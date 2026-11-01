@@ -180,7 +180,7 @@ the three cabinets stand on three separate pads on three different sides of the 
 |---|---|---|
 | discharge (N) | owner assumes acceptance of open-ended canopy | **57 15/16"** to garage south cladding; manufacturer obstruction-table exception is an assumption |
 | back (S) | 4" | **6.0"** to the house cladding |
-| service side (E) | 12" | **12"** to PT-BW-PE's west face |
+| service side (E) | 12" | **12"** to PT-BW-PE's west face (the cabinet moved 3 3/8" west with the pier, 2026-10-31) |
 | overhead | 40" | **64 3/16"** to canopy truss bottom |
 
 **HP3, in the slot**: unchanged, in its own section below.

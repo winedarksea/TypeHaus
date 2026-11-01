@@ -62,7 +62,8 @@ SILL_ANCHOR_BOLT = StructuralHardware(
     model="AB-050-10-BP",
     source="IRC R403.1.6 anchor bolt (1/2 in diameter, 7 in embedment) with the "
            "Simpson Strong-Tie BP 1/2 plate washer R602.11.1 requires "
-           "(strongtie.com/bp) — set in wet concrete between the mudsill anchors",
+           "(strongtie.com/bp) — set in wet concrete; the anchor of a sill wider than "
+           "ESR-2555's 2x4/2x6 MASAZ range (catlin's 2x8 garage sill), 3x3 plate washer",
 )
 
 H25A_HURRICANE_TIE = StructuralHardware(
@@ -418,13 +419,21 @@ HETA20Z_EMBEDDED_BEAM_ANCHOR = StructuralHardware(
         species="SP — Table 3 prints no other column; the PAIR's values (2- or 3-ply, "
                 "concrete, 16d). A single HETA20 is 1,810 uplift / 340 F1 / 770 F2 "
                 "(Table 2)",
-        fasteners="(12) 16d HDG, 6 per strap, into a 2- or 3-ply member; spoons 4\" into "
-                  "f'c >= 2,500 psi concrete, >= 6\" wide, 1-1/2\" min. edge distance; the "
-                  "lowest four holes of each strap filled (Table 2 fn 2)",
+        fasteners="(12) 16d HDG (0.162 x 3-1/2), 6 per strap (Table 3 note 4: half the count "
+                  "in each), into a 2- or 3-ply member; spoons 4\" into f'c >= 2,500 psi "
+                  "concrete, >= 6\" wide, 1-1/2\" min. edge distance. WHICH holes: Table 2 "
+                  "note 2's lowest FOUR of each strap, then the next two up. The 7 in Table 2 "
+                  "note 6 is the SINGLE anchor's lateral floor (\"lateral loads do not apply "
+                  "when fewer than 7 fasteners are used\"); a pair's lateral is Table 3 note 6's "
+                  "(2- or 3-ply, anchors >= 3\" apart), so 6 per strap is the full row. "
+                  "Note 8: no wrap needed, so a strap may be field-trimmed above its nails",
         citation=("Simpson Strong-Tie Florida product approval FL11473 (masonry products), "
                   "Table 3, double HETA, concrete, 2- or 3-ply, sealed 2017-10-19, read "
-                  "2026-09-21: uplift 2,560, F1 1,350, F2 1,430 lb. Note 1: already +60 % "
-                  "for wind. Note 6: lateral applies only to 2- or 3-ply with anchors >= 3\" "
-                  "apart. Note 7: F1 may add 1/16\" deflection when not wrapped over"),
+                  "2026-09-21: uplift 2,560, F1 1,350, F2 1,430 lb; the same row in "
+                  "FL11473-R5 (sealed 2020-10-13) p. 10 of 15, re-read 2026-10-31. Note 1: "
+                  "already +60 % for wind. Note 6: lateral applies only to 2- or 3-ply with "
+                  "anchors >= 3\" apart. Note 7: F1 may add 1/16\" deflection when not "
+                  "wrapped over. §4.6: every HETA is G90 as evaluated — the ZMAX coating is "
+                  "Simpson's, and no HETA12/16 is listed in ZMAX or stainless"),
     ),
 )

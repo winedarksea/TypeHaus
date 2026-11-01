@@ -91,6 +91,7 @@ def main() -> None:
 
     sill_gasket = _p(framing_p, "sill_gasket_in", default=0.25)
     sill_plate = _p(framing_p, "sill_plate_in", default=1.5)
+    sill_width = _p(framing_p, "sill_width_in", default=7.25)  # 2x8 PT, flush outside the studs
     top_plate = _p(framing_p, "top_plate_in", default=1.5)
     raised_heel = _p(framing_p, "raised_heel_in", default=6.0)
     truss_member = _p(framing_p, "truss_member_in", default=3.5)
@@ -120,11 +121,13 @@ def main() -> None:
     x_icf_eps_int1 = x_icf_core0
 
     # Place stud wall so the sheathing plane and the stem's exterior EPS face are
-    # coplanar — the alignment the model authors (params/foundations.py). 4 1/2" of the
-    # 5 1/2" sill plate still lands on the concrete core, and the rainscreen + siding
-    # project past the foam and drip clear of it instead of ledging back onto it.
+    # coplanar — the alignment the model authors (params/foundations.py). The sill is a 2x8
+    # set flush with the stud outside face, so 5 3/8" of its 7 1/4" lands on the concrete core
+    # (a 5 1/2" sill bore 3 5/8"); the 1 3/4" ledge sits inside, under the curb-cap flashing.
+    # The rainscreen + siding project past the foam and drip clear of it.
     x_stud_ext = x_icf_eps_ext1 - zip_r
     x_stud_int = x_stud_ext - stud_depth
+    x_sill_int = x_stud_ext - sill_width
     x_dry_int = x_stud_int - drywall
     x_zip_ext = x_stud_ext + zip_r
     x_rain_ext = x_zip_ext + rainscreen
@@ -175,9 +178,9 @@ def main() -> None:
     _dim_v(ax, y_footing_top, grade_y, x_exterior + 2.0, '42" to frost (typ.)')
 
     # ----- Sill, gasket, anchors (schematic) ----------------------------------
-    _rect(ax, x_stud_int, y_sill0, stud_depth, sill_gasket, fc="#FFFFFF", ec="black", lw=1.0, z=4)
-    _lumber(ax, x_stud_int, y_sill0 + sill_gasket, stud_depth, sill_plate, fc=COL.wood, ec="black", lw=1.2, z=4)
-    _leader(ax, (x_stud_int + stud_depth / 2, y_sill0 + sill_gasket + sill_plate / 2), (x_dry_int - 10.0, y_sill1 + 6.0), "PT sill board + sill gasket", ha="right", va="bottom")
+    _rect(ax, x_sill_int, y_sill0, sill_width, sill_gasket, fc="#FFFFFF", ec="black", lw=1.0, z=4)
+    _lumber(ax, x_sill_int, y_sill0 + sill_gasket, sill_width, sill_plate, fc=COL.wood, ec="black", lw=1.2, z=4)
+    _leader(ax, (x_sill_int + sill_width / 2, y_sill0 + sill_gasket + sill_plate / 2), (x_dry_int - 10.0, y_sill1 + 6.0), '2x8 PT sill, flush outside, + sill gasket;\n1/2" bolts + 3x3 washers in the middle third', ha="right", va="bottom")
 
     # ----- Above-grade framed wall --------------------------------------------
     _rect(ax, x_stud_int, y_sill1, stud_depth, y_topplate0 - y_sill1, fc=COL.wood, ec="black", lw=1.2, z=3)

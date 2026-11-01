@@ -56,7 +56,9 @@ class WallBacking(Element):
     start: Length | None = None
     #: Run along the wall. None = to the end of the wall.
     length: Length | None = None
-    #: Band bottom above the storey datum.
+    #: Band bottom above the wall's sill datum (``ResolvedWall.base_ref_z_m``, which an
+    #: opening's ``sill_m`` also uses) — not the storey datum on a wall standing on a curb,
+    #: and not the finished floor.
     elevation: Length
     #: Band height. A CRC R328.1.1 grab-bar band is 7 1/4"; catlin's wet-wall strip is 12".
     height: Length

@@ -1297,13 +1297,15 @@ def test_hp1_faces_north_off_its_own_pad(catlin_model) -> None:
     cabinet = Polygon(next(o for o in catlin_model.canvas_objects
                            if o.tag == unit.tag).footprint)
     pier = Polygon(_solid(catlin_model, "PT-BW-PE").outline)
+    # Gree's 12" service side; the unit moved 3 3/8" west with PT-BW-PE (2026-10-31).
     assert (pier.bounds[0] - cabinet.bounds[2]) / INCH == pytest.approx(12.0)
     garage = _wall(catlin_model, "W-G-S")
     garage_face_y = min(p[1] for layer in garage.layers for p in layer.polygon)
     assert (garage_face_y - cabinet.bounds[3]) / INCH == pytest.approx(58.4375)
     canopy = next(r for r in catlin_model.roofs if r.tag == "RF-BW-CANOPY")
     assert Polygon(canopy.footprint).covers(cabinet.centroid)
-    # It laps the kitchen sink window. Unavoidable, and stated rather than discovered.
+    # It lapped the kitchen sink window until it moved 3 3/8" west with PT-BW-PE (2026-10-31);
+    # it now clears it, and this says so rather than letting it drift back unseen.
     # W-M-N1 runs EAST to WEST, so the opening's `center_along_m` is subtracted from the
     # wall's start x rather than added to it.
     wall = _wall(catlin_model, "W-M-N1")
@@ -1315,7 +1317,7 @@ def test_hp1_faces_north_off_its_own_pad(catlin_model) -> None:
         ro_half = (window.width_m / INCH) / 2.0
         if abs(wx_in - cx_in) < _HP1_CAB_W_IN / 2.0 + ro_half:
             lapped.append(tag)
-    assert lapped == ["WIN-M-KITCH"]
+    assert lapped == []
 
     # Every leg's full 2" section lands on the pad, and on a published foot hole.
     pad = Polygon(_solid(catlin_model, _HP1_PAD).outline)

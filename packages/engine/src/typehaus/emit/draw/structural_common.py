@@ -10,7 +10,6 @@ from __future__ import annotations
 from typehaus.emit.draw.typography import feet_inches_8th
 from typehaus.model.assembly import FramingSpec
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.framing.profiles import truss_chord_depth_m
 
 M_TO_FT = 3.280839895013123
 IN_PER_FT = 12.0
@@ -101,13 +100,13 @@ def wall_length_m(wall) -> float:
 
 
 def truss_heel_note(spec: FramingSpec) -> str | None:
-    """``RAISED HEEL n"`` only for a heel deeper than the chord; else ``STANDARD HEEL``.
+    """``STANDARD HEEL`` for an unauthored truss heel; else the height and where it is taken.
 
-    A heel equal to the bottom chord is the top chord springing straight off it.
+    The heel is measured at the outside face of bearing (decision #108), and that is printed
+    with the number because a plant reading it at the wall line builds a different truss.
     """
-    if spec.heel_height is None:
+    if spec.roof_frame != "truss":
         return None
-    heel_m = spec.heel_height.meters
-    if heel_m > truss_chord_depth_m(spec) + 1e-6:
-        return f"RAISED HEEL {inches(heel_m)}"
-    return "STANDARD HEEL"
+    if spec.heel_height is None:
+        return "STANDARD HEEL"
+    return f"HEEL {inches(spec.heel_height.meters)} AT OUTSIDE FACE OF BEARING"

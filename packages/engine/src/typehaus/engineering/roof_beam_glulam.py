@@ -9,7 +9,8 @@ combination: ANSI/AWC NDS 2018 Supplement Table 5A. Wet service (Table 5.3.1), s
 The beam is graded on its own two BEARING POSTS with whatever runs past each, by statics under
 the eight load patterns ``overhang_beam.envelope`` walks — the roof's half-area spread uniformly
 over the roof-bearing run, excluding unloaded decorative tails. Bearing is over the post's
-own width (the cap seats the beam on the post end), at Fc-perp wet.
+own width (the cap seats the beam on the post end), at Fc-perp wet, and so is each roof truss's
+bottom chord on the beam top (``truss_on_beam``).
 
 **Oracle.** ``houses/catlin/notes/canopy_west_band.md`` §7;
 ``tests/test_canopy_west_band_calcs.py``.
@@ -27,6 +28,7 @@ from typehaus.engineering.item import (
     Status,
     item_id,
 )
+from typehaus.engineering.truss_on_beam import truss_bearing_on, truss_bearing_state
 
 KIND = "roof_beam"
 
@@ -145,6 +147,12 @@ def glulam(ctx: Any, roof: Any, beam: Any, tributary_ft2: float,
                    f"IRC Table R301.7 L/{DEFLECTION_DENOMINATOR:.0f} on snow; E "
                    f"{E_PSI:,.0f} x C_M {CM_E}, I {inertia:.0f} in4"),
     )
+    uniform_plf = per_ft * (snow_psf + dead_psf)  # type: ignore[operator]
+    truss_inputs: tuple[Quantity, ...] = ()
+    if (truss := truss_bearing_on(ctx, roof, beam)) is not None:
+        truss_state, truss_inputs = truss_bearing_state(truss, uniform_plf, FC_PERP_PSI,
+                                                        CM_FC_PERP)
+        states = (*states, truss_state)
     governing = max(states, key=lambda state: state.ratio)
     return EngineeringRecord(
         item_id=item_id(KIND, beam.tag), kind=KIND, key=beam.tag,
@@ -161,7 +169,7 @@ def glulam(ctx: Any, roof: Any, beam: Any, tributary_ft2: float,
                 Quantity("tributary_area", tributary_ft2, "ft2", 0.01),
                 Quantity("design_snow", snow_psf, "psf", 0.1),  # type: ignore[arg-type]
                 Quantity("design_dead", dead_psf, "psf", 0.1),
-                Quantity("uniform_load", per_ft * (snow_psf + dead_psf), "plf", 0.1)),  # type: ignore[operator]
+                Quantity("uniform_load", uniform_plf, "plf", 0.1), *truss_inputs),
         limit_states=states, element_tags=(roof.tag, beam.tag),
         notes=("A 5-1/2\" glulam is a Western-species width; 24F-V4 DF is the combination "
                "graded, and the supplier's treated stock must be at least that layup.",))

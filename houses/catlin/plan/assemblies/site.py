@@ -258,44 +258,27 @@ SUNKEN_GARDEN_COLUMN_12 = Assembly(
     source="catlin-house garden columns (the four balcony corners PT-SG-BR1/BR3/BF1/BF3) — 12\" round cast concrete, FIXED at the base: the cage is a FABRICATED 8-INCH UNIT, not a field-bent detail — (4) #5 verticals with #3 rings @ 10\" o.c. at 2\" cover, 8\" out-to-out of rings, one of ten identical cross-sections house-wide (four court columns, six north-entry pours), lengths per pour, tied not welded; galvanized (ASTM A767 after fabrication, or A1094 coated stock bent after coating) — the fabricator's choice, NAMED ON THE ORDER; lapped class B ~30\" onto (4) #5 galvanized dowels cast with the wall pour below; wall-top cold joint roughened to 1/4\" amplitude with laitance removed and a bentonite or crystalline waterstop strip set inside the dowel circle (it is the wettest, saltiest elevation on the column and a documented chloride path); Sonotube Finish Free form seated in a plywood saddle collar screwed to the wall FACES (a flush tube leaves no wall top to anchor a collar to) and kicked to the porch framing, stripped to the form line; 5,000 psi, w/cm <= 0.40, 6% +/-1.5 air at 3/4\" or 3/8\" aggregate with SCM caps per ACI 318-19 §19.3.3.4 (class F3 + C2 — chloride tracked into a court that drains only to DRW-SG-MAIN and cannot shed it, plus planter runoff above; NOT washoff from the drive, which is 96 ft away north of the garage; IRC R402.2), air verified at the point of placement, 12-18\" lifts vibrated in the core and never on the cage; top CAST TO LINE under the beam footprint with a >=15 degree wash and >=1\" drip lip screeded around it (BIA Tech Note 36A) and NO grout island — tolerance taken in the SS316-SHIM-35 standoff shim pack (modeled at CN-SG-STDF-*, and its catalog record carries the detailing) or, if a bed is unavoidable, epoxy grout confined under the standoff plate; beam held down by a pair of HETA20Z embedded anchors cast into the column top, one each beam face, straps nailed with HDG 16d and isolated from the standoff with EPDM or HDPE; broom or float finish on the wash, never steel-trowelled (NRMCA CIP 2); wet-cure 7 days protected from freezing to 3,600 psi (ACI 306); NO SILANE/SILOXANE REPELLENT — all four columns are WASHED WHITE instead, with an untinted mineral silicate (2 coats) over the full cylindrical face, which is itself vapour-open weather protection and is the conventional alternative to a repellent on exposed concrete; a silane makes the pour hydrophobic and non-absorbent, which is the one condition a potassium silicate cannot bond to, so the two are alternatives and never a stack, and the ~10-YEARLY RECOAT OBLIGATION GOES WITH IT; the wash also matches the white centre posts (POST_WHITE_PAINT_DF / BEAM_WHITE_PAINT) this court already carries, which is what the old \"optional mineral paint\" line was reaching for; applied after the pour has cured and the court is backfilled, by the coating trade on its own arrival, never by the concrete sub",
 )
 
-# --- frost-protected shallow foundation, sunken-garden side -----------------------------
+# --- frost protection, sunken-garden side (C3-E10) --------------------------------------
 #
-# The condition: the sunken garden's floor is at -9'-4" and the south house strips
-# FT-B-S1/S2/S3 bottom out at -10'-0" — 8" of cover against MN Rules 1303.1600's 42" for
-# Ramsey County (Zone II). Frost depth is measured from the LOWEST ADJACENT grade (IRC
-# R403.1.4.1), and beside those footings that is the garden floor, not the -2'-10" site
-# grade plane. `structural.frost_depth` derives a local grade per footing and names these
-# three rather than comparing every footing to one global scalar. (A fourth, the veneer
-# plinth FT-B-BRICK, sat here with 2" of NEGATIVE cover until 2026-09-05; it is retired —
-# W-B-BRICK bears on the spanning grade beam W-SG-BRKBM now and touches no soil at all.)
+# The court floor is -9'-1 7/16" and the south house strips FT-B-S1..S4 bear at -9'-9 7/16":
+# 8" of cover against MN Rules 1303.1600's 42" for Ramsey County. Frost depth is measured
+# from the LOWEST ADJACENT grade (IRC R403.1.4.1), here the garden floor.
 #
-# The answer is R403.3 — a frost-protected shallow foundation — under **Figure R403.3(3)**
-# specifically: a heated building adjoining a slab-on-ground that is *not* maintained at
-# 64 deg F, which is exactly a heated basement beside an open sunken court. Deepening the
-# strips is the alternative and it is still not the move, though the reason changed: the
-# plinth that used to lean on FT-B-S2/S3's 10" south toe is gone, but that toe now carries
-# SG_VENEER_BEAM_14's isolation board at -8"..-10", so re-centring these strips still means
-# re-deriving what stands beside them.
+# ** THE ANSWER IS A DEEP DRAINED STONE BED, NOT FOAM WINGS. ** The R403.3 route here is
+# Figure R403.3(3), "insulation placement ... adjacent to unheated slab-on-ground structure",
+# and its wing has to abut the footing along the whole reached length. The wings could only
+# run x 150"-282"; FT-SG-W1/E1's toes occupy x 66"-150" and 282"-366", so 145" of S1..S4
+# never had one. The design air-freezing index is **3000 F-days** (Figure R403.3(2) is a
+# 100-year-return estimate; this said 2500). Table R403.3(1) at 3000: vertical R-7.8,
+# horizontal R-6.5 along walls and R-8.6 at corners, A = 12", B = 24", C = 40". XPS counts
+# R-4.5/in vertical and R-4.0/in horizontal (footnote 3): 2" and 3" wings.
+# Priced ~$20 of foam against ~$2-5k of stone, but they cannot reach the toes, so no option.
 #
-# Design air-freezing index **AFI 2500** (Minneapolis-St Paul; MN Rules 1303.1600 and the
-# IRC's own Figure R403.3(2) put the Twin Cities near 2,500 F-days). Table R403.3(1) at
-# AFI 2500 asks for:
-#
-#     vertical            R-6.7
-#     horizontal, walls   R-1.7        dimension B = 24"
-#     horizontal, corners R-4.9        dimension C = 40"
-#
-# The **vertical leg is already built**: the south basement walls compose off
-# FOUNDATION_WALL_8_XPS4_CORE, 4" of XPS = R-20 against the table's R-6.7, and the core
-# carries that face full height from -9'-0" to 0'-0" — the XPS itself was never the banded
-# layer, only the skin over it was. Only the horizontal band is new.
-#
-# Both wings are specified far over the table rather than at it. R-5 and R-10 against R-1.7
-# and R-4.9 is not generosity: 1" is the thinnest XPS anyone stocks, the labour and the
-# excavation are identical at either thickness, and a band sitting exactly on a table minimum
-# has nothing left if the design AFI is revised upward. 40 psi, the same slab-bearing grade
-# as SLAB_FLOOR's, because the garden slab is cast on top of it.
-
+# The beds FB-B-S1..S4 go down 34" to -151 7/16" (42" under the court floor): ASCE 32 soil
+# replacement, IRC R403.1.4.1, with its own pit SM-B-SOUTH because -151" is under SM-B-RADON's
+# floor (params/foundations.py `_DEEP_STONE`). Needs AHJ plan-review acceptance of the
+# ASCE 32 method and the engineer's drainage sign-off: inspections.toml
+# `frost_soil_replacement`. The library FROST_WING_XPS_* assemblies are unused here.
 
 # The footings the wings protect are plain strips on their stone bedding (FOOTING_EXPOSED_20); no foam under a footing (owner: creep).
 # The 20x8 strip under every house and garage wall that is NOT one of the four
@@ -324,8 +307,7 @@ SUNKEN_GARDEN_COLUMN_12 = Assembly(
 #
 # ** THE COURT RIM HAS ITS BASE COURSE NOW (2026-10-28, owner). ** 4" of #57 under the
 # 94 SF net rim (~1.2 cy): a capillary break and a drained bearing course, letting go
-# laterally into the field's rootzone and FD-SG-FIELD. The frost wings dropped 4" to lie
-# under it (params/sunken_garden._WING_TOP). The garage landing stays one layer: its base
+# laterally into the field's rootzone and FD-SG-FIELD. The garage landing stays one layer: its base
 # course was never decided on its own and is not part of this change.
 # ** THE THREE INTERIOR 12" BEARING WALLS KEEP `library.FOUNDATION_WALL_12_INT`, WHICH
 # CARRIES NO MIX — a deliberate stopping point, not an oversight. ** Restating that assembly

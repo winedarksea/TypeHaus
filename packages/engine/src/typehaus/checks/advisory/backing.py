@@ -199,13 +199,13 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
                 f"band behind it. Nothing in the IRC requires one; this is the irreversible "
                 f"item, since after the drywall closes it is a demolition", tags, Result.FAIL,
                 fix=f"author a WallBacking on {wall.tag} spanning "
-                    f"{low / M_PER_IN:.0f}\" above its framing base"))
+                    f"{low / M_PER_IN:.0f}\" above its sill datum"))
     return out
 
 
 def _band_datum_low(ctx: CheckContext, body: WallMountedBody, wall: ResolvedWall,
                     mount: Mount) -> float:
-    """The body's bottom on the band's datum, the wall's framing base.
+    """The body's bottom on the band's datum, the wall's sill datum.
 
     ``Mount.elevation`` is off the room's FINISHED floor (``resolve/placeables``) and a band
     is off ``base_ref_z_m``; they differ by the covering and, in the garage, by the 22"
@@ -221,14 +221,13 @@ def _opening_holding(ctx: CheckContext, wall: ResolvedWall, station: float,
                      body: WallMountedBody, body_type: object) -> str | None:
     """The opening whose rough opening wholly holds this body (an inside-mount shade)."""
     placed = next((obj for obj in ctx.model.canvas_objects if obj.uid == body.uid), None)
-    storey = ctx.plan.storey(wall.storey)
-    if placed is None or placed.body_z0_m is None or placed.body_z1_m is None or storey is None:
+    if placed is None or placed.body_z0_m is None or placed.body_z1_m is None:
         return None
     half = body_type.footprint[0].meters / 2
     for opening in ctx.model.openings:
         if opening.host_wall != wall.tag or opening.height_m is None:
             continue
-        sill = storey.elevation.meters + opening.sill_m
+        sill = wall.base_ref_z_m + opening.sill_m
         if (abs(station - opening.center_along_m) + half <= opening.width_m / 2 + _REACH_M
                 and sill - _REACH_M <= placed.body_z0_m
                 and placed.body_z1_m <= sill + opening.height_m + _REACH_M):

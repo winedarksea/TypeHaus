@@ -42,7 +42,8 @@ _WORKED = {
     "PT-BW-W": (1.0816, 1.3377, Status.INCOMPLETE),
     "PT-BW-E": (1.0220, 1.0658, Status.OK),
     "PT-BW-GW": (1.3466, None, Status.OVER),
-    "PT-BW-GE": (1.0529, 1.2398, Status.INCOMPLETE),
+    # GE's P_u fell 1,107.8 -> 1,074.7 lb when the landing came in 3 3/8" (2026-10-31).
+    "PT-BW-GE": (1.0513, 1.2315, Status.INCOMPLETE),
     # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->
     # 4,855 lb (front), 4,877 (rear); wall-top k_θ unchanged. Front R 6.616 / 6.242.
     # 3" lower on 2026-09-23 (addendum 2026-09-23b): L 105.125", P_u 4,820.0; R 6.412 / 6.049.

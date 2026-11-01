@@ -83,7 +83,7 @@ def test_catlin_house_footings_resolve_bedding(catlin_model):
 
 
 def test_footing_bedding_undercut_and_insulation(catlin_model):
-    bedding = next(fb for fb in catlin_model.footing_beddings if fb.host == "FT-B-S1")
+    bedding = next(fb for fb in catlin_model.footing_beddings if fb.host == "FT-B-S1W")
     assert bedding.z1_m > bedding.z0_m  # bed sits below the footing underside
     assert 0.15 < bedding.z1_m - bedding.z0_m < 0.22  # ~7" undercut
     assert bedding.geotextile and bedding.drain_tile

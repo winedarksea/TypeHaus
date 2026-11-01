@@ -131,13 +131,14 @@ def moment_piers(system):
     return variant(system)["moment_piers"]
 
 
-def east_supports(system, *, x_ft, stations, header_soffit_ft, moment_cage, house_pad,
+def east_supports(system, *, x_ft, stations, header_soffit_ft, pack_ft, moment_cage, house_pad,
                   garage_pad):
     """``(posts, piers, pads)`` for the east line.
 
     ``stations`` maps ``"RE"``/``"RNE"`` to ``(uid, y_ft)`` of the post the header bears on;
     ``house_pad`` / ``garage_pad`` are ``(pad uid, outline factory, moment-pad top ft,
-    thickness ft)`` — the plane each side's pad sits on in the pinned variants.
+    thickness ft)`` — the plane each side's pad sits on in the pinned variants. A `cast`
+    column tops out ``pack_ft`` under the soffit: the shim pack is a solid (C3-E13).
     """
     spec = variant(system)
     posts, piers, pads = [], [], []
@@ -149,7 +150,7 @@ def east_supports(system, *, x_ft, stations, header_soffit_ft, moment_cage, hous
             posts.append(Post(
                 uid=uid, tag=f"PT-BW-{key}", position=pt(ft(x_ft), ft(y_ft)),
                 head_connector=spec["pier_head"], size="12 round",
-                height=ft(header_soffit_ft - base_ft), assembly="PIER_CONCRETE_12",
+                height=ft(header_soffit_ft - pack_ft - base_ft), assembly="PIER_CONCRETE_12",
                 vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
                 reinforcement=moment_cage, supported_by=pad_tag))
             pads.append(Pad(uid=pad_uid, tag=pad_tag, outline=outline(y_ft),

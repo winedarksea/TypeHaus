@@ -9,6 +9,13 @@ drift apart. Arithmetic: `notes/north_entry_piers.md` §9.
 
 from typehaus import HeadConnector
 
+#: ** ONE PACK, HOUSE-WIDE (geometry review C3-E13, 2026-10-31). ** Every wood beam that lands
+#: on a pour stands on an SS316-SHIM-35 pack, and every such pour is cast this far below the
+#: soffit, so the pack is a real ¾" solid: wood held off the concrete, a drained gap, and the
+#: levelling tolerance taken in the leaves (½"-1" either way of it). The north entry's piers
+#: and cast columns and the garden's four corner columns all read this one number.
+STANDOFF_PACK_IN = 0.75
+
 #: The cast-in HETA20Z pair over an SS316-SHIM-35 pack: PT-BW-E/-GE/-RE/-RNE and
 #: PT-SG-B{R,F}{1,3}. FL11473 Table 3 rates the PAIR, so the numbers are the set's
 #: (`set_rated`), SP because every beam here is southern pine. Lateral is the lower of
@@ -26,7 +33,7 @@ HETA20Z_PAIR_HEAD = HeadConnector(
                      "< 1.0, for more than one direction on a single connection")
 
 #: PT-BW-W / -GW: the head is the CBSQ66-SDS2 base under PT-BW-CW / -CNW (ABU66SS until
-#: 2026-09-30), and the seat beam hangs off that 6x6 on an HU28-2Z (`params/breezeway.py`).
+#: 2026-09-30), and the seat beam hangs off that 6x6 on an LUS26-2Z (`params/breezeway.py`).
 CBSQ66_HEAD = HeadConnector(
     tie="CBSQ66-SDS2", tie_count=1, uplift_lb=3060.0, lateral_lb=485.0,
     load_duration_factor=1.6,

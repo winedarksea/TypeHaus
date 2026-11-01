@@ -16,7 +16,7 @@ under the carriers, a Titen HD each into the ICF core), which went with the carr
 interior landing did; uids ARD33PDHYR, AJ70HT0M2D, 0TW5SE2NX5, VNT251FTF3, B0FS509J9R and
 QT6E9ZZ2W8 are retired.
 
-**Line 2, the screen's own line (x = 6'-0") into `W-G-W`, wood to wood.** Two HL33HDG
+**Line 2, the screen's own line (x = 6'-3 3/8") into `W-G-W`, wood to wood.** Two HL33HDG
 stacked on the screen's north end post (east face), heel vertical, the other leg on the
 garage's south face at its SW corner: lag screws >= 5" (HL fn 7) through a KDAT filler cut
 flush with the corrugated into the corner pack. A 4x KDAT filler in the end stud pack gives

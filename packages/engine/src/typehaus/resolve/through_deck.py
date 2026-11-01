@@ -105,7 +105,7 @@ def through_deck_walls(model: Any, system: Any, floor_z0_m: float, floor_z1_m: f
     for wall in model.walls:
         if wall.tag in bearing:
             continue
-        if wall.base_ref_z_m > floor_z0_m + _THROUGH_TOL_M:
+        if wall.frame_base_z_m > floor_z0_m + _THROUGH_TOL_M:
             continue
         if framing_top_z_m(wall) < floor_z1_m + _THROUGH_TOL_M:
             continue

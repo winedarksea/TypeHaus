@@ -21,6 +21,8 @@ from typehaus.library.hardware._common import _SIMPSON
 
 # ZMAX, never G90: a sill on concrete is preservative-treated (IRC R317.1), so every nail
 # of this strap is in treated contact (R317.3.1). Same ESR-2555 row as the G90 MASA.
+# ESR-2555 publishes it for 2x4 and 2x6 sills ONLY: a wider sill (catlin's 2x8 garage sill)
+# takes the cast-in 1/2" bolt instead (``joints/sills.sill_anchor_role``).
 MASA_MUDSILL_ANCHOR = StructuralHardware(
     tag="simpson-masaz-mudsill-anchor",
     name="MASAZ mudsill anchor (ZMAX)",

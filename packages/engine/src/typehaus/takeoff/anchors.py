@@ -19,6 +19,7 @@ from typehaus.hardware.catalog import (
     ROLE_KNEE_BRACE,
     ROLE_LAPPED_BRACE_BOLT,
     ROLE_MUDSILL_ANCHOR,
+    ROLE_SILL_ANCHOR_BOLT,
     ROLE_SLAB_PLATE_PIN,
     ROLE_STUD_PLATE_TIE,
     hardware_by_model,
@@ -37,6 +38,7 @@ from typehaus.joints.sills import (
     mudsill_anchor_stations,
     partition_pin_stations,
     pinned_partition_returns,
+    sill_anchor_role,
     strap_holdown_locations,
 )
 from typehaus.model.enums import ConnectorKind
@@ -48,7 +50,8 @@ from typehaus.takeoff.hardware_row import hardware_row
 _M_TO_FT = 3.280839895013123
 
 #: Parts set wet in the pour. The concrete crew places them, so their rows say where.
-_CAST_IN_ROLES = frozenset({ROLE_MUDSILL_ANCHOR, ROLE_EMBEDDED_STRAP_HOLDOWN})
+_CAST_IN_ROLES = frozenset({ROLE_MUDSILL_ANCHOR, ROLE_SILL_ANCHOR_BOLT,
+                            ROLE_EMBEDDED_STRAP_HOLDOWN})
 
 
 def _pours(returns) -> list:
@@ -71,18 +74,26 @@ def mudsill_anchor_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
     # Counted off the LOCATED anchors rather than re-applying the pitch rule here. The two
     # answers agree by construction only if there is one rule, and a station list one part
     # longer than the order is a drawing that shows hardware nobody bought.
-    by_storey: Counter = Counter()
-    for station in mudsill_anchor_stations(model, rules, sill_category):
-        by_storey[station.storey] += 1
-    total_length_m = sum(ret.length_m for ret in returns)
-    item = hardware_for_role(ROLE_MUDSILL_ANCHOR)
-    return [hardware_row(
-        item, scope="sill plate on concrete", count=int(sum(by_storey.values())),
-        by_storey=dict(sorted(by_storey.items())), length_ft=total_length_m * _M_TO_FT,
-        tags=_pours(returns),
-        basis=(f"{rules.mudsill_anchor_pitch_ft:g} ft o.c. (min "
-               f"{rules.minimum_anchors_per_run} per plate run) over "
-               f"{len(returns)} sill runs totalling {total_length_m * _M_TO_FT:.1f} LF"))]
+    stations = mudsill_anchor_stations(model, rules, sill_category)
+    rows = []
+    for role in (ROLE_MUDSILL_ANCHOR, ROLE_SILL_ANCHOR_BOLT):
+        runs = [ret for ret in returns if sill_anchor_role(ret) == role]
+        by_storey: Counter = Counter(st.storey for st in stations if st.role == role)
+        if not runs or not by_storey:
+            continue
+        total_length_m = sum(ret.length_m for ret in runs)
+        item = hardware_for_role(role)
+        why = ("" if role == ROLE_MUDSILL_ANCHOR else
+               "; the plate is wider than ESR-2555's 2x4/2x6 sills, so cast-in bolts with "
+               "3x3 plate washers, in the plate's middle third and the core")
+        rows.append(hardware_row(
+            item, scope="sill plate on concrete", count=int(sum(by_storey.values())),
+            by_storey=dict(sorted(by_storey.items())), length_ft=total_length_m * _M_TO_FT,
+            tags=_pours(runs),
+            basis=(f"{rules.mudsill_anchor_pitch_ft:g} ft o.c. (min "
+                   f"{rules.minimum_anchors_per_run} per plate run) over "
+                   f"{len(runs)} sill runs totalling {total_length_m * _M_TO_FT:.1f} LF{why}")))
+    return rows
 
 
 def partition_pin_rows(model: ResolvedModel, rules: SillPlateAnchorRules,

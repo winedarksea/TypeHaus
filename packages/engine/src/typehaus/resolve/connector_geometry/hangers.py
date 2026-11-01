@@ -296,6 +296,64 @@ def _ius_model(width: float | None, depth: float | None) -> str | None:
     return f"IUS{width_name}/{height_name}" if width_name and height_name else None
 
 
+def _selected(part: str, member_width_in: float | None, member_depth_in: float | None
+              ) -> tuple[str, HangerDimensions | None]:
+    """``(shape, catalog row)`` for a designation: the one dispatch the mesh and the seat-fit
+    check share. Shapes: lsc, tha, lssr, ius, folded, concealed, or "" for no record."""
+    model = part.strip().upper()
+    for finish in ("SS", "Z", "PC"):
+        if model.endswith(finish):
+            model = model[:-len(finish)]
+            break
+    if model == "LSC":
+        return "lsc", None
+    if model == "THA422":
+        return "tha", THA422_DIMENSIONS
+    if model == "LSSR":
+        if member_width_in is None:
+            return "", None
+        model = next((name for name, dims in LSSR_DIMENSIONS.items()
+                      if member_width_in <= dims.clear_width_in), "")
+    if model in LSSR_DIMENSIONS:
+        return "lssr", LSSR_DIMENSIONS[model]
+    if model == "IUS":
+        model = _ius_model(member_width_in, member_depth_in) or ""
+    if model in IUS_DIMENSIONS:
+        return "ius", IUS_DIMENSIONS[model]
+    if model == "LUS":
+        model = _sawn_model("LUS", member_width_in, member_depth_in) or ""
+    if model in LUS_DIMENSIONS:
+        return "folded", LUS_DIMENSIONS[model]
+    if model == "HHUS410":
+        return "folded", HHUS410_DIMENSIONS
+    if model in ("HU", "HUC"):
+        selected = _sawn_model("HU", member_width_in, member_depth_in)
+        return ("concealed" if model == "HUC" else "folded",
+                HU_DIMENSIONS[selected] if selected else None)
+    if model.startswith("HUC") and not model.startswith("HUCQ"):
+        plain_model = "HU" + model[3:]
+        if plain_model in HU_DIMENSIONS:
+            return "concealed", HU_DIMENSIONS[plain_model]
+    if model in HU_DIMENSIONS:
+        return "folded", HU_DIMENSIONS[model]
+    if model == "HUCQ":
+        selected = _sawn_model("HU", member_width_in, member_depth_in)
+        aliases = {"HU210-2": "HUCQ210-2-SDS", "HU212-2": "HUCQ210-2-SDS",
+                   "HU210-3": "HUCQ210-3-SDS", "HU212-3": "HUCQ210-3-SDS",
+                   "HU48": "HUCQ410-SDS", "HU410": "HUCQ410-SDS",
+                   "HU412": "HUCQ412-SDS"}
+        model = aliases.get(selected or "", "")
+    if model in HUCQ_DIMENSIONS:
+        return "concealed", HUCQ_DIMENSIONS[model]
+    return "", None
+
+
+def hanger_dimensions(part: str, *, member_width_in: float | None = None,
+                      member_depth_in: float | None = None) -> HangerDimensions | None:
+    """The catalog row a designation resolves to (W, H, B, gauge), or ``None``."""
+    return _selected(part, member_width_in, member_depth_in)[1]
+
+
 def hanger_mesh(part: str, *, member_width_in: float | None = None,
                 member_depth_in: float | None = None, slope_radians: float = 0.0,
                 support_width_in: float | None = None) -> GMesh | None:
@@ -305,49 +363,13 @@ def hanger_mesh(part: str, *, member_width_in: float | None = None,
     bottom at that face. Only adjustable seats follow signed pitch along local +y.
     Authored dimensions win even when the supplied member does not fit the product.
     """
-    model = part.strip().upper()
-    for finish in ("SS", "Z", "PC"):
-        if model.endswith(finish):
-            model = model[:-len(finish)]
-            break
-    if model == "LSC":
+    shape, dimensions = _selected(part, member_width_in, member_depth_in)
+    if shape == "lsc":
         return _lsc_hanger(slope_radians)
-    if model == "THA422":
+    if shape == "tha":
         return _tha422_hanger(member_depth_in, support_width_in)
-    if model == "LSSR":
-        if member_width_in is None:
-            return None
-        model = next((name for name, dims in LSSR_DIMENSIONS.items()
-                      if member_width_in <= dims.clear_width_in), "")
-    if model in LSSR_DIMENSIONS:
-        return _lssr_hanger(LSSR_DIMENSIONS[model], slope_radians)
-    if model == "IUS":
-        model = _ius_model(member_width_in, member_depth_in) or ""
-    if model in IUS_DIMENSIONS:
-        return _folded_hanger(IUS_DIMENSIONS[model], ius=True)
-    if model == "LUS":
-        model = _sawn_model("LUS", member_width_in, member_depth_in) or ""
-    if model in LUS_DIMENSIONS:
-        return _folded_hanger(LUS_DIMENSIONS[model])
-    if model == "HHUS410":
-        return _folded_hanger(HHUS410_DIMENSIONS)
-    if model in ("HU", "HUC"):
-        concealed = model == "HUC"
-        selected = _sawn_model("HU", member_width_in, member_depth_in)
-        return _folded_hanger(HU_DIMENSIONS[selected], concealed=concealed) if selected else None
-    if model.startswith("HUC") and not model.startswith("HUCQ"):
-        plain_model = "HU" + model[3:]
-        if plain_model in HU_DIMENSIONS:
-            return _folded_hanger(HU_DIMENSIONS[plain_model], concealed=True)
-    if model in HU_DIMENSIONS:
-        return _folded_hanger(HU_DIMENSIONS[model])
-    if model == "HUCQ":
-        selected = _sawn_model("HU", member_width_in, member_depth_in)
-        aliases = {"HU210-2": "HUCQ210-2-SDS", "HU212-2": "HUCQ210-2-SDS",
-                   "HU210-3": "HUCQ210-3-SDS", "HU212-3": "HUCQ210-3-SDS",
-                   "HU48": "HUCQ410-SDS", "HU410": "HUCQ410-SDS",
-                   "HU412": "HUCQ412-SDS"}
-        model = aliases.get(selected or "", "")
-    if model in HUCQ_DIMENSIONS:
-        return _folded_hanger(HUCQ_DIMENSIONS[model], concealed=True)
-    return None
+    if dimensions is None:
+        return None
+    if shape == "lssr":
+        return _lssr_hanger(dimensions, slope_radians)
+    return _folded_hanger(dimensions, concealed=shape == "concealed", ius=shape == "ius")

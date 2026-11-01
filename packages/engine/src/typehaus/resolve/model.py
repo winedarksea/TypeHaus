@@ -178,8 +178,9 @@ class TrussShape:
     facts that are the *designer's*, not the plant's, so a drawing of the truss can put its
     top chords where the roof actually put them:
 
-    * ``heel_m`` — the raised heel, plate top to top-chord underside at the bearing. The
-      same number ``roof_geometry.truss_heel_lift_m`` lifted the deck plane by.
+    * ``heel_m`` — top of bearing to top of top chord at the outside face of bearing, which
+      is the member's own end (decision #108). The number ``roof_geometry.truss_heel_lift_m``
+      anchored the deck plane on.
     * ``tail_lo_m`` / ``tail_hi_m`` — the eave overhang past each bearing, in plan, past
       ``p0`` and ``p1`` respectively. The tails are part of the truss the plant ships; they
       are outside the member because the member's ENDS are its bearings, which is where the
@@ -337,14 +338,24 @@ class ResolvedWall:
 
     @property
     def base_ref_z_m(self) -> float:
-        """The wall's *framing* base — the datum a sill height is measured from.
+        """The wall's sill/band datum — what a sill height or a band elevation is measured from.
 
-        ``ResolvedOpening.sill_m`` is stated up from the room floor, and the room floor is
-        where the framing starts, not where the cladding stops. Every consumer that adds a
+        ``ResolvedOpening.sill_m``, ``WallBacking.elevation`` and paneling bands are stated up
+        from the storey datum, not from where the cladding stops. Every consumer that adds a
         sill to an elevation reads this rather than ``z0_m``, so extending a wall down over
-        the rim moves its skin without moving a single window (→ ``plate_base_z_m``).
+        the rim moves its skin without moving a single window (→ ``plate_base_z_m``). Where
+        the bottom plate physically sits is :attr:`frame_base_z_m`.
         """
         return self.z0_m if self.plate_base_z_m is None else self.plate_base_z_m
+
+    @property
+    def frame_base_z_m(self) -> float:
+        """Where the bottom plate sits: plates, studs, cripples, kings, girt courses.
+
+        Equal to :attr:`base_ref_z_m` today; a wall seated on a subfloor will sit above it
+        while its sills stay on the datum.
+        """
+        return self.base_ref_z_m
 
     @property
     def thickness_m(self) -> float:

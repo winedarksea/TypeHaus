@@ -38,10 +38,10 @@ one that needs a seal.
 
 `W-B-BRICK` is 129 SF of unglazed brick standing at the bottom of an open court, exposed on
 **both** faces above the garden slab, so it sits at outdoor air temperature all winter
-(design −20 °F, AFI 2500). Until 2026-09-05 it bore on `FT-B-BRICK`, a 10"×5" plinth cast on
+(design −20 °F, AFI 3000). Until 2026-09-05 it bore on `FT-B-BRICK`, a 10"×5" plinth cast on
 `FT-B-S2`/`FT-B-S3`'s own projecting toe. That put the wythe in direct series with the house
 footing — whose underside is level with the court floor and whose entire frost protection is
-the R403.3 wings (`SL-SG-FROST-W/N/E`) plus the insulated form.
+its 34" drained #57 bed (ASCE 32; the R403.3 wings `SL-SG-FROST-W/N/E` are retired, C3-E10) plus the insulated form.
 
 The break intended to interrupt that path was stated twice and drawn never:
 
@@ -83,8 +83,8 @@ face at −10", and that is a fact about this beam and does not move with the st
 
 Top and bottom are both borrowed, not invented: the top **is** `W-B-BRICK`'s authored
 underside (−8'-6 7/16") and the bottom **is** the garden slab's (−10'-0 3/16"), so the beam
-exactly fills a void the court already had. The frost wings run continuous **underneath** it
-— the beam spans to the side walls and delivers nothing to the foam.
+exactly fills a void the court already had. The garden slab's stone course runs continuous **underneath** it
+— the beam spans to the side walls and delivers nothing to the strips' bed.
 
 ## 3. Flexure
 
@@ -307,7 +307,7 @@ corner continuity into the side walls (§5.2) is still the engineer's.
    note does not design that lap.
 3. **The thermal path itself.** §1 says the old detail was wrong and the new one routes the
    load into structure that is already broken from the house at the `TB-SG-*` isolation boards. It does
-   **not** compute a frost isotherm. A 2" XPS board at R-10 across 12.7 SF replaces a
+   **not** compute a frost isotherm. A 2" XPS board at R-9 (4.5 per inch, vertical, IRC Table R403.3(1) fn 3) across 12.7 SF replaces a
    contact that had 16.0 SF of assumed-but-unplaced foam over 16.0 SF of placed stone; that
    is unambiguously better and it is not a number.
 4. **Whether the beam helps the retaining walls.** It does not. See the banner.
@@ -892,8 +892,8 @@ record failing at once. So does moving the brick further off the beam's centre.
 ## Sources
 
 - IRC 2018 R703.8.4 — anchored masonry veneer, airspace and tie spacing.
-- IRC 2018 R403.3 and Figure R403.3(3), Table R403.3(1) at AFI 2500 — the FPSF this beam
-  must not compromise.
+- IRC 2018 R403.3 and Figure R403.3(3), Table R403.3(1) at AFI 3000 — read for the retired wings;
+  the strips are now on a deep drained bed (ASCE 32, R403.1.4.1) this beam must not compromise.
 - IRC 2018 R404.1.2(8) — the table `W-SG-W1`/`E1` already satisfy.
 - ACI 318-19 §9.6.1.2 (minimum flexural steel), §22.5 (one-way shear), §22.7.1
   (compatibility torsion).

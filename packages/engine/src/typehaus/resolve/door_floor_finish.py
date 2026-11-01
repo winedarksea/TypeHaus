@@ -1,6 +1,6 @@
 """The floor build-up at a door, read from the plan before rooms and floors resolve.
 
-A derived RO height is measured from the opening's base (the wall's framing base plus its
+A derived RO height is measured from the opening's base (the wall's sill datum plus its
 sill) to the head, and has to clear the FINISHED floor (``resolve/door_sizing``). On a
 joisted storey the wall stands on the TOP OF JOISTS, so the build-up is the subfloor sheet
 and then the covering; on a slab it is the covering alone. Openings resolve before floors

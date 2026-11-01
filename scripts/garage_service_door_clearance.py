@@ -189,3 +189,17 @@ def service_door_envelope():
         leaf_bottom=inch(1), leaf_top=inch(80), lever_backset=inch(2.375),
         lever_hingeward_extent=inch(4.125), lever_projection=inch(2.5),
         lever_bottom=inch(1), lever_top=inch(80))
+
+
+def service_door_clearance(model, **overrides):
+    """D-G-SERVICE swept to its AUTHORED stop (``Door.maximum_opening_degrees``).
+
+    81 degrees since the canopy headers moved 3 3/8" inboard onto the garage truss bearing
+    lines (2026-10-31): W-BW-SCREEN moved with its chord posts, and at 90 degrees the lever
+    meets its thin-brick face and the leaf the CN-BW-GWTIE ties. Owner to revisit.
+    """
+    from dataclasses import replace
+
+    door = next(o for o in model.openings if o.tag == "D-G-SERVICE")
+    stop = model.plan.by_tag(door.tag).maximum_opening_degrees
+    return clearance_results(model, door, stop, replace(service_door_envelope(), **overrides))

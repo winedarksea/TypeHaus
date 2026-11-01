@@ -103,6 +103,10 @@ from typehaus.library.hardware.simpson_hangers import (
     LUSZ_FACE_MOUNT_HANGER,
     THA_FLOOR_TRUSS_HANGER,
 )
+from typehaus.library.hardware.simpson_hangers_lus import (
+    LUS26_2Z_FACE_MOUNT_HANGER,
+    LUS28Z_FACE_MOUNT_HANGER,
+)
 from typehaus.library.hardware.simpson_post_bases import (
     ABU44_POST_BASE,
     ABU66SS_POST_BASE,
@@ -257,6 +261,8 @@ CAPACITY_ONLY_RECORDS: tuple = (
     HUC212_3_CONCRETE_HANGER,
     HU212_3_FACE_MOUNT_HANGER,
     HU28_2Z_FACE_MOUNT_HANGER,
+    LUS26_2Z_FACE_MOUNT_HANGER,
+    LUS28Z_FACE_MOUNT_HANGER,
     LUS210Z_FACE_MOUNT_HANGER,
     LUS210_3Z_FACE_MOUNT_HANGER,
     LUS210SS_FACE_MOUNT_HANGER,

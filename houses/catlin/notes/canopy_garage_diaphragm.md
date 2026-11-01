@@ -52,6 +52,101 @@ its band and every head and base: `canopy_west_band.md`.
 > to 18.217 psf. Every wind number below is the new one. The receiving lines' surplus grew
 > too: the garage's eave-to-ridge fell under 5', so R602.10.3(2) item 2 takes x0.70.
 
+> ⚠ **Re-worked again 2026-10-31: the heel is read at the outside face of bearing and the
+> headers stand on the garage's truss lines** (decision #108, `canopy_west_band.md` 10-31
+> amendment for the geometry). The ridge is **11.644'**, 20.764' over the ground beneath;
+> `q_h` 18.149 psf, **16.661 psf** ASD on any band. Header centres x 6.28125' / 29.71875',
+> 23.4375' apart; strap and clip stations re-spaced over it. The current numbers are in the
+> block below; every section after it keeps the 10-08 working for history.
+
+### The 2026-10-31 numbers (kdat unless named)
+
+```
+K_z = 2.01 (20.764/1200)^(2/7) = 0.63067   q_h = 0.00256 x 0.63067 x 0.85 x 115² = 18.149
+p = 0.6 x 18.149 x 0.85 x 1.80 = 16.661 psf          k = 16.661 / 16.7232 = 0.99628
+
+§2  E-W  (26.667 slope + 10.762 headers) x 16.661 = 623.60;  + 2 x 23.585 = 670.77 lb
+    N-S  59.259 x 16.661 = 987.32;                          + 2 x 23.585 = 1,034.49 lb
+    kdat post drag 16.661 x 5.5/12 x 6.1771 = 47.17 lb, 23.585 each end
+    steel post drag 16.661 x 4/12 x 6.1771 = 34.31 lb, 17.15 each end
+```
+
+**§3b joint.** Strap stations, x − 18': ±3.90625 (JOINT-3/-5), ±7.8125 (-2/-6), and the
+end straps 1.25" inboard of the header centrelines, ±(11.71875 − 0.10417) = ±11.6146'.
+`Σx² = 2 (3.90625² + 7.8125² + 11.6146²) = 2 (15.259 + 61.035 + 134.899) = 422.386 ft²`,
+strap line 23.229'. M = 670.77 x 3.0774 = 2,064.2 lb-ft (y_V 40.141, unchanged):
+
+```
+linear increment      2,064.2 x 11.6146 / 422.386 = 56.76 lb  vs 823.33              0.069
+cantilever chord      2,064.2 / 23.229 = 88.86 lb
+local attachment      1,034.49/6 + 88.86 = 172.42 + 88.86 = 261.28 lb
+   canopy nailer / SPF block  261.28 / 1,079.395 = 0.242     garage nailer  / 959.462 = 0.272
+along boundary nailing   670.77 / 23.229 = 28.876 plf vs 190                          0.152
+end strap, chord + N-S   88.07 + 172.42 = 260.49 lb vs 823.33                         0.316
+```
+
+**§3c-3f.** E-W into `W-G-S`: 670.77 / 7 LTP4 = **95.82 lb** (0.213); surplus 670.77 / 17.299
+= **38.77 plf** (0.212); overturning 276.50 x 670.77/673.27 = **275.47 lb** (0.090). N-S by
+the lever rule off x_V = (987.32 x 18.000 + 47.17 x 29.71875) / 1,034.49 = 18.5346':
+`W-G-E 1,034.49 x 12.5346/24 = 540.28 lb`, `W-G-W 494.21 lb`; RF-GARAGE's increment
+540.28 / 24.0 = **22.51 plf** (0.134); surpluses W-G-E 540.28 / 21.008 = **25.72 plf**,
+W-G-W 494.21 / 18.675 = **26.46 plf**.
+
+**§4d/4e.** The screen line 1,034.49 / 6.000 = **172.42 plf** vs 190, **0.907** — still the
+closest row. The landing tie reads the whole 1,034.49 lb; its verdicts are
+`north_entry_piers.md` §10k.
+
+**§5 steel.** Uplift 40 x (16.661 − 6.0) = **426.44 lb** (0.126); base anchor T 426.44/0.6 =
+**710.74 lb** vs 4,528 (0.157).
+
+**§6 pier under a pinned post (kdat).** `P = 23.585 + 16.661 x 14/12 x 3.0 = 23.585 + 58.31
+= 81.90 lb`, M at grade 23.585 x 3.0 + 58.31 x 1.5 = 158.22 lb-ft, h 1.932' (unchanged).
+Iterating §1807.3.2.1 at S1 150 d/3: **d = 2.468'** (PE 0.403, PNE 0.705).
+
+**§7 cast variant.** The columns stand at x 29.71875'. Exposed shaft grade to eave,
+2.8333 + 86.398/12 = 2.8333 + 7.1999 = **10.0332'**; each catches 16.661 x 1.0 x 10.0332 =
+**167.16 lb** at a = 16.5625 − 5.0166 = 11.5459':
+
+```
+head  = 167.16 x 11.5459² x (3 x 16.5625 − 11.5459) / (2 x 16.5625³) = 93.54 lb
+M0    = 167.16 x 11.5459 x (16.5625² − 11.5459²) / (2 x 16.5625²)   = 496.1 lb-ft
+E-W   623.60 + 2 x 93.54 = 810.68 lb        N-S  987.32 + 187.08 = 1,174.40 lb
+N-S lines  panel 9,970.5 at x 6.28125, columns 2 x 1,567.7 at x 29.71875
+   x_r = (9,970.5 x 6.28125 + 3,135.4 x 29.71875) / 13,105.9 = 11.8883'
+   x_V = (987.32 x 18.000 + 187.08 x 29.71875) / 1,174.40     = 19.8667'
+   e = 7.9784'   M_t = 1,174.40 x 7.9784 = 9,369.8 lb-ft
+E-W lines  RE 37.500, RNE 42.479 at 1,567.7, W-G-S 43.219 at 23,001  ->  y_r = 42.8316
+   J = 9,970.5 x 5.6071² + 3,135.4 x 17.8305² + 1,567.7 (5.3316² + 0.3526²) + 23,001 x 0.3874²
+     = 313,463 + 996,822 + 44,758 + 3,452 = 1,358,495 lb/in-ft²
+column  direct 1,567.7/13,105.9 x 1,174.40 = 140.48 + torsion 9,369.8 x 1,567.7 x 17.8305
+        / 1,358,495 = 192.80  ->  333.28 lb
+M = 333.28 x 16.5625 + 496.1 = 6,016.0 lb-ft    base V 333.28 + (167.16 − 93.54) = 406.90 lb
+```
+
+At the engine's 16.5104' shaft (198.125"): a = 11.4938', head 93.32, M0 495.1, N-S 1,173.96,
+column **333.06 lb**, M = 333.06 x 16.5104 + 495.1 = **5,994.1 lb-ft** (the engine reads
+333.61 / 6,003.1, 0.17% over), base V 406.90 at M/V = 14.731' -> h = 14.731 − 7.333 = 7.398'
+above grade. §1807.3.2.1 with the pad credited (basis 4, γ 0.91743, S1 150 d/3): **RE 6.46'**
+(B 2.5', b_eff 1.026) and **RNE 6.48'** (B 2.0') against 8.333', 0.78 — doubled-S1 reads 4.86' /
+4.90'. Shaft alone (b 1.0) it is 6.53' (was 6.56'), 0.78: N-S still governs and nothing
+changes but the numbers. The spread base's eccentricity is 5,994.1 /
+5,855.5 = **1.02'** against the 0.42' kern: still not the mechanism.
+
+**§7, cast one pack low (2026-10-31, C3-E13).** The cast columns stop 3/4" under the soffit so
+the SS316 pack is a solid: shaft 197.375" = **16.4479'**, a = 16.4479 − 5.0166 = 11.4313'.
+
+```
+head  = 167.16 x 11.4313² x (3 x 16.4479 − 11.4313) / (2 x 16.4479³)  = 93.06 lb
+M0    = 167.16 x 11.4313 x (16.4479² − 11.4313²) / (2 x 16.4479²)    = 493.9 lb-ft
+N-S   987.32 + 186.12 = 1,173.43 lb   x_V = (987.32 x 18.000 + 186.12 x 29.71875)/1,173.43
+      = 19.8586'   e = 19.8586 − 11.8883 = 7.9703'   M_t = 9,352.7 lb-ft
+column  1,567.7/13,105.9 x 1,173.43 = 140.36 + 9,352.7 x 1,567.7 x 17.8305/1,358,495 = 192.44
+        -> 332.81 lb
+M = 332.81 x 16.4479 + 493.9 = 5,967.9 lb-ft      base V 332.81 + (167.16 − 93.06) = 406.91 lb
+```
+
+0.44% under the 5,994.1 above; the embedment rows move by less than their rounding.
+
 > ⚠ **The envelope is deliberate and it double-counts on purpose.** The garage path is graded
 > at 100% of the delivered load, and `W-BW-SCREEN` and everything downstream of it
 > (hold-down, anchorage, `deck_tie/FS-BW-FLOOR`) are ALSO graded at 100% of N-S. No

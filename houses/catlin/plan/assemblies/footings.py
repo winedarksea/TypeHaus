@@ -161,7 +161,7 @@ FOOTING_EXPOSED_20 = Assembly(
         Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
-    source="the 20\" x 8\" plain strip under the four sunken-garden-face walls (FT-B-S1..S4), on the 7\" washed-stone bedding; frost-protected under IRC R403.3 by the horizontal wings FROST_WING_XPS_1IN/2 under the garden slab, EXPOSED_MIX because the strip is inside the frost zone",
+    source="the 20\" x 8\" plain strip under the four sunken-garden-face walls (FT-B-S1..S4), on a 34\" drained #57 bed that is its frost protection (ASCE 32 soil replacement, IRC R403.1.4.1), EXPOSED_MIX because the strip is inside the frost zone",
 )
 
 

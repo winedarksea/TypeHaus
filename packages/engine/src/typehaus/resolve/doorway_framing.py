@@ -45,7 +45,7 @@ def clear_doorway_sole_plates(model):
         for member in wall.members:
             # Structural mudsills and raised rough sills are separate load-bearing members.
             if (not member.child_key.startswith("plate-bottom")
-                    or member.z0_m < wall.base_ref_z_m - DOORWAY.height_tolerance_m):
+                    or member.z0_m < wall.frame_base_z_m - DOORWAY.height_tolerance_m):
                 members.append(member)
                 continue
             segments = [(0.0, 1.0)]

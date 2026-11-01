@@ -263,8 +263,8 @@ def jamb_pack_stations(openings: list[WallOpening], stud_thickness_m: float,
 def _sill_datum(rw, z0: float) -> float:
     """The elevation an opening's ``sill_m`` is measured up from.
 
-    ``ResolvedWall.base_ref_z_m`` — the wall's framing base — and never the stud bearing
-    line, which sits a bottom plate above it. The fallback to ``z0`` is for the solver's
+    ``ResolvedWall.base_ref_z_m`` — the wall's sill datum — and never the stud bearing
+    line, which sits a bottom plate above the frame base. The fallback to ``z0`` is for the solver's
     own unit fixtures, which hand this function stand-in walls; a real ``ResolvedWall``
     always answers.
     """
@@ -290,16 +290,17 @@ def sole_plate_breaks(
     """Station ranges where the bottom plate is interrupted, merged and sorted.
 
     The exact complement of :func:`_rough_sill_bottom`: an opening whose sill lands within
-    a plate of the framing base takes the bottom plate *as* its rough sill, so the plate
-    runs through. An opening whose sill lands **below** the framing base has no bottom
+    a plate of the frame base takes the bottom plate *as* its rough sill, so the plate
+    runs through. An opening whose sill lands **below** the frame base has no bottom
     plate at all — the floor opens under it. A garage overhead door dropping to a slab
-    22" below the wall's framing base is the case this exists for, and the plate that used
+    22" below the wall's base is the case this exists for, and the plate that used
     to run through it spanned the rough opening with nothing underneath.
 
-    ``sill_m`` is measured from the wall's framing base (``_sill_datum``), so the test is
-    simply ``sill_m < 0``. Every ordinary door in a house sits at exactly 0.0 — a threshold
-    on the plate — and must not be broken; that is what makes the strict inequality, rather
-    than "at or below the plate top", the right predicate.
+    ``sill_m`` is measured from the wall's sill datum (``_sill_datum``), which is also its
+    frame base today, so the test is simply ``sill_m < 0``. Every ordinary door in a house
+    sits at exactly 0.0 — a threshold on the plate — and must not be broken; that is what
+    makes the strict inequality, rather than "at or below the plate top", the right
+    predicate.
 
     Stations are on the same wall axis ``WallOpening.center_m`` uses, which is the axis the
     plate is stationed on, so no reprojection is needed.
@@ -349,12 +350,12 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     jamb_framing = getattr(opening, "jamb_framing", None)
     kings, jacks = jamb_pack_counts(_m(opening.width_m), pattern, jamb_framing)
     center, half = opening.center_m, opening.width_m / 2
-    # ``z0`` is where a vertical member BEARS — the top of the bottom plate. It is not the
-    # datum a sill is measured from: ``ResolvedWall.base_ref_z_m`` is, and every other
-    # consumer of a sill reads it (``geometry_walls``, the buck and ladder blocking in
-    # ``truss_frame``, the furring cuts, the IFC void, the elevations). Framing an opening
-    # off ``z0`` put the whole pack a plate — 1 1/2" — above the hole it frames, which the
-    # viewer showed as a rough sill standing inside the glass of every window in the house.
+    # ``z0`` is where a vertical member BEARS — the top of the bottom plate, a plate above
+    # the frame base. It is not the datum a sill is measured from: ``base_ref_z_m`` is, and
+    # every other consumer of a sill reads it (``geometry_walls``, the buck and ladder
+    # blocking in ``truss_frame``, the furring cuts, the IFC void, the elevations). Framing
+    # an opening off ``z0`` put the whole pack a plate — 1 1/2" — above the hole it frames,
+    # which the viewer showed as a rough sill inside the glass of every window in the house.
     sill_datum = _sill_datum(rw, z0)
     # Head = threshold + clear height, doors included: a door does not always start at its
     # host wall's own floor. Catlin's garage overhead door drops a negative sill to the slab

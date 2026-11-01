@@ -437,3 +437,28 @@ def test_a_blocking_course_backs_a_body_hung_at_its_height():
     assert _blocking_course_behind(wall, inch(15.5).meters, 2.0)
     assert not _blocking_course_behind(wall, inch(30).meters, 2.0)
     assert not _blocking_course_behind(wall, inch(15.5).meters, 4.5)
+
+
+class _SeatedWall(ResolvedWall):
+    """A wall whose plate sits 3/4" above its sill datum, as on a subfloor."""
+
+    @property
+    def frame_base_z_m(self) -> float:
+        return self.base_ref_z_m + inch(0.75).meters
+
+
+def test_plates_and_studs_follow_the_frame_base_and_sills_the_datum():
+    """The split phase 2 relies on: framing off ``frame_base_z_m``, the RO off ``base_ref_z_m``."""
+    plan, flat = _wall_and_plan("3-stud")
+    rw = _SeatedWall(**{f: getattr(flat, f) for f in flat.__dataclass_fields__})
+    seat = inch(0.75).meters
+    opening = WallOpening(2.0, inch(30).meters, inch(36).meters, inch(24).meters, False)
+    members = frame_wall(plan, rw, openings=[opening])
+    bottom = [m for m in members if m.child_key.startswith("plate-bottom")]
+    assert bottom and all(abs(m.z0_m - seat) < 1e-9 for m in bottom)
+    assert all(abs(m.z0_m - seat - inch(1.5).meters) < 1e-9
+               for m in members if m.category in ("stud", "king", "jack"))
+    header = next(m for m in members if m.category == "header")
+    assert abs(header.z0_m - inch(60).meters) < 1e-9
+    sill = next(m for m in members if m.category == "sill")
+    assert abs(sill.z1_m - inch(24).meters) < 1e-9

@@ -23,6 +23,7 @@ from typehaus.hardware.catalog import (
     ROLE_POST_BASE_ANCHOR,
     ROLE_RIDGE_TIE_STRAP,
     ROLE_SCL_FACE_MOUNT_HANGER,
+    ROLE_SILL_ANCHOR_BOLT,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_STAIR_STRINGER_CONNECTOR,
 )
@@ -66,6 +67,9 @@ MARKER_RULES: dict[str, MarkerRule] = {
     # Across the sill, coming up out of the pour.
     ROLE_MUDSILL_ANCHOR: MarkerRule(draw=True, along_in=0.75, across_in=0.25, half_h_in=3.00,
                                     category=CATEGORY_CONNECTOR_EMBEDDED),
+    # A cast-in 1/2" bolt: round, rises through the sill (the plan marker is a thin prism).
+    ROLE_SILL_ANCHOR_BOLT: MarkerRule(draw=True, along_in=0.25, across_in=0.25, half_h_in=4.00,
+                                      category=CATEGORY_CONNECTOR_EMBEDDED),
     # A saddle: as deep as the member it carries, so ``half_h_in`` is deferred.
     ROLE_SLOPED_JOIST_HANGER: MarkerRule(draw=True, along_in=1.50, across_in=0.75,
                                          half_h_in=None,

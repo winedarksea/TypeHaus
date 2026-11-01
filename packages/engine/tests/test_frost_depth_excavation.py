@@ -124,41 +124,31 @@ def test_a_perimeter_footing_does_not_buy_shelter_by_shifting_inward(catlin_mode
 #: W-SG-W1/E1 bears on no soil, so it has no frost condition to grade at all; the plinth's
 #: real problem was never its own cover but that it conducted the court's cold into
 #: FT-B-S2/S3 through a break that existed only as an annotation.
-_BESIDE_THE_GARDEN = ("FT-B-S1", "FT-B-S2", "FT-B-S3")
+_BESIDE_THE_GARDEN = ("FT-B-S1", "FT-B-S2", "FT-B-S3", "FT-B-S4")
 
 
-def test_the_south_strips_are_protected_not_deep(frost_by_tag):
-    """They pass, and the reason they pass is the thing to pin.
+def test_the_south_strips_bear_on_deep_drained_stone(frost_by_tag):
+    """They pass by ASCE 32 soil replacement (C3-E10), not by depth and not by wings.
 
-    Not by depth — none of the three has anything like 42" of cover below the garden floor.
-    They pass through IRC R403.3's frost-protected
-    shallow-foundation path, on the horizontal wing insulation drawn under the garden slab
-    beside them (``params/sunken_garden.FROST_WINGS``). A check that reported PASS here
-    without naming those elements would be reporting the old answer by accident.
+    The R403.3 wings could not abut the strips along the FT-SG-W1/E1 toes, so the beds
+    went 34" deep instead; the finding must name the bed it relies on.
     """
     for tag in _BESIDE_THE_GARDEN:
         finding = frost_by_tag[tag]
         assert finding.result is Result.PASS, tag
-        assert "R403.3" in finding.message, tag
-        assert any(name.startswith("SL-SG-FROST-") for name in finding.element_tags), tag
+        assert "soil replacement" in finding.message, tag
+        assert f"FB-B-S{tag[-1]}" in finding.element_tags, tag
 
 
-def test_without_the_wing_insulation_the_same_three_footings_fail(catlin_plan, catlin_model):
-    """The finding this check existed to be unable to make.
-
-    Take the drawn wings away and nothing else changes: the same four footings, the same
-    1" and -9" of cover, the same 42" requirement. They FAIL. That is the before-and-after
-    the R403.3 band exists to move, and pinning both halves is what stops the local-grade
-    derivation from silently reverting to the single global plane — which would pass them
-    both ways round and prove nothing.
-    """
+def test_without_the_deep_beds_the_same_four_footings_fail(catlin_model):
+    """Take the beds away and nothing else changes: 8" of cover, no wing, FAIL."""
     import copy
 
     from typehaus.checks import run_from_model
 
     stripped = copy.copy(catlin_model)
-    stripped.solids = [s for s in catlin_model.solids
-                       if not s.tag.startswith("SL-SG-FROST-")]
+    stripped.footing_beddings = [b for b in catlin_model.footing_beddings
+                                 if b.host not in _BESIDE_THE_GARDEN]
     report = run_from_model(stripped, [], tier=Tier.STRUCTURAL, only=CHECK_ID)
     by_tag = {}
     for finding in report.findings:
@@ -168,6 +158,26 @@ def test_without_the_wing_insulation_the_same_three_footings_fail(catlin_plan, c
     for tag in _BESIDE_THE_GARDEN:
         assert by_tag[tag].result is Result.FAIL, tag
         assert "SL-SG-FLOOR" in by_tag[tag].message, tag
+
+
+def test_a_wing_must_abut_the_whole_reached_length():
+    """The wing credit is per station, not a 42" distance (C3-E10): a wing that stops
+    short of the reached run leaves it bare, and one a bedding course away still abuts."""
+    from shapely.geometry import box
+
+    from typehaus.checks.structural.frost_shield import unshielded_length_m
+
+    m = 0.0254
+    footing = box(0, 0, 100 * m, 20 * m)
+    floors = [("FLOOR", box(-50 * m, -200 * m, 150 * m, -10 * m), -3.0)]
+    full = [("W", box(0, -30 * m, 100 * m, -6 * m))]  # 6" off the footing, full length
+    short = [("W", box(40 * m, -30 * m, 100 * m, -6 * m))]  # stops 40" short
+    reach = 42 * m
+    assert unshielded_length_m(footing, floors, full, reach)[0] <= 2 * m
+    bare, used = unshielded_length_m(footing, floors, short, reach)
+    assert 30 * m <= bare <= 42 * m and used == ["W"]
+    assert unshielded_length_m(footing, floors, [("W", box(0, -60 * m, 100 * m, -30 * m))],
+                               reach)[0] >= 99 * m  # 30" gap abuts nothing
 
 
 #: The five garden footings that carry the retaining walls. Their concrete stops 21" below

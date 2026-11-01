@@ -154,14 +154,16 @@ ROOF = Assembly(
 GARAGE_ROOF = Assembly(
     tag="GARAGE_ROOF",
     layers=(
-        # STANDARD-HEEL trusses (2x4 chords + webs): the top chord springs straight off
-        # the 3.5" bottom chord (owner, 2026-10-08). The truss carries the ridge, so no
-        # ridge beam is required. `haus` frames the chords/webs/heel as first-class members.
+        # STANDARD-HEEL trusses (2x4 chords + webs), the cheapest truss a plant builds
+        # (owner, 2026-10-08). No `heel_height`: the engine's standard heel is the SBCA one,
+        # top-chord plumb depth 3.689" + a 1/4" butt cut = 3.939" at 4:12, measured at the
+        # OUTSIDE face of bearing, with the bottom chord across the whole 5-1/2" plate
+        # (2026-10-31, decision #108). The truss carries the ridge, so no ridge beam.
         #
         # The heel was a 9.25" energy heel until the garage was accepted as what it is:
         # UNCONDITIONED, needing moderate insulation, not full depth to the plate. Dropping
         # it lowers this deck and the canopy's by 5.75" together, which is what let the
-        # canopy's collector blocks come down from 3-1/2x16 LSL to 2-2x10 SPF.
+        # canopy's collector blocks come down from 3-1/2x16 LSL to 2-2x10 SPF (2-2x8 since the 2026-10-31 standard heel).
         #
         # The fill is loose-fill fiberglass blown onto the ceiling plane, 14.5" settled —
         # R-38 nominal across the field (owner). It now TAPERS at the eave: over the plate
@@ -185,7 +187,6 @@ GARAGE_ROOF = Assembly(
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x4", roof_frame="truss",
                                   spacing=inch(24),
-                                  heel_height=inch(3.5),
                                   chord_member="2x4", web_member="2x4"),
               cavity=CavityFill(material_ref="blown-fiberglass", thickness=inch(14.5),
                                 framing_factor=0.0625)),
@@ -227,11 +228,12 @@ GARAGE_ROOF = Assembly(
 # The north entry canopy, over the open passage between the house and the garage.
 #
 # ** STRUCTURALLY IDENTICAL TO GARAGE_ROOF, AND THAT IS THE POINT. ** Same 2x4 fink at
-# 24" o.c., same 3.5" standard heel, same deck/membrane/roofing. RF-BW-CANOPY bears at +7'-4" on
-# BM-BW-RW/RE, which are southward extensions of the garage's own two truss bearing lines,
-# so the two roof planes are ONE plane: change this layer's depth, spacing or heel and the
-# canopy steps off the garage roof at the joint. The sheathing runs continuous across the
-# garage south wall line even though the `Roof` elements are separate, and since 2026-09-29
+# 24" o.c., same standard heel, same deck/membrane/roofing. RF-BW-CANOPY bears at +7'-4" on
+# BM-BW-RW/RE, whose 5-1/2" faces stand exactly on the garage's 2x6 plate lines (x 6'-0 5/8"
+# to 6'-6 1/8" and 29'-5 7/8" to 29'-11 3/8", moved 3 3/8" inboard 2026-10-31), so the two
+# roofs order ONE truss, 23'-10 3/4" out to out, and share ONE plane: change this layer's
+# depth, spacing or heel, or either bearing line, and the canopy steps off the garage roof.
+# The sheathing runs continuous across the garage south wall line even though the `Roof` elements are separate, and since 2026-09-29
 # it is again the canopy's lateral path — but now a DESIGNED one: six LSTA24 straps across
 # the joint, LTP4 clips from the gable frame into W-G-S, and every part graded at 100% on
 # lateral_system/RF-BW-CANOPY (RF-BW-CANOPY.diaphragm.delivers_to,
@@ -250,7 +252,6 @@ CANOPY_ROOF = Assembly(
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x4", roof_frame="truss",
                                   spacing=inch(24),
-                                  heel_height=inch(3.5),
                                   chord_member="2x4", web_member="2x4")),
         # The designed diaphragm's 8d common HDG at 6" boundary (canopy_garage_diaphragm.md);
         # 12" field per IRC Table R602.3(1). Not RSRS-01: a 0.113 nail is not the 8d the

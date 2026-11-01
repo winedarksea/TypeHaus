@@ -26,9 +26,9 @@ from typehaus.resolve.framing.profiles import (
     cross_section,
     roof_truss_profile,
     truss_chord_depth_m,
-    truss_heel_height_m,
 )
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
+from typehaus.resolve.framing.truss_heel import truss_heel_height_m
 from typehaus.resolve.intervals import subtract as subtract_spans
 from typehaus.resolve.model import (
     FramedMember,
@@ -37,6 +37,7 @@ from typehaus.resolve.model import (
     TrussShape,
 )
 from typehaus.resolve.roof_bearing import resolved_bearings
+from typehaus.resolve.roof_geometry import bearing_outside_face
 
 # 2x4 outlookers on edge at 24" o.c. carry the rake overhang; the gable truss drops by
 # their depth so they pass over it and the deck stays planar.
@@ -84,8 +85,10 @@ ROOF_TRUSS_CATEGORY = "roof_truss"
 class TrussLayout:
     """Everything both the interior trusses and the gable ends need from one roof.
 
-    ``along`` runs parallel to the ridge (truss stations); ``span`` runs perpendicular to it
-    (bearing to bearing). All elevations are the *final* (heel-lifted) plane.
+    ``along`` runs parallel to the ridge (truss stations); ``span`` runs perpendicular to it.
+    ``bear_lo``/``bear_hi`` are the OUTSIDE faces of the two supports: the bottom chord runs
+    across the whole bearing, so the truss's span is out to out (SBCA; decision #108). All
+    elevations are the *final* (heel-anchored) plane.
     """
 
     roof_uid: str
@@ -107,9 +110,9 @@ class TrussLayout:
     #: the layout keeps stating what the assembly asked for.
     web: str
     chord_depth_m: float
-    #: Raised heel: plate top to top-chord underside at the bearing. The deck plane arrives
-    #: already lifted by it (``roof_geometry.apply_truss_heel_lift``), so nothing here does
-    #: heel arithmetic — but the truss's own drawing needs the number back.
+    #: Heel: top of bearing to top of top chord at the outside face of bearing. The deck plane
+    #: arrives already anchored on it (``roof_geometry.apply_truss_heel_lift``), so nothing
+    #: here does heel arithmetic — but the truss's own drawing needs the number back.
     heel_m: float
     positions: tuple[float, ...]
     #: ``(lo, hi)`` — whether each end station is a gable end, i.e. has a wall plate running
@@ -198,15 +201,14 @@ def build_truss_layout(
         return None
     span_ax = 1 if roof.ridge_direction == "x" else 0
     ridge_ax = 1 - span_ax
-    bearings: list[tuple[float, float]] = []  # (span coordinate, plate top z)
+    bearings: list[tuple[float, float]] = []  # (outside face of support, plate top z)
     along_lo = along_hi = None
     for bearing in resolved_bearings(model, element.bearing_refs):
         (ax, ay), (bx, by) = bearing.axis
-        span_coord = ay if span_ax == 1 else ax
         r0, r1 = (ay, by) if ridge_ax == 1 else (ax, bx)
         along_lo = min(r0, r1) if along_lo is None else min(along_lo, r0, r1)
         along_hi = max(r0, r1) if along_hi is None else max(along_hi, r0, r1)
-        bearings.append((span_coord, bearing.z1_m))
+        bearings.append((bearing_outside_face(roof, bearing), bearing.z1_m))
     if along_lo is None or along_hi is None or len(bearings) < 2:
         return None
     bearings.sort()
@@ -246,7 +248,7 @@ def build_truss_layout(
         eave_z_m=roof.eave_z_m, ridge_z_m=roof.ridge_z_m,
         chord=chord, web=web,
         chord_depth_m=truss_chord_depth_m(spec),
-        heel_m=truss_heel_height_m(spec),
+        heel_m=truss_heel_height_m(spec, element.pitch),
         positions=tuple(positions),
         gable_ends=gable_ends,
     )

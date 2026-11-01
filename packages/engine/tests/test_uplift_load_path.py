@@ -296,7 +296,7 @@ def test_the_canopy_headers_are_covered_at_both_of_their_joints(findings):
 def test_the_sill_and_the_stacked_walls_are_both_reported(findings) -> None:
     """Links 3 and 4 — the two joints between a wall and whatever is under it."""
     messages = [f.message for f in findings]
-    assert any("MASA mudsill anchors" in m for m in messages)
+    assert any("sill anchors (MASA / cast-in bolts)" in m for m in messages)
     assert any("CS16 strapping" in m for m in messages)
 
 

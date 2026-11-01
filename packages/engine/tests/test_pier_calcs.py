@@ -212,17 +212,21 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 # ** GUARD 2,452 -> 2,675 LATER ON 2026-09-23 (note §16). ** Its lever is guard top to the
 # resolved column base, 13.375', not column + 42": beam, joists and plank were missing. One
 # guard top, one base elevation, so both rows read the same.
+#
+# ** 3/4" SHORTER ON 2026-10-31 (note §17). ** Cast one SS316 pack under the glulam soffit
+# (C3-E13): 105.125/106.958 -> 104.375/106.208", wind follows the height; the guard's lever
+# is guard top to the column BASE, which did not move.
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 105.125, "wind_lb_ft": 1105.2, "guard_lb_ft": 2675.0},
-    "PT-SG-BF3": {"height_in": 105.125, "wind_lb_ft": 1105.2, "guard_lb_ft": 2675.0},
+    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 1097.3, "guard_lb_ft": 2675.0},
+    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 1097.3, "guard_lb_ft": 2675.0},
     # The rear row runs 2" proud for the deck's drainage crown.
     # ** THE REAR PAIR LOST 1/6" ON 2026-09-14. ** ``SPEC.rear_pillar_rise_in = 2.0`` became
     # ``SPEC.balcony_fall_in_per_ft = 0.25``: the FALL is the authored number now and the rise
     # follows the run between the bearing rows, which over 7'-4" is 1.833" rather than 2.000".
     # Both base moments are ``shear x height``, so they follow it exactly and by the same
     # 0.15%. Nothing else about the rear row moved.
-    "PT-SG-BR1": {"height_in": 106.958, "wind_lb_ft": 1124.5, "guard_lb_ft": 2675.0},
-    "PT-SG-BR3": {"height_in": 106.958, "wind_lb_ft": 1124.5, "guard_lb_ft": 2675.0},
+    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 1116.6, "guard_lb_ft": 2675.0},
+    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 1116.6, "guard_lb_ft": 2675.0},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
 #:
@@ -1159,21 +1163,24 @@ _CANOPY_COLUMNS = ("PT-BW-RE", "PT-BW-RNE")
 #: exercises the base-moment and propped-shaft arithmetic, but its garage receiving line
 #: now shares the N-S shear (canopy_garage_diaphragm.md §7).
 _CANOPY_ORACLE = {
-    # The cast variant's N-S line (canopy_garage_diaphragm.md §7): 335.45 lb after the garage
-    # receiving-line split, over 16.5104' of shaft, plus 515.6 lb-ft of its own propped drag.
-    "PT-BW-RE": {"height_ft": 16.5104, "drag_arm_ft": 11.358,
-                 "drag_moment_lb_ft": 515.6, "wind_asd_lb_ft": 6_054.0},
-    "PT-BW-RNE": {"height_ft": 16.5104, "drag_arm_ft": 11.358,
-                  "drag_moment_lb_ft": 515.6, "wind_asd_lb_ft": 6_054.0},
+    # The cast variant's N-S line (canopy_garage_diaphragm.md §7, 2026-10-31 E13 line):
+    # 332.81 lb after the garage receiving-line split, over 16.4479' of shaft (cast one 3/4"
+    # pack under the soffit), plus 493.9 lb-ft of its own propped drag.
+    "PT-BW-RE": {"height_ft": 16.4479, "drag_arm_ft": 11.431,
+                 "drag_moment_lb_ft": 493.9, "wind_asd_lb_ft": 5_967.9},
+    "PT-BW-RNE": {"height_ft": 16.4479, "drag_arm_ft": 11.431,
+                  "drag_moment_lb_ft": 493.9, "wind_asd_lb_ft": 5_967.9},
 }
-#: canopy_garage_diaphragm.md §2: 0.6 x 18.217 psf x 0.85 x 1.80, on every band below.
-_CANOPY_ASD_PRESSURE_PSF = 16.723
+#: The N-S column force of the hand pass at the engine's shaft.
+_CANOPY_NS_HEAD_LB = 332.81
+#: canopy_garage_diaphragm.md §2 (2026-10-31): 0.6 x 18.149 psf x 0.85 x 1.80.
+_CANOPY_ASD_PRESSURE_PSF = 16.661
 #: Cast-variant wind bands (§7): the glulam E-W bands, the gable triangle, and two 12" shafts
-#: over 10.306' of grade-to-eave exposure.
-_CANOPY_TOP_SHEAR_LB = 642.8
-_CANOPY_TOP_SHEAR_NS_LB = 991.0
-_CANOPY_DRAG_SHEAR_LB = 344.7
-_CANOPY_DIAPHRAGM_SHEAR_LB = 1_180.0
+#: over 10.033' of grade-to-eave exposure.
+_CANOPY_TOP_SHEAR_LB = 623.6
+_CANOPY_TOP_SHEAR_NS_LB = 987.3
+_CANOPY_DRAG_SHEAR_LB = 334.3
+_CANOPY_DIAPHRAGM_SHEAR_LB = 1_174.0
 
 
 @pytest.mark.parametrize("tag", _CANOPY_COLUMNS)
@@ -1195,7 +1202,7 @@ def test_the_canopy_base_moment_reproduces_the_note(tag, piers) -> None:
     want = _CANOPY_ORACLE[tag]
     pier = piers[tag]
     assert pier.height_in / 12.0 == pytest.approx(want["height_ft"], abs=0.01)
-    hand = 335.45 * want["height_ft"] + want["drag_moment_lb_ft"]
+    hand = _CANOPY_NS_HEAD_LB * want["height_ft"] + want["drag_moment_lb_ft"]
     assert hand == pytest.approx(want["wind_asd_lb_ft"], rel=0.005)
     assert pier.wind_base_moment_lb_ft == pytest.approx(want["wind_asd_lb_ft"], rel=0.005)
 
@@ -1222,7 +1229,7 @@ def test_the_shear_is_shared_with_the_garage_and_the_split_is_stated(
         piers, catlin_cast_ctx) -> None:
     """The cast variant's N-S case shares shear with the garage receiving line.
 
-    Both columns take 335.45 lb at their heads after the rigid-deck and torsional
+    Both columns take 332.81 lb at their heads after the rigid-deck and torsional
     distribution; their own propped drag contributes the rest of the base moment.
     """
     from typehaus.engineering.roof_moment import frame_cases_of, roof_base_moments
@@ -1236,9 +1243,9 @@ def test_the_shear_is_shared_with_the_garage_and_the_split_is_stated(
         assert "3 line(s)" in basis, "the garage receiving line shares the shear"
         want = _CANOPY_ORACLE[tag]
         force = north_south.column_forces_lb[tag]
-        assert force == pytest.approx(335.45, rel=0.005)
+        assert force == pytest.approx(_CANOPY_NS_HEAD_LB, rel=0.005)
         ns_moment = force * want["height_ft"] + want["drag_moment_lb_ft"]
-        assert ns_moment == pytest.approx(6_054.0, rel=0.005)
+        assert ns_moment == pytest.approx(want["wind_asd_lb_ft"], rel=0.005)
         assert piers[tag].wind_base_moment_lb_ft == pytest.approx(ns_moment, rel=0.005)
     # And the west line's own columns are wood, so they never reach this module at all.
     assert "PT-BW-CW" not in piers and "PT-BW-CNW" not in piers

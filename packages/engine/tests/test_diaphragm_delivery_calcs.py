@@ -15,26 +15,27 @@ from typehaus.engineering.item import Status
 _ITEM = "lateral_system/RF-BW-CANOPY"
 
 #: §2 — the ASD pressure on any band, and the deck-level shears with pinned 6x6 posts.
-_PRESSURE_PSF = 16.7232
-_DELIVERED = {"x": 673.269, "y": 1038.4}
+#: Re-worked 2026-10-31 (the note's §2 amendment): ridge 11.644', q_h 18.149 psf.
+_PRESSURE_PSF = 16.6610
+_DELIVERED = {"x": 670.77, "y": 1034.49}
 
 #: §3-§4, the kdat column of every table: ``row name -> (demand, capacity)``. The panel and
 #: everything under it moved to ``canopy_west_band.md`` (``test_canopy_west_band_calcs``).
 _ROWS = {
     "open front, L'": (6.000, 25.0),
     "open front, L'/W'": (0.2250, 1.0),
-    "joint boundary nailing, along": (28.298, 190.0),
-    "LSTA24 joint straps, across": (173.06, 823.3333333333334),
-    "LSTA24 joint straps, rotation couple": (55.634, 823.3333333333334),
-    "CN-BW-JOINT-2 RF-BW-CANOPY nailer into deck": (260.142, 1079.3951163681184),
-    "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (260.142, 959.4623256605497),
-    "LTP4 plate clips, frame into wall": (96.181, 450.0),
-    "RF-GARAGE unit-shear increment": (22.62, 167.5),
-    "W-G-S delivered shear on the surplus": (38.920, 182.5),
-    "W-G-E delivered shear on the surplus": (25.84, 182.5),
-    "W-G-W delivered shear on the surplus": (26.53, 182.5),
-    "W-G-S overturning, delivered increment": (276.50, 3065.0),
-    "diaphragm unit shear at W-BW-SCREEN": (173.06, 190.0),
+    "joint boundary nailing, along": (28.876, 190.0),
+    "LSTA24 joint straps, across": (172.42, 823.3333333333334),
+    "LSTA24 joint straps, rotation couple": (56.760, 823.3333333333334),
+    "CN-BW-JOINT-2 RF-BW-CANOPY nailer into deck": (261.277, 1079.3951163681184),
+    "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (261.277, 959.4623256605497),
+    "LTP4 plate clips, frame into wall": (95.824, 450.0),
+    "RF-GARAGE unit-shear increment": (22.51, 167.5),
+    "W-G-S delivered shear on the surplus": (38.775, 182.5),
+    "W-G-E delivered shear on the surplus": (25.72, 182.5),
+    "W-G-W delivered shear on the surplus": (26.46, 182.5),
+    "W-G-S overturning, delivered increment": (275.47, 3065.0),
+    "diaphragm unit shear at W-BW-SCREEN": (172.42, 190.0),
 }
 
 
@@ -44,7 +45,7 @@ def record(catlin_ctx):
 
 
 def test_the_pinned_posts_split_their_drag_half_to_each_end(catlin_ctx) -> None:
-    """§2: 16.7232 psf x 5.5/12 x 6.1771' = 47.35 lb, 23.67 lb to each end."""
+    """§2: 16.6610 psf x 5.5/12 x 6.1771' = 47.17 lb, 23.585 lb to each end (10-31)."""
     from typehaus.engineering.roof_lateral import roof_winds
 
     wind = roof_winds(catlin_ctx.engineering.context)["RF-BW-CANOPY"]
@@ -52,8 +53,8 @@ def test_the_pinned_posts_split_their_drag_half_to_each_end(catlin_ctx) -> None:
     posts = {p.tag: p for p in wind.pinned}
     assert set(posts) == {"PT-BW-RE", "PT-BW-RNE"}, "a within_wall post is the wall's face"
     for post in posts.values():
-        assert post.drag_lb == pytest.approx(47.35, abs=0.02)
-        assert post.head_lb == pytest.approx(post.base_lb) == pytest.approx(23.67, abs=0.01)
+        assert post.drag_lb == pytest.approx(47.17, abs=0.02)
+        assert post.head_lb == pytest.approx(post.base_lb) == pytest.approx(23.585, abs=0.01)
     for axis, lb in _DELIVERED.items():
         assert wind.delivered_lb(axis) == pytest.approx(lb, abs=0.1)
     # §3b: the E-W resultant 3.077' off the joint, headers at their own centroid.
@@ -71,10 +72,10 @@ def test_the_record_reproduces_sections_3_and_4(record) -> None:
 
 
 def test_the_screen_boundary_governs(record) -> None:
-    """§4d: the envelope row over the envelope share — 0.911, and nothing else is closer."""
+    """§4d: the envelope row over the envelope share — 0.907, and nothing else is closer."""
     worst = max(record.limit_states, key=lambda s: s.demand / s.capacity)
     assert worst.name == "diaphragm unit shear at W-BW-SCREEN"
-    assert worst.demand / worst.capacity == pytest.approx(0.911, abs=0.001)
+    assert worst.demand / worst.capacity == pytest.approx(0.907, abs=0.001)
 
 
 def test_the_old_four_to_one_row_is_gone_with_the_second_line(record) -> None:
@@ -91,15 +92,15 @@ def test_the_receivers_are_on_the_record_and_graded_by_nobody_else(catlin_ctx) -
 
 
 def test_the_landing_tie_reads_the_envelope_share(catlin_ctx) -> None:
-    """§4e: the tie's N-S panel load is the whole 1,038.4 lb. Since the HL43 line
-    (north_entry_piers.md §10h) the N-S row governs, at 0.778."""
+    """§4e: the tie's N-S panel load is the whole 1,034.49 lb (10-31). E-W at the screen's
+    joint governs, 0.8147 since line 2 moved 3 3/8" east (north_entry_piers.md §10k)."""
     record = catlin_ctx.engineering["deck_tie/FS-BW-FLOOR"]
     loads = {q.name: q.value for q in record.inputs}
-    assert loads["y:W-BW-SCREEN panel share of RF-BW-CANOPY"] == pytest.approx(1038.35, abs=0.1)
+    assert loads["y:W-BW-SCREEN panel share of RF-BW-CANOPY"] == pytest.approx(1034.49, abs=0.1)
     assert record.status is Status.OK
     worst = max(record.limit_states, key=lambda s: s.demand / s.capacity)
     assert "E-W" in worst.name
-    assert worst.demand / worst.capacity == pytest.approx(0.7802, abs=0.002)
+    assert worst.demand / worst.capacity == pytest.approx(0.8147, abs=0.002)
 
 
 class _Swapped:
@@ -189,11 +190,11 @@ def test_a_pinned_post_mints_no_column_base(catlin_ctx) -> None:
 
 @pytest.mark.parametrize(("tag", "shaft"), [("PT-BW-PE", 6.120), ("PT-BW-PNE", 3.500)])
 def test_the_pier_is_a_short_pole(catlin_ctx, tag, shaft) -> None:
-    """§6: 82.20 lb at 1.932' above grade on the 14" pier; 2.47' of shaft needed, the pad
-    credited below."""
+    """§6: 81.90 lb (10-31) at 1.932' above grade on the 14" pier; 2.47' of shaft needed,
+    the pad credited below."""
     record = catlin_ctx.engineering[f"column_base/{tag}"]
     inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["lateral_shear_asd"] == pytest.approx(82.20, abs=0.05)
+    assert inputs["lateral_shear_asd"] == pytest.approx(81.90, abs=0.05)
     assert inputs["shear_height_above_grade"] == pytest.approx(1.932, abs=0.002)
     assert inputs["shaft_embedment"] == pytest.approx(shaft, abs=0.002)
     embedment = record.limit_states[0]

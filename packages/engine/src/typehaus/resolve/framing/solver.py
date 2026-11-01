@@ -69,6 +69,7 @@ from typehaus.resolve.framing.short_members import (
     is_stud_line_offcut,
     short_member_findings,
 )
+from typehaus.resolve.framing.sill_plate import widen_sole_plate
 from typehaus.resolve.framing.stud_stock import stamp_exterior_door_sills, stamp_stud_stock
 from typehaus.resolve.framing.tables import (
     DEFAULT_SPACING,
@@ -196,10 +197,10 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
         plate_depth = member_actual(plate_member)[1] * 0.0254
         stud_depth = member_actual(member)[1] * 0.0254
         stagger_offset = max((plate_depth - stud_depth) / 2.0, 0.0)
-    # The framing base, which a wall extended down over the rim does NOT move: the
-    # bottom plate, the studs and every opening sill stay on the storey datum while
-    # only the wall's skin laps the foundation below (→ ``ResolvedWall.plate_base_z_m``).
-    z0 = rw.base_ref_z_m
+    # The frame base, where the bottom plate sits. A wall extended down over the rim does
+    # NOT move it: only the skin laps the foundation below (→ ``plate_base_z_m``). Opening
+    # sills and backing bands read the sill datum, ``rw.base_ref_z_m``.
+    z0 = rw.frame_base_z_m
     plate_h = 1.5 * 0.0254
 
     start_role = (CORNER_ROLE_OWNER if corner_start
@@ -244,6 +245,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                    neighbour_insets_start, neighbour_insets_end, openings=openings,
                    post_bands=post_bands, post_top_bands=post_top_bands,
                    laps=(lap_start, lap_end), sole_material=spec.sole_plate_material_ref)
+    widen_sole_plate(members, rw, spec, structure_polygon)
 
     # --- studs at spacing, skipping those inside an opening's king/jack pack --
     stud_z0 = z0 + plate_h
@@ -389,11 +391,11 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                          stud_stations, top_at)
 
     # --- authored backing bands ----------------------------------------------
-    # Across the studs rather than between them, and off the FRAMING base (``z0``) rather
-    # than the stud bearing line, because an authored elevation means "above the floor" —
-    # the datum an opening's ``sill_m`` and a placeable's ``Mount.elevation`` both use.
-    append_backing_members(members, rw, list(backing), d, p0, z0, axis_len, top_at,
-                           openings)
+    # Across the studs rather than between them, and off the sill datum rather than the
+    # plate, because ``WallBacking.elevation`` is authored on the datum an opening's
+    # ``sill_m`` uses.
+    append_backing_members(members, rw, list(backing), d, p0, rw.base_ref_z_m, axis_len,
+                           top_at, openings)
 
     # --- in-wall fixture carriers --------------------------------------------
     # After the module, because the bay's flanking studs replace the module studs the
@@ -708,7 +710,7 @@ def _short_wall_finding(plan: PlanModel, rw: ResolvedWall) -> list[Finding]:
         return []
     courses = 1 + (2 if spec.double_top_plate and not spec.advanced_framing else 1)
     stack_m = courses * 1.5 * 0.0254
-    height_m = max(_wall_top_elevations(rw)) - rw.base_ref_z_m
+    height_m = max(_wall_top_elevations(rw)) - rw.frame_base_z_m
     if height_m + 1e-9 >= stack_m:
         return []
     return [Finding(
@@ -937,7 +939,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             axis_dir = unit(sub(rw.axis[1], rw.axis[0]))
             # ``max``, for the reason ``_short_wall_finding`` gives: on a raked wall the
             # low axis end is an elevation no member stands at.
-            framing_h = max(_wall_top_elevations(rw)) - rw.base_ref_z_m
+            framing_h = max(_wall_top_elevations(rw)) - rw.frame_base_z_m
             top_m = _top_plates_m(plan, rw)
             wall_post_bands = post_bands(wall_posts, rw.axis[0], axis_dir)
             wall_top_bands = post_bands(

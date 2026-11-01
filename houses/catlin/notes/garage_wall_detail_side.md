@@ -29,8 +29,8 @@ source:
 - [K2 @ host#layer:cladding:out] Closures: vented inside at base, solid outside at head and rake. ~192 LF.
 - [K3 @ host#layer:cdx:out] Z-flashing at the wall base: aluminium, drip edge, upper leg behind the panel.
 - [K4] Isolate steel panel from aluminium band: EPDM between, no metal contact.
-- [K5 @ host#layer:gwb-int:in] Curb cap: up-turned flashing behind the drywall, sloped in, drip inboard.
-- [K6] Sill: PT plate on gasket and capillary break. Anchors per IRC R403.1.6.
+- [K5 @ host#layer:gwb-int:in] Curb cap: up-turned PVC flashing behind drywall, sloped in, drip inboard.
+- [K6] Sill: 2x8 PT, flush outside, on gasket and capillary break. Bolts: see S-103.
 - [K7] Overhead door header: 2-ply 14" LVL on packs sized from the 16'-0" opening.
 - [K8] Joint to SL-DW-DRIVE: 1" 40 psi XPS, 1/2" traffic-rated polyurethane sealant.
 
@@ -83,15 +83,16 @@ source:
 
   **THE ONE NEW RULE IS A CORROSION RULE.** The corrugated panel above is 26 ga PVDF-coated **steel** and this band is **aluminium**. The Z-flash between them must be aluminium, and the two must never lap metal-to-metal — sealant or EPDM between, the Z's upper leg behind the corrugated. In a salted splash zone that contact line is where the detail fails, and nothing in the engine grades dissimilar metals. Aluminium must also never touch concrete or fresh mortar: alkali strips its oxide film. On site the corrugated terminates at the Z with its vented base closure there; the model bills the panel full height behind the band.
 
-- Sill: pressure treated sill board over sill gasket and capillary break; provide code-required anchor bolts detailed per IRC R403.1.6 (3"x3" plate washers). Sealed with sealant.
+- Sill: **2x8** PT over gasket and capillary break, **flush with the stud outside face**. Anchors are **1/2" cast-in bolts, 3"x3" plate washers** (R403.1.6), not MASAZ: ESR-2555 covers 2x4/2x6 sills only. The bolt goes in the plate's **middle third** and the 6" core: **3 3/8" to 4 13/16" in from the sill's outside edge**, nominal 4 1/8" (1 1/2" concrete edge, ACI 318-19 20.5.1.3 cover read across; the 6 d_a of 17.7.2 leaves no band, so the ICF maker's anchor detail governs). `structural.sill_bearing_on_core` grades it; S-103 prints it.
+- **STHD14 (CN-G-BWHD-SW, -S-DR) take a notched sill**: cast at the stud's inside face, now mid-sill. Simpson C-C-2026 pp. 66-68 show the strap on the framing face and bar no plate detail, so cut a 4" wide, 1 3/4" deep notch in the sill's inside edge at each strap. Embedment and nailing are unchanged.
 
 - Top plate must be sealed (e.g., with spray foam or sealant) to create continuous air barrier between interior drywall and exterior sheathing.
 
 - Provide Z-flashing / drip edge at base of exterior wall (liquid flashing recommended) to direct water out over the foundation / protective coating. **Aluminium, not steel** — it lands on the aluminium stem band, and see the corrosion rule above on why that contact matters here. **This is built as of 2026-09-03**: `STEM_TOP_Z_FLASHING` in `plan/storeys/garage.py` is six runs at the stem top, broken at the overhead and service door gaps where there is no stem to band.
 
-- Stem and framing are flush on the outside: the wood wall's SHEATHING face (5/8" CDX since 2026-08-31, 1.5" Zip-R before it — the wall's own `alignment` puts whichever it carries on the node line) and the ICF's exterior EPS face are the same plane, so the only thing standing proud at the base of the wall is the 7/8" of corrugated panel, which drips clear. The stem must NOT stand out past the sheathing — a 6" core (11" section) is what makes the two reconcile while keeping 4 1/2" of the 5 1/2" PT sill plate bearing on concrete. The leftover 3 3/8" of section shows up on the *inside* as a curb below the drywall, which is where a curb belongs in a garage.
+- Stem and framing are flush on the outside: the wood wall's SHEATHING face (5/8" CDX since 2026-08-31, 1.5" Zip-R before it — the wall's own `alignment` puts whichever it carries on the node line) and the ICF's exterior EPS face are the same plane, so the only thing standing proud at the base of the wall is the 7/8" of corrugated panel, which drips clear. The stem must NOT stand out past the sheathing. A 5 1/2" sill bore only 3 5/8" on the 6" core (66%, under the two-thirds graded), so the sill is a **2x8 flush outside**: **5 3/8" of 7 1/4" (74%)** bears and a 1 3/4" ledge stands inside the studs, under the curb flashing. The leftover section shows inside as a curb below the drywall, where a curb belongs in a garage.
 
-- Cap the curb: an up-turned metal flashing tucked behind the wood wall's interior drywall, sloped back into the room, with a drip at the inboard edge. Water running down the stud wall's interior face (splash, a hosed-down wall, condensation) is diverted out onto the curb top and into the garage instead of tracking down behind the drywall and into the ICF's board joint below.
+- Cap the curb: an up-turned **PVC** (or self-adhered butyl membrane) flashing tucked behind the wood wall's interior drywall, sloped back into the room, with a drip at the inboard edge. Water running down the stud wall's interior face (splash, a hosed-down wall, condensation) is diverted out onto the curb top and into the garage instead of tracking down behind the drywall and into the ICF's board joint below. **Not aluminium**: it laps PT lumber and bare concrete (corrosion rule above).
 
 - Roof: gable trusses **@24" o.c.** (16" until 2026-08-31 — a 24'-span 2×4 fink is an essentially unchanged truss at either spacing, so this is ~33% fewer trusses of the same design) with drip edge, fascia board + trim and vented soffit (coated aluminum recommended). OSB sheathing + underlayment (e.g., synthetic or self-adhering) + metal roofing (optional rainscreen mesh). Metal roofing shown with 16" o.c. support spacing per manufacturer system. Vented ridge not shown.
 

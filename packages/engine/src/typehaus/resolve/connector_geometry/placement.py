@@ -12,10 +12,11 @@ from shapely.geometry import Point, Polygon
 from typehaus.hardware.catalog import ROLE_RIDGE_TIE_STRAP
 from typehaus.hardware.plan_geometry import centerline_endpoints
 from typehaus.joints.model import Joint
-from typehaus.model import Connector, Element, KneeBrace
+from typehaus.model import Beam, Connector, Element, KneeBrace
+from typehaus.model.enums import ConnectorKind
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.connector_geometry.catalog import connector_mesh
-from typehaus.resolve.connector_geometry.mesh import transform_mesh
+from typehaus.resolve.connector_geometry.mesh import box_mesh, transform_mesh
 from typehaus.resolve.connector_geometry.roof_straps import roof_strap_mesh
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry_ir import GMesh, Vec2, Vec3
@@ -173,6 +174,14 @@ def _authored_hanger_frame(index: ConnectorPlacementIndex, element: Element | No
     return near, beam.z0_m, outward, _width(beam.outline, across), beam.z1_m - beam.z0_m
 
 
+def authored_hanger_section(index: ConnectorPlacementIndex,
+                            element: Connector) -> tuple[float, float] | None:
+    """``(width_m, depth_m)`` of the beam an authored hanger carries, off its resolved solid."""
+    _, _, outward, width, depth = _authored_hanger_frame(index, element,
+                                                         element.position.xy_m, 0.0)
+    return (width, depth) if outward is not None and width is not None and depth else None
+
+
 def _roof_slope(index: ConnectorPlacementIndex, references: Sequence[str]) -> float:
     for tag in references:
         roof = index.hosts.get(tag)
@@ -205,6 +214,36 @@ def _member_at_joint(index: ConnectorPlacementIndex, references: Sequence[str],
     return min(members, key=lambda member: distance_point_to_segment(point, member.p0, member.p1))
 
 
+def _standoff_pack_body(index: ConnectorPlacementIndex, solid: ResolvedSolid,
+                        element: Connector) -> GMesh | None:
+    """A shim pack is a solid standing on what it names below, up through its authored
+    centre: twice the centre's height over that top. No support under it keeps the marker."""
+    centre = (solid.z0_m + solid.z1_m) / 2
+    tops = [index.solids[tag].z1_m for tag in element.connects
+            if tag in index.solids and index.solids[tag].category not in BEAM_CATEGORIES
+            and index.solids[tag].z1_m < centre]
+    if not tops:
+        return None
+    bottom = max(tops)
+    height_in = 2 * (centre - bottom) / M_PER_IN
+    xs, ys = zip(*solid.outline, strict=True)
+    half_x, half_y = (max(xs) - min(xs)) / 2 / M_PER_IN, (max(ys) - min(ys)) / 2 / M_PER_IN
+    return transform_mesh(box_mesh((-half_x, -half_y, 0.0), (half_x, half_y, height_in)),
+                          origin_m=(*_centroid(solid.outline), bottom))
+
+
+def _trimmed_strap_in(index: ConnectorPlacementIndex, references: Sequence[str],
+                      z_m: float) -> float | None:
+    """An embedded strap's exposed height trimmed at its beam's top (the low end's, on a
+    tilted beam): above it the deck framing sits, so the crew cuts it there."""
+    beam = _connected_beam(index, references)
+    element = index.elements.get(beam.tag) if beam is not None else None
+    if not isinstance(element, Beam):
+        return None
+    top = cast(ResolvedSolid, beam).z0_m + cross_section(element.size).depth_m
+    return (top - z_m) / M_PER_IN if top > z_m else None
+
+
 def _knee_body(member: FramedMember, top: bool) -> GMesh:
     """Fold the existing KBS stamping around the actual post/soffit and brace faces."""
     run = math.dist(member.p0, member.p1)
@@ -229,6 +268,8 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
     if part == "KBS1Z" and solid.uid in index.knee_bands:
         return _knee_body(*index.knee_bands[solid.uid])
     element = index.elements.get(solid.tag)
+    if isinstance(element, Connector) and element.kind is ConnectorKind.BEARING_STANDOFF:
+        return _standoff_pack_body(index, solid, element)
     if isinstance(element, Connector) and element.roof_mount is not None:
         roof = cast(ResolvedRoof, index.hosts[element.roof_mount])
         return roof_strap_mesh(roof, element.position.xy_m, part)
@@ -251,6 +292,7 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
     member_depth_m = joint.height_m if joint else None
     slope = joint.slope_radians if joint else 0.0
     support_width_m = None
+    strap_length_in = None
 
     if part.startswith(HANGER_PREFIXES):
         if joint is not None:
@@ -341,6 +383,8 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
             # Embedded straps lie on the sill face; the embed bends back into its pour.
             point = (point[0] - y_axis[0] * member_width_m / 2,
                      point[1] - y_axis[1] * member_width_m / 2)
+    elif part.startswith("HETA") and joint is None:
+        strap_length_in = _trimmed_strap_in(index, references, z_m)
     elif part.startswith("MSTC"):
         # A floor-to-floor strap stands plumb across the band: its length runs up.
         y_axis, z_axis = (0.0, 0.0, 1.0), (-y_axis[0], -y_axis[1], 0.0)
@@ -395,7 +439,8 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
                           member_depth_in=member_depth_m / M_PER_IN
                           if member_depth_m is not None else None,
                           support_width_in=support_width_m / M_PER_IN
-                          if support_width_m is not None else None, slope_radians=slope)
+                          if support_width_m is not None else None, slope_radians=slope,
+                          strap_length_in=strap_length_in)
     return transform_mesh(body, origin_m=(*point, z_m), x_axis=x_axis, y_axis=y_axis,
                           z_axis=z_axis) if body is not None else None
 

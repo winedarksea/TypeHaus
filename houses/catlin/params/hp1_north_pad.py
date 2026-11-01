@@ -48,17 +48,19 @@ _CLADDING_Y_IN = 36 * 12 + HOUSE_NS_OUTBOARD_IN
 _BACK_CLEAR_IN = 6.0
 
 #: The cabinet centre, in inches from the project origin. **This pair is also written in
-#: plan/electrical.py** as ``pt(ft(26, 9.5), ft(37, 8.03125))`` and the two files cannot
+#: plan/electrical.py** as ``pt(ft(26, 6.125), ft(37, 8.03125))`` and the two files cannot
 #: import each other. The Y mirrors the centre the unit had in the pocket
 #: (``ft(-1, -8.53125)`` about the same cladding offset), which is not a coincidence: it is
 #: the same cabinet at the same back clearance off the same 6 3/4" cladding stack.
 #:
-#: Pier west face 29'-5", less 12" service space and half the 39" cabinet.
-_CX_IN = 26 * 12 + 9.5                                      # 26'-9 1/2"
+#: Pier west face 29'-1 5/8", less 12" service space and half the 39" cabinet. 3 3/8" west
+#: of its 2026-10-02 station since PT-BW-PE moved with BM-BW-RE onto the garage truss line
+#: (2026-10-31), so Gree's 12" service side holds.
+_CX_IN = 26 * 12 + 6.125                                    # 26'-6 1/8"
 _CY_IN = _CLADDING_Y_IN + _BACK_CLEAR_IN + _CAB_D_IN / 2.0  # 37'-8 17/32"
 
 # --- the pad ---------------------------------------------------------------------------
-# x 24'-11 1/4"..28'-7 3/4", y 36'-10"..39'-4" — 9.27 sf, 0.114 cy at 4". Same assembly,
+# x 24'-7 7/8"..28'-4 3/8", y 36'-10"..39'-4" — 9.27 sf, 0.114 cy at 4". Same assembly,
 # same top and the same reasoning as the other two: 4" unreinforced on 4" of open-graded
 # stone, no XPS, no vapour retarder, no frost footing under 187 lb of cabinet.
 #

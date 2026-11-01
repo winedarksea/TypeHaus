@@ -141,13 +141,14 @@ def mudsill_anchors(model: Any) -> list[HandoffItem]:
         return []
     if not rows:
         return []
-    row = rows[0]
+    count = sum(int(row.get("count") or 0) for row in rows)
     return [HandoffItem(
         id="mudsill_anchors",
-        label=f"{row.get('count')} sill anchors set to the plate layout",
-        count=int(row.get("count") or 0), sheet_ref="S-100",
+        label=f"{count} sill anchors set to the plate layout",
+        count=count, sheet_ref="S-100",
         derived=("takeoff/anchors.mudsill_anchor_rows — a count at a pitch, NOT a set of "
-                 f"positions ({row.get('basis', '')}). Set them off the sill plan on the "
+                 f"positions ({'; '.join(str(row.get('basis', '')) for row in rows)}). "
+                 "Set them off the sill plan on the "
                  "day and mark what you actually placed."))]
 
 

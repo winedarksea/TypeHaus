@@ -88,7 +88,7 @@ from typehaus.library import (
 from typehaus.library.railings import RAILING_EXT_ALUMINUM_FASCIA
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.model.structure import CompliantLayer
-from params.column_heads import HETA20Z_PAIR_HEAD
+from params.column_heads import HETA20Z_PAIR_HEAD, STANDOFF_PACK_IN
 from params.cladding import HOUSE_NS_OUTBOARD_IN
 from params.landscape_walk import D_X0 as WALK_D_X0
 from params.landscape_walk import GAP_FT as WALK_GAP_FT
@@ -1647,72 +1647,14 @@ GARDEN_FIELD = Slab(
 # EXT_2X6_SWINBURNE precedent — an unreferenced assembly saves no test churn, it
 # preserves the reasoning — and its prices.toml row falls to 0 SF.
 
-# --- FPSF wing insulation under the garden slab, along the house ------------------------
-#
-# IRC R403.3, Figure R403.3(3): the heated-building-adjoining-an-unheated-slab case, which is
-# what a heated basement beside an open sunken court is. Table R403.3(1) at design AFI 2500
-# (Minneapolis-St Paul) wants R-1.7 over B = 24" along the wall and R-4.9 over C = 40" at the
-# corners; the library FROST_WING_XPS_1IN / _2IN (1" and 2" XPS at 40 psi) carry R-5 and R-10.
-#
-# WHY THIS EXISTS: measuring every footing against one global grade plane would pass FT-B-
-# S1/S2/S3 with only 8" of cover below the garden floor. (It also passed the veneer plinth
-# FT-B-BRICK, which had 2" of NEGATIVE cover, until that plinth was retired 2026-09-05.) Frost depth is measured from the lowest adjacent grade, and beside these footings
-# that is the garden floor at -9'-4", not the -2'-10" site plane six and a half feet above
-# it.
-#
-# WHY SLABS: a horizontal band of foam has no other element kind to be. `Layer.extent`
-# measures from WALL_BASE / WALL_TOP / GRADE — all vertical — so it cannot describe a skirt
-# reaching sideways under a floor. These are thin `Slab`s with a single-INSULATION-layer
-# assembly, which bills by the square foot through `envelope_layer_takeoff` like any other
-# insulation. `resolve/site_earth._is_a_floor` keeps them from being read as excavation
-# floors in their own right (they are buried, not stood on), and prices.toml carries a zero
-# qualified key so `structural_solids_takeoff` does not also bill them by the cubic yard.
-#
-# The wings sit under the SL-SG-FLOOR rim AND its 4" #57 base course (2026-10-28, owner):
-# rim top -9'-8 11/16" less 3 1/2" of slab and 4" of stone is -10'-4 3/16", the wings' top.
-# The stone lies over the foam and the slab still covers it (R403.3); plan overlap is all
-# `_frost_protection_footprints` reads, so frost grading does not move.
-RIM_BASE_COURSE_IN = 4.0
-_WING_TOP = inch(_rim_underside_in - RIM_BASE_COURSE_IN)
-_WING_ALONG_FT = 24.0 / 12.0   # Table R403.3(1) dimension B
-_WING_CORNER_FT = 40.0 / 12.0  # Table R403.3(1) dimension C
-# ** THE WINGS RETRACT TO THE PORCH TOES, AND THIS IS NOT A DETAIL. ** They used to start at
-# the wall inner faces (8'-6"/27'-6"). At the old level that was air; at -10'-0 3/16" it is
-# 2 3/4" INSIDE FT-SG-W1/E1, whose 7'-0" strips reach x 11'-6"/24'-6" — nothing fits over a
-# toe whose top is 3/4" below the finished surface. `_frost_protection_footprints` tests
-# plan overlap ONLY, never elevation, so foam left at the old x would have passed every
-# check while lying about where it is. Start at the toe instead.
-#
-# Table R403.3(1)'s B and C dimensions are UNCHANGED — the wings are the same 40" and 24"
-# skirts, just begun 3'-0" further in — and the R403.3 argument gets better rather than
-# worse: outboard of x 11'-6"/24'-6" the re-entrant corner is protected by FT-SG-W1/E1's own
-# strip bearing on 42" of drained NFS stone, which is soil replacement, not foam.
-_WING_X_W = (_x_in_w - _half) + SPEC.footing_width_in / 24.0   # 11.5, FT-SG-W1's court edge
-_WING_X_E = (_x_in_e + _half) - SPEC.footing_width_in / 24.0   # 24.5, FT-SG-E1's
-
-FROST_WINGS = [
-    # The two re-entrant corners, where the garden's own east and west retaining walls meet
-    # the house and frost drives in from two directions at once: C = 40" each way, 2" XPS.
-    Slab(uid="SGFW01AAAA", tag="SL-SG-FROST-W", kind="band", assembly="FROST_WING_XPS_2IN",
-         outline=(pt(ft(_WING_X_W), ft(_y_in_n - _WING_CORNER_FT)),
-                  pt(ft(_WING_X_W + _WING_CORNER_FT), ft(_y_in_n - _WING_CORNER_FT)),
-                  pt(ft(_WING_X_W + _WING_CORNER_FT), ft(_y_in_n)),
-                  pt(ft(_WING_X_W), ft(_y_in_n))),
-         thickness=inch(2.0), top_elevation=_WING_TOP),
-    Slab(uid="SGFW02AAAA", tag="SL-SG-FROST-E", kind="band", assembly="FROST_WING_XPS_2IN",
-         outline=(pt(ft(_WING_X_E - _WING_CORNER_FT), ft(_y_in_n - _WING_CORNER_FT)),
-                  pt(ft(_WING_X_E), ft(_y_in_n - _WING_CORNER_FT)),
-                  pt(ft(_WING_X_E), ft(_y_in_n)),
-                  pt(ft(_WING_X_E - _WING_CORNER_FT), ft(_y_in_n))),
-         thickness=inch(2.0), top_elevation=_WING_TOP),
-    # The run between them, along the wall: B = 24", 1" XPS.
-    Slab(uid="SGFW03AAAA", tag="SL-SG-FROST-N", kind="band", assembly="FROST_WING_XPS_1IN",
-         outline=(pt(ft(_WING_X_W + _WING_CORNER_FT), ft(_y_in_n - _WING_ALONG_FT)),
-                  pt(ft(_WING_X_E - _WING_CORNER_FT), ft(_y_in_n - _WING_ALONG_FT)),
-                  pt(ft(_WING_X_E - _WING_CORNER_FT), ft(_y_in_n)),
-                  pt(ft(_WING_X_W + _WING_CORNER_FT), ft(_y_in_n))),
-         thickness=inch(1.0), top_elevation=_WING_TOP),
-]
+# --- FPSF wings under the garden slab: RETIRED (C3-E10) -------------------------------------
+# SL-SG-FROST-W/E/N were IRC R403.3 Figure R403.3(3) horizontal XPS wings crediting FT-B-S1..S4.
+# They covered x 150"-282" only: nothing fits over the FT-SG-W1/E1 toes (x 66"-150" / 282"-366"),
+# so 145" of the length the court reaches (S1 46", S2 27", S3 26", S4 46") never had a wing
+# abutting it, and `structural.frost_depth` (now `frost_shield`) fails that. The strips' beds
+# are 34" of drained NFS stone instead (params/foundations.py `_DEEP_STONE`). The foam, 31 sf,
+# is gone; the library FROST_WING_XPS_* assemblies stay for houses that can use them.
+FROST_WINGS: list[Slab] = []
 
 # ============================================================================
 # Heat-pump equipment pad, in the yard pocket east of the porch.
@@ -2510,7 +2452,10 @@ def _balcony_rise_at(y_ft):
     return inch((y_ft - _y_front_pillar) * 12.0 * _BEAM_RISE_PER_IN)
 
 # Four concrete corner columns fixed to the wall tops carry the balcony lateral system.
+# Each is cast one SS316 pack under its beam soffit (C3-E13, 2026-10-31), so the pack is a
+# solid and the glulam never touches the pour.
 _CORNER_PILLAR_INDICES = (1, 3)
+_PACK = inch(STANDOFF_PACK_IN)
 PILLARS = []
 PILLAR_BEARINGS = {}  # pillar tag -> (bearing tag, base elevation)
 for _i, _x in _PILLAR_X.items():
@@ -2520,7 +2465,8 @@ for _i, _x in _PILLAR_X.items():
         PILLAR_BEARINGS[_tag] = (_bears_on, _base)
         PILLARS.append(Post(uid=f"SGPB{_i}{_row_index}AAAA", tag=_tag,
                             position=pt(ft(_x), ft(_y)), size=SPEC.corner_column_size,
-                            height=_beam_soffit - _base + _rise, supported_by=_bears_on,
+                            height=_beam_soffit - _base + _rise - _PACK,
+                            supported_by=_bears_on,
                             vertical_reinforcement=SPEC.corner_column_cage,
                             reinforcement=_MOMENT_COLUMN_CAGE,
                             head_connector=HETA20Z_PAIR_HEAD,
@@ -2912,9 +2858,9 @@ CONNECTORS = []
 # 2026-09-21 this was an HGAM10 gusset pair, whose Titen Turbo screws Simpson forbids exposed
 # to the exterior environment (`notes/column_head_connector_options.md`).
 #
-# ``elevation`` is the beam SOFFIT — the bearing plane the tie holds down: a Connector
-# resolves to a marker box centred on its elevation, so authoring the storey datum would draw
-# the tie floating in the joist band above the joint it makes.
+# ``elevation`` is the column TOP, the pour the spoons are cast into and the HETA's own datum
+# (one pack under the soffit since 2026-10-31). The straps are field-trimmed at the glulam top
+# (`AN-SG-HETA-TRIM`).
 _CORNER_SEAT_BEAM = {("R", 1): "BM-SG-BLW", ("F", 1): "BM-SG-BLW",
                      ("R", 3): "BM-SG-BLE", ("F", 3): "BM-SG-BLE"}
 #
@@ -2943,7 +2889,7 @@ for _row, _y, _rise in _PILLAR_ROWS:
                 uid=_uids[(_row, _i)], tag=f"CN-SG-SEAT-{_row}{_i}{_side}",
                 kind=ConnectorKind.HURRICANE_TIE,
                 position=pt(ft(_PILLAR_X[_i]) + inch(_dx), ft(_y)),
-                elevation=_balcony_beam_soffit + _rise, size="HETA20Z",
+                elevation=_balcony_beam_soffit + _rise - _PACK, size="HETA20Z",
                 connects=(_CORNER_SEAT_BEAM[(_row, _i)], f"PT-SG-B{_row}{_i}")))
 
 # THE FOUR BEAM STANDOFF SHIM PACKS — every wood beam soffit in this garden that lands on a
@@ -2968,13 +2914,10 @@ for _row, _y, _rise in _PILLAR_ROWS:
 # and bridge practice taper-shims sloped girders to the nearest 1/16 in, so this slope is
 # inside the range a conforming pad handles. notes/balcony_differential_movement.md §3.
 #
-# ``elevation`` is the SOFFIT LESS HALF THE PACK, for the same reason the seat connectors'
-# elevation comment gives above: a Connector draws as a marker box CENTRED on its elevation
-# (accessories.py::_resolve_connector), so authoring the soffit itself would draw a 1" pack
-# half inside the beam it holds up. Half a pack down puts the box in the gap it occupies,
-# which is the one thing about this part a drawing has to show.
-_STANDOFF_SHIM_IN = 1.0
-_shim_drop = inch(_STANDOFF_SHIM_IN / 2.0)
+# ``elevation`` is the PACK'S CENTRE, half a pack under the soffit: the pack draws from the
+# column top it stands on up through that centre (resolve/connector_geometry/placement.py), so
+# it fills the gap the column is cast short by and no more.
+_shim_drop = _PACK / 2.0
 _STANDOFF_UID = {("R", 1): "SGSD1RAAAA", ("R", 3): "SGSD3RAAAA",
                  ("F", 1): "SGSD1FAAAA", ("F", 3): "SGSD3FAAAA"}
 for _row, _y, _rise in _PILLAR_ROWS:
@@ -3225,6 +3168,10 @@ SEQUENCE_NOTES = [
     Annotation(
         uid="SGAN04AAAA", tag="AN-SG-BLOCKOUTS", position=pt(ft(_cx), ft(-29)),
         text="THERMAL-BREAK BLOCKOUTS — NO BOARD IS CAST AGAINST (basis 7, free body 11j). Every court face that meets an isolation board is formed against a greased, pull-rodded blockout of the board's own thickness, stripped, and the board set into the slot afterwards: TB-SG-W1/E1 2-1/2in x 8in x 84in (placement 1, left in until the walls strip), TB-SG-W1/E1-STEM 2-1/2in x 12in x 9ft 1-7/16in and W-SG-BRKBM's 2in x 17-3/4in x 19ft 0in (placement 2, the beam's pulled up out of the bedding-stone side). Boards are set after the walls are stripped, before backfill, and the owner walks the empty slots first (inspection break_blockouts_stripped). The board is FOAMULAR-class XPS as scheduled; nothing holds it but the slot. A board cast against the pour locks in its fresh-concrete squeeze for good — the beam's alone was 41,162 lb — and puts the house's slab edge and global sliding back over"),
+    # Minted 2026-10-31 with typehaus.model.ids.new_uid() (C3-E14).
+    Annotation(
+        uid="5N3QKZFZ9Y", tag="AN-SG-HETA-TRIM", position=pt(ft(_cx), ft(-35)),
+        text="HOLD POINT, HETA20Z SEAT TIES (CN-SG-SEAT-*): the four corner columns are cast 3/4in under the balcony glulam soffits so the SS316 pack is a real 3/4in; set each pair's spoons from a template of the beam faces. After the glulam is set, FIELD-TRIM each 16in strap at or below the beam top before the joists go on (no HETA12/16 in ZMAX or stainless). Nail 6 - 16d HDG per strap (FL11473 Table 3), the LOWEST FOUR holes first (Table 2 note 2), all on the glulam face above the pack; confirm the trim with Simpson before the pour."),
     # Minted 2026-10-11 with typehaus.model.ids.new_uid(). Free body §13.
     Annotation(
         uid="90QCKCV758", tag="AN-SG-BACKFILL", position=pt(ft(_cx), ft(-32)),

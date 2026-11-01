@@ -82,9 +82,9 @@ MAIN_ELEMENTS = [
     ConduitRun(uid="JWWQ53ZA3Z", tag="CD-M-DATA-CAM-CANOPY", trade_size=inch(0.75), service=Service.DATA,
                path=(pt(ft(19), ft(29)), pt(ft(19), ft(35, 3.5)), pt(ft(31, 7.25), ft(35, 3.5)),
                      pt(ft(31, 7.25), ft(35, 9.75)), pt(ft(31, 7.25), ft(35, 9.75)),
-                     pt(ft(31, 7.25), ft(36, 9)), pt(ft(30, 4.5), ft(36, 9)),
-                     pt(ft(30, 4.5), ft(37, 11.75)), pt(ft(30, 4.5), ft(37, 11.75)),
-                     pt(ft(30, 2), ft(37, 11.75))),
+                     pt(ft(31, 7.25), ft(36, 9)), pt(ft(30, 1.125), ft(36, 9)),
+                     pt(ft(30, 1.125), ft(37, 11.75)), pt(ft(30, 1.125), ft(37, 11.75)),
+                     pt(ft(29, 10.625), ft(37, 11.75))),
                start_elevation=ft(9, 2.25), end_elevation=ft(6, 2),
                elevations=(ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(9, 0.75), ft(5, 9),
                            ft(5, 9), ft(5, 9), ft(5, 9), ft(6, 2), ft(6, 2)),
@@ -94,11 +94,12 @@ MAIN_ELEMENTS = [
 ]
 
 # --- entry: the canopy column camera ---------------------------------------------------------
-# Under BM-BW-RE's soffit (+6'-4"), just north of PT-BW-RE's cap. Faces north (180 deg): the
+# Under BM-BW-RE's soffit (+6'-4"), just north of PT-BW-RE's cap, on the header's centreline
+# (x=29'-8 5/8" since it moved 3 3/8" inboard, 2026-10-31; the conduit's last legs with it). Faces north (180 deg): the
 # lens spans west through north to east, the drive and the street.
 ENTRY_ELEMENTS = [
     ElectricalDevice(uid="N9MVN2Z9HK", tag="ED-BW-CAM-CANOPY", kind=DeviceKind.DATA_OUTLET,
-                     position=pt(ft(30), ft(37, 11.75)), rotation=deg(180),
+                     position=pt(ft(29, 8.625), ft(37, 11.75)), rotation=deg(180),
                      type_ref="ED-T-CAM-WIDE",
                      mount=Mount(kind=MountKind.CEILING, elevation=inch(71.75))),
 ]

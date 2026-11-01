@@ -268,8 +268,8 @@ OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 # runs continuous under it and the landing carriers pass 3 3/4" over the stem top.
 #
 # ** 11in OFFSET / 32in LEAF (2026-10-25). ** Hinge shifts 4in east while the east jamb
-# stays x=115in, preserving the deck edge, edge beam and piers. Ordinary hinges and a 90deg
-# overhead stop-only clear the full-thickness screen. The 36in stair, seats, rail, backing
+# stays x=115in, preserving the deck edge, edge beam and piers. Ordinary hinges and an 81deg
+# overhead stop-only clear the full-thickness screen (90deg until 2026-10-31; see below). The 36in stair, seats, rail, backing
 # and lighting retain their stations; the longitudinal section alone moves to x=99in.
 # The stock 32-inch MMI leaf needs a 34-inch framed opening; east edge stays x=115in.
 #
@@ -325,7 +325,12 @@ OPENINGS = [
     # open leaf parks along W-BW-SCREEN at x=6'-11" and leaves the tier approach and D-M-ENTRY's
     # sweep (y <= 36'-0") clear. The frame's own sill stands on the deck at 0'-0", so the leaf
     # requires a leaf bottom >=1in above the rough sill; set and check in the standard install.
-    # Frame-mounted overhead STOP-ONLY at 90deg: AN-G-SERVICE-DOOR.
+    # Frame-mounted overhead STOP-ONLY at 81deg: AN-G-SERVICE-DOOR. ** 81, NOT 90, SINCE THE
+    # CANOPY HEADERS MOVED 3 3/8" INBOARD (owner, 2026-10-31). ** W-BW-SCREEN moved with its
+    # chord posts, and at 90deg the lever met its thin-brick face and the leaf the landing
+    # tie's CN-BW-GWTIE-LO/-HI. 81deg is the largest stop the sweep clears at the 1/2" pivot
+    # inset with the 1/8" allowance and 1/4" minimum (scripts/garage_service_door_clearance.py,
+    # 0.32" to the ties). Owner to revisit: slide the door or rebuild the screen face.
     # Its rough sill sits flush with the deck: KDAT under a sloped, back-dammed pan
     # (notes/opening_flashing_spec.md §6).
     #
@@ -339,7 +344,7 @@ OPENINGS = [
     # possible on an 81" unit.
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING32-G",
          position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(1),
-         flip_hinge=True, flip_swing=True, maximum_opening_degrees=90,
+         flip_hinge=True, flip_swing=True, maximum_opening_degrees=81,
          header_spec="flat 2x6 nonbearing",
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
              exterior_wrap_material_ref="metal-dark-exterior",
@@ -496,8 +501,9 @@ _GARAGE_LEADER_E = Downspout(
     outlet=pt(ft(31, 3.25), ft(68, 5.875)),     # the trough's north end
     # Both absolute. The trough they bracket is derived from the roof plane, so it moves on
     # its own if the roof does; these are the two numbers that have to follow it by hand
-    # (re-read 2026-10-08 when the standard-heel trusses dropped the trough 5.75").
-    top_elevation=ft(7, 0.417),             # inside the trough floor
+    # (re-read 2026-10-08 when the standard-heel trusses dropped the trough 5.75", and
+    # 2026-10-31 when the heel moved to the outside face of bearing: 3.269" more).
+    top_elevation=ft(6, 9.148),             # inside the trough floor
     bottom_elevation=ft(-1, -6),
     diameter=inch(3), material="metal-dark-kstyle", gutter_ref="RF-GARAGE",
     discharge_ref="RG-E-BASIN",
@@ -516,7 +522,7 @@ _GARAGE_LEADER_E = Downspout(
 _GARAGE_LEADER_W = Downspout(
     uid="WB6YFR9QB2", tag="TR-G-LEADER-W",
     position=pt(ft(4, 8.75), ft(68, 5.875)),    # north end, clear of the west screen
-    top_elevation=ft(7, 0.417),
+    top_elevation=ft(6, 9.148),
     bottom_elevation=ft(-1, -6),
     diameter=inch(3), material="metal-dark-kstyle", gutter_ref="RF-GARAGE",
     discharge_ref="RG-W-BASIN",
@@ -595,9 +601,12 @@ ROOFS = [
     # It bears on BEAMS, which `Roof.bearing_refs` could not name until 2026-09-10 --
     # see resolve/roof_bearing.py. BM-BW-RW/RE top out at +7'-4", the same plate elevation as
     # W-G-W/W-G-E, so the two roof planes are one plane.
+    # The eave overhang is RF-GARAGE's 1'-4" plus 3 3/8": the headers' axes are their
+    # centrelines on the garage's truss bearing lines (2026-10-31), 3 3/8" inboard of the
+    # garage walls' sheathing-plane axes, so both eaves still land on one fascia line.
     Roof(uid="YX2GDZJMBV", tag="RF-BW-CANOPY", form=RoofForm.GABLE,
          pitch=Pitch(4, 12), bearing_refs=("BM-BW-RW", "BM-BW-RE"),
-         assembly="CANOPY_ROOF", overhang=ft(1, 4), ridge_direction="y",
+         assembly="CANOPY_ROOF", overhang=ft(1, 7.375), ridge_direction="y",
          # ** THE DECK IS A DECLARED DIAPHRAGM SINCE 2026-09-19, AND THAT IS A DESIGN
          # DECISION WITH PARTS IN IT. ** Until it was, the paragraph above was true twice
          # over: this roof's sheathing tied two structures together and carried none of the
@@ -636,17 +645,17 @@ ROOFS = [
              collector_blocking=(
                  CollectorBlocking(
                      collector="BM-BW-RW",
-                     stock="2-2x10",
+                     stock="2-2x8",
                      material="spf",
                      flush="inboard",
-                     fastening="2-ply SPF 2x10 solid blocking, laminated with 8d common HDG, two near each end and 12in o.c.; bevel top to deck, seat on header, east face flush with the glulam's east face and every LTP4Z. One LS30Z at each truss end, six 0.148x1.5in HDG nails per angle, three per leg, on clear chord or heel wood and never through a truss plate; fully nailed deck restrains rotation. Each LTP4Z: 12 0.131x1.5in HDG nails, six into block and six into glulam, direct to wood. Deck: 8d common HDG at 6in boundary spacing.",
+                     fastening="2-ply SPF 2x8 solid blocking, laminated with 8d common HDG, two near each end and 12in o.c.; bevel top to deck, seat on header, east face flush with the glulam's east face and every LTP4Z. One LS30Z at each truss end, six 0.148x1.5in HDG nails per angle, three per leg, on clear chord or heel wood and never through a truss plate; fully nailed deck restrains rotation. Each LTP4Z: 12 0.131x1.5in HDG nails, six into block and six into glulam, direct to wood. Deck: 8d common HDG at 6in boundary spacing.",
                  ),
                  CollectorBlocking(
                      collector="BM-BW-RE",
-                     stock="2-2x10",
+                     stock="2-2x8",
                      material="spf",
                      flush="inboard",
-                     fastening="2-ply SPF 2x10 solid blocking, laminated with 8d common HDG, two near each end and 12in o.c.; bevel top to deck, seat on header, west face flush with the glulam's west face. One LS30Z at each truss end, six 0.148x1.5in HDG nails per angle, three per leg, on clear chord or heel wood and never through a truss plate; fully nailed deck restrains rotation. In the joint bay one LTP4Z (CN-BW-EAVE-E) joins the block to the glulam, 12 0.131x1.5in HDG nails, six per member: the east chord force reaches CN-BW-JOINT-7 only through it. Deck: 8d common HDG at 6in boundary spacing.",
+                     fastening="2-ply SPF 2x8 solid blocking, laminated with 8d common HDG, two near each end and 12in o.c.; bevel top to deck, seat on header, west face flush with the glulam's west face. One LS30Z at each truss end, six 0.148x1.5in HDG nails per angle, three per leg, on clear chord or heel wood and never through a truss plate; fully nailed deck restrains rotation. In the joint bay one LTP4Z (CN-BW-EAVE-E) joins the block to the glulam, 12 0.131x1.5in HDG nails, six per member: the east chord force reaches CN-BW-JOINT-7 only through it. Deck: 8d common HDG at 6in boundary spacing.",
                  ),
              ),
              # 45in horizontal = 47.434in on the 4:12 slope, within a standard 48in sheet.
@@ -850,14 +859,14 @@ RAILINGS = [
             start_termination="wall_return", end_termination="wall_return"),
 ]
 
-# ** THE TRUSS ORDER, FOR BOTH ROOFS (2026-09-30). ** `rafter/RF-BW-CANOPY`, `rafter/RF-GARAGE`,
+# ** THE TRUSS ORDER, FOR BOTH ROOFS (2026-09-30; one truss since 2026-10-31). ** `rafter/RF-BW-CANOPY`, `rafter/RF-GARAGE`,
 # `structural.truss_reactions` and `uplift_capacity` stay UNKNOWN until the fabricator's SEALED
 # drawings exist; this is what the order has to ask for so they can close. When they arrive:
 # author `Roof.published_reactions` on both roofs and record the component seal in
 # engineering.toml (notes/canopy_west_band.md §9, canopy_garage_diaphragm.md §10).
 TRUSS_ORDER = [
     Annotation(uid="7FTJXBJ6NP", tag="AN-G-TRUSS-ORDER", position=pt(ft(18), ft(55)),
-               text="TRUSS ORDER — RF-GARAGE and RF-BW-CANOPY, one fabricator, SEALED component design and reaction schedule. Both are 4:12 2x4 finks at 24in o.c. with a STANDARD HEEL: the top chord springs off the 3.5in bottom chord, no raised or energy heel. (1) A reaction at EVERY bearing, gravity and uplift, stating its basis: ground snow 50 psf, flat 42 psf balanced, the roof-step DRIFT surcharge of 50 psf peak over 9.8ft off the house gable (ASCE 7-16 §7.7), wind V_ult 115 mph Exposure B Risk Category II, 10 psf dead. (2) DRIFT TRUSSES: all three canopy trusses and RF-GARAGE's two southernmost (truss-000/-001) carry the drift case, not ground snow. (3) The canopy's SOUTH-END truss stands at the open south edge with no wall under it: design it for the out-of-plane wind on the gable-end triangle (2.22ft x 26.67ft, 16.8 psf ASD) braced at the deck, and say how it is braced. (4) The N-S diaphragm CHORD: both canopy end trusses' top chords, combined with gravity, and the peak splice's slip — the lateral design assumes 0.03in. (5) The heel ties are H2.5ASS stainless on the canopy (CN-BW-TRTIE-*) and H2.5A on the garage; confirm or supersede from the uplift reactions. (6) PERMANENT BRACING per BCSI-B3: show every web continuous lateral restraint and its diagonal brace, and the gable-end bracing at RF-GARAGE's north gable (W-G-N, over the 16ft overhead door) and south gable; state whether the 5/8in gypsum ceiling is relied on as bottom-chord restraint"),
+               text="TRUSS ORDER — RF-GARAGE and RF-BW-CANOPY, one fabricator, SEALED component design and reaction schedule. ONE truss for both roofs: 4:12 2x4 fink at 24in o.c., span 23ft 10-3/4in out to out of bearing with the bottom chord across the full 5-1/2in bearing at both ends (garage 2x6 plates; canopy glulam headers on the same lines), 1ft 4-5/8in tails both ends, STANDARD HEEL 3-15/16in measured at the OUTSIDE FACE OF BEARING (top-chord plumb depth 3-11/16in + 1/4in butt cut), no raised or energy heel. (1) A reaction at EVERY bearing, gravity and uplift, stating its basis: ground snow 50 psf, flat 42 psf balanced, the roof-step DRIFT surcharge of 50 psf peak over 9.8ft off the house gable (ASCE 7-16 §7.7), wind V_ult 115 mph Exposure B Risk Category II, 10 psf dead. (2) DRIFT TRUSSES: all three canopy trusses and RF-GARAGE's two southernmost (truss-000/-001) carry the drift case, not ground snow. (3) The canopy's SOUTH-END truss stands at the open south edge with no wall under it: design it for the out-of-plane wind on the gable-end triangle (2.22ft x 26.67ft, 16.8 psf ASD) braced at the deck, and say how it is braced. (4) The N-S diaphragm CHORD: both canopy end trusses' top chords, combined with gravity, and the peak splice's slip — the lateral design assumes 0.03in. (5) The heel ties are H2.5ASS stainless on the canopy (CN-BW-TRTIE-*) and H2.5A on the garage; confirm or supersede from the uplift reactions. (6) PERMANENT BRACING per BCSI-B3: show every web continuous lateral restraint and its diagonal brace, and the gable-end bracing at RF-GARAGE's north gable (W-G-N, over the 16ft overhead door) and south gable; state whether the 5/8in gypsum ceiling is relied on as bottom-chord restraint"),
 ]
 
 # `Door` and `DoorType` carry no hardware field, so the stop is a drawing note (2026-10-13).
@@ -865,7 +874,7 @@ SERVICE_DOOR_HARDWARE = [
     Annotation(uid="GTREXSPEC1", tag="AN-G-COMPOSITE-DECKING", position=pt(ft(8), ft(44)),
                text="FS-BW-FLOOR, FS-SG-PORCH and ST-G-SERVICE: TREX ENHANCE BASICS, actual 0.94 x 5.5in square-edge, color TBD. Service treads: four 36 x 11in assemblies, each front 5.5in + 1/4in gap + rear rip 5.25in; five KDAT stringers <=9in o.c., EACH on a 316 stainless stem seat. BUTYL TAPE all deck framing tops and stepped stringer cuts; field-treat wood cuts. Both decks and treads: 316 stainless Cap-Tor xd #10 x 2-3/4in, TWO per board at EVERY support, flush; support all board ends. Retain KDAT rough sill under sloped pan, 1/2in open drainage gap, no board through doorway. See notes/composite_decking.md"),
     Annotation(uid="VJDMQAGNCA", tag="AN-G-SERVICE-DOOR", position=pt(ft(8, 1), ft(42, 6)),
-               text="D-G-SERVICE: MMI Z0364688R stock 32x80 six-panel insulated steel RH OUTSWING, 6-9/16 composite frame, factory fixed sill/seals/NRP hinges. West hinges; black exterior/white interior. Frame published RO 34x81.5, x=81..115in. Plumb/square the prehung unit in the RO; hinge pivot must sit 1/2..2in from the west RO edge (flush hits the brick base). Schlage F51A LAT 622 plus B60N 622 deadbolt. Mechanical overhead stop-only at 90deg; no attachment to brick. STHD14 on GARAGE face of double full-height east kings, center x=118in, face y=524.75in, embedment line z=-12in; 30 specified 0.148x3.25in nails, 14in embedment, one #4x40in bar 4in below pour top. Support factory sill continuously on KDAT under the sloped pan; leaf/sweep >=1in above deck. Set stair risers from installed threshold. Keep stair-to-threshold arrangement; AHJ approval remains required. See notes/garage_service_door_outswing.md"),
+               text="D-G-SERVICE: MMI Z0364688R stock 32x80 six-panel insulated steel RH OUTSWING, 6-9/16 composite frame, factory fixed sill/seals/NRP hinges. West hinges; black exterior/white interior. Frame published RO 34x81.5, x=81..115in. Plumb/square the prehung unit in the RO; hinge pivot must sit 1/2..2in from the west RO edge (flush hits the brick base). Schlage F51A LAT 622 plus B60N 622 deadbolt. Mechanical overhead stop-only SET AT 81deg (clears the screen's brick face and the landing ties); no attachment to brick. STHD14 on GARAGE face of double full-height east kings, center x=118in, face y=524.75in, embedment line z=-12in; 30 specified 0.148x3.25in nails, 14in embedment, one #4x40in bar 4in below pour top. Support factory sill continuously on KDAT under the sloped pan; leaf/sweep >=1in above deck. Set stair risers from installed threshold. Keep stair-to-threshold arrangement; AHJ approval remains required. See notes/garage_service_door_outswing.md"),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS,

@@ -8,7 +8,7 @@ Parts keep their catalog size: a supplied wood width never stretches a stock tie
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from typehaus.hardware.connector_dimensions import LATERAL_TIE_PLATE_DIMENSIONS
 from typehaus.resolve.connector_geometry.mesh import (
@@ -239,8 +239,11 @@ def _lateral_tie_plate() -> GMesh:
     return _xz_leaf(tuple(right_edge + left_edge), STEEL_THICKNESS_IN[20])
 
 
-def _embedded_strap(part: str) -> GMesh:
+def _embedded_strap(part: str, trimmed_exposed_in: float | None = None) -> GMesh:
     dimensions = EMBEDDED_STRAPS[part]
+    if trimmed_exposed_in is not None and 0.0 < trimmed_exposed_in < dimensions.exposed_height_in:
+        # Field-trimmed where the strap would pass its member's top (a deck sits there).
+        dimensions = replace(dimensions, exposed_height_in=trimmed_exposed_in)
     thickness = STEEL_THICKNESS_IN[dimensions.gauge]
     half_width = dimensions.width_in / 2.0
     depth, projection = dimensions.embedment_depth_in, dimensions.spoon_projection_in
@@ -374,7 +377,8 @@ def tie_mesh(part: str, *, member_width_in: float | None = None,
     Hurricane ties use plate-top zero; concrete straps use pour-top zero; flat
     straps use their centre/crest; angles use the inner heel at their bottom;
     DTT2 uses seat-bottom zero; SP uses its plate-top bridge. ``CS16`` requires an
-    authored cut length. ``STHD`` is displayed as the documented STHD14 representative.
+    authored cut length; an embedded strap takes ``strap_length_in`` as a shorter, field-
+    trimmed exposed height. ``STHD`` is displayed as the documented STHD14 representative.
     """
     normalized = part.strip().upper()
     coating_aliases = {"H2.5AZ": "H2.5A", "H2.5ASS": "H2.5A",
@@ -401,7 +405,7 @@ def tie_mesh(part: str, *, member_width_in: float | None = None,
     if normalized == "LTP4":
         return _lateral_tie_plate()
     if normalized in EMBEDDED_STRAPS:
-        return _embedded_strap(normalized)
+        return _embedded_strap(normalized, strap_length_in)
     if normalized == "MASA":
         return _mudsill_anchor(member_depth_in if member_depth_in is not None
                               else SILHOUETTE.masa_default_sill_height_in)

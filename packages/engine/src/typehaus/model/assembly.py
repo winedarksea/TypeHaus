@@ -53,8 +53,9 @@ class FramingSpec(HausModel):
     # finding. A course of lumber is not a short stud wall; it is a different thing, and this
     # says which one the layer means rather than leaving the solver to guess from a height.
     wall_frame: Literal["studs", "plate"] = "studs"
-    # truss only — the raised-heel height (top of plate → underside of the top chord at the
-    # bearing) so full insulation depth carries over the wall. None uses the solver default.
+    # truss only — the heel height as a truss order states it: top of bearing → top of the
+    # top chord at the OUTSIDE face of bearing (SBCA; decision #108). None is the standard
+    # heel at the roof's pitch, top-chord plumb depth + 1/4" butt cut (``framing/profiles``).
     heel_height: Length | None = None
     # truss only — chord/web nominal sizes; each defaults to ``member`` (chord) / "2x4" (web).
     chord_member: str | None = None
@@ -76,7 +77,7 @@ class FramingSpec(HausModel):
     layout_origin: Literal["wall-start", "line"] = "wall-start"
     # FURRING + ``direction="horizontal"`` only: what the COURSE module counts from.
     # "wall-base" — the default — is ``rw.z0_m``, the bottom of the band itself.
-    # "framing-base" is ``rw.base_ref_z_m``,
+    # "framing-base" is ``rw.frame_base_z_m``,
     # the datum every opening's sill height is measured from, which on a wall extended
     # down over a floor rim band is 13-7/16" higher.
     #
@@ -175,6 +176,10 @@ class FramingSpec(HausModel):
     # Stock for the bottom (sole) plate only — a treated plate where an exposed bay takes
     # drip. None keeps ordinary framing lumber; top plates are never restocked.
     sole_plate_material_ref: str | None = None
+    # Wall STRUCTURE layers only: the sill is a wider board than the stud (a 2x8 on a 2x6
+    # wall over an ICF core), set flush with the stud band's OUTSIDE face. None keeps the
+    # sole plate at the stud size, centred. See resolve/sill_alignment.py.
+    sill_member: str | None = None
     # Stock for a raised EXTERIOR door's rough sill and the cripples under it — the sill
     # sits at the wet threshold under the pan. None keeps ordinary framing lumber.
     exterior_door_sill_material_ref: str | None = None

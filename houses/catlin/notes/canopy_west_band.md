@@ -500,6 +500,143 @@ fb = 3,857.6 x 12 / 129.26 = 358.1 psi vs 2,208                                 
 The same 80 sf over a shorter run raises w and bending a little; the shorter north overhang
 lowers the bearing reaction. Bearing still governs at 0.326.
 
+### 2026-10-31 amendment — the heel at the outside face of bearing; headers on the garage truss lines
+
+Decision #108 (geometry review C3-E6/E7). Supersedes the numbers above where they differ.
+
+**§1 geometry.** Each header centres on the garage wall's 2x6 plate it extends: sheathing
+plane + 5/8" CDX + half the 5 1/2" plate = 6.0000 + (0.625 + 2.75)/12 = **6.28125'** (x
+6'-3 3/8") and 30.0000 − 0.28125 = **29.71875'**. The glulam faces are the plate faces,
+x 72.625–78.125" and 353.875–359.375". Posts, CBSQ bases, piers, pads, the screen (rigidly,
+every layer +3 3/8"), the band, `BM-BW-SCSILL`, the seat-beam west ends and the hangers moved
+with them. y is unchanged, so the chords, panel, band and heights of §1 all stand.
+
+**The truss.** One truss on both roofs, bottom chord across the whole 5 1/2" bearing:
+
+```
+span, out to out of bearing    359.375 − 72.625 = 286.75"  (23'-10 3/4"; was c/c 288 on the canopy)
+top chord plumb depth          3.5 / cos(atan 4/12) = 3.5 x 1.054093 = 3.6893"
+standard heel                  3.6893 + 1/4" butt cut = 3.9393"  at the outside face
+deck at the outside face       88.000 + 3.9393 = 91.9393"
+ridge, footprint centre 216"   91.9393 + (216 − 72.625)/3 = 91.9393 + 47.7917 = 139.731"
+                               (was 143.000: the plane falls 3.269" on both roofs)
+eave edge, x 56"               91.9393 − (72.625 − 56)/3 = 86.398"; the canopy eave
+                               overhang becomes 1'-4" + 3 3/8" = 1'-7 3/8" so both fascias stay on x 56"
+```
+
+**§3e eave blocks — 2-2x10 → 2-2x8.** A 3" two-ply block flush with the header's inboard
+face spans x 75.125–78.125" (west; mirror east). The deck over it:
+
+```
+outboard face   91.9393 + (75.125 − 72.625)/3 = 92.7726"  -> 4.7726" over the header top
+inboard face    91.9393 + (78.125 − 72.625)/3 = 93.7726"  -> 5.7726"
+```
+
+A 2x6 (5.50") stops 0.27" short of the deck at the inboard face, so the blank is a **2x8
+(7.25")** bevelled to 5.77"/4.77". **LTP4Z nailing still works**: the plate is 3" x 4 1/4"
+(`connector_dimensions.LateralTiePlateDimensions`) on the header-top line, so its upper half
+is 2 1/8" of block face against 5.77" available, and its six 0.131 x 1.5" nails land 3.6" or
+more below the block's bevelled top. Plate capacity 450 lb (SPF/HF G direction) is
+unchanged; demand per west plate 172.42 lb (below), **0.383**.
+
+**The wind.** The ridge stands 139.731/12 = 11.644' up, 11.644 + 9.120 = **20.764'** over
+the ground beneath:
+
+```
+K_z = 2.01 (20.764/1200)^(2/7) = 2.01 x 0.31377 = 0.63067
+q_h = 0.00256 x 0.63067 x 0.85 x 115² = 18.149 psf
+p   = 0.6 x 18.149 x 0.85 x 1.80 = 16.661 psf          k = 16.661 / 16.7232 = 0.99628
+```
+
+Every band area is unchanged (the plane moved down whole; rise, run and header bands as
+§6), so every wind force is the 10-28 one times k. Uplift per post 40 x (16.661 − 6.0) =
+**426.44 lb**; N-S 59.259 x 16.661 = 987.32 + 2 x 23.585 = **1,034.49 lb**; the kdat east
+posts' drag 16.661 x 5.5/12 x 6.1771 = 47.17 lb, 23.585 lb each end.
+
+| row | 10-28 | 10-31 | capacity | d/c |
+|---|---:|---:|---:|---:|
+| `W-BW-SCREEN` unit shear, 1,034.49 / 5.4375 | 190.96 | 190.25 plf | 265 | 0.718 |
+| chord hold-down, 1,034.49 x 8.620 / 4.9792 + 426.44 | 2,226.5 | 2,217.4 lb | 3,060 | 0.725 |
+| chord base shear, one base | 1,038.35 | 1,034.49 lb | 1,270 | 0.815 |
+| diaphragm unit shear at the screen, 1,034.49 / 6.000 | 173.06 | 172.42 plf | 190 | **0.907** |
+| slat end KBS1Z, 745.606 x k | 745.606 | 742.834 lb | 993.218 | 0.748 |
+| centre post end ties, 478.37 x k | 478.37 | 476.59 lb | 1,390 | 0.343 |
+| band top plate screws, 186.402 x k | 186.402 | 185.709 lb | 664.099 | 0.280 |
+| band sill screws, 129.794 x k | 129.794 | 129.311 lb | 648 | 0.200 |
+| top plate end bearing, 98.89 x k | 98.89 | 98.52 psi | 251.25 | 0.392 |
+| CW/CNW ACE6Z, 632.04/1950 + 395.98/1760 | 0.552 | 0.549 | 1.0 | 0.549 |
+| RE/RNE ACE6Z, 426.44/1950 + 23.585/1760 | 0.233 | 0.232 | 1.0 | 0.232 |
+
+The chord's head uplift is 426.44 + 206.37 x k = 426.44 + 205.60 = 632.04 lb and its band push
+519.175 x k = 517.245 lb.
+
+**§6 E-W case.** The bands and their stations do not move, so y_V stays 40.141 and e 3.077':
+
+```
+slope 26.667 x 16.661 = 444.29   headers 10.762 x 16.661 = 179.31   posts 2 x 23.585 = 47.17
+total 670.77 lb      M = 670.77 x 3.0774 = 2,064.2 lb-ft
+chord  M / (29.71875 − 6.28125 = 23.4375') = 88.07 lb   (was M / 24.000)
+end strap (LSTA24)    88.07 + 1,034.49/6 = 88.07 + 172.42 = 260.49 lb vs 823.33        0.316
+west plates CN-BW-EAVE-5/-6   88.07/2 + 172.42 = 216.45 lb vs 450                       0.481
+east plate CN-BW-EAVE-E       88.07 lb vs 450                                           0.196
+couple into RF-GARAGE, across ITS 24.000': 2,064.2/24.000 = 86.01 lb
+   W-G-W 86.01/18.675 = 4.606 plf   W-G-E 86.01/21.008 = 4.094 plf (vs 182.5)
+```
+
+**§7 header — the trusses' chord bearing, a new limit state.** The beam's own design load
+times the truss spacing is the field truss's reaction, on the chord's 1.5" width times the
+length of chord on the beam:
+
+```
+R = 1,245.77 plf x 2.0' = 2,491.5 lb
+after   on 5.50" (outside face to inboard face):  2,491.5 / (1.5 x 5.50) = 302.0 psi
+before  the chord stopped at the centreline, 2.75":  2,491.5 / (1.5 x 2.75) = 604.0 psi
+Fc-perp 650 x C_M 0.53 = 344.5 psi (C_b 1.0, conservative) ->  after 0.877   before 1.753 OVER
+```
+
+It now governs both headers at **0.877**, ahead of the post bearing's unchanged 0.326; the
+fabricator's own chord check (SPF Fc-perp 425 psi, dry, under the roof) reads 302.0 / 425 =
+0.71. Bending 0.162 and shear are unchanged.
+
+### 2026-10-31 amendment (2) — piers cast one pack low; hangers and straps (C3-E11..E14)
+
+**The base.** `PT-BW-W`/`-GW` are cast 3/4" under the seat soffit so the SS316 pack is a solid
+(`north_entry_frame.PIER_TOP_FT`): pier top, CBSQ seat and the chord's base go −15.44" →
+**−16.19"**. Header soffit +76.125" holds, so each west post grows 3/4": L = (76.125 + 16.19)/12 =
+**7.692917'** (was 7.630417'). b = L − a is unchanged, because the band and the soffit did not move.
+
+```
+a = 4.125 + 16.19/12 = 5.474167'          b = 7.692917 − 5.474167 = 2.218750'
+drag 16.661 x 5.5/12 = 7.63629 plf        own drag each end = 7.63629 x 7.692917/2 = 29.373 lb
+head along = 29.373 + 517.245 x 5.474167/7.692917 = 29.373 + 368.064 = 397.437 lb  (was 395.976)
+base along = 29.373 + 517.245 x 2.218750/7.692917 = 29.373 + 149.181 = 178.554 lb  (was 179.537)
+brace moment 517.245 x 5.474167 x 2.218750/7.692917 = 816.64; own drag 7.63629 x 7.692917²/8
+  = 56.49; N-S moment 873.13 lb-ft, fb = 873.13 x 12/27.729 = 377.85 psi
+l/d 92.315/5.5 = 16.7845; FcE = 0.822 x 440,000/16.7845² = 1,283.8 psi; C_P 0.8769;
+  Fc' = 603.75 x 0.8769 = 529.44 psi; fc = 3,408.53/30.25 = 112.68 psi
+combined (112.68/529.44 + 377.85/1,360)/(1 − 112.68/1,283.8) = 0.5379   (was 0.5351)
+chord H = (88 + 16.19)/12 = 8.6825'; hold-down 1,034.49 x 8.6825/4.9792 + 426.44 = 2,230.3 lb
+```
+
+| row | 10-31 | now | capacity | d/c |
+|---|---:|---:|---:|---:|
+| chord hold-down (CBSQ66-SDS2 cracked) | 2,217.4 | 2,230.3 lb | 3,060 | 0.729 |
+| CW/CNW ACE6Z, 632.04/1,950 + head along/1,760 | 0.549 | 632.04/1,950 + 397.44/1,760 | 1.0 | **0.550** |
+| CBSQ base uplift + along, 426.44/3,060 + base along/1,270 | 0.281 | 0.1394 + 0.1406 | 1.0 | 0.280 |
+| post combined axial + bending | 0.535 | 0.538 | 1.0 | 0.538 |
+
+The engine reads 2,230.35 lb, 0.5499 and 0.538. The diaphragm (0.907) still governs.
+
+**Hangers (E11/E12).** The seat beams go HU28-2Z → **LUS26-2Z** (W 3 1/8" on a 3" beam) and
+`BM-BW-SCSILL` HU28-2Z → **LUS28Z** (W 1 9/16" on a 1 1/2" sill), C-C-2026 p. 114. The HU28-2Z's
+1 1/4" flanges made it 3.125 + 2(0.075 + 1.25) = 5.775" wide on a 5.5" post face; the LUS26-2Z is
+3.125 + 2(0.048 + 1.0) = 5.221" and clears the 3" CBSQ strap on the same face by
+(3.125/2 + 0.048) − 1.5 = 0.110" a side. Demand against allowable: `north_entry_piers.md` §12.
+
+**Straps (E14).** The seat-beam HETA20Z pairs at E/GE stay HETA20Z, trimmed at the beam top
+(`AN-BW-HETA-TRIM`); a HETA12/16 exists only in G90. The canopy's own headers carry no HETA in
+the `kdat` variant.
+
 ## 8. Alternatives, and why each is not the choice
 
 

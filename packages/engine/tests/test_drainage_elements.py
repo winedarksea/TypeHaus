@@ -237,8 +237,13 @@ def test_the_house_perimeter_tile_falls_to_the_sump_it_can_actually_reach(catlin
     short-circuits it. There is no daylight available to this tile anywhere on the lot."""
     house = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-B-")]
     assert house
-    assert {b.drain_tile_spec.discharge for b in house} == {"SM-B-RADON"}
+    assert {b.drain_tile_spec.discharge for b in house} == {"SM-B-RADON", "SM-B-SOUTH"}
     assert catlin_model.plan.by_tag("SM-B-RADON") is not None
+    # The four 34"-deep court-face beds float their tile at -150 7/16", under the radon pit's
+    # floor, so they have a pit of their own (C3-E10).
+    deep = {b.tag for b in house if b.drain_tile_spec.discharge == "SM-B-SOUTH"}
+    assert deep == {"FB-B-S1", "FB-B-S2", "FB-B-S3", "FB-B-S4"}
+    assert catlin_model.plan.by_tag("SM-B-SOUTH").pump is not None
     # The garden's own beds are NOT redirected: their soakaway course is below them and takes
     # their water with no pump in the path — and since 2026-09-23 no pipe either.
     garden = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-SG-")]
@@ -422,7 +427,7 @@ def test_every_drainage_source_reaches_something_that_disposes_of_water(catlin_m
     assert network.unresolved == [], network.unresolved
     sources = set(network.sources())
     house_rings = {b.tag for b in catlin_model.footing_beddings if b.tag.startswith("FB-B-")}
-    assert len(house_rings) == 19 and house_rings <= sources
+    assert len(house_rings) == 21 and house_rings <= sources
     assert {"FD-SG-FIELD", "FD-SG-OVERFLOW", "AD-SG-COURT", "FB-SG-W1", "FB-SG-E1",
             "TR-RF-LEADER-W", "TR-G-LEADER-W"} <= sources
     # A soakaway bed DISPOSES; it is not a source.
@@ -519,7 +524,7 @@ def test_every_bedding_that_names_a_receiver_has_a_way_to_reach_it(catlin_model)
 
     bodies = stone_bodies(catlin_model)
     house = bodies["FB-B-W1"]
-    assert len(house) == 19, sorted(house)
+    assert len(house) == 21, sorted(house)
     court = bodies["FB-SG-W1"]
     assert court == {"FB-SG-ARCH", "FB-SG-E1", "FB-SG-E2", "FB-SG-S", "FB-SG-W1", "FB-SG-W2"}
     assert set(bodies) == set(house) | set(court), "a bed in a body of its own is orphaned"
@@ -534,9 +539,9 @@ def test_the_sump_names_what_feeds_it(catlin_model):
     the pit and nothing named them back.
     """
     sump = catlin_model.plan.by_tag("SM-B-RADON")
-    assert len(sump.inlet_refs) == 20, sump.inlet_refs
+    assert len(sump.inlet_refs) == 18, sump.inlet_refs  # 17 beds + the court overflow
     assert "FD-SG-OVERFLOW" in sump.inlet_refs and "FD-B-SUMP-LEAD" not in sump.inlet_refs
-    assert sum(1 for tag in sump.inlet_refs if tag.startswith("FB-B-")) == 19
+    assert sum(1 for tag in sump.inlet_refs if tag.startswith("FB-B-")) == 17
     for tag in sump.inlet_refs:
         assert catlin_model.plan.by_tag(tag) is not None, tag
     assert sump.inlet_invert is not None, "a receiver with no level cannot be checked against"

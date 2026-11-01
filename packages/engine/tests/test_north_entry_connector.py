@@ -197,9 +197,10 @@ def test_shared_trex_surfaces_supports_and_stem_seats(catlin_model_ro):
     for tag, top_in in (("BM-BW-HOUSE-SEAT", -8.19), ("BM-BW-GARAGE-SEAT", -8.19)):
         solid = next(s for s in model.solids if s.tag == tag)
         assert solid.z1_m == pytest.approx(inch(top_in).meters)
+    # Cast one 3/4" SS316 pack under the -15.44" seat soffits (C3-E13).
     for tag in ("PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE"):
         solid = next(s for s in model.solids if s.tag == tag)
-        assert solid.z1_m == pytest.approx(inch(-15.44).meters)
+        assert solid.z1_m == pytest.approx(inch(-16.19).meters)
     stair = next(s for s in model.stairs if s.tag == "ST-G-SERVICE")
     stringers = [m for m in stair.members if m.category == "stringer"]
     assert len(stringers) == 5

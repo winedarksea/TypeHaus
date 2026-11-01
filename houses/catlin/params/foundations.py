@@ -114,17 +114,16 @@ _HOUSE_WALL_TAGS = (
 # them is the garden floor and not the -2'-10" site plane six and a half feet overhead.
 #
 # ``structural.frost_depth`` derives a local grade per footing; the answer to what it finds
-# here is IRC R403.3 — the horizontal wings under the garden slab
-# (``params/sunken_garden.FROST_WINGS``, SL-SG-FROST-W/E/N) over the drained stone bedding.
-# Deepening the strips is not an available alternative: FT-B-S2/S3's
+# here is the deep drained stone bed (``HOUSE_FOOTING_BEDDING`` below, ASCE 32). The IRC R403.3
+# wings that used to carry this (``SL-SG-FROST-W/E/N``) are retired: they could not abut the
+# strips along the FT-SG-W1/E1 toes. Deepening the CONCRETE strips is not an alternative: FT-B-S2/S3's
 # south toe is what carries SG_VENEER_BEAM_14's isolation board at -8"..-10" (that is what
 # `_SOUTH_TOE_TRIM` below is for), so re-centring the strips and re-founding the brick wall
 # are one change and not this one. It used to be the veneer PLINTH that leaned on that toe;
 # the plinth is gone and the constraint is not.
 # W-B-S1B joined on 2026-09-05 and left the same day with the sauna shrink. FT-B-S1 is one
-# unsplit strip again, and it is back inside the court's 42" frost reach — which is what the
-# `SL-SG-FROST-W` wings under the garden slab are for. See the header
-# note on `structural.frost_depth` above.
+# unsplit strip again, and it is back inside the court's 42" frost reach — which the deep stone
+# bed below answers (the SL-SG-FROST wings are retired).
 _FROST_FORMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
 # ** THIS SET IS EMPTY, AND `_SOUTH_TOE_TRIM` IS SUPERSEDED (2026-09-05, second pass). **
 # W-B-S2/S3 took a 2" trim, putting their south face on -8" — flush against
@@ -256,7 +255,13 @@ _FRAMED_WALLS = {"W-B-CS", "W-B-STR", "W-B-STR3", "W-B-STR3B"}
 # projection. They end at y 135 7/16" and 155 7/16"; the 20" under the opening stays slab.
 # Both walls START at the gap (W-B-CS at y=10'-0", W-B-CS2 at 13'-10").
 # `structural.bearing_wall_footing` FAILs if the door or its packs move off these.
-_START_EXTENSION = {"W-B-CS": inch(15.4375), "W-B-CS2": inch(10.5625)}
+#
+# **S1 AND S4 ARE SHORTENED TO THEIR DEEP-BED PIECES** (-56" = the 4'-8" split of 2026-09-05,
+# 46" clear of the court rim): the 34" bed under them digs past the lot line at x=0 / x=432
+# (EX-HOUSE, `integrity.excavation`), so the strip's outer 56" is a second footing on the
+# ordinary 7" bed (`_SPLIT_FOOTINGS` below), one pour, joined at the bed step.
+_START_EXTENSION = {"W-B-CS": inch(15.4375), "W-B-CS2": inch(10.5625), "W-B-S1": inch(-56)}
+_END_EXTENSION = {"W-B-S4": inch(-56)}
 
 
 def _center_on(tag: str) -> str:
@@ -270,9 +275,17 @@ HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,
             width=inch(20), depth=inch(8),
             center_on=_center_on(t), offset=_toe_offset(t),
-            start_extension=_START_EXTENSION.get(t),
+            start_extension=_START_EXTENSION.get(t), end_extension=_END_EXTENSION.get(t),
             assembly="FOOTING_EXPOSED_20" if t in _FROST_FORMED else "FOOTING_20")
     for i, t in _HOUSE_WALL_TAGS
+] + [
+    # The outer 56" of S1 / S4 (x 0..56, x 376..432): unreached by the court, ordinary bed.
+    Footing(uid="CF031AAAAA", tag="FT-B-S1W", under="W-B-S1", width=inch(20), depth=inch(8),
+            center_on="axis", offset=_toe_offset("W-B-S1"), end_extension=inch(-62),
+            assembly="FOOTING_EXPOSED_20"),
+    Footing(uid="CF032AAAAA", tag="FT-B-S4E", under="W-B-S4", width=inch(20), depth=inch(8),
+            center_on="axis", offset=_toe_offset("W-B-S4"), start_extension=inch(-62),
+            assembly="FOOTING_EXPOSED_20"),
 ]
 
 # Bearing prep below every house footing: 7" undercut, geotextile, drain tile, washed stone
@@ -308,13 +321,31 @@ _COLUMN_WALLS = {"W-B-S1", "W-B-S4", "W-B-E1", "W-B-E2", "W-B-N1", "W-B-N2", "W-
 # 16", not 12": the width is off the foam face and the 20" footing projects 2-4" past it,
 # so 16" is what reaches R405.1's 12" past the footing edge (code.R405_1 grades it).
 WALL_COLUMN = DrainColumn(width=inch(16), cap_below_grade=inch(12))
+# ** THE FOUR COURT-FACE BEDS ARE DEEP STONE, AND THAT IS THE FROST PROTECTION (C3-E10). **
+# The court floor is -9'-1 7/16" and these strips bear at -9'-9 7/16": 8" of cover against 42".
+# Wings could not reach all of it (they stop at the FT-SG-W1/E1 toes, 46" short of S1/S4's
+# reached ends), so the bed goes down instead: #57 NFS stone to 42" under the court floor,
+# -151 7/16", i.e. 34" under the strip. ASCE 32 soil replacement, IRC R403.1.4.1; it
+# needs a drain to count, and -151" is 14 1/2" under SM-B-RADON's floor, so the run has its
+# own pit, SM-B-SOUTH, at S1's deep end (plan/mep_drainage.py). AHJ/engineer sign-off:
+# inspections.toml `frost_soil_replacement`.
+_DEEP_STONE = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
 HOUSE_FOOTING_BEDDING = [
     FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-{t[2:]}", host_ref=f"FT-{t[2:]}",
-                   undercut=inch(7), perimeter_insulation=inch(4),
+                   undercut=inch(34) if t in _DEEP_STONE else inch(7),
+                   non_frost_susceptible=True if t in _DEEP_STONE else None,
+                   perimeter_insulation=inch(4),
                    drain_tile_spec=DrainTile(diameter=inch(4), sock=True,
-                                             discharge="SM-B-RADON"),
-                   wall_column=WALL_COLUMN if t in _COLUMN_WALLS else None)
+                                             discharge="SM-B-SOUTH" if t in _DEEP_STONE
+                                             else "SM-B-RADON"),
+                   wall_column=WALL_COLUMN if t in _COLUMN_WALLS and t not in _DEEP_STONE else None)
     for i, t in _HOUSE_WALL_TAGS
+] + [
+    FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-B-{n}", host_ref=f"FT-B-{n}",
+                   undercut=inch(7), perimeter_insulation=inch(4),
+                   drain_tile_spec=DrainTile(diameter=inch(4), sock=True, discharge="SM-B-RADON"),
+                   wall_column=WALL_COLUMN)
+    for i, n in ((31, "S1W"), (32, "S4E"))
 ]
 
 # --- the veneer plinth, RETIRED 2026-09-05 -----------------------------------------
@@ -414,6 +445,8 @@ GARAGE_STEM_NODES = [
 # walls' zip-R plane (`alignment=face("zip-r-ext")` above) — coplanar, so only the 7/8"
 # rainscreen + cladding projects past and drips clear. Left unaligned it stood 5 5/8" proud
 # of the cladding, a shelf for rain to pool on (plans/TODO.md).
+# The studs sit 5/8" inside that plane, so a 5 1/2" sill bore only 3 5/8" on the 6" core: the garage
+# sill is a 2x8 flush outside (`FramingSpec.sill_member`), 5 3/8" on the core, ledge inside.
 #
 # Uses `face("concrete-ext")`, not `face("eps-ext")`: the fuzzy prefix matcher in
 # resolve/topology.py would match "eps-ext" to the *eps-int* layer first. Concrete face is

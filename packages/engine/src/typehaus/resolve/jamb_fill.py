@@ -216,7 +216,7 @@ def resolve_jamb_fills(model):
                 occupied = union_all([occupied, *(Polygon(fill.bay_polygon, fill.voids)
                                        for fill in model.jamb_fills
                                        if fill.host_wall == bay_wall.tag)])
-                bay_base = bay_wall.base_ref_z_m
+                bay_base = bay_wall.frame_base_z_m
                 p_low, p_high = (add(bay_origin, scale(bay_tangent, station))
                                  for station in (low, high))
                 bay = Polygon([(low, bay_base), (high, bay_base),

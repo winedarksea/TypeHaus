@@ -89,11 +89,11 @@ def _loads_on_band(ctx, floor, wall, header, plies):
     top = max(p.z1_m for p in plies)
     inside, seated = [], []
     for other in ctx.model.walls:
-        if other.is_foundation or abs(other.base_ref_z_m - top) > 2 * _IN:
+        if other.is_foundation or abs(other.frame_base_z_m - top) > 2 * _IN:
             continue
         for member in other.members:
             if (member.category not in _VERTICALS or not lo <= across(member.p0) <= hi
-                    or member.z0_m > other.base_ref_z_m + 2 * _IN):
+                    or member.z0_m > other.frame_base_z_m + 2 * _IN):
                 continue  # not a member standing on this wall's bottom plate
             station = along(member.p0)
             if header.ro_lo + 1e-4 < station < header.ro_hi - 1e-4:

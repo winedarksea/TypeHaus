@@ -335,7 +335,7 @@ def course_phase(rw: ResolvedWall, spec: Any) -> float:
     the ladder is pinned.
     """
     datum = getattr(spec, "course_datum", "wall-base")
-    base = rw.base_ref_z_m if datum == "framing-base" else rw.z0_m
+    base = rw.frame_base_z_m if datum == "framing-base" else rw.z0_m
     offset = getattr(spec, "course_offset", None)
     return base + (offset.meters if offset is not None else 0.0)
 

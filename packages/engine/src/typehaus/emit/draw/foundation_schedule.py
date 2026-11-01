@@ -395,7 +395,11 @@ def _mudsill_anchor_schedule_rows(model: ResolvedModel) -> list[tuple[str, ...]]
     if not returns:
         return []
     takeoff = mudsill_anchor_rows(model, rules, config.sill_plate_takeoff_category)
-    part = str(takeoff[0]["part_number"]) if takeoff else "NOT STATED"
+    from typehaus.hardware.catalog import hardware_for_role
+    from typehaus.joints.sills import sill_anchor_role
+
+    def part_of(ret) -> str:
+        return hardware_for_role(sill_anchor_role(ret)).model if takeoff else "NOT STATED"
     wall_tags = {wall.tag for wall in model.walls}
     foundation_tags = {wall.tag for wall in foundation_walls(model)}
     grouped: dict[tuple[str, str], list[Any]] = {}
@@ -404,9 +408,9 @@ def _mudsill_anchor_schedule_rows(model: ResolvedModel) -> list[tuple[str, ...]]
         kind = ("FDN WALL" if host in foundation_tags
                 else "SLAB" if host in {solid.tag for solid in model.solids}
                 else "CONCRETE")
-        grouped.setdefault((ret.storey, kind), []).append(ret)
+        grouped.setdefault((ret.storey, kind, part_of(ret)), []).append(ret)
     rows: list[tuple[str, ...]] = []
-    for index, ((storey, kind), runs) in enumerate(sorted(grouped.items()), start=1):
+    for index, ((storey, kind, part), runs) in enumerate(sorted(grouped.items()), start=1):
         count = sum(max(rules.minimum_anchors_per_run,
                         int(math.floor(ret.length_m / (rules.mudsill_anchor_pitch_ft
                                                        * FT_TO_M) + 1e-9)) + 1)

@@ -32,7 +32,7 @@ def doorway_assembly(ctx: CheckContext) -> list:
             origin, tangent, _, _ = wall_frame(wall)
             for member in wall.members:
                 if (not member.child_key.startswith("plate-bottom")
-                        or member.z0_m < wall.base_ref_z_m - DOORWAY.height_tolerance_m
+                        or member.z0_m < wall.frame_base_z_m - DOORWAY.height_tolerance_m
                         or member.z1_m <= walking + DOORWAY.height_tolerance_m
                         or assembly.rough_opening_z_m > member.z1_m + DOORWAY.height_tolerance_m):
                     continue

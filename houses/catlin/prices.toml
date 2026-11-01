@@ -1119,7 +1119,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Material only, per this section's rule: nailing a face-mount hanger to a 6x6 is framing
 # labour. ** THE ROW MUST EXIST EVEN AT A ROUGH BAND **: an unpriced part is silently dropped
 # from the takeoff, so the total FALLS and the omission reads as a saving.
-"HU28-2Z" = { low = 9, high = 16 }  # 4 ea — CN-BW-HGR-CW/-CNW/-SCS-S/-SCS-N (-FC/-FE went with the garage landing, 2026-10-13)
+"HU28-2Z" = { low = 9, high = 16 }  # 0 ea since 2026-10-31 — the four went to LUS26-2Z / LUS28Z (C3-E11/E12); kept priced as the revert
+# The two seat-beam hangers since 2026-10-31. Home Depot SKU LUS26-2Z $4.77 single, $4.53 at 50+
+# (read 2026-10-31); the high end carries a short-stock yard price.
+"LUS26-2Z" = { low = 4.5, high = 7.5 }  # 2 ea — CN-BW-HGR-CW/-CNW
 # 22 ea -> 30 on 2026-08-30: the eight balcony knee braces moved off the unrated APVKB45-6
 # onto this part, two per brace (Simpson's own instruction — "install single KBS1Z on each
 # end" — and the F1 the code report publishes is measured through that pair). Net material
@@ -1161,7 +1164,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "HHUS410" = { low = 14, high = 24 }  # 10 ea
 # ZMAX (G185) LUS where the carrier is preservative-treated (IRC R317.3.1): the breezeway's
 # treated beams, and the balcony centre glulam. Sized by the engine off the joist; ~25% over G90.
-"LUS28Z" = { low = 2.5, high = 7.5 }  # 0 ea — the 8 on the garage landing's beams went with it, 2026-10-13. Kept: the engine sizes it off any 2x8 into treated stock
+"LUS28Z" = { low = 2.5, high = 7.5 }  # 2 ea authored — CN-BW-HGR-SCS-S/-N, BM-BW-SCSILL off the canopy columns (2026-10-31) — plus whatever the engine derives off a 2x8 into treated stock
 # The single-2x12 face-mount in stainless (owner, 2026-09-22): Simpson publishes no LUS212, and
 # its 2x12 rows list the LUS210 (H 7-13/16"). The porch joists hang on it at both ledgers.
 "LUS210SS" = { low = 6.0, high = 12.0 }  # 16 ea — FS-SG-PORCH's 8 single joists, both ends, on BM-SG-LDGW/LDGE
@@ -1175,7 +1178,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # it reads as coverage.
 # ZMAX (R317.3.1: every nail is in the pt-syp sill). Retail 2026-10-31: $1.95 (fastenersplus)
 # to $2.78 (Home Depot) for the MASAZ.
-"MASAZ" = { low = 1.95, high = 3 }  # 91 ea
+"MASAZ" = { low = 1.95, high = 3 }  # 67 ea (was 91; the garage 2x8 sill takes bolts)
 # Retail, 2026-10-09: ToolUp/Total Fastening $14.54 to McCoy's $19.99.
 "MSTC52" = { low = 14.5, high = 20 }  # 2 ea — CN-M-HD-BALC-W/E
 # Retail, 2026-10-09: $25-38 per 100 (PDPAWL-287MG), plus ~$0.10 of powder load each.
@@ -1184,7 +1187,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # priced as the pair because neither is ordered without the other. Set by the concrete
 # sub, not the framer, which is why cost_codes.py files "AB-*" under 03 15 00 rather
 # than the 06 05 23 the rest of this table defaults to.
-"AB-050-10-BP" = { low = 2.4, high = 4.5 }  # authored only
+"AB-050-10-BP" = { low = 2.4, high = 4.5 }  # 28 ea — the garage's 2x8 sill (wider than MASAZ's ESR-2555 2x4/2x6), derived at the 4' pitch
 # The bolt every ABU sits on, added 2026-08-28. Simpson publish the ABU's uplift and
 # lateral values THROUGH a 5/8" anchor and ship none ("anchor bolt by others"), so the
 # ten bases above billed for two years without the part their capacity is measured

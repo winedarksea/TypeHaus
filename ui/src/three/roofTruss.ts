@@ -91,15 +91,16 @@ export function buildRoofTrusses(group: THREE.Group, members: Member[], center: 
       stickUids.push(uids[i]);
     };
 
-    // The top chord line, as the centreline it is: it springs a raised heel above the plate
-    // at each bearing and closes on the member's stated ridge at mid-span. A truss whose
-    // heel would not fit under its own apex is drawn springing off the bottom chord, which
-    // is what this did before the heel was carried at all.
-    const heel = m.truss?.heel_m ?? chord;
-    const footZ = (heel >= rise - chord ? chord : heel) + chord / 2;
-    const peakZ = rise - chord / 2;
-    const slope = (peakZ - footZ) / (span / 2);
-    const topChordZ = (u: number) => footZ + slope * Math.min(u, span - u);
+    // The top chord line, as the centreline it is. `heel_m` is top of bearing to top of top
+    // chord at the member's ends, the outside faces of bearing (decision #108); the top edge
+    // closes on the member's stated ridge at mid-span, and the centreline hangs half a PLUMB
+    // depth under it. A heel that would not fit under its own apex falls back to a chord.
+    const heelIn = m.truss?.heel_m ?? chord;
+    const heel = heelIn >= rise ? chord : heelIn;
+    const slope = (rise - heel) / (span / 2);
+    const halfPlumb = (chord / 2) * Math.hypot(1, slope);
+    const peakZ = rise - halfPlumb;
+    const topChordZ = (u: number) => heel - halfPlumb + slope * Math.min(u, span - u);
     // Bottom chord: bearing to bearing, sitting on the plate.
     push([0, chord / 2], [span, chord / 2], chord);
     // Top chords, each from its eave tail up to the apex. The tails are the truss's own
@@ -112,7 +113,7 @@ export function buildRoofTrusses(group: THREE.Group, members: Member[], center: 
     // Webs (or a gable end's verticals) run between the bottom chord's top and the top
     // chord's underside, and stop a chord short of it so the plate joint reads.
     const bayBottom = chord;
-    const bayAt = (u: number) => topChordZ(u) - chord / 2;
+    const bayAt = (u: number) => topChordZ(u) - halfPlumb;
     if (bayAt(span / 2) - bayBottom < webT) return;  // too shallow for any pattern
 
     if (m.truss?.gable) {

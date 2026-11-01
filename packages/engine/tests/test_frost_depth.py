@@ -83,10 +83,10 @@ def test_raising_the_plane_does_not_bury_a_footing_beside_an_open_excavation(cat
     """
     matched = _frost(_model_at_grade(catlin_model, ft(3)))
     south = next(f for f in matched if "FT-B-S2" in f.element_tags)
-    # It passes — but on the R403.3 wing insulation beside it, and still measured against
+    # It passes — but on its deep drained stone bed (ASCE 32), and still measured against
     # the court floor. The single-plane reading would have it 10'-2" deep and would say so.
     assert south.result.value == "pass"
-    assert "SL-SG-FLOOR" in south.message and "R403.3" in south.message
+    assert "SL-SG-FLOOR" in south.message and "soil replacement" in south.message
     # 8", then 1" while the flood step existed (2026-09-03), and 8" again since the court
     # came back flush on 2026-09-05. The footing never moved.
     assert '8"' in south.message

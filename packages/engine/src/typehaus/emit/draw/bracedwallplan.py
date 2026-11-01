@@ -18,6 +18,7 @@ actually known: a chain carrying a light-frame wall on the building's exterior e
 from __future__ import annotations
 
 from typehaus.checks.structural.bracing_eval import LineEvaluation, evaluate_line
+from typehaus.checks.structural.sill_bearing import sill_anchor_notes
 from typehaus.emit.draw._shared import emit_ghost_walls, to_in
 from typehaus.emit.draw.lineweights import CUT, CUT_HEAVY
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Text
@@ -88,6 +89,7 @@ def build_braced_wall_plan(model, storey: str) -> Scene:
         notes.append(_req_prov(evaluation))
         for grade in evaluation.panels:
             _draw_panel(b, line, grade)
+    notes.extend(sill_anchor_notes(model, storey))
     for panel in unplaced:
         notes.append(f"{panel.tag}: {panel.reason} (wall_ref {panel.wall_ref})")
     walls = [wall for wall in model.walls if wall.storey == storey]

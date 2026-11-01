@@ -63,7 +63,8 @@ def test_a_roof_truss_serializes_as_one_member_with_its_chord_section(catlin_pay
     for truss in trusses:
         assert truss["shape"] == "roof_truss"
         assert truss["profile"] in ("24 roof truss", "24 gable roof truss")
-        assert truss["truss"]["heel_m"] == pytest.approx(3.5 * 0.0254)  # standard heel
+        # The SBCA standard heel at 4:12, at the outside face of bearing (#108).
+        assert truss["truss"]["heel_m"] == pytest.approx((3.5 * 10 ** 0.5 / 3 + 0.25) * 0.0254)
         assert truss["truss"]["tail_lo_m"] > 0 and truss["truss"]["tail_hi_m"] > 0
         assert truss["flange_thickness_m"] == pytest.approx(3.5 * 0.0254)
         assert truss["width_m"] == pytest.approx(1.5 * 0.0254)
@@ -154,8 +155,9 @@ def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
     # walls), so what this asserts is the closure naming a real skin material rather than a
     # specific one — name the tag and this test breaks every time a gauge or profile
     # changes.
+    # (A gable, W-G-N: a standard heel leaves the eave walls no heel band to close, #108.)
     gable = [m for m in garage["members"]
-             if "W-G-E-closure-" in m["key"] and m["category"] == "cladding"]
+             if "W-G-N-closure-" in m["key"] and m["category"] == "cladding"]
     assert gable and all(m["material"].startswith(("standing-seam", "corrugated"))
                           for m in gable)
     # The garage's cap is trim coil, not the roofing's own stock, and it is the SAME coil as

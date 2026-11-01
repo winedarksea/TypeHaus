@@ -12,7 +12,7 @@ from typehaus.model import ft, inch
 
 EXCAVATION = [
     Excavation(uid="51B78YHGNF", tag="EX-HOUSE",
-        hosts=("FB-B-S1", "FB-B-S2", "FB-B-S3", "FB-B-S4", "FB-B-E1", "FB-B-E2", "FB-B-N1",
+        hosts=("FB-B-S1", "FB-B-S1W", "FB-B-S2", "FB-B-S3", "FB-B-S4", "FB-B-S4E", "FB-B-E1", "FB-B-E2", "FB-B-N1",
                "FB-B-N2", "FB-B-N3", "FB-B-N4", "FB-B-W1", "FB-B-W2", "FB-B-CS", "FB-B-CS2",
                "FB-B-CN", "FB-B-CN2", "FB-B-STR", "FB-B-STR3", "FB-B-STR3B", "FB-SG-W1",
                "FB-SG-E1", "FB-SG-W2", "FB-SG-E2", "FB-SG-S", "FB-SG-ARCH"),

@@ -419,7 +419,7 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
     # daylight (corrected 2026-09-05): its invert is -124 7/16", 7'-6 1/2" BELOW site grade,
     # so it falls to the SM-B-RADON pit and is pumped up. The court's beds run no pipe at all
     # (2026-09-23) and bill stone and fabric with no tile footage.
-    assert {r["drain_tile_discharge"] for r in tile_rows} == {"SM-B-RADON"}
+    assert {r["drain_tile_discharge"] for r in tile_rows} == {"SM-B-RADON", "SM-B-SOUTH"}
     court = [r for r in rows if any(tag.startswith("FB-SG-") for tag in r["tags"])]
     assert court and all(not r["drain_tile"] and float(r["drain_tile_ft"]) == 0 for r in court)
     assert {tag for r in court for tag in r["tags"] if tag.startswith("FB-SG-")} == {

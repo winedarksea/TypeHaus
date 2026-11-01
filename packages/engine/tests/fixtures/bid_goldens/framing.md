@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 677be92779dc8a08  
+**Model hash:** cdf2f6ca15a2b540  
 **Lines:** 191
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -32,12 +32,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | 36 | LF ordered | 1 pcs, 36.0 LF cut | building |
 | 2-1.75x9.5 LVL — header (2-1.75x9.5 LVL) | 8 | LF ordered | 1 pcs, 5.5 LF cut | building |
 | 2-2x10 — header (2-2x10) | 32 | LF ordered | 4 pcs, 21.4 LF cut | building |
-| 2-2x10 SPF framing lumber — blocking (2-2x10:spf) | 16 | LF ordered | 6 pcs, 11.1 LF cut | building |
 | 2-2x6 — header (2-2x6) | 24 | LF ordered | 3 pcs, 17.8 LF cut | building |
 | 2-2x6 SPF framing lumber — blocking (2-2x6:spf) | 24 | LF ordered | 10 pcs, 18.2 LF cut | building |
 | 2-2x8 — header (2-2x8) | 168 | LF ordered | 52 pcs, 144.6 LF cut | building |
-| 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 48.0 LF cut; 48.0 LF in the takeoff | building |
-| 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 336.0 LF cut; 336.0 LF in the takeoff | building |
+| 2-2x8 SPF framing lumber — blocking (2-2x8:spf) | 16 | LF ordered | 6 pcs, 11.1 LF cut | building |
+| 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 47.8 LF cut; 48.0 LF in the takeoff | building |
+| 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 334.5 LF cut; 336.0 LF in the takeoff | building |
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 336 | LF ordered | 38 pcs, 313.2 LF cut | building |
 | 2x10 — hanger board (2x10) | 42 | LF ordered | 7 pcs, 31.7 LF cut | building |
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 40 | LF ordered | 7 pcs, 24.2 LF cut | building |
@@ -54,7 +54,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Laminated strand lumber — corner stud, cripple stud, door blocking, jack stud, king stud, stud (2x6:lsl) | 1,742 | LF ordered | 230 pcs, 1480.1 LF cut | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:oak-8q) | 32 | LF ordered | 21 pcs, 23.9 LF cut | building |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | 74 | LF ordered | 25 pcs, 65.2 LF cut | building |
-| 2x8 — joist, landing framing, rim board (2x8) | 240 | LF ordered | 64 pcs, 197.1 LF cut | building |
+| 2x8 — joist, landing framing, rim board (2x8) | 240 | LF ordered | 64 pcs, 196.5 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 374 | LF ordered | 89 pcs, 312.6 LF cut | building |
 | 3-2x12 — joist (3-2x12:kdat) | 40 | LF ordered | 2 pcs, 33.5 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 360 | LF ordered | 1165 pcs, 339.8 LF cut | building |
@@ -70,7 +70,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 27.0 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 662.4 SF net | building |
 | 5/8" CDX sheathing plywood, 19/32" roof (cdx-plywood:roof) | 49 | sheets 4x8 | 49 sheets 4x8 over 1544.4 SF net | building |
-| 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
+| 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 2.5 SF net | building |
 | 5/8" APA Exterior plywood, 4x9 stock, 5/8" exterior wall (entry-screen-exterior-plywood:exterior wall) | 1 | sheets 4x9 | 1 sheets 4x9 over 27.0 SF net | building |
 | 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" exterior wall (permabase-exterior:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 27.0 SF net | building |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 10.5 SF net | building |
@@ -187,7 +187,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 126 | bf | 4 placed, 10.6 SF plan; 0.39 cy in the takeoff | main, second |
-| Beam — BEAM_KDAT (beam:BEAM_KDAT) | 58.8 | bf | 6 placed, 6.9 SF plan; 0.18 cy in the takeoff | main |
+| Beam — BEAM_KDAT (beam:BEAM_KDAT) | 57.6 | bf | 6 placed, 6.8 SF plan; 0.18 cy in the takeoff | main |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | 86.4 | bf | 3 placed, 7.2 SF plan; 0.27 cy in the takeoff | main, second |
 | Column — POST_KDAT (column:POST_KDAT) | 38.4 | bf | 2 placed, 0.4 SF plan; 0.12 cy in the takeoff | main |
 | Column — POST_KDAT_WRAPPED_PVC (column:POST_KDAT_WRAPPED_PVC) | 31.2 | bf | 2 placed, 0.4 SF plan; 0.1 cy in the takeoff | main |
@@ -198,11 +198,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | butyl-tape, 1 1/2" on beam (butyl-tape) | 18 | LF |  | main |
 | butyl-tape, 1 1/4" on deck (butyl-tape) | 19.1 | LF |  | second |
-| butyl-tape, 1 1/2" on deck (butyl-tape) | 419 | LF |  | main, second |
+| butyl-tape, 1 1/2" on deck (butyl-tape) | 418.4 | LF |  | main, second |
 | butyl-tape, 4 1/2" on deck (butyl-tape) | 33.5 | LF |  | main |
 | butyl-tape, 1 1/2" on stair (butyl-tape) | 65.2 | LF |  | main |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 4.5 | LF |  | main |
-| butyl-tape-beam, 3" on beam (butyl-tape-beam) | 6.7 | LF |  | main |
+| butyl-tape-beam, 3" on beam (butyl-tape-beam) | 6.1 | LF |  | main |
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 19.3 | LF |  | second |
 | butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | 6.4 | LF |  | main |
 | butyl-tape-beam, 5 1/2" on beam (butyl-tape-beam) | 10.9 | LF |  | main |
@@ -288,10 +288,10 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | — |
 | 2-1.75x9.5 LVL — header (2-1.75x9.5 LVL) | — |
 | 2-2x10 — header (2-2x10) | — |
-| 2-2x10 SPF framing lumber — blocking (2-2x10:spf) | — |
 | 2-2x6 — header (2-2x6) | — |
 | 2-2x6 SPF framing lumber — blocking (2-2x6:spf) | — |
 | 2-2x8 — header (2-2x8) | — |
+| 2-2x8 SPF framing lumber — blocking (2-2x8:spf) | — |
 | 24 gable roof truss — roof truss (24 gable roof truss) | — |
 | 24 roof truss — roof truss (24 roof truss) | — |
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | — |

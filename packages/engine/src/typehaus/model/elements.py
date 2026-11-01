@@ -62,8 +62,8 @@ class Wall(Element):
     # keeps stating its height with ``top`` relative to its own base.
     #
     # Everything downstream follows for free: ``ResolvedWall.z0_m`` is what the framing
-    # solver measures plates and studs from, what ``base_ref_z_m`` (and so every opening
-    # sill) is datumed on, and what ``Footing.under`` reads for its own top.
+    # solver measures plates and studs from (``frame_base_z_m``), what ``base_ref_z_m``
+    # (and so every opening sill) is datumed on, and what ``Footing.under`` reads for its own top.
     base_elevation: Length | None = None
     # The exterior surface at the foot of this wall PONDS, and nothing may reach the
     # interior over this wall less than this far above it. Authored, not derived, for the

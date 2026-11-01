@@ -45,7 +45,8 @@ _POCKETS = frozenset({"sump", "french_drain"})
 #: What stands in the hole and displaces fill. Thin runs (pipe, tile, conduit) do not count.
 _OBSTACLES = frozenset({"sub_slab", "beam", "column", "pad", "footing", COLUMN,
                         "planting_fill", "planting_soil", "drywell", "sump", "thermal_break",
-                        "rain_garden_media", "rain_garden_stone", "french_drain"})
+                        "rain_garden_media", "rain_garden_stone", "french_drain",
+                        "drain_tile"})  # the bed ring pokes 2" past the stone outline
 _INSIDE = 0.9
 
 

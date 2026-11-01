@@ -1317,6 +1317,30 @@ cover   C / φB_n / T
 
 Still the pad-dowel row decides cover: **2" stays.**
 
+## 17. Cast one pack low (2026-10-31, geometry review C3-E13)
+
+The SS316 pack under each glulam had no height: the column tops were the soffits. The four
+corner columns are cast 3/4" short (`column_heads.STANDOFF_PACK_IN`), so the record's lever,
+the authored `Post.height`, is **104.375"** front and **106.208"** rear (was 105.125/106.958).
+The column base and the guard top hold, so §16's guard lever (13.375', 2,675 lb-ft) and §15a's
+pressure and shear (126.16 lb a column) do not move.
+
+```
+M_w    = 126.16 x 8.6979'                         = 1,097.3 lb-ft front;  x 8.8507' = 1,116.6 rear
+self   0.7854 x 8.6979' x 150                     = 1,024.7 lb front;    1,042.7 rear
+D      471.3 + self                               = 1,496.0 lb front;    1,514.0 rear
+P_u    1.2 x 1,496.0 + 1.6 x 1,885                = 4,811.2 lb front;    4,832.8 rear
+β_dns  1.2 x 1,496.0 / 4,811.2 = 0.3731    EI = 0.4 x 4.0305e6 x 1,017.9 / 1.3731 = 1.1951e9
+P_c    π² x 1.1951e9 / (2.1 x 104.375)²           = 245,516 lb    (rear 236,631)
+δ      1 / (1 − 4,811.2 / (0.75 x 245,516))       = 1.0268        (rear 1.0280)
+guard  1.6 x 2,675 x 1.0268                       = 4,394.8 lb-ft / 24,667 = 0.178
+wind   1.0W = 1,097.3 / 0.6                       = 1,828.9 lb-ft / 24,667 = 0.074
+```
+
+φM_n falls with P_u at §13→§15's own rate (−9 lb-ft for −35.3 lb): −8.8 lb is −2.2, **24,667**
+(the engine: 24,666.9). Every row in §15-§16 moves in its fourth figure; the dowel development
+(0.884) still governs and does not read the height.
+
 ---
 
 ## Sources

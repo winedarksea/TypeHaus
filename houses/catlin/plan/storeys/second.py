@@ -826,8 +826,9 @@ OPENINGS = [
     # An earlier pass on 2026-09-10 took 2'-3 1/2" for the exact hit and it sat too LOW on
     # the facade. The height is a facade judgement and the girts only bound it; the sill is
     # also well clear of R312.2's 24" fall-protection trigger, which matters because
-    # `sill_m` is measured off the SUBFLOOR and the finished floor is 15/16" higher — an
-    # authored 24" would be 23 1/16" to an inspector's tape. The head follows to 7'-4",
+    # `sill_m` is measured off the storey datum (the joist tops, `ResolvedWall.base_ref_z_m`)
+    # and the finished floor is 15/16" higher — an authored 24" would be 23 1/16" to an
+    # inspector's tape. The head follows to 7'-4",
     # which is 16" over WIN-S-BED3-N's 6'-0" and 4" over the east row's 7'-0"; this pair
     # deliberately heads higher than anything else on the storey.
     #

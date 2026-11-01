@@ -26,6 +26,7 @@ from typehaus.resolve.construction_geometry import (
     _walls_by_storey,
 )
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.sill_plate import sill_width_m
 from typehaus.resolve.framing.solver import _structure_polygon, band_axis
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.model import (
@@ -33,6 +34,7 @@ from typehaus.resolve.model import (
     ResolvedModel,
     ResolvedWall,
 )
+from typehaus.resolve.sill_alignment import sill_shift_m
 from typehaus.resolve.solid_categories import in_slab_family
 
 #: The compressed, in-place sill-seal thickness used when an assembly's ``FramingSpec``
@@ -215,6 +217,11 @@ def _unsplit_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
                 anchor = add(p0, sub(band_axis(upper.axis, _structure_polygon(upper))[0],
                                      upper.axis[0]))
                 lo, hi = -width / 2.0, width / 2.0
+                wide = sill_width_m(bearing.framing)
+                if wide is not None:  # FramingSpec.sill_member: flush outside, ledge inside
+                    shift = sill_shift_m(upper, _structure_polygon(upper), wide)
+                    lo, hi = shift - wide / 2.0, shift + wide / 2.0
+                    width = wide
                 uid = f"CR-{lower.uid}-{upper.uid}-sill"
                 storey_tag = upper.storey
                 element_tags = (lower.tag, upper.tag, *floor_tags)

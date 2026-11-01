@@ -258,7 +258,7 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
             out.append(_unknown(cid, f"{opening.tag} has a degenerate host-wall axis",
                                 (opening.tag,), code))
             continue
-        # ``sill_m`` is measured up from the host wall's FRAMING base, which is what
+        # ``sill_m`` is measured up from the host wall's sill datum, which is what
         # ``base_ref_z_m`` answers — never the storey datum and never ``z0_m`` (a wall
         # extended down over the rim starts 13 7/16" under its own floor). The two agree
         # for an ordinary wall and differ by exactly the curb for a framed wall standing

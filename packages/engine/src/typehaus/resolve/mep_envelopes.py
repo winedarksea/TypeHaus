@@ -341,7 +341,7 @@ def opening_prisms(model: ResolvedModel, *, erode_m: float = OPENING_EDGE_M
     The footprint is the opening's slice of its host wall through the WHOLE wall thickness,
     because that is the hole: a window buck runs the full depth of the assembly, and a run
     that crosses the opening's width anywhere in that depth is in it. The band is the host
-    wall's FRAMING base plus the authored sill, which is how ``resolve`` places the buck.
+    wall's sill datum plus the authored sill, which is how ``resolve`` places the buck.
 
     ``base_ref_z_m``, not ``z0_m``: a wall extended down over the rim keeps its floor where
     the framing is. Reading ``z0_m`` put every opening in catlin's main-storey exterior

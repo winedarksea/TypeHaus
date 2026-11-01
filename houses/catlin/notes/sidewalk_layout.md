@@ -67,6 +67,13 @@ for the cast-in CBSQ's 3" side cover), and force the neck: 1/2" off each.
   south to leg D's west edge, x 30.625..36.702 × y 36.854..39.600 =
   6.077 × 2.746 = 16.69 → **55.73**
 
+**2026-10-31.** `PT-BW-RE`/`-RNE` and their piers moved 3 3/8" west with `BM-BW-RE` onto the
+garage truss line (x 29.719'), and the HP1 cabinet and pad 3 3/8" west with them to keep Gree's
+12" service side (pad x 24.656..28.365). Everything on walk C translates except the north
+pier notch's 1.51" step (the walk's north edge is y 516.26" east of it, 514.75" west), which
+now runs 3 3/8" further: 3.375 × 1.51 = 5.10 in² = **+0.035 sf** (135.094 -> 135.129 sf
+resolved), so the house total moves 580.9 -> 581.0 resolved; concrete stays 7.16 cy.
+
 HP1 moved west of PT-BW-PE on 2026-10-02. The pad and walk C now share concrete on the
 pad's west, north and east edges; the heat pump is bolted down after the continuous pour.
 Defrost drains north onto the walk. From the pad's north edge at y 39'-4" to the garage

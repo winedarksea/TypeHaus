@@ -130,12 +130,25 @@ def _members(model, category):
 # --- 1. pipeline ordering: the heel lift happens before ToRoof walls rake ------------------
 
 def test_truss_roof_plane_is_lifted_by_the_raised_heel(resolved):
-    """The top-chord underside clears plate top + heel over the bearing wall."""
+    """The deck stands plate top + heel at the OUTSIDE face of the bearing's plate, and the
+    truss's bottom chord ends on that face (SBCA; decision #108)."""
     roof = _roof(resolved)
     bearing = next(wall for wall in resolved.walls if wall.tag == "W-S")
-    chord_depth = cross_section(CHORD).depth_m
-    underside = roof_height_at(roof, bearing.axis[0]) - chord_depth
-    assert underside == pytest.approx(bearing.z1_m + HEEL.meters, abs=1e-9)
+    stud = next(layer for layer in bearing.layers if layer.function == "structure")
+    outside_y = min(y for _x, y in stud.polygon)  # W-S is the south (low) bearing
+    deck = roof_height_at(roof, (bearing.axis[0][0], outside_y))
+    assert deck == pytest.approx(bearing.z1_m + HEEL.meters, abs=1e-9)
+    truss = next(m for m in roof.members if m.category == "roof_truss" and not m.truss.gable)
+    assert min(truss.p0[1], truss.p1[1]) == pytest.approx(outside_y)
+
+
+def test_an_unauthored_heel_is_the_standard_heel():
+    """Top-chord PLUMB depth (3.5 / cos theta at 4:12 = 3.689") plus the 1/4" butt cut."""
+    from typehaus.resolve.framing.truss_heel import standard_truss_heel_m
+
+    spec = FramingSpec(member=CHORD, roof_frame="truss", chord_member=CHORD)
+    assert standard_truss_heel_m(spec, Pitch(4, 12)) / 0.0254 == pytest.approx(
+        3.5 * math.sqrt(10) / 3 + 0.25)
 
 
 def test_to_roof_wall_reaches_the_lifted_plane_not_the_pre_lift_one(resolved):
@@ -301,7 +314,9 @@ def test_eave_wall_skin_carries_up_through_the_raised_heel(resolved):
     for member in closures:
         assert member.z0_m == pytest.approx(wall.z1_m)
         assert member.z1_m == pytest.approx(underside, abs=1e-6)
-        assert member.z1_m - member.z0_m == pytest.approx(HEEL.meters, abs=1e-6)
+        # Shorter than the heel, which is top of chord at the plate's outside face (#108):
+        # the band stops a chord lower, at the underside over the wall axis.
+        assert 0.0 < member.z1_m - member.z0_m < HEEL.meters
 
 
 def test_gable_wall_closure_splits_at_the_ridge_and_reaches_the_peak(resolved):

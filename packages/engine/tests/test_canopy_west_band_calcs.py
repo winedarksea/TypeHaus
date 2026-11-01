@@ -18,29 +18,30 @@ from typehaus.engineering.item import Status
 _ITEM = "lateral_system/RF-BW-CANOPY"
 
 #: §3, §4 and §6: ``row name -> (demand, capacity)``. §3 re-worked 2026-10-26 for one
-#: corner-to-corner 6x6 per bay; §6 re-worked 2026-10-28 for the flush headers.
+#: corner-to-corner 6x6 per bay; §6 re-worked 2026-10-28 for the flush headers; every wind row
+#: re-worked 2026-10-31 (16.661 psf, headers 23.4375' apart: the note's 10-31 amendment).
 _ROWS = {
-    "W-BW-SCREEN unit shear": (190.96, 265.0),
+    "W-BW-SCREEN unit shear": (190.25, 265.0),
     "W-BW-SCREEN aspect ratio": (0.751, 3.5),
-    "SB-BW-BAND slat end, KBS1Z": (745.606, 993.218),
-    "SB-BW-BAND slat buckling": (745.606, 24904.1),
-    "SB-BW-BAND clipped end bearing on a post": (23.90, 251.25),
-    "SB-BW-BAND clipped end bearing on a plate": (25.39, 251.25),
-    "SB-BW-BAND centre post bending": (34.07, 1360.0),
-    "SB-BW-BAND centre post end ties": (478.37, 1390.0),
-    "SB-BW-BAND top plate screws into BM-BW-RW": (186.402, 664.099),
-    "SB-BW-BAND sill screws into W-BW-SCREEN's top plate": (129.794, 648.0),
-    "W-BW-SCREEN top plate end bearing on a chord": (98.89, 251.25),
-    "W-BW-SCREEN base plate and sill end bearing on a chord": (64.39, 251.25),
-    "BM-BW-RW eave collector clips": (173.06, 450.0),
-    "W-BW-SCREEN chord hold-down, full height": (2227.6, 3060.0),
-    "W-BW-SCREEN chord base shear, one base": (1038.35, 1270.0),
-    "diaphragm unit shear at W-BW-SCREEN": (173.06, 190.0),
-    "LSTA24 end straps, chord force + across share": (259.388, 823.3333333333334),
-    "BM-BW-RW chord into CN-BW-JOINT-1's block": (216.223, 450.0),
-    "BM-BW-RE chord into CN-BW-JOINT-7's block": (86.329, 450.0),
-    "W-G-W joint couple, E-W case": (4.623, 182.5),
-    "W-G-E joint couple, E-W case": (4.109, 182.5),
+    "SB-BW-BAND slat end, KBS1Z": (742.834, 993.218),
+    "SB-BW-BAND slat buckling": (742.834, 24904.1),
+    "SB-BW-BAND clipped end bearing on a post": (23.81, 251.25),
+    "SB-BW-BAND clipped end bearing on a plate": (25.30, 251.25),
+    "SB-BW-BAND centre post bending": (33.94, 1360.0),
+    "SB-BW-BAND centre post end ties": (476.59, 1390.0),
+    "SB-BW-BAND top plate screws into BM-BW-RW": (185.709, 664.099),
+    "SB-BW-BAND sill screws into W-BW-SCREEN's top plate": (129.311, 648.0),
+    "W-BW-SCREEN top plate end bearing on a chord": (98.52, 251.25),
+    "W-BW-SCREEN base plate and sill end bearing on a chord": (64.15, 251.25),
+    "BM-BW-RW eave collector clips": (172.42, 450.0),
+    "W-BW-SCREEN chord hold-down, full height": (2217.4, 3060.0),
+    "W-BW-SCREEN chord base shear, one base": (1034.49, 1270.0),
+    "diaphragm unit shear at W-BW-SCREEN": (172.42, 190.0),
+    "LSTA24 end straps, chord force + across share": (260.488, 823.3333333333334),
+    "BM-BW-RW chord into CN-BW-JOINT-1's block": (216.451, 450.0),
+    "BM-BW-RE chord into CN-BW-JOINT-7's block": (88.072, 450.0),
+    "W-G-W joint couple, E-W case": (4.606, 182.5),
+    "W-G-E joint couple, E-W case": (4.094, 182.5),
 }
 
 
@@ -64,17 +65,17 @@ def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:
     values = {q.name: q.value for q in record.inputs}
     assert values["band_height_W-BW-SCREEN"] == pytest.approx(2.34375, abs=1e-4)
     assert values["overturning_height_W-BW-SCREEN"] == pytest.approx(8.62, abs=1e-3)
-    assert values["joint_couple_lb_ft"] == pytest.approx(2071.90, abs=1.0)
-    assert values["chord_force_open_front_lb"] == pytest.approx(86.329, abs=0.1)
+    assert values["joint_couple_lb_ft"] == pytest.approx(2064.20, abs=1.0)
+    assert values["chord_force_open_front_lb"] == pytest.approx(88.072, abs=0.1)
 
 
 def test_the_slat_band_reproduces_section_3a_and_3b(record) -> None:
-    """§3a-b: 24.375" x 25.125" bays, one brace across mid-band, 745.606 lb a brace."""
+    """§3a-b: 24.375" x 25.125" bays, one brace across mid-band, 742.834 lb a brace (10-31)."""
     values = {q.name: q.value for q in record.inputs}
     assert values["slat_bay_width_SB-BW-BAND"] == pytest.approx(24.375, abs=1e-3)
     assert values["slat_bay_height_SB-BW-BAND"] == pytest.approx(25.125, abs=1e-3)
     assert values["slats_crossing_mid_SB-BW-BAND"] == 1
-    assert values["slat_force_SB-BW-BAND"] == pytest.approx(745.606, abs=0.01)
+    assert values["slat_force_SB-BW-BAND"] == pytest.approx(742.834, abs=0.01)
     assert not any("band strap tension" in s.name for s in record.limit_states)
 
 
@@ -124,29 +125,29 @@ def test_an_unbridged_band_is_incomplete_by_name(catlin_ctx) -> None:
 
 
 def test_the_corner_band_is_graded_on_the_interpolated_open_knee(record) -> None:
-    """§3b: 993.2 lb at 45.868°, 0.751; nothing about the corner left INCOMPLETE."""
+    """§3b: 993.2 lb at 45.868°, 0.748 (10-31); nothing about the corner left INCOMPLETE."""
     state = next(s for s in record.limit_states if s.name == "SB-BW-BAND slat end, KBS1Z")
-    assert state.demand / state.capacity == pytest.approx(0.751, abs=5e-4)
+    assert state.demand / state.capacity == pytest.approx(0.748, abs=5e-4)
     assert "45.868° interpolated" in state.citation
 
 
 #: §5c, ``post -> {row: ratio}``; a chord's along rows and its column carry the band push.
 #: ACE6Z end caps at all four heads since 2026-10-28.
 _POSTS = {
-    "PT-BW-CW": {"ACE6Z head, uplift + lateral along the beam": 0.552,
+    "PT-BW-CW": {"ACE6Z head, uplift + lateral along the beam": 0.549,
                  "A35Z head, across the beam": 0.163,
                  "A35Z panel top plate into the post": 0.175,
-                 "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.277,
-                 "CBSQ66-SDS2 base, uplift + lateral along the beam": 0.282,
+                 "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.276,
+                 "CBSQ66-SDS2 base, uplift + lateral along the beam": 0.281,
                  "NDS combined axial and bending": 0.536},
-    "PT-BW-CNW": {"ACE6Z head, uplift + lateral along the beam": 0.552,
+    "PT-BW-CNW": {"ACE6Z head, uplift + lateral along the beam": 0.549,
                   "A35Z head, across the beam": 0.163,
                   "NDS combined axial and bending": 0.536},
-    "PT-BW-RE": {"ACE6Z head, uplift + lateral along the beam": 0.233,
-                 "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.189,
+    "PT-BW-RE": {"ACE6Z head, uplift + lateral along the beam": 0.232,
+                 "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.188,
                  "NDS combined axial and bending": 0.225},
-    "PT-BW-RNE": {"ACE6Z head, uplift + lateral along the beam": 0.233,
-                  "CBSQ66-SDS2 base, uplift + lateral along the beam": 0.159},
+    "PT-BW-RNE": {"ACE6Z head, uplift + lateral along the beam": 0.232,
+                  "CBSQ66-SDS2 base, uplift + lateral along the beam": 0.158},
 }
 
 
@@ -161,12 +162,13 @@ def test_every_post_has_a_rated_head_and_base(catlin_ctx, post) -> None:
 
 def test_the_chord_heads_carry_the_band_couple(catlin_ctx) -> None:
     """§5b: 428.9 + max(206.4 header depth, 49.3 brace couple) = 635.3 lb at a chord's head,
-    and the compression bay's 519.175 lb push across the band at the sill top."""
+    and the compression bay's 519.175 lb push across the band at the sill top; x 0.99628 for
+    the 2026-10-31 pressure: 426.44 + 205.60 = 632.04, and 517.245."""
     found = catlin_ctx.engineering["wood_roof_post/PT-BW-CW"]
     values = {q.name: q.value for q in found.inputs}
-    assert values["head_uplift_lb"] == pytest.approx(635.3, abs=0.2)
-    assert values["plate_load_lb"] == pytest.approx(121.38, abs=0.05)
-    assert values["band_push_lb"] == pytest.approx(519.175, abs=0.05)
+    assert values["head_uplift_lb"] == pytest.approx(632.04, abs=0.2)
+    assert values["plate_load_lb"] == pytest.approx(120.93, abs=0.05)
+    assert values["band_push_lb"] == pytest.approx(517.245, abs=0.05)
     assert values["band_push_height_ft"] == pytest.approx(4 + 1.5 / 12, abs=1e-5)
 
 
@@ -184,6 +186,20 @@ def test_the_glulam_header_reproduces_section_7(catlin_ctx) -> None:
     assert states["bearing on the post"].capacity == pytest.approx(344.5, abs=0.1)
     assert states["bending"].demand / states["bending"].capacity == pytest.approx(0.162,
                                                                                 abs=0.002)
+    # §7, 2026-10-31: 1,245.77 plf x 2' = 2,491.5 lb over 1.5" x 5.5" = 302.0 psi.
+    assert inputs["truss_bearing_length"] == pytest.approx(5.5)
+    assert states["truss bearing on the beam"].demand == pytest.approx(302.0, abs=0.1)
+    assert states["truss bearing on the beam"].capacity == pytest.approx(344.5, abs=0.1)
+
+
+def test_a_chord_stopped_at_the_header_centreline_is_over() -> None:
+    """§7 2026-10-31, the pre-move geometry: 2 3/4" of chord on the header is 604 psi, 1.75."""
+    from typehaus.engineering.truss_on_beam import truss_bearing_state
+
+    before, _ = truss_bearing_state((1.5, 2.75, 24.0), 1245.77, 650.0, 0.53)
+    after, _ = truss_bearing_state((1.5, 5.5, 24.0), 1245.77, 650.0, 0.53)
+    assert before.ratio == pytest.approx(1.753, abs=0.001)
+    assert after.ratio == pytest.approx(0.877, abs=0.001)
 
 
 def test_the_cbsq_piers_are_14_inches_for_the_side_cover(catlin_plan) -> None:

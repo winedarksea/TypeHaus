@@ -547,8 +547,11 @@ not reach far enough there either.
 ### 7a. The wind, unchanged
 
 > The 2026-09-20 basis, kept because `tests/test_lateral_system_calcs.py` reproduces §7's pure
-> arithmetic on it. Since the standard-heel trusses (2026-10-08) the ridge is 11.917' and the
-> live pressure is 16.723 psf: `canopy_garage_diaphragm.md` §2 and §7.
+> arithmetic on it. Since the standard-heel trusses (2026-10-08) the ridge was 11.917' and the
+> live pressure 16.723 psf; since the heel is read at the outside face of bearing
+> (2026-10-31) the ridge is 11.644' and the pressure 16.661 psf, with the east columns at
+> x 29.719': `canopy_garage_diaphragm.md`'s 2026-10-31 block (cast: d 6.46' / 6.48' against
+> 8.33', basis 4).
 
 `q_h = 18.335 psf` at 21.52' above the ground beneath (12.396' ridge, -9.120' ground),
 `G = 0.85`, `C_f = 1.80` — the §29.3 solid-sign surrogate `roof_moment` uses because ASCE

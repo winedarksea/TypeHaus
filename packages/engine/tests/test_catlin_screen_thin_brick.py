@@ -1,5 +1,7 @@
 """Screen veneer regressions: east/west datums, actual areas/mass and stopped door."""
 
+import math
+
 import pytest
 
 from typehaus.resolve.assembly_weight import dead_load_plf, wall_line_plf
@@ -15,16 +17,18 @@ INCH = 0.0254
 def test_east_brick_does_not_move_studs_or_west_skin(catlin_model_ro):
     wall = catlin_model_ro.wall("W-BW-SCREEN")
     layers = {layer.name: layer for layer in wall.layers}
+    # Every face is 3 3/8" east of its 2026-10-25 station: the screen moved with its chord
+    # posts onto the garage truss bearing line (2026-10-31).
     for name, expected in {
-        "stud": (70.25, 73.75),
-        "cdx-out": (69.625, 70.25),
-        "cladding-out": (68.75, 69.625),
-        "packing-in": (73.75, 74.875),
-        "siding-in": (74.875, 75.5),
-        "wrb-in": (75.5, 75.51),
-        "drainage-in": (75.51, 75.76),
-        "cement-board-in": (75.76, 76.26),
-        "thin-brick-in": (76.385, 76.885),
+        "stud": (73.625, 77.125),
+        "cdx-out": (73, 73.625),
+        "cladding-out": (72.125, 73),
+        "packing-in": (77.125, 78.25),
+        "siding-in": (78.25, 78.875),
+        "wrb-in": (78.875, 78.885),
+        "drainage-in": (78.885, 79.135),
+        "cement-board-in": (79.135, 79.635),
+        "thin-brick-in": (79.76, 80.26),
     }.items():
         xs = [x / INCH for x, _y in layers[name].polygon]
         assert (min(xs), max(xs)) == pytest.approx(expected)
@@ -32,15 +36,15 @@ def test_east_brick_does_not_move_studs_or_west_skin(catlin_model_ro):
     mortar_xs = [x / INCH for x, _ in layers["setting-mortar-in"].polygon]
     backer_xs = [x / INCH for x, _ in layers["cement-board-in"].polygon]
     assert min(mortar_xs) == pytest.approx(max(backer_xs))
-    assert wall.axis[0][0] / INCH == pytest.approx(72)
+    assert wall.axis[0][0] / INCH == pytest.approx(75.375)
     assert tuple(v / INCH for v in layers["thin-brick-in"].band(wall)) == pytest.approx((2, 47.5))
     assert layers["thin-brick-in"].thickness_m / INCH == pytest.approx(0.5)
-    assert min(x for x, _ in layers["siding-in"].polygon) / INCH - 74.75 == pytest.approx(0.125)
+    assert min(x for x, _ in layers["siding-in"].polygon) / INCH - 78.125 == pytest.approx(0.125)
     assert catlin_model_ro.plan.by_tag(wall.tag).shear_panel.sheathing_layer == "cdx-out"
     for tag in ("TR-BW-BRICK-BASE", "TR-BW-BRICK-HEAD"):
         flashing = catlin_model_ro.plan.by_tag(tag)
         nose = flashing.path[0].x.meters + flashing.thickness.meters / 2
-        assert nose / INCH == pytest.approx(77.010)
+        assert nose / INCH == pytest.approx(80.385)
 
 
 def test_veneer_uses_its_own_net_area_and_purchased_slip_appearance(catlin_model_ro):
@@ -93,29 +97,29 @@ def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):
     assert door.width_m / INCH == pytest.approx(34)
     assert hinge[0] / INCH == pytest.approx(82)
     assert hinge[0] / INCH - 1 + door.width_m / INCH == pytest.approx(115)
-    assert (tip[0] - hinge[0]) / INCH == pytest.approx(0)
-    assert (tip[1] - hinge[1]) / INCH == pytest.approx(-32)
+    # Stopped at 81deg, not 90 (the moved screen): the tip sits 32 cos 81 east of the hinge.
+    assert (tip[0] - hinge[0]) / INCH == pytest.approx(32 * math.cos(math.radians(81)))
+    assert (tip[1] - hinge[1]) / INCH == pytest.approx(-32 * math.sin(math.radians(81)))
     exported = next(o for o in model_to_dict(catlin_model_ro)["openings"] if o["tag"] == door.tag)
-    assert exported["maximum_opening_degrees"] == 90
+    assert exported["maximum_opening_degrees"] == 81
     assert catlin_model_ro.plan.by_tag(
         "SL-D-NORTH-BRIDGE"
     ).cut_origin.x.meters / INCH == pytest.approx(99)
 
 
 def _service_sweep(model, **overrides):
-    from dataclasses import replace
+    from scripts.garage_service_door_clearance import service_door_clearance
 
-    from scripts.garage_service_door_clearance import clearance_results, service_door_envelope
-
-    door = next(o for o in model.openings if o.tag == "D-G-SERVICE")
-    return clearance_results(model, door, 90, replace(service_door_envelope(), **overrides))
+    return service_door_clearance(model, **overrides)
 
 
 def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catlin_model_ro):
+    """At the authored 81deg stop the landing ties govern; the screen face is under 1"."""
     results = _service_sweep(catlin_model_ro)
     anchor = [result for result in results if result.obstacle == "CN-G-BWHD-S-DR"]
     assert min(result.clearance_m for result in anchor) / INCH == pytest.approx(2.873, abs=1e-3)
-    assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.440, abs=1e-3)
+    assert results[0].obstacle == "CN-BW-GWTIE-LO"
+    assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.320, abs=1e-3)
     assert any(result.obstacle == "W-BW-SCREEN" for result in results)
     assert any(result.obstacle == "PT-BW-CNW" for result in results)
     assert any(result.obstacle.startswith("TR-BW-BRICK-HEAD") for result in results)
@@ -123,7 +127,7 @@ def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catli
 
 @pytest.mark.parametrize("inset_in", [0.5, 1.0, 2.0])
 def test_stock_leaf_clears_across_the_hinge_inset_range(catlin_model_ro, inset_in):
-    """The 1/2in pivot inset is the LOWER bound the brick base needs, not a conservative
+    """The 1/2in pivot inset is the LOWER bound the landing ties need, not a conservative
     pick: the 32in leaf passes from 1/2in to 2in, and a flush hinge fails."""
     from typehaus.quantities import inch
 
@@ -131,7 +135,17 @@ def test_stock_leaf_clears_across_the_hinge_inset_range(catlin_model_ro, inset_i
     assert min(result.clearance_m for result in results) / INCH >= 0.25
 
 
-def test_a_flush_hinge_fails_at_the_brick_base(catlin_model_ro):
+def test_a_90_degree_stop_meets_the_moved_screen(catlin_model_ro):
+    """Why the stop is 81deg: the screen moved 3 3/8" east with the canopy posts."""
+    from scripts.garage_service_door_clearance import clearance_results, service_door_envelope
+
+    door = next(o for o in catlin_model_ro.openings if o.tag == "D-G-SERVICE")
+    results = clearance_results(catlin_model_ro, door, 90, service_door_envelope())
+    hit = {r.obstacle for r in results if r.clearance_m < 0}
+    assert {"W-BW-SCREEN", "TR-BW-BRICK-BASE-1", "CN-BW-GWTIE-LO"} <= hit
+
+
+def test_a_flush_hinge_fails(catlin_model_ro):
     from typehaus.quantities import inch
 
     results = _service_sweep(catlin_model_ro, hinge_inset=inch(0))
@@ -161,7 +175,9 @@ def test_r311_2_grades_the_purchased_leaf_not_the_rough_opening(catlin_ctx):
     assert (ro.width.inches, ro.height.inches) == pytest.approx((34, 81.5))
     sizing = next(o.sizing for o in catlin_ctx.model.openings if o.tag == "D-G-SERVICE")
     assert sizing.leaf_w_m / 0.0254 == pytest.approx(32)
-    assert sizing.clear_w_m / 0.0254 == pytest.approx(32 - 2 - 11 / 16)
+    # The deduction at 90deg, less what the leaf still crosses at its 81deg stop.
+    assert sizing.clear_w_m / 0.0254 == pytest.approx(
+        32 - 2 - 11 / 16 - 32 * math.cos(math.radians(81)))
     for check in (egress_door_width, egress_door_height):
         assert not [f for f in check(catlin_ctx) if "D-G-SERVICE" in f.message]
 

@@ -71,7 +71,7 @@ FROST_WING_XPS_1IN = Assembly(
         Layer(name="xps-wing", material_ref="xps", thickness=inch(1.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),
-    source="IRC R403.3 Figure R403.3(3) horizontal insulation wing, 1 in. XPS (R-5)",
+    source="IRC R403.3 Figure R403.3(3) horizontal insulation wing, 1 in. XPS (R-4.0 horizontal, Table R403.3(1) fn 3)",
 )
 FROST_WING_XPS_2IN = Assembly(
     tag="FROST_WING_XPS_2IN",
@@ -80,5 +80,5 @@ FROST_WING_XPS_2IN = Assembly(
         Layer(name="xps-wing", material_ref="xps", thickness=inch(2.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),
-    source="IRC R403.3 Figure R403.3(3) horizontal insulation wing, 2 in. XPS (R-10)",
+    source="IRC R403.3 Figure R403.3(3) horizontal insulation wing, 2 in. XPS (R-8.0 horizontal, Table R403.3(1) fn 3)",
 )

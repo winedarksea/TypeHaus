@@ -102,7 +102,7 @@ def _connection(plan, model, opening, reference: str, at_start: bool):
         for sign in (-1, 1)
     )
     point = add(end, scale(direction, -depth / 2 if at_start else depth / 2))
-    bottom = support.base_ref_z_m + thickness
+    bottom = support.frame_base_z_m + thickness
     plate_top = support.plate_top_z_m if support.plate_top_z_m is not None else support.z1_m
     top = min(
         value if value is not None else plate_top for value in (support.top_z0_m, support.top_z1_m)
@@ -111,7 +111,7 @@ def _connection(plan, model, opening, reference: str, at_start: bool):
         2 if layer.framing.double_top_plate and not layer.framing.advanced_framing else 1
     )
     if (
-        bottom > host.base_ref_z_m + thickness + _GEOMETRY_TOLERANCE_M
+        bottom > host.frame_base_z_m + thickness + _GEOMETRY_TOLERANCE_M
         or top < host.base_ref_z_m + opening.sill_m + opening.height_m + thickness
     ):
         raise ValueError(f"support wall {reference} cannot support the frame head vertically")
@@ -136,7 +136,7 @@ def _connection(plan, model, opening, reference: str, at_start: bool):
     for wall in model.walls:
         if (
             wall.assembly != support.assembly
-            or abs(wall.base_ref_z_m - support.base_ref_z_m) > _GEOMETRY_TOLERANCE_M
+            or abs(wall.frame_base_z_m - support.frame_base_z_m) > _GEOMETRY_TOLERANCE_M
         ):
             continue
         wall_direction = unit(sub(wall.axis[1], wall.axis[0]))

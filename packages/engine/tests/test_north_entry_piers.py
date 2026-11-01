@@ -210,13 +210,16 @@ def test_the_module_agrees_with_this_note(catlin_engineering):
     assert set(records) == {"BM-BW-RW", "BM-BW-RE"}
     # §5 worked the 3-ply 2x12; since 2026-09-30 the headers are 5-1/2" x 11-7/8" glulam and
     # canopy_west_band.md §7 is the hand pass (bearing on the post governs, 0.326 since the
-    # 2026-10-28 flush headers).
+    # 2026-10-28 flush headers) and the trusses' chord bearing (0.877, 2026-10-31).
     for record in records.values():
         states = {state.name: state for state in record.limit_states}
-        assert set(states) == {"bending", "shear", "bearing on the post", "deflection"}
+        assert set(states) == {"bending", "shear", "bearing on the post", "deflection",
+                               "truss bearing on the beam"}
         assert states["bending"].ratio == pytest.approx(0.162, abs=0.002)
         assert states["bearing on the post"].ratio == pytest.approx(0.326, abs=0.002)
-        assert max(s.ratio for s in states.values()) == states["bearing on the post"].ratio
+        # canopy_west_band.md §7, 2026-10-31: the trusses' 5.5" chord bearing governs.
+        assert states["truss bearing on the beam"].ratio == pytest.approx(0.877, abs=0.002)
+        assert max(s.ratio for s in states.values()) == states["truss bearing on the beam"].ratio
 
 
 def test_the_pad_hook_is_graded_against_the_pads_own_cover(catlin_engineering):

@@ -362,6 +362,10 @@ GARAGE_WALL_2X6 = Assembly(
               # door pan: KDAT, not SPF (notes/opening_flashing_spec.md §6).
               framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
                                   spacing=inch(24),
+                                  # 2x8 PT sill flush outside the studs: 5 3/8" of its 7 1/4"
+                                  # bears on the 6" ICF core (was 3 5/8" of 5 1/2"), the 1 3/4"
+                                  # ledge sits inside under the curb-cap flashing.
+                                  sill_member="2x8",
                                   exterior_door_sill_material_ref="kdat"),
               cavity=CavityFill(material_ref="closed-cell-spray-foam", thickness=inch(2.0),
                                 framing_factor=0.20,

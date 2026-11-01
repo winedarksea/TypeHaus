@@ -12,6 +12,7 @@ Our general goals are decent longevity and quality at a reasonable price, avoidi
   top of the lump-sum allowances, which already carry wide spreads (~$15–36k at stake).
 - **Sconce J/J1 (WAC Sprig BL-23210-BK):** confirm it can be hardwired. Output drops from
   623 lm to 287 lm compared with the Stretch it replaced.
+- **D-G-SERVICE swing limited by W-BW-SCREEN after the canopy-beam move — owner to revisit (slide door, rebuild screen face).** Stopped at 81° for now (`maximum_opening_degrees`): clear opening 24.3" vs 29.3" at 90°.
 
 ## Remaining Work
 
@@ -243,7 +244,6 @@ the future.
   - [ ] Garage sill 3 5/8" of 5 1/2" on the ICF core (C3-E8).
   - [ ] RF-HOUSE birdsmouth notches the TJI 230 flange (C3-E5).
   - [ ] HU28-2Z on a single 2x8 -> LUS28Z (C3-E11).
-  - [ ] Frost-wing credit by distance only, FT-B-S1..S4 (C3-E10).
   - [ ] Canopy truss bearing 2 3/4", heel lift, north-entry seat-beam hangers and shim pack (C3-E6/E7/E12-E14).
   - [ ] Floor-to-floor stack 120" vs 120.625": walls on the subfloor, studs 102 7/8" (C3-E3).
   - [ ] BBD75 band panel top unfastened; lap check reads the trim leg (C4 E2-001).
@@ -329,6 +329,10 @@ the future.
 - Trim bbd-transition-trim still isn't showing the white color for some reason in the 3d viewer, despite being named as such already.
 - O-S-VANITY and D-S-STUDY2, both openings (not true doors) seem to get ignored, improperly showing baseboard, sill plates, and non-continuous flooring, they likely just need to reuse some of the existing door handling logic which generally works
 - Edit the door swing icon in 2d so it shows a frame (right now the 2d door swing might be a bit too big, versus actual leaf swing)
+- Make SL-M-DECK a wood joist design. Use open web trusses (not I joists) at tighter OC for extra strength (and maybe ask for a 60 psf or 100 psf truss design, if that is easy to source). Make sure the joists are anchored properly using simpson connectors to the concrete. The structural concrete (BuildDeck) is kept in the library but retired from use. Perhaps 3/4" plywood as the theater ceiling
+- Keep the LVP and tile at the same flush level. Ditra XL or Ditra Heat + Thinset + Tile = 3/4" == 1/2" plywood + 8 mm LVP
+- Delete the shower blow dryer fan from RM-M-BATH2 (but keep in library)
+- Specify paint in detail
 
 # Project Management
 

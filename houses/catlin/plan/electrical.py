@@ -672,7 +672,8 @@ MAIN_EQUIPMENT = [
     # other — and `test_catlin_outdoor_structures.py` holds them together.
     #
     # Owner decision, 2026-10-02: move 7'-10" WEST under the open-ended canopy, assuming
-    # Gree accepts that configuration. Cabinet x 25'-2"..28'-5", with 12" service space
+    # Gree accepts that configuration. Cabinet x 24'-10 5/8"..28'-1 5/8" (3 3/8" west since
+    # PT-BW-PE followed BM-BW-RE onto the garage truss line, 2026-10-31), with 12" service space
     # to PT-BW-PE, 6" rear gap and 57 15/16" north discharge distance to the garage.
     # The stand/pad and its drainage outline move together; SL-WK-C meets the pad on its
     # west, north and east edges in one continuous pour. The unchanged disconnect is east
@@ -682,7 +683,7 @@ MAIN_EQUIPMENT = [
     # `mount.elevation` is UNCHANGED at -14": the pad tops out at the same -2'-8" under the
     # same 18" stand, so all three cabinets keep one base plane at -1'-2".
     Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(26, 9.5), ft(37, 8.03125)), footprint=(inch(39), inch(14.5625)),
+              position=pt(ft(26, 6.125), ft(37, 8.03125)), footprint=(inch(39), inch(14.5625)),
               rotation=deg(180), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-FLEXX-ULTRA-24-OD", circuit="CKT-HP1", room=None),
     Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,

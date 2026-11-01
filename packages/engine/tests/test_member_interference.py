@@ -87,8 +87,10 @@ def test_deck_stacks_post_beam_joist(catlin_model):
     def centre_at(y):
         return cz0 + (cz1 - cz0) * (y - y0) / (y1 - y0)
 
-    # The post's top against the beam soffit directly over it.
-    assert abs(post.z1_m - (centre_at(post.outline[0][1]) - depth / 2.0)) < tol
+    # The post's top one SS316 pack (3/4", catlin STANDOFF_PACK_IN, C3-E13) under the beam
+    # soffit directly over it.
+    pack = inch(0.75).meters
+    assert abs(post.z1_m + pack - (centre_at(post.outline[0][1]) - depth / 2.0)) < tol
 
     # Every joist's underside against the beam top at that joist's own y: the field is a
     # staircase on a tilted beam, so this holds at all eighteen or at none.

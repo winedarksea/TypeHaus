@@ -172,7 +172,7 @@ def test_s100_calls_frost_depth_drainage_and_steps(catlin_model):
     # garden's beds run no pipe (2026-09-23): their stone drains into the soakaway courses,
     # which the note says are not frost section.
     assert "DRAIN TILE" in notes
-    assert "DRAINING TO SM-B-RADON." in notes
+    assert "DRAINING TO SM-B-RADON, SM-B-SOUTH." in notes
     assert "6 BEDS RUN NO PIPE" in notes
     assert "INTO 4 SOAKAWAY COURSES BELOW THE DRAINED SECTION" in notes
     assert "NOT FROST SECTION" in notes
@@ -218,11 +218,12 @@ def test_s100_schedules_the_sill_anchorage_it_already_derived(catlin_model):
     pitch = CONFIG.sill_plate_anchors.mudsill_anchor_pitch_ft
     # The printed pitch IS the takeoff's, not a second number that looks like it.
     assert all(row[3] == f"{pitch:.0f}'-0\" O.C." for row in table.rows), table.rows
-    assert {row[2] for row in table.rows} == {"MASAZ"}
+    # The garage's 2x8 sill is wider than ESR-2555 covers, so it takes cast-in bolts.
+    assert {row[2] for row in table.rows} == {"MASAZ", "AB-050-10-BP"}
     # The table splits the house by condition; the split must not lose or gain an anchor.
     takeoff = mudsill_anchor_rows(catlin_model, CONFIG.sill_plate_anchors,
                                   CONFIG.sill_plate_takeoff_category)
-    assert sum(int(row[4]) for row in table.rows) == takeoff[0]["count"]
+    assert sum(int(row[4]) for row in table.rows) == sum(r["count"] for r in takeoff)
     # Both conditions are on this house and they are not the same detail: a mudsill over a
     # foundation wall, and a partition plate on the basement slab.
     types = {row[1].split(" — ")[0] for row in table.rows}
@@ -275,7 +276,7 @@ def test_s100_radon_block_is_derived_item_by_item(catlin_model):
     # ...and what the model does NOT say is said as such, never as a default.
     assert "AGGREGATE GRADATION AND THE 12\" MEMBRANE LAP ARE NOT MODELLED" in notes
     assert "SUBP. 3-4: COLLECTION POINT SM-B-RADON" in notes and "SEALED COVER" in notes
-    assert "SUBP. 4.E: SM-B-RADON IS CONNECTED TO THE INTERIOR DRAIN TILE OF 19" in notes
+    assert "SUBP. 4.E: SM-B-RADON IS CONNECTED TO THE INTERIOR DRAIN TILE OF 17" in notes
     assert "SUBP. 5: VENT VR-M-STACK" in notes
     assert "NOT MODELLED — FIELD ITEMS" in notes
     # Subp. 6 names the same two boxes code.MN_1303_2402_radon passes on, and only those:

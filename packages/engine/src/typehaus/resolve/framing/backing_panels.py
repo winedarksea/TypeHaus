@@ -12,7 +12,7 @@ behind it (→ ``checks/advisory/backing.py``) and stops there, because backing 
 where today's model's screws land pins the house to today's model forever — the reasoning
 ``houses/catlin/plan/fixture_types_wc.py`` already sets out.
 
-**Elevation is measured from the wall's framing base**, ``ResolvedWall.base_ref_z_m``, the
+**Elevation is measured from the wall's sill datum**, ``ResolvedWall.base_ref_z_m``, the
 same datum an opening's ``sill_m`` uses. ``Mount.elevation`` is NOT on it: a mount is off the
 room's finished floor (0.75-1.5" higher; 22" in a garage on a stem), so the coverage check
 reads the resolved body's absolute bottom, never the authored mount.
@@ -98,7 +98,7 @@ def _station(point, direction, wall_start) -> float:
 
 def _opening_breaks(members: list[FramedMember], parent_uid: str, band_bottom: float,
                     band_top: float, direction, wall_start,
-                    openings: list[WallOpening], frame_base: float,
+                    openings: list[WallOpening], sill_datum: float,
                     ) -> list[tuple[float, float]]:
     """The ``(start, end)`` stations a band cannot cross, sorted.
 
@@ -118,7 +118,7 @@ def _opening_breaks(members: list[FramedMember], parent_uid: str, band_bottom: f
     """
     breaks: list[tuple[float, float]] = []
     for opening in openings:
-        sill = frame_base + opening.sill_m
+        sill = sill_datum + opening.sill_m
         if sill + opening.height_m <= band_bottom + _EPSILON or sill >= band_top - _EPSILON:
             continue
         half = opening.width_m / 2.0
@@ -154,7 +154,7 @@ def _segments(start: float, end: float,
 
 def append_backing_members(members: list[FramedMember], rw: ResolvedWall,
                            bands: list[BackingBand], direction, wall_start,
-                           frame_base: float, axis_len: float, top_at,
+                           sill_datum: float, axis_len: float, top_at,
                            openings: list[WallOpening]) -> None:
     """Emit one member per surviving run of each band on this wall.
 
@@ -174,14 +174,14 @@ def append_backing_members(members: list[FramedMember], rw: ResolvedWall,
     if not bands or axis_len <= _MIN_RUN_M:
         return
     for index, band in enumerate(sorted(bands, key=lambda b: (b.elevation_m, b.tag))):
-        bottom = frame_base + band.elevation_m
+        bottom = sill_datum + band.elevation_m
         top = bottom + band.height_m
         start = max(0.0, band.start_m if band.start_m is not None else 0.0)
         end = axis_len if band.length_m is None else min(axis_len, start + band.length_m)
         if end - start <= _MIN_RUN_M:
             continue
         breaks = _opening_breaks(members, rw.uid, bottom, top, direction, wall_start,
-                                 openings, frame_base)
+                                 openings, sill_datum)
         band_start = _backing_face_axis(rw, band, direction, wall_start)
         for ordinal, (s0, s1) in enumerate(_segments(start, end, breaks)):
             # The conservative end of a raking run: if the LOWER of the two stud tops cannot

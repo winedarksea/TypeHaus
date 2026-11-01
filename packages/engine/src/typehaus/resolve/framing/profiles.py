@@ -441,20 +441,6 @@ def parses(profile: str) -> bool:
     return text in _PARSED_LITERALS or any(rx.match(text) for rx in _PARSED_PATTERNS)
 
 
-#: A truss roof with no authored heel gets the standard energy heel.
-DEFAULT_TRUSS_HEEL_M = inch(9.25).meters
-
-
-def truss_heel_height_m(spec: FramingSpec) -> float:
-    """Authored raised-heel height, or the standard energy heel.
-
-    Beside :func:`truss_chord_depth_m` and for the same reason: ``roof_geometry`` lifts the
-    deck plane by it and ``resolve.framing.roof_gable`` hands it to the viewer, and only one
-    of those two may own the number.
-    """
-    return spec.heel_height.meters if spec.heel_height is not None else DEFAULT_TRUSS_HEEL_M
-
-
 def truss_chord_depth_m(spec: FramingSpec) -> float:
     """Depth of a truss chord: the chord member when specified, else the wall member.
 

@@ -24,9 +24,11 @@ duration is ``C_D`` 1.15 (Table 2.3.2, snow). A design value quoted dry and used
 overstates bending by about a sixth.
 
 **What is NOT graded here**, and belongs to the reader rather than to a silent margin:
-bearing at either end, the connections, lateral-torsional stability (``C_L`` is taken as
-1.0 because the roof deck sheathes the compression edge continuously, which is true here
-and would not be on an unsheathed beam), and the drift derivation itself.
+bearing at either end on a SAWN beam (a glulam grades its post bearing and its trusses'
+chord bearing, ``roof_beam_glulam`` / ``truss_on_beam``), the connections,
+lateral-torsional stability (``C_L`` is taken as 1.0 because the roof deck sheathes the
+compression edge continuously, which is true here and would not be on an unsheathed beam),
+and the drift derivation itself.
 
 **Oracle.** ``houses/catlin/notes/north_entry_piers.md`` §5, hand-worked in a separate
 pass; ``tests/test_north_entry_piers.py`` reproduces it.
@@ -59,7 +61,8 @@ KIND = "roof_beam"
 
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
 #: 2: a GLULAM section is graded (``roof_beam_glulam``), 2026-09-30.
-BASIS_VERSION = "2"
+#: 3: a glulam grades its trusses' bottom-chord bearing (``truss_on_beam``), 2026-10-31.
+BASIS_VERSION = "3"
 BASIS = ("AWC NDS 2018 Ch. 3 and 4 (sawn) and Ch. 5 (glulam); design snow authored per "
          "ASCE 7 §7.7")
 

@@ -301,7 +301,8 @@ def _stack_and_sill_links(ctx: CheckContext) -> list:
         links.append(Link(
             f"the {len(sills)} sill plate runs to the concrete under them",
             tuple(sorted({r.storey for r in sills})),
-            f"{anchors[0]['count']} MASA mudsill anchors" if anchors else None))
+            f"{sum(row['count'] for row in anchors)} sill anchors (MASA / cast-in bolts)"
+            if anchors else None))
     return links
 
 

@@ -74,12 +74,13 @@ comes from. If §3 is wrong, every ratio in §5 and §6 is wrong by the same fac
 | garage plate top | `W-G-E`/`W-G-W` `z1` | +7'-4" |
 | header top | = garage plate, so the two roof planes are one plane | +7'-4" |
 | header soffit | +7'-4" − 11 1/4" | +6'-4 3/4" |
-| bearing plane (seat soffits, pier tops) | −1" − 7 1/4" − 7 1/4" | −1'-3 1/2" |
+| bearing plane (seat soffits) | −0.94" − 7 1/4" − 7 1/4" (2026-10-15 stock) | −15.44" |
+| pier tops, one 3/4" SS316 pack lower (2026-10-31, §12) | −15.44" − 0.75" | −16.19" |
 | site grade | `params/foundations.py::SITE_GRADE` | −2'-10" |
-| pier top above grade | 34" − 15.5" | 18 1/2" |
+| pier top above grade | 34" − 16.19" (2026-10-31) | 17.81" |
 | footing underside | house footing underside | −9'-9 7/16" |
 | footing thickness | authored | 10" (12" under the four moment piers, 2026-09-17) |
-| roof column length | 6'-4 3/4" − (−1'-3 1/2") | 7'-8 1/4" |
+| roof column length | 76.125" + 16.19" (2026-10-31, 5 1/2" glulam soffit) | 92.315" |
 | header span, node to node | 43'-2 5/8" − 37'-6" | 5'-8 5/8" = 5.719 ft |
 | header back span, bearing to bearing | `GARAGE_SEAT_Y_FT` 42'-5 3/4" − 37'-6" | 4'-11 3/4" = 4.979 ft |
 | header tail past the north bearing | 43'-2 5/8" − 42'-5 3/4" | 8 7/8" |
@@ -109,8 +110,10 @@ That is a benefit of this scheme, and it is why the landing is graded at IRC Tab
 ## 3. The design snow — ASCE 7-16 §7.7 roof-step drift **(READ THIS ONE)**
 
 The house's north face is a gable end standing 6 1/2" south of the passage roof, rising
-from +20'-2 1/4" at the corners to +29'-2 1/4" at the ridge — **12 1/2 to 21 1/2 feet above
-the canopy's eave** at +7.472' (half a foot more since the standard-heel trusses, 2026-10-08).
+from +20'-2 1/4" at the corners to +29'-2 1/4" at the ridge — **13 to 22 feet above
+the canopy's eave** at +7.200' (half a foot more since the standard-heel trusses, 2026-10-08,
+and 3.27" more since the heel is read at the outside face of bearing, 2026-10-31:
+20.1875 − 7.200 = 12.99', 29.1875 − 7.200 = 21.99').
 That is a roof-step drift condition and it governs. The clear height h_c is many times the
 2.45' drift, so h_d is set by l_u alone and the drop moved none of the numbers below.
 
@@ -370,7 +373,7 @@ two carriers that brought it to the seats with it: 18.4 → 11.8 ft², service 5
 factored 8,021 → 7,515.)
 
 **The wall line load, worked (2026-09-20).** `BM-BW-SCSILL` is the sill under `W-BW-SCREEN`,
-hung on `HU28-2Z` off the two 6x6 KDAT canopy columns `PT-BW-CW`/`-CNW`, which stand on
+hung (`LUS28Z` since 2026-10-31, §12; `HU28-2Z` before) off the two 6x6 KDAT canopy columns `PT-BW-CW`/`-CNW`, which stand on
 `PT-BW-W` / `PT-BW-GW` through `supported_by`. A **wall is neither a `FloorSystem` nor a
 `Roof`**, so until 2026-09-20 `pier_basis._unmodelled_beams` reported that beam as unpriced
 and `deck_post` declined to publish an axial ratio for either pier at all. A wall's dead load
@@ -763,8 +766,10 @@ pinned to them and correctly so. `integrity.reinforcement_layout`'s four anchora
 
 > **§8 and §9 are the 2026-09-11 / -20 passes, before the canopy delivered to the garage and
 > before the standard-heel trusses (2026-10-08) dropped the eave to +7.472' and the ridge to
-> +11.917' (`q_h` 18.217 psf, 16.723 psf ASD).** The cast variant's current split, base
-> moments and head forces are `canopy_garage_diaphragm.md` §7.
+> +11.917' (`q_h` 18.217 psf, 16.723 psf ASD), and before the heel moved to the outside face
+> of bearing (2026-10-31: eave +7.200', ridge +11.644', `q_h` 18.149, 16.661 psf ASD, east
+> columns at x 29.719').** The cast variant's current split, base moments and head forces are
+> `canopy_garage_diaphragm.md`'s 2026-10-31 block.
 
 **Written 2026-09-11, by hand from the authored geometry.** `PT-BW-RE` and `PT-BW-RNE` are
 the canopy's east lateral system (`notes/north_entry_structure.md` §1a). Until this date
@@ -1410,3 +1415,104 @@ so it carries the panel's **74.84 plf**, not the line: 74.84 / 24 = **3.12 lb** 
 previous 274.9 lb. (An earlier draft of this paragraph charged the 1/2" at 87.64 plf and
 read 276.7; the code, which the `wall_line_loads` docstring states, never did.) The foam, support wood,
 fasteners, and panel engineering properties have not changed.
+
+### 10k. 2026-10-31 — the screen line moved 3 3/8" east
+
+The canopy columns, and with them `W-BW-SCREEN`, moved onto the garage's truss bearing line
+(x 6'-3 3/8"; `canopy_west_band.md` 10-31 amendment). Line 2's joint is on the screen's east
+face, `6.28125 + (1.75 + 0.625)/12 =` **6.4792'** (was 6.1979'); FE stays at 9.5833'. The
+landing's west edge is the column line, so the deck is 115 − 75.375 = 39.625" = **3.3021'**
+wide and the seat beams, from the column's east face, 115 − 78.125 = **3.0729'** long.
+
+**Loads.** E-W runs along y and is unchanged (deck 67.3549, screen 409.5798, skirt 112.9818;
+ΣFx 589.917, M about the joint line **1,911.7 lb-ft** as §10j). N-S, at §10i's band heights
+(8.19" deck edge, 7.25" seat faces) and 15.183 psf:
+
+```
+deck   (0.6825 x 3.3021 + 2 x 0.6042 x 3.0729) x 15.183 = (2.2537 + 3.7131) x 15.183 = 90.59 lb
+       at x (6.28125 + 9.5833)/2 = 7.9323
+screen 1,034.49 lb at x 6.28125 (the canopy's 2026-10-31 N-S delivery)
+```
+
+**Distribution.** W (6.4792, 43.1458), FE (9.5833, 43.1458); centroid 8.03125, `dx = ∓1.55208`,
+`J = 2 x 1.55208² = 4.81791 ft²`.
+
+```
+N-S   ΣFy 1,125.08   M = 1,034.49 (6.28125 − 8.03125) + 90.59 (7.9323 − 8.03125) = −1,819.3 lb-ft
+      W:  1,125.08/2 + 1,819.3 x 1.55208/4.81791 = 562.54 + 586.08 = 1,148.6 lb / 1,480 = 0.776
+      FE: 562.54 − 586.08 = −23.5 lb, 23.5/1,785 = 0.013
+E-W   X = 589.917/2 = 294.96 each;  Y = 1,911.7 x 1.55208/4.81791 = 615.9 lb
+      W:  615.9/1,480 + 295.0/740 = 0.4161 + 0.3986 = 0.815      FE: 294.96/892.5 + 615.9/1,785 = 0.676
+guard 200 lb at the screen's south end, M 1,308.3 (§10j), X 100
+      Y = 1,308.3 x 1.55208/4.81791 = 421.5;  W 421.5/925 + 100/462.5 = 0.456 + 0.216 = 0.672
+```
+
+**Verdict: every row passes; E-W wind at W governs at 0.815** (was 0.780). The joints are
+1.55' either side of their centroid instead of 1.69', which is all that moved.
+
+## 12. 2026-10-31 — the pack is a solid; the four hangers re-picked (C3-E11..E14)
+
+**12a. Pier tops (E13).** The SS316-SHIM-35 pack between a seat soffit and its pier had no
+height: both were −15.44". The four landing piers are cast one pack low, **3/4"**, the one
+house-wide `column_heads.STANDOFF_PACK_IN`:
+
+| item | before | after |
+|---|---:|---:|
+| `PT-BW-W`/`-E` top | −15.44" | **−16.19"** (17.81" over grade) |
+| `PT-BW-W`/`-E` shaft, from the −107.4375" pad top | 91.9975" | 91.2475" |
+| `PT-BW-GW`/`-GE` shaft, from the −76.0" pad top | 60.56" | 59.81" |
+| `PT-BW-CW`/`-CNW` post, pier top to the +76.125" soffit | 91.565" | 92.315" |
+| pack at `-E`/`-GE` | 0" | 0.75" |
+| pack at `-W`/`-GW`, under the LUS26-2Z's 18 ga seat (0.048") | 0" | 0.75 − 0.048 = 0.702" |
+| CBSQ66-SDS2 seat, `PT-BW-CW` bottom (+1.1046" standoff) | −14.335" | −15.085" |
+
+Pads, bottoms and every pad top hold, so `column_base` embedment and the hydrant clearances
+do not move. The shafts lose 3/4" of self weight: 14" round, π x 7² x 0.75 / 1,728 x 150 =
+10.02 lb, less the 3/4" the 6x6 gains (7.87 x 0.0625 = 0.49 lb), x 1.2 = **11.44 lb**
+factored off `PT-BW-W`/`-GW` (the engine: 7,468.6 → 7,457.1, −11.47); 12" round, 113.10 x 0.75
+/ 1,728 x 150 x 1.2 = **8.84 lb** off `-E`/`-GE` (1,467.0 → 1,458.1). Axial d/c stays 0.02.
+The west chord rows that read the longer post are `canopy_west_band.md`'s 10-31 amendment (2).
+`W-BW-SCREEN-SKIRT` keeps its −14.44" bottom: 1 3/4" over the pier tops now, and the deck tie's
+skirt band is unchanged.
+
+**12b. Seat-beam hangers (E12): LUS26-2Z.** The seat beam's west end, service, at 50 psf (10 D +
+40 L) over its 3.281' (house) / 3.094' (garage) strip, plus 5.658 plf of 2-2x8 (21.75 in² at
+37.46 pcf), over the 3.0729' beam (§10k), plus `BM-BW-FE`'s share — its ~168 lb seat reaction
+(0.875' of deck x 6.44' x 50 / 2 + 8.49 plf x 6.44 / 2) stands 0.1875' off the east pier:
+
+```
+house   (50 x 3.281 + 5.658) x 3.0729 / 2 = 169.71 x 1.53645 = 260.75 + 168.2 x 0.1875/3.0729
+        = 260.75 + 10.26 = 271.0 lb
+garage  (50 x 3.094 + 5.658) x 1.53645 = 246.38 + 10.26 = 256.6 lb
+LUS26-2 (C-C-2026 p. 114, DBL 2x8 row, DF/SP): floor (100) 1,030 x C_M 0.70 (wet) = 721 lb
+        271.0 / 721 = 0.376        uplift (160) 1,060 x 0.70 = 742 lb against no net uplift
+```
+
+The beam actually bears on the pack through the hanger's seat, so 0.376 is the hung reading.
+**Backing.** The post's end grain is 1.1046" over the pier top, −15.085", which is **0.355"** over
+the soffit. The LUS26-2's flange runs soffit to soffit + (4.875 − 0.048) = 4.827": 4.472" of it,
+92.6%, is backed (the HU28-2Z before E13: 6.2375 − 1.1046 = 5.133", 82%). Hold point: all four
+header nails above the post's end. The catalog does not dimension hole heights, and only the
+bottom 3/8" is unbacked.
+
+**12c. Sill hangers (E11): LUS28Z.** `BM-BW-SCSILL` is a single 2x8, 1.5"; the HU28-2Z seat was
+3.125" (`structural.hanger_seat_fit` FAILs it by 1.625"). Each end carries §10j's wall line
+**276.45 lb**, the deck boards between the sill and the first joist (half of 3.75" = 0.156' x 50
+psf = 7.8 plf x 4.5208'/2 = 17.63 lb) and the sill (2.83 plf x 2.2604' = 6.40 lb): **300.5 lb**.
+
+```
+LUS28 (C-C-2026 p. 114, 2x8 row, DF/SP): floor (100) 1,100 x C_D 0.9 (dead-dominated) x C_M 0.70
+      = 693 lb      300.5 / 693 = 0.434
+```
+
+Backing: the sill's soffit is −8.19", 6.90" over the post's end, and the CBSQ's two straps are
+on the post's east and west faces, so the north and south faces it hangs on are clear.
+
+**12d. Straps (E14).** No HETA12 or HETA16 is listed in ZMAX or stainless (strongtie.com/heta
+lists both G90; FL11473-R5 §4.6 evaluates every HETA as G90), so `CN-BW-TIE-E*/-GE*` stay
+HETA20Z. Its 16" exposed strap stood 16 − 0.75 − 7.25 = 8.0" past the seat beam's top, into
+the joists. It is field-trimmed at the beam top, 8.0" over the pour (`AN-BW-HETA-TRIM`); the
+model draws it so. FL11473 Table 3 needs 12 nails for the pair, 6 per strap (note 4). Table 2
+note 2 says which holes: the **lowest four**. Table 2 note 6's floor of **7** fasteners is the
+SINGLE anchor's lateral rule, and Table 3 note 6 replaces it for a pair. Uplift 2,560 / F1
+1,350 lb are unchanged.

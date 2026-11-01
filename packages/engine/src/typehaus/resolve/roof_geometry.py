@@ -1,7 +1,7 @@
 """Shared roof-plane math for ``ToRoof`` walls and ``FollowRoof`` rooms.
 
-Also owns the *final* elevation of a roof plane. A truss roof's deck is lifted by its
-raised heel, and that lift has to happen before anything reads the plane — see
+Also owns the *final* elevation of a roof plane. A truss roof's deck is anchored on its
+heel at the outside face of bearing, and that has to happen before anything reads the plane — see
 :func:`apply_truss_heel_lift`.
 """
 
@@ -20,8 +20,8 @@ from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import (
     cross_section,
     truss_chord_depth_m,
-    truss_heel_height_m,
 )
+from typehaus.resolve.framing.truss_heel import truss_heel_height_m
 from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedWall
 from typehaus.resolve.roof_bearing import RoofBearing, resolved_bearings
@@ -209,33 +209,54 @@ def roof_ceiling_area_m2(model: ResolvedModel, roof: ResolvedRoof) -> float | No
     return area * math.sqrt(1.0 + (element.pitch.rise / element.pitch.run) ** 2)
 
 
-def truss_heel_lift_m(model: ResolvedModel, roof: ResolvedRoof) -> float:
-    """How far a truss roof's deck plane rises so the raised heel fits over the bearings.
+def bearing_outside_face(roof: ResolvedRoof, bearing: RoofBearing) -> float:
+    """The span coordinate of a bearing's OUTSIDE face of support — the one nearer its eave.
 
-    The top-chord *underside* must clear ``plate top + heel`` at every bearing, which lifts
-    the whole plane (chords lie on the deck). Zero for a rafter roof or an unresolvable
+    A truss heel is measured there and the bottom chord ends there (decision #108).
+    """
+    axis = 1 if roof.ridge_direction == "x" else 0
+    low, high = roof_slope_extent(roof)
+    face_lo, face_hi = bearing.support_span(axis)
+    return face_lo if bearing.axis[0][axis] < (low + high) / 2.0 else face_hi
+
+
+def truss_heel_lift_m(model: ResolvedModel, roof: ResolvedRoof) -> float:
+    """How far a truss roof's deck plane moves so its heel sits on every bearing. SIGNED.
+
+    The heel is top of bearing to top of top chord at the outside face of bearing (SBCA,
+    decision #108), so the deck must be ``plate top + heel`` there. The envelope stage sets
+    the eave at the plate top at the footprint edge, which over a standard heel and a long
+    tail is ABOVE that, so the plane can drop. Zero for a rafter roof or an unresolvable
     bearing line — never a guess.
     """
     spec = roof_structure_framing(model, roof)
-    if spec is None or spec.roof_frame != "truss":
+    element = model.plan.by_tag(roof.tag)
+    if spec is None or spec.roof_frame != "truss" or not isinstance(element, Roof):
         return 0.0
     walls = roof_bearing_walls(model, roof)
     if len(walls) < 2:
         return 0.0
     plate_top = max(wall.z1_m for wall in walls)
-    needed = plate_top + truss_heel_height_m(spec) + truss_chord_depth_m(spec)
-    return max(0.0, max(needed - roof_height_at(roof, wall.axis[0]) for wall in walls))
+    needed = plate_top + truss_heel_height_m(spec, element.pitch)
+    axis = 1 if roof.ridge_direction == "x" else 0
+
+    def at_face(wall: RoofBearing) -> float:
+        point = list(wall.axis[0])
+        point[axis] = bearing_outside_face(roof, wall)
+        return roof_height_at(roof, (point[0], point[1]))
+
+    return max(needed - at_face(wall) for wall in walls)
 
 
 def apply_truss_heel_lift(model: ResolvedModel) -> None:
-    """Raise every truss roof plane by its heel lift, during the *envelope* stage.
+    """Move every truss roof plane by its signed heel lift, during the *envelope* stage.
 
     Established here, before ``apply_to_roof_wall_tops``, so every downstream consumer —
     raked wall tops, ``FollowRoof`` ceilings, headroom, framing — reads the same final plane
-    rather than a ``ToRoof`` wall raking to a pre-lift plane and falling short.
+    rather than a ``ToRoof`` wall raking to a pre-lift plane and missing it.
     """
     model.roofs = [
-        roof if (lift := truss_heel_lift_m(model, roof)) <= 0.0
+        roof if abs(lift := truss_heel_lift_m(model, roof)) < 1e-12
         else replace(roof, eave_z_m=roof.eave_z_m + lift, ridge_z_m=roof.ridge_z_m + lift)
         for roof in model.roofs
     ]

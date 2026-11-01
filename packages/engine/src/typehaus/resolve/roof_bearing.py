@@ -11,6 +11,9 @@ between two headers on columns, and there is no wall under it to name.
   and rake extent is built from these and nothing else.
 * ``z1_m`` — the top, which is the plate top for a wall and the beam top for a beam.
 * ``assembly`` — read only to cut the birdsmouth, and only on a rafter-framed roof.
+* ``support_offsets_m`` — the two faces of what the roof actually sits on, off the axis: a
+  wall's top plate, a beam's own width. A truss heel is measured at the OUTER face and its
+  bottom chord runs across the whole support (SBCA; decision #108).
 
 The precedent is ``resolve/floors.py::_bearing_axis``, which already falls back from a
 wall to a Beam for a joist bearing; this is the same move one element up.
@@ -28,6 +31,7 @@ from dataclasses import dataclass
 from math import hypot
 
 from typehaus.model.structure import Beam
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 Axis = tuple[tuple[float, float], tuple[float, float]]
@@ -46,6 +50,34 @@ class RoofBearing:
     #: ``_resolve_roof``, and ``_eave_plumb_cuts``' stud face) must branch on this rather
     #: than assume. A beam has no cladding to lap and no stud face to cut to.
     wall: ResolvedWall | None = None
+    #: ``(lo, hi)`` signed offsets of the support's two faces from ``axis``, along the
+    #: axis's left normal. ``(0, 0)`` only where the support has no measurable width.
+    support_offsets_m: tuple[float, float] = (0.0, 0.0)
+
+    def support_span(self, span_axis: int) -> tuple[float, float]:
+        """The support's extent on the roof's span axis, ``(lo, hi)``.
+
+        Bearings run parallel to the ridge, so their left normal lies on the span axis.
+        """
+        (x0, y0), (x1, y1) = self.axis
+        length = hypot(x1 - x0, y1 - y0) or 1.0
+        normal = (-(y1 - y0) / length, (x1 - x0) / length)[span_axis]
+        base = self.axis[0][span_axis]
+        a, b = (base + normal * offset for offset in self.support_offsets_m)
+        return (min(a, b), max(a, b))
+
+
+def _wall_support_offsets(wall: ResolvedWall) -> tuple[float, float]:
+    """The STRUCTURE layer's two faces off the wall axis: the plate the roof sits on."""
+    (x0, y0), (x1, y1) = wall.axis
+    length = hypot(x1 - x0, y1 - y0)
+    points = [point for layer in wall.depth_layers() if layer.function == "structure"
+              for point in layer.polygon]
+    if length <= 0.0 or not points:
+        return (0.0, 0.0)
+    nx, ny = -(y1 - y0) / length, (x1 - x0) / length
+    offsets = [(px - x0) * nx + (py - y0) * ny for px, py in points]
+    return (min(offsets), max(offsets))
 
 
 def _beam_axis(model: ResolvedModel, beam: Beam) -> Axis | None:
@@ -62,7 +94,8 @@ def roof_bearing(model: ResolvedModel, tag: str) -> RoofBearing | None:
     """One bearing ref, or ``None`` where it resolves to neither a wall nor a beam."""
     wall = model.wall(tag)
     if wall is not None:
-        return RoofBearing(tag, wall.axis, wall.z1_m, wall.assembly, wall)
+        return RoofBearing(tag, wall.axis, wall.z1_m, wall.assembly, wall,
+                           _wall_support_offsets(wall))
     beam = model.plan.by_tag(tag)
     if not isinstance(beam, Beam):
         return None
@@ -83,7 +116,9 @@ def roof_bearing(model: ResolvedModel, tag: str) -> RoofBearing | None:
     # to derive a drop from, so an unauthored top is not defaultable: say so instead.
     if beam.top_elevation is None:
         return None
-    return RoofBearing(tag, axis, beam.top_elevation.meters, beam.assembly, None)
+    half_width = cross_section(beam.size).width_m / 2.0
+    return RoofBearing(tag, axis, beam.top_elevation.meters, beam.assembly, None,
+                       (-half_width, half_width))
 
 
 def roof_bearings(model: ResolvedModel, refs: tuple[str, ...]) -> list[RoofBearing | None]:

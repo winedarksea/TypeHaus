@@ -141,9 +141,12 @@ def exposed_wall_top_edges(model):
             condition = (TrimCondition.RAKE_TOP if abs(tops[1]-tops[0]) > 1e-6
                          else TrimCondition.EAVE_TOP)
             product = material.trim_kit.get(condition, "")
+            # The midpoint too: a level gable bottom meets the roof at both ends under a
+            # standard heel (decision #108) and stands under the ridge between them.
+            middle = (face.xy((face.lo + face.hi) / 2), (tops[0] + tops[1]) / 2)
             possible = [roof for roof in model.roofs if footprint_test(roof)(wall)
                         and all(abs(roof_height_at(roof, point)-top) < _ROOF_REACH_TOLERANCE_M
-                                for point, top in zip(points, tops, strict=True))]
+                                for point, top in (*zip(points, tops, strict=True), middle))]
             if not possible:
                 continue
             roof = min(possible, key=lambda item: sum(
@@ -169,9 +172,23 @@ def exposed_wall_top_edges(model):
                     cuts.append(tuple(sorted(x*face.d[0]+y*face.d[1] for x, y in endpoints)))
             for a, b in subtract_spans(face.lo, face.hi, cuts):
                 f0, f1 = (a-face.lo)/(face.hi-face.lo), (b-face.lo)/(face.hi-face.lo)
+                z_a, z_b = tops[0]+f0*(tops[1]-tops[0]), tops[0]+f1*(tops[1]-tops[0])
+                # As a roof-generated band does: the panel top takes the outside closure,
+                # and the sill-to-soffit sits on the soffit under it where one meets the face.
+                # The closure hangs its height below its edge, and here the panel under it is
+                # the wall's own layer, so the edge rides that height up: it sits ON the cut
+                # panel top, under the deck, as a crew sets it.
+                soffit = (_soffit_elevation(roof, face, a, b)
+                          if product == "CORRUGATED_SILL_TO_SOFFIT" else None)
+                if soffit is not None:
+                    candidates.append(WallTopEdge(wall, roof, face, "corrugated-outside-closure",
+                                                  condition, a, b, z_a + _CLOSURE_HEIGHT_M,
+                                                  z_b + _CLOSURE_HEIGHT_M))
+                    candidates.append(WallTopEdge(wall, roof, face, product, condition, a, b,
+                                                  soffit, soffit))
+                    continue
                 candidates.append(WallTopEdge(wall, roof, face, product, condition, a, b,
-                                              tops[0]+f0*(tops[1]-tops[0]),
-                                              tops[0]+f1*(tops[1]-tops[0])))
+                                              z_a, z_b))
     # A wall-top member can be emitted both for the attic panel and the panel below it.
     # Prefer the upper wall and subtract only coincident spans at the same elevation.
     candidates.sort(key=lambda edge: (-edge.wall.z0_m, edge.wall.tag, edge.start))

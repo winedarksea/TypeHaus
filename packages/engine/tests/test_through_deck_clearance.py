@@ -85,8 +85,8 @@ def test_the_platform_trap_is_the_whole_reason_framing_extents_are_read(catlin_m
     assert wall.z0_m <= soffit + _THROUGH_TOL_M
     assert wall.z1_m >= deck.deck_z1_m + _THROUGH_TOL_M
     # The framing: bottom plate on the storey datum, a foot above the soffit. Clause 1 fails.
-    assert wall.base_ref_z_m > soffit + _THROUGH_TOL_M
-    assert wall.base_ref_z_m - soffit == pytest.approx(inch(11.875).meters, abs=1e-6)
+    assert wall.frame_base_z_m > soffit + _THROUGH_TOL_M
+    assert wall.frame_base_z_m - soffit == pytest.approx(inch(11.875).meters, abs=1e-6)
     assert framing_top_z_m(wall) >= deck.deck_z1_m + _THROUGH_TOL_M
     assert "W-M-E1" not in (deck.through_walls or ())
 
@@ -126,7 +126,7 @@ def test_a_wall_stopping_exactly_at_the_sheet_is_not_passing_through_it() -> Non
     def model_with(top_m: float):
         wall = SimpleNamespace(
             tag="W-TEST", z0_m=-1.0, z1_m=top_m, plate_base_z_m=None, plate_top_z_m=None,
-            base_ref_z_m=-1.0,
+            base_ref_z_m=-1.0, frame_base_z_m=-1.0,
             layers=[SimpleNamespace(polygon=[(1.0, 1.0), (1.2, 1.0), (1.2, 2.0), (1.0, 2.0)])])
         return SimpleNamespace(walls=[wall],
                                plan=SimpleNamespace(by_tag=lambda tag: authored))
@@ -150,7 +150,7 @@ def test_a_deck_held_off_the_wall_for_drainage_is_not_a_penetration(catlin_model
     for tag in ("FS-BW-FLOOR",):
         deck = _deck(catlin_model_ro, tag)
         soffit = min(member.z0_m for member in deck.members)
-        assert wall.base_ref_z_m <= soffit + _THROUGH_TOL_M
+        assert wall.frame_base_z_m <= soffit + _THROUGH_TOL_M
         assert framing_top_z_m(wall) >= deck.deck_z1_m + _THROUGH_TOL_M
         face = _wall_face(wall).buffer(_SHEET_CLEARANCE_M, join_style=2)
         overlap = face.intersection(Polygon(deck.deck_outline))
@@ -170,8 +170,9 @@ def test_a_sheet_overlapping_a_wall_edge_is_not_a_contained_penetration(catlin_m
                for x, y in deck.deck_outline]
     sheet = Polygon(outline)
     face = _wall_face(wall).buffer(_SHEET_CLEARANCE_M, join_style=2)
-    # The service-door drainage cutback shortens the overlapping witness.
-    assert sheet.intersection(face).area / _IN**2 > 10
+    # The service-door drainage cutback shortens the overlapping witness, and the landing's
+    # west edge came 3 3/8" east with the canopy column line (2026-10-31): 7.6 sq in.
+    assert sheet.intersection(face).area / _IN**2 > 5
     assert not sheet.covers(face)
     assert through_deck_walls(catlin_model_ro, catlin_model_ro.plan.by_tag(deck.tag),
                               min(m.z0_m for m in deck.members), deck.deck_z1_m,

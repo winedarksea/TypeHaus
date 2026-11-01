@@ -5,7 +5,8 @@ to ridge (``roof_gable.truss_member``). Cut, that envelope is a solid box fillin
 with wood that is not there. This is the section twin of ``ui/src/three/roofTruss.ts``: the
 chord depth, heel, tails and gable flag are model; the fink web pattern is the one drawing
 convention, as it is in the viewer. The top chord's TOP edge lies on the roof plane
-(``truss_heel_lift_m`` put the deck at plate + heel + chord), so the deck sits on it.
+(``truss_heel_lift_m`` put the deck at plate + heel at the member's end, the outside face of
+bearing — decision #108), so the deck sits on it.
 """
 
 from __future__ import annotations
@@ -26,14 +27,15 @@ _MIN_GABLE_STUD_M = 1.5 * M_PER_IN
 
 
 def top_chord_frame(member, section) -> tuple[float, float, float, float]:
-    """``(chord, heel, slope, plumb_depth)``: the top chord springs ``heel`` over the plate.
+    """``(chord, heel, slope, plumb_depth)``: the top chord's top edge stands ``heel`` over
+    the plate at the member's ends (the outside faces of bearing) and rises at ``slope``.
 
-    A heel that would not fit under the apex springs off the bottom chord, as in the viewer.
+    A heel that would not fit under the apex falls back to a chord's depth, as in the viewer.
     """
     chord = section.flange_thickness_m or _DEFAULT_CHORD_M
     rise = member.z1_m - member.z0_m
-    heel = member.truss.heel_m if member.truss.heel_m + chord < rise else chord
-    slope = (rise - heel - chord) / (math.dist(member.p0, member.p1) / 2.0)
+    heel = member.truss.heel_m if member.truss.heel_m < rise else chord
+    slope = (rise - heel) / (math.dist(member.p0, member.p1) / 2.0)
     return chord, heel, slope, chord * math.sqrt(1.0 + slope * slope)
 
 
@@ -50,7 +52,7 @@ def truss_sticks(member, section) -> list[list[tuple[float, float]]]:
     z0 = member.z0_m
 
     def top(s: float) -> float:
-        return z0 + heel + chord + slope * min(s, span - s)
+        return z0 + heel + slope * min(s, span - s)
 
     def under(s: float) -> float:
         return top(s) - plumb_depth

@@ -42,10 +42,10 @@ from typehaus import (
 from typehaus.library import TREX_ENHANCE_BASICS_DECK_LAYER
 
 from params.cladding import HOUSE_NS_OUTBOARD_IN
-from params.column_heads import CBSQ66_HEAD, HETA20Z_PAIR_HEAD
+from params.column_heads import CBSQ66_HEAD, HETA20Z_PAIR_HEAD, STANDOFF_PACK_IN
 from params.east_posts import east_supports, full_height_columns, moment_piers
 from plan.storeys.garage import (
-    GARAGE_X_WEST, GARAGE_Y_SOUTH, SERVICE_DOOR_OFFSET, SERVICE_DOOR_WIDTH,
+    GARAGE_X_EAST, GARAGE_X_WEST, GARAGE_Y_SOUTH, SERVICE_DOOR_OFFSET, SERVICE_DOOR_WIDTH,
 )
 
 # ** THE ONE SWITCH (owner, 2026-09-29): what stands under BM-BW-RE. ** "steel" | "kdat" |
@@ -63,7 +63,15 @@ GARAGE_CLADDING_Y_FT = GARAGE_Y_SOUTH.feet - 0.875 / 12
 # west edge is the canopy column line.
 SERVICE_RO_WEST_FT = GARAGE_X_WEST.feet + SERVICE_DOOR_OFFSET.feet
 SERVICE_RO_EAST_FT = SERVICE_RO_WEST_FT + SERVICE_DOOR_WIDTH.feet
-LANDING_WEST_FT = 6.0  # the column line; also the screen panel and the west door patch's edge
+# ** THE COLUMN LINES ARE THE GARAGE'S TRUSS BEARING LINES (owner, 2026-10-31). ** Each header
+# centres on the 2x6 plate of the garage wall it extends (sheathing plane + 5/8" CDX + half the
+# 5 1/2" plate), so its 5 1/2" faces are the plate's faces and one 23'-10 3/4" truss, with
+# its standard heel at the outside face and its bottom chord across the full 5 1/2", bears the
+# same on both roofs (decision #108; geometry review C3-E6/E7). They were on the garage's
+# SHEATHING planes, 3 3/8" outboard, where a truss reached 2 3/4" onto each header.
+GARAGE_PLATE_INSET_FT = (0.625 + 5.5 / 2) / 12
+# The column line; also the screen panel and the west door patch's edge. 6'-3 3/8".
+LANDING_WEST_FT = GARAGE_X_WEST.feet + GARAGE_PLATE_INSET_FT
 # The deck used to reach 11'-6" to cover two offset door patches (`D-M-ENTRY` at 8'-0",
 # `D-G-SERVICE` at 10'-0"); with the door centres three inches apart the RO's east jamb covers both.
 LANDING_EAST_FT = SERVICE_RO_EAST_FT
@@ -112,7 +120,11 @@ FOOTING_TOP_FT = PIER_BOTTOM_FT + FOOTING_DEPTH_FT
 # at one elevation DO occupy the same space in a model that has no hanger. So the floor beams
 # sit ON the seats: seat top -8.19" (the floor beams' soffit), seat soffit -15.44".
 SEAT_TOP_FT = DECK_JOIST_TOP_FT - JOIST_DEPTH_IN / 12      # -8.19"
-BEARING_TOP_FT = SEAT_TOP_FT - JOIST_DEPTH_IN / 12         # -15.44", 18.56" above grade
+BEARING_TOP_FT = SEAT_TOP_FT - JOIST_DEPTH_IN / 12         # -15.44", the seat-beam SOFFIT
+# ** THE PIERS ARE CAST ONE PACK BELOW THE SOFFITS (C3-E13, 2026-10-31). ** Until then the pier
+# tops were the soffits, so the SS316 pack between them had no height. Cast 3/4" low, it is a
+# solid: -16.19", 17.81" above grade. The CBSQ bases under PT-BW-CW/-CNW drop with it.
+PIER_TOP_FT = BEARING_TOP_FT - STANDOFF_PACK_IN / 12       # -16.19"
 
 # The headers top out at the GARAGE PLATE, +7'-4" (W-G-E/W-G-W z1). That is what makes
 # RF-BW-CANOPY one plane with RF-GARAGE rather than a roof stepping off it. The 5-1/2" x
@@ -121,7 +133,7 @@ HEADER_TOP_FT = 7 + 4 / 12
 HEADER_DEPTH_IN = 11.875
 HEADER_SIZE = "5.5x11.875"
 HEADER_SOFFIT_FT = HEADER_TOP_FT - HEADER_DEPTH_IN / 12
-ROOF_COLUMN_EAST_X_FT = 30.0
+ROOF_COLUMN_EAST_X_FT = GARAGE_X_EAST.feet - GARAGE_PLATE_INSET_FT  # 29'-8 5/8"
 
 # ** THE SLAT CLERESTORY'S SILL IS THE PANEL'S TOP PLATE, AND THERE ARE NO RAILS. **
 # An earlier pass at this put two 2x6 cross rails on the column line at +1'-0" and +3'-0" to
@@ -161,10 +173,10 @@ SCREEN_PANEL_TOP_FT = 4.0
 #
 # ** WHY THE SEATS ARE THE TIER THAT SURVIVES, AND NOT THE OTHER WAY ROUND. ** Putting the
 # north-south beams straight on the piers instead is the obvious alternative and it does not
-# fit: the pier lines are x=6'-0" and x=9'-7", and x=6'-0" is already occupied at BOTH y
+# fit: the pier lines are x=6'-3 3/8" and x=9'-7", and x=6'-3 3/8" is already occupied at BOTH y
 # stations by a canopy column (PT-BW-CW, PT-BW-CNW) standing on that same pier and rising
 # through the deck band to the header. A beam on that line interpenetrates the column
-# outright. The columns own x=6'-0"; the seats get the piers.
+# outright. The columns own x=6'-3 3/8"; the seats get the piers.
 #
 # ** BM-BW-FE IS THE DECK'S EAST EDGE BEAM, SEAT TO SEAT (2026-10-13). ** It runs north-south
 # in the joist plane on the same two seats, so it adds no depth, and it ends where the joist
@@ -177,7 +189,7 @@ SCREEN_PANEL_TOP_FT = 4.0
 # (params/landing_tie.py), wood to wood into W-G-S's east jamb pack.
 #
 # The joist field's own two edges, each a joist CENTRELINE so the rim lands where it is told.
-# West: clear of the two 6x6 canopy columns on x=6'-0", whose east face is at 6'-3".
+# West: clear of the two 6x6 canopy columns on x=6'-3 3/8", whose east face is at 6'-6 1/8".
 # East: clear of BM-BW-FE, whose west face is at 9'-2 1/2" -- the rim's east face touches it.
 #
 # ** FE IS 3-PLY, AND THE TIE IS WHY (2026-10-13). ** Line 1 of the deck tie is a pair of 3 ga
@@ -260,7 +272,7 @@ def beam(number, tag, x0, y0, x1, y1, bearings, top=DECK_JOIST_TOP_FT, size="2-2
 # that test, so "an endpoint lands on its axis" was satisfied by a beam driven halfway in.
 # The geometry is unchanged and cannot be: a hanger's flange has no representation, so the
 # beam is carried to the joint it was authored at either way. What changed is that the joint
-# is now AUTHORED (CN-BW-HGR-* below, HU28-2Z), and only an authored pair is cleared.
+# is now AUTHORED (CN-BW-HGR-* below, LUS26-2Z), and only an authored pair is cleared.
 #
 # ** bearing_refs STAYS ON THE PIERS, AND THAT IS A MEASURED DECISION. ** Re-pointing the
 # west end at the column reads well -- it is the immediate support -- but it was tried and
@@ -298,8 +310,8 @@ beam(5, "BM-BW-FE", EDGE_BEAM_X_FT, FRAME_Y0_FT, EDGE_BEAM_X_FT, GARAGE_CLADDING
 #
 # So the canopy is freestanding on four columns of its own (owner, 2026-09-10): PT-BW-CW/CE
 # at the pier line and PT-BW-CNW/CNE at the garage-side line, each on cast concrete to
-# -15.44". x=6'-0" and x=30'-0" are still the garage's own corner lines, so the canopy
-# reads as one plane with RF-GARAGE and the sheathing runs continuous across the joint -- and
+# -15.44". x=6'-3 3/8" and x=29'-8 5/8" are the garage's own truss bearing lines (2026-10-31),
+# so the canopy reads as one plane with RF-GARAGE and the sheathing runs continuous across the joint -- and
 # THAT continuity is the only thing the two structures share. It is the canopy's lateral
 # system (AN-BW-ROOF says so) and it carries no gravity load in either direction.
 #
@@ -334,7 +346,7 @@ beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_SOUTH_Y_FT,
      roof_bearing_insets=(ft(TRUSS_DATUM_INSET_FT), ft(0)))
 
 # ** THE SCREEN PANEL'S SILL, WHICH IT CANNOT DO WITHOUT AND NEARLY DID. **
-# W-BW-SCREEN stands on the column line at x=6'-0" and weighs 77 plf. Nothing was under it
+# W-BW-SCREEN stands on the column line at x=6'-3 3/8" and weighs 77 plf. Nothing was under it
 # between the two seat beams -- the deck's westmost joist is 3 3/4" east of this line -- so
 # its sill plate spanned 4'-11 3/4" carrying ~385 lb, which a flat 2x4 plate does not do
 # (f_b ~2,200 psi). `structural.masonry_guard_bearing` is what said so, and it was right:
@@ -360,7 +372,7 @@ beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_SOUTH_Y_FT,
 # column FACES it stops 1 1/4" clear of its own bearing -- `test_analytical_graph` catches
 # that second one as "a run of members hangs on no support". Measured both ways.
 #
-# So it stops at the faces and hangs there, on an HU28-2Z apiece (CN-BW-HGR-SCS-* in
+# So it stops at the faces and hangs there, on an LUS28Z apiece (CN-BW-HGR-SCS-* in
 # params/breezeway.py). This revises the owner's earlier "shorten, do not hang" -- that call
 # assumed shortening alone left it bearing, and the arithmetic above is why it does not. It
 # also puts the sill where everything else on this wall already stops: both columns carry
@@ -569,11 +581,9 @@ FOOTINGS = []
 _PAD_WIDE_IN = 30.0
 _PAD_DEPTH_IN = 18.0
 
-for _uid, _tag, _x, _height, _top in (
-    ("BWPT01AAAA", "PT-BW-W", LANDING_WEST_FT, BEARING_TOP_FT - FOOTING_TOP_FT,
-     BEARING_TOP_FT),
-    ("BWPT02AAAA", "PT-BW-E", LANDING_EAST_FT, BEARING_TOP_FT - FOOTING_TOP_FT,
-     BEARING_TOP_FT),
+for _uid, _tag, _x, _height in (
+    ("BWPT01AAAA", "PT-BW-W", LANDING_WEST_FT, PIER_TOP_FT - FOOTING_TOP_FT),
+    ("BWPT02AAAA", "PT-BW-E", LANDING_EAST_FT, PIER_TOP_FT - FOOTING_TOP_FT),
 ):
     PIERS.append(Post(
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(PIER_LINE_Y_FT)),
@@ -656,8 +666,8 @@ GARAGE_PIER_BOTTOM_FT = -7.0
 GARAGE_FOOTING_TOP_FT = GARAGE_PIER_BOTTOM_FT + GARAGE_FOOTING_THICKNESS_FT
 PEDESTALS = []
 for _uid, _tag, _x, _pad_in, _top in (
-    ("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT, 24.0, BEARING_TOP_FT),
-    ("BWPT06AAAA", "PT-BW-GE", LANDING_EAST_FT, 18.0, BEARING_TOP_FT),
+    ("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT, 24.0, PIER_TOP_FT),
+    ("BWPT06AAAA", "PT-BW-GE", LANDING_EAST_FT, 18.0, PIER_TOP_FT),
 ):
     PEDESTALS.append(Post(
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(GARAGE_SEAT_Y_FT)),
@@ -706,7 +716,7 @@ for _uid, _tag, _x, _pad_in, _top in (
         bottom_elevation=ft(GARAGE_FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT
                             if _tag in _MOMENT_PIERS else GARAGE_PIER_BOTTOM_FT)))
 
-# The two west roof columns. Pier top -15.44" to header soffit +6'-4 1/8" = 7'-7.565".
+# The two west roof columns. Pier top -16.19" to header soffit +6'-4 1/8" = 7'-8.315".
 # k*lu/d under 17, nowhere near NDS Sec 3.7.1.4's limit of 50. A cast-in CBSQ66-SDS2 base
 # (no separate bolt) and an ACE6Z end cap at the header, all live rows in prices.toml;
 # `engineering/wood_roof_post` grades both posts, `lateral_system` their chord role.
@@ -715,7 +725,7 @@ for _uid, _tag, _x, _pad_in, _top in (
 # Exposure B, q_h ~ 16.4 psf; a free-roof coefficient near 1.3 gives ~1,500 lb of uplift per
 # header against 720 lb of dead. Under 0.6D + 0.6W the net is ~230 lb per column, well inside
 # the standoff-base-plus-cast-in-bolt detail. Stated, not left open.
-COLUMN_HEIGHT_FT = HEADER_SOFFIT_FT - BEARING_TOP_FT
+COLUMN_HEIGHT_FT = HEADER_SOFFIT_FT - PIER_TOP_FT
 FULL_HEIGHT_COLUMNS = full_height_columns(EAST_POST_SYSTEM)
 
 # ** THE EAST LINE, FROM THE ONE FACTORY. ** params/east_posts.py; the pads keep their tags
@@ -723,7 +733,8 @@ FULL_HEIGHT_COLUMNS = full_height_columns(EAST_POST_SYSTEM)
 _EAST_POSTS, _EAST_PIERS, _EAST_PADS = east_supports(
     EAST_POST_SYSTEM, x_ft=ROOF_COLUMN_EAST_X_FT,
     stations={"RE": ("BWPT03AAAA", PIER_LINE_Y_FT), "RNE": ("BWPT04AAAA", GARAGE_SEAT_Y_FT)},
-    header_soffit_ft=HEADER_SOFFIT_FT, moment_cage=ENTRY_MOMENT_CAGE,
+    header_soffit_ft=HEADER_SOFFIT_FT, pack_ft=STANDOFF_PACK_IN / 12,
+    moment_cage=ENTRY_MOMENT_CAGE,
     house_pad=("BWF03AAAA",
                lambda y: _pad_outline(ROOF_COLUMN_EAST_X_FT, y, _PAD_WIDE_IN, _PAD_DEPTH_IN),
                FOOTING_TOP_FT, MOMENT_PAD_DEPTH_FT),

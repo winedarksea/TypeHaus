@@ -519,3 +519,24 @@ Using the same L, base springs and section, the revised arithmetic is:
 
 At GW's soft end, Pc,flex = 9,193.8 lb; 0.75 Pc = 6,895.3 lb remains **72.0 lb**
 under P_u. The existing verdicts and the addendum's independent-review limitation remain.
+
+## Addendum 2026-10-31 — the landing came in 3 3/8"
+
+The canopy column line moved east onto the garage truss line, so the landing deck is
+3.3021' wide and the seat beams 3.0729' (`north_entry_piers.md` §10k). `PT-BW-GE`'s deck
+share falls with them: D 646.43 -> 642.08 lb, L 207.54 -> 190.14 lb. The pole, k_θ and L
+(60.56") do not move; P_u and the creep factor do:
+
+```
+P_u = 1.2 x 642.08 + 1.6 x 190.14 = 770.50 + 304.22 = 1,074.72 lb      (was 1,107.78)
+β   = 770.50 / 1,074.72 = 0.7169      EI = 1.6410e9 / 1.7169 = 9.558e8
+Pc,rigid = π² x 9.558e8 / (2.1 x 60.56)² = 9.4334e9 / 16,174 = 583,250
+0.25"  R = 2.5085e6 x 60.56 / 9.558e8 = 0.15894   Pc = 583,250 / (1 + 3/0.15894) = 29,346
+       δ = 1 / (1 − 1,074.72 / (0.75 x 29,346)) = 1 / 0.95117 = 1.0513
+1.0"   R = 0.03974                                  Pc = 583,250 / (1 + 3/0.03974) =  7,624
+       δ = 1 / (1 − 1,074.72 / 5,718) = 1 / 0.81205 = 1.2315
+```
+
+Still arithmetic only (the landing piers left the register 2026-09-21). W, E and GW move by
+the same few percent of P_u (W 1.0817 -> 1.0813, 1.3382 -> 1.3361) and stay inside their
+pinned tolerances.

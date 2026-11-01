@@ -1,3 +1,13 @@
+> **Canopy on the garage truss lines, 2026-10-31 (decision #108):** `BM-BW-RW`/`-RE` centre on
+> the garage's 2x6 plates (x 6'-3 3/8" / 29'-8 5/8", 3 3/8" inboard) with their posts, bases,
+> piers, screen, band and HP1 (kept 12" off `PT-BW-PE`). ONE truss on both roofs: 23'-10 3/4"
+> out to out, bottom chord across the full 5 1/2", SBCA standard heel 3.939" (plumb 3.689" +
+> 1/4" butt cut) at the OUTSIDE face of bearing; ridge 143.0 -> 139.73", eave 86.40". Canopy
+> overhang 1'-7 3/8" keeps one fascia line. Collector blocks 2-2x8. `roof_beam` grades the
+> trusses' chord bearing (0.877, governs). `D-G-SERVICE` stops at **81°** (the moved screen
+> face), open in plans/TODO.md. Notes: `canopy_west_band.md` / `canopy_garage_diaphragm.md`
+> 2026-10-31.
+
 > **Canopy headers, 2026-10-28:** `BM-BW-RW`/`-RE` end flush on the outer faces of their
 > end posts (65¼″, no tails) on ACE6Z end caps at all four heads; one A35Z per post, on its
 > inboard face. The bearing run starts ¾″ in (`TRUSS_DATUM_Y_FT`) so truss 1 bears fully;
@@ -344,7 +354,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - `Stair.floor_opening` is optional (a rise states directly via `base_elevation`/`top_elevation`) — but `structural.stair_riser_uniformity` and `code.R311_7_8_handrail` iterate `model.stairs`, so slabs instead of a `Stair` draw NO riser/handrail finding.
 - Garage plates are 8'-4", not 8'-0" — the door climbed 4" when the storey dropped, and the plate height is set by `D-G-SERVICE`'s rough head and the truss heels alone: its head is an R602.7.4 flat 2x6 nonbearing nailer since 2026-10-31 (the old 3-ply LVL ran 2" into the plates; `integrity.header_under_plate`). `D-G-OVERHEAD` is the garage's one beam, a 2-ply 14" LVL (K7).
 - Emitters/placeable resolver read `resolve/room_floor.py::room_floor_elevation` for garage heights, not storey elevation — enforced by `test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade`.
-- **ICF stem and wood wall are coplanar outside.** `GARAGE_Y_SOUTH`/`NORTH` (`plan/storeys/garage.py`) is both the sheathing plane and the stem's EPS face (walls `cdx-ext`, stem `concrete-ext`+`GARAGE_ICF_EPS` offset) — layer NAME is the alignment key, so a sheathing swap is also an alignment edit or the wall silently misplaces. Only 7/8" of the corrugated panel projects past.
+- **ICF stem and wood wall are coplanar outside.** `GARAGE_Y_SOUTH`/`NORTH` (`plan/storeys/garage.py`) is both the sheathing plane and the stem's EPS face (walls `cdx-ext`, stem `concrete-ext`+`GARAGE_ICF_EPS` offset) — layer NAME is the alignment key, so a sheathing swap is also an alignment edit or the wall silently misplaces. Only 7/8" of the corrugated panel projects past. **The garage sill is a 2x8 PT set flush with the studs' outside face** (`FramingSpec.sill_member`; 2026-10-31): 5 3/8" of its 7 1/4" (74%) bears on the 6" core, where a 5 1/2" sill bore 3 5/8" (66%) and `structural.sill_bearing_on_core` FAILs it; a 1 3/4" ledge stands inside under a PVC (never aluminium) curb-cap flashing, and the stud length is unchanged (still 1 1/2" thick). A 2x8 is outside ESR-2555's MASAZ, so the garage takes 1/2" cast-in bolts with 3"x3" washers 3 3/8"-4 13/16" in from the sill's outside edge (middle third and core, R403.1.6; printed on S-103), and the two STHD14 straps cast at the stud face take a notched sill (`notes/garage_wall_detail_side.md`).
 - Do not fix alignment by moving stem nodes — `resolve/stacking.py::_axis_match`'s 1/2" tolerance would silently drop the whole foundation-to-framed stack.
 - `FT-GF-*` follow the stem via `Footing.center_on="wall"`, not the node line.
 

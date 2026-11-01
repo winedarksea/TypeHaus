@@ -14,6 +14,8 @@ from typehaus.model.enums import LayerFunction, StructuralRole
 from typehaus.model.structure import Footing, FoundationWall
 from typehaus.resolve.solid_categories import in_slab_family
 
+from .frost_shield import shielding_wings
+
 # Simplified allowable joist spans (ft) at 16" o.c., residential floor (40 psf live).
 # I-joists by depth; dimensional lumber per IRC R502.3.1(1), SPF #2.
 _IJOIST_SPAN_FT: dict[str, float] = {
@@ -375,7 +377,9 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
 
     * **PASS** — full cover below the local grade, or short of it but protected by drawn
       horizontal insulation, which is IRC R403.3's frost-protected shallow foundation.
-      The R-values and the B/C dimensions of Table R403.3(1) are the *assembly's* authored
+      The wing must abut the footing (``frost_shield``: within 8" at every station the
+      excavation reaches), not merely sit within a frost depth of it. The R-values and
+      the B/C dimensions of Table R403.3(1) are the *assembly's* authored
       citation; this check grades that the protection is drawn and adjacent, not that it is
       sized. Saying so is the point — a check that claimed to size an FPSF would be the
       engineering this tier promises it is not doing.
@@ -508,8 +512,7 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
             ))
             continue
 
-        shielding = [tag for tag, polygon in protection
-                     if here is not None and here.distance(polygon) <= reach_m + 1e-9]
+        bare_m, shielding = shielding_wings(here, floors, protection, reach_m)
         if shielding:
             out.append(_advisory(
                 cid,
@@ -526,6 +529,9 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
             cid,
             f"{solid.tag} base is {cover_in:.0f}\"{where}; {minimum_in:.0f}\" minimum is "
             f"required by the MN profile"
+            + ("" if bare_m <= 0.0 else
+               f"; {bare_m / 0.0254:.0f}\" of the length the excavation reaches has no "
+               f"frost wing abutting it (R403.3)")
             + ("" if source_tag is None else
                f" — measured from the lowest adjacent grade (IRC R403.1.4.1), which here is "
                f"the floor of the {source_tag} excavation, not the site grade plane"),

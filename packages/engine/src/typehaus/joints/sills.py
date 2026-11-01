@@ -21,6 +21,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from typehaus.hardware.catalog import ROLE_MUDSILL_ANCHOR, ROLE_SILL_ANCHOR_BOLT
 from typehaus.hardware.config import FT_TO_M, SillPlateAnchorRules, UpliftTieRules
 from typehaus.hardware.connector_dimensions import LATERAL_TIE_PLATE_DIMENSIONS
 from typehaus.hardware.plan_geometry import centerline_endpoints
@@ -30,6 +31,7 @@ from typehaus.model.enums import ConnectorKind
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.partition import bearing_ref_tags, is_clad, is_interior_partition
+from typehaus.resolve.sill_bearing import band_centre_ends, bolt_offset_m
 
 
 @dataclass(frozen=True)
@@ -41,6 +43,7 @@ class Station:
     point_m: tuple
     z_m: float
     axis: str
+    role: str = ROLE_MUDSILL_ANCHOR
 
 
 def sill_plate_returns(model: ResolvedModel, category: str) -> list:
@@ -102,7 +105,16 @@ def _anchors_on_run(length_m: float, pitch_m: float, minimum: int) -> int:
     return max(minimum, int(math.floor(length_m / pitch_m + 1e-9)) + 1)
 
 
-def _stations_on(returns: list, pitch_m: float, minimum: int, end_m: float) -> list:
+#: MASAZ (ESR-2555) is published for 2x4 and 2x6 sills; a wider plate takes cast-in bolts.
+_MASA_MAX_SILL_M = 5.625 * M_PER_IN
+
+
+def sill_anchor_role(ret) -> str:
+    return ROLE_MUDSILL_ANCHOR if ret.thickness_m <= _MASA_MAX_SILL_M else ROLE_SILL_ANCHOR_BOLT
+
+
+def _stations_on(returns: list, pitch_m: float, minimum: int, end_m: float,
+                 model=None) -> list:
     """Parts spread evenly between ``end_m`` in from each end of every run.
 
     A one-part run takes it at the midpoint. The inset shrinks on a run too short for it,
@@ -114,14 +126,19 @@ def _stations_on(returns: list, pitch_m: float, minimum: int, end_m: float) -> l
         count = _anchors_on_run(ret.length_m, pitch_m, minimum)
         inset = min(end_m, ret.length_m / 4.0) / ret.length_m if ret.length_m > 0 else 0.0
         axis = axis_of(start, end)
+        role = sill_anchor_role(ret) if model is not None else ROLE_MUDSILL_ANCHOR
+        # A bolt sits in the plate's middle third and the core, not on its centreline.
+        off = bolt_offset_m(model, ret) if role == ROLE_SILL_ANCHOR_BOLT else 0.0
+        nx, ny = (-(end[1] - start[1]) / ret.length_m * off,
+                  (end[0] - start[0]) / ret.length_m * off) if off else (0.0, 0.0)
         for index in range(count):
             fraction = 0.5 if count == 1 else inset + (1 - 2 * inset) * index / (count - 1)
             found.append(Station(
                 run_tag=ret.tag, storey=ret.storey,
-                point_m=(start[0] + (end[0] - start[0]) * fraction,
-                         start[1] + (end[1] - start[1]) * fraction),
+                point_m=(start[0] + (end[0] - start[0]) * fraction + nx,
+                         start[1] + (end[1] - start[1]) * fraction + ny),
                 # The pour top: the underside of the plate the part comes up through.
-                z_m=ret.z0_m, axis=axis))
+                z_m=ret.z0_m, axis=axis, role=role))
     return found
 
 
@@ -130,7 +147,8 @@ def mudsill_anchor_stations(model: ResolvedModel, rules: SillPlateAnchorRules,
     """Every MASA along every cast-in-anchored sill plate."""
     return _stations_on(anchored_sill_returns(model, sill_category),
                         rules.mudsill_anchor_pitch_ft * FT_TO_M,
-                        rules.minimum_anchors_per_run, rules.end_distance_in * M_PER_IN)
+                        rules.minimum_anchors_per_run, rules.end_distance_in * M_PER_IN,
+                        model=model)
 
 
 def partition_pin_stations(model: ResolvedModel, rules: SillPlateAnchorRules,
@@ -172,7 +190,7 @@ def strap_holdown_locations(model: ResolvedModel, rules: SillPlateAnchorRules,
     tol = rules.coincident_end_tolerance_in * M_PER_IN
     ends = []
     for ret in returns:
-        start, end = centerline_endpoints(list(ret.outline))
+        start, end = band_centre_ends(model, ret)
         ends.extend((point, axis_of(start, end), ret.z0_m) for point in (start, end))
     authored = _authored_embedded_holdowns(model)
     standdown = rules.authored_holdown_standdown_in * M_PER_IN
@@ -194,7 +212,7 @@ def strap_holdown_stations(model: ResolvedModel, rules: SillPlateAnchorRules,
     returns, locations = strap_holdown_locations(model, rules, sill_category)
     tol = rules.coincident_end_tolerance_in * M_PER_IN
     found: list[Station] = []
-    runs = [(ret, centerline_endpoints(list(ret.outline))) for ret in returns]
+    runs = [(ret, band_centre_ends(model, ret)) for ret in returns]
     for point in locations:
         ret, ends = next((ret, ends) for ret, ends in runs
                          if any(math.dist(point, p) <= tol for p in ends))

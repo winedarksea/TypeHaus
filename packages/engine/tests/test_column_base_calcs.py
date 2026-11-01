@@ -39,11 +39,12 @@ _WORKED = {
     "PT-BW-GW": (3.50, 4.50, 2.0, 4.33, 3.21, Status.OK),
     "PT-BW-GE": (3.50, 4.50, 1.5, 4.39, 3.30, Status.OK),
 }
-#: The cast variant's N-S base shear, 413.3 lb at 7.31' above grade since the standard-heel
-#: trusses (canopy_garage_diaphragm.md §7, 2026-10-08); it was 424.1 lb at 7.14'.
+#: The cast variant's N-S base shear, 406.9 lb at 7.40' above grade at the engine's shaft
+#: since the heel is read at the outside face (canopy_garage_diaphragm.md §7, 2026-10-31);
+#: 413.3 lb at 7.31' on 2026-10-08, 424.1 lb at 7.14' before that.
 _ORACLE = {
-    "PT-BW-RE": (7.33, 8.33, 2.5, 6.48, 4.87, Status.OK),
-    "PT-BW-RNE": (7.33, 8.33, 2.0, 6.50, 4.92, Status.OK),
+    "PT-BW-RE": (7.33, 8.33, 2.5, 6.46, 4.86, Status.OK),
+    "PT-BW-RNE": (7.33, 8.33, 2.0, 6.48, 4.90, Status.OK),
 }
 
 #: The columns that claim IBC §1806.3.4's doubling: NONE since basis 4. The mechanism and its
@@ -149,7 +150,7 @@ def test_the_pad_is_reported_as_not_being_the_mechanism(catlin_cast_ctx) -> None
     """
     record = catlin_cast_ctx.engineering[f"{KIND}/PT-BW-RE"]
     inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["eccentricity"] == pytest.approx(1.05, abs=0.02)
+    assert inputs["eccentricity"] == pytest.approx(1.02, abs=0.02)
     assert any("NOT WHAT MAKES THIS COLUMN FIXED" in note for note in record.notes)
     assert not [s for s in record.limit_states
                 if s.name in ("eccentricity", "bearing", "overturning")]

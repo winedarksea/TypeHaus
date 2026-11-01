@@ -65,8 +65,8 @@ def test_the_landed_record_reproduces_section_5(record) -> None:
         "slenderness KL/r, §E2": (48.77, 200.0),
         "axial, flexural buckling §E3": (3423.4, 84794.2),
         "combined axial and drag, §H1.1": (0.02246, 1.0),
-        "saddle bolts, uplift": (428.93, 3390.0),
-        "PT-BW-RE base anchor tension (breakout / pullout / steel)": (714.9, 4528.2),
+        "saddle bolts, uplift": (426.44, 3390.0),  # 40 ft2 x (16.661 - 6.0), 2026-10-31
+        "PT-BW-RE base anchor tension (breakout / pullout / steel)": (710.74, 4528.2),  # 426.44 / 0.6
     }
     for name, (demand, capacity) in rows.items():
         assert states[name].demand == pytest.approx(demand, rel=2e-3), name
