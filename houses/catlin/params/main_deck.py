@@ -21,7 +21,7 @@ and the basement wall comes out at exactly 8'-0".
       +15/16" ------------------------------------  cap top, coated   <- finished floor
       +3/4"   3/4" plywood subfloor
       0'-0"   ------------------------------------  STOREY DATUM (top of joists)
-              11 7/8" I-joist @ 16" o.c.             4 3/8" cast cover
+              11 7/8" TJI 230 @ 16" o.c.             4 3/8" cast cover
      -11 7/8" ----- joist soffit ------                 +
               1 1/2" PT mudsill                     10" BuildDeck (8" base + 2" top hat)
      -13 3/8"
@@ -132,6 +132,8 @@ found for any of the four EPS deck systems examined — see plans/buildability.m
 """
 
 from typehaus.geometry import rect
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus import (
     BarSpec,
     DeckLayer,
@@ -151,15 +153,14 @@ from typehaus import (
 
 from params.flooring import LVP_THICKNESS_IN
 from params.second_deck import _DEPTH as _JOIST_DEPTH
-from params.second_deck import _SUBFLOOR
+from params.second_deck import _JOIST, _SUBFLOOR, TJI_230_FLOOR_SPAN
 
 # --- the wood bay this deck has to match, top and bottom --------------------------
 #
 # The second floor's build-up, repeated on this storey. The depth and subfloor thickness
 # are imported from ``params/second_deck.py`` rather than restated: that deck is split
 # truss/I-joist at x=18', and both members share this one depth precisely so the concrete
-# band below can keep matching a single number instead of two.
-_JOIST = "11.875 I-joist"
+# band below can keep matching a single number instead of two. The joist is that deck's too.
 _JOIST_OC = inch(16)
 
 # The basement's ceiling — 5/8" gypsum board, room side (and only layer).
@@ -295,9 +296,9 @@ _STR_X = ft(10)
 # ``structural.member_interference``, correctly. It is also not what anyone builds: a bay
 # whose span changes from 18'-0" to 10'-0" gets a joist on each side of the line, nailed
 # together. So the south system stops one joist WIDTH short and the pair sits face to face,
-# which is exactly the 2 1/2" this subtracts. Do not "tidy" the two edges back onto one
-# number.
-_TRANSITION_DOUBLE = inch(2.5)   # one I-joist flange width
+# which is exactly the one flange width this subtracts. Do not "tidy" the two edges back
+# onto one number.
+_TRANSITION_DOUBLE = inch(cross_section(_JOIST).flange_width_m / M_PER_IN)  # one flange
 _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 
 # --- RM-M-BATH2's drop-in bath: the answer to plans/TODO.md's 60 psf item ---------
@@ -359,6 +360,8 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 # box's own weight: a 1 1/2" mortar bed plus platform and tile is roughly 450-500 lb of
 # PERMANENT load over ~23 ft2, which is the part that creeps for thirty years while the
 # 601 lb of water is there a few hours a week.
+# (2026-11-01: the series is named, TJI 230, and every TJI floor now grades against
+# TJ-4000's own row, ``TJI_230_FLOOR_SPAN``: 19'-10" at L/480, 40 live / 20 dead.)
 #
 # ** THE THIRD ENTRY IS THE WASHTOWER, AND IT IS BLOCKING ONLY — NO SISTER. ** FX-M-LAUNDRY
 # stands at (115.83", 236.64"), so its 27"x32 3/4" footprint covers y 220"..253" and its
@@ -379,7 +382,7 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 # this one would cut its blocks against a bare joist and the bath's ply would then be laid
 # straight through them — ``structural.member_interference``, two FAILs. ``plies=1`` asks
 # for no ply of its own and tops up nothing; it rides the bath entry's finished cluster.
-# x=114.58"..117.08" at 2 1/2" wide, clear of the bath's 73.31"..75.81". The station
+# one flange wide at x=115.83", clear of the bath's blocks at x=74.56". The station
 # follows the machine: it moved 1 3/4" east on 2026-09-09 and this constant went with it.
 _TUB_DECK_X = inch(74.56)          # the blocks' axis: 3.9" west of FX-M-BATH2-TUB's centre (78.49"),
                                    # clear of the end drain's drop at x=78.49", y=215.18"
@@ -440,6 +443,7 @@ WEST_FLOOR = FloorSystem(
                      bearing_refs=("W-B-W2", "W-B-W1", "W-B-CS", "W-B-CS3", "W-B-CS2",
                                    "W-B-CN2")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    published_span=TJI_230_FLOOR_SPAN,
     reinforcements=_WEST_FLOOR_REINFORCEMENT,
     # The basement's ceiling. R316.4 wants gypsum over the EPS in the concrete band; the
     # owner's decision was to drywall the whole ceiling rather than stop the board at the
@@ -447,7 +451,7 @@ WEST_FLOOR = FloorSystem(
     ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _MECH_Y_S),
     source="catlin main floor, west half south of the bathroom node line — 11 7/8\" "
-           "I-joists at 16\" o.c. spanning 18'-0\" east-west from the west wall to the "
+           "TJI 230 joists at 16\" o.c. spanning 18'-0\" east-west from the west wall to the "
            "x=18' bearing line",
 )
 
@@ -457,6 +461,7 @@ MECH_FLOOR = FloorSystem(
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      bearing_refs=("W-B-W1", "W-B-STR3B", "W-B-STR3", "W-B-STR")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _MECH_Y, _STR_X, _HOUSE),
     # The two ERV risers' own holes, added 2026-09-15 — the FIRST openings this deck has ever
@@ -482,6 +487,7 @@ STAIR_FLOOR = FloorSystem(
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      bearing_refs=("W-B-STR3B", "W-B-STR3", "W-B-STR", "W-B-CN")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
     outline=_rect(_STR_X, _MECH_Y, _CENTRE_X, _HOUSE),
     openings=("FO-M-STAIR",),
@@ -498,6 +504,7 @@ EAST_FLOOR = FloorSystem(
                      # y 13'-10"..18' and this deck never touches it.
                      bearing_refs=("W-B-CS", "W-B-CS3", "W-B-E1")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _BAND_Y),
     # ** D-B-PATIO'S HEADER IS IN THIS BAND (2026-10-31). ** W-B-S3-FR bears this deck's

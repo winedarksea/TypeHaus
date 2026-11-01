@@ -28,8 +28,8 @@ class _Kit:
 _ROWS = [
     (DoorOperation.SWING, 32, 34.236, 81.512, True),
     (DoorOperation.DOUBLE_SWING, 60, 62.354, 81.512, True),
-    (DoorOperation.SLIDE, 48, 50.236, 81.512, False),
-    (DoorOperation.BIFOLD, 56, 58.236, 81.512, False),
+    (DoorOperation.SLIDE, 48, 50.0, 81.5, False),  # finished opening + jamb, no leaf gap
+    (DoorOperation.BIFOLD, 56, 58.0, 81.5, False),
     (DoorOperation.POCKET, 36, 74.5, 83.25, False),
     (DoorOperation.OVERHEAD, 192, 192, 84, False),
 ]
@@ -79,3 +79,23 @@ def test_a_held_opening_keeps_its_void_and_infers_the_leaf():
     assert door_sizing(_Door(), pair, None, None, 0.0).clear_w_m / _IN == pytest.approx(54.625)
     post = pair.model_copy(update={"center_post": True})
     assert door_sizing(_Door(), post, None, None, 0.0).clear_w_m / _IN == pytest.approx(27.3125)
+
+
+def test_jamb_depth_rips_or_extends_stock_and_a_finished_floor_ro_rises():
+    from types import SimpleNamespace
+
+    standard = SimpleNamespace(jamb_allowance=inch(1),
+                               jamb_stock_depths=(inch(4.5625), inch(6.5625)))
+    door_type = DoorType(tag="T", width=ft(2, 8), height=ft(6, 8))
+    rip = door_sizing(_Door(), door_type, standard, None, 0.0, 6.125 * _IN)
+    assert rip.jamb_stock_m / _IN == pytest.approx(6.5625)
+    assert rip.jamb_rip_m / _IN == pytest.approx(0.4375) and rip.jamb_extension_m == 0
+    deep = door_sizing(_Door(), door_type, standard, None, 0.0, 9.25 * _IN)
+    assert deep.jamb_extension_m / _IN == pytest.approx(2.6875) and deep.jamb_rip_m == 0
+    stock = door_sizing(_Door(), door_type, standard, None, 0.0, 4.5 * _IN)
+    assert stock.jamb_rip_m == stock.jamb_extension_m == 0  # 1/16" proud: set as-is
+    # A maker's RO measured from the finished floor rises by the build-up (Murphy, C2-E7).
+    murphy = DoorType(tag="M", width=ft(3), height=ft(6, 8), rough_opening=OpeningSize(
+        width=inch(38), height=inch(82), datum="finished_floor"))
+    assert door_sizing(_Door(), murphy, None, None, 1.5 * _IN).rough_h_m / _IN == \
+        pytest.approx(83.5)

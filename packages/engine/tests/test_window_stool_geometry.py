@@ -137,7 +137,8 @@ def test_a_stone_stool_notch_seats_on_the_bullnose_return(catlin_model_ro):
     inch = 0.0254
     stools = {stool.tag: stool for stool in catlin_model_ro.window_stools}
     kitchen = stools["STOOL-WIN-M-KITCH"]
-    assert kitchen.notch_inset_m == pytest.approx(0.5 * inch)
+    # The return rides the buck's membrane face: 3/8" buck + 20 mil inside the framed RO.
+    assert kitchen.notch_inset_m == pytest.approx((0.5 + 0.375 + 0.020) * inch)
     assert kitchen.corner_radii_m[3] == kitchen.corner_radii_m[6] == pytest.approx(0.75 * inch)
     plant = stools["STOOL-WIN-S-PLANT1"]
     assert plant.notch_inset_m == 0.0 and plant.corner_radii_m[3] == pytest.approx(0.5 * inch)

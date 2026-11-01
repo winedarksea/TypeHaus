@@ -192,6 +192,19 @@ def test_the_pier_cage_is_the_aci_minimum_and_slenderness_must_be_computed():
     assert magnifier == pytest.approx(1.01, abs=0.01)
 
 
+def test_the_14_inch_cage_meets_the_floor_only_on_the_reduced_area(catlin_engineering):
+    """§13b: (4) #5 is short of 1% of a 14" gross; ACI 318-19 §10.3.1.2's half area carries it."""
+    gross = math.pi * 7.0 ** 2
+    assert gross == pytest.approx(153.94, abs=0.01)
+    assert 4 * 0.31 < 0.01 * gross, "short on gross: the engineer hold"
+    assert 0.01 * gross / 2.0 == pytest.approx(0.770, abs=0.001)
+    results = catlin_engineering.engineering
+    for tag in ("PT-BW-W", "PT-BW-GW"):
+        state = next(s for s in results[f"deck_post/{tag}"].limit_states
+                     if s.name == "longitudinal steel")
+        assert state.demand == pytest.approx(0.01 * gross / 2.0, abs=0.001)
+
+
 def test_the_footing_is_sized_for_the_load_and_the_retired_pad_was_not():
     """§6. 2'-0" square, and the reason the retired 1.78 ft2 pad does not cover it."""
     service_lb = 5283.0

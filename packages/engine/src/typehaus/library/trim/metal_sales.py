@@ -69,9 +69,20 @@ BBD_TRANSITION = TrimProfile(
 OPENING_HEAD = TrimProfile(
     "1.5 inch Sill/Head",
     _pvdf("58114XX"),
-    section_in=((0, 2.5), (0, 0), (1.5, 0), (1.8536, -0.3536)),
+    section_in=((0, 2.5), (0, 0), (1.5, 0), (1.853553, -0.353553)),
     receiver_throat_in=1.5,
     source="PBR Install Guide 4/2024 pp. 20, 68-72",
+)
+#: BBD75's own head: 2-1/2 back leg, 1-1/8 seat at 95 deg, 2-1/2 face leg, a 4" return back
+#: over the frame head and a 1/2" kick. A trim-first head: the frame goes in last under the
+#: return (pp. 28-29 install order), so it does not seat over a window-first outie frame.
+BBD_HEAD_TRIM = TrimProfile(
+    "Head Trim",
+    _pvdf("58720XX"),
+    section_in=((0, 2.5), (0, 0), (1.1207, -0.0981), (1.1207, -2.5981), (-2.8793, -2.5981),
+                (-3.2329, -2.9517)),
+    receiver_throat_in=1.125,
+    source="BBD75 Install Guide 10/2025 pp. 15, 28-29",
 )
 #: Window jamb sections are (along the wall, outward) from the rough-opening edge, as
 #: ``window_jamb_section`` returns them. Legs: 1-3/8 reveal leg, 1 in C-hem over the rib,

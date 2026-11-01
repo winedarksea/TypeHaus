@@ -365,7 +365,7 @@ def test_top_backing_is_emitted_below_the_stud_tops(catlin_plan, catlin_model_ro
         assert blocks
         band = catlin_plan.by_tag(wall_ref.replace("W-", "BK-", 1) + "-KIT-TOP")
         expected_length = band.length.meters if band.length else math.dist(*wall.axis)
-        assert sum(block.length_m for block in blocks) == pytest.approx(expected_length)
+        _assert_blocks_fill_run(blocks, wall, expected_length)
     pantry_band = catlin_plan.by_tag("BK-M-E1-PANTRY-TOP")
     pantry_blocks = [
         member for member in catlin_model_ro.wall(pantry_band.wall_ref).members
@@ -375,9 +375,21 @@ def test_top_backing_is_emitted_below_the_stud_tops(catlin_plan, catlin_model_ro
             pantry_band.elevation.meters + pantry_band.height.meters
         )
     ]
-    assert sum(block.length_m for block in pantry_blocks) == pytest.approx(
-        pantry_band.length.meters
-    )
+    _assert_blocks_fill_run(pantry_blocks, catlin_model_ro.wall(pantry_band.wall_ref),
+                            pantry_band.length.meters)
+
+
+def _assert_blocks_fill_run(blocks, wall, run_m) -> None:
+    """Blocks are fitted between studs: they fill the run less the studs they butt."""
+    (x0, y0), (x1, y1) = wall.axis
+    length = math.dist((x0, y0), (x1, y1))
+    ux, uy = (x1 - x0) / length, (y1 - y0) / length
+    runs = sorted(sorted((p[0] - x0) * ux + (p[1] - y0) * uy for p in (b.p0, b.p1))
+                  for b in blocks)
+    assert sum(block.length_m for block in blocks) <= run_m + 1e-6
+    # Gaps are studs (a doubled stud at most); the ends may stop at a corner pack.
+    assert all(b[0] - a[1] <= 3 * INCH + 1e-6 for a, b in zip(runs, runs[1:], strict=False))
+    assert runs[-1][1] - runs[0][0] >= run_m - 2 * 6 * INCH
 
 
 def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, catlin_model_ro):

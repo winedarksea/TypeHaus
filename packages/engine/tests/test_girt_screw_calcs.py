@@ -31,14 +31,14 @@ from typehaus.engineering.item import Status
 #: term with ``board_batten_girt_span.md`` and ``test_cladding_read.py``: the panel and
 #: the screw carry ONE suction, and two numbers for it would mean one of them was wrong.
 _ORACLE = {
-    "mean_roof_height_ft": 25.5990,
-    "q_h_psf": 19.2679,
+    "mean_roof_height_ft": 25.5178,
+    "q_h_psf": 19.2504,
     "gcp_zone5": -1.4,
     "gcpi": 0.18,
-    "asd_zone5_psf": 18.2659,
+    "asd_zone5_psf": 18.2494,
     # 32" block module x 24" course module.
     "tributary_ft2": 5.3333,
-    "demand_lb": 97.4184,
+    "demand_lb": 97.3301,
     # The screw: FastenMaster TimberLOK 8" TLOK08, ESR-1078 Table 1A (2" thread).
     "length_in": 8.0,
     "thread_in": 2.0,
@@ -49,10 +49,10 @@ _ORACLE = {
     "thread_in_stud_in": 1.5,
     # ESR-1078 Table 2, SPF G 0.42: 170 lb/in x 1.5", C_D 1.0 (the report's clause unread).
     "withdrawal_lb": 255.0,
-    "withdrawal_ratio": 0.3820,
+    "withdrawal_ratio": 0.3817,
     # ESR-1078 Table 3, 1-1/2" side member at SG 0.55 — the girt IS that side member.
     "pull_through_lb": 200.0,
-    "pull_through_ratio": 0.4871,
+    "pull_through_ratio": 0.4867,
     # NDS 2018 §12.2.1 cross-check, printed and never graded against.
     "nds_w_per_in": 95.01,
     # NDS 2018 §12.1.4.6, 6D.

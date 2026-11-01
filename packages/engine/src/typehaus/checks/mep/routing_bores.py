@@ -38,6 +38,8 @@ from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
+from typehaus.checks.mep.routing_bore_scope import bearing_wall_tags as bearing_wall_tags
+from typehaus.checks.mep.routing_bore_scope import lagging_at_framing, r602_6_role
 from typehaus.checks.registry import CheckContext, Tier, check, shared
 from typehaus.findings import Finding
 
@@ -48,21 +50,6 @@ _HEADER = "mep.run_through_header"
 #: Categories that are a stud for R602.6's purposes. A king, a jack and a cripple are all
 #: studs; the section does not distinguish them and neither does the drill.
 STUD_CATEGORIES = frozenset({"stud", "king", "jack", "cripple"})
-
-
-def bearing_wall_tags(ctx: CheckContext) -> frozenset[str]:
-    """Every wall some floor's joists actually bear on, plus every foundation wall.
-
-    Read from ``JoistSpec.bearing_refs`` — the model's own statement of what carries what —
-    rather than guessed from "exterior". The difference is 25% against 40% of a stud's
-    depth, which for a 2x6 is nearly an inch of pipe and is the whole question for a 2"
-    branch.
-    """
-    tags = {wall.tag for wall in ctx.model.walls if wall.is_foundation}
-    for floor in ctx.model.floors:
-        system = ctx.model.plan.by_tag(floor.tag)
-        tags.update(getattr(getattr(system, "joists", None), "bearing_refs", ()) or ())
-    return frozenset(tags)
 
 
 def _crossings(ctx: CheckContext) -> list:
@@ -99,11 +86,15 @@ def _iter_crossings(ctx: CheckContext):
     hulls = [LineString(wall.axis).buffer(wall.thickness_m) for wall in walls]
     index = STRtree(hulls)
     sections = run_sections(ctx.model)
+    lagging = lagging_at_framing(ctx)
 
     for _kind, tag, path, z in run_polylines(ctx.model):
         if len(path) < 2 or len(z) != len(path):
             continue
         radius, half_z, _insulation = sections.get(tag, (0.0, 0.0, None))
+        # Bare unless the run's lagging runs through the framing (``routing_bore_scope``).
+        extra = lagging.get(tag, (0.0, ""))[0]
+        radius, half_z = radius + extra, half_z + extra
         found: dict[str, list] = {}
         for i in range(len(path) - 1):
             a, b = path[i], path[i + 1]
@@ -135,7 +126,8 @@ def run_through_stud(ctx: CheckContext) -> list[Finding]:
     from typehaus.quantities import M_PER_IN
     from typehaus.resolve.mep_bores import stud_bore
 
-    bearing = bearing_wall_tags(ctx)
+    roles = r602_6_role(ctx)  # bearing or exterior both take R602.6's 40%
+    lagging = lagging_at_framing(ctx)
     # Per WALL first (``wall_cavity``): a run standing beside or too big for the cavity is
     # that, whichever studs it happens to clip; one standing between studs is still graded.
     cavity = dict(_stud_planes(ctx))  # a copy: entries are popped below
@@ -151,13 +143,15 @@ def run_through_stud(ctx: CheckContext) -> list[Finding]:
         cavity.pop((tag, wall.tag), None)
         seen += 1
         verdicts = [(cut, stud_bore(cut.profile, cut.diameter_in,
-                                    bearing=wall.tag in bearing,
+                                    bearing=wall.tag in roles,
                                     length_in=cut.member_height_m / M_PER_IN or None))
                     for cut in studs]
         bad = [(cut, v) for cut, v in verdicts if v.ok is False]
         unsure = [(cut, v) for cut, v in verdicts if v.ok is None]
+        lag = lagging.get(tag)
         where = (f"{tag} would bore {len(studs)} member(s) of {wall.tag} "
-                 f"({'bearing' if wall.tag in bearing else 'non-bearing'})")
+                 f"({roles.get(wall.tag, 'non-bearing')}"
+                 f"{'; ' + lag[1] if lag else ''})")
         if bad:
             cut, verdict = max(bad, key=lambda item: item[1].actual_in
                                - (item[1].limit_in or 0.0))
@@ -226,12 +220,10 @@ def run_through_plate(ctx: CheckContext) -> list[Finding]:
     across the plate through its whole thickness: the plate is severed whatever the width.
     """
     from typehaus.resolve.mep_bores import top_plate_cut
-    from typehaus.resolve.room_openings import rooms_by_storey, wall_is_exterior
 
     ties = plate_ties(ctx)
     beside = standing_beside(ctx)
-    bearing = bearing_wall_tags(ctx)
-    rooms = rooms_by_storey(ctx.model)
+    roles = r602_6_role(ctx)
     out: list[Finding] = []
     seen = 0
     for tag, wall, cuts in _crossings(ctx):
@@ -248,7 +240,7 @@ def run_through_plate(ctx: CheckContext) -> list[Finding]:
         covered = ties.get(wall.tag, frozenset())
         tied = "*" in covered or tag in covered
         # R602.6.1's own scope: exterior walls and interior BEARING walls.
-        governed = wall.tag in bearing or wall_is_exterior(ctx.model, wall, rooms)
+        governed = wall.tag in roles
         verdicts = [(cut, top_plate_cut(cut.profile, cut.diameter_in, tie=tied,
                                         through_in=cut.through_in,
                                         spans_width=cut.spans_width, governed=governed))

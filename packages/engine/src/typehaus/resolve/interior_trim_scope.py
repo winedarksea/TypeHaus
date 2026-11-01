@@ -27,10 +27,6 @@ class TrimScope:
     # Wall bodies and floor planes, each computed once for the whole pass.
     _cache: dict = field(default_factory=dict, compare=False, repr=False)
 
-    @property
-    def thickness_m(self) -> float:
-        return self.standard.thickness.meters
-
     def body(self, wall: ResolvedWall):
         from typehaus.resolve.wall_faces import wall_body
 

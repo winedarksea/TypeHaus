@@ -142,25 +142,27 @@ V_ult **115 mph** (MN Rules 1309.0301), Exposure **B**, Risk Category **II**, K_
 (§26.8.2, flat suburban parcel), K_d **0.85** (Table 26.6-1), K_e taken as **1.0** (§26.9
 permits it; the tabulated value at this site's 830 ft is 0.97, so 1.0 is conservative).
 
-Mean roof height, RF-HOUSE:
+Mean roof height, RF-HOUSE (re-struck 2026-11-01: the plane is anchored at the birdsmouth
+heel with the rafters' true plumb depth, decision #109, and dropped 0.973" — eave 251.375" ->
+250.402", ridge 363.000" -> 362.027"; `roof_wall_eave_detail.md` works it):
 
-    eave  6.384925 m  = 20.9479 ft
-    ridge 9.220200 m  = 30.2500 ft
-    h = (20.9479 + 30.2500) / 2 = 25.5990 ft
+    eave  6.360202 m  = 20.8668 ft
+    ridge 9.195477 m  = 30.1689 ft
+    h = (20.8668 + 30.1689) / 2 = 25.5178 ft
 
 K_z, Table 26.10-1, Exposure B (z_g = 1200 ft, alpha = 7):
 
-    K_z = 2.01 (z/z_g)^(2/alpha) = 2.01 x (25.5990/1200)^(2/7)
-        = 2.01 x (0.0213325)^0.285714
-        = 2.01 x 0.333106
-        = 0.669544
+    K_z = 2.01 (z/z_g)^(2/alpha) = 2.01 x (25.5178/1200)^(2/7)
+        = 2.01 x (0.0212649)^0.285714
+        = 2.01 x 0.332805
+        = 0.668937
 
 q_h, eq. 26.10-1:
 
     q_h = 0.00256 x K_z x K_zt x K_d x K_e x V^2
-        = 0.00256 x 0.669544 x 1.0 x 0.85 x 115^2
-        = 0.00256 x 0.669544 x 0.85 x 13,225
-        = 19.2679 psf              (strength level)
+        = 0.00256 x 0.668937 x 1.0 x 0.85 x 115^2
+        = 0.00256 x 0.668937 x 0.85 x 13,225
+        = 19.2504 psf              (strength level)
 
 ## 3. Cladding pressure — ASCE 7-16 §30.3, Fig. 30.3-1 (walls)
 
@@ -180,8 +182,8 @@ capacity side.**
     Zone 4 (field):   GC_p = -1.1
     GC_pi = +-0.18    (Table 26.13-1, enclosed; taken with the sign that worsens suction)
 
-    p(zone 5) = q_h (GC_p - GC_pi) = 19.2679 x (-1.4 - 0.18) = -30.4432 psf   strength
-    p(zone 4) =                     19.2679 x (-1.1 - 0.18) = -24.6629 psf   strength
+    p(zone 5) = q_h (GC_p - GC_pi) = 19.2504 x (-1.4 - 0.18) = -30.4156 psf   strength
+    p(zone 4) =                     19.2504 x (-1.1 - 0.18) = -24.6405 psf   strength
 
 **Zone 5 governs what gets ordered.** A wall panel is one product and runs through both
 zones; nobody orders two gauges for one elevation.
@@ -192,8 +194,8 @@ Every capacity this house cites (NDS, ICC-ES, IAPMO UES, and a manufacturer's sp
 is an **allowable**. Wind acts at 0.6W in the ASD combinations, so the demand has to come to
 the same basis before the two are set beside each other:
 
-    zone 5:  0.6 x 30.4432 = **18.2659 psf**
-    zone 4:  0.6 x 24.6629 = 14.7977 psf
+    zone 5:  0.6 x 30.4156 = **18.2494 psf**
+    zone 4:  0.6 x 24.6405 = 14.7843 psf
 
 ## 5. Panel bending — read off the named product's own table
 
@@ -201,7 +203,7 @@ Metal Sales BBD75-1212, 24 ga, read at the guide's 2'-0" fastener spacing: **58 
 allowable outward** (suction), 43 psf inward. (BB75-1111's guide publishes the identical
 row, which is why the clip/direct correction of §1 moved no number in this section.)
 
-    d/c = 18.2659 / 58 = **0.315**          -> passes, margin 3.18x
+    d/c = 18.2494 / 58 = **0.315**          -> passes, margin 3.18x
 
 This is now the product's own number rather than a nearest-match borrowed from a table for
 some other panel, which is most of what naming the product bought. The table's stated basis
@@ -212,7 +214,7 @@ only bending, and the manufacturer says so.
 
 Suction is what is graded, because suction is what governs a wall panel: it is the negative
 zone-5 pressure of §3 that pulls the panel off its fasteners. The inward 43 psf is recorded
-because it is the smaller of the two, and against the same 18.27 psf demand it is d/c 0.43 —
+because it is the smaller of the two, and against the same 18.25 psf demand it is d/c 0.42 —
 still passing. *(Superseded by §5b: the inward allowable answers the positive pressure,
 13.64 psf ASD, d/c 0.317 — and it governs.)*
 
@@ -258,15 +260,15 @@ Fig. 30.3-1, walls, positive GC_p (one curve for zones 4 and 5): +1.0 at A <= 10
     GC_p   = +1.0
     GC_pi  = -0.18      (internal SUCTION is the sign that adds to an inward push)
 
-    p      = q_h (GC_p - GC_pi) = 19.2679 x (1.0 + 0.18)
-           = 19.2679 x 1.18 = 22.7361 psf    strength
-    ASD    = 0.6 x 22.7361  = **13.6417 psf**
+    p      = q_h (GC_p - GC_pi) = 19.2504 x (1.0 + 0.18)
+           = 19.2504 x 1.18 = 22.7155 psf    strength
+    ASD    = 0.6 x 22.7155  = **13.6293 psf**
 
-    d/c inward  = 13.6417 / 43 = **0.3172**
-    d/c outward = 18.2659 / 58 =   0.3149     (§5)
+    d/c inward  = 13.6293 / 43 = **0.3170**
+    d/c outward = 18.2494 / 58 =   0.3146     (§5)
 
 **Inward governs, by 0.7%.** A lower demand against a lower allowable: 43/58 = 0.741 and
-13.64/18.27 = 0.747, so the ratios cross. Both pass with 3.1x margin, and as with §6's
+13.63/18.25 = 0.747, so the ratios cross. Both pass with 3.1x margin, and as with §6's
 bending/withdrawal flip, which one "governs" is a label, not a finding. Both are graded.
 
 ## 6. Withdrawal of the concealed leg's screws — NDS hand pass
@@ -333,9 +335,9 @@ One screw per panel per girt at the nail strip — BBD75's own wall-base and jam
 The tributary area is the girt spacing by the panel's **12" net coverage**:
 
     A = (24/12) x (12/12) = **2.0000 ft²**
-    P = 18.2659 x 2.0000 = **36.53 lb**
+    P = 18.2494 x 2.0000 = **36.50 lb**
 
-    d/c = 36.53 / 201.1 = **0.182**
+    d/c = 36.50 / 201.1 = **0.182**
 
 **No longer the governing state (2026-09-22).** The panel's own row governs again (0.317
 inward, 0.315 outward). History: at the 1" it read 36.53 / 109.4 = **0.334** and governed,
@@ -349,7 +351,7 @@ should read it as a label moving, not as a finding.
 
 ### Screw length is the whole answer, so the alternates are printed
 
-All d/c below are against the 36.53 lb demand at 12" coverage.
+All d/c below are against the 36.50 lb demand at 12" coverage.
 
 | Screw | Penetration | Capacity | d/c | |
 |---|---|---|---|---|
@@ -445,13 +447,13 @@ sheet through the panel. So this section shares §6's demand and none of its cap
 
 **The demand is §6's, unchanged** — the same screw carries the same tributary:
 
-    P = 36.53 lb
+    P = 36.50 lb
 
-    d/c = 36.53 / 310.7 = **0.118**
+    d/c = 36.50 / 310.7 = **0.117**
 
 **Passes at 8.5x, and it is the least of the three states.** Bending governs at 0.315
 (0.317 inward), withdrawal is 0.182 at the 1-1/2" (0.334 at the old 1"), pull-through is
-0.118. The ordering is the one a reader should expect: a
+0.117. The ordering is the one a reader should expect: a
 single screw carries only one panel width of suction, and 24 ga sheet at a 0.40" head is a
 lot of bearing for 36 lb.
 
@@ -549,7 +551,7 @@ to this note's arithmetic.**
    AISI S100, wood per NDS) — and states: *"The structural design professional may
    rationally design other fastener and substrate combinations based on engineering
    mechanics and the maximum panel/clip capacities stated within this report."* At §4's
-   18.27 psf and one fastener per panel per girt over a 12" panel that is a 2.00 ft²
+   18.25 psf and one fastener per panel per girt over a 12" panel that is a 2.00 ft²
    tributary and 36.5 lb per fastener. **That arithmetic is now done — §6.** The girt is
    1-1/2" KDAT, not 20 ga steel and not a 1"-penetration DFL member, so none of ER-309's
    three rows can simply be read off; what its authorising sentence permits, and what §6
@@ -800,7 +802,7 @@ engine computes, set against an allowable a reviewer opens, mints nothing for a 
   girt) — a CONDITION the row is checked against (drift guards), not a capacity computed.
 - **§6 and §6.2 are kept** as history and corroboration, and as the
   `structural.cladding_fastener` advisory: withdrawal 0.182 (0.334 before D3), pull-through
-  0.118. It names no
+  0.117. It names no
   engineering item and FAILs only at WARN severity.
 - **The girt screw stays engineered** (`girt_screw/W-A-N1`), and its demand is still §2-§4
   of this note, which is why the note stays in the handoff bundle.
@@ -828,7 +830,7 @@ the panel is one product order.
 **What the seal is being asked to confirm** is no longer an absence. All three of the
 failure modes IRC R703.1.2 names are graded: bending **0.315** against the manufacturer's own
 published allowable (§5), withdrawal **0.334** against NDS 2018 §12.2 (§6) — the governing
-state since 2026-09-14 — and head pull-through **0.118** against AISI S100 (§6.2). The
+state since 2026-09-14 — and head pull-through **0.117** against AISI S100 (§6.2). The
 judgement in front of the engineer is whether the rational designs in §6 and §6.2 are the
 right ones for this connection — the wet-service call, the tip and flange deductions, one
 screw per panel per girt as the fastener pattern, and the 0.40" head bearing diameter — not

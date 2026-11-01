@@ -44,7 +44,8 @@ def test_catlin_returns_inherit_finishes_and_skip_other_liners(catlin_model_ro):
 def test_returns_reach_viewer_and_glb_with_material_and_trade(catlin_model_ro):
     model = catlin_model_ro
     solids = {s.uid: s for s in model.solids if s.category == 'window_return'}
-    assert len(solids) == 108  # 36 returns x the board's jambs and head; paint has no solid
+    # 36 returns x jambs + head, plus 3 laps on each of the 34 bucked; paint has no solid.
+    assert len(solids) == 210
     payload = model_to_dict(model)
     rows = [row for row in payload['solids'] if row['category'] == 'window_return']
     assert {row['uid'] for row in rows} == set(solids)
@@ -76,7 +77,7 @@ def test_returns_export_as_ifc_coverings(catlin_model_ro, catlin_ifc_path):
                 if ifcopenshell.util.element.get_psets(p).get(PSET_SOURCE, {}).get(
                     'category') == 'window_return'}
     solids = [s for s in model.solids if s.category == 'window_return']
-    assert len(products) == len(solids) == 108
+    assert len(products) == len(solids) == 210
     for solid in solids:
         product = products[solid.tag]
         assert product.PredefinedType == 'CLADDING'
@@ -120,3 +121,29 @@ def test_bom_estimate_csv_and_drywall_bid_bill_each_item_once(catlin_model_ro, r
              if line.section == 'drywall_trims']
     assert lines and all(line.unit == 'LF' for line in lines)
     assert {r['material'] for r in beads} <= {line.key for line in lines}
+
+
+def test_an_outie_return_rides_the_buck_to_the_frame_on_a_furred_jamb(catlin_model_ro):
+    """C2-E1: one gypsum plane from the room to the frame; the stud zone furred to it."""
+    from typehaus.resolve.geometry import opening_center, wall_frame
+    from typehaus.resolve.geometry_members import member_box
+
+    model = catlin_model_ro
+    opening = next(o for o in model.openings if o.tag == "WIN-M-BED-W1")
+    wall = model.wall(opening.host_wall)
+    _origin, tangent, _normal, _ = wall_frame(wall)
+    centre = opening_center(wall, opening)
+
+    def along(x, y):
+        return ((x - centre[0]) * tangent[0] + (y - centre[1]) * tangent[1]) / 0.0254
+
+    half = opening.width_m / 2 / 0.0254
+    jamb = next(s for s in model.solids if s.tag == "WIN-M-BED-W1-return-1-jamb-left")
+    # 3/8" buck + 20 mil membrane inside the framed RO, the board 1/2" on it.
+    assert min(along(*p) for p in jamb.outline) == pytest.approx(-half + 0.395, abs=1e-6)
+    furs = [m for m in wall.members if m.child_key.endswith("-WIN-M-BED-W1")
+            and m.child_key.startswith("buck-fur-")]
+    assert len(furs) == 3
+    left = next(m for m in furs if "jamb-l" in m.child_key)
+    xs = [along(*p[:2]) for p in member_box(left).corners_bottom]
+    assert (min(xs), max(xs)) == (pytest.approx(-half), pytest.approx(-half + 0.375))

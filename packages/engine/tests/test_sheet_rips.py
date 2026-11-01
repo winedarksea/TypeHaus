@@ -101,9 +101,11 @@ def test_catlin_panels_bill_once_and_by_the_sheet(catlin_model_ro) -> None:
     # The two the pass was written for: 156 window bucks and 76 pairs of web stiffener.
     buck = rips[("buck rip", "struct-1-plywood")]
     assert buck["thickness_in"] == pytest.approx(0.375)
-    assert int(buck["sheets"]) == 10  # 9 before the 27 1/2" ROs (2026-10-23)
+    # 10 until the stud-zone return furs (2026-11-01); 9 before the 27 1/2" ROs.
+    assert int(buck["sheets"]) == 15
     stiff = rips[("bearing stiffener rip", "struct-1-plywood")]
-    assert stiff["thickness_in"] == pytest.approx(0.719, abs=1e-3)
+    # 7/8" plies since 2026-10-31: TJ-4000 p.29's TJI 230 minimum (decision #109).
+    assert stiff["thickness_in"] == pytest.approx(0.875, abs=1e-3)
     assert int(stiff["sheets"]) == 2
 
     # ...and neither is also billed as lineal feet of an 8-ft stick.

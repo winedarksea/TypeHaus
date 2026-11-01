@@ -100,8 +100,9 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # 2026-10-09: the deck edge is the flight's south face, so RL-A-STAIR is one 8'-0 1/8"
     # line and RL-A-FLIGHT-GUARD stops at the 25'-5 1/8" newel (6'-0"). 26.5 since
     # 2026-10-31: the second-storey well's three legs each stop 1.518" short at a shared
-    # corner post, where their fascia bracket lines meet.
-    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(26.5, abs=0.1)
+    # corner post, where their fascia bracket lines meet. 26.1 since 2026-10-31: RL-A-STAIR
+    # stops 5 1/2" further west under the heel-anchored roof plane (decision #109).
+    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(26.1, abs=0.1)
     # 45.6 over four storey groups, and this is the catch-all: every guard or handrail that
     # names no `type_ref` lands here. RL-A-HANDRAIL's 13.0 runs beside ST-S2A's winder fan as
     # well as its straight flight (per R311.7.8.2, measured by `code.R311_7_8_handrail`

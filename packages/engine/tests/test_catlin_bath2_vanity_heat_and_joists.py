@@ -433,9 +433,9 @@ def test_the_washtower_is_blocked_at_its_own_station_and_gets_no_second_sister()
     assert lo < 226.0 and hi > 254.0
 
     # And the block on the sister's side is cut against the finished CLUSTER face, not the
-    # bare joist — 1 1/4" further out, which is the ply width the cluster grew by.
+    # bare joist — 2 5/16" further out, the TJI 230 ply width the cluster grew by.
     assert round(min(y for m in blocks for y in (m.p0[1], m.p1[1])
-                     if y / M_PER_IN > 240.0) / M_PER_IN, 2) == 243.75
+                     if y / M_PER_IN > 240.0) / M_PER_IN, 2) == 243.47
 
 
 def test_the_sister_stays_clear_of_the_tub_drain():

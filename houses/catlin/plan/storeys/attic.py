@@ -811,7 +811,7 @@ FLOOR_OPENINGS = [
 
 FLOOR = [
     FloorSystem(uid="CAF602AAAA", tag="FS-ATTIC",
-                joists=JoistSpec(member="11.875 I-joist", spacing=inch(16),
+                joists=JoistSpec(member="11.875 TJI 230", spacing=inch(16),
                                  direction="x",
                                  # FO-A-STAIR's south trimmer pack (y 66 1/8..69 5/8") takes
                                  # the y=5'-4" line's place: moved into the pack's band, it is
@@ -860,6 +860,13 @@ FLOOR = [
                 # and it takes the `finish-studio-floor-sealer` allowance out with it.
                 subfloor=DeckLayer(material_ref="plywood-subfloor",
                                    thickness=inch(0.75)),
+                # params/second_deck.TJI_230_FLOOR_SPAN, restated (no import here).
+                published_span=PublishedSpan(
+                    source="Weyerhaeuser TJ-4000 Trus Joist TJI Joist Specifier's Guide (July 2025) p.7, \"Floor Span Tables\"",
+                    table="L/480 live load deflection, 40 PSF live / 20 PSF dead, 11-7/8\" TJI 230 at 16\" o.c.: 19'-10\"",
+                    member="11.875 TJI 230", span=ft(19, 10), load_psf=40.0,
+                    spacing=inch(16), edition="July 2025", page="7",
+                    condition="clear distance between supports, uniform loads, the more restrictive of simple or continuous span; single layer of 24\" o.c. span-rated GLUE-NAILED floor panels (reduce 6\" if nailed only); 1 3/4\" minimum end bearing without web stiffeners, 3 1/2\" intermediate; long-term creep under dead load not considered; the rafter-plate reaction over the LSL rim is outside the row"),
                 # The SECOND storey's ceiling, and the last deck in the house to get one:
                 # the same 5/8" board FS-M-* / SL-M-DECK hang over the basement and
                 # FS-S-WEST/EAST over the main floor. Without it every bedroom, the study

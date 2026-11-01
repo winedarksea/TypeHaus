@@ -342,6 +342,7 @@ BASEMENT_EQUIPMENT = [
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
               position=pt(ft(6, 8.4375), ft(29, 10)), footprint=(inch(24.8), inch(21)),
               room="RM-B-FURNACE", type_ref="EQ-T-BROAN-B210E75RT", circuit="CKT-ERV",
+              rotation=deg(0),  # electrical box west, door south: the collars follow
               # HUNG, not floor-standing. Two reasons and the second is the binding one: a
               # Broan ships with hanging straps and this is how the unit installs, and a
               # floor-standing ERV cannot drain by gravity. Its core makes water all winter,

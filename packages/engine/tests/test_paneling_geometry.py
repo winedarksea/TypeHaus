@@ -202,12 +202,13 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     (splash,) = by_tag["WP-M-KIT-BACKSPLASH"]
     assert splash.thickness_m == pytest.approx(0.004, abs=1e-9)
     assert splash.run_m == pytest.approx(1.0, abs=1e-6)
-    # The mudroom's closet block to 6'-0"; W-M-MECH-E is the L's inner-corner wall that a
-    # single room-wide interior point once put on the closet's face.
+    # The mudroom's closet block to 6'-0", from the PVC base's top; W-M-MECH-E is the L's
+    # inner-corner wall that a single room-wide interior point once put on the closet's face.
     assert {b.wall_tag for b in by_tag["WP-M-MUDROOM-SHIPLAP"]} == {
         "W-M-W1", "W-M-MECH-E", "W-M-MUDC-E", "W-M-MECH-S", "W-M-MUDC-N"}
     for band in by_tag["WP-M-MUDROOM-SHIPLAP"]:
-        assert band.z1_m - band.z0_m == pytest.approx(72 * _IN, abs=1e-6)
+        assert band.z0_m == pytest.approx((0.94685 + 3.5) * _IN, abs=1e-6)
+        assert band.z1_m == pytest.approx(72 * _IN, abs=1e-6)
         assert band.thickness_m == pytest.approx(0.75 * _IN, abs=1e-6)
     # Two 3' spans on two walls of the shower corner, full 7'-6" liner height.
     assert len(by_tag["WP-B-SAUNA-SPLASH"]) == 2
@@ -382,7 +383,7 @@ def test_suite_board_and_batten_is_continuous_and_matches_procurement(bands, cat
     for run in base:
         for prism in base_run_prisms(run):
             assert min(y for _, y in prism.ring) == pytest.approx(
-                back_y - 0.75 * _IN, abs=1e-6)
+                back_y - run.thickness_m, abs=1e-6)
     rows = [r for r in interior_trim_takeoff(catlin_model)
             if r["material"] == "poplar-batten-painted"]
     assert sum(r["pieces"] for r in rows) == len(boards)

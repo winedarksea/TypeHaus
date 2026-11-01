@@ -247,7 +247,9 @@ def _runs(room, kind, scope: TrimScope, ring, perimeter, pieces, arcs, breaks, f
     def at_vertex(s: float) -> bool:
         return any(abs(s - v) < 1e-6 for v in vertices)
 
-    t = _SKIN_M.get(kind, scope.thickness_m)
+    material = (scope.standard.base_material_for(room.tag) if kind == "trim"
+                else room.floor_finish)
+    t = _SKIN_M.get(kind) or scope.standard.thickness_for(material).meters
     out: list[ResolvedBaseRun] = []
     count: dict[str, int] = {}
     n = len(pieces)
@@ -285,8 +287,6 @@ def _runs(room, kind, scope: TrimScope, ring, perimeter, pieces, arcs, breaks, f
         count[wall.tag] = index + 1
         touching = tuple(sorted({tag for a, b, tag in breaks
                                  if abs(a - s1) < 1e-6 or abs(b - s0) < 1e-6}))
-        material = (scope.standard.base_material_for(room.tag) if kind == "trim"
-                    else room.floor_finish)
         out.append(ResolvedBaseRun(
             uid=f"{room.uid}-base-{wall.uid}-{index}",
             tag=f"BASE-{room.tag}-{wall.tag}-{index}",

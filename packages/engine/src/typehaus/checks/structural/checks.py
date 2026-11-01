@@ -15,6 +15,7 @@ from typehaus.model.structure import Footing, FoundationWall
 from typehaus.resolve.solid_categories import in_slab_family
 
 from .frost_shield import shielding_wings
+from .published import graded_against_published
 
 # Simplified allowable joist spans (ft) at 16" o.c., residential floor (40 psf live).
 # I-joists by depth; dimensional lumber per IRC R502.3.1(1), SPF #2.
@@ -43,6 +44,8 @@ _IJOIST_SPAN_FT: dict[str, float] = {
 # The o.c. spacing ``_IJOIST_SPAN_FT`` is published at. A floor framed at anything else has
 # no row here and reports UNKNOWN rather than borrowing this one.
 _IJOIST_TABLE_SPACING_IN = 16.0
+#: IRC Table R301.5's residential floor live load: what a published floor row must carry.
+_FLOOR_LIVE_LOAD_PSF = 40.0
 
 # Widest span ``resolve.framing.tables.header_size`` still answers prescriptively (R602.7);
 # anything longer is an engineered beam in that table and here.
@@ -285,6 +288,16 @@ def ijoist_span(ctx: CheckContext) -> list[Finding]:
                                element_tags=(floor.tag,), result=Result.UNKNOWN))
             continue
         profile = joists[0].profile
+        spec = authored.get(floor.tag)
+        if spec is not None and spec.published_span is not None:
+            # The maker's own row, authored on the deck, outranks this generic table.
+            out.append(graded_against_published(
+                "structural.ijoist_span",
+                f"floor {floor.tag} {profile} (longest joist tip to tip, >= its clear span)",
+                (floor.tag,), max(member.length_m for member in joists) / 0.3048,
+                spec.published_span, profile, spacing_in=spec.joists.spacing.inches,
+                demand_psf=_FLOOR_LIVE_LOAD_PSF))
+            continue
         allowable = _IJOIST_SPAN_FT.get(profile)
         if allowable is None:
             out.append(Finding(severity=Severity.WARN, check_id="structural.ijoist_span",
@@ -294,7 +307,6 @@ def ijoist_span(ctx: CheckContext) -> list[Finding]:
         # The table above is published at one spacing. Reading the floor's actual o.c. and
         # reporting UNKNOWN off it beats printing 16" over a deck framed at something else:
         # the answer would be wrong in the unconservative direction at a wider spacing.
-        spec = authored.get(floor.tag)
         spacing = spec.joists.spacing if spec is not None else None
         spacing_in = spacing.inches if spacing is not None else _IJOIST_TABLE_SPACING_IN
         if abs(spacing_in - _IJOIST_TABLE_SPACING_IN) > 1e-6:

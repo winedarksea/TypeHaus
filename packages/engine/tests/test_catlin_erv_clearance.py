@@ -56,7 +56,15 @@ def test_every_erv_duct_and_vent_riser_stands_in_a_drawn_hole(catlin_ctx) -> Non
     assert not found, found
 
 
+#: Trap-arm vents rising out of the joist band into the wet wall over it: clear of every
+#: member, through the subfloor and the wall's own bottom plate, like the drain they tee off.
+_WALL_FOOT_VENTS = {"PR-A-STUBATH-WC-VENT"}
+
+
 def _web_passing(finding) -> bool:
+    if (finding.result is Result.UNKNOWN and "clear of every member" in finding.message
+            and any(tag in _WALL_FOOT_VENTS for tag in finding.element_tags)):
+        return True
     return (finding.result is Result.UNKNOWN and "FS-S-WEST" in finding.message
             and "web" in finding.message
             and any(tag in _WEB_PASSING_VENTS for tag in finding.element_tags))

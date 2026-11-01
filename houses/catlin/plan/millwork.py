@@ -29,6 +29,7 @@ from typehaus.model import (
     StairLandingMillwork,
     StairSkirt,
     TrimStandard,
+    TrimStock,
 )
 
 # The one declaration. Scope is EXT_2X6 alone — 34 of the 41 windows are in scope:
@@ -126,7 +127,17 @@ MILLWORK = [
             # corner's base and ED-S-NCLOSET-SW.
             DoorTrim(doors=("D-S-NCLOSET",), material_ref="mdf-casing", casing_width=inch(1.5)),
         ),
+        # PVC and the milled hardwoods dress to 3/4"; the two yard stocks do not (owner,
+        # 2026-11-01): retail primed MDF 1x4 is 11/16" (Home Depot 242738), FJ pine 23/32".
+        # ST-M2S's 103 1/2" skirt blank needs a 10' board.
         thickness=inch(0.75),
+        stocks=(
+            TrimStock(material_ref="mdf-casing", thickness=inch(0.6875)),
+            TrimStock(material_ref="pine-fj-base", thickness=inch(0.71875)),
+            TrimStock(material_ref="poplar-skirt-paint", stock_length=ft(10)),
+        ),
+        # Stock prehung jambs: a non-stock wall's jamb is ripped down or extended.
+        jamb_stock_depths=(inch(4.5625), inch(6.5625)),
         base_height=inch(3.5),
         casing_width=inch(3.5),
         reveal=inch(0.1875),

@@ -140,16 +140,18 @@ def test_a_birdsmouthed_rafter_exports_its_notch(ifc_file):
     assert solid.SweptArea.is_a("IfcArbitraryClosedProfileDef")
     points = solid.SweptArea.OuterCurve.Points
     # Six distinct corners (the polyline repeats the first to close): end-top, far-top,
-    # far-bottom, the plumb heel's head, its foot, and the seat's outboard end.
+    # far-bottom, the seat's inner end, the heel's foot, and the heel's head — the tail is
+    # cut at the heel on a zero-overhang eave, so it is also the end-bottom (#109).
     assert len(points) == 7
     assert points[0].Coordinates == points[-1].Coordinates
     axis = solid.Position.Axis.DirectionRatios
     assert abs(axis[2]) < 1e-9, "the profile plane is vertical, so its normal is horizontal"
     assert solid.Depth > 0.0
 
-    # The seat is flat: two profile corners share the lowest elevation, one seat run apart.
+    # The seat is flat: two profile corners share one elevation just above the heel's notch.
     heights = sorted(point.Coordinates[1] for point in points[:-1])
-    assert heights[0] == pytest.approx(heights[1], abs=1e-9)
+    assert heights[1] == pytest.approx(heights[2], abs=1e-9)
+    assert heights[0] < heights[1]
 
 
 def test_members_land_in_the_ifc_class_their_trade_calls_for(ifc_file):

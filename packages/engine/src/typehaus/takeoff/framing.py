@@ -341,9 +341,11 @@ def volume_billed_solids(model: ResolvedModel):
     for solid in model.solids:
         if solid.tag in billed_as_steel:
             continue
-        # Fireblocks and window returns bill by installed area in their own takeoffs.
-        # A second volume row could otherwise accept an unrelated bare-category rate.
-        if solid.category in {"fireblock", "window_return", "tub_insulation_return", "bug_screen"}:
+        # Fireblocks and window returns bill by installed area in their own takeoffs, a
+        # drawn sill by its construction return. A second volume row could otherwise
+        # accept an unrelated bare-category rate.
+        if solid.category in {"fireblock", "window_return", "tub_insulation_return", "bug_screen",
+                              "sill_plate", "sill_gasket"}:
             continue
         # A derived connector marker is a MARKER: the part it stands for is billed by
         # part number in ``takeoff/hardware.py``, off the joint, never off this box. Without

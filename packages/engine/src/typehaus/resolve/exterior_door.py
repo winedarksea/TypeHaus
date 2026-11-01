@@ -98,6 +98,12 @@ def place_exterior_door(model, wall, opening, assembly, specification):
     outer = max(sign * n for n in structural_offsets)
     inner = min(sign * n for n in structural_offsets)
     factory = specification.factory_frame_depth
+    if factory:
+        # A documented prehung frame is set flush with the sheathing, its brickmould or
+        # flange bearing there; the jamb's inner edge then falls where its depth puts it.
+        sheathing = [sign * n for layer in wall.depth_layers()
+                     if layer.function == "sheathing" for n in offsets(layer)]
+        outer = max([outer, *sheathing])
     # Until documented, retain an explicitly schematic frame within its anchorage substrate.
     depth = factory.meters if factory else outer - inner
     frame_outer, frame_inner = sign * outer, sign * (outer - depth)

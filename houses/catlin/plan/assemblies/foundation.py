@@ -253,8 +253,8 @@ DECK_EPS_INT = Assembly(
 # the two used to restate the same "ICF-6" masonry spec independently). The 6" concrete
 # core matches library's exactly, so GARAGE_ICF_CORE is authored as the same literal
 # rather than as a coincidence. GARAGE_ICF_EPS stays 2.5" and NOT library's 2.625"
-# generic default: this garage's ICF-6 form genuinely has a thinner EPS facing, a real
-# product difference rather than authoring drift. The editable-plan dialect forbids
+# generic default: this garage's form is BuildBlock BB600 (6" core, 2 1/2" EPS each face,
+# 11" overall), a real product difference rather than authoring drift. The editable-plan dialect forbids
 # subscripting or comprehensions, so there is no way to splice *only* library's concrete
 # Layer out of its `layers` tuple here without also pulling its 2.625" EPS along with
 # it — doing that would silently thicken this stem by 1/4" and break every section
@@ -290,7 +290,7 @@ GARAGE_ICF_6 = Assembly(
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         Layer(name="concrete", material_ref="concrete", thickness=GARAGE_ICF_CORE,
               function=LayerFunction.STRUCTURE, concrete=BURIED_MIX,
-              masonry=MasonrySpec(unit_size="ICF-6", core_fill=True)),
+              masonry=MasonrySpec(unit_size="BuildBlock BB600 (ICF-6)", core_fill=True)),
         Layer(name="eps-ext", material_ref="icf-eps", thickness=GARAGE_ICF_EPS,
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         # THE EXTERIOR HALF OF A REQUIREMENT THAT WAS ONLY EVER HALF-BUILT.
@@ -355,5 +355,5 @@ GARAGE_ICF_6 = Assembly(
               extent=LayerExtent(bottom=LayerBound(datum=LayerDatum.GRADE,
                                                    offset=inch(-2.0)))),
     ),
-    source="library GARAGE_ICF's 6\" concrete core (ICF-6, matching masonry spec) + this house's 2.5\" EPS facing (thinner than library's 2.625\" generic default) and gwb-stem interior banding above grade (code.R316_4); exterior face protected above grade by a Una-Clad PVDF aluminium flat-sheet band from 2\" below grade to the stem top, fixed with 316 stainless gasketed screws into the ICF webs, closing the other half of the note's both-faces requirement",
+    source="BuildBlock BB600 ICF: library GARAGE_ICF's 6\" concrete core + 2.5\" EPS each face, 11\" overall (thinner than library's 2.625\" generic default) and gwb-stem interior banding above grade (code.R316_4); exterior face protected above grade by a Una-Clad PVDF aluminium flat-sheet band from 2\" below grade to the stem top, fixed with 316 stainless gasketed screws into the ICF webs, closing the other half of the note's both-faces requirement",
 )

@@ -66,11 +66,11 @@ GARAGE_SIZE_FT = 24.0
 # chain.)
 GARAGE_GAP_FT = 7 + 2.625 / 12  # selected 30in north move
 GARAGE_OVERHANG_IN = 16.0
-# eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the RAFTER PLATE
-# by its depth less the seat drop across the plate (5.5" depth x 6:12 pitch = 2.75" — the
-# plate is a 2x6 to match the stud wall under it, which is what sets this term), per the
-# golden eave detail (roof_wall_eave_detail_ifc.py).
-DECK_RISE_FT = (11.875 - 5.5 / 2.0) / 12.0
+# eave_z_m is the rafter-top (deck) plane at the footprint edge (decision #109): the
+# I-joist's TRUE plumb depth (11.875" x sqrt(1 + 0.5^2)) above the plate at the heel, less the
+# 2 1/2" seat's 1 1/4" notch, less 7 3/4" of run at 6:12 out from the heel (the rafter plate's
+# outer face, 1/2" in from the house line) to the cladding-lapped footprint edge = 8.152".
+DECK_RISE_FT = (11.875 * 1.25 ** 0.5 - 2.5 / 2.0 - 7.75 / 2.0) / 12.0
 
 
 def test_floor_joist_counts_match_old_model(catlin_model):
@@ -338,7 +338,7 @@ def test_roof_matches_old_pitch_knee_and_ridge(catlin_model):
     assert stations[-1] == pytest.approx(ft(HOUSE_SIZE_FT).meters - flange_half, abs=1e-6)
     # The rafter sinks only the birdsmouth below the plate top — never its full depth.
     plate_top = ft(ATTIC_ELEV_FT + PLATE_FT).meters
-    birdsmouth = inch(3.5 / 2.0).meters
+    birdsmouth = inch(2.5 / 2.0).meters  # the 2 1/2" seat at 6:12 (#109)
     assert all(member.z0_m >= plate_top - birdsmouth - 1e-6 for member in rafters)
     # WP4: rafter ridge ends are trimmed back to bear on the ridge beam rather than
     # crossing to the exact ridge centerline — z1_end drops by half the beam width
@@ -378,42 +378,30 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
     authored = catlin_model.plan.by_tag("RF-HOUSE")
     plate_top = max(catlin_model.wall(tag).z1_m for tag in authored.bearing_refs)
     assert roof.bearing_z_m == pytest.approx(plate_top)
-    # eave rides the deck plane, ~10.04" (0.2551 m) above the plate.
+    # eave rides the deck plane, 8.152" above the plate at the footprint edge.
     assert roof.eave_z_m - roof.bearing_z_m == pytest.approx(ft(DECK_RISE_FT).meters)
 
-    # 2.75" = the seat cut across the 5.5" rafter plate at 6:12 (5.5 x 6/12), which is what
-    # `deck_rise_m` subtracts from the 11.875" rafter to get DECK_RISE_FT.
-    birdsmouth = inch(2.75).meters
     rafters = [m for m in roof.members if m.category == "rafter"]
     assert not [m for m in roof.members if m.category == "seat_cut"], \
         "the seat is part of the rafter's own solid now, not a block beside it"
-    bearing_x = sorted({catlin_model.wall(tag).axis[0][0] for tag in authored.bearing_refs})
     for rafter in rafters:
         seat = rafter.seat
         assert seat is not None
         assert seat.plate_top_z_m == pytest.approx(plate_top)
-        # Anchored at the rafter's plumb-cut tail — the bearing wall's stud exterior face,
-        # one sheathing thickness inboard of the sheathing-ext axis (the reference seat spans
-        # exactly the stud depth from there) — not out in the cladding lap. The heel sits one
-        # seat run inboard of that.
-        heel_offset = min(abs(seat.heel[0] - x) for x in bearing_x)
-        # 1/2" was the offset while the plate sat on the sheathing datum. The rafter plate
-        # is aligned 1/2" further in (over the studs below rather than over the sheathing),
-        # so the heel walks in with it — the tolerance is the seat run either way.
-        assert abs(heel_offset - inch(1.0).meters) <= seat.seat_run_m + 1e-6
+        # The heel sits on the rafter plate's outer face, 1/2" in from the house line, and
+        # the plate is the 5 1/2" 2x6 laid flat; the seat is the one 2 1/2" input (#109).
+        heel_x = seat.heel[0] / inch(1).meters
+        assert min(abs(heel_x - 0.5), abs(heel_x - 431.5)) == pytest.approx(0.0, abs=1e-6)
+        assert seat.seat_run_m == pytest.approx(inch(2.5).meters, abs=1e-9)
+        assert seat.bearing_run_m == pytest.approx(inch(5.5).meters, abs=1e-9)
 
-        # The notch: the rafter's solid has a flat seat at the plate top over the run, and a
-        # plumb heel rising to the underside — one birdsmouth's worth, once.
+        # The notch: a flat seat at the plate top, and below it only the heel's 1 1/4" cut
+        # down the plate's outer face — inside the TJI 230 flange's 1.40" plumb depth.
         solid = member_solid(rafter)
         zs = sorted(round(z, 9) for (_x, _y, z) in solid.profile)
-        assert zs[0] == pytest.approx(plate_top)
         assert zs[1] == pytest.approx(plate_top)
-        heel_height = zs[2] - plate_top
-        # 2.875", not the 2.75" `deck_rise_m` cuts: `deck_rise_m` measures the seat across
-        # the assembly's 5.5" STRUCTURE layer, while the drawn heel is measured from the
-        # footprint edge — which laps the cladding — in to the plumb cut. The 1/8" between
-        # them is that lap resolved against the plate's 1/2" inboard alignment.
-        assert heel_height == pytest.approx(inch(2.875).meters, abs=1e-3)
+        assert zs[2] == pytest.approx(plate_top)
+        assert plate_top - zs[0] == pytest.approx(inch(1.25).meters, abs=1e-6)
 
     setbacks = {entry["layer"]: entry for entry in roof.layer_edge_setbacks}
     # Three layers above the deck: the deck, one adhered membrane on it, and the panel.
@@ -2245,15 +2233,16 @@ def test_the_house_strip_footings_sit_under_the_walls_they_carry(catlin_model):
         structure = next(ly for ly in wall.layers if ly.function == "structure")
         return project(strip.outline), project(structure.polygon)
 
-    # The eight strips the re-centring actually moves, and the exact toes it leaves.
+    # The eight strips the re-centring actually moves, and the exact toes it leaves — each
+    # 1/16" inboard of the band midline so R403.1.1's 2" <= P <= T holds (C3-E18).
     for tag in ("W-B-N1", "W-B-N2", "W-B-N3", "W-B-N4", "W-B-W1", "W-B-W2"):
         footing, pour = spans(tag)
         assert pour == pytest.approx((0.0, 8.0), abs=1e-6), tag
-        assert footing == pytest.approx((-8.03, 11.97), abs=1e-6), tag
+        assert footing == pytest.approx((-7.9675, 12.0325), abs=1e-6), tag
     for tag in ("W-B-E1", "W-B-E2"):
         footing, pour = spans(tag)
         assert pour == pytest.approx((0.0, 12.0), abs=1e-6), tag
-        assert footing == pytest.approx((-6.03, 13.97), abs=1e-6), tag
+        assert footing == pytest.approx((-5.9675, 14.0325), abs=1e-6), tag
 
     # The eleven that stay on the node line: the garden-end four on their 6" trim, and the
     # seven interior walls a 20" strip already straddles symmetrically.

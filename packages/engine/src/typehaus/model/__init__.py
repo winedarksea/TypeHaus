@@ -131,6 +131,7 @@ from typehaus.model.millwork import (
     StairLandingMillwork,
     StairSkirt,
     TrimStandard,
+    TrimStock,
     WindowStool,
 )
 from typehaus.model.opening_size import OpeningSize
@@ -402,7 +403,7 @@ __all__ = [
     "BoardAndBatten", "PanelingSpan", "WallPaneling", "WallBacking", "BracedWallPanel",
     "SuspensionAnchor", "HangingSeatType",
     "Countertop", "MillworkStandard", "RoomTrim", "StairLandingMillwork", "ShelfBank", "ShelfBay",
-    "DoorTrim", "StairSkirt", "TrimStandard", "WindowStool",
+    "DoorTrim", "StairSkirt", "TrimStandard", "TrimStock", "WindowStool",
     "DrywallStandard", "ShadowGapProfile",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",

@@ -168,7 +168,7 @@ ESS_STEEL_DOOR = DoorType(
     tag="DT-INT-STEEL24-LITE", width=ft(2), height=ft(6, 8), function="passage",
     # `glazed` so R308.4.1 grades the lite; the engine has no partial-lite leaf, so the
     # viewer draws it all glass and it takes no leaf_material_ref.
-    glazed=True, tempered=True, self_closing=True, core="hollow",
+    glazed=True, tempered=True, self_closing=True, core="hollow", factory_frame=True,
     frame_material_ref="door-paint-white",
     source="24x80 hollow-metal steel leaf in a knock-down steel frame, small tempered "
            "vision lite (R308.4.1), spring hinges. No fire_rating_minutes: unrated by "

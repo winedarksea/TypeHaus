@@ -236,7 +236,9 @@ def test_receiver_and_movement_conflicts_are_measured(catlin_model_ro):
     assert any("movement closes" in message for message in changed.conflicts)
 
 
-@pytest.mark.parametrize("remove_extender,remove_recess", [(True, False), (False, True), (True, True)])
+# Since the frame anchors at the sheathing face (2026-11-01, C2-E8) the sill stands 1/2"
+# further out and the recess alone clears the seat; the XMN5 extender is no longer forced.
+@pytest.mark.parametrize("remove_extender,remove_recess", [(False, True), (True, True)])
 def test_patio_clearance_requires_deliberate_extender_and_recess(
     catlin_model_ro, remove_extender, remove_recess
 ):

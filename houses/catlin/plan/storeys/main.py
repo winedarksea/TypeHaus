@@ -96,9 +96,10 @@ DOOR_TYPES = [
     DoorType(tag="DT-INT-SWING30-GLAZED-TRIMLESS", width=ft(2, 6), height=ft(6, 8),
              glazed=True, tempered=True, trimless=True, leaf_set="pull", core="solid",
              source="Site-built kerfed hardwood flat jamb to the wall's full depth, matching D-M-BED2 with tear-away L-bead both faces and no applied casing; 1 3/4in wood stile-and-rail slab with tempered glass, pull-set flush at the living-room face, 3 ball-bearing butts, kerf-in perimeter seal. Retain an open undercut above the finished floor for the study's 5 cfm relief; no sweep, automatic door bottom or saddle. Jamb before drywall, slab after paint; no STC claimed."),
-    # Nominal 36 x 80 leaf; the maker's 38 x 82 rough opening is published, not derived.
+    # Nominal 36 x 80 leaf; the maker's 38 x 82 rough opening is published, not derived,
+    # and measured from the finished floor (adopted 2026-11-01; Murphy to confirm).
     DoorType(tag="DT-INT-BOOKCASE36", width=inch(36), height=inch(80), core="solid",
-             rough_opening=OpeningSize(width=inch(38), height=inch(82)),
+             rough_opening=OpeningSize(width=inch(38), height=inch(82), datum="finished_floor"),
              function="passage",
              header_spec="flat 2x4 nonbearing", product_ref="PROD-MURPHY-BOOKCASE-36",
              bookcase_door=BookcaseDoorSpec(
@@ -623,9 +624,14 @@ WALLS = [
          assembly="STAIRWELL_PARTITION_4H",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), base_elevation=inch(0.94685), top=inch(107.05315),
          interior_room="RM-M-LIVING"),
+    # A wet wall since 2026-11-01: it carries PR-M-S-BATH1-DRAIN's 3" stack (3.50" OD, ~4.2"
+    # hub) and the hall-bath supply risers. `haus route` found no lane into W-M-HS1 or the
+    # chase (DU-M-ERV-EXH-TRUNK walls off FS-S-WEST), so this is the owner's last resort. The
+    # powder face holds (FX-M-BATH1-WC front clearance); all 2" go into the mud closet.
     Wall(uid="CMW119AAAA", tag="W-M-STOS", start_node="N-M-W1",
-         end_node="N-M-BA1", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
+         end_node="N-M-BA1", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),),
+         alignment=face("staggered-studs-ext", offset=inch(-1.75)), top=ft(9)),
     Wall(uid="CMW120AAAA", tag="W-M-STOS2", start_node="N-M-BA1",
          end_node="N-M-STRJ", assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
@@ -2087,10 +2093,10 @@ BEAMS = [
     Beam(uid="CMBM01AAAA", tag="BM-M-HALL", start_node="N-M-C2", end_node="N-M-C3-BM-N",
          size="3-1.75x11.875 LVL", bearing_refs=("W-M-C3", "W-M-C5"),
          assembly="BEAM_LVL", top_elevation=ft(10)),
-    # IUS2.56/11.88 at every hung end of FS-S-EAST in this beam: a level I-joist face-mount
-    # for a 2-1/2" to 2-9/16" flange (not the roof's sloped LSSR). One spec, count derived.
+    # IUS2.37/11.88 at every hung end of FS-S-EAST in this beam: a level I-joist face-mount
+    # for the TJI 230's 2-5/16" flange (not the roof's sloped LSSR). One spec, count derived.
     Connector(uid="F7KNJ3E7XT", tag="CN-M-HGR-HALL-E", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(18, 3.375), ft(24, 1)), size="IUS2.56/11.88",
+              position=pt(ft(18, 3.375), ft(24, 1)), size="IUS2.37/11.88",
               connects=("BM-M-HALL", "FS-S-EAST")),
     # FS-S-WEST's open-web floor trusses hang here too, on a different family: THA422, a
     # top-flange hanger for a 4" wide, 2" thick chord — FS-S-WEST's flat 2x4 bottom chord —
@@ -2146,11 +2152,12 @@ PANELING = [
                  walls=("W-M-LS", "W-M-CLN2", "W-M-C3")),
     # The mudroom's closet block, white-painted oak shiplap to 6'-0" — the underside of the
     # coat-nook caps across the room: W-M-W1 between the closets, the closets' east returns
-    # and their door walls (W-M-MECH-S, W-M-MUDC-N). On the door walls the band stops at the
-    # casing's outer edge, flush with it (both 3/4"); the base end stands 3/4" proud of the
-    # casing face (owner, 2026-10-29). Wraps WIN-M-MUD; the sconce at 6'-8" is above it.
+    # and their door walls (W-M-MECH-S, W-M-MUDC-N). The PVC base runs on the gypsum and the
+    # band starts on its top (owner, 2026-11-01): 0.94685" LVP floor + 3 1/2" base. On the
+    # door walls the band stops at the casing's outer edge. Wraps WIN-M-MUD; the sconce at
+    # 6'-8" is above it.
     WallPaneling(uid="G21WZA605X", tag="WP-M-MUDROOM-SHIPLAP", room="RM-M-MUDROOM",
-                 material_ref="oak-shiplap-painted", height=ft(6),
+                 material_ref="oak-shiplap-painted", offset=inch(4.44685), height=inch(67.55315),
                  walls=("W-M-W1", "W-M-MECH-E", "W-M-MUDC-E", "W-M-MECH-S", "W-M-MUDC-N")),
     # The call booth's acoustic felt, sitting on top of the wainscot: band
     # 3'-0" to 9'-0", south and north walls only.

@@ -78,6 +78,9 @@ def frame_furring(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             continue  # a bored penetration is drilled through the strip, not framed around
         by_host.setdefault(op.host_wall, []).append(op)
 
+    from typehaus.resolve.rainscreen_strips import apply_band_joints
+
+    apply_band_joints(model)  # before any course is laid: a band girt derives from its joint
     findings: list[Finding] = []
     framed: list[ResolvedWall] = []
     # A wall's layout line, so a batten grid that phase-locks to the studs follows them onto
@@ -395,8 +398,13 @@ def course_elevations(rw: ResolvedWall, spec: Any, face: float, *,
             elevations.pop()
         if top >= base - 1e-9 and (not elevations or top - elevations[-1] > 1e-9):
             elevations.append(top)
-    for extra in getattr(spec, "additional_course_elevations", ()):
-        station = extra.meters
+    extras = [extra.meters for extra in getattr(spec, "additional_course_elevations", ())]
+    if getattr(spec, "standoff", None) == "block":
+        # A BBD75 band's girt is derived from its panel joint, never authored.
+        from typehaus.resolve.rainscreen_strips import band_girt_bottom
+
+        extras += [band_girt_bottom(joint) for joint in getattr(rw, "panel_joints_m", ())]
+    for station in extras:
         if base - 1e-9 <= station and station + face <= top_high + 1e-9:
             # A joint needs backing at its exact elevation; a nearby regular course is
             # replaced rather than allowed to overlap the added board.

@@ -98,10 +98,12 @@ def test_the_rafter_bears_on_the_plate(eave):
     for rafter in seated:
         assert rafter.seat.plate_top_z_m == pytest.approx(plate_top, abs=1e-9)
         zs = sorted(z for (_x, _y, z) in member_solid(rafter).profile)
-        # Two corners share the lowest elevation: the flat seat, sitting on the plate.
-        assert zs[0] == pytest.approx(zs[1], abs=1e-9)
-        assert zs[0] == pytest.approx(plate_top, abs=1e-9), \
+        # Two corners sit on the plate top: the flat seat. Below them only the heel's notch,
+        # one seat run times the slope down the plate's outer face (#109).
+        assert zs[1] == pytest.approx(zs[2], abs=1e-9)
+        assert zs[1] == pytest.approx(plate_top, abs=1e-9), \
             "the rafter floats above the plate or buries itself in it"
+        assert plate_top - zs[0] == pytest.approx(rafter.seat.seat_run_m * 0.5, abs=1e-9)
 
 
 def test_the_stack_is_above_the_deck_and_the_structure_is_below_it(eave):

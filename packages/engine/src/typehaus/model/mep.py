@@ -116,6 +116,10 @@ class PipeRun(Element):
     # an authored second polyline tracking a first is a second source of truth for one
     # length. ``None`` means bare pipe, which for a hot line is what N1103.4.2 fails.
     insulation: str | None = None  # e.g. '1" fiberglass, ASJ'
+    # Where the lagging meets a stud or plate: "stops" (field practice: the jacket is cut back
+    # and the bare pipe is bored) or "continuous" (bored at the lagged OD). Read by the bore
+    # checks (``checks/mep/routing_bore_scope.py``), which print the stop.
+    lagging_at_framing: Literal["stops", "continuous"] = "stops"
     # Self-regulating heater cable on the run, billed by the foot exactly as ``insulation``
     # is, and a field for the same reason: a heat trace has no route of its own, it is as
     # long as the pipe it follows, and a second authored polyline tracking the first would be

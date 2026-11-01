@@ -233,8 +233,9 @@ def test_a_tapered_member_carries_its_own_plan_width():
 
 def test_roofs_carry_bearing_datum_and_layer_edge_setbacks(catlin_payload):
     """model.json contract: every roof serializes ``bearing_z_m`` and
-    ``layer_edge_setbacks``; the rafter-framed house roof's deck plane rides ~0.2318 m
-    above the plate (11.875" TJI less the 5.5" 2x6 seat drop at 6:12) and its setbacks step
+    ``layer_edge_setbacks``; the rafter-framed house roof's deck plane at the footprint edge
+    rides 8.15" above the plate (the TJI's plumb depth, less the 2 1/2" seat's 1 1/4" notch,
+    less 7 3/4" of run out to the edge at 6:12, decision #109) and its setbacks step
     monotonically outward through the stack, whatever the stack happens to be.
 
     The layer NAMES are read off the assembly rather than typed in — the property being
@@ -248,7 +249,7 @@ def test_roofs_carry_bearing_datum_and_layer_edge_setbacks(catlin_payload):
         assert "layer_edge_setbacks" in roof
     house = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-HOUSE")
     assert house["eave_z_m"] - house["bearing_z_m"] == pytest.approx(
-        inch(11.875 - 5.5 / 2.0).meters)
+        inch(11.875 * 1.25 ** 0.5 - 2.5 / 2.0 - 7.75 / 2.0).meters)
     entries = house["layer_edge_setbacks"]
     assert len(entries) >= 2, entries
     for edge in ("west", "east", "south", "north"):

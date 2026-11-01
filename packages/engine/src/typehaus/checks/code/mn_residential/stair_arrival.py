@@ -319,3 +319,17 @@ def _door_at_head(model, stair, route):
                 and (best is None or along < best[0])):
             best = (along, opening)
     return None if best is None else best[1]
+
+
+def head_threshold(model, stair) -> tuple[float | None, str, str] | None:
+    """``(installed crest, door tag, basis)`` of the door a landing-less flight rises to, or
+    ``None`` where no door stands at its head. The crest is None where unknown."""
+    from typehaus.resolve.doorway_heights import installed_threshold_elevation
+    from typehaus.resolve.stairs.walkline import stair_walk_stations
+
+    route = stair_walk_stations(stair)
+    door = _door_at_head(model, stair, route) if len(route) >= 2 else None
+    if door is None:
+        return None
+    crest, basis = installed_threshold_elevation(door, model.wall(door.host_wall))
+    return crest, door.tag, basis

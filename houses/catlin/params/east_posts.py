@@ -82,7 +82,7 @@ _EAST_VARIANTS = {
                    "OPEN above the pier wash so the 1in standoff and post end drain and can be "
                    "inspected; vent at the top below the cap; do not fasten through a cap or "
                    "base. Verify post MC <= 19% before closing the wrap (ESR-2604 §3.2.2)"),
-        landing_note=("PT-BW-PE (house plane) and PT-BW-PNE (garage plane) are 12in piers "
+        landing_note=("PT-BW-PE (house plane) and PT-BW-PNE (garage plane) are 14in piers "
                       "to +0ft 2in under the pinned KDAT east posts"),
     ),
     "cast": dict(
@@ -108,6 +108,11 @@ _EAST_VARIANTS = {
 
 #: `head` / `base` connector kinds, by name, so the table stays a plain literal.
 _KINDS = {"POST_CAP": ConnectorKind.POST_CAP, "POST_BASE": ConnectorKind.POST_BASE}
+
+
+def pier_assembly(size):
+    """The pier's assembly names its diameter: PIER_CONCRETE_12 / _14 (C3-E21)."""
+    return f"PIER_CONCRETE_{size.split()[0]}"
 
 
 def variant(system):
@@ -161,7 +166,8 @@ def east_supports(system, *, x_ft, stations, header_soffit_ft, pack_ft, moment_c
         piers.append(Post(
             uid=pier_uid, tag=pier_tag, position=pt(ft(x_ft), ft(y_ft)),
             head_connector=spec["pier_head"], size=spec["pier_size"],
-            height=ft(PIER_TOP_FT - pad_top_ft), assembly="PIER_CONCRETE_12",
+            height=ft(PIER_TOP_FT - pad_top_ft),
+            assembly=pier_assembly(spec["pier_size"]),
             vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
             reinforcement=moment_cage, supported_by=pad_tag))
         pads.append(Pad(uid=pad_uid, tag=pad_tag, outline=outline(y_ft),

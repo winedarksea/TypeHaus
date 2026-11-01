@@ -18,6 +18,7 @@ from typehaus.emit.draw.schedules.structural_notes import (
     anchorage_block,
     concrete_block,
     design_criteria_block,
+    footing_dowel_lines,
     limits_block,
     structural_specification_block,
     wood_framing_block,
@@ -96,6 +97,13 @@ def test_the_concrete_block_groups_on_the_mix_not_the_assembly(catlin_model_ro):
     assert 1 <= len(mixes) < 10
     assert any("5,000 psi" in line for line in mixes)
     assert any("hdg-a767" in line for line in lines), "the house's bar coating"
+
+
+def test_the_unfooted_basement_verticals_say_why_there_is_no_dowel(catlin_model_ro, profile):
+    """C3-E22: the verticals stop over a plain strip; the slab holds the base at SDC A."""
+    [line] = footing_dowel_lines(catlin_model_ro, profile)
+    assert "W-B-N1" in line and "SL-B-FLOOR" in line
+    assert "SDC A; IRC R403.1.3 asks them at SDC D0-D2 only" in line
 
 
 def test_the_framing_block_admits_that_species_and_grade_are_not_modelled(catlin_model_ro):

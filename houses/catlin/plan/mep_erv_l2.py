@@ -160,7 +160,9 @@ _BAY_Z = inch(-8.375)
 #: re-derive when a terminal moves. The conflict graph the alternative needs is not even
 #: two-colourable: BED2, BED1 and PLANT cross each other in a triangle.
 #:
-#: The cost is one offset per takeoff, at the elbow where it turns anyway.
+#: The cost is one offset per takeoff, at the elbow where it turns anyway. Since 2026-11-01
+#: the offset is a 30° ramp (26° where a vertex must stand off a truss line): a 4 7/8" step
+#: between two 90s is shorter than their take-offs (`mep.fitting_pattern`).
 _CROSS_Z = inch(-3.5)
 #: An 8" trunk centred in the same window: 110 1/16"..118 1/16", 7/16" clear of each chord.
 #: It rides a BAY, so the window is not actually what constrains it — but centring it is
@@ -208,16 +210,16 @@ DUCTS_ERV_LEVEL2 = [
     # lanes share the one bay since the 34'-8" truss moved to 34'-5 3/4" (2026-09-23), 1" apart.
     DuctRun(uid="2ZZ3MF5VAF", tag="DU-M-ERV-R-STUDY", system=DuctSystem.SUPPLY,
             path=(pt(ft(4, 4.25), ft(34)), pt(ft(4, 4.25), ft(34)), pt(ft(4, 4.25), ft(34)),
-                  pt(ft(4, 4.25), ft(20, 6)), pt(ft(4, 4.25), ft(20, 6)),
+                  pt(ft(4, 4.25), ft(20, 6)), pt(inch(60.6875), ft(20, 6)),
                   pt(ft(17, 2), ft(20, 6))),
             elevations=(_PORT_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=15),
     DuctRun(uid="MRH0QZT6NN", tag="DU-M-ERV-R-LIVING", system=DuctSystem.SUPPLY,
             path=(pt(ft(4, 9), ft(33, 8)), pt(ft(4, 9), ft(33, 8)),
-                  pt(ft(5, 7.5), ft(33, 8)), pt(ft(5, 7.5), ft(28, 8)),
-                  pt(ft(5, 7.5), ft(28, 8)),
-                  pt(ft(5, 7.5), ft(12, 8)), pt(ft(5, 7.5), ft(12, 8)),
+                  pt(ft(5, 7.5), ft(33, 8)), pt(ft(5, 7.5), inch(356.21875)),
+                  pt(ft(5, 7.5), inch(347.78125)),
+                  pt(ft(5, 7.5), inch(162)), pt(ft(5, 7.5), ft(12, 8)),
                   pt(ft(27), ft(12, 8))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
@@ -226,9 +228,9 @@ DUCTS_ERV_LEVEL2 = [
     # this duct's face and the truss at y=34'-4".
     DuctRun(uid="83MA15Q308", tag="DU-M-ERV-R-BED", system=DuctSystem.SUPPLY,
             path=(pt(ft(5, 1), ft(34, 0.75)), pt(ft(5, 1), ft(34, 0.75)),
-                  pt(ft(5, 11.5), ft(34, 0.75)), pt(ft(5, 11.5), ft(28, 8)),
-                  pt(ft(5, 11.5), ft(28, 8)),
-                  pt(ft(5, 11.5), ft(6)), pt(ft(5, 11.5), ft(6)),
+                  pt(ft(5, 11.5), ft(34, 0.75)), pt(ft(5, 11.5), inch(356.21875)),
+                  pt(ft(5, 11.5), inch(347.78125)),
+                  pt(ft(5, 11.5), inch(82)), pt(ft(5, 11.5), ft(6)),
                   pt(ft(7), ft(6))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
@@ -266,8 +268,8 @@ DUCTS_ERV_LEVEL2 = [
     # 16'-6 1/2" web opening — the third truss crossing among the takeoffs.
     # Both tails extend 4" east with the boots for the east PAX frames (2026-10-03).
     DuctRun(uid="HGMQ4AWG3S", tag="DU-M-ERV-R-BED2", system=DuctSystem.RETURN,
-            path=(pt(ft(3, 9.75), ft(14)), pt(ft(16), ft(14)), pt(ft(16), ft(14)),
-                  pt(ft(16), ft(18, 4)), pt(ft(16), ft(18, 4)), pt(ft(28, 1), ft(18, 4))),
+            path=(pt(ft(3, 9.75), ft(14)), pt(ft(16), ft(14)), pt(ft(16), inch(178)),
+                  pt(ft(16), inch(210)), pt(ft(16), ft(18, 4)), pt(ft(28, 1), ft(18, 4))),
             elevations=(_BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=5),
@@ -293,8 +295,8 @@ DUCTS_ERV_LEVEL2 = [
             # Back to the lower tier in the 19'-4" bay (2026-09-24): on the upper tier the
             # south leg met PR-M-S-SUITE-TUB-DRAIN's 19'-0" arm; under it there is 1" to spare.
             path=(pt(ft(3, 9.75), ft(20, 10)), pt(ft(10, 6), ft(20, 10)),
-                  pt(ft(14, 4.5), ft(20, 10)), pt(ft(14, 4.5), ft(20, 10)),
-                  pt(ft(14, 4.5), ft(19, 8)), pt(ft(14, 4.5), ft(19, 8)),
+                  pt(inch(164.0625), ft(20, 10)), pt(ft(14, 4.5), ft(20, 10)),
+                  pt(ft(14, 4.5), inch(242)), pt(ft(14, 4.5), inch(233.5625)),
                   pt(ft(14, 4.5), ft(18)), pt(ft(14, 4.5), ft(18))),
             elevations=(_BAY_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z, inch(-108)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",

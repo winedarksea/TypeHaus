@@ -5,7 +5,7 @@ supply risers serving ``RM-S-PLANT``/the suite bath cluster, the radon/plumbing 
 hydrant distribution, the data conduits — is west of x=18', so that half is where open-web
 trimmable floor trusses pay for themselves: services cross *through* the webs (8 7/8" clear
 chord-to-chord) instead of being bored, soffited or chased. The east half is bedrooms and a
-study with only incidental crossings, so it keeps the cheaper I-joist.
+study with only incidental crossings, so it keeps the cheaper TJI 230 I-joist.
 
 Both members are the same 11 7/8" depth, deliberately — the deck plane, the finished floor
 and the ceiling below all stay flat across the split, exactly as the wood/wood halves of
@@ -45,16 +45,36 @@ the fabricator's order, which ``haus takeoff``'s fabrication schedule states.
 """
 
 from typehaus.geometry import rect
-from typehaus import DeckLayer, FloorSystem, JoistSpec, JoistReinforcement, Layer, LayerFunction, ft, inch, pt
+from typehaus import (DeckLayer, FloorSystem, JoistSpec, JoistReinforcement, Layer,
+                      LayerFunction, PublishedSpan, ft, inch, pt)
 
 # Both members share one depth, deliberately — see the module docstring. ``main_deck.py``
 # imports ``_DEPTH``/``_SUBFLOOR`` from here rather than restating them, so the concrete
 # band's depth derivation can never drift from what this deck actually frames.
 _TRUSS = "11.875 floor truss"
-_JOIST = "11.875 I-joist"
+# TJI 230 house-wide (owner, 2026-11-01, C3-E4): the roof's series, so one flange (2 5/16")
+# and one hanger (IUS2.37/11.88). The generic "11.875 I-joist" was a 2 1/2" flange no
+# maker sells.
+_JOIST = "11.875 TJI 230"
 _DEPTH = inch(11.875)
 _OC = inch(16)
+# 23/32" plywood, modelled at its 3/4" nominal on every deck (notes/floor_heights.md).
 _SUBFLOOR = inch(0.75)
+
+# Every TJI floor field in the house reads this one row (main_deck.py, FS-S-EAST; FS-ATTIC
+# restates it, being editable). The 40/20 column covers tile and mortar beds; L/480 is
+# Weyerhaeuser's recommendation over the code's L/360 (21'-11").
+TJI_230_FLOOR_SPAN = PublishedSpan(
+    source="Weyerhaeuser TJ-4000 Trus Joist TJI Joist Specifier's Guide (July 2025) p.7, \"Floor Span Tables\"",
+    table="L/480 live load deflection, 40 PSF live / 20 PSF dead, 11-7/8\" TJI 230 at 16\" o.c.: 19'-10\"",
+    member=_JOIST,
+    span=ft(19, 10),
+    load_psf=40.0,
+    spacing=_OC,
+    edition="July 2025",
+    page="7",
+    condition="clear distance between supports, uniform loads, the more restrictive of simple or continuous span; single layer of 24\" o.c. span-rated GLUE-NAILED floor panels (reduce 6\" if nailed only); 1 3/4\" minimum end bearing without web stiffeners, 3 1/2\" intermediate; long-term creep under dead load not considered; point loads (the RM-M-BATH2 tub, the WashTower) are outside the row and answered by the JoistReinforcement blocking",
+)
 
 # How the x=18' plate is split. ``W-M-C2`` is a 2x6: 5 1/2" of seat, both decks landing on
 # it from opposite sides. A centreline split gives each 2 3/4", which shorts the truss — an
@@ -140,11 +160,12 @@ EAST_FLOOR = FloorSystem(
     # the old FS-SECOND). Plain board, not type X: R302.13 doesn't reach this floor.
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _HOUSE),
+    published_span=TJI_230_FLOOR_SPAN,
     reinforcements=(
         JoistReinforcement(at=pt(inch(374.375), inch(66.875)), plies=3, blocking=True,
                            source="ST-S2A departing-rim reactions: sister the supporting I-joist and block both adjacent bays to the main-storey bearing walls"),
     ),
-    source="catlin second floor, east half — 11 7/8\" I-joists at 16\" o.c. spanning "
+    source="catlin second floor, east half — 11 7/8\" TJI 230 joists at 16\" o.c. spanning "
            "18'-0\" from the x=18' bearing line to W-M-E1, unchanged from the old "
            "whole-floor FS-SECOND",
 )

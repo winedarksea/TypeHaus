@@ -48,7 +48,7 @@ def test_a_bearing_wall_ending_mid_bay_still_gets_its_block(catlin_model_ro, dec
 
 def test_an_interior_line_is_blocked_on_its_axis(catlin_model_ro) -> None:
     attic = _floor(catlin_model_ro, "FS-ATTIC")
-    solid = [m for m in _blocking(attic) if m.profile == "11.875 I-joist"]
+    solid = [m for m in _blocking(attic) if m.profile == "11.875 TJI 230"]
     assert solid and all(abs(m.p0[0] - 216 * _IN) < 1e-6 for m in solid)
 
 

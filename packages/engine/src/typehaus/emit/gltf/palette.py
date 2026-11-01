@@ -157,6 +157,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "railing_glass": (0.561, 0.718, 0.788, 0.48),
     "dowel": (0.20, 0.55, 0.35, 1.0),     # GFRP rebar (green)
     "thermal_break": (0.95, 0.55, 0.15, 1.0),  # XPS foam block (orange)
+    "sill_plate": (0.70, 0.68, 0.51, 1.0),    # PT SYP, as pt-syp
+    "sill_gasket": (0.37, 0.50, 0.60, 1.0),   # sill seal, as sill-seal
     # Dark display steel makes the thin connector leaves visible against lumber; product
     # coatings remain a catalog fact rather than a colour claim in the review model.
     "connector": (0.10, 0.10, 0.11, 1.0),

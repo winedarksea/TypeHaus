@@ -704,3 +704,15 @@ def test_the_wall_exit_leaves_from_the_jogged_station_not_the_chase():
                    exit_offset=pt(m(0), m(1)),
                    chase_offset=pt(m(3), m(0)), chase_offset_elevation=m(2))
     assert exterior_riser_point(vent) == pytest.approx((5.0, 3.0))
+
+
+def test_trap_arms_are_walked_in_3d_to_a_vent_that_meets_the_drain(catlin_model):
+    """C6-E7: `mep.trap_arm_developed` walks the drain from the trap to the first vent tee
+    (or a wet-vented inlet). The basement WC is the reviewer's case: wet-vented only where
+    the utility sink drops in, 116" along the drain against Table 1002.2's 72"."""
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY,
+                            only="mep.trap_arm_developed")
+    by = {f.element_tags[0]: f for f in report.findings}
+    assert by["FX-A-STUBATH-WC"].result.value == "pass"  # its riser, plan/mep_vent_tees.py
+    assert '116"' in by["FX-B-BATH-WC"].message and by["FX-B-BATH-WC"].result.value == "advisory"
+    assert "no vent meets its drain" in by["FX-M-BATH2-WC"].message

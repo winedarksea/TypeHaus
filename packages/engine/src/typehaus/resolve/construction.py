@@ -19,8 +19,10 @@ returns are construction geometry, not documentation), and for each rule:
 The record is documentation + take-off, **not** render geometry: a correctly-placed return
 duplicates the mitred ``ResolvedLayer.polygon`` the host wall already draws, so no
 ``ResolvedSolid`` is emitted (that only ever produced z-fighting prisms in 3D and phantom
-concrete rectangles in the sections). ``model.construction_returns`` is serialized to
-``model.json`` and emitted as an ``IfcCovering`` directly.
+concrete rectangles in the sections). The one exception is a sill plate nothing frames —
+under a rim band or a wall framed above the pour — which ``resolve/sill_solids`` draws.
+``model.construction_returns`` is serialized to ``model.json`` and emitted as an
+``IfcCovering`` directly.
 
 It is declarative: a ``ConstructionRule.applies_to`` predicate selects *where* the return
 lands via the finders registered in ``_FINDERS``. It never mutates a resolved wall polygon
@@ -49,6 +51,7 @@ from typehaus.resolve.construction_sills import (
     _find_framed_on_concrete,
 )
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.sill_solids import sill_solids
 
 # Registry: applies_to predicate -> finder. Adding a rule/finder here is all that a new
 # declarative return needs; unknown predicates simply emit nothing (and are flagged once).
@@ -66,8 +69,8 @@ def apply_construction_rules(model: ResolvedModel) -> list[Finding]:
     """Apply ``PlanModel.construction_rules`` to the resolved model, pre-framing.
 
     Appends each matched return's record to ``model.construction_returns``. Records only —
-    never fails a build, never mutates a resolved wall or framing member, and never emits a
-    ``ResolvedSolid`` (see the module docstring).
+    never fails a build, never mutates a resolved wall or framing member, and emits a
+    ``ResolvedSolid`` only for an otherwise undrawn sill (see the module docstring).
     """
     plan: PlanModel = model.plan
     for rule in plan.library.construction_rules:
@@ -76,6 +79,7 @@ def apply_construction_rules(model: ResolvedModel) -> list[Finding]:
             continue
         for ret in finder(model, rule):
             model.construction_returns.append(ret)
+    model.solids.extend(sill_solids(model))
     return []
 
 

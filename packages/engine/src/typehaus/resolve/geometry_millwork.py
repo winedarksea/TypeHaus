@@ -80,7 +80,9 @@ def window_stool_prism(wall: ResolvedWall, opening,
                   if part.key == "frame"), None)
     if frame is None:
         return None
-    top = frame.solids[-1].z1_m
+    rail = frame.solids[-1]
+    top = (rail.z1_m if stool.sill_rail_m is None else rail.z0_m + stool.sill_rail_m) \
+        - stool.sash_overlap_m
     return GPrism(ring=ring, z0_m=top - stool.thickness_m, z1_m=top)
 
 

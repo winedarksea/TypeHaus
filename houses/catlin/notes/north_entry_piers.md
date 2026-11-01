@@ -68,9 +68,10 @@ comes from. If §3 is wrong, every ratio in §5 and §6 is wrong by the same fac
 | term | working | value |
 |---|---|---|
 | pier line | authored, `params/north_entry_frame.py::PIER_LINE_Y_FT` | y = 37'-6" |
-| house cladding face | `W-B-N2` axis y=36'-0" + 4" concrete + 3 1/4" foam/skin | y = 36'-7 1/4" |
-| clear, pier face to cladding | 37'-6" − 36'-7 1/4" − 6" (half a 12" round) | 6 3/4" |
-| clear, pier face to concrete | 37'-6" − 36'-4" − 6" | 10 3/4" |
+| house foundation face (2026-11-01, §13) | `W-B-N*` concrete face y=36'-0" + 0.06" membrane + 4" XPS | y = 36'-4 1/16" (436.06") |
+| clear, 14" pier face to it (`PT-BW-W`, kdat `PT-BW-PE`) | 450" − 7" − 436.06" | **6.94"** |
+| clear, 12" pier face to it (`PT-BW-E`) | 450" − 6" − 436.06" | 7.94" |
+| clear, pier face to concrete, 14" / 12" | 450" − 7" (6") − 432" | 11" / 12" |
 | garage plate top | `W-G-E`/`W-G-W` `z1` | +7'-4" |
 | header top | = garage plate, so the two roof planes are one plane | +7'-4" |
 | header soffit | +7'-4" − 11 1/4" | +6'-4 3/4" |
@@ -502,6 +503,8 @@ the cage below is what sizes it. Where the change does bite is bearing, §6's pa
 above, where `PD-BW-RE` goes from 0.85 to 0.94.
 
 ### Section and cage
+
+The 12" rounds (`PT-BW-E`, `-GE`) below; the 14" rounds are §13.
 
 | term | working | value |
 |---|---|---|
@@ -1522,3 +1525,47 @@ head force is `canopy_garage_diaphragm.md` §7's **332.81 lb** (was 333.06); the
 333.40 (0.18% over, as before). Connector lateral 332.81/1,350 = 0.247 (unchanged to three
 figures); column shear (332.81 + 167.16 − 93.06)/0.6 = 678.2 lb (engine 679.2); torsion
 332.81/0.6 x 2.75/12 = 127.1 lb-ft (engine 127.3) against 1,499.5, 0.085.
+
+## 13. 2026-11-01 — the 14" rounds are their own section (C3-E21)
+
+`PT-BW-W`/`-GW` (and, under the `kdat` east posts, `PT-BW-PE`/`-PNE`) are **14"** rounds for the
+CBSQ66-SDS2's 3" strap cover (`canopy_west_band.md` §5e), and carried `PIER_CONCRETE_12`, whose
+12" this note's §6 cage and slenderness rows assumed. They take `PIER_CONCRETE_14` now
+(`east_posts.pier_assembly`); `PT-BW-E`/`-GE` stay 12". Worked here from the section alone.
+
+**13a. §1 clearances, re-measured.** The rows above used a cladding face at 36'-7 1/4" and
+arithmetic that did not close (37'-6" − 36'-7 1/4" − 6" is 4 3/4", not 6 3/4"). From grade to
+the pier tops (−34" to −16.19") the pier faces the foundation's XPS and coating, 36'-4 1/16";
+the main wall's cladding (36'-6 3/4") starts above the pier tops, at −13 7/16". 14": 6.94" clear
+to the foam, 11" to concrete. 12": 7.94" / 12".
+
+**13b. Section and cage, 14" round**
+
+| term | working | value |
+|---|---|---|
+| gross area | π (14/2)² | 153.94 in² |
+| §10.6.1.1 floor on A_g | 0.01 x 153.94 | 1.539 in² — (4) #5's 1.24 is **short** |
+| ρ on A_g | 1.24 / 153.94 | 0.806% |
+| §10.3.1.2 least effective area | A_g / 2 | 76.97 in² |
+| §10.6.1.1 floor on it | 0.01 x 76.97 | 0.770 in² ≤ 1.24 |
+| φP_n,max on A_eff | 0.65 x 0.80 x [0.85 x 5,000 x (76.97 − 1.24) + 60,000 x 1.24] | 206,050 lb vs 7,457 (`PT-BW-W`) |
+| tie spacing | least of 16 d_b = 10.0", 48 d_t = 18.0", h = 14" | 10" |
+
+**ENGINEER HOLD.** The (4) #5 cage meets ACI 318-19 §10.6.1.1 only on §10.3.1.2's reduced
+effective area (a column larger than its load needs may base its minimum steel on an area not
+less than half the gross). `deck_post` takes exactly that basis (77.0 in² / 0.770 in², ρ 0.806%
+on gross). The alternative is six #5 (1.86 in²) on the gross 1.539. The engineer of record
+confirms the §10.3.1.2 basis for `PT-BW-W`/`-GW`/`-PE`/`-PNE`, or the cage goes to (6) #5.
+
+**13c. Slenderness, 14".** r = 0.25 x 14 = 3.50", I_g = π 14⁴ / 64 = 1,885.7 in⁴, E_c = 57,000
+√5,000 = 4.031e6 psi, EI = 0.4 E_c I_g / 1.6 = 1.900e9 lb-in²:
+
+| pier (k = 1, leaning) | l_u (pad top to pier top) | k l_u / r | P_c = π² EI / l_u² | P_u | δ_ns |
+|---|---|---|---|---|---|
+| `PT-BW-W` | −107.4375" to −16.19" = 91.25" | 26.1 | 2,252 kip | 7,457 lb | 1.004 |
+| `PT-BW-GW` | −76.0" to −16.19" = 59.81" | 17.1 | 5,242 kip | 6,931 lb | 1.002 |
+
+The 12" `PT-BW-E` at the same 91.25" reads 30.4 (§6's 92" row predates §12a's 3/4"). `PT-BW-PE`
+/ `-PNE` are fixed-base sway columns (k 2.1), graded in bending with `canopy_garage_diaphragm.md`
+§5a; only their cage (13b) is this note's. `deck_post` agrees on all four: ρ 0.806% on gross,
+0.770 in² on §10.3.1.2's half area, `PT-BW-W`/`-GW` k l_u/r 26.1 / 17.1.

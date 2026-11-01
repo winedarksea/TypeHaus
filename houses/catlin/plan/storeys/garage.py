@@ -346,7 +346,9 @@ OPENINGS = [
          position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(1),
          flip_hinge=True, flip_swing=True, maximum_opening_degrees=81,
          header_spec="flat 2x6 nonbearing",
+         # The MMI listing's 6-9/16" composite frame, set flush with the sheathing.
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
+             factory_frame_depth=inch(6.5625),
              exterior_wrap_material_ref="metal-dark-exterior",
              # MMI publishes no sill section: this is a coordination envelope (frame depth, a
              # 1" composite sill, inside R311.3.2's 1-1/2" outswing allowance) that closes the
@@ -739,9 +741,10 @@ ALARMS = [
 
 # --- service-door stair (ST-G-SERVICE) --------------------------------------------------
 #
-# Five risers from the garage slab at -2'-10" up to D-G-SERVICE's threshold at 0'-0", the
-# same 5 x 6.8" risers on 11" treads at 3'-0" wide that five concrete `Slab`s used to be
-# (SL-G-STEP-0..4 in params/foundations.py). ** NO TOP LANDING SINCE 2026-10-13. ** The door
+# Five risers from the garage slab at -2'-10" up to D-G-SERVICE's threshold crest at +1 1/2"
+# (its schematic sill envelope; MMI publishes no section), 5 x 7.1" on 11" treads at 3'-0"
+# wide. Five concrete `Slab`s were the flight once (SL-G-STEP-0..4 in params/foundations.py).
+# Cut the risers from the INSTALLED threshold. ** NO TOP LANDING SINCE 2026-10-13. ** The door
 # swings out, so R311.7.6's exception applies (code.R311_7_6_door_at_stair_head grades it) and
 # the head riser stands against W-G-S's gyp face under the threshold.
 #
@@ -768,7 +771,7 @@ ALARMS = [
 # GARAGE_Y_SOUTH.
 #
 # ** THE STRINGER HEADS SEAT ON THE STEM, NOT A HEADER. ** The stem's finished face stands
-# 4 7/8" proud of W-G-S's gyp at -1'-0", 5.2" under the top tread, and the inner 1 3/4" of
+# 4 7/8" proud of W-G-S's gyp at -1'-0", 6.4" under the top tread, and the inner 1 3/4" of
 # that ledge is the ICF core (the rest is interior EPS and board, trimmed back under each
 # head). Each stringer bears on the core through a stainless shim pack (STAIR_SEATS); the hand
 # check and the field kick-out anchor are in notes/garage_service_door_outswing.md §3.
@@ -786,7 +789,7 @@ ALARMS = [
 STAIRS = [
     Stair(uid="X99TD38ZS3", tag="ST-G-SERVICE",
           from_storey="garage", to_storey="garage",
-          base_elevation=ft(-2, -10), top_elevation=ft(0),
+          base_elevation=ft(-2, -10), top_elevation=inch(1.5),
           width=ft(3), start=pt(ft(6, 11.625), ft(47, 6.125)),
           run_direction="y", run_reversed=True,
           tread_depth=inch(11), nosing_depth=inch(0),

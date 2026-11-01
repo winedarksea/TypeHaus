@@ -5,9 +5,10 @@ say so (``also_in_interior_trim``). Bought stock (a poplar 1x4) is the yard's, n
 sawyer's, and never appears here.
 
 Both are bought as long boards and cut on site, so each is ONE lineal row per stock, like a
-floor: the total LF, and the boards it takes. With ``TrimStandard.stock_length`` declared,
-the cut pieces are packed first-fit-decreasing into boards that long (a base run longer
-than a board is spliced); without it, boards are as long as the longest piece. Both are
+floor: the total LF, and the boards it takes. With a stock length declared (the stock's own
+in ``TrimStandard.stocks``, else the standard's), the cut pieces are packed first-fit-
+decreasing into boards that long (a base run longer than a board is spliced); without it,
+boards are as long as the longest piece. Both are
 ripped from the wide stack: the face is far under ``max_board_width``.
 """
 
@@ -52,8 +53,10 @@ def trim_rows(model: ResolvedModel, materials: Mapping[str, object],
 
     standard = next((el for el in model.plan.all_elements()
                      if isinstance(el, TrimStandard)), None)
-    stock_in = (standard.stock_length.inches
-                if standard is not None and standard.stock_length is not None else None)
+    def stock_in(material_ref: str) -> float | None:
+        stock = standard.stock_length_for(material_ref) if standard is not None else None
+        return stock.inches if stock is not None else None
+
     # A clipped casing leg is ripped on site from the full-width stock, not milled narrow.
     casing_in = round(standard.casing_width.inches, 3) if standard is not None else None
 
@@ -80,7 +83,8 @@ def trim_rows(model: ResolvedModel, materials: Mapping[str, object],
             lengths, tags = groups.setdefault(key, ([], []))
             lengths.append(piece.length_m * _M_TO_IN)
             tags.append(item.opening_ref)
-    return [_lineal_row(use, material_ref, profile, thickness, width, lengths, stock_in,
-                        tags, materials, max_board_width_in, narrow.get(key, 0))
+    return [_lineal_row(use, material_ref, profile, thickness, width, lengths,
+                        stock_in(material_ref), tags, materials, max_board_width_in,
+                        narrow.get(key, 0))
             for key, (lengths, tags) in groups.items()
             for use, material_ref, profile, thickness, width in (key,)]

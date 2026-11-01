@@ -1,4 +1,6 @@
-"""North/south panel variants: the girt support plane stays fixed."""
+"""North/south panel variants: the girt support plane stays fixed.
+
+The band girt behind the 228" joint is derived from it (``rainscreen_strips``)."""
 from typehaus import inch
 
 from .envelope_walls import EXT_2X6
@@ -13,10 +15,7 @@ def _with_board_batten(assembly, tag):
                                  "thickness": BOARD_BATTEN_DEPTH,
                                  "panel_joint_elevations": (inch(228),),
                                  "joint_trim_material_ref": "bbd-transition-trim"})
-        if layer.name == "cladding" else
-        layer.model_copy(update={"framing": layer.framing.model_copy(
-            update={"additional_course_elevations": (inch(228),)})})
-        if layer.name == "outer-girt" and layer.framing is not None else layer
+        if layer.name == "cladding" else layer
         for layer in assembly.layers)
     return assembly.model_copy(update={"tag": tag, "layers": layers})
 

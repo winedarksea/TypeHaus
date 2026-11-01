@@ -214,9 +214,16 @@ MAIN_BACKING = [
                 start=inch(3.25), length=inch(33.5),
                 elevation=inch(68), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="plain Hubba Pill upper mounting zone (74 in.)"),
+    # Split round the stack bay (2026-11-01): PR-M-S-BATH1-DRAIN at x=5'-0" and the hall-bath
+    # CW riser stand between north-face studs 005 (4'-0") and 007 (5'-4"), so no block there.
     WallBacking(uid="8YJBD0RKJR", tag="BK-M-STOS-SHELF", wall_ref="W-M-STOS",
+                length=inch(48.75),
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="mudroom shelf (66 in.)"),
+    WallBacking(uid="QX2YH9NZ51", tag="BK-M-STOS-SHELF-E", wall_ref="W-M-STOS",
+                start=inch(64.75),
+                elevation=inch(64), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="mudroom shelf (66 in.), east of the stack bay"),
     WallBacking(uid="GWVBD431GV", tag="BK-M-N1-DISP", wall_ref="W-M-N1",
                 start=inch(66.5), length=inch(27),
                 elevation=inch(12), height=inch(7.25), profile="2x8",

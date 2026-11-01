@@ -57,8 +57,8 @@ def test_R602_6_1_reaches_exterior_and_bearing_walls_only(catlin_ctx) -> None:
         passed = [f for f in findings if f.element_tags == pair]
         assert passed and passed[0].result.value == "pass", pair
         assert "non-bearing partition" in passed[0].message
+    # The last interrupted plate (the hall-bath stack in 2x4 W-M-STOS) closed 2026-11-01.
     openings = [f for f in findings if f.result.value == "unknown"]
-    assert openings
     assert all("framed opening" in f.message for f in openings)
 
 
@@ -133,3 +133,19 @@ def test_the_sauna_vent_cuts_no_plate_since_its_re_line(catlin_ctx) -> None:
     mine = [f for f in run_through_plate(catlin_ctx) if "PR-B-SAUNA-VENT" in f.element_tags]
     assert not [f for f in mine if {"W-B-ESS-S", "W-B-ESS-W"} & set(f.element_tags)]
     assert all(f.result.value == "pass" for f in mine), [f.message for f in mine]
+
+
+def test_R602_6_exterior_is_a_weather_skin_and_lagging_stops_at_the_framing(catlin_ctx) -> None:
+    """C6-E4: an attic partition beside the unroomed stair void (`W-A-HALL-S`) is not
+    exterior; a clad wall is. C6-E3: a lagged run bores bare and says so."""
+    from typehaus.checks.mep.routing_bore_scope import lagging_at_framing, r602_6_role
+
+    roles = r602_6_role(catlin_ctx)
+    assert "W-A-HALL-S" not in roles
+    assert roles.get("W-M-W3") == "exterior"
+    extra, phrase = lagging_at_framing(catlin_ctx)["PR-B-HW-WASH"]
+    assert extra == 0.0 and "stops at the framing" in phrase
+    washed = [f for f in run_through_stud(catlin_ctx)
+              if f.element_tags == ("PR-B-HW-WASH", "W-M-CLN")]
+    assert washed and washed[0].result.value == "pass"
+    assert "stops at the framing" in washed[0].message

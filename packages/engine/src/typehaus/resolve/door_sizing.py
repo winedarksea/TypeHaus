@@ -11,6 +11,13 @@ and checks that a leaf fits one:
 ``finish`` is the build-up from the opening's base to the finished floor: the subfloor sheet
 and covering on a joisted storey (``resolve/door_floor_finish``).
 
+A bypass or bifold set is sold by its finished opening, which its track sets: the RO is that
+plus the jamb allowance each side and at the head, with no leaf gap or undercut. A published
+RO measured to the finished floor (``OpeningSize.datum``) is raised by the build-up.
+
+The jamb depth is the wall's finish-to-finish depth. Against ``TrimStandard.jamb_stock_depths``
+it is ripped from the next stock up, or extended from the deepest.
+
 A pure function of its arguments: no model, no house load.
 """
 from __future__ import annotations
@@ -44,6 +51,11 @@ class CasedDoorDefaults:
     track_depth_m: float = 0.025
     room_probe_m: float = 0.15
     raised_sill_m: float = 0.05
+    # Estimated: a retail bypass/bifold set fits a finished opening of its nominal width
+    # and nominal height + 1/2" (no sourced track hardware yet).
+    track_head_m: float = 0.5 * _IN
+    # A stock jamb this much deeper than the wall is set as-is; the casing bridges it.
+    jamb_proud_m: float = 0.125 * _IN
 
 
 CASED_DOOR_DEFAULTS = CasedDoorDefaults()
@@ -75,6 +87,25 @@ class DoorSizing:
     held: bool
     fits: bool  # the unit (or leaf) fits a published RO; a held RO is exempt
     basis: tuple[tuple[str, str], ...]
+    # Finish face to finish face, and the stock jamb it is cut from; None where the door
+    # carries no stock jamb (trimless, pocket, bookcase, exterior, overhead).
+    jamb_depth_m: float | None = None
+    jamb_stock_m: float | None = None
+
+    @property
+    def jamb_rip_m(self) -> float:
+        """How much a stock jamb is ripped down to the wall; 0 if set as-is or extended."""
+        if self.jamb_depth_m is None or self.jamb_stock_m is None:
+            return 0.0
+        excess = self.jamb_stock_m - self.jamb_depth_m
+        return excess if excess > CASED_DOOR_DEFAULTS.jamb_proud_m else 0.0
+
+    @property
+    def jamb_extension_m(self) -> float:
+        """The strip added to the deepest stock jamb to reach the wall's far face."""
+        if self.jamb_depth_m is None or self.jamb_stock_m is None:
+            return 0.0
+        return max(self.jamb_depth_m - self.jamb_stock_m, 0.0)
 
     @property
     def installed_unit(self) -> tuple[float, float] | None:
@@ -146,10 +177,10 @@ def _clear_height(door, door_type, rough_h: float, a: float,
 
 
 def door_sizing(door, door_type, trim_standard=None, kit=None,
-                floor_finish_m: float = 0.0) -> DoorSizing:
+                floor_finish_m: float = 0.0, wall_depth_m: float | None = None) -> DoorSizing:
     """Size one door. ``door`` is the authored ``Door``; ``kit`` a pocket frame kit
     (``StructuralHardware``) or None; ``floor_finish_m`` the build-up from the opening's base
-    to the finished floor, the higher side."""
+    to the finished floor, the higher side; ``wall_depth_m`` its host's finish-to-finish."""
     d = CASED_DOOR_DEFAULTS
     if trim_standard is not None:
         a = trim_standard.jamb_allowance.meters
@@ -160,8 +191,12 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
     g = d.leaf_gap_m
     operation = door_type.operation
     pair = operation == DoorOperation.DOUBLE_SWING
-    side = 2 * (a + g) + (g if pair else 0.0)
-    head = floor_finish_m + d.undercut_m + g + a
+    track = operation in (DoorOperation.SLIDE, DoorOperation.BIFOLD)
+    if track:
+        side, head = 2 * a, floor_finish_m + d.track_head_m + a
+    else:
+        side = 2 * (a + g) + (g if pair else 0.0)
+        head = floor_finish_m + d.undercut_m + g + a
     nominal_w, nominal_h = door_type.width.meters, door_type.height.meters
     catalog = door_type.catalog_dimensions
     unit_w = catalog.unit_width.meters if catalog else None
@@ -180,13 +215,17 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
     elif published is not None:
         rough_w, rough_h = published.width.meters, published.height.meters
         basis["rough"] = "published RO"
+        if published.datum == "finished_floor":
+            rough_h += floor_finish_m
+            basis["rough"] += ", from the finished floor"
     elif pocket:
         rough_w, rough_h, basis["rough"] = _pocket_rough(nominal_w, nominal_h, kit, head,
                                                         floor_finish_m, derived)
     else:
         rough_w, rough_h = nominal_w + side, nominal_h + head
-        generic = operation in (DoorOperation.SLIDE, DoorOperation.BIFOLD)
-        basis["rough"] = derived + (" (generic: no sourced track)" if generic else "")
+        basis["rough"] = derived + (
+            f", finished opening = nominal + {_inches(d.track_head_m)} head "
+            "(estimated: retail set, no sourced track)" if track else "")
     if not pocket:
         passage = rough_w
     required_w, required_h, required_basis = rough_w, rough_h, basis["rough"]
@@ -214,6 +253,9 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
 
     clear_w, basis["clear_w"] = _clear_width(door, door_type, leaf_w)
     clear_h, basis["clear_h"] = _clear_height(door, door_type, rough_h, a, floor_finish_m)
+    jamb_depth, jamb_stock = _jamb(door, door_type, trim_standard, wall_depth_m)
+    if jamb_stock is not None:
+        basis["jamb"] = f"derived: wall finish to finish, cut from {_inches(jamb_stock)} stock"
     return DoorSizing(
         nominal_w_m=nominal_w, nominal_h_m=nominal_h, leaf_w_m=leaf_w, leaf_h_m=leaf_h,
         unit_w_m=unit_w, unit_h_m=unit_h, rough_w_m=rough_w, rough_h_m=rough_h,
@@ -221,7 +263,20 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
         required_w_m=required_w, required_h_m=required_h, required_basis=required_basis,
         jamb_allowance_m=a,
         leaf_gap_m=g, floor_finish_m=floor_finish_m, held=held is not None, fits=fits,
-        basis=tuple(basis.items()))
+        basis=tuple(basis.items()), jamb_depth_m=jamb_depth, jamb_stock_m=jamb_stock)
+
+
+def _jamb(door, door_type, trim_standard, wall_depth_m) -> tuple[float | None, float | None]:
+    """``(jamb depth, stock it is cut from)`` for a door hung on a stock interior jamb."""
+    stocks = sorted(s.meters for s in getattr(trim_standard, "jamb_stock_depths", ()))
+    operation = door_type.operation
+    if (wall_depth_m is None or not stocks or door_type.trimless or door_type.factory_frame
+            or door_type.bookcase_door is not None
+            or getattr(door, "exterior_installation", None) is not None
+            or operation in (DoorOperation.POCKET, DoorOperation.OVERHEAD)):
+        return None, None
+    stock = next((s for s in stocks if s >= wall_depth_m - _FIT_TOLERANCE_M), stocks[-1])
+    return wall_depth_m, stock
 
 
 def _pocket_run(passage_m: float, kit) -> float:

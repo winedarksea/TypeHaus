@@ -38,9 +38,44 @@ BAND_PANEL_GAP_IN = 1.0
 #: The upper panel hangs this far over the Transition Trim's shelf, its batten ends open
 #: (Metal Sales BBD75 Install Guide 10/2025 p. 40): no strip, so nothing holds water there.
 BAND_UPPER_GAP_IN = 0.25
+#: The band girt backs this much of the lower panel's top, for the screw BBD75 p. 40 puts
+#: through its nail strip under the trim. The course rises from there one board face, so
+#: it also takes the trim's back leg (owner, 2026-11-01).
+BAND_PANEL_BACKING_IN = 1.0
 #: A strip is cut this short of each edge of its seat, so its aluminium edge stands off the
 #: steel legs (and the band girt's KDAT) it lies between; the gap is under the 1/8" hole.
 STRIP_EDGE_CLEAR_IN = 1.0 / 32.0
+
+
+def band_panel_top(joint_m: float) -> float:
+    """The lower panel's top under a BBD75 band: the outlet slot below the joint."""
+    return joint_m - BAND_PANEL_GAP_IN * M_PER_IN
+
+
+def band_girt_bottom(joint_m: float) -> float:
+    """The bottom of the girt course a BBD75 band joint derives."""
+    return band_panel_top(joint_m) - BAND_PANEL_BACKING_IN * M_PER_IN
+
+
+def apply_band_joints(model) -> None:
+    """Stamp each wall with its BBD75 cladding's panel joints, before its girts are laid.
+
+    Only board-and-batten joints are cut (``resolve/board_batten.py``), so only they are
+    stamped; ``furring.course_elevations`` derives the band girt from each."""
+    from dataclasses import replace
+
+    finishes = {m.tag: m.finish for m in model.plan.library.materials}
+    walls = []
+    for wall in model.walls:
+        assembly = model.plan.library.resolve_assembly(wall.assembly) if wall.assembly else None
+        authored = {layer.name: layer for layer in assembly.layers} if assembly else {}
+        joints = sorted({j.meters for layer in wall.layers
+                         if layer.function == "cladding" and layer.name in authored
+                         and finishes.get(layer.material_ref) == "board-and-batten"
+                         for j in authored[layer.name].panel_joint_elevations
+                         if layer.band(wall)[0] < j.meters < layer.band(wall)[1]})
+        walls.append(replace(wall, panel_joints_m=tuple(joints)) if joints else wall)
+    model.walls = walls
 
 
 def _sheet(seat, origin, outward, along, length, thickness):
@@ -106,24 +141,31 @@ def _base_strips(model) -> None:
 
 
 def _head_strips(model) -> None:
+    from typehaus.library.trim.catalog import PROFILES
     from typehaus.library.trim.generic import HEAD_FLASHING_CLADDING_CLEARANCE_IN
+    from typehaus.resolve.cladding_trim.openings import is_window_head
     from typehaus.resolve.flashing_config import FLASHING
     from typehaus.resolve.opening_flashing import head_flashing_section, opening_flashing_frame
     from typehaus.resolve.opening_head_drip import DRIP_HEAD_PRODUCT
 
     heads = {s.host_ref: s.product for s in model.solids if s.category == "cladding_trim"
-             and s.product in ("OPENING_HEAD", "DOOR_HEAD_CUSTOM", DRIP_HEAD_PRODUCT)}
+             and (is_window_head(s.product)
+                  or s.product in ("DOOR_HEAD_CUSTOM", DRIP_HEAD_PRODUCT))}
     for wall in model.walls:
         for opening, _s0, _s1, _z in opening_head_spans(model, wall):
             product = heads.get(opening.tag)
             frame = opening_flashing_frame(model, wall, opening) if product else None
             if frame is None:
                 continue
-            if product == "OPENING_HEAD":
+            if is_window_head(product):
+                # The strip lies on the receiver's seat, read off its catalog section.
+                section = PROFILES[product].section_in
                 lo = opening.center_along_m - opening.width_m / 2 - M_PER_IN
                 z = (wall.base_ref_z_m + opening.sill_m + opening.height_m
                      - opening.window_seat.head_drop_m)
-                start, length, seat = lo, opening.width_m + 2 * M_PER_IN, (1.5 * M_PER_IN, 0.0)
+                seat = tuple((b - a) * M_PER_IN for a, b in zip(section[1], section[2],
+                                                                strict=True))
+                start, length = lo, opening.width_m + 2 * M_PER_IN
                 origin = frame.point(lo, frame.mount, z)
             else:
                 head = head_flashing_section(wall, opening, frame, FLASHING)

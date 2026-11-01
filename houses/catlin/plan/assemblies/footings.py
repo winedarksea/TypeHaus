@@ -81,6 +81,22 @@ PIER_CONCRETE_12 = Assembly(
     source="catlin-house 12-inch round north-entry piers and columns, EXPOSED_MIX 5,000 psi F3+C2 with galvanized bar. The four seat-beam piers PT-BW-W/E/GW/GE receive a washed top, drained SS316-SHIM-35 bearing pack and HETA20Z tie pair. Under the pinned east variants, PT-BW-PE/PNE instead carry post bases above washed, drained pier tops; under the cast variant PT-BW-RE/RNE continue full height and receive the shim-and-tie joint. The variant is selected in params/east_posts.py."
 )
 
+# ** THE 14" ROUND, UNDER A CAST-IN CBSQ66-SDS2 (C3-E21). ** PT-BW-W/-GW and, under the
+# `kdat` east posts, PT-BW-PE/-PNE: ESR-3050's 3" side cover to the embedded straps needs the
+# extra inch (notes/canopy_west_band.md §5e). Same mix, cage and seat detail as
+# PIER_CONCRETE_12; only the section differs, so it is its own tag and its own BOM row.
+# The (4) #5 cage is 0.81% of the 14" gross area and meets ACI 318-19 §10.6.1.1's 1% on
+# §10.3.1.2's reduced effective area — an ENGINEER HOLD (notes/north_entry_piers.md §6).
+PIER_CONCRETE_14 = Assembly(
+    tag="PIER_CONCRETE_14",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(14.0),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
+    ),
+    interfaces=(CONCRETE_BEARING,),
+    source="catlin-house 14-inch round north-entry piers under a cast-in CBSQ66-SDS2 base (ESR-3050 Table 1 fn. 4, 3-inch strap side cover): PT-BW-W/GW, and PT-BW-PE/PNE under the kdat east posts. EXPOSED_MIX 5,000 psi F3+C2 with galvanized bar, the same 8-inch (4) #5 cage as PIER_CONCRETE_12; its 1% minimum is read on the ACI 318-19 §10.3.1.2 reduced effective area (engineer hold, notes/north_entry_piers.md §6). Washed, drained top; no grout island."
+)
+
 # ** ONE TYPE FOR ALL FIVE COURT STRIPS SINCE 2026-09-10, AND THE MERGE FIXED A DEFECT. **
 # This was RETAINING_FOOTING_96 (the three retaining strips) and PORCH_FOOTING_84 (the two
 # braced porch strips), and the split was justified on width — 96" against 84" — which an

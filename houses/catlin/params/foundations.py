@@ -195,16 +195,27 @@ _GARDEN_END_TRIMMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
 _SOUTH_TOE_TRIM = inch(2)
 
 
-def _toe_offset(tag: str) -> Length | None:
-    """How far this strip's centre sits north of the line ``center_on`` picks.
+# ** THE BAND-CENTRED STRIPS SIT 1/16" INBOARD (C3-E18). ** Centred on the band (below),
+# the 8" N/W runs' outboard toe is 8.03" against an 8" footing (R403.1.1 P <= T) and the 12"
+# E runs' inboard toe 1.97" (P >= 2"). 1/16" inboard (+left normal on all eight) makes them
+# 7.97"/4.03" and 5.97"/2.03".
+_PROJECTION_TRIMMED = {"W-B-N1", "W-B-N2", "W-B-N3", "W-B-N4", "W-B-W1", "W-B-W2",
+                       "W-B-E1", "W-B-E2"}
+_PROJECTION_TRIM = inch(0.0625)
 
-    Only the garden-end four take one, and they are the four that stay on the node line —
-    see the two blocks above, and ``_center_on`` below.
+
+def _toe_offset(tag: str) -> Length | None:
+    """How far this strip's centre sits off the line ``center_on`` picks (+left normal).
+
+    The garden-end four stay on the node line (see the two blocks above, and ``_center_on``
+    below); the eight band-centred perimeter strips take the 1/16" projection trim.
     """
     if tag in _GARDEN_END_TRIMMED:
         return _GARDEN_END_TOE_TRIM
     if tag in _TOE_TRIMMED:
         return _SOUTH_TOE_TRIM
+    if tag in _PROJECTION_TRIMMED:
+        return _PROJECTION_TRIM
     return None
 
 
@@ -225,7 +236,8 @@ def _toe_offset(tag: str) -> Length | None:
 # 8.03"/3.97" on an 8" wall and 10"/-2" -> 6.03"/1.97" on a 12" one: the eccentricity
 # halves and every wall lands on its footing, but it is NOT symmetric and cannot be made so
 # from here. Closing the last 2.03" means centring on the STRUCTURE
-# layer, which is an engine change and not this one.
+# layer, which is an engine change and not this one. 8.03" broke R403.1.1's P <= T and
+# 1.97" its 2" minimum, so all eight take ``_PROJECTION_TRIM`` (7.97"/4.03", 5.97"/2.03").
 #
 # TWO GROUPS STAY ON THE NODE LINE, and neither is an oversight.
 #

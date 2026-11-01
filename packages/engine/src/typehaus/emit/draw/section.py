@@ -353,6 +353,7 @@ def _emit_solid_cut(b, model, solid, plane: CutPlane, crop) -> None:
     tub_insulation = solid.category in {"tub_batt", "tub_insulation_return"}
     layer = ("A-WALL-INSU" if tub_insulation else
              "A-WALL-FINI" if solid.category == "window_return" else
+             "S-FRAM" if solid.category in ("sill_plate", "sill_gasket") else
              "A-SLAB" if in_slab_family(solid.category) else "S-FNDN")
     # Backfill names no material and would default to concrete stipple: draw it as outline.
     backfill = solid.category in ("backfill_native", "backfill_cap")

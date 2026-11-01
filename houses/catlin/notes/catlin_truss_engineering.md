@@ -279,25 +279,25 @@ on sheathing. If the reviewer is willing to count it, HeadLOK is the better scre
 ### 3.5 The demand, and the three ratios
 
 The site's own basis — **115 mph V_ult, Exposure B, Risk Category II** — at the building's
-mean roof height of 25.60 ft, worked in full in `notes/board_batten_girt_span.md` §2-§4 and
+mean roof height of 25.52 ft (2026-11-01, decision #109's plane), worked in full in `notes/board_batten_girt_span.md` §2-§4 and
 recomputed identically here because the panel and the screw carry **one** suction:
 
 ```
-q_h      = 19.27 psf
+q_h      = 19.25 psf
 GC_p     = -1.4   (ASCE 7-16 Fig. 30.3-1, Zone 5 corner, at 1.33 ft² effective area)
 GC_pi    =  0.18  (Table 26.13-1, enclosed)
-strength = 19.27 x (1.4 + 0.18)         = 30.44 psf
-ASD      = 0.6 x 30.44                  = 18.27 psf      (ASCE 7-16 §2.4.1)
+strength = 19.25 x (1.4 + 0.18)         = 30.42 psf
+ASD      = 0.6 x 30.42                  = 18.25 psf      (ASCE 7-16 §2.4.1)
 
 tributary = 32" x 24"                   = 5.33 ft²
-demand    = 18.27 x 5.33                = 97.4 lb per crossing
+demand    = 18.25 x 5.33                = 97.3 lb per crossing
 ```
 
 | limit state | demand | capacity | d/c |
 |---|---|---|---|
 | thread engagement (shank across the clamped stack) | 6.0 in | 6.0 in | **1.000** |
-| withdrawal from the stud | 97.4 lb | 255 lb | 0.382 |
-| **head pull-through of the girt** | 97.4 lb | **200 lb** | **0.487** |
+| withdrawal from the stud | 97.3 lb | 255 lb | 0.382 |
+| **head pull-through of the girt** | 97.3 lb | **200 lb** | **0.487** |
 | minimum penetration, 6 D | 1.134 in | 1.500 in | 0.756 |
 
 Engagement is a *detailing* row: it reads 1.000 because the screw fits exactly, which is the
@@ -441,7 +441,7 @@ span question with it (below).
 > are comfortable — ASC PS230, Metal Panels Inc. and Homewood all publish 144-168 psf
 > allowable negative for PBR at a 3'-0" span, so 6x or better at 24"; Metal Sales publishes
 > 58 psf outward / 43 psf inward for 24 ga board & batten at 24", which is d/c 0.31 / 0.43
-> against the 18.3 psf ASD zone-5 suction that `notes/board_batten_girt_span.md` works from
+> against the 18.2 psf ASD zone-5 suction that `notes/board_batten_girt_span.md` works from
 > the house's actual mean roof height.
 
 **Coating.** The girt screw of §3 passes through KDAT into SPF, so TimberLOK's coating

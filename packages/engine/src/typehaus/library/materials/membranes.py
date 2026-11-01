@@ -240,4 +240,17 @@ MATERIALS: tuple[Material, ...] = (
             "item 4 exempts the annular fill from ASTM E136; no vapour value is published."
         ),
     ),
+    # The gasket under a PT sill plate on concrete, drawn as the return's 1/16" solid
+    # (``resolve/sill_solids.py``). The product is billed by name in ``[sill_gaskets]``.
+    Material(
+        tag="sill-seal",
+        name="Sill seal gasket (closed-cell foam or peel-and-stick, compressed)",
+        hatch="membrane",
+        color="#5f7f9a",
+        source=(
+            "Product class: a closed-cell polyethylene foam sill sealer, or a self-adhered "
+            "sill membrane where the plate joint is the air barrier. A capillary and air "
+            "break under the IRC R317.1 treated plate; no vapour value is published."
+        ),
+    ),
 )

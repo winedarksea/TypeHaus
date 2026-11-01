@@ -43,7 +43,7 @@ from typehaus.library import TREX_ENHANCE_BASICS_DECK_LAYER
 
 from params.cladding import HOUSE_NS_OUTBOARD_IN
 from params.column_heads import CBSQ66_HEAD, HETA20Z_PAIR_HEAD, STANDOFF_PACK_IN
-from params.east_posts import east_supports, full_height_columns, moment_piers
+from params.east_posts import east_supports, full_height_columns, moment_piers, pier_assembly
 from plan.storeys.garage import (
     GARAGE_X_EAST, GARAGE_X_WEST, GARAGE_Y_SOUTH, SERVICE_DOOR_OFFSET, SERVICE_DOOR_WIDTH,
 )
@@ -590,7 +590,8 @@ for _uid, _tag, _x, _height in (
         head_connector=_HEAD_CONNECTORS[_tag],
         # `"12 round"`. Never a nominal form like "12x12": that matches `_RE_NOMINAL` in
         # resolve/framing/profiles.py, misses LUMBER_ACTUAL and silently resolves to 1.5x5.5.
-        size=_PIER_SIZE.get(_tag, "12 round"), height=ft(_height), assembly="PIER_CONCRETE_12",
+        size=_PIER_SIZE.get(_tag, "12 round"), height=ft(_height),
+        assembly=pier_assembly(_PIER_SIZE.get(_tag, "12 round")),
         # A_g = 113.10 in2, so ACI 318-19 Sec 10.6.1.1's 1% floor is 1.131 in2; (4) #5 =
         # 1.24 in2 (rho 1.096%) clears it and is the Code's own four-bar minimum for a
         # circular tie (Sec 10.7.3.1(b)). Ties are #3 at the Sec 25.7.2.2 maximum, the least
@@ -673,7 +674,8 @@ for _uid, _tag, _x, _pad_in, _top in (
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(GARAGE_SEAT_Y_FT)),
         size=_PIER_SIZE.get(_tag, "12 round"),
         head_connector=_HEAD_CONNECTORS[_tag],
-        height=ft(_top - GARAGE_FOOTING_TOP_FT), assembly="PIER_CONCRETE_12",
+        height=ft(_top - GARAGE_FOOTING_TOP_FT),
+        assembly=pier_assembly(_PIER_SIZE.get(_tag, "12 round")),
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
         reinforcement=ENTRY_MOMENT_CAGE if _tag in _MOMENT_PIERS else ENTRY_PIER_CAGE,
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))

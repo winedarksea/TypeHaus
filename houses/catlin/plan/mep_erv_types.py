@@ -66,16 +66,38 @@ EQUIPMENT_TYPES_ERV = (
                   # day that sizes the equipment.
                   sensible_recovery_effectiveness=0.65,
                   source="Broan B210E75RT. HVI-certified 206 CFM net supply at 0.4 in. w.g. (HVI ID 2004940) — that is the rating point. The manufacturer's '210 CFM at 0.2 in. w.g.' is the model-name point off the fan curve and is NOT the certified rating; quoting it as one halves the apparent static budget. Six-inch round top ports, 24.8 in. W x 21.6 in. H x 21 in. D, MERV 8 filtration standard (MERV 13 optional), SRE 81% at 32 F and 65% at -13 F. The -13 F figure is the one authored above; see the note there. The spec sheet publishes the whole fan curve (214 cfm at 0.1 in. w.g. falling to 176 at 1.2; 1.3 in. w.g. is the ceiling above which the core deforms), which is authored as `fan_curve` — the 0.2 in. and 0.4 in. figures are two stations on it, not two claims. Broan's installation manual carries one distribution instruction and this house obeys it: above 200 cfm with long runs or many elbows, take the trunk up to 8 in. See notes/erv_static_budget.md for where this house stands against that advice and what the upsize would cost.",
+                  # ** THE COLLARS ARE BROAN'S DRAWING (spec sheet p. 2, "6\" Ports
+                  # Dimensions"). ** Product frame: centre of the 24 13/16 x 21 footprint,
+                  # +y the back; the electrical box is the 2 15/16" at -x and the door is
+                  # the front (13" maintenance clearance). Ports 1/2 sit 4 5/16" / 4 3/16"
+                  # off the case sides and 5 5/8" / 3 7/8" off the back; ports 4/3 sit
+                  # 6 1/16" off each side and 13 3/4" off the back, so 9 3/4" apart (the
+                  # 21 7/8" case less two 6 1/16"; derived, not dimensioned directly).
+                  # Only `supply` is EXACT: return, outdoor and exhaust cannot all leave
+                  # their collars under the two basement plenums (A4, 2026-11-01), so they
+                  # stay graded at service level until that layout is decided.
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),
+                         # Port 2, fresh air to building.
                          ServicePort(tag="supply", service=Service.SUPPLY_AIR,
-                                     position=(ft(0), ft(0), inch(21.6))),
+                                     position=(inch(8.21875), inch(6.625), inch(21.6)),
+                                     connection_size=inch(6), direction=(0, 0, 1),
+                                     certainty=PortCertainty.EXACT),
+                         # Port 1, exhaust air from building.
                          ServicePort(tag="return", service=Service.RETURN_AIR,
-                                     position=(ft(0), ft(0), inch(21.6))),
+                                     position=(inch(-5.15625), inch(4.875), inch(21.6)),
+                                     connection_size=inch(6), direction=(0, 0, 1),
+                                     certainty=PortCertainty.APPROXIMATE),
+                         # Port 4, fresh air from outside.
                          ServicePort(tag="outdoor", service=Service.OUTDOOR_AIR,
-                                     position=(ft(0), ft(0), inch(21.6))),
+                                     position=(inch(-3.40625), inch(-3.25), inch(21.6)),
+                                     connection_size=inch(6), direction=(0, 0, 1),
+                                     certainty=PortCertainty.APPROXIMATE),
+                         # Port 3, exhaust air to outside.
                          ServicePort(tag="exhaust", service=Service.EXHAUST_AIR,
-                                     position=(ft(0), ft(0), inch(21.6))))),
+                                     position=(inch(6.34375), inch(-3.25), inch(21.6)),
+                                     connection_size=inch(6), direction=(0, 0, 1),
+                                     certainty=PortCertainty.APPROXIMATE))),
     # ** THREE FABRICATED PLENUMS, NOT A PROPRIETARY MANIFOLD (2026-09-12, BLD-08). **
     # These rows read "160 mm collar, 75 mm outlets" until today, and that part is sold in
     # the USA by exactly two importers (Zehnder and Brink via 475) with no Minnesota dealer
@@ -234,8 +256,9 @@ EQUIPMENT_TYPES_ERV = (
                                      position=(inch(-15), inch(-4), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT),
+                         # x 9" -> 4" (2026-11-01): the trunk now rises at x +10 5/8".
                          ServicePort(tag="collar-gym", service=Service.SUPPLY_AIR,
-                                     position=(inch(9), inch(-4), inch(4)),
+                                     position=(inch(4), inch(-4), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT),
                          ServicePort(tag="collar-play", service=Service.SUPPLY_AIR,

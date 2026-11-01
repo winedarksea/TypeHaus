@@ -18,6 +18,11 @@ unmatched one is UNKNOWN with the reason and the remedy attached — read a subm
 the catalog, or look at the run. Inventing a FAIL out of a gap in our own catalog would be
 the engine grading its own ignorance as the house's defect.
 
+**Laying length.** Where a pattern defines a centreline radius (a gored round duct elbow,
+1.5 D by SMACNA), its take-off ``R tan(theta/2)`` has to fit on the straight between it and
+the next fitting or the run's end. A shorter leg is UNKNOWN, not FAIL: the stocked stamped
+elbow is tighter than the gored pattern and no submittal publishes its radius.
+
 ``Tier.STRUCTURAL`` and **no** ``PermitItemSpec``, the same footing as
 ``mep.run_interference``: no IRC section says which pattern a turn must be, and a CODE tier
 would trip the coverage test and the ``code_ref`` requirement dishonestly.
@@ -25,6 +30,7 @@ would trip the coverage test and the ``code_ref`` requirement dishonestly.
 
 from __future__ import annotations
 
+import math
 from collections import defaultdict
 
 from typehaus.checks._authoring import passed as _pass
@@ -80,6 +86,8 @@ def fitting_pattern(ctx: CheckContext) -> list[Finding]:
                 "run so its turns land on patterns that are made — `haus route --run "
                 f"{run_tag}` proposes a lane and `--evaluate` grades it"))
 
+    out.extend(_laying_length(ctx, records))
+
     graded = len(records) - sum(len(group) for group in ungraded.values())
     if graded:
         out.append(_pass(
@@ -87,4 +95,54 @@ def fitting_pattern(ctx: CheckContext) -> list[Finding]:
             f"{graded} of {len(records)} fittings name a catalogued pattern with its source "
             "(ASTM D3311 for DWV, ASME B16.22 for copper, SMACNA for round duct, the "
             "maker's minimum radius for a bent PEX tube)", ()))
+    return out
+
+
+def _takeoff_in(record) -> float:
+    """Centre-to-tangent of a turn whose pattern defines a radius, inches; 0 otherwise."""
+    radius = getattr(record.spec, "bend_radius_in", None)
+    if not radius or record.bendable or record.index is None:
+        return 0.0
+    return radius * math.tan(math.radians(record.angle_deg) / 2.0)
+
+
+def _laying_length(ctx: CheckContext, records: list) -> list[Finding]:
+    """One UNKNOWN per run with a straight shorter than the take-offs at its two ends.
+
+    A straight is measured along the cleaned path between consecutive fittings, or between
+    a fitting and the run's end (a collar, port or tee, which take no take-off of their own).
+    """
+    from typehaus.quantities import M_PER_IN
+    from typehaus.resolve.sweep import clean_path
+
+    turns: dict[str, dict[int, object]] = defaultdict(dict)
+    for record in records:
+        if _takeoff_in(record) > 0.0:
+            turns[record.run_tag][record.index] = record
+    out: list[Finding] = []
+    for run in (*ctx.model.ducts, *ctx.model.pipe_runs):
+        at = turns.get(run.tag)
+        z = getattr(run, "z_m", None)
+        if not at or z is None or len(z) != len(run.path):
+            continue
+        path = clean_path([(x, y, zz) for (x, y), zz in zip(run.path, z, strict=True)])
+        stops = sorted({0, len(path) - 1, *at})
+        short: list[str] = []
+        for a, b in zip(stops, stops[1:], strict=False):
+            length = sum(math.dist(path[i], path[i + 1]) for i in range(a, b)) / M_PER_IN
+            need = sum(_takeoff_in(at[i]) for i in (a, b) if i in at)
+            if length + 1.0 / 16.0 < need:
+                short.append(f"{length:.1f}\" between vertex {a} and {b} against "
+                             f"{need:.1f}\"")
+        if short:
+            more = f" (+{len(short) - _MAX_LISTED} more)" if len(short) > _MAX_LISTED else ""
+            out.append(_unknown(
+                _CID,
+                f"{run.tag}: {len(short)} straight(s) shorter than the elbow take-offs at "
+                f"their ends at the catalogued centreline radius — "
+                f"{'; '.join(short[:_MAX_LISTED])}{more}. No submittal gives the stocked "
+                "stamped elbow's radius, so this is UNKNOWN, not a FAIL",
+                (run.tag,),
+                fix="lengthen the straight, or read the stocked elbow's radius into "
+                    "library/fittings.py"))
     return out

@@ -140,8 +140,8 @@ LUSZ_FACE_MOUNT_HANGER = StructuralHardware(
            "Simpson's own treated-wood guidance; same stamping and allowables",
 )
 
-#: Level I-joist face-mount. Size reads flange/depth: IUS2.56/11.88 takes a 2-1/2" to 2-9/16"
-#: flange at 11-7/8", and IUS2.37 the 2-5/16" (TJI 110/210/230) one step down. Not sloped —
+#: Level I-joist face-mount. Size reads flange/depth: IUS2.37/11.88 takes the 2-5/16" (TJI
+#: 230/360) flange at 11-7/8", IUS2.56 a 2-1/2" to 2-9/16" one. Not sloped —
 #: the roof's raked rafters take the LSSR. No allowable: no table row has been read yet.
 IUS_FACE_MOUNT_HANGER = StructuralHardware(
     tag="simpson-ius-ijoist-face-mount-hanger",
@@ -151,7 +151,7 @@ IUS_FACE_MOUNT_HANGER = StructuralHardware(
     model="IUS",
     source="Simpson Strong-Tie IUS face-mount I-joist hanger (strongtie.com/ius) — "
            "nailless-seat hanger for a level I-joist into the face of a wood carrier; "
-           "IUS2.56/11.88 is published for 2-1/2\" to 2-9/16\" joist flanges",
+           "IUS2.37/11.88 is published for a 2-5/16\" (TJI 230/360) joist flange",
 )
 
 #: A 2-ply 1 3/4" x 11 7/8" LVL floor-opening header into its LVL trimmer pack. Identity only,

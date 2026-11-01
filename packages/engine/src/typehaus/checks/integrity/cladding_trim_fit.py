@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 import re
 
+from typehaus.checks.integrity.cladding_panel_tops import panel_top_girts
 from typehaus.checks.integrity.cladding_trim_runs import (
     along_extent,
     metal_wall_openings,
@@ -35,8 +36,6 @@ _FRAME_JOINT_CITE = "BBD75 Install Guide 10/2025 pp. 24-26; PBR Install Guide 4/
 # Site-brake gate: a 10'-6" hand brake bends flat 24 ga PVDF to 24 in girth and 4 bends.
 _BRAKE_GIRTH_IN = 24.0
 _BRAKE_BENDS = 4
-# BBD75 p. 40: the Transition Trim's 2-1/2 in lower leg lies on the lower panel.
-_BAND_LAP_M = 2.5 * M_PER_IN
 _BAND_CITE = "BBD75 Install Guide 10/2025 p. 40"
 _UPSTAND_MARGIN_M = 0.0625 * M_PER_IN
 _BBD_RUN_LIMIT_M = 240 * M_PER_IN
@@ -243,22 +242,32 @@ def _rake_faces(ctx):
 
 
 def _band_laps(pieces):
-    """Each BBD75 band's lower leg lies on the lower panel by the manual's 2-1/2 in."""
-    lower = {}
+    """Each BBD75 band's face leg laps the lower panel by the stock leg less the outlet slot.
+
+    The guide gives the 2-1/2 in leg over a panel run up to the seat (p. 40); the lower panel
+    here stops the 1 in outlet slot short, so the lap it leaves is the honest requirement."""
+    from typehaus.library.trim.metal_sales import BBD_TRANSITION
+    from typehaus.resolve.rainscreen_strips import BAND_PANEL_GAP_IN, band_panel_top
+
+    (x0, z0), (x1, z1) = BBD_TRANSITION.section_in[-2:]
+    required = (math.hypot(x1 - x0, z1 - z0) - BAND_PANEL_GAP_IN) * M_PER_IN
+    laps = {}
     for piece in pieces:
         match = re.search(r"-BAND-(\d+)-", piece.tag)
         if piece.product != "BBD_TRANSITION" or match is None or not piece.body_mesh:
             continue
         joint = int(match.group(1)) * M_PER_IN
-        depth = joint - min(p[2] for p in piece.body_mesh.positions)
+        lap = band_panel_top(joint) - min(p[2] for p in piece.body_mesh.positions)
         key = (piece.host_ref, match.group(1))
-        lower[key] = min(lower.get(key, depth), depth)
-    short = [key for key, depth in lower.items() if depth + _TOL < _BAND_LAP_M]
+        laps[key] = min(laps.get(key, lap), lap)
+    need = f"{required / M_PER_IN:.2f} in (the stock leg less the outlet slot)"
+    short = [key for key, lap in laps.items() if lap + _TOL < required]
     if short:
-        return [failed(FIT, f"{len(short)} band joints lap the lower panel under 2-1/2 in",
+        return [failed(FIT, f"{len(short)} band joints lap the lower panel under {need}",
                        tuple(sorted({wall for wall, _ in short})), code=_BAND_CITE)]
-    if lower:
-        return [passed(FIT, f"{len(lower)} band joints lap the lower panel 2-1/2 in",
+    if laps:
+        return [passed(FIT, f"{len(laps)} band joints lap the lower panel "
+                            f"{min(laps.values()) / M_PER_IN:.2f} in, {need} needed",
                        code=_BAND_CITE)]
     return []
 
@@ -327,5 +336,5 @@ def cladding_trim_fit(ctx: CheckContext) -> list:
     if not pieces and not any(screens_rainscreen_base(model, wall) for wall in model.walls):
         return [not_applicable(FIT, "no catalog cladding trim resolved")]
     return [*_opening_runs(ctx, pieces), *_run_limits(ctx, pieces), *_door_heads(ctx, pieces),
-            *_rake_faces(ctx), *_band_laps(pieces),
+            *_rake_faces(ctx), *_band_laps(pieces), *panel_top_girts(ctx, FIT),
             *_site_brake(ctx, pieces), *_soffit_panel_joint(ctx)]

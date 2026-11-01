@@ -252,6 +252,9 @@ class FloorSystem(Element):
     # warns against that contact outright). ``None`` is bare framing, which is every
     # interior floor.
     top_protection: str | None = None
+    # The joist maker's span-table row for this field, where one is read (``Slab``'s field,
+    # same drift guards). ``structural.ijoist_span`` grades it in place of its own table.
+    published_span: PublishedSpan | None = None
     source: str | None = None
 
 

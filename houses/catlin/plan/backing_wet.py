@@ -10,9 +10,10 @@
 # `# haus: editable` is REQUIRED: a band is UI-movable, and a WallBacking edited in the
 # editor against a file without this marker is silently dropped on write-back.
 #
-# Elevations are above the storey datum — the same datum `Mount.elevation` and an opening's
-# sill use — and the dialect forbids arithmetic, so every one is a literal. The policy is in
-# plan/backing.py's header.
+# Elevations are above the wall's sill datum (the storey datum here) unless a band says
+# `datum="finished-floor"`: the GRAB courses do, so CRC R328.1.1's 32" is 32" AFF over the
+# subfloor and tile (2026-11-01; they sat 3/4"-1 1/2" low before). The dialect forbids
+# arithmetic, so every one is a literal. The policy is in plan/backing.py's header.
 #
 # A 2x laid flat and FITTED BETWEEN the studs: nothing stands proud, nothing is dadoed, and
 # the framer cuts to the bay. Three standard heights, kept as constants:
@@ -28,7 +29,8 @@
 # fixture plumbs into. Three walls that carried one never had a fixture in front:
 # W-M-BAE (both main-floor WCs back onto W-M-HS1), W-S-BA-E1B (a vanity), and W-S-BD-N, whose
 # GRAB course now backs the two vanity top rails — FX-S-BATH1-SH stands on W-S-N3 instead.
-# Fixtures with NO grab course today, for the record: FX-S-BATH1-SH (W-S-N3/W-S-CH-W),
+# Fixtures with NO grab course today, for the record: FX-S-BATH1-SH (W-S-N3/W-S-CH-W; it
+# has furred flange nailers instead, below),
 # FX-S-SUITEBATH-TUBSH's back wall (W-S-C2C), FX-S-BATH1-WC (W-S-W1), FX-B-BATH-WC
 # (W-B-BA-N), FX-B-SAUNA-SH and FX-A-STUBATH-SH.
 #
@@ -57,23 +59,32 @@ _HIGH_PROFILE = "2x8"
 MAIN_WET_BACKING = [
     # The drop-in bath's long side is on W-M-BA2E; the shower's back is on W-M-BA2E2, which
     # also carries the closet's SuperSlide west leg on its other face.
-    WallBacking(uid="63Q2NFMTRY", tag="BK-M-BA2E-GRAB", wall_ref="W-M-BA2E",
-                elevation=_GRAB_ELEVATION, height=_GRAB_HEIGHT,
+    # A course is let in on its fixture's face, and its datum is THAT room's floor.
+    WallBacking(uid="63Q2NFMTRY", tag="BK-M-BA2E-GRAB", wall_ref="W-M-BA2E", face="right",
+                elevation=_GRAB_ELEVATION, datum="finished-floor", height=_GRAB_HEIGHT,
                 profile=_GRAB_PROFILE, material_ref="spf",
                 purpose="FX-M-BATH2-TUB grab bar (CRC R328.1.1)"),
-    WallBacking(uid="NGSM5DJCT1", tag="BK-M-BA2E2-GRAB", wall_ref="W-M-BA2E2",
-                elevation=_GRAB_ELEVATION, height=_GRAB_HEIGHT,
+    WallBacking(uid="NGSM5DJCT1", tag="BK-M-BA2E2-GRAB", wall_ref="W-M-BA2E2", face="right",
+                elevation=_GRAB_ELEVATION, datum="finished-floor", height=_GRAB_HEIGHT,
                 profile=_GRAB_PROFILE, material_ref="spf",
-                purpose="FX-M-BATH2-SH grab bar (CRC R328.1.1); closet wire west-leg lower clips (40 in.)"),
+                purpose="FX-M-BATH2-SH grab bar (CRC R328.1.1)"),
+    WallBacking(uid="K72NASWFBS", tag="BK-M-BA2E2-CLIPS", wall_ref="W-M-BA2E2",
+                elevation=_GRAB_ELEVATION, datum="finished-floor", height=_GRAB_HEIGHT,
+                profile=_GRAB_PROFILE, material_ref="spf",
+                purpose="closet wire west-leg lower clips (40 in.)"),
     WallBacking(uid="QMZNJ07GJR", tag="BK-M-BA2E2-HIGH", wall_ref="W-M-BA2E2",
                 elevation=_HIGH_ELEVATION, height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
                 purpose="closet wire west-leg upper clips (80 in.)"),
     # Both WCs and the bath's tub end back onto W-M-HS1; the basin shares its north face.
     WallBacking(uid="QN93C99PCJ", tag="BK-M-HS1-GRAB", wall_ref="W-M-HS1",
-                elevation=_GRAB_ELEVATION, height=_GRAB_HEIGHT,
+                elevation=_GRAB_ELEVATION, datum="finished-floor", height=_GRAB_HEIGHT,
                 profile=_GRAB_PROFILE, material_ref="spf",
-                purpose="FX-M-BATH1-WC and FX-M-BATH2-WC grab bars (CRC R328.1.1), FX-M-BATH2-TUB end"),
+                purpose="FX-M-BATH1-WC grab bar (CRC R328.1.1)"),
+    WallBacking(uid="1EF6BNF7X9", tag="BK-M-HS1-GRAB-S", wall_ref="W-M-HS1", face="right",
+                elevation=_GRAB_ELEVATION, datum="finished-floor", height=_GRAB_HEIGHT,
+                profile=_GRAB_PROFILE, material_ref="spf",
+                purpose="FX-M-BATH2-WC grab bar (CRC R328.1.1), FX-M-BATH2-TUB end"),
     WallBacking(uid="RNKWND9P9B", tag="BK-M-HS1-MID", wall_ref="W-M-HS1",
                 elevation=_MID_ELEVATION, height=_MID_HEIGHT,
                 profile=_MID_PROFILE, material_ref="spf",
@@ -131,7 +142,7 @@ SECOND_WET_BACKING = [
                 start=inch(7.375), length=inch(63.125), elevation=inch(5), height=inch(5.5),
                 profile="2x6", material_ref="spf", purpose="SEKTION 30 pair ledger feet"),
 
-    WallBacking(uid="V4E88WNW8H", tag="BK-S-BA-E1B-MID", wall_ref="W-S-BA-E1B",
+    WallBacking(uid="V4E88WNW8H", tag="BK-S-BA-E1B-MID", wall_ref="W-S-BA-E1B", face="right",
                 start=inch(0), length=inch(47.25),
                 elevation=_MID_ELEVATION, height=_MID_HEIGHT,
                 profile=_MID_PROFILE, material_ref="spf",
@@ -141,29 +152,41 @@ SECOND_WET_BACKING = [
                 elevation=inch(30), height=_GRAB_HEIGHT,
                 profile=_GRAB_PROFILE, material_ref="spf",
                 purpose="FX-S-VANITY-LAV1/LAV2 cabinet top rails"),
-    WallBacking(uid="0BHT64WFKQ", tag="BK-S-BD-N-MID", wall_ref="W-S-BD-N",
+    WallBacking(uid="0BHT64WFKQ", tag="BK-S-BD-N-MID", wall_ref="W-S-BD-N", face="right",
                 elevation=inch(40), height=_MID_HEIGHT,
                 profile=_MID_PROFILE, material_ref="spf",
                 purpose="FURN-S-VANITY-MIRROR1/2 body bottom (42 in.)"),
-    WallBacking(uid="HZ7NZAV31W", tag="BK-S-BD-N-HIGH", wall_ref="W-S-BD-N",
+    WallBacking(uid="HZ7NZAV31W", tag="BK-S-BD-N-HIGH", wall_ref="W-S-BD-N", face="right",
                 elevation=_HIGH_ELEVATION, height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
                 purpose="FURN-S-VANITY-MIRROR1/2 arch heads; sconce tops"),
     # The WC's back and the tub-shower's end are 40" apart on W-S-SN3; one run takes both.
-    WallBacking(uid="YQESA1JG5K", tag="BK-S-SN3-GRAB", wall_ref="W-S-SN3",
-                elevation=_GRAB_ELEVATION, height=_GRAB_HEIGHT,
+    WallBacking(uid="YQESA1JG5K", tag="BK-S-SN3-GRAB", wall_ref="W-S-SN3", face="right",
+                elevation=_GRAB_ELEVATION, datum="finished-floor", height=_GRAB_HEIGHT,
                 profile=_GRAB_PROFILE, material_ref="spf",
                 purpose="FX-S-SUITEBATH-WC grab bar (CRC R328.1.1), FX-S-SUITEBATH-TUBSH end"),
-    WallBacking(uid="KHQD8PAMQT", tag="BK-S-SN3-MID", wall_ref="W-S-SN3",
+    WallBacking(uid="KHQD8PAMQT", tag="BK-S-SN3-MID", wall_ref="W-S-SN3", face="right",
                 start=inch(40.75), length=inch(22.5),
                 elevation=_MID_ELEVATION, height=_MID_HEIGHT,
                 profile=_MID_PROFILE, material_ref="spf",
                 purpose="FURN-S-SUITEBATH-MIRROR bottom (46 in.)"),
-    WallBacking(uid="8Y7R1WNS1Q", tag="BK-S-SN3-HIGH", wall_ref="W-S-SN3",
+    WallBacking(uid="8Y7R1WNS1Q", tag="BK-S-SN3-HIGH", wall_ref="W-S-SN3", face="right",
                 start=inch(40.75), length=inch(22.5),
                 elevation=_HIGH_ELEVATION, height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
                 purpose="FURN-S-SUITEBATH-MIRROR top hang (74 in.)"),
+    # FX-S-BATH1-SH's flange stands 1 1/2" off W-S-N3's studs and 1" off the chase's (C6 E9),
+    # so its top flange nails to furred nailers, not to air. Top at subfloor + 84", the
+    # insert's modelled head: confirm the flange line on the delivered unit. The N3 nailer
+    # spans the studs at 24"..72" along the wall; W-S-N3 has no stud in its last 12".
+    WallBacking(uid="HQKEW8EHR7", tag="BK-S-N3-TUB-NAILER", wall_ref="W-S-N3", face="left",
+                start=inch(23.25), length=inch(49.5), elevation=inch(81.25), height=inch(3.5),
+                profile="2x4", material_ref="spf", furred=True,
+                purpose="FX-S-BATH1-SH top flange, furred 1 1/2 in. to the insert back"),
+    WallBacking(uid="HFF2YZC7BB", tag="BK-S-CH-W-TUB-NAILER", wall_ref="W-S-CH-W", face="right",
+                start=inch(0), length=inch(27.625), elevation=inch(81.25), height=inch(3.5),
+                profile="1.0x3.5", material_ref="spf", furred=True,
+                purpose="FX-S-BATH1-SH end flange, furred 1 in. to the insert end"),
 ]
 
 
@@ -176,9 +199,9 @@ ATTIC_WET_BACKING = [
                 profile="2x6", material_ref="spf", purpose="SEKTION 24 ledger foot"),
     # W-A-STU-W's plate is at 72 3/4" and `CARF01AAAA:rafter-020` rakes across it 60 7/8"
     # above its floor, so a course here stays low; the WC's own bay is all it needs.
-    WallBacking(uid="GCV1Y8MJ5J", tag="BK-A-STU-W-GRAB", wall_ref="W-A-STU-W",
+    WallBacking(uid="GCV1Y8MJ5J", tag="BK-A-STU-W-GRAB", wall_ref="W-A-STU-W", face="right",
                 start=inch(16.75), length=inch(14.5),
-                elevation=_GRAB_ELEVATION, height=_GRAB_HEIGHT,
+                elevation=_GRAB_ELEVATION, datum="finished-floor", height=_GRAB_HEIGHT,
                 profile=_GRAB_PROFILE, material_ref="spf",
                 purpose="FX-A-STUBATH-WC grab bar (CRC R328.1.1)"),
 ]

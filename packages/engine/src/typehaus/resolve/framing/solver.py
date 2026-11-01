@@ -390,18 +390,18 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     append_blocking_rows(members, rw, spec, member, d, p0, stud_z0, module_spacing,
                          stud_stations, top_at)
 
+    # --- in-wall fixture carriers --------------------------------------------
+    # After the module, because the bay's flanking studs replace the module studs the
+    # keepout removed; before the backing, which is cut at them.
+    append_carrier_framing(members, rw, frame_member, d, p0, stud_z0, axis_len, top_at,
+                           carrier_bays, dropped_stations)
+
     # --- authored backing bands ----------------------------------------------
-    # Across the studs rather than between them, and off the sill datum rather than the
+    # Fitted between every vertical emitted above, and off the sill datum rather than the
     # plate, because ``WallBacking.elevation`` is authored on the datum an opening's
     # ``sill_m`` uses.
     append_backing_members(members, rw, list(backing), d, p0, rw.base_ref_z_m, axis_len,
                            top_at, openings)
-
-    # --- in-wall fixture carriers --------------------------------------------
-    # After the module, because the bay's flanking studs replace the module studs the
-    # keepout removed; before nothing, because nothing else reads them.
-    append_carrier_framing(members, rw, frame_member, d, p0, stud_z0, axis_len, top_at,
-                           carrier_bays, dropped_stations)
     # The ONE choke point for the stud-line minimum. Every vertical that frames into this
     # wall is already in ``members`` — module studs, corner studs, the opening king/jack/
     # cripple pack, tee packs, carrier studs, pocket-split and flank studs — so one filter

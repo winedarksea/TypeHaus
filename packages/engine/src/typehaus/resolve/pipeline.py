@@ -231,6 +231,12 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.fixture_floor_finish import resolve_fixture_floor_finishes
 
         findings.extend(resolve_fixture_floor_finishes(model))
+    with _stage("backing_datums"):
+        # After every finished floor is known: a finished-floor band frames on the sill
+        # datum and is lifted here (→ resolve/backing_datum.py).
+        from typehaus.resolve.backing_datum import apply_backing_datums
+
+        apply_backing_datums(plan, model)
     with _stage("millwork"):
         # After placeables and rooms: a shelf bank hosted on a carcass reads that
         # placeable's resolved type, and a stool's room scope reads the resolved rooms.

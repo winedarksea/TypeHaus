@@ -1,21 +1,21 @@
 """Authored backing bands, laid on a wall's stud face (→ ``model/backing.py``).
 
-The counterpart to ``framing/backing.py``'s ``append_blocking_rows``, and deliberately a
-different member. That one reads ``FramingSpec.blocking_heights`` and fits a flat course
-*between* studs, one block per bay, for every wall of an assembly. This one reads a placed
-``WallBacking`` and lays one continuous band *across* the studs over a stated run — which is
-the whole point of backing, since a bar or a bracket lands wherever it lands and a band that
-stops at each stud is not a target.
+The counterpart to ``framing/backing.py``'s ``append_blocking_rows``. That one reads
+``FramingSpec.blocking_heights`` for every wall of an assembly; this one reads a placed
+``WallBacking`` over a stated run. Both are FITTED BETWEEN the studs, flush with their face
+(``notes/wall_backing.md`` §4): a flush board run through the studs would be a 1 1/2" dado
+in every one, so the band is cut at each stud face and the stud is the target between blocks.
 
 A band is authored, never derived. The engine will say a wall-mounted body has nothing
 behind it (→ ``checks/advisory/backing.py``) and stops there, because backing placed only
 where today's model's screws land pins the house to today's model forever — the reasoning
 ``houses/catlin/plan/fixture_types_wc.py`` already sets out.
 
-**Elevation is measured from the wall's sill datum**, ``ResolvedWall.base_ref_z_m``, the
-same datum an opening's ``sill_m`` uses. ``Mount.elevation`` is NOT on it: a mount is off the
-room's finished floor (0.75-1.5" higher; 22" in a garage on a stem), so the coverage check
-reads the resolved body's absolute bottom, never the authored mount.
+**Elevation is framed from the wall's sill datum**, ``ResolvedWall.base_ref_z_m``, the
+same datum an opening's ``sill_m`` uses; a ``datum="finished-floor"`` band is lifted onto it
+after rooms resolve (``resolve/backing_datum.py``). ``Mount.elevation`` is NOT on it: a
+mount is off the room's finished floor (0.75-1.5" higher; 22" in a garage on a stem), so
+the coverage check reads the resolved body's absolute bottom, never the authored mount.
 
 A leaf: it imports ``model``/``resolve`` and is imported by ``framing/solver.py``, never the
 other way round.
@@ -28,6 +28,7 @@ from dataclasses import dataclass
 from typehaus.model.backing import WallBacking
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
+from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.openings import WallOpening
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import add, scale
@@ -55,6 +56,8 @@ class BackingBand:
     profile: str
     material_ref: str
     purpose: str
+    datum: str = "sill"
+    furred: bool = False
 
 
 def backing_bands(plan: PlanModel) -> dict[str, list[BackingBand]]:
@@ -80,6 +83,8 @@ def backing_bands(plan: PlanModel) -> dict[str, list[BackingBand]]:
             profile=element.profile,
             material_ref=element.material_ref,
             purpose=element.purpose,
+            datum=element.datum,
+            furred=element.furred,
         ))
     return bands
 
@@ -134,6 +139,33 @@ def _opening_breaks(members: list[FramedMember], parent_uid: str, band_bottom: f
     return sorted(breaks)
 
 
+def _stud_breaks(members: list[FramedMember], parent_uid: str, band_bottom: float,
+                 band_top: float, direction, wall_start, face_low: float,
+                 face_high: float) -> list[tuple[float, float]]:
+    """Stations of every vertical the band's board would pass through, so it is cut there.
+
+    Read off the emitted footprints, so a staggered wall cuts only at the studs on the
+    band's own face, and a king, jack, cripple, tee pack or carrier stud cuts like a stud.
+    """
+    normal = (-direction[1], direction[0])
+    breaks: list[tuple[float, float]] = []
+    for member in members:
+        if member.parent_uid != parent_uid or member.category == "blocking":
+            continue
+        if abs(member.p0[0] - member.p1[0]) + abs(member.p0[1] - member.p1[1]) > _EPSILON:
+            continue  # horizontal: a header or sill is ``_opening_breaks``' business
+        ring, z_low, z_high = member_footprint(member)
+        if z_high <= band_bottom + _EPSILON or z_low >= band_top - _EPSILON:
+            continue
+        across = [(x - wall_start[0]) * normal[0] + (y - wall_start[1]) * normal[1]
+                  for x, y in ring]
+        if max(across) <= face_low + _EPSILON or min(across) >= face_high - _EPSILON:
+            continue
+        along = [_station(point, direction, wall_start) for point in ring]
+        breaks.append((min(along), max(along)))
+    return sorted(breaks)
+
+
 def _segments(start: float, end: float,
               breaks: list[tuple[float, float]]) -> list[tuple[float, float]]:
     """``[start, end]`` less each break, dropping runs too short to be a board."""
@@ -165,6 +197,8 @@ def append_backing_members(members: list[FramedMember], rw: ResolvedWall,
     * **An opening it passes through.** Split, never bridged — a band across a window is a
       board the framer cannot install. An opening it passes *under* or *over* does not
       interrupt it.
+    * **Every stud it crosses** (not a furred nailer, which runs over them). Blocks fit
+      between studs; a flush run through them is a dado.
     * **A raking stud top.** ``top_at`` is the same callable the corner, opening, tee and
       blocking framing already take. Under a ``ToRoof`` top the studs rake, and a band
       authored at 6'-0" on a wall that is 4'-0" tall at its low end has nothing to fasten
@@ -180,9 +214,15 @@ def append_backing_members(members: list[FramedMember], rw: ResolvedWall,
         end = axis_len if band.length_m is None else min(axis_len, start + band.length_m)
         if end - start <= _MIN_RUN_M:
             continue
+        band_start = _backing_face_axis(rw, band, direction, wall_start)
+        centre = ((band_start[0] - wall_start[0]) * -direction[1]
+                  + (band_start[1] - wall_start[1]) * direction[0])
+        half = cross_section(band.profile).width_m / 2
         breaks = _opening_breaks(members, rw.uid, bottom, top, direction, wall_start,
                                  openings, sill_datum)
-        band_start = _backing_face_axis(rw, band, direction, wall_start)
+        if not band.furred:
+            breaks = sorted(breaks + _stud_breaks(members, rw.uid, bottom, top, direction,
+                                                  wall_start, centre - half, centre + half))
         for ordinal, (s0, s1) in enumerate(_segments(start, end, breaks)):
             # The conservative end of a raking run: if the LOWER of the two stud tops cannot
             # reach the band's top, the run has bays with nothing behind it.
@@ -198,7 +238,7 @@ def append_backing_members(members: list[FramedMember], rw: ResolvedWall,
 
 def _backing_face_axis(rw: ResolvedWall, band: BackingBand, direction,
                        wall_start) -> tuple[float, float]:
-    """Put a band inside the selected stud face, rather than in the cavity's centre."""
+    """Put a band on the selected stud face, rather than in the cavity's centre."""
     structure = next((layer for layer in rw.layers
                       if layer.function == LayerFunction.STRUCTURE.value
                       and not layer.is_cavity and layer.polygon), None)
@@ -208,8 +248,10 @@ def _backing_face_axis(rw: ResolvedWall, band: BackingBand, direction,
     projections = [(point[0] - wall_start[0]) * normal[0]
                    + (point[1] - wall_start[1]) * normal[1] for point in structure.polygon]
     half_thickness = cross_section(band.profile).width_m / 2
-    offset = (max(projections) - half_thickness if band.face == "left"
-              else min(projections) + half_thickness)
+    # Let in flush with the stud face, or furred out past it.
+    inward = -half_thickness if not band.furred else half_thickness
+    offset = (max(projections) + inward if band.face == "left"
+              else min(projections) - inward)
     return add(wall_start, scale(normal, offset))
 
 

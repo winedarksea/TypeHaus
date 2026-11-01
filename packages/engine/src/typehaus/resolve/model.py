@@ -337,6 +337,9 @@ class ResolvedWall:
     # Where a rainscreen cavity BEGINS at this wall's base, its starter girt stands this far
     # above the base so no KDAT sits on the aluminium Z (``rainscreen_closures``).
     girt_starter_rise_m: float = 0.0
+    # Absolute BBD75 panel joints on this wall's cladding; its girt band derives a course
+    # behind each (``rainscreen_strips.apply_band_joints``).
+    panel_joints_m: tuple[float, ...] = ()
 
     @property
     def base_ref_z_m(self) -> float:
@@ -517,7 +520,8 @@ class ResolvedConstructionReturn:
     entry — authoring a :class:`~typehaus.model.assembly.ConstructionRule` is enough to get
     the record + BOM + overlay. It is documentation geometry, not render geometry: no
     ``ResolvedSolid`` is emitted (a correctly-placed return duplicates the mitred layer
-    polygon its host wall already draws), but the record is serialized to ``model.json`` and
+    polygon its host wall already draws; a sill nothing frames is the exception,
+    ``resolve/sill_solids``), but the record is serialized to ``model.json`` and
     emitted as an ``IfcCovering``. It bills through
     :func:`typehaus.takeoff.construction_returns_takeoff` (honouring ``takeoff_category``),
     and carries the element tags + lap / sealant / flashing / thermal-continuity an overlay
@@ -1075,6 +1079,9 @@ class ResolvedWindowStool:
     # How far inside the rough opening the shoulder notches sit: a fabricated stool wraps
     # the finished drywall return (→ countertop_edges.stool_wrapping_return). 0 = the RO.
     notch_inset_m: float = 0.0
+    # ``WindowType.sill_rail_height`` / ``sash_overlap``: None/0 seat on the drawn rail.
+    sill_rail_m: float | None = None
+    sash_overlap_m: float = 0.0
 
 
 @dataclass(frozen=True)

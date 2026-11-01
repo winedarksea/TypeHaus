@@ -242,6 +242,7 @@ def _foundation_clear(model, wall, run):
 
 
 def _heads(model):
+    from typehaus.resolve.cladding_trim.openings import is_window_head
     from typehaus.resolve.opening_flashing import opening_flashing_frame
     from typehaus.resolve.opening_head_cap import CAP_HEAD_LAP_IN, CAP_PRODUCT, head_cap
 
@@ -249,14 +250,15 @@ def _heads(model):
     for wall in model.walls:
         for opening, s0, s1, _z in opening_head_spans(model, wall):
             head = {s.product for s in model.solids if s.host_ref == opening.tag
-                    and s.product in ("OPENING_HEAD", "DOOR_HEAD_CUSTOM", DRIP_HEAD_PRODUCT)}
+                    and (is_window_head(s.product)
+                         or s.product in ("DOOR_HEAD_CUSTOM", DRIP_HEAD_PRODUCT))}
             if not head:
                 bare.append(opening.tag)  # a catalog unit's head (a hold point), or no kit
                 continue
             frame = opening_flashing_frame(model, wall, opening)
             tag, d = opening.tag, frame.along
             before = len(findings)
-            if "OPENING_HEAD" in head:
+            if any(map(is_window_head, head)):
                 caps = _mine(model, tag, {CAP_PRODUCT})
                 cap = head_cap(model, wall, opening, frame)
                 lo, hi = (frame.point(s, 0, 0) for s in (s0, s1))
@@ -264,7 +266,10 @@ def _heads(model):
                 if not caps or not spans_cover([_along(p, d) for p in caps], *span):
                     findings.append(failed(CAVITY, f"{tag}: the cavity over the head has no "
                                            "cap to floor and drain it", (tag,), code=_HEAD_CITE))
-                elif cap is None or min(z for p in caps for *_, z in p.body_mesh.positions) \
+                # The face leg shingles over the back leg: it starts above its top and reaches
+                # 1 in down it.
+                elif cap is None or cap.course_top < cap.head_trim_top or min(
+                        z for p in caps for *_, z in p.body_mesh.positions) \
                         > cap.head_trim_top - CAP_HEAD_LAP_IN * M_PER_IN + 0.05 * M_PER_IN:
                     findings.append(failed(CAVITY, f"{tag}: the head cap's face leg does not "
                                            "lap the head trim by 1 in", (tag,), code=_HEAD_CITE))

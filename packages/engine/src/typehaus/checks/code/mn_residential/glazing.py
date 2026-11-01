@@ -166,7 +166,7 @@ def _hazard_reasons(ctx, opening, wall, storey, window_type, wall_doors, storey_
         if point is not None:
             centre = point_type(*point)
             floor_z = storey.elevation.meters
-            bottom_z = floor_z + sill  # the bottom exposed edge, project frame
+            bottom_z = _exposed_bottom_z(wall, opening, floor_z + sill)
             for line, stair_tag, tread_z in stair_lines:
                 # Only a tread near this storey's floor plane is beside this window; a
                 # flight two storeys down is 60" away in plan and nowhere near in space.
@@ -183,6 +183,18 @@ def _hazard_reasons(ctx, opening, wall, storey, window_type, wall_doors, storey_
                                     "walking surface"))
                     break
     return reasons
+
+
+def _exposed_bottom_z(wall, opening, rough_sill_z: float) -> float:
+    """The glass's bottom exposed edge (project frame): above the seated frame's lower rail
+    when the product resolves one, else the rough sill, which is lower and so conservative."""
+    from typehaus.resolve.geometry_openings import opening_parts
+
+    if opening.kind != "window" or getattr(opening, "window_seat", None) is None:
+        return rough_sill_z
+    glass = [solid.z0_m for part in opening_parts(wall, opening, None)
+             if part.key == "glass" for solid in part.solids]
+    return max(rough_sill_z, min(glass)) if glass else rough_sill_z
 
 
 # --- R308.4.4 structural glass baluster panels -----------------------------------------

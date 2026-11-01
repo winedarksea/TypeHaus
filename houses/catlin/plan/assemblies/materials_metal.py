@@ -207,10 +207,10 @@ MATERIALS_METAL = [
     #
     # ** A MANUFACTURER READ SINCE 2026-09-22, AND `wall_panel/W-A-N1` LEFT THE REGISTER. **
     # `structural.cladding_wind` grades the zone-5 demand against the guide's own row in
-    # BOTH directions: 18.27 psf ASD suction vs 58 outward (d/c 0.315) and 13.64 psf ASD
+    # BOTH directions: 18.25 psf ASD suction vs 58 outward (d/c 0.315) and 13.63 psf ASD
     # push vs 43 inward (d/c 0.317 — inward governs, by a hair). The fastener is the
     # guide's own named screw at its own spacing, a CONDITION of the read; the NDS 2018
-    # section 12.2 withdrawal (0.182) and AISI S100 pull-through (0.118) the retired item
+    # section 12.2 withdrawal (0.182) and AISI S100 pull-through (0.117) the retired item
     # graded stay as the `structural.cladding_fastener` advisory. See
     # houses/catlin/notes/board_batten_girt_span.md §8.
     #
@@ -320,7 +320,7 @@ MATERIALS_METAL = [
                  stress_increase=False,
                  span_condition="3 or more equal spans",
                  excludes="note 2: the allowable \"does not address web crippling, fasteners, support material or load testing\"",
-                 demand_psf=18.27,
+                 demand_psf=18.25,
                  wind_speed_mph=115.0,
                  exposure="B"),
              open_framing_source="Metal Sales BBD75 Board & Batten (Concealed Direct-Fastened) install guide, 2025-10-16, p.7: the panel is \"designed to be installed over open framing and/or directly over a wood substrate\", and p.12's Support Materials list reads \"Lumber - 1x or thicker\" and \"Steel Framing - 18 gauge or thicker\" (neither is a solid substrate). The Spec Data Sheet says the same in its own words: \"Designed for application over solid sheathing or open framing\", typical assembly \"Wood framing with moisture barrier\"",

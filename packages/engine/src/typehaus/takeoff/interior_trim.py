@@ -5,7 +5,9 @@ material). ``kind`` is ``baseboard`` / ``door casing`` for boards, ``tile base``
 ``flash cove`` for a base the floor trade makes from the floor itself, ``resilient base`` for
 a set-on rubber cove base, ``stair skirt`` for a skirted flight's raked boards (its ``room``
 the stair), ``base joint`` for the sealant bead at the toe of any base whose
-floor names a ``Material.base_joint_ref`` (billed by the LF of base, keyed by the sealant).
+floor names a ``Material.base_joint_ref`` (billed by the LF of base, keyed by the sealant),
+``door jamb rip`` / ``door jamb extension`` for a stock jamb cut down to, or built out to, a
+non-stock wall (``DoorSizing.jamb_depth_m``; item ``door-jamb-rip`` / ``door-jamb-extension``).
 
 ``item`` is the price key: the board's stock tag for a board, ``tile-base`` / ``flash-cove`` /
 ``resilient-base``
@@ -80,9 +82,12 @@ def interior_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             cuts[key].append({"length_in": round(board.length_m / 0.0254, 3),
                               "width_in": round(board.width_m / 0.0254, 3),
                               "thickness_in": round(board.thickness_m / 0.0254, 3)})
+    _jamb_rows(model, length, pieces, tags, cuts)
+    stock = _skirt_stock(model, cuts)
     rows = [{
         "kind": kind, "room": room, "material": material, "item": item,
-        "description": f"{kind.capitalize()}, {names.get(material, material)} — {room}",
+        "description": f"{kind.capitalize()}, {names.get(material, material)}"
+                       + (f" — {room}" if room else ""),
         "length_ft": round(length[key] / _FT, 2),
         "pieces": pieces[key],
         "inside_corners": inside[key], "outside_corners": outside[key],
@@ -90,5 +95,50 @@ def interior_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         # work package; the derived BASE-/CASING- records are not plan elements.
         "tags": sorted(set(tags[key])),
         **({"cut_pieces": cuts[key]} if cuts[key] else {}),
+        **stock.get(key, {}),
     } for key in sorted(length) for kind, room, material, item in (key,)]
     return rows + door_installation_rows(model)
+
+
+def _jamb_rows(model: ResolvedModel, length, pieces, tags, cuts) -> None:
+    """A stock jamb ripped to a shallower wall, or extended to a deeper one: legs + head."""
+    from typehaus.resolve.door_floor_finish import trim_standard_of
+
+    standard = trim_standard_of(model.plan)
+    if standard is None:
+        return
+    # The painted base stock, as an exterior door's interior extension is.
+    material = standard.base_material_ref or standard.material_ref
+    for opening in model.openings:
+        sizing = opening.sizing
+        if sizing is None:
+            continue
+        a = sizing.jamb_allowance_m
+        run = 2 * (sizing.rough_h_m - sizing.floor_finish_m - a) + sizing.rough_w_m - 2 * a
+        for kind, width in (("door jamb rip", sizing.jamb_rip_m),
+                            ("door jamb extension", sizing.jamb_extension_m)):
+            if width <= 1e-6:
+                continue
+            key = (kind, None, material, kind.replace(" ", "-"))
+            length[key] += run
+            pieces[key] += 3
+            tags[key].append(opening.tag)
+            cuts[key].append({"length_in": round(run / 0.0254, 3),
+                              "width_in": round(width / 0.0254, 3)})
+
+
+def _skirt_stock(model: ResolvedModel, cuts) -> dict[tuple, dict[str, object]]:
+    """The boards each skirt row's raked blanks are cut from (``TrimStandard.stocks``)."""
+    from typehaus.resolve.door_floor_finish import trim_standard_of
+    from typehaus.takeoff.stock_packing import boards_for
+
+    standard = trim_standard_of(model.plan)
+    out = {}
+    for key, pieces in cuts.items():
+        stock = standard.stock_length_for(key[2]) if standard is not None else None
+        if key[0] != "stair skirt" or stock is None:
+            continue
+        boards, _board_in, _splices = boards_for([p["length_in"] for p in pieces],
+                                                stock.inches)
+        out[key] = {"stock_length_in": round(stock.inches, 3), "stock_boards": boards}
+    return out

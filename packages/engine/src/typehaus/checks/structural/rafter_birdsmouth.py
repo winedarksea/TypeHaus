@@ -49,8 +49,9 @@ def ijoist_birdsmouth(ctx: CheckContext) -> list[Finding]:
             continue
         worst = max(graded, key=lambda item: item[1].notch_m)[1]
         out.append(passed(_CID, f"{roof.tag}: {len(graded)} low-end birdsmouths, worst cut "
-                                f"{worst.notch_m / _IN:.2f}\" of a {worst.flange_plumb_m / _IN:.2f}\""
-                                f" flange, seat {worst.seat_m / _IN:.2f}\" on a "
+                                f"{worst.notch_m / _IN:.2f}\" of a "
+                                f"{worst.flange_plumb_m / _IN:.2f}\" flange, seat "
+                                f"{worst.seat_m / _IN:.2f}\" on a "
                                 f"{(worst.bearing_run_m or 0.0) / _IN:.2f}\" plate, stiffened",
                           (roof.tag,), code=IJOIST_SEAT_CODE_REF))
     if not out:

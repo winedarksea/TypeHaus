@@ -298,6 +298,16 @@ class StairSkirt(HausModel):
         return self
 
 
+class TrimStock(HausModel):
+    """One trim stock's real size where it differs from the ``TrimStandard``'s: retail MDF
+    1x4 is 11/16", FJ pine 23/32". ``stock_length`` is the board the supply sells this stock
+    in, beating the standard's (a 1x12 skirt blank that needs a 10' board)."""
+
+    material_ref: str
+    thickness: Length | None = None
+    stock_length: Length | None = None
+
+
 class RoomTrim(HausModel):
     """A trim stock for named rooms — their base and the casing face inside them — that
     differs from the house's (a sauna's rot-proof species, say). Sizes stay the standard's.
@@ -358,9 +368,30 @@ class TrimStandard(Element):
     # board to the longest piece, which is what a sawyer milling to order would cut.
     stock_length: Length | None = None
     stair_skirt: StairSkirt | None = None
+    # Per-stock dressed thickness and board length; a stock not listed takes ``thickness``
+    # and ``stock_length``.
+    stocks: tuple[TrimStock, ...] = ()
+    # Stock interior jamb depths (4 9/16", 6 9/16"): a door's derived jamb depth is ripped
+    # from the next one up, or extended from the deepest. () derives no jamb.
+    jamb_stock_depths: tuple[Length, ...] = ()
 
     def _room_trim(self, room: str) -> RoomTrim | None:
         return next((o for o in self.room_trims if room in o.rooms), None)
+
+    def _stock(self, material_ref: str | None) -> TrimStock | None:
+        return next((stock for stock in self.stocks if stock.material_ref == material_ref),
+                    None)
+
+    def thickness_for(self, material_ref: str | None) -> Length:
+        """The dressed thickness of ``material_ref``'s boards."""
+        stock = self._stock(material_ref)
+        return stock.thickness if stock is not None and stock.thickness else self.thickness
+
+    def stock_length_for(self, material_ref: str | None) -> Length | None:
+        """The board length ``material_ref`` is bought in."""
+        stock = self._stock(material_ref)
+        return (stock.stock_length if stock is not None and stock.stock_length
+                else self.stock_length)
 
     def base_material_for(self, room: str) -> str:
         """The base stock in ``room``: its ``RoomTrim``, else the house base."""
@@ -411,10 +442,15 @@ class TrimStandard(Element):
         if any(d.casing_width is not None and d.casing_width.meters <= 0
                for d in self.door_trims):
             raise ValueError(f"{self.tag}: a door's casing_width must be positive")
+        sizes = [size for stock in self.stocks for size in (stock.thickness, stock.stock_length)
+                 if size is not None] + list(self.jamb_stock_depths)
+        if any(size.meters <= 0 for size in sizes):
+            raise ValueError(f"{self.tag}: trim stock sizes must be positive")
         return self
 
 
 for _name, _obj in (
+    ("TrimStock", TrimStock),
     ("WindowStool", WindowStool),
     ("ShelfBay", ShelfBay),
     ("ShelfBank", ShelfBank),

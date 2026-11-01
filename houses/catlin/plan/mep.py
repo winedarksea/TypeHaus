@@ -5,6 +5,7 @@ The 2,515-line original was split by system (AGENTS.md §1.1 keeps files under 5
 - ``plan/mep_sleeves.py``        — concrete penetrations: sleeves, slab stubs
 - ``plan/mep_drainage.py``       — waste and condensate runs, TPR discharge, radon sump
 - ``plan/mep_venting.py``        — vent branches, the shared riser and its clamps
+- ``plan/mep_vent_tees.py``      — vent risers from trap-arm tees up to those branches
 - ``plan/mep_supply.py``         — house entry, hot/cold distribution, hydrant branches
 - ``plan/mep_supply_devices.py`` — in-line valves, stops and arrestors
 - ``plan/mep_supply_plant.py``   — RM-S-PLANT's watering stub and the balcony hydrant sleeve
@@ -53,6 +54,7 @@ from plan import (
                   mep_supply,
                   mep_supply_devices,
                   mep_supply_plant,
+                  mep_vent_tees,
                   mep_venting,
 )
 
@@ -73,6 +75,7 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  *mep_drainage.CONDENSATE_MAIN,
                  *mep_drainage.LAUNDRY_MAIN,
                  *mep_venting.VENT_BRANCHES_MAIN,
+                 *mep_vent_tees.VENT_TEES,
                  *mep_electrical.MAIN_DEVICES,
                  *electrical_floor.MAIN_DEVICES,
                  *mep_supply.WATER_SUPPLY,

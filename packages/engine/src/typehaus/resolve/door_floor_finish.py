@@ -144,4 +144,12 @@ def size_door(plan, el, wall, standard, finishes: DoorFloorFinish, sill_m: float
     # depends on the finish.
     probe = door_sizing(el, door_type, standard, kit, 0.0)
     finish = finishes.at_opening(wall, center_of(probe.passage_w_m), sill_m)
-    return door_sizing(el, door_type, standard, kit, finish)
+    return door_sizing(el, door_type, standard, kit, finish, _finish_depth(wall))
+
+
+def _finish_depth(wall) -> float | None:
+    """The host's depth between its two outermost faces: what a jamb spans."""
+    from typehaus.resolve.geometry_door_products import finish_faces
+
+    faces = finish_faces(wall) if getattr(wall, "layers", None) else None
+    return faces[1] - faces[0] if faces is not None else None

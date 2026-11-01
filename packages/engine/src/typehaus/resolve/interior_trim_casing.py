@@ -80,7 +80,8 @@ def _casing(plan, model, scope: TrimScope, wall: ResolvedWall, opening, side: in
     room = room_owning(model, wall.storey, at(0.0, face + side * _ROOM_PROBE_M))
     if room is None or room.tag not in scope.rooms:
         return None
-    t, width = s.thickness.meters, s.casing_width_for(room.tag, opening.tag).meters
+    material = s.casing_material_for(room.tag, opening.tag)
+    t, width = s.thickness_for(material).meters, s.casing_width_for(room.tag, opening.tag).meters
     outer = inner + width
     floor_z, _structural = scope.floors(model, room)
     into_wall = (-normal[0] * side, -normal[1] * side)
@@ -143,7 +144,7 @@ def _casing(plan, model, scope: TrimScope, wall: ResolvedWall, opening, side: in
         uid=f"{opening.uid}-casing-{label.lower()}", tag=f"CASING-{opening.tag}-{label}",
         storey=wall.storey, opening_ref=opening.tag, opening_uid=opening.uid,
         wall_tag=wall.tag, room=room.tag, side=side,
-        material_ref=s.casing_material_for(room.tag, opening.tag),
+        material_ref=material,
         thickness_m=t, casing_width_m=width, pieces=tuple(pieces), clips=tuple(clips),
         profile=s.profile)
 

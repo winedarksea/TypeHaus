@@ -32,9 +32,12 @@ from collections.abc import Iterator
 
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, advisory, failed, not_applicable, passed
+from typehaus.model.enums import DeviceKind
+from typehaus.model.mep import ElectricalDevice
 from typehaus.model.placeables import Mount, MountKind
 from typehaus.model.spatial import Appliance, Fixture, Furniture
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.backing_datum import band_datum_offset_m, face_room
 from typehaus.resolve.framing.backing_panels import (
     BackingBand,
     backing_bands,
@@ -49,9 +52,13 @@ from typehaus.resolve.model import ResolvedWall
 _REACH_M = 1.0 * M_PER_IN
 
 
-#: The three placed-body families that can hang on a wall. Each carries ``type_ref``,
+#: The placed-body families that can hang on a wall. Each carries ``type_ref``,
 #: ``position`` and ``rotation``; ``Element`` itself declares none of them.
-WallMountedBody = Furniture | Fixture | Appliance
+WallMountedBody = Furniture | Fixture | Appliance | ElectricalDevice
+
+#: The electrical devices heavy enough to want backing: a box screws to a stud, an
+#: enclosure hangs off the wall face.
+_BACKED_DEVICE_KINDS = frozenset({DeviceKind.PANEL, DeviceKind.METER, DeviceKind.DISCONNECT})
 
 
 def _bodies_and_types(
@@ -61,11 +68,16 @@ def _bodies_and_types(
         (Furniture, {item.tag: item for item in ctx.plan.library.furniture_types}),
         (Fixture, {item.tag: item for item in ctx.plan.library.fixture_types}),
         (Appliance, {item.tag: item for item in ctx.plan.library.appliance_types}),
+        (ElectricalDevice, {item.tag: item
+                            for item in ctx.plan.library.electrical_device_types}),
     )
     for storey_tag in ctx.plan.elements:
         for element in ctx.plan.storey_elements(storey_tag):
             for kind, types in catalogs:
                 if not isinstance(element, kind):
+                    continue
+                if (isinstance(element, ElectricalDevice)
+                        and element.kind not in _BACKED_DEVICE_KINDS):
                     continue
                 body_type = types.get(element.type_ref)
                 if body_type is None:
@@ -161,6 +173,16 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
                 f"{body.tag} hangs on {wall.tag}, which has no framed cavity — a body on a "
                 f"solid wall takes an anchor, not blocking", tags))
             continue
+        attachment = getattr(getattr(body, "location", None), "attachment", None)
+        if (isinstance(body, ElectricalDevice) and attachment is not None
+                and face_room(ctx.model, wall, attachment.face, station) is None):
+            out.append(advisory(
+                "advisory.wall_backing_present",
+                f"{body.tag} hangs on the outdoor face of {wall.tag}: a band in the stud "
+                f"cavity is not behind it, and the backer it takes over the cladding is "
+                f"modelled nowhere", tags, Result.UNKNOWN,
+                fix=f"confirm {body.tag}'s mounting backer with the utility or installer"))
+            continue
         if mount.elevation is None:
             out.append(advisory(
                 "advisory.wall_backing_present",
@@ -179,8 +201,7 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
             continue
         low = _band_datum_low(ctx, body, wall, mount)
         covering = [b for b in bands.get(wall.tag, ())
-                    if b.elevation_m - _REACH_M <= low <= b.elevation_m + b.height_m + _REACH_M
-                    and _covers_station(b, station, wall)]
+                    if _band_spans(ctx, wall, b, low) and _covers_station(b, station, wall)]
         if not covering and _blocking_course_behind(wall, low, station):
             out.append(passed(
                 "advisory.wall_backing_present",
@@ -201,6 +222,13 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
                 fix=f"author a WallBacking on {wall.tag} spanning "
                     f"{low / M_PER_IN:.0f}\" above its sill datum"))
     return out
+
+
+def _band_spans(ctx: CheckContext, wall: ResolvedWall, band: BackingBand,
+                low: float) -> bool:
+    """Whether the band, on the wall's sill datum, stands behind a body bottom at ``low``."""
+    bottom = band.elevation_m + (band_datum_offset_m(ctx.model, wall, band) or 0.0)
+    return bottom - _REACH_M <= low <= bottom + band.height_m + _REACH_M
 
 
 def _band_datum_low(ctx: CheckContext, body: WallMountedBody, wall: ResolvedWall,
@@ -295,11 +323,18 @@ def wall_backing_ref(ctx: CheckContext) -> list[Finding]:
                     f"backing {band.tag} starts at {start / M_PER_IN:.1f}\" along "
                     f"{wall_tag}, which is only {axis_len / M_PER_IN:.1f}\" long", tags))
                 continue
-            if band.elevation_m + band.height_m > wall.z1_m - wall.z0_m + 1e-9:
+            offset = band_datum_offset_m(ctx.model, wall, band)
+            if offset is None:
+                out.append(failed(
+                    "integrity.wall_backing_ref",
+                    f"backing {band.tag} is measured from the finished floor, but no room "
+                    f"stands on its {band.face} face of {wall_tag} to have one", tags))
+                continue
+            if band.elevation_m + offset + band.height_m > wall.z1_m - wall.z0_m + 1e-9:
                 out.append(failed(
                     "integrity.wall_backing_ref",
                     f"backing {band.tag} tops out at "
-                    f"{(band.elevation_m + band.height_m) / M_PER_IN:.1f}\" on a "
+                    f"{(band.elevation_m + offset + band.height_m) / M_PER_IN:.1f}\" on a "
                     f"{(wall.z1_m - wall.z0_m) / M_PER_IN:.1f}\" wall", tags))
                 continue
             stated = band_face_height_m(band.profile)
@@ -314,7 +349,8 @@ def wall_backing_ref(ctx: CheckContext) -> list[Finding]:
             out.append(passed(
                 "integrity.wall_backing_ref",
                 f"backing {band.tag} on {wall_tag}: {band.height_m / M_PER_IN:.1f}\" of "
-                f"{band.profile} at {band.elevation_m / M_PER_IN:.0f}\" above the floor"
+                f"{band.profile} at {band.elevation_m / M_PER_IN:.0f}\" above the "
+                f"{'finished floor' if band.datum == 'finished-floor' else 'floor'}"
                 + (f" ({band.purpose})" if band.purpose else ""), tags))
     return out
 

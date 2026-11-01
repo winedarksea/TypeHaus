@@ -32,6 +32,8 @@ wall-cavity fireblocking stays outside its coverage and this element does not ch
 
 from __future__ import annotations
 
+from typing import Literal
+
 from typehaus.model.base import Element
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length
@@ -56,10 +58,18 @@ class WallBacking(Element):
     start: Length | None = None
     #: Run along the wall. None = to the end of the wall.
     length: Length | None = None
-    #: Band bottom above the wall's sill datum (``ResolvedWall.base_ref_z_m``, which an
-    #: opening's ``sill_m`` also uses) — not the storey datum on a wall standing on a curb,
-    #: and not the finished floor.
+    #: Band bottom above ``datum``.
     elevation: Length
+    #: What ``elevation`` is measured from. ``"sill"``: the wall's sill datum
+    #: (``ResolvedWall.base_ref_z_m``, which an opening's ``sill_m`` also uses).
+    #: ``"finished-floor"``: the finished floor of the room on the band's face (the left
+    #: room for ``face="both"``), so a CRC R328.1.1 course is written as its 32" AFF
+    #: (``resolve/backing_datum.py``).
+    datum: Literal["sill", "finished-floor"] = "sill"
+    #: A nailer furred OUT from the stud face by its own thickness, for a flange standing
+    #: off the framing (a tub insert in an out-of-plane alcove). It runs over the studs;
+    #: ``False`` is ordinary backing, fitted between them flush with their face.
+    furred: bool = False
     #: Band height. A CRC R328.1.1 grab-bar band is 7 1/4"; catlin's wet-wall strip is 12".
     height: Length
     #: Cross-section, parsed by ``resolve/framing/profiles.cross_section``. **Write the

@@ -131,7 +131,8 @@ def _rafter() -> FramedMember:
         parent_uid="R", child_key="rafter-0", category="rafter", profile="2x10",
         p0=(0.0, 0.0), p1=(3.0, 0.0), z0_m=2.5, z1_m=2.74, length_m=3.35,
         z0_end_m=4.0, z1_end_m=4.24,
-        seat=SeatCut(plate_top_z_m=2.45, heel=(0.14, 0.0), seat_run_m=0.14))
+        # A low-end birdsmouth (#109): heel at p0, 0.07 m notch, 0.14 m seat at slope 0.5.
+        seat=SeatCut(plate_top_z_m=2.57, heel=(0.0, 0.0), seat_run_m=0.14))
 
 
 @pytest.mark.parametrize("member", [

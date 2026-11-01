@@ -20,6 +20,8 @@ either (``runs_full_storey_height``).
 
 from __future__ import annotations
 
+import math
+
 import pytest
 
 from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
@@ -67,13 +69,14 @@ def test_every_attic_partition_rakes_to_the_rafter_soffit(catlin_model_ro) -> No
 
 
 def test_the_attic_plate_is_a_foot_below_the_deck_it_used_to_reach(catlin_model_ro) -> None:
-    """The size of the bug, stated: an 11-7/8" rafter plus the gap."""
+    """The size of the bug, stated: an 11-7/8" rafter, plumb at 6:12 (#109), plus the gap."""
     roof = next(r for r in catlin_model_ro.roofs if r.tag == "RF-HOUSE")
     from typehaus.resolve.roof_geometry import roof_height_at
 
     wall = catlin_model_ro.wall("W-A-STU-N")
     deck = roof_height_at(roof, wall.axis[0])
-    assert (deck - wall.top_z0_m) / _IN == pytest.approx(11.875 + 0.75, abs=1e-6)
+    assert (deck - wall.top_z0_m) / _IN == pytest.approx(
+        11.875 * math.hypot(1.0, 0.5) + 0.75, abs=1e-6)
 
 
 def test_a_storey_line_partition_moves_its_plate_and_not_its_body(catlin_model_ro) -> None:

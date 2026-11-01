@@ -110,6 +110,9 @@ class DoorType(HausModel):
     # Surface appearance only; None inherits the type/product default.
     frame_material_ref: str | None = None
     leaf_material_ref: str | None = None
+    # The frame ships to the wall's throat (a knock-down steel frame): no stock wood jamb
+    # to rip or extend (``door_sizing`` jamb depth).
+    factory_frame: bool = False
     # Type-level engineered-header default (e.g. '2-ply 14" LVL') for openings wide enough
     # that the solver's dimensional-lumber header tables don't apply; a Door instance's
     # own header_spec wins over this.
@@ -217,6 +220,11 @@ class WindowType(HausModel):
     # computed without it. None means not authored: the stool reports UNKNOWN and carries no
     # depth rather than guessing one (#32).
     frame_depth: Length | None = None
+    # The lower rail's top above the frame bottom (sill adaptor included), and how far an
+    # inward sash laps below it. The stool sits at rail - overlap; None keeps the drawn
+    # frame face and no lap.
+    sill_rail_height: Length | None = None
+    sash_overlap: Length | None = None
     # The maker's published NET clear opening (R310.2.1), sash open in normal operation.
     # Selected products need exact openings or deductions below to receive R310 credit.
     net_clear_width: Length | None = None

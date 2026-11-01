@@ -452,11 +452,13 @@ def test_catlin_s_real_plate_cuts_fail_for_want_of_a_tie(catlin_model_ro) -> Non
 
     One since 2026-10-29: the three heat-pump ducts are rectangular, and read at their real
     depth (8" and 6", not their 18" and 10" widths) they pass over the plates.
+
+    None since 2026-11-01: W-M-STOS is a 2x6 wet wall, so the stack bores its plates.
     """
     from typehaus.checks.mep.routing_bores import run_through_plate
 
     findings = run_through_plate(_ctx(catlin_model_ro))
     results = [f.result.value for f in findings]
     assert results.count("fail") == 0
-    assert results.count("unknown") == 1, [f.element_tags for f in findings
+    assert results.count("unknown") == 0, [f.element_tags for f in findings
                                             if f.result.value == "unknown"]

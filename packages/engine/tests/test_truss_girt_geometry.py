@@ -40,6 +40,7 @@ from typehaus.resolve.framing.truss_wall import (
     truss_kind,
 )
 from typehaus.resolve.geometry import sub, unit
+from typehaus.resolve.rainscreen_strips import band_girt_bottom
 
 IN = 0.0254
 _STOCK_FACE = 3.5 * IN     # a course's height, a post's width, a block's face
@@ -353,9 +354,7 @@ def test_the_block_is_three_plies_on_every_other_stud(catlin_model):
         if len(module) < 4:
             continue
         phase = _modal_phase(module)
-        assembly = catlin_model.plan.library.resolve_assembly(wall.assembly)
-        extras = [level.meters for layer in assembly.layers if layer.framing
-                  for level in layer.framing.additional_course_elevations]
+        extras = [band_girt_bottom(joint) for joint in wall.panel_joints_m]
         # Joint backing is frequently cut into short segments by opening heads, so its
         # mandatory end blocks do not measure the regular field's module proportion.
         field = [m for m in wall.members

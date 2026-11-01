@@ -8,6 +8,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from math import hypot, isfinite
 
+#: The catalog head every metal-wall window takes (58114XX). BBD75's own Head Trim 58720XX
+#: is a trim-first head whose return runs over the frame, so the outie keeps this one.
+WINDOW_HEAD_PRODUCT = "OPENING_HEAD"
+
+
+def is_window_head(product: str | None) -> bool:
+    """Whether a trim product is the catalog window head a panel end seats in."""
+    return product == WINDOW_HEAD_PRODUCT
+
 
 @dataclass(frozen=True)
 class WindowTrimSection:
@@ -133,9 +142,6 @@ def window_trim_solids(model, wall, opening, frame, material, seat=None):
         jamb_points = PBR_WINDOW_JAMB.section_in
     else:
         jamb_key, jamb_profile = "WINDOW_JAMB_CUSTOM", WINDOW_JAMB_CUSTOM
-    # The head's one-inch inner upstand is a folded return against the 2.5-inch leg;
-    # the visible single-thickness centerline is sufficient for the formed sheet sweep.
-    head_section = ((0.0, 2.5), (0.0, 0.0), (1.5, 0.0), (1.853553, -0.353553))
     solids = []
     axis_up = (0.0, 0.0, 1.0)
     outward = (*frame.outward, 0.0)
@@ -161,7 +167,8 @@ def window_trim_solids(model, wall, opening, frame, material, seat=None):
             tuple(v * sign for v in along), outward, axis_up, head - jamb_base)
     add("sill", "WINDOW_SILL_CUSTOM", WINDOW_SILL_CUSTOM, sill_points,
         frame.point(lo, frame.mount, sill), outward, axis_up, along, opening.width_m)
-    add("head", "OPENING_HEAD", OPENING_HEAD, head_section,
+    # 58114XX's one-inch inner upstand folds against its back leg; the centreline sweeps.
+    add("head", WINDOW_HEAD_PRODUCT, OPENING_HEAD, OPENING_HEAD.section_in,
         frame.point(lo - INCH_M, frame.mount, head), outward, axis_up, along,
         opening.width_m + 2 * INCH_M)
     return solids

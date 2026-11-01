@@ -173,6 +173,8 @@
     "sheathing": 12105906,
     "shutoff": 12096583,
     "sill": 11041356,
+    "sill_gasket": 6193305,
+    "sill_plate": 11709826,
     "sister_joist": 11041356,
     "slab": 9211793,
     "slab_band": 9211793,
@@ -384,6 +386,8 @@
     "sheathing": 12105906,
     "shutoff": 12096583,
     "sill": 11041356,
+    "sill_gasket": 6193305,
+    "sill_plate": 11709826,
     "sister_joist": 11041356,
     "slab": 9211793,
     "slab_band": 9211793,
@@ -645,6 +649,12 @@
     "shutoff": [
       "plumbing"
     ],
+    "sill_gasket": [
+      "framing"
+    ],
+    "sill_plate": [
+      "framing"
+    ],
     "slab": [
       "concrete"
     ],
@@ -780,6 +790,8 @@
     "screen_slat": "siding",
     "seam_clamp": "roofing",
     "shutoff": "plumbing",
+    "sill_gasket": "framing",
+    "sill_plate": "framing",
     "slab": "concrete",
     "slab_band": "concrete",
     "slab_deck": "concrete",

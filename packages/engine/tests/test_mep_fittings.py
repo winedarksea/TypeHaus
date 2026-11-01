@@ -238,3 +238,25 @@ def test_a_proposal_whose_corner_is_unmakeable_says_so_without_explain() -> None
 def test_a_wye_names_both_diameters_or_says_which_branch_is_missing() -> None:
     assert fitting_for(SERVICE_DRAIN, KIND_WYE, 45.0, 3.0, branch_in=2.0) is not None
     assert fitting_for(SERVICE_DRAIN, KIND_WYE, 45.0, 2.0, branch_in=0.75) is None
+
+
+def test_a_duct_straight_shorter_than_its_elbow_take_offs_is_unknown() -> None:
+    """Two 4" 90s at the gored 1.5 D radius need 12" between them; 5" is reported, 14" not."""
+    from types import SimpleNamespace
+
+    from typehaus.checks.mep.fitting_pattern import fitting_pattern
+    from typehaus.resolve.model import ResolvedDuct
+
+    def duct(tag: str, step_in: float) -> ResolvedDuct:
+        m, d = 0.0254, 4 * 0.0254
+        return ResolvedDuct(
+            uid=tag, tag=tag, storey="second", system="supply",
+            path=((0.0, 0.0), (1.0, 0.0), (1.0, 0.0), (2.0, 0.0)),
+            width_m=d, depth_m=d, routing="exposed", floor_ref=None, crossings=(),
+            conflicts=(), depth_ok=True, diameter_m=d, z_m=(0.0, 0.0, step_in * m, step_in * m))
+
+    model = ResolvedModel(plan=_Plan())
+    model.ducts.extend([duct("DU-SHORT", 5.0), duct("DU-LONG", 14.0)])
+    found = [f for f in fitting_pattern(SimpleNamespace(model=model)) if "straight" in f.message]
+    assert [f.element_tags for f in found] == [("DU-SHORT",)]
+    assert found[0].result.value == "unknown" and "against 12.0\"" in found[0].message

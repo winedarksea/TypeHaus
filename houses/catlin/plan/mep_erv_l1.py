@@ -205,9 +205,10 @@ DUCTS_ERV_BASEMENT = [
     # leave its top.
     #
     # (2026-10-17) The ERV sits at x=6'-8 5/8", so both trunks leave its top inside the case.
-    # The supply turns up into EQ-B-ERV-MAN-SUP's underside at x=7'-0", clear of R-GYM.
+    # The supply rises straight off Broan's port 2 into EQ-B-ERV-MAN-SUP's underside
+    # (2026-11-01; it stood 4 5/8" off the collar).
     DuctRun(uid="225MZ1YDWB", tag="DU-B-ERV-SUP-TRUNK", system=DuctSystem.SUPPLY,
-            path=(pt(inch(84), ft(30, 6)), pt(inch(84), ft(30, 6))),
+            path=(pt(inch(88.65625), inch(364.625)), pt(inch(88.65625), inch(364.625))),
             elevations=(inch(75.6), ft(7, 2)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
@@ -223,6 +224,8 @@ DUCTS_ERV_BASEMENT = [
     # headroom over the upper flight's nosings — `code.R311_7_2_stair_headroom` counts runs
     # now. The x=17'-0" "east chase" was only continuous by walking over the lower flight.
     #
+    # Its collar moved to x=6'-10" (2026-11-01), clear of the supply trunk on Broan's port 2;
+    # GYM and PLAY now leave the ceiling layer on 30° ramps, not 6" drops between two 90s.
     # THE GYM RADIAL GOES THROUGH THE WORKSHOP. South on x=9'-0", directly under
     # PR-B-SAUNA-VENT, the bath vent, and the HW-BATH and LSINK legs it crosses; it stays at
     # 84" past the bath extract and laundry sink drain, then rises to 88 1/2" from
@@ -246,8 +249,8 @@ DUCTS_ERV_BASEMENT = [
     # hole drilled IN a cripple; this is air between two). The cast sleeve through
     # `W-B-CS2` was the alternative and is not taken: a sleeve is a pre-pour commitment.
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
-            path=(pt(ft(7, 3), ft(30, 2)), pt(ft(7, 3), ft(29, 6)),
-                  pt(ft(7, 3), ft(29, 6)), pt(ft(9), ft(29, 6)),
+            path=(pt(ft(6, 10), ft(30, 2)), pt(ft(6, 10), ft(29, 8)),
+                  pt(inch(92.375), ft(29, 8)), pt(ft(9), ft(29, 8)),
                   pt(ft(9), ft(18, 8)), pt(ft(9), ft(17, 4.75)),
                   pt(ft(17), ft(17, 4.75)),
                   pt(ft(17), ft(13, 4)), pt(ft(17), ft(13, 4)), pt(ft(19), ft(13, 4))),
@@ -265,7 +268,7 @@ DUCTS_ERV_BASEMENT = [
     # into REG-B-SUP2 on its last leg (the room's ceiling is SL-M-DECK's solid concrete; see
     # the register). It turned east at y=25'-0" until 2026-09-23; 5' less hall duct.
     DuctRun(uid="DMEQ946YAX", tag="DU-B-ERV-R-PLAY", system=DuctSystem.SUPPLY,
-            path=(pt(ft(8), ft(30, 6)), pt(ft(9, 6), ft(30, 6)), pt(ft(9, 6), ft(30, 6)),
+            path=(pt(ft(8), ft(30, 6)), pt(ft(9, 6), ft(30, 6)), pt(ft(9, 6), inch(355.625)),
                   pt(ft(9, 6), ft(19, 7.25)), pt(ft(9, 6), ft(19, 7.25)),
                   pt(ft(12, 3), ft(19, 7.25)), pt(ft(12, 3), ft(18, 6.75)),
                   pt(ft(16, 9), ft(18, 6.75)), pt(ft(16, 9), ft(20)), pt(ft(19), ft(20))),
@@ -302,25 +305,29 @@ DUCTS_ERV_BASEMENT = [
     # It steps south to y=27'-0" before turning west so that its own drop and the plenum's
     # two 6" underside ports are not in each other's way, then runs the deepest of the four
     # corridors: under PR-B-KITCH-DRAIN, under PR-B-WC1-DRAIN's tail, and under the SH2 and
-    # SINK2 drops that used to be three of its four reported pairs.
+    # SINK2 drops that used to be three of its four reported pairs. The step down is a 45°
+    # ramp (2026-11-01): a 7 1/2" drop between two 90s is shorter than their take-offs.
     DuctRun(uid="MTVYDDP43W", tag="DU-B-ERV-R-BENCH", system=DuctSystem.RETURN,
-            path=(pt(ft(6, 6), ft(28, 1)), pt(ft(6, 6), ft(27)), pt(ft(6, 6), ft(27)),
+            path=(pt(ft(6, 6), ft(28, 1)), pt(ft(6, 6), inch(331.5)), pt(ft(6, 6), ft(27)),
                   pt(ft(2), ft(27)), pt(ft(2), ft(8, 6)), pt(ft(2), ft(8, 6))),
             elevations=(ft(7, 6), ft(7, 6), inch(82.5), inch(82.5), inch(82.5), ft(6, 2)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=6),
-    # The basement bath's extract leaves the plenum's EAST end and drops 1 1/4" off its
-    # collar, then south on x=8'-0" and east on y=24'-0" to a sidewall grille in W-B-STR3B
-    # (REG-B-EXH1). At -20 11/16" it crosses OVER the GYM and PLAY lanes (3/4" each) and
-    # under PR-B-SAUNA-VENT (1 7/16"), and passes W-B-STR3B in its 23'-4"..24'-8" bay.
+    # The basement bath's extract leaves the plenum's EAST end straight off its collar (6",
+    # one elbow's take-off; it dropped 1 1/4" there until 2026-11-01), then south on x=8'-6"
+    # and east on y=24'-0" to a sidewall grille in W-B-STR3B (REG-B-EXH1). At -19 7/16" it
+    # crosses 2" OVER the GYM and PLAY lanes and 7/8" under PR-B-SAUNA-VENT, and passes
+    # W-B-STR3B in its 23'-4"..24'-8" bay.
     #
     # ** IT USED TO GO THROUGH THE STAIR (until 2026-09-22). ** Its old leg ran south under
     # the upper flight to (12', 24'-1 5/8") through `stringer-upper-0`, `tread-upper-003` and
     # W-B-STR3's ledger. The flight's own structure is now inside the volume a router refuses.
     DuctRun(uid="03883CKF0H", tag="DU-B-ERV-R-BATH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(8), ft(28, 5)), pt(ft(8), ft(28, 5)),
-                  pt(ft(8), ft(24)), pt(inch(119.875), ft(24))),
-            elevations=(ft(7, 6), inch(88.75), inch(88.75), inch(88.75)),
+            path=(pt(ft(8), ft(28, 5)), pt(ft(8, 6), ft(28, 5)),
+                  pt(ft(8, 6), ft(24)), pt(inch(119.875), ft(24))),
+            elevations=(ft(7, 6), ft(7, 6), ft(7, 6), ft(7, 6)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
+    # It leaves its collar 6" south and steps down on a 30° ramp (2026-11-01; a 2" stub and
+    # a 7 3/4" drop were shorter than their elbows' take-offs).
     # The low pickup is 4" off the floor on W-B-SA-W. The route uses W-B-CW's x=1'-7" bay
     # (out of the panels' 110.26(E) space since 2026-10-31), clear of D-B-FURN's header,
     # then turns east at y=3'-4". Both sauna radials share the lane at separate tiers: this
@@ -329,8 +336,8 @@ DUCTS_ERV_BASEMENT = [
     # inside that stud bay. W-B-SA-W uses SAUNA_2X6 so the 4" section fits with 3/4" each
     # side; its hot-side liner face stays fixed.
     DuctRun(uid="1Y457X9DMH", tag="DU-B-ERV-R-SAUNA-EXH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(5, 3), ft(28, 1)), pt(ft(5, 3), ft(27, 11)), pt(ft(5, 3), ft(27, 11)),
-                  pt(ft(1, 7), ft(27, 11)), pt(ft(1, 7), inch(40)),
+            path=(pt(ft(5, 3), ft(28, 1)), pt(ft(5, 3), ft(27, 7)), pt(inch(49.5625), ft(27, 7)),
+                  pt(ft(1, 7), ft(27, 7)), pt(ft(1, 7), inch(40)),
                   pt(inch(116.5625), inch(40)), pt(inch(116.5625), inch(40)),
                   pt(inch(116.5625), ft(3, 2)), pt(inch(122), ft(3, 2))),
             elevations=(ft(7, 6), ft(7, 6), inch(82.25), inch(82.25), inch(82.25), inch(82.25),

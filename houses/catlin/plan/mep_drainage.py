@@ -335,8 +335,13 @@ SECOND_DRAINS = [
     # explains. It now drops on the stack's own line and side-enters the main at x=5'-0",
     # 6" east of the kitchen tie and 12" west of the main's corner. The collector lift
     # reduces the 10'-0" tail's fall to 0.325"/ft and clears D-B-FURN's flat nailer.
+    # ** IN A 2x6 WET WALL SINCE 2026-11-01. ** W-M-STOS was a 2x4 and this 3.50" barrel cut
+    # both its plates. `haus route` found no lane into W-M-HS1 or the chase: west of
+    # DU-M-ERV-EXH-TRUNK the LAV has "every lane blocked", east of it the WC has no route.
+    # So STOS became a staggered 2x6 (2" into the mud closet) and the stack moved 1/2" north
+    # to y=26'-8", inside both STOS's and W-S-BD-N's cavities.
     PipeRun(uid="CMPD07AAAA", tag="PR-M-S-BATH1-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(5), ft(26, 7.5)), pt(ft(5), ft(26, 7.5)), pt(ft(5), ft(16, 6))),
+            path=(pt(ft(5), ft(26, 8)), pt(ft(5), ft(26, 8)), pt(ft(5), ft(16, 6))),
             diameter=inch(3), material="pvc",
             # ** THE HEAD IS ABOVE THE SECOND FLOOR NOW, NOT UNDER IT. ** It was 9'-9" —
             # inside the truss depth — for as long as this stack had no branch piping at
@@ -418,7 +423,7 @@ SECOND_BRANCH_DRAINS = [
     PipeRun(uid="K28BQ29KCW", tag="PR-M-S-BATH1-WC-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(18.5), inch(376)), pt(inch(20.278), inch(372.32)),
                   pt(inch(20.278), inch(344)), pt(inch(20.278), inch(344)),
-                  pt(ft(5), inch(344)), pt(ft(5), ft(26, 7.5))),
+                  pt(ft(5), inch(344)), pt(ft(5), ft(26, 8))),
             diameter=inch(3), material="pvc",
             elevations=(ft(10, 0.75), inch(116.75), inch(116), inch(100.5), inch(99.51),
                         inch(98.83)),
@@ -443,7 +448,7 @@ SECOND_BRANCH_DRAINS = [
     # pair puts it under BED's upper tier at x=6'-1 1/2", clear of PR-B-HW-SBATH's riser, and
     # it turns west UNDER both radials in the 26'-2" bay, south of the two supply risers.
     PipeRun(uid="E9TA1G01B8", tag="PR-M-S-BATH1-LAV-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(116.745), inch(374.5)), pt(inch(120), inch(374.5)), pt(inch(120), inch(372)), pt(inch(120), inch(372)), pt(inch(75), inch(372)), pt(inch(75), inch(340)), pt(inch(73.5), inch(338.5)), pt(inch(73.5), inch(314)), pt(inch(60), inch(314)), pt(inch(60), inch(319.5)),),
+            path=(pt(inch(116.745), inch(374.5)), pt(inch(120), inch(374.5)), pt(inch(120), inch(372)), pt(inch(120), inch(372)), pt(inch(75), inch(372)), pt(inch(75), inch(340)), pt(inch(73.5), inch(338.5)), pt(inch(73.5), inch(314)), pt(inch(60), inch(314)), pt(inch(60), inch(320)),),
             diameter=inch(1.5), material="pvc",
             elevations=(inch(141.5), inch(141.43), inch(141.375), inch(117.75), inch(116.8), inch(113.65), inch(113.55), inch(113.0), inch(112.7), inch(112.55),),
             # No `wall_ref`: only the first vertex is in W-S-BA-E1B, and the drop leaves
@@ -458,7 +463,7 @@ SECOND_BRANCH_DRAINS = [
     # are named because both drain here; LAV2 at x=52 3/8" already sat 7 5/8" from the head
     # and passed `fixture_drain_reach` for a reason that was true by accident.
     PipeRun(uid="WJ1ZY1QTET", tag="PR-M-S-VANITY-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(22.375), inch(318)), pt(inch(52.375), inch(318)), pt(inch(60), inch(319.5)), pt(inch(60), inch(319.5)),),
+            path=(pt(inch(22.375), inch(318)), pt(inch(52.375), inch(318)), pt(inch(60), inch(320)), pt(inch(60), inch(320)),),
             diameter=inch(1.5), material="pvc",
             elevations=(inch(140.5), inch(139.875), inch(139.6875), inch(122.5625),),
             serves=("FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2"), wall_ref="W-S-BD-N"),
@@ -833,13 +838,16 @@ STUDIO_DRAINS = [
     # east-side tie — room for two wyes, which 4" was not. Two WCs on one 3" horizontal is
     # what UPC Table 703.2 allows. `drain_inlet_spacing` grades barrels only, so this
     # spacing is this comment's claim, not a check's.
+    # ** THE DROP IS AT y=19'-7", MID-BAY, SINCE 2026-11-01. ** At 19'-4" the barrel stood on
+    # W-S-DC2's stud-005 (19'-3" c/l). 19'-7" centres it between stud-005 and stud-006
+    # (1 1/2" each side). The WC arm takes a 1/8 bend west of the LAV tie, and the east leg
+    # rides y=19'-7" in the same truss bay, so the 4" step at the drop's foot is gone.
     PipeRun(uid="HTZ1RGAGXP", tag="PR-A-STUBATH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(130.69), ft(19, 4)), pt(inch(130.69), ft(19, 4)),
-                  pt(ft(9, 7.5), ft(19, 4)),
-                  pt(ft(9, 7.5), ft(19, 4)), pt(ft(9, 7.5), ft(19, 8)),
-                  pt(ft(12), ft(19, 8))),
+                  pt(inch(118.5), ft(19, 4)), pt(ft(9, 7.5), ft(19, 7)),
+                  pt(ft(9, 7.5), ft(19, 7)), pt(ft(12), ft(19, 7))),
             diameter=inch(3), material="pvc",
-            elevations=(inch(240.87), ft(19, 4), ft(19, 3.5), ft(9, 8), inch(115.875),
+            elevations=(inch(240.87), ft(19, 4), inch(231.61), ft(19, 3.5), ft(9, 8),
                         inch(115.0)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
     # ** THE HEAD FOLLOWED THE BOWL ONTO W-A-BATH-S AND THE RUN GOT SHORTER, 2026-09-09. **
@@ -850,7 +858,7 @@ STUDIO_DRAINS = [
     # no web to cut — and turns north to the stack on the x 9'-7 1/2" wet-wall line. The old
     # 4" tailpiece dog-leg onto a bay centre is gone with it.
     PipeRun(uid="ZY2V3KWMVK", tag="PR-A-BAR-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(152.5), inch(201.74)), pt(inch(152.5), inch(194.625)), pt(inch(152.5), inch(194.625)), pt(inch(115.5), inch(194.625)), pt(inch(115.5), inch(232)),),
+            path=(pt(inch(152.5), inch(201.74)), pt(inch(152.5), inch(194.625)), pt(inch(152.5), inch(194.625)), pt(inch(115.5), inch(194.625)), pt(inch(115.5), inch(235)),),
             diameter=inch(2), material="pvc",
             # 1" over the 3'-1" west leg and 1" over the 3'-1 3/8" north one — both clear
             # 708.0's 1/4"/ft, which `mep.drain_slope` grades segment by segment. The whole

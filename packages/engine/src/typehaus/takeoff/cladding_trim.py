@@ -29,6 +29,7 @@ from typehaus.library.trim.metal_sales import (
 from typehaus.model.trim import Gutter
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.cladding_trim.members import split_stock_run
+from typehaus.resolve.cladding_trim.openings import WINDOW_HEAD_PRODUCT, is_window_head
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.roof_edge_geometry import roof_edge_runs
 from typehaus.resolve.roof_image_ii import wrapped_image_ii_edges
@@ -36,12 +37,12 @@ from typehaus.takeoff.stock_packing import boards_for
 
 _FT = 0.3048
 #: Products whose joint to the frame or panel is sealed along the whole run (K7 joint).
-_SEALED = {"PBR_WINDOW_JAMB", "WINDOW_JAMB_CUSTOM", "WINDOW_SILL_CUSTOM", "OPENING_HEAD",
+_SEALED = {"PBR_WINDOW_JAMB", "WINDOW_JAMB_CUSTOM", "WINDOW_SILL_CUSTOM", WINDOW_HEAD_PRODUCT,
            "DOOR_HEAD_CUSTOM"}
-_CLOSED_BY_PANEL = {"OPENING_HEAD", "WINDOW_SILL_CUSTOM", "CORRUGATED_BASE"}
+_CLOSED_BY_PANEL = {WINDOW_HEAD_PRODUCT, "WINDOW_SILL_CUSTOM", "CORRUGATED_BASE"}
 #: Straight window-kit cuts that combine from stock (metal_trim_kit.md, "Procurement may
 #: combine short cuts"); formed, lapped and closure pieces stay one stick per solid.
-_POOLED = {"OPENING_HEAD", "PBR_WINDOW_JAMB"}
+_POOLED = {WINDOW_HEAD_PRODUCT, "PBR_WINDOW_JAMB"}
 #: Shear kerf per pooled cut, inches.
 _SHEAR_KERF_IN = 0.25
 _LAP_SEALANT_FT = 1.0
@@ -156,7 +157,7 @@ def _wall_trim_rows(model: ResolvedModel, rows: _Rows) -> None:
         closure = profile.closure
         if closure is None and solid.product in _CLOSED_BY_PANEL:
             closure = PANEL_CLOSURE.get(panel or "")
-        end = ("head" if solid.product == "OPENING_HEAD"
+        end = ("head" if is_window_head(solid.product)
                else "base" if solid.tag.startswith(f"TRIM-{host}-BASE-") else None)
         closed = closure and solid.product not in {"BBD_C_CLOSURE"} \
             and (host, end) not in on_strip

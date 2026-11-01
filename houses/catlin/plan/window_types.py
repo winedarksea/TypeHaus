@@ -28,6 +28,8 @@ from plan.opening_products import (
 )
 
 _DRUTEX_DEPTH = inch(93 / 25.4)  # 93 mm installation depth, Drutex's Alucover data
+# sill_rail_height / sash_overlap stay unauthored until DAKAM's Alucover section shows the
+# sill adaptor and the inward sash lap (procurement §2.3): the stool keeps the 75 mm face.
 # Not published to us for the basic unit; the preset's 3 1/4" stays until the dealer's
 # section is in hand.
 _ANDERSEN_DEPTH = inch(3.25)

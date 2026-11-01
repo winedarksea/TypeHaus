@@ -42,23 +42,38 @@ def _band(**overrides) -> BackingBand:
 
 
 def _backing(members):
-    return [m for m in members if m.child_key.startswith("backing-")]
+    return sorted((m for m in members if m.child_key.startswith("backing-")),
+                  key=lambda m: m.p0[0])
 
 
-def test_a_full_run_band_is_one_member_across_the_studs():
-    """Across, not between. A band that stopped at each stud would not be backing."""
+def _covers(pieces, station_m: float) -> bool:
+    return any(min(m.p0[0], m.p1[0]) < station_m < max(m.p0[0], m.p1[0]) for m in pieces)
+
+
+def test_a_full_run_band_is_fitted_between_the_studs():
+    """Between, not across: a flush board run through the studs is a dado in each."""
     plan, rw = _wall_and_plan()
     members = frame_wall(plan, rw, openings=[], backing=(_band(),))
     bands = _backing(members)
-    assert len(bands) == 1
-    band = bands[0]
-    assert band.category == "blocking"
-    assert band.profile == "0.75x12.0"
-    assert band.material == "struct-1-plywood"
-    assert abs(band.length_m - WALL_LEN_M) < 1e-9
-    # Elevation is off the FRAMING base, not the stud bearing line a plate above it.
-    assert abs(band.z0_m - inch(32).meters) < 1e-9
-    assert abs(band.z1_m - inch(44).meters) < 1e-9
+    studs = [m for m in members if m.category == "stud"]
+    assert len(bands) == len(studs) - 1, "one block per bay"
+    half = inch(0.75).meters
+    for band in bands:
+        assert band.category == "blocking"
+        assert band.profile == "0.75x12.0"
+        assert band.material == "struct-1-plywood"
+        # Elevation is off the FRAMING base, not the stud bearing line a plate above it.
+        assert abs(band.z0_m - inch(32).meters) < 1e-9
+        assert abs(band.z1_m - inch(44).meters) < 1e-9
+        assert not any(_covers([band], stud.p0[0] + d) for stud in studs for d in (-half, 0, half))
+    assert 0.85 * WALL_LEN_M < sum(b.length_m for b in bands) < WALL_LEN_M
+
+
+def test_a_furred_band_runs_over_the_studs_proud_of_their_face():
+    plan, rw = _wall_and_plan()
+    nailer = _band(profile="2x4", height_m=inch(3.5).meters, furred=True)
+    bands = _backing(frame_wall(plan, rw, openings=[], backing=(nailer,)))
+    assert len(bands) == 1 and abs(bands[0].length_m - WALL_LEN_M) < 1e-9
 
 
 def test_no_backing_is_emitted_by_default():
@@ -70,17 +85,17 @@ def test_a_partial_run_emits_only_over_that_run():
     plan, rw = _wall_and_plan()
     members = frame_wall(plan, rw, openings=[],
                          backing=(_band(start_m=1.0, length_m=1.5),))
-    band = _backing(members)[0]
-    assert abs(band.length_m - 1.5) < 1e-9
-    assert abs(band.p0[0] - 1.0) < 1e-9 and abs(band.p1[0] - 2.5) < 1e-9
+    bands = _backing(members)
+    assert abs(bands[0].p0[0] - 1.0) < 1e-9 and abs(bands[-1].p1[0] - 2.5) < 1e-9
 
 
 def test_a_run_authored_past_the_wall_end_is_trimmed_not_extended():
     plan, rw = _wall_and_plan()
     members = frame_wall(plan, rw, openings=[],
                          backing=(_band(start_m=3.0, length_m=9.0),))
-    band = _backing(members)[0]
-    assert abs(band.length_m - (WALL_LEN_M - 3.0)) < 1e-9
+    bands = _backing(members)
+    assert abs(bands[0].p0[0] - 3.0) < 1e-9
+    assert WALL_LEN_M - inch(1.5).meters - 1e-9 <= bands[-1].p1[0] <= WALL_LEN_M
 
 
 def test_an_opening_the_band_runs_through_splits_it():
@@ -90,10 +105,9 @@ def test_an_opening_the_band_runs_through_splits_it():
     opening = WallOpening(center_m=2.0, width_m=1.0, height_m=inch(60).meters,
                           sill_m=inch(24).meters, is_door=False)
     members = frame_wall(plan, rw, openings=[opening], backing=(_band(),))
-    bands = sorted(_backing(members), key=lambda m: m.p0[0])
-    assert len(bands) == 2
-    assert abs(bands[0].p1[0] - 1.5) < 1e-9
-    assert abs(bands[1].p0[0] - 2.5) < 1e-9
+    bands = _backing(members)
+    assert not any(_covers(bands, x) for x in (1.51, 2.0, 2.49))
+    assert _covers(bands, 1.0) and _covers(bands, 3.0)
 
 
 def test_an_opening_the_band_passes_under_does_not_split_it():
@@ -102,7 +116,8 @@ def test_an_opening_the_band_passes_under_does_not_split_it():
     opening = WallOpening(center_m=2.0, width_m=1.0, height_m=inch(36).meters,
                           sill_m=inch(60).meters, is_door=False)
     members = frame_wall(plan, rw, openings=[opening], backing=(_band(),))
-    assert len(_backing(members)) == 1
+    bands = _backing(members)
+    assert any(1.5 < m.p0[0] < 2.5 for m in bands), "blocks continue under the window"
 
 
 def test_a_band_above_the_stud_top_is_dropped_not_flown_through_the_roof():
@@ -135,7 +150,8 @@ def test_a_band_over_a_door_head_still_breaks_at_its_header():
     headers = [m for m in members if m.category == "header"]
     assert headers, "the fixture must actually frame a header for this to mean anything"
     bands = _backing(members)
-    assert len(bands) == 2, "the band must stop each side of the header, not run through it"
+    assert not _covers(bands, 2.0), "the band must stop each side of the header"
+    assert _covers(bands, 1.0) and _covers(bands, 3.0)
 
 
 def test_a_band_clear_of_the_framing_is_not_broken_by_it():
@@ -144,4 +160,4 @@ def test_a_band_clear_of_the_framing_is_not_broken_by_it():
     window = WallOpening(center_m=2.0, width_m=0.9, height_m=inch(24).meters,
                          sill_m=inch(72).meters, is_door=False)
     members = frame_wall(plan, rw, openings=[window], backing=(_band(),))
-    assert len(_backing(members)) == 1
+    assert any(1.55 < m.p0[0] < 2.45 for m in _backing(members))

@@ -209,6 +209,45 @@ def concrete_block(model: ResolvedModel) -> list[str]:
     return lines
 
 
+#: IRC R403.1.3 reinforces footing and stem together (the vertical hooked into the strip)
+#: in these categories only.
+_DOWEL_SDCS = ("D0", "D1", "D2", "E")
+
+
+def footing_dowel_lines(model: ResolvedModel, profile: JurisdictionProfile | None) -> list[str]:
+    """Foundation walls whose verticals stop short of a plain strip, and why (C3-E22)."""
+    from shapely.geometry import LineString, Polygon
+
+    from typehaus.emit.draw.foundation_schedule import slabs_on_grade
+    from typehaus.model.structure import Footing, FoundationWall
+
+    plain = {el.under for el in model.plan.all_elements()
+             if isinstance(el, Footing) and el.reinforcement is None}
+    slabs = slabs_on_grade(model)
+    walls, held_by = [], set()
+    for el in model.plan.all_elements():
+        spec = getattr(el, "reinforcement", None)
+        wall = model.wall(el.tag)
+        if not isinstance(el, FoundationWall) or spec is None or el.tag not in plain \
+                or wall is None:
+            continue
+        if not any(b.role == "vertical" and "start" not in (b.hooks or ()) for b in spec.bars):
+            continue
+        band = LineString(wall.axis).buffer(wall.thickness_m)
+        on = [s.tag for s in slabs if abs(s.z0_m - wall.z0_m) < 0.15
+              and Polygon(s.outline).intersects(band)]
+        if on:
+            walls.append(el.tag)
+            held_by.update(on)
+    if not walls:
+        return []
+    sdc = getattr(profile, "seismic_design_category", None)
+    why = (f"SDC {sdc}: IRC R403.1.3 REQUIRES THEM, NOT MODELLED" if sdc in _DOWEL_SDCS
+           else f"SDC {_value(sdc)}; IRC R403.1.3 asks them at SDC D0-D2 only")
+    return [f"FOOTING DOWELS: none at {_tags(sorted(walls))}; verticals stop at cover over "
+            f"the strip, base restrained by {', '.join(sorted(held_by))}. {why}."]
+
+
 def wood_framing_block(model: ResolvedModel) -> list[str]:
     """Every distinct ``FramingSpec`` on a STRUCTURE layer some element actually uses."""
     library = model.plan.library
@@ -396,7 +435,8 @@ def structural_note_blocks(model: ResolvedModel,
     blocks: list[tuple[str, list[str]]] = [
         ("DESIGN CRITERIA — IRC TABLE R301.2(1)",
          design_criteria_block(model, profile, preferences)),
-        ("FOUNDATIONS AND CONCRETE — ACI 318-19", concrete_block(model)),
+        ("FOUNDATIONS AND CONCRETE — ACI 318-19",
+         concrete_block(model) + footing_dowel_lines(model, profile)),
         ("WOOD FRAMING", wood_framing_block(model)),
         ("ANCHORAGE AND CONNECTIONS", anchorage_block(model, sheets)),
         ("STRUCTURAL SPECIFICATIONS — DIVISIONS 03 / 05",

@@ -39,12 +39,12 @@ This is the requirement. It names no brand.
 | Colour | Dark-colour warranty stated **by orientation**, for uPVC foil and for aluminium powder coat |
 
 **Design pressure.** Computed with `typehaus/wind.py` on catlin's basis: V_ult 115, Exp B,
-RC II, K_zt 1, K_d 0.85. The mean roof height is 25.6 ft, so q_h = 19.27 psf. The C&C zone
+RC II, K_zt 1, K_d 0.85. The mean roof height is 25.5 ft, so q_h = 19.25 psf. The C&C zone
 width is a = 3.6 ft (0.1 × 36').
 
 | Unit area | Zone 4 suction, ASD | Zone 5 suction, ASD | Positive, ASD |
 |---|---|---|---|
-| ≤ 10 sf (every unit up to 30×48) | 14.8 psf | **18.3 psf** | 13.6 psf |
+| ≤ 10 sf (every unit up to 30×48) | 14.8 psf | **18.2 psf** | 13.6 psf |
 | 21 sf (`WT-6348-FIX`) | 14.1 psf | 17.1 psf | 13.2 psf |
 
 Zone 5 governs any unit within 3.6 ft of a corner. Order every unit at one rating, DP ≥ 20.

@@ -102,7 +102,7 @@ VENT_BRANCHES_SECOND = [
             # ** IT TIES INTO THE STACK'S JOG SINCE 2026-09-23, NOT THE CHASE. ** North on
             # x=3'-4" in FS-ATTIC's joist band to the vent riser's 19'-6" jog, east of the
             # chase hole — a run that spanned FO-A-ERV-CHASE had nothing to strap to.
-            path=(pt(ft(9, 8.4), ft(31)), pt(ft(5), ft(26, 7.5)), pt(ft(3, 4), ft(26, 7.5)),
+            path=(pt(ft(9, 8.4), ft(31)), pt(ft(5), ft(26, 8)), pt(ft(3, 4), ft(26, 8)),
                   pt(ft(3, 4), inch(412.9))),
             diameter=inch(2),
             elevations=(ft(9, 3), ft(9, 3.3), ft(9, 3.5), ft(9, 6)),
@@ -305,13 +305,13 @@ VENT_BRANCHES_ATTIC = [
     PipeRun(uid="VK3C96KFRF", tag="PR-A-BAR-VENT", system=PipeSystem.VENT,
             # ** IT RISES CLEAR OF THE WALL, THEN STEPS IN (2026-09-23). ** W-A-BATH-S sits on
             # joist-0-013 (y=17'-4"), so a riser in its cavity came up through that joist's
-            # top flange. It leaves the bay at 16'-11 3/8", behind the unit's back panel and
-            # clear of the wall's finished face, and enters the wall at the horizontal's 3'-4".
-            path=(pt(inch(152.5), inch(203.375)), pt(inch(152.5), inch(203.375)),
+            # top flange. Since 2026-11-01 it tees on the arm at the trap outlet (16'-9 3/4"),
+            # rises behind the unit's back panel and enters the wall at the horizontal's 3'-4".
+            path=(pt(inch(152.5), inch(201.74)), pt(inch(152.5), inch(201.74)),
                   pt(inch(152.5), ft(17, 4)),
                   pt(ft(9, 7.5), ft(17, 4)), pt(ft(9, 7.5), ft(20, 8))),
             diameter=inch(2),
-            elevations=(inch(-4.25), ft(3, 3.875), ft(3, 4), ft(3, 5), ft(3, 6)),
+            elevations=(inch(20.87), ft(3, 3.875), ft(3, 4), ft(3, 5), ft(3, 6)),
             serves=("FX-A-STUDIO-BAR-SINK",)),
 ]
 

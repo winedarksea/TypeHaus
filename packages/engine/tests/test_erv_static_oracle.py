@@ -267,8 +267,9 @@ def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_confl
 
     schedule = {row["tag"]: row for row in run_schedule(catlin_model_ro)}
     exhaust = schedule["DU-B-ERV-R-SAUNA-EXH"]
-    # 44.33 since the 2026-10-31 move to x=1'-7" (note §10.7).
-    assert exhaust["developed_ft"] == pytest.approx(44.33)
+    # 44.33 since the 2026-10-31 move to x=1'-7" (note §10.7); 43.86 since its collar
+    # step became a 30° ramp (2026-11-01).
+    assert exhaust["developed_ft"] == pytest.approx(43.86)
     assert exhaust["elbows"] == 7
 
     routed_stud_passes = [finding for finding in catlin_model_report.findings

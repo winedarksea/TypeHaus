@@ -15,6 +15,13 @@ See [bedroom carpet specification and purchasing checks](bedroom_carpet.md).
 
 ## Assemblies above the 3/4-in framed subfloor
 
+**The subfloor is modelled at its 3/4-in nominal** (2026-11-01, review F3-009). The panel
+bought is 23/32-in (0.71875-in) Performance Category plywood, 1/32 in thinner. Every
+framed deck uses the same 0.75, so wood-to-wood doorways are unaffected. The only joint
+that spends the 1/32 in is the LVP-to-cap seam on the living-room L: built, the LVP lands
+at +0.91560 against the cap's +0.9375, 0.022 in low. That is within the 1/16-in flush
+tolerance, so the model keeps the nominal.
+
 | Tag / location | Build-up above subfloor | Finished height |
 | --- | --- | ---: |
 | `oak-floor-custom`, second hall/linen/suite/study | 3/4-in site-milled oak | +1.5000 |

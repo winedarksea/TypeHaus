@@ -87,10 +87,10 @@ SECOND_ELEMENTS = [
          size="3-1.75x11.875 LVL",
          bearing_refs=("W-S-BD-N1B", "W-S-BA-E1B"),
          assembly="BEAM_LVL", top_elevation=ft(20)),
-    # IUS2.56/11.88 at every hung end of FS-ATTIC in this beam: a level I-joist face-mount
-    # for a 2-1/2" to 2-9/16" flange (not the roof's sloped LSSR). One spec, count derived.
+    # IUS2.37/11.88 at every hung end of FS-ATTIC in this beam: a level I-joist face-mount
+    # for the TJI 230's 2-5/16" flange (not the roof's sloped LSSR). One spec, count derived.
     Connector(uid="TBDEHJ6FCE", tag="CN-S-HGR-BATH-E", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(10), ft(24, 5)), size="IUS2.56/11.88",
+              position=pt(ft(10), ft(24, 5)), size="IUS2.37/11.88",
               connects=("BM-S-BATH-E", "FS-ATTIC")),
 ]
 
@@ -243,7 +243,7 @@ WALLS = [
          published_span=PublishedSpan(
              source="Simpson Strong-Tie, IAPMO UES ER-192 Table 37, also printed in Fastening Systems Technical Guide C-F-2025TECHSUP",
              table="SDPW19600 maximum fastener spacing, double 2x top plate, 10'-0\" wall at 5 psf: 36\" o.c.",
-             member="1.25x11.875 rim; 1.75x11.875 LSL; 1.75x11.875 LVL; 11.875 I-joist; 11.875 TJI 230; 11.875 floor truss; 2x6",
+             member="1.25x11.875 rim; 1.75x11.875 LSL; 1.75x11.875 LVL; 11.875 TJI 230; 11.875 floor truss; 2x6",
              span=inch(36),
              carried_span=ft(10),
              load_psf=5.0,
@@ -377,7 +377,8 @@ OPENINGS = [
     # (x 13'-7 1/2") by 4". Going further east is not free: at 15'-11 1/2" the leaf
     # already lands opposite the shower pan, and one more 16" step opens the door onto it.
     Door(uid="ENHDGC87MN", tag="D-A-STUBATH", host="W-A-BATH-S", type_ref="DT-INT-SWING24",
-         position=from_node("N-A-WW-S", ft(4, 4)), flip_hinge=False, flip_swing=True),
+         position=from_node("N-A-WW-S", ft(5, 8)), flip_hinge=False, flip_swing=True,
+         header_spec="flat 2x4 nonbearing"),
 ]
 
 # ============================== ROOMS =================================================

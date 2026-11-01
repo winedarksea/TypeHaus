@@ -414,6 +414,7 @@ def stair_end_risers(ctx: CheckContext) -> list[Finding]:
     meeting its floor badly, it is a floor nobody drew. The one earned NOT_APPLICABLE is a
     flight with fewer than two walking surfaces, which has no riser to measure.
     """
+    from typehaus.checks.code.mn_residential.stair_arrival import head_threshold
     from typehaus.resolve.walking_surface import deck_owning_opening, room_finish_at
     from typehaus.resolve.walking_surface import surfaces_at as _surfaces_at
 
@@ -446,6 +447,15 @@ def stair_end_risers(ctx: CheckContext) -> list[Finding]:
             if not probes:
                 gap = f"{stair.tag} has no run direction to step off at the {label}"
                 break
+            threshold = head_threshold(ctx.model, stair) if at_top and not opening_tag else None
+            if threshold is not None:
+                # A landing-less head steps onto the door's threshold, not the deck past it.
+                crest, door_tag, basis = threshold
+                if crest is None:
+                    gap = f"{stair.tag} rises to {door_tag}, whose {basis}"
+                    break
+                met[label] = (crest, f"{door_tag}'s threshold ({basis})")
+                continue
             candidates = []
             deck = (deck_owning_opening(ctx.model, storey, opening_tag)
                     if at_top and opening_tag else None)

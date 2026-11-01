@@ -187,6 +187,12 @@ ROWS: tuple[C, ...] = (
       finish_group="element", material_refile="laid", is_pour=True, supports_on_top=True,
       collision=_HARD),
     C("dowel", trade="concrete", ifc_class="IfcReinforcingBar", finish_group="accessory"),
+    # A sill return's drawn plate and gasket (resolve/sill_solids.py): billed and exported
+    # off the construction return, so drawn only.
+    C("sill_plate", trade="framing", ifc_class="IfcPlate", finish_group="element",
+      billed_elsewhere=True),
+    C("sill_gasket", trade="framing", ifc_class=_COVER, finish_group="accessory",
+      billed_elsewhere=True),
     C("thermal_break", trade="concrete", ifc_class="IfcBuildingElementProxy",
       finish_group="accessory"),
     # Guards and handrails. Infill exports as part of its railing (diff/semantic.py has no

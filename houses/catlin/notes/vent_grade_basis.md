@@ -119,6 +119,14 @@ It is the fourth run clearing the house's grade preference. The nine-row table
 above remains the dated September snapshot; the current kitchen set-out and
 fabrication checks are in [kitchen_sink_installation.md](kitchen_sink_installation.md).
 
+**2026-11-01 update (C6-E7):** `PR-A-BAR-VENT` now tees on the bar arm at the trap outlet
+(12'-8 1/2", 16'-9 3/4") and rises there, so its flattest leg is the first horizontal:
+3'-4" - 3'-3 7/8" = 0.125" over 208 - 201.74 = 6.26" (0.522 ft) = **0.240"/ft**, PASS /
+PASS (was 0.300"/ft off the old foot). Three trap-arm risers join the set
+(`plan/mep_vent_tees.py`): `PR-A-STUBATH-WC-VENT`, `PR-S-VANITY-VENT`,
+`PR-S-BATH1-LAV-VENT`, each a riser with short rising jogs, all over 1/8"/ft. The
+graded set is seventeen runs (fourteen before).
+
 ## 4. What this does not claim
 
 Not a venting *design*: whether a vent is required, where it may connect, its size and its

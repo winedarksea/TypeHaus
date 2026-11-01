@@ -205,11 +205,18 @@ def _resolve_stools(plan: PlanModel, model: ResolvedModel,
             return_m=interior_return,
             frame_depth_m=frame_depth,
             derived=derived,
+            sill_rail_m=_meters(window_type, "sill_rail_height"),
+            sash_overlap_m=_meters(window_type, "sash_overlap") or 0.0,
             corner_radii_m=stool_corner_radii(
                 stool.corner_radius.meters if stool and stool.corner_radius else 0.0,
                 inside_radius_m(plan, material_ref)),
         ))
     return findings
+
+
+def _meters(window_type, field: str) -> float | None:
+    value = getattr(window_type, field, None)
+    return value.meters if value is not None else None
 
 
 def _stool_scope(model: ResolvedModel, standard: MillworkStandard | None) -> set[str]:

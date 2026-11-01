@@ -47,3 +47,4 @@ from typehaus.checks.mep.plumbing_supply import (  # noqa: F401 - re-export + re
     hydrant_freeze_depth,
     pipe_material_preference,
 )
+from typehaus.checks.mep.trap_arm import trap_arm_developed  # noqa: F401 - register

@@ -227,7 +227,7 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     # the I-joist ply under the bath is the only sistered stock this house orders.
     rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}
     assert sorted(key for key in rows if key[1] == "sister_joist") == [
-        ("1.75x11.875 LVL", "sister_joist"), ("11.875 I-joist", "sister_joist")]
+        ("1.75x11.875 LVL", "sister_joist"), ("11.875 TJI 230", "sister_joist")]
 
 
 def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_model):

@@ -2,7 +2,7 @@
 
 The cavity above a window drains, it does not vent. The cap's upstand stands on the foam
 face, stripped in; its top crosses the cavity, the head course and both jamb posts, falling
-outward; its face leg runs down the girt plane over the 58114XX back leg, so water in the
+outward; its face leg runs down the girt plane over the head trim's back leg, so water in the
 cavity leaves over the head trim and the 1/2" pocket behind the course stays dry
 (``notes/opening_flashing_spec.md`` §4). A custom brake from 24 ga PVDF coil.
 """
@@ -17,9 +17,15 @@ from typehaus.resolve.flashing_config import FLASHING, FlashingConfig
 CAP_PRODUCT = "OPENING_HEAD_CAP"
 CAP_UPSTAND_IN = 2.0
 CAP_FACE_LEG_IN = 2.5
-#: The face leg laps the 58114XX back leg (2-1/2" tall) by at least this much.
+#: The face leg laps the head trim's back leg by at least this much.
 CAP_HEAD_LAP_IN = 1.0
-HEAD_TRIM_BACK_LEG_IN = 2.5
+
+
+def head_trim_back_leg_in() -> float:
+    """The window head trim's back-leg top above its seat, read off its catalog section."""
+    from typehaus.library.trim.metal_sales import OPENING_HEAD
+
+    return max(z for _, z in OPENING_HEAD.section_in)
 
 
 @dataclass(frozen=True)
@@ -45,7 +51,7 @@ def head_cap(model, wall, opening, frame, cfg: FlashingConfig = FLASHING) -> Hea
         return None
     s0, s1, top = span
     head_trim_top = (wall.base_ref_z_m + opening.sill_m + opening.height_m - seat.head_drop_m
-                     + HEAD_TRIM_BACK_LEG_IN * M_PER_IN)
+                     + head_trim_back_leg_in() * M_PER_IN)
     leg = max(CAP_FACE_LEG_IN * M_PER_IN, top - (head_trim_top - CAP_HEAD_LAP_IN * M_PER_IN))
     fall = (frame.mount - frame.water) * cfg.drainage_slope
     points = ((frame.mount, top - leg), (frame.mount, top), (frame.water, top + fall),

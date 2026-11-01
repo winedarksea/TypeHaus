@@ -190,7 +190,7 @@ def test_structural_solids_account_for_every_resolved_solid(catlin_model) -> Non
     measured = [solid for solid in catlin_model.solids
                 if not solid.derived and solid.tag not in steel_tags
                 and solid.category not in {"fireblock", "window_return", "tub_insulation_return",
-                                           "bug_screen"}]
+                                           "bug_screen", "sill_plate", "sill_gasket"}]
     assert measured, "every solid is derived — the fixture is wrong, not the rule"
     assert sum(int(row["count"]) for row in rows) == len(measured)
     assert {tag for row in rows for tag in row["tags"]} == {
