@@ -87,27 +87,16 @@ def test_ifc_window_sizes_follow_frames_and_keep_voids_at_rough_openings(
             == pytest.approx(opening.height_m)
 
 
-def test_schedule_labels_both_sizes_and_identifies_the_manual_detail(catlin_model_ro, monkeypatch):
-    from contextlib import contextmanager
+def test_schedule_labels_both_sizes_and_identifies_the_manual_detail(catlin_model_ro):
+    from typehaus.emit.draw.schedules.openings import opening_tables
 
-    from typehaus.emit.draw.schedules import openings
-
-    @contextmanager
-    def page(*args):
-        yield None
-
-    tables = []
-    monkeypatch.setattr(openings, "schedule_sheet", page)
-    monkeypatch.setattr(openings, "_add_table",
-                        lambda fig, rows, headers, **kwargs: tables.append((rows, headers)))
-    openings._write_opening_schedule(None, catlin_model_ro, "A-602", "Windows", "window")
-    rows, headers = tables[0]
-    assert headers[4:6] == ("Rough opening", "Modeled frame")
-    assert all(len(row) == len(headers) for row in rows)
-    by_tag = {row[1]: row for row in rows}
-    assert by_tag["WIN-S-BED1"][4:6] == ('27.5" × 48"', '26.125″ × 46.500″')
-    assert by_tag["WIN-S-PLANT3"][4:6] == ('27.5" × 54"', '26.210″ × 52.805″')
-    assert by_tag["WIN-B-SAUNA"][5] == "UNRESOLVED"
+    (table,) = opening_tables(catlin_model_ro, "window")
+    assert table.columns[5:7] == ("RO", "Modeled frame")
+    assert all(len(row) == len(table.columns) for row in table.rows)
+    by_tag = {row[1]: row for row in table.rows}
+    assert by_tag["WIN-S-BED1"][5:7] == ("2'-3 1/2\" × 4'-0\"", "2'-2 1/8\" × 3'-10 1/2\"")
+    assert by_tag["WIN-S-PLANT3"][5:7] == ("2'-3 1/2\" × 4'-6\"", "2'-2 3/16\" × 4'-4 13/16\"")
+    assert by_tag["WIN-B-SAUNA"][6] == "UNRESOLVED"
 
 
 def test_orderable_size_rounds_down_and_never_past_the_envelope():

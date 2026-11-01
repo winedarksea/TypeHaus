@@ -76,25 +76,37 @@ def _storey_elevation(model: ResolvedModel, storey_tag: str) -> float:
 
 
 
-def _derived_detail_title(derived: DerivedDetail) -> str:
+#: What a condition kind is called on a sheet, for a transition whose pattern spans kinds.
+_KIND_WORDS = {"wall_foundation": "at foundation", "storey_stack": "rim",
+               "stack_width_change": "stack shelf", "wall_roof": "at roof",
+               "opening_perimeter": "opening", "assembly_change": "jog",
+               "wall_slab": "at slab", "roof_ridge": "ridge"}
+
+
+def _derived_detail_title(derived: DerivedDetail, model: ResolvedModel | None = None) -> str:
     """A derived detail's sheet title, distinguished by the assemblies it actually cuts.
 
-    ``derived.view.title`` is the *transition's* title, and a transition spawns one detail
-    per distinct bound condition — so catlin printed fourteen consecutive sheets all called
-    "TR-CATLIN-RIM-BAND", seven called "TR-CATLIN-FOUNDATION" and six "TR-CATLIN-EAVE". On
-    the sheet index that is 27 of 98 rows saying nothing, and in the title block it means a
-    sheet pulled off the pile cannot say which condition it is.
-
-    ``derived.key`` is exactly the missing half — it is the bound condition, and it is
-    unique by construction, which is why the detail set is keyed on it. ``condition:A|B``
-    becomes "A / B" appended to the transition's own name.
+    A transition spawns one detail per bound condition, so its own title alone printed
+    fourteen consecutive "TR-CATLIN-RIM-BAND" sheets. ``derived.key`` is the missing half
+    and is unique: ``condition:A|B`` becomes "A / B", each assembly by its display name
+    (``Assembly.label``) where ``model`` is given. A transition whose pattern does not pin
+    the condition kind adds the kind (C7-E6: one FOUNDATION-INT binding printed three
+    identical titles).
     """
     title = derived.view.title or derived.key
-    # ``rpartition``: a key is ``condition:A|B`` but a storey stack qualifies itself first
-    # ("storey_stack:rim:A|B"), and splitting on the leading colon leaves that qualifier
-    # stranded in front of the assemblies. The assembly list is always the last field.
+    # ``rpartition``: a storey stack qualifies itself first ("storey_stack:rim:A|B").
     _, _, bound = derived.key.rpartition(":")
-    pair = " / ".join(part for part in bound.split("|") if part)
+    library = model.plan.library if model is not None else None
+
+    def name(tag: str) -> str:
+        assembly = library.assembly(tag) if library is not None else None
+        return (assembly.label if assembly is not None else None) or tag
+
+    pair = " / ".join(name(part) for part in bound.split("|") if part)
+    kind = derived.condition.kind.value
+    pattern = getattr(derived.transition, "condition_pattern", "") or ""
+    if derived.transition is not None and not pattern.startswith(kind):
+        title = f"{title} ({_KIND_WORDS.get(kind, kind.replace('_', ' '))})"
     return f"{title} · {pair}" if pair else title
 
 

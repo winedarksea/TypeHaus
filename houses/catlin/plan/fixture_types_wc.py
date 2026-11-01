@@ -283,6 +283,10 @@ SHOWER_36_COMBO = SHOWER.model_copy(update={
 # rather than south at the door — has 38 1/2" in front of it instead of 19 1/4". That is the
 # clearance IPC 405.3.1 and UPC 402.5 ask for at a shower entrance; the IRC, which is what
 # actually governs this house, asks for none, so this is comfort bought deliberately.
+# ** SINCE 2026-11-01 THE DOOR IS ONE MODULE EAST ** (RO 15'-3 1/2"..17'-5 3/4", for the roof,
+# storeys/attic_studio.py): it now enters opposite the pan's flat south face, 18 3/8" off the
+# wall face over most of its width and 27 1/2" at its west jamb, and swings out. The pan's
+# own SW-facing entrance keeps its 38 1/2".
 #
 # ** IT STILL PASSES IRC P2708.1, AND THAT IS ARITHMETIC, NOT A PRODUCT CLAIM. ** P2708.1
 # wants 900 sq in of interior area and a 30" minimum finished dimension, i.e. a 30" circle

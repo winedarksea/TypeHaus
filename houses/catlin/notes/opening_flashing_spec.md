@@ -331,15 +331,16 @@ no sheet of its own.
   confirm the sealant and bearing arrangement with the actual door and pan instructions.
   The separate veneer cavity and its base-course weeps must remain able to drain.
   The 2026-10-26 model coordinates the concrete-supported sill seat, blind curb-skin
-  recess, XMN5 sill extension, drained approach and separate brick reveal. Its
+  recess, drained approach and separate brick reveal. Its
   geometric fit checks pass. The concrete support connection, reinforcement development,
   membrane bonds and installed product sections remain design holds; the model is not an
   installed product section.
 - **Catalog coordination update, 2026-10-26:** D-B-PATIO now references its separate
   brick opening and draws the backup-wall flashing band, formed concrete seat recess,
   sill/pan/approach coordination envelopes and composite returns. The seat is 5-1/2 inches
-  above the court; adjacent curb tops remain 7-1/4 inches. A stock XMN5 extends the
-  sill 1-3/16 inches beyond the concrete face. A blind curb-skin recess clears insulation
+  above the court; adjacent curb tops remain 7-1/4 inches. The XMN5 sill extender was
+  dropped on 2026-11-01: with the frame anchored at the sheathing the sill stands 1/2 inch
+  further out and the recess alone clears the seat. A blind curb-skin recess clears insulation
   while preserving the concrete seat. The threshold calculation
   includes the catalog cap outline and an installation allowance. Root connections,
   concrete reinforcement development and installed pan/apron bonds are still UNKNOWN.

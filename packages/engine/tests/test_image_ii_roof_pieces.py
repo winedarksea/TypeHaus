@@ -16,7 +16,6 @@ from typehaus.library.trim._image_ii import (
     IMAGE_II_RAKE_CLEAT,
     IMAGE_II_RESIDENTIAL_RAKE,
     IMAGE_II_RIDGE_COVER,
-    IMAGE_II_VENTED_STEP_RIDGE,
     IMAGE_II_Z_CLOSURE,
     SHEET_24_GA_IN,
     eave_catalog_reach_in,
@@ -26,7 +25,6 @@ from typehaus.library.trim._image_ii import (
 )
 from typehaus.library.trim.metal_sales import RESIDENTIAL_RAKE_FACE_IN
 from typehaus.quantities import M_PER_IN, inch
-from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
 from typehaus.resolve.roof_edge_geometry import (
     abutted_run_keys,
     roof_edge_runs,
@@ -35,8 +33,6 @@ from typehaus.resolve.roof_edge_geometry import (
 )
 from typehaus.resolve.roof_image_ii import (
     RAKE_BELOW_HEAD_M,
-    VENTED_RIDGE_LIFT_M,
-    image_ii_cover_ring,
     wrapped_image_ii_edges,
 )
 from typehaus.resolve.roof_image_ii_eave import LAP_GAP_M, eave_deck_bearing
@@ -141,37 +137,36 @@ def test_house_rake_is_the_stock_leg_and_covers_the_stack(catlin_model_ro) -> No
     assert required_in <= RESIDENTIAL_RAKE_FACE_IN
 
 
-def test_vented_step_ridge_is_the_pim_cover_legs_and_hems() -> None:
-    """PIM p. 20: a 13 in step cover, 6-1/2 in legs at the pitch, 1 in hems, over the vent."""
-    left_hem, left, crown, right, right_hem = IMAGE_II_VENTED_STEP_RIDGE.section_in
-    assert math.dist(left, crown) == pytest.approx(6.5)
-    assert math.dist(crown, right) == pytest.approx(6.5)
-    assert math.dist(left, left_hem) == pytest.approx(1.0)
-    assert math.dist(right, right_hem) == pytest.approx(1.0)
-    # Pivoted to 4:12, the two legs span 13 in across the cover's plan width.
-    ring = image_ii_cover_ring(4.0 / 12.0, IMAGE_II_VENTED_STEP_RIDGE)
-    us = [u / M_PER_IN for u, _ in ring]
-    assert max(us) - min(us) == pytest.approx(2 * 6.5 * math.cos(math.atan(4.0 / 12.0)), abs=0.05)
+def test_garage_vented_peak_is_the_canopy_cover_over_profile_vent(catlin_model_ro) -> None:
+    """RDM p. 41 on both slopes under the 7 in cover: one cover, no step at the canopy joint."""
+    roofs = {r.tag: r for r in catlin_model_ro.roofs}
+    garage, canopy = roofs["RF-GARAGE"], roofs["RF-BW-CANOPY"]
+    cap = next(m for m in garage.members if m.category == "ridge_cap")
+    canopy_cap = next(m for m in canopy.members if m.category == "ridge_cap")
+    assert cap.connection == "ridge:vented-peak" and canopy_cap.connection == "ridge:closed-cap"
+    assert cap.section_ring == canopy_cap.section_ring
+    assert (cap.z0_m, cap.z1_m) == pytest.approx((canopy_cap.z0_m, canopy_cap.z1_m), abs=1e-9)
+    vents = [m for m in garage.members if m.connection == "ridge:profile-vent"]
+    assert len(vents) == 2 and not any(m.connection == "ridge:profile-closure"
+                                       for m in garage.members)
+    ridge = roof_ridge_run(garage)
+    half_cover = max(abs(u) for u, _ in cap.section_ring)
+    for vent in vents:
+        offset = abs(vent.p0[0] - ridge.p0[0])
+        width = max(u for u, _ in vent.section_ring) - min(u for u, _ in vent.section_ring)
+        # Under the cover's leg and clear of the 2 in deck slot.
+        assert offset - width / 2 > 1.0 * M_PER_IN and offset + width / 2 < half_cover
+        # A 1 in rib normal to the slope, over a 3-1/8 in clip's fall across it.
+        assert vent.z1_m - vent.z0_m == pytest.approx(
+            math.hypot(1, 4 / 12) * M_PER_IN + width * 4 / 12)
 
 
-def test_garage_vented_ridge_sits_on_the_vent_and_the_roofing(catlin_model_ro) -> None:
-    roof = next(r for r in catlin_model_ro.roofs if r.tag == "RF-GARAGE")
-    cap = next(m for m in roof.members if m.category == "ridge_cap")
-    assert cap.connection == "ridge:image-ii-vented"
-    ridge = roof_ridge_run(roof)
-    layers = above_structure_layers(catlin_model_ro.plan.library.resolve_assembly(roof.assembly))
-    stack = sum(layer.thickness.meters for layer in layers) * math.hypot(1.0, roof_slope(roof))
-    roof_top = ridge.z_m + stack
-    # The legs lie parallel to the roofing and the hems fold 1 in down from them, so every
-    # point stands above the roofing surface at its own distance from the ridge, and the
-    # crown stands the vent's depth above the ridge.
-    slope = abs(roof_slope(roof))
-    for u, z_rel in cap.section_ring:
-        surface = roof_top - slope * abs(u)
-        assert cap.z0_m + z_rel >= surface - 1e-6
-    crown = [cap.z0_m + z_rel for u, z_rel in cap.section_ring if abs(u) < 1e-9]
-    assert crown and all(
-        abs(z - (roof_top + VENTED_RIDGE_LIFT_M)) <= 2 * SHEET_24_GA_M for z in crown)
+def test_open_ridge_ends_are_closed_and_the_canopy_joint_is_not(catlin_model_ro) -> None:
+    ends = {(r.tag, m.child_key) for r in catlin_model_ro.roofs for m in r.members
+            if m.connection == "ridge:end-closure"}
+    assert ends == {("RF-HOUSE", "ridge-end-closure-lo"), ("RF-HOUSE", "ridge-end-closure-hi"),
+                    ("RF-GARAGE", "ridge-end-closure-hi"),
+                    ("RF-BW-CANOPY", "ridge-end-closure-lo")}
 
 
 def _image_ii_rakes(roof):

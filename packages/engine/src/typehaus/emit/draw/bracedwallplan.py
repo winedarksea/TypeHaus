@@ -20,6 +20,7 @@ from __future__ import annotations
 from typehaus.checks.structural.bracing_eval import LineEvaluation, evaluate_line
 from typehaus.checks.structural.sill_bearing import sill_anchor_notes
 from typehaus.emit.draw._shared import emit_ghost_walls, to_in
+from typehaus.emit.draw.annotation_requests import add_line_label
 from typehaus.emit.draw.lineweights import CUT, CUT_HEAVY
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.draw.structural_dimensions import (
@@ -78,11 +79,13 @@ def build_braced_wall_plan(model, storey: str) -> Scene:
     for line in lines:
         b.add(Polyline(points=(to_in(line.p0), to_in(line.p1)),
                        layer=BWL_LAYER, lineweight=CUT, tag=line.tag))
-        mid = ((line.p0[0] + line.p1[0]) / 2.0, (line.p0[1] + line.p1[1]) / 2.0)
         label = _KIND_LABEL.get(line.kind, line.method)
-        b.add(Text(anchor=to_in(mid),
-                   content=f"{line.tag}  {line.length_ft:.1f}'  {label}",
-                   height_pt=DIM_TEXT_PT, layer=BWL_LAYER, align="center"))
+        # Placed at frame time against the panel labels (C7-E8, F1-008): the line's own
+        # side is the one away from its panels.
+        add_line_label(b, key=f"bwl-{line.tag}",
+                       text=f"{line.tag}  {line.length_ft:.1f}'  {label}",
+                       start=to_in(line.p0), end=to_in(line.p1), layer=BWL_LAYER,
+                       height_pt=DIM_TEXT_PT, priority=60, preferred_side=-1)
         if line.kind != KIND_BRACED:
             continue
         evaluation = evaluate_line(model, line, lines, panels)
@@ -123,13 +126,13 @@ def _draw_panel(b: SceneBuilder, line: BracedWallLine, grade) -> None:
     b.add(Polyline(points=(to_in(p0), to_in(p1)), layer=BWL_LAYER,
                    lineweight=CUT_HEAVY if counts else CUT,
                    tag=f"BWP-{panel.line_tag}-{panel.u0_ft:.0f}"))
-    mid = ((p0[0] + p1[0]) / 2.0, (p0[1] + p1[1]) / 2.0)
     words = (f"{panel.length_in:.0f}\" {panel.method}" if counts
              else f"{panel.length_in:.0f}\" — CONTRIBUTES 0: {grade.reason}")
     if panel.hold_down_refs:
         words += f"  HD {'/'.join(panel.hold_down_refs)}"
-    b.add(Text(anchor=to_in(mid), content=words, height_pt=DIM_TEXT_PT, layer=BWL_LAYER,
-               align="center"))
+    add_line_label(b, key=f"bwp-{panel.line_tag}-{panel.u0_ft:.1f}", text=words,
+                   start=to_in(p0), end=to_in(p1), layer=BWL_LAYER, height_pt=DIM_TEXT_PT,
+                   priority=50, preferred_side=1)
 
 
 def _req_prov(evaluation: LineEvaluation) -> str:

@@ -22,7 +22,8 @@ from typehaus.takeoff.hardwood import _furniture_board_rows, hardwood_takeoff
 from typehaus.takeoff.placeables import placeables_takeoff
 
 BRIDGE_PREFIX = "FURN-A-STUDY-BRIDGE-"
-BOARD_BOUNDS_IN = {"FRONT": (262.875, 105.0, 269.375, 105.75)}
+# 13 3/4" since the door narrowed to a 32" RO and moved west (2026-11-01).
+BOARD_BOUNDS_IN = {"FRONT": (255.625, 105.0, 269.375, 105.75)}
 # W-A-SN's two finish faces, (paint takes no depth): study and loft.
 STUDY_FACE_Y_IN, LOFT_FACE_Y_IN = 105.75, 110.25
 
@@ -75,7 +76,7 @@ def test_house_oak_casing_laps_the_face_frame_on_the_study_face_only(catlin_mode
     for x0, y0, x1, y1 in legs.values():
         assert (y0, y1) == pytest.approx((STUDY_FACE_Y_IN - 0.75, STUDY_FACE_Y_IN))
         assert x1 - x0 == pytest.approx(3.5)
-    body_top = (catlin_model_ro.wall("W-A-SN").base_ref_z_m
+    body_top = (catlin_model_ro.wall("W-A-SN").base_ref_z_m + door.sill_m
                 + door_type.bookcase_door.body_height.meters)
     assert pieces["head"].z0_m == pytest.approx(body_top - lap * M_PER_IN)
 
@@ -187,7 +188,7 @@ def test_the_infill_is_counted_and_its_owner_stock_allowance_is_priced(catlin_mo
 def test_catlin_millwork_cuts_the_infill_from_four_quarter_oak(catlin_model_ro):
     rows = [row for row in hardwood_takeoff(catlin_model_ro) if row["use"] == "casework board"]
     assert {(row["finished_thickness_in"], row["finished_width_in"],
-             row["finished_length_in"]): row["pieces"] for row in rows} == {(0.75, 6.5, 60): 1}
+             row["finished_length_in"]): row["pieces"] for row in rows} == {(0.75, 13.75, 60): 1}
     assert {tag for row in rows for tag in row["tags"]} == {
         board.tag for board in _boards(catlin_model_ro).values()}
     for row in rows:

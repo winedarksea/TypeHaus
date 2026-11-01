@@ -3,6 +3,7 @@
 # Flat 2x6 rafter plates east/west (eave sides) — no knee walls —
 # gable walls north/south frame ToRoof, ridge runs N-S over the center wall line,
 # 6:12, zero overhang (first-class). Roof underside above this floor: 1 1/2" + x/2.
+from ..doorway_transitions import D_A_HALVES_OAK_REDUCER
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -331,14 +332,16 @@ WALLS = [
 OPENINGS = [
     # Derived RO since 2026-10-29: 1 5/16" south of where it stood, so it clears the wall end.
     Door(uid="CAD201AAAA", tag="D-A-HALVES", host="W-A-C1B", type_ref="DT-INT-SWING32",
-         position=from_node("N-A-C1", inch(3.75))),
+         position=from_node("N-A-C1", inch(3.75)), doorway=D_A_HALVES_OAK_REDUCER),
     # The band wall's opening onto the stair head — the source's 2'-7 1/2" gap at
     # x 18'-6"..21'-1 3/4", the only way between the east loft and the stair vestibule.
-    # Purchased 36x80 Murphy bookcase door, west hinged and swinging into the study. Its
-    # authored 38x82 rough opening is centred at x=20'-2 1/2". The product record carries
-    # factory body, casing, passage, mounting and published clearance dimensions separately.
-    Door(uid="CAD203AAAA", tag="D-A-STUDY", host="W-A-SN", type_ref="DT-INT-BOOKCASE36",
-         position=from_node("N-A-C2", inch(7.5)), flip_hinge=True),
+    # Purchased 30x80 (custom width) Murphy bookcase door, west hinged and swinging into the
+    # study. Its 32x82 RO (owner, 2026-11-01) stands as far west as the framing allows:
+    # x 18'-6 1/4"..21'-2 1/4", the west king on the wall's end against W-A-C1B's finish, so
+    # the header ends under W-A-SN's raked plate (the 38" RO's east jack ran into it). The
+    # product record carries body, casing, passage and clearance dimensions separately.
+    Door(uid="CAD203AAAA", tag="D-A-STUDY", host="W-A-SN", type_ref="DT-INT-BOOKCASE30",
+         position=from_node("N-A-C2", inch(6.25)), flip_hinge=True),
     # South gable, FOUR openings west→east: S2, JUL-W, JUL-E, S3 — mirror-symmetric about
     # the ridge (CLAUDE.md's "gables read symmetric" rule).
     #
@@ -970,8 +973,9 @@ STAIR_HANDRAIL = Railing(
     role="handrail", serves_stair="ST-S2A", top_height=inch(36),
     graspable_profile="1.9in round — Type I",
     start_termination="wall_return", end_termination="wall_return",
-    # Keep the grip over the top riser, but angle its return east to the fixed door
-    # jamb. The whole 70 mm flange clears D-A-STUDY's x=261 1/2" rough jamb.
+    # Keep the grip over the top riser, but angle its return east to the fixed wall. Since
+    # D-A-STUDY narrowed (2026-11-01) its east casing ends at x=255 5/8", so the 70 mm
+    # flange at x=263" is 6" clear of it, over stud-000.
     end_return_target=pt(inch(263), inch(105.625)),
     # 38 1/2" plan keeps every raked span under the bracket's 48" and leaves the 38" leg by
     # WIN-S-STUDY3 whole. Bracket 7 is above the lower wall but below the recessed attic

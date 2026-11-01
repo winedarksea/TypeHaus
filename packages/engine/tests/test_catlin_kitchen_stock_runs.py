@@ -15,6 +15,7 @@ from typehaus.takeoff import placeables_takeoff
 
 INCH = 0.0254
 FINISH_TOLERANCE = 0.03125 * INCH
+CAP_IN = 0.75  # RM-M-LIVING's finished floor: the SL-M-DECK cap top over the datum
 DOOR_FRONT_ALLOWANCE_IN = 1.0
 PANTRY_DOOR_WIDTH_IN = 24.0
 PANTRY_RACK_EXTENSION_IN = 18.5
@@ -93,14 +94,18 @@ def test_stock_cold_uppers_preserve_hinge_clearance_and_appliance_joint(
         assert (cabinet.body_z0_m - appliance.body_z1_m) / INCH == pytest.approx(1)
         assert _bounds(cabinet)[2] == pytest.approx(243.26, abs=0.03125)
         assert f"{cabinet.tag}-ST" not in kitchen_objects
-    assert (_bounds(freezer)[1], _bounds(freezer)[3]) == pytest.approx((331.75, 361.75))
+    assert (_bounds(freezer)[1], _bounds(freezer)[3]) == pytest.approx((331.5, 361.5))
     assert (_bounds(refrigerator)[1], _bounds(refrigerator)[3]) == pytest.approx(
-        (361.75, 391.75)
+        (361.5, 391.5)
     )
+    # Frigidaire's 3/16" outer sides and 1" rear (2026-11-01).
     south = _bounds(kitchen_objects["APPL-M-FREEZER"])[1]
     north = _bounds(kitchen_objects["APPL-M-FRIDGE"])[3]
-    assert _bounds(freezer)[1] - south == pytest.approx(2.875)
-    assert north - _bounds(refrigerator)[3] == pytest.approx(2.875)
+    assert south - _bounds(kitchen_objects["FURN-M-KIT-PANTRYC"])[3] == pytest.approx(0.1875)
+    assert 394.625 - north == pytest.approx(0.1875)
+    assert _bounds(kitchen_objects["APPL-M-FRIDGE"])[0] - 219.25 == pytest.approx(1.0)
+    assert _bounds(freezer)[1] - south == pytest.approx(2.9375)
+    assert north - _bounds(refrigerator)[3] == pytest.approx(2.9375)
     # The rail near the frame top needs its own band, independent of lower restraint.
     backing = catlin_plan.by_tag("BK-M-C5-COLD-TOP")
     assert backing.wall_ref == "W-M-C5"
@@ -187,12 +192,12 @@ def test_hung_upper_faces_west_over_an_open_appliance_cave(
     for tag, bottom, top in (("FURN-M-KIT-E-HUNG", 56, 86), ("FURN-M-KIT-E-HUNG-ST", 86, 101)):
         obj = kitchen_objects[tag]
         assert (obj.body_z0_m, obj.body_z1_m) == pytest.approx(
-            ((bottom + 0.9375) * INCH, (top + 0.9375) * INCH))
+            ((bottom + CAP_IN) * INCH, (top + CAP_IN) * INCH))
         assert _bounds(obj) == pytest.approx(_bounds(hung))
         radians = math.radians(obj.rotation_degrees)
         assert (math.sin(radians), -math.cos(radians)) == pytest.approx((-1, 0), abs=1e-9)
     # 20" clear over the 36" counter, and no furniture occupies it.
-    assert (hung.body_z0_m / INCH - 0.9375) - 36 == pytest.approx(20)
+    assert (hung.body_z0_m / INCH - CAP_IN) - 36 == pytest.approx(20)
     x0, y0, x1, y1 = _bounds(hung)
     cave = box(x0 * INCH, y0 * INCH, x1 * INCH, y1 * INCH).buffer(-FINISH_TOLERANCE)
     for tag, obj in kitchen_objects.items():
@@ -200,7 +205,7 @@ def test_hung_upper_faces_west_over_an_open_appliance_cave(
         if (not tag.startswith(("FURN-", "APPL-")) or tag.startswith("FURN-M-KIT-E-HUNG")
                 or tag == "APPL-M-MICROWAVE"):
             continue
-        z0, z1 = obj.body_z0_m / INCH - 0.9375, obj.body_z1_m / INCH - 0.9375
+        z0, z1 = obj.body_z0_m / INCH - CAP_IN, obj.body_z1_m / INCH - CAP_IN
         if z1 <= 36 + 1e-6 or z0 >= 56 - 1e-6:
             continue
         ox0, oy0, ox1, oy1 = _bounds(obj)
@@ -221,8 +226,8 @@ def test_microwave_sits_inside_the_cave(kitchen_objects):
     micro = kitchen_objects["APPL-M-MICROWAVE"]
     ox0, oy0, ox1, oy1 = _bounds(micro)
     assert cave.covers(box(ox0 * INCH, oy0 * INCH, ox1 * INCH, oy1 * INCH))
-    assert micro.body_z0_m / INCH >= 36 + 0.9375
-    assert micro.body_z1_m / INCH <= 56 + 0.9375
+    assert micro.body_z0_m / INCH >= 36 + CAP_IN
+    assert micro.body_z1_m / INCH <= 56 + CAP_IN
 
 
 def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro, kitchen_objects):
@@ -263,7 +268,7 @@ def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro
     for tag, type_ref, y0, y1 in living_run:
         item = kitchen_objects[tag]
         assert item.type_ref == type_ref
-        assert item.body_z0_m == pytest.approx(0.9375 * INCH)
+        assert item.body_z0_m == pytest.approx(CAP_IN * INCH)
         assert (_bounds(item)[1], _bounds(item)[3]) == pytest.approx((y0, y1))
         assert (_bounds(item)[0], _bounds(item)[2]) == pytest.approx(
             (_bounds(s2)[0], _bounds(s2)[2])

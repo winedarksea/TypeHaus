@@ -1,4 +1,4 @@
-"""Base and door casing in the milling schedule — custom-milled stock only.
+"""Base, door casing and flat door jambs in the milling schedule — custom-milled stock only.
 
 A view, like the rest of ``hardwood``: the LF is billed in ``interior_trim`` and these rows
 say so (``also_in_interior_trim``). Bought stock (a poplar 1x4) is the yard's, not the
@@ -83,6 +83,20 @@ def trim_rows(model: ResolvedModel, materials: Mapping[str, object],
             lengths, tags = groups.setdefault(key, ([], []))
             lengths.append(piece.length_m * _M_TO_IN)
             tags.append(item.opening_ref)
+    for opening in model.openings:
+        sizing = opening.sizing
+        ref = getattr(sizing, "jamb_material_ref", None)
+        if ref is None or not milled(ref) or standard is None:
+            continue
+        # Two legs and a head, one piece each, milled to the wall's depth.
+        a = sizing.jamb_allowance_m
+        leg = (sizing.rough_h_m - sizing.floor_finish_m - a) * _M_TO_IN
+        key = ("door jamb", ref, standard.profile,
+               round(standard.thickness_for(ref).inches, 3),
+               round(sizing.jamb_depth_m * _M_TO_IN, 3))
+        lengths, tags = groups.setdefault(key, ([], []))
+        lengths.extend((leg, leg, (sizing.rough_w_m - 2 * a) * _M_TO_IN))
+        tags.append(opening.tag)
     return [_lineal_row(use, material_ref, profile, thickness, width, lengths,
                         stock_in(material_ref), tags, materials, max_board_width_in,
                         narrow.get(key, 0))

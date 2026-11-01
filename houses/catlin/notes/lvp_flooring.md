@@ -31,6 +31,11 @@ Keep floating edges free under trims and fixed cabinetry independently supported
 
 ## Clean cap dimensions versus flooring thickness
 
+**Superseded 2026-11-01 (decision #111).** The cap is now 4 3/16 inches, topping at the
+plywood's own +3/4 inch so every main-floor wall plate stands at one height (decision
+#110); the plank stands 5 mm proud of it on a low reducer. What follows is the record of
+the flush-cap comparison that decision replaced.
+
 Keep the existing flat bearing seat at −13 7/16 inches, 10-inch EPS form,
 3/4-inch framed plywood and **4 3/8-inch concrete cap**. Heights are above the
 main top-of-joist datum. Concrete top remains **+0.9375 inch**; Quincy Oak top is

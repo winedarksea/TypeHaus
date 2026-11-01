@@ -50,8 +50,8 @@ def test_catlin_vents_all_pass_the_code_check(catlin_model_ro) -> None:
     """Note §3: nothing in this house drops or sags on its way to a terminal."""
     findings = _grade(catlin_model_ro)
     # includes powder basin and local kitchen protecting vents, and since 2026-11-01 the
-    # three trap-arm risers in plan/mep_vent_tees.py
-    assert len(findings) == 17
+    # five trap-arm risers in plan/mep_vent_tees.py
+    assert len(findings) == 19
     assert all(f.result is Result.PASS for f in findings)
     assert all(f.code_ref == "MN Plumbing Code (ch. 4714) 905.1" for f in findings)
 
@@ -111,7 +111,8 @@ def test_four_runs_clear_the_house_grade(catlin_model_ro) -> None:
     assert {t for f in plain for t in f.element_tags} == {
         "PR-A-STUBATH-VENT", "PR-A-BAR-VENT", "PR-B-BATH-VENT", "PR-M-KITCH-LOCAL-VENT",
         "PR-A-STUBATH-LAV-REVENT", "PR-M-BATH2-LAV-VENT", "PR-A-STUBATH-SH-VENT",
-        "PR-A-STUBATH-WC-VENT", "PR-S-VANITY-VENT", "PR-S-BATH1-LAV-VENT"}
+        "PR-A-STUBATH-WC-VENT", "PR-S-VANITY-VENT", "PR-S-BATH1-LAV-VENT",
+        "PR-B-BATH-LAV-VENT"}
     assert '2.217"/ft' in _for(findings, "PR-B-BATH-VENT").message
     assert '0.218"/ft' in _for(findings, "PR-A-STUBATH-VENT").message
     # 0.125" over 6.26" since the riser moved onto the trap outlet (2026-11-01)

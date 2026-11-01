@@ -18,12 +18,8 @@ def catalog_installation(*, concrete=False):
         frame_material_ref='composite-door-frame', head_material_ref='pvc-opening-flashing',
         pan_material_ref='impermeable-door-flashing', transition_material_ref='silicone-transition',
         sill_outline_m=tuple(tuple(point) for point in _OUTLINE['polygon_m']),
-        sill_extender_ref='XMN5' if concrete else None,
-        sill_extender_source_url=(
-            'https://resources.enduraproducts.com/hubfs/OMRSv3%20-%20Line%20Drawings/'
-            'Sill%20Extenders/XMN5.pdf' if concrete else None),
-        sill_extender_depth=inch(1.1875) if concrete else inch(0),
-        sill_extender_height=inch(0.6875) if concrete else inch(0),
+        # No sill extender (owner, 2026-11-01): with the frame anchored at the sheathing
+        # the patio sill stands 1/2" further out and the curb recess alone clears the seat.
         independent_landing_flashing=not concrete,
         support_kind='concrete_cantilever' if concrete else 'timber_outriggers',
         support_ref='W-B-S3' if concrete else 'FS-S-EAST',

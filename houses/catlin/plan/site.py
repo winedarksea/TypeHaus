@@ -513,7 +513,8 @@ SITE = Site(
         # line, where the passage daylights into the west yard) east to the stair foot at
         # x 15'-7", where the walk takes over.
         #
-        # 81.6 sf. **It does not touch the driveway/parking cap**: Ord. 23-43 bounds
+        # 33.7 sf, 70 sf with the tiers. **It does not touch the driveway/parking cap**:
+        # Ord. 23-43 bounds
         # `_PAVING_KINDS = ("driveway", "pad")` and this is a walk. Paving stands at 478 sf
         # of the 1,000 sf cap either way — there was room, and this does not spend it.
         #
@@ -524,14 +525,27 @@ SITE = Site(
         # near edge is 10 1/4" off the house and 2'-0" off the garage's stem line at the
         # closest corner); the garage side is the outlet, not a second thing to fall away
         # from. See `_foundation_enclosures` for why that is the rule and not a dodge.
+        #
+        # Split at the tiers' landing edge, x 9'-7" (S2-005): the cast tiers are their own
+        # `stair` row on C-101. Both halves keep the passage's 2" fall over the base; the
+        # tiers' own treads cross-fall east, parallel to both foundations.
         ImperviousSurface(
             label="house-to-garage passage floor",
-            # East edge is the stair foot, where walk leg C begins.
-            outline=(pt(ft(4), ft(36, 10.25)), pt(ft(15, 7), ft(36, 10.25)),
-                     pt(ft(15, 7), ft(42, 10.75)), pt(ft(4), ft(42, 10.75))),
+            # East edge is the tiers' landing edge (breezeway.LANDING_EAST_FT).
+            outline=(pt(ft(4), ft(36, 10.25)), pt(ft(9, 7), ft(36, 10.25)),
+                     pt(ft(9, 7), ft(42, 10.75)), pt(ft(4), ft(42, 10.75))),
             near_elevation=ft(-2, -10),
             far_elevation=ft(-3),  # 2.8% away from the house, draining east to walk C
             kind="walk",
+        ),
+        # SL-BW-TIER1..4, x 9'-7"..15'-7" (the stair foot, where walk leg C begins) — 36.3 sf.
+        ImperviousSurface(
+            label="north entry tiers",
+            outline=(pt(ft(9, 7), ft(36, 10.25)), pt(ft(15, 7), ft(36, 10.25)),
+                     pt(ft(15, 7), ft(42, 10.75)), pt(ft(9, 7), ft(42, 10.75))),
+            near_elevation=ft(-2, -10),
+            far_elevation=ft(-3),
+            kind="stair",
         ),
         # SL-M-HP1PAD, the north-face pad under EQ-M-HP1-OD (params/hp1_north_pad.py),
         # x 24'-7 7/8"..28'-4 3/8" by y 36'-10"..39'-4" — 9.27 sf. Moved 7'-10" west

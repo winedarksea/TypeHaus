@@ -113,30 +113,34 @@ def _resolve_banded_run(model: ResolvedModel, el, storey: str, path, category: s
 
 
 def resolve_downspout(model: ResolvedModel, el, storey: str) -> None:
-    """The leader as a round prism from the gutter outlet down to its discharge.
+    """The leader as a prism from the gutter outlet down to its discharge.
 
-    Faceted exactly like the vent riser (``accessories._resolve_vent``) so the two read as the same
-    kind of round metal on the elevation rather than one being smooth and the other a prism.
+    A round one is faceted exactly like the vent riser (``accessories._resolve_vent``) so the
+    two read as the same kind of round metal on the elevation; a rectangular one is its box.
     """
     z0, z1 = el.bottom_elevation.meters, el.top_elevation.meters
     if z1 - z0 <= 0.0:
         return
-    radius = el.diameter.meters / 2.0
+    hx, hy = el.half_extents_m()
+    (cx, cy) = el.position.xy_m
+    outline = (circle_outline((cx, cy), hx, _PIPE_FACETS) if el.section is None else
+               ((cx - hx, cy - hy), (cx + hx, cy - hy), (cx + hx, cy + hy), (cx - hx, cy + hy)))
     model.solids.append(ResolvedSolid(
         uid=f"{el.uid}-00", tag=el.tag, storey=storey, category="downspout",
-        outline=circle_outline(el.position.xy_m, radius, _PIPE_FACETS),
-        z0_m=z0, z1_m=z1, material=el.material))
-    # The gooseneck: one pipe diameter under the trough floor, outlet to drop, run past
-    # both centres by a radius so it covers the two elbows.
+        outline=outline, z0_m=z0, z1_m=z1, material=el.material))
+    # The gooseneck: one leader depth under the trough floor, outlet to drop, run past both
+    # centres by a half-width so it covers the two elbows.
     if el.outlet is not None and el.outlet.xy_m != el.position.xy_m:
         a, b = el.outlet.xy_m, el.position.xy_m
         length = math.dist(a, b)
         ux, uy = (b[0] - a[0]) / length, (b[1] - a[1]) / length
+        half = abs(uy) * hx + abs(ux) * hy   # across the offset run
+        reach = abs(ux) * hx + abs(uy) * hy  # along it
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-01", tag=f"{el.tag}-OFFSET", storey=storey, category="downspout",
-            outline=rect_between((a[0] - ux * radius, a[1] - uy * radius),
-                                 (b[0] + ux * radius, b[1] + uy * radius), -radius, radius),
-            z0_m=z1 - 2.0 * radius, z1_m=z1, material=el.material))
+            outline=rect_between((a[0] - ux * reach, a[1] - uy * reach),
+                                 (b[0] + ux * reach, b[1] + uy * reach), -half, half),
+            z0_m=z1 - 2.0 * half, z1_m=z1, material=el.material))
 
 
 def _cross_span(half: float, offset: float, band_t: float,

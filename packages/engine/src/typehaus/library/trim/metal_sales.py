@@ -7,7 +7,6 @@ been transcribed; consumers must not treat it as a drawable profile.
 import math
 
 from typehaus.library.trim._image_ii import (  # noqa: F401 -- re-exported
-    COBRA_VENT_IN,
     IMAGE_II_EXTENDED_EAVE,
     IMAGE_II_FLAT_CLEAT,
     IMAGE_II_OFFSET_CLEAT,
@@ -15,7 +14,6 @@ from typehaus.library.trim._image_ii import (  # noqa: F401 -- re-exported
     IMAGE_II_RESIDENTIAL_PEAK,
     IMAGE_II_RESIDENTIAL_RAKE,
     IMAGE_II_RIDGE_COVER,
-    IMAGE_II_VENTED_STEP_RIDGE,
     IMAGE_II_Z_CLOSURE,
     OPEN_HEM_GAP_IN,
 )
@@ -214,6 +212,19 @@ PBR_BOX_GUTTER_5X4 = TrimProfile(
     source="PBR Install Guide 4/2024 pp. 12, 46",
 )
 
+#: The 4 x 3-1/2 rectangular downspout (PBR Install Guide 4/2024 pp. 13-14): 4 in face by
+#: 3-1/2 in, 14.0 sq in of waterway against a 4 in round's 12.57. Elbows 58102XX (95 deg) and
+#: 58106XX (45 deg), strap 58110XX. Metal Sales rolls no round leader.
+DOWNSPOUT_4X3_5_IN = (4.0, 3.5)
+DOWNSPOUT_4X3_5 = TrimProfile(
+    "Downspout 4 x 3-1/2",
+    _pvdf("58094XX") + _pvdf("58097XX", 243.0),
+    (122.0, 243.0),
+    ((0.0, 0.0), (DOWNSPOUT_4X3_5_IN[0], 0.0), (DOWNSPOUT_4X3_5_IN[0], DOWNSPOUT_4X3_5_IN[1]),
+     (0.0, DOWNSPOUT_4X3_5_IN[1])),
+    source="PBR Install Guide 4/2024 pp. 13-14",
+)
+
 #: Gutter products whose whole formed piece is transcribed: product -> (section(slope),
 #: end-cap plate(sheet_in), (left cap, right cap) part numbers as seen from the front).
 FORMED_GUTTERS = {
@@ -236,10 +247,20 @@ SUPPLIES = {
     "tube-sealant": ("Tube sealant", "LF", "PBR Install Guide 4/2024 pp. 16-21"),
     "trim-stitch-screw": ("1/4-14 x 7/8 in stitch screw", "ea", "Metal Sales trim guides"),
     "trim-pop-rivet": ("1/8 in pop rivet", "ea", "Metal Sales trim guides"),
-    "cobra-vented-closure": ("Cobra vented closure", "LF", "Image II PIM p. 20"),
+    "6441899": ("Profile Vent, notched 16 in Image II, 100 ft roll", "LF",
+                "Residential Design Manual 5/2024 pp. 13, 41"),
+    "6540000": ("Image II Profile Vent Clip", "ea", "Residential Design Manual 5/2024 pp. 13, 41"),
+    "8215100": ("#14 x 1-1/2 in metalwood screw", "ea", "Residential Design Manual 5/2024 p. 41"),
+    "ridge-end-closure": ("Ridge cover gable-end closure, field-formed from the cover's coil", "ea",
+                          "no catalog gable piece; RDM 5/2024 p. 39 hip end cap by analogy"),
     "58081XX": ("PBR box gutter end cap, left", "ea", "PBR Install Guide 4/2024 p. 12"),
     "58082XX": ("PBR box gutter end cap, right", "ea", "PBR Install Guide 4/2024 p. 12"),
     "58092XX": ("PBR box gutter strap", "ea", "PBR Install Guide 4/2024 p. 12"),
+    "58102XX": ("4 x 3-1/2 in downspout elbow, 95 deg", "ea", "PBR Install Guide 4/2024 p. 14"),
+    "58106XX": ("4 x 3-1/2 in downspout elbow, 45 deg", "ea", "PBR Install Guide 4/2024 p. 14"),
+    "58110XX": ("4 in downspout strap", "ea", "PBR Install Guide 4/2024 p. 14"),
+    "leader-rect-round-adapter": ("4 x 3-1/2 in rectangular to 4 in round leader adapter", "ea",
+                                  "no Metal Sales part; into the buried 4 in PVC"),
 }
 
 #: The profile-matched closure behind a head or sill trim, by the panel's finish. Over a

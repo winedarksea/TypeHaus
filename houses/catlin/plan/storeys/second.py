@@ -20,6 +20,7 @@
 # - `WIN-S-BATH-W` has no source counterpart — kept for bathroom daylight.
 # - `RM-S-BATH1` is the hall bath; the suite's own bath is RM-S-SUITEBATH. Renamed from
 #   `RM-S-ENSUITE` (2026-07-27, which it never was) across fixtures/mep/views/lighting/electrical.
+from ..doorway_transitions import BEDROOM_ZBAR, D_S_PLANT_REDUCER, TILE_EDGE_FLUSH
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -532,16 +533,16 @@ OPENINGS = [
     # (`structural.door_framing_module`, suppressed in preferences.toml) is accepted.
     # Derived RO since 2026-10-29, cased 2 1/4" both faces (plan/millwork.py).
     Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B1", ft(5, 7.5)), flip_swing=True),       # y 15'-10 1/2"
+         position=from_node("N-S-B1", ft(5, 7.5)), flip_swing=True, doorway=BEDROOM_ZBAR),       # y 15'-10 1/2"
     # BED2's wardrobe is on the west wall, freeing the source gap. The door centre was 24'-4",
     # 3" from the surveyed 24'-1"; the PAX shift above takes it to 24'-6 1/2". Both hinges
     # stay on the north jamb; the latch jamb is now the PAX, so both switches are on the
     # north wall (plan/electrical.py).
     # Asserted in test_openings_land_on_the_source_gaps.
     Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B2", ft(5, 7.5)), flip_swing=True, flip_hinge=False),  # y 24'-6 1/2"
+         position=from_node("N-S-B2", ft(5, 7.5)), flip_swing=True, flip_hinge=False, doorway=BEDROOM_ZBAR),  # y 24'-6 1/2"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B3", ft(0, 8)), flip_swing=True, flip_hinge=True),  # y 28'-11"
+         position=from_node("N-S-B3", ft(0, 8)), flip_swing=True, flip_hinge=True, doorway=BEDROOM_ZBAR),  # y 28'-11"
     # Just an opening, framed the same as a 30" door: no leaf needed for this passthrough.
     RoughOpening(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1",
                  position=from_node("N-S-C1", ft(1, 0.625)), width=ft(2, 6),
@@ -553,7 +554,7 @@ OPENINGS = [
     # Owner, 2026-10-02: southernmost feasible 16" module station, centre y=2'-8".
     # RO y=17"..47" leaves the south junction and king/jack pack clear; centre 16" would not.
     Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT-SWING30-GLAZED",
-         position=from_node("N-S-S1", ft(1, 5))),                      # y 2'-8"
+         position=from_node("N-S-S1", ft(1, 5)), doorway=D_S_PLANT_REDUCER),                      # y 2'-8"
     # Derived RO since 2026-10-29, centred between W-S-CLN and W-S-SBS on the suite's little
     # hall (owner), which leaves both cherry casing legs ~2 7/16".
     Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT-SWING32",
@@ -574,7 +575,7 @@ OPENINGS = [
     # wanted this door's centre on 3.5" + n*16", and 9"-edge/24"-centre missed it, cutting an
     # extra stud. 17" edge / 32" centre is the nearest legal station.
     Door(uid="CSD214AAAA", tag="D-S-SUITEBATH", host="W-S-SBS", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-D3", inch(17)), flip_hinge=True),                     # x 12'-1"
+         position=from_node("N-S-D3", inch(17)), flip_hinge=True, doorway=TILE_EDGE_FLUSH),                     # x 12'-1"
     # 4 5/8" off N-S-V1, not the authored 3": W-S-SN1/SN2 became the 8" staggered sound
     # wall on 2026-08-21, so the node square this wall starts past grew from 2 3/8" to 4",
     # and at 3" the void's first inch was cut inside the corner (the IFC self-diff read the
@@ -590,7 +591,7 @@ OPENINGS = [
     # the east wall instead of dividing the entry. The 36" vanity begins 8.5" beyond
     # the 90-degree leaf tip. Keep a stop to protect the adjacent switch and cabinet.
     Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-V2", ft(1, 1.5)), flip_hinge=False),     # x 8'-3"
+         position=from_node("N-S-V2", ft(1, 1.5)), flip_hinge=False, doorway=TILE_EDGE_FLUSH),     # x 8'-3"
     # Derived RO since 2026-10-29 (owner): a flat 2x4 head keeps it under the wall top and
     # SF-S-HP1, and the door slid 2 1/4" west, clear of ED-S-NCLOSET-SW.
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",

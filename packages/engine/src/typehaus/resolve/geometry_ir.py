@@ -5,7 +5,7 @@ owns entity classes, psets and containment; glTF still owns buffers and material
 owns the shape of a stud.
 
 Both Python emitters read it today. Most three.js builders retain their own geometry;
-authored door products serialize selected parts to preserve hardware and field finishes.
+opening products are served as their parts and extruded as served.
 The broader viewer render path is staying
 (→ ``ui/src/three/wholeHouseGlb.ts`` ``WHOLE_HOUSE_GLB_PRIMARY``),
 so the vocabularies it shares with these — finish keys, layer visibility groups, the opening

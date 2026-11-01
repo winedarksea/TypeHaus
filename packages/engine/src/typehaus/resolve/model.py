@@ -331,6 +331,10 @@ class ResolvedWall:
     # on the storey datum, which is the elevation kept here. ``None`` means the wall was not
     # extended down and its base is ``z0_m`` as before.
     plate_base_z_m: float | None = None
+    # Where the bottom plate stands when it is not the sill datum: the subfloor (or cap) top
+    # of a platform storey, written by ``plate_seat.apply_plate_seats`` (decision #110).
+    # ``None`` means the plate sits on ``base_ref_z_m``.
+    plate_seat_z_m: float | None = None
     # Gable walls under a wrapped Image II eave: ``roof_image_ii_eave.HeadCap`` lines the
     # body's top stays under where its layers run out past the axis into the eave stack.
     head_caps: tuple = ()
@@ -357,10 +361,10 @@ class ResolvedWall:
     def frame_base_z_m(self) -> float:
         """Where the bottom plate sits: plates, studs, cripples, kings, girt courses.
 
-        Equal to :attr:`base_ref_z_m` today; a wall seated on a subfloor will sit above it
-        while its sills stay on the datum.
+        A wall seated on a subfloor (``plate_seat_z_m``) sits above :attr:`base_ref_z_m`
+        while its sills and backing bands stay on the datum.
         """
-        return self.base_ref_z_m
+        return self.base_ref_z_m if self.plate_seat_z_m is None else self.plate_seat_z_m
 
     @property
     def thickness_m(self) -> float:

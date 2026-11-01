@@ -19,7 +19,7 @@ layout, and the three places a reviewer should push back.
 | Exposure category | B | `Site.wind_exposure` |
 | Seismic design category | A | `profile.py` — MN statewide, no amendment |
 | Method | **CS-WSP** everywhere | continuous structural sheathing, above and below every opening |
-| House wall height | 9'-0" (108") | the line's own plates, main and second |
+| House wall height | 8'-11 3/8" (107 3/8") | the line's own plates, main and second: the wall stands on the 3/4" subfloor and its top plate meets the joist soffit at 108 1/8" (decision #110) |
 | Garage wall height | 8'-4" (100") | ditto |
 | Braced wall line spacing | 36'-0" house / 24'-0" garage | line to line, measured |
 | Braced wall lines per direction | 2 | counted |
@@ -107,7 +107,7 @@ penalty is taken. Line up the plant room in gypsum and both lines drop to 7.41'.
 - **Item 8, ×2.00 where horizontal blocking is omitted** (companion: R602.10.4.4 exception
   1). It applies to WSP and CS-WSP, and it would double every number in the table above.
   Whether a panel HAS a horizontal joint is read off each sheathing layer's own
-  `sheet_length` against its wall's plates (108" house, 100" garage) — the same number the
+  `sheet_length` against its wall's plates (107 3/8" house, 100" garage) — the same number the
   sheet order bills — and an unstated length is UNKNOWN, not a pass. **At 8-foot sheets
   FOUR lines fail**, not one: main E1 0.78, main S1 0.77, second S1 0.82 and garage N 0.94
   (a 96" sheet joints the 100" garage wall too). At 4x9 or 4x10 no panel has a joint and
@@ -122,16 +122,21 @@ penalty is taken. Line up the plant room in gypsum and both lines drop to 7.41'.
 
 | Line | Wall, plate to plate | Band above | 8' | 9' | 10' |
 |---|---|---|---|---|---|
-| main E1 / N1 / S1 / W1 | 108.0" | 11-7/8" rim (to 120") | **0.78** / 1.12 / **0.77** / 1.07 | 1.56 / 2.24 / 1.55 / 2.14 | same |
-| second E1 / N1 / S1 / W1 | 108.0" | 11-7/8" attic rim | 1.80 / 1.95 / **0.82** / 1.30 | 3.60 / 3.90 / 1.63 / 2.60 | same |
+| main E1 / N1 / S1 / W1 | 107-3/8" (on the subfloor, #110) | 11-7/8" rim + 3/4" upper subfloor (to 120-3/4") | **0.78** / 1.12 / **0.77** / 1.07 | 1.56 / 2.24 / 1.55 / 2.14 | same |
+| second E1 / N1 / S1 / W1 | 107-3/8" | 11-7/8" attic rim + 3/4" attic subfloor | 1.80 / 1.95 / **0.82** / 1.30 | 3.60 / 3.90 / 1.63 / 2.60 | same |
 | garage N / E / W / S | 100.0" | none (trusses) | **0.94** / 2.81 / 2.53 / 2.39 | 1.87 / 5.61 / 5.07 / 4.78 | same |
 
 - **Not 4x9 on the house.** A "4x9" is sized for spacing, 107-7/8" actual (Menards 7/16
-  OSB), against a 108.0" plate height: zero tolerance. A shimmed plate or a tall stud turns
-  the last 1/8" into a sliver, which is a horizontal joint in the panel, and item 8 returns.
-- **4x10 laps the rim exactly.** 108" + 11-7/8" + 1/8" = 120": one sheet runs from the sole
-  plate to the top of the rim above on both storeys, so the upper band needs no rip. The
-  main floor's lower band (sill + rim, 13-7/16") still takes its own strip.
+  OSB), against a 107-3/8" plate height since the walls stand on the subfloor (decision
+  #110; 108.0" before): 1/2" of tolerance, but the sheet then stops 1/2" up the rim and the
+  band takes a rip anyway, so the 4x9 still buys nothing.
+- **4x10 laps the rim exactly.** The stack is 3/4" seat + 1-1/2" sole + 102-7/8" stud + 3"
+  double top = 108-1/8" to the joist soffit, then 11-7/8" of rim and the 3/4" subfloor above:
+  120-3/4" - 3/4" = 120", so one sheet runs from the sole plate's underside to the top of
+  the upper subfloor on both storeys, where the next wall's plate sits, and the upper band
+  needs no rip. (Before #110: 108" + 11-7/8" + 1/8" gap = 120" to the top of the rim.) The
+  main floor's lower band (sill + rim, 13-7/16", plus the 3/4" subfloor edge) still takes
+  its own strip.
 - **The lap is not code-required.** R602.10.8.2 is *Connections to Roof Framing*; the
   wall-to-floor figures are R602.10.8(1)/(2), and those tie by plate nailing per Table
   R602.3(1). Uplift across the bands rides the CS16 straps, not the sheet. 4x10 is chosen
@@ -145,7 +150,11 @@ penalty is taken. Line up the plant room in gypsum and both lines drop to 7.41'.
 Every panel is a full-height run of wall between openings, measured off the resolved model,
 and no run under Table R602.10.5's minimum is authored: it would contribute nothing and only
 put a zero on the drawing. The minima here are 27"-35", read on the adjacent clear opening
-height (the taller of the two openings a panel stands between, R602.10.5).
+height (the taller of the two openings a panel stands between, R602.10.5). A wall between two
+tabulated heights is read by footnote a's linear interpolation: at 107 3/8" and an 84"
+opening, 35 + (32 − 35) × (107.375 − 96) / 12 = **32.2"**, so main E1's and second W4's 34.2"
+panels and S1's 33.3" pair still count. Taking the larger column (35") instead dropped all
+four to zero the day the walls went onto the subfloor.
 
 Not authored, and each is deliberate: main E1's two 9-1/2" slivers beside the fire niche
 (since 2026-10-16); the two 17" ends

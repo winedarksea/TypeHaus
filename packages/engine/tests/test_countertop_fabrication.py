@@ -44,8 +44,8 @@ def test_the_peninsula_is_eased_where_it_is_seen(catlin_model_ro):
         (376.375, 304.375): ("finished", pytest.approx(1.0)),     # seating edge's east end
         (376.375, 319.375): ("finished", pytest.approx(0.375)),   # the cantilever notch
         (387.375, 319.375): ("seam", pytest.approx(0.0)),         # x=32'-3 3/8" to CT-M-KIT-E
-        (387.375, 344.375): ("finished", pytest.approx(0.0)),     # drawer side, from the seam
-        (302.875, 344.375): ("finished", pytest.approx(1.0)),     # west end
+        (387.375, 345.0): ("finished", pytest.approx(0.0)),       # drawer side, from the seam
+        (302.875, 345.0): ("finished", pytest.approx(1.0)),       # west end
         (302.875, 304.375): ("finished", pytest.approx(1.0)),     # seating edge
     }
     corner = next(item for item in catlin_model_ro.countertops if item.tag == "CT-M-KIT-E")
@@ -69,8 +69,8 @@ def test_a_piece_dxf_reads_back_with_true_arcs(catlin_model_ro, tmp_path):
     (hole,) = doc.modelspace().query('CIRCLE[layer=="HOLE"]')
     assert 2 * hole.dxf.radius == pytest.approx(1.375)
     # The faucet sits at the note's (352, 423.5): 54.625" from the west end, 1.875" off
-    # the back of a 25" top.
-    assert (hole.dxf.center.x, hole.dxf.center.y) == pytest.approx((54.625, 23.125), abs=1e-3)
+    # the back of a 25 5/8" top.
+    assert (hole.dxf.center.x, hole.dxf.center.y) == pytest.approx((54.625, 23.75), abs=1e-3)
     peninsula = next(p for p in fabricated_pieces(catlin_model_ro, "quartz-counter")
                      if p.tag == "CT-M-KIT-PENINSULA")
     doc = ezdxf.readfile(write_piece_dxf(peninsula, tmp_path / "pen.dxf"))

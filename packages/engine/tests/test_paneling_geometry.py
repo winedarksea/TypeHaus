@@ -91,7 +91,11 @@ def test_the_drawn_band_agrees_with_the_billed_area(bands, catlin_model):
             # The band's own frame: wall-local z up from the wall's base reference.
             b0 = band.z0_m - wall.base_ref_z_m
             b1 = band.z1_m - wall.base_ref_z_m
-            dz = min(b1, opening.sill_m + opening.height_m + cw) - max(b0, opening.sill_m)
+            # A floor-level door cuts down to the datum: under it is subfloor, not wall.
+            floor_door = (opening.is_door and opening.sill_m
+                          <= wall.frame_base_z_m - wall.base_ref_z_m + 1e-6)
+            bottom = min(opening.sill_m, 0.0) if floor_door else opening.sill_m
+            dz = min(b1, opening.sill_m + opening.height_m + cw) - max(b0, bottom)
             if dz > 0.0:
                 punched += min(opening.width_m + 2 * cw, band.run_m) * dz
         assert gross - band.area_m2 <= punched + 1e-6, \
@@ -195,7 +199,8 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     for band in bands:
         by_tag.setdefault(band.tag, []).append(band)
     assert set(by_tag) == {"WP-B-SAUNA-SPLASH", "WP-M-STUDY-WAINSCOT", "WP-M-STUDY-FELT",
-                           "WP-M-BATH2-SURR", "WP-S-SUITE-HEADBOARD", "WP-A-STUBATH-SURR",
+                           "WP-M-BATH2-SURR", "WP-M-BATH2-SURR-CAP", "WP-S-SUITE-HEADBOARD",
+                           "WP-A-STUBATH-SURR",
                            "WP-M-MUDROOM-SHIPLAP", "WP-M-KIT-BACKSPLASH",
                            "WP-M-BATH2-TUBDK-APRON", "WP-M-BATH2-TUB-SPLASH"}
     # The range backsplash: an authored sheet thickness wins over the material's stock.
@@ -236,8 +241,9 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
         assert not band.replaces_wall_finish
         # PET felt states no board stock, so it takes the 1/2" default — which is the panel.
         assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6)
-    # RM-M-BATH2's shower surround: the 36" pan's two closed sides, 3'-0" each, floor to
-    # ceiling. The walls are W-M-BA2E2 and W-M-BDN1 and NOT W-M-BA2E — FX-M-BATH2-SH's
+    # RM-M-BATH2's shower surround: the 36" pan's two closed sides, 3'-0" each, the 96"
+    # panel on the pan's 5 1/2" top (+6 1/4"), capped by a TK-105 strip. The walls are
+    # W-M-BA2E2 and W-M-BDN1 and NOT W-M-BA2E — FX-M-BATH2-SH's
     # `wall_ref` names the riser's wall, which stops four feet NORTH of the pan (it runs
     # y 18'-0"..22'-4"), so it is not a wall this band can land on. That is the trap this
     # assertion exists to hold.
@@ -247,12 +253,13 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     runs_in = {"W-M-BA2E2": 36.0, "W-M-BDN1": 36.0}
     for band in closed:
         assert band.run_m == pytest.approx(runs_in[band.wall_tag] * _IN, abs=1e-6)
-        assert band.z0_m == pytest.approx(0.0, abs=1e-6)
-        # Floor to ceiling since 2026-10-12: RM-M-BATH2's 106" clear height.
-        assert band.z1_m == pytest.approx(106 * _IN, abs=1e-6)
+        assert band.z0_m == pytest.approx(6.25 * _IN, abs=1e-6)
+        assert band.z1_m == pytest.approx(102.25 * _IN, abs=1e-6)
         assert band.replaces_wall_finish
         # Authored 1/4": the Swanstone MSMK-9636-1 panel's real thickness, not the default.
         assert band.thickness_m == pytest.approx(0.25 * _IN, abs=1e-6)
+    for cap in by_tag["WP-M-BATH2-SURR-CAP"]:
+        assert (cap.z0_m, cap.z1_m) == pytest.approx((102.25 * _IN, 106.125 * _IN), abs=1e-6)
     # The tub deck's Corian waterfall (2026-10-22): the W apron and the stall face under the
     # north glass (the pan's 3' only), one material. Both knee walls stand INSIDE the room,
     # so each span names its face; the stall face is on the south side. Each runs from the
@@ -425,7 +432,7 @@ def test_a_tub_knee_wall_band_reaches_its_deck_top_and_an_ordinary_wall_does_not
         band = next(b for b in catlin_model.panelings if b.wall_tag == wall_tag)
         assert band.z1_m == pytest.approx(deck, abs=1e-9)
         assert band.z1_m > wall.z1_m, "the clamp should reach past the framing top"
-    # An ordinary wall in the same room keeps its own clamp: floor to the 106" ceiling.
+    # An ordinary wall in the same room keeps its authored band: the 96" panel on its base.
     surround = next(b for b in catlin_model.panelings
                     if b.tag == "WP-M-BATH2-SURR" and b.wall_tag == "W-M-BA2E2")
-    assert surround.z1_m == pytest.approx(106 * _IN, abs=1e-6)
+    assert surround.z1_m == pytest.approx(102.25 * _IN, abs=1e-6)

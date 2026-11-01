@@ -17,11 +17,11 @@ and the basement wall comes out at exactly 8'-0".
 
                     WOOD BAY                          EPS DECK BAY
       +0.94685" 5 mm Quincy Oak LVP (RM-M-MUDROOM and both closets)
-      +0.94685" 5 mm Quincy Oak (including cork)   -- wood bays
-      +15/16" ------------------------------------  cap top, coated   <- finished floor
-      +3/4"   3/4" plywood subfloor
+      +0.94685" 5 mm Quincy Oak (including cork)   -- wood bays, 5 mm reducer to the cap
+      +3/4"   3/4" plywood subfloor ---------------  cap top, coated   <- finished floor
+              (every main-floor wall plate stands here, both bays — decision #110)
       0'-0"   ------------------------------------  STOREY DATUM (top of joists)
-              11 7/8" TJI 230 @ 16" o.c.             4 3/8" cast cover
+              11 7/8" TJI 230 @ 16" o.c.             4 3/16" cast cover
      -11 7/8" ----- joist soffit ------                 +
               1 1/2" PT mudsill                     10" BuildDeck (8" base + 2" top hat)
      -13 3/8"
@@ -29,15 +29,18 @@ and the basement wall comes out at exactly 8'-0".
      -13 7/16" ==== BEARING SEAT - FLAT, NO STEP ====  deck soffit
 
 The wood bay's stack to the seat is 1/16 + 1 1/2 + 11 7/8 + 3/4 = 14 3/16"; the deck's is
-10" + 4 3/8" = 14 3/8". The 3/16" difference is the deck's, and it is spent upward: the cap
-tops at +15/16" where the subfloor tops at +3/4", so the 5 mm plank laid on the plywood
-finishes nominally 0.0094" proud of the coated concrete — flush within any floor-covering
-tolerance, and the joint detail is a movement joint anyway. ``structural.mixed_deck_bearing_seat``
-is what holds all of that: nudge the joist depth, the subfloor, the mudsill, the gasket, the
-form or the cover and the build FAILs instead of quietly stepping.
+10" + 4 3/16" = 14 3/16" (decision #111, amending #61). The two tops meet at +3/4", so every
+main-floor wall plate sits at one height and the cap is screeded off the wood edges; the
+5 mm plank on the plywood finishes 0.19685" proud of the coated concrete and takes a low
+5 mm reducer at the L (it was a flush T over a 3/16" higher cap until 2026-11-01).
+``structural.mixed_deck_bearing_seat`` is what holds all of that: nudge the joist depth, the
+subfloor, the mudsill, the gasket, the form or the cover and the build FAILs instead of
+quietly stepping.
 
-**The datum is the top of joists, not the walking surface.** Walls bear there and the
-subfloor rides above it, so a wood bay's finished floor is +3/4" while the datum is 0'-0".
+**The datum is the top of joists, not the walking surface.** The subfloor rides above it and
+the walls stand on the subfloor (``resolve/plate_seat.py``, decision #110): plate at +3/4",
+studs cut so the double top plate meets the joist soffit over it, so a wood bay's finished
+floor is +3/4" + covering while the datum is 0'-0".
 That is why ``DECK`` carries an explicit ``top_elevation``: a ``datum="structure"`` slab
 pins its TOP to the datum whatever its thickness, so the arithmetic below — which is right
 — never reached the elevation on its own.
@@ -98,20 +101,21 @@ Quantities, from the manufacturers' published tables:
 
 * The section is modular either way: a base panel plus a top hat gives a 10"/12"/14" beam
   and the cast cover over it is specified separately. This deck is the **10" section under a
-  4 3/8" cover**. BuildDeck publishes R as installed per section — R-23 at 8", **R-29 at
+  4 3/16" cover**. BuildDeck publishes R as installed per section — R-23 at 8", **R-29 at
   10"**, R-36 at 12" — so ``eps-deck-form`` carries R-2.9/inch, not the 8" section's 3.125.
 * **The published row, quoted onto ``DECK.published_span`` below.** BuildDeck's
   allowable-live-load table takes the 10" deck with a 4" cap and 2-#5 beam bars to a 20'-0"
   span at 62 psf live load: f'c 4,000 psi, fy 60 ksi, +15 psf additional dead load,
   deflection < L/480, #3 stirrups 4'-0" each end at 5" o.c. and slab reinforcement a 12"x12"
-  grid of #4. This span is 18'-0" at a cap 3/8" deeper than the row.
+  grid of #4. This span is 18'-0" at a cap 3/16" deeper than the row.
   ``structural.slab_published_span`` grades that read and refuses the row if the section,
   the product or the demand drifts away from what it was read at. The manual states its
   tables are for estimation and that the Engineer of Record reviews and approves — which is
   a review of a table read, not a design nobody has done.
 * The LiteDeck WRS manual's consumption table reads 58 SF/cy for the 10" beam at a 4" cover
-  and 52 SF/cy at 4 1/2", so 4 3/8" interpolates to ~53.5 SF/cy = 0.01869 cy/SF. The 414 SF
-  band is 7.74 cy — against 34.26 cy for the whole 9" slab it replaced. (Kept as the
+  and 52 SF/cy at 4 1/2", so 4 3/16" interpolates to 58 - 6 x 0.1875/0.5 = 55.75 SF/cy
+  = 0.01794 cy/SF. The 414 SF band is 7.43 cy (7.74 at the old 4 3/8") — against 34.26 cy for
+  the whole 9" slab it replaced. (Kept as the
   consumption basis: it is a geometric figure for the same 10" section, and BuildDeck
   publishes no equivalent table.)
 * **The shoring design is PE-SEALED, not the installer's.** BuildDeck publishes one by
@@ -167,12 +171,12 @@ _JOIST_OC = inch(16)
 _CEILING_GWB = (Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
                       function=LayerFunction.FINISH),)
 
-# The storey datum is the TOP OF JOISTS, not the walking surface — walls bear there and the
-# subfloor rides above it (``Slab.datum``'s own docstring, and W-S-E2 starting at exactly
-# 10'-0" on FS-SECOND's joist tops). So the finished floor of a wood bay is _SUBFLOOR
-# *above* the datum, and anything claiming to share that plane has to be pinned there
-# explicitly. ``plan/manifest.py`` takes the main storey's elevation from MAIN_DATUM, so
-# the two cannot disagree.
+# The storey datum is the TOP OF JOISTS, not the walking surface — the subfloor rides above
+# it (``Slab.datum``'s own docstring) and the walls stand on the subfloor (decision #110:
+# W-S-E2's datum is exactly 10'-0", its plate 10'-0 3/4"). So the finished floor of a wood
+# bay is _SUBFLOOR *above* the datum, and anything claiming to share that plane has to be
+# pinned there explicitly. ``plan/manifest.py`` takes the main storey's elevation from
+# MAIN_DATUM, so the two cannot disagree.
 MAIN_DATUM = ft(0)
 MAIN_FINISHED_FLOOR = inch(MAIN_DATUM.inches + _SUBFLOOR.inches)
 
@@ -181,12 +185,13 @@ MAIN_FINISHED_FLOOR = inch(MAIN_DATUM.inches + _SUBFLOOR.inches)
 _LVP = inch(LVP_THICKNESS_IN)
 MAIN_FINISHED_FLOOR_LVP = inch(MAIN_FINISHED_FLOOR.inches + _LVP.inches)
 
-# **3/4" solid oak cannot share this flush cap height.** The south bay (x 18'-36', y 0'-13')
+# **3/4" solid oak cannot share this cap height.** The south bay (x 18'-36', y 0'-13')
 # was oak for part of 2026-09-05 and was reverted the same day. Oak tops at +1 1/2" against
-# the cap's +15/16" — a 9/16" REDUCER at the y=13' line, on the one leg that also has to
-# break for differential deflection. It could not be designed out from this side:
-# ``structural.mixed_deck_bearing_seat`` holds cap-top within 1/4" of the subfloor top, so
-# the cap has 1/16" of lift in it, not 9/16". The step was acceptable or it was not, and it
+# the cap's then +15/16" (+3/4" since 2026-11-01) — a 9/16" (now 3/4") REDUCER at the
+# y=13' line, on the one leg that also has to break for differential deflection. It could
+# not be designed out from this side: ``structural.mixed_deck_bearing_seat`` holds cap-top
+# within 1/4" of the subfloor top, so the cap had 1/16" of lift in it, not 9/16". The step
+# was acceptable or it was not, and it
 # was not — so there is no MAIN_FINISHED_FLOOR_OAK here. Oak is still the two studies'
 # floor; it is this bay, against this cap, that does not want it. The mudroom
 # and its closets now share the hall LVP plane. The bedroom carpet and heated
@@ -215,7 +220,8 @@ BEARING_SEAT = inch(-(_SILL_GASKET_COMPRESSED.inches + _MUDSILL.inches
 #
 # The split into stay-in-place form and cast cover is the deck-form section: the form is an
 # 8" base panel plus a 2"/4"/6" top hat, giving a 10", 12" or 14" beam, and the cover over it
-# is specified separately. This is the 10" beam under a 4 3/8" cover.
+# is specified separately. This is the 10" beam under a 4 3/16" cover (4 3/8" until
+# 2026-11-01, when the cap came down 3/16" to the subfloor plane, decision #111).
 #
 # Two constraints this arithmetic does NOT enforce, and a human must:
 #   * The manufacturer's span table governs the cover, not the seat: a thinner cover to hit
@@ -225,12 +231,12 @@ BEARING_SEAT = inch(-(_SILL_GASKET_COMPRESSED.inches + _MUDSILL.inches
 #     match. ``integrity.slab_thickness`` fails the build if they drift apart, and
 #     ``structural.mixed_deck_bearing_seat`` fails it if the seat itself drifts.
 EPS_FORM_DEPTH = inch(10.0)   # BuildDeck 10" section (8" base + 2" top hat)
-EPS_CAP = inch(4.375)         # cast cover over the form
+EPS_CAP = inch(4.1875)        # cast cover over the form; tops flush with the subfloor
 DECK_DEPTH = inch(EPS_FORM_DEPTH.inches + EPS_CAP.inches)
 
-# Where that puts the cap's own top: the seat plus the whole section. +15/16", 3/16" above
-# the plywood beside it, which is what leaves the 5 mm plank 0.0094" proud of the coated cap
-# rather than standing below it. Derived, never a literal — a thicker cover lifts it.
+# Where that puts the cap's own top: the seat plus the whole section. +3/4", the plywood
+# subfloor's own plane, so a wall plate straddling the edge (the C-line, x=18') sits level.
+# Derived, never a literal — a thicker cover lifts it.
 DECK_TOP = inch(BEARING_SEAT.inches + DECK_DEPTH.inches)
 
 # The basement's own two planes, derived here because everything else in the house is
@@ -598,10 +604,10 @@ DECK = Slab(
     published_span=PublishedSpan(
         source="BuildDeck Design, Engineering and Installation Manual (BuildBlock, 2022), allowable live load table, 10\" deck / 4\" cap",
         table="10\" deck, 4\" cap, 2-#5 beam bars, 20'-0\" span, 62 psf live load",
-        member="10\" BuildDeck EPS deck form under a 4 3/8\" cast cap",
+        member="10\" BuildDeck EPS deck form under a 4 3/16\" cast cap",
         span=ft(20),
         load_psf=62.0,
-        condition="f'c 4,000 psi, fy 60 ksi, +15 psf additional dead load, deflection < L/480, #3 stirrups 4'-0\" each end at 5\" o.c., slab reinforcement a 12\"x12\" grid of #4. The manual states its tables are for estimation and that the Engineer of Record reviews and approves. The cap here is 4 3/8\" against the row's 4\" — more section, not less. Form module (detail sheet 5E, BuildDeck 10\"): 24\" nominal panels, one beam rib per panel joint at 24\" o.c., rib 6\" wide at the bars and 4 1/2\" at the neck, 7 1/2\" deep below the cap. The schedule is authored as SL-M-DECK.reinforcement",
+        condition="f'c 4,000 psi, fy 60 ksi, +15 psf additional dead load, deflection < L/480, #3 stirrups 4'-0\" each end at 5\" o.c., slab reinforcement a 12\"x12\" grid of #4. The manual states its tables are for estimation and that the Engineer of Record reviews and approves. The cap here is 4 3/16\" against the row's 4\" — more section, not less. Form module (detail sheet 5E, BuildDeck 10\"): 24\" nominal panels, one beam rib per panel joint at 24\" o.c., rib 6\" wide at the bars and 4 1/2\" at the neck, 7 1/2\" deep below the cap. The schedule is authored as SL-M-DECK.reinforcement",
     ),
 )
 

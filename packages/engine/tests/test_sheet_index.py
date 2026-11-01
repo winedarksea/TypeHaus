@@ -121,9 +121,17 @@ def test_the_permit_set_fits_what_a_plan_checker_will_read(catlin_sheet_index):
     flashing laps are legible; and on ledger S-001 and S-602 continue on S-001.1 and S-602.1
     rather than overprint. What ``haus print`` hands in is smaller: catlin's own
     ``permit_drop`` takes A-502/A-507 out (74), and ARCH D needs no continuations (72).
+
+    76 -> 83 on 2026-11-01, seven sheets: the enlarged plans (C7-E8, owner decision), the
+    baths at 1/2" as A-401.1..6 and the mechanical rooms as A-402. A level's bath group that
+    fits the viewport is one sheet; on ARCH D the baths are four.
+
+    83 -> 85 the same day, two ledger continuations: A-601 continues on A-601.1 (C7-E3's
+    hand, jamb, sill and net-clear columns, hardware sets no longer overprint) and S-602 on
+    S-602.2 (the pass's new connector and transition rows). ARCH D needs neither.
     """
     permit = catlin_sheet_index(sets="permit")
-    assert len(permit) <= 76, [s.number for s in permit]
+    assert len(permit) <= 85, [s.number for s in permit]
     numbers = {s.number for s in permit}
     # What DSI's new-construction checklist asks for.
     assert {"G-001", "C-101", "S-001", "S-100", "S-101.1", "A-101", "A-201",

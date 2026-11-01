@@ -332,7 +332,6 @@ def test_a_finish_brings_the_layer_it_implies(bom):
     assert set(companions) == {
         ("carpet", "carpet-pad"),
         ("catlin-carpet-raised", "catlin-bedroom-carpet-pad"),
-        ("catlin-carpet-raised", "catlin-carpet-underlayment"),
         ("catlin-plant-vinyl-raised", "catlin-plant-sureply"),
         ("catlin-tile-opera-blue", "catlin-ditra-heat"),
         ("catlin-tile-carrara", "catlin-ditra-heat"),

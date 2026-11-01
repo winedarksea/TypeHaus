@@ -60,7 +60,7 @@ export function runProductTests() {
     }),
     door_casings: [{ uid: "CA1", material_ref: "mdf-casing" }],
   } as unknown as Model;
-  const door = { is_door: true, type_ref: "DT-1", authored_product_parts: [
+  const door = { is_door: true, type_ref: "DT-1", opening_parts: [
     { key: "hardware:0", name: "PROD-LG-WKHC252HBA", role: "hinge" }] } as never;
   assert(pieceProduct(withDoor, door, "frame:jamb-left").product === WASHTOWER,
     "A frame board takes the opening type's product");

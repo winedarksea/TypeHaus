@@ -4,7 +4,7 @@ Cased interior swing/pocket doors consume the resolved ``cased_product`` specifi
 and delegate shapes to ``geometry_cased_doors``. Concealed and bookcase products keep
 separate builders; windows and other operations retain the schematic frame recipe here.
 Applied interior casing belongs to millwork, independently of these jamb/leaf finishes.
-The live viewer mirrors the shapes, with per-box parity fixtures for cased products.
+The live viewer extrudes these parts as served (``server/model_json_opening_parts``).
 """
 
 from __future__ import annotations
@@ -65,9 +65,7 @@ _WINDOW_TRIM_KEY = "window_trim"
 # wall actually returns into, not a wide craftsman casing. A wider casing (2 1/2") reads far
 # too heavy in 3D: the casing and the window's own frame are both charcoal on a clad wall,
 # so what a viewer sees is one band of casing + frame face, and at 2 1/2" that band came to
-# 5 1/2" a side. Mirrored in ui/src/three/builders/walls.ts
-# (WINDOW_TRIM_FACE_WIDTH_M) — the viewer draws this geometry itself; change both or the
-# glTF and the live panel disagree.
+# 5 1/2" a side.
 _WINDOW_TRIM_FACE_WIDTH_M = 0.032            # 1 1/4" casing face around the RO
 _WINDOW_TRIM_PROUD_DEPTH_M = 0.019           # 3/4" board proud of the cladding plane
 

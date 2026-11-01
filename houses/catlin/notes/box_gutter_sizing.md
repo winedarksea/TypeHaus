@@ -2,7 +2,8 @@
 
 **House:** catlin
 **Structures:** `TR-RF-GUTTER-E`/`-W` (was the custom 6 in x 5 in box, `params/roof_trim.py`),
-leaders `TR-RF-LEADER-E`/`-W` (4 in round), roof `RF-HOUSE` (6:12, ridge N-S at x=18').
+leaders `TR-RF-LEADER-E`/`-W` (Metal Sales 4 x 3-1/2 rectangular since 2026-11-01; 4 in round
+before), roof `RF-HOUSE` (6:12, ridge N-S at x=18').
 Adopted: Metal Sales PBR box gutter 58077XX/58079XX (5 in bottom, 4 in front waterway, 5 in back),
 20'-3" lengths, with 58081XX/58082XX end caps and 58092XX straps.
 **Written:** 2026-10-27, by hand from the resolved model and the Metal Sales manuals.
@@ -84,14 +85,20 @@ A leader therefore serves 1200 * A / I sf of roof.
 
 | Leader | Area (sq in) | Serves at 10-yr 5-min (sf) | Required area, 10-yr plan / sloped | Required area, 5-min 100-yr sloped | Max spacing, 10-yr plan | Verdict |
 |---|---|---|---|---|---|---|
-| 4 in round (kept, both sides) | 12.57 | 2,001 | 4.34 / 4.85 | 7.64 | 107.6 ft | PASS |
+| **4 x 3-1/2 rect (both sides)** | 14.00 | 2,229 | 4.34 / 4.85 | 7.64 | 119.8 ft | PASS |
+| 4 in round (superseded) | 12.57 | 2,001 | 4.34 / 4.85 | 7.64 | 107.6 ft | PASS |
 | 3 in round (not used) | 7.07 | 1,126 | 4.34 / 4.85 | 7.64 | 60.5 ft | PASS on the design basis; FAIL the 100-yr sloped cross-check (38.4 ft at 100-yr plan) |
 
-- **Why 4 in:** the 3 in clears the design basis, but it fails the 100-yr 5-min sloped cross-check, and
-  the 4 in clears it. The 4 in is kept.
-- **Outlet:** 4 in leader against 5.00 in gutter bottom. PGI-15 requires downspout <= bottom width: **PASS**.
+- **Why 4 x 3-1/2:** Metal Sales rolls no round leader (PBR pp. 13-14 list 4 x 3-1/2 and 4 x 6
+  only), so the 4 in round was misdescribed. 4 x 3-1/2 = 14.00 sq in, more than the 4 in round's
+  12.57. 1200 x 14.00 / 7.536 = 2,229 sf; DS = 1200 x 14.00 / (18.604 x 7.536) = 119.8 ft. The
+  3 in round still fails the 100-yr 5-min sloped cross-check; the 4 x 3-1/2 clears it (7.64 sq in
+  needed). At the 100-yr 5-min intensity its DS is 1200 x 14.00 / (18.604 x 11.88) = 76.0 ft.
+- **Outlet:** the leader's larger side, 4 in, against the 5.00 in gutter bottom. PGI-15 requires
+  downspout <= bottom width: **PASS**. The 3-1/2 in side runs across the floor.
 - **Count:** one leader per side at the north end, L = 37.12 ft, under PGI-18's 50 ft maximum: **PASS**.
-- The existing `TR-RF-LEADER-W/E` (4 in) are kept.
+- `TR-RF-LEADER-W/E` are 58094XX/58097XX with 58110XX straps, and a rect-to-round adapter into
+  the 4 in PVC riser (not a Metal Sales part).
 
 ## 5. Verdict
 
@@ -104,7 +111,7 @@ East and west halves are identical, so the verdict is the same on each side.
   cases. These are cross-checks beyond the design basis. The 5x4 has no margin there, and PGI-15
   records 25-yr intensities, so a reviewer who holds the 25-yr sloped case to the design basis
   will object to the 5x4. The 10-yr 90% upper band also fails on sloped area (section 7).
-- **4 in round leader: PASS** in every case.
+- **4 x 3-1/2 leader: PASS** in every case.
 - **Outlet and count: PASS.**
 - The current 6x5 box passes every row, including the 100-yr 5-min sloped case (5.41 in against 6.00 in).
   It is the fallback if the 25-yr sloped case governs review.
@@ -189,6 +196,8 @@ Acceptance:
 
 - Metal Sales, *General Information*, PGI-15 to PGI-19, Gutter and Downspout Sizing:
   `houses/catlin/notes/sources/metal-sales-general-information.pdf`.
+- Metal Sales, *PBR Panel Install* (4/24), pp. 13-14, 4 x 3-1/2 downspout 58094XX/58097XX, elbows
+  58102XX/58106XX, strap 58110XX.
 - Metal Sales, *PBR Panel Install* (4/24), p. 12, Box Gutter 58077XX/58079XX and End Cap 58081XX/58082XX,
   strap 58092XX; p. 46 box gutter detail; p. 63 sculptured gutter hanger spacing:
   `houses/catlin/notes/sources/metal-sales-pbr-install-2024.pdf`.

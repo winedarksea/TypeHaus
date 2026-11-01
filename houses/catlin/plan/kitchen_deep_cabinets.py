@@ -10,8 +10,8 @@ from typehaus.library.placeables.sektion_parts import kitchen_layout, sektion_pa
 
 
 COLD_UPPER_SCRIBE = FurnitureType(
-    tag="FT-KIT-COLD-SCRIBE-20", name='Matte-white cold-upper end scribe, 2 7/8 x 3/4 x 20 in.',
-    footprint=(inch(2.875), inch(0.75)), height=inch(20), plan_symbol="sektion-cover-panel",
+    tag="FT-KIT-COLD-SCRIBE-20", name='Matte-white cold-upper end scribe, 3 1/8 x 3/4 x 20 in.',
+    footprint=(inch(3.125), inch(0.75)), height=inch(20), plan_symbol="sektion-cover-panel",
     source=("Site-cut matching white 3/4-inch strip on cleats (thicker than FÖRBÄTTRA, so "
             "shop stock, not an IKEA part); fitting in the cold-upper labour."),
 )

@@ -32,8 +32,7 @@ CLASH_STATIONS = (2.0, 9.3, 17.4, 26.0, 33.5)
 #: Overlap below this is a shared face, not a clash (sq in).
 CLASH_AREA_IN2 = 1e-4
 #: Foam closures fill the panel ribs; they live inside the panel's envelope by design.
-_FOAM = {"6460800", "6411499", "corrugated-closure", "corrugated-outside-closure",
-         "cobra-vented-closure"}
+_FOAM = {"6460800", "6411499", "corrugated-closure", "corrugated-outside-closure"}
 #: The penetrations of the gutter that are open items, not modelled joints: the provisional
 #: hanger's sealed screw through the back (plans: work package 1, supports).
 KNOWN_OPEN_ROUTES = {"hanger screw"}

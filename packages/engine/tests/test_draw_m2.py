@@ -62,7 +62,7 @@ def test_floorplan_marks_windows_by_schedule_mark_and_carries_door_handing(scene
     marks = opening_type_marks(model)
     window = next(op for op in model.openings if op.tag == "WIN-101")
     assert "WIN-101" not in labels
-    assert marks[window.type_ref] in labels
+    assert marks[window.tag] in labels
 
 
 def test_the_architectural_plan_carries_no_raw_element_tag(scene: Scene):

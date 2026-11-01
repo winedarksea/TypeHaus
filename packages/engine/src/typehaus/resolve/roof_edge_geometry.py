@@ -294,6 +294,27 @@ def _roof_continues_at(roof: ResolvedRoof, other: ResolvedRoof,
     return abs(roof_height_at(other, point) - roof_height_at(roof, point)) <= CLOSURE_TOLERANCE_M
 
 
+def seam_register_roofs(model: ResolvedModel, roof: ResolvedRoof) -> tuple[ResolvedRoof, ...]:
+    """``roof`` and every coplanar roof reached across an abutted rake: one panel register.
+
+    Panels run eave to ridge, so a plane continued along the ridge (a rake that is a seam,
+    not an edge) carries the same seam lines straight across the joint.
+    """
+    group, queue = {roof.tag: roof}, [roof]
+    while queue:
+        current = queue.pop()
+        for run in roof_edge_runs(current):
+            if run.is_eave or run.key not in abutted_run_keys(model, current):
+                continue
+            mid = ((run.p0[0] + run.p1[0]) / 2, (run.p0[1] + run.p1[1]) / 2)
+            for other in model.roofs:
+                if (other.tag not in group and other.ridge_direction == current.ridge_direction
+                        and _roof_continues_at(current, other, mid)):
+                    group[other.tag] = other
+                    queue.append(other)
+    return tuple(sorted(group.values(), key=lambda r: r.tag))
+
+
 class RidgeRun(NamedTuple):
     """The level ridge line of a gable roof, in plan, at the ridge elevation.
 

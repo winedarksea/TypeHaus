@@ -358,24 +358,29 @@ OPENINGS = [
     #
     # ** THE STUD MODULE PICKED THE STATION, NOT THE EYE. ** W-A-BATH-S lays out from its own
     # start node, so its legal door centres are N-A-WW-S + n x 16" — absolute x ≡ 3 1/2"
-    # mod 16". The centre is 14'-11 1/2" and the rough opening is
-    # 13'-11 1/2"..15'-11 1/2". ** `from_node`'s offset is to the NEAR JAMB, not the centre
-    # ** (`resolve/pipeline.py`), so 4'-4" here is 13'-11 1/2" absolute and the centre falls
+    # mod 16". The centre was 14'-11 1/2" and the rough opening 13'-11 1/2"..15'-11 1/2"
+    # (one module west of today's). ** `from_node`'s offset is to the NEAR JAMB, not the
+    # centre ** (`resolve/pipeline.py`), so 4'-4" was 13'-11 1/2" absolute and the centre fell
     # 12" further east; authoring 5'-4" to "put the centre on the module" moves the centre
     # OFF it and re-arms the FAIL. A first pass put the RO at 14'-4"..16'-4" on an eyeballed
     # 8" clear of the unit; `structural.door_framing_module` reported it 4 1/2" off and
     # cutting two studs where one would do, and the module won — the kitchenette slid 4 1/2"
     # west instead (plan/placeables.py), which is the cheaper of the two moves.
     #
-    # ** THE LOW JAMB IS THE BINDING CONSTRAINT, AS BEFORE. ** The 6:12 underside is
-    # `1 1/2" + x/2`, so a 6'-8" head plus its header needs 2 x (80 + 2) = 13'-8" of x at the
-    # LOW (west) jamb, i.e. x >= 13'-3 1/4". The west jamb is 13'-11 1/2" — 8 1/4" clear —
-    # with the hinge on the higher east jamb where the header has the most margin.
+    # ** ONE MODULE EAST, WITH A FLAT HEAD (owner, 2026-11-01). ** The heel-anchored roof
+    # (decision #109) put the true rafter underside at `x/2` over the 3/4" subfloor (it was
+    # read as `1 1/2" + x/2`), and at the old west jamb (13'-11 1/2") the 6'-10 3/8" RO head
+    # stood 2" ABOVE the lower raked plate's underside — the 2-2x8 header had always crossed
+    # the rake there, unseen. Near jamb now 5'-8" off N-A-WW-S: RO 15'-3 1/2"..17'-5 3/4",
+    # still on the module. At the west header end (x=15'-2") the lower raked plate's underside
+    # is 296 1/8 + (182 - 118 1/4)/2 = 328.0" against the flat 2x4's top at 322 3/8 + 1 1/2 =
+    # 323 7/8": 4 1/8" clear, and the RO head 5 5/8". R602.7.4: W-A-BATH-S is nonbearing and
+    # the plate above the header is under 24" off at both ends (4 1/8".. 19"), so no cripples.
     #
-    # ** THE ARC CLEARS THE UNIT BY 4". ** Hinged east and swinging out, the leaf sweeps
-    # x 13'-11 1/2"..15'-11 1/2", reaching y 15'-1 5/8" — clear of the kitchenette's east end
-    # (x 13'-7 1/2") by 4". Going further east is not free: at 15'-11 1/2" the leaf
-    # already lands opposite the shower pan, and one more 16" step opens the door onto it.
+    # ** THE ARC AND THE SHOWER. ** Hinged east and swinging out, the leaf sweeps
+    # x 15'-4 3/4"..17'-4 3/4" into the studio, 1'-9" clear of the kitchenette's east end.
+    # Inside, the door now faces the pan's flat south side, 18 3/8" off the wall face; the
+    # pan's own SW-facing entrance keeps its 38 1/2" (plan/fixture_types_wc.py).
     Door(uid="ENHDGC87MN", tag="D-A-STUBATH", host="W-A-BATH-S", type_ref="DT-INT-SWING24",
          position=from_node("N-A-WW-S", ft(5, 8)), flip_hinge=False, flip_swing=True,
          header_spec="flat 2x4 nonbearing"),

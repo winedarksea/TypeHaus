@@ -297,11 +297,14 @@ def render_views(
                 _SheetId("SECT", "Building section", "section · house center"),
                 dpi=page_dpi, paper=paper, scale=scale, long_edge=long_edge))
     elif view == "elevation":
-        from typehaus.emit.draw.elevation import build_elevation
+        from typehaus.emit.draw.elevation import FACINGS, build_elevation, framed_elevations
 
-        for facing in ("north", "south", "east", "west"):
+        # On paper, the four share the set's one scale (C7-E5) unless --scale forces one.
+        shared = (framed_elevations(model, paper) if paper is not None and scale is None
+                  else {facing: build_elevation(model, facing) for facing in FACINGS})
+        for facing in FACINGS:
             written.append(_write_view(
-                model, build_elevation(model, facing), out_dir / f"elev_{facing}{sfx}.{fmt}",
+                model, shared[facing], out_dir / f"elev_{facing}{sfx}.{fmt}",
                 _SheetId("ELEV", f"{facing.title()} exterior elevation",
                          f"elevation · {facing}"),
                 dpi=page_dpi, paper=paper, scale=scale, long_edge=long_edge))

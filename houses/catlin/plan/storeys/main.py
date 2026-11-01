@@ -10,6 +10,7 @@
 # 27" the bearing cap (the same 30.5" less a jack each side = 27.5", R602.7.5). The 3"
 # between the two caps IS the pair of jacks.
 from library.doors import DT_INT_ACCESS24, DT_INT_CLOSET24
+from ..doorway_transitions import BEDROOM_ZBAR, D_M_BED2_SADDLE, D_M_STUDY_REDUCER
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -96,21 +97,23 @@ DOOR_TYPES = [
     DoorType(tag="DT-INT-SWING30-GLAZED-TRIMLESS", width=ft(2, 6), height=ft(6, 8),
              glazed=True, tempered=True, trimless=True, leaf_set="pull", core="solid",
              source="Site-built kerfed hardwood flat jamb to the wall's full depth, matching D-M-BED2 with tear-away L-bead both faces and no applied casing; 1 3/4in wood stile-and-rail slab with tempered glass, pull-set flush at the living-room face, 3 ball-bearing butts, kerf-in perimeter seal. Retain an open undercut above the finished floor for the study's 5 cfm relief; no sweep, automatic door bottom or saddle. Jamb before drywall, slab after paint; no STC claimed."),
-    # Nominal 36 x 80 leaf; the maker's 38 x 82 rough opening is published, not derived,
-    # and measured from the finished floor (adopted 2026-11-01; Murphy to confirm).
-    DoorType(tag="DT-INT-BOOKCASE36", width=inch(36), height=inch(80), core="solid",
-             rough_opening=OpeningSize(width=inch(38), height=inch(82), datum="finished_floor"),
+    # Nominal 30 x 80 leaf, a custom width (owner, 2026-11-01): the 36's RO put W-A-SN's
+    # east jack and header into the raked plate. Murphy sells by the inch of RO; 32 x 82 is
+    # the widest that clears with the west king on the wall's end. The maker's RO is
+    # published, not derived, and measured from the finished floor (Murphy to confirm).
+    DoorType(tag="DT-INT-BOOKCASE30", width=inch(30), height=inch(80), core="solid",
+             rough_opening=OpeningSize(width=inch(32), height=inch(82), datum="finished_floor"),
              function="passage",
-             header_spec="flat 2x4 nonbearing", product_ref="PROD-MURPHY-BOOKCASE-36",
+             header_spec="flat 2x4 nonbearing", product_ref="PROD-MURPHY-BOOKCASE-30",
              bookcase_door=BookcaseDoorSpec(
-                 body_width=inch(34.75), body_height=inch(78.5), body_depth=inch(8.25),
-                 casing_overall_width=inch(42.5), clear_passage_width=inch(30.25),
+                 body_width=inch(28.75), body_height=inch(78.5), body_depth=inch(8.25),
+                 casing_overall_width=inch(36.5), clear_passage_width=inch(24.25),
                  hinge_side_clearance=inch(1.5), casing_lap=inch(0.5),
                  mounting_face="negative_normal",
                  material_ref="oak-shelf-4q",
-                 source="Murphy Door measurement charts and instruction manuals, read 2026-09-19; published installation clearance, not a calculated pivot sweep. Pre-Hung Flush Mount Installation, read 2026-10-14: 4 9/16in jamb tight to the drywall, face frame flush with the shelf-side wall, 3 3/4in protrusion on the swing side, in-swing casing applied with a 1/2in lap on the face frame",
+                 source="Custom width; scaled from the 36 in. chart (-6 in. on body, casing envelope and passage); confirm with Murphy. 36 in. chart: Murphy Door measurement charts and instruction manuals, read 2026-09-19; published installation clearance, not a calculated pivot sweep. Pre-Hung Flush Mount Installation, read 2026-10-14: 4 9/16in jamb tight to the drywall, face frame flush with the shelf-side wall, 3 3/4in protrusion on the swing side, in-swing casing applied with a 1/2in lap on the face frame",
              ),
-             source="Murphy Door 36 x 80 nominal flush-mount bookcase door; 38 x 82 rough opening. West-hinged in-swing at D-A-STUDY. Threshold anchorage, jamb fastening and final connection design require verification against the delivered unit and supporting floor blocking; exact pivot-axis sweep remains deferred."),
+             source="Murphy Door 30 x 80 nominal flush-mount bookcase door, custom width; 32 x 82 rough opening. West-hinged in-swing at D-A-STUDY. Threshold anchorage, jamb fastening and final connection design require verification against the delivered unit and supporting floor blocking; exact pivot-axis sweep remains deferred."),
     # 2'-0" x 3'-6" — the attic pocket's ACCESS door, and the house's only
     # door that is not 6'-8" tall. D-A-POCKET hosts on W-A-STU-N, which runs in x under the
     # west rake at y=22'-4"; with the attic at 6:12 the roof underside there is
@@ -1174,7 +1177,7 @@ OPENINGS = [
     # the bed and nightstands moved 0.6" east and ED-M-BED-RC9 went behind the nightstand
     # (deleted the same day; ED-M-BED-RC8 there is the GFCI now).
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING32",
-         position=from_node("N-M-W3", inch(24.635)), flip_swing=True, flip_hinge=True),
+         position=from_node("N-M-W3", inch(24.635)), flip_swing=True, flip_hinge=True, doorway=BEDROOM_ZBAR),
     # Pocket, not the 56" bifold it was. The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
     # register or a wall-mounted device anywhere in the cavity, and nothing hangs on that
@@ -1221,7 +1224,7 @@ OPENINGS = [
     # 2026-08-29 `exterior_only` fix there could not be one anyway.
     # Derived RO since 2026-10-29; ED-M-STUDY-SPOT moved 1" north to clear it.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED-TRIMLESS",
-         position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True),
+         position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True, doorway=D_M_STUDY_REDUCER),
     # ** 6'-0" OFF N-M-D3 SINCE 2026-09-15. ** `from_node` resolves to the NEAR JAMB, so
     # the RO is x=170"..202". The king is centred between this opening and D-M-BATH2:
     # its east edge is x=153.3175", and the matching 16" east nightstand ends 0.6825"
@@ -1245,7 +1248,7 @@ OPENINGS = [
     # 9'-5". The open leaf parks along the desk's north end (12 3/4" clear), and both switch
     # gangs moved to the north (latch) jamb.
     Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT-SWING32-TRIMLESS-PUSH",
-         position=from_node("N-M-S1", ft(6, 9)), flip_hinge=True),
+         position=from_node("N-M-S1", ft(6, 9)), flip_hinge=True, doorway=D_M_BED2_SADDLE),
     # O-M-HALL (the old cased pass-through) retired 2026-07-28 with its host wall W-M-C4:
     # the full 4'-2" is open now. Sills raised 2'-0" -> 3'-0" (2026-07-30 facade pass) so
     # every main/second head on the west face lands on one shared 6'-0" line (27" units at
@@ -2220,15 +2223,27 @@ PANELING = [
     # so GoBoard was declined (2026-10-22): trial-bond the tape and adhesive on the cured
     # membrane, or prime it first per Swanstone's surface-prep page.
     #
-    # Floor to ceiling since 2026-10-12: `inch(106)` is RM-M-BATH2's clear height
-    # (clear_height_m 2.6924). 2 x 3'-0" x 8'-10" = 53.0 SF of Swanstone Modern Subway, White (.010).
-    # MSMK-9636-1 is a 1/4" glue-up panel (plan/products_showering.py), not the 1/2" default.
+    # The 96" MSMK-9636-1 stands on the SS-3636's 5 1/2" top (the pan bears on the 3/4"
+    # subfloor: +6 1/4" over datum) to +102 1/4" (owner 2026-11-01, review I2-002; it ran to
+    # the ceiling, 10" longer than the panel). 2 x 3'-0" x 8'-0" = 48.0 SF. MSMK-9636-1 is a
+    # 1/4" glue-up panel (plan/products_showering.py), not the 1/2" default.
+    # Above it: a TK-105 strip caps the top edge (-CAP), then the backer board, painted, to
+    # the ceiling at +107 1/2" (1 3/8"; the room paints it, an F reveal stops it on the cap).
+    # That board is the wet-rated glass-mat backer the membrane is on (notes/bath2_shower.md
+    # §6); the wall layer still says gwb-mr.
     #
     # Known limitation: `replaces_wall_finish` only nets out in `wood_surfaces`, so
-    # `envelope_layers` still bills about 53 SF of latex paint behind the panel (~$80-155).
+    # `envelope_layers` still bills about 50 SF of latex paint behind the panel and cap.
     # The gypsum genuinely stays and is genuinely bought; only the paint on it is wrong.
     WallPaneling(uid="AWV1DA0P86", tag="WP-M-BATH2-SURR", room="RM-M-BATH2",
-                 material_ref="solid-surface-panel", height=inch(106),
+                 material_ref="solid-surface-panel", offset=inch(6.25), height=inch(96),
+                 replaces_wall_finish=True, thickness=inch(0.25),
+                 spans=(PanelingSpan(wall_ref="W-M-BA2E2", start=ft(1, 9.75),
+                                     length=ft(3)),
+                        PanelingSpan(wall_ref="W-M-BDN1", start=ft(4, 10.615),
+                                     length=ft(3)))),
+    WallPaneling(uid="21TRJ4VFMR", tag="WP-M-BATH2-SURR-CAP", room="RM-M-BATH2",
+                 material_ref="swanstone-trim-strip", offset=inch(102.25), height=inch(3.875),
                  replaces_wall_finish=True, thickness=inch(0.25),
                  spans=(PanelingSpan(wall_ref="W-M-BA2E2", start=ft(1, 9.75),
                                      length=ft(3)),

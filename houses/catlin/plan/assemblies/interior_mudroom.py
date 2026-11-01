@@ -21,13 +21,14 @@ from typehaus import (
 # Gypsum starts at the 7' cap's underside.
 _OPEN_BAY_HEIGHT_IN = 84
 _CEILING_HEIGHT_IN = 108
-# Courses are measured from the sole plate's TOP (1 1/2"); editable plans forbid arithmetic.
+# Courses are measured from the sole plate's TOP, 2 1/4" over the datum since the wall stands
+# on the 3/4" subfloor (decision #110); editable plans forbid arithmetic.
 # Bench support course, 15"-16 1/2": the bench board bears on it, seat top at 18".
-_BENCH_COURSE_ABOVE_SOLE_PLATE_IN = 13.5
+_BENCH_COURSE_ABOVE_SOLE_PLATE_IN = 12.75
 # 6' shelf, 70 1/2"-72": top at 72", a 12" clear cubby under the cap.
-_SHELF_COURSE_ABOVE_SOLE_PLATE_IN = 69
+_SHELF_COURSE_ABOVE_SOLE_PLATE_IN = 68.25
 # 7' cap, 84"-85 1/2": underside at 84", where the gypsum starts.
-_CAP_COURSE_ABOVE_SOLE_PLATE_IN = 82.5
+_CAP_COURSE_ABOVE_SOLE_PLATE_IN = 81.75
 _UPPER_CLOSURE_EXTENT = LayerExtent(
     bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(_OPEN_BAY_HEIGHT_IN)),
     # Platform resolution lifts the skin above the ceiling into the joist bay.

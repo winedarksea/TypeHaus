@@ -31,25 +31,25 @@ MATERIALS_FLOORING = [
                     "use only; fasten per Patriot instructions over the existing subfloor."),
     Material(tag="catlin-carpet-raised", name="Sweet Spot I Romano bedroom carpet (provisional)",
              hatch="batt", color="#e5dccb", finish="carpet-pile",
-             finish_thickness_in=0.75,
-             floor_companion_refs=("catlin-bedroom-carpet-pad", "catlin-carpet-underlayment"),
+             finish_thickness_in=1.0,
+             floor_companion_refs=("catlin-bedroom-carpet-pad",),
              product_ref="PROD-STAINMASTER-SWEET-SPOT-I-ROMANO",
              source='Provisional owner selection 2026-10-23: textured nylon, warm ivory/cream; '
                     'light warm greige alternative. Color is a schematic approximation. '
-                    'The retained 3/4-inch modeled depth is a coordination allowance, '
-                    'not the selected installed stack: its former 1/4-inch plywood + '
-                    '1/4-inch pad + 1/4-inch carpet assumption is superseded. '
-                    'Measure carpet including backing, cushion and compressed doorway '
-                    'edges before resolving plywood, transitions, door clearances and '
-                    'affected elevations together; notes/bedroom_carpet.md.'),
+                    'Owner 2026-11-01: no plywood. 1 inch over the subfloor = 0.56-inch '
+                    'published pile + 1/16-inch backing allowance + 3/8-inch cushion, '
+                    '1/4 inch over the 3/4-inch oak and tile it meets. Each bedroom doorway '
+                    'tucks the carpet into a Z-bar flush with the hard floor '
+                    '(plan/doorway_transitions.py). Measure the backing on the sample: '
+                    'the Z-bar answer holds to 0.10 inch; notes/bedroom_carpet.md.'),
     Material(tag="catlin-bedroom-carpet-pad",
-             name='Provisional bedroom rebond cushion, 8 lb/ft3, 7/16 inch',
+             name='Bedroom rebond cushion, 8 lb/ft3, 3/8 inch',
              hatch="batt", color="#c8b7a0",
-             product_ref="PROD-FUTURE-FOAM-150553488-33",
+             product_ref="PROD-FUTURE-FOAM-150553488-32",
              source='Companion to catlin-carpet-raised only; installation is included '
-                    'once in carpet labor. Confirm manufacturer acceptance and warranty '
-                    'requirements. Manufacturer-approved 3/8-inch, 8 lb/ft3 cushion is '
-                    'the height-coordination alternative; notes/bedroom_carpet.md.'),
+                    'once in carpet labor. 3/8 inch, not the 7/16 inch first selected, so '
+                    'the carpet stands 1/4 inch over the oak (owner 2026-11-01). Confirm '
+                    'carpet manufacturer acceptance and warranty; notes/bedroom_carpet.md.'),
     Material(tag="catlin-tile-opera-blue",
              name="Selene Opera Blue 24x48 polished, platinum epoxy grout",
              hatch="masonry", color="#c5c6cc", finish="tile-onyx-opera-blue-grid",
@@ -92,13 +92,6 @@ MATERIALS_FLOORING = [
                     '0.146-inch combined mortar = 3/4 inch. Verify thickness and beds; '
                     'matte selected '
                     'instead of requested polished HDC for published wet DCOF >=0.42. ' + _TOE),
-    Material(tag="catlin-carpet-underlayment",
-             name='Provisional rigid plywood carpet underlayment allowance, 1/4"',
-             hatch="lumber", color="#bfae91",
-             source="Provisional rigid buildup and takeoff allowance; cushion is separate. "
-                    "The selected carpet/pad has not been measured. Reconcile whether "
-                    "plywood is needed and its thickness with transitions, door clearances "
-                    "and affected elevations before construction; notes/bedroom_carpet.md."),
     Material(tag="catlin-ditra-xl", name='DITRA-XL uncoupling membrane, 5/16"',
              hatch="membrane", color="#da7433",
              source="Nonheated tile membrane; seams and perimeters waterproofed where required."),

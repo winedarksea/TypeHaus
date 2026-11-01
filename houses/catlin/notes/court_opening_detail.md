@@ -25,7 +25,7 @@ source:
 - [K3] Sill pan sloped 1/4"/ft, with back dam and end dams 6" up the jambs, lapped over the waterproofing below.
 - [K4] D-B-PATIO: concrete curb with overflow drainage and sump pump; door is specified for standard rain exposure, not as a flood barrier.
 - [K5] D-B-PATIO: keep pan outlet open; confirm seat, sealant and drainage with the installed door and pan instructions.
-- [K6] D-B-PATIO: XMN5 and the blind curb-skin recess clear the approach; verify field membrane bonds.
+- [K6] D-B-PATIO: the blind curb-skin recess clears the approach (no sill extender); verify field membrane bonds.
 - [K7 @ host#layer:eps-ci:out] Veneer cavity: 4" clear air. Keep the base-course weeps open; they drain it after the court drains.
 
 # Notes

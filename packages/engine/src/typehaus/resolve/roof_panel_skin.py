@@ -12,6 +12,7 @@ from typehaus.resolve.metal_skin_profiles import (
     _inset_section,
     _section_ribbon_faces,
 )
+from typehaus.resolve.roof_edge_geometry import bbox, seam_register_roofs
 from typehaus.resolve.roof_image_ii_pan_end import (
     image_ii_pan_ends,
     wrapped_eave_skin_setbacks,
@@ -37,9 +38,9 @@ def profiled_roof_layers(roof, model):
         base += layer.thickness.meters
 
 
-def panel_stations(low, high, pitch):
-    """Seams share the rectangle centre datum on both slopes, including partial end pans."""
-    center = (low + high) / 2
+def panel_stations(low, high, pitch, anchor=None):
+    """Seams share one datum on both slopes, including partial end pans (``seam_anchor``)."""
+    center = (low + high) / 2 if anchor is None else anchor
     return tuple(
         center + index * pitch
         for index in range(
@@ -48,17 +49,40 @@ def panel_stations(low, high, pitch):
     )
 
 
+def _along(roof, rect):
+    return rect[:2] if roof.ridge_direction == "x" else rect[2:]
+
+
+def seam_anchor(model, roof) -> float | None:
+    """The seam datum along the ridge, or None for the roofing rectangle's own centre.
+
+    Coplanar roofs that abut at a rake share one register (``seam_register_roofs``): the
+    longest along its ridge keeps its own centre and the others fall into its seams.
+    """
+    lead = max(seam_register_roofs(model, roof), key=lambda r: (_ridge_length(r), r.tag))
+    if lead.tag != roof.tag:
+        for _, _, rect, _ in profiled_roof_layers(lead, model):
+            return sum(_along(lead, rect)) / 2
+    return None
+
+
+def _ridge_length(roof) -> float:
+    minx, miny, maxx, maxy = bbox(roof.footprint)
+    return maxx - minx if roof.ridge_direction == "x" else maxy - miny
+
+
 def seam_stations(roof, model) -> tuple[float, ...]:
     for _, _, rect, profile in profiled_roof_layers(roof, model):
-        low, high = rect[:2] if roof.ridge_direction == "x" else rect[2:]
-        return panel_stations(low, high, profile.pitch_m)
+        low, high = _along(roof, rect)
+        return panel_stations(low, high, profile.pitch_m, seam_anchor(model, roof))
     return ()
 
 
-def roof_profile_mesh(roof, rect, base, profile):
+def roof_profile_mesh(roof, rect, base, profile, anchor=None):
     """Local coordinates are (along ridge, normal depth, fall-line distance)."""
     along_x = roof.ridge_direction == "x"
     low, high = rect[:2] if along_x else rect[2:]
+    anchor = (low + high) / 2 if anchor is None else anchor
     triangles = tuple(tuple(tuple(p) for p in tri) for tri in plane_triangles(roof, rect))
     ridge = None
     if roof.form != "shed":
@@ -71,7 +95,7 @@ def roof_profile_mesh(roof, rect, base, profile):
     for triangle_index in range(0, len(triangles), 2):
         mesh = _roof_plane_mesh(triangles[triangle_index : triangle_index + 2], along_x,
                                 low, high, base, ridge, profile.section_points_m,
-                                profile.sheet_thickness_m, profile.pitch_m)
+                                profile.sheet_thickness_m, profile.pitch_m, anchor)
         offset = len(positions)
         positions.extend(mesh.positions)
         normals.extend(mesh.normals)
@@ -81,10 +105,9 @@ def roof_profile_mesh(roof, rect, base, profile):
 
 @lru_cache(maxsize=64)
 def _roof_plane_mesh(pair, along_x, low, high, base, ridge, section, sheet_thickness_m,
-                     pitch_m) -> GMesh:
+                     pitch_m, anchor) -> GMesh:
     """One roof plane's folded sheet, a pure function of numbers (→ board_batten._fold)."""
     along = (1.0, 0.0, 0.0) if along_x else (0.0, 1.0, 0.0)
-    anchor = (low + high) / 2
     triangle = pair[0]
     normal = _face_normal(triangle)
     fall = cross(along, normal)
@@ -155,10 +178,12 @@ def resolve_profiled_roof_surfaces(model):
                 raise ValueError(
                     f"{roof.tag}: {profile.key} roofing envelope must match profile depth"
                 )
-            meshes.append((layer.name, roof_profile_mesh(roof, rect, base, profile)))
+            anchor = seam_anchor(model, roof)
+            meshes.append((layer.name, roof_profile_mesh(roof, rect, base, profile, anchor)))
             if profile.key == "standing-seam":
-                wrapped, ends = image_ii_pan_ends(model, roof, rect, profile, layer.material_ref)
+                wrapped, ends = image_ii_pan_ends(model, roof, rect, profile, layer.material_ref,
+                                                  anchor)
                 hems += roof_pan_hems(roof, rect, base, profile, layer.material_ref,
-                                      skip=wrapped) + ends
+                                      skip=wrapped, anchor=anchor) + ends
         model.roofs[index] = replace(roof, layer_surface_meshes=tuple(meshes),
                                      members=roof.members + hems)

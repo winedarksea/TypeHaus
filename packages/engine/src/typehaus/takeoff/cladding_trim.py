@@ -11,6 +11,10 @@ from __future__ import annotations
 
 from math import ceil, dist
 
+from typehaus.library.trim._image_ii import (
+    PROFILE_VENT_CLIPS_PER_PANEL,
+    PROFILE_VENT_SCREWS_PER_CLIP,
+)
 from typehaus.library.trim.catalog import PROFILES
 from typehaus.library.trim.metal_sales import (
     BOX_GUTTER_STRAP_SPACING_FT,
@@ -20,19 +24,19 @@ from typehaus.library.trim.metal_sales import (
     IMAGE_II_RAKE_CLEAT,
     IMAGE_II_RESIDENTIAL_RAKE,
     IMAGE_II_RIDGE_COVER,
-    IMAGE_II_VENTED_STEP_RIDGE,
     PANEL_CLOSURE,
     RESIDENTIAL_RAKE_FACE_IN,
     SUPPLIES,
     TrimProfile,
 )
-from typehaus.model.trim import Gutter
+from typehaus.model.trim import Downspout, Gutter
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.cladding_trim.members import split_stock_run
 from typehaus.resolve.cladding_trim.openings import WINDOW_HEAD_PRODUCT, is_window_head
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.roof_edge_geometry import roof_edge_runs
 from typehaus.resolve.roof_image_ii import wrapped_image_ii_edges
+from typehaus.takeoff.drainage import leader_length_m
 from typehaus.takeoff.stock_packing import boards_for
 
 _FT = 0.3048
@@ -47,8 +51,14 @@ _POOLED = {WINDOW_HEAD_PRODUCT, "PBR_WINDOW_JAMB"}
 _SHEAR_KERF_IN = 0.25
 _LAP_SEALANT_FT = 1.0
 _FLAT_CLEAT_SPACING_FT = 1.5
-#: One pop rivet per 16 in Image II rib, on each side of a vented ridge's step cover.
-_RIDGE_RIB_IN = 16.0
+#: Image II panel module: the vent clips go two per panel on each slope (RDM p. 41).
+_PANEL_IN = 16.0
+#: A ridge cover lap: telescoped 3 in, a pop rivet each side, two beads of tube sealant (p. 38).
+_RIDGE_LAP_IN = 2.0
+#: A field-formed gable-end closure: tube sealant down the cover's two 7 in legs, two
+#: rivets per leg.
+_END_CLOSURE_SEALANT_IN = 14.0
+_END_CLOSURE_RIVETS = 4
 
 
 def catalog_roof_edge(member) -> bool:
@@ -56,7 +66,7 @@ def catalog_roof_edge(member) -> bool:
     return (member.category in {"drip_edge", "ridge_closure"}
             or (member.category == "corner_trim" and member.connection == "roof:panel-rake")
             or (member.category == "ridge_cap"
-                and member.connection in {"ridge:closed-cap", "ridge:image-ii-vented"}))
+                and member.connection in {"ridge:closed-cap", "ridge:vented-peak"}))
 
 
 class _Rows:
@@ -185,13 +195,16 @@ def _runs(roof, suffix: str):
             yield member.child_key[: -len(suffix)], member
 
 
-def _pieces(rows, profile, key, length_m, tag, lap_in=None, note=""):
+def _pieces(rows, profile, key, length_m, tag, lap_in=None, note="") -> int:
+    """Bill ``length_m`` in stock sticks lapped ``lap_in``; returns the stick count."""
     lap = (profile.hem_notch_in or profile.min_lap_in) if lap_in is None else lap_in
-    for start, end, stock in split_stock_run(
-            length_m, tuple(v * M_PER_IN for v in profile.stock_lengths_in), lap * M_PER_IN):
+    pieces = split_stock_run(
+        length_m, tuple(v * M_PER_IN for v in profile.stock_lengths_in), lap * M_PER_IN)
+    for start, end, stock in pieces:
         stock_in = round(stock / M_PER_IN, 6)
         rows.add("roof", _part(profile, stock_in, key), profile.name, stock_in, count=1,
                  length_m=end - start, tag=tag, note=note)
+    return len(pieces)
 
 
 def roof_face_in(member) -> float:
@@ -228,18 +241,30 @@ def _roof_edge_rows(model: ResolvedModel, rows: _Rows) -> None:
             if member.category != "ridge_cap":
                 continue
             tag = f"{roof.tag}:{member.child_key}"
+            if member.connection not in {"ridge:closed-cap", "ridge:vented-peak"}:
+                continue
+            laps = _pieces(rows, IMAGE_II_RIDGE_COVER, "IMAGE_II_RIDGE_COVER", member.length_m,
+                           tag, _RIDGE_LAP_IN, "specify pitch") - 1
             if member.connection == "ridge:closed-cap":
-                _pieces(rows, IMAGE_II_RIDGE_COVER, "IMAGE_II_RIDGE_COVER", member.length_m,
-                        tag, 2.0, "specify pitch")
                 _supply(rows, "58603XX", 2 * member.length_m, tag)
-                _supply(rows, "6403899", 4 * member.length_m, tag)
-            elif member.connection == "ridge:image-ii-vented":
-                _pieces(rows, IMAGE_II_VENTED_STEP_RIDGE, "IMAGE_II_VENTED_STEP_RIDGE",
-                        member.length_m, tag, 2.0, "specify pitch")
-                _supply(rows, "cobra-vented-closure", member.length_m, tag)
-                _supply(rows, "6403899", 4 * member.length_m, tag)
-                ribs = ceil(member.length_m / M_PER_IN / _RIDGE_RIB_IN)
-                _supply(rows, "trim-pop-rivet", 0.0, tag, count=2 * ribs)
+            else:
+                # RDM p. 41 on both slopes: vent, 2 clips per panel, 2 screws and 1 rivet per clip.
+                clips = 2 * PROFILE_VENT_CLIPS_PER_PANEL * ceil(member.length_m / M_PER_IN
+                                                                / _PANEL_IN)
+                _supply(rows, "6441899", 2 * member.length_m, tag)
+                _supply(rows, "6540000", 0.0, tag, count=clips)
+                _supply(rows, "8215100", 0.0, tag, count=PROFILE_VENT_SCREWS_PER_CLIP * clips)
+                _supply(rows, "trim-pop-rivet", 0.0, tag, count=clips)
+            _supply(rows, "6403899", 4 * member.length_m, tag)
+            if laps:
+                _supply(rows, "tube-sealant", 2 * laps * _LAP_SEALANT_FT * _FT, tag)
+                _supply(rows, "trim-pop-rivet", 0.0, tag, count=2 * laps)
+        for member in roof.members:
+            if member.connection == "ridge:end-closure":
+                tag = f"{roof.tag}:{member.child_key}"
+                _supply(rows, "ridge-end-closure", 0.0, tag)
+                _supply(rows, "tube-sealant", _END_CLOSURE_SEALANT_IN * M_PER_IN, tag)
+                _supply(rows, "trim-pop-rivet", 0.0, tag, count=_END_CLOSURE_RIVETS)
 
 
 def _has_barge(model: ResolvedModel, roof, key: str) -> bool:
@@ -298,6 +323,30 @@ def _catalog_gutter_rows(model: ResolvedModel, rows: _Rows) -> None:
             _supply(rows, "trim-pop-rivet", 0.0, element.tag, count=straps)
 
 
+def _catalog_leader_rows(model: ResolvedModel, rows: _Rows) -> None:
+    """Catalog leaders by part: the sticks, a 95 deg elbow pair per gooseneck, a strap at each
+    authored strap station, and the adapter into a buried round extension."""
+    plan = getattr(model, "plan", None)
+    if plan is None:
+        return
+    for element in plan.all_elements():
+        profile = PROFILES.get(getattr(element, "product", None) or "")
+        if not isinstance(element, Downspout) or profile is None:
+            continue
+        stock_m = tuple(v * M_PER_IN for v in profile.stock_lengths_in)
+        for start, end, stock in split_stock_run(leader_length_m(element), stock_m,
+                                                 profile.min_lap_in * M_PER_IN):
+            stock_in = round(stock / M_PER_IN, 6)
+            rows.add("trim", _part(profile, stock_in, element.product), profile.name,
+                     stock_in, count=1, length_m=end - start, tag=element.tag)
+        if element.outlet is not None and element.outlet.xy_m != element.position.xy_m:
+            _supply(rows, "58102XX", 0.0, element.tag, count=2)
+        if element.clamp_refs:
+            _supply(rows, "58110XX", 0.0, element.tag, count=len(element.clamp_refs))
+        if element.extension is not None:
+            _supply(rows, "leader-rect-round-adapter", 0.0, element.tag)
+
+
 def cladding_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Group cut pieces by catalog part and purchased stock length, with their supplies.
 
@@ -307,6 +356,7 @@ def cladding_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     rows = _Rows()
     _wall_trim_rows(model, rows)
     _catalog_gutter_rows(model, rows)
+    _catalog_leader_rows(model, rows)
     if getattr(model, "roofs", None):
         _roof_edge_rows(model, rows)
     return rows.finish()

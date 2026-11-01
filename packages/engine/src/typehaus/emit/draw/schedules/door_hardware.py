@@ -1,5 +1,4 @@
 """Readable hardware sets and installer instructions for A-601."""
-import textwrap
 
 
 def hardware_set_marks(model):
@@ -32,31 +31,23 @@ def hardware_schedule_rows(model):
     return rows
 
 
-def draw_hardware_schedule(fig, model):
-    from typehaus.emit.draw.sheet_writer import section
+def hardware_tables(model):
+    """A-601's hardware sets and their framing notes, as paged tables (wrapped, never cut)."""
+    from typehaus.emit.draw.schedules.paged_tables import PagedTable, wrap_cells
 
     rows = hardware_schedule_rows(model)
     if not rows:
-        return
-    section(fig, .04, .51, "HARDWARE SETS — QUANTITIES PER OPENING; HEIGHTS ABOVE LEAF BOTTOM")
-    widths = (.055, .10, .18, .035, .06, .57)
-    # Explicit line wrapping retains every installation instruction on the sheet.
-    wraps = (10, 19, 34, 5, 16, 112)
-    wrapped = [tuple("\n".join(textwrap.wrap(str(cell), width=width))
-                     for cell, width in zip(row, wraps, strict=True)) for row in rows]
-    ax = fig.add_axes((.04, .18, .92, .31))
-    ax.axis("off")
-    table = ax.table(cellText=wrapped,
-                     colLabels=("HW set", "Role", "Product", "Qty", "Height", "Installation"),
-                     colWidths=widths, cellLoc="left", colLoc="left", bbox=(0, 0, 1, 1))
-    table.auto_set_font_size(False)
-    table.set_fontsize(6)
-    weights = [1] + [max(cell.count("\n")+1 for cell in row) for row in wrapped]
-    for (row, _column), cell in table.get_celld().items():
-        cell.set_height(weights[row]/sum(weights))
-    marks = hardware_set_marks(model)
-    mapping = "; ".join(f"{mark}: {tag}" for tag, mark in marks.items())
-    fig.text(.04, .155, mapping, fontsize=7)
-    fig.text(.04, .135, "Doubled kings/jacks; full-depth backing at hardware anchors. "
-             "ccSPF in adjoining clear jamb bays; dry sheathing before spraying. "
-             "Entry field finish: black exterior / white interior.", fontsize=6)
+        return []
+    types = {mark: tag for tag, mark in hardware_set_marks(model).items()}
+    keyed = [(mark if index == 0 or rows[index - 1][0] != mark else "",
+              types[mark] if index == 0 or rows[index - 1][0] != mark else "", *rest)
+             for index, (mark, *rest) in enumerate(rows)]
+    return [
+        PagedTable("HARDWARE SETS — QUANTITIES PER OPENING; HEIGHTS ABOVE LEAF BOTTOM",
+                   ("HW set", "Door type", "Role", "Product", "Qty", "Height", "Installation"),
+                   wrap_cells(keyed, {3: 34, 6: 96})),
+        PagedTable("HARDWARE NOTES", ("Note",), (
+            ("Doubled kings/jacks; full-depth backing at hardware anchors.",),
+            ("ccSPF in adjoining clear jamb bays; dry sheathing before spraying.",),
+            ("Entry field finish: black exterior / white interior.",))),
+    ]

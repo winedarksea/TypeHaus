@@ -450,10 +450,11 @@ MAIN_DEVICES = [
                          rotation_offset=deg(180)))),
     # Freezer beside the fridge (KRF1 at (18'-4 3/8", 31'-4 5/8")) on the centre wall's east
     # face; fridge + freezer + PoE WiFi share the backup kitchen circuit.
-    # This box stays behind its own appliance (freezer y 27'-4 7/8"..30'-1 3/4") — the
-    # same constraint that decided which end of the bay the retired filler went to.
+    # This box stays behind its own appliance (freezer y 27'-4 9/16"..30'-1 7/16") — the
+    # same constraint that decided which end of the bay the retired filler went to. Recessed
+    # (Arlington IN BOX): the units stand 1" off the wall, less than a plug (C5-E2).
     ElectricalDevice(uid="CEE006AAAA", tag="ED-M-LIVING-KFZ1", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-FRIDGE",
+                     type_ref="ED-T-LEV-DUPLEX-20-REC", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C5", face="right", distance_from_start=inch(47.25),
@@ -827,7 +828,8 @@ MAIN_EQUIPMENT = [
     # measured from the ROOM'S FINISHED FLOOR, not the subfloor. `resolve/placeables.py`'s
     # `_floor_elevation` returns `room_finished_floor_elevation(...)` and hands it to
     # `resolved_mount_elevation` as `floor_m`, which adds the mount to it. RM-M-LIVING's
-    # finished floor is +15/16", so an authored 24" resolves to 24 15/16" absolute — which is
+    # finished floor was +15/16" (the cap; +3/4" since 2026-11-01, so the mount is authored
+    # 24 3/16" now), so an authored 24" resolved to 24 15/16" absolute — which is
     # exactly W-M-FIRE-PLINTH's top, the brick sill, to the thousandth. That agreement is the
     # check on the claim, and the resolved model confirms it: `canvas_objects` carries this
     # unit at z=0.8366125 m = 32 15/16" absolute at the old authored 32". ** THE MANTEL WAS
@@ -893,7 +895,8 @@ MAIN_EQUIPMENT = [
     Equipment(uid="CEE022AAAA", tag="EQ-M-FIREPLACE", kind=EquipmentKind.SPACE_HEATER,
               footprint=(inch(29.25), inch(9.75)),
               room="RM-M-LIVING", type_ref="EQ-T-FIREPLACE-EL", circuit="CKT-FIREPLACE",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(24),
+              # 24 3/16" AFF off the cap (decision #111) = the plinth top, 24 15/16" absolute.
+              mount=Mount(kind=MountKind.WALL, elevation=inch(24.1875),
                           recessed_into_host_surface=True),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(88),

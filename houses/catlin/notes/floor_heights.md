@@ -7,11 +7,12 @@ nominal difference no greater than **1/16 in**. The opening probes in
 on the correct deck. Nominal heights are design targets; the installer must mock up and
 measure compressed carpet edges and set tile elevations before fixing thresholds.
 
-**Bedroom carpet amendment, 2026-10-23:** Sweet Spot I Romano over 7/16-in, 8 lb/ft³
-Future Foam cushion is provisionally selected. The retained 3/4-in modeled bedroom
-assembly and its plywood buildup are coordination allowances awaiting a measured sample,
-not verified installed dimensions. Bedroom doorway heights below remain design targets.
-See [bedroom carpet specification and purchasing checks](bedroom_carpet.md).
+**Bedroom carpet, 2026-11-01 (owner; review C5-E5/E6):** no plywood. Sweet Spot I Romano
+over a 3/8-in, 8 lb/ft³ Future Foam cushion is 1.000 in over the subfloor (0.56-in pile +
+1/16-in backing allowance + 3/8-in cushion), so the carpet stands 1/4 in over the oak and
+tile it meets. Each such doorway tucks the carpet into an aluminium Z-bar flush with the
+hard floor, with no reducer. Every doorway product is named in `plan/doorway_transitions.py`
+and graded by `integrity.doorway_assembly`. See [bedroom carpet](bedroom_carpet.md).
 
 ## Assemblies above the 3/4-in framed subfloor
 
@@ -19,18 +20,18 @@ See [bedroom carpet specification and purchasing checks](bedroom_carpet.md).
 bought is 23/32-in (0.71875-in) Performance Category plywood, 1/32 in thinner. Every
 framed deck uses the same 0.75, so wood-to-wood doorways are unaffected. The only joint
 that spends the 1/32 in is the LVP-to-cap seam on the living-room L: built, the LVP lands
-at +0.91560 against the cap's +0.9375, 0.022 in low. That is within the 1/16-in flush
-tolerance, so the model keeps the nominal.
+at +0.91560 against the cap's +0.7500 (screeded to the built plywood, +0.71875), a 5 mm
+step either way, which the reducer takes. The model keeps the nominal.
 
 | Tag / location | Build-up above subfloor | Finished height |
 | --- | --- | ---: |
 | `oak-floor-custom`, second hall/linen/suite/study | 3/4-in site-milled oak | +1.5000 |
-| `catlin-carpet-raised`, east bedrooms and main bedroom/closet | Provisional 3/4-in modeled assembly allowance; Sweet Spot I Romano and 7/16-in cushion selected, plywood need/thickness and installed depth unconfirmed | +1.5000 target |
+| `catlin-carpet-raised`, east bedrooms and main bedroom/closet | Sweet Spot I Romano (0.56-in pile + 1/16-in backing allowance) over 3/8-in rebond cushion; no plywood | +1.7500 |
 | `catlin-tile-oak-height`, suite bath/vanity | 5/16-in nominal DITRA-XL + 5/16-in Marazzi Modern Formation MF01 24x24 matte porcelain + nominal 1/8-in combined mortar beds | +1.5000 |
 | `catlin-tile-heated`, both heated baths | 1/4-in nominal DITRA-HEAT + same 5/16-in MF01 porcelain + nominal 3/16-in combined mortar beds, cable in studs | +1.5000 |
 | `catlin-plant-vinyl-raised`, second plant | Nominal 1/4-in SurePly underlayment + 0.120-in fully adhered sheet; no floor drain or slope | +1.1200 at doorway |
 | `lvp`, main circulation/mudroom/closets | COREtec Quincy Oak, 5 mm (0.19685 in) total including attached cork; no separate mat | +0.94685 |
-| `coated-concrete`, main living zone | cast cap top, coating adds no appreciable height | +0.9375 |
+| `coated-concrete`, main living zone | cast cap top, flush with the plywood (decision #111); coating adds no appreciable height | +0.7500 |
 
 The Marazzi [product page](https://www.marazziusa.com/products/stone-look/modern-formation/peak-white)
 specifies 5/16 in for the 24x24 matte tile. Schluter lists
@@ -43,13 +44,8 @@ where bath use calls for it. Do not replace the heated membrane with DITRA-XL. T
 `floor_heat` estimate must be a **cable-only** quote; the DITRA-HEAT base is billed
 once on the whole heated bathroom area by the floor-finish companion row.
 
-The former 1/4-in plywood + 1/4-in pad + 1/4-in carpet assumption is superseded by the
-provisional bedroom selection. The 0.56-in published pile height is not the total carpet
-thickness including backing. Measure that carpet, the selected cushion and compressed
-doorway edges; reconcile plywood, transitions, door clearances and affected elevations
-together before construction. The existing 1/4-in plywood takeoff remains an allowance,
-not an approved buildup. The flush oak/tile target remains within 1/16 in, pending that
-reconciliation; the model tests establish numerical consistency, not physical fit.
+The 1/16-in carpet backing is an allowance: the published 0.56 in is pile only. Measure
+the sample. The Z-bar answer below holds while the backing is 0.10 in or less.
 Quincy Oak replaces the generic 6 mm plank as of 2026-10-26; its attached cork is
 included in the 5 mm total, and no separate mat is specified or billed. Measure the
 installed plank and concrete coating samples and
@@ -62,24 +58,23 @@ product alternatives and the nominal flush-setting calculation.
 ## Opening schedule
 
 All numbers are modeled finished planes, in inches above the relevant storey datum.
-Bedroom carpet entries and their transition details are design targets awaiting measured
-assembly reconciliation. An edge or movement joint may be required even where the
-modeled height difference is zero.
+Carpet planes carry the 1/16-in backing allowance until the sample is measured. An edge
+or movement joint may be required even where the modeled height difference is zero.
 
 | Opening | Side A | Side B | Difference | Detail |
 | --- | ---: | ---: | ---: | --- |
-| `D-S-BED1`, `D-S-BED2`, `D-S-BED3` | carpet +1.5000 | hall oak +1.5000 | 0 | Flush carpet edge/retainer, no ramp |
+| `D-S-BED1`, `D-S-BED2`, `D-S-BED3` | carpet +1.7500 | hall oak +1.5000 | 0.2500 | Carpet tucked into a Z-bar flush with the oak; no reducer |
 | `D-S-SUITE` | oak +1.5000 | oak +1.5000 | 0 | Continuous oak field |
-| `D-S-SUITEBATH` | suite oak +1.5000 | porcelain +1.5000 | 0 | Flush tile edge and movement joint |
+| `D-S-SUITEBATH` | suite oak +1.5000 | porcelain +1.5000 | 0 | Schluter-SCHIENE tile edge, silicone joint to the oak |
 | `O-S-VANITY` | hall oak +1.5000 | porcelain +1.5000 | 0 | Flush tile edge and movement joint |
-| `D-S-BATH1` | hall oak +1.5000 | heated porcelain +1.5000 | 0 | Flush tile edge and movement joint |
+| `D-S-BATH1` | hall oak +1.5000 | heated porcelain +1.5000 | 0 | Schluter-SCHIENE tile edge, silicone joint to the oak |
 | `D-S-NCLOSET` | hall oak +1.5000 | oak +1.5000 | 0 | Continuous oak field |
 | `D-S-STUDY2` | hall oak +1.5000 | oak +1.5000 | 0 | Continuous oak field |
 | `D-S-PLANT` | study oak +1.5000 | raised sheet vinyl +1.1200 | 0.3800 | Solid-surface reducer over a sealed water stop; no drain |
 | `D-M-MUD`, `D-M-MECH`, `D-M-MUDC` | LVP +0.94685 | LVP +0.94685 | 0 | One level field; keep expansion gaps; bottom guide at `D-M-MUDC` on flat substrate |
-| `D-M-BED2` | hall LVP +0.94685 | bedroom carpet +1.5000 | 0.55315 | Hardwood saddle at +1.5000 under the leaf, bevelled down to the LVP; the automatic door bottom seals on it |
-| `D-M-BED` | bedroom carpet +1.5000 | closet carpet +1.5000 | 0 | Continuous carpet stack |
-| `D-M-BATH2` | bedroom carpet +1.5000 | heated porcelain +1.5000 | 0 | Flush carpet/tile edge with suitable profile |
+| `D-M-BED2` | hall LVP +0.94685 | bedroom carpet +1.7500 | 0.80315 | 5/4 oak saddle on the subfloor, top on the carpet plane under the leaf, 2-in bevel to the LVP; the automatic door bottom seals on it |
+| `D-M-BED` | bedroom carpet +1.7500 | closet carpet +1.7500 | 0 | Continuous carpet stack |
+| `D-M-BATH2` | bedroom carpet +1.7500 | heated porcelain +1.5000 | 0.2500 | Carpet tucked into a Z-bar flush with the tile |
 | `ST-M2S` lower and upper head | main LVP +0.94685 | second oak +1.5000 (+121.5000 absolute) | stair rise | 16 equal risers at 7.5346 in; level turn +61.22343 absolute |
 | `ST-S2A` lower head | second oak +1.5000 (+121.5000 absolute) | oak stair | 0 at head | Retain existing authored 121.5-in start |
 | `D-M-ENTRY` exterior | mudroom LVP +0.94685 | breezeway deck 0.0000 | 0.94685 down | Flashed weather sill, **not** an interior reducer |
@@ -90,9 +85,7 @@ and seal to a continuous water-stop riser beneath the reducer; seal its ends int
 jamb returns. A reducer without this sealed upturn provides no dependable spill
 containment. Set the final profile from measured installed heights and check the
 delivered glass door's swing and clearance. Use a securely retained tapered profile
-at the 0.55315-in bedroom change, with no exposed sharp lip. Material-change edges
-at the level bath doors still need the selected tile/carpet/oak manufacturer's
-termination and movement detail.
+at the 0.80315-in bedroom change, with no exposed sharp lip.
 
 ```text
 study oak +1.5000  ─────────┐  solid-surface reducer ↘  plant vinyl +1.1200
@@ -107,13 +100,36 @@ door, subfloor and installed finish depths have been measured.
 The resolved rooms on either side of `D-M-BED2` are `RM-M-LIVING` and `RM-M-BED`;
 the earlier implementation plan described it as a closet-to-hall opening.
 
-The coated-concrete/LVP living-room boundary is +0.9375 / +0.94685 in, a
-0.00935-in difference within the same 1/16-in flush target. Keep the L-shaped edge and
-the y=13-ft movement break described in `mixed_deck_movement_joint.md`.
+The coated-concrete/LVP living-room boundary is +0.7500 / +0.94685 in, the plank's own
+5 mm (0.19685 in): a low 5 mm reducer, not a flush T, since the cap came down 3/16 in to the
+plywood plane on 2026-11-01 (decision #111). Keep the L-shaped edge and the y=13-ft
+movement break described in `mixed_deck_movement_joint.md`.
 
 The scheduled interior openings contain **nine material changes** (three east carpet
 doors, three upstairs bath openings, the plant door, the main bedroom entry and its bath
-door) but only **two height changes**: `D-S-PLANT` and `D-M-BED2`. The L-shaped
+door). Six change height: the four carpet-to-hard doors by the carpet's 1/4 in, which the
+Z-bar takes inside the carpet, and the two with a product, `D-S-PLANT` and `D-M-BED2`.
+
+## Doorway transition products (2026-11-01)
+
+`plan/doorway_transitions.py` names one per flooring change, each a design selection with a
+schematic section, supplier PENDING. The rise in each section is the modelled step, so the
+check fails if the floors move.
+
+| Doorway | Change | Product |
+| --- | --- | --- |
+| `D-S-BED1/2/3`, `D-M-BATH2` | carpet 1/4 in over oak/tile | aluminium carpet Z-bar, no reducer |
+| `D-M-BED2` | LVP up 0.80315 in to carpet | 5/4 site-milled oak saddle |
+| `D-S-SUITEBATH`, `D-S-BATH1` | oak = tile | Schluter-SCHIENE |
+| `D-S-PLANT` | oak down 0.38 in to vinyl | 12 mm solid-surface reducer over the water stop |
+| `D-M-STUDY` | LVP down 0.19685 in to the coated cap | COREtec Quincy Oak 5 mm reducer |
+| `D-B-PLAY` | stall mat down 1/4 in to carpet | bevelled rubber reducer |
+| `D-B-SAUNA` | stall mat down 3/4 in to the sealed slab | bevelled rubber reducer |
+| `D-B-BATH` | sheet vinyl down 0.12 in to the slab | rubber reducer for 1/8-in sheet |
+| `D-A-HALVES` | oak down 0.63 in to vinyl | site-milled 3/4-in oak reducer |
+
+Still open: `D-A-STUDY` and `D-A-POCKET` open onto unfinished subfloor (no finish to pair
+with), and `D-M-MECH`'s mechanical-room floor has no finish over part of the doorway. The L-shaped
 concrete/LVP boundary adds one material boundary with two legs and a movement joint;
 it is a flush field joint rather than a doorway reducer.
 
@@ -160,7 +176,7 @@ same engine, gave the following net/order areas in square feet:
 | LVP | 508.4 / 560 | 378.8 / 417 |
 | Custom oak | 408.8 / 450 | 541.6 / 596 |
 | Carpet, both stacks combined | 870.5 / 958 | 870.5 / 958 |
-| Rigid carpet underlayment | — | 589.1 / 648 |
+| Rigid carpet underlayment (dropped 2026-11-01) | — | 589.1 / 648 |
 | Porcelain, all stacks combined | 205.4 / 237 | 202.2 / 233 |
 | DITRA-HEAT | included at plain membrane rate | 137.9 / 159 |
 | DITRA-XL | — | 64.3 / 74 |

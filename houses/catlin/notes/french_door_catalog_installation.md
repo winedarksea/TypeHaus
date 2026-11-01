@@ -22,7 +22,7 @@ questions: the two installation TODOs remain open until these design issues clos
 | Leaves | Therma-Tru Smooth-Star full-lite, nominal pair 60 × 80 | Laminated triple, exact assembled pair NFRC/NAFS and performance label remain unconfirmed; the existing U/SHGC/VT row is provisional |
 | Frame | Therma-Tru composite 4-9/16 inch jamb; 2026 Comp 6.4 | Factory machining, hinge axis and hinge locations of an assembled Endura pair |
 | Returns / casing | AZEK Captivate Graphite Gray, 3/4 × 48 × 96 smooth sheet; PaintPro substrate AS03448096. Field-rip the deep returns and 3-1/2 inch flat casings from two sheets | Catalog product/color selection; no exact color match to the steel or purchase/finish warranty confirmation claimed |
-| Sill | Endura ZAI4565FN, 4-9/16 inch width and 1-3/8 inch rear fin; patio adds catalog XMN5, extending the nose 1-3/16 inch to 5-3/4 inches | Adjustment limits, actual installed cap setting and bearing contacts; the ZAI outline crest remains digitized |
+| Sill | Endura ZAI4565FN, 4-9/16 inch width and 1-3/8 inch rear fin; no sill extender (XMN5 dropped 2026-11-01) | Adjustment limits, actual installed cap setting and bearing contacts; the ZAI outline crest remains digitized |
 | Sweep / pads | Endura DBK-R double-bulb kerfed bottom and compatible corner-pad family are catalog candidates | Therma-Tru leaf kerf fit, installed compression and selected pad variant; no substitute sweep geometry is invented |
 | Passive leaf | Ultimate Flip Lever Astragal; field instructions include the lower receiver | Receiver is drilled 5/8 inch diameter, at least 1-3/8 inch deep; delivered assembly setting and cap/screw clearances remain unconfirmed |
 | Active leaf | PanoLock+ and Schlage BE365 | Endura explicitly lists BE365 CAM/PLY with **adapter F**; selected passage-handle adapter and exact assembly prep still need documentation |
@@ -38,7 +38,6 @@ Primary documents:
 - [Therma-Tru 2026 dimensional data](https://outdoorsandsecurity.widen.net/content/lpxemo2dti/original/2026-Arch-Comp-BOOK---ARCH-1-Dimensional-Data.pdf), Arch 1.4, French inswing with 7/8 inch astragal.
 - [Therma-Tru 2026 frame parts](https://outdoorsandsecurity.widen.net/content/ixw8lz4q8x/original/2026-Arch-Comp-BOOK---COMP-6-Frame-Parts--Packages.pdf), Comp 6.4 composite jamb profiles and composite trim pages.
 - [Endura ZAI4565FN drawing](https://resources.enduraproducts.com/hubfs/OMRSv3%20-%20Line%20Drawings/Inswing%20Sill%20Systems/ZAI4565FN.pdf).
-- [Endura XMN5 drawing](https://resources.enduraproducts.com/hubfs/OMRSv3%20-%20Line%20Drawings/Sill%20Extenders/XMN5.pdf): 1-3/16 inch extension, 11/16 inch section height, 5 degree top.
 - [Endura DBK-R and other bottom profiles](https://marketing.poweredbyendura.com/hubfs/Weathersealing_TechnicalDocuments/Door%20Bottom%20Product%20Profiles_v2.pdf).
 - [FLA inswing field instructions](https://www.enduraproducts.com/wp-content/uploads/2023/06/211159-FL-I-FP-Flip-Lever-Inswing-Field-Install-Inst-6_20_23.pdf).
 - [PanoLock+ / Schlage compatibility](https://www.enduraproducts.com/wp-content/uploads/2024/01/2026-PanoLock-Compatibility-List-Schlage-Locks.pdf).
@@ -91,13 +90,15 @@ check reads this actual lower edge, not the unrecessed wall top. W-B-S3 declares
 new 5-1/2 inch minimum; the sauna curb retains 7-1/4 inches. The door is not credited
 as a flood barrier. Overflow drainage and the sump remain the backup provisions.
 
-The pan's level bearing envelope is over the concrete seat. The XMN5 extender carries
-the sill nose 1-3/16 inches beyond the concrete face. One **blind, nonstructural curb-skin
+The pan's level bearing envelope is over the concrete seat. **No sill extender** (owner,
+2026-11-01): since the frame anchors at the sheathing the sill stands 1/2 inch further out,
+and the recess alone clears the seat; the approach boards run 14.54 inches (13.35 with the
+XMN5). One **blind, nonstructural curb-skin
 recess** clears the approach and pan drop through insulation and membrane, stopping at
 the concrete layer. The approach remains below the framed wall's base, so its exterior
 layers are not recessed. The blind curb recess does not lower the concrete seat or
 flood-containment edge. Generated section-intersection
-checks pass for the sill extension, boards, pan drop and cross bearers. The exposed
+checks pass for the sill, boards, pan drop and cross bearers. The exposed
 water-control layers still need a compatible, bonded membrane apron and field sealant
 sequence; catalog geometry alone does not establish those bonds.
 A concrete cantilever envelope supports the approach without relying on the veneer,
@@ -176,7 +177,6 @@ factory-included sill components are excluded from separate purchasing.
 | --- | --- | --- |
 | Preferred complete Smooth-Star/composite/ZAI/FLA/PanoLock+ pair with requested glass | **Not published for this configuration** | No complete price or assembly approval claimed |
 | [FLA replacement system](https://www.betterdoor.com/shop/french-door-astragals-locks-replacement-parts/double-door-astragal-french-door-locks/endura-ultimate-flip-lever-astragal-system/) | **$190–$359**, options vary | Replacement component only; do not add it again to a prehung-unit allowance |
-| [Endura XMN5 sill extender](https://goldenlocksinc.com/products/endura-z-series-inswing-extenders-for-4-9-16-sills) | Public listing from **$36.50** for a 1-3/16 inch option | One patio sill cut to unit length; exact stock length and finish price remain to be selected |
 | Complete Tru-Defense-eligible fallback | **Not established from public pricing** | Requires Therma-Tru sill, dual-bulb bottom, seven-shape pads, qualifying frame/hinges/weatherstrip/glass and its 7/8 inch astragal; PanoLock+/FLA and laminated triple are not assumed retained |
 | [Therma-Tru composite adjustable sill store page](https://store.thermatru.com/products/composite-adjustable-sill) | **No usable price: $0 placeholder / sold out** | Not a zero-cost component and not a complete-system price |
 | Stock pan, head kit, approach, composite returns and transition parts | **Exact selected variants not fully priced** | Missing prices remain gaps; the model receives no invented catalog rates; its existing French-pair allowance is carried to the new type without presenting it as a quote |
@@ -197,7 +197,7 @@ unit label, order confirmation or warranty extension was obtained.
    supports. Check the resulting clear openings, concrete edge and landing elevations.
 4. Install the supported sloping apron and catalog pan, with their prescribed end caps,
    corners, bonds and sealant. Join the jamb/head bands to the actual water plane.
-5. Fit the patio's catalog XMN5 to the 4-9/16 inch ZAI sill. Set and anchor the
+5. Set and anchor the
    composite frame on continuous level bearing. Install/adjust the
    matched sweep, corner seals and FLA receiver without drilling through the pan.
 6. Install the supported approach boards and stock trim with metal isolation and the

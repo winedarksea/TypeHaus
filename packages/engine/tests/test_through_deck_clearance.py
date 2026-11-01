@@ -84,9 +84,9 @@ def test_the_platform_trap_is_the_whole_reason_framing_extents_are_read(catlin_m
     # The body: down over the rim, up to the storey above. Both clauses hold.
     assert wall.z0_m <= soffit + _THROUGH_TOL_M
     assert wall.z1_m >= deck.deck_z1_m + _THROUGH_TOL_M
-    # The framing: bottom plate on the storey datum, a foot above the soffit. Clause 1 fails.
+    # The framing: bottom plate on the subfloor (#110), a foot above the soffit. Clause 1 fails.
     assert wall.frame_base_z_m > soffit + _THROUGH_TOL_M
-    assert wall.frame_base_z_m - soffit == pytest.approx(inch(11.875).meters, abs=1e-6)
+    assert wall.frame_base_z_m == pytest.approx(deck.deck_z1_m, abs=1e-6)
     assert framing_top_z_m(wall) >= deck.deck_z1_m + _THROUGH_TOL_M
     assert "W-M-E1" not in (deck.through_walls or ())
 
@@ -231,15 +231,16 @@ def test_catlin_passes_with_the_five_eighths_it_was_left_by_a_sixteen_inch_modul
         catlin_check_report) -> None:
     """Six findings — a clearance and a bearing verdict per pier — and every one a PASS.
 
-    The governing gap is 5/8" against a 1/2" threshold, and that 5/8" is residue of a
-    44 1/4" panel laid out on a 16" joist module rather than a margin anybody chose.
+    The governing gap is 23/32" against a 1/2" threshold: the 5/8" residue of a 44 1/4"
+    panel laid out on a 16" joist module rather than a margin anybody chose, plus 3/32"
+    from the TJI 230's 2 5/16" flange replacing the generic 2 1/2" I-joist guess.
     """
     matched = _findings(catlin_check_report(Tier.STRUCTURAL))
     assert len(matched) == 6
     assert {f.result for f in matched} == {Result.PASS}
     clearances = [f for f in matched if "clear of every member" in f.message]
     assert len(clearances) == 3
-    assert any('0.625" against 0.50"' in f.message for f in clearances)
+    assert any('0.719" against 0.50"' in f.message for f in clearances)
     assert all(tag in {t for f in matched for t in f.element_tags} for tag in _PIERS)
 
 

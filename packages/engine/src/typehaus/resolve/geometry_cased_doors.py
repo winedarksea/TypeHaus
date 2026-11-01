@@ -1,4 +1,4 @@
-"""Cased swing and pocket shapes. Mirrors ui/three/builders/casedDoors.ts."""
+"""Cased swing and pocket shapes; the viewer draws them as served (opening_parts)."""
 from __future__ import annotations
 
 from typehaus.resolve.geometry_door_products import hardware_part, lever_solids

@@ -22,7 +22,7 @@ from typehaus.emit.draw.detail_enlarged import enlarged_details
 from typehaus.emit.draw.details import build_authored_detail_scene, derive_detail_slices
 from typehaus.emit.draw.drainageplan import build_drainage_plan, has_drainage_content
 from typehaus.emit.draw.electricalplan import build_electrical_plan, has_electrical_content
-from typehaus.emit.draw.elevation import build_elevation
+from typehaus.emit.draw.elevation import elevation_sheets
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.floorplan_sheet import floorplan_sheet
 from typehaus.emit.draw.foundationplan import build_foundation_plan, has_foundation_content
@@ -30,6 +30,11 @@ from typehaus.emit.draw.framingplan import build_framing_plan
 from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
 from typehaus.emit.draw.lightingplan import build_lighting_plan, has_lighting_content
 from typehaus.emit.draw.pdf_writer import _close
+from typehaus.emit.draw.plan_enlarged import (
+    enlarged_groups,
+    enlarged_plan_sheet,
+    enlarged_title,
+)
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
 from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
 from typehaus.emit.draw.roofplan import build_roof_plan
@@ -53,6 +58,7 @@ from typehaus.emit.draw.schedules import (
     write_compare_sheet,
 )
 from typehaus.emit.draw.schedules.architectural import specification_sections
+from typehaus.emit.draw.schedules.openings import opening_tables
 from typehaus.emit.draw.schedules.paged_tables import page_count
 from typehaus.emit.draw.schedules.structural import framing_bom_tables, hardware_tables
 from typehaus.emit.draw.schedules.structural_notes import (
@@ -272,11 +278,13 @@ def build_sheet_index(model: ResolvedModel,
                             scene=build_roof_plan, north_arrow=True))
     # Elevations BEFORE sections: the type digit is the order (2 then 3), and the set was
     # emitting A-301 first. A reviewer works outside-in — what the building looks like, then
-    # what it is cut open to show — and the numbering already said so.
+    # what it is cut open to show — and the numbering already said so. One scale for all
+    # four (C7-E5): ``elevation_sheets`` frames them together.
+    elevations = elevation_sheets()
     for number, facing in (("A-201", "north"), ("A-202", "south"),
                            ("A-203", "east"), ("A-204", "west")):
         sheets.append(SheetSpec(number, f"{facing.title()} exterior elevation",
-                                scene=partial(build_elevation, facing=facing)))
+                                scene=partial(elevations, facing=facing)))
 
     sheets.append(SheetSpec("A-301", "Building section", scene=build_center_section))
     # Authored SECTION slices join the A-301 series right after the auto centre section —
@@ -291,10 +299,20 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec(f"A-301.{index}", view.title or view.tag,
                                 scene=partial(build_annotated_section, view=view)))
 
-    # The 5 series, not the 4. NCS 4 is LARGE-SCALE VIEWS — an enlarged plan of a kitchen or
-    # a stair at 1/2" = 1'-0", the same drawing type as the plan it comes from. A junction
-    # cut at 1-1/2" = 1'-0" is a DETAIL and belongs in 5. This set has no large-scale views,
-    # so the 4 series is simply absent, which is what a non-consecutive sequence is for.
+    # NCS 4 is LARGE-SCALE VIEWS: the baths (A-401) and mechanical rooms (A-402) enlarged
+    # to 1/2" off the level plan (C7-E8), one sheet per room group that fits the viewport.
+    # A mechanical room enlarges the HVAC plan: its equipment and ducts are what overprint.
+    for number, kind, occupancies, build in (
+            ("A-401", "bath", frozenset({"bathroom"}), None),
+            ("A-402", "mechanical", frozenset({"mechanical"}), build_hvac_plan)):
+        groups = enlarged_groups(model, occupancies, paper)
+        for index, group in enumerate(groups, start=1):
+            sheets.append(SheetSpec(number if len(groups) == 1 else f"{number}.{index}",
+                                    enlarged_title(kind, group), north_arrow=True,
+                                    scene=partial(enlarged_plan_sheet, group=group,
+                                                  build=build)))
+
+    # A junction cut at 1-1/2" = 1'-0" is a DETAIL and belongs in the 5 series.
     authored_details = [item for item in model.plan.elements_of_kind("Slice")
                         if item.kind.value == "detail"]
     next_detail = 501
@@ -311,13 +329,13 @@ def build_sheet_index(model: ResolvedModel,
         # NUMBERED BEFORE FILTERED. ``FIRST_DETAIL_SHEET`` numbers every derived detail,
         # so a detail's number is the same in the permit set and the full set — a callout
         # on A-101 pointing at A-517 must not move because a sheet ahead of it dropped.
-        sheets.append(SheetSpec(f"A-{next_detail}", _derived_detail_title(derived),
+        sheets.append(SheetSpec(f"A-{next_detail}", _derived_detail_title(derived, model),
                                 scene=partial(_derived_detail_scene, derived=derived),
                                 sets=BOTH_SETS if starred else FULL_ONLY))
         # Enlarged head/sill (C7-E4): A-512.1/.2 beside their parent, same sets.
         for index, child in enumerate(enlarged_details(model, derived), start=1):
             sheets.append(SheetSpec(f"A-{next_detail}.{index}",
-                                    f"{_derived_detail_title(derived)} · {child.part}",
+                                    f"{_derived_detail_title(derived, model)} · {child.part}",
                                     scene=partial(_derived_detail_scene, derived=child),
                                     sets=BOTH_SETS if starred else FULL_ONLY))
         next_detail += 1
@@ -325,10 +343,13 @@ def build_sheet_index(model: ResolvedModel,
     # A-601 used to be doors, windows AND fixtures on one sheet. They are three schedules
     # with three readers — a door supplier, a glazing supplier, and whoever is setting
     # plumbing — and NCS gives each its own sheet in the 6 series.
-    sheets.append(SheetSpec("A-601", "Door schedule",
-                            page=partial(_write_opening_schedule, kinds="door")))
-    sheets.append(SheetSpec("A-602", "Window schedule",
-                            page=partial(_write_opening_schedule, kinds="window")))
+    # Paged (C7-E3): a schedule that outgrows its sheet continues on A-601.1 …
+    sheets.extend(_paged("A-601", "Door schedule",
+                         partial(_write_opening_schedule, kinds="door"),
+                         page_count(opening_tables(model, "door"), paper)))
+    sheets.extend(_paged("A-602", "Window schedule",
+                         partial(_write_opening_schedule, kinds="window"),
+                         page_count(opening_tables(model, "window"), paper)))
     sheets.append(SheetSpec("A-603", "Room finish schedule",
                             page=_write_room_finish_schedule, sets=FULL_ONLY))
 

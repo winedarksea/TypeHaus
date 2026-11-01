@@ -88,5 +88,5 @@ def test_raising_the_plane_does_not_bury_a_footing_beside_an_open_excavation(cat
     assert south.result.value == "pass"
     assert "SL-SG-FLOOR" in south.message and "soil replacement" in south.message
     # 8", then 1" while the flood step existed (2026-09-03), and 8" again since the court
-    # came back flush on 2026-09-05. The footing never moved.
-    assert '8"' in south.message
+    # came back flush on 2026-09-05; 10" since FT-B-S2 went 10" deep (2026-11-01).
+    assert '10"' in south.message

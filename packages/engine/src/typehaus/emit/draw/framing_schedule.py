@@ -13,6 +13,7 @@ from dataclasses import dataclass, field, replace
 
 from typehaus.emit.draw.schedule_block import ScheduleTable
 from typehaus.emit.draw.structural_common import feet_inches, wall_center
+from typehaus.emit.draw.stud_stack_note import stud_stack_notes
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import StructuralRole
 from typehaus.model.floors import FloorSystem
@@ -389,6 +390,8 @@ def storey_framing_notes(model: ResolvedModel,
     if role:
         notes.append("ADDITIONAL WALLS BELOW DECLARED BEARING (DO NOT REMOVE): "
                      + _abbreviate(", ".join(role), 120) + ".")
+    # The walls standing on these decks: their seat and precut (decision #110).
+    notes.extend(stud_stack_notes(model, tuple({level.floor.storey for level in levels})))
     notes.append("MEMBER SIZES ARE THE AUTHORED / SOLVER-GENERATED FRAMING; SPANS ARE "
                  "MEASURED FROM THE RESOLVED MODEL AND ARE NOT AN ENGINEERED DESIGN.")
     return notes

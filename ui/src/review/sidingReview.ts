@@ -115,9 +115,7 @@ function buildFacades(targetGroups: Record<Trade, THREE.Group>, profiled: boolea
     for (const opening of openings) {
       const product = model.catalog?.door_types.find(type => type.tag === opening.type_ref);
       buildOpening(targetGroups.openings, opening, wall, center, "nordic", palette,
-        { materials, operation: product?.operation, glazed: product?.glazed,
-          trimless: product?.trimless, bookcaseDoor: product?.bookcase_door,
-          leafSet: product?.leaf_set }, picks, selected);
+        { materials, bookcaseDoor: product?.bookcase_door }, picks, selected);
     }
   }
   const openingTags = new Set(selectedOpenings.map(opening => opening.tag));

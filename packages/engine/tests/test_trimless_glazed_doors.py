@@ -31,7 +31,8 @@ def study_door(catlin_model_ro):
 def _parts(opening, wall, door_type):
     return {part.key: part for part in opening_parts(
         wall, opening, door_type.operation, is_glazed=door_type.glazed,
-        is_trimless=door_type.trimless, leaf_set=door_type.leaf_set)}
+        is_trimless=door_type.trimless, leaf_set=door_type.leaf_set)
+        if not part.key.startswith("doorway:")}
 
 
 def test_study_matches_the_neighbor_jamb_and_keeps_its_glazed_outswing(

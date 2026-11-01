@@ -94,6 +94,11 @@ def test_jamb_depth_rips_or_extends_stock_and_a_finished_floor_ro_rises():
     assert deep.jamb_extension_m / _IN == pytest.approx(2.6875) and deep.jamb_rip_m == 0
     stock = door_sizing(_Door(), door_type, standard, None, 0.0, 4.5 * _IN)
     assert stock.jamb_rip_m == stock.jamb_extension_m == 0  # 1/16" proud: set as-is
+    # A flat jamb (DoorTrim.jamb_material_ref, the sauna's cedar) is milled to the depth.
+    flat = SimpleNamespace(**vars(standard), jamb_material_for=lambda tag: "cedar")
+    sauna = door_sizing(_Door(), door_type, flat, None, 0.0, 9.25 * _IN)
+    assert sauna.jamb_material_ref == "cedar" and sauna.jamb_stock_m / _IN == pytest.approx(9.25)
+    assert sauna.jamb_rip_m == sauna.jamb_extension_m == 0
     # A maker's RO measured from the finished floor rises by the build-up (Murphy, C2-E7).
     murphy = DoorType(tag="M", width=ft(3), height=ft(6, 8), rough_opening=OpeningSize(
         width=inch(38), height=inch(82), datum="finished_floor"))

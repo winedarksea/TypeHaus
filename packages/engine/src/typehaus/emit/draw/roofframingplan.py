@@ -39,6 +39,7 @@ from typehaus.emit.draw.structural_dimensions import (
 )
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction, StructuralRole
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.roof_diaphragm import (
     DIAPHRAGM_BLOCK_CONNECTION,
     JOINT_NAILER_CONNECTION,
@@ -162,14 +163,18 @@ def roof_framing_spec(model: ResolvedModel, roof: ResolvedRoof):
                 None)
 
 
-def roof_pitch_note(roof: ResolvedRoof) -> str:
-    """Slope as rise-in-12, measured from the resolved eave/ridge planes and footprint."""
+def _rise_in_12(roof: ResolvedRoof) -> float | None:
     x0, y0, x1, y1 = outline_bbox(roof.footprint)
     across = (y1 - y0) if roof.ridge_direction == "x" else (x1 - x0)
     run = across / 2.0 if roof.form in _GABLE_FORMS else across
-    if run <= 0.0:
+    return (roof.ridge_z_m - roof.eave_z_m) / run * IN_PER_FT if run > 0.0 else None
+
+
+def roof_pitch_note(roof: ResolvedRoof) -> str:
+    """Slope as rise-in-12, measured from the resolved eave/ridge planes and footprint."""
+    rise_in_12 = _rise_in_12(roof)
+    if rise_in_12 is None:
         return ""
-    rise_in_12 = (roof.ridge_z_m - roof.eave_z_m) / run * IN_PER_FT
     return (f"{roof.form.upper()} ROOF, RIDGE RUNS {roof.ridge_direction.upper()}, "
             f"SLOPE {rise_in_12:.1f}:12 MEASURED EAVE {roof.eave_z_m:.2f} m TO RIDGE "
             f"{roof.ridge_z_m:.2f} m.")
@@ -211,6 +216,46 @@ def build_roof_framing_schedule(model: ResolvedModel, roof: ResolvedRoof) -> Sch
     return ScheduleTable(title=f"{roof.tag} MEMBER SCHEDULE",
                          columns=("MARK", "MEMBER", "SIZE", "SPACING", "QTY", "MAX LENGTH"),
                          rows=tuple(rows))
+
+
+def build_ridge_hardware_schedule(model: ResolvedModel,
+                                  roof: ResolvedRoof) -> ScheduleTable | None:
+    """The ridge cover, closures, vent and supplies this roof bills (C7-E10), or None.
+
+    Read from the take-off's own rows for this roof alone, so the sheet and the bill agree.
+    """
+    from copy import copy
+
+    from typehaus.resolve.roof_ridge_trim import END_CLOSURE_CONNECTION
+    from typehaus.takeoff.cladding_trim import _roof_edge_rows, _Rows, catalog_roof_edge
+
+    keys = {f"{roof.tag}:{m.child_key}" for m in roof.members
+            if (m.category == "ridge_cap" and catalog_roof_edge(m))
+            or m.connection == END_CLOSURE_CONNECTION}
+    if not keys:
+        return None
+    one = copy(model)
+    one.roofs = [roof]
+    taken = _Rows()
+    _roof_edge_rows(one, taken)
+    rows = []
+    for row in taken.finish():
+        if not keys & set(row["tags"]):
+            continue
+        part = str(row["part"])
+        item = str(row["profile"]).upper()
+        if row["stock_length_in"]:
+            item += f", {feet_inches(row['stock_length_in'] * M_PER_IN)} STICKS"
+        if row["note"] == "specify pitch" and _rise_in_12(roof) is not None:
+            item += f", AT {_rise_in_12(roof):.1f}:12"
+        elif row["note"]:
+            item += f", {str(row['note']).upper()}"
+        qty = (f"{row['length_ft']:.1f} LF" if row["unit"] == "LF" else f"{row['count']} EA")
+        rows.append((part if part.upper() == part else "—", item, qty))
+    vented = any(m.connection == "ridge:vented-peak" for m in roof.members)
+    return ScheduleTable(
+        title=f"{roof.tag} RIDGE — {'VENTED PEAK, BOTH SLOPES' if vented else 'CLOSED'}",
+        columns=("PART", "ITEM", "QTY"), rows=tuple(rows))
 
 
 def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof) -> list[str]:
@@ -360,7 +405,9 @@ def _emit_schedule_column(b: SceneBuilder, model: ResolvedModel, roof: ResolvedR
                           metrics: BlockMetrics) -> None:
     missing = tuple(f"{finding.check_id}: {finding.message}"
                     for finding in roof_framing_findings(model, roof))
+    ridge = build_ridge_hardware_schedule(model, roof)
     emit_block_columns(b, (build_roof_framing_schedule(model, roof),
+                           *((ridge,) if ridge is not None else ()),
                            NoteBlock("ROOF FRAMING NOTES", tuple(roof_framing_notes(model, roof))),
                            NoteBlock("NOT SHOWN — MISSING MODEL INPUTS", missing)),
                        plan_points, metrics)

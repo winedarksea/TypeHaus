@@ -8,6 +8,10 @@
 #     because it is easier to make up.
 #   * flush_raceway — a flush box an authored raceway or a floor-heat lead reaches: the steel
 #     4" square with a 1-device ring, which clears Schluter's 35 mm thermostat minimum.
+#   * luminaire, surface — a wall light on concrete: RACO 192 4" square x 1 1/2" under a flat
+#     RACO 753, so a 4 1/2" square sconce backplate covers it (geometry review C6-E10, owner
+#     2026-11-01). The box sides stay in view: field-paint them to the wall.
+#   * recessed — the fridge and freezer receptacles: an Arlington IN BOX, plug inside the wall.
 # Covers and rings are not credited a volume: none of these is marked with one.
 
 from typehaus import BoxRow, BoxStandard, Product, inch
@@ -39,7 +43,23 @@ CARLON_BH235A = Product(tag="PROD-CARLON-BH235A", brand="Carlon", model="BH235A"
                         name="2-gang SuperBlue nail-on new-work box, 35 cu. in., 3-1/2 in. deep",
                         url="https://www.elliottelectric.com/P/Item/TAB/BH235A", source=_SOURCE)
 
-BOX_PRODUCTS = (RACO_232, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A)
+# Hubbell RACO-192 / RACO-753 sheets, read 2026-11-01: drawn 4" square, 1.563" deep, 21.0 in3;
+# flat cover 4 x 4 x 0.063", 1/2" centre KO for the fixture's nipple and crossbar.
+RACO_192 = Product(tag="PROD-RACO-192", brand="RACO", model="192",
+                   name="4 in. square box, 1-1/2 in. deep, drawn, 1/2 and 3/4 in. KOs",
+                   url="https://hubbellcdn.com/specsheet/192.pdf", source=_SOURCE)
+RACO_753 = Product(tag="PROD-RACO-753", brand="RACO", model="753",
+                   name="4 in. square cover, flat, 1/2 in. centre KO (luminaire)",
+                   url="https://hubbellcdn.com/specsheet/RACO-753-SPEC-EN.pdf", source=_SOURCE)
+# Arlington catalog page Q-3, read 2026-11-01: 21.0 in3, trim 4.200 x 6.698", 3.875" deep,
+# new work (screws to the stud), duplex plate included; "plugs don't extend past the wall".
+ARLINGTON_DVFR1W = Product(tag="PROD-ARLINGTON-DVFR1W", brand="Arlington", model="DVFR1W",
+                           name="IN BOX recessed 1-gang box, trim and duplex plate, 21 cu. in.",
+                           url="https://www.aifittings.com/media/catalog-pages/Q-3.pdf",
+                           source="Geometry review C5-E2, owner 2026-11-01.")
+
+BOX_PRODUCTS = (RACO_232, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
+                RACO_192, RACO_753, ARLINGTON_DVFR1W)
 
 BOX_STANDARD = [
     BoxStandard(
@@ -61,6 +81,13 @@ BOX_STANDARD = [
             BoxRow(mounting="flush_raceway", gangs=1, box_product_ref="PROD-RACO-232",
                    cover_product_ref="PROD-RACO-768",
                    box_size=(inch(4), inch(4), inch(2.125)), designation="4 x 2-1/8 square"),
+            BoxRow(mounting="surface", gangs=1, use="luminaire", box_product_ref="PROD-RACO-192",
+                   cover_product_ref="PROD-RACO-753",
+                   box_size=(inch(4), inch(4), inch(1.5)), designation="4 x 1-1/2 square",
+                   cover_rise=inch(0.0625)),
+            BoxRow(mounting="flush", gangs=1, use="recessed",
+                   box_product_ref="PROD-ARLINGTON-DVFR1W",
+                   box_size=(inch(4.2), inch(6.698), inch(3.875)), box_volume_in3=21.0),
         ),
     ),
 ]

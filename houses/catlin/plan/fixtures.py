@@ -443,7 +443,7 @@ GARAGE_FIXTURES = (
 # ** THE LAVATORY GOES ON THE NORTH WALL, IN THE TALL HALF, AND THAT IS WHERE THE ROOM WINS. **
 # You STAND at a lavatory, so this is the fixture Exception 2's usability sentence actually
 # bites on. On the south wall it is trapped between two hard stops: 6'-8" of headroom wants
-# x >= 13'-1", D-A-STUBATH's west jamb at 13'-11 1/2" wants x <= 13'-1", and the old 13'-2"
+# x >= 13'-1", D-A-STUBATH's west jamb (then 13'-11 1/2") wanted x <= 13'-1", and the old 13'-2"
 # station missed on BOTH sides — 1" of its bowl stood inside the door's rough opening. The
 # north wall has neither stop.
 #

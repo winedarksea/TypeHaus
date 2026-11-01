@@ -21,8 +21,9 @@ def test_bedroom_carpet_presentation_matches_the_provisional_selection(catlin_pl
                     if item.tag == _BEDROOM_FINISH)
     assert material.color == "#e5dccb"
     assert material.finish == "carpet-pile"
-    # Product pile height is not the installed assembly depth; keep coordination pending.
-    assert material.finish_thickness_in == 0.75
+    # 0.56 pile + 1/16 backing allowance + 3/8 cushion, no plywood (owner 2026-11-01).
+    assert material.finish_thickness_in == 1.0
+    assert material.floor_companion_refs == (_BEDROOM_CUSHION,)
 
 
 @pytest.fixture(scope="module")
@@ -32,7 +33,7 @@ def floor_rows(catlin_model_ro):
 
 @pytest.mark.parametrize(("material_tag", "model", "url"), [
     (_BEDROOM_FINISH, "7L89100101", "https://www.lowes.com/pd/5013298681"),
-    (_BEDROOM_CUSHION, "150553488-33", "https://www.homedepot.com/p/203393650"),
+    (_BEDROOM_CUSHION, "150553488-32", "https://www.homedepot.com/p/203393647"),
 ])
 def test_bedroom_materials_resolve_to_the_selected_products(catlin_plan, material_tag, model, url):
     material = next(item for item in catlin_plan.library.materials if item.tag == material_tag)
@@ -82,18 +83,14 @@ def test_bedroom_estimate_and_installation_visit_include_every_selected_layer(
                               products=product_labels(catlin_plan))
     rows = estimate["sections"]["floor_finishes"]["rows"]
     visits = load_tasks(CATLIN).visits.entries
-    for key in (_BEDROOM_FINISH, _BEDROOM_CUSHION, "catlin-carpet-underlayment"):
+    for key in (_BEDROOM_FINISH, _BEDROOM_CUSHION):
         billed = [row for row in rows if row["key"] == key]
         assert len(billed) == 1
-        # Underlayment is $0 on the low side (owner: only if the mock-up needs it); high stays priced.
-        if key == "catlin-carpet-underlayment":
-            assert billed[0]["cost"]["low"] >= 0 and billed[0]["cost"]["high"] > 0
-        else:
-            assert billed[0]["cost"]["low"] > 0
+        assert billed[0]["cost"]["low"] > 0
         assert not any(row["key"] == key for row in estimate["unpriced"])
         assigned = [slug for slug, visit in visits.items()
                     if f"floor_finishes:{key}" in visit.rows]
         assert assigned == ["task/flooring/building/carpet"]
     cushion_row = next(row for row in rows if row["key"] == _BEDROOM_CUSHION)
-    assert cushion_row["product"] == "Future Foam 150553488-33"
+    assert cushion_row["product"] == "Future Foam 150553488-32"
     assert cushion_row["labour"] == {"low": 0, "high": 0}

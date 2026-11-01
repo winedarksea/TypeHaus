@@ -178,7 +178,7 @@ def test_generic_standing_seam_keeps_generic_ridge_cover(catlin_model_ro):
         material = library.material(tag)
         return material.model_copy(update={"roof_ridge_trim_profile": None}) if material else None
 
-    model = SimpleNamespace(plan=SimpleNamespace(
+    model = SimpleNamespace(roofs=catlin_model_ro.roofs, plan=SimpleNamespace(
         by_tag=catlin_model_ro.plan.by_tag,
         library=SimpleNamespace(resolve_assembly=library.resolve_assembly,
                                 material=generic_material)))

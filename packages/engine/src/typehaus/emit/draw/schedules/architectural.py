@@ -11,7 +11,11 @@ from contextlib import suppress
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from typehaus.emit.draw.schedules.blocks import _lay_out_blocks
+from typehaus.emit.draw.schedules.blocks import (
+    _lay_out_blocks,
+    draw_note_page,
+    paginate_note_blocks,
+)
 from typehaus.emit.draw.schedules.cover import (  # noqa: F401 — re-exported
     _code_summary_rows,
     _gate_statement,
@@ -23,11 +27,13 @@ from typehaus.emit.draw.schedules.energy import (  # noqa: F401 — re-exported
     _write_ventilation_sheet,
 )
 from typehaus.emit.draw.schedules.openings import (  # noqa: F401 — re-exported
+    HAND_LEGEND,
     _write_opening_schedule,
     _write_room_finish_schedule,
 )
 from typehaus.emit.draw.schedules.tables import _add_table
 from typehaus.emit.draw.sheet_writer import schedule_sheet, section
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 if TYPE_CHECKING:  # pragma: no cover — annotations only
@@ -73,7 +79,8 @@ def _general_note_blocks(model: ResolvedModel,
     checklist = profile.name if profile else "see cover"
     blocks: list[tuple[str, list[str]]] = [
         ("CODE & JURISDICTION", [
-            f"• Code: {edition}; declared checklist {checklist}.",
+            f"• Code: {edition};",
+            f"  declared checklist {checklist}.",
             "• Verify local amendments with the authority having jurisdiction.",
             "• Climate zone 6. See G-004 for the envelope summary.",
         ]),
@@ -106,11 +113,29 @@ def _general_note_blocks(model: ResolvedModel,
             "• Where a report number is cited, the substitute",
             "  carries an equivalent listing for the same use.",
         ]),
+        ("FIREBLOCKING (R302.11)", _fireblocking_block(model)),
     ]
     index = _sheet_note_index(model)
     if index:
         blocks.append(("SHEET NOTE INDEX", index))
     return blocks
+
+
+def _fireblocking_block(model: ResolvedModel) -> list[str]:
+    """R302.11 in concealed spaces; the soffit and stringer lines only where the model has
+    soffits or stairs (F2-009). Materials per R302.11.1."""
+    lines = ["• Fireblock concealed wall spaces at each floor",
+             "  and ceiling level, and at 10 ft max horizontally."]
+    if model.soffits:
+        lines += ["• At soffits and drop ceilings, where concealed",
+                  "  vertical and horizontal spaces meet."]
+    if model.stairs:
+        lines += ["• Between stair stringers at the top and bottom",
+                  "  of each run."]
+    return lines + ["• Seal vent, pipe, duct and cable penetrations",
+                    "  at floor and ceiling with approved material.",
+                    "• R302.11.1: 2x lumber, 23/32\" WSP, 1/2\" gypsum,",
+                    "  or mineral wool / glass fiber batts held in place."]
 
 
 def _envelope_block(model: ResolvedModel) -> list[str]:
@@ -248,16 +273,103 @@ def _write_specifications(pdf, model: ResolvedModel, number: str, name: str,
     with schedule_sheet(pdf, model, number, name, heading_xy=(0.03, 0.945)) as fig:
         blocks = [(f"{num}  {title}", [f"• {line}" for line in lines])
                   for num, title, lines in sections]
+        trim = interior_trim_spec(model) if not disciplines else []
+        if trim:  # MasterFormat order: after the last section that sorts ahead of it
+            at = sum(1 for num, _title, _lines in sections if num < "06 22 00")
+            blocks.insert(at, ("06 22 00  INTERIOR TRIM", trim))
         if not blocks:
             fig.text(0.03, 0.90,
                      "No specification content is authored for this discipline.",
                      fontsize=7, family="monospace", va="top")
             return
-        overflow = _lay_out_blocks(fig, blocks)
+        # Wrapped to the column (spec lines are prose); what spills past one page is named.
+        size = tuple(fig.get_size_inches())
+        pages = paginate_note_blocks(blocks, size)
+        draw_note_page(fig, pages[0], size)
+        overflow = len({text for page in pages[1:] for _c, _r, text, title in page if title})
         if overflow:
             fig.text(0.03, 0.06,
                      f"NOTE: {overflow} section(s) did not fit and are NOT printed.",
                      fontsize=7, family="monospace", color="#8a1c1c")
+
+
+def interior_trim_spec(model: ResolvedModel) -> list[str]:
+    """A-002's 06 22 00 block, read off the house's ``TrimStandard`` (C7-E11): stocks, real
+    thicknesses, reveal, which stock stands proud, milled or bought, jambs and skirt."""
+    from typehaus.resolve.door_floor_finish import trim_standard_of
+
+    std = trim_standard_of(model.plan)
+    if std is None:
+        return []
+    mats = {m.tag: m for m in model.plan.library.materials}
+
+    def stock(ref: str) -> str:
+        how = "milled" if getattr(mats.get(ref), "requires_custom_milling", False) else "bought"
+        return f"{ref} {_inch(std.thickness_for(ref).inches)}, {how}"
+
+    def proud(base: str, casing: str) -> str:
+        step = std.thickness_for(base).inches - std.thickness_for(casing).inches
+        if abs(step) < 1e-4:
+            return "base and casing flush"
+        return f"{'base' if step > 0 else 'casing'} stands {_inch(abs(step))} proud"
+
+    base = std.base_material_ref or std.material_ref
+    lines = [f"• Casing {stock(std.material_ref)},",
+             f"  {_inch(std.casing_width.inches)} {std.profile}; "
+             f"{_inch(std.reveal.inches)} reveal.",
+             f"• Base {stock(base)}, {_inch(std.base_height.inches)};",
+             f"  {proud(base, std.material_ref)} of the casing."]
+    for override in std.room_trims:
+        casing = override.casing_material_ref or override.material_ref
+        lines += [f"• {_listed(override.rooms)}:",
+                  f"  base {stock(override.material_ref)}"
+                  + ("" if casing == override.material_ref else f"; casing {casing}") + ";",
+                  f"  {proud(override.material_ref, casing)}."]
+    for accent in std.door_trims:
+        width = f", {_inch(accent.casing_width.inches)} wide" if accent.casing_width else ""
+        face = f" ({accent.room} face)" if accent.room else ""
+        lines.append(f"• {_listed(accent.doors)}{face}: casing {accent.material_ref}{width}.")
+    for opening in model.openings:
+        sizing = opening.sizing
+        if sizing is not None and sizing.jamb_material_ref and sizing.jamb_depth_m:
+            ref = sizing.jamb_material_ref
+            lines += [f"• {opening.tag}: full-depth flat jamb, {ref},",
+                      f"  {_inch(std.thickness_for(ref).inches)} x "
+                      f"{_inch(sizing.jamb_depth_m / M_PER_IN)}, one piece."]
+    if std.jamb_stock_depths:
+        depths = " / ".join(_inch(d.inches) for d in std.jamb_stock_depths)
+        lines += [f"• Stock jambs {depths}: ripped from the next stock up",
+                  "  or extended from the deepest (A-601 Jamb column);",
+                  "  billed as door jamb rip / extension."]
+    if std.stair_skirt is not None:
+        skirt = std.stair_skirt
+        length = std.stock_length_for(skirt.material_ref)
+        lines.append(f"• Stair skirt {skirt.material_ref} {_inch(skirt.thickness.inches)} x "
+                     f"{_inch(skirt.board_width.inches)} on {_listed(skirt.stair_refs)}"
+                     + (f", {length.feet:g}' stock." if length else "."))
+    if std.uncased_doors:
+        lines.append(f"• Uncased (jamb and drywall): {_listed(std.uncased_doors)}.")
+    if std.excluded_rooms:
+        lines.append(f"• No base or casing: {_listed(std.excluded_rooms)}.")
+    return lines
+
+
+def _inch(value_in: float) -> str:
+    """Inches to the 1/32": ``0.71875`` -> ``23/32"``, ``3.5`` -> ``3 1/2"``."""
+    from math import gcd
+
+    whole, ticks = divmod(round(value_in * 32), 32)
+    if not ticks:
+        return f'{whole}"'
+    common = gcd(ticks, 32)
+    fraction = f"{ticks // common}/{32 // common}"
+    return f'{whole} {fraction}"' if whole else f'{fraction}"'
+
+
+def _listed(tags, limit: int = 2) -> str:
+    """At most ``limit`` tags then a count, so a note line stays one column wide."""
+    tags = list(tags)
+    return ", ".join(tags[:limit]) + (f" +{len(tags) - limit}" if len(tags) > limit else "")
 
 
 #: Abbreviations this set actually prints, and what each expands to. Kept short and
@@ -289,7 +401,8 @@ ABBREVIATIONS = (
 #: are cited so a reader who wants the geometry can find it, and so a symbol that stops
 #: being drawn stops being explained here in the same edit.
 SYMBOLS = (
-    ("D1, W3 in a bubble", "door / window mark, keyed to A-601 and A-602 (plan_marks.py)"),
+    ("D13a, W3 in a bubble",
+     "door / window mark, one per type, RO and frame; keyed to A-601 / A-602 (plan_marks.py)"),
     ("K1 in a circle", "keyed note, listed in the notes band on that sheet (keyed_notes.py)"),
     ("Split circle, 1 over A-501",
      "detail callout: detail 1, drawn on sheet A-501 (callouts.py)"),
@@ -333,9 +446,14 @@ def _write_symbols_legend(pdf, model: ResolvedModel, number: str, name: str) -> 
         _add_table(fig, weights, ("Name", "Width", "What it draws"),
                    bbox=(0.62, 0.62, 0.35, 0.25))
 
-        section(fig, 0.03, 0.57, "ABBREVIATIONS", fontsize=8, va="top")
+        section(fig, 0.03, 0.62, "DOOR HAND AND OPENING SCHEDULES (A-601, A-602)",
+                fontsize=8, va="top")
+        _add_table(fig, [list(row) for row in HAND_LEGEND], ("Column / value", "Meaning"),
+                   bbox=(0.03, 0.40, 0.70, 0.19))
+
+        section(fig, 0.03, 0.36, "ABBREVIATIONS", fontsize=8, va="top")
         half = (len(ABBREVIATIONS) + 1) // 2
         _add_table(fig, [list(row) for row in ABBREVIATIONS[:half]], ("", ""),
-                   bbox=(0.03, 0.13, 0.45, 0.41))
+                   bbox=(0.03, 0.13, 0.45, 0.20))
         _add_table(fig, [list(row) for row in ABBREVIATIONS[half:]], ("", ""),
-                   bbox=(0.52, 0.13, 0.45, 0.41))
+                   bbox=(0.52, 0.13, 0.45, 0.20))

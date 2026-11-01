@@ -33,6 +33,7 @@ from dataclasses import dataclass
 
 from typehaus.emit.draw.annotate import LabelSpec, PlacedLabel, dodge, label_box
 from typehaus.emit.draw.elevation_annotate import (
+    MIN_RUNG_PAPER_IN,
     emit_grade_hatch,
     emit_level_dimensions,
     emit_level_markers,
@@ -358,7 +359,8 @@ def _emit_level_column(b: SceneBuilder, model: ResolvedModel, edge_u: float) -> 
               for index, level in enumerate(levels)]
     emit_level_markers(b, levels, dodge(labels), dim_u,
                        height=ANNO_IN, height_pt=ANNO_PT)
-    emit_level_dimensions(b, levels, dim_u)
+    emit_level_dimensions(b, levels, dim_u, min_paper_in=MIN_RUNG_PAPER_IN,
+                          scale=SECTION_RESERVATION_SCALE)
 
 
 def _emit_room_names(b: SceneBuilder, model: ResolvedModel, plane: CutPlane,

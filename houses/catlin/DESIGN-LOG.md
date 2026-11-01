@@ -1,3 +1,21 @@
+## Walls stand on the subfloor; the cap comes down to meet it (2026-11-01, C3-E3)
+
+- **The stack closes.** Storey datums stay the top of joists. Every framed main, second and
+  attic wall now stands on the 3/4" sheet over them (`resolve/plate_seat.py`, decision #110),
+  and a bearing wall's double top plate meets the joist soffit: 3/4 + 1 1/2 + 102 7/8 + 3 =
+  108 1/8". Partitions keep their 3/4" SDPW gap and come to 102 1/8" studs. Was 103 1/2" and
+  102 7/8", with every plate buried 3/4" in the plywood (15/16" in the cap) and a 1/8" gap
+  under the joists. A-301 and S-101 print the precut. Attic walls lose 3/4" of stud; the
+  `RAFTER_PLATE` at 240 3/4" already stood on the subfloor and holds.
+- **One plate height on the main floor.** `SL-M-DECK`'s cover goes 4 3/8" -> 4 3/16" so the
+  cap tops at +3/4" with the plywood (decision #111, amending #61): the C-line walls straddle
+  the edge level, `W-M-E1`/`-N1`/`-N1B` take a 3/4" ply strip on the LSL rim, and the 31.5 lf
+  L is a low 5 mm reducer, not a flush T. Still inside BuildDeck's 4" row; the 180° rib hooks
+  still fit.
+- **What stays put.** Windows, backing bands, girt courses (still registered to the sills'
+  datum) and every interior door head. An interior door's RO now starts at the subfloor;
+  exterior doors keep their coordinated sills (open, `plans/TODO.md`).
+
 ## Owner decisions: camera shed, garage receptacles, 1" data trunk (2026-10-30)
 
 - **Cameras shed on battery.** HA turns off the doorbell's and both cameras' PoE ports when the
@@ -6661,6 +6679,9 @@ No microwave is modelled. Supersedes the two 2026-10-23 garage entries.
 
 ## Patio sill interference: retain XMN5 and formed approach recess (2026-10-26)
 
+> Superseded 2026-11-01: XMN5 dropped after the sheathing frame anchor moved the sill 1/2" out;
+> the recess alone now clears the seat.
+
 Reviewer follow-up confirms the FAIL → PASS change is a deliberate design revision.
 The approach originally intersected the remaining W-B-S3 curb assembly. Retain both
 catalog Endura XMN5 and AO-B-PATIO-CURB-APPROACH: the extender moves the approach start
@@ -7053,3 +7074,38 @@ the body top now; it read 4 FAIL, now 4 PASS.
   ceiling. DU-ERV-OA now rides 84 1/2" AFF over the working spaces; both sauna radials moved
   to W-B-CW's x=1'-7" bay; DU-ERV-RISER-SUP leaves its bay east of ED-B-BACKUP-ENCL (+2
   elbows, +0.016" on supply). Extract still governs at 0.441"; 203.9 cfm delivered.
+
+## Fit and product data (2026-11-01, geometry review REPORT items 14-24)
+
+The ten escalations, worked in parallel lanes. What was decided and why, where it isn't obvious:
+
+- **58720XX stays in the library.** It is a trim-first head: the 4" return lies on the frame
+  head, needing ~0.38" over it (the outie buck leaves 0.27"), and its back leg tops out 5.20" up,
+  1.05" over the K6 head course, so the cap cannot lap it. The owner kept 58114XX.
+- **W-M-STOS was retyped, not re-routed.** `haus route` found no lane for PR-M-S-BATH1-DRAIN into
+  W-M-HS1 (DU-M-ERV-EXH-TRUNK fills FS-S-WEST's 8 7/8" web window at x=3'-9.8") or the NW chase
+  (ERV risers, OA duct, PR-B-KITCH-DRAIN, W-B-W1's footing). The owner's stated last resort,
+  accepted: the powder face holds and the mud closet gives up 2".
+- **The ERV's real port grid does not fit under the plenums.** 21.3" from case top to ceiling;
+  an 8" duct in 2" wrap is 12" OD and its gored elbow 12", so crossing another needs ~24"; OA/EA's
+  wraps overlap 2 1/4" at 9 3/4" centres. Broan's guide puts a 6->8 transition and 12" of flex on
+  each port (R >= 3"). Held by the owner; only the supply trunk lands on its collar.
+- **Trap arms:** 8 fixtures gained 3D vents; no wet vent was used because none of the open cases
+  clearly meets UPC 908. The 13 left need arm re-routes as well as vents: plumber pass.
+- **Carpet 3/8", not 7/16":** with the cushion cut back at a Z-bar both tuck onto the hard floor;
+  the field stands 0.250" proud with 3/8" (inside A117.1 303.2's untreated 1/4") and 0.3125" with
+  7/16" (wants a reducer).
+- **Peninsula 40 5/8":** 1 5/8 + 24 + 15. The decision's 40 3/4 came from an earlier 1 3/4"
+  overhang option; the owner kept 40 5/8.
+- **FT-B-S2/S3 deepened to 10"**, not narrowed: narrowing changed the court free body and added a
+  schedule row anyway. TB-SG-W1/E1 are still 8" (open in TODO).
+- **Murphy door narrowed to a custom 32" RO.** At the finished-floor datum the 38" RO's east jamb
+  stood under 80.4" of raked plate. With the west king on the wall's end, 32" is the widest whole
+  inch that clears (1/8" under the plate).
+- **Sauna R305:** a dropped-ceiling `clear_height_m` exposed 6'-11 1/16" against R305.1's 7'-0".
+  IRC R202 defines a bathroom by "a bathtub or shower", so the sauna is one (the basin rule is
+  NEC 100's, for receptacles). The ceiling was raised after re-routing PR-B-COND, PR-B-SAUNA-VENT
+  and DU-B-ERV-R-SAUNA-SUP, two of which already sat in the liner.
+- **Receptacle spacing** now measures along the floor line: a wall standing inside a room's ring is
+  traced as a notch (`floor_line_ring`), and a stair well breaks a face only where the floor strip
+  in front of it reaches the well (`facing_well_intervals`).

@@ -13,13 +13,12 @@ BEDROOM_CARPET_PRODUCTS = (
                    'Light warm greige is the alternative color direction. '
                    'Sample, current quote, roll/seam layout and measured assembly '
                    'remain pending; notes/bedroom_carpet.md.'),
-    Product(tag="PROD-FUTURE-FOAM-150553488-33", brand="Future Foam",
-            model="150553488-33", sku="203393650",
-            name='Rebond carpet cushion, 8 lb/ft3 density, 7/16 inch thick',
-            url="https://www.homedepot.com/p/203393650",
-            source='Provisional bedroom cushion 2026-10-23. Confirm carpet manufacturer '
-                   'acceptance and warranty requirements before purchase. A manufacturer-'
-                   'approved 3/8-inch, 8 lb/ft3 cushion is the height-coordination '
-                   'alternative, not a selected product. Theater/stair pad stays separate; '
-                   'notes/bedroom_carpet.md.'),
+    Product(tag="PROD-FUTURE-FOAM-150553488-32", brand="Future Foam",
+            model="150553488-32", sku="203393647",
+            name='Rebond carpet cushion, 8 lb/ft3 density, 3/8 inch thick',
+            url="https://www.homedepot.com/p/203393647",
+            source='Bedroom cushion, owner 2026-11-01: 3/8 inch replaces the 7/16 inch '
+                   '150553488-33 so the carpet meets the oak at a Z-bar with no reducer. '
+                   'Confirm carpet manufacturer acceptance and warranty requirements before '
+                   'purchase. Theater/stair pad stays separate; notes/bedroom_carpet.md.'),
 )

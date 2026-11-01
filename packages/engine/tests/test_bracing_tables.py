@@ -119,14 +119,15 @@ def test_an_opening_between_rows_rounds_up():
     assert min_panel_length_in("CS-WSP", 9.0, 200.0) is None
 
 
-def test_a_wall_between_height_columns_takes_the_LARGER_of_the_two():
-    """Table R602.10.5 is NOT monotonic in wall height — at an 80" opening an 8'-0" wall
-    needs 32" and a 9'-0" wall 30" — so rounding up is not the conservative direction.
-    The garage's 8'-4" wall is the case."""
+def test_a_wall_between_height_columns_interpolates():
+    """Table R602.10.5 is NOT monotonic in wall height, so neither bracketing column alone is
+    the conservative read; footnote a's linear interpolation is. The garage's 8'-4" wall and
+    a platform wall on its subfloor, 107 3/8" plate to plate (decision #110), are the cases."""
     read = min_panel_length_in("CS-WSP", 100.0 / 12.0, 84.0)
     assert read is not None
-    assert read.value == 35   # the 8 ft column, not the 9 ft column's 32
-    assert "not monotonic" in read.row
+    assert read.value == 34.0   # 35 + (32 - 35) / 3
+    assert "footnote a" in read.row
+    assert min_panel_length_in("CS-WSP", 107.375 / 12.0, 84.0).value == 32.2
 
 
 def test_the_intermittent_methods_keep_their_own_rows():

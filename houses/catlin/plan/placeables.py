@@ -51,11 +51,13 @@ BASEMENT_PLACEABLES = [
     # (ED-B-PLAY-N-DATA1). `mount=WALL` with the panel's bottom at 2'-6" puts its top at
     # 6'-8" under an 8'-3 1/2" ceiling. **An 8" concrete wall takes anchors, not blocking** —
     # there is no stud bay behind this and the mount is a mechanical fixing into the pour.
-    Furniture(uid="X99HBG99WJ", tag="FURN-B-PLAY-TV", type_ref="FURN-TV-98-WALL", room="RM-B-PLAY-N",
+    # The panel stands 3 1/2" off the wall on its mount (`normal_gap`, plan/media_types.py) so
+    # RC1 and DATA1's surface boxes sit behind it (C6-E11).
+    Furniture(uid="X99HBG99WJ", tag="FURN-B-PLAY-TV", type_ref="FT-TV-98-PANEL", room="RM-B-PLAY-N",
               mount=Mount(kind=MountKind.WALL, elevation=inch(30)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-B-N1", face="left", distance_from_start=inch(111),
-                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+                  normal_gap=inch(3.5), rotation_offset=deg(-180)))),
     # The U, opening north at the screen. 11'-0" of back run leaves 2'-9" either side of a
     # 16'-6" box. Moving it 18" north to y 23'-0"..31'-0" leaves 2'-6" beyond the open
     # D-B-PLAY leaves and 3'-9 5/8" between the bookcases and its south face, easing entry
@@ -196,9 +198,12 @@ MAIN_PLACEABLES = [
     # protruding object — and unenforced in a dwelling. No clearance zone in RM-M-LIVING
     # overlaps its plan rectangle and no door sweeps it; no casework meets it since
     # 2026-10-20.
+    # 64 3/16" since 2026-11-01: RM-M-LIVING's AFF reads the cap at its centroid, which came
+    # down 3/16" to the plywood (decision #111); the shelf stays on the brick, 64" over the
+    # hearth's LVP.
     Furniture(uid="5RWQRV1P72", tag="FURN-M-FIRE-MANTEL",
               type_ref="FT-MANTEL-ELM-46", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(64)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(64.1875)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(88),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
@@ -306,22 +311,22 @@ MAIN_PLACEABLES = [
     # R4A47142RN, 320A53KSR4, 9222FS9Q20 (WJTG6V6T09 is the balcony door's wall track).
     # Three cellular blinds cover WIN-M-LIV-E1/E2 (27x48) and WIN-M-DINING-E (63x48), the
     # east-facing living-room windows. Their 34" sill and 82" head match the rough openings.
-    # Mount elevations are AFF; the 15/16" finished-floor build-up means 33 1/16" AFF puts
+    # Mount elevations are AFF; the 3/4" finished-floor build-up means 33 1/4" AFF puts
     # each 48" shade envelope exactly between those storey-datum elevations. The 3D symbol
     # draws the shade raised into a compact stack beneath the 82" head. Stations follow the
     # window centres since 2026-10-16; the E3 and EAST-MID blinds are retired.
     Furniture(uid="CBLIV001EA", tag="FURN-M-LIV-BLIND-E1", type_ref="FT-CELLULAR-BLIND-2748", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.0625)),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.25)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(48),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     Furniture(uid="CBLIV002EA", tag="FURN-M-LIV-BLIND-E2", type_ref="FT-CELLULAR-BLIND-2748", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.0625)),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.25)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(128),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     Furniture(uid="CZ7XEJYHBQ", tag="FURN-M-LIV-BLIND-DINING", type_ref="FT-CELLULAR-BLIND-6348", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.0625)),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.25)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(216),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
@@ -843,7 +848,8 @@ ATTIC_PLACEABLES = [
     # 3 7/8" clear of the wall's own west end at 9'-7 1/2". Rotation is omitted, i.e. `deg(0)`,
     # which backs it NORTH onto the wall — local +y is the object's BACK
     # (`resolve/placeables.py`), a convention all three bar pieces used to get backwards.
-    # Its east end leaves 4" to D-A-STUBATH's arc (storeys/attic_studio.py).
+    # Its east end leaves 1'-9" to D-A-STUBATH's arc since the door went one module east
+    # (2026-11-01, storeys/attic_studio.py).
     #
     # The tag and the uid are kept, so the element's GlobalId follows it across the retype the
     # way RM-A-STUDIO kept CAR401AAAA. BK-A-BATH-S (plan/backing.py) is the anchor rail IKEA

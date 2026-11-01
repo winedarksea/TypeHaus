@@ -40,6 +40,7 @@ from typehaus.resolve.opening_fireblock import resolve_fireblocks
 from typehaus.resolve.paneling import resolve_paneling
 from typehaus.resolve.partition_top import apply_partition_tops
 from typehaus.resolve.placeables import resolve_placeables
+from typehaus.resolve.plate_seat import apply_plate_seats, door_sill_m
 from typehaus.resolve.platform import (
     extend_walls_to_foundation,
     extend_walls_to_platform,
@@ -90,6 +91,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
             model.junctions.extend(junctions)
             findings.extend(junction_findings)
         extend_walls_to_platform(model)
+        # Walls stand on the subfloor (#110). Before openings: a floor-level door's RO
+        # starts at the seat.
+        apply_plate_seats(model)
 
     with _stage("openings"):
         _resolve_openings(plan, model, findings)
@@ -362,6 +366,7 @@ def resolve_preview(plan: PlanModel) -> ResolvedModel:
         model.walls.extend(walls)
         model.junctions.extend(junctions)
     extend_walls_to_platform(model)
+    apply_plate_seats(model)
     _resolve_openings(plan, model, findings)
     extend_walls_to_foundation(model)  # reads the openings — see the full pipeline above
     resolve_envelope_geometry(model)
@@ -401,7 +406,7 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
             kind = {"Door": "door", "Window": "window",
                     "RoughOpening": "rough_opening"}[el.element_kind]
             axis_len = length(sub(rw.axis[1], rw.axis[0]))
-            sill = _opening_sill(el)
+            sill = door_sill_m(plan, el, rw, _opening_sill(el))
             sizing = size_door(plan, el, rw, standard, finishes, sill,
                                partial(_opening_center, plan, el, rw, axis_len))
             if sizing is not None:

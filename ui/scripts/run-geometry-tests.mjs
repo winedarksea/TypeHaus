@@ -52,7 +52,7 @@ try {
   const { runPlantBuilderTests } = await server.ssrLoadModule("/src/three/builders/plants.test.ts");
   const { runMirrorBuilderTests } = await server.ssrLoadModule("/src/three/builders/mirrors.test.ts");
   const { runLightRunBuilderTests } = await server.ssrLoadModule("/src/three/builders/lightRun.test.ts");
-  const { runTrimlessGlazedDoorTests } = await server.ssrLoadModule("/src/three/builders/doorProducts.test.ts");
+  const { runOpeningPartTests } = await server.ssrLoadModule("/src/three/builders/openings.test.ts");
   const { runCurvedPlaceableTests } = await server.ssrLoadModule("/src/three/builders/curvedPlaceables.test.ts");
   const { runWallBandShapeTests } = await server.ssrLoadModule("/src/three/builders/wallBandShape.test.ts");
   const { runWallBandSolidTests } = await server.ssrLoadModule("/src/three/builders/wallBandSolid.test.ts");
@@ -88,8 +88,6 @@ try {
   runDoorwayTests();
   const { runFloorCoverTests } = await server.ssrLoadModule("/src/three/builders/floorCover.test.ts");
   runFloorCoverTests();
-  const { runCasedDoorTests } = await server.ssrLoadModule("/src/three/builders/casedDoors.test.ts");
-  runCasedDoorTests();
   runPlanGeometryTests();
   runOpeningGeometryTests();
   runArchGeometryTests();
@@ -157,7 +155,7 @@ try {
   runPlantBuilderTests();
   runMirrorBuilderTests();
   runLightRunBuilderTests();
-  runTrimlessGlazedDoorTests();
+  runOpeningPartTests();
   runCurvedPlaceableTests();
   runWallBandShapeTests();
   runWallBandSolidTests();

@@ -64,6 +64,13 @@ class _Rows:
         ]
 
 
+def leader_length_m(leader) -> float:
+    """A leader's drop, plus its gooseneck offset when the outlet is not over the drop."""
+    offset = (_path_length_m([leader.outlet.xy_m, leader.position.xy_m])
+              if leader.outlet is not None else 0.0)
+    return max(leader.top_elevation.meters - leader.bottom_elevation.meters, 0.0) + offset
+
+
 def drainage_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """The stormwater order: gutter and leader by the foot, trenches and wells by both."""
     from typehaus.model.landscape import RainGarden
@@ -83,13 +90,12 @@ def drainage_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                          length_m=_path_length_m([p.xy_m for p in element.path]))
             elif isinstance(element, Downspout):
                 # A leader is billed by its drop, plus the gooseneck's offset when its
-                # outlet is not over the drop (the elbows are in the rate).
-                offset = (_path_length_m([element.outlet.xy_m, element.position.xy_m])
-                          if element.outlet is not None else 0.0)
-                rows.add("downspout", element.material or "",
-                         element.diameter.meters / M_PER_IN, tag=element.tag,
-                         length_m=max(element.top_elevation.meters
-                                      - element.bottom_elevation.meters, 0.0) + offset)
+                # outlet is not over the drop (the elbows are in the rate). A catalog one
+                # bills by part under [cladding_trim]; its buried extension stays here.
+                if element.product is None:
+                    size_m = 2.0 * max(element.half_extents_m())
+                    rows.add("downspout", element.material or "", size_m / M_PER_IN,
+                             tag=element.tag, length_m=leader_length_m(element))
                 if element.extension is not None:
                     ext = element.extension
                     # The buried run plus the riser from the leader's foot down to its inlet.

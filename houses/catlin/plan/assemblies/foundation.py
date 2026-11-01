@@ -203,10 +203,11 @@ SLAB_FLOOR = Assembly(
 # (x 18'-36', y 13'-36', 414 SF); the other 819 SF is wood I-joists on the same 18' span,
 # and the two systems are interchangeable bay by bay because their depths match.
 #
-# The depth is the whole point. 4 3/8" cap + 10" form = 14 3/8", which is exactly the
+# The depth is the whole point. 4 3/16" cap + 10" form = 14 3/16", which is exactly the
 # 11 7/8" joist beside it (truss west of x=18', I-joist east — same depth either way) plus
 # its 3/4" plywood subfloor, its 1 1/2" mudsill and the 1/16" compressed gasket under that:
-# same bearing seat, same finished-floor plane, same 18' span to the x=18' bearing line.
+# same bearing seat, same wall-plate plane (+3/4", decisions #110/#111), same 18' span to
+# the x=18' bearing line. (4 3/8" until 2026-11-01, 3/16" proud of the plywood.)
 # (The old "4 5/8" cap + 8" form = 12 5/8"" reading here predates the 2026-08-23 deepening
 # and was stale until 2026-09-12.) Both numbers are owned by ``params/main_deck.py``
 # (EPS_CAP / EPS_FORM_DEPTH); ``integrity.slab_thickness`` fails the build if these two
@@ -215,7 +216,7 @@ SLAB_FLOOR = Assembly(
 # ** BUILDDECK IS THE BASIS OF DESIGN. ** The row actually read is BuildDeck's 10" deck /
 # 4" cap at 2-#5 beam bars: 20'-0" span at 62 psf live load, f'c 4,000 psi, fy 60 ksi,
 # +15 psf additional dead load, deflection < L/480. The span here is 18'-0" at a cap
-# 3/8" deeper than the row, and the row is quoted onto ``SL-M-DECK.published_span`` where
+# 3/16" deeper than the row, and the row is quoted onto ``SL-M-DECK.published_span`` where
 # ``structural.slab_published_span`` grades it and refuses it if the section drifts.
 # LiteDeck (LiteForm) and Insul-Deck stay named alternates — the depth-matching argument
 # above is product-neutral, which is the point — but neither publishes a span table for
@@ -227,7 +228,7 @@ SLAB_FLOOR = Assembly(
 DECK_EPS_INT = Assembly(
     tag="DECK_EPS_INT",
     layers=(
-        Layer(name="concrete-cap", material_ref="concrete", thickness=inch(4.375),
+        Layer(name="concrete-cap", material_ref="concrete", thickness=inch(4.1875),
               function=LayerFunction.STRUCTURE, concrete=DECK_CAP_MIX),
         Layer(name="eps-form", material_ref="eps-deck-form", thickness=inch(10.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
@@ -240,7 +241,7 @@ DECK_EPS_INT = Assembly(
               function=LayerFunction.FINISH),
     ),
     interfaces=(CONCRETE_BEARING,),
-    source="catlin-house main-floor deck — LiteDeck 10\" EPS stay-in-place beam (8\" base panel + 2\" top hat) with a 4 3/8\" cast cover (14 3/8\" total, so the soffit lands on the same flat bearing seat as the wood bays' mudsill), steel furring rib and a 5/8\" gypsum R316.4 thermal barrier under it; replaced CATLIN_DECK_9_INT 2026-08-21, deepened 2026-08-23",
+    source="catlin-house main-floor deck — LiteDeck 10\" EPS stay-in-place beam (8\" base panel + 2\" top hat) with a 4 3/16\" cast cover (14 3/16\" total, so the soffit lands on the same flat bearing seat as the wood bays' mudsill), steel furring rib and a 5/8\" gypsum R316.4 thermal barrier under it; replaced CATLIN_DECK_9_INT 2026-08-21, deepened 2026-08-23",
 )
 
 # --- garage (freestanding: ICF stem + 2x6 wood wall) ---------------------------

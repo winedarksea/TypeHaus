@@ -152,14 +152,13 @@ NEC_FILL_ATTIC = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-STU-W", face="left", distance_from_start=inch(5.46875),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # ** RC6 MOVED EAST OF THE DOOR, 15'-6" -> 17'-2" (2026-09-09), BECAUSE IT WAS INSIDE THE
-    # ROUGH OPENING. ** D-A-STUBATH slid east with the kitchenette and its RO is
-    # 13'-11 1/2"..15'-11 1/2" now; 15'-6" is inside it. ** NOTHING GRADES THAT ** — no rule in this engine
-    # tests a wall device against an opening — so it is caught here and by eye, and it is
-    # exactly the defect ED-G-SW/ED-G-EXT-SW still carry in the garage. West of the unit is not
-    # available (the kitchenette starts 8 7/16" off this wall's own west end), so east of the
-    # door it is: 17'-2" leaves 1'-2 1/2" to the jamb and 10" to the W-A-C2 corner. It stays a
-    # GFCI device — the bowl is 4'-2" away through the same wall face, inside E3902.10.
+    # ** RC6 MOVED WEST OF THE DOOR, 17'-2" -> 14'-0" (2026-11-01), BECAUSE THE DOOR MOVED ONTO
+    # IT. ** D-A-STUBATH went one stud module east (RO 15'-3 1/2"..17'-5 3/4") to clear the
+    # heel-anchored roof (decision #109), and east of it there is no wall left: the king
+    # stops 3 1/4" short of the W-A-C2 corner. 14'-0" is the bay between the kitchenette's
+    # east end (13'-7 1/2") and the door's king pack (15'-0 1/2"), 2 1/4" clear of the unit.
+    # `electrical.wall_device_opening` grades the RO now. It stays a GFCI device: the bowl is
+    # within E3902.10's 6'-0" through the same wall face.
     ElectricalDevice(uid="TBSBS6V58H", tag="ED-A-STUDIO-RC6", kind=DeviceKind.RECEPTACLE_GFCI,
                      # ** MOVED 1" OUT WITH W-A-BATH-S'S RETYPE, 2026-09-20 (H8). ** The wall went
                      # INT_2X4_PARTITION -> INT_2X6_PLUMBING so PR-A-BAR-VENT's 2" vent could bore
@@ -170,7 +169,7 @@ NEC_FILL_ATTIC = [
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-BATH-S", face="right", distance_from_start=inch(90.5),
+                         wall_ref="W-A-BATH-S", face="right", distance_from_start=inch(52.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NZQNA1VMKW", tag="ED-A-STUDIO-RC7", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-15",
@@ -194,7 +193,7 @@ NEC_FILL_ATTIC = [
     # 7'-0", so there is a foot of wall above it.
     #
     # x=13'-4" is 7 1/2" east of the bowl, over the unit's east end (which stops at
-    # 13'-7 1/2") and 7 1/2" west of D-A-STUBATH's rough opening — the one band on this wall
+    # 13'-7 1/2") and 1'-11 1/2" west of D-A-STUBATH's rough opening — the one band on this wall
     # that is neither behind the unit's rail nor inside the door. `code.E3902_gfci_locations` measures it at
     # 0.7' against E3902.10's 6'-0". `rotation=deg(180)` faces it south into the studio, off
     # the wall's south face at y 17'-0 5/8" — the same line RC6 stands on, and the number

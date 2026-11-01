@@ -28,6 +28,7 @@ from typehaus.emit.draw.detail_components.opening import (
     sauna_liner_opening_return,
     window_head_jamb_sill,
 )
+from typehaus.emit.draw.detail_components.rake import rake
 from typehaus.emit.draw.detail_components.ridge import lvl_ridge_hanger
 from typehaus.emit.draw.detail_components.sauna import sauna_components
 from typehaus.emit.draw.detail_components.shower import shower_components
@@ -56,6 +57,14 @@ def _recipe_overhang_eave(model, context) -> list[IRNode]:
         return []
     return overhang_eave(model, wall, context.crop, context.direction, context.station,
                          context.scale)
+
+
+def _recipe_rake(model, context) -> list[IRNode]:
+    """Rake: leaders over the stock rake, its closure and the raked plate (C7-E7)."""
+    wall = next((w for w in context.walls if not w.is_foundation), None)
+    if wall is None:
+        return []
+    return rake(model, wall, context.crop, context.direction, context.station, context.scale)
 
 
 def _recipe_basement_framed_wall(model, context) -> list[IRNode]:
@@ -139,6 +148,7 @@ def _recipe_lvl_ridge_hanger(model, context) -> list[IRNode]:
 OVERLAY_RECIPES = {
     "zero-overhang-eave": _recipe_zero_overhang_eave,
     "overhang-eave": _recipe_overhang_eave,
+    "rake": _recipe_rake,
     "basement-framed-wall": _recipe_basement_framed_wall,
     "rim-band-air-seal": _recipe_rim_band_air_seal,
     "stack-width-shelf": _recipe_stack_width_shelf,

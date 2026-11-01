@@ -105,17 +105,18 @@ MATERIALS_METAL = [
              solar_absorptance=0.27,
              fastener_coverage_in=16.0, panel_fastener_part="8243100", panel_fastener_pitch_in=12.0,
              source="Metal Sales Image II Striated, 16 inch coverage, 1 inch rib, 24 ga PVDF, direct-fastened snap-seam; Residential Design Manual 5/2024"),
-    # The garage's own covering, identical except for its ridge: the Cobra vented step cover
-    # (PIM p. 20) instead of the closed 7 in cover the canopy keeps. A ridge is a property of
-    # the covering, so the vented one is a variant tag rather than a flag on the roof.
+    # The garage's own covering, identical except for its ridge: the vented peak (RDM 5/2024
+    # p. 41, Profile Vent 6441899 + clip 6540000 on both slopes) under the same 7 in cover
+    # 52131XX the canopy closes with Z-closures, so the one cover runs across both roofs. A
+    # ridge is a property of the covering, so the vented one is a variant tag, not a roof flag.
     Material(tag="standing-seam-image-ii-garage-vented",
              name="Metal Sales Image II Striated 16 in, 24 ga PVDF Linen White (81), vented ridge",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#6b7076", skin_family="standing-seam", finish="standing-seam",
-             roof_ridge_trim_profile="IMAGE_II_VENTED_RIDGE", roof_edge_trim_kit="IMAGE_II",
+             roof_ridge_trim_profile="IMAGE_II_VENTED_PEAK", roof_edge_trim_kit="IMAGE_II",
              solar_absorptance=0.27,
              fastener_coverage_in=16.0, panel_fastener_part="8243100", panel_fastener_pitch_in=12.0,
-             source="Metal Sales Image II Striated, 16 inch coverage, 24 ga PVDF; vented ridge per Image II PIM p. 20 (13 in step ridge/hip cover, Cobra vented closure)"),
+             source="Metal Sales Image II Striated, 16 inch coverage, 24 ga PVDF; vented peak per Residential Design Manual 5/2024 p. 41 (Profile Vent 6441899, Image II Profile Vent Clip 6540000) under the 7 in Ridge/Hip Cover 52131XX on both slopes"),
     # `corrugated-panel-24` (a library row since 2026-09-24, as are `pbr-panel-24/-26` and
     # the three seam profiles) — `corrugated-panel-26` one gauge heavier, ordered here in
     # Linen White, on GARAGE_WALL_2X6 and both ENTRY_SCREEN faces. Same gauge reasoning as

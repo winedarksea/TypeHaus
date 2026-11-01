@@ -384,7 +384,7 @@ SUPPLY_DEVICES_SECOND = [
 # One accessible stop per riser at its head inside W-A-STU-W, following this file's own
 # per-group pattern. `accessible=True` is the whole point of authoring them: an attic bath fed
 # from a riser two storeys down has no other isolation short of the basement trunk, and the
-# access is the wall cavity behind D-A-STUBATH's jamb.
+# access is W-A-STU-W's own cavity, from the bath face.
 # Both stops are north of the toilet, with their risers: FX-A-STUBATH-WC stands against
 # y 18'-6"..20'-2" on this wall, and a stop behind a toilet tank is not an accessible stop —
 # `accessible=True` is an authored claim that no check can contradict. See

@@ -4,7 +4,8 @@
 #
 # All on W-M-E1, rotation -90 (back on the gwb at x=35'-5 3/8"). 24"-deep stock SEKTION,
 # body centres x=34'-5 3/8", fronts flush with FURN-M-KIT-PANTRY-S2. Standard SEKTION legs
-# adjusted to 4 1/16" + 30" frames + 1 1/4" sub-top + 1 1/4" ash slab = 36 9/16".
+# adjusted to 4 1/4" + 30" frames + 1 1/4" sub-top + 1 1/4" ash slab = 36 3/4" (4 1/16"
+# until the cap came down 3/16" to +3/4", 2026-11-01: the legs take it, the window stays).
 # Supports and toe panels start at the finished floor; the leg adjustment raises the
 # frames rather than floating the entire symbol. The slab meets the seated frame rail, which
 # sits 0.55" over its RO sill on the pan (resolve/opening_flashing.py).

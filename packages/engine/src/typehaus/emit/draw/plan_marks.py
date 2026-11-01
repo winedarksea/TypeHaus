@@ -3,21 +3,11 @@
 Full authoring tags are under the writers' 4 pt legibility floor at any plan scale, so the
 drawing marks *which schedule row*, not the tag, and the schedule says the rest.
 
-**The mark is per TYPE, not per opening**, and that is the convention rather than a
-shortcut: a door/window schedule is a schedule of *types* (A-601's own third column is
-``opening.type_ref``), and what a reader needs off the plan is "this is the same unit as
-that one" — which fifteen door types and sixteen window types answer in two or three
-characters, and eighty per-opening numbers do not.
-
-The mark ladder is derived from the model, deterministically, ordered by type tag: the same
-house always mints the same marks, and an opening keeps its mark when an unrelated one is
-added ahead of it in the plan source. An opening with no ``type_ref`` gets no mark — A-601
-prints ``RO`` for it and there is nothing to key to. Nothing is drawn for it rather than a
-mark that points at no row.
-
-**A-601 does not print the Mark column yet.** ``schedules/architectural.py`` builds its rows
-from ``(tag, kind, type_ref, size)``; adding ``opening_type_marks(model)`` as a fifth value
-closes the key and is the one outstanding half of this.
+**One mark per (type, RO, frame)** (C7-E3): the number is the type's (``D1..Dn``, ``W1..Wn``
+by sorted type tag), and a type built at more than one rough opening or frame takes a letter
+per variant (``D13a``, ``D13b``), sorted by size. A bubble therefore resolves to rows that
+are all one unit at one RO, and the letters of one type never renumber another type. An
+opening with no ``type_ref`` gets no mark — A-601 prints ``RO`` for it and nothing is drawn.
 
 The bubble is a ``Polyline``, not a ``Symbol``: both writers dispatch symbols by name off a
 closed vocabulary (``SYMBOL_NAMES_WITH_DEDICATED_GLYPH``) and an unlisted name is drawn as
@@ -39,6 +29,7 @@ from typehaus.emit.draw.scene import Polyline, SceneBuilder, Text
 from typehaus.emit.draw.typography import CHAR_ASPECT, TAG_PT, model_in_per_pt
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model_window_seat import window_frame_dimensions
 
 MARK_LAYER = "A-ANNO-SYMB"
 
@@ -54,22 +45,38 @@ _CIRCLE_SEGMENTS = 16
 
 
 def opening_type_marks(model: ResolvedModel) -> dict[str, str]:
-    """``type_ref -> mark`` for every opening type the model actually uses.
-
-    ``D1..Dn`` for doors, ``W1..Wn`` for windows, numbered by sorted type tag. Keyed on the
-    *type*, so this is also the mapping A-601 needs to print its Mark column.
-    """
-    doors: set[str] = set()
-    windows: set[str] = set()
+    """``opening tag -> mark`` for every typed opening: ``D13``, or ``D13a`` where the type
+    has more than one (RO, frame) variant."""
+    variants: dict[str, set[tuple]] = {}
     for opening in model.openings:
-        if opening.type_ref is None:
-            continue
-        (doors if opening.is_door else windows).add(opening.type_ref)
-    marks: dict[str, str] = {}
-    for prefix, tags in (("D", doors), ("W", windows)):
-        for index, tag in enumerate(sorted(tags), start=1):
-            marks[tag] = f"{prefix}{index}"
-    return marks
+        if opening.type_ref is not None:
+            variants.setdefault(opening.type_ref, set()).add(_variant(opening))
+    is_door = {o.type_ref: o.is_door for o in model.openings if o.type_ref is not None}
+    marks: dict[tuple[str, tuple], str] = {}
+    for prefix, door in (("D", True), ("W", False)):
+        tags = sorted(tag for tag in variants if is_door[tag] is door)
+        for index, tag in enumerate(tags, start=1):
+            keys = sorted(variants[tag], key=lambda k: tuple(-1 if v is None else v
+                                                             for v in k))
+            for letter, key in zip("abcdefghijklmnopqrstuvwxyz", keys, strict=False):
+                marks[tag, key] = f"{prefix}{index}" + (letter if len(keys) > 1 else "")
+    return {o.tag: marks[o.type_ref, _variant(o)]
+            for o in model.openings if o.type_ref is not None}
+
+
+def _variant(opening) -> tuple:
+    """(RO, frame) in sixteenths: what makes two openings of one type different rows."""
+    def sixteenths(*lengths_m: float | None) -> tuple[int | None, ...]:
+        return tuple(None if v is None else round(v / M_PER_IN * 16) for v in lengths_m)
+
+    sizing = opening.sizing
+    if sizing is None:
+        frame = window_frame_dimensions(opening)
+        return sixteenths(opening.width_m, opening.height_m,
+                          *(frame[:2] if frame is not None else (None, None)))
+    unit = sizing.installed_unit or (None, None)
+    return (*sixteenths(sizing.rough_w_m, sizing.rough_h_m, *unit, sizing.jamb_stock_m),
+            sizing.jamb_material_ref or "")
 
 
 def preferred_normal(center: tuple[float, float], normal: tuple[float, float],

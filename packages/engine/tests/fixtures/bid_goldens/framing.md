@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.2  
 **Model hash:** cdf2f6ca15a2b540  
-**Lines:** 191
+**Lines:** 192
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -76,7 +76,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 10.5 SF net | building |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 99 | sheets 4x8 | 99 sheets 4x8 over 3161.0 SF net | building |
-| Structural 1 plywood, 23/32" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 50.1 SF net | building |
+| Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 43.7 SF net | building |
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 10 | sheets 4x8 | 10 sheets 4x8 over 243.9 SF net | building |
 | Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3068.4 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
@@ -121,13 +121,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 1 | ea |  | building |
 | HL33HDG heavy angle, 7 ga, hot-dip galvanized | 2 | ea |  | building |
 | HL43HDG heavy angle, 3 ga, hot-dip galvanized | 2 | ea |  | building |
-| HU28-2Z face-mount hanger, double 2x8 (ZMAX) | 4 | ea |  | building |
 | HUC concealed-flange masonry/concrete hanger | 4 | ea |  | building |
 | IUS face-mount I-joist hanger | 2 | ea |  | building |
 | IUS face-mount I-joist hanger | 2 | ea |  | building |
-| IUS face-mount I-joist hanger (IUS2.56/11.88) | 3 | ea |  | building |
-| IUS face-mount I-joist hanger (IUS2.56/11.88) | 3 | ea |  | building |
-| IUS face-mount I-joist hanger (IUS2.56/11.88) | 7 | ea |  | building |
+| IUS face-mount I-joist hanger (IUS2.37/11.88) | 3 | ea |  | building |
+| IUS face-mount I-joist hanger (IUS2.37/11.88) | 3 | ea |  | building |
+| IUS face-mount I-joist hanger (IUS2.37/11.88) | 7 | ea |  | building |
 | KBS1Z knee-brace stabilizer (ZMAX), two per brace end | 8 | ea |  | main |
 | LS30 skewable angle, gable-end stud to rafter | 22 | ea |  | building |
 | LS30Z skewable angle, diaphragm blocking end | 32 | ea |  | building |
@@ -144,7 +143,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS210-3Z face-mount hanger, triple 2x10/2x12 (ZMAX) | 2 | ea |  | building |
 | LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 8 | ea |  | building |
 | LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 8 | ea |  | building |
+| LUS26-2Z face-mount hanger, double 2x6/2x8 (ZMAX) | 2 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 2 | ea |  | building |
+| LUS28Z face-mount hanger, 2x8 (ZMAX) | 2 | ea |  | building |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | 2 | ea |  | building |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | 49 | ea |  | basement, main |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375) | 3,138 | ea |  | building |
@@ -327,7 +328,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | — |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | — |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | — |
-| Structural 1 plywood, 23/32" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | — |
+| Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | — |
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | — |
 | Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | — |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | — |
@@ -367,13 +368,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
 | HL33HDG heavy angle, 7 ga, hot-dip galvanized | — |
 | HL43HDG heavy angle, 3 ga, hot-dip galvanized | — |
-| HU28-2Z face-mount hanger, double 2x8 (ZMAX) | — |
 | HUC concealed-flange masonry/concrete hanger | — |
 | IUS face-mount I-joist hanger | — |
 | IUS face-mount I-joist hanger | — |
-| IUS face-mount I-joist hanger (IUS2.56/11.88) | — |
-| IUS face-mount I-joist hanger (IUS2.56/11.88) | — |
-| IUS face-mount I-joist hanger (IUS2.56/11.88) | — |
+| IUS face-mount I-joist hanger (IUS2.37/11.88) | — |
+| IUS face-mount I-joist hanger (IUS2.37/11.88) | — |
+| IUS face-mount I-joist hanger (IUS2.37/11.88) | — |
 | KBS1Z knee-brace stabilizer (ZMAX), two per brace end | SB-BW-BAND |
 | LS30 skewable angle, gable-end stud to rafter | — |
 | LS30Z skewable angle, diaphragm blocking end | — |
@@ -390,7 +390,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS210-3Z face-mount hanger, triple 2x10/2x12 (ZMAX) | — |
 | LUS210SS face-mount hanger, 2x10/2x12 (stainless) | — |
 | LUS210SS face-mount hanger, 2x10/2x12 (stainless) | — |
+| LUS26-2Z face-mount hanger, double 2x6/2x8 (ZMAX) | — |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | — |
+| LUS28Z face-mount hanger, 2x8 (ZMAX) | — |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | — |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | SL-B-FLOOR, SL-M-DECK |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375) | — |

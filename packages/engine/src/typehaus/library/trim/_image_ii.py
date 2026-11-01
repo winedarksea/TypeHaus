@@ -95,18 +95,22 @@ IMAGE_II_RIDGE_COVER = TrimProfile(
     section_in=((-7.0, -1.0), (-7.0, 0.0), (0.0, 0.0), (7.0, 0.0), (7.0, -1.0)),
     source="Residential Design Manual 5/2024 p. 8",
 )
-#: The vented ridge (PIM p. 20, Cobra vent detail): a 13 in step cover, 6-1/2 in legs at the
-#: pitch with 1 in hems, over a Cobra vented closure. No manual prints its part number, so it
-#: bills under its key, and the coverage check holds that one supplier question.
-IMAGE_II_VENTED_STEP_RIDGE = TrimProfile(
-    "13 inch Step Ridge/Hip Cover, Cobra vent",
-    section_in=((-6.5, -1.0), (-6.5, 0.0), (0.0, 0.0), (6.5, 0.0), (6.5, -1.0)),
-    source="Image II PIM p. 20, Vented Ridge (Cobra Vent) detail; leg length read off the "
-           "drawing at its 2 in max deck slot",
-)
-#: The vent block under the crown. PIM p. 20 does not dimension it; read off the drawing at
-#: the same scale, about 1-1/2 in. Its net free area is not printed (R806.2 stays UNKNOWN).
-COBRA_VENT_IN = 1.5
+#: The vented peak (RDM 5/2024 p. 41) on a gable: the 7 in cover rides an Image II Profile
+#: Vent Clip 6540000 (1 in, 3-1/8 in long; p. 13) over Profile Vent 6441899 on each slope,
+#: where the closed ridge (p. 37) has a Z-closure. Two clips per panel, two #14 x 1-1/2 in
+#: metalwood screws 8215100 per clip, one pop rivet 82409XX through the cover into each clip,
+#: double-bead tape at both sides of every clip.
+PROFILE_VENT_CLIP_LENGTH_IN = 3.125
+PROFILE_VENT_CLIPS_PER_PANEL = 2
+PROFILE_VENT_SCREWS_PER_CLIP = 2
+#: The vent's low edge stands back of the cover's hem (SFS ProfileVent sheet 05/2024: "about
+#: 1/2" to 1" up-slope from the ridge cap edge").
+PROFILE_VENT_SETBACK_IN = 0.75
+#: ProfileVent (Ventco; Metal Sales 6441899 is the 16 in Image II cut) net free area, SFS data
+#: sheet 05/2024: "23.4 sq.in. per linear foot", "varies with thickness and profile", at 1.20
+#: in nominal. Read as per foot of RIDGE (both strips), the conservative reading; the RDM
+#: prints none.
+PROFILE_VENT_NFA_IN2_PER_FT = 23.4
 IMAGE_II_Z_CLOSURE = TrimProfile(
     "Image II Z-Closure", pvdf("58603XX"),
     section_in=((-1.0, 0.0), (0.0, 0.0), (0.0, 1.0), (1.0, 1.0)),

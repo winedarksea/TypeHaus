@@ -82,7 +82,7 @@ def test_interior_fireplace_niche_has_no_exterior_trim_or_trim_findings(catlin_m
 def test_roof_edges_bill_as_image_ii_pieces(catlin_model_ro):
     rows = {r["part"]: r for r in cladding_trim_takeoff(catlin_model_ro) if r["kind"] == "roof"}
     assert rows["52124XX"]["count"] == 16        # extended eave: six eave runs, three roofs
-    assert rows["52131XX"]["count"] == 5         # closed ridge cover: house and canopy
+    assert rows["52131XX"]["count"] == 8         # the 7 in cover: house, canopy and garage
     # Every exposed rake: the house's four runs, the garage's north gable and the canopy's
     # south gable. The garage south and canopy north are one plane (abutted_run_keys), no piece.
     # Billed along the slope: a 6:12 house rake is 246" + its foot, three 10'-2" sticks.
@@ -92,18 +92,17 @@ def test_roof_edges_bill_as_image_ii_pieces(catlin_model_ro):
     assert "IMAGE_II_RAKE_4IN_CUSTOM" not in rows  # the house rake is the stock 2-5/8 in leg
 
 
-def test_garage_vented_ridge_bills_by_part_and_its_closure(catlin_model_ro):
+def test_garage_vented_peak_bills_the_cover_vent_and_clips(catlin_model_ro):
     garage = [r for r in cladding_trim_takeoff(catlin_model_ro)
               if "RF-GARAGE:ridge-vent-cap" in r["tags"]]
     by_part = {r["part"]: r for r in garage}
-    vented = by_part["IMAGE_II_VENTED_STEP_RIDGE"]
-    assert vented["count"] == 3                  # 25.7 LF in 10'-2" sticks, 2 in laps
-    # The closure runs the ridge once; the cover's laps are its own extra cut.
-    assert by_part["cobra-vented-closure"]["length_ft"] == pytest.approx(25.41, abs=0.01)
-    assert vented["cut_length_ft"] > by_part["cobra-vented-closure"]["length_ft"]
-    # Rivets are one row for the whole house; the garage's share is its tag on that row.
+    assert "52131XX" in by_part                  # the canopy's 7 in cover, run on across
+    # Profile Vent on both slopes; 2 clips per 16 in panel per slope, 2 screws each.
+    assert by_part["6441899"]["length_ft"] == pytest.approx(2 * 25.41, abs=0.02)
+    clips = by_part["6540000"]["count"]
+    assert clips == 2 * 2 * 20 and by_part["8215100"]["count"] == 2 * clips
     assert "RF-GARAGE:ridge-vent-cap" in by_part["trim-pop-rivet"]["tags"]
-    assert "58603XX" not in by_part, "the vented ridge takes no Z-closure"
+    assert "58603XX" not in by_part, "the vented peak takes no Z-closure"
 
 
 def test_wall_top_edges_use_developed_length_without_stacked_duplicates(catlin_model_ro):
@@ -179,11 +178,9 @@ def test_wall_top_check_does_not_hide_a_missing_kit_mapping(catlin_model_ro):
                for f in _wall_tops(ctx, model.solids))
 
 
-def test_the_vented_ridge_is_the_coverage_checks_one_supplier_question(catlin_check_report):
+def test_the_coverage_check_holds_no_supplier_question(catlin_check_report):
     from typehaus.findings import Result
 
     report = catlin_check_report()
-    open_items = [f for f in report.findings if f.check_id == "integrity.cladding_trim_coverage"
-                  and f.result is Result.UNKNOWN]
-    assert len(open_items) == 1
-    assert "step ridge" in open_items[0].message and "Cobra" in open_items[0].message
+    assert not [f for f in report.findings if f.check_id == "integrity.cladding_trim_coverage"
+                and f.result is Result.UNKNOWN]

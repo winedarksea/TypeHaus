@@ -216,8 +216,9 @@
 # nailed off. The two are not the same hour.
 "0.75x48.0" = { material = { low = 3.38, high = 5.25 }, labour = { low = 2.5, high = 5 } }  # 0 LF — RETIRED, was the 48" wet-wall band
 "0.75x24.0" = { material = { low = 1.69, high = 2.63 }, labour = { low = 1.25, high = 2.5 } }  # 0 LF — RETIRED, was W-A-STU-W's knee-wall band
+"1.0x3.5" = { material = { low = 1.0, high = 1.8 }, labour = { low = 2.5, high = 5 } }  # ~8 LF — SPF 5/4x4 furred tub nailer on the hall-bath chase (C6-E9). ESTIMATE
 "0.75x3.5" = { material = { low = 1.6, high = 2.75 }, labour = { low = 3, high = 6 } }  # 20 LF — W-M-STRW's two poplar 1x4 hook rails, cut between studs, primed and painted (poplar-trim-paint rate). The only 0.75x3.5 framing member
-"1.25x11.875 rim" = { material = { low = 3, high = 4.75 }, labour = { low = 1.1, high = 2.1 } }  # 140 LF — FS-ATTIC's two went to LSL on 2026-08-29, see below
+"1.25x11.875 rim" = { material = { low = 4.5, high = 7.0 }, labour = { low = 1.1, high = 2.1 } }  # 140 LF — 1 1/4" LSL rim (TimberStrand / LP SolidStart), relabelled 2026-11-01 (C3-E19); FS-ATTIC's two went to 1 3/4" LSL on 2026-08-29, see below
 # FS-ATTIC's two rims, 2026-08-29. They are the perimeter bearing line under the attic's
 # rafter plates now rather than a band board capping joist ends, and a 1 1/4" OSB rim on that
 # line would crush. 1 3/4" LSL is the ordinary answer and it is roughly double the band
@@ -260,7 +261,8 @@
 # "1x1 panel" = { material = { low = 0.16, high = 0.27 }, labour = { low = 0.5, high = 1 } }  # was 158 LF — girt-wall eave return
 # "1.5x5.5 panel" =    # 112 LF — SPF fascia, billed in [edge_trim]
 "1.5x6 rim" = { material = { low = 0.95, high = 1.55 }, labour = { low = 0.9, high = 1.7 } }  # 80 LF
-"11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # 2420 LF — floors only since 2026-08-31 (the roof's 1,115 LF of rafter moved to the TJI 230 row below); the comment read 4580 for weeks against an ordered 3,556
+# RETIRED 2026-11-01 (C3-E4): every floor is TJI 230, billed on the row below.
+# "11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # was 2420 LF — floors only since 2026-08-31 (the roof's 1,115 LF of rafter moved to the TJI 230 row below); the comment read 4580 for weeks against an ordered 3,556
 # THE ROOF'S RAFTERS, AND A SEPARATE ROW ON PURPOSE (2026-08-31). Going to 24" o.c. traded
 # 358 LF of joist for a heavier series: at 16" the cheapest TJI in the line carried the
 # 17'-9 3/4" HORIZONTAL run at Ps = 35 psf, at 24" the first one that does is the 230.
@@ -1151,17 +1153,26 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "LSTA24" = { low = 2.75, high = 5.5 }  # 25 ea — 19 derived over the house ridge, 6 authored as CN-BW-JOINT-1..3, -5..7, the diaphragm continuity ties across the garage south wall line
 "LUS" = { low = 2, high = 6 }
 # Level I-joist hangers authored on the three flush LVLs (BM-M-HALL, BM-S-HALL, BM-S-BATH-E).
-# ESTIMATE, unconfirmed: single-piece retail band for an IUS2.56/11.88, carton at the low end.
-"IUS2.56/11.88" = { low = 4, high = 9 }  # 14 ea
+# ESTIMATE, unconfirmed: single-piece retail band for an IUS2.37/11.88 (TJI 230 since
+# 2026-11-01, C3-E4; was IUS2.56/11.88), carton at the low end.
+"IUS2.37/11.88" = { low = 4, high = 9 }  # 13 ea
 # Floor truss hanger, BM-M-HALL x FS-S-WEST (3 hung ends). ESTIMATE, unconfirmed: a THA-series
 # top-flange hanger is a similar single-piece retail band to the IUS above.
 "THA422" = { low = 4, high = 9 }  # 3 ea
 # Derived I-joist ends bill the bare series (the engine does not guess the flange size;
-# geometry review 2026-10-31, F3-006). ESTIMATE, unconfirmed: the IUS2.56/11.88 band above.
+# geometry review 2026-10-31, F3-006). ESTIMATE, unconfirmed: the IUS2.37/11.88 band above.
 "IUS" = { low = 4, high = 9 }
 # Floor-opening LVL header ends into their trimmer packs. ESTIMATE, unconfirmed: single-piece
 # retail band for a 12-ga HHUS face-mount.
 "HHUS410" = { low = 14, high = 24 }  # 10 ea
+# Doorway transitions (plan/doorway_transitions.py, 2026-11-01). ESTIMATES, unconfirmed:
+# retail bands per piece cut to one doorway.
+"PROD-CARPET-ZBAR" = { low = 8, high = 20 }  # 4 ea — BED1/2/3, M-BATH2
+"PROD-CATLIN-OAK-REDUCER" = { low = 25, high = 70 }  # 2 ea — 5/4 saddle D-M-BED2, 3/4 reducer D-A-HALVES (owner-stock oak at the low end)
+"PROD-SCHLUTER-SCHIENE" = { low = 15, high = 35 }  # 2 ea — S-SUITEBATH, S-BATH1
+"PROD-CATLIN-SOLID-SURFACE-REDUCER" = { low = 40, high = 120 }  # 1 ea — S-PLANT, fabricator offcut
+"PROD-CORETEC-REDUCER" = { low = 30, high = 60 }  # 1 ea — M-STUDY T-molding
+"PROD-RUBBER-REDUCER" = { low = 10, high = 30 }  # 3 ea — B-PLAY, B-SAUNA, B-BATH
 # ZMAX (G185) LUS where the carrier is preservative-treated (IRC R317.3.1): the breezeway's
 # treated beams, and the balcony centre glulam. Sized by the engine off the joist; ~25% over G90.
 "LUS28Z" = { low = 2.5, high = 7.5 }  # 2 ea authored — CN-BW-HGR-SCS-S/-N, BM-BW-SCSILL off the canopy columns (2026-10-31) — plus whatever the engine derives off a 2x8 into treated stock
@@ -1710,7 +1721,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 1.131 in2 on a 12" round, 29% short, and a plain column at h/d past 3 is not permitted at
 # any stress under §14.1.5** — so it is stated here once instead of being reconstructed
 # from two obituaries. notes/north_entry_piers.md §6 is the live derivation.
-"column:PIER_CONCRETE_12" = { material = { low = 337, high = 629 }, labour = { low = 638, high = 1348 } }  # six shafts; "steel": six piers, ~0.9 cy — "cast": 1.51 cy = 53.5 LF with two full-height canopy columns; $/cy, so the line scales
+"column:PIER_CONCRETE_14" = { material = { low = 337, high = 629 }, labour = { low = 638, high = 1348 } }  # 4 shafts, 1.09 cy (PT-BW-W/-GW/-PE/-PNE, 2026-11-01, C3-E21), EXPOSED_MIX, galvanized 8" cage; same $/cy as the 12" row
+"column:PIER_CONCRETE_12" = { material = { low = 337, high = 629 }, labour = { low = 638, high = 1348 } }  # 2 shafts, 0.36 cy (PT-BW-E/-GE) since 2026-11-01; history: "steel": six piers, ~0.9 cy — "cast": 1.51 cy = 53.5 LF with two full-height canopy columns; $/cy, so the line scales
 # "dowel" =    # 0 cy
 # A 16"x8" footing is 0.0329 cy/LF, so this is $9.20-14.80/LF. Inch Calculator's dimension
 # table back-solves to a consistent $256-267/cy but on a $137/cy ready-mix basis; Twin Cities
@@ -2678,7 +2690,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LEV-620-FLUSH" = { material = { low = 14, high = 44 }, labour = { low = 45, high = 95 } }  # 1 ea; kettle, flush 2-gang (the old 620-DUPLEX rate)
 "ED-T-LEV-DRYER-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-DUPLEX-15" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 14 ea
-"ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 58 ea (incl. ED-G-GDO-RC, ED-G-RC-E, ED-G-RC-W, 2026-10-30)
+"ED-T-LEV-DUPLEX-20-REC" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 2 ea — E5825 in a recessed DVFR1W behind the fridge pair (2026-11-01)
+"ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 56 ea since 2026-11-01; was 58 ea (incl. ED-G-GDO-RC, ED-G-RC-E, ED-G-RC-W, 2026-10-30)
 "ED-T-LEV-620" = { material = { low = 6, high = 16 }, labour = { low = 38, high = 78 } }  # 1 ea, garage ED-G-RC-240 (T5461 single 6-20R)
 "ED-T-EVSE-JB" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea, ED-G-EV-1450 hardwire box
 "ED-T-LEV-GFCI-15" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 6 ea
@@ -3611,7 +3624,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Plywood remains a provisional allowance until the selected assembly is measured.
 # 2026-10-29: Provisional. notes/bedroom_carpet.md: the 1/4" ply premise no longer describes the selected 7/16" pad + Sweet Spot I;
 # the held 3/4" depth is met WITHOUT ply. Low = none; high = if the mock-up needs it.
-"catlin-carpet-underlayment" = { material = { low = 0, high = 1.5 }, labour = { low = 0, high = 1.5 } }
+# "catlin-carpet-underlayment" retired 2026-11-01: no plywood under the carpet (C5-E5).
 # 2026-09-12: SL-M-DECK's cap, COATED. This is the finish BLD-03's resolution moved the deck
 # to — see plans/buildability.md and notes/mixed_deck_movement_joint.md. The cap is billed in
 # [concrete] exactly as `sealed-concrete` and `polished-concrete` say, so this is the
@@ -5388,7 +5401,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # FX-SHOWER-36-THERMO-COMBO's material half carries the kit surround and its labour. Street
 # ~$28-37/SF less the kit's own ~$5-8/SF leaves $20-32. The top cap or trim to the 106"
 # ceiling rides in the high end. ESTIMATE; a dealer quote collapses it.
-"solid-surface-panel" = { low = 20, high = 32 }  # WP-M-BATH2-SURR, 53.0 SF net (2026-10-29)
+"solid-surface-panel" = { low = 20, high = 32 }  # WP-M-BATH2-SURR, 47.9 SF net on the 96" MSMK9636 panel (2026-11-01)
+# Swan TK-105 trim strip over the panel (C5-E4): one ~$532 kit, priced as a lump over its 3 SF order.
+"swanstone-trim-strip" = { low = 150, high = 210 }  # 1.9 SF net / 3 SF ordered
 # RM-M-BATH2's Corian Glacier White (2026-10-22, notes/bath2_tub_deck_finish.md): the two
 # waterfall faces (WP-M-BATH2-TUBDK-APRON) and the 6" splash (WP-M-BATH2-TUB-SPLASH). One
 # bonded shop piece with the deck top, which bills in [envelope_layers] under the same tag;
@@ -5512,6 +5527,14 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Silicone toe bead under the tile baths' PVC base and the plant room's cove base (GE 2812565).
 # ESTIMATE: ~$8-11 per 10.1 oz tube over ~30-45 LF of 1/4" bead; tooled at base install.
 "catlin-base-toe-silicone" = { material = { low = 0.2, high = 0.4 }, labour = { low = 0.4, high = 0.9 } }
+# Derived jamb depth (2026-11-01, C2-E4): a stock 4 9/16 / 6 9/16 prehung jamb built out to a
+# deeper wall (a primed FJ strip glued to the jamb edge, legs + head) or ripped to a shallower
+# one. ESTIMATE, unconfirmed.
+"door-jamb-extension" = { material = { low = 0.8, high = 1.6 }, labour = { low = 3.0, high = 6.0 } }
+"door-jamb-rip" = { material = { low = 0, high = 0 }, labour = { low = 2.0, high = 4.0 } }
+# D-B-SAUNA's full-depth 3/4 x 9 1/4 cedar flat jamb (owner, 2026-11-01): owner-milled stock at
+# the low end, a joiner's fit at the labour band. ESTIMATE.
+"cedar-sauna-trim:door jamb" = { material = { low = 0, high = 4.0 }, labour = { low = 8.0, high = 15.0 } }  # 15.4 LF
 
 [drywall_trims]
 # NEW 2026-10-30 (decision #103): every drywall accessory the model derives, by the LF of
@@ -5530,7 +5553,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Moved out of those two door-type rows below (was "L-bead 20-40" / "bead 60-150" a door).
 "dw-l-bead-tearaway" = { material = { low = 0.6, high = 1.2 }, labour = { low = 2.0, high = 4.5 } }  # 340.9 LF
 # J-bead where board ends on bare concrete or framing (basement utility rooms, mudroom nook).
-"dw-j-bead-metal" = { material = { low = 0.4, high = 0.9 }, labour = { low = 1.5, high = 3.0 } }  # 156.7 LF
+"dw-j-bead-metal" = { material = { low = 0.4, high = 0.9 }, labour = { low = 1.5, high = 3.0 } }  # 39.5 LF on 5/8" board since 2026-11-01
+"dw-j-bead-metal-half" = { material = { low = 0.4, high = 0.9 }, labour = { low = 1.5, high = 3.0 } }  # 116.7 LF — ClarkDietrich M401-10 on 1/2" board (C5-E7)
 # F reveal, the tile stop: Trim-Tex AS8710 at FBM $140 / 25 x 10' = $0.56/LF. Fussier to set
 # dead straight than a corner bead.
 "dw-reveal-bead-f" = { material = { low = 0.56, high = 1.0 }, labour = { low = 3.0, high = 5.5 } }  # 41.0 LF
@@ -5794,7 +5818,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # includes setting the supplied jamb and threshold, subject to delivered-unit fastening
 # verification. The factory casing ships but is not installed: its oak casing is
 # derived and billed in interior trim (notes/study_bookcase_bridge.md). It does not include unsupported three-ply-jamb or assumed leaf-weight scope.
-"DT-INT-BOOKCASE36" = { material = { low = 1400, high = 3500 }, labour = { low = 500, high = 1150 } }  # 1 ea
+"DT-INT-BOOKCASE30" = { material = { low = 1400, high = 3500 }, labour = { low = 500, high = 1150 } }  # 1 ea — custom 32x82 RO Murphy (2026-11-01); allowance kept until Murphy prices the width
 
 # --- cased openings -----------------------------------------------------------------------------
 # Priced 2026-08-20 where they used to be blank. "no product to buy" was true and was the wrong
@@ -6210,6 +6234,11 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "PROD-RACO-232:flush_raceway" = { material = { low = 3, high = 6 }, labour = { low = 0, high = 0 } }
 "PROD-RACO-808C" = { material = { low = 3, high = 7 }, labour = { low = 3, high = 8 } }
 "PROD-RACO-809C" = { material = { low = 3, high = 7 }, labour = { low = 3, high = 8 } }
+# PLAY-N sconces (2026-11-01, C6-E10): drawn 4" sq x 1 1/2" box + flat 753 cover, Tapcon-set.
+# Recessed DVFR1W behind the fridge pair; the device row carries its labour. ESTIMATES.
+"PROD-RACO-192" = { material = { low = 2, high = 4 }, labour = { low = 15, high = 35 } }  # 6 ea
+"PROD-RACO-753" = { material = { low = 1, high = 2.5 }, labour = { low = 3, high = 8 } }  # 6 ea
+"PROD-ARLINGTON-DVFR1W" = { material = { low = 12, high = 20 }, labour = { low = 0, high = 0 } }  # 2 ea
 "PROD-RACO-768" = { material = { low = 1.5, high = 3.5 }, labour = { low = 0, high = 0 } }
 "PROD-CARLON-B122A" = { material = { low = 1.2, high = 2.5 }, labour = { low = 0, high = 0 } }
 "PROD-CARLON-BH235A" = { material = { low = 7, high = 11 }, labour = { low = 0, high = 0 } }
@@ -6380,7 +6409,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 #                 the colour); the blend moved up slightly inside the same range rather than
 #                 out of it, so the numbers below did not move.
 #   ridge_cap     0 LF since 2026-10-27: the house and canopy closed ridges bill as 52131XX and
-#                 the garage's vented ridge as IMAGE_II_VENTED_STEP_RIDGE, both in [cladding_trim].
+#                 the garage's vented peak as 52131XX over Profile Vent (2026-11-01), both in [cladding_trim].
 #   THE METALLIC UPCHARGE IS GONE FROM THE FASCIA AND, UNTIL 2026-10-27, THE RIDGE. From 2026-08-26 the garage's ~134 LF of cap
 #   and fascia was "Copper Penny", a PVDF METALLIC (mica) at typically a 10-20% upcharge over
 #   solid colour; on 2026-09-08 it went to the house's near-black solid PVDF. That is the
@@ -6459,8 +6488,6 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # UNPRICED, no quote yet (commented, so each sits on the unpriced list): the PBR window jamb,
 # the garage's 13 in step cover (25.4 LF of vented ridge, no published part number) and its Cobra closure.
 # "58208XX" =    # PBR Jamb, 10'-2" stick, window jambs; 36 cuts pool to 13 sticks
-# "IMAGE_II_VENTED_STEP_RIDGE" =    # 13 in Step Ridge/Hip Cover, Cobra vent, garage ridge
-# "cobra-vented-closure" =    # Cobra vented closure, LF under the step cover; net free area unprinted
 
 # NEW 2026-10-27 — Metal Sales trim by PART NUMBER and stock length, with the closures,
 # tape, sealant and fasteners that go with it. Bought, not allowanced: the pieces come off
@@ -6505,7 +6532,20 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "52126XX" = { material = { low = 56, high = 86 }, labour = { low = 26, high = 44 } }     # Residential Rake: house, garage and canopy. The house bottom sits 1.0 in under the wall head
 "52132XX" = { material = { low = 24, high = 38 }, labour = { low = 8, high = 16 } }     # Residential Rake Cleat, 10'-2"
 "5806199" = { material = { low = 1.5, high = 3 }, labour = { low = 0.5, high = 1 } }  # 5806199 at 18" o.c. along the garage/canopy rakes
-"52131XX" = { material = { low = 62, high = 96 }, labour = { low = 26, high = 44 } }     # 7" Ridge/Hip Cover, specify pitch
+"52131XX" = { material = { low = 62, high = 96 }, labour = { low = 26, high = 44 } }     # 7" Ridge/Hip Cover, specify pitch; 8 sticks since the garage vented peak (2026-11-01)
+# RF-GARAGE vented peak, RDM 5/2024 p. 41 (2026-11-01, C4 E1-008/009). ESTIMATES, unconfirmed;
+# Profile Vent's NFA under the 1" Image II clip is an open Metal Sales / SFS question.
+"6441899" = { material = { low = 2.5, high = 4.5 }, labour = { low = 0.8, high = 1.6 }, unit = "LF" }  # Profile Vent, 16" Image II cut, both slopes (50.8 LF)
+"6540000" = { material = { low = 1.5, high = 3.0 }, labour = { low = 0.5, high = 1.0 } }  # Image II Profile Vent Clip, 2 per panel per slope
+"8215100" = { material = { low = 0.10, high = 0.20 }, labour = { low = 0, high = 0 } }  # #14 x 1-1/2" metalwood screw, 2 per clip
+"ridge-end-closure" = { material = { low = 6, high = 15 }, labour = { low = 12, high = 25 } }  # gable ridge-end closure field-formed from the cover's coil, 4 ea
+# House leaders, Metal Sales 4 x 3 1/2 (2026-11-01, C4 E1-007). ESTIMATES, unconfirmed.
+"58097XX" = { material = { low = 60, high = 95 }, labour = { low = 25, high = 45 } }  # 4x3 1/2 downspout, 20'-3", 24 ga PVDF
+"58094XX" = { material = { low = 32, high = 50 }, labour = { low = 14, high = 26 } }  # 4x3 1/2 downspout, 10'-2"
+"58102XX" = { material = { low = 8, high = 14 }, labour = { low = 4, high = 8 } }  # 4x3 1/2 elbow, 95 deg
+"58106XX" = { material = { low = 8, high = 14 }, labour = { low = 4, high = 8 } }  # 4x3 1/2 elbow, 45 deg
+"58110XX" = { material = { low = 3, high = 6 }, labour = { low = 3, high = 6 } }  # 4" downspout strap
+"leader-rect-round-adapter" = { material = { low = 10, high = 25 }, labour = { low = 8, high = 15 } }  # 4x3 1/2 to 4" round into the PVC; not a Metal Sales part
 "58603XX" = { material = { low = 0.9, high = 1.6 }, labour = { low = 0.6, high = 1.2 }, unit = "LF" }  # Image II Z-Closure, each side of the closed ridges
 "6403899" = { material = { low = 0.6, high = 1.2 }, labour = { low = 0, high = 0 }, unit = "LF" }                      # double-bead tape at the ridge covers
 "6460800" = { material = { low = 0.45, high = 0.72 }, labour = { low = 0.4, high = 0.9 }, unit = "LF" }  # PBR Inside Closure
@@ -6738,7 +6778,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # guessed. Per-drop pricing describes a 10-ft leader off a one-storey eave; these average 19 ft
 # down a two-storey walk-out and are formed to match the box gutter, so the foot is the right
 # unit and $30-75 a drop would understate them by 4x.
-"downspout:metal-dark-exterior" = { material = { low = 10, high = 20 }, labour = { low = 4, high = 8 } }  # 38.6 LF / 2 drops
+# "downspout:metal-dark-exterior" retired 2026-11-01: the house leaders are Metal Sales 4x3 1/2
+# (58097XX + straps), billed in [cladding_trim].
+# "downspout:metal-dark-exterior" = { material = { low = 10, high = 20 }, labour = { low = 4, high = 8 } }  # was 38.6 LF / 2 drops
 # The two west leader extensions (params/roof_trim.py, plan/storeys/garage.py): 4" solid PVC
 # buried at 6-10", hand-trenched, with the pop-up emitter at the basin and the boot at the
 # leader. The LF includes each riser from the leader foot down to the inlet. 2026-09-21.
@@ -6982,7 +7024,8 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # specialty, and the low end is a TCL/Hisense-class 98" rather than anything smaller. The
 # high end is an LG/Samsung flagship at the same diagonal. The articulating anchor mount into
 # 8" concrete is inside the range and is a real part of it.
-"FURN-TV-98-WALL" = { low = 2500, high = 4500 }  # 1 ea — owner tier: mid (Sony/Samsung QLED), 2026-10-29
+"FT-TV-98-PANEL" = { low = 2580, high = 4700 }  # 1 ea — panel + a >=3 1/2" stand-off mount ($80-200), 2026-11-01 (C6-E11)
+# "FURN-TV-98-WALL" = { low = 2500, high = 4500 }  # 1 ea — owner tier: mid (Sony/Samsung QLED), 2026-10-29
 # The U sectional, 11'-0" x 8'-0" with a 3'-0" seat depth: eight to nine seats' worth of
 # frame, so it prices as roughly two-and-a-half sofas rather than one. Same enormous spread
 # as every other seating row here, and for the same reason — it is an owner decision that can
@@ -8065,6 +8108,9 @@ cabinet-peninsula-rear-finish = { low = 70, high = 180 }  # paint and edge-band 
 # The bars themselves bill in [placeables] as FT-KIT-CT-BRACKET-24. This is what they bear
 # on: a 3/4 ply sub-top over the three bases, legs lowered 1/2", five routed pockets, screws.
 cabinet-peninsula-bar-subtop = { material = { low = 60, high = 130 }, labour = { low = 150, high = 350 } }
+# 3/4 ply sub-top over B12, sink base, B18 and both carousels (K1, 2026-11-01), screwed up through
+# the frame tops; stops at the DW bay. Legs reset to 4". ESTIMATE scaled from the peninsula row.
+cabinet-kitchen-run-subtop = { material = { low = 90, high = 180 }, labour = { low = 200, high = 450 } }
 # The SEKTION peninsula's free-standing 84": the floor anchoring frame 105.570.36 (82 5/8")
 # and the subfloor fixings it wants. The connector rails bill with FT-KIT-PEN-BACK-PANEL.
 cabinet-peninsula-floor-anchor = { low = 120, high = 300 }
@@ -8251,6 +8297,7 @@ allowances = true
 "allowances:plumbing-wall-hung-wc-carrier" = false
 "allowances:finish-canopy-east-pvc-column-wrap" = false
 "allowances:cabinet-peninsula-bar-subtop" = false
+"allowances:cabinet-kitchen-run-subtop" = false
 
 # $/W back-derived from an installed residential PV price, exactly as the allowance it
 # replaced was. Re-sourcing from a module list price and a separate racking price is the
@@ -8451,7 +8498,7 @@ solar_modules   = "$/W DC installed, split 65/35 on the industry norm. Modules, 
 data_raceways   = "material plus installed labour, $/LF of EMPTY PIPE. It is not the drops: cable, boxes, jacks and termination are the driven electrical-structured-low-voltage-drops allowance. Disjoint from [conduit] by construction — conduit_takeoff and data_raceway_takeoff partition model.conduits on service"
 ducts           = "material plus installed labour, UN-BLENDED 2026-08-27 by qualifying on `material` and 2026-08-30 by qualifying on `diameter_in` as well: `supply:semi_rigid:3.0` is the 75 mm radial, `supply:semi_rigid:6.0` the 6-inch riser, and a bare `supply` the 14x8 galvanized trunk, which the model leaves unnamed. Lookups fall back through the shorter keys, so the `material`-only and bare rows still price anything the finer rows do not name. The 08-27 blend it replaces was a sheet-metal rate carried over the radial pass, so the section fell rather than rose; the 08-30 diameter split is rate-neutral on today's mix and exists so it stays right when the mix moves"
 edge_trim       = "material plus installed labour. One row, drip_flashing, is commonly inside a roofer's price — check for a double count against any roofing bid"
-cladding_trim   = "ESTIMATES, NOT QUOTES: material plus installed labour per Metal Sales stock stick (ea) or per foot of custom cut, closure, tape and sealant bead (LF); fasteners each. RECONCILIATION 2026-10-27: this section ADDS the wall base, corners, band, window and door trim, screen ends, Image II eave/rake/ridge and their closures, sealant and fasteners; it REPLACES [allowances] envelope-pbr-profile-closures and envelope-garage-corrugated-closure-strips (both deleted), the derived drip/ridge-closed/panel-rake LF formerly in [edge_trim] (drip_flashing and corner_trim now cover only the authored runs; ridge_cap has no rows), and ~12% of the three wall panels' MATERIAL $/SF (pbr-panel-24 2.15-3.30 to 1.90-2.90, board-batten-24 2.30-4.05 to 2.00-3.55, corrugated-panel-24 2.00-3.15 to 1.75-2.75), the trim share TRIM IS PARITY left inside them. The 12% is an assumption with no source (the three rows cut 11.6-13.0%, about $1.0-1.7k of pre-tax material at the current SF): re-strike it when a supplier quote lands. Estimate moved $880k-1,738k to $895k-1,762k. The garage's vented ridge (IMAGE_II_VENTED_STEP_RIDGE and the Cobra closure) bills here, unpriced until Metal Sales confirms the part numbers and the Cobra net free area; the PBR 5x4 box gutter is the catalog piece, sized in notes/box_gutter_sizing.md, and bills here by part. The 0.040 in aluminium K2, EPDM isolation and wall-top closures are added as measured runs, with lap sealant separately; prices are estimates pending supplier quotes"
+cladding_trim   = "ESTIMATES, NOT QUOTES: material plus installed labour per Metal Sales stock stick (ea) or per foot of custom cut, closure, tape and sealant bead (LF); fasteners each. RECONCILIATION 2026-10-27: this section ADDS the wall base, corners, band, window and door trim, screen ends, Image II eave/rake/ridge and their closures, sealant and fasteners; it REPLACES [allowances] envelope-pbr-profile-closures and envelope-garage-corrugated-closure-strips (both deleted), the derived drip/ridge-closed/panel-rake LF formerly in [edge_trim] (drip_flashing and corner_trim now cover only the authored runs; ridge_cap has no rows), and ~12% of the three wall panels' MATERIAL $/SF (pbr-panel-24 2.15-3.30 to 1.90-2.90, board-batten-24 2.30-4.05 to 2.00-3.55, corrugated-panel-24 2.00-3.15 to 1.75-2.75), the trim share TRIM IS PARITY left inside them. The 12% is an assumption with no source (the three rows cut 11.6-13.0%, about $1.0-1.7k of pre-tax material at the current SF): re-strike it when a supplier quote lands. Estimate moved $880k-1,738k to $895k-1,762k. The garage's vented peak (52131XX over Profile Vent 6441899 on 6540000 clips, 2026-11-01) and the house's 4x3 1/2 leaders bill here at estimates until Metal Sales quotes and confirms the vent's net free area; the PBR 5x4 box gutter is the catalog piece, sized in notes/box_gutter_sizing.md, and bills here by part. The 0.040 in aluminium K2, EPDM isolation and wall-top closures are added as measured runs, with lap sealant separately; prices are estimates pending supplier quotes"
 bug_screens     = "ESTIMATES, NOT QUOTES: material plus installed labour per lineal foot of perforated aluminium base screen, panel-end strip and band outlet strip; no supplier quote. NEW 2026-10-29: replaces the dead [solids] bug_screen:<assembly> rows (structural_solids never billed the category) and, at the bases and window heads, the 6460800 / 55548XX closures under [cladding_trim]"
 member_protection = "material plus installed labour. Applied by the framer WITH the framing, not by a trade on a return visit — five of the seven capped beams carry joists on top, so the tape and the cap over it go on before the deck frames or not at all"
 railings        = "material plus installed labour. RAILING-INT-STAIR-GUARD is priced as a COMPONENT system; a shop-welded guard moves cost from labour into material and the two models must not be stacked"

@@ -19,11 +19,14 @@ def test_band_is_a_panel_cut_with_backed_girt_courses(catlin_model_ro):
         zs = {position[2] for position in mesh.positions}
         assert any(abs(z - below) < 1e-8 for z in zs) and any(abs(z - above) < 1e-8 for z in zs)
         assert not any(below + 1e-8 < z < above - 1e-8 for z in zs)
+        # The band girt is derived to back BOTH panel edges (226"-229.5"), not seated on the joint.
+        def backs_joint(member):
+            return member.z0_m <= below + 1e-8 and member.z1_m >= above - 1e-8
+
         courses = [member for member in wall.members
-                   if member.child_key.startswith('strapping-outer-girt-')
-                   and abs(member.z0_m - joint) < 1e-8]
+                   if member.child_key.startswith('strapping-outer-girt-') and backs_joint(member)]
         assert courses, wall.tag
-        assert any(member.category == 'truss_block' and abs(member.z0_m - joint) < 1e-8
+        assert any(member.category == 'truss_block' and backs_joint(member)
                    for member in wall.members), wall.tag
 
 

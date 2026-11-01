@@ -63,6 +63,11 @@ _DEEP = dict(footprint=(inch(4), inch(2)), height=inch(3))
 
 RECEPTACLE_TYPES = (
     _dev("ED-T-LEV-DUPLEX-20", "Lever Edge duplex 20 A TR (E5825-W)", E5825, nema="5-20R"),
+    # Behind the fridge and freezer: the plug sits inside the wall (box row use="recessed").
+    # The body is the trim plate; its 1/4" proud of the gypsum is not published.
+    _dev("ED-T-LEV-DUPLEX-20-REC", "Lever Edge duplex 20 A TR (E5825-W), recessed IN BOX",
+         E5825, footprint=(inch(4.2), inch(0.25)), height=inch(6.698), nema="5-20R",
+         box_use="recessed"),
     _dev("ED-T-LEV-DUPLEX-15", "Lever Edge duplex 15 A TR (E5325-W)", E5325, nema="5-15R"),
     _dev("ED-T-LEV-GFCI-20", "GFCI 20 A TR at the device (GFTR2-W)", GFTR2, nema="5-20R"),
     _dev("ED-T-LEV-GFCI-15", "GFCI 15 A TR at the device (GFTR1-W)", GFTR1, nema="5-15R"),

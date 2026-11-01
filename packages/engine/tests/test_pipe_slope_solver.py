@@ -180,8 +180,12 @@ def test_a_solved_endpoint_does_not_argue_with_the_field_it_came_from() -> None:
 #:
 #: PR-B-BATH-DRAIN re-pinned 2026-10-30: its head moved 2 3/16" north onto the Drake's 12"
 #: rough-in flange, and the drop's foot rose 1/20" so the longer run still holds 1/4"/ft.
+#:
+#: PR-B-COND regraded 0.3 -> 0.26"/ft 2026-11-01 so its sauna leg clears the raised ceiling's
+#: foil: same 7'-8" head, so legs of 9', 23", 4'-6" and 13.4" fall 2.34", 0.50", 1.17" and
+#: 0.29"; the authored low-leg inverts (index 5, 6) are unchanged.
 _PINNED_FT = {
-    "PR-B-COND": [-1.45313, -1.67813, -1.72604, -1.83854, -1.86654, -8.32135, -8.36979],
+    "PR-B-COND": [-1.45313, -1.64813, -1.68965, -1.78715, -1.81141, -8.32135, -8.36979],
     "PR-B-BATH-DRAIN": [-9.11979, -9.83229, -9.9765, -10.16479],
     "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.90495, -10.12474, -10.34896],
 }
@@ -192,10 +196,12 @@ _PINNED_FT = {
 #: main: at 0.3"/ft the extra run ate the 5.7" of crown the 4" line has under the slab and
 #: the branch arrived below its invert.
 _GRADE_IN_PER_FT = {
-    "PR-B-COND": 0.3,
+    "PR-B-COND": 0.26,
     "PR-B-BATH-DRAIN": 0.25,
     "PR-B-SAUNA-DRAIN": 0.25,
 }
+#: PR-B-COND's authored under-bench leg kept its 0.3"/ft when the run went to 0.26.
+_LEG_GRADE = {("PR-B-COND", 5): 0.3}
 
 
 @pytest.mark.parametrize("tag", sorted(_PINNED_FT))
@@ -214,7 +220,8 @@ def test_the_converted_runs_still_fall_at_the_grade_their_comments_declare(
             if plan < 1e-6:
                 continue  # a vertical drop has no grade
             grade = (run.z_m[i] - run.z_m[i + 1]) / plan * 0.3048 / inch(1).meters
-            assert grade == pytest.approx(_GRADE_IN_PER_FT[tag], abs=0.01), f"{tag} leg {i}"
+            want = _LEG_GRADE.get((tag, i), _GRADE_IN_PER_FT[tag])
+            assert grade == pytest.approx(want, abs=0.01), f"{tag} leg {i}"
 
 
 def test_the_main_drain_stays_hand_authored(catlin_model) -> None:

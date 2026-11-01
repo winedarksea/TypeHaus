@@ -1,3 +1,38 @@
+> **Fit and product-data pass, 2026-11-01 (REPORT items 14-24):**
+> - **Band girt is DERIVED from the BBD75 joint** (226-229.5": joint - 1" slot - 1" backing);
+>   lap graded 1.59" vs 1.50"; `cladding_trim_fit` requires a girt behind every metal panel top.
+>   B&B heads keep 58114XX (58720XX does not fit the window-first outie).
+> - **Outie reveal:** gypsum returns run on the buck's lining to the frame; the stud zone is furred
+>   with 3/8" ply rips (`buck-fur-*`, billed as buck rips) and the field board laps the 0.395" step.
+> - **Trim stock:** `TrimStandard.stocks` — MDF casing 11/16", FJ pine base 23/32" (stands 1/32"
+>   proud of the casing), poplar skirt on 10' stock. Jamb depth is derived and billed as a rip or
+>   extension on 4 9/16 / 6 9/16 stock; D-B-SAUNA hangs on a full-depth 3/4 x 9 1/4 cedar flat jamb
+>   (`DoorTrim.jamb_material_ref`). Bypass/bifold ROs have their own branch; documented exterior
+>   frames anchor at the sheathing (D-G-SERVICE 6-9/16"); D-B-PATIO has no XMN5 extender.
+> - **TJI 230 house-wide** (floors on TJ-4000 p.7, IUS2.37/11.88). Backing bands are cut at the
+>   studs; `WallBacking.datum="finished-floor"` puts grab courses at true AFF; `furred=True` is an
+>   out-of-plane nailer; a band goes on its body's face.
+> - **Concrete:** GARAGE_ICF_6 is BuildBlock BB600. Mudsill and gasket are drawn
+>   (`resolve/sill_solids.py`), billed on the return. The 8 band-centred house strips sit 1/16"
+>   inboard so 2" <= P <= T holds (live in `bearing_wall_footing`); FT-B-S2/S3 are 20x10 (top held,
+>   32" undercut). PT-BW-W/-GW/-PE/-PNE are `PIER_CONCRETE_14` (`east_posts.pier_assembly`).
+> - **W-M-STOS is a staggered 2x6 wet wall** carrying the hall-bath 3" stack at y=26'-8" (powder
+>   face held, mud closet 29 1/2"); `haus route` found no lane into HS1 or the chase.
+>   `mep.trap_arm_developed` (ADVISORY) is the 3D trap-arm walk; 13 fixtures await a plumber pass.
+> - **ERV:** EQ-B-ERV carries Broan's port pattern (`rotation=deg(0)`: box west, door south); only
+>   the supply lands on its collar. OA/EA/RET are held at service level by the owner.
+> - **Roof:** RF-GARAGE is the RDM vented peak under the same 7" 52131XX as the canopy (one cap
+>   ring, no step); R806.2 passes 562/553 in2 on Profile Vent's 23.4 in2/ft. Coplanar abutting roofs
+>   share the longest roof's seam datum. Open ridge ends take field-formed closures. House leaders
+>   are Metal Sales 4 x 3 1/2 with a rect-to-round adapter into the 4" PVC.
+> - **Electrical:** `BoxRow.use` rows — wall lights on concrete take RACO 192 + flat 753;
+>   KRF1/KFZ1 are recessed DVFR1W behind the fridge pair; FURN-B-PLAY-TV stands 3 1/2" off its wall.
+>   `electrical.canopy_covers_box` grades `LuminaireType.canopy`.
+> - **Floors and interiors:** bedroom carpet is 1.000" (3/8" rebond, no plywood), +1/4" over the
+>   oak and tile, Z-bar at each carpet door; every interior flooring change names its product in
+>   `plan/doorway_transitions.py`. Swanstone: 96" panel on its base, TK-105 cap, painted band.
+>   J-bead by board thickness (1/2" M401-10). `clear_height_m` includes a dropped ceiling.
+
 > **Canopy on the garage truss lines, 2026-10-31 (decision #108):** `BM-BW-RW`/`-RE` centre on
 > the garage's 2x6 plates (x 6'-3 3/8" / 29'-8 5/8", 3 3/8" inboard) with their posts, bases,
 > piers, screen, band and HP1 (kept 12" off `PT-BW-PE`). ONE truss on both roofs: 23'-10 3/4"
@@ -350,7 +385,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Grade-dependent: garage + foundation, bridge's frost pads/piers, hydrant bury, sunken garden floor, nine perimeter spot elevations, both impervious surfaces. `SITE_GRADE` lives in `params/foundations.py`, repeated as a literal in `plan/site.py`; `plan/manifest.py` asserts the two agree.
 - **Garage storey datum is not the garage floor.** Walls bear on the ICF stem at `GARAGE_STEM_REVEAL` (1'-10") above grade → `garage` storey at -1'-0"; the slab pours at grade (1'-10" lower), absolute `Slab.top_elevation`.
 - Sitting on the garage floor must be explicit: `D-G-OVERHEAD` carries the plan's only negative `sill_height`; the ICF stem gaps there (open-ended `N-GF-N-DRE`/`-DRW`) and `SL-G-FLOOR` runs out to the door line. **No grade beam since 2026-09-23** — nothing bears on the opening, the header carries the roof to the piers. The open U is why every `W-GF-*` names `interior_room="RM-GARAGE"`: without a closed loop the winding falls to +1 and the stem builds inside out.
-- `D-G-SERVICE` threshold stays 0'-0" with the bridge deck (`+1'-0"` sill); the 2'-10" drop is five 6.8" risers inside (`ST-G-SERVICE` KDAT, flush to the stem's finished face at x=6'-11 5/8"; `RL-G-SERVICE` wall-mounted on `W-G-W` on `BK-G-W-RAIL-TOP`/`-FOOT`). The flight rises straight to the threshold with no top landing (the door swings OUT; R311.7.6 exception, `code.R311_7_6_door_at_stair_head`), its stringer heads seated on the `W-G-S` stem (`STAIR_SEATS`); `SL-G-STEP-0` and `FS-BW-GARAGE` are both retired. **The stem does NOT gap under this door** (since 2026-09-11): `W-GF-S-DR` is full stem with its nodes pinned at x 8'-3"/11'-9" as a fossil, so `SP-GF-S-HYD` keeps its host.
+- `D-G-SERVICE` threshold stays 0'-0" with the bridge deck (`+1'-0"` sill); the 2'-10" drop is five 7.10" risers inside, topping at the +1.5" threshold crest (MMI height a supplier hold, 2026-11-01) (`ST-G-SERVICE` KDAT, flush to the stem's finished face at x=6'-11 5/8"; `RL-G-SERVICE` wall-mounted on `W-G-W` on `BK-G-W-RAIL-TOP`/`-FOOT`). The flight rises straight to the threshold with no top landing (the door swings OUT; R311.7.6 exception, `code.R311_7_6_door_at_stair_head`), its stringer heads seated on the `W-G-S` stem (`STAIR_SEATS`); `SL-G-STEP-0` and `FS-BW-GARAGE` are both retired. **The stem does NOT gap under this door** (since 2026-09-11): `W-GF-S-DR` is full stem with its nodes pinned at x 8'-3"/11'-9" as a fossil, so `SP-GF-S-HYD` keeps its host.
 - `Stair.floor_opening` is optional (a rise states directly via `base_elevation`/`top_elevation`) — but `structural.stair_riser_uniformity` and `code.R311_7_8_handrail` iterate `model.stairs`, so slabs instead of a `Stair` draw NO riser/handrail finding.
 - Garage plates are 8'-4", not 8'-0" — the door climbed 4" when the storey dropped, and the plate height is set by `D-G-SERVICE`'s rough head and the truss heels alone: its head is an R602.7.4 flat 2x6 nonbearing nailer since 2026-10-31 (the old 3-ply LVL ran 2" into the plates; `integrity.header_under_plate`). `D-G-OVERHEAD` is the garage's one beam, a 2-ply 14" LVL (K7).
 - Emitters/placeable resolver read `resolve/room_floor.py::room_floor_elevation` for garage heights, not storey elevation — enforced by `test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade`.
@@ -477,13 +512,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   stays closed: the roof deck oversails to the girt face**, pinned by
   `test_rainscreen_closures.py`. Clip it back to the sheathing and the whole cavity opens into
   the eave.
-- Girt course module counts from the SILLS' datum, phase ZERO
-  (`course_datum="framing-base"` + `course_offset=inch(0)`), not the wall base. One module
+- Girt course module counts from the SILLS' datum (the storey datum), phase ZERO
+  (`course_datum="framing-base"` + `course_offset=inch(0)`), not the wall base and not the
+  plate, which stands 3/4" higher on the subfloor (decision #110): the story pole reads
+  23-1/4" + 24k off the plate. One module
   runs unbroken from wall base through the gable rake, breaking only at a starter (band
   bottom), a top course (level wall), and a rake nailer (gable's raked top, field one board
   clear).
-- NEW-OPENING RULE: head on a 24" multiple above the sole plate (24/48/72/96"), or sill
-  3-1/2" above one — this phase is the only one keeping every bay ≤24.00"
+- NEW-OPENING RULE: head on a 24" multiple above the storey datum (24/48/72/96"; 3/4" less
+  above the sole plate), or sill 3-1/2" above one — this phase is the only one keeping every bay ≤24.00"
   (`structural.girt_course_spacing` FAILs otherwise) (→ DESIGN-LOG.md, "Shell: framing
   module and envelope").
 - Windows are OUTIE, mount plane 6" out from sheathing on the outermost furring layer's
@@ -597,8 +634,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     sealant and fasteners, and the roof's eave/rake/closed ridge as Image II pieces; prices are
     `prices.toml [cladding_trim]` (estimates) and the panel $/SF rates were cut 12% (an assumption, no source).
     A window frame box stops at the mount plane (`test_cladding_trim_frame_box.py`); a hydrant
-    bore under 6 in takes no trim. Open with Metal Sales: the 13 in step cover part number and the Cobra
-    closure's net free area (the garage vented ridge). The house rake is stock 52126XX; the jamb, sill and head
+    bore under 6 in takes no trim. The garage ridge is the vented peak (52131XX over Profile Vent 6441899
+    on 6540000 clips, 2026-11-01); Profile Vent's NFA under the clip is the open Metal Sales question. The house rake is stock 52126XX; the jamb, sill and head
     brakes are site bends from 24 ga flat (`notes/metal_trim_kit.md`).
   - The panel is **Metal Sales BBD75-1212**, 12" coverage, 24 ga (re-named 2026-09-14; the
     tag `board-batten-24` reads as the GAUGE and does not change). **BB75-1111, named
@@ -709,8 +746,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     doesn't overhang, not by bending demand (→ DESIGN-LOG.md, "Bearing lines and floor decks").
 - **Basement ceiling: ONE FLAT BEARING SEAT at -13 7/16", not one depth.** `FS-M-WEST`,
   `FS-M-MECH`, `FS-M-STAIR` (x 0'-18') and `FS-M-EAST` (x 18'-36', y 0'-13') are 11 7/8"
-  I-joists at 16" o.c.; `SL-M-DECK` (414 SF) is a 10" **BuildDeck** EPS SIP beam (8" base + 2"
-  top hat) under 4 3/8" cast cover — BuildDeck is the basis of design since 2026-09-12
+  TJI 230 at 16" o.c. (graded on TJ-4000 p.7 through `FloorSystem.published_span`, IUS2.37/11.88 hangers, 2026-11-01); `SL-M-DECK` (414 SF) is a 10" **BuildDeck** EPS SIP beam (8" base + 2"
+  top hat) under 4 3/16" cast cover, topping at the plywood's +3/4" so every main-floor wall
+  plate stands at one height (decision #111) — BuildDeck is the basis of design since 2026-09-12
   (LiteDeck/Insul-Deck are named alternates), and its published 10"/4"/2-#5 row (20'-0" at
   62 psf) is quoted onto `SL-M-DECK.published_span`, where
   `structural.slab_published_span` grades the 18'-0" span as a PRESCRIPTIVE read. One plate serves studs and joists, no step in the forms.
@@ -758,7 +796,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     The polish stays as a costed fallback in `prices.toml`.
 - **Second floor's deck is mixed for services, not material.** `FS-S-WEST` (x 0'-18') is
   11 7/8" open-web trimmable floor trusses at 16" o.c.; `FS-S-EAST` (x 18'-36') is 11 7/8"
-  I-joists. West carries nearly every 2nd-floor service crossing (both drain stacks, 4
+  TJI 230. West carries nearly every 2nd-floor service crossing (both drain stacks, 4
   supply risers, radon/plumbing chase, hydrant distribution, data conduits) through the
   webs (8 7/8" clear opening, `resolve/framing/profiles.py::open_web_opening_m`) rather than
   boring/soffiting/chasing. Both fields stay 11 7/8" deliberately, so the split needs no
@@ -923,18 +961,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   y=8'-9 3/4", with its back on `W-A-SN-REAR`'s south finish. `SB-A-STUDY` is rehosted to
   it and keeps the 9 7/8" owner-stock oak shelf depth. A 2 5/8" filler closes the west end.
 - **`D-A-STUDY` is a Murphy flush mount sitting in its framing** (2026-10-14): face frame on
-  W-A-SN's study finish (y=8'-9 3/4"), body through the 38x82 RO, back 3 3/4" proud on the
+  W-A-SN's study finish (y=8'-9 3/4"), body through the 32x82 RO, back 3 3/4" proud on the
   loft (swing) side, nothing over `FO-A-STAIR`. Red oak casing (TRIM-STANDARD's `DoorTrim`, derived) on
   the study face only, lapping the face frame 1/2" (`BookcaseDoorSpec.casing_lap`); the
   factory casing ships unused. The 4 9/16" jamb stands 1/16" proud of the 4 1/2" wall: flush it to
   the study face, ease the loft side.
-- `FURN-A-STUDY-BRIDGE-FRONT` is one 6 1/2 x 60 x 3/4" owner-stock oak infill in the casing
-  plane, from the east leg to the bookcase filler; one 4/4 oak row in `haus millwork`.
-  `ED-A-STUDY-SW` sits under the east casing leg (`advisory.trim_device_clash`): still open.
+- `FURN-A-STUDY-BRIDGE-FRONT` is one 13 3/4 x 60 x 3/4" owner-stock oak infill in the casing
+  plane, x=255 5/8"..269 3/8", from the east leg to the bookcase filler; one 4/4 oak row in
+  `haus millwork`. `ED-A-STUDY-SW` is on W-A-C1, clear of the door.
   Cut list and allowance: `notes/study_bookcase_bridge.md`.
-- `D-A-STUDY` keeps its uid and wall-hosted semantics but uses `DT-INT-BOOKCASE36`: 36x80
-  nominal, 34 3/4 x 78 1/2 x 8 1/4 factory body, 38x82 RO, 30 1/4 published passage and
-  1 1/2 hinge-side wall clearance. It is west-hinged in-swing and uses the explicit flat 2x4
+- `D-A-STUDY` keeps its uid and wall-hosted semantics but uses `DT-INT-BOOKCASE30`: a
+  custom-width Murphy (owner 2026-11-01; sold by the inch of RO), 30x80 nominal, 32x82 RO from
+  the finished floor, 28 3/4 x 78 1/2 x 8 1/4 body, 36 1/2 casing, 24 1/4 passage (scaled from
+  the 36" chart; Murphy to confirm), 1 1/2 hinge-side clearance. RO x=18'-6 1/4"..21'-2 1/4",
+  as far west as framing allows (west king on the wall's end): W-A-SN's raked plate falls
+  1/2"/" east and clears the header by 1/8" — don't widen it or move it east. It is west-hinged in-swing and uses the explicit flat 2x4
   nonbearing header. Published clearance envelopes are not a calculated pivot sweep; verify
   threshold anchorage, jamb fastening and floor blocking against the delivered unit.
 
@@ -1925,7 +1966,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Sauna (`RM-B-SAUNA`).** Current seating is in `plan/sauna.py` with dimensions/types in
   `plan/sauna_types.py`; construction and acceptance: `notes/sauna_seating.md` (2026-10-11).
   The current clear box is approximately 7'-3" × 8'-10 11/16". Read the resolved polygon
-  for containment. The finished ceiling underside is **83 1/16" AFF**, not the stale 90".
+  for containment. The finished ceiling underside is **84 1/16" AFF** (raised 1" for R305.1, 2026-11-01), not the stale 90".
   - West upper lying bench **78 × 28, 42" AFF**, with a full unobstructed surface. Independent
     foot platform **78 3/16 × 20, 24" AFF**; south reading deck **58½ × 28, 24" AFF**;
     access step **14 × 10, 12" AFF**. Upper headroom **41 1/16"**.
@@ -3021,8 +3062,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Bar and projecting back panel:**73 1/2 long, end x=376 3/8, leaving25 to the
   pantry nominal front. The remaining25 of cabinet backs are painted and edge-banded.
   Stools x=315 1/8,339 5/8,364 1/8 at their previous y. Preserve Rev-A-Shelf5374-24FL.
-- **Support height:**3 1/2, normal stock stacks finish103 1/2. Kitchen quartz at36
-  uses approximately1 5/16 substrate; living ash is a 1 1/4 slab over a 1 1/4 subtop. Follow
+- **Support height:** kitchen bases on 4" legs: 30 frame + 3/4 ply sub-top + 1/16 setting under
+  3 cm quartz = 36 (K1, 2026-11-01). Quartz stands 1 5/8 past the frames (7/8 past the fronts);
+  peninsula 40 5/8 deep. Frigidaire pair: 1" rear, 3/16" sides, 66 1/4" bay (PANTRYC 1/2" south); living ash is a 1 1/4 slab over a 1 1/4 subtop. Follow
   published frame/rail/front measurements for shop cuts, not nominal module depths.
 - **Finish pieces and supports are detailed and priced.** Deleted custom east pantry tops,
   custom garage upper and kitchen filler must not re-enter quantities, nor the living

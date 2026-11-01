@@ -172,19 +172,22 @@ Since decision #107 the deck bears 6" at each end: `W-B-CS2`/`-CN` (face x 222")
 `W-B-E1`/`-E2` (face x 420"). 22 rib bars (11 ribs × 2-#5) run 216.75"–425.25", 3/4" end
 cover. Owner: hook them into both bearings and bill it. f'c 4,000, black bar, cover 3/4",
 #3 stirrup under the bars; bar centre 0.75 + 0.375 + 0.3125 = **1.4375"** over the rib soffit.
-Rib 6" × 7.5" under a 4.375" cap, so the cap top is 7.5 + 4.375 − 1.4375 = **10.4375"** over
-the bar centre, and the cap's top-y #4 (under top-x) sits at 0.75 + 0.5 + 0.25 = 1.5" down.
+Rib 6" × 7.5" under a 4.1875" cap (4.375" until 2026-11-01, decision #111), so the cap top
+is 7.5 + 4.1875 − 1.4375 = **10.25"** over the bar centre (was 10.4375"), and the cap's top-y
+#4 (under top-x) sits at 0.75 + 0.5 + 0.25 = 1.5" down.
 
 **Fit.** #5, db 0.625, D = 6 db = 3.75" (Table 25.3.1).
 
 * 90°: tail tip `D/2 + db/2 + 12 db` = 1.875 + 0.3125 + 7.5 = **9.6875"** over the bar centre
-  against 10.4375 − 0.75 = 9.6875" to the top cover plane: zero tolerance, and the tail
-  (x 424.63–425.25") runs through the cap's end top-y bar (x 424.75–425.25", 1.5" down).
-  **Does not fit.**
+  against 10.25 − 0.75 = 9.5" to the top cover plane: 0.1875" through the cover (it was zero
+  tolerance at the 4.375" cap), and the tail (x 424.63–425.25") runs through the cap's end
+  top-y bar (x 424.75–425.25", 1.5" down). **Does not fit.**
 * 180°: out to out `D + 2 db` = **5.0"** tall, so the return's top is 1.125 + 5.0 = 6.125"
-  over the rib soffit, under the cap at 7.5". Along the bar: `D/2 + db` = 2.5" of
-  bend plus a `max(4 db, 2.5")` = 2.5" tail back, so the hook spans 425.25 → 420.25" (west
-  216.75 → 221.75"): wholly over the wall, inside the rib, clear of the cap mat. **Fits.**
+  over the rib soffit, under the cap at 7.5" — the rib depth, which the thinner cap does not
+  change. Along the bar: `D/2 + db` = 2.5" of bend plus a `max(4 db, 2.5")` = 2.5" tail back,
+  so the hook spans 425.25 → 420.25" (west 216.75 → 221.75"): wholly over the wall, inside
+  the rib, clear of the cap mat (top-y underside at 7.5 + 4.1875 − 1.5 − 0.25 = 9.9375" over
+  the rib soffit, 3.81" above the return). **Fits, unchanged by the 4 3/16" cap.**
 * Hairpin: a horizontal U through the rib's two bars (3.125" centres) bends 2.5" inside,
   4 db, under the 6 db a #5 standard bend needs, and laps class B (1.3 × 23.72 = 30.83") into
   the span for the same end condition. Rejected.
@@ -198,9 +201,11 @@ the bar centre, and the cap's top-y #4 (under top-x) sits at 0.75 + 0.5 + 0.25 =
 in this bearing**, so ACI 318-19 §9.8.1.6's joist integrity bar (anchored to develop fy at the
 face) is still unmet; it wants ~15.5" of bearing (14.77 + 0.75) or the bar carried into the
 support. That is BuildDeck's end detail to answer (`plans/TODO.md`). The simple-support check
-§9.7.3.8.3 already passes straight: per 24" rib Mn = 0.62 × 60 × (10.4375 − 0.228) =
-379.8 k-in, wu = 1.2 × 93 + 1.6 × 62 = 211 psf → Vu = 0.422 klf × 9' = 3.79 k, and
-1.3 Mn / Vu = 130" ≫ ld 23.72".
+§9.7.3.8.3 already passes straight: per 24" rib, a = 0.62 × 60 / (0.85 × 4 × 24) = 0.456",
+Mn = 0.62 × 60 × (10.25 − 0.228) = 372.8 k-in (379.8 at the 4.375" cap); wu kept at
+1.2 × 93 + 1.6 × 62 = 211 psf (the thinner cap is 150 × 0.1875 / 12 = 2.3 psf lighter, ignored
+on the safe side) → Vu = 0.422 klf × 9' = 3.79 k, and 1.3 Mn / Vu = 1.3 × 372.8 / 3.79 =
+128" ≫ ld 23.72".
 
 **Bill.** 180° allowance `π (D + db)/2 + ext − (D/2 + db)` = 6.872 + 2.5 − 2.5 = **6.872"**
 (90° would be 8.436"). 44 hooks × 6.872 = 302.4" = 25.20' × 1.043 = **+26.28 lb**: the rib

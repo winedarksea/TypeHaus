@@ -14,7 +14,10 @@ gutter it empties rather than off in the plumbing.
 
 from __future__ import annotations
 
+import math
 from typing import Literal
+
+from pydantic import model_validator
 
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import TrimKind
@@ -129,7 +132,12 @@ class Downspout(Element):
     outlet: Point2D | None = None
     top_elevation: Length            # the outlet at the gutter floor
     bottom_elevation: Length         # discharge, normally just above grade
-    diameter: Length
+    diameter: Length | None = None   # a round leader
+    # A rectangular leader instead, by its plan size (x, y): Metal Sales rolls 4 x 3-1/2.
+    section: tuple[Length, Length] | None = None
+    # A catalog profile (``library/trim/metal_sales.PROFILES``): set, the leader bills by
+    # part under [cladding_trim] (sticks, elbows, straps, adapter), not by the foot.
+    product: str | None = None
     material: str = ""
     gutter_ref: str | None = None    # the Gutter tag this leader drains
     clamp_refs: tuple[str, ...] = ()
@@ -138,6 +146,24 @@ class Downspout(Element):
     discharge_ref: str | None = None
     # The buried pipe from the leader's foot to that receiver.
     extension: DischargeExtension | None = None
+
+    @model_validator(mode="after")
+    def _one_section(self):
+        if (self.diameter is None) == (self.section is None):
+            raise ValueError(f"{self.tag}: a leader takes a diameter or a section, not both")
+        return self
+
+    def half_extents_m(self) -> tuple[float, float]:
+        """Half the leader's plan size in x and y."""
+        if self.section is not None:
+            return self.section[0].meters / 2.0, self.section[1].meters / 2.0
+        return self.diameter.meters / 2.0, self.diameter.meters / 2.0
+
+    def flow_area_sq_in(self) -> float:
+        """The leader's open area, which sizes it (Metal Sales PGI-18)."""
+        if self.section is not None:
+            return self.section[0].inches * self.section[1].inches
+        return math.pi * (self.diameter.inches / 2.0) ** 2
 
 
 @register_element

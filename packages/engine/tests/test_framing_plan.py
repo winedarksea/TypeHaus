@@ -56,7 +56,7 @@ def test_framing_plan_ghosts_bearing_storey_and_marks_bearing_walls(catlin_model
 def test_framing_plan_has_span_callout(catlin_model_ro):
     scene = build_framing_plan(catlin_model_ro, "second")
     texts = [n.content for n in scene.nodes if isinstance(n, Text) and n.layer == "S-FRAM"]
-    assert any("I-JOIST" in t and "O.C." in t for t in texts)
+    assert any("TJI 230" in t and "O.C." in t for t in texts)
 
 
 def test_framing_plan_draws_stair_opening(catlin_model_ro):

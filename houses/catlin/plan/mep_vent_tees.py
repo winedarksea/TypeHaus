@@ -42,4 +42,22 @@ VENT_TEES = [
             diameter=inch(1.5), material="pvc",
             elevations=(inch(141.4), inch(141.45), inch(230.9), inch(231.0)),
             serves=("FX-S-BATH1-LAV",)),
+    # RM-M-BATH1's wall-hung WC: the DuoFit carrier's own vent outlet, straight up W-M-HS1
+    # from the fitting to PR-M-BATH2-LAV-VENT's horizontal at 7'-5 1/8" (6"+ over every rim
+    # it serves). Common vent to the x=4'-10" riser: sink 1 + WC 3 + powder lav 1 = 5 DFU,
+    # inside a 1 1/2" vent's 8 (MN 4714 Table 703.2). Arm 0".
+    PipeRun(uid="28G1YA8JD0", tag="PR-M-BATH1-WC-VENT", system=PipeSystem.VENT,
+            path=(pt(inch(24.5), inch(268)), pt(inch(24.5), inch(268))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(inch(0.95), inch(89.148)),
+            serves=("FX-M-BATH1-WC",)),
+    # RM-B-BATH's lavatory: a tee at the trap outlet in W-B-CW2, up its cavity, west in it and
+    # north in W-B-STR2's to PR-B-BATH-VENT's riser at 1'-6 3/8" under the deck. Arm ~2".
+    PipeRun(uid="MFDV1SAVZT", tag="PR-B-BATH-LAV-VENT", system=PipeSystem.VENT,
+            path=(pt(inch(144), inch(218.25)), pt(inch(144), inch(216)),
+                  pt(inch(144), inch(216)), pt(inch(121.6), inch(216)),
+                  pt(inch(121.6), inch(229.5))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(inch(-89.32), inch(-89.27), inch(-19.5), inch(-19.25), inch(-18.6)),
+            serves=("FX-B-BATH-LAV",)),
 ]

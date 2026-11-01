@@ -73,7 +73,7 @@ MAIN_WET_BACKING = [
                 profile=_GRAB_PROFILE, material_ref="spf",
                 purpose="closet wire west-leg lower clips (40 in.)"),
     WallBacking(uid="QMZNJ07GJR", tag="BK-M-BA2E2-HIGH", wall_ref="W-M-BA2E2",
-                elevation=_HIGH_ELEVATION, height=_HIGH_HEIGHT,
+                elevation=inch(70.5), datum="finished-floor", height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
                 purpose="closet wire west-leg upper clips (80 in.)"),
     # Both WCs and the bath's tub end back onto W-M-HS1; the basin shares its north face.

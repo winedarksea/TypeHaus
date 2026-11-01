@@ -280,10 +280,11 @@ DUCTS_ERV_BASEMENT = [
     # west of D-B-FURN's header. It travels south on that lane, then turns east along the
     # clear southern band to REG-B-SUP3.
     #
-    # ** THE LAST LEG DROPS BEFORE W-B-SA-W. ** At y=1'-8 1/2", the route drops 3 1/2" to
-    # 7'-0" and then crosses W-B-SA-W between studs at y=1'-8 1/2". The duct top is 1" below
-    # that wall's top plates. This keeps the 4" branch in the wall bay rather than through
-    # either top plate; the low south-band step is clear of the other authored services.
+    # ** THE LAST LEG RIDES THE SAUNA'S SERVICE CAVITY (2026-11-01). ** At y=1'-8 1/2" it
+    # rises 6" to 7'-8 1/2", over W-B-SA-W's top plates (+90") and above the hung ceiling's
+    # foil (+87 5/16"), runs east in the cavity, and drops 8 1/2" to REG-B-SUP3 on the 7'-0"
+    # face. At 7'-0" it ran through the shiplap, furring and foil, inside the sauna's
+    # vapour layer.
     #
     # ** x=1'-7" SINCE 2026-10-31, OUT OF THE PANELS' NEC 110.26(E) SPACE. ** At 1'-0 1/2"
     # both sauna radials stood 1 1/2" over the three 4"-deep enclosures on W-B-W1 (x <= 12");
@@ -296,9 +297,10 @@ DUCTS_ERV_BASEMENT = [
                   pt(inch(32), inch(362.5)), pt(inch(32), inch(362.5)),
                   pt(ft(1, 7), inch(362.5)), pt(ft(1, 7), inch(362.5)),
                   pt(ft(1, 7), inch(20.5)),
-                  pt(ft(1, 7), inch(20.5)), pt(inch(199.75), inch(20.5))),
+                  pt(ft(1, 7), inch(20.5)), pt(inch(199.75), inch(20.5)),
+                  pt(inch(199.75), inch(20.5))),
             elevations=(ft(7, 6), inch(89), inch(89), inch(92.5), inch(92.5), inch(87.5),
-                        inch(87.5), inch(86.5), inch(86.5), ft(7), ft(7)),
+                        inch(87.5), inch(86.5), inch(86.5), inch(92.5), inch(92.5), ft(7)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=12),
     # The bench hood's pull. It drops out of the ceiling chase to the hood face at 5'-6",
     # which is the vertical leg that makes it a capture hood rather than a ceiling diffuser.

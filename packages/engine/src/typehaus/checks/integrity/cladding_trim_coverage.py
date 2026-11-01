@@ -26,7 +26,7 @@ from typehaus.takeoff.cladding_trim import cladding_trim_takeoff
 COVERAGE = "integrity.cladding_trim_coverage"
 _SIDES = ("HEAD", "SILL", "JAMB-LEFT", "JAMB-RIGHT")
 _CORNER_RADIUS_M = 8 * M_PER_IN
-_CATALOG_RIDGES = {"ridge:closed-cap", "ridge:image-ii-vented"}
+_CATALOG_RIDGES = {"ridge:closed-cap", "ridge:vented-peak"}
 
 
 def _pieces(model):
@@ -238,12 +238,5 @@ def cladding_trim_coverage(ctx: CheckContext) -> list:
     if not [wall for wall in model.walls if is_profiled_metal_wall(model, wall)]:
         return [not_applicable(COVERAGE, "no profiled metal walls")]
     pieces = _pieces(model)
-    findings = [*_window_like(ctx, pieces), *_doors(ctx, pieces), *_bases(ctx, pieces),
-                *_corners_and_ends(ctx, pieces), *_roof_edges(ctx), *_wall_tops(ctx, pieces)]
-    findings.append(unknown(
-        COVERAGE,
-        "the garage's vented ridge: Metal Sales publishes no part number for the 13 in step "
-        "ridge cover, and the Cobra vented closure's net free area is unprinted",
-        fix="ask Metal Sales for the 13 in step cover and Cobra closure part numbers and NFA "
-            "(notes/metal_trim_kit.md)"))
-    return findings
+    return [*_window_like(ctx, pieces), *_doors(ctx, pieces), *_bases(ctx, pieces),
+            *_corners_and_ends(ctx, pieces), *_roof_edges(ctx), *_wall_tops(ctx, pieces)]

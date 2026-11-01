@@ -558,7 +558,10 @@ def test_exterior_wall_spans_floor_to_floor_across_the_rim(catlin_model):
     upper = catlin_model.wall("W-S-S1")
     assert lower.z1_m == pytest.approx(upper.z0_m), "no void left at the storey line"
     assert lower.plate_top_z_m is not None
-    assert lower.z1_m - lower.plate_top_z_m == pytest.approx(ft(1).meters)
+    # The band is the joists: the double top plate meets their soffit (decision #110).
+    joist_depth = min(m.z1_m - m.z0_m for m in _floor(catlin_model, "FS-S-EAST").members
+                      if m.category == "joist")
+    assert lower.z1_m - lower.plate_top_z_m == pytest.approx(joist_depth)
 
     plate_tops = [m.z1_m for m in lower.members if m.category == "plate"]
     assert max(plate_tops) == pytest.approx(lower.plate_top_z_m, abs=1e-6), \
@@ -2111,7 +2114,9 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
         strip = next(s for s in catlin_model.solids if s.tag == tag)
         south_in = min(y for _x, y in strip.outline) / inch_m
         assert south_in == pytest.approx(-4.0, abs=1e-6), tag
-        assert (strip.z1_m - strip.z0_m) / inch_m == pytest.approx(8.0, abs=1e-3), tag
+        # S2/S3 are 10" under the 6" curb (R403.1.1 P <= T, 2026-11-01).
+        depth = 10.0 if tag in ("FT-B-S2", "FT-B-S3") else 8.0
+        assert (strip.z1_m - strip.z0_m) / inch_m == pytest.approx(depth, abs=1e-3), tag
 
     # No concrete-to-concrete anywhere on that plane: 2" of board, then 4" of bedding stone.
     assert -4.0 - (-10.0) == pytest.approx(6.0)
@@ -2635,7 +2640,7 @@ def test_the_laundry_pocket_clears_the_bearing_corner_and_owns_its_wall(catlin_m
     splits = [m for m in catlin_model.wall("W-M-HS3").members
               if m.child_key.startswith("pocketsplit-")]
     assert splits, "the cavity must be framed"
-    assert all(m.z1_m <= door.height_m + 1e-6 for m in splits)  # the Eclisse RO head
+    assert all(m.z1_m <= door.sill_m + door.height_m + 1e-6 for m in splits)  # Eclisse RO head
     # ...and they really do stand inside W-M-HS4, past their own host's end node.
     assert max(m.p0[0] for m in splits) > hs4.axis[0][0]
 

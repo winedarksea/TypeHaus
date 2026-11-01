@@ -5,6 +5,7 @@
 # Perimeter walls align on the concrete exterior face so the 4" of exterior XPS stacks
 # directly under the framed wall's 4" polyiso+EPS (#43 control-layer continuity) — which
 # is also why thinning the pour moves only the INSIDE face.
+from ..doorway_transitions import D_B_BATH_VINYL_REDUCER, D_B_PLAY_MAT_REDUCER, D_B_SAUNA_MAT_REDUCER
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -1069,7 +1070,7 @@ OPENINGS = [
     # leaves instead of full glazing.
     # Derived RO since 2026-10-29, kept visually centred on W-B-CE (module suppressed).
     Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-DOUBLE60",
-         position=from_node("N-B-C", ft(6, 2))),
+         position=from_node("N-B-C", ft(6, 2)), doorway=D_B_PLAY_MAT_REDUCER),
     # **The two doors formed through 12" interior pours are gone (2026-09-05.)** This one
     # was a blockout in W-B-CS2 and D-B-NE was one in W-B-CN; between them they were the
     # house's only `openings.count[host_structure=concrete]`. The dollars were modest — a
@@ -1114,7 +1115,7 @@ OPENINGS = [
     # from its own steel pocket header, screwed up into this one; nothing bears on it).
     # DU-B-ERV-R-GYM rose 1/2" to pass over it.
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-POCKET-INT-36",
-         position=from_node("N-B-BA-NE", ft(2, 9.9375)), header_spec="flat 2x6 nonbearing"),
+         position=from_node("N-B-BA-NE", ft(2, 9.9375)), header_spec="flat 2x6 nonbearing", doorway=D_B_BATH_VINYL_REDUCER),
     # ESS closet door: a cheap 24x80 steel leaf with a small tempered vision lite in a KD
     # frame, on spring hinges (DT-INT-STEEL24-LITE; owner 2026-10-30, not a rated door). It
     # swings into the closet. 18 7/8" off N-B-ESS-SW lands it on the wood stud module
@@ -1163,7 +1164,7 @@ OPENINGS = [
     # D-B-PATIO's inswing arc and the shower pan in the sauna's NE corner, far enough south
     # to keep clear of D-B-GYM. Swings out into the gym on the default.
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-CS", type_ref="DT-INT-SWING24",
-         position=from_node("N-B-SA-NE", ft(4, 10.3125)), flip_hinge=True),
+         position=from_node("N-B-SA-NE", ft(4, 10.3125)), flip_hinge=True, doorway=D_B_SAUNA_MAT_REDUCER),
     # The framed-wall datum is the curb top; the rough sill is recessed 1.75 inches
     # into the curb seat while the installed threshold remains above the court.
     #
@@ -1370,24 +1371,23 @@ ROOMS = [
                    function=LayerFunction.INSULATION,
                    control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR}),
              # ** THE SERVICE CAVITY, NEW 2026-09-07, AND IT IS THE OUTERMOST LAYER FOR A
-             # REASON. ** Four runs cross this room overhead — DU-B-ERV-R-SAUNA-SUP/-EXH at
-             # 5.6", PR-B-COND at 9.4", PR-B-SAUNA-VENT at 9.6" below the old face — and the
-             # basement has NO plenum to move them into: everywhere else on the storey the
-             # ceiling is 5/8" of gypsum straight onto the joist soffit, the workshop
-             # included, so there is nowhere to reroute to. Owner call: drop this ceiling
-             # rather than box four separate bulkheads into a 92 SF lined room. 11 1/4"
-             # of framed cavity puts the finished face at 6'-10 13/16" — clear of
-             # R305.1.1's 6'-8", 1 5/8" under the deepest run, and a better sauna than
-             # 7'-10" was, because a sauna stratifies and the head space above the top
-             # bench was heating nobody.
+             # REASON. ** Runs cross this room overhead and the basement has NO plenum to
+             # move them into: everywhere else on the storey the ceiling is 5/8" of gypsum
+             # straight onto the joist soffit. Owner call: drop this ceiling rather than box
+             # bulkheads into a 92 SF lined room. 10 1/4" of cavity (11 1/4" until 2026-11-01)
+             # puts the finished face at 7'-0 1/16" — R305.1's 7'-0": the sauna's shower makes
+             # it a bathroom (IRC R202). Over the foil (+87 5/16"): PR-B-COND, and
+             # DU-B-ERV-R-SAUNA-SUP's leg to REG-B-SUP3; PR-B-SAUNA-VENT rises in W-B-SA-N2.
+             # Still a better sauna than 7'-10": a sauna stratifies, and the head space above
+             # the top bench was heating nobody.
              #
              # It sits ABOVE the foil-polyiso, which is the whole point: the vapour and air
              # control stays continuous on the HOT side of the assembly and the services run
              # outboard of it. A cavity inboard of the foil would put ducts inside the sauna's
              # own vapour envelope.
-             Layer(name="service-cavity", material_ref="spf", thickness=inch(11.25),
+             Layer(name="service-cavity", material_ref="spf", thickness=inch(10.25),
                    function=LayerFunction.FURRING,
-                   framing=FramingSpec(member="2x12", direction="horizontal",
+                   framing=FramingSpec(member="2x10", direction="horizontal",
                                        spacing=inch(16))),
          )),
     Room(uid="CBR404AAAA", tag="RM-B-PLAY-N", seed=pt(ft(27), ft(27)),

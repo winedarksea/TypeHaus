@@ -323,7 +323,7 @@ def _draw_chrome(fig, model, number: str, title: str,
     # A fixed 46 was a ledger number: it clipped a title at the same place on 24x36, where
     # this cell is more than twice as wide and had the room to print it whole.
     columns = wrap_columns_for(cells[5][1] - cells[5][0] - 2 * pad, 6.5)
-    label(edges[5] + pad, r[2], _shorten(title, columns), 6.5)
+    label(edges[5] + pad, r[2], _two_lines(title, columns), 6.5)
 
 
 def _draw_seal_cell(ax, cell, pad: float, seal: SealBlock | None, label) -> None:
@@ -428,6 +428,17 @@ def _preparer(project) -> str:
         if value:
             return str(value)[:16]
     return "TYPE:HAUS"
+
+
+def _two_lines(text: str, limit: int) -> str:
+    """Wrap a sheet title onto two lines, then clip: a clipped tail is where derived detail
+    titles differ (C7-E6), so one line made A-525 and A-526 read the same."""
+    import textwrap
+
+    lines = textwrap.wrap(text, limit, break_on_hyphens=False) or [""]
+    if len(lines) > 2:
+        lines = [lines[0], _shorten(" ".join(lines[1:]), limit)]
+    return "\n".join(lines)
 
 
 def _shorten(text: str, limit: int) -> str:

@@ -42,10 +42,10 @@ def test_the_coves_are_shadow_gaps_cut_from_their_host(catlin_model_ro):
 
 def test_trimless_door_bead_and_living_corner_by_hand(catlin_model_ro):
     model = catlin_model_ro
-    # D-M-BED2's RO is 34.236" x 83.012": 2 x 83.012 + 34.236 = 200.26" a face, two faces.
+    # D-M-BED2's RO is 34.236" x 82.512" off the seat: 2 x 82.512 + 34.236 = 199.26" a face.
     bead = [t for t in model.drywall_trims if t.kind == "door_l_bead" and "D-M-BED2" in t.tags]
     assert len(bead) == 2
-    assert sum(t.length_m for t in bead) / _IN == pytest.approx(2 * 200.26, abs=0.02)
+    assert sum(t.length_m for t in bead) / _IN == pytest.approx(2 * 199.26, abs=0.02)
     # RM-M-LIVING's outside corners run its LVP (+15/16") to the 5/8" ceiling face at
     # 9'-1/8" less 5/8" = 107 1/2": 106 9/16".
     corners = [t for t in model.drywall_trims
@@ -98,8 +98,36 @@ def test_jbead_stops_with_the_bare_face_and_slivers_are_not_corners(catlin_model
 
 def test_a_tile_end_reveal_stops_at_what_covers_the_board(catlin_model_ro):
     # WP-M-BATH2-SURR's north end meets W-M-TUBDK-S, the deck and the 6" splash: its reveal
-    # runs from the splash top (28 3/4") to the band top (106"). The free west end starts at
-    # the room's finished floor (+1 1/2"), not the storey datum.
-    ends = sorted(t.length_m / _IN for t in catlin_model_ro.drywall_trims
+    # runs from the splash top (28 3/4") to the panel top (102 1/4"). The free west end
+    # starts on the pan (+6 1/4"). The TK-105 cap over the top edge takes no reveal under
+    # it; the reveal runs along the cap's top and down its two free 3 7/8" ends.
+    trims = catlin_model_ro.drywall_trims
+    ends = sorted(t.length_m / _IN for t in trims
                   if t.kind == "tile_reveal" and "WP-M-BATH2-SURR" in t.tags)
-    assert ends == pytest.approx([36.0, 36.0, 106 - 28.75, 106 - 1.5], abs=1e-3)
+    assert ends == pytest.approx([102.25 - 28.75, 102.25 - 6.25], abs=1e-3)
+    cap = sorted(t.length_m / _IN for t in trims
+                 if t.kind == "tile_reveal" and "WP-M-BATH2-SURR-CAP" in t.tags)
+    assert cap == pytest.approx([3.875, 3.875, 36.0, 36.0], abs=1e-3)
+
+
+def test_a_j_bead_is_picked_by_the_board_it_stops(catlin_model_ro):
+    # A 1/2" J does not seat on 5/8" board (review I4-003): the ESS closet's Type X keeps the
+    # 5/8" bead, the 1/2" walls take M401-10.
+    beads = {}
+    for trim in catlin_model_ro.drywall_trims:
+        if trim.kind == "termination":
+            beads.setdefault(trim.material_ref, set()).add(trim.room)
+    assert set(beads) == {"dw-j-bead-metal", "dw-j-bead-metal-half"}
+    assert "RM-B-ESS" in beads["dw-j-bead-metal"] - beads["dw-j-bead-metal-half"]
+    assert "RM-M-MUDROOM" in beads["dw-j-bead-metal-half"] - beads["dw-j-bead-metal"]
+
+
+def test_a_dropped_ceiling_lowers_the_clear_head(catlin_model_ro):
+    # The sauna's furred T&G hangs below the joists (review I4-007): R305 reads its face.
+    from typehaus.resolve.room_floor import room_finished_floor_elevation
+
+    room = next(r for r in catlin_model_ro.rooms if r.tag == "RM-B-SAUNA")
+    ceiling = min(c.z0_m for c in catlin_model_ro.ceilings if c.room_ref == room.tag)
+    floor = room_finished_floor_elevation(catlin_model_ro, room)
+    assert room.clear_height_m == pytest.approx(ceiling - floor, abs=1e-9)
+    assert room.clear_height_m / _IN == pytest.approx(84.0625, abs=0.01)

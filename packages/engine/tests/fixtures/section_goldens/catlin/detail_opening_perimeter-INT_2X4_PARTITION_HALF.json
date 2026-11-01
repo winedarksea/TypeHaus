@@ -8,6 +8,63 @@
       "points": [
         [
           321.25000000000006,
+          0.0
+        ],
+        [
+          321.75,
+          0.0
+        ],
+        [
+          321.75,
+          0.7499999999999999
+        ],
+        [
+          321.25000000000006,
+          0.7499999999999999
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW120AAAA",
+      "tag": "W-M-STOS2/gwb-a"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          321.25000000000006,
+          0.0
+        ],
+        [
+          321.75,
+          0.0
+        ],
+        [
+          321.75,
+          0.7499999999999999
+        ],
+        [
+          321.25000000000006,
+          0.7499999999999999
+        ]
+      ],
+      "pattern": "gypsum",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb-ar",
+      "fill": "#d3dbe3"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          321.25000000000006,
           82.45866141732284
         ],
         [
@@ -58,6 +115,62 @@
       "uid": null,
       "material": "gwb-ar",
       "fill": "#d3dbe3"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          317.75,
+          0.0
+        ],
+        [
+          321.25000000000006,
+          0.0
+        ],
+        [
+          321.25000000000006,
+          0.7499999999999999
+        ],
+        [
+          317.75,
+          0.7499999999999999
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW120AAAA",
+      "tag": "W-M-STOS2/stud"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          317.75,
+          0.0
+        ],
+        [
+          321.25000000000006,
+          0.0
+        ],
+        [
+          321.25000000000006,
+          0.7499999999999999
+        ],
+        [
+          317.75,
+          0.7499999999999999
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
     },
     {
       "space": "model",
@@ -121,6 +234,62 @@
       "points": [
         [
           317.25,
+          0.0
+        ],
+        [
+          317.75,
+          0.0
+        ],
+        [
+          317.75,
+          0.7499999999999999
+        ],
+        [
+          317.25,
+          0.7499999999999999
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW120AAAA",
+      "tag": "W-M-STOS2/gwb-b"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          317.25,
+          0.0
+        ],
+        [
+          317.75,
+          0.0
+        ],
+        [
+          317.75,
+          0.7499999999999999
+        ],
+        [
+          317.25,
+          0.7499999999999999
+        ]
+      ],
+      "pattern": "gypsum",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          317.25,
           82.45866141732284
         ],
         [
@@ -177,6 +346,27 @@
       "points": [
         [
           321.75,
+          0.0
+        ],
+        [
+          321.75,
+          0.7499999999999999
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW120AAAA",
+      "tag": "W-M-STOS2/paint-a",
+      "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          321.75,
           82.45866141732284
         ],
         [
@@ -190,6 +380,27 @@
       "closed": false,
       "uid": "CMW120AAAA",
       "tag": "W-M-STOS2/paint-a",
+      "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          317.25,
+          0.0
+        ],
+        [
+          317.25,
+          0.7499999999999999
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW120AAAA",
+      "tag": "W-M-STOS2/paint-b",
       "material": "latex-paint"
     },
     {
@@ -212,6 +423,66 @@
       "uid": "CMW120AAAA",
       "tag": "W-M-STOS2/paint-b",
       "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          321.5,
+          0.7499999999999999
+        ],
+        [
+          321.5,
+          82.45866141732284
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW120AAAA",
+      "tag": "W-M-STOS2-void"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          319.5,
+          0.7499999999999999
+        ],
+        [
+          319.5,
+          82.45866141732284
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW120AAAA",
+      "tag": "W-M-STOS2-void"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          317.49999999999994,
+          0.7499999999999999
+        ],
+        [
+          317.49999999999994,
+          82.45866141732284
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW120AAAA",
+      "tag": "W-M-STOS2-void"
     },
     {
       "space": "model",
@@ -274,19 +545,19 @@
       "node": "polyline",
       "points": [
         [
-          308.125,
+          308.21875,
           -11.875
         ],
         [
-          310.625,
+          310.53125,
           -11.875
         ],
         [
-          310.625,
+          310.53125,
           0.0
         ],
         [
-          308.125,
+          308.21875,
           0.0
         ]
       ],
@@ -302,19 +573,19 @@
       "node": "hatch",
       "boundary": [
         [
-          308.125,
+          308.21875,
           -11.875
         ],
         [
-          310.625,
+          310.53125,
           -11.875
         ],
         [
-          310.625,
+          310.53125,
           0.0
         ],
         [
-          308.125,
+          308.21875,
           0.0
         ]
       ],
@@ -330,12 +601,12 @@
       "node": "polyline",
       "points": [
         [
-          308.125,
-          -10.5
+          308.21875,
+          -10.625
         ],
         [
-          310.625,
-          -10.5
+          310.53125,
+          -10.625
         ]
       ],
       "layer": "S-FRAM",
@@ -350,12 +621,12 @@
       "node": "polyline",
       "points": [
         [
-          308.125,
-          -1.375
+          308.21875,
+          -1.25
         ],
         [
-          310.625,
-          -1.375
+          310.53125,
+          -1.25
         ]
       ],
       "layer": "S-FRAM",
@@ -370,19 +641,19 @@
       "node": "polyline",
       "points": [
         [
-          324.125,
+          324.21875,
           -11.875
         ],
         [
-          326.625,
+          326.53125000000006,
           -11.875
         ],
         [
-          326.625,
+          326.53125000000006,
           0.0
         ],
         [
-          324.125,
+          324.21875,
           0.0
         ]
       ],
@@ -398,19 +669,19 @@
       "node": "hatch",
       "boundary": [
         [
-          324.125,
+          324.21875,
           -11.875
         ],
         [
-          326.625,
+          326.53125000000006,
           -11.875
         ],
         [
-          326.625,
+          326.53125000000006,
           0.0
         ],
         [
-          324.125,
+          324.21875,
           0.0
         ]
       ],
@@ -426,12 +697,12 @@
       "node": "polyline",
       "points": [
         [
-          324.125,
-          -10.5
+          324.21875,
+          -10.625
         ],
         [
-          326.625,
-          -10.5
+          326.53125000000006,
+          -10.625
         ]
       ],
       "layer": "S-FRAM",
@@ -446,12 +717,12 @@
       "node": "polyline",
       "points": [
         [
-          324.125,
-          -1.375
+          324.21875,
+          -1.25
         ],
         [
-          326.625,
-          -1.375
+          326.53125000000006,
+          -1.25
         ]
       ],
       "layer": "S-FRAM",
@@ -825,7 +1096,7 @@
           "kind": "point",
           "xy": [
             314.25,
-            0.0
+            0.7499999999999999
           ],
           "name": ""
         },
@@ -840,7 +1111,7 @@
       ],
       "p0": [
         314.25,
-        0.0
+        0.7499999999999999
       ],
       "p1": [
         314.25,
@@ -849,7 +1120,7 @@
       "offset": 0.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "6'-10 1/2\" R.O.",
+      "text": "6'-9 3/4\" R.O.",
       "text_along": 0.0,
       "uid": null
     },
@@ -858,9 +1129,9 @@
       "node": "text",
       "anchor": [
         307.4074803149606,
-        -27.716535433070867
+        -26.966535433070867
       ],
-      "content": "R.O. HEIGHTS IN THIS ASSEMBLY 3'-2 3/8\" – 7'-0 1/4\": SEE A-601",
+      "content": "R.O. HEIGHTS IN THIS ASSEMBLY 3'-1 5/8\" – 6'-11 1/2\": SEE A-601",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -874,7 +1145,7 @@
       "node": "text",
       "anchor": [
         307.4074803149606,
-        -21.716535433070867
+        -20.966535433070867
       ],
       "content": "TR-CATLIN-INTERIOR-OPENING  ·  interior-opening",
       "height": 3.0,
@@ -1270,7 +1541,7 @@
     ],
     "center": [
       334.5,
-      41.22933070866142
+      41.60433070866142
     ],
     "scale": 0.5,
     "scale_label": "1/2\" = 1'-0\"",

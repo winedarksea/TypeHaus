@@ -113,14 +113,14 @@ LIVING_DOOR_TYPES = tuple(
     cabinet.model_copy(update={
         "tag": cabinet.tag + "-AXSTAD-DOOR",
         "name": cabinet.name + ", AXSTAD doors and shelves",
-        "height": inch(36.5625),
+        "height": inch(36.75),
         "plan_symbol": PREFIX + "base-door-raised",
         "parts": sektion_parts(round(cabinet.footprint[0].inches), 24,
                                kitchen_layout(PREFIX + "base-door-raised",
-                                              cabinet.footprint[0].inches, 36.5625),
+                                              cabinet.footprint[0].inches, 36.75),
                                "legs", AXSTAD_HARDWARE),
-        "source": (cabinet.source or "") + " Standard SEKTION legs at 4 1/16 inches; "
-                  "floor-bearing feet and toe panel, 30-inch frame, top 36 9/16 inches.",
+        "source": (cabinet.source or "") + " Standard SEKTION legs at 4 1/4 inches; "
+                  "floor-bearing feet and toe panel, 30-inch frame, top 36 3/4 inches.",
     }) for cabinet in KITCHEN_SEKTION_TYPES if cabinet.tag in {"SEKT-B18", "SEKT-B24", "SEKT-B36"}
 )
 LIVING_DOOR_TYPE_REFS = {cabinet.tag.removesuffix("-AXSTAD-DOOR"): cabinet.tag

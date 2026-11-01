@@ -104,8 +104,8 @@ class Material(HausModel):
     # Catalog profile keys, indexed by the edge condition they terminate.
     trim_kit: dict[TrimCondition, str] = {}
     # Specific ridge profile; the standing-seam finish alone is not a product identity.
-    # "IMAGE_II_RIDGE_COVER" closes the ridge (7 in cover, Z-closure); "IMAGE_II_VENTED_RIDGE"
-    # is the step cover over a Cobra vent (PIM p. 20), for an attic that exhausts there.
+    # "IMAGE_II_RIDGE_COVER" closes the ridge (7 in cover, Z-closure); "IMAGE_II_VENTED_PEAK"
+    # vents it (the same cover over Profile Vent and its clips, RDM 5/2024 p. 41).
     roof_ridge_trim_profile: str | None = None
     # The catalog eave and rake kit this roof covering takes where its edge is wrapped (no
     # fascia board): "IMAGE_II" puts the Extended Eave and Residential Rake on the edge.

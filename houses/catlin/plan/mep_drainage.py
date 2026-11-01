@@ -531,8 +531,8 @@ CONDENSATE_MAIN = [
             path=(pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(9))),
             diameter=inch(0.75), material="pvc",
             # 0.3"/ft over the 8'-0" north leg, landing on PR-B-COND's interpolated
-            # -1'-8.9" invert at x=17'-6".
-            elevations=(ft(2, 6), inch(-18.46), inch(-20.86))),
+            # -1'-8.41" invert at x=17'-6" (raised 0.45" with its 0.26"/ft grade, 2026-11-01).
+            elevations=(ft(2, 6), inch(-18.0055), inch(-20.4055))),
 ]
 
 # --- RM-M-LAUNDRY: one air gap ---------------------------------------------------------
@@ -637,11 +637,12 @@ CONDENSATE = [
             diameter=inch(0.75), material="pvc",
             # Drop inside the north wall, beside the ERV drain, so no riser pierces the
             # continuous 24" foot deck. Keep the existing ceiling crossing and 9" air gap.
-            # At 0.3"/ft, 198 7/16" of overhead run takes 4.9609375" from the 92" head;
-            # the last 23 1/4" under-bench leg takes 0.58125" to the same receptor.
-            elevations=(ft(7, 8), None, None, None, inch(87.0390625),
+            # At 0.26"/ft (0.3 until 2026-11-01), 198 7/16" of overhead run takes 4.3"
+            # from the 92" head, so the leg over the sauna stays above the raised ceiling's
+            # foil (+87 5/16"); the last 23 1/4" under-bench leg is unchanged.
+            elevations=(ft(7, 8), None, None, None, inch(87.7005208),
                         inch(9.58125), ft(0, 9)),
-            slope_in_per_ft=0.3),
+            slope_in_per_ft=0.26),
 ]
 
 # --- TPR relief discharge (UPC 608.5) ------------------------------------------------

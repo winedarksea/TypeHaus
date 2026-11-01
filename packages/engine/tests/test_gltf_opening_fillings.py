@@ -118,10 +118,14 @@ def _measure_box(corners: list[tuple[float, ...]]) -> tuple[tuple[float, float],
     return (spans[0], spans[1]), max(heights) - bottom, center  # type: ignore[return-value]
 
 
-def _solids_of_node(gltf: dict, blob: bytes, node: dict) -> list[_Solid]:
+def _solids_of_node(gltf: dict, blob: bytes, node: dict,
+                    skip_swept: bool = False) -> list[_Solid]:
+    """``skip_swept`` drops primitives that are not whole boxes (a doorway reducer's section)."""
     solids: list[_Solid] = []
     for primitive in gltf["meshes"][node["mesh"]]["primitives"]:
         positions = _read_vec3_accessor(gltf, blob, primitive["attributes"]["POSITION"])
+        if skip_swept and len(positions) % _VERTICES_PER_BOX:
+            continue
         for chunk in _box_vertex_chunks(positions):
             corners = sorted({_vertex_key(vertex) for vertex in chunk})
             assert len(corners) == 8, f"a product piece must be a closed box, got {corners}"
@@ -325,7 +329,7 @@ def test_catlin_plant_room_door_ships_translucent_glazing(catlin_model):
                      if dt.tag == opening.type_ref)
     assert door_type.glazed
     gltf, blob = emit_gltf_dict(catlin_model)
-    solids = _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid))
+    solids = _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid), skip_swept=True)
 
     panes = [solid for solid in solids if solid.has_thickness(_WINDOW_GLAZING_THICKNESS_M)]
     assert len(panes) == 1

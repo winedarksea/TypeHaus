@@ -245,19 +245,27 @@ the future.
   - [ ] RF-HOUSE birdsmouth notches the TJI 230 flange (C3-E5).
   - [ ] HU28-2Z on a single 2x8 -> LUS28Z (C3-E11).
   - [ ] Canopy truss bearing 2 3/4", heel lift, north-entry seat-beam hangers and shim pack (C3-E6/E7/E12-E14).
-  - [ ] Floor-to-floor stack 120" vs 120.625": walls on the subfloor, studs 102 7/8" (C3-E3).
-  - [ ] BBD75 band panel top unfastened; lap check reads the trim leg (C4 E2-001).
-  - [ ] B&B window heads use PBR 58114XX; BBD75 publishes Head Trim 58720XX (O5-005).
-  - [ ] 3" stacks in 2x4 walls W-M-STOS / W-S-DC2; bore checks ignore insulation and exterior bearing (C6-E3..E6).
-  - [ ] ERV starts off the Broan collars; 39 duct legs shorter than their elbows (C6-E1/E2).
-  - [ ] Trap arm measured in plan; vents unconnected in 3D (C6-E7).
-  - [ ] Buck-lined window reveal finish (C2-E1); Drutex sill rail vs 2.953" stools (C2-E10).
-  - [ ] ST-G-SERVICE top riser vs the MMI threshold (C1-E2).
-  - [ ] Kitchen: fridge rear clearance, north-run build-up, stone overhang (C5-E1..E3).
-  - [ ] Carpet stack >= 1.0" vs 0.75"; no transition product at 58 doorways (C5-E5/E6).
-  - [ ] Swanstone 96" vs 106"; J-bead per board thickness; sauna base behind benches; dropped-ceiling clear height (C5-E4, E7..E9).
-  - [ ] Doors/trim: MDF casing 11/16", bypass ROs, jamb depths, mudroom base, Murphy RO, exterior frame anchor (C2-E2..E8).
-  - [ ] Roof: Metal Sales vented ridge part, rectangular leaders, ridge end caps, seam register (C4).
+  - [ ] C3-E3 follow-up: the three exterior doors (D-M-ENTRY, D-M-BALC, D-S-DECK-E) keep their RO base on the joist top, 3/4" under the subfloor the walls now stand on (decision #110); their sill pans, thresholds and landings are coordinated off that datum, and moving D-S-DECK-E onto the subfloor broke its catalog installation (6 FAILs). Owner: confirm the subfloor is cut back for each sill, or re-derive the three installations off the subfloor.
+- Left open by the 2026-11-01 fit and product-data pass (REPORT items 14-24; plan `make-a-plan-to-warm-otter`):
+  - [ ] ERV OA/EA/RET still leave the case at service level: under Broan's 2x2 port grid they cannot all reach the two basement plenums in 21.3" of headroom (8" ducts at 12" wrapped OD, OA/EA wraps overlap 2 1/4"). Owner held it; options are rearranging the plenums or moving the ERV (C6-E1). `erv_static_budget` stays 0.441" > 0.4".
+  - [ ] 13 drain fixtures have no 3D vent (`mep.trap_arm_developed` ADVISORY worklist): basement bath WC/sauna, BATH2 WC/SH/TUB/laundry, hall-bath WC/SH, suite WC/LAV/TUBSH, attic SH. Owner: plumber-led layout pass, wet or individual vents case by case. Before switching it to the CODE `mep.trap_arm_length`, grade UPC 908's wet-vent limits in `checks/mep/trap_arm.py` (C6-E7).
+  - [ ] TB-SG-W1/E1 closure boards are 8" while FT-B-S2/S3 are now 10": 2" x 32" of strip faces the court footing with no board. Extend to 10" (moves §11l and test_thermal_break) or accept.
+  - [ ] Doorway transitions: D-A-STUDY / D-A-POCKET open onto unfinished subfloor (`compatible_finish_pairs` can't name it); D-M-MECH's floor varies across its doorway.
+  - [ ] Leader straps bill twice: `CN-A-LEADER-*` (SS316 standoff strap #13, sized for the old 4" round) and the leader's 58110XX. Pick one product for the 4x3 1/2 leader on the ribbed panel.
+  - [ ] `plan/wind_clamps.py` CN-G-WIND-RFSW/SE-1..3 sit over the canopy but name RF-GARAGE, 8.4" off the canopy's seams since the seam register.
+  - [ ] 13 wall-light types state no `LuminaireType.canopy` (one combined `electrical.canopy_covers_box` UNKNOWN).
+  - [ ] No check grades a run passing through a room's `ceiling_lining` layers (found at the sauna; design: `mep.run_in_ceiling_lining`, runs below the FURRING cavity bottom FAIL, terminal drops exempt, ~60 lines reusing `routing_ceiling._segment_rows`); no check grades a backing band's face against its body's side; BK-M-HS1-BASIN overlaps BK-M-HS1-GRAB.
+  - [ ] Window stools pass through the buck jambs (`framing|window_stool`, 34 pairs): notch in `geometry_millwork.window_stool_ring`. ST-G-SERVICE riser-004 overlaps D-G-SERVICE's sill support (90 cm3).
+  - [ ] BATH2 surround backer: the wall layer is `gwb-mr`; `notes/bath2_shower.md` §6 specifies glass-mat.
+  - [ ] Over 500 lines: `resolve/framing/furring.py` (706), `checks/code/mn_residential/stairs.py` (522).
+- Supplier holds from the same pass:
+  - Metal Sales / SFS: Profile Vent NFA under the 1" Image II clip, and per foot or per strip (R806 passes 562 vs 553 in2); a lower BBD75 panel stopped 1" short of the Transition Trim seat; a stock gable end closure for the 7" cover; Profile Vent width; a 4x3 1/2-to-4" round adapter.
+  - DAKAM: Alucover operable sill rail height and sash overlap (author `WindowType.sill_rail_height` / `sash_overlap`). MMI: Z0364688R sill crest (ST-G-SERVICE tops at the +1.5" envelope).
+  - Murphy Door: the custom 32 x 82 RO flush-mount (FF datum, body 28 3/4 x 78 1/2 x 8 1/4, casing 36 1/2, passage 24 1/4, price/lead time).
+  - **Engineer hold, 14" north-entry pier cage (C3-E21):** PT-BW-W/-GW and PT-BW-PE/-PNE (`PIER_CONCRETE_14`, (4) #5) are 0.806% of gross, under ACI 318-19 §10.6.1.1's 1%; met only on §10.3.1.2's reduced area (0.770 in2 on 76.97 in2). EOR to confirm the basis or go to (6) #5. `notes/north_entry_piers.md` §13.
+  - Broan: the derived 9 3/4" port 3-4 spacing; 8" flex on those centres. Weyerhaeuser: TJI 230 row assumes a glue-nailed subfloor. BuildBlock: BB600 course height vs the 64" stem.
+  - Frigidaire TWINSPAIRKIT 1/8" seam; LG LDTS5552S side-mount with no sub-top. Carpet backing thickness (Z-bar answer holds to 0.10"); Mohawk on the 3/8" pad. WAC Roland on a flat 753 cover; DVFR1W trim stand-off. Bypass/bifold 1/2" head allowance.
+  - Plumber: the attic WC's 1 1/2" vent (UPC 904.1); basement WC re-route under the slab to W-B-BA-E; moving BATH2's supplies and PR-B-HW-TRUNK for a vent lane; a hall-bath WC vent in exterior W-S-W1.
 - Generally our goal is to have every piece of the house linked to a named product (or a standard or commodity size, like a 2x4) so we can confirm every piece fits together correctly.
 - Kitchen sink fabrication hold: dry-fit KHU100-32 / Bolden KPF-1610SFS / Badger 5 / Dearborn P9703WBG in the 36-inch SEKTION. Verify delivered Badger revision, clip/washer and rail access, full hose stroke, cleanout clearance, vent fitting/bore envelopes and the inward tilt-turn window sweep (full turn likely obstructed). See houses/catlin/notes/kitchen_sink_installation.md; product/connection specification is complete, physical fit is not released.
 - Can we widen D-M-BATH2 to 36"? Not sure if/how the casing would work as that puts it into the shower area (the casing).
@@ -269,11 +277,10 @@ the future.
 - [ ] Before ordering LVP/pouring the cap: confirm Quincy Oak sample and local delivered quote, measure the installed plank and coating stack, and set the flush movement/edge joint from those samples.
 - See if we can practically use the fleur de lis molds on the top of PT-BW-PE and PT-BW-PNE https://historystones.com/collections/business-industrial-construction-building-materials-supplies-marble-tile-stone/products/fluer-de-lys-tuscany-column-insert
 - Workshop receptacles: RC1's 120/240 V circuit and RC2's 120 V quad are modeled, with their boxes, covers and raceway. Resolve the required tamper-resistant listings and the field wiring before installation; see [workshop receptacles](../houses/catlin/notes/workshop_receptacles.md).
-- Basement surface wiring open items ([note](../houses/catlin/notes/basement_surface_wiring.md#open-items)): the six PLAY-N sconce canopies must cover a 4" square surface box — confirmed they cannot (WAC 4.5x1" backplate vs RACO 232 + cover; geometry review C6-E10), and the TV sits over two boxes (C6-E11).
-- D-B-PATIO: separate brick reveal, widened RO, 5-1/2 inch concrete seat, composite returns, one blind curb-skin recess and XMN5 sill extension are modeled. Sill/approach/pan intersections pass; crest heights come from the [engine-generated review](../houses/catlin/notes/french_door_catalog_installation.md#3-height-and-geometry-review). Complete concrete reinforcement/development, support root and cross-bearer bearing, field membrane bonds, installed pan/sweep/hinge sections, and assembled-unit label/warranty evidence. Standard rainproofing only; drainage/sump back up the revised concrete curb. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
+- D-B-PATIO: separate brick reveal, widened RO, 5-1/2 inch concrete seat, composite returns, and one blind curb-skin recess are modeled (XMN5 dropped 2026-11-01). Sill/approach/pan intersections pass; crest heights come from the [engine-generated review](../houses/catlin/notes/french_door_catalog_installation.md#3-height-and-geometry-review). Complete concrete reinforcement/development, support root and cross-bearer bearing, field membrane bonds, installed pan/sweep/hinge sections, and assembled-unit label/warranty evidence. Standard rainproofing only; drainage/sump back up the revised concrete curb. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
 - D-S-DECK-E: catalog coordination replaces the schematic plate/wrapped trim with a digitized ZAI outline, composite returns and short AridDek boards. BE365 adapter F is documented; crest heights come from the [engine-generated review](../houses/catlin/notes/french_door_catalog_installation.md#3-height-and-geometry-review). Complete house-root connections and cross-bearer bearing, installed pan/sweep/hinge sections and the flexible flashing-end application; confirm assembly dimensions/label/warranty. Complete preferred/Tru-Defense prices remain unavailable publicly. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
 - Research most commonly failed residential code items and make sure checks or tests exist for those here.
-- Metal trim kit ([notes/metal_trim_kit.md](../houses/catlin/notes/metal_trim_kit.md)): supplier confirmation only: the 13 in step cover part number and the Cobra vented closure's net free area. R806.2 also needs the garage soffit's net free area, which is not authored; until then `code.R806_2_attic_ventilation` stays UNKNOWN for the garage.
+- Metal trim kit ([notes/metal_trim_kit.md](../houses/catlin/notes/metal_trim_kit.md)): the garage soffit's net free area is still unauthored; authoring it would give R806.2 real margin through the 1/300 balanced route.
 - House K2 base flashing and wall-top closures now derive, bill and receive coverage checks; coordinate the garage Sill to Soffit panel break and installation order, which the fit check records UNKNOWN. See the trim note for the selected aluminium section, isolation and quantities.
 - Add the eased edges and rounded corners to the shown tabletop model.
 - Look up a guide to how plumbers and such route, then make sure the autorouter follows that, and also code for it
@@ -330,9 +337,10 @@ the future.
 - O-S-VANITY and D-S-STUDY2, both openings (not true doors) seem to get ignored, improperly showing baseboard, sill plates, and non-continuous flooring, they likely just need to reuse some of the existing door handling logic which generally works
 - Edit the door swing icon in 2d so it shows a frame (right now the 2d door swing might be a bit too big, versus actual leaf swing)
 - Make SL-M-DECK a wood joist design. Use open web trusses (not I joists) at tighter OC for extra strength (and maybe ask for a 60 psf or 100 psf truss design, if that is easy to source). Make sure the joists are anchored properly using simpson connectors to the concrete. The structural concrete (BuildDeck) is kept in the library but retired from use. Perhaps 3/4" plywood as the theater ceiling
-- Keep the LVP and tile at the same flush level. Ditra XL or Ditra Heat + Thinset + Tile = 3/4" == 1/2" plywood + 8 mm LVP
+- Aiming to keep floor transitions flush, looks like ~3/4" thickness makes this easiest. Ditra XL or Ditra Heat + Thinset + 3/8" Tile == 1/2" plywood (nominal) + 7 mm LVP == 1/2" gypsum underlayment (fiberrock or 1/2" exacor mgo) + 6.5 mm LVP == 5/8" actual underlayment + 3 mm sheet vinyl == 3/4" hardwood ~= 7/16" pad + 1/2" pile carpet (carpet squishes at edges)
 - Delete the shower blow dryer fan from RM-M-BATH2 (but keep in library)
 - Specify paint in detail
+- Specify leak detectors, in useful places, linked to Home Assitant
 
 # Project Management
 

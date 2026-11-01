@@ -11,6 +11,9 @@ host face over the device's own band, read outermost layer first:
   heat's ``thermostat_ref``) → ``flush_raceway``;
 * cladding outermost (an exterior face) → no box: the type carries its own weatherproof one.
 
+A row may name a ``use``: a light takes the ``"luminaire"`` row, and a type may ask for its
+own (``box_use="recessed"``); with none, the general row serves.
+
 Wall-hosted receptacles, switches and wall lights take one; data outlets, enclosures,
 panels, disconnects, meters and junction boxes do not unless their type says
 ``device_box=True``. The box is a solid (``electrical_box``) and, where surface, part of
@@ -142,6 +145,14 @@ def takes_box(item: Any, product_type: Any | None) -> bool:
     return getattr(getattr(item, "kind", None), "value", None) in _BOXED_KINDS
 
 
+def box_use(item: Any, product_type: Any | None) -> str | None:
+    """The BoxStandard row ``use`` a device asks for: its type's, or a light's luminaire."""
+    use = getattr(product_type, "box_use", None)
+    if use is not None:
+        return use
+    return "luminaire" if getattr(getattr(item, "kind", None), "value", None) == "light" else None
+
+
 def gang_count(product_type: Any | None) -> int:
     symbol = getattr(getattr(product_type, "model_representation", None), "symbol", None)
     return max(int(getattr(product_type, "gangs", 1) or 1),
@@ -208,7 +219,7 @@ def plan_box(model: ResolvedModel, item: Any, product_type: Any | None,
     if mounting == "flush" and item.tag in reached:
         mounting = "flush_raceway"
     gangs = gang_count(product_type)
-    row = standard.row_for(mounting, gangs)
+    row = standard.row_for(mounting, gangs, box_use(item, product_type))
     if row is None:
         return None
     width, _height, depth = (part.meters for part in row.box_size)

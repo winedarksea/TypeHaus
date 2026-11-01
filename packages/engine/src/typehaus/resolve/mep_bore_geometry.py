@@ -21,6 +21,9 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 #: silence is the one verdict a member carrying an opening's whole tributary load may not
 #: get. It is graded by ``mep_bores.header_bore``, which is NOT R602.6 — see that function.
 _CUTTABLE_CATEGORIES = ("stud", "king", "jack", "cripple", "plate", "sill", "header")
+#: A run resting ON a member's face cuts nothing: a joist-bay duct on the soffit over a
+#: bearing wall's top plate, which meets that soffit exactly (decision #110).
+_FACE_CONTACT_M = 1e-6
 
 
 @dataclass(frozen=True)
@@ -116,12 +119,14 @@ def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, fl
             # A riser occupies its whole z range at one plan point; its midpoint is not
             # where it meets anything (DU-ERV-RISER-EXH's fell 0.9" above W-M-MECH-S).
             low, high = min(za, zb), max(za, zb)
-            if high + half_z < member.z0_m or low - half_z > top:
+            if (high + half_z <= member.z0_m + _FACE_CONTACT_M
+                    or low - half_z >= top - _FACE_CONTACT_M):
                 continue
             z = min(max((member.z0_m + top) / 2.0, low), high)
         else:
             z = _z_at(a, b, za, zb, (centre.x, centre.y))
-            if not (member.z0_m - half_z <= z <= top + half_z):
+            if not (member.z0_m - half_z + _FACE_CONTACT_M < z
+                    < top + half_z - _FACE_CONTACT_M):
                 continue
         # The hole a stud gives up is the run's width across it; a plate or header gives
         # up its height; a riser its whole plan section.

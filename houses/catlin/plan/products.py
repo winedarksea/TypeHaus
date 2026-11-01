@@ -38,6 +38,7 @@ from plan.living_east_run_types import LIVING_EAST_RUN_PRODUCTS
 from plan.plant_liner_selection import EXTRUTECH_P1600
 from plan.plant_room_types import PLANT_ROOM_PRODUCTS
 from plan.products_bedroom_carpet import BEDROOM_CARPET_PRODUCTS
+from plan.doorway_transitions import TRANSITION_PRODUCTS
 from plan.products_floor_tiles import FLOOR_TILE_PRODUCTS
 from plan.flooring_selection import QUINCY_OAK_PRODUCT
 from plan.products_entry_screen import ENTRY_SCREEN_PRODUCTS
@@ -227,16 +228,18 @@ PROSAUNAS_VENT_HATCH_ASPEN = Product(
            "one sliding in a rebate, an easy shop build from offcuts if the part is unavailable.",
 )
 
-# Purchased study door. Geometry and clearances are structured on DT-INT-BOOKCASE36;
-# this record is the order identity only.
-MURPHY_BOOKCASE_36 = Product(
-    tag="PROD-MURPHY-BOOKCASE-36", brand="Murphy Door", model="Flush Mount Bookcase Door",
-    name="Flush-mount bookcase door, 36 x 80 nominal, west-hinged in-swing",
-    source="Murphy Door instruction manuals and measurement charts, read 2026-09-19: "
-           "factory body 34 3/4 x 78 1/2 x 8 1/4 in.; 38 x 82 in. rough opening; "
-           "42 1/2 in. casing envelope; 30 1/4 in. published passage; 1 1/2 in. "
-           "hinge-side wall clearance. Verify threshold anchorage, jamb fasteners and "
-           "delivered-unit connection details before installation.",
+# Purchased study door. Geometry and clearances are structured on DT-INT-BOOKCASE30;
+# this record is the order identity only. A custom 32 in. RO (owner, 2026-11-01).
+MURPHY_BOOKCASE_30 = Product(
+    tag="PROD-MURPHY-BOOKCASE-30", brand="Murphy Door", model="Flush Mount Bookcase Door",
+    name="Flush-mount bookcase door, 30 x 80 nominal (custom width), west-hinged in-swing",
+    source="Custom width; scaled from the 36 in. chart; confirm with Murphy. Ordered by "
+           "rough opening, 32 x 82 in.; factory body 28 3/4 x 78 1/2 x 8 1/4 in.; "
+           "36 1/2 in. casing envelope; 24 1/4 in. passage; 1 1/2 in. hinge-side wall "
+           "clearance. 36 in. chart (Murphy Door instruction manuals and measurement charts, "
+           "read 2026-09-19): body 34 3/4 in., RO 38 x 82, casing 42 1/2, passage 30 1/4. "
+           "Verify threshold anchorage, jamb fasteners and delivered-unit connection "
+           "details before installation.",
 )
 
 # --- RM-M-BATH2's drop-in bath (2026-08-29; K-1130-W1 since 2026-10-22) -----------------
@@ -309,14 +312,14 @@ PRODUCTS = (
     KRAUS_KHU100_32, KRAUS_BOLDEN, DEARBORN_KITCHEN_TRAP,
     FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
     RHEEM_PROTERRA_80, EG4_12KPV, EG4_POWERPRO_WALLMOUNT,
-    BROAN_B210E75RT, MURPHY_BOOKCASE_36,
+    BROAN_B210E75RT, MURPHY_BOOKCASE_30,
     ERV_PLENUM_FABRICATED, ERV_START_COLLAR_DAMPERED, ERV_VOLUME_DAMPER_4,
     PROSAUNAS_VENT_HATCH_ASPEN, *AIR_PRODUCTS,
     KOHLER_UNDERSCORE_1130_W1, KOHLER_CLEARFLO_7272,
     LEVITON_EV_RECEPTACLE_1450R,
     FLOOR_BOX_PRODUCT,
     *ENTRY_SCREEN_PRODUCTS, QUINCY_OAK_PRODUCT,
-    *INTERIOR_PRODUCTS, *IKEA_PRODUCTS, *LAUNDRY_PRODUCTS, *FLOOR_TILE_PRODUCTS, *BEDROOM_CARPET_PRODUCTS, *CLOSET_PRODUCTS,
+    *INTERIOR_PRODUCTS, *IKEA_PRODUCTS, *LAUNDRY_PRODUCTS, *FLOOR_TILE_PRODUCTS, *BEDROOM_CARPET_PRODUCTS, *TRANSITION_PRODUCTS, *CLOSET_PRODUCTS,
     *BEDROOM_WARDROBE_PRODUCTS, *BATH1_STORAGE_PRODUCTS,
     *STUDY_NOOK_PRODUCTS, *STUDY_BOOKCASE_PRODUCTS,
     *BED_READING_CORNER_PRODUCTS, *BED_DESK_PRODUCTS,

@@ -11,6 +11,11 @@ wall. R403.1.1's projection P ("not less than 2 inches") is written for the stri
 a strip's END has no code number, so the least margin is printed, flagged under 2", and left
 to the reader.
 
+The second leg is R403.1.1's face projection on every PLAIN concrete strip hosted under a wall
+(``Footing.under``): 2" <= P <= T on both faces, P measured square to the wall from its
+STRUCTURE layer (the pour, or the studs) to the strip's edge. A reinforced footing is designed
+in flexure and a stone one is R403.5's, so neither is graded here.
+
 Where a door breaks the wall, the header delivers the load to its jamb packs; the opening
 itself needs nothing under it, and this check asks nothing of it (no member stands there).
 
@@ -95,6 +100,51 @@ def _grade_wall(wall, on: list[str], members, ground, footing_tags) -> Finding:
                         f"{', '.join(footing_tags) or 'a footing'}{note}", tags, code=_CODE)
 
 
+def _normal_span_in(axis, points) -> tuple[float, float]:
+    """``points``' extent square to ``axis``, inches along its left-hand normal."""
+    (x0, y0), (x1, y1) = axis
+    run = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5 or 1.0
+    nx, ny = -(y1 - y0) / run, (x1 - x0) / run
+    s = [((x - x0) * nx + (y - y0) * ny) / _IN for x, y in points]
+    return min(s), max(s)
+
+
+def _projection_findings(ctx: CheckContext) -> list[Finding]:
+    """R403.1.1's 2" <= P <= T on both faces of each plain concrete strip under a wall."""
+    from typehaus.model.structure import Footing
+    from typehaus.resolve.construction_sills import _is_concrete_ref
+
+    solids = {s.tag: s for s in ctx.model.solids if s.category == "footing"}
+    out: list[Finding] = []
+    for footing in ctx.plan.all_elements():
+        if not isinstance(footing, Footing) or footing.reinforcement is not None:
+            continue
+        wall, solid = ctx.model.wall(footing.under), solids.get(footing.tag)
+        if wall is None or solid is None or not _is_concrete_ref(ctx.model, footing.assembly):
+            continue
+        body = [p for layer in wall.layers if str(layer.function) == "structure"
+                for p in layer.polygon]
+        if not body:
+            continue
+        w_lo, w_hi = _normal_span_in(wall.axis, body)
+        f_lo, f_hi = _normal_span_in(wall.axis, solid.outline)
+        thick = (solid.z1_m - solid.z0_m) / _IN
+        faces = ((w_lo - f_lo, "right"), (f_hi - w_hi, "left"))
+        bad = [f"{p:.2f}\" ({side})" for p, side in faces
+               if p < _PROJECTION_M / _IN - 1e-6 or p > thick + 1e-6]
+        said = f"{faces[1][0]:.2f}\" / {faces[0][0]:.2f}\" (left/right) past {wall.tag}"
+        tags = (footing.tag, wall.tag)
+        if bad:
+            out.append(failed(_CID, f"{footing.tag}: face projection {said}, outside "
+                              f"R403.1.1's 2\" <= P <= T = {thick:.2f}\" at {', '.join(bad)}",
+                              tags, code=_CODE,
+                              fix="move the strip (Footing.offset), narrow it or deepen it"))
+        else:
+            out.append(passed(_CID, f"{footing.tag}: face projection {said}, within 2\" "
+                              f"<= P <= T = {thick:.2f}\"", tags, code=_CODE))
+    return out
+
+
 @check(Tier.STRUCTURAL, _CID)
 def bearing_wall_footing(ctx: CheckContext) -> list[Finding]:
     """Grade each framed bearing wall on a slab-on-grade for a footing under every bearing point."""
@@ -136,9 +186,10 @@ def bearing_wall_footing(ctx: CheckContext) -> list[Finding]:
         footing_tags = sorted(s.tag for s in under
                               if Polygon(s.outline).intersects(axis.buffer(0.2)))
         out.append(_grade_wall(wall, on, members, ground, footing_tags))
-    if not out:
+    projections = _projection_findings(ctx)
+    if not out and not projections:
         out.append(not_applicable(
             _CID, f"{len(walls)} framed walls are named as bearings and none stands on a "
             "slab-on-grade — each bears on a foundation wall, a floor or a beam",
             code=_CODE))
-    return out
+    return out + projections

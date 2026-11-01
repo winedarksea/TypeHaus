@@ -174,7 +174,7 @@ rough opening occupy 0.645 in, or 0.6875 in at the Andersen sizes.
 | House closed ridge | 7 in Ridge/Hip Cover 52131XX, specify 6:12; Z-Closure 58603XX both sides; double-bead tape 6403899 | Residential manual pp. 30–41 |
 | Garage and canopy eaves | Extended Eave 52124XX on Offset Cleat over metal fascia | Residential manual pp. 30–41 |
 | Garage and canopy rakes | Residential Rake and Rake Cleat over fascia/barge; Flat Cleats 5806199 at 18 in | Residential manual pp. 30–41 |
-| Garage vented ridge | 13 in Step Ridge/Hip Cover over the Cobra vented closure, material `standing-seam-image-ii-garage-vented`; part numbers and net free area unconfirmed | Image II PIM p. 20 |
+| Garage vented ridge | Vented peak on both slopes: 7 in Ridge/Hip Cover 52131XX (specify 4:12) over Profile Vent 6441899 and Image II Profile Vent Clips 6540000 (2 per panel per slope, two #14 x 1-1/2 in metalwood screws 8215100 each, a pop rivet 82409XX through the cover into each); double-bead tape 6403899 at both sides of the clips; material `standing-seam-image-ii-garage-vented` | Residential manual pp. 13, 15, 37, 41 |
 | Canopy closed ridge | 7 in Ridge/Hip Cover 52131XX, specify 4:12; Z-Closure 58603XX | Residential manual pp. 30–41 |
 
 The house rake is the stock piece. Its 2-5/8 in leg is fitted with the bottom 1.0 in under the BBD75
@@ -183,10 +183,15 @@ wall head, so 2.12 in of face runs down from the roof top. That clears the roofi
 1.0 in is a Catlin rule. The custom 4 in rake is deleted: the general information manual publishes no
 brake limits for it, and the stock leg fits.
 
-The garage's vented ridge is the Image II PIM p. 20 step cover (13 in, 6-1/2 in legs at pitch, 1 in
-hems) over the Cobra vented closure, with double-bead tape and rivets at every rib, 3:12 minimum and a
-2 in maximum deck slot. The PIM prints no part number and no net free area for either piece. The 2024
-manual shows its 7 in cover only in a non-vented detail.
+The garage's vented ridge is the RDM p. 41 vented peak taken onto both slopes of the gable (owner,
+2026-11-01): the 7 in cover rides the 1 in vent clips where the canopy's rides 1 in Z-closures, so one
+cover runs across the canopy joint with no step. 52134XX is a single-slope peak and 52111XX a hip end
+cap; neither is used. The deck slot is the ProfileVent sheet's 2 in (1 in each side), started 6 in from
+the gable ends. Net free area: SFS's ProfileVent sheet (05/2024) prints 23.4 sq in per linear foot,
+"varies with thickness and profile", at 1.20 in nominal; the model reads it per foot of ridge (562 sq in
+over the 24 ft of ridge above the attic, against 553). Every open ridge end (house both, garage north,
+canopy south) takes a field-formed end closure from the cover's coil; the canopy/garage joint stays
+open, one cover lapped across it.
 
 Gutter and eave relationship: PIM-11 shows only a gutter by others behind the eave face, and PBR p. 46 shows the box gutter's roof flange under eave flashing on a PBR roof. Neither shows the combination; the house documents it (`roof_wall_eave_detail.md`). The flange lies on the field membrane under the eave leg, with the membrane strip-in over both; no field bend, stock part identity kept. The eave's Offset Cleat is not part of the house eave.
 
@@ -257,7 +262,8 @@ What the model derives and bills, with the counts the tests pin
 | Roof eaves | Extended Eave 52124XX, pan hemmed to its lip (no cleat) | 16 sticks |
 | Roof rakes | House: stock Residential Rake 52126XX with its bottom 1.0 in under the wall head; Rake Cleat 52132XX. Garage and canopy: Flat Cleat 5806199 at 18 in | House 4 runs / 16 ea 52126XX; 5806199 40 ea |
 | Closed ridges | 7 in cover 52131XX, Z-Closure 58603XX each side, double-bead tape 6403899 | 5 sticks |
-| Garage vented ridge | 13 in step cover and Cobra closure (`IMAGE_II_VENTED_STEP_RIDGE`, `cobra-vented-closure`), unpriced until the part numbers are in | 25.4 ft |
+| Garage vented ridge | 7 in cover 52131XX over Profile Vent 6441899 (both slopes), 80 clips 6540000, 160 screws 8215100 | 25.4 ft / 3 sticks |
+| Ridge end closures | Field-formed from the cover coil (`ridge-end-closure`), tube sealant and 4 rivets each | 4 ea |
 | Box gutter | PBR 5 x 4 `58079XX`, 20 ft 3 in sticks; end caps `58081XX` / `58082XX` and straps `58092XX` unpriced | 4 sticks |
 | Closed ridges | 7 in cover 52131XX, Z-Closure 58603XX each side, double-bead tape 6403899 | 5 sticks |
 
@@ -282,9 +288,7 @@ Decisions this pass:
   6-9/16 in, 1 in composite sill); MMI publishes no sill section. 1 in rather than 1-1/2 in because the
   outswing allowance in R311.3.2 is 1-1/2 in above the landing.
 
-Still open, all printed as UNKNOWN by the checks: the garage's vented ridge (part numbers and the
-Cobra net free area), `code.R806_2_attic_ventilation` for the garage (its soffit and Cobra net free
-area), and the corrugated Sill to Soffit break. Prices in `prices.toml [cladding_trim]` are estimates.
+Still open, printed as UNKNOWN by the checks: the corrugated Sill to Soffit break. Prices in `prices.toml [cladding_trim]` are estimates.
 
 
 The K2 section has a 2 in upstand, a pan spanning the resolved cavity at a 1/4 in per foot
@@ -328,9 +332,9 @@ jambs and screen ends.
 
 Two items, plus one optional:
 
-1. The part number for the 13 in Step Ridge/Hip Cover (garage vented ridge). Image II PIM p. 20 and
-   the 2024 manual print none.
-2. The Cobra vented closure's net free area. R806.2 needs it before the garage attic can pass. The
-   garage soffit's net free area is a vent product's figure and is not on this list.
+1. Profile Vent 6441899's net free area as installed under the 1 in Image II clip (SFS prints 23.4 sq
+   in/ft at 1.20 in nominal, "varies with thickness and profile"), and whether that figure is per
+   strip or per foot of ridge. R806.2 passes on it by 9 sq in.
+2. Whether a stock end closure exists for a gable ridge on the 7 in cover (none is printed).
 3. Optional: stock part numbers for the Corrugated Jamb and the 1.5 in Sill/Head, if stock is preferred
    over the site bends.

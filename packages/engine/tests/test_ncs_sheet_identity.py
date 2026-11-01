@@ -64,10 +64,11 @@ def test_the_type_digit_agrees_with_the_content(catlin_sheet_index):
 
 def test_details_are_the_five_series_not_the_four(catlin_sheet_index):
     """Type 4 is a large-scale VIEW — an enlarged plan. A junction cut is type 5."""
-    numbers = _numbers(catlin_sheet_index())
-    assert any(n.startswith("A-5") for n in numbers)
-    assert not [n for n in numbers if n.startswith("A-4")], \
-        "this set has no large-scale views, so the 4 series must be empty"
+    sheets = catlin_sheet_index()
+    assert any(s.number.startswith("A-5") for s in sheets)
+    fours = [s for s in sheets if s.number.startswith("A-4")]
+    assert fours and all(s.title.startswith("Enlarged ") for s in fours), \
+        [(s.number, s.title) for s in fours]
 
 
 def test_elevations_come_before_sections(catlin_sheet_index):

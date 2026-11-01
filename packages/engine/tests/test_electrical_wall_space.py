@@ -9,6 +9,8 @@ from typehaus.checks import build_context_from_model
 from typehaus.checks.mep.electrical import receptacle_spacing
 from typehaus.checks.mep.electrical_wall_space import (
     definite_coverage_gaps,
+    facing_well_intervals,
+    floor_line_ring,
     uncertain_wall_space,
 )
 from typehaus.model import (
@@ -178,3 +180,19 @@ def test_floor_opening_breaks_coverage_without_a_catlin_device_dependency(projec
 
 def test_uncertain_interval_crossing_the_seam_preserves_known_failures():
     assert _gaps(40, [24], uncertain=[(0, 10), (38, 40)]) == [(10, 18), (30, 38)]
+
+
+def test_a_wall_inside_the_ring_is_wall_space_and_a_well_behind_it_breaks_nothing(
+        catlin_model_ro):
+    """W-M-C5 stands inside RM-M-LIVING: KRF1 on its east face is on the floor line, and
+    FO-M-STAIR beyond its west face does not break that face."""
+    from typehaus.resolve.placeables import placed_xy
+    from typehaus.resolve.room_perimeter import perimeter_position
+
+    model = catlin_model_ro
+    room = next(r for r in model.rooms if r.tag == "RM-M-LIVING")
+    ring = floor_line_ring(model, room)
+    s, d = perimeter_position(ring, placed_xy(model, model.plan.by_tag("ED-M-LIVING-KRF1")))
+    assert d < inch(1).meters
+    wells = facing_well_intervals(model.plan, ring, room.storey, inch(12).meters)
+    assert wells and not any(a <= s <= b for a, b in wells)

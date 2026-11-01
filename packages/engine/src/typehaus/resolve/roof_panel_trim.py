@@ -75,7 +75,8 @@ def rake_panel_trim(roof, profile, base, material, *, skip=frozenset()):
     return tuple(members)
 
 
-def ridge_panel_closures(roof, profile, base, material, *, offset_m=RIDGE_HALF_WIDTH_M):
+def ridge_panel_closures(roof, profile, base, material, *, offset_m=RIDGE_HALF_WIDTH_M,
+                         anchor=None):
     """Profile-cut Z web in every pan; the crown flange seats the closed cap."""
     from typehaus.resolve.geometry_roofs import layer_inset_rect
 
@@ -90,7 +91,7 @@ def ridge_panel_closures(roof, profile, base, material, *, offset_m=RIDGE_HALF_W
     factor = roof_slope_factor(roof)
     sheet = profile.sheet_thickness_m
     members = []
-    anchor = (low + high) / 2
+    anchor = (low + high) / 2 if anchor is None else anchor
     for sign in (-1, 1):
         cross = ridge + sign * offset_m
         crown = roof_plane_z(roof, cross) + (base + profile.depth_m) * factor

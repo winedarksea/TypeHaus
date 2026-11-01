@@ -76,6 +76,11 @@ plant-rim details, A-512.1/.2, A-513.1/.2). New checks: `integrity.header_under_
 
 ### Structural fit (needs a design or engineering decision)
 
+**Status 2026-11-01: items 8–13 are resolved** (each `adjudicated/C3.md` entry, E3, E5–E8 and
+E10–E14, carries a "Resolved" line). Decisions #108 (truss heel at the outside face of
+bearing), #109 (roof plane anchored at the heel, true plumb depth), #110/#111 (walls on the
+subfloor; the cap at +¾").
+
 8. **The garage sill bears 3⅝" of its 5½" on the ICF core**, with 1⅞" over EPS (C3-E8: F5-001).
    This conflicts with the recorded "coplanar outside" decision.
 9. **The RF-HOUSE birdsmouth cuts 1.47" plumb into the TJI 230 bottom flange** (C3-E5: F4-001).
@@ -97,30 +102,52 @@ plant-rim details, A-512.1/.2, A-513.1/.2). New checks: `integrity.header_under_
 14. **BBD75 band**: the lower panel top sits 7.5" past its last girt with nothing to screw to,
     and the lap check reads the trim leg (2½") rather than the true 1.5" (C4: E2-001).
     → Lower the band girt course. An honest lap check would add a FAIL until then.
+    → **Resolved 2026-11-01:** band girt derived from the joint (226–229.5"); lap graded 1.59" vs a derived 1.50"; new
+    panel-top girt check (`cladding_panel_tops.py`).
 15. **The B&B window head trim is the PBR part** (coordinator, O5-005). Metal Sales' BBD75
     guide (10/2025 p.16) publishes its own board-and-batten **Head Trim 58720XX** and Window
     Closure 55539XX, but every B&B window uses PBR's 58114XX. → Swap the B&B heads to 58720XX
     and re-check the K6 cap lap against its 2½"/1⅛" profile.
+    → **Resolved 2026-11-01:** 58720XX added to the library but **not** swapped: it is trim-first, needs ~0.38" over
+    the frame head (the buck leaves 0.27"), and its back leg rises 1.05" above K6. Owner kept 58114XX.
 16. **3" stacks in 2x4 walls**: W-M-STOS and W-S-DC2 stud-005 (C6-E5/E6, = F2-004/005). The
     bore checks ignore pipe insulation (C6-E3, which would add 2 FAIL) and treat exterior walls
     as non-bearing (C6-E4, which would add 3 FAIL on W-A-HALL-S).
+    → **Resolved 2026-11-01:** `haus route` found no lane into W-M-HS1 or the chase (the ERV exhaust trunk walls off
+    FS-S-WEST), so W-M-STOS is a staggered 2x6 wet wall (owner accepted; mud closet 29½"). The
+    W-S-DC2 drop moved 3" to mid-bay. Bore checks gained the lagging fact and an outdoor-facing exterior set.
 17. **Ducts**: the ERV start points aren't on the Broan B210E75RT collars (C6-E1). 39 of 156
     round legs are shorter than the elbows at their ends need (C6-E2). Both need a re-route.
+    → **Partly resolved 2026-11-01:** Broan's port grid and rotation authored; the supply trunk
+    lands on its collar. OA/EA/RET cannot leave their collars under the plenums (21.3" of headroom)
+    and are held by the owner (TODO). Laying-length term added; short legs 43 → 28 of 163.
 18. **Trap arms** are measured as plan distance, and vents aren't connected in 3D (C6-E7).
+    → **Partly resolved 2026-11-01:** `mep.trap_arm_developed` walks the 3D arm (ADVISORY); 8 more
+    fixtures vented in 3D; 13 wait on a plumber layout pass before the switch to CODE (TODO).
 19. **PLAY-N sconces cannot cover a RACO 232 surface box** (C6-E10; confirms the TODO). The TV
     also sits over two surface boxes (C6-E11).
+    → **Resolved 2026-11-01:** luminaire box row (RACO 192 + flat 753), `electrical.canopy_covers_box`; the TV on a
+    3½" stand-off; the fridge pair's receptacles in recessed DVFR1W boxes.
 20. **Window reveal**: the buck-lined interior reveal of an outie window (2.3–2.75") has no
     specified finish (C2-E1). → A derived jamb-extension board. The Drutex sill rail may be
     125 mm against the 2.953" stool rule, pending the DAKAM drawing (C2-E10).
+    → **Resolved 2026-11-01:** gypsum returns on the buck's lining to the frame, 3/8" ply fur where the stud zone steps
+    0.395"; optional `WindowType.sill_rail_height` / `sash_overlap` await DAKAM.
 21. **ST-G-SERVICE top riser**: it ends at the deck, not at the MMI threshold above it, giving
     about 7.8–8.3" against 7.75" (C1-E2 = C2-E9). The fix needs MMI's sill height, which is
     unpublished.
+    → **Resolved 2026-11-01:** the flight tops at the +1.5" threshold envelope (5 × 7.10"); `stair_end_risers` reads the
+    crest. MMI's sill height stays a supplier hold.
 22. **Kitchen**: the fridge columns have 1/8" behind them against Frigidaire's 1" (C5-E2). The
     north-run 1.319" build-up under the stone is unspecified (C5-E1). The stone is 1/4" past
     the fronts, not 1"; changing it breaks pinned fabrication tests (C5-E3).
+    → **Resolved 2026-11-01:** 1" rear / 3/16" sides, bay 66¼" (PANTRYC ½" south); 1⅝" past the frames, peninsula
+    40⅝" (owner); the 4" leg + ¾" ply sub-top + 1/16" stack on every kitchen run.
 23. **Floors**: the carpet stack is modelled at 0.75" but its published parts add to ≥ 1.0",
     which moves the bedroom thresholds (C5-E5). No transition product exists at 58 doorways
     (C5-E6).
+    → **Resolved 2026-11-01:** 3/8" cushion, 1.0" stack, no plywood; Z-bars at carpet doors; 13 doorway products in
+    `plan/doorway_transitions.py`. Unfinished-subfloor and D-M-MECH doorways remain (TODO).
 24. **Smaller product and data items**:
     - Interiors: the Swanstone surround is 96" but modelled at 106" (C5-E4). One J-bead serves
       two board thicknesses (C5-E7). The sauna base runs behind the benches (C5-E8).
@@ -133,6 +160,13 @@ plant-rim details, A-512.1/.2, A-513.1/.2). New checks: `integrity.header_under_
       garage. 4" round leaders are not a Metal Sales part. Ridge end caps are unbilled. The
       garage and canopy seams are out of register.
     - Structure and viewer (C3 E4/E9/E15–E23, C7 E3/E5–E11): see their files.
+    → **Resolved 2026-11-01:** Swanstone on its base + TK-105 cap + painted band; J-bead by board thickness; sauna
+    benches stop the base; `clear_height_m` reads dropped ceilings (exposed the sauna's R305; ceiling
+    raised 1" to 7'-0 1/16" after re-routing three runs out of its liner). Doors/trim: per-stock thickness, bypass RO branch, derived jamb depth, Murphy FF datum
+    (now a 32" custom unit), mudroom base on gypsum, sheathing-anchored frames. Roof: vented peak +
+    Profile Vent (R806 PASS 562/553), 4×3½ leaders, ridge end closures, seam register. Structure:
+    TJI 230 / IUS2.37, backing cut at studs + `datum`, BB600 named, sills drawn, P ≤ T live (S2/S3 at
+    10"), PIER_CONCRETE_14, dowel note.
 
 ## 2. Fixes applied
 
@@ -186,11 +220,12 @@ None was recorded. The viewer-side twin (`openings.ts` duplicating `_opening_par
 ## Open handoffs
 
 Each of these needs an authoring or design decision, so none is fixed:
+(2026-11-01: C-101, A-528 K2, the R302.11 note, the skirt stock and the STOS backing split are
+resolved; see adjudicated/C7.md and C6.md. O3-010 closed earlier and is removed.)
 - **C-101 "STAIR AREA 27 SF"** is an authored `ImperviousSurface` outline; re-trace it to the
   tier 1 and porch pad footprints (S2-005).
 - **A-528 K2** is a window keynote printed on the door detail; scope it once the opening is
   confirmed (O1-008).
-- **D-G-SERVICE header plies**: 2-ply in the note against 3-ply in `CLAUDE.md` (O3-010).
 - **A fireblocking (R302.11) general note** (F2-009).
 - **The ST-M2S skirt blank** needs 10' stock (O2-010).
 - **The backing bands split around stack bays** after C6-E5 (F2-003).

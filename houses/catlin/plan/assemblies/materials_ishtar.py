@@ -128,7 +128,7 @@ MATERIALS_ISHTAR = [
              name="Marble-look cast shower wall panel (1/2\")",
              r_per_inch=0.0, density=1600.0, hatch="stone", color="#efece6",
              source="RM-M-BATH2 shower surround, 2026-09-02; \"marble-look\" spans cultured marble, cast solid surface and acrylic and the product family is an OPEN OWNER SELECTION — see prices.toml [wood_surfaces] for the price spread that collapses when it is made"),
-    # RM-M-BATH2's shower walls since 2026-10-12, WP-M-BATH2-SURR, floor to ceiling. Swanstone
+    # RM-M-BATH2's shower walls since 2026-10-12, WP-M-BATH2-SURR, base to 96". Swanstone
     # Modern Subway relief in White (.010), owner 2026-10-29. Same reasoning as
     # marble-look-panel above: no species, no vapour field. The band authors the panel's 1/4".
     Material(tag="solid-surface-panel",
@@ -136,6 +136,12 @@ MATERIALS_ISHTAR = [
              r_per_inch=0.0, density=1700.0, hatch="stone", color="#f4f4f2",
              finish="tile-swanstone-modern-subway", product_ref="PROD-SOLID-SURFACE-SHOWER",
              source="RM-M-BATH2 shower surround, owner selection 2026-10-12, style and colour 2026-10-29: Swanstone MSMK-9636-1 Modern Subway (6x24 simulated tile relief) in White (.010), matching the SS-3636 base (plan/products_showering.py); confirm against a physical chip"),
+    # WP-M-BATH2-SURR-CAP: a TK-105 strip across the panels' top edge (review I2-002).
+    Material(tag="swanstone-trim-strip",
+             name="Swanstone TK-105 trim strip, 3 7/8 x 1/4 in., White",
+             r_per_inch=0.0, density=1700.0, hatch="stone", color="#f4f4f2",
+             product_ref="PROD-SWAN-TK-105",
+             source="Swan TK-105 wall panel trim kit (plan/products_showering.py), bonded over the backer on the panels' top edge, silicone to the panel"),
     # The SS-3636 pan in the same White, smooth: the subway relief is the panels' alone.
     Material(tag="solid-surface-base",
              name="Solid-surface shower base, Swanstone White",

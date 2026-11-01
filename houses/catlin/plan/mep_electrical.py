@@ -264,9 +264,9 @@ MAIN_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # On the centre bearing wall's east face, behind APPL-M-FRIDGE, at 48" — above the
     # coil deck, so the plug is reachable without pulling the whole cabinet out. Fridge is
-    # y 30'-1 3/4"..32'-10 5/8".
+    # y 30'-1 9/16"..32'-10 7/16". Recessed like KFZ1: 1" behind the unit takes no plug.
     ElectricalDevice(uid="D9EBW2FJTX", tag="ED-M-LIVING-KRF1", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-FRIDGE",
+                     type_ref="ED-T-LEV-DUPLEX-20-REC", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C5", face="right", distance_from_start=inch(66.625),

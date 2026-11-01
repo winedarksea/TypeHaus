@@ -122,7 +122,7 @@ try {
         query: { uid: c.opening_uid, piece } });
     }
     for (const o of (m.openings ?? []).filter(o => o.is_door))
-      for (const p of o.authored_product_parts ?? [])
+      for (const p of o.opening_parts ?? [])
         if (p.role === "hinge") out.push({ label: "door hinge", want: { kind: "opening", uid: o.uid, piece: p.key },
           query: { uid: o.uid, piece: p.key } });
     for (const roof of m.roofs ?? []) {

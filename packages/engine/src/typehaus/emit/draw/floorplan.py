@@ -169,7 +169,7 @@ def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str],
         length = axis_length or 1.0
         cx, cy = opening_center(wall, op) or (sx, sy)
         angle = _angle(sx, sy, ex, ey)
-        mark = marks.get(op.type_ref or "")
+        mark = marks.get(op.tag)
         if op.is_door:
             _emit_door_symbol(b, model, op, (cx, cy), (ex - sx, ey - sy), length, angle,
                               wall.thickness_m / M_PER_IN)

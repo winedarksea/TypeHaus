@@ -153,19 +153,12 @@ DETAIL_SLICES = [
     # while the joists and rafters stay on the frame line where the sheets need bearing.
     # See the post-line block in params/north_entry_frame.py.
     #
-    # The crop runs from below the frost-depth pads (-4') to above the crown (+8'-6"), and
-    # 9" past the 4'-6" glazing envelope (x = 6'-9" to 11'-3") on each side. **It was
-    # x = 1'-6"..7'-6" until 2026-09-03 and x = 5'-0"..11'-0" until 2026-09-09** — and each
-    # time the enclosure moved, this crop was the thing that did not, so the drawing quietly
-    # cropped off part of its own subject. The 2026-09-09 widening to 4'-6" put GL-BW-WALL-E
-    # and its sill and hatch trim 3" OUTSIDE the old x=11'-0" edge, and the section goldens
-    # recorded three elements simply vanishing. The enclosure and its `_EW_FT` /
-    # `_GLAZING_CENTER_X` are themselves retired now — the extruded garage gable replaced
-    # them — so what this crop must follow today is the north-entry frame:
+    # The crop must follow the north-entry frame (the breezeway enclosure is retired, and
+    # this tag was renamed off it in C7-E6):
     # ** IF `params/north_entry_frame.py`'s FRAME_Y0_FT/FRAME_Y1_FT OR THE COLUMN LINE
     # MOVES, MOVE THIS TOO ** — nothing links them and no check grades a crop against the
     # thing it is meant to show.
-    Slice(uid="BWD901AAAA", tag="SL-D-BREEZEWAY", kind=SliceKind.DETAIL,
+    Slice(uid="BWD901AAAA", tag="SL-D-NORTH-ENTRY", kind=SliceKind.DETAIL,
          title="North entry: gable, bridge landing and east tiers",
          cut_origin=pt(ft(0), ft(DETAIL_CUT_Y_FT)), cut_direction="x",
          dimensions=_TIER_RISERS + _TIER_GOINGS,

@@ -96,7 +96,9 @@ def _grade_line(ctx: CheckContext, sump: Sump, line, receiver) -> list[Finding]:
 
 def _lands_on_leader(line, z, leader: Downspout) -> list[str]:
     end = Point(line.path[-1])
-    radius = leader.diameter.meters / 2.0
+    # The wye is on the extension riser when there is one, else on the leader itself.
+    radius = (leader.extension.diameter.meters / 2.0 if leader.extension is not None
+              else max(leader.half_extents_m()))
     if end.distance(Point(leader.position.xy_m)) > radius + LEADER_SLACK_M:
         return [f"it ends off {leader.tag} in plan"]
     ext = leader.extension

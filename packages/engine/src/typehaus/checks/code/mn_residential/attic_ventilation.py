@@ -16,15 +16,14 @@ vented eave anywhere scope-passes naming that, rather than failing.
 
 from __future__ import annotations
 
-import math
-
 from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
+from typehaus.library.trim._image_ii import PROFILE_VENT_NFA_IN2_PER_FT
 from typehaus.model.spatial import Roof
 from typehaus.model.trim import EaveSoffit, EaveTrim
 from typehaus.resolve.roof_edge_geometry import roof_ridge_run
-from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
+from typehaus.resolve.roof_geometry import roof_bearing_footprint, roof_ceiling_area_m2
 
 _BASE_RATIO = 1 / 150.0   # R806.2 default
 _REDUCED_RATIO = 1 / 300.0  # R806.2 exception 2, with balanced upper/lower distribution
@@ -34,6 +33,7 @@ _IN2_PER_M2 = 1550.0031
 _M_PER_FT = 0.3048
 _M2_PER_SF = 0.09290304
 _VENTED_SOFFIT = "eave-trim:vented-soffit"  # the connection roof_trim stamps on vented panels
+_PROFILE_VENT = "ridge:profile-vent"  # resolve/roof_ridge_trim.py, the RDM p. 41 vented peak
 
 
 @check(Tier.CODE, "code.R806_2_attic_ventilation")
@@ -69,7 +69,7 @@ def attic_ventilation(ctx: CheckContext) -> list[Finding]:
     if attic_m2 <= 1e-9:
         return [_unknown(cid, "roof footprints resolve no attic floor to ventilate", (), code)]
 
-    intake_in2, exhaust_in2, unrated = _vent_areas(vented_pairs, soffits)
+    intake_in2, exhaust_in2, unrated = _vent_areas(ctx.model, vented_pairs, soffits)
     total_in2 = intake_in2 + exhaust_in2
     attic_sf = attic_m2 / _M2_PER_SF
     required_base = attic_m2 * _IN2_PER_M2 * _BASE_RATIO
@@ -112,12 +112,13 @@ def _run_length_m(run) -> float:
                for a, b in zip(points, points[1:], strict=False))
 
 
-def _vent_areas(pairs, soffits) -> tuple[float, float, list[tuple[str, str]]]:
+def _vent_areas(model, pairs, soffits) -> tuple[float, float, list[tuple[str, str]]]:
     """Intake and exhaust net free area in in², and every vent run stating no rating.
 
     Each rating is per foot, so lengths come from the resolved geometry: a roof's vented soffit
-    panels (the eave and rake runs its trim closes) and its ridge run, which the ridge vent
-    covers end to end. An unrated run is reported, never counted as zero.
+    panels (the eave and rake runs its trim closes) and its ridge over the attic (the bearing
+    footprint: the run past a gable overhang vents nothing). A ridge with no authored rating
+    takes its Profile Vent's printed one. An unrated run is reported, never counted as zero.
     """
     intake, exhaust = 0.0, 0.0
     unrated: list[tuple[str, str]] = []
@@ -131,14 +132,27 @@ def _vent_areas(pairs, soffits) -> tuple[float, float, list[tuple[str, str]]]:
                 intake += trim.soffit_nfva_in2_per_ft * soffit_ft
         ridge = roof_ridge_run(roof)
         if ridge is not None:
-            if trim.ridge_vent_nfva_in2_per_ft is None:
+            rating = trim.ridge_vent_nfva_in2_per_ft
+            if rating is None and any(m.connection == _PROFILE_VENT for m in roof.members):
+                rating = PROFILE_VENT_NFA_IN2_PER_FT
+            if rating is None:
                 unrated.append((roof.tag, "ridge vent net free area"))
             else:
-                ridge_m = math.hypot(ridge.p1[0] - ridge.p0[0], ridge.p1[1] - ridge.p0[1])
-                exhaust += trim.ridge_vent_nfva_in2_per_ft * ridge_m / _M_PER_FT
+                exhaust += rating * _ridge_over_attic_m(model, roof, ridge) / _M_PER_FT
     for soffit in soffits:
         if soffit.net_free_area_in2_per_ft is None:
             unrated.append((soffit.tag, "net free area"))
         else:
             intake += soffit.net_free_area_in2_per_ft * _run_length_m(soffit) / _M_PER_FT
     return intake, exhaust, unrated
+
+
+def _ridge_over_attic_m(model, roof, ridge) -> float:
+    """The ridge run clipped to the bearing footprint's extent along it."""
+    axis = 0 if roof.ridge_direction == "x" else 1
+    lo, hi = sorted((ridge.p0[axis], ridge.p1[axis]))
+    footprint = roof_bearing_footprint(model, roof)
+    if footprint is not None:
+        lo = max(lo, min(p[axis] for p in footprint))
+        hi = min(hi, max(p[axis] for p in footprint))
+    return max(hi - lo, 0.0)

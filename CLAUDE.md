@@ -75,6 +75,9 @@ a release or for exhaustive local verification.
 - **A pour slab stops at what it is cast against; a rim band has one wall** (decision #107):
   `resolve/slab_clip.py` cuts flush footings and through-walls out of the slab; read the slab
   as a floor through `floor_plan`. A wall dropping to a foundation owns its band outright.
+- **A wall stands on the subfloor; its sills stay on the datum** (decision #110):
+  `ResolvedWall.frame_base_z_m` (plates, studs, `resolve/plate_seat.py`) vs `base_ref_z_m`
+  (every `sill_m`, backing band and girt course). Never measure framing off `base_ref_z_m`.
 - **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
   reads `is_pour_slab`, never `category == "slab"`.
 - **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure

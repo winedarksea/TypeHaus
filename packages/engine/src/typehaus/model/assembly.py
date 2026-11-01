@@ -77,9 +77,9 @@ class FramingSpec(HausModel):
     layout_origin: Literal["wall-start", "line"] = "wall-start"
     # FURRING + ``direction="horizontal"`` only: what the COURSE module counts from.
     # "wall-base" — the default — is ``rw.z0_m``, the bottom of the band itself.
-    # "framing-base" is ``rw.frame_base_z_m``,
-    # the datum every opening's sill height is measured from, which on a wall extended
-    # down over a floor rim band is 13-7/16" higher.
+    # "framing-base" is ``rw.base_ref_z_m``, the sills' datum every opening's sill height is
+    # measured from, which on a wall extended down over a floor rim band is 13-7/16" higher.
+    # (The name predates decision #110: the plate itself now stands a subfloor above it.)
     #
     # The two are the same elevation on a wall that starts at its own storey datum, and
     # they are not on a main-storey platform wall — which is the whole reason this exists.

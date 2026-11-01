@@ -2,8 +2,7 @@
 
 Split from ``geometry_openings.py``, which calls in here with its own ``box`` builder so every
 solid stays in the same wall frame: ``along`` the axis from the opening centre, ``normal``
-offset along the wall's LEFT normal, and an elevation. Mirrored by hand in
-``ui/src/three/builders/doorProducts.ts`` — change both.
+offset along the wall's LEFT normal, and an elevation. The viewer draws the served parts.
 
 Handing (``ResolvedOpening.flip_hinge`` / ``flip_swing``): unflipped, the leaf hangs on the
 END-node jamb and sweeps toward the left normal, exactly as ``pipeline._door_swing_clearance``.

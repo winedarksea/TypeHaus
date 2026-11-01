@@ -22,6 +22,8 @@ from __future__ import annotations
 
 import math
 
+import pytest
+
 from typehaus.quantities import inch
 from typehaus.resolve.orientation import storey_outward_sign
 from typehaus.resolve.platform import _MAX_BAND_M
@@ -111,6 +113,27 @@ def test_lifted_walls_keep_their_plate_at_the_old_ceiling(catlin_model):
     for w in lifted:
         assert w.plate_top_z_m <= w.z1_m + 1e-9, w.tag
         assert w.z1_m - w.plate_top_z_m <= inch(24).meters, w.tag
+
+
+def test_walls_stand_on_the_subfloor_and_bearing_studs_close_the_stack(catlin_model):
+    """Decision #110, by hand: 3/4 seat + 1 1/2 sole + 102 7/8 stud + 3 top = 108 1/8".
+
+    The seat is the deck top, the top plate the joist soffit; the authored attic
+    ``RAFTER_PLATE`` base (240 3/4") is the author's and is not seated again.
+    """
+    def studs_in(tag):
+        wall = catlin_model.wall(tag)
+        return {round((m.z1_m - m.z0_m) / inch(1).meters, 4) for m in wall.members
+                if m.child_key.startswith("stud-")}
+
+    for tag, datum in (("W-M-C2", 0.0), ("W-M-E1", 0.0), ("W-S-E1", 120.0)):
+        wall = catlin_model.wall(tag)
+        assert wall.frame_base_z_m / inch(1).meters == pytest.approx(datum + 0.75), tag
+        assert wall.base_ref_z_m / inch(1).meters == pytest.approx(datum), tag
+        assert wall.plate_top_z_m / inch(1).meters == pytest.approx(datum + 108.125), tag
+        assert 102.875 in studs_in(tag), tag
+    assert 102.125 in studs_in("W-M-HS3")  # partition: 3/4" under the soffit
+    assert catlin_model.wall("W-A-E1").plate_seat_z_m is None
 
 
 def test_catlin_exterior_loops_are_authored_counter_clockwise(catlin_model):

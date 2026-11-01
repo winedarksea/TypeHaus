@@ -1,6 +1,6 @@
 # Study bookcase door — flush mount, oak casing, oak infill
 
-`D-A-STUDY` is a Murphy Door 36 x 80 nominal pre-hung flush-mount bookcase door, in-swing,
+`D-A-STUDY` is a Murphy Door 30 x 80 nominal pre-hung flush-mount bookcase door, in-swing,
 hinged west, in W-A-SN (2x4 partition, 1/2" board both faces, 4 1/2" overall since 2026-10-23). The shelf face
 is the study (south); the door swings north into the loft.
 
@@ -8,7 +8,12 @@ is the study (south); the door swings north into the loft.
 
 From Murphy Door's *Pre-Hung Flush Mount Installation* sheet and its spec table:
 
-- Rough opening = nominal + 2": **38 x 82**. Frame it with 2x4; 2x6 is out-swing only.
+- **Custom width (owner, 2026-11-01).** Murphy sells by the inch of rough opening; this one is
+  ordered at **32 x 82**. The 36" unit's 38" RO put W-A-SN's east jack and header into the
+  wall's raked top plate (`structural.member_interference`) once the RO datum moved to the
+  finished floor. Body, casing and passage below are the 36" chart's less 6"; confirm with
+  Murphy.
+- Rough opening = nominal + 2": **32 x 82** (38 x 82 for the 36). Frame it with 2x4; 2x6 is out-swing only.
 - The jamb is **4 9/16"** deep, installed tight to the drywall edges. The threshold "extends
   into the room toward the back of the bookcase".
 - The 8 1/4" door's face frame sits flush with the jamb edge on the shelf side. The body
@@ -22,18 +27,21 @@ From Murphy Door's *Pre-Hung Flush Mount Installation* sheet and its spec table:
 
 | Item | x | y |
 |---|---|---|
-| Rough opening | 223 1/2..261 1/2 | (W-A-SN, axis y=108) |
-| Cabinet (face frame to back) | 225 1/8..259 7/8 | 105.74..113.99 |
-| Casing, west leg | 222 1/8..225 5/8 | 104.99..105.74 |
-| Casing, east leg | 259 3/8..262 7/8 | 104.99..105.74 |
-| Oak infill | 262 7/8..269 3/8 | 104.99..105.74 |
+| Rough opening | 222 1/4..254 1/4 | (W-A-SN, axis y=108) |
+| Cabinet (face frame to back) | 223 7/8..252 5/8 | 105.74..113.99 |
+| Casing, west leg | 220 7/8..224 3/8 | 104.99..105.74 |
+| Casing, east leg | 252 1/8..255 5/8 | 104.99..105.74 |
+| Oak infill | 255 5/8..269 3/8 | 104.99..105.74 |
 | Bookcase filler starts | 269 3/8 | front 105.74 |
 
 The face frame lies on the study finish (105.74, the 0.01" paint film since 2026-10-24; 105 3/4 on bare board, 105 5/8 before the 1/2" board). `FO-A-STAIR`'s north edge is that same
 line, so no part of the cabinet stands over the well. Only the 3/4" casing and infill lap
 past it, as trim on the wall. The back is 3 3/4" past the loft finish (110 1/4), inside the
-swing clearance. The resolved framing needed no change: jack and king each side, a flat
-2x4 nonbearing header, and the east king (263..264 1/2) beside the W-A-SN-WR corner post.
+swing clearance. Framing: jack and king each side and a flat 2x4 nonbearing header. The door
+stands as far west as that allows: the west king is the wall's end (219 1/4..220 3/4, against
+W-A-C1B's finish), which leaves the west casing leg 1 5/8" off that finish (the 1 1/2"
+hinge-side clearance). The header (220 3/4..255 3/4, top 325" abs) ends 1/8" under the raked
+plate, which falls 1/2" per inch eastward; the east king is 255 3/4..257 1/4.
 
 **Jamb depth.** The 4 9/16" jamb stands 1/16" proud of the 4 1/2" wall (it was 3/16" short
 of the old 4 3/4" one). Set it flush to the study face (the cased side) and ease the 1/16" on
@@ -47,14 +55,14 @@ floor, their inner edges 1/2" over the face frame. The head bottom is 1/2" below
 78 1/2" body top, at 78". It bills by the LF in interior trim. The Murphy factory casing ships
 with the unit and is not installed.
 
-`FURN-A-STUDY-BRIDGE-FRONT` is one owner-stock 4/4 oak board dressed to **6 1/2 x 60 x 3/4"**,
+`FURN-A-STUDY-BRIDGE-FRONT` is one owner-stock 4/4 oak board dressed to **13 3/4 x 60 x 3/4"**
+(6 1/2" before the door narrowed),
 in the casing plane. It butts the east leg (glue/biscuit), fastens to W-A-SN's backing, and
 is scribed at its east edge to the bookcase filler. Its top is level with the built-in's 60"
 top, with painted drywall above it beside the leg. It is fixed to the wall and casing,
 never to the moving door.
 
-`haus millwork houses/catlin` lists it as one `casework board` row, 4/4 oak S4S, **3.4 rough
-board feet**. The size comes from the furniture type, not a second declaration.
+`haus millwork houses/catlin` lists it as one `casework board` row, 4/4 oak S4S, one board. The size comes from the furniture type, not a second declaration.
 
 ## Cost
 
@@ -64,8 +72,7 @@ costs $0. The casing legs and head are priced in interior trim as `oak-trim:door
 
 ## Open
 
-- `ED-A-STUDY-SW` (x=260 3/8", 48" AFF) sits under the east casing leg
-  (`advisory.trim_device_clash`). W-A-C1B is full with D-A-HALVES, and the framing behind
-  the infill is solid (king + corner post), so there is no free stud bay beside the door.
+- `ED-A-STUDY-SW` is on W-A-C1 (y=5'-0", 48" AFF), clear of the door and its casing; the
+  `advisory.trim_device_clash` this note used to carry is closed.
 - Verify threshold anchorage, jamb fastening and floor blocking against the delivered unit.
   The modelled swing envelope is the published clearance, not a calculated pivot sweep.

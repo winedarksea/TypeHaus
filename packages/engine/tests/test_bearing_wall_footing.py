@@ -67,8 +67,9 @@ def test_without_the_extensions_it_fails_on_every_jamb_member(catlin_plan) -> No
 
 
 def test_catlin_reports_every_framed_bearing_wall_on_the_slab(catlin_findings) -> None:
-    assert set(catlin_findings) == {"W-B-CS", "W-B-CS3", "W-B-STR", "W-B-STR3", "W-B-STR3B"}
-    assert all(f.result is Result.PASS for f in catlin_findings.values())
+    walls = {k: f for k, f in catlin_findings.items() if k.startswith("W-")}
+    assert set(walls) == {"W-B-CS", "W-B-CS3", "W-B-STR", "W-B-STR3", "W-B-STR3B"}
+    assert all(f.result is Result.PASS for f in walls.values())
     # A thin END margin is disclosed, not graded: R403.1.1's P is a face projection.
     assert "1.88\" of footing past it" in catlin_findings["W-B-STR3B"].message
 
@@ -86,3 +87,19 @@ def test_starter_earns_not_applicable(starter_dir) -> None:
     findings = bearing_wall_footing(ctx)
     assert [f.result for f in findings] == [Result.NOT_APPLICABLE]
     assert "none stands on a slab-on-grade" in findings[0].message
+
+
+@pytest.mark.parametrize("tag, said", [
+    ("FT-B-N1", '4.03" / 7.97"'),   # 8.03" until the 1/16" trim (C3-E18)
+    ("FT-B-E1", '2.03" / 5.97"'),   # 1.97", under the 2" floor, until the same trim
+    ("FT-B-S2", '10.00" / 4.00"'),  # the 6" curb's 10" toe; T went 8" -> 10" (owner, 2026-11-01)
+])
+def test_the_trimmed_strips_hold_r403_1_1_projection(catlin_findings, tag, said) -> None:
+    finding = catlin_findings[tag]
+    assert finding.result is Result.PASS, finding.message
+    assert said in finding.message
+
+
+def test_reinforced_and_stone_footings_are_not_graded_for_projection(catlin_findings) -> None:
+    # FT-SG-* are designed in flexure (rebar sets); FT-GF-* are R403.5 crushed stone.
+    assert not any(k.startswith(("FT-SG-", "FT-GF-")) for k in catlin_findings)

@@ -109,8 +109,20 @@ SOLID_SURFACE_SHOWER = Product(
            "panels are MSMK-9636-1 Modern Subway glue-up, 36 x 96 in., 6 x 24 in. simulated "
            "tile relief, 1/4 in., two for the two 3 ft walls. Confirm the chip under 5000 K "
            "and 2700 K. Confirm before ordering: the flange and threshold sides against the "
-           "W threshold, and the 96 in. panel on the 5 1/2 in. base stops short of the 106 "
-           "in. ceiling: a top cap or trim closes it.",
+           "W threshold. The 96 in. panels stand on the 5 1/2 in. base and stop 5 1/4 in. "
+           "under the ceiling: SWAN_TRIM_KIT caps them, painted board above.",
+)
+# The surround's top cap (review I2-002, owner 2026-11-01): Swan's own colour-matched trim.
+SWAN_TRIM_KIT = Product(
+    tag="PROD-SWAN-TK-105", brand="Swan", model="TK00105.010 (TK-105)",
+    name="Swanstone wall panel trim kit for 96 in. panels, White (.010)",
+    url="https://homedepot.com/p/Swan-105-in-Solid-Surface-Easy-Up-Adhesive-Shower-Wall-Trim-Kit-and-Corner-Molding-in-White-TK00105-010/100417999",
+    source="Retailer listings (Home Depot TK00105-010, Ferguson STK105WH, First Supply "
+           "SWATK105), read 2026-11-01: two 3 7/8 x 105 in. and two 3 7/8 x 74 in. "
+           "solid-surface trim strips, 1/4 in., two 1 1/4 x 1/2 x 96 in. corner mouldings, "
+           "adhesive and colour-matched silicone. One 74 in. strip cut in two caps both "
+           "36 in. panels' top edges; the rest is spare. Carbide blade. Confirm the White "
+           "(.010) kit, its contents and the price with the dealer.",
 )
 
 BATH2_FLEX_FRONT = Product(
@@ -160,4 +172,5 @@ SHOWERING_PRODUCTS = (
     INLINE_FAN_4, BATH2_STALL_FAN_FILTER, BATH2_FLEX_FRONT,
     DELTA_MULTICHOICE_ROUGH, DELTA_T14459_TRIM, SPEAKMAN_HOTEL_HEAD, MOEN_ENGAGE_MAGNETIX,
     MOEN_ATTRACT_MAGNETIX, DELTA_17T_THERMO_TRIM, DELTA_UNIVERSAL_HEAD, SOLID_SURFACE_SHOWER,
+    SWAN_TRIM_KIT,
 )

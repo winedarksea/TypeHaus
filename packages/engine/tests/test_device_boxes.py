@@ -100,3 +100,13 @@ def test_a_raceway_fed_box_prices_apart_from_the_same_product_on_concrete(catlin
     assert rows["PROD-RACO-232", "flush_raceway"]["count"] == 5  # was 6 until the EVSE was hardwired (2026-10-30)
     assert surface[0] == "PROD-RACO-232" and surface[1].labour.high > 0
     assert raceway[0] == "PROD-RACO-232:flush_raceway" and raceway[1].labour.high == 0
+
+
+def test_use_rows_luminaire_and_recessed(catlin_model_ro):
+    """A light takes the luminaire row; a type's box_use picks its own (C6-E10, C5-E2)."""
+    sconce = _box(catlin_model_ro, "ED-B-PLAY-N-SCONCE1")  # WAC Roland, 4 1/2" sq canopy
+    assert (sconce.box_product, sconce.cover_product) == ("PROD-RACO-192", "PROD-RACO-753")
+    assert sconce.projection_m == pytest.approx((1.5 + 0.0625) * M_PER_IN)
+    fridge = _box(catlin_model_ro, "ED-M-LIVING-KRF1")
+    assert (fridge.mounting, fridge.box_product) == ("flush", "PROD-ARLINGTON-DVFR1W")
+    assert _box(catlin_model_ro, "ED-B-GYM-RC5").box_product == "PROD-RACO-232"

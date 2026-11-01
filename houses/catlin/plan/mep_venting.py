@@ -281,8 +281,8 @@ VENT_BRANCHES_ATTIC = [
     # MARGINAL. ** FX-A-STUDIO-BAR-SINK used to ride PR-A-STUBATH-VENT above, whose nearest
     # point is over the shower; with the bowl at the SUNNERSTA's east end (plan/fixtures.py)
     # that arm lands within an inch of Table 1002.2's 60" on dimensions nobody has measured,
-    # and holding it under 60" without a revent forces D-A-STUBATH so far east that it opens
-    # onto a 19 1/4" strip in front of the shower.
+    # and holding it under 60" without a revent would have forced D-A-STUBATH east; the door
+    # did go one module east on 2026-11-01, for the roof (storeys/attic_studio.py), not this.
     #
     # ** IT COSTS NO BORED STUD AND NO BEARING WALL. ** The unit backs onto W-A-BATH-S, a 2x4
     # NONBEARING partition that already carries pipe at its west end. The 2" rises in that
@@ -458,25 +458,25 @@ VENT_BRANCHES_BASEMENT = [
             # back to the fixtures and keeping the riser below W-B-STR2's top plate.
             elevations=(ft(1, 3.4375), inch(91.551), inch(93.7678)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
-    # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-3", 8'-2 3/16") — inside
-    # W-B-CS's 3 1/2" liner build-up, in the pan's own east wall, on the pan-and-floor-drain
-    # y centreline and clear of the mixer's two supply drops. That is both fixtures' declared
-    # wet wall (plan/fixtures.py) and the one basement wet wall that carries a framed wall on
-    # the storey above, so the vent has a true stack path as well as this drawn one.
+    # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-0", 10'-1 3/8") inside
+    # W-B-SA-N2's stud cavity, the pan's north wall, clear of the mixer's two supply drops.
+    # (Both fixtures still declare W-B-CS as their wet wall, plan/fixtures.py.)
     #
     # Trap arms as the check measures them, both well inside Table 1002.2's 5'-0" for a 2"
-    # arm. Above the sauna's hung ceiling the run leaves the build-up north over W-B-SA-N,
-    # crosses the workshop west at y=10'-6", and passes W-B-CW at x=9'.
+    # arm. Over the wall's plates the run jogs north, crosses the workshop west at
+    # y=10'-6", and passes W-B-CW at x=9'.
     # ** INTO THE RE-PACKED CHASE FROM THE SOUTH (2026-09-23). ** North on x=9'-0" only to
     # y=29'-4", west to x=5'-1 1/2", north between the ERV cabinet (x<=5'-0") and
     # DU-ERV-RISER-SUP's port, west on y=33'-4" just under FS-M-MECH's joists — 1" north of
     # the backup enclosure's 110.26 dedicated space, over the supply duct's leg — and north
     # onto the vent riser at x=10". PR-B-BATH-VENT ties into it at (9'-0", 19'-1 1/2").
     PipeRun(uid="CBPV02AAAA", tag="PR-B-SAUNA-VENT", system=PipeSystem.VENT,
-            # The riser moved west 1" from x=17'-4" to clear W-B-SA-N2's stud-003 at
-            # x=17'-5"; the short jog into the same westbound run stays above the wall.
-            path=(pt(ft(17, 3), inch(98.1875)), pt(ft(17, 3), inch(98.1875)),
-                  pt(ft(17, 3), ft(10, 6)), pt(ft(9), ft(10, 6)),
+            # ** THE RISER IS IN W-B-SA-N2'S 2x4 CAVITY SINCE 2026-11-01 ** (x=17'-0", the
+            # stud-002/-003 bay, on the cavity centreline). At (17'-3", 8'-2 3/16") it stood
+            # in the pan, 3" in front of the liner, and its north leg ran through the sauna
+            # ceiling's foil. It clears the wall's top plates (+90") before jogging north.
+            path=(pt(ft(17), inch(121.375)), pt(ft(17), inch(121.375)),
+                  pt(ft(17), ft(10, 6)), pt(ft(9), ft(10, 6)),
                   pt(ft(9), ft(19)), pt(ft(9), ft(28, 8)), pt(inch(51.5), ft(28, 8)),
                   pt(inch(51.5), inch(400)), pt(inch(10), inch(400)),
                   pt(inch(10), inch(412.9))),
@@ -491,7 +491,7 @@ VENT_BRANCHES_BASEMENT = [
             # dry-fire collector lift, keeping clear of the raised laundry drain. The
             # north profile retains the half-inch clearance over
             # DU-B-ERV-R-PLAY at y=30'-6", where D3 left it 2 1/2 thousandths of an inch.
-            elevations=(ft(0, 3.4375), ft(7, 1.4375), ft(7, 3.4375), ft(7, 5.4375),
+            elevations=(ft(0, 3.4375), inch(90.5), inch(90.5625), inch(91.75),
                         inch(93.75), ft(7, 10.4375), ft(7, 11.14), ft(7, 11.54),
                         ft(8, 0.0375), ft(8, 0.1375)),
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),

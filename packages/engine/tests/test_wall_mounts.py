@@ -135,11 +135,12 @@ def test_attach_slide_detach_round_trip_through_write_back(tmp_path) -> None:
     assert item.position is None and item.location.attachment.wall_ref == "W-101"
 
 
-def test_playroom_tv_uses_a_thin_wall_panel_seated_on_the_host(catlin_model_ro):
+def test_playroom_tv_panel_stands_off_on_its_mount(catlin_model_ro):
+    """The panel's back is the mount's 3 1/2" off the face, over RC1/DATA1 (C6-E11)."""
     tv = next(item for item in catlin_model_ro.canvas_objects if item.tag == "FURN-B-PLAY-TV")
-    assert tv.type_ref == "FURN-TV-98-WALL"
+    assert tv.type_ref == "FT-TV-98-PANEL"
     face, edge = _face_distance(catlin_model_ro, tv.tag, "W-B-N1")
-    assert edge == pytest.approx(face, abs=1e-9)
+    assert edge - face == pytest.approx(3.5 * 0.0254, abs=1e-9)
 
 
 def test_wall_lights_face_away_from_their_host_in_both_symbol_frames(catlin_model_ro):

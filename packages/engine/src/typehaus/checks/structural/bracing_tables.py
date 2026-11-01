@@ -13,8 +13,10 @@ answer at all.
 
 The one exception is wall height in **Table R602.10.5**, where rounding up is NOT the
 conservative direction: the CS-WSP block is non-monotonic (an 80" adjacent opening needs
-32" of panel at an 8'-0" wall and 30" at 9'-0"), so a wall between two tabulated heights
-takes the LARGER of the two bracketing columns.
+32" of panel at an 8'-0" wall and 30" at 9'-0"). A wall between two tabulated heights is
+read by footnote a's linear interpolation between the two bracketing columns: a platform
+wall standing on its subfloor is 8'-11 3/8" plate to plate (decision #110), and the 8 ft
+column is no more its row than the 9 ft one.
 """
 
 from __future__ import annotations
@@ -137,25 +139,37 @@ def min_panel_length_in(method: str, wall_height_ft: float,
         values = [row[h] for h in brackets if row[h] is not None]
         if len(values) != len(brackets):
             return None  # the table stops before this wall height at this opening
-        return TableRead(float(max(values)), (
+        value = _interpolated(values, brackets, wall_height_ft)
+        return TableRead(value, (
             f"Table R602.10.5, {method}, adjacent clear opening height <= {opening} in, "
-            f"{_height_words(brackets)}: {max(values)} in"))
+            f"{_height_words(brackets, values, wall_height_ft)}: {value:g} in"))
     row_any = MIN_PANEL_LENGTH_IN.get(method)
     if row_any is None:
         return None
     values = [row_any[h] for h in brackets if row_any[h] is not None]
     if len(values) != len(brackets):
         return None
-    return TableRead(float(max(values)), (
-        f"Table R602.10.5, {method}, {_height_words(brackets)}: {max(values)} in"))
+    value = _interpolated(values, brackets, wall_height_ft)
+    return TableRead(value, (
+        f"Table R602.10.5, {method}, {_height_words(brackets, values, wall_height_ft)}: "
+        f"{value:g} in"))
+
+
+def _interpolated(values, brackets, wall_height_ft: float) -> float:
+    """Footnote a: linear between the two bracketing wall-height columns, to 0.1 in."""
+    if len(brackets) == 1:
+        return float(values[0])
+    (low, high), (at_low, at_high) = brackets, values
+    fraction = (wall_height_ft - low) / (high - low)
+    return round(at_low + (at_high - at_low) * fraction, 1)
 
 
 def _height_brackets(wall_height_ft: float) -> tuple[int, ...] | None:
     """The tabulated wall-height column(s) covering this wall.
 
-    An exact height is one column. A height between two is BOTH, and the caller takes the
-    larger value — Table R602.10.5 is not monotonic in wall height, so the taller column
-    is not reliably the conservative one.
+    An exact height is one column. A height between two is BOTH, and the caller
+    interpolates between them (footnote a) — Table R602.10.5 is not monotonic in wall
+    height, so neither column alone is reliably the conservative one.
     """
     if wall_height_ft < WALL_HEIGHTS_FT[0] - 1e-9:
         return (WALL_HEIGHTS_FT[0],)
@@ -168,11 +182,12 @@ def _height_brackets(wall_height_ft: float) -> tuple[int, ...] | None:
     return (below, above)
 
 
-def _height_words(brackets) -> str:
+def _height_words(brackets, values, wall_height_ft: float) -> str:
     if len(brackets) == 1:
         return f"{brackets[0]} ft wall height"
-    return (f"wall height between the {brackets[0]} ft and {brackets[1]} ft columns "
-            f"(the larger of the two, the table is not monotonic here)")
+    return (f"{wall_height_ft * 12.0:.3f} in wall height, interpolated (footnote a) between "
+            f"the {brackets[0]} ft ({values[0]} in) and {brackets[1]} ft ({values[1]} in) "
+            f"columns")
 
 
 def exposure_factor(exposure: str, stories: int) -> TableRead | None:

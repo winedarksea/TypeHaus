@@ -39,6 +39,7 @@ READING_LIGHT_PATH = (pt(inch(LOWER_EAST_X_IN), inch(READING_NORTH_Y_IN)),
                       pt(inch(READING_EAST_X_IN), inch(READING_NORTH_Y_IN)),
                       pt(inch(READING_EAST_X_IN), inch(READING_SOUTH_Y_IN)))
 
+# work_surface=False: fixed casework, so the locust base stops at the benches (review I3-001).
 _JOINERY = ("Unfinished owner basswood slats on a bought Douglas fir frame, eased edges, "
             "open frame. Removable deck sections "
             "for cleaning and service; support framing must leave the floor drain, "
@@ -48,20 +49,22 @@ UPPER_BENCH = FurnitureType(
     tag="FT-CATLIN-SAUNA-UPPER-78", name='Sauna lying bench, 78 x 28, 42" top',
     footprint=(inch(BENCH_NORTH_Y_IN - UPPER_SOUTH_Y_IN),
                inch(UPPER_EAST_X_IN - UPPER_WEST_X_IN)),
-    height=inch(UPPER_HEIGHT_IN), plan_symbol="sauna-open-bench",
+    height=inch(UPPER_HEIGHT_IN), plan_symbol="sauna-open-bench", work_surface=False,
     source=_JOINERY + ' Full 78 x 28" lying surface; no inward-projecting backrest.',
 )
 LOWER_PLATFORM = FurnitureType(
     tag="FT-CATLIN-SAUNA-LOWER-78", name='Sauna foot platform, 78 3/16 x 20, 24" top',
     footprint=(inch(BENCH_NORTH_Y_IN - READING_NORTH_Y_IN),
                inch(LOWER_EAST_X_IN - UPPER_EAST_X_IN)),
-    height=inch(LOWER_HEIGHT_IN), plan_symbol="sauna-open-bench", source=_JOINERY,
+    height=inch(LOWER_HEIGHT_IN), plan_symbol="sauna-open-bench", work_surface=False,
+    source=_JOINERY,
 )
 READING_PLATFORM = FurnitureType(
     tag="FT-CATLIN-SAUNA-READING-58", name='Sauna reading platform, 58 1/2 x 28, 24" top',
     footprint=(inch(READING_EAST_X_IN - UPPER_WEST_X_IN),
                inch(READING_NORTH_Y_IN - READING_SOUTH_Y_IN)),
-    height=inch(LOWER_HEIGHT_IN), plan_symbol="sauna-open-bench", source=_JOINERY,
+    height=inch(LOWER_HEIGHT_IN), plan_symbol="sauna-open-bench", work_surface=False,
+    source=_JOINERY,
 )
 ACCESS_STEP = FurnitureType(
     tag="FT-CATLIN-SAUNA-STEP", name='Sauna access step, 14 x 10, 12" top',

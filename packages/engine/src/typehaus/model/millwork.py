@@ -321,12 +321,15 @@ class RoomTrim(HausModel):
 class DoorTrim(HausModel):
     """A casing stock for named doors, beating any ``RoomTrim``: an accent on one face.
     ``room`` picks the face by the room it looks into; None cases both faces.
-    ``casing_width`` is a one-off face width where the house's will not fit."""
+    ``casing_width`` is a one-off face width where the house's will not fit.
+    ``jamb_material_ref`` hangs the door on a full-depth flat jamb of that stock, milled to
+    the wall's depth, in place of a stock jamb ripped or extended (a sauna's cedar)."""
 
     doors: tuple[str, ...]
     room: str | None = None
     material_ref: str
     casing_width: Length | None = None
+    jamb_material_ref: str | None = None
 
 
 @register_element
@@ -413,6 +416,11 @@ class TrimStandard(Element):
             return accent.casing_width
         return self.casing_width
 
+    def jamb_material_for(self, door: str | None) -> str | None:
+        """The flat-jamb stock ``door`` is hung on, if a ``DoorTrim`` names one."""
+        return next((d.jamb_material_ref for d in self.door_trims
+                     if door in d.doors and d.jamb_material_ref), None)
+
     def casing_material_for(self, room: str, door: str | None = None) -> str:
         """The casing stock on ``door``'s face in ``room``: DoorTrim, RoomTrim, house."""
         accent = self._door_trim(room, door)
@@ -428,7 +436,8 @@ class TrimStandard(Element):
         refs = [self.material_ref, self.base_material_ref,
                 *(ref for override in self.room_trims
                   for ref in (override.material_ref, override.casing_material_ref)),
-                *(accent.material_ref for accent in self.door_trims),
+                *(ref for accent in self.door_trims
+                  for ref in (accent.material_ref, accent.jamb_material_ref)),
                 self.stair_skirt.material_ref if self.stair_skirt is not None else None]
         return tuple(dict.fromkeys(ref for ref in refs if ref))
 

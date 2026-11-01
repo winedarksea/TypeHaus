@@ -24,6 +24,7 @@ SLOPED_SF = 772.2  # note §2: plan x sqrt(1 + (6/12)^2)
 DESIGN_IN_HR = 7.536  # note §1: St Paul 10-yr 5-min, 0.628 in x 12
 RATIO_5X4 = BOX_GUTTER_FRONT_IN / BOX_GUTTER_BOTTOM_IN  # note §3: M = 4/5
 LEADER_4IN_SQ_IN = 12.57
+LEADER_4X3_5_SQ_IN = 14.00  # note §4: the Metal Sales rectangular leader
 LEADER_3IN_SQ_IN = 7.07
 
 
@@ -62,7 +63,8 @@ def test_current_6x5_box_passes_the_design_basis() -> None:
 @pytest.mark.parametrize(
     ("area_sq_in", "served_sf"),
     [
-        (LEADER_4IN_SQ_IN, 2001.0),  # kept: 4 in round
+        (LEADER_4X3_5_SQ_IN, 2229.0),  # used: 4 x 3-1/2 rectangular
+        (LEADER_4IN_SQ_IN, 2001.0),  # superseded: 4 in round
         (LEADER_3IN_SQ_IN, 1126.0),  # not used: clears the design basis only
     ],
 )
@@ -73,7 +75,7 @@ def test_leader_capacity_matches_the_note(area_sq_in, served_sf) -> None:
 def test_3_in_leader_fails_the_100_year_sloped_cross_check() -> None:
     required = SLOPED_SF * 11.88 / 1200.0
     assert required == pytest.approx(7.64, abs=0.01)
-    assert LEADER_3IN_SQ_IN < required < LEADER_4IN_SQ_IN
+    assert LEADER_3IN_SQ_IN < required < LEADER_4IN_SQ_IN < LEADER_4X3_5_SQ_IN
 
 
 def test_design_intensity_is_the_noaa_10_year_5_minute_depth() -> None:
@@ -109,18 +111,18 @@ def test_house_roof_drains_the_note_area_and_the_5x4_clears_it(catlin_model_ro) 
         assert pgi_required_width_in(DESIGN_IN_HR, sf, RUN_FT, RATIO_5X4) < BOX_GUTTER_BOTTOM_IN
 
 
-def test_house_leaders_are_4_in_and_clear_the_design_area(catlin_model_ro) -> None:
+def test_house_leaders_are_4_x_3_5_and_clear_the_design_area(catlin_model_ro) -> None:
     leaders = {
         el.tag: el
         for el in catlin_model_ro.plan.all_elements()
         if getattr(el, "tag", "") in {"TR-RF-LEADER-W", "TR-RF-LEADER-E"}
     }
     assert len(leaders) == 2
-    assert leader_served_area_sf(LEADER_4IN_SQ_IN, DESIGN_IN_HR) > PLAN_SF
+    assert leader_served_area_sf(LEADER_4X3_5_SQ_IN, DESIGN_IN_HR) > PLAN_SF
     for leader in leaders.values():
-        assert leader.diameter.inches == pytest.approx(4.0)
+        assert leader.flow_area_sq_in() == pytest.approx(LEADER_4X3_5_SQ_IN)
         # PGI-15: a downspout no wider than the gutter's bottom.
-        assert leader.diameter.inches <= BOX_GUTTER_BOTTOM_IN
+        assert 2 * max(leader.half_extents_m()) / 0.0254 <= BOX_GUTTER_BOTTOM_IN
 
 
 def test_catalog_gutter_bills_by_part_and_not_under_drainage(catlin_model_ro) -> None:
@@ -133,5 +135,11 @@ def test_catalog_gutter_bills_by_part_and_not_under_drainage(catlin_model_ro) ->
     assert trim["58081XX"]["count"] == 2 and trim["58082XX"]["count"] == 2
     # 37.125' at 3'-0" o.c. is 13 spaces, so 14 straps and 14 rivets per eave.
     assert trim["58092XX"]["count"] == 28 and trim["trim-pop-rivet"]["count"] >= 28
-    drainage_tags = {tag for row in drainage_takeoff(catlin_model_ro) for tag in row["tags"]}
-    assert not any(tag.startswith("TR-RF-GUTTER-") for tag in drainage_tags)
+    # Each ~20' straight drop is one 20'-3" leader stick, three straps, one adapter, no elbow.
+    assert trim["58097XX"]["count"] == 2 and "58094XX" not in trim
+    assert trim["58110XX"]["count"] == 6 and "58102XX" not in trim
+    assert trim["leader-rect-round-adapter"]["count"] == 2
+    drainage = drainage_takeoff(catlin_model_ro)
+    drainage_tags = {tag for row in drainage if row["category"] != "leader_extension"
+                     for tag in row["tags"]}
+    assert not any(tag.startswith(("TR-RF-GUTTER-", "TR-RF-LEADER-")) for tag in drainage_tags)

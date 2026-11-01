@@ -44,14 +44,14 @@ def _flat_shaded(member):
     return replace(member, surface_mesh=flat_shaded(sweep_mesh(member_solid(member))))
 
 
-def image_ii_pan_ends(model, roof, rect, profile, material):
+def image_ii_pan_ends(model, roof, rect, profile, material, anchor=None):
     """``(edge names handled, members)``: the pan ends and seam stubs on wrapped eaves."""
     runs, stack = wrapped_eave_runs(model, roof)
     if not runs:
         return frozenset(), ()
     along_x = roof.ridge_direction == "x"
     low, high = rect[:2] if along_x else rect[2:]
-    anchor = (low + high) / 2
+    anchor = (low + high) / 2 if anchor is None else anchor
     margin = profile.crown_width_m or profile.sheet_thickness_m
     pan = thickened_ring([stack.uz(s, w) for s, w in stack.pan_path_sw()])
     seam = _seam_path(profile)

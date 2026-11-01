@@ -22,7 +22,11 @@ from __future__ import annotations
 from params.cladding import HOUSE_EW_OUTBOARD_IN, HOUSE_NS_OUTBOARD_IN
 from params.roof_panel import EAVE_DECK_IN, PITCH, ROOFING_BASE_IN
 from typehaus import DischargeExtension, Downspout, Gutter, TrimKind, ft, inch, pt
-from typehaus.library.trim.metal_sales import BOX_GUTTER_BACK_IN, BOX_GUTTER_BOTTOM_IN
+from typehaus.library.trim.metal_sales import (
+    BOX_GUTTER_BACK_IN,
+    BOX_GUTTER_BOTTOM_IN,
+    DOWNSPOUT_4X3_5_IN,
+)
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
 from typehaus.resolve.roof_image_ii_eave import EaveStack
@@ -89,19 +93,20 @@ def _eave_water(side: str, index: int, eave_x, outward: float):
 
 
 # --- Downspouts ---------------------------------------------------------------------------
-# One 4" round leader per eave, each draining half the roof (18' x 37.1' plan = 690.7 sf).
-# At the St Paul 10-yr 5-min intensity a 4" round serves 2,001 sf and a 3" round 1,126 sf
-# (PGI-18; notes/box_gutter_sizing.md §4). Both clear the design basis. The 4" stays because
-# the 3" fails the 100-yr 5-min sloped cross-check.
+# One Metal Sales 4 x 3-1/2 rectangular leader per eave (PBR pp. 13-14: 58094XX/58097XX,
+# strap 58110XX; Metal Sales rolls no round one), each draining half the roof (18' x 37.1'
+# plan = 690.7 sf). Its 14.0 sq in serves 2,229 sf at the St Paul 10-yr 5-min intensity
+# (PGI-18; notes/box_gutter_sizing.md §4) and clears the 100-yr 5-min sloped cross-check;
+# 4 in deep in the 5 in gutter floor, so PGI-15 holds. Its 4 in face lies along the wall.
 #
 # Both go to the NORTH end, discharging into the 4' gap toward the garage rather than onto
 # the freestanding sunken-garden structure 5" off the south face. Each hangs on the trough's
-# centre line, so it takes the outlet straight down out of the gutter floor. Each runs to its
-# buried extension's riser and on to its own rain garden, mirrored about x=18'-0"
-# (`_discharge`). The S-5! CanDuit clamps that
-# hold it to the standing-seam siding are in plan/mep.py; per the reference they steady the
-# leader and are explicitly not its primary support.
-_LEADER_DIA_IN = 4.0
+# centre line, so it takes the outlet straight down out of the gutter floor (no elbows), and
+# drops into its buried extension's 4" PVC riser through a rect-to-round adapter, on to its
+# own rain garden, mirrored about x=18'-0" (`_discharge`). Its straps sit at the stations
+# plan/mep_electrical.py authors (CN-A-LEADER-*); they steady the leader and are explicitly
+# not its primary support.
+_LEADER_SECTION_IN = DOWNSPOUT_4X3_5_IN  # (along the wall, out from it)
 _LEADER_Y = ft(_HOUSE_FT) - inch(6.0)
 # The riser from +1'-0" down to the extension's inlet bills with the extension.
 _LEADER_BOTTOM = ft(1)
@@ -109,15 +114,16 @@ _LEADER_BOTTOM = ft(1)
 
 def _leader(side: str, index: int, eave_x, outward: float):
     x = _out(eave_x, outward, _TROUGH_MID_IN)
+    along, out = _LEADER_SECTION_IN
     return Downspout(
         uid=f"RTDS0{index}AAAA", tag=f"TR-RF-LEADER-{side}",
         position=pt(x, _LEADER_Y),
         top_elevation=_above_deck(_TROUGH_FLOOR_IN),
         bottom_elevation=_LEADER_BOTTOM,
-        diameter=inch(_LEADER_DIA_IN),
+        section=(inch(out), inch(along)), product="DOWNSPOUT_4X3_5",
         material=_CHAIN_MATERIAL, gutter_ref=f"TR-RF-GUTTER-{side}",
-        # Four clamps at roughly 6' o.c. down the ~24' run (plan/mep.py::LEADER_CLAMPS).
-        clamp_refs=tuple(f"CN-A-LEADER-{side}{n}" for n in (1, 2, 3, 4)),
+        # Three straps at roughly 6' o.c. down the ~24' run (plan/mep_electrical.py).
+        clamp_refs=tuple(f"CN-A-LEADER-{side}{n}" for n in (1, 2, 3)),
         **_discharge(side, x))
 
 

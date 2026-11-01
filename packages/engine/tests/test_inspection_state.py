@@ -188,6 +188,10 @@ def test_the_catlin_file_loads() -> None:
     # of the truss order, and (2026-09-22) the thermal-break blockouts stripped before the
     # boards go in — the field half of free body §11j, which the model can state and not
     # enforce. None is an AHJ inspection and none has a phone number.
+    # Plus (2026-11-01) the building official's acceptance of the court-face soil
+    # replacement, C3-E10.
     assert sorted(x.id for x in state.extra) == [
-        "break_blockouts_stripped", "girt_screws", "truss_mep_review"]
-    assert {x.authority for x in state.extra} == {"owner"}
+        "break_blockouts_stripped", "frost_soil_replacement", "girt_screws",
+        "truss_mep_review"]
+    assert {x.id: x.authority for x in state.extra if x.authority != "owner"} == {
+        "frost_soil_replacement": "building"}

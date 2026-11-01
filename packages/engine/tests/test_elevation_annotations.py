@@ -152,7 +152,7 @@ def test_coincident_level_datums_share_one_marker(catlin_model):
     floor (F3-002) — and coincident datums still share one label."""
     scene = build_elevation(catlin_model, "south")
     labels = [text for text in _leader_texts(scene) if "EL." in text]
-    assert any(text.startswith("MAIN T.O. PLATE  EL. 9'-0\"") for text in labels), labels
+    assert any(text.startswith("MAIN T.O. PLATE\nEL. 9'-0\"") for text in labels), labels
     # ...and every printed elevation appears exactly once, however many names share it.
     elevations = [text.split("EL.")[1].strip() for text in labels]
     assert len(elevations) == len(set(elevations))
@@ -250,5 +250,19 @@ def test_below_grade_geometry_is_dashed_on_its_own_layer(catlin_model):
     # this is where it is supposed to read instead: its floor and its south retaining wall,
     # dashed, below the line — the elevation convention for buried work.
     assert {"SL-SG-FIELD", "W-SG-S"} <= {node.tag for node in buried if node.tag}
+
+
+def test_the_four_elevations_share_one_scale(catlin_model):
+    """C7-E5: one scale for A-201..A-204, and the shortest drawn rung is legible on paper."""
+    from typehaus.emit.draw.elevation import framed_elevations
+    from typehaus.emit.draw.elevation_annotate import MIN_RUNG_PAPER_IN
+    from typehaus.emit.draw.sheet_writer import LEDGER
+
+    scenes = framed_elevations(catlin_model, LEDGER)
+    assert {scene.frame.scale_label for scene in scenes.values()} == {"3/32\" = 1'-0\""}
+    for scene in scenes.values():
+        spans = [abs(n.p1[1] - n.p0[1]) for n in scene.nodes if isinstance(n, ArchDimension)]
+        assert min(spans) * scene.frame.scale / 12.0 >= MIN_RUNG_PAPER_IN
+
 
 pytestmark = pytest.mark.slow

@@ -17,11 +17,7 @@ import math
 
 from shapely.geometry import Polygon, box
 
-from typehaus.library.trim._image_ii import (
-    COBRA_VENT_IN,
-    IMAGE_II_RESIDENTIAL_RAKE,
-    IMAGE_II_RIDGE_COVER,
-)
+from typehaus.library.trim._image_ii import IMAGE_II_RESIDENTIAL_RAKE, IMAGE_II_RIDGE_COVER
 from typehaus.library.trim.profile import TrimProfile
 from typehaus.model.enums import LayerFunction
 from typehaus.model.spatial import Roof
@@ -44,8 +40,6 @@ from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
 #: The roofing material's marker for the Image II eave and rake kit (``roof_edge_trim_kit``).
 IMAGE_II_KIT = "IMAGE_II"
-#: Crown lift of the vented ridge above the roofing: the Cobra vent block (PIM p. 20).
-VENTED_RIDGE_LIFT_M = inch(COBRA_VENT_IN).meters
 EAVE_KEY = "image-ii-eave"
 RAKE_KEY = "image-ii-rake"
 CONNECTION_EAVE = "roof:image-ii-eave"

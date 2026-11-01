@@ -669,8 +669,8 @@ def test_infill_never_lands_on_the_frame_category(catlin_model) -> None:
 
 def test_catlin_sump_sits_below_the_basement_slab(catlin_model) -> None:
     sumps = _solids(catlin_model, "sump")
-    assert len(sumps) == 1
-    assert sumps[0].z0_m < sumps[0].z1_m <= 0.0
+    assert sorted(s.tag for s in sumps) == ["SM-B-RADON", "SM-B-SOUTH"]  # SOUTH: 2026-11-01
+    assert all(s.z0_m < s.z1_m <= 0.0 for s in sumps)
 
 
 def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:

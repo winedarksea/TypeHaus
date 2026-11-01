@@ -1,36 +1,20 @@
-// Door and window fills cut into a wall's opening void: frame, leaves, glazing, exterior
-// casing, and (→ ./doorProducts) the concealed frame and lever sets. Mirrors
-// resolve/geometry_openings.py; split out of ./walls.
+// Door and window fills cut into a wall's opening void. The engine serves every product part
+// as resolved rings (`opening.opening_parts`, server/model_json_opening_parts.py) and this file
+// extrudes them as served: it owns the materials and the picking, never a dimension.
 import * as THREE from "three";
-import type { DoorOperation, DoorTypeSpec, Opening, Wall } from "../../model/types";
+import type { DoorTypeSpec, Opening, OpeningPart, Vec2, Wall } from "../../model/types";
 import { authoredAppearance, materialColor, type MaterialAppearance } from "../../nordic/palette";
 import type { ResolvedNordicPalette } from "../../nordic/palette";
 import { categoryColor } from "../members";
-import { projectPointToScene, type PlanCenter } from "../planGeometry";
+import { createPlanPrismGeometry, projectPointToScene, type PlanCenter } from "../planGeometry";
 import { NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
-import {
-  GLAZED_LEAF_FRAME_WIDTH_M, type AddBox, type LeafSet, buildConcealedFrame, buildLeverSet, concealedLeaf, finishFaces, handing,
-} from "./doorProducts";
 import { buildDoorway } from "./doorway";
 import { authoredPiece } from "./openingPieces";
-import { buildCasedDoor } from "./casedDoors";
 import { registerSelectable } from "./registry";
-import { baseRefZ } from "./wallFrame";
-import { buildBookcaseDoor } from "./bookcaseDoor";
-import { rakedTopAt } from "./walls";
 import { boardBoxGeometry, pieceSeed, woodMaterialsForGeometry } from "../woodPiece";
 import { boardStyleFor } from "./millwork";
 import { createPlankMaterial } from "../plankMaterial";
-
-// Exterior window casing — mirrors the exterior_trim part in resolve/geometry_openings.py
-// (constants _WINDOW_TRIM_FACE_WIDTH_M / _WINDOW_TRIM_PROUD_DEPTH_M): a picture-frame of
-// flat boards proud of the cladding plane, windows in clad walls only. The colour rides
-// members.ts CATEGORY_COLOR ("window_trim"), keeping recolors a palette-only edit.
-// 1 1/4" face: the visible width of standard J-channel/flat trim, chosen over a heavier
-// 2 1/2" face that read as too heavy in 3D — casing and window frame are both charcoal
-// here and blur into one band.
-const WINDOW_TRIM_FACE_WIDTH_M = 0.032;
-const WINDOW_TRIM_PROUD_DEPTH_M = 0.019;
+import type { PlankStyle } from "../plankLayout";
 
 // The door's charcoal wrap is a sub-millimetre skin over a red isolation film. At normal
 // house-view distances, the flashing material's coating bias can put that film ahead of the
@@ -40,204 +24,91 @@ const DOOR_TRIM_WRAP_DEPTH_BIAS = {
   polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2,
 } as const;
 
-// Mirrors resolve/geometry_openings.py::_exterior_face — the exterior cladding plane as a
-// signed offset along the wall's right-hand normal, or null when the outermost depth layer
-// is not cladding (a concrete wall or interior partition has no plane to sit a casing on).
-function exteriorFace(wall: Wall): { plane: number; sign: number } | null {
-  const layers = wall.layers.filter((layer) => !layer.is_cavity);
-  if (layers.length < 2) return null;
-  const outerLayer = layers[layers.length - 1];
-  if (outerLayer.function.trim().toLowerCase() !== "cladding") return null;
-  const [[x0, y0], [x1, y1]] = wall.axis;
-  const length = Math.hypot(x1 - x0, y1 - y0);
-  if (length < 1e-9) return null;
-  const nx = -(y1 - y0) / length, ny = (x1 - x0) / length;
-  const project = (ring: [number, number][]) =>
-    ring.map(([px, py]) => (px - x0) * nx + (py - y0) * ny);
-  const outer = project(outerLayer.polygon), inner = project(layers[0].polygon);
-  if (!outer.length || !inner.length) return null;
-  const mean = (values: number[]) => values.reduce((a, b) => a + b, 0) / values.length;
-  const outward = mean(outer) - mean(inner);
-  if (Math.abs(outward) < 1e-9) return null;
-  const sign = outward > 0 ? 1 : -1;
-  return { plane: sign > 0 ? Math.max(...outer) : Math.min(...outer), sign };
-}
-
-function pocketCenterlineOffset(wall: Wall, nx: number, ny: number): number {
-  const structure = wall.layers.find((layer) => layer.function === "structure");
-  if (!structure?.polygon.length) return 0;
-  const [origin] = wall.axis;
-  const offsets = structure.polygon.map(([x, y]) =>
-    (x - origin[0]) * nx + (y - origin[1]) * ny);
-  return (Math.min(...offsets) + Math.max(...offsets)) / 2;
-}
+// Finishes the engine keys flat; every other product key is a satin paint.
+const MATTE_KEYS = new Set(["shadow_gap", "overhead_door"]);
 
 export interface OpeningProductOptions {
-  operation?: DoorOperation;
-  glazed?: boolean;
-  trimless?: boolean;
+  // The bookcase body's species: its boards carry the `oak_bookcase` key and no catalog ref.
   bookcaseDoor?: DoorTypeSpec["bookcase_door"];
   materials?: readonly MaterialAppearance[];
-  leafSet?: LeafSet;
 }
 
-export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: Wall, center: PlanCenter,
+type PartMaterial = { material: THREE.Material; style: PlankStyle | null };
+
+/** One material per finish, shared by every solid of the opening that carries it. */
+function partMaterials(mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  materials: readonly MaterialAppearance[] | undefined, bookcaseRef: string | undefined) {
+  const cache = new Map<string, PartMaterial>();
+  const cached = (key: string, build: () => PartMaterial) => {
+    let entry = cache.get(key);
+    if (!entry) cache.set(key, entry = build());
+    return entry;
+  };
+  const product = (ref: string) => cached(`ref:${ref}`, () => {
+    const color = materialColor(ref, palette, materials);
+    const style = boardStyleFor(ref, materials);
+    return { style, material: style
+      ? createPlankMaterial(mode, style, color, undefined, authoredAppearance(ref, materials))
+      : standardMaterial(color, mode, { roughness: 0.45 }) };
+  });
+  return (part: OpeningPart): PartMaterial => {
+    const key = part.material_key;
+    // A glazed leaf stays glass whatever finish its catalog names for the leaf.
+    if (key === "glass") return cached(key, () => ({ style: null, material: standardMaterial(
+      categoryColor("glass"), mode, { transparent: true, opacity: 0.48, roughness: 0.2,
+        metalness: 0.05, depthWrite: false }) }));
+    if (part.material_ref) return product(part.material_ref);
+    if (key === "oak_bookcase" && bookcaseRef) return product(bookcaseRef);
+    const exteriorTrim = part.key.split(":")[0] === "exterior_trim";
+    return cached(exteriorTrim ? "exterior_trim" : key, () => ({ style: null, material:
+      key === "door_hardware" ? standardMaterial(categoryColor(key), mode,
+        { metalness: 0.8, roughness: 0.35 })
+      // An interior schematic frame is the member wood, which the palette themes.
+      : key === "opening_frame" ? standardMaterial(palette.member.wood, mode)
+      : key === "window_trim" && !exteriorTrim ? standardMaterial(categoryColor(key), mode)
+      : MATTE_KEYS.has(key) || exteriorTrim ? standardMaterial(categoryColor(key), mode,
+        { roughness: NORDIC_ROUGHNESS.matte })
+      : standardMaterial(categoryColor(key), mode, { roughness: 0.45 }) }));
+  };
+}
+
+/** The box a rectangular ring extrudes to, for a wood finish's grain; null for any other ring. */
+function ringBoxMatrix(ring: readonly Vec2[], z0: number, z1: number,
+  center: PlanCenter): THREE.Matrix4 | null {
+  if (ring.length !== 4) return null;
+  const [a, b, c, d] = ring;
+  const u = [b[0] - a[0], b[1] - a[1]], v = [c[0] - b[0], c[1] - b[1]];
+  const lu = Math.hypot(u[0], u[1]), lv = Math.hypot(v[0], v[1]);
+  if (lu < 1e-9 || lv < 1e-9 || Math.abs(u[0] * v[0] + u[1] * v[1]) > 1e-4 * lu * lv
+    || Math.hypot(d[0] - a[0] - v[0], d[1] - a[1] - v[1]) > 1e-5) return null;
+  return new THREE.Matrix4().compose(
+    projectPointToScene([(a[0] + c[0]) / 2, (a[1] + c[1]) / 2], (z0 + z1) / 2, center),
+    new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(u[1], u[0])),
+    new THREE.Vector3(lu, z1 - z0, lv));
+}
+
+export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
   options: OpeningProductOptions, picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
-  const { operation, glazed: isGlazed = false, trimless: isTrimless = false, bookcaseDoor,
-    materials, leafSet = "pull" } = options;
-  if (roughOpening.kind === "rough_opening") return;
-  // The casing frames the RO; a flashed window's unit sits inside it, on its pan.
-  // Mirrors resolve/geometry_openings.py.
-  const seat = roughOpening.window_seat ?? null;
-  const opening: Opening = seat ? {
-    ...roughOpening,
-    width_m: roughOpening.width_m - 2 * seat.jamb_inset_m,
-    sill_m: roughOpening.sill_m + seat.sill_rise_m,
-  } : roughOpening;
-  if (opening.width_m <= 1e-9) return;
-  const firstChildIndex = parent.children.length;
+  if (opening.kind === "rough_opening") return;
   const [[x0, y0], [x1, y1]] = wall.axis;
   const length = Math.hypot(x1 - x0, y1 - y0);
   if (length < 1e-9) return;
+  const { materials, bookcaseDoor } = options;
+  const firstChildIndex = parent.children.length;
   const direction: [number, number] = [(x1 - x0) / length, (y1 - y0) / length];
-  const normal: [number, number] = [-direction[1], direction[0]];
   const openingCenter: [number, number] = [
     x0 + direction[0] * opening.center_along_m,
     y0 + direction[1] * opening.center_along_m,
   ];
-  const pocketOffset = operation === "pocket"
-    ? pocketCenterlineOffset(wall, normal[0], normal[1]) : 0;
-  const position: [number, number] = [
-    openingCenter[0] + normal[0] * pocketOffset,
-    openingCenter[1] + normal[1] * pocketOffset,
-  ];
-  const ro = roughOpening;
-  const roHeight = Math.max(0, Math.min(ro.height_m,
-    rakedTopAt(wall, x0 + direction[0] * (ro.center_along_m - ro.width_m / 2), y0 + direction[1] * (ro.center_along_m - ro.width_m / 2)) - baseRefZ(wall) - ro.sill_m,
-    rakedTopAt(wall, x0 + direction[0] * (ro.center_along_m + ro.width_m / 2), y0 + direction[1] * (ro.center_along_m + ro.width_m / 2)) - baseRefZ(wall) - ro.sill_m));
-  if (roHeight <= 1e-9) return;
-  const availableHeight = seat ? roHeight - seat.sill_rise_m - seat.head_drop_m : roHeight;
-  if (availableHeight <= 1e-9) return;
   const rotation = Math.atan2(direction[1], direction[0]);
-  let frameWidth = Math.min(0.075, opening.width_m / 4, availableHeight / 4);
-  // A sized door's jamb fills the RO out to its leaf (resolve/door_sizing); an overhead
-  // door is its RO. Mirrors resolve/geometry_openings.py.
-  const sizing = opening.kind === "door" ? roughOpening.sizing ?? null : null;
-  if (sizing && !seat && operation !== "overhead" && operation !== "pocket"
-    && sizing.leaf_w_m < opening.width_m) {
-    frameWidth = (opening.width_m - sizing.leaf_w_m) / 2;
-  }
-  const sizedLeaf = sizing?.leaf_w_m ?? null;
-  const depth = 0.08;
-  // An opening in a clad wall is an exterior product: frame/mullion/stile boxes take the
-  // charcoal exterior tone, doors and windows alike, and the frame extends from its
-  // interior face out to the casing's proud face so the reveal reads charcoal instead of
-  // exposing the wall layers' cut foam. Mirrors resolve/geometry_openings.py.
-  const exterior = exteriorFace(wall);
-  const defaultFrameMaterial = standardMaterial(
-    exterior ? categoryColor("window_trim") : palette.member.wood, mode);
-  // A solid leaf is white enamel indoors and the charcoal frame tone in a clad wall. Mirrors
-  // resolve/geometry_openings.py::_DOOR_LEAF_KEY. Satin, not the walls' matte, so the leaf
-  // catches a highlight the flat gypsum around it does not.
-  const defaultLeafMaterial = exterior ? defaultFrameMaterial
-    : standardMaterial(categoryColor("door_leaf"), mode, { roughness: 0.45 });
-  const frameMaterial = opening.effective_frame_material_ref
-    ? productMaterial(opening.effective_frame_material_ref) : defaultFrameMaterial;
-  const solidLeafMaterial = opening.effective_leaf_material_ref
-    ? productMaterial(opening.effective_leaf_material_ref) : defaultLeafMaterial;
-  function productMaterial(ref: string) {
-    const color = materialColor(ref, palette, materials);
-    const style = boardStyleFor(ref, materials);
-    return style ? createPlankMaterial(mode, style, color, undefined, authoredAppearance(ref, materials))
-      : standardMaterial(color, mode, { roughness: 0.45 });
-  }
-  let frameDepth = depth, frameOffset = 0;
-  if (exterior) {
-    const outerEdge = seat?.outer_m ?? exterior.plane + exterior.sign * WINDOW_TRIM_PROUD_DEPTH_M;
-    let innerEdge = -exterior.sign * (depth / 2);
-    // The unit's own frame depth off the mount plane (geometry_openings.py:168).
-    if (seat?.outer_m != null && seat.frame_depth_m) innerEdge = seat.outer_m - exterior.sign * seat.frame_depth_m;
-    // Outboard of the back dam: the unit never stands in the pan's upturn.
-    if (seat) innerEdge = exterior.sign * Math.max(exterior.sign * innerEdge, exterior.sign * seat.inner_m);
-    frameDepth = Math.abs(outerEdge - innerEdge);
-    frameOffset = (outerEdge + innerEdge) / 2;
-  }
-  const placement = opening.doorway?.exterior_placement;
-  const productOffset = placement?.leaf_normal_m ?? 0;
-  if (placement) {
-    frameDepth = Math.abs(placement.frame_outer_m - placement.frame_inner_m);
-    frameOffset = (placement.frame_outer_m + placement.frame_inner_m) / 2 - productOffset;
-  }
-  // Pick keys mirror resolve/geometry_openings.py GPart names; unnamed boards number per role.
-  const pieceCounts: Record<string, number> = {};
-  const nextPiece = (role: string) => `${role}:${pieceCounts[role] = (pieceCounts[role] ?? -1) + 1}`;
-  const addBox = (width: number, height: number, thickness: number, along: number, elevation: number, material: THREE.Material, normalOffset = 0, piece?: string) => {
-    normalOffset += productOffset;
-    const leafBottom = opening.doorway?.leaf_bottom_z_m;
-    if (leafBottom != null && (material === solidLeafMaterial || material === glassMaterial)
-      && elevation + height / 2 > leafBottom) {
-      const oldBottom = elevation - height / 2;
-      if (isTrimless && isGlazed && material === glassMaterial && faces) {
-        const originalBottom = concealedLeaf(faces, swingSign, opening.width_m, floorZ,
-          availableHeight, leafSet, sizedLeaf)[2];
-        const bottom = oldBottom + leafBottom - originalBottom;
-        const top = elevation + height / 2;
-        height = top - bottom; elevation = (top + bottom) / 2;
-      } else if (height > GLAZED_LEAF_FRAME_WIDTH_M) {
-        const top = elevation + height / 2;
-        height = top - leafBottom; elevation = (top + leafBottom) / 2;
-      } else if (oldBottom < floorZ + availableHeight / 2) {
-        elevation = leafBottom + height / 2;
-      }
-    }
-    const jambBottom = opening.doorway?.jamb_bottom_z_m;
-    if (jambBottom != null && material === frameMaterial && height > GLAZED_LEAF_FRAME_WIDTH_M
-      && elevation - height / 2 < jambBottom && elevation + height / 2 > jambBottom) {
-      const top = elevation + height / 2;
-      height = top - jambBottom; elevation = (top + jambBottom) / 2;
-    }
-    const ref = material === frameMaterial ? opening.effective_frame_material_ref
-      : material === solidLeafMaterial ? opening.effective_leaf_material_ref : undefined;
-    const style = ref ? boardStyleFor(ref, materials) : null;
-    const mesh = new THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>(
-      new THREE.BoxGeometry(width, height, thickness), material);
-    mesh.position.copy(projectPointToScene([
-      position[0] + direction[0] * along - direction[1] * normalOffset,
-      position[1] + direction[1] * along + direction[0] * normalOffset], elevation, center));
-    mesh.rotation.y = rotation;
-    if (style) {
-      mesh.updateMatrix();
-      mesh.geometry.dispose();
-      const boardMatrix = new THREE.Matrix4().compose(mesh.position, mesh.quaternion,
-        new THREE.Vector3(width, height, thickness));
-      mesh.geometry = boardBoxGeometry(boardMatrix, style,
-        pieceSeed(`${opening.uid}|${parent.children.length - firstChildIndex}`));
-      mesh.position.set(0, 0, 0); mesh.rotation.set(0, 0, 0); mesh.updateMatrix();
-      mesh.material = woodMaterialsForGeometry(material, mesh.geometry);
-    }
-    mesh.userData.piece = piece ?? nextPiece(material === glassMaterial ? "glass"
-      : material === solidLeafMaterial ? "leaf" : material === hardwareMaterial ? "hardware"
-        : "frame");
-    parent.add(mesh);
-  };
-  const midElevation = baseRefZ(wall) + opening.sill_m + availableHeight / 2;
-  const floorZ = baseRefZ(wall) + opening.sill_m;
-  const [hingeSign, swingSign] = handing(opening);
-  const swingLeaf = operation === undefined || operation === "swing";
-  const hardwareMaterial = standardMaterial(categoryColor("door_hardware"), mode,
-    { metalness: 0.8, roughness: 0.35 });
-  const addHardware: AddBox = (w, h, t, a, e, n) => addBox(w, h, t, a, e, hardwareMaterial, n,
-    nextPiece("hardware"));
-  const glassMaterial = standardMaterial(0x8fb7c9, mode, { transparent: true, opacity: 0.48,
-    roughness: 0.2, metalness: 0.05, depthWrite: false });
-  // Section normal offsets are relative to the wall axis, independent of the pocket leaf.
+  // Section normal offsets are relative to the wall axis.
   buildDoorway(opening, openingCenter, direction, center, parent, (ref, materialKey) =>
     standardMaterial(materialKey === "window_trim" ? categoryColor("window_trim")
       : new THREE.Color(materialColor(ref, palette, materials)), mode,
       materialKey === "door_hardware" ? { metalness: 0.8, roughness: 0.35 }
         : { metalness: 0, roughness: 0.45 }));
-  for (const board of placement?.boards ?? []) {
+  for (const board of opening.doorway?.exterior_placement?.boards ?? []) {
     const material = standardMaterial(board.role && board.role !== "door_installation"
       ? materialColor(board.material_ref, palette, materials)
       : categoryColor(board.material_key === "window_trim" ? "window_trim" : "door_frame"),
@@ -256,244 +127,31 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     mesh.userData.piece = `installation:${board.name}`;
     parent.add(mesh);
   }
-  if (opening.authored_product_parts?.length) {
-    // The engine supplies final part geometry so hardware heights and two-face paint
-    // share one answer with IFC and GLB, including the supplier sill/leaf placement.
-    for (const part of opening.authored_product_parts) {
-      const material = part.material_ref ? productMaterial(part.material_ref)
-        : part.material_key === "door_hardware" ? hardwareMaterial
-        : part.material_key === "glass" ? glassMaterial
-        : standardMaterial(categoryColor(part.material_key), mode, { roughness: 0.45 });
-      for (const [solidIndex, solid] of part.solids.entries()) {
-        const along = solid.ring.map(([x, y]) =>
-          (x - position[0]) * direction[0] + (y - position[1]) * direction[1]);
-        const across = solid.ring.map(([x, y]) =>
-          (x - position[0]) * normal[0] + (y - position[1]) * normal[1]);
-        const a0 = Math.min(...along), a1 = Math.max(...along);
-        const n0 = Math.min(...across), n1 = Math.max(...across);
-        const mesh = new THREE.Mesh(new THREE.BoxGeometry(a1 - a0,
-          solid.z1_m - solid.z0_m, n1 - n0), material);
-        mesh.position.copy(projectPointToScene([
-          position[0] + direction[0] * (a0 + a1) / 2 + normal[0] * (n0 + n1) / 2,
-          position[1] + direction[1] * (a0 + a1) / 2 + normal[1] * (n0 + n1) / 2,
-        ], (solid.z0_m + solid.z1_m) / 2, center));
-        mesh.rotation.y = rotation;
-        mesh.userData.doorPart = part.key;
-        mesh.userData.piece = authoredPiece(part.key, solidIndex, a0, a1, solid.z0_m, solid.z1_m,
-          opening.width_m, baseRefZ(wall) + opening.sill_m + availableHeight / 2);
-        parent.add(mesh);
-      }
-    }
-    registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
-    return;
-  }
-  const faces = finishFaces(wall);
-  if (opening.cased_product) {
-    const paintedFrame = opening.effective_frame_material_ref ? frameMaterial
-      : standardMaterial(categoryColor("door_frame"), mode, { roughness: 0.45 });
-    const withMaterial = (material: THREE.Material, role: string): AddBox =>
-      (w, h, t, a, e, n) => addBox(w, h, t, a, e, material, n, nextPiece(role));
-    buildCasedDoor(opening.cased_product, hingeSign, swingSign, {
-      liner: withMaterial(paintedFrame, "frame"), stop: withMaterial(paintedFrame, "stop"),
-      leaf: withMaterial(solidLeafMaterial, "leaf"), hardware: addHardware,
-    });
-    registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
-    return;
-  }
-  if (isTrimless && opening.kind === "door" && faces && swingLeaf) {
-    // A concealed frame: no casing, a 1/8" reveal, the leaf set at the face `leafSet` names.
-    // Mirrors resolve/geometry_door_products.py.
-    const linerMaterial = opening.effective_frame_material_ref ? frameMaterial
-      : standardMaterial(categoryColor("door_leaf"), mode);
-    const shadowMaterial = standardMaterial(categoryColor("shadow_gap"), mode,
-      { roughness: NORDIC_ROUGHNESS.matte });
-    const withMaterial = (material: THREE.Material, role: string): AddBox =>
-      (w, h, t, a, e, n) => addBox(w, h, t, a, e, material, n, nextPiece(role));
-    buildConcealedFrame(faces, swingSign, opening.width_m, floorZ, availableHeight, {
-      liner: withMaterial(linerMaterial, "frame"), leaf: withMaterial(solidLeafMaterial, "leaf"),
-      stop: (w, h, t, a, e, n) => {
-        const bottom = opening.doorway?.leaf_bottom_z_m;
-        const oldBottom = e - h / 2;
-        if (bottom != null && oldBottom < bottom && e + h / 2 > bottom) {
-          const top = e + h / 2; h = top - bottom; e = (top + bottom) / 2;
-        }
-        addBox(w, h, t, a, e, linerMaterial, n, nextPiece("stop"));
-      },
-      shadow: (w, h, t, a, e, n) => {
-        const bottom = opening.doorway?.leaf_bottom_z_m;
-        const oldBottom = e - h / 2;
-        if (bottom != null && oldBottom < bottom && e + h / 2 > bottom) {
-          const top = e + h / 2; h = top - bottom; e = (top + bottom) / 2;
-        }
-        addBox(w, h, t, a, e, shadowMaterial, n, nextPiece("shadow"));
-      },
-      glazing: isGlazed ? withMaterial(glassMaterial, "glass") : undefined,
-    }, leafSet, sizedLeaf);
-    const [leafW, , , flush, back] = concealedLeaf(faces, swingSign, opening.width_m, floorZ,
-      availableHeight, leafSet, sizedLeaf);
-    buildLeverSet(addHardware, -hingeSign * leafW / 2, hingeSign, [flush, back], floorZ);
-    registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
-    return;
-  }
-  if (opening.kind === "door" && bookcaseDoor) {
-    const materialRef = bookcaseDoor.material_ref;
-    const color = materialColor(materialRef, palette, materials);
-    const boardStyle = boardStyleFor(materialRef, materials);
-    const boardMaterial = boardStyle
-      ? createPlankMaterial(mode, boardStyle, color, undefined,
-        authoredAppearance(materialRef, materials))
-      : standardMaterial(new THREE.Color(color), mode);
-    let boardIndex = 0;
-    const addOakBox = (boxWidth: number, boxHeight: number, thickness: number, along: number,
-      elevation: number, material: THREE.Material, normalOffset: number) => {
-      if (!boardStyle || material !== boardMaterial) {
-        addBox(boxWidth, boxHeight, thickness, along, elevation, material, normalOffset,
-          nextPiece("leaf"));
-        return;
-      }
-      const boardPosition = projectPointToScene([
-        position[0] + direction[0] * along - direction[1] * normalOffset,
-        position[1] + direction[1] * along + direction[0] * normalOffset], elevation, center);
-      const transform = new THREE.Matrix4().compose(
-        boardPosition,
-        new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotation),
-        new THREE.Vector3(boxWidth, boxHeight, thickness));
-      const geometry = boardBoxGeometry(transform, boardStyle,
-        pieceSeed(`${opening.uid}|bookcase-board-${boardIndex++}`));
-      const board = new THREE.Mesh(geometry, woodMaterialsForGeometry(material, geometry));
-      board.userData.piece = nextPiece("leaf");
-      parent.add(board);
-    };
-    const mountPlane = faces === null ? 0
-      : bookcaseDoor.mounting_face === "negative_normal" ? faces[0] : faces[1];
-    buildBookcaseDoor(addOakBox, bookcaseDoor, opening.width_m, availableHeight, floorZ,
-      boardMaterial, boardMaterial, mountPlane);
-    registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
-    return;
-  }
-  if (!isTrimless) {
-    addBox(frameWidth, availableHeight, frameDepth, -opening.width_m / 2 + frameWidth / 2, midElevation, frameMaterial, frameOffset, "frame:jamb-left");
-    addBox(frameWidth, availableHeight, frameDepth, opening.width_m / 2 - frameWidth / 2, midElevation, frameMaterial, frameOffset, "frame:jamb-right");
-    addBox(opening.width_m, frameWidth, frameDepth, 0, baseRefZ(wall) + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial, frameOffset, "frame:head");
-    if (opening.kind === "window") {
-      addBox(opening.width_m, frameWidth, frameDepth, 0, baseRefZ(wall) + opening.sill_m + frameWidth / 2, frameMaterial, frameOffset, "frame:sill");
+  const materialOf = partMaterials(mode, palette, materials, bookcaseDoor?.material_ref ?? undefined);
+  const along = ([x, y]: Vec2) =>
+    (x - openingCenter[0]) * direction[0] + (y - openingCenter[1]) * direction[1];
+  for (const part of opening.opening_parts ?? []) {
+    const { material, style } = materialOf(part);
+    // Frame boards are named by where they sit within the part (→ ./openingPieces).
+    const spans = part.solids.map(solid => solid.ring.map(along));
+    const partA0 = Math.min(...spans.flat()), partA1 = Math.max(...spans.flat());
+    const partMid = (partA0 + partA1) / 2;
+    const midZ = (Math.min(...part.solids.map(s => s.z0_m))
+      + Math.max(...part.solids.map(s => s.z1_m))) / 2;
+    for (const [index, solid] of part.solids.entries()) {
+      const box = style && ringBoxMatrix(solid.ring, solid.z0_m, solid.z1_m, center);
+      const geometry = box
+        ? boardBoxGeometry(box, style, pieceSeed(`${opening.uid}|${part.key}|${index}`))
+        : createPlanPrismGeometry(solid.ring, solid.z0_m, solid.z1_m, [], center);
+      if (!geometry) continue;
+      const mesh = new THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>(
+        geometry, box ? woodMaterialsForGeometry(material, geometry) : material);
+      mesh.userData.piece = authoredPiece(part.key, index, Math.min(...spans[index]) - partMid,
+        Math.max(...spans[index]) - partMid, solid.z0_m, solid.z1_m, partA1 - partA0, midZ);
+      parent.add(mesh);
     }
   }
-  const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
-  if (opening.kind === "door" && operation === "double_swing") {
-    // Two leaves meeting at a center mullion, matching the 2D French-door symbol.
-    const mullionWidth = Math.min(frameWidth, (opening.width_m - 2 * frameWidth) / 6);
-    const leafWidth = Math.max(0.01, (opening.width_m - 2 * frameWidth - mullionWidth) / 2);
-    const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
-    const astragalBottom = (placement?.sill_design_status === "SCHEMATIC" || placement?.sill_design_status === "CATALOG_DESIGN")
-      ? opening.doorway?.leaf_bottom_z_m : null;
-    const astragalTop = baseRefZ(wall) + opening.sill_m + availableHeight;
-    addBox(mullionWidth, astragalBottom == null ? availableHeight : astragalTop - astragalBottom,
-      depth, 0, astragalBottom == null ? midElevation : (astragalTop + astragalBottom) / 2,
-      frameMaterial, 0, "frame:mullion");
-    const leafMaterial = isGlazed ? glassMaterial : solidLeafMaterial;
-    const leafThickness = isGlazed ? 0.015 : 0.045;
-    addBox(leafWidth, panelHeight, leafThickness, -mullionWidth / 2 - leafWidth / 2, panelElevation, leafMaterial);
-    addBox(leafWidth, panelHeight, leafThickness, mullionWidth / 2 + leafWidth / 2, panelElevation, leafMaterial);
-    for (const side of [-1, 1]) {
-      buildLeverSet(addHardware, side * mullionWidth / 2, side,
-        [-leafThickness / 2, leafThickness / 2], floorZ);
-    }
-  } else if (opening.kind === "door" && operation === "slide") {
-    // The 3D product stays closed and coplanar; a narrow meeting stile plus bottom track
-    // makes the pair read as a slider without staging one panel over the wall.
-    const clearWidth = opening.width_m - 2 * frameWidth;
-    const stileWidth = Math.min(frameWidth / 2, clearWidth / 12);
-    const panelWidth = Math.max(0.01, (clearWidth - stileWidth) / 2);
-    const panelOffset = stileWidth / 2 + panelWidth / 2;
-    const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
-    const panelMaterial = isGlazed ? glassMaterial : solidLeafMaterial;
-    const panelThickness = isGlazed ? 0.015 : 0.045;
-    addBox(stileWidth, panelHeight, depth, 0, panelElevation, frameMaterial, 0, "frame:mullion");
-
-    addBox(panelWidth, panelHeight, panelThickness, -panelOffset, panelElevation, panelMaterial);
-    addBox(panelWidth, panelHeight, panelThickness, panelOffset, panelElevation, panelMaterial);
-  } else if (opening.kind === "door" && operation === "bifold") {
-    // Four leaves are a centre-opening bifold's closed product arrangement. Small reveals
-    // keep the fold joints legible while the leaves remain in the wall plane.
-    const clearWidth = opening.width_m - 2 * frameWidth;
-    const foldGap = Math.min(frameWidth / 8, clearWidth / 40);
-    const leafWidth = Math.max(0.01, (clearWidth - 3 * foldGap) / 4);
-    const firstLeafCenter = -clearWidth / 2 + leafWidth / 2;
-    const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
-    for (let index = 0; index < 4; index++) {
-      addBox(leafWidth, panelHeight, 0.045,
-        firstLeafCenter + index * (leafWidth + foldGap), panelElevation, solidLeafMaterial);
-    }
-  } else if (opening.kind === "door" && operation === "pocket") {
-    // Closed and coplanar, like the slider above. The wall over a pocket is drywalled on
-    // both faces and genuinely reads solid, so the leaf is drawn filling its opening
-    // rather than parked in the cavity — the cavity is modelled, but as framing members.
-    // A pocket has no floor track, so unlike the slider the rail sits at the head.
-    const clearWidth = Math.max(0.01, opening.width_m - 2 * frameWidth);
-    const trackHeight = Math.min(0.02, panelHeight);
-    const leafHeight = Math.max(0.01, panelHeight - trackHeight);
-    const base = baseRefZ(wall) + opening.sill_m + frameWidth;
-    addBox(clearWidth, trackHeight, depth, 0, base + panelHeight - trackHeight / 2, frameMaterial, 0, "frame:track");
-    addBox(clearWidth, leafHeight, 0.045, 0, base + leafHeight / 2, solidLeafMaterial);
-  } else if (opening.kind === "door") {
-    // A sectional overhead door's panel is a factory-finished product in its own charcoal,
-    // not the wood leaf of an interior door nor the near-black trim coil its frame is drawn
-    // in — at 16' wide the trim tone read as matte black across the whole elevation. The
-    // colour rides the generated vocabulary ("overhead_door"), mirroring
-    // resolve/geometry_openings.py::_OVERHEAD_KEY.
-    const leafMaterial = isGlazed ? glassMaterial
-      : operation === "overhead" && !opening.effective_leaf_material_ref
-        ? standardMaterial(categoryColor("overhead_door"), mode,
-          { roughness: NORDIC_ROUGHNESS.matte })
-        : solidLeafMaterial;
-    addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, isGlazed ? 0.015 : 0.045, 0,
-      baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2, leafMaterial);
-    if (swingLeaf) {
-      const thickness = isGlazed ? 0.015 : 0.045;
-      buildLeverSet(addHardware, -hingeSign * (opening.width_m - 2 * frameWidth) / 2, hingeSign,
-        [-thickness / 2, thickness / 2], floorZ);
-    }
-  } else {
-    // A seated unit's glass rides in its frame, wherever the frame landed in depth.
-    addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.015, 0,
-      baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2, glassMaterial,
-      seat ? frameOffset : 0);
-  }
-  if (opening.kind === "window") {
-    if (exterior && seat?.outer_m == null) {
-      // Picture-frame casing on the cladding plane: two jambs beside the RO, a head band
-      // over it, an apron under the sill. Mirrors resolve/geometry_openings.py, including
-      // the per-board rake clip — a head band reaches past the RO span the availableHeight
-      // clip already honoured, so each board checks the raked top over its own footprint.
-      const trimW = WINDOW_TRIM_FACE_WIDTH_M;
-      const trimOffset = exterior.plane + exterior.sign * (WINDOW_TRIM_PROUD_DEPTH_M / 2);
-      const trimMaterial = standardMaterial(categoryColor("window_trim"), mode,
-        { roughness: NORDIC_ROUGHNESS.matte });
-      const rakedHost = wall.top_z0_m != null || wall.top_z1_m != null;
-      const sillZ = baseRefZ(wall) + ro.sill_m;
-      const bands: [number, number, number, number, string][] = [
-        [trimW, roHeight, -ro.width_m / 2 - trimW / 2, sillZ, "jamb-left"],
-        [trimW, roHeight, ro.width_m / 2 + trimW / 2, sillZ, "jamb-right"],
-        [ro.width_m + 2 * trimW, trimW, 0, sillZ + roHeight, "head"],
-        [ro.width_m + 2 * trimW, trimW, 0, sillZ - trimW, "sill"],
-      ];
-      for (const [bandW, bandH, along, baseZ, leg] of bands) {
-        let zTop = baseZ + bandH;
-        if (rakedHost) {
-          for (const end of [-1, 1]) {
-            zTop = Math.min(zTop, rakedTopAt(wall,
-              position[0] + direction[0] * (along + end * bandW / 2),
-              position[1] + direction[1] * (along + end * bandW / 2)));
-          }
-        }
-        if (zTop - baseZ <= 1e-9) continue;
-        addBox(bandW, zTop - baseZ, WINDOW_TRIM_PROUD_DEPTH_M, along,
-          baseZ + (zTop - baseZ) / 2, trimMaterial, trimOffset, `exterior_trim:${leg}`);
-      }
-    }
-  }
-  // Frame, leaf/mullion, glazing and exterior casing are one door or window: clicking any of
-  // them selects the opening record, which the Inspector already knows how to edit.
+  // Frame, leaf, glazing, casing and hardware are one door or window: clicking any of them
+  // selects the opening record, which the Inspector already knows how to edit.
   registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
 }

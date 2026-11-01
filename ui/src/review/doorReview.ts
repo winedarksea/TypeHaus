@@ -30,8 +30,14 @@ const cases = exteriorReview ? ["D-M-ENTRY", "D-M-BALC", "D-S-DECK-E", "D-B-PATI
 for (const sample of cases) {
   const original = model.openings.find(o => o.tag === sample.tag)!;
   const spec = sample as typeof sample & { frame?: string; leaf?: string };
+  // A synthetic finish re-points the served parts (resolve/geometry_openings.py frame/leaf keys).
+  const refFor = (key: string) => ["frame", "jamb_liner", "stop", "mullion", "sliding_stile"]
+    .includes(key.split(":")[0]) ? spec.frame : ["leaf", "sliding_panel", "bifold_leaf"]
+    .includes(key.split(":")[0]) ? spec.leaf : undefined;
   const opening: Opening = { ...original, effective_frame_material_ref: spec.frame ?? original.effective_frame_material_ref,
-    effective_leaf_material_ref: spec.leaf ?? original.effective_leaf_material_ref };
+    effective_leaf_material_ref: spec.leaf ?? original.effective_leaf_material_ref,
+    opening_parts: original.opening_parts?.map(part =>
+      ({ ...part, material_ref: refFor(part.key) ?? part.material_ref })) };
   const wall = model.walls.find(w => w.tag === opening.host)!;
   const type = model.catalog!.door_types.find(t => t.tag === opening.type_ref)!;
   const [a, b] = wall.axis, angle = Math.atan2(b[1] - a[1], b[0] - a[0]);
@@ -49,9 +55,8 @@ for (const sample of cases) {
     [], new Map(), materials);
   groups.framing.visible = false;
   Object.values(groups).forEach(g => group.add(g));
-  buildOpening(group, opening, wall, center, mode, palette, { operation: type.operation,
-    glazed: type.glazed, trimless: type.trimless, bookcaseDoor: type.bookcase_door,
-    leafSet: type.leaf_set, materials }, picks, byUid);
+  buildOpening(group, opening, wall, center, mode, palette,
+    { bookcaseDoor: type.bookcase_door, materials }, picks, byUid);
   for (const casing of model.door_casings ?? []) if (casing.opening_uid === opening.uid) {
     buildDoorCasing(group, casing, center, mode, palette, materials, picks, byUid);
   }

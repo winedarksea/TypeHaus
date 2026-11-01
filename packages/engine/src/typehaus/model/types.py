@@ -1005,6 +1005,9 @@ class ElectricalDeviceType(FurnitureType):
     # it from the kind: receptacles, switches and lights do, data outlets and enclosures do
     # not. False for a type that carries its own (a gasketed in-use box).
     device_box: bool | None = None
+    # Picks a BoxStandard row by its ``use`` (e.g. "recessed"); a light defaults to
+    # "luminaire". Unmatched, the general row serves.
+    box_use: str | None = None
 
 
 class LuminaireType(ElectricalDeviceType):
@@ -1053,6 +1056,9 @@ class LuminaireType(ElectricalDeviceType):
     max_overall_height: Length | None = None
     # The canopy at the ceiling, which a cluster spreads to the width of its whole cascade.
     canopy_diameter: Length | None = None
+    # A wall fixture's backplate (width, height) off its sheet: what must cover the box
+    # face it mounts on (`electrical.canopy_covers_box`).
+    canopy: tuple[Length, Length] | None = None
     track_lighting: TrackLightingSpec | None = None
 
     @model_validator(mode="after")

@@ -198,9 +198,10 @@ PLANT_EXT_2X6_HUMID = Assembly(
         # the 7" shadow of one. At zero no bay exceeds 24.00" anywhere.
         #
         # The phase IS the authoring rule for a new opening, and it flipped with the sign:
-        # a course BOTTOM now lands on the framing-base module, so put the HEAD on a 24"
-        # multiple above the sole plate, or the SILL 3-1/2" above one. It was the mirror of
-        # that at -3.5". See houses/catlin/CLAUDE.md, Facade rules.
+        # a course BOTTOM lands on the sills' datum (the storey datum, top of joists), so put
+        # the HEAD on a 24" multiple above it, or the SILL 3-1/2" above one. The plate stands
+        # 3/4" higher on the subfloor (decision #110), so the crew's story pole reads
+        # 23-1/4" + 24k off the plate. See houses/catlin/CLAUDE.md, Facade rules.
         Layer(name="outer-girt", material_ref="kdat", thickness=inch(1.5),
               function=LayerFunction.FURRING,
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",

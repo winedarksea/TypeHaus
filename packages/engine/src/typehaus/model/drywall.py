@@ -12,6 +12,15 @@ from typehaus.model.base import Element, HausModel
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, ft
 
+_BOARD_MATCH_M = 0.001
+
+
+class TerminationBead(HausModel):
+    """The J-bead for one board thickness: a 1/2" J does not seat on 5/8" board."""
+
+    board_thickness: Length
+    material_ref: str
+
 
 class ShadowGapProfile(HausModel):
     """An LED shadow gap at the wall-ceiling edge: the ceiling (or soffit) board stops
@@ -42,6 +51,9 @@ class DrywallStandard(Element):
 
     outside_corner_ref: str
     termination_ref: str
+    # Per-thickness J-beads, matched to the board at the edge; any other board takes
+    # ``termination_ref``.
+    termination_refs: tuple[TerminationBead, ...] = ()
     door_bead_ref: str
     tile_reveal_ref: str
     window_corner_ref: str
@@ -52,8 +64,17 @@ class DrywallStandard(Element):
     led_profile: ShadowGapProfile | None = None
     stock_length: Length = ft(10)
 
+    def termination_for(self, board_thickness_m: float | None) -> str:
+        """The J-bead for a board ``board_thickness_m`` thick (within 1 mm)."""
+        if board_thickness_m is not None:
+            for bead in self.termination_refs:
+                if abs(bead.board_thickness.meters - board_thickness_m) < _BOARD_MATCH_M:
+                    return bead.material_ref
+        return self.termination_ref
+
     def material_refs(self) -> tuple[str, ...]:
-        refs = (self.outside_corner_ref, self.termination_ref, self.door_bead_ref,
+        refs = (self.outside_corner_ref, self.termination_ref,
+                *(bead.material_ref for bead in self.termination_refs), self.door_bead_ref,
                 self.tile_reveal_ref, self.window_corner_ref, self.window_frame_ref,
                 *((self.led_profile.material_ref,) if self.led_profile else ()))
         return tuple(dict.fromkeys(refs))
@@ -61,3 +82,4 @@ class DrywallStandard(Element):
 
 register_constructor("DrywallStandard", DrywallStandard)
 register_constructor("ShadowGapProfile", ShadowGapProfile)
+register_constructor("TerminationBead", TerminationBead)

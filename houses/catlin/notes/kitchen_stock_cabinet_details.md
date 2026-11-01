@@ -1,6 +1,6 @@
 # Kitchen stock-frame installation details
 
-Revision 2026-10-24. Coordinates are inches in the house plan; elevations are above
+Revision 2026-11-01. Coordinates are inches in the house plan; elevations are above
 finished floor. Cabinet widths follow stock modules. These details govern the revised north
 and east runs and the west cold-storage uppers.
 
@@ -17,7 +17,20 @@ its pantry face is x=292 5/8. Keep the kitchen sink window and its stud-grid fra
 | E2, drawers | 18 | 369 3/8 | 387 3/8 |
 | NE carousel | 38 | 387 3/8 | 425 3/8 |
 
-There is no E2 filler or extra filler substrate under the quartz. Appliance bay dimensions
+**Counter build-up (2026-11-01).** Every kitchen top uses the peninsula's stack (K6):
+SEKTION legs at 4 (905.560.71 is rated 3 1/2–5 1/8), the 30 frame, a 3/4 plywood sub-top
+screwed up through the frame tops, and a 1/16 silicone setting. Stone underside is 34 13/16
+(34.8125, within 1/100 of 34.819); 3 cm top is 36. The sub-top runs over B12, the sink base,
+B18 and both carousels. It stops at the dishwasher bay: the stone spans the 24 bay, and
+the LG unit side-mounts to the adjacent cabinet sides (confirm in LG's install guide). Its
+opening is then 34 13/16 high. The ply and its fixing are priced as
+`cabinet-kitchen-run-subtop`; the setting is in the quartz install rate and the legs are
+stock SEKTION legs, adjusted.
+
+The quartz stands 1 5/8 past the frames, 7/8 past the 3/4 AXSTAD fronts (y=399 3/4 on the
+north run; 25 5/8 deep).
+
+There is no E2 filler. Appliance bay dimensions
 are installation dimensions, not the dishwasher's narrower appliance shell. Cabinet doors
 retain factory reveals; do not add filler widths to the module arithmetic. Seal cabinet to
 wall contacts with a small colour-matched flexible joint after scribing the finish, rather
@@ -205,7 +218,8 @@ END-N; it no longer stands on the counter.
 Seating overhang: one quartz slab with the work surface, no seam on the knee line. It
 cantilevers 15 behind the cabinet backs (y=319 3/8) for 73 1/2, x=302 7/8–376 3/8, so
 its south edge is y=304 3/8; east of x=376 3/8 the slab stops at the backs. The slab is
-84 1/2 x 40, notched, and fits a standard 120 x 55 slab. 15 exceeds the 14 that 3 cm
+84 1/2 x 40 5/8, notched, and fits a standard 120 x 55 slab. Its north edge is y=345,
+1 5/8 past the frames, leaving 54 3/4 to the north-run stone. 15 exceeds the 14 that 3 cm
 quartz may hang unsupported, so it is carried:
 
 - **Bars.** Five 1/2 x 2 1/2 x 24 A36 hidden flat bars, powder-coated (the Original
@@ -216,8 +230,8 @@ quartz may hang unsupported, so it is carried:
   through the frame tops. Rout a 1/2-deep pocket for each bar so its top is flush; fasten
   with three #12 x 1 1/2 into the ply and the frame top rail. Do not rely on fiberboard
   backs.
-- **Height.** Lower the peninsula's SEKTION legs 1/2 (to 4, inside their 3 1/2 minimum):
-  frame top 34, sub-top 34–34 3/4, 1/16 silicone setting, stone underside 34.819 and top
+- **Height.** Set the peninsula's SEKTION legs to 4, the K1 stack (inside their
+  3 1/2–5 1/8 range): frame top 34, sub-top 34–34 3/4, 1/16 silicone setting, stone underside 34.819 and top
   36, flush with the carousel slab at the x=32'-3 3/8 seam.
 
 The stools moved 3 3/8 south with the edge and keep their x.
@@ -248,11 +262,15 @@ with suspension rail purchased separately; no legs or plinth for this wall insta
 
 | Item | South y | North y | Bottom | Top |
 |---|---:|---:|---:|---:|
-| Freezer upper | 331 3/4 | 361 3/4 | 73 1/2 | 93 1/2 |
-| Refrigerator upper | 361 3/4 | 391 3/4 | 73 1/2 | 93 1/2 |
+| Freezer upper | 331 1/2 | 361 1/2 | 73 1/2 | 93 1/2 |
+| Refrigerator upper | 361 1/2 | 391 1/2 | 73 1/2 | 93 1/2 |
 
-The ganged cabinets retain their joint on the appliance joint at y=361 3/4. The appliance
-bay is y=328 7/8–394 5/8, 65 3/4 wide. Two 30-wide frames leave a 2 7/8-wide,
+The ganged cabinets retain their joint on the appliance joint at y=361 1/2. The appliance
+bay is y=328 3/8–394 5/8, 66 1/4 wide, Frigidaire's paired cutout. The FPRU19F8WF install
+guide asks 1 at the rear and 3/16 at each side: the columns stand 1 off the wall (x=220 1/4
+to 247 1/4, fronts 3 7/8 proud of the 24 frames), 3/16 off PANTRYC and the partition, with
+a 1/8 TWINSPAIRKIT seam between them (y=328 9/16–361 7/16 and 361 9/16–394 7/16; confirm
+the seam on the pairing-kit sheet). Two 30-wide frames leave a 3 1/8-wide,
 20-high site-cut scribe at each outer end, against PANTRYC south and the pantry partition
 north. Price these finish strips with the stock cabinets. Keep the space above open;
 there is no stacker or 10-inch top filler. Cabinet tops align with the revised west pantry at 93 1/2 and sit about
@@ -308,7 +326,8 @@ the generated model is not a fabrication or drilling template.
 
 Replace PANTRYC's 80-inch frame and custom 20-inch stacker with one stock
 18 x 24 x 90-inch SEKTION high frame on 3 1/2-inch supports. Installed top is
-93 1/2 AFF, matching both cold-storage uppers. Retain its plan position and width.
+93 1/2 AFF, matching both cold-storage uppers. Retain its width; it moved 1/2 south
+(y=310 3/8–328 3/8, 2026-11-01) to widen the cold bay, 3/8 inside W-M-C5's end.
 The shared catalog's legacy 3-inch support is overridden only in Catlin's type.
 
 Use AXSTAD matte-white 18 x 30, 18 x 40 and 18 x 20 fronts, bottom to top,
@@ -320,8 +339,8 @@ three independent doors before ordering; this is a configured front arrangement,
 not the standard IKEA 60/30 two-door package. Do not remove a structural fixed shelf
 to accommodate a hinge. The model is an elevation intent, not a drilling template.
 
-Fit 2 7/8 x 20-inch matching front scribes at y=328 7/8–331 3/4 and
-391 3/4–394 5/8, bottom 73 1/2 AFF. Their front plane matches the
+Fit 3 1/8 x 20-inch matching front scribes at y=328 3/8–331 1/2 and
+391 1/2–394 5/8, bottom 73 1/2 AFF. Their front plane matches the
 3/4-inch cabinet doors, 24 3/4 inches from the wall; fasten on cleats to adjacent
 casework/framing. Keep ventilation openings and the appliance clearance below open.
 Retain the existing cold-upper rail blocking; independently anchor the high frame

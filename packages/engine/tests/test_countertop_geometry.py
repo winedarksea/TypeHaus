@@ -64,7 +64,7 @@ def test_the_peninsula_draws_its_notched_slab_at_the_counter(catlin_model_ro):
     # The viewer draws the fabricator's corners: R1" outside, R3/8" in the notch.
     assert Polygon(prism.ring).equals_exact(
         Polygon(filleted_ring(top.outline, top.corner_radii_m)), 1e-9)
-    assert Polygon(top.outline).area == pytest.approx((84.5 * 25 + 73.5 * 15) * INCH * INCH)
+    assert Polygon(top.outline).area == pytest.approx((84.5 * 25.625 + 73.5 * 15) * INCH * INCH)
     assert Polygon(prism.ring).area < Polygon(top.outline).area
     assert prism.z1_m == pytest.approx(max(objects[tag].body_z1_m for tag in top.hosts))
     assert prism.z1_m - prism.z0_m == pytest.approx(top.thickness_m)
@@ -194,7 +194,7 @@ def test_hosted_cabinets_drop_their_symbol_counter_in_model_json(catlin_model_ro
     assert peninsula["z1_m"] - peninsula["z0_m"] == pytest.approx(1.181 * INCH)
     # Filleted (four R1" corners, one R3/8" notch), so a little under the gross rectangle.
     assert Polygon(peninsula["parts"][0]["outline"]).area == pytest.approx(
-        (84.5 * 25 + 73.5 * 15) * INCH * INCH, rel=1e-3)
+        (84.5 * 25.625 + 73.5 * 15) * INCH * INCH, rel=1e-3)
     assert "CT-M-LIV-E-S" not in rows
     assert rows["CT-M-LIV-E-N"]["material_ref"] == "ash-counter-6q"
 

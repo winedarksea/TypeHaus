@@ -43,11 +43,13 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   replaceable_lamp=False, name="Slim up/down LED wall sconce, black",
                   form=LuminaireForm.SCONCE, type_mark="H",
                   footprint=(inch(4.5), inch(2.5)), height=inch(12),
+                  canopy=(inch(4.5), inch(4.5)),
                   plan_symbol="sconce-slim-updown", lamp="LED integrated, ELV + TRIAC",
                   watts=15.0, lumens=680.0, cct_k=3000, cri=90, dimmable=True,
                   damp_rated=True, load_va=15.0, ports=_POWER_120,
                   product_ref="PROD-WAC-WS-83212-BK",
-                  source="WAC dweLED Roland WS-83212-BK (spec sheet). The theatre units sit "
+                  source="WAC dweLED Roland WS-83212-BK (spec sheet, May 2025: canopy "
+                         "4 1/2 x 4 1/2 x 1 in.). The theatre units sit "
                          "on a DVCL-153P: CONFIRM it against the TRIAC range."),
     # J and J1 are one product (WAC Sprig): J is wall-switched, J1 uses the canopy toggle.
     # The plant room's old wet copy retyped to J (damp is enough there); mark J2 is now the

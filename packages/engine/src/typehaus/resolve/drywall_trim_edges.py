@@ -28,6 +28,8 @@ _ROOM_PROBE_M = 0.15
 _JAMB_PROBE_M = 0.05
 _CONTINUED_M = 0.03
 _TOP_GAP_M = 0.025
+# A band starting this close to another's top caps it: no reveal between the two.
+_CAP_MEET_M = 0.002
 _SOFFIT_BACKED_M = 0.0254
 _SOFFIT_STEP_M = 0.003
 # A tile end's cover is probed this far room-side of the finish face.
@@ -106,14 +108,23 @@ def tile_reveals(ctx: TrimContext) -> None:
         top = top_at(model, room, centroid, (wall,))
         tags = (band.room, band.tag)
         face = _GypsumBeside(ctx, wall, band, centroid)
-        if band.z1_m < top - _TOP_GAP_M and face.at(centroid, band.z1_m + 0.02,
-                                                     band.z1_m + 0.08):
+        if (band.z1_m < top - _TOP_GAP_M and not _capped(bands, band)
+                and face.at(centroid, band.z1_m + 0.02, band.z1_m + 0.08)):
             ctx.add("tile_reveal", band.room, band.storey, ctx.standard.tile_reveal_ref,
                     band.run_m, tags)
         floor_z = max(band.z0_m, room_floor(model, room))
         for end in _band_ends(band.outline):
             ctx.add("tile_reveal", band.room, band.storey, ctx.standard.tile_reveal_ref,
                     _exposed_end_height(model, face, band, end, floor_z), tags)
+
+
+def _capped(bands, band) -> bool:
+    """Whether another band starts on this one's top edge (a trim strip capping a panel)."""
+    outline = Polygon(band.outline)
+    return any(other is not band and other.room == band.room
+               and abs(other.z0_m - band.z1_m) < _CAP_MEET_M
+               and Polygon(other.outline).distance(outline) < _CONTINUED_M
+               for other in bands)
 
 
 def _exposed_end_height(model, face: _GypsumBeside, band, end, floor_z: float) -> float:

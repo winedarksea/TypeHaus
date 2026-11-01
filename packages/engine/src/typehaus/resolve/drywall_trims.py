@@ -4,8 +4,9 @@ The house's ``DrywallStandard`` names one bead per edge kind; this stage finds t
 
 * ``outside_corner`` — each reflex vertex of a room ring with gypsum on both faces, finished
   floor to ceiling less any tile band over it; and a gypsum soffit's free bottom edges;
-* ``termination`` (J-bead) — where a gypsum arc meets a bare face along a ring (floor to
-  ceiling), and along a banded gypsum layer whose edge stops over a bare face;
+* ``termination`` (J-bead, picked by the board's thickness) — where a gypsum arc meets a
+  bare face along a ring (floor to ceiling), and along a banded gypsum layer whose edge
+  stops over a bare face;
 * ``tile_reveal``, ``door_l_bead``, ``window_corner`` / ``window_frame``, ``led_profile`` —
   ``resolve/drywall_trim_edges.py``.
 
@@ -24,7 +25,12 @@ from typehaus.findings import Finding
 from typehaus.model.drywall import DrywallStandard
 from typehaus.quantities import ft
 from typehaus.resolve.drywall_led import drywall_standard, host_shadow_gap_runs
-from typehaus.resolve.interior_trim_scope import face_function, face_is_gypsum, is_finish
+from typehaus.resolve.interior_trim_scope import (
+    face_function,
+    face_is_gypsum,
+    face_layer,
+    is_finish,
+)
 from typehaus.resolve.model import ResolvedModel, ResolvedRoom
 from typehaus.resolve.model_trim import ResolvedDrywallTrim
 from typehaus.resolve.room_corners import (
@@ -197,10 +203,13 @@ def _room_edges(ctx: TrimContext, room: ResolvedRoom) -> None:
                          for c, d, other, other_wall in kinds
                          if other == "bare" and _meets(end, c, d, perimeter)), None)
             if bare is not None:
-                height = _jbead_height(ctx, room, ring, perimeter, (_inset(end, a, b), wall),
+                station = _inset(end, a, b)
+                height = _jbead_height(ctx, room, ring, perimeter, (station, wall),
                                        bare, floor_z)
-                ctx.add("termination", room.tag, room.storey, standard.termination_ref,
-                        height, (room.tag,))
+                point, outward = point_and_outward(ring, station % perimeter)
+                bead = standard.termination_for(_board_thickness(ctx, wall, point, outward,
+                                                                 *probe))
+                ctx.add("termination", room.tag, room.storey, bead, height, (room.tag,))
 
 
 def _jbead_height(ctx: TrimContext, room: ResolvedRoom, ring, perimeter: float, gypsum,
@@ -224,6 +233,14 @@ def _jbead_height(ctx: TrimContext, room: ResolvedRoom, ring, perimeter: float, 
                 and face_is_gypsum(g_wall, g_xy, g_in, z0, z1, ctx.materials)):
             total += hi - lo
     return total
+
+
+def _board_thickness(ctx: TrimContext, wall, point, into_wall, z0: float,
+                     z1: float) -> float | None:
+    """The thickness of the board behind any coating at ``point``, which picks its J-bead."""
+    layer = face_layer(wall, point, into_wall, z0, z1, skip=lambda candidate: getattr(
+        ctx.materials.get(candidate.material_ref), "coating", False))
+    return None if layer is None else layer.thickness_m
 
 
 def _is_wall_end(wall, into_wall) -> bool:
@@ -264,8 +281,8 @@ def _banded_edges(ctx: TrimContext, room: ResolvedRoom, wall, ring, span, floor_
         for edge, z_lo, z_hi in ((z0 > floor_z + _BAND_GAP_M, z0 - _MEET_M, z0 - 0.01),
                                  (z1 < top - _BAND_GAP_M, z1 + 0.01, z1 + _MEET_M)):
             if edge and not is_finish(face_function(wall, point, outward, z_lo, z_hi)):
-                ctx.add("termination", room.tag, room.storey, ctx.standard.termination_ref,
-                        b - a, (room.tag,))
+                ctx.add("termination", room.tag, room.storey,
+                        ctx.standard.termination_for(layer.thickness_m), b - a, (room.tag,))
 
 
 def _tile_cover(model: ResolvedModel, room: ResolvedRoom, xy, floor_z: float,

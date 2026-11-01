@@ -7,7 +7,7 @@ From the basement-ceiling overhaul (`plans/TODO.md § Basement Ceiling`, decisio
 The main floor over the basement is two structures that meet on one line:
 
 - **East of x = 18', north of y = 13'** — `SL-M-DECK`, 414 SF of the 10" BuildDeck EPS
-  stay-in-place section (8" base panel + 2" top hat) under a 4 3/8" cast cover, read
+  stay-in-place section (8" base panel + 2" top hat) under a 4 3/16" cast cover, read
   against BuildDeck's published 20'-0" / 62 psf row and graded by
   `structural.slab_published_span`. Bears on the
   x=18' line and the east foundation wall.
@@ -15,12 +15,19 @@ The main floor over the basement is two structures that meet on one line:
   I-joists at 16" o.c. with a 3/4" plywood subfloor. Same bearing lines; 18'-0" spans except
   over the mechanical room and the stair, where the x=10' line cuts them to 10'-0" and 8'-0".
 
-**What the two share is the BEARING SEAT, not the depth.** The deck is 14 3/8" and both land
-on one flat seat at **-13 7/16"**, the whole way round the basement, with no step in the
-forms. The cost of that is at the top and it is
-3/16": the cap tops at +15/16" where the plywood tops at +3/4", which is inside the thickness
-of the 5 mm Quincy Oak plank laid on the plywood — the two walking surfaces still meet flush, with the
-LVP nominally 0.0094" proud. `structural.mixed_deck_bearing_seat` holds all of it.
+**What the two share is the BEARING SEAT, not the depth.** Both land on one flat seat at
+**-13 7/16"**, the whole way round the basement, with no step in the forms. **Since
+2026-11-01 (decision #111) they share the TOP too:** the cover is 4 3/16", so the deck is
+14 3/16" and the cap tops at **+3/4"**, the plywood's own plane. Every main-floor wall plate
+then stands at one height (decision #110): the C-line bearing walls (`W-M-C2`, `-C3`,
+`-C5`, `-C5B`) straddle the cap edge and sit level, `W-M-PAN-S`/`-E` sit wholly on the cap,
+and `W-M-E1`/`-N1`/`-N1B`, which stop at the cap edge on the LSL rim, take a **3/4" plywood
+strip on the rim** to reach the same +3/4". Screed the cap off the wood edges. The cost is
+at the walking surface: the 5 mm Quincy Oak plank on the plywood now stands **5 mm
+(0.19685") proud** of the coated cap, and the joint takes a low 5 mm reducer instead of the
+flush T (until 2026-11-01 the cap topped at +15/16", 3/16" above the plywood, and the plank
+was 0.0094" proud). `structural.mixed_deck_bearing_seat` holds all of it and reads 0" between
+the two tops.
 
 What is *not* continuous is stiffness.
 
@@ -49,7 +56,8 @@ the line, so the differential shows up as a hinge. Two consequences to draw:
 
 1. **A continuous wood run across the line will telegraph.** The plank reads here, and a
    joint that opens and closes 1/2" per footfall works the edge loose: the seam nearest the
-   line opens first. Break the run on the line with a **flush T** and let each field float
+   line opens first. Break the run on the line with a **5 mm reducer** (a flush T until
+   2026-11-01) and let each field float
    within its own structure. The south bay was solid oak for part of 2026-09-05, which made
    this point sharper rather than softer — floating plank is at least forgiving in-plane and
    a nailed-down 3/4" strip floor is not — and it is plank again, so the softer case is the
@@ -87,6 +95,12 @@ the line, so the differential shows up as a hinge. Two consequences to draw:
   follows `_BAND_Y` when the boundary moves, and an authored one has to be chased.
 
 ## What the model still cannot hold
+
+**2026-11-01: the "flush" below is history.** The cap came down 3/16" to the plywood plane
+(decision #111), so both legs of the L are now the plank 0.19685" over the cap, and all
+31.5 lf takes a low 5 mm reducer glued to the cap, its lip over the plank's expansion gap
+(`D-M-STUDY` binds the COREtec reducer, `plan/doorway_transitions.py`). The movement break on
+the y=13' leg is unchanged. The paragraphs below record why the room stayed one material.
 
 **The transition is an L, not a line.** Inside `RM-M-LIVING` the finish changes along
 y = 13'-0" from x = 18' to 36' (17.9 lf) **and** along x = 18'-0" from y = 22.4' to 36'
@@ -127,8 +141,8 @@ studies' floor, where nothing meets a concrete cap. Cost of the reversion, measu
 line-to-line on `haus takeoff --csv`: **-$1,980 to -$2,751** delivered, against which the
 `oak` row in `prices.toml` falls back under its sand-and-finish mobilisation minimum.
 
-That 3/16" of cap over plywood is deliberate and it is derived, not dialled. The deck is
-14 3/8" (10" beam + 4 3/8" cover) against the wood bay's 14 3/16" to the same seat
+That 3/16" of cap over plywood was deliberate and derived, not dialled, until 2026-11-01:
+the deck was 14 3/8" (10" beam + 4 3/8" cover) against the wood bay's 14 3/16" to the same seat
 (1/16" gasket + 1 1/2" mudsill + 11 7/8" joist + 3/4" subfloor); the difference is spent
 upward, because the seat below is the plane that must not move. Re-spec the cover and the
 cap top moves with it — `structural.mixed_deck_bearing_seat` allows a quarter inch here,
@@ -139,7 +153,7 @@ ordering the moulding, not this paragraph.
 `RM-M-MUD-CLOSET` use the hall's LVP at +0.94685". The bypass guide at `D-M-MUDC`
 sits on one plane. `D-M-ENTRY` needs a separate flashed weather sill because the
 breezeway decking is about +1.000"; see [the floor height schedule](floor_heights.md).
-The LVP/coated cap joint remains a flush T with a movement break on its y=13' leg.
+The LVP/coated cap joint is a 5 mm reducer with a movement break on its y=13' leg.
 
 **And a second step, in the ceiling below — 2 1/16".** The gypsum
 is continuous across the boundary but the two faces are not coplanar: on the wood side the
@@ -205,7 +219,7 @@ bridges nothing, and a crack that moves under a film telegraphs as a line in the
 
 **The cream polish remains the named fallback, and it is still costed.** If the owner
 reverts at pour time: a **cream polish** — grind the surface paste only, about 1/16" — not
-aggregate exposure. The cap is 4 3/8" over EPS form and its reinforcement cover is not there
+aggregate exposure. The cap is 4 3/16" over EPS form and its reinforcement cover is not there
 to survive a salt-and-pepper grind. That implies a **hard** steel trowel finish (the opposite
 instruction from the coating route — this is the decision that has to be taken *before* the
 pour, not after), and either a wet cure or a cure-and-seal the polisher's densifier will bond
@@ -233,7 +247,7 @@ use* rather than museum grade, and there is a middle path that gets both:
 **Micro-synthetic MONOFILAMENT polypropylene at ~1.5 lb/cy** (`DECK_CAP_MIX`, renamed from
 `POLISHED_MIX` on 2026-09-12 with the finish). It is a different product answering a
 different question — it targets **plastic shrinkage** cracking in the first hours, a 55-70%
-reduction, which is exactly the surface cracking a thin 4 3/8" cap over EPS is prone to.
+reduction, which is exactly the surface cracking a thin 4 3/16" cap over EPS is prone to.
 Monofilament, not fibrillated.
 
 **The coating change did not move the fibre, and the reason changed.** The old argument was
@@ -267,7 +281,7 @@ The engine has no element for a floor-finish movement joint. The *finish* half i
 now — the band knows what it is, and bills and draws as its own material — but the **joint**
 is not. A `Transition` binds to a *derived boundary condition* and there is no condition for
 "two decks meet in plan"; a `ConstructionRule` bills a return along a wall or a ceiling, not
-along a line between two floor elements. So the flush T, the soft joint and the ceiling
+along a line between two floor elements. So the reducer, the soft joint and the ceiling
 control joint are a note and a drawing instruction, and nothing in `haus check` will notice
 if the finish is run straight through. If the mixed deck outlives this house — and the
 depth-matching that makes it work is general — the condition worth deriving is

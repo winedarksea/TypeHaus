@@ -18,6 +18,11 @@ room lining). About twenty devices sit on that concrete.
 - **Surface box:** RACO 232, 4" square × 2-1/8" (30.3 in³), under a 1/2"-raised RACO 808C
   (1 Decorator) or 809C (2 GFCI/Decorator) cover. The device sits on the cover, 2-5/8" off
   the wall.
+- **Wall light on concrete** (BoxRow `use="luminaire"`, owner 2026-11-01, review C6-E10): RACO
+  192, 4" square × 1-1/2" drawn (21.0 in³), under a flat RACO 753 cover (1/2" centre KO for the
+  fixture's nipple and crossbar). The six PLAY-N sconces (WAC Roland, 4-1/2" × 4-1/2" canopy
+  off the May 2025 sheet) cover the 4" face with 1/4" a side, 1-9/16" off the wall; the box
+  sides show, so they are field-painted to the wall. `electrical.canopy_covers_box` grades it.
 - **Flush box:** in a framed cavity, a deep nonmetallic nail-on new-work box: Carlon B122A-UPC
   (1-gang, 22 in³) or BH235A (2-gang, 35 in³), both 3-1/2" deep. The box goes through furring
   and any membrane behind the finish to the studs, sealed at the membrane.
@@ -41,6 +46,8 @@ room lining). About twenty devices sit on that concrete.
   ED-B-PANEL to ED-B-PLAY-N-JB, a surface box on the ceiling over the TV. The ceiling there
   is gypsum hung on SL-M-DECK's concrete band, so the box cannot be recessed. CD-B-PLAY-N-RC1
   is 3/4" EMT + THHN from that box to ED-B-PLAY-N-RC1, and CKT-RC-BSMT's NM enters the box.
+  RC1 and DATA1 sit behind the TV, whose mount stands the panel 3-1/2" off the wall: the
+  box and cover take 2-5/8", a flat plug the rest (review C6-E11, `plan/media_types.py`).
   There is no new circuit, because the panel is nearly full. A dedicated AV circuit can be
   pulled into the spare later without opening the ceiling.
 - **Floor heat:** each zone names its thermostat (`FloorHeat.thermostat_ref`). Each zone gets
@@ -149,7 +156,6 @@ runs to the ceiling.
 
 ## Open items
 
-- The six PLAY-N sconce canopies must cover a 4" square surface box.
 - **Pull boxes.**
   - CD-B-PLAY-SPARE: vertex 7 in RM-B-BATH's ceiling at x 13'-6 1/4", y 20'-3 1/2", and
     vertex 12 in RM-B-PLAY-N at x 19'-4 1/2", y 26'-0".

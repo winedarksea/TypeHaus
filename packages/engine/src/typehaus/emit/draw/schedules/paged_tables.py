@@ -45,6 +45,20 @@ class _Piece:
     widths: tuple[float, ...]
 
 
+def wrap_cells(rows, widths: dict[int, int]) -> tuple[tuple[str, ...], ...]:
+    """Rows with the columns in ``widths`` wrapped to that many characters, each extra line a
+    continuation row blank elsewhere: lettering stays fixed and nothing is shortened."""
+    from textwrap import wrap
+
+    out: list[tuple[str, ...]] = []
+    for row in rows:
+        cells = [(wrap(str(cell), widths[i]) or [""]) if i in widths else [str(cell)]
+                 for i, cell in enumerate(row)]
+        for line in range(max(len(cell) for cell in cells)):
+            out.append(tuple(cell[line] if line < len(cell) else "" for cell in cells))
+    return tuple(out)
+
+
 def continuation_number(number: str, page: int) -> str:
     """``S-602`` for the first page, then ``S-602.1``, ``S-602.2`` …"""
     return number if page == 0 else f"{number}.{page}"
@@ -98,7 +112,7 @@ def _widths(table: PagedTable, room: float) -> tuple[float, ...]:
     widths = []
     for index, label in enumerate(table.columns):
         cells = {label, *(str(row[index]) for row in table.rows if index < len(row))}
-        widest = max(_text_in(text) for text in sorted(cells, key=len, reverse=True)[:4])
+        widest = max(_text_in(text) for text in cells)
         widths.append((widest + 2.5 / 72.0) / (1.0 - _CELL_PAD))
     total = sum(widths)
     return tuple(w * min(1.0, room / total) for w in widths)

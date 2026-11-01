@@ -1,12 +1,14 @@
 """R806.2 attic ventilation: the nested roof eave trim is walked, and the ratio is graded.
 
 The garage's vented eave is ``Roof.eave_trim`` (``RF-GARAGE``), not a top-level element.
-Its intake and ridge ratings are not authored yet, so the honest answer is UNKNOWN; the grade
-tests supply test ratings through a plan wrapper, which keeps the house source untouched.
+Its ridge is the RDM p. 41 vented peak, so the ridge takes Profile Vent's printed rating; the
+grade tests supply authored ratings through a plan wrapper, which keeps the house source
+untouched.
 """
 
 from __future__ import annotations
 
+import dataclasses
 from types import SimpleNamespace
 
 import pytest
@@ -38,26 +40,32 @@ class _PlanWithEaveRatings:
         return element
 
 
-def _rated_garage_ctx(catlin_plan, catlin_ctx, *, soffit, ridge):
+def _without_profile_vent(model):
+    """The model with RF-GARAGE's Profile Vent members dropped: an unrated vented ridge."""
+    roofs = [roof if roof.tag != "RF-GARAGE" else dataclasses.replace(roof, members=tuple(
+        m for m in roof.members if m.connection != "ridge:profile-vent")) for roof in model.roofs]
+    return dataclasses.replace(model, roofs=roofs)
+
+
+def _rated_garage_ctx(catlin_plan, catlin_ctx, *, soffit, ridge, model=None):
     garage = catlin_plan.by_tag("RF-GARAGE")
     rated = garage.eave_trim.model_copy(update={
         "soffit_nfva_in2_per_ft": soffit,
         "ridge_vent_nfva_in2_per_ft": ridge,
     })
     plan = _PlanWithEaveRatings(catlin_plan, {"RF-GARAGE": rated})
-    return SimpleNamespace(model=catlin_ctx.model, plan=plan)
+    return SimpleNamespace(model=model or catlin_ctx.model, plan=plan)
 
 
-def test_nested_vented_eave_is_graded_not_passed_as_unvented(catlin_ctx):
-    """RF-GARAGE is vented through its nested trim: the old top-level read said PASS."""
+def test_nested_vented_eave_is_graded_on_the_profile_vent_rating(catlin_ctx):
+    """RF-GARAGE vents through its nested trim; the ridge alone carries Profile Vent's 23.4."""
     findings = attic_ventilation(catlin_ctx)
     assert len(findings) == 1
     finding = findings[0]
     assert "no vented eave" not in finding.message
-    assert finding.result is Result.UNKNOWN
-    assert finding.element_tags == ("RF-GARAGE",)
-    assert "RF-GARAGE soffit net free area" in finding.message
-    assert "RF-GARAGE ridge vent net free area" in finding.message
+    # 23.4 in²/ft over the 24'-0" of ridge above the attic: 562 against 1/150 = 553.
+    assert finding.result is Result.PASS
+    assert finding.message.startswith("562 in² net free area over 576 sf")
 
 
 @pytest.mark.parametrize("soffit, ridge", [(10.0, 12.5), (10.0, None)])
@@ -71,7 +79,8 @@ def test_intake_at_one_fifty_passes_and_unrated_ridge_cannot_fail_it(
 
 
 def test_short_intake_with_unrated_ridge_is_unknown_not_fail(catlin_plan, catlin_ctx):
-    ctx = _rated_garage_ctx(catlin_plan, catlin_ctx, soffit=2.0, ridge=None)
+    ctx = _rated_garage_ctx(catlin_plan, catlin_ctx, soffit=2.0, ridge=None,
+                            model=_without_profile_vent(catlin_ctx.model))
     (finding,) = attic_ventilation(ctx)
     assert finding.result is Result.UNKNOWN
     assert "RF-GARAGE ridge vent net free area" in finding.message
@@ -87,8 +96,8 @@ def test_known_short_ratings_fail(catlin_plan, catlin_ctx):
 
 
 def test_balanced_exhaust_clears_the_one_three_hundredth_exception(catlin_plan, catlin_ctx):
-    """281 in² with 47% up high clears 1/300 (~277 in²) though it misses 1/150 (553 in²)."""
-    ctx = _rated_garage_ctx(catlin_plan, catlin_ctx, soffit=2.0, ridge=5.2)
+    """283 in² with 47% up high clears 1/300 (~277 in²) though it misses 1/150 (553 in²)."""
+    ctx = _rated_garage_ctx(catlin_plan, catlin_ctx, soffit=2.0, ridge=5.6)
     (finding,) = attic_ventilation(ctx)
     assert finding.result is Result.PASS
     assert "exception 2" in finding.message

@@ -13,9 +13,9 @@ FLUSH_TOLERANCE_IN = 1 / 16  # Catlin design target, notes/floor_heights.md
 
 
 @pytest.mark.parametrize(("opening", "first", "second", "difference_in"), [
-    ("D-S-BED1", "RM-S-BED1", "RM-S-HALL", 0),
-    ("D-S-BED2", "RM-S-BED2", "RM-S-HALL", 0),
-    ("D-S-BED3", "RM-S-BED3", "RM-S-HALL", 0),
+    ("D-S-BED1", "RM-S-BED1", "RM-S-HALL", 0.25),  # carpet field over the Z-bar
+    ("D-S-BED2", "RM-S-BED2", "RM-S-HALL", 0.25),  # carpet field over the Z-bar
+    ("D-S-BED3", "RM-S-BED3", "RM-S-HALL", 0.25),  # carpet field over the Z-bar
     ("D-S-SUITE", "RM-S-SUITE", "RM-S-HALL", 0),
     ("D-S-SUITEBATH", "RM-S-SUITE", "RM-S-SUITEBATH", 0),
     ("O-S-VANITY", "RM-S-HALL", "RM-S-VANITY", 0),
@@ -26,9 +26,9 @@ FLUSH_TOLERANCE_IN = 1 / 16  # Catlin design target, notes/floor_heights.md
     ("D-M-MUD", "RM-M-LIVING", "RM-M-MUDROOM", 0),
     ("D-M-MECH", "RM-M-MUDROOM", "RM-M-MECH", 0),
     ("D-M-MUDC", "RM-M-MUD-CLOSET", "RM-M-MUDROOM", 0),
-    ("D-M-BED2", "RM-M-LIVING", "RM-M-BED", 0.5531496062992126),
+    ("D-M-BED2", "RM-M-LIVING", "RM-M-BED", 0.8031496062992126),
     ("D-M-BED", "RM-M-BED", "RM-M-CLOSET", 0),
-    ("D-M-BATH2", "RM-M-BED", "RM-M-BATH2", 0),
+    ("D-M-BATH2", "RM-M-BED", "RM-M-BATH2", 0.25),
 ])
 def test_finished_planes_beside_each_door(
     catlin_model_ro, opening, first, second, difference_in,
@@ -92,9 +92,10 @@ def test_quincy_oak_selection_is_house_local_and_includes_its_pad(catlin_plan):
     ((28, 12.5), (28, 13.5)),  # south leg: y=13 ft movement break
     ((17.5, 25), (18.5, 25)),  # west leg: x=18 ft shared bearing
 ])
-def test_both_legs_of_concrete_boundary_remain_flush(
+def test_both_legs_of_concrete_boundary_step_one_plank(
     catlin_model_ro, wood_xy_ft, concrete_xy_ft,
 ):
+    """The cap tops on the subfloor plane (decision #111): the plank stands 5 mm proud."""
     def main_surface(point, finish):
         return next(surface for surface in surfaces_at(
             catlin_model_ro, tuple(coordinate * 12 * INCH_M for coordinate in point))
@@ -103,10 +104,8 @@ def test_both_legs_of_concrete_boundary_remain_flush(
     wood = main_surface(wood_xy_ft, "lvp")
     concrete = main_surface(concrete_xy_ft, "coated-concrete")
     assert wood.surface_m / INCH_M == pytest.approx(0.75 + 5 / 25.4)
-    assert concrete.surface_m / INCH_M == pytest.approx(0.9375)
-    difference_in = (wood.surface_m - concrete.surface_m) / INCH_M
-    assert difference_in == pytest.approx(0.0093503937007874)
-    assert difference_in < FLUSH_TOLERANCE_IN
+    assert concrete.surface_m / INCH_M == pytest.approx(0.75)
+    assert (wood.surface_m - concrete.surface_m) / INCH_M == pytest.approx(5 / 25.4)
 
 
 def test_exported_quincy_oak_meshes_match_resolved_depth_and_color(catlin_model_ro):

@@ -72,7 +72,8 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     assert assembly.fit_status == "UNKNOWN"
     if tag == "D-B-PATIO":
         assert placement.installation_report["seat_interference_status"] == "PASS"
-        assert placement.specification.catalog_installation.sill_extender_ref == "XMN5"
+        # The XMN5 extender is dropped (owner, 2026-11-01): the recess alone clears the seat.
+        assert placement.specification.catalog_installation.sill_extender_ref is None
     else:
         assert assembly.fit_status == "UNKNOWN"
         assert not assembly.conflicts
@@ -84,19 +85,12 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     )
     names = {s.name for s in placement.sections}
     assert "catalog-sill-outline" in names
+    assert not any(n.startswith("catalog-sill-extender") for n in names)
     if tag == "D-B-PATIO":
-        assert "catalog-sill-extender-XMN5" in names
-        extender = next(s for s in placement.sections
-                        if s.name == "catalog-sill-extender-XMN5")
-        assert extender.purchase == "separate"
-        assert extender.source_url.endswith("/XMN5.pdf")
         from typehaus.takeoff.doors import door_installation_rows
 
-        takeoff = [row for row in door_installation_rows(model)
-                   if row["item"] == "XMN5"]
-        assert len(takeoff) == 1
-        assert takeoff[0]["tags"] == ["D-B-PATIO"]
-        assert takeoff[0]["source"].endswith("/XMN5.pdf")
+        assert not [row for row in door_installation_rows(model)
+                    if row["kind"] == "exterior door sill accessory"]
         from typehaus.takeoff.openings import opening_takeoff
 
         schedule_rows = opening_takeoff(model)
@@ -237,11 +231,8 @@ def test_receiver_and_movement_conflicts_are_measured(catlin_model_ro):
 
 
 # Since the frame anchors at the sheathing face (2026-11-01, C2-E8) the sill stands 1/2"
-# further out and the recess alone clears the seat; the XMN5 extender is no longer forced.
-@pytest.mark.parametrize("remove_extender,remove_recess", [(False, True), (True, True)])
-def test_patio_clearance_requires_deliberate_extender_and_recess(
-    catlin_model_ro, remove_extender, remove_recess
-):
+# further out and the recess alone clears the seat; the XMN5 extender is dropped (owner).
+def test_patio_clearance_requires_the_recess(catlin_model_ro):
     from typehaus.resolve.exterior_door_catalog_fit import catalog_seat_conflicts
     from typehaus.resolve.exterior_door_catalog_layout import catalog_installation_layout
     from typehaus.resolve.exterior_door_catalog_parts import catalog_sill_sections
@@ -251,14 +242,9 @@ def test_patio_clearance_requires_deliberate_extender_and_recess(
     wall = model.wall(opening.host_wall)
     placement = opening.doorway.exterior_placement
     spec = placement.specification.catalog_installation
-    if remove_extender:
-        spec = spec.model_copy(update=dict(sill_extender_ref=None, sill_extender_source_url=None,
-                                          sill_extender_depth=inch(0), sill_extender_height=inch(0)))
-    installation = placement.specification.model_copy(update={"catalog_installation": spec})
-    placement = replace(placement, specification=installation)
-    if remove_recess:
-        model = replace(model, openings=[o for o in model.openings
-                                        if o.tag != "AO-B-PATIO-CURB-APPROACH"])
+    installation = placement.specification
+    model = replace(model, openings=[o for o in model.openings
+                                    if o.tag != "AO-B-PATIO-CURB-APPROACH"])
     assembly = replace(opening.doorway, exterior_placement=placement)
     clad, _ = exterior_door_boundary(model, wall, opening, installation)
     layout = catalog_installation_layout(model, wall, opening, assembly, clad)

@@ -180,7 +180,11 @@ def build_center_section(model: ResolvedModel) -> Scene:
     station = (min(stations) + max(stations)) / 2.0 if stations else 0.0
     view = Slice(uid="RNDSEC00001", tag="SECTION-HOUSE-CENTER", kind=SliceKind.SECTION,
                  cut_origin=pt(m(0), m(station)), cut_direction="x")
-    return build_annotated_section(model, view)
+    scene = build_annotated_section(model, view)
+    # The platform stud stack the section draws, as the framer cuts it (decision #110).
+    from typehaus.emit.draw.stud_stack_note import stud_stack_notes
+
+    return scene.model_copy(update={"notes": scene.notes + stud_stack_notes(model)})
 
 
 def build_annotated_section(model: ResolvedModel, view: Slice,
@@ -208,8 +212,12 @@ def build_annotated_section(model: ResolvedModel, view: Slice,
     scene = build_section(model, view, frame=frame)
     scene = annotate_building_section(scene, model, plane, crop=crop)
     callouts = _detail_callouts(model, scene, plane, crop=crop)
-    if callouts:
-        scene = scene.model_copy(update={"nodes": scene.nodes + tuple(callouts)})
+    # Authored strings last, off the cut drawn above (C7-E8: A-301.1 had no lane dimension).
+    from typehaus.emit.draw.detail_dimensions import authored_dimension_nodes
+
+    extra = tuple(callouts) + tuple(authored_dimension_nodes(model, view, scene))
+    if extra:
+        scene = scene.model_copy(update={"nodes": scene.nodes + extra})
     return scene
 
 
@@ -294,7 +302,8 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
     _emit_glazing_lines(b, model, wall, plane, crop, is_detail)
     # A crop opening onto an R.O. (an enlarged sill) has void above the wall it cuts.
     ladder_top = wall_top if cut_top is None else min(wall_top, cut_top)
-    wall_layer_ladder(wall, label_entries, ladder_top, crop, ladder_labels, scale)
+    wall_layer_ladder(wall, label_entries, ladder_top, crop, ladder_labels, scale,
+                      either_side=joints is None)
 
 
 def _emit_glazing_lines(b, model, wall, plane: CutPlane, crop, is_detail) -> None:

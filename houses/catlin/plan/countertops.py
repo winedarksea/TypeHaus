@@ -28,10 +28,13 @@ from typehaus.model import Countertop, WindowStool
 # corner_radius: 1" on every exposed outside corner of a top (owner, 2026-10-29); inside
 # corners take the material's stress-relief radius and anything at a wall, seam or tall
 # cabinet stays square (`haus countertops`).
+#
+# KITCHEN QUARTZ (owner, 2026-11-01): 1 5/8" past the frames, 7/8" past the 3/4" AXSTAD
+# fronts. Every kitchen top sits on the peninsula's stack: 4" legs + 30" frame + 3/4" ply
+# sub-top + 1/16" setting = 34 13/16" underside, 36" top (notes K1, K6).
 MAIN_COUNTERTOPS = [
-    # The north run: B12, the dishwasher, the 36" sink base and B18. 25" deep: 24" of
-    # carcass and 1" of oversail, 1/4" past the 3/4" AXSTAD fronts. It and the NE corner
-    # were one 128" L until 2026-10-30, longer than any quartz slab
+    # The north run: B12, the dishwasher, the 36" sink base and B18, 25 5/8" deep. It and
+    # the NE corner were one 128" L until 2026-10-30, longer than any quartz slab
     # (`advisory.countertop_fabrication`), so it seams at the corner cabinet's west face,
     # x=32'-3 3/8", like the peninsula corner.
     Countertop(
@@ -40,7 +43,7 @@ MAIN_COUNTERTOPS = [
         hosts=("FURN-M-KIT-E1", "APPL-M-DW", "FURN-M-KIT-SINKBASE", "FURN-M-KIT-E2"),
         material_ref="quartz-counter",
         thickness=inch(1.181),  # 3 cm
-        overhang=inch(1),
+        overhang=inch(1.625),
         corner_radius=inch(1),
     ),
     # FURN-M-KIT-CORNER-NE, both legs: its east leg carries the stone to y=32'-3 3/8" beside
@@ -50,33 +53,35 @@ MAIN_COUNTERTOPS = [
         hosts=("FURN-M-KIT-CORNER-NE",),
         material_ref="quartz-counter",
         thickness=inch(1.181),
-        overhang=inch(1),
+        overhang=inch(1.625),
         corner_radius=inch(1),
     ),
-    # The peninsula-corner carousel, both legs: the east leg to the range, the peninsula leg to the seam at x=32'-3 3/8". A separate slab because a slide-in range
+    # The peninsula-corner carousel, both legs: the east leg to the range, the peninsula leg
+    # to the seam at x=32'-3 3/8". A separate slab because a slide-in range
     # interrupts the stone, and the seam is where the free-standing bases start.
     Countertop(
         uid="WRDEA4N59W", tag="CT-M-KIT-E",
         hosts=("FURN-M-KIT-CORNER-PEN",),
         material_ref="quartz-counter",
         thickness=inch(1.181),
-        overhang=inch(1),
+        overhang=inch(1.625),
         corner_radius=inch(1),
     ),
-    # ** THE PENINSULA IS ONE NOTCHED SLAB. ** 1" past the frames (1/4" past the fronts) to
-    # the north, and a 15" seating cantilever behind the bases for the first 73 1/2" from
-    # the west end panel, which leaves 25" clear to the tall pantry's nominal west face for
-    # its doors and swing-out racks. 15" is past quartz's 14" unsupported cap, so five hidden flat bars
-    # carry it (FURN-M-KIT-PEN-BRACKET1..5, notes/kitchen_stock_cabinet_details.md K6). No
-    # seam on the knee line: that is the weakest place in the stone.
+    # ** THE PENINSULA IS ONE NOTCHED SLAB. ** 1 5/8" past the frames to the north (depth
+    # 1 5/8 + 24 + 15 = 40 5/8), and a 15" seating cantilever behind the bases for the
+    # first 73 1/2" from the west end panel, which leaves 25" clear to the tall pantry's
+    # nominal west face for its doors and swing-out racks. 15" is past quartz's 14"
+    # unsupported cap, so five hidden flat bars carry it (FURN-M-KIT-PEN-BRACKET1..5,
+    # notes/kitchen_stock_cabinet_details.md K6). No seam on the knee line: that is the
+    # weakest place in the stone.
     Countertop(
         uid="YNNE7K95XB", tag="CT-M-KIT-PENINSULA",
         hosts=("FURN-M-KIT-PEN-END", "FURN-M-KIT-PEN-B36", "FURN-M-KIT-PEN-B24-W",
                "FURN-M-KIT-PEN-B24-E"),
         material_ref="quartz-counter",
         thickness=inch(1.181),
-        overhang=inch(1),
-        depth=inch(40),
+        overhang=inch(1.625),
+        depth=inch(40.625),
         unsupported_overhang=inch(15),
         cantilever_side="back",
         cantilever_length=inch(73.5),

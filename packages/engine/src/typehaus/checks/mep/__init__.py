@@ -16,6 +16,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     duct_penetrations,
     electrical,
     electrical_boxes,
+    electrical_canopy,
     electrical_ceiling,
     electrical_code,
     electrical_floor,

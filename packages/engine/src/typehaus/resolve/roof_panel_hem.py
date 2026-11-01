@@ -36,7 +36,7 @@ def flat_shaded(mesh: GMesh) -> GMesh:
     return GMesh(tuple(positions), tuple(triangles), tuple(normals))
 
 
-def roof_pan_hems(roof, rect, base, profile, material, skip=frozenset()):
+def roof_pan_hems(roof, rect, base, profile, material, skip=frozenset(), anchor=None):
     """Thin return under each pan, cut short of the seam legs at each module edge.
 
     ``skip`` names the eave edges whose pans wrap an Image II Extended Eave instead
@@ -48,7 +48,7 @@ def roof_pan_hems(roof, rect, base, profile, material, skip=frozenset()):
     factor = roof_slope_factor(roof)
     slope = math.sqrt(factor * factor - 1)
     sheet = profile.sheet_thickness_m
-    anchor = (low + high) / 2
+    anchor = (low + high) / 2 if anchor is None else anchor
     members = []
     for sign, edge in ((-1, across_low), (1, across_high)):
         if roof.form == "shed" and sign > 0:

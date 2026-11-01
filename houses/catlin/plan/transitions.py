@@ -31,7 +31,7 @@ AIR_WATER_THERMAL = (
 # The test a key has to pass to stay starred: does a plan checker or a framer open THIS
 # sheet, and is it a different drawing from the one next to it?
 TRANSITIONS = (
-    Transition(uid="CATPATIOSEAT", tag="TR-CATLIN-PATIO-SEAT",
+    Transition(uid="CATPATIOSEAT", tag="TR-CATLIN-PATIO-SEAT", title="Patio door seat",
                condition_pattern="opening_perimeter:GARDEN_CURB_6",
                notes="notes/court_opening_detail.md", star=False,
                suppress=True,
@@ -45,7 +45,7 @@ TRANSITIONS = (
     # The garage's overhung eave: fascia, vented soffit, formed drip edge and K-gutter, all
     # derived from its EaveTrim. BEFORE TR-CATLIN-EAVE because matching is first-match. Water
     # only: the garage wall carries no foam face for an air or thermal claim to hand off.
-    Transition(uid="BKK603N875", tag="TR-CATLIN-GARAGE-EAVE",
+    Transition(uid="BKK603N875", tag="TR-CATLIN-GARAGE-EAVE", title="Garage eave",
                condition_pattern="wall_roof:GARAGE_ROOF|*",
                notes="notes/garage_eave_detail.md", overlay="overhang-eave",
                continuity=(Continuity(control="water", from_face="cdx-ext",
@@ -53,9 +53,9 @@ TRANSITIONS = (
                star=True),
     # The N/S gables are rakes, not eaves (C7-E7): no gutter and no eave chain, a stock
     # Residential Rake over the deck edge. Ahead of TR-CATLIN-EAVE, which is first-match.
-    Transition(uid="PZWNXF8EYX", tag="TR-CATLIN-RAKE",
+    Transition(uid="PZWNXF8EYX", tag="TR-CATLIN-RAKE", title="Rake",
                condition_pattern="wall_roof:EXT_2X6_BOARD_BATTEN|ROOF",
-               notes="notes/roof_wall_rake_detail.md",
+               notes="notes/roof_wall_rake_detail.md", overlay="rake",
                continuity=(
                    Continuity(control="air", from_face="sheathing-ext",
                               to_face="sheathing-ext"),
@@ -67,7 +67,7 @@ TRANSITIONS = (
     # Eave water is two claims, not the foam's: field membrane -> strip-in over the eave
     # and gutter flanges -> eave leg under the Image II pan (GCP IWSDET-102 option 2, TL-15),
     # and the wall head, covered by gutter flange + eave leg. Air and thermal stay the foam's.
-    Transition(uid="CATR001AAAA", tag="TR-CATLIN-EAVE", condition_pattern="wall_roof:*",
+    Transition(uid="CATR001AAAA", tag="TR-CATLIN-EAVE", title="Eave", condition_pattern="wall_roof:*",
                notes="notes/roof_wall_eave_detail.md", overlay="zero-overhang-eave",
                continuity=(
                    Continuity(control="air", from_face="sheathing-ext",
@@ -85,7 +85,7 @@ TRANSITIONS = (
     # (the sauna liner starting along the interior concrete run, and the masonry railing
     # meeting the retaining wall's 6" upstand). They are bound — covered, continuity
     # declared, construction rules documented — but deliberately sheetless.
-    Transition(uid="CATR012AAAA", tag="TR-CATLIN-ASSEMBLY-JOG",
+    Transition(uid="CATR012AAAA", tag="TR-CATLIN-ASSEMBLY-JOG", title="Assembly jog",
                condition_pattern="assembly_change:*",
                continuity=AIR_WATER_THERMAL,
                documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-SAUNA-LINER-RETURN",
@@ -96,7 +96,7 @@ TRANSITIONS = (
     # The interior concrete wall under the bearing partition: conditioned both sides, so no
     # control layer crosses it. Same seat (mudsill on its gasket) and notes as the perimeter;
     # the recipe's weather pieces self-gate off an interior wall.
-    Transition(uid="KR0VGRXMNQ", tag="TR-CATLIN-FOUNDATION-INT",
+    Transition(uid="KR0VGRXMNQ", tag="TR-CATLIN-FOUNDATION-INT", title="Interior foundation wall",
                condition_pattern="*FOUNDATION_WALL_12_INT|INT_*",
                notes="notes/basement_to_framed_wall_detail.md",
                overlay="basement-framed-wall", continuity=(),
@@ -109,7 +109,7 @@ TRANSITIONS = (
     # argument TR-CATLIN-BASEMENT-OPENING already makes for a window in either; and the
     # garden curb and the sauna liner on it are a 7-1/4" upstand in a sunken court, not an
     # envelope crossing anybody inspects. All four still derive under `--set full`.
-    Transition(uid="CATR002AAAA", tag="TR-CATLIN-FOUNDATION",
+    Transition(uid="CATR002AAAA", tag="TR-CATLIN-FOUNDATION", title="Wall on foundation",
                condition_pattern="wall_foundation:*",
                notes="notes/basement_to_framed_wall_detail.md",
                overlay="basement-framed-wall", continuity=AIR_WATER_THERMAL,
@@ -133,7 +133,7 @@ TRANSITIONS = (
     # the rim band is an air-seal detail at 35% RH, and here it is the continuity of a
     # Class I barrier at 70%. Ahead of RIM-BAND and INTERIOR-RIM: first match binds, and
     # behind RIM-BAND this sheet never derived (C5-E10, integrity.transition_shadowed).
-    Transition(uid="CATR017AAAA", tag="TR-CATLIN-PLANT-RIM",
+    Transition(uid="CATR017AAAA", tag="TR-CATLIN-PLANT-RIM", title="Plant room rim",
                condition_pattern="storey_stack:rim:*PLANT_*",
                # Same drawn vocabulary as TR-CATLIN-RIM-BAND (membrane strip, plate-line
                # sealant, rim cavity foam), so it reuses that recipe rather than inventing a
@@ -147,7 +147,7 @@ TRANSITIONS = (
                                       to_face="rim-foam")),
                star=True),
     # The sauna liner's foil is a real vapour and air layer, so its rim keeps the claim.
-    Transition(uid="83YPDC3KQ3", tag="TR-CATLIN-SAUNA-RIM",
+    Transition(uid="83YPDC3KQ3", tag="TR-CATLIN-SAUNA-RIM", title="Sauna rim",
                condition_pattern="storey_stack:rim:*|SAUNA_LINER_INT_*",
                notes="notes/sauna_basement_wall_detail.md", overlay="rim-band-air-seal",
                continuity=(Continuity(control="vapor", from_face="foil-polyiso",
@@ -156,7 +156,7 @@ TRANSITIONS = (
                                       to_face="foil-polyiso"))),
     # Interior partitions crossing a floor line: conditioned both sides, paint only, so no
     # control layer to carry (C5-E10). Plant and sauna partners are bound above.
-    Transition(uid="RDS9SPYMY7", tag="TR-CATLIN-INTERIOR-RIM",
+    Transition(uid="RDS9SPYMY7", tag="TR-CATLIN-INTERIOR-RIM", title="Interior rim",
                condition_pattern="storey_stack:rim:INT_*", continuity=()),
     # ** UNSTARRED WHOLE. ** The envelope rims left after the plant, sauna and interior
     # bindings above, and every one is the same drawing: a membrane strip lapped over the
@@ -166,12 +166,12 @@ TRANSITIONS = (
     # The rim band's permit sheets are TR-CATLIN-PLANT-RIM's, the one place in this house
     # where the detail is NOT an air seal at 35% RH but the continuity of a Class I vapour
     # barrier at 70%. All of these still print under `--set full`.
-    Transition(uid="CATR003AAAA", tag="TR-CATLIN-RIM-BAND",
+    Transition(uid="CATR003AAAA", tag="TR-CATLIN-RIM-BAND", title="Rim band",
                condition_pattern="storey_stack:rim:*", overlay="rim-band-air-seal",
                continuity=AIR_WATER_THERMAL, star=False),
     # Interior-to-interior stack-width changes: nothing to carry. A plant or sauna partner
     # (`PLANT_*`, `SAUNA_*` second) stays on STACK-SHELF.
-    Transition(uid="ESSE3RSV1A", tag="TR-CATLIN-INTERIOR-STACK",
+    Transition(uid="ESSE3RSV1A", tag="TR-CATLIN-INTERIOR-STACK", title="Interior stack shelf",
                condition_pattern="stack_width_change:INT_*|INT_*", continuity=()),
     # No notes= here, deliberately: this condition pattern is a wildcard over every
     # stack-width change in the house (partition-to-partition, sauna liner, plant room,
@@ -179,18 +179,18 @@ TRANSITIONS = (
     # narrative note would land on all of them if pointed at from here. The garage curb
     # gets its narrative from TR-CATLIN-GARAGE-OPENING below instead, which is genuinely
     # scoped to GARAGE_WALL_2X6.
-    Transition(uid="CATR004AAAA", tag="TR-CATLIN-STACK-SHELF",
+    Transition(uid="CATR004AAAA", tag="TR-CATLIN-STACK-SHELF", title="Stack shelf",
                condition_pattern="stack_width_change:*", overlay="stack-width-shelf",
                continuity=AIR_WATER_THERMAL),
     # THE OUTIE WINDOW. The unit sits in the truss plane, 5" outboard of the sheathing, so
     # the innie `window-head-jamb-sill` recipe — which measures its head flashing and sill
     # pan from the sheathing face — draws neither piece where it now goes.
     # `outie-window-truss` is its sibling.
-    Transition(uid="CATR005AAAA", tag="TR-CATLIN-FRAMED-OPENING",
+    Transition(uid="CATR005AAAA", tag="TR-CATLIN-FRAMED-OPENING", title="Framed opening",
                condition_pattern="opening_perimeter:EXT_*",
                notes="notes/outie_window_truss_detail.md", overlay="outie-window-truss",
                continuity=AIR_WATER_THERMAL, star=True),
-    Transition(uid="CATR006AAAA", tag="TR-CATLIN-CONCRETE-OPENING",
+    Transition(uid="CATR006AAAA", tag="TR-CATLIN-CONCRETE-OPENING", title="Concrete opening",
                condition_pattern="opening_perimeter:FOUNDATION_WALL_*_INT",
                notes="notes/sauna_basement_wall_detail.md", overlay="concrete-opening"),
     # ``BASEMENT_[0-9]*`` covers every perimeter foundation assembly: the N/W wall with
@@ -199,7 +199,7 @@ TRANSITIONS = (
     # outside an opening's perimeter, and in the pour depth — but the buck, the frame and
     # the flashing at a window in cast concrete are the same detail at 8" as at 12" (only
     # the jamb gets 4" shallower), and one sheet is what draws them.
-    Transition(uid="CATR007AAAA", tag="TR-CATLIN-BASEMENT-OPENING",
+    Transition(uid="CATR007AAAA", tag="TR-CATLIN-BASEMENT-OPENING", title="Basement opening",
                # The [0-9] is load-bearing, not decoration: a bare ``BASEMENT_*`` also
                # swallows BASEMENT_BRICK_VENEER, whose perimeter is an open segmental arch
                # that TR-CATLIN-VENEER-OPENING deliberately SUPPRESSES. Widening this glob
@@ -214,7 +214,7 @@ TRANSITIONS = (
     # sealed opening is the one in the framed wall behind them (TR-CATLIN-GARDEN-FRAMED-
     # OPENING draws that). A second sheet here would detail a perimeter
     # that has no perimeter work.
-    Transition(uid="CATR015AAAA", tag="TR-CATLIN-VENEER-OPENING",
+    Transition(uid="CATR015AAAA", tag="TR-CATLIN-VENEER-OPENING", title="Veneer opening",
                condition_pattern="opening_perimeter:BASEMENT_BRICK_VENEER",
                suppress=True,
                # (single literal: the editable dialect forbids concatenated strings)
@@ -228,7 +228,7 @@ TRANSITIONS = (
     # this sheet carries the hand spec (opening_flashing_spec.md §8). WIN-B-SAUNA gets no
     # sheet of its own; its water side is K1-K3 of the same note, and its vapour return
     # stays TR-CATLIN-SAUNA-OPENING's (`SAUNA_*` reaches the framed variant).
-    Transition(uid="6997Z5EY26", tag="TR-CATLIN-GARDEN-FRAMED-OPENING",
+    Transition(uid="6997Z5EY26", tag="TR-CATLIN-GARDEN-FRAMED-OPENING", title="Garden framed opening",
                condition_pattern="opening_perimeter:GARDEN_FRAMED_2X6",
                notes="notes/court_opening_detail.md",
                overlay="window-head-jamb-sill", continuity=AIR_WATER_THERMAL,
@@ -241,7 +241,7 @@ TRANSITIONS = (
     # is bucks before foam, exactly as it is on the house. The air plane is the foam too,
     # not the sheathing: bare CDX is not taped and is not an air barrier, which is the whole
     # difference from the house's `sheathing-ext` row.
-    Transition(uid="CATR009AAAA", tag="TR-CATLIN-GARAGE-OPENING",
+    Transition(uid="CATR009AAAA", tag="TR-CATLIN-GARAGE-OPENING", title="Garage opening",
                condition_pattern="opening_perimeter:GARAGE_WALL_2X6",
                notes="notes/garage_wall_detail_side.md", overlay="garage-opening",
                continuity=(Continuity(control="air", from_face="stud-cavity",
@@ -254,17 +254,17 @@ TRANSITIONS = (
                                       to_face="stud-cavity")),
                star=True),
     # Ahead of TR-CATLIN-INTERIOR-OPENING, whose `INT_*` would otherwise bind it first.
-    Transition(uid="CATR011AAAA", tag="TR-CATLIN-CENTER-OPENING",
+    Transition(uid="CATR011AAAA", tag="TR-CATLIN-CENTER-OPENING", title="Center wall opening",
                condition_pattern="opening_perimeter:INT_2X6_BRG",
                overlay="bearing-partition-opening"),
-    Transition(uid="CATR010AAAA", tag="TR-CATLIN-INTERIOR-OPENING",
+    Transition(uid="CATR010AAAA", tag="TR-CATLIN-INTERIOR-OPENING", title="Interior opening",
                condition_pattern="opening_perimeter:INT_*", overlay="interior-opening"),
     # D-S-BATH1's opening in the hall bath's east wet wall, which is BEARING and was
     # retyped with it. Its own binding, same reason as the others: the tag starts
     # "CATLIN_", so TR-CATLIN-INTERIOR-OPENING's `INT_*` glob never sees it. The overlay is
     # the bearing partition's, not the plain interior one — the jack/king studs at a door in
     # a wall carrying an attic joist field are the point of the sheet.
-    Transition(uid="KNP02ZZ5WC", tag="TR-CATLIN-WETWALL-OPENING",
+    Transition(uid="KNP02ZZ5WC", tag="TR-CATLIN-WETWALL-OPENING", title="Wet wall opening",
                condition_pattern="opening_perimeter:INT_2X6_BRG_PLUMBING",
                overlay="bearing-partition-opening"),
     # D-B-CLOSET's opening in W-B-STR3, the under-stair closet's door (2026-09-05). Its own
@@ -272,7 +272,7 @@ TRANSITIONS = (
     # TR-CATLIN-INTERIOR-OPENING's `INT_*` glob never sees it. `bearing-partition-opening`
     # and not the plain interior sheet — W-B-STR3 is BEARING (FS-M-MECH and FS-M-STAIR both
     # name it), so the jack/king pack at this door is exactly what the sheet is for.
-    Transition(uid="4K0XA3X1TX", tag="TR-CATLIN-UNDERSTAIR-OPENING",
+    Transition(uid="4K0XA3X1TX", tag="TR-CATLIN-UNDERSTAIR-OPENING", title="Under-stair opening",
                condition_pattern="opening_perimeter:STAIRWALL_INT_2X6_BRG_UNDERSTAIR",
                overlay="bearing-partition-opening"),
     # D-M-BED2's opening in W-M-C1, the bedroom segment of the centreline. Same reason as
@@ -283,12 +283,12 @@ TRANSITIONS = (
     # `bearing-partition-opening` overlay as the plain centreline: the jack/king pack at
     # this door is the sheet's subject and the resilient channel does not change it — a
     # channel dies into the opening's return and carries no load.
-    Transition(uid="2M8HCPVAXB", tag="TR-CATLIN-CENTER-RC-OPENING",
+    Transition(uid="2M8HCPVAXB", tag="TR-CATLIN-CENTER-RC-OPENING", title="Center RC wall opening",
                condition_pattern="opening_perimeter:INT_2X6_BRG_RC",
                overlay="bearing-partition-opening"),
     # The sauna door breaks the hot side's vapour control layer — the foil-faced polyiso
     # has to be returned into the jamb and sealed, not just butted.
-    Transition(uid="CATR014AAAA", tag="TR-CATLIN-SAUNA-OPENING",
+    Transition(uid="CATR014AAAA", tag="TR-CATLIN-SAUNA-OPENING", title="Sauna opening",
                condition_pattern="opening_perimeter:SAUNA_*",
                notes="notes/sauna_basement_wall_detail.md", overlay="sauna-liner-opening",
                continuity=(Continuity(control="vapor", from_face="foil-polyiso",
@@ -312,7 +312,7 @@ TRANSITIONS = (
     # framer have to read together. It also carries the drained sill pan under every unit —
     # sloped, flashed into the wall membrane, draining to the room and never into framing —
     # which no other opening detail in this house needs.
-    Transition(uid="CATR016AAAA", tag="TR-CATLIN-PLANT-OPENING",
+    Transition(uid="CATR016AAAA", tag="TR-CATLIN-PLANT-OPENING", title="Plant room opening",
                condition_pattern="opening_perimeter:PLANT_*",
                notes="notes/plant_room.md", overlay="humid-liner-opening",
                continuity=(Continuity(control="vapor", from_face="humid-membrane",
@@ -320,6 +320,6 @@ TRANSITIONS = (
                            Continuity(control="air", from_face="humid-membrane",
                                       to_face="humid-membrane")),
                star=True),
-    Transition(uid="CATR013AAAA", tag="TR-CATLIN-RIDGE-BEAM",
+    Transition(uid="CATR013AAAA", tag="TR-CATLIN-RIDGE-BEAM", title="Ridge beam",
                condition_pattern="roof_ridge:*", overlay="lvl-ridge-hanger"),
 )

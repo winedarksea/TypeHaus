@@ -22,6 +22,94 @@ DISTANCE_TOLERANCE_M = 1e-9
 DEVICE_STATION_TOLERANCE_M = 0.05
 
 
+#: A wall must stand this far into the room's clear face to be traced (excludes slivers
+#: where a bounding wall's face meets the ring).
+_INSIDE_WALL_MIN_M2 = 1e-4
+
+
+def floor_line_ring(model: ResolvedModel, room: ResolvedRoom) -> list:
+    """``clear_face``, traced round any wall standing inside it (NEC 210.52(A)(1)).
+
+    An open plan can hold a wall within the room's ring (catlin's W-M-C5 in RM-M-LIVING);
+    its faces are wall space along the floor line. A wall joined to the ring becomes a
+    notch; a freestanding one (a hole) or one splitting the room is left as it was.
+    """
+    from shapely.geometry import Polygon
+    from shapely.geometry.polygon import orient
+
+    from typehaus.resolve.overlay import difference, intersection, union_all
+
+    ring = [tuple(point) for point in room.clear_face]
+    if len(ring) < 3:
+        return ring
+    area = Polygon(ring)
+    if not area.is_valid:
+        return ring
+    x0, y0, x1, y1 = area.bounds
+    inside = []
+    for wall in model.walls:
+        if wall.storey != room.storey:
+            continue
+        points = [p for layer in wall.layers if layer.polygon for p in layer.polygon]
+        if not points or (max(p[0] for p in points) <= x0 or min(p[0] for p in points) >= x1
+                          or max(p[1] for p in points) <= y0
+                          or min(p[1] for p in points) >= y1):
+            continue
+        body = union_all([Polygon(layer.polygon) for layer in wall.layers
+                          if layer.polygon and len(layer.polygon) >= 3])
+        if not body.is_empty and intersection(body, area).area > _INSIDE_WALL_MIN_M2:
+            inside.append(body)
+    if not inside:
+        return ring
+    cut = difference(area, union_all(inside))
+    if cut.geom_type != "Polygon" or cut.is_empty or Polygon(cut.exterior).equals(area):
+        return ring  # split, emptied, or only holes: the ring stands
+    sign = 1.0 if area.exterior.is_ccw else -1.0
+    return [tuple(point) for point in orient(cut, sign).exterior.coords[:-1]]
+
+
+def facing_well_intervals(plan, ring: list, storey_tag: str,
+                          ledge_m: float) -> list[Interval]:
+    """Ring intervals within ``ledge_m`` of a well the face looks onto.
+
+    ``room_perimeter.floor_opening_intervals`` with one filter: an edge counts only where the
+    floor strip in front of it (its room side, ``ledge_m`` deep) meets the well, so a well
+    behind a wall (W-M-C5's other face) breaks nothing.
+    """
+    import math
+
+    from shapely.geometry import LineString, Point, Polygon
+
+    wells = [Polygon([point.xy_m for point in element.outline])
+             for element in plan.storey_elements(storey_tag)
+             if element.element_kind == "FloorOpening" and element.purpose.value != "chase"]
+    wells = [well for well in wells if well.is_valid and not well.is_empty]
+    if not wells or len(ring) < 3:
+        return []
+    side = 1.0 if Polygon(ring).exterior.is_ccw else -1.0
+    out: list[Interval] = []
+    start = 0.0
+    for a, b in zip(ring, ring[1:] + ring[:1], strict=True):
+        length = math.hypot(b[0] - a[0], b[1] - a[1])
+        if length <= 0:
+            continue
+        tx, ty = (b[0] - a[0]) / length, (b[1] - a[1]) / length
+        nx, ny = -ty * side * ledge_m, tx * side * ledge_m  # toward the room
+        strip = Polygon([a, b, (b[0] + nx, b[1] + ny), (a[0] + nx, a[1] + ny)])
+        edge = LineString([a, b])
+        for well in wells:
+            if not strip.intersects(well):
+                continue
+            hit = edge.intersection(well.buffer(ledge_m))
+            for piece in getattr(hit, "geoms", (hit,)):
+                if piece.is_empty or piece.length <= 0:
+                    continue
+                offsets = [edge.project(Point(c)) for c in piece.coords]
+                out.append((start + min(offsets), start + max(offsets)))
+        start += length
+    return out
+
+
 @dataclass(frozen=True)
 class UncertainWallSpace:
     intervals: tuple[Interval, ...]

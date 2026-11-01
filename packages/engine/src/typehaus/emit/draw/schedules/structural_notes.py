@@ -186,8 +186,7 @@ def concrete_block(model: ResolvedModel) -> list[str]:
         if spec is None:
             continue
         key = (spec.fc_psi, spec.w_cm_max, spec.air_content_pct, spec.exposure_f,
-               spec.exposure_s, spec.exposure_w, spec.exposure_c,
-               round(spec.cover.inches, 3) if spec.cover is not None else None, spec.bar_coating,
+               spec.exposure_s, spec.exposure_w, spec.exposure_c, spec.bar_coating,
                spec.scm,
                round(spec.max_aggregate.inches, 3) if spec.max_aggregate is not None
                else None)
@@ -198,15 +197,31 @@ def concrete_block(model: ResolvedModel) -> list[str]:
     lines: list[str] = []
     for index, (key, tags) in enumerate(sorted(grouped.items(), key=lambda item: -item[0][0]),
                                         start=1):
-        (fc, w_cm, air, exp_f, exp_s, exp_w, exp_c, cover, coating, scm, aggregate) = key
+        (fc, w_cm, air, exp_f, exp_s, exp_w, exp_c, coating, scm, aggregate) = key
         lines.append(f"MIX C{index}  {fc:,.0f} psi  w/cm {_value(w_cm)}  "
                      f"AIR {_value(air, '%')}")
         lines.append(f"  ACI 318-19 EXPOSURE  F:{_value(exp_f)}  S:{_value(exp_s)}  "
                      f"W:{_value(exp_w)}  C:{_value(exp_c)}")
-        lines.append(f"  COVER {_value(cover, chr(34))}   BAR COATING {_value(coating)}")
+        lines.append(f"  BAR COATING {_value(coating)}")
+        lines.append(f"  COVER {_pour_cover_text(model, tags)}")
         lines.append(f"  SCM {_value(scm)}   MAX AGGREGATE {_value(aggregate, chr(34))}")
         lines.append(f"  POURS: {_tags(tags)}")
     return lines
+
+
+def _pour_cover_text(model: ResolvedModel, assemblies: list[str]) -> str:
+    """Clear cover per pour, as S-100 prints it (C7-E10); a pour with no steel states none."""
+    from typehaus.emit.draw.foundation_schedule import _cover_text
+
+    by_cover: dict[str, list[str]] = {}
+    for element in model.plan.all_elements():
+        if (assembly := getattr(element, "assembly", None)) in assemblies:
+            spec = getattr(element, "reinforcement", None)
+            text = ("PLAIN" if spec is None
+                    else _cover_text(spec, concrete_spec_of(model.plan, assembly)))
+            by_cover.setdefault(text, []).append(element.tag)
+    parts = [f"{cover} at {_tags(sorted(tags))}" for cover, tags in sorted(by_cover.items())]
+    return "; ".join(parts) or NOT_STATED
 
 
 #: IRC R403.1.3 reinforces footing and stem together (the vertical hooked into the strip)

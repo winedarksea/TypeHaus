@@ -47,7 +47,9 @@ def test_the_engine_default_is_a_sixteenth(catlin_plan, catlin_model_ro) -> None
     # Kitchen trap arm is intentionally at the 1/4-inch/ft code minimum.
     # New drawn wall arms use the house's explicit zero reserve preference too.
     # The 2026-10-26 web-clearance reroute added the suite WC's 9.19" first leg and its lav arm.
-    assert len(fails) == 19
+    # PR-A-STUBATH-DRAIN joined 2026-11-01: its drop moved mid-bay to y=19'-7" (W-S-DC2's
+    # stud-005) and its flattest leg is 0.311"/ft, +0.061 over the minimum.
+    assert len(fails) == 20
     assert all(f.severity is Severity.WARN for f in fails), "ADVISORY, not a permit blocker"
 
 

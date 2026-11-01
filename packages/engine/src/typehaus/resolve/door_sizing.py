@@ -16,7 +16,8 @@ plus the jamb allowance each side and at the head, with no leaf gap or undercut.
 RO measured to the finished floor (``OpeningSize.datum``) is raised by the build-up.
 
 The jamb depth is the wall's finish-to-finish depth. Against ``TrimStandard.jamb_stock_depths``
-it is ripped from the next stock up, or extended from the deepest.
+it is ripped from the next stock up, or extended from the deepest; a door its ``DoorTrim``
+hangs on a flat jamb (``jamb_material_ref``) is milled to the depth in one piece.
 
 A pure function of its arguments: no model, no house load.
 """
@@ -91,6 +92,8 @@ class DoorSizing:
     # carries no stock jamb (trimless, pocket, bookcase, exterior, overhead).
     jamb_depth_m: float | None = None
     jamb_stock_m: float | None = None
+    # A full-depth flat jamb milled from this stock (``DoorTrim.jamb_material_ref``).
+    jamb_material_ref: str | None = None
 
     @property
     def jamb_rip_m(self) -> float:
@@ -254,7 +257,12 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
     clear_w, basis["clear_w"] = _clear_width(door, door_type, leaf_w)
     clear_h, basis["clear_h"] = _clear_height(door, door_type, rough_h, a, floor_finish_m)
     jamb_depth, jamb_stock = _jamb(door, door_type, trim_standard, wall_depth_m)
-    if jamb_stock is not None:
+    flat = (trim_standard.jamb_material_for(getattr(door, "tag", None))
+            if jamb_stock is not None and hasattr(trim_standard, "jamb_material_for") else None)
+    if flat is not None:
+        jamb_stock = jamb_depth
+        basis["jamb"] = f"derived: wall finish to finish, a flat {flat} jamb milled to depth"
+    elif jamb_stock is not None:
         basis["jamb"] = f"derived: wall finish to finish, cut from {_inches(jamb_stock)} stock"
     return DoorSizing(
         nominal_w_m=nominal_w, nominal_h_m=nominal_h, leaf_w_m=leaf_w, leaf_h_m=leaf_h,
@@ -263,7 +271,8 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
         required_w_m=required_w, required_h_m=required_h, required_basis=required_basis,
         jamb_allowance_m=a,
         leaf_gap_m=g, floor_finish_m=floor_finish_m, held=held is not None, fits=fits,
-        basis=tuple(basis.items()), jamb_depth_m=jamb_depth, jamb_stock_m=jamb_stock)
+        basis=tuple(basis.items()), jamb_depth_m=jamb_depth, jamb_stock_m=jamb_stock,
+        jamb_material_ref=flat)
 
 
 def _jamb(door, door_type, trim_standard, wall_depth_m) -> tuple[float | None, float | None]:

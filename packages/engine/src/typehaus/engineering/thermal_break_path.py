@@ -192,7 +192,9 @@ def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missin
             f"f'c (plain, ACI 318-19 Table 21.2.1, §14.5.6). Buckling not credible: a slab on "
             f"grade is braced continuously by its subgrade"))
     dead, basis = take_down(ctx, solid)
-    bottom = min(s.z0_m * _IN for s in ctx.model.solids
+    # The shallowest: a stepped near line (FT-B-S2/S3 2" deeper) must not credit the far
+    # wall with soil down to the deeper step.
+    bottom = max(s.z0_m * _IN for s in ctx.model.solids
                  if s.tag in footings and s.category == "footing")
     depth_ft = (ctx.plan.project.site.grade.inches - bottom) / 12.0
     at_rest = 0.5 * soil.at_rest_efp_psf_per_ft * depth_ft ** 2

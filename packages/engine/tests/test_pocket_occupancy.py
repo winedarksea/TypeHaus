@@ -48,7 +48,7 @@ def test_the_band_stops_at_the_rough_opening_head(catlin_model_ro) -> None:
     low, high = bands[("D-M-LAUN", "W-M-HS4")]
     assert low == pytest.approx(0.0, abs=1e-9)
     door = next(op for op in catlin_model_ro.openings if op.tag == "D-M-LAUN")
-    assert high == pytest.approx(door.height_m, abs=1e-9)
+    assert high == pytest.approx(door.sill_m + door.height_m, abs=1e-9)  # sill: the seat
 
 
 def test_laundry_pocket_follows_the_aligned_stud_cavity(catlin_model_ro) -> None:

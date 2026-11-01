@@ -1,9 +1,9 @@
-"""The IFC accessories and live viewer consume the same authored door parts."""
+"""The IFC accessories and live viewer consume the same resolved opening parts."""
 import ifcopenshell
 import ifcopenshell.util.element
 import pytest
 
-from typehaus.server.model_json_door_hardware import authored_product_parts
+from typehaus.server.model_json_opening_parts import opening_parts_json
 
 # Measured: shared house + IFC setup 16.2 s (pytest --durations=10).
 pytestmark = pytest.mark.slow
@@ -12,8 +12,8 @@ pytestmark = pytest.mark.slow
 def test_authored_parts_include_two_finishes_and_viewer(catlin_model_ro):
     model = catlin_model_ro
     entry = next(opening for opening in model.openings if opening.tag == "D-M-ENTRY")
-    parts = authored_product_parts(model, entry)
-    assert {part["material_ref"] for part in parts if part["key"].startswith("leaf:")} == {
+    parts = opening_parts_json(model, entry)
+    assert {part.get("material_ref") for part in parts if part["key"].startswith("leaf:")} == {
         "door-paint-exterior", "door-paint-white"}
     spec = next(spec for spec in model.plan.library.door_types if spec.tag == entry.type_ref)
     viewer_index = next(index for index, item in enumerate(spec.hardware) if item.role == "viewer")
@@ -21,8 +21,13 @@ def test_authored_parts_include_two_finishes_and_viewer(catlin_model_ro):
     leaf_bottom = entry.doorway.leaf_bottom_z_m
     assert all((solid["z0_m"] + solid["z1_m"])/2 == pytest.approx(leaf_bottom + 1.524)
                for solid in viewer["solids"])
-    garage = next(opening for opening in model.openings if opening.tag == "D-G-SERVICE")
-    assert authored_product_parts(model, garage) is None
+    # Every opening is served, windows too; doorway sections and installation boards are not.
+    keys = {part["key"].split(":")[0] for opening in model.openings
+            for part in opening_parts_json(model, opening) or ()}
+    assert {"frame", "glass", "leaf", "jamb_liner", "stop", "hardware"} <= keys
+    assert not keys & {"doorway", "installation"}
+    window = next(opening for opening in model.openings if opening.kind == "window")
+    assert any(part["key"] == "glass" for part in opening_parts_json(model, window))
 
 
 def test_ifc_hardware_accessories_have_product_quantity_installation_and_geometry(catlin_ifc_path):

@@ -192,9 +192,7 @@ export function populateScene(options: PopulateSceneOptions) {
     for (const opening of wallOpenings) {
       const doorType = model.catalog?.door_types.find((type) => type.tag === opening.type_ref);
       build(family("opening"), wall.storey, () => buildOpening(tradeGroups.openings, opening, wall, center,
-        mode, palette, { operation: doorType?.operation, glazed: doorType?.glazed,
-          trimless: doorType?.trimless, bookcaseDoor: doorType?.bookcase_door,
-          materials: model.catalog?.materials, leafSet: doorType?.leaf_set },
+        mode, palette, { bookcaseDoor: doorType?.bookcase_door, materials: model.catalog?.materials },
         registry.picks, registry.byUid));
     }
   }

@@ -1801,13 +1801,19 @@ is the safe side for sliding:
 
 ```
 FT-B-S1   20 × 8" footing 166.67 plf + W-B-S1 8" × 96" 800.0 plf = 966.67 plf × 8.833' = 8,538.9 lb
-FT-B-S2   166.67 plf + W-B-S2 6" × 7.25" curb 45.31 plf           = 211.98 plf × 9.167' = 1,943.1 lb
-D = 10,482.0 lb;  H = 20,029 + 17,168 = 37,197 lb;  μ = 0.25 (IBC Table 1806.2, class 4 — GM)
-sliding   FS = 0.25 × 10,482.0 / 37,197 = 0.0705   vs 1.5                  ratio 21.29  OVER
+FT-B-S2   20 × 10" footing 208.33 plf + W-B-S2 6" × 7.25" curb 45.31 plf = 253.65 plf × 9.167' = 2,325.2 lb
+D = 10,864.1 lb;  H = 20,029 + 17,168 = 37,197 lb;  μ = 0.25 (IBC Table 1806.2, class 4 — GM)
+sliding   FS = 0.25 × 10,864.1 / 37,197 = 0.0730   vs 1.5                  ratio 20.54  OVER
 bearing   M = 20,029 × 4" (board centroid) + 17,168 × 8" (footing top) = 217,457 lb-in
-          e = 217,457 / 10,482 = 20.75"; Meyerhof: B' ≥ D/(q_a L) = 10,482/(2,000/144 × 216)
-          = 3.494" → e_max = (20 − 3.494)/2 = 8.253"                        d/c 2.514   OVER
+          e = 217,457 / 10,864.1 = 20.02"; Meyerhof: B' ≥ D/(q_a L) = 10,864.1/(2,000/144 × 216)
+          = 3.621" → e_max = (20 − 3.621)/2 = 8.189"                        d/c 2.444   OVER
 ```
+
+**2026-11-01: `FT-B-S2`/`S3` are 10" deep** (R403.1.1 P ≤ T under the 6" curb), top unchanged,
+bottom 2" lower. Their self-weight went 166.67 → 208.33 plf (was D 10,482.0, ratio 21.29, d/c
+2.514; beam item D 20,964, 44.92, 5.557). The moment arms stay on `FT-B-S1`'s 8" plane, which
+carries 79% of D; on S2's own plane each arm is 2" longer. The board stops at S1's underside,
+so S2's lowest 2" faces the court footing across the 2 11/16" slot below the board.
 
 `FT-B-S1` bears on its washed-stone bedding (`FOOTING_EXPOSED_20`; the 2" of XPS it once bore
 on is gone); 0.25 is the soil's, taken for the stone-to-soil plane below it. **The slab strut is not credited**: `SL-B-FLOOR` abuts the wall through a
@@ -1815,12 +1821,12 @@ on is gone); 0.25 is the soil's, taken for the stone-to-soil plane below it. **T
 which would not close the row either.
 
 **The beam item.** Its board faces `FT-B-S1`..`S4` across 4" of stone. Same take-down, all four
-strips: D = 2 × 8,538.9 + 2 × 1,943.1 = 20,964 lb; bearing length 432".
+strips: D = 2 × 8,538.9 + 2 × 2,325.2 = 21,728.1 lb; bearing length 432".
 
 ```
-sliding   FS = 0.25 × 20,964 / 156,958 = 0.0334                            ratio 44.92  OVER
-bearing   board centroid 6.125" above the bearing plane: e = 156,958 × 6.125 / 20,964 = 45.86"
-          e_max = (20 − 20,964/(13.889 × 432))/2 = 8.253"                   d/c 5.557   OVER
+sliding   FS = 0.25 × 21,728.1 / 156,958 = 0.0346                          ratio 43.34  OVER
+bearing   board centroid 6.125" above the bearing plane: e = 156,958 × 6.125 / 21,728.1 = 44.25"
+          e_max = (20 − 21,728.1/(13.889 × 432))/2 = 8.189"                 d/c 5.403   OVER
 ```
 
 **The court side — the same force back into the court.** It pushes the court SOUTH, against the
@@ -1918,8 +1924,8 @@ nothing here is picked. Two demands are carried side by side:
      - above FT-B-S1: 26.7' of wall = 320 plf × 8.83' = 2,830 lb;
      - above FT-B-S2: 21.1' = 253 plf × 9.17' = 2,323 lb.
 
-     D is 15,635 lb for the footing items (was 10,482) and 31,270 lb for the beam's four
-     strips (was 20,964).
+     D is 16,017 lb for the footing items (was 10,864) and 32,034 lb for the beam's four
+     strips (was 21,728); 15,635 / 31,270 before S2/S3 went 10" deep (2026-11-01).
   4. **Added — the pour pressure is locked in.** Every board is a form face. When the
      court concrete hardens against a compressed board, the board keeps pushing back.
      - At the stem base that is the full 9.500 psi head. Over the house wall it is a
@@ -2611,6 +2617,16 @@ engine (which already sat 141 lb under the 376,173.7 above):
 ```
 D = 362,095.0;  friction 90,523.7;  capped 118,080.9 / 27,315.75 = 4.3228  ratio 0.3470
                                     uncapped 118,080.9 / 42,074.2 = 2.8065  ratio 0.5345
+```
+
+2026-11-01: `FT-B-S2`/`S3` go 8" → 10" deep (R403.1.1 P ≤ T): 2 × 20" × 2" × 98" = 7,840 in³
+at 150 pcf = +680.6 lb of footings. The far wall's at-rest depth stays 6.953' (grade to the
+near line's SHALLOWEST bottom, −117 7/16"); the 2" step is S2/S3's alone and the far wall is
+not 2" deeper for it.
+
+```
+D = 362,775.6;  friction 90,693.9;  capped 118,251.1 / 27,315.75 = 4.3290  ratio 0.3465
+                                    uncapped 118,251.1 / 42,074.2 = 2.8105  ratio 0.5337
 ```
 
 ### 12a. FT-SG-S's toe grows 1'-4" (2026-09-22) — the south strip row

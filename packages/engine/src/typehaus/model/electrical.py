@@ -155,10 +155,13 @@ class BoxRow(HausModel):
     314.16(A) ``designation``; a nonmetallic one authors its marked ``box_volume_in3``.
     ``cover_volume_in3`` is the volume a raised cover or ring adds where it is marked with
     one (314.16(A)(1)); ``cover_rise`` is how far a surface cover stands proud of the box.
+    ``use`` names a special-purpose row (``"luminaire"`` for every light, or the
+    ``box_use`` a device type asks for, e.g. ``"recessed"``); None is the general row.
     """
 
     mounting: BoxMounting
     gangs: int = 1
+    use: str | None = None
     box_product_ref: str
     # None where the box takes no ring or cover: a flush nonmetallic box under a wall plate.
     cover_product_ref: str | None = None
@@ -190,9 +193,11 @@ class BoxStandard(Element):
     rows: tuple[BoxRow, ...]
     surface_drop: Length
 
-    def row_for(self, mounting: str, gangs: int) -> BoxRow | None:
-        return next((row for row in self.rows
-                     if row.mounting == mounting and row.gangs == gangs), None)
+    def row_for(self, mounting: str, gangs: int, use: str | None = None) -> BoxRow | None:
+        """The ``use`` row for this mounting and gangs, else the general one."""
+        rows = [row for row in self.rows if row.mounting == mounting and row.gangs == gangs]
+        return (next((row for row in rows if use is not None and row.use == use), None)
+                or next((row for row in rows if row.use is None), None))
 
     def product_refs(self) -> tuple[str, ...]:
         refs = [ref for row in self.rows for ref in (row.box_product_ref, row.cover_product_ref)

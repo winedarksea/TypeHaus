@@ -57,7 +57,7 @@ export function pieceProduct(model: Model, opening: Opening, piece: string): Pie
   const typeProduct = () => productFor(catalog,
     types.find((type) => type.tag === opening.type_ref)?.product_ref);
   if (role === "hardware") {
-    const part = opening.authored_product_parts?.find((one) => one.key === piece);
+    const part = opening.opening_parts?.find((one) => one.key === piece);
     return { label, product: productFor(catalog, part?.name), detail: part?.role ?? null };
   }
   if (role === "doorway") {

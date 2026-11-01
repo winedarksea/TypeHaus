@@ -322,14 +322,14 @@ def test_a_countertops_area_is_derived_from_the_cabinets_under_it(countertops):
     # Four hosts; the NE carousel is its own slab (CT-M-KIT-NE), seamed at its face.
     assert north.hosts == ("FURN-M-KIT-E1", "APPL-M-DW", "FURN-M-KIT-SINKBASE",
                            "FURN-M-KIT-E2")
-    # 24" of carcass plus the 1" a top oversails its doors — nothing authored the 25".
-    assert north.depth_m * M_TO_IN == pytest.approx(25.0, abs=1e-6)
+    # 24" of carcass plus the 1 5/8" a top oversails its frames — nothing authored 25 5/8".
+    assert north.depth_m * M_TO_IN == pytest.approx(25.625, abs=1e-6)
     # A straight run: the deeper dishwasher no longer jogs the stone's edges.
     assert len(north.outline) == 4
     assert north.area_m2 * M2_TO_FT2 == pytest.approx(
         north.length_m * north.depth_m * M2_TO_FT2, rel=1e-6)
     corner = countertops["CT-M-KIT-NE"]
-    assert corner.area_m2 * M2_TO_FT2 == pytest.approx((38.0 * 25.0 + 13.0 * 25.0) / 144.0)
+    assert corner.area_m2 * M2_TO_FT2 == pytest.approx((38.0 + 12.375) * 25.625 / 144.0)
 
 
 def test_the_peninsula_is_one_notched_slab_on_brackets(countertops):
@@ -339,14 +339,14 @@ def test_the_peninsula_is_one_notched_slab_on_brackets(countertops):
     stone = countertops["CT-M-KIT-PENINSULA"]
     assert "CT-M-KIT-PENINSULA-BAR" not in countertops
     assert stone.material_ref == "quartz-counter" and stone.support == "brackets"
-    assert stone.depth_m * M_TO_IN == pytest.approx(40.0, abs=1e-6)
+    assert stone.depth_m * M_TO_IN == pytest.approx(40.625, abs=1e-6)
     assert stone.unsupported_overhang_m * M_TO_IN == pytest.approx(15.0, abs=1e-6)
     ring = Polygon(stone.outline)
     assert len(stone.outline) == 6
-    # 84 1/2 x 25 over the boxes, plus the 73 1/2 x 15 knee.
-    assert ring.area * M_TO_IN**2 == pytest.approx(84.5 * 25 + 73.5 * 15, abs=1e-3)
+    # 84 1/2 x 25 5/8 over the boxes, plus the 73 1/2 x 15 knee.
+    assert ring.area * M_TO_IN**2 == pytest.approx(84.5 * 25.625 + 73.5 * 15, abs=1e-3)
     x0, y0, x1, y1 = (value * M_TO_IN for value in ring.bounds)
-    assert (x0, y0, x1, y1) == pytest.approx((302.875, 304.375, 387.375, 344.375))
+    assert (x0, y0, x1, y1) == pytest.approx((302.875, 304.375, 387.375, 345.0))
     # The knee stops 25" short of the pantry's nominal front, x=401 3/8.
     knee = ring.intersection(Polygon([(0, 0), (1e3, 0), (1e3, 319.0 / M_TO_IN),
                                       (0, 319.0 / M_TO_IN)]))
@@ -360,8 +360,8 @@ def test_an_l_host_takes_the_slab_over_its_whole_l(countertops):
     corner = countertops["CT-M-KIT-E"]
     assert corner.hosts == ("FURN-M-KIT-CORNER-PEN",)
     ring = Polygon(corner.outline)
-    # Two 24"-deep legs, 38" long, plus 1" on each of the two 14" notch faces.
-    expected = (38 * 25 + 13 * 25) / 144.0
+    # Two 24"-deep legs, 38" long, plus 1 5/8" on each of the two 14" notch faces.
+    expected = (38 + 12.375) * 25.625 / 144.0
     assert ring.area * _M2_TO_FT2 == pytest.approx(expected, abs=1e-6)
     # An L, not a rectangle (its south edge splits where the pantry starts).
     assert len(ring.simplify(0).exterior.coords) - 1 == 6, "an L, not a rectangle"

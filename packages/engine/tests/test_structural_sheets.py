@@ -303,7 +303,7 @@ def test_s101_carries_joist_direction_size_and_spacing(catlin_model):
     arrows = [node for node in scene.nodes if getattr(node, "name", "") == "span-arrow"]
     assert arrows and arrows[0].rotation == 0.0  # FS-S-EAST spans x
     text = _joined(scene)
-    assert 'I-JOIST @ 16" O.C.' in text and "MAX SPAN" in text
+    assert 'TJI 230 @ 16" O.C.' in text and "MAX SPAN" in text
 
 
 def test_s101_schedules_headers_over_their_openings(catlin_model):

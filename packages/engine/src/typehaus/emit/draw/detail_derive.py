@@ -365,7 +365,7 @@ def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
         inboard = max(inboard, u_lo - reach_lo + _TRIM_MARGIN_M)
     view = Slice(
         uid="", tag=f"D-{_key_slug(cond.key)}", kind=SliceKind.DETAIL,
-        title=(tr.tag if tr is not None else cond.key),
+        title=(tr.title or tr.tag if tr is not None else cond.key),
         cut_origin=pt(m(station if direction == "y" else center_u),
                       m(center_u if direction == "y" else station)),
         cut_direction=direction,
@@ -409,7 +409,7 @@ def _build_ridge_derived(model, cond, tr) -> DerivedDetail | None:
     ridge_z = roof.ridge_z_m
     view = Slice(
         uid="", tag=f"D-{_key_slug(cond.key)}", kind=SliceKind.DETAIL,
-        title=(tr.tag if tr is not None else cond.key),
+        title=(tr.title or tr.tag if tr is not None else cond.key),
         cut_origin=pt(m(station if direction == "y" else center_u),
                       m(center_u if direction == "y" else station)),
         cut_direction=direction,

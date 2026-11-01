@@ -25,7 +25,7 @@ LABEL_RUNG_PT = 2.6 / LEGACY_IN_PER_PT
 
 
 def wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels,
-                      scale: float | None = None) -> None:
+                      scale: float | None = None, either_side: bool = False) -> None:
     """Name every layer of a wall's assembly, hung from a single anchor at its top.
 
     The whole ladder hangs from one anchor: the wall's top as seen in the crop. Rungs step
@@ -33,24 +33,39 @@ def wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels,
     its own height, cannot interleave rungs from different layers. Stacked vertically
     because at detail scale a membrane and its neighbours are hundredths of an inch apart —
     labels sharing one baseline overprint into a smear.
+
+    One ladder per (assembly, layer): two walls of one assembly in a cut (overlaid stacks,
+    both sides of a room) print one set of rungs (C7-E8). ``either_side`` lets the column
+    go to whichever crop edge is nearer the wall, so its leaders do not cross the drawing;
+    a derived detail keeps the left, its right belonging to the continuity column.
     """
     if not label_entries or ladder_labels is None:
         return
+    done = {placed.spec.key for placed in ladder_labels}
+    assembly = getattr(wall, "assembly", None) or wall.uid
+    fresh = {name: entry for name, entry in label_entries.items()
+             if (assembly, name) not in done}
+    if not fresh:
+        return
+    align = "right"
     if crop is not None:
         (cu0, cz0), (cu1, cz1) = crop
         z_top = min(wall_top, max(cz0, cz1))
-        text_u = min(cu0, cu1) / M_PER_IN - 1.0
+        left_in, right_in = min(cu0, cu1) / M_PER_IN, max(cu0, cu1) / M_PER_IN
+        mids = [mid_u for (_lab, mid_u) in fresh.values()]
+        text_u = left_in - 1.0
+        if either_side and right_in - max(mids) < min(mids) - left_in:
+            text_u, align = right_in + 1.0, "left"
     else:
         z_top = wall_top
-        text_u = min(mid_u for (_lab, mid_u) in label_entries.values()) - 14.0
-    # Sorted by mid_u (innermost layer first): the text column sits left of the cut, so
-    # ascending targets top-to-bottom keep the horizontal leader lines nested, not crossed.
-    entries = [LabelSpec(text=label, target=(mid_u, 0.0), key=(wall.uid, name))
+        text_u = min(mid_u for (_lab, mid_u) in fresh.values()) - 14.0
+    # Sorted by mid_u toward the column: the horizontal leader lines nest, never cross.
+    entries = [LabelSpec(text=label, target=(mid_u, 0.0), key=(assembly, name))
                for name, (label, mid_u) in
-               sorted(label_entries.items(), key=lambda item: item[1][1])]
+               sorted(fresh.items(), key=lambda item: item[1][1], reverse=align == "left")]
     ladder_labels.extend(place_column(entries, x=text_u, z_top=z_top / M_PER_IN - 1.0,
                                       step_pt=LABEL_RUNG_PT, height_pt=TEXT_PT,
-                                      align="right", scale=scale))
+                                      align=align, scale=scale))
 
 
 class DrawnBand(NamedTuple):

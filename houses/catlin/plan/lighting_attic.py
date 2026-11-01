@@ -350,13 +350,12 @@ ATTIC_LIGHTING = [
     # reported it floating 1.6" off that face; the door wall is both the better station and the
     # one whose finish face the house's standard 1" box offset lands on cleanly.
     #
-    # ** IT MOVED WEST WITH THE DOOR, 14'-3" -> 13'-3" (2026-09-09). ** D-A-STUBATH's rough
-    # opening is 13'-11 1/2"..15'-11 1/2" now, so 14'-3" fell INSIDE it. 13'-3" is on the
-    # LATCH side (the hinge is the east jamb) with 8 1/2" to the jamb, and it is also the only
-    # band left in this cavity: PR-A-BAR-VENT rises at x=12'-8 1/2", so
-    # the box has to sit east of that riser and west of the jamb pack. ** NOTHING GRADES
-    # EITHER OF THOSE ** — no rule tests a wall device against a rough opening or against a
-    # pipe in its own bay — so both clearances are held here and by eye in the viewer.
+    # ** IT MOVED EAST WITH THE DOOR, 13'-3" -> 14'-7" (2026-11-01). ** D-A-STUBATH went one
+    # stud module east to clear the heel-anchored roof (decision #109); its rough opening is
+    # 15'-3 1/2"..17'-5 3/4". 14'-7" keeps the box on the LATCH side (the hinge is the east
+    # jamb) with 8 1/2" to the jamb, in the bay west of the king pack and east of
+    # PR-A-BAR-VENT's riser at x=12'-8 1/2". `electrical.wall_device_opening` grades the RO;
+    # nothing grades a pipe in the box's own bay, so that clearance is held here.
     ElectricalDevice(uid="DD20R7F44T", tag="ED-A-STUBATH-SW", kind=DeviceKind.SWITCH,
                      # ** MOVED 1" OUT WITH W-A-BATH-S'S RETYPE, 2026-09-20 (H8). ** The wall went
                      # INT_2X4_PARTITION -> INT_2X6_PLUMBING so PR-A-BAR-VENT's 2" vent could bore
@@ -367,7 +366,7 @@ ATTIC_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-BATH-S", face="left", distance_from_start=inch(43.5),
+                         wall_ref="W-A-BATH-S", face="left", distance_from_start=inch(59.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Bath night light (2026-10-31; the pattern is plan/lighting_second.py's): E5 under the
     # SEKTION 24's 5 1/2" bottom. No ceiling bay under the rake and no second gang beside

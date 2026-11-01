@@ -101,6 +101,27 @@ def resolve_ceilings(plan: PlanModel, model: ResolvedModel) -> None:
                     ))
                     model.solids.extend(_roof_cavity_insulation(
                         plan, model, storey.tag, room, uid, tag, host, outline, z1))
+    _drop_clear_heads(model)
+
+
+def _drop_clear_heads(model: ResolvedModel) -> None:
+    """Lower ``clear_height_m`` to a ceiling hung below the deck (a ``ceiling_lining``
+    furred down: the sauna's T&G, the plant room's liner), which the room stage, reading
+    decks and soffits only, cannot see. A ceiling never raises the head."""
+    from dataclasses import replace
+
+    from typehaus.resolve.room_floor import room_finished_floor_elevation
+
+    lowest: dict[str, float] = {}
+    for ceiling in model.ceilings:
+        if ceiling.z0_m is not None:
+            lowest[ceiling.room_ref] = min(ceiling.z0_m, lowest.get(ceiling.room_ref, ceiling.z0_m))
+    for index, room in enumerate(model.rooms):
+        if room.clear_height_m is None or room.tag not in lowest:
+            continue
+        head = lowest[room.tag] - room_finished_floor_elevation(model, room)
+        if head < room.clear_height_m:
+            model.rooms[index] = replace(room, clear_height_m=head)
 
 
 def _roof_cavity_insulation(plan: PlanModel, model: ResolvedModel, storey_tag: str, room: Any,

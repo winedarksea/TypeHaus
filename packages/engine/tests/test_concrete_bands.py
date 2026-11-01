@@ -25,14 +25,14 @@ def _solid(model, tag):
 
 def test_the_eps_deck_resolves_one_concrete_band_not_its_whole_depth(
         catlin_model_ro) -> None:
-    """``DECK_EPS_INT`` is a 4 3/8" cast cover over a 10" foam beam. Only the cover is
+    """``DECK_EPS_INT`` is a 4 3/16" cast cover over a 10" foam beam (decision #111). Only the cover is
     concrete, and it is the top of the section."""
     deck = _solid(catlin_model_ro, "SL-M-DECK")
     bands = concrete_bands(catlin_model_ro, deck)
     assert len(bands) == 1
     (low, high), = bands
     assert high == pytest.approx(deck.z1_m)
-    assert (high - low) / M_PER_IN == pytest.approx(4.375, abs=1e-6)
+    assert (high - low) / M_PER_IN == pytest.approx(4.1875, abs=1e-6)
     # And the foam below it is genuinely most of the section.
     assert (low - deck.z0_m) / M_PER_IN == pytest.approx(10.0, abs=1e-6)
 

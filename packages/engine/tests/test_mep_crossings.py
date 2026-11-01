@@ -36,7 +36,8 @@ def test_open_web_truss_gets_its_web(catlin_model_ro) -> None:
 
 
 def test_an_i_joist_field_is_not_a_truss_field(catlin_model_ro) -> None:
-    """FS-S-EAST is the same 11 7/8" depth in I-joists — a different rule, a wider window.
+    """FS-S-EAST is the same 11 7/8" depth in TJI 230s — a different rule, a wider window:
+    inside both 1 1/4" flanges (the low end of TJ-4000's published band), 9 3/8".
 
     And the PASS it produces is **qualified**: the flange is clear, and the hole's diameter
     and its allowable zone along the span still come off the fabricator's chart. The old
@@ -46,7 +47,7 @@ def test_an_i_joist_field_is_not_a_truss_field(catlin_model_ro) -> None:
     window = member_window(_floor(catlin_model_ro, "FS-S-EAST"))
     assert window is not None
     assert window.kind == "i_joist"
-    assert window.height_m / M_PER_IN == pytest.approx(11.875 - 2 * 1.375)
+    assert window.height_m / M_PER_IN == pytest.approx(11.875 - 2 * 1.25)
     assert "chart" in window.basis
 
     truss = member_window(_floor(catlin_model_ro, "FS-S-WEST"))

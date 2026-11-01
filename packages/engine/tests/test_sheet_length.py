@@ -81,7 +81,7 @@ def test_eight_foot_sheets_fail_two_lines(catlin_model_ro):
               if ev.line.tag == "BWL-W-A-E1")
     item8 = [f for f in e1.factors if "item 8" in f.row]
     assert item8 and "R602.10.4.4 exception 1" in item8[0].row
-    assert "W-M-E1 (4x8 on 108.0 in)" in item8[0].row
+    assert "W-M-E1 (4x8 on 107.4 in)" in item8[0].row  # on the subfloor, decision #110
 
 
 @pytest.mark.parametrize("length", [ft(9), ft(10)])

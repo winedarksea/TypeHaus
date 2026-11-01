@@ -665,9 +665,14 @@ export function runSelectionRegistrationTests() {
   assert((stairs.byUid.get("ST-1") ?? []).length > 0,
     "buildStair still indexes its materials so selecting the stair highlights it");
 
+  // The engine serves the window's frame as three boards; the viewer only names and picks them.
+  const board = (a0: number, a1: number, z0: number, z1: number) => ({
+    ring: [[a0, -0.04], [a1, -0.04], [a1, 0.04], [a0, 0.04]] as [number, number][], z0_m: z0, z1_m: z1 });
+  const served = { ...opening(2), opening_parts: [{ key: "frame", material_key: "opening_frame",
+    solids: [board(1.5, 1.575, 0.9, 2.1), board(2.425, 2.5, 0.9, 2.1), board(1.5, 2.5, 2.025, 2.1)] }] };
   const openingGroup = new THREE.Group();
   const openings = registry();
-  buildOpening(openingGroup, opening(2), wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
+  buildOpening(openingGroup, served, wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
     {}, openings.picks, openings.byUid);
   registered(openingGroup, "opening", "opening", openings.picks, openings.byUid, "buildOpening");
   // Each board carries a piece key and still answers to the opening's uid: a click selects
@@ -679,44 +684,35 @@ export function runSelectionRegistrationTests() {
   }
   assert(openings.picks.every((mesh) => typeof mesh.userData.piece === "string"),
     "Every opening board carries a piece key");
+  const head = new THREE.Box3().setFromObject(byPiece.get(pieceKey("opening", "frame:head"))![0]);
+  // Within float32 position precision.
+  assert(Math.abs(head.min.x - 1.5) < 1e-6 && Math.abs(head.max.y - 2.1) < 1e-6
+    && Math.abs(head.max.z - 0.04) < 1e-6, "A served ring extrudes exactly where the engine put it");
 
   // A rough opening has no filling to click on, so it must register nothing at all.
   const roughGroup = new THREE.Group();
   const rough = registry();
-  buildOpening(roughGroup, { ...opening(2), kind: "rough_opening" } as Opening,
+  buildOpening(roughGroup, { ...served, kind: "rough_opening" } as Opening,
     wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE, {}, rough.picks, rough.byUid);
   assert(rough.picks.length === 0 && roughGroup.children.length === 0,
     "An unfilled rough opening builds nothing and registers nothing");
 
-  const door = { ...opening(2, 0, 2, 0, 1.5), kind: "door", is_door: true } as Opening;
-  const bifoldGroup = new THREE.Group();
-  const bifoldRegistry = registry();
-  buildOpening(bifoldGroup, door, wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
-    { operation: "bifold" }, bifoldRegistry.picks, bifoldRegistry.byUid);
-  assert(bifoldGroup.children.length === 7,
-    "A closed bifold renders three frame pieces and four coplanar leaves");
-
-  const sliderGroup = new THREE.Group();
-  const sliderRegistry = registry();
-  buildOpening(sliderGroup, door, wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
-    { operation: "slide", glazed: true }, sliderRegistry.picks, sliderRegistry.byUid);
-  assert(sliderGroup.children.length === 6,
-    "A closed slider renders three frame pieces, a stile and two panels; no assumed track");
-  assert(new Set(sliderGroup.children.map((child) => child.position.z.toFixed(9))).size === 1,
-    "Closed slider panels remain in the wall plane rather than posing open");
-
+  // Bookcase boards carry no catalog ref; the door type's species gives them their grain.
   const bookcaseGroup = new THREE.Group();
   const bookcaseRegistry = registry();
-  buildOpening(bookcaseGroup, { ...door, width_m: 0.9652, height_m: 2.0828 },
-    wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
-    { operation: "swing", bookcaseDoor: {
-      body_width_m: 0.88265, body_height_m: 1.9939, body_depth_m: 0.20955,
-      casing_overall_width_m: 1.0795, mounting_face: "negative_normal",
-    } }, bookcaseRegistry.picks, bookcaseRegistry.byUid);
-  assert(bookcaseGroup.children.length === 9,
-    "Bookcase door renders two sides, two caps, four shelves, and a back; casing is trim");
-  assert(bookcaseRegistry.picks.length === 9,
-    "Every cabinet board selects the bookcase door");
+  buildOpening(bookcaseGroup, { ...served, kind: "door", is_door: true, opening_parts: [
+    { key: "bookcase_sides", material_key: "oak_bookcase",
+      solids: [board(1.5, 1.52, 0, 2), board(2.48, 2.5, 0, 2)] }] } as Opening,
+  wall([[0, 0], [4, 0]]), [0, 0], "nordic", PALETTE,
+  { bookcaseDoor: { body_width_m: 1, body_height_m: 2, body_depth_m: 0.08,
+    casing_overall_width_m: 1.1, mounting_face: "negative_normal", material_ref: "oak-test" },
+  materials: [{ tag: "oak-test", color: "#bda77c", species: "oak", finish: "solid-board" }] },
+  bookcaseRegistry.picks, bookcaseRegistry.byUid);
+  assert(bookcaseGroup.children.length === 2 && bookcaseRegistry.picks.length === 2,
+    "Every bookcase board is drawn and selects the bookcase door");
+  const side = new THREE.Box3().setFromObject(bookcaseGroup.children[0]);
+  assert(Math.abs(side.min.x - 1.5) < 1e-6 && Math.abs(side.max.x - 1.52) < 1e-6
+    && Math.abs(side.max.y - 2) < 1e-6, "A wood board keeps the served ring's bounds");
 }
 
 export function runCanvasObjectGeometryTests() {

@@ -7,7 +7,8 @@ a set-on rubber cove base, ``stair skirt`` for a skirted flight's raked boards (
 the stair), ``base joint`` for the sealant bead at the toe of any base whose
 floor names a ``Material.base_joint_ref`` (billed by the LF of base, keyed by the sealant),
 ``door jamb rip`` / ``door jamb extension`` for a stock jamb cut down to, or built out to, a
-non-stock wall (``DoorSizing.jamb_depth_m``; item ``door-jamb-rip`` / ``door-jamb-extension``).
+non-stock wall (``DoorSizing.jamb_depth_m``; item ``door-jamb-rip`` / ``door-jamb-extension``),
+``door jamb`` for a full-depth flat jamb milled from its own stock (keyed by that stock).
 
 ``item`` is the price key: the board's stock tag for a board, ``tile-base`` / ``flash-cove`` /
 ``resilient-base``
@@ -115,6 +116,14 @@ def _jamb_rows(model: ResolvedModel, length, pieces, tags, cuts) -> None:
             continue
         a = sizing.jamb_allowance_m
         run = 2 * (sizing.rough_h_m - sizing.floor_finish_m - a) + sizing.rough_w_m - 2 * a
+        if sizing.jamb_material_ref is not None:
+            key = ("door jamb", None, sizing.jamb_material_ref, sizing.jamb_material_ref)
+            length[key] += run
+            pieces[key] += 3
+            tags[key].append(opening.tag)
+            cuts[key].append({"length_in": round(run / 0.0254, 3),
+                              "width_in": round(sizing.jamb_depth_m / 0.0254, 3)})
+            continue
         for kind, width in (("door jamb rip", sizing.jamb_rip_m),
                             ("door jamb extension", sizing.jamb_extension_m)):
             if width <= 1e-6:

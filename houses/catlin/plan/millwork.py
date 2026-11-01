@@ -117,6 +117,10 @@ MILLWORK = [
         door_trims=(
             DoorTrim(doors=("D-S-SUITE",), room="RM-S-SUITE", material_ref="cherry-trim"),
             DoorTrim(doors=("D-A-STUDY",), material_ref="oak-trim"),
+            # A full-depth cedar flat jamb, one piece to the wall's depth, not a 6 9/16"
+            # stock jamb with a 2 11/16" extension (owner, 2026-11-01).
+            DoorTrim(doors=("D-B-SAUNA",), room="RM-B-SAUNA", material_ref="cedar-sauna-trim",
+                     jamb_material_ref="cedar-sauna-trim"),
             # One-off widths where 3 1/2" will not fit (owner, 2026-10-29). D-M-BATH1's
             # powder-room face is the minimum leg, 1 1/2", so ED-M-BATH1-SW (5/8" south) clears.
             DoorTrim(doors=("D-M-BATH1",), room="RM-M-BATH1", material_ref="pvc-trim",

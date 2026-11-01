@@ -137,7 +137,8 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                     # A replacing band is the face the casing nails to; only an applied one
                     # butts it.
                     holes = _holes(openings, None if el.replaces_wall_finish else trim,
-                                   room, panel_face)
+                                   room, panel_face,
+                                   wall.frame_base_z_m - wall.base_ref_z_m)
                     area = (hi - lo) * (band_z1 - band_z0)
                     for a, b, s0, s1 in holes:
                         du = min(hi, b) - max(lo, a)
@@ -193,12 +194,15 @@ def _knee_wall_deck_tops(plan: PlanModel, model: ResolvedModel) -> dict[str, flo
     return tops
 
 
-def _holes(openings, trim, room, panel_face) -> list[tuple[float, float, float, float]]:
+def _holes(openings, trim, room, panel_face,
+           seat_m: float = 0.0) -> list[tuple[float, float, float, float]]:
     """``(u0, u1, z0, z1)`` each opening takes out of a band, in wall-local frame.
 
     The rough opening, or with a trim scope a cased door's casing envelope on the band's
     face: the band butts the casing's outer edge rather than running under it. The casing
-    is derived later (``interior_trim_casing``) from the same three helpers.
+    is derived later (``interior_trim_casing``) from the same three helpers. A floor-level
+    door (sill on the wall's plate seat, decision #110) cuts down to the datum: under it is
+    subfloor, not wall.
     """
     out = []
     for o in openings:
@@ -212,7 +216,8 @@ def _holes(openings, trim, room, panel_face) -> list[tuple[float, float, float, 
                 inner, head = casing_edges(o, door_type, trim.standard)
                 width = trim.standard.casing_width_for(room.tag, o.tag).meters
                 half, top = inner + width, head + width
-        out.append((o.center_along_m - half, o.center_along_m + half, o.sill_m, o.sill_m + top))
+        bottom = min(o.sill_m, 0.0) if o.is_door and o.sill_m <= seat_m + 1e-6 else o.sill_m
+        out.append((o.center_along_m - half, o.center_along_m + half, bottom, o.sill_m + top))
     return out
 
 

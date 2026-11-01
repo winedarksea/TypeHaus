@@ -8,6 +8,8 @@ from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.mep.electrical_wall_space import (
     definite_coverage_gaps,
+    facing_well_intervals,
+    floor_line_ring,
     uncertain_wall_space,
 )
 from typehaus.checks.registry import CheckContext, Tier, check
@@ -162,8 +164,7 @@ def _floor_opening_intervals(ctx: CheckContext, ring: list,
     well breaks the measurement the same way a doorway does. ``_FLOOR_OPENING_LEDGE_M`` is
     deliberately small: a foot of ledge along a 9' drop is not where a lamp gets plugged in.
     """
-    return room_perimeter.floor_opening_intervals(ctx.plan, ring, storey_tag,
-                                                  _FLOOR_OPENING_LEDGE_M)
+    return facing_well_intervals(ctx.plan, ring, storey_tag, _FLOOR_OPENING_LEDGE_M)
 
 
 def _fixed_cabinet_intervals(ctx: CheckContext, ring: list,
@@ -207,7 +208,7 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
     for room in ctx.model.rooms:
         if room.occupancy not in habitable:
             continue
-        ring = [tuple(point) for point in room.clear_face]
+        ring = floor_line_ring(ctx.model, room)
         if len(ring) < 3:
             out.append(_unknown(cid, f"room {room.tag}: boundary geometry is unresolved",
                                 (room.tag,)))

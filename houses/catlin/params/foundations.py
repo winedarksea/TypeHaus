@@ -109,8 +109,8 @@ _HOUSE_WALL_TAGS = (
 # The four south strips take FOOTING_EXPOSED_20 (the EXPOSED mix, F3), the rest FOOTING_20;
 # all are plain strips on the bedding, with no foam under them (owner: creep). They are the
 # strips the sunken garden runs along: the garden floor is at -9'-1 7/16" and they bottom
-# out at -9'-9 7/16", **8" of frost cover** against MN Rules 1303.1600's 42" for Ramsey
-# County — measured, as IRC R403.1.4.1 says to, from the lowest adjacent grade, which beside
+# out at -9'-9 7/16" (S2/S3 -9'-11 7/16"), **8" (10") of frost cover** against MN Rules
+# 1303.1600's 42" for Ramsey County — measured, as IRC R403.1.4.1 says to, from the lowest adjacent grade, which beside
 # them is the garden floor and not the -2'-10" site plane six and a half feet overhead.
 #
 # ``structural.frost_depth`` derives a local grade per footing; the answer to what it finds
@@ -165,10 +165,10 @@ _TOE_TRIMMED: set[str] = set()
 # stem level: -4" leaves the full 2" between the strips, so TB-SG-W1/E1 and the stem
 # boards above them are one continuous plane instead of a nominal one buried in a pour.
 #
-# It is free structurally, and in the same direction the 2" trim already argued for: these
-# two carry an 8" wall standing at y = 0..8", so a strip centred on y = 0 threw a 10" toe
-# south under a load whose centre is at +4". At -4"..+16" the toes are 4" and 8" — the
-# eccentricity halves and changes sign, and all 20" of bearing is still under the wall.
+# It is free structurally, and in the same direction the 2" trim already argued for: a strip
+# centred on y = 0 threw a 10" toe south under a wall whose centre is north of it. At
+# -4"..+16" the south toe is 4" on all four; the north toe is 8" under S1/S4's 8" wall and
+# 10" under S2/S3's 6" GARDEN_CURB_6 — which is why those two are 10" deep (below).
 #
 # Two things fall out of it that were wrong before and are not any more. FT-B-S1's south
 # 2" used to lap SG_VENEER_BEAM_14's `xps-break` at -10"..-8" over the 10" the beam
@@ -176,6 +176,13 @@ _TOE_TRIMMED: set[str] = set()
 # to 27'-2" and would have picked up the identical lap — never gets it.
 _GARDEN_END_TOE_TRIM = inch(6)
 _GARDEN_END_TRIMMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
+
+# ** S2/S3 ARE 10" DEEP (owner, 2026-11-01). ** Their 10" north toe broke R403.1.1's P <= T
+# on an 8" strip; T = 10" keeps the width and the -4" face. Same top (the wall's underside),
+# bottom 2" lower at -9'-11 7/16"; the deep bed keeps its -151 7/16" floor (32" undercut).
+# The court footings' closure board still covers the whole shared concrete face: FT-SG-W1/E1
+# bottom at -9'-9 7/16", so S2/S3's extra 2" faces stone.
+_DEEP_STRIP = {"W-B-S2", "W-B-S3"}
 
 # ** SUPERSEDED — KEPT FOR ITS REASONING, WHICH IS STILL WHY THE TRIM GOES NORTH AND NOT
 # SOUTH. `_TOE_TRIMMED` IS EMPTY, SO THIS CONSTANT IS NOW UNUSED. **
@@ -285,7 +292,7 @@ def _center_on(tag: str) -> str:
 
 HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,
-            width=inch(20), depth=inch(8),
+            width=inch(20), depth=inch(10) if t in _DEEP_STRIP else inch(8),
             center_on=_center_on(t), offset=_toe_offset(t),
             start_extension=_START_EXTENSION.get(t), end_extension=_END_EXTENSION.get(t),
             assembly="FOOTING_EXPOSED_20" if t in _FROST_FORMED else "FOOTING_20")
@@ -334,17 +341,18 @@ _COLUMN_WALLS = {"W-B-S1", "W-B-S4", "W-B-E1", "W-B-E2", "W-B-N1", "W-B-N2", "W-
 # so 16" is what reaches R405.1's 12" past the footing edge (code.R405_1 grades it).
 WALL_COLUMN = DrainColumn(width=inch(16), cap_below_grade=inch(12))
 # ** THE FOUR COURT-FACE BEDS ARE DEEP STONE, AND THAT IS THE FROST PROTECTION (C3-E10). **
-# The court floor is -9'-1 7/16" and these strips bear at -9'-9 7/16": 8" of cover against 42".
+# The court floor is -9'-1 7/16" and these strips bear at -9'-9 7/16" (S2/S3 2" lower).
 # Wings could not reach all of it (they stop at the FT-SG-W1/E1 toes, 46" short of S1/S4's
 # reached ends), so the bed goes down instead: #57 NFS stone to 42" under the court floor,
-# -151 7/16", i.e. 34" under the strip. ASCE 32 soil replacement, IRC R403.1.4.1; it
+# -151 7/16", i.e. 34" under S1/S4 and 32" under S2/S3. ASCE 32 soil replacement, IRC R403.1.4.1; it
 # needs a drain to count, and -151" is 14 1/2" under SM-B-RADON's floor, so the run has its
 # own pit, SM-B-SOUTH, at S1's deep end (plan/mep_drainage.py). AHJ/engineer sign-off:
 # inspections.toml `frost_soil_replacement`.
 _DEEP_STONE = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
 HOUSE_FOOTING_BEDDING = [
     FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-{t[2:]}", host_ref=f"FT-{t[2:]}",
-                   undercut=inch(34) if t in _DEEP_STONE else inch(7),
+                   undercut=(inch(32) if t in _DEEP_STRIP else inch(34)) if t in _DEEP_STONE
+                   else inch(7),
                    non_frost_susceptible=True if t in _DEEP_STONE else None,
                    perimeter_insulation=inch(4),
                    drain_tile_spec=DrainTile(diameter=inch(4), sock=True,

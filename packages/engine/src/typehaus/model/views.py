@@ -94,6 +94,8 @@ class Transition(Element):
     Post-resolve only: documents/validates; never alters geometry (#45)."""
 
     condition_pattern: str  # wildcard pattern over condition keys
+    # The detail sheets' display name ("Rim band"); the tag stays the id (C7-E6).
+    title: str | None = None
     notes: str | None = None
     continuity: tuple[Continuity, ...] = ()
     documents_rules: tuple[str, ...] = ()  # ConstructionRule tags

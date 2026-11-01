@@ -18,8 +18,13 @@ weight, because it is nearer the eye, not further from it.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from dataclasses import dataclass
+
 from typehaus.emit.draw.elevation_annotate import (
-    ANNO_HEIGHT_IN,
+    ANNO_PT,
+    ELEVATION_SCALE,
+    anno_in,
     emit_grade_profile,
     emit_sheet_annotations,
     grade_datum,
@@ -34,7 +39,8 @@ from typehaus.emit.draw.elevation_project import (
     split_at_grade,
     view_for,
 )
-from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Text
+from typehaus.emit.draw.paper import ARCH_SCALES
+from typehaus.emit.draw.scene import IRNode, Polyline, Scene, SceneBuilder, Text
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve import overlay
 from typehaus.resolve.model import ResolvedModel
@@ -77,32 +83,106 @@ _FAMILY_LAYER = {"body": "A-WALL", "roof": "A-ROOF", "trim": "A-ROOF-TRIM",
 _RECEDES_TO_BEYOND = frozenset({"body", "roof", "trim", "rail"})
 
 
-def build_elevation(model: ResolvedModel, facing: str) -> Scene:
-    """Project the building into one cardinal elevation, hidden lines removed.
+FACINGS = ("north", "south", "east", "west")
 
-    ``facing`` is the compass direction the elevation *looks at* — a "south elevation" is the
-    view of the south face, seen from the south. The signature is the one
-    ``sheets.py``/``render.py`` call; everything else here is free to move.
-    """
+
+@dataclass(frozen=True)
+class ProjectedElevation:
+    """One facing's scale-free linework, plus what the annotation pass needs from it."""
+
+    view: object
+    nodes: tuple[IRNode, ...]
+    facade: tuple[VisiblePiece, ...]
+    facade_depth: float
+    extent: tuple[float, float]
+    margin_u: float
+    label_z: float
+
+
+def project_elevation(model: ResolvedModel, facing: str) -> ProjectedElevation:
+    """The hidden-line projection and its linework — the expensive, scale-free half."""
     view = view_for(facing)
     b = SceneBuilder(name=f"elevation-{view.facing}", units="in")
     pieces = _merge_wall_runs(occlude(collect_candidates(model, view), view))
     grade_z = grade_datum(model)
     facade_depth = _dominant_plane_depth(pieces)
     facade = [piece for piece in pieces if _band_of(piece, facade_depth) == "facade"]
-
     for piece in pieces:
         _emit_piece(b, piece, facade_depth, grade_z)
     emit_cladding_texture(b, model, facade, view, grade_z)
     emit_opening_glyphs(b, model, pieces, view)
+    extent = _facade_extent(pieces, facade_depth)
+    # The column starts past everything drawn and past the ground line's run-on.
+    margin_u = max(_margin_u(pieces), extent[1] + _EXTEND_M)
+    return ProjectedElevation(view=view, nodes=b.build().nodes, facade=tuple(facade),
+                              facade_depth=facade_depth, extent=extent,
+                              margin_u=margin_u, label_z=_label_z(pieces))
 
-    lo_u, hi_u = _facade_extent(pieces, facade_depth)
-    emit_grade_profile(b, model, view, facade_depth, lo_u, hi_u)
-    emit_sheet_annotations(b, model, facade, _margin_u(pieces))
-    b.add(Text(anchor=(lo_u / M_PER_IN, _label_z(pieces)),
+
+def annotate_elevation(model: ResolvedModel, drawn: ProjectedElevation,
+                       scale: float = ELEVATION_SCALE) -> Scene:
+    """Ground line, callouts, datums and title, lettered in points at ``scale``."""
+    view = drawn.view
+    b = SceneBuilder(name=f"elevation-{view.facing}", units="in")
+    b.extend(list(drawn.nodes))
+    lo_u, hi_u = drawn.extent
+    emit_grade_profile(b, model, view, drawn.facade_depth, lo_u, hi_u, scale)
+    emit_sheet_annotations(b, model, list(drawn.facade), drawn.margin_u, scale)
+    b.add(Text(anchor=(lo_u / M_PER_IN, drawn.label_z),
                content=f"{view.facing.upper()} ELEVATION",
-               height=ANNO_HEIGHT_IN * 1.5, align="left"))
+               height=anno_in(scale) * 1.5, height_pt=ANNO_PT * 1.5, align="left"))
     return b.build()
+
+
+def build_elevation(model: ResolvedModel, facing: str, *,
+                    scale: float = ELEVATION_SCALE) -> Scene:
+    """Project the building into one cardinal elevation, hidden lines removed.
+
+    ``facing`` is the compass direction the elevation *looks at* — a "south elevation" is the
+    view of the south face, seen from the south. ``scale`` is the sheet scale the lettering
+    is reserved at; the permit set picks one for all four (:func:`framed_elevations`).
+    """
+    return annotate_elevation(model, project_elevation(model, facing), scale)
+
+
+def framed_elevations(model: ResolvedModel, paper: tuple[float, float],
+                      facings: tuple[str, ...] = FACINGS) -> dict[str, Scene]:
+    """The elevations framed at ONE scale on ``paper`` — the largest rung all of them fit.
+
+    A set whose four elevations print at three scales cannot be compared facade to facade
+    (C7-E5). Lettering is laid out per rung, so each sheet reserves what it prints; the
+    projection is done once.
+    """
+    from typehaus.emit.draw.sheet_writer import frame_for_scene
+
+    drawn = {facing: project_elevation(model, facing) for facing in facings}
+    for scale, label in ARCH_SCALES:
+        scenes = {facing: annotate_elevation(model, item, scale)
+                  for facing, item in drawn.items()}
+        frames = {facing: frame_for_scene(scene, paper) for facing, scene in scenes.items()}
+        if any(frame is None for frame in frames.values()):
+            return scenes
+        if all(frame.scale >= scale for frame in frames.values()):
+            return {facing: scene.model_copy(update={
+                        "frame": frame_for_scene(scene, paper, scale_label=label)})
+                    for facing, scene in scenes.items()}
+    return {facing: annotate_elevation(model, item) for facing, item in drawn.items()}
+
+
+def elevation_sheets() -> Callable[..., Scene]:
+    """A ``SceneFn(model, facing=...)`` sharing one :func:`framed_elevations` per set."""
+    cached: dict[str, object] = {}
+
+    def scene(model: ResolvedModel, facing: str) -> Scene:
+        from typehaus.emit.draw.sheet_writer import current_paper
+
+        paper = current_paper()
+        if cached.get("model") is not model or cached.get("paper") != paper:
+            cached.update(model=model, paper=paper,
+                          scenes=framed_elevations(model, paper))
+        return cached["scenes"][facing]  # type: ignore[index]
+
+    return scene
 
 
 def _merge_wall_runs(pieces: list[VisiblePiece]) -> list[VisiblePiece]:
@@ -152,8 +232,8 @@ def _margin_u(pieces: list[VisiblePiece]) -> float:
     straight through it.
     """
     if not pieces:
-        return _EXTEND_M
-    return float(max(piece.geometry.bounds[2] for piece in pieces)) + _EXTEND_M
+        return 0.0
+    return float(max(piece.geometry.bounds[2] for piece in pieces))
 
 
 # --- depth banding -----------------------------------------------------------------------

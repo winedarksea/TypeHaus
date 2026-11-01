@@ -347,7 +347,7 @@ export interface CasedDoorSpec {
   leaf_width_m?: number | null;
 }
 
-// Mirrors resolve/door_sizing.DoorSizing (server/model_json_door_hardware.sizing_json).
+// Mirrors resolve/door_sizing.DoorSizing (server/model_json_opening_parts.sizing_json).
 // The viewer reads it and never re-derives it.
 export interface DoorSizing {
   nominal_w_m: number;
@@ -373,21 +373,12 @@ export interface DoorSizing {
   pocket_run_m: number;
 }
 
-// A flashed window unit's envelope inside its RO. Mirrors resolve/model_window_seat.py.
-export interface WindowSeat {
-  jamb_inset_m: number;
-  sill_rise_m: number;
-  head_drop_m: number;
-  inner_m: number;
-  outer_m?: number | null;
-  // WindowType.frame_depth (metres); null when the type authors none.
-  frame_depth_m?: number | null;
-}
-
-export interface AuthoredDoorPart {
+// One resolved product part of an opening (server/model_json_opening_parts.py): plan rings
+// extruded z0..z1. The viewer draws these as served and derives no geometry of its own.
+export interface OpeningPart {
   key: string;
   material_key: string;
-  material_ref: string | null;
+  material_ref?: string | null;
   // The catalog role (hardware: passage, hinge, ...) and its product_ref, when authored.
   role?: string | null;
   name?: string | null;
@@ -395,11 +386,10 @@ export interface AuthoredDoorPart {
 }
 
 export interface Opening {
-  authored_product_parts?: AuthoredDoorPart[] | null;
+  opening_parts?: OpeningPart[] | null;
   cased_product?: CasedDoorSpec | null;
   sizing?: DoorSizing | null;
   doorway?: DoorwayAssembly | null;
-  window_seat?: WindowSeat | null;
   frame_material_ref?: string | null;
   leaf_material_ref?: string | null;
   effective_frame_material_ref?: string | null;

@@ -17,7 +17,7 @@ from typehaus.emit.draw._shared import emit_floor_heat, emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.annotation_requests import add_point_label
 from typehaus.emit.draw.lineweights import FAINT, PROFILE
-from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
+from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol
 from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry import rect_between
@@ -108,5 +108,8 @@ def _emit_equipment(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                    (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2))
         b.add(Polyline(points=tuple(_in(p) for p in outline), layer="M-HVAC-EQPM",
                        closed=True, lineweight=PROFILE, uid=element.uid, tag=element.tag))
-        b.add(Text(anchor=_in((x, y)), content=element.kind.value.upper(), height_pt=TEXT_PT,
-                   layer="M-HVAC-EQPM", align="center"))
+        # Placed at frame time with the duct labels: at the mech room the plenums, ERV
+        # and water heater stand inches apart (C7-E8, M1-009).
+        add_point_label(b, key=f"equipment-{element.uid}", text=element.kind.value.upper(),
+                        target=_in((x, y)), layer="M-HVAC-EQPM", height_pt=TEXT_PT,
+                        priority=60, leader=True, avoid_obstacles=False)

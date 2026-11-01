@@ -865,7 +865,10 @@ def test_drain_tile_spec_reads_the_footing_bedding(catlin_model):
         # `discharge` was "daylight" until 2026-09-05 and it was never true: this tile's
         # invert is 7'-6 1/2" BELOW site grade. It falls to the sealed radon pit, which
         # pumps it up to grade.
-        assert spec.diameter == inch(4) and spec.sock and spec.discharge == "SM-B-RADON"
+        # The four court-face beds have their own pit, SM-B-SOUTH (2026-11-01, C3-E10).
+        pit = "SM-B-SOUTH" if footing.tag in {"FT-B-S1", "FT-B-S2", "FT-B-S3", "FT-B-S4"} \
+            else "SM-B-RADON"
+        assert spec.diameter == inch(4) and spec.sock and spec.discharge == pit, footing.tag
 
 
 def test_sill_gasket_prefers_the_authored_framing_spec():

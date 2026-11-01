@@ -342,13 +342,27 @@ def test_attic_handrail_lower_supports_have_bearing_backing(catlin_model_ro):
     bands = [b for b in backing_bands(model.plan)[wall.tag] if 'HANDRAIL' in b.tag]
     assert len(bands) == 2
     assert floating_band_ends(wall, bands) == []
-    members = [m for m in wall.members if m.child_key.startswith('backing-')]
+    # Backing is cut at the studs (2026-11), so a plate may land on backing AND the stud it
+    # stops against: what must hold is that bearing — backing or stud — runs unbroken under it.
+    half_stud = inch(0.75).meters
+    bearing = [(min(m.p0[1], m.p1[1]), max(m.p0[1], m.p1[1]), m) for m in wall.members
+               if m.child_key.startswith('backing-')]
+    bearing += [(m.p0[1] - half_stud, m.p0[1] + half_stud, m) for m in wall.members
+                if m.category in ('stud', 'king') and m.p0[1] == m.p1[1]]
     for suffix, station in [('ENDPLATE1', 46), ('BRACKET2', 84)]:
         support = _solids(model, 'RL-A-HANDRAIL', suffix)[0]
-        assert min(y for _x, y in support.outline) <= inch(station).meters
-        assert any(min(m.p0[1], m.p1[1]) <= min(y for _x, y in support.outline)
-                   and max(m.p0[1], m.p1[1]) >= max(y for _x, y in support.outline)
-                   and m.z0_m <= support.z0_m and m.z1_m >= support.z1_m for m in members)
+        lo, hi = (f(y for _x, y in support.outline) for f in (min, max))
+        assert lo <= inch(station).meters
+        spans = sorted((a, b) for a, b, m in bearing
+                       if m.z0_m <= support.z0_m and m.z1_m >= support.z1_m and b > lo and a < hi)
+        assert any(m.child_key.startswith('backing-') and a < hi and b > lo
+                   for a, b, m in bearing), suffix
+        reach = lo
+        for a, b in spans:
+            if a > reach + 1e-6:
+                break
+            reach = max(reach, b)
+        assert reach >= hi - 1e-6, suffix
 
 
 def test_attic_recess_bracket_reaches_the_lower_walls_double_top_plate(catlin_model_ro):

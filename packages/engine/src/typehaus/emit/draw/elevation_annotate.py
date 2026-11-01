@@ -7,7 +7,7 @@ ground goes, what the facade is made of, and what the horizontal datums are call
 The layout rule these three share is that nothing places itself blind: a fixed stagger from
 each wall top piles material callouts on this house, and GRADE, GARAGE FLOOR and MAIN
 FLOOR — inches apart here — would print on top of one another at their raw elevations. They
-are one column instead, sized in model inches, boxed with air, and run through
+are one column instead, lettered in points at the sheet's scale, boxed with air, and run through
 :func:`annotate.dodge` against each other. A label that has been dodged off its own datum
 keeps a leader back to the marker, which is why these are ``Leader`` nodes and not bare
 ``Text``.
@@ -29,7 +29,6 @@ from shapely.geometry import Point
 from shapely.geometry.base import BaseGeometry
 from shapely.ops import nearest_points
 
-from typehaus.emit.draw import annotate
 from typehaus.emit.draw.annotate import LabelSpec, PlacedLabel, dodge, label_box
 from typehaus.emit.draw.elevation_project import (
     ElevationView,
@@ -46,6 +45,7 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
+from typehaus.emit.draw.typography import TEXT_PT, model_in_per_pt
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
@@ -69,35 +69,41 @@ _INBOARD_SLACK_M = 0.3048  # 12"
 #: annotation column.
 _EXTEND_M = 0.6096  # 24"
 
-#: Annotation lettering, model inches. An elevation is the largest drawing in the set —
-#: forty feet across — so a smaller size (2.5") rasterises to about three pixels in
-#: ``haus render``. Sized here rather than inherited so the dodge boxes and the
-#: printed glyphs are the same number.
-ANNO_HEIGHT_IN = 4.0
+#: The scale elevation lettering is reserved at when no sheet scale is given: the set's
+#: ledger scale (C7-E5). ``framed_elevations`` lays the four sheets out at the one scale
+#: they all fit, so a sheet reserves exactly what it prints.
+ELEVATION_SCALE = 0.09375  # 3/32" = 1'-0"
 
-#: Air reserved above and below every annotation label, model inches. ``dodge`` separates
-#: boxes that *overlap*, and two labels a hair apart do not overlap — they print as one
-#: smear at elevation scale. Padding the reservation is how the gap becomes part of what is
-#: reserved, and it is what makes four datums within 3'-4" of each other come out as four
-#: readable lines.
+#: Printed size of every annotation label, points. Same pattern as ``section_annotate``:
+#: lettering is paper, and model-inch lettering printed at ``MIN_PT`` past its reservation.
+ANNO_PT = TEXT_PT
+
+
+def anno_in(scale: float) -> float:
+    """``ANNO_PT`` as model inches at ``scale`` — what the dodge boxes and bounds measure."""
+    return ANNO_PT * model_in_per_pt(scale)
+
+
+#: The lettering as model inches at :data:`ELEVATION_SCALE` (frameless renders and tests).
+ANNO_HEIGHT_IN = anno_in(ELEVATION_SCALE)
+
+#: Air reserved above and below a label at that scale: ``dodge`` separates boxes that
+#: overlap, and two labels a hair apart print as one smear.
 LABEL_PAD_IN = ANNO_HEIGHT_IN * 0.7
 
-#: Air between the three right-hand columns — material callouts, the vertical dimension
-#: string, then the datum labels — model inches. The columns' *positions* are derived from
-#: the width of what lands in each, so a long material name pushes the string over instead
-#: of printing through it; this is the slack on top of that width.
-#:
-#: 3'-0" of it, which is more than an estimate needs, because the reservation and the print
-#: are not always the same size here: ``text_extent`` reserves at the authored height, while
-#: ``pdf_writer`` floors annotation at ``typography.MIN_PT`` so a raster of a forty-foot
-#: elevation prints the smallest labels *larger* than they were reserved. The slack is what
-#: absorbs that, and "FOUNDATION-PROTECTION-PANEL" printing through "GRADE EL. -2'-10"" is
-#: what it looks like when there is none.
-_COLUMN_GAP_IN = 36.0
+#: Air between the three right-hand columns (callouts, dimension string, datum labels),
+#: paper inches. Column positions derive from what lands in each; this is the slack.
+_COLUMN_GAP_PAPER_IN = 0.15
 
-#: Shortest rung the vertical dimension string will draw. Under 2'-0" the string's own text
-#: prints between two arrowheads that are already touching; see
-#: :func:`emit_level_dimensions` for why skipping the rung keeps the chain summing.
+#: Paper the dimension string's rotated 9.5 pt text takes left of its line.
+_DIM_TEXT_PAPER_IN = 0.18
+
+#: Shortest rung the vertical dimension string draws, paper inches (C7-E5). A rung is read
+#: through its own 9.5 pt string between two arrowheads; "2'-10"" is ~0.5" of paper, so
+#: under this the string overprints its neighbour. Merging keeps the chain summing.
+MIN_RUNG_PAPER_IN = 0.6
+
+#: The model-inch floor for a frameless caller: under 2'-0" no scale makes a rung legible.
 _MIN_DIM_IN = 24.0
 
 #: Smallest visible surface worth a material callout. A wall whose cladding is occluded can
@@ -166,7 +172,8 @@ def grade_profile_points(model: ResolvedModel, view: ElevationView, plane_depth:
 
 
 def emit_grade_profile(b: SceneBuilder, model: ResolvedModel, view: ElevationView,
-                        facade_depth: float, lo_u: float, hi_u: float) -> None:
+                        facade_depth: float, lo_u: float, hi_u: float,
+                        scale: float = ELEVATION_SCALE) -> None:
     """The elevation's ground line, its hatch and its "GRADE" caption.
 
     Sampled against the *facade* band rather than the symmetric section one: an elevation
@@ -179,8 +186,9 @@ def emit_grade_profile(b: SceneBuilder, model: ResolvedModel, view: ElevationVie
     poly = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in points)
     b.add(Polyline(points=poly, layer="L-SITE-GRAD", lineweight=CUT_HEAVY))
     emit_grade_hatch(b, points)
-    b.add(Text(anchor=(poly[0][0], poly[0][1] - ANNO_HEIGHT_IN), content="GRADE",
-               height=ANNO_HEIGHT_IN, layer="L-SITE-GRAD"))
+    height = anno_in(scale)
+    b.add(Text(anchor=(poly[0][0], poly[0][1] - height), content="GRADE",
+               height=height, height_pt=ANNO_PT, layer="L-SITE-GRAD"))
 
 
 def emit_grade_hatch(b: SceneBuilder, points: list[tuple[float, float]]) -> None:
@@ -218,32 +226,37 @@ class Level:
 
 
 def emit_sheet_annotations(b: SceneBuilder, model: ResolvedModel,
-                           facade_pieces: list[VisiblePiece], edge_u: float) -> None:
+                           facade_pieces: list[VisiblePiece], edge_u: float,
+                           scale: float = ELEVATION_SCALE) -> None:
     """Material callouts and the level datum string, laid out once and dodged together.
 
     Placed blind — a fixed stagger for callouts, raw elevation for level labels — GRADE,
     MAIN FLOOR and GARAGE FLOOR print on top of one another on this house. One column
     instead: merged, stacked, and run through :func:`annotate.dodge` against each other.
+    Lettering is ``ANNO_PT`` reserved at ``scale``, the scale the sheet prints at.
     """
-    height_pt = ANNO_HEIGHT_IN / annotate.model_in_per_pt(None)
+    height_in = anno_in(scale)
+    pad_in = height_in * 0.7
     levels = merged_levels(model)
-    gap = _COLUMN_GAP_IN * M_PER_IN
+    gap = _COLUMN_GAP_PAPER_IN * 12.0 / scale * M_PER_IN
 
     callout_u = edge_u + gap
     callouts = _material_callouts(facade_pieces, callout_u, grade_datum(model))
-    callout_labels = [label_at(callout_u, target[1], spec.text, height_pt,
-                                target=target, key=spec.key)
+    callout_labels = [label_at(callout_u, target[1], spec.text, ANNO_PT,
+                                target=target, key=spec.key, scale=scale, pad_in=pad_in)
                       for spec, target in ((spec, spec.target or (callout_u, 0.0))
                                            for spec in callouts)]
 
     widest = max((item.box[2] - item.box[0] for item in callout_labels), default=0.0)
-    dim_u = callout_u + widest * M_PER_IN + gap
+    # The string's own rotated text prints LEFT of its line, so the line stands that far on.
+    dim_u = callout_u + widest * M_PER_IN + gap + _DIM_TEXT_PAPER_IN * 12.0 / scale * M_PER_IN
     # Three gaps, not one: the level marker and the dimension string's own text both sit at
     # ``dim_u``, and a datum label starting a foot away printed through both of them.
-    label_u = dim_u + 3.0 * gap
+    label_u = dim_u + gap
     level_labels = [
-        label_at(label_u, level.z_m, level_text(level), height_pt,
-                  target=(dim_u, level.z_m), key=("level", index))
+        label_at(label_u, level.z_m, level_text(level, stacked=True), ANNO_PT,
+                  target=(dim_u, level.z_m), key=("level", index), scale=scale,
+                  pad_in=pad_in)
         for index, level in enumerate(levels)]
 
     # Level labels settle first and the callouts dodge around them: a datum label has to stay
@@ -251,8 +264,8 @@ def emit_sheet_annotations(b: SceneBuilder, model: ResolvedModel,
     placed_levels = dodge(level_labels)
     placed_callouts = dodge(callout_labels, fixed=tuple(item.box for item in placed_levels))
 
-    emit_level_markers(b, levels, placed_levels, dim_u)
-    emit_level_dimensions(b, levels, dim_u)
+    emit_level_markers(b, levels, placed_levels, dim_u, height=height_in, height_pt=ANNO_PT)
+    emit_level_dimensions(b, levels, dim_u, min_paper_in=MIN_RUNG_PAPER_IN, scale=scale)
 
     for placed in placed_callouts:
         anchor_u, anchor_z = placed.spec.target or placed.at
@@ -260,7 +273,8 @@ def emit_sheet_annotations(b: SceneBuilder, model: ResolvedModel,
             anchor=NamedPoint(xy=(anchor_u / M_PER_IN, anchor_z / M_PER_IN),
                               name=str(placed.spec.key)),
             at=placed.at, to=(anchor_u / M_PER_IN, anchor_z / M_PER_IN),
-            text=placed.spec.text, height=ANNO_HEIGHT_IN, layer="A-ANNO-TEXT"))
+            text=placed.spec.text, height=height_in, height_pt=ANNO_PT,
+            layer="A-ANNO-TEXT"))
 
 
 def emit_level_markers(b: SceneBuilder, levels: list[Level],
@@ -321,8 +335,12 @@ def merged_levels(model: ResolvedModel) -> list[Level]:
     return out
 
 
-def level_text(level: Level) -> str:
-    return " / ".join(level.labels) + f"  EL. {feet_inches_signed(level.z_m)}"
+def level_text(level: Level, *, stacked: bool = False) -> str:
+    """The datum caption; ``stacked`` puts each name and the elevation on its own line."""
+    elevation = f"EL. {feet_inches_signed(level.z_m)}"
+    if stacked:
+        return "\n".join((*level.labels, elevation))
+    return " / ".join(level.labels) + f"  {elevation}"
 
 
 def label_at(u: float, z: float, text: str, height_pt: float,
@@ -345,17 +363,25 @@ def label_at(u: float, z: float, text: str, height_pt: float,
                        box=(u0, z0 - pad_in, u1, z1 + pad_in))
 
 
-def emit_level_dimensions(b: SceneBuilder, levels: list[Level], dim_u: float) -> None:
+def emit_level_dimensions(b: SceneBuilder, levels: list[Level], dim_u: float, *,
+                          min_paper_in: float | None = None,
+                          scale: float | None = None) -> None:
     """The stacked vertical string, chained past datums too close together to dimension.
 
     ``SECOND T.O. PLATE`` stands 1" above ``ATTIC FLOOR`` here, and a 1" dimension printed
     between two arrowheads that overlap each other is illegible and worthless. Skipping the
     rung rather than dropping the level keeps the chain summing: the next dimension is
     measured from the last one that was drawn, so bottom to top still adds up to the inch.
+
+    The shortest rung is ``min_paper_in`` of paper at ``scale`` when both are given (the
+    string's size is points, so legibility is a paper length), never under 2'-0".
     """
     if not levels:
         return
-    minimum = _MIN_DIM_IN * M_PER_IN
+    minimum_in = _MIN_DIM_IN
+    if min_paper_in is not None and scale is not None:
+        minimum_in = max(minimum_in, min_paper_in * 12.0 / scale)
+    minimum = minimum_in * M_PER_IN
     lower = levels[0]
     for upper in levels[1:]:
         if upper.z_m - lower.z_m < minimum:

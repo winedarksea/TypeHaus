@@ -86,8 +86,8 @@ _PROFILE_FACE_FACTOR: dict[str, float] = {
 _FLAT_FACE_FACTOR = 1.0
 
 #: Order the schedule groups by. A mill reads it top to bottom as one day's work.
-_USE_ORDER = ("window stool", "door casing", "baseboard", "casework board", "furniture",
-              "countertop", "shelf",
+_USE_ORDER = ("window stool", "door casing", "door jamb", "baseboard", "casework board",
+              "furniture", "countertop", "shelf",
               "stair tread", "stair winder", "stair riser", "stair landing nosing",
               "stair landing board", "stair landing closing board", "stair landing deck",
               "floor", "wainscot", "wall liner", "ceiling liner",

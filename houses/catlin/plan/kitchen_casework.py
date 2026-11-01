@@ -12,7 +12,7 @@ from typehaus.model import deg, ft, inch, mm, pt
 MAIN_KITCHEN_CASEWORK = [
     # West run — cold storage and pantry against the centre bearing wall, opening east.
     # North to south: RM-M-PANTRY's south partition, refrigerator, freezer, closet pantry.
-    # Cabinets 24" deep (centre x=19'-3 3/8"); cold boxes 27" deep (centre 19'-4 7/8").
+    # Cabinets 24" deep (centre x=19'-3 3/8"); cold boxes 27" deep (centre 19'-5 3/4").
     #
     # ** THE RUN'S NORTH END IS A WALL, NOT A CABINET. ** RM-M-PANTRY's south partition
     # W-M-PAN-S puts its face at y=32'-10 5/8"; the shared catalog's CASE-TALL-PANTRY-12/-18
@@ -20,31 +20,29 @@ MAIN_KITCHEN_CASEWORK = [
     # room.
     #
     # The pair shifts SOUTH to meet that face and FURN-M-KIT-COLDSTORE-FILL is deleted with
-    # them: the partition takes 4 3/4" off the north end, the filler gives 6 1/4" back, so
-    # PANTRYC nets 1 1/2" north — the whole budget, and a bigger move means a shallower
-    # pantry. The bay is 65 3/4", EXACTLY two appliance widths, so the appliances divide it
-    # with no filler at either end. The two over-cabinets DO need filler and cannot avoid
-    # it: 65 3/4" is not two SEKTION widths. See their note below.
+    # them. ** CLEARANCES (2026-11-01, FPRU19F8WF install guide): 1" rear, 3/16" each outer
+    # side. ** The bay is 66 1/4" (PANTRYC 1/2" south), Frigidaire's paired cutout: 3/16 +
+    # 32 7/8 + 1/8 pair-kit seam + 32 7/8 + 3/16. Both units stand 1" off the wall face.
+    # The over-cabinets need filler: 66 1/4" is not two SEKTION widths. See their note below.
     #
-    # Fridge/freezer door zones: fronts at x=20'-6 3/8", so a 3'-0" zone reaches 23'-6 3/8"
-    # — clear of W-M-PAN-E by 7 1/4" and south of the north counter run. ** DESIGN NOTE, and
+    # Fridge/freezer door zones: fronts at x=20'-7 1/4", so a 3'-0" zone reaches 23'-7 1/4"
+    # — clear of W-M-PAN-E by 6 3/8" and south of the north counter run. ** DESIGN NOTE, and
     # no check catches it: ** that zone stands in front of D-M-PANTRY. The pantry
     # now pockets west: the closed refrigerator obstructed ~23 inches of the old west
     # bypass opening. Shelves and cabinet positions stay fixed. An open fridge door
     # blocks the pantry. It is the price of putting both on one aisle, and it is the price
     # the owner is paying knowingly.
     # Product: the Frigidaire Professional single-door pair (plan/appliance_types.py).
-    # The current bay is y=27'-4 7/8"..32'-10 5/8", 65 3/4", with no appliance filler.
+    # The bay is y=27'-4 3/8"..32'-10 5/8", 66 1/4", with no appliance filler.
     #
-    # x moved OUT, from 19'-8 3/8" to 19'-4 7/8", and the run got roomier for it: these
-    # columns are 27" deep against the allowance's 34", and both are back-aligned to the
-    # centre bearing wall's face at x=18'-3 3/8" the way the whole run is. They stand 3"
-    # proud of the 24" tall cabinets beside them instead of 10". Frigidaire does not publish
-    # the handle projection, so the *real* proudness is 3" plus a handle nobody has measured
+    # These columns are 27" deep against the allowance's 34", backs 1" off the centre
+    # bearing wall's face at x=18'-3 1/4". They stand 3 7/8" proud of the 24" frames
+    # beside them. Frigidaire does not publish
+    # the handle projection, so the *real* proudness is 3 7/8" plus a handle nobody has measured
     # — a tape on a floor sample before the cabinet order, not a number to invent here.
     Appliance(uid="A1Y5Q0RDXV", tag="APPL-M-FRIDGE", type_ref="APPL-FRIG-PRO-ALLFRIDGE",
               room="RM-M-LIVING",
-              position=pt(ft(19, 4.875), ft(31, 6.1875)), rotation=deg(90),
+              position=pt(ft(19, 5.75), ft(31, 6)), rotation=deg(90),
               # TWINSPAIRKIT rides on the refrigerator rather than the freezer arbitrarily —
               # it is one kit for the pair, and billing it twice would be wrong. It is what
               # makes two cabinets legal to stand against each other: the shared side walls
@@ -52,26 +50,26 @@ MAIN_KITCHEN_CASEWORK = [
               install_parts=("Frigidaire TWINSPAIRKIT twin pairing kit (anti-condensation heater, power supply, cord, clips)",)),
     Appliance(uid="ZH6G4SNPWT", tag="APPL-M-FREEZER", type_ref="APPL-FRIG-PRO-ALLFREEZER",
               room="RM-M-LIVING",
-              position=pt(ft(19, 4.875), ft(28, 9.3125)), rotation=deg(90)),
+              position=pt(ft(19, 5.75), ft(28, 9)), rotation=deg(90)),
     # One 90-inch frame on 3 1/2-inch supports aligns with the cold uppers at 93 1/2.
-    # Retain the 18-inch width: the south end stays 7/8 inch inside W-M-C5's end.
+    # Retain the 18-inch width: 1/2" south for the cold bay, its south end 3/8" inside W-M-C5's end.
     # The 30/40/20 fronts put the upper door joint at the cold-upper bottom, 73 1/2.
     Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="SEKT-HIGH18-90",
               room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(26, 7.875)), rotation=deg(90)),
+              position=pt(ft(19, 3.375), ft(26, 7.375)), rotation=deg(90)),
     # Finish both existing end gaps; these are front strips, not full-depth cabinets.
     Furniture(uid="J7C2SCRB6S", tag="FURN-M-KIT-COLD-SCRIBE-S", type_ref="FT-KIT-COLD-SCRIBE-20",
               room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-C5", face="right", distance_from_start=inch(20.3125),
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(19.9375),
                   normal_gap=inch(24), rotation_offset=deg(0)))),
     Furniture(uid="K7C2SCRB6N", tag="FURN-M-KIT-COLD-SCRIBE-N", type_ref="FT-KIT-COLD-SCRIBE-20",
               room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-C5", face="right", distance_from_start=inch(83.1875),
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(83.0625),
                   normal_gap=inch(24), rotation_offset=deg(0)))),
     # Over the two cold boxes: 24" deep like the talls, so all four fronts land on
-    # x=20'-3 3/8" and the appliances stand 3" proud — clearing the fridge/freezer door
+    # x=20'-3 3/8" and the appliances stand 3 7/8" proud — clearing the fridge/freezer door
     # swing.
     #
     # Stock 30x24x20 fridge-top frames replace the custom 30-high boxes (2026-10-05).
@@ -83,22 +81,22 @@ MAIN_KITCHEN_CASEWORK = [
     # hinge and want 1" above (plan/appliance_types.py). A 73 1/2" cabinet starts exactly
     # there; confirm the hinge and rail clearance on the appliance/shop drawings.
     #
-    # ** THE 5 3/4" OF FILLER, AND WHERE IT GOES. ** Bay 27'-4 7/8"..32'-10 5/8" is
-    # 65 3/4"; two 30" boxes are 60". The pair is GANGED, with its joint on the appliance
-    # joint at 30'-1 3/4", with a 2 7/8" end scribe against PANTRYC south and the pantry
-    # partition north. Box centres are 28'-10 3/4" and 31'-4 3/4", different from
+    # ** THE 6 1/4" OF FILLER, AND WHERE IT GOES. ** Bay 27'-4 3/8"..32'-10 5/8" is
+    # 66 1/4"; two 30" boxes are 60". The pair is GANGED, with its joint on the appliance
+    # joint at 30'-1 1/2", with a 3 1/8" end scribe against PANTRYC south and the pantry
+    # partition north. Box centres are 28'-10 1/2" and 31'-4 1/2", different from
     # the appliance centres below them.
     Furniture(uid="8T3D1P2QRV", tag="FURN-M-KIT-OVER-FRIDGE", type_ref="SEKT-TS30-20",
               room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-C5", face="right", distance_from_start=inch(66.75),
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(66.5),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
     Furniture(uid="Y4KJ6WB0ZC", tag="FURN-M-KIT-OVER-FREEZER", type_ref="SEKT-TS30-20",
               room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-C5", face="right", distance_from_start=inch(36.75),
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(36.5),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # Pantry face x=297 3/8; 12 + 24 DW + 36 sink + 18 = 90 inches to the carousel.

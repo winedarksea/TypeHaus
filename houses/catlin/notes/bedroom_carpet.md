@@ -9,7 +9,7 @@ Applies to `RM-M-BED`, `RM-M-CLOSET`, and `RM-S-BED1/2/3`, which share
 | Item | Provisional selection | Published details |
 | --- | --- | --- |
 | Carpet | [STAINMASTER PetProtect Sweet Spot I, Romano](https://www.lowes.com/pd/5013298681), model **7L89100101** | Textured nylon, 48.8 oz/yd² **face weight**, 0.56-in pile height, 12-ft roll; twist unverified |
-| Cushion | [Future Foam 150553488-33](https://www.homedepot.com/p/203393650) | Rebond, **8 lb/ft³ density**, **7/16-in thickness** |
+| Cushion | [Future Foam 150553488-32](https://www.homedepot.com/p/203393647) | Rebond, **8 lb/ft³ density**, **3/8-in thickness** (owner 2026-11-01; was the 7/16-in -33) |
 
 Use **warm ivory/cream** as the color direction, pending a Romano sample in the house.
 **Light warm greige** is the alternative to consider. The material's `#e5dccb` is an
@@ -43,24 +43,37 @@ it is research context only, not a current quote.
 remains separate. The model's area-plus-waste takeoff is an estimate, not a cutting plan:
 obtain a roll/seam layout, verify roll width and cut lengths, and quote the actual order.
 
-## Installed height remains unresolved
+## Installed height and the doorways (owner, 2026-11-01)
 
-The retained **3/4-in modeled depth above subfloor** is a provisional coordination
-allowance. Its former **1/4-in plywood + 1/4-in pad + 1/4-in carpet** assumption does
-not describe the selected products. The **0.56-in pile height excludes any unreported
-backing contribution** and must not be substituted for total carpet thickness. Plywood
-continues as a provisional takeoff allowance; its need and thickness are unconfirmed.
+No plywood. The model carries the carpet at **1.000 in over the subfloor**: 0.56-in published
+pile + a **1/16-in backing allowance** (unpublished) + the 3/8-in cushion. That is 1/4 in over
+the 3/4-in oak and tile at `D-S-BED1/2/3` and `D-M-BATH2`.
 
-Keep current modeled elevations while this is pending. Mock up and measure the actual
-carpet including backing, selected cushion, and compressed doorway edges. Then reconcile
-plywood, transitions, door clearances and affected elevations together. The
-[floor-height schedule](floor_heights.md), including flush oak/tile edges and the main
-bedroom saddle, remains a design target awaiting this reconciliation. Passing its model
-tests establishes numerical consistency, not physical fit of the selected assembly.
+The owner's rule: take the 3/8-in cushion if it lets those doorways go without a transition
+product. Both cushions were computed against the doorway check (`integrity.doorway_assembly`,
+1 mm on every contact plane):
 
-Default to 7/16-in cushion subject to carpet manufacturer acceptance. A
-**manufacturer-approved 3/8-in, 8 lb/ft³ cushion** is the height-coordination alternative;
-no specific 3/8-in product is selected. CRI's [general cushion guidance](https://carpet-rug.org/carpet-for-homes/selecting-the-right-carpet/)
+| | 3/8-in cushion | 7/16-in cushion |
+| --- | ---: | ---: |
+| carpet + backing alone (cushion stops at the bar) | 0.625 in | 0.625 in |
+| field over the subfloor | 1.000 in | 1.0625 in |
+| field over the oak/tile | **0.250 in** | 0.3125 in |
+
+At a Z-bar the cushion is cut back and the 0.625-in carpet is tucked against the 3/4-in hard
+floor, so the edge lands on the oak/tile plane with either cushion. What differs is the step
+the carpet itself makes up to its field. 3/8 in stays within the 1/4 in that ICC A117.1 §303.2
+lets stand as a vertical change with no edge treatment. 7/16 in stands 1/16 in past it and
+would want a bevelled reducer. So: **3/8-in cushion, a Z-bar at each carpet-to-hard doorway,
+no reducer** (`plan/doorway_transitions.py`, `BEDROOM_ZBAR`). It holds while the measured
+backing is 0.10 in or less (0.185 in + backing ≤ 1/4 in + 1 mm).
+
+`D-M-BED2` meets the hall LVP 0.80315 in below and takes a product either way: a 5/4 oak saddle
+on the subfloor, top on the carpet plane under the leaf.
+
+Measure the sample's backing and the compressed edge at a Z-bar mock-up before ordering; a
+thicker backing re-opens the 1/4-in step, and the fix is a reducer, not plywood.
+
+The 3/8-in pad still needs the carpet maker's acceptance. CRI's [general cushion guidance](https://carpet-rug.org/carpet-for-homes/selecting-the-right-carpet/)
 does not replace the selected carpet maker's installation and warranty requirements.
 
 ## Before purchase and construction
@@ -72,5 +85,4 @@ does not replace the selected carpet maker's installation and warranty requireme
 - Verify the exact cushion's acceptance, required certification and warranty conditions
   with the carpet supplier/installer. File the applicable installation and warranty
   documents; do not assume a branded pad warranty extension applies to Future Foam.
-- Complete the measured assembly and reconcile all affected construction heights before
-  fixing plywood thickness, thresholds, door clearances or final elevations.
+- Measure the backing and a Z-bar mock-up edge before ordering (see above).

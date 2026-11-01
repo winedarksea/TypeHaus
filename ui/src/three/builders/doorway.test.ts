@@ -40,7 +40,7 @@ export function runDoorwayTests() {
       };
       const pocket = new THREE.Group();
       buildOpening(pocket, opening, wall, [0, 0], "schematic", RESOLVED_NORDIC_PALETTE.light,
-        { operation: "pocket" }, [], new Map());
+        {}, [], new Map());
       const section = pocket.children.find(child => child.userData.doorwayProduct) as THREE.Mesh;
       const pocketPoints = section.geometry.getAttribute("position");
       if (pocketPoints.count !== points.count || actual.some((point, i) =>

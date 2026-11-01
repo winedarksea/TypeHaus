@@ -1,5 +1,5 @@
 # haus: editable
-from typehaus import ClearZone, Slice, SliceKind, inch, pt
+from typehaus import ClearZone, Slice, SliceDimension, SliceKind, inch, pt
 
 # A thin paper target sits 1/16" proud of the south concrete face. The north limit
 # is the inverter's actual front: 403 9/16" = 10.2504875 m of usable dry-fire length.
@@ -16,5 +16,9 @@ DRY_FIRE_LANE = [
     Slice(uid="18XSSZCHEA", tag="SL-S-DRYFIRE", kind=SliceKind.SECTION,
           title="Dry-fire lane — 10.25 m usable",
           cut_origin=pt(inch(54), inch(0)), cut_direction="y",
+          # The usable length, target face to the inverter's front (C7-E8, D2-014).
+          dimensions=(SliceDimension(start=pt(inch(8.0625), inch(-40)),
+                                     end=pt(inch(411.625), inch(-40)), axis="u",
+                                     at=inch(-40), text="{} usable (10.25 m)"),),
           crop=(pt(inch(0), inch(-112)), pt(inch(420), inch(-10)))),
 ]

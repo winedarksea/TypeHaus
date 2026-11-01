@@ -174,7 +174,10 @@ def test_reflow_beats_a_single_column_on_the_sheet(catlin_model):
 #: was never going to use and WIDTH is what binds. On 2026-09-17 the ratio read 1.354
 #: against a 1.35 limit while the sheet printed at full 1/8" with 172" of vertical room to
 #: spare — a red test over a sheet with nothing wrong with it.
-SCENE_TO_PLAN_HEIGHT_REPORTED = 1.4
+#:
+#: 1.4 -> 1.45 (2026-11-01): FT-B-S2/S3 went 8" -> 10" deep, adding an F-mark row, two STEP
+#: FTG. and one undercut callout and two notes (1.279 -> 1.404); both papers kept their scale.
+SCENE_TO_PLAN_HEIGHT_REPORTED = 1.45
 
 
 def test_the_schedule_no_longer_governs_the_sheet_height(catlin_model):
