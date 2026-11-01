@@ -67,7 +67,7 @@ def _discover() -> None:
     """Import every module under this package: importing a calc module is what registers it.
 
     Auto-discovered rather than listed, so a new family cannot silently vanish from
-    ``haus engineering``, S-105 and the permit gate for want of an import line.
+    ``haus engineering``, S-603 and the permit gate for want of an import line.
     """
     import importlib
     import pkgutil

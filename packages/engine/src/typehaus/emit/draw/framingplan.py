@@ -17,7 +17,7 @@ mark, and every drawn element is emitted once behind a ``seen`` tag set — a du
 
 from __future__ import annotations
 
-from typehaus.emit.draw._shared import emit_bbox_dimension_chain, emit_wall
+from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE, emit_wall
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.framing_schedule import (
     FramedLevel,
@@ -39,6 +39,15 @@ from typehaus.emit.draw.schedule_block import (
     metrics_for,
 )
 from typehaus.emit.draw.structural_common import feet_inches, outline_center
+from typehaus.emit.draw.structural_dimensions import (
+    BEARING,
+    LOCATING,
+    Tier,
+    emit_structural_tiers,
+    line_stations,
+    overall_tier,
+    wall_opening_stations,
+)
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
@@ -52,7 +61,9 @@ _MEMBER_LABEL_HEIGHT_IN = 3.0
 _BEARING_LABEL_HEIGHT_IN = 2.0
 
 
-def build_framing_plan(model: ResolvedModel, storey: str) -> Scene:
+def build_framing_plan(model: ResolvedModel, storey: str,
+                       metrics: BlockMetrics | None = None,
+                       dimension_scale: float = PLAN_RESERVATION_SCALE) -> Scene:
     """Build the S-101 IR scene for every framed deck on ``storey``."""
     b = SceneBuilder(name=f"framing-{storey}", units="in")
     levels = framed_levels(model, storey)
@@ -74,7 +85,7 @@ def build_framing_plan(model: ResolvedModel, storey: str) -> Scene:
         if stair.storey == storey and stair.winder_turn is not None:
             emit_winder_framing(b, stair)
     plan_points = _drawn_plan_points(model, levels)
-    metrics = metrics_for(plan_points)
+    metrics = metrics or metrics_for(plan_points)
     seen: set[str] = set()
     for level in levels:
         _emit_span_callout(b, level)
@@ -82,11 +93,43 @@ def build_framing_plan(model: ResolvedModel, storey: str) -> Scene:
         _emit_beams_and_posts(b, model, level, metrics, seen)
         _emit_headers(b, level, metrics, seen)
         _emit_bearing_labels(b, level, seen)
-    bearing = [wall for level in levels for wall in level.declared_bearing_walls]
-    if bearing:
-        emit_bbox_dimension_chain(b, bearing)
+    emit_structural_tiers(b, _framing_tiers(model, levels), dimension_scale)
     _emit_schedule_column(b, model, levels, plan_points, metrics)
     return b.build()
+
+
+def _framing_tiers(model: ResolvedModel,
+                   levels: tuple[FramedLevel, ...]) -> list[Tier | None]:
+    """Locating (bearing lines, posts, beams, floor-opening edges, openings in bearing walls),
+    the declared bearing lines c/c, and the overall of the walls below to their faces."""
+    bearing = {wall.tag: wall for level in levels for wall in level.declared_bearing_walls}
+    bearing_xs, bearing_ys = line_stations(wall.axis for wall in bearing.values())
+    xs, ys = list(bearing_xs), list(bearing_ys)
+    for level in levels:
+        for post in level.posts:
+            x, y = post.position.xy_m
+            xs.append(x)
+            ys.append(y)
+        for beam, _span in level.beams:
+            start, end = model.plan.by_tag(beam.start_node), model.plan.by_tag(beam.end_node)
+            if start is not None and end is not None:
+                beam_xs, beam_ys = line_stations([(start.position.xy_m, end.position.xy_m)])
+                xs.extend(beam_xs)
+                ys.extend(beam_ys)
+        for tag in level.system.openings:
+            opening = model.plan.by_tag(tag)
+            if opening is not None and len(opening.outline) >= 3:
+                xs.extend(point.xy_m[0] for point in opening.outline)
+                ys.extend(point.xy_m[1] for point in opening.outline)
+        for wall, _member, opening_tag in level.headers:
+            opening_xs, opening_ys = wall_opening_stations(model, wall, (opening_tag,))
+            xs.extend(opening_xs)
+            ys.extend(opening_ys)
+    storeys = _bearing_storeys(levels)
+    below = [wall for wall in model.walls if wall.storey in storeys]
+    return [Tier(LOCATING, tuple(xs), tuple(ys)),
+            Tier(BEARING, tuple(bearing_xs), tuple(bearing_ys)),
+            overall_tier("O/A FACE WALL", below)]
 
 
 def _drawn_plan_points(model: ResolvedModel,

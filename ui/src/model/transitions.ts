@@ -38,17 +38,24 @@ export function transitionMatchesCondition(transition: Transition, condition: Co
   return globMatches(transition.pattern, condition.key);
 }
 
-/** Conditions each transition documents, and the conditions no transition covers. */
+/** The transition that binds a condition: the FIRST whose pattern matches, in authored order
+ *  (model/patterns.py::first_match). A later, narrower pattern behind a wildcard binds nothing. */
+export function bindingTransition(transitions: Transition[], condition: Condition): Transition | undefined {
+  return transitions.find((transition) => transitionMatchesCondition(transition, condition));
+}
+
+/** Conditions each transition binds (first match), and the conditions no transition covers. */
 export function transitionCoverage(transitions: Transition[], conditions: Condition[]): {
   matchesByTransition: Map<string, Condition[]>;
   uncovered: Condition[];
 } {
-  const matchesByTransition = new Map<string, Condition[]>();
-  const covered = new Set<Condition>();
-  for (const transition of transitions) {
-    const matched = conditions.filter((condition) => transitionMatchesCondition(transition, condition));
-    matchesByTransition.set(transition.tag, matched);
-    for (const condition of matched) covered.add(condition);
+  const matchesByTransition = new Map<string, Condition[]>(
+    transitions.map((transition) => [transition.tag, []]));
+  const uncovered: Condition[] = [];
+  for (const condition of conditions) {
+    const binder = bindingTransition(transitions, condition);
+    if (binder) matchesByTransition.get(binder.tag)?.push(condition);
+    else uncovered.push(condition);
   }
-  return { matchesByTransition, uncovered: conditions.filter((condition) => !covered.has(condition)) };
+  return { matchesByTransition, uncovered };
 }

@@ -31,7 +31,7 @@ is 83 1/16 inches AFF; use that surface for headroom and heater checks.
 
 ### Keyed
 - [K1 @ host#layer:liner-furring:out] Furring to the pour: masonry anchors, embedment verified for the substrate.
-- [K2] South rough jamb 11 1/2" deep: 8" pour plus 3 1/2" liner. Deepen the buck.
+- {opening_perimeter:*} [K2] South rough jamb 11 1/2" deep: 8" pour plus 3 1/2" liner. Deepen the buck.
 - [K3 @ host#layer:foil-polyiso:out] Return the foil facing into the jamb and seal it. Do not stop it short.
 - [K4] Independent lying bench at 42 inches, foot platform at 24 inches and lighting rails at 16 inches AFF.
 - [K5] Drop framing: 2x4 wall on the pour, 2x4 ceiling hung from the I-joists.

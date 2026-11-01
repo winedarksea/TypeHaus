@@ -815,6 +815,182 @@
       "node": "polyline",
       "points": [
         [
+          9.245000000000001,
+          -24.4375
+        ],
+        [
+          9.34615082014275,
+          -24.815
+        ],
+        [
+          9.6225,
+          -25.09134917985725
+        ],
+        [
+          10.0,
+          -25.192500000000003
+        ],
+        [
+          10.377500000000001,
+          -25.09134917985725
+        ],
+        [
+          10.653849179857252,
+          -24.815
+        ],
+        [
+          10.755,
+          -24.4375
+        ],
+        [
+          10.653849179857252,
+          -24.060000000000002
+        ],
+        [
+          10.377500000000001,
+          -23.78365082014275
+        ],
+        [
+          10.0,
+          -23.6825
+        ],
+        [
+          9.6225,
+          -23.78365082014275
+        ],
+        [
+          9.34615082014275,
+          -24.060000000000002
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CDT008AAAA-run",
+      "tag": "CD-B-DATA-CHASE-RUN"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          9.245000000000001,
+          -24.4375
+        ],
+        [
+          9.34615082014275,
+          -24.815
+        ],
+        [
+          9.6225,
+          -25.09134917985725
+        ],
+        [
+          10.0,
+          -25.192500000000003
+        ],
+        [
+          10.377500000000001,
+          -25.09134917985725
+        ],
+        [
+          10.653849179857252,
+          -24.815
+        ],
+        [
+          10.755,
+          -24.4375
+        ],
+        [
+          10.653849179857252,
+          -24.060000000000002
+        ],
+        [
+          10.377500000000001,
+          -23.78365082014275
+        ],
+        [
+          10.0,
+          -23.6825
+        ],
+        [
+          9.6225,
+          -23.78365082014275
+        ],
+        [
+          9.34615082014275,
+          -24.060000000000002
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          10.0,
+          -25.11359212758328
+        ],
+        [
+          17.84251968503937,
+          -25.11359212758328
+        ],
+        [
+          17.84251968503937,
+          -23.761407872416722
+        ],
+        [
+          10.0,
+          -23.761407872416722
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CDT008AAAA-run",
+      "tag": "CD-B-DATA-CHASE-RUN"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          10.0,
+          -25.11359212758328
+        ],
+        [
+          17.84251968503937,
+          -25.11359212758328
+        ],
+        [
+          17.84251968503937,
+          -23.761407872416722
+        ],
+        [
+          10.0,
+          -23.761407872416722
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           12.4,
           -17.9375
         ],
@@ -1903,97 +2079,6 @@
     },
     {
       "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          0.25,
-          -13.437499999999998
-        ],
-        "name": ""
-      },
-      "at": [
-        13.0,
-        2.069761592300964
-      ],
-      "to": [
-        0.25,
-        -13.437499999999998
-      ],
-      "text": "air continuity — sheathing-ext →\nsheathing-ext",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -1.9999999999999996,
-          -13.437499999999998
-        ],
-        "name": ""
-      },
-      "at": [
-        13.0,
-        -2.5774606299212572
-      ],
-      "to": [
-        -1.9999999999999996,
-        -13.437499999999998
-      ],
-      "text": "water continuity — spray-foam-ext →\nspray-foam-ext",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -1.9999999999999996,
-          -13.437499999999998
-        ],
-        "name": ""
-      },
-      "at": [
-        13.0,
-        -7.224682852143479
-      ],
-      "to": [
-        -1.9999999999999996,
-        -13.437499999999998
-      ],
-      "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        -13.90251968503937,
-        -37.12253937007874
-      ],
-      "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -2101,6 +2186,97 @@
       "layer": "A-ANNO-DIMS",
       "text": "4\" XPS (2 layers)",
       "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          0.25,
+          -13.437499999999998
+        ],
+        "name": ""
+      },
+      "at": [
+        13.0,
+        2.069761592300964
+      ],
+      "to": [
+        0.25,
+        -13.437499999999998
+      ],
+      "text": "air continuity — sheathing-ext →\nsheathing-ext",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -1.9999999999999996,
+          -13.437499999999998
+        ],
+        "name": ""
+      },
+      "at": [
+        13.0,
+        -2.5774606299212572
+      ],
+      "to": [
+        -1.9999999999999996,
+        -13.437499999999998
+      ],
+      "text": "water continuity — spray-foam-ext →\nspray-foam-ext",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -1.9999999999999996,
+          -13.437499999999998
+        ],
+        "name": ""
+      },
+      "at": [
+        13.0,
+        -7.224682852143479
+      ],
+      "to": [
+        -1.9999999999999996,
+        -13.437499999999998
+      ],
+      "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        -13.90251968503937,
+        -37.12253937007874
+      ],
+      "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
       "uid": null
     },
     {

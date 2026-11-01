@@ -9,7 +9,7 @@ diffs against last week's, and sends to a licensed professional.
 Markdown is the source of truth. ``--pdf`` flattens the same sheets through
 ``takeoff/calc_pdf`` for the file a seal actually binds to — a jurisdiction accepts no
 Markdown — but the pagination there is derived from these files and never edited beside
-them. The permit set keeps S-105 as its engineering page; this is what stands behind it.
+them. The permit set keeps S-603 as its engineering page; this is what stands behind it.
 
 The folder is *regenerated*, never maintained. ``MANIFEST.json`` records what this run
 produced, and the next run deletes anything the previous manifest listed and this one did

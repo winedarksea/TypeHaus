@@ -10,17 +10,16 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from typehaus.emit.draw._shared import emit_wall
+from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE, emit_wall
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.diaphragm_notes import diaphragm_framing_notes
 from typehaus.emit.draw.lineweights import CUT, FAINT, PROFILE
 from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.draw.schedule_block import (
     BlockMetrics,
+    NoteBlock,
     ScheduleTable,
-    block_origin_right_of,
-    emit_note_block,
-    emit_schedule_table,
+    emit_block_columns,
     metrics_for,
 )
 from typehaus.emit.draw.structural_common import (
@@ -29,6 +28,14 @@ from typehaus.emit.draw.structural_common import (
     outline_bbox,
     truss_heel_note,
     wall_center,
+)
+from typehaus.emit.draw.structural_dimensions import (
+    BEARING,
+    LOCATING,
+    Tier,
+    emit_structural_tiers,
+    line_stations,
+    overall_tier,
 )
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction, StructuralRole
@@ -71,7 +78,9 @@ _BLOCKING_TITLES = {
 }
 
 
-def build_roof_framing_plan(model: ResolvedModel, roof_tag: str) -> Scene:
+def build_roof_framing_plan(model: ResolvedModel, roof_tag: str,
+                            metrics: BlockMetrics | None = None,
+                            dimension_scale: float = PLAN_RESERVATION_SCALE) -> Scene:
     """Build the S-102 IR scene for the ``ResolvedRoof`` with tag ``roof_tag``."""
     b = SceneBuilder(name=f"roof-framing-{roof_tag}", units="in")
     roof = next((item for item in model.roofs if item.tag == roof_tag), None)
@@ -88,10 +97,26 @@ def build_roof_framing_plan(model: ResolvedModel, roof_tag: str) -> Scene:
                        uid=roof.uid, tag=member.child_key))
 
     plan_points = [_in(point) for point in roof.footprint]
-    metrics = metrics_for(plan_points)
+    metrics = metrics or metrics_for(plan_points)
     _emit_ridge_callout(b, roof)
+    emit_structural_tiers(b, _roof_tiers(model, roof), dimension_scale)
     _emit_schedule_column(b, model, roof, plan_points, metrics)
     return b.build()
+
+
+def _roof_tiers(model: ResolvedModel, roof: ResolvedRoof) -> list[Tier | None]:
+    """Bearing lines and the ridge located, the bearing lines c/c, the walls' face overall."""
+    walls = [wall for wall in model.walls if wall.storey == roof.storey]
+    bearing = [wall for wall in walls
+               if getattr(model.plan.by_tag(wall.tag), "structural_role", None)
+               is StructuralRole.BEARING]
+    bearing_xs, bearing_ys = line_stations(wall.axis for wall in bearing)
+    ridge_xs, ridge_ys = line_stations((member.p0, member.p1) for member in roof.members
+                                       if member.category == _RIDGE_CATEGORY)
+    located = (Tier(LOCATING, (*bearing_xs, *ridge_xs), (*bearing_ys, *ridge_ys))
+               if ridge_xs or ridge_ys else None)
+    return [located, Tier(BEARING, tuple(bearing_xs), tuple(bearing_ys)),
+            overall_tier("O/A FACE WALL", walls)]
 
 
 def _drawn_members(roof: ResolvedRoof) -> list:
@@ -333,12 +358,9 @@ def _has_uplift_connector(model: ResolvedModel, roof: ResolvedRoof) -> bool:
 def _emit_schedule_column(b: SceneBuilder, model: ResolvedModel, roof: ResolvedRoof,
                           plan_points: list[tuple[float, float]],
                           metrics: BlockMetrics) -> None:
-    cursor = block_origin_right_of(plan_points, metrics)
-    bottom = emit_schedule_table(b, build_roof_framing_schedule(model, roof), cursor, metrics)
-    cursor = (cursor[0], bottom - metrics.block_gap)
-    bottom = emit_note_block(b, "ROOF FRAMING NOTES", roof_framing_notes(model, roof), cursor,
-                             metrics)
-    cursor = (cursor[0], bottom - metrics.block_gap)
-    missing = [f"{finding.check_id}: {finding.message}"
-               for finding in roof_framing_findings(model, roof)]
-    emit_note_block(b, "NOT SHOWN — MISSING MODEL INPUTS", missing, cursor, metrics)
+    missing = tuple(f"{finding.check_id}: {finding.message}"
+                    for finding in roof_framing_findings(model, roof))
+    emit_block_columns(b, (build_roof_framing_schedule(model, roof),
+                           NoteBlock("ROOF FRAMING NOTES", tuple(roof_framing_notes(model, roof))),
+                           NoteBlock("NOT SHOWN — MISSING MODEL INPUTS", missing)),
+                       plan_points, metrics)

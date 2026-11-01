@@ -115,6 +115,9 @@ class JoistReinforcement(HausModel):
     plies: int = 3  # total plies at the line, the authored joist included
     member: str | None = None  # None = the deck's own JoistSpec.member
     blocking: bool = True  # solid blocking out to the joist line on each side
+    # Plan coordinates along the joist axis the plies run between; None = the whole line.
+    # A flush header in the band over a wall opening is the case (``Door.header_in_band``).
+    extent: tuple[Length, Length] | None = None
     source: str | None = None
 
 

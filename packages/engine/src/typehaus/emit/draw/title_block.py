@@ -54,6 +54,9 @@ _TITLE_H_FRACTION = 0.085
 #: is the switch and ``viewport_box`` reserves to match.
 TITLE_W = 2.60
 
+#: Least baseline pitch for the seal cell's 5 pt lines: 5 pt on ``LINE_SPACING`` 1.4.
+_SEAL_LINE_STEP_IN = 5.0 * 1.4 / 72.0
+
 #: Clear space between the drawn border and any lettering, inches.
 _GUTTER = 0.35
 
@@ -345,25 +348,35 @@ def _draw_seal_cell(ax, cell, pad: float, seal: SealBlock | None, label) -> None
                 family="monospace", va="center", ha="center", color="#999999")
         return
 
-    # Top half: the dashed reserved area a physical or electronic stamp lands in.
+    # The dashed reserved area a physical or electronic stamp lands in, over the four lines;
+    # beside them where the cell is too short to stack five lines at 5 pt (the ledger
+    # bottom strip, where they overprinted).
     stamp_bot = seal_bot + (seal_top - seal_bot) * 0.46
-    ax.add_patch(Rectangle((box_x0, stamp_bot), box_x1 - box_x0,
-                           (seal_top - pad) - stamp_bot,
+    step = (stamp_bot - (seal_bot + pad)) / 5.4
+    stacked = step >= _SEAL_LINE_STEP_IN
+    if stacked:
+        stamp = (box_x0, stamp_bot, box_x1, seal_top - pad)
+        lines_x, y = box_x0, stamp_bot - step * 0.8
+    else:
+        height = seal_top - seal_bot - 2 * pad
+        stamp = (box_x0, seal_bot + pad, box_x0 + min(height, 0.4 * (box_x1 - box_x0)),
+                 seal_top - pad)
+        step = height / 5.0
+        lines_x, y = stamp[2] + pad, seal_top - pad - step * 0.5
+    ax.add_patch(Rectangle(stamp[:2], stamp[2] - stamp[0], stamp[3] - stamp[1],
                            fill=False, edgecolor="#999999", linewidth=0.4,
                            linestyle=(0, (3, 2))))
-    ax.text((box_x0 + box_x1) / 2.0, (seal_top - pad + stamp_bot) / 2.0, "SEAL",
+    ax.text((stamp[0] + stamp[2]) / 2.0, (stamp[1] + stamp[3]) / 2.0, "SEAL",
             fontsize=6.0, family="monospace", va="center", ha="center", color="#999999")
 
-    # Bottom half: the four lines, filled from the signoff where there is one.
+    # The four lines, filled from the signoff where there is one.
     filled = {"NAME": seal.engineer, "LICENSE NO.": seal.license, "DATE": seal.sealed_on}
-    span = stamp_bot - (seal_bot + pad)
-    step = span / 5.4
-    y = stamp_bot - step * 0.8
     for line in ("NAME", "LICENSE NO.", "DATE", "SIGNATURE"):
         value = filled.get(line)
-        label(box_x0, y, f"{line} {value}" if value else f"{line} ____________", 5.0)
+        label(lines_x, y, f"{line} {value}" if value else f"{line} ____________", 5.0)
         y -= step
-    label(box_x0, y, "SEE S-001 FOR CERTIFICATION", 4.5, color="#555555")
+    if seal.certification:  # S-001 prints the sentence only when the profile states one
+        label(lines_x, y, "SEE S-001 FOR CERTIFICATION", 4.5, color="#555555")
 
 
 def _site_rows(site) -> list[str]:

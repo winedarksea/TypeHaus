@@ -1331,12 +1331,65 @@
     },
     {
       "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            213.25000000000006,
+            14.0
+          ],
+          "name": ""
+        },
+        {
+          "kind": "point",
+          "xy": [
+            218.75000000000003,
+            14.0
+          ],
+          "name": ""
+        }
+      ],
+      "p0": [
+        213.25000000000006,
+        14.0
+      ],
+      "p1": [
+        218.75000000000003,
+        14.0
+      ],
+      "offset": 3.0,
+      "height_pt": 9.5,
+      "layer": "A-ANNO-DIMS",
+      "text": "5 1/2\" stud",
+      "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        188.34645669291342,
+        -74.61860236220473
+      ],
+      "content": "FTG 1'-8\" x 8\" · TOES 4\" / 4\" · BRG EL. -9'-9 1/2\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-DIMS",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
       "node": "text",
       "anchor": [
         188.34645669291342,
         -68.61860236220473
       ],
-      "content": "TR-CATLIN-FOUNDATION  ·  basement-framed-wall",
+      "content": "TR-CATLIN-FOUNDATION-INT  ·  basement-framed-wall",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -1463,43 +1516,6 @@
       "uid": null
     },
     {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            213.25000000000006,
-            14.0
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            218.75000000000003,
-            14.0
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        213.25000000000006,
-        14.0
-      ],
-      "p1": [
-        218.75000000000003,
-        14.0
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "5 1/2\" stud",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
       "space": "paper",
       "node": "text",
       "anchor": [
@@ -1522,7 +1538,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-FOUNDATION  ·  basement-framed-wall",
+      "content": "TR-CATLIN-FOUNDATION-INT  ·  basement-framed-wall",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,

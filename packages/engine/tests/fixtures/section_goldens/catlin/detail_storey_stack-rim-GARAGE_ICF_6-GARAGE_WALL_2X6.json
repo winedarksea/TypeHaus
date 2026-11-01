@@ -620,86 +620,6 @@
       "node": "polyline",
       "points": [
         [
-          525.0625,
-          -4.370956789862821e-15
-        ],
-        [
-          525.0625,
-          9.653543307086611
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CGW101AAAA",
-      "tag": "W-G-S-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          522.0,
-          -4.370956789862821e-15
-        ],
-        [
-          522.0,
-          9.653543307086611
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CGW101AAAA",
-      "tag": "W-G-S-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          518.9375000000001,
-          -4.370956789862821e-15
-        ],
-        [
-          518.9375000000001,
-          9.653543307086611
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CGW101AAAA",
-      "tag": "W-G-S-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          518.1875000000001,
-          -4.370956789862821e-15
-        ],
-        [
-          518.1875000000001,
-          9.653543307086611
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CGW101AAAA",
-      "tag": "W-G-S-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           508.4824803149607,
           -15.44
         ],
@@ -1664,17 +1584,17 @@
         "kind": "point",
         "xy": [
           518.1875000000001,
-          7.564654418197723
+          -2.088888888888893
         ],
         "name": ""
       },
       "at": [
         507.4824803149607,
-        7.564654418197723
+        -2.088888888888893
       ],
       "to": [
         518.1875000000001,
-        7.564654418197723
+        -2.088888888888893
       ],
       "text": "cladding 7/8\"",
       "height": 1.6,
@@ -1689,17 +1609,17 @@
         "kind": "point",
         "xy": [
           518.9375000000001,
-          5.036876640419945
+          -4.616666666666671
         ],
         "name": ""
       },
       "at": [
         507.4824803149607,
-        5.036876640419945
+        -4.616666666666671
       ],
       "to": [
         518.9375000000001,
-        5.036876640419945
+        -4.616666666666671
       ],
       "text": "cdx 5/8\"",
       "height": 1.6,
@@ -1714,17 +1634,17 @@
         "kind": "point",
         "xy": [
           522.0,
-          2.5090988626421673
+          -7.144444444444448
         ],
         "name": ""
       },
       "at": [
         507.4824803149607,
-        2.5090988626421673
+        -7.144444444444448
       ],
       "to": [
         522.0,
-        2.5090988626421673
+        -7.144444444444448
       ],
       "text": "stud 5 1/2\"",
       "height": 1.6,
@@ -1739,17 +1659,17 @@
         "kind": "point",
         "xy": [
           525.0625,
-          -0.018678915135610374
+          -9.672222222222226
         ],
         "name": ""
       },
       "at": [
         507.4824803149607,
-        -0.018678915135610374
+        -9.672222222222226
       ],
       "to": [
         525.0625,
-        -0.018678915135610374
+        -9.672222222222226
       ],
       "text": "gwb 5/8\"",
       "height": 1.6,
@@ -1983,22 +1903,6 @@
     },
     {
       "space": "model",
-      "node": "text",
-      "anchor": [
-        508.4824803149607,
-        -37.65354330708662
-      ],
-      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -2069,6 +1973,38 @@
       "layer": "A-ANNO-DIMS",
       "text": "2 1/2\" EPS",
       "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        508.4824803149607,
+        -43.65354330708662
+      ],
+      "content": "FLOOR BAND 1'-0 5/8\": 11 7/8\" JOIST + 3/4\" SUBFLOOR",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-DIMS",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        508.4824803149607,
+        -37.65354330708662
+      ],
+      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
       "uid": null
     },
     {

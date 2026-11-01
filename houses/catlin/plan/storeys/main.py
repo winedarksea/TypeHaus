@@ -2289,17 +2289,21 @@ CONNECTORS = [
     # The balcony door stands on W-B-S3-FR, a framed wall, not on concrete: W-B-S3 is a
     # 7 1/4" curb at -102 3/16". So each jamb is two parts — an MSTC52 across the floor
     # band into W-B-S3-FR's jamb studs, and an STHD14 cast in the curb under them.
+    # Re-stationed 2026-10-31 onto the French pair's 2-jack + 2-king packs (6" outboard of
+    # the 63 5/16" RO, x 18'-2 11/32" / 24'-5 21/32"): they sat at 19'-1"/24'-7" from before
+    # the 2026-10-29 re-centring, the west pair inside both openings, where D-B-PATIO's
+    # band header now has no stud under the strap.
     Connector(uid="5D80PTSEWM", tag="CN-M-HD-BALC-W", kind=ConnectorKind.TENSION_TIE,
-              position=pt(ft(19, 1), _JAMB_Y_SOUTH), elevation=_BAND_Z,
+              position=pt(inch(218.34375), _JAMB_Y_SOUTH), elevation=_BAND_Z,
               size="MSTC52", connects=("W-M-S2", "W-B-S3-FR")),
     Connector(uid="PJMETCQPK0", tag="CN-M-HD-BALC-E", kind=ConnectorKind.TENSION_TIE,
-              position=pt(ft(24, 7), _JAMB_Y_SOUTH), elevation=_BAND_Z,
+              position=pt(inch(293.65625), _JAMB_Y_SOUTH), elevation=_BAND_Z,
               size="MSTC52", connects=("W-M-S2", "W-B-S3-FR")),
     Connector(uid="0NMTQ0A5A4", tag="CN-B-HD-BALC-W", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(ft(19, 1), _JAMB_Y_SOUTH), elevation=_CURB_Z,
+              position=pt(inch(218.34375), _JAMB_Y_SOUTH), elevation=_CURB_Z,
               size="STHD14", connects=("W-B-S3-FR", "W-B-S3")),
     Connector(uid="V3TS8F7C9A", tag="CN-B-HD-BALC-E", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(ft(24, 7), _JAMB_Y_SOUTH), elevation=_CURB_Z,
+              position=pt(inch(293.65625), _JAMB_Y_SOUTH), elevation=_CURB_Z,
               size="STHD14", connects=("W-B-S3-FR", "W-B-S3")),
 ]
 

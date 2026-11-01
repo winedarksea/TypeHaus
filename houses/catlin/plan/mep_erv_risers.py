@@ -158,12 +158,18 @@ DUCTS_ERV_RISERS = [
             # bay between the 32'-5.4" joist and FO-M-ERV-OA's trimmer pack, up into it (6",
             # under half the deck), west over everything, and down again at x=1'-3.4" onto
             # the riser's foot. Two more elbows: +0.033" w.g. (notes/erv_static_budget.md §6).
+            # (2026-10-31) It drops out of the bay at x=1'-5 1/2", not under the riser:
+            # at x=1'-3.4" the drop stood 1.6" into ED-B-BACKUP-ENCL's NEC 110.26(E)
+            # dedicated space (x <= 14", y 382..398"). North to y=401 1/2", then west onto
+            # the riser foot, at the old -17 15/16".
             path=(pt(inch(65), ft(30, 10)), pt(inch(65), inch(394.8)),
-                  pt(inch(65), inch(394.8)), pt(inch(15.4), inch(394.8)),
-                  pt(inch(15.4), inch(394.8)), pt(inch(15.4), inch(406.8)),
+                  pt(inch(65), inch(394.8)), pt(inch(17.0625), inch(394.8)),
+                  pt(inch(17.0625), inch(394.8)), pt(inch(17.0625), inch(401.0625)),
+                  pt(inch(15.4), inch(401.0625)), pt(inch(15.4), inch(406.8)),
                   pt(inch(15.4), inch(406.8))),
             elevations=(inch(-19.4375), inch(-19.4375), inch(-7.4), inch(-7.4),
-                        inch(-17.9375), inch(-17.9375), inch(231.875)),
+                        inch(-17.9375), inch(-17.9375), inch(-17.9375), inch(-17.9375),
+                        inch(231.875)),
             # 150 cfm: the 210 at its foot less the basement plenum's 60. Its highest flow
             # anywhere (notes/erv_static_budget.md §10.6).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
@@ -199,8 +205,8 @@ DUCTS_ERV_RISERS = [
             path=(pt(ft(4, 2), ft(34, 6)), pt(inch(26.9), ft(34, 6)),
                   pt(inch(26.9), inch(406.8)), pt(inch(26.9), inch(406.8)),
                   pt(inch(26.9), inch(350)), pt(inch(26.9), inch(350)),
-                  pt(inch(26.9), ft(28, 6)), pt(ft(6, 1.5), ft(28, 6)),
-                  pt(ft(6, 1.5), ft(28, 6))),
+                  pt(inch(26.9), ft(28, 5)), pt(ft(6, 1.5), ft(28, 5)),
+                  pt(ft(6, 1.5), ft(28, 5))),
             elevations=(inch(244), inch(244), inch(244), inch(-27.5),
                         inch(-27.5), inch(-25.9375), inch(-25.9375),
                         inch(-25.9375), inch(-23.4375)),
@@ -272,15 +278,17 @@ DUCTS_ERV_RISERS = [
             # storey's floor zone. It never reaches the main deck or this riser's +5'-0".
             # y=34'-1" since 2026-09-23: with its 2" wrap the 33'-11" station stood 1/4"
             # inside W-M-MECH-S's face.
-            # (2026-10-17) The ERV moved east out of the lane. The last leg turns east at
-            # 78 1/2" AFF (its 2" wrap clears the lane's 72" line), under the sauna supply,
-            # to its port at x=6'-2".
+            # (2026-10-31) Over the panels' NEC 110.26(A) working space (78" AFF): south of
+            # y=31'-1" the wrap's underside is 78 1/2" AFF (centre -24 15/16"), down x=3'-4"
+            # under DU-B-ERV-R-SAUNA-SUP and east on y=29'-3" beside EQ-B-ERV-MAN-EXH (moved
+            # 1" south for it) to its port. It holds -21" north of 31'-1" to clear DU-ERV-EA's
+            # west leg. Length and elbow count are unchanged.
             path=(pt(ft(3, 4), ft(36, 8)), pt(ft(3, 4), ft(34, 1)),
                   pt(ft(3, 4), ft(34, 1)), pt(ft(3, 4), ft(31, 1)),
                   pt(ft(3, 4), ft(31, 1)), pt(ft(3, 4), ft(29, 3)),
                   pt(ft(6, 2), ft(29, 3)), pt(ft(6, 2), ft(29, 3))),
             elevations=(inch(60), inch(60), inch(-21), inch(-21),
-                        inch(-30.9375), inch(-30.9375), inch(-30.9375), inch(-33.8375)),
+                        inch(-24.9375), inch(-24.9375), inch(-24.9375), inch(-33.8375)),
             # ** 8", AND THE MOVE IS WHAT PAID FOR IT. ** notes/erv_static_budget.md §7 had
             # priced this upsize for weeks as the one remaining lever on what was then the
             # governing supply column, and it was blocked not by money but by the chase: at

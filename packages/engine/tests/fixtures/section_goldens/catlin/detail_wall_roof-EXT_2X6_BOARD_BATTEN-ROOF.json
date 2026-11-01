@@ -2375,122 +2375,6 @@
     },
     {
       "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          432.75000000000006,
-          310.2563906948577
-        ],
-        "name": ""
-      },
-      "at": [
-        453.75000000000006,
-        307.98972402819106
-      ],
-      "to": [
-        432.75000000000006,
-        310.2563906948577
-      ],
-      "text": "Metal Sales Image II Striated 16 in, 24\nga, 70% PVDF Kynar 500 Linen White (81),\ndirect-fastened through nail flange",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          431.7500000000001,
-          309.0
-        ],
-        "name": ""
-      },
-      "at": [
-        443.75000000000006,
-        334.34978127734036
-      ],
-      "to": [
-        431.7500000000001,
-        309.0
-      ],
-      "text": "air continuity — sheathing-ext →\nsheathing-ext",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          434.0,
-          309.0
-        ],
-        "name": ""
-      },
-      "at": [
-        443.75000000000006,
-        329.7025590551181
-      ],
-      "to": [
-        434.0,
-        309.0
-      ],
-      "text": "water continuity — spray-foam-ext →\ngutter-flange-ext",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          434.0,
-          309.0
-        ],
-        "name": ""
-      },
-      "at": [
-        443.75000000000006,
-        325.0553368328959
-      ],
-      "to": [
-        434.0,
-        309.0
-      ],
-      "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        413.68897637795277,
-        275.4724409448819
-      ],
-      "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -2564,6 +2448,56 @@
       "uid": null
     },
     {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          431.7500000000001,
+          309.0
+        ],
+        "name": ""
+      },
+      "at": [
+        443.75000000000006,
+        334.34978127734036
+      ],
+      "to": [
+        431.7500000000001,
+        309.0
+      ],
+      "text": "air continuity — sheathing-ext →\nsheathing-ext",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          434.0,
+          309.0
+        ],
+        "name": ""
+      },
+      "at": [
+        443.75000000000006,
+        329.7025590551181
+      ],
+      "to": [
+        434.0,
+        309.0
+      ],
+      "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
       "space": "paper",
       "node": "text",
       "anchor": [
@@ -2586,7 +2520,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
+      "content": "TR-CATLIN-RAKE",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,
@@ -3589,14 +3523,19 @@
   ],
   "notes": [
     "NOTES:",
-    "• Roof: 11-7/8\" TJI 230 at 24\" o.c., LSSR hangers to a structural ridge beam.",
+    "• Roof: 11-7/8\" TJI 230 at 24\" o.c., parallel to the gable. 6:12, zero overhang.",
     "• Bay: 5\" ccSPF on deck, R-30C batt. Foam is the air and vapour barrier.",
-    "• Deck: 19/32\" CDX, 40/20, oversailing the rafter ends to the girt face.",
-    "• Butyl membrane 240 F, full field + eave strip-in. 24 ga Image II, nail flange.",
+    "• Deck: 19/32\" CDX, 40/20, oversailing the gable to the girt face.",
+    "• Butyl membrane 240 F, full field to the deck edge. 24 ga Image II, nail flange.",
     "• Wall: 2x6, 1/2\" ply, 4\" ccSPF, 1/2\" gap, KDAT girts, 3/4\" BBD75. No WRB.",
     "",
     "KEYED NOTES:",
-    "K2  Foam first lift 1-1/2\" min; lap ridge beam and hanger flanges in one pass."
+    "K1  Rake: stock Residential Rake 52126XX over the membrane at the deck edge.",
+    "K2  Rake leg stops 1\" under the wall head and covers the closure.",
+    "K3  BBD75 slope-cut at the rake; Universal Closure 6411499 taped to it.",
+    "K4  Rake foot sits on the Extended Eave leg; the rake sheds onto the eave.",
+    "K5  Rake nailer on the raked top plate closes the cladding's raked edge.",
+    "K6  Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam."
   ],
   "frame": {
     "paper": [

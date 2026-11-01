@@ -7016,3 +7016,40 @@ kitchen tape stays fixed white, preferably MITTLED; the sweep is the whole house
   buy nothing. **Known gaps:** the kitchen counter is not graded (the lumen method averages
   RM-M-LIVING's 701 sf); the gym reads 297 lx against 300, accepted as at target.
 
+
+## Headers into the plates (2026-10-31, geometry review C3-E1/E2)
+
+Neither header fit under its plates, and `structural.member_interference` excuses every
+header/plate contact, so nothing said so. `integrity.header_under_plate` is the grader now
+(ERROR, so it gates the print through the integrity line); it found exactly these two.
+- **D-G-SERVICE: a flat 2x6 nonbearing header (owner).** The 3-ply 5 1/2" LVL ran 2" into
+  W-G-S's double top plate. A 1/2" RO trim is impossible (the MMI unit is 81" in an 81 1/2"
+  RO), and W-G-S is a nonbearing gable, so R602.7.4 applies: 1 1/2" nailer, 2" under the
+  plates. RO, sill, plates and ST-G-SERVICE unchanged. O3-010 closes with it: K7's "2-ply
+  14" LVL" is D-G-OVERHEAD and was right; CLAUDE.md's "3-ply" was this door.
+- **D-B-PATIO: a flush rim header in FS-M-EAST's band (owner).** The 2-2x10 stood 4 5/8"
+  into the plates. W-B-S3-FR bears the band but runs parallel to its joists, so the beam is a
+  2-ply 1 3/4" x 11 7/8" Microllam beside the edge joist (`JoistReinforcement.extent`), not a
+  bearing ref (that would cut every joist). `Door.header_in_band` frames no wall header, runs
+  the jacks to the plates and lays a flat nailer at the head. Graded as
+  `band_header/D-B-PATIO`, d/c 0.017 on shear (TJ-9000 July 2026;
+  `notes/patio_band_header.md`): no table publishes a flush beam with jamb stacks on its
+  seats. The review's "point load at 19'-1"" was the stale CN-*-HD-BALC-W strap station;
+  D-M-BALC's packs stand on the seats. All four balcony-jamb straps moved onto the packs.
+
+
+## Panels under the handle limit (2026-10-31, geometry review C6-E8 / M3-002, M3-006)
+
+The four W-B-W1 enclosures hung at 5' bottoms, putting top handles ~80–96" AFF against NEC
+240.24(A) / 404.8(A)'s 6'-7". `electrical.panel_handle_height` (CODE, permit-blocking) grades
+the body top now; it read 4 FAIL, now 4 PASS.
+- **One top line at 6'-6" AFF.** ED-B-PANEL 38 5/8"–78" (a 54-space 200 A can is 39.37",
+  QO154M200P; the library's 36" corrected), PANEL-2 48"–78", BACKUP-PANEL/ENCL 58"–78".
+- **Raceways leave inside the panel footprint**, out of the top or bottom, never 12" off the
+  face across the working space. Spa and EV feeders re-homed to ED-B-PANEL-2, their circuits'
+  panel.
+- **The working and dedicated spaces are ClearZones** (`plan/panel_working_space.py`), all
+  `required`: 110.26(A) 30" x 36" x 6'-6", and 110.26(E) the footprint to the 96 15/16"
+  ceiling. DU-ERV-OA now rides 84 1/2" AFF over the working spaces; both sauna radials moved
+  to W-B-CW's x=1'-7" bay; DU-ERV-RISER-SUP leaves its bay east of ED-B-BACKUP-ENCL (+2
+  elbows, +0.016" on supply). Extract still governs at 0.441"; 203.9 cfm delivered.

@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, Any
 
 from typehaus.checks.soil import site_soil_bearing_psf, site_soil_class
 from typehaus.emit.draw.sheet_writer import schedule_sheet, section
-from typehaus.emit.draw.typography import wrap_columns_for
+from typehaus.emit.draw.typography import CHAR_ASPECT, wrap_columns_for
 from typehaus.findings import Result
 from typehaus.resolve.model import ResolvedModel
 
@@ -53,6 +53,15 @@ _INDEX_PT = 8.0
 #: many rows it is scanning a wall of numbers. Above the cap the list balances across as
 #: many columns as the sheet is wide enough to hold.
 _INDEX_MAX_ROWS = 48
+
+#: The last step before an index overflows: one point smaller, on a tighter pitch. Still
+#: above the 6.5 pt of the plans' own tags, so the map stays as legible as the sheets.
+_INDEX_TIGHT_PT = 7.0
+_INDEX_TIGHT_PITCH_IN = 0.118
+
+#: Narrowest the deferred-submittal statement may print beside the data blocks, inches.
+#: Narrower and it stacks under them, as it did before ledger ran out of index rows.
+_DEFERRED_MIN_IN = 3.0
 
 
 #: Widest the PROJECT DATA column gets, inches. Past this the label and its value stop
@@ -144,8 +153,8 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]],
     house that passes it, and ``haus print`` gates on that same evaluation being clean.
 
     The index layout is in paper inches and takes its row count from :func:`content_box`, so
-    the column count follows the paper; if a set ever outgrows even that, the overflow is
-    *stated on the sheet* rather than silently clipped.
+    the column count follows the paper. Every sheet is listed (three steps, below); only
+    a set past even the tightest step states its overflow on the sheet.
     """
     from typehaus.checks import evaluate_permit_checklist, run_from_model
     from typehaus.emit.draw.sheet_writer import content_box
@@ -182,10 +191,11 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]],
         column_2 = x0 + min(_DATA_COLUMN_MAX_IN, (x1 - x0) / 2.0)
         section(fig, _x(x0), _y(top), "PROJECT DATA", fontsize=12)
         section(fig, _x(column_2), _y(top), "CODE SUMMARY", fontsize=12)
+        code_rows = [(label, value, False) for label, value
+                     in _code_summary_rows(profile, model.plan)]
         rows = 0
         for column_x, entries in ((x0, _project_data_rows(model.plan.project, site)),
-                                  (column_2, [(label, value, False) for label, value
-                                              in _code_summary_rows(profile, model.plan)])):
+                                  (column_2, code_rows)):
             cursor = top - 0.42
             for label, value, warn in entries:
                 fig.text(_x(column_x + 0.1), _y(cursor), f"{label:<22}{value}", fontsize=8,
@@ -195,42 +205,67 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]],
                 cursor -= _INDEX_PITCH_IN
             rows = max(rows, len(entries))
 
-        cursor = top - 0.42 - rows * _INDEX_PITCH_IN - 0.34
-        for deferred_line in DEFERRED_SUBMITTALS.splitlines():
-            fig.text(_x(x0), _y(cursor), deferred_line, fontsize=8, family="monospace")
-            cursor -= _INDEX_PITCH_IN
-        cursor -= 0.32
+        cursor = top - 0.42 - rows * _INDEX_PITCH_IN
+        # Beside the data blocks where the paper has the width: stacked under them it cost
+        # ledger's index eight rows, and the index is the one list that must be whole.
+        widest = max(len(f"{label:<22}{value}") for label, value, _ in code_rows)
+        deferred_x = column_2 + 0.1 + widest * _INDEX_PT * CHAR_ASPECT / 72.0 + 0.4
+        if x1 - deferred_x >= _DEFERRED_MIN_IN:
+            heading, _, body = " ".join(DEFERRED_SUBMITTALS.split()).partition(" — ")
+            section(fig, _x(deferred_x), _y(top), heading, fontsize=12)
+            side = top - 0.42
+            measure = min(x1 - deferred_x, _DATA_COLUMN_MAX_IN)
+            for deferred_line in textwrap.wrap(body, wrap_columns_for(measure, _INDEX_PT)):
+                fig.text(_x(deferred_x), _y(side), deferred_line, fontsize=8,
+                         family="monospace")
+                side -= _INDEX_PITCH_IN
+            cursor = min(cursor, side) - 0.34
+        else:
+            cursor -= 0.34
+            for deferred_line in DEFERRED_SUBMITTALS.splitlines():
+                fig.text(_x(x0), _y(cursor), deferred_line, fontsize=8, family="monospace")
+                cursor -= _INDEX_PITCH_IN
+            cursor -= 0.32
         section(fig, _x(x0), _y(cursor), "SHEET INDEX", fontsize=12)
         cursor -= 0.42
         # The footer is laid out first, in lines, because the index gets whatever height is
         # left above it — a statement that grew (the draft gate now names every unsealed
         # requirement) used to run off the bottom of the sheet and through the title block.
-        footer_lines = _footer_paragraphs(profile, checklist, wrap_columns_for(x1 - x0, 9.0))
+        register = next((number for number, name in index
+                         if name == "Engineering register"), None)
+        footer_lines = _footer_paragraphs(profile, checklist, wrap_columns_for(x1 - x0, 9.0),
+                                          register=register)
         footer_in = 0.10 + _FOOTER_STEP_IN * (sum(len(p) for p in footer_lines)
                                               + 0.4 * len(footer_lines) + 1)
-        # Rows are whatever fits between here and the statement above the title block; the
-        # column count then follows from the sheet count, not from a guess about the paper.
-        per_column, columns = _index_shape(
-            len(index),
-            rows=max(1, int((cursor - (y0 + footer_in)) / _INDEX_PITCH_IN)),
-            columns=max(1, int((x1 - x0) / _INDEX_COLUMN_IN)))
-        shown, dropped = index[:per_column * columns], index[per_column * columns:]
+        # Every sheet is listed. Three steps, each only when the one before will not fit:
+        # one row per sheet; continuations and enlarged parts on their parent's row
+        # ("A-512/.1/.2"); then a point smaller on a tighter pitch.
+        entries, size_pt, pitch = list(index), _INDEX_PT, _INDEX_PITCH_IN
+        for step in ("rows", "grouped", "tight"):
+            if step == "grouped":
+                entries = _grouped(index)
+            elif step == "tight":
+                size_pt, pitch = _INDEX_TIGHT_PT, _INDEX_TIGHT_PITCH_IN
+            per_column, columns = _index_shape(
+                len(entries),
+                rows=max(1, int((cursor - (y0 + footer_in)) / pitch)),
+                columns=max(1, int((x1 - x0) / (_INDEX_COLUMN_IN * size_pt / _INDEX_PT))))
+            if per_column * columns >= len(entries):
+                break
+        shown, dropped = entries[:per_column * columns], entries[per_column * columns:]
         # Having settled how many columns there are, spend the leftover width on them. Three
         # columns on 24x36 leave 34.8" to fill, and a title clipped to the 11x17 column
         # width on a sheet with that much room to spare is a clip for no reason.
         pitch_in = min(_INDEX_COLUMN_MAX_IN, (x1 - x0) / columns)
-        # The column is the width the entry has, so it is the width the entry is fitted to.
-        # Catlin's longest titles ("Framing schedule / bill of materials", "Framing plan —
-        # main · FS-SG-PORCH") are wider than one 11x17 column and ran straight through the
-        # next column's sheet number — two overlapping strings, both unreadable, on the page
-        # that is meant to be the map.
-        room = wrap_columns_for(pitch_in - _INDEX_GUTTER_IN, _INDEX_PT) - 10
+        # The title is fitted to its column, or it runs through the next column's number.
+        field = max([9, *(len(number) for number, _ in shown)])
+        room = wrap_columns_for(pitch_in - _INDEX_GUTTER_IN, size_pt) - (field + 1)
         for row, (number, name) in enumerate(shown):
             column, line = divmod(row, per_column)
             fig.text(_x(x0 + 0.1 + column * pitch_in),
-                     _y(cursor - line * _INDEX_PITCH_IN),
-                     f"{number:9} {_fit(name, room)}",
-                     fontsize=_INDEX_PT, family="monospace")
+                     _y(cursor - line * pitch),
+                     f"{number:{field}} {_fit(name, room)}",
+                     fontsize=size_pt, family="monospace")
         if dropped:
             footer_lines.insert(0, [
                 f"Index continues: {len(dropped)} further sheet(s) "
@@ -244,7 +279,8 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]],
             cursor -= _FOOTER_STEP_IN * 0.4
 
 
-def _footer_paragraphs(profile, checklist, columns: int) -> list[list[str]]:
+def _footer_paragraphs(profile, checklist, columns: int,
+                       register: str | None = None) -> list[list[str]]:
     """The gate statement, then the jurisdiction's certification sentence — both wrapped.
 
     Minn. R. 1800.4200 subp. 4, verbatim and once: the ruled NAME / LICENSE NO. / DATE /
@@ -252,7 +288,8 @@ def _footer_paragraphs(profile, checklist, columns: int) -> list[list[str]]:
     the sentence they refer back to. A profile that states no certification prints none —
     another state's set must never carry Minnesota's.
     """
-    paragraphs = [textwrap.wrap(_gate_statement(profile, checklist), width=columns)]
+    paragraphs = [textwrap.wrap(_gate_statement(profile, checklist, register),
+                                width=columns)]
     if profile.seal_certification:
         paragraphs.append(textwrap.wrap(
             "PROFESSIONAL CERTIFICATION — " + profile.seal_certification
@@ -271,6 +308,23 @@ def _fit(text: str, room: int) -> str:
     if room <= 1 or len(text) <= room:
         return text
     return text[:room - 1].rstrip() + "…"
+
+
+def _grouped(index: list[tuple[str, str]]) -> list[tuple[str, str]]:
+    """Continuation and enlarged sub-sheets folded onto their parent's row.
+
+    ``S-602.1`` "(cont.)" and ``A-512.1`` "… · head" carry their parent's title, so their
+    numbers join its row ("A-512/.1/.2"). ``A-301.1`` names its own section and keeps one.
+    """
+    rows: list[tuple[str, str, list[str]]] = []
+    for number, title in index:
+        if rows:
+            head, head_title, parts = rows[-1]
+            if number.startswith(head + ".") and title.startswith(head_title):
+                parts.append(number[len(head):])
+                continue
+        rows.append((number, title, []))
+    return [("/".join([head, *parts]), title) for head, title, parts in rows]
 
 
 def _index_shape(entries: int, *, rows: int, columns: int) -> tuple[int, int]:
@@ -341,7 +395,8 @@ def _code_summary_rows(profile: JurisdictionProfile, plan: Any = None) -> list[t
 _RESOLVED = frozenset({Result.PASS, Result.NOT_APPLICABLE})
 
 
-def _gate_statement(profile: JurisdictionProfile, checklist: PermitChecklist) -> str:
+def _gate_statement(profile: JurisdictionProfile, checklist: PermitChecklist,
+                    register: str | None = None) -> str:
     """The verdict line, which now names what is unresolved instead of only that something is.
 
     "NOT READY" on its own sends a reader back to the CLI to find out why. Since this page
@@ -380,8 +435,10 @@ def _gate_statement(profile: JurisdictionProfile, checklist: PermitChecklist) ->
             f"engineered design computed by this engine and reviewed by no licensed "
             f"professional engineer: " + ", ".join(item.label for item in unsealed))
     credits = sorted({item.signoff.credit() for item in engineered if item.signoff})
+    # The register's number comes from the index (it was "S-105" long after S-603 took it).
+    where = f" — see {register}" if register else ""
     return _gate_sentence(
-        profile, f"PASS. Engineered items sealed by {'; '.join(credits)} — see S-105")
+        profile, f"PASS. Engineered items sealed by {'; '.join(credits)}{where}")
 
 
 def _gate_sentence(profile: JurisdictionProfile, verdict: str) -> str:

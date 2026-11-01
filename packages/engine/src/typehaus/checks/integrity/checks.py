@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from typehaus.checks._authoring import advisory, advisory_fail
+from typehaus.checks._authoring import advisory
 from typehaus.checks.integrity.furring_spec import furring_spec_findings
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.assembly import Layer, LayerExtent
 from typehaus.model.enums import LayerDatum
-from typehaus.model.patterns import matches as _matches
 from typehaus.resolve.slab_clip import floor_outline
 from typehaus.resolve.solid_categories import is_pour_slab
 
@@ -391,52 +390,6 @@ def space_zero_gap(ctx: CheckContext) -> list[Finding]:
         if len(room.clear_face) < 3 or room.area_m2 <= 0:
             out.append(_err("integrity.space_zero_gap",
                             f"room {room.tag} has no valid clear-face polygon", (room.tag,)))
-    return out
-
-
-@check(Tier.INTEGRITY, "integrity.condition_coverage")
-def condition_coverage(ctx: CheckContext) -> list[Finding]:
-    """Every derived boundary condition should be bound to a Transition or warn-flagged
-    (warn-tier during design; hard-gated only in /permit-check, → 11b risk 8)."""
-    out: list[Finding] = []
-    transitions = ctx.plan.library.transitions
-    for cond in ctx.model.conditions:
-        covered = any(_matches(t.condition_pattern, cond.key) for t in transitions)
-        if not covered:
-            out.append(advisory_fail("integrity.condition_coverage",
-                                     f"boundary condition {cond.key} has no Transition binding",
-                                     cond.element_tags))
-    return out
-
-
-@check(Tier.INTEGRITY, "integrity.condition_star_override")
-def condition_star_override(ctx: CheckContext) -> list[Finding]:
-    """Per-condition star overrides must name condition keys that still exist (→ 11b).
-
-    ``Transition.starred_conditions``/``unstarred_conditions`` address conditions by their
-    exact derived key, and those keys are spelled out of assembly tags — rename an assembly
-    and every override naming it silently stops applying, quietly re-curating the primary
-    drawing set. An override that matches nothing is either a typo or a rename that never
-    got followed through, so it warns rather than degrading in silence.
-    """
-    out: list[Finding] = []
-    derived = {cond.key for cond in ctx.model.conditions}
-    for tr in ctx.plan.library.transitions:
-        for field in ("starred_conditions", "unstarred_conditions"):
-            for key in getattr(tr, field, ()):
-                if key not in derived:
-                    out.append(advisory_fail("integrity.condition_star_override",
-                                             f"transition {tr.tag} {field} names {key!r}, which no "
-                                             f"longer derives to any boundary condition",
-                                             (tr.tag,)))
-                elif not _matches(tr.condition_pattern, key):
-                    # The key is real, but this transition never binds it — the override is
-                    # inert, and the detail is curated by whichever transition does bind it.
-                    out.append(advisory_fail(
-                        "integrity.condition_star_override",
-                        f"transition {tr.tag} {field} names {key!r}, which its "
-                        f"pattern {tr.condition_pattern!r} does not match",
-                        (tr.tag,)))
     return out
 
 

@@ -40,7 +40,7 @@ from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, 
                   study_bookcase_types,
                   bedroom_wardrobes, braced_walls,
                   circuits, closet, closet_types, countertops, court_daybed, panel_types,
-                  dry_fire_lane, device_boxes, device_types, drywall, earthwork, electrical, electrical_attic, electrical_branches, electrical_stair_ext, electrical_floor_types, equipment_types,
+                  dry_fire_lane, panel_working_space, device_boxes, device_types, drywall, earthwork, electrical, electrical_attic, electrical_branches, electrical_stair_ext, electrical_floor_types, equipment_types,
                   dining_types, door_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets, kitchen_front_types,
                   landscape, lighting_basement, lighting_entry, lighting_garage,
                   lighting_living, lighting_main, lighting_second, living_east_run, living_east_run_types,
@@ -389,7 +389,7 @@ PLAN = (
         # footings and hydrant drywell in one list; the four garage names are spread onto
         # `g-foundation` below instead. Spread by name rather than by editing params/, which
         # already named all four at module level.
-        [*french_door_installations.with_catalog_installations(basement.ELEMENTS), *dry_fire_lane.DRY_FIRE_LANE, *fixtures.BASEMENT_FIXTURES,
+        [*french_door_installations.with_catalog_installations(basement.ELEMENTS), *dry_fire_lane.DRY_FIRE_LANE, *panel_working_space.PANEL_WORKING_SPACE, *fixtures.BASEMENT_FIXTURES,
          *foundations.HOUSE_FOOTINGS, *foundations.HOUSE_FOOTING_BEDDING, *earthwork.EXCAVATION,
          *foundations.VENEER_PLINTH, *foundations.VENEER_PLINTH_BEDDING,
          *masonry_joints.JOINTS,

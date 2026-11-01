@@ -462,7 +462,7 @@ def test_hardware_schedule_renders_every_derived_row(catlin_model, tmp_path: Pat
     hardware = hardware_takeoff(catlin_model)
     assert hardware, "catlin must derive hardware for this sheet to mean anything"
     # Every row needs the rule behind it — a hardware count nobody can check is not a
-    # schedule, and the sheet prints these as keyed notes under the table.
+    # schedule. The permit sheet no longer prints it (C7-E1); takeoff and bids still do.
     assert all(row["basis"] for row in hardware)
 
     out = tmp_path / "s104.pdf"

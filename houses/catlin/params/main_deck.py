@@ -500,6 +500,18 @@ EAST_FLOOR = FloorSystem(
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _BAND_Y),
+    # ** D-B-PATIO'S HEADER IS IN THIS BAND (2026-10-31). ** W-B-S3-FR bears this deck's
+    # y=0 edge line but runs PARALLEL to the joists, so the 63 5/16" opening under it is
+    # carried by a flush 2-ply 1 3/4" x 11 7/8" Microllam LVL beside the edge joist, seated
+    # on the two 4-stud jamb packs (x 18'-2 11/32" .. 24'-5 21/32", the packs' outer faces).
+    # NOT a bearing ref: resolve/floors.py would cut every joist at that line. Graded as
+    # `band_header/D-B-PATIO` (notes/patio_band_header.md); D-M-BALC's packs stack on the
+    # seats, so no jamb load lands in the span.
+    reinforcements=(JoistReinforcement(
+        at=pt(inch(256), inch(3.25)), plies=3, member="1.75x11.875 LVL", blocking=False,
+        extent=(inch(218.34375), inch(293.65625)),
+        source="flush band header over D-B-PATIO (Door.header_in_band) — 2-ply Microllam "
+               "LVL 2.0E, Weyerhaeuser TJ-9000 (July 2026)"),),
     # RM-M-LIVING's fireplace surround passes through this deck: W-M-FIRE-STUB-S/-M/-N's brick
     # starts on W-B-E1's pour and rises 13 7/16" through the joist zone. NO `openings` — the
     # joists run CONTINUOUS through the panel to their mudsill seat and the three piers stand

@@ -7,6 +7,7 @@ architectural plan family and the structural sheet family independent.
 
 from __future__ import annotations
 
+from typehaus.emit.draw.typography import feet_inches_8th
 from typehaus.model.assembly import FramingSpec
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import truss_chord_depth_m
@@ -16,11 +17,8 @@ IN_PER_FT = 12.0
 
 
 def feet_inches(meters: float) -> str:
-    """Architectural length notation, e.g. ``12'-6"`` — rounded to the nearest inch."""
-    total_inches = round(meters / M_PER_IN)
-    sign = "-" if total_inches < 0 else ""
-    total_inches = abs(total_inches)
-    return f"{sign}{int(total_inches // IN_PER_FT)}'-{int(total_inches % IN_PER_FT)}\""
+    """Architectural length notation to 1/8", e.g. ``12'-6 1/4"`` (``feet_inches_8th``)."""
+    return feet_inches_8th(meters / M_PER_IN)
 
 
 def inches(meters: float) -> str:

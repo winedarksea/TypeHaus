@@ -706,17 +706,33 @@ def _shower_slice():
                  crop=(qpt(m(8.4), m(2.7)), qpt(m(11.3), m(5.8))))
 
 
+def _tiled_shower_slice():
+    """The same x=5' cut, cropped to RM-M-BATH2's tiled 36" shower (FX-M-BATH2-SH)."""
+    from typehaus.model.enums import SliceKind
+    from typehaus.model.views import Slice
+    from typehaus.quantities import m
+    from typehaus.quantities import pt as qpt
+
+    return Slice(uid="", tag="TEST-D-SHOWER-TILED", kind=SliceKind.DETAIL,
+                 title="Shower section", cut_origin=qpt(m(1.524), m(10.0)),
+                 cut_direction="y",
+                 crop=(qpt(m(3.5), m(-0.6)), qpt(m(5.5), m(2.6))))
+
+
 def test_shower_vocabulary_is_gated_on_the_fixture(catlin_model):
     """No shower assembly exists — the recognition gate is the resolved fixture whose
     type publishes ``plan_symbol="shower"`` or ``"tub-shower"``, cut by the section
-    plane."""
+    plane. A tub-shower is an integral insert: no recess, tile, backer or glass."""
     from typehaus.emit.draw.details import build_authored_detail_scene
 
+    tags = _component_tags(build_authored_detail_scene(catlin_model, _tiled_shower_slice()))
+    assert {"shower-recess", "shower-tile", "shower-backer", "shower-drain"} <= tags
     scene = build_authored_detail_scene(catlin_model, _shower_slice())
     tags = _component_tags(scene)
     # shower-hrv-duct rides the authored DU-S-BATH1-EXH exhaust run crossing the cut.
-    assert {"shower-recess", "shower-tile", "shower-backer", "shower-glass",
-            "shower-drain", "shower-hrv-duct"} <= tags
+    assert {"tub-shower-insert", "tub-shower-flange", "tub-shower-valve",
+            "shower-hrv-duct"} <= tags
+    assert not tags & {"shower-recess", "shower-tile", "shower-backer", "shower-glass"}
     for node in scene.nodes:
         if str(getattr(node, "tag", "")).startswith("detail-component:shower"):
             assert isinstance(node, (Polyline, Hatch))
@@ -741,10 +757,13 @@ def test_shower_dimensions_match_the_reference(catlin_model):
     assert SHOWER_RECESS_IN == pytest.approx(float(ref["recess_in"]))
     assert SHOWER_HRV_DUCT_IN == pytest.approx(float(ref["hrv_duct_in"]))
 
-    scene = build_authored_detail_scene(catlin_model, _shower_slice())
-    glass = _component_nodes(scene, "shower-glass")[0]
+    from typehaus.emit.draw.detail_components.shower import shower_glass
+
+    glass = next(n for n in shower_glass(0.0, 36.0, 0.0, 84.0, {"high"})
+                 if isinstance(n, Polyline))
     thickness = (max(u for u, _z in glass.points) - min(u for u, _z in glass.points))
     assert thickness == pytest.approx(SHOWER_GLASS_IN, abs=1e-6)
+    scene = build_authored_detail_scene(catlin_model, _tiled_shower_slice())
     recess = _component_nodes(scene, "shower-recess")[0]
     depth = (max(z for _u, z in recess.points) - min(z for _u, z in recess.points))
     assert depth == pytest.approx(SHOWER_RECESS_IN, abs=1e-6)
@@ -755,7 +774,7 @@ def test_shower_tile_rides_on_backer_on_the_walled_side(catlin_model):
     from typehaus.emit.draw.detail_components import SHOWER_BACKER_IN, SHOWER_TILE_IN
     from typehaus.emit.draw.details import build_authored_detail_scene
 
-    scene = build_authored_detail_scene(catlin_model, _shower_slice())
+    scene = build_authored_detail_scene(catlin_model, _tiled_shower_slice())
     backers = _component_nodes(scene, "shower-backer")
     assert backers
     backer = backers[0]

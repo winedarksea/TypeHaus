@@ -272,15 +272,20 @@ def test_authored_sauna_detail_draws_room_scale_vocabulary(catlin_model):
 
 
 def test_authored_non_sauna_detail_is_unchanged(catlin_model):
-    # A non-sauna authored detail must be byte-identical to the plain section cut — the sauna
-    # overlay self-gates on sauna walls being in the cut, so it never touches other details.
+    # A non-sauna authored detail is the plain section cut plus its dimension pass — the
+    # sauna overlay self-gates on sauna walls being in the cut, so it never touches others.
     from typehaus.emit.draw.details import build_authored_detail_scene
     from typehaus.emit.draw.section import build_section
 
     fndn = next(s for s in catlin_model.plan.elements_of_kind("Slice")
                 if s.tag == "SL-D-FNDN")
-    assert (build_authored_detail_scene(catlin_model, fndn).to_json()
-            == build_section(catlin_model, fndn).to_json())
+    scene = build_authored_detail_scene(catlin_model, fndn)
+    dims = [n for n in scene.nodes if n.layer == "A-ANNO-DIMS"]
+    assert {d.text for d in dims if d.node == "dimension"} >= {
+        "9'-1 1/2\" fl. to fl.", "8'-0\" fdn wall", "1'-8\" ftg"}
+    bare = scene.model_copy(update={"nodes": tuple(
+        n for n in scene.nodes if n.layer != "A-ANNO-DIMS")})
+    assert bare.to_json() == build_section(catlin_model, fndn).to_json()
 
 
 def test_sauna_bench_geometry_matches_placed_furniture(catlin_model):

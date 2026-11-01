@@ -40,6 +40,11 @@ Full evidence, options and blast radius are in the cited `adjudicated/` file.
 
 ### Blocks the permit print or misprints what a trade builds from
 
+**Status 2026-10-31 (later): items 1–7 are resolved** (each `adjudicated/` entry carries a
+"Resolved" line). `haus print` passes the gate at 74 sheets (was 63: S-001.1, S-602.1, the five
+plant-rim details, A-512.1/.2, A-513.1/.2). New checks: `integrity.header_under_plate`,
+`integrity.transition_shadowed`, `electrical.panel_handle_height`. Follow-ups are in `plans/TODO.md`.
+
 1. **ST-S2A guard posts stand 2.9" inside the 36" flight and on the head landing**
    (C1-E1: S1-001, S3-001/002, S1-002). This causes both baseline FAILs and keeps `haus print`
    shut. `code.R311_7_6_stair_head_landing` cannot see guard posts, so it reports a false PASS.

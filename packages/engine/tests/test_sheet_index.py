@@ -114,9 +114,16 @@ def test_the_permit_set_fits_what_a_plan_checker_will_read(catlin_sheet_index):
     64 -> 65 on 2026-10-28: SL-D-EAVE, the house eave enlarged to 3" = 1'-0" (Image II eave,
     pan hem, strip-in, box gutter). At 3/4" its 24 ga laps are one line; the enlargement is
     where a reviewer reads the water paths.
+
+    65 -> 76 on 2026-10-31, eleven sheets: TR-CATLIN-PLANT-RIM was always starred but
+    shadowed by RIM-BAND, so its five details never printed (A-560, A-563, A-577, A-581,
+    A-584); A-512 and A-513 each gained head and sill enlargements (.1/.2), where the
+    flashing laps are legible; and on ledger S-001 and S-602 continue on S-001.1 and S-602.1
+    rather than overprint. What ``haus print`` hands in is smaller: catlin's own
+    ``permit_drop`` takes A-502/A-507 out (74), and ARCH D needs no continuations (72).
     """
     permit = catlin_sheet_index(sets="permit")
-    assert len(permit) <= 65, [s.number for s in permit]
+    assert len(permit) <= 76, [s.number for s in permit]
     numbers = {s.number for s in permit}
     # What DSI's new-construction checklist asks for.
     assert {"G-001", "C-101", "S-001", "S-100", "S-101.1", "A-101", "A-201",

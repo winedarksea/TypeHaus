@@ -201,7 +201,7 @@ BACKUP_ENCLOSURE = [
     # it said the opposite.
     ElectricalDevice(uid="CEE002AAAA", tag="ED-B-BACKUP-ENCL", kind=DeviceKind.PANEL,
                      type_ref="ED-T-BACKUP-ENCL",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room="RM-B-FURNACE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(58)), room="RM-B-FURNACE",
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-W1", face="left", distance_from_start=inch(42),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
@@ -210,7 +210,7 @@ BACKUP_ENCLOSURE = [
     # run to two enclosures a person can stand between.
     ElectricalDevice(uid="CEE060AAAA", tag="ED-B-BACKUP-PANEL", kind=DeviceKind.PANEL,
                      type_ref="ED-T-BACKUP-PANEL",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room="RM-B-FURNACE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(58)), room="RM-B-FURNACE",
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-W1", face="left", distance_from_start=inch(108),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
@@ -1165,8 +1165,10 @@ PV_JBOX = [
 PV_JBOX_CLAMP = []
 
 # --- Conduit trunks (owner: make it easy to run new lines) ---------------------------
-# Four EMT trunks from ED-B-PANEL, elevations project-frame absolute (they cross
-# storeys). Each run travels its plan polyline flat at start_elevation and rises
+# EMT trunks from ED-B-PANEL / -PANEL-2, elevations project-frame absolute (they cross
+# storeys). ** SINCE 2026-10-31 EACH LEAVES ITS PANEL'S TOP (78" AFF, -31 7/16") INSIDE
+# THE PANEL'S PLAN FOOTPRINT ** and stays out of the 110.26(A) working spaces
+# (plan/panel_working_space.py): over 78" in front of the panels, or along the wall strip. Each run travels its plan polyline flat at start_elevation and rises
 # vertically at its last point to end_elevation; the takeoff bills the developed length.
 # The spa feed's southward leg station, shared by the run and BOTH of its sleeves — see the
 # comment on CD-B-SPA below for why it is 1/8" inside W-SG-W1's court face (9'-5 7/8" vs 9'-6").
@@ -1186,10 +1188,12 @@ CONDUIT_TRUNKS = [
                # Stations re-packed 2026-09-23 with the NW chase: the three chase conduits
                # stand in its south band between the ERV supply and exhaust risers, each on
                # its own -4'-0" basement lane.
-               path=(pt(ft(2), ft(29)), pt(inch(19.6), ft(29)), pt(inch(19.6), inch(404)),
-                     pt(inch(19.6), inch(404))),
-               start_elevation=ft(-4), end_elevation=ft(20, 6),
-               elevations=(ft(-4), ft(-4), ft(-4), ft(20, 6)),
+               # Up out of the panel top to 80" AFF, under DU-B-ERV-R-SAUNA-SUP (86 1/2").
+               path=(pt(inch(10), inch(354)), pt(inch(10), inch(354)), pt(inch(19.6), inch(354)),
+                     pt(inch(19.6), inch(404)), pt(inch(19.6), inch(404))),
+               start_elevation=inch(-31.4375), end_elevation=ft(20, 6),
+               elevations=(inch(-31.4375), inch(-29.4375), inch(-29.4375), inch(-29.4375),
+                           ft(20, 6)),
                from_ref="ED-B-PANEL", to_ref="ED-A-PV-JB"),
     # The over-and-up leg: east along the attic deck under the north rake, into the north
     # gable wall, and up it to ED-A-PV-JB at 25'-6". 6" above the deck for the flat part,
@@ -1231,30 +1235,34 @@ CONDUIT_TRUNKS = [
                path=(pt(inch(19.6), inch(404)), pt(inch(19.6), inch(404)),
                      pt(inch(19.6), inch(416)), pt(inch(45), inch(416)),
                      pt(inch(45), inch(416))),
-               start_elevation=ft(-4), end_elevation=inch(-76.4375),
-               elevations=(ft(-4), inch(-79.4375), inch(-79.4375), inch(-79.4375),
+               start_elevation=inch(-29.4375), end_elevation=inch(-76.4375),
+               elevations=(inch(-29.4375), inch(-79.4375), inch(-79.4375), inch(-79.4375),
                            inch(-76.4375)),
                from_ref="ED-A-PV-JB", to_ref="EQ-B-ESS-INV"),
     # Grid port to ED-B-PANEL's CKT-ESS-GRID breaker: the run that carries the backfeed.
     ConduitRun(uid="CDT006AAAA", tag="CD-B-INV-PANEL", trade_size=inch(1),
+               # South along the wall strip at x=9 1/2" under the enclosures (dedicated space),
+               # up into ED-B-PANEL's bottom at 38.63" AFF.
                path=(pt(inch(50), inch(418)), pt(inch(50), inch(418)),
                      pt(inch(30), inch(418)), pt(inch(30), inch(400)),
-                     pt(inch(10), inch(400)), pt(inch(10), inch(348)),
-                     pt(inch(10), inch(348))),
-               start_elevation=inch(-76.4375), end_elevation=inch(-49.4375),
+                     pt(inch(9.5), inch(400)), pt(inch(9.5), inch(348)),
+                     pt(inch(9.5), inch(348))),
+               start_elevation=inch(-76.4375), end_elevation=inch(-70.8075),
                elevations=(inch(-76.4375), inch(-83.4375), inch(-83.4375), inch(-83.4375),
-                           inch(-83.4375), inch(-83.4375), inch(-49.4375)),
+                           inch(-83.4375), inch(-83.4375), inch(-70.8075)),
                pull_points=(3,),
                from_ref="EQ-B-ESS-INV", to_ref="ED-B-PANEL"),
     # Load output to ED-B-BACKUP-PANEL — the conductors that stay live when the grid does not.
     ConduitRun(uid="CDT007AAAA", tag="CD-B-INV-BACKUP", trade_size=inch(1),
+               # West at y=33'-3" (north of CZ-B-WS-BACKUP-ENCL), then 4" under CD-B-INV-PANEL
+               # on the x=9 1/2" strip, up into ED-B-BACKUP-PANEL's bottom at 58" AFF.
                path=(pt(inch(55), inch(420)), pt(inch(55), inch(420)),
-                     pt(inch(35.5), inch(420)), pt(inch(35.5), inch(397.5)),
-                     pt(inch(12.5), inch(397.5)), pt(inch(12.5), inch(324)),
-                     pt(inch(10), inch(324)), pt(inch(10), inch(324))),
-               start_elevation=inch(-76.4375), end_elevation=inch(-49.4375),
+                     pt(inch(35.5), inch(420)), pt(inch(35.5), inch(399)),
+                     pt(inch(9.5), inch(399)), pt(inch(9.5), inch(324)),
+                     pt(inch(9.5), inch(324))),
+               start_elevation=inch(-76.4375), end_elevation=inch(-51.4375),
                elevations=(inch(-76.4375), inch(-87.4375), inch(-87.4375), inch(-87.4375),
-                           inch(-87.4375), inch(-87.4375), inch(-87.4375), inch(-49.4375)),
+                           inch(-87.4375), inch(-87.4375), inch(-51.4375)),
                pull_points=(4,),
                from_ref="EQ-B-ESS-INV", to_ref="ED-B-BACKUP-PANEL"),
     # ** ONE FEEDER, TWO RUNS SINCE 2026-09-09, AND THE SPLIT IS THE POINT. ** The whole
@@ -1280,25 +1288,27 @@ CONDUIT_TRUNKS = [
     ConduitRun(uid="CDT002AAAA", tag="CD-B-GARAGE", trade_size=inch(1.25),
                # ** ITS OWN LANE AT x=4'-11 1/2" SINCE 2026-09-24. ** North on x=2'-0" it ran
                # through the chase foot — DU-ERV-EA's and DU-ERV-RISER-EXH's risers and the
-               # sauna vent's last leg. Now south 1'-1" off the panel and down, east at
-               # 27'-11" (under the kitchen drain, which has fallen far enough there), north
+               # sauna vent's last leg. Now north off ED-B-PANEL-2 on the wall strip, east at
+               # 27'-10" (under the kitchen drain, which has fallen far enough there), north
                # under CD-B-KITCHEN and the sauna vent, north between the cold trunk's dip and the supply plenum, and
                # east along the north wall under the kitchen drain and the cold riser.
-               path=(pt(ft(2), ft(29)), pt(ft(2), ft(27, 11)), pt(ft(2), ft(27, 11)),
-                     pt(inch(59.5), ft(27, 11)), pt(inch(59.5), ft(35, 3)),
+               # Since 2026-10-31 from ED-B-PANEL-2 (CKT-EV-1450's panel): up its top at x=9",
+               # north on the wall strip to y=27'-10", then east as before.
+               path=(pt(inch(9), inch(304)), pt(inch(9), inch(304)), pt(inch(9), inch(334)),
+                     pt(inch(59.5), inch(334)), pt(inch(59.5), ft(35, 3)),
                      pt(ft(16), ft(35, 3)),
                      pt(ft(16), ft(35, 5)), pt(ft(16), ft(35, 5))),
-               start_elevation=ft(-1, -1.75), end_elevation=ft(-4), elevations=(ft(-1, -1.75), ft(-1, -1.75), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), ft(-4)),
+               start_elevation=inch(-31.4375), end_elevation=ft(-4), elevations=(inch(-31.4375), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), ft(-4)),
                # Low-profile LB at 4 (16'-0", 35'-3"), RM-B-STAIR ceiling: ~7/16" under the drain.
                pull_points=(5,),
-               from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
+               from_ref="ED-B-PANEL-2", to_ref="ED-G-EV-1450"),
     # The buried leg: out through SP-B-N2-CD-GAR2 at -4'-0", north under the house/garage
     # gap, and up through the garage slab to ED-G-EV-1450. Same station the whole feeder
     # always used — none of its three sleeves moved.
     ConduitRun(uid="5PEMG38MHJ", tag="CD-B-GAP-EV", trade_size=inch(1.25),
                path=(pt(ft(16), ft(35, 5)), pt(ft(16), ft(44, 3.375)), pt(ft(16), ft(44, 3.375))),
                start_elevation=ft(-4), end_elevation=ft(5, 10), elevations=(ft(-4), ft(-4), ft(5, 10)),
-               from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
+               from_ref="ED-B-PANEL-2", to_ref="ED-G-EV-1450"),
     # Across the basement ceiling to the kitchen's east counter wall, where KGF3 (the device
     # this feeds) is.
     #
@@ -1309,7 +1319,8 @@ CONDUIT_TRUNKS = [
     # y=18'-10" and the bath vent's riser, north up the hall at x=16'-5 1/2", and through
     # W-B-CN at y=25'-6" (SP-B-CN-CD-KITCH), 6" south of the stair's first riser.
     ConduitRun(uid="CDT003AAAA", tag="CD-B-KITCHEN", trade_size=inch(0.75),
-               path=(pt(ft(2), ft(29)), pt(ft(9, 6.625), ft(29)),
+               # Up out of ED-B-PANEL's top at x=9 1/2" to the ceiling band, then east.
+               path=(pt(inch(9.5), ft(29)), pt(inch(9.5), ft(29)), pt(ft(9, 6.625), ft(29)),
                      pt(ft(9, 6.625), ft(19, 11)), pt(ft(13, 3.5), ft(19, 11)),
                      pt(ft(13, 3.5), ft(18, 11.75)), pt(ft(16, 5.5), ft(18, 11.75)),
                      pt(ft(16, 5.5), ft(25, 6)), pt(ft(19, 9), ft(25, 6)),
@@ -1325,15 +1336,15 @@ CONDUIT_TRUNKS = [
                # it. Do not put it back — a 16'-6" bulkhead to box a 3/4" pipe is not the fix.
                # -1'-4 1/4" since 2026-09-22: its framed-wall crossings pass under the double
                # top plate (-15 5/8"), and it still hangs only 2 5/8" into RM-B-PLAY-N.
-               start_elevation=ft(-1, -4.25), end_elevation=ft(3, 6),
-               elevations=(ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
+               start_elevation=inch(-31.4375), end_elevation=ft(3, 6),
+               elevations=(inch(-31.4375), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
                            ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.5625), ft(-1, -4.5625),
                            ft(-1, -4.5625), ft(3, 6)),
                # The y=29' leg is 5/16" lower, at -1'-4 9/16", to pass under PR-B-HW-KITCH's
                # x=30'-3.6" leg (see its note): 2.91" into RM-B-PLAY-N against the 3" allowance.
-               # NEC 358.26 conduit bodies, covers down: 2 = RM-B-FURNACE (9'-6 5/8", 19'-11");
-               # 7 = RM-B-PLAY-N (19'-9", 25'-6"). Not 6: CD-B-DATA-MEDIA passes 1/3" off it.
-               pull_points=(2, 7),
+               # NEC 358.26 conduit bodies, covers down: 3 = RM-B-FURNACE (9'-6 5/8", 19'-11");
+               # 8 = RM-B-PLAY-N (19'-9", 25'-6"). Not 7: CD-B-DATA-MEDIA passes 1/3" off it.
+               pull_points=(3, 8),
                from_ref="ED-B-PANEL", to_ref="ED-M-LIVING-KGF3"),
     # South out of the basement to the hot tub disconnect under the porch. The east leg runs
     # 1' north of the y=0 sheathing line, so it crosses W-B-S1 once rather than running
@@ -1364,16 +1375,20 @@ CONDUIT_TRUNKS = [
     ConduitRun(uid="CDT004AAAA", tag="CD-B-SPA", trade_size=inch(1),
                # The south-wall cross-lane leg clears 80" AFF. The two vertical
                # offsets keep both garden sleeves at their original -4' elevation.
-               path=(pt(ft(2), ft(29)), pt(ft(2), ft(1)), pt(ft(2), ft(1)),
-                     pt(ft(7), ft(1)), pt(ft(7), ft(1)), pt(_SPA_CHASE_X, ft(1)),
+               # Since 2026-10-31 from ED-B-PANEL-2 (CKT-SPA's panel): up its top to 79 1/4"
+               # AFF, 3/8" under DU-B-ERV-R-SAUNA-EXH and over the 78" working spaces, south
+               # on x=1'-5" (west of DU-B-ERV-R-BENCH), rising to 81.9" by the south wall.
+               path=(pt(inch(11), inch(296)), pt(inch(11), inch(296)), pt(inch(17), inch(296)),
+                     pt(inch(17), inch(40)), pt(inch(17), ft(1)), pt(ft(7), ft(1)),
+                     pt(ft(7), ft(1)), pt(_SPA_CHASE_X, ft(1)),
                      pt(_SPA_CHASE_X, ft(-7.833))),
-               start_elevation=ft(-4), end_elevation=ft(-4),
-               elevations=(ft(-4), ft(-4), inch(-27.5), inch(-27.5),
-                           ft(-4), ft(-4), ft(-4)),
-               # Pull box at the south-west corner's vertical jog (2'-0", 1'-0"), outside the
-               # dry-fire lane's x 40.5"..68" band. Splits the 450 degrees of bends (NEC 358.26).
-               pull_points=(2,),
-               from_ref="ED-B-PANEL", to_ref="ED-B-SPA-DISC"),
+               start_elevation=inch(-31.4375), end_elevation=ft(-4),
+               elevations=(inch(-31.4375), inch(-30.1875), inch(-30.1875), inch(-30.1875),
+                           inch(-27.5), inch(-27.5), ft(-4), ft(-4), ft(-4)),
+               # Pull box at the south-west corner (1'-5", 1'-0"), outside the dry-fire
+               # lane's x 40.5"..68" band. Splits the bends (NEC 358.26).
+               pull_points=(4,),
+               from_ref="ED-B-PANEL-2", to_ref="ED-B-SPA-DISC"),
 ]
 
 # --- Structured cabling: the head end, three access points, and the spine trunk ---------
@@ -1405,20 +1420,29 @@ DATA_TRUNKS = [
     # radon/vent bundle. Every upstairs pull goes through this one pipe.
     ConduitRun(uid="CDT008AAAA", tag="CD-B-DATA-CHASE", trade_size=inch(1.25),
                service=Service.DATA,
-               path=(pt(ft(2), ft(31)), pt(inch(22), ft(31)), pt(inch(22), inch(406.2)),
-                     pt(inch(22), inch(406.2))),
-               start_elevation=ft(-4), end_elevation=ft(20, 6),
-               elevations=(ft(-4), ft(-4), ft(-4), ft(20, 6)),
+               # Out of the patch's north side at 85" AFF, north on the wall strip over
+               # ED-B-BACKUP-ENCL (clear of its working space) and under DU-ERV-RISER-SUP.
+               path=(pt(inch(10), inch(379.5)), pt(inch(10), inch(406.2)),
+                     pt(inch(22), inch(406.2)), pt(inch(22), inch(406.2))),
+               start_elevation=inch(-24.4375), end_elevation=ft(20, 6),
+               elevations=(inch(-24.4375), inch(-24.4375), inch(-24.4375), ft(20, 6)),
                from_ref="ED-B-NET-PATCH"),
     # The capped spare, another 6" east. No service and no conductors — a pull string and
     # 2" of room, which is the whole of what the owner's "conduit, make it easy to run new
     # lines" asks for. It is where the PoE cameras go.
     ConduitRun(uid="CDT009AAAA", tag="CD-B-SPARE-CHASE", trade_size=inch(2),
                service=None,
-               path=(pt(ft(2), ft(31)), pt(ft(2, 6), ft(31)), pt(ft(2, 6), inch(409.4)),
+               # Down out of the patch bottom to 50" AFF, north on the wall strip under
+               # ED-B-BACKUP-ENCL, east at y=33'-5 1/2" (north of its working space); it must
+               # stay under DU-ERV-RISER-EXH's 78.9" north leg. Pull body at 3 (2'-6").
+               path=(pt(inch(11), inch(377.5)), pt(inch(11), inch(377.5)),
+                     pt(inch(11), inch(401.5)), pt(ft(2, 6), inch(401.5)),
+                     pt(ft(2, 6), inch(409.4)),
                      pt(inch(19.9), inch(409.4)), pt(inch(19.9), inch(409.4))),
-               start_elevation=ft(-4), end_elevation=ft(20, 6),
-               elevations=(ft(-4), ft(-4), ft(-4), ft(-4), ft(20, 6)),
+               start_elevation=inch(-49.4375), end_elevation=ft(20, 6),
+               elevations=(inch(-49.4375), inch(-59.4375), inch(-59.4375), inch(-59.4375),
+                           inch(-59.4375), inch(-59.4375), ft(20, 6)),
+               pull_points=(3,),
                from_ref="ED-B-NET-PATCH"),
 ]
 
@@ -1622,10 +1646,15 @@ BASEMENT_DATA_TRUNKS = [
     # north risers at x=1'-7 3/5" and x=2'-6". The last inch turns into the jack before
     # dropping to 42" over the slab. Stays inside the basement box — no sleeve.
     ConduitRun(uid="F2D3CT89ZV", tag="CD-B-DATA-SHOP", trade_size=inch(0.75), service=Service.DATA,
-               path=(pt(inch(10), ft(31)), pt(inch(10), ft(8, 6)),
+               # Since 2026-10-31 under the panels: out of the patch bottom down to 32" AFF on
+               # x=11" (it ran through their bodies at 61"), back up to 61" at y=23'-8".
+               path=(pt(inch(11), ft(31)), pt(inch(11), ft(31)), pt(inch(11), inch(284)),
+                     pt(inch(11), inch(284)), pt(inch(11), ft(8, 6)),
                      pt(inch(9), ft(8, 6)), pt(inch(9), ft(8, 6))),
-               start_elevation=ft(-4), end_elevation=ft(-5, -10),
-               elevations=(ft(-4), ft(-4), ft(-4), ft(-5, -10)),
+               start_elevation=inch(-49.4375), end_elevation=ft(-5, -10),
+               elevations=(inch(-49.4375), inch(-77.4375), inch(-77.4375), ft(-4), ft(-4),
+                           ft(-4), ft(-5, -10)),
+               pull_points=(3,),
                from_ref="ED-B-NET-PATCH", to_ref="ED-B-WORKSHOP-DATA1"),
     # Media room: east along the basement ceiling at -1'-4", through the stair shaft's west
     # wall and the centre wall, then north to the jack behind the television. Held at y=30'

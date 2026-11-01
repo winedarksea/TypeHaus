@@ -208,7 +208,7 @@ class EngineeringRecord:
     #: model does — a seal is against a computation, and silently swapping the computation
     #: under a valid-looking stamp is the failure this exists to prevent.
     basis_version: str = "0"
-    #: The standard the calculation follows, printed on S-105 and in every finding.
+    #: The standard the calculation follows, printed on S-603 and in every finding.
     basis: str = ""
     summary: str = ""
     status: Status = Status.NO_CALC

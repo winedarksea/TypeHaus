@@ -21,6 +21,7 @@ from typehaus.emit.draw.scene import (
     Text,
     Viewport,
 )
+from typehaus.emit.draw.typography import DIMENSION_DENOMINATOR
 
 _XDATA_APPID = "TYPEHAUS"
 # Loaded by ``ezdxf.new(setup=True)``; used for symbol geometry above the plan cut plane.
@@ -261,6 +262,11 @@ def _ensure_arch_dimstyle(doc: object) -> None:
     dimstyle.dxf.dimtih = 0
     dimstyle.dxf.dimlunit = 4  # architectural units
     dimstyle.dxf.dimlfac = 1.0
+    # 1/8" like the PDF (typography.feet_inches_8th): dimdec 3 is 1/8 in architectural units.
+    dimstyle.dxf.dimdec = 3
+    dimstyle.dxf.dimrnd = 1.0 / DIMENSION_DENOMINATOR
+    dimstyle.dxf.dimfrac = 2  # not stacked: 4'-11 1/8"
+    dimstyle.dxf.dimdsep = ord(".")  # ezdxf's own render is decimal; never "100,625"
 
 
 def _xdata(entity: object, node: Polyline) -> None:

@@ -35,6 +35,7 @@ from typehaus.emit.draw.typography import (
     LINE_SPACING,
     MIN_PT,
     NOTES_PT,
+    feet_inches_8th,
     paper_in_per_model_in,
     wrap_columns_for,
 )
@@ -1057,9 +1058,8 @@ def _draw_symbol(ax: object, node: Symbol, Arc: object) -> None:
                 [node.insert[1] - ny, node.insert[1] + ny], color="#3a6a8a", lw=0.8)
 
 
-def _feet_inches(total_in: float) -> str:
-    total = round(total_in)
-    return f"{total // 12}'-{total % 12}\""
+#: The one dimension formatter (``typography.feet_inches_8th``), at its old name.
+_feet_inches = feet_inches_8th
 
 
 def write_pdf(scene: Scene, path: Path, title: str | None = None) -> Path:

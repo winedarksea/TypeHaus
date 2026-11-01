@@ -92,7 +92,7 @@ _declare(Deferral(
                 "uplift reaction schedule is "
                 "the intake half: quote each row into `Roof.published_reactions` and the "
                 "chain below the heel is graded as a published read, not sealed here",
-    unblocks="Roof framing — the S-105 rafter/truss line and the roof-load permit item; "
+    unblocks="Roof framing — the S-603 rafter/truss line and the roof-load permit item; "
              "the uplift line (structural.uplift_capacity, structural.truss_reactions) "
              "closes on the quoted reactions",
     oracle=(Oracle(note="catlin_truss_engineering.md",

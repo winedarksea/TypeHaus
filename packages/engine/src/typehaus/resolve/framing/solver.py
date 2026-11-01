@@ -739,6 +739,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     opening_header_specs = {element.tag: element.header_spec
                             for element in plan.all_elements()
                             if isinstance(element, (Door, Window))}
+    band_floors = {element.tag: element.header_in_band for element in plan.all_elements()
+                   if isinstance(element, Door) and element.header_in_band}
     # A wall's layout line, so ``FramingSpec.layout_origin="line"`` can phase its module.
     lines_for_wall = lines_by_wall(model.layout_lines)
     by_host: dict[str, list[WallOpening]] = {}
@@ -764,6 +766,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             exterior=op.is_door and op.type_ref in exterior_door_types,
             jamb_framing=(door_types[op.type_ref].jamb_framing
                           if op.is_door and op.type_ref in door_types else None),
+            header_in_band=band_floors.get(op.tag),
         ))
     # Before the corner topology is read: a jamb pack reaching into an L takes it.
     jamb_packs_take_corners(plan, model, by_host)

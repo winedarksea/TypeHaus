@@ -13,11 +13,11 @@ below either prints a number or admits it has none.
 
 from __future__ import annotations
 
-import textwrap
+from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from typehaus.emit.draw.schedules.blocks import _lay_out_blocks
+from typehaus.emit.draw.schedules.blocks import draw_note_page, paginate_note_blocks
 from typehaus.emit.draw.sheet_writer import schedule_sheet
 from typehaus.emit.draw.structural_common import truss_heel_note
 from typehaus.resolve.concrete import concrete_spec_of
@@ -37,9 +37,8 @@ NOT_STATED = "not stated"
 #: nineteen tags on one line is a note nobody reads to the end of.
 _MAX_TAGS_LISTED = 6
 
-#: Characters one column holds at the 6 pt monospace ``_lay_out_blocks`` sets. A longer
-#: line does not wrap — it runs straight into the next column — so every line is clipped
-#: to it on the way out, once, rather than by each block guessing its own budget.
+#: A line budget for the tag lists and the certification paragraph. Sheet lines are wrapped
+#: to the column's measured width by ``blocks.paginate_note_blocks``, never clipped.
 _MAX_LINE_CHARS = 86
 
 
@@ -262,7 +261,21 @@ def wood_framing_block(model: ResolvedModel) -> list[str]:
     return lines
 
 
-def anchorage_block(model: ResolvedModel) -> list[str]:
+def sheet_ref(sheets: Sequence[str] | None, base: str) -> str | None:
+    """``base`` as this set numbers it: "S-602, S-602.1", "S-103.1–S-103.4", or ``None``.
+
+    ``sheets`` is the set's sheet numbers; ``None`` (no index to hand) prints ``base``.
+    """
+    if sheets is None:
+        return base
+    found = [n for n in sheets if n == base or n.startswith(base + ".")]
+    if len(found) > 2:
+        return f"{found[0]}–{found[-1]}"
+    return ", ".join(found) or None
+
+
+def anchorage_block(model: ResolvedModel,
+                    sheets: Sequence[str] | None = None) -> list[str]:
     """The governing rule behind each hardware role, from the takeoff's own ``basis``.
 
     The schedule of parts and counts stays on S-602. What belongs on a notes sheet is the
@@ -281,12 +294,13 @@ def anchorage_block(model: ResolvedModel) -> list[str]:
     lines: list[str] = []
     for role, basis in sorted(by_role.items()):
         lines.append(role.replace("_", " ").upper())
-        lines.append("  " + _clip(basis))
-    lines.append("PARTS, PART NUMBERS AND COUNTS: SEE S-602.")
+        lines.append("  " + basis)
+    lines.append(f"PARTS, PART NUMBERS AND COUNTS: SEE {sheet_ref(sheets, 'S-602') or 'S-602'}.")
     return lines
 
 
 def _clip(text: str, limit: int = _MAX_LINE_CHARS) -> str:
+    """A one-line summary of ``text`` for callers that want one; the sheet wraps instead."""
     return text if len(text) <= limit else text[: limit - 1] + "…"
 
 
@@ -300,29 +314,47 @@ def structural_specification_block(model: ResolvedModel) -> list[str]:
     lines: list[str] = []
     for number, title, bullets in sections:
         lines.append(f"{number}  {title}")
-        lines.extend(f"  • {_clip(bullet)}" for bullet in bullets)
+        lines.extend(f"  • {bullet}" for bullet in bullets)
     return lines
 
 
-def limits_block(model: ResolvedModel, house_dir: Path | None) -> list[str]:
-    """What this sheet does NOT say. The half of a notes sheet that is usually missing."""
+def limits_block(model: ResolvedModel, house_dir: Path | None,
+                 sheets: Sequence[str] | None = None) -> list[str]:
+    """What this sheet does NOT say. The half of a notes sheet that is usually missing.
+
+    Cross-references read ``sheets`` (the set's numbers), so a series that continues or
+    is absent is named as the set prints it. One string per paragraph; the layout wraps.
+    """
+    register = sheet_ref(sheets, "S-603")
+    engineered = (
+        "ENGINEERED ITEMS — every requirement this engine could not answer from a "
+        f"prescriptive table is listed on {register} with its governing limit state, and "
+        "the arithmetic behind each is in out/calcs/ (`haus calcs`). An item on "
+        f"{register} that carries no seal rests on this engine's own calculation and on "
+        "nothing else." if register else
+        "ENGINEERED ITEMS — none: every requirement was answered from a prescriptive "
+        "table, so the set carries no engineering register.")
+    where = []
+    for subject, bases in (("BRACED WALL LINES are drawn on", ("S-103",)),
+                           ("MEMBER SCHEDULES are on", ("S-101", "S-102")),
+                           ("CONNECTION HARDWARE is scheduled on", ("S-602",)),
+                           ("FOUNDATIONS are on", ("S-100",))):
+        refs = [ref for ref in (sheet_ref(sheets, base) for base in bases) if ref]
+        if refs:
+            where.append(f"{subject} {' and '.join(refs)}.")
     return [
         "This sheet states what the model carries. It is not a design.",
         "",
-        "ENGINEERED ITEMS — every requirement this engine could not answer from a",
-        "prescriptive table is listed on S-603 with its governing limit state, and the",
-        "arithmetic behind each is in out/calcs/ (`haus calcs`). An item on S-603 that",
-        "carries no seal rests on this engine's own calculation and on nothing else.",
+        engineered,
         "",
-        f"A value printed as \"{NOT_STATED}\" is a value this model does not carry. It is",
+        f"A value printed as \"{NOT_STATED}\" is a value this model does not carry. It is "
         "not a value of zero and not a default: nothing on this sheet is inferred.",
-        "",
-        "BRACED WALL LINES are drawn on S-103. MEMBER SCHEDULES are on S-101 and S-102.",
-        "CONNECTION HARDWARE is scheduled on S-602. FOUNDATIONS are on S-100.",
+        *(["", " ".join(where)] if where else []),
     ]
 
 
-def certification_block(profile: JurisdictionProfile | None) -> list[str]:
+def certification_block(profile: JurisdictionProfile | None,
+                        sheets: Sequence[str] | None = None) -> list[str]:
     """The jurisdiction's own certification sentence — printed here, once, in full.
 
     Minn. R. 1800.4200 subp. 3 puts the certification on *each* sheet a licensee is
@@ -337,46 +369,72 @@ def certification_block(profile: JurisdictionProfile | None) -> list[str]:
     text = getattr(profile, "seal_certification", None)
     if not text:
         return []
+    register = sheet_ref(sheets, "S-603")
     return [
-        *textwrap.wrap(text, width=_MAX_LINE_CHARS),
+        text,  # one line: the sheet wraps it to the column
         "",
         "The signature, typed or printed name, date and licence number are ruled in the",
         "title block of each sheet the licensee is responsible for. This engine never",
         "draws a stamp and never writes engineering.toml: a seal is a human act, and the",
         "set records it rather than performing it.",
-        "",
-        "An engineered requirement that carries no seal is listed on S-603 and rests on",
-        "this engine's own calculation. See out/calcs/ for the arithmetic (`haus calcs`).",
+        *(["", f"An engineered requirement that carries no seal is listed on {register} "
+                "and rests on this engine's own calculation. See out/calcs/ for the "
+                "arithmetic (`haus calcs`)."] if register else []),
     ]
 
 
-def _write_structural_notes(pdf, model: ResolvedModel, number: str, name: str, *,
-                            profile: JurisdictionProfile | None = None,
-                            preferences: Preferences | None = None,
-                            house_dir: Path | None = None) -> None:
-    """S-001 — the general structural notes sheet, always emitted.
+def structural_note_blocks(model: ResolvedModel,
+                           profile: JurisdictionProfile | None = None,
+                           preferences: Preferences | None = None,
+                           house_dir: Path | None = None,
+                           sheets: Sequence[str] | None = None,
+                           ) -> list[tuple[str, list[str]]]:
+    """S-001's blocks, in reading order. Lines are wrapped by the layout, not clipped.
 
-    Unconditional on purpose. The sheet it replaces (S-002) appeared only when the model
-    happened to carry a specification section, so the one house with nothing authored — the
-    house that most needed a sheet saying what is and is not known — got no sheet at all.
+    ``sheets`` is the rest of the set's numbers, for the cross-references (→ ``sheet_ref``).
     """
     blocks: list[tuple[str, list[str]]] = [
         ("DESIGN CRITERIA — IRC TABLE R301.2(1)",
          design_criteria_block(model, profile, preferences)),
         ("FOUNDATIONS AND CONCRETE — ACI 318-19", concrete_block(model)),
         ("WOOD FRAMING", wood_framing_block(model)),
-        ("ANCHORAGE AND CONNECTIONS", anchorage_block(model)),
+        ("ANCHORAGE AND CONNECTIONS", anchorage_block(model, sheets)),
         ("STRUCTURAL SPECIFICATIONS — DIVISIONS 03 / 05",
          structural_specification_block(model)),
-        ("WHAT THIS SHEET DOES NOT SAY", limits_block(model, house_dir)),
+        ("WHAT THIS SHEET DOES NOT SAY", limits_block(model, house_dir, sheets)),
     ]
-    certification = certification_block(profile)
+    certification = certification_block(profile, sheets)
     if certification:
-        blocks.append(("PROFESSIONAL CERTIFICATION", certification))
-    clipped = [(title, [_clip(line) for line in lines]) for title, lines in blocks]
+        # Second, so it is on S-001 itself: every title block says "SEE S-001 FOR
+        # CERTIFICATION", and the long anchorage block would push it onto S-001.1.
+        blocks.insert(1, ("PROFESSIONAL CERTIFICATION", certification))
+    return blocks
+
+
+def structural_notes_pages(model: ResolvedModel, paper: tuple[float, float], *,
+                           profile: JurisdictionProfile | None = None,
+                           preferences: Preferences | None = None,
+                           house_dir: Path | None = None,
+                           sheets: Sequence[str] | None = None) -> int:
+    """How many sheets S-001 takes on ``paper`` — ``S-001``, ``S-001.1`` …"""
+    blocks = structural_note_blocks(model, profile, preferences, house_dir, sheets)
+    return len(paginate_note_blocks(blocks, paper))
+
+
+def _write_structural_notes(pdf, model: ResolvedModel, number: str, name: str, *,
+                            profile: JurisdictionProfile | None = None,
+                            preferences: Preferences | None = None,
+                            house_dir: Path | None = None, page: int = 0,
+                            sheets: Sequence[str] | None = None) -> None:
+    """S-001 (page ``page`` of it) — the general structural notes sheet, always emitted.
+
+    Unconditional on purpose. The sheet it replaces (S-002) appeared only when the model
+    happened to carry a specification section, so the one house with nothing authored — the
+    house that most needed a sheet saying what is and is not known — got no sheet at all.
+    """
+    blocks = structural_note_blocks(model, profile, preferences, house_dir, sheets)
     with schedule_sheet(pdf, model, number, name, heading_xy=(0.03, 0.945)) as fig:
-        overflow = _lay_out_blocks(fig, clipped)
-        if overflow:
-            fig.text(0.03, 0.06,
-                     f"NOTE: {overflow} block(s) did not fit and are NOT printed.",
-                     fontsize=7, family="monospace", color="#8a1c1c")
+        size = tuple(fig.get_size_inches())
+        pages = paginate_note_blocks(blocks, size)
+        if page < len(pages):
+            draw_note_page(fig, pages[page], size)

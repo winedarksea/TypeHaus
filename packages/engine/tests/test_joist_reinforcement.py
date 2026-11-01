@@ -212,8 +212,10 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
         found = [m for m in floor.members if m.category == "sister_joist"]
         assert floor.tag not in unsistered or found == [], floor.tag
         sisters.extend((floor.tag, m) for m in found)
-    # Two additional full-span plies carry ST-S2A's departing-rim reactions on FS-S-EAST.
-    assert sorted(tag for tag, _ in sisters) == ["FS-M-WEST", "FS-S-EAST", "FS-S-EAST"]
+    # Two additional full-span plies carry ST-S2A's departing-rim reactions on FS-S-EAST;
+    # FS-M-EAST's two LVL plies are D-B-PATIO's flush band header (``extent``-clipped).
+    assert sorted(tag for tag, _ in sisters) == [
+        "FS-M-EAST", "FS-M-EAST", "FS-M-WEST", "FS-S-EAST", "FS-S-EAST"]
     # Full span, tip to tip: a sister that stops short carries nothing where the load is
     # (``resolve/floors.py::_reinforcement_members``). 17.85' and not the 18'-0" bearing grid
     # — the joist it doubles stops 1 1/4" inboard of the foundation's framing face, behind
@@ -225,7 +227,7 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     # the I-joist ply under the bath is the only sistered stock this house orders.
     rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}
     assert sorted(key for key in rows if key[1] == "sister_joist") == [
-        ("11.875 I-joist", "sister_joist")]
+        ("1.75x11.875 LVL", "sister_joist"), ("11.875 I-joist", "sister_joist")]
 
 
 def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_model):

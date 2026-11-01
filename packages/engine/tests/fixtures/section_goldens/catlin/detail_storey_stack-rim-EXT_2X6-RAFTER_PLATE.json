@@ -2843,6 +2843,96 @@
     },
     {
       "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            432.00000000000006,
+            234.75
+          ],
+          "name": ""
+        },
+        {
+          "kind": "point",
+          "xy": [
+            436.00000000000006,
+            234.75
+          ],
+          "name": ""
+        }
+      ],
+      "p0": [
+        432.00000000000006,
+        234.75
+      ],
+      "p1": [
+        436.00000000000006,
+        234.75
+      ],
+      "offset": 4.0,
+      "height_pt": 9.5,
+      "layer": "A-ANNO-DIMS",
+      "text": "4\" CI",
+      "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            426.00000000000006,
+            226.75
+          ],
+          "name": ""
+        },
+        {
+          "kind": "point",
+          "xy": [
+            431.50000000000006,
+            226.75
+          ],
+          "name": ""
+        }
+      ],
+      "p0": [
+        426.00000000000006,
+        226.75
+      ],
+      "p1": [
+        431.50000000000006,
+        226.75
+      ],
+      "offset": 3.0,
+      "height_pt": 9.5,
+      "layer": "A-ANNO-DIMS",
+      "text": "5 1/2\" stud",
+      "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        415.65748031496065,
+        209.0964566929134
+      ],
+      "content": "FLOOR BAND 1'-0 5/8\": 11 7/8\" JOIST + 3/4\" SUBFLOOR",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-DIMS",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2930,80 +3020,6 @@
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
       "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            432.00000000000006,
-            234.75
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            436.00000000000006,
-            234.75
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        432.00000000000006,
-        234.75
-      ],
-      "p1": [
-        436.00000000000006,
-        234.75
-      ],
-      "offset": 4.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "4\" CI",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            426.00000000000006,
-            226.75
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            431.50000000000006,
-            226.75
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        426.00000000000006,
-        226.75
-      ],
-      "p1": [
-        431.50000000000006,
-        226.75
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "5 1/2\" stud",
-      "text_along": 0.0,
       "uid": null
     },
     {

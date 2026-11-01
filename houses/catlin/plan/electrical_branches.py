@@ -35,18 +35,18 @@ BRANCH_PULL_BOXES = [
 BRANCH_RACEWAYS = [
     # 1" EMT + THHN, panel 2 to the bench box, exposed below the joists (owner, 2026-10-29:
     # no bores through ~15 I-joist webs). Router proposal A, adjusted: its x 9 1/4" lane cut
-    # W-B-CW's end stud lengthwise. Out of the panel top at x 9 7/8" (beside
-    # DU-B-ERV-R-SAUNA-SUP), up 15/16" to ride over it, south on clamp-backs at 7'-7" AFF,
-    # angling 7/8" east so it crosses W-B-CW in the ducts' bay clear of the stud; up at
+    # W-B-CW's end stud lengthwise. Out of the panel top (78" AFF) at x 9 1/2", up and
+    # south on clamp-backs at 7'-7" AFF, angling 7/8" east so it crosses W-B-CW in its west
+    # clear bay clear of the stud (the sauna ducts moved a bay east, 2026-10-31); up at
     # y 12'-6" (clear of RC2's drop) to the box's side knockout, 2" under the gypsum.
     # 360 degrees, panel to box. Carries CKT-WORKSHOP-240; 1" leaves room for more circuits
     # or a 60-100 A subpanel feeder (#3 + #8 THHN fits at 40%).
     ConduitRun(uid="4AQ25GM4Y2", tag="CD-B-WORKSHOP", trade_size=inch(1),
                service=Service.POWER_240,
-               path=(pt(inch(9.875), ft(25)), pt(inch(9.875), ft(25)),
+               path=(pt(inch(9.5), ft(25)), pt(inch(9.5), ft(25)),
                      pt(inch(10.75), ft(12, 6)), pt(inch(10.75), ft(12, 6)),
                      pt(ft(1, 7.375), ft(12, 6)), pt(ft(1, 7.375), ft(8, 6))),
-               elevations=(inch(-19.4375), inch(-18.5), inch(-18.5), inch(-15.125),
+               elevations=(inch(-31.4375), inch(-18.5), inch(-18.5), inch(-15.125),
                            inch(-15.125), inch(-15.125)),
                from_ref="ED-B-PANEL-2", to_ref="ED-B-WORKSHOP-JB",
                circuits=("CKT-WORKSHOP-240",)),
@@ -70,30 +70,31 @@ BRANCH_RACEWAYS = [
                from_ref="ED-B-WORKSHOP-JB", to_ref="ED-B-WORKSHOP-RC2",
                circuits=("CKT-RC-BSMT",)),
     # 3/4" EMT capped spare, panel to the TV-wall box: a dedicated AV circuit pulls in later
-    # without opening the ceiling. No new circuit now; the panel is nearly full. Off an LB
-    # on the panel top and under the gypsum at -1'-1 7/16" (west of PR-B-SAUNA-VENT's x=4'-3
-    # 1/2" leg, ducking 1.6" under PR-B-HW-BATH's x=7'-3 5/8" leg and rising back over the
+    # without opening the ceiling. No new circuit now; the panel is nearly full. Up out of
+    # the panel top (78" AFF) and under the gypsum at -1'-1 7/16" (west of PR-B-SAUNA-VENT's x=4'-3
+    # 1/2" leg, ducking 1.6" under PR-B-HW-BATH's x=7'-3 5/8" leg on 6" ramps (15° bends) and rising back over the
     # vent's x=9'-0" leg, 2.8" over CD-B-KITCHEN and CD-B-DATA-MEDIA: the
     # furnace room has no lane beside those two, W-B-STR3's face is at x=9'-9 1/4"),
     # through W-B-STR2's top plate and RM-B-BATH on CD-B-DATA-MEDIA's lanes one step further
     # from CD-B-KITCHEN, down to their -1'-4 1/4" in the hall and through W-B-CN at
-    # y=26'-0" (SP-B-CN-CD-SPARE). Pull boxes at 7 (RM-B-BATH) and 12 (RM-B-PLAY-N): no
+    # y=26'-0" (SP-B-CN-CD-SPARE). Pull boxes at 8 (RM-B-BATH) and 13 (RM-B-PLAY-N): no
     # section passes 360 degrees.
     ConduitRun(uid="FD1J045HS6", tag="CD-B-PLAY-SPARE", trade_size=inch(0.75),
                service=None,
-               path=(pt(inch(10), inch(349.375)), pt(inch(40), inch(349.375)),
-                     pt(inch(40), inch(243.5)), pt(inch(80), inch(243.5)),
+               path=(pt(inch(9.5), inch(349.375)), pt(inch(9.5), inch(349.375)),
+                     pt(inch(40), inch(349.375)),
+                     pt(inch(40), inch(243.5)), pt(inch(76), inch(243.5)),
                      pt(inch(82), inch(243.5)), pt(inch(95), inch(243.5)),
-                     pt(inch(97), inch(243.5)), pt(inch(162.25), inch(243.5)),
+                     pt(inch(101), inch(243.5)), pt(inch(162.25), inch(243.5)),
                      pt(inch(162.25), inch(230.75)), pt(inch(194.75), inch(230.75)),
                      pt(inch(194.75), inch(312)), pt(inch(194.75), inch(312)),
                      pt(inch(232.5), inch(312)), pt(inch(232.5), inch(361.5)),
                      pt(inch(321), inch(361.5)), pt(inch(321), inch(414))),
-               elevations=(inch(-13.44), inch(-13.44), inch(-13.44), inch(-13.44),
+               elevations=(inch(-31.4375), inch(-13.44), inch(-13.44), inch(-13.44), inch(-13.44),
                            inch(-15.05), inch(-15.05), inch(-13.44), inch(-13.44), inch(-13.44),
                            inch(-13.44), inch(-13.44), inch(-16.25), inch(-16.25), inch(-16.25),
                            inch(-16.25), inch(-16.25)),
-               pull_points=(7, 12),
+               pull_points=(8, 13),
                from_ref="ED-B-PANEL", to_ref="ED-B-PLAY-N-JB"),
     # 3/4" EMT + THHN from the TV box to the receptacle behind the panel, down the wall face
     # (face + half the OD); CKT-RC-BSMT's NM enters the box.

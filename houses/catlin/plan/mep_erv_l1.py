@@ -150,8 +150,10 @@ EQUIPMENT_ERV_BASEMENT = [
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 2))),
     # 5/8" lower than its twin: PR-B-SAUNA-VENT's y=28'-8" leg crosses over this box at
     # 7'-10 7/16" and its top stood in the pipe (structural.placeable_interference).
+    # y=28'-5" since 2026-10-31, 1" south, so DU-ERV-OA's port leg passes beside it at
+    # 84 1/2" (over the panels' 78" working space) instead of under it.
     Equipment(uid="CRN5GT0ECP", tag="EQ-B-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(6, 6), ft(28, 6)), footprint=(inch(36), inch(8)),
+              position=pt(ft(6, 6), ft(28, 5)), footprint=(inch(36), inch(8)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV-PLENUM-B-EXH",
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.375))),
 ]
@@ -212,7 +214,7 @@ DUCTS_ERV_BASEMENT = [
     # (2026-10-17) Off the case's north-east top, under the collars. Nothing west of x=6'-0".
     DuctRun(uid="6BTCWW2S1V", tag="DU-B-ERV-RET-TRUNK", system=DuctSystem.RETURN,
             path=(pt(inch(86), ft(29, 2)), pt(ft(7, 4.5), ft(29, 2)),
-                  pt(ft(7, 4.5), ft(28, 6)), pt(ft(7, 4.5), ft(28, 6))),
+                  pt(ft(7, 4.5), ft(28, 5)), pt(ft(7, 4.5), ft(28, 5))),
             elevations=(inch(75.6), inch(75.6), inch(75.6), ft(7, 2)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
@@ -271,19 +273,29 @@ DUCTS_ERV_BASEMENT = [
                         inch(90.75), inch(90.75), inch(90.75), inch(90.75)),
             diameter=inch(4), routing=DuctRouting.SOFFIT, soffit_ref="SF-B-BATH",
             material="galvanized", design_cfm=30),
-    # The sauna supply crosses W-B-CW at x=1'-0 1/2", in its west clear stud bay and west
-    # of D-B-FURN's header. It travels south on that lane, then turns east along the clear
-    # southern band to REG-B-SUP3.
+    # The sauna supply crosses W-B-CW at x=1'-7", in its 1'-4 3/4"..2'-7 1/4" stud bay and
+    # west of D-B-FURN's header. It travels south on that lane, then turns east along the
+    # clear southern band to REG-B-SUP3.
     #
     # ** THE LAST LEG DROPS BEFORE W-B-SA-W. ** At y=1'-8 1/2", the route drops 3 1/2" to
     # 7'-0" and then crosses W-B-SA-W between studs at y=1'-8 1/2". The duct top is 1" below
     # that wall's top plates. This keeps the 4" branch in the wall bay rather than through
     # either top plate; the low south-band step is clear of the other authored services.
+    #
+    # ** x=1'-7" SINCE 2026-10-31, OUT OF THE PANELS' NEC 110.26(E) SPACE. ** At 1'-0 1/2"
+    # both sauna radials stood 1 1/2" over the three 4"-deep enclosures on W-B-W1 (x <= 12");
+    # 1'-7" is the next W-B-CW bay. West at y=30'-2 1/2": 89" under CD-B-GARAGE and
+    # PR-B-SAUNA-VENT, 92 1/2" over DU-ERV-OA's wrap (top 90 1/2"), 87 1/2" over
+    # DU-ERV-RISER-EXH, then 86 1/2" down the lane to clear PR-B-SINK2-DRAIN's rake.
     DuctRun(uid="VXGA0P0V72", tag="DU-B-ERV-R-SAUNA-SUP", system=DuctSystem.SUPPLY,
-            path=(pt(ft(5, 3), ft(30, 2)), pt(ft(5, 3), ft(30, 2)),
-                  pt(ft(1, 0.5), ft(30, 2)), pt(ft(1, 0.5), inch(20.5)),
-                  pt(ft(1, 0.5), inch(20.5)), pt(inch(199.75), inch(20.5))),
-            elevations=(ft(7, 6), inch(87.5), inch(87.5), inch(87.5), ft(7), ft(7)),
+            path=(pt(ft(5, 3), inch(362.5)), pt(ft(5, 3), inch(362.5)),
+                  pt(inch(48), inch(362.5)), pt(inch(48), inch(362.5)),
+                  pt(inch(32), inch(362.5)), pt(inch(32), inch(362.5)),
+                  pt(ft(1, 7), inch(362.5)), pt(ft(1, 7), inch(362.5)),
+                  pt(ft(1, 7), inch(20.5)),
+                  pt(ft(1, 7), inch(20.5)), pt(inch(199.75), inch(20.5))),
+            elevations=(ft(7, 6), inch(89), inch(89), inch(92.5), inch(92.5), inch(87.5),
+                        inch(87.5), inch(86.5), inch(86.5), ft(7), ft(7)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=12),
     # The bench hood's pull. It drops out of the ceiling chase to the hood face at 5'-6",
     # which is the vertical leg that makes it a capture hood rather than a ceiling diffuser.
@@ -292,7 +304,7 @@ DUCTS_ERV_BASEMENT = [
     # corridors: under PR-B-KITCH-DRAIN, under PR-B-WC1-DRAIN's tail, and under the SH2 and
     # SINK2 drops that used to be three of its four reported pairs.
     DuctRun(uid="MTVYDDP43W", tag="DU-B-ERV-R-BENCH", system=DuctSystem.RETURN,
-            path=(pt(ft(6, 6), ft(28, 2)), pt(ft(6, 6), ft(27)), pt(ft(6, 6), ft(27)),
+            path=(pt(ft(6, 6), ft(28, 1)), pt(ft(6, 6), ft(27)), pt(ft(6, 6), ft(27)),
                   pt(ft(2), ft(27)), pt(ft(2), ft(8, 6)), pt(ft(2), ft(8, 6))),
             elevations=(ft(7, 6), ft(7, 6), inch(82.5), inch(82.5), inch(82.5), ft(6, 2)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=6),
@@ -305,23 +317,23 @@ DUCTS_ERV_BASEMENT = [
     # the upper flight to (12', 24'-1 5/8") through `stringer-upper-0`, `tread-upper-003` and
     # W-B-STR3's ledger. The flight's own structure is now inside the volume a router refuses.
     DuctRun(uid="03883CKF0H", tag="DU-B-ERV-R-BATH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(8), ft(28, 6)), pt(ft(8), ft(28, 6)),
+            path=(pt(ft(8), ft(28, 5)), pt(ft(8), ft(28, 5)),
                   pt(ft(8), ft(24)), pt(inch(119.875), ft(24))),
             elevations=(ft(7, 6), inch(88.75), inch(88.75), inch(88.75)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
-    # The low pickup is 4" off the floor on W-B-SA-W. The route now uses the west clear bay
-    # in W-B-CW at x=1'-0 1/2", clear of D-B-FURN's header, then turns east at y=3'-4".
-    # Both sauna radials share the west lane at separate tiers: this one is at 6'-10", 5 1/2"
-    # below supply. At y=3'-4" it enters the centre of W-B-SA-W's 5 1/2" cavity and drops
+    # The low pickup is 4" off the floor on W-B-SA-W. The route uses W-B-CW's x=1'-7" bay
+    # (out of the panels' 110.26(E) space since 2026-10-31), clear of D-B-FURN's header,
+    # then turns east at y=3'-4". Both sauna radials share the lane at separate tiers: this
+    # one at 82 1/4", 1/4" under the supply's underside. At y=3'-4" it enters the centre of W-B-SA-W's 5 1/2" cavity and drops
     # between the studs to 4" AFF. The 2" shift to the register's y=3'-2" station stays
     # inside that stud bay. W-B-SA-W uses SAUNA_2X6 so the 4" section fits with 3/4" each
     # side; its hot-side liner face stays fixed.
     DuctRun(uid="1Y457X9DMH", tag="DU-B-ERV-R-SAUNA-EXH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(5, 3), ft(28, 2)), pt(ft(5, 3), ft(28)), pt(ft(5, 3), ft(28)),
-                  pt(ft(1, 0.5), ft(28)), pt(ft(1, 0.5), inch(40)),
+            path=(pt(ft(5, 3), ft(28, 1)), pt(ft(5, 3), ft(27, 11)), pt(ft(5, 3), ft(27, 11)),
+                  pt(ft(1, 7), ft(27, 11)), pt(ft(1, 7), inch(40)),
                   pt(inch(116.5625), inch(40)), pt(inch(116.5625), inch(40)),
                   pt(inch(116.5625), ft(3, 2)), pt(inch(122), ft(3, 2))),
-            elevations=(ft(7, 6), ft(7, 6), inch(82.5), inch(82.5), inch(82.5), inch(82.5),
+            elevations=(ft(7, 6), ft(7, 6), inch(82.25), inch(82.25), inch(82.25), inch(82.25),
                         inch(4), inch(4), inch(4)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
 ]

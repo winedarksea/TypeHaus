@@ -73,8 +73,9 @@ MN_2020 = JurisdictionProfile(
         "listing, R327.5 ventilation and R327.6 protection from impact are NOT covered. "
         "The 2021 R328 kWh caps and detection are advisories, not 2018 code. "
         "Source-side NEC: 705.12 "
-        "busbar interconnection and 690.12 PV rapid shutdown; no other article of the NEC "
-        "is claimed. "
+        "busbar interconnection and 690.12 PV rapid shutdown; and 240.24(A) / 404.8(A) "
+        "the highest panel handle at 6'-7\" (the body top where no handle offset is "
+        "stated); no other article of the NEC is claimed. "
         "Wall bracing: R602.10 in full for the wind path — line spacing (R602.10.1.3), "
         "the required length per line against Tables R602.10.3(1) and (2), minimum panel "
         "length (Table R602.10.5), panel location (R602.10.2.2/.2.3), the end conditions "
@@ -302,6 +303,9 @@ MN_2020 = JurisdictionProfile(
                        ("IRC E3901.6", "NEC 210.52(D)")),
         PermitItemSpec("AFCI branch circuits", ("code.E3902_16_afci",),
                        ("IRC E3902.16",), blocking=False),
+        # Panel tops, not handles: a type with no handle offset grades its body top.
+        PermitItemSpec("Panelboard handle height", ("electrical.panel_handle_height",),
+                       ("NEC 240.24(A)", "NEC 404.8(A)")),
         # The energy storage system, as the adopted 2018 IRC R327 has it. The kWh caps and
         # detection are 2021 R328 and grade as advisories (energy_storage_anticipated.py).
         PermitItemSpec("Energy storage system",

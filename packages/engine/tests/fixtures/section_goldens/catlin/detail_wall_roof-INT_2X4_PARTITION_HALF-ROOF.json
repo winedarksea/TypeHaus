@@ -991,22 +991,6 @@
     },
     {
       "space": "model",
-      "node": "text",
-      "anchor": [
-        105.93897637795277,
-        268.84744094488195
-      ],
-      "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -1040,6 +1024,22 @@
       "layer": "A-ANNO-DIMS",
       "text": "3 1/2\" stud",
       "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        105.93897637795277,
+        268.84744094488195
+      ],
+      "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
       "uid": null
     },
     {

@@ -9,6 +9,7 @@ from __future__ import annotations
 from typehaus.checks._authoring import advisory_fail, passed
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
+from typehaus.model.patterns import first_match
 from typehaus.model.placeables import MountKind
 from typehaus.quantities import inch
 from typehaus.resolve.placeables import placed_xy
@@ -56,20 +57,38 @@ def window_size_variety(ctx: CheckContext) -> list[Finding]:
 @check(Tier.ADVISORY, "advisory.control_continuity")
 def control_layer_continuity(ctx: CheckContext) -> list[Finding]:
     """Warn where a tagged control layer dead-ends at a condition whose transition does
-    not declare continuity (walks junctions and stack edges, → 11b)."""
+    not declare continuity (walks junctions and stack edges, → 11b).
+
+    The binding is the first match, as the drawing reads it. A paint coat's vapour tag is
+    not a layer that continues across a floor line, so an assembly carrying only coatings
+    owes no claim (an interior-to-interior rim declares ``continuity=()``)."""
+    from typehaus.resolve.coatings import is_coating
+
+    library = ctx.plan.library
     out: list[Finding] = []
-    transitions = ctx.plan.library.transitions
     for cond in ctx.model.conditions:
         if cond.kind.value not in ("storey_stack", "assembly_change"):
             continue
-        declared = any(
-            _matches(t.condition_pattern, cond.key) and t.continuity for t in transitions
-        )
-        if not declared:
-            out.append(advisory_fail("advisory.control_continuity",
-                                     f"control-layer continuity not declared across {cond.key}",
-                                     cond.element_tags))
+        tr = first_match(library.transitions, cond.key)
+        if tr is not None and tr.continuity:
+            continue
+        if tr is not None and not _carries_control(library, cond.assemblies, is_coating):
+            continue
+        out.append(advisory_fail("advisory.control_continuity",
+                                 f"control-layer continuity not declared across {cond.key}",
+                                 cond.element_tags))
     return out
+
+
+def _carries_control(library, assemblies, is_coating) -> bool:
+    """True when any assembly has a control-tagged layer that is not a coating."""
+    for tag in assemblies:
+        resolved = library.resolve_assembly(tag)
+        layers = resolved.layers if resolved is not None else ()
+        if any(layer.control and not is_coating(library, layer.material_ref)
+               for layer in layers):
+            return True
+    return False
 
 
 @check(Tier.ADVISORY, "advisory.wet_wall_depth")
@@ -476,9 +495,3 @@ def cladding_side_mismatch(ctx: CheckContext) -> list[Finding]:
                     (tag_a, tag_b, node),
                 ))
     return out
-
-
-def _matches(pattern: str, key: str) -> bool:
-    import fnmatch
-
-    return fnmatch.fnmatch(key, pattern)

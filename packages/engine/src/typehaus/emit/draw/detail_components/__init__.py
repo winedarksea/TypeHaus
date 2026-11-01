@@ -25,7 +25,7 @@ from typehaus.emit.draw.detail_components.below_grade import (
     grade_line,
     soil_body,
 )
-from typehaus.emit.draw.detail_components.chrome import dimension_strings, material_legend
+from typehaus.emit.draw.detail_components.chrome import material_legend
 from typehaus.emit.draw.detail_components.config import (
     BASEMENT_TO_FRAMED_WALL,
     FOUNDATION_FACE,
@@ -114,6 +114,7 @@ from typehaus.emit.draw.detail_components.stack import (
     rim_band_air_seal,
     stack_width_shelf,
 )
+from typehaus.emit.draw.detail_components.stack_dimensions import dimension_strings
 from typehaus.emit.draw.detail_components.wall_base import (
     basement_framed_wall,
     foam_protection_board,

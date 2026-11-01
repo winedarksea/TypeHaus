@@ -8,8 +8,7 @@ page).
 """
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
-from dataclasses import dataclass, field, replace
+from dataclasses import replace
 from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -19,12 +18,8 @@ from typehaus.emit.draw.bracedwallplan import (
     has_braced_wall_content,
 )
 from typehaus.emit.draw.datum import at_level, model_at_level
-from typehaus.emit.draw.details import (
-    DerivedDetail,
-    build_authored_detail_scene,
-    build_detail,
-    derive_detail_slices,
-)
+from typehaus.emit.draw.detail_enlarged import enlarged_details
+from typehaus.emit.draw.details import build_authored_detail_scene, derive_detail_slices
 from typehaus.emit.draw.drainageplan import build_drainage_plan, has_drainage_content
 from typehaus.emit.draw.electricalplan import build_electrical_plan, has_electrical_content
 from typehaus.emit.draw.elevation import build_elevation
@@ -38,7 +33,7 @@ from typehaus.emit.draw.pdf_writer import _close
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
 from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
 from typehaus.emit.draw.roofplan import build_roof_plan
-from typehaus.emit.draw.scene import Scene
+from typehaus.emit.draw.schedule_plan_sheet import schedule_plan_sheet
 from typehaus.emit.draw.schedules import (
     _has_data_content,
     _write_cover,
@@ -58,7 +53,12 @@ from typehaus.emit.draw.schedules import (
     write_compare_sheet,
 )
 from typehaus.emit.draw.schedules.architectural import specification_sections
-from typehaus.emit.draw.schedules.structural_notes import _write_structural_notes
+from typehaus.emit.draw.schedules.paged_tables import page_count
+from typehaus.emit.draw.schedules.structural import framing_bom_tables, hardware_tables
+from typehaus.emit.draw.schedules.structural_notes import (
+    _write_structural_notes,
+    structural_notes_pages,
+)
 from typehaus.emit.draw.section import build_annotated_section, build_center_section
 from typehaus.emit.draw.sheet_sets import (
     BOTH_SETS,
@@ -68,11 +68,20 @@ from typehaus.emit.draw.sheet_sets import (
     in_set,
     resolve_set_name,
 )
+from typehaus.emit.draw.sheet_spec import (  # noqa: F401 — re-exported
+    PageFn,
+    SceneFn,
+    SheetSpec,
+    _derived_detail_scene,
+    _derived_detail_title,
+    _has_engineered_items,
+    _paged,
+    _storey_elevation,
+)
 from typehaus.emit.draw.sheet_writer import (
     LEDGER,
     PORTRAIT_LEDGER,
     compose_sheet,
-    paper_for,
     set_paper,
     set_seal_block,
 )
@@ -97,75 +106,9 @@ __all__ = [
     "write_plan_dxfs",
 ]
 
-def _derived_detail_title(derived: DerivedDetail) -> str:
-    """A derived detail's sheet title, distinguished by the assemblies it actually cuts.
-
-    ``derived.view.title`` is the *transition's* title, and a transition spawns one detail
-    per distinct bound condition — so catlin printed fourteen consecutive sheets all called
-    "TR-CATLIN-RIM-BAND", seven called "TR-CATLIN-FOUNDATION" and six "TR-CATLIN-EAVE". On
-    the sheet index that is 27 of 98 rows saying nothing, and in the title block it means a
-    sheet pulled off the pile cannot say which condition it is.
-
-    ``derived.key`` is exactly the missing half — it is the bound condition, and it is
-    unique by construction, which is why the detail set is keyed on it. ``condition:A|B``
-    becomes "A / B" appended to the transition's own name.
-    """
-    title = derived.view.title or derived.key
-    # ``rpartition``: a key is ``condition:A|B`` but a storey stack qualifies itself first
-    # ("storey_stack:rim:A|B"), and splitting on the leading colon leaves that qualifier
-    # stranded in front of the assemblies. The assembly list is always the last field.
-    _, _, bound = derived.key.rpartition(":")
-    pair = " / ".join(part for part in bound.split("|") if part)
-    return f"{title} · {pair}" if pair else title
-
-
-def _derived_detail_scene(model: ResolvedModel, derived: DerivedDetail) -> Scene:
-    scene, _findings = build_detail(model, derived)
-    return scene
-
 if TYPE_CHECKING:
     from typehaus.checks.jurisdiction import JurisdictionProfile
     from typehaus.checks.registry import CheckReport, Preferences
-
-SceneFn = Callable[[ResolvedModel], Scene]
-PageFn = Callable[["object", ResolvedModel, str, str], None]  # pdf: PdfPages
-
-
-@dataclass(frozen=True)
-class SheetSpec:
-    number: str                # "S-100"
-    title: str                 # "Foundation plan"
-    scale_note: str = "1/4\" = 1'-0\""  # hint only — compose_sheet prints the TRUE scale
-    scene: SceneFn | None = None       # IR-backed sheets
-    page: PageFn | None = None         # table/cover pages
-    # The paper the whole *set* is on, landscape (w, h) in inches — ``build_sheet_index``
-    # stamps every spec with the one it was asked for, so a set cannot be half 11x17.
-    paper: tuple[float, float] = LEDGER
-    # Orientation is the sheet's own business: E-602's four stacked tables need portrait on
-    # whatever paper the set is printing on, which is a rotation of ``paper`` and not a
-    # second preset. ``size`` resolves the two.
-    portrait: bool = False
-    north_arrow: bool = False          # stamp a north arrow in the viewport (plan sheets)
-    # Which SETS this sheet belongs to. "full" is everything this engine can draw;
-    # "permit" is what a Saint Paul DSI plan checker is asked to review, which is a
-    # deliberately smaller thing — no separate E or P drawings (fixtures go on the floor
-    # plans), no BOM, no room finish schedule, and only the starred derived details.
-    # ``build_sheet_index(sets="permit")`` filters on it at the return.
-    sets: frozenset[str] = BOTH_SETS
-
-    @property
-    def primary(self) -> bool:
-        """Deprecated alias for permit-set membership. Kept for one release."""
-        return PERMIT_SET in self.sets
-    # What this sheet is ABOUT, for a caller that needs to find one without parsing its
-    # title — ``{"storey": "main"}`` on the plan sheets. A dict rather than fields because
-    # the set has no fixed vocabulary and a title is prose, not an index.
-    keywords: Mapping[str, str] = field(default_factory=dict)
-
-    @property
-    def size(self) -> tuple[float, float]:
-        """The figure size this sheet composes at — ``paper``, turned if it is portrait."""
-        return paper_for(self.paper, self.portrait)
 
 
 def build_sheet_index(model: ResolvedModel,
@@ -218,7 +161,8 @@ def build_sheet_index(model: ResolvedModel,
     sheets.append(SheetSpec("G-005", "Ventilation and energy certificate",
                             page=partial(_write_ventilation_sheet,
                                          preferences=preferences)))
-    sheets.append(SheetSpec("C-101", "Site plan", "project north", scene=build_site_plan,
+    sheets.append(SheetSpec("C-101", "Site plan", "project north",
+                            scene=schedule_plan_sheet(build_site_plan),
                             north_arrow=True))
 
     # S-001 — general structural notes, and it is UNCONDITIONAL. It replaces S-002, whose
@@ -226,9 +170,9 @@ def build_sheet_index(model: ResolvedModel,
     # on a house with nothing authored it printed no sheet at all — precisely the house
     # that most needs a sheet saying what is and is not known. Divisions 03/05 are now one
     # block on it, so A-002 still keeps the remainder and nothing prints twice.
-    sheets.append(SheetSpec("S-001", "General structural notes",
-                            page=partial(_write_structural_notes, profile=profile,
-                                         preferences=preferences, house_dir=house_dir)))
+    # Its pages are spliced in HERE at the end: its cross-references read the set's own
+    # numbers ("S-602, S-602.1"), so it is composed once the rest of the set is known.
+    notes_at = len(sheets)
 
     # ONE SHEET PER LEVEL, NOT PER STOREY. A storey is a datum within one building, so
     # catlin has five at 0'-0" (the house's main floor, the garage deck, the porch, the north
@@ -242,7 +186,8 @@ def build_sheet_index(model: ResolvedModel,
 
     if has_foundation_content(model):
         sheets.append(SheetSpec("S-100", "Foundation plan",
-                                scene=partial(build_foundation_plan, profile=profile),
+                                scene=schedule_plan_sheet(build_foundation_plan,
+                                                          profile=profile),
                                 north_arrow=True))
 
     # S-101.n — ONE SHEET PER STOREY, not one per ``ResolvedFloor``. Catlin's main floor is
@@ -255,7 +200,7 @@ def build_sheet_index(model: ResolvedModel,
     for index, storey_tag in enumerate(framed_storeys, start=1):
         number = "S-101" if len(framed_storeys) == 1 else f"S-101.{index}"
         sheets.append(SheetSpec(number, f"Framing plan — {storey_tag}",
-                                scene=at_level(build_framing_plan, storey_tag),
+                                scene=schedule_plan_sheet(build_framing_plan, storey_tag),
                                 north_arrow=True, keywords={"storey": storey_tag}))
 
     # Roof framing keeps its own S-102 series: a roof is a framed level too, but numbering
@@ -267,7 +212,8 @@ def build_sheet_index(model: ResolvedModel,
     for index, roof in enumerate(roofs, start=1):
         number = "S-102" if len(roofs) == 1 else f"S-102.{index}"
         sheets.append(SheetSpec(number, f"Roof framing plan — {roof.tag}",
-                                scene=partial(build_roof_framing_plan, roof_tag=roof.tag),
+                                scene=schedule_plan_sheet(build_roof_framing_plan,
+                                                          roof_tag=roof.tag),
                                 north_arrow=True))
 
     # S-103.n — the braced wall plan, one per storey that has a braced wall line. MNSPECT
@@ -293,17 +239,17 @@ def build_sheet_index(model: ResolvedModel,
         # Full only: a bill of materials is a builder's document, not a plan check's.
         # S-602 stays in the permit set (the framing inspection is run against it) and so
         # does S-603 (it says which items rest on a seal).
-        sheets.append(SheetSpec("S-601", "Framing schedule / bill of materials",
-                                page=_write_framing_bom, sets=FULL_ONLY))
+        sheets.extend(_paged("S-601", "Framing schedule / bill of materials",
+                             _write_framing_bom,
+                             page_count(framing_bom_tables(model), paper), sets=FULL_ONLY))
 
-    # Hardware gets its own sheet rather than a second page under S-103: a PageFn that
-    # emits two pages would put the cover's printed index one page out of step with the
-    # emitted set, which ``build_sheet_index`` exists to prevent.
+    # One PageFn emits one page, or the cover's index would drift from the set; a schedule
+    # that outgrows its sheet continues on S-602.1, S-602.2 … (``_paged``).
     if hardware_takeoff(model):
-        sheets.append(SheetSpec("S-602", "Connection hardware schedule",
-                                page=_write_hardware_schedule))
+        sheets.extend(_paged("S-602", "Connection hardware schedule", _write_hardware_schedule,
+                             page_count(hardware_tables(model), paper)))
 
-    # S-105 only where the house actually has engineering in it. A set answered entirely by
+    # S-603 only where the house actually has engineering in it. A set answered entirely by
     # prescriptive tables gets no page saying so — an empty register reads as an omission,
     # and the cover already states the checklist verdict for that case.
     if _has_engineered_items(model, house_dir, report):
@@ -368,6 +314,12 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec(f"A-{next_detail}", _derived_detail_title(derived),
                                 scene=partial(_derived_detail_scene, derived=derived),
                                 sets=BOTH_SETS if starred else FULL_ONLY))
+        # Enlarged head/sill (C7-E4): A-512.1/.2 beside their parent, same sets.
+        for index, child in enumerate(enlarged_details(model, derived), start=1):
+            sheets.append(SheetSpec(f"A-{next_detail}.{index}",
+                                    f"{_derived_detail_title(derived)} · {child.part}",
+                                    scene=partial(_derived_detail_scene, derived=child),
+                                    sets=BOTH_SETS if starred else FULL_ONLY))
         next_detail += 1
 
     # A-601 used to be doors, windows AND fixtures on one sheet. They are three schedules
@@ -436,13 +388,16 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec("E-603", "Data / low-voltage schedule",
                                 page=_write_data_schedule, sets=FULL_ONLY))
 
-    return [replace(sheet, paper=paper) for sheet in sheets
-            if in_set(sheet, resolve_set_name(sets, details), preferences)]
-
-
-def _storey_elevation(model: ResolvedModel, storey_tag: str) -> float:
-    storey = next((s for s in model.plan.storeys if s.tag == storey_tag), None)
-    return storey.elevation.meters if storey is not None else 0.0
+    chosen = resolve_set_name(sets, details)
+    kept = [sheet for sheet in sheets if in_set(sheet, chosen, preferences)]
+    notes = {"profile": profile, "preferences": preferences, "house_dir": house_dir,
+             "sheets": tuple(sheet.number for sheet in kept)}
+    s001 = [sheet for sheet in _paged("S-001", "General structural notes",
+                                      partial(_write_structural_notes, **notes),
+                                      structural_notes_pages(model, paper, **notes))
+            if in_set(sheet, chosen, preferences)]
+    at = sum(1 for sheet in sheets[:notes_at] if in_set(sheet, chosen, preferences))
+    return [replace(sheet, paper=paper) for sheet in kept[:at] + s001 + kept[at:]]
 
 
 def write_permit_set(model: ResolvedModel, output: Path,
@@ -508,25 +463,3 @@ def write_plan_dxfs(model: ResolvedModel, output_dir: Path) -> list[Path]:
     return paths
 
 
-def _has_engineered_items(model: ResolvedModel, house_dir: Path | None,
-                          report: CheckReport | None = None) -> bool:
-    """Whether any check in this house delegates to the engineering register.
-
-    Asked by running the registry, not by enumerating the suite: which requirements a house
-    puts outside the prescriptive path is a conclusion the checks reach, and a second
-    enumeration here would be that judgement written twice.
-
-    ``report`` is that same registry run, already in hand. It is not a different answer —
-    it is the identical one, not computed twice: ``haus print`` runs the registry for the
-    permit checklist immediately before composing the set, and this function was re-running
-    every check in the house (~19 s on catlin) to append one sheet. A caller that holds a
-    report for THIS model, house and jurisdiction passes it; anyone else passes nothing and
-    the registry runs here as before.
-    """
-    if report is not None:
-        return any(finding.engineering_item for finding in report.findings)
-
-    from typehaus.checks import run_from_model
-
-    fresh = run_from_model(model, [], house_dir)
-    return any(finding.engineering_item for finding in fresh.findings)

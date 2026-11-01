@@ -55,8 +55,13 @@ BENCHMARK_LAYER = "C-ANNO-BMRK"
 _ENTRANCE_MARK_IN = 8.0
 
 
-def emit_site_annotations(builder: SceneBuilder, model: ResolvedModel, site: Site) -> None:
-    """Draw everything C-101 says *about* the parcel, on top of the drawn geometry."""
+def emit_site_annotations(builder: SceneBuilder, model: ResolvedModel, site: Site,
+                          schedule: BlockMetrics | None = None) -> None:
+    """Draw everything C-101 says *about* the parcel, on top of the drawn geometry.
+
+    ``schedule`` sizes the zoning table and notes at the framed sheet's scale
+    (``schedule_plan_sheet``); the parcel labels keep the parcel-scaled lettering.
+    """
     metrics = metrics_for([_in(p.xy_m) for p in site.parcel])
     _emit_parcel_and_setbacks(builder, model, site, metrics)
     _emit_lot_line_dimensions(builder, site, metrics)
@@ -64,7 +69,13 @@ def emit_site_annotations(builder: SceneBuilder, model: ResolvedModel, site: Sit
     _emit_easements(builder, site, metrics)
     _emit_erosion_controls(builder, site, metrics)
     _emit_benchmark(builder, site, metrics)
-    _emit_coverage_table(builder, model, site, metrics)
+    _emit_coverage_table(builder, model, site, schedule or metrics,
+                         lane=0.0 if schedule is None else _LEADER_LANE_CHARS)
+
+
+# East leader labels are resolved at frame time, outside the scene bounds the table is placed
+# by; at a printed size the table stands this many characters clear of the parcel for them.
+_LEADER_LANE_CHARS = 45
 
 
 def _reading_angle(dx: float, dy: float) -> float:
@@ -276,7 +287,7 @@ def _survey_notes(site: Site) -> list[str]:
 
 
 def _emit_coverage_table(builder: SceneBuilder, model: ResolvedModel, site: Site,
-                         metrics: BlockMetrics) -> None:
+                         metrics: BlockMetrics, lane: float = 0.0) -> None:
     """Zoning arithmetic beside the drawing: coverage, paving, height, and the survey note.
 
     Placed off the parcel's right edge, so the table can never land on the lot it
@@ -286,6 +297,7 @@ def _emit_coverage_table(builder: SceneBuilder, model: ResolvedModel, site: Site
     if len(parcel) < 3:
         return
     x0, y0 = block_origin_right_of(parcel, metrics)
+    x0 += lane * metrics.text_height * CHARACTER_WIDTH_RATIO
     rows = tuple(tuple(cell for cell in row) for row in coverage_table(model, site))
     table = ScheduleTable(title="SITE / ZONING DATA",
                           columns=("ITEM", "PROVIDED", "ALLOWED"), rows=rows)

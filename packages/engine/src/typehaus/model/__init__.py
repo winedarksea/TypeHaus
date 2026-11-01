@@ -291,6 +291,7 @@ from typehaus.model.views import (
     ExaggerationSpec,
     LayerJoin,
     Slice,
+    SliceDimension,
     Transition,
 )
 from typehaus.quantities import (
@@ -406,7 +407,7 @@ __all__ = [
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
     "WallLiningException",
-    "Slice", "Transition", "Continuity", "ExaggerationSpec",
+    "Slice", "SliceDimension", "Transition", "Continuity", "ExaggerationSpec",
     "DetailAnnotation", "LayerJoin",
     "FaceRef", "face", "LayerMaterial", "ToRoof", "FollowRoof", "Arch", "LayerSpan",
     "OpeningFrameEndSupports", "OpeningPosition", "OpeningSize",

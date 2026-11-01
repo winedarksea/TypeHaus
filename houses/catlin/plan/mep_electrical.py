@@ -70,11 +70,15 @@ ELECTRICAL_DEVICE_TYPES = (
 
 
 # --- Electrical: symbols-only (decision 1 — panel/circuit schedule deferred) -------
+# ** ALL FOUR PANEL TOPS ON ONE LINE, 6'-6" AFF (2026-10-31). ** NEC 240.24(A)/404.8(A) cap
+# the top handle at 6'-7"; `electrical.panel_handle_height` grades the body top. Bottoms:
+# ED-B-PANEL 38.63" (39.37" can), PANEL-2 48", BACKUP-PANEL/-ENCL 58" (plan/electrical.py).
+# Each panel's 110.26(A) working space is a ClearZone in plan/panel_working_space.py.
 PANEL = [
     ElectricalDevice(uid="CEP901AAAA", tag="ED-B-PANEL", kind=DeviceKind.PANEL,
                      # x=0'-10": face-mounted on W-B-W1/W2, whose inside face is x=0'-8".
                      type_ref="ED-T-PANEL",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(38.63)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-W1", face="left", distance_from_start=inch(84),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
@@ -85,11 +89,11 @@ PANEL = [
     # 31'-4" and ED-B-BACKUP-ENCL 31'-10"..33'-2" — the one gap between them is 6 1/2" wide.
     # 25'-0" centres this 16" enclosure at 24'-4"..25'-8", 9" clear of the backup panel,
     # with the whole 23'..26' band empty. NEC 110.26 working space (36" deep, 30" wide) runs
-    # east into open basement floor. Nothing in checks/ grades working space or device
-    # overlap, so both are held by the measurements above and by eye in the viewer.
+    # east into open basement floor (CZ-B-WS-PANEL-2 grades it); device overlap is held
+    # by the measurements above.
     ElectricalDevice(uid="F7T26XHBCR", tag="ED-B-PANEL-2", kind=DeviceKind.PANEL,
                      type_ref="ED-T-PANEL-2",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-W1", face="left", distance_from_start=inch(132),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),

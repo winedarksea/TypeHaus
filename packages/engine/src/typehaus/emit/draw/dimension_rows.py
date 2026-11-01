@@ -15,7 +15,15 @@ whose tiers would not fit steps down a scale instead of running off the sheet.
 from __future__ import annotations
 
 from typehaus.emit.draw.annotate import DODGE_GAP_PT, text_extent
-from typehaus.emit.draw.typography import DIM_STRING_PT, LINE_SPACING, model_in_per_pt
+from typehaus.emit.draw.typography import (
+    CHAR_ASPECT,
+    DIM_STRING_PT,
+    DIMENSION_DENOMINATOR,
+    LINE_SPACING,
+    model_in_per_pt,
+    round_to_fraction,
+)
+from typehaus.quantities import M_PER_IN
 
 #: Paper inches from the sheathing face to the first (facade) tier. NCS: >= 9/16".
 TIER_FIRST_IN = 9.0 / 16.0
@@ -63,6 +71,28 @@ def dimension_band_in() -> tuple[float, float, float, float]:
     return overall + text, facade_outer, overall, facade_outer + text
 
 
+def snap_chain(stations: list[float]) -> list[float]:
+    """Stations (metres, sorted) with the inner ones moved onto the 1/8" grid off the first.
+
+    Rounding each segment on its own made A-104's chain print 36'-1" under a 36'-0" overall.
+    Rounding the cumulative station instead makes every inner segment an exact eighth, and
+    the last segment then prints ``round(overall) - sum(the rest)``, so the printed chain
+    sums to the printed overall exactly. A station is moved at most 1/16"; the two ends stay.
+    Stations that collapse onto one another are merged.
+    """
+    if len(stations) <= 2:
+        return list(stations)
+    lo, hi = stations[0], stations[-1]
+    step = M_PER_IN / DIMENSION_DENOMINATOR
+    out = [lo]
+    for station in stations[1:-1]:
+        snapped = lo + round_to_fraction((station - lo) / M_PER_IN) * step
+        if snapped - out[-1] > step / 2 and hi - snapped > step / 2:
+            out.append(snapped)
+    out.append(hi)
+    return out
+
+
 def _free(interval: tuple[float, float], row: list[tuple[float, float]]) -> bool:
     return all(interval[1] <= lo or hi <= interval[0] for lo, hi in row)
 
@@ -84,7 +114,9 @@ def dimension_offsets(spans: list[float], labels: list[str], base_offset: float,
     magnitude = abs(base_offset)
     per_pt = model_in_per_pt(scale)
     pitch = row_pitch_in(height_pt) * _PT_PER_IN * per_pt
-    gap = DODGE_GAP_PT * per_pt
+    # One character of air between two strings on a row: at the dodge gap alone a crowded
+    # 1/8" chain read as one run-on number.
+    gap = max(DODGE_GAP_PT, height_pt * CHAR_ASPECT) * per_pt
     rows: list[list[tuple[float, float]]] = [[] for _ in range(STAGGER_ROWS)]
     out: list[tuple[float, float]] = []
     along = 0.0
@@ -120,3 +152,39 @@ def _slide(rows: list[list[tuple[float, float]]], centre: float,
                     best = key
     assert best is not None  # the slot beyond a row's outermost label is always free
     return best[1], best[2]
+
+
+def dimension_reserve(scene, scale: float) -> tuple[float, float, float, float]:
+    """``(w, e, s, n)`` paper inches the scene's dimension strings stand past its bounds.
+
+    ``pdf_writer._scene_bounds`` (what a frame is fitted to) does not see an
+    ``ArchDimension``; a sheet whose tiers are built at ``scale`` reserves this much more.
+    """
+    from typehaus.emit.draw.pdf_writer import _scene_bounds
+    from typehaus.emit.draw.scene import ArchDimension
+
+    bounds = _scene_bounds(scene)
+    dims = [node for node in scene.nodes if isinstance(node, ArchDimension)]
+    if bounds is None or not dims:
+        return (0.0, 0.0, 0.0, 0.0)
+    per_pt = model_in_per_pt(scale)
+    xs: list[float] = []
+    ys: list[float] = []
+    for node in dims:
+        (x0, y0), (x1, y1) = node.p0, node.p1
+        width = text_extent(node.text or "0'-00 0/0\"", node.height_pt)[0] * per_pt
+        text = (node.height_pt * LINE_SPACING + DODGE_GAP_PT) * per_pt
+        if abs(x1 - x0) >= abs(y1 - y0):
+            y = y0 + node.offset
+            centre = (x0 + x1) / 2.0 + node.text_along
+            xs.extend((min(x0, x1), max(x0, x1), centre - width / 2, centre + width / 2))
+            ys.extend((y, y + text))
+        else:
+            x = x0 + node.offset
+            centre = (y0 + y1) / 2.0 + node.text_along
+            ys.extend((min(y0, y1), max(y0, y1), centre - width / 2, centre + width / 2))
+            xs.extend((x, x - text))
+    u0, z0, u1, z1 = bounds
+    to_paper = scale / 12.0
+    return (max(0.0, u0 - min(xs)) * to_paper, max(0.0, max(xs) - u1) * to_paper,
+            max(0.0, z0 - min(ys)) * to_paper, max(0.0, max(ys) - z1) * to_paper)

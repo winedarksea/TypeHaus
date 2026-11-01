@@ -249,7 +249,10 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
 # line. The permit item BLOCKS and is green, so no gate moved; what rose is the count of
 # lines a reviewer can follow to an engineer's work.
 # The KDAT roof-post calculation adds one separately traceable engineered item.
-MAX_UNSEALED_ITEMS = {"mn-2020": 18}
+# RAISED 18 -> 19 on 2026-10-31: "Flush band headers over wall openings". D-B-PATIO's header
+# moved out of its wall into FS-M-EAST's band (C3-E2); no table publishes that member with
+# jamb loads at its seats, so `band_header/D-B-PATIO` is a computed item awaiting a seal.
+MAX_UNSEALED_ITEMS = {"mn-2020": 19}
 
 
 def _engineered_labels(profile) -> set[str]:

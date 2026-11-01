@@ -1657,6 +1657,230 @@
       "boundary": [
         [
           -5.999999999999997,
+          71.355
+        ],
+        [
+          -2.3385826771653515,
+          71.355
+        ],
+        [
+          -2.3385826771653515,
+          68.4022440944882
+        ],
+        [
+          -5.999999999999997,
+          68.4022440944882
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal-dark"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -5.999999999999997,
+          71.355
+        ],
+        [
+          -2.3385826771653515,
+          71.355
+        ],
+        [
+          -2.3385826771653515,
+          68.4022440944882
+        ],
+        [
+          -5.999999999999997,
+          68.4022440944882
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-unit-frame"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.999999999999997,
+          39.50233923884515
+        ],
+        [
+          -2.3385826771653515,
+          39.50233923884515
+        ],
+        [
+          -2.3385826771653515,
+          36.54958333333334
+        ],
+        [
+          -5.999999999999997,
+          36.54958333333334
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal-dark"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -5.999999999999997,
+          39.50233923884515
+        ],
+        [
+          -2.3385826771653515,
+          39.50233923884515
+        ],
+        [
+          -2.3385826771653515,
+          36.54958333333334
+        ],
+        [
+          -5.999999999999997,
+          36.54958333333334
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-unit-frame"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -4.464566929133855,
+          68.4022440944882
+        ],
+        [
+          -3.8740157480314936,
+          68.4022440944882
+        ],
+        [
+          -3.8740157480314936,
+          39.502339238845146
+        ],
+        [
+          -4.464566929133855,
+          39.502339238845146
+        ]
+      ],
+      "pattern": "glass",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "glass"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -4.464566929133855,
+          68.4022440944882
+        ],
+        [
+          -3.8740157480314936,
+          68.4022440944882
+        ],
+        [
+          -3.8740157480314936,
+          39.502339238845146
+        ],
+        [
+          -4.464566929133855,
+          39.502339238845146
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-unit-glass"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -2.33858267716535,
+          39.50233923884515
+        ],
+        [
+          7.249999999999999,
+          39.50233923884515
+        ],
+        [
+          7.249999999999999,
+          38.50233923884515
+        ],
+        [
+          -2.33858267716535,
+          38.50233923884515
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -2.33858267716535,
+          39.50233923884515
+        ],
+        [
+          7.249999999999999,
+          39.50233923884515
+        ],
+        [
+          7.249999999999999,
+          38.50233923884515
+        ],
+        [
+          -2.33858267716535,
+          38.50233923884515
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-unit-body"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.999999999999997,
           36.00000000000001
         ],
         [
@@ -2549,6 +2773,96 @@
     },
     {
       "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            -10.249999999999996,
+            36.00000000000001
+          ],
+          "name": ""
+        },
+        {
+          "kind": "point",
+          "xy": [
+            -10.249999999999996,
+            72.00000000000001
+          ],
+          "name": ""
+        }
+      ],
+      "p0": [
+        -10.249999999999996,
+        36.00000000000001
+      ],
+      "p1": [
+        -10.249999999999996,
+        72.00000000000001
+      ],
+      "offset": 0.0,
+      "height_pt": 9.5,
+      "layer": "A-ANNO-DIMS",
+      "text": "3'-0\" R.O.",
+      "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        -17.092519685039367,
+        8.283464566929137
+      ],
+      "content": "R.O. HEIGHTS IN THIS ASSEMBLY 2'-0\" – 4'-6\": SEE A-602",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-DIMS",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            -17.249999999999996,
+            36.54958333333334
+          ],
+          "name": ""
+        },
+        {
+          "kind": "point",
+          "xy": [
+            -17.249999999999996,
+            71.355
+          ],
+          "name": ""
+        }
+      ],
+      "p0": [
+        -17.249999999999996,
+        36.54958333333334
+      ],
+      "p1": [
+        -17.249999999999996,
+        71.355
+      ],
+      "offset": 0.0,
+      "height_pt": 9.5,
+      "layer": "A-ANNO-DIMS",
+      "text": "2'-10 3/4\" frame",
+      "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2987,43 +3301,6 @@
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            9.5,
-            36.00000000000001
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            9.5,
-            72.00000000000001
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        9.5,
-        36.00000000000001
-      ],
-      "p1": [
-        9.5,
-        72.00000000000001
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "36\" R.O.",
-      "text_along": 0.0,
       "uid": null
     },
     {

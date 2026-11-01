@@ -860,17 +860,17 @@
         "kind": "point",
         "xy": [
           106.00000000000001,
-          238.18333333333334
+          225.55833333333337
         ],
         "name": ""
       },
       "at": [
         94.90748031496065,
-        238.18333333333334
+        225.55833333333337
       ],
       "to": [
         106.00000000000001,
-        238.18333333333334
+        225.55833333333337
       ],
       "text": "gwb 1/2\"",
       "height": 1.6,
@@ -885,17 +885,17 @@
         "kind": "point",
         "xy": [
           108.0,
-          236.2875
+          223.66250000000002
         ],
         "name": ""
       },
       "at": [
         94.90748031496065,
-        236.2875
+        223.66250000000002
       ],
       "to": [
         108.0,
-        236.2875
+        223.66250000000002
       ],
       "text": "stud 3 1/2\"",
       "height": 1.6,
@@ -910,38 +910,22 @@
         "kind": "point",
         "xy": [
           110.0,
-          234.39166666666665
+          221.76666666666668
         ],
         "name": ""
       },
       "at": [
         94.90748031496065,
-        234.39166666666665
+        221.76666666666668
       ],
       "to": [
         110.0,
-        234.39166666666665
+        221.76666666666668
       ],
       "text": "gwb-ar 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        95.90748031496065,
-        214.3464566929134
-      ],
-      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
       "uid": null
     },
     {
@@ -982,6 +966,22 @@
       "uid": null
     },
     {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        95.90748031496065,
+        208.3464566929134
+      ],
+      "content": "FLOOR BAND 1'-0 5/8\": 11 7/8\" JOIST + 3/4\" SUBFLOOR",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-DIMS",
+      "align": "left",
+      "uid": null
+    },
+    {
       "space": "paper",
       "node": "text",
       "anchor": [
@@ -1004,7 +1004,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
+      "content": "TR-CATLIN-INTERIOR-RIM",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,

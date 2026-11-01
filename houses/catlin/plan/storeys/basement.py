@@ -1174,8 +1174,15 @@ OPENINGS = [
     # into the court, over the very landing being measured, which voids the relief and
     # drops the limit to 1 1/2". Swinging north into the gym is what makes the 7 1/4"
     # legal. `code.R311_3_exterior_landing` now tests `swing_clearance` and will say so.
+    #
+    # ** ITS HEADER IS IN THE FLOOR BAND (owner, 2026-10-31). ** An 82 7/8" RO leaves 4 5/8"
+    # under the plates, and the table's 2-2x10 stood 4 5/8" into them
+    # (integrity.header_under_plate; geometry review C3-E2). FS-M-EAST's flush 2-ply LVL
+    # (params/main_deck.py) carries the band over the opening; this wall runs its jacks to
+    # the plates and takes a flat nailer at the head for the liner.
     Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3-FR", type_ref="DT-EXT-FRENCH60-CATALOG",
-         position=from_node("N-B-S2F", inch(8.34375)), sill_height=inch(-1.75)),
+         position=from_node("N-B-S2F", inch(8.34375)), sill_height=inch(-1.75),
+         header_in_band="FS-M-EAST"),
     RoughOpening(uid="CBPSEAT0001", tag="AO-B-PATIO-SEAT", host="W-B-S3",
                  position=from_node("N-B-S2", inch(8.34375)),
                  width=inch(63.3125), height=inch(1.75), sill_height=inch(5.5),

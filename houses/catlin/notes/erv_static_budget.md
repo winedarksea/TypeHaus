@@ -702,6 +702,18 @@ chart-reading error of §10.1, so commissioning (§8) remains the real check. Th
 readings: finish-face rooms 4,479 sf / 195 cfm, centrelines ~5,000 / 205, exterior
 dimensions 5,455 / 214.
 
+### 10.7 The panel spaces re-route (2026-10-31)
+
+NEC 110.26(A)/(E) clearances at the W-B-W1 panels moved four runs (`plan/mep_erv_l1.py`,
+`plan/mep_erv_risers.py`). `DU-ERV-OA` keeps 18.07 ft on six elbows (term unchanged).
+`DU-ERV-RISER-SUP` drops out of its bay 1.66" further east and jogs north then west onto the
+riser foot: 29.90 ft on **seven** elbows, L_eff = 29.90 + 7 x 4.5 = 61.40 ft; at 150 cfm
+(§10.6's V, P_v, f) Δp = 0.0238 x (61.40 / 0.5) x 0.03638 = **0.1063** (engine 0.1065), so
+supply 0.4206 + 0.0154 = **0.4360**. `DU-B-ERV-R-SAUNA-EXH` shortens 45.50 → 44.33 ft
+(0.0212 → 0.0208) while `EQ-B-ERV-MAN-EXH`'s 1" move south adds 1" each to
+`DU-ERV-RISER-EXH` and `DU-B-ERV-RET-TRUNK` (+0.0006): extract **0.4413**, unchanged to the
+fourth place. Extract still governs, by 0.005 in.; 203.9 cfm.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

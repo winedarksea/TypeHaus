@@ -39,6 +39,7 @@ from typehaus.emit.draw.typography import (
     LINE_SPACING,
     ROOM_NAME_PT,
     TAG_PT,
+    feet_inches_8th,
     model_in_per_pt,
 )
 from typehaus.quantities import M_PER_IN
@@ -73,21 +74,10 @@ BLOCK_FIT_FRACTION = 0.8
 def feet_inches(total_in: float, denominator: int = 16) -> str:
     """``106.56`` → ``8'-10 9/16"``. Drafting form, reduced fraction, no bare zero inches.
 
-    The writers' own ``_feet_inches`` rounds to whole inches, which is right for a
-    dimension string (a framer does not chase a sixteenth across 36 feet) and wrong for a
-    ceiling height, where the sixteenth is the whole point: 8'-0 15/16" and 7'-11 3/8" are
-    the two numbers the basement's mixed deck actually makes, and rounding both to 8'-0"
-    and 7'-11" would state a 1" step where 1 9/16" is built.
+    A ceiling height keeps the sixteenth (8'-0 15/16" vs 7'-11 3/8" is the basement's real
+    1 9/16" step); dimension strings use ``typography.feet_inches_8th`` at 1/8".
     """
-    sign = "-" if total_in < -1e-9 else ""
-    ticks = int(round(abs(total_in) * denominator))
-    whole, fraction = divmod(ticks, denominator)
-    feet, inches = divmod(whole, 12)
-    text = f"{sign}{feet}'-{inches}"
-    if fraction:
-        common = gcd(fraction, denominator)
-        text += f" {fraction // common}/{denominator // common}"
-    return text + '"'
+    return feet_inches_8th(total_in, denominator)
 
 
 def inches_fraction(value_in: float) -> str:

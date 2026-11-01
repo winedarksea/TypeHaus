@@ -633,106 +633,6 @@
       "node": "polyline",
       "points": [
         [
-          212.21000000000004,
-          120.0
-        ],
-        [
-          212.21000000000004,
-          203.01181102362207
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CSW114AAAA",
-      "tag": "W-S-C1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          212.83500000000004,
-          120.0
-        ],
-        [
-          212.83500000000004,
-          203.01181102362207
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CSW114AAAA",
-      "tag": "W-S-C1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          213.23000000000005,
-          120.0
-        ],
-        [
-          213.23000000000005,
-          203.01181102362207
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CSW114AAAA",
-      "tag": "W-S-C1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          216.00000000000003,
-          120.0
-        ],
-        [
-          216.00000000000003,
-          203.01181102362207
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CSW114AAAA",
-      "tag": "W-S-C1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          219.00000000000003,
-          120.0
-        ],
-        [
-          219.00000000000003,
-          203.01181102362207
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CSW114AAAA",
-      "tag": "W-S-C1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           219.87500000000003,
           107.50000000000001
         ],
@@ -1487,17 +1387,17 @@
         "kind": "point",
         "xy": [
           212.5,
-          117.36666666666666
+          105.36666666666667
         ],
         "name": ""
       },
       "at": [
         201.11748031496066,
-        117.36666666666666
+        105.36666666666667
       ],
       "to": [
         212.5,
-        117.36666666666666
+        105.36666666666667
       ],
       "text": "gwb 1/2\"",
       "height": 1.6,
@@ -1512,17 +1412,17 @@
         "kind": "point",
         "xy": [
           213.0,
-          113.57499999999999
+          101.575
         ],
         "name": ""
       },
       "at": [
         201.11748031496066,
-        113.57499999999999
+        101.575
       ],
       "to": [
         213.0,
-        113.57499999999999
+        101.575
       ],
       "text": "resilient-channel 1/2\"",
       "height": 1.6,
@@ -1537,17 +1437,17 @@
         "kind": "point",
         "xy": [
           216.0,
-          109.78333333333332
+          97.78333333333333
         ],
         "name": ""
       },
       "at": [
         201.11748031496066,
-        109.78333333333332
+        97.78333333333333
       ],
       "to": [
         216.0,
-        109.78333333333332
+        97.78333333333333
       ],
       "text": "stud 5 1/2\"",
       "height": 1.6,
@@ -1562,17 +1462,17 @@
         "kind": "point",
         "xy": [
           219.0,
-          105.99166666666665
+          93.99166666666666
         ],
         "name": ""
       },
       "at": [
         201.11748031496066,
-        105.99166666666665
+        93.99166666666666
       ],
       "to": [
         219.0,
-        105.99166666666665
+        93.99166666666666
       ],
       "text": "gwb-ar 1/2\"",
       "height": 1.6,
@@ -1704,6 +1604,118 @@
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          214.42519685039375,
+          203.01181102362207
+        ],
+        [
+          217.57480314960634,
+          203.01181102362207
+        ],
+        [
+          217.57480314960634,
+          201.89370078740163
+        ],
+        [
+          214.42519685039375,
+          201.89370078740163
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal-dark"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          214.42519685039375,
+          203.01181102362207
+        ],
+        [
+          217.57480314960634,
+          203.01181102362207
+        ],
+        [
+          217.57480314960634,
+          201.89370078740163
+        ],
+        [
+          214.42519685039375,
+          201.89370078740163
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-unit-frame"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          215.70472440944883,
+          201.89370078740157
+        ],
+        [
+          216.29527559055123,
+          201.89370078740157
+        ],
+        [
+          216.29527559055123,
+          121.89370078740157
+        ],
+        [
+          215.70472440944883,
+          121.89370078740157
+        ]
+      ],
+      "pattern": "glass",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "glass"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          215.70472440944883,
+          201.89370078740157
+        ],
+        [
+          216.29527559055123,
+          201.89370078740157
+        ],
+        [
+          216.29527559055123,
+          121.89370078740157
+        ],
+        [
+          215.70472440944883,
+          121.89370078740157
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-unit-glass"
     },
     {
       "space": "model",
@@ -1872,6 +1884,43 @@
       "closed": true,
       "uid": null,
       "tag": "detail-component:humid-sill-pan"
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            222.25000000000006,
+            120.0
+          ],
+          "name": ""
+        },
+        {
+          "kind": "point",
+          "xy": [
+            222.25000000000006,
+            203.01181102362204
+          ],
+          "name": ""
+        }
+      ],
+      "p0": [
+        222.25000000000006,
+        120.0
+      ],
+      "p1": [
+        222.25000000000006,
+        203.01181102362204
+      ],
+      "offset": 0.0,
+      "height_pt": 9.5,
+      "layer": "A-ANNO-DIMS",
+      "text": "6'-11\" R.O.",
+      "text_along": 0.0,
+      "uid": null
     },
     {
       "space": "model",
@@ -2062,67 +2111,67 @@
       "points": [
         [
           231.68300000000002,
-          167.63100000000003
+          141.9113333333334
         ],
         [
           231.23465044649151,
-          169.8850054166304
+          144.16533874996378
         ],
         [
           229.9578589411888,
-          171.79585894118878
+          146.07619227452216
         ],
         [
           228.0470054166304,
-          173.0726504464915
+          147.35298377982488
         ],
         [
           225.79300000000003,
-          173.52100000000002
+          147.8013333333334
         ],
         [
           223.53899458336966,
-          173.0726504464915
+          147.35298377982488
         ],
         [
           221.62814105881128,
-          171.79585894118878
+          146.07619227452216
         ],
         [
           220.35134955350856,
-          169.8850054166304
+          144.16533874996378
         ],
         [
           219.90300000000005,
-          167.63100000000003
+          141.9113333333334
         ],
         [
           220.35134955350856,
-          165.37699458336965
+          139.65732791670303
         ],
         [
           221.62814105881128,
-          163.46614105881127
+          137.74647439214465
         ],
         [
           223.53899458336966,
-          162.18934955350855
+          136.46968288684192
         ],
         [
           225.79300000000003,
-          161.74100000000004
+          136.02133333333342
         ],
         [
           228.0470054166304,
-          162.18934955350855
+          136.46968288684192
         ],
         [
           229.9578589411888,
-          163.46614105881127
+          137.74647439214465
         ],
         [
           231.23465044649151,
-          165.37699458336965
+          139.65732791670303
         ]
       ],
       "layer": "A-ANNO-KEYN",
@@ -2137,7 +2186,7 @@
       "node": "text",
       "anchor": [
         225.79300000000003,
-        167.63100000000003
+        141.9113333333334
       ],
       "content": "K4",
       "height": 3.0,
@@ -2161,7 +2210,7 @@
       },
       "at": [
         225.79300000000003,
-        167.63100000000003
+        141.9113333333334
       ],
       "to": [
         212.83500000000004,
@@ -2171,43 +2220,6 @@
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            222.25000000000006,
-            120.0
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            222.25000000000006,
-            203.01181102362204
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        222.25000000000006,
-        120.0
-      ],
-      "p1": [
-        222.25000000000006,
-        203.01181102362204
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "83.01\" R.O.",
-      "text_along": 0.0,
       "uid": null
     },
     {
@@ -2739,8 +2751,8 @@
     "",
     "KEYED NOTES:",
     "K1  Lap the floor cove up the wall and terminate it behind the wall membrane.",
-    "K2  Membrane continuous from wall to ceiling at the perimeter; seal each penetration.",
-    "K3  Drained sill pan under each unit: sloped, flashed into the wall membrane, over the Corian stool, draining to the room, never into framing.",
+    "K2  Membrane continuous wall to ceiling; seal each penetration.",
+    "K3  Sloped, drained sill pan over the stool, flashed into the membrane; drains to the room, never into framing.",
     "K4  Keep the 3/4\" furring gap open behind the panel; it is the drying path.",
     "K5  Wet-location listed luminaires, gasketed, corrosion-resistant housings.",
     "K6  Receptacles WR-listed and GFCI, in non-metallic gasketed boxes with in-use covers.",

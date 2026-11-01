@@ -49,4 +49,13 @@ export function runTransitionTests() {
     "The rim transition must find its conditions — reporting zero was the bug this mirrors away");
   assert(coverage.uncovered.length === 1 && coverage.uncovered[0].kind === "roof_ridge",
     "Conditions no transition documents are surfaced, not silently dropped");
+
+  // First match binds, as the engine's drawing reads it: a narrow pattern behind a wildcard
+  // binds nothing (TR-CATLIN-PLANT-RIM behind TR-CATLIN-RIM-BAND, C5-E10).
+  const shadowed = transitionCoverage(
+    [transition("TR-RIM", "storey_stack:rim:*"), transition("TR-PLANT-RIM", "storey_stack:rim:*PLANT_*")],
+    [condition("storey_stack", "storey_stack:rim:EXT_2X6|PLANT_EXT_2X6_HUMID")]);
+  assert(shadowed.matchesByTransition.get("TR-PLANT-RIM")?.length === 0 &&
+    shadowed.matchesByTransition.get("TR-RIM")?.length === 1,
+    "Only the first matching transition binds a condition");
 }

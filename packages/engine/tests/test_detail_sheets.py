@@ -22,7 +22,9 @@ from typehaus.source import load_plan
 
 def test_catlin_emits_authored_then_derived_detail_sheets(catlin_sheet_index):
     sheets = catlin_sheet_index()
-    detail_numbers = [s.number for s in sheets if s.number.startswith("A-5")]
+    # Enlarged head/sill sub-sheets (A-512.1) ride their parent and are not numbered.
+    detail_numbers = [s.number for s in sheets
+                      if s.number.startswith("A-5") and "." not in s.number]
     # The four authored details keep A-501..A-504, in order, ahead of derived details.
     assert detail_numbers[:4] == ["A-501", "A-502", "A-503", "A-504"]
     titles = {s.number: s.title for s in sheets}

@@ -138,6 +138,8 @@ class WallOpening:
     #: ``DoorType.exterior`` — what ``stud_stock.stamp_exterior_door_sills`` restocks by.
     exterior: bool = False
     jamb_framing: JambFraming | None = None
+    #: ``Door.header_in_band``: the floor band is the header, so the wall frames none.
+    header_in_band: str | None = None
 
 
 def frame_end_supported(opening: WallOpening, sign: int) -> bool:
@@ -375,6 +377,9 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     # operation, which leaves the symmetric pack below exactly as it was.
     mouth, closed = pocket_extent(opening)
     pocket_sign = 0 if not closed else (1 if opening.pocket_sign > 0 else -1)
+    # A band header (``Door.header_in_band``) bears on the plates, so the jacks run up to
+    # them with the kings and carry it through the plates.
+    band = getattr(opening, "header_in_band", None) is not None
 
     # Trimmers (jacks) and kings pack face-to-face outward from each rough-opening edge:
     # the innermost jack's inner face sits on the RO edge (centreline at half a thickness
@@ -390,9 +395,10 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
         for jack_index in range(jacks):
             station = edge + sign * (thickness / 2 + jack_index * thickness)
             position = add(wall_start, scale(direction, station))
+            jack_top = top_at(station) if band else header_bottom
             out.append(FramedMember(rw.uid, f"jack-{opening_index}-{side}{jack_index}",
-                                    "jack", member, position, position, z0, header_bottom,
-                                    header_bottom - z0, orient=direction,
+                                    "jack", member, position, position, z0, jack_top,
+                                    jack_top - z0, orient=direction,
                                     opening_tag=opening.tag if jamb_framing else None))
         for king_index in range(kings):
             station = edge + sign * (thickness / 2 + (jacks + king_index) * thickness)
@@ -418,6 +424,16 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     header_span = header_right_station - header_left_station
     header_left = add(wall_start, scale(direction, header_left_station))
     header_right = add(wall_start, scale(direction, header_right_station))
+    if band:
+        # No header: a flat nailer between the jacks at the rough head, for the liner.
+        out.append(FramedMember(rw.uid, f"headnailer-{opening_index}", "blocking", member,
+                                add(wall_start, scale(direction, center - half)),
+                                add(wall_start, scale(direction, center + half)),
+                                header_bottom, header_bottom + _PLATE_THICKNESS_M,
+                                opening.width_m, opening_tag=opening.tag))
+        _frame_rough_sill(out, rw, direction, wall_start, opening, opening_index, member,
+                          z0, sill_datum, cripples_at)
+        return out
     # An authored engineered header (e.g. '2-ply 14" LVL') replaces the table-sized
     # member: the profile carries the ply count/width/depth structurally, and the depth
     # comes from the profile itself. An unparseable spec falls back to the table rather
@@ -449,25 +465,8 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
                                                opening_index, header_bottom + depth,
                                                header_span)
 
-    # A door gets a rough sill only where its threshold stands ABOVE the framing base: a
-    # raised sill (catlin's D-G-SERVICE, 12" up on the garage stem) is a hole in the wall
-    # below the threshold exactly as a window's is, and nothing else carries the door.
-    if not opening.is_door or opening.sill_m > 1e-9:
-        sill_top = sill_datum + opening.sill_m
-        sill_bottom = _rough_sill_bottom(sill_top, z0)
-        # The rough sill fits *between* the trimmers, spanning the rough opening only, so
-        # its ends butt the jack inner faces instead of running through them.
-        left = add(wall_start, scale(direction, center - half))
-        right = add(wall_start, scale(direction, center + half))
-        if sill_bottom is not None:
-            out.append(FramedMember(rw.uid, f"sill-{opening_index}", "sill", member,
-                                    left, right, sill_bottom, sill_top,
-                                    opening.width_m))
-        # Cripples under the rough sill retain the normal stud module without placing
-        # framing through the opening itself.
-        _append_sill_cripples(out, rw.uid, opening_index, direction, wall_start, center,
-                              half, z0, sill_bottom if sill_bottom is not None else z0,
-                              member, cripples_at)
+    _frame_rough_sill(out, rw, direction, wall_start, opening, opening_index, member,
+                      z0, sill_datum, cripples_at)
     # Head cripples depend only on the gap between the header (or its nailer) and the
     # plate underside — a door has no rough sill, but it has the same head condition a
     # window does. R602.7.4: over a flat nonbearing header "cripples or blocking are not
@@ -477,6 +476,34 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     _append_head_cripples(out, rw.uid, opening_index, direction, wall_start, center,
                           half, cripple_bottom, top_at, member, cripples_at)
     return out
+
+
+def _frame_rough_sill(out: list[FramedMember], rw, direction, wall_start,
+                      opening: WallOpening, opening_index: int, member: str, z0: float,
+                      sill_datum: float, cripples_at: float) -> None:
+    """Rough sill + its cripples.
+
+    A door gets a rough sill only where its threshold stands ABOVE the framing base: a
+    raised sill (catlin's D-G-SERVICE, 12" up on the garage stem) is a hole in the wall
+    below the threshold exactly as a window's is, and nothing else carries the door.
+    """
+    if opening.is_door and opening.sill_m <= 1e-9:
+        return
+    center, half = opening.center_m, opening.width_m / 2
+    sill_top = sill_datum + opening.sill_m
+    sill_bottom = _rough_sill_bottom(sill_top, z0)
+    # The rough sill fits *between* the trimmers, spanning the rough opening only, so
+    # its ends butt the jack inner faces instead of running through them.
+    if sill_bottom is not None:
+        out.append(FramedMember(rw.uid, f"sill-{opening_index}", "sill", member,
+                                add(wall_start, scale(direction, center - half)),
+                                add(wall_start, scale(direction, center + half)),
+                                sill_bottom, sill_top, opening.width_m))
+    # Cripples under the rough sill retain the normal stud module without placing
+    # framing through the opening itself.
+    _append_sill_cripples(out, rw.uid, opening_index, direction, wall_start, center,
+                          half, z0, sill_bottom if sill_bottom is not None else z0,
+                          member, cripples_at)
 
 
 def _append_pocket_cavity(out: list[FramedMember], rw, direction, wall_start,

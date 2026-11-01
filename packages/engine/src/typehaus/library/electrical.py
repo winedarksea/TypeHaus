@@ -229,9 +229,14 @@ def _panel(tag: str, name: str, width, height, *, spaces: int, main: int,
 PANEL_TYPES = (
     _panel("ED-T-PANEL-100A", "100A load centre, 20 spaces", inch(14), ft(2),
            spaces=20, main=100),
+    # 30" tall: Homeline HOM2040M200PC (20-space, 200A main) is 758 mm (29.84") H x 14.25" W
+    # (powermatic.net/part/schneider-electric/hom2040m200pc/1896701, read 2026-10-31).
     _panel("ED-T-PANEL-200A", "200A main, 200A bus, 20 spaces", inch(16), ft(2, 6),
            spaces=20, main=200, bus=200),
-    _panel("ED-T-PANEL-225A", "225A bus, 200A main, 54 spaces", inch(20), ft(3),
+    # 39.37" (1000 mm) tall, not 36": a 54-space 200A-main QO154M200P is 39.37" H x 14.25" W
+    # x 3.75" D, box 12 (royalwholesaleelectric.com and standardelectricsupply.com listings,
+    # read 2026-10-31); the 40-space HOM4080M200PC is the same 39.37".
+    _panel("ED-T-PANEL-225A", "225A bus, 200A main, 54 spaces", inch(20), inch(39.37),
            spaces=54, main=200, bus=225),
 )
 

@@ -169,7 +169,7 @@ export function AssemblyDetailsView() {
                 <span className="reader-mono reader-card-title">{transition.tag}</span>
                 <span className="muted">{transition.pattern}</span>
                 {transition.overlay && <span className="reader-chip">{transition.overlay}</span>}
-                <span className="muted">{matches.length} matching condition{matches.length === 1 ? "" : "s"}</span>
+                <span className="muted">{matches.length} bound condition{matches.length === 1 ? "" : "s"}</span>
               </div>
               <ContinuityRows transition={transition} />
               <JoinRows transition={transition} />
@@ -180,7 +180,7 @@ export function AssemblyDetailsView() {
                     className="btn reader-expand"
                     onClick={() => setExpanded(expanded === transition.tag ? null : transition.tag)}
                   >
-                    {expanded === transition.tag ? "Hide" : "Show"} matching conditions
+                    {expanded === transition.tag ? "Hide" : "Show"} bound conditions
                   </button>
                   {expanded === transition.tag && (
                     <ConditionRows conditions={matches} index={index} uncovered={uncoveredKeys}

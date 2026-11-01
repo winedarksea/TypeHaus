@@ -1093,22 +1093,6 @@
     },
     {
       "space": "model",
-      "node": "text",
-      "anchor": [
-        107.28248031496064,
-        -37.12253937007874
-      ],
-      "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -1167,7 +1151,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
+      "content": "TR-CATLIN-INTERIOR-STACK",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,

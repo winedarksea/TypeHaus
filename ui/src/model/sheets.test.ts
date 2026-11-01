@@ -48,6 +48,8 @@ export function runSheetGroupingTests() {
 
   assert(findSheet(SHEETS, "S-101")?.title === "Foundation", "lookup is by exact number");
   assert(findSheet(SHEETS, "S-10") === null, "a sheet number is not a prefix");
+  assert(findSheet([{ number: "S-103.1", title: "Braced", page: 1 }], "S-103")?.number === "S-103.1",
+         "a series number opens its first sheet");
   assert(findSheet(SHEETS, null) === null, "no selection resolves to no sheet");
 
   // Stepping is through the *set*, in page order — across series boundaries, the way you

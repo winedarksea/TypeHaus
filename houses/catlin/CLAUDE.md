@@ -342,7 +342,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Sitting on the garage floor must be explicit: `D-G-OVERHEAD` carries the plan's only negative `sill_height`; the ICF stem gaps there (open-ended `N-GF-N-DRE`/`-DRW`) and `SL-G-FLOOR` runs out to the door line. **No grade beam since 2026-09-23** — nothing bears on the opening, the header carries the roof to the piers. The open U is why every `W-GF-*` names `interior_room="RM-GARAGE"`: without a closed loop the winding falls to +1 and the stem builds inside out.
 - `D-G-SERVICE` threshold stays 0'-0" with the bridge deck (`+1'-0"` sill); the 2'-10" drop is five 6.8" risers inside (`ST-G-SERVICE` KDAT, flush to the stem's finished face at x=6'-11 5/8"; `RL-G-SERVICE` wall-mounted on `W-G-W` on `BK-G-W-RAIL-TOP`/`-FOOT`). The flight rises straight to the threshold with no top landing (the door swings OUT; R311.7.6 exception, `code.R311_7_6_door_at_stair_head`), its stringer heads seated on the `W-G-S` stem (`STAIR_SEATS`); `SL-G-STEP-0` and `FS-BW-GARAGE` are both retired. **The stem does NOT gap under this door** (since 2026-09-11): `W-GF-S-DR` is full stem with its nodes pinned at x 8'-3"/11'-9" as a fossil, so `SP-GF-S-HYD` keeps its host.
 - `Stair.floor_opening` is optional (a rise states directly via `base_elevation`/`top_elevation`) — but `structural.stair_riser_uniformity` and `code.R311_7_8_handrail` iterate `model.stairs`, so slabs instead of a `Stair` draw NO riser/handrail finding.
-- Garage plates are 8'-4", not 8'-0" — the door climbed 4" when the storey dropped; a shorter plate would push the 3-ply LVL header into the truss heels.
+- Garage plates are 8'-4", not 8'-0" — the door climbed 4" when the storey dropped, and the plate height is set by `D-G-SERVICE`'s rough head and the truss heels alone: its head is an R602.7.4 flat 2x6 nonbearing nailer since 2026-10-31 (the old 3-ply LVL ran 2" into the plates; `integrity.header_under_plate`). `D-G-OVERHEAD` is the garage's one beam, a 2-ply 14" LVL (K7).
 - Emitters/placeable resolver read `resolve/room_floor.py::room_floor_elevation` for garage heights, not storey elevation — enforced by `test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade`.
 - **ICF stem and wood wall are coplanar outside.** `GARAGE_Y_SOUTH`/`NORTH` (`plan/storeys/garage.py`) is both the sheathing plane and the stem's EPS face (walls `cdx-ext`, stem `concrete-ext`+`GARAGE_ICF_EPS` offset) — layer NAME is the alignment key, so a sheathing swap is also an alignment edit or the wall silently misplaces. Only 7/8" of the corrugated panel projects past.
 - Do not fix alignment by moving stem nodes — `resolve/stacking.py::_axis_match`'s 1/2" tolerance would silently drop the whole foundation-to-framed stack.
@@ -1459,7 +1459,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     R403.5's **203.0** (4,900 sf CFA).
   - **Three new checks.** `mep.erv_static_budget` (ADVISORY) computes Darcy-Weisbach/Colebrook
     over the whole system and reads the curve at it: **0.441" w.g. worst path, 203.9 cfm
-    delivered** (2026-10-31, §10.6), on the EXTRACT side via the sauna radial; supply 0.421. It
+    delivered** (2026-10-31, §10.6), on the EXTRACT side via the sauna radial; supply 0.436 (§10.7). It
     counts the two 8" hoods now (RenewAire FA8, 23.3 / 22.7 Pa), which it never did, and the
     valves' published curves; the risers carry their real flows (164/150 cfm) and the basement
     plenums read their 6" trunk collar at 210. **203.9 clears R403.5's 203.0 by 0.9 cfm**,
@@ -1535,7 +1535,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     accepts; 1.41" left); `PR-B-MAIN-DRAIN` (x 6'-0") passes over it. **Do not put a
     bearing header back here without re-reading `notes/framing_bore_limits.md` §8-§9**, and
     do not land anything on `W-B-CW` — it stops being nonbearing, and the flat header with it.
-    `DU-B-ERV-R-SAUNA-SUP` is at **x=1'-0 1/2"** in `W-B-CW`'s west clear bay and
+    `DU-B-ERV-R-SAUNA-SUP` (and `-EXH`) is at **x=1'-7"** in `W-B-CW`'s second bay since
+    2026-10-31 (out of the panels' NEC 110.26(E) dedicated space) and
     `DU-B-ERV-R-GYM` crosses OVER `D-B-GYM`'s header between two whole cripples; neither cuts
     anything. `stud_bore` reads a member shorter than two depths as UNKNOWN (§6a), so a hole
     in a short cripple no longer reads legal — passing BETWEEN cripples is still the thing to do.
@@ -2256,7 +2257,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     east (inside `_axis_match`'s 1/2" tolerance). **Do not recess the EPS to hold the face
     still** — that re-opens the old rain shelf.
 
-- **A-585 is `TR-CATLIN-GARAGE-EAVE`** (overlay `overhang-eave`, `notes/garage_eave_detail.md`),
+- **A-594 is `TR-CATLIN-GARAGE-EAVE`** (overlay `overhang-eave`, `notes/garage_eave_detail.md`),
   listed BEFORE `TR-CATLIN-EAVE` because transition matching is first-match. The sheet only
   names the derived fascia, soffit, drip edge and K-gutter the cut draws — no schematic metal.
 

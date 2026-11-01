@@ -147,6 +147,11 @@ class Door(Element):
     # Per-opening engineered-header override (e.g. '2-ply 14" LVL'); None lets the framing
     # solver size the header. Falls back to the DoorType's header_spec when unset there too.
     header_spec: str | None = None
+    # A FloorSystem tag whose band carries the wall above across this opening (a flush rim
+    # header, ``JoistReinforcement.extent``): the host wall then frames no header, runs its
+    # jacks to the plates and takes a flat nailer at the rough head. ``resolve/band_headers``
+    # raises an ERROR when that floor has no reinforcement covering the opening.
+    header_in_band: str | None = None
     # The published table row that answers this member's span, where one does. A
     # manufacturer's table is a PRESCRIPTIVE read — a reviewer opens the document and the
     # question is closed — so authoring one here takes the requirement out of the

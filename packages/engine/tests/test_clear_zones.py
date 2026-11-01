@@ -233,5 +233,6 @@ def test_catlin_full_lane_is_required_and_clear(catlin_model_ro):
     assert zone.policy == "required"
     findings = _findings(catlin_model_ro)
     assert findings and all(f.check_id == CHECK_ID for f in findings)
-    assert all(f.element_tags[0] == zone.tag for f in findings)
+    # The lane and every NEC 110.26 panel space (plan/panel_working_space.py) pass.
+    assert any(f.element_tags[0] == zone.tag for f in findings)
     assert {f.result for f in findings} == {Result.PASS}

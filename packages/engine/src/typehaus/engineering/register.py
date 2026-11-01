@@ -114,7 +114,7 @@ class Signoff:
             object.__setattr__(self, "external", {})
 
     def credit(self) -> str:
-        """"Jane Doe, PE (MN 12345), 2026-09-14" — the line A-000 and S-105 letter."""
+        """"Jane Doe, PE (MN 12345), 2026-09-14" — the line G-001 and S-603 letter."""
         return f"{self.engineer} ({self.license}), {self.sealed_on.isoformat()}"
 
 

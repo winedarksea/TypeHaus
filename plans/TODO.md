@@ -239,12 +239,7 @@ the future.
 - Maybe add a lighting view to the UI (lights generate cast lighting effect, background otherwise goes to full shadow/black)
 - Window bottoms in 3D: the cause (stool top coplanar with a frame drawn 5.44" deep) is fixed in engine and viewer (geometry review O4-001); confirm by eye in the viewer, then delete this line.
 - Geometry & dimensional-accuracy review 2026-10-31 done: [report](geometry-review/REPORT.md) (244 findings; ~84 fixed). Open escalations, ranked (detail in `geometry-review/adjudicated/`):
-  - [ ] S-602/S-601/S-101/S-100/S-001 schedules overprint; needs continuation sheets (C7-E1).
-  - [ ] Plan dimension convention: state face-of-stud, print to 1/8", add locating strings on S-100/S-101 (C7-E2).
-  - [ ] Authored details A-501..A-511, the A-512 head/sill and A-507 carry no dimensions or enlarged parts (C7-E4).
-  - [ ] Transitions first-match: the plant-room vapour-barrier rim detail never derives; interior rims inherit envelope data (C5-E10).
-  - [ ] Headers into top plates: D-G-SERVICE 2", D-B-PATIO 4 5/8" on a bearing wall (C3-E1/E2).
-  - [ ] Service panels: top breaker ~90" AFF vs NEC 240.24(A) 79"; ungraded (C6-E8).
+  - [ ] Follow-ups from closing items 1-7: A-592 (now `TR-CATLIN-RAKE`) has no rake recipe, so no Image II / 52126XX leaders; A-105 roof outline/ridge/eave strings (D1-004's roof-plan part, `roofplan.py`); the FULL set's G-001 index still overflows on ledger (44 unlisted); `D-B-PATIO` band header: bearing under the stacked D-S-DECK-E/D-M-BALC jamb packs is ungraded and the LVL plies' attachment to the edge I-joist (filler/backer) isn't modelled (`notes/patio_band_header.md` §4); library panel widths 20" vs Square D's 14.25"; `CD-B-ATTIC-RISER` clears `DU-ERV-RISER-SUP` by ~0.01" (moving the riser breaks its pull chain into `CD-A-PV-EAST`).
   - [ ] Garage sill 3 5/8" of 5 1/2" on the ICF core (C3-E8).
   - [ ] RF-HOUSE birdsmouth notches the TJI 230 flange (C3-E5).
   - [ ] HU28-2Z on a single 2x8 -> LUS28Z (C3-E11).
@@ -333,6 +328,7 @@ the future.
 - Do an outlet and light switch placement review pass
 - Trim bbd-transition-trim still isn't showing the white color for some reason in the 3d viewer, despite being named as such already.
 - O-S-VANITY and D-S-STUDY2, both openings (not true doors) seem to get ignored, improperly showing baseboard, sill plates, and non-continuous flooring, they likely just need to reuse some of the existing door handling logic which generally works
+- Edit the door swing icon in 2d so it shows a frame (right now the 2d door swing might be a bit too big, versus actual leaf swing)
 
 # Project Management
 

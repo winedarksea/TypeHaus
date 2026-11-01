@@ -238,5 +238,5 @@ sheet for an item the house no longer has reads as a calculation somebody did.
 now" there means "not asked for". The helpers are in `takeoff/handoff.py`, shared with
 `haus handoff`.
 
-The permit set keeps S-105 as its engineering page, and S-105 names both `out/calcs/` and
+The permit set keeps S-603 as its engineering page, and S-603 names both `out/calcs/` and
 the oracle note per item, so the drawings and the calculations reference each other.

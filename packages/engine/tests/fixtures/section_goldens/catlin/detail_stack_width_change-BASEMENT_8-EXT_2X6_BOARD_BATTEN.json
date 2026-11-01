@@ -1815,97 +1815,6 @@
     },
     {
       "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          0.25,
-          -13.437499999999998
-        ],
-        "name": ""
-      },
-      "at": [
-        13.0,
-        2.069761592300964
-      ],
-      "to": [
-        0.25,
-        -13.437499999999998
-      ],
-      "text": "air continuity — sheathing-ext →\nsheathing-ext",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -1.9999999999999996,
-          -13.437499999999998
-        ],
-        "name": ""
-      },
-      "at": [
-        13.0,
-        -2.5774606299212572
-      ],
-      "to": [
-        -1.9999999999999996,
-        -13.437499999999998
-      ],
-      "text": "water continuity — spray-foam-ext →\nspray-foam-ext",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -1.9999999999999996,
-          -13.437499999999998
-        ],
-        "name": ""
-      },
-      "at": [
-        13.0,
-        -7.224682852143479
-      ],
-      "to": [
-        -1.9999999999999996,
-        -13.437499999999998
-      ],
-      "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        -13.90251968503937,
-        -37.12253937007874
-      ],
-      "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -2013,6 +1922,97 @@
       "layer": "A-ANNO-DIMS",
       "text": "4\" XPS (2 layers)",
       "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          0.25,
+          -13.437499999999998
+        ],
+        "name": ""
+      },
+      "at": [
+        13.0,
+        2.069761592300964
+      ],
+      "to": [
+        0.25,
+        -13.437499999999998
+      ],
+      "text": "air continuity — sheathing-ext →\nsheathing-ext",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -1.9999999999999996,
+          -13.437499999999998
+        ],
+        "name": ""
+      },
+      "at": [
+        13.0,
+        -2.5774606299212572
+      ],
+      "to": [
+        -1.9999999999999996,
+        -13.437499999999998
+      ],
+      "text": "water continuity — spray-foam-ext →\nspray-foam-ext",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -1.9999999999999996,
+          -13.437499999999998
+        ],
+        "name": ""
+      },
+      "at": [
+        13.0,
+        -7.224682852143479
+      ],
+      "to": [
+        -1.9999999999999996,
+        -13.437499999999998
+      ],
+      "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        -13.90251968503937,
+        -37.12253937007874
+      ],
+      "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
       "uid": null
     },
     {

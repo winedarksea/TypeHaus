@@ -13,7 +13,7 @@ import math
 from dataclasses import dataclass
 
 from typehaus.model.enums import SliceKind
-from typehaus.model.patterns import matches
+from typehaus.model.patterns import first_match
 from typehaus.model.views import Slice
 from typehaus.quantities import m, pt
 from typehaus.resolve.geometry_members import member_solid
@@ -31,13 +31,11 @@ class DerivedDetail:
     view: Slice
     direction: str
     station: float
+    part: str | None = None  # "head" | "sill" on an enlarged child (``enlarged_details``)
 
 
 def _matched_transition(model: ResolvedModel, cond: BoundaryCondition):
-    for tr in model.plan.library.transitions:
-        if matches(tr.condition_pattern, cond.key):
-            return tr
-    return None
+    return first_match(model.plan.library.transitions, cond.key)
 
 
 def _host_wall(model: ResolvedModel, cond: BoundaryCondition):

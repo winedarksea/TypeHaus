@@ -15,6 +15,26 @@ class ExaggerationSpec(HausModel):
     label_true: bool = True
 
 
+class SliceDimension(HausModel):
+    """An authored dimension string on a section/detail cut (C7-E4).
+
+    ``start``/``end`` are cut-local anchors: a literal ``(u, z)`` point in the slice frame
+    (``u`` along the cut, ``z`` world elevation), or ``"<TAG>:<face>"`` resolved from the
+    element's own cut at the station (``top``/``bottom``/``left``/``right``; a wall also
+    takes ``exterior``/``interior``), or ``"storey:<name>"`` for a datum. ``axis="z"``
+    measures elevation on a vertical line at ``at`` (a ``u``); ``axis="u"`` measures across
+    the cut on a horizontal line at ``at`` (a ``z``). ``at`` is a length or an anchor, then
+    moved by ``offset``. ``text`` overrides the measured 1/8" string; a ``{}`` in it is
+    replaced by that string (``"{} band"``). Consecutive strings on one line chain."""
+
+    start: str | Point2D
+    end: str | Point2D
+    axis: str = "z"  # "z" | "u"
+    at: str | Length
+    offset: Length | None = None
+    text: str | None = None
+
+
 @register_element
 class Slice(Element):
     """One view mechanism for plans/sections/details over the resolved model (#36).
@@ -32,6 +52,7 @@ class Slice(Element):
     title: str | None = None  # sheet name override (→ Permit-ready plan set Phase 6)
     condition_key: str | None = None  # authored DETAIL claims this condition, suppressing
     # its auto-scaffold (→ 11b transition details)
+    dimensions: tuple[SliceDimension, ...] = ()  # authored strings (detail sheets only)
 
 
 class ConditionKey(HausModel):
@@ -135,6 +156,7 @@ for _name, _obj in (
     ("Transition", Transition),
     ("DetailAnnotation", DetailAnnotation),
     ("ExaggerationSpec", ExaggerationSpec),
+    ("SliceDimension", SliceDimension),
     ("Continuity", Continuity),
     ("LayerJoin", LayerJoin),
 ):

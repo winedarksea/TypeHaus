@@ -124,17 +124,27 @@ def test_divisions_03_and_05_are_on_s001_and_not_on_a002(catlin_model_ro):
         assert any(line.startswith(number) for line in on_s001)
 
 
-def test_every_line_fits_the_column_it_is_laid_into(catlin_model_ro, profile):
-    """``_lay_out_blocks`` does not wrap — a long line runs into the next column."""
-    from typehaus.emit.draw.schedules.structural_notes import _MAX_LINE_CHARS, _clip
+def test_every_line_wraps_to_its_column_and_nothing_is_dropped(catlin_model_ro, profile):
+    """Lines wrap to the column's measure rather than being clipped, and whatever does not
+    fit continues on S-001.1 — every word of every block is placed somewhere."""
+    from typehaus.emit.draw.paper import LEDGER
+    from typehaus.emit.draw.schedules.blocks import (
+        _COLUMN_GAP_IN,
+        NOTE_PT,
+        _note_geometry,
+        paginate_note_blocks,
+    )
+    from typehaus.emit.draw.schedules.structural_notes import structural_note_blocks
+    from typehaus.emit.draw.typography import wrap_columns_for
 
-    everything = (design_criteria_block(catlin_model_ro, profile)
-                  + concrete_block(catlin_model_ro)
-                  + wood_framing_block(catlin_model_ro)
-                  + anchorage_block(catlin_model_ro)
-                  + structural_specification_block(catlin_model_ro)
-                  + limits_block(catlin_model_ro, None))
-    assert all(len(_clip(line)) <= _MAX_LINE_CHARS for line in everything)
+    blocks = structural_note_blocks(catlin_model_ro, profile)
+    pages = paginate_note_blocks(blocks, LEDGER)
+    _x0, _top, pitch, _columns, _per = _note_geometry(LEDGER)
+    measure = wrap_columns_for(pitch - _COLUMN_GAP_IN, NOTE_PT)
+    placed = [text for page in pages for _c, _r, text, title in page if not title]
+    assert all(len(text) <= measure for text in placed)
+    assert " ".join(" ".join(placed).split()) == " ".join(
+        " ".join(line for _t, lines in blocks for line in lines).split())
 
 
 def test_the_sheet_composes_with_nothing_dropped(catlin_model_ro, profile, tmp_path):

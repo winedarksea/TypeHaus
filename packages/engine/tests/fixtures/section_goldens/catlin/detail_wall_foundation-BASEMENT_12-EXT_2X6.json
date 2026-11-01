@@ -2941,6 +2941,133 @@
     },
     {
       "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            432.00000000000006,
+            -7.437499999999998
+          ],
+          "name": ""
+        },
+        {
+          "kind": "point",
+          "xy": [
+            436.00000000000006,
+            -7.437499999999998
+          ],
+          "name": ""
+        }
+      ],
+      "p0": [
+        432.00000000000006,
+        -7.437499999999998
+      ],
+      "p1": [
+        436.00000000000006,
+        -7.437499999999998
+      ],
+      "offset": 4.0,
+      "height_pt": 9.5,
+      "layer": "A-ANNO-DIMS",
+      "text": "4\" CI",
+      "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            426.00000000000006,
+            0.5625000000000018
+          ],
+          "name": ""
+        },
+        {
+          "kind": "point",
+          "xy": [
+            431.50000000000006,
+            0.5625000000000018
+          ],
+          "name": ""
+        }
+      ],
+      "p0": [
+        426.00000000000006,
+        0.5625000000000018
+      ],
+      "p1": [
+        431.50000000000006,
+        0.5625000000000018
+      ],
+      "offset": 3.0,
+      "height_pt": 9.5,
+      "layer": "A-ANNO-DIMS",
+      "text": "5 1/2\" stud",
+      "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            432.06000000000006,
+            -39.02805118110236
+          ],
+          "name": ""
+        },
+        {
+          "kind": "point",
+          "xy": [
+            436.06000000000006,
+            -39.02805118110236
+          ],
+          "name": ""
+        }
+      ],
+      "p0": [
+        432.06000000000006,
+        -39.02805118110236
+      ],
+      "p1": [
+        436.06000000000006,
+        -39.02805118110236
+      ],
+      "offset": 3.0,
+      "height_pt": 9.5,
+      "layer": "A-ANNO-DIMS",
+      "text": "4\" XPS (2 layers)",
+      "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        398.3464566929134,
+        -74.61860236220473
+      ],
+      "content": "FTG 1'-8\" x 8\" · TOES 2\" / 6\" · BRG EL. -9'-9 1/2\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-DIMS",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -3379,117 +3506,6 @@
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            432.00000000000006,
-            -7.437499999999998
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            436.00000000000006,
-            -7.437499999999998
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        432.00000000000006,
-        -7.437499999999998
-      ],
-      "p1": [
-        436.00000000000006,
-        -7.437499999999998
-      ],
-      "offset": 4.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "4\" CI",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            426.00000000000006,
-            0.5625000000000018
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            431.50000000000006,
-            0.5625000000000018
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        426.00000000000006,
-        0.5625000000000018
-      ],
-      "p1": [
-        431.50000000000006,
-        0.5625000000000018
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "5 1/2\" stud",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            432.06000000000006,
-            -39.02805118110236
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            436.06000000000006,
-            -39.02805118110236
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        432.06000000000006,
-        -39.02805118110236
-      ],
-      "p1": [
-        436.06000000000006,
-        -39.02805118110236
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "4\" XPS (2 layers)",
-      "text_along": 0.0,
       "uid": null
     },
     {

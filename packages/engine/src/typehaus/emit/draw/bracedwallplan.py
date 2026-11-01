@@ -21,6 +21,12 @@ from typehaus.checks.structural.bracing_eval import LineEvaluation, evaluate_lin
 from typehaus.emit.draw._shared import emit_ghost_walls, to_in
 from typehaus.emit.draw.lineweights import CUT, CUT_HEAVY
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Text
+from typehaus.emit.draw.structural_dimensions import (
+    Tier,
+    emit_structural_tiers,
+    line_stations,
+    overall_tier,
+)
 from typehaus.emit.draw.typography import DIM_TEXT_PT
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.braced_walls import (
@@ -37,6 +43,10 @@ from typehaus.resolve.braced_walls import (
 )
 
 BWL_LAYER = "S-WALL-BRCE"
+
+#: The scale S-103's dimension tiers are laid out for: the smallest it lands on (ledger).
+#: A larger print only spaces them further apart.
+_TIER_SCALE = 0.09375
 
 #: How far off the line a panel is drawn, so the heavy panel run reads beside the line
 #: rather than on top of it.
@@ -80,9 +90,16 @@ def build_braced_wall_plan(model, storey: str) -> Scene:
             _draw_panel(b, line, grade)
     for panel in unplaced:
         notes.append(f"{panel.tag}: {panel.reason} (wall_ref {panel.wall_ref})")
-    y = -48.0
+    walls = [wall for wall in model.walls if wall.storey == storey]
+    line_xs, line_ys = line_stations((line.p0, line.p1) for line in lines)
+    tiers = [Tier("BWL C/C", tuple(line_xs), tuple(line_ys)),
+             overall_tier("O/A FACE WALL", walls)]
+    # Framed by ``compose_sheet`` from its scene bounds, which a dimension does not enter:
+    # the notes go below the tiers, so their extent is what frames the tiers.
+    reach = emit_structural_tiers(b, tiers, _TIER_SCALE)
+    x, y = (0.0, -48.0) if reach is None else (min(0.0, reach[0]), min(-48.0, reach[1] - 12.0))
     for note in (*notes, _CONDITIONS):
-        b.add(Text(anchor=(0.0, y), content=note, height_pt=DIM_TEXT_PT, layer=BWL_LAYER,
+        b.add(Text(anchor=(x, y), content=note, height_pt=DIM_TEXT_PT, layer=BWL_LAYER,
                    align="left"))
         y -= 12.0
     return b.build()

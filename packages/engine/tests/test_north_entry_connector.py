@@ -95,7 +95,7 @@ def test_service_door_narrowing_retains_stair_and_clears_exterior_guard(catlin_p
     guard = catlin_plan.by_tag("RL-BW-ENTRY")
     assert min(point.x.meters for point in guard.path) / inch(1).meters == pytest.approx(116.5)
     door = catlin_plan.by_tag("D-G-SERVICE")
-    assert door.header_spec == '3-ply 5.5" LVL'
+    assert door.header_spec == "flat 2x6 nonbearing"
 
 
 def test_tiers_are_cast_pours_at_an_18in_going_over_a_clear_lower_landing(catlin_model_ro):

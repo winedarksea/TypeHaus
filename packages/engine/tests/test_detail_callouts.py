@@ -27,8 +27,9 @@ def test_the_two_numberings_agree(catlin_model_ro, catlin_sheet_index):
     callout naming a sheet the set does not emit is worse than no callout.
     """
     derived = detail_sheet_numbers(catlin_model_ro)
+    # An enlarged head/sill (A-512.1) is a sub-sheet of its detail, never a callout target.
     index = [s.number for s in catlin_sheet_index(sets="full")
-             if s.number.startswith(f"A-{FIRST_DETAIL_SHEET // 100}")]
+             if s.number.startswith(f"A-{FIRST_DETAIL_SHEET // 100}") and "." not in s.number]
     assert sorted(derived.values()) == sorted(index)
 
 

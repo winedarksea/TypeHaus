@@ -181,7 +181,7 @@ def test_a_slight_jog_in_the_run_still_counts_as_collinear():
 # --- the suppression channel --------------------------------------------------
 
 def _coverage_findings(transitions, conditions):
-    from typehaus.checks.integrity.checks import condition_coverage
+    from typehaus.checks.integrity.transition_binding import condition_coverage
 
     ctx = SimpleNamespace(
         model=SimpleNamespace(conditions=list(conditions)),
@@ -216,6 +216,31 @@ def test_an_unbound_condition_still_warns():
     findings = _coverage_findings([tr], [_REVEAL_COND])
     assert len(findings) == 1
     assert findings[0].check_id == "integrity.condition_coverage"
+
+
+def test_a_narrow_transition_behind_a_wildcard_is_shadowed():
+    """First match binds (C5-E10): a starred pattern behind a wildcard never prints, and
+    that is an ERROR until it is moved ahead."""
+    from typehaus.checks.integrity.transition_binding import transition_shadowed
+    from typehaus.findings import Result, Severity
+
+    conds = [BoundaryCondition(kind=ConditionKind.STOREY_STACK, assemblies=tags, detail="rim",
+                               element_tags=(), key="storey_stack:rim:" + "|".join(tags))
+             for tags in (("EXT",), ("EXT", "PLANT_EXT"))]
+    wide = Transition(uid="TESTTR00003", tag="TR-RIM", condition_pattern="storey_stack:rim:*")
+    plant = Transition(uid="TESTTR00004", tag="TR-PLANT-RIM", star=True,
+                       condition_pattern="storey_stack:rim:*PLANT_*")
+
+    def findings(*transitions):
+        ctx = SimpleNamespace(
+            model=SimpleNamespace(conditions=conds),
+            plan=SimpleNamespace(library=SimpleNamespace(transitions=transitions)))
+        return transition_shadowed(ctx)
+
+    [shadowed] = findings(wide, plant)
+    assert shadowed.result is Result.FAIL and shadowed.severity is Severity.ERROR
+    assert "TR-RIM comes first" in shadowed.message
+    assert [f.result for f in findings(plant, wide)] == [Result.PASS]
 
 
 def test_suppressed_bindings_derive_no_detail_sheets(catlin_model_ro):

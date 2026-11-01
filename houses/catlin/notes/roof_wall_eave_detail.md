@@ -24,7 +24,6 @@ source:
 - Deck: 19/32" CDX, 40/20, oversailing the rafter ends to the girt face.
 - Butyl membrane 240 F, full field + eave strip-in. 24 ga Image II, nail flange.
 - {wall_roof:EXT_2X6|*} Wall: 2x6, 1/2" ply, 4" ccSPF, 1/2" gap, KDAT girts, 1-1/4" PBR. No WRB.
-- {*BOARD_BATTEN*} Wall: 2x6, 1/2" ply, 4" ccSPF, 1/2" gap, KDAT girts, 3/4" BBD75. No WRB.
 - {wall_roof:INT_*} Partition stops 3/4" under rafters; SDPW19600 screw per crossing.
 
 ### Keyed

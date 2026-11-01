@@ -213,6 +213,11 @@ def build_overlay_components(model, derived, scale=None) -> list[IRNode]:
                              derived.condition, opening=opening, roof=roof, scale=scale)
 
     nodes: list[IRNode] = []
+    if opening is not None and derived.condition.kind.value == "opening_perimeter":
+        # The product in the R.O., under its flashings (O4-004).
+        from typehaus.emit.draw.detail_components.opening_unit import unit_nodes
+
+        nodes += unit_nodes(model, opening, crop, derived.direction, derived.station)
     overlay = getattr(transition, "overlay", None) if transition is not None else None
     recipe = OVERLAY_RECIPES.get(overlay) if overlay else None
     if recipe is not None:

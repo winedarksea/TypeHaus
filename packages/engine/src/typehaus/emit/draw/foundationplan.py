@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from typehaus.emit.draw._shared import emit_bbox_dimension_chain, emit_wall
+from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE, emit_wall
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.foundation_annotations import foundation_annotations
 from typehaus.emit.draw.foundation_schedule import (
@@ -29,8 +29,6 @@ from typehaus.emit.draw.foundation_schedule import (
 from typehaus.emit.draw.lineweights import CUT, LIGHT, PROFILE
 from typehaus.emit.draw.plumbingplan import storey_above
 from typehaus.emit.draw.scene import (
-    ArchDimension,
-    FaceAnchor,
     Leader,
     NamedPoint,
     Polyline,
@@ -55,6 +53,15 @@ from typehaus.emit.draw.structural_common import (
     inches_text,
     outline_center,
     wall_center,
+)
+from typehaus.emit.draw.structural_dimensions import (
+    BEARING,
+    LOCATING,
+    Tier,
+    emit_structural_tiers,
+    line_stations,
+    overall_tier,
+    wall_opening_stations,
 )
 from typehaus.resolve.solid_categories import in_slab_family
 
@@ -92,7 +99,9 @@ def _foundation_storey(model: ResolvedModel) -> str | None:
 
 
 def build_foundation_plan(model: ResolvedModel,
-                          profile: JurisdictionProfile | None = None) -> Scene:
+                          profile: JurisdictionProfile | None = None,
+                          metrics: BlockMetrics | None = None,
+                          dimension_scale: float = PLAN_RESERVATION_SCALE) -> Scene:
     """Build the S-100 IR scene: foundation plan plus its keyed schedules and notes."""
     b = SceneBuilder(name="foundation-plan", units="in")
     if not has_foundation_content(model):
@@ -111,8 +120,9 @@ def build_foundation_plan(model: ResolvedModel,
     # clear of the 4 pt floor — so the multiplier manufactured the small scale it was
     # defending against. The floor only bites on the ledger check print, and the precedent
     # for that (``elevation_annotate._COLUMN_GAP_IN``) is additive slack between columns,
-    # never a multiplier on the glyph.
-    metrics = metrics_for(plan_points)
+    # never a multiplier on the glyph. The printed sheet passes ``metrics`` sized at its
+    # frame's scale instead (``schedule_plan_sheet``); ``metrics_for`` is the unframed guess.
+    metrics = metrics or metrics_for(plan_points)
 
     for wall in walls:
         emit_wall(b, wall, layer_override="S-FNDN")
@@ -123,12 +133,45 @@ def build_foundation_plan(model: ResolvedModel,
     _emit_grade_beams(b, model, metrics)
     _emit_step_callouts(b, model)
     _emit_footing_bedding_note(b, model)
-    _emit_sleeve_pour_dimensions(b, model, walls, storey)
-    if walls:
-        emit_bbox_dimension_chain(b, walls)
     b, callouts = foundation_annotations(b.build())
+    if walls:
+        emit_structural_tiers(b, _foundation_tiers(model, walls, storey), dimension_scale)
     _emit_schedule_column(b, model, plan_points, metrics, profile, callouts)
     return b.build()
+
+
+def _foundation_tiers(model: ResolvedModel, walls: list[ResolvedWall],
+                      storey: str | None) -> list[Tier | None]:
+    """Locating (bearing lines; pad, post and sleeve centres; wall openings), c/c, overall.
+
+    The sleeves above are the pour layout: they used to be strings struck inside the plan,
+    unlabelled and under the K leaders (D1-004).
+    """
+    bearing_xs, bearing_ys = line_stations(wall.axis for wall in walls)
+    xs, ys = list(bearing_xs), list(bearing_ys)
+    for solid in bearing_solids(model):
+        if solid.category == "pad":
+            cx, cy = outline_center(solid.outline)
+            xs.append(cx)
+            ys.append(cy)
+    supports = {solid.tag for solid in bearing_solids(model)}
+    for element in model.plan.all_elements():
+        if element.element_kind == "Post" and element.supported_by in supports:
+            x, y = element.position.xy_m
+            xs.append(x)
+            ys.append(y)
+    above = storey_above(model, storey) if storey is not None else None
+    for sleeve in model.sleeves:
+        if above is not None and sleeve.storey == above:
+            xs.append(sleeve.center[0])
+            ys.append(sleeve.center[1])
+    for wall in walls:
+        opening_xs, opening_ys = wall_opening_stations(model, wall)
+        xs.extend(opening_xs)
+        ys.extend(opening_ys)
+    return [Tier(LOCATING, tuple(xs), tuple(ys)),
+            Tier(BEARING, tuple(bearing_xs), tuple(bearing_ys)),
+            overall_tier("O/A FACE FDN", walls)]
 
 
 def _drawn_plan_points(model: ResolvedModel,
@@ -263,53 +306,6 @@ def _emit_step_callouts(b: SceneBuilder, model: ResolvedModel) -> None:
                  f"{elevation_feet(lower.z0_m)} → {elevation_feet(upper.z0_m)}",
             layer="S-FNDN-FTNG",
         ))
-
-
-def _emit_sleeve_pour_dimensions(b: SceneBuilder, model: ResolvedModel,
-                                 walls: list[ResolvedWall], storey: str | None) -> None:
-    """Dimension each sleeve above from the nearest two perpendicular foundation-wall
-    faces — the pour layout the concrete crew works from (Phase 2 hook)."""
-    if storey is None:
-        return
-    above = storey_above(model, storey)
-    sleeves = [s for s in model.sleeves if s.storey == above]
-    if not sleeves or not walls:
-        return
-    horizontal = [w for w in walls if _is_horizontal(w)]
-    vertical = [w for w in walls if not _is_horizontal(w)]
-    for sleeve in sleeves:
-        cx, cy = sleeve.center
-        nearest_h = min(horizontal, key=lambda w: abs(_axis_y(w) - cy), default=None)
-        nearest_v = min(vertical, key=lambda w: abs(_axis_x(w) - cx), default=None)
-        if nearest_h is not None:
-            wy = _axis_y(nearest_h)
-            b.add(ArchDimension(
-                kind="linear",
-                ends=(FaceAnchor(uid=nearest_h.uid, face_role="start"),
-                      NamedPoint(xy=_in((cx, cy)), name=sleeve.tag)),
-                p0=_in((cx, wy)), p1=_in((cx, cy)), offset=6.0,
-            ))
-        if nearest_v is not None:
-            wx = _axis_x(nearest_v)
-            b.add(ArchDimension(
-                kind="linear",
-                ends=(FaceAnchor(uid=nearest_v.uid, face_role="start"),
-                      NamedPoint(xy=_in((cx, cy)), name=sleeve.tag)),
-                p0=_in((wx, cy)), p1=_in((cx, cy)), offset=6.0,
-            ))
-
-
-def _is_horizontal(wall: ResolvedWall) -> bool:
-    (x0, y0), (x1, y1) = wall.axis
-    return abs(y1 - y0) < abs(x1 - x0)
-
-
-def _axis_y(wall: ResolvedWall) -> float:
-    return (wall.axis[0][1] + wall.axis[1][1]) / 2.0
-
-
-def _axis_x(wall: ResolvedWall) -> float:
-    return (wall.axis[0][0] + wall.axis[1][0]) / 2.0
 
 
 def _emit_footing_bedding_note(b: SceneBuilder, model: ResolvedModel) -> None:

@@ -24,6 +24,8 @@ already speak.
 
 from __future__ import annotations
 
+from math import floor, gcd
+
 #: Monospace advance width as a fraction of cap height. Only ever used to *reserve* room —
 #: matplotlib measures the real thing at draw time, and DXF has its own font metrics.
 CHAR_ASPECT = 0.62
@@ -87,3 +89,31 @@ def wrap_columns_for(band_in: float, size_pt: float) -> int:
     if size_pt <= 0.0:
         return 1
     return max(1, int(band_in * 72.0 / (size_pt * CHAR_ASPECT)))
+
+
+#: Dimension strings round to this fraction of an inch (C7-E2): fine enough that a chain on
+#: a 1 1/2" stud module sums to its overall, coarse enough to pull with a tape.
+DIMENSION_DENOMINATOR = 8
+
+
+def round_to_fraction(value_in: float, denominator: int = DIMENSION_DENOMINATOR) -> int:
+    """``value_in`` in whole ``1/denominator`` ticks, half away from zero (never banker's)."""
+    ticks = floor(abs(value_in) * denominator + 0.5 + 1e-9)
+    return -ticks if value_in < 0 else ticks
+
+
+def feet_inches_8th(total_in: float, denominator: int = DIMENSION_DENOMINATOR) -> str:
+    """``106.56`` -> ``8'-10 1/2"``: THE feet-inches formatter for every drawn length.
+
+    Reduced fraction, no bare zero inches, sign kept. Dependency-free so ``_shared``, the
+    writers and ``plan_labels`` can all import it.
+    """
+    ticks = round_to_fraction(total_in, denominator)
+    sign = "-" if ticks < 0 else ""
+    whole, fraction = divmod(abs(ticks), denominator)
+    feet, inches = divmod(whole, 12)
+    text = f"{sign}{feet}'-{inches}"
+    if fraction:
+        common = gcd(fraction, denominator)
+        text += f" {fraction // common}/{denominator // common}"
+    return text + '"'

@@ -44,7 +44,7 @@ from typehaus.model import Location, WallAttachment
 # this is the first thing that should move into it.
 PANEL = [
     ElectricalDevice(uid="95YK2Q5XDP", tag="ED-PANEL", kind=DeviceKind.PANEL, type_ref="ED-T-PANEL",
-                     room="RM-Main", mount=Mount(kind=MountKind.WALL, elevation=ft(5)),
+                     room="RM-Main", mount=Mount(kind=MountKind.WALL, elevation=ft(4, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-104", face="left", distance_from_start=inch(36),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),

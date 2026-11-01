@@ -284,6 +284,15 @@ hangs, on `W-B-N4` west of the closet: each rises into the case bottom at its ow
 (30", 26", 22" AFF), north of the dry-fire lane, then down `W-B-W1` with one conduit body
 each. The battery's DC run is ~5 ft through `W-B-ESS-W`.
 
+**Panel heights, 2026-10-31.** All four `W-B-W1` enclosures top out on one line at 6'-6"
+AFF (NEC 240.24(A)/404.8(A): top handle ≤ 6'-7", graded by
+`electrical.panel_handle_height` on the body top): `ED-B-PANEL` 38.63"–78" (a 54-space
+200 A main can is 39.37", e.g. Square D QO154M200P), `ED-B-PANEL-2` 48"–78",
+`ED-B-BACKUP-PANEL` and `ED-B-BACKUP-ENCL` 58"–78". The two inverter raceways run the
+x=9 1/2" wall strip under the enclosures (22"/26") and rise into the panel bottoms; nothing
+crosses a 110.26(A) working space below 78" (`plan/panel_working_space.py`) except
+`DU-ERV-OA`, still open.
+
 ## 10. The V2H seam (rough-in, recorded here)
 
 No V2H product integrates with a 48 V hybrid inverter. A car lands as **its own system at

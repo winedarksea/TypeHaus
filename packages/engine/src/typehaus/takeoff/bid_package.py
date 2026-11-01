@@ -280,8 +280,9 @@ def build_bid_packages(model: Any, bom: Mapping[str, Any], *,
             groups.append(BidGroup(section=section, heading=shape.heading,
                                    unit=units.pop() if len(units) == 1 else "mixed",
                                    lines=tuple(lines)))
-        sheets = tuple(s for s in recipe.sheets
-                       if sheet_numbers is None or s in sheet_numbers)
+        sheets = recipe.sheets if sheet_numbers is None else tuple(
+            n for s in recipe.sheets for n in sheet_numbers
+            if n == s or n.startswith(s + "."))
         packages[trade] = BidPackage(
             trade=trade, label=TRADE_LABELS.get(trade, trade), recipe=recipe,
             groups=tuple(groups), allowances=_allowance_lines(trade, estimate, priced),

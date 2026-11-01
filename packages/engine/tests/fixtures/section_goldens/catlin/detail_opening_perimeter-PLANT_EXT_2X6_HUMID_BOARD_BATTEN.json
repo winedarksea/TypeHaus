@@ -2257,6 +2257,230 @@
       "node": "hatch",
       "boundary": [
         [
+          -5.999999999999999,
+          199.355
+        ],
+        [
+          -2.3385826771653537,
+          199.355
+        ],
+        [
+          -2.3385826771653537,
+          196.40224409448822
+        ],
+        [
+          -5.999999999999999,
+          196.40224409448822
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal-dark"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -5.999999999999999,
+          199.355
+        ],
+        [
+          -2.3385826771653537,
+          199.355
+        ],
+        [
+          -2.3385826771653537,
+          196.40224409448822
+        ],
+        [
+          -5.999999999999999,
+          196.40224409448822
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-unit-frame"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.999999999999999,
+          155.50233923884517
+        ],
+        [
+          -2.3385826771653537,
+          155.50233923884517
+        ],
+        [
+          -2.3385826771653537,
+          152.54958333333335
+        ],
+        [
+          -5.999999999999999,
+          152.54958333333335
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal-dark"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -5.999999999999999,
+          155.50233923884517
+        ],
+        [
+          -2.3385826771653537,
+          155.50233923884517
+        ],
+        [
+          -2.3385826771653537,
+          152.54958333333335
+        ],
+        [
+          -5.999999999999999,
+          152.54958333333335
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-unit-frame"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -4.464566929133857,
+          196.40224409448822
+        ],
+        [
+          -3.874015748031496,
+          196.40224409448822
+        ],
+        [
+          -3.874015748031496,
+          155.50233923884517
+        ],
+        [
+          -4.464566929133857,
+          155.50233923884517
+        ]
+      ],
+      "pattern": "glass",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "glass"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -4.464566929133857,
+          196.40224409448822
+        ],
+        [
+          -3.874015748031496,
+          196.40224409448822
+        ],
+        [
+          -3.874015748031496,
+          155.50233923884517
+        ],
+        [
+          -4.464566929133857,
+          155.50233923884517
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-unit-glass"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -2.3385826771653546,
+          155.50233923884517
+        ],
+        [
+          8.540000000000001,
+          155.50233923884517
+        ],
+        [
+          8.540000000000001,
+          155.03033923884516
+        ],
+        [
+          -2.3385826771653546,
+          155.03033923884516
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -2.3385826771653546,
+          155.50233923884517
+        ],
+        [
+          8.540000000000001,
+          155.50233923884517
+        ],
+        [
+          8.540000000000001,
+          155.03033923884516
+        ],
+        [
+          -2.3385826771653546,
+          155.03033923884516
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-unit-body"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
           6.499999999999999,
           199.75000000000003
         ],
@@ -2419,6 +2643,80 @@
       "closed": true,
       "uid": null,
       "tag": "detail-component:humid-sill-pan"
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            -9.75,
+            152.00000000000003
+          ],
+          "name": ""
+        },
+        {
+          "kind": "point",
+          "xy": [
+            -9.75,
+            200.00000000000003
+          ],
+          "name": ""
+        }
+      ],
+      "p0": [
+        -9.75,
+        152.00000000000003
+      ],
+      "p1": [
+        -9.75,
+        200.00000000000003
+      ],
+      "offset": 0.0,
+      "height_pt": 9.5,
+      "layer": "A-ANNO-DIMS",
+      "text": "4'-0\" R.O.",
+      "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            -16.75,
+            152.54958333333335
+          ],
+          "name": ""
+        },
+        {
+          "kind": "point",
+          "xy": [
+            -16.75,
+            199.355
+          ],
+          "name": ""
+        }
+      ],
+      "p0": [
+        -16.75,
+        152.54958333333335
+      ],
+      "p1": [
+        -16.75,
+        199.355
+      ],
+      "offset": 0.0,
+      "height_pt": 9.5,
+      "layer": "A-ANNO-DIMS",
+      "text": "3'-10 3/4\" frame",
+      "text_along": 0.0,
+      "uid": null
     },
     {
       "space": "model",
@@ -2718,43 +3016,6 @@
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            10.79,
-            152.00000000000003
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            10.79,
-            200.00000000000003
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        10.79,
-        152.00000000000003
-      ],
-      "p1": [
-        10.79,
-        200.00000000000003
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "48\" R.O.",
-      "text_along": 0.0,
       "uid": null
     },
     {
@@ -3575,8 +3836,8 @@
     "",
     "KEYED NOTES:",
     "K1  Lap the floor cove up the wall and terminate it behind the wall membrane.",
-    "K2  Membrane continuous from wall to ceiling at the perimeter; seal each penetration.",
-    "K3  Drained sill pan under each unit: sloped, flashed into the wall membrane, over the Corian stool, draining to the room, never into framing.",
+    "K2  Membrane continuous wall to ceiling; seal each penetration.",
+    "K3  Sloped, drained sill pan over the stool, flashed into the membrane; drains to the room, never into framing.",
     "K4  Keep the 3/4\" furring gap open behind the panel; it is the drying path.",
     "K5  Wet-location listed luminaires, gasketed, corrosion-resistant housings.",
     "K6  Receptacles WR-listed and GFCI, in non-metallic gasketed boxes with in-use covers.",

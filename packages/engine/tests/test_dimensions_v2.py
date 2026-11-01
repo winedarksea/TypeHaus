@@ -136,6 +136,42 @@ def test_interior_chains_measure_partition_faces_and_close_on_the_envelope(catli
         assert total == pytest.approx(hi - lo, abs=1e-6)
 
 
+@pytest.mark.parametrize("storey", ["main", "attic"])
+def test_printed_strings_sum_exactly_and_partitions_show_both_faces(catlin_floorplan,
+                                                                     catlin_model, storey):
+    """C7-E2: the PRINTED 1/8" strings of every chain add up to the printed overall (A-104
+    printed 36'-1" under 36'-0"), and an interior chain carries both stud faces of each
+    partition it dimensions, so the wall is its own segment (D1-001)."""
+    from typehaus.emit.draw.plan_dimensions import _face_stations
+    from typehaus.emit.draw.typography import round_to_fraction
+
+    walls = [w for w in catlin_model.walls if w.storey == storey]
+    bbox = _axis_bbox_in(catlin_model, storey)
+    minx, maxx, miny, maxy = bbox
+    scene = catlin_floorplan(storey)
+    eighths = lambda inches: round_to_fraction(inches)  # noqa: E731
+    for facade in ("S", "N", "W", "E"):
+        chain, axis = _facade_chain(scene, bbox, facade)
+        if chain:
+            overall = (maxx - minx) if axis == 0 else (maxy - miny)
+            assert sum(eighths(d.p1[axis] - d.p0[axis]) for d in chain) == eighths(overall)
+    interior = [d for d in _dims(scene)
+                if INTERIOR_OFFSET - 1e-6 <= abs(d.offset) <= INTERIOR_OFFSET + TIER_BAND]
+    for axis, lo, hi in ((0, minx, maxx), (1, miny, maxy)):
+        chain = sorted((d for d in interior
+                        if (abs(d.p1[0] - d.p0[0]) >= abs(d.p1[1] - d.p0[1])) is (axis == 0)),
+                       key=lambda d: d.p0[axis])
+        assert chain, (storey, axis)
+        assert sum(eighths(d.p1[axis] - d.p0[axis]) for d in chain) == eighths(hi - lo)
+        # Inner stations come in (near, far) pairs, each the two stud faces of one wall.
+        inner = [d.p0[axis] for d in chain[1:]]
+        assert inner and len(inner) % 2 == 0, (storey, axis, inner)
+        faces = [(near / M_PER_IN, far / M_PER_IN) for near, far in _face_stations(walls, axis)]
+        for near, far in zip(inner[::2], inner[1::2], strict=True):
+            assert any(abs(near - n) <= 1 / 16 + 1e-6 and abs(far - f) <= 1 / 16 + 1e-6
+                       for n, f in faces), (storey, axis, near, far)
+
+
 def test_every_facade_chain_is_contiguous_sorted_and_sums_to_overall(
         catlin_model, main_scene):
     bbox = _axis_bbox_in(catlin_model, "main")

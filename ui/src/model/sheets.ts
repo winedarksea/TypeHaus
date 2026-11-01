@@ -65,10 +65,12 @@ export function groupSheets(sheets: readonly SheetEntry[]): SheetGroup[] {
   return groups;
 }
 
-/** The sheet `number` names, or null. Exact match — sheet numbers are not prefixes. */
+/** The sheet `number` names, or null. Exact match first; a series number ("S-103" where the
+ *  set prints S-103.1…) falls to its first sheet. Never a bare prefix: "S-10" is no sheet. */
 export function findSheet(sheets: readonly SheetEntry[], number: string | null): SheetEntry | null {
   if (!number) return null;
-  return sheets.find((sheet) => sheet.number === number) ?? null;
+  return sheets.find((sheet) => sheet.number === number)
+    ?? sheets.find((sheet) => sheet.number.startsWith(`${number}.`)) ?? null;
 }
 
 /** Step through the set in page order. Returns null at the ends rather than wrapping: a

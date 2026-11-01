@@ -162,7 +162,8 @@ class Recipe:
     intro: str
     #: Sections in the order the sub reads them; anything else follows in estimate order.
     section_order: tuple[str, ...] = ()
-    #: Sheet numbers to point at, filtered against the sheets the house actually draws.
+    #: Sheets to point at, filtered against the sheets the house draws. A number is a
+    #: series: "S-101" cites S-101.1, S-101.2 … where the house has one per storey.
     sheets: tuple[str, ...] = ()
     #: Whether the package lists element tags per line (a framer wants them; a painter does
     #: not) — Appendix A.
@@ -183,13 +184,13 @@ RECIPES: dict[str, Recipe] = {
     "earth": Recipe("Earthwork", "Excavation, backfill, grading and the stone placed under the "
                     "footings, with the perimeter tile bedded in it.",
                     ("footing_bedding", "excavation", "envelope_layers", "allowances"),
-                    ("S-100", "C-100")),
+                    ("S-100", "C-101")),
     "drainage": Recipe("Drainage", "The stormwater run from the gutter to daylight: leaders, "
                        "tile, drywells and the sump.", ("drainage", "site", "allowances"),
                        ("S-100", "P-101")),
     "landscaping": Recipe("Landscaping", "Final grade, sod, rootzone and the segmental "
                           "retaining block.", ("envelope_layers", "wall_structure", "site"),
-                          ("C-100",)),
+                          ("C-101",)),
     "concrete": Recipe("Concrete", "Every pour, by the yard: footings, foundation walls, slabs, "
                        "the cast columns, the reinforcing steel and the cast-in anchors and "
                        "sleeves.", ("concrete", "wall_structure", "reinforcement", "hardware",
@@ -203,7 +204,7 @@ RECIPES: dict[str, Recipe] = {
                       ("framing", "sheet_goods", "hardware", "solids", "timber",
                        "member_protection", "fireblock_sealant", "construction_returns",
                        "sill_gaskets", "envelope_layers", "wall_structure"),
-                      ("S-100", "S-101", "S-201", "A-301", "A-401")),
+                      ("S-100", "S-101", "S-102", "S-103", "A-301", "A-401")),
     "stairs": Recipe("Stairs and guards", "Stringers, treads, risers and newels, and every "
                      "guard and handrail. Owner-milled treads are install only.",
                      ("stair_treads", "framing", "railings", "solids"),

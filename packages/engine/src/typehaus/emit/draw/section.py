@@ -227,6 +227,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
     # after the layer loop from a single anchor.
     label_entries: dict[str, tuple[str, float]] = {}
     wall_top = _wall_top_at_cut(wall, plane.axis, plane.station_m)
+    cut_top = None  # highest cut material in the crop: the ladder's leaders land on it
 
     for part in (element.parts if element is not None else ()):
         catalog = part.catalog
@@ -259,6 +260,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
             if rect is None:
                 continue
             ru0, ru1, rz0, rz1 = rect
+            cut_top = rz1 if cut_top is None else max(cut_top, rz1)
             true_thickness = ru1 - ru0
             exaggerated = False
             if is_detail and 0 < true_thickness < min_draw:
@@ -290,7 +292,9 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
     emit_wall_cavity(b, model, wall, plane, crop, is_detail, min_draw, wall_top, joints)
     emit_wall_coatings(b, model, wall, plane, crop, wall_top)
     _emit_glazing_lines(b, model, wall, plane, crop, is_detail)
-    wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels, scale)
+    # A crop opening onto an R.O. (an enlarged sill) has void above the wall it cuts.
+    ladder_top = wall_top if cut_top is None else min(wall_top, cut_top)
+    wall_layer_ladder(wall, label_entries, ladder_top, crop, ladder_labels, scale)
 
 
 def _emit_glazing_lines(b, model, wall, plane: CutPlane, crop, is_detail) -> None:
@@ -320,7 +324,9 @@ def _emit_glazing_lines(b, model, wall, plane: CutPlane, crop, is_detail) -> Non
                 # nor sill in frame. Drop it and let the neighbouring bands' edges show the
                 # head/sill instead (#opening-void). Keep it where a real jamb edge is in
                 # frame (an opening genuinely cut in a plan/elevation).
-                if is_detail and crop is not None and z0 <= rz0 + 1e-9 and z1 >= rz1 - 1e-9:
+                # Likewise one that runs out of the crop: an enlarged head or sill shows one
+                # end of the R.O., and the void line past it is a stub to nowhere.
+                if is_detail and crop is not None and (z0 <= rz0 + 1e-9 or z1 >= rz1 - 1e-9):
                     continue
                 mid = (ru0 + ru1) / 2 / M_PER_IN
                 b.add(Polyline(points=((mid, z0 / M_PER_IN), (mid, z1 / M_PER_IN)),

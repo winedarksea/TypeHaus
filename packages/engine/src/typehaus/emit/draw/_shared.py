@@ -7,7 +7,7 @@ per → 20's original scope).
 
 from __future__ import annotations
 
-from typehaus.emit.draw.dimension_rows import dimension_offsets
+from typehaus.emit.draw.dimension_rows import dimension_offsets, snap_chain
 from typehaus.emit.draw.lineweights import CUT, FAINT, LIGHT, PROFILE, REFERENCE
 from typehaus.emit.draw.scene import (
     ArchDimension,
@@ -18,7 +18,7 @@ from typehaus.emit.draw.scene import (
     SceneBuilder,
     Text,
 )
-from typehaus.emit.draw.typography import DIM_TEXT_PT, TEXT_PT
+from typehaus.emit.draw.typography import DIM_TEXT_PT, TEXT_PT, feet_inches_8th
 from typehaus.model.canvas import canvas_object_types
 from typehaus.model.placeable_symbols import place_local
 from typehaus.quantities import M_PER_IN
@@ -250,9 +250,7 @@ def emit_bbox_dimension_chain(b: SceneBuilder, walls: list[ResolvedWall],
 
     ``reference="face"`` measures the sheathing faces (:func:`wall_face_bounds`) instead of
     the wall axes — what the architectural plan wants, and what a framer can actually pull.
-    The default stays ``"axis"`` because the structural plans (S-100/S-101) call this with a
-    *bearing-wall* subset whose members are drawn on their centrelines: a face bbox there
-    would dimension to a face nothing on that sheet draws.
+    The structural plans no longer call this: their tiers are ``structural_dimensions``.
     """
     pts = [p for w in walls for p in (w.axis[0], w.axis[1])]
     if not pts:
@@ -282,14 +280,8 @@ def emit_bbox_dimension_chain(b: SceneBuilder, walls: list[ResolvedWall],
 
 
 def _dimension_label(span_in: float) -> str:
-    """The string a writer will print for a span — what :func:`dimension_offsets` reserves.
-
-    Mirrors ``pdf_writer._feet_inches``. Duplicated rather than imported: this module is a
-    *scene builder* and must not depend on either writer, and what matters for reservation
-    is the character count, which both writers agree on.
-    """
-    total = round(span_in)
-    return f"{total // 12}'-{total % 12}\""
+    """The string a writer will print for a span — what :func:`dimension_offsets` reserves."""
+    return feet_inches_8th(span_in)
 
 
 # Perpendicular walls / openings within this distance of a facade line count as *on* it.
@@ -415,6 +407,7 @@ def emit_facade_dimension_strings(b: SceneBuilder, model: ResolvedModel,
         if len(stations) <= 2:
             continue  # only the corners — the overall chain already says this
         stations[0], stations[-1] = lo, hi
+        stations = snap_chain(stations)
         spans = [(stations[i + 1] - stations[i]) / M_PER_IN
                  for i in range(len(stations) - 1)]
         offsets = dimension_offsets(spans, [_dimension_label(span) for span in spans],

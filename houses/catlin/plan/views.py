@@ -4,7 +4,7 @@ Cut stations/crops below were verified against the resolved model (joist lines, 
 segment boundaries, ridge elevation).
 """
 
-from typehaus import ExaggerationSpec, Slice, SliceKind, ft, inch, m, pt
+from typehaus import ExaggerationSpec, Slice, SliceDimension, SliceKind, ft, inch, m, pt
 
 from params.cladding import HOUSE_EW_OUTBOARD_IN
 from params.north_entry_frame import DETAIL_CUT_Y_FT
@@ -13,11 +13,52 @@ from params.roof_panel import EAVE_DECK_IN
 #: The east eave's cladding face (== RF-HOUSE's footprint edge) and its deck plane, inches.
 _EAVE_FACE_E_IN = 36 * 12 + HOUSE_EW_OUTBOARD_IN
 
+
+def _z(start, end, at, text=None, offset=None):
+    """A vertical (elevation) string; anchors are ``TAG:face`` or ``storey:<tag>``."""
+    return SliceDimension(start=start, end=end, axis="z", at=at, text=text, offset=offset)
+
+
+def _u(start, end, at, text=None, offset=None):
+    """A horizontal string across the cut."""
+    return SliceDimension(start=start, end=end, axis="u", at=at, text=text, offset=offset)
+
+
+def _risers(anchors, at, overall_at, which):
+    """Equal risers: riser ``which`` (one whose label clears the slabs), and the overall
+    rise with the riser count. A chain of 6" risers cannot hold a label per riser below
+    1/2" = 1'-0"."""
+    count = len(anchors) - 1
+    return (_z(anchors[which], anchors[which + 1], at, "{} riser"),
+            _z(anchors[0], anchors[-1], overall_at, "{} (" + str(count) + " EQ.)"))
+
+
+def _chain(axis, anchors, at, texts=(), offset=None):
+    """Consecutive strings on one line — they chain, and their labels stagger."""
+    make = _z if axis == "z" else _u
+    labels = list(texts) + [None] * len(anchors)
+    return tuple(make(anchors[i], anchors[i + 1], at, labels[i], offset)
+                 for i in range(len(anchors) - 1))
+
+
+#: A-508's tier stair (S2-004): risers walk -> four tiers -> deck, goings deck edge -> walk,
+#: read off the slabs themselves. A-509's service stair by its own risers.
+_TIERS = ("SL-WK-C", "SL-BW-TIER1", "SL-BW-TIER2", "SL-BW-TIER3", "SL-BW-TIER4")
+_TIER_RISERS = _risers(tuple(t + ":top" for t in _TIERS) + ("FS-BW-FLOOR:top",), inch(194),
+                       inch(202), 2)
+_TIER_GOINGS = _chain("u", ("FS-BW-FLOOR:right",) + tuple(t + ":right" for t in _TIERS[:0:-1]),
+                      inch(4))
+_SERVICE_RISERS = _risers(tuple("ST-G-SERVICE:riser:" + str(i) for i in range(6)),
+                          inch(578), inch(586), 3)
+
 DETAIL_SLICES = [
     # West basement wall + footing + slab edge (cut at y=18', the mid-height bearing
     # tie-in) — crop isolates the west perimeter, away from the sunken garden.
     Slice(uid="CVD901AAAA", tag="SL-D-FNDN", kind=SliceKind.DETAIL, title="Foundation detail",
          cut_origin=pt(ft(0), ft(18)), cut_direction="x",
+         dimensions=(
+             _z("storey:basement", "storey:main", inch(30), "{} fl. to fl."),
+             _z("W-B-W1:bottom", "W-B-W1:top", inch(14), "{} fdn wall")),
          crop=(pt(ft(-2), ft(-12)), pt(ft(3), ft(1))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(2))),
     # 9" SL-M-DECK seated on the 12" basement concrete cross-wall (INT_2X6_BRG
@@ -25,6 +66,10 @@ DETAIL_SLICES = [
     Slice(uid="CVD902AAAA", tag="SL-D-DECKBRG", kind=SliceKind.DETAIL,
          title="Deck bearing detail",
          cut_origin=pt(ft(0), ft(18)), cut_direction="x",
+         dimensions=(
+             _z("SL-M-DECK:bottom", "SL-M-DECK:top", inch(246), "{} deck"),) + _chain(
+             "u", ("W-B-CS2:left", "SL-M-DECK:left", "W-B-CS2:right"), inch(-20),
+             ("{}", "{} brg")),
          crop=(pt(ft(15), ft(-2)), pt(ft(21), ft(1, 6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(2))),
     # Typical exterior wall section — south wall, full height (cut x=10', through
@@ -40,6 +85,10 @@ DETAIL_SLICES = [
     Slice(uid="CVD903AAAA", tag="SL-D-WALLTYP", kind=SliceKind.DETAIL,
          title="Typical exterior wall section",
          cut_origin=pt(ft(10), ft(0)), cut_direction="y",
+         dimensions=_chain(
+             "z", ("storey:basement", "storey:main", "storey:second", "storey:attic",
+                   "W-A-S2:top"), inch(40),
+             ("{} bsmt", "{} main", "{} second", "{} to plate")),
          crop=(pt(ft(-2), ft(-10)), pt(ft(6), ft(30)))),
     # Ridge beam connection — cut perpendicular to the N-S ridge (direction="x" at
     # y=18') so the section shows the ridge's peak, cropped past the beam band at
@@ -48,6 +97,8 @@ DETAIL_SLICES = [
     Slice(uid="CVD904AAAA", tag="SL-D-RIDGE", kind=SliceKind.DETAIL,
          title="Ridge beam connection",
          cut_origin=pt(ft(0), ft(18)), cut_direction="x",
+         dimensions=(
+             _z("W-A-C2M:top", "RF-HOUSE:top", inch(232), "{} plate to ridge"),),
          crop=(pt(ft(10), ft(26)), pt(ft(26), ft(33)))),
     # Sauna room section — transverse cut across the sauna at y=6'. The room rotated onto
     # the garden wall on 2026-09-05 and is now 12'-2" east-west (x 5'-3 13/16"..17'-5 3/4"),
@@ -61,12 +112,28 @@ DETAIL_SLICES = [
     Slice(uid="CVD905AAAA", tag="SL-D-SAUNA", kind=SliceKind.DETAIL,
          title="Sauna room section",
          cut_origin=pt(ft(14), ft(6)), cut_direction="x",
+         dimensions=_chain("z", ("storey:basement", "FURN-B-SAUNA-STEP:top",
+                                  "FURN-B-SAUNA-LOWER:top", "FURN-B-SAUNA-UPPER:top",
+                                  "CEIL-RM-B-SAUNA:bottom"), inch(196)) + (
+             _z("storey:basement", "CEIL-RM-B-SAUNA:bottom", inch(204), "{} headroom"),
+             _u("FURN-B-SAUNA-UPPER:left", "FURN-B-SAUNA-UPPER:right",
+                "FURN-B-SAUNA-UPPER:top", offset=inch(3)),
+             _u("FURN-B-SAUNA-LOWER:left", "FURN-B-SAUNA-LOWER:right",
+                "FURN-B-SAUNA-LOWER:top", offset=inch(3)),
+             _u("FURN-B-SAUNA-STEP:left", "FURN-B-SAUNA-STEP:right",
+                "FURN-B-SAUNA-STEP:top", offset=inch(3))),
          crop=(pt(ft(8), inch(-116)), pt(ft(19, 6), inch(6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
     # Through the reading platform and heater: the back points west, feet east.
     Slice(uid="RP18WM2C5X", tag="SL-D-SAUNA-READING", kind=SliceKind.DETAIL,
          title="Sauna window-side reading recliner",
          cut_origin=pt(ft(14), inch(24)), cut_direction="x",
+         dimensions=(
+             _z("storey:basement", "FURN-B-SAUNA-READING:top", inch(187), "{} deck"),
+             _z("EQ-B-SAUNA-HTR:top", "CEIL-RM-B-SAUNA:bottom", inch(204),
+                "{} htr to clg"),
+             _u("FURN-B-SAUNA-READING:right", "EQ-B-SAUNA-HTR:left",
+                "EQ-B-SAUNA-HTR:top", "{} to htr", inch(-10))),
          crop=(pt(ft(9, 6), inch(-116)), pt(ft(19, 6), inch(6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
     # Hall bath shower section — cut plane x=5' through FX-S-BATH1-SH so the recess,
@@ -101,6 +168,7 @@ DETAIL_SLICES = [
     Slice(uid="BWD901AAAA", tag="SL-D-BREEZEWAY", kind=SliceKind.DETAIL,
          title="North entry: gable, bridge landing and east tiers",
          cut_origin=pt(ft(0), ft(DETAIL_CUT_Y_FT)), cut_direction="x",
+         dimensions=_TIER_RISERS + _TIER_GOINGS,
          crop=(pt(ft(4), ft(-4)), pt(ft(32), ft(16))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
     # Cut on D-G-SERVICE's centreline: x=8'-3" with the 32in leaf and 11in offset
@@ -108,6 +176,7 @@ DETAIL_SLICES = [
     Slice(uid="BWD902AAAA", tag="SL-D-NORTH-BRIDGE", kind=SliceKind.DETAIL,
          title="North entry longitudinal foundation and threshold section",
          cut_origin=pt(ft(8, 3), ft(0)), cut_direction="y",
+         dimensions=_SERVICE_RISERS,
          crop=(pt(ft(34), ft(-11)), pt(ft(52), ft(16)))),
     # ** THE DRAWING THAT PROVES THE ATTIC CHANGE, AND THE ONE THAT WOULD CATCH IT COMING
     # UNDONE. ** FO-A-HALL takes the attic deck away over x 10'-0"..18'-0", so the stair
@@ -132,6 +201,10 @@ DETAIL_SLICES = [
     Slice(uid="CVD907AAAA", tag="SL-D-STAIRVOID", kind=SliceKind.DETAIL,
          title="Stair hall void section",
          cut_origin=pt(ft(0), ft(30)), cut_direction="x",
+         dimensions=_chain(
+             "z", ("storey:second", "storey:attic", "W-A-C2B:top"), inch(196),
+             ("{} 2nd fl. to attic", "{} to ridge beam")) + (
+             _u("W-A-BA-E:right", "W-A-C2B:left", inch(250), "{} void"),),
          crop=(pt(ft(6), ft(8)), pt(ft(22), ft(33)))),
     # ** THE FIREPLACE BREAST, AND THE ONLY SliceKind.SECTION IN THE HOUSE. ** Every other
     # slice here is a DETAIL and lands in the A-5xx block; a SECTION joins the A-301 series
@@ -192,6 +265,9 @@ DETAIL_SLICES = [
     Slice(uid="PWAJW7KF6Y", tag="SL-D-EAVE", kind=SliceKind.DETAIL,
          title="East eave: Image II eave, pan hem and box gutter",
          cut_origin=pt(ft(0), ft(17, 4)), cut_direction="x",
+         dimensions=(
+             _u("RF-HOUSE:right", "TR-RF-GUTTER-E-1:right", "TR-RF-GUTTER-E-1:top",
+                "{} gutter proj.", inch(2.5)),),
          crop=(pt(inch(_EAVE_FACE_E_IN - 7), inch(EAVE_DECK_IN - 9)),
                pt(inch(_EAVE_FACE_E_IN + 9.5), inch(EAVE_DECK_IN + 5))),
          scale="3\"=1'"),

@@ -51,6 +51,19 @@ TRANSITIONS = (
                continuity=(Continuity(control="water", from_face="cdx-ext",
                                       to_face="membrane-ext"),),
                star=True),
+    # The N/S gables are rakes, not eaves (C7-E7): no gutter and no eave chain, a stock
+    # Residential Rake over the deck edge. Ahead of TR-CATLIN-EAVE, which is first-match.
+    Transition(uid="PZWNXF8EYX", tag="TR-CATLIN-RAKE",
+               condition_pattern="wall_roof:EXT_2X6_BOARD_BATTEN|ROOF",
+               notes="notes/roof_wall_rake_detail.md",
+               continuity=(
+                   Continuity(control="air", from_face="sheathing-ext",
+                              to_face="sheathing-ext"),
+                   Continuity(control="water", from_face="membrane-ext",
+                              to_face="rake-metal-ext"),
+                   Continuity(control="thermal", from_face="spray-foam-ext",
+                              to_face="spray-foam-ext"),
+               ), star=True),
     # Eave water is two claims, not the foam's: field membrane -> strip-in over the eave
     # and gutter flanges -> eave leg under the Image II pan (GCP IWSDET-102 option 2, TL-15),
     # and the wall head, covered by gutter flange + eave leg. Air and thermal stay the foam's.
@@ -66,10 +79,28 @@ TRANSITIONS = (
                    Continuity(control="thermal", from_face="spray-foam-ext",
                               to_face="spray-foam-ext"),
                ), star=False,
-               starred_conditions=(
-                   "wall_roof:EXT_2X6|ROOF",
-                   "wall_roof:EXT_2X6_BOARD_BATTEN|ROOF",
-               )),
+               starred_conditions=("wall_roof:EXT_2X6|ROOF",)),
+    # Ahead of TR-CATLIN-FOUNDATION-INT, whose `*` prefix also reaches an assembly_change key.
+    # Two legitimate in-plan assembly changes survive the resolver's derivation gates
+    # (the sauna liner starting along the interior concrete run, and the masonry railing
+    # meeting the retaining wall's 6" upstand). They are bound — covered, continuity
+    # declared, construction rules documented — but deliberately sheetless.
+    Transition(uid="CATR012AAAA", tag="TR-CATLIN-ASSEMBLY-JOG",
+               condition_pattern="assembly_change:*",
+               continuity=AIR_WATER_THERMAL,
+               documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-SAUNA-LINER-RETURN",
+                                "CR-PORCH-MASONRY-RETURN"),
+               suppress=True,
+               # (single literal: the editable dialect forbids concatenated strings)
+               suppress_reason="the jog happens *along* the wall run, while a derived detail cuts perpendicular to the wall — the change of assembly is simply not in that cut plane, so any sheet here would describe a junction the drawing does not show; the returns themselves are documented by the construction rules this transition records"),
+    # The interior concrete wall under the bearing partition: conditioned both sides, so no
+    # control layer crosses it. Same seat (mudsill on its gasket) and notes as the perimeter;
+    # the recipe's weather pieces self-gate off an interior wall.
+    Transition(uid="KR0VGRXMNQ", tag="TR-CATLIN-FOUNDATION-INT",
+               condition_pattern="*FOUNDATION_WALL_12_INT|INT_*",
+               notes="notes/basement_to_framed_wall_detail.md",
+               overlay="basement-framed-wall", continuity=(),
+               documents_rules=("CR-CONC-TO-FRAMED-SILL",)),
     # The envelope crossing — concrete to framed wall, where the thermal, air and water
     # layers all have to hand off. Named keys rather than a pattern-wide star, and two of the five: the perimeter
     # basement wall meeting the framed wall above it, and the garage's ICF stem meeting
@@ -89,19 +120,59 @@ TRANSITIONS = (
                    "wall_foundation:BASEMENT_8|EXT_2X6_BOARD_BATTEN",
                    "wall_foundation:GARAGE_ICF_6|GARAGE_WALL_2X6",
                )),
-    # ** UNSTARRED WHOLE. ** Sixteen conditions derived off this one pattern and every one
-    # of them is the same drawing: a membrane strip lapped over the plate line, sealant at
-    # the plate, and the rim bay filled. What differs between them is which two assemblies
-    # happen to meet, which is a schedule fact and not a drawing. Sixteen near-identical
-    # sheets in a submittal is how a reviewer learns to stop turning pages.
+    # The plant room's rim band, and the hardest detail in the room. FS-S-WEST and FS-ATTIC
+    # both run their joists in x, so the ends bear on W-S-W4 and a parallel rim bay sits
+    # against W-S-S1: two direct paths from a floor cavity into the coldest part of an
+    # exterior wall, and neither can take a sheet membrane — there is no continuous plane to
+    # lap it onto between the joist ends. Closed-cell spray foam at the rim in BOTH floor
+    # systems along both walls is the answer: bonded, monolithic, no seams, and its own
+    # vapour retarder, which is the only product that is simultaneously the air barrier, the
+    # vapour barrier and the insulation in a cavity shaped like that one.
     #
-    # The rim band still has a sheet in the permit set: TR-CATLIN-PLANT-RIM, which is the
-    # one place in this house where the detail is NOT an air seal at 35% RH but the
-    # continuity of a Class I vapour barrier at 70%. All sixteen still derive and still
-    # print under `--set full`, which is where a builder reads them.
+    # Its own sheet rather than a note on TR-CATLIN-RIM-BAND: everywhere else in this house
+    # the rim band is an air-seal detail at 35% RH, and here it is the continuity of a
+    # Class I barrier at 70%. Ahead of RIM-BAND and INTERIOR-RIM: first match binds, and
+    # behind RIM-BAND this sheet never derived (C5-E10, integrity.transition_shadowed).
+    Transition(uid="CATR017AAAA", tag="TR-CATLIN-PLANT-RIM",
+               condition_pattern="storey_stack:rim:*PLANT_*",
+               # Same drawn vocabulary as TR-CATLIN-RIM-BAND (membrane strip, plate-line
+               # sealant, rim cavity foam), so it reuses that recipe rather than inventing a
+               # near-identical one; what differs here is the SPEC on it — closed-cell,
+               # full-depth, and doing the vapour barrier's job — which is what the notes
+               # page and this transition's continuity carry.
+               notes="notes/plant_room.md", overlay="rim-band-air-seal",
+               continuity=(Continuity(control="vapor", from_face="humid-membrane",
+                                      to_face="rim-foam"),
+                           Continuity(control="air", from_face="humid-membrane",
+                                      to_face="rim-foam")),
+               star=True),
+    # The sauna liner's foil is a real vapour and air layer, so its rim keeps the claim.
+    Transition(uid="83YPDC3KQ3", tag="TR-CATLIN-SAUNA-RIM",
+               condition_pattern="storey_stack:rim:*|SAUNA_LINER_INT_*",
+               notes="notes/sauna_basement_wall_detail.md", overlay="rim-band-air-seal",
+               continuity=(Continuity(control="vapor", from_face="foil-polyiso",
+                                      to_face="foil-polyiso"),
+                           Continuity(control="air", from_face="foil-polyiso",
+                                      to_face="foil-polyiso"))),
+    # Interior partitions crossing a floor line: conditioned both sides, paint only, so no
+    # control layer to carry (C5-E10). Plant and sauna partners are bound above.
+    Transition(uid="RDS9SPYMY7", tag="TR-CATLIN-INTERIOR-RIM",
+               condition_pattern="storey_stack:rim:INT_*", continuity=()),
+    # ** UNSTARRED WHOLE. ** The envelope rims left after the plant, sauna and interior
+    # bindings above, and every one is the same drawing: a membrane strip lapped over the
+    # plate line, sealant at the plate, and the rim bay filled. What differs between them is
+    # which two assemblies happen to meet, which is a schedule fact and not a drawing.
+    #
+    # The rim band's permit sheets are TR-CATLIN-PLANT-RIM's, the one place in this house
+    # where the detail is NOT an air seal at 35% RH but the continuity of a Class I vapour
+    # barrier at 70%. All of these still print under `--set full`.
     Transition(uid="CATR003AAAA", tag="TR-CATLIN-RIM-BAND",
                condition_pattern="storey_stack:rim:*", overlay="rim-band-air-seal",
                continuity=AIR_WATER_THERMAL, star=False),
+    # Interior-to-interior stack-width changes: nothing to carry. A plant or sauna partner
+    # (`PLANT_*`, `SAUNA_*` second) stays on STACK-SHELF.
+    Transition(uid="ESSE3RSV1A", tag="TR-CATLIN-INTERIOR-STACK",
+               condition_pattern="stack_width_change:INT_*|INT_*", continuity=()),
     # No notes= here, deliberately: this condition pattern is a wildcard over every
     # stack-width change in the house (partition-to-partition, sauna liner, plant room,
     # mudroom, and the garage's masonry-to-framed curb among them), and the garage's own
@@ -182,11 +253,12 @@ TRANSITIONS = (
                            Continuity(control="thermal", from_face="stud-cavity",
                                       to_face="stud-cavity")),
                star=True),
-    Transition(uid="CATR010AAAA", tag="TR-CATLIN-INTERIOR-OPENING",
-               condition_pattern="opening_perimeter:INT_*", overlay="interior-opening"),
+    # Ahead of TR-CATLIN-INTERIOR-OPENING, whose `INT_*` would otherwise bind it first.
     Transition(uid="CATR011AAAA", tag="TR-CATLIN-CENTER-OPENING",
                condition_pattern="opening_perimeter:INT_2X6_BRG",
                overlay="bearing-partition-opening"),
+    Transition(uid="CATR010AAAA", tag="TR-CATLIN-INTERIOR-OPENING",
+               condition_pattern="opening_perimeter:INT_*", overlay="interior-opening"),
     # D-S-BATH1's opening in the hall bath's east wet wall, which is BEARING and was
     # retyped with it. Its own binding, same reason as the others: the tag starts
     # "CATLIN_", so TR-CATLIN-INTERIOR-OPENING's `INT_*` glob never sees it. The overlay is
@@ -214,18 +286,6 @@ TRANSITIONS = (
     Transition(uid="2M8HCPVAXB", tag="TR-CATLIN-CENTER-RC-OPENING",
                condition_pattern="opening_perimeter:INT_2X6_BRG_RC",
                overlay="bearing-partition-opening"),
-    # Two legitimate in-plan assembly changes survive the resolver's derivation gates
-    # (the sauna liner starting along the interior concrete run, and the masonry railing
-    # meeting the retaining wall's 6" upstand). They are bound — covered, continuity
-    # declared, construction rules documented — but deliberately sheetless.
-    Transition(uid="CATR012AAAA", tag="TR-CATLIN-ASSEMBLY-JOG",
-               condition_pattern="assembly_change:*",
-               continuity=AIR_WATER_THERMAL,
-               documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-SAUNA-LINER-RETURN",
-                                "CR-PORCH-MASONRY-RETURN"),
-               suppress=True,
-               # (single literal: the editable dialect forbids concatenated strings)
-               suppress_reason="the jog happens *along* the wall run, while a derived detail cuts perpendicular to the wall — the change of assembly is simply not in that cut plane, so any sheet here would describe a junction the drawing does not show; the returns themselves are documented by the construction rules this transition records"),
     # The sauna door breaks the hot side's vapour control layer — the foil-faced polyiso
     # has to be returned into the jamb and sealed, not just butted.
     Transition(uid="CATR014AAAA", tag="TR-CATLIN-SAUNA-OPENING",
@@ -241,31 +301,6 @@ TRANSITIONS = (
                # drawing at a higher RH on TR-CATLIN-PLANT-OPENING. Both still derive, and
                # `--set full` is what the installer is handed.
                star=False),
-    # The plant room's rim band, and the hardest detail in the room. FS-S-WEST and FS-ATTIC
-    # both run their joists in x, so the ends bear on W-S-W4 and a parallel rim bay sits
-    # against W-S-S1: two direct paths from a floor cavity into the coldest part of an
-    # exterior wall, and neither can take a sheet membrane — there is no continuous plane to
-    # lap it onto between the joist ends. Closed-cell spray foam at the rim in BOTH floor
-    # systems along both walls is the answer: bonded, monolithic, no seams, and its own
-    # vapour retarder, which is the only product that is simultaneously the air barrier, the
-    # vapour barrier and the insulation in a cavity shaped like that one.
-    #
-    # Its own sheet rather than a note on TR-CATLIN-RIM-BAND: everywhere else in this house
-    # the rim band is an air-seal detail at 35% RH, and here it is the continuity of a
-    # Class I barrier at 70%.
-    Transition(uid="CATR017AAAA", tag="TR-CATLIN-PLANT-RIM",
-               condition_pattern="storey_stack:rim:*PLANT_*",
-               # Same drawn vocabulary as TR-CATLIN-RIM-BAND (membrane strip, plate-line
-               # sealant, rim cavity foam), so it reuses that recipe rather than inventing a
-               # near-identical one; what differs here is the SPEC on it — closed-cell,
-               # full-depth, and doing the vapour barrier's job — which is what the notes
-               # page and this transition's continuity carry.
-               notes="notes/plant_room.md", overlay="rim-band-air-seal",
-               continuity=(Continuity(control="vapor", from_face="humid-membrane",
-                                      to_face="rim-foam"),
-                           Continuity(control="air", from_face="humid-membrane",
-                                      to_face="rim-foam")),
-               star=True),
     # The plant room's openings. Cloned from TR-CATLIN-SAUNA-OPENING above for the same
     # reason and with the same shape: an opening is a hole in the only thing keeping moist
     # room air out of the stud bays, so the membrane is *returned into the jamb* and sealed

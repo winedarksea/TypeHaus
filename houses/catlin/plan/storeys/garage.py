@@ -108,9 +108,9 @@ NODES = [
 
 # 8'-4" plates, not 8'-0". The garage sits 4" down from grade while D-G-SERVICE's threshold
 # stays pinned to the breezeway deck at 0'-0" — so the door climbs 4" inside its own wall,
-# and its 3-ply LVL header needs that same 4" of plate above the rough head to clear the
-# truss heels (structural.member_interference). The slab sits at the same grade, so the
-# interior clear height is unchanged.
+# and the plate height is now set by that rough head and the truss heels alone: the head
+# carries a flat nonbearing nailer, not a beam (see D-G-SERVICE). The slab sits at the same
+# grade, so the interior clear height is unchanged.
 WALLS = [
     # ** THE BEARING PAIR IS E/W SINCE 2026-09-07. ** The ridge turned with the overhead
     # door, so the trusses now span east-west and land on W-G-E/W-G-W; W-G-S and W-G-N are
@@ -329,19 +329,18 @@ OPENINGS = [
     # Its rough sill sits flush with the deck: KDAT under a sloped, back-dammed pan
     # (notes/opening_flashing_spec.md §6).
     #
-    # The head lands 8" under the top plate — 6'-8" of door in a wall whose plate is at
-    # +7'-4" — which is why this opening now names a header the way the overhead door does.
-    # There is 6 1/2" between the rough head and the top of wall, and the table's 2-2x8
-    # (7 1/4") does not fit it: the solver grows a header up from the rough head, so an
-    # oversized one pushes straight through the plates into the truss bottom chords
-    # (structural.member_interference caught exactly that). A 5 1/2"-deep 3-ply LVL does
-    # fit, three plies filling the 2x6 wall, and it is the ordinary answer for a tall
-    # opening in a garage wall: a continuous header carried at the plate line rather than
-    # dropped below it (IRC R602.7.2 lets the header take the top plate's place).
+    # ** A FLAT NONBEARING HEADER (owner, 2026-10-31). ** W-G-S is a NONBEARING gable end
+    # (the trusses land on W-G-E/W-G-W), so IRC R602.7.4 lets a flat 2x laid on the wall's
+    # width head the opening: no jacks, and no cripples over it. The rough head is 93 1/2"
+    # off the wall base (12" sill + the MMI unit's 81 1/2" RO, fixed by the product) under
+    # 97" of plates, so a 1 1/2" nailer fits with 2" to spare and nothing deeper does: the
+    # 3-ply 5 1/2" LVL this door carried ran 2" into the double top plate
+    # (integrity.header_under_plate; geometry review C3-E1), and a 1/2" RO trim is not
+    # possible on an 81" unit.
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING32-G",
          position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(1),
          flip_hinge=True, flip_swing=True, maximum_opening_degrees=90,
-         header_spec='3-ply 5.5" LVL',
+         header_spec="flat 2x6 nonbearing",
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
              exterior_wrap_material_ref="metal-dark-exterior",
              # MMI publishes no sill section: this is a coordination envelope (frame depth, a

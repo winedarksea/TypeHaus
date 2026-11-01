@@ -12,6 +12,7 @@ from typehaus.model.enums import FloorOpeningPurpose
 from typehaus.model.floors import FloorSystem
 from typehaus.model.structure import Beam
 from typehaus.quantities import inch
+from typehaus.resolve.band_headers import band_header_findings
 from typehaus.resolve.coatings import layer_depth_m
 from typehaus.resolve.floor_ends import floor_ends
 from typehaus.resolve.floor_lines import extra_lines, move_lines
@@ -50,6 +51,7 @@ def resolve_floors(model: ResolvedModel) -> list[Finding]:
             if floor is not None:
                 model.floors.append(floor)
     unframed(model, anchors)
+    findings.extend(band_header_findings(model))
     return findings
 
 
@@ -399,20 +401,26 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
         # pack that is already there rather than starting a second one on the other face.
         sign = existing_sign or (1.0 if perp_at >= perp else -1.0)
         normal = (0.0, sign) if along_x else (sign, 0.0)
+        # An authored ``extent`` (a flush band header) clips the plies to its own stations.
+        ply_lo, ply_hi = axis_lo, axis_hi
+        extent = getattr(reinforcement, "extent", None)
+        if extent is not None:
+            ends = sorted(length.meters for length in extent)
+            ply_lo, ply_hi = max(axis_lo, ends[0]), min(axis_hi, ends[1])
         if along_x:
-            p0, p1 = (axis_lo, perp), (axis_hi, perp)
+            p0, p1 = (ply_lo, perp), (ply_hi, perp)
         else:
-            p0, p1 = (perp, axis_lo), (perp, axis_hi)
+            p0, p1 = (perp, ply_lo), (perp, ply_hi)
         # A sister runs BESIDE its joist, so on a tilted field it takes that joist's own
         # end heights (``lift``) — the same line, one ply over.
-        raise_a = lift(axis_lo, perp) if lift is not None else 0.0
-        raise_b = lift(axis_hi, perp) if lift is not None else 0.0
+        raise_a = lift(ply_lo, perp) if lift is not None else 0.0
+        raise_b = lift(ply_hi, perp) if lift is not None else 0.0
         sister_rakes = abs(raise_b - raise_a) > 1e-9
         for ply in range(existing, plies - 1):
             s0, s1 = _shift(p0, p1, normal, host_width / 2 + (ply + .5) * ply_width)
             out.append(FramedMember(
                 system.uid, f"sister-{index}-{ply}", "sister_joist", member,
-                s0, s1, z0 + raise_a, z1 + raise_a, axis_hi - axis_lo,
+                s0, s1, z0 + raise_a, z1 + raise_a, ply_hi - ply_lo,
                 z0_end_m=(z0 + raise_b) if sister_rakes else None,
                 z1_end_m=(z1 + raise_b) if sister_rakes else None,
             ))
@@ -427,7 +435,7 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
             continue
         # Blocks sit at the load, held a full member width inside the joist tips so they
         # clear the rim board riding on those tips.
-        block_axis = min(max(axis_at, axis_lo + ply_width), axis_hi - ply_width)
+        block_axis = min(max(axis_at, ply_lo + ply_width), ply_hi - ply_width)
         for key, neighbour in (("lo", line - 1), ("hi", line + 1)):
             if not 0 <= neighbour < len(positions):
                 continue  # the cluster is on the field edge — nothing to block against

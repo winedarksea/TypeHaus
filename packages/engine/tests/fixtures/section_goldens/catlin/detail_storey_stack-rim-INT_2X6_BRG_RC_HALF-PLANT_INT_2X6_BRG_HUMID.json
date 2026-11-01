@@ -1443,17 +1443,17 @@
         "kind": "point",
         "xy": [
           212.5,
-          118.18333333333334
+          106.18333333333335
         ],
         "name": ""
       },
       "at": [
         201.40748031496065,
-        118.18333333333334
+        106.18333333333335
       ],
       "to": [
         212.5,
-        118.18333333333334
+        106.18333333333335
       ],
       "text": "gwb 1/2\"",
       "height": 1.6,
@@ -1468,17 +1468,17 @@
         "kind": "point",
         "xy": [
           213.0,
-          116.28750000000001
+          104.28750000000002
         ],
         "name": ""
       },
       "at": [
         201.40748031496065,
-        116.28750000000001
+        104.28750000000002
       ],
       "to": [
         213.0,
-        116.28750000000001
+        104.28750000000002
       ],
       "text": "resilient-channel 1/2\"",
       "height": 1.6,
@@ -1493,17 +1493,17 @@
         "kind": "point",
         "xy": [
           216.0,
-          114.39166666666668
+          102.3916666666667
         ],
         "name": ""
       },
       "at": [
         201.40748031496065,
-        114.39166666666668
+        102.3916666666667
       ],
       "to": [
         216.0,
-        114.39166666666668
+        102.3916666666667
       ],
       "text": "stud 5 1/2\"",
       "height": 1.6,
@@ -1518,17 +1518,17 @@
         "kind": "point",
         "xy": [
           219.0,
-          112.49583333333335
+          100.49583333333337
         ],
         "name": ""
       },
       "at": [
         201.40748031496065,
-        112.49583333333335
+        100.49583333333337
       ],
       "to": [
         219.0,
-        112.49583333333335
+        100.49583333333337
       ],
       "text": "gwb-ar 1/2\"",
       "height": 1.6,
@@ -1663,22 +1663,6 @@
     },
     {
       "space": "model",
-      "node": "text",
-      "anchor": [
-        202.40748031496065,
-        94.34645669291339
-      ],
-      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -1715,6 +1699,322 @@
       "uid": null
     },
     {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        202.40748031496065,
+        88.34645669291339
+      ],
+      "content": "FLOOR BAND 1'-0 5/8\": 11 7/8\" JOIST + 3/4\" SUBFLOOR",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-DIMS",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          213.23000000000005,
+          120.0
+        ],
+        "name": ""
+      },
+      "at": [
+        224.25000000000006,
+        138.02020997375328
+      ],
+      "to": [
+        213.23000000000005,
+        120.0
+      ],
+      "text": "vapor continuity — humid-membrane → rim-\nfoam",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          213.23000000000005,
+          120.0
+        ],
+        "name": ""
+      },
+      "at": [
+        224.25000000000006,
+        134.5347933070866
+      ],
+      "to": [
+        213.23000000000005,
+        120.0
+      ],
+      "text": "air continuity — humid-membrane → rim-\nfoam",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        202.40748031496065,
+        94.34645669291339
+      ],
+      "content": "TR-CATLIN-PLANT-RIM  ·  rim-band-air-seal",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          222.65400000000005,
+          135.15748031496062
+        ],
+        [
+          222.42982522324579,
+          136.2844830232758
+        ],
+        [
+          221.79142947059444,
+          137.239909785555
+        ],
+        [
+          220.83600270831525,
+          137.87830553820635
+        ],
+        [
+          219.70900000000006,
+          138.10248031496062
+        ],
+        [
+          218.58199729168487,
+          137.87830553820635
+        ],
+        [
+          217.62657052940568,
+          137.239909785555
+        ],
+        [
+          216.98817477675433,
+          136.2844830232758
+        ],
+        [
+          216.76400000000007,
+          135.15748031496062
+        ],
+        [
+          216.98817477675433,
+          134.03047760664543
+        ],
+        [
+          217.62657052940568,
+          133.07505084436625
+        ],
+        [
+          218.58199729168487,
+          132.4366550917149
+        ],
+        [
+          219.70900000000006,
+          132.21248031496063
+        ],
+        [
+          220.83600270831525,
+          132.4366550917149
+        ],
+        [
+          221.79142947059444,
+          133.07505084436625
+        ],
+        [
+          222.42982522324579,
+          134.03047760664543
+        ]
+      ],
+      "layer": "A-ANNO-KEYN",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        219.70900000000006,
+        135.15748031496062
+      ],
+      "content": "K2",
+      "height": 3.0,
+      "height_pt": 9.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-KEYN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          213.23000000000005,
+          135.15748031496062
+        ],
+        "name": ""
+      },
+      "at": [
+        219.70900000000006,
+        135.15748031496062
+      ],
+      "to": [
+        213.23000000000005,
+        135.15748031496062
+      ],
+      "text": "",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          222.25900000000001,
+          128.97298031496064
+        ],
+        [
+          222.03482522324575,
+          130.09998302327583
+        ],
+        [
+          221.3964294705944,
+          131.055409785555
+        ],
+        [
+          220.4410027083152,
+          131.69380553820636
+        ],
+        [
+          219.31400000000002,
+          131.91798031496063
+        ],
+        [
+          218.18699729168483,
+          131.69380553820636
+        ],
+        [
+          217.23157052940564,
+          131.055409785555
+        ],
+        [
+          216.5931747767543,
+          130.09998302327583
+        ],
+        [
+          216.36900000000003,
+          128.97298031496064
+        ],
+        [
+          216.5931747767543,
+          127.84597760664545
+        ],
+        [
+          217.23157052940564,
+          126.89055084436626
+        ],
+        [
+          218.18699729168483,
+          126.2521550917149
+        ],
+        [
+          219.31400000000002,
+          126.02798031496064
+        ],
+        [
+          220.4410027083152,
+          126.2521550917149
+        ],
+        [
+          221.3964294705944,
+          126.89055084436626
+        ],
+        [
+          222.03482522324575,
+          127.84597760664545
+        ]
+      ],
+      "layer": "A-ANNO-KEYN",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        219.31400000000002,
+        128.97298031496064
+      ],
+      "content": "K4",
+      "height": 3.0,
+      "height_pt": 9.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-KEYN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          212.83500000000004,
+          135.15748031496062
+        ],
+        "name": ""
+      },
+      "at": [
+        219.31400000000002,
+        128.97298031496064
+      ],
+      "to": [
+        212.83500000000004,
+        135.15748031496062
+      ],
+      "text": "",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
       "space": "paper",
       "node": "text",
       "anchor": [
@@ -1737,7 +2037,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
+      "content": "TR-CATLIN-PLANT-RIM  ·  rim-band-air-seal",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,
@@ -2519,7 +2819,23 @@
       "uid": null
     }
   ],
-  "notes": [],
+  "notes": [
+    "NOTES:",
+    "• Room design condition: 75 F at 70% RH. Dew point 64.4 F.",
+    "• Liner, inside out: 1/2\" PVC panel, 3/4\" furring, membrane. Walls and ceiling.",
+    "• The membrane is the air and vapour barrier. Continuous on all six sides.",
+    "• Floor: 1/4\" SurePly + seamless vinyl; 6\" cove pending approval. No drain.",
+    "• Glazing: fixed units only, U-0.14, warm-edge spacer, thermally broken frame.",
+    "• No suspended ceiling. No roofing membrane under the vinyl.",
+    "• Ventilation: 25 cfm in, 25 cfm out, both dampered. Extract high, far end.",
+    "• Damp location throughout; wet location wherever misted or hosed.",
+    "",
+    "KEYED NOTES:",
+    "K1  Lap the floor cove up the wall and terminate it behind the wall membrane.",
+    "K2  Membrane continuous wall to ceiling; seal each penetration.",
+    "K4  Keep the 3/4\" furring gap open behind the panel; it is the drying path.",
+    "K8  Rim bay: 3\" ccSPF in both floor bands; lap the membrane onto it."
+  ],
   "frame": {
     "paper": [
       11.0,

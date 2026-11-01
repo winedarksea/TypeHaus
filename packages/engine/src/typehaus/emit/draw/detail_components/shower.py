@@ -5,9 +5,9 @@ Reference: ``sauna_shower_basement_detail_ifc.png``; dimensions from
 
 There is no shower *assembly* — a shower is a fixture standing in a room — so the
 recognition gate is the fixture itself: a resolved canvas object whose ``FixtureType``
-publishes ``plan_symbol="shower"``, ``"shower-neo-angle"`` or ``"tub-shower"`` (a combo
-unit gets the same pan/tile/glass/HRV vocabulary), cut by the section plane. Everything is
-then derived from that footprint and the walls around it:
+publishes ``plan_symbol="shower"``, ``"shower-neo-angle"`` or ``"tub-shower"``, cut by the
+section plane. A ``tub-shower`` is an integral insert and draws as one (``tub_shower``);
+every other shower is derived from its footprint and the walls around it:
 
 * **recess** — the 4" drop in the floor structure that makes the pan curbless, finished
   with a mortar bed falling to a center drain;
@@ -32,6 +32,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     rect_region,
     wall_cut_bounds_m,
 )
+from typehaus.emit.draw.detail_components.tub_shower import tub_shower_components
 from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import IRNode
 from typehaus.quantities import M_PER_IN
@@ -193,6 +194,12 @@ def shower_components(model, crop, direction: str, station: float) -> list[IRNod
             continue
         height = getattr(ftype, "height", None)
         height_in = height.meters / M_PER_IN if height is not None else cfg.SHOWER_ENCLOSURE_H_IN
+        if getattr(ftype, "plan_symbol", None) == "tub-shower":
+            # An integral insert: no recess, backer, tile or glass (I2-005).
+            nodes += tub_shower_components(model, obj, ftype, direction, station)
+            nodes += shower_hrv_duct(model, direction, station, u_lo_m, u_hi_m,
+                                     floor_z + height_in)
+            continue
         walled = _walled_sides(model, direction, station, u_lo_m, u_hi_m,
                                obj.z_m + 0.1, obj.z_m + 1.5)
         nodes += shower_recess(u_lo, u_hi, floor_z)

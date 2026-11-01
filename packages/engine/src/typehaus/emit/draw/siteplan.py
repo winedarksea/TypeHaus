@@ -24,6 +24,7 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
+from typehaus.emit.draw.schedule_block import BlockMetrics
 from typehaus.emit.draw.siteplan_annotate import emit_site_annotations
 from typehaus.emit.draw.siteplan_labels import add_point_label
 from typehaus.emit.draw.siteplan_planting import emit_site_planting
@@ -35,7 +36,7 @@ from typehaus.resolve.solid_categories import in_slab_family
 _DRAINAGE_RADIUS_FT = 40.0
 
 
-def build_site_plan(model: ResolvedModel) -> Scene:
+def build_site_plan(model: ResolvedModel, metrics: BlockMetrics | None = None) -> Scene:
     """Show every freestanding footprint together instead of reusing a floor plan for C-101.
 
     A house can intentionally contain disconnected structures. The site sheet projects
@@ -50,7 +51,7 @@ def build_site_plan(model: ResolvedModel) -> Scene:
     _emit_flatwork(builder, model)
     _emit_drainage_overlay(builder, model)
     emit_site_planting(builder, model)
-    emit_site_annotations(builder, model, site)
+    emit_site_annotations(builder, model, site, metrics)
     _emit_utilities(builder, site)
     _emit_spot_elevations_and_drainage(builder, site)
     _emit_foundation_grading(builder, model, site)

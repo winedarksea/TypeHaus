@@ -45,12 +45,13 @@ source:
 
 ### Keyed
 - [K1] Lap the floor cove up the wall and terminate it behind the wall membrane.
-- [K2 @ host#layer:humid-membrane:out] Membrane continuous from wall to ceiling at the perimeter; seal each penetration.
-- [K3] Drained sill pan under each unit: sloped, flashed into the wall membrane, over the Corian stool, draining to the room, never into framing.
+- [K2 @ host#layer:humid-membrane:out] Membrane continuous wall to ceiling; seal each penetration.
+- {opening_perimeter:*} [K3] Sloped, drained sill pan over the stool, flashed into the membrane; drains to the room, never into framing.
 - [K4 @ host#layer:liner-furring:out] Keep the 3/4" furring gap open behind the panel; it is the drying path.
-- [K5] Wet-location listed luminaires, gasketed, corrosion-resistant housings.
-- [K6] Receptacles WR-listed and GFCI, in non-metallic gasketed boxes with in-use covers.
-- [K7] Grow tubes listed to UL 8800 per NEC Article 410 Part XVI.
+- {!storey_stack:*} [K5] Wet-location listed luminaires, gasketed, corrosion-resistant housings.
+- {!storey_stack:*} [K6] Receptacles WR-listed and GFCI, in non-metallic gasketed boxes with in-use covers.
+- {!storey_stack:*} [K7] Grow tubes listed to UL 8800 per NEC Article 410 Part XVI.
+- {storey_stack:*} [K8] Rim bay: 3" ccSPF in both floor bands; lap the membrane onto it.
 
 ### Spec 06 64 00
 - Extrutech P1600 white, or Trusscore white equal. One brand and its own trims throughout.

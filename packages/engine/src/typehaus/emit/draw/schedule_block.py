@@ -24,7 +24,7 @@ from itertools import combinations
 
 from typehaus.emit.draw.lineweights import LIGHT
 from typehaus.emit.draw.scene import Polyline, SceneBuilder, Text
-from typehaus.emit.draw.typography import CHAR_ASPECT, LEADER_WRAP_COLUMNS
+from typehaus.emit.draw.typography import CHAR_ASPECT, LEADER_WRAP_COLUMNS, model_in_per_pt
 
 # Lettering and rhythm of a schedule block, model-space inches at the scale of a plan whose
 # longest side is REFERENCE_PLAN_EXTENT_IN. A bigger building is drawn smaller on the same
@@ -59,6 +59,13 @@ MAX_SCHEDULE_COLUMNS = 4
 SCHEDULE_GRID_LAYER = "A-ANNO-TABL"
 SCHEDULE_TEXT_LAYER = "A-ANNO-TEXT"
 MARK_TEXT_HEIGHT_IN = 2.5
+
+# Rhythm of ``metrics_at_scale``, in multiples of the body text height. A rule sits half
+# a pitch under a row, so 1.6 keeps it clear of both the caps above and the row below.
+_TITLE_RATIO = SCHEDULE_TITLE_HEIGHT_IN / SCHEDULE_TEXT_HEIGHT_IN
+_ROW_PITCH_EM = 1.6
+_TITLE_PITCH_EM = _TITLE_RATIO * 1.6
+_BLOCK_GAP_EM = 4.0
 
 
 @dataclass(frozen=True)
@@ -111,6 +118,21 @@ def metrics_for(points: list[tuple[float, float]]) -> BlockMetrics:
         block_gap=SCHEDULE_BLOCK_GAP_IN * factor,
         mark_height=MARK_TEXT_HEIGHT_IN * factor,
     )
+
+
+def metrics_at_scale(scale: float, text_pt: float) -> BlockMetrics:
+    """Block metrics that print at exactly ``text_pt`` on a sheet framed at ``scale``.
+
+    ``metrics_for`` sizes lettering in model inches before the scale is known, and on a
+    sheet that lands small the writer rounds it up to ``MIN_PT`` — so every row prints
+    wider than the column it reserved and the next block starts on top of it. Sized from
+    the frame's scale there is no rounding, so the rhythm can be a real line pitch rather
+    than the 3x hedge the nominal metrics carry. ``text_pt`` should not be below ``MIN_PT``.
+    """
+    unit = model_in_per_pt(scale) * text_pt
+    return BlockMetrics(text_height=unit, title_height=unit * _TITLE_RATIO,
+                        row_pitch=unit * _ROW_PITCH_EM, title_pitch=unit * _TITLE_PITCH_EM,
+                        block_gap=unit * _BLOCK_GAP_EM, mark_height=unit)
 
 
 def emit_schedule_table(b: SceneBuilder, table: ScheduleTable, origin: tuple[float, float],

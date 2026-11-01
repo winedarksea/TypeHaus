@@ -2011,97 +2011,6 @@
     },
     {
       "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          0.25,
-          -13.437499999999998
-        ],
-        "name": ""
-      },
-      "at": [
-        13.0,
-        4.038265529308841
-      ],
-      "to": [
-        0.25,
-        -13.437499999999998
-      ],
-      "text": "air continuity — sheathing-ext →\nsheathing-ext",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -1.9999999999999996,
-          -13.437499999999998
-        ],
-        "name": ""
-      },
-      "at": [
-        13.0,
-        -0.6089566929133801
-      ],
-      "to": [
-        -1.9999999999999996,
-        -13.437499999999998
-      ],
-      "text": "water continuity — spray-foam-ext →\nspray-foam-ext",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -1.9999999999999996,
-          -13.437499999999998
-        ],
-        "name": ""
-      },
-      "at": [
-        13.0,
-        -5.256178915135601
-      ],
-      "to": [
-        -1.9999999999999996,
-        -13.437499999999998
-      ],
-      "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        -13.90251968503937,
-        -39.091043307086615
-      ],
-      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -2209,6 +2118,113 @@
       "layer": "A-ANNO-DIMS",
       "text": "4\" XPS (2 layers)",
       "text_along": 0.0,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        -13.90251968503937,
+        -45.091043307086615
+      ],
+      "content": "FLOOR BAND 1'-0 5/8\": 11 7/8\" JOIST + 3/4\" SUBFLOOR",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-DIMS",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          0.25,
+          -13.437499999999998
+        ],
+        "name": ""
+      },
+      "at": [
+        13.0,
+        4.038265529308841
+      ],
+      "to": [
+        0.25,
+        -13.437499999999998
+      ],
+      "text": "air continuity — sheathing-ext →\nsheathing-ext",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -1.9999999999999996,
+          -13.437499999999998
+        ],
+        "name": ""
+      },
+      "at": [
+        13.0,
+        -0.6089566929133801
+      ],
+      "to": [
+        -1.9999999999999996,
+        -13.437499999999998
+      ],
+      "text": "water continuity — spray-foam-ext →\nspray-foam-ext",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -1.9999999999999996,
+          -13.437499999999998
+        ],
+        "name": ""
+      },
+      "at": [
+        13.0,
+        -5.256178915135601
+      ],
+      "to": [
+        -1.9999999999999996,
+        -13.437499999999998
+      ],
+      "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        -13.90251968503937,
+        -39.091043307086615
+      ],
+      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
       "uid": null
     },
     {

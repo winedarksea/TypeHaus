@@ -1219,19 +1219,59 @@
     },
     {
       "space": "model",
-      "node": "text",
-      "anchor": [
-        200.15748031496065,
-        -39.091043307086615
+      "node": "hatch",
+      "boundary": [
+        [
+          213.25000000000006,
+          -13.437499999999998
+        ],
+        [
+          218.75000000000003,
+          -13.437499999999998
+        ],
+        [
+          218.75000000000003,
+          -13.374999999999998
+        ],
+        [
+          213.25000000000006,
+          -13.374999999999998
+        ]
       ],
-      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "rubber"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          213.25000000000006,
+          -13.437499999999998
+        ],
+        [
+          218.75000000000003,
+          -13.437499999999998
+        ],
+        [
+          218.75000000000003,
+          -13.374999999999998
+        ],
+        [
+          213.25000000000006,
+          -13.374999999999998
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:sill-gasket"
     },
     {
       "space": "model",
@@ -1271,6 +1311,155 @@
       "uid": null
     },
     {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        200.15748031496065,
+        -45.091043307086615
+      ],
+      "content": "FLOOR BAND 1'-0 5/8\": 11 7/8\" JOIST + 3/4\" SUBFLOOR",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-DIMS",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        200.15748031496065,
+        -39.091043307086615
+      ],
+      "content": "TR-CATLIN-FOUNDATION-INT  ·  basement-framed-wall",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          228.56533333333337,
+          -22.09891732283464
+        ],
+        [
+          228.26643363099436,
+          -20.596247045081057
+        ],
+        [
+          227.41523929412588,
+          -19.322344695375463
+        ],
+        [
+          226.1413369444203,
+          -18.47115035850699
+        ],
+        [
+          224.6386666666667,
+          -18.172250656167975
+        ],
+        [
+          223.1359963889131,
+          -18.47115035850699
+        ],
+        [
+          221.8620940392075,
+          -19.322344695375463
+        ],
+        [
+          221.01089970233903,
+          -20.596247045081054
+        ],
+        [
+          220.71200000000002,
+          -22.09891732283464
+        ],
+        [
+          221.01089970233903,
+          -23.601587600588225
+        ],
+        [
+          221.8620940392075,
+          -24.87548995029382
+        ],
+        [
+          223.1359963889131,
+          -25.726684287162293
+        ],
+        [
+          224.6386666666667,
+          -26.025583989501307
+        ],
+        [
+          226.1413369444203,
+          -25.726684287162293
+        ],
+        [
+          227.41523929412588,
+          -24.87548995029382
+        ],
+        [
+          228.26643363099436,
+          -23.60158760058823
+        ]
+      ],
+      "layer": "A-ANNO-KEYN",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        224.6386666666667,
+        -22.09891732283464
+      ],
+      "content": "K5",
+      "height": 3.0,
+      "height_pt": 9.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-KEYN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          216.00000000000003,
+          -22.09891732283464
+        ],
+        "name": ""
+      },
+      "at": [
+        224.6386666666667,
+        -22.09891732283464
+      ],
+      "to": [
+        216.00000000000003,
+        -22.09891732283464
+      ],
+      "text": "",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
       "space": "paper",
       "node": "text",
       "anchor": [
@@ -1293,7 +1482,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
+      "content": "TR-CATLIN-FOUNDATION-INT  ·  basement-framed-wall",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,
@@ -1713,7 +1902,15 @@
       "uid": null
     }
   ],
-  "notes": [],
+  "notes": [
+    "NOTES:",
+    "• Pour and steel per the S-100 schedule.",
+    "• Seat: pour top -13 7/16\"; one shared 2x6 PT mudsill (329.3 LF) on 1/16\" EPDM, 11 7/8\" rim.",
+    "• Slab: 3-1/2\" at 4,000 psi on 2\" XPS, 10 mil poly, 4\" stone. Drain: 4\" pipe.",
+    "",
+    "KEYED NOTES:",
+    "K5  Mudsill anchors per IRC R403.1.6. Plate joint peel-and-stick on the envelope."
+  ],
   "frame": {
     "paper": [
       11.0,

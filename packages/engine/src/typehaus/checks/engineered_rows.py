@@ -104,6 +104,15 @@ ROWS: tuple[ItemRow, ...] = (
             "no footingless wall in this plan retains fill",
             "Segmental gravity retaining walls (tiered)",
             ("IRC R404.4", "IBC 2018 §1807.2")),
+    ItemRow("band_header", "band_header",
+            "A flush LVL header in a floor band over a wall opening (Door.header_in_band).",
+            "the flush LVL header in the floor band — bending, shear and deflection under "
+            "the band's floor strip, with every jamb load above landing on its seats",
+            "AWC NDS 2018 §3.3-3.4; Weyerhaeuser TJ-9000 p.5; IRC Table R301.7",
+            "no opening in this plan names a floor band as its header",
+            "Flush band headers over wall openings",
+            ("AWC NDS 2018 §3.3", "IRC R602.7", "IRC Table R301.7",
+             "Weyerhaeuser TJ-9000 (Microllam LVL)")),
 )
 
 

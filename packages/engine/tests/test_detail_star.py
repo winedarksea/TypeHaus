@@ -147,7 +147,7 @@ def test_per_condition_overrides_curate_the_permit_sheet_set(catlin_model_ro,
 
 def test_stale_override_keys_are_reported(catlin_model_ro):
     from typehaus.checks.code.mn_residential.profile import MN_2020
-    from typehaus.checks.integrity.checks import condition_star_override
+    from typehaus.checks.integrity.transition_binding import condition_star_override
     from typehaus.checks.registry import CheckContext, Preferences
 
     ctx = CheckContext(plan=catlin_model_ro.plan, model=catlin_model_ro,
