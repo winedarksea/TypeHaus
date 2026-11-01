@@ -187,7 +187,8 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None,
                                                      wood, materials),
                          **({"material_ref": part["material_ref"]}
                             if "material_ref" in part else {}),
-                         **({"role": "counter"} if is_counter_part(part) else {}),
+                         **({"role": "counter"} if is_counter_part(part)
+                            else {"role": "tapestry"} if part["color"] == "tapestry" else {}),
                          **({"shape": part["shape"], "radial_segments": DEPTH_CYLINDER_SEGMENTS}
                             if part["shape"] == "cylinder-depth" else {}),
                          **({"shape": "mesh", "mesh": part["mesh"]} if "mesh" in part else {}),

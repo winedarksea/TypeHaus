@@ -103,6 +103,8 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "metal-black": (0.025, 0.025, 0.025, 1.0),
     "glass": (0.72, 0.82, 0.86, 0.55),
     "mirror": (0.78, 0.84, 0.87, 1.0),
+    # Woven-cotton tapestry face: the flat fallback (GLB, schematic); the viewer paints it.
+    "tapestry": (0.36, 0.38, 0.27, 1.0),
     "mattress": (0.93, 0.92, 0.89, 1.0),
     "pillow": (0.85, 0.86, 0.88, 1.0),
     "screen": (0.14, 0.15, 0.17, 1.0),

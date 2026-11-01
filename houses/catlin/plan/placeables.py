@@ -93,42 +93,29 @@ BASEMENT_PLACEABLES = [
               position=pt(ft(31, 0.25), ft(18, 8.875)), rotation=deg(180)),
     Furniture(uid="2XX4D4BYHR", tag="FURN-B-PLAY-BOOK-E2", type_ref="FURN-BOOKCASE-BILLY-31", room="RM-B-PLAY-N",
               position=pt(ft(33, 7.75), ft(18, 8.875)), rotation=deg(180)),
-    # ** FIRST-REFLECTION TREATMENT IS NOT AUTHORED, AND THE TWO SURFACES THAT WANT IT ARE
-    # THE SIDE WALLS AND THE CEILING. ** Nothing in the engine grades room acoustics, so
-    # this note is the whole record. Two of the four bounces are already answered by
-    # decisions above and elsewhere, which is why only two are left:
+    # ** FIRST REFLECTIONS ** (nothing in the engine grades room acoustics; this is the
+    # record). Floor: carpet. Back wall: the loaded bookcases diffuse it. Ceiling (y ≈ 29'-4",
+    # bare 5/8" gypsum) and the WEST wall are still open.
     #
-    # - FLOOR: answered. RM-B-PLAY-N is `floor_finish="carpet"` in storeys/basement.py, so
-    #   the floor bounce is dead already. A rug on top of it would be belt and braces.
-    # - BACK WALL: answered, by accident and well. Four 7'-6" bookcases stand across the
-    #   south face behind the seating. A loaded shelf of irregular spines is a diffuser,
-    #   which is the right treatment for a back wall in a room this short.
-    # - SIDE WALLS: open. West x=18'-6" and east x=35'-0", both bare.
-    # - CEILING: open. 5/8" gypsum straight onto the joist soffit, no plenum anywhere on
-    #   this storey, so it is a hard flat plane directly over the listening axis.
-    #
-    # The geometry, worked off the authored pieces rather than a rule of thumb. Ears sit at
-    # about (26'-9", 24'-0") — the U's back run, the row people actually watch from. The
-    # screen centre is (26'-9", 34'-7 3/4"). Taking L/R speakers flanking it at x=22'-6"
-    # and x=31'-0" on the north wall, the mirror-image construction puts BOTH side-wall
-    # reflection points at ** y ≈ 31'-0" **, and the room is symmetric so it is the same
-    # figure left and right. A 2'x4' panel centred there covers y 30'-0" to 32'-0", which
-    # is ample margin for the speaker positions being an assumption. Centre it near seated
-    # ear height, about 3'-6" AFF.
-    #
-    # The ceiling point is the midpoint of the same path: ** y ≈ 29'-4" **, spanning the
-    # L/R pair in x, so roughly x 22' to 31'.
-    #
-    # ** BOTH SIDE WALLS ARE 12" CONCRETE ** — W-B-CN/CN2 west on FOUNDATION_WALL_12_INT,
-    # W-B-E2 east on BASEMENT_12. Checked, because the south wall is NOT: W-B-CE is
-    # INT_2X6_STAGGERED_PLUMBING, which is why the bookcases anti-tip into studs. Same
-    # condition
-    # as the screen above: mechanical anchors into the pour, no blocking to hit, and no
-    # chance of a French cleat into a stud. Size the fixings before buying panels.
-    #
-    # Deliberately NOT authored as Furniture: panels this size would want real types, uids
-    # and prices.toml rows, and their placement depends on speakers nobody has bought. This
-    # is a finish-stage purchase with no geometry consequence for the build.
+    # EAST WALL: the dragon tapestry (owner, 2026-11-01). Ears at about (26'-9", 24'-0"),
+    # speakers assumed at x 22'-6" / 31'-0" beside the screen: the mirror construction on
+    # x=35'-0" puts the near (R) speaker's bounce at y ≈ 31'-1", the centre's at 29'-3" and
+    # the far (L) one's at 28'-2". An 80" hanging centred at y=29'-3" (y 25'-11"..32'-7")
+    # covers all three, and centres it between SCONCE3 and SCONCE2 (27'-0" / 31'-6").
+    # It hangs 3" off the wall on clip rings: an air gap is what lets thin cotton absorb at
+    # all (peak near a quarter wavelength, ~1 kHz here). 12"..72" AFF, centre 42" at seated
+    # ear height; the rod's centre is 74 1/2" and its top 2 1/2" under the sconces' 78"
+    # bodies, whose down-light washes it. W-B-E2 is 12" concrete: brackets on masonry anchors.
+    Furniture(uid="CFK2HMZZEF", tag="FURN-B-PLAY-TAPESTRY", type_ref="FT-TAPESTRY-DRAGON-80X60", room="RM-B-PLAY-N",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(12)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-B-E2", face="left", distance_from_start=inch(135),
+                  normal_gap=inch(3), rotation_offset=deg(-180)))),
+    Furniture(uid="DERM7T3B1G", tag="FURN-B-PLAY-TAPESTRY-ROD", type_ref="FT-TAPESTRY-ROD-96", room="RM-B-PLAY-N",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-B-E2", face="left", distance_from_start=inch(135),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 MAIN_PLACEABLES = [
     # --- the sitting circle, turned onto the fire (2026-09-06) ---------------------------

@@ -82,6 +82,7 @@ from typehaus.model.placeable_symbols._sit_stand_desk import sit_stand_desk
 from typehaus.model.placeable_symbols._slat_partition import slat_partition
 from typehaus.model.placeable_symbols._strandmon import strandmon
 from typehaus.model.placeable_symbols._tannforsen import tannforsen_wall
+from typehaus.model.placeable_symbols._tapestry import wall_tapestry
 from typehaus.model.placeable_symbols._towel_hardware import towel_bar, towel_hook
 from typehaus.model.placeable_symbols._wardrobe import (
                                                         DOUBLE_HANG_INTERIOR,
@@ -197,6 +198,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "bed": bed(pillows=2, headboard=True),
     "tv": screen(stand=True),
     "tv-wall": screen(stand=False),
+    "wall-tapestry": wall_tapestry,
     # The one furnishing that is not joinery: a pot with leaves over it. Five blades is the
     # fewest that still reads as a canopy rather than as a star at plan scale.
     "potted-plant": potted_plant(leaves=5),

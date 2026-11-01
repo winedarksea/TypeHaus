@@ -19,6 +19,7 @@ import { applyPieceGrainUv, boardBoxGeometry, pieceSeed, woodMaterialsForGeometr
 import { boardStyleFor } from "./millwork";
 import { createModelPartMeshGeometry } from "../modelPartMesh";
 import { applyPlankPlaneUv } from "../plankMaterial";
+import { createTapestryMaterial, isTapestry } from "../tapestryMaterial";
 import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
 import { mergePartDraws, type MergedGeometryCache, type PartDraw } from "../mergeParts";
 import {
@@ -281,15 +282,16 @@ export function buildCanvasObjectParts(
     const board = boardStyleFor(part.material_ref, catalog);
     const marble = !board && isVeinedMarble(authoredAppearance(part.material_ref, catalog)?.finish);
     const opacity = part.opacity ?? 1;
-    const key = `${board ? board.key : ""}|${part.material_ref}|${part.color}|${opacity}|${part.metalness}|${part.roughness}`;
+    const key = `${part.role === "tapestry" ? "tapestry" : ""}|${board ? board.key : ""}|${part.material_ref}|${part.color}|${opacity}|${part.metalness}|${part.roughness}`;
     let material = materials.get(key);
     if (!material) {
-      material = board ? createPlankMaterial(mode, board, part.color, part.roughness,
+      material = (isTapestry(part.role) && mode === "nordic" ? createTapestryMaterial() : null)
+        ?? (board ? createPlankMaterial(mode, board, part.color, part.roughness,
         authoredAppearance(part.material_ref, catalog))
         : marble ? createMarbleMaterial(mode, part.color, 0.3)
         : standardMaterial(new THREE.Color(part.color), mode,
           { roughness: mode === "nordic" ? (part.roughness ?? NORDIC_ROUGHNESS.massing) : 1,
-            metalness: mode === "nordic" ? (part.metalness ?? 0) : 0 });
+            metalness: mode === "nordic" ? (part.metalness ?? 0) : 0 }));
       const treatments: THREE.Material[] = material.userData.endGrainMaterial
         ? [material, material.userData.endGrainMaterial] : [material];
       for (const treatment of treatments) {
