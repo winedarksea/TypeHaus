@@ -2636,7 +2636,7 @@ _ENCLOSURE_BLOCK_LINES = [_ENCLOSURE_FRONT_Y] + [_bal_y0 + _k * _bal_oc_ft for _
 
 # The garden flood hangs outside the porch floor/enclosure, in the first balcony bay.
 # The centre guard-post block already spans this bay: reuse it for the weatherproof
-# box, fastened from below without penetrating the waterproof balcony plank.
+# box, fastened to the blocking/joist from below; the plank above is untouched.
 GARDEN_FLOOD_POSITION = pt(ft((_x_in_w + _x_in_e) / 2), ft(_bal_y0 + _bal_oc_ft / 2))
 GARDEN_FLOOD_SUPPORT_ELEVATION = (
     ft(SPEC.balcony_level_ft - _balcony_joist_depth_ft)

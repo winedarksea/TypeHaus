@@ -171,25 +171,25 @@ HUNTER_GALLEGOS = Product(
            "5,174 cfm high, ~43 W, ETL damp. Owner 2026-10-22: no light; blade span is "
            "flexible, the <= 11 in. height is not.",
 )
-# The sunken-garden flood (ED-M-PORCH-FLOOD): a 3" round adjustable trim whose 60 deg
-# full-flood optic is the B60 code, in black, with the 0-30 deg tilt that aims the head
-# 66 deg below horizontal (24 deg off the axis). Spec sheet read 2026-10-22.
-ALCON_14119_GARDEN_FLOOD = Product(
-    tag="PROD-ALCON-14119-3ND-TFBK-B60", brand="Alcon Lighting",
-    model="14119-3ND-TFBK-B60-30K-NC-RB",
-    name='3" round adjustable recessed LED flood, black trim, 60 deg, 3000K',
-    url="https://www.alconlighting.com/14119-3nd-tfbk.html",
-    source="Alcon 14119 Mini Recessed spec sheet (Rev 05/04/26) and product page, read "
-           "2026-10-22. ** WET LISTED: ** cULus for damp AND wet locations, IC ordering "
-           "option NC = non-IC frame kit, which suits an exterior soffit with no insulation "
-           "above. 3000 K fixed (30K), 90+ CRI, 5-19 W selectable, 60 deg full flood (B60), "
-           "0-30 deg tilt with 360 deg rotation, Triac and 0-10 V to 1%, 50,000 h, 5 yr. "
-           "Black flange trim is TFBK with RB reflector. ** NOT PUBLISHED: ** 60 deg delivered "
-           "lumens (the 3\" maximum is 1,700 lm at 19 W, read on the 24 deg beam), so the house's "
-           "20 W / 1,800 lm allowance stands. ** OPEN: ** the 3\" aperture needs a hole in the "
-           "waterproof balcony plank that the surface-hung design avoids; the sheet also lists a "
-           "WL wet-location plate, to confirm for the soffit. Built to order, 3-7 business days "
-           "per the product page.",
+# The sunken-garden flood (ED-M-PORCH-FLOOD): a small knuckle-mount surface flood whose
+# knuckle fastens up to the weatherproof box on the guard-post blocking, the head tilted
+# 66 deg below horizontal. The recessed Alcon 14119 trim (2026-10-22) could not aim there.
+ALCON_11414_KN_GARDEN_FLOOD = Product(
+    tag="PROD-ALCON-11414-KN", brand="Alcon Lighting",
+    model="11414-KN-SM-BK",
+    name="Small knuckle-mount LED flood, black, selectable 10/20/30 W and 3000/4000/5000 K",
+    url="https://www.alconlighting.com/11414-kn.html",
+    source="Alcon 11414 spec sheet (Rev 5/8/26), read 2026-11-02. ** WET LISTED: ** UL and "
+           "cUL for wet locations, DLC Premium. Die-cast aluminum, powder coat; BK = black "
+           "gloss (Cardinal BK08). Small (SM) head switches 10/20/30 W, set to 20 W; CCT "
+           "switches 30/40/50K, set to 3000 K. 120-277 VAC, 0-10 V dimming, CRI 80+, "
+           "-40 to 104 F, 50,000 h, 5 yr. Built-in photocell has an on/off switch: set OFF, "
+           "the porch switch controls it. KN-SM line drawing: head 7.625 in. wide x 5 in. "
+           "tall x 2.75 in. deep, 8.7 in. overall with the knuckle. Options WG wire guard, "
+           "VSH vandal shield. ** NOT PUBLISHED: ** beam angle (no 60 deg optic code), a "
+           "glare visor (VSH is a guard, not a cutoff), the knuckle thread size, and lumens "
+           "below 30 W (4,796 lm at 30 W / 4000 K), so the house's 60 deg, 20 W / 1,800 lm "
+           "allowance stands. Built to order, 3-7 business days per the product page.",
 )
 
 DIODE_S45_CHANNEL = Product(
@@ -208,5 +208,5 @@ LIGHTING_PRODUCTS = (
     *SELECTED_LIGHTING_PRODUCTS, WESTGATE_VAPORTIGHT, DOLRIA_PC0008,
     MODERN_FORMS_BANTAM, CRAFTMADE_FORCE_XL,
     ARMACOST_RIBBONFLEX_COB, DIODE_VALENT_X, DIODE_OMNIDRIVE_X, DIODE_S45_CHANNEL,
-    LEDSUPPLY_SAUNA_STRIP, ALCON_14119_GARDEN_FLOOD, FLYACHILLES_DJ3616_2L,
+    LEDSUPPLY_SAUNA_STRIP, ALCON_11414_KN_GARDEN_FLOOD, FLYACHILLES_DJ3616_2L,
 )
