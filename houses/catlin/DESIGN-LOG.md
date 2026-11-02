@@ -7297,3 +7297,32 @@ R305 went red on RM-A-STUDY and RM-A-STUBATH once it measured to the gypsum. Thr
 - **W-A-STU-W's bath face is furred 3 1/2"** (`INT_2X6_PLUMBING_HALF_FURRED`, aligned so the
   studs and the studio face stay put). FX-A-STUBATH-WC, its flange and its stop moved 3 1/2"
   east: the clearance centre went from 6'-6 11/16" to 6'-8 7/16". The lavatory has 6'-9 1/2".
+
+## Backup trim, a solar-surplus tier, the element-free HPWH (2026-11-02)
+
+The battery plan's verdict was a ~32 h countdown that missed the December bridge. Three reviews
+found why: `CKT-LT-BACKUP` carried ~40 lighting devices across both floors. The owners'
+intent is narrower (Wi-Fi, fridge and freezer, a couple of lights, a charging outlet, the
+sump; heat and hot water only on spare sun). `notes/backup_power.md` §5-§6 is the record.
+
+- **Lighting.** `CKT-LT-BACKUP` keeps the two furnace-room cans, the ESS closet light, the
+  kitchen tape and all 13 alarms (one unswitched Kidde branch); 579 -> 65 VA. The basement's
+  cans, sconces and PSUs went to `CKT-LT-BSMT`, with the stair-head can its 3-way shares
+  (NEC 210.7 caught it as a cross-circuit switch leg); the kitchen cans and pantry PSU to
+  `CKT-LT-MAIN`. Alarm standby is counted in the duty (~0.75 W each, an estimate).
+- **`BackupTier.SHED` -> `SURPLUS`.** HP3 and the water heater run on battery only on PV
+  surplus with SOC near full (HA, `smart_home.md` rule 7), never against autonomy. The EG4 GEN
+  port stays free for a generator or car. `backup_calc` grades autonomy, the 48 h cycle and the
+  bridge on ALWAYS_ON only, and reports the surplus a strong day leaves (8.14 kWh / 9.4 h
+  summer, 0.22 kWh December).
+- **HPWH: Rheem PROPH80 T0 RH120-M** (owner, 2026-10-31): 120 V, 395 W, no element, on a
+  retagged `CKT-WH` (15 A, 1-pole, a Pro 4PM channel; slot 11 freed). **Its geometry is still
+  the 240 V tank's**: the plug-in has side connections Rheem's sheet does not name; held in
+  `plans/TODO.md`.
+- **Surge**: `Circuit.start_va` (new). Two Zoeller M53s share `CKT-SUMP` (2,328 VA, a 1/2 hp
+  start with the other running = 4,664). The worst start with everything else running is
+  9,663 VA (`CKT-WH` at 3x) of 16 kW.
+- **Result**: always-on 250.0 W AC / 321.0 W battery-side, 40.1 h unaided; summer 48 h +0.43
+  kWh, December -7.49; the bridge holds by 0.28 kWh. 220.82 demand 272.2 A of 320.
+- **V2H** is a record now, not a rough-in list (§10): one empty 2" Sch 80 PVC to the garage,
+  not yet routed.

@@ -26,6 +26,7 @@ material with no density does.
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from typehaus.model.enums import LayerFunction
@@ -63,6 +64,10 @@ def dead_load_plf(ctx: Any, wall: Any, height_m: float) -> float | None:
             layer_height = max(0.0, min(top, wall.z1_m) - max(bottom, wall.z0_m))
         if layer_height <= 0:
             continue
+        span = getattr(layer, "run_span_m", None)
+        if span is not None:
+            axis_length = math.dist(*wall.axis)
+            layer_height *= (span[1] - span[0]) / axis_length
         # A FRAMED layer is mostly cavity. Weighing a 2x4 stud layer as 3 1/2" of solid wood
         # over the whole wall face is the same overstatement a profiled sheet makes, and in
         # the same direction: it read a 31 plf screen panel at 67 and sent it looking for a

@@ -55,7 +55,8 @@ both flatter a ~400 W outage load: 94% is the peak of the curve, and an islanded
 may idle above its standby figure. Meter both at commissioning.
 
 The sheet also gives a 4,000 W maximum per line (leg). Every always-on circuit is 120 V and
-together they connect 3,025 VA, so they fit one leg even unbalanced; balance them anyway.
+together they connect 3,493 VA (both sumps running), so they fit one leg even unbalanced;
+balance them anyway, and put `CKT-WH` on the other leg.
 
 ## 2. The listing reality, and the battery spec
 
@@ -164,22 +165,48 @@ the faucet's 43" box. The W-B-STR2 bore and the bath-lavatory termination are go
 
 No receptacle stands within 6' of the sink, so E3902's sink rule adds nothing here.
 
-## 5. The tiers
+## 5. The tiers (2026-11-02)
+
+The owners' intent for an outage is narrow: some Wi-Fi, the fridge and freezer, a couple of
+lights, a charging outlet, the sump; heat and hot water only when there is sun to spare.
 
 | Tier | Circuits | What it is |
 |---|---|---|
-| `ALWAYS_ON` | `CKT-FRIDGE`, `CKT-HA`, `CKT-LT-BACKUP`, `CKT-SUMP` | Food, network, light in the kitchen and mechanical room, the sump |
-| `SHED` | `CKT-HP3`, `CKT-WH-240` | Fallback heat into the open stair; hot water |
+| `ALWAYS_ON` | `CKT-FRIDGE`, `CKT-HA`, `CKT-LT-BACKUP`, `CKT-SUMP` | Food, network, two furnace-room cans + the kitchen tape, the alarms, both sumps |
+| `SURPLUS` | `CKT-HP3`, `CKT-WH` | Heat into the open stair; hot water — on battery only on solar surplus |
 
-**The sump moved to ALWAYS_ON** (2026-10-30). A SHED relay drops on low battery with no sun —
-exactly the long stormy night the sump must run. Its start is now graded with the motors.
+**ALWAYS_ON is what the battery is graded on.** **SURPLUS replaced SHED** ("drop on low
+battery"): it runs on battery only when PV is strong and SOC is near full, so it is never
+counted against autonomy, the 48 h cycle or the bridge. HA switches it
+([smart_home.md](smart_home.md) rule 7); relays default OFF while islanded. The inverter
+carries it when it runs, so peak and surge still count both tiers.
 
-**Winter outage**: the water heater goes to off/vacation (80 gal of stored water rides a day
-or two, and its compressor would be cooling a basement the battery cannot heat); HP3 is the
-fallback heat. **The battery cannot do freeze protection** — that needs a drain-down plan.
+- **Lighting.** `CKT-LT-BACKUP` keeps `ED-B-FURNACE-CAN1/2` (the panels, the ESS closet, the
+  sump), the ESS closet light, the kitchen under-cabinet tape (`ED-M-KITCH-LT-PSU`, its own
+  switch `-SW-UC`) and every alarm. Everything else left it: the basement's cans, sconces and
+  PSUs (and the stair-head can its 3-way shares) for `CKT-LT-BSMT`; the kitchen cans and the
+  pantry PSU for `CKT-LT-MAIN`.
+- **Alarms.** All 13 and both relays stay on `CKT-LT-BACKUP`: Kidde wants one branch,
+  R314.4 an unswitched one, and the ESS closet's two must ride the outage. Their standby is
+  counted in the circuit's duty (~0.75 W each, an **estimate**: Kidde publishes only an 80 mA
+  maximum; meter it).
+- **Network.** `CKT-HA` sheds the doorbell, both cameras and two of the three APs on
+  battery (`backup_shed_poe`, 76.1 W at the outlet). `ED-M-KITCH-AP` stays live.
+- **Charging.** `ED-B-UTIL-RC1`'s spare half, on `CKT-HA`, is the outage charging point. No
+  new circuit.
+- **Sumps.** Two Zoeller M53s (`SM-B-RADON`, `SM-B-SOUTH`) share `CKT-SUMP`. The sump moved
+  to ALWAYS_ON on 2026-10-30: the long stormy night is exactly when it must run.
+- **Water heater.** The Rheem PROPH80 T0 RH120-M (owner, 2026-10-31): 120 V, 395 W average,
+  no element. The 240 V ProTerra falls back to its 4,500 W element on compressor, airflow,
+  condensate and sensor faults in any mode (Use & Care AP23657), so no automation could hold
+  it to "compressor only". The cost: 12 GPH recovery and no element boost (FHR 84 gal).
+  `CKT-WH` is a dedicated 15 A circuit, not the unit's shared-circuit feature: on the backup
+  panel there is nothing to share with. Rheem's Use & Care alarm table still says "heating
+  source defaults to elements"; its wiring diagram lists none. Confirm with Rheem.
 
-`CKT-FRIDGE` is the fridge plus the upright freezer column beside it. `CKT-HA` sheds the
-doorbell's and cameras' PoE ports on battery (`backup_shed_poe`, 42.0 W at the outlet).
+**Winter outage**: HP3 is surplus heat only. At its 1,850 W maximum a cold morning is ~38
+kWh/day if it were the only heat, which no battery carries. **The battery cannot do freeze
+protection** — that needs a drain-down plan.
 
 ## 6. The numbers — the hand oracle for `takeoff/backup_calc.py`
 
@@ -192,58 +219,69 @@ with no idle or efficiency.
 | Circuit | VA | Duty | Average |
 |---|---|---|---|
 | `CKT-FRIDGE` | 800 | 0.13 | 104.0 W |
-| `CKT-HA` | 300 | 0.44 | 132.0 - 42.0 = 90.0 W |
-| `CKT-LT-BACKUP` | 579 | 0.15 | 86.9 W |
-| `CKT-SUMP` | 1,000 | 0.05 | 50.0 W |
-| **always-on** | 2,679 | | **330.9 W** |
-| `CKT-HP3` | 1,500 | 0.4 | 600.0 W |
-| `CKT-WH-240` | 500 (`backup_va`) | 0.15 | 75.0 W |
-| **shed** | 2,000 | | **675.0 W** |
+| `CKT-HA` | 300 | 0.44 | 132.0 - 76.1 = 55.9 W |
+| `CKT-LT-BACKUP` | 65 | 0.49 | 31.9 W |
+| `CKT-SUMP` | 2,328 (two M53s, 9.7 A) | 0.025 | 58.2 W |
+| **always-on** | 3,493 | | **250.0 W** |
+| `CKT-HP3` | 1,850 (NEEP max, 17 °F) | 0.4 | 740.0 W |
+| `CKT-WH` | 1,440 (12.0 A, ENERGY STAR) | 0.05 | 72.0 W |
+| **surplus** | 3,290 | | **812.0 W** |
+
+`CKT-HA`'s shed: (12.95 + 12 + 12 + 15 + 15) / 0.88 = 66.95 / 0.88 = 76.1 W.
+`CKT-LT-BACKUP`'s 65 VA: two cans 13, the closet light 9, the TRADFRI 30, the relays 3.6 +
+9.6. Its 0.49 is a blend: (13 + 30) x 5 h / 24 = 9.0 W of light, ~0.2 W closet, 13.2 W of
+relays at their rating, 13 x 0.75 = 9.8 W of alarms; 32.1 W / 65.2 VA = 0.49.
 
 **Battery-side draw** = AC / 0.94 + 55 W idle:
 
-- always-on: 330.9 / 0.94 + 55 = 352.0 + 55 = **407.0 W** (436.7 W at 765 VA earlier on
-  2026-10-31; 462.2 W before the twenty backup cans went from 14.5 W modules to 6.5 W PAR20s).
-  The lighting review the same day took 765 -> 579 VA: the workshop panels left for
-  `CKT-LT-BSMT` (-120), the kitchen's 200 VA OMNIDRIVE became a 30 W TRADFRI for MITTLED
-  (-170), the A4 task cans and two new kitchen cans (+38.8), the pantry PSU 60 W OMNIDRIVE
-  -> 96 W Class 2 HLG (+36), the ESS closet light (+9) and the basement bath night-light
-  driver (+20).
-- both tiers: (330.9 + 675.0) / 0.94 + 55 = 1,070.1 + 55 = **1,125.1 W**.
+- always-on: 250.0 / 0.94 + 55 = 266.0 + 55 = **321.0 W** (407.0 W before the 2026-11-02
+  trim: lighting 579 -> 65 VA, two APs shed).
+- surplus, added load only (the idle is already counted): 812.0 / 0.94 = **863.8 W**.
 
 **Storage**: 14.3 kWh x 0.90 DoD = **12.87 kWh** usable.
 
-**Autonomy, no sun**: 12,870 / 407.0 = **31.6 h** always-on; 12,870 / 1,125.1 = **11.4 h**
-both tiers.
+**Autonomy, no sun, always-on only**: 12,870 / 321.0 = **40.1 h**.
 
 **48-hour cycle** (one strong day in two; array 12 x 440 W = 5.28 kW):
 
-- 48 h of always-on: 0.4070 x 48 = **19.54 kWh**; both tiers 1.1251 x 48 = 54.00 kWh.
-- Summer strong day, 3.0 kWh/kW: 15.84 kWh -> always-on net **-3.70 kWh**.
+- 48 h of always-on: 0.3210 x 48 = **15.41 kWh**.
+- Summer strong day, 3.0 kWh/kW: 15.84 kWh -> net **+0.43 kWh**. Passes.
 - December strong day, 1.5 kWh/kW (`WINTER_STRONG_DAY_KWH_PER_KW`): 7.92 kWh -> net
-  **-11.62 kWh**. A low-pitch E/W split loses more of December than of June.
+  **-7.49 kWh**. Fails.
 
 Solar is counted at the DC side and all load at 94%, which errs heavy: PV-to-battery is
 99.9%, and daytime loads run PV-to-AC near 97.5%.
 
+**Surplus** = strong day - 24 h of always-on (the day carries itself and refills the night):
+
+- summer: 15.84 - 0.3210 x 24 = 15.84 - 7.70 = **8.14 kWh** -> 8,140 / 863.8 = **9.4 h** of
+  the surplus tier at its average;
+- December: 7.92 - 7.70 = **0.22 kWh** -> **0.3 h**. A December outage has no surplus heat.
+
 **Darkness bridge**: the battery alone must carry the always-on tier from one evening's last
 sun through a dark day and the longest night after it. St Paul (44.98 N) at the winter
 solstice: cos H = (sin -0.833 - sin 44.98 sin -23.44) / (cos 44.98 cos -23.44)
-= (-0.01454 + 0.28118) / 0.64897 = 0.4109, H = 65.74°, day = 8.77 h, **night = 15.23 h** (`longest_night_hours`, from the site's own
-latitude). Needs 0.4070 x (24 + 15.23) = **15.97 kWh**; has 12.87.
+= (-0.01454 + 0.28118) / 0.64897 = 0.4109, H = 65.74°, day = 8.77 h, **night = 15.23 h**
+(`longest_night_hours`, from the site's own latitude). Needs 0.3210 x (24 + 15.23) =
+**12.59 kWh**; has 12.87. **Bridges**, with 0.28 kWh to spare — a margin metering can erase.
 
-**Peak**: 4,679 VA connected on the microgrid against 8 kW continuous; the largest motor start
-(HP3, 1,500 VA x 3 for a soft-started VFD = 4,500 VA) against 16 kW. Both fit. The calc's 3x
-does not describe the sump, an across-the-line motor: at 6x it starts at 6,000 VA, also well
-inside 16 kW, but nothing in the engine grades that figure.
+**Peak**: 6,783 VA connected on the microgrid (both tiers) against 8 kW continuous. Fits.
 
-**Verdict (`backup_calc`)**: one strong summer day does not cover 48 h of even the always-on
-tier, and one battery does not bridge a December dark day. The idle draw alone (55 W x 48 h
-= 2.64 kWh) took the +0.12 kWh margin of the old calc to about -2.5; efficiency and the sump
-do the rest. Read it as: **the always-on tier is a 32-hour countdown, not a steady state.**
-The levers, in order of cost: meter the duty cycles and the real idle; shed `CKT-LT-BACKUP`
-lighting harder; the second PV row (`plans/TODO.md`); a second battery (28.6 kWh bridges at
-16.0). The verdict says "add array" rather than "not battery" because both are short.
+**Surge** (`Circuit.start_va`, else 3x running): each circuit's start with every other
+circuit running, the worst governing, against 16 kW:
+
+- `CKT-WH`, no published start: 3 x 1,440 + 6,783 - 1,440 = **9,663 VA** (governs);
+- `CKT-SUMP`: one start at the M98's 29.2 A (3,500 VA, so a 1/2 hp upsize stays covered;
+  the M53's own is 25.9 A) with the other pump running: 4,664 + 6,783 - 2,328 = 9,119 VA;
+- `CKT-HP3`: an inverter compressor has no inrush, `start_va` = its 1,850 maximum.
+
+All fit. The old 6x figure for the sump was wrong: published starts run ~3x running.
+
+**Verdict (`backup_calc`)**: a strong December day does not cover 48 h of the always-on
+tier. Summer passes and the bridge holds. Read it as: **the always-on tier is a 40-hour
+countdown in December and a steady state in summer.** The levers, in order of cost: meter the
+duty cycles, the alarms and the real idle; the second PV row (`plans/TODO.md`); a second
+battery (it fixes the bridge margin, not December's cycle).
 
 A system with zero usable storage used to report "sustains" (the cycle never looked at the
 battery). `sustains_*` and `bridges` now require usable storage > 0.
@@ -293,35 +331,37 @@ x=9 1/2" wall strip under the enclosures (22"/26") and rise into the panel botto
 crosses a 110.26(A) working space below 78" (`plan/panel_working_space.py`) except
 `DU-ERV-OA`, still open.
 
-## 10. The V2H seam (rough-in, recorded here)
+## 10. Where V2H stands (2026-10-31; a record, not a spec)
 
-No V2H product integrates with a 48 V hybrid inverter. A car lands as **its own system at
-the service entrance** (a bidirectional charger plus a microgrid interconnection device),
-not on `ED-B-BACKUP-PANEL`. NEC 705.12 leaves 20 A on the main bus (225 x 1.2 - 200 = 70 A
-allowed, 50 A used). On the EG4 path the MID is the **EG4 GridBOSS** (200 A transfer switch,
-up to three 12kPV/18kPV/FlexBOSS21, generator and smart-load ports;
-[EG4](https://eg4electronics.com/categories/inverters/eg4-gridboss/)).
+**Rough-in, owner 2026-10-31: "see how the tech develops."** One oversized empty raceway,
+inverter area to garage, with a pull string: **2" Sch 80 PVC**, `CD-B-V2H-SPARE`
+(not yet routed: `plans/TODO.md`). 2" carries a 125 A Cu or 150 A Al four-wire feeder, which
+covers an ~80 A bidirectional AC charger, an ~11-20 kW DC unit, a generator-style feed into
+the 12kPV's GEN port, or a garage EV charger fed from the backup panel. Comms ride the
+existing 1" garage data trunk. It replaces the old list here (1 1/2" conduit, a separate
+data conduit, a reserved 2-pole space, 30 x 36" at the meter).
 
-Rough-in to build now:
+**Standards exist; products do not.** SAE J3072, UL 1741 SC (May 2026), UL 9741 + 1741 SB and
+ISO 15118-20 are published. No shipping product is brand-agnostic, and none integrates with
+a 48 V hybrid inverter. Three futures:
 
-- a 1 1/2" spare conduit, panel to garage, sized for a 100 A feeder;
-- a 1" data conduit beside it;
-- a reserved 2-pole space in `ED-B-PANEL`;
-- ~30 x 36" of clear wall by the meter for a gateway or MID.
+1. **EG4 as hub, car as tank.** A car's 240 V outlet into the GEN port; the car charges from
+   the backup panel as a surplus load. This is why HP3 stays off the GEN port.
+2. **A DC-coupled box replacing the EG4 and its battery** (dcbel Ara-type; short car list).
+3. **A separate V2H system on one 200 A main of the CL320 meter-main.** Not `ED-B-PANEL`:
+   705.12 gives 200 + 50 + 70 A > 270 A.
 
-**Not modelled.** A `ConduitRun` can express an empty raceway (`CD-B-SPARE-CHASE`), but the
-panel-to-garage path is `CD-B-GARAGE`'s corridor — the north-wall ceiling lane, the
-`W-B-N2` sleeve and the buried gap leg, routed 3/8" off the drain — and two more raceways
-in it are a routing pass of their own (`plans/TODO.md`).
+Xcel's TIIR footnote 6: an outage-only, break-before-make feed is treated like a generator.
 
 **Moving the ESS to the garage** was rejected: unheated, -20 F.
 
 ## 11. Deferring the battery
 
-The 12kPV runs without a battery, but EG4 does not document its load port working from PV
-alone, so **ask EG4** before counting on PV-only backup. With zero storage the calc now
-reports no usable storage rather than "sustains". A small LFP UPS (separate from the ESS)
-should carry Home Assistant, the router and the leak valve regardless.
+The 12kPV runs without a battery. EG4's 12kPV/18kPV menu map documents a **"No Battery"**
+setting; **confirm with EG4 how the load port behaves on it** before counting on PV-only
+backup. With zero storage the calc reports no usable storage rather than "sustains". A
+small LFP UPS (separate from the ESS) should carry Home Assistant, the router and the leak
+valve regardless.
 
 ## 12. Open
 
@@ -332,5 +372,17 @@ should carry Home Assistant, the router and the leak valve regardless.
 - The declined gas detector and exhaust fan, if the owners revisit containment.
 - A freeze drain-down plan (the battery cannot hold the house above freezing).
 - A small LFP UPS for HA, the router and the leak valve.
-- Meter the 12kPV's islanded idle and low-load efficiency; revise the duty cycles.
+- Meter the 12kPV's islanded idle and low-load efficiency, the alarms' standby and the
+  duty cycles; the bridge margin is 0.28 kWh.
+- Rheem: confirm the PROPH80 T0 RH120-M has no element (the Use & Care alarm table says
+  "defaults to elements"; the wiring diagram lists none), and get a port drawing for the
+  HydroBoost side connections (notes/water_service.md §1).
+- Is the Sapphire's Wi-Fi module reachable by HA's `gree` integration (HP3 commanded off
+  before its contactor opens)?
+- Xcel: the V2H interconnection exemption; CL320 meter-adjacent devices; declare V2H on the
+  application.
+- DSI: is the permit under the **2026 NEC** (Minn. R. 1315.0200; 230.85 is gone in 2026)?
+  The detached-garage feeder grounding.
+- EG4: is the GEN port rated 50 or 80 A? Neutral bonding with a truck's GFCI. Can a
+  GridBOSS sit below a CL320 meter-main?
 - Confirm the QL033Y hose adapter's thread; source the 24" steel door.

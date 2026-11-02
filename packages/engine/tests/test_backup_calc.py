@@ -9,7 +9,7 @@ no ESS gets ``modeled: False`` instead of a page of zeros.
 
 The Catlin numbers are pinned against the hand-worked oracle in
 ``houses/catlin/notes/backup_power.md`` — battery-side draw with inverter idle and
-efficiency, a summer and a December 48 h cycle, and the darkness bridge.
+efficiency, a summer and a December 48 h cycle, the darkness bridge and the surplus tier.
 """
 
 from __future__ import annotations
@@ -97,7 +97,7 @@ def test_a_battery_with_no_declared_capacity_is_listed_not_assumed(catlin_model)
     plan = catlin_model.plan.model_copy(update={"library": library})
     result = backup_runtime_summary(_rebind(catlin_model, plan))
     assert result["batteries_without_capacity"] == ["EQ-B-ESS-BATT"]
-    assert result["autonomy"]["hours_all_tiers"] is None  # not 0.0, and not infinity
+    assert result["autonomy"]["hours_always_on_only"] is None  # not 0.0, and not infinity
     assert result["complete"] is False
 
 
@@ -110,18 +110,31 @@ def test_usable_storage_is_nameplate_times_the_declared_dod(summary):
     assert autonomy["usable_kwh"] == pytest.approx(14.3 * DEPTH_OF_DISCHARGE, abs=0.01)
 
 
-def test_the_always_on_tier_outlasts_the_shed_tier_by_a_wide_margin(summary):
-    """Battery-only autonomy, battery-side: (330.9 W / 0.94 + 55 W idle) = 407.0 W on the
-    always-on tier, so 12.87 kWh lasts 31.6 h (notes/backup_power.md, the hand oracle).
-
-    Each PSU on CKT-LT-BACKUP sums at its nameplate, not its tape draw
-    (plan/lighting_types.py's rule), so this is a floor: a backup calc errs heavy.
-    """
+def test_autonomy_is_the_always_on_tier_alone(summary):
+    """Battery-only autonomy, battery-side: 250.0 W / 0.94 + 55 W idle = 321.0 W, so 12.87 kWh
+    lasts 40.1 h (notes/backup_power.md §6, the hand oracle). The surplus tier is never
+    counted against it."""
     autonomy = summary["autonomy"]
     assert autonomy["inverter_idle_w"] == 55.0 and autonomy["inverter_efficiency"] == 0.94
-    assert autonomy["battery_w_always_on"] == pytest.approx(330.9 / 0.94 + 55, abs=0.2)
-    assert 29.0 < autonomy["hours_always_on_only"] < 34.0
-    assert autonomy["hours_all_tiers"] < autonomy["hours_always_on_only"]
+    assert summary["tiers"]["always_on"]["average_w"] == pytest.approx(250.0, abs=0.1)
+    assert autonomy["battery_w_always_on"] == pytest.approx(250.0 / 0.94 + 55, abs=0.1)
+    assert autonomy["hours_always_on_only"] == pytest.approx(40.1, abs=0.1)
+    assert "hours_all_tiers" not in autonomy
+
+
+def test_the_surplus_tier_is_excluded_from_autonomy(catlin_model, summary):
+    """Doubling every surplus circuit's duty moves the surplus figures and nothing the
+    battery is graded on."""
+    circuits = tuple(
+        c.model_copy(update={"duty_cycle": c.duty_cycle * 2})
+        if c.backup_tier is not None and c.backup_tier.value == "surplus" else c
+        for c in catlin_model.plan.library.circuits)
+    heavier = backup_runtime_summary(_with_circuits(catlin_model, circuits))
+    for key in ("autonomy", "darkness_bridge"):
+        for field in ("hours_always_on_only", "battery_w_always_on", "required_kwh"):
+            if field in summary[key]:
+                assert heavier[key][field] == summary[key][field]
+    assert heavier["cycle_48h"]["surplus_hours"] < summary["cycle_48h"]["surplus_hours"]
 
 
 def test_an_inverter_without_idle_or_efficiency_is_unknown_not_free(catlin_model):
@@ -149,11 +162,12 @@ def test_zero_storage_sustains_nothing(catlin_model):
 
 
 def test_shed_poe_ports_come_off_the_backup_average(catlin_model, summary):
-    """CKT-HA's shed is structure, not a lowered duty: the three named ports' E-603 watts
-    over the 88% supply (36.95 / 0.88 = 42 W). An unrated tag is listed and saves nothing."""
+    """CKT-HA's shed is structure, not a lowered duty: the five named ports' E-603 watts
+    (doorbell, two cameras, two of the three APs) over the 88% supply: 66.95 / 0.88 = 76.1 W.
+    An unrated tag is listed and saves nothing."""
     row = next(r for r in summary["tiers"]["always_on"]["circuits"] if r["circuit"] == "CKT-HA")
-    assert row["shed_w"] == pytest.approx(42.0, abs=0.1) and row["shed_unrated"] == []
-    assert row["average_w"] == pytest.approx(300 * 0.44 - 42.0, abs=0.1)
+    assert row["shed_w"] == pytest.approx(76.1, abs=0.1) and row["shed_unrated"] == []
+    assert row["average_w"] == pytest.approx(300 * 0.44 - 76.1, abs=0.1)
 
     circuits = tuple(
         c.model_copy(update={"backup_shed_poe": ("ED-M-STUDY-DATA1",)}) if c.tag == "CKT-HA"
@@ -163,21 +177,31 @@ def test_shed_poe_ports_come_off_the_backup_average(catlin_model, summary):
     assert row["shed_unrated"] == ["ED-M-STUDY-DATA1"] and row["average_w"] == 132.0
 
 
-def test_neither_season_carries_the_always_on_tier_and_the_bridge_falls_short(summary):
-    """The hand oracle in notes/backup_power.md: 407.0 W x 48 h = 19.54 kWh against 15.84
+def test_summer_and_the_bridge_carry_the_always_on_tier_and_december_does_not(summary):
+    """The hand oracle in notes/backup_power.md §6: 321.0 W x 48 h = 15.41 kWh against 15.84
     (summer, 3.0 kWh/kW) and 7.92 (December, 1.5 kWh/kW); the dark day plus St Paul's
-    15.2 h longest night needs 16.0 kWh of the 12.87 usable."""
+    15.2 h longest night needs 12.59 kWh of the 12.87 usable."""
     summer, winter = summary["cycle_48h"], summary["cycle_48h_winter"]
     assert summer["array_kw"] == pytest.approx(5.28)
-    assert summer["two_day_load_kwh_always_on"] == pytest.approx(19.54, abs=0.02)
-    assert summer["net_kwh_always_on"] == pytest.approx(-3.70, abs=0.02)
-    assert winter["net_kwh_always_on"] == pytest.approx(-11.62, abs=0.02)
-    assert not summer["sustains_always_on"] and not winter["sustains_always_on"]
+    assert summer["two_day_load_kwh_always_on"] == pytest.approx(15.41, abs=0.02)
+    assert summer["net_kwh_always_on"] == pytest.approx(0.43, abs=0.02)
+    assert winter["net_kwh_always_on"] == pytest.approx(-7.49, abs=0.02)
+    assert summer["sustains_always_on"] and not winter["sustains_always_on"]
     bridge = summary["darkness_bridge"]
     assert bridge["longest_night_h"] == pytest.approx(15.23, abs=0.05)
-    assert bridge["required_kwh"] == pytest.approx(15.97, abs=0.05)
-    assert bridge["bridges"] is False
-    assert "add array;" in summary["verdict"] and "does not bridge" in summary["verdict"]
+    assert bridge["required_kwh"] == pytest.approx(12.59, abs=0.05)
+    assert bridge["bridges"] is True
+    assert summary["verdict"].startswith("a strong December day")
+
+
+def test_a_strong_day_leaves_hours_for_the_surplus_tier(summary):
+    """15.84 - 24 h x 321.0 W = 8.14 kWh over the surplus tier's 812 W / 0.94 = 863.8 W:
+    9.4 h in summer; December leaves 0.22 kWh."""
+    summer, winter = summary["cycle_48h"], summary["cycle_48h_winter"]
+    assert summary["tiers"]["surplus"]["average_w"] == pytest.approx(812.0, abs=0.1)
+    assert summer["surplus_kwh"] == pytest.approx(8.14, abs=0.02)
+    assert summer["surplus_hours"] == pytest.approx(9.4, abs=0.1)
+    assert winter["surplus_kwh"] == pytest.approx(0.22, abs=0.02)
 
 
 def test_the_backup_load_fits_the_inverter(summary):
@@ -188,10 +212,25 @@ def test_the_backup_load_fits_the_inverter(summary):
     assert peak["simultaneous_va"] > peak["always_on_va"]
 
 
+def test_an_authored_start_governs_the_surge(catlin_model, summary):
+    """Surge = the worst single start plus every other circuit running. CKT-WH has no
+    authored start, so 3 x 1,440 + 6,783 - 1,440 = 9,663 VA; author a sump start of 12 kVA
+    and the sump governs at 12,000 + 6,783 - 2,328."""
+    assert summary["peak"]["surge_circuit"] == "CKT-WH"
+    assert summary["peak"]["surge_va"] == pytest.approx(9663, abs=1)
+    circuits = tuple(c.model_copy(update={"start_va": 12000.0}) if c.tag == "CKT-SUMP" else c
+                     for c in catlin_model.plan.library.circuits)
+    peak = backup_runtime_summary(_with_circuits(catlin_model, circuits))["peak"]
+    assert peak["surge_circuit"] == "CKT-SUMP"
+    assert peak["surge_va"] == pytest.approx(12000 + 6783 - 2328, abs=1)
+
+
 def test_solar_input_scales_the_verdict(catlin_model, summary):
-    """Solar yield is a parameter, not a rewrite: at 4.3 kWh/kW a summer day covers the
-    always-on 48 h (22.7 > 19.54) and the December cycle becomes the binding complaint."""
-    sunny = backup_runtime_summary(catlin_model, strong_day_kwh_per_kw=4.3)
-    assert sunny["cycle_48h"]["sustains_always_on"] is True
-    assert "December" in sunny["verdict"]
-    assert summary["cycle_48h"]["sustains_always_on"] is False
+    """Solar yield is a parameter, not a rewrite: at 3.0 kWh/kW in December too, both seasons
+    carry the always-on 48 h and the verdict is sufficient; at 2.9 summer fails."""
+    sunny = backup_runtime_summary(catlin_model, winter_strong_day_kwh_per_kw=3.0)
+    assert sunny["cycle_48h_winter"]["sustains_always_on"] is True
+    assert sunny["verdict"].startswith("sufficient")
+    dull = backup_runtime_summary(catlin_model, strong_day_kwh_per_kw=2.9)
+    assert dull["cycle_48h"]["sustains_always_on"] is False
+    assert "add array, not battery" in dull["verdict"]

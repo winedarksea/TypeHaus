@@ -101,7 +101,11 @@ def restore_coatings(walls: list, taken: dict[str, tuple]) -> list:
                                         for p in solved.get(host.name, host).polygon)
                          if abs(n - offset) <= 1e-6]
                 if len(along) >= 2:
-                    ring = _rect(origin, tangent, normal, min(along), max(along),
+                    start, end = min(along), max(along)
+                    if layer.run_span_m is not None:
+                        start = max(start, layer.run_span_m[0])
+                        end = min(end, layer.run_span_m[1])
+                    ring = _rect(origin, tangent, normal, start, end,
                                  offset, offset)
                     break
             layers.append(replace(layer, polygon=ring))

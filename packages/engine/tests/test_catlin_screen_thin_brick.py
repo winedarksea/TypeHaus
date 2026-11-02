@@ -1,10 +1,10 @@
-"""Screen veneer regressions: east/west datums, actual areas/mass and stopped door."""
+"""Screen cassette regions, geometry, quantities and stopped door regressions."""
 
 import math
 
 import pytest
 
-from typehaus.resolve.assembly_weight import dead_load_plf, wall_line_plf
+from typehaus.resolve.assembly_weight import dead_load_plf
 from typehaus.takeoff.envelope import (
     envelope_layer_takeoff,
     wall_layer_net_area_m2,
@@ -14,75 +14,39 @@ from typehaus.takeoff.envelope import (
 INCH = 0.0254
 
 
-def test_east_brick_does_not_move_studs_or_west_skin(catlin_model_ro):
+def test_cassettes_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
     wall = catlin_model_ro.wall("W-BW-SCREEN")
     layers = {layer.name: layer for layer in wall.layers}
-    # Every face is 3 3/8" east of its 2026-10-25 station: the screen moved with its chord
-    # posts onto the garage truss bearing line (2026-10-31).
-    for name, expected in {
-        "stud": (73.625, 77.125),
-        "cdx-out": (73, 73.625),
-        "cladding-out": (72.125, 73),
-        "packing-in": (77.125, 78.25),
-        "siding-in": (78.25, 78.875),
-        "wrb-in": (78.875, 78.885),
-        "drainage-in": (78.885, 79.135),
-        "cement-board-in": (79.135, 79.635),
-        "thin-brick-in": (79.76, 80.26),
-    }.items():
+    for name, expected in {"stud": (73.625, 77.125), "cdx-out": (73, 73.625),
+                           "cladding-out": (72.125, 73)}.items():
         xs = [x / INCH for x, _y in layers[name].polygon]
         assert (min(xs), max(xs)) == pytest.approx(expected)
-    assert "bond-membrane-in" not in layers
-    mortar_xs = [x / INCH for x, _ in layers["setting-mortar-in"].polygon]
-    backer_xs = [x / INCH for x, _ in layers["cement-board-in"].polygon]
-    assert min(mortar_xs) == pytest.approx(max(backer_xs))
-    assert wall.axis[0][0] / INCH == pytest.approx(75.375)
-    assert tuple(v / INCH for v in layers["thin-brick-in"].band(wall)) == pytest.approx((2, 47.5))
-    assert layers["thin-brick-in"].thickness_m / INCH == pytest.approx(0.5)
-    assert min(x for x, _ in layers["siding-in"].polygon) / INCH - 78.125 == pytest.approx(0.125)
+    expected_runs = ((0.125, 7.875), (13.625, 40.5625),
+                     (40.6875, 67.625), (73.375, 79.25))
+    for index, expected in enumerate(expected_runs, 1):
+        layer = layers[f"cassette-in-{index}"]
+        xs = [x / INCH for x, _ in layer.polygon]
+        assert (min(xs), max(xs)) == pytest.approx((77.825, 77.875))
+        assert tuple(value / INCH for value in layer.run_span_m) == pytest.approx(expected)
+        assert tuple(value / INCH for value in layer.band(wall)) == pytest.approx((2, 47.5))
     assert catlin_model_ro.plan.by_tag(wall.tag).shear_panel.sheathing_layer == "cdx-out"
-    for tag in ("TR-BW-BRICK-BASE", "TR-BW-BRICK-HEAD"):
-        flashing = catlin_model_ro.plan.by_tag(tag)
-        nose = flashing.path[0].x.meters + flashing.thickness.meters / 2
-        assert nose / INCH == pytest.approx(80.385)
+    assert not {"thin-brick-in", "packing-in", "cement-board-in"} & layers.keys()
 
 
-def test_veneer_uses_its_own_net_area_and_purchased_slip_appearance(catlin_model_ro):
+def test_cassette_area_and_weight_use_the_same_bounded_regions(catlin_model_ro):
+    from types import SimpleNamespace
+
     wall = catlin_model_ro.wall("W-BW-SCREEN")
-    veneer = next(layer for layer in wall.layers if layer.name == "thin-brick-in")
     net = wall_net_areas_m2(catlin_model_ro)[wall.tag]
-    screen_ft2 = wall_layer_net_area_m2(catlin_model_ro, wall, veneer, net) * 10.7639104
-    assert screen_ft2 == pytest.approx(79.375 * 45.5 / 144, abs=0.1)
-    # Rows carry no wall tags; the takeoff's one thin-brick row is the screen's area alone.
-    envelope_rows = envelope_layer_takeoff(catlin_model_ro)
-    rows = [
-        row
-        for row in envelope_rows
-        if row["material"] == "thin-brick-brown"
-    ]
-    assert not any(
-        row["material"] == "mvis-air-water-barrier"
-        for row in envelope_rows
-    )
+    layers = [layer for layer in wall.layers if layer.name.startswith("cassette-in-")]
+    area = sum(wall_layer_net_area_m2(catlin_model_ro, wall, layer, net) for layer in layers)
+    assert area * 10.7639104 == pytest.approx(21.328125, abs=0.001)
+    rows = [row for row in envelope_layer_takeoff(catlin_model_ro)
+            if row["material"] == "entry-screen-bone-white-aluminum"]
     assert len(rows) == 1
-    assert rows[0]["net_area_sqft"] == pytest.approx(screen_ft2, abs=0.05)  # row rounds to 0.1
-    material = next(
-        m for m in catlin_model_ro.plan.library.materials if m.tag == "thin-brick-brown"
-    )
-    assert (material.finish, material.color) == ("brown-brick", "#a07c5c")
-    assert material.product_ref == "PROD-BW-THIN-BRICK"
-
-
-def test_screen_load_is_known_and_skirt_is_not_its_bearing(catlin_ctx):
-    from typehaus.checks.structural.masonry_load import support_at
-
-    wall = catlin_ctx.model.wall("W-BW-SCREEN")
-    own = dead_load_plf(catlin_ctx, wall, wall.z1_m - wall.z0_m)
-    assert own == pytest.approx(74.84, abs=0.02)
-    total, basis = wall_line_plf(catlin_ctx, wall)
-    assert total is not None and total > own
-    assert "SB-BW-BAND" in basis
-    assert support_at(catlin_ctx, wall, wall.axis[0])[1] != "W-BW-SCREEN-SKIRT"
+    assert rows[0]["net_area_sqft"] == pytest.approx(area * 10.7639104, abs=0.05)
+    weight = dead_load_plf(SimpleNamespace(plan=catlin_model_ro.plan), wall, wall.z1_m - wall.z0_m)
+    assert weight == pytest.approx(24.87, abs=0.02)
 
 
 def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):
@@ -114,7 +78,7 @@ def _service_sweep(model, **overrides):
 
 
 def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catlin_model_ro):
-    """At the authored 81deg stop the landing ties govern; the screen face is about 1" off.
+    """At the authored 81deg stop the landing ties govern.
 
     Re-pinned 2026-11-01 when the MMI frame was anchored flush with the sheathing
     (``factory_frame_depth`` 6-9/16"), which moved the leaf plane: ties 0.320 -> 0.381",
@@ -127,7 +91,7 @@ def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catli
     assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.381, abs=1e-3)
     assert any(result.obstacle == "W-BW-SCREEN" for result in results)
     assert any(result.obstacle == "PT-BW-CNW" for result in results)
-    assert any(result.obstacle.startswith("TR-BW-BRICK-HEAD") for result in results)
+    assert any(result.obstacle.startswith("TR-BW-METAL-") for result in results)
 
 
 @pytest.mark.parametrize("inset_in", [0.5, 1.0, 2.0])
@@ -140,14 +104,14 @@ def test_stock_leaf_clears_across_the_hinge_inset_range(catlin_model_ro, inset_i
     assert min(result.clearance_m for result in results) / INCH >= 0.25
 
 
-def test_a_90_degree_stop_meets_the_moved_screen(catlin_model_ro):
-    """Why the stop is 81deg: the screen moved 3 3/8" east with the canopy posts."""
+def test_a_90_degree_stop_meets_the_landing_ties(catlin_model_ro):
+    """The landing ties are still struck at 90 degrees."""
     from scripts.garage_service_door_clearance import clearance_results, service_door_envelope
 
     door = next(o for o in catlin_model_ro.openings if o.tag == "D-G-SERVICE")
     results = clearance_results(catlin_model_ro, door, 90, service_door_envelope())
     hit = {r.obstacle for r in results if r.clearance_m < 0}
-    assert {"W-BW-SCREEN", "TR-BW-BRICK-BASE-1", "CN-BW-GWTIE-LO"} <= hit
+    assert "CN-BW-GWTIE-LO" in hit
 
 
 def test_a_flush_hinge_fails(catlin_model_ro):
@@ -207,3 +171,35 @@ def test_service_door_takeoff_uses_mmi_32in_price(catlin_model_ro):
     subtotal = estimate["sections"]["openings"]["subtotal"]
     assert (subtotal["low"], subtotal["high"]) == pytest.approx((row.low, row.high))
     assert not estimate["unpriced"]
+
+
+def test_cassette_regions_reach_viewer_and_ifc(catlin_model_ro, catlin_ifc_path):
+    import ifcopenshell
+
+    from typehaus.server.model_json import model_to_dict
+
+    wall = catlin_model_ro.wall("W-BW-SCREEN")
+    exported = next(w for w in model_to_dict(catlin_model_ro)["walls"] if w["tag"] == wall.tag)
+    regions = [layer for layer in exported["layers"] if layer["name"].startswith("cassette-in-")]
+    assert len(regions) == 4
+    for region in regions:
+        actual = next(layer for layer in wall.layers if layer.name == region["name"])
+        assert region["polygon"] == [list(point) for point in actual.polygon]
+    ifc = ifcopenshell.open(str(catlin_ifc_path))
+    parts = {part.Name for part in ifc.by_type("IfcBuildingElementPart")}
+    assert {f"W-BW-SCREEN:cassette-in-{index}" for index in range(1, 5)} <= parts
+
+
+def test_run_spans_reject_invalid_or_overlapping_slot_regions():
+    from typehaus import Layer, LayerFunction, inch
+    from typehaus.checks.integrity.checks import _slot_findings
+
+    def panel(name, start, end):
+        return Layer(name=name, material_ref="metal", thickness=inch(0.05),
+                     function=LayerFunction.CLADDING, slot="cassette",
+                     run_span=(inch(start), inch(end)))
+
+    with pytest.raises(ValueError):
+        panel("invalid", 4, 3)
+    assert not _slot_findings("test", [panel("a", 0, 4), panel("b", 4, 8)])
+    assert _slot_findings("test", [panel("a", 0, 5), panel("b", 4, 8)])

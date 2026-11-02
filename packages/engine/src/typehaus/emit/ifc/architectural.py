@@ -82,7 +82,8 @@ def _full_height_layers(wall: ResolvedWall) -> tuple[ResolvedLayer, ...]:
     ``EXT_2X6`` a different key from the assembly's own signature and export all 28 of them
     as ``EXT_2X6~lining0`` — a lining variant that is not a lining.
     """
-    return tuple(ly for ly in wall.depth_layers() if ly.band_spec is None)
+    return tuple(ly for ly in wall.depth_layers()
+                 if ly.band_spec is None and ly.run_span_m is None)
 
 
 def is_external_wall(model: ResolvedModel, wall: ResolvedWall) -> bool:
@@ -116,7 +117,8 @@ def _assembly_default_signature(model: ResolvedModel, assembly_tag: str) -> tupl
     return tuple((layer.name, layer.material_ref,
                   round(0.0 if layer.material_ref in coatings else layer.thickness.meters, 6))
                  for (layer, _added, cavity) in _added_thicknesses(stack, coatings)
-                 if not cavity and getattr(layer, "extent", None) is None)
+                 if not cavity and getattr(layer, "extent", None) is None
+                 and getattr(layer, "run_span", None) is None)
 
 
 def _emit_wall_types(f: Any, model: ResolvedModel,
@@ -238,7 +240,7 @@ def _emit_banded_layer_parts(f: Any, body: Any, rw: ResolvedWall,
         # it would double-describe the same solid. That is every layer of a lifted
         # partition, which is why trimming one adds no parts at all. A banded coating is a
         # covering (``wall_coatings``), not a part.
-        if (not getattr(layer, "is_banded", False) or len(layer.polygon) < 3
+        if ((not layer.is_banded and layer.run_span_m is None) or len(layer.polygon) < 3
                 or layer.coating or at_body_band(layer, rw)):
             continue
         z0, z1 = layer.band(rw)

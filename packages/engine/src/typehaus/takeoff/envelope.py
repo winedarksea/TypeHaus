@@ -113,6 +113,20 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
     blind = _blind_deduction_m2(model, wall, layer)
     axis_run: float = length(sub(wall.axis[1], wall.axis[0]))
     mean_top = ((wall.top_z0_m or wall.z1_m) + (wall.top_z1_m or wall.z1_m)) / 2.0
+    if layer.run_span_m is not None:
+        start, end = layer.run_span_m
+        bottom, top = layer.band(wall)
+        top = min(top, mean_top)
+        area = (end - start) * max(0.0, top - bottom)
+        for opening in model.openings:
+            if opening.host_wall != wall.tag or not cuts_layer(wall, layer.name, opening):
+                continue
+            width = max(0.0, min(end, opening.center_along_m + opening.width_m / 2)
+                        - max(start, opening.center_along_m - opening.width_m / 2))
+            lower = wall.base_ref_z_m + opening.sill_m
+            height = max(0.0, min(top, lower + opening.height_m) - max(bottom, lower))
+            area -= width * height
+        return max(0.0, area)
     # Sheathing runs off its own polygon (a through corner panel is longer than the axis);
     # ``sheet_goods_takeoff`` measures the same run, so the two sections agree.
     run = (layer_run_m(layer, axis_run)

@@ -411,15 +411,8 @@
 "3-2x12:kdat" = { material = { low = 7.2, high = 10.8 }, labour = { low = 4.2, high = 7.8 } }  # 40 LF ordered — FS-SG-PORCH lines 003 and 006
 "2x2" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 260 LF
 # 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]
-# W-BW-SCREEN east veneer, 2026-10-25. Preliminary budgets, not supplier quotes.
-# Brick rate includes pointing mortar/labour; setting bed is a separate purchase below.
-# Attachment consumables ride in packing/plywood/backer installation, never a second allowance.
-"thin-brick-brown" = { material = { low = 10, high = 18 }, labour = { low = 15, high = 28 } }
-"mvis-thin-brick-mortar" = { material = { low = 1.4, high = 2.5 }, labour = { low = 0, high = 0 } }
-"permabase-exterior" = { material = { low = 1.5, high = 2.6 }, labour = { low = 3, high = 5 } }
+# W-BW-SCREEN WRB. Cassette allowance is in [envelope_layers]; obtain a fabricator quote.
 "entry-screen-wrb" = { material = { low = 0.2, high = 0.45 }, labour = { low = 0.5, high = 1 } }
-"thin-brick-drainage-mat" = { material = { low = 0.9, high = 1.8 }, labour = { low = 0.5, high = 1 } }
-"entry-screen-exterior-plywood" = { material = { low = 1.6, high = 2.6 }, labour = { low = 1.2, high = 2.2 } }
 # polyiso rate of $1.20-2.20/SF.
 "2x2 panel" = { low = 0.2, high = 0.45 }  # 316 LF
 # RE-SCOPED AGAIN 2026-09-01, back to what it was before the truss: ordinary framing and
@@ -3739,6 +3732,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # is the real order quantity for stock culled at the moulder rather than at the rack.
 
 [envelope_layers]
+# Preliminary fabricated cassette allowance per installed square foot; verify by quote.
+"entry-screen-bone-white-aluminum" = { material = { low = 9, high = 16 }, labour = { low = 30, high = 55 } }
 # Installed budget rates for full-depth jamb foam and site door paint.
 "closed-cell-spray-foam:5.5" = { material = { low = 2.2, high = 3.3 }, labour = { low = 3.3, high = 4.95 } }
 "door-paint-exterior" = { material = { low = 0.4, high = 0.8 }, labour = { low = 2, high = 4 } }

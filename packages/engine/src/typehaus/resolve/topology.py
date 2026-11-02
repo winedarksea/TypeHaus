@@ -9,6 +9,7 @@ silently exporting intersecting solids.
 
 from __future__ import annotations
 
+import math
 from dataclasses import replace
 
 from shapely import get_coordinates, is_valid
@@ -302,6 +303,19 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
             continue
         # A band that resolves to the wall's own ends is not a band on THIS wall.
         band_z0, band_z1 = band_ends_on_wall(band_z0, band_z1, z0, z1)
+        run_span = getattr(layer, "run_span", None)
+        ring = _ring(span_in, span_out)
+        resolved_run = None
+        if run_span is not None:
+            run_length = math.hypot(p1[0] - p0[0], p1[1] - p0[1])
+            start = min(run_span[0].meters, run_length)
+            end = min(run_span[1].meters, run_length)
+            if end - start <= 1e-9:
+                continue
+            resolved_run = (start, end)
+            ring = rect_between(p0, p1, (span_in - axis_from_int) * outward_sign,
+                                (span_out - axis_from_int) * outward_sign, -start,
+                                end - run_length)
         layers.append(
             ResolvedLayer(
                 name=layer.name,
@@ -309,7 +323,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                 function=layer.function.value,
                 thickness_m=(0.0 if layer.material_ref in coatings
                              else layer.thickness.meters),
-                polygon=_ring(span_in, span_out),
+                polygon=ring,
                 control=frozenset(c.value for c in layer.control),
                 view_trade=layer.view_trade,
                 is_cavity=cavity,
@@ -317,6 +331,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                 z0_m=band_z0,
                 z1_m=band_z1,
                 slot=getattr(layer, "slot", None),
+                run_span_m=resolved_run,
                 band_spec=spec,
                 board_run=_board_run(stack, index),
                 framed=layer.framing is not None,

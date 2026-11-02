@@ -1,19 +1,11 @@
-"""W-BW-SCREEN east veneer design basis; inches unless explicitly named otherwise.
+"""Dimensions for the W-BW-SCREEN cassette concept, in inches."""
 
-Product/field release items live in notes/garage_service_door_outswing.md. The packing lifts
-primary sheathing clear of the 6x6s, without fastening the brittle finish to their faces.
-"""
-
-PACKING_THICKNESS_IN = 1.125
-PLYWOOD_THICKNESS_IN = 0.625
-WRB_THICKNESS_IN = 0.01
-DRAINAGE_THICKNESS_IN = 0.25
-BACKER_THICKNESS_IN = 0.5
-SETTING_MORTAR_THICKNESS_IN = 0.125
-BRICK_THICKNESS_IN = 0.5
+METAL_THICKNESS_IN = 0.050
+WRB_THICKNESS_IN = 0.010
+AIRSPACE_THICKNESS_IN = 0.690
 FINISH_BOTTOM_IN = 2.0
 FINISH_TOP_IN = 47.5
-HEAD_PROJECTION_IN = 0.125
-BRICK_LENGTH_IN = 7.625
-BRICK_HEIGHT_IN = 2.25
-MORTAR_JOINT_IN = 0.375
+# Stations measured from the south wall node. Post edges are 8, 13.5, 67.75,
+# and 73.25 inches; a 1/8-inch installation gap is left at each end.
+PANEL_RUNS_IN = ((0.125, 7.875), (13.625, 40.5625),
+                 (40.6875, 67.625), (73.375, 79.25))

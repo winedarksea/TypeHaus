@@ -191,16 +191,16 @@ ENTRY_LIGHTING = [
 
     # The stair head. The can stood under FO-S-STAIR's open well with no ceiling to recess
     # into; since 2026-10-31 it is in the hall row, third from the west, at ST-M2S's foot, on its
-    # own switch, on CKT-LT-MAIN since 2026-11-02. The switch is also one end of the basement railing run's
+    # own switch. On CKT-LT-BSMT since 2026-11-02 with the basement stair it 3-ways (NEC 210.7). The switch is also one end of the basement railing run's
     # 3-way.
     ElectricalDevice(uid="QTM0015AAA", tag="ED-M-STAIR-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(13, 7), ft(24, 8)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     circuit="CKT-LT-BSMT", room="RM-M-LIVING",
                      controlled_by=("ED-M-STAIR-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0016AAA", tag="ED-M-STAIR-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER-COMPANION",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     circuit="CKT-LT-BSMT", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-STRW", face="left", distance_from_start=inch(96),

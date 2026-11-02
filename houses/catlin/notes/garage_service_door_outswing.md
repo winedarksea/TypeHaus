@@ -70,23 +70,20 @@ plan, IFC); `catalog_dimensions.nominal_width` is the 32-inch leaf. Takeoff bill
 and `code.R311_door_width`/`R311_2_door_height` grade the leaf (32 × 80), never the RO.
 A 32-inch nominal leaf is still not 32 inches of clear passage; see §1.
 
-The clearance regression sweeps the **32-inch leaf** inside the 34-inch RO: leaf faces and
-Schlage lever, continuous 0–91°, a 1/8-inch installation allowance and 1/4-inch minimum
-clearance, against the brick base and head flashing, screen, deck post and hold-down. The
-result turns on the hinge-pivot inset from the west RO edge:
+The clearance regression sweeps the **32-inch leaf** inside the 34-inch RO through the
+authored **81° stop**, including a 1° stop tolerance, 1/8-inch installation allowance and
+1/4-inch required clearance. The 2026-11-02 model has recessed metal cassette faces and
+separately terminated head/base flashings. The currently modelled obstacles give:
 
-| pivot inset | worst clearance | CN-G-BWHD-S-DR |
-|---:|---:|---:|
-| 0 (flush) | −0.060 in, brick base: **fails** | 3.373 in |
-| 1/2 in | 0.440 in, brick base | 2.873 in |
-| 1 in | 0.940 in | 2.374 in |
-| 2 in | 1.374 in, hold-down | 1.374 in |
+| Pivot inset | Worst clearance | Governing obstacle |
+|---:|---:|---|
+| 0 | −0.114 in | CN-BW-GWTIE-LO, fails |
+| 1/2 in | 0.381 in | CN-BW-GWTIE-LO |
+| 1 in | 0.876 in | CN-BW-GWTIE-LO |
+| 2 in | 1.366 in | CN-G-BWHD-S-DR |
 
-**1/2 inch is the lower bound the brick base needs, not a conservative choice.** Anything
-from 1/2 to 2 inches passes; a flush pivot does not. Before setting the stop, measure the
-delivered frame's pivot from the RO edge and confirm it falls in that range. The old overlap
-came from sweeping the full 34-inch RO as the leaf; `test_catlin_screen_thin_brick.py` pins
-the range, the flush failure and that overlap.
+Measure the delivered frame's pivot before setting the stop. Final cassette end trims,
+clips and supports are not yet modelled and must be added to the sweep before release.
 
 Keep the canopy chord connection at the east jamb: stock **Simpson STHD14**,
 CN-G-BWHD-S-DR, centered at x=118 inches on the garage face at y=524.75 inches. It is

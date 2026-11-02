@@ -25,7 +25,8 @@ COATING_OBJECT_TYPE = "COATING"
 
 def is_banded_coating(layer: ResolvedLayer) -> bool:
     """A coating the layer set cannot hold: its assembly bands it (``band_spec``)."""
-    return bool(layer.coating and layer.band_spec is not None and layer.polygon)
+    return bool(layer.coating and (layer.band_spec is not None or layer.run_span_m is not None)
+                and layer.polygon)
 
 
 def banded_coating_pieces(rw: ResolvedWall,

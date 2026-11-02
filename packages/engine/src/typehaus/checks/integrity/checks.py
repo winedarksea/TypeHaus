@@ -207,6 +207,11 @@ def _overlapping_band_findings(assembly_tag: str,
         for second in banded[index + 1:]:
             if first.material_ref != second.material_ref:
                 continue
+            if first.run_span is not None and second.run_span is not None:
+                a0, a1 = (value.meters for value in first.run_span)
+                b0, b1 = (value.meters for value in second.run_span)
+                if min(a1, b1) - max(a0, b0) <= 1e-9:
+                    continue
             span_a = _comparable_span(first.extent)
             span_b = _comparable_span(second.extent)
             if span_a is None or span_b is None or span_a[0] is not span_b[0]:
@@ -263,7 +268,7 @@ def _slot_findings(assembly_tag: str, layers: Sequence[Layer]) -> list[Finding]:
                     "give every layer of a slot the same thickness, "
                     "or take this one out of the slot"))
         for member in members:
-            if getattr(member, "extent", None) is None:
+            if getattr(member, "extent", None) is None and member.run_span is None:
                 out.append(_err(
                     "integrity.assembly_layers",
                     f"assembly {assembly_tag} slot {slot!r} layer {member.name} has no "
@@ -272,9 +277,19 @@ def _slot_findings(assembly_tag: str, layers: Sequence[Layer]) -> list[Finding]:
                     "band every region of a split row"))
         for index, first in enumerate(members):
             for second in members[index + 1:]:
+                if first.run_span is not None and second.run_span is not None:
+                    a0, a1 = (v.meters for v in first.run_span)
+                    b0, b1 = (v.meters for v in second.run_span)
+                    if min(a1, b1) - max(a0, b0) <= 1e-9:
+                        continue
                 span_a = _slot_span(first.extent)
                 span_b = _slot_span(second.extent)
                 if span_a is None or span_b is None:
+                    if first.extent is None or second.extent is None:
+                        out.append(_err("integrity.assembly_layers",
+                                        f"assembly {assembly_tag} slot {slot!r} layers "
+                                        f"{first.name} and {second.name} overlap",
+                                        (assembly_tag,), "separate the run spans"))
                     continue
                 if span_a[0] is not span_b[0]:
                     # Two regions of ONE row measured from two different datums cannot be

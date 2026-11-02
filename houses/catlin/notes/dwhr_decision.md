@@ -88,7 +88,9 @@ for the two couplings and a developing length above. It fits. An R4-72 would not
 ## 3. The water heater, and the cold feed
 
 `EQ-B-WH` — Rheem ProTerra 80 gal **hybrid heat pump** (PROPH80 / XE80T10HS45U0 class), 4.5 kW
-resistance element, 30A/240V `CKT-WH-240`, in `RM-B-FURNACE` at (5'-6", 24'-0").
+resistance element, 30A/240V `CKT-WH-240`, in `RM-B-FURNACE` at (5'-6", 24'-0"). *(Superseded
+2026-11-02: the 120 V element-free PROPH80 T0 RH120-M on `CKT-WH`, UEF 3.46,
+`notes/backup_power.md` §5. The A5 COP below was not re-derived for it.)*
 Distance from the stack's vertical at (3'-0", 15'-6"): √(30² + 102²) = 106.3" = **8'-10 1/4"**.
 
 The cold feed passes the stack. `PR-B-CW-TRUNK` (1 1/4") runs along y = 16'-0" at z = −8.799",

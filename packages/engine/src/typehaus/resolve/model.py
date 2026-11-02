@@ -72,6 +72,7 @@ class ResolvedLayer:
     # the first of them may be counted toward the wall's thickness. ``None`` — every layer
     # in every assembly authored before slots existed — is a row of its own.
     slot: str | None = None
+    run_span_m: tuple[float, float] | None = None
     # The *unresolved* ``Layer.extent`` that produced ``z0_m``/``z1_m``, as
     # ``((datum, offset_m) | None, (datum, offset_m) | None)`` — bottom, then top.
     # ``z0_m``/``z1_m`` are absolute and therefore stale the moment the wall's own extent

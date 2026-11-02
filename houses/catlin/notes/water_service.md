@@ -23,6 +23,18 @@ price row exists for one.**
 
 ## 1. The heater, as Rheem publishes it (PROPH80 T2 RH400-30)
 
+**Retyped 2026-11-02 to the 120 V plug-in, PROPH80 T0 RH120-M** (`notes/backup_power.md` §5);
+**the geometry below and on `EQ-T-WATER-HEATER` is still the RH400-30's**, an open item
+(`plans/TODO.md`). What Rheem publishes for the plug-in (spec sheet RH-PIHP-SC-NO-SO-SS Rev. 1,
+04/26; Use & Care p.11): 24 1/4" round like this one, **A 74 3/16"** tall, C 59", D 3 7/8",
+E 42 3/8", F 29 1/2", G 54 5/16", H 91" ducted, I 29", J 27 3/8", K 5 1/16"; "easy access
+**side** connections" on the HydroBoost mixing-valve assembly (cold in low, hot out of the
+valve high, drawn on the product's right-front). The sheet does not name G and K, so the
+port positions are **not yet published to us**: get Rheem's port drawing before re-running
+`PR-B-HW-TRUNK`/`PR-B-CW-WH`. F and I put the T&P and that assembly ~5" proud of the body,
+against 4 1/2" to `W-B-ESS-S` and 0.04" to the ERV case: re-check both. The unit ships with a
+cord for a standard outlet, which `CKT-WH` does not yet have.
+
 Sources: the RH400-30 spec sheet (Quick Start Connection Guide, rheem.com related document
 436312), HP-400-SO 07/24 (the PROPH80's sheet), the Use & Care manual p.5-12. The dimension-sheet
 link in the old TODO is dead (404); the same lettered dimensions are on both sheets above.

@@ -37,13 +37,26 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
    - LG ThinQ appliances: LG's HA integration is cloud-only.
    - The Broan hood.
    - The Harvia sauna: remote start of a 9 kW heater is a safety question, not a feature.
-6. **On battery, HA sheds the cameras** (owner, 2026-10-30). When the EG4 reports the grid
-   gone, HA turns off the PoE ports of `ED-M-DOORBELL`, `ED-M-CAM-PORCH` and
-   `ED-BW-CAM-CANOPY`, and turns them back on when the grid returns. The APs stay up. During
-   an outage there is no doorbell and no recording. Modelled as `CKT-HA.backup_shed_poe`; it
-   is what lets one strong solar day per 48 h carry the always-on tier
-   ([backup_power.md](backup_power.md)). The water heater's Heat-Pump-Only switch is the same
-   kind of automation.
+6. **On battery, HA sheds the cameras and two APs** (owner, 2026-10-30; APs 2026-11-02).
+   When the EG4 reports the grid gone, HA turns off the PoE ports of `ED-M-DOORBELL`,
+   `ED-M-CAM-PORCH`, `ED-BW-CAM-CANOPY`, `ED-M-PORCH-AP` and `ED-A-STUDIO-AP`, and turns them
+   back on when the grid returns. `ED-M-KITCH-AP`, the central one, stays up. During an outage
+   there is no doorbell and no recording. Modelled as `CKT-HA.backup_shed_poe`
+   ([backup_power.md](backup_power.md) §5).
+7. **The surplus tier is HA's** (2026-11-02). HA reads the 12kPV locally and switches
+   `CKT-HP3` and `CKT-WH` through the Pro 4PM in `ED-B-BACKUP-ENCL`:
+   - **Reading the inverter**: `eg4_web_monitor` in local mode, Modbus TCP through an
+     RS-485-to-Ethernet adapter on the inverter's RS-485 port. The adapter is a purchased
+     part with no product selected yet, so it is not modelled.
+   - **On grid**: both on.
+   - **Islanded**: on when PV exceeds the always-on load by the tier's draw and SOC >= 90%;
+     off when SOC < 85% or PV falls. These mirror EG4's smart-load defaults.
+   - **HP3 is commanded off first** through its own control (core `gree`, if the Sapphire's
+     Wi-Fi module pairs; confirm), then its contactor opens as the backstop.
+   - **Fail-safe**: each relay's power-on/default state is OFF while islanded, so HA being
+     down never leaves the surplus tier draining the battery.
+   - The EG4's GEN port is not a smart-load output here: it stays free for a generator or a
+     car (backup_power.md §10).
 
 ## Register
 
@@ -64,7 +77,7 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | ERV boost | `EQ-B-ERV` | Shelly relay on the Broan dry-contact aux input (manual §3.2.2) | Shelly core (local push) | none | Broan wall control | read the terminal names before wiring |
 | Floor heat (3 zones) | `ED-*-FH-STAT` | Warmup 7iE | Matter over Wi-Fi (local push) | Warmup app for firmware | own schedule, own sensor | Schluter warranty letter |
 | Leak shutoff | `APPL-S-PLANT-VALVE` | Zooz ZAC36 Titan (Z-Wave LR) + ZSE42 | Z-Wave JS (local push) | none | wired probe closes the valve | confirm the stub valve is a lever ball valve |
-| Water heater | `EQ-B-WH` | Rheem ProTerra EcoNet port | ESPHome `esphome-econet` over RS-485 | Wi-Fi module never registered | tank controls | mode control on the ProTerra |
+| Water heater | `EQ-B-WH` | Rheem ProTerra Plug-in, EcoNet Wi-Fi + CTA-2045 port | none needed: power is switched by `CKT-WH`'s relay | Wi-Fi module never registered | tank controls | whether `esphome-econet` reaches the plug-in; not needed for backup |
 | Inverter/battery | `EQ-B-ESS-INV` | EG4 12kPV | EG4 web monitor, local Modbus (HACS) | none | inverter runs itself | firmware support for local mode |
 | Lighting | `ED-T-LEV-MATTER*` | Leviton D215S / D2ELV / companion | Matter (local push) | one My Leviton session (D215S firmware) | paddles | confirm companion `DD0SR-DLZ` |
 | Shades | `plan/window_coverings.py` | SmartWings, Matter/Thread | Matter via ZBT-2 | none | wand and remote | none |
@@ -153,7 +166,7 @@ the cable warranty survives a non-Schluter thermostat.
 
 **Recording, alarms, UPS.** No cloud recording plans. The HA host, router and PoE switch share
 `CKT-HA` (ALWAYS_ON); a small UPS for them is the separate backup-battery TODO. On battery the
-doorbell and cameras are shed (rule 6).
+doorbell, cameras and two APs are shed (rule 6).
 
 ## Lighting scenes
 
@@ -201,7 +214,7 @@ which dim and colour at their Gledopto GL-C-001P controllers (RGBCCT mode).
   it, or a scene "on" leaves it dark; bench it before the trim-out. Confirm each D215S's
   power-on behaviour after an outage.
 - **HA down**: every D215S paddle still switches its group; the keypad does nothing; the coves
-  return at their last setting. Kitchen and under-cabinet ride `CKT-LT-BACKUP`; the lounge does not.
+  return at their last setting. Only the kitchen under-cabinet tape rides `CKT-LT-BACKUP`.
 
 ## Bath night lights
 
@@ -209,7 +222,7 @@ Added 2026-10-31. Every bath has one, all built the same way: E5 2200 K tape (`E
 
 | Bath | Run | PSU | Relay |
 |---|---|---|---|
-| B-BATH | `LR-B-BATH-NIGHT` | `ED-B-BATH-NL-PSU` | `ED-B-BATH-SW-NL`, on `CKT-LT-BACKUP` |
+| B-BATH | `LR-B-BATH-NIGHT` | `ED-B-BATH-NL-PSU` | `ED-B-BATH-SW-NL`, on `CKT-LT-BSMT` |
 | M-BATH1 | `LR-M-BATH1-NIGHT`, on the wall under the basin | `ED-M-BATH1-NL-PSU` | `ED-M-BATH1-SW-NL` |
 | M-BATH2 | `LR-M-BATH2-TOEKICK` | `ED-M-BATH2-NL-PSU` | `ED-M-BATH2-SW-NL` |
 | S-VANITY | `LR-S-VANITY-NIGHT` | `ED-S-VANITY-NL-PSU` | `ED-S-VANITY-SW-NL` |

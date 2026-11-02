@@ -16,6 +16,8 @@ from typehaus.resolve.slat_cuts import clipped_slat_profile
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / 'plans/assets/bw-screen-brace-comparison.svg'
 FINISH = runpy.run_path(str(ROOT / 'houses/catlin/plan/entry_screen_finish_spec.py'))
+# Dimensions of the historical thin-brick study; current cassettes use no brick.
+FINISH.update(BRICK_LENGTH_IN=7.625, BRICK_HEIGHT_IN=2.25, MORTAR_JOINT_IN=0.375)
 
 # Inches, measured south-to-north from the lower screen's south edge.
 GEOMETRY = SimpleNamespace(

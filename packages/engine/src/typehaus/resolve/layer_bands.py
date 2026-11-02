@@ -262,6 +262,8 @@ def at_body_band(layer: ResolvedLayer, wall: ResolvedWall) -> bool:
     that measured a different set from the one that is drawn would report every trimmed
     wall as RESIZED on a self-diff.
     """
+    if layer.run_span_m is not None:
+        return False
     z0, z1 = layer.band(wall)
     band_z0, band_z1 = wall_body_band(wall)
     return abs(z0 - band_z0) <= 1e-9 and abs(z1 - band_z1) <= 1e-9

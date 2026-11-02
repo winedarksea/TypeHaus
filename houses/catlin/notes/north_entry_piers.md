@@ -1,3 +1,5 @@
+> The W-BW-SCREEN brick loads in this note are historical as of 2026-11-02. The preliminary metal model weighs 24.87 plf before cassette supports and accessories; recalculate this note after the complete assembly is designed. See [metal cassette concept](entry_screen_metal_cassettes.md).
+
 # North entry canopy, piers and headers — hand-worked basis
 
 > **Current east pair, 2026-09-29:** `PT-BW-RE`/`-RNE` are 6x6 KDAT posts on 3'-0"

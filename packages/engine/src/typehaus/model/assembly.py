@@ -427,6 +427,8 @@ class Layer(HausModel):
     # because the alternative — a stack whose total thickness varies with elevation — is not
     # something ``Wall.alignment`` or any junction rule can answer.
     extent: LayerExtent | None = None
+    # Distances from the wall start along its axis. None retains the full run.
+    run_span: tuple[Length, Length] | None = None
     # The regions of ONE row of the stack, named. Layers sharing a ``slot`` occupy a single
     # depth position between them rather than one each — a brick plinth under a different
     # brick field, a parge below grade under a protection panel above it. Without it the
@@ -453,6 +455,13 @@ class Layer(HausModel):
     def _sheet_length_positive(cls, value: Length | None) -> Length | None:
         if value is not None and value.meters <= 0:
             raise ValueError("sheet_length must be positive")
+        return value
+
+    @field_validator("run_span")
+    @classmethod
+    def _run_span_in_order(cls, value: tuple[Length, Length] | None):
+        if value is not None and (value[0].meters < 0 or value[1].meters <= value[0].meters):
+            raise ValueError("run_span must have nonnegative, increasing stations")
         return value
 
     @property

@@ -69,6 +69,12 @@
 > 24" steel door with a tempered lite. `FX-B-UTIL-SINK` (SE furnace room, hose behind an
 > ASSE 1011 vacuum breaker) is the ERV/WH condensate receptor. `CKT-SUMP` rides ALWAYS_ON.
 > The 2018 IRC R327 has no kWh caps or detection rule: those grade as advisories (2021 R328).
+> **2026-11-02 trim:** `CKT-LT-BACKUP` is two furnace-room cans, the ESS closet light, the
+> kitchen tape and every alarm; the rest of the basement is `CKT-LT-BSMT`, the kitchen cans
+> `CKT-LT-MAIN`. `BackupTier.SHED` is now **`SURPLUS`** (`CKT-HP3`, `CKT-WH`): on battery only
+> on solar surplus, never counted against autonomy. The HPWH is the 120 V, element-free
+> PROPH80 T0 RH120-M; **its ports/footprint are still the 240 V tank's** (`plans/TODO.md`).
+> `Circuit.start_va` sets a surge start (else 3x). Oracle: `backup_power.md` §6.
 
 > **Door sizing, 2026-10-29 (`plans/door-sizing.md`, decisions #96-#98):** `DoorType.width`
 > is the nominal leaf; the RO is published (`rough_opening`) or derived from `TRIM-STANDARD`.
@@ -2071,9 +2077,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     Do not re-box either run without re-reading the declaration. `PR-B-HW-SAUNA` and
     `PR-B-CW-SAUNA` run side by side, not stacked, at x=17'-4"/17'-3" — do not restack them;
     two 1/2" lines need 5/8" separation in a band only 3" deep.
-  - Lighting/outlets: three `ED-T-LT-CAN4` (mark C retired 2026-10-28) on `CKT-LT-BACKUP` at x=190",
-    y=19'-6"/15'-0"/11'-6" (43.5 VA; `cycle_48h.sustains_always_on` does not hold once
-    inverter idle and efficiency count, `test_backup_calc.py`, notes/backup_power.md §6). Keep the middle one at **15'-0"**, not 15'-6" — `PR-B-HW-SAUNA`
+  - Lighting/outlets: three `ED-T-LT-CAN4` (mark C retired 2026-10-28) on `CKT-LT-BSMT` (off
+    backup since 2026-11-02) at x=190", y=19'-6"/15'-0"/11'-6". Keep the middle one at **15'-0"**, not 15'-6" — `PR-B-HW-SAUNA`
     crosses 2 9/16" below the ceiling there. `ED-B-WORKSHOP-SW` sits 5" north of
     `D-B-SHOP`'s hinge jamb — the only side with room for the box. `ED-B-HALL-RC1` is on
     `CKT-RC-BSMT` at y=16' (NEC 210.52(H)); note `electrical.receptacle_spacing` only walks
@@ -2974,7 +2979,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   only runs inside 18" (the five branches tee on 29" up), but all seven stay copper.
   A PEX turn off a stock elbow is a BEND graded against Uponor's 6 x OD
   (`library/fittings.TUBE_BEND_RULES`); a short jog wants a plumb step, not a diagonal.
-- **The heater is the Rheem PROPH80 T2 RH400-30, non-ducted: 24 1/4" round x 76 13/16"** (K,
+- **The heater is the 120 V PROPH80 T0 RH120-M since 2026-11-02, but its geometry is still the
+  RH400-30's (side ports unpublished to us; `notes/water_service.md` §1).** As modelled: 24 1/4" round x 76 13/16"** (K,
   the top nipples; `notes/water_service.md`). 91" is the ducted unit and does not fit under
   the 96 15/16" ceiling with its 6" top clearance. **Rotation -90 at (8'-9", 29'-5")** (owner,
   2026-10-29): air exhaust SOUTH into the room with Rheem's 6", back on `W-B-STR3`, T&P north
@@ -3007,8 +3013,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   gap between them is 6 1/2" wide. **Nothing grades a device-on-device overlap or NEC 110.26
   working space**; both are held by the measurements in `plan/mep_electrical.py`. Feeder 2 carries `CKT-SPA`, `CKT-SAUNA`, `CKT-EV-1450`, `CKT-GAR-240` and nothing
   else. `electrical.panel_feeder_load` grades each panel's own 220.82 demand against its own
-  main (155.9 A and 117.7 A of 200 A); `electrical.service_load` grades the house against the
-  meter (265.8 A of 320 A, **54.2 A of margin**). `CKT-RANGE` is 40 A / 11,900 VA (the LG
+  main (155.6 A and 125.7 A of 200 A, 2026-11-02); `electrical.service_load` grades the house against the
+  meter (272.2 A of 320 A, **47.8 A of margin**, 2026-11-02). `CKT-RANGE` is 40 A / 11,900 VA (the LG
   nameplate) and `CKT-KETTLE` 3,000 VA (a typical nameplate, not the breaker) — replace the
   kettle's with the purchased unit's. The ways back to 200 A are in `plans/cost-options.md`.
 - **Both panels state `service_amps=200` on their types, and must keep doing so.**
@@ -3025,10 +3031,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   (220.82(C)(2)/(4), a compressor against its own supplemental heat).
 - **Backup shedding is NOT load management** and was never touched: it lives on
   `Circuit.backup_tier` plus the Shelly Pro 4PM relay and its contactors
-  (`backup_component_rows`). So does the water heater's ESPHome/EcoNet Heat-Pump-Only
-  automation, now authored as **`CKT-WH-240.backup_va = 500`** — a backup reserve worth
-  nothing in 220.82, and **load-bearing**: at the 4,500 VA nameplate the SHED tier's peak
-  does not fit the 12kPV's 8 kW continuous.
+  (`backup_component_rows`). The water heater needs no governor any more: the 120 V plug-in
+  on `CKT-WH` has no element (1,440 VA), so `backup_va` is unused in this house.
 - **The EVSE is the Grizzl-E Smart (2026-10-30)**, `APPL-G-EVSE`, local OCPP to Home
   Assistant; the Emporia (no local API) is superseded. No charger here is a PCS; if dynamic
   EV charging is ever to be credited the path is a UL 3141 PCS, not a different charger.

@@ -1,3 +1,5 @@
+> W-BW-SCREEN brick load assumptions below are historical as of 2026-11-02; update the calculations using the complete metal cassette assembly. See [metal cassette concept](entry_screen_metal_cassettes.md).
+
 # Column base rotation — the fixed base as a spring, hand-worked
 
 **Oracle for** `engineering/base_rotation.py`, `engineering/base_supports.py` and

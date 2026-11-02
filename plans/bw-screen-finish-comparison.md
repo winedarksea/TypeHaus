@@ -1,3 +1,5 @@
+> Historical study: the 2026-11-02 direction is Bone White aluminum infill throughout.
+
 # W-BW-SCREEN — east-face finish comparison
 
 **Study date:** 2026-10-14; coordination updated 2026-10-25. **Current selection:** the modeled

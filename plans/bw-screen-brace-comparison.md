@@ -1,3 +1,5 @@
+> Historical study: the 2026-11-02 direction is Bone White aluminum infill throughout.
+
 # W-BW-SCREEN — thin brick and single knee braces
 
 Study: 2026-10-25. [Open the comparison sheet](assets/bw-screen-brace-comparison.svg).

@@ -418,8 +418,8 @@ CIRCUITS = (
     # would freeze them against a number nobody re-adds when a can moves.
     # ** 20 A SINCE 2026-10-28 (12 AWG). ** The garage's lights left for CKT-LT-GARAGE on
     # 2026-10-31; only the opener's outlet (ED-G-GDO-GFCI / ED-G-GDO-RC) is still out there.
-    # The kitchen cans, the pantry PSU and the stair-head can joined from CKT-LT-BACKUP on
-    # 2026-11-02: ~1,283 VA of 1,920 continuous.
+    # The kitchen cans and the pantry PSU joined from CKT-LT-BACKUP on 2026-11-02:
+    # ~1,277 VA of 1,920 continuous.
     Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", slot=38, panel_ref=_PANEL, breaker_amps=20, poles=1,
             afci=True,
             description="General lighting — main storey incl. kitchen, porch, + the garage opener outlet"),
@@ -433,7 +433,7 @@ CIRCUITS = (
             afci=True, description="General lighting — second + attic"),
     # The basement's lighting off the backup tier: the T8 strips and gym fan (2026-10-31), then
     # (2026-11-02) the gym, stair, bath and Play-N cans, sconces and PSUs, the sauna PSU and the
-    # under-stair closet light. ~796 VA of 1,440 continuous. Only the furnace-room cans and the
+    # under-stair closet light, and the stair-head can its 3-way shares. ~802 VA of 1,440. Only the furnace-room cans and the
     # ESS closet light stay on CKT-LT-BACKUP. Slot 26 was spare.
     Circuit(uid="J3RFM1RVCW", tag="CKT-LT-BSMT", slot=26, panel_ref=_PANEL, breaker_amps=15,
             poles=1, afci=True, description="Basement lighting (all but the furnace room), gym fan"),
