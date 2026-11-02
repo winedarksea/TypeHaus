@@ -3592,9 +3592,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "REG-T-HP-STUDY-SIDE" = { material = { low = 65, high = 100 }, labour = { low = 25, high = 60 } }  # 1 ea
 # 6x12 aluminium floor register (H&C 531SA class; price not read — aluminium runs 2-3x steel).
 "REG-T-HP-FLOOR-0612" = { material = { low = 40, high = 95 }, labour = { low = 18, high = 45 } }  # 3 ea
-# The plant room's System 1 terminal: a 12x6 aluminium register plus a 6" 24 VAC zone damper
-# (Honeywell ARD6TZ class, price not read) on a 10x6-to-6 stub.
-"REG-T-HP-CEIL-DAMPERED" = { material = { low = 190, high = 320 }, labour = { low = 180, high = 420 } }  # 1 ea
+# Plant supply assembly: A220V 12x6 (no OBD), ZD12X6TZ including actuator,
+# TH-HP-PLANT-BOOT-01 26ga boot, collar, and gasketed PVC service hatch. Included once.
+# Budget allowance, not a supplier quote; includes fabrication, support, seal and service work.
+"REG-T-HP-CEIL-DAMPERED" = { material = { low = 260, high = 430 }, labour = { low = 220, high = 480 } }  # 1 ea
 # 28x12 hinged filter-back return (H&C 673 class). The custom 12x28x1 MERV 13 filters are an
 # owner consumable, not in the build.
 "REG-T-HP-RET-FILTER" = { material = { low = 60, high = 130 }, labour = { low = 18, high = 45 } }  # 1 ea

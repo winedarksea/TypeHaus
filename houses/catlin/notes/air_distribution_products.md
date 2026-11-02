@@ -69,7 +69,7 @@ duct's 12.6, so the grille is not the restriction; loss stays the derived K 5.
 | `REG-T-HP-SIDE-1206` (5) | TRUaire A220VO 12X06, double deflection, OBD | H&C HVD, Shoemaker 904-O | 13 3/4 x 7 3/4 | 12x6x2 11/16 (H&C HVD 3 7/16" overall less face) | $79.80 hvacquick |
 | `REG-T-HP-STUDY-SIDE` (1) | TRUaire A220VO 08X06 | H&C HVD 8x6 | 9 3/4 x 7 3/4 | 8x6x2 11/16 | $68.60 |
 | `REG-T-HP-FLOOR-0612` (3) | H&C 531SA 6x12, multi-shutter | Reggio, Shoemaker 600 | 13 3/8 x 7 3/8 (est.) | 12x6x2 (est.; TRUaire 150 is 2") | not read |
-| `REG-T-HP-CEIL-DAMPERED` (1) | A220VO 12X06 + 6" zone damper (§7) | | 13 3/4 x 7 3/4 | 12x6x2 11/16 | |
+| `REG-T-HP-CEIL-DAMPERED` (1) | A220V 12X06, no OBD + ZD12X6TZ (§7) | | 13 3/4 x 7 3/4 | multipart boot, damper, collar and service hatch | allowance |
 
 The sidewall faces are centred on the duct axis (faces grew 6" → 7 3/4", so every mount
 elevation dropped 7/8"). Oak-match flush in RM-A-STUDY is a note only. Caution read on
@@ -97,13 +97,13 @@ published STC or free area found). `CD-M-DATA-DOORBELL` was moved 1/2" north to 
 | item | basis of design | or equal | note |
 |---|---|---|---|
 | plant extract, 4" 24 VAC | EWC 4RSD spring-return (~$177) | Duro Dyne NSPRD024-4, Zonefirst RDSC | **at `DU-M-ERV-R-PLANT`'s start collar on the level-2 plenum in RM-M-MECH**, not behind the valve: serviced with no access panel in the humid liner; RH sensor local |
-| plant HP supply, 6" 24 VAC | Honeywell ARD6TZ | EWC 6RSD, Suncourt ZC206, Aprilaire 6606 | on a 10x6-to-6 round stub above `REG-S-HP-PLANT`, reached through the register opening |
+| plant HP supply, 12x6, 24 VAC | Honeywell Home ZD12X6TZ | dimensionally compatible equal | vertical airflow, west actuator, fabricated 26ga end boot; [dimensioned connection and service sequence](plant_supply_connection.md) |
 | 6" branch balancing | spin-in collar with damper (Master Flow LSCD6) | Speedi AC-VDQ 06 with quadrant | locking quadrant not confirmed on the collar; specify the quadrant damper where the collar lacks one |
 | air-handler connector | Duro Dyne MFN metal-fabric-metal | | NFPA 90A / 701 fabric; 3" fabric (suggested, not a code number) |
 | mastic / tape | Hardcast Versa-Grip 181 (UL 181A-M/B-M) | Nashua 324A tape (UL 181A-P/B-FX), 3M 3340 | Iron-Grip 601 is B-M only; 3M 3381 is not UL 181 |
 
-Body length and actuator box size of all three motorised dampers are unpublished online:
-confirm on the submittal (§13).
+The plant supply now uses the ZD series' published 4" body and the M847D motor envelope.
+The extract damper still needs its body and actuator dimensions confirmed (§13).
 
 ## 8. Hoods — `EQ-T-ERV-HOOD-8` / `-8-EXH`
 

@@ -2371,6 +2371,20 @@ bearing wall, matching every other bearing wall in the house.
 
 ## Ventilation, ducts and soffits
 
+### Plant supply has a connected rectangular terminal assembly (2026-11-01)
+
+Moved REG-S-HP-PLANT east to (14′8″, 3′3″). A220V 12X06 without OBD, ZD12X6TZ,
+26ga TH-HP-PLANT-BOOT-01 and removable collar replace the generic OBD neck and unmodeled
+round-damper transition. DU-S-HP-SOUTH rises west of the bearing line and ends square on
+its dimensioned inlet; the inlet elevation follows the resolved ceiling face. The actuator
+is west, because the proposed east position conflicts with the feed. A gasketed PVC hatch
+west of the grille permits separate actuator removal; geometry includes withdrawal paths.
+One terminal allowance includes the complete assembly and hatch. See
+[connection detail](notes/plant_supply_connection.md) for dimensions, seals and service.
+Envelope fit passes are not a release of fabrication tolerances or hand/tool access;
+physical dry fit is required before closing the liner. Window-wash performance is unverified.
+
+
 ### Air-distribution products named; hoods counted; 203 cfm (2026-10-31)
 
 Every terminal, both hoods and the outdoor legs' insulation now name a basis-of-design part,

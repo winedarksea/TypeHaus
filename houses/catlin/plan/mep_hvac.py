@@ -262,7 +262,7 @@ DUCTS_HVAC_SECOND = [
             path=(pt(ft(19, 4), ft(14, 8.875)), pt(ft(17), ft(14, 8.875))),
             width=inch(10), depth=inch(8), routing=DuctRouting.EXPOSED,
             start_elevation=inch(100.125), end_elevation=inch(100.125), design_cfm=175, material="galvanized"),
-    # The plant room and attic study share FS-ATTIC's y=3'-4" I-joist bay.
+    # The plant room and attic study share FS-ATTIC's y=3'-3" I-joist bay.
     # RM-S-STUDY2 takes 75 cfm from the soffit leg below before it rises; this
     # bay run carries the remaining 175 cfm west across the x=18' bearing line.
     #
@@ -285,24 +285,14 @@ DUCTS_HVAC_SECOND = [
     # damper, and the 18x8 trunk was chosen partly so the take-off could sit further
     # downstream than a 14x8 would have allowed.
     #
-    # ** BOTH ENDS CAME IN ON 2026-09-04, THE WEST END BY MOST. ** 19'-4" of 10x6 became
-    # 15'-8" — and both moves are better terminal placement, not only less duct. The west end
-    # came in again on 2026-09-23, 9'-4" -> 12'-0", another 2'-8": see
-    # REG-S-HP-PLANT for why the room does not notice.
-    #
-    #  * WEST 6'-8" -> 9'-4", a 2'-8" saving. The old end was 2'-4" PAST the plant room's
-    #    centreline, and its "centred between WIN-S-PLANT1/2" argument only ever counted two
-    #    of the three south windows: the glass runs x 4'-0" / 9'-4" / 14'-8", so 6'-8" left
-    #    WIN-S-PLANT4 unwashed eight feet away. 9'-4" is WIN-S-PLANT2's own centreline and
-    #    the centroid of all three, so one terminal washes the whole south wall. It is 4"
-    #    clear in y of FURN-S-PLANT-POT2 (which ends at y=2'-9") and 1'-4" north of
-    #    ED-S-PLANT-TUBE1/2's line, so it is over neither a pot nor a grow tube, and it is
-    #    still 9'-2" from REG-S-ERV-PLANT-EXH across a 159 sf room.
-    #  * EAST ends at the riser station x=19'-6" now that RM-S-STUDY2 is fed
-    #    from below. This removes another 3'-2" beyond the attic desk relocation.
+    # Rise only west of the x=18' bearing line; final elevation follows the terminal's
+    # resolved ceiling face and inlet. The boot begins at x=15'-2", grille at 14'-8".
+    # The attic study still takes 100 cfm from this branch before its 75 cfm plant tail.
     DuctRun(uid="NYRX7TBEGH", tag="DU-S-HP-SOUTH", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(3, 3)), pt(ft(12), ft(3, 3))),
+            path=(pt(ft(19, 6), ft(3, 3)), pt(ft(17, 6), ft(3, 3)),
+                  pt(ft(15, 2), ft(3, 3))),
             width=inch(10), depth=inch(6), routing=DuctRouting.JOIST_BAY,
+            end_terminal_ref="REG-S-HP-PLANT",
             floor_ref="FS-ATTIC", design_cfm=175, material="galvanized"),
     # THE RISER — a repeated plan point at two elevations is the vertical leg, the idiom
     # DU-S-ERV-HP-FEED's drop already uses.

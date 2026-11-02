@@ -1484,6 +1484,12 @@
 "canvas_objects/FURN-B-PLAY-SECTIONAL/body_z0_m": -2.7670125,
 "canvas_objects/FURN-B-PLAY-SECTIONAL/body_z1_m": -1.9034125,
 "canvas_objects/FURN-B-PLAY-SECTIONAL/z_m": -2.7670125,
+"canvas_objects/FURN-B-PLAY-TAPESTRY-ROD/body_z0_m": -0.9001125,
+"canvas_objects/FURN-B-PLAY-TAPESTRY-ROD/body_z1_m": -0.8493125,
+"canvas_objects/FURN-B-PLAY-TAPESTRY-ROD/z_m": -0.9001125,
+"canvas_objects/FURN-B-PLAY-TAPESTRY/body_z0_m": -2.4622125,
+"canvas_objects/FURN-B-PLAY-TAPESTRY/body_z1_m": -0.9382125,
+"canvas_objects/FURN-B-PLAY-TAPESTRY/z_m": -2.4622125,
 "canvas_objects/FURN-B-PLAY-TV/body_z0_m": -2.0050125,
 "canvas_objects/FURN-B-PLAY-TV/body_z1_m": -0.7324725,
 "canvas_objects/FURN-B-PLAY-TV/z_m": -2.0050125,
@@ -3618,9 +3624,9 @@
 ],
 "ducts/DU-S-HP-SOUTH/z_m": [
 5.870575,
-5.870575,
-2,
-"9ea966bb6e69"
+6.010148,
+4,
+"caf56f453451"
 ],
 "ducts/DU-S-HP-STUDY2/z_m": [
 5.565775,
@@ -59168,11 +59174,35 @@
 2,
 "933333b82b0e"
 ],
-"geometry/CXDCYN7YQ2-neck/body": [
-5.819648,
-5.8879105,
+"geometry/CXDCYN7YQ2-neck-actuator/body": [
+5.832348,
+5.9502199,
 2,
-"4b682ed5237c"
+"5b99f56be8c1"
+],
+"geometry/CXDCYN7YQ2-neck-collar/body": [
+5.819648,
+5.832348,
+2,
+"129e59edaa2f"
+],
+"geometry/CXDCYN7YQ2-neck-damper/body": [
+5.832348,
+5.933948,
+2,
+"964a7bcd89ac"
+],
+"geometry/CXDCYN7YQ2-neck-service-hatch/body": [
+5.806948,
+5.819648,
+2,
+"117c6d48221c"
+],
+"geometry/CXDCYN7YQ2-neck/body": [
+5.933948,
+6.086348,
+2,
+"12910f74e304"
 ],
 "geometry/CXYTEY6C5D-run/body": [
 6.314948,
@@ -64318,9 +64348,9 @@
 ],
 "geometry/NYRX7TBEGH-run/body": [
 5.794375,
-5.946775,
-8,
-"5304bc513780"
+6.086348,
+24,
+"c638e33bbda2"
 ],
 "geometry/NZQNA1VMKW-box/body": [
 6.502273,
@@ -112096,7 +112126,7 @@
 "solids/DU-S-HP-SOUTH-RISE-RUN/z0_m": 5.489575,
 "solids/DU-S-HP-SOUTH-RISE-RUN/z1_m": 5.870575,
 "solids/DU-S-HP-SOUTH-RUN/z0_m": 5.794375,
-"solids/DU-S-HP-SOUTH-RUN/z1_m": 5.946775,
+"solids/DU-S-HP-SOUTH-RUN/z1_m": 6.086348,
 "solids/DU-S-HP-STUDY2-RUN/z0_m": 5.489575,
 "solids/DU-S-HP-STUDY2-RUN/z1_m": 5.641975,
 "solids/DU-S-HP-SUITE-RUN/z0_m": 5.489575,
@@ -114815,8 +114845,16 @@
 "solids/REG-S-HP-BED2-NECK/z1_m": 5.680075,
 "solids/REG-S-HP-BED3-NECK/z0_m": 5.527675,
 "solids/REG-S-HP-BED3-NECK/z1_m": 5.680075,
-"solids/REG-S-HP-PLANT-NECK/z0_m": 5.819648,
-"solids/REG-S-HP-PLANT-NECK/z1_m": 5.8879105,
+"solids/REG-S-HP-PLANT-NECK-ACTUATOR/z0_m": 5.832348,
+"solids/REG-S-HP-PLANT-NECK-ACTUATOR/z1_m": 5.9502199,
+"solids/REG-S-HP-PLANT-NECK-COLLAR/z0_m": 5.819648,
+"solids/REG-S-HP-PLANT-NECK-COLLAR/z1_m": 5.832348,
+"solids/REG-S-HP-PLANT-NECK-DAMPER/z0_m": 5.832348,
+"solids/REG-S-HP-PLANT-NECK-DAMPER/z1_m": 5.933948,
+"solids/REG-S-HP-PLANT-NECK-SERVICE-HATCH/z0_m": 5.806948,
+"solids/REG-S-HP-PLANT-NECK-SERVICE-HATCH/z1_m": 5.819648,
+"solids/REG-S-HP-PLANT-NECK/z0_m": 5.933948,
+"solids/REG-S-HP-PLANT-NECK/z1_m": 6.086348,
 "solids/REG-S-HP-RET-NECK/z0_m": 5.2451,
 "solids/REG-S-HP-RET-NECK/z1_m": 5.28955,
 "solids/REG-S-HP-STAIR-NECK/z0_m": 5.553075,

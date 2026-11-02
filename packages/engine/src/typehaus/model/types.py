@@ -7,7 +7,12 @@ from typing import Literal
 
 from pydantic import Field, model_validator
 
-from typehaus.model.air_products import DuctProductType, TerminalNeck
+from typehaus.model.air_products import (  # noqa: F401 — public authoring exports
+    DuctProductType,
+    TerminalNeck,
+    TerminalNeckComponent,
+    TerminalNeckInlet,
+)
 from typehaus.model.base import HausModel
 from typehaus.model.built_in_bench import BENCH_ENVELOPE_TOLERANCE_M, BuiltInBenchSpec
 from typehaus.model.curtain_track import CurtainTrackSpec

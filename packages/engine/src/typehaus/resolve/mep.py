@@ -87,7 +87,7 @@ def resolve_mep(model: ResolvedModel) -> list[Finding]:
         for element in model.plan.storey_elements(storey.tag):
             if isinstance(element, SleevePenetration):
                 findings.extend(_resolve_sleeve(model, element, storey.tag))
-            elif isinstance(element, DuctRun):
+            elif isinstance(element, DuctRun) and element.end_terminal_ref is None:
                 findings.extend(_resolve_duct_run(model, element, storey))
             elif isinstance(element, ConduitRun):
                 findings.extend(_resolve_conduit_run(model, element, storey.tag))

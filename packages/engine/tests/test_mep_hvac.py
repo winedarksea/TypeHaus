@@ -288,7 +288,8 @@ def test_study_sidewall_boot_connects_and_clears_soffit_framing(catlin_plan, cat
     # Bay-centred between FS-ATTIC joists since 2026-10-31: 1" off the axis, over the 10" duct.
     assert LineString(bay.path).distance(Point(attic_boot.position)) < bay.width_m / 2
     assert Polygon(room.clear_face).covers(Polygon(grille.footprint))
-    assert bay.length_m == pytest.approx(inch(90).meters)
+    # The plant supply now ends at its raised boot east of the east window.
+    assert bay.length_m < inch(54).meters
     assert not bay.conflicts
 
     half_diameter = branch.diameter_m / 2

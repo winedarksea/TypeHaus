@@ -72,6 +72,51 @@ class DuctProductType(HausModel):
         return self
 
 
+class TerminalNeckComponent(HausModel):
+    """A ceiling assembly part; offset is its centre in plan and its bottom above the face.
+
+    Clearance-only boxes describe blade travel or service space and are never emitted or
+    purchased. Product quantities belong to RegisterType.parts, not to these fit envelopes.
+    """
+
+    tag: str
+    width: Length
+    height: Length
+    depth: Length
+    offset: tuple[Length, Length, Length]
+    part: str
+    product_ref: str | None = None
+    clearance_only: bool = False
+    receives_duct: bool = False
+
+    @model_validator(mode="after")
+    def _positive_dimensions(self) -> TerminalNeckComponent:
+        if min(self.width.meters, self.height.meters, self.depth.meters) <= 0:
+            raise ValueError("terminal component dimensions must be positive")
+        return self
+
+
+class TerminalNeckInlet(HausModel):
+    """Rectangular inlet centre relative to a ceiling face; normal points toward the duct."""
+
+    position: tuple[Length, Length, Length]
+    width: Length
+    height: Length
+    normal: tuple[float, float]
+    #: Level approach inside the authored final leg, so a pitched offset ends square.
+    straight_length: Length | None = None
+
+    @model_validator(mode="after")
+    def _valid_inlet(self) -> TerminalNeckInlet:
+        if self.straight_length is not None and self.straight_length.meters <= 0:
+            raise ValueError("terminal inlet straight length must be positive")
+        if self.width.meters <= 0 or self.height.meters <= 0:
+            raise ValueError("terminal inlet dimensions must be positive")
+        if abs(sum(v * v for v in self.normal) - 1.0) > 1e-6:
+            raise ValueError("terminal inlet normal must be a unit vector")
+        return self
+
+
 class TerminalNeck(HausModel):
     """The part of an air terminal that is IN the cavity: boot, valve spigot, inline damper.
 
@@ -91,3 +136,15 @@ class TerminalNeck(HausModel):
     depth: Length
     #: What occupies the box, as a reader would name it ("6in stamped side boot").
     part: str
+
+    #: Multipart geometry currently uses ceiling-face coordinates only. Legacy single-box
+    #: necks retain their wall, ceiling and floor placement conventions.
+    components: tuple[TerminalNeckComponent, ...] = ()
+    inlet: TerminalNeckInlet | None = None
+
+    @model_validator(mode="after")
+    def _unique_components(self) -> TerminalNeck:
+        tags = [component.tag for component in self.components]
+        if len(tags) != len(set(tags)):
+            raise ValueError("terminal neck component tags must be unique")
+        return self

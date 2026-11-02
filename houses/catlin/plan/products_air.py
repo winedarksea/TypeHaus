@@ -72,13 +72,39 @@ ROUND_DAMPER_4_24V = Product(
     source=f"Basis of design, or equal: Duro Dyne NSPRD024-4, Zonefirst RDSC. RH-controlled "
            f"locally. Body length and actuator size unpublished online. {_SPEC} §7.",
 )
-ROUND_DAMPER_6_24V = Product(
-    tag="PROD-AIR-DAMPER-6-24V", brand="Honeywell", model="ARD6TZ",
-    name="6in round 24 VAC zone damper",
-    url="https://www.supplyhouse.com/Honeywell-Home-ARD6TZ-6-Round-Automatic-TrueZONE-Damper",
-    source=f"Basis of design, or equal: EWC 6RSD, Suncourt ZC206, Aprilaire 6606. On a "
-           f"6in round stub with a 10x6-to-6 round transition at REG-S-HP-PLANT's boot. "
-           f"{_SPEC} §7.",
+PLANT_CEILING_GRILLE = Product(
+    tag="PROD-AIR-PLANT-GRILLE-12X6", brand="TRUaire", model="A220V 12X06",
+    name="12x6 aluminium double-deflection ceiling grille, white, without OBD",
+    url="https://rectorseal.com/hvac/a220-adjustable-double-deflection/",
+    source=f"Plain A220V, not A220VO: motorized damper provides isolation and balancing. {_SPEC} §7.",
+)
+PLANT_ZONE_DAMPER = Product(
+    tag="PROD-AIR-PLANT-DAMPER-12X6", brand="Honeywell Home", model="ZD12X6TZ",
+    name="12x6 rectangular 24 VAC power-close, spring-open zone damper, 4in body",
+    url="https://customer.resideo.com/resources/Techlit/TechLitDocuments/33-00000s/33-00264.pdf",
+    source=f"Vertical airflow; actuator on the west 6in side. Nominal passage; frame is "
+           f"5/32in undersize per manufacturer. M847D actuator included, not a second purchase. {_SPEC} §7.",
+)
+PLANT_END_BOOT = Product(
+    tag="PROD-AIR-PLANT-END-BOOT", brand="Project fabrication", model="TH-HP-PLANT-BOOT-01",
+    name="26ga galvanized end boot, 10x6 east inlet to 12x6 downward outlet",
+    source="Fabricated shell envelope 12in E-W x 10in N-S x 6in high; downward outlet "
+           "centred, east inlet full 10x6. Closed west end; sealed seams and turning vane. "
+           "Dimensioned section and service sequence: notes/plant_supply_connection.md.",
+)
+PLANT_COLLAR = Product(
+    tag="PROD-AIR-PLANT-COLLAR", brand="Project fabrication", model="TH-HP-PLANT-COLLAR-01",
+    name="26ga galvanized 12x6 grille collar, 1/2in installed face-to-damper extension",
+    source="Removable collar and gasketed flange; membrane sealed to fixed perimeter. "
+           "Slip engagements additional to installed extension; notes/plant_supply_connection.md.",
+)
+PLANT_SERVICE_HATCH = Product(
+    tag="PROD-AIR-PLANT-SERVICE-HATCH", brand="Project fabrication", model="TH-HP-PLANT-HATCH-01",
+    name="12x8 white PVC gasketed screw-fixed service cover, 10x6 clear opening",
+    source="Matching Extrutech liner offcut, fixed flanged galvanized curb, closed-cell EPDM "
+           "gasket and stainless captive screws. Membrane sealed to the fixed curb, never "
+           "to the removable cover. Included in the terminal assembly allowance. "
+           "notes/plant_supply_connection.md.",
 )
 WALL_HOOD_8 = Product(
     tag="PROD-AIR-HOOD-8", brand="RenewAire", model="FA8-P (102409)",
@@ -123,6 +149,6 @@ SPOT_NOZZLE_4 = Product(
 
 AIR_PRODUCTS = (
     DISC_VALVE_100, FLOOR_GRILLE_ERV, SIDEWALL_DD_OBD, FLOOR_REGISTER_HP,
-    FILTER_RETURN_GRILLE, RETURN_GRILLE_1210, ROUND_DAMPER_4_24V, ROUND_DAMPER_6_24V,
+    FILTER_RETURN_GRILLE, RETURN_GRILLE_1210, ROUND_DAMPER_4_24V, PLANT_CEILING_GRILLE, PLANT_ZONE_DAMPER, PLANT_END_BOOT, PLANT_COLLAR, PLANT_SERVICE_HATCH,
     WALL_HOOD_8, BACKDRAFT_DAMPER_8, WALL_SEAL_FOAM, ELASTOMERIC_SHEET, SPOT_NOZZLE_4,
 )

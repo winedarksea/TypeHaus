@@ -287,6 +287,10 @@ the future.
 - House K2 base flashing and wall-top closures now derive, bill and receive coverage checks; coordinate the garage Sill to Soffit panel break and installation order, which the fit check records UNKNOWN. See the trim note for the selected aluminium section, isolation and quantities.
 - Add the eased edges and rounded corners to the shown tabletop model.
 - Look up a guide to how plumbers and such route, then make sure the autorouter follows that, and also code for it
+- Plant supply fabrication hold: dry-fit A220V / ZD12X6TZ / TH-HP-PLANT-BOOT-01 and gasketed
+  service hatch, including actuator fasteners, hand/tool access, seams/supports and the
+  approximately 3/8-inch deck margin. Geometry and connection are specified; see
+  houses/catlin/notes/plant_supply_connection.md.
 - Air-distribution products (specified 2026-10-31, [note](../houses/catlin/notes/air_distribution_products.md)); still open:
   - Owner: trimless for RM-M-LIVING / RM-M-BED / the stair hall (note §12), and whether "the heat pump over the stairway" includes the 28x12 return.
   - Owner: the 1.1 cfm residual under 205, or the 10" hoods (needs RenewAire FA10 test data and a plate fit check) — `notes/erv_static_budget.md` §10.4, §10.6.
@@ -339,11 +343,13 @@ the future.
 - Trim bbd-transition-trim still isn't showing the white color for some reason in the 3d viewer, despite being named as such already.
 - O-S-VANITY and D-S-STUDY2, both openings (not true doors) seem to get ignored, improperly showing baseboard, sill plates, and non-continuous flooring, they likely just need to reuse some of the existing door handling logic which generally works
 - Edit the door swing icon in 2d so it shows a frame (right now the 2d door swing might be a bit too big, versus actual leaf swing)
-- Make SL-M-DECK a wood joist design. Use open web trusses (not I joists) at tighter OC for extra strength (and maybe ask for a 60 psf or 100 psf truss design, if that is easy to source). Make sure the joists are anchored properly using simpson connectors to the concrete. The structural concrete (BuildDeck) is kept in the library but retired from use. Perhaps 3/4" plywood as the theater ceiling
+- Make SL-M-DECK a wood joist design, removing the concrete deck and the concrete centerlin wall. Use open web trusses (not I joists) at tighter OC for extra strength (and maybe ask for a 60 psf or 100 psf truss design, if that is easy to source) to support large format tile well. Make sure the joists are anchored properly using simpson connectors to the concrete. The structural concrete (BuildDeck) is kept in the library but retired from use. Perhaps 3/4" plywood as the theater ceiling.
+- Acoustics for the theater ceiling: resilient channels (1" or 1 1/8" screws to avoid short circuiting into the wood). Painter's caulk in gap between ceiling and walls. No ceiling lights.
 - Aiming to keep floor transitions flush, looks like ~3/4" thickness makes this easiest. Ditra XL or Ditra Heat + Thinset + 8 mm Tile (Ditra Heat PS 5.5 mm + 3.5 mm thinset (3/8" by 3/8" notch trowel) + 10 mm tile OR Ditra Heat Duo peel and stick (PS) + 2.5 mm thinset (1/4" x 3/8" trowel) + 9 mm tile OR 1.5 mm thinset (compressed by 1/4" by 1/4" trowel) + ditra heat 5.5 mm + 2.5 mm thinset + 9.5 mm tile) == 1/2" plywood (nominal) + 7 mm LVP == 1/2" exacor (12 mm actual) + 7 mm LVP == 1/2" gypsum underlayment (fiberrock) + 6.5 mm LVP == 5/8" actual (Fiberock) underlayment + 3 mm sheet vinyl == 16 mm exacor + feather finish + 2.8 to 3 mm sheet vinyl == 3/4" hardwood ~= 7/16" pad + 1/2" pile carpet (carpet squishes at edges)
 - Delete the shower blow dryer fan from RM-M-BATH2 (but keep in library)
 - Specify paint in detail
 - Specify leak detectors, in useful places, linked to Home Assitant
+- REG-S-EXH3-NECK is on the floor right in front of the sink. Seams a great way to suck water into the ERV system. Probably better if that was moved.
 
 # Project Management
 

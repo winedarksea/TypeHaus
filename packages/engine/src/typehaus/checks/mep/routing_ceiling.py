@@ -75,7 +75,7 @@ from shapely.geometry import LineString, MultiLineString, Point, Polygon
 
 from typehaus.checks._authoring import advisory, passed, unknown
 from typehaus.checks.mep.routing import VOID_BUFFER_M
-from typehaus.checks.mep.routing_geometry import M_TO_FT, run_polylines, run_radii, wall_cover
+from typehaus.checks.mep.routing_geometry import M_TO_FT, run_polylines, wall_cover
 from typehaus.checks.mep.routing_sloped import SlopedPlane, sloped_plane
 from typehaus.checks.mep.routing_terminals import (
     fixture_trim,
@@ -229,7 +229,10 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
     declared = {room.tag: room.exposed_services for room in ctx.model.rooms
                 if room.exposed_services}
     storey_z = {storey.tag: storey.elevation.meters for storey in ctx.plan.storeys}
-    radii = run_radii(ctx)
+    from typehaus.resolve.mep_envelopes import run_sections
+
+    # Ceiling and floor intrusion use vertical depth, not a rectangular duct's plan width.
+    vertical_radii = {tag: section[1] for tag, section in run_sections(ctx.model).items()}
     soffit_covers: dict[str, Any] = {}
     tol = rules.ceiling_intrusion_in * M_PER_IN
     grace_m = rules.terminal_grace_in * M_PER_IN
@@ -281,7 +284,7 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
         if len(z) != len(path):
             ungraded.append(tag)
             continue
-        radius = radii.get(tag, 0.0)
+        radius = vertical_radii.get(tag, 0.0)
         trim = fixture_trim(ctx, tag, path, z, radius) if kind == "pipe" else set()
         for index in range(len(path) - 1):
             a, b = path[index], path[index + 1]

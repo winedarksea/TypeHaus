@@ -149,27 +149,11 @@ REGISTERS_HVAC_SECOND = [
              position=pt(inch(261.25), inch(43.5)), rotation=deg(90),
              duct_ref="DU-S-HP-STUDY2", type_ref="REG-T-HP-STUDY-SIDE", design_cfm=75,
              mount=Mount(kind=MountKind.WALL, elevation=inch(93.75))),
-    # RM-S-PLANT at (12'-0", 3'-4"): the branch's west terminus, moved 2'-8" east on
-    # 2026-09-23 for that much less 10x6. The glass runs x 4'-0" / 9'-4" / 14'-8"; 9'-4" was
-    # its centroid (and 6'-8" before 2026-09-04, which left the east window unwashed). 12'-0",
-    # midway between the middle and east windows, is still over the glass band a humid room
-    # condenses on first. Further east is worse air, not just less duct: at 14'-8" it would
-    # be 5'-5" from REG-S-ERV-PLANT-EXH, at the room's only door.
-    #
-    # It clears everything it has to: 1'-2" north of ED-S-PLANT-TUBE2 (which ends at 11'-8"),
-    # 3" south of ED-S-PLANT-LT's footprint, over no pot (POT2 ends at x=9'-5"), and 6'-10"
-    # from the extract, diagonally, so the room's air crosses the planting on the way out.
-    # (placeables.py still describes the chairs as straddling a floor register at (9', 4') —
-    # that was REG-S-SUP1, since retired.)
-    # REG-T-HP-SUP-DAMPERED: same grille doing the same glass wash, with a motorised
-    # isolation damper behind it. Two things it has to do that a plain terminal cannot — shut
-    # System 1 out of a 70% RH room so the branch does not carry its moisture to every other
-    # room on DU-S-HP-SOUTH, and stop pressurising a room whose vapour barrier has no
-    # redundancy. It is interlocked with REG-S-ERV-PLANT-EXH below, which is what makes the
-    # pair balanced rather than merely present (mep.humid_room_pressure is the rule that
-    # says so out loud).
+    # East-window supply, 75 cfm with RH-interlocked isolation. The complete rectangular
+    # assembly and raised feed are dimensioned in notes/plant_supply_connection.md.
+    # Westward vane setting distributes air across the planting; window wash is unverified.
     Register(uid="CXDCYN7YQ2", tag="REG-S-HP-PLANT", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
-             position=pt(ft(12), ft(3, 3)), duct_ref="DU-S-HP-SOUTH",
+             position=pt(ft(14, 8), ft(3, 3)), duct_ref="DU-S-HP-SOUTH",
              type_ref="REG-T-HP-CEIL-DAMPERED", design_cfm=75,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # The plant room's extract. RM-S-PLANT was supply-only, so its own ventilation pushed
@@ -201,10 +185,8 @@ REGISTERS_HVAC_SECOND = [
     # carry that UNKNOWN and want the same treatment.) The duct's riser is still on the axis,
     # inside the stud cavity; the boot is the 5" of horizontal that crosses the liner.
     #
-    # It leaves 6'-10" between this grille and REG-S-HP-PLANT at (12'-0", 3'-4"), so conditioned
-    # air still lands on the south glass and crosses the planting before it is pulled out,
-    # rather than short-circuiting. (The old text here claimed 6'-9" against a supply at
-    # (6'-8", 3'-4"), which was 11'-7" away — stale arithmetic from a y=4'-8" station.)
+    # Approximately 5' from the supply at (14'-8", 3'-3"). Supply blades aim west;
+    # whole-room throw and short-circuit performance remain commissioning checks.
     Register(uid="C7LM4KAP2X", tag="REG-S-ERV-PLANT-EXH", kind=DuctSystem.EXHAUST,
              # y=7'-4" is a truss bay centre and a stud bay centre at once; y=4'-8" would
              # put the riser inside D-S-PLANT's rough opening — 78 1/2" of bare duct standing

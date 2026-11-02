@@ -1,4 +1,4 @@
-"""The part of an air terminal behind its face: one box per register whose type has a neck.
+"""The parts behind an air terminal: legacy boot boxes or a dimensioned ceiling assembly.
 
 A register resolves as its face (``RegisterType.footprint``/``height``, an inch deep). What
 is in the cavity — a stamped boot, a disc valve's collar, an inline damper and its actuator —
@@ -24,7 +24,7 @@ _PROBE_M = 0.05
 
 
 def neck_boxes(model: ResolvedModel) -> list[tuple[str, tuple, float, float, str]]:
-    """``(register tag, plan ring, z0, z1, part)`` for every register with a typed neck.
+    """``(register tag, plan ring, z0, z1, part)`` for every physical or clearance envelope.
 
     A wall terminal whose back cannot be found comes back with an EMPTY ring, so the check
     can say so rather than skip it.
@@ -36,10 +36,43 @@ def neck_boxes(model: ResolvedModel) -> list[tuple[str, tuple, float, float, str
         neck = getattr(product, "neck", None)
         if neck is None:
             continue
+        if neck.components:
+            for component in neck.components:
+                box = component_box(obj, component)
+                out.append((obj.tag, *(box or ((), 0.0, 0.0)), component.part))
+            continue
         box = (_box(model, obj, neck)
                if obj.mount is not None and obj.body_z0_m is not None else None)
         out.append((obj.tag, *(box or ((), 0.0, 0.0)), neck.part))
     return out
+
+
+def component_box(obj, component) -> tuple[tuple, float, float] | None:
+    """Place one ceiling component using the same face plane as the legacy neck."""
+    if obj.mount is None or obj.mount.kind.value != "ceiling" or obj.body_z0_m is None:
+        return None
+    dx, dy = _rotate(tuple(v.meters for v in component.offset[:2]), obj.rotation_degrees)
+    ring = _rectangle((obj.position[0] + dx, obj.position[1] + dy),
+                      _rotate((1.0, 0.0), obj.rotation_degrees),
+                      _rotate((0.0, 1.0), obj.rotation_degrees),
+                      component.width.meters, component.height.meters, centred=True)
+    bottom = obj.body_z0_m + component.offset[2].meters
+    return ring, bottom, bottom + component.depth.meters
+
+
+def terminal_inlet(model: ResolvedModel, tag: str):
+    """World-space (centre, outward normal, width, height), or None if not placeable."""
+    obj = next((o for o in model.canvas_objects if o.tag == tag and o.kind == "Register"), None)
+    if obj is None or obj.mount is None or obj.mount.kind.value != "ceiling":
+        return None
+    catalog = next((t for t in model.plan.library.register_types if t.tag == obj.type_ref), None)
+    inlet = catalog.neck.inlet if catalog is not None and catalog.neck is not None else None
+    if inlet is None or obj.body_z0_m is None:
+        return None
+    dx, dy = _rotate(tuple(v.meters for v in inlet.position[:2]), obj.rotation_degrees)
+    return ((obj.position[0] + dx, obj.position[1] + dy,
+             obj.body_z0_m + inlet.position[2].meters),
+            _rotate(inlet.normal, obj.rotation_degrees), inlet.width.meters, inlet.height.meters)
 
 
 def _rotate(local: tuple[float, float], degrees: float) -> tuple[float, float]:
@@ -122,12 +155,35 @@ def _back(model: ResolvedModel, obj, axis: tuple[float, float]) -> tuple[float, 
 
 
 def emit_terminal_necks(model: ResolvedModel) -> None:
-    """Append each neck as a ``terminal_neck`` solid on its register's storey."""
-    storeys = {obj.tag: obj.storey for obj in model.canvas_objects}
-    for tag, ring, z0, z1, _part in neck_boxes(model):
-        if not ring:
+    """Draw parts, with a shared inspect group; quantities come from the catalog parts."""
+    types = {t.tag: t for t in model.plan.library.register_types}
+    for obj in model.canvas_objects:
+        catalog = types.get(obj.type_ref) if obj.kind == "Register" else None
+        neck = getattr(catalog, "neck", None)
+        if neck is None:
             continue
-        uid = next((o.uid for o in model.canvas_objects if o.tag == tag), tag)
-        model.solids.append(ResolvedSolid(
-            uid=f"{uid}-neck", tag=f"{tag}-NECK", storey=storeys[tag],
-            category="terminal_neck", outline=ring, z0_m=z0, z1_m=z1))
+        if neck.components:
+            for component in neck.components:
+                if component.clearance_only:
+                    continue
+                box = component_box(obj, component)
+                if box is None:
+                    continue
+                ring, z0, z1 = box
+                # Keep the established NECK pick identity for the boot itself.
+                suffix = "NECK" if component.tag == "BOOT" else f"NECK-{component.tag}"
+                model.solids.append(ResolvedSolid(
+                    uid=f"{obj.uid}-{suffix.lower()}", tag=f"{obj.tag}-{suffix}",
+                    storey=obj.storey, category="terminal_neck", outline=ring,
+                    z0_m=z0, z1_m=z1, product=component.product_ref,
+                    host_ref=obj.tag, group=f"{obj.tag}-NECK"))
+        else:
+            box = (_box(model, obj, neck)
+                   if obj.mount is not None and obj.body_z0_m is not None else None)
+            if box is None:
+                continue
+            ring, z0, z1 = box
+            model.solids.append(ResolvedSolid(
+                uid=f"{obj.uid}-neck", tag=f"{obj.tag}-NECK", storey=obj.storey,
+                category="terminal_neck", outline=ring, z0_m=z0, z1_m=z1,
+                host_ref=obj.tag))

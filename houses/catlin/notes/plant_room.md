@@ -64,6 +64,7 @@ source:
 - One sheet, no seam. The cove is the waterproofing; add no second impermeable layer under it.
 
 ### Spec 23 00 00
+- Plant HP supply: [dimensioned boot, damper and sealed service hatch](plant_supply_connection.md).
 - Hold the room neutral to slightly negative, -0.05 to -0.15 in. w.g. against adjacent spaces.
 - A humidifier is required: an 84%-latent ERV still loses 1.5 to 2 gal/day at design.
 

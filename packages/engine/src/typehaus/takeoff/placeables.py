@@ -54,6 +54,14 @@ def placeables_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         assert isinstance(tags, list)
         tags.append(item.tag)
         product = types.get(item.type_ref or "")
+        neck = getattr(product, "neck", None)
+        included = {component.product_ref for component in getattr(neck, "components", ())
+                    if component.product_ref and not component.clearance_only}
+        if included:
+            # These are the contents of one priced terminal assembly, not extra purchases.
+            row["included_products"] = [
+                {"product_ref": ref, "quantity_per_assembly": 1}
+                for ref in sorted(included)]
         for part in getattr(product, "parts", ()):
             part_key = (part.product_ref, item.domain, item.storey)
             part_product = model.plan.library.product(part.product_ref)

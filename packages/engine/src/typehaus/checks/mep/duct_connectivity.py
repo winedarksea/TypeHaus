@@ -187,6 +187,10 @@ def _boot(ctx: CheckContext, duct: ResolvedDuct,
           point: tuple[float, float]) -> str | None:
     """A register that names this run and is within a boot's reach of the end."""
     for tag, at in _takeoffs(ctx, duct):
+        from typehaus.resolve.terminal_necks import terminal_inlet
+
+        if terminal_inlet(ctx.model, tag) is not None:
+            continue  # A dimensioned inlet cannot earn an implicit boot or cap allowance.
         span = ((at[0] - point[0]) ** 2 + (at[1] - point[1]) ** 2) ** 0.5
         if span <= BOOT_REACH_M:
             return tag
@@ -212,6 +216,10 @@ def _capped_past_a_takeoff(ctx: CheckContext, duct: ResolvedDuct,
     leg = ((duct.path[-2], duct.path[-1]) if point == duct.path[-1]
            else (duct.path[0], duct.path[1]))
     for tag, at in _takeoffs(ctx, duct):
+        from typehaus.resolve.terminal_necks import terminal_inlet
+
+        if terminal_inlet(ctx.model, tag) is not None:
+            continue  # A dimensioned inlet cannot earn an implicit boot or cap allowance.
         span, _ = plan_distance_to_segment(at, leg[0], leg[1])
         if span <= BOOT_REACH_M:
             return tag
@@ -234,6 +242,21 @@ def duct_connectivity(ctx: CheckContext) -> list[Finding]:
                     "end": duct.z_m[-1] if duct.z_m else None}
         for point, label in ((duct.path[0], "start"), (duct.path[-1], "end")):
             z = z_by_end[label]
+            authored = ctx.plan.by_tag(duct.tag)
+            terminal_ref = getattr(authored, "end_terminal_ref", None)
+            if label == "end" and terminal_ref is not None:
+                from typehaus.resolve.terminal_connections import inlet_connection_error
+
+                problem = inlet_connection_error(ctx.model, terminal_ref)
+                if problem:
+                    out.append(failed("mep.duct_connectivity",
+                                      f"duct {duct.tag} end: {problem}", (duct.tag, terminal_ref)))
+                else:
+                    out.append(passed("mep.duct_connectivity",
+                                      f"duct {duct.tag} end matches "
+                                      f"{terminal_ref}'s dimensioned inlet",
+                                      (duct.tag, terminal_ref)))
+                continue
             landed = (_meets_another_duct(ctx, duct, z, point)
                       or equipment_at_end(ctx, z, point)
                       or _boot(ctx, duct, point))

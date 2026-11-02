@@ -196,6 +196,34 @@ def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
     findings.extend(z_findings)
     if not z:
         return findings
+    if duct.end_terminal_ref is not None:
+        from typehaus.resolve.terminal_necks import terminal_inlet
+
+        inlet = terminal_inlet(model, duct.end_terminal_ref)
+        terminal = model.plan.by_tag(duct.end_terminal_ref)
+        if inlet is None or getattr(terminal, "duct_ref", None) != duct.tag:
+            return findings + [Finding(
+                severity=Severity.ERROR, check_id="integrity.duct_terminal_ref",
+                message=f"{duct.tag}: end_terminal_ref needs a ceiling terminal "
+                        "with an inlet naming this duct",
+                element_tags=(duct.tag, duct.end_terminal_ref), result=Result.FAIL)]
+        z[-1] = inlet[0][2]
+        catalog = next(t for t in model.plan.library.register_types if t.tag == terminal.type_ref)
+        straight = catalog.neck.inlet.straight_length
+        if straight is not None:
+            approach = (path[-1][0] + inlet[1][0] * straight.meters,
+                        path[-1][1] + inlet[1][1] * straight.meters)
+            # Keep this inside the authored last leg; never silently reroute around a wall.
+            from typehaus.resolve.mep_soffit import plan_distance_to_segment
+
+            distance, _ = plan_distance_to_segment(approach, path[-2], path[-1])
+            if distance > 1e-6 or length(sub(path[-2], path[-1])) <= straight.meters:
+                return findings + [Finding(
+                    severity=Severity.ERROR, check_id="integrity.duct_terminal_ref",
+                    message=f"{duct.tag}: final leg cannot contain the terminal's level approach",
+                    element_tags=(duct.tag, duct.end_terminal_ref), result=Result.FAIL)]
+            path.insert(-1, approach)
+            z.insert(-1, z[-1])
     developed = sum(
         math.hypot(length(sub(path[i], path[i + 1])), z[i + 1] - z[i])
         for i in range(len(path) - 1))

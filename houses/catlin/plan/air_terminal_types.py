@@ -24,6 +24,8 @@ from typehaus import (
     inch,
 )
 
+from plan.plant_supply_terminal import PLANT_SUPPLY_NECK
+
 _NOTE = "notes/air_distribution_products.md"
 
 
@@ -148,16 +150,13 @@ AIR_REGISTER_TYPES = (
                  source=f"Face 7 3/8 x 13 3/8in and 2in damper depth are planning figures, "
                         f"not published at this size. {_NOTE} §4.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
-    # RM-S-PLANT's System 1 terminal must shut (its damper is interlocked with the room's
-    # RH control): a 6in round 24 VAC zone damper on a 10x6-to-6 round stub above the
-    # register, reached through the register opening.
+    # One assembly allowance: grille, collar, motorized damper (including actuator), boot.
     RegisterType(tag="REG-T-HP-CEIL-DAMPERED",
-                 name="Heat-pump supply, 12x6 aluminium ceiling register, 6in motorised zone "
-                      "damper above",
+                 name="Plant supply A220V 12x6 / ZD12X6TZ / TH-HP-PLANT-BOOT-01 assembly",
                  footprint=(inch(13.75), inch(7.75)), height=inch(1), plan_symbol="register",
-                 product_ref="PROD-AIR-SIDEWALL-DD-OBD", neck=_OBD_NECK_1206,
-                 source=f"Register as REG-T-HP-SIDE-1206; damper PROD-AIR-DAMPER-6-24V "
-                        f"(body length unpublished online). {_NOTE} §7.",
+                 product_ref="PROD-AIR-PLANT-GRILLE-12X6", neck=PLANT_SUPPLY_NECK,
+                 source=f"75 cfm, RH interlocked; westward throw. Motor actuator west of the "
+                        f"damper, removable service cassette. {_NOTE} §7; notes/plant_supply_connection.md.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     # The only filter in System 1. 12x28x1 is not a stocked size and no stocked size fits
     # EQ-S-ERV-MIX's 12 x 29 opening under Manual D's 300 fpm (12x24x1: 347 fpm at 650 cfm),

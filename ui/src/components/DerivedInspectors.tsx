@@ -16,7 +16,7 @@ import { solidLabel, solidMaterialRef } from "../model/solidLabels";
 import { useStore } from "../state/store";
 import { Provenance } from "./Provenance";
 import { ProductRows } from "./ProductRows";
-import { productForMaterial, railingProduct, trimProfileFor } from "../model/products";
+import { productFor, productForMaterial, railingProduct, trimProfileFor } from "../model/products";
 
 // NB: construction returns (ConstructionRule laps) produce no solids — the resolver records
 // them on `Model.construction_returns`, and nothing in 3D draws them, so there is no selection
@@ -47,7 +47,7 @@ export function SolidInspector({ solid }: { solid: Solid }) {
   const zoomToUid = useStore((s) => s.zoomToUid);
   const host = solid.host_ref && [
     ...model?.openings ?? [], ...model?.braces ?? [], ...model?.walls ?? [],
-    ...model?.solids ?? [], ...model?.floors ?? [],
+    ...model?.solids ?? [], ...model?.floors ?? [], ...model?.canvas_objects ?? [],
   ].find((item) => item.tag === solid.host_ref);
   // A solid that names no material of its own is not material-less: its assembly's face
   // layer is the sheet you are looking at (the breezeway glazing is one polycarbonate
@@ -86,7 +86,7 @@ export function SolidInspector({ solid }: { solid: Solid }) {
       {siblings.length > 1 && <><span className="k">Part of</span>
         <span>{railing ? `${railing.type?.name ?? "railing"}` : "one part"} · {siblings.length} pieces
           ({solidLabel(solid)})</span></>}
-      <ProductRows product={railing?.product ?? productForMaterial(model, material)} />
+      <ProductRows product={railing?.product ?? productFor(model?.catalog, solid.product) ?? productForMaterial(model, material)} />
       <span className="k">Plan extent</span><PlanExtent points={solid.outline} />
       <span className="k">{solid.body_mesh ? "Height" : "Thickness"}</span>
       <span>{formatFtIn(solid.z1_m - solid.z0_m)}</span>

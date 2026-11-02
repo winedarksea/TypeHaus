@@ -154,11 +154,6 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_floors(model))
     with _stage("mep"):
         findings.extend(resolve_mep(model))
-        # Needs the runs: a bay a run crosses gets a 2x6 box instead of a solid block.
-        resolve_bearing_blocking(model)
-    with _stage("fireblocks"):
-        # Reads the run envelopes: a chase fireblock's holes follow the runs.
-        resolve_fireblocks(model)
     with _stage("solar"):
         # After framing: panels ride the resolved roof planes.
         findings.extend(resolve_solar(model))
@@ -224,6 +219,19 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.terminal_necks import emit_terminal_necks
 
         emit_terminal_necks(model)  # a register's boot or spigot, behind its placed face
+    with _stage("terminal_ducts"):
+        # These endpoints depend on the resolved ceiling-mounted terminal, not a copied Z.
+        from typehaus.model.mep import DuctRun
+        from typehaus.resolve.mep import _resolve_duct_run
+
+        for storey in plan.storeys:
+            for element in plan.storey_elements(storey.tag):
+                if isinstance(element, DuctRun) and element.end_terminal_ref is not None:
+                    findings.extend(_resolve_duct_run(model, element, storey))
+        # Both blocking passes must see ALL runs, including the terminal-anchored tails.
+        resolve_bearing_blocking(model)
+    with _stage("fireblocks"):
+        resolve_fireblocks(model)
     # Apron cutouts use the resolved service leaves, including their final elevations.
     with _stage("paneling"):
         findings.extend(resolve_paneling(plan, model))
