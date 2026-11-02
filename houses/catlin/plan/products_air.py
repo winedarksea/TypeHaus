@@ -78,6 +78,15 @@ STAIR_REGISTER_BOX = Product(
     source="12in along wall x 6in tall x 4in deep, including the A220VO OBD envelope. "
            "4in round galvanized branch at 50 cfm, 573 fpm; notes/stair_supply_connection.md.",
 )
+SUITEBATH_EXTRACT_BOOT = Product(
+    tag="PROD-AIR-SUITEBATH-BOOT", brand="Project fabrication",
+    model="TH-ERV-SUITEBATH-BOOT-01",
+    name="26ga sealed galvanized 4x8x5-1/4in bottom-entry extract valve box",
+    source="Overall envelope including front collar: 4in along wall x 8in tall x 5 1/4in "
+           "into wall. 4in bottom inlet axis 3 1/4in behind front plane; 100 mm removable "
+           "disc valve centred on front. Includes collar and mounting tabs within envelope. "
+           "Fabrication specification, not a manufacturer submittal; notes/suitebath_extract.md.",
+)
 PLANT_CEILING_GRILLE = Product(
     tag="PROD-AIR-PLANT-GRILLE-12X6", brand="TRUaire", model="A220V 12X06",
     name="12x6 aluminium double-deflection ceiling grille, white, without OBD",
@@ -154,6 +163,7 @@ SPOT_NOZZLE_4 = Product(
 )
 
 AIR_PRODUCTS = (
+    SUITEBATH_EXTRACT_BOOT,
     DISC_VALVE_100, FLOOR_GRILLE_ERV, SIDEWALL_DD_OBD, FLOOR_REGISTER_HP,
     FILTER_RETURN_GRILLE, RETURN_GRILLE_1210, ROUND_DAMPER_4_24V, STAIR_REGISTER_BOX, PLANT_CEILING_GRILLE, PLANT_ZONE_DAMPER, PLANT_END_BOOT, PLANT_COLLAR, PLANT_SERVICE_HATCH,
     WALL_HOOD_8, BACKDRAFT_DAMPER_8, WALL_SEAL_FOAM, ELASTOMERIC_SHEET, SPOT_NOZZLE_4,

@@ -46,11 +46,11 @@ def test_trimless_door_bead_and_living_corner_by_hand(catlin_model_ro):
     bead = [t for t in model.drywall_trims if t.kind == "door_l_bead" and "D-M-BED2" in t.tags]
     assert len(bead) == 2
     assert sum(t.length_m for t in bead) / _IN == pytest.approx(2 * 199.26, abs=0.02)
-    # RM-M-LIVING's outside corners run its LVP (+15/16") to the 5/8" ceiling face at
-    # 9'-1/8" less 5/8" = 107 1/2": 106 9/16".
+    # RM-M-LIVING's outside corners run its cap top (+3/4", decision #111) to the 5/8" ceiling
+    # face at 9'-1/8" less 5/8" = 107 1/2": 106 3/4".
     corners = [t for t in model.drywall_trims
                if t.kind == "outside_corner" and t.room == "RM-M-LIVING"]
-    assert corners and all(t.length_m / _IN == pytest.approx(106.5625, abs=1e-3)
+    assert corners and all(t.length_m / _IN == pytest.approx(106.75, abs=1e-3)
                            for t in corners)
 
 

@@ -341,8 +341,8 @@ def test_cast_variant_keeps_its_column_collectors_and_delivers_to_garage(
     assert "PT-BW-RNE collector end connection, N-S" in states
     assert states["W-G-S delivered shear on the surplus"].ok
     assert states["RF-GARAGE unit-shear increment"].ok
-    # §7 2026-10-31, at the engine's 16.5104' shaft: 987.32 + 2 x 93.32.
-    assert _inputs(record)["delivered_shear_y"] == pytest.approx(1173.96, abs=0.5)
+    # §7 cast one pack low (C3-E13), 16.4479' shaft: 987.32 + 2 x 93.06.
+    assert _inputs(record)["delivered_shear_y"] == pytest.approx(1173.43, abs=0.5)
 
 
 def test_only_the_declared_canopy_has_a_lateral_system_item(catlin_ctx) -> None:

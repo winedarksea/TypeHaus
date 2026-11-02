@@ -39,7 +39,7 @@ _SCHEDULE = {
     ("foundation wall", "#4", "hdg-a767"): (283, 1610.1),
     ("foundation wall", "#5", "hdg-a767"): (135, 1311.7),
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
-    ("slab", "#3", "black"): (220, 237.3),
+    ("slab", "#3", "black"): (220, 234.7),
     ("slab", "#4", "black"): (43, 562.5),
     ("slab", "#5", "black"): (22, 425.0),
 }
@@ -88,7 +88,9 @@ _SCHEDULE = {
 # (rebar_layout_basis.md §5), 44 × 6.872".
 # −4.7 lb, −2 pieces the same day (C3-E13, note addendum): eight cast columns one 3/4" pack
 # shorter (32 #5 verticals x 3/4", −2.1) and PT-BW-GW/-GE each one #3 tie fewer (−2.6).
-_TOTAL_LB = 6581.8
+# −2.6 lb on 2026-11-01 (#111, note addendum): SL-M-DECK's cap 3/16" thinner, so its 220
+# stirrups each lose 3/8" of leg.
+_TOTAL_LB = 6579.2
 _TOTAL_PIECES = 1123
 
 @pytest.fixture(scope="module")

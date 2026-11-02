@@ -271,3 +271,27 @@ def test_a_chase_a_wall_fills_is_not_a_void_in_the_ceiling() -> None:
     # 0.05 / 0.30 = 17%: a wall merely sharing the elevation, and the hole is still a hole.
     face = deck_void_face(plan, "S", deck, [wall(0.05)], 0.0)
     assert face is not None and face.area == pytest.approx(0.09)
+
+
+@pytest.mark.parametrize("cuts_ceiling", [True, False])
+def test_deck_only_penetration_keeps_the_ceiling_below(cuts_ceiling):
+    from types import SimpleNamespace
+
+    from typehaus import FloorOpening, ft, pt
+    from typehaus.model.enums import FloorOpeningPurpose
+    from typehaus.resolve.ceiling_over import deck_void_face
+
+    opening = FloorOpening(
+        uid="TESTDECK01", tag="FO-TEST", purpose=FloorOpeningPurpose.CHASE,
+        outline=(pt(ft(0), ft(0)), pt(ft(1), ft(0)),
+                 pt(ft(1), ft(1)), pt(ft(0), ft(1))),
+    )
+    assert opening.cuts_ceiling_below is True  # Existing stairs/chases keep their behavior.
+    opening = opening.model_copy(update={"cuts_ceiling_below": cuts_ceiling})
+    plan = SimpleNamespace(by_tag=lambda tag: opening)
+    deck = SimpleNamespace(openings=(opening.tag,))
+    face = deck_void_face(plan, "S", deck)
+    if cuts_ceiling:
+        assert face is not None and face.area == pytest.approx(ft(1).meters ** 2)
+    else:
+        assert face is None

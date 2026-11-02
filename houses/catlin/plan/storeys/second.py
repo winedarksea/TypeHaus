@@ -1298,6 +1298,12 @@ SOFFITS = [
 # W-B-N2's sill): only the wall's outer 6" is under anything up here. Deliberately NOT moved onto the source: it's drawn to
 # the *main* storey's finished faces, so moving it means moving main.py.
 FLOOR_OPENINGS = [
+    # 4 1/4in deck/bottom-plate clearance for the suite-bath extract's 4in riser.
+    # Inside one truss bay; no floor member is cut. Seal around the galvanized riser.
+    FloorOpening(uid="SBERVHOLE1", tag="FO-S-ERV-SUITEBATH", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(113.375), inch(193.875)), pt(inch(117.625), inch(193.875)),
+                          pt(inch(117.625), inch(198.125)), pt(inch(113.375), inch(198.125))),
+                 penetration_for=("DU-M-ERV-R-SUITEBATH",), cuts_ceiling_below=False),
     # ** THE NW CHASE, FRAMED THROUGH FS-S-WEST (2026-09-23). ** Two ERV risers, DU-ERV-EA,
     # the radon/vent bundle and three conduits stand in W-S-CH-W/-CH-S's 2'-0" x 2'-2"
     # chase; the y=34'-5.8" truss was running straight through it. The fabricator shortens

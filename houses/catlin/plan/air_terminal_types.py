@@ -14,6 +14,7 @@ REG-T-ERV-*/REG-T-HP-*/hood rows stay for other houses.
 
 from __future__ import annotations
 
+from plan.plant_supply_terminal import PLANT_SUPPLY_NECK
 from typehaus import (
     EquipmentType,
     RegisterType,
@@ -24,8 +25,7 @@ from typehaus import (
     ft,
     inch,
 )
-
-from plan.plant_supply_terminal import PLANT_SUPPLY_NECK
+from typehaus.model import ProductPart
 
 _NOTE = "notes/air_distribution_products.md"
 
@@ -49,6 +49,9 @@ _VALVE_125_PA = ((10.0, 0.9), (20.0, 3.6), (31.8, 9.0), (42.4, 15.0), (53.0, 24.
 _PLANT_PA = ((5.0, 0.46), (10.0, 1.84), (21.2, 8.2), (31.8, 19.4), (42.4, 33.7))
 # A floor grille on a boot publishes no curve: the derived K 5 of the note's §5.
 _FLOOR_GRILLE_PA = ((10.0, 1.0), (20.0, 4.0), (30.0, 9.0))
+# Same conservative K=5 allowance as the floor boot; no measured curve for this box.
+_SUITEBATH_BOOT_REFERENCE_CFM = 20.0
+_SUITEBATH_BOOT_REFERENCE_LOSS_PA = 4.0
 
 _VALVE_NECK = TerminalNeck(width=inch(4), height=inch(4), depth=inch(2.9375),
                            part="100 mm valve collar in a 4in snap-lock collar")
@@ -99,6 +102,24 @@ AIR_REGISTER_TYPES = (
                  source=f"Same valve in a wall collar; no maker sells a sidewall-specific "
                         f"collar, the ceiling collar is screwed to the stud-bay blocking. "
                         f"{_NOTE} §2.",
+                 ports=(_port("return", Service.RETURN_AIR),)),
+    # Same removable valve; a dimensioned bottom-entry box replaces the implicit elbow.
+    # A 1.5D round elbow cannot turn inside this 5 1/2in staggered wall cavity.
+    RegisterType(tag="REG-T-ERV-SUITEBATH-WALL",
+                 name="Suite bath 100 mm extract valve on TH-ERV-SUITEBATH-BOOT-01",
+                 footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
+                 plan_symbol="register", ventilation_terminal=True,
+                 product_ref="PROD-AIR-DISC-VALVE-100",
+                 static_loss_pa_at_cfm=tuple(
+                     (cfm, pa + _SUITEBATH_BOOT_REFERENCE_LOSS_PA
+                      * (cfm / _SUITEBATH_BOOT_REFERENCE_CFM) ** 2) for cfm, pa in _VALVE_PA),
+                 neck=TerminalNeck(width=inch(4), height=inch(8), depth=inch(5.25),
+                     part="TH-ERV-SUITEBATH-BOOT-01 4x8x5-1/4in bottom-entry valve box",
+                     product_ref="PROD-AIR-SUITEBATH-BOOT"),
+                 parts=(ProductPart(role="fitting", product_ref="PROD-AIR-SUITEBATH-BOOT"),),
+                 source="notes/suitebath_extract.md: 26ga sealed box, 4in bottom inlet, "
+                        "100 mm front collar. Valve curve plus estimated K=5 boot loss; "
+                        "balance to 20 cfm on commissioning.",
                  ports=(_port("return", Service.RETURN_AIR),)),
     # A disc valve cannot sit in a floor. Long side along the joist bay.
     RegisterType(tag="REG-T-ERV-EXH-FLOOR",
@@ -169,7 +190,8 @@ AIR_REGISTER_TYPES = (
                  footprint=(inch(13.75), inch(7.75)), height=inch(1), plan_symbol="register",
                  product_ref="PROD-AIR-PLANT-GRILLE-12X6", neck=PLANT_SUPPLY_NECK,
                  source=f"75 cfm, RH interlocked; westward throw. Motor actuator west of the "
-                        f"damper, removable service cassette. {_NOTE} §7; notes/plant_supply_connection.md.",
+                        f"damper, removable service cassette. {_NOTE} §7; "
+                        "notes/plant_supply_connection.md.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     # The only filter in System 1. 12x28x1 is not a stocked size and no stocked size fits
     # EQ-S-ERV-MIX's 12 x 29 opening under Manual D's 300 fpm (12x24x1: 347 fpm at 650 cfm),

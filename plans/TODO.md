@@ -349,7 +349,7 @@ the future.
 - Delete the shower blow dryer fan from RM-M-BATH2 (but keep in library)
 - Specify paint in detail
 - Specify leak detectors, in useful places, linked to Home Assitant
-- REG-S-EXH3-NECK is on the floor right in front of the sink. Seams a great way to suck water into the ERV system. Probably better if that was moved.
+- [x] Move REG-S-EXH3 / REG-S-EXH3-NECK off the wet floor in front of the sink: high west-wall valve, drawn deck penetration and sealed bottom-entry boot. See `houses/catlin/notes/suitebath_extract.md`.
 
 # Project Management
 

@@ -2303,9 +2303,9 @@
 "canvas_objects/REG-S-EXH1/body_z0_m": 5.8293,
 "canvas_objects/REG-S-EXH1/body_z1_m": 5.8547,
 "canvas_objects/REG-S-EXH1/z_m": 5.8293,
-"canvas_objects/REG-S-EXH3/body_z0_m": 3.0607,
-"canvas_objects/REG-S-EXH3/body_z1_m": 3.0861,
-"canvas_objects/REG-S-EXH3/z_m": 3.0861,
+"canvas_objects/REG-S-EXH3/body_z0_m": 5.51815,
+"canvas_objects/REG-S-EXH3/body_z1_m": 5.6467375,
+"canvas_objects/REG-S-EXH3/z_m": 5.51815,
 "canvas_objects/REG-S-EXH4/body_z0_m": 3.0607,
 "canvas_objects/REG-S-EXH4/body_z1_m": 3.0861,
 "canvas_objects/REG-S-EXH4/z_m": 3.0861,
@@ -3576,9 +3576,9 @@
 ],
 "ducts/DU-M-ERV-R-SUITEBATH/z_m": [
 2.835275,
-2.835275,
+5.4808438,
 3,
-"c9fdb63525fa"
+"c2297216729a"
 ],
 "ducts/DU-M-ERV-R-VANITY/z_m": [
 2.835275,
@@ -44439,10 +44439,10 @@
 "8d7aab80d44a"
 ],
 "geometry/CSRV03AAAA-neck/body": [
-2.9591,
-3.0861,
+5.4808438,
+5.6840438,
 2,
-"ed5647d9f3e0"
+"6fba5bb83ffa"
 ],
 "geometry/CSRV04AAAA-neck/body": [
 2.9591,
@@ -59344,9 +59344,9 @@
 ],
 "geometry/DPAS57TPCG-run/body": [
 2.784475,
-2.886075,
+5.4808438,
 48,
-"0ed84df208dd"
+"59ac8a2d0a31"
 ],
 "geometry/DS30ANGPH9-box/body": [
 1.216025,
@@ -112184,7 +112184,7 @@
 "solids/DU-M-ERV-R-STUDY-RUN/z0_m": 2.57175,
 "solids/DU-M-ERV-R-STUDY-RUN/z1_m": 3.0099,
 "solids/DU-M-ERV-R-SUITEBATH-RUN/z0_m": 2.784475,
-"solids/DU-M-ERV-R-SUITEBATH-RUN/z1_m": 2.886075,
+"solids/DU-M-ERV-R-SUITEBATH-RUN/z1_m": 5.4808438,
 "solids/DU-M-ERV-R-VANITY-RUN/z0_m": 2.784475,
 "solids/DU-M-ERV-R-VANITY-RUN/z1_m": 2.886075,
 "solids/DU-S-ERV-HP-FEED-RUN/z0_m": 5.464175,
@@ -114911,8 +114911,8 @@
 "solids/REG-S-ERV-PLANT-EXH-NECK/z1_m": 5.6997917,
 "solids/REG-S-EXH1-NECK/z0_m": 5.8293,
 "solids/REG-S-EXH1-NECK/z1_m": 5.9039125,
-"solids/REG-S-EXH3-NECK/z0_m": 2.9591,
-"solids/REG-S-EXH3-NECK/z1_m": 3.0861,
+"solids/REG-S-EXH3-NECK/z0_m": 5.4808438,
+"solids/REG-S-EXH3-NECK/z1_m": 5.6840438,
 "solids/REG-S-EXH4-NECK/z0_m": 2.9591,
 "solids/REG-S-EXH4-NECK/z1_m": 3.0861,
 "solids/REG-S-HP-BED1-NECK/z0_m": 5.527675,

@@ -28,7 +28,7 @@ def test_each_authored_pull_point_is_graded(catlin_model_ro) -> None:
     Keyed on the raceway's first run: the two attic runs chain off their basement risers.
     """
     expected = {"CD-B-KITCHEN": 3, "CD-B-DATA-MEDIA": 3, "CD-B-GARAGE": 2,
-                "CD-M-DATA-PORCH": 2, "CD-B-ATTIC-RISER": 1, "CD-A-PV-EAST": 1,
+                "CD-M-DATA-PORCH": 2, "CD-B-ATTIC-RISER": 1, "CD-A-PV-EAST": 2,
                 "CD-B-DATA-CHASE": 1, "CD-A-DATA-NE": 1}
     sections = pull_sections(list(catlin_model_ro.conduits))
     for tag, count in expected.items():

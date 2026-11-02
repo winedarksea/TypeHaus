@@ -138,7 +138,8 @@ WEST_FLOOR = FloorSystem(
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _HOUSE),
-    openings=("FO-S-STAIR", "FO-S-ERV-CHASE", "FO-S-ERV-LAUNDRY", "FO-S-BATH1-WC-DRAIN"),
+    openings=("FO-S-STAIR", "FO-S-ERV-CHASE", "FO-S-ERV-LAUNDRY", "FO-S-BATH1-WC-DRAIN",
+              "FO-S-ERV-SUITEBATH"),
     source="catlin second floor, west half — 11 7/8\" open-web floor trusses at 16\" o.c. "
            "spanning 18'-0\" from W-M-W2 to the x=18' bearing line south of FO-S-STAIR, "
            "and 10'-3 1/4\" to that opening's west header north of it, chosen for the "

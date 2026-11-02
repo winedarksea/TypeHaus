@@ -289,6 +289,8 @@ def deck_void_face(plan: PlanModel, storey_tag: str, deck: Any,
     faces = []
     for tag in tags:
         opening = plan.by_tag(tag)
+        if not getattr(opening, "cuts_ceiling_below", True):
+            continue
         outline = getattr(opening, "outline", ())
         if len(outline) < 3:
             continue

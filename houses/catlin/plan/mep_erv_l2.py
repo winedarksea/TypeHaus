@@ -279,13 +279,13 @@ DUCTS_ERV_LEVEL2 = [
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=5),
     DuctRun(uid="DPAS57TPCG", tag="DU-M-ERV-R-SUITEBATH", system=DuctSystem.EXHAUST,
-            # ** OFF THE TRUNK AT y=16'-8" SINCE 2026-09-24, NOT IN ITS OWN 19'-4" BAY. ** That
-            # bay crossed PR-M-S-SUITE-WC-DRAIN's north-south leg, which falls through the
-            # middle of the window there, and PR-A-STUBATH-DRAIN's diagonal fills the band
-            # south of it. From the south on the lower tier the whole way: east, then north
-            # at x=14'-0" under PR-M-KITCH-VENT and the suite tub's arm to the grille.
-            path=(pt(ft(3, 9.75), ft(16, 8)), pt(ft(14), ft(16, 8)), pt(ft(14), ft(19, 4))),
-            elevations=(_BAY_Z, _BAY_Z, _BAY_Z),
+            # Same lower-tier bay, now ending in W-S-DC2 rather than the wet floor
+            # before the sink. The riser stays inside the 5 1/2" staggered cavity.
+            # End at the bottom inlet of TH-ERV-SUITEBATH-BOOT-01, not at the
+            # valve centre: the boot contains the final turn (notes/suitebath_extract.md).
+            path=(pt(ft(3, 9.75), inch(196)), pt(inch(115.5), inch(196)),
+                  pt(inch(115.5), inch(196))),
+            elevations=(_BAY_Z, _BAY_Z, inch(95.78125)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=20),
     # LAUNDRY and KITCH are the two takeoffs that do cross a truss, and each crosses in its

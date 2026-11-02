@@ -782,3 +782,11 @@ four garden corner columns stop 3/4" under their soffits for the SS316 pack:
   stay at 10; `PT-BW-GW`/`-GE` 60.56" → 59.81" go ceil(5.056) + 1 = 7 → ceil(4.981) + 1 = **6**.
   One 14" ring (r 7 − 2 − 0.1875 = 4.8125", 30.24" round) and one 12" (r 3.8125", 23.96")
   plus the D5 6" overlap and two hooks each: **−2 pieces, −2.6 lb** (column #3 118.5 lb, 91).
+
+## Addendum 2026-11-01 — SL-M-DECK's cap 3/16" thinner (decision #111)
+
+Total **6,579.2 lb / 1,123 pieces** (was 6,581.8). The cast cap came down 4 3/8" → 4 3/16"
+to the subfloor plane (`params/main_deck.py`), and each rib stirrup's two legs shorten with
+it: placed 26.25" → 25.875", 220 × 0.375" = 82.5" = 6.875 LF × 0.376 plf = **−2.6 lb**, no
+piece lost (slab #3 234.7 lb, 220). The hooks and the rib bars are unchanged
+(`rebar_layout_basis.md`: the 180° return sits in the rib, below the cap).

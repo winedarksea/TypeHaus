@@ -142,6 +142,9 @@ class FloorOpening(Element):
     #: contains a riser geometrically and needs no names; this is for the hole that exists
     #: only because a pipe goes through it.
     penetration_for: tuple[str, ...] = ()
+    #: A riser from the joist cavity into the wall above cuts the deck, but never
+    #: reaches the room below. Keep that room's ceiling continuous when False.
+    cuts_ceiling_below: bool = True
     #: The finish run across the joist band on every edge, well side first — gypsum
     #: closing the truss ends and trimmers from the ceiling below to the joist tops. The
     #: outline stays the finished hole; the framing steps back by this stack's thickness.
