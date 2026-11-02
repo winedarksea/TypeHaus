@@ -159,6 +159,14 @@ comparison. Do not change the structural cap just to avoid the fraction 3/8.
   The linked [WPC installation guide](https://qmsview.shawinc.com/Shaw-Residential/Shaw-Residential-Installation/Resilient-Installation/WPC/Floorte-Installation-Guidelines/Floorte-installation)
   permits residential secondary underlay up to 3 mm and warns against soft substrates
   that impair locking/indentation resistance; none is required for the height pairing.
+- Mohawk SolidTech Plus, pale oak colours [Amber Escape Akers SDP07-231](https://www.mohawkflooring.com/shop/Resilient/detail/SDP07/Amber_Escape/231/Akers?productLine=SolidTech%20Plus),
+  [Barker Hollow Lucy SDP10-213](https://www.mohawkflooring.com/shop/Resilient/detail/SDP10/Barker_Hollow/213/Lucy?productLine=SolidTech%20Plus)
+  and [Poppy Reserve Fresno SDP06-221](https://www.mohawkflooring.com/shop/Resilient/detail/SDP06/Poppy_Reserve/221/Fresno?productLine=SolidTech%20Plus):
+  SPC, **6 mm including a 1 mm attached pad**, 20 mil wear layer, Uniclic. Planks are 9 × 60 inches
+  (Akers, Fresno) or 7 × 60 inches (Lucy). Best-value durable option found (2026-11-01 shortlist):
+  Akers $4.49/SF at [Avalon Flooring](https://www.avalonflooring.com/products/amber-escape-9-vinyl-plank).
+  Specs are retailer-reported (Mohawk's pages were unreadable); confirm on the sell sheet and
+  sample. Unselected; a switch updates installed depth, the reducer and stair arrivals together.
 
 The generic engine-library `lvp` remains unchanged. Catlin replaces that one material
 under the same tag and links its selected product; the material and main-deck height

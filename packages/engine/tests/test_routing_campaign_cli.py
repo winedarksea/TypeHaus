@@ -35,9 +35,10 @@ def test_the_supply_slot_in_trade_order_is_no_longer_decorative() -> None:
     assert result.exit_code in (0, 1), result.output
     printed = " ".join(result.output.split())
     # 47 since the 2026-10-24 lavatory selections added their CW/HW stubs (31 before); 48
-    # since 2026-10-29's PR-G-SERVICE-CW, refused as a parentless service lateral.
-    assert "of 48 targets laid" in printed
-    laid = int(printed.split(" of 48 targets laid")[0].split()[-1])
+    # since 2026-10-29's PR-G-SERVICE-CW, refused as a parentless service lateral; 67 since
+    # the house's supply runs grew (61 laid, 6 refused on 2026-11-01).
+    assert "of 67 targets laid" in printed
+    laid = int(printed.split(" of 67 targets laid")[0].split()[-1])
     assert laid >= 20, printed
     # And the refusals that remain say which cause applies, not a sentence about a chase.
     assert "chase" not in printed
