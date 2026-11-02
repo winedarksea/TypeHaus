@@ -107,7 +107,9 @@ def test_end_bearing_is_graded_against_what_the_member_needs(tmp_path):
     report = run(load_plan(Path(house)).plan, Path(house))
     findings = [f for f in report.findings
                 if f.check_id == "integrity.floor_end_bearing"]
-    assert [f.result for f in findings] == [Result.FAIL]
-    assert "2.75\"" in findings[0].message and "FS-S-WEST" in findings[0].element_tags
+    # FS-M-NE's trusses share the constant (params/main_deck.py), so both floors fail.
+    assert [f.result for f in findings] == [Result.FAIL, Result.FAIL]
+    assert all("2.75\"" in f.message for f in findings)
+    assert {tag for f in findings for tag in f.element_tags} == {"FS-S-WEST", "FS-M-NE"}
 
 pytestmark = pytest.mark.slow

@@ -79,7 +79,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3566.6 SF net | building |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 43.7 SF net | building |
-| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 15 | sheets 4x8 | 15 sheets 4x8 over 380.7 SF net | building |
+| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 15 | sheets 4x8 | 15 sheets 4x8 over 381.1 SF net | building |
 | Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3062.5 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
 | Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.0 SF net | building |

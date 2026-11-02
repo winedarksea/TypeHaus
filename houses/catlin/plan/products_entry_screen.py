@@ -2,11 +2,10 @@
 from typehaus import Product
 
 ENTRY_SCREEN_PRODUCTS = (
-    Product(tag="PROD-BW-ALUMINUM", brand="UNA-CLAD", model="Bone White PVDF aluminum, 0.050 inch",
-            url="https://www.elevatecommercialbp.com/content/dam/elevateamericas/migrated-document/Documents/us/metal/Una-Clad-Metal-Color-Selection-National.pdf",
-            source="Factory-coated sheet; obtain actual colour and formed-panel sample before order."),
-    Product(tag="PROD-BW-WRB", brand="DuPont", model="Tyvek HomeWrap",
-            url="https://www.dupont.com/products/tyvek-homewrap.html"),
+    Product(tag="PROD-BW-MDO", brand="Roseburg", model="DuraGard Premium MDO, 3/4in",
+            url="https://www.roseburg.com/resources/duragard-mdo-premium-flyer/",
+            source="Exterior-grade MDO; white exterior primer/topcoats on both faces and edges. "
+                   "Confirm local 3/4in stock and coating system before purchase."),
     Product(tag="PROD-G-SERVICE-LEVER", brand="Schlage", model="F51A LAT 622",
             url="https://www.schlage.com/en/home/products/F51ALATFFF.html",
             source="Matte black Latitude keyed entry, 2-3/8in backset; use a conservative "

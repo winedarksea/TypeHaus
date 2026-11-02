@@ -39,11 +39,11 @@ _WORKED = {
     # The garage landing went 2026-10-13 (addendum 2026-10-13): 3.91 ft2 off each; GW's soft
     # end is a hair inside 0.75 Pc. The 0.06 inch raised bearing (2026-10-15 addendum)
     # makes L=60.56 inch and the soft-end magnifier 48.8372, still arithmetic only.
-    # W-BW-SCREEN's thin brick and its full 6.57' run onto its chords (addendum
-    # 2026-10-25): +176.9 lb D on W/GW after face-membrane removal; GW's soft end remains singular.
-    "PT-BW-W": (1.0802, 1.3307, Status.INCOMPLETE),
+    # Reworked 2026-11-02 with the cassette accessory inventory and WRB backing.
+    # These retired landing rows remain arithmetic only; GW is still near singular.
+    "PT-BW-W": (1.0784, 1.3223, Status.INCOMPLETE),
     "PT-BW-E": (1.0212, 1.0632, Status.OK),
-    "PT-BW-GW": (1.3382, 131.95, Status.OVER),
+    "PT-BW-GW": (1.3291, 36.1795, Status.OVER),
     # GE's P_u fell 1,107.8 -> 1,074.7 lb when the landing came in 3 3/8" (2026-10-31).
     "PT-BW-GE": (1.0502, 1.2254, Status.INCOMPLETE),
     # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->

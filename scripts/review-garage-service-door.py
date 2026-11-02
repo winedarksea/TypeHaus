@@ -88,7 +88,7 @@ def main():
     ax.plot(*hinge_inches, "ko")
     ax.text(84, 522, f"Modelled pivot x={hinge_inches[0]:.2f}in; minimum inset 1/2in",
             fontsize=9)
-    ax.text(85, 482, "90° stop-only (blue), 91° tolerance (orange)\n"
+    ax.text(85, 482, f"{stop}° stop (blue), {limit}° tolerance (orange)\n"
             "MMI 32in leaf; 1/8in install allowance; 1/4in min clearance", fontsize=10)
     ax.annotate(
         "Guard head x=116.5in",
@@ -103,7 +103,7 @@ def main():
         aspect="equal",
         xlabel="Project x (in)",
         ylabel="Project y (in)",
-        title="D-G-SERVICE — MMI 32in outswing / retained brick screen",
+        title="D-G-SERVICE — MMI 32in outswing / direct-mounted white MDO",
     )
     ax.grid(alpha=0.2)
     fig.tight_layout()

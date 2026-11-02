@@ -31,6 +31,11 @@ AIR_WATER_THERMAL = (
 # The test a key has to pass to stay starred: does a plan checker or a framer open THIS
 # sheet, and is it a different drawing from the one next to it?
 TRANSITIONS = (
+    Transition(uid="CATBWTIEREL", tag="TR-CATLIN-SCREEN-TIE-RELIEF",
+               title="Cassette relief around garage tie",
+               condition_pattern="opening_perimeter:ENTRY_SCREEN_WALL",
+               notes="notes/entry_screen_mdo.md", star=False, suppress=True,
+               suppress_reason="finish-only end relief, not a framed opening; dimensioned in the MDO screen detail"),
     Transition(uid="CATPATIOSEAT", tag="TR-CATLIN-PATIO-SEAT", title="Patio door seat",
                condition_pattern="opening_perimeter:GARDEN_CURB_6",
                notes="notes/court_opening_detail.md", star=False,

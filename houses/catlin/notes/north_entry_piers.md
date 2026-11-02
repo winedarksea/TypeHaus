@@ -1,4 +1,4 @@
-> The W-BW-SCREEN brick loads in this note are historical as of 2026-11-02. The preliminary metal model weighs 24.87 plf before cassette supports and accessories; recalculate this note after the complete assembly is designed. See [metal cassette concept](entry_screen_metal_cassettes.md).
+> Brick load assumptions below are historical. Current white MDO screen: 34.23 plf including edge nailers and a hardware/paint reserve; see [current detail](entry_screen_mdo.md).
 
 # North entry canopy, piers and headers — hand-worked basis
 
@@ -1571,3 +1571,13 @@ The 12" `PT-BW-E` at the same 91.25" reads 30.4 (§6's 92" row predates §12a's 
 / `-PNE` are fixed-base sway columns (k 2.1), graded in bending with `canopy_garage_diaphragm.md`
 §5a; only their cage (13b) is this note's. `deck_post` agrees on all four: ρ 0.806% on gross,
 0.770 in² on §10.3.1.2's half area, `PT-BW-W`/`-GW` k l_u/r 26.1 / 17.1.
+
+
+## Addendum 2026-11-02 — direct-mounted white MDO
+
+The owner replaced the metal cassette proposal with [white painted exterior MDO](entry_screen_mdo.md).
+The wall weighs 34.23 plf including five new vertical 2x4 edge nailers and a 2 lb
+hardware/paint reserve. Including SB-BW-BAND the line is 52.33 plf, delivering 154.12 lb
+to each west chord. Existing brick arithmetic above is historical. See the reproducible
+[current load-path results](entry_screen_mdo_calculations.json). The west shear layer,
+structural guard, posts and active pinned canopy system remain unchanged.

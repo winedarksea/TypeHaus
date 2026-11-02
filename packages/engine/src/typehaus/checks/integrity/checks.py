@@ -376,9 +376,12 @@ def opening_fits_host(ctx: CheckContext) -> list[Finding]:
         axis_len = length(sub(rw.axis[1], rw.axis[0]))
         left = op.center_along_m - op.width_m / 2
         right = op.center_along_m + op.width_m / 2
-        left_margin = 0.0 if op.frame_start_support_wall else min_edge
-        right_margin = 0.0 if op.frame_end_support_wall else min_edge
-        if left < left_margin or right > axis_len - right_margin:
+        # Finish-only recesses may terminate at a wall end; they need no jamb.
+        # Keep the host bounds check, and retain the edge allowance for framed holes.
+        unframed_recess = op.depth_m is not None and not op.framing_required
+        left_margin = 0.0 if op.frame_start_support_wall or unframed_recess else min_edge
+        right_margin = 0.0 if op.frame_end_support_wall or unframed_recess else min_edge
+        if left < left_margin - 1e-9 or right > axis_len - right_margin + 1e-9:
             out.append(_err("integrity.opening_fits",
                             f"opening {op.tag} does not fit host {op.host_wall} "
                             f"(needs >= {min_edge*39.37:.1f}\" edge distance)", (op.tag,)))

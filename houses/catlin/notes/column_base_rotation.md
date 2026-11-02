@@ -1,4 +1,4 @@
-> W-BW-SCREEN brick load assumptions below are historical as of 2026-11-02; update the calculations using the complete metal cassette assembly. See [metal cassette concept](entry_screen_metal_cassettes.md).
+> Brick load assumptions below are historical. Current white MDO screen: 34.23 plf including edge nailers and a hardware/paint reserve; see [current detail](entry_screen_mdo.md).
 
 # Column base rotation — the fixed base as a spring, hand-worked
 
@@ -587,3 +587,13 @@ det 4,651.4`; `u0 = (1,205.63 + 192.901 x 9.11458)/(14,000 x 4,651.4) x 12 = 5.4
 7.8223e-6`, `Δ = 1.4017e-3`, `k_θ = 197.375²/1.4017e-3 = 2.7792e7`, `R = 4.5893`, `Pc,flex =
 68,666/(1 + 3/4.5893) = 41,523`, `δ = 1/(1 − 7,522.07/31,142) = 1.3185`: increment 0.3185/0.40
 = **0.80**, OK (was 0.81). The garden rows move in their fourth figure (R 6.609 → 6.556 front).
+
+
+## Addendum 2026-11-02 — direct-mounted white MDO
+
+The owner replaced the metal cassette proposal with [white painted exterior MDO](entry_screen_mdo.md).
+The wall weighs 34.23 plf including five new vertical 2x4 edge nailers and a 2 lb
+hardware/paint reserve. Including SB-BW-BAND the line is 52.33 plf, delivering 154.12 lb
+to each west chord. Existing brick arithmetic above is historical. See the reproducible
+[current load-path results](entry_screen_mdo_calculations.json). The west shear layer,
+structural guard, posts and active pinned canopy system remain unchanged.

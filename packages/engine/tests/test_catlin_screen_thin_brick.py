@@ -1,4 +1,4 @@
-"""Screen cassette regions, geometry, quantities and stopped door regressions."""
+"""Screen mdo regions, geometry, quantities and stopped door regressions."""
 
 import math
 
@@ -14,7 +14,7 @@ from typehaus.takeoff.envelope import (
 INCH = 0.0254
 
 
-def test_cassettes_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
+def test_mdos_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
     wall = catlin_model_ro.wall("W-BW-SCREEN")
     layers = {layer.name: layer for layer in wall.layers}
     for name, expected in {"stud": (73.625, 77.125), "cdx-out": (73, 73.625),
@@ -24,29 +24,35 @@ def test_cassettes_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
     expected_runs = ((0.125, 7.875), (13.625, 40.5625),
                      (40.6875, 67.625), (73.375, 79.25))
     for index, expected in enumerate(expected_runs, 1):
-        layer = layers[f"cassette-in-{index}"]
+        layer = layers[f"mdo-in-{index}"]
         xs = [x / INCH for x, _ in layer.polygon]
-        assert (min(xs), max(xs)) == pytest.approx((77.825, 77.875))
+        assert (min(xs), max(xs)) == pytest.approx((77.125, 77.875))
         assert tuple(value / INCH for value in layer.run_span_m) == pytest.approx(expected)
         assert tuple(value / INCH for value in layer.band(wall)) == pytest.approx((2, 47.5))
     assert catlin_model_ro.plan.by_tag(wall.tag).shear_panel.sheathing_layer == "cdx-out"
     assert not {"thin-brick-in", "packing-in", "cement-board-in"} & layers.keys()
+    # The supplemental nailer layout reserves these existing studs; a framing change
+    # must not silently put new supports or clips through existing timber.
+    stud_stations = sorted((member.p0[1] - wall.axis[0][1]) / INCH
+                           for member in wall.members if member.category == "stud")
+    assert stud_stations == pytest.approx([0.75, 16, 32, 48, 64, 78.625])
 
 
-def test_cassette_area_and_weight_use_the_same_bounded_regions(catlin_model_ro):
+
+def test_mdo_area_and_weight_use_the_same_bounded_regions(catlin_model_ro):
     from types import SimpleNamespace
 
     wall = catlin_model_ro.wall("W-BW-SCREEN")
     net = wall_net_areas_m2(catlin_model_ro)[wall.tag]
-    layers = [layer for layer in wall.layers if layer.name.startswith("cassette-in-")]
+    layers = [layer for layer in wall.layers if layer.name.startswith("mdo-in-")]
     area = sum(wall_layer_net_area_m2(catlin_model_ro, wall, layer, net) for layer in layers)
-    assert area * 10.7639104 == pytest.approx(21.328125, abs=0.001)
+    assert area * 10.7639104 == pytest.approx(21.259765625, abs=0.001)
     rows = [row for row in envelope_layer_takeoff(catlin_model_ro)
-            if row["material"] == "entry-screen-bone-white-aluminum"]
+            if row["material"] == "entry-screen-white-mdo"]
     assert len(rows) == 1
     assert rows[0]["net_area_sqft"] == pytest.approx(area * 10.7639104, abs=0.05)
     weight = dead_load_plf(SimpleNamespace(plan=catlin_model_ro.plan), wall, wall.z1_m - wall.z0_m)
-    assert weight == pytest.approx(24.87, abs=0.02)
+    assert weight == pytest.approx(34.23, abs=0.02)
 
 
 def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):
@@ -91,7 +97,7 @@ def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catli
     assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.381, abs=1e-3)
     assert any(result.obstacle == "W-BW-SCREEN" for result in results)
     assert any(result.obstacle == "PT-BW-CNW" for result in results)
-    assert any(result.obstacle.startswith("TR-BW-METAL-") for result in results)
+    assert any(result.obstacle.startswith("TR-BW-MDO-") for result in results)
 
 
 @pytest.mark.parametrize("inset_in", [0.5, 1.0, 2.0])
@@ -173,21 +179,25 @@ def test_service_door_takeoff_uses_mmi_32in_price(catlin_model_ro):
     assert not estimate["unpriced"]
 
 
-def test_cassette_regions_reach_viewer_and_ifc(catlin_model_ro, catlin_ifc_path):
+def test_mdo_regions_reach_viewer_and_ifc(catlin_model_ro, catlin_ifc_path):
     import ifcopenshell
 
     from typehaus.server.model_json import model_to_dict
 
     wall = catlin_model_ro.wall("W-BW-SCREEN")
     exported = next(w for w in model_to_dict(catlin_model_ro)["walls"] if w["tag"] == wall.tag)
-    regions = [layer for layer in exported["layers"] if layer["name"].startswith("cassette-in-")]
+    regions = [layer for layer in exported["layers"] if layer["name"].startswith("mdo-in-")]
     assert len(regions) == 4
     for region in regions:
         actual = next(layer for layer in wall.layers if layer.name == region["name"])
         assert region["polygon"] == [list(point) for point in actual.polygon]
     ifc = ifcopenshell.open(str(catlin_ifc_path))
     parts = {part.Name for part in ifc.by_type("IfcBuildingElementPart")}
-    assert {f"W-BW-SCREEN:cassette-in-{index}" for index in range(1, 5)} <= parts
+    assert {f"W-BW-SCREEN:mdo-in-{index}" for index in range(1, 4)} <= parts
+    # The end mdo is still one removable part; IFC splits its C-shaped face
+    # into three rectangles around the garage tie-block relief.
+    assert {f"W-BW-SCREEN:mdo-in-4 ({index}/3)" for index in range(1, 4)} <= parts
+    assert "W-BW-SCREEN:mdo-in-4" not in parts
 
 
 def test_run_spans_reject_invalid_or_overlapping_slot_regions():
@@ -196,10 +206,18 @@ def test_run_spans_reject_invalid_or_overlapping_slot_regions():
 
     def panel(name, start, end):
         return Layer(name=name, material_ref="metal", thickness=inch(0.05),
-                     function=LayerFunction.CLADDING, slot="cassette",
+                     function=LayerFunction.CLADDING, slot="mdo",
                      run_span=(inch(start), inch(end)))
 
     with pytest.raises(ValueError):
         panel("invalid", 4, 3)
     assert not _slot_findings("test", [panel("a", 0, 4), panel("b", 4, 8)])
     assert _slot_findings("test", [panel("a", 0, 5), panel("b", 4, 8)])
+
+
+def test_mdo_has_edge_supports_without_metal_rail_hardware(catlin_model_ro):
+    tags = {element.tag for element in catlin_model_ro.plan.all_elements()}
+    assert {f"TR-BW-MDO-NAILER-{i}" for i in range(1, 6)} <= tags
+    assert not any(tag.startswith("TR-BW-METAL-") for tag in tags)
+    wall = catlin_model_ro.wall("W-BW-SCREEN")
+    assert not {"vent-in", "wrb-in"} & {layer.name for layer in wall.layers}

@@ -564,7 +564,8 @@ def test_every_framed_catlin_corner_carries_a_three_stud_pack(catlin_resolved):
 def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catlin_resolved):
     walls = {wall.tag: wall for wall in catlin_resolved.walls}
     small = [o for o in catlin_resolved.openings
-             if not o.is_door and o.width_m <= inch(14).meters + 1e-9]
+             if not o.is_door and o.framing_required
+             and o.width_m <= inch(14).meters + 1e-9]
     # This is a stud-framing rule, so it only applies to windows in framed walls. A 14" RO
     # in a poured wall has no bay to fit between and no stud to avoid breaking.
     # The split is on *stud-bearing* members, not on having any member at all: the sauna

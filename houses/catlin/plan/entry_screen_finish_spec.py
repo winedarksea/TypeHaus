@@ -1,11 +1,34 @@
-"""Dimensions for the W-BW-SCREEN cassette concept, in inches."""
+"""Sheltered east screen panel dimensions, in inches."""
 
-METAL_THICKNESS_IN = 0.050
-WRB_THICKNESS_IN = 0.010
-AIRSPACE_THICKNESS_IN = 0.690
+PANEL_THICKNESS_IN = 0.750
 FINISH_BOTTOM_IN = 2.0
 FINISH_TOP_IN = 47.5
-# Stations measured from the south wall node. Post edges are 8, 13.5, 67.75,
-# and 73.25 inches; a 1/8-inch installation gap is left at each end.
-PANEL_RUNS_IN = ((0.125, 7.875), (13.625, 40.5625),
-                 (40.6875, 67.625), (73.375, 79.25))
+PANEL_RUNS_IN = ((0.125, 7.875), (13.625, 40.5625), (40.6875, 67.625), (73.375, 79.25))
+TIE_RELIEF_START_IN = 76.625
+TIE_RELIEF_BOTTOM_IN = 22.125
+TIE_RELIEF_TOP_IN = 25.875
+# Additional vertical edge support, fitted between existing plates; no face rails.
+NAILER_STATIONS_IN = (7.125, 14.375, 40.625, 66.875, 74.125)
+NAILER_BOTTOM_IN = 0.56
+NAILER_TOP_IN = 45.0
+WOOD_DENSITY_KG_M3 = 600.0
+# Conservative reserve for screws, nails and the dry paint system, counted once.
+HARDWARE_AND_PAINT_RESERVE_LB = 2.0
+GROSS_PANEL_AREA_IN2 = sum(b - a for a, b in PANEL_RUNS_IN) * (FINISH_TOP_IN - FINISH_BOTTOM_IN)
+NET_PANEL_AREA_IN2 = GROSS_PANEL_AREA_IN2 - (79.25 - TIE_RELIEF_START_IN) * (
+    TIE_RELIEF_TOP_IN - TIE_RELIEF_BOTTOM_IN
+)
+SUPPORT_WEIGHT_LB = (
+    len(NAILER_STATIONS_IN)
+    * 1.5
+    * 3.5
+    * (NAILER_TOP_IN - NAILER_BOTTOM_IN)
+    * 0.0254**3
+    * WOOD_DENSITY_KG_M3
+    * 2.2046226218
+)
+ACCESSORY_AREAL_DENSITY_KG_M2 = (
+    (SUPPORT_WEIGHT_LB + HARDWARE_AND_PAINT_RESERVE_LB)
+    / 2.2046226218
+    / (NET_PANEL_AREA_IN2 * 0.0254**2)
+)

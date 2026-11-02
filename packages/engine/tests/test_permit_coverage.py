@@ -148,7 +148,10 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # RAISED 24 -> 25 on 2026-09-23: "Concrete materials for the exposure class". The ACI 318
 # Table 19.3.2.1 / §26.4.2.2 material checks were on no line at all; catlin's mixes do not
 # yet state chloride, cement type or aggregate reactivity, so the line is staged.
-MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
+#
+# RAISED 25 -> 26 on 2026-11-02: "Foundation wall top restraint" (Minn. R. 1309.0404) was
+# on no line; staged while W-B-N2's restraint at the stair well waits on an EOR detail.
+MAX_NON_BLOCKING_ITEMS = {"mn-2020": 26}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*

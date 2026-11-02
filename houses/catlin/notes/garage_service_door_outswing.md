@@ -72,8 +72,9 @@ A 32-inch nominal leaf is still not 32 inches of clear passage; see §1.
 
 The clearance regression sweeps the **32-inch leaf** inside the 34-inch RO through the
 authored **81° stop**, including a 1° stop tolerance, 1/8-inch installation allowance and
-1/4-inch required clearance. The 2026-11-02 model has recessed metal cassette faces and
-separately terminated head/base flashings. The currently modelled obstacles give:
+1/4-inch required clearance. The 2026-11-02 model has direct-mounted 3/4-inch white MDO panels,
+vertical edge nailers and modeled face screw-head envelopes. The face remains at the
+same plane, with screw heads up to 1/8 inch proud. These modeled obstacles give:
 
 | Pivot inset | Worst clearance | Governing obstacle |
 |---:|---:|---|
@@ -82,8 +83,9 @@ separately terminated head/base flashings. The currently modelled obstacles give
 | 1 in | 0.876 in | CN-BW-GWTIE-LO |
 | 2 in | 1.366 in | CN-G-BWHD-S-DR |
 
-Measure the delivered frame's pivot before setting the stop. Final cassette end trims,
-clips and supports are not yet modelled and must be added to the sweep before release.
+Measure the delivered frame's pivot before setting the stop. The MDO panel, nailer and
+screw-head geometry is included in the continuous sweep. Recheck changes to the face
+plane or hardware projection.
 
 Keep the canopy chord connection at the east jamb: stock **Simpson STHD14**,
 CN-G-BWHD-S-DR, centered at x=118 inches on the garage face at y=524.75 inches. It is
