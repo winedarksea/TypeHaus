@@ -23,8 +23,6 @@ from typehaus.emit.gltf.openings import (
     _DOOR_LEAF_THICKNESS_M,
     _DOUBLE_SWING_MULLION_CLEAR_WIDTH_DIVISOR,
     _OPENING_FRAME_DEPTH_M,
-    _OPENING_FRAME_FACE_WIDTH_M,
-    _OPENING_FRAME_SPAN_DIVISOR,
     _WINDOW_GLAZING_THICKNESS_M,
     _WINDOW_TRIM_PROUD_DEPTH_M,
     _add_opening_filling,
@@ -36,7 +34,11 @@ from typehaus.resolve.geometry_door_products import (
     _PUSH_SET_REBATE_M,
     finish_faces,
 )
-from typehaus.resolve.geometry_openings import opening_parts
+from typehaus.resolve.geometry_openings import (
+    _OPENING_FRAME_FACE_WIDTH_M,
+    _OPENING_FRAME_SPAN_DIVISOR,
+    opening_parts,
+)
 from typehaus.resolve.room_lookup import room_owning
 from typehaus.resolve.model import ResolvedLayer, ResolvedOpening, ResolvedWall
 from typehaus.source import load_plan
@@ -198,12 +200,17 @@ def _opening_center_plan_point(wall, opening) -> tuple[float, float]:
     return (x0 + along_x * opening.center_along_m, -(y0 + along_y * opening.center_along_m))
 
 
+def _face_width_m(opening) -> float:
+    """The type's authored frame face (``WindowType.frame_face_width``), else the default."""
+    return opening.frame_face_width_m or _OPENING_FRAME_FACE_WIDTH_M
+
+
 def _frame_width_m(opening, available_height_m: float) -> float:
     """A sized door's jamb fills the RO out to its leaf (resolve/door_sizing)."""
     sizing = getattr(opening, "sizing", None)
     if sizing is not None and sizing.leaf_w_m < opening.width_m:
         return (opening.width_m - sizing.leaf_w_m) / 2
-    return min(_OPENING_FRAME_FACE_WIDTH_M,
+    return min(_face_width_m(opening),
                opening.width_m / _OPENING_FRAME_SPAN_DIVISOR,
                available_height_m / _OPENING_FRAME_SPAN_DIVISOR)
 
@@ -280,7 +287,7 @@ def test_a_window_ships_a_four_piece_frame_and_one_glass_pane(starter_model):
     unit_width = opening.width_m - 2 * seat.jamb_inset_m
     available_height = min(opening.height_m, wall.z1_m - wall.z0_m - opening.sill_m) \
         - seat.sill_rise_m - seat.head_drop_m
-    frame_width = min(_OPENING_FRAME_FACE_WIDTH_M, unit_width / _OPENING_FRAME_SPAN_DIVISOR,
+    frame_width = min(_face_width_m(opening), unit_width / _OPENING_FRAME_SPAN_DIVISOR,
                       available_height / _OPENING_FRAME_SPAN_DIVISOR)
     jambs = [s for s in frame if s.height_m == pytest.approx(available_height, abs=_DIMENSION_TOLERANCE_M)]
     heads = [s for s in frame if s.height_m == pytest.approx(frame_width, abs=_DIMENSION_TOLERANCE_M)]

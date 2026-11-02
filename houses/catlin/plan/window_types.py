@@ -5,7 +5,9 @@ the same tag, so the presets themselves stay untouched for other houses. Catalog
 stay presets. Owner's selection, notes/window_and_door_procurement.md §2:
 
 - Drutex IGLO Energy Alucover (aluminium-capped uPVC, black outside, white inside) for every
-  tilt-turn, fixed and tilt-only unit.
+  27"+ tilt-turn and every fixed unit.
+- Aliplast Max Light Modern (thermally broken aluminium, 35 mm frame + 35 mm sash) for the
+  three 14x24 tilt-turns, where Drutex's 125 mm operable sightline leaves little glass.
 - Andersen 400 casement, egress hinge, for the nine R310 escape windows, whose narrow
   bearing RO no Euro sightline clears. R310 applies Andersen's deductions to the unit the
   seat resolves: the flashed opening less 1/2" (Andersen's minimum RO allowance), rounded
@@ -24,7 +26,7 @@ from typehaus import WindowType, u_us
 from typehaus.quantities import ft, inch
 
 from plan.opening_products import (
-    ANDERSEN_400_CASEMENT, DRUTEX_ALUCOVER_FIX, DRUTEX_ALUCOVER_TILT, DRUTEX_ALUCOVER_TT,
+    ALIPLAST_MAXLIGHT_TT, ANDERSEN_400_CASEMENT, DRUTEX_ALUCOVER_FIX, DRUTEX_ALUCOVER_TT,
 )
 
 _DRUTEX_DEPTH = inch(93 / 25.4)  # 93 mm installation depth, Drutex's Alucover data
@@ -33,6 +35,15 @@ _DRUTEX_DEPTH = inch(93 / 25.4)  # 93 mm installation depth, Drutex's Alucover d
 # Not published to us for the basic unit; the preset's 3 1/4" stays until the dealer's
 # section is in hand.
 _ANDERSEN_DEPTH = inch(3.25)
+# Visible faces. Phius W-102033 (IGLO Energy Classic tilt-turn over fixed, read 2026-11-02)
+# lists the fixed lite's frame at 75 mm and the operable lite's at 125 mm, so the sash is
+# 50 mm. Alucover rides the same uPVC profile; the cap's own sightline is a dealer item.
+_DRUTEX_FRAME, _DRUTEX_SASH = inch(75 / 25.4), inch(50 / 25.4)
+_DRUTEX_FACES = "Faces: Phius W-102033, frame 75 mm, operable lite 125 mm (sash 50 mm)."
+# Andersen 400 publishes unobstructed glass = unit - 4.40" wide, - 4.95" tall (2025-26
+# custom sizes), i.e. 2.20" frame + sash a jamb, but not the split; faces await the owner.
+_MAXLIGHT_DEPTH = inch(75 / 25.4)  # frame ML010 depth; sash 84 mm
+_MAXLIGHT_FACE = inch(35 / 25.4)   # 35 mm frame, 35 mm sash (Aliplast Max Light Modern)
 
 _TT = ("NFRC DRU-K-24-00001: CGPrem2/ARG90/ExtraClr/ARG90/CGPrem2 (4/4/4) 48mm IG, "
        "U 0.16, SHGC 0.33, VT 0.47.")
@@ -40,9 +51,10 @@ _FIX = ("NFRC DRU-K-23-00001: CGPrem2/ARG90/ExtraClr/ARG90/CGPrem2 (4/4/4) 48mm 
         "U 0.15, SHGC 0.39, VT 0.57. Fixed in frame.")
 _FIX_HP = ("NFRC DRU-K-23-00010: CGPrem2/ARG90/ExtraClr/ARG90/CGPrem2Lami (152PVB) 48mm IG, "
            "U 0.14, SHGC 0.39, VT 0.56. The plant room's glazing_dew_point needs U <= 0.14.")
-_TILT = ("NFRC DRU-K-26-00001: CGPrem2/ARG90/ExtraClr/ARG90/CGPrem2 (4/4/4) 48mm IG, "
-         "U 0.18, SHGC 0.24, VT 0.35. Inward bottom-hinged tilt only, modelled as awning "
-         "(no hopper operation); the 14\" width is under every outward awning's minimum.")
+_MAXLIGHT = ("NFRC STO-M-20 (Slowinscy, MAXLIGHT Tilt Turn, frame ML010 / sash ML020): "
+             "CGPrem2/Arg/Clr/Arg/CGPrem2 48 mm triple, U 0.20, SHGC 0.40, VT 0.58, CR 69; "
+             "Plastixal PLX-K-17 carries the same row (CR 66). Faces 35 mm frame + 35 mm sash "
+             "(Aliplast Max Light Modern fiche). Inward tilt-turn.")
 _AND = ("NFRC AND-N-1-04162: LowE(180/180/i89) triple, argon, U 0.20, SHGC 0.40, VT 0.51. "
         "Andersen sells 400 triple in the Northeast only; if a Twin Cities dealer cannot, "
         "the HeatLock double AND-N-1-03559 is U 0.24.")
@@ -56,8 +68,19 @@ def _drutex(tag, width, height, operation, row, product, *, tempered=False,
     return WindowType(
         tag=tag, width=width, height=height, operation=operation, tempered=tempered,
         u_factor=u_us(u), shgc=shgc, vt=vt, frame_depth=_DRUTEX_DEPTH,
+        frame_face_width=_DRUTEX_FRAME,
+        sash_face_width=_DRUTEX_SASH if operation != "fixed" else inch(0),
         frame_material_ref="drutex-alucover-cap",
-        product_ref=product.tag, source=f"{row} {_SIZE}")
+        product_ref=product.tag, source=f"{row} {_DRUTEX_FACES} {_SIZE}")
+
+
+def _maxlight(tag, width, height, *, tempered=False) -> WindowType:
+    return WindowType(
+        tag=tag, width=width, height=height, operation="tilt_turn", tempered=tempered,
+        u_factor=u_us(0.20), shgc=0.40, vt=0.58, frame_depth=_MAXLIGHT_DEPTH,
+        frame_face_width=_MAXLIGHT_FACE, sash_face_width=_MAXLIGHT_FACE,
+        frame_material_ref="aliplast-maxlight-powder",
+        product_ref=ALIPLAST_MAXLIGHT_TT.tag, source=f"{_MAXLIGHT} {_SIZE}")
 
 
 def _tt(tag, width, height, *, tempered=False) -> WindowType:
@@ -91,8 +114,8 @@ def _egress(tag, width, height, height_deduction, *, tempered=False) -> WindowTy
 # the full 27 1/2" between jacks (preferences.toml's bearing rung): a 27" RO nets a 25 5/8"
 # unit and 19.8" clear; 27 1/2" nets 26 1/8" and 20.3" (notes/window_and_door_procurement.md §7).
 WINDOW_TYPES = (
-    _drutex("WT-1424", inch(14), ft(2), "awning", _TILT, DRUTEX_ALUCOVER_TILT,
-            u=0.18, shgc=0.24, vt=0.35),
+    _maxlight("WT-1424-TT", inch(14), ft(2)),  # kitchen pair
+    _maxlight("WT-1424-TT-T", inch(14), ft(2), tempered=True),  # WIN-M-BATH1-W
     _fix("WT-1424-FIX", inch(14), ft(2)),
     _fix("WT-1424-FIX-T", inch(14), ft(2), tempered=True),
     _fix("WT-2736-FIX", inch(27.5), ft(3)),

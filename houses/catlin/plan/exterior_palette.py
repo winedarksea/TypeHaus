@@ -52,7 +52,7 @@ RAL_9005 = Finish(maker="RAL", colour="9005 Jet black", hex="#131516", family="b
 
 # ---- the two switches --------------------------------------------------------------
 METAL = MS_SLATE_GREY_W38      # all exterior metal + everything matched to it
-WINDOW = RAL_7016              # the 32 Drutex units' Alucover cap
+WINDOW = RAL_7016              # the 29 Drutex caps and the 3 Max Light frames
 # -------------------------------------------------------------------------------------
 
 # Andersen 400 has no grey (White, Sandtone, Canvas, Terratone, Forest Green, Dark Bronze,

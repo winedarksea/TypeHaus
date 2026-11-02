@@ -503,6 +503,9 @@ class ResolvedOpening:
     window_seat: WindowSeat | None = None
     frame_material_ref: str | None = None
     leaf_material_ref: str | None = None
+    # ``WindowType.frame_face_width`` / ``sash_face_width``; None / 0 is the schematic frame.
+    frame_face_width_m: float | None = None
+    sash_face_width_m: float = 0.0
     effective_frame_material_ref: str | None = None
     effective_leaf_material_ref: str | None = None
     # A typed door's leaf, unit, RO and clear passage (``resolve/door_sizing``).

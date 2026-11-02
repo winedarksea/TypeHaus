@@ -334,3 +334,13 @@ to **10:00**, at **12,075.8 Btu/h** (S 5,922.4; E 4,431.8; W 1,019.5; N 702.1).
 The 08:00–20:00 average is **8,914.2 Btu/h**, and AED is
 12,075.8 − 1.3 × 8,914.2 = **487.3 Btu/h**. South contributes 49.0% at the peak.
 Earlier tables retain their dated layouts and product assumptions.
+
+## Revision 2026-10-31 — Max Light tilt-turns at the three operable 14x24s
+
+`WIN-M-KITCH-N` (N) and `WIN-M-KIT-E` (E) go Drutex tilt-only SHGC 0.24 → Max Light 0.40;
+`WIN-M-BATH1-W` (W) goes Drutex fixed 0.39 → 0.40. Each is a 14x24 RO, 2.333 ft², so
+Δ A·SHGC is N +0.373, E +0.373, W +0.023 ft². At 10:00 that is N +16.5, E +63.4, W +1.0:
+**+80.9**, so the peak is 12,075.8 + 80.9 = **12,156.7 Btu/h** (still 10:00). The day's
+average rises 44.4, so AED = 487.3 + 80.9 − 1.3 × 44.4 = **510.5 Btu/h**. The engine
+agrees to 0.1 Btu/h on the delta; it resolves 12,217 / 516 overall, the 60 Btu/h of south
+drift since the 2026-10-25 revision being unrelated to this retype.

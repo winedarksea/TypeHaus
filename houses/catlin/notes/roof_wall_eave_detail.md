@@ -37,6 +37,11 @@ source:
 - {wall_roof:EXT_2X6|*} [K8] Eave face over the gutter back, hemmed into the trough; pan hemmed round the lip.
 - {wall_roof:EXT_2X6|*} [K9] 2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Hanger below the eave face; bracket pending.
 
+### Spec 06 10 00
+- All KDAT: field-treat every cut end, notch and drilled hole with 2% copper naphthenate per AWPA M4, before assembly or concealment.
+- Keep all LSL dry during delivery, construction staging and erection; store off the ground under a weatherproof cover with ventilation.
+- Protect staged and installed LSL from rain, standing water and wet work until dried in; inspect any wetted LSL for swelling before enclosure.
+
 ### Spec 07 21 00
 - Hold point: plywood under 16% MC, bay by bay, before foam.
 - Hold point: inspect every bay for voids before the batts go in.

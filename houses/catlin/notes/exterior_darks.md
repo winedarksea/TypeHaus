@@ -2,7 +2,7 @@
 
 2026-10-30. Every dark on the exterior takes its name and colour from
 `plan/exterior_palette.py`. `METAL` recolours all exterior metal and everything matched to it,
-and `WINDOW` recolours the Drutex caps. Swap the facade there; tags name the product, never
+and `WINDOW` recolours the Drutex caps and the Max Light frames (`aliplast-maxlight-powder`). Swap the facade there; tags name the product, never
 the colour, so a swap moves no price row, test or golden key. Hexes are the makers' own chips
 or published sRGB, never pre-darkened (the viewer crushes a dark, it does not lift it).
 Screen colour is approximate; a physical sample governs.

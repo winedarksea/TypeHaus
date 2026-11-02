@@ -2,8 +2,10 @@
 
 2026-10-21. Design reasoning, not a calc oracle. **The owner's selection (updated 2026-10-25):**
 
-- **Drutex IGLO Energy Alucover** (Polish, aluminium-capped uPVC) for the 11 tilt-turn, 19
-  fixed and 2 tilt-only units.
+- **Drutex IGLO Energy Alucover** (Polish, aluminium-capped uPVC) for the 11 tilt-turn and
+  18 fixed units.
+- **Aliplast Max Light Modern** (Polish thermally broken aluminium, tilt-turn) for the three
+  operable 14x24s: `WIN-M-KITCH-N`, `WIN-M-KIT-E`, `WIN-M-BATH1-W` (2026-10-31).
 - **Andersen 400 casement** (Bayport, MN) for the 9 R310 escape windows.
 - **Therma-Tru Smooth-Star full-lite** fiberglass / composite frames / Endura hardware
   for all three French pairs; an opaque **Therma-Tru
@@ -16,8 +18,9 @@ carrying its NFRC CPD row. **Every NFRC number below was read from the CPD itsel
 (search.nfrc.org), not from a brochure or a Phius page.** What is still claimed rather than
 in hand is listed in §2.6.
 
-The schedule is 41 units: 11 tilt-turn, 9 casement, 2 tilt-only, 19 fixed (4 of them the
-`-HP` plant-room units). 11 are tempered.
+The schedule is 41 units: 14 tilt-turn (3 Max Light), 9 casement, 18 fixed (4 of them the
+`-HP` plant-room units); 23 operable. 11 are tempered. Suppliers: Drutex 29, Max Light 3,
+Andersen 9.
 
 **The import risk is the code gates, more than the U-value.** Without an NFRC label, IECC
 R303.1.3 assigns a default U of about 0.55, and the house fails the energy table. Without a
@@ -67,8 +70,15 @@ Zone 5 governs any unit within 3.6 ft of a corner. Order every unit at one ratin
 - **Dark frames.** On Alucover the black is powder-coated aluminium, so no dark uPVC sees the
   sun on any face (§3's preferred material). Andersen 400 is black Perma-Shield vinyl over
   wood. Smooth-Star doors are painted fiberglass.
-- **14" units.** Cascadia's outswing awning starts at 20" wide and its casement at 18 3/4".
-  The two kitchen units go Drutex tilt-only (inward, bottom-hinged), modelled as `awning`.
+- **14" units (2026-10-31).** Cascadia's outswing awning starts at 20" wide and its casement
+  at 18 3/4". The three operable 14x24s are **Max Light tilt-turns**: at a 12.71" frame a
+  Drutex operable lite (125 mm a side) leaves ~0.40 sf of glass, Max Light (70 mm) ~0.86 sf,
+  about the Drutex fixed unit's 0.80. Two Polish fabricators hold NFRC rows for it (§2.2).
+- **Slim-line survey (2026-10-31, NFRC CPD read directly).** Aluprof MB-Slimline and MB-79N
+  CSF: no NFRC listing found (CSF is a UK outward system, 60.5 mm operable sightline).
+  Drutex's slim lines buy no glass: IGLO EDGE 114 mm frame + sash (U 0.18), IGLO LIGHT 108 mm
+  (U 0.21), SL 38 U 0.27 triple, MB-79N/86N SI U 0.22. The 2026-10-21 gate on Aluprof/Aliplast
+  was NFRC, which fabricators (not the system house) hold.
 
 ### 2.2 Windows, by role (whole-window NFRC, triple low-e unless noted)
 
@@ -85,7 +95,9 @@ Zone 5 governs any unit within 3.6 ft of a corner. Order every unit at one ratin
 | **Egress casement — selected** | Andersen 400 | AND-N-1-04162 | 0.20 | 0.40 | 0.51 | wood/vinyl | triple is Northeast-only; dealer to confirm |
 | Egress casement — fallback | Andersen 400 HeatLock double | AND-N-1-03559 | 0.24 | 0.31 | 0.53 | wood/vinyl | stocked |
 | Casement (no 27" egress) | Cascadia outswing | CWL-K-21-00079 | 0.17 | 0.29 | 0.37 | fiberglass | fails 20" |
-| **Tilt-only 14" — selected** | Drutex Alucover | DRU-K-26-00001 | 0.18 | 0.24 | 0.35 | as above | minimum sash to confirm |
+| **Tilt-turn 14" — selected** | Aliplast Max Light Modern (Słowińscy) | STO-M-20 | 0.20 | 0.40 | 0.58 | thermally broken alu, 75 mm; 35 + 35 mm face | CR 69; quote |
+| Tilt-turn 14" — alternate fabricator | Aliplast Max Light Modern (Plastixal) | PLX-K-17 | 0.20 | 0.40 | 0.58 | as above | CR 66; quote |
+| Tilt-only 14" — retired 2026-10-31 | Drutex Alucover | DRU-K-26-00001 | 0.18 | 0.24 | 0.35 | uPVC + alu cap | 125 mm operable sightline |
 
 NAFS: Drutex holds Florida approvals (FL41835/6/7, AAMA/WDMA/CSA 101/I.S.2/A440-17) for IGLO
 5 Classic casement and tilt-turn and IGLO Energy Classic fixed, **nail-fin plus jamb-strap
@@ -146,15 +158,23 @@ claimed.
 
 | Type | n | Line | RO → unit | CPD | U/SHGC/VT | Depth |
 |---|---|---|---|---|---|---|
-| WT-1424 | 2 | Drutex tilt-only | 14x24 → 13½x23½ | DRU-K-26-00001 | 0.18/0.24/0.35 | 93 mm |
-| WT-1424-FIX(-T) | 7+4 | Drutex fixed | 14x24 → 13½x23½ | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
+| WT-1424-TT(-T) | 2+1 | Max Light tilt-turn | 14x24 → 12.71" frame | STO-M-20 | 0.20/0.40/0.58 | 75 mm |
+| WT-1424-FIX(-T) | 7+3 | Drutex fixed | 14x24 → 13½x23½ | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
 | WT-2736-FIX(-T), WT-2748-FIX-T | 1+1+1 | Drutex fixed | — | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
 | WT-6348-FIX | 1 | Drutex fixed | 63x48 → 62½x47½ | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
 | WT-2736-TT, WT-2748-TT(-T), WT-3048-TT(-T) | 4+2+1+1+3 | Drutex tilt-turn | — | DRU-K-24-00001 | 0.16/0.33/0.47 | 93 mm |
 | WT-2754-HP, WT-3048-HP | 1+3 | Drutex fixed, laminated | — | DRU-K-23-00010 | 0.14/0.39/0.56 | 93 mm |
 | WT-2748(-T), WT-2754, WT-3048 | 2+1+4+2 | Andersen 400 casement | — | AND-N-1-04162 | 0.20/0.40/0.51 | 3¼" (preset; confirm) |
 
-Flange: factory nailing fin on all three window lines. Colour: black exterior, white interior.
+Flange: factory nailing fin on all window lines (Max Light: quoted +15%, to confirm).
+Colour: black exterior, white interior.
+
+**Visible faces, modelled (`WindowType.frame_face_width` / `sash_face_width`, 2026-11-02).**
+Drutex: 75 mm frame, 50 mm sash on the operable units (Phius W-102033, IGLO Energy Classic:
+fixed lite 75 mm, operable lite 125 mm). Max Light: 35 + 35 mm. Andersen 400: **not
+authored** — the 2025-26 custom-size sheet gives unobstructed glass = unit − 4.40" wide and
+− 4.95" tall (2.20" frame + sash a jamb), but no frame/sash split; the dealer's head/jamb/sill
+section or the owner settles it, and the stools stay on the schematic 75 mm until then.
 
 ### 2.5 Landed price
 
@@ -175,9 +195,9 @@ than ±20% without it.
 
 1. Drutex: written confirmation that Alucover ships with a nail fin, and the NAFS report and
    DP for **Alucover** itself (the Florida approvals cover IGLO 5 / Energy Classic).
-2. Drutex tilt-only minimum sash at the **12.71" modeled outie frame**; if not buildable,
-   WT-1424 needs a different product or operation. The previous 13.5" assumption omitted
-   the buck and membrane allowances. Confirm every modeled frame size with the supplier.
+2. Max Light minimum tilt-turn sash at the **12.71" modeled outie frame** (the Drutex
+   tilt-only it replaced had the same open item). Confirm every modeled frame size with
+   the supplier.
 3. Stool height (§6). **The frame half is confirmed**: Drutex's frame face is 75 mm = 2.95"
    (Phius W-102033, IGLO Energy Classic, fixed-section frame height), which is the 2.953" the
    stools already assume, so no fixed unit moves. Two terms are unpublished: the 5-chamber
@@ -204,7 +224,8 @@ than ±20% without it.
 7. Clopay: Texas TDI approval GDR150 lists Modern Steel residential models 7208/7209,
    non-impact, at **+38/−42 psf**, about twice §1's worst 18.3 psf. The door is now Classic
    Steel GDU293 (2026-10-29): get its own rating. Confirm it is listed and that the listing reaches 16'-0" wide (drawing 104859/105042-B-TDI).
-8. 16 CFR 1201 marks on the 11 tempered units and every glazed door (the three French pairs).
+8. 16 CFR 1201 marks on the 11 tempered units (including the Max Light `WIN-M-BATH1-W`) and
+   every glazed door (the three French pairs).
 9. **Size standardization, priced, not assumed.** Ask each supplier to quote the schedule
    as drawn and with sizes merged (e.g. the 27" heights 36/48/54 onto fewer). Take a merge only
    where the quote shows a real saving. Limits: 27" egress width, the girt-course sill module,
@@ -222,6 +243,16 @@ than ±20% without it.
     NFRC U/SHGC/VT, NAFS rating, required safety-glazing marks, sash/hardware weight limits
     and bedroom egress clear opening. This is a quote alternate pending supplier responses
     and owner selection; availability and security performance are not yet confirmed.
+
+11. **Max Light (2026-10-31).** Fabricator choice, Słowińscy (STO-M-20) or Plastixal
+    (PLX-K-17), and its US import route; nail fin (Debesto quotes +15%); a NAFS label at
+    DP ≥ 20; the 16 CFR 1201 mark on the `-T` unit; RAL match to the Drutex caps.
+12. **Egress alternate.** Quote the 9 Andersen casements (27½×48 ×3, 27½×54 ×4, 30×48 ×2)
+    as Max Light tilt-turns, with a **written net clear opening** ≥ 20" W / 24" H / 5.7 sf.
+    Screening only: 26.21" − 2 × 70 mm ≈ 20.7" clear before the turn sash's intrusion. The
+    model gives no R310 credit without published data, so the casements stay in it.
+13. **Whole-schedule quote** from the Max Light fabricator, so Drutex + Andersen could
+    collapse to one order if the price and the egress figures hold.
 
 **Security-glazing sourcing check (2026-10-26).**
 [Drutex's glass options](https://www.drutex.eu/en/products/addons/type/3/) explicitly
@@ -279,21 +310,22 @@ the same as east and west.
 
 ## 4. Operation
 
-- **11 tilt-turn**: `WIN-M-KITCH`, `WIN-M-LIV-E1`/`E2`/`S1`/`S2`, `WIN-M-BED-W1`/`W2`,
-  `WIN-S-STUDY1`/`2`/`3`, `WIN-A-N2`.
+- **14 tilt-turn**: Drutex `WIN-M-KITCH`, `WIN-M-LIV-E1`/`E2`/`S1`/`S2`, `WIN-M-BED-W1`/`W2`,
+  `WIN-S-STUDY1`/`2`/`3`, `WIN-A-N2`; Max Light `WIN-M-KITCH-N`, `WIN-M-KIT-E`,
+  `WIN-M-BATH1-W` (the powder room's second ventilation path, still tempered).
 - **9 egress casements, Andersen 400** (§7): `WIN-M-BED-S1`/`S2`, `WIN-S-BED1`, `WIN-S-BED2`,
   `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`. Both of each pair go, so a pair
   reads alike. Order the egress (widest-opening) hinge, not wash mode.
-- **2 kitchen units are Drutex tilt-only** (inward, bottom-hinged). No line surveyed builds an
-  outward awning at 14" (§2.1).
+- **No awnings.** No line surveyed builds an outward awning at 14" (§2.1); the kitchen pair
+  went Drutex tilt-only → Max Light tilt-turn on 2026-10-31. Bedroom 3's two 14s stay fixed.
 - **Two suppliers on one face.** The south, east and west faces each mix the two products
   (e.g. `WIN-M-BED-S1`/`S2` beside `WIN-M-LIV-S1`/`S2`). §3's colour, gloss and sightline
   match applies between suppliers, not only between materials.
-- **Fixed units (19).** Fixed-in-sash matches the operable sightlines on the dark facade.
+- **Fixed units (18).** Fixed-in-sash matches the operable sightlines on the dark facade.
   Fixed-in-frame is cheaper and has more glass. Pick one rule per elevation. Where a fixed
   unit sits beside a tilt-turn on one face (north: `WIN-A-N1`/`N2`), fixed-in-sash.
 - **Juliets** (`WIN-A-S-JUL-W`/`E`) are outward casements: the studio's escape opening.
-- **R312.2.** The engine grades all 22 operable units: none has a sill under 24" with more
+- **R312.2.** The engine grades all 23 operable units: none has a sill under 24" with more
   than 72" below (PASS). **It measures the sill from the storey datum, not the finished
   floor.** The suite's 2'-3½" sill is 26" over its 1½" oak, so it holds. `WIN-A-N2` sits at
   exactly 24" over the attic datum. Confirm against the finished floor; if it lands under
@@ -331,7 +363,9 @@ trim kit is ordered**.
   rail top. **Replace 2.953" with the chosen product's rail height, minus the sash overlap**,
   and drop the stools to clear it. Where a stool is flush with the counter (`WIN-M-LIV-E1`/
   `E2`, and `WIN-M-KITCH` over the counter), turn mode needs a clear counter. Tilt is the
-  daily mode there.
+  daily mode there. The Max Light kitchen pair (`WIN-M-KITCH-N`, `WIN-M-KIT-E`, sill 42" over
+  the counter and backsplash) turns its sash over the counter too: keep the sill clear of
+  appliances and canisters, and fit an exterior screen (inward sash).
 - **Window seats.** In `plan/study_nook.py`, the seat top is 19½" and the
   `WIN-S-STUDY1`/`2` sills are 32", so it is clear. The suite desk moved ½" east so
   `WIN-S-SUITE1`'s stool (now ~29" AFF, under the 30" desk top) clears it by ⅛".

@@ -25,11 +25,15 @@ DRUTEX_ALUCOVER_FIX = Product(
     tag="PROD-DRUTEX-ALUCOVER-FIX", brand="Drutex", model="IGLO Energy Alucover",
     name="IGLO Energy Alucover fixed", url=_DRUTEX_URL,
     source=_DRUTEX + " NFRC line DRU-K-23.")
-DRUTEX_ALUCOVER_TILT = Product(
-    tag="PROD-DRUTEX-ALUCOVER-TILT", brand="Drutex", model="IGLO Energy Alucover",
-    name="IGLO Energy Alucover tilt-only (hopper)", url=_DRUTEX_URL,
-    source=_DRUTEX + " NFRC line DRU-K-26. Minimum tilt sash at a 13 1/2\" frame is a quote "
-           "item; if it cannot be built the unit goes fixed.")
+ALIPLAST_MAXLIGHT_TT = Product(
+    tag="PROD-ALIPLAST-MAXLIGHT-TT", brand="Aliplast", model="Max Light Modern",
+    name="Max Light Modern tilt-turn, thermally broken aluminium", url="https://aliplast.pl",
+    source="Aliplast system, built by an NFRC-certified Polish fabricator: Slowinscy STO-M-20 "
+           "(MAXLIGHT Tilt Turn, frame ML010 / sash ML020) or Plastixal PLX-K-17. Frame depth "
+           "75 mm, sash depth 84 mm, glazing to 68 mm, Uf 1.8 W/m2K; 35 mm frame + 35 mm sash "
+           "visible. Open: nail fin (Debesto quotes +15%), NAFS label at DP >= 20, minimum "
+           "tilt-turn sash at the 12.71\" modelled frame (notes/window_and_door_procurement.md "
+           "§2.6).")
 ANDERSEN_400_CASEMENT = Product(
     tag="PROD-ANDERSEN-400-CASEMENT", brand="Andersen", model="400 Series Casement",
     name="400 Series casement, egress hinge, Black exterior / White interior",
@@ -111,6 +115,6 @@ SECURITY_STRIKE = Product(tag='PROD-THERMATRU-SECURITY-STRIKE', brand='Therma-Tr
 
 OPENING_PRODUCTS = (
     SENSE_PRO, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS, DOOR_HINGE, PANOLOCK, BE365, FLA_ASTRAGAL, SECURITY_STRIKE,
-    DRUTEX_ALUCOVER_TT, DRUTEX_ALUCOVER_FIX, DRUTEX_ALUCOVER_TILT, ANDERSEN_400_CASEMENT,
+    DRUTEX_ALUCOVER_TT, DRUTEX_ALUCOVER_FIX, ALIPLAST_MAXLIGHT_TT, ANDERSEN_400_CASEMENT,
     THERMATRU_SMOOTHSTAR_FULLLITE, THERMATRU_SMOOTHSTAR, MMI_STEEL_SIX_PANEL, CLOPAY_CLASSIC_STEEL,
 )

@@ -35,6 +35,9 @@ def test_every_catlin_window_type_declares_a_modeled_operation(catlin_plan):
     ("WT-3660-FIX", "WT-3660"),
     ("WT-1424-FIX", "WT-1424"),
     ("WT-1424-FIX-T", "WT-1424-T"),
+    # The operable 14x24s are the house's Max Light tilt-turns (2026-10-31).
+    ("WT-1424-FIX", "WT-1424-TT"),
+    ("WT-1424-FIX-T", "WT-1424-TT-T"),
     # The house's 27" family is 27 1/2" (jack to jack); the library's 27" casement presets
     # are catalog-only, so these pair with the house's own operable twins.
     ("WT-2736-FIX", "WT-2736-TT"),
@@ -89,8 +92,8 @@ def test_catlin_picture_window_selection_preserves_the_operable_exceptions(catli
         window_type = window_types[window.type_ref]
         if window_type.width.inches == 14 and window_type.height.inches == 24:
             expected_operation = (
-                WindowOperation.AWNING
-                if window.tag in {"WIN-M-KITCH-N", "WIN-M-KIT-E"}
+                WindowOperation.TILT_TURN
+                if window.tag in {"WIN-M-KITCH-N", "WIN-M-KIT-E", "WIN-M-BATH1-W"}
                 else WindowOperation.FIXED
             )
             assert window_type.operation is expected_operation, window.tag
@@ -126,7 +129,7 @@ EGRESS_CASEMENTS = (
 def test_catlin_egress_windows_are_casements_and_the_rest_tilt_turn(catlin_plan):
     # 2026-10-21: the casements went tilt-turn for import, then the egress set came back. A
     # 27" tilt-turn nets ~18" clear at a Euro sightline and R310 wants 20"; a US egress-hinge
-    # casement nets ~20 3/4". The 14" kitchen pair stays an outward awning.
+    # casement nets ~20 3/4". The three operable 14x24s are Max Light tilt-turns.
     window_types = {wt.tag: wt for wt in catlin_plan.library.window_types}
     operations = {
         element.tag: window_types[element.type_ref].operation
@@ -134,9 +137,28 @@ def test_catlin_egress_windows_are_casements_and_the_rest_tilt_turn(catlin_plan)
     }
     casements = {tag for tag, op in operations.items() if op is WindowOperation.CASEMENT}
     assert casements == set(EGRESS_CASEMENTS)
-    assert sum(op is WindowOperation.TILT_TURN for op in operations.values()) == 11
-    assert {tag for tag, op in operations.items() if op is WindowOperation.AWNING} == {
-        "WIN-M-KITCH-N", "WIN-M-KIT-E"}
+    assert sum(op is WindowOperation.TILT_TURN for op in operations.values()) == 14
+    assert not any(op is WindowOperation.AWNING for op in operations.values())
+
+
+# Andersen 400 publishes only the combined frame + sash sightline (unit - 4.40"), not the
+# split; its faces await the owner (notes/window_and_door_procurement.md §2.6).
+_FACES_PENDING = {"PROD-ANDERSEN-400-CASEMENT"}
+
+
+def test_every_catlin_product_window_authors_its_frame_face(catlin_plan):
+    window_types = {wt.tag: wt for wt in catlin_plan.library.window_types}
+    in_use = {e.type_ref for e in catlin_plan.all_elements() if isinstance(e, Window)}
+    for tag in sorted(in_use):
+        window_type = window_types[tag]
+        if window_type.product_ref is None or window_type.product_ref in _FACES_PENDING:
+            continue
+        assert window_type.frame_face_width is not None, tag
+        assert 25 <= window_type.frame_face_width.meters * 1000 <= 150, tag
+        sash = window_type.sash_face_width
+        assert sash is not None and 0 <= sash.meters * 1000 <= 150, tag
+        if window_type.operation is WindowOperation.FIXED:
+            assert sash.meters == 0, f"{tag}: a fixed-in-frame unit has no sash"
 
 
 def test_r310_grades_the_authored_net_clear_opening_not_the_rough_opening():

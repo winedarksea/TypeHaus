@@ -1309,7 +1309,9 @@ OPENINGS = [
     # lines): they head at 5'-6" and hold 4'-6" instead. The 27" units did NOT move.
     # 1'-3" off N-M-W1 since 2026-08-29, restoring y=25'-3" after that node moved 2" north
     # with the y=26'-6" line — same compensation, same reason, as the WIN-M-MUD-W note below.
-    Window(uid="FGWPV572DB", tag="WIN-M-BATH1-W", host="W-M-W2", type_ref="WT-1424-FIX-T",
+    # Operable since 2026-10-31 (Max Light tilt-turn): a second ventilation path beside
+    # the ERV. Still tempered per R308.4.5.
+    Window(uid="FGWPV572DB", tag="WIN-M-BATH1-W", host="W-M-W2", type_ref="WT-1424-TT-T",
            position=from_node("N-M-W1", inch(16.5)), sill_height=ft(3, 6)),       # y 24'-4"
     # Picture unit centred y=31'-4", the bench/aisle centreline (FURN-M-MUD-BENCH,
     # plan/placeables.py). Re-authored off N-M-MECH1: a `from_node` offset is
@@ -1397,7 +1399,7 @@ OPENINGS = [
     # Relocated to the NE corner 2026-07-30 with the range/sink wall swap. Kept as a small
     # corner window rather than dropped: centre x=34'-0" is a bay centre off N-M-NE, clear
     # of WIN-M-KITCH by 20 1/2" and of the corner face by 10 3/8".
-    Window(uid="82WVR597PA", tag="WIN-M-KITCH-N", host="W-M-N1", type_ref="WT-1424",
+    Window(uid="82WVR597PA", tag="WIN-M-KITCH-N", host="W-M-N1", type_ref="WT-1424-TT",
            position=from_node("N-M-NE", ft(1, 5)), sill_height=ft(3, 6)),
     # The kitchen's second small window, around the corner from
     # WIN-M-KITCH-N on the east wall, over FURN-M-KIT-N4's counter. Centre y=34'-0": 408"
@@ -1407,9 +1409,9 @@ OPENINGS = [
     # Sill 3'-6" (counter + 6" backsplash) and head 5'-6", matching both existing kitchen
     # units.
     #
-    # ** WT-1424, NOT -FIX **: it is an operable awning, which is what answers "one of these
-    # should open". WIN-M-KITCH-N beside it is already the same unit, so the corner pair is
-    # two operable awnings. ** Plain glass, not -T **: no door on this wall, no stair, not a
+    # ** WT-1424-TT, NOT -FIX **: operable, which is what answers "one of these should
+    # open". WIN-M-KITCH-N beside it is the same unit, so the corner pair is two Max Light
+    # tilt-turns (2026-10-31). ** Plain glass, not -T **: no door on this wall, no stair, not a
     # wet room — R308.4 names no clause.
     #
     # ** TWO OTHER BAYS WERE CONSIDERED AND SPENT. ** y=32'-8" is also a legal bay centre,
@@ -1421,7 +1423,7 @@ OPENINGS = [
     # N-M-E1. That wall no longer exists: W-M-E1/E2 were merged for WIN-M-EAST-MID
     # (2026-08-24, see its note above), and on the merged wall's own grid — which starts at
     # N-M-SE — 33'-4" is a STUD LINE. The bay centres moved 8", not the window.
-    Window(uid="G0Y75W9ZS1", tag="WIN-M-KIT-E", host="W-M-E1", type_ref="WT-1424",
+    Window(uid="G0Y75W9ZS1", tag="WIN-M-KIT-E", host="W-M-E1", type_ref="WT-1424-TT",
            position=from_node("N-M-SE", ft(33, 5)), sill_height=ft(3, 6)),
     # --- the firebox pocket, behind the W-M-FIRE-* breast ---------------------------------
     # ** A BLIND RECESS, NOT A HOLE (2026-09-20). ** `depth=inch(6)` is the whole point: the

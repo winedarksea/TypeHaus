@@ -426,3 +426,9 @@ envelope area by a fraction of a percent, which is −2 Btu/h on HP1 and −1 on
 
 Equipment and verdicts are unchanged: HP1/HP3 remain advisory, HP2 passes the sizing cap.
 These loads use the provisional CPD U 0.21; the laminated-triple pair's label is pending.
+
+## Addendum 2026-10-31 — Max Light tilt-turns (HP2 only)
+
+All three retyped units are on the main storey, in HP2's zone: ΔUA +0.210 × 85 °F = +17.9
+Btu/h. HP2 14,274 → **14,292**, factor 8,800 / 14,292 = **0.62**, crossover 25.5 → **25.6 °F**
+(the air term's slope grows by 0.21 Btu/h·°F). HP1 and HP3 are unchanged; no verdict moves.

@@ -225,6 +225,11 @@ class WindowType(HausModel):
     # computed without it. None means not authored: the stool reports UNKNOWN and carries no
     # depth rather than guessing one (#32).
     frame_depth: Length | None = None
+    # Visible face of the frame, and of an operable sash ringed inside it (0 = fixed in
+    # frame). Unset keeps the schematic 75 mm frame and no sash. Two fields: the stool reads
+    # the frame's sill piece, and an inward sash must not lift it into the sweep.
+    frame_face_width: Length | None = None
+    sash_face_width: Length | None = None
     # The lower rail's top above the frame bottom (sill adaptor included), and how far an
     # inward sash laps below it. The stool sits at rail - overlap; None keeps the drawn
     # frame face and no lap.
@@ -259,6 +264,11 @@ class WindowType(HausModel):
             if deduction is not None and (not math.isfinite(deduction.meters)
                                           or deduction.meters < 0):
                 raise ValueError(f"{self.tag}: net clear {axis} deduction must be nonnegative")
+        frame, sash = self.frame_face_width, self.sash_face_width
+        if frame is not None and not (math.isfinite(frame.meters) and frame.meters > 0):
+            raise ValueError(f"{self.tag}: frame face width must be positive")
+        if sash is not None and not (math.isfinite(sash.meters) and sash.meters >= 0):
+            raise ValueError(f"{self.tag}: sash face width must be nonnegative")
         step, allowance = self.frame_size_increment, self.minimum_rough_opening_allowance
         if step is not None and not (math.isfinite(step.meters) and step.meters > 0):
             raise ValueError(f"{self.tag}: frame size increment must be positive")

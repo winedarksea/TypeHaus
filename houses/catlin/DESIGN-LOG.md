@@ -36,6 +36,25 @@
   datum) and every interior door head. An interior door's RO now starts at the subfloor;
   exterior doors keep their coordinated sills (open, `plans/TODO.md`).
 
+## Max Light tilt-turns at the operable 14x24s; true frame faces (2026-10-31)
+
+- **What.** `WIN-M-BATH1-W` opens (`WT-1424-TT-T`), a second ventilation path beside the
+  ERV's 20 cfm; R303.3 still passes on the ERV, R308.4.5 tempering stays, the 42" sill keeps
+  R312.2 clear. The kitchen pair goes Drutex tilt-only → `WT-1424-TT`. All three are
+  Aliplast Max Light Modern (NFRC STO-M-20 / PLX-K-17, U 0.20 / SHGC 0.40 / VT 0.58).
+  `WT-1424` and `PROD-DRUTEX-ALUCOVER-TILT` retire; Bedroom 3's two 14s stay fixed.
+- **Why Max Light.** At the 12.71" frame a Drutex operable lite (125 mm a side) leaves
+  ~0.40 sf of glass; Max Light's 70 mm leaves ~0.86 sf, about Drutex fixed (0.80). Aluprof
+  MB-Slimline / MB-79N CSF have no NFRC row; Drutex's own slim lines buy no glass. The
+  2026-10-21 "Aluprof/Aliplast considered" gate was NFRC, which fabricators do hold.
+- **Engine.** `WindowType.frame_face_width` / `sash_face_width` draw the frame and an inset
+  sash ring; unset is the old 75 mm frame, so other houses do not move. Drutex 75/50 mm
+  (Phius W-102033), Max Light 35/35. Andersen 400 publishes only frame + sash (unit − 4.40")
+  and stays on the schematic frame pending the owner.
+- **Cost.** HP2 +17.9 Btu/h (14,292), peak glass +80.9, AED +23.2 (oracle notes amended).
+  The egress casements stay Andersen; Max Light is quoted as an alternate with a written net
+  clear opening (procurement §2.6 item 12).
+
 ## Owner decisions: camera shed, garage receptacles, 1" data trunk (2026-10-30)
 
 - **Cameras shed on battery.** HA turns off the doorbell's and both cameras' PoE ports when the

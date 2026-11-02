@@ -1118,13 +1118,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 - **Fixed picture selection (2026-10-21).** `WIN-S-STAIR-N`, `WIN-A-N1`, `WIN-A-S2`,
   `WIN-A-S3` and `WIN-M-BATH2` are fixed. All 14x24 units outside the kitchen and mudroom
-  are fixed too, including Bedroom 3's two small windows, the garage pair and tempered
-  wet-room units. Kitchen awnings remain operable; the mudroom was already fixed and stays
-  so. Larger bedroom windows, `WIN-S-HALL-N` and `WIN-A-N2` remain operable.
+  are fixed too, including Bedroom 3's two small windows (they stay fixed), the garage pair
+  and the tempered wet-room units, except `WIN-M-BATH1-W`, which opens since 2026-10-31 (the
+  powder room's second ventilation path, `WT-1424-TT-T`). The kitchen pair opens
+  (`WT-1424-TT`); the mudroom stays fixed. Larger bedroom windows, `WIN-S-HALL-N` and
+  `WIN-A-N2` remain operable.
 
 - **Named products; window and door types are HOUSE-LOCAL (2026-10-21).** Drutex IGLO
-  Energy Alucover (aluminium-capped uPVC) for the 11 tilt-turn, 19 fixed and 2 kitchen
-  tilt-only units; Andersen 400 casements for the 9 R310 escape windows (`WIN-M-BED-S1`/`S2`,
+  Energy Alucover (aluminium-capped uPVC) for the 11 tilt-turn and 18 fixed units; Aliplast
+  Max Light Modern tilt-turns (NFRC STO-M-20, U 0.20, 35 + 35 mm faces) for the three operable
+  14x24s since 2026-10-31; Andersen 400 casements for the 9 R310 escape windows (`WIN-M-BED-S1`/`S2`,
   `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`); Therma-Tru Smooth-Star full-lite / Endura
   for the French pairs (2026-10-25; laminated triple and pair label pending); an OPAQUE Therma-Tru Smooth-Star for
   `D-M-ENTRY` (owner: a solid, insulated front door, at most a tiny lite); MMI Z0364688R
@@ -1138,6 +1141,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   the escape casements are 26⅛" units, 20.3" clear, and every sleeping room passes R310** —
   calculated, supplier confirmation outstanding. Before retyping an escape window, read
   `notes/window_and_door_procurement.md` §2 and §7; open quote items are §2.6.
+  Each product type authors its visible faces (`frame_face_width`/`sash_face_width`: Drutex
+  75/50 mm off Phius W-102033, Max Light 35/35); Andersen 400's split is unpublished and
+  awaits the owner, so its units draw the schematic 75 mm frame.
 
 - **Facade alignment — ONE GRID PER FACADE.** `EXT_2X6`/`PLANT_EXT_2X6_HUMID` set
   `layout_origin="line"`, so a wall segment lays out from its **layout line** (the derived

@@ -342,3 +342,8 @@ which is the same lesson again.
   so the pinned basis is **20,159.9 Btu/h**, **1.7967 tons** including 1,400 latent.
   Current model: **20,144.6 Btu/h**, **1.7954 tons**. These use provisional CPD
   THC-M-5-04493-00001, not a certified laminated-triple pair rating.
+- **2026-10-31, Max Light tilt-turns** (`WT-1424-TT`/`-TT-T`). Same 3 × 2.333 ft² of glass:
+  kitchen pair U 0.18 → 0.20, `WIN-M-BATH1-W` 0.15 → 0.20, ΔUA = (2 × 0.02 + 0.05) × 2.333
+  = +0.210, so heating +17.9 Btu/h (all in HP2's zone, `heat_pump_turndown.md`). Cooling:
+  +3.2 conduction, +80.9 glass and +23.2 AED (`solar_gain_basis.md`), +107.3 sensible:
+  the pinned basis is 20,159.9 + 107.3 = **20,267.2 Btu/h**, **1.8056 tons**.

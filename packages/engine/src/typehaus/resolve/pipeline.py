@@ -451,6 +451,7 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                     flip_hinge=bool(getattr(el, "flip_hinge", False)),
                     flip_swing=bool(getattr(el, "flip_swing", False)),
                     sizing=sizing,
+                    **_window_face_widths(plan, kind, type_ref),
                 )
             )
             model.conditions.append(
@@ -460,6 +461,17 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                     key=f"opening_perimeter:{drawn_assembly(model.plan, rw.assembly)}",
                 )
             )
+
+
+def _window_face_widths(plan: PlanModel, kind: str, type_ref: str | None) -> dict:
+    """A window type's authored frame and sash face widths, for the product geometry."""
+    window_type = (next((t for t in plan.library.window_types if t.tag == type_ref), None)
+                   if kind == "window" else None)
+    if window_type is None:
+        return {}
+    frame, sash = window_type.frame_face_width, window_type.sash_face_width
+    return {"frame_face_width_m": frame.meters if frame is not None else None,
+            "sash_face_width_m": sash.meters if sash is not None else 0.0}
 
 
 def _blind_depth(el, rw, findings: list[Finding]) -> float | None:

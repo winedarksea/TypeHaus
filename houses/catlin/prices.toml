@@ -5625,9 +5625,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Everything else here moved 10-25%, which is an ordinary revision.
 #
 # TWO UNITS ARE BELOW A STOCK LINE'S MINIMUM SIZE and may not be orderable as priced:
-#   WT-1424 (14" wide) — Simonton's AWNING minimum is 23.5" wide, Cascadia's 20". The two
-#                        kitchen units are a Drutex tilt-only since 2026-10-21, minimum
-#                        sash to confirm; the other 14x24 placements are fixed.
+#   WT-1424 (14" wide) — Simonton's AWNING minimum is 23.5" wide, Cascadia's 20". The three
+#                        operable 14x24s are Max Light tilt-turns since 2026-10-31 (WT-1424-TT),
+#                        minimum sash to confirm; the other 14x24 placements are fixed.
 #   WT-1448 (14x48)    — a legal casement at a 3.4:1 aspect, but an odd one; expect the band
 #                        floor, never below it.
 # ** VERIFY AVAILABILITY BEFORE BIDDING THESE. ** An unavailable size is not a price problem.
@@ -5665,7 +5665,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # $ each, by door/window type — MATERIAL IS PRE-TAX LIST; labour unchanged from 2026-08-20a
 #
 # ** PRODUCTS NAMED 2026-10-21 (notes/window_and_door_procurement.md §2). ** Drutex IGLO
-# Energy Alucover for the tilt-turn, fixed and tilt-only units, Andersen 400 casements for the
+# Energy Alucover for the tilt-turn and fixed units (Max Light for the 14" tilt-turns since
+# 2026-10-31), Andersen 400 casements for the
 # nine egress windows, Therma-Tru Smooth-Star doors. None publishes a price, so the window bands
 # below are NOT re-based: each comment names its product, and a quote per supplier replaces
 # them. The one Drutex figure found is Polish list: IGLO Energy white triple tilt-turn,
@@ -5676,9 +5677,13 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 
 # --- windows ------------------------------------------------------------------------------
 # The five small units. All were 65-85% low; all sit in the 0-71 UI band with WT-2736.
-"WT-1424" = { material = { low = 520, high = 1000 }, labour = { low = 115, high = 235 } }  # 2 ea — kitchen only; Drutex Alucover tilt-only; 38 UI
+"WT-1424" = { material = { low = 520, high = 1000 }, labour = { low = 115, high = 235 } }  # 0 ea — CATALOG-ONLY since 2026-10-31 (kitchen pair retyped to WT-1424-TT); was the Drutex tilt-only; 38 UI
+# Aliplast Max Light Modern tilt-turn (2026-10-31): no published price, so WT-1424's operable
+# 38 UI band, and the flat tempered adder on the -T. A fabricator quote replaces both.
+"WT-1424-TT" = { material = { low = 520, high = 1000 }, labour = { low = 115, high = 235 } }  # 2 ea — WIN-M-KITCH-N, WIN-M-KIT-E; Max Light TT
+"WT-1424-TT-T" = { material = { low = 670, high = 1250 }, labour = { low = 115, high = 240 } }  # 1 ea — WIN-M-BATH1-W; Max Light TT, +$150/250 tempered
 "WT-1424-FIX" = { material = { low = 400, high = 780 }, labour = { low = 105, high = 215 } }  # 7 ea — Drutex Alucover fixed; fixed runs 75-80% of an operable casement
-"WT-1424-FIX-T" = { material = { low = 550, high = 1030 }, labour = { low = 105, high = 220 } }  # 4 ea — fixed +$150/250 flat tempered
+"WT-1424-FIX-T" = { material = { low = 550, high = 1030 }, labour = { low = 105, high = 220 } }  # 3 ea — fixed +$150/250 flat tempered
 "WT-1424-T" = { material = { low = 670, high = 1250 }, labour = { low = 115, high = 240 } }  # 0 ea — catalog-only operable tempered twin
 # 14x36, the south gable's flanker size since 2026-08-29 (WT-1448 shortened for the 6:12
 # rake). 50 UI, INSIDE the 0-71 UI band, so it prices between WT-1424's 38 UI and WT-1448's
