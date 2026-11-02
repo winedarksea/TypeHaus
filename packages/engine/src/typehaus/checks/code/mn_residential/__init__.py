@@ -22,6 +22,7 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     fireblocking,
     foam_plastic,
     foundation_protection,
+    foundation_wall_top,
     glazing,
     handrail_clearance,
     handrail_hardware,

@@ -147,4 +147,18 @@ MATERIALS: tuple[Material, ...] = (
         source="Douglas-fir lumber thermal/permeance reference values; NDS 2018 "
                "Table 12.3.3A Douglas Fir-Larch specific gravity 0.50.",
     ),
+    Material(
+        tag="df-l-no2",
+        name="Douglas fir-larch No. 2 framing",
+        r_per_inch=1.00,
+        density=530.0,
+        # A bearing wall's plate where SPF crushes: NDS 2018 Supplement Table 4A, Douglas
+        # Fir-Larch No. 2, Fc-perp 625 psi (SPF 425); Table 12.3.3A specific gravity 0.50.
+        specific_gravity=0.50,
+        perm_rating=2.9,
+        hatch="lumber",
+        color="#d4b98f",
+        source="NDS 2018 Supplement Table 4A Douglas Fir-Larch No. 2 (Fc-perp 625 psi); "
+               "Table 12.3.3A specific gravity 0.50; thermal/permeance as df-select-s4s",
+    ),
 )

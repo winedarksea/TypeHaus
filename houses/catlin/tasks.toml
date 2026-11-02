@@ -342,7 +342,7 @@ depends_on = [
   "site/long-lead-orders",
 ]
 checkpoints = [
-  { id = "joists", label = "Mudsills, floor decks framed — joists and rims set, FS-M-NE trusses tied to their seats (H2.5A/H2.5AZ) and blocked along W-B-N1, decks open" },
+  { id = "joists", label = "Mudsills, floor decks framed — joists and rims set, every joist and truss end on a concrete wall tied to the sill (A35Z) and the wall-top blocking stations set with their A35Zs, MASA at each (Minn. R. 1309.0404), decks open" },
   { id = "sheathing", label = "Subfloor down", after = ["task/masonry/building/masonry#piers"] },
   { id = "shell", label = "Walls, roof and the rest of the shell" },
 ]

@@ -408,3 +408,45 @@ def _covers(carriers, target0: float, target1: float, *, reach: bool = False) ->
             return False
         cursor = max(cursor, end)
     return bool(carriers) and cursor >= target1 - 1e-9
+
+
+def clip_blocks_at_trimmers(members: list, along_x: bool) -> list:
+    """Cut each reinforcement block where a trimmer pack crosses it.
+
+    Blocking is laid between the joist lines before the openings are framed, and a trimmer
+    runs bearing to bearing, so a block across its line would run through it. The block
+    becomes the pieces either side of the pack, in the same bay.
+    """
+    from dataclasses import replace
+
+    from typehaus.resolve.framing.profiles import cross_section
+
+    perp = 1 if along_x else 0  # the block's own direction
+    packs = []
+    for member in members:
+        if member.category == "trimmer":
+            half = cross_section(member.profile).width_m / 2.0
+            lo, hi = sorted((member.p0[1 - perp], member.p1[1 - perp]))
+            packs.append((member.p0[perp] - half, member.p0[perp] + half, lo, hi))
+    if not packs:
+        return members
+    out = []
+    for member in members:
+        if member.category != "blocking" or not member.child_key.startswith("sister-"):
+            out.append(member)
+            continue
+        a, b = sorted((member.p0[perp], member.p1[perp]))
+        station = member.p0[1 - perp]
+        pieces = [(a, b)]
+        for c0, c1, lo, hi in packs:
+            if not lo <= station <= hi:
+                continue
+            pieces = [part for x0, x1 in pieces
+                      for part in ((x0, min(x1, c0)), (max(x0, c1), x1))
+                      if part[1] - part[0] > 1e-3]
+        for n, (x0, x1) in enumerate(pieces):
+            p0 = (station, x0) if along_x else (x0, station)
+            p1 = (station, x1) if along_x else (x1, station)
+            key = member.child_key if len(pieces) == 1 else f"{member.child_key}-{n}"
+            out.append(replace(member, child_key=key, p0=p0, p1=p1, length_m=x1 - x0))
+    return out

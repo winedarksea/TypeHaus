@@ -244,7 +244,8 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                    top_start, top_end, structure_polygon, start_role, end_role, thickness,
                    neighbour_insets_start, neighbour_insets_end, openings=openings,
                    post_bands=post_bands, post_top_bands=post_top_bands,
-                   laps=(lap_start, lap_end), sole_material=spec.sole_plate_material_ref)
+                   laps=(lap_start, lap_end), sole_material=spec.sole_plate_material_ref,
+                   top_material=spec.top_plate_material_ref)
     widen_sole_plate(members, rw, spec, structure_polygon)
 
     # --- studs at spacing, skipping those inside an opening's king/jack pack --
@@ -524,7 +525,8 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
                    post_bands: tuple[tuple[float, float], ...] = (),
                    post_top_bands: tuple[tuple[float, float], ...] | None = None,
                    laps: tuple[bool, bool] = (True, True),
-                   sole_material: str | None = None) -> None:
+                   sole_material: str | None = None,
+                   top_material: str | None = None) -> None:
     """Bottom + top plate course(s), each cut to the corner square that course owns.
 
     The cap plate of a double top plate laps the *opposite* way from the courses below it:
@@ -602,13 +604,14 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
             if abs(start_bottom - end_bottom) < 1e-9:
                 key = f"plate-top-{i}" if course_single else f"plate-top-{i}-{j}"
                 members.append(_plate(rw, a, b, key, start_bottom,
-                                      start_bottom + plate_h, member))
+                                      start_bottom + plate_h, member, top_material))
             else:
                 key = f"plate-raked-{i}" if course_single else f"plate-raked-{i}-{j}"
                 members.append(FramedMember(
                     rw.uid, key, "raked_plate", member, a, b,
                     start_bottom, start_bottom + plate_h, length(sub(b, a)),
                     z0_end_m=end_bottom, z1_end_m=end_bottom + plate_h,
+                    material=top_material,
                 ))
 
 

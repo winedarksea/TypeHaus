@@ -48,6 +48,8 @@ from typehaus.hardware.catalog import (
     ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
     ROLE_LATERAL_TIE_PLATE,
+    ROLE_SILL_TIE,
+    hardware_by_model,
     hardware_for_role,
 )
 from typehaus.hardware.config import GableEndTieRules, UpliftTieRules
@@ -90,24 +92,34 @@ def bearing_uplift_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> list
     groups: dict = {}
     for connection in connections:
         key = (connection.member_category, connection.member_profile,
-               _exposure(connection))
+               _exposure(connection), connection.sill_tie or "", connection.sill_ties)
         entry = groups.setdefault(key, {"by_storey": Counter(), "supports": Counter()})
-        entry["by_storey"][connection.storey] += rules.ties_per_bearing
+        entry["by_storey"][connection.storey] += (connection.sill_ties if connection.sill_tie
+                                                  else rules.ties_per_bearing)
         entry["supports"][connection.support_tag] += 1
 
     rows = []
-    for (category, profile, exposure), entry in sorted(groups.items()):
+    for (category, profile, exposure, sill_tie, per_end), entry in sorted(groups.items()):
         by_storey, supports = entry["by_storey"], entry["supports"]
-        item = hardware_for_role(ROLE_HURRICANE_TIE, exposure=exposure)
-        note = ("" if exposure == EXPOSURE_DRY else
-                " — preservative-treated bearings, so a G185/ZMAX tie under IRC R317.3.1")
-        rows.append(hardware_row(
+        if sill_tie:
+            item = hardware_by_model(sill_tie)
+            note = (" — joist to concrete-wall sill, Minn. R. 1309.0404 (listed capacity "
+                    "against the Table R404.1(1) top-of-wall reaction)")
+        else:
+            item = hardware_for_role(ROLE_HURRICANE_TIE, exposure=exposure)
+            note = ("" if exposure == EXPOSURE_DRY else
+                    " — preservative-treated bearings, so a G185/ZMAX tie under IRC R317.3.1")
+        per = per_end if sill_tie else rules.ties_per_bearing
+        row = hardware_row(
             item, scope=f"{category.replace('_', ' ')} bearing", size=profile,
             count=int(sum(by_storey.values())), by_storey=dict(sorted(by_storey.items())),
-            basis=(f"{rules.ties_per_bearing} per bearing joint x {sum(supports.values())} "
+            basis=(f"{per} per bearing joint x {sum(supports.values())} "
                    f"{profile} {category} ends seated on the declared bearings "
                    + ", ".join(f"{tag} x{n}" for tag, n in sorted(supports.items()))
-                   + note)))
+                   + note))
+        if sill_tie:
+            row["role"] = ROLE_SILL_TIE
+        rows.append(row)
     return rows
 
 

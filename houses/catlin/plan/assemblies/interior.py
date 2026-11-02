@@ -312,7 +312,8 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
                       function=LayerFunction.STRUCTURE,
                       framing=FramingSpec(member="2x6", spacing=inch(16),
                                           sill_gasket=inch(0.0625),
-                                          layout_origin="line"),
+                                          layout_origin="line",
+                                          top_plate_material_ref="df-l-no2"),
                       cavity=CavityFill(material_ref="mineral-wool")),
             ),
         ),
@@ -430,6 +431,12 @@ STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
 # under 3/4" paint-grade plywood — the plywood face W-B-STR carries across the well, and
 # screw-anywhere handrail backing. P-M-STRLAND-SE's block lands on this furring, so a doubled
 # 2x3 stands under it to the slab. Moving the stair 3 1/4" instead would re-open ST-B2M.
+# INT_2X6_BRG_HALF's stud layer with DF-L No. 2 top plates (the x=18' line, below).
+_STUD_DFL_PLATES = Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+                         function=LayerFunction.STRUCTURE,
+                         framing=FramingSpec(member="2x6", layout_origin="line",
+                                             top_plate_material_ref="df-l-no2"))
+
 STAIRWELL_INT_2X6_BRG_FURRED = Assembly(
     tag="STAIRWELL_INT_2X6_BRG_FURRED",
     variant_of="INT_2X6_BRG_HALF",
@@ -446,8 +453,19 @@ STAIRWELL_INT_2X6_BRG_FURRED = Assembly(
                       framing=FramingSpec(member="2x3", spacing=inch(16))),
             ),
         ),
+        Substitution(span=layers("stud", "stud"), replacement=(_STUD_DFL_PLATES,)),
     ),
-    source="catlin basement x=18' bearing wall on the stair well (W-B-CN), 2026-11-01: INT_2X6_BRG_HALF with its stair face furred 3 1/4\" (2x3 on edge, 3/4\" painted plywood) back to the pour's old x=17'-6\" face",
+    source="catlin basement x=18' bearing wall on the stair well (W-B-CN), 2026-11-01: INT_2X6_BRG_HALF with its stair face furred 3 1/4\" (2x3 on edge, 3/4\" painted plywood) back to the pour's old x=17'-6\" face; DF-L No. 2 top plates (notes/main_floor_truss_basis.md §5)",
+)
+
+# W-B-CS3 / -CS2 / -CN2: the base bearing wall with DF-L No. 2 top plates, the cure for the
+# x=18' line's plate crushing (SPF Fc-perp 425 psi, d/c 1.03; DF-L 625 psi, d/c 0.70,
+# notes/main_floor_truss_basis.md §5). The sole plate is the PT SYP sill already.
+INT_2X6_BRG_HALF_DFL = Assembly(
+    tag="INT_2X6_BRG_HALF_DFL",
+    variant_of="INT_2X6_BRG_HALF",
+    substitute=(Substitution(span=layers("stud", "stud"), replacement=(_STUD_DFL_PLATES,)),),
+    source="catlin basement x=18' bearing line: INT_2X6_BRG_HALF with DF-L No. 2 top plates (notes/main_floor_truss_basis.md §5)",
 )
 
 # ** THE U-STAIR'S WELL PARTITION, GIVEN FACES AND A ROOM SIDE 2026-09-05. **

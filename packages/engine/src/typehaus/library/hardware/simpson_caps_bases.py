@@ -92,6 +92,7 @@ A35Z_FRAMING_ANGLE = StructuralHardware(
         lateral_f1_lb=695.0,
         lateral_f2_lb=845.0,
         load_duration_factor=1.6,
+        lowest_load_duration_factor=1.0,
         species="DF/SP",
         fasteners="6-SD9112 each leg (the 6+6 rows of Table 5)",
         citation=("ICC-ES ESR-3096 (Simpson Strong-Tie framing connectors), Table 5, read "

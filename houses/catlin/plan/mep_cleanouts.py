@@ -31,13 +31,6 @@ BASEMENT_CLEANOUTS = [
                   position=pt(inch(352), inch(416.99)), fitting_elevation=inch(106.25),
                   cap_position=pt(inch(352), inch(416.99)), cap_elevation=inch(121.4375),
                   access="cabinet", clear_width=inch(24), clear_depth=inch(24)),
-    # The truss route turns 180 degrees south, west and north at x=240": one cleanout at the
-    # west corner, capped through the theater's ceiling as an access panel. The 3" stub off
-    # the sink riser falls 1" (past a 1/5 bend) and starts the count over.
-    DrainCleanout(uid="99DC64ACMK", tag="CO-B-KITCH-FIELD", pipe_ref="PR-B-KITCH-DRAIN",
-                  position=pt(inch(240), inch(378)), fitting_elevation=inch(101.82),
-                  cap_position=pt(inch(240), inch(378)), cap_elevation=inch(95.375),
-                  access="ceiling", clear_width=inch(24), clear_depth=inch(24)),
     DrainCleanout(uid="COB0000004", tag="CO-B-KITCH-TURN", pipe_ref="PR-B-KITCH-DRAIN",
                   position=pt(ft(9, 8), ft(35)), fitting_elevation=inch(96.21875),
                   cap_position=pt(ft(9, 10.2), ft(35)), cap_elevation=inch(100.21875),

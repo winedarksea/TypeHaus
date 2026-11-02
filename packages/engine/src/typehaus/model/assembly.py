@@ -174,8 +174,11 @@ class FramingSpec(HausModel):
     # exposed bay cap can match the finish studs without restocking plates or headers.
     blocking_material_ref: str | None = None
     # Stock for the bottom (sole) plate only — a treated plate where an exposed bay takes
-    # drip. None keeps ordinary framing lumber; top plates are never restocked.
+    # drip. None keeps ordinary framing lumber.
     sole_plate_material_ref: str | None = None
+    # Stock for the top plate courses only — a denser species where a bearing wall's plates
+    # crush under the studs (Fc-perp). None keeps ordinary framing lumber.
+    top_plate_material_ref: str | None = None
     # Wall STRUCTURE layers only: the sill is a wider board than the stud (a 2x8 on a 2x6
     # wall over an ICF core), set flush with the stud band's OUTSIDE face. None keeps the
     # sole plate at the stud size, centred. See resolve/sill_alignment.py.

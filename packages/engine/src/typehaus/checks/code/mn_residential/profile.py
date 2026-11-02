@@ -365,6 +365,10 @@ MN_2020 = JurisdictionProfile(
                        ("structural.bearing_wall_footing",), ("IRC R403.1", "IRC R403.1.1")),
         PermitItemSpec("Sill-plate anchorage", ("code.R403_1_6_foundation_anchorage",),
                        ("IRC R403.1.6",)),
+        # Added 2026-11-02. Non-blocking while catlin's W-B-N2 restraint (the stair well fills
+        # its footnote f joist spaces) waits on an EOR detail; the line still prints its UNKNOWN.
+        PermitItemSpec("Foundation wall top restraint", ("code.MN_1309_0404_wall_top",),
+                       ("Minn. R. 1309.0404",), blocking=False),
         # Added 2026-09-23. What the mix must state for its exposure class — a spec line the
         # reviewer reads off the concrete schedule, not an inspection (the footing
         # inspection already carries mix_matches_exposure). Non-blocking: catlin's mixes do

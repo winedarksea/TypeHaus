@@ -114,7 +114,9 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # RF-HOUSE / RF-GARAGE, 10 along the ridge, and FS-BW-FLOOR's 4 + 4 on its two seats.
     # 82 -> 130 on 2026-11-01 (decision #112): FS-M-NE sets ``JoistSpec.seat_ties``, so its
     # 24 floor trusses take a tie at both wall seats (+48: 24 x=18' plates, 24 on W-B-E1/E2).
-    assert joints["hurricane_tie"] == 130
+    # 130 -> 82 on 2026-11-02: ``JoistSpec.sill_tie`` ties only the concrete-wall ends, with
+    # an A35Z each (Minn. R. 1309.0404), which is its own part and role: the 48 leave.
+    assert joints["hurricane_tie"] == 82
     # 137 -> 136 in 2026-09: the main-storey sill run over the sunken garden (y = -11 3/4")
     # spans axis to axis of the court's side walls, 20'-0" -> 18'-0" with the 17'-0" court.
     # At a 4' pitch, fencepost: floor(20/4)+1 = 6 became floor(18/4)+1 = 5.

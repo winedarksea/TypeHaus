@@ -242,6 +242,24 @@ _LAUNDRY_X = inch(115.83)          # FX-M-LAUNDRY's centre, and its own blocks' 
 # (which still stacks, on W-B-CW2) closing the west.
 _CLN2_X_W = inch(174)              # 1'-2" east of W-M-CLN2's west end at 13'-4"
 _CLN2_X_E = inch(201)              # 1'-3" west of the x=18'-0" bearing line
+# ** WALL-TOP BLOCKING (Minn. R. 1309.0404, Table R404.1(1) fn. f; basis note §4). ** Where a
+# TJI field runs PARALLEL to a backfilled foundation wall, full-depth blocking in the first
+# three joist spaces at <= 72" o.c., each station tied to the sill by five A35Z
+# (``plan/wall_top_ties.py``) and within 8" of a MASA (derived: the nearest anchor moves to
+# it). Two lines per station block four spaces, as on W-B-N1. ``code.MN_1309_0404_wall_top``
+# grades it; W-B-N2 has no station because FO-M-STAIR fills those spaces.
+def _wall_top_blocks(wall, xs, lines):
+    return tuple(
+        JoistReinforcement(at=pt(x, y), plies=1, blocking=True,
+                           source=f"{wall} top restraint (Minn. R. 1309.0404, Table R404.1(1) "
+                                  "fn. f): full-depth blocking in the first three joist "
+                                  "spaces, 72\" o.c. max; subfloor nailed to it 8d @ 3\"")
+        for x in xs for y in lines)
+
+
+_S_WALL_LINES = (inch(16), inch(48))
+_N_WALL_LINES = (inch(421), inch(389))  # FS-M-MECH's lines 421.4" / 389.4"
+
 _WEST_FLOOR_REINFORCEMENT = (
     JoistReinforcement(at=pt(_TUB_DECK_X, inch(208)), plies=1, blocking=True,
                        source="RM-M-BATH2 drop-in bath: full-depth blocking in the "
@@ -264,6 +282,7 @@ _WEST_FLOOR_REINFORCEMENT = (
                        source="W-M-CLN2's east third: the second of the pair above, "
                               "2'-3\" along, with the x=18'-0\" bearing line closing the "
                               "run 1'-3\" further east"),
+    *_wall_top_blocks("W-B-S1", (inch(36), inch(84)), _S_WALL_LINES),
 )
 
 # South bay: full 18'-0" span, wall to centre line, y 0'-0" to the bathroom node line.
@@ -278,7 +297,8 @@ WEST_FLOOR = FloorSystem(
                      bearing_refs=("W-B-W2", "W-B-W1", "W-B-CS", "W-B-CS3", "W-B-CS2",
                                    "W-B-CN2"),
                      # The x=18' plate is shared with FS-M-NE's trusses north of y=13'.
-                     end_bearing=(("W-B-CS2", _JOIST_BEARING), ("W-B-CN2", _JOIST_BEARING))),
+                     end_bearing=(("W-B-CS2", _JOIST_BEARING), ("W-B-CN2", _JOIST_BEARING)),
+                     sill_tie="A35Z"),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     reinforcements=_WEST_FLOOR_REINFORCEMENT,
@@ -294,7 +314,8 @@ WEST_FLOOR = FloorSystem(
 MECH_FLOOR = FloorSystem(
     uid="CMFS03AAAA", tag="FS-M-MECH",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
-                     bearing_refs=("W-B-W1", "W-B-STR3B", "W-B-STR3", "W-B-STR")),
+                     bearing_refs=("W-B-W1", "W-B-STR3B", "W-B-STR3", "W-B-STR"),
+                     sill_tie="A35Z"),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
@@ -306,6 +327,9 @@ MECH_FLOOR = FloorSystem(
     # joist. The vents, the radon riser and the conduits through this deck are still undrawn —
     # see the openings' own notes in plan/storeys/main.py.
     openings=("FO-M-ERV-OA",),
+    # W-B-N3 at x=8', W-B-N4 at x=5' (clear of the FO-M-ERV-OA chase, x 6"..48 1/2").
+    reinforcements=(*_wall_top_blocks("W-B-N3", (inch(96),), _N_WALL_LINES),
+                    *_wall_top_blocks("W-B-N4", (inch(60),), _N_WALL_LINES)),
     source="catlin main floor, over the furnace room — same joists as FS-M-WEST, spanning "
            "10'-0\" east-west from the west wall to the x=10' bearing line",
 )
@@ -344,7 +368,8 @@ EAST_FLOOR = FloorSystem(
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      # South of y=13'-10", so its west bearing is the framed pair W-B-CS
                      # (y 0..10'-0") and W-B-CS3 (10'-0"..13'-10").
-                     bearing_refs=("W-B-CS", "W-B-CS3", "W-B-E1")),
+                     bearing_refs=("W-B-CS", "W-B-CS3", "W-B-E1"),
+                     sill_tie="A35Z"),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
@@ -358,7 +383,8 @@ EAST_FLOOR = FloorSystem(
         at=pt(inch(256), inch(3.25)), plies=3, member="1.75x11.875 LVL", blocking=False,
         extent=(inch(218.34375), inch(293.65625)),
         source="flush band header over D-B-PATIO (Door.header_in_band) — 2-ply Microllam "
-               "LVL 2.0E, Weyerhaeuser TJ-9000 (July 2026)"),),
+               "LVL 2.0E, Weyerhaeuser TJ-9000 (July 2026)"),
+        *_wall_top_blocks("W-B-S4", (inch(350), inch(398)), _S_WALL_LINES)),
     # RM-M-LIVING's fireplace piers pass through this deck in the pockets between joists
     # 005/006; the joists run continuous and the subfloor cut is DERIVED
     # (`resolve/through_deck.py`, decision #78).
@@ -398,10 +424,11 @@ _TRUSS_OC = inch(12)
 # Minnesota's R404.1 amendment wants floor joists "connected to the sill plate at the top of
 # wall with an approved connector", and where the framing runs PARALLEL to a foundation wall,
 # full-depth blocking in the first three joist spaces at its Table R404.1(1) spacing (72" for
-# an 8' wall in GM soil). So: ``seat_ties`` puts a hurricane tie (H2.5A; the ZMAX twin on the
-# PT sill) on every truss end seated on a wall, and W-B-N1, the one foundation wall this
-# field runs parallel to, takes blocking in the four bays y 32'..36' at x 21'/27'/33' —
-# 72" o.c., 36" off each end wall. Each line blocks the bay either side of it.
+# an 8' wall in GM soil). So: ``sill_tie`` puts one A35Z on every truss end seated on the
+# W-B-E1/E2 sill (400 lb a truss at 12" o.c. against 538 lb), the x=18' plate ends stay
+# toe-nailed, and W-B-N1, the one foundation wall this field runs parallel to, takes
+# blocking in the four bays y 32'..36' at x 21'/27'/33' — 72" o.c., 36" off each end wall,
+# five A35Z a station (``plan/wall_top_ties.py``). Each line blocks the bay either side.
 _N_WALL_BLOCK_X = (ft(21), ft(27), ft(33))
 _N_WALL_BLOCKING = tuple(
     JoistReinforcement(at=pt(x, y), plies=1, blocking=True,
@@ -423,7 +450,7 @@ NE_FLOOR = FloorSystem(
                      web_panel_offset=_WEB_PANEL_OFFSET,
                      end_bearing=(("W-B-CS3", _TRUSS_BEARING), ("W-B-CS2", _TRUSS_BEARING),
                                   ("W-B-CN2", _TRUSS_BEARING), ("W-B-CN", _TRUSS_BEARING)),
-                     seat_ties=True),
+                     sill_tie="A35Z"),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     reinforcements=_N_WALL_BLOCKING,
     ceiling_below=_CEILING_GWB,

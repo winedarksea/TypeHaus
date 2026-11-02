@@ -102,7 +102,8 @@ def blocking_material_ref(ctx: CheckContext) -> list[Finding]:
         if assembly is None:
             continue
         for layer in assembly.layers:
-            for field in ("blocking_material_ref", "sole_plate_material_ref"):
+            for field in ("blocking_material_ref", "sole_plate_material_ref",
+                          "top_plate_material_ref"):
                 ref = getattr(layer.framing, field) if layer.framing else None
                 if ref is None or ref in known:
                     continue

@@ -69,6 +69,9 @@ class BearingSupport:
     #: A wall, not a beam. A floor joist on a wall plate is toe-nailed (IRC Table R602.3(1))
     #: and held down by the wall above it; only a joist on a beam takes a tie.
     wall: bool = False
+    #: A concrete wall: the member seats on its PT sill return, which is the plate a
+    #: ``JoistSpec.sill_tie`` ties to (Minn. R. 1309.0404).
+    sill: bool = False
 
 
 @dataclass(frozen=True)
@@ -101,6 +104,10 @@ class BearingConnection:
     #: The support line, snapped to ``"x"``/``"y"``. A tie straddles its plate, so the
     #: support's direction and not the member's is what orients it.
     axis: str = "x"
+    #: The catalog model tying this end to a concrete wall's sill, and how many, when the
+    #: floor names a ``JoistSpec.sill_tie``; ``None`` is the house's hurricane-tie rule.
+    sill_tie: str | None = None
+    sill_ties: int = 0
 
 
 def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
@@ -116,7 +123,8 @@ def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
         top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
         return BearingSupport(tag=tag, p0=wall.axis[0], p1=wall.axis[1], top_z_m=top,
                               half_width_m=wall.thickness_m / 2.0,
-                              treated=_wall_treated(model, wall), wall=True)
+                              treated=_wall_treated(model, wall), wall=True,
+                              sill=_wall_concrete(model, wall))
     for solid in model.solids:
         if solid.tag != tag or solid.category != "beam":
             continue
@@ -133,11 +141,15 @@ def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
     return None
 
 
+def _wall_concrete(model: ResolvedModel, wall) -> bool:
+    asm = model.plan.library.resolve_assembly(wall.assembly) if wall.assembly else None
+    return asm is not None and is_concrete_assembly(asm)
+
+
 def _wall_treated(model: ResolvedModel, wall) -> bool:
     """A concrete wall seats its members on the sill return, a PT plate on the pour (IRC
     R317.1 item 2), so that is the wood a tie screws into."""
-    asm = model.plan.library.resolve_assembly(wall.assembly) if wall.assembly else None
-    return (asm is not None and is_concrete_assembly(asm)) or is_treated(model, wall.assembly)
+    return _wall_concrete(model, wall) or is_treated(model, wall.assembly)
 
 
 def is_treated(model: ResolvedModel, assembly_tag: str | None,
@@ -188,7 +200,8 @@ def _bearing_line(model: ResolvedModel, declared: BearingSupport,
             continue
         line.append(BearingSupport(tag=wall.tag, p0=wall.axis[0], p1=wall.axis[1],
                                    top_z_m=top, half_width_m=wall.thickness_m / 2.0,
-                                   treated=_wall_treated(model, wall), wall=True))
+                                   treated=_wall_treated(model, wall), wall=True,
+                                   sill=_wall_concrete(model, wall)))
     return line
 
 
@@ -259,7 +272,8 @@ def _crossing(member, support: BearingSupport):
 
 
 def _tied_assemblies(model: ResolvedModel, elements_by_tag: dict, rules: UpliftTieRules):
-    """``(assembly, bearing tags, member categories to tie, tie on walls?)`` per roof/floor.
+    """``(assembly, bearing tags, member categories to tie, tie on walls?, (sill tie, per
+    end) or None)`` per roof/floor.
 
     Roofs and floors are walked separately because each names its bearings on a different
     field — a ``Roof`` on ``bearing_refs``, a ``FloorSystem`` on ``joists.bearing_refs`` —
@@ -271,14 +285,15 @@ def _tied_assemblies(model: ResolvedModel, elements_by_tag: dict, rules: UpliftT
         element = elements_by_tag.get(roof.tag)
         refs = tuple(getattr(element, "bearing_refs", ()) or ())
         if refs:
-            yield roof, refs, rules.tied_roof_categories, True
+            yield roof, refs, rules.tied_roof_categories, True, None
     for floor in model.floors:
         element = elements_by_tag.get(floor.tag)
         joists = getattr(element, "joists", None)
         refs = tuple(getattr(joists, "bearing_refs", ()) or ())
         if refs:
-            yield floor, refs, rules.tied_floor_categories, (
-                rules.tie_floor_joists_on_walls or bool(getattr(joists, "seat_ties", False)))
+            sill_tie = getattr(joists, "sill_tie", None)
+            yield floor, refs, rules.tied_floor_categories, rules.tie_floor_joists_on_walls, (
+                (sill_tie, joists.sill_ties_per_end) if sill_tie else None)
 
 
 def bearing_line_tags(model: ResolvedModel, refs: tuple, rules: UpliftTieRules) -> set:
@@ -356,7 +371,8 @@ def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
                        for storey in model.plan.storeys
                        for element in model.plan.storey_elements(storey.tag)}
 
-    for resolved, refs, categories, on_walls in _tied_assemblies(model, elements_by_tag, rules):
+    for resolved, refs, categories, on_walls, sill_tie in _tied_assemblies(
+            model, elements_by_tag, rules):
         if (resolved.tag in covered) is not authored:
             continue
         supports: list = []
@@ -372,7 +388,7 @@ def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
                         or frozenset({support.tag, resolved.tag}) in joints):
                     continue
                 seen.add(support.tag)
-                if on_walls or not support.wall:
+                if on_walls or not support.wall or (sill_tie and support.sill):
                     supports.append(support)
         if not supports:
             continue
@@ -395,13 +411,16 @@ def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
                     ties.append((crossing[0], support))
             for point, support in ties:
                 key_point = (round(point[0] / grid_m), round(point[1] / grid_m))
+                on_sill = sill_tie is not None and support.sill
                 yield BearingConnection(
                     support_tag=support.tag, storey=resolved.storey,
                     assembly_tag=resolved.tag, member_profile=member.profile,
                     member_category=member.category, key_point=key_point,
                     support_treated=support.treated,
                     point_m=(point[0], point[1]), z_m=_seat_z(point, support),
-                    axis=axis_of(support.p0, support.p1)), support
+                    axis=axis_of(support.p0, support.p1),
+                    sill_tie=sill_tie[0] if on_sill else None,
+                    sill_ties=sill_tie[1] if on_sill else 0), support
 
 
 @dataclass(frozen=True)

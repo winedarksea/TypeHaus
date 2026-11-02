@@ -18,6 +18,7 @@ from typehaus.resolve.floor_ends import floor_ends
 from typehaus.resolve.floor_lines import extra_lines, move_lines
 from typehaus.resolve.floor_openings import (
     _shift,
+    clip_blocks_at_trimmers,
     opening_frames,
     opening_members,
     within_one_bay,
@@ -207,6 +208,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
     # packs bearing to bearing (resolve/floor_openings.py).
     members.extend(opening_members(system, opening_boxes, along_x, z0, z1, depth,
                                    (perp0, perp1)))
+    members[:] = clip_blocks_at_trimmers(members, along_x)
 
     # Rim (band) boards cap the joist ends — perpendicular to the joists, not a duplicate
     # of the parallel edge joists above. When the outer spans cantilever, the band rides

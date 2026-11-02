@@ -698,7 +698,7 @@ WALLS = [
     # segment D-B-GYM moved onto — a framed host in place of the 12" pour it used to be
     # formed through — which is the whole point of the rotation.
     Wall(uid="NJ21M7MF6R", tag="W-B-CS3", start_node="N-B-C1",
-         end_node="N-B-SA-NE", assembly="INT_2X6_BRG_HALF",
+         end_node="N-B-SA-NE", assembly="INT_2X6_BRG_HALF_DFL",
          layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING),
@@ -710,7 +710,7 @@ WALLS = [
     # east (3 1/2" / 2" plate split, params/main_deck.py), W-M-C2/C3/C5/C5B and through them
     # RB-HOUSE, BM-M-HALL, FO-M-STAIR's east edge and P-M-STRLAND-SE.
     Wall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
-         end_node="N-B-C", assembly="INT_2X6_BRG_HALF", top=ft(8),
+         end_node="N-B-C", assembly="INT_2X6_BRG_HALF_DFL", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING),
     # Split at N-B-BA-E so the bathroom's north partition tees onto a shared
@@ -721,7 +721,7 @@ WALLS = [
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING),
     Wall(uid="CBW121AAAA", tag="W-B-CN2", start_node="N-B-C",
-         end_node="N-B-BA-E", assembly="INT_2X6_BRG_HALF", top=ft(8),
+         end_node="N-B-BA-E", assembly="INT_2X6_BRG_HALF_DFL", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING),
     # **The y=18' cross line is framed now.** All four of these were 12" cast

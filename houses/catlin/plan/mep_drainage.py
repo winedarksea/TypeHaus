@@ -65,18 +65,18 @@ DRAINS = [
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
                     "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
-    # ** THROUGH THE TRUSS WEBS (2026-11-01, decision #112). ** FS-M-NE replaced the EPS deck
-    # this drain used to hide in. It drops at the sink into the 34'-35' bay, then threads the
-    # field in the 8 7/8" chord window (a 2" pipe's centre 100.25"..106.75"), clear of
-    # RM-B-PLAY-N's ceiling (95 3/8", 94 7/8" with its resilient channel). The footnote-f blocks (x 21'/27'/33',
-    # y 32'..36') close all four north bays, so it cannot run west there: it crosses the
-    # trusses south at x=355" (web opening 353.5".."366.5", centre 360") into the unblocked
-    # 31'-32' bay, runs west to x=240" (opening 233.5".."246.5"), crosses back north to
-    # bay 35'-36' (the one bay with no full block on the x=18' line, only the 2x6 box this
-    # run frames), mid-bay at y=35'-1", and leaves over the x=18' plate. 0.26"/ft all the way:
-    # 100.3" at the plate keeps its invert on the box's plate rail (99 1/16"). The west legs
-    # fall 0.5"/ft from there to the stair-well profile they always had; a 45 pair offsets it
-    # 2 1/4" south onto the pack face just west of the plate.
+    # ** THROUGH THE TRUSS WEBS AND THE BLOCKS (2026-11-02, decision #112). ** It drops at the
+    # sink into the 34'-35' bay and runs straight west in it, in the 8 7/8" chord window (a
+    # 2" pipe's centre 100.25"..106.75"), clear of RM-B-PLAY-N's ceiling (95 3/8"). The
+    # footnote-f blocks (x 21'/27'/33') close that bay, so the pipe BORES the 27' and 21'
+    # ones: 2 1/2" at its centre (104.3", 101.7"), `notes/main_floor_truss_basis.md` §4 has
+    # the net section. A 45 pair jogs it 6 1/4" north through the truss web opening at x=240"
+    # (233.5".."246.5") into bay 35'-36', mid-bay y=35'-3 1/4" (the one bay with no full block
+    # on the x=18' line, only the 2x6 box this run frames), and it leaves over the x=18' plate.
+    # 0.43"/ft in the field; 100.3" at the plate keeps its invert on the box's plate rail
+    # (99 1/16"). The west legs fall 0.5"/ft from there to the stair-well profile they always
+    # had; a 45 pair offsets it 2 1/4" south onto the pack face just west of the plate. No
+    # cleanout in the field: 90 degrees of turn at most, CO-B-KITCH-HEAD and -TURN bracket it.
     #
     # ** WEST OF x=18' IT IS EXPOSED, AND THAT IS THE OWNER'S CALL. ** It hugs the stair well's
     # north edge, clamped along its face (below), where a stair is somewhere a pipe may show
@@ -102,8 +102,8 @@ DRAINS = [
     # of FS-M-MECH's joists.
     PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(352), inch(416.99)), pt(inch(352), inch(416.99)),
-                  pt(inch(355), inch(416.99)), pt(inch(355), inch(378)),
-                  pt(inch(240), inch(378)), pt(inch(240), inch(423.25)),
+                  pt(inch(349), inch(416.99)), pt(inch(243.13), inch(416.99)),
+                  pt(inch(236.87), inch(423.25)),
                   pt(ft(18), inch(423.25)), pt(ft(17, 9.25), inch(423.25)),
                   pt(inch(119.25), inch(423.25)), pt(ft(9, 8), ft(35)),
                   pt(ft(6), ft(35)), pt(inch(32.5), ft(35)),
@@ -116,8 +116,8 @@ DRAINS = [
             # The truss field holds 0.26"/ft; the final ceiling legs hold
             # 0.3"/ft, as does the short buried wye leg. Its -19.25" arrival is
             # 3/32" above the main's -19.34375" centreline at y406.5".
-            elevations=(ft(9, 7.875), inch(106.25), inch(105.15), inch(104.31),
-                        inch(101.82), inch(100.84), inch(100.31), inch(100.2),
+            elevations=(ft(9, 7.875), inch(106.25), inch(105.15), inch(101.37),
+                        inch(101.05), inch(100.31), inch(100.2),
                         ft(8, 0.3125), inch(96.2),
                         ft(7, 11.25), inch(94.2625), inch(93.925), inch(-19.1625), inch(-19.25)),
             serves=("FX-M-KITCH-SINK",)),

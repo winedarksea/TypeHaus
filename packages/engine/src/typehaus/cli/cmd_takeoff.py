@@ -204,7 +204,10 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
     for row in framing_bom:
         buckets = ", ".join(f"{b['count']}×{b['length_ft']}'" for b in row["stock"])
         bf = f" · {row['board_feet']} bf" if row["board_feet"] else ""
-        console.print(f"  {row['profile']:>18} {row['category']:<18} "
+        # Two "2x6 plate" rows are two purchases when one is DF-L: say which.
+        category = (f"{row['category']} {row['material']}" if row.get("material")
+                    and ":" not in str(row["profile"]) else row["category"])
+        console.print(f"  {row['profile']:>18} {category:<18} "
                       f"{row['pieces']:>4} pc / {row['cut_length_ft']:>7.1f} LF cut "
                       f"[{buckets}]{bf}")
     if payload["fabricated_members"]:

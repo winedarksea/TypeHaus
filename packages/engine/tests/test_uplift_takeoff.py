@@ -194,21 +194,20 @@ def test_a_floor_is_tied_along_its_whole_bearing_line(catlin_model_ro) -> None:
 
 def test_a_floor_joist_on_a_wall_takes_no_tie(catlin_model_ro, connections) -> None:
     """Hurricane ties are for the roof. A joist on a wall plate is toe-nailed and held down
-    by the wall above; the band's CS16/LTP4 carry uplift storey to storey — unless its own
-    ``JoistSpec.seat_ties`` asks for one at every wall seat (decision #112)."""
+    by the wall above; the band's CS16/LTP4 carry uplift storey to storey — unless its floor
+    names a ``JoistSpec.sill_tie``, which ties only the ends on a CONCRETE wall's sill
+    (Minn. R. 1309.0404) and leaves framed plates toe-nailed."""
     walls = {w.tag for w in catlin_model_ro.walls}
     plan = catlin_model_ro.plan
-    seat_tied = {f.tag for f in catlin_model_ro.floors
-                 if getattr(plan.by_tag(f.tag).joists, "seat_ties", False)}
-    assert seat_tied == {"FS-M-NE"}
+    sill_tied = {f.tag for f in catlin_model_ro.floors
+                 if getattr(plan.by_tag(f.tag).joists, "sill_tie", None)}
+    assert sill_tied == {"FS-M-NE", "FS-M-EAST", "FS-M-WEST", "FS-M-MECH"}
     on_walls = [c for c in connections if c.support_tag in walls
                 and c.assembly_tag in {f.tag for f in catlin_model_ro.floors}]
-    assert {c.assembly_tag for c in on_walls} == seat_tied, "seat_ties=False floors stay untied"
-    # FS-M-NE: 24 trusses, both ends. The x=18' line is framed (plain H2.5A); the east pours
-    # seat the trusses on their PT sill return, so those ties are the treated part.
-    treated = Counter(c.support_treated for c in on_walls)
-    assert treated == {False: 24, True: 24}
-    assert {c.support_tag for c in on_walls if c.support_treated} == {"W-B-E1", "W-B-E2"}
+    assert {c.assembly_tag for c in on_walls} == sill_tied, "sill_tie=None floors stay untied"
+    # Only the pours: 24 truss + 37 TJI ends, one A35Z each; the x=18' plate is nailed.
+    assert {c.support_tag for c in on_walls} == {"W-B-E1", "W-B-E2", "W-B-W1", "W-B-W2"}
+    assert Counter((c.sill_tie, c.sill_ties) for c in on_walls) == {("A35Z", 1): 61}
     assert [c for c in connections if c.assembly_tag in {f.tag for f in catlin_model_ro.floors}
             and c.support_tag not in walls], "deck joists on beams stay tied"
 

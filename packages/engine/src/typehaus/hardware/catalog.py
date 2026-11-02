@@ -111,6 +111,10 @@ ROLE_EQUIPMENT_PAD_ANCHOR = "equipment_pad_anchor"
 # asks 1/2" expansion or adhesive anchors with washers and leaves spacing to the maker.
 ROLE_LEDGER_ANCHOR = "ledger_anchor"
 ROLE_HURRICANE_TIE = "hurricane_tie"
+#: A joist end tied to a concrete wall's sill by the part its floor names
+#: (``JoistSpec.sill_tie``, Minn. R. 1309.0404). A row/joint label, never a lookup key: the
+#: part comes from ``hardware_by_model``.
+ROLE_SILL_TIE = "sill_tie"
 # A wood member held down to CONCRETE or masonry by a gusset angle — one leg screwed into
 # the wood, the other anchored with a concrete screw. Its own role and not a second product
 # on ROLE_HURRICANE_TIE, which ``hardware_for_role`` would refuse anyway: an H-tie is a
@@ -283,6 +287,9 @@ class AllowableLoads:
     #: The NDS load-duration factor the tabulated values already include. ``None`` where the
     #: record's values are all ``None`` or where the report tabulates several.
     load_duration_factor: float | None = None
+    #: The lowest C_D column the report tabulates the same values at, where it publishes a
+    #: range (ESR-3096 Table 5: C_D 1.0 to 1.6). A sustained load reads from here, not 1.6.
+    lowest_load_duration_factor: float | None = None
     #: The lumber the values are published against, as the report states it. **Not
     #: decoration**: Simpson tabulate against specific gravity, and a value published for
     #: DF/SP (SG 0.50) does not apply to the SPF (SG 0.42) this house frames in. Where the

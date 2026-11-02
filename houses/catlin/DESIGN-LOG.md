@@ -7196,3 +7196,37 @@ Sources: BuildDeck Design, Engineering and Installation Manual (BuildBlock, 2022
 McLaren shoring design; LiteDeck WRS installation manual, Sept 2020 (liteform.com);
 Insul-Deck technical summary; ICF Builder's foam-decking comparison. No ICC-ES report was
 found for any of the four EPS deck systems examined — see plans/buildability.md BLD-03.
+
+## Wall-top restraint, DF-L plates, and the straight kitchen drain (2026-11-02)
+
+Closes decision #112's three open items.
+
+**Minn. R. 1309.0404 wall-top restraint.** Table R404.1(1) gives 400 plf at the top of every
+8' backfilled wall here (GM soil, 6.3' of fill). Subpart 1 wants joists and blocking tied to
+the sill "with listed capacity meeting the top of wall reaction", and the derived H2.5A carried
+110 lbf lateral. Now:
+* `JoistSpec.seat_ties` became `sill_tie` (a catalog part) plus `sill_ties_per_end`, applied
+  only to ends on a concrete wall's sill. `FS-M-NE`/`-EAST`/`-WEST`/`-MECH` name `"A35Z"`: 61
+  ends, one each. The x=18' plates are toe-nailed again (no net uplift), so 24 H2.5A and 24
+  H2.5AZ are gone.
+* A35Z capacity: ESR-3096 Table 5 (6+6 SD9112, F1 695 / F2 845, the same at C_D 1.0-1.6, not
+  adjustable) x 0.9 for a permanent soil load x 0.86 for an SPF chord (C-C-2026 p. 310) =
+  538 lb, or x 0.90 onto a TJI's LSL rim (fn. 6) = 563 lb. A truss end needs 400 lb (d/c 0.74)
+  and a TJI end 533 lb (d/c 0.95).
+* Parallel walls take footnote f blocking stations (first three spaces, <= 72") with five
+  A35Z each, `plan/wall_top_ties.py`: `W-B-N1` (2,400 lb, d/c 0.89), `-S1`, `-S4`, `-N3`, `-N4`.
+  The nearest MASA moves to each station, the count unchanged.
+* New check `code.MN_1309_0404_wall_top` grades all of it; the oracle is
+  `notes/main_floor_truss_basis.md` §4.
+* **Open:** `W-B-N2`. `FO-M-STAIR` fills its first three joist spaces, so the check reads
+  UNKNOWN and the restraint there is an EOR detail (`plans/TODO.md`).
+
+**x=18' plate bearing.** SPF top plates read d/c 1.03 under the stud. They are DF-L No. 2 now
+(Fc-perp 625, d/c 0.70), through a new `FramingSpec.top_plate_material_ref`. Same stud grid; 12"
+o.c. would have broken the line. `INT_2X6_BRG_HALF_DFL` is the new catlin variant.
+
+**Kitchen drain.** `PR-B-KITCH-DRAIN` runs straight west in the 34'-35' bay through bored holes
+in the 27' and 21' blocking (net-section check in the basis note, d/c 0.19), 11.5 ft instead of
+the 18.9 ft dogleg. `CO-B-KITCH-FIELD`, the access panel in the theater's RC ceiling, is gone.
+The bore is the fabricator's call (`mep.run_through_floor_member` UNKNOWN); the dogleg is the
+fallback.

@@ -32,9 +32,11 @@ from typehaus.hardware.catalog import (
     ROLE_RIDGE_TIE_STRAP,
     ROLE_SCL_FACE_MOUNT_HANGER,
     ROLE_SILL_ANCHOR_BOLT,
+    ROLE_SILL_TIE,
     ROLE_SLAB_PLATE_PIN,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_STAIR_STRINGER_CONNECTOR,
+    hardware_by_model,
     hardware_for_role,
     hardware_for_role_and_nominal,
 )
@@ -67,6 +69,7 @@ COVERED_ROLES = frozenset({
     ROLE_GABLE_END_TIE,
     ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
+    ROLE_SILL_TIE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_SILL_ANCHOR_BOLT,
     ROLE_SLAB_PLATE_PIN,
@@ -133,10 +136,12 @@ def _bearing_tie_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> 
     out: list[Joint] = []
     for connection in bearing_connections(model, config.uplift):
         exposure = EXPOSURE_TREATED if connection.support_treated else EXPOSURE_DRY
-        item = hardware_for_role(ROLE_HURRICANE_TIE, exposure=exposure)
-        for _ in range(ties):
+        item = (hardware_by_model(connection.sill_tie) if connection.sill_tie
+                else hardware_for_role(ROLE_HURRICANE_TIE, exposure=exposure))
+        for _ in range(connection.sill_ties if connection.sill_tie else ties):
             out.append(_joint(
-                ROLE_HURRICANE_TIE, item.model, connection.storey, connection.point_m,
+                ROLE_SILL_TIE if connection.sill_tie else ROLE_HURRICANE_TIE, item.model,
+                connection.storey, connection.point_m,
                 connection.z_m, connection.axis, embedded=False,
                 members=(connection.support_tag, connection.assembly_tag),
                 anchor_tag=connection.support_tag, grid_m=grid_m))

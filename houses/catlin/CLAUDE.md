@@ -1,8 +1,9 @@
 > **Main deck is wood, 2026-11-01 (decision #112):** `SL-M-DECK` is `FS-M-NE`, 11 7/8" open-web
 > trusses at 12" o.c. (60 psf, L/480, fabricator-sealed design pending), and `W-B-CS2`/`-CN2`/`-CN`
 > are framed 2x6 bearing walls; one flat basement ceiling, no movement joint, no cast sleeves.
-> Truss seats are tied (`JoistSpec.seat_ties`). Open: the Minn. R. 1309.0404 lateral reaction and
-> the x=18' plate bearing (`notes/main_floor_truss_basis.md` §4-§5). The main floor is Cotton Oak
+> Every joist/truss end on a concrete wall takes an A35Z (`JoistSpec.sill_tie`) and the parallel
+> walls take blocking stations with five A35Z each, graded by `code.MN_1309_0404_wall_top`; the
+> x=18' line has DF-L top plates (`notes/main_floor_truss_basis.md` §4-§5). The main floor is Cotton Oak
 > LVP (7 mm, floating) on the subfloor throughout, cabinets on the subfloor; the theater ceiling
 > is on resilient channel. No tile medallions (review in `plans/TODO.md`).
 
@@ -767,13 +768,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     (`end_bearing`), as on the second floor. `W-B-CN`'s stair face is furred 3 1/4" back to the
     pour's old x=17'-6" (`STAIRWELL_INT_2X6_BRG_FURRED`): `FO-M-STAIR`'s east edge, `ST-B2M`'s east
     lane and `RL-M-HANDRAIL-E` are struck off it, and `P-M-STRLAND-SE` lands on a doubled furring
-    stud. **Plate bearing on this line reads d/c ~1.03 at 16" o.c. (SPF Fc⊥) by hand**, as it
-    already did on `W-B-CS`/`-CS3` — open item, cure is 12" studs or DF-L plates (basis note §5).
-  - **Anchorage (Minn. R. 1309.0404).** `JoistSpec.seat_ties` ties every `FS-M-NE` truss end: 24
-    H2.5A on the x=18' plates, 24 H2.5AZ on the PT sill (a tie on a concrete wall's seat is ZMAX).
-    `W-B-N1`, the one wall it runs parallel to, takes blocking in four bays at 72". Table
-    R404.1(1)'s **400 plf lateral reaction is NOT met by an H2.5A** (110 lbf lateral) and the
-    house's TJI fields are only toe-nailed: open, house-wide (basis note §4).
+    stud. **Top plates are DF-L No. 2** (`top_plate_material_ref="df-l-no2"`; SPF Fc⊥ read d/c
+    1.03, DF-L 0.70) on all five segments: `INT_2X6_BRG_HALF_DFL` (`-CS3`/`-CS2`/`-CN2`),
+    `SAUNA_LINER_INT_2X6_BRG` (`-CS`), `STAIRWELL_INT_2X6_BRG_FURRED` (`-CN`). The sole plate is
+    the PT SYP sill already. Same stud grid (basis note §5).
+  - **Wall-top restraint (Minn. R. 1309.0404, `code.MN_1309_0404_wall_top`).** Table R404.1(1),
+    8' wall, GM: 400 plf. Perpendicular fields (`FS-M-NE`/`-EAST`/`-WEST`/`-MECH`) name
+    `sill_tie="A35Z"`: one per end on the concrete walls, 400 lb a truss against 538 (SPF ×0.86,
+    C_D 0.9), 533 lb a TJI against 563 (onto the LSL rim, ×0.90). The x=18' plate ends are
+    toe-nailed again (no net uplift). Parallel walls `W-B-N1`/`-N3`/`-N4`/`-S1`/`-S4` take
+    blocking stations (first three spaces, ≤72") with five A35Z each (`plan/wall_top_ties.py`);
+    the nearest MASA moves to each (`joints/sills._snap_to_blocking`). **`W-B-N2` is UNKNOWN**:
+    `FO-M-STAIR` fills its first three joist spaces, so its restraint is the well's edge framing,
+    a design (`plans/TODO.md`). Basis note §4.
   - Ceiling is 5/8" gypsum end to end, ONE plane: the TJI/truss seam at y=13' is a doubled member,
     not a step, and `RM-B-GYM` resolves one ceiling. `RM-B-PLAY-N` (the theater) hangs its board on
     resilient channel at 24" o.c. (`CR-PLAY-CEIL-RC`, `notes/theater_ceiling_acoustics.md`): 1"
@@ -1587,9 +1594,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       Framed-wall crossings are clear stud bays or over a plate: nothing is bored or headed.
     - **East of x=18' everything rides `FS-M-NE`'s webs** (decision #112, no cast sleeves). The
       `W-B-N1` restraint blocking closes the four north bays (y 32'-36') at x=21'/27'/33', so
-      `PR-B-KITCH-DRAIN` crosses south at x=355" into the 31'-32' bay, runs west, and crosses back
-      north at x=240" to cross the plate in the 35'-36' bay; `CO-B-KITCH-FIELD` is an access
-      panel in the theater ceiling (owner call open). The kitchen supply risers stand in the
+      `PR-B-KITCH-DRAIN` runs straight west in its own 34'-35' bay and **bores the 27' and 21'
+      blocks** (2 1/2" at mid-depth, net section in the basis note §4; the engine grades it
+      UNKNOWN, the fabricator's chart), then jogs 6 1/4" north on a 45 pair through the web
+      opening at x=240" to cross the plate in the 35'-36' bay. No field cleanout and no
+      theater ceiling panel (`CO-B-KITCH-FIELD` is gone). If the fabricator refuses the bores,
+      the old route (south into the unblocked 31'-32' bay, west, back north at x=240", plus a
+      ceiling access cleanout) is the fallback. The kitchen supply risers stand in the
       35'-36' bay and jog back to the old stops.
     - **PR-B-SAUNA-VENT shapes all of it.** It runs x=9'-0" from y=10'-6" to 34'-6", rising
       -20" to -15 1/2", so every east-west lane in the west half crosses it and the crossing
