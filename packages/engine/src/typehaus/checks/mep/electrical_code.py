@@ -294,6 +294,7 @@ _AFCI_OCCUPANCIES = frozenset({
     Occupancy.KITCHEN.value, Occupancy.LIVING.value, Occupancy.DINING.value,
     Occupancy.BEDROOM.value, Occupancy.HALLWAY.value, Occupancy.LAUNDRY.value,
     Occupancy.MEDIA.value, Occupancy.OFFICE.value, Occupancy.STORAGE.value,
+    Occupancy.STUDY_CLOSET.value,  # "similar rooms or areas"
 })
 
 # ...and only on the circuits the section actually reaches. E3902.16 (NEC 210.12) is written

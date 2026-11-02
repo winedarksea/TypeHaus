@@ -21,7 +21,7 @@ from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring, owns
 
 _HABITABLE = {Occupancy.BEDROOM, Occupancy.LIVING, Occupancy.KITCHEN, Occupancy.DINING,
-             Occupancy.OFFICE}
+             Occupancy.OFFICE, Occupancy.STUDY_CLOSET}
 
 
 # WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR

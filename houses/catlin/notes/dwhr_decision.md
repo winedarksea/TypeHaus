@@ -37,7 +37,7 @@ attic 240". `VERT` is a segment whose plan position does not move.
 z = 108" and second's structure at z = 120": 11 7/8" of I-joist plus subfloor. A 1 1/2" trap arm
 that must stay in that deck can fall 3" before it turns, and does. The same holds at the attic
 deck. The rooms below are `RM-M-MUDROOM` / `RM-M-MECH` (under BATH1's tub),
-`RM-M-LIVING` / `RM-M-STUDY` (under the suite tub) and `RM-S-SUITEBATH` (under the attic
+`RM-M-LIVING` / `RM-M-STUDY-CLOSET` (under the suite tub) and `RM-S-SUITEBATH` (under the attic
 shower) — two of the three are finished living space, so dropping a stack through them to win
 vertical is not on offer either.
 

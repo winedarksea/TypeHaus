@@ -71,6 +71,7 @@ from .interior_mudroom import (
 )
 from .interior_wet import (
     INT_2X4_PLUMBING,
+    INT_2X6_PLUMBING_HALF_FURRED,
     PLANT_EXT_2X6_HUMID,
     PLANT_INT_2X4_HUMID,
     PLANT_INT_2X6_BRG_HUMID,
@@ -295,6 +296,7 @@ ASSEMBLIES = [
     INT_2X6_BRG_PLUMBING_HALF,
     INT_2X6_BRG_RC_HALF,
     INT_2X6_PLUMBING_HALF,
+    INT_2X6_PLUMBING_HALF_FURRED,
     INT_2X6_STAGGERED_PLUMBING_HALF,
     # Kept, referenced by nothing — W-M-LS/CLN/CLN2 retyped to the
     # single-gwb INT_2X4_STAGGERED_GWB below for the material cost, same convention

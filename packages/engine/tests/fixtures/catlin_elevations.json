@@ -2375,8 +2375,8 @@
 "ceilings/CEIL-RM-M-MUDROOM/z1_m": 2.746375,
 "ceilings/CEIL-RM-M-PANTRY/z0_m": 2.7305,
 "ceilings/CEIL-RM-M-PANTRY/z1_m": 2.746375,
-"ceilings/CEIL-RM-M-STUDY/z0_m": 2.7305,
-"ceilings/CEIL-RM-M-STUDY/z1_m": 2.746375,
+"ceilings/CEIL-RM-M-STUDY-CLOSET/z0_m": 2.7305,
+"ceilings/CEIL-RM-M-STUDY-CLOSET/z1_m": 2.746375,
 "ceilings/CEIL-RM-S-BATH1-2/z0_m": 5.7785,
 "ceilings/CEIL-RM-S-BATH1-2/z1_m": 5.794375,
 "ceilings/CEIL-RM-S-BATH1-3/z0_m": 5.7785,
@@ -7996,6 +7996,12 @@
 "c05038fc08ee"
 ],
 "geometry/ACQ0FY2BZD-base-ZEF56D047J-0/body": [
+6.118098,
+6.206998,
+2,
+"c05038fc08ee"
+],
+"geometry/ACQ0FY2BZD-base-ZEF56D047J-1/body": [
 6.118098,
 6.206998,
 2,
@@ -63787,7 +63793,7 @@
 2.8829234,
 6.118098,
 120,
-"3edefbc90c2f"
+"baf48607c465"
 ],
 "geometry/HY88AM9MS4-run/body": [
 6.726083,
@@ -72789,6 +72795,12 @@
 32,
 "773eb900eb87"
 ],
+"geometry/ZEF56D047J/layer:bath-furring": [
+6.096,
+7.56285,
+6,
+"c9c20618a317"
+],
 "geometry/ZEF56D047J/layer:gwb-a": [
 6.096,
 7.56285,
@@ -72830,6 +72842,36 @@
 7.52475,
 8,
 "a49c8743e78b"
+],
+"geometry/ZEF56D047J::framing/member:strapping-bath-furring-000": [
+6.096,
+7.56285,
+8,
+"426029c74d72"
+],
+"geometry/ZEF56D047J::framing/member:strapping-bath-furring-001": [
+6.096,
+7.56285,
+8,
+"426029c74d72"
+],
+"geometry/ZEF56D047J::framing/member:strapping-bath-furring-002": [
+6.096,
+7.56285,
+8,
+"426029c74d72"
+],
+"geometry/ZEF56D047J::framing/member:strapping-bath-furring-003": [
+6.096,
+7.56285,
+8,
+"426029c74d72"
+],
+"geometry/ZEF56D047J::framing/member:strapping-bath-furring-004": [
+6.096,
+7.56285,
+8,
+"426029c74d72"
 ],
 "geometry/ZEF56D047J::framing/member:stud-000": [
 6.15315,
@@ -110375,6 +110417,36 @@
 2,
 "204ad5aabaf4"
 ],
+"member/ZEF56D047J/strapping-bath-furring-000": [
+6.096,
+7.56285,
+2,
+"a92c647a77a9"
+],
+"member/ZEF56D047J/strapping-bath-furring-001": [
+6.096,
+7.56285,
+2,
+"a92c647a77a9"
+],
+"member/ZEF56D047J/strapping-bath-furring-002": [
+6.096,
+7.56285,
+2,
+"a92c647a77a9"
+],
+"member/ZEF56D047J/strapping-bath-furring-003": [
+6.096,
+7.56285,
+2,
+"a92c647a77a9"
+],
+"member/ZEF56D047J/strapping-bath-furring-004": [
+6.096,
+7.56285,
+2,
+"a92c647a77a9"
+],
 "member/ZEF56D047J/stud-000": [
 6.15315,
 7.48665,
@@ -112346,8 +112418,8 @@
 "solids/CEIL-RM-M-MUDROOM/z1_m": 2.746375,
 "solids/CEIL-RM-M-PANTRY/z0_m": 2.7305,
 "solids/CEIL-RM-M-PANTRY/z1_m": 2.746375,
-"solids/CEIL-RM-M-STUDY/z0_m": 2.7305,
-"solids/CEIL-RM-M-STUDY/z1_m": 2.746375,
+"solids/CEIL-RM-M-STUDY-CLOSET/z0_m": 2.7305,
+"solids/CEIL-RM-M-STUDY-CLOSET/z1_m": 2.746375,
 "solids/CEIL-RM-S-BATH1-2/z0_m": 5.7785,
 "solids/CEIL-RM-S-BATH1-2/z1_m": 5.794375,
 "solids/CEIL-RM-S-BATH1-3/z0_m": 5.7785,

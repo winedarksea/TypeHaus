@@ -176,7 +176,7 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-C1", face="left", distance_from_start=inch(123),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # RM-M-STUDY has no exterior wall, so the notes' "sconce to the side of the window"
+    # RM-M-STUDY-CLOSET has no exterior wall, so the notes' "sconce to the side of the window"
     # applies to the two studies that do (RM-S-STUDY2, RM-A-STUDY). This one gets a down
     # spot for the desk, over a general can.
     #
@@ -206,13 +206,13 @@ MAIN_LIGHTING = [
     # opening down to 21'-0 11/16" and FURN-M-STUDY-BENCH from there to the corner. See
     # plan/mep_registers.py for both.
     #
-    # ** KEEP AT LEAST ONE OF THIS AND ED-M-STUDY-LT. ** RM-M-STUDY is windowless and
+    # ** KEEP AT LEAST ONE OF THIS AND ED-M-STUDY-LT. ** RM-M-STUDY-CLOSET is windowless and
     # passes `code.R303_1_light_and_ventilation` only on Exception 1's electric-light
     # substitute: 787 lm (500 can + 287 spot) over its 16 sf is 23.6 fc against 6 (LightRun
     # coves are excluded by `_room_lumens`). Either alone still passes; neither is a FAIL.
     ElectricalDevice(uid="QTM000HAAA", tag="ED-M-STUDY-SPOT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-SPOT",
-                     circuit="CKT-LT-MAIN", room="RM-M-STUDY", controlled_by=("ED-M-STUDY-SW",),
+                     circuit="CKT-LT-MAIN", room="RM-M-STUDY-CLOSET", controlled_by=("ED-M-STUDY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C3", face="left", distance_from_start=inch(45.5),

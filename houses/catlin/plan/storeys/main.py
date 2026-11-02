@@ -233,7 +233,7 @@ NODES = [
     # of the laundry.
     Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8, 2), ft(22, 4))),
     # The closet/laundry line moved north 8" (y 17'-4" -> 18'-0"), taking
-    # W-M-CLN/CLN2 with it. Costs 8" each off RM-M-LAUNDRY and RM-M-STUDY; bounded by
+    # W-M-CLN/CLN2 with it. Costs 8" each off RM-M-LAUNDRY and RM-M-STUDY-CLOSET; bounded by
     # FX-M-LAUNDRY (40" deep, room now 48 3/4" clear). Bonus: y=18'-0" is also where the
     # basement's 12" cast wall W-B-CW2 runs, so the partition now lands on solid concrete.
     #
@@ -706,7 +706,7 @@ WALLS = [
     Wall(uid="CMW127AAAA", tag="W-M-BA2E2", start_node="N-M-D2",
          end_node="N-M-D3", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
          layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
-    # W-M-LS and W-M-CLN2 (below) are RM-M-STUDY's west and south walls, and the study is
+    # W-M-LS and W-M-CLN2 (below) are RM-M-STUDY-CLOSET's west and south walls, and the study is
     # now a built-in call booth (FURN-M-STUDY-BENCH / -DESK). STAGGERED, originally
     # STAGGERED_DOUBLE_GWB at STC 52, not INT_2X4_RC_DOUBLE_GWB, which reaches STC 54 in
     # 1 1/2" less room: a resilient wall you fasten millwork to is rigidly bridged back to
@@ -741,7 +741,7 @@ WALLS = [
          end_node="N-M-E3", assembly="INT_2X4_STAGGERED_X_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), top=ft(9)),
     # The closet's north line, y=18'-0" since 2026-08-03 (was 17'-4"). See the NODES note
-    # over N-M-D2: the 8" came out of RM-M-LAUNDRY and RM-M-STUDY, and the laundry's 40"
+    # over N-M-D2: the 8" came out of RM-M-LAUNDRY and RM-M-STUDY-CLOSET, and the laundry's 40"
     # stacked pair is what says it could not be more.
     # Both name W-B-CW2 explicitly: the basement's y=18' line is actually two walls
     # (W-B-CW3 and W-B-CW2), so `integrity.stack_ambiguous` needs a pick. Non-structural
@@ -1203,7 +1203,7 @@ OPENINGS = [
     # move. 6 11/16" clears the corner stud pack (the D-M-MECH margin); the wall is only
     # 4'-2" long now, so the door cannot move further south.
     #
-    # **Glazed since 2026-08-29, for borrowed light.** RM-M-STUDY is 19.3 sf of `office`
+    # **Glazed since 2026-08-29, for borrowed light.** RM-M-STUDY-CLOSET is 19.3 sf of `office`
     # occupancy with NO window at all — the only habitable room in the house with none — and
     # it clears R303.1 solely on Exception 1's electric-light substitute (1500 lm over 19 sf
     # = 37 fc). W-M-C3 is the centre bearing wall and its far side is RM-M-LIVING, whose east
@@ -1217,7 +1217,7 @@ OPENINGS = [
     #
     # This buys the ROOM daylight; it does not buy the CHECK anything. `_room_windows` skips
     # doors, so `code.R303_1_light_and_ventilation` still reports 0.0 sf of glazing here and
-    # still passes RM-M-STUDY on Exception 1. That is the honest accounting: R303.1's 8% is
+    # still passes RM-M-STUDY-CLOSET on Exception 1. That is the honest accounting: R303.1's 8% is
     # measured on glazing to the outdoors, and a borrowed-light leaf is not that.
     #
     # `office` is not a sleeping occupancy, so there is no R310 exposure — and since the
@@ -1556,8 +1556,10 @@ ROOMS = [
          )),
     Room(uid="CMR405AAAA", tag="RM-M-LAUNDRY", seed=pt(ft(10, 6), ft(20)),
          occupancy=Occupancy.LAUNDRY, floor_finish="lvp"),
-    Room(uid="CMR406AAAA", tag="RM-M-STUDY", seed=pt(ft(15, 8), ft(20)),
-         occupancy=Occupancy.OFFICE, floor_finish="lvp"),
+    # A 16 sf call booth behind a door: a study closet, not a habitable room, so R304/R305
+    # do not reach it. Retagged from RM-M-STUDY 2026-11-02; the uid is unchanged.
+    Room(uid="CMR406AAAA", tag="RM-M-STUDY-CLOSET", seed=pt(ft(15, 8), ft(20)),
+         occupancy=Occupancy.STUDY_CLOSET, floor_finish="lvp"),
     Room(uid="CMR407AAAA", tag="RM-M-CLOSET", seed=pt(ft(13), ft(15, 4)),
          occupancy=Occupancy.STORAGE, floor_finish="catlin-carpet-raised",
          closed_to_services="the master suite's walk-in closet is dressed in, not a store room: no pipe or duct stands or hangs in it"),
@@ -2139,7 +2141,7 @@ BEAMS = [
 # Study walnut remains on west/south and the east doorway returns. The north wall
 # has a self-supporting upholstered bench below the felt, retaining its gypsum.
 PANELING = [
-    WallPaneling(uid="CMK901AAAA", tag="WP-M-STUDY-WAINSCOT", room="RM-M-STUDY",
+    WallPaneling(uid="CMK901AAAA", tag="WP-M-STUDY-WAINSCOT", room="RM-M-STUDY-CLOSET",
                  material_ref="walnut-shiplap", height=ft(3),
                  walls=("W-M-LS", "W-M-CLN2", "W-M-C3")),
     # The mudroom's closet block, white-painted oak shiplap to 6'-0" — the underside of the
@@ -2174,7 +2176,7 @@ PANELING = [
     # either way. The band's 3D outline lands on the walls' resolved layer polygons
     # (`paneling._room_side_offset`), so it followed W-M-CLN2's retype without help; its
     # billed AREA is axis run x band height, so the retype did not change the square footage.
-    WallPaneling(uid="ESE0EDBW2X", tag="WP-M-STUDY-FELT", room="RM-M-STUDY",
+    WallPaneling(uid="ESE0EDBW2X", tag="WP-M-STUDY-FELT", room="RM-M-STUDY-CLOSET",
                  material_ref="pet-felt-panel", offset=ft(3), height=ft(6),
                  walls=("W-M-CLN2", "W-M-HS4")),
     # RM-M-BATH2's shower surround: the marble-look panel the owner wants,

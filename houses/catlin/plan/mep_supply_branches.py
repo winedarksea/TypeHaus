@@ -164,11 +164,11 @@ MAIN_SUPPLY_BRANCHES = [
     # (W-A-HALL-S), the hot in the cavity's front half past the lav revent and shower vent.
     PipeRun(uid="CXYTEY6C5D", tag="PR-A-STUBATH-WC-CW", system=PipeSystem.WATER_COLD,
             path=(pt(inch(113.5), inch(246)), pt(inch(113.5), inch(226)),
-                  pt(inch(118.688), inch(226)),),
+                  pt(inch(122.188), inch(226)),),
             elevations=(inch(248.87), inch(248.87), inch(248.87),),
             diameter=inch(0.5), material="pex", serves=("FX-A-STUBATH-WC",)),
     PipeAccessory(uid="0F21Q8EDD6", tag="PA-A-STUBATH-WC-STOP", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-A-STUBATH-WC-CW", position=pt(inch(118.688), inch(226)),
+                  pipe_ref="PR-A-STUBATH-WC-CW", position=pt(inch(122.188), inch(226)),
                   elevation=inch(248.87), accessible=True, room="RM-A-STUBATH",
                   model=_ANGLE_STOP, serves=("FX-A-STUBATH-WC",)),
     PipeRun(uid="9DJH46T5SR", tag="PR-A-STUBATH-SH-HW", system=PipeSystem.WATER_HOT,

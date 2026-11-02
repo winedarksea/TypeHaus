@@ -3182,7 +3182,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "FURN-S-PAX-SHELF-40" = { material = { low = 290, high = 350 }, labour = { low = 80, high = 200 } }  # 1 ea
 "FURN-S-PAX-DOUBLE-40" = { material = { low = 235, high = 280 }, labour = { low = 80, high = 200 } }  # 1 ea
 "FURN-S-PAX-SLIDE-79" = { material = { low = 470, high = 520 }, labour = { low = 120, high = 300 } }  # 1 ea
-# RM-M-STUDY: plywood carcass with one edge-glued solid walnut front, solid walnut edging/cap,
+# RM-M-STUDY-CLOSET: plywood carcass with one edge-glued solid walnut front, solid walnut edging/cap,
 # independent reclined back and two internal partitions. Bench materials/labor include
 # carcass, front and trim; bench shop cuts are an unpriced mirror, never billed again.
 # Desk remains solid walnut. Upholstery/adjustable footrest stay in the allowance below.
@@ -5355,7 +5355,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # the same square feet get bought twice.
 # "tile" =    # 52 SF — NOT billed in [floor_finishes]; see above
 # ** 2026-09-05: 51 -> 115 SF, and the second band raises a question this rate does not
-# answer. ** WP-S-SUITE-HEADBOARD joined RM-M-STUDY's wainscot on this tag — the same 4/4
+# answer. ** WP-S-SUITE-HEADBOARD joined RM-M-STUDY-CLOSET's wainscot on this tag — the same 4/4
 # board, one mill order, one row (57.8 sf net on W-S-SN1/SN2, 0 to 6'-0"). Both are wall
 # area on this table, so there is no double-billing trap of the kind the tombstone in
 # [floor_finishes] describes.
@@ -5368,7 +5368,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 2026-10-07: T&G -> shiplap, owner-milled on a table saw rather than a moulder; the rate
 # question above stands.
 # 2026-10-16: WP-S-SUITE-HEADBOARD left this row for `cherry-shiplap`; the study alone remains.
-"walnut-shiplap" = { material = { low = 8, high = 18 }, labour = { low = 6, high = 12 } }  # RM-M-STUDY wainscot (46.4 net)
+"walnut-shiplap" = { material = { low = 8, high = 18 }, labour = { low = 6, high = 12 } }  # RM-M-STUDY-CLOSET wainscot (46.4 net)
 # 2026-10-20: suite cherry shiplap retired. Bought 1/4" MDF over intact gypsum,
 # ~53 SF net. ESTIMATE, not a supplier quote: sheet stock/consumables plus installation,
 # edge priming and white enamel on the field. Rails/battens price separately by LF below.
@@ -5377,7 +5377,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # ~$2/SF rough of `oak-stool` x 1.1 face factor, plus stain-blocking primer and enamel;
 # labour is install plus prime and two coats.
 "oak-shiplap-painted" = { material = { low = 2.5, high = 4.5 }, labour = { low = 8, high = 16 } }
-# ADDED 2026-08-29 with RM-M-STUDY's call booth. WP-M-STUDY-FELT, 1/2" recycled-PET acoustic
+# ADDED 2026-08-29 with RM-M-STUDY-CLOSET's call booth. WP-M-STUDY-FELT, 1/2" recycled-PET acoustic
 # felt board on the south and north walls, band 3'-0" to 9'-0". It is billed here and nowhere
 # else — the material is in no assembly layer and no floor finish, so it carries no
 # `also_in_*` and the mirror warning at the top of this section does not apply to it.
@@ -7446,7 +7446,7 @@ porch-enclosure-panels-mesh = { material = { low = 850, high = 1450 }, labour = 
 # already bought and located — this is a seasonal swap, not a second installation.
 porch-enclosure-panels-vinyl = { material = { low = 1700, high = 3300 }, labour = { low = 150, high = 400 } }
 # --- millwork -------------------------------------------------------------------------------
-# RM-M-STUDY upholstery and fitting, separate from the plywood bench construction.
+# RM-M-STUDY-CLOSET upholstery and fitting, separate from the plywood bench construction.
 # Modeled seat/back: 3 inch HR seat, >=2.5 lb/ft3, supplier 25% IFD 35-45 lbf with
 # test conditions; 1 inch contoured back and removable 1/2 inch lumbar insert,
 # concealed adjustment 6-9 inch above occupied seat. Warm gray zipped seat cover,

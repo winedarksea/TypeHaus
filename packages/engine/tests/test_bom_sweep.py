@@ -297,7 +297,7 @@ def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
 def test_floor_finish_rows_match_the_authored_room_groups(catlin_model, bom):
     rows = {row["finish"]: row for row in bom["floor_finishes"] if "under" not in row}
     assert set(rows["lvp"]["rooms"]) == {
-        "RM-M-LIVING", "RM-M-STUDY", "RM-M-PANTRY", "RM-M-BATH1",
+        "RM-M-LIVING", "RM-M-STUDY-CLOSET", "RM-M-PANTRY", "RM-M-BATH1",
         "RM-M-LAUNDRY", "RM-M-MUDROOM", "RM-M-MECH", "RM-M-MUD-CLOSET"}
     lvp_area = sum(room.field_area_m2 for room in catlin_model.rooms
                    if room.floor_finish == "lvp") * _M2_TO_FT2

@@ -281,16 +281,16 @@ MAIN_PLACEABLES = [
                   wall_ref="W-M-CLN", face="left", distance_from_start=inch(53.53125),
                   normal_gap=inch(0), rotation_offset=deg(90)))),
 
-    # Fitted to current RM-M-STUDY gypsum/wainscot faces. See notes/study_booth.md.
+    # Fitted to current RM-M-STUDY-CLOSET gypsum/wainscot faces. See notes/study_booth.md.
     # North has no walnut behind the upholstered back; retain 1/16 inch rear/end scribes.
     Furniture(uid="AZ3GY4JQFH", tag="FURN-M-STUDY-BENCH", type_ref="FT-STUDY-BENCH",
-              room="RM-M-STUDY", position=pt(inch(189.5), inch(256.277571)), rotation=deg(0)),
+              room="RM-M-STUDY-CLOSET", position=pt(inch(189.5), inch(256.277571)), rotation=deg(0)),
     Furniture(uid="90JCARB5PG", tag="FURN-M-STUDY-DESK", type_ref="FT-STUDY-DESK",
-              room="RM-M-STUDY", position=pt(inch(179.5625), inch(228.0625)), rotation=deg(180)),
+              room="RM-M-STUDY-CLOSET", position=pt(inch(179.5625), inch(228.0625)), rotation=deg(180)),
     Furniture(uid="SBR4CFX5EH", tag="FURN-M-STUDY-DESK-LEAF", type_ref="FT-STUDY-DESK-LEAF",
-              room="RM-M-STUDY", position=pt(inch(204), inch(228.0625)), rotation=deg(180)),
+              room="RM-M-STUDY-CLOSET", position=pt(inch(204), inch(228.0625)), rotation=deg(180)),
     Furniture(uid="SBF00TREST", tag="FURN-M-STUDY-FOOTREST", type_ref="FT-STUDY-FOOTREST",
-              room="RM-M-STUDY", position=pt(inch(180), inch(232.5)), rotation=deg(180)),
+              room="RM-M-STUDY-CLOSET", position=pt(inch(180), inch(232.5)), rotation=deg(180)),
 
     # --- window coverings -------------------------------------------
     # The seven curtain rods are retired (2026-10-29): plan/window_coverings.py holds the

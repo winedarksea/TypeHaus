@@ -179,7 +179,7 @@ MAIN_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(180)))),
     ElectricalDevice(uid="CED003K1AA", tag="ED-M-STUDY-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(14, 11.5), ft(19, 4)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-MAIN",
-                     room="RM-M-STUDY", controlled_by=("ED-M-STUDY-SW",),
+                     room="RM-M-STUDY-CLOSET", controlled_by=("ED-M-STUDY-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED003K2AA", tag="ED-M-STUDY-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-MAIN",

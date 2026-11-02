@@ -1,4 +1,4 @@
-# RM-M-STUDY fitted booth
+# RM-M-STUDY-CLOSET fitted booth
 
 Design basis: 2026-10-19. Adults approximately 5′4″–6′0″, extended laptop work,
 using the laptop's own keyboard. This fixed booth has limited adjustability; laptop

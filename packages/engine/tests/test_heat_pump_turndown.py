@@ -61,7 +61,8 @@ _CATLIN = {
     # 14,643 before W-B-CN/CN2/CS2 went 12" pour -> 2x6 (#112, 2026-11-01): RM-B-GYM/PLAY-N/
     # STAIR gain 6.6 sf (+53 ft3, +0.13% of the house), so HP1's ventilation share falls
     # 3,479.5 -> 3,475.0 Btu/h; every UA component is unchanged.
-    "EQ-M-HP1-OD": (14_638, 14_000, 5.0, 0.96, -9.4, _ADVISED),
+    # 14,638 before the attic WC chase (2026-11-02) took 1.3 sf off RM-A-STUBATH's volume.
+    "EQ-M-HP1-OD": (14_635, 14_000, 5.0, 0.96, -9.4, _ADVISED),
     # The living-east rework replaces two 27x48 windows with one 63x48 unit, adding 3 sf
     # of glass to System 2's main-storey zone (2026-10-16). 13,855 / 0.64 / 23.6 °F, and
     # HP3 910 / 3.08, before the 2026-10-21 bath 1 rework moved the powder room's walls.
@@ -76,7 +77,8 @@ _CATLIN = {
     # 14,261 before the mud closet lost 0.88 sf to its 2x6 STOS wall (2026-11-01): +0.6
     # ventilation share. 14,262 before #112 (2026-11-01): its basement rooms take the 53 ft3
     # the thinner walls free, +6.7 infiltration and +4.6 ventilation.
-    "EQ-M-HP2-OD": (14_273, 8_800, 5.0, 0.62, 25.5, not _ADVISED),
+    # 14,273 before the attic WC chase (2026-11-02) moved the ventilation share.
+    "EQ-M-HP2-OD": (14_274, 8_800, 5.0, 0.62, 25.5, not _ADVISED),
     # D-M-ENTRY's Therma-Tru unit replaces its 36x80 void (2026-10-29): 905 -> 921.
     # 921 / 3.04 before RM-M-MUD-CLOSET went 13.84 -> 12.96 sf (2x6 STOS wall, 2026-11-01).
     # 919 before #112 (2026-11-01): the same ventilation-share dilution, 918.59 -> 918.46.
@@ -172,12 +174,12 @@ def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
 
 
 def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> None:
-    """0.80 as a ratio is a number nobody can act on; ``11,711 Btu/h against this zone's
-    14,638`` is one an equipment selector can shop against."""
+    """0.80 as a ratio is a number nobody can act on; ``11,708 Btu/h against this zone's
+    14,635`` is one an equipment selector can shop against."""
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message
-    assert "11,711 Btu/h" in finding.message  # 0.80 x the unrounded design load
+    assert "11,708 Btu/h" in finding.message  # 0.80 x the unrounded design load
 
 
 # --- §3. the crossover ------------------------------------------------------------------------

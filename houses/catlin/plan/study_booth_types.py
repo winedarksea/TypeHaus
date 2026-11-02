@@ -1,5 +1,5 @@
 # haus: editable
-# RM-M-STUDY's fitted booth; fabrication basis in notes/study_booth.md.
+# RM-M-STUDY-CLOSET's fitted booth; fabrication basis in notes/study_booth.md.
 from typehaus import BuiltInBenchSpec, FurnitureType, inch
 
 STUDY_BENCH = FurnitureType(

@@ -231,6 +231,6 @@ def test_the_french_doors_count_as_glazing_in_the_rooms_they_light(catlin_plan,
 
 
 def test_the_glazed_interior_leaves_are_not_daylight(catlin_model_ro):
-    """`RM-M-STUDY`'s door is glazed and its room still reads 0.0 sf — deliberately."""
-    study = next(r for r in catlin_model_ro.rooms if r.tag == "RM-M-STUDY")
+    """`RM-M-STUDY-CLOSET`'s door is glazed and its room still reads 0.0 sf — deliberately."""
+    study = next(r for r in catlin_model_ro.rooms if r.tag == "RM-M-STUDY-CLOSET")
     assert study.glazed_area_m2 == pytest.approx(0.0)

@@ -62,7 +62,7 @@ def duct_joist_bay(ctx: CheckContext) -> list[Finding]:
 # rooms breathe fresh air; wet rooms give stale air back. Registers are matched to rooms
 # by their authored `room=` when present, else by point-in-polygon against the resolved
 # room's clear face (the floor_finish_over_radiant precedent).
-_SUPPLY_OCCUPANCIES = frozenset({"bedroom", "living", "office"})
+_SUPPLY_OCCUPANCIES = frozenset({"bedroom", "living", "office", "study_closet"})
 _STALE_OCCUPANCIES = frozenset({"bathroom", "laundry", "kitchen"})
 _STALE_KINDS = frozenset({"return", "exhaust"})
 # DuctSystem.TRANSFER is deliberately in neither set. A passive louver moves house air from

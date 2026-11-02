@@ -86,7 +86,7 @@ STUDY_NOOK_SEAT_END = FurnitureType(
     source="Site-cut from a 25x30 panel; covers the east seat frame and the top's end grain.",
 )
 # This nook's 3" cushion assumes ~1 1/2" compression; verify its occupied fit separately
-# from RM-M-STUDY's refitted booth. Held 1/2" back so the lift-up fronts clear it.
+# from RM-M-STUDY-CLOSET's refitted booth. Held 1/2" back so the lift-up fronts clear it.
 STUDY_NOOK_CUSHION = FurnitureType(
     tag="FT-S-STUDY-NOOK-CUSHION", name='Window-seat cushion, 72 x 24 3/8 x 3"',
     footprint=(inch(72), inch(24.375)), height=inch(3), plan_symbol="seat-cushion",

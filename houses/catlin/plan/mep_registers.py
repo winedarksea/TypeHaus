@@ -355,7 +355,7 @@ REGISTERS_MAIN = [
             position=pt(ft(7), ft(6)), duct_ref="DU-M-ERV-R-BED",
             type_ref="REG-T-ERV-VALVE-SUP", design_cfm=15,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # ================== RM-M-STUDY: THE CALL BOOTH'S TWO TERMINALS ==================
+    # ================== RM-M-STUDY-CLOSET: THE CALL BOOTH'S TWO TERMINALS ==================
     #
     # THE ROOM HAS AN EXTRACT, AND THAT IS WHAT PUTS THE SUPPLY BACK IN THE CEILING. A lone
     # ceiling supply strands its air at the ceiling because the only way out is D-M-STUDY's
@@ -384,7 +384,7 @@ REGISTERS_MAIN = [
     # the same objection that kept the terminal off the east WALL yesterday. The x is as far
     # east as a 7" grille goes: the face reaches 17'-5 1/2", 3 1/8" clear of W-M-C3's study
     # face and 3 3/4" clear of its top plate.
-    Register(uid="CMRV04AAAA", tag="REG-M-SUP4", kind=DuctSystem.SUPPLY, room="RM-M-STUDY",
+    Register(uid="CMRV04AAAA", tag="REG-M-SUP4", kind=DuctSystem.SUPPLY, room="RM-M-STUDY-CLOSET",
             position=pt(ft(17, 2), ft(20, 8)), duct_ref="DU-M-ERV-R-STUDY",
             type_ref="REG-T-ERV-VALVE-SUP", design_cfm=15,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
@@ -447,7 +447,7 @@ REGISTERS_MAIN = [
     # CD-B-DATA-STUDY rises at 16'-0" on this same wall, now 1'-6" clear.
     # Hosted on W-M-CLN2's study face, back to the wall (it sits in the corner with W-M-LS,
     # which the host codemod could not choose between).
-    Register(uid="H6C6RD9NED", tag="REG-M-RET-STUDY", kind=DuctSystem.RETURN, room="RM-M-STUDY",
+    Register(uid="H6C6RD9NED", tag="REG-M-RET-STUDY", kind=DuctSystem.RETURN, room="RM-M-STUDY-CLOSET",
             duct_ref="DU-M-ERV-R-LAUNDRY",
             type_ref="REG-T-ERV-VALVE-EXH-WALL", design_cfm=5,
             mount=Mount(kind=MountKind.WALL, elevation=inch(12)),

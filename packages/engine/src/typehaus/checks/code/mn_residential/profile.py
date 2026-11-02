@@ -29,8 +29,9 @@ MN_2020 = JurisdictionProfile(
     nec_base="2026 NEC (MN adoption effective 2026-08-17)",
     coverage_statement=(
         "Encodes a declared subset. "
-        "Habitability, egress and circulation: R305 ceiling height, R310 emergency escape "
-        "openings (sleeping rooms and basements), R311.2 egress door width and height, "
+        "Habitability, egress and circulation: R304.1 habitable floor area, R305 ceiling "
+        "height, R310 emergency escape openings (sleeping rooms and basements), "
+        "R311.2 egress door width and height, "
         "R311.3 landings at exterior doors, R311.6 hallway width, R311.7 stairways. "
         "Fall protection: R312.1 guards at stair wells, at raised walking surfaces and "
         "at the open sides of a flight, "
@@ -155,8 +156,9 @@ MN_2020 = JurisdictionProfile(
     ),
     inspections=MN_INSPECTIONS,
     permit_items=(
-        PermitItemSpec("Ceiling height / habitable attic", ("code.R305_ceiling_height",),
-                       ("IRC R305",)),
+        PermitItemSpec("Ceiling height / habitable attic",
+                       ("code.R305_ceiling_height", "code.R304_1_floor_area"),
+                       ("IRC R305", "IRC R304")),
         # R310.1 is two requirements, and only the room-level one was encoded: a basement
         # with habitable space needs its own escape opening whether or not anyone sleeps in
         # it. The storey-level rule joins this line rather than opening a new one — a plan

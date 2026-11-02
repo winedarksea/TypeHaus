@@ -41,6 +41,28 @@ INT_2X4_PLUMBING = Assembly(
 )
 
 
+# W-A-STU-W's bath face, furred 3 1/2" (2x4 on edge) so FX-A-STUBATH-WC's front-clearance
+# centre moves east under R305.1 Exception 2's 6'-8". The studs and the studio face stay put.
+INT_2X6_PLUMBING_HALF_FURRED = Assembly(
+    tag="INT_2X6_PLUMBING_HALF_FURRED",
+    variant_of="INT_2X6_PLUMBING_HALF",
+    substitute=(
+        Substitution(
+            span=layers("gwb-b", "paint-b"),
+            replacement=(
+                Layer(name="bath-furring", material_ref="spf", thickness=inch(3.5),
+                      function=LayerFunction.FURRING,
+                      framing=FramingSpec(member="2x4", spacing=inch(16))),
+                Layer(name="gwb-b", material_ref="gwb-mr", thickness=inch(0.5),
+                      function=LayerFunction.FINISH),
+                PAINT_FINISH_B,
+            ),
+        ),
+    ),
+    source="INT_2X6_PLUMBING_HALF with its B face furred 3 1/2\" (2x4 on edge, 16\" o.c.) under MR gypsum: the attic WC chase, 2026-11-02",
+)
+
+
 # --- plant room (RM-S-PLANT) ------------------------------------------------------
 # A room held at ~75 F / 70% RH year-round against a -15 F design temperature is a
 # natatorium-class vapour drive in a residential shell, and the failure mode is invisible:

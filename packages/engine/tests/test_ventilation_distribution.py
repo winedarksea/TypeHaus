@@ -114,7 +114,7 @@ def test_catlin_covers_every_required_room(catlin_model):
     findings = _run(catlin_model)
     tags = {t for f in findings for t in f.element_tags}
     # RM-A-EAST-UNFIN is storage, not living space, so it no longer calls for a ventilation path.
-    for required in ("RM-M-BED", "RM-M-LIVING", "RM-M-STUDY", "RM-S-SUITE",
+    for required in ("RM-M-BED", "RM-M-LIVING", "RM-M-STUDY-CLOSET", "RM-S-SUITE",
                      "RM-B-GYM", "RM-M-BATH1", "RM-M-BATH2",
                      "RM-M-LAUNDRY", "RM-S-BATH1", "RM-B-SAUNA"):
         assert required in tags, required

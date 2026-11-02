@@ -46,6 +46,7 @@ from typehaus import (
     ToRoof,
     Wall,
     WallPaneling,
+    face,
     from_node,
     ft,
     inch,
@@ -298,13 +299,17 @@ WALLS = [
     # This internal wall separates the conditioned bath and studio; no thermal boundary or
     # rated acoustic assembly calls for a batt. It now uses standard INT_2X6_PLUMBING.
     #
+    # ** FURRED 3 1/2" ON THE BATH FACE, 2026-11-02 ** (plan/fixtures.py, the WC's R305.1
+    # Exception 2 centre). The -1 3/4" alignment holds the studs and studio face where they
+    # were; `stacks_on` keeps it on W-S-DC2's layout line, which the shifted centre broke.
+    #
     # Everything that drains in this suite is on this wall — the water closet, the lavatory and the
     # shower on its east face, the wet-bar sink back-to-back on its WEST face — so one stack, one
     # vent and one cavity serve the whole storey addition.
     Wall(uid="ZEF56D047J", tag="W-A-STU-W", start_node="N-A-WW-S", end_node="N-A-WW-N",
-         assembly="INT_2X6_PLUMBING_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ToRoof(roof_ref="RF-HOUSE"),
-         structural_role=StructuralRole.NONBEARING),
+         assembly="INT_2X6_PLUMBING_HALF_FURRED", alignment=face("center", inch(-1.75)),
+         top=ToRoof(roof_ref="RF-HOUSE"),
+         structural_role=StructuralRole.NONBEARING, stacks_on="W-S-DC2"),
     # STUDIO | BATH, y=17'-4" — a joist line (208" = 13 x 16), so this plate has a joist under it
     # and needs no blocking. Hosts D-A-STUBATH.
     #
@@ -447,11 +452,9 @@ ROOMS = [
     # ED-A-STUBATH- and ED-A-POCKET- must stay disjoint.
     #
     # `vinyl-sheet` is already the house's cheap waterproof answer (RM-M-BATH1, RM-M-LAUNDRY, the
-    # main hall band): no grout, no backer, no threshold. R305.1 Exception 1 is a VERY CLOSE pass
-    # on the finished ceiling face (rafter underside less paint and 5/8" GWB): RM-A-STUBATH has
-    # 35.30 sf total, 17.97 sf (50.9%) at or above 7'-0", and all 35.30 sf at or above 5'-0".
-    # The 7-foot share clears the 50% threshold by only 0.32 sf. The prior 8'-3"..11'-0" /
-    # 100% note measured the wrong roof plane and omitted the sloped ceiling lining.
+    # main hall band): no grout, no backer, no threshold. R305.1 passes on Exception 2, the
+    # bathroom rule (6'-8" at each fixture's front-clearance centre): the WC's 6'-8 7/16" is
+    # the tight one, bought by W-A-STU-W's furred chase (plan/fixtures.py).
     Room(uid="ACQ0FY2BZD", tag="RM-A-STUBATH", seed=pt(ft(13), ft(20)),
          occupancy=Occupancy.BATHROOM, floor_finish="vinyl-sheet",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),

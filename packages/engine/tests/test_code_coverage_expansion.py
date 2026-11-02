@@ -939,6 +939,7 @@ def _ceiling_on_deck(monkeypatch):
     from typehaus.checks.code.mn_residential import rules
 
     monkeypatch.setattr(rules, "roof_underside_depth_m", lambda *_a, **_k: 0.0)
+    monkeypatch.setattr(rules, "_finished_floor", lambda *_a: 0.0)
 
 
 def test_r305_sloped_ceiling_passes_when_the_room_reaches_the_floor_at_the_eave(
@@ -969,6 +970,48 @@ def test_r305_sloped_ceiling_fails_when_half_the_required_area_misses_seven_feet
     finding = ceiling_height(ctx)[0]
     assert finding.result is Result.FAIL
     assert "50%" in finding.message
+
+
+def test_r305_bathroom_passes_on_exception_2_and_fails_on_a_low_clearance_centre(
+        _ceiling_on_deck):
+    """A 6' x 6' bath at the low eave fails Exception 1's 70 sf; Exception 2 grades the WC's
+    front-clearance centre instead. The bowl faces east (local -y), its zone 24" in front."""
+    ctx, room = _sloped_ctx(room_wide_ft=6.0, room_deep_ft=6.0, eave_ft=4.0, ridge_ft=13.0,
+                            occupancy=Occupancy.BATHROOM)
+    ctx.plan.library = SimpleNamespace(fixture_types=[])
+
+    def wc(x_ft):
+        x, d = ft(x_ft).meters, inch(28).meters
+        y0, y1 = ft(2).meters, ft(4).meters
+        return SimpleNamespace(
+            kind="Fixture", room="RM-A", tag="FX-WC", type_ref=None, position=(x, ft(3).meters),
+            rotation_degrees=90.0, footprint=((x - d / 2, y0), (x + d / 2, y0),
+                                              (x + d / 2, y1), (x - d / 2, y1)),
+            required_clearances=(((x - d / 2, y0), (x + d / 2 + inch(24).meters, y0),
+                                  (x + d / 2 + inch(24).meters, y1), (x - d / 2, y1)),),
+            recommended_clearances=())
+
+    # Head = 4' + x/2 (6:12 from the eave at x=0): the clearance centre sits 26" east of the
+    # bowl's centre, so a bowl at 4'-2" clears 6'-8" and one at 2'-0" does not.
+    ctx.model.canvas_objects = [wc(4.2)]
+    finding = ceiling_height(ctx)[0]
+    assert finding.result is Result.PASS
+    assert "Exception 2" in finding.message
+    ctx.model.canvas_objects = [wc(2.0)]
+    finding = ceiling_height(ctx)[0]
+    assert finding.result is Result.FAIL
+    assert "FX-WC" in finding.message
+
+
+def test_r304_1_fails_a_sixty_square_foot_office():
+    from typehaus.checks.code.mn_residential.room_area import habitable_floor_area
+
+    ctx, room = _sloped_ctx(room_wide_ft=6.0, room_deep_ft=10.0, eave_ft=9.0, ridge_ft=9.0,
+                            occupancy=Occupancy.OFFICE)
+    ctx.model.rooms[0].head_limited_area_m2 = ctx.model.rooms[0].area_m2
+    findings = habitable_floor_area(ctx)
+    assert _results(findings) == [Result.FAIL]
+    assert "60 sf" in findings[0].message
 
 
 def test_r305_does_not_reach_a_storage_room():

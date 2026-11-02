@@ -145,6 +145,8 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
 ### Schema gaps found during selections/fireplace passes
 
 - **No `Lintel` element type.** A `Beam` stands in, and its `size` is a free string.
+- **R304.2's 7'-0" minimum room dimension is ungraded.** `code.R304_1_floor_area` and
+  R305's sloped path grade area only, so a 3'-wide ribbon of floor would pass.
 - **A `floor:ceiling_channel` rule adds no ceiling depth.** `RM-B-PLAY-N`'s resilient channel
   (`CR-PLAY-CEIL-RC`) bills LF only; the finished ceiling is ~1/2" lower than R305 and the
   register/ceiling-plane checks read (`houses/catlin/notes/theater_ceiling_acoustics.md`).
@@ -230,7 +232,7 @@ the future.
 - W-BW-SCREEN's shear role is already redundant with the garage path (graded 100%). Relaxing its 4″ edge nailing needs the reviewer to accept `canopy_garage_diaphragm.md`'s 'garage takes the whole load'.
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps a vertical grab bar between the toilet and the tub, serving both.
 - Window/door quotes (products named 2026-10-21): get Drutex (DAKAM, Chicago), Andersen 400 and Cascadia quotes and close `notes/window_and_door_procurement.md` §2.6 — Alucover nail fin + NAFS DP, the 14" tilt-only minimum, Drutex sill rail height (re-strike the 2.953" stools), Andersen triple-pane in MN and frame depth, the Cascadia double-door NFRC label and thresholds, dark-colour warranties.
-- [ ] Before fabricating RM-M-STUDY: complete the 60-minute seating mock-up, verify occupied cushion height, lumbar fit and bracket/blocking connections, and record any dimensional changes in the bench spec.
+- [ ] Before fabricating RM-M-STUDY-CLOSET: complete the 60-minute seating mock-up, verify occupied cushion height, lumbar fit and bracket/blocking connections, and record any dimensional changes in the bench spec.
 - Plant room needs review on bottom of wall detail (switch to a flash cove capable vinyl?) and also a review on if plumbing or drainage is present.
 - Maybe add a lighting view to the UI (lights generate cast lighting effect, background otherwise goes to full shadow/black)
 - Window bottoms in 3D: the cause (stool top coplanar with a frame drawn 5.44" deep) is fixed in engine and viewer (geometry review O4-001); confirm by eye in the viewer, then delete this line.

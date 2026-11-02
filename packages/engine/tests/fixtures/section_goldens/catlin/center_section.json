@@ -5386,11 +5386,11 @@
           240.0
         ],
         [
-          118.75,
+          120.47,
           240.0
         ],
         [
-          118.75,
+          120.47,
           297.75000000000006
         ],
         [
@@ -5398,12 +5398,12 @@
           297.75000000000006
         ]
       ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
+      "layer": "A-WALL",
+      "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "ZEF56D047J",
-      "tag": "W-A-STU-W/gwb-b"
+      "tag": "W-A-STU-W/bath-furring"
     },
     {
       "space": "model",
@@ -5414,11 +5414,11 @@
           240.0
         ],
         [
-          118.75,
+          120.47,
           240.0
         ],
         [
-          118.75,
+          120.47,
           297.75000000000006
         ],
         [
@@ -5426,13 +5426,12 @@
           297.75000000000006
         ]
       ],
-      "pattern": "gypsum",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-mr",
-      "fill": "#e0d6ec"
+      "material": "spf"
     },
     {
       "space": "model",
@@ -5453,27 +5452,6 @@
       "closed": false,
       "uid": "ZEF56D047J",
       "tag": "W-A-STU-W/paint-a",
-      "material": "latex-paint"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          118.75000000000001,
-          240.0
-        ],
-        [
-          118.75000000000001,
-          297.75000000000006
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "ZEF56D047J",
-      "tag": "W-A-STU-W/paint-b",
       "material": "latex-paint"
     },
     {
@@ -22415,7 +22393,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        165.75,
+        166.61,
         264.87
       ],
       "content": "STUBATH",
@@ -22637,7 +22615,7 @@
         432.00000000000006,
         -21.87721555555555
       ],
-      "content": "A-586",
+      "content": "A-587",
       "height": 3.0,
       "height_pt": 9.5,
       "rotation": 0.0,
@@ -22781,7 +22759,7 @@
         0.0,
         232.31028444444445
       ],
-      "content": "A-593",
+      "content": "A-594",
       "height": 3.0,
       "height_pt": 9.5,
       "rotation": 0.0,

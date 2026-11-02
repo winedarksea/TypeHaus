@@ -238,7 +238,7 @@ MATERIALS = [
     #
     # `stock_bf_per_sqft` is thickness x (face width / coverage width): the lap loses face.
     # --- species wood finishes (plans/TODO.md §Hardwood) -----------------------
-    # RM-M-STUDY wainscot to 36". Shiplap since 2026-10-07: a
+    # RM-M-STUDY-CLOSET wainscot to 36". Shiplap since 2026-10-07: a
     # rabbet is two passes on a table saw, a tongue and groove is a moulder job. 4/4 stock,
     # 5 1/2" face over 5" coverage: 1.1 bf per SF.
     Material(tag="walnut-shiplap", name="Black walnut shiplap wainscot (4/4)", r_per_inch=1.1,
@@ -271,7 +271,7 @@ MATERIALS = [
              density=610.0, color="#80634f", finish="clear-satin-hardwax-oil",
              species="walnut", nominal_quarters=5, milling_profile="S4S",
              requires_custom_milling=True,
-             source="RM-M-STUDY call booth desk top and fold-down leaf; 5/4 dressed to 1\" over a 30-5/8\" span, one flitch for both"),
+             source="RM-M-STUDY-CLOSET call booth desk top and fold-down leaf; 5/4 dressed to 1\" over a 30-5/8\" span, one flitch for both"),
     # RM-M-LIVING's fireplace mantel, SB-M-FIRE-MANTEL. Same species, same finish and same
     # bought-not-milled accounting as the walnut above; ** 12/4 AND NOT 8/4, WHICH IS THE
     # WHOLE REASON IT IS A SEPARATE MATERIAL. ** The mantel finishes 2 1/4" — one brick bed
@@ -297,7 +297,7 @@ MATERIALS = [
              requires_custom_milling=True,
              source="5/4 rough elm dressed to 1\" and ripped to 2 1/2\", one piece per slat or plate. Kiln-dried to 6-8% MC; rift sticks off the board edges, no pith; rip oversize, rest indoors a week or two, then dress; mill ~25% extra and reject any stick that moves. Hardwax oil all faces."),
     # The booth's acoustic felt, band 36" to 9'-0" on the south and north walls
-    # of RM-M-STUDY. ** NO `species`. ** That one field is the gate on `haus millwork`
+    # of RM-M-STUDY-CLOSET. ** NO `species`. ** That one field is the gate on `haus millwork`
     # (takeoff/hardwood.py — "a milling schedule is only about wood"); set it and PET felt is
     # scheduled as lumber. ** NO `stock_bf_per_sqft` either: ** it is the only input to
     # `paneling._band_thickness_m`, and leaving it unset draws the band at the 1/2" default,

@@ -375,7 +375,7 @@ GARAGE_FIXTURES = (
 )
 
 # --- the guest studio: bath + wet bar ---------------------------------------------------
-# The bath box is x 9'-10 7/8"..17'-8 5/8", y 17'-6 3/8"..22'-1 5/8" — ENTIRELY INSIDE
+# The bath box is x 10'-2 3/8"..17'-8 5/8", y 17'-6 3/8"..22'-1 5/8" — ENTIRELY INSIDE
 # RM-S-SUITEBATH's footprint one storey down, which is the whole point of where it is.
 #
 # ** `wall_ref="W-A-STU-W"` ON ALL THREE FIXTURES, INCLUDING THE SHOWER THAT BACKS W-A-C2. **
@@ -384,12 +384,10 @@ GARAGE_FIXTURES = (
 # `mep.trap_arm_length`: W-A-STU-W is the 5 1/2" 2x6 wet wall stacked on W-S-DC2, and
 # every drop in this suite lands in it.
 #
-# ** advisory.fixture_overlap PASSES, AND THE TIGHT DIMENSION IS 2". ** FX-TOILET-STD's one
-# REQUIRED ClearanceZone (library/placeables/fixtures.py) is 15" each side of centreline and
-# depth/2 + 21" in front; at rotation=deg(90) that projects east to x 9'-10 7/8"..13'-11 7/8",
-# y 19'-5"..21'-11". The lavatory clears its south edge by 2", the shower clears its east edge
-# by 8 3/4", and all three footprints are pairwise disjoint. The finding trigger is ~1.55 in2,
-# so 2" over an 18" face is not much slack — ** IF THE LAV MOVES, MOVE IT SOUTH AND RE-CHECK. **
+# ** advisory.fixture_overlap PASSES, AND THE TIGHT DIMENSIONS ARE 5/8" AND 2 1/16". ** The
+# WC's REQUIRED zone (15" each side, 24" in front; library/placeables/fixtures.py) resolves to
+# x 10'-2 3/16"..14'-6 9/16", y 18'-1"..20'-7": 5/8" south of the lavatory and 2 1/16" west of
+# the shower's bounding box. ** IF EITHER MOVES TOWARD THE WC, RE-CHECK. **
 # ** THE WC BELONGS ON THE WET WALL, NOT THE NORTH WALL — A MISREADING OF EXCEPTION 2. **
 # Putting the WC on the north wall and the lavatory on the south, both crammed into the
 # same 20 inches of x, rests on the claim "Minn. R. 1309.0305 Exception 2 asks 6'-8" over
@@ -416,24 +414,20 @@ GARAGE_FIXTURES = (
 # What is still ungraded is whether the envelope FITS THE ROOM: `_clearance_conflicts`
 # compares a zone against peer placeable FOOTPRINTS only, never against a wall. Every
 # distance-to-a-wall figure below was measured by hand off the resolved layer polygons.
-# `code.R305_ceiling_height` grades the ROOM, not a fixture against the rake. On the finished
-# ceiling face (rafter underside less paint and 5/8" GWB), the attic bath has 17.97 of its
-# 35.30 sf (50.9%) at or above 7'-0", and all 35.30 sf is at or above 5'-0". That R305.1
-# Exception 1 pass is only 0.32 sf over the 50% line. The fixture measurements below are
-# therefore checked separately against R305.1 Exception 2.
+# `code.R305_ceiling_height` grades this bath on Exception 2 (`room_area.bath_exception_2`):
+# from the finished floor to the finished ceiling face it has 34 sf at 5'-0" and 16 sf at 7'-0",
+# so Exception 1 fails, and that is not the bathroom rule anyway.
 #
 # ** THE WATER CLOSET GOES BACK ON THE WET WALL, WHICH IS THE ONLY WALL IT CAN PLUMB INTO. **
-# Back to W-A-STU-W's east face at x 9'-10 7/8", facing east, c/l at y 20'-8" -> 19'-4". The
-# finished ceiling face is about 5'-8" over the seat — you SIT there, and Exception 2's usability
-# test is satisfied by a fixture you use seated. What the exception actually measures is the
-# centre of the 24" front clearance, at x 13'-3 1/16", where the resolved finish-face height is
-# ** about 6'-9 1/16" **. That clears 6'-8" by about 1 1/16", and it is the whole reason this
-# fixture can be on this wall at all. These heights include the sloped paint/GWB lining.
+# Back to W-A-STU-W's east face, facing east, c/l at y 19'-4". You SIT there, and Exception
+# 2's usability test is satisfied by a fixture you use seated. What the exception measures is
+# the centre of the 24" front clearance, x 13'-6 9/16": ** 6'-8 7/16" ** to the gypsum.
+# ** THE FACE IS FURRED 3 1/2" FOR IT (INT_2X6_PLUMBING_HALF_FURRED, 2026-11-02). ** On the
+# bare wall face the centre had 6'-6 11/16"; the chase moved the bowl 3 1/2" east, and the
+# studs and the studio face did not move (`alignment` on the wall).
 #
-#   WC  c/l (11'-0 7/8", 19'-4"), rot -90.  footprint x 9'-10 7/8"..12'-2 7/8",
-#       y 18'-6"..20'-2".  UPC 402.5 zone (15" each side, 24" in front)
-#       x 9'-10 7/8"..14'-2 7/8", y 18'-1"..20'-7" — 6 5/8" off the south wall face and
-#       5 3/4" off the shower's west edge, both hand-measured.
+#   WC  c/l (11'-4 3/8", 19'-4"), rot 90.  footprint x 10'-2 3/16"..12'-6 9/16".
+#       UPC 402.5 zone x 10'-2 3/16"..14'-6 9/16", y 18'-1"..20'-7".
 #       ** y 19'-4" IS AN FS-ATTIC BAY CENTRE ** (232" = 8 + 14 x 16), so the flange drops
 #       between joists and PR-A-STUBATH-DRAIN loses its dog-leg entirely (plan/mep_drainage.py).
 #       It is also what dragged REG-A-STUBATH-EXH's type into the open: a 7x7 CEILING grille
@@ -477,7 +471,7 @@ GARAGE_FIXTURES = (
 ATTIC_FIXTURES = (
     # Floor-mount, not FX-TOILET-WH: a wall-hung carrier costs a 6" chase this room need not buy.
     Fixture(uid="WCM0PV9H71", tag="FX-A-STUBATH-WC", type_ref="FX-TOTO-DRAKE", room="RM-A-STUBATH",
-            position=pt(ft(11, 0.875), ft(19, 4)), rotation=deg(90),
+            position=pt(ft(11, 4.375), ft(19, 4)), rotation=deg(90),
             wall_ref="W-A-STU-W"),
     # SEKTION 24 / AXSTAD with an 18 in. deep Corian bonded-bowl top.
     # The north-wall port and local revent replace the old 49 in. undrawn trap arm.

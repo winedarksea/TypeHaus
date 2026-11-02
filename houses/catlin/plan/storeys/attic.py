@@ -550,8 +550,10 @@ ROOMS = [
     Room(uid="CAR402AAAA", tag="RM-A-EAST-UNFIN", seed=pt(ft(27), ft(20)),
          occupancy=Occupancy.STORAGE, floor_finish=None,
          ceiling=FollowRoof(roof_ref="RF-HOUSE"), unpainted=True),
+    # A deliberately small desk room at the stair head (49 sf at 5'-0" once the well is
+    # out): a study closet, not a habitable room, so R304/R305 do not reach it.
     Room(uid="CAR404AAAA", tag="RM-A-STUDY", seed=pt(ft(27), ft(4)),
-         occupancy=Occupancy.OFFICE, floor_finish="oak-floor-custom",
+         occupancy=Occupancy.STUDY_CLOSET, floor_finish="oak-floor-custom",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
 ]
 

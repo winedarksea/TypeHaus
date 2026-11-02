@@ -826,7 +826,7 @@ STUDIO_DRAINS = [
     # (1 1/2" each side). The WC arm takes a 1/8 bend west of the LAV tie, and the east leg
     # rides y=19'-7" in the same truss bay, so the 4" step at the drop's foot is gone.
     PipeRun(uid="HTZ1RGAGXP", tag="PR-A-STUBATH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(130.69), ft(19, 4)), pt(inch(130.69), ft(19, 4)),
+            path=(pt(inch(134.19), ft(19, 4)), pt(inch(134.19), ft(19, 4)),
                   pt(inch(118.5), ft(19, 4)), pt(ft(9, 7.5), ft(19, 7)),
                   pt(ft(9, 7.5), ft(19, 7)), pt(ft(12), ft(19, 7))),
             diameter=inch(3), material="pvc",

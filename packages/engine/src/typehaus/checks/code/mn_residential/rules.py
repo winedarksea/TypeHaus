@@ -12,6 +12,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from shapely.geometry import Polygon
+
 from typehaus.checks.code.mn_residential._common import (
     HABITABLE_OCCUPANCIES,
     SF_PER_M2,
@@ -23,12 +25,13 @@ from typehaus.checks.code.mn_residential._common import (
     _storey_is_below_grade,
     _unknown,
 )
+from typehaus.checks.code.mn_residential.room_area import bath_exception_2, walkable_face
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding
+from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy
 from typehaus.model.refs import FollowRoof
 from typehaus.quantities import Length, ft, inch, m
-from typehaus.resolve.roof_geometry import roof_headroom_areas, roof_underside_depth_m
+from typehaus.resolve.roof_geometry import roof_headroom_region, roof_underside_depth_m
 
 #: Who R305.1 is *about*, as Minn. R. 1309.0305 names them: "habitable space, hallways,
 #: bathrooms, toilet rooms, and laundry rooms". This is an ALLOWLIST on purpose. It used to
@@ -237,22 +240,30 @@ def _follow_roof_ceiling_finding(ctx: CheckContext, room, minimum: Length) -> Fi
     does not disqualify the room; it simply does not count, and a room only has to assemble
     70 good square feet somewhere inside itself.
 
-    That makes the test decidable in closed form. ``roof_headroom_areas`` returns NESTED
+    That makes the test decidable in closed form. ``roof_headroom_region`` gives NESTED
     regions — the ≥7' area is inside the ≥5' area is inside the room — so the required floor
     area may always be taken from the tallest part of the room downward, and the best
     achievable fraction is ``min(at_seven, required) / required``. There is no packing
     problem to solve.
 
+    A bathroom passes on Exception 1 OR Exception 2 (6'-8" at each fixture's front-clearance
+    centre and over 30"x30" of a shower, ``room_area.bath_exception_2``). R304.1's 70 sf is a
+    habitable-room figure, so Exception 1 alone asked a 36 sf bath to be a habitable room.
+
+    Head is from the FINISHED floor, as ``_deck_only_clear_height`` measures it, and the
+    floor is ``room_area.walkable_face``: a stair well or its pocket is not floor area.
+
     NOT tested here, and the docstring is the only place that says so:
 
+    * **Exception 2's usability clause** over each fixture ("capable of being used for its
+      intended purpose") — a judgement, not a number.
     * **R304.2's 7'-0" minimum horizontal dimension** over that required area.
-      ``roof_headroom_areas`` returns scalars, not the qualifying polygon, so there is
-      nothing here to measure a width on — a room could satisfy the area test with a 3'-wide
-      ribbon and pass. That is a ``code.R304_2_*`` check with a geometry return, not a clause
+      Only areas are graded — a room could satisfy the area test with a 3'-wide ribbon
+      and pass. That is a ``code.R304_2_*`` check with a geometry return, not a clause
       bolted onto this one. Do not read a pass here as a pass on R304.2.
 
     Heights are to the finished ceiling: ``roof_underside_depth_m`` (structure plus this
-    room's lining, plumbed) is added to each threshold, since ``roof_headroom_areas``
+    room's lining, plumbed) is added to each threshold, since ``roof_headroom_region``
     measures to the deck plane.
     """
     roof = next((item for item in ctx.model.roofs if item.tag == room.ceiling.roof_ref), None)
@@ -265,13 +276,15 @@ def _follow_roof_ceiling_finding(ctx: CheckContext, room, minimum: Length) -> Fi
     if depth is None:
         return _unknown("code.R305_ceiling_height", f"{roof.tag} has no framed structure "
                         "to take a ceiling depth from", (room.tag,), "R305.1")
-    elevation = storey.elevation.meters
-    area, at_min = roof_headroom_areas(
-        resolved_room.clear_face, roof, elevation, minimum.meters + depth,
-    )
-    _, at_five = roof_headroom_areas(
-        resolved_room.clear_face, roof, elevation, _MIN_SLOPED_CEILING.meters + depth,
-    )
+    elevation = _finished_floor(ctx, resolved_room)
+    floor = walkable_face(ctx, resolved_room, storey.tag).intersection(Polygon(roof.footprint))
+    area = floor.area
+
+    def at_or_above(threshold_m: float) -> float:
+        region = roof_headroom_region(roof, elevation, threshold_m + depth)
+        return 0.0 if region.is_empty or floor.is_empty else floor.intersection(region).area
+
+    at_min, at_five = at_or_above(minimum.meters), at_or_above(_MIN_SLOPED_CEILING.meters)
     if area <= 1e-9:
         return _unknown("code.R305_ceiling_height", "room has no area beneath referenced roof",
                         (room.tag,), "R305.1")
@@ -284,21 +297,33 @@ def _follow_roof_ceiling_finding(ctx: CheckContext, room, minimum: Length) -> Fi
               f"{at_min * SF_PER_M2:.0f} sf at or above {minimum.fmt()} "
               f"(room is {area * SF_PER_M2:.0f} sf)")
     if at_five + 1e-9 < required:
-        return _fail(
-            "code.R305_ceiling_height",
-            f"{room.tag} cannot assemble a required floor area above 5'-0\" — {detail}",
-            (room.tag,), "R305.1",
-        )
-    if achieved + 1e-9 < _MIN_SLOPED_CEILING_FRACTION:
-        return _fail(
-            "code.R305_ceiling_height",
-            f"{room.tag} has {achieved:.0%} of its required floor area at or above "
-            f"{minimum.fmt()}; R305.1's sloped-ceiling exception needs 50% — {detail}",
-            (room.tag,), "R305.1",
-        )
+        miss = f"{room.tag} cannot assemble a required floor area above 5'-0\" — {detail}"
+    elif achieved + 1e-9 < _MIN_SLOPED_CEILING_FRACTION:
+        miss = (f"{room.tag} has {achieved:.0%} of its required floor area at or above "
+                f"{minimum.fmt()}; R305.1's sloped-ceiling exception needs 50% — {detail}")
+    else:
+        miss = None
+    if miss is not None and room.occupancy is Occupancy.BATHROOM:
+        verdict, bath = bath_exception_2(ctx, room.tag, roof, depth, elevation)
+        if verdict is Result.PASS:
+            return _pass("code.R305_ceiling_height",
+                         f"{room.tag} follows {roof.tag}: Exception 2 — {bath}",
+                         "R305.1 Exception 2")
+        if verdict is Result.UNKNOWN:
+            return _unknown("code.R305_ceiling_height", f"Exception 1 fails ({miss}) and "
+                            f"Exception 2 cannot be graded: {bath}", (room.tag,), "R305.1")
+        miss = f"{miss}; Exception 2 also fails: {bath}"
+    if miss is not None:
+        return _fail("code.R305_ceiling_height", miss, (room.tag,), "R305.1")
     return _pass("code.R305_ceiling_height",
                  f"{room.tag} follows {roof.tag}: {achieved:.0%} of its required floor area "
                  f"at or above {minimum.fmt()} — {detail}", "R305.1")
+
+
+def _finished_floor(ctx: CheckContext, resolved_room: Any) -> float:
+    from typehaus.resolve.room_floor import room_finished_floor_elevation
+
+    return room_finished_floor_elevation(ctx.model, resolved_room)
 
 
 @check(Tier.CODE, "code.R401_3_grading")

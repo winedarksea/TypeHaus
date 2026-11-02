@@ -874,8 +874,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       `ResolvedRoom.head_limited_area_m2` (146 sf, area under the roof UNDERSIDE per
       R304.3) rather than the whole 356 sf — needs 11.7 sf glazing (has 13.6).
       `code.R305_ceiling_height` now reads to the gypsum too (`roof_underside_depth_m`,
-      2026-11-02): 128 sf at 5'-0", 88% at 7'. RM-A-STUDY (67 of 70 sf) and RM-A-STUBATH
-      (35 of 36 sf) FAIL on it, left red pending a design change. Revert lives in `_r303_floor_area`
+      2026-11-02): 125 sf at 5'-0", 85% at 7'. RM-A-STUDY is a `STUDY_CLOSET` (not habitable,
+      out of R304/R305); RM-A-STUBATH passes on Exception 2. Revert lives in `_r303_floor_area`
       (`checks/code/mn_residential/ventilation.py`). (→ log4.md, literal-reading risk)
     - Exception 1's lumen floor no longer binds this room while it passes on daylight —
       `plan/lighting_attic.py` claims of R303.1-required fittings are stale (room carries
@@ -1103,8 +1103,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       11'-4"/24'-8", where only WT-1424's 4'-8" head clears the rake): third height on the 14" family — 5'-8" head fits the
       6:12 rake's clearance (`2 x (head+2")`) at 12'-8"/23'-4" with 4" to spare, where
       WT-1448's 6'-8" head does not fit anywhere a mirrored pair could use. Also keeps
-      `RM-A-STUDY` on R303.1 daylight (165 sf needs 13.2 sf; gives 13.625) without
-      Exception 1's electric-light substitute.
+      `RM-A-STUDY` daylit (13.625 sf of glass), though as a `STUDY_CLOSET` R303.1 no longer
+      grades it.
     - **WT-3048** (south glazing): the 30" family's committed 36" height would drop the
       south head off the house's 6'-8" door-head line.
     - **WT-2748** (`WIN-M-LIV-E1`/`-E2`; `WIN-M-EAST-MID` until 2026-10-16): bearing cap

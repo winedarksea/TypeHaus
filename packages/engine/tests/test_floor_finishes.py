@@ -286,10 +286,11 @@ def test_the_billed_finishes_are_one_lvp_field(catlin_model):
     assert rows["catlin-plant-sureply"]["order_area_sqft"] == rows[
         "catlin-plant-vinyl-raised"]["order_area_sqft"]
     # 529.6 SF after the 1/2" walls, less the attic's 8.1 SF neo-angle receptor, less
-    # ~0.6 SF the D-A-HALVES / D-B-BATH reducers cover in their reveals (2026-11-01).
+    # ~0.6 SF the D-A-HALVES / D-B-BATH reducers cover in their reveals (2026-11-01), less
+    # the attic WC chase's 1.3 SF (2026-11-02).
     assert (float(rows["vinyl-sheet"]["net_area_sqft"])
             + float(rows["catlin-plant-vinyl-raised"]["net_area_sqft"])) == pytest.approx(
-                520.6, abs=0.5)
+                519.3, abs=0.5)
     assignments = {
         "catlin-tile-opera-blue": ("RM-M-BATH2", "catlin-ditra-heat"),
         "catlin-tile-carrara": ("RM-S-BATH1", "catlin-ditra-heat"),

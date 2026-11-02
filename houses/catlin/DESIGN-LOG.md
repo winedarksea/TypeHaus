@@ -7256,3 +7256,20 @@ countdown timer. Removed the fan's ~30 VA annotation from the shared CKT-LT-MAIN
 Fan/register/timer types, products and catalog prices remain available for reuse.
 The ERV exhaust, shower lighting and enclosure, and radiant floor remain as specified.
 `notes/bath2_shower.md` §7 preserves the former design calculations as history.
+
+## Study closets, R305.1 Exception 2, and the attic WC chase (2026-11-02)
+
+R305 went red on RM-A-STUDY and RM-A-STUBATH once it measured to the gypsum. Three changes:
+
+- **Both studies are `Occupancy.STUDY_CLOSET`**: finished and occupied, but not habitable
+  space (R202's "similar areas"), so R304/R305/R303 do not reach them. They are deliberately
+  small (RM-A-STUDY has 49 sf at 5'-0" once FO-A-STAIR and the bookcase pocket are taken out).
+  RM-M-STUDY is retagged **RM-M-STUDY-CLOSET** (same uid), so the plan prints it as one.
+  Wiring, receptacle, lighting and ERV-supply rules treat them as they treated OFFICE.
+- **Bathrooms grade on Exception 2** (6'-8" at each fixture's front-clearance centre, and over
+  30"x30" in a shower) when Exception 1's 70 sf does not apply. The sloped path also measures
+  from the finished floor now, and does not count floor openings as floor. A new
+  `code.R304_1_floor_area` grades the 70 sf habitable-room minimum, which nothing graded before.
+- **W-A-STU-W's bath face is furred 3 1/2"** (`INT_2X6_PLUMBING_HALF_FURRED`, aligned so the
+  studs and the studio face stay put). FX-A-STUBATH-WC, its flange and its stop moved 3 1/2"
+  east: the clearance centre went from 6'-6 11/16" to 6'-8 7/16". The lavatory has 6'-9 1/2".

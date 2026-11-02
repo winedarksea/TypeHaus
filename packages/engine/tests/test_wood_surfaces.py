@@ -230,10 +230,10 @@ def test_the_study_wainscot_reconciles_with_the_rooms_bounding_walls(catlin_mode
     records = [p for p in catlin_model.panelings if p.material_ref == "walnut-shiplap"]
     resolved = sum(p.area_m2 for p in records) * _M2_TO_FT2
     assert float(walnut["net_area_sqft"]) == pytest.approx(resolved, abs=0.05)
-    study = sum(p.area_m2 for p in records if p.room == "RM-M-STUDY") * _M2_TO_FT2
+    study = sum(p.area_m2 for p in records if p.room == "RM-M-STUDY-CLOSET") * _M2_TO_FT2
     # Sanity-bound against the room's own clear face: perimeter x 3' is the ceiling
     # before subtracting the upholstered north wall and the door punch.
-    room = next(r for r in catlin_model.rooms if r.tag == "RM-M-STUDY")
+    room = next(r for r in catlin_model.rooms if r.tag == "RM-M-STUDY-CLOSET")
     ring = list(room.clear_face)
     perimeter = sum(length(sub(ring[i], ring[i - 1])) for i in range(len(ring)))
     north_width = max(x for x, y in ring) - min(x for x, y in ring)

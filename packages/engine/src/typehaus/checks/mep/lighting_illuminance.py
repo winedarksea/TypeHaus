@@ -35,6 +35,7 @@ DEFAULT_TARGET_LUX: dict[Occupancy, float] = {
     Occupancy.UTILITY: 500.0,  # the workshop
     Occupancy.KITCHEN: 300.0,
     Occupancy.OFFICE: 300.0,
+    Occupancy.STUDY_CLOSET: 300.0,
     Occupancy.MECHANICAL: 200.0,
     Occupancy.GARAGE: 200.0,
 }

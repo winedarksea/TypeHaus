@@ -76,7 +76,7 @@ def test_takeoff_and_membranes_bill_only_retained_floor(catlin_model_ro):
         assert all(row["net_area_sqft"] == net and row["order_area_sqft"] == order
                    for row in companions)
     attic = next(room for room in catlin_model_ro.rooms if room.tag == "RM-A-STUBATH")
-    assert attic.field_area_m2 * 10.7639104 == pytest.approx(28.4, abs=0.05)
+    assert attic.field_area_m2 * 10.7639104 == pytest.approx(27.1, abs=0.05)  # less the WC chase
 
 
 def test_existing_heat_zones_still_fit_and_uncut_rooms_remain_identical(catlin_model_ro):

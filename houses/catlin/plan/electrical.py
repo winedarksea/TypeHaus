@@ -163,7 +163,7 @@ DEVICE_TYPES = (
     # these numbers are; ``height`` is the 8" diameter now that the diameter stands up.
     # A wall jack. The catalog had an enclosure and two access points and no way to say
     # "a cable ends here at a plate", so a hardwired drop could not be modelled at all —
-    # which is why RM-M-STUDY and RM-B-PLAY-N had none. Receptacle-sized because it is a
+    # which is why RM-M-STUDY-CLOSET and RM-B-PLAY-N had none. Receptacle-sized because it is a
     # single-gang plate in the same box family, and NO ``poe_watts``: a jack is passive, and
     # a number here would land in the PoE budget as load that does not exist.
 )
@@ -711,7 +711,7 @@ MAIN_EQUIPMENT = [
               mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6)),
               # The west half of the main floor: the suite bedroom and everything off it.
               zone_rooms=("RM-M-BED", "RM-M-BATH1", "RM-M-BATH2", "RM-M-CLOSET",
-                          "RM-M-LAUNDRY", "RM-M-STUDY"),
+                          "RM-M-LAUNDRY", "RM-M-STUDY-CLOSET"),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-S1", face="left", distance_from_start=inch(192),
                   normal_gap=inch(0.5625), rotation_offset=deg(-180)))),
@@ -1463,7 +1463,7 @@ MAIN_DATA_TRUNKS = [
     # CD-M-DATA-PORCH's x=2'-0" lane at the same z), crosses east through the open webs in
     # the bay at y=22'-0", between trusses 018 and 019, then north to the AP. ~+11.6 LF.
     # y=24'-8" was tried and runs through BM-M-HALL's flush LVL. (19', 29') is unchanged:
-    # east of the FO-M-STAIR well, one radio for the kitchen, the stair and RM-M-STUDY.
+    # east of the FO-M-STAIR well, one radio for the kitchen, the stair and RM-M-STUDY-CLOSET.
     # 1" EMT from the data riser to the pull box, where `CD-M-DATA-DOORBELL` leaves: three
     # Cat 6A (AP, doorbell, canopy camera) are 25% full at 0.30" OD, 33% at 0.35" (Table 4:
     # 0.864 in^2, 40%). Two go on in the 3/4" `CD-M-DATA-KITCH`.
@@ -1625,14 +1625,14 @@ BASEMENT_DATA_DEVICES = [
 ]
 
 MAIN_DATA_DEVICES_STUDY = [
-    # RM-M-STUDY's east wall is nearly all door, so the south wall is where anything goes —
+    # RM-M-STUDY-CLOSET's east wall is nearly all door, so the south wall is where anything goes —
     # beside ED-M-STUDY-RC1, the pairing a desk actually wants. 1'-0" west of it, at 32" AFF
     # — 2 1/2" over FURN-M-STUDY-DESK's top (16" deep, top at 29 1/2"), in the last course of
     # WP-M-STUDY-WAINSCOT, at hand height beside the laptop. A plate cut into a wainscot is
     # ordinary joinery.
     ElectricalDevice(uid="V51Z24K1AA", tag="ED-M-STUDY-DATA1", kind=DeviceKind.DATA_OUTLET,
                      type_ref="ED-T-DATA-JACK",
-                     room="RM-M-STUDY",
+                     room="RM-M-STUDY-CLOSET",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(32)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-CLN2", face="left", distance_from_start=inch(31),
