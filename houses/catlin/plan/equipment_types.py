@@ -403,6 +403,7 @@ EQUIPMENT_TYPES = (
                   footprint=(inch(14), inch(9)), height=inch(15),
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
+    # Retained library option; the BATH2 installation was removed 2026-11-02.
     # BATH2's stall-drying fan (2026-10-12, notes/bath2_shower.md §7). A remote inline fan
     # in RM-M-BED's ceiling, not a ventilator: it moves bedroom air through the stall and
     # back, so its run is DuctSystem.TRANSFER and earns no ventilation credit. No air ports:
@@ -427,7 +428,7 @@ STALL_FAN_REGISTER_TYPES = (
                  footprint=(inch(12), inch(12)), height=inch(1), plan_symbol="register",
                  product_ref="PROD-AAF-PERFECTPLEAT-HC-M8-10X10",
                  filter_nominal_size="10x10x1", filter_merv=8, service_face="bottom",
-                 source="Stall fan intake in RM-M-BED's ceiling; the filter keeps lint and "
+                 source="Retained stall fan intake option; the filter keeps lint and "
                         "dust out of the fan and the stall. Specify a nominal 10x10x1 "
                         "MERV 8 pleated filter. AAF PerfectPleat HC M8 publishes a 10x10x1 "
                         "size (9.5x9.5x0.75 actual) rated 200 cfm at 300 fpm, against this "
@@ -440,7 +441,7 @@ STALL_FAN_REGISTER_TYPES = (
                  name="4in round adjustable nozzle diffuser with gravity backdraft damper",
                  footprint=(inch(4.2), inch(4.2)), height=inch(2), plan_symbol="register",
                  product_ref="PROD-AIR-SPOT-NOZZLE-4",
-                 source="Stall fan discharge in FX-M-BATH2-SH's ceiling: an aimable aluminium "
+                 source="Retained stall fan discharge option: an aimable aluminium "
                         "spot nozzle (Shoemaker 1202-4 or equal), and a 4in gravity backdraft "
                         "damper in the duct above it so stall steam does not back into the "
                         "duct when the fan is off. Passive: no electrics in the shower zone. "

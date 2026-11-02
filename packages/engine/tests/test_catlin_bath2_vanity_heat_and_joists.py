@@ -255,16 +255,30 @@ def test_the_sink_base_carries_its_own_shelf():
 
 def test_the_bathroom_has_no_heat_source_but_the_mat():
     """This is why the zone was GROWN rather than trimmed to match its old wattage. The
-    only ducted air terminal in the room is an ERV EXHAUST, which takes heat out. The stall
-    fan's nozzle (2026-10-12) is a TRANSFER of bedroom air at room temperature, on a timer,
-    and heats nothing."""
+    only ducted air terminal in the room is an ERV EXHAUST, which takes heat out."""
     plan = _plan()
     terminals = [e for e in plan.storey_elements("main")
                  if e.element_kind in {"Register", "Equipment"}
                  and getattr(e, "room", None) == "RM-M-BATH2"]
-    assert [t.tag for t in terminals if t.kind.value != "transfer"] == ["REG-M-EXH2"]
-    assert [t.tag for t in terminals if t.kind.value == "transfer"] == ["REG-M-BATH2-DRY-OUT"]
+    assert [t.tag for t in terminals] == ["REG-M-EXH2"]
     assert terminals[0].kind.value == "exhaust"
+
+
+def test_removed_shower_dryer_keeps_reusable_catalog_entries(catlin_plan):
+    removed_tags = {
+        "EQ-M-BATH2-STALL-FAN", "REG-M-BATH2-DRY-IN", "REG-M-BATH2-DRY-OUT",
+        "ED-M-BATH2-SW-DRY", "DU-M-BATH2-DRY",
+    }
+    installed_tags = {element.tag for elements in catlin_plan.elements.values()
+                      for element in elements}
+    assert installed_tags.isdisjoint(removed_tags)
+    library = catlin_plan.library
+    assert "EQ-T-INLINE-FAN-4" in {item.tag for item in library.equipment_types}
+    assert {"REG-T-FILTER-GRILLE-10", "REG-T-NOZZLE-DAMPER-4"} <= {
+        item.tag for item in library.register_types}
+    assert "ED-T-LUT-COUNTDOWN" in {item.tag for item in library.electrical_device_types}
+    assert {"PROD-INLINE-FAN-4", "PROD-AAF-PERFECTPLEAT-HC-M8-10X10",
+            "PROD-AIR-SPOT-NOZZLE-4"} <= {item.tag for item in library.products}
 
 
 def test_the_mat_is_a_real_cable_and_covers_the_zone_without_exceeding_it():

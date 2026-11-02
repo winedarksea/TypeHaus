@@ -433,7 +433,7 @@ CIRCUITS = (
     # 2026-10-31; only the opener's outlet (ED-G-GDO-GFCI / ED-G-GDO-RC) is still out there.
     Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", slot=38, panel_ref=_PANEL, breaker_amps=20, poles=1,
             afci=True,
-            description="General lighting — main storey and porch, + the garage opener outlet; + EQ-M-BATH2-STALL-FAN ~30 VA, an Equipment the derived sum does not count"),
+            description="General lighting — main storey and porch, + the garage opener outlet"),
     # The garage's lighting (2026-10-31): five shop lights, the door-pair sconces and the six
     # Class 2 drivers for the RGBW eave and gable tape (ED-T-LT-PSU-96-WE, summed at their
     # 96 VA rating). Its own breaker rather than CKT-RC-GARAGE so a tool tripping a garage GFCI

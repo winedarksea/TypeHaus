@@ -140,7 +140,9 @@ still holds. Painted to the north-face cladding. **10" option**: budget §10.4.
   kits; `mep.duct_penetration_fit` grades bare 8" + a 1/4" foam annulus in the 9" RO
   (1/4" spare each way); the wrap solid stops at the sheathing.
 
-## 10. Stall fan nozzle — `REG-T-NOZZLE-DAMPER-4`
+## 10. Retained stall fan nozzle option — `REG-T-NOZZLE-DAMPER-4`
+
+The BATH2 dryer installation was removed 2026-11-02; this specification remains for reuse.
 
 Shoemaker **1202-4** 4" aluminium spot nozzle ($119, hvacquick), or equal Schako DSARR-V, with
 a 4" gravity backdraft damper in the duct above. No maker publishes a wet rating; aluminium is
@@ -169,7 +171,7 @@ kept as the record of what was weighed.
 | `REG-M-RET5` (living, ERV 4" extract) | same | +$40-120 | same | same | none |
 | `REG-M-XFER-MUD` (12x10 wall) | mud-in flush cover (Invisagrille-type, magnetic face) | +$60-200 plus finishing | framed 12x10 opening and sleeve before board | face lifts off | free-area loss on a passive transfer: unpublished, the riskiest one |
 | `REG-M-SUP3` (bedroom, ERV 4" supply) | plaster-in valve frame | +$40-120 | as SUP1 | as SUP1 | none |
-| stall-fan intake (`REG-M-BATH2-DRY-IN`, 10" filter) | **not recommended** | +$100-250 | no standard mud-in filter frame | the filter comes out every change | filter + reduced face: a real penalty |
+| former stall-fan intake (removed 2026-11-02; retained 10" filter option) | **not recommended** | +$100-250 | no standard mud-in filter frame | the filter comes out every change | filter + reduced face: a real penalty |
 | `REG-S-HP-STAIR` (12x6 sidewall in SF-S-DUCT's lining) | mud-in supply (Invisagrille 6x10 class; no 12x6 found) or a mud-in slot diffuser | +$100-250 plus finishing | frame set before the soffit is boarded; the boot flange meets the board face | magnetic face, damper behind | throw unverified at 50 cfm; free area unpublished |
 
 **Likely total: about $400-1,100 over the standard family for the five that fit**, mostly

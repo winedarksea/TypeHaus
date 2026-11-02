@@ -2,8 +2,7 @@
 
 **House:** catlin
 **Structure:** `FX-M-BATH2-SH` (`FX-SHOWER-36-THERMO-COMBO`), `WP-M-BATH2-SURR`, `REG-M-EXH2`,
-`DU-M-ERV-R-BATH2`, `EQ-B-WH`; since the follow-up the same day, `EQ-M-BATH2-STALL-FAN`,
-`DU-M-BATH2-DRY`, `REG-M-BATH2-DRY-IN`/`-OUT` (§7).
+`DU-M-ERV-R-BATH2`, `EQ-B-WH`. The former stall-drying loop was removed 2026-11-02 (§7).
 **Written:** 2026-10-12, by hand, against `out/model.json` after the change.
 **Oracle for:** nothing. This is a **decision record**. No engine module computes hot-water
 duration or steam, and none is proposed. It follows `notes/TEMPLATE.md`'s shape so the
@@ -17,8 +16,7 @@ temperature). Disagree with one and redo the table.
 > ⚠ **The grille is outside the enclosure on purpose, and the front glass's open top is the
 > steam path.** Do not glass the front to the ceiling, add a transom, or move `REG-M-EXH2`
 > back by the tub without re-reading §4. The ERV has no headroom to boost, so position is
-> the only lever. The stall-drying fan (§7) does not change this: its air enters at the
-> ceiling inside the glass and leaves the stall the same way, over the open top.
+> the only lever.
 
 ---
 
@@ -154,8 +152,7 @@ BATH2's 20 cfm, so the grille's position is the only lever.
 
 - **Drain-water heat recovery**: still no. See `dwhr_decision.md` §10.
 - **A transom, a boost of the ERV extract, or steam features**: not done. The ERV cannot
-  boost (§4). The stall-drying fan of §7 is a TRANSFER loop of bedroom air, not a boost:
-  it takes nothing out of the house and earns no ventilation credit.
+  boost (§4). The former stall-drying transfer loop was removed (§7).
 - **The studio bath and sauna showers, and the two tub-showers' valves**: unchanged. The
   tub-showers get only the 52535-SS head. Their WALLS are §6.
 - **A flow-rate field**: none. Nothing in the engine would read it. 1.75 gpm lives on the
@@ -227,7 +224,12 @@ The knee-wall span needed one engine addition: `W-M-TUBDK-S` stands inside the r
 so both its faces are the room's and no side can be derived. `PanelingSpan.face` names it
 (`"right"` of C->E is the stall), and a span on an inside wall without one is an ERROR.
 
-## 7. Stall drying fan (Option A, owner 2026-10-12)
+## 7. Former stall drying fan (selected 2026-10-12, removed 2026-11-02)
+
+**Superseded:** the owner removed the complete loop: bedroom fan and filtered intake,
+shower nozzle/damper, transfer duct, and countdown timer. The types, products and prices
+remain in the library for future use. The following calculations and confirmations are
+historical; they no longer describe installed equipment or outstanding procurement.
 
 **What it is.** `EQ-M-BATH2-STALL-FAN`, a moisture-rated 4" inline fan in RM-M-BED's ceiling,
 draws filtered bedroom air through `REG-M-BATH2-DRY-IN` and blows it down into the stall

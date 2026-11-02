@@ -3037,7 +3037,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "EQ-T-SAUNA-HEATER" = { material = { low = 2970, high = 4200 }, labour = { low = 780, high = 1700 } }  # 1 ea
 # One tank, not two (2026-08-15, replacing the two-row entry the old two-tank model
 # carried) — Rheem ProTerra 80gal PROPH80/XE80T10HS45U0 class, retail-listed $900-$1,300.
-# BATH2's stall-drying fan (2026-10-12, notes/bath2_shower.md §7): a 4" insulated inline
+# Library option only since removal 2026-11-02 (notes/bath2_shower.md §7): a 4" insulated inline
 # fan, ~$130-260 for the WhisperLine-class unit; labour hangs it on the bedroom ceiling's
 # truss chords over its intake grille and lands the circuit. ESTIMATE; confirm the model.
 "EQ-T-INLINE-FAN-4" = { material = { low = 130, high = 260 }, labour = { low = 150, high = 350 } }  # 1 ea

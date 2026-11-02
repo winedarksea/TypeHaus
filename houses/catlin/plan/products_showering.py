@@ -138,6 +138,7 @@ BATH2_FLEX_FRONT = Product(
            "north pane and post are separately budgeted. See notes/bath2_shower.md §3.",
 )
 
+# Retained library option; the BATH2 installation was removed 2026-11-02.
 # The stall-drying fan (notes/bath2_shower.md §7). A CLASS record: the WhisperLine
 # FV-10NLF1E the hand calc read was DISCONTINUED 2024-04-02.
 INLINE_FAN_4 = Product(

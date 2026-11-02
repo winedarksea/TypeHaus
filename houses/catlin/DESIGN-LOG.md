@@ -7230,3 +7230,12 @@ in the 27' and 21' blocking (net-section check in the basis note, d/c 0.19), 11.
 the 18.9 ft dogleg. `CO-B-KITCH-FIELD`, the access panel in the theater's RC ceiling, is gone.
 The bore is the fabricator's call (`mep.run_through_floor_member` UNKNOWN); the dogleg is the
 fallback.
+
+## BATH2 stall-drying loop removed (2026-11-02)
+
+Owner removed the shower dryer and all associated installation components: the inline
+fan and filtered intake in RM-M-BED, shower nozzle/backdraft damper, transfer duct, and
+countdown timer. Removed the fan's ~30 VA annotation from the shared CKT-LT-MAIN.
+Fan/register/timer types, products and catalog prices remain available for reuse.
+The ERV exhaust, shower lighting and enclosure, and radiant floor remain as specified.
+`notes/bath2_shower.md` §7 preserves the former design calculations as history.

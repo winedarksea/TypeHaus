@@ -92,7 +92,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 |---|---|
 | `bath2_over_toilet_cabinet.md` | the over-toilet cabinet and its clearances |
 | `bath2_lighting.md` | BATH2's 5000 K day and 2700 K evening layers, the CCT rule change (install-selectable banned, user-adjustable allowed), the evening melanopic target, and the product confirms |
-| `bath2_shower.md` | BATH2's thermostatic one-outlet shower: the tank-duration hand calc, the glass heights, the steam path and why the exhaust grille stays outside the enclosure, the wet-wall spec for every shower (§6), the stall-drying fan (§7), and the open finish/SKU confirms |
+| `bath2_shower.md` | BATH2's thermostatic one-outlet shower: the tank-duration hand calc, the glass heights, the steam path and why the exhaust grille stays outside the enclosure, the wet-wall spec for every shower (§6), the former stall-drying fan (removed 2026-11-02; historical §7), and the open finish/SKU confirms |
 | `bath2_tub_deck_finish.md` | BATH2's one-piece Corian tub deck: the options review (quartz, Corian-class, cultured marble, Swanstone, tile), the bonded waterfall faces, splash, glass and wall joints, the colour rules, and the fabrication radii |
 | `bath2_swap_review.md` | measured shower/tub swap: the basin aisle, doorway approach, shower entrance and dependent construction |
 | `beam_water_protection.md` | current garden framing tape, drained column seats, and treatment procurement |

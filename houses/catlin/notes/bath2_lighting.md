@@ -8,9 +8,8 @@
 night layer and the 42 × 36 halo, 2026-10-31.
 **Oracle for:** nothing. A **decision record**: no engine module computes melanopic light,
 and none is proposed. It follows `notes/TEMPLATE.md`'s shape so each choice can be re-argued.
-**Companions:** `notes/bath2_shower.md` (the stall, its glass and the drying fan that shares
-the 15'-4" ceiling bay); `notes/interior_selections.md` (the house's 3000 K standard and the
-CCT rule this note amends).
+**Companions:** `notes/bath2_shower.md` (the stall, its glass and the former drying fan);
+`notes/interior_selections.md` (the house's 3000 K standard and the CCT rule this note amends).
 **What is asked of the reviewer:** §5's product confirms. Nothing here is ordered until each
 one is closed.
 
@@ -48,7 +47,7 @@ The separate 5000 K Karlie remains the daytime task light.
 | item | where | why there |
 |---|---|---|
 | every can | y = 15'-4" bay (176"-192") or the tub at 19'-4" | CAN1 sat on the y=192" truss chord at 16'-0"; the bay centre clears both chords |
-| shower cans and nozzle | CAN-SH 5'-3", CAN-SH-EVE 6'-0", `REG-M-BATH2-DRY-OUT` 6'-4", all at y 15'-4" | the nozzle east of both cans, west of `DU-M-BATH2-DRY`'s drop |
+| shower cans | CAN-SH 5'-3", CAN-SH-EVE 6'-0", both at y 15'-4" | inside the glass, clear of the truss chords; dryer nozzle removed 2026-11-02 |
 | P4 halo mirror | `W-M-W3`, 42" x 36", 3'-6" to 6'-6", centred on the vanity at y=15'-2 3/8" | centred on the 48" vanity since 2026-10-22, not the basin |
 | P3 Karlie task light | 80" body bottom, 87 1/2" top, 2" over mirror head | same uid, 54623CM + three 80795-SU bulbs |
 | `ED-M-BATH2-RC1` | moved 85" -> 74" along `W-M-W3`, now y=16'-2", 44" | the mirror's glass would have buried it (the BATH1 lesson) |
@@ -59,9 +58,9 @@ The separate 5000 K Karlie remains the daytime task light.
 
 **Controls.** The old single switch on `W-M-BDN1` (box x 17.7"-21.7", uid kept, now
 `-SW-DAY`) gains a second gang 4" west for the evening relay. A third gang does not fit:
-`ED-M-BATH2-FH-STAT` is at x 9 3/4"-13 3/4", and `D-M-BATH2`'s casing starts about 22", so
-the stall fan's countdown timer `ED-M-BATH2-SW-DRY` went on `W-M-W3` at y=18'-1", north of
-RC1, outside the shower zone. The night relay `ED-M-BATH2-SW-NL` gangs with it, 4" north.
+`ED-M-BATH2-FH-STAT` is at x 9 3/4"-13 3/4", and `D-M-BATH2`'s casing starts about 22".
+The night relay `ED-M-BATH2-SW-NL` stays on `W-M-W3`, north of RC1 and outside the shower
+zone. The former adjacent dryer countdown timer was removed 2026-11-02.
 
 ## 4. Evening light and sleep
 

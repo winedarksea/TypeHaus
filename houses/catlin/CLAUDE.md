@@ -1866,11 +1866,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   to boost (203.9 vs 203.0 cfm), so position is the only lever. **Do not glass the front to the
   ceiling, add a transom, or move the grille back by the tub** without re-reading
   `notes/bath2_shower.md`.
-  - **The stall-drying fan is a TRANSFER loop, not ventilation** (2026-10-12):
-    `EQ-M-BATH2-STALL-FAN` (`EquipmentKind.FAN`, `plan/mep_bath2_dryer.py`) blows bedroom air
-    down `DU-M-BATH2-DRY` into the stall on a countdown timer; it leaves over the open top
-    like the steam. No outdoor air, no credit, and any contact with an ERV run is a clash.
-    Its ~30 VA is stated on `CKT-LT-MAIN`'s description, not counted (§7 of the note).
+  - **The stall-drying loop was removed** (owner, 2026-11-02): fan, bedroom filtered
+    intake, shower nozzle/damper, transfer duct and countdown timer. Its types, products
+    and prices remain available in the library; `notes/bath2_shower.md` §7 is historical.
 - **Every shower is a wet wall, and nothing goes through an integral insert** (2026-10-12).
   Behind any panel or tile a shower wets: glass-mat or cement backer, then a bonded liquid
   membrane lapped OVER the base flange, then the finish — never paper-faced gypsum. A

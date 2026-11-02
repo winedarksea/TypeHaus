@@ -276,8 +276,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      controlled_by=("ED-M-BATH2-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # Inside the glass in the y 176"-192" bay, west of DU-M-BATH2-DRY: as central as the
-    # dryer duct allows.
+    # Inside the glass in the y 176"-192" bay, clear of the truss chords.
     ElectricalDevice(uid="N45GBJ06HG", tag="ED-M-BATH2-CAN-SH", kind=DeviceKind.LIGHT,
                      position=pt(ft(5, 3), ft(15, 4)), type_ref="ED-T-LT-CAN4-WET-5000",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
@@ -299,8 +298,7 @@ MAIN_LIGHTING = [
                      position=pt(inch(15), inch(200)), type_ref="ED-T-LT-PSU-20",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.CEILING)),
-    # The 2-gang at W-M-BDN1 is full, so the relay gangs with ED-M-BATH2-SW-DRY on W-M-W3,
-    # 4" north of it.
+    # The 2-gang at W-M-BDN1 is full, so the night relay sits on W-M-W3 north of RC1.
     ElectricalDevice(uid="3TDCM4KJQZ", tag="ED-M-BATH2-SW-NL", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
@@ -319,7 +317,7 @@ MAIN_LIGHTING = [
     # HS1: the LR-M-LIVING-* idiom, fixed to the board. It replaced the deck-nosing run
     # LR-M-BATH2-TUBDECK (owner, 2026-10-22: no LEDs near the floor). 5.5 ft against the
     # old 5.4, so the PSU line stands. Damp-rated E3, as NEC 410.10(D) wants within 8' of
-    # the rim. Clear of DU-M-BATH2-DRY (in the stall), the cans and the towel bars at 55".
+    # the rim. Clear of the cans and the towel bars at 55".
     LightRun(uid="WEQM9XB2MM", tag="LR-M-BATH2-TUB-CLG", type_ref="ED-T-LT-STRIP24-2700",
              path=(pt(inch(94.4375), inch(196)), pt(inch(94.4375), inch(262))),
              room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
@@ -332,8 +330,7 @@ MAIN_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING)),
     # A 2-gang over the vanity's south end: day toggle (the old ED-M-BATH2-SW, same uid)
     # and the evening Matter relay 4" west. A third gang does not fit: ED-M-BATH2-FH-STAT is at
-    # x 9 3/4"-13 3/4" and D-M-BATH2's casing starts ~22" — so the stall fan's timer is on
-    # W-M-W3 beside the mirror (ED-M-BATH2-SW-DRY).
+    # x 9 3/4"-13 3/4" and D-M-BATH2's casing starts ~22".
     ElectricalDevice(uid="QTM000RAAA", tag="ED-M-BATH2-SW-DAY", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
