@@ -38,8 +38,9 @@ the install spec.
   ever goes into this ceiling.
 
 ## Install sequence
-1. Trusses and sprinkler/MEP rough-in done; ducts and pipes clear of the channel plane (a later
-   phase reroutes them; the channel lowers the finished ceiling about 1/2").
+1. Trusses and sprinkler/MEP rough-in done; ducts and pipes clear of the channel plane (they
+   run inside the truss depth: `DU-B-ERV-R-PLAY` in the web openings). The channel lowers the
+   finished ceiling about 1/2".
 2. Strike y-lines at 24" o.c.; hang channel, one Type W per chord crossing.
 3. Insulation in the truss bays if specified; do not fill the 1/2" channel gap.
 4. Hang board with 1" Type S into the channel only, 1/4" off every wall.
@@ -49,11 +50,13 @@ the install spec.
 - **1/4" gap** at all walls, filled with painter's (acrylic latex) caulk, never rigid hard
   contact, no screws or corner bead tied to wall plates. Billed in `prices.toml [allowances]`
   `paint-theater-ceiling-perimeter-caulk` (68 LF).
-- **No ceiling lights or boxes.** The six wall sconces stay. `ED-B-PLAY-N-JB` moves to a wall in
-  a later phase.
+- **No ceiling lights or boxes.** The six wall sconces stay. `ED-B-PLAY-N-JB` is on `W-B-N1`
+  since 2026-11-02 (`plan/electrical_branches.py`).
 - **`REG-B-SUP2` supply boot is sealed to the board** (flexible collar, acrylic caulk) and is
-  not tied rigidly through the channel or to a chord; duct reroute is a later phase.
+  not tied rigidly through the channel or to a chord. It sits mid-bay at y=20'-6" on the
+  cavity duct (`plan/mep_registers.py`), so no chord is in its way.
 
 ## Not modelled
 The rule adds no ceiling solid or height: `haus check` finished-ceiling and R305 numbers are
-unchanged by it. The real ceiling is about 1/2" lower than the model reads.
+unchanged by it. The real ceiling is about 1/2" lower than the model reads (open in
+`plans/TODO.md`).

@@ -483,7 +483,8 @@ it moved BOTH terms: 119 lb of steel and 3.5 cy of concrete came out together, a
 fell because the concrete that left (the rim's voided 2 cy) carried no steel at all.
 
 **The gap is still the unauthored steel §4 lists and not this cut** — the basement walls'
-horizontals, `GARAGE_ICF_6`'s bar size, `SL-M-DECK`'s cap schedule. But the cut has eaten the
+horizontals, `GARAGE_ICF_6`'s bar size, `SL-M-DECK`'s cap schedule (since gone with the deck,
+decision #112). But the cut has eaten the
 margin this figure had, and the next DESIGN reduction in steel is the one to look at twice
 rather than wave through. **The saving is also invisible in `haus takeoff`**, by design:
 `[reinforcement]` in `prices.toml` is empty and `[rebar_inclusive]` declares the $/cy rates
@@ -516,7 +517,8 @@ the model has nowhere to state it, or states it in a form nothing can read.
 2. **The garage ICF stems' vertical steel**, `GARAGE_ICF_6`, 8.82 cy. Stated only as
    `MasonrySpec.rebar_spacing = 16"` — a spacing with **no bar size**, which is not a
    readable schedule. That field is marked superseded and read by nothing.
-3. **`SL-M-DECK`'s cap steel — THE RESEARCH HALF IS NOW CLOSED (2026-09-12).** This item
+3. **`SL-M-DECK`'s cap steel — MOOT 2026-11-01 (decision #112): the deck and its bars are
+   gone; see the last addendum. The record follows.** This item
    used to read "the model carries no rib width or spacing for the EPS T-beam form, so the
    flexural schedule cannot be derived and was not guessed". It no longer has to be derived:
    **BuildDeck publishes the schedule with the row**. The BuildDeck Design, Engineering and
@@ -594,7 +596,8 @@ In order, and the first is most of the money:
 - give `GARAGE_ICF_6`'s stems a real `ReinforcementSpec` with a bar size, and retire
   `MasonrySpec.rebar_spacing`;
 - decide `SL-M-DECK` — either author the BuildDeck schedule, or record the cap's steel as a
-  deliberate hole with a dollar figure attached so the back-out can subtract it explicitly;
+  deliberate hole with a dollar figure attached so the back-out can subtract it explicitly
+  (moot since decision #112: no deck);
 - **re-run §3.** If the billed subtotal lands inside $10,000-18,000, cut the rates. If it
   does not, this note says why before anyone touches a dollar.
 
@@ -671,10 +674,9 @@ So S-100's reinforcement schedule prints the walls, the retaining footings and t
 cages that carry bar, and prints nothing for the pours above, correctly. What it must not do
 is invent a `#4 @ 16" O.C. E.W.` for a slab whose specification is fibre.
 
-**STILL A REAL GAP, and unchanged by this section** — §4 items 1, 2 and 3, in that order of
-size: the basement walls' horizontal temperature-and-shrinkage steel, the garage ICF stems'
-bar size, and `SL-M-DECK`'s cap schedule. §5 is the order to close them in, §3's gate is
-still CLOSED, and none of the three was closed here by authoring a number.
+**The gap this section left open is closed.** §4 items 1-2 were authored (decision #75) and
+item 3, `SL-M-DECK`'s cap schedule, became moot when the deck left (decision #112). None of
+them was closed here by authoring a number.
 
 **Why this is a note and not a model field.** "Plain by design" and "not yet authored" are
 different claims and the model has one spelling for both — an absent `ReinforcementSpec`.

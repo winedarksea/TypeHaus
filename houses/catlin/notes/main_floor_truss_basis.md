@@ -111,12 +111,16 @@ section 2.
   | W-B-N1 | FS-M-NE | 1.8"..216" | x 21'/27'/33' | 72" | 2,400 lb | 0.89 |
   | W-B-S1 | FS-M-WEST | 1.7"..118" | x 3'/7' | 58.3" | 1,943 lb | 0.69 |
   | W-B-S4 | FS-M-EAST | 0..116.2" | x 29'-2"/33'-2" | 60" | 2,000 lb | 0.71 |
-  | W-B-N3 | FS-M-MECH | 0..48" | x 8' | 48" | 1,600 lb | 0.57 |
-  | W-B-N4 | FS-M-MECH | 0..70.3" | x 5' | 70.3" | 2,343 lb | 0.83 |
+  | W-B-N3 | FS-M-MECH | 0..48" | x 8' / 5'-10" | 11" (1 A35Z) | 367 lb | 0.65 |
+  | W-B-N4 | FS-M-MECH | 0..70.3" | x 5'-10" | 70.3" | 2,343 lb | 0.83 |
 
-  W-B-N4's station is at x=5', east of `FO-M-ERV-OA` (x 6"..48 1/2"), whose trimmers the
-  blocks are cut around. Each station has a MASA within 8": the nearest anchor on that sill
-  moves to it, the count unchanged (`joints/sills._snap_to_blocking`).
+  W-B-N4's station is at its east end, x=5'-10": `FO-M-ERV-OA` (x 6"..48 1/2") and
+  `DU-ERV-RISER-SUP` (6", west through the third space over x 17"..68") leave no other spot.
+  It is also W-B-N3's west-end station (N3 runs east to west, so along 50"): N3's x=8' station
+  takes 0..37", 1,233 lb / 2,815 = 0.44, and the end station 37..48", 400 x 11/12 = 367 lb
+  on N3's one tie within 18" (x=7', 563 lb), 0.65. A station counts only its own wall's ties.
+  Each station has a MASA within 8": where the pitch left none, one is added (eight in all,
+  69 -> 77 billed; `joints/sills._snap_to_blocking`). Moving one instead stranded the plate ends.
 - **W-B-N2 — UNKNOWN, a design.** `FO-M-STAIR` runs y 26'..35'-4 7/8" against the 36' wall, so
   its first three joist spaces are the stair well for x 10'-3"..17'-6" and no footnote f
   block can stand there. The wall top (400 x 8' = 3,200 lb) goes into the well's edge

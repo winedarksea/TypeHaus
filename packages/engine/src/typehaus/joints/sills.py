@@ -158,42 +158,38 @@ _BLOCK_TO_ANCHOR_M = 8.0 * M_PER_IN
 
 
 def _snap_to_blocking(model: ResolvedModel, found: list) -> list:
-    """Move the nearest anchor on a foundation wall's sill to each wall-top block station.
+    """Add an anchor at each wall-top block station with none within 8".
 
-    Moved, never added: the count stays the pitch rule's, so ``takeoff/anchors.py``'s order
-    and this drawing still agree. An anchor already within 8" is left where it is.
+    Added, not moved: moving one strands a plate end or opens the pitch. The takeoff counts
+    these stations, so the order still matches the drawing.
     """
     from typehaus.joints.wall_top import along_wall, parallel_runs
 
     walls = {wall.tag: wall for wall in model.walls}
     found = list(found)
-    claimed: set = set()  # an anchor serves one station; a second pull would strand the first
     for run in parallel_runs(model):
         wall = walls[run.wall_tag]
         # Return tags are a construction KIND, shared by every sill, so an anchor is placed
         # on this wall by where it stands: on its axis band, inside its length.
         length = math.hypot(wall.axis[1][0] - wall.axis[0][0], wall.axis[1][1] - wall.axis[0][1])
-        on_wall = {}
-        for index, s in enumerate(found):
+        mine = []
+        for s in found:
             along, offset = along_wall(wall, s.point_m)
-            if index not in claimed and offset <= wall.thickness_m / 2.0 and 0 <= along <= length:
-                on_wall[index] = along
+            if offset <= wall.thickness_m / 2.0 and 0 <= along <= length:
+                mine.append((along, s))
+        if not mine:
+            continue
         for block in run.stations:
-            mine = [(index, a) for index, a in on_wall.items() if index not in claimed]
-            near = [index for index, a in mine if abs(a - block.along_m) <= _BLOCK_TO_ANCHOR_M]
-            if near or not mine:
-                claimed.update(near[:1])
+            along, near = min(mine, key=lambda m: abs(m[0] - block.along_m))
+            if abs(along - block.along_m) <= _BLOCK_TO_ANCHOR_M:
                 continue
-            index, along = min(mine, key=lambda m: abs(m[1] - block.along_m))
-            claimed.add(index)
-            station = found[index]
             shift = block.along_m - along
             (ax, ay), (bx, by) = wall.axis[0][:2], wall.axis[1][:2]
-            found[index] = Station(
-                run_tag=station.run_tag, storey=station.storey,
-                point_m=(station.point_m[0] + (bx - ax) / (length or 1.0) * shift,
-                         station.point_m[1] + (by - ay) / (length or 1.0) * shift),
-                z_m=station.z_m, axis=station.axis, role=station.role)
+            found.append(Station(
+                run_tag=near.run_tag, storey=near.storey,
+                point_m=(near.point_m[0] + (bx - ax) / (length or 1.0) * shift,
+                         near.point_m[1] + (by - ay) / (length or 1.0) * shift),
+                z_m=near.z_m, axis=near.axis, role=near.role))
     return found
 
 

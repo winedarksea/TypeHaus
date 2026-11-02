@@ -129,7 +129,9 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # 95 -> 67 + 28: the garage's 2x8 sill is wider than ESR-2555's 2x4/2x6 MASAZ, so its
     # 28 anchors are cast-in 1/2" bolts (sill_anchor_bolt). +2: D-B-GYM is a passage and
     # splits W-B-CS3's PT sill.
-    assert joints["mudsill_anchor"] == 69
+    # 69 -> 77 on 2026-11-02: an anchor at each Minn. R. 1309.0404 wall-top block station
+    # with none within 8" (two each on W-B-S1 and W-B-S4, four on the north wall line).
+    assert joints["mudsill_anchor"] == 77
     assert joints["sill_anchor_bolt"] == 28
     # Door-cut slab plates shorten one pinned run. 49 -> 43 (decision #112): the six pins under
     # the pantry partitions on SL-M-DECK's cap went with it. The eight x=18' mudsill anchors

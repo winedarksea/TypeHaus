@@ -327,9 +327,11 @@ MECH_FLOOR = FloorSystem(
     # joist. The vents, the radon riser and the conduits through this deck are still undrawn —
     # see the openings' own notes in plan/storeys/main.py.
     openings=("FO-M-ERV-OA",),
-    # W-B-N3 at x=8', W-B-N4 at x=5' (clear of the FO-M-ERV-OA chase, x 6"..48 1/2").
+    # W-B-N3 at x=8', W-B-N4 at x=5'-10", its east end: the FO-M-ERV-OA chase (x 6"..48 1/2")
+    # and DU-ERV-RISER-SUP's 6" run west through the third space (x 17"..68") leave no other
+    # spot. The station also serves W-B-N3's west end.
     reinforcements=(*_wall_top_blocks("W-B-N3", (inch(96),), _N_WALL_LINES),
-                    *_wall_top_blocks("W-B-N4", (inch(60),), _N_WALL_LINES)),
+                    *_wall_top_blocks("W-B-N4", (inch(70),), _N_WALL_LINES)),
     source="catlin main floor, over the furnace room — same joists as FS-M-WEST, spanning "
            "10'-0\" east-west from the west wall to the x=10' bearing line",
 )

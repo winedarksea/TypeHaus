@@ -2841,6 +2841,23 @@ case: the U already slides as one body, and a brace adds no friction.
 `test_retaining_court.test_staged_backfill_holds_at_half_a_wall_of_difference` reproduces
 the three key rows from the engine's members.
 
+## 14. Five sill anchors on each house wall (2026-11-02)
+
+The wall-top restraint (Minn. R. 1309.0404, `main_floor_truss_basis.md` §4) puts footnote-f
+blocking stations on `W-B-S1` (36", 84") and `W-B-S4` (350", 398"), and `joints/sills` adds a
+MASA at each station with no anchor within 8". Each wall keeps its three pitch anchors (S1 at
+6/59/112", S4 at 320/373/426"), so each stem's floor line has five:
+
+```
+capacity  5 x MASA F2 1,095 = 5,475 lb (ESR-2555 Table 1, as §11l)
+basis 9   2,580.4 / 5,475                                           d/c 0.471 ✓ (was 0.786)
+basis 8   788.5 / 5,475                                             d/c 0.144 ✓ (was 0.240)
+```
+
+The corner anchor on the cross wall's sill is not counted: it takes this
+load along its own plate, not at F2. With the floor line at 0.471 the stems' governing row is
+§11m's slab-edge peak sustained load, 0.680. Every verdict above is unchanged.
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.

@@ -11,6 +11,7 @@ returns a :class:`Finding` naming the missing input instead of printing a plausi
 from __future__ import annotations
 
 import math
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
@@ -386,7 +387,7 @@ def _mudsill_anchor_schedule_rows(model: ResolvedModel) -> list[tuple[str, ...]]
     ``test_structural_sheets``.
     """
     from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
-    from typehaus.joints.sills import anchored_sill_returns
+    from typehaus.joints.sills import anchored_sill_returns, mudsill_anchor_stations
     from typehaus.takeoff.anchors import mudsill_anchor_rows
 
     config = DEFAULT_HARDWARE_TAKEOFF_CONFIG
@@ -409,12 +410,20 @@ def _mudsill_anchor_schedule_rows(model: ResolvedModel) -> list[tuple[str, ...]]
                 else "SLAB" if host in {solid.tag for solid in model.solids}
                 else "CONCRETE")
         grouped.setdefault((ret.storey, kind, part_of(ret)), []).append(ret)
+    pitch_m = rules.mudsill_anchor_pitch_ft * FT_TO_M
+    counts = {key: sum(max(rules.minimum_anchors_per_run,
+                           int(math.floor(ret.length_m / pitch_m + 1e-9)) + 1) for ret in runs)
+              for key, runs in grouped.items()}
+    # The anchors ``joints/sills`` adds at wall-top block stations are on foundation walls.
+    located = Counter((st.storey, hardware_for_role(st.role).model) for st in
+                      mudsill_anchor_stations(model, rules, config.sill_plate_takeoff_category))
+    for (storey, part), n in located.items():
+        if (storey, "FDN WALL", part) in counts:
+            counts[(storey, "FDN WALL", part)] += n - sum(
+                c for (s, _k, q), c in counts.items() if (s, q) == (storey, part))
     rows: list[tuple[str, ...]] = []
     for index, ((storey, kind, part), runs) in enumerate(sorted(grouped.items()), start=1):
-        count = sum(max(rules.minimum_anchors_per_run,
-                        int(math.floor(ret.length_m / (rules.mudsill_anchor_pitch_ft
-                                                       * FT_TO_M) + 1e-9)) + 1)
-                    for ret in runs)
+        count = counts[(storey, kind, part)]
         carried = sorted({tag for ret in runs for tag in ret.element_tags[1:]
                           if tag in wall_tags})
         # Narrow on purpose: this column sits beside the plan and a wide table costs the

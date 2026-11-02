@@ -243,11 +243,13 @@ def _sill_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[Jo
     sthd = hardware_for_role(ROLE_EMBEDDED_STRAP_HOLDOWN)
     ltp = hardware_for_role(ROLE_LATERAL_TIE_PLATE)
     out: list[Joint] = []
+    # Every return shares one tag, so at a 6" grid the two plates' anchors at a corner were
+    # one key and one marker; a placed anchor needs no float-hair tolerance.
     for station in mudsill_anchor_stations(model, rules, category):
         out.append(_joint(station.role, hardware_for_role(station.role).model, station.storey,
                           station.point_m, station.z_m, station.axis, embedded=True,
                           members=(station.run_tag,), anchor_tag=station.run_tag,
-                          grid_m=grid_m))
+                          grid_m=min(grid_m, M_PER_IN)))
     pin = hardware_for_role(ROLE_SLAB_PLATE_PIN)
     for station in partition_pin_stations(model, rules, category):
         out.append(_joint(ROLE_SLAB_PLATE_PIN, pin.model, station.storey, station.point_m,

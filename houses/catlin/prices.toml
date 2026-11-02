@@ -1202,7 +1202,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # it reads as coverage.
 # ZMAX (R317.3.1: every nail is in the pt-syp sill). Retail 2026-10-31: $1.95 (fastenersplus)
 # to $2.78 (Home Depot) for the MASAZ.
-"MASAZ" = { low = 1.95, high = 3 }  # 67 ea (was 91; the garage 2x8 sill takes bolts)
+"MASAZ" = { low = 1.95, high = 3 }  # 77 ea (was 91; the garage 2x8 sill takes bolts; +8 at the Minn. R. 1309.0404 wall-top block stations, 2026-11-02)
 # Retail, 2026-10-09: ToolUp/Total Fastening $14.54 to McCoy's $19.99.
 "MSTC52" = { low = 14.5, high = 20 }  # 2 ea — CN-M-HD-BALC-W/E
 # Retail, 2026-10-09: $25-38 per 100 (PDPAWL-287MG), plus ~$0.10 of powder load each.

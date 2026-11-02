@@ -2,8 +2,8 @@
 
 **House:** catlin
 **Structure:** `FH-M-BATH2` in `RM-M-BATH2`, `FH-S-BATH1` in `RM-S-BATH1` — the two radiant
-zones that are the only heat source in the room they lie in. `FH-M-DINING` is the third zone
-and is **not** a subject here: `RM-M-LIVING` has an indoor head in it.
+zones that are the only heat source in the room they lie in. (`FH-M-DINING`, a supplemental
+third zone, was retired 2026-11-01 with the concrete deck, decision #112.)
 **Written:** 2026-09-12, by hand, before the calculation it oracles was encoded.
 **Oracle for:** `checks/mep/room_heat.py`, reported by `mep.room_heat_source`; reproduced by
 `tests/test_room_heat_source.py`.
@@ -230,9 +230,6 @@ approximation into a verdict.
   A floor delivering its load holds the room, but the vertical temperature profile over a
   radiant floor is not something a block load speaks to — and as the banner says, R303.10
   does not reach a bathroom anyway.
-- **`FH-M-DINING`.** It is supplemental in a room with a head in it, and it deliberately
-  states no `delivered_btuh_per_ft2`: the delivered output of a floor under engineered plank
-  in a 748 ft² room is not the question, the zone's margin is.
 - **Electrical.** The circuits, GFCI protection and the uncuttable-cable ordering rule live
   in the zones' own comments and in `plan/circuits.py`.
 

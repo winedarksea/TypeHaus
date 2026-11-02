@@ -177,7 +177,7 @@ is still the first thing to remove.
 | BLD-12 | No soils report, and the piers make one mandatory | HIGH | **SIMPLIFY** | +$2,500 to $5,000 |
 | BLD-06 | Service load calc rests on unlisted devices | HIGH | **RESOLVED 2026-09-12 — Class 320 service** | +$2.5k–5k, 320 A service |
 | BLD-01b | The girt-and-block exterior wall | HIGH | **KEEP + ENGINEERED (2026-09-12)** | screw −$0.34/ea |
-| BLD-03 | Two floor systems on the main storey | HIGH | **KEEP — resolved 2026-09-12** (product decision + finish change) | cut declined; the −$7,536 to −$13,486 stands as the measured price of the feature |
+| BLD-03 | Two floor systems on the main storey | HIGH | **KEEP — resolved 2026-09-12** (product decision + finish change); **superseded 2026-11-01** by decision #112: wood trusses | cut declined; the −$7,536 to −$13,486 stands as the measured price of the feature |
 | BLD-02 | The freestanding concrete structure | HIGH | **RESOLVED 2026-09-12 (BLD-12 still gates the piers)** | unpriced |
 | BLD-05 | ~~Suite bathroom drain, 0.062" of slack~~ **`PR-B-BATH-DRAIN` at the code minimum, under a slab** | HIGH | **SIMPLIFY — re-struck + graded 2026-09-12** | ~free if timed right; the branch itself cannot be bought out |
 | BLD-13 | Conditions the engine does not grade | HIGH | KEEP as checklist | — |
@@ -630,7 +630,12 @@ between house and garden footings, and the requirement that every wall-to-house
 joint carry one continuous 2-inch board from the house footing underside to the
 porch wall top.
 
-### BLD-03 — Two floor systems on the main storey. **HIGH · RESOLVED 2026-09-12**
+### BLD-03 — Two floor systems on the main storey. **HIGH · RESOLVED 2026-09-12 · SUPERSEDED 2026-11-01**
+
+> **SUPERSEDED by decision #112 (2026-11-01): the concrete did not stay.** `SL-M-DECK` is
+> `FS-M-NE`, 11 7/8" open-web floor trusses; `FH-M-DINING` was retired with it. The KEEP
+> verdict below, and its reasons, are the record, not the current design
+> (`houses/catlin/notes/main_floor_truss_basis.md`).
 
 **RESOLVED 2026-09-12 — KEEP, with a product decision and a finish change. Three of the
 four findings do not survive contact with the manufacturers' own documents, and one of them

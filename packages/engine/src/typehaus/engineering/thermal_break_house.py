@@ -140,7 +140,13 @@ def _floor_line(ctx, board: Board, patch: dict, states, missing) -> None:
         across, along = (cy, cx) if board.ax == 1 else (cx, cy)
         a_lo, a_hi = (min(ys), max(ys)) if board.ax == 1 else (min(xs), max(xs))
         l_lo, l_hi = (min(xs), max(xs)) if board.ax == 1 else (min(ys), max(ys))
-        if a_lo < across < a_hi and l_lo - 1.0 <= along <= l_hi + 1.0:
+        # A marker is long across its own plate: a corner anchor on the cross wall's sill
+        # takes this load along its plate, not at F2.
+        sx = [p[0] for p in s.outline]
+        sy = [p[1] for p in s.outline]
+        span_x, span_y = max(sx) - min(sx), max(sy) - min(sy)
+        own = span_y > span_x if board.ax == 1 else span_x > span_y
+        if own and a_lo < across < a_hi and l_lo - 1.0 <= along <= l_hi + 1.0:
             anchors.append(parts[1])
             capacity += value
     demand = patch["top_reaction"] + patch["band"]

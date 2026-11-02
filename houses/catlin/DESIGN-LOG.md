@@ -7215,7 +7215,8 @@ the sill "with listed capacity meeting the top of wall reaction", and the derive
   and a TJI end 533 lb (d/c 0.95).
 * Parallel walls take footnote f blocking stations (first three spaces, <= 72") with five
   A35Z each, `plan/wall_top_ties.py`: `W-B-N1` (2,400 lb, d/c 0.89), `-S1`, `-S4`, `-N3`, `-N4`.
-  The nearest MASA moves to each station, the count unchanged.
+  A MASA is added at each station with none within 8" (eight, 69 -> 77; moving one
+  stranded the plate ends). W-B-N4's station sits at its east end (x=5'-10"), clear of the OA chase and DU-ERV-RISER-SUP.
 * New check `code.MN_1309_0404_wall_top` grades all of it; the oracle is
   `notes/main_floor_truss_basis.md` §4.
 * **Open:** `W-B-N2`. `FO-M-STAIR` fills its first three joist spaces, so the check reads

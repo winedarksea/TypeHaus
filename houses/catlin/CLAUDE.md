@@ -778,7 +778,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     C_D 0.9), 533 lb a TJI against 563 (onto the LSL rim, ×0.90). The x=18' plate ends are
     toe-nailed again (no net uplift). Parallel walls `W-B-N1`/`-N3`/`-N4`/`-S1`/`-S4` take
     blocking stations (first three spaces, ≤72") with five A35Z each (`plan/wall_top_ties.py`);
-    the nearest MASA moves to each (`joints/sills._snap_to_blocking`). **`W-B-N2` is UNKNOWN**:
+    a MASA is added at each with none within 8" (`joints/sills._snap_to_blocking`). **`W-B-N2` is UNKNOWN**:
     `FO-M-STAIR` fills its first three joist spaces, so its restraint is the well's edge framing,
     a design (`plans/TODO.md`). Basis note §4.
   - Ceiling is 5/8" gypsum end to end, ONE plane: the TJI/truss seam at y=13' is a doubled member,

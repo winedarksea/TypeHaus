@@ -17,6 +17,7 @@ from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.accessories import resolve_accessories
+from typehaus.resolve.assembly_equivalence import drawn_assembly
 from typehaus.resolve.ceilings import resolve_ceilings
 from typehaus.resolve.clear_zones import resolve_clear_zones
 from typehaus.resolve.construction import apply_construction_rules
@@ -456,7 +457,7 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                 BoundaryCondition(
                     kind=ConditionKind.OPENING_PERIMETER, assemblies=(rw.assembly,),
                     detail=kind, element_tags=(el.tag,),
-                    key=f"opening_perimeter:{rw.assembly}",
+                    key=f"opening_perimeter:{drawn_assembly(model.plan, rw.assembly)}",
                 )
             )
 
@@ -751,17 +752,10 @@ def _layers_equivalent(plan: PlanModel, asm_tag_a: str, asm_tag_b: str) -> bool:
     literal identity), but deliberately not imported from there: that module compares
     emitted IFC, which is the wrong altitude for a resolve-time derivation gate.
     """
+    from typehaus.resolve.assembly_equivalence import layer_signature
+
     a = plan.library.resolve_assembly(asm_tag_a)
     b = plan.library.resolve_assembly(asm_tag_b)
     if a is None or b is None:
         return False
-
-    # Framing is construction, not thickness: a 2x4 run meeting a staggered 2x6 wet wall
-    # jogs both faces, which material and role alone (and paint on both) cannot see.
-    def signature(asm) -> tuple:
-        return tuple((layer.material_ref, layer.function,
-                      getattr(getattr(layer, "framing", None), "member", None),
-                      getattr(getattr(layer, "framing", None), "layout", None))
-                     for layer in asm.layers)
-
-    return signature(a) == signature(b)
+    return layer_signature(a) == layer_signature(b)

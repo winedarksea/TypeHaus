@@ -144,7 +144,8 @@ def _parallel(ctx, run, reaction_plf, blocking_in, connectors, anchors) -> tuple
         if not {1, 2, 3} <= station.bays:
             short.append(f"{where}: blocks only joist space(s) {sorted(station.bays)}")
         demand = reaction_plf * trib / _M_PER_FT
-        mine = [c for c in connectors if run.floor_tag in c.connects
+        # The wall too: a collinear neighbour's ties are within reach of a station at its end.
+        mine = [c for c in connectors if {run.floor_tag, run.wall_tag} <= set(c.connects)
                 and math.dist(c.position.xy_m, station.point_m) <= _STATION_REACH_M]
         capacity = 0.0
         for c in mine:

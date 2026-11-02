@@ -28,5 +28,5 @@ def test_catlin_wall_tops_match_the_basis_note(catlin_model_ro) -> None:
     assert "d/c 0.95" in findings["W-B-W2"].message
     # Parallel: worst station per wall.
     for tag, worst in (("W-B-N1", "0.89"), ("W-B-S1", "0.69"), ("W-B-S4", "0.71"),
-                       ("W-B-N3", "0.57"), ("W-B-N4", "0.83")):
+                       ("W-B-N3", "0.65"), ("W-B-N4", "0.83")):
         assert f"worst d/c {worst}" in findings[tag].message, tag

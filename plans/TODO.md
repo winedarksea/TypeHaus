@@ -13,6 +13,9 @@ Note that many of the pinned decisions in the code base here aren't as fixed as 
   top of the lump-sum allowances, which already carry wide spreads (~$15–36k at stake).
 - **Sconce J/J1 (WAC Sprig BL-23210-BK):** confirm it can be hardwired. Output drops from
   623 lm to 287 lm compared with the Stretch it replaced.
+- **Cotton Oak LVP (Karndean AKP-RL38):** get a local quote (the `lvp` row in `prices.toml` is
+  still Quincy's placeholder) and check a sample in the house light against the model's
+  `#d6cebb` (`houses/catlin/notes/lvp_flooring.md`).
 - **D-G-SERVICE swing limited by W-BW-SCREEN after the canopy-beam move — owner to revisit (slide door, rebuild screen face).** Stopped at 81° for now (`maximum_opening_degrees`): clear opening 24.3" vs 29.3" at 90°.
 
 ## Remaining Work
@@ -127,13 +130,6 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
   load. Measure islanded idle and low-load efficiency at commissioning, with the backup duty
   cycles, and re-author them. See `houses/catlin/notes/backup_power.md` §6.
 
-- **Resolve the dining radiant floor's operating schedule.** The 58 ft², 700 W
-  `FH-M-DINING` zone supplements heat-pump space heating. `houses/catlin/notes/room_heat_loss_baths.md`
-  already flags warm-up lag and the undecided setback schedule. Test a meal-time/preheat
-  schedule and floor limit with a simple override; compare metered energy and comfort over
-  representative weeks. Keep this tied to the existing note rather than duplicating its
-  heat-output analysis.
-
 ### Structural/framing residuals
 
 - **Four matchers share one arithmetic but still answer at three tolerances.**
@@ -145,13 +141,13 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
   not the other (`W-B-S1`->`W-M-S1` + 8 garage walls). All under-framed-wall pours, so nothing
   reads the difference today. The two endpoint formulations differ too and are preserved
   behind `both_ends=`.
-- **A `Slab`/`FloorSystem` rim has no cladding concept.** `SL-M-DECK`'s exposed edge takes no
-  fascia/trim/drip — the roof-edge machinery (`resolve/roof_edge.py`, `resolve/trim_bands.py`)
-  has no horizontal-element analog.
 
 ### Schema gaps found during selections/fireplace passes
 
 - **No `Lintel` element type.** A `Beam` stands in, and its `size` is a free string.
+- **A `floor:ceiling_channel` rule adds no ceiling depth.** `RM-B-PLAY-N`'s resilient channel
+  (`CR-PLAY-CEIL-RC`) bills LF only; the finished ceiling is ~1/2" lower than R305 and the
+  register/ceiling-plane checks read (`houses/catlin/notes/theater_ceiling_acoustics.md`).
 - **R502.10.1's single-member header allowance is sawn-lumber only, deliberately** — an
   I-joist/floor-truss deck would need a manufacturer's hung-header table this engine doesn't
   have, so catlin (all I-joist/floor-truss decks) sees no saving from it. **Still open:**

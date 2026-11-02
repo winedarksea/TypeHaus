@@ -5,6 +5,7 @@ from __future__ import annotations
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConditionKind
 from typehaus.quantities import ft, inch
+from typehaus.resolve.assembly_equivalence import drawn_assembly
 from typehaus.resolve.layout_lines import collinear_overlap
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedWall, StackEdge
 
@@ -80,11 +81,12 @@ def resolve_stacking(model: ResolvedModel) -> list[Finding]:
                           width_change=width_change)
             )
             asms = tuple(sorted({lw.assembly, uw.assembly}))
+            drawn = "|".join(sorted({drawn_assembly(plan, a) for a in asms}))
             model.conditions.append(
                 BoundaryCondition(
                     kind=ConditionKind.STOREY_STACK, assemblies=asms, detail="rim",
                     element_tags=(lw.tag, uw.tag),
-                    key=f"storey_stack:rim:{'|'.join(asms)}",
+                    key=f"storey_stack:rim:{drawn}",
                 )
             )
             if lw.is_foundation and not uw.is_foundation:
@@ -92,7 +94,7 @@ def resolve_stacking(model: ResolvedModel) -> list[Finding]:
                     BoundaryCondition(
                         kind=ConditionKind.WALL_FOUNDATION, assemblies=asms,
                         detail="foundation-to-framed", element_tags=(lw.tag, uw.tag),
-                        key=f"wall_foundation:{'|'.join(asms)}",
+                        key=f"wall_foundation:{drawn}",
                     )
                 )
             if width_change:
@@ -100,7 +102,7 @@ def resolve_stacking(model: ResolvedModel) -> list[Finding]:
                     BoundaryCondition(
                         kind=ConditionKind.STACK_WIDTH_CHANGE, assemblies=asms,
                         detail="width-change", element_tags=(lw.tag, uw.tag),
-                        key=f"stack_width_change:{'|'.join(asms)}",
+                        key=f"stack_width_change:{drawn}",
                     )
                 )
     return findings

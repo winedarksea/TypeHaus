@@ -44,9 +44,9 @@ From Karndean's [Rigid Core Plank and Tile installation guide](https://www.karnd
 
 - Finished floor +1.0255906" (3/4" + 7 mm), 0.0787" (2 mm) over Quincy. Storey datum stays the
   top of joists; sills stay on the datum.
-- Radiant: `FH-M-DINING` (12 W/ft2, in the living-room field) now sits under plank, so the
-  `floor_finish_over_radiant` advisory fires. Keep the stat's floor-sensor limit at 85 F or
-  below at the subfloor/backing interface and confirm the cable maker accepts plank.
+- Radiant: none under the plank. `FH-M-DINING` was retired with `SL-M-DECK` (decision #112),
+  so the 85 F interface rule above only matters if a rug-sized film is added later
+  (`plans/TODO.md`, tile medallions).
 - `D-M-STUDY` has plank on both sides at one plane: no reducer. `D-M-BED2` keeps its
   5/4 oak saddle (rise now 0.7244" to the 1.75" carpet plane).
 - Stair arrivals, base/paneling starts and plumbing elevations that quote the plank top moved

@@ -7,9 +7,10 @@ every board is set into a STRIPPED BLOCKOUT (no pour lock-in) and ``SL-B-FLOOR``
 break states its grade. Basis 8 makes that board FOAMULAR 1000 (Type V, 100 psi) and grades the
 sheet's 1/3 sustained-load rule. Basis 9 (§11l) puts a stress-capped EPDM sponge in series
 with every board and grades the thrust at its published 3.5 psi maximum: no verdict reads the
-estimated modulus. Every item is OK, the stems' floor line governing at 0.786. §11m adds the
-house's near footing line in plan and the court's winter contraction, both OK. The ablations
-below are the proof that each decision is the lever: take one away and its numbers come back.
+estimated modulus. Every item is OK (the stems' floor line was 0.786 until §14's anchors).
+§11m adds the house's near footing line in plan and the court's winter contraction, both OK.
+The ablations below are the proof that each decision is the lever: take one away and its
+numbers come back.
 """
 
 from __future__ import annotations
@@ -76,7 +77,9 @@ _NOTE = {
         "house insulation bearing": (3.5, 15.0, 0.2333),
         "house wall flexure": (48_384.0, 307_578.0, 0.1573),
         "house wall shear": (2_016.0, 80_570.4, 0.0250),
-        "house floor-line reaction": (2_580.375, 3_285.0, 0.7855),
+        # Five MASA on each house wall since 2026-11-02: three on the pitch plus two at the
+        # wall-top block stations (Minn. R. 1309.0404 fn. f), 5 x 1,095 = 5,475 lb.
+        "house floor-line reaction": (2_580.375, 5_475.0, 0.4713),
         **_PATH, **_LINE,
     },
     "beam": {"compliant layer strain": (0.052635, 0.125, 0.4211),
@@ -117,7 +120,7 @@ _NOTE_8 = {
         "house insulation bearing": (1.06953, 15.0, 0.0713),
         "house wall flexure": (14_785.3, 307_578.0, 0.04807),
         "house wall shear": (616.05, 80_570.4, 0.00765),
-        "house floor-line reaction": (788.52, 3_285.0, 0.2400),
+        "house floor-line reaction": (788.52, 5_475.0, 0.1440),
         **_PATH_8,
     },
     "beam": {
@@ -206,7 +209,7 @@ def test_without_the_cap_basis_8_comes_back(ctx, monkeypatch) -> None:
     note = next(n for n in out["TB-SG-W1-STEM"].notes if n.startswith("SENSITIVITY"))
     # x1.5 by hand: S 341.76, x = 153,718 / 946.34 = 162.43", T 55,514; the stem's floor
     # line 1.4111 psi x 12 x 61.4375" = 1,040.4 (0.317); line 53,433 (0.353, 1.060).
-    assert "house floor-line reaction 0.240 -> 0.176 / 0.317 / 0.377" in note
+    assert "house floor-line reaction 0.144 -> 0.106 / 0.190 / 0.226" in note
     assert "house slab-edge bearing 0.268 -> 0.196 / 0.353 / 0.421" in note
     # §11k: the graded 1/3 rule goes over inside the band (x1.5) — why basis 9 exists.
     assert "house slab-edge sustained load 0.804 -> 0.590 / 1.060 / 1.262" in note

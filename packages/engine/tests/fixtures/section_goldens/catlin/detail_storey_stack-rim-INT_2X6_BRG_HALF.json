@@ -1269,7 +1269,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "df-l-no2",
+      "fill": "#d4b98f"
     },
     {
       "space": "model",
@@ -1325,7 +1326,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "df-l-no2",
+      "fill": "#d4b98f"
     },
     {
       "space": "model",
@@ -1509,6 +1511,81 @@
         -19.045833333333327
       ],
       "text": "gwb 1/2\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          213.0,
+          19.836876640419952
+        ],
+        "name": ""
+      },
+      "at": [
+        201.90748031496065,
+        19.836876640419952
+      ],
+      "to": [
+        213.0,
+        19.836876640419952
+      ],
+      "text": "gwb 1/2\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          216.0,
+          17.94104330708662
+        ],
+        "name": ""
+      },
+      "at": [
+        201.90748031496065,
+        17.94104330708662
+      ],
+      "to": [
+        216.0,
+        17.94104330708662
+      ],
+      "text": "stud 5 1/2\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          219.0,
+          16.045209973753288
+        ],
+        "name": ""
+      },
+      "at": [
+        201.90748031496065,
+        16.045209973753288
+      ],
+      "to": [
+        219.0,
+        16.045209973753288
+      ],
+      "text": "gwb-ar 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

@@ -9,7 +9,7 @@ Stations are read off the blocking the resolver derived from an authored
 ``JoistReinforcement(blocking=True)`` (child keys ``sister-*-block-*``), never off a
 proximity search for loose lumber: a bearing-line block that happens to sit near a wall is
 not a restraint station anyone designed. ``code.MN_1309_0404_wall_top`` grades them and
-``joints/sills.mudsill_anchor_stations`` moves an anchor to each.
+``joints/sills.mudsill_anchor_stations`` adds an anchor where none is within 8".
 """
 
 from __future__ import annotations

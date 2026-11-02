@@ -402,6 +402,16 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # twin under a neutral name (#72); the condition is the same one.
         ("assembly_change:INT_2X6_BRG_EXPOSED_PLY|"
          "STAIRWALL_INT_2X6_BRG_UNDERSTAIR"),
+        # (W-B-CS3/CS2/CN2 carry the DF-L-plate variant since 2026-11-02, the x=18' line's
+        # plate bearing; the two keys below are the same nodes as before under its name.)
+        # N-B-SA-NE, new with the rotation: the sauna's east liner stops at the room's north
+        # face and the same 2x6 bearing wall carries on without it. The liner RETURNS into
+        # the corner here — the hot side's vapour control is continuous on all four faces or
+        # it is not vapour control — which is exactly what this key exists to put on a sheet.
+        "assembly_change:INT_2X6_BRG_HALF_DFL|SAUNA_LINER_INT_2X6_BRG",
+        # W-B-CN2 -> W-B-CN since decision #112 reframed the x=18' pours (which took N-B-C1's
+        # FOUNDATION_WALL_12_INT key with them): the furred plywood stair face starts here.
+        "assembly_change:INT_2X6_BRG_HALF_DFL|STAIRWELL_INT_2X6_BRG_FURRED",
         # N-M-C1: W-M-C1 alone carries INT_2X6_BRG_RC — a resilient channel and a
         # batt on the RM-M-BED face — and W-M-C2 east of the node does not. Exactly the
         # same kind of key as INT_2X4_PARTITION|INT_2X4_RC below, and it earns its sheet
@@ -409,14 +419,6 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # a builder who runs them through to W-M-C2 has shorted the acoustic wall by a leaf
         # while gaining 1/2" of wall the drawings do not show.
         "assembly_change:INT_2X6_BRG_HALF|INT_2X6_BRG_RC_HALF",
-        # N-B-SA-NE, new with the rotation: the sauna's east liner stops at the room's north
-        # face and the same 2x6 bearing wall carries on without it. The liner RETURNS into
-        # the corner here — the hot side's vapour control is continuous on all four faces or
-        # it is not vapour control — which is exactly what this key exists to put on a sheet.
-        "assembly_change:INT_2X6_BRG_HALF|SAUNA_LINER_INT_2X6_BRG",
-        # W-B-CN2 -> W-B-CN since decision #112 reframed the x=18' pours (which took N-B-C1's
-        # FOUNDATION_WALL_12_INT key with them): the furred plywood stair face starts here.
-        "assembly_change:INT_2X6_BRG_HALF|STAIRWELL_INT_2X6_BRG_FURRED",
         # Framing joined the equivalence signature on 2026-10-25, so a stagger starting is
         # a key. W-S-BD-N1B is a BEARING plumbing wall (continuous studs, wet_wall_bearing)
         # and W-S-BD-N the staggered wet wall it meets.
