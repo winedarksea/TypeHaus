@@ -9,15 +9,19 @@ rule: a backup circuit without an authored ``duty_cycle`` is reported as an unkn
 contributor and never counted as zero. A silent zero would make the array look like it
 carries a house it does not carry — the exact failure this calc exists to catch.
 
-Three questions get answered:
+Two tiers: ALWAYS_ON is what the battery is graded on; SURPLUS runs on battery only on
+solar surplus with the battery near full, so it is never counted against autonomy. Five
+questions get answered:
 
-1. **Peak** — can the inverter's continuous output cover the backup loads running at
-   once, and can its surge cover the largest motor start?
-2. **Autonomy** — how many hours the battery alone carries each tier, with no sun.
+1. **Peak** — can the inverter's continuous output cover every backup load at once, and
+   can its surge cover the worst single start with every other circuit running?
+2. **Autonomy** — how many hours the battery alone carries the always-on tier, no sun.
 3. **The 48-hour cycle** — with strong sun every *other* day, does one solar day put back
-   more than two days of load takes out? Asked twice, at a summer and a December yield.
+   more than two days of always-on load takes out? At a summer and a December yield.
 4. **The darkness bridge** — does the battery alone carry the always-on tier through a
    dark day and the longest night after it?
+5. **Surplus** — on a strong day, what is left after the always-on day, and how many hours
+   of the surplus tier it runs.
 
 All of it is battery-side: AC load over the inverter's efficiency plus its idle draw, both
 read off the inverter type. Missing either is an unknown, never a free inverter.
@@ -60,10 +64,9 @@ WINTER_STRONG_DAY_KWH_PER_KW = 1.5
 _HORIZON_ALTITUDE_DEG = -0.833
 _SOLSTICE_DECLINATION_DEG = -23.44
 
-# Motor-start multiple applied to the largest backup circuit (either tier) when checking
-# the inverter's surge rating. 3x is the allowance for a soft-started inverter-driven motor
-# (the Sapphire R32 on CKT-HP3). An across-the-line motor such as a sump pump starts at
-# 5-7x and is NOT covered by it: one that is not also the largest circuit is ungraded.
+# Start multiple for a circuit with no authored ``Circuit.start_va``. Published starts for
+# small across-the-line pumps run ~3x running (Zoeller M53: 25.9 A vs 9.7 A); a circuit whose
+# start is known authors it instead.
 MOTOR_START_MULTIPLE = 3.0
 
 # Efficiency of the PoE switch's supply, for what a shed port saves at the outlet. 88% is the
@@ -79,11 +82,9 @@ def _governed_va(model: ResolvedModel, circuit, va: float) -> float:
     """The most this circuit can draw during a backup event.
 
     ``Circuit.backup_va`` where authored — a smart appliance held in a low-power mode while
-    the house is on battery (the water heater forced to Heat-Pump-Only), which is a BACKUP
-    fact and lives on the circuit beside ``backup_tier``. This used to read a
-    single-circuit ``LoadManagement`` instead, which conflated a backup reserve with a
-    service-calculation credit; those are different claims needing different evidence (2026
-    NEC 130.2 wants a listing for the second and nothing for the first).
+    the house is on battery, a BACKUP fact that lives on the circuit beside ``backup_tier``.
+    It is not a ``LoadManagement``: a backup reserve and a service-calculation credit need
+    different evidence (2026 NEC 130.2 wants a listing for the second only).
     """
     if circuit.backup_va is not None:
         return min(va, float(circuit.backup_va))
@@ -114,10 +115,14 @@ def _tier_rows(model: ResolvedModel, tier: BackupTier) -> list[dict[str, object]
                           _va(model, circuit, consumers.get(circuit.tag, [])))
         duty = circuit.duty_cycle
         shed_w, unrated = _poe_shed(circuit, poe_watts)
+        start_va = (float(circuit.start_va) if circuit.start_va is not None
+                    else va * MOTOR_START_MULTIPLE)
         rows.append({
             "circuit": circuit.tag,
             "description": circuit.description,
             "connected_va": round(va, 0),
+            "start_va": round(start_va, 0),
+            "start_authored": circuit.start_va is not None,
             "duty_cycle": duty,
             "shed_poe": list(circuit.backup_shed_poe),
             "shed_w": round(shed_w, 1),
@@ -210,25 +215,29 @@ def _battery_w(ac_w: float, conversion: dict) -> float:
 
 
 def _cycle(array_kw: float, kwh_per_kw: float, usable_kwh: float,
-           always_w: float, both_w: float) -> dict[str, object]:
-    """One strong solar day against 48 h of battery-side load. A system with no usable
-    storage sustains nothing, however big the array: the dark day has nowhere to come from."""
+           always_w: float, surplus_w: float) -> dict[str, object]:
+    """One strong solar day against 48 h of battery-side always-on load, and what that day
+    leaves for the surplus tier. A system with no usable storage sustains nothing, however
+    big the array: the dark day has nowhere to come from."""
     solar_day_kwh = array_kw * kwh_per_kw
     always_2day = always_w * 2 * _HOURS_PER_DAY / 1000.0
-    both_2day = both_w * 2 * _HOURS_PER_DAY / 1000.0
+    # The strong day carries its own 24 h of always-on load (and refills the night); the
+    # rest is what the surplus tier may spend.
+    surplus_kwh = max(0.0, solar_day_kwh - always_w * _HOURS_PER_DAY / 1000.0)
     stores = usable_kwh > 0.0
     return {
         "array_kw": array_kw,
         "strong_day_kwh_per_kw": kwh_per_kw,
         "solar_day_kwh": round(solar_day_kwh, 2),
-        "two_day_load_kwh_all_tiers": round(both_2day, 2),
         "two_day_load_kwh_always_on": round(always_2day, 2),
-        "net_kwh_all_tiers": round(solar_day_kwh - both_2day, 2),
         "net_kwh_always_on": round(solar_day_kwh - always_2day, 2),
-        "sustains_all_tiers": stores and solar_day_kwh >= both_2day,
         "sustains_always_on": stores and solar_day_kwh >= always_2day,
-        "basis": ("one strong solar day per 48h against 48h of battery-side tier load; the "
-                  "battery buffers the dark day"),
+        "surplus_kwh": round(surplus_kwh, 2),
+        "surplus_hours": (round(surplus_kwh * 1000.0 / surplus_w, 1)
+                          if surplus_w > 0.0 else None),
+        "basis": ("one strong solar day per 48h against 48h of battery-side always-on load; "
+                  "surplus = that day less 24h of it, over the surplus tier's battery-side "
+                  "average"),
     }
 
 
@@ -247,10 +256,10 @@ def backup_runtime_summary(
     placed = backup_equipment(model)
     tiers = {
         "always_on": _tier_summary(_tier_rows(model, BackupTier.ALWAYS_ON)),
-        "shed": _tier_summary(_tier_rows(model, BackupTier.SHED)),
+        "surplus": _tier_summary(_tier_rows(model, BackupTier.SURPLUS)),
     }
     if not (placed["batteries"] or placed["inverters"]
-            or tiers["always_on"]["circuits"] or tiers["shed"]["circuits"]):
+            or tiers["always_on"]["circuits"] or tiers["surplus"]["circuits"]):
         return {"modeled": False}
 
     types = {t.tag: t for t in model.plan.library.equipment_types}
@@ -260,52 +269,52 @@ def backup_runtime_summary(
     inverter_kw, surge_kw = conversion["kw_continuous"], conversion["kw_surge"]
 
     # --- Peak: everything on the microgrid at once -------------------------------------
+    # Both tiers: the inverter carries the surplus loads whenever they do run.
     always_va = float(tiers["always_on"]["connected_va"])
-    both_va = always_va + float(tiers["shed"]["connected_va"])
-    # Every backup circuit, not only the shed tier: the sump rides always-on and starts too.
-    largest_va = max([float(r["connected_va"]) for tier in tiers.values()
-                      for r in tier["circuits"]] or [0.0])
+    all_va = always_va + float(tiers["surplus"]["connected_va"])
+    rows = [r for tier in tiers.values() for r in tier["circuits"]]
+    # Surge: each circuit's start with every other circuit running; the worst one governs.
+    surges = sorted(((float(r["start_va"]) + all_va - float(r["connected_va"]), str(r["circuit"]))
+                     for r in rows), reverse=True)
+    surge_va, surge_circuit = surges[0] if surges else (0.0, None)
     peak: dict[str, object] = {
-        "simultaneous_va": round(both_va, 0),
+        "simultaneous_va": round(all_va, 0),
         "always_on_va": tiers["always_on"]["connected_va"],
         "inverter_kw_continuous": inverter_kw,
         "inverter_kw_surge": surge_kw,
-        "largest_motor_start_va": round(largest_va * MOTOR_START_MULTIPLE, 0),
+        "surge_va": round(surge_va, 0),
+        "surge_circuit": surge_circuit,
         "motor_start_multiple": MOTOR_START_MULTIPLE,
-        "within_continuous": None if inverter_kw is None else both_va <= inverter_kw * 1000.0,
+        "within_continuous": None if inverter_kw is None else all_va <= inverter_kw * 1000.0,
         "always_on_within_continuous": (None if inverter_kw is None
                                         else always_va <= inverter_kw * 1000.0),
-        "within_surge": (None if surge_kw is None
-                         else largest_va * MOTOR_START_MULTIPLE <= surge_kw * 1000.0),
+        "within_surge": None if surge_kw is None else surge_va <= surge_kw * 1000.0,
     }
 
     # --- Battery-side draw: AC load through the inverter, plus its idle ----------------
     always_w = _battery_w(float(tiers["always_on"]["average_w"]), conversion)
-    both_w = _battery_w(float(tiers["always_on"]["average_w"])
-                        + float(tiers["shed"]["average_w"]), conversion)
-
-    def _hours(watts: float) -> float | None:
-        if usable_kwh <= 0.0 or watts <= 0.0:
-            return None
-        return round(usable_kwh * 1000.0 / watts, 1)
+    # The surplus tier adds load only: the idle is already in the always-on figure.
+    surplus_w = _battery_w(float(tiers["surplus"]["average_w"]),
+                           {**conversion, "idle_w": 0.0})
 
     autonomy = {
         "usable_kwh": round(usable_kwh, 2),
         "nameplate_kwh": round(nameplate_kwh, 2),
         "depth_of_discharge": depth_of_discharge,
         "battery_w_always_on": round(always_w, 1),
-        "battery_w_all_tiers": round(both_w, 1),
+        "battery_w_surplus": round(surplus_w, 1),
         "inverter_idle_w": conversion["idle_w"],
         "inverter_efficiency": conversion["efficiency"],
-        "hours_all_tiers": _hours(both_w),
-        "hours_always_on_only": _hours(always_w),
-        "basis": ("battery only, no solar; tier draw = connected VA x authored duty cycle, "
+        "hours_always_on_only": (round(usable_kwh * 1000.0 / always_w, 1)
+                                 if usable_kwh > 0.0 and always_w > 0.0 else None),
+        "basis": ("battery only, no solar, always-on tier only (the surplus tier never runs "
+                  "on the battery's account); draw = connected VA x authored duty cycle, "
                   "less PoE ports shed, over inverter efficiency, plus inverter idle"),
     }
 
     array_kw = round(sum(panel.watts for panel in model.solar_panels) / 1000.0, 3)
-    cycle = _cycle(array_kw, strong_day_kwh_per_kw, usable_kwh, always_w, both_w)
-    winter = _cycle(array_kw, winter_strong_day_kwh_per_kw, usable_kwh, always_w, both_w)
+    cycle = _cycle(array_kw, strong_day_kwh_per_kw, usable_kwh, always_w, surplus_w)
+    winter = _cycle(array_kw, winter_strong_day_kwh_per_kw, usable_kwh, always_w, surplus_w)
 
     night_h = longest_night_hours(model.plan.project.site.lat)
     bridge_h = _HOURS_PER_DAY + night_h
@@ -320,7 +329,7 @@ def backup_runtime_summary(
                   "through a dark day and the longest night after it"),
     }
 
-    complete = (bool(tiers["always_on"]["complete"]) and bool(tiers["shed"]["complete"])
+    complete = (bool(tiers["always_on"]["complete"]) and bool(tiers["surplus"]["complete"])
                 and not undeclared_batteries and inverter_kw is not None
                 and not conversion["unknown"])
     return {
@@ -357,22 +366,18 @@ def _verdict(complete: bool, peak: dict, autonomy: dict, cycle: dict, winter: di
         problems.append(
             f"all backup loads at once ({peak['simultaneous_va']:,.0f} VA) exceed the "
             f"inverter's {peak['inverter_kw_continuous']:g} kW continuous output — the "
-            "shed tier must not run with the always-on tier")
+            "surplus tier must not run with the always-on tier at full load")
     if peak["within_surge"] is False:
-        problems.append("the largest backup motor start exceeds the inverter surge")
+        problems.append(f"{peak['surge_circuit']}'s start with every other backup load "
+                        f"running ({peak['surge_va']:,.0f} VA) exceeds the inverter surge")
     if not cycle["sustains_always_on"]:
         # A bigger battery cannot fix a cycle that loses energy every 48 h; it can only fix
         # the bridge, so "not battery" is said only when the bridge already holds.
         remedy = "add array, not battery" if bridge["bridges"] else "add array"
         problems.append(
             f"one strong summer day ({cycle['solar_day_kwh']:g} kWh) does not cover 48h of "
-            f"even the always-on tier ({cycle['two_day_load_kwh_always_on']:g} kWh) — "
-            f"{remedy}")
-    elif not cycle["sustains_all_tiers"]:
-        problems.append(
-            "one strong solar day covers the always-on tier over 48h but not both tiers "
-            "together — which is what the shed tier is for")
-    if cycle["sustains_always_on"] and not winter["sustains_always_on"]:
+            f"the always-on tier ({cycle['two_day_load_kwh_always_on']:g} kWh) — {remedy}")
+    elif not winter["sustains_always_on"]:
         problems.append(
             f"a strong December day ({winter['solar_day_kwh']:g} kWh) does not cover 48h of "
             f"the always-on tier ({winter['two_day_load_kwh_always_on']:g} kWh)")
@@ -383,6 +388,6 @@ def _verdict(complete: bool, peak: dict, autonomy: dict, cycle: dict, winter: di
             f"(needs {bridge['required_kwh']:g} kWh)")
     if not problems:
         return (f"sufficient — {autonomy['usable_kwh']:g} kWh usable carries the always-on "
-                f"tier {autonomy['hours_always_on_only']} h unaided, and one strong solar "
-                f"day nets {cycle['net_kwh_all_tiers']:+g} kWh over 48h of both tiers")
+                f"tier {autonomy['hours_always_on_only']} h unaided, and a strong summer day "
+                f"leaves {cycle['surplus_kwh']:g} kWh for the surplus tier")
     return "; ".join(problems)

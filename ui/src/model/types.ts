@@ -821,7 +821,7 @@ export interface PanelScheduleRow {
   nema: string;
   gfci: boolean;
   backup: boolean;
-  backup_tier: string; // "" | "always_on" | "shed"
+  backup_tier: string; // "" | "always_on" | "surplus"
   panel: string;
   source: boolean; // a power-source interconnection, excluded from the service load
   connected_va: number;
@@ -894,9 +894,10 @@ export interface BackupTierSummary {
 
 export interface BackupCycle {
   array_kw: number; strong_day_kwh_per_kw: number; solar_day_kwh: number;
-  two_day_load_kwh_all_tiers: number; two_day_load_kwh_always_on: number;
-  net_kwh_all_tiers: number; net_kwh_always_on: number;
-  sustains_all_tiers: boolean; sustains_always_on: boolean; basis: string;
+  two_day_load_kwh_always_on: number; net_kwh_always_on: number;
+  sustains_always_on: boolean;
+  // What the strong day leaves after 24 h of always-on load, and the surplus tier's hours of it.
+  surplus_kwh: number; surplus_hours: number | null; basis: string;
 }
 
 export interface BackupRuntime {
@@ -910,19 +911,19 @@ export interface BackupRuntime {
     kw_continuous: number | null; kw_surge: number | null; pv_input_kw: number | null;
   }[];
   pv_input_kw?: number | null;
-  tiers?: { always_on: BackupTierSummary; shed: BackupTierSummary };
+  tiers?: { always_on: BackupTierSummary; surplus: BackupTierSummary };
   peak?: {
     simultaneous_va: number; always_on_va: number;
     inverter_kw_continuous: number | null; inverter_kw_surge: number | null;
-    largest_motor_start_va: number; motor_start_multiple: number;
+    surge_va: number; surge_circuit: string | null; motor_start_multiple: number;
     within_continuous: boolean | null; always_on_within_continuous: boolean | null;
     within_surge: boolean | null;
   };
   autonomy?: {
     usable_kwh: number; nameplate_kwh: number; depth_of_discharge: number;
-    battery_w_always_on: number; battery_w_all_tiers: number;
+    battery_w_always_on: number; battery_w_surplus: number;
     inverter_idle_w: number | null; inverter_efficiency: number | null;
-    hours_all_tiers: number | null; hours_always_on_only: number | null; basis: string;
+    hours_always_on_only: number | null; basis: string;
   };
   // Summer and December strong days, the same shape (takeoff/backup_calc.py::_cycle).
   cycle_48h?: BackupCycle;

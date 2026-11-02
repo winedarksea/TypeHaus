@@ -682,7 +682,9 @@ RADON_SUMP = [
          # pipe behind it. PR-B-SUMP-DISCH (below) wyes into TR-RF-LEADER-W's extension
          # riser, so pumped water shares the buried line to RG-W-BASIN. That line is 6-10"
          # down and freezes; the ice guard spills at the foundation foot when it does.
-         pump=SumpPump(model="1/3 hp cast-iron submersible", horsepower=0.33,
+         # Basis of design Zoeller M53 (Ferguson 53-0029): 0.3 hp, 9.7 A running, 25.9 A
+         # starting — what CKT-SUMP's load_va and start_va read (plan/circuits.py).
+         pump=SumpPump(model="Zoeller M53, 0.3 hp cast-iron submersible", horsepower=0.3,
                        discharge="TR-RF-LEADER-W", circuit_ref="CKT-SUMP",
                        discharge_line_ref="PR-B-SUMP-DISCH", check_valve=True,
                        freeze_relief=True),
@@ -741,7 +743,7 @@ RADON_SUMP = [
     Sump(uid="GERQNZ96QJ", tag="SM-B-SOUTH", position=pt(inch(70), inch(26)),
          diameter=inch(18), depth=inch(50), host_ref="SL-B-FLOOR",
          sealed_cover=True, radon_vent=False,
-         pump=SumpPump(model="1/3 hp cast-iron submersible", horsepower=0.33,
+         pump=SumpPump(model="Zoeller M53, 0.3 hp cast-iron submersible", horsepower=0.3,
                        discharge="daylight", circuit_ref="CKT-SUMP",
                        discharge_line_ref="PR-B-SUMP-S-DISCH", check_valve=True,
                        freeze_relief=True),

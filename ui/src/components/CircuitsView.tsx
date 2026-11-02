@@ -40,7 +40,7 @@ function BackupRuntimeCard({ runtime }: { runtime: BackupRuntime }) {
   const peak = runtime.peak!;
   const unknown = [
     ...(runtime.tiers?.always_on.unknown_duty_cycle ?? []),
-    ...(runtime.tiers?.shed.unknown_duty_cycle ?? []),
+    ...(runtime.tiers?.surplus.unknown_duty_cycle ?? []),
   ];
   return (
     <div className="reader-card">
@@ -66,10 +66,13 @@ function BackupRuntimeCard({ runtime }: { runtime: BackupRuntime }) {
             ? ` of ${peak.inverter_kw_continuous} kW continuous`
             : " — inverter rating not declared"}
         </span>
-        <span className="k">Autonomy, both tiers</span>
-        <span>{hours(autonomy.hours_all_tiers)}</span>
-        <span className="k">Autonomy, always-on only</span>
+        <span className="k">Autonomy, always-on (no sun)</span>
         <span>{hours(autonomy.hours_always_on_only)}</span>
+        <span className="k">Surplus tier, strong day</span>
+        <span>
+          {cycle.surplus_kwh} kWh = {hours(cycle.surplus_hours)}
+          {winter && <> · December {winter.surplus_kwh} kWh</>}
+        </span>
         <span className="k">Inverter idle / efficiency</span>
         <span>
           {autonomy.inverter_idle_w === null ? "not declared" : `${autonomy.inverter_idle_w} W`}
@@ -187,7 +190,7 @@ function PanelSchedule({ rows, expanded, onExpand, index, onZoom }: {
                   <td>
                     {row.gfci && <span className="reader-chip">GFCI</span>}
                     {row.backup_tier === "always_on" && <span className="reader-chip">always-on</span>}
-                    {row.backup_tier === "shed" && <span className="reader-chip">shed</span>}
+                    {row.backup_tier === "surplus" && <span className="reader-chip">surplus</span>}
                     {row.source && <span className="reader-chip">source</span>}
                     {!row.gfci && !row.backup && !row.source && <span className="muted">—</span>}
                   </td>
@@ -271,7 +274,7 @@ export function CircuitsView() {
 
       <ReaderSection
         title="Backup microgrid"
-        note="Derived twice over: the storage and conversion rows from the placed ESS equipment, the switching gear from the shed-tier circuits — never a hand-typed parts list."
+        note="Derived twice over: the storage and conversion rows from the placed ESS equipment, the switching gear from the surplus-tier circuits — never a hand-typed parts list."
         count={backup.length}
       >
         <ReaderTable<BackupComponentRow> rows={backup} rowKey={(row) => row.component} columns={[

@@ -13,7 +13,7 @@ BASEMENT_MIRRORS = [
                 normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="2455867868", tag="ED-B-BATH-MIRROR", kind=DeviceKind.LIGHT,
             type_ref="ED-T-LT-KARLIE-3-BN", room="RM-B-BATH",
-            circuit="CKT-LT-BACKUP", controlled_by=("ED-B-BATH-SW",),
+            circuit="CKT-LT-BSMT", controlled_by=("ED-B-BATH-SW",),
             mount=Mount(kind=MountKind.WALL, elevation=inch(76.1875)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-B-CW2", face="left", distance_from_start=inch(24),
@@ -33,16 +33,16 @@ BASEMENT_MIRRORS = [
     # The basement bath's night light (2026-10-31; here, not lighting_basement.py, which is at
     # its 500-line limit): E5 under the ANGSJON's 8 3/8" bottom, 2" behind its front, on its own
     # PSU (mid-bay between the doubled joists) and a Matter relay 4" north of ED-B-BATH-SW.
-    # CKT-LT-BACKUP with the rest of the room. The pattern is plan/lighting_second.py's.
+    # CKT-LT-BSMT with the rest of the room. The pattern is plan/lighting_second.py's.
     LightRun(uid="DZ7N0FJTY2", tag="LR-B-BATH-NIGHT", type_ref="ED-T-LT-STRIP24-NIGHT",
         path=(pt(inch(127), inch(237.25)), pt(inch(161), inch(237.25))),
         room="RM-B-BATH", psu_ref="ED-B-BATH-NL-PSU", controlled_by=("ED-B-BATH-SW-NL",),
         mount=Mount(kind=MountKind.WALL, elevation=inch(8))),
     ElectricalDevice(uid="N14TT2JC5A", tag="ED-B-BATH-NL-PSU", kind=DeviceKind.JUNCTION_BOX,
             position=pt(inch(147), inch(248)), type_ref="ED-T-LT-PSU-20",
-            circuit="CKT-LT-BACKUP", room="RM-B-BATH", mount=Mount(kind=MountKind.CEILING)),
+            circuit="CKT-LT-BSMT", room="RM-B-BATH", mount=Mount(kind=MountKind.CEILING)),
     ElectricalDevice(uid="D5926D536W", tag="ED-B-BATH-SW-NL", kind=DeviceKind.SWITCH,
-            type_ref="ED-T-LEV-MATTER", room="RM-B-BATH", circuit="CKT-LT-BACKUP",
+            type_ref="ED-T-LEV-MATTER", room="RM-B-BATH", circuit="CKT-LT-BSMT",
             mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-B-BA-E", face="right", distance_from_start=inch(12),

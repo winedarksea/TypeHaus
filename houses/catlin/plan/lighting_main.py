@@ -61,7 +61,7 @@ MAIN_LIGHTING = [
     # on/off with the occupancy sensor (the pantry needs no dimming).
     ElectricalDevice(uid="DZVAFADH7Y", tag="ED-M-PANTRY-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-LT-PSU-96-WE",
-                     circuit="CKT-LT-BACKUP", room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
+                     circuit="CKT-LT-MAIN", room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(90)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N1B", face="left", distance_from_start=inch(39),
@@ -73,7 +73,7 @@ MAIN_LIGHTING = [
     # driver's 120V, so all four channels.
     ElectricalDevice(uid="1M4ZM8DRWH", tag="ED-M-PANTRY-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-OCC-PANTRY",
-                     circuit="CKT-LT-BACKUP", room="RM-M-PANTRY",
+                     circuit="CKT-LT-MAIN", room="RM-M-PANTRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(56)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-PAN-E", face="left", distance_from_start=inch(6.76),

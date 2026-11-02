@@ -126,13 +126,13 @@ BASEMENT_DEVICES = [
     # the least essential load on the always-on lighting tier, so it moved off it, and since
     # 2026-10-31 it is on CKT-LT-BSMT, the basement's non-backup lighting circuit. It is an AC
     # fan (Hunter's sheet; not DC) with no lamp, on constant hot with its included wall
-    # control, so ED-B-GYM-SW (the cans', on CKT-LT-BACKUP) does not switch it.
+    # control, so ED-B-GYM-SW (the cans') does not switch it.
     ElectricalDevice(uid="CED010K1AA", tag="ED-B-GYM-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(27), ft(9)), type_ref="ED-T-LT-FAN52-FLUSH", circuit="CKT-LT-BSMT",
                      room="RM-B-GYM",
                      mount=Mount(kind=MountKind.CEILING, drop=inch(10.5625))),
     ElectricalDevice(uid="CED010K2AA", tag="ED-B-GYM-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-BACKUP",
+                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CE", face="right", distance_from_start=inch(66.5),

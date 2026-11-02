@@ -137,17 +137,13 @@ FRIGIDAIRE_ALL_FREEZER = Product(
 
 # --- mechanical and the backup microgrid -------------------------------------------------
 #
-# The Rheem tank is the one product in the house whose designation genuinely differs by
-# channel: ``PROPH80 T2 RH400-30`` is the plumbing-wholesale number and
-# ``XE80T10HS45U0`` the retail/AHRI one, for the same 80-gallon ProTerra. ``sku`` is where
-# that second number belongs — it is what an order may actually be placed against.
+# The 120 V plug-in ProTerra since 2026-10-31 (was the 240 V PROPH80 T2 RH400-30). Model
+# variant 700951 is Rheem's own number for it; no retail SKU is recorded.
 RHEEM_PROTERRA_80 = Product(
-    tag="PROD-RHEEM-PROPH80", brand="Rheem", model="PROPH80 T2 RH400-30",
-    name="ProTerra 80 gal hybrid heat-pump water heater (EcoNet)",
-    sku="XE80T10HS45U0",
-    source="Rheem RH400-30 spec sheet (Quick Start Connection Guide, rheem.com document "
-           "436312) and HP-400-SO 07/24: dimensions A-L, top nipples, 59in condensate, 6in top "
-           "clearance. See EQ-T-WATER-HEATER for the 4.5 kW element and 30A/240V circuit.",
+    tag="PROD-RHEEM-PROPH80", brand="Rheem", model="PROPH80 T0 RH120-M",
+    name="ProTerra Plug-in heat-pump water heater with HydroBoost, 80 gal, 120 V",
+    source="Rheem spec sheet RH-PIHP-SC-NO-SO-SS Rev. 1 (04/26) and the plug-in Use & Care "
+           "(shared circuit); ENERGY STAR PD 3555363. See EQ-T-WATER-HEATER for ratings.",
 )
 # "12kPV" is the PV *input*, not the output — the naming trap EQ-T-EG4-12KPV's note exists to
 # defuse. Carried as the model because it is what EG4 prints on the box and what an order

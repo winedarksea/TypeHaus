@@ -454,14 +454,15 @@ class EquipmentKind(Enum):
 class BackupTier(Enum):
     """Which half of the two-tier backup scheme a circuit sits in.
 
-    ALWAYS_ON rides the inverter's load output for the whole event. SHED sits behind a
-    relay or contactor that opens when the battery is low and the sun is not out. The tier
-    is authored, never derived: whether a load is worth carrying through an outage is an
-    owner decision, not a property of the load.
+    ALWAYS_ON rides the inverter's load output for the whole event, and is what battery
+    autonomy is graded on. SURPLUS sits behind a relay or contactor that closes on battery
+    only when PV is strong and the battery near full; it is never counted against autonomy.
+    The tier is authored, never derived: whether a load is worth carrying through an outage
+    is an owner decision, not a property of the load.
     """
 
     ALWAYS_ON = "always_on"
-    SHED = "shed"
+    SURPLUS = "surplus"
 
 
 class DeviceKind(Enum):

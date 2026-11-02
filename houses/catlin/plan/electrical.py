@@ -256,7 +256,9 @@ ESS_EQUIPMENT = [
 # the inside face is west x=0'-8", north y=35'-4", south y=0'-8" —
 # `integrity.wall_mount_on_face` reads exactly this.
 BASEMENT_DEVICES = [
-    # HA server + router (backup). Beside the panel in the furnace room.
+    # HA server + router (backup). Beside the panel in the furnace room. Its spare half is
+    # the OUTAGE CHARGING POINT (2026-11-02): CKT-HA rides the always-on tier, so no new
+    # circuit (notes/backup_power.md §5).
     ElectricalDevice(uid="CEE003AAAA", tag="ED-B-UTIL-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-15", circuit="CKT-HA",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
@@ -323,9 +325,8 @@ BASEMENT_DEVICES = [
 ]
 
 BASEMENT_EQUIPMENT = [
-    # There is one water heater, an 80-gal Rheem ProTerra hybrid HPWH
-    # (plan/mep.py::EQ-T-WATER-HEATER) — its two internal power draws are not modelled as
-    # two appliances.
+    # There is one water heater, an 80-gal Rheem ProTerra Plug-in 120 V HPWH
+    # (plan/mep.py::EQ-T-WATER-HEATER) — one 120 V compressor, no element.
     # The ventilator is a Broan B210E75RT, four 6" round top ports. Everything downstream of
     # it — the manifolds, the four chase risers, the outdoor side, the radials — is in
     # plan/mep_erv_l1.py and its siblings, and `pan_drain_ref` names the condensate line a cold-climate core
@@ -449,7 +450,7 @@ MAIN_DEVICES = [
                          distance_from_start=inch(33.125), normal_gap=inch(-2.46875),
                          rotation_offset=deg(180)))),
     # Freezer beside the fridge (KRF1 at (18'-4 3/8", 31'-4 5/8")) on the centre wall's east
-    # face; fridge + freezer + PoE WiFi share the backup kitchen circuit.
+    # face; fridge + freezer share the backup kitchen circuit (PoE Wi-Fi is on CKT-HA).
     # This box stays behind its own appliance (freezer y 27'-4 9/16"..30'-1 7/16") — the
     # same constraint that decided which end of the bay the retired filler went to. Recessed
     # (Arlington IN BOX): the units stand 1" off the wall, less than a plug (C5-E2).

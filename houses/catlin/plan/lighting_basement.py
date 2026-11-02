@@ -45,9 +45,9 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment, m
 
 # --- Basement -------------------------------------------------------------------------
-# The cans, coves and sconces are on CKT-LT-BACKUP (notes/backup_power.md: basement
-# and kitchen light survive an outage). The work light is not: the mark Q1 T8 strips in the
-# workshop, gym and furnace room are on CKT-LT-BSMT, each on its own switch (NEC 210.7).
+# Only the furnace-room cans and the ESS closet light ride CKT-LT-BACKUP (2026-11-02,
+# notes/backup_power.md §5); everything else here, cans, sconces and the Q1 T8 strips, is on
+# CKT-LT-BSMT, each strip run on its own switch (NEC 210.7).
 # Q1 is surface (`drop` = its 2.5" height) or chain-hung (a larger `drop`).
 BASEMENT_LIGHTING = [
     # RM-B-GYM: ED-B-GYM-LT (plan/mep_electrical.py) is a lampless N3 fan on its own wall
@@ -56,22 +56,22 @@ BASEMENT_LIGHTING = [
     # y=13'-0" and off joist 009 at y=12'-0".
     ElectricalDevice(uid="QTB0001AAA", tag="ED-B-GYM-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(22), ft(6)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-GYM",
+                     circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTB0002AAA", tag="ED-B-GYM-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(32), ft(6)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-GYM",
+                     circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTB0003AAA", tag="ED-B-GYM-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(ft(22), ft(11, 4)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-GYM",
+                     circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTB0004AAA", tag="ED-B-GYM-CAN4", kind=DeviceKind.LIGHT,
                      position=pt(ft(32), ft(11, 4)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-GYM",
+                     circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # Four Q1 strips, two E-W rows of two about the room's centre, 59" and 64" off the fan's
@@ -98,7 +98,7 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW2",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(2.5))),
-    # Their toggle, 6 1/2" west of ED-B-GYM-SW (the cans', CKT-LT-BACKUP) inside D-B-PLAY, in
+    # Their toggle, 6 1/2" west of ED-B-GYM-SW (the cans', also CKT-LT-BSMT) inside D-B-PLAY, in
     # the bay across stud-007 (64").
     ElectricalDevice(uid="1NAESZJ528", tag="ED-B-GYM-SW2", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-BSMT", room="RM-B-GYM",
@@ -176,7 +176,7 @@ BASEMENT_LIGHTING = [
     # overhead is 6'-1 5/8" up at this y, and a 9" fixture at 54" tops out 10 5/8" under it.
     ElectricalDevice(uid="JYMY6WGGP3", tag="ED-B-CLOSET-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SPOT-SW",
-                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
+                     circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-STR3", face="left", distance_from_start=inch(22),
@@ -205,8 +205,8 @@ BASEMENT_LIGHTING = [
     # No `circuit=` on either run: a 24V run carries none, its PSU does.
     #
     # ** THE PSU SIZE IS THE BINDING CONSTRAINT. ** 9'-8 11/16" at 3 W/ft x1.25 is 36.5 W,
-    # 61% of the PSU-60. A PSU sums into the backup tier at its RATING (plan/lighting_types.py),
-    # so a PSU-200 here would flip `cycle_48h.sustains_always_on` (test_backup_calc.py).
+    # 61% of the PSU-60. Off the backup tier since 2026-11-02 (CKT-LT-BSMT), so the old
+    # reason not to oversize it (a PSU sums at its RATING on a backup circuit) is gone.
     #
     # On the workshop face of W-B-SA-N (y=10'-3 13/16"), not in the sauna: x=10'-0" keeps the
     # 8" box clear of W-B-SA-W's corner and the sauna's north service strip; 48" AFF keeps the
@@ -215,7 +215,7 @@ BASEMENT_LIGHTING = [
     # W-B-SA-N's foil-faced polyiso through a gasketed grommet, sealed both faces.
     ElectricalDevice(uid="392P1PBQF7", tag="ED-B-SAUNA-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-LT-PSU-60",
-                     circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP",
+                     circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-SA-N", face="left", distance_from_start=inch(2),
@@ -229,7 +229,7 @@ BASEMENT_LIGHTING = [
     # that mis-pairing is the commonest cause of tape flicker. **
     ElectricalDevice(uid="MDVC5HGQZ8", tag="ED-B-SAUNA-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER-ELV",
-                     circuit="CKT-LT-BACKUP", room="RM-B-GYM",
+                     circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CS", face="left", distance_from_start=inch(54),
@@ -328,21 +328,21 @@ BASEMENT_LIGHTING = [
     # the sectional are in the middle third.
     ElectricalDevice(uid="QTB000BAAA", tag="ED-B-PLAY-N-SCONCE1", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
+                     circuit="CKT-LT-BSMT", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-E2", face="left", distance_from_start=inch(54),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTB000CAAA", tag="ED-B-PLAY-N-SCONCE2", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
+                     circuit="CKT-LT-BSMT", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-E2", face="left", distance_from_start=inch(162),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="7VRS9XJKG7", tag="ED-B-PLAY-N-SCONCE3", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
+                     circuit="CKT-LT-BSMT", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-E2", face="left", distance_from_start=inch(108),
@@ -356,33 +356,33 @@ BASEMENT_LIGHTING = [
     # reads in the room.
     ElectricalDevice(uid="NYEVZE2RN5", tag="ED-B-PLAY-N-SCONCE4", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
+                     circuit="CKT-LT-BSMT", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CN", face="right", distance_from_start=inch(8.625),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="4XZRS7P3VR", tag="ED-B-PLAY-N-SCONCE5", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
+                     circuit="CKT-LT-BSMT", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CN", face="right", distance_from_start=inch(62.625),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="JBZ1PYPYF0", tag="ED-B-PLAY-N-SCONCE6", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
+                     circuit="CKT-LT-BSMT", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CN", face="right", distance_from_start=inch(116.625),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** THE AMBIENT COVE WAS DESIGNED, PRICED AND WITHDRAWN (2026-09-06) FOR THE BATTERY. **
     # Two surface COB channels up the side walls at 7'-4" (2 x 15'-6" at 3 W/ft, 93 W, a
-    # PSU-200) would sum at the driver's rating on CKT-LT-BACKUP and flip
-    # `cycle_48h.sustains_always_on` (test_backup_calc.py). If it is wanted, it goes on
-    # CKT-LT-BSMT (non-backup, since 2026-10-31) with its own switch.
+    # PSU-200) would have summed at its rating on CKT-LT-BACKUP. The room is on CKT-LT-BSMT
+    # since 2026-11-02, so that objection is gone; a revival takes its own switch.
+    #
     ElectricalDevice(uid="QTB000FAAA", tag="ED-B-PLAY-N-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LUT-DIVA",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N",
+                     circuit="CKT-LT-BSMT", room="RM-B-PLAY-N",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CN2", face="right", distance_from_start=inch(24),
@@ -413,7 +413,7 @@ BASEMENT_LIGHTING = [
     # light's supply does not belong behind the stored goods.
     ElectricalDevice(uid="QTB000GAAA", tag="ED-B-STAIR-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(15, 6), ft(33)), type_ref="ED-T-LT-PSU-60",
-                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
+                     circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.CEILING)),
     # The 3-way at the stair foot. It hung on W-B-STR3's east face at (10'-4 3/8", 26'-6")
     # until 2026-09-05, which the under-stair closet then enclosed — so it moved across the
@@ -425,7 +425,7 @@ BASEMENT_LIGHTING = [
     # thing your hand finds at the stair foot.
     ElectricalDevice(uid="QTB000HAAA", tag="ED-B-STAIR-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER",
-                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
+                     circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-WELL", face="right", distance_from_start=inch(4),
@@ -438,7 +438,7 @@ BASEMENT_LIGHTING = [
     # 2026-09-07 the slot runs to the sauna wall and this is the first of four cans on it.
     ElectricalDevice(uid="QTB000JAAA", tag="ED-B-STAIR-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(inch(190), ft(23, 6)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
+                     circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # ** THREE MORE CANS DOWN THE EXTENDED HALL (2026-09-07). ** The hall is 15'-6" of
@@ -447,7 +447,7 @@ BASEMENT_LIGHTING = [
     # lands at 170.0725" and W-B-CN2's west face at 210", so the centre did not move when
     # the slot grew. (South of y=13'-10" the east side is W-B-CS3's face at 212.615" and the
     # true centre is 191 5/16"; holding 190" keeps the ladder straight, which is worth more
-    # than 1 5/16" on a 3" aperture.) On CKT-LT-BACKUP the three cost 19.5 VA (6.5 W PAR20).
+    # than 1 5/16" on a 3" aperture.) The three are 19.5 VA (6.5 W PAR20), on CKT-LT-BSMT.
     #
     # ** THE MIDDLE ONE IS AT 15'-0", NOT THE 15'-6" A 4'-0" LADDER WANTS. ** PR-B-HW-SAUNA
     # crosses the hall east-west at y=15'-6", 2 9/16" below the finished ceiling, and a
@@ -458,28 +458,28 @@ BASEMENT_LIGHTING = [
     # for the 6" housing.
     ElectricalDevice(uid="J2YZPDZ9MP", tag="ED-B-STAIR-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(inch(190), ft(19, 6)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
+                     circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="780QDKJASC", tag="ED-B-STAIR-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(inch(190), ft(15)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
+                     circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="K96T60Y9RX", tag="ED-B-STAIR-CAN4", kind=DeviceKind.LIGHT,
                      position=pt(inch(190), ft(11, 6)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
+                     circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
-    # RM-B-BATH (2026-07-30; rotated 2026-09-05). On CKT-LT-BACKUP, deliberately, so this
-    # room and the stair foot stay lit together on backup power. The can is the vanity light,
+    # RM-B-BATH (2026-07-30; rotated 2026-09-05). On CKT-LT-BSMT with the stair foot since
+    # 2026-11-02 (off backup: notes/backup_power.md §5). The can is the vanity light,
     # on the room's centre line 17 1/2" off the mirror wall: the only joist bay in the 18-24"
     # band (the doubled joists at 20'-0"/21'-4" hold the rest); switch on the latch-jamb side
     # (door swings out, so it isn't behind the leaf).
     ElectricalDevice(uid="QTB000KAAA", tag="ED-B-BATH-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(12), ft(19, 7.75)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-BATH",
+                     circuit="CKT-LT-BSMT", room="RM-B-BATH",
                      controlled_by=("ED-B-BATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # x follows W-B-BA-E: the wall slid 1 5/16" west on 2026-09-05 and the switch went with
@@ -488,7 +488,7 @@ BASEMENT_LIGHTING = [
     # and no `haus check` rule does.
     ElectricalDevice(uid="QTB000LAAA", tag="ED-B-BATH-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
-                     circuit="CKT-LT-BACKUP", room="RM-B-BATH",
+                     circuit="CKT-LT-BSMT", room="RM-B-BATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-BA-E", face="right", distance_from_start=inch(16),

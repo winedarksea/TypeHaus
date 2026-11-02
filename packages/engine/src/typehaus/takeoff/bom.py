@@ -247,7 +247,7 @@ def bill_of_materials(
         # which the UI reads, exactly as it was.
         "solar_modules": solar["by_product"],
         # The backup microgrid (→ takeoff/electrical.py + takeoff/backup_calc.py): the
-        # placed ESS hardware and shed-tier switching gear, plus the runtime estimate that
+        # placed ESS hardware and surplus-tier switching gear, plus the runtime estimate that
         # says whether the system as sized actually carries the house.
         "backup_power": {
             "components": backup_component_rows(model),

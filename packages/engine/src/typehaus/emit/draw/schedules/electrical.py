@@ -41,7 +41,7 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
         section(fig, 0.04, 0.90, "PANEL SCHEDULE")
         # The backup column names the tier, not just the fact: a reader has to be able to tell
         # the circuits that ride through an outage from the ones a relay drops.
-        _TIER_LABEL = {"always_on": "BKUP-ON", "shed": "BKUP-SHED"}
+        _TIER_LABEL = {"always_on": "BKUP-ON", "surplus": "BKUP-SURP"}
         schedule_rows = [
             (row["circuit"], row["description"], f"{row['breaker_amps']}A/{row['poles']}p",
              f"{row['volts']}V", row["nema"] or "—", row["panel"],
@@ -112,9 +112,12 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
                 ("Inverter idle / efficiency",
                  (f"{idle:g} W" if idle is not None else "not declared") + " / "
                  + (f"{efficiency:.0%}" if efficiency is not None else "not declared")),
-                ("Autonomy, always-on / both",
-                 f"{_hours_label(autonomy['hours_always_on_only'])} / "
-                 f"{_hours_label(autonomy['hours_all_tiers'])}"),
+                ("Autonomy, always-on (no sun)",
+                 _hours_label(autonomy["hours_always_on_only"])),
+                ("Surplus tier, strong day (summer / Dec)",
+                 f"{summer['surplus_kwh']:g} / {winter['surplus_kwh']:g} kWh = "
+                 f"{_hours_label(summer['surplus_hours'])} / "
+                 f"{_hours_label(winter['surplus_hours'])}"),
                 (f"48h always-on, {summer['array_kw']:g} kW (summer / Dec)",
                  f"{summer['net_kwh_always_on']:+g} / {winter['net_kwh_always_on']:+g} kWh"),
                 (f"Dark day + {bridge['longest_night_h']:.1f} h night",

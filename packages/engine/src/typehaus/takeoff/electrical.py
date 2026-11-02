@@ -479,19 +479,19 @@ def backup_equipment(model: ResolvedModel) -> dict[str, list]:
 
 def backup_component_rows(model: ResolvedModel) -> list[dict[str, object]]:
     """The backup microgrid's bill of components: the placed inverter and battery
-    modules, the backup subpanel they feed, and the DIN gear that sheds the SHED tier.
+    modules, the backup subpanel they feed, and the DIN gear that switches the SURPLUS tier.
 
     Derived twice over — the storage/inverter rows from placed ``Equipment`` (so a second
     battery module is a placement, not an edit here), the switching rows from the
-    ``SHED``-tier circuits (so re-tiering a circuit re-counts the relays). The ALWAYS_ON
+    ``SURPLUS``-tier circuits (so re-tiering a circuit re-counts the relays). The ALWAYS_ON
     tier deliberately contributes no switching hardware: that is what the tier *means*.
     Empty when nothing is placed and nothing is tiered.
     """
     circuits = model.plan.library.circuits
-    shed = [c for c in circuits if c.backup_tier is BackupTier.SHED]
+    surplus = [c for c in circuits if c.backup_tier is BackupTier.SURPLUS]
     always_on = [c for c in circuits if c.backup_tier is BackupTier.ALWAYS_ON]
     placed = backup_equipment(model)
-    if not (shed or always_on or placed["batteries"] or placed["inverters"]):
+    if not (surplus or always_on or placed["batteries"] or placed["inverters"]):
         return []
 
     types = {t.tag: t for t in model.plan.library.equipment_types}
@@ -519,7 +519,7 @@ def backup_component_rows(model: ResolvedModel) -> list[dict[str, object]]:
 
     # The backup subpanel: whichever panel the tiered circuits are homed to, when that is
     # not the same panel the rest of the house is on.
-    backup_panels = sorted({c.panel_ref for c in (*always_on, *shed)})
+    backup_panels = sorted({c.panel_ref for c in (*always_on, *surplus)})
     main_panels = sorted({c.panel_ref for c in circuits if c.backup_tier is None})
     for panel_ref in backup_panels:
         if panel_ref in main_panels:
@@ -528,20 +528,20 @@ def backup_component_rows(model: ResolvedModel) -> list[dict[str, object]]:
                          "spaces", None)
         rows.append({
             "component": f"backup subpanel {panel_ref}", "count": 1,
-            "basis": (f"{len(always_on) + len(shed)} backup circuits"
+            "basis": (f"{len(always_on) + len(surplus)} backup circuits"
                       + (f", {spaces}-space enclosure" if spaces else "")),
         })
 
-    if shed:
-        relay_circuits = [c for c in shed
+    if surplus:
+        relay_circuits = [c for c in surplus
                           if c.breaker_amps <= RELAY_CHANNEL_AMPS and c.poles == 1]
-        contactor_circuits = [c for c in shed
+        contactor_circuits = [c for c in surplus
                               if c.breaker_amps > RELAY_CHANNEL_AMPS or c.poles == 2]
         if relay_circuits:
             rows.append({
                 "component": "Shelly Pro 4PM 4-channel DIN relay",
                 "count": math.ceil(len(relay_circuits) / BACKUP_CIRCUITS_PER_RELAY),
-                "basis": (f"{len(relay_circuits)} shed-tier circuit"
+                "basis": (f"{len(relay_circuits)} surplus-tier circuit"
                           f"{'s' if len(relay_circuits) != 1 else ''} "
                           f"({', '.join(c.tag for c in relay_circuits)}) at "
                           f"{BACKUP_CIRCUITS_PER_RELAY} channels per relay"),
@@ -550,16 +550,16 @@ def backup_component_rows(model: ResolvedModel) -> list[dict[str, object]]:
             rows.append({
                 "component": "DIN contactor (relay-driven)",
                 "count": len(contactor_circuits),
-                "basis": (f"shed-tier circuits over the {RELAY_CHANNEL_AMPS}A relay "
+                "basis": (f"surplus-tier circuits over the {RELAY_CHANNEL_AMPS}A relay "
                           f"channel or 2-pole "
                           f"({', '.join(c.tag for c in contactor_circuits)})"),
             })
-        # One relay channel drives however many contactors there are; a shed tier made
+        # One relay channel drives however many contactors there are; a surplus tier made
         # entirely of contactor circuits still needs the relay that commands them.
         if contactor_circuits and not relay_circuits:
             rows.append({
                 "component": "Shelly Pro 4PM 4-channel DIN relay", "count": 1,
-                "basis": "one relay to drive the shed-tier contactor coils",
+                "basis": "one relay to drive the surplus-tier contactor coils",
             })
 
     rsd = sum(1 for panel in model.solar_panels if panel.rsd)

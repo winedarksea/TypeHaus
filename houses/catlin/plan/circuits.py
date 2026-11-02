@@ -8,9 +8,9 @@ Conventions:
 - ``poles=2`` is a 240V circuit; ``poles=1`` is 120V.
 - ``gfci=True`` is protection at the *breaker* (plans/TODO.md: GFCI at breaker, not outlet).
 - ``backup_tier`` places a circuit on the backup microgrid (notes/backup_power.md).
-  ALWAYS_ON rides the EG4's load output through the whole outage; SHED sits behind a
-  Shelly Pro 4PM relay or a relay-driven contactor in ED-B-BACKUP-ENCL and drops when the
-  battery is low and the sun is not out. Every tiered circuit is homed to
+  ALWAYS_ON rides the EG4's load output through the whole outage; SURPLUS sits behind a
+  Shelly Pro 4PM relay or a relay-driven contactor in ED-B-BACKUP-ENCL and runs on battery
+  only on solar surplus. Every tiered circuit is homed to
   ``ED-B-BACKUP-PANEL``, the 12-space subpanel on the inverter's dedicated load output —
   which is what makes the tier physical rather than a label.
 - ``duty_cycle`` is the authored average-draw fraction the autonomy calc multiplies the
@@ -29,8 +29,8 @@ Conventions:
   (plan/mep_electrical.py). Slots 1/5/9/13/17 of ED-B-PANEL-2 carry CKT-SPA, CKT-SAUNA,
   CKT-EV-1450, CKT-GAR-240 and CKT-WORKSHOP-240, respectively. The first four moved off
   ED-B-PANEL on 2026-09-12 — their old slots
-  9, 13, 17 and 21 there are spares now. ED-B-BACKUP-PANEL carries 2 two-pole + 4 one-pole
-  = 8 of its 12. Counts per panel come from `electrical.panel_spaces`, not from here.
+  9, 13, 17 and 21 there are spares now. ED-B-BACKUP-PANEL carries 1 two-pole + 5 one-pole
+  = 7 of its 12. Counts per panel come from `electrical.panel_spaces`, not from here.
   ``electrical.panel_spaces`` reconciles both against
   ``test_catlin_panel_spaces_fits_the_54_space_enclosure``. Count from the loaded plan,
   not by hand — a hand count has been wrong here before.
@@ -109,8 +109,8 @@ CIRCUITS = (
     # heater are on separate circuits.
     Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", slot=5, panel_ref=_PANEL_2, breaker_amps=60, poles=2,
             gfci=False, load_va=10500, description="Sauna heater (EQ-B-SAUNA-HTR), 10.5 kW"),
-    # CKT-WH-240 moved to the backup subpanel — see the SHED tier below. Slot 25 is a
-    # spare on the main panel now.
+    # CKT-WH (was CKT-WH-240) is on the backup subpanel — see the SURPLUS tier below. Slot 25
+    # is a spare on the main panel now.
     Circuit(uid="CKT008AAAA", tag="CKT-ERV", slot=2, panel_ref=_PANEL, breaker_amps=15, poles=2,
             load_va=200, description="ERV"),
     # The three Gree heat-pump systems (plan/electrical.py). A multi's indoor heads are fed
@@ -297,105 +297,92 @@ CIRCUITS = (
     # --- the backup microgrid (notes/backup_power.md) ---------------------------------
     # Every circuit below is homed to ED-B-BACKUP-PANEL, the 12-space subpanel on the
     # EG4 12kPV's dedicated load output. Two tiers: ALWAYS_ON rides the whole outage
-    # (food, network, light for two rooms, the sump); SHED drops via relay (or a
-    # relay-driven contactor for 2-pole/over-16A loads) when the battery is low and the
-    # sun isn't out.
+    # (food, network, two basement cans + the kitchen tape, the alarms, the sump); SURPLUS
+    # runs on battery only on solar surplus, through a relay (or a relay-driven contactor for
+    # 2-pole/over-16A loads) that Home Assistant commands (notes/backup_power.md §5).
     #
-    # ``duty_cycle`` on each is an ESTIMATE (basis stated per circuit, authored
-    # 2026-08-02) for the autonomy calc — the least certain numbers here and the ones the
-    # 48-hour verdict is most sensitive to; revise against real metering, not vibes.
+    # ``duty_cycle`` on each is an ESTIMATE with its basis stated per circuit — the numbers
+    # the bridge verdict is most sensitive to; revise against real metering.
     #
-    # CKT-BACKUP-FEED (retired same change): its DIN gear is now downstream of the
-    # inverter's load output like everything else on this bus, so a circuit feeding the
-    # backup enclosure from the *grid* side was backwards.
+    # CKT-BACKUP-FEED (retired): its DIN gear is downstream of the inverter's load output like
+    # everything else on this bus, so a circuit feeding it from the grid side was backwards.
 
     # -- ALWAYS_ON --
     # 800 VA is the *circuit allowance*, not the draw — the gap is why duty_cycle exists.
     # The fridge averages ~60W and the upright freezer column beside it ~45W: 105W of 800VA
     # = 0.13, still the largest always-on term and the one most worth metering.
-    #
-    # The ~15W PoE allowance this circuit used to carry moved to CKT-HA on 2026-08-02: the
-    # access points are fed by the switch in ED-B-NET-PATCH, not a kitchen receptacle.
     Circuit(uid="CKT016AAAA", tag="CKT-FRIDGE", slot=2, panel_ref=_BACKUP_PANEL,
             breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
             load_va=800, duty_cycle=0.13,
             description="Kitchen outlet 1: fridge + freezer"),
-    # 300 VA is again an outlet allowance; the real load is a router (~12W), an always-on
-    # HA server (~28W), and a PoE switch feeding 3 APs, the doorbell and 2 cameras (82 W on
-    # E-603, ~93 W at the outlet through an 88% supply) — ~133W of 300VA = 0.44 (0.30 before
-    # the cameras). Not a duty cycle in the compressor sense (this load never cycles off,
-    # the allowance is just generous). Per-device PoE draw is scheduled on E-603
+    # 300 VA is an outlet allowance; the real load is a router (~12W), an always-on HA server
+    # (~28W), and a PoE switch feeding 3 APs, the doorbell and 2 cameras (E-603, through an
+    # 88% supply) — ~133W of 300VA = 0.44. Per-device PoE draw is scheduled on E-603
     # (→ takeoff/data.py) since a PoE device names no circuit of its own.
-    # On battery HA turns off the doorbell's and cameras' ports (owner, 2026-10-30;
-    # notes/smart_home.md): backup_shed_poe takes their 36.95 W / 0.88 = 42 W off the backup
-    # average, which is the camera-free 90 W the 48 h cycle was sized against.
+    # On battery HA turns off the doorbell's, the cameras' (owner, 2026-10-30) and two of the
+    # three APs' ports (2026-11-02): backup_shed_poe subtracts their E-603 watts / 0.88.
+    # ED-M-KITCH-AP, the central main-floor AP, stays live. ED-B-UTIL-RC1's spare half on
+    # this circuit is the outage charging point (plan/electrical.py).
     Circuit(uid="CKT017AAAA", tag="CKT-HA", slot=4, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, gfci=True,
             load_va=300, duty_cycle=0.44,
-            backup_shed_poe=("ED-M-DOORBELL", "ED-M-CAM-PORCH", "ED-BW-CAM-CANOPY"),
-            description="Basement outlet 1: HA server + router + PoE switch"),
-    # load_va is None: the luminaires carry real typed loads and the panel-schedule takeoff
-    # sums the fixtures actually on the circuit (579 VA after the 2026-10-31 review,
-    # notes/backup_power.md). 0.15
-    # is about five hours of the twenty-four with roughly two thirds of those fixtures lit —
-    # an outage evening in the kitchen and the mechanical room while the rest of the house
-    # stays dark.
-    #
-    # The kitchen's under-cabinet light is IKEA MITTLED (~7.8 ft x 2.8 W/ft, ~22 W) on
-    # ED-M-KITCH-LT-PSU, a TRADFRI 30 W driver that sums here at its 30 VA rating: a PSU's
-    # load_va is the supply's rating (plan/lighting_types.py). That errs heavy, as a backup
-    # calculation should.
+            backup_shed_poe=("ED-M-DOORBELL", "ED-M-CAM-PORCH", "ED-BW-CAM-CANOPY",
+                             "ED-M-PORCH-AP", "ED-A-STUDIO-AP"),
+            description="Basement outlet 1: HA server + router + PoE switch; outage charging"),
+    # Since 2026-11-02 only the furnace-room cans (by the panels, the ESS closet and the sump),
+    # the ESS closet light, the kitchen under-cabinet tape and every alarm; the rest went to
+    # CKT-LT-BSMT / CKT-LT-MAIN. The alarms stay on one unswitched branch (Kidde interconnect,
+    # R314.4) that rides the outage (the ESS closet's two). load_va is None: the takeoff sums
+    # the devices (65 VA, the alarms at 0). duty_cycle 0.49 is a blend, ~32 W of 65 VA:
+    # - lights: cans 13 W + the tape's 30 VA TRADFRI (its rating, errs heavy) for ~5 h of 24
+    #   = 9.0 W; the closet light ~0.2 W;
+    # - the two interconnect relays at their 13.2 VA rating, always energised;
+    # - 13 alarms' standby, ~0.75 W each = 9.8 W. AN ESTIMATE: Kidde publishes only a 120 V /
+    #   80 mA maximum. Meter it.
     Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=6, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
-            duty_cycle=0.15,
-            description="Basement + kitchen lighting (LED, backup light)"),
+            duty_cycle=0.49,
+            description="Furnace-room + kitchen task light + interconnected alarms"),
 
-    # The sump rides ALWAYS_ON since 2026-10-30: the long stormy night is exactly when a
-    # SHED relay drops it (battery low, no sun) and exactly when it must run. 1000 VA x 0.05
-    # is a pump running a minute or two an hour in wet weather. Its across-the-line start
-    # (~6 kVA at 6x) is not what backup_calc's 3x surge test grades (that is HP3, the
-    # largest circuit); it is far inside the 16 kW surge either way. GFCI at the DEVICE (2026-10-27): ED-B-SUMP-RC is an
-    # audible-alarm GFCI, so a trip is heard (NEC 2023 210.8(A)(5)); the breaker is not GFCI.
+    # The sumps ride ALWAYS_ON since 2026-10-30: the long stormy night is exactly when they
+    # must run. TWO pumps on this circuit, SM-B-RADON's and SM-B-SOUTH's, each a Zoeller M53
+    # (plan/mep_drainage.py): 9.7 A running, so load_va = 2 x 9.7 x 120 = 2,328 with both on;
+    # x0.025 is each running a minute or two an hour in wet weather (58 W).
+    # start_va 4,664 = one start at the M98 (1/2 hp)'s published 29.2 A (3,500 VA, so an
+    # upsize stays covered; the M53's own is 25.9 A) with the other pump running (1,164).
+    # Published starts run ~3x running, not 6x.
+    # GFCI at the DEVICE (2026-10-27): ED-B-SUMP-RC is an audible-alarm GFCI, so a trip is
+    # heard (NEC 2023 210.8(A)(5)); the breaker is not GFCI.
     Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=7, panel_ref=_BACKUP_PANEL,
             breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON,
-            load_va=1000, duty_cycle=0.05, description="Sump pump"),
+            load_va=2328, start_va=4664, duty_cycle=0.025,
+            description="Sump pumps (SM-B-RADON, SM-B-SOUTH)"),
 
-    # -- SHED --
-    # HP3 is the house's fallback heat on battery: one 9K head blowing into the open stair,
-    # which carries it up through the house. 2-pole, so it switches through a relay-driven
-    # contactor rather than a Pro 4PM channel (takeoff/electrical.py::RELAY_CHANNEL_AMPS).
-    # 0.4: a modulating head holding the stair in shoulder weather runs most of the time at
-    # a fraction of nameplate; this is the term that decides whether the shed tier is
-    # affordable at all.
+    # -- SURPLUS --
+    # Never counted against battery autonomy; on battery it runs only on PV surplus with the
+    # battery near full (notes/backup_power.md §5). duty_cycle feeds only the surplus-hours
+    # figure.
+    # HP3: one 9K head blowing into the open stair. load_va 1,850 is NEEP 393164's maximum
+    # input (17 F). At that maximum a cold morning is ~38 kWh/day if it were the only heat,
+    # which no battery carries; on battery it is surplus heat only. 0.4: a modulating head
+    # holding the stair runs most of the time at a fraction of maximum. start_va = load_va:
+    # an inverter compressor has no inrush. 2-pole, so a relay-driven contactor switches it
+    # (takeoff/electrical.py::RELAY_CHANNEL_AMPS); HA's own command to the unit goes first.
     Circuit(uid="CKT010AAAA", tag="CKT-HP3", slot=1, panel_ref=_BACKUP_PANEL,
-            breaker_amps=15, poles=2, backup_tier=BackupTier.SHED, load_va=1500,
-            duty_cycle=0.4,
-            description="Heat pump 3 outdoor, Sapphire R32 VFD (EQ-M-HP3-OD; shed tier)"),
-    # ONE circuit for the whole 80-gal ProTerra (EQ-B-WH), moved here from the main panel
-    # 2026-08-15 — replacing the old two-tank split, which modelled one product's single
-    # power whip as two appliances on two panels. `load_va=4500` is the nameplate (what
-    # the breaker/schedule/220.82 estimate size against, since a resistance-element call
-    # can happen at any time). ** THE ESPHome/EcoNet Heat-Pump-Only AUTOMATION IS A BACKUP
-    # RESERVE MEASURE, NOT A LOAD-MANAGEMENT CREDIT. ** It belongs with `backup_tier=SHED`:
-    # on battery it holds the tank at the compressor's ~500 W instead of 4,500 W, which is
-    # what governs the backup-event draw (see EQ-T-WATER-HEATER's note in plan/mep_hvac.py).
-    # It buys nothing in the 220.82 calculation and never did — an unlisted software
-    # governor is not a PCS (2026 NEC 130.2). `duty_cycle=0.15`: a HPWH makes a household
-    # day of hot water in 3-4 hours of compressor run. In a WINTER outage the tank goes to
-    # off/vacation instead: 80 gal of stored water rides a day or two, and its compressor
-    # would be cooling a basement the battery cannot heat.
-    # Slot 9 (not 5): a 2-pole breaker occupies slot and slot+2 in the same column
-    # (electrical.panel_spaces); 5+7 collides with CKT-SUMP at slot 7, 9+11 is clear.
-    # `backup_va=500`: the compressor's steady-state ceiling in Heat-Pump-Only mode
-    # (datasheet figure). It is what the ESPHome/EcoNet automation holds the tank to while
-    # the house is on battery, and the number the inverter is sized against — the SHED
-    # tier's peak is over 8 kW without it. Authored on the circuit, not as a
-    # `LoadManagement`: it is a backup reserve, not a 220.82 credit.
-    Circuit(uid="CKT007AAAA", tag="CKT-WH-240", slot=9, panel_ref=_BACKUP_PANEL,
-            breaker_amps=30, poles=2, backup_tier=BackupTier.SHED, load_va=4500,
-            backup_va=500, duty_cycle=0.15,
-            description="Water heater, Rheem ProTerra 80gal hybrid HPWH (EQ-B-WH; "
-                        "EcoNet-automated to Heat-Pump-Only on backup)"),
+            breaker_amps=15, poles=2, backup_tier=BackupTier.SURPLUS, load_va=1850,
+            start_va=1850, duty_cycle=0.4,
+            description="Heat pump 3 outdoor, Sapphire R32 VFD (EQ-M-HP3-OD; surplus tier)"),
+    # The element-free 120 V plug-in HPWH (EQ-B-WH, Rheem PROPH80 T0 RH120-M, owner
+    # 2026-10-31). Retagged from CKT-WH-240 (uid kept). load_va 1,440 = ENERGY STAR's 12.0 A
+    # maximum x 120 V; 15 A is Rheem's minimum breaker. A Shelly Pro 4PM channel switches it.
+    # duty 0.05: the 395 W average compressor draw for ~4.5 h a day (12 GPH recovery) =
+    # 74 W. DEDICATED, not the unit's shared-circuit feature: on the backup panel there is
+    # no second load to share with. Slot 9, 1-pole; 11 is spare.
+    Circuit(uid="CKT007AAAA", tag="CKT-WH", slot=9, panel_ref=_BACKUP_PANEL,
+            breaker_amps=15, poles=1, backup_tier=BackupTier.SURPLUS, load_va=1440,
+            duty_cycle=0.05,
+            description="Water heater, Rheem ProTerra Plug-in 80 gal HPWH, 120 V, no element "
+                        "(EQ-B-WH; surplus tier)"),
 
     # --- general-use 120V ------------------------------------------------------------
     # ``afci=True`` on every circuit below (2026-08-01, code.E3902_16_afci): each reaches
@@ -431,9 +418,11 @@ CIRCUITS = (
     # would freeze them against a number nobody re-adds when a can moves.
     # ** 20 A SINCE 2026-10-28 (12 AWG). ** The garage's lights left for CKT-LT-GARAGE on
     # 2026-10-31; only the opener's outlet (ED-G-GDO-GFCI / ED-G-GDO-RC) is still out there.
+    # The kitchen cans, the pantry PSU and the stair-head can joined from CKT-LT-BACKUP on
+    # 2026-11-02: ~1,283 VA of 1,920 continuous.
     Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", slot=38, panel_ref=_PANEL, breaker_amps=20, poles=1,
             afci=True,
-            description="General lighting — main storey and porch, + the garage opener outlet"),
+            description="General lighting — main storey incl. kitchen, porch, + the garage opener outlet"),
     # The garage's lighting (2026-10-31): five shop lights, the door-pair sconces and the six
     # Class 2 drivers for the RGBW eave and gable tape (ED-T-LT-PSU-96-WE, summed at their
     # 96 VA rating). Its own breaker rather than CKT-RC-GARAGE so a tool tripping a garage GFCI
@@ -442,11 +431,12 @@ CIRCUITS = (
             poles=1, description="Garage lighting — shop lights, door sconces, eave + gable linear drivers"),
     Circuit(uid="CKT025AAAA", tag="CKT-LT-UPPER", slot=43, panel_ref=_PANEL, breaker_amps=15, poles=1,
             afci=True, description="General lighting — second + attic"),
-    # The basement's work light (2026-10-31): the workshop, gym and furnace-room T8 strips
-    # plus the gym fan. Off the backup tier on purpose: a strip is not outage light, and the
-    # cans beside them stay on CKT-LT-BACKUP. Slot 26 was spare.
+    # The basement's lighting off the backup tier: the T8 strips and gym fan (2026-10-31), then
+    # (2026-11-02) the gym, stair, bath and Play-N cans, sconces and PSUs, the sauna PSU and the
+    # under-stair closet light. ~796 VA of 1,440 continuous. Only the furnace-room cans and the
+    # ESS closet light stay on CKT-LT-BACKUP. Slot 26 was spare.
     Circuit(uid="J3RFM1RVCW", tag="CKT-LT-BSMT", slot=26, panel_ref=_PANEL, breaker_amps=15,
-            poles=1, afci=True, description="Basement work lighting — workshop, gym, furnace room (T8 strips), gym fan"),
+            poles=1, afci=True, description="Basement lighting (all but the furnace room), gym fan"),
     # The two storey receptacle circuits stay non-GFCI at the breaker on purpose: each
     # reaches a whole floor, and thirty outlets behind one 5 mA trip is not buildable.
     # The handful in an E3902 location (bath, mudroom sink, wet bar) are GFCI *devices*
@@ -573,8 +563,8 @@ CIRCUITS = (
 # no service constraint left to satisfy it buys nothing.)
 #
 # The answer was the service, not a $2-3k listed PCS: a Class 320 HDLB meter-main with two
-# 200 A mains. ** 265.8 A of unmanaged 220.82 demand against 320 A **, no software in the
-# calculation at all (267.4 A before the 2026-09-22 range/kettle nameplate fix). The route
+# 200 A mains. ** 272.2 A of unmanaged 220.82 demand against 320 A ** (2026-11-02, after the
+# 120 V HPWH and the two-pump sump circuit), no software in the calculation at all. The route
 # back to 200 A is measured in plans/cost-options.md. See DESIGN-LOG.md "Electrical service"
 # for the derivation, the three options priced, and why there is no 225 A service.
 #

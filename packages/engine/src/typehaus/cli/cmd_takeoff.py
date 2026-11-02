@@ -373,7 +373,9 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
                       + f" at {autonomy['battery_w_always_on']:g} W battery-side"
                       + f" · 48h always-on net {cycle['net_kwh_always_on']:+g} summer / "
                         f"{winter['net_kwh_always_on']:+g} Dec kWh"
-                      + f" · dark-day bridge needs {bridge['required_kwh']:g} kWh")
+                      + f" · dark-day bridge needs {bridge['required_kwh']:g} kWh"
+                      + f" · surplus tier {cycle['surplus_kwh']:g} summer / "
+                        f"{winter['surplus_kwh']:g} Dec kWh")
         console.print(f"        [dim]{runtime['verdict']}[/dim]")
     if payload["luminaire_schedule"]:
         console.print("[bold]Luminaire schedule[/bold]  (mark · qty: description)")

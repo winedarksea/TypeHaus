@@ -173,8 +173,8 @@ LIVING_LIGHTING = [
                          wall_ref="W-M-C2", face="right", distance_from_start=inch(36),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
-    # The kitchen end of the same room, on the backup circuit with the basement
-    # (notes/backup_power.md).
+    # The kitchen end of the same room. The cans left the backup tier on 2026-11-02 for
+    # CKT-LT-MAIN; only the under-cabinet tape below rides it (notes/backup_power.md §5).
     #
     # Two rows (2026-10-31), each in a FS-S-EAST mid-bay and on one x pitch of 3'-0" off the
     # sink centre: CAN1-CAN3 at y=34'-0", between the uppers' face (34'-2 1/2") and the
@@ -187,44 +187,44 @@ LIVING_LIGHTING = [
     # perimeter on ED-M-KITCH-SW, peninsula on ED-M-KITCH-SW-PEN.
     ElectricalDevice(uid="7WE319EHB5", tag="ED-M-KITCH-CAN5", kind=DeviceKind.LIGHT,
                      position=pt(ft(23, 4), ft(27, 4)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="Z256WYTAN6", tag="ED-M-KITCH-CAN6", kind=DeviceKind.LIGHT,
                      position=pt(ft(26, 4), ft(27, 4)), type_ref="ED-T-LT-CAN4-TASK",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW-PEN",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="T5YZRQ2P6K", tag="ED-M-KITCH-CAN7", kind=DeviceKind.LIGHT,
                      position=pt(ft(29, 4), ft(27, 4)), type_ref="ED-T-LT-CAN4-TASK",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW-PEN",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QXW0T5DB2J", tag="ED-M-KITCH-CAN8", kind=DeviceKind.LIGHT,
                      position=pt(ft(32, 4), ft(27, 4)), type_ref="ED-T-LT-CAN4-TASK",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW-PEN",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0009AAA", tag="ED-M-KITCH-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(26, 4), ft(34)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000AAAA", tag="ED-M-KITCH-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(29, 4), ft(34)), type_ref="ED-T-LT-CAN4-TASK",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000BAAA", tag="ED-M-KITCH-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(ft(32, 4), ft(34)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # CAN4 is over the peninsula carousel's landing in front of the microwave, between the
     # upper's face and the east counter edge.
     ElectricalDevice(uid="QTM000CAAA", tag="ED-M-KITCH-CAN4", kind=DeviceKind.LIGHT,
                      position=pt(ft(33, 10), ft(28, 8)), type_ref="ED-T-LT-CAN4-TASK",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW-PEN",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # The range front, 1 1/4" inside APPL-M-RANGE's face (32'-11 3/4"), 8 3/4" ahead of the
@@ -232,13 +232,13 @@ LIVING_LIGHTING = [
     # planned 32'-10": PR-M-KITCH-VENT runs north-south in the bay at x=32'-7".
     ElectricalDevice(uid="HP0FGG8J2G", tag="ED-M-KITCH-CAN9", kind=DeviceKind.LIGHT,
                      position=pt(ft(33, 1), ft(31, 4)), type_ref="ED-T-LT-CAN4-TASK",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # The pantry aisle, 17" off the PANTRY-S1/S2 fronts (33'-5 1/2"), north of the stools.
     ElectricalDevice(uid="KPZAFJ3357", tag="ED-M-KITCH-CAN10", kind=DeviceKind.LIGHT,
                      position=pt(ft(32), ft(23, 4)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # ** MOVED OFF W-M-C5 (2026-09-06): THE KITCHEN'S MAIN SWITCH WAS BEHIND A CABINET. **
@@ -260,21 +260,21 @@ LIVING_LIGHTING = [
     # A ZEN32 on the house's Z-Wave stick; its relay is unwired (every load has its own D215S).
     ElectricalDevice(uid="65D56B3E59", tag="ED-M-LIVING-KEYPAD", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-ZOOZ-ZEN32",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C3", face="right", distance_from_start=inch(45.6875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTM000DAAA", tag="ED-M-KITCH-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C3", face="right", distance_from_start=inch(48),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="9DC7AGX2V8", tag="ED-M-KITCH-SW-PEN", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C3", face="right", distance_from_start=inch(50.3125),

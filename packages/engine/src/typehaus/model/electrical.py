@@ -42,7 +42,7 @@ class Circuit(Element):
     # nowhere else. False means "not stated": the check reports a circuit that needs AFCI
     # and does not declare it, rather than assuming either answer.
     afci: bool = False
-    # None means "not on the backup microgrid" — the common case. ALWAYS_ON / SHED is the
+    # None means "not on the backup microgrid" — the common case. ALWAYS_ON / SURPLUS is the
     # authored two-tier scheme; nothing infers a tier from the load.
     backup_tier: BackupTier | None = None
     # A power-source interconnection (PV/ESS grid port, a future V2H port), not a load.
@@ -66,6 +66,10 @@ class Circuit(Element):
     # unshed average, and the backup calc subtracts these devices' scheduled ``poe_watts``
     # (grossed up for the switch supply's loss). Authored, never inferred, like the tier.
     backup_shed_poe: tuple[str, ...] = ()
+    # Starting draw from a published starting (locked-rotor) current, for the backup surge
+    # test. None means the calc assumes 3x ``load_va``; an inverter compressor's start is its
+    # running maximum.
+    start_va: float | None = None
     load_va: float | None = None
     description: str = ""
     # Physical breaker position in the enclosure. Real panel numbering: odd slots run down

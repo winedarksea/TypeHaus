@@ -46,21 +46,23 @@ from typehaus.model import m
 # EQ-T-BROAN-B210E75RT (plan/mep_erv_types.py) and EQ-T-GREE-DUC24 (plan/electrical.py) —
 # the two things that push air, neither of which burns anything.
 EQUIPMENT_TYPES = (
-    # ONE 80-gal hybrid HPWH. Rheem ProTerra PROPH80, EcoNet-enabled: 4.5 kW resistance
-    # element, 30A/240V dedicated circuit, single power whip.
-    #
-    # Compressor-only draw ("Heat Pump"/"Energy Saver" mode) is ~360-500W per the datasheet.
-    # ESPHome's esphome-econet component forces Heat-Pump-Only mode ON BATTERY, Hybrid
-    # otherwise — a ** BACKUP RESERVE ** behaviour that belongs with CKT-WH-240's
-    # `backup_tier=SHED`, not a load-management credit: an unlisted software governor is not
-    # a PCS (2026 NEC 130.2) and nothing in the 220.82 calculation reads it. The
-    # breaker/panel/NEC 220.82 sizing goes against the nameplate 4.5 kW. See
+    # ONE 80-gal HPWH: the Rheem ProTerra Plug-in with HydroBoost, PROPH80 T0 RH120-M (owner,
+    # 2026-10-31). 120 V, 395 W average, NO ELEMENT: the 240 V ProTerra falls back to its
+    # 4.5 kW element on a compressor, airflow, condensate or sensor fault in any mode, so no
+    # automation could promise "compressor only" on battery. This one's wiring diagram lists
+    # no element (Use & Care, component codes). Its alarm table still says "heating source
+    # defaults to elements", which reads as carried over from the 240 V manual: confirm with
+    # Rheem. The cost is recovery: 12 GPH and no element boost; FHR 84 gal is the HydroBoost
+    # mixing valve at a 132 F tank. CKT-WH, 1-pole, surplus tier. See
     # `code.MN_4714_0608_water_heater_relief` for the TPR.
     #
-    # Fallback if reverted to a 120V-only plug-in HPWH (~450W, no 240V circuit): swap
-    # `type_ref` on EQ-B-WH to a 120V-only EquipmentType, retag `circuit` to a 1-pole 120V
-    # circuit at ~450 VA. Nothing else needs to move.
-    EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater, Rheem ProTerra 80gal hybrid heat pump (EcoNet)",
+    # ** GEOMETRY IS STILL THE 240 V TANK'S (open, notes/water_service.md §1). ** The plug-in
+    # is 24 1/4" round like it, but 74 3/16" tall (A) with SIDE connections on the HydroBoost
+    # assembly (cold low, hot high; Rheem's sheet letters the heights G 54 5/16", K 5 1/16",
+    # D 3 7/8", E 42 3/8" without naming each), and its plan is 29 1/2" x 29" over the T&P and
+    # that assembly (F, I). The ports and footprint below are the RH400-30's until the
+    # piping is re-run to a confirmed port drawing.
+    EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater, Rheem ProTerra Plug-in HydroBoost 80 gal heat pump, 120 V",
                   product_ref="PROD-RHEEM-PROPH80",
                   # Body = 24 1/4" tank (B); height 76 13/16" = K, the top nipples. NOT 91": that
                   # is H, the unit with an 8" duct elbow, and this house does not duct it.
@@ -76,7 +78,7 @@ EQUIPMENT_TYPES = (
                       pt(inch(2.412), inch(-12.125)), pt(inch(6.868), inch(-10.279)),
                       pt(inch(10.279), inch(-6.868)), pt(inch(12.125), inch(-2.412)))),
                   plan_symbol="water-heater",
-                  source="Rheem PROPH80 T2 RH400-30 / ProTerra XE80T10HS45U0 class: 80 gal, 4.5 kW resistance element, 30A/240V dedicated circuit, ~360-500W compressor draw in Heat Pump Only mode. HA via ESPHome esphome-econet on the RS-485 (RJ11) EcoNet port; the Wi-Fi module is never registered. Mode control on the ProTerra to be tested (notes/smart_home.md).",
+                  source="Rheem spec sheet RH-PIHP-SC-NO-SO-SS Rev. 1 (04/26), PROPH80 T0 RH120-M: 80 gal (72 rated), 15 A minimum breaker, 395 W average, UEF 3.46, 4,200 Btu/h compressor, FHR 84 gal at a 132 F tank, 12 GPH recovery (60 F rise), 74 3/16 x 24 1/4 in, 244 lb; modes Heat Pump and Vacation/Away only; factory cord to a standard outlet. ENERGY STAR (PD 3555363): 12.0 A maximum, 120 V. Ports below are still the RH400-30's (see the comment).",
                   # Ports off Rheem's RH400-30 sheet and HP-400-SO (letters A-L). Product frame:
                   # -y front, +x right. Nipples at K 76 13/16" (tank top A 74 3/16"); hot 4 1/8"
                   # left/1 1/2" back, cold 4 1/8" right/1 1/2" front, x/y SCALED (+-0.3").
@@ -103,7 +105,7 @@ EQUIPMENT_TYPES = (
                                      connection_size=inch(0.75), direction=(-1.0, 0.0, 0.0),
                                      certainty=PortCertainty.EXACT,
                                      notes="Factory T&P valve, product-left side. Height E = 42 3/8in published; 2in off the 24 1/4in body is where the valve outlet is drawn."),
-                         ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0)))),
+                         ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0)))),
                   clearances=(
                       ClearanceZone(
                           footprint=Footprint2D(points=(
@@ -372,6 +374,6 @@ DUCTS_HVAC_ATTIC = []
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
              position=pt(ft(8, 9), ft(29, 5)), rotation=deg(-90),
-             footprint=(inch(24.25), inch(24.25)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-240",
+             footprint=(inch(24.25), inch(24.25)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH",
              relief_discharge_ref="PR-B-WH-TPR"),
 ]
