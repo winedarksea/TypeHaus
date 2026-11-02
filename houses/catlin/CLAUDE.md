@@ -1,7 +1,7 @@
 > **Main deck is wood, 2026-11-01 (decision #112):** `SL-M-DECK` is `FS-M-NE`, 11 7/8" open-web
-> trusses at 16" o.c. (TRIFORCE OJ418S published row, 40/25 psf L/480, a doubled peninsula truss, two strongbacks; amended 2026-11-02), and `W-B-CS2`/`-CN2`/`-CN`
+> trusses at 16" o.c. (TRIFORCE OJ418S published row, 40/25 psf L/480, the 316/332 lines doubled under the peninsula, two strongbacks; amended 2026-11-02), and `W-B-CS2`/`-CN2`/`-CN`
 > are framed 2x6 bearing walls; one flat basement ceiling, no movement joint, no cast sleeves.
-> Every joist/truss end on a concrete wall takes an A35Z (`JoistSpec.sill_tie`) and the parallel
+> Every joist/truss end on a concrete wall takes an A35Z (`JoistSpec.sill_tie`; a sistered pack one on each outer face) and the parallel
 > walls take blocking stations with five A35Z each, graded by `code.MN_1309_0404_wall_top`; the
 > x=18' line has DF-L top plates (`notes/main_floor_truss_basis.md` §4-§5). The main floor is Cotton Oak
 > LVP (7 mm, floating) on the subfloor throughout, cabinets on the subfloor; the theater ceiling
@@ -761,8 +761,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   IUS2.37/11.88 hangers). `FS-M-NE` (x 18'-36', y 13'-36', where `SL-M-DECK` was) is 11 7/8"
   open-web floor trusses at **16" o.c. on TRIFORCE's published OJ418S row** (40 psf live / 25 dead,
   L/480, 18'-0"; `TRIFORCE_OJ418S_FLOOR_SPAN`, L/720 live on the order), on `FS-S-WEST`'s web drawing
-  (24"/13"/12"). 19 trusses (y 156..396 on 16", then 408/420/432, so the N1 bays stay 12"); the 332 line
-  is doubled under the peninsula boxes, and two 2x6 `Strongback`s (x 317.75"/330.25", TRIFORCE pp. 20-22)
+  (24"/13"/12"). 19 trusses (y 156..396 on 16", then 408/420/432, so the N1 bays stay 12"); the 316 and 332
+  lines are doubled under the peninsula boxes (each pack end takes two A35Z, one an outer face), and two 2x6 `Strongback`s (x 317.75"/330.25", TRIFORCE pp. 20-22)
   are cut at stations 180/196/292/414 where lanes cross (`notes/main_floor_truss_basis.md` §3). Constants live in
   `params/main_deck.py`; `integrity.floor_bearing_grid` and `floor_end_bearing` hold the grid.
   - **The x=18' line is framed end to end.** `W-B-CS2`/`-CN2`/`-CN` are 2x6 bearing walls on their

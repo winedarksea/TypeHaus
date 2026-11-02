@@ -214,9 +214,10 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
         sisters.extend((floor.tag, m) for m in found)
     # Two additional full-span plies carry ST-S2A's departing-rim reactions on FS-S-EAST;
     # FS-M-EAST's two LVL plies are D-B-PATIO's flush band header (``extent``-clipped);
-    # FS-M-NE's one is the doubled truss under the peninsula.
+    # FS-M-NE's two are the doubled 316/332 trusses under the peninsula.
     assert sorted(tag for tag, _ in sisters) == [
-        "FS-M-EAST", "FS-M-EAST", "FS-M-NE", "FS-M-WEST", "FS-S-EAST", "FS-S-EAST"]
+        "FS-M-EAST", "FS-M-EAST", "FS-M-NE", "FS-M-NE", "FS-M-WEST", "FS-S-EAST",
+        "FS-S-EAST"]
     # Full span, tip to tip: a sister that stops short carries nothing where the load is
     # (``resolve/floors.py::_reinforcement_members``). 17.79' and not the 18'-0" bearing grid
     # — the joist it doubles starts 1 3/4" in, behind the west rim board, and since decision

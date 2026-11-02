@@ -1,7 +1,7 @@
 # Main-floor truss field FS-M-NE — basis and hand check
 
-2026-11-01, decision #112; **amended 2026-11-02: 16" o.c. on the published TRIFORCE row, a doubled
-peninsula truss, two strongbacks.** Replaces `SL-M-DECK` (BuildDeck; basis in `DESIGN-LOG.md`, "Main
+2026-11-01, decision #112; **amended 2026-11-02: 16" o.c. on the published TRIFORCE row, the 316 and 332
+lines doubled under the peninsula, two strongbacks.** Replaces `SL-M-DECK` (BuildDeck; basis in `DESIGN-LOG.md`, "Main
 deck goes wood"). Model: `params/main_deck.py` (`NE_FLOOR`), `params/second_deck.py`
 (`TRIFORCE_OJ418S_FLOOR_SPAN`), `plan/storeys/basement.py` (`W-B-CS2`/`-CN2`/`-CN`),
 `plan/assemblies/interior.py` (`STAIRWELL_INT_2X6_BRG_FURRED`). Independent of the engine: every
@@ -15,7 +15,7 @@ bounce, not 60 psf: the 12" o.c. / 60 psf order had no published row.
   lines), then 408, 420, 432 (`line_overrides` 412 -> 408, 428 -> 420, so the three bays at
   W-B-N1 stay 12" and a 0.5" slit at 428-432 is avoided). Warren webs at 24" pitch, 13" clear,
   12" offset (`FS-S-WEST`'s drawing).
-- Count: (396 - 156)/16 + 1 = 16, plus 3 = **19**, plus one sister (section 3a).
+- Count: (396 - 156)/16 + 1 = 16, plus 3 = **19**, plus two sisters: 332 at 328.5" and 316 at 319.5" (section 3a).
 - Truss ends x = 215 1/4" .. 430 1/4": **17'-11"**, the same blank as `FS-S-WEST`.
   - West: 3 1/2" onto the x=18' 2x6 double top plate (studs 213 1/4"..218 3/4"); the TJIs
     west of it take the other 2". 3 1/2" + 2" = 5 1/2", the plate exactly.
@@ -108,9 +108,17 @@ x = 345" gives w a b / 2 = 6.11 x 128 x 80 / 2 = 31,290 in-lb = **2,607 ft-lb**.
   565 psi, over 3 1/2" x 3 1/2": 83 psi, d/c 0.15).
 
 Reading: the doubled 332 line is under the box centre and carries the dead mass; the cantilever
-couple loads 316, 3.4" from the back edge. The truth is between the two cases. The engine cannot
-grade this (the row is uniform only); the fabricator's drawing carries it as point loads
-(`plans/TODO.md`), and **316 is the line to ask about first**.
+couple loads 316, 3.4" from the back edge. The truth is between the two cases.
+
+**316 is doubled too** (owner, 2026-11-02; sister on the box side at 319.5"):
+- **No sharing:** 616 / 2 = 308 lb a ply: 308 x 128 x 80 / 208 = 15,163 in-lb = 1,264 ft-lb;
+  total **3,871 ft-lb**, 1.10x the row's 3,510.
+- **Shared across five plies** (316 pair, 332 pair, 348; 1,173 / 5 = 235 lb): 11,550 in-lb =
+  963 ft-lb; total **3,570 ft-lb**, 1.02x the row.
+
+Closer to the row, but it does not clear it, and the stool load is an assumption. The engine cannot
+grade this (the row is uniform only); the fabricator's drawing carries the point loads and
+confirms both doubled pairs (`plans/TODO.md`).
 
 ## 3b. Strongbacks (TRIFORCE pp. 20-22)
 
@@ -176,16 +184,22 @@ ducts or pipes". The owner's bounce goal, so two:
   |---|---|---|---|---|---|---|
   | W-B-E1 | FS-M-EAST, TJI | 10 | 16" | 400 x 1.333 = 533 lb | 563 | 0.95 |
   | W-B-E1 | FS-M-NE, truss | 4 | 16" | 400 x 1.333 = 533 lb | 538 | 0.99 |
-  | W-B-E2 | FS-M-NE, truss | 15 | 16" | 533 lb | 538 | 0.99 |
+  | W-B-E2 | FS-M-NE, truss | 13 | 16" | 533 lb | 538 | 0.99 |
+  | W-B-E2 | FS-M-NE, 2-ply pack (316, 332) | 2 | 16" | 533 lb | 2 x 538 | 0.50 |
   | W-B-W1 | FS-M-MECH, TJI | 10 | 16" | 533 lb | 563 | 0.95 |
-  | W-B-W1 | FS-M-WEST, TJI | 3 | 16" | 533 lb | 563 | 0.95 |
+  | W-B-W1 | FS-M-WEST, TJI | 2 | 16" | 533 lb | 563 | 0.95 |
+  | W-B-W1 | FS-M-WEST, 2-ply pack (240, the bath) | 1 | 16" | 533 lb | 2 x 563 | 0.47 |
   | W-B-W2 | FS-M-WEST, TJI | 14 | 16" | 533 lb | 563 | 0.95 |
 
-  56 ends, one A35Z each (37 TJI + 19 truss). A second angle is not needed anywhere.
+  56 ends, **59 A35Z**: one an end (37 TJI + 19 truss), plus one on each sister ply that lands on
+  a sill (the 316 and 332 trusses, and `FS-M-WEST`'s bath ply at y 240").
+  A second angle is not needed for demand anywhere.
   Hand count of the truss ends: W-B-E1's axis runs y 0..216", so lines 156, 172, 188, 204 = 4;
   W-B-E2 (216"..432") takes 220, 236, ... 396 = (396 - 220)/16 + 1 = 12, plus 408, 420, 432 = **15**.
-  The 332 sister is a reinforcement and carries no tie of its own. (The engine's finding splits
-  the 19 as 5 + 14; the per-end d/c, 533/538 = 0.99, is the same either way.) The 533 lb is also
+  **A sistered pack takes one A35Z on each OUTER face** (owner, 2026-11-02): Subp. 1 connects
+  each joist, an angle cannot fit between plies, and the 16" tributary does not grow, so a 2-ply
+  pack reads 533 / 1,076 = 0.50 (`joints/bearing.py`, the outer-face rule). (The engine's finding
+  splits the 19 as 5 + 12 + 2 packs; the per-end d/c, 533/538 = 0.99, is the same either way.) The 533 lb is also
   the bound for the three 12" bays at the north wall, whose tributary is smaller.
 
   Parallel (footnote f): blocking in the first three joist spaces (two blocked lines a

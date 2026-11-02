@@ -4,14 +4,18 @@
   strength spec. The owner's goal is a floor with no bounce. TRIFORCE OJ418S publishes 16" o.c.,
   40/25 psf, L/480 to 18'-0" (p. 5), so the field is a prescriptive read; L/720 live goes on the order
   (hand estimate ~L/875 under 40 psf, from the p. 6 row).
-- **Bounce levers.** A doubled truss on the 332 line (sister at 328.5") under the peninsula boxes, and
+- **Bounce levers.** Doubled trusses on the 332 line (sister at 328.5", box centre) and the 316 line
+  (sister at 319.5", back legs; added the same day) under the peninsula boxes, and
   two 2x6 strongbacks on the bottom chords (x 317.75", 330.25"), cut in four bays where lanes cross
   (180, 196, 292, 414). Lines 408/420/432 kept at 12" so W-B-N1's blocking, the N1 ties and the
   kitchen drain keep their bays. Lanes `PR-B-CW-TRUNK` (186 -> 180) and `CD-B-KITCHEN` (282 -> 276) moved
   off the new chords.
 - **Rejected.** 2x8 basement walls at x=18' (studs ~0.55, DF-L plates ~0.66 at 40 psf; margin nobody
   needs); running trusses south of y=13' (costs the fireplace piers' pockets).
-- **Open.** The peninsula's point loads (line 316 unshared bound is 1.9x uniform moment) and the L/720
+- **316 doubled too.** The cantilever couple put ~616 lb on 316 by hand (1.5x the row unshared). Doubled,
+  it is 1.10x unshared / 1.02x shared: closer, not clear. Each pack end takes an A35Z on both outer
+  faces (nothing fits between plies); `FS-M-WEST`'s bath ply on W-B-W1 too, 59 in all.
+- **Open.** The peninsula's point loads (confirm the doubled 316/332 pairs) and the L/720
   request go to the truss supplier; `FS-S-WEST` could take the same row and a strongback.
 
 ## Walls stand on the subfloor; the cap comes down to meet it (2026-11-01, C3-E3)

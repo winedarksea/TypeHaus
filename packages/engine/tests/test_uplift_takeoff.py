@@ -207,7 +207,9 @@ def test_a_floor_joist_on_a_wall_takes_no_tie(catlin_model_ro, connections) -> N
     assert {c.assembly_tag for c in on_walls} == sill_tied, "sill_tie=None floors stay untied"
     # Only the pours: 24 truss + 37 TJI ends, one A35Z each; the x=18' plate is nailed.
     assert {c.support_tag for c in on_walls} == {"W-B-E1", "W-B-E2", "W-B-W1", "W-B-W2"}
-    assert Counter((c.sill_tie, c.sill_ties) for c in on_walls) == {("A35Z", 1): 56}
+    # The three sistered packs (FS-M-NE 316/332, FS-M-WEST's bath ply) tie both outer faces.
+    assert Counter((c.sill_tie, c.sill_ties) for c in on_walls) == {("A35Z", 1): 53,
+                                                                     ("A35Z", 2): 3}
     assert [c for c in connections if c.assembly_tag in {f.tag for f in catlin_model_ro.floors}
             and c.support_tag not in walls], "deck joists on beams stay tied"
 

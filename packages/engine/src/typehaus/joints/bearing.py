@@ -392,6 +392,7 @@ def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
                     supports.append(support)
         if not supports:
             continue
+        sisters = [m for m in resolved.members if m.category == "sister_joist"]
         for member in resolved.members:
             if member.category not in categories:
                 continue
@@ -412,6 +413,8 @@ def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
             for point, support in ties:
                 key_point = (round(point[0] / grid_m), round(point[1] / grid_m))
                 on_sill = sill_tie is not None and support.sill
+                # A sistered pack takes a sill tie on each OUTER face: nothing fits between plies.
+                plies = min(1 + _sisters_at(member, point, sisters, grid_m), 2) if on_sill else 1
                 yield BearingConnection(
                     support_tag=support.tag, storey=resolved.storey,
                     assembly_tag=resolved.tag, member_profile=member.profile,
@@ -420,7 +423,21 @@ def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
                     point_m=(point[0], point[1]), z_m=_seat_z(point, support),
                     axis=axis_of(support.p0, support.p1),
                     sill_tie=sill_tie[0] if on_sill else None,
-                    sill_ties=sill_tie[1] if on_sill else 0), support
+                    sill_ties=sill_tie[1] * plies if on_sill else 0), support
+
+
+def _sisters_at(member, point: tuple, sisters: list, tolerance_m: float) -> int:
+    """Sister plies parallel to ``member`` with an end within ``tolerance_m`` of ``point``."""
+    dx, dy = member.p1[0] - member.p0[0], member.p1[1] - member.p0[1]
+    length = math.hypot(dx, dy) or 1.0
+    count = 0
+    for sister in sisters:
+        sx, sy = sister.p1[0] - sister.p0[0], sister.p1[1] - sister.p0[1]
+        if abs(dx * sy - dy * sx) > 0.01 * length * (math.hypot(sx, sy) or 1.0):
+            continue
+        if min(math.dist(point, sister.p0), math.dist(point, sister.p1)) <= tolerance_m:
+            count += 1
+    return count
 
 
 @dataclass(frozen=True)

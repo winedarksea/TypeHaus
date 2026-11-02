@@ -419,8 +419,9 @@ EAST_FLOOR = FloorSystem(
 # north sink run's base cabinets get trusses at 408 and 420. 19 trusses.
 #
 # ** POINT LOADS FOR THE FABRICATOR. ** The peninsula's cabinet boxes (y 319.4"..343.4")
-# carry the cantilevered quartz and its stool users: the 332" line under them is doubled
-# (the sister lands at 328.5"), and 316" is 3.4" off their back edge. ``APPL-M-FRIDGE``/
+# carry the cantilevered quartz and its stool users: the 332" line under the box centre is
+# doubled (sister at 328.5") for the dead mass, and 316", 3.4" off the back edge, is doubled
+# (sister toward the box) for the cantilever couple on the back legs. ``APPL-M-FRIDGE``/
 # ``-FREEZER`` stand against the x=18' bearing wall (~175 lb a truss within 2'-3" of the
 # seat), so they get no sister; they and the partitions this field carries (below) still go
 # on the truss drawing. ``notes/main_floor_truss_basis.md`` lists them.
@@ -431,6 +432,11 @@ _PENINSULA_TRUSS = JoistReinforcement(
     source="peninsula cabinet boxes (y 319.4\"..343.4\"): stone, brackets and three stool "
            "users bear through them mid-span; double the truss under the box centre "
            "(notes/main_floor_truss_basis.md)")
+_PENINSULA_BACK_TRUSS = JoistReinforcement(
+    at=pt(ft(27), inch(321.4)), plies=2, blocking=False,
+    source="peninsula back legs (y 321.4\"): the cantilevered stone and stool users tip onto "
+           "them, ~616 lb on the 316\" line by hand; double it (notes/main_floor_truss_basis.md "
+           "§3a)")
 # ** STRONGBACKS (TRIFORCE pp. 20-22, Detail 5 Option #1). ** Two 2x6 on edge on the bottom
 # chords, each hard against a face of the 27' web: A in the 26' opening, B in the 28' one,
 # both within 6" of mid-span. Cut in a bay where a run crosses at their height ("can be cut
@@ -478,14 +484,15 @@ NE_FLOOR = FloorSystem(
                      line_overrides=_TRUSS_LINE_MOVES,
                      sill_tie="A35Z"),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
-    reinforcements=(*_N_WALL_BLOCKING, _PENINSULA_TRUSS),
+    reinforcements=(*_N_WALL_BLOCKING, _PENINSULA_TRUSS, _PENINSULA_BACK_TRUSS),
     strongbacks=_STRONGBACKS,
     published_span=TRIFORCE_OJ418S_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _SEAM_Y, _HOUSE, _HOUSE),
     source="catlin main floor, east half north of y=13' — 11 7/8\" open-web floor trusses "
            "at 16\" o.c. (TRIFORCE OJ418S row, 40/25 psf at L/480; L/720 live on the order), "
-           "a doubled truss under the peninsula and two 2x6 strongbacks against bounce, "
+           "doubled trusses on the 316 and 332 lines under the peninsula and two 2x6 "
+           "strongbacks against bounce, "
            "spanning 18'-0\" from the x=18' bearing line to W-B-E1/W-B-E2 (decision #112, "
            "replacing SL-M-DECK)",
 )
