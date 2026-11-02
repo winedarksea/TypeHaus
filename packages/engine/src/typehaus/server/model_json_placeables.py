@@ -12,6 +12,7 @@ from typing import Any
 
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.placeables import placed_xy
+from typehaus.server.model_json_alarms import alarm_points
 from typehaus.server.model_json_shared import _provenance
 from typehaus.source.provenance import Provenance
 
@@ -27,6 +28,7 @@ def placeables_json(
             # edge to show which circuit a selected detector is on.
             {"uid": alarm.uid, "tag": alarm.tag, "storey": storey.tag,
              "kind": alarm.kind.value, "room": alarm.room, "circuit": alarm.circuit,
+             **alarm_points(model, alarm, storey.tag),
              "provenance": _provenance(provenance, alarm.tag)}
             for storey in model.plan.storeys
             for alarm in model.plan.storey_elements(storey.tag)

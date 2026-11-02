@@ -23,6 +23,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     electrical_garage,
     electrical_openings,
     electrical_panel_height,
+    electrical_panel_space,
     electrical_receptacles,
     electrical_service,
     erv_interlock,

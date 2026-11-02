@@ -130,7 +130,7 @@ LG_INDUCTION_RANGE = ApplianceType(
     # deeper than the cutout because a slide-in oversails the counter front by design —
     # which is why plan/placeables.py stands the range 3" proud of the 24" bases beside it.
     footprint=(inch(29.875), inch(29.3125)), height=inch(36.5),
-    plan_symbol="range",
+    plan_symbol="range", cooking=True,
     needs=frozenset({Service.POWER_240}),
     ports=(ServicePort(tag="power", service=Service.POWER_240,
                        position=(ft(0), ft(0), ft(0))),),

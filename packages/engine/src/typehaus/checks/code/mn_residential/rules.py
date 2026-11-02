@@ -28,7 +28,7 @@ from typehaus.findings import Finding
 from typehaus.model.enums import Occupancy
 from typehaus.model.refs import FollowRoof
 from typehaus.quantities import Length, ft, inch, m
-from typehaus.resolve.roof_geometry import roof_headroom_areas
+from typehaus.resolve.roof_geometry import roof_headroom_areas, roof_underside_depth_m
 
 #: Who R305.1 is *about*, as Minn. R. 1309.0305 names them: "habitable space, hallways,
 #: bathrooms, toilet rooms, and laundry rooms". This is an ALLOWLIST on purpose. It used to
@@ -250,11 +250,10 @@ def _follow_roof_ceiling_finding(ctx: CheckContext, room, minimum: Length) -> Fi
       nothing here to measure a width on — a room could satisfy the area test with a 3'-wide
       ribbon and pass. That is a ``code.R304_2_*`` check with a geometry return, not a clause
       bolted onto this one. Do not read a pass here as a pass on R304.2.
-    * The thresholds are compared against ``eave_z_m``/``ridge_z_m``, which are the roof
-      DECK plane — the rafter-top, not the ceiling somebody stands under. The honest clear
-      height is a rafter depth lower, so this check reads GENEROUS, by about two feet of
-      station on a 6:12. Fixing it means adding the structure depth at both call sites and
-      re-blessing ``code.R807_1_attic_access`` with it, which is its own change.
+
+    Heights are to the finished ceiling: ``roof_underside_depth_m`` (structure plus this
+    room's lining, plumbed) is added to each threshold, since ``roof_headroom_areas``
+    measures to the deck plane.
     """
     roof = next((item for item in ctx.model.roofs if item.tag == room.ceiling.roof_ref), None)
     resolved_room = next((item for item in ctx.model.rooms if item.tag == room.tag), None)
@@ -262,12 +261,16 @@ def _follow_roof_ceiling_finding(ctx: CheckContext, room, minimum: Length) -> Fi
     if roof is None or resolved_room is None or storey is None:
         return _unknown("code.R305_ceiling_height", "unresolved roof-following ceiling",
                         (room.tag,), "R305.1")
+    depth = roof_underside_depth_m(ctx.model, roof, room.tag)
+    if depth is None:
+        return _unknown("code.R305_ceiling_height", f"{roof.tag} has no framed structure "
+                        "to take a ceiling depth from", (room.tag,), "R305.1")
     elevation = storey.elevation.meters
     area, at_min = roof_headroom_areas(
-        resolved_room.clear_face, roof, elevation, minimum.meters,
+        resolved_room.clear_face, roof, elevation, minimum.meters + depth,
     )
     _, at_five = roof_headroom_areas(
-        resolved_room.clear_face, roof, elevation, _MIN_SLOPED_CEILING.meters,
+        resolved_room.clear_face, roof, elevation, _MIN_SLOPED_CEILING.meters + depth,
     )
     if area <= 1e-9:
         return _unknown("code.R305_ceiling_height", "room has no area beneath referenced roof",

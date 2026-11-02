@@ -16,14 +16,14 @@ REFRIGERATOR = ApplianceType(
 )
 GAS_RANGE = ApplianceType(
     tag="APPL-GAS-RANGE", name="Gas range", footprint=(ft(2, 6), ft(2, 6)), height=ft(3),
-    plan_symbol="range", source=REFERENCE,
+    plan_symbol="range", source=REFERENCE, cooking=True,
     needs=frozenset({Service.GAS, Service.POWER_120}),
     ports=(ServicePort(tag="gas", service=Service.GAS, position=(ft(0), ft(0), ft(0))),
            ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0)))),
 )
 ELECTRIC_RANGE = ApplianceType(
     tag="APPL-ELECTRIC-RANGE", name="Electric range", footprint=(ft(2, 6), ft(2, 6)), height=ft(3),
-    plan_symbol="range", source=REFERENCE,
+    plan_symbol="range", source=REFERENCE, cooking=True,
     needs=frozenset({Service.POWER_240}),
     ports=(ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))),),
 )

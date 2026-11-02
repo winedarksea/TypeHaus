@@ -98,6 +98,11 @@ def room_windows(model: Any, room, *, exterior_only: bool = False) -> list:
     return _openings_on_boundary(model, room, doors=False, exterior_only=exterior_only)
 
 
+def room_doors(model: Any, room) -> list:
+    """Typed doors on this room's bounding wall, interior and exterior alike."""
+    return _openings_on_boundary(model, room, doors=True, exterior_only=False)
+
+
 def _openings_on_boundary(model: Any, room, *, doors: bool, exterior_only: bool) -> list:
     """The openings of one kind whose centre falls in this room's boundary band."""
     from shapely.geometry import Point, Polygon

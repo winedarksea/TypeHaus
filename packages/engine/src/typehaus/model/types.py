@@ -600,6 +600,9 @@ class ApplianceType(FurnitureType):
     # ``ductless`` is: "washer" in a product name is a naming convention, and a check that
     # keyed on one would silently stop applying the day a product was renamed.
     quick_closing: bool = False
+    # A permanently installed cooking appliance (range, cooktop, wall oven): IRC R314.3.3
+    # keeps a smoke alarm 6-20 ft off it. Declared, like the two above, not read off a name.
+    cooking: bool = False
 
 
 class AirHandlingProductFacts(HausModel):

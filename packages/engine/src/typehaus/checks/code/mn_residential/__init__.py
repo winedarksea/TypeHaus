@@ -9,6 +9,7 @@ than a failure, which is why the list below is exhaustive rather than lazy.
 from __future__ import annotations
 
 from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers checks
+    alarm_offsets,
     alarms,
     attic,
     attic_ventilation,
@@ -19,6 +20,7 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     energy_storage,
     fall_protection,
     fire_separation,
+    fire_separation_distance,
     fireblocking,
     foam_plastic,
     foundation_protection,

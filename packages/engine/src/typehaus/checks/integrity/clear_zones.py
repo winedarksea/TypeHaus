@@ -79,7 +79,16 @@ def _overlaps(zone, footprint, prism: Prism) -> bool:
             and footprint.intersection(prism.footprint).area > MIN_INTERSECTION_AREA_M2)
 
 
-def _potential_run_footprints(model: ResolvedModel) -> dict:
+def obstruction_prisms(model: ResolvedModel, run_envelopes=None) -> list[Prism]:
+    """Every physical volume that can occupy a reservation: run segments, then bodies."""
+    if run_envelopes is None:
+        run_envelopes = envelopes(model)
+    out = [prism for envelope in run_envelopes for prism in envelope.prisms]
+    out.extend(_bodies(model, {envelope.tag for envelope in run_envelopes}))
+    return out
+
+
+def potential_run_footprints(model: ResolvedModel) -> dict:
     """Locate schematic runs even when no elevations exist to build their envelopes.
 
     Missing dimensions remain the run checks' global gap. A reservation reports that gap
@@ -103,9 +112,8 @@ def clear_zone_intrusion(ctx: CheckContext) -> list[Finding]:
     if not ctx.model.clear_zones:
         return []
     run_envelopes = envelopes(ctx.model)
-    potential_footprints = _potential_run_footprints(ctx.model)
-    candidates = [prism for envelope in run_envelopes for prism in envelope.prisms]
-    candidates.extend(_bodies(ctx.model, {envelope.tag for envelope in run_envelopes}))
+    potential_footprints = potential_run_footprints(ctx.model)
+    candidates = obstruction_prisms(ctx.model, run_envelopes)
     findings = []
     for zone in ctx.model.clear_zones:
         footprint = Polygon(zone.outline)

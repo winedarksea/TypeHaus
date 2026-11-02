@@ -933,7 +933,16 @@ def _sloped_ctx(*, room_wide_ft: float, room_deep_ft: float, eave_ft: float, rid
     return ctx, authored
 
 
-def test_r305_sloped_ceiling_passes_when_the_room_reaches_the_floor_at_the_eave():
+@pytest.fixture
+def _ceiling_on_deck(monkeypatch):
+    """These pin the area predicate: read the ceiling on the deck plane (zero depth)."""
+    from typehaus.checks.code.mn_residential import rules
+
+    monkeypatch.setattr(rules, "roof_underside_depth_m", lambda *_a, **_k: 0.0)
+
+
+def test_r305_sloped_ceiling_passes_when_the_room_reaches_the_floor_at_the_eave(
+        _ceiling_on_deck):
     """The story-and-a-half case. Eave at the deck, 6:12 to a 9'-0" ridge over an 18' half
     span: the west 10' of this room is under 5'-0" and contributes nothing, and the room is
     still compliant because the 70 sf it owes sits in the tall half."""
@@ -943,7 +952,7 @@ def test_r305_sloped_ceiling_passes_when_the_room_reaches_the_floor_at_the_eave(
     assert "required floor area" in finding.message
 
 
-def test_r305_sloped_ceiling_fails_when_seventy_good_feet_cannot_be_assembled():
+def test_r305_sloped_ceiling_fails_when_seventy_good_feet_cannot_be_assembled(_ceiling_on_deck):
     """A shallow room in the same roof: only 3'-6" of depth, so even the whole tall half is
     under 70 sf at 5'-0". This is the clause that should fail, and the only one."""
     ctx, room = _sloped_ctx(room_wide_ft=18.0, room_deep_ft=3.5, eave_ft=0.0, ridge_ft=9.0)
@@ -952,7 +961,8 @@ def test_r305_sloped_ceiling_fails_when_seventy_good_feet_cannot_be_assembled():
     assert "cannot assemble" in finding.message
 
 
-def test_r305_sloped_ceiling_fails_when_half_the_required_area_misses_seven_feet():
+def test_r305_sloped_ceiling_fails_when_half_the_required_area_misses_seven_feet(
+        _ceiling_on_deck):
     """A roof that clears 5'-0" everywhere but 7'-0" almost nowhere: 70 sf assembles, but
     less than 35 sf of it is tall enough."""
     ctx, room = _sloped_ctx(room_wide_ft=18.0, room_deep_ft=20.0, eave_ft=5.0, ridge_ft=7.1)

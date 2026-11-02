@@ -43,7 +43,11 @@ MN_2020 = JurisdictionProfile(
         "R316.4 the thermal barrier over foam plastic — the latter graded off authored "
         "assembly stacks, so R316.5's exceptions and any barrier breached on site are "
         "outside it; "
-        "R314/R315 smoke and CO alarms per storey and per sleeping area. "
+        "R314/R315 smoke and CO alarms per storey and per sleeping area, and a smoke "
+        "head's offsets: 3 ft from a tub/shower room's door (R314.3.4), a fan blade and a "
+        "supply register (NFPA 72 via R314.1), 6-20 ft from a cooking appliance (R314.3.3). "
+        "R302.1 exterior walls, openings and roof projections against fire separation "
+        "distance to the lot lines (wall ratings themselves are not modelled). "
         "Light and ventilation: R303.1 glazing and openable area, R303.3 local exhaust, "
         "MN 1322 R403.5 whole-house ventilation rate. "
         "Site: R401.3 lot drainage away from the foundation, local setbacks, and whether "
@@ -75,7 +79,9 @@ MN_2020 = JurisdictionProfile(
         "Source-side NEC: 705.12 "
         "busbar interconnection and 690.12 PV rapid shutdown; and 240.24(A) / 404.8(A) "
         "the highest panel handle at 6'-7\" (the body top where no handle offset is "
-        "stated); no other article of the NEC is claimed. "
+        "stated); 110.26(A) panel working space (36\" x 30\" x 6'-6\", door swings not "
+        "graded) and 110.26(E)(1) dedicated space (no pipe or duct over a panel); no other "
+        "article of the NEC is claimed. "
         "Wall bracing: R602.10 in full for the wind path — line spacing (R602.10.1.3), "
         "the required length per line against Tables R602.10.3(1) and (2), minimum panel "
         "length (Table R602.10.5), panel location (R602.10.2.2/.2.3), the end conditions "
@@ -306,6 +312,9 @@ MN_2020 = JurisdictionProfile(
         # Panel tops, not handles: a type with no handle offset grades its body top.
         PermitItemSpec("Panelboard handle height", ("electrical.panel_handle_height",),
                        ("NEC 240.24(A)", "NEC 404.8(A)")),
+        PermitItemSpec("Panelboard working and dedicated space",
+                       ("electrical.panel_working_space", "electrical.panel_dedicated_space"),
+                       ("NEC 110.26(A)", "NEC 110.26(E)(1)")),
         # The energy storage system, as the adopted 2018 IRC R327 has it. The kWh caps and
         # detection are 2021 R328 and grade as advisories (energy_storage_anticipated.py).
         PermitItemSpec("Energy storage system",
@@ -336,6 +345,8 @@ MN_2020 = JurisdictionProfile(
         # no rule: the existing check only visits storeys that have a bedroom on them, so a
         # basement with zero alarms passed the gate. Non-blocking until the house carries the
         # alarms the rule asks for.
+        PermitItemSpec("Smoke alarm offsets", ("code.R314_alarm_offsets",),
+                       ("IRC R314.3.3", "IRC R314.3.4", "NFPA 72 29.11.3.4")),
         PermitItemSpec("Alarms on every storey",
                        ("code.R314_alarm_every_storey", "code.R315_co_every_sleeping_area"),
                        ("IRC R314.3", "IRC R314.4", "IRC R315.3"), blocking=False),
@@ -345,6 +356,8 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Lot drainage away from the foundation",
                        ("code.R401_3_grading", "code.R401_3_impervious"), ("IRC R401.3",)),
         PermitItemSpec("Site setbacks", ("code.site_setback",), ("local zoning",)),
+        PermitItemSpec("Exterior walls and fire separation distance",
+                       ("code.R302_1_exterior_walls",), ("IRC R302.1",)),
         # NON-BLOCKING, deliberately. Every setback, lot-area and coverage figure on the
         # set is measured off the parcel ring, so an uncertified ring is a real gap — but
         # it is a gap the *reviewer* closes, not one the engine can. The survey is a

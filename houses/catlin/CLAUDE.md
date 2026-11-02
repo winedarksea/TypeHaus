@@ -871,8 +871,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       penetration excluded). R303.1 has passed on daylight since 2026-09-10 via
       `ResolvedRoom.head_limited_area_m2` (146 sf, area under the roof UNDERSIDE per
       R304.3) rather than the whole 356 sf — needs 11.7 sf glazing (has 13.6).
-      `code.R305_ceiling_height` still reads 190 sf off the rafter TOP; the two are not
-      reconciled. Revert lives in `_r303_floor_area`
+      `code.R305_ceiling_height` now reads to the gypsum too (`roof_underside_depth_m`,
+      2026-11-02): 128 sf at 5'-0", 88% at 7'. RM-A-STUDY (67 of 70 sf) and RM-A-STUBATH
+      (35 of 36 sf) FAIL on it, left red pending a design change. Revert lives in `_r303_floor_area`
       (`checks/code/mn_residential/ventilation.py`). (→ log4.md, literal-reading risk)
     - Exception 1's lumen floor no longer binds this room while it passes on daylight —
       `plan/lighting_attic.py` claims of R303.1-required fittings are stale (room carries

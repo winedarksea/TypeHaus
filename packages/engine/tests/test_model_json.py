@@ -494,3 +494,16 @@ def test_catalog_wood_appearance_preserves_species_and_finish_exceptions(catlin_
     assert materials["locust-trim"]["wood_surface"] == "unfinished"
     assert materials["oak-shiplap-painted"]["wood_surface"] == "painted"
     assert materials["walnut-counter"]["finish"] == "clear-satin-hardwax-oil"
+
+
+def test_alarms_are_served_at_the_shared_alarm_point(catlin_model_ro, catlin_payload):
+    from typehaus.resolve.alarms import alarm_xy
+
+    alarms = catlin_payload["alarms"]
+    assert alarms
+    for record in alarms:
+        alarm = catlin_model_ro.plan.by_tag(record["tag"])
+        expected = alarm_xy(alarm, catlin_model_ro.plan.by_tag(alarm.room) if alarm.room else None)
+        assert (record["x"], record["y"]) == expected
+    hall = next(record for record in alarms if record["tag"] == "AL-S-HALL")
+    assert hall["z"] is not None

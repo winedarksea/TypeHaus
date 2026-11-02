@@ -587,11 +587,15 @@ export interface Alarm {
   uid: string;
   tag: string;
   storey: string;
-  kind: "smoke" | "co" | "combo" | "heat";
+  kind: "smoke" | "co" | "combo" | "heat" | "leak" | "freeze";
   room: string;
   // The circuit that powers this detector, if any — the panel schedule names the alarms on
   // a circuit, so this is the reverse edge a reader needs to show it from the alarm's side.
   circuit: string | null;
+  /** Head position: plan point (the shared `alarm_xy`) and ceiling-face z; null = underivable. */
+  x: number | null;
+  y: number | null;
+  z: number | null;
   provenance: Provenance | null;
 }
 

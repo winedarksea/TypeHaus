@@ -1630,8 +1630,9 @@ ROOMS = [
 ]
 
 ALARMS = [
+    # Off the seed, which sat under ED-M-BED-FAN: 3 ft past its blade tips and REG-M-SUP3.
     Alarm(uid="CMA701AAAA", tag="AL-M-BED", kind=AlarmKind.COMBO, room="RM-M-BED",
-          circuit="CKT-LT-BACKUP"),
+          circuit="CKT-LT-BACKUP", position=pt(ft(13), ft(10, 6))),
     # The R314.3 "outside each separate sleeping area" alarm. Hosted by RM-M-LIVING (the
     # space it's open to) but positioned explicitly, since that room's seed is ~13' away in
     # the dining end: the position below is the dressing corridor, directly outside D-M-BED,

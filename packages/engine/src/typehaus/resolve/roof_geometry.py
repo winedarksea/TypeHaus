@@ -17,6 +17,7 @@ from typehaus.model.enums import LayerFunction
 from typehaus.model.refs import ToRoof
 from typehaus.model.spatial import Roof
 from typehaus.quantities import inch
+from typehaus.resolve.coatings import layer_depth_m
 from typehaus.resolve.framing.profiles import (
     cross_section,
     truss_chord_depth_m,
@@ -131,6 +132,22 @@ def roof_structure_plumb_depth_m(model: ResolvedModel, roof: ResolvedRoof) -> fl
     11 7/8" joist at 6:12 (decision #109).
     """
     return roof_structure_depth_m(model, roof) * roof_slope_factor(roof)
+
+
+def roof_underside_depth_m(model: ResolvedModel, roof: ResolvedRoof,
+                           room_tag: str | None = None) -> float | None:
+    """Plumb depth from the deck plane to the finished face under it; ``None`` if unframed.
+
+    Structure plus ``room_tag``'s resolved ceiling lining (``model.ceilings``); no room is
+    the bare structure an unfinished attic stands under.
+    """
+    if roof_structure_framing(model, roof) is None:
+        return None
+    ceiling = next((c for c in model.ceilings if c.room_ref == room_tag), None) \
+        if room_tag else None
+    lining = sum(layer_depth_m(model.plan.library, layer)
+                 for layer in (ceiling.layers if ceiling is not None else ()))
+    return roof_structure_plumb_depth_m(model, roof) + lining * roof_slope_factor(roof)
 
 
 def roof_underside_at(model: ResolvedModel, roof: ResolvedRoof,

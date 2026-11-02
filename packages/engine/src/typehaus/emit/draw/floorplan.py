@@ -53,6 +53,7 @@ from typehaus.emit.draw.typography import (
 )
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.alarms import alarm_xy
 from typehaus.resolve.assembly_material import is_cast_beam, is_flatwork
 from typehaus.resolve.door_plan_dimensions import door_plan_dimensions
 from typehaus.resolve.geometry import opening_center, wall_frame
@@ -441,7 +442,7 @@ def _alarm_positions(model: ResolvedModel, storey: str) -> list[tuple[float, flo
         room = rooms.get(alarm.room)
         if room is None:
             continue
-        out.append(alarm.position.xy_m if alarm.position is not None else room.seed.xy_m)
+        out.append(alarm_xy(alarm, room))
     return out
 
 
@@ -483,7 +484,7 @@ def _emit_alarms(b: SceneBuilder, model: ResolvedModel, storey: str,
         # The room stays the host (it is what the check rules reconcile against); the seed is
         # only the default *drawing* point, so an alarm that names its own position draws
         # there — e.g. a hall lobe of a big open room rather than that room's centroid.
-        at = alarm.position.xy_m if alarm.position is not None else room.seed.xy_m
+        at = alarm_xy(alarm, room)
         b.add(Symbol(name="alarm", insert=_in(at), layer="A-ANNO-SYMB"))
         b.add(Text(anchor=_in(_alarm_label_anchor(at, label, avoid)),
                    content=label, height_pt=TAG_PT, layer="A-ANNO-TEXT"))

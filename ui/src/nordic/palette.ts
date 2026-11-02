@@ -107,6 +107,8 @@ export interface ResolvedNordicPalette {
   highlight: string;
   material: Record<string, string>;
   member: Record<string, number>;
+  /** Alarm head colour per `AlarmKind`. */
+  alarm: Record<string, string>;
 }
 
 export const RESOLVED_NORDIC_PALETTE: Record<"light" | "dark", ResolvedNordicPalette> = {
@@ -114,11 +116,13 @@ export const RESOLVED_NORDIC_PALETTE: Record<"light" | "dark", ResolvedNordicPal
     bg: "#f4f2ed", viewport: ["#cfcabf", "#ebe7dd"], edge: "#4a463d", highlight: "#2a3d45",
     material: { lumber: "#d8c9a6", osb: "#c9a86a", rigid: "#e8d64f", batt: "#f3c6d0", gypsum: "#efeae2", membrane: "#4a4a4a", siding: "#b8bcc0", metal: "#6b7076", concrete: "#a9a9a9", masonry: "#9c5a45", fallback: "#cfc9bd" },
     member: { wood: 0xb3854f, concrete: 0xb0b0b0 },
+    alarm: { smoke: "#c0392b", co: "#d98a1f", combo: "#8e3a8f", heat: "#e0661a", leak: "#2f7fb8", freeze: "#3aa6b0" },
   },
   dark: {
     bg: "#2E3440", viewport: ["#262b35", "#3B4252"], edge: "#D8DEE9", highlight: "#88C0D0",
     material: { lumber: "#D6B06F", osb: "#D09A57", rigid: "#EBCB8B", batt: "#D9A4B2", gypsum: "#D8DEE9", membrane: "#BFC8D5", siding: "#AEB8C6", metal: "#9AA8BA", concrete: "#B0B8C4", masonry: "#A86550", fallback: "#C4BDAE" },
     member: { wood: 0xd6b06f, concrete: 0xb0b8c4 },
+    alarm: { smoke: "#BF616A", co: "#EBCB8B", combo: "#B48EAD", heat: "#D08770", leak: "#81A1C1", freeze: "#88C0D0" },
   },
 };
 

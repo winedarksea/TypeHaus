@@ -23,6 +23,7 @@ import {
 import { ALL_TRADES, type EarthTone, type Trade } from "../../state/vocabulary";
 import { buildLightRun } from "./lightRun";
 import { baseRunTrade, buildBaseRun, buildCountertop, buildDoorCasing, buildWindowStool } from "./millwork";
+import { buildAlarms } from "./alarms";
 import { buildPlants, instancedPlantUids } from "./plants";
 import type { RebarLayer } from "./rebar";
 import { tagStorey as tagStoreyChildren, tagTrades } from "./registry";
@@ -296,6 +297,14 @@ export function populateScene(options: PopulateSceneOptions) {
   for (const panel of model.solar_panels ?? []) {
     build(family("solar_panel"), panel.storey, () => buildSolarPanel(tradeGroups.electrical, panel, center,
       mode, registry.picks, registry.byUid));
+  }
+  const alarmsByStorey = new Map<string, NonNullable<Model["alarms"]>>();
+  for (const alarm of model.alarms ?? []) {
+    alarmsByStorey.set(alarm.storey, [...(alarmsByStorey.get(alarm.storey) ?? []), alarm]);
+  }
+  for (const [storey, alarms] of alarmsByStorey) {
+    build(["electrical"], storey, () => buildAlarms(tradeGroups.electrical, alarms, center, mode,
+      palette, registry.picks, registry.byUid));
   }
   for (const run of model.light_runs ?? []) {
     build(family("light_run"), run.storey, () => buildLightRun(tradeGroups.electrical, run, center, mode,
