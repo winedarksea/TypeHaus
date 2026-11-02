@@ -84,7 +84,10 @@ MAX_CANDIDATE_LINES = 400
 #: **450,000 on 2026-10-29, same reason.** 335,036 nodes on 2026-10-25, 392,334 after the
 #: owner-answer MEP waves (984 -> 1,072 hard prisms: condensate runs, the service lateral).
 #: Builds in 19.6 s, searches in 2.6 s, peaks at 886 MB (`--timing`, measured).
-MAX_LATTICE_NODES = 450_000
+#:
+#: **500,000 on 2026-11-01, same reason.** DU-B-ERV-R-SAUNA-SUP measured 475,794 after the
+#: ERV/sauna supply moves (392,334 on 2026-10-29).
+MAX_LATTICE_NODES = 500_000
 
 #: Default margin round the terminals' bounding box, in feet. Eight is about the width of
 #: a room: enough for a route to step out of the direct line and back, and small enough

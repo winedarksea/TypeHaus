@@ -1748,7 +1748,7 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     assert abs(deck_top - threshold) <= inch(1.5).meters
     assert threshold - slab.z1_m == pytest.approx(inch(34.0).meters)
 
-    # Five 6.8" risers inside close that 2'-10": four pressure-treated treads and the head
+    # Five 7.1" risers inside close that 2'-10" plus the 1 1/2" threshold crest (2026-11-01): four pressure-treated treads and the head
     # riser up to the threshold itself.
     assert not [f for f in catlin_model.floors if f.tag == "FS-BW-GARAGE"]
     assert not [s.tag for s in catlin_model.solids if s.tag.startswith("SL-G-STEP-")], \
@@ -1756,13 +1756,13 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
 
     stair = next(s for s in catlin_model.stairs if s.tag == "ST-G-SERVICE")
     assert stair.riser_count == 5
-    assert stair.riser_height_m == pytest.approx(inch(34.0 / 5).meters)
+    assert stair.riser_height_m == pytest.approx(inch(35.5 / 5).meters)
     assert stair.base_elevation_m == pytest.approx(slab.z1_m)
-    assert stair.arrival_elevation_m == pytest.approx(threshold)
+    assert stair.arrival_elevation_m == pytest.approx(threshold + inch(1.5).meters)
     treads = sorted((m for m in stair.members if m.category == "tread"), key=lambda m: m.z1_m)
     assert len(treads) == 4
-    assert treads[0].z1_m - slab.z1_m == pytest.approx(inch(34.0 / 5).meters)
-    assert treads[-1].z1_m == pytest.approx(threshold - inch(34.0 / 5).meters)
+    assert treads[0].z1_m - slab.z1_m == pytest.approx(inch(35.5 / 5).meters)
+    assert treads[-1].z1_m == pytest.approx(threshold + inch(1.5).meters - inch(35.5 / 5).meters)
     # Pressure-treated, distinct from the generic lumber elsewhere in the house.
     assert {m.material for m in stair.members if m.category == "tread"} == {"trex-enhance-basics"}
     assert {m.material for m in stair.members if m.category != "tread"} == {"kdat"}
@@ -2731,7 +2731,10 @@ def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_t
                 else {"main", "second", "attic"})
     by_storey = _facade_stations(catlin_model, wall_tag, "truss_block", "block-2-")
     assert set(by_storey) == expected, by_storey.keys()
-    on_module = {storey: [s for s in stations if s not in _off_module(stations)]
+    # Also not the 32" grid: a rake-cut free course end lands on the nearest 16" stud
+    # (`land_free_ends`, decision #109), an attic-only block at odd studs (48, 144, 240, 336).
+    on_module = {storey: [s for s in stations
+                          if s not in _off_module(stations) and s % 32.0 < 0.02]
                  for storey, stations in by_storey.items()}
     grids = [on_module[storey] for storey in sorted(expected)]
     assert all(grid == grids[0] for grid in grids), (

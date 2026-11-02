@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** a1a4cda8e786e15d  
+**Model hash:** a4cef4d89682a9c0  
 **Lines:** 201
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -39,13 +39,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 47.8 LF cut; 48.0 LF in the takeoff | building |
 | 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 334.5 LF cut; 336.0 LF in the takeoff | building |
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 336 | LF ordered | 38 pcs, 313.2 LF cut | building |
-| 2x10 — hanger board (2x10) | 42 | LF ordered | 7 pcs, 31.7 LF cut | building |
+| 2x10 — hanger board (2x10) | 42 | LF ordered | 7 pcs, 31.8 LF cut | building |
 | 2x10 SPF framing lumber — blocking, ceiling furring (2x10:spf) | 80 | LF ordered | 30 pcs, 72.6 LF cut | building |
 | 2x12 — blocking, joist (2x12:kdat) | 424 | LF ordered | 46 pcs, 387.8 LF cut | building |
 | 2x12 SPF framing lumber — blocking (2x12:spf) | 16 | LF ordered | 12 pcs, 15.2 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 260 | LF ordered | 77 pcs, 209.2 LF cut | building |
 | 2x3 — corner stud, plate, stud (2x3) | 48 | LF ordered | 12 pcs, 28.0 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,652 | LF ordered | 659 pcs, 3932.7 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,652 | LF ordered | 659 pcs, 3932.6 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,934 | LF ordered | 477 pcs, 2515.5 LF cut | building |
 | 2x4 SPF framing lumber — blocking, ceiling furring (2x4:spf) | 88 | LF ordered | 36 pcs, 73.1 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 6,996 | LF ordered | 1177 pcs, 6016.1 LF cut | building |
@@ -54,7 +54,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Laminated strand lumber — corner stud, cripple stud, door blocking, jack stud, king stud, stud (2x6:lsl) | 1,734 | LF ordered | 230 pcs, 1470.3 LF cut | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:oak-8q) | 32 | LF ordered | 21 pcs, 23.9 LF cut | building |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | 72 | LF ordered | 53 pcs, 60.8 LF cut | building |
-| 2x8 — joist, landing framing, plate, rim board (2x8) | 320 | LF ordered | 69 pcs, 274.3 LF cut | building |
+| 2x8 — joist, landing framing, plate, rim board (2x8) | 320 | LF ordered | 69 pcs, 274.4 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 296 | LF ordered | 286 pcs, 287.0 LF cut | building |
 | 3-2x12 — joist (3-2x12:kdat) | 40 | LF ordered | 2 pcs, 33.5 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 360 | LF ordered | 1157 pcs, 337.5 LF cut | building |
@@ -149,12 +149,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | 2 | ea |  | building |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | 49 | ea |  | basement, main |
 | PROD-CARPET-ZBAR — carpet tucked flush with the hard floor; 1/4 in. field rise | 4 | ea |  | main, second |
+| PROD-CARPET-ZBAR — carpet tucked flush with the stall-mat edge | 1 | ea |  | basement |
 | PROD-CATLIN-OAK-REDUCER — 3/4 in. oak reducer, 2 in. bevel to the vinyl | 1 | ea |  | attic |
 | PROD-CATLIN-OAK-REDUCER — 5/4 white oak saddle, 1 3/4 in. flat under the leaf, 2 in. bevel | 1 | ea |  | main |
 | PROD-CATLIN-SOLID-SURFACE-REDUCER — 12 mm solid surface, 4 1/2 in. slope to the vinyl | 1 | ea |  | second |
 | PROD-CORETEC-REDUCER — 5 mm reducer, plank down to the cap | 1 | ea |  | main |
 | PROD-RUBBER-REDUCER — bevelled rubber edge for 3/4 in. mats | 2 | ea |  | basement |
-| PROD-RUBBER-REDUCER — bevelled rubber edge, 1/4 in. to the carpet | 1 | ea |  | basement |
 | PROD-RUBBER-REDUCER — rubber reducer for 1/8 in. sheet vinyl | 1 | ea |  | basement |
 | PROD-SCHLUTER-SCHIENE — aluminium, height to the tile | 3 | ea |  | second |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375) | 3,138 | ea |  | building |
@@ -405,12 +405,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | — |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | SL-B-FLOOR, SL-M-DECK |
 | PROD-CARPET-ZBAR — carpet tucked flush with the hard floor; 1/4 in. field rise | D-M-BATH2, D-S-BED1, D-S-BED2, D-S-BED3 |
+| PROD-CARPET-ZBAR — carpet tucked flush with the stall-mat edge | D-B-PLAY |
 | PROD-CATLIN-OAK-REDUCER — 3/4 in. oak reducer, 2 in. bevel to the vinyl | D-A-HALVES |
 | PROD-CATLIN-OAK-REDUCER — 5/4 white oak saddle, 1 3/4 in. flat under the leaf, 2 in. bevel | D-M-BED2 |
 | PROD-CATLIN-SOLID-SURFACE-REDUCER — 12 mm solid surface, 4 1/2 in. slope to the vinyl | D-S-PLANT |
 | PROD-CORETEC-REDUCER — 5 mm reducer, plank down to the cap | D-M-STUDY |
 | PROD-RUBBER-REDUCER — bevelled rubber edge for 3/4 in. mats | D-B-GYM, D-B-SAUNA |
-| PROD-RUBBER-REDUCER — bevelled rubber edge, 1/4 in. to the carpet | D-B-PLAY |
 | PROD-RUBBER-REDUCER — rubber reducer for 1/8 in. sheet vinyl | D-B-BATH |
 | PROD-SCHLUTER-SCHIENE — aluminium, height to the tile | D-S-BATH1, D-S-SUITEBATH, O-S-VANITY |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375) | — |

@@ -307,7 +307,7 @@ def test_basement_lower_hanger_bears_at_the_landing(catlin_model, basement_stair
         assert not hanger.connection.startswith("framed-wall-ledger:")
         # The hanger follows the landing substrate down by the carpet depth while its
         # finished walking face stays on the original riser schedule.
-        assert hanger.z1_end_m == pytest.approx(-1.509, abs=0.001)
+        assert hanger.z1_end_m == pytest.approx(-1.503, abs=0.001)  # 1/4" carpet since 2026-11-01
     # The annotated stringer carries the same connection tag.
     tagged = [m for m in stair.members if m.category == "stringer"
               and m.connection is not None]

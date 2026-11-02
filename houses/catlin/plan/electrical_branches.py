@@ -102,7 +102,7 @@ BRANCH_RACEWAYS = [
                service=Service.POWER_120,
                path=(pt(inch(321), inch(414)), pt(inch(321), inch(423.54)),
                      pt(inch(321), inch(423.54))),
-               elevations=(inch(-16.06), inch(-16.06), inch(-75.94)),
+               elevations=(inch(-16.06), inch(-16.06), inch(-75.7025)),  # box top on the 0.735" carpet
                from_ref="ED-B-PLAY-N-JB", to_ref="ED-B-PLAY-N-RC1",
                circuits=("CKT-RC-BSMT",)),
 ]

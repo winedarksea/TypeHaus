@@ -229,9 +229,7 @@ the future.
 - The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
 - ED-M-PORCH-FLOOD: shielded adjustable 60° flood beneath the balcony front, aimed into the sunken garden; shared 3D geometry in viewer/GLB/IFC. However it seems to be a recessed light, not one that is angled at the sunken garden.
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
-- Sconce ED-S-STUDY2-STAIR-SC1 is a bit close to the floor, perhaps it should go at the top of the stairs on the wall, still on the same circuit but in the room above?
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
-- Flashing geometry and visibility implemented 2026-10-15: west-draining fitted cap on SB-BW-BAND's exposed 2×6 sill above W-BW-SCREEN; metal heads and concealed perimeter/sill flashing at exterior windows and doors; one Flashing 3D hide/isolate control. [Modeling basis and limits](../houses/catlin/notes/flashing_model.md).
 - Possibly swap the concrete canopy stairway (SL-BW-TIER*) to pressure treated wood and composite treads or with brick stairs.
 - W-BW-SCREEN's shear role is already redundant with the garage path (graded 100%). Relaxing its 4″ edge nailing needs the reviewer to accept `canopy_garage_diaphragm.md`'s 'garage takes the whole load'.
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps a vertical grab bar between the toilet and the tub, serving both.
