@@ -69,7 +69,7 @@ const FLOOR_RECIPE_SURFACE: Record<string, FloorSurface> = {
   "plank-floor": FLOOR_FINISH_SURFACE.oak,
   "lvp-plank": FLOOR_FINISH_SURFACE.lvp,
   "carpet-pile": FLOOR_FINISH_SURFACE.carpet,
-  "carpet-loop-pattern": FLOOR_FINISH_SURFACE.carpet,
+  "carpet-refine-structural": FLOOR_FINISH_SURFACE.carpet,
   "porcelain-tile": FLOOR_FINISH_SURFACE.tile,
   "tile-kaleo-running-bond": FLOOR_FINISH_SURFACE.tile,
   "tile-carrara-grid": FLOOR_FINISH_SURFACE.tile,

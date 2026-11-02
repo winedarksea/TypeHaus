@@ -27,7 +27,7 @@ import {
 import { applyTileUv, createTileMaterial, tileRepeatSizeM, tileStyleOrNull } from "../tileMaterial";
 import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
 import { applyCarpetUv, createCarpetMaterial, isCarpetPile } from "../carpetMaterial";
-import { applyCarpetLoopUv, createCarpetLoopMaterial, isCarpetLoopPattern } from "../carpetLoopMaterial";
+import { applyCarpetLoopUv, createCarpetLoopMaterial, isCarpetRefineStructural } from "../carpetLoopMaterial";
 import { buildMembers, isRoofFramingMember, memberColor, type SkinLine } from "../members";
 import { buildBoardMembers } from "./millwork";
 import { addStairFinishParts } from "./stairFinish";
@@ -333,7 +333,7 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
   const tileStyle = tileStyleOrNull(declared);
   const plain = !plankStyle && !tileStyle && !marble;
   const carpet = plain && isCarpetPile(declared);
-  const loop = plain && isCarpetLoopPattern(declared);
+  const loop = plain && isCarpetRefineStructural(declared);
   if (plankStyle) {
     applyPlankPlaneUv(geometry, center, planLongAxis(outline), plankTileSizeM(plankStyle));
   } else if (tileStyle) {

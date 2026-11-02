@@ -52,7 +52,7 @@ MATERIALS_FLOORING = [
                     'mats at D-B-PLAY (Z-bar). Dealer to confirm stretch-in; '
                     'notes/basement_carpet.md.'),
     Material(tag="catlin-stair-carpet", name="Refine Structural stair carpet (provisional)",
-             hatch="batt", color="#415058", finish="carpet-loop-pattern",
+             hatch="batt", color="#415058", finish="carpet-refine-structural",
              finish_thickness_in=0.25,
              product_ref="PROD-PHILA-REFINE-STRUCTURAL",
              source='ST-B2M, owner 2026-11-01: dense multi-level loop glued to tread and '

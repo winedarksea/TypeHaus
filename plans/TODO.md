@@ -271,11 +271,8 @@ the future.
   - Plumber: the attic WC's 1 1/2" vent (UPC 904.1); basement WC re-route under the slab to W-B-BA-E; moving BATH2's supplies and PR-B-HW-TRUNK for a vent lane; a hall-bath WC vent in exterior W-S-W1.
 - Generally our goal is to have every piece of the house linked to a named product (or a standard or commodity size, like a 2x4) so we can confirm every piece fits together correctly.
 - Kitchen sink fabrication hold: dry-fit KHU100-32 / Bolden KPF-1610SFS / Badger 5 / Dearborn P9703WBG in the 36-inch SEKTION. Verify delivered Badger revision, clip/washer and rail access, full hose stroke, cleanout clearance, vent fitting/bore envelopes and the inward tilt-turn window sweep (full turn likely obstructed). See houses/catlin/notes/kitchen_sink_installation.md; product/connection specification is complete, physical fit is not released.
-- Can we widen D-M-BATH2 to 36"? Not sure if/how the casing would work as that puts it into the shower area (the casing).
 - Improve the wainscot of the mudrooms (the wainscot should be tall—typically 54" to 66" high (or roughly two-thirds of the wall height), mid-to-dark tone (e.g., muddy green, slate blue, warm mushroom, or charcoal), Satin or Semi-Gloss finish using a high-end urethane alkyd enamel (like Sherwin-Williams Emerald Urethane or Benjamin Moore Scuff-X), 1x6 or 1x8 Cellular PVC board for the bottom baseboard, smooth 1/4" MDF panel backers (if walls are textured) with 1x3 Primed Poplar (for impact resistance) or Primed MDF (for lowest cost) for the vertical battens (or shiplap))
 - Oksana wants an elm slab sofa table
-- Check the basement stair carpet, and swap the carpet from the theater with an partial coverage area rug in the theater (technically not installed with tack strips or glue)
-- [ ] Before ordering LVP/pouring the cap: confirm Quincy Oak sample and local delivered quote, measure the installed plank and coating stack, and set the flush movement/edge joint from those samples.
 - See if we can practically use the fleur de lis molds on the top of PT-BW-PE and PT-BW-PNE https://historystones.com/collections/business-industrial-construction-building-materials-supplies-marble-tile-stone/products/fluer-de-lys-tuscany-column-insert
 - Workshop receptacles: RC1's 120/240 V circuit and RC2's 120 V quad are modeled, with their boxes, covers and raceway. Resolve the required tamper-resistant listings and the field wiring before installation; see [workshop receptacles](../houses/catlin/notes/workshop_receptacles.md).
 - D-B-PATIO: separate brick reveal, widened RO, 5-1/2 inch concrete seat, composite returns, and one blind curb-skin recess are modeled (XMN5 dropped 2026-11-01). Sill/approach/pan intersections pass; crest heights come from the [engine-generated review](../houses/catlin/notes/french_door_catalog_installation.md#3-height-and-geometry-review). Complete concrete reinforcement/development, support root and cross-bearer bearing, field membrane bonds, installed pan/sweep/hinge sections, and assembled-unit label/warranty evidence. Standard rainproofing only; drainage/sump back up the revised concrete curb. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
@@ -305,12 +302,9 @@ the future.
   - Real outlet fitting and the north tail.
   - Snow protection: gutter front is about 2" above the snow-slide line.
   - Confirm strip-in width (provisional 9") with GCP, and Image II + deck + membrane acceptance with Metal Sales; deck bearing is 2.036" vs 2" min, provisional.
-  - Build a physical mock-up (two panels, wall rib/closure, membrane, gutter, two supports, a corner).
-- [x] Compared 5/8" AdvanTech roof sheathing; retain plywood. Reconsider as a construction-moisture upgrade after local quotes and product/connection review; see the roof assessment.
 - Consider 1/2" advantech for walls sheathing
 - Pg 288 of the book has a roof eave detail where the roof and drip flashing alone extend out about an inch (no metal or sheathing).
 - Pick a soffit product and close the garage attic ventilation grading, and the corrugated soffit to sill junction detailed. Also fix the garage soffit end detail (north and south gable ends) where the sofit is too flat and isn't inline with the roof slope there
-- [x] SL-SG-STAIRPAD matches SL-WK-D at −2′-9″ finished height.
 - D-B-PATIO has too short a threshold, it needs to go out over the foam gap. And it has some weird top flashing that isn't needed here it seems.
 - D-B-PATIO has an STHD14 connector sprouting up in the middle.
 - Might be worth writing up ICF in cost options as an alternative exterior wall setup (for the house) something like the Quadlock 'plus' form which with 4.25" of EPS on each side delivers R-38.
@@ -338,14 +332,13 @@ the future.
 - `haus print3d --colour-groups`: per-piece colour components bucketed from `Material.color`, matched to a sample exported from Bambu Studio before shipping.
 - Check the door handle specification, interior doors. Make sure bathroom doors are simple locks.
 - Do an outlet and light switch placement review pass
-- Trim bbd-transition-trim still isn't showing the white color for some reason in the 3d viewer, despite being named as such already.
 - O-S-VANITY and D-S-STUDY2, both openings (not true doors) seem to get ignored, improperly showing baseboard, sill plates, and non-continuous flooring, they likely just need to reuse some of the existing door handling logic which generally works
 - Edit the door swing icon in 2d so it shows a frame (right now the 2d door swing might be a bit too big, versus actual leaf swing)
 - Make SL-M-DECK a wood joist design, removing the concrete deck and the concrete centerline wall. Use open web trusses (not I joists) perhaps at tighter OC for extra strength (and maybe ask for a 60 psf or 100 psf truss design, if that is easy to source) to support large format tile well. Make sure the joists are anchored properly using simpson connectors to the concrete. The structural concrete (BuildDeck) is kept in the library but retired from use.
 - Looks like fridge/freezer and perhaps dishwasher go straight on LVP. Dishwasher and possibly cabinets on subfloor or plywood spacers. LVP going under the toe kick.
 - Acoustics for the theater ceiling: resilient channels (1" or 1 1/8" screws to avoid short circuiting into the wood). Painter's caulk in gap between ceiling and walls. No ceiling lights.
 - Aiming to keep floor transitions flush, looks like ~3/4" thickness makes this easiest. Ditra XL or Ditra Heat + Thinset + 8 mm Tile (Ditra Heat PS 5.5 mm + 3.5 mm thinset (3/8" by 3/8" notch trowel) + 10 mm tile OR Ditra Heat Duo peel and stick (PS) + 2.5 mm thinset (1/4" x 3/8" trowel) + 9 mm tile OR 1.5 mm thinset (compressed by 1/4" by 1/4" trowel) + ditra heat 5.5 mm + 2.5 mm thinset + 9.5 mm tile) == 1/2" plywood (nominal) + 7 mm LVP == 1/2" exacor (12 mm actual) + 7 mm LVP == 1/2" gypsum underlayment (fiberrock) + 6.5 mm LVP == 5/8" actual (Fiberock) underlayment + 3 mm sheet vinyl == 16 mm exacor + feather finish + 2.8 to 3 mm sheet vinyl == 3/4" hardwood ~= 7/16" pad + 1/2" pile carpet (carpet squishes at edges)
-- Delete the shower blow dryer fan from RM-M-BATH2 (but keep in library)
+- Delete the shower blow dryer fan and its associated components from RM-M-BATH2 (but keep in library)
 - Specify paint in detail
 - Specify leak detectors, in useful places, linked to Home Assitant
 

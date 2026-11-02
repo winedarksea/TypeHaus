@@ -9,6 +9,8 @@ come from the ``ResolvedModel`` (→ 20 "the UI never re-measures" rule, applied
 
 from __future__ import annotations
 
+from dataclasses import asdict
+
 from shapely.geometry import Point, Polygon
 
 from typehaus.emit.draw._shared import (
@@ -52,6 +54,7 @@ from typehaus.emit.draw.typography import (
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.assembly_material import is_cast_beam, is_flatwork
+from typehaus.resolve.door_plan_dimensions import door_plan_dimensions
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.solid_categories import in_slab_family
@@ -202,15 +205,17 @@ def _emit_door_symbol(b: SceneBuilder, model: ResolvedModel, op, center: tuple[f
     name = symbol_name_for_operation(_door_operation(model, op.type_ref))
     width_in = op.width_m / M_PER_IN
     hinge_jamb_sign = -1.0 if getattr(authored, "flip_hinge", False) else 1.0
+    dimensions = (door_plan_dimensions(op, model.wall(op.host_wall))
+                  if name in (DOOR_SWING, DOOR_SWING_DOUBLE) else None)
     placement = op.doorway.exterior_placement if op.doorway else None
     if placement:
         center = (center[0] - axis_delta[1] / length * placement.leaf_normal_m,
                   center[1] + axis_delta[0] / length * placement.leaf_normal_m)
     # A hinged leaf hangs at the jamb face and is the leaf's width (resolve/door_sizing).
     hinge_half_m, leaf_in = op.width_m / 2, width_in
-    if op.sizing is not None and name in (DOOR_SWING, DOOR_SWING_DOUBLE):
-        hinge_half_m = op.sizing.rough_w_m / 2 - op.sizing.jamb_allowance_m
-        leaf_in = op.sizing.leaf_w_m / M_PER_IN
+    if dimensions is not None:
+        hinge_half_m = dimensions.hinge_half_m
+        leaf_in = dimensions.leaf_width_m / M_PER_IN
     insert = center if symbol_is_centre_anchored(name) else (
         center[0] + hinge_jamb_sign * axis_delta[0] / length * hinge_half_m,
         center[1] + hinge_jamb_sign * axis_delta[1] / length * hinge_half_m)
@@ -220,8 +225,10 @@ def _emit_door_symbol(b: SceneBuilder, model: ResolvedModel, op, center: tuple[f
                                   host_wall_thickness_in=host_wall_thickness_in,
                                   maximum_opening_degrees=getattr(
                                       authored, "maximum_opening_degrees", 90.0))
-    if name == DOOR_SWING_DOUBLE:
-        params["hinge_half_in"] = hinge_half_m / M_PER_IN
+    if dimensions is not None:
+        params.update({key.removesuffix("_m") + "_in": value / M_PER_IN
+                       for key, value in asdict(dimensions).items()
+                       if key != "leaf_width_m"})
     b.add(Symbol(
         name=name, insert=_in(insert), rotation=angle, scale=leaf_in, layer="A-DOOR",
         uid=op.uid, params=params,

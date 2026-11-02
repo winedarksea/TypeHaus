@@ -6,7 +6,7 @@ import {
   type ResolvedNordicPalette,
 } from "../../nordic/palette";
 import { applyCarpetUv, createCarpetMaterial, isCarpetPile } from "../carpetMaterial";
-import { applyCarpetLoopUv, createCarpetLoopMaterial, isCarpetLoopPattern } from "../carpetLoopMaterial";
+import { applyCarpetLoopUv, createCarpetLoopMaterial, isCarpetRefineStructural } from "../carpetLoopMaterial";
 import { createPlanPrismGeometry, type PlanCenter } from "../planGeometry";
 import { makeSurfaceMesh, standardMaterial } from "../surfaces";
 
@@ -20,14 +20,14 @@ export function addStairFinishParts(parent: THREE.Group,
     if (!geometry) continue;
     const recipe = authoredAppearance(part.material_ref, materials)?.finish;
     if (isCarpetPile(recipe)) applyCarpetUv(geometry, center);
-    else if (isCarpetLoopPattern(recipe)) applyCarpetLoopUv(geometry, center);
+    else if (isCarpetRefineStructural(recipe)) applyCarpetLoopUv(geometry, center);
     let material = appearances.get(part.material_ref);
     if (!material) {
       const color = materialColor(part.material_ref, palette, materials);
       const roughness = mode === "nordic" ? floorSurface(part.material_ref, recipe).roughness : 1;
       material = isCarpetPile(recipe)
         ? createCarpetMaterial(mode, color, roughness)
-        : isCarpetLoopPattern(recipe)
+        : isCarpetRefineStructural(recipe)
         ? createCarpetLoopMaterial(mode, color, roughness)
         : standardMaterial(color, mode, { roughness });
       appearances.set(part.material_ref, material);

@@ -1,4 +1,5 @@
 """Resolved opening parts for the live viewer, which extrudes these rings and derives none."""
+from typehaus.resolve.door_plan_dimensions import door_plan_dimensions
 from typehaus.resolve.geometry_ir import GPrism
 
 # The viewer draws these from the opening's ``doorway`` record (sections, installation boards).
@@ -43,3 +44,13 @@ def sizing_json(sizing):
     out["basis"] = dict(sizing.basis)
     out["pocket_run_m"] = sizing.pocket_run_m
     return out
+
+
+def door_plan_dimensions_json(model, opening):
+    """Physical glyph dimensions; the canvas only projects these resolved measurements."""
+    from dataclasses import asdict
+
+    wall = model.wall(opening.host_wall)
+    if not opening.is_door or wall is None:
+        return None
+    return asdict(door_plan_dimensions(opening, wall))

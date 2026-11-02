@@ -299,7 +299,8 @@ def test_single_swing_arc_stays_concave_toward_its_hinge(rotation, swing_sign,
     geometry = door_symbol_geometry(_symbol(DOOR_SWING, width_in, swing_sign=swing_sign,
                                             rotation=rotation,
                                             hinge_jamb_sign=hinge_jamb_sign))
-    (leaf,) = geometry.strokes
+    leaf, *jambs = geometry.strokes
+    assert len(jambs) == 2
     (arc,) = geometry.arcs
     assert arc.center == (0.0, 0.0) and arc.radius == pytest.approx(width_in)
     assert _arc_sweep_deg(arc) == pytest.approx(90.0)
@@ -321,7 +322,7 @@ def test_double_swing_leaves_are_mirror_images(rotation, swing_sign):
     half = width_in / 2.0
     geometry = door_symbol_geometry(_symbol(DOOR_SWING_DOUBLE, width_in,
                                             swing_sign=swing_sign, rotation=rotation))
-    assert len(geometry.strokes) == 2 and len(geometry.arcs) == 2
+    assert len(geometry.strokes) == 4 and len(geometry.arcs) == 2
     mullion = (0.0, 0.0)
     for arc, jamb_sign in zip(geometry.arcs, (-1.0, 1.0)):
         assert arc.center == pytest.approx(_along(rotation, jamb_sign * half))

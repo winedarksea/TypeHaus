@@ -31,6 +31,7 @@ try {
   const { runProductTests } = await server.ssrLoadModule("/src/model/products.test.ts");
   const { runOpenHouseTests } = await server.ssrLoadModule("/src/engine/openHouse.test.ts");
   const { runDoorSymbolTests, runWindowSymbolTests } = await server.ssrLoadModule("/src/model/doorSymbols.test.ts");
+  const { runSwingDoorSymbolTests } = await server.ssrLoadModule("/src/model/swingDoorSymbols.test.ts");
   const { runRoofGeometryTests } = await server.ssrLoadModule("/src/three/roofGeometry.test.ts");
   const { runSweepParityTests, runSweepFrameTests, runSweepMeshTests } = await server.ssrLoadModule("/src/three/tubeGeometry.test.ts");
   const { runMaterialGeometryTests, runMemberColorTests, runSkinBandUvTests } = await server.ssrLoadModule("/src/three/materials.test.ts");
@@ -121,6 +122,7 @@ try {
   runModelGeometryTests();
   runMemberFootprintTests();
   runDoorSymbolTests();
+  runSwingDoorSymbolTests();
   runWindowSymbolTests();
   runRoofGeometryTests();
   runSweepParityTests();

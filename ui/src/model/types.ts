@@ -385,7 +385,18 @@ export interface OpeningPart {
   solids: { ring: [number, number][]; z0_m: number; z1_m: number }[];
 }
 
+export interface DoorPlanDimensions {
+  hinge_half_m: number;
+  leaf_width_m: number;
+  leaf_thickness_m: number;
+  jamb_thickness_m: number;
+  frame_normal_low_m: number;
+  frame_normal_high_m: number;
+  leaf_normal_m: number;
+}
+
 export interface Opening {
+  door_plan_dimensions?: DoorPlanDimensions | null;
   opening_parts?: OpeningPart[] | null;
   cased_product?: CasedDoorSpec | null;
   sizing?: DoorSizing | null;

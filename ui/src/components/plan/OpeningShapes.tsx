@@ -7,8 +7,9 @@
 import { useStore } from "../../state/store";
 import { memo, useRef, useState } from "react";
 import type { DoorOperation, Model, Opening, Stair, Vec2, Wall, WindowOperation } from "../../model/types";
-import { doorStrokeGlyph, hostWallThicknessM, windowStrokeGlyph } from "../../model/doorSymbols";
-import { openingHostWall, pointAlong, swingArcSweepFlag } from "../../model/geometry";
+import { doorStrokeGlyph, doorSymbolPoint, hostWallThicknessM, windowStrokeGlyph } from "../../model/doorSymbols";
+import { openingHostWall, pointAlong } from "../../model/geometry";
+import { swingDoorDimensions, swingDoorGeometry } from "../../model/swingDoorSymbols";
 import { memberFootprint } from "../../model/memberFootprint";
 import { NORDIC_ACCENT, NORDIC_INK } from "../../nordic/palette";
 import { PLAN_TEXT_HALO, PlanLabel } from "./PlanLabelLayer";
@@ -82,28 +83,7 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
   const dx = Math.cos(ang) * halfPx;
   const dy = Math.sin(ang) * halfPx;
   const hingeDirection = o.flip_hinge ? -1 : 1;
-  // A hinged leaf hangs at the jamb face (rough_w/2 - a) and is the sized leaf; without
-  // sizing it falls back to the void's edge and width (mirrors emit/draw/floorplan.py).
-  const sizing = o.is_door ? o.sizing ?? null : null;
-  const hingeHalfM = sizing ? sizing.rough_w_m / 2 - sizing.jamb_allowance_m : o.width_m / 2;
-  const leafM = sizing ? sizing.leaf_w_m : o.width_m;
-  const hx = Math.cos(ang) * hingeHalfM * scale, hy = Math.sin(ang) * hingeHalfM * scale;
-  const leafPx = leafM * scale;
-  const leafOffsetPx = (o.doorway?.exterior_placement?.leaf_normal_m ?? 0) * scale;
-  const hingeX = cx + hingeDirection * hx + Math.sin(ang) * leafOffsetPx;
-  const hingeY = cy + hingeDirection * hy - Math.cos(ang) * leafOffsetPx;
   const swingSign = o.flip_swing ? -1 : 1;
-  // SVG's y axis is inverted from plan coordinates, so the screen-space +90° normal is
-  // [sin(angle), -cos(angle)].  It matches the shared drawing IR's handed plan symbol.
-  const openingAngle = (o.maximum_opening_degrees ?? 90) * Math.PI / 180;
-  const leafX = hingeX + (-hingeDirection * Math.cos(ang) * Math.cos(openingAngle)
-    + swingSign * Math.sin(ang) * Math.sin(openingAngle)) * leafPx;
-  const leafY = hingeY + (-hingeDirection * Math.sin(ang) * Math.cos(openingAngle)
-    - swingSign * Math.cos(ang) * Math.sin(openingAngle)) * leafPx;
-  const wallArcX = hingeX - hingeDirection * Math.cos(ang) * leafPx;
-  const wallArcY = hingeY - hingeDirection * Math.sin(ang) * leafPx;
-  // A pair: two leaves of half the sized width, hinged at the two jamb faces.
-  const pairHalfPx = (sizing ? sizing.leaf_w_m / 2 : o.width_m / 2) * scale;
   const windowTick = Math.min(6, Math.max(3, scale * 0.08));
   // Null for the hinged operations, which draw a leaf plus a swing arc instead.
   const strokeGlyph = o.is_door ? doorStrokeGlyph({
@@ -112,6 +92,17 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
     parkJambSign: hingeDirection, widthM: o.width_m, heightM: o.height_m,
     hostWallThicknessM: hostWallThicknessM(host.layers), pixelsPerMeter: scale,
   }) : null;
+  const swingGlyph = o.is_door && !strokeGlyph ? swingDoorGeometry({
+    center: [cx, cy], angleRadians: ang, operatingSign: swingSign,
+    hingeSign: hingeDirection, doubleSwing: operation === "double_swing",
+    maximumOpeningDegrees: o.maximum_opening_degrees ?? 90,
+    dimensions: swingDoorDimensions(o, hostWallThicknessM(host.layers)), pixelsPerMeter: scale,
+  }) : null;
+  const hitHalfDepth = hostWallThicknessM(host.layers) * scale / 2;
+  const swingHitPoints = swingGlyph ? [
+    [-halfPx, -hitHalfDepth], [halfPx, -hitHalfDepth],
+    [halfPx, hitHalfDepth], [-halfPx, hitHalfDepth],
+  ].map(([along, normal]) => doorSymbolPoint([cx, cy], ang, 1, along, normal)) : [];
   // Empty for a fixed (picture) unit and for an unknown operation: a sash tick is drawn
   // only when the catalog actually says the window opens.
   const sashGlyph = o.is_door ? [] : windowStrokeGlyph({
@@ -164,11 +155,15 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
       pointerEvents={preview ? "none" : undefined}
       opacity={preview ? .65 : 1}
       style={{ cursor: preview ? undefined : "pointer" }}>
-      <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
-        stroke={selected ? NORDIC_ACCENT : "var(--canvas-white)"} strokeWidth={selected ? 6 : 5} />
-      <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
-      stroke={o.is_door ? "var(--canvas-wood)" : NORDIC_ACCENT} strokeWidth={2}
-        strokeDasharray={o.is_door ? undefined : "3 2"} />
+      {swingGlyph && <polygon points={swingHitPoints.map(point => point.join(",")).join(" ")}
+        fill="transparent" pointerEvents={preview ? "none" : "all"} />}
+      {!swingGlyph && <>
+        <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
+          stroke={selected ? NORDIC_ACCENT : "var(--canvas-white)"} strokeWidth={selected ? 6 : 5} />
+        <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
+          stroke={o.is_door ? "var(--canvas-wood)" : NORDIC_ACCENT} strokeWidth={2}
+          strokeDasharray={o.is_door ? undefined : "3 2"} />
+      </>}
       {o.is_door ? (strokeGlyph ? <>
         {/* The non-swinging operations — overhead, bifold, slider, pocket — are pure
             stroke glyphs resolved by the shared symbol module, arc-free by construction. */}
@@ -177,36 +172,16 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
             fill="none" stroke="var(--canvas-wood)" strokeWidth={stroke.dashed ? 1 : 1.5}
             strokeDasharray={stroke.dashed ? "4 3" : undefined} />
         ))}
-      </> : operation === "double_swing" ? <>
-        {/* French/double door — two half-width leaves hinged at the jambs, meeting at
-            a centre mullion. Both leaves swing to the same side. */}
-        {([-1, 1] as const).map((side) => {
-          const jx = cx + side * hx;
-          const jy = cy + side * hy;
-          const lx = jx + swingSign * Math.sin(ang) * pairHalfPx;
-          const ly = jy - swingSign * Math.cos(ang) * pairHalfPx;
-          // The closed leaf lies along the wall from the jamb toward the centre.
-          const sx = jx - side * Math.cos(ang) * pairHalfPx;
-          const sy = jy - side * Math.sin(ang) * pairHalfPx;
-          return (
-            <g key={side}>
-              <line x1={jx} y1={jy} x2={lx} y2={ly}
-                stroke="var(--canvas-wood)" strokeWidth={1.5} />
-              {/* Arc pivots on the jamb (jx,jy); its two leaves mirror across the mullion,
-                  so each resolves to the sweep flag that keeps that jamb as the centre. */}
-              <path d={`M ${sx} ${sy} A ${pairHalfPx} ${pairHalfPx} 0 0 ${swingArcSweepFlag([jx, jy], [sx, sy], [lx, ly])} ${lx} ${ly}`}
-                fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
-            </g>
-          );
-        })}
       </> : <>
-        <line x1={hingeX} y1={hingeY} x2={leafX} y2={leafY}
-          stroke="var(--canvas-wood)" strokeWidth={1.5} />
-        {/* Swing arc pivots on the hinge; the closed leaf lies along the wall at the far
-            jamb (wallArc) and opens to leaf. The flag must keep the hinge as the arc
-            centre so the arc bows concave toward the hinge, not convex away from it. */}
-        <path d={`M ${wallArcX} ${wallArcY} A ${leafPx} ${leafPx} 0 0 ${swingArcSweepFlag([hingeX, hingeY], [wallArcX, wallArcY], [leafX, leafY])} ${leafX} ${leafY}`}
-          fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
+        {swingGlyph && [...swingGlyph.jambs, ...swingGlyph.leaves].map((points, index) => (
+          <polyline key={index} points={points.map(point => point.join(",")).join(" ")}
+            fill="none" stroke={selected ? NORDIC_ACCENT : "var(--canvas-wood)"} strokeWidth={1.5} />
+        ))}
+        {swingGlyph?.arcs.map((arc, index) => (
+          <path key={index}
+            d={`M ${arc.closedTip.join(" ")} A ${arc.radius} ${arc.radius} 0 0 ${arc.sweepFlag} ${arc.openTip.join(" ")}`}
+            fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
+        ))}
       </>) : <>
         <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
           stroke={NORDIC_ACCENT} strokeWidth={3} />

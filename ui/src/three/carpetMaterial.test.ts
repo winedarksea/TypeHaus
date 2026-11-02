@@ -2,7 +2,7 @@ import * as THREE from "three";
 import {
   applyCarpetUv, buildCarpetMaps, CARPET_TILE_M, carpetSample, createCarpetMaterial, isCarpetPile,
 } from "./carpetMaterial";
-import { carpetLoopSample, isCarpetLoopPattern } from "./carpetLoopMaterial";
+import { carpetLoopSample, isCarpetRefineStructural } from "./carpetLoopMaterial";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -33,7 +33,7 @@ export function runCarpetMaterialTests() {
     assert(s.roughness >= 0.85 && s.roughness <= 1, "pile roughness stays high");
   }
 
-  assert(isCarpetLoopPattern("carpet-loop-pattern") && !isCarpetLoopPattern("carpet-pile"), "loop recipe by declared finish");
+  assert(isCarpetRefineStructural("carpet-refine-structural") && !isCarpetRefineStructural("carpet-pile"), "loop recipe by declared finish");
   for (const t of [0.05, 0.37, 0.8]) {
     const [a, b, c, d] = [carpetLoopSample(0, t), carpetLoopSample(1, t), carpetLoopSample(t, 0), carpetLoopSample(t, 1)];
     assert(Math.abs(a.luminance - b.luminance) < 1e-6 && Math.abs(c.height - d.height) < 1e-9

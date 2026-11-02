@@ -9,8 +9,8 @@ owns both halves of the contract:
 * :func:`door_symbol_geometry` — the resolved strokes/arcs a writer draws, in model-space
   inches, so the PDF and DXF writers agree by construction.
 
-The TypeScript canvas mirrors this file in ``ui/src/model/doorSymbols.ts``; the constants
-below are the shared definition of each glyph and must move together.
+The TypeScript canvas mirrors this file in ``ui/src/model/doorSymbols.ts`` and
+``swingDoorSymbols.ts``; their geometry contracts must move together.
 """
 
 from __future__ import annotations
@@ -20,6 +20,8 @@ from dataclasses import dataclass
 
 from typehaus.emit.draw.scene import Symbol
 from typehaus.model.enums import DoorOperation
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.door_sizing import CASED_DOOR_DEFAULTS
 
 Pt = tuple[float, float]
 
@@ -124,11 +126,20 @@ def door_symbol_params(name: str, width_in: float, height_in: float, swing_sign:
     the symbol is inserted on the wall axis, so both are measured from its half depth.
     """
     params: dict[str, float] = {"width_in": width_in, "swing_sign": swing_sign}
+    if name in (DOOR_SWING, DOOR_SWING_DOUBLE):
+        params.update(
+            hinge_half_in=width_in / 2.0,
+            leaf_thickness_in=CASED_DOOR_DEFAULTS.leaf_thickness_m / M_PER_IN,
+            jamb_thickness_in=CASED_DOOR_DEFAULTS.jamb_thickness_m / M_PER_IN,
+            frame_normal_low_in=-host_wall_thickness_in / 2.0,
+            frame_normal_high_in=host_wall_thickness_in / 2.0,
+            leaf_normal_in=0.0,
+        )
+        if maximum_opening_degrees != 90.0:
+            params["maximum_opening_degrees"] = maximum_opening_degrees
     if name == DOOR_SWING:
         # A leaf shuts *away* from its hinge, and the arc has to sweep that quadrant.
         params["closed_leaf_sign"] = -hinge_jamb_sign
-        if maximum_opening_degrees != 90.0:
-            params["maximum_opening_degrees"] = maximum_opening_degrees
     elif name == DOOR_OVERHEAD:
         params["track_depth_in"] = height_in * OVERHEAD_TRACK_DEPTH_PER_DOOR_HEIGHT
     elif name == DOOR_BIFOLD:
@@ -169,13 +180,17 @@ def door_symbol_geometry(node: Symbol) -> DoorSymbolGeometry:
     width_in = float(node.params.get("width_in", node.scale) or node.scale)
     swing_sign = float(node.params.get("swing_sign", 1.0))
     frame = _SymbolFrame(node.insert, node.rotation, swing_sign)
-    if node.name == DOOR_SWING:
-        return _swing_leaf(node.insert, node.rotation, swing_sign, width_in,
-                           float(node.params["closed_leaf_sign"]),
-                           float(node.params.get("maximum_opening_degrees", 90.0)))
-    if node.name == DOOR_SWING_DOUBLE:
-        return _double_swing(frame, node.rotation, swing_sign, width_in,
-                             float(node.params.get("hinge_half_in", width_in / 2.0)))
+    if node.name in (DOOR_SWING, DOOR_SWING_DOUBLE):
+        thickness = float(node.params.get("leaf_thickness_in", 0.0))
+        maximum = float(node.params.get("maximum_opening_degrees", 90.0))
+        if node.name == DOOR_SWING:
+            leaves = _swing_leaf(node.insert, node.rotation, swing_sign, width_in,
+                                 float(node.params["closed_leaf_sign"]), maximum, thickness)
+        else:
+            leaves = _double_swing(frame, node.rotation, swing_sign, width_in,
+                                    float(node.params.get("hinge_half_in", width_in / 2.0)),
+                                    maximum, thickness)
+        return DoorSymbolGeometry(strokes=leaves.strokes + _swing_jambs(node), arcs=leaves.arcs)
     if node.name == DOOR_OVERHEAD:
         return _overhead(frame, width_in, float(node.params.get("track_depth_in", width_in)))
     if node.name == DOOR_BIFOLD:
@@ -210,7 +225,8 @@ class _SymbolFrame:
 
 def _swing_leaf(hinge: Pt, rotation_deg: float, swing_sign: float, leaf_length_in: float,
                 closed_leaf_sign: float,
-                maximum_opening_degrees: float = 90.0) -> DoorSymbolGeometry:
+                maximum_opening_degrees: float = 90.0,
+                leaf_thickness_in: float = 0.0) -> DoorSymbolGeometry:
     """One hinged leaf standing at its positive stop plus its swing arc, pivoting on ``hinge``.
 
     ``closed_leaf_sign`` is the direction along the wall (+1 = the frame's ``u``) the shut
@@ -224,23 +240,50 @@ def _swing_leaf(hinge: Pt, rotation_deg: float, swing_sign: float, leaf_length_i
     angle = math.radians(open_angle)
     open_end = (hinge[0] + math.cos(angle) * leaf_length_in,
                 hinge[1] + math.sin(angle) * leaf_length_in)
+    # Thicken toward the shut leaf, keeping the established hinge-to-tip arc edge.
+    direction = closed_leaf_sign * swing_sign
+    offset = (math.sin(angle) * direction * leaf_thickness_in,
+              -math.cos(angle) * direction * leaf_thickness_in)
+    points = (hinge, open_end)
+    if leaf_thickness_in > 0:
+        points += ((open_end[0] + offset[0], open_end[1] + offset[1]),
+                   (hinge[0] + offset[0], hinge[1] + offset[1]), hinge)
     return DoorSymbolGeometry(
-        strokes=(SymbolStroke(points=(hinge, open_end)),),
+        strokes=(SymbolStroke(points=points),),
         arcs=(_quarter_swing_arc(hinge, leaf_length_in, closed_angle,
                                  open_angle),),
     )
 
 
+def _swing_jambs(node: Symbol) -> tuple[SymbolStroke, ...]:
+    thickness = float(node.params.get("jamb_thickness_in", 0.0))
+    if thickness <= 0:
+        return ()
+    half = float(node.params["hinge_half_in"])
+    # Single symbols insert at a hinge; pairs insert at the leaf centre. Undo that
+    # placement before locating jambs, so exterior leaf offsets never displace the frame.
+    along = float(node.params["closed_leaf_sign"]) * half if node.name == DOOR_SWING else 0.0
+    local = _SymbolFrame(node.insert, node.rotation, 1.0)
+    center = local.at(along, -float(node.params["leaf_normal_in"]))
+    frame = _SymbolFrame(center, node.rotation, 1.0)
+    low = float(node.params["frame_normal_low_in"])
+    high = float(node.params["frame_normal_high_in"])
+    return tuple(SymbolStroke(points=tuple(frame.at(u, v) for u, v in (
+        (side * half, low), (side * (half + thickness), low),
+        (side * (half + thickness), high), (side * half, high), (side * half, low),
+    ))) for side in (-1.0, 1.0))
+
+
 def _quarter_swing_arc(hinge: Pt, radius_in: float, closed_angle_deg: float,
                        open_angle_deg: float) -> SymbolArc:
-    """The 90° sweep between the shut and open leaf, ordered as both writers expect.
+    """The authored sweep between the shut and open leaf, ordered as both writers expect.
 
     ezdxf and matplotlib each draw an arc counter-clockwise from ``start_angle`` to
     ``end_angle``, so the two leaf directions cannot simply be emitted in leaf order: for
     every leaf that opens clockwise that draws the 270° complement — an arc bowing away
     from the hinge instead of hugging it.
     """
-    opens_counter_clockwise = (open_angle_deg - closed_angle_deg) % 360.0 < 180.0
+    opens_counter_clockwise = open_angle_deg > closed_angle_deg
     start_deg, end_deg = ((closed_angle_deg, open_angle_deg) if opens_counter_clockwise
                           else (open_angle_deg, closed_angle_deg))
     return SymbolArc(center=hinge, radius=radius_in, start_angle_deg=start_deg % 360.0,
@@ -248,7 +291,9 @@ def _quarter_swing_arc(hinge: Pt, radius_in: float, closed_angle_deg: float,
 
 
 def _double_swing(frame: _SymbolFrame, rotation_deg: float, swing_sign: float,
-                  width_in: float, hinge_half_in: float | None = None) -> DoorSymbolGeometry:
+                  width_in: float, hinge_half_in: float | None = None,
+                  maximum_opening_degrees: float = 90.0,
+                  leaf_thickness_in: float = 0.0) -> DoorSymbolGeometry:
     """A French pair: half-width leaves hinged at both jambs, opening to the same side.
 
     The second leaf reuses the single-leaf math with its rotation flipped 180° and its
@@ -259,9 +304,11 @@ def _double_swing(frame: _SymbolFrame, rotation_deg: float, swing_sign: float,
     half = width_in / 2.0
     hinge = half if hinge_half_in is None else hinge_half_in
     left = _swing_leaf(frame.at(-hinge, 0.0), rotation_deg, swing_sign, half,
-                       closed_leaf_sign=1.0)
+                       closed_leaf_sign=1.0, maximum_opening_degrees=maximum_opening_degrees,
+                       leaf_thickness_in=leaf_thickness_in)
     right = _swing_leaf(frame.at(hinge, 0.0), rotation_deg + 180.0, -swing_sign, half,
-                        closed_leaf_sign=1.0)
+                        closed_leaf_sign=1.0, maximum_opening_degrees=maximum_opening_degrees,
+                        leaf_thickness_in=leaf_thickness_in)
     return DoorSymbolGeometry(strokes=left.strokes + right.strokes,
                               arcs=left.arcs + right.arcs)
 
