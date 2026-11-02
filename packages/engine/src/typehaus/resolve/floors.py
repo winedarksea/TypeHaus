@@ -23,6 +23,7 @@ from typehaus.resolve.floor_openings import (
     opening_members,
     within_one_bay,
 )
+from typehaus.resolve.floor_strongbacks import strongback_members
 from typehaus.resolve.floor_tilt import joist_lift, twisted
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
@@ -203,6 +204,8 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
     members.extend(_reinforcement_members(
         system, spec, sorted(positions + extra + anchored), along_x, ends.tip_lo, ends.tip_hi,
         z0, z1, lift if tilt is not None else None, field_members=members))
+    findings += strongback_members(system, sorted(positions + extra + anchored), along_x, z0,
+                                   members)
 
     # Opening framing after clipping: headers on edges with no declared bearing, trimmer
     # packs bearing to bearing (resolve/floor_openings.py).

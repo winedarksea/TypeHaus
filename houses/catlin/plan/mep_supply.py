@@ -216,8 +216,8 @@ SUPPLY = [
                   pt(ft(9, 6), ft(34, 10)), pt(ft(9, 6), ft(34, 10)),
                   pt(ft(4, 9), ft(34, 10)), pt(ft(4, 9), ft(34, 10)),
                   pt(ft(4, 9), inch(386.5)), pt(ft(4, 9), inch(386.5)), pt(ft(4, 9), ft(16)),
-                  pt(ft(8), ft(16)), pt(ft(17, 5), ft(16)), pt(ft(17, 5), inch(186)),
-                  pt(ft(29, 9.6), inch(186)),
+                  pt(ft(8), ft(16)), pt(ft(17, 5), ft(16)), pt(ft(17, 5), inch(180)),
+                  pt(ft(29, 9.6), inch(180)),
                   pt(ft(29, 9.6), inch(424.2)), pt(ft(29, 9.6), inch(424.2)),
                   pt(ft(29, 9.6), inch(421.5)), pt(ft(29, 9.6), inch(421.5))),
             diameter=inch(1.25), material="pex",
@@ -477,7 +477,7 @@ SUPPLY = [
     # ** BOTH KITCHEN RISERS SURFACE AT THE SINK BASE'S BACK (2026-10-23). ** At y=35'-1 1/2",
     # 3.9" off its back panel and east of the disposer and drain, stopping 20" AFF under the
     # bowl. ** SINCE 2026-11-01 THEY RISE 2 3/4" FARTHER NORTH, AT y=35'-4 3/16" (424.2"), **
-    # the 35'-36' truss bay: y=35'-1 1/2" is the chord of truss 022 (418 1/4".. 421 3/4").
+    # the 35'-36' truss bay: y=35'-1 1/2" is the chord of the 420" truss line (418 1/4".. 421 3/4"; lines are 16" o.c.).
     # Each jogs back south above the floor, the hot at 118 1/2" (just over the dishwasher stub
     # at 114 15/16") and the cold at 120", to the stop positions it always had.
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,

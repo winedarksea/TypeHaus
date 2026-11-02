@@ -1013,14 +1013,14 @@
       "points": [
         [
           215.25,
-          -11.875
+          -1.4999999999999998
         ],
         [
-          229.0925196850394,
-          -11.875
+          220.75,
+          -1.4999999999999998
         ],
         [
-          229.0925196850394,
+          220.75,
           0.0
         ],
         [
@@ -1033,7 +1033,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "Q3ZJD83QVD",
-      "tag": "joist-0-003-0"
+      "tag": "bearing-block-0-002-rail-top"
     },
     {
       "space": "model",
@@ -1041,14 +1041,14 @@
       "boundary": [
         [
           215.25,
-          -11.875
+          -1.4999999999999998
         ],
         [
-          229.0925196850394,
-          -11.875
+          220.75,
+          -1.4999999999999998
         ],
         [
-          229.0925196850394,
+          220.75,
           0.0
         ],
         [
@@ -1069,39 +1069,55 @@
       "points": [
         [
           215.25,
+          -11.875
+        ],
+        [
+          220.75,
+          -11.875
+        ],
+        [
+          220.75,
           -10.375
         ],
         [
-          229.0925196850394,
+          215.25,
           -10.375
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.13,
+      "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": false,
+      "closed": true,
       "uid": "Q3ZJD83QVD",
-      "tag": "joist-0-003-0/flange"
+      "tag": "bearing-block-0-002-rail-bottom"
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
+      "node": "hatch",
+      "boundary": [
         [
           215.25,
-          -1.4999999999999998
+          -11.875
         ],
         [
-          229.0925196850394,
-          -1.4999999999999998
+          220.75,
+          -11.875
+        ],
+        [
+          220.75,
+          -10.375
+        ],
+        [
+          215.25,
+          -10.375
         ]
       ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "Q3ZJD83QVD",
-      "tag": "joist-0-003-0/flange"
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
     },
     {
       "space": "model",

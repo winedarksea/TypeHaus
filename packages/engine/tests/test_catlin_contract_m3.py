@@ -151,10 +151,9 @@ def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
         assert "ASCE 32" in by_tag[tag].message, tag
     # No court pad is left to grade.
     assert not [tag for tag in by_tag if tag.startswith("PD-SG-")]
-    # FS-M-NE's trusses at 12" o.c. read the 16" table conservatively; a wider spacing would
-    # be UNKNOWN (decision #112).
+    # FS-M-NE's trusses at 16" o.c. read TRIFORCE's OJ418S row (decision #112).
     assert by_tag["FS-M-NE"].result is Result.PASS
-    assert "tighter than the table: conservative" in by_tag["FS-M-NE"].message
+    assert "OJ418S (18' stock) at 16\" o.c.: 18'-0\"" in by_tag["FS-M-NE"].message
 
 
 def test_catlin_sunken_garden_decks_are_graded_and_the_guard_rule_resolves(

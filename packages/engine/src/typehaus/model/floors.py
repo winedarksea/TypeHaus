@@ -127,6 +127,18 @@ class JoistReinforcement(HausModel):
     source: str | None = None
 
 
+class Strongback(HausModel):
+    """A continuous on-edge member across an open-web field's bottom chords, through one web
+    opening at ``at`` (a station along the joist axis); it stiffens the floor against bounce.
+    Each perp station in ``omit_bays`` cuts the bay containing it, for a run crossing there.
+    """
+
+    at: Length
+    member: str = "2x6"
+    omit_bays: tuple[Length, ...] = ()
+    source: str | None = None
+
+
 class DeckLayer(HausModel):
     material_ref: str
     thickness: Length
@@ -209,6 +221,7 @@ class FloorSystem(Element):
     # Sistered plies + blocking under concentrated loads (a post bearing on the deck).
     # Empty is the ordinary case: a deck with no point load on it needs none.
     reinforcements: tuple[JoistReinforcement, ...] = ()
+    strongbacks: tuple[Strongback, ...] = ()  # resolve/floor_strongbacks.py
     subfloor: DeckLayer | None = None
     # The ceiling hung under this deck's joists, room side first (furring, membrane,
     # finish — same "interior -> exterior" convention as ``Assembly.default_lining``).

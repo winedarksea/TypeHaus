@@ -561,7 +561,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "Q3ZJD83QVD",
-      "tag": "joist-0-016-0"
+      "tag": "joist-0-012-0"
     },
     {
       "space": "model",
@@ -609,7 +609,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "Q3ZJD83QVD",
-      "tag": "joist-0-016-0/flange"
+      "tag": "joist-0-012-0/flange"
     },
     {
       "space": "model",
@@ -629,7 +629,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "Q3ZJD83QVD",
-      "tag": "joist-0-016-0/flange"
+      "tag": "joist-0-012-0/flange"
     },
     {
       "space": "model",

@@ -552,8 +552,8 @@ REGISTERS_BASEMENT = [
     # tops 7'-6") and the sectional, not over either.
     # ** 20'-6" SINCE 2026-11-01 (decision #112). ** The ceiling is FS-M-NE's trusses over a
     # resilient channel, so the valve's 125 mm collar and increaser (2.94" tall) stand in the
-    # cavity: at y=20'-0" they stood on truss joist-0-007 (`mep.terminal_neck_fit`, 3.50"),
-    # at 20'-6" they are mid-bay (241 3/4".. 250 1/4"), fed by the cavity duct.
+    # cavity: at y=20'-0" they stood on a 12" o.c. truss (`mep.terminal_neck_fit`, 3.50"); at 20'-6"
+    # they are mid-bay of the 16" o.c. lines (236, 252: 237 3/4".. 250 1/4"), fed by the cavity duct.
     Register(uid="CBRV02AAAA", tag="REG-B-SUP2", kind=DuctSystem.SUPPLY, room="RM-B-PLAY-N",
             position=pt(ft(19), ft(20, 6)), duct_ref="DU-B-ERV-R-PLAY",
             type_ref="REG-T-ERV-VALVE-SUP-125", design_cfm=30,

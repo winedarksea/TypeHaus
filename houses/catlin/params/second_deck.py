@@ -76,6 +76,21 @@ TJI_230_FLOOR_SPAN = PublishedSpan(
     condition="clear distance between supports, uniform loads, the more restrictive of simple or continuous span; single layer of 24\" o.c. span-rated GLUE-NAILED floor panels (reduce 6\" if nailed only); 1 3/4\" minimum end bearing without web stiffeners, 3 1/2\" intermediate; long-term creep under dead load not considered; point loads (the RM-M-BATH2 tub, the WashTower) are outside the row and answered by the JoistReinforcement blocking",
 )
 
+# FS-M-NE's open-web trusses at 16" o.c. (decision #112). The 17.92' tip-to-tip blank is
+# inside the 18'-0" row; the peninsula's point load is answered by a doubled truss
+# (``params/main_deck.py``), and the bounce by two strongbacks.
+TRIFORCE_OJ418S_FLOOR_SPAN = PublishedSpan(
+    source="TRIFORCE (Open Joist) U.S. Specifier Guide, \"Maximum Allowable Spans\" floor table",
+    table="L/480 live load deflection, 40 PSF live / 25 PSF dead, 11-7/8\" OJ418S (18' stock) at 16\" o.c.: 18'-0\"",
+    member=_TRUSS,
+    span=ft(18),
+    load_psf=40.0,
+    spacing=_OC,
+    edition="2023-05-11",
+    page="5",
+    condition="glue-nailed 23/32\" floor panels; 1 1/2\" minimum end bearing; uniform load only; OJ418S as the basis of design (any fabricator's 11 7/8\" truss to the same row); the 25 psf dead-load column; point loads (the peninsula) are outside the row and answered by the doubled truss; L/720 live is on the order for a stiffer floor",
+)
+
 # How the x=18' plate is split. ``W-M-C2`` is a 2x6: 5 1/2" of seat, both decks landing on
 # it from opposite sides. A centreline split gives each 2 3/4", which shorts the truss — an
 # open-web truss wants 3" minimum, an I-joist 1 3/4". So the meeting line moves 3/4" east:

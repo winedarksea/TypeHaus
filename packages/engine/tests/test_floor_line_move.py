@@ -7,8 +7,11 @@ billed like any other. A station matching no line, or a move out of the field or
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 from test_floor_extra_line import _joist_count, _joists
 
+from typehaus.checks.structural.interference import member_interference
 from typehaus.hardware.config import UpliftTieRules
 from typehaus.joints.bearing import bearing_connections
 from typehaus.model import (
@@ -27,6 +30,7 @@ from typehaus.model import (
     Project,
     Site,
     Storey,
+    Strongback,
     degF,
     ft,
     inch,
@@ -40,7 +44,7 @@ _EXT = Assembly(tag="EXT", layers=(
           function=LayerFunction.STRUCTURE),))
 
 
-def _model(moves=()):
+def _model(moves=(), strongbacks=(), member="2x8", **panels):
     project = Project(name="LM", project_uuid="00000000-0000-4000-8000-0000000000e2",
                       site=Site(lat=44.9, lon=-93.2, elevation=ft(830),
                                 design_temp_heating=degF(-15), design_temp_cooling=degF(90)),
@@ -58,9 +62,10 @@ def _model(moves=()):
                   size="3-2x12"))
     floor = FloorSystem(
         uid="FS000000e2", tag="FS-M",
-        joists=JoistSpec(member="2x8", spacing=inch(16), direction="y",
-                         bearing_refs=("BM-S", "BM-N"), line_overrides=tuple(moves)),
-        subfloor=DeckLayer(material_ref="spf", thickness=inch(0.75)), service="deck")
+        joists=JoistSpec(member=member, spacing=inch(16), direction="y",
+                         bearing_refs=("BM-S", "BM-N"), line_overrides=tuple(moves), **panels),
+        subfloor=DeckLayer(material_ref="spf", thickness=inch(0.75)), service="deck",
+        strongbacks=tuple(strongbacks))
     return resolve(plan.with_elements("main", (*nodes, *beams, floor)))
 
 
@@ -103,3 +108,23 @@ def test_a_move_out_of_the_field_is_refused():
     _, findings = _model([(inch(96), ft(20))])
     (refusal,) = _refusals(findings)
     assert "outside the joist field" in refusal.message
+
+
+def test_a_strongback_threads_one_web_opening_and_skips_its_cut_bay():
+    def truss(at):  # webs on 12" + 24k; the opening around 24" is 17.5"..30.5"
+        return _model(strongbacks=[Strongback(at=at, omit_bays=(inch(40),))],
+                      member="11.875 floor truss", web_panel_pitch=inch(24),
+                      web_opening_width=inch(13), web_panel_offset=inch(12))
+
+    model, findings = truss(inch(29.75))
+    assert not [f for f in findings if f.check_id == "integrity.floor_strongback"]
+    pieces = [m for m in model.floors[0].members if m.category == "strongback"]
+    assert sorted(tuple(round(v / inch(1).meters, 3) for v in (m.p0[1], m.p0[0], m.p1[0]))
+                  for m in pieces) == [(29.75, 0.0, 32.0), (29.75, 48.0, 192.0)]
+    ctx = SimpleNamespace(model=model, plan=model.plan, preferences=SimpleNamespace(
+        framing=SimpleNamespace(interference_tolerance_in=0.25)))
+    assert not [f for f in member_interference(ctx) if "strongback" in f.message]
+
+    model, findings = truss(inch(36))  # on a web
+    assert [f for f in findings if f.check_id == "integrity.floor_strongback"]
+    assert not [m for m in model.floors[0].members if m.category == "strongback"]

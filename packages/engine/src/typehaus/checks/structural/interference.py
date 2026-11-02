@@ -153,9 +153,7 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     # A rafter/ridge against a wall top is NOT cleared here: ``_rafter_seat.grade_seat``
     # grades it in the caller (a birdsmouth only where the seat geometry holds).
     wall_top_kinds = _WALL_TOP_KINDS
-    # A fabricated truss bears down onto the wall top plate it lands on. The box IR carries
-    # no gusset plate or heel seat, so that reads as shared volume — intended joinery, never
-    # an elevation bug.
+    # A fabricated truss bearing on its wall top plate: the box IR carries no heel seat.
     if kinds & _TRUSS_KINDS and kinds & wall_top_kinds:
         return True
     # eave web stiffener bonded to its own rafter.
@@ -181,9 +179,11 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
         return True
     if kinds & _STAIR_BORNE and (kinds - _STAIR_BORNE) <= _STAIR_SUPPORT:
         return True
-    # Two ledger/hanger bands of the same stair lapping at a landing-platform corner
-    # (e.g. a rim ledger meeting an edge-joist ledger on perpendicular concrete walls).
+    # Two ledger/hanger bands of the same stair lapping at a landing-platform corner.
     if kinds == {"hanger"} and same_parent:
+        return True
+    # A strongback through its own truss field's web openings (resolve/floor_strongbacks.py).
+    if "strongback" in kinds and kinds <= {"strongback", "joist", "sister_joist"} and same_parent:
         return True
     # A stair's wall ledger meeting the floor-opening framing at the head of its flight.
     # The flight arrives *at* the opening edge, so the ledger let into the shaft wall and

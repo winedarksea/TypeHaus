@@ -1316,12 +1316,12 @@ CONDUIT_TRUNKS = [
     #
     # ** OVER THE THEATER CEILING, NOT UNDER IT (2026-11-02, decision #112). ** The hall leg
     # keeps its 2026-09-22 lane around ST-B2M (x=9'-6 5/8" strip, W-B-STR2, SF-B-BATH, up the
-    # hall at x=16'-5 1/2"), but stops at y=23'-6", south of FO-M-STAIR (y>26'-0 3/8" is open
+    # hall at x=16'-5 1/2"), but stops at y=23'-4", south of FO-M-STAIR (y>26'-0 3/8" is open
     # well). A conduit body there (accessible, covers down) takes the turn: a ramp rises into
     # FS-M-WEST's bay and crosses the x=18' plate OVER it, not through the framed W-B-CN (a
     # bearing 2x6 bores 2.20" at most, R602.6, and the old under-plate lane now lies in its
-    # double top plate). East of the wall it rides FS-M-NE's truss bay y=23'-6" (between the
-    # 23' and 24' trusses, clear of both chords) at -3 1/2", the top of the web window: over
+    # double top plate). East of the wall it rides FS-M-NE's truss bay y=23'-4" (between the
+    # 284" and 268" lines, 16" o.c., clear of both chords and FS-M-STAIR's joists) at -3 1/2", the top of the web window: over
     # PR-B-CW-TRUNK (x=29'-9.6") and PR-B-HW-KITCH, which it must cross to reach the kitchen.
     # It turns north at x=28'-2 1/2" (the 13" web opening beside CD-B-DATA-MEDIA's) through
     # each truss to y=29'-6", east in that bay, and rises through the deck 4 3/4" south of
@@ -1333,15 +1333,15 @@ CONDUIT_TRUNKS = [
                path=(pt(inch(9.5), ft(29)), pt(inch(9.5), ft(29)), pt(ft(9, 6.625), ft(29)),
                      pt(ft(9, 6.625), ft(19, 11)), pt(ft(13, 3.5), ft(19, 11)),
                      pt(ft(13, 3.5), ft(18, 11.75)), pt(ft(16, 5.5), ft(18, 11.75)),
-                     pt(ft(16, 5.5), ft(23, 6)), pt(inch(209), ft(23, 6)),
-                     pt(inch(338.5), ft(23, 6)), pt(inch(338.5), ft(29, 6)),
+                     pt(ft(16, 5.5), inch(280)), pt(inch(209), inch(280)),
+                     pt(inch(338.5), inch(280)), pt(inch(338.5), ft(29, 6)),
                      pt(ft(34, 11), ft(29, 6)), pt(ft(34, 11), ft(29, 6))),
                start_elevation=inch(-31.4375), end_elevation=ft(3, 6),
                elevations=(inch(-31.4375), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
                            ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
                            inch(-3.5), inch(-3.5), inch(-3.5), inch(-3.5), ft(3, 6)),
                # NEC 358.26 conduit bodies, covers down: 3 = RM-B-FURNACE (9'-6 5/8", 19'-11");
-               # 7 = the hall, at the foot of the ramp (16'-5 1/2", 23'-6").
+               # 7 = the hall, at the foot of the ramp (16'-5 1/2", 23'-4").
                pull_points=(3, 7),
                from_ref="ED-B-PANEL", to_ref="ED-M-LIVING-KGF3"),
     # South out of the basement to the hot tub disconnect under the porch. The east leg runs

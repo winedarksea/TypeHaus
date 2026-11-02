@@ -303,8 +303,8 @@
 # $88-128) and is now stated at the 23/32" rate rather than inherited at the 1/2" one.
 # "4x1.4375 stiffener panel" = { material = { low = 1.1, high = 1.6 }, labour = { low = 3.75, high = 8 } }  # was 76 LF (76 pairs) -> 2 sheets
 # PLACEHOLDER, 2026-08-21 — no fabricator quote yet, confirm before treating the takeoff
-# delta as meaningful. Since 2026-11-01 also FS-M-NE's 24 trusses at 12" o.c. (60 psf live,
-# L/480 — a heavier fabricated design than FS-S-WEST's, so read the high end there). FS-S-WEST's open-web trimmable trusses, same 11 7/8" depth as the
+# delta as meaningful. Since 2026-11-01 also FS-M-NE's 19 trusses at 16" o.c. plus a sister
+# (TRIFORCE OJ418S row, 40 psf live, L/480; L/720 requested — so read the high end there). FS-S-WEST's open-web trimmable trusses, same 11 7/8" depth as the
 # I-joist row above. Material above the I-joist's $3.50-5.50 (fabricated open-web at this
 # depth costs more per foot); labour *below* it (no web-hole layout on site, faster to
 # hang than an I-joist that still needs blocking/hole-boring for services).
@@ -993,7 +993,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # these eight the owner wants in stainless becomes a `Connector` in
 # params/sunken_garden.py at ~$3.00-$6.50 each, which stands the derived rule down at that
 # joint and puts the part number in the plan source where it can be read.
-"H2.5AZ" = { low = 1.2, high = 2.5 }  # 8 ea — all derived, PRESERVATIVE-TREATED bearings: the north entry's 8. FS-M-NE's 24 PT-mudsill truss seats went to A35Z on 2026-11-02 (Minn. R. 1309.0404). 57 until 2026-09-22, when the balcony's joist ties went to authored stainless (H10ASS / H2.5ASS)
+"H2.5AZ" = { low = 1.2, high = 2.5 }  # 8 ea — all derived, PRESERVATIVE-TREATED bearings: the north entry's 8. FS-M-NE's 19 PT-mudsill truss seats went to A35Z on 2026-11-02 (Minn. R. 1309.0404). 57 until 2026-09-22, when the balcony's joist ties went to authored stainless (H10ASS / H2.5ASS)
 # ** THE STAINLESS TWIN, AND IT IS A SEPARATE PART AND A SEPARATE PRICE FOR TWO REASONS. **
 # RF-BW-CANOPY's three trusses land on 3-ply KDAT headers at an entry that is salted every
 # winter, and the house buys stainless at every KDAT joint (owner, 2026-09-10). Unlike the
@@ -1057,7 +1057,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 2026-09-30, UNCONFIRMED — the owner's numbers replace them. One row per assembled cap (the
 # pair of pieces).
 "ACE6Z" = { low = 30, high = 60 }  # 4 ea — CN-BW-CAP-W/-NW, CN-BW-CAP-E/-NE (the east two only under "kdat")
-"A35Z" = { low = 1.5, high = 3.5 }  # 116 ea — 61 derived joist-to-sill ties (JoistSpec.sill_tie: 37 TJI + 24 truss ends on the concrete walls, Minn. R. 1309.0404) + 45 at the wall-top blocking stations (plan/wall_top_ties.py) + CN-BW-A35-* (4, the east two only under "kdat") + CN-BW-PLATE-S/-N + 4 at SB-BW-BAND's centre post
+"A35Z" = { low = 1.5, high = 3.5 }  # 111 ea — 56 derived joist-to-sill ties (JoistSpec.sill_tie: 37 TJI + 19 truss ends on the concrete walls, Minn. R. 1309.0404) + 45 at the wall-top blocking stations (plan/wall_top_ties.py) + CN-BW-A35-* (4, the east two only under "kdat") + CN-BW-PLATE-S/-N + 4 at SB-BW-BAND's centre post
 # The band brace's nails, billed per nail by `takeoff/strap_braces`. 0 ea since 2026-10-04: the
 # CS16 X became SB-BW-BAND's slats (notes/canopy_west_band.md §8 keeps the straps as a backup).
 "10d x 2-1/2\" common, HDG" = { low = 0.04, high = 0.12 }  # 0 ea — was 48, the SB-BW-BAND-* straps

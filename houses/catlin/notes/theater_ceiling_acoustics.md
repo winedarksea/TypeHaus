@@ -7,12 +7,12 @@ bills area / spacing (285.5 sf / 2 ft = 142.7 LF) and ignores orientation, so th
 the install spec.
 
 ## Assembly
-- Framing: FS-M-NE 11 7/8" open-web trusses at 12" o.c., running E-W (x). Bottom chords are the
+- Framing: FS-M-NE 11 7/8" open-web trusses at 16" o.c. (the theater's lines are on the 16" grid), running E-W (x). Bottom chords are the
   only fastening surface.
 - Channel: RC-1 along **y**, perpendicular to the trusses (a channel parallel to a chord screws
   to one chord and decouples nothing). **24" o.c.**: the published maximum for one layer of 5/8"
-  gypsum on RC-1 is 24" o.c. (1/2" board: 16"); channel spacing is independent of the 12" truss
-  spacing, and the 12" framing is well inside RC-1's rated load. Sources: ClarkDietrich
+  gypsum on RC-1 is 24" o.c. (1/2" board: 16"); channel spacing is independent of the 16" truss
+  spacing, and the 16" framing is well inside RC-1's rated load. Sources: ClarkDietrich
   RC install guidelines (`CD_RC-InstallationGuidelines.pdf`, clarkdietrich.com); USG/GA-600 Fire
   Resistance and Sound Control Design Manual RC-1 listings (not re-read; confirm before ordering).
 - Channel to truss: one screw per chord crossing through the mounting flange (1 1/4" #6 Type W,
@@ -22,9 +22,13 @@ the install spec.
   to the trusses). End joints land on a channel, staggered between rows. No second layer.
 
 ## Screws: channel only, off the chords
-- 1" (preferred) or 1 1/8" Type S bugle, **into the board flange only**, 12" o.c. along the
-  channel (maker's guide), kept clear of every chord line. Chords are 12" o.c., so the screw
-  line lands between chords.
+- 1" (preferred) or 1 1/8" Type S bugle, **into the board flange only**, **8" o.c.** along the
+  channel (the maker's maximum is 12"), kept clear of every chord line. Chords are 16" o.c., so
+  screws go 4" either side of mid-bay: at 4", 12", 20", ... from a chord line, i.e. 4" and 12"
+  mod 16", never 0. That is 4" (2 1/4" from the chord's edge) from a chord centre. Why 8" and
+  not the maker's 12": 12" o.c. walks onto a chord every fourth screw (0, 12, 24 = 8, 36 = 4,
+  48 = 0 mod 16"), and 16" lands on one every time. Strike the screw line from a chord line, not
+  from the wall.
 - Why not longer. RC-1 stands the board flange about 1/2" below the chord face (RC-1 offset; the
   resolver uses 1/2"). Tip past the flange = screw - 5/8" board - 0.018" (25 ga) flange:
   - 1": 1.000 - 0.625 - 0.018 = **0.357"**, 0.143" short of the chord plane.
@@ -41,9 +45,10 @@ the install spec.
 1. Trusses and sprinkler/MEP rough-in done; ducts and pipes clear of the channel plane (they
    run inside the truss depth: `DU-B-ERV-R-PLAY` in the web openings). The channel lowers the
    finished ceiling about 1/2".
-2. Strike y-lines at 24" o.c.; hang channel, one Type W per chord crossing.
+2. Strike y-lines at 24" o.c.; hang channel, one Type W per chord crossing (every 16").
 3. Insulation in the truss bays if specified; do not fill the 1/2" channel gap.
-4. Hang board with 1" Type S into the channel only, 1/4" off every wall.
+4. Hang board with 1" Type S into the channel only at 8" o.c., 4" either side of mid-bay, 1/4" off
+   every wall.
 5. Tape and finish; fill the perimeter gap with painter's caulk.
 
 ## Perimeter and penetrations

@@ -2,7 +2,7 @@
 
 Five joist fields on one flat bearing seat. West of x=18' the TJI 230 bays (``FS-M-WEST``,
 ``FS-M-MECH``, ``FS-M-STAIR``); east of it ``FS-M-EAST`` (TJI 230, y 0'-13') and ``FS-M-NE``
-(11 7/8" open-web floor trusses at 12" o.c., y 13'-36', decision #112). Every member is
+(11 7/8" open-web floor trusses at 16" o.c., y 13'-36', decision #112). Every member is
 11 7/8", so the seat, the subfloor and the basement ceiling are one plane each, house-wide.
 ``FS-M-NE`` replaced ``SL-M-DECK``, the BuildDeck EPS/concrete band; its basis is in
 ``DESIGN-LOG.md`` ("Main deck goes wood"), and ``DECK_EPS_INT`` stays a named revert.
@@ -12,7 +12,7 @@ Five joist fields on one flat bearing seat. West of x=18' the TJI 230 bays (``FS
       +3/4" + plank   Cotton Oak LVP on the subfloor, whole main floor
       +3/4"           3/4" plywood subfloor   <- every main-floor wall plate stands here
       0'-0"           STOREY DATUM (top of joists)
-                      11 7/8" TJI 230 @ 16" / open-web truss @ 12"
+                      11 7/8" TJI 230 @ 16" / open-web truss @ 16"
      -11 7/8"         joist soffit (5/8" gypsum hangs here, basement ceiling)
                       1 1/2" PT mudsill (concrete walls) or 2x6 double top plate (x=18')
      -13 3/8"
@@ -45,6 +45,7 @@ from typehaus import (
     JoistSpec,
     Layer,
     LayerFunction,
+    Strongback,
     ft,
     inch,
     pt,
@@ -54,7 +55,7 @@ from params.flooring import LVP_THICKNESS_IN
 from params.second_deck import _DEPTH as _JOIST_DEPTH
 from params.second_deck import (_JOIST, _JOIST_BEARING, _SUBFLOOR, _TRUSS, _TRUSS_BEARING,
                                 _WEB_OPENING, _WEB_PANEL_OFFSET, _WEB_PANEL_PITCH,
-                                TJI_230_FLOOR_SPAN)
+                                TJI_230_FLOOR_SPAN, TRIFORCE_OJ418S_FLOOR_SPAN)
 
 _JOIST_OC = inch(16)
 
@@ -396,38 +397,60 @@ EAST_FLOOR = FloorSystem(
 
 # --- the east half north of y=13': open-web floor trusses (decision #112) ---------------
 #
-# ** 12" O.C., DESIGNED FOR 60 PSF LIVE AT L/480 (owner, 2026-11-01). ** The kitchen,
-# dining and the lounge's north end stand here, and the owner wants a stiff floor under a
-# long LVP field (and a tile medallion later, if the review in plans/TODO.md lands one).
-# 60 psf is the order spec, not the code's 40 (R301.5); L/480 is the TJI fields' criterion.
+# ** 16" O.C., THE PUBLISHED ROW, STIFFENED FOR BOUNCE (owner, 2026-11-02). ** TRIFORCE's
+# OJ418S row (40 psf live / 25 psf dead, L/480, 16" o.c.) reaches 18'-0"; the trusses are
+# 17'-11", so the field is a prescriptive read like the TJI fields, and the order asks
+# L/720 live. The kitchen, dining and the lounge's north end stand here; what the owner
+# wants is no bounce, which is the strongbacks and the doubled peninsula truss, not 60 psf.
 # Same 11 7/8" depth as every other field, so nothing above or below this deck moved.
 #
 # The webs are ``FS-S-WEST``'s Warren layout (24" pitch, 13" clear, 12" offset): the
 # fabricator builds both decks to one drawing, and ``mep.open_web_panel`` reads it. The
-# kitchen drain, the ERV radials and the data conduits that used to need cast sleeves cross
-# through the webs.
+# kitchen drain, the ERV radials and the data conduits cross through the webs.
 #
 # ** THE x=18' PLATE IS SPLIT 3 1/2" / 2" ** exactly as on the second floor: ``W-B-CS2``/
 # ``-CN2``/``-CN`` are 2x6 framed walls whose double top plate is the seat, the trusses take
 # 3 1/2" (open-web minimum 3") and the TJIs west of it 2" (minimum 1 3/4").
 # ``integrity.floor_end_bearing`` grades the pair.
 #
-# ** POINT LOADS FOR THE FABRICATOR. ** The truss drawing has to carry, as concentrated
-# loads at their stations: the fridge/freezer pair (``FX-M-KRF1``/``KFZ1``, ~350 lb each
-# loaded, on the north wall), the peninsula's cantilevered quartz and its stools, and the
-# partitions this field carries (below). ``notes/main_floor_truss_basis.md`` lists them.
+# ** LINES. ** 16" from the seam, 156".."396"; the two north lines move (412 -> 408,
+# 428 -> 420) so the three bays at W-B-N1 stay 12" — the N1 blocking, the CN-WT-N1 ties,
+# the kitchen drain and risers and ``W-M-PAN-S`` (1" off 396) all keep their bays, and the
+# north sink run's base cabinets get trusses at 408 and 420. 19 trusses.
 #
-# No ``published_span``: no maker publishes an 11 7/8" open-web row at 12" o.c. that reaches
-# 60 psf (``notes/main_floor_truss_basis.md`` §3), so ``structural.ijoist_span`` reads its
-# advisory table and the fabricator's sealed truss design governs (plans/TODO.md).
-_TRUSS_OC = inch(12)
+# ** POINT LOADS FOR THE FABRICATOR. ** The peninsula's cabinet boxes (y 319.4"..343.4")
+# carry the cantilevered quartz and its stool users: the 332" line under them is doubled
+# (the sister lands at 328.5"), and 316" is 3.4" off their back edge. ``APPL-M-FRIDGE``/
+# ``-FREEZER`` stand against the x=18' bearing wall (~175 lb a truss within 2'-3" of the
+# seat), so they get no sister; they and the partitions this field carries (below) still go
+# on the truss drawing. ``notes/main_floor_truss_basis.md`` lists them.
+_TRUSS_OC = inch(16)
+_TRUSS_LINE_MOVES = ((inch(412), inch(408)), (inch(428), inch(420)))
+_PENINSULA_TRUSS = JoistReinforcement(
+    at=pt(ft(27), inch(331.4)), plies=2, blocking=False,
+    source="peninsula cabinet boxes (y 319.4\"..343.4\"): stone, brackets and three stool "
+           "users bear through them mid-span; double the truss under the box centre "
+           "(notes/main_floor_truss_basis.md)")
+# ** STRONGBACKS (TRIFORCE pp. 20-22, Detail 5 Option #1). ** Two 2x6 on edge on the bottom
+# chords, each hard against a face of the 27' web: A in the 26' opening, B in the 28' one,
+# both within 6" of mid-span. Cut in a bay where a run crosses at their height ("can be cut
+# between two joists for ducts or pipes").
+_STRONGBACK_SOURCE = ("TRIFORCE Specifier Guide pp. 20-22, Detail 5 Option #1: 2x6 on edge, "
+                      "attached to the diagonal web and chord, for a stiffer floor")
+# Cut bays: the CW trunk, PR-B-HW-KITCH, CD-B-DATA-MEDIA (a bore would sit ~1.2" off the
+# bottom edge, short of R502.8.1's 2") and the kitchen drain.
+_STRONGBACK_OMIT = (inch(180), inch(196), inch(292), inch(414))
+_STRONGBACKS = (
+    Strongback(at=inch(317.75), omit_bays=_STRONGBACK_OMIT, source=_STRONGBACK_SOURCE),
+    Strongback(at=inch(330.25), omit_bays=_STRONGBACK_OMIT, source=_STRONGBACK_SOURCE),
+)
 
 # ** ANCHORAGE TO THE CONCRETE (Minn. R. 1309.0404, notes/main_floor_truss_basis.md §4). **
 # Minnesota's R404.1 amendment wants floor joists "connected to the sill plate at the top of
 # wall with an approved connector", and where the framing runs PARALLEL to a foundation wall,
 # full-depth blocking in the first three joist spaces at its Table R404.1(1) spacing (72" for
 # an 8' wall in GM soil). So: ``sill_tie`` puts one A35Z on every truss end seated on the
-# W-B-E1/E2 sill (400 lb a truss at 12" o.c. against 538 lb), the x=18' plate ends stay
+# W-B-E1/E2 sill (533 lb a truss at 16" o.c. against 538 lb), the x=18' plate ends stay
 # toe-nailed, and W-B-N1, the one foundation wall this field runs parallel to, takes
 # blocking in the four bays y 32'..36' at x 21'/27'/33' — 72" o.c., 36" off each end wall,
 # five A35Z a station (``plan/wall_top_ties.py``). Each line blocks the bay either side.
@@ -452,14 +475,19 @@ NE_FLOOR = FloorSystem(
                      web_panel_offset=_WEB_PANEL_OFFSET,
                      end_bearing=(("W-B-CS3", _TRUSS_BEARING), ("W-B-CS2", _TRUSS_BEARING),
                                   ("W-B-CN2", _TRUSS_BEARING), ("W-B-CN", _TRUSS_BEARING)),
+                     line_overrides=_TRUSS_LINE_MOVES,
                      sill_tie="A35Z"),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
-    reinforcements=_N_WALL_BLOCKING,
+    reinforcements=(*_N_WALL_BLOCKING, _PENINSULA_TRUSS),
+    strongbacks=_STRONGBACKS,
+    published_span=TRIFORCE_OJ418S_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _SEAM_Y, _HOUSE, _HOUSE),
     source="catlin main floor, east half north of y=13' — 11 7/8\" open-web floor trusses "
-           "at 12\" o.c. for 60 psf live at L/480, spanning 18'-0\" from the x=18' bearing "
-           "line to W-B-E1/W-B-E2 (decision #112, replacing SL-M-DECK)",
+           "at 16\" o.c. (TRIFORCE OJ418S row, 40/25 psf at L/480; L/720 live on the order), "
+           "a doubled truss under the peninsula and two 2x6 strongbacks against bounce, "
+           "spanning 18'-0\" from the x=18' bearing line to W-B-E1/W-B-E2 (decision #112, "
+           "replacing SL-M-DECK)",
 )
 
 MAIN_ELEMENTS = [WEST_FLOOR, MECH_FLOOR, STAIR_FLOOR, EAST_FLOOR, NE_FLOOR]

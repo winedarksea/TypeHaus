@@ -1,3 +1,19 @@
+## FS-M-NE at 16" o.c., a doubled truss and strongbacks (2026-11-02, decision #112)
+
+- **Why.** The 12" o.c. / 60 psf order had no published row and was a stiffness answer to a
+  strength spec. The owner's goal is a floor with no bounce. TRIFORCE OJ418S publishes 16" o.c.,
+  40/25 psf, L/480 to 18'-0" (p. 5), so the field is a prescriptive read; L/720 live goes on the order
+  (hand estimate ~L/875 under 40 psf, from the p. 6 row).
+- **Bounce levers.** A doubled truss on the 332 line (sister at 328.5") under the peninsula boxes, and
+  two 2x6 strongbacks on the bottom chords (x 317.75", 330.25"), cut in four bays where lanes cross
+  (180, 196, 292, 414). Lines 408/420/432 kept at 12" so W-B-N1's blocking, the N1 ties and the
+  kitchen drain keep their bays. Lanes `PR-B-CW-TRUNK` (186 -> 180) and `CD-B-KITCHEN` (282 -> 276) moved
+  off the new chords.
+- **Rejected.** 2x8 basement walls at x=18' (studs ~0.55, DF-L plates ~0.66 at 40 psf; margin nobody
+  needs); running trusses south of y=13' (costs the fireplace piers' pockets).
+- **Open.** The peninsula's point loads (line 316 unshared bound is 1.9x uniform moment) and the L/720
+  request go to the truss supplier; `FS-S-WEST` could take the same row and a strongback.
+
 ## Walls stand on the subfloor; the cap comes down to meet it (2026-11-01, C3-E3)
 
 - **The stack closes.** Storey datums stay the top of joists. Every framed main, second and

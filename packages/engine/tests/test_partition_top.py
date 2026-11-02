@@ -194,8 +194,9 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     # 2026-09-25). Keep each condition separate because each uses a different landing rule.
     # 105 -> 106 (decision #112): W-B-CE, refused under SL-M-DECK, is under FS-M-NE's trusses
     # and bills the one rim its axis crosses at x=36' (a crossing outranks the parallel truss).
+    # 106 -> 107 (2026-11-02): at 16" o.c. W-B-CE also crosses one FS-M-NE truss.
     assert counts == {
-        "partition top plate, perpendicular framing above": 106,
+        "partition top plate, perpendicular framing above": 107,
         "partition top plate, under a parallel member": 12,
         "partition top plate, blocking between parallel members": 71,
     }

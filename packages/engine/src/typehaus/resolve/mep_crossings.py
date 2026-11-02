@@ -144,12 +144,13 @@ class MemberCrossing:
 
 
 def is_member_line(member) -> bool:
-    """One of the floor's own member lines: a joist, a rim, or a trimmer in an open-web
-    truss section — an opening's edge on a truss floor is a truss, and a leg across it
-    passes through the same web window (catlin's FO-S-ERV-CHASE, 2026-09-24)."""
+    """One of the floor's own member lines: a joist, a rim, or a trimmer or sister in an
+    open-web truss section — an opening's edge or a doubled line on a truss floor is a
+    truss, and a leg across it passes through the same web window (catlin's
+    FO-S-ERV-CHASE, 2026-09-24; FS-M-NE's peninsula truss)."""
     if member.category in ("joist", "rim"):
         return True
-    if member.category != "trimmer":
+    if member.category not in ("trimmer", "sister_joist"):
         return False
     from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
 

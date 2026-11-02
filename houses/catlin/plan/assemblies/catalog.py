@@ -201,9 +201,10 @@ CONSTRUCTION_RULES = [
         takeoff_category="resilient-channel",
         scope_ref="RM-M-LIVING",
     ),
-    # Theater ceiling under FS-M-NE's 12" o.c. trusses: RC-1 across the chords (along y), one
+    # Theater ceiling under FS-M-NE's 16" o.c. trusses: RC-1 across the chords (along y), one
     # layer 5/8" gypsum. 24" o.c. is the published maximum for single-layer 5/8" on RC-1
-    # (ClarkDietrich RC install guide; GA-600). 1" Type S into the channel only: see
+    # (ClarkDietrich RC install guide; GA-600). 1" Type S into the channel only, 8" o.c.
+    # 4" either side of mid-bay so none lands on a 16" chord: see
     # notes/theater_ceiling_acoustics.md. Caulk perimeter: prices.toml [allowances].
     ConstructionRule(
         tag="CR-PLAY-CEIL-RC",

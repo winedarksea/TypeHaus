@@ -1,5 +1,5 @@
 > **Main deck is wood, 2026-11-01 (decision #112):** `SL-M-DECK` is `FS-M-NE`, 11 7/8" open-web
-> trusses at 12" o.c. (60 psf, L/480, fabricator-sealed design pending), and `W-B-CS2`/`-CN2`/`-CN`
+> trusses at 16" o.c. (TRIFORCE OJ418S published row, 40/25 psf L/480, a doubled peninsula truss, two strongbacks; amended 2026-11-02), and `W-B-CS2`/`-CN2`/`-CN`
 > are framed 2x6 bearing walls; one flat basement ceiling, no movement joint, no cast sleeves.
 > Every joist/truss end on a concrete wall takes an A35Z (`JoistSpec.sill_tie`) and the parallel
 > walls take blocking stations with five A35Z each, graded by `code.MN_1309_0404_wall_top`; the
@@ -759,22 +759,24 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   2026-11-01).** `FS-M-WEST`, `FS-M-MECH`, `FS-M-STAIR` (x 0'-18') and `FS-M-EAST` (x 18'-36',
   y 0'-12'-9") are 11 7/8" TJI 230 at 16" o.c. (TJ-4000 p.7 via `FloorSystem.published_span`,
   IUS2.37/11.88 hangers). `FS-M-NE` (x 18'-36', y 13'-36', where `SL-M-DECK` was) is 11 7/8"
-  open-web floor trusses at **12" o.c., ordered for 60 psf live at L/480**, on `FS-S-WEST`'s web
-  drawing (24"/13"/12"). No maker publishes that row, so `structural.ijoist_span` is UNKNOWN on it
-  until the fabricator's sealed design (`notes/main_floor_truss_basis.md` §3). Constants live in
+  open-web floor trusses at **16" o.c. on TRIFORCE's published OJ418S row** (40 psf live / 25 dead,
+  L/480, 18'-0"; `TRIFORCE_OJ418S_FLOOR_SPAN`, L/720 live on the order), on `FS-S-WEST`'s web drawing
+  (24"/13"/12"). 19 trusses (y 156..396 on 16", then 408/420/432, so the N1 bays stay 12"); the 332 line
+  is doubled under the peninsula boxes, and two 2x6 `Strongback`s (x 317.75"/330.25", TRIFORCE pp. 20-22)
+  are cut at stations 180/196/292/414 where lanes cross (`notes/main_floor_truss_basis.md` §3). Constants live in
   `params/main_deck.py`; `integrity.floor_bearing_grid` and `floor_end_bearing` hold the grid.
   - **The x=18' line is framed end to end.** `W-B-CS2`/`-CN2`/`-CN` are 2x6 bearing walls on their
     old strip footings (`params/foundations._FRAMED_WALLS`); the plate splits 3 1/2" truss / 2" TJI
     (`end_bearing`), as on the second floor. `W-B-CN`'s stair face is furred 3 1/4" back to the
     pour's old x=17'-6" (`STAIRWELL_INT_2X6_BRG_FURRED`): `FO-M-STAIR`'s east edge, `ST-B2M`'s east
     lane and `RL-M-HANDRAIL-E` are struck off it, and `P-M-STRLAND-SE` lands on a doubled furring
-    stud. **Top plates are DF-L No. 2** (`top_plate_material_ref="df-l-no2"`; SPF Fc⊥ read d/c
-    1.03, DF-L 0.70) on all five segments: `INT_2X6_BRG_HALF_DFL` (`-CS3`/`-CS2`/`-CN2`),
+    stud. **Top plates are DF-L No. 2** (`top_plate_material_ref="df-l-no2"`; SPF Fc⊥ reads d/c
+    0.98 with no margin, DF-L 0.66) on all five segments: `INT_2X6_BRG_HALF_DFL` (`-CS3`/`-CS2`/`-CN2`),
     `SAUNA_LINER_INT_2X6_BRG` (`-CS`), `STAIRWELL_INT_2X6_BRG_FURRED` (`-CN`). The sole plate is
     the PT SYP sill already. Same stud grid (basis note §5).
   - **Wall-top restraint (Minn. R. 1309.0404, `code.MN_1309_0404_wall_top`).** Table R404.1(1),
     8' wall, GM: 400 plf. Perpendicular fields (`FS-M-NE`/`-EAST`/`-WEST`/`-MECH`) name
-    `sill_tie="A35Z"`: one per end on the concrete walls, 400 lb a truss against 538 (SPF ×0.86,
+    `sill_tie="A35Z"`: one per end on the concrete walls, 533 lb a truss (16" o.c.) against 538 (SPF ×0.86,
     C_D 0.9), 533 lb a TJI against 563 (onto the LSL rim, ×0.90). The x=18' plate ends are
     toe-nailed again (no net uplift). Parallel walls `W-B-N1`/`-N3`/`-N4`/`-S1`/`-S4` take
     blocking stations (first three spaces, ≤72") with five A35Z each (`plan/wall_top_ties.py`);

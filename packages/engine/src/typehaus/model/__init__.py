@@ -93,6 +93,7 @@ from typehaus.model.floors import (
     SlabThermalBreak,
     Soffit,
     SoffitOpening,
+    Strongback,
 )
 from typehaus.model.furniture_cut import FurnitureCut
 from typehaus.model.landscape import (
@@ -398,7 +399,7 @@ __all__ = [
     "RegisterType", "RailingType", "DuctProductType", "TerminalNeck",
     "TerminalNeckComponent", "TerminalNeckInlet", "ElectricalDeviceType",
     "LuminaireType", "MeshRef", "TrackHeadProduct", "TrackHeadSpec", "TrackLightingSpec",
-    "JoistSpec", "JoistReinforcement", "DeckLayer", "FloorSystem", "FloorOpening",
+    "JoistSpec", "JoistReinforcement", "Strongback", "DeckLayer", "FloorSystem", "FloorOpening",
     "FloorOpeningEdgeInterval", "FloorOpeningPocketClosure",
     "Slab", "SlabThermalBreak",
     "Soffit", "SoffitOpening",

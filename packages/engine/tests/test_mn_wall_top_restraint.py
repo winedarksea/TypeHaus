@@ -22,7 +22,7 @@ def test_catlin_wall_tops_match_the_basis_note(catlin_model_ro) -> None:
     for f in findings.values():
         assert "row 8'/7.5' gives 400 plf" in f.message
     # Perpendicular: 538 lb a truss end, 563 lb a TJI end (note §4).
-    assert "1 A35Z x 538 lb = 538 lb, d/c 0.74" in findings["W-B-E2"].message
+    assert "1 A35Z x 538 lb = 538 lb, d/c 0.99" in findings["W-B-E2"].message
     assert "14 11.875 TJI 230 ends at 16\" o.c., 533 lb each): 1 A35Z x 563 lb" \
         in findings["W-B-W2"].message
     assert "d/c 0.95" in findings["W-B-W2"].message

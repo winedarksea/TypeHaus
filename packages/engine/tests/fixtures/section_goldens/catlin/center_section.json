@@ -16325,6 +16325,118 @@
       "node": "polyline",
       "points": [
         [
+          317.0,
+          -10.375
+        ],
+        [
+          318.5,
+          -10.375
+        ],
+        [
+          318.5,
+          -4.875000000000001
+        ],
+        [
+          317.0,
+          -4.875000000000001
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "strongback-0-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          317.0,
+          -10.375
+        ],
+        [
+          318.5,
+          -10.375
+        ],
+        [
+          318.5,
+          -4.875000000000001
+        ],
+        [
+          317.0,
+          -4.875000000000001
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          329.50000000000006,
+          -10.375
+        ],
+        [
+          331.00000000000006,
+          -10.375
+        ],
+        [
+          331.00000000000006,
+          -4.875000000000001
+        ],
+        [
+          329.50000000000006,
+          -4.875000000000001
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "strongback-1-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          329.50000000000006,
+          -10.375
+        ],
+        [
+          331.00000000000006,
+          -10.375
+        ],
+        [
+          331.00000000000006,
+          -4.875000000000001
+        ],
+        [
+          329.50000000000006,
+          -4.875000000000001
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           430.25,
           -11.875
         ],
@@ -16402,7 +16514,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "Q3ZJD83QVD",
-      "tag": "bearing-block-0-004"
+      "tag": "bearing-block-0-003"
     },
     {
       "space": "model",
@@ -16450,7 +16562,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "Q3ZJD83QVD",
-      "tag": "bearing-block-0-004/flange"
+      "tag": "bearing-block-0-003/flange"
     },
     {
       "space": "model",
@@ -16470,7 +16582,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "Q3ZJD83QVD",
-      "tag": "bearing-block-0-004/flange"
+      "tag": "bearing-block-0-003/flange"
     },
     {
       "space": "model",

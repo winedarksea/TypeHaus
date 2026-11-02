@@ -58,6 +58,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # Plies sistered onto a joist line under a point load (resolve/floors.py). Same stock as
     # the joist it doubles, a shade darker so a reinforced line reads as one in the viewer.
     "sister_joist": (0.66, 0.48, 0.30, 1.0),
+    # A 2x on edge through an open-web field's webs (resolve/floor_strongbacks.py).
+    "strongback": (0.66, 0.48, 0.30, 1.0),
     "rim": (0.66, 0.48, 0.30, 1.0),
     # Furring strapping (resolve/framing/furring.py). Lighter than a stud: 1x4 battens
     # over the sheathing are the last lumber outboard of the wall, and reading them as
