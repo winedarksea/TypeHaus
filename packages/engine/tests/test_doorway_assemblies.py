@@ -247,6 +247,22 @@ def test_raised_opening_does_not_extend_or_raise_floor_finish(doorway_model):
     assert len(model.walls[0].members) == 1
 
 
+def test_floor_level_rough_opening_is_a_leafless_passage(doorway_model):
+    model = doorway_model
+    passage = replace(model.openings[0], kind="rough_opening", is_door=False, type_ref=None)
+    blind = replace(passage, uid="blind", tag="B", center_along_m=3.5, width_m=.3, depth_m=.05)
+    model.openings = [passage, blind]
+    resolve_doorways(model)
+    clear_doorway_sole_plates(model)
+    extend_doorway_finishes(model)
+    assert model.openings[0].doorway.floor_treatment == "continuous"
+    assert model.openings[0].doorway.status == "VERIFIED"
+    assert model.openings[1].doorway is None
+    assert [p.child_key for p in model.walls[0].members] == [
+        "plate-bottom-passage-0", "plate-bottom-passage-1"]
+    assert sum(r.field_area_m2 for r in model.rooms) == pytest.approx(15.44 + .9 * .14)
+
+
 def test_pan_back_dam_and_support_intersections_report_conflicts(doorway_model, monkeypatch):
     from typehaus.resolve.opening_flashing import OpeningFlashingFrame
     import typehaus.resolve.opening_flashing as flashing

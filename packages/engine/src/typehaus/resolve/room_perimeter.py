@@ -102,7 +102,7 @@ def door_intervals(model, ring: list, storey_tag: str,
     walls = {w.tag: w for w in model.walls if w.storey == storey_tag}
     intervals = []
     for opening in model.openings:
-        if not opening.is_door:
+        if not opening.is_passage:
             continue
         host = walls.get(opening.host_wall)
         if host is None or (hosts is not None and host.tag not in hosts):

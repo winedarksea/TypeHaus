@@ -12,7 +12,7 @@ def doorway_assembly(ctx: CheckContext) -> list:
     findings = []
     materials = {m.tag for m in ctx.plan.library.materials}
     for opening in ctx.model.openings:
-        if opening.kind != "door":
+        if opening.kind != "door" and opening.doorway is None:
             continue
         before = len(findings)
         assembly = opening.doorway

@@ -140,8 +140,12 @@ def _floor_sample_stations(model, wall, opening, center, tangent, normal, offset
     return [point((a + b) / 2) for a, b in pairwise(stations) if b - a > 1e-9]
 
 
-def resolve_doorway(model, wall, opening, door_type, treatment=None):
+def resolve_doorway(model, wall, opening, door_type=None, treatment=None):
     treatment = treatment or DoorwayTreatment()
+    # A leafless passage (``door_type=None``) is interior, untracked and sill-less.
+    trimless = bool(door_type and door_type.trimless)
+    exterior_type = bool(door_type and door_type.exterior)
+    operation = door_type.operation.value if door_type else None
     center = opening_center(wall, opening)
     _, tangent, normal, _ = wall_frame(wall)
     faces = finish_faces(wall)
@@ -188,7 +192,7 @@ def resolve_doorway(model, wall, opening, door_type, treatment=None):
     base = wall.base_ref_z_m + opening.sill_m
     joint = opening.cased_product.leaf_normal_m if opening.cased_product else 0.0
     # Concealed leaves close on their flush face; avoid using swing direction as sill orientation.
-    if door_type.trimless and faces:
+    if trimless and faces:
         from typehaus.resolve.geometry_door_products import concealed_leaf, handing
         _, _, _, flush, back = concealed_leaf(faces, handing(opening)[1], opening.width_m,
                                              base, opening.height_m, door_type.leaf_set)
@@ -198,18 +202,18 @@ def resolve_doorway(model, wall, opening, door_type, treatment=None):
                      <= DOORWAY.height_tolerance_m)
     mode = treatment.floor_treatment
     if mode == "auto":
-        mode = ("continuous" if same and not door_type.exterior
+        mode = ("continuous" if same and not exterior_type
                 and treatment.transition is None else "transition")
     if mode == "continuous" and known and not same:
         conflicts.append("continuous floor requires matching finishes and walking elevations")
     selected = [treatment.threshold, treatment.transition]
-    if door_type.exterior and treatment.threshold is None:
+    if exterior_type and treatment.threshold is None:
         unknown.append("exact exterior sill/track or leaf-mounted bottom-seal section "
                        "is unspecified")
-    if door_type.operation.value in ("slide", "pocket", "bifold") and treatment.threshold is None:
+    if operation in ("slide", "pocket", "bifold") and treatment.threshold is None:
         unknown.append("documented guide/track installation is unspecified; "
                        "no bottom track inferred")
-    if mode == "transition" and treatment.transition is None and not door_type.exterior:
+    if mode == "transition" and treatment.transition is None and not exterior_type:
         unknown.append("compatible flooring trim or documented transition is unspecified")
     components = []
     for spec in selected:
@@ -291,12 +295,12 @@ def resolve_doorway(model, wall, opening, door_type, treatment=None):
                     conflicts.append(f"{spec.product_ref}: published leaf bottom conflicts "
                                      "with floor/profile clearance")
                 leaf = published_bottom
-            if (door_type.exterior and spec.role in ("sill", "track")
+            if (exterior_type and spec.role in ("sill", "track")
                     and spec.leaf_bottom_m is None):
                 unknown.append(f"{spec.product_ref}: published leaf termination is missing")
             if spec.jamb_bottom_m is not None:
                 jamb = component.base_z_m + spec.jamb_bottom_m
-            elif door_type.exterior and spec.role in ("sill", "track"):
+            elif exterior_type and spec.role in ("sill", "track"):
                 unknown.append(f"{spec.product_ref}: published jamb termination is missing")
         if leaf >= base + opening.height_m:
             conflicts.append("walking surface/product leaves no clear leaf height")
@@ -311,16 +315,21 @@ def resolve_doorways(model):
     resolved = []
     for opening in model.openings:
         product = types.get(opening.type_ref)
-        if opening.kind != "door" or product is None:
+        passage = opening.kind == "rough_opening" and opening.is_passage
+        if not passage and (opening.kind != "door" or product is None):
             resolved.append(opening)
             continue
         authored = model.plan.by_tag(opening.tag)
-        treatment = getattr(authored, "doorway", None) or product.doorway
+        treatment = getattr(authored, "doorway", None) or (product.doorway if product else None)
         installation = getattr(authored, "exterior_installation", None)
         if installation:
             treatment = (treatment or DoorwayTreatment()).model_copy(
                 update={"exterior_installation": installation})
-        assembly = resolve_doorway(model, walls[opening.host_wall], opening, product, treatment)
+        assembly = resolve_doorway(model, walls[opening.host_wall], opening,
+                                   None if passage else product, treatment)
+        if passage and not any(f is not None and f.room_tag for f in assembly.adjacent_floors):
+            resolved.append(opening)  # a veneer reveal with no room either side
+            continue
         if treatment and treatment.exterior_installation:
             from typehaus.resolve.exterior_door import place_exterior_door
 

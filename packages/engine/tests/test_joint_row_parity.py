@@ -123,8 +123,9 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # and fifteen non-bearing slab partitions are pinned, not anchored (slab_plate_pin).
     # Split door-interrupted plates independently; short pieces each need two anchors.
     # 95 -> 67 + 28: the garage's 2x8 sill is wider than ESR-2555's 2x4/2x6 MASAZ, so its
-    # 28 anchors are cast-in 1/2" bolts (sill_anchor_bolt).
-    assert joints["mudsill_anchor"] == 67
+    # 28 anchors are cast-in 1/2" bolts (sill_anchor_bolt). +2: D-B-GYM is a passage and
+    # splits W-B-CS3's PT sill.
+    assert joints["mudsill_anchor"] == 69
     assert joints["sill_anchor_bolt"] == 28
     assert joints["slab_plate_pin"] == 49  # Door-cut slab plates shorten one pinned run.
     # 38 rafters on the ridge. ST-G-SERVICE's two stringer heads were two more until

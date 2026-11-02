@@ -1086,10 +1086,9 @@ OPENINGS = [
     # ** DOOR -> ROUGH OPENING, SAME 36" WIDTH, 2026-09-09. ** No leaf: the hall and the
     # gym are one circulation space now, so there is nothing to swing or to case a glazed
     # lite through — the gym's south daylight reaches the hall directly through the void.
-    # `is_door` is False, which drops two consumers: `code.R308_4_safety_glazing` (no
-    # glazing to grade) and `electrical.receptacle_spacing`'s doorway break — a bare
-    # opening still counts as one under NEC 210.52(A)(2), a check gap this house does not
-    # rely on; RM-B-GYM's `>6' from a receptacle` FAIL is real either way.
+    # `is_door` is False, so `code.R308_4_safety_glazing` has no glazing to grade. As a
+    # floor-level passage (`is_passage`) it still breaks the base, the PT sill and the
+    # receptacle wall space, and takes the sauna's mat reducer at the floor change.
     #
     # ** THE WIDTH ARGUMENT, UNCHANGED FROM THE DOOR: ** the earlier "it stays 32"" note
     # measured against 42 3/16" — N-B-C1's pour face down to W-B-SA-N2's north GWB face —
@@ -1106,7 +1105,8 @@ OPENINGS = [
     # `haus print`. Narrowing the opening to save one cripple is not a trade this house
     # makes.
     RoughOpening(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS3",
-                 position=from_node("N-B-C1", ft(0, 2.5625)), width=ft(3), height=ft(6, 8)),
+                 position=from_node("N-B-C1", ft(0, 2.5625)), width=ft(3), height=ft(6, 8),
+                 doorway=D_B_SAUNA_MAT_REDUCER),
     # The 36" pocket opens the bathroom without a swing in its WC/vanity clearance. Its
     # 37" cavity runs south through N-B-BA-SE into W-B-HALL-W; both walls have the same
     # 2x6 section even though their stud layouts differ. The bathroom services moved to

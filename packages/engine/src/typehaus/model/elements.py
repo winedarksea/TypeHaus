@@ -239,6 +239,9 @@ class RoughOpening(Element):
     #: — the ``Door.published_hole`` field, on the opening kind that carries neither a
     #: ``header_spec`` nor a ``published_span``. ``mep.run_through_header`` reads it.
     published_hole: PublishedHole | None = None
+    #: A floor-level through hole is a leafless doorway: this names its floor transition,
+    #: as ``Door.doorway`` does (``resolve/doorway.resolve_doorways``).
+    doorway: DoorwayTreatment | None = None
 
     @model_validator(mode="after")
     def unframed_opening_must_be_blind(self):

@@ -1853,9 +1853,10 @@ NEC_FILL_BASEMENT = [
     # Three, not two, because the line is broken by two doors now: D-B-SAUNA at y 2'-10"..
     # 4'-10" and D-B-GYM at y 9'-11"..12'-7". NEC 210.52(A)(2) measures wall space between
     # doorways, so each of the three stretches needs its own — south of the sauna door,
-    # between the two, and north of D-B-GYM. RC8 sits on the 15" of W-B-CS3 left north of
-    # that door; the wall past it is W-B-CS2's 12" pour, which is the last place to want a
-    # cast-in box.
+    # between the two, and north of D-B-GYM. RC8 sits on W-B-CS3 SOUTH of that door. The
+    # stretch north of it is W-B-CS2's 12" pour (the last place to want a cast-in box), so
+    # RC3 on W-B-CE covers it: 25" off the corner, not 31", since D-B-GYM became a passage
+    # (2026-11-01) and RC8 stopped reaching across the void.
     ElectricalDevice(uid="NEC001AAAA", tag="ED-B-GYM-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-BSMT", room="RM-B-GYM",
@@ -1888,7 +1889,7 @@ NEC_FILL_BASEMENT = [
                      circuit="CKT-RC-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CE", face="right", distance_from_start=inch(31),
+                         wall_ref="W-B-CE", face="right", distance_from_start=inch(25),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC004AAAA", tag="ED-B-GYM-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",

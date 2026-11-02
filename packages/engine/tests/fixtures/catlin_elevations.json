@@ -17594,6 +17594,12 @@
 2,
 "0dfdcd3627ad"
 ],
+"geometry/CBR406AAAA-base-NJ21M7MF6R-1/body": [
+-2.7797125,
+-2.6908125,
+2,
+"0dfdcd3627ad"
+],
 "geometry/CBR406AAAA-ceiling-2/body": [
 -0.3175,
 -0.301625,
@@ -24775,6 +24781,12 @@
 7.579402,
 32,
 "73abebb9900d"
+],
+"geometry/CM-900ffe4e6f36/body": [
+-2.8654375,
+-2.7400936,
+48,
+"c5a44126e669"
 ],
 "geometry/CM-907357fb6b9e/body": [
 8.7112895,
@@ -43892,6 +43904,12 @@
 2,
 "17bfcd6c7f91"
 ],
+"geometry/CSR409AAAA-base-CSW120AAAA-1/body": [
+3.0861,
+3.175,
+2,
+"17bfcd6c7f91"
+],
 "geometry/CSR409AAAA-base-CSW122AAAA-0/body": [
 3.0861,
 3.175,
@@ -43959,6 +43977,12 @@
 "17bfcd6c7f91"
 ],
 "geometry/CSR409AAAA-base-CSW148AAAA-0/body": [
+3.0861,
+3.175,
+2,
+"17bfcd6c7f91"
+],
+"geometry/CSR409AAAA-base-CSW148AAAA-1/body": [
 3.0861,
 3.175,
 2,
@@ -53876,7 +53900,13 @@
 8,
 "324e755ecf95"
 ],
-"geometry/CSW120AAAA::framing/member:plate-bottom": [
+"geometry/CSW120AAAA::framing/member:plate-bottom-passage-0": [
+3.06705,
+3.10515,
+8,
+"49ef86ae13ca"
+],
+"geometry/CSW120AAAA::framing/member:plate-bottom-passage-1": [
 3.06705,
 3.10515,
 8,
@@ -56858,7 +56888,13 @@
 8,
 "324e755ecf95"
 ],
-"geometry/CSW148AAAA::framing/member:plate-bottom": [
+"geometry/CSW148AAAA::framing/member:plate-bottom-passage-0": [
+3.06705,
+3.10515,
+8,
+"49ef86ae13ca"
+],
+"geometry/CSW148AAAA::framing/member:plate-bottom-passage-1": [
 3.06705,
 3.10515,
 8,
@@ -64274,7 +64310,13 @@
 8,
 "1f09581df6ba"
 ],
-"geometry/NJ21M7MF6R::framing/member:plate-bottom": [
+"geometry/NJ21M7MF6R::framing/member:plate-bottom-passage-0": [
+-2.7797125,
+-2.7416125,
+8,
+"6feb3b34ad8e"
+],
+"geometry/NJ21M7MF6R::framing/member:plate-bottom-passage-1": [
 -2.7797125,
 -2.7416125,
 8,
@@ -102478,7 +102520,13 @@
 2,
 "c3a7c925afe9"
 ],
-"member/CSW120AAAA/plate-bottom": [
+"member/CSW120AAAA/plate-bottom-passage-0": [
+3.06705,
+3.10515,
+2,
+"f8261713f896"
+],
+"member/CSW120AAAA/plate-bottom-passage-1": [
 3.06705,
 3.10515,
 2,
@@ -105004,7 +105052,13 @@
 2,
 "c3a7c925afe9"
 ],
-"member/CSW148AAAA/plate-bottom": [
+"member/CSW148AAAA/plate-bottom-passage-0": [
+3.06705,
+3.10515,
+2,
+"f8261713f896"
+],
+"member/CSW148AAAA/plate-bottom-passage-1": [
 3.06705,
 3.10515,
 2,
@@ -105994,7 +106048,13 @@
 2,
 "f09603dc0119"
 ],
-"member/NJ21M7MF6R/plate-bottom": [
+"member/NJ21M7MF6R/plate-bottom-passage-0": [
+-2.7797125,
+-2.7416125,
+2,
+"2c6e5b3829a7"
+],
+"member/NJ21M7MF6R/plate-bottom-passage-1": [
 -2.7797125,
 -2.7416125,
 2,
@@ -111825,12 +111885,12 @@
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~33/z1_m": -2.7400936,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~34/z0_m": -2.8654375,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~34/z1_m": -2.7400936,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~35/z0_m": -0.4270375,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~35/z1_m": -0.3016936,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~36/z0_m": -2.8654375,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~36/z1_m": -2.7400936,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~37/z0_m": -0.4270375,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~37/z1_m": -0.3016936,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~35/z0_m": -2.8654375,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~35/z1_m": -2.7400936,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~36/z0_m": -0.4270375,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~36/z1_m": -0.3016936,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~37/z0_m": -2.8654375,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~37/z1_m": -2.7400936,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~38/z0_m": -0.4270375,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~38/z1_m": -0.3016936,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~39/z0_m": -0.4270375,
@@ -111839,24 +111899,24 @@
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~40/z1_m": -0.3016936,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~41/z0_m": -0.4270375,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~41/z1_m": -0.3016936,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~42/z0_m": -2.8654375,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~42/z1_m": -2.7400936,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~43/z0_m": -0.4270375,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~43/z1_m": -0.3016936,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~42/z0_m": -0.4270375,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~42/z1_m": -0.3016936,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~43/z0_m": -2.8654375,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~43/z1_m": -2.7400936,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~44/z0_m": -0.4270375,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~44/z1_m": -0.3016936,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~45/z0_m": -2.6812875,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~45/z1_m": -2.5559436,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~46/z0_m": -0.4270375,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~46/z1_m": -0.3016936,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~45/z0_m": -0.4270375,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~45/z1_m": -0.3016936,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~46/z0_m": -2.6812875,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~46/z1_m": -2.5559436,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~47/z0_m": -0.4270375,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~47/z1_m": -0.3016936,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~48/z0_m": -2.6812875,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~48/z1_m": -2.5559436,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~48/z0_m": -0.4270375,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~48/z1_m": -0.3016936,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~49/z0_m": -2.6812875,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~49/z1_m": -2.5559436,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~50/z0_m": -0.4270375,
-"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~50/z1_m": -0.3016936,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~50/z0_m": -2.6812875,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~50/z1_m": -2.5559436,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~51/z0_m": -0.4270375,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~51/z1_m": -0.3016936,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~52/z0_m": -0.4270375,
@@ -111883,6 +111943,8 @@
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~62/z1_m": -0.3016936,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~63/z0_m": -0.4270375,
 "solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~63/z1_m": -0.3016936,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~64/z0_m": -0.4270375,
+"solids/CN~MASAZ~CR-CONC-TO-FRAMED-SILL~64/z1_m": -0.3016936,
 "solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~01/z0_m": -0.6969125,
 "solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~01/z1_m": 0.3222625,
 "solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~02/z0_m": -0.6969125,

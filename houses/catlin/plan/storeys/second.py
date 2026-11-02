@@ -583,7 +583,7 @@ OPENINGS = [
     # opening always had between its jamb and the corner square.
     RoughOpening(uid="CSD215AAAA", tag="O-S-VANITY", host="W-S-VE",
                  position=from_node("N-S-V1", inch(8)), width=ft(2, 8),
-                 height=ft(6, 8)),                                       # y 24'-0 5/8"
+                 height=ft(6, 8), doorway=TILE_EDGE_FLUSH),                                       # y 24'-0 5/8"
     # Keep the 13.5" offset from N-S-V2: moving the opening east puts its king stud
     # into N-S-BA1's corner pack. The 49.5" wall cannot fit this 30" leaf on the
     # 16" framing module while clearing both corner packs, so the off-module advisory stays.

@@ -115,7 +115,8 @@ TILE_EDGE_FLUSH = DoorwayTreatment(transition=_spec(
     SCHIENE, "aluminium, height to the tile", "Anchoring leg in the tile bed under the "
     "door; oak butts it over a 1/4 in. silicone joint", sign=1, rise_in=0.0, max_in=0.0625,
     pairs=(("oak-floor-custom", "catlin-tile-kaleo-brick"),
-           ("oak-floor-custom", "catlin-tile-carrara")),
+           ("oak-floor-custom", "catlin-tile-carrara"),
+           ("oak-floor-custom", "catlin-tile-agua-linda")),
     edges_in=(0.0, 0.0625), url=SCHIENE.url, drawing="Schluter-SCHIENE product page; "
     "profile height to the delivered tile",
     parts=(_part("profile", "aluminum-extrusion",

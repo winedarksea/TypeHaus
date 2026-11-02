@@ -513,6 +513,13 @@ class ResolvedOpening:
         """A recess with a back, rather than a hole through the wall."""
         return self.depth_m is not None
 
+    @property
+    def is_passage(self) -> bool:
+        """A doorway people walk through: a door, or a leafless floor-level through hole.
+        ``is_door`` still means "has a leaf" to framing, schedules and checks."""
+        return self.is_door or (self.kind == "rough_opening" and self.depth_m is None
+                                and not self.penetration_for and self.sill_m <= 1e-9)
+
 
 @dataclass(frozen=True)
 class ResolvedConstructionReturn:

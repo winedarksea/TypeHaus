@@ -80,6 +80,8 @@ class TrimScope:
         rough opening (trimless) or the factory frame (a bookcase door), per
         :func:`base_break_half_width`.
         """
+        if opening.kind != "door":
+            return None
         door_type = self.door_types.get(opening.type_ref or "")
         if not cased(door_type) or opening.tag in self.standard.uncased_doors:
             return None

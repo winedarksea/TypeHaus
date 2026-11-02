@@ -79,7 +79,7 @@ def _room_runs(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
     breaks: list[tuple[float, float, str]] = [(a, b, "bare face") for a, b in bare]
     hosts = {wall.tag for wall, _span in arcs}
     for opening in model.openings:
-        if opening.is_door and opening.host_wall in hosts:
+        if opening.is_passage and opening.host_wall in hosts:
             for a, b in _one_door(model, ring, room, scope, opening):
                 breaks.append((a, b, opening.tag))
     for a, b in rp.floor_opening_intervals(plan, ring, room.storey, _WELL_LEDGE_M):
