@@ -567,9 +567,10 @@ rows = ["allowances:finish-floor-prep-and-self-levelling",
         "sheet_goods:aluminum-deck", "sheet_goods:trex-enhance-basics"]
 
 [visits."task/flooring/building/carpet"]
-label = "Carpet — BED, BED1-3, the main closet and PLAY-N, tucked under the base"
-rows = ["floor_finishes:carpet", "floor_finishes:carpet-pad",
-        "floor_finishes:catlin-carpet-raised", "floor_finishes:catlin-bedroom-carpet-pad"]
+label = "Carpet — BED, BED1-3, the main closet and PLAY-N tucked under the base; ST-B2M glued"
+rows = ["floor_finishes:catlin-theater-carpet", "floor_finishes:catlin-carpet-raised",
+        "floor_finishes:catlin-bedroom-carpet-pad", "allowances:finish-floor-stair-carpet-steps",
+        "allowances:finish-floor-stair-carpet-landings"]
 depends_on = ["task/millwork/building/trim"]
 
 # The rows are keyed by STOCK: switching TRIM-STANDARD's material renames them here.

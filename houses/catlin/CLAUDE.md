@@ -29,7 +29,9 @@
 >   KRF1/KFZ1 are recessed DVFR1W behind the fridge pair; FURN-B-PLAY-TV stands 3 1/2" off its wall.
 >   `electrical.canopy_covers_box` grades `LuminaireType.canopy`.
 > - **Floors and interiors:** bedroom carpet is 1.000" (3/8" rebond, no plywood), +1/4" over the
->   oak and tile, Z-bar at each carpet door; every interior flooring change names its product in
+>   oak and tile, Z-bar at each carpet door. ST-B2M is Refine, glued, 1/4"; the theater is Emphatic
+>   II 30 over the bedroom rebond, 0.735", flush with the gym mats at a Z-bar
+>   (`notes/basement_carpet.md`, stretch-in pending dealer). Every interior flooring change names its product in
 >   `plan/doorway_transitions.py`. Swanstone: 96" panel on its base, TK-105 cap, painted band.
 >   J-bead by board thickness (1/2" M401-10). `clear_height_m` includes a dropped ceiling.
 

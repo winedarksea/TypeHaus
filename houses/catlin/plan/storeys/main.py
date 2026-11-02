@@ -1999,15 +1999,15 @@ SLABS = [
 # unchanged; only the flight's elevation is.
 #
 # ** THE CARPET DOES NOT MOVE ANY OF THAT. ** This is the carpeted flight (prices.toml
-# [framing]; MW-STANDARD gives the oak to ST-M2S and ST-S2A instead): 1/4" of
-# commercial-weight cut pile over a 1/4" high-density rebond cushion, 1/2" in all, selected
-# 2026-09-11. The resolver now draws the 1" substrate below a separate 1/2" carpet
+# [stair_treads]; MW-STANDARD gives the oak to ST-M2S and ST-S2A instead): Refine, a dense
+# multi-level loop glued to tread and riser with no cushion, 1/4" (owner 2026-11-01,
+# notes/basement_carpet.md). The resolver draws the 1" substrate below a separate 1/4" carpet
 # covering, with the finished faces on the theoretical line. Every riser,
 # the two end ones included, meets that finished line, which
 # `code.R311_7_5_1_stair_end_risers` now measures rather than assumes.
 #
 # `tread_thickness` states the bought board/substrate depth and every layout honours it. On
-# this carpeted flight, the 1" substrate plus 1/2" carpet and pad make a 1-1/2" stack.
+# this carpeted flight, the 1" substrate plus 1/4" glued carpet make a 1-1/4" stack.
 # The oak ST-M2S landing is 3/4" plywood plus 3/4" oak T&G beside 1" oak treads; its
 # framing drops 1/2" and its landing tread lips down to 1" over the riser below (MW-STANDARD). The stair finish resolver lowers the substrate
 # and its supports by the covering depth, so no finished riser moves and the end risers
@@ -2024,7 +2024,7 @@ STAIRS = [
           from_storey="basement", to_storey="main", width=ft(3, 5.125),
           base_elevation=inch(-109.4375), top_elevation=inch(0.94685),
           tread_thickness=inch(1),
-          finish_material="carpet",
+          finish_material="catlin-stair-carpet",
           # A flush LVP stair nose at the main-floor stairhead (R311.7.5.3 counts it).
           head_nosing_material="lvp",
           layout="u_split_landing", run_direction="y", turn_direction="left",

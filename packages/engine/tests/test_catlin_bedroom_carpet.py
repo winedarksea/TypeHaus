@@ -47,7 +47,8 @@ def test_bedroom_materials_resolve_to_the_selected_products(catlin_plan, materia
 
 def test_bedroom_cushion_is_ordered_once_for_only_the_bedroom_area(catlin_model_ro, floor_rows):
     bedroom = next(row for row in floor_rows if row["finish"] == _BEDROOM_FINISH)
-    cushions = [row for row in floor_rows if row["finish"] == _BEDROOM_CUSHION]
+    cushions = [row for row in floor_rows if row["finish"] == _BEDROOM_CUSHION
+                and row["under"] == _BEDROOM_FINISH]
     assert len(cushions) == 1
     cushion = cushions[0]
     assert cushion["under"] == _BEDROOM_FINISH
@@ -58,13 +59,14 @@ def test_bedroom_cushion_is_ordered_once_for_only_the_bedroom_area(catlin_model_
     assert bedroom["net_area_sqft"] == pytest.approx(area_sqft, abs=0.05)
     for quantity in ("net_area_sqft", "order_area_sqft"):
         assert cushion[quantity] == bedroom[quantity]
-    generic_pads = [row for row in floor_rows if row["finish"] == "carpet-pad"]
-    assert len(generic_pads) == 1
-    assert generic_pads[0]["under"] == "carpet"
-    assert generic_pads[0]["rooms"] == ["RM-B-PLAY-N"]
+    # The theater shares the cushion on its own row; the generic pad bills nowhere.
+    assert not [row for row in floor_rows if row["finish"] == "carpet-pad"]
+    theater = [row for row in floor_rows if row["finish"] == _BEDROOM_CUSHION
+               and row["under"] == "catlin-theater-carpet"]
+    assert [row["rooms"] for row in theater] == [["RM-B-PLAY-N"]]
     # Bedroom procurement must not change the carpeted flight's walking surface.
     stair = next(item for item in catlin_model_ro.stairs if item.tag == "ST-B2M")
-    assert stair.finish_material == "carpet"
+    assert stair.finish_material == "catlin-stair-carpet"
 
 
 def test_bedroom_estimate_and_installation_visit_include_every_selected_layer(
@@ -83,10 +85,11 @@ def test_bedroom_estimate_and_installation_visit_include_every_selected_layer(
                               products=product_labels(catlin_plan))
     rows = estimate["sections"]["floor_finishes"]["rows"]
     visits = load_tasks(CATLIN).visits.entries
-    for key in (_BEDROOM_FINISH, _BEDROOM_CUSHION):
+    # The cushion bills twice: under the bedrooms and under the theater.
+    for key, count in ((_BEDROOM_FINISH, 1), (_BEDROOM_CUSHION, 2)):
         billed = [row for row in rows if row["key"] == key]
-        assert len(billed) == 1
-        assert billed[0]["cost"]["low"] > 0
+        assert len(billed) == count
+        assert all(row["cost"]["low"] > 0 for row in billed)
         assert not any(row["key"] == key for row in estimate["unpriced"])
         assigned = [slug for slug, visit in visits.items()
                     if f"floor_finishes:{key}" in visit.rows]

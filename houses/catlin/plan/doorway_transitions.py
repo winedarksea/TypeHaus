@@ -139,13 +139,15 @@ D_M_STUDY_REDUCER = DoorwayTreatment(transition=_bevel(
     rise_in=0.19685, run_in=1.0, depth_in=0.0, land_in=0.75, min_in=0.125, max_in=0.25,
     pairs=(("coated-concrete", "lvp"),)))
 
-# The gym's 3/4" stall mats down to the theater carpet (mat on -normal) and to the sauna's
-# sealed slab (mat on +normal).
-D_B_PLAY_MAT_REDUCER = DoorwayTreatment(transition=_bevel(
-    RUBBER_REDUCER, "bevelled rubber edge, 1/4 in. to the carpet", "Glued to the slab at the "
-    "mat edge; carpet tucks against its low edge", "rubber", sign=-1, rise_in=0.25,
-    run_in=1.0, depth_in=0.5, land_in=1.0, max_in=0.75,
-    pairs=(("catlin-rubber-stall-mat", "carpet"),)))
+# The gym's 3/4" stall mats meet the 0.735" theater carpet flush (mat on -normal): the
+# carpet tucks into a Z-bar against the mat edge, no reducer (owner 2026-11-01).
+D_B_PLAY_MAT_ZBAR = DoorwayTreatment(transition=_spec(
+    CARPET_ZBAR, "carpet tucked flush with the stall-mat edge", "Fastened to the slab "
+    "against the mat edge; cushion stops at the bar", sign=-1, rise_in=0.015, max_in=0.0625,
+    pairs=(("catlin-rubber-stall-mat", "catlin-theater-carpet"),), edges_in=(0.0, 0.0),
+    parts=(_part("z-bar", "aluminum-extrusion",
+                 ((0, -0.25), (0.0625, -0.25), (0.0625, -0.0625), (0.75, -0.0625),
+                  (0.75, 0), (0, 0))),)))
 D_B_SAUNA_MAT_REDUCER = DoorwayTreatment(transition=_bevel(
     RUBBER_REDUCER, "bevelled rubber edge for 3/4 in. mats", "Glued to the slab at the mat "
     "edge, outside the sauna's sealed concrete", "rubber", sign=1, rise_in=0.75,

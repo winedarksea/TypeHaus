@@ -5,7 +5,7 @@
 # Perimeter walls align on the concrete exterior face so the 4" of exterior XPS stacks
 # directly under the framed wall's 4" polyiso+EPS (#43 control-layer continuity) — which
 # is also why thinning the pour moves only the INSIDE face.
-from ..doorway_transitions import D_B_BATH_VINYL_REDUCER, D_B_PLAY_MAT_REDUCER, D_B_SAUNA_MAT_REDUCER
+from ..doorway_transitions import D_B_BATH_VINYL_REDUCER, D_B_PLAY_MAT_ZBAR, D_B_SAUNA_MAT_REDUCER
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -1070,7 +1070,7 @@ OPENINGS = [
     # leaves instead of full glazing.
     # Derived RO since 2026-10-29, kept visually centred on W-B-CE (module suppressed).
     Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-DOUBLE60",
-         position=from_node("N-B-C", ft(6, 2)), doorway=D_B_PLAY_MAT_REDUCER),
+         position=from_node("N-B-C", ft(6, 2)), doorway=D_B_PLAY_MAT_ZBAR),
     # **The two doors formed through 12" interior pours are gone (2026-09-05.)** This one
     # was a blockout in W-B-CS2 and D-B-NE was one in W-B-CN; between them they were the
     # house's only `openings.count[host_structure=concrete]`. The dollars were modest — a
@@ -1391,7 +1391,7 @@ ROOMS = [
                                        spacing=inch(16))),
          )),
     Room(uid="CBR404AAAA", tag="RM-B-PLAY-N", seed=pt(ft(27), ft(27)),
-         occupancy=Occupancy.MEDIA, floor_finish="carpet"),
+         occupancy=Occupancy.MEDIA, floor_finish="catlin-theater-carpet"),
     # ** THE GYM'S SERVICES RUN EXPOSED, UNDER A CLOSED CEILING (2026-09-13; restated
     # 2026-10-30). ** The ceiling is not open: CEIL-RM-B-GYM-FS-M-EAST is 5/8" gwb on the
     # I-joists, the R302.13 membrane (`code.R302_13_floor_protection`), and it stays.

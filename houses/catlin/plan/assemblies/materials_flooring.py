@@ -42,11 +42,28 @@ MATERIALS_FLOORING = [
                     'tucks the carpet into a Z-bar flush with the hard floor '
                     '(plan/doorway_transitions.py). Measure the backing on the sample: '
                     'the Z-bar answer holds to 0.10 inch; notes/bedroom_carpet.md.'),
+    Material(tag="catlin-theater-carpet", name="Emphatic II 30 Nightlife theater carpet (provisional)",
+             hatch="batt", color="#1f1a21", finish="carpet-pile",
+             finish_thickness_in=0.735,
+             floor_companion_refs=("catlin-bedroom-carpet-pad",),
+             product_ref="PROD-PHILA-EMPHATIC-II-30-NIGHTLIFE",
+             source='RM-B-PLAY-N, owner 2026-11-01: dark cut pile for the theater. 0.36-inch '
+                    'published total + 3/8-inch cushion, stretched in; flush with the gym '
+                    'mats at D-B-PLAY (Z-bar). Dealer to confirm stretch-in; '
+                    'notes/basement_carpet.md.'),
+    Material(tag="catlin-stair-carpet", name="Refine Structural stair carpet (provisional)",
+             hatch="batt", color="#415058", finish="carpet-loop-pattern",
+             finish_thickness_in=0.25,
+             product_ref="PROD-PHILA-REFINE-STRUCTURAL",
+             source='ST-B2M, owner 2026-11-01: dense multi-level loop glued to tread and '
+                    'riser, no cushion. 0.237-inch published total + adhesive, 1/4 inch; '
+                    'notes/basement_carpet.md.'),
     Material(tag="catlin-bedroom-carpet-pad",
-             name='Bedroom rebond cushion, 8 lb/ft3, 3/8 inch',
+             name='Bedroom and theater rebond cushion, 8 lb/ft3, 3/8 inch',
              hatch="batt", color="#c8b7a0",
              product_ref="PROD-FUTURE-FOAM-150553488-32",
-             source='Companion to catlin-carpet-raised only; installation is included '
+             source='Companion to catlin-carpet-raised and catlin-theater-carpet; '
+                    'meets Shaw stretch-in commercial minimum (8 lb, 3/8 in max); installation is included '
                     'once in carpet labor. 3/8 inch, not the 7/16 inch first selected, so '
                     'the carpet stands 1/4 inch over the oak (owner 2026-11-01). Confirm '
                     'carpet manufacturer acceptance and warranty; notes/bedroom_carpet.md.'),

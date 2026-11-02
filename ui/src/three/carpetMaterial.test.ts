@@ -2,6 +2,7 @@ import * as THREE from "three";
 import {
   applyCarpetUv, buildCarpetMaps, CARPET_TILE_M, carpetSample, createCarpetMaterial, isCarpetPile,
 } from "./carpetMaterial";
+import { carpetLoopSample, isCarpetLoopPattern } from "./carpetLoopMaterial";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -31,6 +32,21 @@ export function runCarpetMaterialTests() {
     assert(s.luminance > 0.75 && s.luminance < 1.1, `luminance stays near 1 (${s.luminance})`);
     assert(s.roughness >= 0.85 && s.roughness <= 1, "pile roughness stays high");
   }
+
+  assert(isCarpetLoopPattern("carpet-loop-pattern") && !isCarpetLoopPattern("carpet-pile"), "loop recipe by declared finish");
+  for (const t of [0.05, 0.37, 0.8]) {
+    const [a, b, c, d] = [carpetLoopSample(0, t), carpetLoopSample(1, t), carpetLoopSample(t, 0), carpetLoopSample(t, 1)];
+    assert(Math.abs(a.luminance - b.luminance) < 1e-6 && Math.abs(c.height - d.height) < 1e-9
+      && Math.abs(a.height - b.height) < 1e-9, "the loop tile wraps");
+  }
+  let onLine = 0, lineLum = 0, fieldLum = 0, n = 0;
+  for (let i = 0; i < 4000; i++) {
+    const s = carpetLoopSample((i * 0.6180339) % 1, (i * 0.4142136) % 1);
+    n++;
+    if (s.line > 0.5) { onLine++; lineLum += s.luminance; } else fieldLum += s.luminance;
+  }
+  assert(onLine > n * 0.05 && onLine < n * 0.3, `lines are a minority of the area (${onLine}/${n})`);
+  assert(lineLum / onLine > 1.2 * fieldLum / (n - onLine), "the line level reads lighter than the field");
 
   const box = new THREE.BoxGeometry(0.6, 0.18, 0.3);
   applyCarpetUv(box, [0, 0]);

@@ -5,7 +5,8 @@ import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
  * World-scaled box projection on each vertex's dominant normal axis. Treads and floors read
  * plan coordinates, so clipped parts stay in phase; risers read (along-face, height).
  */
-export function applyWorldBoxUv(geometry: THREE.BufferGeometry, center: PlanCenter, tileSizeM: number): void {
+export function applyWorldBoxUv(geometry: THREE.BufferGeometry, center: PlanCenter, tileSizeM: number | readonly [number, number]): void {
+  const [tw, th] = typeof tileSizeM === "number" ? [tileSizeM, tileSizeM] : tileSizeM;
   if (!geometry.getAttribute("normal")) geometry.computeVertexNormals();
   const positions = geometry.getAttribute("position");
   const normals = geometry.getAttribute("normal");
@@ -17,7 +18,7 @@ export function applyWorldBoxUv(geometry: THREE.BufferGeometry, center: PlanCent
     const ny = Math.abs(normals.getY(i));
     const nz = Math.abs(normals.getZ(i));
     const [a, b] = ny >= nx && ny >= nz ? [px, py] : nx >= nz ? [py, sy] : [px, sy];
-    uv[i * 2] = a / tileSizeM; uv[i * 2 + 1] = b / tileSizeM;
+    uv[i * 2] = a / tw; uv[i * 2 + 1] = b / th;
   }
   geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
 }

@@ -20,5 +20,5 @@ BEDROOM_CARPET_PRODUCTS = (
             source='Bedroom cushion, owner 2026-11-01: 3/8 inch replaces the 7/16 inch '
                    '150553488-33 so the carpet meets the oak at a Z-bar with no reducer. '
                    'Confirm carpet manufacturer acceptance and warranty requirements before '
-                   'purchase. Theater/stair pad stays separate; notes/bedroom_carpet.md.'),
+                   'purchase. Also the theater cushion (notes/basement_carpet.md); notes/bedroom_carpet.md.'),
 )

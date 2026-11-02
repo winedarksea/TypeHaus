@@ -264,7 +264,7 @@ def test_every_finish_row_resolved_a_real_material(bom):
                if not row["known"] and row["finish"] is not None]
     assert unknown == [], unknown
     assert {row["finish"] for row in bom["floor_finishes"] if "under" not in row} == {
-        "carpet", "catlin-carpet-raised", "lvp", "oak-floor-custom",
+        "catlin-theater-carpet", "catlin-carpet-raised", "lvp", "oak-floor-custom",
         "catlin-tile-opera-blue", "catlin-tile-kaleo-brick",
         "catlin-tile-agua-linda", "catlin-tile-carrara", "sealed-concrete",
         "coated-concrete", "catlin-rubber-stall-mat", "vinyl-sheet", "catlin-plant-vinyl-raised",
@@ -302,7 +302,7 @@ def test_floor_finish_rows_match_the_authored_room_groups(catlin_model, bom):
     lvp_area = sum(room.field_area_m2 for room in catlin_model.rooms
                    if room.floor_finish == "lvp") * _M2_TO_FT2
     assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(lvp_area, abs=0.05)
-    assert set(rows["carpet"]["rooms"]) == {"RM-B-PLAY-N"}
+    assert set(rows["catlin-theater-carpet"]["rooms"]) == {"RM-B-PLAY-N"}
     assert set(rows["catlin-carpet-raised"]["rooms"]) == {
         "RM-M-BED", "RM-M-CLOSET", "RM-S-BED1", "RM-S-BED2", "RM-S-BED3"}
     assert set(rows["oak-floor-custom"]["rooms"]) == {
@@ -330,7 +330,7 @@ def test_a_finish_brings_the_layer_it_implies(bom):
     companions = {(row["under"], row["finish"]): row for row in bom["floor_finishes"]
                   if "under" in row}
     assert set(companions) == {
-        ("carpet", "carpet-pad"),
+        ("catlin-theater-carpet", "catlin-bedroom-carpet-pad"),
         ("catlin-carpet-raised", "catlin-bedroom-carpet-pad"),
         ("catlin-plant-vinyl-raised", "catlin-plant-sureply"),
         ("catlin-tile-opera-blue", "catlin-ditra-heat"),

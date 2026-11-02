@@ -590,6 +590,9 @@
 "4x0.5 panel" = { low = 0, high = 0 }  # 68 LF — formed gutter stock (bottom); bills in [drainage] gutter:metal-dark-kstyle
 "4x4" = { material = { low = 2.2, high = 3.6 }, labour = { low = 1.5, high = 3 } }  # 32 LF
 "6x6" = { material = { low = 5, high = 8.5 }, labour = { low = 2.5, high = 5 } }  # 8 LF
+# ** 2026-11-01: ST-B2M's carpet was billed NOWHERE after 2026-09-28 ** — its substrate resolves
+# `deck 11x1` / `deck 43.375x1`, which had no rows, and the carpet is not a member. Both now
+# price below as plain substrate; the carpet is [allowances] finish-floor-stair-carpet-steps/-landings.
 # ** SUPERSEDED 2026-09-28 for the oak: ** the oak treads now bill in [stair_treads] by the
 # piece, and ST-B2M resolves `deck 11x1`, so `deck 11x1.5` below now prices ONLY the two
 # exterior PT flights' 32 LF — at a blend that reads high for PT. History kept below.
@@ -620,6 +623,10 @@
 # $9-14 an 8' board, set like trim.
 "0.750x5.088" = { material = { low = 1.1, high = 1.8 }, labour = { low = 1, high = 2 } }  # 24 LF — ST-SG-PORCH
 "0.750x5.860" = { material = { low = 1.1, high = 1.8 }, labour = { low = 1, high = 2 } }  # ST-G-SERVICE KDAT closed risers
+# ST-B2M's carpet substrate (2026-11-01): plain 1" tread blanks and 1" landing decks, set by
+# the stair builder; the glued carpet over them is in [allowances]. ESTIMATES, unconfirmed.
+"deck 11x1" = { material = { low = 4.5, high = 7.5 }, labour = { low = 3, high = 6 } }  # 48 LF ordered — ST-B2M treads
+"deck 43.375x1" = { material = { low = 10, high = 16 }, labour = { low = 5, high = 10 } }  # ST-B2M half-landings
 "deck 42x1.5" = { material = { low = 8, high = 16 }, labour = { low = 9.5, high = 25 } }  # 16 LF — ST-B2M landing, carpeted
 "hanger" = { material = { low = 1.5, high = 4 }, labour = { low = 1.3, high = 2.6 } }  # 32 LF — stair hanger board, 2x stock
 
@@ -1167,7 +1174,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "HHUS410" = { low = 14, high = 24 }  # 10 ea
 # Doorway transitions (plan/doorway_transitions.py, 2026-11-01). ESTIMATES, unconfirmed:
 # retail bands per piece cut to one doorway.
-"PROD-CARPET-ZBAR" = { low = 8, high = 20 }  # 4 ea — BED1/2/3, M-BATH2
+"PROD-CARPET-ZBAR" = { low = 8, high = 20 }  # 5 ea — BED1/2/3, M-BATH2, B-PLAY (mat edge)
 "PROD-CATLIN-OAK-REDUCER" = { low = 25, high = 70 }  # 2 ea — 5/4 saddle D-M-BED2, 3/4 reducer D-A-HALVES (owner-stock oak at the low end)
 "PROD-SCHLUTER-SCHIENE" = { low = 15, high = 35 }  # 2 ea — S-SUITEBATH, S-BATH1
 "PROD-CATLIN-SOLID-SURFACE-REDUCER" = { low = 40, high = 120 }  # 1 ea — S-PLANT, fabricator offcut
@@ -3615,15 +3622,17 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Sources: homeguide.com 2026 LVP / carpet / carpet-padding / tile-flooring cost charts,
 # dgfloors.com carpet grade table, angi.com oak flooring 2026, homeadvisor.com rubber floor.
 # $/SF on the ORDER quantity (waste included), by finish
-# RM-B-PLAY-N keeps the basic carpet (310 SF ordered). The three east bedrooms,
-# main bedroom and its closet use the raised variant (648 SF ordered).
-"carpet" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }  # 310 SF — labour includes pad and tack strip
-"carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # basic theater pad; labor is inside carpet rates
+# The generic library carpet: no catlin room or stair uses it since 2026-11-01; kept priced.
+"carpet" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }  # 0 SF — labour includes pad and tack strip
+"carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 0 SF; labor is inside carpet rates
+# 2026-11-01 provisional Emphatic II 30 Nightlife theater selection; notes/basement_carpet.md.
+# Commercial 30 oz cut pile, $18-29/SY material target, not a quote; stretch-in labour.
+"catlin-theater-carpet" = { material = { low = 2, high = 3.25 }, labour = { low = 1, high = 2.25 } }  # RM-B-PLAY-N
 # 2026-10-23 provisional Sweet Spot I Romano bedroom selection; notes/bedroom_carpet.md.
 # $3-4/SF carpet material target, not a quote. Lowe's displayed $2.84/SF promotion had
 # an expired end date; do not use it as a current rate. Cushion retains the pad allowance.
 "catlin-carpet-raised" = { material = { low = 3, high = 4 }, labour = { low = 1, high = 2.25 } }
-"catlin-bedroom-carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 8 lb/ft3, 7/16 in; labor included once in carpet
+"catlin-bedroom-carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 8 lb/ft3, 3/8 in, bedrooms + theater; labor included once in carpet
 # Plywood remains a provisional allowance until the selected assembly is measured.
 # 2026-10-29: Provisional. notes/bedroom_carpet.md: the 1/4" ply premise no longer describes the selected 7/16" pad + Sweet Spot I;
 # the held 3/4" depth is met WITHOUT ply. Low = none; high = if the mock-up needs it.
@@ -5584,7 +5593,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "oak-floor-custom:landing" = { material = { low = 0, high = 0 }, labour = { low = 76, high = 200 } }  # 2 ea — ST-M2S
 # Closed risers (2026-09-28, notes/stair_riser_basis.md). Oak: owner-milled 4/4, so labour
 # only, about half a tread's (a square-edged board, no nosing). Ply: a 3/4" rip under
-# ST-B2M's carpet, which already prices the carpet wrapping it.
+# ST-B2M's glued carpet, which [allowances] finish-floor-stair-carpet-* prices.
 "oak-riser:riser" = { material = { low = 0, high = 0 }, labour = { low = 20, high = 45 } }  # 32 ea — ST-M2S 16, ST-S2A 16
 "plywood-subfloor:riser" = { material = { low = 3, high = 6 }, labour = { low = 10, high = 20 } }  # 15 ea — ST-B2M
 
@@ -8088,7 +8097,12 @@ finish-canopy-east-pvc-column-wrap = { material = { low = 200, high = 450 }, lab
 # The row is NOT dropped from `stair_finish` — ST-G-SERVICE still buys treads, risers and
 # stringers and still appears in the schedule; only this nosing scope excludes it.
 # 2026-10-29: $7-21 -> $4.5-12: the oak treads are owner-milled 5/4 BULLNOSE (nosing is the tread) and the carpeted ST-B2M wraps in
-# its carpet row, so no nosing is bought here. What remains is ~25 floor-to-floor transitions/saddles at $30-75 each over the 136.5 LF.
+# its carpet (finish-floor-stair-carpet-steps below), so no nosing is bought here. What remains is ~25 floor-to-floor transitions/saddles at $30-75 each over the 136.5 LF.
+# ST-B2M's Refine carpet, glued (2026-11-01; notes/basement_carpet.md). ESTIMATES, not a quote:
+# ~5.5 SF a step (tread, riser, nosing wrap) at $1.5-2.5/SF material plus $25-45 a step to cut,
+# glue and tuck; the landings at $1.5-2.5/SF + $2-3.5/SF glue-down labour.
+finish-floor-stair-carpet-steps = { low = 33, high = 60, unit = "ea", driver = "stair_finish.risers[stair=ST-B2M]" }
+finish-floor-stair-carpet-landings = { low = 3.5, high = 6, unit = "SF", driver = "stair_finish.landing_area_sqft[stair=ST-B2M]" }
 finish-transitions-and-stair-nosings = { low = 4.5, high = 12, unit = "LF", driver = "stair_finish.tread_lf[conditioned=True,has_nosing=True]" }
 # `finish-garage-door-opener` is DELETED (2026-10-30): the opener is APPL-G-GDO, priced as
 # APPL-LIFTMASTER-8550W in [placeables].

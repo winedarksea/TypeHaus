@@ -2,7 +2,7 @@
 
 Owner selection, 2026-10-23. Goals: decent comfort, durability and cost effectiveness.
 Applies to `RM-M-BED`, `RM-M-CLOSET`, and `RM-S-BED1/2/3`, which share
-`catlin-carpet-raised`. The theater and basement stair retain their existing carpet/pad.
+`catlin-carpet-raised`. The theater and basement stair are in `notes/basement_carpet.md`; the theater shares this cushion.
 
 ## Selected products and shopping guidance
 
@@ -39,7 +39,7 @@ planning allowances, not bids; tax, delivery and any required preparation need a
 The displayed Lowe's **$2.84/ft²** promotion referenced an expired end date when reviewed;
 it is research context only, not a current quote.
 
-`catlin-bedroom-carpet-pad` bills only under the bedroom finish. The existing `carpet-pad`
+`catlin-bedroom-carpet-pad` bills under the bedroom and theater finishes. The generic `carpet-pad`
 remains separate. The model's area-plus-waste takeoff is an estimate, not a cutting plan:
 obtain a roll/seam layout, verify roll width and cut lengths, and quote the actual order.
 

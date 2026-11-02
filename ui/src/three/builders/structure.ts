@@ -27,6 +27,7 @@ import {
 import { applyTileUv, createTileMaterial, tileRepeatSizeM, tileStyleOrNull } from "../tileMaterial";
 import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
 import { applyCarpetUv, createCarpetMaterial, isCarpetPile } from "../carpetMaterial";
+import { applyCarpetLoopUv, createCarpetLoopMaterial, isCarpetLoopPattern } from "../carpetLoopMaterial";
 import { buildMembers, isRoofFramingMember, memberColor, type SkinLine } from "../members";
 import { buildBoardMembers } from "./millwork";
 import { addStairFinishParts } from "./stairFinish";
@@ -330,7 +331,9 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
   const plankStyle = plankStyleOrNull(finish, declared);
   const marble = !plankStyle && isVeinedMarble(declared);
   const tileStyle = tileStyleOrNull(declared);
-  const carpet = !plankStyle && !tileStyle && !marble && isCarpetPile(declared);
+  const plain = !plankStyle && !tileStyle && !marble;
+  const carpet = plain && isCarpetPile(declared);
+  const loop = plain && isCarpetLoopPattern(declared);
   if (plankStyle) {
     applyPlankPlaneUv(geometry, center, planLongAxis(outline), plankTileSizeM(plankStyle));
   } else if (tileStyle) {
@@ -339,6 +342,8 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
     applyPlankPlaneUv(geometry, center, [1, 0], [MARBLE_TILE_M, MARBLE_TILE_M]);
   } else if (carpet) {
     applyCarpetUv(geometry, center);
+  } else if (loop) {
+    applyCarpetLoopUv(geometry, center);
   }
   const roughness = mode === "nordic" ? surface.roughness : 1;
   const mesh = new THREE.Mesh(geometry,
@@ -351,6 +356,8 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
       ? createMarbleMaterial(mode, materialColor(finish, palette, materials), roughness)
       : carpet
       ? createCarpetMaterial(mode, materialColor(finish, palette, materials), roughness)
+      : loop
+      ? createCarpetLoopMaterial(mode, materialColor(finish, palette, materials), roughness)
       : standardMaterial(new THREE.Color(materialColor(finish, palette, materials)), mode, {
         roughness,
         metalness: mode === "nordic" ? surface.metalness : 0,

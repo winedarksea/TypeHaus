@@ -9,6 +9,8 @@ from typehaus.resolve.geometry_build import build_geometry
 from typehaus.server.model_json_fabric import framing_json
 from typehaus.takeoff.stairs import stair_finish_takeoff, stair_tread_takeoff
 
+_CARPET = "catlin-stair-carpet"
+
 
 def _basement_stair(model):
     return next(stair for stair in model.stairs if stair.tag == "ST-B2M")
@@ -16,8 +18,8 @@ def _basement_stair(model):
 
 def test_carpet_covers_every_stair_surface_without_entering_takeoff(catlin_model_ro):
     stair = _basement_stair(catlin_model_ro)
-    assert stair.finish_material == "carpet"
-    assert stair.finish_thickness_m == pytest.approx(inch(0.5).meters)
+    assert stair.finish_material == _CARPET
+    assert stair.finish_thickness_m == pytest.approx(inch(0.25).meters)
     by_role = {role: [part for part in stair.finish_parts if part.role == role]
                for role in ("walking", "nosing", "riser")}
     assert {role: len(parts) for role, parts in by_role.items()} == {
@@ -26,10 +28,10 @@ def test_carpet_covers_every_stair_surface_without_entering_takeoff(catlin_model
     # nose on the main floor (notes/stair_nosing_basis.md).
     lips = {part.key: part.material_ref for part in stair.finish_parts
             if part.role == "landing-nosing"}
-    assert lips == {"landing-lower:nosing": "carpet", "landing-upper:nosing": "carpet",
+    assert lips == {"landing-lower:nosing": _CARPET, "landing-upper:nosing": _CARPET,
                     "stairhead:nosing": "lvp"}
     assert all(part.z1_m > part.z0_m for part in stair.finish_parts)
-    assert all(part.material_ref == "carpet" for part in stair.finish_parts
+    assert all(part.material_ref == _CARPET for part in stair.finish_parts
                if part.key != "stairhead:nosing")
     assert {part.key for part in by_role["walking"]} == {
         f"{member.child_key}:top" for member in stair.members
@@ -41,11 +43,11 @@ def test_carpet_covers_every_stair_surface_without_entering_takeoff(catlin_model
             finish = next(part for part in by_role["walking"]
                           if part.key == f"{member.child_key}:top")
             assert finish.z0_m == pytest.approx(member.z1_m)
-            assert finish.z1_m == pytest.approx(member.z1_m + inch(0.5).meters)
+            assert finish.z1_m == pytest.approx(member.z1_m + inch(0.25).meters)
             assert member.z1_m - member.z0_m == pytest.approx(inch(1).meters)
     assert all(member.category != "stair_finish" for member in stair.members)
     assert not [row for row in stair_tread_takeoff(catlin_model_ro)
-                if row["stair"] == stair.tag and row["material"] == "carpet"]
+                if row["stair"] == stair.tag and row["material"] == _CARPET]
     [finish_row] = [row for row in stair_finish_takeoff(catlin_model_ro)
                     if row["stair"] == stair.tag]
     assert (finish_row["treads"], finish_row["risers"],
@@ -57,12 +59,12 @@ def test_carpet_surfaces_reach_model_json_and_geometry_ir(catlin_model_ro):
     [record] = [row for row in framing_json(catlin_model_ro, None)["stairs"]
                 if row["tag"] == stair.tag]
     assert len(record["finish_parts"]) == len(stair.finish_parts)
-    assert record["finish_material"] == "carpet"
+    assert record["finish_material"] == _CARPET
     geometry = build_geometry(catlin_model_ro)
     [element] = [element for element in geometry.elements
                  if element.uid == f"{stair.uid}::finish"]
     assert len(element.parts) == len(stair.finish_parts)
-    assert {part.catalog.material_ref for part in element.parts} == {"carpet", "lvp"}
+    assert {part.catalog.material_ref for part in element.parts} == {_CARPET, "lvp"}
 
 
 def test_carpet_is_in_gltf_stair_mesh(catlin_model_ro):
@@ -73,7 +75,7 @@ def test_carpet_is_in_gltf_stair_mesh(catlin_model_ro):
               and node.get("extras", {}).get("kind") == "stair"]
     material_ids = {primitive["material"] for primitive in
                     gltf["meshes"][node["mesh"]]["primitives"]}
-    carpet_color = _material_finish_color("carpet", "finish", authored_colors(catlin_model_ro))
+    carpet_color = _material_finish_color(_CARPET, "finish", authored_colors(catlin_model_ro))
     assert any(gltf["materials"][material_id]["pbrMetallicRoughness"]
                ["baseColorFactor"] == list(carpet_color)
                for material_id in material_ids)
