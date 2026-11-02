@@ -42,11 +42,12 @@ from typehaus.model import Location, WallAttachment
 # room is unusual but legal — NEC 240.24(D) keeps overcurrent devices out of clothes
 # closets and bathrooms, and this house has neither. Give the template a utility room and
 # this is the first thing that should move into it.
+# 54" along the wall keeps VR-RADON's riser out of its NEC 110.26(A) working space.
 PANEL = [
     ElectricalDevice(uid="95YK2Q5XDP", tag="ED-PANEL", kind=DeviceKind.PANEL, type_ref="ED-T-PANEL",
                      room="RM-Main", mount=Mount(kind=MountKind.WALL, elevation=ft(4, 6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-104", face="left", distance_from_start=inch(36),
+                         wall_ref="W-104", face="left", distance_from_start=inch(54),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
