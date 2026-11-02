@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** cdf2f6ca15a2b540  
-**Lines:** 192
+**Model hash:** a1a4cda8e786e15d  
+**Lines:** 201
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -16,14 +16,14 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| 0.75x3.5 Poplar trim, 1x4 S4S, paint grade — blocking (0.75x3.5:poplar-trim-paint) | 18 | LF ordered | 2 pcs, 16.8 LF cut | building |
+| 0.75x3.5 Poplar trim, 1x4 S4S, paint grade — blocking (0.75x3.5:poplar-trim-paint) | 16 | LF ordered | 14 pcs, 15.0 LF cut | building |
+| 1.0x3.5 SPF framing lumber — blocking (1.0x3.5:spf) | 8 | LF ordered | 1 pcs, 2.3 LF cut | building |
 | 1.125x1.5 KDAT southern yellow pine (treated exterior framing) — girt strapping (1.125x1.5:kdat) | 48 | LF ordered | 6 pcs, 24.5 LF cut | building |
 | 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | 20 | LF ordered | 2 pcs, 19.1 LF cut | building |
 | 1.25x11.875 rim — rim board (1.25x11.875 rim) | 140 | LF ordered | 6 pcs, 135.0 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
 | 1.75x11.875 LVL — sister joist, trimmer (1.75x11.875 LVL) | 208 | LF ordered | 18 pcs, 187.8 LF cut | building |
-| 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,480 | LF ordered | 223 pcs, 2225.5 LF cut | building |
-| 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
+| 11.875 TJI 230 — blocking, joist, rafter, sister joist (11.875 TJI 230) | 3,240 | LF ordered | 261 pcs, 2983.7 LF cut | building |
 | 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | 43 | ea | 43 pcs, 483.6 LF cut; 502.0 LF in the takeoff | building |
 | 1x4 SPF framing lumber — ceiling furring, girt strapping (1x4:spf) | 556 | LF ordered | 73 pcs, 472.8 LF cut | building |
 | 1x4 Structural 1 plywood — ceiling furring, girt strapping (1x4:struct-1-plywood) | 342 | LF ordered | 51 pcs, 286.4 LF cut | building |
@@ -34,30 +34,30 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-2x10 — header (2-2x10) | 32 | LF ordered | 4 pcs, 21.4 LF cut | building |
 | 2-2x6 — header (2-2x6) | 24 | LF ordered | 3 pcs, 17.8 LF cut | building |
 | 2-2x6 SPF framing lumber — blocking (2-2x6:spf) | 24 | LF ordered | 10 pcs, 18.2 LF cut | building |
-| 2-2x8 — header (2-2x8) | 168 | LF ordered | 52 pcs, 144.6 LF cut | building |
+| 2-2x8 — header (2-2x8) | 168 | LF ordered | 51 pcs, 142.2 LF cut | building |
 | 2-2x8 SPF framing lumber — blocking (2-2x8:spf) | 16 | LF ordered | 6 pcs, 11.1 LF cut | building |
 | 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 47.8 LF cut; 48.0 LF in the takeoff | building |
 | 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 334.5 LF cut; 336.0 LF in the takeoff | building |
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 336 | LF ordered | 38 pcs, 313.2 LF cut | building |
 | 2x10 — hanger board (2x10) | 42 | LF ordered | 7 pcs, 31.7 LF cut | building |
-| 2x10 SPF framing lumber — blocking (2x10:spf) | 40 | LF ordered | 7 pcs, 24.2 LF cut | building |
+| 2x10 SPF framing lumber — blocking, ceiling furring (2x10:spf) | 80 | LF ordered | 30 pcs, 72.6 LF cut | building |
 | 2x12 — blocking, joist (2x12:kdat) | 424 | LF ordered | 46 pcs, 387.8 LF cut | building |
-| 2x12 SPF framing lumber — blocking, ceiling furring (2x12:spf) | 80 | LF ordered | 14 pcs, 66.9 LF cut | building |
+| 2x12 SPF framing lumber — blocking (2x12:spf) | 16 | LF ordered | 12 pcs, 15.2 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 260 | LF ordered | 77 pcs, 209.2 LF cut | building |
 | 2x3 — corner stud, plate, stud (2x3) | 48 | LF ordered | 12 pcs, 28.0 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,700 | LF ordered | 651 pcs, 3987.9 LF cut | building |
-| 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,942 | LF ordered | 477 pcs, 2518.1 LF cut | building |
-| 2x4 SPF framing lumber — blocking, ceiling furring (2x4:spf) | 80 | LF ordered | 33 pcs, 69.3 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,048 | LF ordered | 1174 pcs, 6098.3 LF cut | building |
-| 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | 90 | LF ordered | 9 pcs, 77.6 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,652 | LF ordered | 659 pcs, 3932.7 LF cut | building |
+| 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,934 | LF ordered | 477 pcs, 2515.5 LF cut | building |
+| 2x4 SPF framing lumber — blocking, ceiling furring (2x4:spf) | 88 | LF ordered | 36 pcs, 73.1 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 6,996 | LF ordered | 1177 pcs, 6016.1 LF cut | building |
+| 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | 90 | LF ordered | 9 pcs, 77.2 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | 130 | LF ordered | 14 pcs, 93.6 LF cut | building |
-| 2x6 Laminated strand lumber — corner stud, cripple stud, door blocking, jack stud, king stud, stud (2x6:lsl) | 1,742 | LF ordered | 230 pcs, 1480.1 LF cut | building |
+| 2x6 Laminated strand lumber — corner stud, cripple stud, door blocking, jack stud, king stud, stud (2x6:lsl) | 1,734 | LF ordered | 230 pcs, 1470.3 LF cut | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:oak-8q) | 32 | LF ordered | 21 pcs, 23.9 LF cut | building |
-| 2x6 SPF framing lumber — blocking (2x6:spf) | 74 | LF ordered | 25 pcs, 65.2 LF cut | building |
-| 2x8 — joist, landing framing, rim board (2x8) | 240 | LF ordered | 64 pcs, 196.5 LF cut | building |
-| 2x8 SPF framing lumber — blocking (2x8:spf) | 374 | LF ordered | 89 pcs, 312.6 LF cut | building |
+| 2x6 SPF framing lumber — blocking (2x6:spf) | 72 | LF ordered | 53 pcs, 60.8 LF cut | building |
+| 2x8 — joist, landing framing, plate, rim board (2x8) | 320 | LF ordered | 69 pcs, 274.3 LF cut | building |
+| 2x8 SPF framing lumber — blocking (2x8:spf) | 296 | LF ordered | 286 pcs, 287.0 LF cut | building |
 | 3-2x12 — joist (3-2x12:kdat) | 40 | LF ordered | 2 pcs, 33.5 LF cut | building |
-| 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 360 | LF ordered | 1165 pcs, 339.8 LF cut | building |
+| 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 360 | LF ordered | 1157 pcs, 337.5 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |
 | 6x6 KDAT southern yellow pine (treated exterior framing) — brace, stud (6x6:kdat) | 16 | LF ordered | 3 pcs, 7.9 LF cut | building |
 | hanger — hanger board (hanger) | 24 | LF ordered | 4 pcs, 18.0 LF cut | building |
@@ -75,10 +75,10 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" exterior wall (permabase-exterior:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 27.0 SF net | building |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 10.5 SF net | building |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
-| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 99 | sheets 4x8 | 99 sheets 4x8 over 3161.0 SF net | building |
+| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 99 | sheets 4x8 | 99 sheets 4x8 over 3161.2 SF net | building |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 43.7 SF net | building |
-| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 10 | sheets 4x8 | 10 sheets 4x8 over 243.9 SF net | building |
-| Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3068.4 SF net | building |
+| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 15 | sheets 4x8 | 15 sheets 4x8 over 380.7 SF net | building |
+| Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3062.5 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
 | Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.0 SF net | building |
 
@@ -87,11 +87,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail) | 84 | ea |  | building |
-| HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | 1,134 | ea |  | building |
-| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 44 | ea |  | building |
-| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 959 | ea |  | building |
+| HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | 900 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 40 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 958 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | 72 | ea |  | building |
-| HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5) | 288 | ea |  | building |
+| HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5) | 248 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 452 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 176 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 1,037 | ea |  | building |
@@ -135,7 +135,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 19 | ea |  | building |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 6 | ea |  | building |
 | LTP4 lateral tie plate, gable-end truss to top plate | 2 | ea |  | building |
-| LTP4 lateral tie plate | 164 | ea |  | building |
+| LTP4 lateral tie plate | 168 | ea |  | building |
 | LTP4 lateral tie plate | 7 | ea |  | building |
 | LTP4Z lateral tie plate (ZMAX) | 7 | ea |  | building |
 | LUS face-mount joist hanger | 7 | ea |  | building |
@@ -148,6 +148,15 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS28Z face-mount hanger, 2x8 (ZMAX) | 2 | ea |  | building |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | 2 | ea |  | building |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | 49 | ea |  | basement, main |
+| PROD-CARPET-ZBAR — carpet tucked flush with the hard floor; 1/4 in. field rise | 4 | ea |  | main, second |
+| PROD-CATLIN-OAK-REDUCER — 3/4 in. oak reducer, 2 in. bevel to the vinyl | 1 | ea |  | attic |
+| PROD-CATLIN-OAK-REDUCER — 5/4 white oak saddle, 1 3/4 in. flat under the leaf, 2 in. bevel | 1 | ea |  | main |
+| PROD-CATLIN-SOLID-SURFACE-REDUCER — 12 mm solid surface, 4 1/2 in. slope to the vinyl | 1 | ea |  | second |
+| PROD-CORETEC-REDUCER — 5 mm reducer, plank down to the cap | 1 | ea |  | main |
+| PROD-RUBBER-REDUCER — bevelled rubber edge for 3/4 in. mats | 2 | ea |  | basement |
+| PROD-RUBBER-REDUCER — bevelled rubber edge, 1/4 in. to the carpet | 1 | ea |  | basement |
+| PROD-RUBBER-REDUCER — rubber reducer for 1/8 in. sheet vinyl | 1 | ea |  | basement |
+| PROD-SCHLUTER-SCHIENE — aluminium, height to the tile | 3 | ea |  | second |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375) | 3,138 | ea |  | building |
 | S-5-N Mini nail-strip seam clamp | 24 | ea |  | building |
 | 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN) | 620 | ea |  | building |
@@ -158,7 +167,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 105 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 12 | ea |  | building |
 | slat brace plate screw (SDWS22400DB) | 16 | ea |  | main |
-| SDWS Timber Screw (0.220 in shank), stringer through spacer to stud (SDWS22600DB) | 9 | ea |  | building |
+| SDWS Timber Screw (0.220 in shank), stringer through spacer to stud (SDWS22600DB) | 8 | ea |  | building |
 | SP4Z stud plate tie (2x4, ZMAX) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 323 | ea |  | building |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | 4 | ea |  | building |
@@ -170,7 +179,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | THA422 top-flange floor truss hanger | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 1 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,165 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,157 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 72 | ea |  | building |
 
 ## Other structural solids
@@ -201,7 +210,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape, 1 1/4" on deck (butyl-tape) | 19.1 | LF |  | second |
 | butyl-tape, 1 1/2" on deck (butyl-tape) | 418.4 | LF |  | main, second |
 | butyl-tape, 4 1/2" on deck (butyl-tape) | 33.5 | LF |  | main |
-| butyl-tape, 1 1/2" on stair (butyl-tape) | 65.2 | LF |  | main |
+| butyl-tape, 1 1/2" on stair (butyl-tape) | 65.7 | LF |  | main |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 4.5 | LF |  | main |
 | butyl-tape-beam, 3" on beam (butyl-tape-beam) | 6.1 | LF |  | main |
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 19.3 | LF |  | second |
@@ -219,13 +228,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Treated sill plate, Pressure-treated southern yellow pine (sill plate) (pt-sill-plate) | 329.3 | LF |  | building |
+| Treated sill plate, Pressure-treated southern yellow pine (sill plate) (pt-sill-plate) | 326.3 | LF |  | building |
 
 ## Sill gaskets
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Sill seal foam gasket, under the sill plate (sill-seal-foam) | 110.6 | LF |  | building |
+| Sill seal foam gasket, under the sill plate (sill-seal-foam) | 107.6 | LF |  | building |
 | Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | 218.7 | LF |  | building |
 
 ## Assembly layers, by material
@@ -237,7 +246,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 5/8" APA Exterior plywood, 4x9 stock sheathing, 5/8" — wall (entry-screen-exterior-plywood:0.625) | 27 | SF net |  | building |
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | 84.4 | SF net |  | building |
 | 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" — wall (permabase-exterior:0.5) | 25.1 | SF net |  | building |
-| Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,177.7 | SF net |  | building |
+| Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,171.9 | SF net |  | building |
 | Structural 1 plywood sheathing, 19/32" — roof (struct-1-plywood:0.594) | 882.8 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | 4.3 | SF net |  | building |
 
@@ -274,13 +283,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | elements |
 |---|---|
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade — blocking (0.75x3.5:poplar-trim-paint) | — |
+| 1.0x3.5 SPF framing lumber — blocking (1.0x3.5:spf) | — |
 | 1.125x1.5 KDAT southern yellow pine (treated exterior framing) — girt strapping (1.125x1.5:kdat) | — |
 | 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | — |
 | 1.25x11.875 rim — rim board (1.25x11.875 rim) | — |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | — |
 | 1.75x11.875 LVL — sister joist, trimmer (1.75x11.875 LVL) | — |
-| 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | — |
-| 11.875 TJI 230 — rafter (11.875 TJI 230) | — |
+| 11.875 TJI 230 — blocking, joist, rafter, sister joist (11.875 TJI 230) | — |
 | 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | — |
 | 1x4 SPF framing lumber — ceiling furring, girt strapping (1x4:spf) | — |
 | 1x4 Structural 1 plywood — ceiling furring, girt strapping (1x4:struct-1-plywood) | — |
@@ -297,9 +306,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 24 roof truss — roof truss (24 roof truss) | — |
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | — |
 | 2x10 — hanger board (2x10) | — |
-| 2x10 SPF framing lumber — blocking (2x10:spf) | — |
+| 2x10 SPF framing lumber — blocking, ceiling furring (2x10:spf) | — |
 | 2x12 — blocking, joist (2x12:kdat) | — |
-| 2x12 SPF framing lumber — blocking, ceiling furring (2x12:spf) | — |
+| 2x12 SPF framing lumber — blocking (2x12:spf) | — |
 | 2x2 — blocking, plate, stud (2x2) | — |
 | 2x3 — corner stud, plate, stud (2x3) | — |
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | — |
@@ -311,7 +320,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Laminated strand lumber — corner stud, cripple stud, door blocking, jack stud, king stud, stud (2x6:lsl) | — |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:oak-8q) | — |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | — |
-| 2x8 — joist, landing framing, rim board (2x8) | — |
+| 2x8 — joist, landing framing, plate, rim board (2x8) | — |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | — |
 | 3-2x12 — joist (3-2x12:kdat) | — |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | — |
@@ -395,6 +404,15 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS28Z face-mount hanger, 2x8 (ZMAX) | — |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | — |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | SL-B-FLOOR, SL-M-DECK |
+| PROD-CARPET-ZBAR — carpet tucked flush with the hard floor; 1/4 in. field rise | D-M-BATH2, D-S-BED1, D-S-BED2, D-S-BED3 |
+| PROD-CATLIN-OAK-REDUCER — 3/4 in. oak reducer, 2 in. bevel to the vinyl | D-A-HALVES |
+| PROD-CATLIN-OAK-REDUCER — 5/4 white oak saddle, 1 3/4 in. flat under the leaf, 2 in. bevel | D-M-BED2 |
+| PROD-CATLIN-SOLID-SURFACE-REDUCER — 12 mm solid surface, 4 1/2 in. slope to the vinyl | D-S-PLANT |
+| PROD-CORETEC-REDUCER — 5 mm reducer, plank down to the cap | D-M-STUDY |
+| PROD-RUBBER-REDUCER — bevelled rubber edge for 3/4 in. mats | D-B-GYM, D-B-SAUNA |
+| PROD-RUBBER-REDUCER — bevelled rubber edge, 1/4 in. to the carpet | D-B-PLAY |
+| PROD-RUBBER-REDUCER — rubber reducer for 1/8 in. sheet vinyl | D-B-BATH |
+| PROD-SCHLUTER-SCHIENE — aluminium, height to the tile | D-S-BATH1, D-S-SUITEBATH, O-S-VANITY |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375) | — |
 | S-5-N Mini nail-strip seam clamp | — |
 | 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN) | — |
@@ -482,6 +500,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 - A-301
 - A-301.1
 - A-301.2
+- A-401.1
+- A-401.2
+- A-401.3
+- A-401.4
+- A-401.5
+- A-401.6
 
 ## Appendix C — owner allowances in this trade
 
