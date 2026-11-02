@@ -114,22 +114,32 @@ def test_the_void_is_buffered_inward_so_a_trimmer_line_is_not_a_span(catlin_mode
 
 
 def test_a_run_below_the_joists_is_not_this_checks_business(catlin_model, findings):
-    """The elevation band, from the other side. Catlin's basement ceiling carries four runs at
-    -1'-6" to -1'-7 3/8" whose plan lines cross the stairwell — but ``FS-M-STAIR``'s joists
-    stop at -0'-11 7/8", so they hang *below* the floor, in the room.
+    """The elevation band, from the other side. ``CD-B-GARAGE`` (-17.6") and
+    ``PR-B-CW-TRUNK`` (-14.8") cross the stairwell in plan on the basement ceiling — but
+    ``FS-M-STAIR``'s joists stop at -0'-11 7/8", so they hang *below* the floor, in the room.
 
     Whether they foul the stair's headroom is a real question and a different one; this check
     has no per-room ceiling plane and must not pretend to answer it. A storey-based match, or a
-    band dialled deep enough to reach them, calls all four void-spanners."""
-    below = {"CD-B-KITCHEN", "CD-B-DATA-MEDIA", "DU-B-ERV-R-PLAY", "DU-B-ERV-R-BATH"}
+    band dialled deep enough to reach them, calls both void-spanners."""
+    from shapely.geometry import LineString, Polygon
+
+    from typehaus.resolve.mep_queries import conduit_vertical_profile
+
+    below = {"CD-B-GARAGE", "PR-B-CW-TRUNK"}
     named = {tag for f in findings for tag in f.element_tags}
     assert not (below & named)
     # ...and they really do cross the opening in plan, so the exemption is the band, not luck.
     stair = next(floor for floor in catlin_model.floors if floor.tag == "FS-M-STAIR")
     joist_bottom = min(member.z0_m for member in stair.members if member.z0_m is not None)
-    for duct in catlin_model.ducts:
-        if duct.tag in below:
-            assert max(duct.z_m) < joist_bottom, duct.tag
+    void = Polygon(stair.deck_voids[0])
+    runs = {r.tag: (r.path, r.z_m) for r in catlin_model.pipe_runs if r.tag in below}
+    runs |= {c.tag: conduit_vertical_profile(c) for c in catlin_model.conduits if c.tag in below}
+    assert runs.keys() == below
+    for tag, (path, z_m) in runs.items():
+        over = [i for i in range(len(path) - 1)
+                if LineString(path[i:i + 2]).intersection(void).length > 0.3]
+        assert over, tag
+        assert all(max(z_m[i], z_m[i + 1]) < joist_bottom for i in over), tag
 
 
 def test_a_run_lying_on_the_deck_is_graded(catlin_model):
@@ -155,13 +165,14 @@ def test_a_wall_over_the_void_is_the_exemption(catlin_model):
 
 
 def test_a_run_beside_a_face_is_clamped_to_it_and_one_away_is_not(catlin_model):
-    """The side exemption, both ways, on ``PR-B-KITCH-DRAIN``'s stair-well leg: its OD runs
-    1/16" off FS-M-STAIR's north trimmer pack (on W-B-N2's sill), clamped to it. Pull the
-    leg 1 1/2" south, out of :data:`SIDE_STRAP_REACH_M`, and it is a span again."""
+    """The side exemption, both ways, on ``PR-B-KITCH-DRAIN``'s stair-well leg at y=35'-3 1/4":
+    its OD runs along FS-M-STAIR's north trimmer pack, clamped to it. Pull the leg 1 1/2"
+    south, out of :data:`SIDE_STRAP_REACH_M`, and it is a span again."""
     import dataclasses
 
     run = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-KITCH-DRAIN")
     assert pytest.approx(0.0254) == SIDE_STRAP_REACH_M
+    lane = 423.25 * 0.0254
 
     def fails_for(path):
         moved = dataclasses.replace(run, path=path)
@@ -174,7 +185,6 @@ def test_a_run_beside_a_face_is_clamped_to_it_and_one_away_is_not(catlin_model):
 
     assert not fails_for(tuple(run.path))
     shift = 1.5 * 0.0254
-    lane = run.path[3][1]
     away = tuple((x, y - shift) if abs(y - lane) < 1e-6 else (x, y) for x, y in run.path)
     fails = fails_for(away)
     assert len(fails) == 1 and "FS-M-STAIR" in fails[0].message, [f.message for f in fails]

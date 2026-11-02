@@ -1513,17 +1513,17 @@ STAIRS = [
     # R311.7.6 36" minimum. `turn_direction="left"`, same hand as ST-B2M below: the flight
     # springs east lane on main, arrives west lane on second, so the stack alternates sides
     # as one continuous run.
-    # Both ends are walking surfaces: main LVP at +0.94685" and second hall oak
-    # at +121.5". Sixteen equal risers are (121.5 - 0.94685)/16 = 7.5346";
-    # the level turn is at their midpoint, +61.22343".
+    # Both ends are walking surfaces: main LVP at +1.0255906" and second hall oak
+    # at +121.5". Sixteen equal risers are (121.5 - 1.0255906)/16 = 7.5296";
+    # the level turn is at their midpoint, +61.2627953".
     # `landing_depth` is DERIVED: both half-landings run to W-M-N2's gypsum face
     # (y=35'-5 3/8"), less the start, the 70" lower flight and half the far 2x8, which
     # `bearing_refs` ledgers to that wall — so no post stands at the north corners. 7" short
-    # at ft(3) until 2026-09-24. The turn is level at 61.22343" with 7 tread boards on
+    # at ft(3) until 2026-09-24. The turn is level at 61.2627953" with 7 tread boards on
     # each run; the former split turn put one of the 16 risers between the half-decks.
     Stair(uid="CST702AAAA", tag="ST-M2S", floor_opening="FO-S-STAIR",
           from_storey="main", to_storey="second", width=ft(3, 6.5625),
-          base_elevation=inch(0.94685), top_elevation=inch(121.5),
+          base_elevation=inch(1.0255906), top_elevation=inch(121.5),
           layout="u_level_landing", run_direction="y", turn_direction="left",
           # Start on W-M-STRW's 1/2" MDO face (123 1/8"); two equal lanes fill the well to
           # W-M-C5's gypsum (212 3/4"), so the partition (and W-M-WELL) centres at

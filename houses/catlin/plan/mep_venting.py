@@ -41,8 +41,8 @@ VENT_BRANCHES_MAIN = [
                   pt(inch(58), inch(268)), pt(inch(58), inch(268)),
                   pt(inch(98.5), inch(268.9))),
             diameter=inch(1.5),
-            # Match the 20 in. AFF drain arm across the main floor's 0.94685 in. datum.
-            elevations=(inch(20.94685), inch(45), inch(45.05), inch(120), inch(120.2)),
+            # Match the 20 in. AFF drain arm across the main floor's 1.0255906 in. datum.
+            elevations=(inch(21.0255906), inch(45), inch(45.05), inch(120), inch(120.2)),
             serves=("FX-M-BATH1-LAV",)),
     # BATH1's fixtures are served from the overhead run at x=6' and W-M-BA2E (x=8'-2")
     # rises through W-S-SN2 to the hall-bath vent. 2" for the two water closets' worth of
@@ -434,10 +434,8 @@ VENT_CLAMPS = [
 #
 # Both share the same vertical band: the tee sits low, the riser goes up inside the room's own
 # stud cavity, and the horizontal leg tops out at **7'-10 7/16" basement-relative**. The
-# ceiling over both of them is FS-M-WEST's 11 7/8" I-joists, not a pour — SL-M-DECK's cast
-# deck starts at x=18'-0" and these run at x=7' and x=9' — so the constraint is the joist
-# soffit at 8'-1 9/16", which the band clears by 3 1/8". (The older note here said 9" of cast
-# concrete; that was true of an x=18'-plus station this pair has never had.) Each rises a few
+# ceiling over both of them is FS-M-WEST's 11 7/8" I-joists, not a pour, so the constraint is
+# the joist soffit at 8'-1 9/16", which the band clears by 3 1/8". Each rises a few
 # inches over its length to the chase so condensate drains back to the fixtures.
 #
 # Neither shares a leg with the other — the bathroom's runs north at x=7', the sauna's at

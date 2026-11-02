@@ -13,11 +13,32 @@ from typehaus.checks.registry import Tier
 from typehaus.resolve.placeables import placed_xy
 
 
-def test_expected_drain_point_is_the_authored_outlet_when_there_is_one(catlin_model):
+@pytest.fixture(scope="module")
+def kitchen_sleeve_model(catlin_plan):
+    """Catlin with a sleeve under the kitchen sink's authored outlet: the deck sleeve
+    ``SP-M-KITCH`` went with ``SL-M-DECK`` (decision #112), and the sink is still the one
+    fixture whose ``drain_position`` is far from its footprint centre."""
+    from typehaus.model.mep import SleevePenetration
+    from typehaus.quantities import inch
+    from typehaus.resolve import resolve
+
+    fixture = catlin_plan.by_tag("FX-M-KITCH-SINK")
+    sleeve = SleevePenetration(
+        uid="TSTMP00001", tag="SP-TEST-KITCH", host_ref="SL-B-FLOOR",
+        position=fixture.drain_position, pipe_diameter=inch(2), sleeve_diameter=inch(3),
+        serves_fixture="FX-M-KITCH-SINK")
+    plan = catlin_plan.with_elements(
+        "basement", (*catlin_plan.storey_elements("basement"), sleeve))
+    model, _ = resolve(plan)
+    return model
+
+
+def test_expected_drain_point_is_the_authored_outlet_when_there_is_one(kitchen_sleeve_model):
     """A fixture whose waste does not drop under its own footprint authors
     ``drain_position``, and that override — not the fixture's footprint center — is what the
     sleeve must sit under. The kitchen sink's drain leaves at the wall behind the cabinet."""
-    sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-M-KITCH")
+    catlin_model = kitchen_sleeve_model
+    sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-TEST-KITCH")
     fixture = catlin_model.plan.by_tag("FX-M-KITCH-SINK")
     assert fixture.drain_position is not None
     assert sleeve.expected_center == fixture.drain_position.xy_m
@@ -38,15 +59,16 @@ def test_floor_wc_drains_under_its_own_bowl(catlin_model):
     assert sleeve.offset_m == pytest.approx(0.0, abs=1e-9)
 
 
-def test_catlin_sleeve_expectation_sources_agree(catlin_model):
+def test_catlin_sleeve_expectation_sources_agree(kitchen_sleeve_model):
     """On this house the three expectation sources are not in conflict, and that is the
-    point: SP-M-KITCH's authored outlet, the vertex of the run serving it, and the
+    point: SP-TEST-KITCH's authored outlet, the vertex of the run serving it, and the
     sleeve's own position are one point. Precedence only ever decides a disagreement, so if
     this test starts needing it, something drifted."""
     from typehaus.resolve.mep import _pipe_expected_point
 
+    catlin_model = kitchen_sleeve_model
     sleeve = next(el for el in catlin_model.plan.all_elements()
-                  if el.element_kind == "SleevePenetration" and el.tag == "SP-M-KITCH")
+                  if el.element_kind == "SleevePenetration" and el.tag == "SP-TEST-KITCH")
     fixture = catlin_model.plan.by_tag("FX-M-KITCH-SINK")
     assert _pipe_expected_point(catlin_model, sleeve) == fixture.drain_position.xy_m
 
@@ -158,17 +180,18 @@ def test_drain_position_override_wins():
     assert point == (ft(99).meters, ft(99).meters)
 
 
-def test_sleeve_alignment_fails_at_one_inch_offset(catlin_model):
+def test_sleeve_alignment_fails_at_one_inch_offset(kitchen_sleeve_model):
+    catlin_model = kitchen_sleeve_model
     model = copy.copy(catlin_model)
     model.sleeves = [
         dataclasses.replace(s, center=(s.center[0] + 0.0254, s.center[1]),
                             offset_m=0.0254)
-        if s.tag == "SP-M-KITCH" else s
+        if s.tag == "SP-TEST-KITCH" else s
         for s in catlin_model.sleeves
     ]
     report = run_from_model(model, [], tier=Tier.CODE, only="mep.sleeve_alignment")
     fails = [f for f in report.findings
-             if f.check_id == "mep.sleeve_alignment" and "SP-M-KITCH" in f.element_tags
+             if f.check_id == "mep.sleeve_alignment" and "SP-TEST-KITCH" in f.element_tags
              and f.result.value == "fail"]
     assert fails, [f.message for f in report.findings if f.check_id == "mep.sleeve_alignment"]
 

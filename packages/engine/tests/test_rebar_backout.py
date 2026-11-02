@@ -27,9 +27,10 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: hosts in these rows are laid out bar for bar in notes/rebar_layout_basis.md and pinned by
 #: test_rebar_layout_oracle.py; this pins the house-wide sum they sit inside.
 #:
-#: Eleven rows, not seven: §4's gaps are authored (basement horizontals, the garage ICF stems,
-#: W-SG-BRKBM's cage, SL-M-DECK's BuildDeck schedule, dowels), and the deck cap is the one
-#: BLACK pour because DECK_CAP_MIX says so — a new scope, not a second coating in an old one.
+#: Eight rows: §4's gaps are authored (basement horizontals, the garage ICF stems,
+#: W-SG-BRKBM's cage, dowels). The three BLACK ``slab`` rows were SL-M-DECK's BuildDeck
+#: schedule and left with the deck (#112, 2026-11-01) — every billed bar is A767 now. The
+#: note's §1 table still lists them and needs re-working.
 _SCHEDULE = {
     ("column", "#3", "hdg-a767"): (91, 118.5),
     ("column", "#5", "hdg-a767"): (80, 470.3),
@@ -39,9 +40,6 @@ _SCHEDULE = {
     ("foundation wall", "#4", "hdg-a767"): (283, 1610.1),
     ("foundation wall", "#5", "hdg-a767"): (135, 1311.7),
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
-    ("slab", "#3", "black"): (220, 234.7),
-    ("slab", "#4", "black"): (43, 562.5),
-    ("slab", "#5", "black"): (22, 425.0),
 }
 # +3,215.6 lb on 2026-09-17 over the area/spacing era's 3,514.7 (newly authored steel, laps and
 # hooks out of [waste], the fencepost), then −122.3 the same day after the detailing review:
@@ -90,8 +88,11 @@ _SCHEDULE = {
 # shorter (32 #5 verticals x 3/4", −2.1) and PT-BW-GW/-GE each one #3 tie fewer (−2.6).
 # −2.6 lb on 2026-11-01 (#111, note addendum): SL-M-DECK's cap 3/16" thinner, so its 220
 # stirrups each lose 3/8" of leg.
-_TOTAL_LB = 6579.2
-_TOTAL_PIECES = 1123
+# −1,222.1 lb, −285 pieces on 2026-11-01 (#112): SL-M-DECK became floor trusses, taking the
+# whole slab scope — 220 #3 (234.7), 43 #4 (562.5), 22 #5 (424.9). Nothing else moved: the
+# three 12" pours reframed with it (W-B-CN/CN2/CS2) carried no ReinforcementSpec.
+_TOTAL_LB = 5357.1
+_TOTAL_PIECES = 838
 
 @pytest.fixture(scope="module")
 def rows(catlin_model):
@@ -134,7 +135,9 @@ def test_the_rate_cut_is_taken(rows) -> None:
     prices = load_prices(_CATLIN)
     assert prices is not None and prices.reinforcement
     billed = {(r["bar"], r["coating"]) for r in rows}
-    assert {c for _b, c in billed} == {"black", "hdg-a767"}
+    # All A767 since the deck's black cap left (#112); the loop below is the guard that
+    # matters — each HDG key is its own row and dearer than black, never a fallback to it.
+    assert {c for _b, c in billed} == {"hdg-a767"}
     for bar, coating in sorted(billed):
         want = bar if coating == "black" else f"{bar}:{coating}"
         key, price = rate_for(prices, "reinforcement", bar, coating)
@@ -169,7 +172,10 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     walls_cy = sum(row["volume_cubic_yards"] for row in wall_structure_takeoff(catlin_model)
                    if row.get("material") == "concrete")
     total_cy = concrete_cy + walls_cy
-    assert total_cy == pytest.approx(137.39, rel=0.02), (
+    # 137.30 -> 113.49 on 2026-11-01 (#112): SL-M-DECK's 17.24 cy (56,700 in² x 14.1875",
+    # the whole prism) and FOUNDATION_WALL_12_INT's 6.57 cy (W-B-CN/CN2/CS2, now framed) out.
+    # The note's §2 table still lists both.
+    assert total_cy == pytest.approx(113.49, rel=0.02), (
         f"the concrete volume moved to {total_cy:.2f} cy; notes/rebar_backout.md §2 and the "
         f"lb/cy figure in §3 both need re-working")
 
@@ -221,4 +227,5 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # top E-W bars confined to the heels (−139 lb, no concrete); 46.8 after the review's
     # splices (+58 lb). 47.7 on 2026-10-31: the basement slab stops at its footings and the
     # deck at W-M-E1's band (#107), −3.4 cy billed twice before, −26 lb of deck bar.
-    assert total_lb / total_cy == pytest.approx(47.75, rel=0.02)
+    # 47.2 on 2026-11-01 (#112): the deck and three 12" pours out, 5,357.1 lb / 113.49 cy.
+    assert total_lb / total_cy == pytest.approx(47.20, rel=0.02)

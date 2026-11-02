@@ -52,8 +52,8 @@ from typehaus.model import Location, WallAttachment, m
 BASEMENT_LIGHTING = [
     # RM-B-GYM: ED-B-GYM-LT (plan/mep_electrical.py) is a lampless N3 fan on its own wall
     # control, so the gym's light is this 4-can grid in FS-M-EAST's mid-bays, y 6'-0"/11'-4",
-    # plus the four strips below. The north row stays south of SL-M-DECK's band at
-    # y=13'-0" (solid deck, nothing to recess into) and off joist 009 at y=12'-0".
+    # plus the four strips below. The north row stays south of FS-M-NE's trusses at
+    # y=13'-0" and off joist 009 at y=12'-0".
     ElectricalDevice(uid="QTB0001AAA", tag="ED-B-GYM-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(22), ft(6)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-GYM",
@@ -76,7 +76,8 @@ BASEMENT_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # Four Q1 strips, two E-W rows of two about the room's centre, 59" and 64" off the fan's
     # centre and 33" clear of its 52" blade circle: no strobe through the blades. The north
-    # row is under SL-M-DECK's ceiling, 1 9/16" below FS-M-EAST's, hence the deeper drop.
+    # row hangs the same 2.5": the ceiling is one plane since decision #112 (it was 1 9/16"
+    # lower under SL-M-DECK).
     ElectricalDevice(uid="GBATRH18K6", tag="ED-B-GYM-STRIP1", kind=DeviceKind.LIGHT,
                      position=pt(inch(267.5), ft(4)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BSMT", room="RM-B-GYM",
@@ -91,12 +92,12 @@ BASEMENT_LIGHTING = [
                      position=pt(inch(267.5), ft(14, 4)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW2",),
-                     mount=Mount(kind=MountKind.CEILING, drop=inch(4.0625))),
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(2.5))),
     ElectricalDevice(uid="Z054XAGTKG", tag="ED-B-GYM-STRIP4", kind=DeviceKind.LIGHT,
                      position=pt(inch(371.5), ft(14, 4)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW2",),
-                     mount=Mount(kind=MountKind.CEILING, drop=inch(4.0625))),
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(2.5))),
     # Their toggle, 6 1/2" west of ED-B-GYM-SW (the cans', CKT-LT-BACKUP) inside D-B-PLAY, in
     # the bay across stud-007 (64").
     ElectricalDevice(uid="1NAESZJ528", tag="ED-B-GYM-SW2", kind=DeviceKind.SWITCH,
@@ -303,15 +304,12 @@ BASEMENT_LIGHTING = [
     # dimmer is the whole point: bright enough to cross the room, dark enough to watch
     # something.
     #
-    # ** THE FOUR CANS ARE GONE (2026-09-06, owner's call), BECAUSE THIS CEILING CANNOT
-    # TAKE ONE. ** ED-B-PLAY-N-CAN1..4 (uids QTB000DAAA, QTB000EAAA, QTB0010AAA, QTB0011AAA)
-    # all stood inside SL-M-DECK: 4 3/8" of cast cap over a 10" EPS stay-in-place form, on
-    # 1/2" steel furring, under the 5/8" gypsum IRC R316.4 requires as the thermal barrier
-    # over that foam. The whole 18' x 18' room is on it. There is no cavity — plan/mep.py's
-    # duct routing has said so for weeks ("NO cavity at all, so every foot of that run is
-    # surface-mounted") — and the only way to recess anything is to cut the one layer that
-    # is there to stop a fire reaching the foam. The right fitting count for a ceiling like
-    # that is zero.
+    # ** THE FOUR CANS ARE GONE (2026-09-06, owner's call), AND THE CEILING TAKES NO BOX.
+    # ** ED-B-PLAY-N-CAN1..4 (uids QTB000DAAA, QTB000EAAA, QTB0010AAA, QTB0011AAA) are retired.
+    # Since decision #112 the ceiling is 5/8" gypsum on resilient channel under FS-M-NE's
+    # trusses (CR-PLAY-CEIL-RC, notes/theater_ceiling_acoustics.md): a recessed can or box
+    # is a rigid bridge through the decoupling and a hole in the sound-rated board. The
+    # right fitting count for that ceiling is zero.
     #
     # ** SIX SCONCES, NOT TWO, AND THE ARITHMETIC IS THE REASON. ** This windowless room is
     # habitable only under R303.1 Exception 1's 6 fc average, and
@@ -456,8 +454,8 @@ BASEMENT_LIGHTING = [
     # recessed can wants that plane for its trim. 15'-0" is 6" clear of the pipe and leaves
     # 4'-0"/4'-6"/3'-6" spacings, which nobody standing in a 3'-4" hall can read.
     #
-    # Recessing is legitimate here: SL-M-DECK is the x 18'-36' half, so this hall's ceiling
-    # is FS-M-WEST's joist bays and there is depth for the 6" housing.
+    # Recessing is legitimate here: this hall's ceiling is FS-M-WEST's joist bays, with depth
+    # for the 6" housing.
     ElectricalDevice(uid="J2YZPDZ9MP", tag="ED-B-STAIR-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(inch(190), ft(19, 6)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",

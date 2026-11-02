@@ -8,11 +8,10 @@
 # the fixture drain point (`mep.sleeve_alignment`); nothing here is derived. Framed-floor
 # drops (e.g. the second-floor hall bath into wet wall W-S-BD-N) need no sleeve at all.
 #
-# SL-M-DECK is the 414 SF concrete band over the dining end only (x 18'-36', y 13'-36'); the
-# other 819 SF is FS-M-WEST and FS-M-EAST, I-joists at 16" o.c. A pipe crossing a joist bay
-# is bored or dropped between the joists on site — nothing to cast, nothing to get wrong
-# before the pour, which is the only reason a SleevePenetration exists. What survives is the
-# kitchen group at x 28'-29', inside the band and passing through 12 5/8" of deck.
+# The main floor is wood end to end since 2026-11-01 (decision #112: FS-M-NE replaced the
+# concrete band SL-M-DECK), so nothing on it casts a sleeve. A pipe crossing a joist bay or
+# truss web is bored or dropped between the members on site — nothing to cast, nothing to get
+# wrong before the pour, which is the only reason a SleevePenetration exists.
 
 from typehaus import (
     PipeRun,
@@ -24,34 +23,19 @@ from typehaus import (
 )
 from typehaus.model import m
 
-SLEEVES = [
-    # Authored at FX-M-KITCH-SINK's `drain_position` (0.00" alignment) — see fixtures.py.
-    SleevePenetration(uid="BFQH6F04VQ", tag="SP-M-KITCH", host_ref="SL-M-DECK",
-                      position=pt(inch(352), inch(416.99)), pipe_diameter=inch(2),
-                      sleeve_diameter=inch(3), serves_fixture="FX-M-KITCH-SINK"),
-]
+SLEEVES = []
 
-# Supply risers through the concrete band — every hot/cold branch crossing SL-M-DECK still
-# needs its own cast-in sleeve (`mep.sleeve_coverage`). Only the kitchen's pair is left: the
-# bath, laundry and suite risers all rise through joist bays now.
-SUPPLY_SLEEVES = [
-    # Same offset magnitude from the sink centre as SP-M-KITCH above.
-    SleevePenetration(uid="CMPS07AAAA", tag="SP-M-CW-KITCH", host_ref="SL-M-DECK",
-                      position=pt(ft(29, 9.6), inch(421.5)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
-    SleevePenetration(uid="CMPS08AAAA", tag="SP-M-HW-KITCH", host_ref="SL-M-DECK",
-                      position=pt(ft(30, 3.6), inch(421.5)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
-]
+# Supply risers through a deck: none. The kitchen pair rises through FS-M-NE's truss bay.
+SUPPLY_SLEEVES = []
 
 # Second-storey waste stacks. The upstairs bathrooms drain down through framed walls and
 # floors — joists everywhere they land, not concrete. Empty, and kept rather than deleted
 # so plan/mep.py's re-export and the manifest stay as they are, and so the next stack that
-# does cross the band has an obvious home.
+# does cross a pour has an obvious home.
 STACK_SLEEVES = []
 
 # Slab-on-grade stub-ups. A fixture on grade has no wall drain stack — its trap arm runs
-# *under* the slab — so the penetration is set pre-pour like the deck sleeves above, at the
+# *under* the slab — so the penetration is set pre-pour, at the
 # fixture's own `drain_position` for an exact alignment match: a bathroom at the stair foot,
 # and the sauna's shower end (curbed pan + floor drain). All four moved with the rooms on
 # 2026-09-05 when the sauna rotated onto the garden wall and the bathroom onto the stair
@@ -91,53 +75,23 @@ SLAB_STUBS = [
                       sleeve_diameter=inch(6)),
 ]
 
-# Horizontal sleeves through the basement's cast concrete walls: every ceiling-level run
-# crossing the y=18' centre walls or the perimeter is a cast-in hole (`mep.sleeve_coverage`).
+# Horizontal sleeves through the basement's cast concrete walls: every run crossing the
+# perimeter is a cast-in hole (`mep.sleeve_coverage`).
 # center_elevation is project-frame absolute (the walls span -9'-1 7/16"..-13 7/16");
-# positions along y=18' keep >= 5" between neighbours so the 4"-tolerance matcher stays
-# unambiguous.
+# neighbours keep >= 5" apart so the 4"-tolerance matcher stays unambiguous.
 #
-# SP-B-CS2-KITCH and SP-B-SEWER-EXIT — the drains' own crossings — carry re-stated absolute
-# elevations, since every ``PipeRun.elevations`` in this house is basement-storey-relative
-# and these sleeves are the only absolute numbers in the drainage path.
+# SP-B-SEWER-EXIT — the drain's own crossing — carries a re-stated absolute elevation,
+# since every ``PipeRun.elevations`` in this house is basement-storey-relative
+# and this sleeve is the only absolute number in the drainage path.
 # ``mep.sewer_exit_invert`` is what would catch a mismatch.
 #
-# What is left crosses concrete that is still concrete: the x=18' bearing line
-# (W-B-CS2/W-B-CN), the perimeter, and the footings. Every crossing of a framed wall
-# (W-B-CW, W-B-CW2, W-B-CW3, W-B-CE, W-B-STR2, W-B-CS) takes a bored hole on the day, not a
-# sleeve set before a pour.
+# What is left crosses concrete that is still concrete: the perimeter and the footings.
+# Every crossing of a framed wall (W-B-CW, W-B-CW2, W-B-CW3, W-B-CE, W-B-STR2, W-B-CS, and
+# since 2026-11-01 W-B-CS2/-CN2/-CN on the x=18' line) takes a bored hole on the day, or
+# passes over the plate, not a sleeve set before a pour.
 WALL_SLEEVES = [
-    # ** SP-B-CS2-KITCH IS GONE (2026-09-07). ** It was the kitchen drain's crossing of the
-    # x=18' centre line at y=16'-6", back when that run went south through the theater and
-    # west through the gym. PR-B-KITCH-DRAIN now leaves the sink northward and runs the
-    # whole width of the house along y=35', so it never touches W-B-CS2 — and a cast-in
-    # sleeve with no run through it is a void somebody forms and pays for and then patches.
-    # `mep.sleeve_coverage` reported it UNKNOWN ("no routed run to check against yet") the
-    # moment the reroute landed, which is the check doing its second job.
-    # ** BOTH CENTRES ROSE 6" ON 2026-09-19 WITH THE SUPPLY BAND, AND A SLEEVE THAT DOES
-    # NOT FOLLOW ITS RUN IS WORSE THAN NO SLEEVE. ** `plan/mep_supply.py` split the
-    # basement ceiling runs into two bands; both of these crossings ride the COLD one,
-    # which went from -1'-2.8" to -0'-8.8" project. Left where they were, the runs missed
-    # the holes: `mep.sleeve_coverage` went UNKNOWN on both ("no routed run to check
-    # against yet"), which took `Cast-in sleeve coverage` on the PERMIT CHECKLIST to
-    # UNKNOWN and shut `haus print`. A cast-in sleeve is formed before a pour and cannot be
-    # moved on the day — **if either band moves again, these two move with it.**
-    #
-    # Both are now centred on the pipe exactly: `pipe_elevations_at` reads PR-B-CW-TRUNK
-    # and PR-B-HW-KITCH at -8.8" at their own stations. The two bores are 5" apart in y
-    # with 2 1/2" and 2" sleeves, so 2 3/4" of concrete stands between them.
-    SleevePenetration(uid="CBPW21AAAA", tag="SP-B-CS2-CW", host_ref="W-B-CS2",
-                      position=pt(ft(18), ft(16)), pipe_diameter=inch(1.25),
-                      sleeve_diameter=inch(2.5), axis="horizontal",
-                      purpose=Service.WATER_COLD, center_elevation=ft(-1.1933)),
-    # Moved to y=16'-5" on 2026-09-09 with PR-B-HW-KITCH's hall crossing: that run steps
-    # north and up to the COLD band to clear RM-B-STAIR's ceiling by more than the 3"
-    # `mep.run_in_finished_volume` allows, and this is the hole it now goes through. 5"
-    # north of SP-B-CS2-CW and at the same height, because the two crossings share a band.
-    SleevePenetration(uid="CBPW22AAAA", tag="SP-B-CS2-HW", host_ref="W-B-CS2",
-                      position=pt(ft(18), ft(16, 5)), pipe_diameter=inch(1),
-                      sleeve_diameter=inch(2), axis="horizontal",
-                      purpose=Service.WATER_HOT, center_elevation=ft(-1.2333)),
+    # The x=18' line casts no sleeves: W-B-CS2/-CN2/-CN are framed 2x6 bearing walls, and
+    # the supply, drain and ERV runs cross over their plate in FS-M-NE's truss space.
     # PR-B-COND crosses W-B-CS (2x6 stud, not concrete) with a bored hole, not a sleeve —
     # same reasoning as the framed-wall crossings above.
     # Perimeter exits.
@@ -164,16 +118,6 @@ WALL_SLEEVES = [
                       position=pt(ft(11, 4), ft(35, 6)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
-    # DU-B-ERV-R-PLAY's last leg into REG-B-SUP2, square through the 12" centre wall. Every
-    # route to that register crosses this pour (preferences.toml, D3), so the hole is cast.
-    # A 4" galvanized duct in a 6" sleeve: 1" annulus all round for the foam/sealant air
-    # seal. Centred on the duct at 7'-7 1/4" over the basement datum (-1'-6 3/16" project).
-    # In W-B-CN2 at y=20'-0" since 2026-09-23 (was W-B-CN at 25'-0", and 26'-0" before that);
-    # the tag is kept. A pre-pour item, so it moves on the drawings before the forms go up.
-    SleevePenetration(uid="72XHRECGF2", tag="SP-B-CN-ERV-PLAY", host_ref="W-B-CN2",
-                      position=pt(ft(18), ft(20)), pipe_diameter=inch(4),
-                      sleeve_diameter=inch(6), axis="horizontal",
-                      purpose=Service.SUPPLY_AIR, center_elevation=inch(-18.1875)),
 ]
 
 # The hydrant line's garage-foundation protection (UPC 314.1 — Minn. R. 1309.0010 subp. 3.D

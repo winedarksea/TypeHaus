@@ -7,8 +7,12 @@ Saint Paul DSI inspects.
 
 ## What is installed
 
-The basement perimeter and the 12" cross walls are bare concrete inside (4" XPS outboard, no
-room lining). About twenty devices sit on that concrete.
+The basement perimeter is bare concrete inside (4" XPS outboard, no room lining). Since
+decision #112 the x=18' line (W-B-CS2, -CN2, -CN) is framed 2x6, so the 12" cross walls are
+gone: **fifteen devices sit on concrete** (the gym's east and south walls W-B-E1/S4, the
+theater's east and north walls W-B-E2/N1, the bench wall W-B-W2, W-B-W1, W-B-N2/N4). The rest
+are flush in studs, including the theater's sconces 4-6 and switch on the framed x=18' wall,
+which `resolve/device_boxes.py` reads as a framed cavity (Carlon B122A nail-on box, not RACO).
 
 - **Default: NM-B in a 3/4" EMT sleeve.** NM-B runs overhead in the joists. A vertical 3/4"
   EMT sleeve drops from the ceiling to the top knockout of a surface steel box, with a
@@ -27,7 +31,7 @@ room lining). About twenty devices sit on that concrete.
   (1-gang, 22 in³) or BH235A (2-gang, 35 in³), both 3-1/2" deep. The box goes through furring
   and any membrane behind the finish to the studs, sealed at the membrane.
 - **Flush box a raceway reaches:** RACO 232 with a RACO 768 1-device ring. This covers the
-  three floor-heat thermostats, the study data jack, the kitchen GFCI the CD-B-KITCHEN trunk
+  two floor-heat thermostats, the study data jack, the kitchen GFCI the CD-B-KITCHEN trunk
   feeds, and the EV receptacle.
 - **Workshop: one large raceway, one small.**
   - Large: CD-B-WORKSHOP is 1" EMT + THHN from ED-B-PANEL-2 to ED-B-WORKSHOP-JB, a surface
@@ -43,9 +47,18 @@ room lining). About twenty devices sit on that concrete.
     RC2.
   - Small: the existing 3/4" CD-B-DATA-SHOP stays as the data raceway.
 - **Theater:** CD-B-PLAY-SPARE is a 3/4" EMT capped spare with a pull string. It runs from
-  ED-B-PANEL to ED-B-PLAY-N-JB, a surface box on the ceiling over the TV. The ceiling there
-  is gypsum hung on SL-M-DECK's concrete band, so the box cannot be recessed. CD-B-PLAY-N-RC1
-  is 3/4" EMT + THHN from that box to ED-B-PLAY-N-RC1, and CKT-RC-BSMT's NM enters the box.
+  ED-B-PANEL to ED-B-PLAY-N-JB, a surface box on the north concrete wall at 48" AFF, behind
+  the TV. The ceiling is gypsum on resilient channel under FS-M-NE's trusses (no boxes or
+  lights, `notes/theater_ceiling_acoustics.md`), so the box moved from the ceiling to the wall
+  (2026-11-02). The spare, CD-B-KITCHEN and CD-B-DATA-MEDIA no longer cross a concrete wall or
+  hang in the theater: each rises in the hall into a FS-M-STAIR bay south of FO-M-STAIR,
+  crosses the x=18' plate over it (the framed W-B-CN is a bearing 2x6, bore limit 2.20"), and
+  rides its own FS-M-NE truss bay at -8 3/4" (the kitchen at -3 1/2", over the cold trunk and
+  HW-KITCH), north through the 13" web openings to its drop or riser. Only the data and spare
+  drops hang in the room, against the north wall, through the ceiling's 1/4" caulked gap.
+  CD-B-PLAY-N-RC1 is 3/4" EMT + THHN straight down the wall from that box to ED-B-PLAY-N-RC1
+  (now at x=25'-11 1/4", under the box), and CKT-RC-BSMT's NM enters the box. Bodies for the
+  360 degree limit are in the hall (accessible), none above the ceiling.
   RC1 and DATA1 sit behind the TV, whose mount stands the panel 3-1/2" off the wall: the
   box and cover take 2-5/8", a flat plug the rest (review C6-E11, `plan/media_types.py`).
   There is no new circuit, because the panel is nearly full. A dedicated AV circuit can be
@@ -54,8 +67,8 @@ room lining). About twenty devices sit on that concrete.
   two separate raceways, as both Schluter and Warmup/WarmlyYours require.
   - **Sensor:** 1/2" ENT down the stud bay and through the plate, capped. Under a DITRA-HEAT
     mat it ends at the plate's foot, and the mat's own sensor sleeve carries on from there:
-    a 0.84" tube has no room in a 3/4" tile-and-mat build-up. On FH-M-DINING it is 3/4" ENT
-    cast into the concrete band out to the `stat` point.
+    a 0.84" tube has no room in a 3/4" tile-and-mat build-up. (FH-M-DINING and its cast-in 3/4"
+    ENT sensor were retired 2026-11-02 with the concrete band, decision #112.)
   - **Cold lead:** 1/2" ENT down to the top of the bottom plate.
 
 ## Code basis

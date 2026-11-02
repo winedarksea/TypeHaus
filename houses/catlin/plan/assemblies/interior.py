@@ -423,6 +423,33 @@ STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
     source="catlin basement stair wall (W-B-STR) where it is also RM-B-ESS's west enclosure: INT_2X6_BRG_EXPOSED_PLY with a 5/8 in. Type X leaf on the closet face (notes/backup_power.md)",
 )
 
+# ** W-B-CN'S STAIR FACE, FURRED BACK OUT TO THE WELL (2026-11-01, decision #112). ** The
+# pour's stair face was x=17'-6", and FO-M-STAIR's east edge, ST-B2M's east lane and
+# RL-M-HANDRAIL-E's brackets are all struck off it. The framed wall's stud face is 3 1/4"
+# further east, so the stair face is built back out: 2x3 on edge at 16" o.c., slab to plate,
+# under 3/4" paint-grade plywood — the plywood face W-B-STR carries across the well, and
+# screw-anywhere handrail backing. P-M-STRLAND-SE's block lands on this furring, so a doubled
+# 2x3 stands under it to the slab. Moving the stair 3 1/4" instead would re-open ST-B2M.
+STAIRWELL_INT_2X6_BRG_FURRED = Assembly(
+    tag="STAIRWELL_INT_2X6_BRG_FURRED",
+    variant_of="INT_2X6_BRG_HALF",
+    substitute=(
+        Substitution(
+            span=layers("paint-a", "gwb-a"),
+            replacement=(
+                Layer(name="paint-stair", material_ref="latex-paint", thickness=inch(0.01),
+                      function=LayerFunction.FINISH),
+                Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
+                      function=LayerFunction.FINISH),
+                Layer(name="stair-furring", material_ref="spf", thickness=inch(2.5),
+                      function=LayerFunction.FURRING,
+                      framing=FramingSpec(member="2x3", spacing=inch(16))),
+            ),
+        ),
+    ),
+    source="catlin basement x=18' bearing wall on the stair well (W-B-CN), 2026-11-01: INT_2X6_BRG_HALF with its stair face furred 3 1/4\" (2x3 on edge, 3/4\" painted plywood) back to the pour's old x=17'-6\" face",
+)
+
 # ** THE U-STAIR'S WELL PARTITION, GIVEN FACES AND A ROOM SIDE 2026-09-05. **
 # `resolve/stairs/common.py` budgets 4 1/2" of cross-run space between the two flights —
 # 3 1/2" of stud and 1/2" of gwb each face — and `resolve/stairs/u_split.py` FRAMES IT: two

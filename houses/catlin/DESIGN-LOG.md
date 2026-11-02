@@ -7131,3 +7131,68 @@ The ten escalations, worked in parallel lanes. What was decided and why, where i
 - **Receptacle spacing** now measures along the floor line: a wall standing inside a room's ring is
   traced as a notch (`floor_line_ring`), and a stair well breaks a face only where the floor strip
   in front of it reaches the well (`facing_well_intervals`).
+
+
+## Main deck goes wood: BuildDeck retired (2026-11-01)
+
+`SL-M-DECK` (414 SF, x 18'-36', y 13'-36') is replaced by `FS-M-NE`, 11 7/8" open-web floor
+trusses at 12" o.c. designed for 60 psf live at L/480 (decision #112). Same depth as the TJI
+fields and `FS-S-WEST`, so the -13 7/16" seat, the subfloor and the basement ceiling stay one
+flat plane; the y=13' movement joint and `RM-B-GYM`'s two-ceiling step are gone. The x=18'
+centreline pours `W-B-CS2`/`W-B-CN2`/`W-B-CN` are framed 2x6 bearing walls on their existing
+footings, the `W-B-CS` precedent. Main floor is Karndean Cotton Oak LVP over the subfloor
+throughout; the coated cap is gone.
+
+Why: the cap dried upward only (F2170 gate), its 6" end bearing could not develop the rib bars
+(ldh 14.77" vs 5.25", ACI 318-19 §9.8.1.6 unmet), the boundary needed a movement joint and a
+finish break, and every service crossing the band was a cast sleeve. A truss field takes all
+of it through the webs.
+
+BuildDeck stays a named revert: `DECK_EPS_INT` (`plan/assemblies/foundation.py`), `eps-deck-form`
+in the engine library, and `DECK_CAP_MIX`. Nothing references them. The basis the deck was
+designed on, as `params/main_deck.py` carried it:
+
+**BuildDeck is the basis of design (2026-09-12), and the model half-said so already.** This
+file named LiteDeck as the product while sourcing both its span basis and its R-value from
+BuildDeck. Making BuildDeck the product makes the model self-consistent and picks up two
+things LiteDeck's free literature does not publish: a sealed shoring design and a rebar
+schedule. LiteDeck (LiteForm) and Insul-Deck stay named ALTERNATES — the depth-matching
+argument above is product-neutral and that is exactly the point — but a substitution has to
+bring its own span table, its own shoring design and its own R per section with it.
+
+Quantities, from the manufacturers' published tables:
+
+* The section is modular either way: a base panel plus a top hat gives a 10"/12"/14" beam
+  and the cast cover over it is specified separately. This deck is the **10" section under a
+  4 3/16" cover**. BuildDeck publishes R as installed per section — R-23 at 8", **R-29 at
+  10"**, R-36 at 12" — so ``eps-deck-form`` carries R-2.9/inch, not the 8" section's 3.125.
+* **The published row, quoted onto ``DECK.published_span`` below.** BuildDeck's
+  allowable-live-load table takes the 10" deck with a 4" cap and 2-#5 beam bars to a 20'-0"
+  span at 62 psf live load: f'c 4,000 psi, fy 60 ksi, +15 psf additional dead load,
+  deflection < L/480, #3 stirrups 4'-0" each end at 5" o.c. and slab reinforcement a 12"x12"
+  grid of #4. This span is 18'-0" at a cap 3/16" deeper than the row.
+  ``structural.slab_published_span`` grades that read and refuses the row if the section,
+  the product or the demand drifts away from what it was read at. The manual states its
+  tables are for estimation and that the Engineer of Record reviews and approves — which is
+  a review of a table read, not a design nobody has done.
+* The LiteDeck WRS manual's consumption table reads 58 SF/cy for the 10" beam at a 4" cover
+  and 52 SF/cy at 4 1/2", so 4 3/16" interpolates to 58 - 6 x 0.1875/0.5 = 55.75 SF/cy
+  = 0.01794 cy/SF. The 414 SF band is 7.43 cy (7.74 at the old 4 3/8") — against 34.26 cy for
+  the whole 9" slab it replaced. (Kept as the
+  consumption basis: it is a geometric figure for the same 10" section, and BuildDeck
+  publishes no equivalent table.)
+* **The shoring design is PE-SEALED, not the installer's.** BuildDeck publishes one by
+  McLaren Engineering Group (File 150609.00, 2016): wood stud walls at 6'-0" o.c. with
+  2x8/2x10 joists at 24" o.c., 97 psf dead + 25 psf construction live, in place no more than
+  6 weeks, struck after the 28-day cure. That is a rental-and-carpentry line, not the 9"
+  slab's commercial plywood-and-mobilisation package — the line is in ``prices.toml``, which
+  said this on 2026-08-23 before this docstring caught up.
+* **One open question for the EOR, and it is not a defect.** McLaren's design uses 25 psf
+  construction live load where ACI 347 §2.2.1 asks for >=50 psf live and >=100 psf combined.
+  97 + 25 = 122 psf clears the combined floor and not the live-load floor. Ask; do not
+  assume either way.
+
+Sources: BuildDeck Design, Engineering and Installation Manual (BuildBlock, 2022) and its
+McLaren shoring design; LiteDeck WRS installation manual, Sept 2020 (liteform.com);
+Insul-Deck technical summary; ICF Builder's foam-decking comparison. No ICC-ES report was
+found for any of the four EPS deck systems examined — see plans/buildability.md BLD-03.

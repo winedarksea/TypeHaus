@@ -2382,6 +2382,7 @@ line   28,806.75 − 2 x 2,580.4 = 23,646 lb
 edge   bearing 23,646 / 151,200 0.156 ✓    1/3 rule 23,646 / 50,395  d/c 0.469 ✓
 strut  23,646 / 1,512 = 15.64 psi / 2,040                           d/c 0.008 ✓
 global FS (93,667 + 30,458) / 28,806.75 = 4.309 vs 1.5              ratio 0.348 ✓
+       (19'-0" court, deck era; now 3.4586 -- §12, 2026-11-01)
 far    52,214 + max(0, 28,807 − 93,667) = 52,214 / 130,534           d/c 0.400 ✓
 court  28,807 − 61,446 < 0: net push 0                              d/c 0.000 ✓
 ```
@@ -2638,6 +2639,20 @@ The thrust and the at-rest term are unchanged.
 ```
 D = 361,672.6;  friction 90,418.1;  capped 117,975.3 / 27,315.75 = 4.3189  ratio 0.3473
                                     uncapped 117,975.3 / 42,074.2 = 2.8040  ratio 0.5350
+```
+
+2026-11-01, later (decision #112): `SL-M-DECK` becomes floor trusses and the three 12" pours
+`W-B-CS2`/`CN2`/`CN` become framed 2x6 walls. D falls **94,002.0 lb**: deck solid
+−69,829.1 (56,700 in² x 14.1875" at 150 pcf); pours −16,262.5 − 4,537.5 − 5,000.0 = −25,800.0
+(1,951.5 / 544.5 / 600 in² x 96"); same axes framed +1,037.4 + 275.9 + 304.0 = +1,617.3
+(8 psf x 109.4375"); W-B-CE +9.8. The thrust and the at-rest term are unchanged. The sliding
+ratio is the house global row's re-pin: capped (0.25 x 267,670.6 + 27,557.2) / 27,315.75
+= 94,474.8 / 27,315.75 = **3.4586**, ratio 0.4337; uncapped 94,474.8 / 42,074.2 = **2.2454**,
+ratio 0.6680. Earlier figures above and §11l's printed 4.309 are deck-era history.
+
+```
+D = 267,670.6;  friction 66,917.6;  capped 94,474.8 / 27,315.75 = 3.4586  ratio 0.4337
+                                    uncapped 94,474.8 / 42,074.2 = 2.2454  ratio 0.6680
 ```
 
 ### 12a. FT-SG-S's toe grows 1'-4" (2026-09-22) — the south strip row

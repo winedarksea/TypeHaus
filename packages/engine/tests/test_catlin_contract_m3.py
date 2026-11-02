@@ -30,7 +30,6 @@ from typehaus.resolve.geometry import opening_center
 from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.roof_image_ii_eave import eave_stack
 from typehaus.resolve.solid_categories import in_slab_family
-from typehaus.source import load_plan
 
 # Old CatlinHouseSpec contract values.
 HOUSE_SIZE_FT = 36.0
@@ -152,6 +151,10 @@ def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
         assert "ASCE 32" in by_tag[tag].message, tag
     # No court pad is left to grade.
     assert not [tag for tag in by_tag if tag.startswith("PD-SG-")]
+    # FS-M-NE's trusses at 12" o.c. read the 16" table conservatively; a wider spacing would
+    # be UNKNOWN (decision #112).
+    assert by_tag["FS-M-NE"].result is Result.PASS
+    assert "tighter than the table: conservative" in by_tag["FS-M-NE"].message
 
 
 def test_catlin_sunken_garden_decks_are_graded_and_the_guard_rule_resolves(
@@ -1299,15 +1302,16 @@ def test_catlin_bearing_view_has_continuous_house_load_path(catlin_model):
     assert {"W-M-C1", "W-S-C1"} <= stacked
 
 
-def test_catlin_floor_heat_zones_are_the_three_supplemental_ones(catlin_model):
+def test_catlin_floor_heat_zones_are_the_two_supplemental_ones(catlin_model):
     """Radiant floor is a comfort layer, not the heating system, and RM-B-SAUNA has none.
 
     The sauna floor is absent (a heated floor in a 190 F room has nowhere to put its heat);
-    what is left is the main bath, the patch under the dining table and the
-    NW bathroom upstairs. All three are electric mat with a resolvable zone and wire run.
+    what is left is the main bath and the NW bathroom upstairs (the patch under the dining
+    table went with SL-M-DECK, decision #112). Both are electric mat with a resolvable zone
+    and wire run.
     """
     zones = {item.tag: item for item in catlin_model.floor_heat}
-    assert set(zones) == {"FH-M-BATH2", "FH-M-DINING", "FH-S-BATH1"}
+    assert set(zones) == {"FH-M-BATH2", "FH-S-BATH1"}
     for zone in zones.values():
         assert zone.system == "electric"
         assert zone.wire_length_m > 0
@@ -2564,53 +2568,6 @@ def test_floor_heat_zones_do_not_run_under_the_walls_that_bound_them(catlin_mode
                 offenders.append((zone.tag, _tag,
                                   "%.2f\"" % (lap / math.sqrt(mat.area) / inch(1).meters)))
     assert not offenders, offenders
-
-
-# The one `slow` test in an otherwise fast module, so the mark is per-test rather than
-# module-level (→ AGENTS.md §3): emission itself is now shared and cheap, but
-# `validate(express_rules=True)` over the whole catlin file is 22 s on its own — and
-# test_ifc_validation_gate.py asserts exactly this for [catlin-framed], among three other
-# (house, LOD) combinations. Nothing is lost from the --fast tier by deselecting it here.
-@pytest.mark.slow
-def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
-    """The contract that makes DERIVING the finish split worth it rather than authoring it.
-
-    ``_BAND_Y`` in ``params/main_deck.py`` is the one place the concrete/wood boundary lives:
-    the two FloorSystem outlines and the Slab outline are all cut from it. Because
-    ``RM-M-LIVING``'s coated-concrete zone is intersected out of ``SL-M-DECK`` rather than
-    written as a polygon on the room, moving that one line moves the finish with it. An
-    authored zone would have gone stale silently — which is exactly how the three
-    sealed-concrete rooms ended up over a wood deck.
-    """
-    from _helpers import copy_house
-
-    house = copy_house(CATLIN_DIR, tmp_path / "catlin")
-    params = house / "params" / "main_deck.py"
-    source = params.read_text()
-    assert "_BAND_Y = ft(13)" in source
-    params.write_text(source.replace("_BAND_Y = ft(13)", "_BAND_Y = ft(20)"))
-
-    def band_sqft(house_dir: Path) -> float:
-        result = load_plan(house_dir)
-        assert result.plan is not None, [f.message for f in result.findings]
-        model, findings = resolve(result.plan)
-        assert not [f for f in findings if f.severity.value == "error"]
-        living = next(room for room in model.rooms if room.tag == "RM-M-LIVING")
-        zones = [z for z in living.finish_zones if z.material_ref == "coated-concrete"]
-        assert len(zones) == 1 and zones[0].source_ref == "SL-M-DECK"
-        return zones[0].area_m2 * 10.7639104
-
-    before = band_sqft(CATLIN_DIR)
-    after = band_sqft(house)
-    # The band lost 7' of its 23' north-south run over the 18' east half, and the zone is
-    # clipped to the room, so the drop is the room's share of 7' x 18' — not the whole of it.
-    # The band is clipped to the ROOM, so RM-M-PANTRY taking the living room's NW corner
-    # shrinks this zone by that room's area; the pantry sits at y 33'-3 3/8"..35'-5 3/8",
-    # nowhere near the _BAND_Y line this test moves, so the 7' x 18' arithmetic below is
-    # unaffected.
-    # The pantry's 2 3/8-inch eastward extension reduces the living finish zone.
-    assert before == pytest.approx(372.9, abs=0.5)  # 1/2" walls moved the faces 1/8" (2026-10-23)
-    assert before - after == pytest.approx(7.0 * 17.9, rel=0.05)
 
 
 def test_the_laundry_pocket_clears_the_bearing_corner_and_owns_its_wall(catlin_model):

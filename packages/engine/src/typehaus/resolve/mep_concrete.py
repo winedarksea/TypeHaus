@@ -230,7 +230,8 @@ def _segment_concrete_hit(a, b, za, zb, footprint, hz0, hz1, LineString, Point):
         point = (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
         if footprint.buffer(1e-6).contains(Point(point)):
             return point, mid
-        return None
+        # Meeting the mid-plane outside the footprint does not clear a leg that passes
+        # laterally through the host inside its band: a sloped drain through a wall.
     if lo >= hz0 - 1e-6 and hi <= hz1 + 1e-6:
         line = LineString((a, b))
         if line.intersects(footprint):

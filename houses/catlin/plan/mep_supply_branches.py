@@ -186,7 +186,7 @@ MAIN_SUPPLY_BRANCHES = [
     # the cold riser, along the cabinet backs, to the machine's inlet. Its stop is in the
     # sink base. Two legs, each ending at a terminal: a third would read as transit.
     PipeRun(uid="0JY6SHV11S", tag="PR-M-DW-HW", system=PipeSystem.WATER_HOT,
-            path=(pt(inch(363.6), inch(421.5)), pt(inch(363.6), inch(422.75)),
+            path=(pt(inch(363.6), inch(424.2)), pt(inch(363.6), inch(422.75)),
                   pt(inch(314.175), inch(422.75)),),
             elevations=(inch(5.5), inch(5.5), inch(5.438),),
             diameter=inch(0.5), material="pex", serves=("APPL-M-DW",)),

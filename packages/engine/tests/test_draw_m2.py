@@ -236,52 +236,42 @@ def test_emit_fixtures_draws_the_generated_glyph_as_plain_polylines() -> None:
 
 
 def test_room_blocks_say_name_area_and_ceiling_height() -> None:
-    """A room label states name, area and ceiling height. 8'-10 3/4" is what the main
+    """A room label states name, area and ceiling height. 8'-10 1/2" is what the main
     floor's 9'-0" nominal resolves to under 5/8" gypsum on the second floor's deck
-    (``ResolvedCeiling`` carries it per deck region), measured off the cap: 8'-10 9/16"
-    until the cap came down 3/16" to +3/4" (decision #111).
+    (``ResolvedCeiling`` carries it per deck region), measured off the finished floor: the
+    ceiling at +107 1/2" over the datum less the 1.0256" plank top (decision #112).
+
+    ``RM-M-LIVING`` spans the second floor's truss/I-joist split on one plane and gets ONE
+    caption: a deck seam is not a step, so no main-storey label takes the per-region form.
     """
     from typehaus.emit.draw.plan_labels import room_display_name
 
     house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     model, _ = resolve(load_plan(house).plan)
-    printed = {node.content for node in build_floorplan(model, "main").nodes
-               if isinstance(node, Text) and node.layer == "A-AREA-IDEN"}
+    printed = [node.content for node in build_floorplan(model, "main").nodes
+               if isinstance(node, Text) and node.layer == "A-AREA-IDEN"]
     assert room_display_name("RM-M-LIVING") == "LIVING"
     # 701 since the 1/2" walls (2026-10-23; 699 before, 1/8" each side).
-    #  W-M-PAN-E moved 5/8" east into the room (2026-10-03).
-    assert {"LIVING", "701 SF", 'CLG 8\'-10 3/4"'} <= printed
+    assert {"LIVING", "701 SF", 'CLG 8\'-10 1/2"'} <= set(printed)
+    assert not [c for c in printed if c.startswith("CLG") and " / " in c], printed
 
 
 def test_a_room_over_two_ceiling_planes_labels_both() -> None:
-    """``RM-B-GYM`` resolves TWO ceilings and the plan states both, on their own regions.
+    """A room under two ceiling planes states both, each on its own region.
 
-    207 SF at 8'-0 3/16" under ``FS-M-EAST``'s I-joists and 78 SF at 7'-10 5/8" under
-    ``SL-M-DECK``'s cast deck — the 1 9/16" step one flat bearing seat costs
-    (houses/catlin/CLAUDE.md). Collapsing them to one number, or picking the bigger, would
-    put a step the house is built with on no drawing at all.
-
-    Both captions are 3/4" lower than the structural datum would give them: the gym's floor
-    is a slab under 3/4" stall mats, and the plan measures head from the FINISHED floor.
-
-    ``RM-M-LIVING`` is the control: it spans the second floor's truss/I-joist split on one
-    plane and gets ONE caption — a deck seam is not a step. (It resolved four records while
-    its face ran to the wall axes; three were slivers under the walls.)
+    ``_mixed_deck_plan``'s room (17' x 29' clear) runs under an 11 7/8" joist bay (y to 12')
+    and a pour deck whose soffit is the -13 7/16" seat, both under 5/8" gypsum, over a floor
+    96" below the seat: 96 + 13 7/16 - 11 7/8 - 5/8 = 8'-0 15/16" on 17 x 11.5 = 195.5 SF,
+    and 96 - 5/8 = 7'-11 3/8" on 17 x 17.5 = 297.5 SF. Collapsing them to one number, or
+    picking the bigger, would put a step the building has on no drawing at all. (Catlin's
+    RM-B-GYM was this case until decision #112.)
     """
-    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
-    model, _ = resolve(load_plan(house).plan)
-    printed = [node.content for node in build_floorplan(model, "basement").nodes
-               if isinstance(node, Text) and node.layer == "A-AREA-IDEN"]
-    assert 'CLG 8\'-0 3/16" / 207 SF' in printed
-    assert 'CLG 7\'-10 5/8" / 78 SF' in printed
+    from _mixed_deck_plan import mixed_deck_model
 
-    assert len([c for c in model.ceilings if c.room_ref == "RM-M-LIVING"]) == 1
-    main = [node.content for node in build_floorplan(model, "main").nodes
-            if isinstance(node, Text) and node.layer == "A-AREA-IDEN"]
-    # The per-region caption form (``CLG <height> / <area> SF``) is what a split looks like,
-    # and no main-storey room has one: LIVING is one plane.
-    assert 'CLG 8\'-10 3/4"' in main
-    assert not [c for c in main if c.startswith("CLG") and " / " in c], main
+    printed = [node.content for node in build_floorplan(mixed_deck_model(), "basement").nodes
+               if isinstance(node, Text) and node.layer == "A-AREA-IDEN"]
+    assert [c for c in printed if c.startswith("CLG")] == [
+        'CLG 7\'-11 3/8" / 297 SF', 'CLG 8\'-0 15/16" / 195 SF']
 
 
 def test_a_follow_roof_ceiling_states_that_rather_than_a_number() -> None:

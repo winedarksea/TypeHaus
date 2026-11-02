@@ -366,6 +366,7 @@ MATERIALS: tuple[Material, ...] = (
         color="#c0ae94",
         finish="lvp-plank",
         finish_thickness_in=0.2362,
+        floating=True,
         floor_companion_refs=("lvp-underlayment",),
         source="a white-oak-look print, 7x48 plank. "
         "finish covering over its own underlayment; thermal/vapour fields unset "

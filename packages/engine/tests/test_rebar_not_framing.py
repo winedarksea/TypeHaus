@@ -6,7 +6,9 @@ from __future__ import annotations
 def test_no_bar_reaches_all_members_or_the_geometry_ir(catlin_model_ro) -> None:
     model = catlin_model_ro
     keys = {b.key for s in model.rebar for b in s.bars}
-    assert len(keys) > 1000
+    # A floor that keeps the scan below meaningful, not a pin: 838 laid bars since #112
+    # (1,123 less SL-M-DECK's 285); test_rebar_backout pins the exact count.
+    assert len(keys) > 500
     assert not any(m.category == "rebar" or m.child_key in keys for m in model.all_members())
     geometry = model.geometry
     assert geometry is not None

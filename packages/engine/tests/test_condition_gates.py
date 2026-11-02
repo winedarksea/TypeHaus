@@ -366,11 +366,6 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # construction, and the returns they imply are what TR-CATLIN-ASSEMBLY-JOG records.
         "assembly_change:EXT_2X6_BOARD_BATTEN|PLANT_EXT_2X6_HUMID_BOARD_BATTEN",
         "assembly_change:EXT_2X6|PLANT_EXT_2X6_HUMID",
-        # N-B-C1 since 2026-09-05. The x=18' line's framed run reaches further north than
-        # the sauna does now: W-B-CS3 is a plain 2x6 bearing wall between the room and the
-        # y=18' cross line, and it is what meets W-B-CS2's 12" pour here. The same
-        # wood-against-concrete detail this node always carried, one assembly along.
-        "assembly_change:FOUNDATION_WALL_12_INT|INT_2X6_BRG_HALF",
         # The framed walkout's two nodes are the same condition one storey down from each
         # other: N-B-S2 where the two 7 1/4" curbs meet, and N-B-S2F where the two framed
         # walls on them do. The liner starts at x=18' on both, so both are real changes of
@@ -383,9 +378,6 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # closed the x-line too, so the node changes construction on neither and there is
         # nothing here to tell a builder.
         #
-        # (N-B-C1's key is INT_2X6_BRG|FOUNDATION_WALL_12_INT above since the
-        # rotation. `integrity.junction_fallback` reports the same node UNKNOWN for the same
-        # wood-against-concrete reason, and that key is the drawing which answers it.)
         # (N-B-STR is not a key since 2026-10-24: W-B-CW2's partition took the same latex as
         # W-B-CW3's wet wall, and on the same 2x4 studs with flush faces nothing is left to
         # tell a builder. The key only ever fired on the paint difference.)
@@ -422,6 +414,9 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # the corner here — the hot side's vapour control is continuous on all four faces or
         # it is not vapour control — which is exactly what this key exists to put on a sheet.
         "assembly_change:INT_2X6_BRG_HALF|SAUNA_LINER_INT_2X6_BRG",
+        # W-B-CN2 -> W-B-CN since decision #112 reframed the x=18' pours (which took N-B-C1's
+        # FOUNDATION_WALL_12_INT key with them): the furred plywood stair face starts here.
+        "assembly_change:INT_2X6_BRG_HALF|STAIRWELL_INT_2X6_BRG_FURRED",
         # Framing joined the equivalence signature on 2026-10-25, so a stagger starting is
         # a key. W-S-BD-N1B is a BEARING plumbing wall (continuous studs, wet_wall_bearing)
         # and W-S-BD-N the staggered wet wall it meets.

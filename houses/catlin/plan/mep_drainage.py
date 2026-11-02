@@ -65,78 +65,60 @@ DRAINS = [
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
                     "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
-    # ** REROUTED 2026-09-07: NORTH INTO THE DECK, THEN THE WHOLE WIDTH OF THE HOUSE. **
-    # It used to go south down x=29'-4" and west along y=16'-6", and `mep.run_in_finished_
-    # volume` measured what that cost: **14.5 ft hanging 6.7" into RM-B-PLAY-N and 9.1 ft
-    # hanging 9.9" into RM-B-GYM.** Not a routing mistake so much as an unavoidable one —
-    # RM-B-PLAY-N's finished ceiling resolves at -14 1/16" while SL-M-DECK's soffit is at
-    # -13 7/16", a furred plane 5/8" UNDER the slab, so anything hung beneath that deck is
-    # in the theater by construction. Rerouting inside the basement cannot fix that.
+    # ** THROUGH THE TRUSS WEBS (2026-11-01, decision #112). ** FS-M-NE replaced the EPS deck
+    # this drain used to hide in. It drops at the sink into the 34'-35' bay, then threads the
+    # field in the 8 7/8" chord window (a 2" pipe's centre 100.25"..106.75"), clear of
+    # RM-B-PLAY-N's ceiling (95 3/8", 94 7/8" with its resilient channel). The footnote-f blocks (x 21'/27'/33',
+    # y 32'..36') close all four north bays, so it cannot run west there: it crosses the
+    # trusses south at x=355" (web opening 353.5".."366.5", centre 360") into the unblocked
+    # 31'-32' bay, runs west to x=240" (opening 233.5".."246.5"), crosses back north to
+    # bay 35'-36' (the one bay with no full block on the x=18' line, only the 2x6 box this
+    # run frames), mid-bay at y=35'-1", and leaves over the x=18' plate. 0.26"/ft all the way:
+    # 100.3" at the plate keeps its invert on the box's plate rail (99 1/16"). The west legs
+    # fall 0.5"/ft from there to the stair-well profile they always had; a 45 pair offsets it
+    # 2 1/4" south onto the pack face just west of the plate.
     #
-    # ** THE FIX IS TO STAY IN THE DECK, NOT UNDER IT. ** SL-M-DECK is a BuildDeck EPS
-    # stay-in-place form: 4 3/8" of cast cover over a 10" foam beam whose ribs run in x, the
-    # same direction this leg travels. So the drain drops through the cap only, turns west at
-    # -7 1/2" inside the foam — a routed channel between ribs, which is what an EPS deck is
-    # sold for — and stays there for the whole 11'-4" over the theater, coming out at
-    # -10 3/4" with its bottom still 2 11/16" above the foam's soffit. Zero exposure in
-    # RM-B-PLAY-N. `resolve/mep_queries.concrete_bands` is what lets the model say this:
-    # before it, `concrete_crossings` read the deck as one 14 3/8" prism and called a pipe
-    # lying in the foam an unsleeved crossing of the pour.
-    #
-    # ** WEST OF x=18' IT IS EXPOSED, AND THAT IS THE OWNER'S CALL. ** Past the deck edge it
-    # runs open in the stair well, clamped along its north face (below), where a stair is
-    # somewhere a pipe may show (`RM-B-STAIR.exposed_services`). It then bores W-B-STR and W-B-ESS-W (both framed: a hole on the day, no
-    # cast sleeve) and crosses RM-B-ESS. ** THAT IS A BATTERY CLOSET BEHIND A TYPE X
+    # ** WEST OF x=18' IT IS EXPOSED, AND THAT IS THE OWNER'S CALL. ** It hugs the stair well's
+    # north edge, clamped along its face (below), where a stair is somewhere a pipe may show
+    # (`RM-B-STAIR.exposed_services`). It then bores W-B-STR and W-B-ESS-W (both framed: a
+    # hole on the day) and crosses RM-B-ESS. ** THAT IS A BATTERY CLOSET BEHIND A TYPE X
     # MEMBRANE ** — the owner accepted the crossing on 2026-09-07, and both penetrations
     # need a listed firestop to keep the membrane's rating. Nothing in this engine grades
     # that; this comment is the record.
     #
-    # ** y=35'-0", NOT 35'-6". ** The north foundation walls W-B-N1..N4 are 12 3/16" on the
-    # y=36' axis, so their inner face is y=35'-5 7/8" and a 2" pipe at 35'-6" is INSIDE the
-    # pour — three unsleeved crossings, and the wall-cover exemption in
-    # `run_in_finished_volume` would have hidden the stair leg while it was there. Six inches
-    # south is the whole difference.
-    #
-    # Elevations re-solved onto SP-M-KITCH's cast centerline at >= 0.25"/ft.
-    #
-    # These are BASEMENT-relative, so ft(9, 4.75) is project +3/4" — the main floor's
-    # finished surface, which is the plywood top of the wood bays and the cap top of
-    # SL-M-DECK with it (params/main_deck.py::MAIN_FINISHED_FLOOR). At ft(9, 4) — the datum
-    # itself — the trap arm starts 3/4" INSIDE the concrete and the drop stops being a
-    # through-crossing of the band, so SP-M-KITCH goes unclaimed. This file is
-    # editable-dialect and cannot import the constant, but nothing here can drift quietly:
-    # `mep.sleeve_coverage` fails the build the moment this run stops passing through its
-    # sleeve.
+    # ** y=35'-0" WEST OF THE PLATE, NOT 35'-6". ** The north foundation walls W-B-N1..N4 are
+    # 12 3/16" on the y=36' axis, so their inner face is y=35'-5 7/8" and a 2" pipe at 35'-6"
+    # is INSIDE the pour.
     # The kitchen leaves the lane ceiling entirely: west to x32.5", south to y406.5",
     # down through SP-B-SLAB-KITCH, then 3 1/2" east into the buried main. The plan's
     # x36",y418" stack sat inside the north footing's 45-degree influence line.
     # y406.5" clears that line and the panel working space; x32.5" clears the two-way
     # sewer cleanout's fitting at (36",408"). Seal the slab sleeve to the radon layer.
-    # ** OVER THE STAIR WELL IT HUGS THE NORTH WALL, EXPOSED (2026-09-23). ** It ran 8 ft
-    # inside FO-M-STAIR's north trimmer pack. The pack moved onto W-B-N2's sill (plan/
-    # storeys/main.py) and this leg jogs north on two 45 pairs — over W-B-CN's top at
-    # x=17'-9 1/4", and back at x=9'-8" past W-B-STR — to y=35'-2 3/4", its OD 1/16" off the
-    # pack/concrete face at 35'-4". Clamped to that face: `mep.run_over_void` counts it.
-    # West of x=9'-10 3/4" it hangs 1/16" clear of FS-M-MECH's joists.
+    # ** OVER THE STAIR WELL IT HUGS THE NORTH WALL, EXPOSED. ** At y=35'-3 1/4" it stands
+    # 11/16" off the trimmer pack's face (35'-4 7/8", FO-M-STAIR's edge, on W-B-N2's sill) and
+    # 5/16" off truss 022's chord, the one lane that clears both, so it never leaves that line
+    # across the plate; it comes back to y=35'-0" at x=9'-8" past W-B-STR on one 45 pair.
+    # Clamped to the pack: `mep.run_over_void` counts it. West of x=9'-10 3/4" it hangs clear
+    # of FS-M-MECH's joists.
     PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(352), inch(416.99)), pt(inch(352), inch(416.99)),
-                  pt(ft(18), ft(35)), pt(ft(17, 9.25), ft(35, 2.75)),
-                  pt(ft(9, 10.75), ft(35, 2.75)), pt(ft(9, 8), ft(35)),
+                  pt(inch(355), inch(416.99)), pt(inch(355), inch(378)),
+                  pt(inch(240), inch(378)), pt(inch(240), inch(423.25)),
+                  pt(ft(18), inch(423.25)), pt(ft(17, 9.25), inch(423.25)),
+                  pt(inch(119.25), inch(423.25)), pt(ft(9, 8), ft(35)),
                   pt(ft(6), ft(35)), pt(inch(32.5), ft(35)),
                   pt(inch(32.5), inch(406.5)), pt(inch(32.5), inch(406.5)),
                   pt(ft(3), inch(406.5))),
             diameter=inch(2), material="pvc",
-            # Starts 5 1/2" AFF at the local sink waste return; passes through the cap's
-            # plane (+15/16" project = 9'-2 3/8" basement-relative) and
-            # drops clear of the deck's SOFFIT, the bearing seat at -13 7/16" — a drop that
-            # stops inside the pour is what `mep.sleeve_coverage` reads as a sleeve serving
-            # nothing.
+            # Starts 5 1/2" AFF at the local sink waste return and drops through the deck
+            # into the truss window.
             #
-            # Preserve the theater/stair profile; the final ceiling legs hold
+            # The truss field holds 0.26"/ft; the final ceiling legs hold
             # 0.3"/ft, as does the short buried wye leg. Its -19.25" arrival is
             # 3/32" above the main's -19.34375" centreline at y406.5".
-            elevations=(ft(9, 7.875), ft(8, 5.9375), ft(8, 2.6875), ft(8, 2.59375),
-                        ft(8, 0.3125), ft(8, 0.21875),
+            elevations=(ft(9, 7.875), inch(106.25), inch(105.15), inch(104.31),
+                        inch(101.82), inch(100.84), inch(100.31), inch(100.2),
+                        ft(8, 0.3125), inch(96.2),
                         ft(7, 11.25), inch(94.2625), inch(93.925), inch(-19.1625), inch(-19.25)),
             serves=("FX-M-KITCH-SINK",)),
     # BATH2's WC, at its flange on the wet wall (→ SP-M-WC2): x 2'-6", y 21'-0 3/4", the
@@ -167,7 +149,7 @@ DRAINS = [
     #   * and it started 3 5/16" BELOW the finished floor, which is a closet-flange invert.
     #     A wall-hung bowl's trap is integral and above the deck: there is no flange, the
     #     stub turns down inside the carrier frame, and the pipe crosses the floor plane —
-    #     the bath's finished surface, 110.38435" basement-relative, the AP's waste port —
+    #     the bath's finished surface, 110.4630906" basement-relative, the AP's waste port —
     #     on its way into the joist bay.
     #
     # Route is the house's standard two-move branch (cf. PR-B-WC2-DRAIN): drop in W-M-HS1's
@@ -180,7 +162,7 @@ DRAINS = [
             path=(pt(inch(24.5), ft(22, 4)), pt(inch(24.5), ft(22, 4)),
                   pt(inch(24.5), ft(21, 10)), pt(ft(6), ft(21, 10))),
             diameter=inch(3), material="pvc",
-            elevations=(inch(110.38435), ft(7, 9.625), ft(7, 9.4375), ft(7, 8.4375)),
+            elevations=(inch(110.4630906), ft(7, 9.625), ft(7, 9.4375), ft(7, 8.4375)),
             serves=("FX-M-BATH1-WC",)),
     # South wet-wall basin: drop below the floor, then north and east to the collector head.
     # Tee/vent stays behind the north-face timber block, not through a fixing target.
@@ -188,7 +170,7 @@ DRAINS = [
             path=(pt(inch(53.5), inch(268)), pt(inch(53.5), inch(268)),
                   pt(inch(53.5), inch(271)), pt(inch(72), inch(271))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(130.38435), inch(94.6), inch(94.5), inch(94.0),),
+            elevations=(inch(130.4630906), inch(94.6), inch(94.5), inch(94.0),),
             serves=("FX-M-BATH1-LAV",)),
     # 1 1/2": FX-M-BATH2-TUB is the Kohler K-1130-W1 (plan/fixtures.py), whose spec
     # drawing labels a 1 1/2" bath drain and whose required waste-and-overflow — K-7272

@@ -95,6 +95,11 @@ class JoistSpec(HausModel):
     # bearing already runs its joists to the framing face behind the rim (resolve/floors.py
     # ``_end_coords``), and an interior line the deck spans over is not an end at all.
     end_bearing: tuple[tuple[str, Length], ...] = ()
+    # Tie every joist end seated on a WALL bearing with a hurricane tie, where the house's
+    # ``UpliftTieRules.tie_floor_joists_on_walls`` toe-nails them. For a field a jurisdiction
+    # wants connected to the sill (Minn. R. 1309.0404: joists to the sill plate "with an
+    # approved connector"), stated per floor rather than house-wide.
+    seat_ties: bool = False
 
 
 class JoistReinforcement(HausModel):

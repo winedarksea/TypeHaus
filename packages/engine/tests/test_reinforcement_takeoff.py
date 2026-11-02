@@ -79,9 +79,8 @@ def test_the_coating_comes_from_the_pours_mix_not_the_schedule(rows) -> None:
     was stated per-bar via ``BarSpec.coating`` — while the other half read black.
     ``PIER_CONCRETE_12`` named ``EXPOSED_MIX`` that day and ``SUNKEN_GARDEN_COLUMN_12``
     followed on 2026-09-10, so both now inherit A767 from the pour and the per-bar overrides
-    are belt and braces rather than the only route. Six columns on each type, twelve cages.
-    This still asserts a UNIFORM result reached by two routes, because either one alone
-    would be enough and a scope carrying two coatings is the failure worth catching.
+    were later dropped. This still asserts a UNIFORM result per scope, because a scope
+    carrying two coatings is the failure worth catching.
 
     Uniformity is the assertion worth making rather than a coincidence to tolerate. Mixing
     coatings inside one pour is specifying a corrosion cell, and the check that would notice
@@ -93,9 +92,8 @@ def test_the_coating_comes_from_the_pours_mix_not_the_schedule(rows) -> None:
     assert by_scope["footing"] == {"hdg-a767"}
     assert by_scope["foundation wall"] == {"hdg-a767"}
     assert by_scope["column"] == {"hdg-a767"}
-    # The one black pour is the interior deck cap, and its MIX says so (DECK_CAP_MIX: no
-    # chloride, no freeze-thaw) — the same route, a different answer.
-    assert by_scope["slab"] == {"black"}
+    # Catlin authors no per-bar ``coating`` any more, so every row above reached A767 from its
+    # mix alone. The black counter-case (SL-M-DECK's DECK_CAP_MIX) left with the deck (#112).
     assert all(len(coatings) == 1 for coatings in by_scope.values()), by_scope
 
 

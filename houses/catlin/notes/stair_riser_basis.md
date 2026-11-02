@@ -5,6 +5,11 @@ Model: `Stair.riser_thickness` / `riser_material` on every stringer flight, and
 `resolve/stairs/common.py::_riser_member`. Graded by `code.R311_7_5_1_open_risers`
 (`checks/code/mn_residential/open_risers.py`). `tests/test_stair_risers.py` reproduces §3–§4.
 
+**2026-11-01 amendment (decision #112, 7 mm Cotton Oak).** The main floor's plank top is
++1.0255906" (was +0.94685"), so ST-B2M rises 110.4630906" in 15 = **7.3642"** (board 6.114") and
+ST-M2S 120.4744094" in 16 = **7.5296"** (board 6.530"). The §3-§4 arithmetic below is the
+2026-09-28 basis at 7.3590/7.5346; the test pins the new values.
+
 ## 1. Why
 
 No flight resolved a riser, so every one was an open-riser stair. Nothing graded that, and

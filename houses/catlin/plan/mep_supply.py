@@ -52,7 +52,7 @@ WATER_SUPPLY = [
     PipeRun(uid="KV1KTD2P01", tag="PR-M-CW-BATH1-LAV", system=PipeSystem.WATER_COLD,
             path=(pt(inch(60), inch(268)), pt(inch(60), inch(271.385))),
             diameter=inch(0.5), material="pex",
-            elevations=(inch(24.0), inch(24.94685),),
+            elevations=(inch(24.0), inch(25.0255906),),
             serves=("FX-M-BATH1-LAV",)),
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
             # ** THIS RUN DID NOT MOVE FOR THE 2026-09-10 NORTH ENTRY PIERS; THEY MOVED
@@ -94,14 +94,14 @@ WATER_SUPPLY = [
 # --- Domestic hot/cold distribution (2026-07-29 plumbing pass) -----------------------
 #
 # PEX home-run-lite: 1" cold trunk tees off the water service at (5', 35'-6"), 1" hot trunk
-# leaves EQ-B-WH; both run the ceiling band south of the y=18' wall, cross the concrete
-# through their own WALL_SLEEVES, and rise to each wet-wall group through SUPPLY_SLEEVES.
+# leaves EQ-B-WH; both run the ceiling band south of the y=18' wall, cross the framed
+# centre walls (a bored stud bay, or over the plate) and rise to each wet-wall group.
 # `serves` on a trunk is the union of everything downstream, so `mep.pipe_sizing` sums the
 # real WSFU. Filed on ``basement`` (datum -9') so ceiling runs read as 8'-ish heights.
 #
 # Cold trunk went 1" -> 1 1/4" on 2026-07-30: the stair-foot bath and sauna shower added 4
 # WSFU, taking it from 30 to 34 against the 32 a 1" branch carries (Table 610.4, 46-60 psi /
-# <100'). Hot trunk stays 1" at 21.5 WSFU; SP-B-CS2-CW (the trunk's cast crossing) grew with it.
+# <100'). Hot trunk stays 1" at 21.5 WSFU.
 #
 # ** THE TWO-BAND CONVENTION, AND IT IS LOAD-BEARING FOR EVERY ELEVATION BELOW
 # (2026-09-19). ** The basement ceiling runs ride TWO bands, not one, and which band a leg
@@ -133,29 +133,20 @@ WATER_SUPPLY = [
 #     interrupted at every joist — so it stays hung, and the 4" it rose is the whole of
 #     what the floor cavity had to give it.
 #
-# ** THE CONVENTION STOPS AT x=18'-0", AND IT IS THE CEILING THAT STOPS IT. ** West of the
-# centre line, and east of it north of y=13'-0", the basement ceiling is FS-M-*'s 11 7/8"
-# I-joists and both bands are inside or just under them. East of x=18'-0" and north of
-# y=13'-0" it is **SL-M-DECK, a cast deck whose soffit is at -1'-1.4"** — 10" of BuildDeck
-# EPS SIP under 4 3/8" of cast cover. A pipe on the new cold band there is not hanging
-# under a ceiling, it is **4.6" INSIDE A CONCRETE SLAB**, and NOTHING IN THIS ENGINE GRADES
-# THAT: `mep.run_in_finished_volume` measures hang below a ceiling, `mep.run_member_crossing`
-# reads framed members, and a slab is neither. It went undetected for a whole round.
-#
-# What DID catch it, indirectly and only because two other things happened to depend on it:
-# `mep.sleeve_coverage` went UNKNOWN on SP-B-CS2-CW and SP-B-CS2-HW (the runs had risen
-# above W-B-CS2's -1'-1.4" top and missed their cast holes, which took `Cast-in sleeve
-# coverage` on the permit checklist with them), and `pipe_material_preference` stopped
-# grading anything at all, because no supply run was hung under the concrete band any more.
-# **Neither of those is the rule that should have caught it.** A `mep.run_in_slab` check is
-# the honest follow-on and is deliberately not written here, on a house trying to get a
-# different number down.
-#
-# So PR-B-CW-TRUNK and PR-B-HW-KITCH — the only two supply runs that reach under the deck —
-# step back DOWN to the old bands at x=17'-6", just west of the centre line, and cross
-# W-B-CS2 through their cast sleeves exactly where they always did. Everything east of that
-# step is as it was authored before 2026-09-19. **A cast-in sleeve is formed before a pour
-# and cannot be moved on the day: if either band moves again, check these two steps first.**
+# ** THE CONVENTION NOW RUNS THROUGH x=18'-0" (2026-11-01, decision #112). ** East of the
+# centre line and north of y=13'-0" the ceiling used to be SL-M-DECK, a cast deck whose soffit
+# put the cold band 4.6" inside the slab, so PR-B-CW-TRUNK and PR-B-HW-KITCH stepped back
+# down at x=17'-6" and crossed W-B-CS2 through cast sleeves. It is FS-M-NE's 11 7/8"
+# open-web trusses now, chord window 99 1/16"..107 15/16" basement-relative, and the cold band
+# (100 5/8") sits inside it. Both runs cross the x=18' line OVER the framed plate, through the
+# 2x6 box the resolver frames in the bearing-line blocking (a bored stud would be the other
+# way, and R602.6 caps a bearing stud's bore at 2.20"), then run east in truss bays: cold in
+# the 15'-16' bay (y=186"), hot in the 16'-17' bay (y=197", the lane it already had west of
+# the wall). They turn north at x=357.6" (cold) and 363.6" (hot), inside the web opening
+# 353.5".."366.5" every truss shares, and rise in the 35'-36' bay at y=424.2". The hot lane
+# is north of the cold one and its riser east of it, so the cold's north-south leg crosses the
+# hot's east-west one: the hot rides 2 1/2" higher (103.2", invert 102 1/4", over the cold's
+# 101 5/16" crown) from the hall bay on.
 #
 # ** THE WINDOW IS NARROW AT THE HOT END AND WIDE AT THE COLD END, MEASURED. ** Sweeping
 # both bands against the full registry with suppression lifted:
@@ -164,9 +155,9 @@ WATER_SUPPLY = [
 #   cold +6"  hot +4"      147, nothing else moved
 #   cold +6"  hot +4.25"   146, and +11 mep.run_member_crossing
 #
-# and then 147 -> 146 once the two runs under SL-M-DECK were stepped back down, which is
-# the honest figure: the 147 row was measured with a 1 1/4" PEX trunk drawn inside a
-# cast slab.
+# and then 147 -> 146 once the two runs under the cast deck (SL-M-DECK, since replaced by
+# FS-M-NE) were stepped back down, the honest figure: the 147 row was measured with a 1 1/4"
+# PEX trunk drawn inside a cast slab.
 #
 # One eighth of an inch of hot is all that is left: at +4.25" the jacket clips the joists'
 # bottom flange and eleven crossings stop being clear. Cold is broad — +3" through +10" all
@@ -202,11 +193,10 @@ SUPPLY = [
     # x=9'-9" is still inside the blocking. Two elbows, four inches west of the wall, and
     # the other 36 feet of the trunk is on the convention.
     #
-    # ** NEITHER STEP MAY LAND ON A JOIST (2026-09-23). ** mep.run_in_joist_flange: at
-    # y=35'-0" the step took joist-0-010-1's bottom flange, and at (17'-6", 16'-0") the drop
-    # stood in joist-0-012 (the y=16' band is that joist's plane). The west leg rides
-    # y=34'-10", and the east drop is at (17'-5", 16'-2 1/4"), in the bay north of 012,
-    # clear of W-B-CS2's pour and PR-B-HW-KITCH's drop.
+    # ** THE STEP MAY NOT LAND ON A JOIST (2026-09-23). ** mep.run_in_joist_flange: at
+    # y=35'-0" the step took joist-0-010-1's bottom flange. The west leg rides y=34'-10".
+    # East of the x=17'-5" jog the trunk leaves joist-0-012's plane (y=16'-0") for the truss
+    # bay at y=15'-6".
     #
     # ** IT DIPS UNDER FO-M-ERV-OA's TRIMMER PACKS (2026-09-23). ** Both 2-ply 1.75x11.875
     # LVL packs run full bay (x 6"..10'-0"), so any x=4'-9" crossing bores four plies. The
@@ -226,16 +216,16 @@ SUPPLY = [
                   pt(ft(9, 6), ft(34, 10)), pt(ft(9, 6), ft(34, 10)),
                   pt(ft(4, 9), ft(34, 10)), pt(ft(4, 9), ft(34, 10)),
                   pt(ft(4, 9), inch(386.5)), pt(ft(4, 9), inch(386.5)), pt(ft(4, 9), ft(16)),
-                  pt(ft(8), ft(16)), pt(ft(17, 5), ft(16)), pt(ft(17, 5), ft(16, 2.25)),
-                  pt(ft(17, 5), ft(16, 2.25)), pt(ft(17, 5), ft(16)),
-                  pt(ft(29, 9.6), ft(16)),
+                  pt(ft(8), ft(16)), pt(ft(17, 5), ft(16)), pt(ft(17, 5), inch(186)),
+                  pt(ft(29, 9.6), inch(186)),
+                  pt(ft(29, 9.6), inch(424.2)), pt(ft(29, 9.6), inch(424.2)),
                   pt(ft(29, 9.6), inch(421.5)), pt(ft(29, 9.6), inch(421.5))),
             diameter=inch(1.25), material="pex",
             elevations=(inch(2), ft(4), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
                         ft(8, 4.6375), ft(8, 4.6375), inch(93.44), inch(93.44),
                         ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
-                        ft(8, 4.6375), ft(8, 4.6375), ft(7, 10.6375), ft(7, 10.6375),
-                        ft(7, 10.6375), ft(7, 10.6375), ft(10, 9.4375)),
+                        ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
+                        ft(8, 4.6375), inch(120), inch(120), ft(10, 9.4375)),
             serves=("FX-G-HYDRANT", "FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
                     "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-FILLER",
                     "FX-M-BATH2-SINK",
@@ -358,7 +348,7 @@ SUPPLY = [
                   pt(inch(50.5), inch(266.75)), pt(inch(50.5), inch(266.75)),
                   pt(inch(50.5), inch(266.75)), pt(inch(50.5), inch(271.385))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(inch(88.0), inch(91.5), inch(91.5), inch(109.4375), inch(133.4375), inch(134.38435),),
+            elevations=(inch(88.0), inch(91.5), inch(91.5), inch(109.4375), inch(133.4375), inch(134.4630906),),
             wall_refs=(None, None, None, "W-M-HS1", None),
             serves=("FX-M-BATH1-LAV",)),
     # ** THE COLD RISER IS IN W-M-HS1 SINCE 2026-09-09, NOT STANDING IN THE ROOM. ** It came
@@ -479,44 +469,32 @@ SUPPLY = [
     # `mep.run_in_finished_volume` has nothing to measure on either of them anywhere in the
     # hall. The jog keeps its PLAN shape, which is still doing work (the sauna pair really
     # does own the y=15'-6" lane out to x=17'-4"), and its two raised vertices ride the COLD
-    # band the way they always did: 8'-4 5/8" against the run's own 8'-1 7/16", 3 3/16"
-    # apart, the same relationship the old 7'-10 5/8"/7'-9 7/16" pair had at 1 3/16" and
-    # could not afford. The east jog turns at x=18'-9", 3" clear of W-B-CS2's east face so
-    # the leg is in the room and not along the pour.
-    # SP-B-CS2-HW moves with it (plan/mep_sleeves.py) — the y=15'-6" hole it was cast for
-    # no longer has a pipe in it.
+    # band the way they always did.
+    # ** THE x=17'-6" AND x=18'-9" STEPS ARE GONE (2026-11-01). ** They put the leg through
+    # W-B-CS2's cast sleeve and then under SL-M-DECK; with the framed wall and FS-M-NE it stays
+    # on the cold band across the plate and through the truss bay at y=16'-5" (see the
+    # convention above), and the y=15'-6" return that dodged PR-B-CW-TRUNK's lane is moot.
     # ** BOTH KITCHEN RISERS SURFACE AT THE SINK BASE'S BACK (2026-10-23). ** At y=35'-1 1/2",
     # 3.9" off its back panel and east of the disposer and drain, stopping 20" AFF under the
-    # bowl. They came up mid-floor and ran on to 3'-6", through the counter.
+    # bowl. ** SINCE 2026-11-01 THEY RISE 2 3/4" FARTHER NORTH, AT y=35'-4 3/16" (424.2"), **
+    # the 35'-36' truss bay: y=35'-1 1/2" is the chord of truss 022 (418 1/4".. 421 3/4").
+    # Each jogs back south above the floor, the hot at 118 1/2" (just over the dishwasher stub
+    # at 114 15/16") and the cold at 120", to the stop positions it always had.
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
             # Both steps are plumb (2026-09-26): a 3" jog over 2" of plan was a 58-degree
             # bend a 3/4" PEX cannot make in that little tube.
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(13, 6), ft(15, 6)),
                   pt(ft(13, 6), ft(16, 5)), pt(ft(13, 6), ft(16, 5)),
-                  pt(ft(17, 6), ft(16, 5)), pt(ft(17, 6), ft(16, 5)),
-                  pt(ft(18, 9), ft(16, 5)), pt(ft(18, 9), ft(16, 5)),
-                  pt(ft(18, 9), ft(15, 6)), pt(ft(30, 3.6), ft(15, 6)),
-                  pt(ft(30, 3.6), inch(421.5)), pt(ft(30, 3.6), inch(421.5)),
-                  pt(ft(30, 3.6), inch(421.5))),
+                  pt(ft(17, 6), ft(16, 5)), pt(ft(30, 3.6), ft(16, 5)),
+                  pt(ft(30, 3.6), inch(424.2)), pt(ft(30, 3.6), inch(424.2)),
+                  pt(ft(30, 3.6), inch(421.5)), pt(ft(30, 3.6), inch(421.5))),
             diameter=inch(0.75), material="pex", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
-            # ** 1/2" SLEEVE AND THE EAST LEG AT -1'-3 1/16", FOR CD-B-KITCHEN (2026-10-08). **
-            # Between SL-M-DECK's -14 1/16" board and RM-B-PLAY-N's 3" finished-air allowance
-            # there are 3" of band; a 1" jacket (2.88" OD) and the 3/4" EMT that crosses this
-            # leg at y=29' need 3.8" stacked, a 1/2" jacket (1.88" OD, R-3.1 still meets IECC
-            # R403.5.3's R-3) and the EMT need 2.8". So this leg rides 1/16" under the board
-            # and the conduit passes under it.
-            # ** THE x=18'-9" STEP GOES 1 1/4" DEEPER THAN THE BAND (P3, 2026-09-19). **
-            # This run crosses PR-B-CW-TRUNK's own y=16'-0" lane there, and at the hot band's
-            # -1'-4" the two were 1.2" apart against the 2 1/8" a 1 1/4" cold and this run's
-            # insulated jacket want. Neither band could move: the cold is 2/3" under
-            # SL-M-DECK's soffit already, and dropping the whole hot band puts 15 ft of it
-            # into RM-B-PLAY-N's finished air. So the step alone goes to -1'-5 1/4" and the
-            # long east leg ramps back over its 11 1/2 ft. It is under RM-B-GYM, whose
-            # ceiling the owner leaves open, and it clears the 6'-8" headroom line by 11".
-            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 4.6375),
-                        ft(8, 4.6375), ft(7, 10.6375), ft(7, 10.6375),
-                        ft(7, 8.1875), ft(7, 8.1875), ft(7, 10.375),
-                        ft(7, 10.375), inch(114.9375), ft(10, 9.4375)),
+            # ** 1/2" SLEEVE (2026-10-08). **
+            # 1/2" jacket (1.88" OD, R-3.1 still meets IECC R403.5.3's R-3) rather than 1":
+            # the pair crosses drains and its own cold trunk in the truss window.
+            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), inch(103.2),
+                        inch(103.2), inch(103.2), inch(103.2),
+                        inch(118.5), inch(118.5), ft(10, 9.4375)),
             serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
     # Second-storey groups: risers climb two storeys to the hall bath, split at both deck
     # top (ft(9) basement-rel = 0'-0" project) and second floor (ft(19) = 10'-0" project),
@@ -728,13 +706,13 @@ SUPPLY = [
 # Both fed from above, out of the second floor's joist space (FS-S-WEST, 11 7/8" open-web
 # floor trusses), rather than from below: the main-storey exterior wall's stud cavity sits
 # directly over W-B-S1 (cast concrete, 8", and W-M-C1/W-B-CS on the centre line, 12"), so a
-# riser through SL-M-DECK would surface through the top of a bearing wall. One riser leaves
-# the basement and splits upstairs — one leg into W-M-S1 to the porch hydrant, one into
+# riser through the main floor there would surface through the top of a bearing wall. One
+# riser leaves the basement and splits upstairs — one leg into W-M-S1 to the porch hydrant, one into
 # W-S-S1 to the balcony hydrant — always inboard of the wall's 4" continuous exterior
 # insulation so the pipe stays warm.
 #
 # The riser stands in W-M-BDN1, a 2x4 partition (3.5" cavity, ample for 3/4" PEX) whose
-# deck crossing (SP-M-CW-HYD) lands in open slab at x=6', not on a wall below.
+# floor crossing lands in an open joist bay at x=6', not on a wall below.
 HYDRANT_BRANCH_BASEMENT = [
     # Two runs, one branch, split at the deck: the ceiling leg and the slab-up leg inside the
     # wall/joist bays.
@@ -826,12 +804,11 @@ HYDRANT_BRANCH_MAIN = [
 # a filtered tap arrives, the job is pulling the appliance out and opening a stop, not
 # opening a finished kitchen.
 #
-# **Why it is worth authoring now and not later.** SL-M-DECK is a 12 5/8" cast concrete band
-# covering x 18'-36', y 13'-36' (plan/mep_sleeves.py) — the whole cold-storage bay stands on
-# it. A line fed from *below* would need a cast-in sleeve set before the pour, and coring a
-# structural band afterwards is a different kind of job. This one never goes below the floor:
+# **Why it is worth authoring now and not later.** The whole cold-storage bay stands on
+# FS-M-NE's trusses (x 18'-36', y 13'-36'). A line fed from *below* would be a hole through
+# the floor, and coring a finished truss floor afterwards is a different kind of job. This one never goes below the floor:
 # it tees off the kitchen cold where it has already surfaced, at the riser head in the sink
-# base (SP-M-CW-KITCH, ft(29, 9.6) / inch(421.5)) where PA-M-KITCH-STOP-CW and PA-M-RO-STUB
+# base (ft(29, 9.6) / inch(421.5)) where PA-M-KITCH-STOP-CW and PA-M-RO-STUB
 # already sit, and runs at 20" (the stop height) through the backs of cabinets that are
 # being built anyway — west along the north run, then south down the west run. No penetration, no sleeve, no
 # concrete, and every inch of it behind a removable cabinet back.
@@ -854,7 +831,7 @@ HYDRANT_BRANCH_MAIN = [
 #   * the rise at x=24'-5" is at the pantry's east end, just west of W-M-PAN-E;
 #   * the drop at x=18'-0" is on W-M-C5/C5B's own axis, mid-cavity (17'-9 1/4"..18'-2 3/4"),
 #     and carries on south inside it to y=31' before stepping east to the stub.
-# No penetration of SL-M-DECK, no cast-in sleeve.
+# No penetration of the floor.
 KITCHEN_STUB_MAIN = [
     PipeRun(uid="N0D5ATAN07", tag="PR-M-CW-COLDSTORE-STUB", system=PipeSystem.WATER_COLD,
             path=(pt(ft(29, 9.6), inch(421.5)),

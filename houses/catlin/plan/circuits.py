@@ -235,12 +235,7 @@ CIRCUITS = (
             gfci=True, load_va=203,
             description="Radiant floor heat — main bath, sole heat source "
                         "(FH-M-BATH2, 17.85 ft2, Schluter DHEHK12016)"),
-    # AFCI too: this mat is in RM-M-LIVING, and E3902.16 covers the 120V 15/20A
-    # circuits *supplying outlets or devices* in a living room — a heating mat is a device.
-    # The two bath mats are not: E3902.16's room list stops at the bathroom door.
-    Circuit(uid="CKT032AAAA", tag="CKT-FH-DINING", slot=31, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            gfci=True, afci=True, load_va=696,
-            description="Radiant floor heat — under the dining table (FH-M-DINING, 58.0 ft2)"),
+    # (The dining mat and its slot-31 circuit are retired: no slab left to embed it in, decision #112.)
     Circuit(uid="CKT033AAAA", tag="CKT-FH-BATH1", slot=33, panel_ref=_PANEL, breaker_amps=15, poles=1,
             # 338 VA: the wattage is a purchased nameplate (Schluter DHEHK12027, 26.7 ft2 /
             # 338 W / 2.8 A) rather than a stale area times 12. NEC 220.51 counts fixed

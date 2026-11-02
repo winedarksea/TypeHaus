@@ -18,10 +18,8 @@ and graded by `integrity.doorway_assembly`. See [bedroom carpet](bedroom_carpet.
 
 **The subfloor is modelled at its 3/4-in nominal** (2026-11-01, review F3-009). The panel
 bought is 23/32-in (0.71875-in) Performance Category plywood, 1/32 in thinner. Every
-framed deck uses the same 0.75, so wood-to-wood doorways are unaffected. The only joint
-that spends the 1/32 in is the LVP-to-cap seam on the living-room L: built, the LVP lands
-at +0.91560 against the cap's +0.7500 (screeded to the built plywood, +0.71875), a 5 mm
-step either way, which the reducer takes. The model keeps the nominal.
+framed deck uses the same 0.75 (the whole main floor is wood since decision #112, 2026-11-01:
+no cap), so no doorway spends the 1/32 in. The model keeps the nominal.
 
 | Tag / location | Build-up above subfloor | Finished height |
 | --- | --- | ---: |
@@ -30,8 +28,7 @@ step either way, which the reducer takes. The model keeps the nominal.
 | `catlin-tile-oak-height`, suite bath/vanity | 5/16-in nominal DITRA-XL + 5/16-in Marazzi Modern Formation MF01 24x24 matte porcelain + nominal 1/8-in combined mortar beds | +1.5000 |
 | `catlin-tile-heated`, both heated baths | 1/4-in nominal DITRA-HEAT + same 5/16-in MF01 porcelain + nominal 3/16-in combined mortar beds, cable in studs | +1.5000 |
 | `catlin-plant-vinyl-raised`, second plant | Nominal 1/4-in SurePly underlayment + 0.120-in fully adhered sheet; no floor drain or slope | +1.1200 at doorway |
-| `lvp`, main circulation/mudroom/closets | COREtec Quincy Oak, 5 mm (0.19685 in) total including attached cork; no separate mat | +0.94685 |
-| `coated-concrete`, main living zone | cast cap top, flush with the plywood (decision #111); coating adds no appreciable height | +0.7500 |
+| `lvp`, whole main floor | Karndean Cotton Oak AKP-RL38, 7.0 mm (0.27559 in) rigid core incl. backing, floating on the subfloor; no mat | +1.0255906 |
 
 The Marazzi [product page](https://www.marazziusa.com/products/stone-look/modern-formation/peak-white)
 specifies 5/16 in for the 24x24 matte tile. Schluter lists
@@ -46,14 +43,13 @@ once on the whole heated bathroom area by the floor-finish companion row.
 
 The 1/16-in carpet backing is an allowance: the published 0.56 in is pile only. Measure
 the sample. The Z-bar answer below holds while the backing is 0.10 in or less.
-Quincy Oak replaces the generic 6 mm plank as of 2026-10-26; its attached cork is
-included in the 5 mm total, and no separate mat is specified or billed. Measure the
-installed plank and concrete coating samples and
-keep the mudroom and hall on the same stack; any height change at the concrete joint
-must stay within this schedule's 1/16-in flush target.
+Karndean Cotton Oak (7.0 mm incl. backing) replaces COREtec Quincy Oak 5 mm on 2026-11-01
+(decision #112); no separate mat is specified or billed. Measure the installed plank; one
+plank plane runs the whole main floor, with no concrete joint. Base cabinets with toe
+kicks stand on the subfloor with the plank under the kick only; fridge, freezer, range and
+dishwasher stand on the plank level (the dishwasher on a spacer).
 
-See [Quincy Oak specification and cap-thickness comparison](lvp_flooring.md) for
-product alternatives and the nominal flush-setting calculation.
+See [Cotton Oak LVP](lvp_flooring.md) for the spec, install rules and alternatives.
 
 ## Opening schedule
 
@@ -71,13 +67,13 @@ or movement joint may be required even where the modeled height difference is ze
 | `D-S-NCLOSET` | hall oak +1.5000 | oak +1.5000 | 0 | Continuous oak field |
 | `D-S-STUDY2` | hall oak +1.5000 | oak +1.5000 | 0 | Continuous oak field |
 | `D-S-PLANT` | study oak +1.5000 | raised sheet vinyl +1.1200 | 0.3800 | Solid-surface reducer over a sealed water stop; no drain |
-| `D-M-MUD`, `D-M-MECH`, `D-M-MUDC` | LVP +0.94685 | LVP +0.94685 | 0 | One level field; keep expansion gaps; bottom guide at `D-M-MUDC` on flat substrate |
-| `D-M-BED2` | hall LVP +0.94685 | bedroom carpet +1.7500 | 0.80315 | 5/4 oak saddle on the subfloor, top on the carpet plane under the leaf, 2-in bevel to the LVP; the automatic door bottom seals on it |
+| `D-M-MUD`, `D-M-MECH`, `D-M-MUDC` | LVP +1.0255906 | LVP +1.0255906 | 0 | One level field; keep expansion gaps; bottom guide at `D-M-MUDC` on flat substrate |
+| `D-M-BED2` | hall LVP +1.0255906 | bedroom carpet +1.7500 | 0.7244094 | 5/4 oak saddle on the subfloor, top on the carpet plane under the leaf, 2-in bevel to the LVP; the automatic door bottom seals on it |
 | `D-M-BED` | bedroom carpet +1.7500 | closet carpet +1.7500 | 0 | Continuous carpet stack |
 | `D-M-BATH2` | bedroom carpet +1.7500 | heated porcelain +1.5000 | 0.2500 | Carpet tucked into a Z-bar flush with the tile |
-| `ST-M2S` lower and upper head | main LVP +0.94685 | second oak +1.5000 (+121.5000 absolute) | stair rise | 16 equal risers at 7.5346 in; level turn +61.22343 absolute |
+| `ST-M2S` lower and upper head | main LVP +1.0255906 | second oak +1.5000 (+121.5000 absolute) | stair rise | 16 equal risers at 7.5296 in ((121.5 - 1.0255906)/16); level turn +61.2627953 absolute |
 | `ST-S2A` lower head | second oak +1.5000 (+121.5000 absolute) | oak stair | 0 at head | Retain existing authored 121.5-in start |
-| `D-M-ENTRY` exterior | mudroom LVP +0.94685 | breezeway deck 0.0000 | 0.94685 down | Flashed weather sill, **not** an interior reducer |
+| `D-M-ENTRY` exterior | mudroom LVP +1.0255906 | breezeway deck 0.0000 | 1.0255906 down | Flashed weather sill, **not** an interior reducer |
 
 Use a restrained, shallow solid-surface reducer at the 0.3800-in plant change, sloping
 down toward the vinyl over roughly 4 1/2 in of run. The wet-side sheet must turn up
@@ -85,7 +81,7 @@ and seal to a continuous water-stop riser beneath the reducer; seal its ends int
 jamb returns. A reducer without this sealed upturn provides no dependable spill
 containment. Set the final profile from measured installed heights and check the
 delivered glass door's swing and clearance. Use a securely retained tapered profile
-at the 0.80315-in bedroom change, with no exposed sharp lip.
+at the 0.7244-in bedroom change, with no exposed sharp lip.
 
 ```text
 study oak +1.5000  ─────────┐  solid-surface reducer ↘  plant vinyl +1.1200
@@ -100,10 +96,9 @@ door, subfloor and installed finish depths have been measured.
 The resolved rooms on either side of `D-M-BED2` are `RM-M-LIVING` and `RM-M-BED`;
 the earlier implementation plan described it as a closet-to-hall opening.
 
-The coated-concrete/LVP living-room boundary is +0.7500 / +0.94685 in, the plank's own
-5 mm (0.19685 in): a low 5 mm reducer, not a flush T, since the cap came down 3/16 in to the
-plywood plane on 2026-11-01 (decision #111). Keep the L-shaped edge and the y=13-ft
-movement break described in `mixed_deck_movement_joint.md`.
+There is no living-room cap boundary and no movement joint (decision #112; the concrete
+deck and `mixed_deck_movement_joint.md` are retired): the plank is one plane.
+`ST-B2M` climbs 110.4630906 in over 15 risers (7.3642 in) to the plank top.
 
 The scheduled interior openings contain **nine material changes** (three east carpet
 doors, three upstairs bath openings, the plant door, the main bedroom entry and its bath
@@ -119,25 +114,23 @@ check fails if the floors move.
 | Doorway | Change | Product |
 | --- | --- | --- |
 | `D-S-BED1/2/3`, `D-M-BATH2` | carpet 1/4 in over oak/tile | aluminium carpet Z-bar, no reducer |
-| `D-M-BED2` | LVP up 0.80315 in to carpet | 5/4 site-milled oak saddle |
+| `D-M-BED2` | LVP up 0.7244 in to carpet | 5/4 site-milled oak saddle |
 | `D-S-SUITEBATH`, `D-S-BATH1` | oak = tile | Schluter-SCHIENE |
 | `D-S-PLANT` | oak down 0.38 in to vinyl | 12 mm solid-surface reducer over the water stop |
-| `D-M-STUDY` | LVP down 0.19685 in to the coated cap | COREtec Quincy Oak 5 mm reducer |
 | `D-B-PLAY` | stall mat down 1/4 in to carpet | bevelled rubber reducer |
 | `D-B-SAUNA` | stall mat down 3/4 in to the sealed slab | bevelled rubber reducer |
 | `D-B-BATH` | sheet vinyl down 0.12 in to the slab | rubber reducer for 1/8-in sheet |
 | `D-A-HALVES` | oak down 0.63 in to vinyl | site-milled 3/4-in oak reducer |
 
 Still open: `D-A-STUDY` and `D-A-POCKET` open onto unfinished subfloor (no finish to pair
-with), and `D-M-MECH`'s mechanical-room floor has no finish over part of the doorway. The L-shaped
-concrete/LVP boundary adds one material boundary with two legs and a movement joint;
-it is a flush field joint rather than a doorway reducer.
+with), and `D-M-MECH`'s mechanical-room floor has no finish over part of the doorway. `D-M-STUDY` has plank on both sides
+now: no reducer.
 
 ## Exterior entry section, schematic
 
 ```
        interior                          exterior / breezeway
-  LVP top +0.94685  ───┐  raised weather sill  ┌── composite deck 0.0000
+  LVP top +1.0255906  ───┐  raised weather sill  ┌── composite deck 0.0000
   floating edge gap  →│  gasket / door sweep   │  open deck drainage ↓
   3/4-in plywood  ────┴─ sloped sill pan ──────┴── flashing drains outward
                       pan laps WRB at jambs and discharges past rim
@@ -149,7 +142,7 @@ the floating plank with its required perimeter gap under a removable sill trim; 
 seal a drainage path shut. Set the sill height from the selected door system's instructions
 and verify door sweep clearance after the plank is installed. The breezeway deck finishes at
 0'-0" (`params/north_entry_frame.py` `DECK_FINISH_FT`; "bridge composite finish 0",
-2026-09-11), 0.94685 in below the LVP, so the step out is that drop plus the sill
+2026-09-11), 1.0255906 in below the LVP, so the step out is that drop plus the sill
 upstand. The water path still relies on the sill and pan, not on floor-level fall. Use a removable boot mat or tray inside
 the mudroom so standing snowmelt does not sit at floating plank seams.
 
@@ -197,7 +190,7 @@ remain in the house estimate.
 
 The second-storey and main-storey plan renders show all scheduled rooms and openings.
 The emitted glTF floor mesh bounds place the second hall, east bedrooms and heated hall
-bath at +121.500 in absolute, and the main mudroom at +0.94685 in. The main living-room
-LVP mesh also tops at +0.94685 in on its wood deck despite the room centroid lying over
-the coated cap. Both boundary legs are covered by floor-height regression probes;
+bath at +121.500 in absolute, and the main mudroom at +1.0255906 in. The living-room LVP
+mesh tops at the same plane (the old cap is `FS-M-NE`, wood). The floor-height regression
+probes sample both sides of each main opening;
 stair arrival, riser uniformity, stair headroom and open-side guard checks remain in the gate.

@@ -137,10 +137,9 @@ drain_stack_required_structure_in = 5.5
 # covered. The note here said so in as many words: "Change SL-M-DECK to wood joists and
 # everything under it stops being visible pipe with nothing here to edit."
 #
-# That is what happened. Two thirds of the basement ceiling is I-joists now, and the owner's
-# call on the other third was gypsum over the EPS anyway — IRC R316.4 wants a thermal barrier
-# there, and stopping the board at the boundary to expose 414 SF of soffit was not worth it.
-# With drywall on the whole ceiling there is no visible pipe left to have a rule about, so
+# That is what happened: the owner's call was gypsum over the EPS deck anyway (IRC R316.4
+# wants a thermal barrier), and on 2026-11-01 the deck itself went to FS-M-NE's wood trusses
+# (decision #112). With drywall on the whole ceiling there is no visible pipe left to have a rule about, so
 # both keys are deleted rather than restated, and basement supply reverts to the default
 # (PEX, unfinished). Deleting them is the edit; the rule needed no other change.
 #
@@ -320,29 +319,12 @@ suppress = [
   # `mep.run_through_stud` is 0 FAIL. A new over-bore anywhere in the house now reports,
   # which is what the per-run form was protecting.
 
-  # ** mep.run_in_slab: 2 RUNS INSIDE A POUR, BOTH CLOSED (B5 2026-09-22; PR-SG-ARCH-OVERFLOW
-  # retired 2026-09-23 with the overflow's move to the west heel). NEW CHECK, 2026-09-19. **
-  #
-  # The check this file's supply-band note above has asked for since the cold band moved
-  # ("**A `mep.run_in_slab` check is the honest follow-on and is not written yet.**"). It
-  # exists now, and the case that motivated it is already gone: PR-B-CW-TRUNK and
-  # PR-B-HW-KITCH step back to the old bands at x=17'-6", so nothing lies in SL-M-DECK.
-  # What it found instead is two things nothing else in the engine could see.
-  #
-  #   * ** CLOSED 2026-09-22 (B5): `concrete_crossings` walks ducts now and SP-B-CN-ERV-PLAY
-  #     (plan/mep_sleeves.py) is the cast sleeve; `mep.sleeve_coverage` PASSes it and the
-  #     suppression below is gone. ** The record as it stood:
-  #   * DU-B-ERV-R-PLAY crosses W-B-CN, the 12" cast centre wall, with 4" of concrete over
-  #     it and NO void of any kind — no sleeve, no rough opening. `mep.sleeve_coverage`
-  #     never saw it because `concrete_crossings` walks pipe and raceway and not duct, so a
-  #     4" branch through a foundation wall has been ungraded for as long as it has been
-  #     drawn. **D3 ran and this one is not a lane problem after all** (2026-09-19): the
-  #     wall is x 17'-6"..18'-6" for the whole depth of the house and REG-B-SUP2 is on the
-  #     far side of it, so every route to that register crosses the pour once. What D3 did
-  #     change is WHERE — it crosses on the run's last leg into the register now, square to
-  #     the wall, one foot of it, instead of on a transit leg — and what it owes is a cast
-  #     sleeve at (18'-0", 26'-0"), which is a concrete decision taken before the pour and
-  #     not a duct decision taken after it.
+  # ** mep.run_in_slab: CLOSED, NOTHING SUPPRESSED (B5 2026-09-22; PR-SG-ARCH-OVERFLOW retired
+  # 2026-09-23 with the overflow's move to the west heel; the kitchen pair and the play
+  # radial 2026-11-01). ** NEW CHECK, 2026-09-19. The case that motivated it went with
+  # SL-M-DECK (decision #112): the main floor east of x=18' is FS-M-NE's open-web trusses, so
+  # PR-B-CW-TRUNK and PR-B-HW-KITCH ride the cold band through the truss bays, and
+  # DU-B-ERV-R-PLAY crosses the framed x=18' wall over its plate, not through a cast wall.
   #
   # Itemised, not blanket: a NEW run in a pour anywhere in the house still reports.
   # The former PR-B-CW-WH interference suppression came off on 2026-09-29: the heater has

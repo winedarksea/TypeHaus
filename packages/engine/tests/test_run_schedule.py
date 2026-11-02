@@ -86,7 +86,8 @@ def test_straight_is_three_dimensional_so_a_riser_is_not_an_offender(catlin_mode
     for run in risers:
         row = by_tag[run.tag]
         plan_only = math.dist(run.path[0], run.path[-1]) * _M_TO_FT
-        assert row["developed_ft"] / plan_only > 4.0, run.tag  # what plan-grading would say
+        # What plan-grading would say; a pure drop (CD-B-PLAY-N-RC1) has no plan run at all.
+        assert row["developed_ft"] > 4.0 * plan_only, run.tag
         assert row["straight_ft"] == pytest.approx(
             math.hypot(math.dist(run.path[0], run.path[-1]),
                        run.z_end_m - run.z_start_m) * _M_TO_FT, abs=0.02)

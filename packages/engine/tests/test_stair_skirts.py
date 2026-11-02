@@ -29,18 +29,19 @@ def test_four_skirts_with_the_note_s_reveal_toe_and_blanks(stair) -> None:
     assert set(skirts) == {"skirt-lower-left", "skirt-lower-right",
                            "skirt-upper-left", "skirt-upper-right"}
     assert {k: round(m.cut_length_m / IN, 3) for k, m in skirts.items()} == {
-        "skirt-lower-left": 95.821, "skirt-lower-right": 98.657,
-        "skirt-upper-left": 92.140, "skirt-upper-right": 103.470}
+        "skirt-lower-left": 95.795, "skirt-lower-right": 98.631,
+        "skirt-upper-left": 92.115, "skirt-upper-right": 103.450}
     floor = stair.base_elevation_m
-    # §3: 13.586" over the floor at the first riser face; level foot to +0.664".
+    # §3 at R = 7.52965" (since #112): 13.5825" over the floor at the first riser face;
+    # level foot to +0.664".
     profile = skirts["skirt-lower-left"].elevation_profile
-    assert max(z for s, z in profile if abs(s) < 1e-9) - floor == pytest.approx(13.586 * IN,
+    assert max(z for s, z in profile if abs(s) < 1e-9) - floor == pytest.approx(13.5825 * IN,
                                                                                  abs=1e-4)
     assert max(s for s, z in profile if abs(z - floor) < 1e-6) == pytest.approx(0.664 * IN,
                                                                                 abs=1e-4)
-    # §3: the toe drops to the 3 1/2" base 13.386" before the upper flight's first riser.
+    # §3: the toe drops to the 3 1/2" base 13.390" before the upper flight's first riser.
     upper = skirts["skirt-upper-right"]
-    assert (upper.p0[1] / IN) - 383.125 == pytest.approx(13.386, abs=1e-3)
+    assert (upper.p0[1] / IN) - 383.125 == pytest.approx(13.390, abs=1e-3)
     toe = [z for s, z in upper.elevation_profile if abs(s) < 1e-9]
     assert max(toe) - min(toe) == pytest.approx(3.5 * IN, abs=1e-6)
 
@@ -49,6 +50,6 @@ def test_the_landing_takes_base_at_its_own_floor(catlin_model_ro) -> None:
     runs = {r.wall_tag: r for r in catlin_model_ro.base_runs
             if r.tag.startswith("BASE-ST-M2S-LANDING-")}
     assert {k: round(r.length_m / IN, 3) for k, r in runs.items()} == {
-        "W-M-C5": 13.875, "W-M-C5B": 28.5, "W-M-N2": 88.906, "W-M-STRW": 28.27}
-    assert all(r.piece.z0_m / IN == pytest.approx(61.2234, abs=1e-4) for r in runs.values())
+        "W-M-C5": 13.875, "W-M-C5B": 28.5, "W-M-N2": 88.906, "W-M-STRW": 28.266}
+    assert all(r.piece.z0_m / IN == pytest.approx(61.2628, abs=1e-4) for r in runs.values())
     assert sum(r.end_corner == "inside" for r in runs.values()) == 2

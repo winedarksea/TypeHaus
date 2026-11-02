@@ -15,7 +15,8 @@ function loopDistance(a: number, b: number, period: number): number {
 }
 
 export function runPlankLayoutTests() {
-  for (const key of ["strip-floor", "plank-floor", "lvp-plank", "tg-board", "shiplap"]) {
+  for (const key of ["strip-floor", "plank-floor", "lvp-plank", "lvp-limed-oak", "tg-board",
+    "shiplap"]) {
     const style = WOOD_PLANK_STYLES[key];
     const lanes = layoutPlankTile(style);
     assert(lanes.length === style.boardsPerTile, `${key}: one lane per board across the tile`);

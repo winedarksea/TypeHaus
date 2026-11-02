@@ -205,12 +205,12 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # schedule row because it occupies two spaces, not because anything draws through it.
     # Then PLUS CKT-LT-BSMT and CKT-LT-GARAGE (2026-10-31): the basement work strips off
     # backup, and the garage's lighting off CKT-LT-MAIN.
-    assert len(rows) == 43  # plus the workshop's two-pole receptacle branch
+    # Then MINUS CKT-FH-DINING (2026-11-02): the dining mat went with SL-M-DECK (decision #112).
+    assert len(rows) == 42  # plus the workshop's two-pole receptacle branch
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
-    # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor; the
-    # dining zone takes the same protection because every mat maker asks for it).
+    # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor).
+    assert "CKT-FH-DINING" not in rows
     for circuit, stat in (("CKT-FH-BATH2", "ED-M-BATH2-FH-STAT"),
-                          ("CKT-FH-DINING", "ED-M-DINING-FH-STAT"),
                           ("CKT-FH-BATH1", "ED-S-BATH1-FH-STAT")):
         assert rows[circuit]["gfci"] and rows[circuit]["volts"] == 120
         assert rows[circuit]["breaker_amps"] == 15
@@ -270,8 +270,8 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     assert load["panel_rating_amps"] == 225 and load["service_amps"] == 320
     # And it fits UNMANAGED — no software anywhere in the calculation.
     assert load["unmanaged_demand_va"] / 240 <= 320
-    # 220.82(C) selects, it does not sum: five separately controlled resistance heaters
-    # (three mats, the fireplace and the garage heater) are taken at 40% and lose to the three
+    # 220.82(C) selects, it does not sum: four separately controlled resistance heaters
+    # (two mats, the fireplace and the garage heater; the dining mat went 2026-11-02) are taken at 40% and lose to the three
     # heat-pump systems at 100%, so the heating term is the heat pumps' and the resistance
     # heat costs the service nothing. The heat-pump circuits are identified by the typed
     # Equipment on them, not by a word in the description (takeoff/electrical._is_heat_pump).
@@ -282,7 +282,7 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # DUCTED_AIR_HANDLER — so `_bucket` files the pair as heat_pump, not resistance_heat.
     # This is the right answer and not a lost load: the kit's 4,600 W is counted at 100% in
     # the heat-pump term instead of at 40% in the resistance one.
-    assert load["resistance_heat_units"] == 5 and load["resistance_heat_factor"] == 0.40
+    assert load["resistance_heat_units"] == 4 and load["resistance_heat_factor"] == 0.40
     assert load["hvac_va"] == load["heat_pump_va"] > load["resistance_heat_va"] * 0.40
     # The kit's 4,600 W is counted at 100% in the heat-pump term and NOTHING credits it
     # back: catlin retired every LoadManagement on 2026-09-12 with the Class 320 service.
@@ -432,8 +432,9 @@ def test_catlin_conduit_trunks(catlin_model):
     # and power are separate orders pulled by separate trades and may not share a raceway.
     emt = [row for row in rows if row["material"] == "emt"]
     assert {row["trade_size_in"] for row in emt} == {0.5, 0.75, 1.0, 1.25, 1.5}
-    # The floor-heat leads are ENT (resolve/floor_heat_leads.py).
-    assert {row["size"] for row in rows if row["material"] == "ent"} == {"ENT 0.5", "ENT 0.75"}
+    # The floor-heat leads are ENT (resolve/floor_heat_leads.py); the 3/4" one was the dining
+    # mat's cast-in sensor sleeve, retired with it.
+    assert {row["size"] for row in rows if row["material"] == "ent"} == {"ENT 0.5"}
     # A loose sanity band, not a contract: no trunk group is a stub and none crosses the
     # house twice. 3/4" also carries the derived NM sleeves.
     assert all(20 < row["length_ft"] < 130 for row in emt if row["trade_size_in"] > 0.5)
@@ -476,8 +477,8 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
         if element.element_kind == "ElectricalDevice")
     # Rows are trade-size groups, not runs: the three 1" microgrid runs join the group the
     # 1" trunk already made.
-    # Laundry adds its own 1/2" group; the floor-heat leads add 1/2" and 3/4" ENT.
-    assert len(bom["conduit"]) == 7
+    # Laundry adds its own 1/2" group; the floor-heat leads add 1/2" ENT.
+    assert len(bom["conduit"]) == 6
     # The microgrid section is derived twice over: the placed ESS hardware, then the
     # shed-tier switching gear. The first row is the inverter because equipment leads.
     components = bom["backup_power"]["components"]
@@ -585,8 +586,9 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     assert main[0] <= main[1] and backup[0] <= backup[1]
     # 47 -> 39 on 2026-09-12: CKT-SPA, CKT-SAUNA, CKT-EV-1450 and CKT-GAR-240 (then CKT-EV-620; four 2-pole,
     # eight spaces) moved to ED-B-PANEL-2, feeder 2 of the Class 320 service. Fifteen spare
-    # here, twelve there. 41 since CKT-LT-BSMT and CKT-LT-GARAGE took slots 26/24 (2026-10-31).
-    assert main == (41, 54)
+    # here, twelve there. 41 since CKT-LT-BSMT and CKT-LT-GARAGE took slots 26/24 (2026-10-31); 40 once
+    # CKT-FH-DINING (slot 31) went with the dining mat (2026-11-02).
+    assert main == (40, 54)
     assert spaces("ED-B-PANEL-2", "ED-T-PANEL-2") == (10, 20)
     assert backup == (8, 12)
     required = sum(circuit.poles for circuit in circuits)
@@ -890,7 +892,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     # 40: the 36 that survived the microgrid refactor plus CKT-DISPOSAL, minus CKT-WH-HP
     # folded into CKT-WH-240, plus CKT-BATH2-TUB for the drop-in bath's Bask heated surface,
     # plus the two washlet circuits, plus CKT-SPD (the NEC 230.67 service surge device).
-    assert len(payload["panel_schedule"]) == 43  # includes the workshop branch
+    assert len(payload["panel_schedule"]) == 42  # includes the workshop branch
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

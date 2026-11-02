@@ -244,7 +244,8 @@ def _seated_links(ctx: CheckContext) -> list:
         # A floor on wall plates is toe-nailed, not tied; the wall above holds it down and the
         # band's straps carry the storey below (link 3).
         nailed = set()
-        if noun == "floor" and not _RULES.tie_floor_joists_on_walls:
+        if (noun == "floor" and not _RULES.tie_floor_joists_on_walls
+                and not _seat_tied(ctx, resolved.tag)):
             nailed = {ref for ref in refs if ctx.model.wall(ref) is not None}
         hung = sum(count for tag, count in hangers_by_carrier.items()
                    if tag in line or tag in refs)
@@ -490,6 +491,15 @@ def _gable_links(ctx: CheckContext) -> list:
             tags, (f"{ties} derived LTP4 tying {end.gable_truss}" if end.gable_truss
                    else f"{ties} derived gable-end ties") if ties else None))
     return links
+
+
+def _seat_tied(ctx: CheckContext, tag: str) -> bool:
+    """A floor whose ``JoistSpec.seat_ties`` asks for a tie at every wall seat."""
+    for storey in ctx.model.plan.storeys:
+        for element in ctx.model.plan.storey_elements(storey.tag):
+            if element.tag == tag:
+                return bool(getattr(getattr(element, "joists", None), "seat_ties", False))
+    return False
 
 
 @check(Tier.STRUCTURAL, _CHECK_ID)

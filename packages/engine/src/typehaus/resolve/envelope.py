@@ -622,7 +622,9 @@ def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
     # A post bears on a wall top as readily as on a pad: the balcony pillars stand on the
     # masonry porch railing, whose CMU cores are grouted to receive their bases. Walls are
     # not solids, so merge their tops in first and let a same-tag solid win.
-    solid_top = {w.tag: w.z1_m for w in model.walls}
+    # A framed wall bears at its plate, not its body top (which rises through the band).
+    solid_top = {w.tag: (w.plate_top_z_m if w.plate_top_z_m is not None else w.z1_m)
+                 for w in model.walls}
     # A joisted deck is a bearing top too. The storey datum is top-of-joist, so its walking
     # surface is that datum plus whatever sheet is laid on it — which is where a post
     # standing on the deck starts. (The porch's rear-centre balcony pillar is the case: its

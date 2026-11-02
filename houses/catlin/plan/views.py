@@ -61,16 +61,17 @@ DETAIL_SLICES = [
              _z("W-B-W1:bottom", "W-B-W1:top", inch(14), "{} fdn wall")),
          crop=(pt(ft(-2), ft(-12)), pt(ft(3), ft(1))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(2))),
-    # 9" SL-M-DECK seated on the 12" basement concrete cross-wall (INT_2X6_BRG
-    # above) — same y=18' cut, cropped to the center bearing line at x=18'.
+    # FS-M-NE's open-web trusses seated on W-B-E1 (decision #112): the 3" seat, the PT
+    # mudsill and gasket on the pour, the MASA anchor and the H2.5A seat tie. Cut along the
+    # y=16' truss line, cropped to the east bearing. Tag and uid kept from the BuildDeck
+    # bearing detail it replaces.
     Slice(uid="CVD902AAAA", tag="SL-D-DECKBRG", kind=SliceKind.DETAIL,
-         title="Deck bearing detail",
-         cut_origin=pt(ft(0), ft(18)), cut_direction="x",
+         title="Floor truss bearing detail",
+         cut_origin=pt(ft(0), ft(16)), cut_direction="x",
          dimensions=(
-             _z("SL-M-DECK:bottom", "SL-M-DECK:top", inch(246), "{} deck"),) + _chain(
-             "u", ("W-B-CS2:left", "SL-M-DECK:left", "W-B-CS2:right"), inch(-20),
-             ("{}", "{} brg")),
-         crop=(pt(ft(15), ft(-2)), pt(ft(21), ft(1, 6))),
+             _z("FS-M-NE:bottom", "FS-M-NE:top", inch(408), "{} truss"),) + _chain(
+             "u", ("W-B-E1:left", "W-B-E1:right"), inch(-20), ("{} fdn wall",)),
+         crop=(pt(ft(33), ft(-2)), pt(ft(38, 6), ft(1, 6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(2))),
     # Typical exterior wall section — south wall, full height (cut x=10', through
     # WIN-S-PLANT2; it was x=9' until the court narrowed on 2026-09-22, which put that line on W-SG-W1's axis and west of the brick

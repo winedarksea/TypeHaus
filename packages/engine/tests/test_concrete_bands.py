@@ -2,7 +2,7 @@
 
 ``mep.sleeve_coverage`` is the pour-day check: an unsleeved crossing cures and gets cored.
 It read every concrete solid as solid, which is right for a footing and wrong for a
-stay-in-place foam deck form. ``SL-M-DECK`` is 14 3/8" tall and 10" of that is
+stay-in-place foam deck form. Catlin's retired ``SL-M-DECK`` was 14 3/16" tall and 10" of that is
 ``eps-deck-form`` — a material a plumber routes a channel in with a hot knife, and the whole
 reason an EPS deck is specified. A run lying in that foam was reported as embedded in the
 pour, which says the opposite of what is true.
@@ -11,6 +11,8 @@ pour, which says the opposite of what is true.
 from __future__ import annotations
 
 import pytest
+from _helpers import check_context
+from _mixed_deck_plan import DECK, mixed_deck_model
 
 from typehaus.checks import run_from_model
 from typehaus.checks.registry import Tier
@@ -23,12 +25,12 @@ def _solid(model, tag):
     return next(s for s in model.solids if s.tag == tag)
 
 
-def test_the_eps_deck_resolves_one_concrete_band_not_its_whole_depth(
-        catlin_model_ro) -> None:
-    """``DECK_EPS_INT`` is a 4 3/16" cast cover over a 10" foam beam (decision #111). Only the cover is
-    concrete, and it is the top of the section."""
-    deck = _solid(catlin_model_ro, "SL-M-DECK")
-    bands = concrete_bands(catlin_model_ro, deck)
+def test_the_eps_deck_resolves_one_concrete_band_not_its_whole_depth() -> None:
+    """A 4 3/16" cast cover over a 10" foam form (``_mixed_deck_plan``, catlin's retired
+    ``DECK_EPS_INT``). Only the cover is concrete, and it is the top of the section."""
+    model = mixed_deck_model()
+    deck = _solid(model, DECK)
+    bands = concrete_bands(model, deck)
     assert len(bands) == 1
     (low, high), = bands
     assert high == pytest.approx(deck.z1_m)
@@ -56,15 +58,34 @@ def test_every_footing_keeps_its_whole_depth(catlin_model_ro) -> None:
         assert concrete_bands(catlin_model_ro, footing) == [(footing.z0_m, footing.z1_m)]
 
 
-def test_the_kitchen_drain_still_crosses_the_cap_through_its_sleeve(
-        catlin_model_ro) -> None:
-    """The half that must NOT change. ``PR-B-KITCH-DRAIN`` drops from the sink through the
-    4 3/8" cast cover, and that is a real crossing with a real cast-in sleeve. Only the
-    horizontal leg lying in the foam beyond it stopped being one."""
-    crossings = [c for c in concrete_crossings(catlin_model_ro)
-                 if c["run"] == "PR-B-KITCH-DRAIN" and c["host"] == "SL-M-DECK"]
-    assert len(crossings) == 1, crossings
-    assert crossings[0]["sleeve"] == "SP-M-KITCH"
+def _drained_deck_model():
+    """Catlin's retired kitchen drain in miniature: a drop through the cap at its cast
+    sleeve, 5' lying in the foam, and out through the soffit."""
+    from _mixed_deck_plan import drain, resolved_with
+
+    from typehaus.model import SleevePenetration, ft, inch, pt
+
+    run = drain("PRDRAIN0e1", "PR-DRAIN", ((9, 20), (9, 20), (9, 25), (9, 25), (9, 27)),
+                (113, 100, 99.5, 90, 89.5))
+    sleeve = SleevePenetration(uid="SPDRAIN0e1", tag="SP-DRAIN", host_ref=DECK,
+                               position=pt(ft(9), ft(20)), pipe_diameter=inch(2),
+                               sleeve_diameter=inch(3))
+    return resolved_with(basement=(run,), main=(sleeve,))
+
+
+def test_a_drop_through_the_cap_is_a_crossing_and_the_leg_in_the_foam_is_not() -> None:
+    """The half that must NOT change: the drop through the cast cap is a real crossing with
+    a real cast-in sleeve. Only the leg lying in the foam beyond it stopped being one, and
+    leaving through the foam's soffit crosses no concrete at all."""
+    from typehaus.checks.mep.run_in_slab import run_in_slab
+
+    model = _drained_deck_model()
+    crossings = [c for c in concrete_crossings(model) if c["run"] == "PR-DRAIN"]
+    assert [(c["host"], c["sleeve"]) for c in crossings] == [(DECK, "SP-DRAIN")]
+    assert crossings[0]["point"] == pytest.approx((9 * 0.3048, 20 * 0.3048))
+    fails = [f for f in run_in_slab(check_context(model=model))
+             if f.result is Result.FAIL and "PR-DRAIN" in f.element_tags]
+    assert not fails, [f.message for f in fails]
 
 
 def test_catlin_has_no_unsleeved_concrete_crossing(catlin_model_ro) -> None:

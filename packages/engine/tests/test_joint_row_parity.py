@@ -112,7 +112,9 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # naming FS-SG-DECK), which stands the derivation down, and the porch hangs ledger to
     # ledger on LUS210Z with no beam to bear on. What is left: 64 rafter-to-plate ties on
     # RF-HOUSE / RF-GARAGE, 10 along the ridge, and FS-BW-FLOOR's 4 + 4 on its two seats.
-    assert joints["hurricane_tie"] == 82
+    # 82 -> 130 on 2026-11-01 (decision #112): FS-M-NE sets ``JoistSpec.seat_ties``, so its
+    # 24 floor trusses take a tie at both wall seats (+48: 24 x=18' plates, 24 on W-B-E1/E2).
+    assert joints["hurricane_tie"] == 130
     # 137 -> 136 in 2026-09: the main-storey sill run over the sunken garden (y = -11 3/4")
     # spans axis to axis of the court's side walls, 20'-0" -> 18'-0" with the 17'-0" court.
     # At a 4' pitch, fencepost: floor(20/4)+1 = 6 became floor(18/4)+1 = 5.
@@ -127,7 +129,10 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # splits W-B-CS3's PT sill.
     assert joints["mudsill_anchor"] == 69
     assert joints["sill_anchor_bolt"] == 28
-    assert joints["slab_plate_pin"] == 49  # Door-cut slab plates shorten one pinned run.
+    # Door-cut slab plates shorten one pinned run. 49 -> 43 (decision #112): the six pins under
+    # the pantry partitions on SL-M-DECK's cap went with it. The eight x=18' mudsill anchors
+    # moved from the pour tops to the reframed walls' slab plates, count unchanged.
+    assert joints["slab_plate_pin"] == 43
     # 38 rafters on the ridge. ST-G-SERVICE's two stringer heads were two more until
     # 2026-09-24, then hung on BM-BW-LAND-HDR on LSCZ, their own role, until 2026-10-13: they
     # seat on the stem now, on authored standoffs, and hang on nothing.

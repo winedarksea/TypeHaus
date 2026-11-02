@@ -39,6 +39,7 @@ from __future__ import annotations
 
 from typehaus.model import Footprint2D, FurnitureType, ft, inch, m, pt
 from typehaus.model.placeable_symbols._sektion_corner_wall import sektion_corner_wall_points
+from typehaus.model.placeable_symbols._sektion_kitchen import TOE_RECESS_M
 from typehaus.model.placeable_symbols.furniture import sektion_corner_points
 
 REFERENCE = ("IKEA SEKTION frame ladder (ikea.com/us, 2026-09-11). Frame sizes only — "
@@ -58,13 +59,16 @@ _CORNER = inch(38)
 _HIGH_90 = inch(93)
 _HIGH_80 = inch(83.5)
 _FRAME_90 = inch(90)
+# The FÖRBÄTTRA kick face behind the frame front, as the kitchen glyph draws it. Every
+# floor-standing frame stands on legs behind it.
+_TOE_KICK = m(TOE_RECESS_M)
 
 
 def _base(tag: str, width) -> FurnitureType:
     return FurnitureType(
         tag=tag, name=f'SEKTION {width.inches:.0f}" base cabinet',
         footprint=(width, _BASE_DEPTH), height=_BASE_HEIGHT, plan_symbol="base-cabinet",
-        storage=True, work_surface=True, source=REFERENCE,
+        storage=True, work_surface=True, toe_kick_depth=_TOE_KICK, source=REFERENCE,
     )
 
 
@@ -72,7 +76,7 @@ def _shallow_base(tag: str, width) -> FurnitureType:
     return FurnitureType(
         tag=tag, name=f'SEKTION {width.inches:.0f}x15" base cabinet',
         footprint=(width, _SHALLOW_BASE_DEPTH), height=_BASE_HEIGHT, plan_symbol="base-cabinet",
-        storage=True, work_surface=True, source=REFERENCE,
+        storage=True, work_surface=True, toe_kick_depth=_TOE_KICK, source=REFERENCE,
     )
 
 
@@ -89,7 +93,7 @@ def _high(tag: str, width, frame_height=_FRAME_90, installed_height=_HIGH_90) ->
         tag=tag,
         name=f'SEKTION {width.inches:.0f}" high cabinet, {frame_height.inches:.0f} in. frame',
         footprint=(width, _DEEP), height=installed_height, plan_symbol="tall-cabinet", storage=True,
-        work_surface=False, source=REFERENCE,
+        work_surface=False, toe_kick_depth=_TOE_KICK, source=REFERENCE,
     )
 
 
@@ -105,7 +109,7 @@ BASE_36 = _base("SEKT-B36", ft(3))
 SINK_BASE_36 = FurnitureType(
     tag="SEKT-SINK-B36", name='SEKTION 36" sink base', footprint=(ft(3), _BASE_DEPTH),
     height=_BASE_HEIGHT, plan_symbol="sink-base", storage=True, work_surface=True,
-    source=REFERENCE,
+    toe_kick_depth=_TOE_KICK, source=REFERENCE,
 )
 
 # --- 15"-deep bases: the same frame height on the shallow wall depth ------------------
@@ -123,7 +127,7 @@ BASE_36_D15 = _shallow_base("SEKT-B36-D15", ft(3))
 CORNER_BASE_38 = FurnitureType(
     tag="SEKT-CORNER-B38", name='SEKTION 38x38" corner base cabinet', footprint=(_CORNER, _CORNER),
     height=_BASE_HEIGHT, plan_symbol="corner-base", storage=True, work_surface=True,
-    carcass_depth=_BASE_DEPTH, source=REFERENCE,
+    carcass_depth=_BASE_DEPTH, toe_kick_depth=_TOE_KICK, source=REFERENCE,
     footprint_shape=Footprint2D(points=tuple(
         pt(m(x), m(y)) for x, y in sektion_corner_points(_CORNER.meters, _CORNER.meters,
                                                          _BASE_DEPTH.meters))),

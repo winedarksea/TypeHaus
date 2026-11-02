@@ -13,6 +13,8 @@ file noticing. ``test_a_hung_end_is_never_also_a_bearing`` is that check.
 
 from __future__ import annotations
 
+from collections import Counter
+
 import pytest
 
 from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
@@ -182,7 +184,7 @@ def test_a_floor_is_tied_along_its_whole_bearing_line(catlin_model_ro) -> None:
                                     replace(RULES, tie_floor_joists_on_walls=True))
     floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-S-WEST")
     joists = [m for m in floor.members if m.category == "joist"]
-    trussed = [c for c in wall_ties if c.member_profile == "11.875 floor truss"]
+    trussed = [c for c in wall_ties if c.assembly_tag == "FS-S-WEST"]
     # Less one tie: the y=34'-5 3/4" truss's west end hangs on FO-S-ERV-CHASE's header.
     # The y=25'-4" line is FO-S-STAIR's full-span south trimmer pack since 2026-09-25.
     assert len(trussed) == len(joists) - 1 == 24
@@ -192,12 +194,23 @@ def test_a_floor_is_tied_along_its_whole_bearing_line(catlin_model_ro) -> None:
 
 def test_a_floor_joist_on_a_wall_takes_no_tie(catlin_model_ro, connections) -> None:
     """Hurricane ties are for the roof. A joist on a wall plate is toe-nailed and held down
-    by the wall above; the band's CS16/LTP4 carry uplift storey to storey."""
+    by the wall above; the band's CS16/LTP4 carry uplift storey to storey — unless its own
+    ``JoistSpec.seat_ties`` asks for one at every wall seat (decision #112)."""
     walls = {w.tag for w in catlin_model_ro.walls}
-    floors = {f.tag for f in catlin_model_ro.floors}
-    on_walls = [c for c in connections if c.assembly_tag in floors and c.support_tag in walls]
-    assert not on_walls
-    assert [c for c in connections if c.assembly_tag in floors], "deck joists on beams stay tied"
+    plan = catlin_model_ro.plan
+    seat_tied = {f.tag for f in catlin_model_ro.floors
+                 if getattr(plan.by_tag(f.tag).joists, "seat_ties", False)}
+    assert seat_tied == {"FS-M-NE"}
+    on_walls = [c for c in connections if c.support_tag in walls
+                and c.assembly_tag in {f.tag for f in catlin_model_ro.floors}]
+    assert {c.assembly_tag for c in on_walls} == seat_tied, "seat_ties=False floors stay untied"
+    # FS-M-NE: 24 trusses, both ends. The x=18' line is framed (plain H2.5A); the east pours
+    # seat the trusses on their PT sill return, so those ties are the treated part.
+    treated = Counter(c.support_treated for c in on_walls)
+    assert treated == {False: 24, True: 24}
+    assert {c.support_tag for c in on_walls if c.support_treated} == {"W-B-E1", "W-B-E2"}
+    assert [c for c in connections if c.assembly_tag in {f.tag for f in catlin_model_ro.floors}
+            and c.support_tag not in walls], "deck joists on beams stay tied"
 
 
 def test_a_hung_end_is_never_also_a_bearing(catlin_model_ro, connections) -> None:

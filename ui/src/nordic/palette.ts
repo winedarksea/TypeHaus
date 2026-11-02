@@ -68,6 +68,8 @@ const FLOOR_RECIPE_SURFACE: Record<string, FloorSurface> = {
   "strip-floor": FLOOR_FINISH_SURFACE.oak,
   "plank-floor": FLOOR_FINISH_SURFACE.oak,
   "lvp-plank": FLOOR_FINISH_SURFACE.lvp,
+  // A limed oak print under a matte wear layer: chalky, near oak-oil dull, no gloss lobe.
+  "lvp-limed-oak": { roughness: 0.7, metalness: 0 },
   "carpet-pile": FLOOR_FINISH_SURFACE.carpet,
   "carpet-refine-structural": FLOOR_FINISH_SURFACE.carpet,
   "porcelain-tile": FLOOR_FINISH_SURFACE.tile,
@@ -78,12 +80,15 @@ const FLOOR_RECIPE_SURFACE: Record<string, FloorSurface> = {
   "tile-onyx-agua-linda-grid": { roughness: 0.16, metalness: 0 },
 };
 
-/** The lighting response for a floor finish (tag, then declared recipe); never undefined. */
+/**
+ * The lighting response for a floor finish; never undefined. The declared recipe wins over
+ * the tag, as it does for the board recipe: it is the material stating its own surface.
+ */
 export function floorSurface(
   finish: string | null | undefined, declared?: string | null,
 ): FloorSurface {
-  return (finish && FLOOR_FINISH_SURFACE[finish])
-    || (declared && FLOOR_RECIPE_SURFACE[declared]) || DEFAULT_FLOOR_SURFACE;
+  return (declared && FLOOR_RECIPE_SURFACE[declared])
+    || (finish && FLOOR_FINISH_SURFACE[finish]) || DEFAULT_FLOOR_SURFACE;
 }
 
 const FALLBACK = "var(--material-fallback)";

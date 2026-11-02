@@ -8,7 +8,7 @@ bars) and the PT-SG-COL cage. Counts are exact; lengths match the note to 0.01".
 worked for a 240" axis and FT-SG-S/W-SG-S are 216" now. The same arithmetic, re-run at 216",
 is inlined in each docstring below; FT-SG-S's mat is worked at its 2026-10-10 300" length the
 same way. PT-SG-COL retired with the court's centre line, so §4 is
-laid on a stand-in built from the note's own inputs.
+laid on a stand-in built from the note's own inputs; SL-M-DECK's §5 likewise (decision #112).
 """
 
 from __future__ import annotations
@@ -141,13 +141,45 @@ def test_pt_sg_col_cage() -> None:
     assert not [b for b in bars if b.role == "dowels"]
 
 
-def test_sl_m_deck_rib_bars_hook_180_inside_each_bearing(catlin_model_ro) -> None:
+def _retired_deck_ribs():
+    """§5's inputs, laid by ``lay_mat`` directly: SL-M-DECK retired 2026-11-01 (#112).
+
+    x 216..426" between its cast-against faces, y 13'..36', top +3/4", 10" form under a
+    4 3/16" cap; ribs x @ 24" from 24", 6" x 7.5"; 2-#5 std180 both ends, #3 stirrups @ 5"
+    within 4', #4 @ 12" each way in the cap; cover 3/4"; 4,000 psi black bar, 40' stock.
+    """
+    from types import SimpleNamespace
+
+    from typehaus.model.rebar import BarSpec, ReinforcementSpec, RibLayout
+    from typehaus.quantities import ft, inch
+    from typehaus.resolve.rebar.mats import lay_mat
+    from typehaus.resolve.rebar.stock import Sink
+
+    spec = ReinforcementSpec(
+        bars=(BarSpec(role="top-x", bar=4, spacing=inch(12)),
+              BarSpec(role="top-y", bar=4, spacing=inch(12)),
+              BarSpec(role="rib", bar=5, count=2, hooks=("start", "end"), hook_kind="std180"),
+              BarSpec(role="stirrups", bar=3, spacing=inch(5), zone=ft(4))),
+        cover=inch(0.75),
+        ribs=RibLayout(direction="x", spacing=inch(24), width=inch(6), depth=inch(7.5),
+                       offset=inch(24)))
+    top = 0.75 * _IN
+    solid = SimpleNamespace(
+        outline=[(216 * _IN, 156 * _IN), (426 * _IN, 156 * _IN), (426 * _IN, 432 * _IN),
+                 (216 * _IN, 432 * _IN)],
+        voids=[], z0_m=top - 14.1875 * _IN, z1_m=top)
+    sink = Sink("SL-M-DECK", "black", 4000.0, None, 480.0 * _IN)
+    lay_mat(sink, spec, solid, 0.75 * _IN, cap_thickness=4.1875 * _IN)
+    return solid, sink.bars
+
+
+def test_sl_m_deck_rib_bars_hook_180_inside_each_bearing() -> None:
     """§5: 22 #5 rib bars, 208.5" placed, a 6.872" 180° hook each end turned up; each hook's
     return stays over its 6" bearing (x 216.75-221.75", 420.25-425.25") and under the cap."""
-    m = catlin_model_ro
-    bars = _role(m, "SL-M-DECK", "rib")
+    solid, laid = _retired_deck_ribs()
+    bars = [b for b in laid if b.role == "rib"]
     assert len(bars) == 22
-    cap_bottom = next(s for s in m.solids if s.tag == "SL-M-DECK").z1_m - 4.375 * _IN
+    cap_bottom = solid.z1_m - 4.1875 * _IN
     for b in bars:
         assert b.hook_kinds == ("std180", "std180")
         assert b.placed_length_m / _IN == pytest.approx(208.5, abs=0.01)
@@ -157,3 +189,4 @@ def test_sl_m_deck_rib_bars_hook_180_inside_each_bearing(catlin_model_ro) -> Non
         assert {round(x, 2) for x in xs} == {216.75, 221.75, 420.25, 425.25}
         assert max(p[2] for p in b.path) + b.diameter_m / 2 < cap_bottom
     assert _lb(bars) == pytest.approx(424.97, abs=0.01)
+

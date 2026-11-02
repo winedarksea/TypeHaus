@@ -17,6 +17,8 @@
 //     flush), every board its own wood.
 //   • `lvp-plank` — 7"×48" click-lock, micro-bevelled on all four edges, and a print that
 //     repeats every six boards: format, bevel and repeat are how LVP reads as LVP.
+//   • `lvp-limed-oak` — the same plank in a limed (chalky whitewashed) oak print: low tone
+//     spread, faint grain, hand-scraped cross-grain ripple and a matte wear layer.
 //   • `oak-board` — solid oak millwork: one jointless board per piece, no seams.
 //
 // Board format is independent of species and surface treatment.
@@ -81,6 +83,14 @@ const LVP_PLANK_STYLE: PlankStyle = {
   printRepeat: 6, reliefScale: 0.45,
 };
 
+// Limed oak print on the same plank. Liming evens the board-to-board tone (the swatch's
+// per-plank mean spreads ~3%) and its bevel dips only ~7% below the face: less jitter,
+// a lighter joint, a straighter figure and a shallower emboss.
+const LVP_LIMED_OAK_STYLE: PlankStyle = {
+  ...LVP_PLANK_STYLE, key: "lvp-limed-oak", jitter: 0.03, grain: 0.6, figure: "limed",
+  jointTone: 0.8, reliefScale: 0.35,
+};
+
 // Solid white-oak millwork (stools, treads, shelves): no joints at all, four 16" boards of
 // distinct tone across the tile so each piece can take its own (→ woodPiece.ts).
 const OAK_BOARD_STYLE: PlankStyle = {
@@ -116,6 +126,7 @@ export const WOOD_PLANK_STYLES: Readonly<Record<string, PlankStyle>> = {
   "strip-floor": STRIP_FLOOR_STYLE,
   "plank-floor": PLANK_FLOOR_STYLE,
   "lvp-plank": LVP_PLANK_STYLE,
+  "lvp-limed-oak": LVP_LIMED_OAK_STYLE,
   "oak-board": { ...SOLID_BOARD_STYLE, key: "oak-board" },
   "solid-board": SOLID_BOARD_STYLE,
 };
@@ -233,7 +244,8 @@ function buildPlankMaps(
 
   // The joint is the board in shadow, not a separate material: a groove, a bevel and a butt
   // seam are all a shadow line in the same wood, unlike a mortar joint.
-  cctx.fillStyle = lumFill(bevel ? 0.5 : 0.62);
+  const jointTone = style.jointTone ?? (bevel ? 0.5 : 0.62);
+  cctx.fillStyle = lumFill(jointTone);
   cctx.fillRect(0, 0, width, height);
   nctx.fillStyle = "rgb(128,128,255)";
   nctx.fillRect(0, 0, width, height);
@@ -256,7 +268,7 @@ function buildPlankMaps(
         // Normal map: each edge slopes down into its joint. A bevel also darkens its band.
         const band = bevel ? jointPx * 1.5 : jointPx;
         if (bevel) {
-          cctx.fillStyle = "rgba(0,0,0,0.18)";
+          cctx.fillStyle = `rgba(0,0,0,${(0.36 * (1 - jointTone)).toFixed(3)})`;
           cctx.fillRect(face.x, face.y, band, face.h);
           cctx.fillRect(face.x + face.w - band, face.y, band, face.h);
           if (ends) {
@@ -300,7 +312,8 @@ export function createPlankMaterial(
       color, roughness: 1, metalness: 0, flatShading: true,
     });
   }
-  const species = style.key === "lvp-plank" ? null : woodSpeciesProfile(appearance?.species);
+  // A printed plank (any `printRepeat`) is not wood: species maps never apply to it.
+  const species = style.printRepeat > 0 ? null : woodSpeciesProfile(appearance?.species);
   if (species) {
     const surface = appearance?.wood_surface ?? "natural-clear";
     const sheen = woodSurfaceRoughness(surface);

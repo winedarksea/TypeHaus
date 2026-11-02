@@ -5,6 +5,12 @@ Derived by `resolve/stairs/skirt.py`; landing base by `resolve/interior_trim_lan
 Billed by the LF in `interior_trim` (`stair skirt`). `tests/test_stair_skirts.py` reproduces
 §3–§5; `tests/test_stair_framing.py` reproduces §6.
 
+**2026-11-01 amendment (decision #112, 7 mm Cotton Oak).** R is now 7.52965" (was 7.53457),
+the landing base z = 1.0255906 + 8R = 61.2628" (was 61.2234), and the §3-§4 formula gives the
+skirt top over the floor at the first riser 13.5825", toe 13.3904", blanks 95.795 / 98.631 /
+92.115 / 103.450" (lower-left was 95.821) and the STRW landing piece 28.266". The worked
+numbers below are the 2026-10-30 basis; the tests pin the new values.
+
 ## 1. Decisions (owner)
 
 - ST-M2S only: the oak U-stair with a level landing. ST-S2A's winders are out of scope.

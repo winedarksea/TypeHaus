@@ -526,8 +526,9 @@ REGISTERS_MAIN = [
                  normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
-# Basement terminals hang from the SL-M-DECK underside off the CHASE trunks — except the
-# sauna's stale pickup, which is the one wall-mounted terminal in the house (see below).
+# Basement terminals are ceiling valves under the FS-M-* floors, fed from the CHASE trunks in
+# the joist/truss cavity above — except the sauna's stale pickup, which is the one
+# wall-mounted terminal in the house (see below).
 REGISTERS_BASEMENT = [
     Register(uid="CBRV01AAAA", tag="REG-B-SUP1", kind=DuctSystem.SUPPLY, room="RM-B-GYM",
             # Dragged north-east on 2026-09-05 and kept, rounded onto (19'-0", 13'-0") —
@@ -544,14 +545,17 @@ REGISTERS_BASEMENT = [
     # adjacent room's grille doesn't satisfy it. **Deleting this terminal is a hard
     # code.R303_1_light_and_ventilation FAIL.**
     #
-    # (19', 20'): the entire play-room ceiling is SL-M-DECK's 14 3/8" solid concrete with NO
-    # cavity at all, so every foot of that run is surface-mounted; entering at the room's
-    # west edge and stopping just inside cuts about eight feet of exposed duct. It still
-    # throws away from FURN-B-PLAY-TV on the east wall. Moved 5'-0" south on 2026-09-23 (was
-    # y=25'), where the duct arrives from the south up the hall: over the walk between the
-    # south bookcases (fronts y=19'-3 3/8", tops 7'-6") and the sectional, not over either.
+    # (19', 20'-6"): entering at the room's west edge and stopping just inside cuts about eight
+    # feet of duct off the old (27', 27') position; it still throws away from FURN-B-PLAY-TV on
+    # the east wall. Moved 5'-0" south on 2026-09-23 (was y=25'), where the duct arrives from
+    # the south up the hall: over the walk between the south bookcases (fronts y=19'-3 3/8",
+    # tops 7'-6") and the sectional, not over either.
+    # ** 20'-6" SINCE 2026-11-01 (decision #112). ** The ceiling is FS-M-NE's trusses over a
+    # resilient channel, so the valve's 125 mm collar and increaser (2.94" tall) stand in the
+    # cavity: at y=20'-0" they stood on truss joist-0-007 (`mep.terminal_neck_fit`, 3.50"),
+    # at 20'-6" they are mid-bay (241 3/4".. 250 1/4"), fed by the cavity duct.
     Register(uid="CBRV02AAAA", tag="REG-B-SUP2", kind=DuctSystem.SUPPLY, room="RM-B-PLAY-N",
-            position=pt(ft(19), ft(20)), duct_ref="DU-B-ERV-R-PLAY",
+            position=pt(ft(19), ft(20, 6)), duct_ref="DU-B-ERV-R-PLAY",
             type_ref="REG-T-ERV-VALVE-SUP-125", design_cfm=30,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # THE WORKSHOP TERMINAL IS A BENCH HOOD, NOT A CEILING DIFFUSER: a diffuser eight feet

@@ -1,3 +1,11 @@
+> **Main deck is wood, 2026-11-01 (decision #112):** `SL-M-DECK` is `FS-M-NE`, 11 7/8" open-web
+> trusses at 12" o.c. (60 psf, L/480, fabricator-sealed design pending), and `W-B-CS2`/`-CN2`/`-CN`
+> are framed 2x6 bearing walls; one flat basement ceiling, no movement joint, no cast sleeves.
+> Truss seats are tied (`JoistSpec.seat_ties`). Open: the Minn. R. 1309.0404 lateral reaction and
+> the x=18' plate bearing (`notes/main_floor_truss_basis.md` §4-§5). The main floor is Cotton Oak
+> LVP (7 mm, floating) on the subfloor throughout, cabinets on the subfloor; the theater ceiling
+> is on resilient channel. No tile medallions (review in `plans/TODO.md`).
+
 > **Fit and product-data pass, 2026-11-01 (REPORT items 14-24):**
 > - **Band girt is DERIVED from the BBD75 joint** (226-229.5": joint - 1" slot - 1" backing);
 >   lap graded 1.59" vs 1.50"; `cladding_trim_fit` requires a girt behind every metal panel top.
@@ -383,7 +391,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   canopy's `edge_overhangs` are 1 3/8" south and 6 1/8" north. The rake did not move. (→ DESIGN-LOG.md, "Site and the four structures")
 - **Every wood-on-concrete beam seat is a drained STANDOFF, never a sill gasket** (owner, 2026-09-12) — ten of them, six at the north entry (`CN-BW-STDF-*`) and four in the garden (`CN-SG-STDF-*`, the balcony corners), all `SS316-SHIM-35` packs holding a 1/2"-1" gap — **cast 3/4" low since 2026-10-31, so the pack is a modelled solid** (`params/column_heads.STANDOFF_PACK_IN`; its HETA20Z straps are field-trimmed at the beam top, `AN-BW-HETA-TRIM`/`AN-SG-HETA-TRIM`) — and **not one grout island** (`PIER_CONCRETE_12` carried one until 2026-09-12; retyping `PT-SG-COL` on 2026-09-10 rode it over to `PT-BW-RE`/`-RNE` rather than closing it). The cast-in `HETA20Z` pair beside the pack is the **TIE**, never the bearing — two parts, two jobs. **Every column-head tie is a cast-in `HETA20Z` pair since 2026-09-21, never an `HGAM10`**: Simpson requires the HGAM's Titen Turbo screws kept out of the exterior environment, and all eight joints are exterior. Backups, ranked, with the open pour-day items: `notes/column_head_connector_options.md`. `BM-BW-RW` never touches concrete at all: 6x6 KDAT posts through `ACE6Z` caps on cast-in `CBSQ66-SDS2` bases. **No IRC provision requires a barrier or a standoff at this joint** — R317.1 item (2) needs a foundation wall AND under 8" to grade, R317.1.2 is embedment, and R317.1.4 governs wood COLUMNS with 1"/6"/8" projections that *relieve* the treatment requirement rather than impose a clearance; a treated beam on a concrete column top satisfies R317 with nothing added. A closed-cell gasket would be the wrong part: it is a capillary break for a plate bolted tight to a slab, and at an exposed joint it becomes the water-holding layer. Wicking is not the mechanism that governs either — capillary rise is bounded by evaporation at 100-480 mm, and nothing here is within reach of it: the north entry's pier tops stand 18 1/2" above grade, its canopy columns 9'-2 3/4", and the garden's four corner columns stand on the court walls' tops, a storey above the court floor. What wets a seat is rain standing on the pour and end-grain uptake where a beam END lands there, which is `BM-BW-RE`'s south end; the wash, the drip lip and the gap are aimed at that. (→ DESIGN-LOG.md, "Site and the four structures")
 - **Grade is 2'-10" below the main floor.** **Datum is the TOP OF JOISTS, not the finished floor** — main-floor FFE is +3/4", so a slab landing there needs an explicit `top_elevation` (`params/main_deck.py`).
-- Basement storey is at -9'-1 7/16", independent of grade. Pour is exactly 8'-0"; clear height 8'-0 15/16" under joists / 7'-10 7/8" under the EPS band. `code.R305_ceiling_height` DERIVES this, not `Storey.default_ceiling_height` (still a fictional 9'-0") (→ DESIGN-LOG.md, "Site and the four structures").
+- Basement storey is at -9'-1 7/16", independent of grade. Pour is exactly 8'-0"; clear height 8'-0 15/16" under the joists and trusses, one plane (decision #112). `code.R305_ceiling_height` DERIVES this, not `Storey.default_ceiling_height` (still a fictional 9'-0") (→ DESIGN-LOG.md, "Site and the four structures").
 - Grade-dependent: garage + foundation, bridge's frost pads/piers, hydrant bury, sunken garden floor, nine perimeter spot elevations, both impervious surfaces. `SITE_GRADE` lives in `params/foundations.py`, repeated as a literal in `plan/site.py`; `plan/manifest.py` asserts the two agree.
 - **Garage storey datum is not the garage floor.** Walls bear on the ICF stem at `GARAGE_STEM_REVEAL` (1'-10") above grade → `garage` storey at -1'-0"; the slab pours at grade (1'-10" lower), absolute `Slab.top_elevation`.
 - Sitting on the garage floor must be explicit: `D-G-OVERHEAD` carries the plan's only negative `sill_height`; the ICF stem gaps there (open-ended `N-GF-N-DRE`/`-DRW`) and `SL-G-FLOOR` runs out to the door line. **No grade beam since 2026-09-23** — nothing bears on the opening, the header carries the roof to the piers. The open U is why every `W-GF-*` names `interior_room="RM-GARAGE"`: without a closed loop the winding falls to +1 and the stem builds inside out.
@@ -746,30 +754,38 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `D-S-BATH1`); `BM-S-BATH-E` spans it, `3-1.75x11.875 LVL` flush (`top_elevation=ft(20)`).
     Ply count (3, matching `BM-S-HALL`) is set by bearing WIDTH so the 4.77" attic partition
     doesn't overhang, not by bending demand (→ DESIGN-LOG.md, "Bearing lines and floor decks").
-- **Basement ceiling: ONE FLAT BEARING SEAT at -13 7/16", not one depth.** `FS-M-WEST`,
-  `FS-M-MECH`, `FS-M-STAIR` (x 0'-18') and `FS-M-EAST` (x 18'-36', y 0'-13') are 11 7/8"
-  TJI 230 at 16" o.c. (graded on TJ-4000 p.7 through `FloorSystem.published_span`, IUS2.37/11.88 hangers, 2026-11-01); `SL-M-DECK` (414 SF) is a 10" **BuildDeck** EPS SIP beam (8" base + 2"
-  top hat) under 4 3/16" cast cover, topping at the plywood's +3/4" so every main-floor wall
-  plate stands at one height (decision #111) — BuildDeck is the basis of design since 2026-09-12
-  (LiteDeck/Insul-Deck are named alternates), and its published 10"/4"/2-#5 row (20'-0" at
-  62 psf) is quoted onto `SL-M-DECK.published_span`, where
-  `structural.slab_published_span` grades the 18'-0" span as a PRESCRIPTIVE read. One plate serves studs and joists, no step in the forms.
-  Seat/depth constants live in `params/main_deck.py` — moving the boundary is a one-line
-  edit there. `structural.mixed_deck_bearing_seat` (FAIL) and `integrity.floor_bearing_grid`
-  hold this.
-  - Ceiling is 5/8" gypsum end to end (IRC R316.4, `ceiling_below` on the joist fields), but
-    the two faces step 2 1/16" at the boundary. `RM-B-GYM` (only room crossing it) resolves
-    TWO ceilings — 234 SF at -11 7/8", 90 SF at -13 7/16" — since ceilings derive per *deck
-    region* (`resolve/ceilings.py`, `ceiling_over.ceiling_regions`), not per room. A seam
-    alone isn't a step: `RM-M-LIVING` (2nd-floor truss/I-joist split, same depth) is ONE.
-  - Floor finish follows the deck via `_BAND_Y`: `SL-M-DECK.floor_finish=coated-concrete`
-    (`polished-concrete` until 2026-09-12),
-    `RM-M-LIVING.floor_finish=lvp` over the wood bays; this band is the room's only zone,
-    and nothing is currently authored on it. Prefer a derived zone over authoring one here —
-    an authored zone's drawn ring must be clipped to the room, same as its area (fixed
-    2026-09-05).
+- **Basement ceiling: ONE FLAT BEARING SEAT at -13 7/16", ONE DEPTH, ALL WOOD (decision #112,
+  2026-11-01).** `FS-M-WEST`, `FS-M-MECH`, `FS-M-STAIR` (x 0'-18') and `FS-M-EAST` (x 18'-36',
+  y 0'-12'-9") are 11 7/8" TJI 230 at 16" o.c. (TJ-4000 p.7 via `FloorSystem.published_span`,
+  IUS2.37/11.88 hangers). `FS-M-NE` (x 18'-36', y 13'-36', where `SL-M-DECK` was) is 11 7/8"
+  open-web floor trusses at **12" o.c., ordered for 60 psf live at L/480**, on `FS-S-WEST`'s web
+  drawing (24"/13"/12"). No maker publishes that row, so `structural.ijoist_span` is UNKNOWN on it
+  until the fabricator's sealed design (`notes/main_floor_truss_basis.md` §3). Constants live in
+  `params/main_deck.py`; `integrity.floor_bearing_grid` and `floor_end_bearing` hold the grid.
+  - **The x=18' line is framed end to end.** `W-B-CS2`/`-CN2`/`-CN` are 2x6 bearing walls on their
+    old strip footings (`params/foundations._FRAMED_WALLS`); the plate splits 3 1/2" truss / 2" TJI
+    (`end_bearing`), as on the second floor. `W-B-CN`'s stair face is furred 3 1/4" back to the
+    pour's old x=17'-6" (`STAIRWELL_INT_2X6_BRG_FURRED`): `FO-M-STAIR`'s east edge, `ST-B2M`'s east
+    lane and `RL-M-HANDRAIL-E` are struck off it, and `P-M-STRLAND-SE` lands on a doubled furring
+    stud. **Plate bearing on this line reads d/c ~1.03 at 16" o.c. (SPF Fc⊥) by hand**, as it
+    already did on `W-B-CS`/`-CS3` — open item, cure is 12" studs or DF-L plates (basis note §5).
+  - **Anchorage (Minn. R. 1309.0404).** `JoistSpec.seat_ties` ties every `FS-M-NE` truss end: 24
+    H2.5A on the x=18' plates, 24 H2.5AZ on the PT sill (a tie on a concrete wall's seat is ZMAX).
+    `W-B-N1`, the one wall it runs parallel to, takes blocking in four bays at 72". Table
+    R404.1(1)'s **400 plf lateral reaction is NOT met by an H2.5A** (110 lbf lateral) and the
+    house's TJI fields are only toe-nailed: open, house-wide (basis note §4).
+  - Ceiling is 5/8" gypsum end to end, ONE plane: the TJI/truss seam at y=13' is a doubled member,
+    not a step, and `RM-B-GYM` resolves one ceiling. `RM-B-PLAY-N` (the theater) hangs its board on
+    resilient channel at 24" o.c. (`CR-PLAY-CEIL-RC`, `notes/theater_ceiling_acoustics.md`): 1"
+    Type S into the channel only, 1/4" caulked perimeter, no ceiling boxes.
+  - BuildDeck is a named revert: `DECK_EPS_INT`, `eps-deck-form`, `DECK_CAP_MIX` and their price
+    rows at 0 (`DESIGN-LOG.md`, "Main deck goes wood").
+  - Floor finish: the whole main floor is Karndean Cotton Oak AKP-RL38 LVP (7.0 mm, floating)
+    on the 3/4" subfloor, no zones (decision #112; the coated cap and `SL-M-DECK` are gone, and
+    `coated-concrete`/`polished-concrete` stay as named reverts). `Material.floating` cuts fixed
+    base cabinets' boxes (less the 3" kick) out of the plank.
   - `RM-M-MUDROOM` + its closets (`RM-M-MECH`, `RM-M-MUD-CLOSET`) share the hall LVP
-    plane at +0.94685". Their doors open into the mudroom, and the bypass guide at
+    plane at +1.02559". Their doors open into the mudroom, and the bypass guide at
     `D-M-MUDC` needs one level field. The exterior `D-M-ENTRY` has a separate flashed
     weather sill; see `notes/floor_heights.md`.
   - **`W-M-STRW`'s mudroom face is open bays to 7'-0"** (2026-10-14): three flat
@@ -787,15 +803,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     is x=10'-3 1/8", and `FO-S-STAIR`'s west edge and `ST-M2S.start` are struck off it**:
     change the leaf thickness and move both, or the opening edge reads as unsupported
     (`notes/stair_wall_finish.md`).
-  - LVP +0.94685" and the coated cap +15/16" meet flush on both legs of the living-room
-    L. The main bedroom entry and second-storey plant room retain reducers. Oak +1 1/2"
+  - LVP tops at +1.02559" (3/4" + 7 mm) across the main floor; no cap edge remains. The main
+    bedroom entry and second-storey plant room retain reducers. Oak +1 1/2"
     now runs through the second hall and linen closet as well as the suite and studies;
-    never extend it to a cap edge. Junction detail is in
-    `notes/mixed_deck_movement_joint.md`; mix is `DECK_CAP_MIX` (micro-monofilament PP, no
-    macro fibre or steel — macro would be re-exposed by the coating's CSP 2-3 grind).
-    The finish is a **coating**, not a cream polish, since 2026-09-12: light steel trowel,
-    grind to ICRI CSP 2-3, ASTM F2170 RH gate, moisture-mitigating primer, matte 2K PU.
-    The polish stays as a costed fallback in `prices.toml`.
+    never extend it to a cap edge. Plank notes: `notes/lvp_flooring.md`
+    (`notes/mixed_deck_movement_joint.md` is retired).
 - **Second floor's deck is mixed for services, not material.** `FS-S-WEST` (x 0'-18') is
   11 7/8" open-web trimmable floor trusses at 16" o.c.; `FS-S-EAST` (x 18'-36') is 11 7/8"
   TJI 230. West carries nearly every 2nd-floor service crossing (both drain stacks, 4
@@ -1512,7 +1524,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     keep — no real duct system lands under 0.2" w.g. The number that governs is MN 1322
     R403.5's **203.0** (4,900 sf CFA).
   - **Three new checks.** `mep.erv_static_budget` (ADVISORY) computes Darcy-Weisbach/Colebrook
-    over the whole system and reads the curve at it: **0.441" w.g. worst path, 203.9 cfm
+    over the whole system and reads the curve at it: **0.441" w.g. worst path, 203.95 cfm
     delivered** (2026-10-31, §10.6), on the EXTRACT side via the sauna radial; supply 0.436 (§10.7). It
     counts the two 8" hoods now (RenewAire FA8, 23.3 / 22.7 Pa), which it never did, and the
     valves' published curves; the risers carry their real flows (164/150 cfm) and the basement
@@ -1568,14 +1580,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       then x=17'-0") was continuous only by passing over the flight, 1"-17" into R311.7.2's
       6'-8". `code.R311_7_2_stair_headroom` counts runs now and the router refuses the
       flight (`resolve/stair_headroom.py`). GYM goes through the workshop (W-B-CW3, y=17'-4
-      3/4", W-B-HALL-W) to the hall's x=17'-0" lane; PLAY, `CD-B-KITCHEN` and
-      `CD-B-DATA-MEDIA` go through `SF-B-BATH`, out of `W-B-BA-E` south of the bath's three
-      risers, and through `W-B-CN` at y 25'-0"..25'-10 1/2"; BATH ends at a sidewall grille
-      in `W-B-STR3B`. Every framed-wall crossing is in a clear stud bay under the -15 5/8"
-      top plate: nothing is bored or headed.
-    - **x=17'-0" and NOT 17'-9":** W-B-CN/-CN2/W-B-CS2 are one 12" pour on the x=18'-0" axis
-      and RM-B-STAIR's ceiling polygon reaches over its west half. A lane in that strip is
-      inside the concrete and `mep.run_in_slab` says so.
+      3/4", W-B-HALL-W) to the hall's x=17'-0" lane; PLAY goes through `SF-B-BATH`, out of
+      `W-B-BA-E` south of the bath's three risers, north up the hall at x=16'-9" to y=20'-6",
+      then rises over `W-B-CN2`'s plate into `FS-M-NE`'s truss bay to `REG-B-SUP2` (19', 20'-6",
+      in the 20'-21' bay since 2026-11-01); BATH ends at a sidewall grille in `W-B-STR3B`.
+      Framed-wall crossings are clear stud bays or over a plate: nothing is bored or headed.
+    - **East of x=18' everything rides `FS-M-NE`'s webs** (decision #112, no cast sleeves). The
+      `W-B-N1` restraint blocking closes the four north bays (y 32'-36') at x=21'/27'/33', so
+      `PR-B-KITCH-DRAIN` crosses south at x=355" into the 31'-32' bay, runs west, and crosses back
+      north at x=240" to cross the plate in the 35'-36' bay; `CO-B-KITCH-FIELD` is an access
+      panel in the theater ceiling (owner call open). The kitchen supply risers stand in the
+      35'-36' bay and jog back to the old stops.
     - **PR-B-SAUNA-VENT shapes all of it.** It runs x=9'-0" from y=10'-6" to 34'-6", rising
       -20" to -15 1/2", so every east-west lane in the west half crosses it and the crossing
       elevation depends on where. That is why both sauna radials come east along y=1'-8 1/2"
@@ -1955,9 +1970,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - Pour thickness: only `W-B-E1`/`E2` are `BASEMENT_12`. **`W-B-E1` cannot thin**: the
     fireplace brick bears on its pour's inside face (`notes/east_breast_bearing.md`); E2
     matches it. 10" was weighed and declined 2026-10-11. The other nine segments are 8" with `#5 @ 41" o.c.` vertical steel
-    per IRC Table R404.1.2(8). `W-B-STR`/`W-B-STR3` and `W-B-CS` are 2x6 bearing **stud**
-    walls, not concrete — `unbalanced_fill` is `ft(0)` on all of them; `W-B-CS2`/`W-B-CN`/
-    `W-B-CN2` are the only interior pours left. Do not retype any of the nine to 12" without
+    per IRC Table R404.1.2(8). `W-B-STR`/`W-B-STR3` and the whole x=18' line (`W-B-CS`/`-CS3`/
+    `-CS2`/`-CN2`/`-CN`, decision #112) are 2x6 bearing **stud** walls: no interior pour is
+    left. Do not retype any of the nine to 12" without
     cause — `structural.foundation_unbalanced_fill` FAILs correctly otherwise.
   - Cladding: `N-B-BRICK-W`/`-E` stand off `inch(-4.05)` on bare XPS; veneer clear cavity is
     **4"** behind the backup's 2" EPS (IRC R703.8.4 min 1"; `basement_to_framed_wall_detail.md`). Never re-strike this node off a parge finish face — it
@@ -3054,13 +3069,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   no extra STC credit. Existing base builds out over the MDF; no separate bottom rail.
   Purchased stock stays out of the owner mill order. See `notes/suite_headboard.md`.
 - **Elm slat partition (2026-10-20):** `FURN-M-LIV-SLAT-FULL` is one floor-to-ceiling
-  piece, 60 1/2" west from the gwb, centred y=12'-11 1/2" over the LVP/coated-concrete
-  joint. 22 American elm slats finish 1 x 2 1/2" from **5/4 rough**, on a 2 3/4" pitch
+  piece, 60 1/2" west from the gwb, centred y=12'-11 1/2" over the old
+  deck line (now one LVP field). 22 American elm slats finish 1 x 2 1/2" from **5/4 rough**, on a 2 3/4" pitch
   (1 3/4" clear gaps); top and bottom plates also finish 1 x 2 1/2". Slats are 104 5/16"
   long within the 106 5/16" overall height. Kiln-dried, rift sticks off the board edges,
   rip-rest-dress, ~25% overage to reject movers (`elm-slat-5q`). Ceiling plate needs
-  blocking between FS-S-EAST joists 144/160; floor plate fixes south of the movement
-  joint only. The LVP remains floating with its expansion gap around the plate.
+  blocking between FS-S-EAST joists 144/160; floor plate fixes to the subfloor (the old
+  movement joint is retired, #112). The LVP remains floating with its expansion gap around the plate.
 - **Bar and projecting back panel:**73 1/2 long, end x=376 3/8, leaving25 to the
   pantry nominal front. The remaining25 of cabinet backs are painted and edge-banded.
   Stools x=315 1/8,339 5/8,364 1/8 at their previous y. Preserve Rev-A-Shelf5374-24FL.

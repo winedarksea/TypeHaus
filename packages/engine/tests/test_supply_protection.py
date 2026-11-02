@@ -299,51 +299,48 @@ def _copper_prefs(base):
             visible_basement_finish="lacquered"))
 
 
-def test_a_restated_copper_rule_grades_the_trunks_under_concrete(
-        catlin_plan, catlin_model, catlin_prefs):
-    """catlin's supply went PEX on 2026-09-26, so restating the retired rule now flags the
-    trunks under the concrete band — which is the rule doing its job."""
-    findings = pipe_material_preference(
-        _context(catlin_plan, catlin_model, _copper_prefs(catlin_prefs)))
-    assert findings, "the rule is stated; the check must grade something"
-    assert {"PR-B-CW-TRUNK", "PR-B-HW-KITCH"} <= {f.element_tags[0]
-                                                 for f in _fails(findings)}
-    graded = {f.element_tags[0] for f in findings}
-    # The trunks hung under the surviving concrete band are what the rule is about. The
-    # band is x 18'-36', y 13'-36', so the trunks that still qualify are the ones whose
-    # east ends reach it.
-    assert {"PR-B-CW-TRUNK", "PR-B-HW-KITCH"} <= graded
-    # A run that never leaves a wall or a joist bay is not visible pipe and is not asked.
-    assert "PR-M-CW-HYD-DIST" not in graded
-    assert "PR-B-CW-HYD-RISER" not in graded
+def _deck_runs(*runs):
+    """``_mixed_deck_plan`` (wood bay y 0..12', cast deck y 12'..30') with ``runs`` hung in
+    its basement room. Catlin has no cast deck over its basement since decision #112."""
+    from _mixed_deck_plan import mixed_deck_plan
+
+    plan = mixed_deck_plan()
+    return plan.with_elements("basement", (*plan.storey_elements("basement"), *runs))
 
 
-def test_the_rule_re_derives_from_what_is_overhead_not_from_a_tag_list(
-        catlin_plan, catlin_model, catlin_prefs):
-    """The claim preferences.toml made: swap the cast deck for wood joists and the rule
-    stops applying by itself. Both halves are proved here — a new PEX trunk under the
-    concrete band inherits the rule with nothing authored to say so, and the identical
-    trunk under FS-M-WEST's joists is never asked."""
+def _trunk(uid, tag, y_ft, **update):
     from typehaus.model.enums import PipeSystem
     from typehaus.model.mep import PipeRun
     from typehaus.quantities import ft, inch, pt
 
-    prefs = _copper_prefs(catlin_prefs)
-    # (12', 6') is under FS-M-EAST/FS-M-WEST joists; (24', 24') is under the concrete band.
-    under_joists = PipeRun(
-        uid="TSTPM00001", tag="PR-B-CW-NEW", system=PipeSystem.WATER_COLD,
-        path=(pt(ft(12), ft(6)), pt(ft(16), ft(6))), diameter=inch(0.75),
-        # 7'-6" over the basement slab, i.e. -1'-7 7/16" project: clear under the -13 7/16"
-        # bearing seat — a trunk inside the pour is not a trunk hung under it.
-        elevations=(ft(7, 6), ft(7, 6)), material="pex")
-    under_concrete = PipeRun(
-        uid="TSTPM00002", tag="PR-B-CW-NEW2", system=PipeSystem.WATER_COLD,
-        path=(pt(ft(22), ft(24)), pt(ft(30), ft(24))), diameter=inch(0.75),
-        elevations=(ft(7, 6), ft(7, 6)), material="pex")
-    plan = catlin_plan.with_elements(
-        "basement", (*catlin_plan.storey_elements("basement"),
-                     under_joists, under_concrete))
-    findings = pipe_material_preference(_context(plan, _resolved(plan), prefs))
+    # 7'-6" over the basement slab: clear under the -13 7/16" bearing seat.
+    return PipeRun(uid=uid, tag=tag, system=PipeSystem.WATER_COLD,
+                   path=(pt(ft(4), ft(y_ft)), pt(ft(14), ft(y_ft))), diameter=inch(0.75),
+                   elevations=(ft(7, 6), ft(7, 6)), material="pex").model_copy(update=update)
+
+
+def test_a_restated_copper_rule_grades_the_trunks_under_concrete(catlin_prefs):
+    """A PEX trunk hung under a cast deck breaks the restated rule; lacquered copper keeps
+    it. Catlin's supply is PEX and its deck is wood, so the rule needs this witness."""
+    plan = _deck_runs(_trunk("TSTPM00001", "PR-B-CW-PEX", 20),
+                      _trunk("TSTPM00002", "PR-B-CW-CU", 24, material="copper",
+                             finish="lacquered"))
+    findings = pipe_material_preference(
+        _context(plan, _resolved(plan), _copper_prefs(catlin_prefs)))
+    assert findings, "the rule is stated; the check must grade something"
+    assert {f.element_tags[0] for f in _fails(findings)} == {"PR-B-CW-PEX"}
+    assert {f.element_tags[0] for f in findings} == {"PR-B-CW-PEX", "PR-B-CW-CU"}
+
+
+def test_the_rule_re_derives_from_what_is_overhead_not_from_a_tag_list(catlin_prefs):
+    """The claim preferences.toml made: swap the cast deck for wood joists and the rule
+    stops applying by itself. Both halves are proved here — a new PEX trunk under the
+    concrete band inherits the rule with nothing authored to say so, and the identical
+    trunk under the joisted bay is never asked."""
+    plan = _deck_runs(_trunk("TSTPM00001", "PR-B-CW-NEW", 6),
+                      _trunk("TSTPM00002", "PR-B-CW-NEW2", 24))
+    findings = pipe_material_preference(
+        _context(plan, _resolved(plan), _copper_prefs(catlin_prefs)))
     assert "PR-B-CW-NEW2" in [f.element_tags[0] for f in _fails(findings)]
     assert "PR-B-CW-NEW" not in {f.element_tags[0] for f in findings}
 

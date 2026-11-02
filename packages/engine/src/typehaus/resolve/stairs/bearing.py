@@ -242,7 +242,8 @@ def _spacer_carriage(stair: Stair, host, member: FramedMember,
 
 def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
                          members: tuple[FramedMember, ...], subfloor: float,
-                         skirts: dict[str, float] | None = None
+                         skirts: dict[str, float] | None = None,
+                         post_floor: float | None = None,
                          ) -> tuple[FramedMember, ...]:
     """Give the flight a resolvable load path against the walls it runs beside.
 
@@ -367,12 +368,14 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
                 if key in supported_corners:
                     continue
                 posts[key] = max(posts.get(key, z_top), z_top)
+    # A post stands on the structural sheet, never on a floating finish laid round it.
+    base = subfloor if post_floor is None else min(post_floor, subfloor)
     orient = (1.0, 0.0) if stair.run_direction == "x" else (0.0, 1.0)
     for index, (key, z_top) in enumerate(sorted(posts.items())):
         if z_top <= subfloor + 1e-9:
             continue
         out.append(FramedMember(stair.uid, f"landing-post-{index:03d}", "landing_framing",
                                 "4x4",
-                                key, key, subfloor, z_top, z_top - subfloor,
+                                key, key, base, z_top, z_top - base,
                                 orient=orient))
     return tuple(out)

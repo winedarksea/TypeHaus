@@ -552,12 +552,15 @@ def test_catlin_stair_handrail_rakes_along_the_flight(catlin_model) -> None:
         return solid.z1_m if "BRACKET" in solid.tag else (solid.z0_m + solid.z1_m) / 2.0
 
     rail_h = 36 * 0.0254
-    # ST-M2S lower flight: first tread top one riser above the main floor, landing at the
-    # far end — the rail rides the walking line, not the authored base_elevation. Both
-    # numbers carry the main floor's 15/16" build-up (3/4" subfloor + plank): the flight
-    # springs from the SURFACE underfoot, not from the storey datum at the joist tops.
-    assert rail_z(supports[0]) == pytest.approx(0.1905 + 0.0251 + rail_h, abs=2e-2)
-    assert rail_z(supports[-1]) == pytest.approx(1.524 + 0.0251 + rail_h, abs=2e-2)
+    # ST-M2S lower flight (notes/stair_riser_basis.md): the flight springs from the main
+    # floor's 1.0255906" plank top, not the storey datum, at 7.5296" risers and 10" goings.
+    # The rail rides 36" over the nosing line; its bottom return sits on the first riser line,
+    # one 1" nosing up the rake from the first nosing; the top one is over the landing,
+    # eight risers up.
+    floor, riser = 1.0255906, 7.5296
+    assert rail_z(supports[0]) / 0.0254 == pytest.approx(floor + riser + 36 + riser / 10,
+                                                         abs=0.01)
+    assert rail_z(supports[-1]) / 0.0254 == pytest.approx(floor + 8 * riser + 36, abs=0.01)
     for support in supports:
         assert support.z1_m - support.z0_m < 6 * 0.0254, "a bracket, not a post"
     # The rail is ONE solid now, carrying the 3D polyline it used to be chopped into bands to

@@ -99,11 +99,11 @@ constraints = [
 ]
 
 [visits."task/concrete/building/slabs"]
-label = "Slabs on grade — basement, garage, heat-pump pad, interior decks"
+label = "Slabs on grade — basement, garage, heat-pump pad"
 # `hardware:AB-058-10-SS` left this list 2026-09-22: with the garden's two centre-pillar bases
 # retired, the four bolts left (P-M-STRWELL-S/SS, PT-BW-CNW/CW) are all on `main`'s package
 # and ride its own visit.
-rows = ["concrete:slab", "concrete:slab:DECK_EPS_INT", "concrete:slab:HP_PAD_ON_GRADE",
+rows = ["concrete:slab", "concrete:slab:HP_PAD_ON_GRADE",
         "concrete:column:PIER_CONCRETE_12", "concrete:column:SUNKEN_GARDEN_COLUMN_12",
         "allowances:radon-passive-pipe-and-stack",
         "allowances:concrete-cold-weather-protection"]
@@ -342,7 +342,7 @@ depends_on = [
   "site/long-lead-orders",
 ]
 checkpoints = [
-  { id = "joists", label = "Mudsills, floor decks framed — joists and rims set, decks open" },
+  { id = "joists", label = "Mudsills, floor decks framed — joists and rims set, FS-M-NE trusses tied to their seats (H2.5A/H2.5AZ) and blocked along W-B-N1, decks open" },
   { id = "sheathing", label = "Subfloor down", after = ["task/masonry/building/masonry#piers"] },
   { id = "shell", label = "Walls, roof and the rest of the shell" },
 ]
@@ -560,7 +560,7 @@ rows = ["allowances:finish-floor-prep-and-self-levelling",
         "allowances:finish-transitions-and-stair-nosings",
         "floor_finishes:catlin-ditra-heat", "floor_finishes:catlin-ditra-xl",
         "floor_finishes:catlin-plant-sureply", "floor_finishes:catlin-plant-vinyl-raised",
-        "floor_finishes:coated-concrete", "floor_finishes:lvp",
+        "floor_finishes:lvp",
         "floor_finishes:oak-floor-custom", "floor_finishes:catlin-rubber-stall-mat",
         "floor_finishes:sealed-concrete", "floor_finishes:vinyl-sheet",
         "interior_trim:flash-cove",

@@ -58,7 +58,7 @@ def test_an_open_flight_fails(catlin_model_ro, tag):
 
 
 @pytest.mark.parametrize(("tag", "material", "heights"), [
-    ("ST-B2M", "plywood-subfloor", {6.109}), ("ST-M2S", "oak-riser", {6.535}),
+    ("ST-B2M", "plywood-subfloor", {6.114}), ("ST-M2S", "oak-riser", {6.53}),
     ("ST-S2A", "oak-riser", {6.5}), ("ST-G-SERVICE", "kdat", {6.16})])
 def test_riser_boards(catlin_model_ro, tag, material, heights):
     """§4: every step carries a 3/4" board of the flight's riser stock."""

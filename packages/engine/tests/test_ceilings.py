@@ -7,9 +7,9 @@ synthetic plan: `RM-M-LIVING` (plain deck default), `RM-B-SAUNA`/`RM-S-PLANT` (r
 override), `RM-GARAGE` (no-deck, flat roof fallback), `RM-A-STUDIO` (no-deck, sloped
 ``FollowRoof`` — no flat plane to draw), `RM-B-PLAY-N` (a ``Slab.ceiling_below``).
 
-`RM-B-GYM` and `RM-M-LIVING` cover the other axis — how many ceilings ONE room resolves.
-A room straddling decks that hang at different elevations steps and gets one per plane; a
-room straddling decks that hang at the same one does not.
+How many ceilings ONE room resolves: a room straddling decks that hang at different
+elevations steps and gets one per plane (``_mixed_deck_plan``); a room straddling decks that
+hang at the same one does not (`RM-M-LIVING`, `RM-B-GYM`).
 """
 
 from __future__ import annotations
@@ -142,28 +142,30 @@ def test_a_ceiling_solid_is_filed_under_the_deck_that_hangs_it(catlin_model) -> 
 
 
 def test_a_room_straddling_two_decks_resolves_a_ceiling_per_plane(catlin_model) -> None:
-    """`RM-B-GYM` is the house's one stepped ceiling.
+    """``_mixed_deck_plan``'s one basement room runs under an 11 7/8" joist bay hung at
+    -11 7/8" and a 14 3/16" pour deck whose soffit is the -13 7/16" seat. One plane at either
+    elevation puts board where there is nothing to screw it to, so it resolves two.
 
-    234 SF of it hangs off `FS-M-EAST`'s 11 7/8" joist soffit at -11 7/8"; the other 90 SF
-    hangs off `SL-M-DECK`'s 14 3/8" EPS band at -13 7/16", because the joists bear on a
-    mudsill and the deck's soffit reaches the seat under it (`params/main_deck.py`). One
-    plane at either elevation puts 90 or 234 SF of board where there is nothing to screw
-    it to, so the room resolves two, each with its own solid.
+    Catlin's ``RM-B-GYM`` was this case until 2026-11-01 (decision #112): its two decks are
+    both 11 7/8" now, a TJI bay and a floor-truss bay, so it is one ceiling.
     """
-    ceilings = {c.tag: c for c in _ceilings(catlin_model, "RM-B-GYM")}
-    assert sorted(ceilings) == ["CEIL-RM-B-GYM-FS-M-EAST", "CEIL-RM-B-GYM-SL-M-DECK"]
-    wood = ceilings["CEIL-RM-B-GYM-FS-M-EAST"]
-    concrete = ceilings["CEIL-RM-B-GYM-SL-M-DECK"]
+    from _mixed_deck_plan import DECK, ROOM, WOOD, mixed_deck_model
+
+    assert [c.tag for c in _ceilings(catlin_model, "RM-B-GYM")] == ["CEIL-RM-B-GYM"]
+    model = mixed_deck_model()
+    ceilings = {c.tag: c for c in _ceilings(model, ROOM)}
+    assert sorted(ceilings) == [f"CEIL-{ROOM}-{WOOD}", f"CEIL-{ROOM}-{DECK}"]
+    wood, concrete = ceilings[f"CEIL-{ROOM}-{WOOD}"], ceilings[f"CEIL-{ROOM}-{DECK}"]
     assert wood.z1_m == pytest.approx(inch(-11.875).meters)
     assert concrete.z1_m == pytest.approx(inch(-13.4375).meters)
-    # The step is what makes them two ceilings: 1 9/16", the deck's depth over the wood
-    # bay's. (The form's 1/2" steel rib adds the rest of CLAUDE.md's 2 1/16" on site; EPS
-    # is never modelled here, so the model states the 1 9/16" it can derive.)
+    # The step is the deck's depth over the joist's: 14 3/16 - 11 7/8 - 3/4 of subfloor.
     assert wood.z1_m - concrete.z1_m == pytest.approx(inch(1.5625).meters)
-    assert _sqft(wood) == pytest.approx(207.1, abs=0.5)  # finish faces (234.0 axis-derived)
-    assert _sqft(concrete) == pytest.approx(78.0, abs=0.5)  # finish faces (90.0 axis)
+    # Clear faces inside 12" pours: 17' wide, 0'-6"..12' under the wood, 12'..29'-6" under
+    # the deck — split on the outline seam, not on a wall.
+    assert _sqft(wood) == pytest.approx(17 * 11.5, abs=0.01)
+    assert _sqft(concrete) == pytest.approx(17 * 17.5, abs=0.01)
     for ceiling in (wood, concrete):
-        solid = _solid(catlin_model, ceiling.tag)
+        solid = _solid(model, ceiling.tag)
         assert solid is not None and solid.material == "gwb"
         assert solid.z0_m == ceiling.z0_m and solid.z1_m == ceiling.z1_m
 
@@ -193,7 +195,7 @@ Neither room keeps a single unsuffixed piece any more, and for the same reason i
         assert ceilings
         assert ceilings[0].tag == f"CEIL-{room_tag}"
         assert len({c.z1_m for c in ceilings}) == 1
-        assert len({tuple(l.material_ref for l in c.layers) for c in ceilings}) == 1
+        assert len({tuple(layer.material_ref for layer in c.layers) for c in ceilings}) == 1
 
     for room_tag in ("RM-M-LIVING", "RM-B-FURNACE"):
         tags = [c.tag for c in _ceilings(catlin_model, room_tag)]

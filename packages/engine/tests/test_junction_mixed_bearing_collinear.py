@@ -3,8 +3,8 @@
 A stud wall meeting the end of a pour on one bearing line has no transfer to detail: each
 wall's load goes down its own path, the deck that spans onto the line lands on both, and
 nothing in IRC R404.1.7 / R602.10.8 / R403.1.6 asks for a connection between them (the
-reasoning and the citations live on ``_independent_bearing``). Catlin's N-B-C1 is the real
-instance.
+reasoning and the citations live on ``_independent_bearing``). Catlin's N-B-C1 was the real
+instance until its pours were reframed (decision #112); the synthetic tier below holds it.
 
 These tests pin the two guards that keep the clause from becoming a mute button — a wall
 bearing on its neighbour, and a wall with no bearing element at all, both still report
@@ -110,17 +110,6 @@ def test_a_side_with_no_bearing_element_still_reports_unknown(project) -> None:
     tier = _tier(_collinear(project, "POUR", "FINISH_ONLY"))
     assert not tier.supported
     assert tier.diagnostic == "mixed-assembly junction requires interface rules"
-
-
-def test_catlin_stud_wall_meeting_the_pour_end_is_owned(catlin_plan) -> None:
-    """The real instance: W-B-CS3's 2x6 studs meet W-B-CS2's 12" pour end-on at N-B-C1,
-    both spanning the same z. It is the only junction in the house this clause closes."""
-    tier = next(item for item in classify_storey_junctions(catlin_plan, "basement")
-                if item.node_tag == "N-B-C1")
-    assert tier.kind == "collinear"
-    assert {item.wall_tag for item in tier.incidents} == {"W-B-CS2", "W-B-CS3"}
-    assert len({item.assembly for item in tier.incidents}) == 2
-    assert tier.supported and tier.diagnostic is None
 
 
 def test_no_junction_in_the_house_is_left_unowned(catlin_plan) -> None:

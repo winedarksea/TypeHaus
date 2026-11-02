@@ -153,13 +153,30 @@ def test_every_concrete_crossing_is_sleeved(catlin_model):
     assert not unsleeved, unsleeved
 
 
-def test_a_duct_through_concrete_is_walked_and_sleeved(catlin_model):
-    """B5: ducts are walked too, and an air sleeve is claimed only by air."""
+def test_a_duct_through_concrete_is_walked_and_sleeved(catlin_plan):
+    """B5: ducts are walked too, and an air sleeve is claimed only by air. Catlin has no duct
+    through a pour since the framed x=18' wall (decision #112), so the witness is a 4" supply
+    duct spliced through the south foundation wall with its cast sleeve."""
+    from typehaus.model.enums import DuctRouting, DuctSystem, Service
+    from typehaus.model.mep import DuctRun, SleevePenetration
+    from typehaus.quantities import inch, pt
+    from typehaus.resolve import resolve
     from typehaus.resolve.mep import concrete_crossings
 
-    rows = [(c["host"], c["system"], c["sleeve"]) for c in concrete_crossings(catlin_model)
-            if c["run"] == "DU-B-ERV-R-PLAY"]
-    assert rows == [("W-B-CN2", "supply_air", "SP-B-CN-ERV-PLAY")]
+    duct = DuctRun(uid="TSTDC00001", tag="DU-TEST-AIR", system=DuctSystem.SUPPLY,
+                   path=(pt(inch(60), inch(36)), pt(inch(60), inch(-36))),
+                   elevations=(inch(84), inch(84)), diameter=inch(4),
+                   routing=DuctRouting.CHASE, material="galvanized", design_cfm=10)
+    sleeve = SleevePenetration(
+        uid="TSTDC00002", tag="SP-TEST-AIR", host_ref="W-B-S1", position=pt(inch(60), inch(4)),
+        pipe_diameter=inch(4), sleeve_diameter=inch(6), axis="horizontal",
+        purpose=Service.SUPPLY_AIR, center_elevation=inch(84 - 109.4375))
+    plan = catlin_plan.with_elements(
+        "basement", (*catlin_plan.storey_elements("basement"), duct, sleeve))
+    model, _ = resolve(plan)
+    rows = [(c["host"], c["system"], c["sleeve"]) for c in concrete_crossings(model)
+            if c["run"] == "DU-TEST-AIR"]
+    assert rows == [("W-B-S1", "supply_air", "SP-TEST-AIR")]
 
 
 def test_sleeve_coverage_and_alignment_are_clean(code_report):

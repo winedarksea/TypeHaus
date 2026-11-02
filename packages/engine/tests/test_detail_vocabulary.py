@@ -443,8 +443,10 @@ def test_slab_on_grade_is_read_from_rooms_below_not_the_assembly_name(catlin_mod
     slabs = {s.tag: s for s in catlin_model.solids if in_slab_family(s.category)}
     assert slab_is_on_grade(catlin_model, slabs["SL-G-FLOOR"]), (
         "the garage slab has nothing but earth beneath it")
-    assert not slab_is_on_grade(catlin_model, slabs["SL-M-DECK"]), (
-        "the main deck sits over the conditioned basement")
+    # SL-M-DECK was the subject until decision #112; the tub deck is the house's other slab
+    # over a room (the mechanical room below it).
+    assert not slab_is_on_grade(catlin_model, slabs["SL-M-TUBDK"]), (
+        "the tub deck sits over the conditioned basement")
 
 
 # --- dimensional parity for the drawn vocabulary ------------------------------

@@ -115,8 +115,8 @@ BASEMENT_DEVICES = [
     #
     # ** RETYPED N -> N3 (FLUSH) AND drop 18" -> 11", 2026-09-06, uid PRESERVED. ** An 18"
     # fan left the blades near 6'-5" in a room people exercise in. Restated 2026-10-30 over
-    # the 3/4" stall mats: the fan hangs under FS-M-EAST's gypsum, 96 3/16" above the mats
-    # (the room's clear_height_m, 94 5/8", is the lower SL-M-DECK ceiling at the north end).
+    # the 3/4" stall mats: the fan hangs under the gym's one flat gypsum ceiling, 96 3/16"
+    # above the mats.
     # The Gallegos is modelled at 10 9/16" overall, so its body bottoms at 7'-1 5/8"; Hunter's
     # sheet puts the blade bottom 7.97" below the ceiling flush-mounted, ~7'-4 1/4" AFF.
     # ** NOTHING GRADES THIS: ** there is no blade-to-floor check in the engine, so this

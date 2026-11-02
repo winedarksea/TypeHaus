@@ -20,11 +20,21 @@ def _slabs(plan, model):
 
 def test_catlin_authored_kind_equals_derived(catlin_plan, catlin_model_ro):
     pairs = list(_slabs(catlin_plan, catlin_model_ro))
-    assert len(pairs) == 19  # SL-SG-FROST-W/E/N retired 2026-10-31 (C3-E10)
+    # SL-SG-FROST-W/E/N retired 2026-10-31 (C3-E10), SL-M-DECK 2026-11-01 (#112).
+    assert len(pairs) == 18
     for solid, slab in pairs:
         assert slab.kind is not None, slab.tag
         assert derive_slab_kind(catlin_model_ro, slab, solid.storey, solid.z0_m) == slab.kind, \
             slab.tag
+
+
+def test_a_suspended_eps_deck_derives_pour():
+    from _mixed_deck_plan import DECK, mixed_deck_model, mixed_deck_plan
+
+    model = mixed_deck_model()
+    solid = next(s for s in model.solids if s.tag == DECK)
+    slab = mixed_deck_plan().by_tag(DECK)
+    assert derive_slab_kind(model, slab, solid.storey, solid.z0_m) == "pour"
 
 
 def test_tub_deck_is_a_platform_off_the_foundation_sheet(catlin_model_ro):

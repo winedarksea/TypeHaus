@@ -278,6 +278,10 @@ class Material(HausModel):
     # Project-specific waste allowance for a finish whose cut pattern differs from the
     # generic tag defaults. None uses the takeoff's default schedule.
     floor_waste_fraction: float | None = None
+    # A floating floor (click-lock plank): it must not be pinned, so fixed casework with a
+    # ``toe_kick_depth`` stands on the subfloor and the covering runs under its kick only
+    # (``resolve/fixture_floor_finish.py``). Other coverings run under casework as before.
+    floating: bool = False
     # What a FLOOR finish wants at the wall (``resolve/interior_trim.py``): "trim" is the
     # wood base board, "tile" a cut-tile base, "integral_cove" sheet flooring flashed up the
     # wall, "resilient_base" a set-on rubber or vinyl cove base, "none" nothing. ``None``

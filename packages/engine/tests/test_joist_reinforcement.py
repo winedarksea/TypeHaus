@@ -217,12 +217,12 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     assert sorted(tag for tag, _ in sisters) == [
         "FS-M-EAST", "FS-M-EAST", "FS-M-WEST", "FS-S-EAST", "FS-S-EAST"]
     # Full span, tip to tip: a sister that stops short carries nothing where the load is
-    # (``resolve/floors.py::_reinforcement_members``). 17.85' and not the 18'-0" bearing grid
-    # — the joist it doubles stops 1 1/4" inboard of the foundation's framing face, behind
-    # the rim board, and the sister is cut to the joist rather than to the grid line
-    # (``resolve/floor_ends.py``).
+    # (``resolve/floors.py::_reinforcement_members``). 17.79' and not the 18'-0" bearing grid
+    # — the joist it doubles starts 1 3/4" in, behind the west rim board, and since decision
+    # #112 takes 2" of the x=18' 2x6 plate (``end_bearing``): 216 - 2.75 + 2 = 215.25", so
+    # 213.5". The sister is cut to the joist, not the grid line (``resolve/floor_ends.py``).
     full_span = next(m for tag, m in sisters if tag == "FS-M-WEST")
-    assert round(full_span.length_m / 0.3048, 2) == 17.85
+    assert round(full_span.length_m / 0.3048, 2) == 17.79
     # And the BOM follows: the 2x8 sister rows the porch pack bought are gone with it, and
     # the I-joist ply under the bath is the only sistered stock this house orders.
     rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}

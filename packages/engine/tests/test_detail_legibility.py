@@ -442,12 +442,13 @@ def test_a_bubble_never_lands_on_a_layer_ladder_leader(catlin_details):
 def test_a_keyed_note_off_this_detail_draws_nothing_and_reports_nothing(catlin_model_ro):
     """One notes file is bound by an assembly pattern and reaches several junctions.
 
-    ``basement_to_framed_wall_detail.md`` reaches seven, and a note anchored on the
-    damp-proofing has nothing to say at the interior bearing line that shares the file.
-    That is the binding working, not an authoring error, so it must not produce a finding.
+    ``basement_to_framed_wall_detail.md`` reaches six, and a note anchored on the
+    damp-proofing has nothing to say at the garage's ICF stem that shares the file. That is
+    the binding working, not an authoring error, so it must not produce a finding. (The
+    interior bearing line was the subject until its pours were reframed, decision #112.)
     """
     derived = next(d for d in derive_detail_slices(catlin_model_ro)
-                   if d.key == "wall_foundation:FOUNDATION_WALL_12_INT|INT_2X6_BRG_HALF")
+                   if d.key == "wall_foundation:GARAGE_ICF_6|GARAGE_WALL_2X6")
     scene, findings = build_detail(catlin_model_ro, derived)
     assert any(line.startswith("K") for line in scene.notes), "the legend still prints"
     assert not [f for f in findings if "anchor" in f.check_id]

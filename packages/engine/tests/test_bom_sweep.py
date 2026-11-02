@@ -267,7 +267,7 @@ def test_every_finish_row_resolved_a_real_material(bom):
         "catlin-theater-carpet", "catlin-carpet-raised", "lvp", "oak-floor-custom",
         "catlin-tile-opera-blue", "catlin-tile-kaleo-brick",
         "catlin-tile-agua-linda", "catlin-tile-carrara", "sealed-concrete",
-        "coated-concrete", "catlin-rubber-stall-mat", "vinyl-sheet", "catlin-plant-vinyl-raised",
+        "catlin-rubber-stall-mat", "vinyl-sheet", "catlin-plant-vinyl-raised",
         None}
 
 
@@ -603,7 +603,7 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     group into a single ``ceiling`` row because they are the same board at the same
     thickness — so the deck-by-deck arithmetic is checked against each deck's *share* of
     that row, not against the whole of it. `FS-S-WEST`/`FS-S-EAST` are the main storey's
-    ceiling, `FS-M-WEST`/`MECH`/`STAIR`/`EAST` plus the cast `SL-M-DECK` band are the
+    ceiling, `FS-M-WEST`/`MECH`/`STAIR`/`EAST`/`NE` are the
     basement's, and `FS-ATTIC` is the second storey's — the last one to be authored, and
     while it was not, every bedroom below resolved open to the I-joists.
 
@@ -657,12 +657,11 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     # the deck does.
     # FO-M-ERV-EA folded into FO-M-ERV-OA on 2026-09-23; `_net_sqft` reads whatever holes
     # each deck declares, so a new riser hole cannot leave this arithmetic stale.
-    others = (_net_sqft("FS-M-WEST") + _net_sqft("FS-M-MECH") + _net_sqft("FS-M-STAIR")
-              + _net_sqft("FS-M-EAST"))
-    # SL-M-DECK — the concrete band over the media room — bills the same board, and the two
+    # FS-M-NE replaced the cast SL-M-DECK band on 2026-11-01 (decision #112). The two
     # room-level liner overrides carve their clear faces back out of the decks they hang
     # under (the sauna out of FS-M-WEST, the plant room out of FS-ATTIC).
-    sl_m_deck_net = 414.0  # 18' x 23', no floor openings (params/main_deck.py)
+    others = (_net_sqft("FS-M-WEST") + _net_sqft("FS-M-MECH") + _net_sqft("FS-M-STAIR")
+              + _net_sqft("FS-M-EAST") + _net_sqft("FS-M-NE"))
     # FS-ATTIC has TWO holes in it. FO-A-HALL (103 SF) opens the deck over the ST-M2S well
     # so the stair hall runs to the roof — and because this deck's underside IS the second
     # storey's ceiling, the board stops at the void exactly as the deck does.
@@ -677,7 +676,7 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     # RM-B-ESS carves its face out of the blanket too, and lines it with TWO 5/8" Type X
     # layers — gypsum of the same thickness, so it nets +1 face inside this family.
     ess_net = _room_sqft("RM-B-ESS")
-    total = (west_second_net + east_second_net + others + sl_m_deck_net + attic_net
+    total = (west_second_net + east_second_net + others + attic_net
              - sauna_net - plant_net + ess_net)
     assert float(gwb["net_area_sqft"]) == pytest.approx(total, abs=0.5)
     assert float(ceiling[("gwb-x", 0.625)]["net_area_sqft"]) == pytest.approx(

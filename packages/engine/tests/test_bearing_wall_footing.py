@@ -68,7 +68,9 @@ def test_without_the_extensions_it_fails_on_every_jamb_member(catlin_plan) -> No
 
 def test_catlin_reports_every_framed_bearing_wall_on_the_slab(catlin_findings) -> None:
     walls = {k: f for k, f in catlin_findings.items() if k.startswith("W-")}
-    assert set(walls) == {"W-B-CS", "W-B-CS3", "W-B-STR", "W-B-STR3", "W-B-STR3B"}
+    # W-B-CS2/CN2/CN joined on 2026-11-01: 2x6 on their footings, no longer pours (#112).
+    assert set(walls) == {"W-B-CS", "W-B-CS2", "W-B-CS3", "W-B-CN", "W-B-CN2", "W-B-STR",
+                          "W-B-STR3", "W-B-STR3B"}
     assert all(f.result is Result.PASS for f in walls.values())
     # A thin END margin is disclosed, not graded: R403.1.1's P is a face projection.
     assert "1.88\" of footing past it" in catlin_findings["W-B-STR3B"].message

@@ -304,12 +304,12 @@ def ijoist_span(ctx: CheckContext) -> list[Finding]:
                                message=f"UNKNOWN — no span-table row for {profile}",
                                element_tags=(floor.tag,), result=Result.UNKNOWN))
             continue
-        # The table above is published at one spacing. Reading the floor's actual o.c. and
-        # reporting UNKNOWN off it beats printing 16" over a deck framed at something else:
-        # the answer would be wrong in the unconservative direction at a wider spacing.
+        # The table above is published at one spacing. A WIDER spacing would read it in the
+        # unconservative direction, so that is UNKNOWN; a tighter one puts less of the same
+        # floor load on each member, so the table still bounds it.
         spacing = spec.joists.spacing if spec is not None else None
         spacing_in = spacing.inches if spacing is not None else _IJOIST_TABLE_SPACING_IN
-        if abs(spacing_in - _IJOIST_TABLE_SPACING_IN) > 1e-6:
+        if spacing_in > _IJOIST_TABLE_SPACING_IN + 1e-6:
             out.append(Finding(
                 severity=Severity.WARN, check_id="structural.ijoist_span",
                 message=(f"UNKNOWN — floor {floor.tag} is framed at {spacing_in:.0f}\" o.c. "
@@ -322,14 +322,16 @@ def ijoist_span(ctx: CheckContext) -> list[Finding]:
             out.append(_advisory(
                 "structural.ijoist_span",
                 f"floor {floor.tag} {profile} span {span_ft:.1f}' exceeds the "
-                f"{allowable:.1f}' table limit at {spacing_in:.0f}\" o.c.",
+                f"{allowable:.1f}' table limit at {_IJOIST_TABLE_SPACING_IN:.0f}\" o.c.",
                 (floor.tag,), Result.FAIL,
             ))
         else:
             out.append(_advisory(
                 "structural.ijoist_span",
                 f"floor {floor.tag} {profile} span {span_ft:.1f}' is within the "
-                f"{allowable:.1f}' table limit at {spacing_in:.0f}\" o.c.",
+                f"{allowable:.1f}' table limit at {_IJOIST_TABLE_SPACING_IN:.0f}\" o.c."
+                + (f" (framed at {spacing_in:.0f}\", tighter than the table: conservative)"
+                   if spacing_in < _IJOIST_TABLE_SPACING_IN - 1e-6 else ""),
                 (floor.tag,), Result.PASS,
             ))
     return out

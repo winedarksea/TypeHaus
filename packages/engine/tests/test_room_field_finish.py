@@ -85,13 +85,15 @@ def test_the_takeoff_bills_the_field_not_the_gross_room(catlin_model_ro):
     rows = {row["finish"]: row for row in floor_finish_rows(catlin_model_ro)}
     gross = sum(room.area_m2 - sum(zone.area_m2 for zone in room.finish_zones)
                 for room in catlin_model_ro.rooms if room.floor_finish == "lvp") * _M2_TO_FT2
-    # RM-S-HALL and RM-M-LIVING each wrap ~70 sf of well; the underlayment follows the plank.
+    # The underlayment follows the plank.
     reveals = sum(_reveal_area(room) for room in catlin_model_ro.rooms
                   if room.floor_finish == "lvp") * _M2_TO_FT2
     reveals += sum(Polygon(outline, holes=list(holes)).difference(Polygon(room.clear_face)).area
                    for room in catlin_model_ro.rooms if room.floor_finish == "lvp"
                    for zone in room.finish_zones for outline, holes in zone.parts) * _M2_TO_FT2
-    assert gross + reveals - float(rows["lvp"]["net_area_sqft"]) == pytest.approx(75.8, abs=1.0)
+    # The wells (75.8 sf) plus the kitchen's fixed base boxes behind their 3" kicks, cut out of
+    # the floating plank since #112: 64.2 sf (13 boxes w x (24 - 3)", two 38" L corners net).
+    assert gross + reveals - float(rows["lvp"]["net_area_sqft"]) == pytest.approx(140.0, abs=1.0)
     assert "lvp-underlayment" not in rows
 
 

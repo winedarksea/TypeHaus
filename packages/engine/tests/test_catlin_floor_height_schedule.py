@@ -26,7 +26,7 @@ FLUSH_TOLERANCE_IN = 1 / 16  # Catlin design target, notes/floor_heights.md
     ("D-M-MUD", "RM-M-LIVING", "RM-M-MUDROOM", 0),
     ("D-M-MECH", "RM-M-MUDROOM", "RM-M-MECH", 0),
     ("D-M-MUDC", "RM-M-MUD-CLOSET", "RM-M-MUDROOM", 0),
-    ("D-M-BED2", "RM-M-LIVING", "RM-M-BED", 0.8031496062992126),
+    ("D-M-BED2", "RM-M-LIVING", "RM-M-BED", 0.7244094488188977),
     ("D-M-BED", "RM-M-BED", "RM-M-CLOSET", 0),
     ("D-M-BATH2", "RM-M-BED", "RM-M-BATH2", 0.25),
 ])
@@ -61,54 +61,47 @@ def test_finished_planes_beside_each_door(
 
 def test_stair_heads_match_their_finished_floors(catlin_model_ro):
     stairs = {stair.tag: stair for stair in catlin_model_ro.stairs}
-    assert stairs["ST-M2S"].base_elevation_m / INCH_M == pytest.approx(0.9468503937007874)
+    assert stairs["ST-M2S"].base_elevation_m / INCH_M == pytest.approx((0.75 + 7 / 25.4))
     assert stairs["ST-M2S"].arrival_elevation_m / INCH_M == pytest.approx(121.5)
     assert stairs["ST-M2S"].riser_height_m / INCH_M == pytest.approx(
-        (121.5 - 0.9468503937007874) / 16)
+        (121.5 - (0.75 + 7 / 25.4)) / 16)
     assert stairs["ST-S2A"].base_elevation_m / INCH_M == pytest.approx(121.5)
 
 
-def test_quincy_oak_selection_is_house_local_and_includes_its_pad(catlin_plan):
+def test_cotton_oak_selection_is_house_local_and_is_7mm_as_published(catlin_plan):
     from typehaus.library.materials import ALL_MATERIALS
 
     materials = catlin_plan.library.materials
     assert len({material.tag for material in materials}) == len(materials)
     lvp = next(material for material in materials if material.tag == "lvp")
-    assert lvp.finish_thickness_in == pytest.approx(5 / 25.4)
+    assert lvp.finish_thickness_in == pytest.approx(7 / 25.4)
     assert lvp.floor_companion_refs == ()
-    assert lvp.finish == "lvp-plank"
-    assert lvp.color == "#bfb6ad"
+    assert lvp.finish == "lvp-limed-oak"
+    assert lvp.color == "#d6cebb"
     product = next(product for product in catlin_plan.library.products
                    if product.tag == lvp.product_ref)
-    assert product.brand == "COREtec"
-    assert product.model == "VV017-01018"
-    assert "attached cork" in product.source
+    assert product.brand == "Karndean"
+    assert product.model == "AKP-RL38"
+    assert "7.0 mm" in product.source
     generic = next(material for material in ALL_MATERIALS if material.tag == "lvp")
     assert generic.finish_thickness_in == 0.2362
     assert generic.floor_companion_refs == ("lvp-underlayment",)
 
 
-@pytest.mark.parametrize(("wood_xy_ft", "concrete_xy_ft"), [
-    ((28, 12.5), (28, 13.5)),  # south leg: y=13 ft movement break
-    ((17.5, 25), (18.5, 25)),  # west leg: x=18 ft shared bearing
+@pytest.mark.parametrize("xy_ft", [
+    (28, 12.5), (28, 13.5),  # either side of the old y=13 ft deck edge
+    (17.5, 25), (18.5, 25),  # either side of the old x=18 ft bearing
 ])
-def test_both_legs_of_concrete_boundary_step_one_plank(
-    catlin_model_ro, wood_xy_ft, concrete_xy_ft,
-):
-    """The cap tops on the subfloor plane (decision #111): the plank stands 5 mm proud."""
-    def main_surface(point, finish):
-        return next(surface for surface in surfaces_at(
-            catlin_model_ro, tuple(coordinate * 12 * INCH_M for coordinate in point))
-            if surface.finish_ref == finish and surface.room_tag == "RM-M-LIVING")
-
-    wood = main_surface(wood_xy_ft, "lvp")
-    concrete = main_surface(concrete_xy_ft, "coated-concrete")
-    assert wood.surface_m / INCH_M == pytest.approx(0.75 + 5 / 25.4)
-    assert concrete.surface_m / INCH_M == pytest.approx(0.75)
-    assert (wood.surface_m - concrete.surface_m) / INCH_M == pytest.approx(5 / 25.4)
+def test_main_living_floor_is_one_plank_plane(catlin_model_ro, xy_ft):
+    """Wood floor trusses replaced the cap (decision #112): LVP on the subfloor everywhere."""
+    point = tuple(coordinate * 12 * INCH_M for coordinate in xy_ft)
+    surface = next(surface for surface in surfaces_at(catlin_model_ro, point)
+                   if surface.room_tag == "RM-M-LIVING")
+    assert surface.finish_ref == "lvp"
+    assert surface.surface_m / INCH_M == pytest.approx(0.75 + 7 / 25.4)
 
 
-def test_exported_quincy_oak_meshes_match_resolved_depth_and_color(catlin_model_ro):
+def test_exported_cotton_oak_meshes_match_resolved_depth_and_color(catlin_model_ro):
     from typehaus.emit.gltf import emit_gltf_dict
     from typehaus.emit.gltf.palette import _room_floor_color
 
@@ -127,6 +120,6 @@ def test_exported_quincy_oak_meshes_match_resolved_depth_and_color(catlin_model_
                      if primitive["material"] in lvp_materials]
         assert positions, room_tag
         for accessor in positions:
-            # glTF Y is vertical; the room centroid may sit on concrete, but LVP is on wood.
+            # glTF Y is vertical; LVP sits on the plywood.
             assert accessor["min"][1] / INCH_M == pytest.approx(0.75, abs=1e-6)
-            assert accessor["max"][1] / INCH_M == pytest.approx(0.75 + 5 / 25.4, abs=1e-6)
+            assert accessor["max"][1] / INCH_M == pytest.approx(0.75 + 7 / 25.4, abs=1e-6)

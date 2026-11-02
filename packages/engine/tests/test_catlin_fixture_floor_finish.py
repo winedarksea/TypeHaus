@@ -92,8 +92,29 @@ def test_existing_heat_zones_still_fit_and_uncut_rooms_remain_identical(catlin_m
     assert not resolve_fixture_floor_finishes(copied)
     assert copied.rooms == model.rooms
     for room in copied.rooms:
-        if room.tag not in {pair[0] for pair in _BATHING_FIXTURES.values()}:
+        if room.tag not in {pair[0] for pair in _BATHING_FIXTURES.values()} | {"RM-M-LIVING"}:
             assert not room.floor_finish_exclusions
+
+
+def test_living_room_excludes_exactly_its_base_cabinets_less_their_toe_kick(catlin_model_ro):
+    """Cotton Oak floats, so each fixed SEKTION base stands on the subfloor and the plank
+    runs under its kick only (decision #112); appliances carry no toe kick and are not cut."""
+    from typehaus.resolve.fixture_floor_finish import _casework_footprint
+
+    model = catlin_model_ro
+    types = {t.tag: t for t in model.plan.library.furniture_types}
+    canvas = {item.tag: item for item in model.canvas_objects}
+    cabinets = [item for item in model.plan.storey_elements("main")
+                if item.element_kind == "Furniture" and item.room == "RM-M-LIVING"
+                and getattr(types.get(item.type_ref), "toe_kick_depth", None) is not None]
+    assert len(cabinets) == 15
+    assert all("SEKTION" in types[item.type_ref].name for item in cabinets)
+    expected = union_all([_casework_footprint(canvas[item.tag],
+                                              types[item.type_ref].toe_kick_depth.meters)
+                          for item in cabinets])
+    living = next(room for room in model.rooms if room.tag == "RM-M-LIVING")
+    assert _geometry(living.floor_finish_exclusions).symmetric_difference(
+        expected).area == pytest.approx(0.0, abs=1e-6)
 
 
 def test_json_carries_actual_exclusion_parts(catlin_model_ro):

@@ -37,7 +37,7 @@ def test_matching_windows_leave_independent_jamb_packs_and_clear_the_pantry(catl
         assert opening.center_along_m == pytest.approx(centre * INCH)
         assert opening.width_m == pytest.approx(width * INCH)
         assert opening.height_m == pytest.approx(48 * INCH)
-        assert opening.sill_m == pytest.approx(34 * INCH)
+        assert opening.sill_m == pytest.approx(34.28125 * INCH)  # stool on the counter, on the plank
 
     jamb_members = sorted(
         (member for member in wall.members if member.category in {"king", "jack"}
@@ -63,8 +63,8 @@ def test_matching_windows_leave_independent_jamb_packs_and_clear_the_pantry(catl
         opening = openings[window_tag]
         assert blind.type_ref == blind_type
         assert blind.position[1] == pytest.approx(opening.center_along_m)
-        assert blind.body_z0_m == pytest.approx(34 * INCH)
-        assert blind.body_z1_m == pytest.approx(82 * INCH)
+        assert blind.body_z0_m == pytest.approx((34 + 7 / 25.4) * INCH)  # follows the plank
+        assert blind.body_z1_m == pytest.approx((82 + 7 / 25.4) * INCH)
 
 
 def test_the_dining_stool_meets_the_counter(catlin_model_ro):
@@ -103,8 +103,7 @@ def test_counter_devices_clear_windows_framing_and_each_other(catlin_model_ro):
     model = catlin_model_ro
     objects = {obj.tag: obj for obj in model.canvas_objects}
     windows = [opening for opening in model.openings if opening.tag in EAST_WINDOWS]
-    devices = [objects[tag] for tag in (*NORTH_COUNTER_RECEPTACLES, *WALL_RECEPTACLES,
-                                        "ED-M-DINING-FH-STAT")]
+    devices = [objects[tag] for tag in (*NORTH_COUNTER_RECEPTACLES, *WALL_RECEPTACLES)]
     east_wall = model.wall("W-M-E1")
     for device in devices:
         _, device_south, _, device_north = Polygon(device.footprint).bounds
@@ -123,8 +122,7 @@ def test_counter_devices_clear_windows_framing_and_each_other(catlin_model_ro):
                 device_north <= member.p0[1] - half_thickness
                 or device_south >= member.p0[1] + half_thickness
             ), (device.tag, member.child_key)
-    thermostat, receptacle = objects["ED-M-DINING-FH-STAT"], objects["ED-M-LIVING-RC3"]
-    assert thermostat.body_z0_m > receptacle.body_z1_m
+    assert "ED-M-DINING-FH-STAT" not in objects  # retired with FH-M-DINING, decision #112
     # Wall space at 16", 26" under the counter devices' 42".
     counter_z = objects["ED-M-LIVING-RC15"].body_z0_m
     for tag in WALL_RECEPTACLES:

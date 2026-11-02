@@ -7,10 +7,13 @@ from typehaus import (
     ConduitRun,
     DeviceKind,
     ElectricalDevice,
+    Location,
     Mount,
     MountKind,
     Service,
     SleevePenetration,
+    WallAttachment,
+    deg,
     ft,
     inch,
     pt,
@@ -23,13 +26,18 @@ BRANCH_PULL_BOXES = [
     ElectricalDevice(uid="38ARN77QK2", tag="ED-B-WORKSHOP-JB", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-JBOX-8X8", room="RM-B-WORKSHOP", position=pt(inch(20), inch(102)),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(4.625))),
-    # Above FURN-B-PLAY-TV. Surface on the ceiling, blank cover: the gypsum here is hung on
-    # SL-M-DECK's concrete band, so there is no cavity to recess into. The storey's ceiling
-    # plane is -1'-0 1/2"; this room's finished ceiling is -1'-2 1/16", and the 4" box hangs
-    # from it (drop 5 9/16").
+    # Behind FURN-B-PLAY-TV, on the north wall at 48" AFF, over RC1 and clear of the panel's
+    # face (the mount stands it 3 1/2" off the wall; box and cover take 2-5/8"). It was a
+    # surface box on the theater ceiling until 2026-11-02: that ceiling is gypsum on resilient
+    # channel with no boxes or lights (notes/theater_ceiling_acoustics.md), and a box on a
+    # bare concrete wall is the house's own surface-device idiom. x=25'-11 1/4" sits in the
+    # 13" web opening CD-B-PLAY-SPARE comes down through, so the spare drops straight in.
     ElectricalDevice(uid="X6HGS71F6Y", tag="ED-B-PLAY-N-JB", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-JBOX", room="RM-B-PLAY-N", position=pt(inch(321), inch(414)),
-                     mount=Mount(kind=MountKind.CEILING, drop=inch(5.5625))),
+                     type_ref="ED-T-JBOX", room="RM-B-PLAY-N",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-N1", face="left", distance_from_start=inch(120.75),
+                         normal_gap=inch(0), rotation_offset=deg(180)))),
 ]
 
 BRANCH_RACEWAYS = [
@@ -75,10 +83,15 @@ BRANCH_RACEWAYS = [
     # 1/2" leg, ducking 1.6" under PR-B-HW-BATH's x=7'-3 5/8" leg on 6" ramps (15° bends) and rising back over the
     # vent's x=9'-0" leg, 2.8" over CD-B-KITCHEN and CD-B-DATA-MEDIA: the
     # furnace room has no lane beside those two, W-B-STR3's face is at x=9'-9 1/4"),
-    # through W-B-STR2's top plate and RM-B-BATH on CD-B-DATA-MEDIA's lanes one step further
-    # from CD-B-KITCHEN, down to their -1'-4 1/4" in the hall and through W-B-CN at
-    # y=26'-0" (SP-B-CN-CD-SPARE). Pull boxes at 8 (RM-B-BATH) and 13 (RM-B-PLAY-N): no
-    # section passes 360 degrees.
+    # through W-B-STR2's top plate and RM-B-BATH, then up the hall to a body at y=25'-6" (south
+    # of FO-M-STAIR, which is open well from y=26'-0 3/8").
+    #
+    # ** OVER the theater ceiling since 2026-11-02 (decision #112). ** From that body a ramp
+    # rises into FS-M-WEST's bay, over the x=18' plate (the framed W-B-CN is bearing; no bore),
+    # and rides FS-M-NE's truss bay y=25'-6" at -8 3/4" to x=25'-11 1/4", turns north through the
+    # 13" web opening of each truss to y=35'-3 1/2" and drops against the north wall (1/2" off
+    # the face, as RC1's drop does) to the box's top knockout. 206 degrees after the hall
+    # body; pull boxes at 8 (RM-B-BATH) and 11 (the hall).
     ConduitRun(uid="FD1J045HS6", tag="CD-B-PLAY-SPARE", trade_size=inch(0.75),
                service=None,
                path=(pt(inch(9.5), inch(349.375)), pt(inch(9.5), inch(349.375)),
@@ -87,30 +100,22 @@ BRANCH_RACEWAYS = [
                      pt(inch(82), inch(243.5)), pt(inch(95), inch(243.5)),
                      pt(inch(101), inch(243.5)), pt(inch(162.25), inch(243.5)),
                      pt(inch(162.25), inch(230.75)), pt(inch(194.75), inch(230.75)),
-                     pt(inch(194.75), inch(312)), pt(inch(194.75), inch(312)),
-                     pt(inch(232.5), inch(312)), pt(inch(232.5), inch(361.5)),
-                     pt(inch(321), inch(361.5)), pt(inch(321), inch(414))),
+                     pt(inch(194.75), inch(306)), pt(inch(208), inch(306)),
+                     pt(inch(311.25), inch(306)), pt(inch(311.25), inch(423.54)),
+                     pt(inch(311.25), inch(423.54))),
                elevations=(inch(-31.4375), inch(-13.44), inch(-13.44), inch(-13.44), inch(-13.44),
                            inch(-15.05), inch(-15.05), inch(-13.44), inch(-13.44), inch(-13.44),
-                           inch(-13.44), inch(-13.44), inch(-16.25), inch(-16.25), inch(-16.25),
-                           inch(-16.25), inch(-16.25)),
-               pull_points=(8, 13),
+                           inch(-13.44), inch(-13.44), inch(-8.75), inch(-8.75), inch(-8.75), inch(-57.7)),
+               pull_points=(8, 11),
                from_ref="ED-B-PANEL", to_ref="ED-B-PLAY-N-JB"),
-    # 3/4" EMT + THHN from the TV box to the receptacle behind the panel, down the wall face
+    # 3/4" EMT + THHN from the TV box straight down the wall face to the receptacle below it
     # (face + half the OD); CKT-RC-BSMT's NM enters the box.
     ConduitRun(uid="8XNJPBCK9B", tag="CD-B-PLAY-N-RC1", trade_size=inch(0.75),
                service=Service.POWER_120,
-               path=(pt(inch(321), inch(414)), pt(inch(321), inch(423.54)),
-                     pt(inch(321), inch(423.54))),
-               elevations=(inch(-16.06), inch(-16.06), inch(-75.7025)),  # box top on the 0.735" carpet
+               path=(pt(inch(311.25), inch(423.54)), pt(inch(311.25), inch(423.54))),
+               elevations=(inch(-61.7), inch(-75.7025)),  # box top on the 0.735" carpet
                from_ref="ED-B-PLAY-N-JB", to_ref="ED-B-PLAY-N-RC1",
                circuits=("CKT-RC-BSMT",)),
 ]
 
-BRANCH_SLEEVES = [
-    # Cast-in, located before the basement pour (as SP-B-CN-CD-DATA, 1 1/2" north of it).
-    SleevePenetration(uid="MKJNJTJKD3", tag="SP-B-CN-CD-SPARE", host_ref="W-B-CN",
-                      position=pt(inch(216), inch(312)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
-                      axis="horizontal", center_elevation=inch(-16.25)),
-]
+BRANCH_SLEEVES = []

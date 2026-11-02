@@ -30,6 +30,7 @@ from typehaus.model import (
     Building,
     FloorOpening,
     FloorSystem,
+    FoundationWall,
     FramingSpec,
     JoistSpec,
     Layer,
@@ -293,25 +294,25 @@ def test_landing_platforms_have_unique_joists_edge_joists_deck_and_rims(basement
             assert rim.z1_m == pytest.approx(deck.z0_m)  # framing tops at the deck
 
 
-# ------------------------------------------------------------ 6. concrete-wall hangers
+# ------------------------------------------------------------ 6. wall hangers
 def test_basement_lower_hanger_bears_at_the_landing(catlin_model, basement_stair):
+    """W-B-CN is framed since decision #112, so the lower flight hangs on a 2x10 ledger
+    (concrete hangers: ``test_a_concrete_host_hangs_a_band_that_follows_the_rake``)."""
     stair = basement_stair
+    members = {m.child_key: m for m in stair.members}
     lower_hangers = [m for m in stair.members
                      if m.category == "hanger"
                      and "stringer-lower" in m.child_key]
     assert lower_hangers
     for hanger in lower_hangers:
-        assert hanger.connection is not None
-        assert hanger.connection.startswith("concrete-wall-hanger:")
-        # A framed-wall bearing is annotation-only; a hanger band is concrete-only.
-        assert not hanger.connection.startswith("framed-wall-ledger:")
-        # The hanger follows the landing substrate down by the carpet depth while its
-        # finished walking face stays on the original riser schedule.
+        assert hanger.connection == "framed-wall-ledger:W-B-CN"
+        assert hanger.child_key.startswith("ledger-")
+        stringer = members[hanger.child_key.removeprefix("ledger-W-B-CN-")]
+        assert stringer.connection == hanger.connection
+        # The ledger top follows the raked stringer down to the landing substrate (carpet
+        # depth below the riser schedule), never ``max(z0, z1)`` of a full prism.
+        assert hanger.z1_end_m == pytest.approx(stringer.z1_end_m)
         assert hanger.z1_end_m == pytest.approx(-1.503, abs=0.001)  # 1/4" carpet since 2026-11-01
-    # The annotated stringer carries the same connection tag.
-    tagged = [m for m in stair.members if m.category == "stringer"
-              and m.connection is not None]
-    assert any("stringer-lower" in m.child_key for m in tagged)
 
 
 def test_a_u_split_buys_the_stock_it_states_and_moves_no_riser(catlin_model,
@@ -410,9 +411,11 @@ def test_every_landing_platform_corner_is_supported(catlin_model):
                 key = (round(point[0], 4), round(point[1], 4))
                 if key in carried:
                     continue
+                # A post seats on the structural sheet under the walking surface, never on
+                # a floating plank laid round it.
                 beneath = [p for p in posts
                            if (round(p.p0[0], 4), round(p.p0[1], 4)) == key
-                           and p.z0_m == pytest.approx(subfloor, abs=1e-6)
+                           and subfloor - inch(1.0).meters <= p.z0_m <= subfloor + 1e-6
                            and p.z1_m >= underside - 1e-6]
                 assert beneath, (
                     f"{stair.tag}: {rim.child_key} corner {key} bears on nothing")
@@ -490,7 +493,8 @@ def test_framed_hosts_emit_ledger_boards_flush_with_the_wall_face(catlin_model,
 def test_skirted_wall_stringers_stand_on_a_spacer_below_the_skirt(catlin_model, main_stair):
     """A skirted stringer is held a flat 2x4 off the studs (notes/stair_skirt_basis.md §6): the
     spacer sits on the stud face, the stringer on the spacer, the skirt in the pocket between,
-    and the spacer's top runs a constant 0.715" under the skirt's bottom edge."""
+    and the spacer's top runs a constant 0.720" under the skirt's bottom edge (0.715" on the
+    5 mm plank's riser, before #112)."""
     walls = {wall.tag: wall for wall in catlin_model.walls}
     members = {m.child_key: m for m in main_stair.members}
     spacers = [m for m in main_stair.members if m.child_key.startswith("spacer-")]
@@ -506,8 +510,9 @@ def test_skirted_wall_stringers_stand_on_a_spacer_below_the_skirt(catlin_model, 
         assert abs(stringer.p0[0] - stud_face) == pytest.approx(inch(2.25).meters)
         assert spacer.category == "blocking" and spacer.profile == "2x4"
     lower = members["spacer-W-M-C5-stringer-lower-2"]
-    # From where the stringer's bottom edge leaves the floor (s 6.258") to its head.
-    assert (lower.p0[1], lower.p1[1]) == pytest.approx((inch(318.633).meters,
+    # From where the stringer's bottom edge leaves the floor to its head (the start moved
+    # 0.011" with the 7 mm plank's 7.5296" riser, #112).
+    assert (lower.p0[1], lower.p1[1]) == pytest.approx((inch(318.644).meters,
                                                          inch(382.375).meters), abs=1e-5)
     assert lower.z0_m == pytest.approx(main_stair.base_elevation_m)
     skirt = members["skirt-lower-right"]
@@ -516,7 +521,7 @@ def test_skirted_wall_stringers_stand_on_a_spacer_below_the_skirt(catlin_model, 
     (sa, za), (sb, zb) = sorted(bottom, key=lambda p: p[1])[:2]
     edge_at = lambda y: za + (zb - za) * (y - s0 - sa) / (sb - sa)  # noqa: E731
     for y, top in ((lower.p0[1], lower.z1_m), (lower.p1[1], lower.z1_end_m)):
-        assert edge_at(y) - top == pytest.approx(inch(0.7154).meters, abs=1e-5)
+        assert edge_at(y) - top == pytest.approx(inch(0.7203).meters, abs=1e-5)
 
 
 def test_no_stair_member_is_degenerate(catlin_model):
@@ -904,6 +909,32 @@ def test_invalid_tread_and_nosing_combinations_are_rejected(fields):
     assert any(finding.check_id in {"integrity.stair_geometry", "integrity.stair_nosing"}
                for finding in findings)
 
+
+
+def test_a_concrete_host_hangs_a_band_that_follows_the_rake():
+    """A stringer beside a pour hangs on a ``concrete-wall-hanger`` band whose top tracks the
+    raked stringer top end to end. An 8" pour 4" off the y=0 stringer puts its face on it."""
+    plan = _stair_plan()
+    concrete = Assembly(tag="CONC8", layers=(Layer(
+        name="concrete", material_ref="concrete", thickness=inch(8),
+        function=LayerFunction.STRUCTURE),))
+    plan = plan.model_copy(update={"library": plan.library.model_copy(update={
+        "materials": (*plan.library.materials,
+                      Material(tag="concrete", name="Concrete", r_per_inch=0.08)),
+        "assemblies": (*plan.library.assemblies, concrete)})})
+    pour = (Node(uid="N000000101", tag="N-101", position=pt(ft(0), -inch(4)), open_end=True),
+            Node(uid="N000000102", tag="N-102", position=pt(ft(20), -inch(4)), open_end=True),
+            FoundationWall(uid="W000000101", tag="W-CONC", start_node="N-101",
+                           end_node="N-102", assembly="CONC8", top_elevation=ft(9),
+                           bottom_elevation=ft(-1)))
+    plan = plan.with_elements("main", (*plan.storey_elements("main"), *pour))
+    stair, findings = _resolved_stair(plan)
+    assert not [f for f in findings if f.severity.value == "error"]
+    members = {m.child_key: m for m in stair.members}
+    stringer, band = members["stringer-0"], members["hanger-W-CONC-stringer-0"]
+    assert stringer.connection == band.connection == "concrete-wall-hanger:W-CONC"
+    assert band.z1_end_m is not None and band.z1_end_m > band.z1_m
+    assert (band.z1_m, band.z1_end_m) == pytest.approx((stringer.z1_m, stringer.z1_end_m))
 
 
 def test_a_wall_four_inches_off_the_stringer_is_not_a_host():

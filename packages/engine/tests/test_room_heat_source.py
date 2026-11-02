@@ -42,6 +42,20 @@ def _findings(model_or_plan, *, plan=False):
     return room_heat_source(ctx)
 
 
+def _with_dining_zone(plan):
+    """``plan`` plus the supplemental zone catlin retired (decision #112), in a living room
+    that ``EQ-M-HP2-LIVING`` reaches: an unstated output on a room a head serves."""
+    from typehaus import FloorHeat, RadiantSystem, ft, in_slab, inch, pt
+
+    zone = FloorHeat(uid="TSTFHDINAA", tag="FH-M-DINING",
+                     zone=(pt(inch(269.375), ft(14, 4.5)), pt(inch(365.375), ft(14, 4.5)),
+                           pt(inch(365.375), ft(21, 7.5)), pt(inch(269.375), ft(21, 7.5))),
+                     system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
+                     watts=700)
+    elements = {**plan.elements, "main": (*plan.elements["main"], zone)}
+    return plan.model_copy(update={"elements": elements})
+
+
 def _by_room(model, *, plan=False):
     return {f.element_tags[0] if f.element_tags else f.message.split(":")[0].strip(): f
             for f in _findings(model, plan=plan)}
@@ -94,9 +108,9 @@ def test_both_bath_zones_state_the_corrected_delivered_output(catlin_plan) -> No
              if isinstance(e, FloorHeat)}
     assert zones["FH-M-BATH2"].delivered_btuh_per_ft2 == pytest.approx(22.8)
     assert zones["FH-S-BATH1"].delivered_btuh_per_ft2 == pytest.approx(22.8)
-    # The dining zone is supplemental in a room with a head in it, so what it DELIVERS is
-    # not the question — the zone's margin is. Never defaulted.
-    assert zones["FH-M-DINING"].delivered_btuh_per_ft2 is None
+    # The dining zone (retired 2026-11-01) was supplemental in a room with a head; a zone
+    # that states no output never gets one defaulted in (see the synthetic one below).
+    assert "FH-M-DINING" not in zones
 
 
 def test_bath1_carries_its_room_and_bath2_does_not(catlin_model_ro) -> None:
@@ -152,12 +166,13 @@ def test_a_bathroom_carries_no_code_ref_and_says_why(catlin_model_ro) -> None:
 
 
 def test_a_room_the_system_reaches_passes_without_any_temperature_arithmetic(
-        catlin_model_ro) -> None:
-    """``RM-M-LIVING`` has ``FH-M-DINING`` in it AND ``EQ-M-HP2-LIVING`` hanging on its wall.
-    The delivered output of a modulating inverter head is not a model fact — it depends on
-    the supply temperature it happens to be running at — so the honest statement is that the
-    room is served, and the sizing question is the zone's."""
-    living = _by_room(catlin_model_ro)["RM-M-LIVING"]
+        catlin_plan) -> None:
+    """A radiant zone in ``RM-M-LIVING``, which ``EQ-M-HP2-LIVING`` hangs on the wall of. The
+    delivered output of a modulating inverter head is not a model fact — it depends on the
+    supply temperature it happens to be running at — so the honest statement is that the
+    room is served, and the sizing question is the zone's. Catlin's own dining mat is
+    retired, so the zone is put back on a copy of the plan."""
+    living = _by_room(_with_dining_zone(catlin_plan), plan=True)["RM-M-LIVING"]
     assert living.result is Result.PASS
     assert "mep.heating_capacity" in living.message
 
@@ -165,7 +180,7 @@ def test_a_room_the_system_reaches_passes_without_any_temperature_arithmetic(
 def test_catlin_reports_no_fail_from_this_check(catlin_model_ro) -> None:
     findings = _findings(catlin_model_ro)
     assert [f.message for f in findings if f.result is Result.FAIL] == []
-    assert len(findings) == 3, "three radiant zones, three findings"
+    assert len(findings) == 2, "two radiant zones, two findings"
 
 
 # --- 3. the FAIL and UNKNOWN branches, synthetically ----------------------------------------

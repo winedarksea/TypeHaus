@@ -702,18 +702,28 @@ WALLS = [
          layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING),
-    FoundationWall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
-                   end_node="N-B-C", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
+    # ** THE REST OF THE x=18' LINE IS FRAMED TOO (2026-11-01, decision #112). ** W-B-CS2,
+    # W-B-CN2 and W-B-CN were 12" pours because SL-M-DECK's cast band bore on them; that deck
+    # is FS-M-NE's open-web trusses now, so they are the same 2x6 bearing wall as W-B-CS3 on
+    # their existing footings (params/foundations.py `_FRAMED_WALLS`). Tags and uids kept
+    # (decision #16). They still carry FS-M-WEST/-STAIR from the west and FS-M-NE from the
+    # east (3 1/2" / 2" plate split, params/main_deck.py), W-M-C2/C3/C5/C5B and through them
+    # RB-HOUSE, BM-M-HALL, FO-M-STAIR's east edge and P-M-STRLAND-SE.
+    Wall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
+         end_node="N-B-C", assembly="INT_2X6_BRG_HALF", top=ft(8),
+         alignment=face("stud-ext", offset=inch(-2.75)),
+         structural_role=StructuralRole.BEARING),
     # Split at N-B-BA-E so the bathroom's north partition tees onto a shared
     # node — else `integrity.wall_loop_open` reads it as a free end. W-B-CN keeps the tag,
     # uid, and the north 14'-2 5/8" that W-M-C5 stacks on, so the bearing stack is untouched.
-    FoundationWall(uid="CBW113AAAA", tag="W-B-CN", start_node="N-B-BA-E",
-                   end_node="N-B-N1", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
-    FoundationWall(uid="CBW121AAAA", tag="W-B-CN2", start_node="N-B-C",
-                   end_node="N-B-BA-E", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
+    Wall(uid="CBW113AAAA", tag="W-B-CN", start_node="N-B-BA-E",
+         end_node="N-B-N1", assembly="STAIRWELL_INT_2X6_BRG_FURRED", top=ft(8),
+         alignment=face("stud-ext", offset=inch(-2.75)),
+         structural_role=StructuralRole.BEARING),
+    Wall(uid="CBW121AAAA", tag="W-B-CN2", start_node="N-B-C",
+         end_node="N-B-BA-E", assembly="INT_2X6_BRG_HALF", top=ft(8),
+         alignment=face("stud-ext", offset=inch(-2.75)),
+         structural_role=StructuralRole.BEARING),
     # **The y=18' cross line is framed now.** All four of these were 12" cast
     # concrete for one reason: the 9" suspended deck over the basement was designed to span
     # between them. The deck is joists and an EPS-formed band since the basement-ceiling

@@ -1,3 +1,8 @@
+> **RETIRED 2026-11-01 (decision #112).** The main floor's concrete deck `SL-M-DECK` was replaced
+> by wood floor trusses (`FS-M-NE`), so there is no wood-to-concrete boundary, cap or movement
+> joint: Cotton Oak LVP floats over the 3/4" subfloor across the whole floor
+> (`lvp_flooring.md`). The body below is the record of the retired design, kept for the revert.
+
 # Main floor, wood-to-concrete boundary at y = 13'-0"
 
 From the basement-ceiling overhaul (`plans/TODO.md § Basement Ceiling`, decisions #59/#60).

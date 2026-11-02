@@ -1,155 +1,50 @@
-"""The basement's ceiling — the main floor's structure, mixed wood and concrete.
+"""The basement's ceiling — the main floor's structure, all wood.
 
-Two facts drive the mix. Wood I-joists already cross the same 18' bays on both storeys above
-(``FS-SECOND``, ``FS-ATTIC``), and EPS stay-in-place deck forms — LiteDeck, BuildDeck,
-Insul-Deck — span 18' one-way with far less concrete. Tune the EPS deck so it lands on the
-same bearing plane as the wood floor's mudsill and the two become interchangeable bay by
-bay: same seat, same soffit-to-datum arithmetic, same 18' span to the x=18' bearing line.
-Concrete then goes only where it is actually wanted.
-
-**One flat bearing seat, one shared mudsill.** ``plan/storeys/basement.py``'s WALLS header
-says the I-joists share the framed wall's 2x6 mudsill, and ``pt-sill-plate`` bills the LF.
-The fix: one flat seat all the way round at ``BEARING_SEAT``, reached by deepening the EPS
-deck until its soffit lands on the same plane the mudsill sits on. No stepping in the forms,
-and the basement wall comes out at exactly 8'-0".
+Five joist fields on one flat bearing seat. West of x=18' the TJI 230 bays (``FS-M-WEST``,
+``FS-M-MECH``, ``FS-M-STAIR``); east of it ``FS-M-EAST`` (TJI 230, y 0'-13') and ``FS-M-NE``
+(11 7/8" open-web floor trusses at 12" o.c., y 13'-36', decision #112). Every member is
+11 7/8", so the seat, the subfloor and the basement ceiling are one plane each, house-wide.
+``FS-M-NE`` replaced ``SL-M-DECK``, the BuildDeck EPS/concrete band; its basis is in
+``DESIGN-LOG.md`` ("Main deck goes wood"), and ``DECK_EPS_INT`` stays a named revert.
 
 ::
 
-                    WOOD BAY                          EPS DECK BAY
-      +0.94685" 5 mm Quincy Oak LVP (RM-M-MUDROOM and both closets)
-      +0.94685" 5 mm Quincy Oak (including cork)   -- wood bays, 5 mm reducer to the cap
-      +3/4"   3/4" plywood subfloor ---------------  cap top, coated   <- finished floor
-              (every main-floor wall plate stands here, both bays — decision #110)
-      0'-0"   ------------------------------------  STOREY DATUM (top of joists)
-              11 7/8" TJI 230 @ 16" o.c.             4 3/16" cast cover
-     -11 7/8" ----- joist soffit ------                 +
-              1 1/2" PT mudsill                     10" BuildDeck (8" base + 2" top hat)
+      +3/4" + plank   Cotton Oak LVP on the subfloor, whole main floor
+      +3/4"           3/4" plywood subfloor   <- every main-floor wall plate stands here
+      0'-0"           STOREY DATUM (top of joists)
+                      11 7/8" TJI 230 @ 16" / open-web truss @ 12"
+     -11 7/8"         joist soffit (5/8" gypsum hangs here, basement ceiling)
+                      1 1/2" PT mudsill (concrete walls) or 2x6 double top plate (x=18')
      -13 3/8"
-              1/16" EPDM gasket, compressed
-     -13 7/16" ==== BEARING SEAT - FLAT, NO STEP ====  deck soffit
-
-The wood bay's stack to the seat is 1/16 + 1 1/2 + 11 7/8 + 3/4 = 14 3/16"; the deck's is
-10" + 4 3/16" = 14 3/16" (decision #111, amending #61). The two tops meet at +3/4", so every
-main-floor wall plate sits at one height and the cap is screeded off the wood edges; the
-5 mm plank on the plywood finishes 0.19685" proud of the coated concrete and takes a low
-5 mm reducer at the L (it was a flush T over a 3/16" higher cap until 2026-11-01).
-``structural.mixed_deck_bearing_seat`` is what holds all of that: nudge the joist depth, the
-subfloor, the mudsill, the gasket, the form or the cover and the build FAILs instead of
-quietly stepping.
+                      1/16" EPDM gasket, compressed (on concrete)
+     -13 7/16"        BEARING SEAT
 
 **The datum is the top of joists, not the walking surface.** The subfloor rides above it and
-the walls stand on the subfloor (``resolve/plate_seat.py``, decision #110): plate at +3/4",
-studs cut so the double top plate meets the joist soffit over it, so a wood bay's finished
-floor is +3/4" + covering while the datum is 0'-0".
-That is why ``DECK`` carries an explicit ``top_elevation``: a ``datum="structure"`` slab
-pins its TOP to the datum whatever its thickness, so the arithmetic below — which is right
-— never reached the elevation on its own.
+the walls stand on the subfloor (``resolve/plate_seat.py``, decision #110).
 
-The one plane that does NOT match is the basement ceiling, and it cannot: the board screws
-to the form's integral steel rib on the concrete side and straight to the joists on the
-wood side. With the deck 1 9/16" deeper than the wood bay's soffit and the rib's 1/2" on top
-of that, the two gypsum faces sit **2 1/16"** apart at the boundary. That is a real step in
-a real ceiling, and ``notes/mixed_deck_movement_joint.md`` carries how it is trimmed.
+**Why a params module and not ``plan/storeys/main.py``.** The depth and the seat want to be
+one constant each: ``BEARING_SEAT`` is read by the basement walls (as literals, since
+editable files cannot import) and by the wall-base detail. FloorSystems are not UI-movable.
 
-**And the model draws it.** ``RM-B-GYM`` is the only room the boundary runs through, so it
-resolves TWO ceilings rather than one — 234 SF hung off ``FS-M-EAST``'s joist soffit at
--11 7/8", 90 SF off this deck's at -13 7/16" (``resolve/ceilings.py``, via
-``ceiling_over.ceiling_regions``). The model states the **1 9/16"** it can derive, not the
-2 1/16" that gets built: the rib is part of the EPS form, and EPS is never modelled here.
-A room straddling two decks of the SAME depth — ``RM-M-LIVING`` over the second floor's
-truss/I-joist split, ``RM-B-FURNACE`` over two of the west bays — is one flat ceiling and
-must stay one; a deck seam is not a step.
-
-The basement floor rose 2 9/16" with the seat (the house did not move — ``SITE_GRADE`` is
-unchanged), so the basement slab and storey are at -9'-1 7/16" and the walls are exactly
-8'-0" of pour: 8'-0 15/16" clear under the joists, 7'-10 7/8" under the concrete band, both
-over R305.1's 7'-0". The 8" segments drop from ``#6 @ 48" o.c.`` to ``#5 @ 41" o.c.`` on
-IRC Table R404.1.2(8)'s 8'-unsupported row.
-
-**Why this is a params module and not ``plan/storeys/main.py``.** The depth wants to be one
-constant, and now so does the seat: ``BEARING_SEAT`` is read by the basement walls (as
-literals the ``integrity`` tier guards, since editable files cannot import), by
-``structural.mixed_deck_bearing_seat`` and by the wall-base detail component.
-Editable-dialect files may hold only literals and cannot import from ``params/``, so a file
-that holds the arithmetic cannot be the file the UI writes back to. The elements here are
-not UI-movable, so nothing is lost.
-
-**Why three FloorSystems on the west half and not one.** ``FloorSystem.outline`` scopes only
-the *perpendicular* extent; span boundaries come from the bearing refs' axis midpoints
-(``resolve/floors.py``). One system naming all three bearing lines would frame joists across
-the full 36' of the house, straight through the concrete band. So the west half's south
-bay, its mechanical-room bay and its stair bay are separate systems, each naming only the
-lines it actually bears on — see the split at ``_MECH_Y`` below.
-
-**Bearing refs are a bearing statement, not an axis proxy.** Every system below names the
-walls its joists actually land on, all of them, including duplicates on one grid line — a
-duplicate boundary is a degenerate span and ``resolve/floors.py`` drops it, so listing the
-truth costs nothing. ``integrity.floor_bearing_grid`` catches the remaining trap: ``W-B-CS``
-and ``W-B-CS3`` carry ``alignment=face("stud-ext", offset=inch(-2.75))``, a hardcoded HALF
-of the stud thickness; an alignment offset that stopped matching would slide their axis off
-x=18' and inject a bay of stub joists. Both resolve to 18.000 exactly today.
-
-**BuildDeck is the basis of design (2026-09-12), and the model half-said so already.** This
-file named LiteDeck as the product while sourcing both its span basis and its R-value from
-BuildDeck. Making BuildDeck the product makes the model self-consistent and picks up two
-things LiteDeck's free literature does not publish: a sealed shoring design and a rebar
-schedule. LiteDeck (LiteForm) and Insul-Deck stay named ALTERNATES — the depth-matching
-argument above is product-neutral and that is exactly the point — but a substitution has to
-bring its own span table, its own shoring design and its own R per section with it.
-
-Quantities, from the manufacturers' published tables:
-
-* The section is modular either way: a base panel plus a top hat gives a 10"/12"/14" beam
-  and the cast cover over it is specified separately. This deck is the **10" section under a
-  4 3/16" cover**. BuildDeck publishes R as installed per section — R-23 at 8", **R-29 at
-  10"**, R-36 at 12" — so ``eps-deck-form`` carries R-2.9/inch, not the 8" section's 3.125.
-* **The published row, quoted onto ``DECK.published_span`` below.** BuildDeck's
-  allowable-live-load table takes the 10" deck with a 4" cap and 2-#5 beam bars to a 20'-0"
-  span at 62 psf live load: f'c 4,000 psi, fy 60 ksi, +15 psf additional dead load,
-  deflection < L/480, #3 stirrups 4'-0" each end at 5" o.c. and slab reinforcement a 12"x12"
-  grid of #4. This span is 18'-0" at a cap 3/16" deeper than the row.
-  ``structural.slab_published_span`` grades that read and refuses the row if the section,
-  the product or the demand drifts away from what it was read at. The manual states its
-  tables are for estimation and that the Engineer of Record reviews and approves — which is
-  a review of a table read, not a design nobody has done.
-* The LiteDeck WRS manual's consumption table reads 58 SF/cy for the 10" beam at a 4" cover
-  and 52 SF/cy at 4 1/2", so 4 3/16" interpolates to 58 - 6 x 0.1875/0.5 = 55.75 SF/cy
-  = 0.01794 cy/SF. The 414 SF band is 7.43 cy (7.74 at the old 4 3/8") — against 34.26 cy for
-  the whole 9" slab it replaced. (Kept as the
-  consumption basis: it is a geometric figure for the same 10" section, and BuildDeck
-  publishes no equivalent table.)
-* **The shoring design is PE-SEALED, not the installer's.** BuildDeck publishes one by
-  McLaren Engineering Group (File 150609.00, 2016): wood stud walls at 6'-0" o.c. with
-  2x8/2x10 joists at 24" o.c., 97 psf dead + 25 psf construction live, in place no more than
-  6 weeks, struck after the 28-day cure. That is a rental-and-carpentry line, not the 9"
-  slab's commercial plywood-and-mobilisation package — the line is in ``prices.toml``, which
-  said this on 2026-08-23 before this docstring caught up.
-* **One open question for the EOR, and it is not a defect.** McLaren's design uses 25 psf
-  construction live load where ACI 347 §2.2.1 asks for >=50 psf live and >=100 psf combined.
-  97 + 25 = 122 psf clears the combined floor and not the live-load floor. Ask; do not
-  assume either way.
-
-Sources: BuildDeck Design, Engineering and Installation Manual (BuildBlock, 2022) and its
-McLaren shoring design; LiteDeck WRS installation manual, Sept 2020 (liteform.com);
-Insul-Deck technical summary; ICF Builder's foam-decking comparison. No ICC-ES report was
-found for any of the four EPS deck systems examined — see plans/buildability.md BLD-03.
+**Why five FloorSystems and not one.** ``FloorSystem.outline`` scopes only the
+*perpendicular* extent; span boundaries come from the bearing refs' axis midpoints
+(``resolve/floors.py``), so each field names only the lines it actually bears on.
+**Bearing refs are a bearing statement**: duplicates on one grid line are a degenerate span
+and dropped. ``integrity.floor_bearing_grid`` catches the trap that the x=18' framed walls
+carry ``alignment=face("stud-ext", offset=inch(-2.75))``, a hand-written HALF of the stud;
+an offset that stopped matching would slide their axis off x=18'.
 """
 
 from typehaus.geometry import rect
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus import (
-    BarSpec,
     DeckLayer,
     FloorSystem,
     JoistReinforcement,
     JoistSpec,
     Layer,
     LayerFunction,
-    PublishedSpan,
-    ReinforcementSpec,
-    RibLayout,
-    Slab,
     ft,
     inch,
     pt,
@@ -157,119 +52,53 @@ from typehaus import (
 
 from params.flooring import LVP_THICKNESS_IN
 from params.second_deck import _DEPTH as _JOIST_DEPTH
-from params.second_deck import _JOIST, _SUBFLOOR, TJI_230_FLOOR_SPAN
+from params.second_deck import (_JOIST, _JOIST_BEARING, _SUBFLOOR, _TRUSS, _TRUSS_BEARING,
+                                _WEB_OPENING, _WEB_PANEL_OFFSET, _WEB_PANEL_PITCH,
+                                TJI_230_FLOOR_SPAN)
 
-# --- the wood bay this deck has to match, top and bottom --------------------------
-#
-# The second floor's build-up, repeated on this storey. The depth and subfloor thickness
-# are imported from ``params/second_deck.py`` rather than restated: that deck is split
-# truss/I-joist at x=18', and both members share this one depth precisely so the concrete
-# band below can keep matching a single number instead of two. The joist is that deck's too.
 _JOIST_OC = inch(16)
 
 # The basement's ceiling — 5/8" gypsum board, room side (and only layer).
 _CEILING_GWB = (Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
                       function=LayerFunction.FINISH),)
 
-# The storey datum is the TOP OF JOISTS, not the walking surface — the subfloor rides above
-# it (``Slab.datum``'s own docstring) and the walls stand on the subfloor (decision #110:
-# W-S-E2's datum is exactly 10'-0", its plate 10'-0 3/4"). So the finished floor of a wood
-# bay is _SUBFLOOR *above* the datum, and anything claiming to share that plane has to be
-# pinned there explicitly. ``plan/manifest.py`` takes the main storey's elevation from
-# MAIN_DATUM, so the two cannot disagree.
+# The storey datum is the TOP OF JOISTS; the finished floor of every bay is _SUBFLOOR above
+# it. ``plan/manifest.py`` takes the main storey's elevation from MAIN_DATUM.
 MAIN_DATUM = ft(0)
 MAIN_FINISHED_FLOOR = inch(MAIN_DATUM.inches + _SUBFLOOR.inches)
 
-# Quincy Oak's total installed depth includes its attached cork. Use the same selection
-# as the house material so stair arrivals and the rendered walking plane stay coordinated.
+# The plank's total installed depth, from the one selection the house material reads, so stair
+# arrivals and the rendered walking plane stay coordinated.
 _LVP = inch(LVP_THICKNESS_IN)
 MAIN_FINISHED_FLOOR_LVP = inch(MAIN_FINISHED_FLOOR.inches + _LVP.inches)
 
-# **3/4" solid oak cannot share this cap height.** The south bay (x 18'-36', y 0'-13')
-# was oak for part of 2026-09-05 and was reverted the same day. Oak tops at +1 1/2" against
-# the cap's then +15/16" (+3/4" since 2026-11-01) — a 9/16" (now 3/4") REDUCER at the
-# y=13' line, on the one leg that also has to break for differential deflection. It could
-# not be designed out from this side: ``structural.mixed_deck_bearing_seat`` holds cap-top
-# within 1/4" of the subfloor top, so the cap had 1/16" of lift in it, not 9/16". The step
-# was acceptable or it was not, and it
-# was not — so there is no MAIN_FINISHED_FLOOR_OAK here. Oak is still the two studies'
-# floor; it is this bay, against this cap, that does not want it. The mudroom
-# and its closets now share the hall LVP plane. The bedroom carpet and heated
-# bath are at +1 1/2", with a reducer at the bedroom entry.
-
-# --- the plane the whole exercise turns on ----------------------------------------
+# --- the bearing seat ---------------------------------------------------------------
 #
-# **The bearing seat.** One flat plane, all the way round the basement, that both bays land
-# on. On the wood side the stack under the datum is joist + mudsill + gasket; the deck's
-# soffit is simply told to reach the same elevation. Every basement ``FoundationWall`` tops
-# out here, ``SL-M-DECK``'s soffit sits here, and the flat-laid PT plate the joists and rim
-# bear on is returned here (``resolve/construction_sills.py``).
-#
-# The mudsill is the framed wall's own 2x6 sill, shared: one board carries the studs above
-# and the joists beside it, which is why the sill return is authored over the *union* of the
-# two runs rather than as two rules that would double-bill the same plate.
-# The same number ``FramingSpec.sill_gasket`` states on EXT_2X6 (and the same one
-# ``BasementToFramedWallConfig.sill_gasket_in`` falls back to) — the seat is derived here,
-# and the field is what the wall-base detail draws.
+# One flat plane all the way round the basement. Every basement ``FoundationWall`` and the
+# x=18' framed walls top out here, and the flat-laid PT plate the joists bear on over
+# concrete is returned here (``resolve/construction_sills.py``). The gasket is the number
+# ``FramingSpec.sill_gasket`` states on EXT_2X6.
 _SILL_GASKET_COMPRESSED = inch(0.0625)   # EPDM sill seal, compressed thickness
-_MUDSILL = inch(1.5)                     # the framed wall's 2x6 sill plate, laid flat
+_MUDSILL = inch(1.5)                     # 2x PT sill plate, laid flat
 BEARING_SEAT = inch(-(_SILL_GASKET_COMPRESSED.inches + _MUDSILL.inches
                       + _JOIST_DEPTH.inches))
 
-# **The deck's depth is what reaches that seat**, not a copy of the wood bay's depth.
-#
-# The split into stay-in-place form and cast cover is the deck-form section: the form is an
-# 8" base panel plus a 2"/4"/6" top hat, giving a 10", 12" or 14" beam, and the cover over it
-# is specified separately. This is the 10" beam under a 4 3/16" cover (4 3/8" until
-# 2026-11-01, when the cap came down 3/16" to the subfloor plane, decision #111).
-#
-# Two constraints this arithmetic does NOT enforce, and a human must:
-#   * The manufacturer's span table governs the cover, not the seat: a thinner cover to hit
-#     some other seat needs the 18'-0" clear span re-checked, not just a thinner pour.
-#   * ``plan/assemblies.py`` is editable-dialect — literals only, no imports from params —
-#     so DECK_EPS_INT's two structural layers cannot read these and must be edited to
-#     match. ``integrity.slab_thickness`` fails the build if they drift apart, and
-#     ``structural.mixed_deck_bearing_seat`` fails it if the seat itself drifts.
-EPS_FORM_DEPTH = inch(10.0)   # BuildDeck 10" section (8" base + 2" top hat)
-EPS_CAP = inch(4.1875)        # cast cover over the form; tops flush with the subfloor
-DECK_DEPTH = inch(EPS_FORM_DEPTH.inches + EPS_CAP.inches)
-
-# Where that puts the cap's own top: the seat plus the whole section. +3/4", the plywood
-# subfloor's own plane, so a wall plate straddling the edge (the C-line, x=18') sits level.
-# Derived, never a literal — a thicker cover lifts it.
-DECK_TOP = inch(BEARING_SEAT.inches + DECK_DEPTH.inches)
-
-# The basement's own two planes, derived here because everything else in the house is
-# derived from the seat and the basement should be too. The pour is exactly 8'-0" — which is
-# what takes the 8" segments from ``#6 @ 48" o.c.`` to ``#5 @ 41" o.c.`` on IRC Table
-# R404.1.2(8)'s 8'-unsupported / 7'-unbalanced cell. ``plan/storeys/basement.py`` is
-# editable-dialect and repeats both as literals; ``integrity.basement_bearing_seat`` is what
-# stops the two from drifting, exactly as ``integrity.slab_thickness`` guards DECK_DEPTH.
+# The basement's own two planes, derived from the seat. The pour is exactly 8'-0", which is
+# what takes the 8" segments to ``#5 @ 41" o.c.`` on IRC Table R404.1.2(8)'s 8' row.
+# ``plan/storeys/basement.py`` repeats both as literals; ``integrity.basement_bearing_seat``
+# stops them drifting.
 BASEMENT_WALL_HEIGHT = ft(8)
 BASEMENT_DATUM = inch(BEARING_SEAT.inches - BASEMENT_WALL_HEIGHT.inches)
 
-# The basement's FINISHED ceiling, off its own datum: the joists' soffit less the 5/8" board
-# hung on it, which is 8'-0 15/16". `Storey.default_ceiling_height` in plan/manifest.py reads
-# this instead of a nominal 9'-0", and the difference is not cosmetic — a soffit hangs from
-# that field (`resolve/envelope.py`), and so does every ceiling-mounted placeable and light
-# (`resolve/placeables.py`). The nominal put RM-B-BATH's bulkhead 11" up inside FS-M-WEST.
+# The basement's FINISHED ceiling, off its own datum: joist soffit less the 5/8" board,
+# 8'-0 15/16". ``Storey.default_ceiling_height`` reads this; soffits, ceiling placeables and
+# lights hang from it.
 BASEMENT_CEILING_HEIGHT = inch(-(_JOIST_DEPTH.inches + _CEILING_GWB[0].thickness.inches)
                                - BASEMENT_DATUM.inches)
 
-# The concrete/wood boundary. Concrete keeps the east half north of y=13' — the dining
-# radiant zone (FH-M-DINING, x 22'-11"..30'-11", y 14'-4 1/2"..21'-7 1/2") sits wholly inside it,
-# with its thinset bed over the cured cap exactly as before. Everything else is wood.
-# Re-apportioning the ceiling later is a matter of moving this one line and the two
-# outlines it cuts.
-#
-# It is also a movement joint, and the finish has to say so: the two systems match in depth
-# but not in stiffness, and an I-joist bay's 1/2" of live-load deflection against a slab that
-# barely moves is a hinge under whatever runs across it. The detail — break the LVP, break
-# the ceiling board, keep tile off the line entirely — is
-# ``houses/catlin/notes/mixed_deck_movement_joint.md``. Nothing in the engine can bind it to
-# geometry (a Transition needs a derived boundary condition and there is none for "two decks
-# meet in plan"), which is recorded there and in plans/TODO.md.
-_BAND_Y = ft(13)
+# The TJI/truss seam east of x=18'. Same depth both sides, so no movement joint and no
+# ceiling step (``RM-B-GYM`` is one flat ceiling); only the member changes.
+_SEAM_Y = ft(13)
 _CENTRE_X = ft(18)
 _HOUSE = ft(36)
 _ZERO = ft(0)
@@ -447,13 +276,13 @@ WEST_FLOOR = FloorSystem(
                      # All five are true bearing; the three on x=18' resolve to one
                      # boundary (integrity.floor_bearing_grid holds them there).
                      bearing_refs=("W-B-W2", "W-B-W1", "W-B-CS", "W-B-CS3", "W-B-CS2",
-                                   "W-B-CN2")),
+                                   "W-B-CN2"),
+                     # The x=18' plate is shared with FS-M-NE's trusses north of y=13'.
+                     end_bearing=(("W-B-CS2", _JOIST_BEARING), ("W-B-CN2", _JOIST_BEARING))),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     reinforcements=_WEST_FLOOR_REINFORCEMENT,
-    # The basement's ceiling. R316.4 wants gypsum over the EPS in the concrete band; the
-    # owner's decision was to drywall the whole ceiling rather than stop the board at the
-    # boundary (houses/catlin/preferences.toml).
+    # The basement's ceiling: 5/8" gypsum end to end (houses/catlin/preferences.toml).
     ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _MECH_Y_S),
     source="catlin main floor, west half south of the bathroom node line — 11 7/8\" "
@@ -491,7 +320,8 @@ MECH_FLOOR = FloorSystem(
 STAIR_FLOOR = FloorSystem(
     uid="CMFS04AAAA", tag="FS-M-STAIR",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
-                     bearing_refs=("W-B-STR3B", "W-B-STR3", "W-B-STR", "W-B-CN")),
+                     bearing_refs=("W-B-STR3B", "W-B-STR3", "W-B-STR", "W-B-CN"),
+                     end_bearing=(("W-B-CN", _JOIST_BEARING),)),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
@@ -501,114 +331,106 @@ STAIR_FLOOR = FloorSystem(
            "8'-0\" east-west from the x=10' bearing line to the x=18' bearing line",
 )
 
-# The east half's wood bay: the gym's ceiling, south of the concrete band.
+# The east half's I-joist bay: the gym's ceiling, south of the truss seam.
+#
+# ** THE SEAM IS A DOUBLE MEMBER, AND IT HAS TO BE AUTHORED AS ONE ** (the ``_MECH_Y_S`` reasoning
+# above): both fields lay a member on their own outline edge, so this one stops short by half
+# of each member's width and the TJI and the truss's chord sit face to face.
+_SEAM_GAP = inch((cross_section(_JOIST).flange_width_m + cross_section(_TRUSS).width_m)
+                 / 2 / M_PER_IN)
+_SEAM_Y_S = inch(_SEAM_Y.inches - _SEAM_GAP.inches)
 EAST_FLOOR = FloorSystem(
     uid="CMFS02AAAA", tag="FS-M-EAST",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
-                     # This bay is south of y=13'-10", so its west bearing is the framed
-                     # pair W-B-CS (y 0..10'-0") and W-B-CS3 (10'-0"..13'-10") — W-B-CS2 runs
-                     # y 13'-10"..18' and this deck never touches it.
+                     # South of y=13'-10", so its west bearing is the framed pair W-B-CS
+                     # (y 0..10'-0") and W-B-CS3 (10'-0"..13'-10").
                      bearing_refs=("W-B-CS", "W-B-CS3", "W-B-E1")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
-    outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _BAND_Y),
+    outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _SEAM_Y_S),
     # ** D-B-PATIO'S HEADER IS IN THIS BAND (2026-10-31). ** W-B-S3-FR bears this deck's
     # y=0 edge line but runs PARALLEL to the joists, so the 63 5/16" opening under it is
     # carried by a flush 2-ply 1 3/4" x 11 7/8" Microllam LVL beside the edge joist, seated
-    # on the two 4-stud jamb packs (x 18'-2 11/32" .. 24'-5 21/32", the packs' outer faces).
-    # NOT a bearing ref: resolve/floors.py would cut every joist at that line. Graded as
-    # `band_header/D-B-PATIO` (notes/patio_band_header.md); D-M-BALC's packs stack on the
-    # seats, so no jamb load lands in the span.
+    # on the two 4-stud jamb packs. NOT a bearing ref: resolve/floors.py would cut every
+    # joist at that line. Graded as `band_header/D-B-PATIO` (notes/patio_band_header.md).
     reinforcements=(JoistReinforcement(
         at=pt(inch(256), inch(3.25)), plies=3, member="1.75x11.875 LVL", blocking=False,
         extent=(inch(218.34375), inch(293.65625)),
         source="flush band header over D-B-PATIO (Door.header_in_band) — 2-ply Microllam "
                "LVL 2.0E, Weyerhaeuser TJ-9000 (July 2026)"),),
-    # RM-M-LIVING's fireplace surround passes through this deck: W-M-FIRE-STUB-S/-M/-N's brick
-    # starts on W-B-E1's pour and rises 13 7/16" through the joist zone. NO `openings` — the
-    # joists run CONTINUOUS through the panel to their mudsill seat and the three piers stand
-    # in the two 4" pockets between them, so all this deck owes the detail is a piece of
-    # plywood, and that cut is DERIVED (`resolve/through_deck.py`, decision #78). FO-M-FIRE
-    # was listed here until 2026-09-19; plan/storeys/main.py carries why it is gone.
+    # RM-M-LIVING's fireplace piers pass through this deck in the pockets between joists
+    # 005/006; the joists run continuous and the subfloor cut is DERIVED
+    # (`resolve/through_deck.py`, decision #78).
     source="catlin main floor, east half south of y=13' — same joists as FS-M-WEST, "
            "spanning 18'-0\" from the x=18' bearing line to W-B-E1",
 )
 
-# What is left of the concrete: 414 SF over the dining end. Same tag and same uid as the
-# 1,233 SF slab it replaces, so the IFC GlobalId survives (decision #16).
-DECK = Slab(
-    kind="pour",
-    uid="CMS501AAAA", tag="SL-M-DECK",
-    outline=_rect(_CENTRE_X, _BAND_Y, _HOUSE, _HOUSE),
-    thickness=DECK_DEPTH, assembly="DECK_EPS_INT",
-    # The cap's own top is the finished floor: a coating on the cap, no covering, no
-    # subfloor. Every room that sits on this outline resolves a derived finish zone from it
-    # (``resolve/rooms.py``), so RM-M-LIVING keeps LVP as its FIELD finish over the wood
-    # bays and the band bills as coated concrete. Move _BAND_Y and the finish moves too —
-    # the boundary is stated once, here. Spec in notes/mixed_deck_movement_joint.md.
-    #
-    # ** 2026-09-12: A COATING, NOT A CREAM POLISH. ** The two want opposite surfaces —
-    # coating TDSs ask for ICRI CSP 2-4 and a hard-troweled cream reads below CSP 2 — so the
-    # route is a LIGHT steel trowel, a grind to CSP 2-3 and a coating over a
-    # moisture-mitigating primer. The cream polish stays a named, costed fallback. The risk
-    # is moisture, not silica: this cap dries UPWARD ONLY (EPS below), so ASTM F2170 in-situ
-    # RH is a real gate, and nothing in the engine grades it — a floor_finish is not a
-    # Layer, so no vapour check sees the film. notes/mixed_deck_movement_joint.md.
-    floor_finish="coated-concrete",
-    # Ceiling is 5/8" gypsum end to end (CLAUDE.md) — the media room below sees the same
-    # board as the wood bays either side of it, no EPS layer (per the owner: EPS is always
-    # hidden, never modelled).
+# --- the east half north of y=13': open-web floor trusses (decision #112) ---------------
+#
+# ** 12" O.C., DESIGNED FOR 60 PSF LIVE AT L/480 (owner, 2026-11-01). ** The kitchen,
+# dining and the lounge's north end stand here, and the owner wants a stiff floor under a
+# long LVP field (and a tile medallion later, if the review in plans/TODO.md lands one).
+# 60 psf is the order spec, not the code's 40 (R301.5); L/480 is the TJI fields' criterion.
+# Same 11 7/8" depth as every other field, so nothing above or below this deck moved.
+#
+# The webs are ``FS-S-WEST``'s Warren layout (24" pitch, 13" clear, 12" offset): the
+# fabricator builds both decks to one drawing, and ``mep.open_web_panel`` reads it. The
+# kitchen drain, the ERV radials and the data conduits that used to need cast sleeves cross
+# through the webs.
+#
+# ** THE x=18' PLATE IS SPLIT 3 1/2" / 2" ** exactly as on the second floor: ``W-B-CS2``/
+# ``-CN2``/``-CN`` are 2x6 framed walls whose double top plate is the seat, the trusses take
+# 3 1/2" (open-web minimum 3") and the TJIs west of it 2" (minimum 1 3/4").
+# ``integrity.floor_end_bearing`` grades the pair.
+#
+# ** POINT LOADS FOR THE FABRICATOR. ** The truss drawing has to carry, as concentrated
+# loads at their stations: the fridge/freezer pair (``FX-M-KRF1``/``KFZ1``, ~350 lb each
+# loaded, on the north wall), the peninsula's cantilevered quartz and its stools, and the
+# partitions this field carries (below). ``notes/main_floor_truss_basis.md`` lists them.
+#
+# No ``published_span``: no maker publishes an 11 7/8" open-web row at 12" o.c. that reaches
+# 60 psf (``notes/main_floor_truss_basis.md`` §3), so ``structural.ijoist_span`` reads its
+# advisory table and the fabricator's sealed truss design governs (plans/TODO.md).
+_TRUSS_OC = inch(12)
+
+# ** ANCHORAGE TO THE CONCRETE (Minn. R. 1309.0404, notes/main_floor_truss_basis.md §4). **
+# Minnesota's R404.1 amendment wants floor joists "connected to the sill plate at the top of
+# wall with an approved connector", and where the framing runs PARALLEL to a foundation wall,
+# full-depth blocking in the first three joist spaces at its Table R404.1(1) spacing (72" for
+# an 8' wall in GM soil). So: ``seat_ties`` puts a hurricane tie (H2.5A; the ZMAX twin on the
+# PT sill) on every truss end seated on a wall, and W-B-N1, the one foundation wall this
+# field runs parallel to, takes blocking in the four bays y 32'..36' at x 21'/27'/33' —
+# 72" o.c., 36" off each end wall. Each line blocks the bay either side of it.
+_N_WALL_BLOCK_X = (ft(21), ft(27), ft(33))
+_N_WALL_BLOCKING = tuple(
+    JoistReinforcement(at=pt(x, y), plies=1, blocking=True,
+                       source="W-B-N1 top restraint (Minn. R. 1309.0404, Table R404.1(1)): "
+                              "full-depth blocking in the bays next to a parallel foundation "
+                              "wall, 72\" o.c.; subfloor nailed to it 8d @ 3\"")
+    for x in _N_WALL_BLOCK_X for y in (ft(35), ft(33)))
+
+NE_FLOOR = FloorSystem(
+    uid="Q3ZJD83QVD", tag="FS-M-NE",
+    joists=JoistSpec(member=_TRUSS, spacing=_TRUSS_OC, direction="x",
+                     # x=18': W-B-CS2 (13'-10"..18'), W-B-CN2 (to the bath node line),
+                     # W-B-CN (to 36'); x=36': W-B-E1 (to 18'), W-B-E2. The 10" of the seam
+                     # bay south of 13'-10" lands on W-B-CS3, which FS-M-EAST also names.
+                     bearing_refs=("W-B-CS3", "W-B-CS2", "W-B-CN2", "W-B-CN", "W-B-E1",
+                                   "W-B-E2"),
+                     web_panel_pitch=_WEB_PANEL_PITCH,
+                     web_opening_width=_WEB_OPENING,
+                     web_panel_offset=_WEB_PANEL_OFFSET,
+                     end_bearing=(("W-B-CS3", _TRUSS_BEARING), ("W-B-CS2", _TRUSS_BEARING),
+                                  ("W-B-CN2", _TRUSS_BEARING), ("W-B-CN", _TRUSS_BEARING)),
+                     seat_ties=True),
+    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    reinforcements=_N_WALL_BLOCKING,
     ceiling_below=_CEILING_GWB,
-    # And the cap top has to BE a stated plane, not whatever a datum leaves it at.
-    # ``top_elevation`` is absolute and wins over ``datum`` outright
-    # (``resolve/envelope.py::_slab_elevations``), which is the only way to say it: a
-    # ``datum="structure"`` slab hangs its thickness below the datum whatever its thickness
-    # is, so the arithmetic above never reached the elevation. Pinning the top is also what
-    # pins the SOFFIT — z0 = DECK_TOP - DECK_DEPTH = BEARING_SEAT, the plane the mudsill
-    # sits on beside it. Derived, never a literal: a thicker cover lifts the polish and
-    # leaves the seat alone, a deeper form lowers the seat and leaves the polish alone, and
-    # ``structural.mixed_deck_bearing_seat`` FAILs on either if it stops meeting the wood.
-    # SL-G-FLOOR pins itself the same way.
-    top_elevation=DECK_TOP,
-    # ** THE ROW'S OWN SCHEDULE, AUTHORED (decision #75 D12). ** BuildDeck names the steel with
-    # the span it publishes: 2-#5 in each beam rib, #3 stirrups at 5" over 4'-0" from each end,
-    # and a 12"x12" grid of #4 in the cap. The ribs run with the 18' span (x), one per 24"
-    # panel joint (detail sheet 5E). Cover 3/4": ACI 318-19 Table 20.5.1.3.1, joists and slabs
-    # not exposed to weather or earth. The east face is cast against W-M-E1's LSL rim band:
-    # sill seal or building paper on it first (notes/mixed_deck_movement_joint.md).
-    reinforcement=ReinforcementSpec(
-        bars=(
-            BarSpec(role="top-x", bar=4, spacing=inch(12), note="cap grid, BuildDeck row"),
-            BarSpec(role="top-y", bar=4, spacing=inch(12), note="cap grid, BuildDeck row"),
-            # Both ends 180° hooks turned up over the 6" bearings (owner, 2026-10-31): a 90°
-            # tail reaches the top cover plane through the cap's end top-y bar; the 180°
-            # stands 5" inside the rib. Neither develops fy at the face (ldh 14.77" vs 5.25"):
-            # notes/rebar_layout_basis.md §5.
-            BarSpec(role="rib", bar=5, count=2, hooks=("start", "end"), hook_kind="std180",
-                    note="2-#5 beam bars per rib, BuildDeck row; 180° hooks into each bearing"),
-            BarSpec(role="stirrups", bar=3, spacing=inch(5), zone=ft(4),
-                    note="#3 @ 5\" within 4'-0\" of each end, BuildDeck row"),
-        ),
-        cover=inch(0.75),
-        ribs=RibLayout(direction="x", spacing=inch(24), width=inch(6), depth=inch(7.5),
-                       offset=inch(24)),
-        source="BuildDeck manual (BuildBlock, 2022): 10\" deck / 4\" cap / 2-#5 row; sheet 5E",
-    ),
-    # ** THE DECK'S STRUCTURE IS A PRESCRIPTIVE READ, NOT A SEAL (2026-09-12). ** Nothing
-    # graded this span before: no engineering/ kind for a suspended slab, no check reading
-    # one. It needs no seal — BuildDeck publishes the row (docstring above), and
-    # ``structural.slab_published_span`` grades it. ``member`` is spelled the way that check
-    # derives it from DECK_EPS_INT — form thickness, form material name, cap thickness — so
-    # retyping any of the three takes the finding to UNKNOWN. Do not "tidy" it.
-    published_span=PublishedSpan(
-        source="BuildDeck Design, Engineering and Installation Manual (BuildBlock, 2022), allowable live load table, 10\" deck / 4\" cap",
-        table="10\" deck, 4\" cap, 2-#5 beam bars, 20'-0\" span, 62 psf live load",
-        member="10\" BuildDeck EPS deck form under a 4 3/16\" cast cap",
-        span=ft(20),
-        load_psf=62.0,
-        condition="f'c 4,000 psi, fy 60 ksi, +15 psf additional dead load, deflection < L/480, #3 stirrups 4'-0\" each end at 5\" o.c., slab reinforcement a 12\"x12\" grid of #4. The manual states its tables are for estimation and that the Engineer of Record reviews and approves. The cap here is 4 3/16\" against the row's 4\" — more section, not less. Form module (detail sheet 5E, BuildDeck 10\"): 24\" nominal panels, one beam rib per panel joint at 24\" o.c., rib 6\" wide at the bars and 4 1/2\" at the neck, 7 1/2\" deep below the cap. The schedule is authored as SL-M-DECK.reinforcement",
-    ),
+    outline=_rect(_CENTRE_X, _SEAM_Y, _HOUSE, _HOUSE),
+    source="catlin main floor, east half north of y=13' — 11 7/8\" open-web floor trusses "
+           "at 12\" o.c. for 60 psf live at L/480, spanning 18'-0\" from the x=18' bearing "
+           "line to W-B-E1/W-B-E2 (decision #112, replacing SL-M-DECK)",
 )
 
-MAIN_ELEMENTS = [WEST_FLOOR, MECH_FLOOR, STAIR_FLOOR, EAST_FLOOR, DECK]
+MAIN_ELEMENTS = [WEST_FLOOR, MECH_FLOOR, STAIR_FLOOR, EAST_FLOOR, NE_FLOOR]

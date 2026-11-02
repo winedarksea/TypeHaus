@@ -110,11 +110,11 @@ _DETACHED_GARAGE_WALLS = (
     "W-GF-S1", "W-GF-S2", "W-GF-S3", "W-GF-W",
 )
 
-# The five walls ``both_faces_interior`` is the ONLY test that excludes: they bound a
-# conditioned room, they carry a skin or are cast as foundation, and there is interior space
-# on both faces. Three basement centre bearing walls and the two tub-deck partitions. The
-# naive "conditioned on exactly one side" rule kept all five.
-_INTERIOR_BUT_BOUNDING = ("W-B-CN", "W-B-CN2", "W-B-CS2", "W-M-TUBDK-S", "W-M-TUBDK-W")
+# The walls ``both_faces_interior`` is the ONLY test that excludes: they bound a conditioned
+# room, they carry a skin or are cast as foundation, and there is interior space on both
+# faces. The naive "conditioned on exactly one side" rule kept them. The three basement
+# centre pours (W-B-CN/CN2/CS2) left with decision #112: framed now, neither cast nor skinned.
+_INTERIOR_BUT_BOUNDING = ("W-M-TUBDK-S", "W-M-TUBDK-W")
 
 
 def _report(model):
@@ -246,7 +246,7 @@ def test_the_sunken_garden_walkout_walls_are_envelope(catlin_model_ro) -> None:
 
 
 def test_a_chase_and_an_unmodelled_attic_void_are_interior(catlin_model_ro) -> None:
-    """``both_faces_interior`` is the only one of the three tests that excludes these five,
+    """``both_faces_interior`` is the only one of the three tests that excludes these,
     and it is why the rule needs an interior REGION rather than a room-coverage test.
 
     ``INTERIOR = fill_holes(⋃ rooms ∪ ⋃ wall bodies) − ⋃ wall bodies``. Filling the holes is
@@ -271,19 +271,18 @@ def test_an_interior_floor_between_two_conditioned_storeys_carries_no_ua(
     """A slab is envelope when EXACTLY ONE side is conditioned, and the assertion is on the
     REASON rather than on the outcome, so a slab that drops out for the wrong reason fails.
 
-    ``SL-M-DECK`` has the living room above and a play room below; ``SL-M-TUBDK`` has a
-    bathroom above and the mechanical room below. Both were in the block load, billed as
-    envelope floors at a soil ΔT. The two yard pads are the other error in the same list —
+    ``SL-M-TUBDK`` has a bathroom above and the mechanical room below (``SL-M-DECK``, the
+    other, became a joisted floor in decision #112). It was in the block load, billed as an
+    envelope floor at a soil ΔT. The two yard pads are the other error in the same list —
     conditioned on NEITHER side, 6.9 and 9.3 sf of concrete under an outdoor condenser — and
     they were excluded from the MN table by a named tag and from nothing else.
     """
     geometry = envelope_geometry(catlin_model_ro)
     by_tag = {solid.tag: solid for solid in catlin_model_ro.solids
               if in_slab_family(solid.category)}
-    for tag in ("SL-M-DECK", "SL-M-TUBDK"):
-        is_envelope, reason = geometry.is_envelope_slab(by_tag[tag])
-        assert not is_envelope, tag
-        assert reason.count("conditioned") == 2, (tag, reason)
+    is_envelope, reason = geometry.is_envelope_slab(by_tag["SL-M-TUBDK"])
+    assert not is_envelope
+    assert reason.count("conditioned") == 2, reason
     for tag in ("SL-M-HP1PAD", "SL-M-HP3PAD"):
         is_envelope, reason = geometry.is_envelope_slab(by_tag[tag])
         assert not is_envelope, tag

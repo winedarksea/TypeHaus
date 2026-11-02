@@ -97,8 +97,8 @@ def test_the_work_list_is_clear(findings) -> None:
 
     REROUTED OUT OF THE ROOM: ``PR-M-COND-HEADS`` into ``RM-B-SAUNA``'s service void (that
     ceiling is 14" lower than the storey's), ``PR-B-COND``'s trunk, and ``PR-B-HW-KITCH``,
-    which steps north and up 1 3/16" to cross ``RM-B-STAIR`` and back down in the gym where
-    the ceiling is lower. ``CD-B-KITCHEN`` and ``CD-B-DATA-MEDIA`` came up 2" to -1'-4",
+    which steps north and up 1 3/16" to cross ``RM-B-STAIR`` and, since 2026-11-01, rides
+    that band on through ``FS-M-NE``'s truss space. ``CD-B-KITCHEN`` and ``CD-B-DATA-MEDIA`` came up 2" to -1'-4",
     where they sit 1 9/16" under ``SL-M-DECK``'s board — which is what
     ``plan/electrical.py``'s own prose had claimed all along while the authored elevation
     said otherwise.

@@ -21,36 +21,47 @@ def _fails(ctx):
     return [f for f in run_in_slab(ctx) if f.result is Result.FAIL]
 
 
-def test_a_run_in_the_EPS_FORM_is_not_in_the_pour(catlin_ctx) -> None:
-    """``SL-M-DECK`` is 14 3/8" tall and 10" of that is ``eps-deck-form`` — a material a
-    plumber cuts a channel in with a hot knife. Carrying services without a cast void is
-    what an EPS deck is SOLD for, and a check that reported it would say the opposite of
-    what is true.
+def _synthetic_fails(*runs):
+    from _helpers import check_context
+    from _mixed_deck_plan import resolved_with
 
-    The band reading is ``resolve/mep_concrete.concrete_bands``, shared with
-    ``mep.sleeve_coverage``; this pins that this check consumes it rather than the prism."""
-    from typehaus.resolve.mep_concrete import concrete_bands
-
-    deck = next(s for s in catlin_ctx.model.solids if s.tag == "SL-M-DECK")
-    (bottom, top), = concrete_bands(catlin_ctx.model, deck)
-    assert top == pytest.approx(deck.z1_m)
-    # Ten inches of foam under 4 3/8" of topping, and only the topping is a pour.
-    assert (bottom - deck.z0_m) / M_PER_IN == pytest.approx(10.0, abs=0.05)
-    assert all("SL-M-DECK" not in f.element_tags for f in _fails(catlin_ctx)), \
-        "nothing on catlin lies in the deck's topping today"
+    model = resolved_with(basement=runs)
+    return model, _fails(check_context(model=model))
 
 
-def test_a_through_crossing_reports_ONCE(catlin_ctx) -> None:
-    """``PR-B-CW-TRUNK`` and ``PR-B-HW-KITCH`` pass through ``SL-M-DECK`` and
-    ``mep.sleeve_coverage`` owns them. Without the dedupe every one of those would report
-    here too, and a reader could not tell which finding to act on."""
+def test_a_run_in_the_EPS_FORM_is_not_in_the_pour() -> None:
+    """``_mixed_deck_plan``'s deck (catlin's retired ``SL-M-DECK``) is 10" of
+    ``eps-deck-form`` under a 4 3/16" cap — foam a plumber cuts a channel in with a hot
+    knife. Carrying services without a cast void is what an EPS deck is SOLD for, and a check
+    that reported it would say the opposite of what is true. Raised until its envelope breaks
+    the cap's soffit (106"), the same 5' leg is along the pour, so the band reading
+    (``resolve/mep_concrete.concrete_bands``, shared with ``mep.sleeve_coverage``) is what
+    excuses it, not the prism."""
+    from _mixed_deck_plan import DECK, drain
+
+    def leg(z_in):
+        return drain("PRFOAM00e1", "PR-FOAM", ((3, 18), (8, 18)), (z_in, z_in))
+
+    _model, in_foam = _synthetic_fails(leg(100))
+    assert not in_foam, [f.message for f in in_foam]
+    _model, at_cap = _synthetic_fails(leg(105.5))
+    assert [f.element_tags for f in at_cap] == [("PR-FOAM", DECK)]
+
+
+def test_a_through_crossing_reports_ONCE() -> None:
+    """A run passing THROUGH a 12" foundation wall is ``mep.sleeve_coverage``'s crossing.
+    Without the dedupe it would report here too, and a reader could not tell which finding
+    to act on. It falls through the wall's mid-height, which ``concrete_crossings`` once
+    read as a slab crossing outside the footprint and dropped."""
+    from _mixed_deck_plan import drain
+
     from typehaus.resolve.mep_concrete import concrete_crossings
 
-    owned = {(row["run"], row["host"]) for row in concrete_crossings(catlin_ctx.model)}
-    assert ("PR-B-CW-TRUNK", "SL-M-DECK") in owned
-    assert ("PR-B-HW-KITCH", "SL-M-DECK") in owned
-    reported = {tuple(f.element_tags) for f in _fails(catlin_ctx)}
-    assert not (owned & reported)
+    run = drain("PRWALL00e1", "PR-WALL", ((9, 3), (9, -3)), (48, 47.5))
+    model, fails = _synthetic_fails(run)
+    owned = {(row["run"], row["host"]) for row in concrete_crossings(model)}
+    assert ("PR-WALL", "W-S") in owned
+    assert not fails, [f.message for f in fails]
 
 
 def test_the_band_is_read_over_the_CLIPPED_length_not_the_whole_leg(catlin_ctx) -> None:

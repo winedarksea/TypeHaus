@@ -259,12 +259,14 @@ def _toe_offset(tag: str) -> Length | None:
 #    liner) and -1/32" on S3 (GARDEN_CURB_6). One trim constant could no longer put
 #    three different walls on one face, and S2's footing would move the next time an
 #    interior sauna finish changed thickness.
-# 2. **The four framed walls** — W-B-CS, W-B-STR, W-B-STR3, W-B-STR3B. A stud wall is
+# 2. **The framed walls** — the x=18' line (W-B-CS/CS2/CN/CN2, all framed since
+#    2026-11-01) and W-B-STR, W-B-STR3, W-B-STR3B. A stud wall is
 #    already centred on its own node line (each one's stud layer is within 1/4" of it), so
 #    there is nothing to correct, and its band is dominated by finishes, so correcting
 #    anyway makes it worse. W-B-CS is the case that shows it: its shiplap liner and
 #    foil-polyiso would pull the strip **1 7/16" off the studs it carries**.
-_FRAMED_WALLS = {"W-B-CS", "W-B-STR", "W-B-STR3", "W-B-STR3B"}
+_FRAMED_WALLS = {"W-B-CS", "W-B-CS2", "W-B-CN", "W-B-CN2", "W-B-STR", "W-B-STR3",
+                 "W-B-STR3B"}
 
 
 # ** W-B-CS3 (framed, y 10'-0"..13'-10") HAS NO FOOTING OF ITS OWN, AND NEEDS NONE. **

@@ -93,8 +93,8 @@
 # A duct inside a modeled `Soffit` says so with `soffit_ref` and is graded by
 # `mep.duct_soffit_occupancy`; CHASE means only a framed shaft that is not modeled as a
 # `Soffit`:
-#   * basement: boxed under the mixed SL-M-DECK / FS-M-* ceiling, the same status as the
-#     rectangular trunks these replace;
+#   * basement: boxed under the FS-M-* ceiling, the same status as the rectangular trunks
+#     these replace;
 #   * attic: an open deck chase along the west wall at x=1'-0" carries the north-south leg
 #     on the FS-ATTIC deck (exposed in the studio eave, owner 2026-10-29), and the east-west
 #     leg rides an FS-ATTIC bay. One run cannot declare two cavities, and splitting a single
@@ -195,11 +195,9 @@ EQUIPMENT_ERV_BASEMENT = [
 # sauna radials go down the WEST corridors and come east along y=1'-8 1/2" and y=3'-2",
 # south of the vent's corner, where the floor is clear the full width of the house.
 #
-# REG-B-SUP2's radial is the short one on purpose. The play room's whole ceiling is
-# SL-M-DECK's 14 3/8" solid concrete with NO cavity at all, so every foot of that run is
-# surface-mounted; entering at the room's west edge and stopping just inside cuts about
-# eight feet of exposed duct off the old (27', 27') position. It still throws away from
-# FURN-B-PLAY-TV on the east wall.
+# REG-B-SUP2's radial is the short one on purpose: it stops just inside the play room's west
+# edge, about eight feet short of the old (27', 27') position, and throws away from
+# FURN-B-PLAY-TV on the east wall. Its last leg rides FS-M-NE's truss space (2026-11-01).
 DUCTS_ERV_BASEMENT = [
     # ** THE MACHINE'S OWN TWO TRUNKS. ** Both are 6", the machine's full 210 cfm, and both
     # leave its top.
@@ -236,9 +234,10 @@ DUCTS_ERV_BASEMENT = [
     # at 88 1/2"), so its lower face clears D-B-BATH's flat head (84 7/8"; 86 3/8" until the
     # Eclisse kit dropped its track nailer, 2026-10-29).
     #
-    # ** x=17'-0" AND NOT 17'-9", BECAUSE THE STRIP BESIDE THE STAIR IS THE POUR. **
-    # W-B-CN / -CN2 / W-B-CS2 are one 12" cast wall on the x=18'-0" axis, so x 17'-6"..18'-6"
-    # is concrete; 17'-0" leaves 4" between the duct's east face and it.
+    # ** x=17'-0" STAYS (2026-11-01). ** The strip beside the stair was a 12" pour (x 17'-6"..
+    # 18'-6") and 17'-9" would have been inside it; W-B-CN/-CN2/W-B-CS2 are framed now, with
+    # the stair face furred to x=17'-6", so the lane could move east, but 4" of air to the
+    # furring is the clearance the hall already has and nothing wants the lane.
     #
     # ** IT RISES 6 1/8" AT x=17'-0" AND CROSSES `W-B-CS3` OVER `D-B-GYM`'s HEADER. ** The
     # header tops out at -22.19" and the double top plate starts at -16.44"; centred at
@@ -246,8 +245,9 @@ DUCTS_ERV_BASEMENT = [
     # 7/8" to header and plate, and cuts nothing. At y=13'-4" since 2026-10-31: REG-B-SUP1's
     # valve collar has to stand in the FS-M-EAST bay north of the y=13'-0" joist, and 13'-4"
     # is the one line clearing both the joist (3/4") and the north cripple (11/16") (`notes/framing_bore_limits.md` §6a is a
-    # hole drilled IN a cripple; this is air between two). The cast sleeve through
-    # `W-B-CS2` was the alternative and is not taken: a sleeve is a pre-pour commitment.
+    # hole drilled IN a cripple; this is air between two). At y=13'-4" it is south of
+    # `W-B-CS2` (y >= 13'-10"), so it crosses no wall on the x=18' line, and it runs on
+    # exposed in the gym (`RM-B-GYM.exposed_services`) to the register.
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
             path=(pt(ft(6, 10), ft(30, 2)), pt(ft(6, 10), ft(29, 8)),
                   pt(inch(92.375), ft(29, 8)), pt(ft(9), ft(29, 8)),
@@ -265,15 +265,21 @@ DUCTS_ERV_BASEMENT = [
     # leaves through W-B-BA-E at y=18'-6 3/4" — the one gap in that staggered wall south of
     # the bath's three risers (y 19'-3"..19'-10") wide enough for a 4" duct. Then 1'-5"
     # north up the hall at x=16'-9" and east through W-B-CN2 at y=20'-0"
-    # into REG-B-SUP2 on its last leg (the room's ceiling is SL-M-DECK's solid concrete; see
-    # the register). It turned east at y=25'-0" until 2026-09-23; 5' less hall duct.
+    # into REG-B-SUP2 on its last leg. ** SINCE 2026-11-01 (decision #112) IT NO LONGER
+    # CROSSES THE x=18' LINE THROUGH A SLEEVE. ** W-B-CN2 is a framed 2x6 bearing wall (a 4"
+    # bore is 4.00" against R602.6's 2.20"), so the duct turns north up the hall at x=16'-9"
+    # to y=20'-6" (the 241 3/4".. 250 1/4" truss bay and a FS-M-WEST joist bay), ramps at
+    # 45 degrees onto 101 1/4" before the wall, and crosses over its plate through the 2x6 box
+    # the resolver frames in the bearing blocking, in the cavity (99 1/16".. 107 15/16" window),
+    # to the register. It turned east at y=25'-0" until 2026-09-23; 5' less hall duct.
     DuctRun(uid="DMEQ946YAX", tag="DU-B-ERV-R-PLAY", system=DuctSystem.SUPPLY,
             path=(pt(ft(8), ft(30, 6)), pt(ft(9, 6), ft(30, 6)), pt(ft(9, 6), inch(355.625)),
                   pt(ft(9, 6), ft(19, 7.25)), pt(ft(9, 6), ft(19, 7.25)),
                   pt(ft(12, 3), ft(19, 7.25)), pt(ft(12, 3), ft(18, 6.75)),
-                  pt(ft(16, 9), ft(18, 6.75)), pt(ft(16, 9), ft(20)), pt(ft(19), ft(20))),
+                  pt(ft(16, 9), ft(18, 6.75)), pt(ft(16, 9), ft(20, 6)),
+                  pt(inch(211.5), ft(20, 6)), pt(ft(19), ft(20, 6))),
             elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(91.25), inch(90.75),
-                        inch(90.75), inch(90.75), inch(90.75), inch(90.75)),
+                        inch(90.75), inch(90.75), inch(90.75), inch(101.25), inch(101.25)),
             diameter=inch(4), routing=DuctRouting.SOFFIT, soffit_ref="SF-B-BATH",
             material="galvanized", design_cfm=30),
     # The sauna supply crosses W-B-CW at x=1'-7", in its 1'-4 3/4"..2'-7 1/4" stud bay and

@@ -162,6 +162,8 @@ export function runRoomFloorTests() {
   assert(floorSurface("no-such-finish") === DEFAULT_FLOOR_SURFACE,
     "An unlisted finish gets a plausible matte default rather than undefined");
   assert(floorSurface(null) === DEFAULT_FLOOR_SURFACE, "A null finish never throws");
+  assert(floorSurface("lvp", "lvp-limed-oak").roughness > floorSurface("lvp").roughness,
+    "A declared recipe's surface wins over the tag's: a matte limed print on an `lvp` tag");
 
   // A house-tagged floor is boards by its declared recipe: plank UVs, and oak's sheen
   // rather than the matte default an unlisted tag would get.

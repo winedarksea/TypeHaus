@@ -102,19 +102,6 @@ def test_the_body_never_sinks_below_the_plate_on_any_partition(catlin_model_ro) 
         assert top <= wall.z1_m + 1e-9, wall.tag
 
 
-def test_the_one_wall_whose_framing_goes_down_to_a_sip_soffit(catlin_model_ro) -> None:
-    """``W-B-CE`` stands under ``SL-M-DECK``, whose soffit is 1-9/16" below the joists'.
-
-    The ``min`` across the decks covering a wall, and the reason it is a ``min``: a
-    ``ResolvedWall`` carries one flat framing top, so the low reading is the only one that
-    never runs into structure. (``W-B-CW`` also sees ``SL-M-TUBDK`` 20" UP, where a ``max``
-    would put a basement plate 19-1/4" above its own ceiling.)
-    """
-    wall = catlin_model_ro.wall("W-B-CE")
-    assert wall.plate_top_z_m / _IN == pytest.approx(-14.1875, abs=1e-6)
-    assert wall.z1_m / _IN == pytest.approx(-13.4375, abs=1e-6)
-
-
 def test_a_partition_whose_plate_rises_takes_its_body_with_it(catlin_model_ro) -> None:
     """``W-B-CW`` authors 8'-0" in a 8'-0 1/16" storey and reaches nothing. It does now.
 
@@ -205,8 +192,10 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     # rework moved N-S-W1/-V2/-BA1 1 1/2" north and W-S-BW2 lost one), 12 parallel-member
     # pitches, and 71 blocked bays between parallel members (a trimmer takes the screw since
     # 2026-09-25). Keep each condition separate because each uses a different landing rule.
+    # 105 -> 106 (decision #112): W-B-CE, refused under SL-M-DECK, is under FS-M-NE's trusses
+    # and bills the one rim its axis crosses at x=36' (a crossing outranks the parallel truss).
     assert counts == {
-        "partition top plate, perpendicular framing above": 105,
+        "partition top plate, perpendicular framing above": 106,
         "partition top plate, under a parallel member": 12,
         "partition top plate, blocking between parallel members": 71,
     }
@@ -229,7 +218,8 @@ def test_a_partition_under_a_sip_soffit_is_refused_and_says_so(sdpw_rows) -> Non
     """
     assert all(row["count"] for row in sdpw_rows), "no row here may be an empty order line"
     for row in sdpw_rows:
-        for tag in ("W-B-CE", "W-B-BA-E", "W-B-WELL"):
+        # W-B-CE left this list with SL-M-DECK (decision #112): it is under FS-M-NE now.
+        for tag in ("W-B-BA-E", "W-B-WELL"):
             assert tag in row["basis"], f"{row['scope']} does not name {tag}"
 
 

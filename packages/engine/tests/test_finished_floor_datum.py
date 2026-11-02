@@ -58,20 +58,16 @@ def test_a_floored_room_walks_above_its_storey_datum(catlin_model, tag, finish_i
     assert room_floor_elevation(catlin_model, room) == pytest.approx(datum, abs=1e-6)
 
 
-def test_a_deck_that_is_its_own_finish_outranks_the_rooms_field_finish(catlin_model):
-    """RM-M-LIVING is authored LVP and its centroid lands on the coated cap.
-
-    ``Room.floor_finish`` is the FIELD finish; SL-M-DECK carries its own and its cap top IS
-    the finished floor there (params/main_deck.py pins it flush with the plywood beside it).
-    Taking the room's finish at that probe stood the plank on top of the cap.
-    """
+def test_the_main_living_floor_is_plank_on_the_subfloor_everywhere(catlin_model):
+    """RM-M-LIVING is LVP end to end since decision #112 (the coated cap is gone): a probe
+    in the old SL-M-DECK band walks on the same 7 mm plank as one in the south bay."""
     living = _room(catlin_model, "RM-M-LIVING")
     assert living.floor_finish == "lvp"
-    assert _build_up_in(catlin_model, "RM-M-LIVING") == pytest.approx(0.0, abs=1e-9)
-    band = next(s for s in surfaces_at(catlin_model, (8.0, 4.0))
-                if s.deck_tag == "SL-M-DECK")
-    assert band.finish_ref == "coated-concrete"
-    assert band.finish_in == 0.0
+    assert _build_up_in(catlin_model, "RM-M-LIVING") == pytest.approx(0.75 + 7 / 25.4, abs=1e-6)
+    for point in ((8.0, 4.0), (8.0, 2.0)):
+        rows = [s for s in surfaces_at(catlin_model, point) if s.room_tag == "RM-M-LIVING"]
+        assert rows and all(s.finish_ref == "lvp" for s in rows)
+        assert all(s.finish_in == pytest.approx(7 / 25.4, abs=1e-6) for s in rows)
 
 
 # ------------------------------------------------------------------ 2. what reads it

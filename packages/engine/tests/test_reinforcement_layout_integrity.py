@@ -57,7 +57,7 @@ def test_a_schedule_the_layout_cannot_honour_is_an_error(catlin_plan, bars, need
 
 def test_a_rib_role_without_ribs_is_an_error(catlin_plan) -> None:
     spec = ReinforcementSpec(bars=(BarSpec(role="rib", bar=5, count=2),))
-    found = _findings(_with_spec(catlin_plan, "SL-M-DECK", spec), "SL-M-DECK")
+    found = _findings(_with_spec(catlin_plan, "SL-B-FLOOR", spec), "SL-B-FLOOR")
     assert any("needs ReinforcementSpec.ribs" in f.message for f in found)
 
 

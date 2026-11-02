@@ -81,11 +81,10 @@ def test_center_wall_concrete_stays_on_the_bearing_grid(catlin_model) -> None:
     """Flipping ``W-B-CS`` must move only the liner, not the 18' bearing line.
 
     Its alignment offset is a hand-written HALF of its structure thickness, so the bearing
-    band is invariant under the sign — assert it against the plain concrete segment that
-    continues the same grid line. **The band is 5 1/2" of stud since 2026-08-28**, where it
-    was 12" of concrete under ``face("concrete-ext", offset=-6")``; it is centred on the
-    same x=18' axis by ``face("stud-ext", offset=-2.75")``, which is what this asserts —
-    the two bands share a centreline, not a width.
+    band is invariant under the sign — assert it against the segments that continue the
+    same grid line. **The band is 5 1/2" of stud since 2026-08-28**, centred on the x=18'
+    axis by ``face("stud-ext", offset=-2.75")``; W-B-CS2/CN2/CN were 12" pours on that line
+    until decision #112 and are plain centred 2x6 now, so every band shares one centreline.
     """
     def band_center(tag: str, layer_name: str) -> float:
         wall = next(w for w in catlin_model.walls if w.tag == tag)
@@ -93,7 +92,8 @@ def test_center_wall_concrete_stays_on_the_bearing_grid(catlin_model) -> None:
         minx, _miny, maxx, _maxy = Polygon(layer.polygon).bounds
         return round((minx + maxx) / 2.0, 6)
 
-    assert band_center("W-B-CS", "stud") == band_center("W-B-CS2", "concrete")
+    for tag in ("W-B-CS2", "W-B-CN2", "W-B-CN"):
+        assert band_center("W-B-CS", "stud") == band_center(tag, "stud"), tag
 
 
 def test_south_wall_concrete_stays_on_the_garden_wall_line(catlin_model) -> None:

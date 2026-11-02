@@ -384,27 +384,17 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     low = {item.tag for item in placed if above_floor(item.tag) <= 0.5}
     pantry_channels = {"ED-M-PANTRY-LT", "ED-M-PANTRY-LT2", "ED-M-PANTRY-LT3", "ED-M-PANTRY-LT4"}
     assert low == pantry_channels, sorted(low)
-    # ...and 1'-0" off the floor they STAND on, which is the point of the paragraph below:
-    # RM-M-PANTRY sits on SL-M-DECK like RM-M-LIVING, so its floor is 15/16" above the
-    # storey datum.
+    # ...and 1'-0" off the FINISHED floor they stand on: a stated elevation is AFF (below),
+    # here 3/4" subfloor + the 7 mm plank = 1.0255906" over the datum since #112.
     pantry = next(room for room in model.rooms if room.tag == "RM-M-PANTRY")
-    pantry_floor = room_floor_elevation(model, pantry) - storey_elevation["main"]
+    pantry_floor = room_finished_floor_elevation(model, pantry) - storey_elevation["main"]
+    assert pantry_floor == pytest.approx(inch(1.0255906).meters)
     for tag in pantry_channels:
         assert above_floor(tag) == pytest.approx(pantry_floor + ft(1).meters)
 
-    # A placeable is measured off the floor it STANDS on, not off the storey datum
-    # (``resolve/room_floor.py``) — and on this storey those are not the same plane. The
-    # datum is top-of-joists; RM-M-LIVING sits on SL-M-DECK, whose polished cap is pinned
-    # to the wood bays' plywood top (``params/main_deck.py::MAIN_FINISHED_FLOOR``).
-    # So everything in the living room stands
-    # 3/4" above everything in RM-M-BED next door.
-    #
-    # ** That step is the other rooms being wrong, not this one. ** ``room_floor_elevation``
-    # prefers a slab top under the room and otherwise falls back to the wall base, never
-    # adding a FloorSystem's subfloor — so a room over joists resolves its floor 3/4" low.
-    # RM-M-LIVING is simply the only main-storey room with a slab under it. Recorded in
-    # plans/TODO.md; deriving it here rather than writing 0.75 twice keeps this test honest
-    # either way.
+    # A hanging fixture hangs off the room's ceiling plane, struck from its structural floor
+    # (``resolve/room_floor.py``). Since #112 every main-storey room is over joists, so that
+    # is the datum; deriving it rather than writing 0 keeps this honest if a slab returns.
     living = next(room for room in model.rooms if room.tag == "RM-M-LIVING")
     living_floor = room_floor_elevation(model, living) - storey_elevation["main"]
 
@@ -436,7 +426,9 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
         stubath_build_up + ft(7).meters)
 
     switch = next(item for item in model.canvas_objects if item.tag == "ED-M-LIVING-SW")
-    assert switch.z_m == pytest.approx(living_floor + inch(48).meters)
+    # A switch's 48" is AFF, off the plank like the pantry channels.
+    assert switch.z_m == pytest.approx(
+        room_finished_floor_elevation(model, living) + inch(48).meters)
 
 
 def test_placeable_drag_updates_the_explicit_containing_room_assignment() -> None:

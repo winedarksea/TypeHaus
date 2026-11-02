@@ -15,7 +15,7 @@ from typehaus.takeoff import placeables_takeoff
 
 INCH = 0.0254
 FINISH_TOLERANCE = 0.03125 * INCH
-CAP_IN = 0.75  # RM-M-LIVING's finished floor: the SL-M-DECK cap top over the datum
+CAP_IN = 0.75 + 7.0 / 25.4  # RM-M-LIVING's finished floor: Cotton Oak on the subfloor (#112)
 DOOR_FRONT_ALLOWANCE_IN = 1.0
 PANTRY_DOOR_WIDTH_IN = 24.0
 PANTRY_RACK_EXTENSION_IN = 18.5
@@ -128,12 +128,9 @@ def test_sink_centres_on_fixed_window_and_drain_components_move_together(catlin_
     expected = (352 * INCH, 416.99 * INCH)
     assert objects["APPL-M-DISP"].position == pytest.approx(expected, abs=FINISH_TOLERANCE)
     assert plan.by_tag("FX-M-KITCH-SINK").drain_position.xy_m == pytest.approx(expected)
-    assert plan.by_tag("SP-M-KITCH").position.xy_m == pytest.approx(expected)
     assert plan.by_tag("CO-B-KITCH-HEAD").position.xy_m == pytest.approx(expected)
     assert plan.by_tag("CO-B-KITCH-HEAD").cap_position.xy_m == pytest.approx(expected)
     assert plan.by_tag("PR-B-KITCH-DRAIN").path[0].xy_m == pytest.approx(expected)
-    assert plan.by_tag("PR-B-KITCH-DRAIN").path[1].xy_m == pytest.approx(expected)
-    assert plan.by_tag("PR-B-KITCH-DRAIN").path[2].xy_m == pytest.approx((216 * INCH, 420 * INCH))
 
 
 def test_single_bowl_opening_fits_offset_base_and_meets_quartz_underside(catlin_model_ro):

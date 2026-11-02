@@ -116,7 +116,7 @@ LAUNDRY_TUB = FixtureType(
                             connection_size=inch(size), direction=direction,
                             notes="House station; the QL033Y spec sheet is not retrieved")
                 for tag, service, x, y, z, size, direction in (
-                    ("drain", Service.DRAIN, 1.5524, 4.4459, -0.94685, 2, (0, 0, -1)),
+                    ("drain", Service.DRAIN, 1.5524, 4.4459, -1.0255906, 2, (0, 0, -1)),
                     ("supply-hot", Service.WATER_HOT, -0.4476, 14.0709, 19.0532, 0.5, (0, 1, 0)),
                     ("supply-cold", Service.WATER_COLD, 4.0524, 14.0709, 19.0532, 0.5, (0, 1, 0)))),
 )

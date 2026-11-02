@@ -37,7 +37,9 @@ def test_the_bays_over_w_m_c3_are_blocked_though_no_deck_names_it(catlin_model_r
 
 @pytest.mark.parametrize(("deck", "x_in", "lo_in", "hi_in"), [
     ("FS-M-MECH", 118.75, 309.38, 325.38),   # W-M-STRW ends at y=26'-6", past mid-bay
-    ("FS-M-STAIR", 216.0, 261.38, 277.38),   # W-M-C3 ends at y=22'-4", short of mid-bay
+    # W-M-C3 ends at y=22'-4", short of mid-bay. Since decision #112 the I-joists take 2" of
+    # the shared x=18' plate (tip 215.25"), and the block stays behind its own tip.
+    ("FS-M-STAIR", 214.09, 261.38, 277.38),
 ])
 def test_a_bearing_wall_ending_mid_bay_still_gets_its_block(catlin_model_ro, deck, x_in,
                                                             lo_in, hi_in) -> None:

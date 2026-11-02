@@ -290,9 +290,19 @@ def test_below_grade_detail_draws_the_reference_context(catlin_model):
 
 
 def test_interior_foundation_walls_get_no_soil(catlin_model):
-    """An interior basement bearing wall has slab on both sides — drawing earth would lie."""
-    _, scene = _detail(catlin_model, "wall_foundation:FOUNDATION_WALL_12_INT|INT_2X6_BRG")
-    assert not _component_tags(scene) & {"grade-line", "soil", "french-drain"}
+    """An interior basement bearing wall has slab on both sides — drawing earth would lie.
+
+    Catlin's last interior pours were reframed (decision #112), so the predicate is held on
+    W-B-E1 with its outboard layers stripped: the same pour, nothing against the earth."""
+    from types import SimpleNamespace
+
+    from typehaus.emit.draw.detail_components import faces_soil
+
+    wall = catlin_model.wall("W-B-E1")
+    assert faces_soil(wall)
+    structure = next(i for i, ly in enumerate(wall.layers) if ly.function == "structure")
+    assert not faces_soil(SimpleNamespace(is_foundation=True,
+                                          layers=wall.layers[:structure + 1]))
 
 
 def test_detail_components_stay_inside_their_crop(catlin_model):

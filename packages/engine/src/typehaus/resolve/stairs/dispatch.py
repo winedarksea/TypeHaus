@@ -268,7 +268,8 @@ def _resolve_stair(
     unclipped_members = members
     members = _clip_stair_to_subfloor(members, support_floor_m)
     members = _bear_stair_on_walls(model, stair, members, support_floor_m,
-                                   skirts.offsets if skirts is not None else None)
+                                   skirts.offsets if skirts is not None else None,
+                                   post_floor=winder_supporting_floor(model, stair, z0))
     members = cut_stringer_profiles(members, unclipped_members, support_floor_m)
     members += skirt_members(stair, skirts, members, riser, going_m, nosing_m,
                              finish_thickness_m, z_top)

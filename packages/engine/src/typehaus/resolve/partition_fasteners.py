@@ -372,8 +372,8 @@ def partition_top_joints(
             continue
         structures = _structures_over(model, wall, rules)
         if not structures:
-            # A slab or SIP soffit has no wood in it — catlin's ``SL-M-DECK`` over
-            # ``W-B-CE`` — and a screw into one is a different part on a different rule.
+            # A slab or SIP soffit has no wood in it, and a screw into one is a different
+            # part on a different rule.
             refusals.append(f"{wall.tag}: no framed structure over it")
             continue
         crossings: list[_Hit] = []
@@ -420,8 +420,8 @@ def partition_top_joints(
             refusals.append(
                 f"{wall.tag}: {nearest}, so nothing reads a gap inside "
                 f"[-{rules.gap_search_tolerance_in:g}, {rules.maximum_gap_in:g}] in of its "
-                "top plate. A slab or SIP soffit is the usual reason and it is not an SDPW "
-                "joint: catlin's SL-M-DECK is what stands over W-B-CE and W-B-BA-E")
+                "top plate. A slab or SIP soffit, or a floor opening, is the usual reason "
+                "and it is not an SDPW joint")
             continue
         joints.append(PartitionTopJoint(
             wall_tag=wall.tag, storey=wall.storey, scope=scope, count=count,

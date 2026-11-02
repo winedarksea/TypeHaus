@@ -34,6 +34,7 @@ from typehaus.joints.model import axis_of
 from typehaus.model.enums import ConnectorKind
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.assembly_material import assembly_structure_material
+from typehaus.resolve.construction_assemblies import _is_concrete as is_concrete_assembly
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
 
@@ -115,7 +116,7 @@ def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
         top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
         return BearingSupport(tag=tag, p0=wall.axis[0], p1=wall.axis[1], top_z_m=top,
                               half_width_m=wall.thickness_m / 2.0,
-                              treated=is_treated(model, wall.assembly), wall=True)
+                              treated=_wall_treated(model, wall), wall=True)
     for solid in model.solids:
         if solid.tag != tag or solid.category != "beam":
             continue
@@ -130,6 +131,13 @@ def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
         return BearingSupport(tag=tag, p0=start, p1=end, top_z_m=solid.z1_m,
                               half_width_m=fallback_half_width_m, treated=treated)
     return None
+
+
+def _wall_treated(model: ResolvedModel, wall) -> bool:
+    """A concrete wall seats its members on the sill return, a PT plate on the pour (IRC
+    R317.1 item 2), so that is the wood a tie screws into."""
+    asm = model.plan.library.resolve_assembly(wall.assembly) if wall.assembly else None
+    return (asm is not None and is_concrete_assembly(asm)) or is_treated(model, wall.assembly)
 
 
 def is_treated(model: ResolvedModel, assembly_tag: str | None,
@@ -180,7 +188,7 @@ def _bearing_line(model: ResolvedModel, declared: BearingSupport,
             continue
         line.append(BearingSupport(tag=wall.tag, p0=wall.axis[0], p1=wall.axis[1],
                                    top_z_m=top, half_width_m=wall.thickness_m / 2.0,
-                                   wall=True))
+                                   treated=_wall_treated(model, wall), wall=True))
     return line
 
 
@@ -269,7 +277,8 @@ def _tied_assemblies(model: ResolvedModel, elements_by_tag: dict, rules: UpliftT
         joists = getattr(element, "joists", None)
         refs = tuple(getattr(joists, "bearing_refs", ()) or ())
         if refs:
-            yield floor, refs, rules.tied_floor_categories, rules.tie_floor_joists_on_walls
+            yield floor, refs, rules.tied_floor_categories, (
+                rules.tie_floor_joists_on_walls or bool(getattr(joists, "seat_ties", False)))
 
 
 def bearing_line_tags(model: ResolvedModel, refs: tuple, rules: UpliftTieRules) -> set:

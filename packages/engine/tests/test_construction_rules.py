@@ -103,12 +103,9 @@ def test_sill_plate_is_pt_bearing_and_carries_overlay_metadata(catlin_model) -> 
     on_slabs = [s for s in sills if s.condition_key is None]
     assert on_walls and on_slabs, "both cases are live on this house"
     assert all(s.condition_key.startswith("wall_foundation:") for s in on_walls)
-    # W-M-PAN-S and W-M-PAN-E (RM-M-PANTRY) are framed partitions standing on the MAIN
-    # storey's cast deck (SL-M-DECK) rather than on the basement slab. Same rule, same
-    # R317.1 plate, same reason there is no `wall_foundation:` condition to name — a
-    # slab-to-partition junction is not a wall stack — and it is a real ordering item:
-    # those two walls need treated sill stock too.
-    assert {s.element_tags[0] for s in on_slabs} == {"SL-B-FLOOR", "SL-M-DECK"}
+    # Only the basement slab since SL-M-DECK became FS-M-NE (decision #112): the pantry
+    # partitions that stood on its cap now stand on plywood and take no treated plate.
+    assert {s.element_tags[0] for s in on_slabs} == {"SL-B-FLOOR"}
 
 
 def test_sauna_liner_return_declares_air_vapor_continuity(catlin_model) -> None:
@@ -147,26 +144,22 @@ def test_the_wall_sills_bill_as_pt_sill_plate(catlin_model) -> None:
 def test_the_basement_mudsill_covers_every_bearing_wall_end_to_end(catlin_model) -> None:
     """One board per pour, and it runs the whole pour — union across both.
 
-    W-B-CN carries 14.22 LF of wall against 10.17 LF of plate before it, and W-B-CS 13.83
-    against 13.00: the bare remainder is the stretch where a floor bears and no framed wall
-    stacks. Both are full-length, and each return names the floor systems on it as well as
-    the wall above, so a second rule cannot be added over the same run without the
-    double-bill being obvious.
+    A pour can carry more wall than framed wall stacks on it; the bare remainder is where a
+    floor bears alone. Each plate is full-length and names the floor systems on it as well
+    as the wall above, so a second rule over the same run would be an obvious double-bill.
     """
     plate = {r.element_tags[0]: r for r in catlin_model.construction_returns
              if r.tag == "CR-CONC-TO-FRAMED-SILL"}
-    # W-B-STR is a 2x6 bearing wall on a footing, so its plate is a ``_framed_on_slab``
-    # return keyed on SL-B-FLOOR rather than a wall stack. W-B-E1 is the east wall's
-    # floor-bearing pour instead. W-B-CS has no pour left under it to carry a mudsill by the
-    # same route, which is why this loop does not name either.
-    for tag in ("W-B-CN", "W-B-W1", "W-B-E1"):
+    # W-B-STR, W-B-CS and (decision #112) W-B-CN/CN2/CS2 are 2x6 bearing walls on footings,
+    # so their plates are ``_framed_on_slab`` returns keyed on SL-B-FLOOR, not wall stacks.
+    for tag in ("W-B-W1", "W-B-E1", "W-B-E2"):
         wall = catlin_model.wall(tag)
         assert tag in plate, f"{tag} bears a floor and carries no mudsill"
         run = ((wall.axis[1][0] - wall.axis[0][0]) ** 2
                + (wall.axis[1][1] - wall.axis[0][1]) ** 2) ** 0.5
         assert abs(plate[tag].length_m - run) < 0.05, f"{tag} has a bare stretch"
         assert abs(plate[tag].z0_m - wall.z1_m) < 1e-6  # on the pour, not the framed base
-    assert "FS-M-STAIR" in plate["W-B-CN"].element_tags
+    assert "FS-M-NE" in plate["W-B-E2"].element_tags
 
 
 # --- resilient channel under a ceiling ----------------------------------------
@@ -256,8 +249,12 @@ def test_the_ceiling_channel_bills_lineal_feet_of_steel(catlin_model) -> None:
             if row["category"] == "resilient-channel"]
     assert len(rows) == 1
     assert rows[0]["material"] == "galv-steel"
-    assert rows[0]["count"] == 1
-    assert rows[0]["length_ft"] == pytest.approx(_rc(catlin_model).length_m / 0.3048, abs=0.1)
+    # CR-LIVING-CEIL-RC + CR-PLAY-CEIL-RC (theater) share the row
+    assert rows[0]["count"] == 2
+    returns = [r for r in catlin_model.construction_returns if r.kind == "furring"
+               and r.material_ref == "galv-steel"]
+    assert rows[0]["length_ft"] == pytest.approx(
+        sum(r.length_m for r in returns) / 0.3048, abs=0.1)
 
 
 def test_a_ceiling_channel_rule_naming_no_room_is_inert(catlin_model) -> None:
@@ -326,7 +323,7 @@ def test_the_sill_seal_picks_its_product_from_the_wall(catlin_model) -> None:
     assert by_wall["W-M-E1"] == SILL_GASKET_PEEL_STICK
     # Interior: the centre bearing line and the two stair walls — neither is on the air
     # barrier, and neither should be bought the expensive product.
-    assert by_wall["W-M-C5"] == SILL_GASKET_FOAM
+    assert by_wall["W-B-CN"] == SILL_GASKET_FOAM
     assert by_wall["W-B-STR"] == SILL_GASKET_FOAM
     assert by_wall["W-B-STR3"] == SILL_GASKET_FOAM
     # Every sill states a compressed thickness, and it is the in-place joint, not the roll.

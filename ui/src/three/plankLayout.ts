@@ -25,12 +25,14 @@ export interface PlankStyle {
   // `vee` a T&G groove, `butt` a sanded-flush seam, `bevel` a factory micro-bevel on all
   // four edges — darker and deeper than a butt, and the first thing that reads as LVP.
   readonly jointProfile: "vee" | "butt" | "bevel";
+  // Joint luminance; unset, 0.5 for a bevel and 0.62 otherwise. A pale print's bevel is lighter.
+  readonly jointTone?: number;
   // Per-board tone spread, as a fraction of full brightness. LIGHTNESS ONLY: the maps are
   // luminance, so hue cannot vary per board — and keeping the map neutral is what lets
   // `material.color` stay the species colour.
   readonly jitter: number;
   readonly grain: number; // figure contrast, 0..1
-  readonly figure: "streak" | "oak";
+  readonly figure: "streak" | "oak" | "limed";
   // 0: every board is its own wood. N: only N board visuals, cycled — a printed plank's tell.
   readonly printRepeat: number;
   readonly reliefScale: number; // normal-map strength
@@ -240,6 +242,64 @@ function drawOakFigure(ctx: CanvasRenderingContext2D, r: BoardRect, seed: number
   }
 }
 
+// Limed (whitewashed) oak print: the liming fills the pores, so the grain is faint and
+// straight, a cathedral shows on few boards, and the hand-scraped cross-grain ripple
+// ("burring") is the figure that reads.
+function drawLimedFigure(ctx: CanvasRenderingContext2D, r: BoardRect, seed: number,
+  style: PlankStyle) {
+  const h = (k: number) => hashBoard(seed * 11 + 5, k);
+  const g = style.grain;
+  const widthScale = Math.max(0.7, style.faceWidthM / 0.08);
+  const lines = Math.round((10 + 6 * h(1)) * widthScale);
+  const step = 8;
+  for (let i = 0; i < lines; i++) {
+    const x0 = r.x + ((i + 0.5 + (h(10 + i) - 0.5) * 0.6) / lines) * r.w;
+    const amp = (0.2 + h(40 + i) * 0.6) * (r.w / 80);
+    const freq = (2 * Math.PI) / (200 + h(70 + i) * 500);
+    const phase = h(100 + i) * 6.283;
+    ctx.strokeStyle = ink((0.03 + 0.05 * h(130 + i)) * g);
+    ctx.lineWidth = 0.5 + h(160 + i);
+    ctx.beginPath();
+    for (let y = r.y; y <= r.y + r.h + step; y += step) {
+      const x = x0 + amp * Math.sin(y * freq + phase);
+      if (y === r.y) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  if (h(200) < 0.4) {
+    const cx = r.x + (0.3 + h(202) * 0.4) * r.w;
+    const apex = r.y + h(203) * r.h * 0.6;
+    const tall = Math.min(r.h * 0.5, (0.2 + h(204) * 0.2) * style.pxPerM);
+    for (let j = 0; j < 2; j++) {
+      const a = (0.12 + 0.1 * j) * r.w;
+      const len = tall * (1 + 0.35 * j);
+      ctx.strokeStyle = ink((0.05 + 0.03 * h(210 + j)) * g);
+      ctx.lineWidth = 1 + h(220 + j);
+      ctx.beginPath();
+      for (let s = -1; s <= 1.0001; s += 0.05) {
+        const x = cx + a * s;
+        const y = apex + j * 8 + len * s * s;
+        if (s === -1) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  }
+  // Hand-scraped bands: short broken ripples ACROSS the grain (horizontal in the canvas).
+  const bands = 2 + Math.floor(h(500) * 3);
+  for (let b = 0; b < bands; b++) {
+    const y0 = r.y + h(510 + b) * r.h;
+    const len = (0.08 + h(520 + b) * 0.15) * style.pxPerM;
+    const x0 = r.x + h(530 + b) * r.w * 0.5;
+    const span = (0.3 + h(540 + b) * 0.5) * r.w;
+    for (let k = 0, y = y0; y < y0 + len; k++) {
+      const t = hashBoard(seed * 13 + b, k);
+      ctx.fillStyle = ink((0.04 + 0.06 * t) * g);
+      ctx.fillRect(x0 + t * span * 0.3, y, span * (0.4 + 0.6 * hashBoard(k, seed + b)), 1);
+      y += 3 + t * 4;
+    }
+  }
+}
+
 /**
  * Paint one board's figure into `r` (luminance, over its already-filled face). Clipped to the
  * board. Boards sharing a `seed` share a figure — which is exactly what an LVP print does.
@@ -251,6 +311,7 @@ export function drawBoardFigure(ctx: CanvasRenderingContext2D, r: BoardRect, see
   ctx.rect(r.x, r.y, r.w, r.h);
   ctx.clip();
   if (style.figure === "oak") drawOakFigure(ctx, r, seed, style);
+  else if (style.figure === "limed") drawLimedFigure(ctx, r, seed, style);
   else drawStreaks(ctx, r, seed, style.grain);
   ctx.restore();
 }

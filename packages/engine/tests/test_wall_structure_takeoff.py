@@ -125,7 +125,10 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     #
     # **45 SINCE 2026-09-23:** `W-M-WELL`, the main stair's well partition — faces only, its
     # studs are ST-M2S's own and bill in [framing] (see `W-B-WELL`).
-    assert len({tag for row in rows for tag in row["tags"]}) == 45
+    #
+    # **42 SINCE 2026-11-01** (decision #112): W-B-CS2 / W-B-CN2 / W-B-CN, the x=18' pours,
+    # are framed 2x6 bearing walls now and bill in [framing].
+    assert len({tag for row in rows for tag in row["tags"]}) == 42
     # **`metal-flat-sheet` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,
@@ -169,7 +172,8 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # ~83.9 cy since 2026-08-28: ~4.1 cy of W-B-CS and ~2.9 cy of the sunken-garden
     # walkout out, ~0.2 cy of curb back. Still bigger than the entire priced concrete order
     # the estimate used to know about, which is what this floor is for.
-    assert sum(float(row["volume_cubic_yards"]) for row in rows) > 80
+    # 81.9 -> 75.3 cy on 2026-11-01: the three FOUNDATION_WALL_12_INT pours (6.57 cy) framed.
+    assert sum(float(row["volume_cubic_yards"]) for row in rows) > 70
     assert all(float(row["net_area_sqft"]) > 0 for row in rows)
 
 

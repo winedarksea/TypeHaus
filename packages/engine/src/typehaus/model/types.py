@@ -410,6 +410,11 @@ class FurnitureType(HausModel):
     # ``None`` means "the carcass IS the footprint", which is true of every base cabinet in a
     # run against a wall; a consumer reads ``footprint[1]`` in that case.
     carcass_depth: Length | None = None
+    # Fixed floor-standing casework on legs behind a recessed kick: how far the kick face
+    # stands behind the footprint's front (each notch face of an L). The box stands on the
+    # subfloor, so a floating floor is cut from its footprint less this strip
+    # (``resolve/fixture_floor_finish.py``). ``None``: no toe kick, the covering runs under.
+    toe_kick_depth: Length | None = None
     mesh: MeshRef | None = None
     # The chosen product, by ``Product.tag`` (model/product.py). A type is a
     # *specification* — the width the run is cut to, the circuit the electrician pulls —
@@ -527,6 +532,8 @@ class FixtureType(HausModel):
     # Prefabricated receptors bear on the slab/subfloor, without the room's covering.
     # Enclosed drop-in baths exclude their enclosure rather than just the rim footprint.
     excludes_floor_finish: bool = False
+    # A floor-standing vanity on a toe kick — see ``FurnitureType.toe_kick_depth``.
+    toe_kick_depth: Length | None = None
     needs: frozenset[Service] = frozenset()
     clearance: tuple[Length, Length, Length, Length] | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.

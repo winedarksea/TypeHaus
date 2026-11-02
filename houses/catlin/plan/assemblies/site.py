@@ -309,20 +309,6 @@ SUNKEN_GARDEN_COLUMN_12 = Assembly(
 # 94 SF net rim (~1.2 cy): a capillary break and a drained bearing course, letting go
 # laterally into the field's rootzone and FD-SG-FIELD. The garage landing stays one layer: its base
 # course was never decided on its own and is not part of this change.
-# ** THE THREE INTERIOR 12" BEARING WALLS KEEP `library.FOUNDATION_WALL_12_INT`, WHICH
-# CARRIES NO MIX — a deliberate stopping point, not an oversight. ** Restating that assembly
-# house-locally so it could name a house mix was written and then dropped: the
-# three walls' tag appears in `plan/transitions.py` condition keys
-# (`wall_foundation:FOUNDATION_WALL_12_INT|INT_2X6_BRG` and the storey-stack rim), so
-# retagging them moves detail keys and the section-card goldens with them. Against that: the
-# walls are inside the conditioned envelope with soil on neither face, so there is no
-# chloride, no freeze-thaw, and black bar at the code-minimum mix is the right answer anyway.
-# The blast radius is real and the durability gain is nil.
-# Re-derived and kept on 2026-09-03, when the sweep that gave every other assembly-less
-# pour in this house a mix reached these three. Same answer, plus one new reason to be
-# comfortable with it: `structural.concrete_cover_meets_minimum` grades a pour's cover
-# only where a `ReinforcementSpec` says there is bar to cover, and these three carry
-# none, so the rule that would have cared is not being deprived of a subject.
 GARDEN_COURT_SLAB = Assembly(
     tag="GARDEN_COURT_SLAB",
     layers=(

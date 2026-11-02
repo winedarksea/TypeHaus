@@ -814,8 +814,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CBR405AAAA-ceiling-FS-M-EAST",
-      "tag": "CEIL-RM-B-GYM-FS-M-EAST"
+      "uid": "CBR405AAAA-ceiling",
+      "tag": "CEIL-RM-B-GYM"
     },
     {
       "space": "model",
@@ -854,11 +854,11 @@
           -11.875
         ],
         [
-          216.0,
+          215.25,
           -11.875
         ],
         [
-          216.0,
+          215.25,
           -9.459153543307078
         ],
         [
@@ -882,11 +882,11 @@
           -11.875
         ],
         [
-          216.0,
+          215.25,
           -11.875
         ],
         [
-          216.0,
+          215.25,
           -9.459153543307078
         ],
         [

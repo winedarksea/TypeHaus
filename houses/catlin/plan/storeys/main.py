@@ -10,7 +10,7 @@
 # 27" the bearing cap (the same 30.5" less a jack each side = 27.5", R602.7.5). The 3"
 # between the two caps IS the pair of jacks.
 from library.doors import DT_INT_ACCESS24, DT_INT_CLOSET24
-from ..doorway_transitions import BEDROOM_ZBAR, D_M_BED2_SADDLE, D_M_STUDY_REDUCER
+from ..doorway_transitions import BEDROOM_ZBAR, D_M_BED2_SADDLE
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -619,13 +619,13 @@ WALLS = [
     # the 4 1/2" slot at the head of the stairs is wall rather than a guard
     # (RL-M-STAIRHEAD, retired 2026-09-23). Same device as W-B-WELL: the stair generates
     # the studs (its stud-head stands at this south end, under the trimmer), this wall adds
-    # the faces and carries no FramingSpec — see STAIRWELL_PARTITION_4H. Base at the stairs' 0.94685" walking surface,
+    # the faces and carries no FramingSpec — see STAIRWELL_PARTITION_4H. Base at the stairs' 1.0255906" walking surface,
     # where ST-M2S's generated bottom plate sits and ST-B2M's partition top plate stops; top
     # at 9'-0" like every main wall — higher runs into FO-S-STAIR's south trimmer
     # (structural.through_deck_clearance).
     Wall(uid="SNNBY9M3CE", tag="W-M-WELL", start_node="N-M-WELL-S", end_node="N-M-WELL-N",
          assembly="STAIRWELL_PARTITION_4H",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), base_elevation=inch(0.94685), top=inch(107.05315),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), base_elevation=inch(1.0255906), top=inch(106.9744094),
          interior_room="RM-M-LIVING"),
     # A wet wall since 2026-11-01: it carries PR-M-S-BATH1-DRAIN's 3" stack (3.50" OD, ~4.2"
     # hub) and the hall-bath supply risers. `haus route` found no lane into W-M-HS1 or the
@@ -1224,7 +1224,7 @@ OPENINGS = [
     # 2026-08-29 `exterior_only` fix there could not be one anyway.
     # Derived RO since 2026-10-29; ED-M-STUDY-SPOT moved 1" north to clear it.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED-TRIMLESS",
-         position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True, doorway=D_M_STUDY_REDUCER),
+         position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True),
     # ** 6'-0" OFF N-M-D3 SINCE 2026-09-15. ** `from_node` resolves to the NEAR JAMB, so
     # the RO is x=170"..202". The king is centred between this opening and D-M-BATH2:
     # its east edge is x=153.3175", and the matching 16" east nightstand ends 0.6825"
@@ -1345,6 +1345,9 @@ OPENINGS = [
     # 2026-08-27: retyped WT-2736 -> WT-2748 (36" -> 48"), same 27" bearing width, so the
     # near-jamb offsets and the beat are untouched and the row carries one head line.
     #
+    # ** 2026-11-01: the row rose 9/32" again, 2'-10" -> 2'-10 9/32", when the deck's cap gave way
+    # to plywood under a 7 mm plank: the counter stands on the plank, the sill stays on the
+    # datum, and 9/32" restores the stool-to-slab plane (decision #112). **
     # ** 2026-10-02: E1, E2 AND WIN-M-EAST-MID ROSE 2'-8" -> 2'-10", HEADS 6'-8" -> 6'-10". **
     # The east wall became one SEKTION line under a 36" live-edge slab (plan/living_east_run.py),
     # and the owner wanted each STOOL TOP ON THE COUNTER TOP. The stool sits on the frame's
@@ -1358,23 +1361,23 @@ OPENINGS = [
     # (ROs 2'-10 1/2"..11'-9 1/2") now sits on the LVP. E1 no longer columns with WIN-S-STUDY3.
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
            type_ref="WT-2748-TT", position=from_node("N-M-SE", ft(2, 10.25)),
-           sill_height=ft(2, 10)),
+           sill_height=ft(2, 10.28125)),
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
            type_ref="WT-2748-TT", position=from_node("N-M-SE", ft(9, 6.25)),
-           sill_height=ft(2, 10)),
+           sill_height=ft(2, 10.28125)),
     # ** ONE PICTURE WINDOW ON THE DINING TABLE (2026-10-16). ** Replaces WIN-M-LIV-E3 and
     # WIN-M-EAST-MID (uids retired). Centre y=18'-0" (216", a bay centre), on the table and on
     # the BED1/BED2 axis above; RO y 15'-4 1/2"..20'-7 1/2". 63" is the width nearest the
     # owner's ~60" that centres there: it breaks 4 studs, the minimum for any RO between
     # 62 1/2" and 78 1/2" at this station, and a 59" RO is only legal 8" off the table.
-    # Same 2'-10" sill and 6'-10" head as the row. Not tempered: the sill is 33" AFF.
+    # Same 2'-10 9/32" sill as the row. Not tempered: the sill is 33" AFF.
     #
     # W-M-E1 is BEARING and the house's 27" cap (`max_window_ro_bearing_in`) stays; this one
     # window carries a named `structural.window_framing_module` suppression instead. The
     # header is read off Boise's own table rather than R602.7, see notes/dining_window_header.md.
     Window(uid="83YR1VW00D", tag="WIN-M-DINING-E", host="W-M-E1",
            type_ref="WT-6348-FIX", position=from_node("N-M-SE", ft(15, 4.5)),
-           sill_height=ft(2, 10), header_spec='2-ply 9.5" LVL',
+           sill_height=ft(2, 10.28125), header_spec='2-ply 9.5" LVL',
            published_span=PublishedSpan(
                source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.5, 3-1/2\" VERSA-LAM 1.7 2650 Header Look Up Tables",
                table="Door and window headers, Roof Only + 1 Floor (no mid support), roof load 50 psf snow (115%) + 15 psf dead, 32'-0\" structure width, 5'-8\" clear span: 8-5/8\" (not bolded, single trimmers); double 1-3/4\" substituted per the table note, at the next 1-3/4\" depth, 9-1/2\"",
@@ -1489,7 +1492,7 @@ ROOMS = [
     # a 9/16" REDUCER, on the one leg of this room that also has to break for differential
     # deflection. The concrete cannot be raised to meet it —
     # ``structural.mixed_deck_bearing_seat`` holds DECK_TOP within 1/4" of the subfloor —
-    # so the step was not designable-out, only acceptable or not. It is not. LVP at +0.94685"
+    # so the step was not designable-out, only acceptable or not. It is not. LVP at +1.0255906"
     # meets the same cap nominally 0.0094" proud, which is flush, and the room reads as one floor.
     # Oak is still the two studies' floor (RM-A-STUDY, RM-S-STUDY2); it is this room that
     # does not want it.
@@ -1514,7 +1517,7 @@ ROOMS = [
     # RM-M-BATH1 and RM-M-LAUNDRY were sheet vinyl and are LVP since 2026-09-05: both open
     # off the hall, which no longer carries a FinishZone of its own, so the plank simply
     # runs through — one floor, one product, no zone, no threshold and no grout to keep.
-    # Neither is a wet room: a powder bath and a laundry are splash duty, and 5 mm Quincy Oak SPC is a
+    # Neither is a wet room: a powder bath and a laundry are splash duty, and 7 mm Cotton Oak SPC is a
     # waterproof core. RM-M-BATH2 upstairs of the plumbing wall keeps its tile — it is a
     # full bath on its own radiant zone (FH-M-BATH2), which is where tile earns the mass.
     Room(uid="CMR403AAAA", tag="RM-M-BATH1", seed=pt(ft(2), ft(24, 6)),
@@ -1637,15 +1640,12 @@ ALARMS = [
           circuit="CKT-LT-BACKUP", position=pt(ft(14, 4), ft(15, 8))),
 ]
 
-# Electric radiant floor — the two main-storey comfort zones. Not a heating
-# system (the heat pumps carry the house); these just warm two barefoot floors. Mat at
-# 12 W/ft2 (the working rate for a 3" serpentine 120V cable); `in_slab(1/2")` is the setting
-# bed in the thinset, not cast structure — over SL-M-DECK's cured concrete cap under the
-# dining zone, and over FS-M-WEST's plywood subfloor under the bathroom, where the same 1/2"
-# is an uncoupling membrane and its bed rather than thinset straight onto a slab. The two
-# substrates differ; the mat, its depth and its output do not. Zones are drawn
-# 4" off every clear face since mat can't run to a wall. `stat` is the slab sensor point;
-# line-voltage thermostats are ED-M-BATH2-FH-STAT / ED-M-DINING-FH-STAT (plan/electrical.py).
+# Electric radiant floor — the main-storey comfort zones. Not a heating system (the heat
+# pumps carry the house); these just warm barefoot floors. `in_slab(1/2")` is the uncoupling
+# membrane and its bed over FS-M-WEST's plywood subfloor, not cast structure. Zones are drawn
+# 4" off every clear face since mat can't run to a wall. The dining mat (FH-M-DINING) was
+# retired 2026-11-01 with SL-M-DECK (decision #112): nothing left to embed it in. `stat` is
+# the sensor point; the line-voltage thermostat is ED-M-BATH2-FH-STAT (plan/electrical.py).
 FLOOR_HEAT = [
     # RM-M-BATH2's floor is over FS-M-WEST's I-joists since 2026-08-21, not over concrete:
     # the tile wants an uncoupling membrane over the 3/4" subfloor, and `embed` still reads
@@ -1776,18 +1776,6 @@ FLOOR_HEAT = [
               # DHEHK12016 as purchased. NOT a computed number — see above.
               watts=203, delivered_btuh_per_ft2=22.8,
               stat=pt(inch(40), inch(175)), thermostat_ref="ED-M-BATH2-FH-STAT"),
-    # Under the dining table centred at y=18'. FURN-M-DINING covers x 22'-5 3/8"..30'-5 3/8",
-    # y 16'-3"..19'-9"; the 8'-0" x 7'-3" zone runs y 14'-4 1/2"..21'-7 1/2" under both
-    # chair rows (FURN-M-CHAIR-S* at y=15'-2", -N* at y=20'-10") — feet, not table legs,
-    # are what this is for. 58.0 ft2, free-standing in RM-M-LIVING with no
-    # room_ref, since the living room is 642 ft2 and only this patch of it is heated.
-    FloorHeat(uid="CMH802AAAA", tag="FH-M-DINING",
-              zone=(pt(inch(269.375), ft(14, 4.5)), pt(inch(365.375), ft(14, 4.5)),
-                    pt(inch(365.375), ft(21, 7.5)), pt(inch(269.375), ft(21, 7.5))),
-              system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
-              # 58.0 ft2 at 12 W/ft2 -> 696 W, carried at 700.
-              watts=700,
-              stat=pt(inch(317.375), ft(18)), thermostat_ref="ED-M-DINING-FH-STAT"),
 ]
 
 # The main floor's structure — two wood bays and one concrete band — lives in
@@ -1979,8 +1967,8 @@ SLABS = [
 # ST-M2S's first tread is at floor level on the east, so both are a flight to step onto, not
 # a drop. The 4 1/2" of well partition between them is W-M-WELL, down to the floor.
 # ** THE TWO ENDS ARE WALKING SURFACES, NOT STOREY DATA. ** A storey elevation on a wood
-# bay is the TOP OF JOISTS (params/main_deck.py) and the floor underfoot is 0.94685" above it
-# — 3/4" subfloor plus the 5 mm Quincy Oak plank. Left to derive its rise from the storey table this
+# bay is the TOP OF JOISTS (params/main_deck.py) and the floor underfoot is 1.0255906" above it
+# — 3/4" subfloor plus the 7 mm Cotton Oak plank. Left to derive its rise from the storey table this
 # flight climbed 9'-1 7/16" from the basement slab to the top of the main joists and stopped
 # there, so the last step up onto the living-room floor was 8 1/4" against 7 5/16" for the
 # other fourteen: over R311.7.5.1's 7 3/4" maximum AND its 3/8" uniformity tolerance, and
@@ -1992,9 +1980,9 @@ SLABS = [
 # Both literals below are project-frame absolute, and `base_elevation`/`top_elevation` must
 # be authored together (resolve/stairs/dispatch.py). -109.4375" is params/main_deck's
 # BASEMENT_DATUM, which is also the slab top and the sealed-concrete surface RM-B-STAIR
-# walks on; 0.94685" is MAIN_FINISHED_FLOOR_LVP, the plank top in RM-M-LIVING where the
+# walks on; 1.0255906" is MAIN_FINISHED_FLOOR_LVP, the plank top in RM-M-LIVING where the
 # flight heads out. This file is editable-dialect and cannot import them, so if either
-# number moves in params, move it here. Rise is 110.38435" over the same 15 risers — 7.3590"
+# number moves in params, move it here. Rise is 110.4630906" over the same 15 risers — 7.3642"
 # each, still clear of 7 3/4" — so the riser count, the run length and the well are
 # unchanged; only the flight's elevation is.
 #
@@ -2022,7 +2010,7 @@ SLABS = [
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
           from_storey="basement", to_storey="main", width=ft(3, 5.125),
-          base_elevation=inch(-109.4375), top_elevation=inch(0.94685),
+          base_elevation=inch(-109.4375), top_elevation=inch(1.0255906),
           tread_thickness=inch(1),
           finish_material="catlin-stair-carpet",
           # A flush LVP stair nose at the main-floor stairhead (R311.7.5.3 counts it).
@@ -2156,11 +2144,11 @@ PANELING = [
     # The mudroom's closet block, white-painted oak shiplap to 6'-0" — the underside of the
     # coat-nook caps across the room: W-M-W1 between the closets, the closets' east returns
     # and their door walls (W-M-MECH-S, W-M-MUDC-N). The PVC base runs on the gypsum and the
-    # band starts on its top (owner, 2026-11-01): 0.94685" LVP floor + 3 1/2" base. On the
+    # band starts on its top (owner, 2026-11-01): 1.0255906" LVP floor + 3 1/2" base. On the
     # door walls the band stops at the casing's outer edge. Wraps WIN-M-MUD; the sconce at
     # 6'-8" is above it.
     WallPaneling(uid="G21WZA605X", tag="WP-M-MUDROOM-SHIPLAP", room="RM-M-MUDROOM",
-                 material_ref="oak-shiplap-painted", offset=inch(4.44685), height=inch(67.55315),
+                 material_ref="oak-shiplap-painted", offset=inch(4.5255906), height=inch(67.4744094),
                  walls=("W-M-W1", "W-M-MECH-E", "W-M-MUDC-E", "W-M-MECH-S", "W-M-MUDC-N")),
     # The call booth's acoustic felt, sitting on top of the wainscot: band
     # 3'-0" to 9'-0", south and north walls only.
@@ -2400,19 +2388,18 @@ POSTS = [
     # ``structural.landing_post_bearing`` deliberately refuses as a load path, since a 4x4
     # set down mid-bay is a point load on a member sized for a uniform one. So this fills
     # the joist bay from the deck datum down to W-B-CN's top at -1'-1 7/16" and delivers the
-    # corner reaction straight into the 12" concrete, which is the "block the joist bay
-    # under it" the check's own hint asks for.
+    # corner reaction into the wall below — the "block the joist bay under it" the check's
+    # own hint asks for. W-B-CN is framed since 2026-11-01 and this corner is over its furred
+    # stair face, so a doubled 2x3 furring stud stands under the block to the slab
+    # (plan/assemblies/interior.py, STAIRWELL_INT_2X6_BRG_FURRED).
     #
     # x=17'-7 1/2" puts its EAST face on W-M-C5's stud face (17'-9 1/4") — it laps only the
     # 5/8" gypsum, which is scribed to it, and touches no stud — while still containing the
     # rim end at 17'-8 5/8" (y 31'-11 1/8"). Move ST-M2S and this moves with it, as the note above
     # says of the other two.
     #
-    # ``supported_by="W-B-CN"`` is the concrete this delivers into, named above in prose
-    # since 2026-08-24 and authored 2026-08-28 — with the same 1/16" correction the two
-    # posts above took. The gap it fills is the datum down to W-B-CN's top at -1'-1 7/16",
-    # so the block is 13 7/16"; it was cut at 13.4" against a comment that said 13 3/8",
-    # and neither number was the hole.
+    # ``supported_by="W-B-CN"``: the gap it fills is the datum down to W-B-CN's top at
+    # -1'-1 7/16", so the block is 13 7/16".
     #
     # Naming the bearing does NOT buy this one a post base. At 13 7/16" it is under the
     # 2'-0" DCA6-2015 p.10 uses as the height at which a stick starts behaving like a

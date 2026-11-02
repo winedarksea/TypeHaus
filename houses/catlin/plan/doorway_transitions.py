@@ -38,11 +38,6 @@ SCHIENE = Product(
     source="Same-height transition: the anchoring leg sets in the tile bed and the oak "
            "butts the profile with a 1/4 in. silicone movement joint. Pick the height "
            "to the delivered tile (A80 is 5/16 in.).")
-CORETEC_REDUCER = Product(
-    tag="PROD-CORETEC-REDUCER", brand="COREtec", name="Quincy Oak reducer",
-    source="Colour-matched reducer for the 5 mm Quincy Oak plank (lvp_flooring.md), down to "
-           "the coated cap, which tops flush with the plywood since 2026-11-01 "
-           "(mixed_deck_movement_joint.md; decision #111). Confirm the SKU with the dealer.")
 SOLID_SURFACE_REDUCER = Product(
     tag="PROD-CATLIN-SOLID-SURFACE-REDUCER", brand="Shop-fabricated",
     name="Fabricated solid-surface reducer",
@@ -53,7 +48,7 @@ RUBBER_REDUCER = Product(
     source="Rubber reducer edge, height to suit (3/4 in. stall mats, 1/8 in. sheet vinyl), "
            "glued to the substrate. Brand to the installer; confirm the height range.")
 
-TRANSITION_PRODUCTS = (CARPET_ZBAR, OAK_REDUCER, SCHIENE, CORETEC_REDUCER,
+TRANSITION_PRODUCTS = (CARPET_ZBAR, OAK_REDUCER, SCHIENE,
                        SOLID_SURFACE_REDUCER, RUBBER_REDUCER)
 
 
@@ -101,13 +96,13 @@ def _bevel(product, variant, installation, material, *, sign, rise_in, run_in, d
 # Carpet on the -normal side at D-S-BED1/2/3 and D-M-BATH2.
 BEDROOM_ZBAR = DoorwayTreatment(transition=_zbar(-1))
 
-# 0.80315" from the hall LVP up to the carpet: a 1" (5/4) oak saddle on the subfloor, top on
+# 0.7244" from the hall LVP up to the carpet: a 1" (5/4) oak saddle on the subfloor, top on
 # the carpet plane under the leaf, bevelled 2" down to the plank. Carpet on +normal.
 D_M_BED2_SADDLE = DoorwayTreatment(transition=_bevel(
     OAK_REDUCER, "5/4 white oak saddle, 1 3/4 in. flat under the leaf, 2 in. bevel",
     "On the subfloor; LVP floats to its low edge, carpet tucks at its high edge; the "
-    "automatic door bottom seals on the flat", "oak-floor-custom", sign=1, rise_in=0.80315,
-    run_in=2.0, depth_in=0.19685, land_in=1.75, min_in=0.75, max_in=0.8125,
+    "automatic door bottom seals on the flat", "oak-floor-custom", sign=1, rise_in=0.7244094,
+    run_in=2.0, depth_in=0.2755906, land_in=1.75, min_in=0.65, max_in=0.75,
     pairs=(("lvp", "catlin-carpet-raised"),)))
 
 # Oak and tile at one plane (D-S-SUITEBATH, D-S-BATH1).
@@ -130,14 +125,6 @@ D_S_PLANT_REDUCER = DoorwayTreatment(transition=_bevel(
     "seal both ends to the jamb returns", "solid-surface-fabricated", sign=-1,
     rise_in=0.38, run_in=4.5, depth_in=0.12, land_in=0.75, min_in=0.3, max_in=0.4,
     pairs=(("oak-floor-custom", "catlin-plant-vinyl-raised"),)))
-
-# The plank 5 mm (0.19685") over the coated cap, which tops flush with the plywood: a low
-# reducer glued to the cap, its lip over the plank's expansion gap. LVP on +normal.
-D_M_STUDY_REDUCER = DoorwayTreatment(transition=_bevel(
-    CORETEC_REDUCER, "5 mm reducer, plank down to the cap", "Glued to the cap; the plank "
-    "keeps its expansion gap under the lip", "aluminum-extrusion", sign=1,
-    rise_in=0.19685, run_in=1.0, depth_in=0.0, land_in=0.75, min_in=0.125, max_in=0.25,
-    pairs=(("coated-concrete", "lvp"),)))
 
 # The gym's 3/4" stall mats meet the 0.735" theater carpet flush (mat on -normal): the
 # carpet tucks into a Z-bar against the mat edge, no reducer (owner 2026-11-01).

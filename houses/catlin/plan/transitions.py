@@ -80,7 +80,6 @@ TRANSITIONS = (
                               to_face="spray-foam-ext"),
                ), star=False,
                starred_conditions=("wall_roof:EXT_2X6|ROOF",)),
-    # Ahead of TR-CATLIN-FOUNDATION-INT, whose `*` prefix also reaches an assembly_change key.
     # Two legitimate in-plan assembly changes survive the resolver's derivation gates
     # (the sauna liner starting along the interior concrete run, and the masonry railing
     # meeting the retaining wall's 6" upstand). They are bound — covered, continuity
@@ -93,14 +92,6 @@ TRANSITIONS = (
                suppress=True,
                # (single literal: the editable dialect forbids concatenated strings)
                suppress_reason="the jog happens *along* the wall run, while a derived detail cuts perpendicular to the wall — the change of assembly is simply not in that cut plane, so any sheet here would describe a junction the drawing does not show; the returns themselves are documented by the construction rules this transition records"),
-    # The interior concrete wall under the bearing partition: conditioned both sides, so no
-    # control layer crosses it. Same seat (mudsill on its gasket) and notes as the perimeter;
-    # the recipe's weather pieces self-gate off an interior wall.
-    Transition(uid="KR0VGRXMNQ", tag="TR-CATLIN-FOUNDATION-INT", title="Interior foundation wall",
-               condition_pattern="*FOUNDATION_WALL_12_INT|INT_*",
-               notes="notes/basement_to_framed_wall_detail.md",
-               overlay="basement-framed-wall", continuity=(),
-               documents_rules=("CR-CONC-TO-FRAMED-SILL",)),
     # The envelope crossing — concrete to framed wall, where the thermal, air and water
     # layers all have to hand off. Named keys rather than a pattern-wide star, and two of the five: the perimeter
     # basement wall meeting the framed wall above it, and the garage's ICF stem meeting

@@ -216,11 +216,12 @@ def test_a_stud_the_cut_passes_through_is_drawn(catlin_model):
     1e-9 of the station, so a cut anywhere inside a 1.5" stud drew the cavity instead.
 
     ``member_box`` is the one member solid every emitter shares, so the plane meets the
-    stick's real width.
+    stick's real width. Cut on the y=18' plane the deck-bearing detail used until it moved to
+    the y=16' truss line (decision #112), where it passes between studs.
     """
-    scene = build_section(catlin_model, _slice(catlin_model, "SL-D-DECKBRG"))
+    scene = build_section(catlin_model, _slice(catlin_model, "SL-D-FNDN"))
     studs = {tag for tag in _tags(scene, "S-FRAM") if tag.startswith("stud-")}
-    assert studs, "the deck-bearing detail passes through no stud at all"
+    assert studs, "the foundation detail passes through no stud at all"
 
 
 def test_a_cut_member_shows_its_real_section_face(catlin_model):

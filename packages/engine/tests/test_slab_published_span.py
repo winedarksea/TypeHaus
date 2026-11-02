@@ -1,64 +1,47 @@
-"""The suspended deck's span, read off a published table rather than waiting for a seal.
+"""A suspended deck's span, read off a published table rather than waiting for a seal.
 
-``structural.slab_published_span`` is the prescriptive read that replaced "graded by
-nothing" for ``SL-M-DECK``. Three things have to hold, and each is one test below: the
-authored BuildDeck row grades PASS at catlin's 18'-0"; a row whose ``member`` no longer
-describes the model goes UNKNOWN naming the drift rather than printing a stale PASS; and a
-house with no suspended slab earns NOT_APPLICABLE from positive evidence instead of
-returning ``[]``.
+``structural.slab_published_span`` grades the BuildDeck row authored on
+``_mixed_deck_plan``'s deck (catlin's ``SL-M-DECK`` retired 2026-11-01, decision #112). Each
+test is one thing that has to hold: the row PASSes at 18'-0"; a row whose ``member`` no longer
+describes the model goes UNKNOWN naming the drift; a span past the row FAILs; no row is
+UNKNOWN; and a house with no suspended slab earns NOT_APPLICABLE, never ``[]``.
 """
 
 from __future__ import annotations
 
 from _helpers import check_context
+from _mixed_deck_plan import DECK, deck, mixed_deck_model, mixed_deck_plan, published_row
 
 from typehaus.checks.structural.slab_span import slab_published_span
 from typehaus.findings import Result
 from typehaus.quantities import ft
 
 
-def _findings(plan, model):
-    return slab_published_span(check_context(plan, model))
+def _findings(**slab_update):
+    # The check reads the plan only; the shared model just fills the context.
+    plan = mixed_deck_plan(slab=deck(**slab_update))
+    return slab_published_span(check_context(plan, mixed_deck_model()))
 
 
-def _replaced(catlin_plan, tag, **updates):
-    element = catlin_plan.by_tag(tag)
-    storey = next(s.tag for s in catlin_plan.storeys
-                  if any(e.tag == tag for e in catlin_plan.storey_elements(s.tag)))
-    kept = [e if e.tag != tag else element.model_copy(update=updates)
-            for e in catlin_plan.storey_elements(storey)]
-    return catlin_plan.with_elements(storey, kept)
-
-
-def test_the_authored_buildeck_row_grades_the_deck_pass(catlin_plan, catlin_model_ro):
-    findings = _findings(catlin_plan, catlin_model_ro)
+def test_the_authored_buildeck_row_grades_the_deck_pass():
+    findings = _findings()
     assert len(findings) == 1, [f.message for f in findings]
     finding = findings[0]
     assert finding.result is Result.PASS, finding.message
-    assert finding.element_tags == ("SL-M-DECK",)
-    # The short side of an 18' x 23' band, not its long side and not its diagonal.
+    assert finding.element_tags == (DECK,)
+    # The short side of an 18' x 18' outline, against the row's 20'.
     assert "18.00'" in finding.message
     assert "20.00'" in finding.message
-    # The conditions the row assumes are printed: a prescriptive PASS nobody can read the
-    # conditions of is a claim, not a read.
+    # The row's conditions are printed: a PASS nobody can read the conditions of is a claim.
     assert "L/480" in finding.message
     assert "BuildDeck" in finding.message
 
 
-def test_a_row_read_for_another_section_refuses_to_grade(catlin_plan, catlin_model_ro):
-    """Retype the form and the quotation stops describing the building.
-
-    ``member`` is derived from ``DECK_EPS_INT`` — the form's thickness and material name and
-    the cap's thickness — so this is the drift guard doing its job, not a spelling check.
-    """
-    deck = catlin_plan.by_tag("SL-M-DECK")
-    stale = deck.published_span.model_copy(
-        update={"member": '8" BuildDeck EPS deck form under a 4" cast cap'})
-    plan = _replaced(catlin_plan, "SL-M-DECK", published_span=stale)
-
-    findings = _findings(plan, catlin_model_ro)
-    assert len(findings) == 1
-    finding = findings[0]
+def test_a_row_read_for_another_section_refuses_to_grade():
+    """``member`` is derived from the deck's assembly (form depth and name, cap depth), so a
+    row quoted for another section stops describing the building."""
+    stale = published_row(member='8" BuildDeck EPS deck form under a 4" cast cap')
+    (finding,) = _findings(published_span=stale)
     assert finding.result is Result.UNKNOWN, finding.message
     assert "no longer describes this member" in finding.message
     # Named both ways round, so a reader can see which half moved.
@@ -66,32 +49,22 @@ def test_a_row_read_for_another_section_refuses_to_grade(catlin_plan, catlin_mod
     assert '10" BuildDeck' in finding.message
 
 
-def test_a_deck_past_its_published_row_fails(catlin_plan, catlin_model_ro):
+def test_a_deck_past_its_published_row_fails():
     """A published maximum is a maximum. No rounding, and no quiet PASS past it."""
-    deck = catlin_plan.by_tag("SL-M-DECK")
-    short = deck.published_span.model_copy(update={"span": ft(16)})
-    plan = _replaced(catlin_plan, "SL-M-DECK", published_span=short)
-
-    finding = _findings(plan, catlin_model_ro)[0]
+    (finding,) = _findings(published_span=published_row(span=ft(16)))
     assert finding.result is Result.FAIL, finding.message
     assert "past the 16.00'" in finding.message
 
 
-def test_no_authored_row_is_unknown_with_the_authoring_hint(catlin_plan, catlin_model_ro):
-    plan = _replaced(catlin_plan, "SL-M-DECK", published_span=None)
-    finding = _findings(plan, catlin_model_ro)[0]
+def test_no_authored_row_is_unknown_with_the_authoring_hint():
+    (finding,) = _findings(published_span=None)
     assert finding.result is Result.UNKNOWN
     assert "no published table row is authored" in finding.message
 
 
-def test_a_house_with_no_suspended_slab_earns_not_applicable(catlin_plan, catlin_model_ro):
-    """N/A is positive evidence of absence, never an empty list.
-
-    Strip the ceiling from under the one suspended slab in the house and there is nothing
-    left that spans: every other pour here bears on the ground.
-    """
-    plan = _replaced(catlin_plan, "SL-M-DECK", ceiling_below=())
-    findings = _findings(plan, catlin_model_ro)
+def test_a_house_with_no_suspended_slab_earns_not_applicable():
+    """Strip the ceiling from under the one suspended slab and nothing left spans."""
+    findings = _findings(ceiling_below=())
     assert len(findings) == 1
     assert findings[0].result is Result.NOT_APPLICABLE
     assert "no slab in this building is suspended" in findings[0].message

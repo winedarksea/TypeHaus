@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import pytest
 from _helpers import CATLIN as CATLIN_DIR
 
 from typehaus.checks import load_preferences
@@ -29,7 +30,7 @@ def test_catlin_emits_authored_then_derived_detail_sheets(catlin_sheet_index):
     assert detail_numbers[:4] == ["A-501", "A-502", "A-503", "A-504"]
     titles = {s.number: s.title for s in sheets}
     assert titles["A-501"] == "Foundation detail"
-    assert titles["A-502"] == "Deck bearing detail"
+    assert titles["A-502"] == "Floor truss bearing detail"
     # Derived transition details continue the A-5xx block (catlin binds many conditions).
     assert len(detail_numbers) > 4
     # numbering is contiguous
@@ -37,20 +38,19 @@ def test_catlin_emits_authored_then_derived_detail_sheets(catlin_sheet_index):
     assert nums == list(range(501, 501 + len(nums)))
 
 
-def test_deckbrg_scene_contains_deck_hatch_spanning_its_thickness(catlin_model_ro,
-                                                                  catlin_sheet_index):
+def test_deckbrg_scene_seats_the_truss_on_the_pour(catlin_model_ro, catlin_sheet_index):
+    """FS-M-NE's trusses on W-B-E1 (decision #112): pour to the -13 7/16" seat, the 1/16"
+    gasket and 1 1/2" PT mudsill on it, and the 11 7/8" truss from there to the datum."""
     sheets = {s.number: s for s in catlin_sheet_index()}
     scene = sheets["A-502"].scene(catlin_model_ro)
-    slab_hatches = [n for n in scene.nodes if isinstance(n, Hatch) and n.pattern == "concrete"]
-    assert slab_hatches
-    # the 9" deck spans z in [-0.2286m, 0] — some hatch boundary must cover that band
-    m_to_in = 39.37007874015748
-    covers_deck = any(
-        min(p[1] for p in hatch.boundary) <= -0.2286 * m_to_in + 1e-3
-        and max(p[1] for p in hatch.boundary) >= 0.0 - 1e-3
-        for hatch in slab_hatches
-    )
-    assert covers_deck
+    bands = {}
+    for hatch in (n for n in scene.nodes if isinstance(n, Hatch)):
+        zs = [p[1] for p in hatch.boundary]
+        bands.setdefault(hatch.pattern, []).append((min(zs), max(zs)))
+    assert any(top == pytest.approx(-13.4375, abs=1e-3) for _lo, top in bands["concrete"])
+    assert (-13.4375, -13.375) in [pytest.approx(b, abs=1e-3) for b in bands["sill-seal"]]
+    assert (-13.375, -11.875) in [pytest.approx(b, abs=1e-3) for b in bands["pt-syp"]]
+    assert (-11.875, 0.0) in [pytest.approx(b, abs=1e-3) for b in bands["lumber"]]
 
 
 def test_detail_sheets_snapshot_deterministic(catlin_model_ro, catlin_sheet_index):
@@ -86,7 +86,7 @@ def test_catlin_omits_low_value_details_only_from_its_permit_set(catlin_model_ro
     full_by_number = {sheet.number: sheet.title for sheet in full}
     permit_by_number = {sheet.number: sheet.title for sheet in permit}
 
-    assert full_by_number["A-502"] == "Deck bearing detail"
+    assert full_by_number["A-502"] == "Floor truss bearing detail"
     assert full_by_number["A-507"] == "Hall bath shower section"
     assert permit_by_number["A-506"] == "Sauna window-side reading recliner"
     assert {"A-502", "A-507"}.isdisjoint(permit_by_number)

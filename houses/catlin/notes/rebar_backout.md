@@ -74,10 +74,7 @@ Pieces are what gets cut; bars are runs (a lapped run is one bar in two pieces).
 | foundation wall | #4 | hdg-a767 | 311 | 311 | 2,089.4 | 505.0 | 3.4 | 2,597.9 LF | 1,735.4 lb |
 | foundation wall | #5 | hdg-a767 | 145 | 145 | 1,330.4 | 13.8 | 70.3 | 1,414.5 LF | 1,475.3 lb |
 | foundation wall | #6 | hdg-a767 | 10 | 10 | 86.2 | 0.0 | 0.0 | 86.2 LF | 129.5 lb |
-| slab | #3 | black | 220 | 220 | 481.3 | 0.0 | 149.7 | 631.0 LF | 237.3 lb |
-| slab | #4 | black | 43 | 43 | 863.6 | 0.0 | 0.0 | 863.6 LF | 576.9 lb |
-| slab | #5 | black | 22 | 22 | 393.2 | 0.0 | 0.0 | 393.2 LF | 410.1 lb |
-| | | | **1,216** | | | | | | **6,717.9 lb** |
+| | | | **1,216** | | | | | | **6,717.9 lb** (before the three black slab rows left, see 2026-11-01) |
 
 **Checked by hand, not only by the machine.** Three elements in these rows are laid out bar
 for bar in `notes/rebar_layout_basis.md` and reproduced by `tests/test_rebar_layout_oracle.py`:
@@ -248,33 +245,36 @@ footing/slab/pad/column **whose STRUCTURE layer material is `concrete`**, plus e
 `wall_structure` row of material `concrete`. `tests/test_rebar_backout.py` recomputes it.
 
 ```
-column   PIER_CONCRETE_12                       1.51 cy
-column   SUNKEN_GARDEN_COLUMN_12                1.53
+beam     SUNKEN_GARDEN_GRADE_BEAM_12            0.67
+column   PIER_CONCRETE_12                       0.36
+column   PIER_CONCRETE_14                       1.09
+column   SUNKEN_GARDEN_COLUMN_12                0.89
 footing  COURT_FOOTING_12                      19.09
-footing  FOOTING_20                             6.35
-footing  FOOTING_EXPOSED_20                     1.48
-pad      PIER_BASE_12                           1.06
-slab     DECK_EPS_INT                          18.37
-slab     ENTRY_STEP_TIER                        1.90
-slab     GARAGE_SLAB_ON_GRADE                   5.27
-slab     GARDEN_COURT_SLAB                      1.32
-slab     HP_PAD_ON_GRADE                        0.56
-slab     SLAB_FLOOR                            14.00
-                                     solids   72.44 cy
+footing  FOOTING_20                             6.44
+footing  FOOTING_EXPOSED_20                     1.65
+pad      PIER_BASE_12                           0.80
+slab     ENTRY_STEP_TIER                        1.86
+slab     GARAGE_SLAB_ON_GRADE                   5.43
+slab     GARDEN_COURT_SLAB                      1.02
+slab     HP_PAD_ON_GRADE                        0.73
+slab     SLAB_FLOOR                            11.45
+                                     solids   51.48 cy
 
-SUNKEN_GARDEN_WALL_DRAINED                    17.79
-BASEMENT_8                                    17.71
+BASEMENT_8                                    18.11
+SUNKEN_GARDEN_WALL_DRAINED                    17.11
 BASEMENT_12                                   10.67
-GARAGE_ICF_6                                   8.94
-SUNKEN_GARDEN_WALL                             7.08
-FOUNDATION_WALL_12_INT                         6.57
-SG_VENEER_BEAM_14                              1.10
-SUNKEN_GARDEN_GRADE_BEAM_12                    1.08
-GARDEN_CURB_6 + SAUNA_LINER_ON_GARDEN_CURB     0.20
-                                      walls   71.14 cy
+GARAGE_ICF_6                                   7.90
+SUNKEN_GARDEN_WALL                             7.06
+SG_VENEER_BEAM_14                              0.99
+GARDEN_CURB_6 + SAUNA_LINER_ON_GARDEN_CURB     0.17
+                                      walls   62.01 cy
 
-                                      TOTAL  143.58 cy
+                                      TOTAL  113.49 cy
 ```
+
+**Re-read 2026-11-01 (decision #112):** `DECK_EPS_INT` (17.24 cy, the whole 56,700 in2 x
+14.1875" prism) and `FOUNDATION_WALL_12_INT` (6.57 cy; `W-B-CS2`/`CN2`/`CN` are framed 2x6
+walls now) left; 137.30 -> **113.49 cy**. The older figures in this section are history.
 
 **Re-derived 2026-09-15, and the table above had gone badly stale — most of it was not this
 change.** `PORCH_FOOTING_84`, `RETAINING_FOOTING_96`, `GARAGE_STEP_6` and the footing-hosted
@@ -790,3 +790,12 @@ to the subfloor plane (`params/main_deck.py`), and each rib stirrup's two legs s
 it: placed 26.25" → 25.875", 220 × 0.375" = 82.5" = 6.875 LF × 0.376 plf = **−2.6 lb**, no
 piece lost (slab #3 234.7 lb, 220). The hooks and the rib bars are unchanged
 (`rebar_layout_basis.md`: the 180° return sits in the rib, below the cap).
+
+## Addendum 2026-11-01 — the deck and the three 12" pours leave (decision #112)
+
+`SL-M-DECK` is `FS-M-NE`, wood floor trusses, so its three black `slab` rows (285 bars,
+**1,222.1 lb**) are gone and every billed bar is A767: **eight rows, 838 pieces, 5,357.1 lb**
+(`tests/test_rebar_backout.py` pins each row). Concrete the steel sits in: 137.30 -> **113.49 cy**
+(deck 17.24 + `FOUNDATION_WALL_12_INT` 6.57 removed, §2), so **47.2 lb/cy**. The §1 history table
+above keeps the other rows' older weights; the pinned schedule is the test's. The decision #111
+addendum above is moot (no cap). `DECK_CAP_MIX` and the BuildDeck schedule are the named revert only.

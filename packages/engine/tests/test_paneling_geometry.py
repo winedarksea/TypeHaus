@@ -212,7 +212,7 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     assert {b.wall_tag for b in by_tag["WP-M-MUDROOM-SHIPLAP"]} == {
         "W-M-W1", "W-M-MECH-E", "W-M-MUDC-E", "W-M-MECH-S", "W-M-MUDC-N"}
     for band in by_tag["WP-M-MUDROOM-SHIPLAP"]:
-        assert band.z0_m == pytest.approx((0.94685 + 3.5) * _IN, abs=1e-6)
+        assert band.z0_m == pytest.approx((1.0255906 + 3.5) * _IN, abs=1e-6)
         assert band.z1_m == pytest.approx(72 * _IN, abs=1e-6)
         assert band.thickness_m == pytest.approx(0.75 * _IN, abs=1e-6)
     # Two 3' spans on two walls of the shower corner, full 7'-6" liner height.

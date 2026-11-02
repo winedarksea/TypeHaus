@@ -303,7 +303,8 @@
 # $88-128) and is now stated at the 23/32" rate rather than inherited at the 1/2" one.
 # "4x1.4375 stiffener panel" = { material = { low = 1.1, high = 1.6 }, labour = { low = 3.75, high = 8 } }  # was 76 LF (76 pairs) -> 2 sheets
 # PLACEHOLDER, 2026-08-21 — no fabricator quote yet, confirm before treating the takeoff
-# delta as meaningful. FS-S-WEST's open-web trimmable trusses, same 11 7/8" depth as the
+# delta as meaningful. Since 2026-11-01 also FS-M-NE's 24 trusses at 12" o.c. (60 psf live,
+# L/480 — a heavier fabricated design than FS-S-WEST's, so read the high end there). FS-S-WEST's open-web trimmable trusses, same 11 7/8" depth as the
 # I-joist row above. Material above the I-joist's $3.50-5.50 (fabricated open-web at this
 # depth costs more per foot); labour *below* it (no web-hole layout on site, faster to
 # hang than an I-joist that still needs blocking/hole-boring for services).
@@ -426,6 +427,7 @@
 # course and jamb post, 571 LF of block-1, 192 LF of inner head/sill course, and the SPF
 # offcuts that went with them — and hands nothing back, because everything outboard of the
 # sheathing is KDAT now. This is the single largest material line change in the wall.
+"2x3" = { material = { low = 0.45, high = 0.7 }, labour = { low = 0.65, high = 1.2 } }  # W-B-CN's stair-face furring (2026-11-01, decision #112) — SPF, 2x4 rate less the stock
 "2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 4746 LF — SPF, ordinary framing only (-80 LF on 2026-09-02: the roof's web stiffeners are plywood, see the stiffener panel row above; -1016 LF on 2026-09-06 when RF-GARAGE's chords/webs/heels became one member per truss and moved to the "24 roof truss" row — they were never ordinary 2x4 framing, they were shop-plated lumber billing at the stick rate)
 # 2026-08-30, with the INT_2X4_RC retype of the five sleeping-side partitions
 # (plan/storeys/second.py). This is the SAME product [construction_returns] prices as
@@ -947,7 +949,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # UNTREATED wood. The split is derived, not authored — `takeoff/uplift.py::_exposure` reads
 # `Material.preservative_treated` off the support — so it follows a retype of the beam rather
 # than needing a count kept here.
-"H2.5A" = { low = 0.8, high = 1.75 }  # 74 ea — all derived, roof bearings only (floor joists on walls untied since 2026-09-16)
+"H2.5A" = { low = 0.8, high = 1.75 }  # 98 ea — all derived: the roof bearings, plus FS-M-NE's 24 truss seats on the x=18' plates (JoistSpec.seat_ties, 2026-11-01); other floors on walls untied since 2026-09-16
 # ** THE GABLE ENDS. ** The leg of the uplift chain that had no hardware at all until
 # 2026-09-14: no rafter bears on a gable end, so every bearing rule looked past the wall that
 # takes the largest out-of-plane wind pressure in the house. Twenty-two ties at 4' o.c. along
@@ -986,7 +988,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # these eight the owner wants in stainless becomes a `Connector` in
 # params/sunken_garden.py at ~$3.00-$6.50 each, which stands the derived rule down at that
 # joint and puts the part number in the plan source where it can be read.
-"H2.5AZ" = { low = 1.2, high = 2.5 }  # 8 ea — all derived, PRESERVATIVE-TREATED bearings. 57 until 2026-09-22, when the balcony's joist ties went to authored stainless (H10ASS / H2.5ASS)
+"H2.5AZ" = { low = 1.2, high = 2.5 }  # 32 ea — all derived, PRESERVATIVE-TREATED bearings: FS-M-NE's 24 truss seats on the PT mudsill (2026-11-01, Minn. R. 1309.0404), the north entry's 8. 57 until 2026-09-22, when the balcony's joist ties went to authored stainless (H10ASS / H2.5ASS)
 # ** THE STAINLESS TWIN, AND IT IS A SEPARATE PART AND A SEPARATE PRICE FOR TWO REASONS. **
 # RF-BW-CANOPY's three trusses land on 3-ply KDAT headers at an entry that is salted every
 # winter, and the house buys stainless at every KDAT joint (owner, 2026-09-10). Unlike the
@@ -1178,7 +1180,6 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "PROD-CATLIN-OAK-REDUCER" = { low = 25, high = 70 }  # 2 ea — 5/4 saddle D-M-BED2, 3/4 reducer D-A-HALVES (owner-stock oak at the low end)
 "PROD-SCHLUTER-SCHIENE" = { low = 15, high = 35 }  # 2 ea — S-SUITEBATH, S-BATH1
 "PROD-CATLIN-SOLID-SURFACE-REDUCER" = { low = 40, high = 120 }  # 1 ea — S-PLANT, fabricator offcut
-"PROD-CORETEC-REDUCER" = { low = 30, high = 60 }  # 1 ea — M-STUDY T-molding
 "PROD-RUBBER-REDUCER" = { low = 10, high = 30 }  # 3 ea — B-PLAY, B-SAUNA, B-BATH
 # ZMAX (G185) LUS where the carrier is preservative-treated (IRC R317.3.1): the breezeway's
 # treated beams, and the balcony centre glulam. Sized by the engine off the joist; ~25% over G90.
@@ -1937,7 +1938,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # $900-2,060, i.e. $2.00-5.00/SF. Engineering also stays and is still a third of a shored
 # deck's, because the form supplier gives a layout and the shoring is prescriptive out of the
 # manual rather than designed.
-"slab:DECK_EPS_INT" = { low = 9.77, high = 20.14, unit = "SF" }  # 414 SF — EPS-formed deck, concrete + temporary shoring, pump in [allowances]
+"slab:DECK_EPS_INT" = { low = 9.77, high = 20.14, unit = "SF" }  # 0 since 2026-11-01 (decision #112: SL-M-DECK is FS-M-NE's trusses); kept priced as the BuildDeck revert (was 414 SF, EPS-formed deck, concrete + temporary shoring, pump in [allowances])
 # 2026-08-20: RE-UNITED, and REPRICED — the old rate was not just mis-keyed, it was wrong.
 # It read $15-60/LF for a structural bearing break (Armatherm FRR, Foamglas Perinsul) under
 # three ~0.3 SF pads at the sunken-garden column and drywell, giving $25-90 each against the
@@ -3654,12 +3655,12 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # ** 414 SF IS BELOW EVERY MOBILISATION MINIMUM FOUND. ** A grinder, a slurry vac and a
 # two-day return for primer-then-topcoat arrive for a day each either way. Treat the $/SF
 # below as a BUDGET FIGURE and expect a LUMP -- the same caution the polish row carries.
-"coated-concrete" = { material = { low = 1.25, high = 3 }, labour = { low = 2.75, high = 7 } }  # 387 SF — grind to CSP 2-3 + moisture-mitigating primer + matte 2K PU; the cap is in [concrete]
+"coated-concrete" = { material = { low = 1.25, high = 3 }, labour = { low = 2.75, high = 7 } }  # 0 since 2026-11-01 (decision #112: SL-M-DECK is FS-M-NE's trusses); kept priced as the BuildDeck revert (was 387 SF) — grind to CSP 2-3 + moisture-mitigating primer + matte 2K PU
 # 417 SF ordered: main circulation, mudroom and both mud closets. The second
 # hall/linen moved to oak. Keep one floating field with manufacturer edge gaps.
 # 2026-10-29: same-SKU street $4.09 (Kennedy Tile / Ferguson, $117.96/28.84 SF carton) to $4.89 (Hurst); $5.69 stays the listed ceiling.
-"lvp" = { material = { low = 4.09, high = 5.69 }, labour = { low = 1.5, high = 3.25 } }  # Quincy Oak VV017-01018, COREtec listed $/SF 2026-10-26; attached cork included; local delivery/tax quote pending
-# Quincy Oak includes its factory cork. No separate acoustic mat is specified or billed.
+"lvp" = { material = { low = 4.09, high = 5.69 }, labour = { low = 1.5, high = 3.25 } }  # Cotton Oak AKP-RL38 (Karndean publishes no price): Quincy Oak $/SF kept as a placeholder until a local quote
+# Cotton Oak is 7.0 mm as published, backing included. No separate underlay is specified or billed.
 # 596 SF ordered: second hall/linen join the suite, walk-in and study; the
 # attic study remains a separate trip. Labour includes sanding and site finish.
 # 2026-10-29: material was a BOUGHT white-oak rate. The floor is owner-milled red oak (requires_custom_milling, 1.0 bf/SF), so
@@ -4224,7 +4225,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # level and brace the intermediate bearer line, close the ends, strip the bearers.
 # Re-quoted 2026-08-23 for the **10" beam** (8" base panel + 2" top hat), not the 8" panel
 # the old rate was taken from: 25% more EPS in the section, and one more piece per bay to set.
-"eps-deck-form" = { material = { low = 6.25, high = 8.75 }, labour = { low = 4.5, high = 8 } }  # 414 SF — 10" LiteDeck forms only; ready-mix is in [concrete]
+"eps-deck-form" = { material = { low = 6.25, high = 8.75 }, labour = { low = 4.5, high = 8 } }  # 0 since 2026-11-01 (decision #112: SL-M-DECK is FS-M-NE's trusses); kept priced as the BuildDeck revert (was 414 SF of 10" forms)
 # Every resolved coat: the rooms paint their faces and ceilings (resolve/room_paint.py), so the
 # five unpainted rooms (furnace, ESS, main mech, east unfinished attic, attic pocket) bill none.
 "latex-paint" = { material = { low = 0.35, high = 0.8 }, labour = { low = 1.2, high = 2.2 } }  # 13,385 SF walls, ceilings, linings, returns — ~75/25 LABOUR to material
@@ -5079,7 +5080,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # FOUNDATION_WALL_12_INT rather than minted a second time here; the rate is untouched.
 # MERGED, and the 2026-10-11 rebar back-out did not touch it: W-B-CN/CN2/CS2 author NO steel, so
 # there is nothing measured to take out. If it gains a schedule, split this row first.
-"FOUNDATION_WALL_12_INT" = { low = 470, high = 780 }  # 5.25 CY — was $320-600; comment was stale at 22.18 CY until 2026-08-29
+"FOUNDATION_WALL_12_INT" = { low = 470, high = 780 }  # 0 CY since 2026-11-01 (decision #112: W-B-CS2/CN2/CN are framed); kept priced as the poured-centreline revert
 # HISTORY, so the number can be re-struck rather than re-guessed. 2026-08-20: $480-1,000/cy
 # was $8.89-18.52/SF and its LOW sat on the absolute floor of the cheapest published number
 # anywhere; it went to $756-1,296 = $14-24/SF against a $13-25/SF typical installed market.
@@ -7315,6 +7316,9 @@ radon-passive-pipe-and-stack = { low = 900, high = 2200 }
 concrete-cold-weather-protection = { low = 0, high = 0 }
 # Silt fence and a rock construction entrance are required by the metro watershed district.
 site-survey-staking-and-erosion-control = { low = 2000, high = 6000 }
+# Theater RC ceiling (CR-PLAY-CEIL-RC): painter's-caulk bead in the 1/4" board-to-wall gap. 68 LF
+# clear-face perimeter of RM-B-PLAY-N (20.74 m), ~3 tubes + tooling. notes/theater_ceiling_acoustics.md.
+paint-theater-ceiling-perimeter-caulk = { low = 40, high = 100 }
 
 # --- framing -----------------------------------------------------------------------------
 # ** SUBFLOOR ADHESIVE, ADDED 2026-09-19. NOTHING IN THIS FILE BOUGHT GLUE. ** Glue-and-screw
@@ -8349,9 +8353,9 @@ solar_modules = true
 # PLACEHOLDER pending a fabricator's quote (Rebarfab, New Brighton) — ask for black and A767
 # per pound, and the galvanizer's minimum by name.
 [reinforcement]
-"#3" = { low = 1.15, high = 1.65 }  # 237.3 lb — SL-M-DECK, the only black pour
-"#4" = { low = 1.00, high = 1.40 }  # 576.9 lb — SL-M-DECK
-"#5" = { low = 0.95, high = 1.30 }  # 410.1 lb — SL-M-DECK
+"#3" = { low = 1.15, high = 1.65 }  # 0 since 2026-11-01 (decision #112: SL-M-DECK is FS-M-NE's trusses); kept priced as the BuildDeck revert (was 237.3 lb, the only black pour)
+"#4" = { low = 1.00, high = 1.40 }  # 0 since 2026-11-01 (decision #112: SL-M-DECK is FS-M-NE's trusses); kept priced as the BuildDeck revert (was 576.9 lb)
+"#5" = { low = 0.95, high = 1.30 }  # 0 since 2026-11-01 (decision #112: SL-M-DECK is FS-M-NE's trusses); kept priced as the BuildDeck revert (was 410.1 lb)
 "#6" = { low = 0.90, high = 1.25 }  # 0 lb black — kept so a black #6 prices at once (see [retired])
 "#3:hdg-a767" = { low = 1.50, high = 2.50 }  # 137.3 lb — column ties, veneer-beam ties
 "#4:hdg-a767" = { low = 1.35, high = 2.25 }  # 1,845.0 lb — court footings, walls, ICF stems

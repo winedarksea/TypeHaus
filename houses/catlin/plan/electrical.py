@@ -568,10 +568,6 @@ MAIN_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BDN1", face="left", distance_from_start=inch(11.75),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # FH-M-DINING's thermostat follows the 2026-10-03 east-window respacing: y=14'-0"
-    # in the E2/E3 pier, 54" AFF over RC3's 42" line. The old y=16'-8" station is
-    # inside E3. A geometry regression covers both the opening and stud clearances,
-    # since the registry does not grade a wall device against a window.
     # FX-M-BATH2-TUB's Bask outlet. Kohler: "A qualified electrician must
     # install a GFCI-protected, 120 V, 15 A, grounded outlet. Locate the outlet BEHIND THE
     # BATH and WITHIN 24 in. of the power supply." The bath ships cord-and-plug with its
@@ -596,13 +592,6 @@ MAIN_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-HS1", face="right", distance_from_start=inch(66.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    ElectricalDevice(uid="CEE024AAAA", tag="ED-M-DINING-FH-STAT", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-FLOOR-STAT-WARMUP",
-                     circuit="CKT-FH-DINING", room="RM-M-LIVING",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(168),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
 MAIN_EQUIPMENT = [
@@ -747,8 +736,9 @@ MAIN_EQUIPMENT = [
     # stops at y=35').
     # ** 3'-0" BASE, UNDER ST-M2S's UPPER LANDING (2026-09-24; was 7'-0"). ** At 7' it sat
     # 15" above that landing's deck; lowered so it blows down ST-B2M's well to the basement
-    # corner. Top 3'-1 21/32" clears the landing joists (bottom 4'-11 3/4") by 10"; base is
-    # 7'-2 1/2" above ST-B2M's upper landing, over R311.7.2's 6'-8".
+    # corner. 35 1/2" since 2026-11-02: the 13.65" body's top had met ST-M2S's landing ledger
+    # on W-M-N2 (bottom 50.51" absolute) once the plank rose to +1.0256"; it clears by 1/3".
+    # Base is 7'-2" above ST-B2M's upper landing, over R311.7.2's 6'-8".
     # `room` is RM-M-LIVING, which the stair well is part of. `zone_rooms` is not — it's the
     # mudroom, the mech closet and the mudroom closet; the stair volume it blows into
     # belongs to EQ-M-HP2-LIVING's 768 sf claim, not counted twice here.
@@ -772,7 +762,7 @@ MAIN_EQUIPMENT = [
     Equipment(uid="CEE030AAAA", tag="EQ-M-HP3-STAIR", kind=EquipmentKind.INDOOR_HEAD,
               footprint=(inch(33), inch(8)),
               room="RM-M-LIVING", type_ref="EQ-T-GREE-SAPPHIRE-9", outdoor_ref="EQ-M-HP3-OD",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(3)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(35.5)),
               zone_rooms=("RM-M-MUDROOM", "RM-M-MECH", "RM-M-MUD-CLOSET"),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-N2", face="left", distance_from_start=inch(71.75),
@@ -828,8 +818,8 @@ MAIN_EQUIPMENT = [
     # measured from the ROOM'S FINISHED FLOOR, not the subfloor. `resolve/placeables.py`'s
     # `_floor_elevation` returns `room_finished_floor_elevation(...)` and hands it to
     # `resolved_mount_elevation` as `floor_m`, which adds the mount to it. RM-M-LIVING's
-    # finished floor was +15/16" (the cap; +3/4" since 2026-11-01, so the mount is authored
-    # 24 3/16" now), so an authored 24" resolved to 24 15/16" absolute — which is
+    # finished floor was +15/16" (+3/4" since the main floor went to wood, so the mount is
+    # authored 24 3/16" now), so an authored 24" resolved to 24 15/16" absolute — which is
     # exactly W-M-FIRE-PLINTH's top, the brick sill, to the thousandth. That agreement is the
     # check on the claim, and the resolved model confirms it: `canvas_objects` carries this
     # unit at z=0.8366125 m = 32 15/16" absolute at the old authored 32". ** THE MANTEL WAS
@@ -888,14 +878,14 @@ MAIN_EQUIPMENT = [
     #
     # ** ERRATUM, AND IT PREDATES THIS CHANGE: the east wall's interior face is 35'-5 3/8",
     # NOT 35'-11 3/8". ** The comment this replaces claimed the latter — the gwb had been
-    # subtracted from the wrong side — and `electrical.py`'s own FH-M-DINING note,
-    # plan/placeables.py and plan/millwork.py all say 35'-5 3/8". The consequence was live: the
+    # subtracted from the wrong side — and plan/placeables.py and plan/millwork.py
+    # both say 35'-5 3/8". The consequence was live: the
     # old unit at x=35'-8" with a 7" body had its BACK at 35'-11 1/2", so ** the fireplace has
     # been buried 6 1/8" inside the studs for as long as that comment has existed. **
     Equipment(uid="CEE022AAAA", tag="EQ-M-FIREPLACE", kind=EquipmentKind.SPACE_HEATER,
               footprint=(inch(29.25), inch(9.75)),
               room="RM-M-LIVING", type_ref="EQ-T-FIREPLACE-EL", circuit="CKT-FIREPLACE",
-              # 24 3/16" AFF off the cap (decision #111) = the plinth top, 24 15/16" absolute.
+              # 24 3/16" AFF off the subfloor LVP (decision #111/#112) = the plinth top, 24 15/16" absolute.
               mount=Mount(kind=MountKind.WALL, elevation=inch(24.1875),
                           recessed_into_host_surface=True),
               location=Location(attachment=WallAttachment(
@@ -1324,39 +1314,35 @@ CONDUIT_TRUNKS = [
     # Across the basement ceiling to the kitchen's east counter wall, where KGF3 (the device
     # this feeds) is.
     #
-    # ** AROUND ST-B2M, NOT OVER IT (2026-09-22). ** The y=29' line crossed the upper flight
-    # 8.4" into its 6'-8" headroom. It now goes south down the furnace room's east strip
-    # (x=9'-6 5/8", over the GYM/PLAY ducts), east through W-B-STR2 and SF-B-BATH beside
-    # DU-B-ERV-R-PLAY, out through W-B-BA-E in the 3" gap between its staggered stud at
-    # y=18'-10" and the bath vent's riser, north up the hall at x=16'-5 1/2", and through
-    # W-B-CN at y=25'-6" (SP-B-CN-CD-KITCH), 6" south of the stair's first riser.
+    # ** OVER THE THEATER CEILING, NOT UNDER IT (2026-11-02, decision #112). ** The hall leg
+    # keeps its 2026-09-22 lane around ST-B2M (x=9'-6 5/8" strip, W-B-STR2, SF-B-BATH, up the
+    # hall at x=16'-5 1/2"), but stops at y=23'-6", south of FO-M-STAIR (y>26'-0 3/8" is open
+    # well). A conduit body there (accessible, covers down) takes the turn: a ramp rises into
+    # FS-M-WEST's bay and crosses the x=18' plate OVER it, not through the framed W-B-CN (a
+    # bearing 2x6 bores 2.20" at most, R602.6, and the old under-plate lane now lies in its
+    # double top plate). East of the wall it rides FS-M-NE's truss bay y=23'-6" (between the
+    # 23' and 24' trusses, clear of both chords) at -3 1/2", the top of the web window: over
+    # PR-B-CW-TRUNK (x=29'-9.6") and PR-B-HW-KITCH, which it must cross to reach the kitchen.
+    # It turns north at x=28'-2 1/2" (the 13" web opening beside CD-B-DATA-MEDIA's) through
+    # each truss to y=29'-6", east in that bay, and rises through the deck 4 3/4" south of
+    # KGF3 (y=29'-1 1/4"), in the open bay between the 29' and 30' trusses. Nothing hangs in
+    # RM-B-PLAY-N's volume. 0.75" EMT, 314 degrees between pull points: ramp 46, north 90,
+    # east 90, riser 90.
     ConduitRun(uid="CDT003AAAA", tag="CD-B-KITCHEN", trade_size=inch(0.75),
                # Up out of ED-B-PANEL's top at x=9 1/2" to the ceiling band, then east.
                path=(pt(inch(9.5), ft(29)), pt(inch(9.5), ft(29)), pt(ft(9, 6.625), ft(29)),
                      pt(ft(9, 6.625), ft(19, 11)), pt(ft(13, 3.5), ft(19, 11)),
                      pt(ft(13, 3.5), ft(18, 11.75)), pt(ft(16, 5.5), ft(18, 11.75)),
-                     pt(ft(16, 5.5), ft(25, 6)), pt(ft(19, 9), ft(25, 6)),
-                     pt(ft(19, 9), ft(29)), pt(ft(34, 11), ft(29)), pt(ft(34, 11), ft(28, 11)),
-                     pt(ft(34, 11), ft(28, 11))),
-               # ** -1'-4", RAISED 2" ON 2026-09-09, AND THE OLD PROSE WAS THE TELL. ** This
-               # block claimed 1 15/16" of clear under the deck board while the run was
-               # authored at -1'-6", where the real gap is 3 9/16" and the raceway hangs 4.3"
-               # into RM-B-PLAY-N below — `mep.run_in_finished_volume` FAILed on it. At -1'-4"
-               # the conduit's top is 1 9/16" under the board at -14 1/16": strapped tight to
-               # the deck framing with room for the ceiling, which is what was always meant.
-               # This is the tightest raceway in the basement. Its two wall crossings go with
-               # it. Do not put it back — a 16'-6" bulkhead to box a 3/4" pipe is not the fix.
-               # -1'-4 1/4" since 2026-09-22: its framed-wall crossings pass under the double
-               # top plate (-15 5/8"), and it still hangs only 2 5/8" into RM-B-PLAY-N.
+                     pt(ft(16, 5.5), ft(23, 6)), pt(inch(209), ft(23, 6)),
+                     pt(inch(338.5), ft(23, 6)), pt(inch(338.5), ft(29, 6)),
+                     pt(ft(34, 11), ft(29, 6)), pt(ft(34, 11), ft(29, 6))),
                start_elevation=inch(-31.4375), end_elevation=ft(3, 6),
-               elevations=(inch(-31.4375), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
-                           ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.5625), ft(-1, -4.5625),
-                           ft(-1, -4.5625), ft(3, 6)),
-               # The y=29' leg is 5/16" lower, at -1'-4 9/16", to pass under PR-B-HW-KITCH's
-               # x=30'-3.6" leg (see its note): 2.91" into RM-B-PLAY-N against the 3" allowance.
+               elevations=(inch(-31.4375), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
+                           ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
+                           inch(-3.5), inch(-3.5), inch(-3.5), inch(-3.5), ft(3, 6)),
                # NEC 358.26 conduit bodies, covers down: 3 = RM-B-FURNACE (9'-6 5/8", 19'-11");
-               # 8 = RM-B-PLAY-N (19'-9", 25'-6"). Not 7: CD-B-DATA-MEDIA passes 1/3" off it.
-               pull_points=(3, 8),
+               # 7 = the hall, at the foot of the ramp (16'-5 1/2", 23'-6").
+               pull_points=(3, 7),
                from_ref="ED-B-PANEL", to_ref="ED-M-LIVING-KGF3"),
     # South out of the basement to the hot tub disconnect under the porch. The east leg runs
     # 1' north of the y=0 sheathing line, so it crosses W-B-S1 once rather than running
@@ -1406,7 +1392,7 @@ CONDUIT_TRUNKS = [
 # --- Structured cabling: the head end, three access points, and the spine trunk ---------
 # Rides the existing full-height radon/plumbing chase at (1', 35'-1.3") in its own raceways
 # (NEC 800.133/725 forbids comms sharing a raceway with power). Four risers 6" apart
-# (>=5" so mep.sleeve_coverage's matcher doesn't confuse sleeves through SL-M-DECK):
+# (>=5" so mep.sleeve_coverage's matcher doesn't confuse their sleeves):
 # x=1'-0" radon/vent, x=1'-6" CD-B-ATTIC-RISER (PV DC), x=2'-0" CD-B-DATA-CHASE, x=2'-6"
 # CD-B-SPARE-CHASE (capped, pull string). The three conduits stand on y=34'-2 3/8", not the
 # vent bundle's 34'-6" (2026-09-23): that line put them in FS-S-WEST's y=34'-8" truss and
@@ -1627,7 +1613,7 @@ BASEMENT_DATA_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-W2", face="left", distance_from_start=inch(114),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # Behind the television on the media room's north wall, 1'-0" east of ED-B-PLAY-N-RC1 so
+    # Behind the television on the media room's north wall, 1'-9 3/4" east of ED-B-PLAY-N-RC1 so
     # the two plates do not share a box location. Both sit inside the panel's 85.3" width
     # (x 23'-2" to 30'-3"), so neither is visible with the TV hung.
     ElectricalDevice(uid="N99QMTQDK6", tag="ED-B-PLAY-N-DATA1", kind=DeviceKind.DATA_OUTLET,
@@ -1668,31 +1654,28 @@ BASEMENT_DATA_TRUNKS = [
                            ft(-4), ft(-5, -10)),
                pull_points=(3,),
                from_ref="ED-B-NET-PATCH", to_ref="ED-B-WORKSHOP-DATA1"),
-    # Media room: east along the basement ceiling at -1'-4", through the stair shaft's west
-    # wall and the centre wall, then north to the jack behind the television. Held at y=30'
-    # so its two sleeves stay a clear foot from CD-B-KITCHEN's at y=29' — the sleeve matcher
-    # pairs a run to a hole by proximity, and two holes 6" apart in the same wall confuse it.
-    #
-    # -1'-4" for the same reason CD-B-KITCHEN is (2026-09-09): at -1'-6" it hung 4.3" into
-    # RM-B-PLAY-N, whose finished ceiling IS the deck board at -14 1/16". Both raceways
-    # cross that room, and both had to come up the same 2".
-    #
-    # ** AROUND ST-B2M ON CD-B-KITCHEN'S LANES (2026-09-22) **, one step east/north of it
-    # at every turn so the two never cross, at the same -1'-4 1/4". Through W-B-CN at
-    # y=25'-10 1/2" (SP-B-CN-CD-DATA), 2" short of the first riser's headroom.
+    # Media room jack behind the television. Hall leg as before (around ST-B2M, held at y=30'
+    # west so its holes stay a clear foot from CD-B-KITCHEN's), then ** OVER the theater
+    # ceiling, not under it (2026-11-02, decision #112). ** A body in the hall at y=24'-8 1/2"
+    # (south of FO-M-STAIR, clear of FS-M-STAIR's y=24'-5 3/8" joist flange) takes a ramp into
+    # its bay, over the x=18' plate and into FS-M-NE's bay y=24'-8 1/2" at -8 3/4". It runs
+    # east to x=27'-9" (inside the 13" web opening centred on 28'-0"), north through every
+    # truss to y=35'-3" under PR-B-KITCH-DRAIN's y=31'-6" leg, and drops against the wall
+    # (1" off the face, as RC1's drop did) through the ceiling's 1/4" caulked gap to the jack.
+    # Data and power never share a raceway, so this is its own lane.
     ConduitRun(uid="D606MFGTEG", tag="CD-B-DATA-MEDIA", trade_size=inch(0.75), service=Service.DATA,
                path=(pt(inch(10), ft(31)), pt(ft(2), ft(30)), pt(ft(9, 7.75), ft(30)),
                      pt(ft(9, 7.75), ft(20, 0.5)), pt(ft(13, 4.75), ft(20, 0.5)),
                      pt(ft(13, 4.75), ft(19, 1.25)), pt(ft(16, 4.25), ft(19, 1.25)),
-                     pt(ft(16, 4.25), ft(25, 10.5)), pt(ft(19, 6), ft(25, 10.5)),
-                     pt(ft(19, 6), ft(30)), pt(ft(27, 9), ft(30)), pt(ft(27, 9), ft(35, 3)),
-                     pt(ft(27, 9), ft(35, 3))),
+                     pt(ft(16, 4.25), inch(296.5)), pt(inch(208.5), inch(296.5)),
+                     pt(inch(333), inch(296.5)), pt(inch(333), ft(35, 3)),
+                     pt(inch(333), ft(35, 3))),
                start_elevation=ft(-1, -4.25), end_elevation=ft(-6, -10),
-               elevations=(ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
-                           ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
-                           ft(-1, -4.25), ft(-1, -4.25), ft(-6, -10)),
-               # Pull boxes at 2 = RM-B-FURNACE (9'-7 3/4", 30'-0") and 7 = RM-B-STAIR hall
-               # (16'-4 1/4", 25'-10 1/2"). Not 3: CD-B-KITCHEN passes 1/5" off it.
+               elevations=(ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
+                           ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
+                           inch(-8.75), inch(-8.75), inch(-8.75), ft(-6, -10)),
+               # Bodies at 2 = RM-B-FURNACE (9'-7 3/4", 30'-0") and 7 = RM-B-STAIR hall
+               # (16'-4 1/4", 24'-8 1/2"), at the foot of the ramp; 206 degrees after it.
                pull_points=(2, 7),
                from_ref="ED-B-NET-PATCH", to_ref="ED-B-PLAY-N-DATA1"),
     # Study: south and east strapped to the basement ceiling at -1'-0 1/2", then up the
@@ -1735,10 +1718,6 @@ DATA_SLEEVES = [
     # W-B-STR3 (x=10', y=30') is 2x6 bearing studs, not concrete, so its crossing is a
     # bored hole on the day, not a sleeve set before a pour — the raceway still crosses the
     # wall at that station, there is simply no pour to cast into.
-    SleevePenetration(uid="V44DS76X6J", tag="SP-B-CN-CD-DATA", host_ref="W-B-CN",
-                      position=pt(ft(18), ft(25, 10.5)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), purpose=Service.DATA,
-                      axis="horizontal", center_elevation=ft(-1, -4.25)),
 ]
 
 ATTIC_DATA_DEVICES = [
@@ -1812,19 +1791,8 @@ CONDUIT_SLEEVES = [
     SleevePenetration(uid="CNS010AAAA", tag="SP-G-CD-GAR", host_ref="SL-G-FLOOR",
                       position=pt(ft(16), ft(44, 3.375)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240),
-    # CD-B-KITCHEN: east across the basement ceiling at -1' and up through SL-M-DECK to the
-    # kitchen's east counter wall. W-B-STR3 (x=10', y=29') is framed now, so it has no
-    # sleeve here; its partner in W-B-CN stays, since that wall is still concrete.
-    # The riser is at 34'-11", 1" inside W-B-E2's concrete face (35'), so it crosses no wall.
-    # At 35' it lay on the face, and a wall sleeve was authored that bored 12" through the
-    # core to the membrane and served nothing.
-    SleevePenetration(uid="CNS012AAAA", tag="SP-B-CN-CD-KITCH", host_ref="W-B-CN",
-                      position=pt(ft(18), ft(25, 6)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
-                      axis="horizontal", center_elevation=ft(-1, -4.25)),
-    SleevePenetration(uid="CNS014AAAA", tag="SP-M-CD-KITCH", host_ref="SL-M-DECK",
-                      position=pt(ft(34, 11), ft(28, 11)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), purpose=Service.POWER_120),
+    # (CD-B-KITCHEN, CD-B-DATA-MEDIA and CD-B-PLAY-SPARE cross no concrete since decision #112:
+    # they ride the truss bays over the framed x=18' plate, so none carries a sleeve.)
     # Host is W-B-S1 again since the sauna shrink undid the 2026-09-05 pour split: the leg's
     # x (9'-5 7/8") is in the one south segment. Same hole, same station.
     SleevePenetration(uid="CNS015AAAA", tag="SP-B-S1-CD-SPA", host_ref="W-B-S1",
@@ -1854,7 +1822,7 @@ NEC_FILL_BASEMENT = [
     # 4'-10" and D-B-GYM at y 9'-11"..12'-7". NEC 210.52(A)(2) measures wall space between
     # doorways, so each of the three stretches needs its own — south of the sauna door,
     # between the two, and north of D-B-GYM. RC8 sits on W-B-CS3 SOUTH of that door. The
-    # stretch north of it is W-B-CS2's 12" pour (the last place to want a cast-in box), so
+    # stretch north of it is W-B-CS2, now a framed bearing wall, so
     # RC3 on W-B-CE covers it: 25" off the corner, not 31", since D-B-GYM became a passage
     # (2026-11-01) and RC8 stopped reaching across the void.
     ElectricalDevice(uid="NEC001AAAA", tag="ED-B-GYM-RC1", kind=DeviceKind.RECEPTACLE,
@@ -1949,7 +1917,8 @@ NEC_FILL_BASEMENT = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-B-PLAY-N had no receptacle of its own either, and a wall-hung 98" panel needs one
-    # behind it. Directly under FURN-B-PLAY-TV at x=26'-9", on the north wall's 35'-4" face
+    # behind it. Behind FURN-B-PLAY-TV at x=25'-11 1/4" (under ED-B-PLAY-N-JB; 9 3/4" west of the
+    # panel's centre), on the north wall's 35'-4" face
     # (1" south of it — half the 2" body, the face convention above), plate turned south into
     # the room. Elevation 30" puts it behind the panel's lower edge rather than below it.
     #
@@ -1961,7 +1930,7 @@ NEC_FILL_BASEMENT = [
                      circuit="CKT-RC-BSMT", room="RM-B-PLAY-N",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(30)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-N1", face="left", distance_from_start=inch(111),
+                         wall_ref="W-B-N1", face="left", distance_from_start=inch(120.75),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
 
     # ** THE HALL, AND NOTHING IN THIS ENGINE ASKED FOR IT (2026-09-07). ** The basement
