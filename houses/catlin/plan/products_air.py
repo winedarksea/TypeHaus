@@ -72,6 +72,12 @@ ROUND_DAMPER_4_24V = Product(
     source=f"Basis of design, or equal: Duro Dyne NSPRD024-4, Zonefirst RDSC. RH-controlled "
            f"locally. Body length and actuator size unpublished online. {_SPEC} §7.",
 )
+STAIR_REGISTER_BOX = Product(
+    tag="PROD-AIR-STAIR-REGISTER-BOX", brand="Project fabrication", model="TH-HP-STAIR-BOX-01",
+    name="26ga galvanized 12x6x4in register box, centred 4in round back collar",
+    source="12in along wall x 6in tall x 4in deep, including the A220VO OBD envelope. "
+           "4in round galvanized branch at 50 cfm, 573 fpm; notes/stair_supply_connection.md.",
+)
 PLANT_CEILING_GRILLE = Product(
     tag="PROD-AIR-PLANT-GRILLE-12X6", brand="TRUaire", model="A220V 12X06",
     name="12x6 aluminium double-deflection ceiling grille, white, without OBD",
@@ -149,6 +155,6 @@ SPOT_NOZZLE_4 = Product(
 
 AIR_PRODUCTS = (
     DISC_VALVE_100, FLOOR_GRILLE_ERV, SIDEWALL_DD_OBD, FLOOR_REGISTER_HP,
-    FILTER_RETURN_GRILLE, RETURN_GRILLE_1210, ROUND_DAMPER_4_24V, PLANT_CEILING_GRILLE, PLANT_ZONE_DAMPER, PLANT_END_BOOT, PLANT_COLLAR, PLANT_SERVICE_HATCH,
+    FILTER_RETURN_GRILLE, RETURN_GRILLE_1210, ROUND_DAMPER_4_24V, STAIR_REGISTER_BOX, PLANT_CEILING_GRILLE, PLANT_ZONE_DAMPER, PLANT_END_BOOT, PLANT_COLLAR, PLANT_SERVICE_HATCH,
     WALL_HOOD_8, BACKDRAFT_DAMPER_8, WALL_SEAL_FOAM, ELASTOMERIC_SHEET, SPOT_NOZZLE_4,
 )

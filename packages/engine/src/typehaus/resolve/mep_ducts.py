@@ -204,7 +204,7 @@ def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
         if inlet is None or getattr(terminal, "duct_ref", None) != duct.tag:
             return findings + [Finding(
                 severity=Severity.ERROR, check_id="integrity.duct_terminal_ref",
-                message=f"{duct.tag}: end_terminal_ref needs a ceiling terminal "
+                message=f"{duct.tag}: end_terminal_ref needs a terminal "
                         "with an inlet naming this duct",
                 element_tags=(duct.tag, duct.end_terminal_ref), result=Result.FAIL)]
         z[-1] = inlet[0][2]

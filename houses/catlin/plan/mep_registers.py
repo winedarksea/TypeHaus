@@ -97,35 +97,13 @@ REGISTERS_HVAC_SECOND = [
              location=Location(attachment=WallAttachment(
                  wall_ref="W-S-BW3", face="right", distance_from_start=inch(12.75),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
-    # ** IT IS A SIDEWALL GRILLE IN THE SOFFIT'S WEST FACE, AND IT WAS A SHORT CIRCUIT. **
-    # Until 2026-09-04 this was a ceiling diffuser at (17'-6", 24'-0"), 6'-2" in plan from
-    # REG-S-HP-RET — 50 cfm blown straight DOWN, in the same room, at a 650 cfm return sitting
-    # LOWER than it did (7'-3" against 8'-0"). The return simply ate it: the hall and the stair
-    # got a terminal on the drawing and no air in the building. No size of ceiling grille fixes
-    # that, because the fault is DIRECTION. A sidewall face throws the 50 cfm horizontally
-    # WEST, 180 degrees away from the return, across 12'-7" of open landing (x 5'-11 1/8"..
-    # 21'-10 3/8" here, the widest the hall gets) and into the stair void at y=26'-0 3/8".
-    #
-    # THE WEST FACE, BECAUSE THE TAKE-OFF THERE IS THE CLEANEST IN THE HOUSE: DU-S-HP-SUP is
-    # 18" wide on x=19'-6", so its west face stands at 18'-9" — 3/8" off the cavity's west edge
-    # at 18'-8 5/8". A side collar through 3/8" of air, 1 1/2" of rail and 5/8" of gypsum, and
-    # no boot at all.
-    #
-    # x=18'-6" is the lining's room face (18'-6 1/2") less half the type's 1" body — the
-    # convention REG-M-XFER-MUD and every wall device here uses; authored ON the face the
-    # centre reads outside RM-S-HALL and `integrity.placeable_room_mismatch` says so. y is
-    # 23'-6 5/8" since 2026-10-31 (it was 24'-0"): the 12x6 register box behind the face has
-    # to land between SF-S-DUCT's ladder studs (`mep.terminal_neck_fit`); still south of the
-    # well. `rotation=deg(90)` turns the sidewall type's (face, projection) rectangle to face
-    # along y.
-    #
-    # ** THE FACE IS CENTRED ON THE TRUNK: ** the trunk's centreline resolves at 100 1/8"
-    # (`ResolvedDuct.z_m`), so the 7 3/4" A220VO face is authored at 96 1/4" and runs to
-    # 104", inside the cavity's 96 1/8"..107 3/8". Change the trunk's depth or the drop and
-    # this moves.
+    # West-facing 50 cfm stair/landing supply. The separate 4in branch ends at the
+    # dimensioned inlet of TH-HP-STAIR-BOX-01, rather than an implicit gap to the trunk.
+    # The collar sits 1.5in above the trunk centre and fits fully within its 8in height.
+    # Box, framing clearance and seals: notes/stair_supply_connection.md.
     Register(uid="CSRH04AAAA", tag="REG-S-HP-STAIR", kind=DuctSystem.SUPPLY, room="RM-S-HALL",
-             position=pt(inch(218.76), inch(282.625)), duct_ref="DU-S-HP-SUP", rotation=deg(90),
-             type_ref="REG-T-HP-SIDE-1206", design_cfm=50,
+             position=pt(inch(218.76), inch(282.625)), duct_ref="DU-S-HP-STAIR", rotation=deg(90),
+             type_ref="REG-T-HP-STAIR-SIDE", design_cfm=50,
              mount=Mount(kind=MountKind.WALL, elevation=inch(96.25))),
     # The suite's high sidewall supply over D-S-SUITE, throwing west into RM-S-SUITE. Its
     # mount elevation matches the bedroom side collars. The W-S-C2B station is y=14'-8 7/8",

@@ -20,6 +20,7 @@ from typehaus import (
     Service,
     ServicePort,
     TerminalNeck,
+    TerminalNeckInlet,
     ft,
     inch,
 )
@@ -132,6 +133,18 @@ AIR_REGISTER_TYPES = (
                  product_ref="PROD-AIR-SIDEWALL-DD-OBD", neck=_OBD_NECK_1206,
                  source=f"TRUaire A220VO 12X06 face 13 3/4 x 7 3/4in. Double deflection: the "
                         f"vertical blades aim, the horizontal set the spread. {_NOTE} §4.",
+                 ports=(_port("supply", Service.SUPPLY_AIR),)),
+    RegisterType(tag="REG-T-HP-STAIR-SIDE",
+                 name="Stair supply A220VO 12x6 with TH-HP-STAIR-BOX-01 and 4in branch",
+                 footprint=(inch(13.75), inch(1)), height=inch(7.75), plan_symbol="register",
+                 product_ref="PROD-AIR-SIDEWALL-DD-OBD",
+                 neck=TerminalNeck(width=inch(12), height=inch(6), depth=inch(4),
+                     part="TH-HP-STAIR-BOX-01 12x6x4 register box with centred 4in back collar",
+                     product_ref="PROD-AIR-STAIR-REGISTER-BOX",
+                     inlet=TerminalNeckInlet(position=(inch(0), inch(4), inch(0)),
+                         section="round", width=inch(4), height=inch(4), normal=(0, 1))),
+                 source="50 cfm through 4in galvanized branch to the trunk. "
+                        "notes/stair_supply_connection.md; grille retains OBD and westward throw.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     RegisterType(tag="REG-T-HP-STUDY-SIDE",
                  name="Study heat-pump supply, 8x6 aluminium double-deflection sidewall with "

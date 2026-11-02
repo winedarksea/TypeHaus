@@ -2371,6 +2371,14 @@ bearing wall, matching every other bearing wall in the house.
 
 ## Ventilation, ducts and soffits
 
+### Stair supply has a named box and explicit branch (2026-11-01)
+
+REG-S-HP-STAIR keeps its position and westward throw. The old generic damper neck stopped
+about 3in short of DU-S-HP-SUP. TH-HP-STAIR-BOX-01 is now a 26ga 12x6x4 register box with
+a centred 4in back collar; DU-S-HP-STAIR is its 50 cfm galvanized branch. The round collar
+fits within the trunk's 8in height at the existing grille elevation. Both the neck's product
+identity and its dimensioned connection are checked. [Detail](notes/stair_supply_connection.md).
+
 ### Plant supply has a connected rectangular terminal assembly (2026-11-01)
 
 Moved REG-S-HP-PLANT east to (14′8″, 3′3″). A220V 12X06 without OBD, ZD12X6TZ,

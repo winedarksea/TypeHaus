@@ -66,7 +66,8 @@ duct's 12.6, so the grille is not the restriction; loss stays the derived K 5.
 
 | type | basis of design | or equal | face | neck | price read |
 |---|---|---|---|---|---|
-| `REG-T-HP-SIDE-1206` (5) | TRUaire A220VO 12X06, double deflection, OBD | H&C HVD, Shoemaker 904-O | 13 3/4 x 7 3/4 | 12x6x2 11/16 (H&C HVD 3 7/16" overall less face) | $79.80 hvacquick |
+| `REG-T-HP-SIDE-1206` (4) | TRUaire A220VO 12X06, double deflection, OBD | H&C HVD, Shoemaker 904-O | 13 3/4 x 7 3/4 | 12x6x2 11/16 (H&C HVD 3 7/16" overall less face) | $79.80 hvacquick |
+| `REG-T-HP-STAIR-SIDE` (1) | A220VO 12X06 + TH-HP-STAIR-BOX-01 | | 13 3/4 x 7 3/4 | 12x6x4, centred 4in back collar | allowance |
 | `REG-T-HP-STUDY-SIDE` (1) | TRUaire A220VO 08X06 | H&C HVD 8x6 | 9 3/4 x 7 3/4 | 8x6x2 11/16 | $68.60 |
 | `REG-T-HP-FLOOR-0612` (3) | H&C 531SA 6x12, multi-shutter | Reggio, Shoemaker 600 | 13 3/8 x 7 3/8 (est.) | 12x6x2 (est.; TRUaire 150 is 2") | not read |
 | `REG-T-HP-CEIL-DAMPERED` (1) | A220V 12X06, no OBD + ZD12X6TZ (§7) | | 13 3/4 x 7 3/4 | multipart boot, damper, collar and service hatch | allowance |
@@ -74,6 +75,8 @@ duct's 12.6, so the grille is not the restriction; loss stays the derived K 5.
 The sidewall faces are centred on the duct axis (faces grew 6" → 7 3/4", so every mount
 elevation dropped 7/8"). Oak-match flush in RM-A-STUDY is a note only. Caution read on
 Pace Supply: one listing calls the 220VO steel; order the **aluminium** A220 line.
+
+The stair supply has an [explicit 4in branch and named register box](stair_supply_connection.md).
 
 ## 5. The return filter grille — `REG-T-HP-RET-FILTER`
 

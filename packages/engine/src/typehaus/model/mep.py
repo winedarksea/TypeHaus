@@ -251,7 +251,7 @@ class DuctRun(Element):
     declared unchecked case rather than a silent one.
     """
 
-    #: Derive the last vertex elevation from a ceiling terminal's dimensioned inlet.
+    #: Derive the last vertex elevation from a terminal's dimensioned inlet.
     #: Plan position remains authored, so a misplaced endpoint still fails connectivity.
     end_terminal_ref: str | None = None
     system: DuctSystem

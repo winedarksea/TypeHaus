@@ -3628,6 +3628,12 @@
 4,
 "caf56f453451"
 ],
+"ducts/DU-S-HP-STAIR/z_m": [
+5.629275,
+5.629275,
+2,
+"af9edf34c127"
+],
 "ducts/DU-S-HP-STUDY2/z_m": [
 5.565775,
 5.565775,
@@ -69458,6 +69464,12 @@
 2,
 "88a3d237cd49"
 ],
+"geometry/STAIRBOOT1-run/body": [
+5.578475,
+5.680075,
+24,
+"ea7d6b1eda49"
+],
 "geometry/STDYBOOT01-run/body": [
 5.489575,
 5.641975,
@@ -112127,6 +112139,8 @@
 "solids/DU-S-HP-SOUTH-RISE-RUN/z1_m": 5.870575,
 "solids/DU-S-HP-SOUTH-RUN/z0_m": 5.794375,
 "solids/DU-S-HP-SOUTH-RUN/z1_m": 6.086348,
+"solids/DU-S-HP-STAIR-RUN/z0_m": 5.578475,
+"solids/DU-S-HP-STAIR-RUN/z1_m": 5.680075,
 "solids/DU-S-HP-STUDY2-RUN/z0_m": 5.489575,
 "solids/DU-S-HP-STUDY2-RUN/z1_m": 5.641975,
 "solids/DU-S-HP-SUITE-RUN/z0_m": 5.489575,

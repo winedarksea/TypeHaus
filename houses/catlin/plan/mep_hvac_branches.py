@@ -29,6 +29,13 @@
 from typehaus import DuctRouting, DuctRun, DuctSystem, ft, inch, pt
 
 DUCTS_HVAC_BRANCHES_SECOND = [
+    # 4in at 50 cfm = 573 fpm. Start is inside the trunk; end is the register box back.
+    # Elevation follows the grille at the endpoint; the start shares its current centre.
+    DuctRun(uid="STAIRBOOT1", tag="DU-S-HP-STAIR", system=DuctSystem.SUPPLY,
+            path=(pt(inch(234), inch(282.625)), pt(inch(223.26), inch(282.625))),
+            elevations=(inch(101.625), inch(101.625)),
+            end_terminal_ref="REG-S-HP-STAIR", diameter=inch(4),
+            routing=DuctRouting.EXPOSED, material="galvanized", design_cfm=50),
     # This boot leaves through SF-S-DUCT's east lining between its ladder rails.
     # EXPOSED follows the bedroom-collar idiom: the soffit occupancy check requires
     # named runs to remain inside the box's clear width. Framing clearance is tested.

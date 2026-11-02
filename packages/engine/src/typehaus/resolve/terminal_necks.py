@@ -63,16 +63,32 @@ def component_box(obj, component) -> tuple[tuple, float, float] | None:
 def terminal_inlet(model: ResolvedModel, tag: str):
     """World-space (centre, outward normal, width, height), or None if not placeable."""
     obj = next((o for o in model.canvas_objects if o.tag == tag and o.kind == "Register"), None)
-    if obj is None or obj.mount is None or obj.mount.kind.value != "ceiling":
+    if obj is None or obj.mount is None:
         return None
     catalog = next((t for t in model.plan.library.register_types if t.tag == obj.type_ref), None)
     inlet = catalog.neck.inlet if catalog is not None and catalog.neck is not None else None
     if inlet is None or obj.body_z0_m is None:
         return None
-    dx, dy = _rotate(tuple(v.meters for v in inlet.position[:2]), obj.rotation_degrees)
-    return ((obj.position[0] + dx, obj.position[1] + dy,
-             obj.body_z0_m + inlet.position[2].meters),
-            _rotate(inlet.normal, obj.rotation_degrees), inlet.width.meters, inlet.height.meters)
+    if obj.mount.kind.value == "ceiling":
+        dx, dy = _rotate(tuple(v.meters for v in inlet.position[:2]), obj.rotation_degrees)
+        return ((obj.position[0] + dx, obj.position[1] + dy,
+                 obj.body_z0_m + inlet.position[2].meters),
+                _rotate(inlet.normal, obj.rotation_degrees),
+                inlet.width.meters, inlet.height.meters)
+    if obj.mount.kind.value != "wall":
+        return None
+    across = _rotate((1.0, 0.0), obj.rotation_degrees)
+    back = _back(model, obj, _rotate((0.0, 1.0), obj.rotation_degrees))
+    if back is None or obj.body_z1_m is None:
+        return None
+    along, behind, up = (v.meters for v in inlet.position)
+    behind += _face_offset(obj, back)
+    return ((obj.position[0] + across[0] * along + back[0] * behind,
+             obj.position[1] + across[1] * along + back[1] * behind,
+             (obj.body_z0_m + obj.body_z1_m) / 2 + up),
+            (across[0] * inlet.normal[0] + back[0] * inlet.normal[1],
+             across[1] * inlet.normal[0] + back[1] * inlet.normal[1]),
+            inlet.width.meters, inlet.height.meters)
 
 
 def _rotate(local: tuple[float, float], degrees: float) -> tuple[float, float]:
@@ -176,7 +192,7 @@ def emit_terminal_necks(model: ResolvedModel) -> None:
                     uid=f"{obj.uid}-{suffix.lower()}", tag=f"{obj.tag}-{suffix}",
                     storey=obj.storey, category="terminal_neck", outline=ring,
                     z0_m=z0, z1_m=z1, product=component.product_ref,
-                    host_ref=obj.tag, group=f"{obj.tag}-NECK"))
+                    host_ref=obj.tag, group=obj.tag))
         else:
             box = (_box(model, obj, neck)
                    if obj.mount is not None and obj.body_z0_m is not None else None)
@@ -186,4 +202,4 @@ def emit_terminal_necks(model: ResolvedModel) -> None:
             model.solids.append(ResolvedSolid(
                 uid=f"{obj.uid}-neck", tag=f"{obj.tag}-NECK", storey=obj.storey,
                 category="terminal_neck", outline=ring, z0_m=z0, z1_m=z1,
-                host_ref=obj.tag))
+                product=neck.product_ref, host_ref=obj.tag))

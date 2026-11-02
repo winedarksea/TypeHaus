@@ -22,7 +22,7 @@ def test_assembly_has_named_parts_and_one_priced_purchase(catlin_model_ro):
     model = catlin_model_ro
     obj = next(o for o in model.canvas_objects if o.tag == REGISTER)
     assert obj.position == pytest.approx((inch(176).meters, inch(39).meters))
-    parts = [s for s in model.solids if s.group == REGISTER + "-NECK"]
+    parts = [s for s in model.solids if s.group == REGISTER]
     assert len(parts) == 5
     assert {s.host_ref for s in parts} == {REGISTER}
     assert all(model.plan.library.product(s.product) is not None for s in parts)

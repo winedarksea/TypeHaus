@@ -75,6 +75,7 @@ def unknown_product_ref(ctx: CheckContext) -> list[Finding]:
             references.extend((f"{part.role} part", part.product_ref)
                               for part in getattr(entry, "parts", ()))
             neck = getattr(entry, "neck", None)
+            references.append(("neck product_ref", getattr(neck, "product_ref", None)))
             references.extend((f"neck {component.tag}", component.product_ref)
                               for component in getattr(neck, "components", ()))
             for role, ref in references:

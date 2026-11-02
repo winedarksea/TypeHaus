@@ -57,6 +57,8 @@ def placeables_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         neck = getattr(product, "neck", None)
         included = {component.product_ref for component in getattr(neck, "components", ())
                     if component.product_ref and not component.clearance_only}
+        if getattr(neck, "product_ref", None):
+            included.add(neck.product_ref)
         if included:
             # These are the contents of one priced terminal assembly, not extra purchases.
             row["included_products"] = [

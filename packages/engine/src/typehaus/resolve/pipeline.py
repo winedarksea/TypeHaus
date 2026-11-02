@@ -154,6 +154,7 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_floors(model))
     with _stage("mep"):
         findings.extend(resolve_mep(model))
+        fireblock_solid_index = len(model.solids)
     with _stage("solar"):
         # After framing: panels ride the resolved roof planes.
         findings.extend(resolve_solar(model))
@@ -231,7 +232,12 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         # Both blocking passes must see ALL runs, including the terminal-anchored tails.
         resolve_bearing_blocking(model)
     with _stage("fireblocks"):
+        first_new_solid = len(model.solids)
         resolve_fireblocks(model)
+        # Keep section/export node order stable while resolving the holes after ALL ducts.
+        sheets = model.solids[first_new_solid:]
+        del model.solids[first_new_solid:]
+        model.solids[fireblock_solid_index:fireblock_solid_index] = sheets
     # Apron cutouts use the resolved service leaves, including their final elevations.
     with _stage("paneling"):
         findings.extend(resolve_paneling(plan, model))

@@ -97,9 +97,12 @@ class TerminalNeckComponent(HausModel):
 
 
 class TerminalNeckInlet(HausModel):
-    """Rectangular inlet centre relative to a ceiling face; normal points toward the duct."""
+    """Inlet centre in ceiling-plan or wall-back coordinates; normal points to the duct."""
 
+    # Ceiling: local plan XY and height above face. Wall: across, into host, height
+    # above face centre; the origin is the grille's back face.
     position: tuple[Length, Length, Length]
+    section: Literal["rectangular", "round"] = "rectangular"
     width: Length
     height: Length
     normal: tuple[float, float]
@@ -108,6 +111,8 @@ class TerminalNeckInlet(HausModel):
 
     @model_validator(mode="after")
     def _valid_inlet(self) -> TerminalNeckInlet:
+        if self.section == "round" and abs(self.width.meters - self.height.meters) > 1e-6:
+            raise ValueError("round terminal inlet width and height must match its diameter")
         if self.straight_length is not None and self.straight_length.meters <= 0:
             raise ValueError("terminal inlet straight length must be positive")
         if self.width.meters <= 0 or self.height.meters <= 0:
@@ -136,6 +141,7 @@ class TerminalNeck(HausModel):
     depth: Length
     #: What occupies the box, as a reader would name it ("6in stamped side boot").
     part: str
+    product_ref: str | None = None
 
     #: Multipart geometry currently uses ceiling-face coordinates only. Legacy single-box
     #: necks retain their wall, ceiling and floor placement conventions.
