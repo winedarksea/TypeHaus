@@ -695,15 +695,14 @@ is laid (§8 step 5). A missed stud is invisible once the foam is on, and this i
 load path. **Inspect the screw pattern from the ground before the sprayer arrives** — it is
 the last moment it can be seen, and it is cheap.
 
-**One block on the house lands 3" off its stud, and it is a field instruction.** `W-A-N1`'s
-course at the attic gable is cut by the RAKE at 128.0" — 1-3/4" past the king over that
-window's head — so the mandatory end block lands at 129.75" where the nearest stick is that
-king at 126.75". The frame will not move it (the block would stand 3" out past the girt it
-carries), and the frame is right. **Drive this one into the king and let the girt end bear on
-the block's outer half**, or add a cripple at the module.
-`test_truss_girt_geometry.py::test_the_block_lands_on_the_stud_it_is_screwed_to` names it and
-holds the count at one; if it ever grows, the block grid has drifted and that is a different
-problem.
+**A course the rake cuts carries its end on the stud inside the cut** (2026-11-01). The
+heel-anchored plane (decision #109) dropped every gable rake 0.973", which slid each
+rake-cut course end 1.95" along the wall: 15 end blocks on `W-A-S1..S3` / `W-A-N1..N2B` landed
+3.7" past their stud, on sheathing. The frame now moves such a block inward onto the nearest
+stud within 16" (`girt_support_spacing.land_free_ends`), and the girt end cantilevers past it
+to the rake girt, at most 12.3". Course heights do not move; only the blocks along them.
+`test_truss_girt_geometry.py::test_the_block_lands_on_the_stud_it_is_screwed_to` holds the
+count of blocks lapping under half a stud at zero.
 
 **Water on the flat girt top.** A 3-1/2" horizontal ledge behind cladding will collect what
 gets past the panel. It can go back into the 1/2" gap behind the girt (which is the drainage

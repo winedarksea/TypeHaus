@@ -289,16 +289,11 @@ def test_the_block_lands_on_the_stud_it_is_screwed_to(catlin_model):
     # not simply halved. It is a vacuity guard, not a target: what it is here to catch is
     # the walk finding nothing at all.
     assert len(laps) > 500, "the field of the wall is what this measures"
-    # ONE, and it is named rather than hidden: W-A-N1's course at 7.925 m starts at 128.0"
-    # because the attic GABLE RAKE cut it there, 1-3/4" past the king over the window head,
-    # and the mandatory end block ``_module_stations`` frames at a course end lands at
-    # 129.75" where the nearest stick is that king at 126.75". ``GirtFrame.snap`` refuses to
-    # move it — the block would stand 3" out past the girt it carries — and that refusal is
-    # right. It is a FIELD instruction, not a model defect: drive this one into the king and
-    # let the girt end bear on the block's outer half, or add a cripple at the module.
-    # notes/catlin_truss_engineering.md §9 carries it. If this count ever grows, the grid has
-    # drifted off the stud module and that is a different thing entirely.
-    assert len(thin) <= 1, (
+    # NONE. A course the rake cuts used to leave its end block between studs (W-A-N1's at
+    # 129.75", then 15 once decision #109 dropped the rake); `land_free_ends` now moves it
+    # onto the stud inside the cut (notes/catlin_truss_engineering.md §9). A thin block here
+    # means the grid has drifted off the stud module.
+    assert not thin, (
         f"blocks lapping under half a stud: {thin[:6]} — the block grid has drifted off "
         "the 16 in stud module")
     # And nearly all of them cover the stud WHOLE. The handful that do not are the end block
@@ -393,10 +388,12 @@ def test_the_block_is_three_plies_on_every_other_stud(catlin_model):
         # screw count and halve the tributary every load is derived from. Other short gaps
         # are legitimate and common — the mandatory end block ``_module_stations`` frames at
         # each course end sits wherever the course was cut, and ``snap`` moves a block near
-        # an opening onto the stick that is actually there.
+        # an opening onto the stick that is actually there. A rake-cut end block moved onto
+        # the stud inside it (``land_free_ends``) can be exactly one bay off its neighbour,
+        # so the course's outermost pair is exempt; a reverted module fails in the field.
         close = [(round(a, 1), round(b - a, 2)) for xs in by_course.values()
                  for a, b in zip(sorted(xs), sorted(xs)[1:], strict=False)
-                 if abs(b - a - 16.0) < 0.02]
+                 if abs(b - a - 16.0) < 0.02 and a != min(xs) and b != max(xs)]
         assert not close, (
             f"{wall.tag}: field blocks one stud bay apart at {close[:6]} — the module has "
             "reverted from every other stud to every stud")

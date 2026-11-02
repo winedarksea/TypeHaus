@@ -88,7 +88,10 @@ from typehaus.resolve.framing.furring import (  # noqa: F401 - re-exported by tr
     course_elevations,
     opening_margin,
 )
-from typehaus.resolve.framing.girt_support_spacing import complete_support_stations
+from typehaus.resolve.framing.girt_support_spacing import (
+    complete_support_stations,
+    land_free_ends,
+)
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.solver import band_axis
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
@@ -379,6 +382,17 @@ class GirtFrame(BandFrame):
                                           (seg_lo, seg_hi))
                                 for station in self._block_stations(segment, tier, butts)
                                 if not self._in_void(station, segment.z0_m, voids)]
+                    # A course end inside the band (a rake cut it) is free; band ends land
+                    # on corner posts outside this wall's members, jambs on their posts.
+                    free = (seg_lo > self.first + self.stock_thickness
+                            and not any(abs(seg_lo - b) < 1e-6 for b in butts),
+                            seg_hi < self.last - self.stock_thickness
+                            and not any(abs(seg_hi - b) < 1e-6 for b in butts))
+                    stations = land_free_ends(
+                        stations, reach=self.spacing, face=self.stock_face,
+                        lap=self.stock_thickness / 2.0, verticals=verticals, z0=segment.z0_m,
+                        bounds=(seg_lo, seg_hi), free=free,
+                        in_void=lambda station, z0=segment.z0_m: self._in_void(station, z0, voids))
                     stations = complete_support_stations(stations, spacing=self._module(tier)[0],
                         face=self.stock_face, verticals=verticals, z0=segment.z0_m,
                         bounds=(seg_lo, seg_hi),

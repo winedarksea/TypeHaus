@@ -161,15 +161,15 @@ def test_every_level_two_duct_rests_on_a_chord_and_none_is_inside_one(
     ducts = [f for f in findings
              if any(t.startswith("DU-M-ERV") for t in f.element_tags)
              and "FS-S-WEST" in f.element_tags and "ON A WEB" not in f.message]
-    # **SEVEN of the fourteen, and the other seven are the design.** Because the trunk runs
-    # south, most extract takeoffs are pure BAY legs and cross no truss; what is left to
-    # grade is the trunk itself, the three supply radials, LAUNDRY's turn south to the
-    # standpipe boot, SUITEBATH's turn north to its grille (2026-09-24), and BED2's jog
-    # north at x=16' to its south-wall boot's bay (2026-10-02).
+    # Most extract takeoffs are pure BAY legs and cross no truss. The crossings left
+    # to grade are the south-running trunk, three supply radials, LAUNDRY's turn to
+    # its standpipe boot and BED2's jog north at x=16' to its south-wall boot's bay.
     assert sorted(tag for f in ducts for tag in f.element_tags
                   if tag.startswith("DU-M-ERV")) == [
         "DU-M-ERV-EXH-TRUNK", "DU-M-ERV-R-BED", "DU-M-ERV-R-BED2", "DU-M-ERV-R-LAUNDRY",
-        "DU-M-ERV-R-LIVING", "DU-M-ERV-R-STUDY", "DU-M-ERV-R-SUITEBATH"]
+        "DU-M-ERV-R-LIVING", "DU-M-ERV-R-STUDY"]
+    # SUITEBATH now rises in its own bay to the west-wall valve, without a truss crossing.
+    assert not any("DU-M-ERV-R-SUITEBATH" in f.element_tags for f in ducts)
     for finding in ducts:
         assert finding.result is Result.PASS, finding.message
         crown = float(finding.message.split("crown ")[1].split('"')[0])

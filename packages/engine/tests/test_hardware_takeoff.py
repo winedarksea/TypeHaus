@@ -322,8 +322,9 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # girt stations across the N/S walls. 1163 since the door holds released (2026-10-29):
     # D-M-BALC's re-centred 63 5/16" RO packs one girt station fewer.
     # 1165 since the band moved to +19'-0" (2026-10-31): its course now runs unbroken past
-    # the north window heads it used to stop at.
-    assert row["count"] == 1165 and furring[0]["count"] == 198
+    # the north window heads it used to stop at. 1157 on 2026-11-01: 8 rake-cut attic course
+    # ends land on a stud that already has a block (`land_free_ends`).
+    assert row["count"] == 1157 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

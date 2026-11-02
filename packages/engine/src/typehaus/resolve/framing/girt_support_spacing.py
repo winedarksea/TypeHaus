@@ -34,3 +34,37 @@ def complete_support_stations(stations: Iterable[float], *, spacing: float, face
         center = min(candidates, key=lambda center: abs(center - (low + high)/2))
         stations.insert(index + 1, center)
     return stations
+
+
+def land_free_ends(stations: list[float], *, reach: float, face: float, lap: float,
+                   verticals: tuple[tuple[float, float, float], ...], z0: float,
+                   bounds: tuple[float, float], free: tuple[bool, bool],
+                   in_void: Callable[[float], bool]) -> list[float]:
+    """Move a free course end's block inward onto the nearest stud when it laps none.
+
+    A course cut by a rake starts wherever the rake crosses it, so its end block can land
+    between studs (decision #109 moved every catlin gable's by 2"). The girt end then
+    cantilevers past the block; a block already on that stud absorbs it.
+    """
+    half = face / 2
+    out = sorted(stations)
+    for end, sign in ((0, 1.0), (-1, -1.0)):
+        if not out or not free[end]:
+            continue
+        station = out[end]
+        if abs(station - (bounds[end] + sign * half)) > _SPACING_TOLERANCE_M:
+            continue
+        at_height = [c for c, bottom, top in verticals if bottom < z0 + face and top > z0]
+        if any(abs(c - station) <= half - lap + 1e-6 for c in at_height):
+            continue
+        inward = [c for c in at_height
+                  if 0 < sign * (c - station) <= reach
+                  and bounds[0] + half <= c <= bounds[1] - half and not in_void(c)]
+        if not inward:
+            continue
+        target = min(inward, key=lambda c: abs(c - station))
+        out.pop(end)
+        if not any(abs(s - target) < face for s in out):
+            out.append(target)
+        out.sort()
+    return out
