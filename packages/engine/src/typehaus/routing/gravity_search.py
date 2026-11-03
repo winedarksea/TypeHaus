@@ -61,17 +61,15 @@ import numpy as np
 from typehaus.quantities import M_PER_IN
 from typehaus.routing.fitting_room import heel_clear
 from typehaus.routing.graph import Graph
+from typehaus.routing.gravity import drop_blocker, grid_allowance, head_floor_fn
 from typehaus.routing.gravity_band import Obstacles, subtract
 from typehaus.routing.search import Route, price_route, turn_price
 from typehaus.routing.space import RoutingSpace
 
-#: Axis ordering for the tie-break, lowest first — the same table ``search.py`` states, and
-#: for the same reason: without it A* is non-deterministic and no oracle can pin it.
+#: Axis ordering for the tie-break, as ``search.py``: without it A* is non-deterministic.
 _AXIS_ORDER = {"x": 0, "y": 1, "z": 2}
 
-#: A sixteenth of an inch of slop on every elevation comparison. Coordinates in this repo
-#: are authored on that grid, and a window test that refused a run by 1e-12 of a metre would
-#: be reporting float noise as a defect.
+#: A sixteenth of slop on every elevation comparison: the repo's authoring grid, not noise.
 _TOL_M = 0.0015875 / 16.0
 
 #: ``(low, high)`` the run's CENTRELINE may occupy at a fraction along one edge.
@@ -104,6 +102,8 @@ class GravityProblem:
     #: carrying that take-off's ``h_vent``. The search starts from these and not ``start``;
     #: an empty dict is an arm with nowhere to close. None: no arm.
     seeds: dict[int, tuple[float, float, tuple[int, ...]]] | None = None
+    #: Labels expanded before the search gives up: an unreachable goal walks every front.
+    max_labels: int = 1_500_000
 
     def fall_over(self, developed_ft: float) -> float:
         """Metres of fall over this developed plan length, at this grade."""
@@ -180,26 +180,30 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
 
     report = refusal if refusal is not None else GravityRefusal()
     heuristic = _heuristic(graph, space, goals)
-    # Labels are addressed by a stable id, never by their slot in a frontier: pruning a
-    # dominated label shifts slots, and an "under"/"over" pair shares one cost.
+    head_floor = head_floor_fn(graph, goals, problem.required_m, problem.grade_in_per_ft)
+    # Labels have stable ids, not frontier slots: pruning shifts slots.
     frontier: dict[tuple[int, str], list[tuple[_Label, int]]] = {}
     alive: dict[int, tuple[int, str, _Label]] = {}
     came: dict[int, int] = {}
     node_of: dict[int, int] = {}  # every label ever pushed, never pruned: for the rebuild
     counter = 0
     open_heap: list[tuple[float, int, int, float, int, str, float, int]] = []
+    heels: dict[tuple[int, int, int], bool] = {}  # a corner's heel is geometry: once each
+    expanded = 0  # this call's labels; ``report`` may be shared by a tree's searches
 
     def push(node: int, axis: str, label: _Label, parent: int | None) -> None:
         nonlocal counter
         key = (node, axis)
         kept = frontier.setdefault(key, [])
-        for other, _lid in kept:
+        pruned = False  # one pass: a Pareto-clean frontier cannot both dominate and lose
+        for other, lid in kept:
             if _dominates(other, label, problem.nipple_m):
                 return
-        for other, lid in kept:
             if _dominates(label, other, problem.nipple_m):
                 alive.pop(lid, None)
-        kept[:] = [(o, lid) for o, lid in kept if lid in alive]
+                pruned = True
+        if pruned:
+            kept[:] = [(o, lid) for o, lid in kept if lid in alive]
         counter += 1
         kept.append((label, counter))
         alive[counter] = (node, axis, label)
@@ -223,23 +227,33 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
             continue  # superseded by a label that dominated this one after it was pushed
         label = alive[lid][2]
         report.reached += 1
+        expanded += 1
+        if expanded > problem.max_labels:
+            report.notes.append(f"the search stopped after {problem.max_labels:,} labels "
+                                "with no legal arrival: a budget, not a proof")
+            return None
         report.furthest_ft = max(report.furthest_ft, developed)
 
-        if index in goals:
-            required = problem.required_m.get(index)
-            # The tie is a FLOOR on the start: arriving at or above ``required`` after
-            # falling ``slope x D`` and dropping ``drop`` means starting at least that high.
-            floor_m = (float("-inf") if required is None
-                       else required + problem.fall_over(developed) + label.drop_m)
+        required = problem.required_m.get(index)
+        if index in goals and required is not None:  # an unknown invert grades nothing
+            # The tie is a FLOOR on the start: required + slope x D + drop.
+            floor_m = required + problem.fall_over(developed) + label.drop_m
             if floor_m <= label.hi_m + _TOL_M:
                 found = _rebuild(graph, space, came, node_of, lid, seeds, label.takeoff)
-                # The lowest start every constraint met allows: over an obstacle that is
-                # its band's floor, not the arrival-anchored start.
-                found.start_m = max(floor_m, label.lo_m)
-                return found
+                # The 1/16" snap rounds each leg's fall UP (``route_fall._on_grid``).
+                snapped = floor_m + grid_allowance(found, problem.grade_in_per_ft,
+                                                    required)
+                start_m = max(floor_m, label.lo_m)  # over an obstacle: its band's floor
+                blocker = drop_blocker(obstacles, index, start_m - floor_m + required,
+                                       required)
+                if snapped <= label.hi_m + _TOL_M and blocker is None:
+                    found.start_m = start_m
+                    return found
+                if blocker is not None:
+                    _note(report, f"{blocker} across the drop into the tie", 0.0)
+                floor_m = snapped
             _note(report, f"the tie at node {index}", (floor_m - label.hi_m) / M_PER_IN)
-            # Not a dead end: a longer route arrives LOWER, so nothing past here helps at
-            # this goal — but another goal on the same stack may still accept it.
+            # Not a dead end: another goal on the same stack may still accept it.
 
         for other, axis in graph.neighbours(index):
             step = graph.weights.get((index, other))
@@ -263,11 +277,16 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
                 continue
             leg_m = plan_ft * 0.3048 if axis != "z" else -rise
             if turn and not _fitting_fits(graph, space, problem, label, came, node_of,
-                                          lid, index, other):
+                                          lid, index, other, heels):
                 continue
             since = leg_m if turn else label.since_m + leg_m
+            # §13: no start in the band can still reach any tie, at grade, by plan distance.
+            floor_m = head_floor(other) + problem.fall_over(developed + plan_ft) + next_drop
             for low, high in _clear_of(obstacles, problem, index, other, developed,
                                        plan_ft, label.drop_m, next_drop, band, report):
+                if high + _TOL_M < floor_m:
+                    _note(report, "the head to any tie", (floor_m - high) / M_PER_IN)
+                    continue
                 push(other, axis,
                      _Label(cost + step + turn, developed + plan_ft, low, high, next_drop,
                             since, label.takeoff), lid)
@@ -296,14 +315,18 @@ def _dominates(first: _Label, second: _Label, nipple_m: float = 0.0) -> bool:
 
 def _fitting_fits(graph: Graph, space: RoutingSpace, problem: GravityProblem,
                   label: _Label, came: dict[int, int], node_of: dict[int, int], lid: int,
-                  index: int, other: int) -> bool:
+                  index: int, other: int, heels: dict[tuple[int, int, int], bool]) -> bool:
     """A turn at ``index`` needs its nipple behind it and its heel clear (Phase 3)."""
     # Not ``_note``d: a lattice step a hair under the nipple is never why a route failed.
     if label.since_m < problem.nipple_m - _TOL_M:
         return False
     parent = came.get(lid)
-    return (parent is None or problem.heel_m <= 0.0
-            or heel_clear(graph, space, node_of[parent], index, other, problem.heel_m))
+    if parent is None or problem.heel_m <= 0.0:
+        return True
+    key = (node_of[parent], index, other)
+    if key not in heels:
+        heels[key] = heel_clear(graph, space, key[0], index, other, problem.heel_m)
+    return heels[key]
 
 
 def _edge_band(problem: GravityProblem, constraints: Constraints | None,
@@ -385,8 +408,7 @@ def _heuristic(graph: Graph, space: RoutingSpace,
     """
     floor = space.cost.heuristic_floor()
     riser = space.cost.riser_per_ft
-    # Vectorised over the goals and memoised per node: same IEEE operations in the same
-    # order as the scalar form, so every f value (and so every tie-break) is bit-identical.
+    # Vectorised over goals, memoised per node; bit-identical to the scalar form.
     gx = np.array([graph.nodes[g].x for g in goals])
     gy = np.array([graph.nodes[g].y for g in goals])
     gz = np.array([graph.nodes[g].z for g in goals])

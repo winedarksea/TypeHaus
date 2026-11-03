@@ -154,7 +154,8 @@ def sweep(model: ResolvedModel, fixture_tag: str, ends: Any, *, reach_in: float,
             space = build_space(model, radius_m=moved.radius_m, terminals=terminals,
                                 margin_ft=margin_ft, avoid=avoid, touch=moved.touch,
                                 cost=cost, z_band=band,
-                                cavity_radius_m=moved.cavity_radius_m or None)
+                                cavity_radius_m=moved.cavity_radius_m or None,
+                                panel_space=moved.kind != "conduit")
             levels = [moved.root[2]] if moved.falls else None
             graph = build_graph(space, terminals, levels)
         except RoutingSpaceTooLarge as exc:

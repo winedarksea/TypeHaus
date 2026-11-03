@@ -53,9 +53,48 @@ routing exit codes.
 | `--fixture TAG --sweep 8` | Try drain-point stations within eight inches along its wall |
 | `--space TAG --out DIR` | Classify routing space and save one SVG per elevation |
 | `--explain` / `--timing` | Cost weights and terms / build and search measurements |
+| `--scorecard --out DIR` | Search and grade the fixed scorecard targets; diff against `tests/data/route_scorecard.json` |
 
 `--summary` supports all proposal selectors, including campaigns, and rejects `--space`
 and fixture sweeps. Space views and sweeps keep their separate diagnostic output.
+
+## Plumber's rules
+
+Weights are inches of equivalent travel in `[mep.routing]`; cheapest first: ride a corridor,
+ride a rack, pipe, a PEX bend, a fitting, a stud bore, a plate cut, a joist bore, an
+exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
+
+| Rule | Enforced in | Note |
+| --- | --- | --- |
+| DWV turns by flow direction (UPC 706): level-to-down a 1/4 bend, else a sweep, never up | `RouteCost.turn_cost`, `search.turn_price` | drain basis §10 |
+| Members: a bore, plate cut or joist hole priced per cut; an illegal cut is no edge; a riser through a joist or proud of the stud plane is refused | `routing/members.py` | `framing_bore_limits.md` §10 |
+| A fitting's room: nipple at least a hub OD, heel clear for the joining tool | `routing/fitting_room.py` | drain basis §10 |
+| Short level jogs as a pair of 1/8 bends, re-checked against obstacles | `routing/compaction.py` | drain basis §10 |
+| Trap arm within Table 1002.2, no S-trap, vent taken off inside the arm and plumb to 6" over the rim | `routing/trap_vent.py`, `cli/route_fixture_vent.py` | drain basis §9 |
+| Branch ties on a level main keep the catalogued inlet pitch | `cli/route_roots._spaced_goals`, `resolve/mep_inlet_spacing` | drain basis §10 |
+| Cleanouts (UPC 707.4) placed with 707.9 clearance on the plug axis | `cli/route_cleanouts.py`, `resolve/cleanout_rules.py` | `mep.drain_cleanouts` |
+| PEX bends where its 6 x OD arc clears; copper and CPVC take a fitting | `search.bend_price`, `trades/pipe.bend_radius_m` | drain basis §11 |
+| Supply and drain in an exterior insulated cavity pay per foot; vents, ducts, conduit exempt | `graph._finish`, `RouteCost.for_run` | drain basis §11 |
+| NEC 110.26(E)(1) dedicated space is hard for pipe and duct | `resolve/panel_space.py`, `routing/obstacles` | drain basis §11 |
+| A campaign's laid level legs offer rack lanes to the same trade | `routing/rack.py` | drain basis §12 |
+| Couplings per stock length are disclosed, not counted (no stock length on record) | `trades/pipe.coupling_disclosure` | — |
+| A falling run's arrival holds the 1/16" snap's head; a band that cannot reach any tie by plan distance is dropped | `gravity.grid_allowance`, `gravity.head_floor_fn` | drain basis §13 |
+| A falling run crosses rims and joists, never rides them, and never a blocking flange; foundation walls and the outside of the decks are hard; a tie is pardoned only its own run; the drop into a tie is tested | `gravity_band.rail_prisms`, `obstacles`, `gravity_band.terminal_pardons` | drain basis §13 |
+
+**A fixture's arm and vent.** `--fixture` on a drain fixture searches the arm and its vent
+together: the arm's reachable take-offs (`arm_reach`) seed the gravity search at their arm
+cost plus the vent's cost-to-go, and the vent is read back off a 3D lattice in which
+finished rooms are hard. The pair is proposed and evaluated together (`A + B`). A refusal
+names the cheapest take-off's first blocker. **Cleanouts** a proposed drain needs are placed
+on it, each with access (wall, floor or ceiling), cap point and concealment; a concealed
+one pays `cleanout_concealed_in`.
+
+**Limitations.** Wet vents are ungraded in `arm_is_vented`; seeds keep the two cheapest
+take-offs (`keep=2`); a vertical barrel's stack pitch is left to the check; a tie's fitting
+is named but not priced; `--manifold` and trunk topologies are not implemented (no water
+manifold is modelled); rack lanes exist only inside `--house` campaigns. `--tree` prints each
+branch graded alone, so a branch meets the authored drain another branch replaces; the
+scorecard grades the tree as one network.
 
 ## Interpret and accept
 
@@ -102,6 +141,9 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 | Terminals and tie-ins | `cli/route_support`, `cli/route_roots`, `resolve/mep_ports` | `test_cmd_route`, `test_route_metadata` |
 | Space and graph | `routing/space`, `routing/obstacles`, `routing/graph` | `test_routing_graph`, `test_routing_perf_guard` |
 | Search and gravity | `routing/search`, `routing/gravity*`, `routing/tree` | `test_routing_oracle`, `test_gravity_search`, `test_routing_vent` |
+| Plumber's rules | `routing/members`, `fitting_room`, `compaction`, `trap_vent`, `rack` | `test_routing_members`, `test_routing_compaction`, `test_routing_trap_vent`, `test_routing_supply` |
+| Fixture vent, cleanouts | `cli/route_fixture_vent`, `cli/route_cleanouts`, `resolve/cleanout_rules` | `test_drain_cleanouts` |
+| Scorecard | `cli/route_scorecard` | `test_route_scorecard` (`-m autorouter`) |
 | Campaign policy | `routing/campaign` | `test_routing_campaign`, `test_routing_campaign_cli` |
 | Candidate grading | `cli/route_eval` | `test_route_eval` |
 | Shared geometry | `resolve/mep_envelopes`, `resolve/mep_bores`, `resolve/mep_fittings` | Corresponding MEP tests |

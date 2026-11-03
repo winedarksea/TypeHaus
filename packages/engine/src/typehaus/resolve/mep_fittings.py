@@ -158,6 +158,13 @@ _ORDER_SNAP_DEG = 10.0
 _ORDER_ROUND_DEG = 5.0
 
 
+def elbow_faces_in(service: str, nominal_in: float) -> list[float]:
+    """Published elbow centre-to-face lengths at one size, for ``routing/fitting_room``."""
+    return [f.center_to_face_in for f in fitting_catalog()
+            if f.service == service and f.kind == "elbow" and f.nominal_in == nominal_in
+            and f.center_to_face_in is not None]
+
+
 def size_text(diameter_m: float) -> str:
     """A diameter as it is *ordered*: ``4in``, ``1.5in``, ``0.75in``."""
     return f"{round(diameter_m / M_PER_IN, 2):g}in"

@@ -82,11 +82,14 @@ def _polygon(ring: Any) -> Any:
 
 def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] = frozenset(),
                 touch: frozenset[str] = frozenset(),
-                clearance_m: float = CLEARANCE_M) -> list[HardPrism]:
+                clearance_m: float = CLEARANCE_M,
+                panel_space: bool = True) -> list[HardPrism]:
     """Forbidden prisms, inflated by radius + clearance.
 
     ``avoid`` adds hard element tags. ``touch`` exempts runs being replaced or joined so a
-    branch can reach its parent. Shared envelopes come from resolve.mep_envelopes."""
+    branch can reach its parent. Shared envelopes come from resolve.mep_envelopes.
+    ``panel_space`` closes each panel's NEC 110.26(E)(1) space; a raceway, which is the
+    electrical installation, passes False."""
     from typehaus.resolve.mep_envelopes import opening_prisms
 
     inflate = radius_m + clearance_m
@@ -111,6 +114,16 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
     for tag, _host, sector, low, high, _for in door_swing_prisms(model):
         out.append(HardPrism(tag=tag, kind="opening", footprint=sector.buffer(inflate),
                              z0_m=low - inflate, z1_m=high + inflate))
+
+    if panel_space:
+        from shapely.geometry import Polygon
+
+        from typehaus.resolve.panel_space import dedicated_spaces
+
+        for space in filter(None, dedicated_spaces(model).values()):
+            out.append(HardPrism(tag=f"{space.panel} (NEC 110.26(E)(1))", kind="clear_zone",
+                                 footprint=Polygon(space.footprint).buffer(inflate),
+                                 z0_m=space.floor_m, z1_m=space.z1_m + inflate))
 
     # Deck voids, less the walls that cross them: a run over a void has nothing to strap
     # to unless a wall carries it, which is exactly ``mep.run_over_void``'s reading.
@@ -186,6 +199,37 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
                                      z0_m=window.z0_m - inflate,
                                      z1_m=window.z1_m + inflate))
 
+    # I-joist BLOCKING flanges. A leg across a joist is graded by ``routing/members``; one
+    # across the blocking between joists (it runs the other way) was not, and the maker
+    # forbids any cut in a flange (``mep.run_in_joist_flange``). The web between is open.
+    from typehaus.resolve.framing.profiles import cross_section
+
+    for floor in model.floors:
+        for member in floor.members:
+            if member.category not in ("blocking", "sister_joist") or member.z0_m is None:
+                continue
+            section = cross_section(member.profile)
+            (ax, ay), (bx, by) = member.p0, member.p1
+            if (section is None or section.shape != "i_joist"
+                    or not section.flange_thickness_m
+                    or (abs(ax - bx) > 1e-6 and abs(ay - by) > 1e-6)):
+                continue
+            half = section.width_m / 2.0
+            poly = _polygon([(min(ax, bx) - half * (ay != by), min(ay, by) - half * (ax != bx)),
+                             (max(ax, bx) + half * (ay != by), min(ay, by) - half * (ax != bx)),
+                             (max(ax, bx) + half * (ay != by), max(ay, by) + half * (ax != bx)),
+                             (min(ax, bx) - half * (ay != by), max(ay, by) + half * (ax != bx))])
+            if poly is None:
+                continue
+            across = frozenset({"x" if abs(ax - bx) < 1e-6 else "y"})
+            z1 = member.z1_m if member.z1_m is not None else member.z0_m + section.depth_m
+            t = section.flange_thickness_m
+            for z0, z1_band in ((member.z0_m, member.z0_m + t), (z1 - t, z1)):
+                out.append(HardPrism(tag=f"{floor.tag} flange@{ax:.3f},{ay:.3f}",
+                                     kind="flange",
+                                     footprint=poly.buffer(inflate), z0_m=z0 - inflate,
+                                     z1_m=z1_band + inflate, applies=across))
+
     # Beams: a carrier is not bored for a run, and ``mep.run_through_beam`` reads the same
     # sections (``resolve/beam_sections``).
     from typehaus.resolve.beam_sections import beam_sections
@@ -208,6 +252,13 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
         grown = poly.buffer(inflate)
         for z0, z1 in concrete_bands(model, solid):
             out.append(HardPrism(tag=solid.tag, kind="concrete", footprint=grown,
+                                 z0_m=z0 - inflate, z1_m=z1 + inflate))
+    # A foundation wall's structure layer: ``mep.run_in_slab``'s host, the same list.
+    from typehaus.resolve.mep_concrete import concrete_hosts
+
+    for tag, category, footprint, z0, z1 in concrete_hosts(model):
+        if category == "wall":
+            out.append(HardPrism(tag=tag, kind="concrete", footprint=footprint.buffer(inflate),
                                  z0_m=z0 - inflate, z1_m=z1 + inflate))
 
     # Existing runs. A proposal that occupies a lane something else already has is not a
@@ -321,13 +372,17 @@ def soft_prisms(model: ResolvedModel) -> list[SoftPrism]:
                              z0_m=storey_z.get(ceiling.storey, 0.0),
                              z1_m=ceiling.z0_m,
                              occupancy=occupancies.get(ceiling.room_ref)))
+    # An exterior insulated wall's cavity carries ``occupancy="exterior"``: the graph
+    # prices it at ``exterior_wall_per_ft``.
+    exterior = {tag for tag, *_ in exterior_cavities(model)}
     for wall in model.walls:
         structure = next((ly for ly in wall.layers if ly.function == "structure"), None)
         poly = _polygon(structure.polygon) if structure is not None else None
         if poly is None:
             continue
         out.append(SoftPrism(tag=wall.tag, kind="wall", footprint=poly,
-                             z0_m=wall.z0_m, z1_m=wall.z1_m))
+                             z0_m=wall.z0_m, z1_m=wall.z1_m,
+                             occupancy="exterior" if wall.tag in exterior else None))
     return out
 
 

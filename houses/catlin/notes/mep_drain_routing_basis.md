@@ -491,9 +491,12 @@ inflated, stands over x = 30"..42": a quarter to three quarters of edge B–C, d
 **The arm.** The suite lavatory drains through a 1 1/4" arm. Table 1002.2 allows **30"**
 developed at that size, and over 30" at 1/4"/ft the arm falls 30 / 12 x 0.25 = **0.625"**.
 While the arm is open the search may not drop (a fall of more than a pipe diameter before
-the vent is an S-trap) and may not develop past 30". It closes at a take-off: a node in a
-wall cavity whose clear width holds the vent, paying that node's vent cost-to-go.
-`routing/trap_vent.py`, `gravity_search` (`arm_limit_ft`, `takeoffs`).
+the vent is an S-trap) and may not develop past 30". It closes at a take-off: a node on a
+wall cavity's station whose clear width holds the vent and whose cavity reaches the 905.3
+line (a wall that tops out under the fixture leaves the riser in the room), at most 30"
+under the cavity (a floor's depth and a soffit below it), paying that node's vent
+cost-to-go. `routing/trap_vent.py` (`arm_reach`, `takeoff_candidates`, `arm_seeds`): the
+gravity search starts from the take-offs, the arm walked to each prepended.
 
 **Already vented?** `PR-S-SUITEBATH-VENT` names the LAV in `serves`, but naming is not
 reaching: the check's own walk (`resolve/mep_trap_arm.arm_is_vented`, the same one
@@ -516,6 +519,13 @@ band starts 1.6425" under the leg's centre, and the router's first 1/4" step ins
 cheapest, at (165.50", 268.00"), rises into PR-S-SUITE-LAV-HW 25.75" above the arm" — and
 the fix it points at is the supply: move that leg to y <= 266.36" (or under the arm), and the
 vent rises.
+
+**FX-M-BATH2-TUB, the same shape.** Its 1 1/2" arm (42") runs at -21.69", under the
+11 7/8" TJIs, and the wet wall `W-M-BA2E` (2x6, x = 95.25"..100.75", station 98") is 20"
+off the trap. The take-off at (98", 216") rises 21.69" to the plate and on up the cavity —
+into `PR-B-HW-WASH`, which crosses the cavity at 39.23"..44.77", **61"** over the arm.
+Refused with exactly that; the vent air of the finished bath (ceiling 107.5") is hard,
+so the riser cannot step out of the wall around it. Fix the supply, and the vent rises.
 
 `tests/test_routing_trap_vent.py` pins the two rules on a hand-built ladder: with no arm the
 cheap route drops at the trap; with a 3.5 ft arm and take-offs at 2, 3 and 4 ft, the one at
@@ -573,6 +583,120 @@ reaches past the pipe by the hub's extra radius plus the joint's tool: (2.190 - 
 bay is not refused by the bay's faces.
 
 `tests/test_routing_compaction.py` reproduces the jog and the pitch, and the fitting's room.
+
+---
+
+## 11. Supply: a PEX bend, an exterior cavity, a panel's space (2026-11-03)
+
+**The bend.** Uponor's minimum radius is 6 x OD (`library/fittings.TUBE_BEND_RULES`, the
+rule the take-off grades a field bend against). 1/2" PEX is 0.625" OD, so **R = 3.75"**.
+A lattice corner from +x to +y bends through a quarter arc centred one radius back along
+the way in and one out along the way out; its midpoint stands
+
+    R (1 - 1/sqrt 2) = 3.75 x 0.2929 = 1.098"
+
+back along x and out along y from the corner. Five points on that arc must clear every
+hard prism; then the turn pays `pex_bend_in` = **4"**, else `bend_in` = **24"** (a fitting).
+Copper and CPVC carry no rule and always pay the fitting; a drain or vent is never bent.
+Whether the straight tube either side holds R tan(theta/2) is the take-off's to grade
+(`resolve/mep_fittings._bend`), and a short leg prints a fitting gap on the proposal.
+`routing/search.bend_price`, `trades/pipe.bend_radius_m`.
+
+**The exterior cavity.** A supply or drain edge whose midpoint is in an exterior insulated
+wall's structure (`routing/obstacles.exterior_cavities`: a cladding layer and a room on
+one side) pays `exterior_wall_per_ft` = **96"/ft**: a 2 ft edge pays **192"**. A vent, a
+duct and a raceway pay nothing (`RouteCost.for_run`).
+
+**The panel.** NEC 110.26(E)(1)'s dedicated space (`resolve/panel_space.dedicated_spaces`,
+the prism `electrical.panel_dedicated_space` grades) is hard for every pipe and duct, from
+the floor under the panel to the lower of 6 ft over its top and the room's clear height. A
+raceway is the electrical installation and is not refused it.
+
+`tests/test_routing_supply.py` pins the bend both ways (clear; a 1/4" post on the arc's
+midpoint) and the 192".
+
+---
+
+## 12. A rack: the second line on the first one's hangers (2026-11-03)
+
+In a `haus route --house` campaign every accepted level, axis-aligned leg of 2 ft or more
+offers a lane either side to the next run of its trade (supply with supply, drain with
+drain). A 1/2" PEX hot leg laid along y = 0 (OD 0.625", radius 0.3125") and a 1/2" PEX
+cold run behind it, at `rack_spacing_in` = 1" surface to surface:
+
+    0.3125 + 1.000 + 0.3125 = 1.625"
+
+so the lanes stand at y = -1.625" and +1.625", at the laid leg's height. A 2 ft edge on a
+lane pays 24" of travel less 2 x `rack_discount_per_ft` (4") = **16"**, the term printed as
+`rack_in` = -8". The rack discount replaces the corridor discount on that edge rather than
+adding to it, so no edge is cheaper than the corridor floor and A* stays admissible. A laid
+drain offers a supply run nothing. The scorecard counts `rack_shared`: runs with a level
+leg on another compatible run's lane. `routing/rack.py`; `tests/test_routing_supply.py`.
+
+---
+
+## 13. Snapping a falling route onto the 1/16" grid, and which lines it may turn on (2026-11-03)
+
+**The grid allowance.** `route_fall._on_grid` builds the profile from the arrival up and
+rounds each graded leg's fall UP to 1/16", so snapping never costs grade but can cost head.
+Three legs of 5.1, 3.3 and 2.0 ft at 1/4"/ft fall 1.275 + 0.825 + 0.500 = 2.600" exactly,
+and on the grid 21/16 + 14/16 + 8/16 = **2.6875"**, 0.0875" more. The search therefore accepts
+an arrival only when its start band holds the continuous floor plus that excess (and any
+round-up of the tie's own snap). §8's lane L, 2 + 6 + 2 ft, falls 0.5 + 1.5 + 0.5" — already
+on the grid — so it still arrives at its tie with nothing to spare. Before this, the main
+tree's `FX-M-KITCH-SINK` was found, then refused after the search, "0.125" more head than
+its start allows", and the three branches tying onto it were refused for want of its invert.
+The allowance only rejects arrivals, so A*'s heuristic is untouched. `gravity_search.py`
+`_grid_allowance`.
+
+**Which banded prisms nominate lattice lines.** A falling run's plan search takes lines from
+every banded prism so it can pass beside one at its real height (§8a). An existing run's
+segment is a thin obstacle the label passes over or under on its banded interval, so it
+nominates lines only when it reaches the nominal plane. On `--tree PR-B-MAIN-DRAIN --level
+main` at 1.5" the 557 banded prisms (221 run segments) gave 360 x 455 lines, past
+`MAX_CANDIDATE_LINES`; without the run segments' lines it is 177 x 267 and the group routes.
+`graph.py` `candidate_lines_at`.
+
+**The head bound.** A label at node n, developed D, can only arrive at a goal g if its
+band reaches `required_g + slope x (D + |dx| + |dy|) + drop`: the plan distance to g is a
+floor on what is left to develop, and drops only add. The search drops a band whose top is
+under the least of that over every goal. On the §8 world at node B (24" from A, 48" of
+plan to D), D = 2 ft: 114.00 + 0.25 x (2 + 4) = **115.50"**, under the 116.50" ceiling, so B
+stays; raise the tie to 117.00" and every band at B is under 118.50" and goes. It removes
+labels, never edges or costs, so A* stays admissible. tree:second's LAV branch walked its
+1.5M-label budget for 177 s; with the bound it refuses in 7,390 labels and 0.4 s.
+`gravity.head_floor_fn`.
+
+**Rims and foundation walls, at their real height.** `RoutingSpace.rails` tested a level
+step against a floor member at the nominal plane, which a falling drain never shares with
+the rim it rides (FS-M-WEST rim-0: x = 1.125" ± 0.625", z -11.88..0" against a -16" plane).
+For a falling run each rail is now a banded prism along its own axis, half-width plus
+radius plus clearance, so a run may cross it and never ride it; the rail index boxes grow by
+the same amount (a 1.75" drain centred on x = 0 met no rail before). A foundation wall's
+structure layer, `mep.run_in_slab`'s own host list, is a hard prism: W-B-W1/W2 were absent.
+`gravity_band.rail_prisms`, `obstacles.hard_prisms`.
+
+**A tie needs an invert, and a branch's inverts exist the moment it is found.** A tree
+branch may tie onto one routed before it, so every node of a found branch is a goal. Those
+nodes had no `required_m` until the proposals were laid, and a goal without one took the
+start floor as −∞: an "under" label (start below the foundation wall's −110.9") passed the
+goal test, the profile was then rebuilt from the fixture floor, and `FX-M-BATH2-SH` landed
+along x = 0 inside rim-0 and W-B-W1/W2. Now a goal with no invert is not a goal, and the
+tree records each branch's inverts (`arrival + slope x (D − d)` per node) as soon as its
+search returns. A tie node is pardoned only the run it lies on, never a rim or wall it
+stands in; only the start, a fixture in its wall, is pardoned whatever holds it.
+
+**Blocking flanges, the outside, and the drop into the tie.** A leg across I-joist
+BLOCKING (it runs the other way to the joists `routing/members` grades) may pass its web,
+never a flange: each flange is a banded prism over z0..z0+t and z1-t..z1, t the TJI
+series' flange (1.375" on a TJI 230), across the blocking's axis only. Within a storey's
+floor depth, everything outside the convex hull of the decks there is outside the house
+(the hull keeps the 2" bearing-line gaps between FS-M-WEST and FS-M-MECH inside). An "over"
+route drops plumb into its tie at the last station (`route_fall._fall`); that drop is now
+tested against the banded prisms at the tie node, which is what put FX-M-BATH2-WC's 12"
+riser through PR-B-CW-WH (-9.61..-3.99") before. Such a branch's inverts are its start less
+the fall, not the arrival-anchored line, so a branch tying onto it lands on the pipe.
+`obstacles.hard_prisms`, `gravity_band.outside_prisms`, `gravity.drop_blocker`.
 
 ---
 

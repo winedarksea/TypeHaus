@@ -48,15 +48,18 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
         console.print(f"[bold]{len(targets)} target(s)[/bold] in campaign order")
 
     diagnostics: dict[str, tuple[list[str], list[str], list]] = {}
+    made: dict[str, Any] = {}  # every proposal laid so far; occupancy says which still are
 
     def propose(target: Any, occupancy: list) -> Outcome:
+        laid = {prism.tag for prism in occupancy}
         proposals, problems, notices, refusals = _propose(
             model, [target.tag], mode="run", slope=slope, margin_ft=margin_ft, band=band,
             avoid=avoid, via=[], explain=explain or as_json or out_dir is not None,
             cost=cost, alternatives=alternatives,
-            extra_prisms=occupancy)
+            extra_prisms=occupancy, racks=[p for tag, p in made.items() if tag in laid])
         diagnostics[target.tag] = (problems, notices, refusals)
         if proposals:
+            made[proposals[0][0].tag] = proposals[0][0]
             return Outcome(proposal=proposals[0][0])
         # The occupancy uses proposal tags; the rip-up ledger uses their authored targets.
         blockers = tuple(sorted({_target_of(b.tag) for r in refusals for b in r.blockers}))

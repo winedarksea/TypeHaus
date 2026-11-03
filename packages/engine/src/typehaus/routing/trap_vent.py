@@ -31,6 +31,8 @@ from typehaus.routing.search import turn_price
 from typehaus.routing.space import RoutingSpace
 
 _TOL_M = 0.0015875
+#: An arm under a wall tees up through its plate from a floor's depth and a soffit under it.
+_PLATE_REACH_M = 30 * M_PER_IN
 
 
 @dataclass(frozen=True)
@@ -139,22 +141,26 @@ def vent_size_m(drain_m: float) -> float:
 
 
 def takeoff_candidates(graph: Graph, space: RoutingSpace, reach: dict[int, ArmReach], *,
-                       vent_od_m: float, limit: int = 12) -> list[int]:
-    """Arm-reachable nodes inside a wall cavity that holds the vent's OD, cheapest first.
+                       vent_od_m: float, rise_to_m: float, limit: int = 12) -> list[int]:
+    """Arm-reachable nodes under or in a wall cavity that holds the vent's OD, cheapest first.
 
     UPC 905.2: the vent leaves the arm and rises; on this lattice that is a node on a wall
-    corridor's station whose clear width takes the vent. ``limit`` bounds the vent lattice.
+    corridor's station whose clear width takes the vent, and whose cavity carries it to the
+    905.3 line ``rise_to_m`` — a wall that tops out under the fixture leaves the riser in the
+    room. An arm in the floor depth may tee up through the plate, within ``_PLATE_REACH_M``.
+    ``limit`` bounds the vent lattice.
     """
     out = []
     for index, arm in reach.items():
         node = graph.nodes[index]
         for corridor in space.corridors:
-            if corridor.kind != "wall" or corridor.clear_width_m + _TOL_M < vent_od_m:
+            if (corridor.kind != "wall" or corridor.clear_width_m + _TOL_M < vent_od_m
+                    or corridor.z1_m + _TOL_M < rise_to_m):
                 continue
             across, along = (node.y, node.x) if corridor.axis == "x" else (node.x, node.y)
             if (abs(across - corridor.station) <= _TOL_M
                     and corridor.lo_m - _TOL_M <= along <= corridor.hi_m + _TOL_M
-                    and corridor.z0_m - _TOL_M <= node.z <= corridor.z1_m + _TOL_M):
+                    and corridor.z0_m - _PLATE_REACH_M <= node.z <= corridor.z1_m + _TOL_M):
                 out.append((arm.cost, index))
                 break
     return [index for _cost, index in sorted(out)[:limit]]

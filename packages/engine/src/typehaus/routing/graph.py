@@ -207,13 +207,19 @@ def candidate_lines_at(space: RoutingSpace,
         (ys if corridor.axis == "x" else xs).append(corridor.station)
 
     reach = (z - space.radius_m, z + space.radius_m)
-    # A falling run's banded prisms are lines on its one plane: it may pass beside them.
+    # A falling run's banded prisms are lines on its one plane: it may pass beside them. An
+    # existing run's segment it passes over or under (its banded interval), so only one at
+    # the nominal plane nominates lines — catlin's 221 segments took the main tree past the
+    # cap. A rail it only crosses: the bays between rails are corridors already (§13).
     for prism in space.banded if plan_search else ():
+        if prism.kind in ("rail", "flange", "outside") or (prism.kind == "run" and (
+                prism.z1_m < reach[0] or prism.z0_m > reach[1])):
+            continue
         px0, py0, px1, py1 = prism.footprint.bounds
         xs.extend((px0, px1))
         ys.extend((py0, py1))
     for prism in space.hard:
-        if prism.footprint.is_empty:
+        if prism.footprint.is_empty or prism.kind in ("flange", "outside"):  # never turned at
             continue
         if prism.z1_m < reach[0] or prism.z0_m > reach[1]:
             continue
@@ -422,20 +428,26 @@ def _finish(space: RoutingSpace, a: Node, b: Node, axis: str, soft: list
             return None  # an illegal bore, notch or plate cut: not a lane
         cuts = found
 
-    room_ft, occupancy = 0.0, None
+    room_ft, occupancy, exterior = 0.0, None, False
     for prism in soft:
         if prism.kind == "room":
             room_ft, occupancy = length_ft, prism.occupancy
+        elif prism.kind == "wall" and prism.occupancy == "exterior":
+            exterior = True
 
+    rack = corridor is not None and corridor.kind == "rack"
     cost = space.cost.segment_cost(
-        length_ft, vertical=vertical, corridor=corridor is not None,
-        room_ft=room_ft, occupancy=occupancy)
+        length_ft, vertical=vertical, corridor=corridor is not None and not rack,
+        rack=rack, room_ft=room_ft, occupancy=occupancy)
     terms = {"travel_in": space.cost.travel(length_ft, vertical=vertical)}
     if corridor is not None:
-        terms["corridor_in"] = -space.cost.discount(length_ft, terms["travel_in"],
-                                                    corridor=True, rack=False)
+        terms["rack_in" if rack else "corridor_in"] = -space.cost.discount(
+            length_ft, terms["travel_in"], corridor=not rack, rack=rack)
     if room_ft:
         terms["room_in"] = room_ft * space.cost.room_penalty(occupancy)
+    if exterior and space.cost.exterior_wall_per_ft:
+        terms["exterior_wall_in"] = length_ft * space.cost.exterior_wall_per_ft
+        cost += terms["exterior_wall_in"]
     for kind, count in cuts.items():
         price = count * space.cost.cut_cost(kind)
         name = _CUT_TERMS[kind]

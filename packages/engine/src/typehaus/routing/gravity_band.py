@@ -20,6 +20,7 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
+    from typehaus.resolve.model import ResolvedModel
     from typehaus.routing.graph import Graph
     from typehaus.routing.space import RoutingSpace
 
@@ -32,11 +33,73 @@ Obstacles = Callable[[int, int], "list[Obstacle]"]
 _ERODE_M = 0.0015875
 
 
-def prepare_falling(space: RoutingSpace, band: tuple[float, float]) -> None:
-    """Add the walls' illegal stud and plate zones, then split the set by ``band``."""
+def prepare_falling(space: RoutingSpace, band: tuple[float, float],
+                    model: ResolvedModel | None = None) -> None:
+    """Add the walls' stud and plate zones, the rails and (with ``model``) the outside."""
     if space.members is not None:
         space.hard.extend(space.members.wall_prisms())
+    space.hard.extend(rail_prisms(space))
+    if model is not None:
+        space.hard.extend(outside_prisms(model, space))
     split_banded(space, band)
+
+
+def outside_prisms(model: ResolvedModel, space: RoutingSpace) -> list:
+    """Within a floor's depth, past every deck there at that height is outside the house.
+
+    A falling run searches a plan, and past the rim nothing stops it: the main tree laid a
+    laundry drain at x = -1.44", outside W-B-W1 (§13). Each storey's decks are taken as
+    their convex hull, so the bearing-line gaps between deck fields stay inside; a hull can
+    only admit more, never refuse a lane a deck holds.
+    """
+    from shapely.geometry import MultiPoint, box
+
+    from typehaus.resolve.overlay import difference, union_all
+    from typehaus.routing.obstacles import HardPrism
+
+    grow = space.radius_m + space.clearance_m
+    minx, miny, maxx, maxy = space.bbox
+    world = box(minx - 1.0, miny - 1.0, maxx + 1.0, maxy + 1.0)
+    storeys: dict[str, tuple[list, float, float]] = {}
+    for floor in model.floors:
+        placed = [m.z0_m for m in floor.members if m.z0_m is not None]
+        if len(floor.deck_outline) < 3 or not placed:
+            continue
+        points, z0, z1 = storeys.get(floor.storey, ([], float("inf"), float("-inf")))
+        storeys[floor.storey] = (points + list(floor.deck_outline), min(z0, *placed),
+                                 max(z1, floor.deck_z1_m))
+    out = []
+    for storey, (_points, z0, z1) in sorted(storeys.items()):
+        inside = union_all(MultiPoint(p).convex_hull for p, a0, a1 in storeys.values()
+                           if a0 <= z1 and a1 >= z0)
+        outside = difference(world, inside).buffer(grow)
+        if not outside.is_empty:
+            out.append(HardPrism(tag=f"outside {storey}", kind="outside", footprint=outside,
+                                 z0_m=z0 - grow, z1_m=z1 + grow))
+    return out
+
+
+def rail_prisms(space: RoutingSpace) -> list:
+    """Floor rails at their real height: a falling run may cross a member, never ride it.
+
+    ``RoutingSpace._rail_blocked`` reads the nominal plane, which a drain never shares
+    with the rim it would ride; banded, each rail forbids the starts that put it inside.
+    """
+    from shapely.geometry import box
+
+    from typehaus.routing.obstacles import HardPrism
+
+    grow = space.radius_m + space.clearance_m
+    out = []
+    for axis, station, lo, hi, half, z0, z1, tag in space.rails:
+        w = half + grow
+        footprint = (box(lo, station - w, hi, station + w) if axis == "x"
+                     else box(station - w, lo, station + w, hi))
+        # Its own tag: a pardon names one member, never the whole floor's.
+        out.append(HardPrism(tag=f"{tag} {axis}={station / 0.0254:.3f}in", kind="rail",
+                             footprint=footprint, z0_m=z0 - grow, z1_m=z1 + grow,
+                             applies=frozenset({axis})))
+    return out
 
 
 def split_banded(space: RoutingSpace, band: tuple[float, float]) -> None:
@@ -68,7 +131,7 @@ def band_obstacles(space: RoutingSpace, graph: Graph,
     height — the step off it may pass through those, as ``graph.build_graph`` pardons a
     plan-hard terminal.
     """
-    from shapely import STRtree, prepared
+    from shapely import STRtree
     from shapely.geometry import LineString, Point
 
     prisms = list(space.banded)
@@ -76,11 +139,22 @@ def band_obstacles(space: RoutingSpace, graph: Graph,
     eroded: dict[int, object] = {}
     excused = pardon or {}
     cache: dict[tuple[int, int], list[Obstacle]] = {}
+    # Every edge on one lattice line meets a prism in the same spans: clip the line once.
+    spans: dict[tuple[int, bool, int], list[tuple[float, float]]] = {}
 
     def shape(index: int):
         if index not in eroded:
-            eroded[index] = prepared.prep(prisms[index].footprint.buffer(-_ERODE_M))
+            eroded[index] = prisms[index].footprint.buffer(-_ERODE_M)
         return eroded[index]
+
+    def line_spans(index: int, along_x: bool, across: float) -> list[tuple[float, float]]:
+        key = (index, along_x, round(across / _ERODE_M))
+        if key not in spans:
+            x0, y0, x1, y1 = prisms[index].footprint.bounds
+            ends = ([(x0 - 1.0, across), (x1 + 1.0, across)] if along_x
+                    else [(across, y0 - 1.0), (across, y1 + 1.0)])
+            spans[key] = _spans(LineString(ends).intersection(shape(index)), along_x)
+        return spans[key]
 
     def obstacles(a: int, b: int) -> list[Obstacle]:
         key = (a, b) if a < b else (b, a)
@@ -91,21 +165,29 @@ def band_obstacles(space: RoutingSpace, graph: Graph,
                 first, second = graph.nodes[key[0]], graph.nodes[key[1]]
                 skip = excused.get(key[0], frozenset()) | excused.get(key[1], frozenset())
                 riser = abs(first.x - second.x) + abs(first.y - second.y) < _ERODE_M
-                axis = ("z" if riser else
-                        "x" if abs(first.x - second.x) > abs(first.y - second.y) else "y")
+                along_x = abs(first.x - second.x) > abs(first.y - second.y)
+                axis = "z" if riser else "x" if along_x else "y"
                 line = (Point(first.plan) if riser
                         else LineString([first.plan, second.plan]))
+                lo_end, hi_end, across = ((first.x, second.x, first.y) if along_x
+                                          else (first.y, second.y, first.x))
                 for index in tree.query(line):
                     prism = prisms[int(index)]
                     if prism.applies is not None and axis not in prism.applies:
                         continue
-                    if prism.tag in skip or not shape(int(index)).intersects(line):
+                    if prism.tag in skip:
                         continue
                     if riser:
-                        found.append((0.0, 1.0, prism.z0_m, prism.z1_m, prism.tag))
+                        if shape(int(index)).intersects(line):
+                            found.append((0.0, 1.0, prism.z0_m, prism.z1_m, prism.tag))
                         continue
-                    for t0, t1 in _fractions(line, prism.footprint.buffer(-_ERODE_M)):
-                        found.append((t0, t1, prism.z0_m, prism.z1_m, prism.tag))
+                    run = hi_end - lo_end
+                    for s0, s1 in line_spans(int(index), along_x, across):
+                        start = max(min(lo_end, hi_end), s0)
+                        end = min(max(lo_end, hi_end), s1)
+                        if end > start:
+                            t0, t1 = sorted(((start - lo_end) / run, (end - lo_end) / run))
+                            found.append((t0, t1, prism.z0_m, prism.z1_m, prism.tag))
             cache[key] = found
         if a < b:
             return found
@@ -114,9 +196,16 @@ def band_obstacles(space: RoutingSpace, graph: Graph,
     return obstacles
 
 
-def terminal_pardons(space: RoutingSpace, graph: Graph,
-                     at: dict[int, float]) -> dict[int, frozenset[str]]:
-    """Per terminal node, the banded prisms it stands in at the given height."""
+def terminal_pardons(space: RoutingSpace, graph: Graph, at: dict[int, float],
+                     start: int | None = None, tie_runs: frozenset[str] | None = None
+                     ) -> dict[int, frozenset[str]]:
+    """Per terminal node, the banded prisms it stands in at the given height.
+
+    The ``start`` (a fixture in its wall) is pardoned whatever it stands in; a TIE only
+    the run it lies on (``tie_runs``, when the caller knows it). A tie inside a rim, a wall
+    or a neighbour's pipe is a line laid close to it, not a licence for every edge off it
+    to pass through (§13).
+    """
     from shapely.geometry import Point
 
     out: dict[int, frozenset[str]] = {}
@@ -124,27 +213,23 @@ def terminal_pardons(space: RoutingSpace, graph: Graph,
         node = graph.nodes[index]
         probe = Point(node.plan)
         tags = frozenset(p.tag for p in space.banded
-                         if p.z0_m <= z <= p.z1_m and p.footprint.covers(probe))
+                         if (start is None or index == start
+                             or (p.kind == "run" and (tie_runs is None or p.tag in tie_runs)))
+                         and p.z0_m <= z <= p.z1_m and p.footprint.covers(probe))
         if tags:
             out[index] = tags
     return out
 
 
-def _fractions(line, footprint) -> list[tuple[float, float]]:
-    """``(t0, t1)`` along ``line`` for each piece of it inside ``footprint``."""
-    from shapely.geometry import Point
-
-    inside = line.intersection(footprint)
-    if inside.is_empty:
-        return []
-    pieces = getattr(inside, "geoms", [inside])
+def _spans(inside, along_x: bool) -> list[tuple[float, float]]:
+    """The ``(lo, hi)`` ordinate ranges along the line of each piece of ``inside``."""
+    k = 0 if along_x else 1
     out = []
-    for piece in pieces:
-        if piece.length <= 0:
+    for piece in getattr(inside, "geoms", [inside]):
+        if piece.is_empty or piece.length <= 0:
             continue
-        ends = [line.project(Point(c)) / line.length
-                for c in (piece.coords[0], piece.coords[-1])]
-        out.append((min(ends), max(ends)))
+        ends = sorted((piece.coords[0][k], piece.coords[-1][k]))
+        out.append((ends[0], ends[1]))
     return out
 
 

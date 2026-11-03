@@ -82,7 +82,7 @@ def run_scorecard(directory: Path, model: ResolvedModel, cost: RouteCost,
         proposals, expected, seconds = found[target.name]
         evaluation = (evaluate_network(directory, model, proposals, baseline=baseline)
                       if proposals else None)
-        out[target.name] = _metrics(model, proposals, expected, seconds, evaluation)
+        out[target.name] = _metrics(model, proposals, expected, seconds, evaluation, cost)
     totals: dict[str, Any] = {}
     for metrics in out.values():
         for key, value in metrics.items():
@@ -126,9 +126,10 @@ def _tree_terminals(model: ResolvedModel, target: ScoreTarget) -> int:
 
 
 def _metrics(model: ResolvedModel, proposals: list[RouteProposal], expected: int,
-             seconds: float, evaluation: Any) -> dict[str, Any]:
+             seconds: float, evaluation: Any, cost: RouteCost) -> dict[str, Any]:
     from typehaus.resolve.mep_fitting_direction import forbidden_turns
     from typehaus.resolve.mep_fittings import SERVICE_BY_SYSTEM
+    from typehaus.routing.rack import rack_shared
 
     fittings: Counter[str] = Counter()
     forbidden = 0
@@ -156,6 +157,7 @@ def _metrics(model: ResolvedModel, proposals: list[RouteProposal], expected: int
         "cleanouts_required": count(CLEANOUT_CHECKS),
         "cleanouts_placed": sum(len(getattr(p, "cleanouts", ())) for p in proposals),
         "exterior_wall_ft": round(sum(_exterior_ft(model, p) for p in proposals), 2),
+        "rack_shared": rack_shared(proposals, spacing_m=cost.rack_spacing_in * 0.0254),
         "eval_fail": sum(1 for f in introduced if f.result.value == "fail"),
         "eval_unknown": sum(1 for f in introduced if f.result.value == "unknown"),
         "search_s": round(seconds, 2),

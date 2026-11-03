@@ -13,6 +13,8 @@ import math
 from dataclasses import dataclass, field
 from typing import Any
 
+from shapely.geometry import Polygon
+
 from typehaus.quantities import M_PER_IN
 
 #: UPC 905.3: a vent rises this far over the flood-level rim before it may run level.
@@ -60,17 +62,17 @@ def arm_problem(model: Any, ends: Any, graph: Any, space: Any, start: int, goals
     reach = arm_reach(graph, space, start, limit_ft=limit_in / 12.0, weir_m=ends.origin[2],
                       grade_in_per_ft=grade, obstacles=obstacles)
     vent_d = vent_size_m(ends.diameter_m)
-    candidates = takeoff_candidates(graph, space, reach,
-                                    vent_od_m=2.0 * pipe_trade.cavity_radius_m(vent_d, "vent"))
     keywords: dict[str, Any] = {"seeds": arm_seeds(reach, {}, vented)}
-    if not candidates:
-        report.notes.append(f'no wall cavity that holds a {vent_d / M_PER_IN:g}" vent within '
-                            f'{limit_in:g}" developed of the trap')
-        return keywords, None
     rim = _rim_m(model, ends.fixture)
     if rim is None:
         report.notes.append(f"{ends.fixture} states no body height, so the 905.3 line (6\" "
                             "over its flood rim) is unknown and its vent is not searched")
+        return keywords, None
+    candidates = takeoff_candidates(graph, space, reach, rise_to_m=rim + _OVER_RIM_M,
+                                    vent_od_m=2.0 * pipe_trade.cavity_radius_m(vent_d, "vent"))
+    if not candidates:
+        report.notes.append(f'no wall cavity that holds a {vent_d / M_PER_IN:g}" vent to 6" '
+                            f'over the rim within {limit_in:g}" developed of the trap')
         return keywords, None
     context = _vent_context(model, ends, graph, space.cost, candidates, rim + _OVER_RIM_M,
                             vent_d, report)
@@ -125,11 +127,13 @@ def _vent_context(model: Any, ends: Any, drain_graph: Any, cost: Any, candidates
     terminals += [p for _t, a, b in legs for p in (a, b)]
     try:
         space = build_space(model, radius_m=pipe_trade.radius_m(vent_d), terminals=terminals,
-                            cost=cost, margin_ft=_VENT_MARGIN_FT,
+                            cost=cost.for_run("pipe", "vent"), margin_ft=_VENT_MARGIN_FT,
                             touch=frozenset({*(t for t, *_ in legs), *ends.touch}),
                             cavity_radius_m=pipe_trade.cavity_radius_m(vent_d, "vent"))
-        _close_finished_rooms(space)
-        graph = build_graph(space, terminals)
+        _close_finished_rooms(model, space)
+        # A terminal in a closed room would be kept, and its edges excused from the room.
+        graph = build_graph(space, [t for t in terminals
+                                    if t[2] != level_floor_m or space.blocked(t[:2], t[2]) is None])
     except RoutingSpaceTooLarge as exc:
         report.notes.append(f"the vent lattice is too large to search ({exc})")
         return None
@@ -145,23 +149,39 @@ def _vent_context(model: Any, ends: Any, drain_graph: Any, cost: Any, candidates
     if not context.by_drain:
         report.notes.append("no take-off in reach rises clear to a vent stack"
                             + _first_blocker(space, drain_graph.nodes[candidates[0]],
-                                             level_floor_m))
+                                             max(p[2] for _t, a, b in legs for p in (a, b))))
     return context
 
 
-def _close_finished_rooms(space: Any) -> None:
+def _close_finished_rooms(model: Any, space: Any) -> None:
     """A dry vent never runs exposed through a finished room: its air is hard, not priced.
 
     Walls, floor depths and the space over a ceiling stay open, which is where a plumber
-    runs one. ``mep.run_in_finished_volume`` grades the same band.
+    runs one. ``mep.run_in_finished_volume`` grades the same band; a ``FollowRoof`` room,
+    which builds no soft prism, is closed up to its sloped plane's highest corner.
     """
+    from typehaus.checks.mep.routing_sloped import sloped_plane
     from typehaus.routing.obstacles import HardPrism
 
     space.hard.extend(
         HardPrism(tag=s.tag, kind="clear_zone", footprint=s.footprint.buffer(space.radius_m),
                   z0_m=s.z0_m, z1_m=s.z1_m)
         for s in space.soft if s.kind == "room" and space.cost.room_penalty(s.occupancy) > 0)
+    occupancy = {r.tag: "living" if r.closed_to_services else r.occupancy for r in model.rooms}
+    datum = {s.tag: s.elevation.meters for s in model.plan.storeys}
+    for ceiling in model.ceilings:
+        if (ceiling.z0_m is not None or len(ceiling.outline) < 3
+                or space.cost.room_penalty(occupancy.get(ceiling.room_ref)) <= 0):
+            continue
+        plane = sloped_plane(model, model.plan, ceiling)
+        if plane is not None:
+            outline = Polygon(ceiling.outline)
+            space.hard.append(HardPrism(
+                tag=ceiling.room_ref, kind="clear_zone",
+                footprint=outline.buffer(space.radius_m), z0_m=datum.get(ceiling.storey, 0.0),
+                z1_m=max(plane.z_at(p) for p in ceiling.outline)))
     space._hard_index = space._exact = space._rail_index = None  # rebuilt on next query
+    space._blocked_memo.clear()
 
 
 def _vent_legs(model: Any, origin: tuple, floor_m: float, vent_d: float) -> list:
@@ -263,8 +283,10 @@ def vent_proposal(found: Any, drain: Any, ends: Any, target: str, suffix: str) -
         return None
     points = [(n.x, n.y, n.z) for n in (context.graph.nodes[i] for i in nodes)]
     tee = _on_drain(drain.points, points[0])
-    if tee is not None and tee[2] < points[0][2] - 1e-6:
-        points.insert(0, tee)  # leave the arm at its graded centreline (905.2)
+    if tee is not None:
+        # Leave the arm at its graded centreline (905.2): the lattice node may sit off it.
+        points = [tee, *(p for p in points if math.dist(p[:2], tee[:2]) > 1e-6
+                         or p[2] > tee[2] + 1e-6)]
     return RouteProposal(
         tag=f"{target}-VENT-PROPOSED{suffix}", kind="pipe", points=points,
         diameter_m=context.diameter_m, serves=ends.serves, system="vent",

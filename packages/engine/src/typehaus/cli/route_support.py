@@ -36,6 +36,8 @@ class Endpoints:
     diameter_m: float = 0.0
     #: Half what a wall cavity must hold — a DWV hub; 0 means ``radius_m``.
     cavity_radius_m: float = 0.0
+    #: A bendable tube's minimum bend radius (``trades.pipe.bend_radius_m``); 0 if fitted.
+    bend_radius_m: float = 0.0
     #: ``--fixture``: the fixture whose trap arm this drain starts (Phase 4's arm search).
     fixture: str | None = None
     #: Rectangular duct only; both zero for everything round.
@@ -255,6 +257,8 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
             # **Never branch_diameter_m here.** That is a DFU drain table and says nothing
             # about a water branch, whose size comes off WSFU and pressure.
             diameter_m=run.diameter_m,
+            bend_radius_m=pipe_trade.bend_radius_m(run.diameter_m, str(run.system),
+                                                   run.material),
             serves=run.serves, storey=run.storey, system=run.system, falls=False,
             touch=frozenset({run.tag, *chain, *children}), root_paths=paths,
             tie_is_the_goal=True, after_paste=after,

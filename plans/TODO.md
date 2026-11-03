@@ -217,6 +217,9 @@ the future.
 - **Door hardware still bills as one lump in catlin.** Openings rows now carry
   `DoorType.function`, but catlin hangs one commodity type (`DT-INT-SWING32`) at both a bath and
   a study, so the type has to split before a per-function allowance means anything.
+- We can perhaps do a cost optimization on where solid core doors are used versus hollow core doors.
+- D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door. A simpler option is probably to just make sure the hinge can open to close to 180 degrees so the door can be flat against the wall, out of the way of the walking space.
+- Check the door handle specification, interior doors. Make sure bathroom doors are simple locks.
 - **Plan lettering residue after 96b845f4 (3/32" lettering):** at 1/4" a few small rooms still
   touch a tag (PANTRY/D8, STUDY/D13, MECH's "CHASE TYP. OF 2"), and on the 11x17 reduced check
   print the 12 pt room names spill past small rooms' walls.
@@ -228,7 +231,6 @@ the future.
 - Open (drywall overhaul): kids' bedroom and kids' room hall faces are NOT on the abuse-resistant swap list; decide whether they take `gwb-ar` (the owner's list omits them).
 - Open (drywall overhaul): mudroom wainscot could be LP SmartSide 38 Series 7/16" (sidings used indoors) instead of the shiplap; the shiplap stays until someone prices it.
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so
-- D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door. A simpler option is probably to just make sure the hinge can open to close to 180 degrees so the door can be flat against the wall, out of the way of the walking space.
 - Make sure all handrail brackets are stock, avoid custom needs. Remaining: titanium railing brackets (aim to use standard as much as possible). Also attic rail, bracket 7 needs a rethink, ideally to an off the shelf part.
 - The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
@@ -249,8 +251,8 @@ the future.
 - Left open by the 2026-11-01 fit and product-data pass (REPORT items 14-24; plan `make-a-plan-to-warm-otter`):
   - [ ] ERV OA/EA/RET still leave the case at service level: under Broan's 2x2 port grid they cannot all reach the two basement plenums in 21.3" of headroom (8" ducts at 12" wrapped OD, OA/EA wraps overlap 2 1/4"). Owner held it; options are rearranging the plenums or moving the ERV (C6-E1). `erv_static_budget` stays 0.441" > 0.4".
   - [ ] 3 drain fixtures have no 3D vent (`mep.trap_arm_developed` ADVISORY; C6-E7, wet-vent grading done):
-    - FX-M-BATH2-TUB: no lane. Options: a FloorOpening on FS-M-WEST near (97.3", 213.5"), re-box the W-B-CW3 blocking, or re-route HW/CW-WASH.
-    - FX-S-SUITEBATH-LAV, -TUBSH: no wet vent (the WC joins upstream, 908.2.1.4). The y=269.25" lane passed both arms (27", 6") but hit PR-B-CW-SUITE's riser by 0.14" and PR-B-HW-SUITE / PR-A-HW-STUBATH on y=268". Move those supplies, or re-route DU-S-ERV-HP-FEED's last leg.
+    - FX-M-BATH2-TUB: `haus route --fixture` refuses: the take-off at (98", 216") in W-M-BA2E rises into PR-B-HW-WASH 61" over the arm (drain basis §9). Re-route HW-WASH out of that cavity and the vent rises.
+    - FX-S-SUITEBATH-LAV: refused, the take-off at (165.5", 268") rises into PR-S-SUITE-LAV-HW 25.75" over the arm; move that leg to y <= 266.36" (§9). -TUBSH: no wall cavity holding a 1 1/4" vent to 6" over the rim within its 42" arm. No wet vent either (the WC joins upstream, 908.2.1.4).
     - When all three pass, move the 3D walk under the CODE id `mep.trap_arm_length` and retire `mep.trap_arm_developed`.
     - Fitting detail: PR-M-LSINK-VENT and PR-M-BATH2-WC-VENT tee into the drain where CO-B-LSINK / CO-B-WC2-HEAD sit (solids overlap 32 / 86 cm^3, blessed). A plumber's combo-fitting sketch, or nudge the tee off the cleanout.
   - [ ] TB-SG-W1/E1 closure boards are 8" while FT-B-S2/S3 are now 10": 2" x 32" of strip faces the court footing with no board. Extend to 10" (moves §11l and test_thermal_break) or accept.
@@ -283,7 +285,11 @@ the future.
 - Metal trim kit ([notes/metal_trim_kit.md](../houses/catlin/notes/metal_trim_kit.md)): the garage soffit's net free area is still unauthored; authoring it would give R806.2 real margin through the 1/300 balanced route.
 - House K2 base flashing and wall-top closures now derive, bill and receive coverage checks; coordinate the garage Sill to Soffit panel break and installation order, which the fit check records UNKNOWN. See the trim note for the selected aluminium section, isolation and quantities.
 - Add the eased edges and rounded corners to the shown tabletop model.
-- Look up a guide to how plumbers and such route, then make sure the autorouter follows that, and also code for it
+- Autorouter open items (plumber's-rules pass, 2026-11-03; drain basis §13, `docs/routing.md`):
+  - [ ] FX-M-KITCH-SINK refuses in the main tree at 1.5" (715k labels, tightest PR-B-CW-WH across the fall band); the authored run stands. tree:second's TUBSH branch refuses too.
+  - [ ] `--tree` grades each branch alone, so FX-M-BATH2-SH-PROPOSED reads as interfering with PR-B-TUB2-DRAIN, which the TUB branch replaces; grade the tree's drains together there as the scorecard does (`evaluate_network`).
+  - [ ] `test_routing_perf_guard::test_every_catlin_duct_builds_a_lattice_that_fits` fails: DU-B-ERV-R-SAUNA-SUP is 548,354 nodes against 500,000 (529,787 at c00e4356 already).
+  - [ ] `test_cmd_route::test_a_congested_terminal_is_refused_with_the_tags_that_block_it` fails at c00e4356 too.
 - Plant supply fabrication hold: dry-fit A220V / ZD12X6TZ / TH-HP-PLANT-BOOT-01 and gasketed
   service hatch, including actuator fasteners, hand/tool access, seams/supports and the
   approximately 3/8-inch deck margin. Geometry and connection are specified; see
@@ -326,10 +332,8 @@ the future.
 - **Engine-wide: is the AHJ on the 2026 NEC?** `plan/circuits.py` already says MN adopted it for permits filed on or after 2026-08-17 (Minn. R. 1315.0200); many checks still cite 2023 sections (230.85 is gone in 2026). Settle the citation basis; not fixed piecemeal.
 - Let's make sure all the charcoal gray and black details of the house exterior (various metal trim, window frames, foundation insulation cover) show real manufacturer colors. We are using this to determine if we should switch all to more gray or more black.
 - `haus print3d --colour-groups`: per-piece colour components bucketed from `Material.color`, matched to a sample exported from Bambu Studio before shipping.
-- Check the door handle specification, interior doors. Make sure bathroom doors are simple locks.
 - Do an outlet and light switch placement review pass
 - O-S-VANITY and D-S-STUDY2, both openings (not true doors) seem to get ignored, improperly showing baseboard, sill plates, and non-continuous flooring, they likely just need to reuse some of the existing door handling logic which generally works
-- Edit the door swing icon in 2d so it shows a frame (right now the 2d door swing might be a bit too big, versus actual leaf swing)
 - **FS-M-NE truss order (decision #112).** 16" o.c. is a published TRIFORCE OJ418S read (p. 5, 40/25 psf L/480, 18'-0"), so this is a stock order plus confirmation. Send the supplier `houses/catlin/notes/main_floor_truss_basis.md` §2-§3: L/720 live on the order, `FS-S-WEST`'s 24"/13"/12" web layout, the doubled trusses on the 316 and 332 lines, the peninsula point loads (confirm both pairs: doubled, the hand bound is still 1.02-1.10x the row's moment) and the fridge/freezer and partition loads; also the blocking panel for the `W-B-N1` bays and the two strongbacks (cuts at y 180/196/292/414).
 - **Consider the same row and a strongback on `FS-S-WEST`** (11 7/8" open-web at 16" o.c.; today it rests on a borrowed I-joist table, advisory only).
 - **W-B-N2 wall-top restraint (Minn. R. 1309.0404).** `FO-M-STAIR` fills the first three joist spaces against W-B-N2 for x 10'-3"..17'-6", so no footnote f blocking can stand there and `code.MN_1309_0404_wall_top` reports UNKNOWN. 400 plf x 8' = 3,200 lb goes into the well's edge framing spanning flat between the headers: get the EOR's approved-equivalent detail (a flat strongback or a landing strut) and author it. Basis note `houses/catlin/notes/main_floor_truss_basis.md` §4.

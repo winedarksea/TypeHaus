@@ -18,8 +18,8 @@ exactly when the hub plus the tool, beyond the pipe, would meet one.
 
 from __future__ import annotations
 
-from typehaus.hardware.fittings import fitting_catalog
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.mep_fittings import elbow_faces_in
 from typehaus.routing.cost import RouteCost
 from typehaus.routing.graph import Graph
 from typehaus.routing.space import RoutingSpace
@@ -42,9 +42,7 @@ def tool_in(cost: RouteCost, material: str | None) -> float:
 def nipple_m(service: str, nominal_m: float, hub_od_m: float) -> float:
     """Least centre-to-centre between two turns: two published bodies, else the hub OD."""
     size = round(nominal_m / M_PER_IN * 16) / 16
-    faces = [f.center_to_face_in for f in fitting_catalog()
-             if f.service == service and f.kind == "elbow" and f.nominal_in == size
-             and f.center_to_face_in is not None]
+    faces = elbow_faces_in(service, size)
     return max(2.0 * min(faces) * M_PER_IN if faces else 0.0, hub_od_m)
 
 

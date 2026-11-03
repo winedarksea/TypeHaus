@@ -12,7 +12,7 @@ catlin's, and each states its basis the way ``max_run_developed_over_straight`` 
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 #: Occupancy-keyed penalty for a foot of run in a room's open air, in inches of equivalent
@@ -54,9 +54,10 @@ class RouteCost:
     #: heuristic's admissibility and A* would stop being optimal without saying so.
     corridor_discount_per_ft: float = 8.0
     #: Per-foot discount for riding beside an accepted parallel run on shared hangers (a
-    #: rack, Phase 7). Shares the corridor discount's cap: together they never take an
-    #: edge below zero, and ``heuristic_floor`` folds in both.
+    #: rack, ``routing/rack.py``), in place of the corridor discount on that edge.
     rack_discount_per_ft: float = 4.0
+    #: Clear between two pipes on one rack, surface to surface.
+    rack_spacing_in: float = 1.0
     #: A DWV turn that must be a sweep (long-sweep 1/4 bend, combo, wye + 1/8 or a 45 pair):
     #: every drainage transition but horizontal-to-vertical (UPC 706).
     dwv_sweep_in: float = 30.0
@@ -181,6 +182,16 @@ class RouteCost:
                      f"{self.heuristic_floor():.3f}")
         return lines
 
+    def for_run(self, kind: str, system: str) -> RouteCost:
+        """This cost for one run: only supply and drain pipe pay ``exterior_wall_per_ft``.
+
+        The price is freeze risk and a hole in the insulation; a vent carries air, and a
+        duct or a raceway is not water.
+        """
+        if kind == "pipe" and getattr(system, "value", system) not in ("vent", "radon"):
+            return self
+        return replace(self, exterior_wall_per_ft=0.0)
+
     def heuristic_floor(self, *, rack: bool = False) -> float:
         """The cheapest an inch of plan travel can ever be — the heuristic's scale factor.
 
@@ -205,6 +216,7 @@ _SUPERSEDED = {
 
 _FLOAT_KEYS = (
     "bend_in", "riser_per_ft", "corridor_discount_per_ft", "rack_discount_per_ft",
+    "rack_spacing_in",
     "dwv_sweep_in", "pex_bend_in", "bore_stud_in", "plate_cut_in", "bore_joist_in",
     "bore_engineered_in", "bore_unpublished_in", "exterior_wall_per_ft",
     "cleanout_concealed_in", "solvent_weld_tool_in", "propress_tool_in",

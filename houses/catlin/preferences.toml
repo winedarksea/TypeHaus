@@ -213,6 +213,8 @@ corridor_discount_per_ft = 8.0
 # A wall is priced per member cut (`in_wall_travel_per_ft` is retired): vertical travel in a
 # cavity that fits pays travel only, which is the wet-wall preference.
 rack_discount_per_ft = 4.0
+# Clear between two pipes on one rack, surface to surface.
+rack_spacing_in = 1.0
 dwv_sweep_in = 30.0
 pex_bend_in = 4.0
 bore_stud_in = 12.0

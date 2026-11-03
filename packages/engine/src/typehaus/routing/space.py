@@ -175,6 +175,9 @@ class RoutingSpace:
     #: A falling run's possible centreline band, set by ``gravity_band.split_banded``: its
     #: one search plane is nominal, so member tests read the band rather than the plane.
     plan_band: tuple[float, float] | None = None
+    #: A bendable tube's minimum bend radius (``trades.pipe.bend_radius_m``); 0 is fitted at
+    #: every turn. A turn whose arc clears pays ``pex_bend_in`` (``search.bend_price``).
+    bend_radius_m: float = 0.0
 
     def admits(self, corridor: Corridor) -> bool:
         """Whether this run fits ``corridor`` — at its hub, when the corridor is a cavity."""
@@ -291,14 +294,14 @@ class RoutingSpace:
 
         if not self.rails:
             return None
+        grow = self.radius_m + self.clearance_m  # the index boxes too: a bbox query
         if self._rail_index is None:
             self._rail_index = STRtree([
-                box(lo, station - half, hi, station + half) if axis == "x"
-                else box(station - half, lo, station + half, hi)
+                box(lo, station - half - grow, hi, station + half + grow) if axis == "x"
+                else box(station - half - grow, lo, station + half + grow, hi)
                 for axis, station, lo, hi, half, _z0, _z1, _tag in self.rails])
         axis = "x" if abs(b[0] - a[0]) > abs(b[1] - a[1]) else "y"
         station = a[1] if axis == "x" else a[0]
-        grow = self.radius_m + self.clearance_m
         for i in self._rail_index.query(LineString([a, b])):
             rail_axis, rail_station, lo, hi, half, z0, z1, tag = self.rails[int(i)]
             if rail_axis != axis or abs(station - rail_station) >= half + grow - _GRID_M:
@@ -387,7 +390,8 @@ def build_space(model: ResolvedModel, *, radius_m: float,
                 touch: frozenset[str] = frozenset(),
                 z_band: tuple[float, float] | None = None,
                 clearance_m: float = CLEARANCE_M,
-                cavity_radius_m: float | None = None) -> RoutingSpace:
+                cavity_radius_m: float | None = None,
+                panel_space: bool = True) -> RoutingSpace:
     """Inflate the world once for a run of this radius, bounded around its terminals.
 
     ``terminals`` is any iterable of ``(x, y)`` or ``(x, y, z)`` — the points the route has
@@ -395,7 +399,8 @@ def build_space(model: ResolvedModel, *, radius_m: float,
     step to get round something.
 
     ``touch`` names the existing runs this proposal may occupy — the one it replaces and
-    the one it ties into. See :func:`~typehaus.routing.obstacles.hard_prisms`.
+    the one it ties into; ``panel_space`` is False for a raceway. See
+    :func:`~typehaus.routing.obstacles.hard_prisms`.
     """
     points = [(t[0], t[1]) for t in terminals]
     if not points:
@@ -410,7 +415,7 @@ def build_space(model: ResolvedModel, *, radius_m: float,
 
     window = box(minx, miny, maxx, maxy)
     hard = [prism for prism in hard_prisms(model, radius_m, avoid=avoid, touch=touch,
-                                           clearance_m=clearance_m)
+                                           clearance_m=clearance_m, panel_space=panel_space)
             if prism.footprint.intersects(window)]
     soft = [prism for prism in soft_prisms(model)
             if prism.footprint.intersects(window)]

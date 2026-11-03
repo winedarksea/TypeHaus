@@ -76,6 +76,12 @@ def one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
         note = bay_note(model, found.corridor_tags, ends.radius_m)
         if note:
             notes.append(note)
+    if ends.kind == "pipe":
+        from typehaus.routing.trades.pipe import coupling_disclosure
+
+        couplings = coupling_disclosure([*ends.held, *points], ends.echo.get("material"))
+        if couplings:
+            notes.append(couplings)
     if ends.kind == "conduit":
         disclosed = conduit_trade.disclosure(conduit_trade.legalize(list(points)))
         if disclosed:

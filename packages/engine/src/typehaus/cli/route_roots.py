@@ -356,7 +356,7 @@ def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None)
             required_m=dict.fromkeys(goals, ends.root[2]), nipple_m=nipple, heel_m=heel)
         heights = {**dict.fromkeys(goals, ends.root[2]), start: ends.origin[2]}
         obstacles = band_obstacles(a_space, a_graph,
-                                   terminal_pardons(a_space, a_graph, heights))
+                                   terminal_pardons(a_space, a_graph, heights, start))
         arm, vent = arm_problem(model, ends, a_graph, a_space, start, goals, grade,
                                 obstacles, report)
         if arm:

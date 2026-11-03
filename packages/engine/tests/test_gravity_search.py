@@ -203,3 +203,40 @@ def test_a_banded_duct_is_passed_over_under_or_refused_as_section_8a_works_it(
     assert route is not None and route.nodes == [0, 1, 2, 3]
     # 2e-3": the duct is read 1/16" eroded (a run on its inflated edge is at clearance).
     assert route.start_m / M_PER_IN == pytest.approx(start_in, abs=2e-3)
+
+
+def test_the_grid_allowance_covers_section_13s_three_legs() -> None:
+    """§13: 5.1 + 3.3 + 2.0 ft at 1/4"/ft is 2.600" exact, 2.6875" on the grid."""
+    from typehaus.cli.route_fall import _on_grid
+    from typehaus.routing.gravity import grid_allowance
+    from typehaus.routing.search import Route
+
+    ft = 0.3048
+    points = [(0.0, 0.0, 0.0), (5.1 * ft, 0.0, 0.0), (5.1 * ft, 3.3 * ft, 0.0),
+              (7.1 * ft, 3.3 * ft, 0.0)]
+    snapped = _on_grid(points, 0.25)
+    assert abs(snapped[0][2] / M_PER_IN - 2.6875) < 1e-9
+    allowance = grid_allowance(Route(nodes=[0, 1, 2, 3], points=points, cost=0.0),
+                                0.25, 0.0)
+    assert abs(allowance / M_PER_IN - 0.0875) < 1e-3  # plan snap: 61.2" is 61.1875"
+
+
+def test_the_head_bound_at_b_is_section_13s_number() -> None:
+    """§13: at B, 2 ft developed and 4 ft of plan to D: 114.00 + 0.25 x 6 = 115.50"."""
+    from typehaus.routing.gravity import head_floor_fn
+
+    graph, _space = _world()
+    problem = _problem()
+    floor = head_floor_fn(graph, {3}, problem.required_m, GRADE_IN_PER_FT)
+    assert (floor(1) + problem.fall_over(2.0)) / M_PER_IN == pytest.approx(115.50)
+
+
+def test_the_drop_into_the_tie_meets_a_heater_line_as_section_13_says() -> None:
+    """§13: a plumb drop from -4.0" to -16.0" crosses PR-B-CW-WH's -9.61..-3.99" band."""
+    from typehaus.routing.gravity import drop_blocker
+
+    def at_node(_a: int, _b: int) -> list[tuple[float, float, float, float, str]]:
+        return [(0.0, 1.0, -9.61 * M_PER_IN, -3.99 * M_PER_IN, "PR-B-CW-WH")]
+
+    assert drop_blocker(at_node, 0, -4.0 * M_PER_IN, -16.0 * M_PER_IN) == "PR-B-CW-WH"
+    assert drop_blocker(at_node, 0, -10.0 * M_PER_IN, -16.0 * M_PER_IN) is None

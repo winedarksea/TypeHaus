@@ -6,9 +6,8 @@ not be centred in that width, so the window slides along the face in 1" steps; a
 position passes. Door swings are not graded: 110.26 does not forbid a door over the
 working space at a dwelling panel, only the 110.26(C) egress rules for large equipment.
 
-110.26(E)(1): the panel's own footprint, floor to 6 ft above it or the structural ceiling
-(taken as the room's clear height), whichever is lower, is reserved for the electrical
-installation. A pipe or duct in it fails; conduit is the installation and is allowed.
+110.26(E)(1): ``resolve/panel_space.dedicated_spaces`` (the router's hard prism too). A pipe
+or duct in it fails; conduit is the installation and is allowed.
 """
 
 from __future__ import annotations
@@ -22,19 +21,17 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, by_result
 from typehaus.resolve.mep_envelopes import Prism, envelopes
 from typehaus.resolve.overlay import union_all
+from typehaus.resolve.panel_space import dedicated_spaces, floor_and_top, panels
 
 _WORK, _DEDICATED = "electrical.panel_working_space", "electrical.panel_dedicated_space"
 _IN = 0.0254
 _DEPTH_M, _WIDTH_M, _HEIGHT_M = 36 * _IN, 30 * _IN, 78 * _IN
-_ABOVE_M = 72 * _IN
 _STEP_M = 1 * _IN
 _SHRINK_M = 0.001  # contact is not intrusion
 
 
 def _panels(ctx: CheckContext) -> list:
-    return sorted((e for e in ctx.plan.all_elements()
-                   if e.element_kind == "ElectricalDevice" and e.kind.value == "panel"),
-                  key=lambda e: e.tag)
+    return panels(ctx.plan)
 
 
 def _wall_prisms(ctx: CheckContext) -> list[Prism]:
@@ -73,13 +70,6 @@ def _windows(body):
                        for u, v in corners]).buffer(-_SHRINK_M, join_style=2)
 
 
-def _floor_and_top(panel, body) -> tuple[float, float] | None:
-    elevation = getattr(panel.mount, "elevation", None)
-    if elevation is None or body.body_z0_m is None or body.body_z1_m is None:
-        return None
-    return body.body_z0_m - elevation.meters, body.body_z1_m
-
-
 @check(Tier.CODE, _WORK)
 def panel_working_space(ctx: CheckContext) -> list[Finding]:
     """NEC 110.26(A): a clear 36"-deep, 30"-wide, 6'-6"-high space in front of each panel."""
@@ -95,7 +85,7 @@ def panel_working_space(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     for panel in panels:
         body = bodies.get(panel.tag)
-        band = None if body is None else _floor_and_top(panel, body)
+        band = None if body is None else floor_and_top(panel, body)
         if body is None or band is None or len(body.footprint) < 3:
             out.append(by_result(_WORK, Result.UNKNOWN, f"{panel.tag}: no resolved body and "
                                  "mount elevation to place a working space on",
@@ -143,24 +133,18 @@ def panel_dedicated_space(ctx: CheckContext) -> list[Finding]:
     panels = _panels(ctx)
     if not panels:
         return [by_result(_DEDICATED, Result.NOT_APPLICABLE, "no panel in the plan", (), code)]
-    bodies = {item.tag: item for item in ctx.model.canvas_objects}
-    rooms = {room.tag: room for room in ctx.model.rooms}
+    spaces = dedicated_spaces(ctx.model)
     run_envelopes = [env for env in envelopes(ctx.model) if env.kind != "conduit"]
     potential = potential_run_footprints(ctx.model)
     out: list[Finding] = []
     for panel in panels:
-        body = bodies.get(panel.tag)
-        band = None if body is None else _floor_and_top(panel, body)
-        if body is None or band is None or len(body.footprint) < 3:
+        space = spaces.get(panel.tag)
+        if space is None:
             out.append(by_result(_DEDICATED, Result.UNKNOWN, f"{panel.tag}: no resolved "
                                  "body to project a dedicated space from", (panel.tag,), code))
             continue
-        floor, top = band
-        room = rooms.get(body.room or "")
-        z1 = top + _ABOVE_M
-        if room is not None and room.clear_height_m is not None:
-            z1 = min(z1, floor + room.clear_height_m)
-        zone = Polygon(body.footprint).buffer(-_SHRINK_M, join_style=2)
+        floor, z1 = space.floor_m, space.z1_m
+        zone = Polygon(space.footprint).buffer(-_SHRINK_M, join_style=2)
         intruders = sorted({p.tag for env in run_envelopes for p in env.prisms
                             if _hits(zone, floor, z1, p)})
         gaps = sorted(env.tag for env in run_envelopes if env.gaps and not env.prisms

@@ -54,6 +54,9 @@ _KIND_MOBILITY = {
     # notched or moved by anybody, and lifting one in a counterfactual would be pricing a
     # truss nobody will build.
     "member": Mobility.FIXED,
+    "rail": Mobility.FIXED,  # a floor member a falling run would ride (``rail_prisms``)
+    "flange": Mobility.FIXED,  # an I-joist blocking flange: no cut, ever
+    "outside": Mobility.FIXED,  # past the decks, within a floor's depth: not the house
     # A flight's R311.7.2 headroom and its stringers: the stair does not move for a duct.
     "stair": Mobility.FIXED,
     # A beam or girder: a carrier is not bored for a run and does not move for one.

@@ -284,12 +284,14 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
              avoid: frozenset[str], via: list[tuple[float, float]], explain: bool,
              cost: RouteCost, alternatives: int = 1, timing: list[str] | None = None,
              counterfactual: bool = False, extra_prisms: list | None = None,
-             hold: int = 0
+             hold: int = 0, racks: list | None = None
              ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str], list]:
     """Return (proposal/storey pairs, problems, notices, structured refusals).
 
     ``extra_prisms`` are already-inflated campaign occupancy, appended without further
-    inflation. Every target refusal is reported; it never becomes an approximate route."""
+    inflation; ``racks`` the laid proposals whose level legs offer rack lanes
+    (``routing/rack.py``). Every target refusal is reported; it never becomes an
+    approximate route."""
     from typehaus.routing.alternatives import alternative_routes
     from typehaus.routing.diagnostics import Refusal, refusal
     from typehaus.routing.graph import build_graph
@@ -325,8 +327,17 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                 with clock.stage("build-space"):
                     space = build_space(model, radius_m=ends.radius_m, terminals=terminals,
                                         margin_ft=margin_ft, avoid=avoid, touch=ends.touch,
-                                        cost=cost, z_band=band,
-                                        cavity_radius_m=ends.cavity_radius_m or None)
+                                        cost=cost.for_run(ends.kind, ends.system), z_band=band,
+                                        cavity_radius_m=ends.cavity_radius_m or None,
+                                        panel_space=ends.kind != "conduit")
+                    space.bend_radius_m = ends.bend_radius_m
+                    if racks and ends.kind == "pipe":
+                        from typehaus.routing.rack import rack_lanes
+
+                        space.corridors.extend(rack_lanes(
+                            racks, system=str(ends.system), radius_m=ends.radius_m,
+                            spacing_m=space.cost.rack_spacing_in * 0.0254))
+                        space._corridor_index = None
                     if extra_prisms:
                         # Appended after the build so the space's own inflation is not
                         # applied twice: a campaign's prisms are already grown by the
@@ -337,7 +348,7 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                         from typehaus.routing.gravity_band import prepare_falling
 
                         prepare_falling(space, (min(ends.root[2], ends.origin[2]),
-                                             max(ends.root[2], ends.origin[2])))
+                                             max(ends.root[2], ends.origin[2])), model)
             except RoutingSpaceTooLarge as exc:
                 problems.append(f"{target}: {exc}")
                 continue

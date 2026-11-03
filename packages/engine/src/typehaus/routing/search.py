@@ -24,6 +24,7 @@ and no oracle can pin it.
 from __future__ import annotations
 
 import heapq
+import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
@@ -142,7 +143,7 @@ def shortest_route(graph: Graph, space: RoutingSpace, start: int,
                 continue
             if rising and graph.nodes[other].z < graph.nodes[index].z - _RISE_TOL_M:
                 continue
-            turn = (space.cost.bend_in
+            turn = (bend_price(graph, space, came.get(state, (None,))[0], index, other)
                     if incoming and axis != incoming else 0.0)
             candidate = current + step + turn
             key = (other, axis)
@@ -199,6 +200,36 @@ def _rebuild(graph: Graph, space: RoutingSpace,
                  corridor_tags=route.corridor_tags)
 
 
+def bend_price(graph: Graph, space: RoutingSpace, before: int | None, at: int,
+               after: int) -> float:
+    """A pressure turn at ``at``: ``pex_bend_in`` where the tube bends, else ``bend_in``.
+
+    A bendable tube (``space.bend_radius_m``) bends where the quarter arc of that radius
+    between the two legs clears every hard prism; anything else is a fitting.
+    """
+    radius = space.bend_radius_m
+    if radius <= 0.0 or before is None:
+        return space.cost.bend_in
+    a, b, c = graph.nodes[before], graph.nodes[at], graph.nodes[after]
+    u = _unit((b.x - a.x, b.y - a.y, b.z - a.z))
+    v = _unit((c.x - b.x, c.y - b.y, c.z - b.z))
+    # Centre one radius back along the way in and one out along the way out.
+    centre = tuple(p - radius * ui + radius * vi
+                   for p, ui, vi in zip((b.x, b.y, b.z), u, v, strict=True))
+    for k in range(5):
+        t = k * math.pi / 8.0
+        p = tuple(o - radius * math.cos(t) * vi + radius * math.sin(t) * ui
+                  for o, ui, vi in zip(centre, u, v, strict=True))
+        if space.blocked(p[:2], p[2]) is not None:
+            return space.cost.bend_in
+    return space.cost.pex_bend_in
+
+
+def _unit(d: tuple[float, float, float]) -> tuple[float, float, float]:
+    n = math.sqrt(sum(x * x for x in d)) or 1.0
+    return (d[0] / n, d[1] / n, d[2] / n)
+
+
 def turn_price(space: RoutingSpace, before: str, after: str,
                service: str = "drain") -> float | None:
     """A lattice turn from axis ``before`` to ``after`` at its UPC 706 price, or None.
@@ -244,8 +275,9 @@ def price_route(graph: Graph, space: RoutingSpace, nodes: list[int],
             corridors.append(tag)
         if step and axes[step] != axes[step - 1]:
             bends += 1
-            price = (turn_price(space, axes[step - 1], axes[step], service)
-                     if service else space.cost.bend_in)
+            price = (turn_price(space, axes[step - 1], axes[step], service) if service
+                     else bend_price(graph, space, nodes[step - 1], nodes[step],
+                                     nodes[step + 1]))
             bend_total += space.cost.bend_in if price is None else price
     total += bend_total
     if bends:

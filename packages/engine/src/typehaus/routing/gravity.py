@@ -20,8 +20,9 @@ the number a person can act on.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from typing import Any
 
 from typehaus.quantities import M_PER_IN
 
@@ -181,3 +182,53 @@ def apply(points: Sequence[tuple[float, ...]],
     lengths = developed_lengths(points)
     return [(p[0], p[1], profile.invert_at(length))
             for p, length in zip(points, lengths, strict=False)]
+
+
+def head_floor_fn(graph: Any, goals: set[int], required_m: dict[int, float],
+                  grade_in_per_ft: float) -> Callable[[int], float]:
+    """Per node, the least ``required + fall over the plan distance`` to any goal (§13).
+
+    A falling run's arrival needs a start at least this far above ``fall_over(developed)``:
+    the plan distance is a floor on what is left to develop. A goal with no tie admits any.
+    """
+    import numpy as np
+
+    tie = [(graph.nodes[g].x, graph.nodes[g].y, required_m[g]) for g in goals
+           if required_m.get(g) is not None]
+    if not tie or len(tie) < len(goals):
+        return lambda _node: float("-inf")
+    xs, ys, req = (np.array(c) for c in zip(*tie, strict=True))
+    per_m = grade_in_per_ft * M_PER_IN / 0.3048
+    memo: dict[int, float] = {}
+
+    def floor(node: int) -> float:
+        if node not in memo:
+            n = graph.nodes[node]
+            memo[node] = float((req + per_m * (np.abs(xs - n.x) + np.abs(ys - n.y))).min())
+        return memo[node]
+
+    return floor
+
+
+def grid_allowance(found: Any, grade_in_per_ft: float, required_m: float | None) -> float:
+    """The head ``route_fall._on_grid`` adds: each leg's fall rounded UP, the tie snapped (§13)."""
+    import math
+
+    from typehaus.routing.proposal import SNAP_IN, snap
+
+    step = SNAP_IN * M_PER_IN
+    plan = [(snap(p[0]), snap(p[1])) for p in found.polyline()]
+    extra = 0.0 if required_m is None else max(0.0, snap(required_m) - required_m)
+    for a, b in zip(plan, plan[1:], strict=False):
+        fall = grade_in_per_ft * math.dist(a, b) / 0.3048 * M_PER_IN
+        extra += math.ceil(fall / step - 1e-6) * step - fall
+    return extra
+
+
+def drop_blocker(obstacles: Any, index: int, top_m: float, required_m: float) -> str | None:
+    """A banded prism across the plumb drop an "over" route makes into its tie (§13)."""
+    tol = 0.0015875
+    if obstacles is None or top_m <= required_m + tol:
+        return None
+    return next((tag for _t0, _t1, z0, z1, tag in obstacles(index, index)
+                 if z0 < top_m - tol and z1 > required_m + tol), None)

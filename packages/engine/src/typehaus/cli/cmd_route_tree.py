@@ -200,7 +200,7 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
                                 cost=cost, touch=touch,
                                 cavity_radius_m=pipe_trade.cavity_radius_m(size, "drain"))
         # Inverts lie between the main's tie and the highest fixture floor (§8a).
-        prepare_falling(space, (root_z, max(floors[tag] for tag in group)))
+        prepare_falling(space, (root_z, max(floors[tag] for tag in group)), model)
         with clock.stage(f"build-graph {size / 0.0254:.3g}in"):
             graph = build_graph(space, terminals_xyz, [root_z])
     except RoutingSpaceTooLarge as exc:
@@ -260,9 +260,22 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
                                  nipple_m=nipple, heel_m=heel)
         heights = {**problem.required_m, start: problem.ceiling_m}
         obstacles = band_obstacles(a_space, a_graph,
-                                   terminal_pardons(a_space, a_graph, heights))
-        return sloped_route(a_graph, a_space, start, targets, problem,
-                            constraints=constraints, refusal=report, obstacles=obstacles)
+                                   terminal_pardons(a_space, a_graph, heights, start,
+                                                    frozenset({target})))
+        found = sloped_route(a_graph, a_space, start, targets, problem,
+                             constraints=constraints, refusal=report, obstacles=obstacles)
+        if found is not None and found.nodes[-1] in inverts:
+            # Its own inverts, now: the next branch may tie onto this one (§13).
+            lengths = developed_lengths(found.points)
+            arrival = inverts[found.nodes[-1]]
+            # An "over" route runs at its start and drops plumb into the tie at the end.
+            over = (found.start_m is not None
+                    and found.start_m > arrival + problem.fall_over(lengths[-1]) + 1e-6)
+            for index, length in zip(found.nodes, lengths, strict=False):
+                inverts.setdefault(index, found.start_m - problem.fall_over(length)
+                                   if over and index != found.nodes[-1]
+                                   else arrival + problem.fall_over(lengths[-1] - length))
+        return found
 
     with clock.stage(f"search {size / 0.0254:.3g}in"):
         built = build_tree(graph, space, min(goals), terminals, root_nodes=goals,
@@ -270,8 +283,9 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
     notices = [f"{label}: {line}" for line in explain_tree(built)] if explain else []
     for tag, shortfall in sorted(built.unserved.items()):
         problems.append(
-            f"{tag}: no route in plan to {target} at "
-            f'{size / 0.0254:.3g}" — every lane is blocked'
+            f"{tag}: no route to {target} at "
+            f'{size / 0.0254:.3g}" — '
+            + (report.sentence() if report.reached else "every lane is blocked")
             if shortfall == float("inf") else
             f'{tag}: short {shortfall:.2f}" of head to {target} at the minimum grade')
 
