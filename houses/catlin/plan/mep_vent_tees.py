@@ -128,4 +128,16 @@ VENT_TEES = [
             diameter=inch(1.5), material="pvc",
             elevations=(inch(-89.32), inch(-89.27), inch(-19.5), inch(-19.25), inch(-18.6)),
             serves=("FX-B-BATH-LAV",)),
+    # RM-B-BATH's water closet: a sanitary tee on the branch 60 1/2" down from the closet bend
+    # (arm ~69" against Table 1002.2's 72"), a 1 1/2" vent laid west under the slab on
+    # y=19'-3 1/4" (clear of FT-B-STR3B, which ends at y=21'-9 3/8"), and up W-B-STR2's cavity
+    # in the 2 1/2" strip between the lavatory-vent end and the towel-bar backing (y 19'-4 3/4"+)
+    # onto that vent's end at (10'-1 5/8", 19'-1 1/2"). It stands south of DU-B-ERV-R-PLAY's
+    # y=19'-7 1/4" leg (y 19'-5 1/4"..).
+    PipeRun(uid="KBNJYZPWCZ", tag="PR-B-BATH-WC-VENT", system=PipeSystem.VENT,
+            path=(pt(inch(144), inch(231.3)), pt(inch(121.6), inch(231.3)),
+                  pt(inch(121.6), inch(231.3)), pt(inch(121.6), inch(229.5))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(inch(-119.2), inch(-118.8), inch(-18.9), inch(-18.6)),
+            serves=("FX-B-BATH-WC",)),
 ]

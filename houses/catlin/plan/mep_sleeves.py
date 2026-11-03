@@ -53,6 +53,20 @@ SLAB_STUBS = [
                       position=pt(inch(120), inch(229.5)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-B-UTIL-SINK",
                       seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
+    # FX-B-BATH-WC's vent riser (mep_vent_tees.py PR-B-BATH-WC-VENT), up W-B-STR2's cavity.
+    SleevePenetration(uid="PXGXETEFWC", tag="SP-B-SLAB-WC-VENT", host_ref="SL-B-FLOOR",
+                      position=pt(inch(121.6), inch(231.3)), pipe_diameter=inch(1.5),
+                      sleeve_diameter=inch(2), purpose=Service.VENT,
+                      seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
+    # The sauna vents' risers (mep_venting.py PR-B-SAUNA-VENT, PR-B-SAUNA-FD-VENT), up W-B-SA-N2/-N.
+    SleevePenetration(uid="1RDFAM8VSF", tag="SP-B-SLAB-SA-VENT", host_ref="SL-B-FLOOR",
+                      position=pt(inch(204), inch(121.375)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), purpose=Service.VENT,
+                      seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
+    SleevePenetration(uid="KY9JRBHRRZ", tag="SP-B-SLAB-SA-FDV", host_ref="SL-B-FLOOR",
+                      position=pt(inch(152), inch(121.375)), pipe_diameter=inch(1.5),
+                      sleeve_diameter=inch(2), purpose=Service.VENT,
+                      seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
     # The sauna's two. The pan's is under the centre of the 36" x 36" curbed shower; the floor
     # drain's is the drain body itself, which is why its position and the fixture's are the
     # same point with no `drain_position` override on either.
