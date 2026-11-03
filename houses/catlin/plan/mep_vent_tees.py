@@ -23,6 +23,20 @@ VENT_TEES = [
             diameter=inch(1.5), material="pvc",
             elevations=(inch(231.555), inch(281.0), inch(281.64)),
             serves=("FX-A-STUBATH-WC",)),
+    # RM-S-SUITEBATH's water closet (individual vent: its leg is UPSTREAM of the lav and tub
+    # ties, so UPC 908.2.1.4 rules a wet vent out). Tees off the arm east of the flange, north
+    # through the truss's open web (x 137.5"-150.5"), west under SN3 and up at x=112", west of
+    # FO-A-HALL's trimmer and clear of DU-S-ERV-HP-FEED, onto PR-S-SUITEBATH-VENT's header.
+    # Lav and tub have no lane yet (the supply risers on y=268" and truss 017 box it in).
+    PipeRun(uid="696MGSWX4F", tag="PR-S-SUITEBATH-WC-VENT", system=PipeSystem.VENT,
+            path=(pt(inch(140), inch(252.406)), pt(inch(140), inch(266.8)),
+                  pt(inch(140), inch(269.25)), pt(inch(112), inch(269.25)),
+                  pt(inch(112), inch(268)), pt(inch(112), inch(268)),
+                  pt(inch(112), inch(265))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(inch(116.6), inch(117.6), inch(117.9), inch(118.0), inch(118.2),
+                        inch(234.0), inch(236.1)),
+            serves=("FX-S-SUITEBATH-WC",)),
     # RM-S-VANITY: the stack vent. The double vanity's arm drops into PR-M-S-BATH1-DRAIN at
     # (5'-0", 26'-8"); the vent leaves the top of that drop 1 1/4" north, rises W-S-BD-N's
     # cavity behind the vanity supplies, and returns to PR-S-BATH1-VENT's corner. Arms:
