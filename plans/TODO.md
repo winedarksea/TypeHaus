@@ -69,8 +69,10 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
   carries a check valve and what the static pressure at the main is. Then model a listed expansion
   tank on the heater inlet (and a PRV over 80 psi). `PA-G-HYD-BFP` is on the hydrant branch only
   since 2026-10-29, so the meter set is the only possible check. `notes/water_service.md` §4.
-- **Confirm the delivered parts:** the RH400-30's T&P projection (4 1/2" to `W-B-ESS-S` on that
-  side) and the ProSaunas vent hatch's cutout and free area (unpublished; (844) 565-1113).
+- **Confirm the delivered parts:** on the PROPH80 T0 RH120-MSO, the scaled T&P outlet (~46",
+  front-left, under the ERV case's 54" bottom), the HydroBoost riser's projection (r ~15", 2 1/4"
+  off `D-B-CLOSET`'s 75-degree sweep) and the cord's length (`notes/water_service.md` §1); and the
+  ProSaunas vent hatch's cutout and free area (unpublished; (844) 565-1113).
 
 - **Filter and service access is only partly resolved; no reachability rule grades it.**
   System 1's 28x12x1 MERV 13 return filter is typed and reachable from the hall floor;
@@ -324,7 +326,6 @@ the future.
   - Sense Pro trim: Century is bundle-only. Match the 622 escutcheon to the Latitude lever.
 - Backup battery, still open (`houses/catlin/notes/backup_power.md` §11-§12): EG4's UL 9540 certificate naming 12kPV + WallMount Indoor; how the 12kPV's load port behaves on its "No Battery" setting (ask EG4); its GEN port rating; declare future storage and V2H on the Xcel application; DSI's position on a UL 9540 3rd-ed. DC ESS battery; a freeze drain-down plan; a small LFP UPS for Home Assistant, the router and the leak valve. After the 2026-11-02 trim the always-on tier passes summer's 48 h and the bridge (0.28 kWh margin) and still fails December's cycle (§6).
 - **Route the V2H spare raceway** (`backup_power.md` §10): one empty 2" Sch 80 PVC with a pull string, inverter area on `W-B-N4` to the garage, along `CD-B-GARAGE`'s corridor (north-wall ceiling lane, the `W-B-N2` sleeve, the buried gap leg). Use the `route-run` skill; check `mep.run_interference` and the sleeve. If `SP-B-N2-CD-GAR2` cannot take a second 2" raceway, upsize the sleeve, don't reroute `CD-B-GARAGE`.
-- **`EQ-B-WH`'s geometry is still the 240 V tank's.** The PROPH80 T0 RH120-M (2026-11-02) is 74 3/16" tall with SIDE connections on its HydroBoost assembly; Rheem's sheet letters the heights (G 54 5/16", K 5 1/16") without naming them, and its plan is 29 1/2" x 29" over the T&P and that assembly. Get a port drawing, then re-run `PR-B-HW-TRUNK`/`PR-B-CW-WH` to the side ports, re-check the ERV case (0.04" off the front) and the T&P gap, and give its factory cord a receptacle on `CKT-WH` (`notes/water_service.md` §1).
 - **Engine-wide: is the AHJ on the 2026 NEC?** `plan/circuits.py` already says MN adopted it for permits filed on or after 2026-08-17 (Minn. R. 1315.0200); many checks still cite 2023 sections (230.85 is gone in 2026). Settle the citation basis; not fixed piecemeal.
 - Let's make sure all the charcoal gray and black details of the house exterior (various metal trim, window frames, foundation insulation cover) show real manufacturer colors. We are using this to determine if we should switch all to more gray or more black.
 - `haus print3d --colour-groups`: per-piece colour components bucketed from `Material.color`, matched to a sample exported from Bambu Studio before shipping.

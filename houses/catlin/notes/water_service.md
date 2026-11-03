@@ -21,85 +21,77 @@ source:
 Written 2026-10-29. Research only where it says so: **no expansion device is modelled and no
 price row exists for one.**
 
-## 1. The heater, as Rheem publishes it (PROPH80 T2 RH400-30)
+## 1. The heater, as Rheem publishes it (PROPH80 T0 RH120-MSO)
 
-**Retyped 2026-11-02 to the 120 V plug-in, PROPH80 T0 RH120-M** (`notes/backup_power.md` §5);
-**the geometry below and on `EQ-T-WATER-HEATER` is still the RH400-30's**, an open item
-(`plans/TODO.md`). What Rheem publishes for the plug-in (spec sheet RH-PIHP-SC-NO-SO-SS Rev. 1,
-04/26; Use & Care p.11): 24 1/4" round like this one, **A 74 3/16"** tall, C 59", D 3 7/8",
-E 42 3/8", F 29 1/2", G 54 5/16", H 91" ducted, I 29", J 27 3/8", K 5 1/16"; "easy access
-**side** connections" on the HydroBoost mixing-valve assembly (cold in low, hot out of the
-valve high, drawn on the product's right-front). The sheet does not name G and K, so the
-port positions are **not yet published to us**: get Rheem's port drawing before re-running
-`PR-B-HW-TRUNK`/`PR-B-CW-WH`. F and I put the T&P and that assembly ~5" proud of the body,
-against 4 1/2" to `W-B-ESS-S` and 0.04" to the ERV case: re-check both. The unit ships with a
-cord for a standard outlet, which `CKT-WH` does not yet have.
-
-Sources: the RH400-30 spec sheet (Quick Start Connection Guide, rheem.com related document
-436312), HP-400-SO 07/24 (the PROPH80's sheet), the Use & Care manual p.5-12. The dimension-sheet
-link in the old TODO is dead (404); the same lettered dimensions are on both sheets above.
+The 120 V, element-free plug-in (`notes/backup_power.md` §5), 2026-11-02. Sources: spec sheet
+RH-PIHP-SC-SO Rev. 7 (03/25) p.2; Use & Care p.11 (typical installation) and p.34.
 
 | letter | what | PROPH80 |
 |---|---|---|
-| A | tank height | 74 3/16" |
+| A | tank height (top, filter grille) | 74 3/16" |
 | B | tank diameter | 24 1/4" |
-| C | condensate connection (3/4" NPT female) | 59" |
-| D | cold inlet and drain (side connects) | 3 7/8" |
-| E | hot outlet and T&P (side) | 42 3/8" |
-| F x G | plan envelope incl. T&P / fittings | 29 1/2" x 24 5/8" |
-| H | overall height, **ducted** (8" elbow on top) | 91" |
-| K | overall height, not ducted (to the top nipples) | 76 13/16" |
+| C | condensate (3/4" NPT female) | 59" |
+| D | drain valve / bottom of the HydroBoost riser | 3 7/8" |
+| E | hot outlet, top fitting of the riser | 42 3/8" |
+| F x I | plan envelope incl. T&P and riser | 29 1/2" x 29" |
+| G | top of the riser cover | 54 5/16" |
+| H | overall height, **ducted** | 91" |
+| J | ducted plan depth | 27 3/8" |
+| K | cold inlet | 5 1/16" |
 
-- The model is **76 13/16" high, not 91"**: 91" is the duct-ready unit and this house does not
-  duct it. Top nipples are at K, **scaled off the top-view drawing**: hot 4 1/8" left of the
-  axis and 1 1/2" toward the back, cold 4 1/8" right and 1 1/2" forward (+-0.3").
-- Clearances: **min 0" rear and sides, 6" above for the washable filter** (6" all round "for
-  easier serviceability"); non-ducted exhaust 6" off any wall or hard surface; 2" off the T&P
-  side for its release. Room > 1200 ft3 needs no louvres (this room is ~1,250 ft3).
-- **Fit under the 96 15/16" ceiling:** 76 13/16" + 6" = 82 13/16" fits with 14 1/8" in hand. The
-  91" ducted unit + 6" = 97" would **not** (0.06" short): ducting is closed by the ceiling.
-- **Rotation -90 (owner, 2026-10-29), so the air exhaust faces the room.** At rotation 0 it
-  faced the east wall at 0" against Rheem's 6". Turning the product's right side (exhaust)
-  south puts it over open floor: the 6" zone is x 99..117", y 334 7/8..340 7/8". Back is east
-  on `W-B-STR3` (0" allowed). Left (T&P, E 42 3/8") is north, toward `W-B-ESS-S`. Front
-  (display, condensate C 59") is west, beside the hung ERV case. No other orientation opens the
-  exhaust: west is the ERV case (54"-75 5/8", the heat-pump section's height), north is
-  `W-B-ESS-S`, and -67.5 or less swings the exhaust zone into `W-B-STR3`.
-- **The tank moved 1" south** to (8'-9", 29'-5"), giving the T&P side 4 1/2" to the wall:
-  Rheem's 2" release, with 2 1/2" left between the valve outlet and the wall. `PR-B-ERV-COND`
-  crosses that gap at y=367 3/8", 52" up, 9" over the valve (2026-10-29), so the limit
-  south is `D-B-CLOSET`'s swing (y <= 339"), 1 7/8" more. If the delivered valve stands
-  proud of 4 1/2", the tank moves south.
-- **The ERV case moved 3/16" west** (centre x 6'-8 7/16"), making the slot 24.28" against the
-  24 1/4" tank. A full 1/4" would put its west face 0.025" into `CZ-B-DRYFIRE` (x <= 68");
-  3/16" leaves 0.04" there and 0.04" at the tank. The four 6" collars and the pan drain
-  stay on the case top, so no ERV duct moved.
-- **What the turn costs.** The display faces the ERV case: read it through EcoNet, reach the
-  lower panels from under the case. The condensate port is 1.2" off the case's east face, so
-  a street elbow turns it down at once (below). While `D-B-CLOSET` stands open its leaf parks
-  in the exhaust zone; it is a storage door, open briefly. Ports re-quoted (x/y still scaled):
-  hot (106 1/2", 357 1/8"), cold (103 1/2", 348 7/8"), condensate (94", 360 1/2"), T&P outlet
-  (105", 367 1/8").
-- The sheet's 29 1/2" x 24 5/8" plan envelope (F x G) does not say how F splits between the
-  T&P and the other side; confirm the valve's projection on the delivered unit.
+3/4" NPT hot and cold, "use MIP fittings". Factory cord "plugs directly into a standard wall
+outlet" (grounded; not a circuit already loaded past half its breaker). Clearances 0" rear and
+sides, 6" above for the filter, 6" all round for service, 2" for the T&P release, non-ducted
+exhaust 6" off any wall. Heat trap 6" min on the cold; flexible connections recommended (here
+copper or listed stainless flex: UPC 604.13 bars PEX in the first 18").
 
-Hot trunk: it crosses the tank at 6'-6 5/16" (the 69.5" level cannot pass a 76 13/16" tank),
-west from the nipple and then south, so it never crosses `PR-B-CW-BATH`'s leg off the cold
-nipple, then drops in the round tank's empty corner (x 93.7") to 5'-9 1/2", where it must stay to pass
-under `DU-B-ERV-RET-TRUNK`'s rising leg; going over that duct hits the extract plenum.
+**Ports (model, `EQ-T-WATER-HEATER`).** Heights published except the T&P's; every plan
+position SCALED off p.2 (+-1"). Tank at (8'-9", 29'-5"), rotation -90: front west, right south
+(exhaust), left north, back east on `W-B-STR3`.
+
+| port | product frame | world (x, y, z AFF) |
+|---|---|---|
+| hot (E) | ~70 deg right of front, r ~15" | (99.9", 338.9", 42 3/8") |
+| cold (K) | ~42 deg right of front, r ~16", riser foot | (93.1", 342.3", 5 1/16") |
+| T&P outlet | ~20 deg left of front, r ~15.4", ~46" scaled | (90.5", 358.3", ~46") |
+| condensate (C) | front-left shoulder | (94", 360.5", 59") |
+
+The riser cover is drawn as a lobe on the footprint, 40-75 deg right of front at r 15" (south-
+west in plan), full height though it stops at G. Model height is A, 74 3/16": the top nipples
+are gone and nothing sits on top. Filter clearance: the nearest thing over the top is
+`DU-B-ERV-R-GYM` / `-R-PLAY` at 82" (7 13/16").
+
+**What it clears.**
+- `D-B-CLOSET` (75-degree stop): its sweep stays 2 1/4" off the riser lobe and 2.95" off the hot
+  tap's centreline. Scaled +-1", so this is the number to check on the delivered unit.
+- ERV case: 0.04" at the tank (unchanged). The T&P outlet sits under its 54" bottom, ~8" below
+  it (scaled); the valve faces west-north-west into open air under the case, its 2" release
+  clear (`PR-B-WH-COND` is ~4" away).
+- `W-B-ESS-S`: 4 1/2" body-to-wall, nothing of the heater on that side now. `ED-B-WH-RC`
+  (CKT-WH, GFCI at the device) is on its south face at x 8'-4", 77"-81", 3" above the tank top:
+  the cord leaves the top front-left and never crosses the south exhaust zone.
+
+**Runs.**
+- `PR-B-HW-TRUNK`: west from the hot tap at 42 3/8" along the riser face to x=94", up to
+  5'-9 1/2", west under `DU-B-ERV-RET-TRUNK` (bottom 72 5/8") to the x=83" riser, then its old
+  route. 5.9" off that duct's rising leg.
+- `PR-B-CW-WH`: ceiling leg to (93 1/2", 27'-11 1/2"), 3.3" outside the door's sweep and south of
+  the extract plenum; falls to 5 1/16" and runs 6 3/4" north onto the tap. The full-height drop
+  is the heat trap. `PA-B-WH-STOP-CW` is on the drop; `PR-B-CW-BATH` now tees off the ceiling
+  leg at x=7'-0".
+- `PR-B-WH-TPR`: full-size 3/4" copper, a 2" stub pitched down, then straight down to an air gap
+  6" over the slab under the ERV case. Not threaded at its end, never into the condensate.
 
 ## 2. Condensate
 
-`PR-B-WH-COND`: 3/4" PVC from the port (59", facing the ERV case since the -90 turn) straight
-down to 52 1/2", then 6 7/8" north past the round tank's NW corner onto `PR-B-ERV-COND`
-behind the tank (51.6" there, 1.5"/ft). That line runs east through the tank's T&P gap and
-`W-B-STR3`, across the under-stair storage, west inside `W-B-BA-N` and down `W-B-STR2`'s
-mech face to the `FX-B-BATH-LAV` air gap (>= 0.33"/ft; nothing at walking height in the
-room, clear of `D-B-CLOSET`'s swing and doorway). Rheem: pitch
->= 1/8"/ft, 3/4" minimum, never into the heater's own pan, trap only if it meets a sewer
-(it does not: it ends at an air gap). `mep.drain_slope` and `mep.drain_tie_in` pass. The ERV
-line now carries both appliances; a heat-pump water heater makes roughly 1/2-1 gal a day in
-summer, so the allowance is a rounding error against the ERV core's.
+`PR-B-WH-COND`: 3/4" PVC from the port (59", facing the ERV case) straight down to 52 1/2", then
+6 7/8" north past the tank's NW corner onto `PR-B-ERV-COND` behind it (51.6" there, 1.5"/ft).
+That line runs east through the tank's 4 1/2" north gap and `W-B-STR3`, across the under-stair
+storage, west inside `W-B-BA-N` and down `W-B-STR2`'s mech face to the `FX-B-UTIL-SINK` air gap
+(>= 0.33"/ft). Rheem: pitch >= 1/8"/ft, 3/4" minimum, never into the heater's own pan, trap only
+if it meets a sewer (it ends at an air gap). `mep.drain_slope` and `mep.drain_tie_in` pass. A
+heat-pump water heater makes roughly 1/2-1 gal a day in summer, a rounding error against the
+ERV core's.
 
 ## 3. The service lateral and the hydrant branch
 
@@ -177,9 +169,9 @@ The tank stays on the slab (`MountKind.FLOOR`, `elevation=None`).
   kit only on non-concrete floors.
 - No pan: UPC/Rheem want a pan only where a leak damages the area below or adjacent. This
   tank stands on the basement slab; nothing is below it. Its own T&P discharge and the
-  heater's LeakGuard-class sensor (not on the RH400-30; optional AP19134) are the protection.
+  heater's LeakGuard sensor are the protection.
   Condensate must **not** drain into a pan (Rheem), which is one more reason not to add one.
 - Flood: the exposure is a burst pipe or tank failure, not groundwater, and the room walks out
   onto a drained court with a 7 1/4" threshold. A 4" pad would buy a few inches against a
-  slow leak and would move the 76 13/16" top nipples, every literal quoting them and the 6"
-  filter clearance; not worth it. Closed.
+  slow leak and would move every port literal and the 6" filter clearance; not worth it.
+  Closed.

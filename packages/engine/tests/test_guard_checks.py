@@ -37,7 +37,7 @@ def test_catlin_grades_one_guard_wall_and_it_is_not_masonry(catlin_ctx):
     """The house gained its first ``Wall.guard`` on 2026-09-10, and it is a light one.
 
     ``W-BW-SCREEN`` is the north entry's west panel: KDAT 2x4 at 16" o.c. under 5/8" CDX and
-    west 7/8" corrugated and east recessed metal, closing the passage to +4'-0" and doing
+    west 7/8" corrugated and east white painted MDO, closing the passage to +4'-0" and doing
     three jobs at once — the canopy's north-south shear panel, the guard, and the closure
     over the deck framing.
 
@@ -49,8 +49,7 @@ def test_catlin_grades_one_guard_wall_and_it_is_not_masonry(catlin_ctx):
     is tens of plf and a grouted-CMU parapet is hundreds, and this check only means anything
     while it can tell them apart.
 
-    2026-11-02: the preliminary metal cassette faces reduce the modeled weight to about
-    25 plf. Supports, clips, and flashings still need to be added to the design load.
+    2026-11-02: direct-mounted MDO, edge nailers and a hardware/paint reserve give 34 plf.
     """
     findings = masonry_guard_bearing(catlin_ctx)
     assert len(findings) == 1, [f.message for f in findings]
@@ -59,7 +58,7 @@ def test_catlin_grades_one_guard_wall_and_it_is_not_masonry(catlin_ctx):
     assert "W-BW-SCREEN" in finding.message
     assert "at or under the 50 plf" in finding.message
     plf = float(finding.message.split("weighs ")[1].split(" plf")[0])
-    assert 20 <= plf <= 30, finding.message
+    assert 30 <= plf <= 40, finding.message
     assert [w.tag for w in catlin_ctx.plan.all_elements()
             if getattr(w, "guard", False)] == ["W-BW-SCREEN"]
 

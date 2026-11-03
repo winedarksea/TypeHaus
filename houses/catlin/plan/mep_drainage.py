@@ -557,7 +557,7 @@ LAUNDRY_MAIN = [
 # the room at walking height instead.
 #
 # ** BEHIND THE TANK AND THROUGH THE UNDER-STAIR STORAGE (owner, 2026-10-29). ** North under
-# the case to y 30'-7 3/8", east through the tank's 4 1/2" T&P gap (9" over the valve) and
+# the case to y 30'-7 3/8", east through the tank's 4 1/2" north gap and
 # W-B-STR3 into the storage, across its low north end (stringers 58" over it), south 3 1/2"
 # off W-B-WELL, then west INSIDE W-B-BA-N (bores at 152", 136", 124") and through the
 # W-B-STR3 line at N-B-BA-NW, under its 49 1/2" ladder block (pipe top 47 1/2"), to the
@@ -577,7 +577,7 @@ ERV_CONDENSATE = [
             diameter=inch(0.75), material="pvc",
             elevations=(inch(52.5), inch(52), inch(49.75), inch(48), inch(46.75), inch(44.5),
                         inch(44.25),)),
-    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem RH400-30 sheet C), 1.2" off the
+    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C), 1.2" off the
     # ERV case's east face: a street elbow turns it down to 52 1/2", then it runs north past
     # the round tank's NW corner onto PR-B-ERV-COND behind the tank (Rheem: no trap to a
     # non-sewer receptor, pitch >= 1/8"/ft, never into the tank's own pan). The tee is read
@@ -633,26 +633,24 @@ CONDENSATE = [
 # EQ-B-WH's `relief_discharge_ref`.
 #
 # 3/4" full-size copper (the valve's own outlet — UPC 608.5 forbids reducing it, or any
-# valve/trap/rise along the run). Drops from the valve at 3'-6 3/8", then runs at 2"/ft to an
-# air gap 6" over the floor — inside Minn. R. 4714.0608's "within 18 inches of the floor"
+# valve/trap/rise along the run). Falls from the valve to an air gap 6" over the floor — inside Minn. R. 4714.0608's "within 18 inches of the floor"
 # (its rewrite of UPC 608.5(3)). Discharges onto the mechanical-room slab by design, with no
 # fixture below to damage — the same reason UPC 507.5 needs no pan under the tank. It ends
 # ~11' from SM-B-RADON — too far for "the floor
 # falls to SM-B-RADON" to be an argument on its own. The air gap is what UPC 608.5 actually
 # requires; the slope is a slab-pour question the pour has to be told to fall this way
 # rather than assumed to. Flagged in plans/TODO.md.
-# ** THE RELIEF LINE FOLLOWS THE TANK'S T&P PORT (2026-10-29). ** The valve outlet is the
-# type's `relief` port: product-left side, 42 3/8" up (Rheem E), 2" off the body — NORTH
-# since the tank turned -90, in the 4 1/2" between the tank and W-B-ESS-S. The run drops
-# there to 8 1/2", then runs 15" west at 2"/ft to its air gap 6" over the slab under the
-# hung ERV, where it is seen from the room. `test_water_heater_connections` grades its
-# start against the `relief` port.
+# ** THE RELIEF LINE FOLLOWS THE TANK'S T&P PORT (2026-11-02). ** The valve outlet is the
+# type's `relief` port: front-left of the plug-in, ~46" up (scaled), facing west-north-west
+# under the hung ERV case (bottom 54"). A 2" stub pitched down, then straight down to its air
+# gap 6" over the slab under the case, seen from the room; never into the condensate line.
+# `test_water_heater_connections` grades its start against the `relief` port.
 TPR_DISCHARGE = [
     PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(105), inch(367.125)), pt(inch(105), inch(367.125)),
-                  pt(inch(90), inch(367.125))),
+            path=(pt(inch(90.5), inch(358.3)), pt(inch(88.6), inch(359)),
+                  pt(inch(88.6), inch(359))),
             diameter=inch(0.75), material="copper",
-            elevations=(inch(42.375), inch(8.5), ft(0, 6))),
+            elevations=(inch(46), inch(45.75), ft(0, 6))),
 ]
 
 # --- Radon sump + shared radon/plumbing vent riser ---------------------------------

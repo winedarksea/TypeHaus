@@ -1581,3 +1581,7 @@ hardware/paint reserve. Including SB-BW-BAND the line is 52.33 plf, delivering 1
 to each west chord. Existing brick arithmetic above is historical. See the reproducible
 [current load-path results](entry_screen_mdo_calculations.json). The west shear layer,
 structural guard, posts and active pinned canopy system remain unchanged.
+
+The retired cast-column spring arithmetic now gives W stiff/soft magnifiers
+1.0781/1.3210 and GW 1.3277/32.5351. These are test oracles for the retired
+variant, not verdicts on the active pinned canopy posts. GW remains over.

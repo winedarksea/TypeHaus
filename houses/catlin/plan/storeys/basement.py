@@ -1145,7 +1145,8 @@ OPENINGS = [
     # would be six inches inside the stringer.
     # Derived RO since 2026-10-29. The door stays put (the ERV, the heater and the dry-fire
     # lane outrank it): it takes no casing, ED-B-CLOSET-LT moved 3" north, and a 75-degree
-    # hinge-pin stop keeps the leaf tip 1/2" off EQ-B-WH (at 90 it clips the tank's corner).
+    # hinge-pin stop keeps its sweep 2 1/4" off EQ-B-WH's HydroBoost riser (scaled; at 90 it
+    # clips it).
     Door(uid="B43P8B5Y0T", tag="D-B-CLOSET", host="W-B-STR3", type_ref="DT-INT-CLOSET24",
          position=from_node("N-B-BA-NW", inch(10)), flip_swing=True, flip_hinge=True,
          maximum_opening_degrees=75),

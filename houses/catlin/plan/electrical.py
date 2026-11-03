@@ -276,6 +276,16 @@ BASEMENT_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-N4", face="left", distance_from_start=inch(58),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # EQ-B-WH's factory cord (Rheem: a grounded standard outlet, not shared past half its
+    # breaker). Dedicated CKT-WH, GFCI at the device as the sump's (210.8(A)(5)). On
+    # W-B-ESS-S's south face over the tank's north-west shoulder, 3 13/16" above its 74 3/16"
+    # top: the cord leaves the top front-left and never crosses the south exhaust zone.
+    ElectricalDevice(uid="4KWVWZGFP6", tag="ED-B-WH-RC", kind=DeviceKind.RECEPTACLE_GFCI,
+                     type_ref="ED-T-LEV-GFCI-15", circuit="CKT-WH", room="RM-B-FURNACE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(78)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-ESS-S", face="right", distance_from_start=inch(28),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # On the sauna's SOUTH liner immediately WEST of EQ-B-SAUNA-HTR, low like the heater
     # terminals. It followed the heater onto the garden wall when the room rotated on
     # 2026-09-05, into the south-east corner when the room shrank, and 2'-0" further east
@@ -326,7 +336,8 @@ BASEMENT_DEVICES = [
 
 BASEMENT_EQUIPMENT = [
     # There is one water heater, an 80-gal Rheem ProTerra Plug-in 120 V HPWH
-    # (plan/mep.py::EQ-T-WATER-HEATER) — one 120 V compressor, no element.
+    # (plan/mep_hvac.py::EQ-T-WATER-HEATER) — one 120 V compressor, no element; its cord
+    # plugs into ED-B-WH-RC above.
     # The ventilator is a Broan B210E75RT, four 6" round top ports. Everything downstream of
     # it — the manifolds, the four chase risers, the outdoor side, the radials — is in
     # plan/mep_erv_l1.py and its siblings, and `pan_drain_ref` names the condensate line a cold-climate core
@@ -358,7 +369,7 @@ BASEMENT_EQUIPMENT = [
               # crossing band: 1 5/8" under the 7'-6" radial layer, 6 13/16" over this case,
               # and 6'-7 3/8" of headroom beneath — over R305.1.1's 6'-4" basement
               # projection floor. PR-B-ERV-COND (plan/mep_drainage.py) falls by gravity from
-              # the pan to FX-B-BATH-LAV: behind EQ-B-WH, through the under-stair storage and
+              # the pan to FX-B-UTIL-SINK: behind EQ-B-WH, through the under-stair storage and
               # W-B-BA-N, then along W-B-STR2's mech face.
               #
               # SERVICE ACCESS (notes/erv_service_access.md): keep this exposed in

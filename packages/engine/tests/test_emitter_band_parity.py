@@ -255,6 +255,8 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     65 since 2026-10-25: W-BW-SCREEN's east veneer stack adds four banded layers (brick,
     setting mortar, cement board, drainage mat), all whole-height and unsplit; the face
     liquid membrane is omitted.
+    37 since 2026-11-02: east MDO replaces the metal/WRB stack; its north panel
+    splits around the garage tie block and the other three retain their identities.
     47 since 2026-09-16: W-SG-W1/E1's dimpleboard stops at grade. 61 since the platform
     trim (``layer_bands.clamp_to_plates``): a lifted or dropped ENVELOPE wall's interior
     finish stops at the plate while its skin runs the rim band, so the finish is now a part
@@ -274,7 +276,7 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     parts = {p.Name: p.GlobalId for p in catlin_ifc.by_type("IfcBuildingElementPart")}
     unsplit = [(w, ly) for w in catlin_model_ro.walls for ly in w.body_layers()
                if f"{w.tag}:{ly.name}" in parts]
-    assert len(unsplit) == 38, \
+    assert len(unsplit) == 37, \
         f"expected the banded non-coating layers less the 6 that split, got {len(unsplit)}"
     for wall, layer in unsplit:
         assert parts[f"{wall.tag}:{layer.name}"] == derive_child_guid(

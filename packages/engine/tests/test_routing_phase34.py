@@ -209,8 +209,10 @@ def test_port_at_never_offers_an_approximate_port_to_the_router(catlin_model):
     from typehaus.resolve.mep_ports import placed_ports, port_at
 
     port = next(p for p in placed_ports(catlin_model) if not p.exact)
-    assert port_at(catlin_model, (port.x_m, port.y_m), port.z_m,
-                   duct_system=None, tolerance_m=1.0) is None
+    # EQ-B-WH's face-only power port has the exact cold tap within 1 m; that one may answer.
+    hit = port_at(catlin_model, (port.x_m, port.y_m), port.z_m,
+                  duct_system=None, tolerance_m=1.0)
+    assert hit is None or hit.exact
 
 
 def test_the_port_verdict_says_it_is_service_level(catlin_model):

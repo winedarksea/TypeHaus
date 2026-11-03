@@ -13,7 +13,8 @@ from typehaus.model.placeable_symbols._flood_light import (
 # Envelope is the Alcon 11414-KN-SM line drawing: 7 5/8" head width, 5" head, 8.7" overall.
 GARDEN_FLOOD_TYPE = luminaire_class("ED-T-LT-FLOOD-NARROW").model_copy(update={
     "tag": "ED-T-LT-FLOOD-GARDEN",
-    "name": "Sunken garden adjustable LED flood, shielded, wet",
+    "name": "Sunken garden adjustable LED flood, wet",
+    "full_cutoff": False,
     "type_mark": "S",
     "replaceable_lamp": False,
     "plan_symbol": "flood-light",

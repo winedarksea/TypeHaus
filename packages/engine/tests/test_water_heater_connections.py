@@ -1,8 +1,8 @@
 """EQ-B-WH's direct supply connections land on service-specific ports.
 
 ``houses/catlin`` authors the water heater's coordinate as ``Equipment.position``
-(``plan/mep_hvac.py``) and repeats its port stations in the hot trunk, the cold feed, the
-cold bath branch, and the T&P relief datum. Those files are ``# haus: editable``, whose
+(``plan/mep_hvac.py``) and repeats its port stations in the hot trunk, the cold feed and
+the T&P relief datum. Those files are ``# haus: editable``, whose
 dialect allows only literals, and nothing in the resolver pulls a pipe onto its equipment.
 So moving the tank without moving its connected runs can silently disconnect them while the
 model still resolves and builds. The four hot fixture branches tee off the hot trunk's south
@@ -17,8 +17,8 @@ it holds however the coordinate is spelled.
 HEATER`` used to state three ports at one local ``(0, 0)``, so the only thing a test could ask
 was "is there a vertex on the footprint's centroid" — which a COLD run landing on the HOT tap
 answers just as well as the right one, and which three pipes of two services drawn through a
-single point answer best of all. The type now carries Rheem's top pair (3/4" NPT nipples 4 1/8"
-either side of the axis at 76 13/16", ``notes/water_service.md``), so the question this file asks is
+single point answer best of all. The type now carries the plug-in's side pair on its HydroBoost
+riser (cold at K 5 1/16", hot at E 42 3/8", ``notes/water_service.md``), so the question this file asks is
 the one that was always meant: **each run's tank end lands on the resolved port matching its
 own service**, read through :func:`typehaus.resolve.mep_ports.placed_ports` — the same reading
 ``mep.equipment_port_service`` and the router's terminal snapping use.
@@ -40,7 +40,6 @@ _RUNS_BY_PORT = {
     ),
     "cold": (
         "PR-B-CW-WH",      # the cold feed into it
-        "PR-B-CW-BATH",
     ),
 }
 
@@ -119,12 +118,7 @@ def test_every_run_that_names_the_tank_lands_on_its_own_tap(catlin_model, wh_por
 
 def test_the_two_runs_that_really_connect_land_at_the_tap_elevation(catlin_model,
                                                                     wh_ports) -> None:
-    """The hot trunk and cold feed connect at the tank's top ports.
-
-    These are top connections, so the one vertex that is the connection sits at the port's
-    own z. Before the ports were dimensioned both ran to a mid-tank 3'-9 7/16" — 22 1/2" of
-    copper drawn down INSIDE the tank body, which nothing graded.
-    """
+    """The hot trunk and cold feed connect at the riser's side taps, at each tap's own z."""
     runs = {r.tag: r for r in catlin_model.pipe_runs}
     for tag, port_tag, index in (("PR-B-HW-TRUNK", "hot", 0), ("PR-B-CW-WH", "cold", -1)):
         run = runs[tag]
@@ -136,8 +130,8 @@ def test_the_two_runs_that_really_connect_land_at_the_tap_elevation(catlin_model
 
 
 def test_the_relief_discharge_leaves_the_t_and_p_port(catlin_model, wh_ports) -> None:
-    """The UPC 608.5 relief discharge starts on the type's ``relief`` port (Rheem E, 42 3/8",
-    2" off the body), the factory T&P valve's outlet."""
+    """The UPC 608.5 relief discharge starts on the type's ``relief`` port, the factory T&P
+    valve's outlet (front-left, ~46", scaled)."""
     tpr = next((r for r in catlin_model.pipe_runs if r.tag == "PR-B-WH-TPR"), None)
     assert tpr is not None, "EQ-B-WH names relief_discharge_ref=PR-B-WH-TPR; it is missing"
     port = wh_ports["relief"]
@@ -156,15 +150,15 @@ def test_the_tank_stands_inside_the_room_it_claims(catlin_model, water_heater) -
     assert Polygon(room.clear_face).contains(Polygon(water_heater.footprint))
 
 
-def test_both_taps_stand_over_the_tank(water_heater, wh_ports) -> None:
-    """A derived offset that walks off the 24" top is a derivation that went wrong."""
+def test_both_taps_stand_on_the_riser(water_heater, wh_ports) -> None:
+    """Side taps sit on the riser cover's face: within 1 1/2" of the drawn body, never off it."""
     from shapely.geometry import Point, Polygon
 
-    top = Polygon(water_heater.footprint)
+    body = Polygon(water_heater.footprint)
     for tag in _PORT_SERVICE:
         port = wh_ports[tag]
-        assert top.covers(Point(port.x_m, port.y_m)), (
-            f"EQ-B-WH.{tag} is placed outside the tank's own footprint")
+        assert body.distance(Point(port.x_m, port.y_m)) <= 1.5 * 0.0254, (
+            f"EQ-B-WH.{tag} is placed off the tank and its riser")
 
 
 def test_the_condensate_run_leaves_the_published_port_and_ties_into_the_erv_line(
@@ -177,10 +171,8 @@ def test_the_condensate_run_leaves_the_published_port_and_ties_into_the_erv_line
                 if p.equipment_tag == "EQ-B-WH" and p.port_tag == "condensate")
     runs = {r.tag: r for r in catlin_model.pipe_runs}
     cond = runs["PR-B-WH-COND"]
-    hot = next(p for p in placed_ports(catlin_model)
-               if p.equipment_tag == "EQ-B-WH" and p.port_tag == "hot")
-    # Sheet: condensate C = 59", nipples K = 76 13/16", both off the floor.
-    assert abs((hot.z_m - port.z_m) - (76.8125 - 59) * 0.0254) <= _TOLERANCE_M
+    # Sheet: condensate C = 59" off the floor.
+    assert abs((port.z_m - water_heater.z_m) - 59 * 0.0254) <= _TOLERANCE_M
     assert abs(cond.path[0][0] - port.x_m) <= _TOLERANCE_M
     assert abs(cond.path[0][1] - port.y_m) <= _TOLERANCE_M
     assert abs(cond.z_m[0] - port.z_m) <= _TOLERANCE_M

@@ -56,18 +56,17 @@ EQUIPMENT_TYPES = (
     # mixing valve at a 132 F tank. CKT-WH, 1-pole, surplus tier. See
     # `code.MN_4714_0608_water_heater_relief` for the TPR.
     #
-    # ** GEOMETRY IS STILL THE 240 V TANK'S (open, notes/water_service.md §1). ** The plug-in
-    # is 24 1/4" round like it, but 74 3/16" tall (A) with SIDE connections on the HydroBoost
-    # assembly (cold low, hot high; Rheem's sheet letters the heights G 54 5/16", K 5 1/16",
-    # D 3 7/8", E 42 3/8" without naming each), and its plan is 29 1/2" x 29" over the T&P and
-    # that assembly (F, I). The ports and footprint below are the RH400-30's until the
-    # piping is re-run to a confirmed port drawing.
+    # GEOMETRY: Rheem RH-PIHP-SC-SO Rev. 7 (03/25) p.2, PROPH80 T0 RH120-MSO, letters in the
+    # comments below; notes/water_service.md §1. Plug-in: SIDE connections on the factory
+    # HydroBoost riser at the product's front-right, no top nipples.
     EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater, Rheem ProTerra Plug-in HydroBoost 80 gal heat pump, 120 V",
                   product_ref="PROD-RHEEM-PROPH80",
-                  # Body = 24 1/4" tank (B); height 76 13/16" = K, the top nipples. NOT 91": that
-                  # is H, the unit with an 8" duct elbow, and this house does not duct it.
-                  footprint=(inch(24.25), inch(24.25)), height=inch(76.8125),
-                  # Round tank: a 16-gon, flats on the axes, so a pipe may pass the corners.
+                  # Height = A 74 3/16", the tank top with its filter grille. Not H 91" (ducted);
+                  # the filter wants 6" over it, which the 82" duct soffit above gives.
+                  footprint=(inch(24.25), inch(24.25)), height=inch(74.1875),
+                  # Tank (B 24 1/4"): a 16-gon, flats on the axes. The lobe at front-right is
+                  # the riser cover, 40-75 deg right of front at r 15" (SCALED); it stops at
+                  # G 54 5/16" but is drawn full height.
                   footprint_shape=Footprint2D(points=(
                       pt(inch(12.125), inch(2.412)), pt(inch(10.279), inch(6.868)),
                       pt(inch(6.868), inch(10.279)), pt(inch(2.412), inch(12.125)),
@@ -76,35 +75,35 @@ EQUIPMENT_TYPES = (
                       pt(inch(-12.125), inch(-2.412)), pt(inch(-10.279), inch(-6.868)),
                       pt(inch(-6.868), inch(-10.279)), pt(inch(-2.412), inch(-12.125)),
                       pt(inch(2.412), inch(-12.125)), pt(inch(6.868), inch(-10.279)),
-                      pt(inch(10.279), inch(-6.868)), pt(inch(12.125), inch(-2.412)))),
+                      pt(inch(7.824), inch(-9.324)), pt(inch(9.642), inch(-11.491)),
+                      pt(inch(12.287), inch(-8.604)), pt(inch(14.489), inch(-3.882)),
+                      pt(inch(11.813), inch(-3.165)), pt(inch(12.125), inch(-2.412)))),
                   plan_symbol="water-heater",
-                  source="Rheem spec sheet RH-PIHP-SC-NO-SO-SS Rev. 1 (04/26), PROPH80 T0 RH120-M: 80 gal (72 rated), 15 A minimum breaker, 395 W average, UEF 3.46, 4,200 Btu/h compressor, FHR 84 gal at a 132 F tank, 12 GPH recovery (60 F rise), 74 3/16 x 24 1/4 in, 244 lb; modes Heat Pump and Vacation/Away only; factory cord to a standard outlet. ENERGY STAR (PD 3555363): 12.0 A maximum, 120 V. Ports below are still the RH400-30's (see the comment).",
-                  # Ports off Rheem's RH400-30 sheet and HP-400-SO (letters A-L). Product frame:
-                  # -y front, +x right. Nipples at K 76 13/16" (tank top A 74 3/16"); hot 4 1/8"
-                  # left/1 1/2" back, cold 4 1/8" right/1 1/2" front, x/y SCALED (+-0.3").
-                  # Published: condensate C 59", T&P E 42 3/8". `power` is a face only.
-                  # Clearances 0" rear/sides, 6" top; exhaust 6" off a wall when not ducted;
-                  # 2" off the T&P side for its release.
+                  source="Rheem spec sheet RH-PIHP-SC-NO-SO-SS Rev. 1 (04/26), PROPH80 T0 RH120-M: 80 gal (72 rated), 15 A minimum breaker, 395 W average, UEF 3.46, 4,200 Btu/h compressor, FHR 84 gal at a 132 F tank, 12 GPH recovery (60 F rise), 74 3/16 x 24 1/4 in, 244 lb; modes Heat Pump and Vacation/Away only; factory cord to a standard outlet. ENERGY STAR (PD 3555363): 12.0 A maximum, 120 V. Port geometry: RH-PIHP-SC-SO Rev. 7 (03/25) p.2 and Use & Care p.11; heights published, plan positions scaled (+-1in).",
+                  # Product frame: -y front, +x right, z off the floor. Heights published (E, K,
+                  # C); every x/y SCALED off p.2's plan and elevation (+-1"), and the T&P height
+                  # too. 3/4" NPT, MIP fittings. `power` is the factory cord, a face only.
+                  # Clearances 0" rear/sides, 6" top; exhaust 6" off a wall; 2" T&P release.
                   ports=(ServicePort(tag="cold", service=Service.WATER_COLD,
-                                     position=(inch(4.125), inch(-1.5), inch(76.8125)),
-                                     connection_size=inch(0.75), direction=(0.0, 0.0, 1.0),
+                                     position=(inch(10.7), inch(-11.9), inch(5.0625)),
+                                     connection_size=inch(0.75), direction=(0.669, -0.743, 0.0),
                                      certainty=PortCertainty.EXACT,
-                                     notes="3/4in NPT cold inlet, top nipple (right of axis). Height K published; x/y scaled off the Rheem top-view drawing."),
+                                     notes="3/4in NPT cold inlet at the HydroBoost riser foot (factory valve cluster), ~42 deg right of front, r ~16in. Height K = 5 1/16in published; x/y scaled off RH-PIHP-SC-SO Rev. 7 p.2."),
                          ServicePort(tag="hot", service=Service.WATER_HOT,
-                                     position=(inch(-4.125), inch(1.5), inch(76.8125)),
-                                     connection_size=inch(0.75), direction=(0.0, 0.0, 1.0),
+                                     position=(inch(14.1), inch(-5.1), inch(42.375)),
+                                     connection_size=inch(0.75), direction=(0.940, -0.342, 0.0),
                                      certainty=PortCertainty.EXACT,
-                                     notes="3/4in NPT hot outlet, top nipple (left of axis). Height K published; x/y scaled off the Rheem top-view drawing."),
+                                     notes="3/4in NPT hot outlet, top fitting of the HydroBoost riser, ~70 deg right of front, r ~15in. Height E = 42 3/8in published; x/y scaled off RH-PIHP-SC-SO Rev. 7 p.2."),
                          ServicePort(tag="condensate", service=Service.DRAIN,
                                      position=(inch(-7.5), inch(-11), inch(59)),
                                      connection_size=inch(0.75), direction=(0.0, -1.0, 0.0),
                                      certainty=PortCertainty.EXACT,
                                      notes="3/4in NPT female primary condensate, front-left shoulder. Height C = 59in published; x/y scaled off the drawing."),
                          ServicePort(tag="relief", service=Service.DRAIN,
-                                     position=(inch(-14.125), ft(0), inch(42.375)),
-                                     connection_size=inch(0.75), direction=(-1.0, 0.0, 0.0),
+                                     position=(inch(-5.3), inch(-14.5), inch(46)),
+                                     connection_size=inch(0.75), direction=(-0.342, -0.940, 0.0),
                                      certainty=PortCertainty.EXACT,
-                                     notes="Factory T&P valve, product-left side. Height E = 42 3/8in published; 2in off the 24 1/4in body is where the valve outlet is drawn."),
+                                     notes="Factory T&P valve outlet, front-left, ~20 deg left of front, r ~15.4in. Position AND height scaled off RH-PIHP-SC-SO Rev. 7 p.2 (not published); confirm on the delivered unit."),
                          ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0)))),
                   clearances=(
                       ClearanceZone(
@@ -113,7 +112,7 @@ EQUIPMENT_TYPES = (
                               pt(inch(18.125), inch(12)), pt(inch(12.125), inch(12)))),
                           purpose="air exhaust 6in off any wall or hard surface when not ducted",
                           policy=ClearancePolicy.RECOMMENDED,
-                          source="Rheem RH400-30 spec sheet, non-ducted note"),)),
+                          source="Rheem RH-PIHP-SC-SO Rev. 7 / Use & Care p.11, non-ducted note"),)),
     # --- the backup microgrid (notes/backup_power.md) ----------------------------------
     #
     # EG4 12kPV: name is the PV input, not the output. 12,000 W array in, 8,000 W AC out
@@ -365,12 +364,13 @@ DUCTS_HVAC_ATTIC = []
 # ** ROTATED -90 SO THE AIR EXHAUST FACES THE ROOM (owner, 2026-10-29). ** Product right
 # (exhaust) is SOUTH: its 6" zone (x 99..117", y 334 7/8..340 7/8") is open floor, with only
 # D-B-CLOSET's leaf in it while it stands open (PR-B-ERV-COND left it on 2026-10-29).
-# Back is EAST on the wall (0" allowed). Left (T&P, 42 3/8") is NORTH, 4 1/2" body-to-wall: 1"
-# south from 29'-6" buys that; the leaf's swing (y <= 339") would allow 1 7/8" more.
-# PR-B-ERV-COND runs through that gap at 52", 9" over the valve (plan/mep_drainage.py).
-# Front (display, condensate) is WEST, beside the ERV case: the display is read through
-# EcoNet, the lower panels from under the case (it hangs at 54"; it moved 3/16" west to open
-# the slot to 24.28"). mep_supply.py, mep_supply_devices.py and mep_drainage.py quote the rotated ports.
+# Back is EAST on the wall (0" allowed). Left is NORTH, 4 1/2" body-to-wall: PR-B-ERV-COND
+# runs that gap at 52". Front (display, condensate, T&P) is WEST, beside the ERV case: the
+# display is read through EcoNet, the T&P (~46") sits under the case's 54" bottom. The
+# HydroBoost riser is SOUTH-WEST, outside D-B-CLOSET's 75-degree swing. World ports
+# (notes/water_service.md §1): hot (99.9", 338.9", 42 3/8"), cold (93.1", 342.3", 5 1/16"),
+# T&P (90.5", 358.3", ~46"), condensate (94", 360.5", 59"); mep_supply.py,
+# mep_supply_devices.py and mep_drainage.py quote them.
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
              position=pt(ft(8, 9), ft(29, 5)), rotation=deg(-90),

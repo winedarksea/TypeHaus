@@ -73,7 +73,7 @@
 > kitchen tape and every alarm; the rest of the basement is `CKT-LT-BSMT`, the kitchen cans
 > `CKT-LT-MAIN`. `BackupTier.SHED` is now **`SURPLUS`** (`CKT-HP3`, `CKT-WH`): on battery only
 > on solar surplus, never counted against autonomy. The HPWH is the 120 V, element-free
-> PROPH80 T0 RH120-M; **its ports/footprint are still the 240 V tank's** (`plans/TODO.md`).
+> PROPH80 T0 RH120-MSO, side taps on its HydroBoost riser, cord to `ED-B-WH-RC` (`notes/water_service.md` §1).
 > `Circuit.start_va` sets a surge start (else 3x). Oracle: `backup_power.md` §6.
 
 > **Door sizing, 2026-10-29 (`plans/door-sizing.md`, decisions #96-#98):** `DoorType.width`
@@ -2979,16 +2979,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   only runs inside 18" (the five branches tee on 29" up), but all seven stay copper.
   A PEX turn off a stock elbow is a BEND graded against Uponor's 6 x OD
   (`library/fittings.TUBE_BEND_RULES`); a short jog wants a plumb step, not a diagonal.
-- **The heater is the 120 V PROPH80 T0 RH120-M since 2026-11-02, but its geometry is still the
-  RH400-30's (side ports unpublished to us; `notes/water_service.md` §1).** As modelled: 24 1/4" round x 76 13/16"** (K,
-  the top nipples; `notes/water_service.md`). 91" is the ducted unit and does not fit under
-  the 96 15/16" ceiling with its 6" top clearance. **Rotation -90 at (8'-9", 29'-5")** (owner,
-  2026-10-29): air exhaust SOUTH into the room with Rheem's 6", back on `W-B-STR3`, T&P north
-  at 42 3/8" with 4 1/2" to `W-B-ESS-S`, front (display, condensate 59") west beside the ERV
-  case; `PR-B-WH-COND` drops beside the case into `PR-B-ERV-COND`, which runs behind the tank
-  (T&P gap, 52") and through the under-stair storage. Ports are EXACT (heights
-  published, x/y scaled). The round 16-gon footprint is load-bearing: `PR-B-HW-TRUNK` drops in
-  its empty corner. On the slab, no plinth or pan. South, `D-B-CLOSET`'s swing allows 1 7/8".
+- **The heater is the 120 V PROPH80 T0 RH120-MSO since 2026-11-02** (Rheem RH-PIHP-SC-SO
+  Rev. 7 p.2; `notes/water_service.md` §1). Modelled 24 1/4" round x 74 3/16" (A; not 91",
+  ducted), with the HydroBoost riser as a lobe on the 16-gon (40-75 deg right of front, r 15",
+  scaled). **Rotation -90 at (8'-9", 29'-5")** (owner, 2026-10-29): exhaust SOUTH into the room,
+  back on `W-B-STR3`, front (display, condensate 59", T&P ~46" under the ERV case) west. SIDE
+  taps on the riser: hot E 42 3/8" and cold K 5 1/16" at the SW, x/y scaled; `D-B-CLOSET`'s
+  sweep clears the riser by 2 1/4". `PR-B-HW-TRUNK` leaves west along the riser, `PR-B-CW-WH`
+  drops at (93 1/2", 335 1/2") with `PA-B-WH-STOP-CW`, `PR-B-CW-BATH` tees off its ceiling leg,
+  `PR-B-WH-TPR` falls straight to an air gap under the case. The cord plugs into `ED-B-WH-RC`
+  (`CKT-WH`) on `W-B-ESS-S` over the tank. On the slab, no plinth or pan.
 - **`PR-G-SERVICE-CW` is the service lateral** (1 1/4" PEX, 6' bury, x=11'-4"), drawn street
   to house so `PR-B-CW-TRUNK` derives it as parent at the entry (11'-4", 35'-6"). **The hydrant
   is a branch of the trunk** (owner, 2026-10-29): `PR-G-HYDRANT-CW` (3/4") tees off the riser

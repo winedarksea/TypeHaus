@@ -1,7 +1,7 @@
-"""An underside-mounted, shielded flood with a visibly adjustable head.
+"""An underside-mounted flood with a visibly adjustable head.
 
 The pose is a design allowance, not manufacturer photometry. Local -y is the throw;
-the lens and visor share its downward axis so exports cannot turn it into a wall pack.
+the lens faces down that axis so exports cannot turn it into a wall pack.
 """
 
 from __future__ import annotations
@@ -66,15 +66,13 @@ def _hinge(center, radius, length):
 
 def flood_light(width: float, depth: float, height: float):
     head_height, thickness = _head_dimensions(depth, height)
-    direction = flood_head_direction()
-    vertical = (0.0, direction[2], -direction[1])
     center = (0.0, -depth * 0.08, height * 0.30)
     housing = "luminaire-housing"
     strokes = (rect(0, depth * 0.08, width * 0.55, depth * 0.55, fill=housing),
                rect(0, -depth * 0.08, width * 0.90, depth * 0.55, fill=housing),
                line((-width * 0.35, -depth * 0.20), (-width * 0.48, -depth * 0.48)),
                line((width * 0.35, -depth * 0.20), (width * 0.48, -depth * 0.48)))
-    parts = [
+    return strokes, (
         box(0, depth * 0.08, height * 0.82, height, width * 0.55, depth * 0.55, housing),
         box(0, depth * 0.08, height * 0.37, height * 0.86,
             width * 0.18, depth * 0.18, housing),
@@ -83,16 +81,4 @@ def flood_light(width: float, depth: float, height: float):
         _head_box(center, width * 0.90, head_height, thickness, housing),
         _head_box(flood_lens_center(width, depth, height), width * 0.76,
                   head_height * 0.80, thickness * 0.08, "lamp"),
-    ]
-    # A top visor and side cheeks project past the lens, shielding its bright face.
-    visor_center = tuple(center[i] + vertical[i] * head_height * 0.50
-                         + direction[i] * thickness * 0.70 for i in range(3))
-    parts.append(_head_box(visor_center, width * 0.94, head_height * 0.08,
-                           thickness * 1.20, housing))
-    for side in (-1, 1):
-        cheek_center = (side * width * 0.44,
-                        center[1] + direction[1] * thickness * 0.70,
-                        center[2] + direction[2] * thickness * 0.70)
-        parts.append(_head_box(cheek_center, width * 0.06, head_height,
-                               thickness * 1.20, housing))
-    return strokes, tuple(parts)
+    )

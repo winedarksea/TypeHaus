@@ -7,6 +7,16 @@ The west shear plywood, corrugated skin, posts, brace cap and guard framing rema
 
 ## Sheet notes
 
+### General
+- White painted 3/4-inch exterior MDO, directly screwed to framing; no east cavity or WRB.
+- Panel faces x=77.875 inches; tops +47.5, bottoms +2 inches. Keep 1/8-inch joints open.
+- Add five KDAT 2x4 vertical edge nailers; see dimensioned support schedule below.
+- No. 8 x 2-1/2-inch stainless screws: 6 inches at vertical edges, 12 inches at field studs.
+- North panel: 2.625 x 3.750-inch open-ended garage tie relief; retain bolt/tool access.
+- Prime and paint both faces, cut edges and holes; retain upper cap and drainage below.
+
+## Detailed installation schedule
+
 - East infill: nominal 3/4-inch Roseburg DuraGard Premium exterior-grade MDO, white painted,
   screwed directly to the framing. Face x=77.875 inches, 1/4 inch behind timber.
 - Four panels, elevations +2 to +47.5 inches. Widths 7.750, 26.9375, 26.9375 and 5.875 inches.

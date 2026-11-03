@@ -59,7 +59,7 @@ def test_flood_box_is_on_blocking_beyond_the_porch_floor(catlin_model_ro):
     fraction = ((flood.position[1] - block.p0[1]) / (block.p1[1] - block.p0[1]))
     support_z = block.z0_m + fraction * ((block.z0_end_m or block.z0_m) - block.z0_m)
     assert flood.body_z1_m == pytest.approx(support_z)
-    # The downward head, including visor, is below the fascia and the higher gutter.
+    # The downward head is below the fascia and the higher gutter.
     fascia = model.plan.by_tag("TR-SG-FASCIA")
     parts = model_parts(product.plan_symbol, *(d.meters for d in product.footprint),
                         product.height.meters)
@@ -99,7 +99,7 @@ def test_garden_flood_is_scheduled_and_priced_once(catlin_model_ro):
     _, product = _flood(catlin_model_ro)
     row = next(row for row in luminaire_schedule(catlin_model_ro) if row["type"] == product.tag)
     assert row["count"] == 1 and row["mark"] == "S"
-    assert product.wet_rated and product.full_cutoff
+    assert product.wet_rated and not product.full_cutoff
     assert (product.watts, product.lumens, product.cct_k) == (20, 1800, 3000)
     prices = tomllib.loads((Path(catlin_model_ro.plan.source_root) / "prices.toml").read_text())
     assert prices["placeables"][product.tag]["material"] == {"low": 80, "high": 250}
