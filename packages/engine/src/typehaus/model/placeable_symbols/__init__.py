@@ -68,7 +68,7 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS
     "sofa", "loveseat", "sectional", "armchair", "strandmon", "dining-chair", "cantilever-chair",
     "office-chair",
     "dining-table", "rounded-dining-table", "round-table", "coffee-table", "end-table",
-    "chess-table", "hammock-chair", "hanging-daybed", "curtain-rod", "cellular-blind",
+    "chess-table", "hammock-chair", "hanging-daybed", "curtain-rod", "tapestry-rod-clips", "cellular-blind",
     "desk", "wall-desk", "footrest",
     "drawer-desk", "sit-stand-desk",
     "sektion-drawer-base", "dresser", "chest", "nightstand", "media-console", "bookcase",

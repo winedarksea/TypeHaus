@@ -1,4 +1,4 @@
-"""The theatre: a 98" screen on a stand-off mount and the east wall's tapestry, RM-B-PLAY-N
+"""The theatre: a 98" screen on a stand-off mount and two wall tapestries, RM-B-PLAY-N
 (plan/placeables.py).
 
 The shared FURN-TV-98-WALL is a 4" envelope with the mount folded in. Here the body is the
@@ -32,15 +32,24 @@ DRAGON_TAPESTRY = FurnitureType(
            "Blanket), 60 x 80 in. size, hung 80 in. wide. Woven cotton throw on clip rings.",
 )
 
-#: Its rod: 96" so the end brackets clear the 80" fabric, a 4" bracket return so the fabric
-#: hangs ~3" off the wall. Library rod symbol; the 14 clip rings are billed, not drawn.
-TAPESTRY_ROD = FurnitureType(
-    tag="FT-TAPESTRY-ROD-96", name='Curtain rod, 96", 1" dia., 4" return, 14 clip rings',
-    footprint=(inch(96), inch(4)), height=inch(2),
-    model_representation=ModelRepresentation(symbol="curtain-rod"),
-    mount=Mount(kind=MountKind.WALL),
-    source="Generic 1 in. black adjustable rod (48-96 in.), three brackets with 4 in. return, "
-           "masonry anchors; 14 clip rings at about 6 in. Retail, not a selected product.",
+HUNT_TAPESTRY = FurnitureType(
+    tag="FT-TAPESTRY-HUNT-80X60", name='Medieval mounted hunt woven tapestry, 80" x 60"',
+    footprint=(inch(80), inch(0.25)), height=inch(60),
+    plan_symbol="wall-tapestry", mount=Mount(kind=MountKind.WALL),
+    source="Owner, 2026-11-02: medieval men riding to hunt, woven cotton hanging, "
+           "80 in. wide x 60 in. high, with 14 clip rings. Product not selected.",
 )
 
-MEDIA_TYPES = (TV_98_PANEL, DRAGON_TAPESTRY, TAPESTRY_ROD)
+#: Its rod: 96" so the end brackets clear the 80" fabric, a 4" bracket return so the fabric
+#: hangs ~3" off the wall. Four-inch hardware envelope includes the 14 clip rings.
+TAPESTRY_ROD = FurnitureType(
+    tag="FT-TAPESTRY-ROD-96", name='Curtain rod, 96", 1" dia., 4" return, 14 clip rings',
+    footprint=(inch(96), inch(4)), height=inch(4),
+    model_representation=ModelRepresentation(symbol="tapestry-rod-clips"),
+    mount=Mount(kind=MountKind.WALL),
+    source="Generic 1 in. black adjustable rod (48-96 in.), three brackets with 4 in. return, "
+           "masonry anchors east / stud fasteners west; 14 clip rings at about 6 in. "
+           "Retail, not a selected product.",
+)
+
+MEDIA_TYPES = (TV_98_PANEL, DRAGON_TAPESTRY, HUNT_TAPESTRY, TAPESTRY_ROD)
