@@ -254,6 +254,7 @@ the future.
     - FX-M-BATH2-TUB: no lane. Options: a FloorOpening on FS-M-WEST near (97.3", 213.5"), re-box the W-B-CW3 blocking, or re-route HW/CW-WASH.
     - FX-S-SUITEBATH-LAV, -TUBSH: no wet vent (the WC joins upstream, 908.2.1.4). The y=269.25" lane passed both arms (27", 6") but hit PR-B-CW-SUITE's riser by 0.14" and PR-B-HW-SUITE / PR-A-HW-STUBATH on y=268". Move those supplies, or re-route DU-S-ERV-HP-FEED's last leg.
     - When all three pass, move the 3D walk under the CODE id `mep.trap_arm_length` and retire `mep.trap_arm_developed`.
+    - Fitting detail: PR-M-LSINK-VENT and PR-M-BATH2-WC-VENT tee into the drain where CO-B-LSINK / CO-B-WC2-HEAD sit (solids overlap 32 / 86 cm^3, blessed). A plumber's combo-fitting sketch, or nudge the tee off the cleanout.
   - [ ] TB-SG-W1/E1 closure boards are 8" while FT-B-S2/S3 are now 10": 2" x 32" of strip faces the court footing with no board. Extend to 10" (moves §11l and test_thermal_break) or accept.
   - [ ] Doorway transitions: D-A-STUDY / D-A-POCKET open onto unfinished subfloor (`compatible_finish_pairs` can't name it); D-M-MECH's floor varies across its doorway.
   - [ ] Leader straps bill twice: `CN-A-LEADER-*` (SS316 standoff strap #13, sized for the old 4" round) and the leader's 58110XX. Pick one product for the 4x3 1/2 leader on the ribbed panel.
