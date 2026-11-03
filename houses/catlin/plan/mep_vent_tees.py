@@ -23,6 +23,16 @@ VENT_TEES = [
             diameter=inch(1.5), material="pvc",
             elevations=(inch(231.555), inch(281.0), inch(281.64)),
             serves=("FX-A-STUBATH-WC",)),
+    # RM-A-STUBATH's shower: a tee on the pan's trap drop at (16'-2 5/8", 20'-7 5/8"). The riser
+    # cannot go north (the hall trimmer, pan and room) so it runs east 20" in the joist bay, up
+    # W-A-C2M's 2x6 cavity, and 20" west in W-A-HALL-S onto PR-A-STUBATH-SH-VENT's low end.
+    PipeRun(uid="S9JKFZ4JRT", tag="PR-A-STUBATH-SH-TEE", system=PipeSystem.VENT,
+            path=(pt(inch(194.625), inch(247.625)), pt(inch(215), inch(247.625)),
+                  pt(inch(215), inch(247.625)), pt(inch(215), inch(268)),
+                  pt(inch(194.625), inch(268))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(inch(236), inch(237.4), inch(279.5), inch(280.25), inch(281)),
+            serves=("FX-A-STUBATH-SH",)),
     # RM-S-VANITY: the stack vent. The double vanity's arm drops into PR-M-S-BATH1-DRAIN at
     # (5'-0", 26'-8"); the vent leaves the top of that drop 1 1/4" north, rises W-S-BD-N's
     # cavity behind the vanity supplies, and returns to PR-S-BATH1-VENT's corner. Arms:
