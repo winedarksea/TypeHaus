@@ -1,6 +1,7 @@
 {
   "acceptance": "blocked",
   "acceptance_blockers": [
+    "guard concentrated/infill: single-ply bending",
     "ply transfer: one screw, full load envelope",
     "end attachments: installed directions and fit",
     "local plate load transfer",
@@ -215,12 +216,12 @@
   "local_checks": [
     {
       "name": "guard concentrated/infill: single-ply bending",
-      "status": "ok",
+      "status": "over",
       "demand": 1077.3333333333333,
-      "capacity": 1100.0,
+      "capacity": 1000.0,
       "unit": "psi",
-      "ratio": 0.9793939393939394,
-      "basis": "NDS Supplement Table 4B SP No.2 2x6 Fb=1100; wet Fb factor 1 where Fb<=1150, CD=1, CL=1 for this 5.5x1.5 flatwise orientation; no sharing"
+      "ratio": 1.0773333333333333,
+      "basis": "NDS Supplement Table 4B SP No.2 2x6 Fb=1000; wet Fb factor 1 where Fb<=1150, CD=1, CL=1 for this 5.5x1.5 flatwise orientation; no sharing"
     },
     {
       "name": "guard concentrated/infill: single-ply shear",
@@ -244,10 +245,10 @@
       "name": "out-of-plane wind: single-ply bending",
       "status": "ok",
       "demand": 443.1530106554028,
-      "capacity": 1100.0,
+      "capacity": 1000.0,
       "unit": "psi",
-      "ratio": 0.40286637332309344,
-      "basis": "NDS Supplement Table 4B SP No.2 2x6 Fb=1100; wet Fb factor 1 where Fb<=1150, CD=1, CL=1 for this 5.5x1.5 flatwise orientation; no sharing"
+      "ratio": 0.4431530106554028,
+      "basis": "NDS Supplement Table 4B SP No.2 2x6 Fb=1000; wet Fb factor 1 where Fb<=1150, CD=1, CL=1 for this 5.5x1.5 flatwise orientation; no sharing"
     },
     {
       "name": "out-of-plane wind: single-ply shear",

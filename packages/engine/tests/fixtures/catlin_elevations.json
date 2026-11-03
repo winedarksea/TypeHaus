@@ -8444,12 +8444,6 @@
 2,
 "909a8d60b026"
 ],
-"geometry/BWMDO00003-00/body": [
-0.014224,
-1.143,
-2,
-"909a8d60b026"
-],
 "geometry/BWMDO00004-00/body": [
 0.014224,
 1.143,
@@ -8461,6 +8455,66 @@
 1.143,
 2,
 "909a8d60b026"
+],
+"geometry/BWMDO00006-00/body": [
+0.014224,
+1.143,
+2,
+"909a8d60b026"
+],
+"geometry/BWMDO00007-00/body": [
+0.014224,
+1.143,
+2,
+"909a8d60b026"
+],
+"geometry/BWMDP00001-00/body": [
+0.156972,
+0.176276,
+2,
+"6bddc644eab8"
+],
+"geometry/BWMDP00002-00/body": [
+0.360172,
+0.379476,
+2,
+"e28e33fd4d2c"
+],
+"geometry/BWMDP00003-00/body": [
+0.766572,
+0.785876,
+2,
+"5c0c54406c0b"
+],
+"geometry/BWMDP00004-00/body": [
+0.969772,
+0.989076,
+2,
+"7ee3a6cbb818"
+],
+"geometry/BWMDP00005-00/body": [
+0.182372,
+0.201676,
+2,
+"8dd371a2bbeb"
+],
+"geometry/BWMDP00006-00/body": [
+0.385572,
+0.404876,
+2,
+"4e7579cc9b42"
+],
+"geometry/BWMDP00007-00/body": [
+0.741172,
+0.760476,
+2,
+"afb942bfca98"
+],
+"geometry/BWMDP00008-00/body": [
+0.944372,
+0.963676,
+2,
+"3755f6883d7c"
 ],
 "geometry/BWMDS100-00/body": [
 0.0555625,
@@ -9007,6 +9061,24 @@
 1.2017375,
 2,
 "401c862a1b72"
+],
+"geometry/BWMDT00007-00/body": [
+0.014224,
+1.143,
+2,
+"909a8d60b026"
+],
+"geometry/BWMDT00008-00/body": [
+0.014224,
+1.143,
+2,
+"909a8d60b026"
+],
+"geometry/BWMDT00009-00/body": [
+0.014224,
+1.143,
+2,
+"909a8d60b026"
 ],
 "geometry/BWNSE1AAAA/body": [
 2.183892,
@@ -118775,12 +118847,30 @@
 "solids/TR-BW-MDO-NAILER-1-1/z1_m": 1.143,
 "solids/TR-BW-MDO-NAILER-2-1/z0_m": 0.014224,
 "solids/TR-BW-MDO-NAILER-2-1/z1_m": 1.143,
-"solids/TR-BW-MDO-NAILER-3-1/z0_m": 0.014224,
-"solids/TR-BW-MDO-NAILER-3-1/z1_m": 1.143,
 "solids/TR-BW-MDO-NAILER-4-1/z0_m": 0.014224,
 "solids/TR-BW-MDO-NAILER-4-1/z1_m": 1.143,
 "solids/TR-BW-MDO-NAILER-5-1/z0_m": 0.014224,
 "solids/TR-BW-MDO-NAILER-5-1/z1_m": 1.143,
+"solids/TR-BW-MDO-NAILER-6-1/z0_m": 0.014224,
+"solids/TR-BW-MDO-NAILER-6-1/z1_m": 1.143,
+"solids/TR-BW-MDO-NAILER-7-1/z0_m": 0.014224,
+"solids/TR-BW-MDO-NAILER-7-1/z1_m": 1.143,
+"solids/TR-BW-MDO-PLY-SCREW-1-1/z0_m": 0.156972,
+"solids/TR-BW-MDO-PLY-SCREW-1-1/z1_m": 0.176276,
+"solids/TR-BW-MDO-PLY-SCREW-2-1/z0_m": 0.360172,
+"solids/TR-BW-MDO-PLY-SCREW-2-1/z1_m": 0.379476,
+"solids/TR-BW-MDO-PLY-SCREW-3-1/z0_m": 0.766572,
+"solids/TR-BW-MDO-PLY-SCREW-3-1/z1_m": 0.785876,
+"solids/TR-BW-MDO-PLY-SCREW-4-1/z0_m": 0.969772,
+"solids/TR-BW-MDO-PLY-SCREW-4-1/z1_m": 0.989076,
+"solids/TR-BW-MDO-PLY-SCREW-5-1/z0_m": 0.182372,
+"solids/TR-BW-MDO-PLY-SCREW-5-1/z1_m": 0.201676,
+"solids/TR-BW-MDO-PLY-SCREW-6-1/z0_m": 0.385572,
+"solids/TR-BW-MDO-PLY-SCREW-6-1/z1_m": 0.404876,
+"solids/TR-BW-MDO-PLY-SCREW-7-1/z0_m": 0.741172,
+"solids/TR-BW-MDO-PLY-SCREW-7-1/z1_m": 0.760476,
+"solids/TR-BW-MDO-PLY-SCREW-8-1/z0_m": 0.944372,
+"solids/TR-BW-MDO-PLY-SCREW-8-1/z1_m": 0.963676,
 "solids/TR-BW-MDO-SCREW-1-0-0-1/z0_m": 0.0555625,
 "solids/TR-BW-MDO-SCREW-1-0-0-1/z1_m": 0.0650875,
 "solids/TR-BW-MDO-SCREW-1-0-1-1/z0_m": 0.1976437,
@@ -118963,6 +119053,12 @@
 "solids/TR-BW-MDO-SCREW-4-1-7-1/z1_m": 1.0596562,
 "solids/TR-BW-MDO-SCREW-4-1-8-1/z0_m": 1.1922125,
 "solids/TR-BW-MDO-SCREW-4-1-8-1/z1_m": 1.2017375,
+"solids/TR-BW-MDO-TIMBER-PLY-1-1/z0_m": 0.014224,
+"solids/TR-BW-MDO-TIMBER-PLY-1-1/z1_m": 1.143,
+"solids/TR-BW-MDO-TIMBER-PLY-2-1/z0_m": 0.014224,
+"solids/TR-BW-MDO-TIMBER-PLY-2-1/z1_m": 1.143,
+"solids/TR-BW-MDO-TIMBER-PLY-3-1/z0_m": 0.014224,
+"solids/TR-BW-MDO-TIMBER-PLY-3-1/z1_m": 1.143,
 "solids/TR-BW-SCREEN-CAP/z0_m": 1.23825,
 "solids/TR-BW-SCREEN-CAP/z1_m": 1.2614199,
 "solids/TR-G-LEADER-E-EXT-RISER/z0_m": -1.2192,

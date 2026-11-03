@@ -54,18 +54,21 @@ def local_timber_checks(wind_pressure_psf):
             _check(f"interface {index}: screw end distance", spec.PLY_SCREW_MIN_END_IN,
                    min(min(offsets), length - max(offsets)), "in", "ER-192 Table 8"),
             _check(f"interface {index}: screw row spacing", spec.PLY_SCREW_MIN_SPACING_IN,
-                   min(b - a for a, b in zip(offsets, offsets[1:])), "in", "ER-192 Table 8"),
+                   min(b - a for a, b in zip(offsets, offsets[1:], strict=False)),
+                   "in", "ER-192 Table 8"),
         ]
     rows.append(_check("screw edge distance", spec.PLY_SCREW_MIN_EDGE_IN, width / 2,
                        "in", "ER-192 Table 8"))
-    timber_weight = sum(s.volume_in3 for s in spec.SUPPORTS if s.profile == "2x6") * spec.LB_PER_IN3
+    timber_weight = (sum(s.volume_in3 for s in spec.SUPPORTS if s.profile == "2x6")
+                     * spec.LB_PER_IN3)
     # East ply bears only 0.5in on the existing 3.5in plate; never use the 4.5in pack
     # width as bearing area or count the timber as supporting the roof.
     east_ply_bearing = 77.125 - (spec.TIMBER_EAST_IN - depth)
     rows.append(_check("east-ply bottom-plate bearing, self weight",
                        timber_weight / spec.TIMBER_PLY_COUNT / (east_ply_bearing * width),
                        spec.SOUTHERN_PINE_FC_PERP_PSI * spec.WOOD_FC_PERP_WET_FACTOR, "psi",
-                       "NDS Table 4B Fc-perp565 x CM0.67; actual 0.5x5.5in contact; no roof credit"))
+                       "NDS Table 4B Fc-perp565 x CM0.67; actual 0.5x5.5in contact; "
+                       "no roof credit"))
     for name in ("end attachments: installed directions and fit", "local plate load transfer",
                  "end screw penetration, edge distances and cross-grain effects"):
         rows.append({"name": name, "status": "incomplete", "ratio": None,
@@ -75,11 +78,13 @@ def local_timber_checks(wind_pressure_psf):
 
 def support_load_delta():
     """Point-load differences against the previous centre nailer, in wall stations."""
-    timber = sum(s.volume_in3 for s in spec.SUPPORTS if s.profile == "2x6") * spec.LB_PER_IN3
+    timber = (sum(s.volume_in3 for s in spec.SUPPORTS if s.profile == "2x6")
+              * spec.LB_PER_IN3)
     nailer = spec.PREVIOUS_SUPPORT_WEIGHT_LB / 5
     return ((spec.TIMBER_STATION_IN, timber - nailer),
             *((station, nailer) for identity, station in zip(
-                spec.NAILER_IDENTITIES, spec.NAILER_STATIONS_IN, strict=True) if identity in (6, 7)))
+                spec.NAILER_IDENTITIES, spec.NAILER_STATIONS_IN, strict=True)
+              if identity in (6, 7)))
 
 
 def concentrated_sill_delta(model):
@@ -104,5 +109,5 @@ def concentrated_sill_delta(model):
             "span_in": length, "additional_south_reaction_lb": left,
             "additional_north_reaction_lb": right,
             "maximum_additional_moment_lb_in": max(moment for _, moment in moments),
-            "acceptance": "incomplete: total sill stress, local plate distribution and hanger effects "
-                          "under concentrated loading require verification"}
+            "acceptance": "incomplete: total sill stress, local plate distribution and hanger "
+                          "effects under concentrated loading require verification"}

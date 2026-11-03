@@ -638,9 +638,12 @@ _veneer_beam_bottom = inch(-120.1875)
 # Vertical steel on the three retaining walls' stems, on the RETAINED face — that is
 # where a cantilever puts its tension, and getting it on the wrong face is the classic
 # way a correctly-sized wall falls over. Sized in
-# `notes/sunken_garden_court_free_body.md` §6: Mu = 1.6 x 7,585 = 12,136 ft-lb/ft at
-# at-rest against phi-Mn 20,028 at #5 @ 7" (d = 8.6875", d/c 0.61, 5,000 psi mix), 3" cover.
-# ** #5 @ 7", NOT #6 @ 10" (2026-09-17). ** Same steel (0.531 vs 0.528 in2/ft); the bar
+# `notes/sunken_garden_court_free_body.md` §6: Mu = 12,329 ft-lb/ft at at-rest with the
+# apron (§4c) against phi-Mn 14,177 at #5 @ 10" (d = 8.6875", d/c 0.87, 5,000 psi mix), 3"
+# cover. ** #5 @ 10", NOT #5 @ 7" (owner, 2026-11-02). ** §6's own table row: the owner takes
+# the margin (~290 lb of HDG #5 out). The hook (§6b) does not depend on spacing, and 10"
+# clears §11.6.1's 0.173 in2/ft and §11.7.2.1's 18" (free body addendum 2026-11-02).
+# ** #5, NOT #6 @ 10" (2026-09-17). ** Same steel at 7" (0.531 vs 0.528 in2/ft); the bar
 # changed because the vertical now runs continuous from the footing on a 90° foot, not a
 # lapped dowel. The 12" footing leaves 12 - 3 - 0.625 - 0.5 = 7.875" for the hook; ACI
 # 318-19 §25.4.3.1(a) ldh (psi_c 0.933) is 9.35" for a #6 and 7.11" for a #5 (§6b).
@@ -730,12 +733,12 @@ _VENEER_BEAM_STEEL = ReinforcementSpec(
     source="notes/sunken_garden_veneer_beam.md §6j",
 )
 
-_RET_REBAR = '#5 @ 7" o.c.'
+_RET_REBAR = '#5 @ 10" o.c.'
 _RET_STEM_STEEL = ReinforcementSpec(
     bars=(
         # Continuous from the footing: foot on the bottom mat, turned across the stem into
         # the joint. No lap at the base, where the moment is greatest.
-        BarSpec(role="vertical", bar=5, spacing=inch(7.0), face="exterior", hooks=("start",),
+        BarSpec(role="vertical", bar=5, spacing=inch(10.0), face="exterior", hooks=("start",),
                 note="RETAINED face, continuous from the footing mat with a 90° foot"),
         # #4 @ 16" each face is the same steel as the #4 @ 8" this was, and puts it where the
         # note always said: on both faces (decision #75 D11).
@@ -764,7 +767,7 @@ _RET_STEM_STEEL = ReinforcementSpec(
     # lever (w/cm 0.40, the galvanizing, the fly ash) buys time.
     #
     # It costs 1-1/2" straight off `d` over the Code figure, ~15% of the stem's flexural
-    # capacity: the #5 @ 7" section goes from d/c 0.51 to 0.61
+    # capacity: the #5 @ 7" section went from d/c 0.51 to 0.61 (0.87 at #5 @ 10")
     # (notes/sunken_garden_court_free_body.md §6a). That is a real spend of margin and it is why this number is authored on the
     # SCHEDULE and not on the mix — the mix pours the footings too, and a 3" default there
     # is free where here it is not.
@@ -873,7 +876,7 @@ WALLS = [
     #
     # The buildability consequence, and the thing a crew gets wrong: **the vertical bar
     # spacing changes mid-pour at y = -11'-0" (`_y_ax_mid`) — #6 @ 38" north of it,
-    # #5 @ 7" on the retained face south of it, in one form.**
+    # #5 @ 10" on the retained face south of it, in one form.**
     FoundationWall(uid="SGW103AAAA", tag="W-SG-W1", start_node="N-SG-NW",
                    end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL", alignment=_COURT_AXIS_SHIFT,
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom,

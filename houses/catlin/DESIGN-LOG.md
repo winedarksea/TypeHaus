@@ -1,3 +1,24 @@
+## Lower screen centre timber — coordination revision (2026-11-02; acceptance BLOCKED)
+
+Three KDAT SP No.2 2x6 plies replace MDO nailer -3: 4.5 x 5.5 inches, x73.625–78.125,
+station 40.625, +0.56–45. Four MDO runs now stop 1/8 inch beside the exposed timber;
+two new 2x4 edge nailers support the cuts. Upper post, plates/cap, west shear and braces
+retain their geometry and engineering roles. This adds no roof support or shear chord.
+
+The shared finish schedule drives supports, cuts, reserve weight and the local report.
+Six 2x4 cuts buy three 8-foot sticks; three 2x6 cuts buy two. Support mass 25.2866 →
+54.1855 lb; MDO net area 21.2598 → 19.4824 sf. Budget includes the added timber,
+candidate hardware and finish once. Normal wall weight propagates through SCSILL,
+its hangers, columns and foundations; concentrated local effects are reported separately.
+
+**Not released:** the unshared single-ply bending and conservative single-screw transfer
+screens exceed capacity. Bent A35Z stud-to-plate direction/fit is unresolved; its rating
+cannot be borrowed from upper-band F1. Tabs conflict with adjacent nailer envelopes and
+the east ply overhangs the plate. No plywood/plate cuts are authorized by this detail.
+Local plate/sill/hanger verification and the final installed-end-hardware door sweep
+remain open. The report writes evidence and exits nonzero; normal canopy passes do not
+close these blockers. See `notes/entry_screen_mdo.md` and its calculation JSON.
+
 ## FS-M-NE at 16" o.c., a doubled truss and strongbacks (2026-11-02, decision #112)
 
 - **Why.** The 12" o.c. / 60 psf order had no published row and was a stiffness answer to a

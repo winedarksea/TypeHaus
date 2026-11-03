@@ -191,8 +191,53 @@ def layer_boards(ctx, loops: dict) -> list[Board]:
                       court_face_in=court_face, house_face_in=house_face, loop_ref=ref,
                       structure=structure, court_tag=element.tag)
         if facing_footings(ctx, found):
+            _clip_to_house_concrete(ctx, found)
             out.append(found)
     return sorted(out, key=lambda b: b.tag)
+
+
+def _clip_to_house_concrete(ctx, board: Board) -> None:
+    """Above the house concrete a layer board faces air and bears on nothing (a framed wall
+    across its slot). Clip its TOP, station by station along the joint, and keep the faced
+    area as an equivalent height — the thrust is the cap times that area."""
+    faced = house_concrete_tops(ctx, board)
+    cuts = sorted({board.along[0], board.along[1]}
+                  | {v for a0, a1, _t in faced for v in (a0, a1)
+                     if board.along[0] < v < board.along[1]})
+    area = 0.0
+    for a, b in zip(cuts, cuts[1:]):
+        top = max((t for a0, a1, t in faced if a0 <= a and a1 >= b), default=board.bottom_in)
+        area += max(0.0, min(top, board.top_in) - board.bottom_in) * (b - a)
+    h = area / board.length_in if board.length_in else board.h_in
+    if h < board.h_in - 1e-6:
+        board.h_in, board.top_in = h, board.bottom_in + h
+
+
+def house_concrete_tops(ctx, board: Board) -> list[tuple[float, float, float]]:
+    """``(along0, along1, top)`` in inches for the house concrete the board faces: its facing
+    footings and any cast house wall (a curb is a ``FoundationWall``) overlapping it along the
+    joint and in z, near face within ``FACING_REACH_IN``."""
+    from typehaus.model.structure import FoundationWall
+
+    out = []
+    for t in facing_footings(ctx, board):
+        a0, a1 = _extent(_solid(ctx, t, "footing").outline, 1 - board.ax)
+        out.append((a0, a1, z_extent(ctx, t)[1]))
+    for e in ctx.plan.all_elements():
+        if not isinstance(e, FoundationWall) or e.tag in board.structure:
+            continue
+        z, across = z_extent(ctx, e.tag), concrete_extent(ctx, e.tag, board.ax)
+        along = concrete_extent(ctx, e.tag, 1 - board.ax)
+        if z is None or across is None or along is None:
+            continue
+        if min(along[1], board.along[1]) - max(along[0], board.along[0]) <= 0.5:
+            continue
+        if min(z[1], board.top_in) - max(z[0], board.bottom_in) <= 0.5:
+            continue
+        near = across[0] if board.toward_house > 0 else across[1]
+        if 0.0 <= (near - board.house_face_in) * board.toward_house <= FACING_REACH_IN:
+            out.append((*along, z[1]))
+    return out
 
 
 def _host_at_ends(ctx, wall, tol_in: float = 0.5) -> str | None:

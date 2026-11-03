@@ -221,3 +221,91 @@ def test_mdo_has_edge_supports_without_metal_rail_hardware(catlin_model_ro):
     assert not any(tag.startswith("TR-BW-METAL-") for tag in tags)
     wall = catlin_model_ro.wall("W-BW-SCREEN")
     assert not {"vent-in", "wrb-in"} & {layer.name for layer in wall.layers}
+
+
+def _supplemental_bounds(model, tag):
+    from typehaus.emit.draw.elevation_project import solid_faces
+
+    uid = model.plan.by_tag(tag).uid
+    geometry = next(element for element in model.geometry.elements if element.uid == f"{uid}-00")
+    vertices = [point for part in geometry.parts for solid in part.solids
+                for face in solid_faces(solid) for point in face]
+    return tuple((min(point[axis] for point in vertices) / INCH,
+                  max(point[axis] for point in vertices) / INCH) for axis in range(3))
+
+
+def test_lower_timber_has_three_disjoint_plies_and_backed_panel_edges(catlin_model_ro):
+    model = catlin_model_ro
+    wall = model.wall("W-BW-SCREEN")
+    south = wall.axis[0][1] / INCH
+    assert model.plan.by_tag("TR-BW-MDO-NAILER-3") is None
+    for ply in range(1, 4):
+        bounds = _supplemental_bounds(model, f"TR-BW-MDO-TIMBER-PLY-{ply}")
+        assert bounds[0] == pytest.approx((73.625 + (ply - 1) * 1.5, 73.625 + ply * 1.5))
+        assert bounds[1] == pytest.approx((south + 37.875, south + 43.375))
+        assert bounds[2] == pytest.approx((0.56, 45))
+        west_sheathing = next(layer for layer in wall.layers if layer.name == "cdx-out")
+        assert bounds[0][0] >= max(x for x, _ in west_sheathing.polygon) / INCH - 1e-6
+    assert _supplemental_bounds(model, "TR-BW-MDO-TIMBER-PLY-3")[0][1] == pytest.approx(78.125)
+    for tag, station, panel_edge in (("TR-BW-MDO-NAILER-6", 37, 37.750),
+                                     ("TR-BW-MDO-NAILER-7", 44.25, 43.500)):
+        bounds = _supplemental_bounds(model, tag)
+        assert bounds[1] == pytest.approx((south + station - 0.75, south + station + 0.75))
+        # A screw 3/8in inside each new cut lands in solid framing.
+        screw_station = panel_edge - 0.375 if station < 40 else panel_edge + 0.375
+        assert bounds[1][0] < south + screw_station < bounds[1][1]
+    # The supplemental pack does not add a Post to the engineering model.
+    assert all(model.plan.by_tag(f"TR-BW-MDO-TIMBER-PLY-{ply}").host_ref == wall.tag
+               for ply in range(1, 4))
+
+
+def test_timber_schedule_weights_and_stock_nesting_are_derived_once(catlin_plan):
+    from scripts.entry_screen_mdo_report import spec
+
+    assert [(row["profile"], row["cuts"], row["boards"]) for row in spec.PURCHASING] == [
+        ("2x4", 6, 3), ("2x6", 3, 2)]
+    assert all(row["cuts_per_board"] * (row["cut_length_in"] + spec.SAW_KERF_IN)
+               <= row["stock_length_in"] for row in spec.PURCHASING)
+    assert pytest.approx(54.1855189) == spec.SUPPORT_WEIGHT_LB
+    assert spec.HARDWARE_QUANTITIES == {"SDWS22300DB": 8, "A35Z": 4, "SD9112": 48}
+    assert pytest.approx(4.6) == spec.HARDWARE_AND_PAINT_RESERVE_LB
+    material = catlin_plan.library.material("entry-screen-white-mdo")
+    effective_weight = (material.areal_density_kg_m2 * spec.NET_PANEL_AREA_IN2
+                        * INCH**2 * 2.2046226218)
+    panel_weight = spec.NET_PANEL_AREA_IN2 * spec.PANEL_THICKNESS_IN * spec.LB_PER_IN3
+    assert effective_weight == pytest.approx(panel_weight + spec.SUPPORT_WEIGHT_LB + 4.6)
+
+
+def test_local_timber_check_does_not_hide_failed_or_unverified_connections(catlin_ctx):
+    from scripts.entry_screen_mdo_report import concentrated_sill_delta, local_timber_checks
+
+    from typehaus.engineering.roof_lateral import roof_winds
+
+    pressure = roof_winds(catlin_ctx.engineering.context)["RF-BW-CANOPY"].pressure_psf
+    rows = {row["name"]: row for row in local_timber_checks(pressure)}
+    assert rows["guard concentrated/infill: single-ply bending"]["ratio"] == pytest.approx(
+        1.07733, abs=1e-4)
+    assert rows["guard concentrated/infill: single-ply bending"]["status"] == "over"
+    assert rows["ply transfer: one screw, full load envelope"]["capacity"] == pytest.approx(171.5)
+    assert rows["ply transfer: one screw, full load envelope"]["status"] == "over"
+    assert rows["end attachments: installed directions and fit"]["status"] == "incomplete"
+    assert rows["guard concentrated/infill: single-ply deflection"]["status"] == "ok"
+    assert all(row["status"] == "ok" for name, row in rows.items() if "screw end distance" in name
+               or "screw row spacing" in name or name == "screw edge distance")
+    local = concentrated_sill_delta(catlin_ctx.model)
+    assert sum(row["load_lb"] for row in local["point_loads"]) == pytest.approx(28.8989434)
+    assert local["maximum_additional_moment_lb_in"] == pytest.approx(373.60915, abs=0.01)
+
+
+def test_lower_timber_reaches_ifc_and_viewer_geometry(catlin_model_ro, catlin_ifc_path):
+    import ifcopenshell
+
+    from typehaus.server.model_json import model_to_dict
+
+    tags = {f"TR-BW-MDO-TIMBER-PLY-{ply}" for ply in range(1, 4)}
+    ifc = ifcopenshell.open(str(catlin_ifc_path))
+    names = {product.Name for product in ifc.by_type("IfcProduct")}
+    assert {f"{tag}-1" for tag in tags} <= names
+    # Viewer exports serialize the same geometry IR, including supplemental solids.
+    payload = str(model_to_dict(catlin_model_ro))
+    assert all(tag in payload for tag in tags)

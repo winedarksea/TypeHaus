@@ -7,34 +7,6 @@
       "node": "polyline",
       "points": [
         [
-          77.0,
-          2.000000000000007
-        ],
-        [
-          78.0,
-          2.000000000000007
-        ],
-        [
-          78.0,
-          47.50000000000001
-        ],
-        [
-          77.0,
-          47.50000000000001
-        ]
-      ],
-      "layer": "A-WALL",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWWS01AAAA",
-      "tag": "W-BW-SCREEN/mdo-in-2"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           73.625,
           -0.94
         ],
@@ -856,6 +828,174 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          73.625,
+          0.5600000000000006
+        ],
+        [
+          75.125,
+          0.5600000000000006
+        ],
+        [
+          75.125,
+          45.0
+        ],
+        [
+          73.625,
+          45.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWMDT00007-00",
+      "tag": "TR-BW-MDO-TIMBER-PLY-1-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          73.625,
+          0.5600000000000006
+        ],
+        [
+          75.125,
+          0.5600000000000006
+        ],
+        [
+          75.125,
+          45.0
+        ],
+        [
+          73.625,
+          45.0
+        ]
+      ],
+      "pattern": "kdat",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          75.125,
+          0.5600000000000006
+        ],
+        [
+          76.625,
+          0.5600000000000006
+        ],
+        [
+          76.625,
+          45.0
+        ],
+        [
+          75.125,
+          45.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWMDT00008-00",
+      "tag": "TR-BW-MDO-TIMBER-PLY-2-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          75.125,
+          0.5600000000000006
+        ],
+        [
+          76.625,
+          0.5600000000000006
+        ],
+        [
+          76.625,
+          45.0
+        ],
+        [
+          75.125,
+          45.0
+        ]
+      ],
+      "pattern": "kdat",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          76.625,
+          0.5600000000000006
+        ],
+        [
+          78.125,
+          0.5600000000000006
+        ],
+        [
+          78.125,
+          45.0
+        ],
+        [
+          76.625,
+          45.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWMDT00009-00",
+      "tag": "TR-BW-MDO-TIMBER-PLY-3-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          76.625,
+          0.5600000000000006
+        ],
+        [
+          78.125,
+          0.5600000000000006
+        ],
+        [
+          78.125,
+          45.0
+        ],
+        [
+          76.625,
+          45.0
+        ]
+      ],
+      "pattern": "kdat",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
     },
     {
       "space": "model",
@@ -4773,31 +4913,6 @@
         40.68000000000001
       ],
       "text": "stud 3 1/2\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          77.5,
-          38.080000000000005
-        ],
-        "name": ""
-      },
-      "at": [
-        47.00000000000001,
-        38.080000000000005
-      ],
-      "to": [
-        77.5,
-        38.080000000000005
-      ],
-      "text": "mdo-in-2 3/4\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

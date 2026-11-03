@@ -478,3 +478,26 @@ def test_the_court_side_joint_is_spliced(records) -> None:
     assert _input(record, "winter_joint_steel") == pytest.approx(1.20)
     assert not any(n.startswith("WINTER JOINT") for n in record.notes)
     assert not [s for s in record.limit_states if "unreinforced joint" in s.name]
+
+
+def test_a_raised_layer_board_stops_at_the_house_concrete(ctx, monkeypatch) -> None:
+    """A beam grown into a wall keeps only the board area that faces house concrete: the
+    W-B-S2/S3 curb over 196", and W-B-S1/S4's full-height pour over the 10" each end that the
+    axis-to-axis board reaches past N-B-S1/N-B-S4. Above the curb it faces a framed wall across
+    air and bears on nothing. Today's top is under the curb, so nothing clips (free body §11)."""
+    from typehaus.engineering import thermal_break_geometry as geo
+    from typehaus.engineering.retaining_system import footing_shortfalls
+
+    loops = footing_shortfalls(ctx)
+    before = next(b for b in geo.layer_boards(ctx, loops) if b.tag == _BEAM)
+    assert (before.h_in, before.length_in) == (pytest.approx(17.75), pytest.approx(216.0))
+    walls = [dataclasses.replace(w, z1_m=-13.333 * 0.0254) if w.tag == _BEAM else w
+             for w in ctx.model.walls]
+    monkeypatch.setattr(ctx.model, "walls", walls)
+    raised = next(b for b in geo.layer_boards(ctx, loops) if b.tag == _BEAM)
+    curb, pour = geo.z_extent(ctx, "W-B-S2")[1], geo.z_extent(ctx, "W-B-S1")[1]
+    bottom = raised.bottom_in
+    faced = 196.0 * (curb - bottom) + 2 * 10.0 * (pour - bottom)
+    assert curb - bottom == pytest.approx(18.0, abs=0.01)
+    assert raised.area_in2 == pytest.approx(faced, rel=1e-6)
+    assert raised.h_in == pytest.approx(26.22, abs=0.01)

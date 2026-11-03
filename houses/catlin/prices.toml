@@ -3735,8 +3735,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # is the real order quantity for stock culled at the moulder rather than at the rack.
 
 [envelope_layers]
-# Budget only: MDO, edge nailers, stainless hardware and paint system; not a local quote.
-"entry-screen-white-mdo" = { material = { low = 7, high = 11 }, labour = { low = 8, high = 16 } }
+# Budget only: one MDO sheet, six nailers, three 2x6 plies, candidate hardware and finishes.
+# Entire supplemental scope counted here once; connections remain blocked in entry_screen_mdo.md.
+"entry-screen-white-mdo" = { material = { low = 10, high = 16 }, labour = { low = 10, high = 20 } }
 # Installed budget rates for full-depth jamb foam and site door paint.
 "closed-cell-spray-foam:5.5" = { material = { low = 2.2, high = 3.3 }, labour = { low = 3.3, high = 4.95 } }
 "door-paint-exterior" = { material = { low = 0.4, high = 0.8 }, labour = { low = 2, high = 4 } }

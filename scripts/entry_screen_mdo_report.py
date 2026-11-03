@@ -14,7 +14,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "houses/catlin"))
 from plan import entry_screen_finish_spec as spec  # noqa: E402
-from plan.entry_screen_finish_checks import concentrated_sill_delta, local_timber_checks  # noqa: E402
+from plan.entry_screen_finish_checks import (  # noqa: E402
+    concentrated_sill_delta,
+    local_timber_checks,
+)
 
 from typehaus.checks.run import build_context  # noqa: E402
 from typehaus.engineering.pier_basis import wall_line_loads  # noqa: E402
@@ -53,7 +56,8 @@ def previous_weight_plan(plan):
                                     / (spec.NET_PANEL_AREA_IN2 * 0.0254**2)})
         if material.tag == "entry-screen-white-mdo" else material
         for material in plan.library.materials)
-    return plan.model_copy(update={"library": plan.library.model_copy(update={"materials": materials})})
+    library = plan.library.model_copy(update={"materials": materials})
+    return plan.model_copy(update={"library": library})
 
 
 def build_report(context, before):
@@ -102,7 +106,8 @@ def build_report(context, before):
                                    for tag, load in after["wall_reaction_lb"].items()},
         "door_sweep": {"stop_degrees": context.plan.by_tag("D-G-SERVICE").maximum_opening_degrees,
                        "minimum_clearance_in": clearance_in, "obstacle": minimum.obstacle,
-                       "new_hardware_scope": "ply screw heads; end A35Z/SD9112 installation unresolved"},
+                       "new_hardware_scope": ("ply screw heads; end A35Z/SD9112 "
+                                              "installation unresolved")},
     }
 
 

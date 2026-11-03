@@ -91,7 +91,8 @@ END_CONNECTION_MISSING = (
     "Verify all SD9112 hole locations, side-grain penetration, wood edge/end distances and "
     "plate contact at both ends without cutting west shear plywood or existing plates.",
     "Resolve A35Z bent-tab interference with the two new edge nailers; the 1/8in gaps "
-    "are narrower than a 1-7/16in angle leg. Candidate hardware envelopes are not installation approval.",
+    "are narrower than a 1-7/16in angle leg. Candidate hardware envelopes are not "
+    "installation approval.",
 )
 
 # Conservative procurement/dead-load allowances, not additional solid-derived weight.

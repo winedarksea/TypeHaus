@@ -68,6 +68,6 @@ ENTRY_SCREEN_WALL = Assembly(
     ),
     source="Owner selected white painted 3/4in exterior MDO, directly screwed to framing. "
     "Four removable panels, 1/4in behind timber; no WRB or ventilation cavity. "
-    "Supplemental vertical edge nailers; support/hardware/paint dead load included. "
+    "Six supplemental 2x4 edge nailers and three 2x6 centre plies; scheduled dead load included. Lower timber attachment acceptance blocked pending local connection checks. "
     "Seal all faces, edges and holes; see notes/entry_screen_mdo.md.",
 )

@@ -1,10 +1,10 @@
 """Direct-mounted MDO edge supports and accessible garage tie-block relief."""
 
 from plan.entry_screen_finish_spec import (
-    SUPPORTS,
-    PLY_SCREWS,
     PLY_SCREW_HEAD_DIAMETER_IN,
     PLY_SCREW_HEAD_PROJECTION_IN,
+    PLY_SCREWS,
+    SUPPORTS,
     TIE_RELIEF_BOTTOM_IN,
     TIE_RELIEF_START_IN,
     TIE_RELIEF_TOP_IN,
