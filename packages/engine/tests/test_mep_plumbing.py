@@ -731,11 +731,40 @@ def test_the_wall_exit_leaves_from_the_jogged_station_not_the_chase():
 
 def test_trap_arms_are_walked_in_3d_to_a_vent_that_meets_the_drain(catlin_model):
     """C6-E7: `mep.trap_arm_developed` walks the drain from the trap to the first vent tee
-    (or a wet-vented inlet). The basement WC is the reviewer's case: wet-vented only where
-    the utility sink drops in, 116" along the drain against Table 1002.2's 72"."""
+    (or a wet vent that grades legal under 908). The basement WC is the reviewer's case: the
+    utility sink joins 116" down the drain, against Table 1002.2's 72"."""
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY,
                             only="mep.trap_arm_developed")
     by = {f.element_tags[0]: f for f in report.findings}
     assert by["FX-A-STUBATH-WC"].result.value == "pass"  # its riser, plan/mep_vent_tees.py
-    assert '116"' in by["FX-B-BATH-WC"].message and by["FX-B-BATH-WC"].result.value == "advisory"
+    assert by["FX-B-BATH-WC"].result.value == "advisory"
     assert "no vent meets its drain" in by["FX-M-BATH2-WC"].message
+    # 908 grades the sink as a wet vent and refuses it: 6 DFU on a Ø1.5" section, a utility
+    # sink in the group, and the WC first on the branch (houses/catlin/notes/wet_vent_basis.md).
+    msg = by["FX-B-BATH-WC"].message
+    assert "PR-B-USINK-DRAIN rejected as a wet vent" in msg and "not a bathroom-group" in msg
+
+
+def _wet_layout(child_in: float):
+    """Lav arm -> main; a tub drain C (vent tee at its top) and a WC arm join the main."""
+    from typehaus.checks.mep.trap_arm import developed_arm
+
+    drains = {"ARM": [(0, 1.5, 0), (1, 1.5, 0)], "P": [(1, 2, 0), (1, 0, 0), (4, 0, 0)],
+              "C": [(2, 1, 0), (2, 0, 0)], "WCARM": [(3, 1, 0), (3, 0, 0)]}
+    radii = {"ARM": 0.019, "P": 0.0381, "C": child_in * 0.0254 / 2, "WCARM": 0.0381}
+    fx = {"FX-LAV": ("ARM", 1.0, "lavatory", "S1"), "FX-TUB": ("C", 2.0, "tub", "S1"),
+          "FX-WC": ("WCARM", 3.0, "toilet", "S1")}
+    return lambda ends: developed_arm("ARM", drains, radii, ends, (fx, "FX-LAV"))
+
+
+def test_a_legal_wet_vent_ends_the_arm_and_an_undersized_one_is_walked_past():
+    # 6 DFU into the wet vent: 908.2.2 wants 3" for its whole length. Ø3 passes.
+    arm, what, _, notes = _wet_layout(3.0)([(2, 1, 0)])
+    assert arm == pytest.approx(3.5) and "C, wet-vented (908.2" in what and not notes
+    # Ø1.5 fails: the walk skips it, says why, and ends at the next true tee.
+    arm, what, _, notes = _wet_layout(1.5)([(2, 1, 0), (3.5, 0, 0)])
+    assert arm == pytest.approx(5.0) and what == "a vent tee"
+    assert len(notes) == 1 and notes[0].startswith("C rejected as a wet vent")
+    assert "3\" it needs for 6 DFU" in notes[0]
+    # Nothing else to end on: no arm at all.
+    assert _wet_layout(1.5)([(2, 1, 0)])[0] is None

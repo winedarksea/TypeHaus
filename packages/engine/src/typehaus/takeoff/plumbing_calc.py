@@ -129,6 +129,26 @@ TRAP_ARM_MAX_IN: dict[float, float] = {
 }
 
 
+# MN Plumbing Code 908 (2018 UPC, Minn. R. 4714.0050) wet venting. Sources: 908.2.x text per
+# IAPMO TIA UPC-001-12 (908.2.1 where permitted, .1 vent connection, .2 size, .3 trap arm,
+# .4 water closet last, .5 additional fixtures); 908.2.2 as quoted and applied to the ENTIRE
+# wet vent by MN Plumbing Board PB0225 (2026-02-24); 908.1 as summarized on MN DLI's
+# "Vertical Wet Venting" sheet (1/22). Horizontal: ≥2" for ≤4 DFU, ≥3" for ≥5 DFU.
+# Vertical: upper fixtures 1-2 DFU, ≤4 fixtures, one storey, ≤6 ft developed, each section
+# one size over the larger of the upper fixture's waste and the Table 703.2 size for its
+# sum, never under 2". 908.1.1's per-section split is graded on the whole section.
+WET_VENT_HORIZONTAL_MIN_IN: tuple[tuple[float, float], ...] = ((4.0, 2.0), (float("inf"), 3.0))
+WET_VENT_VERTICAL_MAX_IN = 72.0
+WET_VENT_VERTICAL_MAX_FIXTURES = 4
+WET_VENT_VERTICAL_UPPER_DFU_MAX = 2.0
+WET_VENT_MIN_IN = 2.0
+#: A bathroom group (UPC 204.0): water closet, lavatories, bath/shower, bidet, floor drain.
+#: Horizontal wet venting admits no other fixture (908.2.1).
+BATHROOM_GROUP_SYMBOLS: frozenset[str] = frozenset(
+    k for k in DFU_BY_SYMBOL
+    if not k.startswith(("kitchen-sink", "washer")) and k not in {"dishwasher", "laundry-sink"})
+
+
 @dataclass(frozen=True)
 class FixtureUnits:
     """One fixture's code loads. ``None`` fields mean the table has no row — UNKNOWN."""
