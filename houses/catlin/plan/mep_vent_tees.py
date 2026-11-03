@@ -9,7 +9,7 @@
 # FILED ON ``main`` (datum 0'-0"), like SECOND_DRAINS, so every elevation is project-absolute
 # and reads straight against the drains it tees off.
 
-from typehaus import PipeRun, PipeSystem, inch, pt
+from typehaus import PipeRun, PipeSystem, ft, inch, pt
 
 VENT_TEES = [
     # RM-A-STUBATH's water closet: a sanitary tee at the top of PR-A-STUBATH-DRAIN's drop in
@@ -62,6 +62,32 @@ VENT_TEES = [
             diameter=inch(1.5), material="pvc",
             elevations=(inch(0.95), inch(89.148)),
             serves=("FX-M-BATH1-WC",)),
+    # RM-M-BATH2's WC: a tee on the closet bend's drop (x 2'-6", y 21'-0 3/4"), 15 1/4" north
+    # under the floor to W-M-HS1's bay, up the wet wall onto PR-M-BATH2-LAV-VENT's header.
+    PipeRun(uid="TE1ZQ3VJ98", tag="PR-M-BATH2-WC-VENT", system=PipeSystem.VENT,
+            path=(pt(inch(30), inch(252.74)), pt(inch(30), inch(268)),
+                  pt(inch(30), inch(268)), pt(inch(30), inch(268))),
+            diameter=inch(2), material="pvc",
+            elevations=(inch(-20.5), inch(-19.5), inch(-19.4), inch(89.2)),
+            serves=("FX-M-BATH2-WC",)),
+    # RM-M-BATH2's shower: a tee on the centre drain's drop, east in its bay and up
+    # W-M-BA2E2's cavity, north at the ceiling onto PR-M-BATH2-VENT's end.
+    PipeRun(uid="F7XXC9XDK5", tag="PR-M-BATH2-SH-VENT", system=PipeSystem.VENT,
+            path=(pt(ft(6, 4.615), ft(14, 11)), pt(inch(98.5), ft(14, 11)),
+                  pt(inch(98.5), ft(14, 11)), pt(inch(98.5), ft(14, 11)), pt(inch(98.5), inch(204))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(inch(-22.0), inch(-21.5), inch(-21.4), inch(115.9), inch(116)),
+            serves=("FX-M-BATH2-SH",)),
+    # RM-M-LAUNDRY's sink: a tee at the foot of its drop, under the joists to x=13'-0" (past the
+    # HW/CW-WASH ends and PR-M-S-SUITE-DRAIN's stack), up W-M-CLN's cavity behind the basin,
+    # then west in the truss bay onto PR-M-BATH2-VENT's riser. Arm ~16".
+    PipeRun(uid="BQEVC68G5T", tag="PR-M-LSINK-VENT", system=PipeSystem.VENT,
+            path=(pt(inch(144), ft(18, 10.625)), pt(inch(156), inch(216)),
+                  pt(inch(156), inch(216)), pt(inch(156), inch(216)),
+                  pt(inch(98.5), inch(216))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(inch(-15.2), inch(-14.9), inch(-14.8), inch(115.9), inch(116)),
+            serves=("FX-M-LAUNDRY-SINK",)),
     # RM-B-BATH's lavatory: a tee at the trap outlet in W-B-CW2, up its cavity, west in it and
     # north in W-B-STR2's to PR-B-BATH-VENT's riser at 1'-6 3/8" under the deck. Arm ~2".
     PipeRun(uid="MFDV1SAVZT", tag="PR-B-BATH-LAV-VENT", system=PipeSystem.VENT,
