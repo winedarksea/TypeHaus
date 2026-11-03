@@ -198,7 +198,7 @@ MAIN_BACKING = [
                 start=inch(15.25), length=inch(53.875),
                 elevation=inch(62), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="closet robe peg rail (64 in.)"),
-    # RM-M-BED's two J2 sconces (plan/lighting_main.py), backplates 52"-56" AFF.
+    # RM-M-BED's two J1 sconces (plan/lighting_main.py), backplates 52"-56" AFF.
     WallBacking(uid="4Z8EB4TJKF", tag="BK-M-BDN1-SCONCE", wall_ref="W-M-BDN1", face="right",
                 start=inch(64.75), length=inch(14.5),
                 elevation=inch(52), height=inch(7.25), profile="2x8",

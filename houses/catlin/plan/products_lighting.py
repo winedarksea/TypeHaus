@@ -188,8 +188,9 @@ ALCON_11414_KN_GARDEN_FLOOD = Product(
            "tall x 2.75 in. deep, 8.7 in. overall with the knuckle. Options WG wire guard, "
            "VSH vandal shield. ** NOT PUBLISHED: ** beam angle (no 60 deg optic code), a "
            "glare visor (VSH is a guard, not a cutoff), the knuckle thread size, and lumens "
-           "below 30 W (4,796 lm at 30 W / 4000 K), so the house's 60 deg, 20 W / 1,800 lm "
-           "allowance stands. Built to order, 3-7 business days per the product page.",
+           "below 30 W (4,796 lm at 30 W / 4000 K). ** ALLOWANCE (owner, 2026-11-02): ** 60 deg "
+           "beam and 20 W / 1,800 lm are assumed, not read; CONFIRM at order by asking Alcon "
+           "for the IES file. Built to order, 3-7 business days per the product page.",
 )
 
 DIODE_S45_CHANNEL = Product(

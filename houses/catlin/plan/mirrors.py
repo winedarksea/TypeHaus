@@ -119,38 +119,38 @@ SECOND_MIRRORS = [
             location=Location(attachment=WallAttachment(
                 wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(25.5),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
-    Furniture(uid="71CDD3B4F5", tag="FURN-S-VANITY-MIRROR1", type_ref="FT-MIRROR-KOHLER-30638-BNL", room="RM-S-VANITY",
+    Furniture(uid="71CDD3B4F5", tag="FURN-S-VANITY-MIRROR1", type_ref="FT-MIRROR-KOHLER-30638-BLL", room="RM-S-VANITY",
             mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-S-BD-N", face="right", distance_from_start=inch(22.375),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
-    Furniture(uid="3436262C8E", tag="FURN-S-VANITY-MIRROR2", type_ref="FT-MIRROR-KOHLER-30638-BNL", room="RM-S-VANITY",
+    Furniture(uid="3436262C8E", tag="FURN-S-VANITY-MIRROR2", type_ref="FT-MIRROR-KOHLER-30638-BLL", room="RM-S-VANITY",
             mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-S-BD-N", face="right", distance_from_start=inch(52.375),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
-    # Makeup light (2026-10-31): three P6 opal sconces flank the two arches at face height,
-    # centres 64" AFF, symmetric about the switch. The 5" bodies leave 7/16" to each side
-    # wall and to each mirror edge; the outer two take a <= 4 1/2" backplate if one is
-    # found. Boxes land in BK-S-BD-N-MIRROR-HANG. The W/E uids are the two retired Karlies'.
+    # Makeup light (2026-10-31): three P6 sconces flank the two arches at face height,
+    # centres 64" AFF, symmetric about the switch. Black Hinkley Soren beside black Kohler
+    # arches (2026-11-02); the 5" round backplates leave 7/16" to each side wall and to each
+    # mirror edge. Boxes land in BK-S-BD-N-MIRROR-HANG. The W/E uids are the two retired Karlies'.
     ElectricalDevice(uid="QTS000FAAA", tag="ED-S-VANITY-SCONCE-W", kind=DeviceKind.LIGHT,
             type_ref="ED-T-LT-SCONCE-VANITY", room="RM-S-VANITY",
             circuit="CKT-LT-UPPER", controlled_by=("ED-S-VANITY-SW",),
-            mount=Mount(kind=MountKind.WALL, elevation=inch(55)),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(56.875)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-S-BD-N", face="right", distance_from_start=inch(9.4375),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="PMRKTC441J", tag="ED-S-VANITY-SCONCE-C", kind=DeviceKind.LIGHT,
             type_ref="ED-T-LT-SCONCE-VANITY", room="RM-S-VANITY",
             circuit="CKT-LT-UPPER", controlled_by=("ED-S-VANITY-SW",),
-            mount=Mount(kind=MountKind.WALL, elevation=inch(55)),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(56.875)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-S-BD-N", face="right", distance_from_start=inch(37.375),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTS000GAAA", tag="ED-S-VANITY-SCONCE-E", kind=DeviceKind.LIGHT,
             type_ref="ED-T-LT-SCONCE-VANITY", room="RM-S-VANITY",
             circuit="CKT-LT-UPPER", controlled_by=("ED-S-VANITY-SW",),
-            mount=Mount(kind=MountKind.WALL, elevation=inch(55)),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(56.875)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-S-BD-N", face="right", distance_from_start=inch(65.3125),
                 normal_gap=inch(0), rotation_offset=deg(0)))),

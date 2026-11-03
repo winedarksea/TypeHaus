@@ -31,13 +31,16 @@ REOLINK_DOORBELL = Product(
            "IP65, black -10..50 C (14 F; owner accepts the cold limit). Core Reolink "
            "integration, local push; two-way talk is app-only. Plug-in Reolink Chime (433 MHz) "
            "or an HA announcement; no mechanical chime." + _NOTE)
-REOLINK_TURRET = Product(
-    tag="PROD-REOLINK-RLC-833A", brand="Reolink", model="RLC-833A",
-    name="4K PoE turret camera, IR 30 m",
-    url="https://reolink.com/product/rlc-833a/",
-    source="Reolink page, read 2026-10-30: 117.4 x 103.8 mm, <12 W, 802.3af, IR 30 m, IP67. "
-           "Marked DISCONTINUED: buy the current 4K PoE turret of the same envelope "
-           "(RLC-833A class). microSD on board; core Reolink integration." + _NOTE)
+REOLINK_OMVI_3I = Product(
+    tag="PROD-REOLINK-OMVI-3I-POE", brand="Reolink", model="Omvi 3i PoE",
+    name="Triple-lens 180 deg pan-tilt PoE camera",
+    url="https://reolink.com/product/omvi-3i-poe/",
+    source="Owner, 2026-11-02 (replaces the discontinued RLC-833A). Reolink page and power "
+           "table, read 2026-11-02: 202 x 151 x 125 mm, 1.3 kg, 802.3at PoE+ (a 30 W port), "
+           "20 W max, IR 30 m, IP66, -10..55 C; 180 x 65 deg panorama over a 55 deg tele lens, "
+           "350 deg pan; wall, ceiling or corner bracket included. microSD to 512 GB, RTSP. "
+           "Not on the core reolink integration's tested list: CONFIRM, else RTSP/ONVIF "
+           "locally." + _NOTE)
 REOLINK_DUO3 = Product(
     tag="PROD-REOLINK-DUO-3-POE", brand="Reolink", model="Duo 3 PoE",
     name="Dual-lens 180 deg PoE camera",
@@ -100,13 +103,13 @@ ZOOZ_ZAC36 = Product(
            "no hub. Optional backup battery pack. Envelope is an allowance until the manual "
            "is read." + _NOTE)
 
-SMART_HOME_PRODUCTS = (REOLINK_DOORBELL, REOLINK_TURRET, REOLINK_DUO3, LIFTMASTER_8550W,
+SMART_HOME_PRODUCTS = (REOLINK_DOORBELL, REOLINK_OMVI_3I, REOLINK_DUO3, LIFTMASTER_8550W,
                        GRIZZLE_SMART, KIDDE_SM120X, KIDDE_CO120X, AQARA_W200, WARMUP_7IE,
                        ZOOZ_ZAC36)
 
 # --- low-voltage endpoints (DATA_OUTLET kind; PoE from the switch in ED-B-NET-PATCH) ----------
-# 12.95 W is the 802.3af PD ceiling, used where the maker publishes no draw; the two cameras
-# publish "<12 W".
+# 12.95 W is the 802.3af PD ceiling, used where the maker publishes no draw; the Duo 3
+# publishes "<12 W" and the Omvi 3i 20 W.
 _CAMERA = dict(ports=_DATA, ifc_entity="IfcAudioVisualAppliance", ifc_predefined_type="CAMERA")
 
 DEVICE_TYPES = (
@@ -115,10 +118,11 @@ DEVICE_TYPES = (
         footprint=(inch(1.875), inch(0.875)), height=inch(5.25),
         product_ref=REOLINK_DOORBELL.tag, poe_watts=12.95, source=REOLINK_DOORBELL.source,
         **_CAMERA),
+    # PoE+: the only port on ED-B-NET-PATCH's switch that needs 802.3at.
     ElectricalDeviceType(
-        tag="ED-T-CAM-TURRET", name="PoE turret camera, 4K (RLC-833A class)",
-        footprint=(inch(4.625), inch(4.625)), height=inch(4.125),
-        product_ref=REOLINK_TURRET.tag, poe_watts=12.0, source=REOLINK_TURRET.source,
+        tag="ED-T-CAM-PANTILT", name="PoE+ pan-tilt camera, 180 deg (Reolink Omvi 3i)",
+        footprint=(inch(7.9375), inch(5.9375)), height=inch(4.9375),
+        product_ref=REOLINK_OMVI_3I.tag, poe_watts=20.0, source=REOLINK_OMVI_3I.source,
         **_CAMERA),
     # Body 195 x 56 mm in plan; the depth carries the mount bracket under a beam soffit.
     ElectricalDeviceType(

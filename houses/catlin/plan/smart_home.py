@@ -62,10 +62,10 @@ MAIN_ELEMENTS = [
                elevations=(inch(110.5), inch(110.5), inch(110.5), ft(3, 9), ft(3, 9), ft(3, 9)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-DOORBELL"),
     # Under the balcony joists in the bay south of the screen's front track, so the IR does
-    # not flare off the mesh. Base = soffit (105.75") less the body.
+    # not flare off the mesh. Base = soffit (105.75") less the 4 15/16" body.
     ElectricalDevice(uid="VD453HW3G7", tag="ED-M-CAM-PORCH", kind=DeviceKind.DATA_OUTLET,
-                     position=pt(ft(17, 6), ft(-9, -2.5)), type_ref="ED-T-CAM-TURRET",
-                     mount=Mount(kind=MountKind.CEILING, elevation=inch(101.625))),
+                     position=pt(ft(17, 6), ft(-9, -2.5)), type_ref="ED-T-CAM-PANTILT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=inch(100.8125))),
     # A second Cat 6A in CD-M-DATA-PORCH, then this extension: up into the balcony joists
     # beside the AP and south through them (bored at mid-depth) so nothing crosses under
     # the screen track, then down to the camera.

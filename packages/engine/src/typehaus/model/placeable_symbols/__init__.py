@@ -59,6 +59,7 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
 # holds the registry to it in both directions.
 SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS) | frozenset({
     "plain-round-mirror-nickel", "plain-arch-mirror-nickel", "plain-arch-mirror-chrome",
+    "plain-arch-mirror-black",
     "plain-soft-rectangle-mirror-nickel", "plain-capsule-mirror-nickel",
     "halo-mirror-light", "socketed-vanity-2-nickel", "socketed-vanity-2-chrome",
     "socketed-vanity-3-nickel", "socketed-vanity-3-chrome",

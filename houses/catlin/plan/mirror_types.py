@@ -22,20 +22,23 @@ _PLAIN_MIRROR_INSTALLATION = (
 )
 
 
-def _kohler_mirror(model, width, height, shape, finish):
+_SYMBOL_FINISH = {"polished chrome": "chrome", "matte black": "black"}
+
+
+def _kohler_mirror(model, width, height, shape, finish, read=_READ_DATE):
     product_tag = "PROD-KOHLER-" + model
     product = Product(
         tag=product_tag, brand="Kohler", model="K-" + model,
         name=f"Essential {shape} mirror, {finish}",
         url=_KOHLER_SPEC.format(model.split("-")[0]),
-        source=_READ_DATE + f"Overall {width} x {height} x 1.375 in., {finish}."
+        source=read + f"Overall {width} x {height} x 1.375 in., {finish}."
                + _PLAIN_MIRROR_INSTALLATION,
     )
     mirror_type = FurnitureType(
         tag="FT-MIRROR-KOHLER-" + model, name=product.name,
         footprint=(inch(width), inch(1.375)), height=inch(height),
         mount=Mount(kind=MountKind.WALL), product_ref=product_tag,
-        plan_symbol=f"plain-{shape}-mirror-{'chrome' if finish == 'polished chrome' else 'nickel'}",
+        plan_symbol=f"plain-{shape}-mirror-{_SYMBOL_FINISH.get(finish, 'nickel')}",
         source=product.source,
     )
     return product, mirror_type
@@ -44,7 +47,8 @@ def _kohler_mirror(model, width, height, shape, finish):
 _KOHLER_SELECTIONS = (
     _kohler_mirror("26052-BNL", 22.1875, 34.1875, "soft-rectangle", "brushed nickel"),
     _kohler_mirror("30638-CPL", 20, 32, "arch", "polished chrome"),
-    _kohler_mirror("30638-BNL", 20, 32, "arch", "brushed nickel"),
+    # Black since 2026-11-02, to match the black Soren sconces (P6) between the arches.
+    _kohler_mirror("30638-BLL", 20, 32, "arch", "matte black", read="Read 2026-11-02. "),
     _kohler_mirror("26050-BNL", 28.0625, 28.0625, "round", "brushed nickel"),
     _kohler_mirror("31367-BNL", 22, 22, "round", "brushed nickel"),
 )

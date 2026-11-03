@@ -7352,3 +7352,28 @@ The service load falls to 270.3 A.
 - **Not taken:** an engine "stone continuity" field letting the beds claim W1's body across
   the 2.68" gap. The owner was fine with either. The leads are house source only, and they
   are real pipe in a real trench.
+
+## Owner placeholders named: vanity, bed, camera, motion, TV (2026-11-02)
+
+Five "owner selection" and "class of" records became orderable products (owner picks,
+facts read 2026-11-02 and cited in each `Product.source`):
+
+- **P6 vanity → Hinkley Soren 50910BK**, black, three at the same 64" centres. One E26 under
+  a 6 W cap, so the lamp is a Waveform ModernVintage A19 filament (5 W, 450 lm, 95 CRI):
+  1,350 source lm for the three against the 2 x E26 allowance's 4,800, taken for the look.
+  The arches went **matte black** with it (Kohler K-30638-BLL, same envelope; a new
+  `plain-arch-mirror-black` symbol). Open: the UL damp label and the box offset.
+- **J2 bed sconces → retired.** No US-listed hardwired GU10 swing arm turned up below
+  ~$400 (Hudson Valley Clark, aged brass only), so RM-M-BED's pair are J1, the WAC Sprig
+  already in the house: one product, switch on the canopy, no replaceable lamp.
+- **Porch camera → Reolink Omvi 3i PoE** (RLC-833A discontinued): `ED-T-CAM-PANTILT`,
+  202 x 151 x 125 mm, hung 13/16" lower, **PoE+ at 20 W** — the switch's only 802.3at port.
+  PoE total 82 → 90 W; the outage shed grows to 85.2 W, always-on falls to 211.8 W, the
+  battery alone runs 45.9 h and the bridge holds by 1.87 kWh (`notes/backup_power.md` §6).
+- **Night-light motion → IKEA MYGGSPRAY**, eight placed (`plan/motion_sensors.py`), Matter
+  over Thread on the ZBT-2, not Zigbee. The basement stair one has no night run to drive yet.
+- **Theatre TV → TCL 98QM8L** on a **Monoprice 12994** tilt mount: 5 1/8" off the wall is the
+  only listed mount found that clears the 3 1/2" over RC1/DATA1 without spacers (fixed and
+  low-tilt mounts sit 1-2 5/8"). VESA 600 x 500 is the 98QM8K sibling's: confirm.
+- **Garden flood:** the Alcon stays; its 60 deg / 1,800 lm is now written as an allowance
+  until the IES file is read at order.

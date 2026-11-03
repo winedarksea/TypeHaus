@@ -37,18 +37,10 @@ Note that many of the pinned decisions in the code base here aren't as fixed as 
 
 ### From the 2026-09-10 `plans/notes.md` triage
 
-- **No low-voltage security or sensing devices exist anywhere** (cameras, video doorbell,
-  access control/readers, water-leak sensors, an outdoor weather station). Grepping every
-  `ED-T-` declaration for `camera|doorbell|lock|access` returns nothing but one comment —
-  `plan/electrical.py` says "future PoE cameras are just another entry here", which is the
-  right shape but nobody made the entries. The structured-cabling half is finished and
-  careful (`ED-T-NET-ENCLOSURE`, three `ED-T-AP-*`, `ED-T-DATA-JACK`, a star topology whose
-  home runs `electrical.data_reachability` actually walks), so this is new device types plus
-  placement plus a PoE budget re-check, on the pattern the access-point rollout already set.
-  **Why it is worth doing before drywall and not after:** a camera or a reader that has no
-  authored position has no authored cable path either, and the AP work already had to fix
-  one device whose footprint collided with the studs it was supposed to sit between. Every
-  one of these is a retrofit at full price once the board is up. -- DEFERRED
+- **Low-voltage devices still unmodelled:** the doorbell, both cameras, the leak probe, the
+  lock and the bath motion sensors exist (`plan/smart_home.py`, `plan/motion_sensors.py`); an
+  outdoor weather station and any access reader do not, if wanted. Place them before drywall,
+  on the AP rollout's pattern (type, placement, PoE budget re-check). -- DEFERRED
 
 ### MEP / lighting residuals
 
@@ -59,10 +51,12 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
 
 - **Lighting review confirms (2026-10-31, houses/catlin DESIGN-LOG "Lighting review").** Before
   ordering: SuperLightingLED RGB+CCT white-channel CRI and lm/ft, and 12 mm in the 5/8" reveal;
-  the Fleurco MHAP4236's CRI (swap if under 90); choose the P6 vanity and J2 bed sconces (vanity
-  backplate <= 4 1/2"); CentricHOME R9 and enclosed/damp rating; Waveform tubes are Type B
-  double-ended; GL-C-001P cold rating in the garage; power-on state of the D215S relays, the
-  dining pendant and the six-plus controllers; the Zigbee dongle and the bath PIR sensors;
+  the Fleurco MHAP4236's CRI (swap if under 90); the Soren 50910BK's UL damp label and box
+  offset (P6, 2026-11-02); CentricHOME R9 (the 2026-11-02 sheet says > 80, not 90+) and
+  enclosed/damp rating; Waveform tubes are Type B double-ended; GL-C-001P cold rating in the
+  garage; power-on state of the D215S relays, the dining pendant and the six-plus
+  controllers; the Zigbee dongle; MYGGSPRAY on HA's Matter/Thread and its depth; the Omvi 3i
+  on HA's `reolink` integration (else RTSP/ONVIF); the TCL 98QM8L's VESA in its manual;
   MITTLED's US article numbers, lengths and connector cords (the order list counts one piece
   per run until `stock_length` is set); Mean Well HLG-100H-24A's Class 2 marking.
 - **Determine basement backwater protection before under-slab rough-in.** Add the next
@@ -221,7 +215,7 @@ the future.
   touch a tag (PANTRY/D8, STUDY/D13, MECH's "CHASE TYP. OF 2"), and on the 11x17 reduced check
   print the 12 pt room names spill past small rooms' walls.
 - The theater, RM-B-PLAY-N is specified as carpet, and should have a heating strip under the carpet near the sofa where feet are, likely just plugged in to a regular outlet
-- Extra light switches by beds: done for RM-M-BED (J2 sconces switch at the fixture) and RM-S-SUITE (2026-10-31); RM-S-BED1-3 still open.
+- Extra light switches by beds: done for RM-M-BED (J1 WAC Sprigs switch at the fixture) and RM-S-SUITE (2026-10-31); RM-S-BED1-3 still open.
 - A reviewer suggested 1/2" drywall as the standard otherwise, with cheaper end 'abuse' resistant drywall 1/2" for major Hallways, Kids' Rooms, Stairwells. Some options: 1/2" Type C, Paper-Faced 1/2" AR (e.g., Gold Bond Hi-Abuse or USG Sheetrock AR), LP SmartSide 38 Series Panel 7/16" (Sidings Used Indoors), 1/2" MDF (4x8 Sheets with V-Groove or Batten Strips), 1/2" MDO (Medium Density Overlay) Plywood
 - Best Cheap STC Upgrade (~+$0.12/sq ft): 1/2" Type C Drywall (also staggered stud framing which we use in some places, cheap low-expansion spray foam or standard elastomeric latex caulk ), Best Seamless Durability Upgrade (~+$0.45/sq ft): 1/2" Paper-Faced Abuse-Resistant (AR) Drywall, Best "Skip-the-Taper" Durable Wall (~$1.30/sq ft material, $0 mudding): 4x8 Pre-Primed MDF Shiplap Panels (or LP SmartSide 38 Series), The Winner for General Bath Walls: 1/2" Mold-Resistant Paper-Faced Drywall ("Purple Board" / USG Mold Tough, although not strictly needed on well ventilated walls with good high-resin paint), The Bathroom Ceiling Secret: 1/2" Interior Soffit Board (Sag-Resistant), Best Value for Speed & Zero-Fail Waterproofing behind tile: 1/2" Polyisocyanurate Foam Board (Johns Manville GoBoard), Places where 5/8" may still make sense: floor to floor ceilings (Type X), garage walls (5/8" AR Type X). Apparently the resonant frequency of 1/2" Type C drywall is one of the more ideal for household noises (being higher than the others)
 - Around bathrooms and bedrooms we want higher STC. Around major hallways and stairs we want abuse resistance (but only need it on the lower 4' above the walking surface probably). Around the mudroom we want highest abuse resistant with something like wainscot (shiplap there carries the idea already, can be improved further possibly like LP Smartside). Some walls likely worth abuse resistance on a side: W-M-WELL, W-M-HS2/HS3/HS4, W-M-BAE, W-M-C1/C2/C3 and walls facing RM-S-HALLWAY and next to stair landings. A reviewer also said that we should focus STC drywall/framing upgrades strictly for the solid walls without undercut doors (as they say doors bypass sound so much they make upgrades not worth the price, although doors that are weatherstripped, solid, and with no undercut do have better STC), based on this we can perhaps remove resilient channel assemblies from W-S-SBS and W-S-BW1/BW2/BW3

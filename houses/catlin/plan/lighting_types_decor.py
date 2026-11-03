@@ -52,26 +52,13 @@ DECORATIVE_LUMINAIRE_TYPES = (
                          "4 1/2 x 4 1/2 x 1 in.). The theatre units sit "
                          "on a DVCL-153P: CONFIRM it against the TRIAC range."),
     # J and J1 are one product (WAC Sprig): J is wall-switched, J1 uses the canopy toggle.
-    # The plant room's old wet copy retyped to J (damp is enough there); mark J2 is now the
-    # bed sconce below.
+    # The plant room's old wet copy retyped to J (damp is enough there). J2 (the bed
+    # sconces' shaded E26) retired 2026-11-02: RM-M-BED's pair are J1 too.
     _STRETCH,
     LuminaireType(tag="ED-T-LT-SPOT-SW", name="Swing-arm LED reading light, switch on fixture",
                   form=LuminaireForm.SCONCE, type_mark="J1", **_STRETCH_BODY,
                   integral_switch=True,
                   source="WAC Sprig BL-23210-BK, switched at its canopy toggle (a true on/off)."),
-    # J2 (2026-10-31): RM-M-BED's pair of bed sconces, replacing the headboard bar. J1's
-    # idea (switch at the fixture) with a shaded replaceable E26 lamp instead of a module.
-    LuminaireType(tag="ED-T-LT-SCONCE-BED",
-                  replaceable_lamp=True,
-                  lamp_base="E26", name="Swing-arm bed sconce, shaded E26, switch on fixture",
-                  form=LuminaireForm.SCONCE, type_mark="J2",
-                  footprint=(inch(7), inch(9)), height=inch(10), plan_symbol="sconce-swing-arm",
-                  lamp="E26 A19 LED, 2700K, CRI 95, 450-500 lm, replaceable", watts=6.0,
-                  lumens=450.0, cct_k=2700, cri=95, dimmable=False, load_va=6.0,
-                  integral_switch=True, ports=_POWER_120,
-                  product_ref="PROD-SWING-ARM-SCONCE-E26",
-                  source="Hardwired swing-arm sconce, switch on the fixture, shade hides the "
-                         "lamp from the pillow. Drawn folded."),
     LuminaireType(tag="ED-T-LT-SAUNA-VT", replaceable_lamp=False,
                   name="Sauna fibre-optic lighting, 8 ferrules on a remote projector",
                   form=LuminaireForm.SCONCE, type_mark="V",
@@ -337,18 +324,19 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # Mark P (a 24" mirror bar) retired 2026-10-28: the studio's wet-bar light is P1, the
     # Karlie 54622BN (plan/mirror_types.py).
     # P6 (2026-10-31): RM-S-VANITY's makeup light, three flanking the mirrors at eye height
-    # so the face is lit from the front, not from overhead. Lumens are lamp source output.
+    # so the face is lit from the front, not from overhead. Hinkley Soren since 2026-11-02.
     LuminaireType(tag="ED-T-LT-SCONCE-VANITY",
                   replaceable_lamp=True,
-                  lamp_base="E26", name="Vertical opal vanity sconce, 2 x E26, damp",
+                  lamp_base="E26", name="Vertical fluted-glass sconce, 1 x E26, black",
                   form=LuminaireForm.SCONCE, type_mark="P6",
-                  footprint=(inch(5), inch(5)), height=inch(18), plan_symbol="sconce",
-                  lamp="2 x E26 A19 LED, 3000K, CRI 95, R9 90+, replaceable", watts=18.0,
-                  lumens=None, cct_k=3000, cri=95, dimmable=True, damp_rated=True,
-                  load_va=18.0, ports=_POWER_120, product_ref="PROD-VANITY-SCONCE-OPAL-2E26",
-                  parts=(ProductPart(role="lamp", product_ref="PROD-WAVEFORM-CENTRICHOME-A19-30K",
-                                     quantity=2),),
-                  source="Vertical opal sconce, damp, two Waveform CentricHOME A19 (800 lm, "
-                         "95 CRI, R9 90+): 1,600 source lm, delivered unpublished (the Karlie "
-                         "convention). Centre at 64 in. AFF."),
+                  footprint=(inch(5), inch(4.75)), height=inch(14.25), plan_symbol="sconce",
+                  lamp="1 x E26 A19 LED filament, 3000K, CRI 95, R9 80+, replaceable",
+                  watts=5.0, lumens=None, cct_k=3000, cri=95, dimmable=True, damp_rated=True,
+                  load_va=5.0, ports=_POWER_120, product_ref="PROD-HINKLEY-50910BK",
+                  parts=(ProductPart(role="lamp",
+                                     product_ref="PROD-WAVEFORM-MODERNVINTAGE-A19-30K"),),
+                  source="Hinkley Soren 50910BK, one Waveform ModernVintage A19 (450 lm, "
+                         "95 CRI) under its 6 W cap: 1,350 source lm for the three, a third "
+                         "of the 2 x E26 allowance. Delivered lm unpublished. Centre at 64 in. "
+                         "AFF; damp label CONFIRM."),
 )

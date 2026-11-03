@@ -25,8 +25,8 @@ GARDEN_FLOOD_TYPE = luminaire_class("ED-T-LT-FLOOD-NARROW").model_copy(update={
     "source": f"Alcon 11414-KN-SM-BK: black wet-listed knuckle flood, switched to 20 W and "
               f"3000K, 0-10 V; knuckle on a box fastened up to the balcony blocking, aimed "
               f"{FLOOD_DOWNWARD_AIM_DEGREES:g} deg below horizontal into the open court. "
-              f"Beam and 20 W lumens unpublished; {FLOOD_BEAM_DEGREES:g} deg and "
-              "20 W / 1800 lm remain the allowance.",
+              f"ALLOWANCE: beam and 20 W lumens unpublished; {FLOOD_BEAM_DEGREES:g} deg and "
+              "20 W / 1800 lm are assumed until Alcon's IES file is read at order.",
 })
 GARDEN_FLOOD_MOUNT = Mount(
     kind=MountKind.CEILING,

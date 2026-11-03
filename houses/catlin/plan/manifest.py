@@ -45,7 +45,7 @@ from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, 
                   landscape, lighting_basement, lighting_entry, lighting_garage,
                   lighting_living, lighting_main, lighting_second, living_east_run, living_east_run_types,
                   living_puzzle_table_types, media_types,
-                  lighting_attic, lighting_types, masonry_joints, mep, mep_lavatories, mep_supply_branches, millwork,
+                  lighting_attic, lighting_types, masonry_joints, motion_sensor_types, motion_sensors, mep, mep_lavatories, mep_supply_branches, millwork,
                   millwork_vanities, placeables,
                   plant_room, plant_room_types, plant_types, plate_ties, porch_lighting,
                   opening_products, products, smart_home, smart_home_types,
@@ -73,7 +73,8 @@ _library = Library(
               *opening_products.OPENING_PRODUCTS, *bath_accessory_types.BATH_ACCESSORY_PRODUCTS,
               *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS, *products_bath_lavs.BATH_LAV_PRODUCTS,
               *device_types.DEVICE_PRODUCTS, *device_boxes.BOX_PRODUCTS, *drywall.DRYWALL_PRODUCTS,
-              *window_covering_types.WINDOW_COVERING_PRODUCTS, *smart_home_types.SMART_HOME_PRODUCTS,
+              *window_covering_types.WINDOW_COVERING_PRODUCTS, *smart_home_types.SMART_HOME_PRODUCTS, motion_sensor_types.MYGGSPRAY,
+              *media_types.MEDIA_PRODUCTS,
               *RAILING_PRODUCTS),
     # The one library pocket size this house hangs, alongside the house's own catalog. Only
     # the pocket types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for
@@ -146,7 +147,7 @@ _library = Library(
     electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *panel_types.PANEL_TYPES,
                              *mep.ELECTRICAL_DEVICE_TYPES,
                              *electrical.DEVICE_TYPES, *electrical_floor_types.DEVICE_TYPES,
-                             *device_types.DEVICE_TYPES, *smart_home_types.DEVICE_TYPES,
+                             *device_types.DEVICE_TYPES, *smart_home_types.DEVICE_TYPES, *motion_sensor_types.DEVICE_TYPES,
                              *lighting_types.LIGHTING_TYPES, *mirror_types.MIRROR_LIGHT_TYPES),
     circuits=circuits.CIRCUITS,
     # No ``load_managements``: retired 2026-09-12 with the Class 320 service. See the
@@ -404,7 +405,7 @@ PLAN = (
          *backing.BASEMENT_BACKING, *backing_wet.BASEMENT_WET_BACKING, *towel_accessories.BASEMENT_TOWEL_ACCESSORIES,
          *backing_towel_accessories.BASEMENT_TOWEL_BACKING,
          *bath_accessories.BASEMENT_BATH_ACCESSORIES,
-         *backing_bath_accessories.BASEMENT_TP_BACKING, *smart_home.BASEMENT_ELEMENTS],
+         *backing_bath_accessories.BASEMENT_TP_BACKING, *smart_home.BASEMENT_ELEMENTS, *motion_sensors.BASEMENT_ELEMENTS],
     )
     .with_elements(
         "main",
@@ -435,7 +436,7 @@ PLAN = (
          *bath_accessories.MAIN_BATH_ACCESSORIES, *backing_bath_accessories.MAIN_TP_BACKING,
          *braced_walls.MAIN_BRACED_WALLS, *braced_walls.MAIN_BRACED_CONNECTORS,
          *plate_ties.MAIN_PLATE_TIES, *wall_top_ties.MAIN_WALL_TOP_TIES,
-         *smart_home.MAIN_ELEMENTS],
+         *smart_home.MAIN_ELEMENTS, *motion_sensors.MAIN_ELEMENTS],
     )
     .with_elements("second", [*french_door_installations.with_catalog_installations(second.ELEMENTS), *attic_studio.SECOND_ELEMENTS,
                                 *fixtures.SECOND_FIXTURES,
@@ -462,7 +463,7 @@ PLAN = (
                                 *backing_bath_accessories.SECOND_TP_BACKING,
                                 *braced_walls.SECOND_BRACED_WALLS,
                                 *braced_walls.SECOND_BRACED_CONNECTORS,
-                                *plate_ties.SECOND_PLATE_TIES, *smart_home.SECOND_ELEMENTS])
+                                *plate_ties.SECOND_PLATE_TIES, *smart_home.SECOND_ELEMENTS, *motion_sensors.SECOND_ELEMENTS])
     .with_elements("attic", [*attic.ELEMENTS, *attic_studio.ATTIC_ELEMENTS,
                              *fixtures.ATTIC_FIXTURES,
                              *roof_trim.ATTIC_ELEMENTS,
@@ -470,7 +471,7 @@ PLAN = (
                              *roof_wind_clamps.HOUSE_ROOF_WIND_CLAMPS,
                               *solar.ATTIC_ELEMENTS, *lighting_attic.ATTIC_LIGHTING, *mirrors.ATTIC_MIRRORS,
                              *electrical_attic.NEC_FILL_ATTIC, *electrical_stair_ext.STAIR_ATTIC,
-                             *placeables.ATTIC_PLACEABLES,
+                             *placeables.ATTIC_PLACEABLES, *motion_sensors.ATTIC_ELEMENTS,
                              *window_coverings.ATTIC_WINDOW_COVERINGS,
                              *study_bridge.STUDY_BRIDGE,
                              *millwork.ATTIC_SHELVES,

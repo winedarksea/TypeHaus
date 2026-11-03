@@ -194,6 +194,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "plain-round-mirror-nickel": plain_mirror("round", "brushed-nickel"),
     "plain-arch-mirror-nickel": plain_mirror("arch", "brushed-nickel"),
     "plain-arch-mirror-chrome": plain_mirror("arch", "metal"),
+    "plain-arch-mirror-black": plain_mirror("arch", "metal-black"),
     "plain-soft-rectangle-mirror-nickel": plain_mirror("soft-rectangle", "brushed-nickel"),
     "plain-capsule-mirror-nickel": plain_mirror("capsule", "metal"),
 

@@ -118,19 +118,19 @@ MAIN_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C1", face="left", distance_from_start=inch(119),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # Two J2 swing-arm sconces replaced the headboard bar and its switch (2026-10-31), one
-    # each side of FURN-M-BED, ~44" off its centre (outside the mattress), backplates
-    # 52"-56" on BK-M-BDN1-SCONCE / BK-M-BDN2-SCONCE. Each switches at the fixture. The west
-    # box stays west of PR-B-CW-HYD-RISER in W-M-BDN1 at x=6'-0"; the east one's 7" body
-    # ends 1/2" west of ED-M-BED-SW's box (centre x=13'-8").
+    # Two swing-arm sconces replaced the headboard bar and its switch (2026-10-31), one
+    # each side of FURN-M-BED, ~44" off its centre (outside the mattress), on
+    # BK-M-BDN1-SCONCE / BK-M-BDN2-SCONCE. J1, the WAC Sprig, since 2026-11-02: each
+    # switches at its canopy toggle. The west box stays west of PR-B-CW-HYD-RISER in W-M-BDN1
+    # at x=6'-0"; the east one's body stays west of ED-M-BED-SW's box (centre x=13'-8").
     ElectricalDevice(uid="K18FY9C6C0", tag="ED-M-BED-SCONCE-W", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-BED", circuit="CKT-LT-MAIN", room="RM-M-BED",
+                     type_ref="ED-T-LT-SPOT-SW", circuit="CKT-LT-MAIN", room="RM-M-BED",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(49)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BDN1", face="right", distance_from_start=inch(69),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NT2TZWZ8E0", tag="ED-M-BED-SCONCE-E", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-BED", circuit="CKT-LT-MAIN", room="RM-M-BED",
+                     type_ref="ED-T-LT-SPOT-SW", circuit="CKT-LT-MAIN", room="RM-M-BED",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(49)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BDN2", face="right", distance_from_start=inch(60),

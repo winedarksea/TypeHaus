@@ -13,9 +13,10 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
    exists, and this note names it: OCPP for the EVSE (`lbbrhzn/ocpp`), and the EG4 web
    monitor in local Modbus mode.
 2. **Radios.**
-   - The HA Connect ZBT-2 runs **Thread** (Sense Pro lock, SmartWings shades). It cannot run
-     Thread and Zigbee at once (Nabu Casa FAQ), so Zigbee (wanted since 2026-10-31: the
-     GL-C-001P controllers and the PIRs) runs on a second dongle, a Zigbee coordinator on ZHA.
+   - The HA Connect ZBT-2 runs **Thread** (Sense Pro lock, SmartWings shades, the MYGGSPRAY
+     motion sensors). It cannot run Thread and Zigbee at once (Nabu Casa FAQ), so Zigbee
+     (wanted since 2026-10-31: the GL-C-001P controllers) runs on a second dongle, a Zigbee
+     coordinator on ZHA.
    - A Z-Wave 800 LR stick serves the leak valve and its sensors.
    - No vendor hubs: no MyQ, no DIRIGERA, no Reolink Home Hub, no YoLink hub.
 3. **Safety stands alone.** These work with HA down; HA observes them and may notify:
@@ -67,7 +68,7 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Entry deadbolt | `D-M-ENTRY` hardware | Schlage Sense Pro BE889WB 622 | Matter/Thread via ZBT-2 (local push); PIN codes local | none | keypad works offline; USB-C jumpstart | Century trim is bundle-only: check the 622 escutcheon against the Latitude lever |
 | French-door locks | `DT-*` French hardware | Schlage BE365 | not connected | none | keyed keypad | none |
 | Doorbell | `ED-M-DOORBELL` | Reolink D340P, PoE | core `reolink` (local push) | one Reolink app session | the chime rings locally | rated to 14 F, accepted; talk is app-only |
-| Backyard camera | `ED-M-CAM-PORCH` | RLC-833A class 4K turret | core `reolink` (local polling/push) | none | records to microSD | RLC-833A is discontinued: buy the current turret |
+| Backyard camera | `ED-M-CAM-PORCH` | Reolink Omvi 3i PoE (owner, 2026-11-02), PoE+ 20 W | core `reolink` if it lists the model, else RTSP/ONVIF (both local) | none | records to microSD | not on the integration's tested list; one 802.3at switch port |
 | Canopy camera | `ED-BW-CAM-CANOPY` | Reolink Duo 3 PoE | core `reolink` | none | records to microSD | none |
 | Garage opener | `APPL-G-GDO` | LiftMaster 8550W (Security+ 2.0) + ratgdo32 | ESPHome (local push) | none; MyQ never set up | wall button and remotes | head size; the manual's headroom figure |
 | Smoke/CO/heat | `AL-*` (13) | Kidde hardwired interconnect | relay dry contacts into an isolated input in `ED-B-BACKUP-ENCL` | none | interconnect sounds every alarm | confirm part numbers on kidde.com |
@@ -84,7 +85,7 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Scene keypad | `ED-M-LIVING-KEYPAD` | Zooz ZEN32 | Z-Wave JS on the 800 LR stick (local push) | none | does nothing | set scene-only (relay unwired) |
 | Tape controllers (12) | `ED-M-LIVING-LT-CTRL`/`-E`, `ED-M-DINING-LT-CTRL`/`-E`, `ED-S-HALL-LT-CTRL`/`-CTRL2`, `ED-G-EAVE-W/-W2/-E/-E2-CTRL`, `ED-G-GABLE-N/-N2-CTRL` | Gledopto GL-C-001P | Zigbee, ZHA (local push) | none | its power-on state | set power-on to "previous" |
 | Closet and kitchen tape | `ED-M-CLOSET-LT-PSU`, `ED-M-KITCH-LT-PSU` (MITTLED) | IKEA TRADFRI 30 W | unpaired, or Zigbee on ZHA to dim | none | powers on lit | bench-test power-on unpaired |
-| Night-light motion (8) | not modelled: one per bath, one at the basement stair | PIR sensor (to select), battery | Zigbee, ZHA | none | relay paddles | select the product |
+| Night-light motion (8) | `ED-*-MOTION` (`plan/motion_sensors.py`): seven baths, one at the basement stair foot | IKEA MYGGSPRAY 806.194.51, 2x AAA | Matter over Thread via the ZBT-2 (not Zigbee/ZHA) | none | relay paddles | HA support rests on IKEA's "any Matter system with a Thread border router" claim, community-unconfirmed; depth unpublished (1" allowance); the stair has no night-light run yet |
 | HA host | `ED-B-UTIL-RC1` / `CKT-HA` | mini PC + ZBT-2 + Z-Wave 800 LR stick + Zigbee coordinator dongle | wired LAN | none | none | UPS: the backup-battery TODO |
 
 Lighting, the fan and the RF-remote fixtures: `notes/workshop_receptacles.md`. Shades:
@@ -113,8 +114,9 @@ Reolink plug-in chime or an HA announcement; there is no mechanical chime.
 
 **Cameras.** Both record to their own microSD, and HA keeps events through the core
 integration. There is no NVR; Frigate is optional later.
-- The backyard turret hangs under the balcony joists, south of the screen's front track, so
-  its IR does not flare off the mesh. Its Cat 6A is the second cable in `CD-M-DATA-PORCH`, and
+- The backyard Omvi 3i (202 x 151 x 125 mm, 1.3 kg, on its ceiling bracket) hangs under the
+  balcony joists, south of the screen's front track, so its IR does not flare off the mesh.
+  It is the only PoE+ load: the switch needs one 802.3at (30 W) port. Its Cat 6A is the second cable in `CD-M-DATA-PORCH`, and
   `CD-M-DATA-CAM-PORCH` then bores the balcony joists at mid-depth, so nothing crosses under
   the track.
 - The canopy camera is the second cable in `CD-M-DATA-KITCH`. It leaves through `W-M-N1`

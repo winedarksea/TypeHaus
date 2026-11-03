@@ -2412,8 +2412,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "APPL-GRIZZLE-SMART-40" = { material = { low = 400, high = 600 }, labour = { low = 40, high = 100 } }  # 1 ea, hardwired from ED-G-EV-1450
 "APPL-ZOOZ-ZAC36" = { material = { low = 110, high = 180 }, labour = { low = 60, high = 150 } }  # 1 ea, incl. the 1/2" lever ball valve and a ZSE42
 "ED-T-DOORBELL-POE" = { material = { low = 100, high = 160 }, labour = { low = 60, high = 140 } }  # 1 ea + plug-in chime
-"ED-T-CAM-TURRET" = { material = { low = 90, high = 160 }, labour = { low = 60, high = 140 } }  # 1 ea
+"ED-T-CAM-PANTILT" = { material = { low = 315, high = 315 }, labour = { low = 60, high = 140 } }  # 1 ea, Omvi 3i $315 (owner, 2026-11-02)
 "ED-T-CAM-WIDE" = { material = { low = 150, high = 230 }, labour = { low = 60, high = 140 } }  # 1 ea
+"ED-T-MOTION-MYGGSPRAY" = { material = { low = 12, high = 20 }, labour = { low = 5, high = 20 } }  # 8 ea — IKEA $11.99 (2026-11-02) + 2 AAA, screwed or stuck on
 "ED-T-HP-STAT" = { material = { low = 130, high = 200 }, labour = { low = 60, high = 150 } }  # 1 ea, Aqara W200 on 24 VAC
 "ED-T-ALARM-RELAY-SMOKE" = { material = { low = 40, high = 80 }, labour = { low = 45, high = 95 } }  # 1 ea, SM120X + 4" box
 "ED-T-ALARM-RELAY-CO" = { material = { low = 50, high = 90 }, labour = { low = 45, high = 95 } }  # 1 ea, CO120X + 4" box
@@ -2840,18 +2841,17 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # linkable cords crack in cold and that is where the failures start, which also means this
 # row's labour is an electrician rather than a hook and a plug.
 "ED-T-LT-SHOP4" = { material = { low = 93, high = 140 }, labour = { low = 60, high = 130 } }  # 5 ea
-# Lighting review 2026-10-31 (estimates; the two sconces are not yet chosen):
-# J2 bed sconce, hardwired swing arm with a shaded E26 and its lamp.
-"ED-T-LT-SCONCE-BED" = { material = { low = 70, high = 180 }, labour = { low = 48, high = 115 } }  # 2 ea
-# P6 vanity sconce, vertical opal, 2 x E26; its two lamps are part rows.
-"ED-T-LT-SCONCE-VANITY" = { material = { low = 90, high = 250 }, labour = { low = 60, high = 135 } }  # 3 ea
-"PROD-WAVEFORM-CENTRICHOME-A19-30K" = { material = { low = 10, high = 16 }, labour = 0 }  # Karlie and P6 lamps
+# P6 vanity sconce, Hinkley Soren 50910BK: $169 hinkley.com, dealers $139-219 (read
+# 2026-11-02); its lamp is a part row.
+"ED-T-LT-SCONCE-VANITY" = { material = { low = 139, high = 219 }, labour = { low = 60, high = 135 } }  # 3 ea
+"PROD-WAVEFORM-CENTRICHOME-A19-30K" = { material = { low = 10, high = 16 }, labour = 0 }  # Karlie lamps
+"PROD-WAVEFORM-MODERNVINTAGE-A19-30K" = { material = { low = 8, high = 15 }, labour = 0 }  # 3 ea, P6 lamps; estimate
 # Q1 LED-ready T8 strip (Halco 90511 ~$25-45) and its two Waveform 95-CRI tubes (part rows).
 "ED-T-LT-STRIP-T8" = { material = { low = 25, high = 45 }, labour = { low = 60, high = 130 } }  # 12 ea
 "PROD-WAVEFORM-T8-95-50K" = { material = { low = 15, high = 25 }, labour = 0 }  # 24 ea
 # Q2 keyless lampholder (Leviton 9880) with an A19 LED.
 "ED-T-LT-KEYLESS" = { material = { low = 8, high = 18 }, labour = { low = 40, high = 90 } }  # 4 ea
-"ED-T-LT-SPOT-SW" = { material = { low = 99, high = 130 }, labour = { low = 60, high = 140 } }  # 2 ea — same WAC Sprig as mark J; canopy toggle is the switch (2026-10-29)
+"ED-T-LT-SPOT-SW" = { material = { low = 99, high = 130 }, labour = { low = 60, high = 140 } }  # 4 ea — same WAC Sprig as mark J; canopy toggle is the switch (2026-10-29); RM-M-BED's pair since 2026-11-02
 "ED-T-LT-GROW-BAR" = { material = { low = 230, high = 290 }, labour = { low = 45, high = 100 } }  # 2 ea — Barron AG90-W-001 $220-261 + cable hangers (researched 2026-10-28)
 "ED-T-LT-WALL-LINEAR" = { material = { low = 480, high = 552 }, labour = { low = 45, high = 100 } }  # 1 ea — WAC WS-6724-30-BK $480-552 (researched 2026-10-28)
 # RM-M-PANTRY's jamb channels: per channel 6 ft of generic 90-CRI COB (mark E's tape, since
@@ -3159,7 +3159,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # https://www.afsupply.com/bath/bath-accessories/mirrors.html?finish=Brushed+Nickel
 "FT-MIRROR-KOHLER-26052-BNL" = { material = { low = 284, high = 350 }, labour = { low = 35, high = 85 } }  # 1 ea
 "FT-MIRROR-KOHLER-30638-CPL" = { material = { low = 329, high = 400 }, labour = { low = 35, high = 85 } }  # 1 ea
-"FT-MIRROR-KOHLER-30638-BNL" = { material = { low = 329, high = 400 }, labour = { low = 35, high = 85 } }  # 2 ea
+# 30638-BLL matte black (2026-11-02): $289.98 Home Depot, $316.75 Superarbor.
+"FT-MIRROR-KOHLER-30638-BLL" = { material = { low = 290, high = 360 }, labour = { low = 35, high = 85 } }  # 2 ea
 "FT-MIRROR-KOHLER-26050-BNL" = { material = { low = 329, high = 400 }, labour = { low = 35, high = 85 } }  # 1 ea
 "FT-MIRROR-KOHLER-31367-BNL" = { material = { low = 189, high = 250 }, labour = { low = 35, high = 85 } }  # 1 ea
 # Umbra Hubba Pill 62x18 retail $220; titanium 1023469-624, not the brass variant.
@@ -7048,11 +7049,11 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # IKEA HEMNES 604.135.02, white stain/light brown, RM-M-BED's south pair. It billed $0 until
 # 2026-10-07: no row existed. US listing $329.
 "FURN-BOOKCASE-HEMNES-35" = { low = 329, high = 329 }  # 2 ea
-# A 98" panel is the one line in this table with a floor well above zero: the size itself is
-# specialty, and the low end is a TCL/Hisense-class 98" rather than anything smaller. The
-# high end is an LG/Samsung flagship at the same diagonal. The articulating anchor mount into
-# 8" concrete is inside the range and is a real part of it.
-"FT-TV-98-PANEL" = { low = 2580, high = 4700 }  # 1 ea — panel + a >=3 1/2" stand-off mount ($80-200), 2026-11-01 (C6-E11)
+# A 98" panel is the one line in this table with a floor well above zero. The TCL 98QM8L is
+# priced as read, not as a tier range. The tilt mount into 8" concrete is
+# its own part row below.
+"FT-TV-98-PANEL" = { low = 2999, high = 2999 }  # 1 ea — TCL 98QM8L $2,999 (owner, 2026-11-02)
+"PROD-MONOPRICE-12994" = { low = 80, high = 200 }  # 1 ea — its 5.1" tilt mount, part row; price not read
 # "FURN-TV-98-WALL" = { low = 2500, high = 4500 }  # 1 ea — owner tier: mid (Sony/Samsung QLED), 2026-10-29
 # The U sectional, 11'-0" x 8'-0" with a 3'-0" seat depth: eight to nine seats' worth of
 # frame, so it prices as roughly two-and-a-half sofas rather than one. Same enormous spread

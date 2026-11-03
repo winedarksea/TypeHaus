@@ -22,7 +22,7 @@ a fabrication drawing of its floating SEKTION frames.
 | Main bath2 | Fleurco **MHAP4236** Halo Plus | 42 × 36 × 1 3/4 | 42 / 78 | Illuminated border **and** rear glow; owner accepted both; centred on the vanity |
 | Upstairs hall bath | Kohler K-26050-BNL | 28 1/16 diameter × 1 3/8 | 44 / 72 1/16 | Plain round keeps the softened silhouette over the 36-inch vanity |
 | Suite bath | Kate and Laurel Estero 221484 | Existing 20 1/8 × 28 × 5 1/2 model | 46 / 74 | Preserve the owner's gold arch and shelf, including its existing placement |
-| Upstairs double vanity | Two Kohler K-30638-BNL | Each 20 × 32 × 1 3/8 | Each 42 / 74 | Repeated arches, centered at x=22 3/8 and 52 3/8, with a 10-inch gap; three side sconces |
+| Upstairs double vanity | Two Kohler K-30638-BLL (matte black, 2026-11-02) | Each 20 × 32 × 1 3/8 | Each 42 / 74 | Repeated arches, centered at x=22 3/8 and 52 3/8, with a 10-inch gap; three side sconces |
 | Attic guest bath | Kohler K-31367-BNL | 22 diameter × 1 3/8 | 48 / 70 | Compact round permits a socketed light below the sloping roof |
 | Main closet | Umbra Hubba Pill **1023469-624** | 17.88 × 62 × 2 | 12 / 74 | Plain full-length capsule, metallic titanium; no electrical load |
 
@@ -47,7 +47,7 @@ Manufacturer sources, read 2026-10-22:
 ## Replaceable lighting
 
 Every separate light takes replaceable E26 lamps; no fixture has a driver to fail. The
-3000 K lamp everywhere is the **Waveform CentricHOME A19 3000K** (800 lm, 95 CRI, R9 90+,
+3000 K lamp in every Karlie is the **Waveform CentricHOME A19 3000K** (800 lm, 95 CRI, R9 90+,
 `PROD-WAVEFORM-CENTRICHOME-A19-30K`), which replaced the Sunlite 80793-SU (CRI 94, R9 69) on
 2026-10-31; it bills as its own lamp line. Bath2's 5000 K day bar keeps the Sunlite 80795-SU.
 
@@ -62,7 +62,7 @@ sockets to 14 W each.
 | Bath2 daytime | 54623CM / P3 | 3 × 80795-SU | 80 / 87 1/2 |
 | Hall bath | 54623BN / P5 | 3 × CentricHOME | 74 1/16 / 81 9/16 |
 | Suite | 54623BN / P5 (was P1 until 2026-10-31) | 3 × CentricHOME | 76 / 83 1/2 |
-| Double vanity | three P6 vertical opal sconces, 2 × E26, damp | 2 × CentricHOME each | 55 / 73 (centres 64) |
+| Double vanity | three P6 Hinkley Soren 50910BK, 1 × E26 | 1 × Waveform ModernVintage A19 each | 56 7/8 / 71 1/8 (centres 64) |
 | Attic | 54622BN / P1A | 2 × CentricHOME | 72 / 79 1/2 |
 
 Each Karlie body starts **2 inches above its mirror head**, and its mounting elevation is the
@@ -74,10 +74,15 @@ basement soffit is about 86 7/16 inches above finished floor. Neither needs a ce
 from over the mirror. The two Karlies over the arches became three P6 sconces at x = 9 7/16,
 37 3/8 and 65 5/16 inches (`ED-S-VANITY-SCONCE-W/-C/-E`). Each 5-inch body clears the side
 wall and the mirror edge by **7/16 inch**. Shifting the mirrors east does not help, because
-both outer gaps are already equal, so choose a sconce with a backplate of 4 1/2 inches or
-less. The boxes land in `BK-S-BD-N-MIRROR-HANG` (60 to 71 1/4 inches); the old Karlie band
-`BK-S-BD-N-MIRROR-LIGHT` is gone. The product is still an owner selection
-(`PROD-VANITY-SCONCE-OPAL-2E26`).
+both outer gaps are already equal. The boxes land in `BK-S-BD-N-MIRROR-HANG` (60 to 71 1/4
+inches); the old Karlie band `BK-S-BD-N-MIRROR-LIGHT` is gone.
+
+**Soren, black (owner, 2026-11-02).** `PROD-HINKLEY-50910BK`: 14 1/4 × 5 in., 4 3/4 in.
+extension, a 5 in. round backplate, clear fluted glass, one E26 with a **6 W cap**. The mirrors
+went black with it (K-30638-BLL, same 20 × 32 × 1 3/8). The lamp is the Waveform ModernVintage
+A19 filament (5 W, 450 lm, 95 CRI, R9 80+): 1,350 source lm for the three against the old
+2 × E26 allowance's 4,800, a deliberate trade for the look. Confirm before rough-in: the UL
+damp label (dealers disagree) and the box offset (2 1/2 in. top to outlet).
 
 **Suite (2026-10-31).** The three-light bar sits on the existing 22 1/2-inch
 `BK-S-SN3-MIRROR-LIGHT`. Flanking sconces would stand in the tub's spray zone.

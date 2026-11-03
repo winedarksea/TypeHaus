@@ -51,13 +51,13 @@ BASEMENT_PLACEABLES = [
     # (ED-B-PLAY-N-DATA1). `mount=WALL` with the panel's bottom at 2'-6" puts its top at
     # 6'-8" under an 8'-3 1/2" ceiling. **An 8" concrete wall takes anchors, not blocking** —
     # there is no stud bay behind this and the mount is a mechanical fixing into the pour.
-    # The panel stands 3 1/2" off the wall on its mount (`normal_gap`, plan/media_types.py) so
-    # RC1 and DATA1's surface boxes sit behind it (C6-E11).
+    # The panel stands 5 1/8" off the wall on its tilt mount (`normal_gap`,
+    # plan/media_types.py) so RC1 and DATA1's surface boxes sit behind it (C6-E11).
     Furniture(uid="X99HBG99WJ", tag="FURN-B-PLAY-TV", type_ref="FT-TV-98-PANEL", room="RM-B-PLAY-N",
               mount=Mount(kind=MountKind.WALL, elevation=inch(30)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-B-N1", face="left", distance_from_start=inch(111),
-                  normal_gap=inch(3.5), rotation_offset=deg(-180)))),
+                  normal_gap=inch(5.125), rotation_offset=deg(-180)))),
     # The U, opening north at the screen. 11'-0" of back run leaves 2'-9" either side of a
     # 16'-6" box. Moving it 18" north to y 23'-0"..31'-0" leaves 2'-6" beyond the open
     # D-B-PLAY leaves and 3'-9 5/8" between the bookcases and its south face, easing entry

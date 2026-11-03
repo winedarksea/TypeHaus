@@ -267,19 +267,25 @@ WAVEFORM_A19_95 = Product(
     source=_REVIEW + "Makeup-grade lamp for the vanity lights. CONFIRM 800 lm, R9 >= 90 and "
            "the enclosed/damp rating against each fixture.",
 )
-VANITY_SCONCE_OPAL = Product(
-    tag="PROD-VANITY-SCONCE-OPAL-2E26", brand="Owner selection", model="vertical opal sconce, 2 x E26",
-    name="Vertical opal-glass vanity sconce, 2 x E26, damp",
-    source=_REVIEW + "Not yet chosen (Kichler, Access, JESCO all list one): vertical opal "
-           "diffuser ~18-20 in. tall, <= 5 in. projection, damp listed, two E26 sockets, "
-           "centred on a 4 in. box. Lamp: two Waveform CentricHOME A19.",
+HINKLEY_SOREN_50910BK = Product(
+    tag="PROD-HINKLEY-50910BK", brand="Hinkley", model="50910BK",
+    name="Soren medium sconce, black, clear fluted glass, 1 x E26",
+    url="https://www.hinkley.com/50910bk.html",
+    source="Owner, 2026-11-02. Hinkley page and dealer listings, read 2026-11-02: 14.25 in. "
+           "tall x 5 in. wide, 4.75 in. extension, 5 in. round backplate, top to outlet "
+           "2.5 in.; one medium base, 6 W max LED; mounts up or down. Black or Heritage Brass "
+           "only. CONFIRM the UL damp label (dealers disagree) and the box offset from the "
+           "spec sheet before rough-in. Lamp: one Waveform ModernVintage A19.",
 )
-BED_SWING_ARM_SCONCE = Product(
-    tag="PROD-SWING-ARM-SCONCE-E26", brand="Owner selection", model="swing-arm sconce, shaded E26",
-    name="Hardwired swing-arm reading sconce, switch on fixture, shaded E26",
-    source=_REVIEW + "Not yet chosen: hardwire-capable swing arm, on/off at the fixture, a "
-           "shade that hides the lamp from the pillow, E26 (GU10 heads are scarce). Lamp: "
-           "2700 K, CRI 95, 450-500 lm A19.",
+WAVEFORM_MODERNVINTAGE_A19_30K = Product(
+    tag="PROD-WAVEFORM-MODERNVINTAGE-A19-30K", brand="Waveform Lighting",
+    model="ModernVintage 95 CRI A19 5W filament, 3000K",
+    name="A19 LED filament bulb, E26, 450 lm, 3000 K, 95 CRI, R9 80+",
+    url="https://store.waveformlighting.com/cdn/shop/files/"
+        "Ultra_High_95_CRI_A19_5W_LED_Filament_Bulb_for_Home_Residential_Specification_Sheet.pdf",
+    source="Waveform spec sheet, read 2026-11-02: 5 W, 450 lm, 95 CRI, R9 > 80, dimmable, "
+           "2400/2700/3000 K. Fits the Soren's 6 W cap; the filament reads well behind "
+           "clear fluted glass.",
 )
 
 SELECTED_LIGHTING_PRODUCTS = (
@@ -290,5 +296,6 @@ SELECTED_LIGHTING_PRODUCTS = (
     MODERN_FORMS_MYKONOS, WAC_TUBE_EXT, SLL_COB_IP67, MEANWELL_HLG_100H_24A, LIVEX_4451,
     SLL_COB_RGBCCT, SLL_COB_RGBW_IP67, COB_TUNABLE_24V, COB_NIGHT_2200,
     MEANWELL_LPV_20_24, GLEDOPTO_GL_C_001P, HALCO_LED_READY_STRIP, WAVEFORM_T8_95,
-    LEVITON_9880, CHANNEL_45_GENERIC, WAVEFORM_A19_95, VANITY_SCONCE_OPAL, BED_SWING_ARM_SCONCE,
+    LEVITON_9880, CHANNEL_45_GENERIC, WAVEFORM_A19_95, HINKLEY_SOREN_50910BK,
+    WAVEFORM_MODERNVINTAGE_A19_30K,
 )
