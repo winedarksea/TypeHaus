@@ -456,6 +456,10 @@ VENT_BRANCHES_BASEMENT = [
             # back to the fixtures and keeping the riser below W-B-STR2's top plate.
             elevations=(ft(1, 3.4375), inch(91.551), inch(93.7678)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
+    # ** THE SHOWER'S TEE IS UNDER THE SLAB (C6-E7, 2026-11-02). ** The riser used to start on
+    # the slab 22.6" off the drain, so it vented nothing. It now leaves the pan drop's
+    # bottom, 26" SW of the riser, runs NE under the slab on the drain's fall, and rises
+    # through SP-B-SLAB-SA-VENT. Pan arm ~11" against Table 1002.2's 60".
     # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-0", 10'-1 3/8") inside
     # W-B-SA-N2's stud cavity, the pan's north wall, clear of the mixer's two supply drops.
     # (Both fixtures still declare W-B-CS as their wet wall, plan/fixtures.py.)
@@ -473,7 +477,8 @@ VENT_BRANCHES_BASEMENT = [
             # stud-002/-003 bay, on the cavity centreline). At (17'-3", 8'-2 3/16") it stood
             # in the pan, 3" in front of the liner, and its north leg ran through the sauna
             # ceiling's foil. It clears the wall's top plates (+90") before jogging north.
-            path=(pt(ft(17), inch(121.375)), pt(ft(17), inch(121.375)),
+            path=(pt(inch(191.75), inch(98.1875)), pt(ft(17), inch(121.375)),
+                  pt(ft(17), inch(121.375)), pt(ft(17), inch(121.375)),
                   pt(ft(17), ft(10, 6)), pt(ft(9), ft(10, 6)),
                   pt(ft(9), ft(19)), pt(ft(9), ft(28, 8)), pt(inch(51.5), ft(28, 8)),
                   pt(inch(51.5), inch(400)), pt(inch(10), inch(400)),
@@ -489,8 +494,17 @@ VENT_BRANCHES_BASEMENT = [
             # dry-fire collector lift, keeping clear of the raised laundry drain. The
             # north profile retains the half-inch clearance over
             # DU-B-ERV-R-PLAY at y=30'-6", where D3 left it 2 1/2 thousandths of an inch.
-            elevations=(ft(0, 3.4375), inch(90.5), inch(90.5625), inch(91.75),
-                        inch(93.75), ft(7, 10.4375), ft(7, 11.14), ft(7, 11.54),
+            elevations=(inch(-8.3), inch(-7.8), ft(0, 3.4375), inch(90.5), inch(90.5625),
+                        inch(91.75), inch(93.75), ft(7, 10.4375), ft(7, 11.14), ft(7, 11.54),
                         ft(8, 0.0375), ft(8, 0.1375)),
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
+    # The floor drain's own tee (C6-E7): off the bottom of PR-B-SAUNA-FD-DROP, north-west under the
+    # slab on the drop's fall, up W-B-SA-N's cavity through SP-B-SLAB-SA-FDV, and over the
+    # plates onto PR-B-SAUNA-VENT's y=10'-6" run. Arm ~9" against Table 1002.2's 60".
+    PipeRun(uid="D9Z3MBW6KV", tag="PR-B-SAUNA-FD-VENT", system=PipeSystem.VENT,
+            path=(pt(inch(162), inch(98.1875)), pt(inch(152), inch(121.375)),
+                  pt(inch(152), inch(121.375)), pt(inch(152), ft(10, 6))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(inch(-8.5), inch(-8.0), inch(90.6), inch(91.2)),
+            serves=("FX-B-SAUNA-FD",)),
 ]
