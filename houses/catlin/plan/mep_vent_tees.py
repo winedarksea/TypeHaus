@@ -43,6 +43,23 @@ VENT_TEES = [
             diameter=inch(1.5), material="pvc",
             elevations=(inch(141.4), inch(141.45), inch(230.9), inch(231.0)),
             serves=("FX-S-BATH1-LAV",)),
+    # RM-S-BATH1's WC: tee on the arm's y-leg at y=30'-0" (arm 18"), west in the 360" truss bay
+    # to W-S-W1's cavity (x=3 1/4"), up it, east in FS-ATTIC's bay onto PR-S-BATH1-VENT's x=40" leg.
+    PipeRun(uid="HJDACC7GS7", tag="PR-S-BATH1-WC-VENT", system=PipeSystem.VENT,
+            path=(pt(inch(20.278), inch(360)), pt(inch(3.25), inch(360)),
+                  pt(inch(3.25), inch(360)), pt(inch(40), inch(360))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(inch(117.0), inch(117.6), inch(231.0), inch(232.5)),
+            serves=("FX-S-BATH1-WC",)),
+    # RM-S-BATH1's tub-shower: tee on its drain under the deck (arm ~26"), west below the
+    # trusses (the chase header is at x 33"..36 1/2"), up the chase's south band at x=30 1/4"
+    # (clear of EXH riser, CD-M-DATA-PORCH, W-S-CH-W's studs), east onto PR-S-BATH1-VENT.
+    PipeRun(uid="S57D33HC70", tag="PR-S-BATH1-SH-VENT", system=PipeSystem.VENT,
+            path=(pt(inch(39.25), inch(402.8)), pt(inch(30.3), inch(402.8)),
+                  pt(inch(30.3), inch(402.8)), pt(inch(40), inch(402.8))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(inch(102.0), inch(102.8), inch(231.0), inch(233.7)),
+            serves=("FX-S-BATH1-SH",)),
     # RM-M-BATH1's wall-hung WC: the DuoFit carrier's own vent outlet, straight up W-M-HS1
     # from the fitting to PR-M-BATH2-LAV-VENT's horizontal at 7'-5 1/8" (6"+ over every rim
     # it serves). Common vent to the x=4'-10" riser: sink 1 + WC 3 + powder lav 1 = 5 DFU,
