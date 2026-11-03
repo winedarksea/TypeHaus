@@ -6,6 +6,14 @@ until the ply load transfer, bent A35Z end connections, local plate/sill/hanger 
 and final installed-hardware door sweep are verified. Passing existing canopy checks
 alone does not approve the added detail. See `entry_screen_mdo_calculations.json`.
 
+## Sheet notes
+### General
+- Lower centre timber: coordination geometry only; attachments are not released for construction.
+- Three KDAT 2x6 plies, six 2x4 MDO edge nailers; retain west plywood, plates and cap.
+- White 3/4-inch exterior MDO with removable stainless screws; leave 1/8-inch timber gaps.
+- Keep the north tie-access relief and bottom drainage open.
+
+
 ## Installation geometry
 
 - Retain the west 5/8-inch shear plywood, corrugated skin, field studs, upper brace band,
@@ -118,3 +126,13 @@ Sources: [Simpson A angles](https://www.strongtie.com/framinganglesandplates_ang
 [SFPA dimensional lumber design values, 5–6-inch width](https://www.anthonyforest.com/assets/pdf/dv-2013-visual-grades.pdf),
 [Roseburg DuraGard](https://www.roseburg.com/resources/duragard-mdo-premium-flyer/),
 [APA MDO/HDO](https://www.apawood.org/engineered-wood-products/plywood-osb/mdohdo-panels/).
+
+
+## Geometry overlap review
+
+The supplemental wood occupies the wall's continuous stud-cavity proxy; these are not
+intersections with west plywood or existing field studs. The overlap golden also records
+four conservative hidden screw-head envelopes extending into the next ply. Their actual
+flush seating or recess detail remains unverified; pinning those envelopes does not
+release the fastening design. The three timber plies themselves meet at faces without
+volume overlap. Reviewed changes are limited to these two overlap categories.

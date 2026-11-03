@@ -245,7 +245,7 @@ def test_s100_schedules_the_authored_reinforcement(catlin_model):
     # The court footing mat: cover from ReinforcementSpec.cover (3"), both directions print.
     assert ('BX #5 @ 12" + TX #5 @ 12" + BY #4 @ 18"', '3"', "B") in rows
     # The retaining stems: retained-face #5 hooked into the mat, both-face horizontals.
-    assert ('V #5 @ 7" + H #4 @ 16" x2', '3"', "B") in rows
+    assert ('V #5 @ 10" + H #4 @ 16" x2', '3"', "B") in rows
     # Nothing is invented for the pours that carry no spec, and a suspended deck is not a
     # foundation pour.
     assert all("#" in row[2] for row in table.rows)

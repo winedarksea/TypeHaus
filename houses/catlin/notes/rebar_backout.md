@@ -801,3 +801,10 @@ piece lost (slab #3 234.7 lb, 220). The hooks and the rib bars are unchanged
 (deck 17.24 + `FOUNDATION_WALL_12_INT` 6.57 removed, §2), so **47.2 lb/cy**. The §1 history table
 above keeps the other rows' older weights; the pinned schedule is the test's. The decision #111
 addendum above is moot (no cap). `DECK_CAP_MIX` and the BuildDeck schedule are the named revert only.
+
+## Addendum 2026-11-02 — the court stems at `#5 @ 10"`
+
+`_RET_STEM_STEEL`'s verticals go `#5 @ 7"` → `#5 @ 10"` (owner; `sunken_garden_court_free_body.md`
+§6c). W-SG-S 32 → 23 (−95.7 lb), W2/E2 29 → 21 each (−85.1 lb each): foundation wall #5
+**135 → 110 pieces, 1,311.7 → 1,045.8 lb**. Total **5,091.2 lb / 813 pieces** over the same
+113.49 cy, **44.9 lb/cy**. Billed `#5:hdg-a767` 3,247.9 → 2,982.0 lb, −$346–572.

@@ -38,7 +38,7 @@ _SCHEDULE = {
     ("footing", "#5", "hdg-a767"): (179, 1465.9),
     ("foundation wall", "#3", "hdg-a767"): (12, 16.2),
     ("foundation wall", "#4", "hdg-a767"): (283, 1610.1),
-    ("foundation wall", "#5", "hdg-a767"): (135, 1311.7),
+    ("foundation wall", "#5", "hdg-a767"): (110, 1045.8),
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
 }
 # +3,215.6 lb on 2026-09-17 over the area/spacing era's 3,514.7 (newly authored steel, laps and
@@ -91,8 +91,10 @@ _SCHEDULE = {
 # −1,222.1 lb, −285 pieces on 2026-11-01 (#112): SL-M-DECK became floor trusses, taking the
 # whole slab scope — 220 #3 (234.7), 43 #4 (562.5), 22 #5 (424.9). Nothing else moved: the
 # three 12" pours reframed with it (W-B-CN/CN2/CS2) carried no ReinforcementSpec.
-_TOTAL_LB = 5357.1
-_TOTAL_PIECES = 838
+# −265.9 lb, −25 pieces on 2026-11-02 (note addendum): the court stems #5 @ 7" -> 10" (owner;
+# free body §6 addendum) — W-SG-S 32 -> 23 verticals, W2/E2 eight fewer each.
+_TOTAL_LB = 5091.2
+_TOTAL_PIECES = 813
 
 @pytest.fixture(scope="module")
 def rows(catlin_model):
@@ -228,4 +230,5 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # splices (+58 lb). 47.7 on 2026-10-31: the basement slab stops at its footings and the
     # deck at W-M-E1's band (#107), −3.4 cy billed twice before, −26 lb of deck bar.
     # 47.2 on 2026-11-01 (#112): the deck and three 12" pours out, 5,357.1 lb / 113.49 cy.
-    assert total_lb / total_cy == pytest.approx(47.20, rel=0.02)
+    # 44.9 on 2026-11-02: the court stems at #5 @ 10" (−265.9 lb), 5,091.2 lb / 113.49 cy.
+    assert total_lb / total_cy == pytest.approx(44.86, rel=0.02)

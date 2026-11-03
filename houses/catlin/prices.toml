@@ -8370,7 +8370,7 @@ solar_modules = true
 "#6" = { low = 0.90, high = 1.25 }  # 0 lb black — kept so a black #6 prices at once (see [retired])
 "#3:hdg-a767" = { low = 1.50, high = 2.50 }  # 137.3 lb — column ties, veneer-beam ties
 "#4:hdg-a767" = { low = 1.35, high = 2.25 }  # 1,845.0 lb — court footings, walls, ICF stems
-"#5:hdg-a767" = { low = 1.30, high = 2.15 }  # 3,249.9 lb — columns, court footings, walls
+"#5:hdg-a767" = { low = 1.30, high = 2.15 }  # 2,982.0 lb — columns, court footings, walls (3,247.9 until the court stems went #5 @ 10", 2026-11-02)
 "#6:hdg-a767" = { low = 1.25, high = 2.10 }  # 129.5 lb — W-SG-W1/E1
 
 # ** ROLLED STEEL MEMBERS, BY THE FOOT OF A NAMED SECTION (new 2026-09-20). ** One row and

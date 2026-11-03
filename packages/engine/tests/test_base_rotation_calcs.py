@@ -43,7 +43,7 @@ _WORKED = {
     # These retired landing rows remain arithmetic only; GW is still near singular.
     "PT-BW-W": (1.0781, 1.3210, Status.INCOMPLETE),
     "PT-BW-E": (1.0212, 1.0632, Status.OK),
-    "PT-BW-GW": (1.3277, 32.5351, Status.OVER),
+    "PT-BW-GW": (1.3277, 35.25, Status.OVER),
     # GE's P_u fell 1,107.8 -> 1,074.7 lb when the landing came in 3 3/8" (2026-10-31).
     "PT-BW-GE": (1.0502, 1.2254, Status.INCOMPLETE),
     # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->

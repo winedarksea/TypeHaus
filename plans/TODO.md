@@ -133,6 +133,12 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
 
 ### Structural/framing residuals
 
+- **Court stems as a two-way plate (owner option, 2026-11-02).** A screening PyNite MITC4 plate
+  model (±5%) of W2/S/E2 with W1's braced top reads base moments 0.50–0.51× the cantilever
+  `retaining_wall` grades, enough for `#5 @ 18"` (~295 lb HDG, $380–640 below today's
+  `#5 @ 10"`). Waits on: an engine calc for a two-way wall (none exists), a PE, and the corner
+  horizontals going borderline (0.148 vs 0.15 in²/ft) with a rotating footing. Free body §6c.
+
 - **Four matchers share one arithmetic but still answer at three tolerances.**
   `platform._collinear_overlap`, `stacking._axis_match`, `construction_geometry._stack_overlap`
   and `layout_lines._collinear` all route through `layout_lines.collinear_overlap` since

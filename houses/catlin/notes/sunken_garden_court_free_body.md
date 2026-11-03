@@ -1002,6 +1002,39 @@ spacing is chosen to keep the steel: `0.31 × 12/7 = 0.531 in²/ft` against `#6 
 φMn 20,028 at d/c 0.61. The price is bar count — 12/7 per foot against 12/10 — and one bar
 size fewer on the pour: the stem and the §7e mat both take `#5` now.
 
+### 6c. Addendum 2026-11-02 — the owner selects `#5 @ 10"`
+
+§6's table row, now selected. The owner takes the margin §6 kept: reason 1 dissolved with the
+mat (§7e is `#5 @ 9"`/`12"`), and reason 2's stone-bed dependence (§5) is a sliding question,
+which this section does not touch. Re-worked term by term on §4d's graded moment (AB Classic
+apron, 88 ft-lb/ft at the stem base; §4c's 120.3 is superseded):
+
+```
+Mu  = 1.6 × (7,585 + 88)                                  = 12,277 ft-lb/ft
+As  = 0.31 × 12/10                                        = 0.372 in²/ft
+a   = 0.372 × 60,000 / (0.85 × 5,000 × 12)                = 0.438 in
+φMn = 0.9 × 0.372 × 60,000 × (8.688 − 0.219) / 12         = 14,177 ft-lb/ft
+d/c = 12,277 / 14,177                                     = 0.866  ✓
+c   = 0.438 / 0.80 = 0.547;  εt = 0.003 × (8.688 − 0.547)/0.547 = 0.045 > 0.005, φ 0.90 ✓
+```
+
+* **§11.6.1 minimum**: 0.372 ≥ 0.173 in²/ft ✓. **§11.6.2**: with §4d's 50 plf strip,
+  `Vu = 1.6 × (2,495 + 50) = 4,072 lb/ft` < `0.5 φVc = 5,529` ✓; 0.372 also clears the
+  0.360 that would apply above that line, so the verdict still does not depend on it.
+* **§11.7.2.1 spacing**: 10" ≤ min(3h, 18") ✓. **One-way shear**: 4,072 / 11,057, d/c 0.37 ✓.
+* **§6b hook**: ℓdh 7.11" < 7.875" ✓, unchanged — ψr 1.0 needs spacing ≥ 6db = 3.75", and 10"
+  is wider. The bar, not the spacing, set the hook.
+* **What governs moves.** Stem flexure 0.866 now edges the base restraint's 0.865 (§12a) on
+  `retaining_wall/W-SG-W2`/`-E2`/`-S`. Both are under 1.0; §6a's "nothing moves the number
+  that governs" no longer holds, by 0.001.
+* **Steel**: W-SG-S 32 → 23 verticals (244.51 lb, `rebar_layout_basis.md` addendum), W2/E2
+  29 → 21 each; −265.9 lb of HDG #5, $346–572 at `[reinforcement]`.
+
+Two-way plate action (W2, S and E2 as one U with W1's braced top) was screened at 0.50–0.51×
+the cantilever moment and would allow `#5 @ 18"`. **Not adopted**: no engine calc grades a
+two-way wall, it needs a PE, and the corner horizontals go borderline (0.148 vs 0.15 in²/ft)
+on a rotating footing. Recorded in `plans/TODO.md`.
+
 ---
 
 ## 7. The footing — the OTHER limit state nothing had computed
@@ -2545,6 +2578,34 @@ winter joint 0.208.
 
 
 ---
+
+### 11n. Addendum 2026-11-02 — a layer board bears only where it faces house concrete
+
+`thermal_break_geometry.layer_boards` took W-SG-BRKBM's board at the WHOLE wall's height.
+That is right only while the wall stops under the house concrete it faces; grow the beam
+into a wall and the board above the `W-B-S2`/`S3` curb faces a framed wall across air and
+bears on nothing, yet would carry σ_cap × its full area. The board is now clipped station by
+station along the joint to the highest house concrete it faces (its facing footings, and
+cast house walls within 12"), and the faced area is kept as an equivalent height.
+
+Today nothing clips, and the record is bit-identical: the board runs −120 3/16" to
+−102 7/16" (17.75" × 216"), and every station faces concrete at or above its top —
+`W-B-S1`/`S4`'s full pour (top −13 7/16") over x 108–118" / 314–324", the curbs (top
+−102 3/16") over 118–314".
+
+Were the beam raised to −13 1/3" (the concrete north wall, weighed 2026-11-02, undecided):
+
+```
+curbs  196 × (−102.1875 + 120.1875) = 196 × 18.00   = 3,528 in²
+pours   2 × 10 × (−13.4375 + 120.1875) = 20 × 106.75 = 2,135 in²
+faced                                                 5,663 in² → 26.22" over 216"
+```
+
+Not the 18.0" that scheme assumed: the board is drawn axis to axis, so its last 10" each end
+stand before `W-B-S1`/`S4`. Those strips sit inside W1/E1's own stems, behind their own
+boards — a conservatism of the axis-to-axis drawing, to settle if that wall is ever built.
+Without the clip the same board reads 106.85", 6× today's thrust. Pinned by
+`test_thermal_break.py::test_a_raised_layer_board_stops_at_the_house_concrete`.
 
 ## 12. The court narrowed to 17'-0" clear (2026-09-22)
 

@@ -2602,7 +2602,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   mis-state the engineering (a false fill on the braced half, an inflated court FS). The layout
   lines already chain each side as one run on the drawings. **Nor can the court go prescriptive
   by treating it as a basement:** with W2/E2/S relabelled `top_and_bottom`, Table R404.1.2(8)
-  passes them easily (#5 @ 7" vs #6 @ 38" required), but nothing braces their TOPS — the porch
+  passes them easily (#5 @ 10" vs #6 @ 38" required), but nothing braces their TOPS — the porch
   beams brace W1/E1 only, and ARCH, BRKBM and the corners act at the base and ends — so R404.4
   governs. Prescriptive would need new top struts across the open court.
 - **A wall's faces are NOT `axis ± thickness_m/2` any more.** That shorthand is only right while
@@ -2674,7 +2674,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **`W-SG-W1`+`W2` are ONE pour, and so are `E1`+`E2`** — one 12" section, one form height,
   placement 2. They are two elements because the restraint condition changes at `N-SG-MW` /
   `N-SG-ME`: braced top-and-bottom north, R404.4 base-restrained south. So does the steel —
-  **#6 @ 38" north of y = -11'-0" and #5 @ 7" (retained face) south of it, in one form.**
+  **#6 @ 38" north of y = -11'-0" and #5 @ 10" (retained face) south of it, in one form.**
 - **One footing type in the court, `COURT_FOOTING_12`** (was `RETAINING_FOOTING_96` +
   `PORCH_FOOTING_84`). Identical stacks — 12" of EXPOSED_MIX — split on a width an Assembly
   does not carry, and the porch card declared **13"** where every strip is built at 12". The
@@ -2784,14 +2784,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `run = 2(L - 9.6667) + 18` (free body §12), so it moves with the strip width, the apron's
   surcharge and the court's width. It was 22'-10" before FT-SG-S's toe grew (§12a), 24'-6"
   at the 19'-0" court, 23'-3" at 8'-0", and 23'-11" before the surcharge (2026-09-20).
-- Current stem/toe state: system FS **1.735** (d/c 0.865), stem flexure **0.61**, toe
+- Current stem/toe state: system FS **1.735** (d/c 0.865), stem flexure **0.866** (governs, by 0.001), toe
   flexure **0.72** on W2/E2 and **0.74** on S (§12a), heel flexure **0.70**, stem length **9.1198'**. **The raised-garden
   apron's bearing is in every one of those** (2026-09-20, `engineering/tier_surcharge.py`,
   free body §4c): +69 plf of thrust per wall, NET of the soil the block displaces — taken
   gross the loop read **1.46 and did not clear** at the 19'-0" court, so netting is a
   load-bearing argument.
-  Every schedule in the stem bar table clears, `#6 @ 16"` included at 0.98; the 0.53 in²/ft
-  is held on that 2% margin and on §5's stone-bed dependence. **It is `#5 @ 7"`, not `#6 @ 10"` (2026-09-17)**:
+  **The stem is `#5 @ 10"` since 2026-11-02** (owner took §6's margin; free body §6c, −266 lb
+  HDG #5). Two-way plate action would allow `#5 @ 18"` and is NOT adopted (`plans/TODO.md`).
+  **It is `#5`, not `#6 @ 10"` (2026-09-17)**:
   the vertical runs continuous on a 90° foot on the footing mat, 7.875" is available, and
   ACI 318-19 §25.4.3.1(a) ldh is 9.35" for a #6, 7.11" for a #5 (free body §6b).
 - **FT-SG-S is 8'-4" with a 4'-4" toe and a `#5 @ 9"` bottom-x mat (2026-09-22,

@@ -61,19 +61,20 @@ def test_ft_sg_s_mat(catlin_model_ro) -> None:
 
 
 def test_w_sg_s_verticals(catlin_model_ro) -> None:
-    """§3 at 216": centres [0.625, 215.375], ceil(214.75/7) + 1 = 32 #5 continuous from the
-    footing. The foot sits on FT-SG-S's bottom mat, #5 on #5 since 2026-10-10 (was #5 on #4),
-    so it is 0.125" higher: 113.875" + a 8.436" foot (cut 122.311 x 32 = 3,913.95" =
-    340.19 lb), 2.6875" inside the retained face, 7.75" of the 7.115" ldh embedded."""
+    """§3 at 216": centres [0.625, 215.375], ceil(214.75/10) + 1 = 23 #5 continuous from the
+    footing (#5 @ 10" since 2026-11-02; 32 at 7"). The foot sits on FT-SG-S's bottom mat, #5
+    on #5 since 2026-10-10 (was #5 on #4), so it is 0.125" higher: 113.875" + a 8.436" foot
+    (cut 122.311 x 23 = 2,813.15" = 244.51 lb), 2.6875" inside the retained face, 7.75" of
+    the 7.115" ldh embedded."""
     bars = _role(catlin_model_ro, "W-SG-S", "vertical")
-    assert len(bars) == 32
+    assert len(bars) == 23
     for b in bars:
         assert b.placed_length_m / _IN == pytest.approx(113.875, abs=0.01)
         assert b.hook_length_m / _IN == pytest.approx(8.436, abs=0.001)
         assert b.lap_length_m == 0.0 and b.hook_kinds == ("std90",)
         assert b.embedment_m / _IN == pytest.approx(7.75, abs=0.001)
         assert b.development_m / _IN == pytest.approx(7.115, abs=0.001)
-    assert _lb(bars) == pytest.approx(340.19, abs=0.01)
+    assert _lb(bars) == pytest.approx(244.51, abs=0.01)
     wall = catlin_model_ro.wall("W-SG-S")
     t = (bars[0].path[1][1] - wall.axis[0][1]) / _IN
     assert t == pytest.approx(-2.6875, abs=0.001)

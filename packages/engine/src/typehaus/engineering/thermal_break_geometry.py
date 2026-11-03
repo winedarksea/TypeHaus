@@ -205,7 +205,7 @@ def _clip_to_house_concrete(ctx, board: Board) -> None:
                   | {v for a0, a1, _t in faced for v in (a0, a1)
                      if board.along[0] < v < board.along[1]})
     area = 0.0
-    for a, b in zip(cuts, cuts[1:]):
+    for a, b in zip(cuts, cuts[1:], strict=False):
         top = max((t for a0, a1, t in faced if a0 <= a and a1 >= b), default=board.bottom_in)
         area += max(0.0, min(top, board.top_in) - board.bottom_in) * (b - a)
     h = area / board.length_in if board.length_in else board.h_in

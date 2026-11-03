@@ -166,6 +166,14 @@ is 94" x 210" and bottom-x tightens to `#5 @ 9"`. Same steps: bottom-x
 (1,786" = 148.83' = 155.23 lb); bottom-y `ceil((94 - 0.5)/18) + 1 = 7` #4 at 210" (1,470" =
 122.5' = 81.83 lb). Heights in the mat are unchanged.
 
+## Addendum 2026-11-02 — the court stems at `#5 @ 10"`
+
+The owner's spacing (`sunken_garden_court_free_body.md` §6c). §3's steps at 216": centres
+[0.625, 215.375], `ceil(214.75/10) + 1 = 23` #5, each 113.875" + an 8.436" foot (cut 122.311;
+foot on FT-SG-S's #5 mat since 2026-10-10). 23 × 122.311 = 2,813.15" = 234.43' = **244.51 lb**
+(was 32, 340.19). Anchorage unchanged, 7.875 ≥ 7.115. W-SG-W2/E2: 29 → 21 verticals each,
+223.41 lb. Horizontals unchanged.
+
 ## §5. SL-M-DECK rib ends — 180° hooks in a 6" bearing (2026-10-31)
 
 Since decision #107 the deck bears 6" at each end: `W-B-CS2`/`-CN` (face x 222") and

@@ -1,3 +1,23 @@
+## Court stems `#5 @ 10"`; layer boards bear only on house concrete (2026-11-02)
+
+- **Stems.** `_RET_STEM_STEEL`'s verticals `#5 @ 7"` → `#5 @ 10"` on W2/E2/S (owner). §6 of the
+  free body had kept 7" on margin alone; d/c 0.616 → **0.866**, which now governs
+  `retaining_wall/*` by 0.001 over the base restraint (0.865). Hook, §11.6.1/§11.6.2 and the 18"
+  spacing cap all clear (free body §6c). −25 pieces, −265.9 lb HDG #5, **−$346–572**.
+- **Two-way plate: recorded, not adopted.** A PyNite MITC4 screen of the U (W1's braced top in)
+  reads base moments 0.50–0.51× the cantilever, enough for `#5 @ 18"` (a further ~295 lb,
+  $380–640). No engine calc, needs a PE, corner horizontals borderline (0.148 vs 0.15 in²/ft)
+  on a rotating footing (`plans/TODO.md`).
+- **Thermal-break layer boards** (`engineering/thermal_break_geometry.py`, free body §11n) are
+  clipped station by station to the house concrete they face; today's record is unchanged.
+  It is the guard a raised `W-SG-BRKBM` needs: without it the board reads the whole wall and
+  the thrust goes ~6×. With it the raised board reads 26.2", not the 18.0" first assumed,
+  because its ends stand before `W-B-S1`/`S4`'s full pours.
+- **The concrete north wall (brick → poured, monolithic with W1/E1) is weighed, not decided.**
+  Brick + joints out $2.8–4.7k; concrete, cage, wash and two openings in $2.7–5.8k (estimate);
+  the fireplace losing its shared mason call-out adds $1.3–2.0k. Roughly a wash: a choice of
+  look and durability, not cost. The stem and board changes above are independent of it.
+
 ## Lower screen centre timber — coordination revision (2026-11-02; acceptance BLOCKED)
 
 Three KDAT SP No.2 2x6 plies replace MDO nailer -3: 4.5 x 5.5 inches, x73.625–78.125,
