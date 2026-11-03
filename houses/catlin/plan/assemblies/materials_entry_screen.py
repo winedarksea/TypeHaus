@@ -23,7 +23,7 @@ MATERIALS_ENTRY_SCREEN = [
         areal_density_kg_m2=WOOD_DENSITY_KG_M3 * PANEL_THICKNESS_IN * 0.0254
         + ACCESSORY_AREAL_DENSITY_KG_M2,
         color="#f5f5f0",
-        source="600 kg/m3 plywood plus five 2x4 edge nailers and 2lb hardware/paint "
+        source="600 kg/m3 plywood plus six 2x4 edge nailers, three 2x6 plies and scheduled hardware/paint "
         "reserve, distributed over net panel area once. Not a shear layer.",
     ),
 ]

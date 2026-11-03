@@ -1,9 +1,10 @@
 """Direct-mounted MDO edge supports and accessible garage tie-block relief."""
 
 from plan.entry_screen_finish_spec import (
-    NAILER_BOTTOM_IN,
-    NAILER_STATIONS_IN,
-    NAILER_TOP_IN,
+    SUPPORTS,
+    PLY_SCREWS,
+    PLY_SCREW_HEAD_DIAMETER_IN,
+    PLY_SCREW_HEAD_PROJECTION_IN,
     TIE_RELIEF_BOTTOM_IN,
     TIE_RELIEF_START_IN,
     TIE_RELIEF_TOP_IN,
@@ -21,22 +22,39 @@ STUD_EAST_IN = LANDING_WEST_FT * 12 + 1.75
 # is already included in the MDO material's effective areal density.
 FINISH_ELEMENTS = [
     Flashing(
-        uid=f"BWMDO{i:05d}",
-        tag=f"TR-BW-MDO-NAILER-{i}",
+        uid=(f"BWMDO{int(support.tag.rsplit('-', 1)[1]):05d}"
+             if "NAILER" in support.tag else f"BWMDT{i:05d}"),
+        tag=support.tag,
         kind=TrimKind.WRB_COUNTERFLASHING,
         path=(
-            pt(inch(STUD_EAST_IN - 1.75), ft(DECK_SHEET_SOUTH_Y_FT) + inch(station - 0.75)),
-            pt(inch(STUD_EAST_IN - 1.75), ft(DECK_SHEET_SOUTH_Y_FT) + inch(station + 0.75)),
+            pt(inch((support.west_in + support.east_in) / 2),
+               ft(DECK_SHEET_SOUTH_Y_FT) + inch(support.station_start_in)),
+            pt(inch((support.west_in + support.east_in) / 2),
+               ft(DECK_SHEET_SOUTH_Y_FT) + inch(support.station_end_in)),
         ),
-        top_elevation=inch(NAILER_TOP_IN),
-        depth=inch(NAILER_TOP_IN - NAILER_BOTTOM_IN),
-        thickness=inch(3.5),
+        top_elevation=inch(support.top_in),
+        depth=inch(support.top_in - support.bottom_in),
+        thickness=inch(support.east_in - support.west_in),
         material="kdat",
         host_ref="W-BW-SCREEN",
         vertical=True,
     )
-    for i, station in enumerate(NAILER_STATIONS_IN, 1)
+    for i, support in enumerate(SUPPORTS, 1)
 ]
+
+# Conservative head envelopes are included in the complete service-door sweep. Hidden
+# interface screws are installed before the next ply; all axes point west into side grain.
+for index, (east, station, elevation) in enumerate(PLY_SCREWS, 1):
+    FINISH_ELEMENTS.append(Flashing(
+        uid=f"BWMDP{index:05d}", tag=f"TR-BW-MDO-PLY-SCREW-{index}",
+        kind=TrimKind.WRB_COUNTERFLASHING,
+        path=(pt(inch(east + PLY_SCREW_HEAD_PROJECTION_IN / 2),
+                 ft(DECK_SHEET_SOUTH_Y_FT) + inch(station - PLY_SCREW_HEAD_DIAMETER_IN / 2)),
+              pt(inch(east + PLY_SCREW_HEAD_PROJECTION_IN / 2),
+                 ft(DECK_SHEET_SOUTH_Y_FT) + inch(station + PLY_SCREW_HEAD_DIAMETER_IN / 2))),
+        top_elevation=inch(elevation + PLY_SCREW_HEAD_DIAMETER_IN / 2),
+        depth=inch(PLY_SCREW_HEAD_DIAMETER_IN), thickness=inch(PLY_SCREW_HEAD_PROJECTION_IN),
+        material="entry-screen-white-hardware", host_ref="W-BW-SCREEN"))
 
 FINISH_ELEMENTS.append(
     RoughOpening(

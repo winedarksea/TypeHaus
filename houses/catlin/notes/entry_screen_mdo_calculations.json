@@ -1,119 +1,594 @@
 {
+  "acceptance": "blocked",
+  "acceptance_blockers": [
+    "ply transfer: one screw, full load envelope",
+    "end attachments: installed directions and fit",
+    "local plate load transfer",
+    "end screw penetration, edge distances and cross-grain effects",
+    "door sweep with installed end angles and SD9112 heads",
+    "concentrated total sill/hanger effects"
+  ],
+  "scope": "supplemental lower screen only; existing shear and upper-band model retained",
   "panel_cuts_in": [
     {
+      "start": 0.125,
+      "end": 7.875,
       "width": 7.75,
       "height": 45.5,
       "quantity": 1
     },
     {
-      "width": 26.9375,
+      "start": 13.625,
+      "end": 37.75,
+      "width": 24.125,
       "height": 45.5,
       "quantity": 1
     },
     {
-      "width": 26.9375,
+      "start": 43.5,
+      "end": 67.625,
+      "width": 24.125,
       "height": 45.5,
       "quantity": 1
     },
     {
+      "start": 73.375,
+      "end": 79.25,
       "width": 5.875,
       "height": 45.5,
       "quantity": 1
     }
   ],
-  "support_weight_lb": 25.286575489059125,
-  "hardware_and_paint_reserve_lb": 2.0,
-  "wall_dead_load_plf": 34.23462744746476,
-  "wall_and_upper_band_plf": 52.32534582544788,
-  "wall_reaction_lb": {
-    "PT-BW-CW": 154.11645940200427,
-    "PT-BW-CNW": 154.11645940200427
-  },
-  "structural_records": [
+  "net_panel_area_sqft": 19.482421875,
+  "previous_net_panel_area_sqft": 21.259765625,
+  "supports": [
     {
-      "key": "column_base/PT-BW-PE",
-      "status": "ok",
-      "ratio": 0.33502367863431165
+      "tag": "TR-BW-MDO-NAILER-1",
+      "profile": "2x4",
+      "west_in": 73.625,
+      "east_in": 77.125,
+      "station_start_in": 6.375,
+      "station_end_in": 7.875,
+      "bottom_in": 0.56,
+      "top_in": 45.0
     },
     {
-      "key": "column_base/PT-BW-PNE",
-      "status": "ok",
-      "ratio": 0.5020342240705203
+      "tag": "TR-BW-MDO-NAILER-2",
+      "profile": "2x4",
+      "west_in": 73.625,
+      "east_in": 77.125,
+      "station_start_in": 13.625,
+      "station_end_in": 15.125,
+      "bottom_in": 0.56,
+      "top_in": 45.0
     },
     {
-      "key": "deck_post/PT-BW-E",
-      "status": "ok",
-      "ratio": 0.005100299944142312
+      "tag": "TR-BW-MDO-NAILER-6",
+      "profile": "2x4",
+      "west_in": 73.625,
+      "east_in": 77.125,
+      "station_start_in": 36.25,
+      "station_end_in": 37.75,
+      "bottom_in": 0.56,
+      "top_in": 45.0
     },
     {
-      "key": "deck_post/PT-BW-GE",
-      "status": "ok",
-      "ratio": 0.0037282507911851124
+      "tag": "TR-BW-MDO-NAILER-7",
+      "profile": "2x4",
+      "west_in": 73.625,
+      "east_in": 77.125,
+      "station_start_in": 43.5,
+      "station_end_in": 45.0,
+      "bottom_in": 0.56,
+      "top_in": 45.0
     },
     {
-      "key": "deck_post/PT-BW-GW",
-      "status": "ok",
-      "ratio": 0.01799794632064304
+      "tag": "TR-BW-MDO-NAILER-4",
+      "profile": "2x4",
+      "west_in": 73.625,
+      "east_in": 77.125,
+      "station_start_in": 66.125,
+      "station_end_in": 67.625,
+      "bottom_in": 0.56,
+      "top_in": 45.0
     },
     {
-      "key": "deck_post/PT-BW-PE",
-      "status": "ok",
-      "ratio": 0.8495237906376403
+      "tag": "TR-BW-MDO-NAILER-5",
+      "profile": "2x4",
+      "west_in": 73.625,
+      "east_in": 77.125,
+      "station_start_in": 73.375,
+      "station_end_in": 74.875,
+      "bottom_in": 0.56,
+      "top_in": 45.0
     },
     {
-      "key": "deck_post/PT-BW-PNE",
-      "status": "ok",
-      "ratio": 0.8495237906376403
+      "tag": "TR-BW-MDO-TIMBER-PLY-1",
+      "profile": "2x6",
+      "west_in": 73.625,
+      "east_in": 75.125,
+      "station_start_in": 37.875,
+      "station_end_in": 43.375,
+      "bottom_in": 0.56,
+      "top_in": 45.0
     },
     {
-      "key": "deck_post/PT-BW-W",
-      "status": "ok",
-      "ratio": 0.01939632619448703
+      "tag": "TR-BW-MDO-TIMBER-PLY-2",
+      "profile": "2x6",
+      "west_in": 75.125,
+      "east_in": 76.625,
+      "station_start_in": 37.875,
+      "station_end_in": 43.375,
+      "bottom_in": 0.56,
+      "top_in": 45.0
     },
     {
-      "key": "deck_tie/FS-BW-FLOOR",
-      "status": "ok",
-      "ratio": 0.8147438480196877
-    },
-    {
-      "key": "lateral_system/RF-BW-CANOPY",
-      "status": "ok",
-      "ratio": 0.9074481612362932
-    },
-    {
-      "key": "rafter/RF-BW-CANOPY",
-      "status": "no_calc",
-      "ratio": null
-    },
-    {
-      "key": "roof_beam/BM-BW-RE",
-      "status": "ok",
-      "ratio": 0.8766450749776687
-    },
-    {
-      "key": "roof_beam/BM-BW-RW",
-      "status": "ok",
-      "ratio": 0.8766450749776772
-    },
-    {
-      "key": "wood_roof_post/PT-BW-CNW",
-      "status": "ok",
-      "ratio": 0.5499401754495761
-    },
-    {
-      "key": "wood_roof_post/PT-BW-CW",
-      "status": "ok",
-      "ratio": 0.5499401754495761
-    },
-    {
-      "key": "wood_roof_post/PT-BW-RE",
-      "status": "ok",
-      "ratio": 0.23208856600514188
-    },
-    {
-      "key": "wood_roof_post/PT-BW-RNE",
-      "status": "ok",
-      "ratio": 0.23208856600514188
+      "tag": "TR-BW-MDO-TIMBER-PLY-3",
+      "profile": "2x6",
+      "west_in": 76.625,
+      "east_in": 78.125,
+      "station_start_in": 37.875,
+      "station_end_in": 43.375,
+      "bottom_in": 0.56,
+      "top_in": 45.0
     }
-  ]
+  ],
+  "purchasing": [
+    {
+      "profile": "2x4",
+      "cut_length_in": 44.44,
+      "cuts": 6,
+      "stock_length_in": 96.0,
+      "cuts_per_board": 2,
+      "boards": 3
+    },
+    {
+      "profile": "2x6",
+      "cut_length_in": 44.44,
+      "cuts": 3,
+      "stock_length_in": 96.0,
+      "cuts_per_board": 2,
+      "boards": 2
+    }
+  ],
+  "candidate_hardware_quantities": {
+    "SDWS22300DB": 8,
+    "A35Z": 4,
+    "SD9112": 48
+  },
+  "support_weight_lb": 54.185518905126706,
+  "hardware_and_paint_reserve_lb": 4.6,
+  "support_weight_delta_lb": 28.898943416067578,
+  "candidate_ply_screws": {
+    "part": "SDWS22300DB",
+    "axes": "west, into side grain",
+    "head_coordinates_in": [
+      [
+        76.625,
+        40.625,
+        6.5600000000000005
+      ],
+      [
+        76.625,
+        40.625,
+        14.56
+      ],
+      [
+        76.625,
+        40.625,
+        30.56
+      ],
+      [
+        76.625,
+        40.625,
+        38.56
+      ],
+      [
+        78.125,
+        40.625,
+        7.5600000000000005
+      ],
+      [
+        78.125,
+        40.625,
+        15.56
+      ],
+      [
+        78.125,
+        40.625,
+        29.56
+      ],
+      [
+        78.125,
+        40.625,
+        37.56
+      ]
+    ],
+    "thread_penetration_in": 1.5
+  },
+  "end_connection_missing": [
+    "Select and verify the bent A35Z stud-to-plate configuration and installed load directions; F1/F2 695/845 lb from the unbent upper-band detail do not establish this connection.",
+    "Verify all SD9112 hole locations, side-grain penetration, wood edge/end distances and plate contact at both ends without cutting west shear plywood or existing plates.",
+    "Resolve A35Z bent-tab interference with the two new edge nailers; the 1/8in gaps are narrower than a 1-7/16in angle leg. Candidate hardware envelopes are not installation approval."
+  ],
+  "wind_pressure_psf": 16.661038255629844,
+  "local_checks": [
+    {
+      "name": "guard concentrated/infill: single-ply bending",
+      "status": "ok",
+      "demand": 1077.3333333333333,
+      "capacity": 1100.0,
+      "unit": "psi",
+      "ratio": 0.9793939393939394,
+      "basis": "NDS Supplement Table 4B SP No.2 2x6 Fb=1100; wet Fb factor 1 where Fb<=1150, CD=1, CL=1 for this 5.5x1.5 flatwise orientation; no sharing"
+    },
+    {
+      "name": "guard concentrated/infill: single-ply shear",
+      "status": "ok",
+      "demand": 36.36363636363637,
+      "capacity": 169.75,
+      "unit": "psi",
+      "ratio": 0.21421877091980188,
+      "basis": "NDS Table 4B Fv=175, wet CM=0.97; full point at end bounds reaction"
+    },
+    {
+      "name": "guard concentrated/infill: single-ply deflection",
+      "status": "ok",
+      "demand": 0.18762259715461488,
+      "capacity": 0.25,
+      "unit": "in",
+      "ratio": 0.7504903886184595,
+      "basis": "project 1/4in local limit; wet E=0.9E"
+    },
+    {
+      "name": "out-of-plane wind: single-ply bending",
+      "status": "ok",
+      "demand": 443.1530106554028,
+      "capacity": 1100.0,
+      "unit": "psi",
+      "ratio": 0.40286637332309344,
+      "basis": "NDS Supplement Table 4B SP No.2 2x6 Fb=1100; wet Fb factor 1 where Fb<=1150, CD=1, CL=1 for this 5.5x1.5 flatwise orientation; no sharing"
+    },
+    {
+      "name": "out-of-plane wind: single-ply shear",
+      "status": "ok",
+      "demand": 14.957909900609906,
+      "capacity": 169.75,
+      "unit": "psi",
+      "ratio": 0.08811728954703921,
+      "basis": "NDS Table 4B Fv=175, wet CM=0.97; full point at end bounds reaction"
+    },
+    {
+      "name": "out-of-plane wind: single-ply deflection",
+      "status": "ok",
+      "demand": 0.09647144043477729,
+      "capacity": 0.25,
+      "unit": "in",
+      "ratio": 0.38588576173910916,
+      "basis": "project 1/4in local limit; wet E=0.9E"
+    },
+    {
+      "name": "ply transfer: one screw, full load envelope",
+      "status": "over",
+      "demand": 200.0,
+      "capacity": 171.5,
+      "unit": "lb",
+      "ratio": 1.1661807580174928,
+      "basis": "ER-192 Table 7: 164 lb/in, Wmax245, actual 1.5in side-grain thread, CM0.7, CD1.0; no unverified group distribution"
+    },
+    {
+      "name": "interface 1: screw end distance",
+      "status": "ok",
+      "demand": 6.0,
+      "capacity": 6.0,
+      "unit": "in",
+      "ratio": 1.0,
+      "basis": "ER-192 Table 8"
+    },
+    {
+      "name": "interface 1: screw row spacing",
+      "status": "ok",
+      "demand": 8.0,
+      "capacity": 8.0,
+      "unit": "in",
+      "ratio": 1.0,
+      "basis": "ER-192 Table 8"
+    },
+    {
+      "name": "interface 2: screw end distance",
+      "status": "ok",
+      "demand": 6.0,
+      "capacity": 7.0,
+      "unit": "in",
+      "ratio": 0.8571428571428571,
+      "basis": "ER-192 Table 8"
+    },
+    {
+      "name": "interface 2: screw row spacing",
+      "status": "ok",
+      "demand": 8.0,
+      "capacity": 8.0,
+      "unit": "in",
+      "ratio": 1.0,
+      "basis": "ER-192 Table 8"
+    },
+    {
+      "name": "screw edge distance",
+      "status": "ok",
+      "demand": 1.4375,
+      "capacity": 2.75,
+      "unit": "in",
+      "ratio": 0.5227272727272727,
+      "basis": "ER-192 Table 8"
+    },
+    {
+      "name": "east-ply bottom-plate bearing, self weight",
+      "status": "ok",
+      "demand": 2.889894341606757,
+      "capacity": 378.55,
+      "unit": "psi",
+      "ratio": 0.0076341152862415985,
+      "basis": "NDS Table 4B Fc-perp565 x CM0.67; actual 0.5x5.5in contact; no roof credit"
+    },
+    {
+      "name": "end attachments: installed directions and fit",
+      "status": "incomplete",
+      "ratio": null,
+      "basis": "Select and verify the bent A35Z stud-to-plate configuration and installed load directions; F1/F2 695/845 lb from the unbent upper-band detail do not establish this connection.; Verify all SD9112 hole locations, side-grain penetration, wood edge/end distances and plate contact at both ends without cutting west shear plywood or existing plates.; Resolve A35Z bent-tab interference with the two new edge nailers; the 1/8in gaps are narrower than a 1-7/16in angle leg. Candidate hardware envelopes are not installation approval."
+    },
+    {
+      "name": "local plate load transfer",
+      "status": "incomplete",
+      "ratio": null,
+      "basis": "Select and verify the bent A35Z stud-to-plate configuration and installed load directions; F1/F2 695/845 lb from the unbent upper-band detail do not establish this connection.; Verify all SD9112 hole locations, side-grain penetration, wood edge/end distances and plate contact at both ends without cutting west shear plywood or existing plates.; Resolve A35Z bent-tab interference with the two new edge nailers; the 1/8in gaps are narrower than a 1-7/16in angle leg. Candidate hardware envelopes are not installation approval."
+    },
+    {
+      "name": "end screw penetration, edge distances and cross-grain effects",
+      "status": "incomplete",
+      "ratio": null,
+      "basis": "Select and verify the bent A35Z stud-to-plate configuration and installed load directions; F1/F2 695/845 lb from the unbent upper-band detail do not establish this connection.; Verify all SD9112 hole locations, side-grain penetration, wood edge/end distances and plate contact at both ends without cutting west shear plywood or existing plates.; Resolve A35Z bent-tab interference with the two new edge nailers; the 1/8in gaps are narrower than a 1-7/16in angle leg. Candidate hardware envelopes are not installation approval."
+    },
+    {
+      "name": "complete service-door sweep at authored stop including ply screws",
+      "status": "ok",
+      "clearance_in": 0.38077805966295564,
+      "minimum_in": 0.25,
+      "obstacle": "CN-BW-GWTIE-LO",
+      "ratio": 0.6565504331349516
+    },
+    {
+      "name": "door sweep with installed end angles and SD9112 heads",
+      "status": "incomplete",
+      "ratio": null,
+      "basis": "end connection geometry unresolved; only ply screws represented"
+    },
+    {
+      "name": "concentrated total sill/hanger effects",
+      "status": "incomplete",
+      "ratio": null,
+      "basis": "incomplete: total sill stress, local plate distribution and hanger effects under concentrated loading require verification"
+    }
+  ],
+  "concentrated_sill_effects": {
+    "basis": "incremental supplemental wood only; no double addition to wall-line weight",
+    "point_loads": [
+      {
+        "station_in": 40.625,
+        "load_lb": 18.78431322044392
+      },
+      {
+        "station_in": 37.0,
+        "load_lb": 5.057315097811825
+      },
+      {
+        "station_in": 44.25,
+        "load_lb": 5.057315097811825
+      }
+    ],
+    "span_in": 54.25000000000006,
+    "additional_south_reaction_lb": 14.44947170803383,
+    "additional_north_reaction_lb": 14.449471708033741,
+    "maximum_additional_moment_lb_in": 373.60915285084894,
+    "acceptance": "incomplete: total sill stress, local plate distribution and hanger effects under concentrated loading require verification"
+  },
+  "before": {
+    "wall_dead_load_plf": 34.23804469246205,
+    "wall_and_upper_band_plf": 52.32876307044517,
+    "wall_reaction_lb": {
+      "PT-BW-CW": 154.12776122790675,
+      "PT-BW-CNW": 154.12776122790675
+    },
+    "structural_records": [
+      {
+        "key": "column_base/PT-BW-PE",
+        "status": "ok",
+        "ratio": 0.33502367863431165
+      },
+      {
+        "key": "column_base/PT-BW-PNE",
+        "status": "ok",
+        "ratio": 0.5020342240705203
+      },
+      {
+        "key": "deck_post/PT-BW-E",
+        "status": "ok",
+        "ratio": 0.005100299944142312
+      },
+      {
+        "key": "deck_post/PT-BW-GE",
+        "status": "ok",
+        "ratio": 0.0037282507911851124
+      },
+      {
+        "key": "deck_post/PT-BW-GW",
+        "status": "ok",
+        "ratio": 0.017997982375852352
+      },
+      {
+        "key": "deck_post/PT-BW-PE",
+        "status": "ok",
+        "ratio": 0.8495237906376403
+      },
+      {
+        "key": "deck_post/PT-BW-PNE",
+        "status": "ok",
+        "ratio": 0.8495237906376403
+      },
+      {
+        "key": "deck_post/PT-BW-W",
+        "status": "ok",
+        "ratio": 0.019396362249696337
+      },
+      {
+        "key": "deck_tie/FS-BW-FLOOR",
+        "status": "ok",
+        "ratio": 0.8147438480196877
+      },
+      {
+        "key": "lateral_system/RF-BW-CANOPY",
+        "status": "ok",
+        "ratio": 0.9074481612362932
+      },
+      {
+        "key": "rafter/RF-BW-CANOPY",
+        "status": "no_calc",
+        "ratio": null
+      },
+      {
+        "key": "roof_beam/BM-BW-RE",
+        "status": "ok",
+        "ratio": 0.8766450749776687
+      },
+      {
+        "key": "roof_beam/BM-BW-RW",
+        "status": "ok",
+        "ratio": 0.8766450749776772
+      },
+      {
+        "key": "wood_roof_post/PT-BW-CNW",
+        "status": "ok",
+        "ratio": 0.5499401754495761
+      },
+      {
+        "key": "wood_roof_post/PT-BW-CW",
+        "status": "ok",
+        "ratio": 0.5499401754495761
+      },
+      {
+        "key": "wood_roof_post/PT-BW-RE",
+        "status": "ok",
+        "ratio": 0.23208856600514188
+      },
+      {
+        "key": "wood_roof_post/PT-BW-RNE",
+        "status": "ok",
+        "ratio": 0.23208856600514188
+      }
+    ]
+  },
+  "after": {
+    "wall_dead_load_plf": 38.38554986662084,
+    "wall_and_upper_band_plf": 56.476268244603965,
+    "wall_reaction_lb": {
+      "PT-BW-CW": 167.844770527859,
+      "PT-BW-CNW": 167.844770527859
+    },
+    "structural_records": [
+      {
+        "key": "column_base/PT-BW-PE",
+        "status": "ok",
+        "ratio": 0.33502367863431165
+      },
+      {
+        "key": "column_base/PT-BW-PNE",
+        "status": "ok",
+        "ratio": 0.5020342240705203
+      },
+      {
+        "key": "deck_post/PT-BW-E",
+        "status": "ok",
+        "ratio": 0.005100299944142312
+      },
+      {
+        "key": "deck_post/PT-BW-GE",
+        "status": "ok",
+        "ratio": 0.0037282507911851124
+      },
+      {
+        "key": "deck_post/PT-BW-GW",
+        "status": "ok",
+        "ratio": 0.018041742529801976
+      },
+      {
+        "key": "deck_post/PT-BW-PE",
+        "status": "ok",
+        "ratio": 0.8495237906376403
+      },
+      {
+        "key": "deck_post/PT-BW-PNE",
+        "status": "ok",
+        "ratio": 0.8495237906376403
+      },
+      {
+        "key": "deck_post/PT-BW-W",
+        "status": "ok",
+        "ratio": 0.019440122403645965
+      },
+      {
+        "key": "deck_tie/FS-BW-FLOOR",
+        "status": "ok",
+        "ratio": 0.8147438480196877
+      },
+      {
+        "key": "lateral_system/RF-BW-CANOPY",
+        "status": "ok",
+        "ratio": 0.9074481612362932
+      },
+      {
+        "key": "rafter/RF-BW-CANOPY",
+        "status": "no_calc",
+        "ratio": null
+      },
+      {
+        "key": "roof_beam/BM-BW-RE",
+        "status": "ok",
+        "ratio": 0.8766450749776687
+      },
+      {
+        "key": "roof_beam/BM-BW-RW",
+        "status": "ok",
+        "ratio": 0.8766450749776772
+      },
+      {
+        "key": "wood_roof_post/PT-BW-CNW",
+        "status": "ok",
+        "ratio": 0.5499401754495761
+      },
+      {
+        "key": "wood_roof_post/PT-BW-CW",
+        "status": "ok",
+        "ratio": 0.5499401754495761
+      },
+      {
+        "key": "wood_roof_post/PT-BW-RE",
+        "status": "ok",
+        "ratio": 0.23208856600514188
+      },
+      {
+        "key": "wood_roof_post/PT-BW-RNE",
+        "status": "ok",
+        "ratio": 0.23208856600514188
+      }
+    ]
+  },
+  "wall_reaction_delta_lb": {
+    "PT-BW-CW": 13.717009299952252,
+    "PT-BW-CNW": 13.717009299952252
+  },
+  "door_sweep": {
+    "stop_degrees": 81.0,
+    "minimum_clearance_in": 0.38077805966295564,
+    "obstacle": "CN-BW-GWTIE-LO",
+    "new_hardware_scope": "ply screw heads; end A35Z/SD9112 installation unresolved"
+  }
 }

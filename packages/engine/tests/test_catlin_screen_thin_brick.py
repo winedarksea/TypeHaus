@@ -21,8 +21,8 @@ def test_mdos_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
                            "cladding-out": (72.125, 73)}.items():
         xs = [x / INCH for x, _y in layers[name].polygon]
         assert (min(xs), max(xs)) == pytest.approx(expected)
-    expected_runs = ((0.125, 7.875), (13.625, 40.5625),
-                     (40.6875, 67.625), (73.375, 79.25))
+    expected_runs = ((0.125, 7.875), (13.625, 37.750),
+                     (43.500, 67.625), (73.375, 79.25))
     for index, expected in enumerate(expected_runs, 1):
         layer = layers[f"mdo-in-{index}"]
         xs = [x / INCH for x, _ in layer.polygon]
@@ -46,13 +46,13 @@ def test_mdo_area_and_weight_use_the_same_bounded_regions(catlin_model_ro):
     net = wall_net_areas_m2(catlin_model_ro)[wall.tag]
     layers = [layer for layer in wall.layers if layer.name.startswith("mdo-in-")]
     area = sum(wall_layer_net_area_m2(catlin_model_ro, wall, layer, net) for layer in layers)
-    assert area * 10.7639104 == pytest.approx(21.259765625, abs=0.001)
+    assert area * 10.7639104 == pytest.approx(19.482421875, abs=0.001)
     rows = [row for row in envelope_layer_takeoff(catlin_model_ro)
             if row["material"] == "entry-screen-white-mdo"]
     assert len(rows) == 1
     assert rows[0]["net_area_sqft"] == pytest.approx(area * 10.7639104, abs=0.05)
     weight = dead_load_plf(SimpleNamespace(plan=catlin_model_ro.plan), wall, wall.z1_m - wall.z0_m)
-    assert weight == pytest.approx(34.23, abs=0.02)
+    assert weight == pytest.approx(38.38555, abs=0.02)
 
 
 def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):
@@ -217,7 +217,7 @@ def test_run_spans_reject_invalid_or_overlapping_slot_regions():
 
 def test_mdo_has_edge_supports_without_metal_rail_hardware(catlin_model_ro):
     tags = {element.tag for element in catlin_model_ro.plan.all_elements()}
-    assert {f"TR-BW-MDO-NAILER-{i}" for i in range(1, 6)} <= tags
+    assert {f"TR-BW-MDO-NAILER-{i}" for i in (1, 2, 4, 5, 6, 7)} <= tags
     assert not any(tag.startswith("TR-BW-METAL-") for tag in tags)
     wall = catlin_model_ro.wall("W-BW-SCREEN")
     assert not {"vent-in", "wrb-in"} & {layer.name for layer in wall.layers}
