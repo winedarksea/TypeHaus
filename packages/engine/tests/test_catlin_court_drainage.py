@@ -97,8 +97,7 @@ def test_the_pump_walks_to_the_rain_garden(catlin_model_ro, ctx):
     reached, path, _ = network.reaches_disposal("SM-B-RADON", first_hop=EdgeKind.PRIMARY)
     assert reached and path == ["SM-B-RADON", "TR-RF-LEADER-W", "RG-W-BASIN"], path
     found = pump_discharge(ctx)
-    # SM-B-SOUTH (2026-11-01) pumps the court-face beds to daylight beside it.
-    assert [f.result for f in found] == [Result.PASS, Result.PASS], [f.message for f in found]
+    assert [f.result for f in found] == [Result.PASS], [f.message for f in found]
 
 
 def test_the_rain_garden_still_holds_its_roofs_and_names_the_pump(ctx):

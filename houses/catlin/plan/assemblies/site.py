@@ -275,8 +275,8 @@ SUNKEN_GARDEN_COLUMN_12 = Assembly(
 # Priced ~$20 of foam against ~$2-5k of stone, but they cannot reach the toes, so no option.
 #
 # The beds FB-B-S1..S4 go down 34" to -151 7/16" (42" under the court floor): ASCE 32 soil
-# replacement, IRC R403.1.4.1, with its own pit SM-B-SOUTH because -151" is under SM-B-RADON's
-# floor (params/foundations.py `_DEEP_STONE`). Needs AHJ plan-review acceptance of the
+# replacement, IRC R403.1.4.1, draining by gravity through FD-B-S-LEAD-W/E into FB-SG-W2/E2
+# (params/foundations.py `_DEEP_STONE`). Needs AHJ plan-review acceptance of the
 # ASCE 32 method and the engineer's drainage sign-off: inspections.toml
 # `frost_soil_replacement`. The library FROST_WING_XPS_* assemblies are unused here.
 

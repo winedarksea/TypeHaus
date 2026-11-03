@@ -672,7 +672,7 @@ def test_infill_never_lands_on_the_frame_category(catlin_model) -> None:
 
 def test_catlin_sump_sits_below_the_basement_slab(catlin_model) -> None:
     sumps = _solids(catlin_model, "sump")
-    assert sorted(s.tag for s in sumps) == ["SM-B-RADON", "SM-B-SOUTH"]  # SOUTH: 2026-11-01
+    assert sorted(s.tag for s in sumps) == ["SM-B-RADON"]  # SM-B-SOUTH retired 2026-11-02
     assert all(s.z0_m < s.z1_m <= 0.0 for s in sumps)
 
 

@@ -344,19 +344,18 @@ CIRCUITS = (
             duty_cycle=0.49,
             description="Furnace-room + kitchen task light + interconnected alarms"),
 
-    # The sumps ride ALWAYS_ON since 2026-10-30: the long stormy night is exactly when they
-    # must run. TWO pumps on this circuit, SM-B-RADON's and SM-B-SOUTH's, each a Zoeller M53
-    # (plan/mep_drainage.py): 9.7 A running, so load_va = 2 x 9.7 x 120 = 2,328 with both on;
-    # x0.025 is each running a minute or two an hour in wet weather (58 W).
-    # start_va 4,664 = one start at the M98 (1/2 hp)'s published 29.2 A (3,500 VA, so an
-    # upsize stays covered; the M53's own is 25.9 A) with the other pump running (1,164).
+    # The sump rides ALWAYS_ON since 2026-10-30: the long stormy night is exactly when it
+    # must run. One pump, SM-B-RADON's Zoeller M53 (plan/mep_drainage.py; SM-B-SOUTH retired
+    # 2026-11-02): 9.7 A running, so load_va = 9.7 x 120 = 1,164; x0.025 is a minute or two
+    # an hour in wet weather (29 W). start_va 3,500 is the M98 (1/2 hp)'s published 29.2 A, so
+    # an upsize stays covered (the M53's own is 25.9 A).
     # Published starts run ~3x running, not 6x.
     # GFCI at the DEVICE (2026-10-27): ED-B-SUMP-RC is an audible-alarm GFCI, so a trip is
     # heard (NEC 2023 210.8(A)(5)); the breaker is not GFCI.
     Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=7, panel_ref=_BACKUP_PANEL,
             breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON,
-            load_va=2328, start_va=4664, duty_cycle=0.025,
-            description="Sump pumps (SM-B-RADON, SM-B-SOUTH)"),
+            load_va=1164, start_va=3500, duty_cycle=0.025,
+            description="Sump pump (SM-B-RADON)"),
 
     # -- SURPLUS --
     # Never counted against battery autonomy; on battery it runs only on PV surplus with the
@@ -563,8 +562,8 @@ CIRCUITS = (
 # no service constraint left to satisfy it buys nothing.)
 #
 # The answer was the service, not a $2-3k listed PCS: a Class 320 HDLB meter-main with two
-# 200 A mains. ** 272.2 A of unmanaged 220.82 demand against 320 A ** (2026-11-02, after the
-# 120 V HPWH and the two-pump sump circuit), no software in the calculation at all. The route
+# 200 A mains. ** 270.3 A of unmanaged 220.82 demand against 320 A ** (2026-11-02, after the
+# 120 V HPWH and the one-pump sump circuit), no software in the calculation at all. The route
 # back to 200 A is measured in plans/cost-options.md. See DESIGN-LOG.md "Electrical service"
 # for the derivation, the three options priced, and why there is no 225 A service.
 #

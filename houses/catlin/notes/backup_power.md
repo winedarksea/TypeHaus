@@ -55,7 +55,7 @@ both flatter a ~400 W outage load: 94% is the peak of the curve, and an islanded
 may idle above its standby figure. Meter both at commissioning.
 
 The sheet also gives a 4,000 W maximum per line (leg). Every always-on circuit is 120 V and
-together they connect 3,493 VA (both sumps running), so they fit one leg even unbalanced;
+together they connect 2,329 VA (the sump running), so they fit one leg even unbalanced;
 balance them anyway, and put `CKT-WH` on the other leg.
 
 ## 2. The listing reality, and the battery spec
@@ -172,7 +172,7 @@ lights, a charging outlet, the sump; heat and hot water only when there is sun t
 
 | Tier | Circuits | What it is |
 |---|---|---|
-| `ALWAYS_ON` | `CKT-FRIDGE`, `CKT-HA`, `CKT-LT-BACKUP`, `CKT-SUMP` | Food, network, two furnace-room cans + the kitchen tape, the alarms, both sumps |
+| `ALWAYS_ON` | `CKT-FRIDGE`, `CKT-HA`, `CKT-LT-BACKUP`, `CKT-SUMP` | Food, network, two furnace-room cans + the kitchen tape, the alarms, the sump |
 | `SURPLUS` | `CKT-HP3`, `CKT-WH` | Heat into the open stair; hot water — on battery only on solar surplus |
 
 **ALWAYS_ON is what the battery is graded on.** **SURPLUS replaced SHED** ("drop on low
@@ -194,8 +194,9 @@ carries it when it runs, so peak and surge still count both tiers.
   battery (`backup_shed_poe`, 76.1 W at the outlet). `ED-M-KITCH-AP` stays live.
 - **Charging.** `ED-B-UTIL-RC1`'s spare half, on `CKT-HA`, is the outage charging point. No
   new circuit.
-- **Sumps.** Two Zoeller M53s (`SM-B-RADON`, `SM-B-SOUTH`) share `CKT-SUMP`. The sump moved
-  to ALWAYS_ON on 2026-10-30: the long stormy night is exactly when it must run.
+- **Sump.** One Zoeller M53 (`SM-B-RADON`) on `CKT-SUMP`. It moved to ALWAYS_ON on
+  2026-10-30: the long stormy night is exactly when it must run. `SM-B-SOUTH`, the second
+  M53, retired 2026-11-02: the court-face beds drain by gravity into the court soakaway.
 - **Water heater.** The Rheem PROPH80 T0 RH120-M (owner, 2026-10-31): 120 V, 395 W average,
   no element. The 240 V ProTerra falls back to its 4,500 W element on compressor, airflow,
   condensate and sensor faults in any mode (Use & Care AP23657), so no automation could hold
@@ -221,8 +222,8 @@ with no idle or efficiency.
 | `CKT-FRIDGE` | 800 | 0.13 | 104.0 W |
 | `CKT-HA` | 300 | 0.44 | 132.0 - 76.1 = 55.9 W |
 | `CKT-LT-BACKUP` | 65 | 0.49 | 31.9 W |
-| `CKT-SUMP` | 2,328 (two M53s, 9.7 A) | 0.025 | 58.2 W |
-| **always-on** | 3,493 | | **250.0 W** |
+| `CKT-SUMP` | 1,164 (one M53, 9.7 A) | 0.025 | 29.1 W |
+| **always-on** | 2,329 | | **220.9 W** |
 | `CKT-HP3` | 1,850 (NEEP max, 17 °F) | 0.4 | 740.0 W |
 | `CKT-WH` | 1,440 (12.0 A, ENERGY STAR) | 0.05 | 72.0 W |
 | **surplus** | 3,290 | | **812.0 W** |
@@ -234,51 +235,53 @@ relays at their rating, 13 x 0.75 = 9.8 W of alarms; 32.1 W / 65.2 VA = 0.49.
 
 **Battery-side draw** = AC / 0.94 + 55 W idle:
 
-- always-on: 250.0 / 0.94 + 55 = 266.0 + 55 = **321.0 W** (407.0 W before the 2026-11-02
-  trim: lighting 579 -> 65 VA, two APs shed).
+- always-on: 220.9 / 0.94 + 55 = 235.0 + 55 = **290.0 W** (321.0 W with the second sump,
+  retired 2026-11-02; 407.0 W before that day's trim: lighting 579 -> 65 VA, two APs shed).
 - surplus, added load only (the idle is already counted): 812.0 / 0.94 = **863.8 W**.
 
 **Storage**: 14.3 kWh x 0.90 DoD = **12.87 kWh** usable.
 
-**Autonomy, no sun, always-on only**: 12,870 / 321.0 = **40.1 h**.
+**Autonomy, no sun, always-on only**: 12,870 / 290.0 = **44.4 h**.
 
 **48-hour cycle** (one strong day in two; array 12 x 440 W = 5.28 kW):
 
-- 48 h of always-on: 0.3210 x 48 = **15.41 kWh**.
-- Summer strong day, 3.0 kWh/kW: 15.84 kWh -> net **+0.43 kWh**. Passes.
+- 48 h of always-on: 0.2900 x 48 = **13.92 kWh**.
+- Summer strong day, 3.0 kWh/kW: 15.84 kWh -> net **+1.92 kWh**. Passes (down to 13.92 /
+  5.28 = 2.64 kWh/kW).
 - December strong day, 1.5 kWh/kW (`WINTER_STRONG_DAY_KWH_PER_KW`): 7.92 kWh -> net
-  **-7.49 kWh**. Fails.
+  **-6.00 kWh**. Fails.
 
 Solar is counted at the DC side and all load at 94%, which errs heavy: PV-to-battery is
 99.9%, and daytime loads run PV-to-AC near 97.5%.
 
 **Surplus** = strong day - 24 h of always-on (the day carries itself and refills the night):
 
-- summer: 15.84 - 0.3210 x 24 = 15.84 - 7.70 = **8.14 kWh** -> 8,140 / 863.8 = **9.4 h** of
+- summer: 15.84 - 0.2900 x 24 = 15.84 - 6.96 = **8.88 kWh** -> 8,880 / 863.8 = **10.3 h** of
   the surplus tier at its average;
-- December: 7.92 - 7.70 = **0.22 kWh** -> **0.3 h**. A December outage has no surplus heat.
+- December: 7.92 - 6.96 = **0.96 kWh** -> 960 / 863.8 = **1.1 h**. A December outage has
+  about an hour of surplus heat.
 
 **Darkness bridge**: the battery alone must carry the always-on tier from one evening's last
 sun through a dark day and the longest night after it. St Paul (44.98 N) at the winter
 solstice: cos H = (sin -0.833 - sin 44.98 sin -23.44) / (cos 44.98 cos -23.44)
 = (-0.01454 + 0.28118) / 0.64897 = 0.4109, H = 65.74°, day = 8.77 h, **night = 15.23 h**
-(`longest_night_hours`, from the site's own latitude). Needs 0.3210 x (24 + 15.23) =
-**12.59 kWh**; has 12.87. **Bridges**, with 0.28 kWh to spare — a margin metering can erase.
+(`longest_night_hours`, from the site's own latitude). Needs 0.2900 x (24 + 15.23) =
+**11.38 kWh**; has 12.87. **Bridges**, with 1.49 kWh to spare.
 
-**Peak**: 6,783 VA connected on the microgrid (both tiers) against 8 kW continuous. Fits.
+**Peak**: 5,619 VA connected on the microgrid (both tiers) against 8 kW continuous. Fits.
 
 **Surge** (`Circuit.start_va`, else 3x running): each circuit's start with every other
 circuit running, the worst governing, against 16 kW:
 
-- `CKT-WH`, no published start: 3 x 1,440 + 6,783 - 1,440 = **9,663 VA** (governs);
+- `CKT-WH`, no published start: 3 x 1,440 + 5,619 - 1,440 = **8,499 VA** (governs);
 - `CKT-SUMP`: one start at the M98's 29.2 A (3,500 VA, so a 1/2 hp upsize stays covered;
-  the M53's own is 25.9 A) with the other pump running: 4,664 + 6,783 - 2,328 = 9,119 VA;
+  the M53's own is 25.9 A): 3,500 + 5,619 - 1,164 = 7,955 VA;
 - `CKT-HP3`: an inverter compressor has no inrush, `start_va` = its 1,850 maximum.
 
 All fit. The old 6x figure for the sump was wrong: published starts run ~3x running.
 
 **Verdict (`backup_calc`)**: a strong December day does not cover 48 h of the always-on
-tier. Summer passes and the bridge holds. Read it as: **the always-on tier is a 40-hour
+tier. Summer passes and the bridge holds. Read it as: **the always-on tier is a 44-hour
 countdown in December and a steady state in summer.** The levers, in order of cost: meter the
 duty cycles, the alarms and the real idle; the second PV row (`plans/TODO.md`); a second
 battery (it fixes the bridge margin, not December's cycle).
@@ -373,7 +376,7 @@ valve regardless.
 - A freeze drain-down plan (the battery cannot hold the house above freezing).
 - A small LFP UPS for HA, the router and the leak valve.
 - Meter the 12kPV's islanded idle and low-load efficiency, the alarms' standby and the
-  duty cycles; the bridge margin is 0.28 kWh.
+  duty cycles; the bridge margin is 1.49 kWh.
 - Rheem: confirm the PROPH80 T0 RH120-M has no element (the Use & Care alarm table says
   "defaults to elements"; the wiring diagram lists none), and get a port drawing for the
   HydroBoost side connections (notes/water_service.md §1).

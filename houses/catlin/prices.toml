@@ -2055,7 +2055,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # $/cy, and a steep one: the money in a hand-dug trench 9' down is the access and the barrow.
 # (It is NOT a lump — this table bills by the yard — so the retired leads took their share
 # with them: $204-561 for four trenches became $104-286 for two.)
-"french_drain" = { low = 400, high = 1100 }  # 0.14 cy in two hand-dug trenches (0.26 until the overflow moved to W1's heel, 2026-09-23)
+# FD-B-S-LEAD-W/E (2026-11-02) run ~125" of their 138" inside FB-SG-W1/E1's stone, so most of
+# their 0.33 cy is laid with the bed, not hand-dug: this row over-bills them.
+"french_drain" = { low = 400, high = 1100 }  # 0.47 cy in four trenches (0.14 before the S-bed leads, 2026-11-02)
 # ** THE GARAGE'S NINE, WHICH ARE STONE AND NOT CONCRETE (2026-09-15). ** 2024 IRC R403.5,
 # graded by `code.R403_5_crushed_stone_footings`. They left the row above — that is the
 # 30.87 -> 26.92 cy — and they land here because `structural_solids` keys on solid CATEGORY
@@ -6725,7 +6727,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 4" pipe inside it as [site] `drain_tile` ($/LF, open-trench installed) and the stone
 # around it as [site] `french_drain` ($/cy). A $/LF rate here would bill the same trench a
 # third time. The zero says "priced, elsewhere, on purpose".
-"french_drain" = { low = 0, high = 0 }  # 20.2 LF — bills in [site], twice over already
+"french_drain" = { low = 0, high = 0 }  # 34.2 LF — bills in [site], twice over already
 # AD-SG-COURT, 2026-09-22: a 12" square PE catch basin with a cast-iron-look grate (NDS 1200
 # class, $60-140 retail) set in the rim pour, and its solid 4" PVC riser by the foot at the
 # [pipe_runs] 4" DWV rate plus the coupling into the basin outlet.

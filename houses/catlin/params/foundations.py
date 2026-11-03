@@ -347,10 +347,12 @@ WALL_COLUMN = DrainColumn(width=inch(16), cap_below_grade=inch(12))
 # Wings could not reach all of it (they stop at the FT-SG-W1/E1 toes, 46" short of S1/S4's
 # reached ends), so the bed goes down instead: #57 NFS stone to 42" under the court floor,
 # -151 7/16", i.e. 34" under S1/S4 and 32" under S2/S3. ASCE 32 soil replacement, IRC R403.1.4.1; it
-# needs a drain to count, and -151" is 14 1/2" under SM-B-RADON's floor, so the run has its
-# own pit, SM-B-SOUTH, at S1's deep end (plan/mep_drainage.py). AHJ/engineer sign-off:
+# needs a drain to count. -151" is under SM-B-RADON's floor but 12" over the court soakaway
+# (-163 7/16"), so the beds drain by gravity through FD-B-S-LEAD-W/E into FB-SG-W2/E2
+# (plan/mep_drainage.py; the SM-B-SOUTH pit retired 2026-11-02). AHJ/engineer sign-off:
 # inspections.toml `frost_soil_replacement`.
-_DEEP_STONE = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
+_DEEP_STONE = {"W-B-S1": "FB-SG-W2", "W-B-S2": "FB-SG-W2",
+               "W-B-S3": "FB-SG-E2", "W-B-S4": "FB-SG-E2"}
 HOUSE_FOOTING_BEDDING = [
     FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-{t[2:]}", host_ref=f"FT-{t[2:]}",
                    undercut=(inch(32) if t in _DEEP_STRIP else inch(34)) if t in _DEEP_STONE
@@ -358,8 +360,7 @@ HOUSE_FOOTING_BEDDING = [
                    non_frost_susceptible=True if t in _DEEP_STONE else None,
                    perimeter_insulation=inch(4),
                    drain_tile_spec=DrainTile(diameter=inch(4), sock=True,
-                                             discharge="SM-B-SOUTH" if t in _DEEP_STONE
-                                             else "SM-B-RADON"),
+                                             discharge=_DEEP_STONE.get(t, "SM-B-RADON")),
                    wall_column=WALL_COLUMN if t in _COLUMN_WALLS and t not in _DEEP_STONE else None)
     for i, t in _HOUSE_WALL_TAGS
 ] + [

@@ -72,6 +72,7 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
 NOT_A_CALCULATION = frozenset({
     "__init__", "space", "obstacles", "cost", "proposal", "oracle", "timing",
     "diagnostics", "counterfactual", "campaign", "space_view",
+    "graph_batch",  # vectorised queries for graph: same answers, oracled through it
     "trades/__init__", "trades/pipe", "trades/conduit",
 })
 

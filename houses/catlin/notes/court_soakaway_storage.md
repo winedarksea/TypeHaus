@@ -89,7 +89,9 @@ Reported as UNKNOWN: "sits 36" above the drained section's bottom".
 
 Rain (the 1.7x ponding ratio covers it, `CLAUDE.md`). The wall-face inflow through the
 dimpleboard. The melt rate against the 4" riser's capacity. Ice in the basin. The sump's pumped
-volume. A frozen upper course. The water table, which nobody has measured.
+volume. A frozen upper course. The water table, which nobody has measured. The house court-face
+beds' seepage (FB-B-S1..S4, through FD-B-S-LEAD-W/E into W2/E2 since 2026-11-02): it arrives
+here uncounted, and SM-B-SOUTH's pump was never rated against it either.
 
 ## 7. The pipeless lateral, W1 → W2 (design basis; no check reads it)
 

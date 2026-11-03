@@ -418,8 +418,10 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
     # And where a run discharges is part of the key, not a note. The house tile does not
     # daylight (corrected 2026-09-05): its invert is -124 7/16", 7'-6 1/2" BELOW site grade,
     # so it falls to the SM-B-RADON pit and is pumped up. The court's beds run no pipe at all
-    # (2026-09-23) and bill stone and fabric with no tile footage.
-    assert {r["drain_tile_discharge"] for r in tile_rows} == {"SM-B-RADON", "SM-B-SOUTH"}
+    # (2026-09-23) and bill stone and fabric with no tile footage. The four court-face beds
+    # drain by gravity into the court soakaway (2026-11-02).
+    assert {r["drain_tile_discharge"] for r in tile_rows} == {"SM-B-RADON", "FB-SG-W2",
+                                                              "FB-SG-E2"}
     court = [r for r in rows if any(tag.startswith("FB-SG-") for tag in r["tags"])]
     assert court and all(not r["drain_tile"] and float(r["drain_tile_ft"]) == 0 for r in court)
     assert {tag for r in court for tag in r["tags"] if tag.startswith("FB-SG-")} == {

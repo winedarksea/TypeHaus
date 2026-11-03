@@ -7326,3 +7326,29 @@ sump; heat and hot water only on spare sun). `notes/backup_power.md` §5-§6 is 
   kWh, December -7.49; the bridge holds by 0.28 kWh. 220.82 demand 272.2 A of 320.
 - **V2H** is a record now, not a rough-in list (§10): one empty 2" Sch 80 PVC to the garage,
   not yet routed.
+
+## SM-B-SOUTH retired: the court-face beds drain by gravity (2026-11-02, C3-E10)
+
+C3-E10 deepened FB-B-S1..S4 to 34" of drained #57 for their ASCE 32 frost credit, and their
+floor (-151 7/16") landed under SM-B-RADON's. So they got a second pumped pit: 50" deep, its
+own M53, a discharge out the west wall, a second load on `CKT-SUMP`. The frost protection then
+depended on a pump. If it stopped, the beds flooded 27" before they relieved at -123 7/16".
+
+The court's stone is lower. FB-SG-W1/E1 bottom at -163 7/16", and W2/E2's soakaway course
+runs on down to -175 7/16". So two short `FrenchDrain`s, `FD-B-S-LEAD-W`/`-E` (x 11'-0" /
+25'-0", the mirror of FD-SG-OVERFLOW 4' apart), run from inside FB-B-S2/S3 at the tile line
+(-150 7/16") south through W1/E1 and end 6" into W2/E2 at -152 7/16". The house stone stops
+2.68" short of W1/E1, so a lead is what `drainage.tile_lead` asks for; the receiver must be a
+soakaway bed, so it is W2/E2, not W1/E1. The pit, its discharge line and its circuit share
+are gone: `CKT-SUMP` is one M53 again (1,164 VA, start 3,500). Always-on is 290.0 W at the
+battery and 44.4 h unaided, and the bridge holds by 1.49 kWh (`notes/backup_power.md` §6).
+The service load falls to 270.3 A.
+
+- **Trade-off.** The house frost beds now share the court body's flood risk. But a flood has
+  to fill the 12" course and then 12" of drained section before it reaches the S-bed floor.
+  That beats a single pump failure. The S-beds' seepage now reaches the soakaway uncounted by
+  `soakaway_storage` (`notes/court_soakaway_storage.md` §6). The old pump was never rated
+  against that inflow either.
+- **Not taken:** an engine "stone continuity" field letting the beds claim W1's body across
+  the 2.68" gap. The owner was fine with either. The leads are house source only, and they
+  are real pipe in a real trench.

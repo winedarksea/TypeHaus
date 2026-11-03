@@ -1,5 +1,6 @@
 # haus: editable
-# Catlin MEP — drainage — waste and condensate runs, the TPR discharge, the radon sump.
+# Catlin MEP — drainage — waste and condensate runs, the TPR discharge, the radon sump and
+# the court-face beds' leads.
 #
 # Split out of the old 2,515-line plan/mep.py (AGENTS.md §1.1). Every element below moved
 # verbatim; plan/mep.py still re-exports the storey lists, so the manifest is unchanged.
@@ -10,6 +11,8 @@
 # plan/mep_venting.py.
 
 from typehaus import (
+    DrainTile,
+    FrenchDrain,
     PipeRun,
     PipeSystem,
     Sump,
@@ -730,27 +733,31 @@ RADON_SUMP = [
                   pt(inch(10), inch(419.1))),
             diameter=inch(3), material="pvc",
             elevations=(inch(-4), inch(3.1875), inch(3.3125), inch(3.4375))),
-    # ** THE COURT-FACE BEDS' OWN PIT (C3-E10). ** FB-B-S1..S4 are 34" of #57 NFS stone, floor
-    # -151 7/16" (params/foundations.py `_DEEP_STONE`), which is their frost protection and only
-    # counts drained. That is 14 1/2" under SM-B-RADON's floor, so no gravity run reaches the
-    # radon pit and no point of the lot daylights: a second pit at the run's west end (x 5'-10", over FB-B-S1's step), floor
-    # 11 1/2" under the tile as the first one has it (-151 7/16 + 1 + 11 1/2 = -163"), 51"
-    # below the slab underside (-112 15/16"), so two 24" basins stacked, joined with the lid
-    # seal. The beds' tile floats 1" over the bed floor: invert -150 7/16". Pumped out through
-    # the west wall's rim band to daylight, check valve and freeze relief as the first has.
-    Sump(uid="GERQNZ96QJ", tag="SM-B-SOUTH", position=pt(inch(70), inch(26)),
-         diameter=inch(18), depth=inch(50), host_ref="SL-B-FLOOR",
-         sealed_cover=True, radon_vent=False,
-         pump=SumpPump(model="Zoeller M53, 0.3 hp cast-iron submersible", horsepower=0.3,
-                       discharge="daylight", circuit_ref="CKT-SUMP",
-                       discharge_line_ref="PR-B-SUMP-S-DISCH", check_valve=True,
-                       freeze_relief=True),
-         inlet_refs=("FB-B-S1", "FB-B-S2", "FB-B-S3", "FB-B-S4"),
-         inlet_invert=inch(-150.4375),
-         # Relief as SM-B-RADON's: the bed's stone is continuous with the court's course
-         # through FB-B-S1 and FD-SG-OVERFLOW, so a full pit spills there downhill.
-         overflow_ref="FB-SG-W1",
-         overflow_invert=inch(-123.4375)),
+]
+
+# --- the court-face beds' leads (C3-E10; pit retired 2026-11-02) ---------------------------
+# FB-B-S1..S4 are 34" of #57 NFS stone, floor -151 7/16" (params/foundations.py `_DEEP_STONE`):
+# their frost protection, which only counts drained. That is under SM-B-RADON's floor but
+# 12" over the court soakaway course (FB-SG-W2/E2, -163 7/16" to -175 7/16"), so each half
+# drains downhill with nothing to fail. The house stone stops 2.68" short of FB-SG-W1/E1, so
+# a lead carries it: from inside FB-B-S2/S3 at the tile line, south through W1/E1's stone,
+# 6" into W2/E2 (W2 spans y -132".."-270"). x = W1 axis + 2'-0" (FD-SG-OVERFLOW's mirror,
+# 4' apart); east mirrors about x = 18'. Invert -150 7/16" is the S-bed tile invert; 2" of
+# fall over ~11.5' to -152 7/16", inside W1/W2's drained band. 4" perforated, no sock: it
+# lies in open-graded stone.
+S_BED_LEADS = [
+    FrenchDrain(uid="863GX9DGNX", tag="FD-B-S-LEAD-W",
+                path=(pt(inch(132), inch(0)), pt(inch(132), inch(-138))),
+                invert=inch(-150.4375), end_invert=inch(-152.4375),
+                trench_width=inch(6), trench_depth=inch(8),
+                tile=DrainTile(diameter=inch(4), sock=False, discharge="FB-SG-W2"),
+                discharge_ref="FB-SG-W2"),
+    FrenchDrain(uid="ZMPTPHATRC", tag="FD-B-S-LEAD-E",
+                path=(pt(inch(300), inch(0)), pt(inch(300), inch(-138))),
+                invert=inch(-150.4375), end_invert=inch(-152.4375),
+                trench_width=inch(6), trench_depth=inch(8),
+                tile=DrainTile(diameter=inch(4), sock=False, discharge="FB-SG-E2"),
+                discharge_ref="FB-SG-E2"),
 ]
 
 # --- the sump's pumped discharge (2026-09-22; re-routed 2026-09-24) ----------------------
@@ -770,11 +777,6 @@ SUMP_DISCHARGE = [
             diameter=inch(1.5), material="pvc",
             # From the pump in the pit; 1/4"/ft after the rise, nothing climbs again.
             elevations=(inch(-18), inch(103.5), inch(103.375), inch(102.75))),
-    # SM-B-SOUTH's pump out through the west rim band, 1/4"/ft after the rise.
-    PipeRun(uid="6S0BD487AT", tag="PR-B-SUMP-S-DISCH", system=PipeSystem.SUMP_DISCHARGE,
-            path=(pt(inch(70), inch(26)), pt(inch(70), inch(26)), pt(inch(-10.5), inch(26))),
-            diameter=inch(1.5), material="pvc",
-            elevations=(inch(-44), inch(103.5), inch(102.75))),
 ]
 
 # --- the guest studio ---------------------------------------------------------------------

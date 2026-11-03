@@ -1327,7 +1327,9 @@ _BEDDING_UID = {"FT-SG-W1": "SGB002AAAA", "FT-SG-E1": "SGB003AAAA",
 # No court bed runs a pipe (2026-09-23): the stone is the drain. W1/E1 have no course of their
 # own, so their stone lets go into the retaining bed it abuts at the grade-beam line.
 _STONE_TO = {"FT-SG-W1": "FB-SG-W2", "FT-SG-E1": "FB-SG-E2"}
-_STONE_FROM = {"FT-SG-W2": "FB-SG-W1", "FT-SG-E2": "FB-SG-E1"}
+# W2/E2 also take the house's court-face beds through FD-B-S-LEAD-W/E (2026-11-02).
+_STONE_FROM = {"FT-SG-W2": ("FB-SG-W1", "FB-B-S1", "FB-B-S2", "FD-B-S-LEAD-W"),
+               "FT-SG-E2": ("FB-SG-E1", "FB-B-S3", "FB-B-S4", "FD-B-S-LEAD-E")}
 # ** THE COURT'S RELIEF IS AT W1 (2026-09-23), where FD-SG-OVERFLOW starts in its stone on the
 # west heel. The lip is the field profile's underside, -127 7/16": the body spills into that
 # trench before it backs into the field's gravel. SM-B-RADON's bridge arrives the same way.
@@ -1377,7 +1379,7 @@ FOOTING_BEDDING = [
         drain_tile=False,
         **({"discharge_ref": _STONE_TO[f.tag]} if f.tag in _STONE_TO else {}),
         **({} if f.tag in _HOUSE_ADJACENT else _SOAKAWAY),
-        **({"inlet_refs": (_STONE_FROM[f.tag],)} if f.tag in _STONE_FROM else {}),
+        **({"inlet_refs": _STONE_FROM[f.tag]} if f.tag in _STONE_FROM else {}),
         **({"inlet_refs": ("SM-B-RADON",)} if f.tag in _RELIEF else {}),
         **_RELIEF.get(f.tag, {}),
         # The retained walls' structural drainage: 12" of #57 on the heel, up to 12" under
@@ -1652,8 +1654,9 @@ GARDEN_FIELD = Slab(
 # They covered x 150"-282" only: nothing fits over the FT-SG-W1/E1 toes (x 66"-150" / 282"-366"),
 # so 145" of the length the court reaches (S1 46", S2 27", S3 26", S4 46") never had a wing
 # abutting it, and `structural.frost_depth` (now `frost_shield`) fails that. The strips' beds
-# are 34" of drained NFS stone instead (params/foundations.py `_DEEP_STONE`). The foam, 31 sf,
-# is gone; the library FROST_WING_XPS_* assemblies stay for houses that can use them.
+# are 34" of drained NFS stone instead (params/foundations.py `_DEEP_STONE`), draining by
+# gravity into FB-SG-W2/E2 through FD-B-S-LEAD-W/E. The foam, 31 sf, is gone; the library
+# FROST_WING_XPS_* assemblies stay for houses that can use them.
 FROST_WINGS: list[Slab] = []
 
 # ============================================================================

@@ -884,126 +884,6 @@
       "node": "polyline",
       "points": [
         [
-          25.25,
-          -5.947697094928361
-        ],
-        [
-          25.35048094716167,
-          -6.322713369988948
-        ],
-        [
-          25.625,
-          -6.597244336998523
-        ],
-        [
-          26.0,
-          -6.697729645049535
-        ],
-        [
-          26.375,
-          -6.597244336998523
-        ],
-        [
-          26.64951905283833,
-          -6.322713369988948
-        ],
-        [
-          26.75,
-          -5.947697094928361
-        ],
-        [
-          26.64951905283833,
-          -5.572680819867774
-        ],
-        [
-          26.375,
-          -5.298149852858199
-        ],
-        [
-          26.0,
-          -5.197664544807187
-        ],
-        [
-          25.625,
-          -5.298149852858199
-        ],
-        [
-          25.35048094716167,
-          -5.572680819867774
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "6S0BD487AT-run",
-      "tag": "PR-B-SUMP-S-DISCH-RUN"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          25.25,
-          -5.947697094928361
-        ],
-        [
-          25.35048094716167,
-          -6.322713369988948
-        ],
-        [
-          25.625,
-          -6.597244336998523
-        ],
-        [
-          26.0,
-          -6.697729645049535
-        ],
-        [
-          26.375,
-          -6.597244336998523
-        ],
-        [
-          26.64951905283833,
-          -6.322713369988948
-        ],
-        [
-          26.75,
-          -5.947697094928361
-        ],
-        [
-          26.64951905283833,
-          -5.572680819867774
-        ],
-        [
-          26.375,
-          -5.298149852858199
-        ],
-        [
-          26.0,
-          -5.197664544807187
-        ],
-        [
-          25.625,
-          -5.298149852858199
-        ],
-        [
-          25.35048094716167,
-          -5.572680819867774
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           18.499999999999996,
           -16.937500000000004
         ],
@@ -1630,8 +1510,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-034",
-      "tag": "EX-HOUSE-BF-35"
+      "uid": "51B78YHGNF-BF-039",
+      "tag": "EX-HOUSE-BF-40"
     },
     {
       "space": "model",
@@ -1658,8 +1538,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-035",
-      "tag": "EX-HOUSE-BF-36"
+      "uid": "51B78YHGNF-BF-040",
+      "tag": "EX-HOUSE-BF-41"
     },
     {
       "space": "model",
@@ -1686,8 +1566,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-038",
-      "tag": "EX-HOUSE-BF-39"
+      "uid": "51B78YHGNF-BF-043",
+      "tag": "EX-HOUSE-BF-44"
     },
     {
       "space": "model",
@@ -1708,34 +1588,6 @@
         [
           -25.713543307086617,
           -48.00000000000001
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "51B78YHGNF-BF-045",
-      "tag": "EX-HOUSE-BF-46"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -25.713543307086617,
-          -48.00000000000001
-        ],
-        [
-          -4.06,
-          -48.00000000000001
-        ],
-        [
-          -4.06,
-          -46.00000000000001
-        ],
-        [
-          -25.713543307086617,
-          -46.00000000000001
         ]
       ],
       "layer": "S-FNDN",
@@ -1751,6 +1603,34 @@
       "points": [
         [
           -25.713543307086617,
+          -48.00000000000001
+        ],
+        [
+          -4.06,
+          -48.00000000000001
+        ],
+        [
+          -4.06,
+          -46.00000000000001
+        ],
+        [
+          -25.713543307086617,
+          -46.00000000000001
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-055",
+      "tag": "EX-HOUSE-BF-56"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -25.713543307086617,
           -46.00000000000001
         ],
         [
@@ -1770,8 +1650,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-052",
-      "tag": "EX-HOUSE-BF-53"
+      "uid": "51B78YHGNF-BF-057",
+      "tag": "EX-HOUSE-BF-58"
     },
     {
       "space": "model",
@@ -1798,8 +1678,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-054",
-      "tag": "EX-HOUSE-BF-55"
+      "uid": "51B78YHGNF-BF-059",
+      "tag": "EX-HOUSE-BF-60"
     },
     {
       "space": "model",
@@ -1826,8 +1706,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-058",
-      "tag": "EX-HOUSE-BF-59"
+      "uid": "51B78YHGNF-BF-063",
+      "tag": "EX-HOUSE-BF-64"
     },
     {
       "space": "model",
@@ -1854,8 +1734,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-062",
-      "tag": "EX-HOUSE-BF-63"
+      "uid": "51B78YHGNF-BF-067",
+      "tag": "EX-HOUSE-BF-68"
     },
     {
       "space": "model",
@@ -1882,8 +1762,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-065",
-      "tag": "EX-HOUSE-BF-66"
+      "uid": "51B78YHGNF-BF-070",
+      "tag": "EX-HOUSE-BF-71"
     },
     {
       "space": "model",
@@ -1910,8 +1790,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-068",
-      "tag": "EX-HOUSE-BF-69"
+      "uid": "51B78YHGNF-BF-073",
+      "tag": "EX-HOUSE-BF-74"
     },
     {
       "space": "model",
@@ -1938,8 +1818,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-071",
-      "tag": "EX-HOUSE-BF-72"
+      "uid": "51B78YHGNF-BF-076",
+      "tag": "EX-HOUSE-BF-77"
     },
     {
       "space": "model",

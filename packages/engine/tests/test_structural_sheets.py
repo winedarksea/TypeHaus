@@ -168,11 +168,12 @@ def test_s100_calls_frost_depth_drainage_and_steps(catlin_model):
     assert "SL-SG-FLOOR, NOT THE SITE GRADE PLANE" in notes
     # The note reads the tile's authored discharge, and as of 2026-09-05 NOTHING on this
     # project discharges to daylight: the house tile falls to the SM-B-RADON pit (its invert
-    # is 7'-6 1/2" below site grade, so daylight was never available to it). The sunken
+    # is 7'-6 1/2" below site grade, so daylight was never available to it), the court-face
+    # beds to the court soakaway. The sunken
     # garden's beds run no pipe (2026-09-23): their stone drains into the soakaway courses,
     # which the note says are not frost section.
     assert "DRAIN TILE" in notes
-    assert "DRAINING TO SM-B-RADON, SM-B-SOUTH." in notes
+    assert "DRAINING TO FB-SG-E2, FB-SG-W2, SM-B-RADON." in notes
     assert "6 BEDS RUN NO PIPE" in notes
     assert "INTO 4 SOAKAWAY COURSES BELOW THE DRAINED SECTION" in notes
     assert "NOT FROST SECTION" in notes

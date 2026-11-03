@@ -214,8 +214,8 @@ def test_the_garden_field_has_a_real_underdrain_and_not_a_prose_one(catlin_model
     xs = {round(point.x._m, 6) for point in plan_drain.path}
     assert len(xs) == 1, "one straight lateral on the centreline"
 
-    # ** `sock=False`, which in this house means the two FrenchDrains in the sand profile —
-    # this field lateral and `FD-SG-OVERFLOW`. ** (This comment said "the only tile in this
+    # ** `sock=False`, which in this house means the FrenchDrains in sand or open-graded stone —
+    # this field lateral, `FD-SG-OVERFLOW` and the S-bed leads (2026-11-02). ** (This comment said "the only tile in this
     # house" until 2026-09-14; the overflow has always carried it too.) USGA: "any piping
     # encased in geotextile sleeves are not recommended"; a sock in a sand profile clogs
     # with fines and seals the line. Every bearing bed in clay keeps its sock.
@@ -223,7 +223,8 @@ def test_the_garden_field_has_a_real_underdrain_and_not_a_prose_one(catlin_model
     sockless = {drain.tag for drain in catlin_model.plan.all_elements()
                 if getattr(drain, "element_kind", None) == "FrenchDrain"
                 and getattr(drain, "tile", None) is not None and drain.tile.sock is False}
-    assert sockless == {"FD-SG-FIELD", "FD-SG-OVERFLOW"}, sockless
+    assert sockless == {"FD-SG-FIELD", "FD-SG-OVERFLOW", "FD-B-S-LEAD-W",
+                        "FD-B-S-LEAD-E"}, sockless
     beds = [b for b in catlin_model.footing_beddings if b.drain_tile_spec is not None]
     assert beds and all(b.drain_tile_spec.sock for b in beds)
 
@@ -237,13 +238,15 @@ def test_the_house_perimeter_tile_falls_to_the_sump_it_can_actually_reach(catlin
     short-circuits it. There is no daylight available to this tile anywhere on the lot."""
     house = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-B-")]
     assert house
-    assert {b.drain_tile_spec.discharge for b in house} == {"SM-B-RADON", "SM-B-SOUTH"}
+    assert {b.drain_tile_spec.discharge for b in house} == {"SM-B-RADON", "FB-SG-W2",
+                                                           "FB-SG-E2"}
     assert catlin_model.plan.by_tag("SM-B-RADON") is not None
     # The four 34"-deep court-face beds float their tile at -150 7/16", under the radon pit's
-    # floor, so they have a pit of their own (C3-E10).
-    deep = {b.tag for b in house if b.drain_tile_spec.discharge == "SM-B-SOUTH"}
+    # floor but over the court soakaway, so they lead into it by gravity (C3-E10, 2026-11-02).
+    deep = {b.tag for b in house if b.drain_tile_spec.discharge != "SM-B-RADON"}
     assert deep == {"FB-B-S1", "FB-B-S2", "FB-B-S3", "FB-B-S4"}
-    assert catlin_model.plan.by_tag("SM-B-SOUTH").pump is not None
+    assert catlin_model.plan.by_tag("FD-B-S-LEAD-W").discharge_ref == "FB-SG-W2"
+    assert catlin_model.plan.by_tag("FD-B-S-LEAD-E").discharge_ref == "FB-SG-E2"
     # The garden's own beds are NOT redirected: their soakaway course is below them and takes
     # their water with no pump in the path — and since 2026-09-23 no pipe either.
     garden = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-SG-")]

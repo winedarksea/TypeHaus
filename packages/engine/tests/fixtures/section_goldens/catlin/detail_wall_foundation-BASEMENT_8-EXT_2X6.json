@@ -2758,8 +2758,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-034",
-      "tag": "EX-HOUSE-BF-35"
+      "uid": "51B78YHGNF-BF-039",
+      "tag": "EX-HOUSE-BF-40"
     },
     {
       "space": "model",
@@ -2786,8 +2786,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-035",
-      "tag": "EX-HOUSE-BF-36"
+      "uid": "51B78YHGNF-BF-040",
+      "tag": "EX-HOUSE-BF-41"
     },
     {
       "space": "model",
@@ -2814,8 +2814,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-041",
-      "tag": "EX-HOUSE-BF-42"
+      "uid": "51B78YHGNF-BF-046",
+      "tag": "EX-HOUSE-BF-47"
     },
     {
       "space": "model",
@@ -2836,62 +2836,6 @@
         [
           -25.713543307086617,
           -48.00000000000001
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "51B78YHGNF-BF-047",
-      "tag": "EX-HOUSE-BF-48"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -25.713543307086617,
-          -48.00000000000001
-        ],
-        [
-          -4.06,
-          -48.00000000000001
-        ],
-        [
-          -4.06,
-          -46.00000000000001
-        ],
-        [
-          -25.713543307086617,
-          -46.00000000000001
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "51B78YHGNF-BF-050",
-      "tag": "EX-HOUSE-BF-51"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -25.713543307086617,
-          -46.00000000000001
-        ],
-        [
-          -4.06,
-          -46.00000000000001
-        ],
-        [
-          -4.06,
-          -43.00000000000001
-        ],
-        [
-          -25.713543307086617,
-          -43.00000000000001
         ]
       ],
       "layer": "S-FNDN",
@@ -2907,6 +2851,62 @@
       "points": [
         [
           -25.713543307086617,
+          -48.00000000000001
+        ],
+        [
+          -4.06,
+          -48.00000000000001
+        ],
+        [
+          -4.06,
+          -46.00000000000001
+        ],
+        [
+          -25.713543307086617,
+          -46.00000000000001
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-055",
+      "tag": "EX-HOUSE-BF-56"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -25.713543307086617,
+          -46.00000000000001
+        ],
+        [
+          -4.06,
+          -46.00000000000001
+        ],
+        [
+          -4.06,
+          -43.00000000000001
+        ],
+        [
+          -25.713543307086617,
+          -43.00000000000001
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-057",
+      "tag": "EX-HOUSE-BF-58"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -25.713543307086617,
           -43.00000000000001
         ],
         [
@@ -2926,8 +2926,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-054",
-      "tag": "EX-HOUSE-BF-55"
+      "uid": "51B78YHGNF-BF-059",
+      "tag": "EX-HOUSE-BF-60"
     },
     {
       "space": "model",
@@ -2954,8 +2954,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-058",
-      "tag": "EX-HOUSE-BF-59"
+      "uid": "51B78YHGNF-BF-063",
+      "tag": "EX-HOUSE-BF-64"
     },
     {
       "space": "model",
@@ -2982,8 +2982,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-062",
-      "tag": "EX-HOUSE-BF-63"
+      "uid": "51B78YHGNF-BF-067",
+      "tag": "EX-HOUSE-BF-68"
     },
     {
       "space": "model",
@@ -3010,8 +3010,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-065",
-      "tag": "EX-HOUSE-BF-66"
+      "uid": "51B78YHGNF-BF-070",
+      "tag": "EX-HOUSE-BF-71"
     },
     {
       "space": "model",
@@ -3038,8 +3038,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-068",
-      "tag": "EX-HOUSE-BF-69"
+      "uid": "51B78YHGNF-BF-073",
+      "tag": "EX-HOUSE-BF-74"
     },
     {
       "space": "model",
@@ -3066,8 +3066,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-071",
-      "tag": "EX-HOUSE-BF-72"
+      "uid": "51B78YHGNF-BF-076",
+      "tag": "EX-HOUSE-BF-77"
     },
     {
       "space": "model",

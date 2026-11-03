@@ -43,8 +43,7 @@ def _square(cx_ft, cy_ft, half_ft=0.75):
 
 def test_the_pit_clears_every_footing(catlin_model):
     found = pit_footing_clearance(check_context(model=catlin_model))
-    # Two pits since 2026-11-01: SM-B-SOUTH drains the court-face beds (C3-E10).
-    assert sorted(f.element_tags for f in found) == [("SM-B-RADON",), ("SM-B-SOUTH",)]
+    assert [f.element_tags for f in found] == [("SM-B-RADON",)]
     assert {f.result for f in found} == {Result.PASS}
 
 
@@ -81,7 +80,7 @@ def test_subpart_4e_reads_the_tile_into_the_pit(catlin_model, catlin_plan):
     ctx = check_context(model=catlin_model)
     sump = catlin_plan.by_tag("SM-B-RADON")
     feeders = interior_tile_feeders(ctx, sump)
-    # 17: FB-B-S1..S4 drain to SM-B-SOUTH since 2026-11-01; S1W/S4E stay on this pit.
+    # 17: FB-B-S1..S4 lead into the court soakaway (2026-11-02); S1W/S4E stay on this pit.
     assert len(feeders) == 17 and all(tag.startswith("FB-B-") for tag in feeders)
     finding = next(f for f in radon_control_system(ctx) if "SM-B-RADON" in f.message)
     assert finding.result is Result.PASS and "subpart 4.E" in finding.message

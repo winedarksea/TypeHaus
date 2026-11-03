@@ -154,8 +154,9 @@ milestone = "weathertight"
 [[extra]]
 # ** THE COURT-FACE STRIPS' FROST PROTECTION IS SOIL REPLACEMENT, AND THAT IS NOT A TABLE ROW (C3-E10). **
 # FT-B-S1..S4 bear 8" under the court floor; FB-B-S1..S4 are 34" of drained #57 NFS stone down to
-# -151 7/16" (ASCE 32, IRC R403.1.4.1), pumped by SM-B-SOUTH. The building official accepts or
-# refuses that method on the plans, and the engineer signs the gradation, the drain and the pit.
+# -151 7/16" (ASCE 32, IRC R403.1.4.1), led by gravity into the court soakaway. The building
+# official accepts or refuses that method on the plans, and the engineer signs the gradation and
+# the drain.
 # A sink like `truss_mep_review`: no `gates`, no `requires`; the owner does not dig the beds
 # before it is closed. `structural.frost_depth` grades the geometry, not this acceptance.
 id = "frost_soil_replacement"
@@ -165,7 +166,7 @@ check_ids = ["structural.frost_depth"]
 on_site = [
   "plan reviewer accepts ASCE 32 / R403.1.4.1 for the four court-face strips, in writing on the permit",
   "engineer signs the bed: #57 NFS gradation (< 6% passing the #200), 34\" depth, geotextile, tile at -150 7/16\"",
-  "engineer signs SM-B-SOUTH: pit floor -163\", pump rate against the S-bed inflow, discharge and freeze relief",
+  "engineer signs the S-bed leads FD-B-S-LEAD-W/E into FB-SG-W2/E2 and the court soakaway taking their seepage",
   "bed excavated to -151 7/16\" and the tile and sock seen before any stone goes in",
 ]
 milestone = "preconstruction"

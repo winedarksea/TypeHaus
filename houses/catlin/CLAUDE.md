@@ -3014,7 +3014,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   working space**; both are held by the measurements in `plan/mep_electrical.py`. Feeder 2 carries `CKT-SPA`, `CKT-SAUNA`, `CKT-EV-1450`, `CKT-GAR-240` and nothing
   else. `electrical.panel_feeder_load` grades each panel's own 220.82 demand against its own
   main (155.6 A and 125.7 A of 200 A, 2026-11-02); `electrical.service_load` grades the house against the
-  meter (272.2 A of 320 A, **47.8 A of margin**, 2026-11-02). `CKT-RANGE` is 40 A / 11,900 VA (the LG
+  meter (270.3 A of 320 A, **49.7 A of margin**, 2026-11-02). `CKT-RANGE` is 40 A / 11,900 VA (the LG
   nameplate) and `CKT-KETTLE` 3,000 VA (a typical nameplate, not the breaker) — replace the
   kettle's with the purchased unit's. The ways back to 200 A are in `plans/cost-options.md`.
 - **Both panels state `service_amps=200` on their types, and must keep doing so.**
