@@ -285,7 +285,9 @@ def _slot_findings(assembly_tag: str, layers: Sequence[Layer]) -> list[Finding]:
                 span_a = _slot_span(first.extent)
                 span_b = _slot_span(second.extent)
                 if span_a is None or span_b is None:
-                    if first.extent is None or second.extent is None:
+                    # A member with neither band was reported above as claiming the wall.
+                    unbanded = [m for m in (first, second) if m.extent is None]
+                    if unbanded and all(m.run_span is not None for m in unbanded):
                         out.append(_err("integrity.assembly_layers",
                                         f"assembly {assembly_tag} slot {slot!r} layers "
                                         f"{first.name} and {second.name} overlap",

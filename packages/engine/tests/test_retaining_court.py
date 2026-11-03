@@ -464,8 +464,9 @@ def test_nothing_bears_under_the_strut_between_its_ends(catlin_model) -> None:
     An earlier scheme merged a column pour with the strut and gave it a bearing at midspan,
     halving its span. Until 2026-09-22 this pinned that ``PD-SG-FCOL`` stopped 9" below the
     beam; that pad left with the centre support line (17'-0" court, §12), so what is asserted
-    now is the claim itself: under the strut's plan footprint there is no concrete, only its
-    drain tile, so §8's λ is rightly taken on the whole 18'-0" member.
+    now is the claim itself: under the strut's plan footprint there is no concrete, only drainage
+    (its tile, and since 2026-11-02 the ``FD-B-S-LEAD-W``/``-E`` trenches ~22" below it), so §8's
+    λ is rightly taken on the whole 18'-0" member.
     """
     from shapely.geometry import Polygon
 
@@ -477,7 +478,7 @@ def test_nothing_bears_under_the_strut_between_its_ends(catlin_model) -> None:
     assert max(xs) - min(xs) == pytest.approx(18.0, abs=1e-6)
     under = [s.tag for s in catlin_model.solids
              if s.tag != beam.tag and s.outline and s.z1_m <= beam.z0_m + 1e-6
-             and s.category not in ("drain_tile", "backfill_native", "backfill_cap")
+             and s.category not in ("drain_tile", "french_drain", "backfill_native", "backfill_cap")
              and Polygon(list(s.outline)).intersects(footprint)]
     assert under == [], under
 
