@@ -67,22 +67,34 @@ def _key(finding: Finding) -> tuple:
             finding.message)
 
 
+#: One baseline per (house, loaded plan) in a process: a scorecard evaluates ten targets
+#: against the same unchanged house, and each pass is a full check run.
+_BASELINES: dict[tuple[str, int], tuple[Any, dict[tuple, Finding]]] = {}
+
+
 def evaluate_proposals(directory: Path, model: ResolvedModel,
                        proposals: list[RouteProposal]) -> list[Evaluation]:
     """One :class:`Evaluation` per proposal, each against the house's own baseline."""
-    baseline = {_key(f): f for f in _findings(model.plan, directory)}
+    baseline = baseline_findings(model, directory)
 
     out = []
+    drains = {p.tag: p for p in proposals if p.system == "drain"}
     for proposal in proposals:
-        out.append(_evaluate_one(directory, model, proposal, baseline))
+        # A fixture's vent is graded WITH its drain (``route_fixture_vent``): alone it
+        # would meet the very drain the pair replaces, and its arm would read unvented.
+        partner = drains.get(proposal.tag.replace("-VENT-PROPOSED", "-PROPOSED"))
+        group = [partner, proposal] if proposal.system == "vent" and partner else [proposal]
+        out.append(_evaluate_one(directory, model, proposal, baseline, group))
     return out
 
 
 def _evaluate_one(directory: Path, model: ResolvedModel, proposal: RouteProposal,
-                  baseline: dict[tuple, Finding]) -> Evaluation:
-    result = Evaluation(tag=proposal.tag)
+                  baseline: dict[tuple, Finding],
+                  group: list[RouteProposal] | None = None) -> Evaluation:
+    result = Evaluation(tag=proposal.tag if not group or len(group) == 1
+                        else " + ".join(p.tag for p in group))
     try:
-        candidate = _candidate_plan(model, proposal)
+        candidate = candidate_plan_for_all(model, group or [proposal])
     except (ValueError, TypeError, KeyError) as exc:
         result.refused = f"the candidate elements would not build: {exc}"
         return result
@@ -163,13 +175,28 @@ def candidate_element(model: ResolvedModel, proposal: RouteProposal) -> tuple[st
     return storey, element
 
 
+def _cleanout_elements(model: ResolvedModel, storey: str, proposal: RouteProposal) -> list:
+    """The ``DrainCleanout``s a drain proposal prints, built as its source reads."""
+    from typehaus.model.mep import DrainCleanout
+    from typehaus.quantities import Point2D, inch
+    from typehaus.routing.proposal import length_source as _len
+
+    datum = next((s.elevation.meters for s in model.plan.storeys if s.tag == storey), 0.0)
+    out = []
+    for c in proposal.cleanouts:
+        out.append(DrainCleanout(
+            tag=c.tag, pipe_ref=proposal.tag,
+            position=Point2D(_len(c.point[0]), _len(c.point[1])),
+            cap_position=Point2D(_len(c.cap[0]), _len(c.cap[1])),
+            fitting_elevation=_len(c.point[2] - datum), cap_elevation=_len(c.cap[2] - datum),
+            access=c.access, wall_ref=c.wall_ref, clear_width=inch(c.clear_in),
+            clear_depth=inch(c.clear_in)))
+    return out
+
+
 def _candidate_plan(model: ResolvedModel, proposal: RouteProposal) -> Any:
     """The house's plan with this proposal's element added, and what it replaces removed."""
-    storey, element = candidate_element(model, proposal)
-    replaced = _replaced_tags(model, proposal)
-    keep = [e for e in model.plan.storey_elements(storey)
-            if getattr(e, "tag", None) not in replaced]
-    return model.plan.with_elements(storey, (*keep, element))
+    return candidate_plan_for_all(model, [proposal])
 
 
 def candidate_plan_for_all(model: ResolvedModel,
@@ -187,18 +214,37 @@ def candidate_plan_for_all(model: ResolvedModel,
     for proposal in proposals:
         storey, element = candidate_element(model, proposal)
         by_storey.setdefault(storey, []).append(element)
+        by_storey[storey].extend(_cleanout_elements(model, storey, proposal))
         replaced |= _replaced_tags(model, proposal)
 
+    # The replaced runs leave EVERY storey: a second-floor branch is often filed on the
+    # storey below it (PR-M-S-SUITE-LAV-DRAIN), and leaving it graded the proposal against
+    # its own ghost.
     plan = model.plan
-    for storey, elements in by_storey.items():
-        keep = [e for e in plan.storey_elements(storey)
-                if getattr(e, "tag", None) not in replaced]
-        plan = plan.with_elements(storey, (*keep, *elements))
+    for storey in model.plan.storeys:
+        current = plan.storey_elements(storey.tag)
+        # A replaced run's own cleanouts go with it.
+        keep = [e for e in current if getattr(e, "tag", None) not in replaced
+                and getattr(e, "pipe_ref", None) not in replaced]
+        added = by_storey.get(storey.tag, [])
+        if added or len(keep) != len(current):
+            plan = plan.with_elements(storey.tag, (*keep, *added))
     return plan
 
 
+def baseline_findings(model: ResolvedModel, directory: Path) -> dict[tuple, Finding]:
+    """The house's own graded findings, keyed — computed once and shared by many networks."""
+    key = (str(directory), id(model.plan))
+    held = _BASELINES.get(key)
+    if held is None or held[0] is not model.plan:  # the plan is held, so its id is not reused
+        held = _BASELINES[key] = (model.plan, {_key(f): f for f in _findings(model.plan,
+                                                                             directory)})
+    return held[1]
+
+
 def evaluate_network(directory: Path, model: ResolvedModel,
-                     proposals: list[RouteProposal]) -> Evaluation:
+                     proposals: list[RouteProposal], *,
+                     baseline: dict[tuple, Finding] | None = None) -> Evaluation:
     """Grade all accepted proposals together, including network and run/run checks.
 
     An empty campaign is explicitly ungraded. Individual route evaluations cannot establish
@@ -208,7 +254,8 @@ def evaluate_network(directory: Path, model: ResolvedModel,
         result.refused = "nothing was laid, so there is no network to grade"
         return result
     try:
-        baseline = {_key(f): f for f in _findings(model.plan, directory)}
+        if baseline is None:
+            baseline = baseline_findings(model, directory)
         candidate = candidate_plan_for_all(model, proposals)
     except (ValueError, TypeError, KeyError) as exc:
         result.refused = f"the candidate elements would not build: {exc}"
@@ -266,7 +313,9 @@ def _replaced_tags(model: ResolvedModel, proposal: RouteProposal) -> set[str]:
         # campaign evaluates seventeen at once.
         if run.system != proposal.system or run.tag in descendants:
             continue
-        if proposal.serves and any(tag in run.serves for tag in proposal.serves):
+        # A run replaced serves nothing the proposal does not: the trunk a branch ties
+        # into serves the same fixture and stays.
+        if proposal.serves and run.serves and set(run.serves) <= set(proposal.serves):
             out.add(run.tag)
     return out
 

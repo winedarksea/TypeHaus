@@ -22,36 +22,25 @@ from typehaus.checks.registry import CheckContext, shared
 
 
 def bearing_wall_tags(ctx: CheckContext) -> frozenset[str]:
-    """Every wall some floor's joists actually bear on, plus every foundation wall.
+    """Every wall some floor's joists bear on, plus every foundation wall
+    (``resolve/mep_bore_scope``, which the router reads too)."""
+    from typehaus.resolve.mep_bore_scope import bearing_wall_tags as read
 
-    Read from ``JoistSpec.bearing_refs`` — the model's own statement of what carries what.
-    """
-    tags = {wall.tag for wall in ctx.model.walls if wall.is_foundation}
-    for floor in ctx.model.floors:
-        system = ctx.model.plan.by_tag(floor.tag)
-        tags.update(getattr(getattr(system, "joists", None), "bearing_refs", ()) or ())
-    return frozenset(tags)
+    return read(ctx.model)
 
 
 def outdoor_wall_tags(ctx: CheckContext) -> frozenset[str]:
     """Walls that face outdoors: a weather skin outboard, or earth (a foundation)."""
-    from typehaus.resolve.envelope_geometry import carries_a_weather_skin
+    from typehaus.resolve.mep_bore_scope import outdoor_wall_tags as read
 
-    def build() -> frozenset[str]:
-        return frozenset(wall.tag for wall in ctx.model.walls
-                         if wall.is_foundation or carries_a_weather_skin(wall))
-
-    return shared(ctx, "routing_bore_scope.outdoor", build)
+    return shared(ctx, "routing_bore_scope.outdoor", lambda: read(ctx.model))
 
 
 def r602_6_role(ctx: CheckContext) -> dict[str, str]:
     """``{wall tag: "bearing" | "exterior"}``; a wall absent is a non-bearing partition."""
-    def build() -> dict[str, str]:
-        roles = dict.fromkeys(outdoor_wall_tags(ctx), "exterior")
-        roles.update(dict.fromkeys(bearing_wall_tags(ctx), "bearing"))
-        return roles
+    from typehaus.resolve.mep_bore_scope import r602_6_roles
 
-    return shared(ctx, "routing_bore_scope.roles", build)
+    return shared(ctx, "routing_bore_scope.roles", lambda: r602_6_roles(ctx.model))
 
 
 def lagging_at_framing(ctx: CheckContext) -> dict[str, tuple[float, str]]:

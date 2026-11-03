@@ -19,6 +19,7 @@ from typehaus.routing.corridors import (
     wall_corridors,
 )
 from typehaus.routing.cost import RouteCost
+from typehaus.routing.members import Penetrations
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
@@ -163,6 +164,23 @@ class RoutingSpace:
     #: Per hard prism: its footprint eroded by a sixteenth, prepared, when the midpoint
     #: test cannot be trusted for it — see :meth:`edge_blocked`. None for a boxy prism.
     _exact: list[Any] | None = field(default=None, repr=False, compare=False)
+    #: Hard prisms a FALLING run may pass over or under: ``gravity_band.split_banded`` moves
+    #: them here and the gravity search grades each as a forbidden start interval.
+    banded: list[HardPrism] = field(default_factory=list)
+    #: Half what a WALL cavity must hold (a DWV hub); None means ``radius_m``.
+    cavity_radius_m: float | None = None
+    #: The framing members an edge cuts (``routing/members.Penetrations``); None prices no
+    #: cuts, which is what a hand-built oracle world wants.
+    members: Any = None
+    #: A falling run's possible centreline band, set by ``gravity_band.split_banded``: its
+    #: one search plane is nominal, so member tests read the band rather than the plane.
+    plan_band: tuple[float, float] | None = None
+
+    def admits(self, corridor: Corridor) -> bool:
+        """Whether this run fits ``corridor`` — at its hub, when the corridor is a cavity."""
+        if corridor.kind == "wall" and self.cavity_radius_m is not None:
+            return corridor.admits(self.cavity_radius_m)
+        return corridor.admits(self.radius_m)
 
     def _index(self, which: str) -> Any:
         from shapely import STRtree
@@ -336,7 +354,7 @@ class RoutingSpace:
             index: dict[tuple[str, int], list[Corridor]] = {}
             tolerance = self.radius_m + self.clearance_m
             for corridor in self.corridors:
-                if not corridor.admits(self.radius_m):
+                if not self.admits(corridor):
                     continue
                 # Bucket by the stations a query within `tolerance` could name, so a lookup
                 # is one dict hit rather than a scan. The buckets are 1/16" wide, the same
@@ -368,7 +386,8 @@ def build_space(model: ResolvedModel, *, radius_m: float,
                 avoid: frozenset[str] = frozenset(),
                 touch: frozenset[str] = frozenset(),
                 z_band: tuple[float, float] | None = None,
-                clearance_m: float = CLEARANCE_M) -> RoutingSpace:
+                clearance_m: float = CLEARANCE_M,
+                cavity_radius_m: float | None = None) -> RoutingSpace:
     """Inflate the world once for a run of this radius, bounded around its terminals.
 
     ``terminals`` is any iterable of ``(x, y)`` or ``(x, y, z)`` — the points the route has
@@ -405,7 +424,8 @@ def build_space(model: ResolvedModel, *, radius_m: float,
     corridors = [corridor for corridor in
                  (*bays, *soffit_corridors(model),
                   *wall_corridors(model), *chase_corridors(model))
-                 if corridor.admits(radius_m)
+                 if corridor.admits(cavity_radius_m if corridor.kind == "wall"
+                                    and cavity_radius_m is not None else radius_m)
                  and _corridor_in(corridor, minx, miny, maxx, maxy)]
 
     lines = len({(c.axis, round(c.station, 6)) for c in corridors}) + 2 * len(points)
@@ -427,7 +447,10 @@ def build_space(model: ResolvedModel, *, radius_m: float,
                         cost=cost or RouteCost(), hard=hard, soft=soft,
                         corridors=corridors, bbox=(minx, miny, maxx, maxy),
                         storeys=storeys, crossings=crossings, z_band=z_band,
-                        rails=floor_rails(model, (minx, miny, maxx, maxy)))
+                        rails=floor_rails(model, (minx, miny, maxx, maxy)),
+                        cavity_radius_m=cavity_radius_m,
+                        members=Penetrations(model, (minx, miny, maxx, maxy), radius_m,
+                                             cavity_radius_m=cavity_radius_m))
 
 
 def floor_rails(model: ResolvedModel, bbox: tuple[float, float, float, float]) -> list:

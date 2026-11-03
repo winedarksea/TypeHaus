@@ -1838,6 +1838,11 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # beam, ~16 LF of 1" 40 psi XPS under traffic-rated PU sealant. PROPOSED 2026-09-23, owner's call.
 # 2026-10-29: labour 450-850 -> 400-700/cy: one pour, no voids; 3 men x 5-6 h + ~16 LF joint/sealant = ~$1.0-1.9k over 2.70 cy.
 "slab:DRIVEWAY_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 400, high = 700 } }  # 2.59 cy, 210 SF, one pour
+# The north-entry tiers, SL-BW-TIER1..4 (params/breezeway.py): one stepped placement, 6'-1" wide,
+# four 18" treads, five 6.6" risers, EXPOSED_MIX off the walks' truck (no short-load). Labour is
+# the side and riser forms, broom finish and tooled nosings: ~$1.5-3.3k over 1.86 cy. They billed
+# at the bare "slab" rate until 2026-11-03. PROPOSED 2026-11-03, owner's call.
+"slab:ENTRY_STEP_TIER" = { material = { low = 220, high = 320 }, labour = { low = 800, high = 1800 } }  # 1.86 cy, one placement
 # The FPSF frost wings and SL-SG-FIELD are kind="band" slabs (category slab_band), so the
 # bare "slab" $/cy no longer reaches them; their layers bill in [envelope_layers].
 # RESEARCHED 2026-08-18 — the suspended main-floor deck, priced apart from every other

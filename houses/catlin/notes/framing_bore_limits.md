@@ -525,3 +525,32 @@ x 100", so over the head (RO x 39"-75", nailer top -27.94" while held at 6'-8") 
 both faces), its top at -26.43". The nailer cannot be nudged without holding the RO (its
 underside is the derived head), so the 0.09" notch by `PR-M-S-BATH1-DRAIN` at x 60" is
 accepted: `flat_header_cut` PASSes it with 1.41" of the 1.50" nailer left.
+
+---
+
+## 10. The router prices the same holes (2026-11-03)
+
+`typehaus/routing/members.py` reads the resolved studs, plates and joist lines and grades
+every lattice edge with the functions above, so a lane the search takes is one these checks
+pass. Reproduced by `packages/engine/tests/test_routing_members.py`.
+
+**One wall.** A 2x4 partition running in x, stud plane 3 1/2" deep (y 0..3 1/2"), studs at
+x = 0, 16, 32, 48". A 1/2" PEX line (0.625" OD) runs along the cavity's centre, y = 1 3/4",
+from x = 8" to x = 56".
+
+* It meets the studs at 16, 32 and 48: **three bores**.
+* Each is legal: 0.625" against a non-bearing stud's 60% x 3.50" = 2.10", leaving
+  (3.50 - 0.625) / 2 = 1.4375" of stud either side against 5/8".
+* Cost: 48" of travel + 3 x `bore_stud_in` 12" = **84"**.
+* The lane may sit off the stud's centre by at most 1.75 - 0.3125 - 0.625 = **0.8125"**. At
+  1" off it would leave 0.4375" of stud on one side, and the edge is refused.
+* A 2" PVC drain (2.375" OD) in the same wall marked bearing is refused: 40% x 3.50" =
+  1.40".
+
+**One floor.** Solid-sawn 2x10 joists (9 1/4" deep) at y = 16 and 32", z 0..9 1/4". A 2" PVC
+line crosses in y from y = 8" to 40" at z = 4 5/8".
+
+* **Two bores**, each legal: 2.375" against D/3 = 3.083", and the centreline is inside
+  R502.8.1's band, 2" + 1.1875" = 3.1875" .. 9.25 - 3.1875 = 6.0625" above the joist bottom.
+* Cost: 32" of travel + 2 x `bore_joist_in` 36" = **104"**.
+* At z = 7" the hole leaves 1.0625" to the top edge and the edge is refused.

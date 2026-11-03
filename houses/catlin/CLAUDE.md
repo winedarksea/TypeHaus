@@ -349,7 +349,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   factory, the seven beams, six piers and their footings, the four KDAT roof columns and the
   two interior posts. Publishes every constant `breezeway.py` and `plan/views.py` read, so
   the two cannot drift.
-- `params/breezeway.py` — what sits on that: the landing, the four cast tier pours, the
+- `params/breezeway.py` — what sits on that: the landing, the four cast tiers (one placement), the
   guards, the slat screen, the seat/cap/truss-tie connectors and the annotations. The canopy `Roof` itself is authored in
   `plan/storeys/garage.py`, because a roof belongs to a storey.
 - `notes/*.md` — construction detail notes migrated from the original repo.
@@ -2158,8 +2158,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   landing is `FS-BW-FLOOR` on six piers. **`PT-BW-T1W..T4E` and their
   footings are gone too** (2026-09-10): eight 42" piers laid out running EAST from the stair
   foot while the flight runs WEST, so every one stood under open ground. The tiers are
-  `carriage="cast"` — four `Slab` pours, `SL-BW-TIER1..4`, wedding-caked on a compacted base
-  — so **no member of `ST-BW-ENTRY` is a stringer or a rim**; only its treads resolve, and
+  `carriage="cast"` — four `Slab` tiers, `SL-BW-TIER1..4`, wedding-caked on a compacted base
+  and cast as one stepped placement in the flatwork visit (concrete kept over wood/brick,
+  2026-11-03) — so **no member of `ST-BW-ENTRY` is a stringer or a rim**; only its treads resolve, and
   they exist because every code rule grading a flight measures them, not because anything
   bills them. See `notes/north_entry_structure.md`.
 - **The garage wall was rebuilt; both the garage wall and its roof are current.**

@@ -26,6 +26,7 @@ from __future__ import annotations
 import heapq
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import Any
 
 import numpy as np
 
@@ -61,6 +62,14 @@ class Route:
     #: ``floor_ref=``/``soffit_ref=`` from these, so what the run claims about where it is
     #: concealed is what the search actually priced it at rather than a later guess.
     corridor_tags: tuple[str, ...] = ()
+    #: A falling run's chosen start elevation (``gravity_search``): the lowest its legal
+    #: band allows. None for every other search, and for a drain the profile may build
+    #: from the arrival upward.
+    start_m: float | None = None
+    #: Where a fixture's trap arm closed with a vent take-off (``gravity_search``), or None.
+    takeoff: int | None = None
+    #: The vent side of a fixture's pair (``cli/route_fixture_vent.VentContext``), or None.
+    vent: Any = None
 
     def polyline(self) -> list[tuple[float, float, float]]:
         """The path with collinear interior vertices removed — what a proposal prints.
@@ -190,7 +199,23 @@ def _rebuild(graph: Graph, space: RoutingSpace,
                  corridor_tags=route.corridor_tags)
 
 
-def price_route(graph: Graph, space: RoutingSpace, nodes: list[int]) -> Route:
+def turn_price(space: RoutingSpace, before: str, after: str,
+               service: str = "drain") -> float | None:
+    """A lattice turn from axis ``before`` to ``after`` at its UPC 706 price, or None.
+
+    For a drain a ``z`` leg is falling (the gravity search never rises), so level-to-``z``
+    is a quarter bend at ``bend_in`` and every other change a sweep at ``dwv_sweep_in``.
+    """
+    if not before or before == after:
+        return 0.0
+    return space.cost.turn_cost(service, _CLASS[before], _CLASS[after])
+
+
+_CLASS = {"x": "level", "y": "level", "z": "down"}
+
+
+def price_route(graph: Graph, space: RoutingSpace, nodes: list[int],
+                service: str = "") -> Route:
     """Price a node chain against THIS graph's weights — the alternatives' honest ruler.
 
     Extracted from ``_rebuild`` because a penalty re-search finds a route on a graph whose
@@ -209,6 +234,7 @@ def price_route(graph: Graph, space: RoutingSpace, nodes: list[int]) -> Route:
     corridors: list[str] = []
     bends = 0
     total = 0.0
+    bend_total = 0.0
     for step, (a, b) in enumerate(zip(nodes, nodes[1:], strict=False)):
         total += graph.weights.get((a, b), 0.0)
         for key, value in graph.terms.get((a, b), {}).items():
@@ -218,9 +244,12 @@ def price_route(graph: Graph, space: RoutingSpace, nodes: list[int]) -> Route:
             corridors.append(tag)
         if step and axes[step] != axes[step - 1]:
             bends += 1
-            total += space.cost.bend_in
+            price = (turn_price(space, axes[step - 1], axes[step], service)
+                     if service else space.cost.bend_in)
+            bend_total += space.cost.bend_in if price is None else price
+    total += bend_total
     if bends:
-        terms["bend_in"] = bends * space.cost.bend_in
+        terms["bend_in"] = bend_total
     return Route(nodes=list(nodes), points=points, cost=total, terms=terms,
                  bends=bends, corridor_tags=tuple(corridors))
 

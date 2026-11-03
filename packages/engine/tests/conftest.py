@@ -24,13 +24,23 @@ def pytest_addoption(parser) -> None:
 
     Only ``test_section_goldens.py`` reads it. Deliberately a flag rather than an env var
     so it shows up in ``pytest --help`` next to the other options a contributor sees.
-    ``--autorouter`` opts into ``test_routing_campaign_cli.py``, a real search campaign.
+    ``--autorouter`` opts into the ``autorouter``-marked modules: real catlin searches.
     """
     parser.addoption("--bless", action="store_true", default=False,
                      help="rewrite stored goldens from the current build")
     parser.addoption("--autorouter", action="store_true", default=False,
-                     help="run the real route campaign (after changing typehaus/routing/)")
+                     help="run the autorouter-marked real searches "
+                          "(after changing typehaus/routing/)")
 
+
+def pytest_collection_modifyitems(config, items) -> None:
+    """Skip ``autorouter`` items unless ``--autorouter``: they run real searches by hand."""
+    if config.getoption("--autorouter"):
+        return
+    skip = pytest.mark.skip(reason="run with --autorouter after changing typehaus/routing/")
+    for item in items:
+        if "autorouter" in item.keywords:
+            item.add_marker(skip)
 
 
 @pytest.fixture(scope="session")

@@ -207,6 +207,11 @@ def candidate_lines_at(space: RoutingSpace,
         (ys if corridor.axis == "x" else xs).append(corridor.station)
 
     reach = (z - space.radius_m, z + space.radius_m)
+    # A falling run's banded prisms are lines on its one plane: it may pass beside them.
+    for prism in space.banded if plan_search else ():
+        px0, py0, px1, py1 = prism.footprint.bounds
+        xs.extend((px0, px1))
+        ys.extend((py0, py1))
     for prism in space.hard:
         if prism.footprint.is_empty:
             continue
@@ -409,25 +414,40 @@ def _finish(space: RoutingSpace, a: Node, b: Node, axis: str, soft: list
     corridor = (None if vertical
                 else space.corridor_at(axis, station, lo, hi, midz))
 
-    room_ft, occupancy, in_wall_ft = 0.0, None, 0.0
+    cuts: dict[str, int] = {}
+    if space.members is not None:
+        found = space.members.cuts((a.x, a.y, a.z), (b.x, b.y, b.z), axis,
+                                   band=space.plan_band)
+        if found is None:
+            return None  # an illegal bore, notch or plate cut: not a lane
+        cuts = found
+
+    room_ft, occupancy = 0.0, None
     for prism in soft:
         if prism.kind == "room":
             room_ft, occupancy = length_ft, prism.occupancy
-        elif prism.kind == "wall":
-            in_wall_ft = length_ft
 
     cost = space.cost.segment_cost(
         length_ft, vertical=vertical, corridor=corridor is not None,
-        in_wall_ft=in_wall_ft, room_ft=room_ft, occupancy=occupancy)
-    terms = {"travel_in": length_ft * 12.0 * (space.cost.riser_per_ft if vertical else 1.0)}
+        room_ft=room_ft, occupancy=occupancy)
+    terms = {"travel_in": space.cost.travel(length_ft, vertical=vertical)}
     if corridor is not None:
-        terms["corridor_in"] = -min(length_ft * space.cost.corridor_discount_per_ft,
-                                    terms["travel_in"])
+        terms["corridor_in"] = -space.cost.discount(length_ft, terms["travel_in"],
+                                                    corridor=True, rack=False)
     if room_ft:
         terms["room_in"] = room_ft * space.cost.room_penalty(occupancy)
-    if in_wall_ft:
-        terms["in_wall_in"] = in_wall_ft * space.cost.in_wall_travel_per_ft
+    for kind, count in cuts.items():
+        price = count * space.cost.cut_cost(kind)
+        name = _CUT_TERMS[kind]
+        terms[name] = terms.get(name, 0.0) + price
+        cost += price
     return cost, terms, (corridor.tag if corridor is not None else None)
+
+
+#: ``--explain`` term per member-cut kind.
+_CUT_TERMS = {"stud": "bore_stud_in", "plate": "plate_cut_in", "plate_tie": "plate_cut_in",
+              "joist": "bore_joist_in", "engineered": "bore_engineered_in",
+              "unpublished": "bore_unpublished_in"}
 
 
 def _unique(values: Iterable[float]) -> list[float]:

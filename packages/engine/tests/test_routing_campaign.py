@@ -118,9 +118,10 @@ def test_a_proposals_prisms_are_the_solid_it_will_occupy_once_pasted() -> None:
     prisms = proposal_prisms(_proposal("PR-A"), inflate_m=0.0)
     assert len(prisms) == 1
     assert prisms[0].kind == "run"
-    # 3" pipe, no clearance: the band is the radius either side of a level run.
-    assert prisms[0].z1_m == pytest.approx(inch(1.5).meters)
-    assert prisms[0].z0_m == pytest.approx(-inch(1.5).meters)
+    # 3" DWV, no clearance: the band is the REAL 3.5" OD's radius either side of a level
+    # run, as the pasted run's envelope reads it — never the nominal.
+    assert prisms[0].z1_m == pytest.approx(inch(1.75).meters)
+    assert prisms[0].z0_m == pytest.approx(-inch(1.75).meters)
 
 
 # --- rip-up ------------------------------------------------------------------------------

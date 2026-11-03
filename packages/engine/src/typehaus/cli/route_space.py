@@ -47,7 +47,7 @@ def print_space_view(model: Any, target: str, *, margin_ft: float,
     terminals = [ends.origin, ends.root]
     space = build_space(model, radius_m=ends.radius_m, terminals=terminals,
                         margin_ft=margin_ft, avoid=avoid, touch=ends.touch, cost=cost,
-                        z_band=band)
+                        z_band=band, cavity_radius_m=ends.cavity_radius_m or None)
     levels = candidate_levels(space, terminals)
     regions = space_view(space, levels)
 

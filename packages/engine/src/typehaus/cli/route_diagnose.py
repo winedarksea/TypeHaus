@@ -40,7 +40,8 @@ def counterfactual_lines(model: ResolvedModel, ends: Any, refused: Any, *,
     def build(extra: frozenset[str]):
         return build_space(model, radius_m=ends.radius_m, terminals=terminals,
                            margin_ft=margin_ft, avoid=avoid,
-                           touch=ends.touch | extra, cost=cost, z_band=band)
+                           touch=ends.touch | extra, cost=cost, z_band=band,
+                           cavity_radius_m=ends.cavity_radius_m or None)
 
     def search_one(space) -> float | None:
         levels = [ends.root[2]] if ends.falls else None

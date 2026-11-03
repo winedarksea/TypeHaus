@@ -37,7 +37,8 @@ def _world() -> tuple[Graph, RoutingSpace]:
     """
     coords = [(i * STEP, j * STEP) for j in range(2) for i in range(4)]
     nodes = [Node(index=k, x=x, y=y, z=0.0) for k, (x, y) in enumerate(coords)]
-    cost = RouteCost(bend_in=6.0, corridor_discount_per_ft=8.0)
+    # §8 prices every turn at 6", the level-to-level sweeps included.
+    cost = RouteCost(bend_in=6.0, dwv_sweep_in=6.0, corridor_discount_per_ft=8.0)
     space = RoutingSpace(radius_m=0.0, clearance_m=0.0, cost=cost, hard=[], soft=[],
                          corridors=[], bbox=(0.0, 0.0, 3 * STEP, STEP),
                          storeys=("main",))
@@ -158,3 +159,47 @@ def test_a_rise_is_never_relaxed() -> None:
                              grade_in_per_ft=GRADE_IN_PER_FT, diameter_m=0.0,
                              required_m={8: 0.0})
     assert sloped_route(graph, space, 0, {8}, problem) is None
+
+
+def _row_world(duct_in: tuple[float, float]):
+    """§8a: A-B-C-D at 24" pitch, one inflated duct over x = 30"..42" of edge B-C."""
+    from shapely.geometry import box
+
+    from typehaus.routing.gravity_band import band_obstacles
+    from typehaus.routing.obstacles import HardPrism
+
+    nodes = [Node(index=k, x=k * STEP, y=0.0, z=0.0) for k in range(4)]
+    graph = Graph(nodes=nodes)
+    for a in range(3):
+        graph.edges.setdefault(a, {}).setdefault("x", []).append(a + 1)
+        graph.edges.setdefault(a + 1, {}).setdefault("x", []).append(a)
+        for key in ((a, a + 1), (a + 1, a)):
+            graph.weights[key] = 24.0
+            graph.terms[key] = {"travel_in": 24.0}
+    duct = HardPrism(tag="DU-ORACLE", kind="run",
+                     footprint=box(30 * M_PER_IN, -6 * M_PER_IN, 42 * M_PER_IN, 6 * M_PER_IN),
+                     z0_m=duct_in[0] * M_PER_IN, z1_m=duct_in[1] * M_PER_IN)
+    space = RoutingSpace(radius_m=0.0, clearance_m=0.0, cost=RouteCost(bend_in=6.0),
+                         hard=[], soft=[], corridors=[], bbox=(0.0, 0.0, 3 * STEP, 0.0),
+                         storeys=("main",), banded=[duct])
+    problem = GravityProblem(ceiling_m=CEILING_IN * M_PER_IN,
+                             grade_in_per_ft=GRADE_IN_PER_FT, diameter_m=0.0,
+                             required_m={3: REQUIRED_IN * M_PER_IN})
+    return graph, space, problem, band_obstacles(space, graph)
+
+
+@pytest.mark.parametrize(("duct_in", "start_in"), [
+    ((114.50, 115.40), 116.275),  # row 1: the old plane search drew it through the duct
+    ((114.50, 116.00), None),     # row 2: no start clears it and reaches the tie
+    ((115.40, 116.20), 115.50),   # row 3: passes under at the arrival-anchored start
+])
+def test_a_banded_duct_is_passed_over_under_or_refused_as_section_8a_works_it(
+        duct_in, start_in) -> None:
+    graph, space, problem, obstacles = _row_world(duct_in)
+    route = sloped_route(graph, space, 0, {3}, problem, obstacles=obstacles)
+    if start_in is None:
+        assert route is None
+        return
+    assert route is not None and route.nodes == [0, 1, 2, 3]
+    # 2e-3": the duct is read 1/16" eroded (a run on its inflated edge is at clearance).
+    assert route.start_m / M_PER_IN == pytest.approx(start_in, abs=2e-3)

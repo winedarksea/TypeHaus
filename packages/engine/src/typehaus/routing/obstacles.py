@@ -32,6 +32,10 @@ class HardPrism:
     footprint: Any  # shapely Polygon
     z0_m: float
     z1_m: float
+    #: The edge axes this prism binds (``"x"``, ``"y"``, ``"z"``); None binds every edge. A
+    #: stud plane's face strip binds a lane running ALONG the wall and a riser, never one
+    #: crossing the face into the cavity (``routing/members.wall_prisms``).
+    applies: frozenset[str] | None = None
 
     def blocks(self, point: tuple[float, float], z: float) -> bool:
         from shapely.geometry import Point
@@ -324,6 +328,28 @@ def soft_prisms(model: ResolvedModel) -> list[SoftPrism]:
             continue
         out.append(SoftPrism(tag=wall.tag, kind="wall", footprint=poly,
                              z0_m=wall.z0_m, z1_m=wall.z1_m))
+    return out
+
+
+def exterior_cavities(model: ResolvedModel) -> list[tuple[str, Any, float, float]]:
+    """``(wall tag, stud-cavity ring, z0, z1)`` for every exterior insulated wall.
+
+    Exterior is the assembly's reading, never a tag: a CLADDING layer, and a room on one
+    side only (``resolve/room_openings.wall_is_exterior``). Foundation walls are excluded —
+    concrete is a hard prism already, not a cavity.
+    """
+    from typehaus.resolve.room_openings import rooms_by_storey, wall_is_exterior
+
+    index = rooms_by_storey(model)
+    out = []
+    for wall in model.walls:
+        if wall.is_foundation or not any(ly.function == "cladding" for ly in wall.layers):
+            continue
+        structure = next((ly for ly in wall.layers if ly.function == "structure"), None)
+        if structure is None or len(structure.polygon) < 3:
+            continue
+        if wall_is_exterior(model, wall, index):
+            out.append((wall.tag, tuple(structure.polygon), wall.z0_m, wall.z1_m))
     return out
 
 

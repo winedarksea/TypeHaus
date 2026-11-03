@@ -102,6 +102,23 @@ def pipe_outside_diameter_m(nominal_m: float, material: str | None) -> float:
     return _lookup(table, nominal_in) * M_PER_IN
 
 
+#: Schedule 40 minimum wall, inches (ASTM D1785 / D2665). A DWV socket's wall is at least the
+#: pipe's, so pipe OD + 2 x this is a LOWER bound on a hub's outside — the size a fitting
+#: needs in a stud cavity, which the barrel alone under-reports.
+SCH40_WALL_IN: dict[float, float] = {
+    1.25: 0.140, 1.5: 0.145, 2.0: 0.154, 2.5: 0.203, 3.0: 0.216, 4.0: 0.237,
+}
+
+
+def hub_outside_diameter_m(nominal_m: float, material: str | None) -> float:
+    """A solvent-weld DWV hub's outside diameter (lower bound); tube takes no hub."""
+    od = pipe_outside_diameter_m(nominal_m, material)
+    if (material or "").strip().lower() in _TUBE_MATERIALS:
+        return od
+    wall = _lookup(SCH40_WALL_IN, nominal_m / M_PER_IN)
+    return od if wall == nominal_m / M_PER_IN else od + 2.0 * wall * M_PER_IN
+
+
 def raceway_outside_diameter_m(trade_size_m: float, material: str = "emt") -> float:
     """The outside diameter of a raceway of this trade size and ``RacewayMaterial`` value.
 

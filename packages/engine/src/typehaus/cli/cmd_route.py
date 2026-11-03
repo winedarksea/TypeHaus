@@ -6,19 +6,18 @@ The CLI sits above routing and checks so the search never grades its own answer.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import typer
 
 from typehaus.cli._shared import app, console
 from typehaus.cli.cmd_route_tree import _line_nodes, _propose_tree
-from typehaus.cli.route_ports import attach_leads, terminal_refusal
+from typehaus.cli.route_ports import terminal_refusal
+from typehaus.cli.route_proposal import one_proposal as _one_proposal
 from typehaus.cli.route_roots import hold_upstream
 from typehaus.cli.route_roots import search_for as _search_for
 from typehaus.cli.route_support import (
-    Endpoints,
     _endpoints,
-    _fall,
     _load,
     _nearest,
     _points,
@@ -97,6 +96,10 @@ def route(
         None, "--space", help="Classify the routing space this target would search — per "
                               "level, what is clear, what is priced, what refuses and what "
                               "is ungraded — instead of routing it."),
+    scorecard: bool = typer.Option(
+        False, "--scorecard", help="Search and grade the fixed scorecard targets "
+                                   "(cli/route_scorecard.py); --out writes report.json "
+                                   "and scorecard.md."),
     whole_house: bool = typer.Option(
         False, "--house", help="Lay every run in scope as one coordinated campaign: a "
                                "stated trade order, one shared occupancy, bounded rip-up."),
@@ -169,10 +172,10 @@ def route(
     directory, model = _load(house)
     validate_output_directory(out_dir, directory)
     selectors = [bool(run), bool(fixture), bool(tree), unconnected, whole_house,
-                 bool(space_of)]
+                 bool(space_of), scorecard]
     if sum(selectors) != 1:
         console.print("[red]choose exactly one of --run, --fixture, --tree, "
-                      "--unconnected, --house, --space[/red]")
+                      "--unconnected, --house, --space, --scorecard[/red]")
         raise typer.Exit(2)
     if not 1 <= alternatives <= len(_LETTERS):
         console.print(f"[red]--alternatives wants 1..{len(_LETTERS)}[/red]")
@@ -194,6 +197,11 @@ def route(
             raise typer.Exit(2)
 
     cost = _route_cost(directory)
+
+    if scorecard:
+        from typehaus.cli.route_scorecard import write_scorecard
+
+        raise typer.Exit(write_scorecard(directory, model, cost, out_dir))
 
     if space_of:
         from typehaus.cli.route_space import print_space_view
@@ -317,13 +325,19 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                 with clock.stage("build-space"):
                     space = build_space(model, radius_m=ends.radius_m, terminals=terminals,
                                         margin_ft=margin_ft, avoid=avoid, touch=ends.touch,
-                                        cost=cost, z_band=band)
+                                        cost=cost, z_band=band,
+                                        cavity_radius_m=ends.cavity_radius_m or None)
                     if extra_prisms:
                         # Appended after the build so the space's own inflation is not
                         # applied twice: a campaign's prisms are already grown by the
                         # clearance the campaign chose.
                         space.hard.extend(extra_prisms)
                         space._hard_index = None
+                    if ends.falls:
+                        from typehaus.routing.gravity_band import prepare_falling
+
+                        prepare_falling(space, (min(ends.root[2], ends.origin[2]),
+                                             max(ends.root[2], ends.origin[2])))
             except RoutingSpaceTooLarge as exc:
                 problems.append(f"{target}: {exc}")
                 continue
@@ -395,7 +409,7 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                             f"{len(space.corridors)} corridor(s) in the space",
                             f"margin {margin_ft:.3g} ft"
                             + ("" if band is None else ", pruned to the --level band"))
-                if report is not None and report.tightest is not None:
+                if report is not None and (report.tightest is not None or report.notes):
                     # A gravity refusal knows something a geometric one does not: whether
                     # the route ran out of HEAD, and where. Its number is the shortage, and
                     # the geometric record carries it rather than replacing it — "a quarter
@@ -421,12 +435,25 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                                f"{alternatives} asked for — the rest were the same lane at a "
                                "higher price, which is not an alternative")
 
+            ranked = []
             for index, found in enumerate(found_all):
                 suffix = f"-{_LETTERS[index]}" if len(found_all) > 1 else ""
                 made = _one_proposal(model, ends, found, target, suffix, slope, explain,
-                                     problems)
-                if made is not None:
-                    proposals.append((made, ends.storey))
+                                     problems, space=space)
+                if made is None:
+                    continue
+                if made.system == "drain":
+                    made = _with_cleanouts(model, space, made)
+                pair = [made]
+                if found.vent is not None:
+                    from typehaus.cli.route_fixture_vent import vent_proposal
+
+                    vent = vent_proposal(found, made, ends, target, suffix)
+                    pair += [vent] if vent is not None else []
+                ranked.append(pair)
+            # Ranked on the whole price — cleanout access panels included — not the search's.
+            for pair in sorted(ranked, key=lambda p: p[0].cost):
+                proposals.extend((made, ends.storey) for made in pair)
         finally:
             # Measurements survive a refusal. A target that could not be routed is
             # exactly the one whose build-space and lattice counts say why.
@@ -435,64 +462,15 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
     return proposals, problems, notices, refusals
 
 
-def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
-                  suffix: str, slope: float | None, explain: bool,
-                  problems: list[str]) -> RouteProposal | None:
-    """One found route, given its elevations and its concealment, or None with a reason."""
-    from typehaus.routing.gravity import HeadBudget, minimum_slope
-    from typehaus.routing.proposal import RouteProposal, bay_note, concealment
-    from typehaus.routing.trades import conduit as conduit_trade
+def _with_cleanouts(model, space, made):
+    """Phase 5: the drain's UPC 707.4 cleanouts, their access panels priced into its cost."""
+    from dataclasses import replace
 
-    points, lead_notes, lead_bends = attach_leads(found.polyline(), ends)
-    if ends.tie_is_the_goal:
-        # The search ran riser -> trunk because the fixture end is the fixed one; the run is
-        # authored trunk -> riser, and every reader downstream (the dialect, `serves`, the
-        # tie-in derivation itself) reads path[0] as the tee. No gravity profile is
-        # involved, so this really is the one line it looks like.
-        points = list(reversed(points))
-    # **A route of one point is not a run.** It means the origin was already standing on the
-    # goal — which is a true and useful FINDING, and on catlin it is exactly the one the
-    # vent merge is about: PR-S-BATH1-VENT's origin sits 0.9" from PR-S-SUITEBATH-VENT's
-    # north leg. But "paste this" is the wrong thing to say about it, and printing a 1-tuple
-    # of points emits dialect that will not even parse. So it is reported, never proposed.
-    if len({(round(x, 6), round(y, 6)) for x, y, _z in points}) < 2:
-        problems.append(
-            f"{target + suffix}: its origin already stands on what it is being routed to, "
-            "so the shortest route is no route at all. That is not a lane to paste — it is "
-            "a finding: the two are already in one place, and what to do about it (land "
-            "this run's fixtures on the other, or move one of them) is a judgement, not a "
-            "search")
-        return None
-    notes: list[str] = lead_notes
-    if ends.falls:
-        developed_ft = sum(((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
-                           for a, b in zip(points, points[1:], strict=False)) / 0.3048
-        grade = slope if slope is not None else minimum_slope(ends.diameter_m)
-        budget = HeadBudget(ceiling_m=ends.origin[2], required_m=ends.root[2],
-                            developed_ft=developed_ft, diameter_m=ends.diameter_m)
-        fallen = _fall(points, ends.origin, budget, grade, target + suffix, problems)
-        if fallen is None:
-            return None
-        points, note = fallen
-        notes.append(note)
+    from typehaus.cli.route_cleanouts import place_cleanouts
 
-    routing, floor_ref, soffit_ref = (None, None, None)
-    if ends.kind == "duct":
-        routing, floor_ref, soffit_ref = concealment(model, found.corridor_tags)
-        note = bay_note(model, found.corridor_tags, ends.radius_m)
-        if note:
-            notes.append(note)
-    if ends.kind == "conduit":
-        disclosed = conduit_trade.disclosure(conduit_trade.legalize(list(points)))
-        if disclosed:
-            notes.append(disclosed)
-
-    proposal = RouteProposal(
-        tag=f"{target}-PROPOSED{suffix}", kind=ends.kind, points=[*ends.held, *points],
-        diameter_m=ends.diameter_m, width_m=ends.width_m, depth_m=ends.depth_m,
-        serves=ends.serves, system=ends.system, cost=found.cost, bends=found.bends + lead_bends,
-        terms=dict(found.terms) if explain else {}, notes=notes, routing=routing,
-        floor_ref=floor_ref, soffit_ref=soffit_ref, echo=dict(ends.echo),
-        after=ends.after_paste).snapped()
-    # After snapping: the indices must be the pasted run's own.
-    return proposal.with_pull_points(ends.pull_boxes) if ends.kind == "conduit" else proposal
+    cleanouts, cost, notes = place_cleanouts(model, space, made)
+    terms = dict(made.terms)
+    if cost and terms:
+        terms["cleanout_concealed_in"] = cost
+    return replace(made, cleanouts=cleanouts, cost=made.cost + cost, terms=terms,
+                   notes=[*made.notes, *notes])

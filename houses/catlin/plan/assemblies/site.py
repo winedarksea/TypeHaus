@@ -414,8 +414,8 @@ GARAGE_STEP_6 = Assembly(
 # ** THE NORTH ENTRY'S FOUR CAST TIERS, WHICH REPLACED EIGHT DRILLED PIERS. **
 # The terrace was framed KDAT boxes on eight 42"-deep piers until 2026-09-10. The piers were
 # both wrong and unnecessary -- laid out east of a flight that runs WEST, so all eight stood
-# under open ground -- and the owner's call is the ordinary detail: four solid pours,
-# wedding-caked, on a compacted base. One riser thick each, EXPOSED_MIX because they are
+# under open ground -- and the owner's call is the ordinary detail: four tiers in one stepped
+# placement, wedding-caked, on a compacted base. One riser thick each, EXPOSED_MIX because they are
 # sky-exposed at a salted entry (ACI 318-19 F3 + C2), and every tier above the first is fully
 # bedded on the one below it, so nothing here spans.
 #

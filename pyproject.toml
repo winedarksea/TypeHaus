@@ -70,6 +70,7 @@ addopts = "-q -n 6 --dist loadfile -p no:cacheprovider"
 # slow is just a test nobody runs. Keep focused unit tests in the standard tier.
 markers = [
   "slow: whole-house exports and comparisons, permit rendering, end-to-end CLI and server flows",
+  "autorouter: real route searches on catlin; skipped unless --autorouter (run by hand after changing typehaus/routing/)",
 ]
 # Third-party noise only, not ours: FastAPI 0.141's own Body() on pydantic 2.13, and
 # Starlette 1.6's TestClient asking for httpx2. Drop each when the library fixes it.

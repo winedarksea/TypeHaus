@@ -99,15 +99,17 @@ constraints = [
 ]
 
 [visits."task/concrete/building/slabs"]
-label = "Slabs on grade — basement, garage, heat-pump pad"
+label = "Slabs on grade — basement, garage, court floor"
 # `hardware:AB-058-10-SS` left this list 2026-09-22: with the garden's two centre-pillar bases
 # retired, the four bolts left (P-M-STRWELL-S/SS, PT-BW-CNW/CW) are all on `main`'s package
 # and ride its own visit.
-rows = ["concrete:slab", "concrete:slab:HP_PAD_ON_GRADE",
+# 2026-11-03: the exterior on-grade pours (walks, entry tiers, HP and court-stair pads) moved
+# to flatwork. They sit on backfill, and this visit is before the backfill inspection.
+rows = ["concrete:slab",
         "concrete:column:PIER_CONCRETE_12", "concrete:column:SUNKEN_GARDEN_COLUMN_12",
         "allowances:radon-passive-pipe-and-stack",
         "allowances:concrete-cold-weather-protection"]
-element_tags = ["SL-*", "PT-SG-*", "PT-BW-*"]
+element_tags = ["SL-B-*", "SL-G-*", "SL-SG-FLOOR", "PT-SG-*", "PT-BW-*"]
 # Not the trade order: the sleeves, the radon collection point and the in-floor tube are all
 # plumbing work, and every one of them is under the slab. This is the dependency a
 # (trade x storey) package could not express.
@@ -121,14 +123,16 @@ constraints = [
 ]
 
 [visits."task/concrete/building/flatwork"]
-label = "Flatwork — driveway apron and walks"
+label = "Flatwork — driveway, walks, entry tiers, HP pads"
 # ** THE WATERPROOFING IS NOT HERE ANY MORE (2026-09-12). ** This visit carried
 # `allowances:foundation-damp-or-waterproofing`, and this visit `depends_on
 # insp/foundation_backfill` — so the membrane that has to be on the wall BEFORE the backfill
 # inspection was scheduled after it. The allowance is deleted and the membrane is a modelled
 # layer on the concrete trade now, which puts it in the wall package where it belongs.
-rows = ["concrete:slab:DRIVEWAY_FRC_CLASS5", "allowances:concrete-driveway-apron-and-walks"]
-element_tags = ["SL-DW-*"]
+rows = ["concrete:slab:DRIVEWAY_FRC_CLASS5", "concrete:slab:SIDEWALK_FRC_CLASS5",
+        "concrete:slab:ENTRY_STEP_TIER", "concrete:slab:HP_PAD_ON_GRADE",
+        "allowances:concrete-driveway-apron-and-walks"]
+element_tags = ["SL-DW-*", "SL-WK-*", "SL-BW-TIER*", "SL-M-HP*", "SL-SG-HPPAD", "SL-SG-STAIRPAD"]
 # Last, and deliberately after backfill: a new apron under a loaded truck is a repair.
 # And `blocks_successors = false` because of the other half of that sentence: framing's
 # package-level predecessor is the concrete package, and expanded to every concrete arrival
@@ -137,6 +141,7 @@ depends_on = ["task/concrete/building/slabs", "insp/foundation_backfill"]
 blocks_successors = false
 constraints = [
   { label = "final grade set — the apron is poured to it, not corrected afterwards" },
+  { label = "entry landing framed and decked: SL-BW-TIER1..4 are ONE stepped placement on the walks' truck, the top riser set to the deck (R311.7.5.1, 3/8\")" },
   { label = "confirmed with the sub 48 hours ahead" },
 ]
 

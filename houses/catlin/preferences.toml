@@ -207,10 +207,23 @@ riser_per_ft = 0.5
 # is what `--explain` prints as the heuristic's scale.
 corridor_discount_per_ft = 8.0
 
-# Per-foot penalty for travelling IN a wall beyond one stud bay, because every stud on the
-# way gets bored. Mirrors `mep_queries._STUD_BAY_TRAVEL_M`'s reading in
-# `mep.wet_wall_occupancy`, which reports the same thing after the fact.
-in_wall_travel_per_ft = 18.0
+# The plumber's order (docs/routing.md, "Plumber's rules"), cheapest first: ride a corridor,
+# ride a rack, pipe, a PEX field bend, a fitting, a stud bore, a plate cut, a joist bore, an
+# exterior wall. Engine defaults written out so `haus route --explain` shows what changed.
+# A wall is priced per member cut (`in_wall_travel_per_ft` is retired): vertical travel in a
+# cavity that fits pays travel only, which is the wet-wall preference.
+rack_discount_per_ft = 4.0
+dwv_sweep_in = 30.0
+pex_bend_in = 4.0
+bore_stud_in = 12.0
+plate_cut_in = 24.0
+bore_joist_in = 36.0
+bore_engineered_in = 36.0
+bore_unpublished_in = 96.0
+# Freeze risk and a hole in the insulation; vents exempt. Catlin keeps the default although
+# its stud bays sit inboard of 4" of ccSPF, which would argue for less.
+exterior_wall_per_ft = 96.0
+cleanout_concealed_in = 48.0
 
 # **The equal-friction design rate a duct is sized at**, in. w.g. per 100 ft — the
 # ASHRAE/ACCA Manual D method, and its residential default. Not a router weight: it decides

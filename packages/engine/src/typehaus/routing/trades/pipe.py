@@ -30,9 +30,31 @@ GRAVITY_SYSTEMS = frozenset({"drain"})
 RISING_SYSTEMS = frozenset({"vent", "radon"})
 
 
-def radius_m(diameter_m: float) -> float:
-    """Half the outside dimension — a pipe is round, so this is the whole of it."""
-    return (diameter_m or 0.0) / 2.0
+def radius_m(diameter_m: float, material: str | None = None,
+             insulation: str | None = None) -> float:
+    """Half the REAL outside: OD for this material plus lagging, as ``run_radii`` reads it.
+
+    The authored ``diameter`` is nominal, and 3" DWV is 3.5" across. An unstated material
+    takes the IPS series (the larger), and lagging that states no thickness counts as none,
+    the same reading ``mep_envelopes.run_envelope`` discloses.
+    """
+    from typehaus.resolve.mep_envelopes import insulation_thickness_m
+    from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
+
+    lagging = insulation_thickness_m(insulation) or 0.0
+    return pipe_outside_diameter_m(diameter_m or 0.0, material) / 2.0 + lagging
+
+
+def cavity_radius_m(diameter_m: float, system: str, material: str | None = None,
+                    insulation: str | None = None) -> float:
+    """Half what a stud cavity must hold: the HUB for DWV, so 3" cannot claim a 2x4."""
+    from typehaus.resolve.mep_envelopes import insulation_thickness_m
+    from typehaus.resolve.pipe_sections import hub_outside_diameter_m
+
+    if system not in ("drain", "vent"):
+        return radius_m(diameter_m, material, insulation)
+    lagging = insulation_thickness_m(insulation) or 0.0
+    return hub_outside_diameter_m(diameter_m or 0.0, material) / 2.0 + lagging
 
 
 def crossing_admissible(corridor: Corridor, diameter_m: float,

@@ -217,10 +217,11 @@ def soffit_corridors(model: ResolvedModel) -> list[Corridor]:
 def wall_corridors(model: ResolvedModel) -> list[Corridor]:
     """One corridor per wall, on its axis, bounded by its structure cavity.
 
-    A wall is a corridor and a soft obstacle at once, and that is not a contradiction:
-    travelling ALONG a wall in its own cavity is what a wet wall is for, and travelling
-    far along one is what bores every stud on the way. The discount is here; the penalty
-    past one stud bay is :mod:`typehaus.routing.obstacles`' ``in_wall_travel_per_ft``.
+    Travelling ALONG a wall in its own cavity is what a wet wall is for, and travelling
+    far along one bores every stud on the way. The discount is here; the studs are priced
+    one by one by ``routing/members.py``. The station is the STUD PLANE's centre, not the
+    wall's axis: an exterior wall's axis sits in its foam, and a lane there straddles the
+    studs, which ``members`` refuses.
     """
     out: list[Corridor] = []
     for wall in model.walls:
@@ -233,9 +234,11 @@ def wall_corridors(model: ResolvedModel) -> list[Corridor]:
         structure = next((ly for ly in wall.layers if ly.function == "structure"), None)
         if structure is None:
             continue
+        across = [p[1] if horizontal else p[0] for p in structure.polygon]
         out.append(Corridor(
             tag=wall.tag, kind="wall", axis="x" if horizontal else "y",
-            station=ay if horizontal else ax,
+            station=((min(across) + max(across)) / 2.0 if len(across) >= 3
+                     else ay if horizontal else ax),
             z0_m=wall.z0_m, z1_m=wall.z1_m,
             clear_width_m=structure.thickness_m,
             lo_m=min(ax, bx) if horizontal else min(ay, by),

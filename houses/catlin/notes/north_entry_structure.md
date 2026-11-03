@@ -214,9 +214,13 @@ guard (`RL-BW-GARAGE-W` is deleted) and `RL-G-SERVICE` is a wall-mounted handrai
 `W-G-W` — one bracket on a stud at the landing end, one on 2x12 blocking (`BK-G-W-RAIL-FOOT`,
 `plan/backing.py`) at the foot.
 
-## 3. The tiers — four cast pours on a compacted base
+## 3. The tiers — one stepped pour on a compacted base
 
-`SL-BW-TIER1..4`, 18" going, one riser (6.6") thick each, **wedding-caked**: tier *i* runs
+`SL-BW-TIER1..4` are four `Slab` elements and **one placement**: side forms, riser boards
+hung, poured monolithically off the walks' truck by the flatwork crew
+(`task/concrete/building/flatwork`), after backfill and after the landing is framed and
+decked, so the top riser is set to the deck. Until then the entry takes a temporary wood stair.
+18" going, one riser (6.6") per tier, **wedding-caked**: tier *i* runs
 from the landing edge east to the front of its own tread, so every tier above the first is
 fully bedded on the one below it and nothing here spans. EXPOSED_MIX (ACI 318-19 F3 + C2),
 broom finish, 1/4" per foot of cross-fall east. `ST-BW-ENTRY` carries the flight's *code*
@@ -253,6 +257,13 @@ because nothing grades whether a pier is under the thing it names.
 > unheated spaces such as porches", Minnesota's Rules 1309.0403 amendment carries no
 > exceptions, and ASCE 32 is a stamped engineered submittal. **This is an owner's decision
 > to accept movement on an unheated exterior terrace, taken knowingly.**
+
+**Concrete kept over wood or brick (owner, 2026-11-03).** Both alternatives were weighed for
+trade sequencing and found worse on it: each still needs a pad poured with the walks, then
+adds a return trip (a carpenter, or the mason, whose visit is early for the court veneer).
+PT framing with composite treads and fascia risers lasts less on a wet, salted pad and
+grips worse in ice. Brick steps are a veneer over this same concrete stair, plus mortar
+joints that salt and freeze-thaw take apart. The cast flight rides a truck that is coming anyway.
 
 ## 4. The screen — a solid shear panel with a slat clerestory over it
 

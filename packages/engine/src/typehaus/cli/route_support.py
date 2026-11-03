@@ -14,6 +14,7 @@ import typer
 
 from typehaus.cli._shared import _print_findings, _resolve_house
 from typehaus.cli.route_metadata import run_metadata as _run_metadata
+from typehaus.routing.trades import pipe as pipe_trade
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.cli.route_ports import PortLead
@@ -33,6 +34,10 @@ class Endpoints:
     storey: str
     #: Round section, or the pipe's own outside diameter, or a raceway's trade size.
     diameter_m: float = 0.0
+    #: Half what a wall cavity must hold — a DWV hub; 0 means ``radius_m``.
+    cavity_radius_m: float = 0.0
+    #: ``--fixture``: the fixture whose trap arm this drain starts (Phase 4's arm search).
+    fixture: str | None = None
     #: Rectangular duct only; both zero for everything round.
     width_m: float = 0.0
     depth_m: float = 0.0
@@ -205,12 +210,17 @@ def _target_endpoints(model: ResolvedModel, target: str, mode: str,
         # are not obstacles to it — and one of them is usually the run the tie point sits
         # on, which is why leaving them hard reports "no lattice node at the root" for a
         # root that is perfectly reachable.
-        replaced = {run.tag for run in model.pipe_runs if target in run.serves}
+        # Drains only: the hot and cold runs to the same basin are not replaced, and
+        # touching them let the branch through its own supply lines.
+        replaced = {run.tag for run in model.pipe_runs
+                    if target in run.serves and run.system == "drain"}
         return Endpoints(
             origin=(point[0], point[1], floor_m), root=root, kind="pipe",
-            radius_m=diameter_m / 2.0, diameter_m=diameter_m, serves=(target,),
+            radius_m=pipe_trade.radius_m(diameter_m),
+            cavity_radius_m=pipe_trade.cavity_radius_m(diameter_m, "drain"),
+            diameter_m=diameter_m, serves=(target,),
             storey=storey, system="drain", falls=True,
-            touch=frozenset({parent, *replaced}))
+            touch=frozenset({parent, *replaced}), fixture=target)
 
     problems.append(f"{target}: not a run in this model")
     return None
@@ -241,7 +251,7 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
                  "re-route each with `haus route --run <tag>`",) if children else ()
         return Endpoints(
             origin=(run.path[-1][0], run.path[-1][1], run.z_m[-1]), root=root, kind="pipe",
-            radius_m=(run.diameter_m or 0.0) / 2.0,
+            radius_m=pipe_trade.radius_m(run.diameter_m, run.material, run.insulation),
             # **Never branch_diameter_m here.** That is a DFU drain table and says nothing
             # about a water branch, whose size comes off WSFU and pressure.
             diameter_m=run.diameter_m,
@@ -267,7 +277,10 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
         root, chain, paths = sibling
     return Endpoints(
         origin=(run.path[0][0], run.path[0][1], run.z_m[0]), root=root, kind="pipe",
-        radius_m=(run.diameter_m or 0.0) / 2.0, diameter_m=run.diameter_m,
+        radius_m=pipe_trade.radius_m(run.diameter_m, run.material, run.insulation),
+        cavity_radius_m=pipe_trade.cavity_radius_m(run.diameter_m, str(run.system),
+                                                   run.material, run.insulation),
+        diameter_m=run.diameter_m,
         serves=run.serves, storey=run.storey, system=run.system,
         falls=falls, touch=frozenset({run.tag, *chain}),
         root_paths=() if falls else tuple(p for p in paths if p),
@@ -320,6 +333,7 @@ def _conduit_endpoints(model: ResolvedModel, raceway: Any,
     """
     from typehaus.model.enums import RacewayMaterial
     from typehaus.resolve.mep_queries import conduit_vertical_profile
+    from typehaus.resolve.pipe_sections import raceway_outside_diameter_m
 
     profile = conduit_vertical_profile(raceway)
     if profile is None or len(raceway.path) < 2:
@@ -334,7 +348,9 @@ def _conduit_endpoints(model: ResolvedModel, raceway: Any,
     boxes = _pull_boxes(raceway)
     return Endpoints(
         origin=(path[0][0], path[0][1], z[0]), root=(path[-1][0], path[-1][1], z[-1]),
-        kind="conduit", radius_m=(raceway.trade_size_m or 0.0) / 2.0,
+        kind="conduit",
+        radius_m=raceway_outside_diameter_m(raceway.trade_size_m or 0.0,
+                                            raceway.material) / 2.0,
         diameter_m=raceway.trade_size_m or 0.0, storey=raceway.storey,
         system=raceway.service or "", falls=False, echo=echo,  # "" is a capped spare
         touch=frozenset({raceway.tag}), pull_boxes=boxes)
@@ -350,43 +366,6 @@ def _pull_boxes(raceway: Any) -> tuple[tuple[float, float, float], ...]:
     points, indices, _schematic = profile
     return tuple(next(p for p, i in zip(points, indices, strict=True) if i == index)
                  for index in raceway.pull_points if index in indices)
-
-
-def _fall(points: list[tuple[float, float, float]],
-          origin: tuple[float, float, float], budget: Any, grade: float,
-          target: str, problems: list[str]
-          ) -> tuple[list[tuple[float, float, float]], str] | None:
-    """Put a found plan route on its gravity profile, or refuse and say by how much.
-
-    The profile comes from ``gravity.profile_for`` rather than from a start elevation, so
-    it is built from the ARRIVAL upward and the route lands exactly on the tie. Then the
-    flange is prepended as its own vertex at the finished floor, which makes the first leg
-    the vertical drop it is: a closet bend is a fitting, not a grade.
-
-    A refusal names the grade the route WOULD hold. "No feasible route" is not actionable;
-    "this needs 0.19"/ft and the code wants 0.25"" says how much shorter, higher or lower
-    the problem has to get. That second refusal — a ``--slope`` steeper than the code
-    minimum, which ``HeadBudget.feasible`` does not grade because it asks about the
-    minimum — is why the profile is asked rather than the budget.
-    """
-    from typehaus.routing.trades import pipe as pipe_trade
-
-    fallen = pipe_trade.elevate(points, budget, grade_in_per_ft=grade)
-    if fallen is None:
-        feasible = budget.feasible_slope_in_per_ft()
-        short = max(budget.shortfall_in(),
-                    grade * budget.developed_ft - budget.available_in)
-        problems.append(
-            f'{target}: short {short:.2f}" of head over '
-            f'{budget.developed_ft:.2f} ft. The route is feasible at '
-            f'{feasible:.3f}"/ft and this asks for {grade:.3f}"/ft — raise the '
-            f'start, lower the tie, or shorten the run by {short / grade:.2f} ft')
-        return None
-    if origin[2] > fallen[0][2] + 1e-9:
-        fallen = [(fallen[0][0], fallen[0][1], origin[2]), *fallen]
-    return fallen, (f'gravity: {grade:.3f}"/ft over {budget.developed_ft:.2f} ft, '
-                    f'{budget.slack_in:.2f}" of head to spare; the first leg is the '
-                    "flange drop and takes no grade")
 
 
 def _storey_of(model: ResolvedModel, tag: str) -> str:

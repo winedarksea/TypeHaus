@@ -39,11 +39,10 @@ cost.
 start ceiling is fixed: a longer route arrives lower, and lower is worse at a member window
 and worse at a goal. So a label that is both cheaper and shorter can never be beaten later.
 
-**The one non-monotone case, stated rather than papered over.** An existing run's prism is
-NOT monotone — a longer route arrives lower and could in principle dive *under* the thing in
-the way. Those are handled where the lattice is built, conservatively, as blocking anywhere
-in the drain's possible band, and the refusal says so. A drain is not lengthened to slip
-under a duct; a person decides that.
+**The one non-monotone case.** A prism that spans only part of the run's band is NOT
+monotone — the run may pass over it or under it. ``gravity_band`` turns each into a
+forbidden interval of start elevations per edge, and a label whose band it splits becomes
+two, an "under" and an "over" (§8a).
 
 **Rises never.** A vertical edge downward lowers the ceiling for the remainder of the route
 (a drop is free fall and takes no grade). A vertical edge upward is not relaxed at all.
@@ -60,8 +59,10 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from typehaus.quantities import M_PER_IN
+from typehaus.routing.fitting_room import heel_clear
 from typehaus.routing.graph import Graph
-from typehaus.routing.search import Route, price_route
+from typehaus.routing.gravity_band import Obstacles, subtract
+from typehaus.routing.search import Route, price_route, turn_price
 from typehaus.routing.space import RoutingSpace
 
 #: Axis ordering for the tie-break, lowest first — the same table ``search.py`` states, and
@@ -91,8 +92,18 @@ class GravityProblem:
 
     ceiling_m: float
     grade_in_per_ft: float
+    #: The run's real OUTSIDE (OD plus lagging), which is what a member window must hold.
     diameter_m: float
     required_m: dict[int, float]
+    #: ``routing/fitting_room``: the least straight between two turns, and how far behind a
+    #: corner the hub and its tool reach. Zero leaves the lattice to decide (§8's worlds).
+    nipple_m: float = 0.0
+    heel_m: float = 0.0
+    #: UPC 1002.2, a fixture's arm (``routing/trap_vent.arm_seeds``): ``node -> (cost,
+    #: developed ft, the arm's nodes)`` for each take-off the arm reaches, its cost
+    #: carrying that take-off's ``h_vent``. The search starts from these and not ``start``;
+    #: an empty dict is an arm with nowhere to close. None: no arm.
+    seeds: dict[int, tuple[float, float, tuple[int, ...]]] | None = None
 
     def fall_over(self, developed_ft: float) -> float:
         """Metres of fall over this developed plan length, at this grade."""
@@ -123,6 +134,10 @@ class _Label:
     lo_m: float
     hi_m: float
     drop_m: float = 0.0
+    #: Straight run since the last fitting; the start is a trap's outlet, not a turn.
+    since_m: float = float("inf")
+    #: The take-off this label's arm closed at (a seed), or -1.
+    takeoff: int = -1
 
 
 @dataclass
@@ -152,7 +167,8 @@ class GravityRefusal:
 
 def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
                  problem: GravityProblem, *, constraints: Constraints | None = None,
-                 refusal: GravityRefusal | None = None) -> Route | None:
+                 refusal: GravityRefusal | None = None,
+                 obstacles: Obstacles | None = None) -> Route | None:
     """The cheapest route whose invert is legal at every point along it, or None.
 
     The head budget is the **goal test**, not a post-check: a label arriving at a goal below
@@ -164,38 +180,48 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
 
     report = refusal if refusal is not None else GravityRefusal()
     heuristic = _heuristic(graph, space, goals)
-    frontier: dict[tuple[int, str], list[_Label]] = {}
-    came: dict[tuple[int, str, int], tuple[int, str, int]] = {}
+    # Labels are addressed by a stable id, never by their slot in a frontier: pruning a
+    # dominated label shifts slots, and an "under"/"over" pair shares one cost.
+    frontier: dict[tuple[int, str], list[tuple[_Label, int]]] = {}
+    alive: dict[int, tuple[int, str, _Label]] = {}
+    came: dict[int, int] = {}
+    node_of: dict[int, int] = {}  # every label ever pushed, never pruned: for the rebuild
     counter = 0
     open_heap: list[tuple[float, int, int, float, int, str, float, int]] = []
 
-    def push(node: int, axis: str, label: _Label, parent) -> None:
+    def push(node: int, axis: str, label: _Label, parent: int | None) -> None:
         nonlocal counter
         key = (node, axis)
         kept = frontier.setdefault(key, [])
-        for other in kept:
-            if _dominates(other, label):
+        for other, _lid in kept:
+            if _dominates(other, label, problem.nipple_m):
                 return
-        kept[:] = [o for o in kept if not _dominates(label, o)]
-        kept.append(label)
-        slot = len(kept) - 1
+        for other, lid in kept:
+            if _dominates(label, other, problem.nipple_m):
+                alive.pop(lid, None)
+        kept[:] = [(o, lid) for o, lid in kept if lid in alive]
         counter += 1
+        kept.append((label, counter))
+        alive[counter] = (node, axis, label)
+        node_of[counter] = node
         if parent is not None:
-            came[(node, axis, slot)] = parent
+            came[counter] = parent
         heapq.heappush(open_heap, (label.cost + heuristic(node), node,
                                    _AXIS_ORDER[axis], label.developed_ft, counter, axis,
-                                   label.cost, slot))
+                                   label.cost, counter))
 
-    for axis in ("x", "y", "z"):
-        push(start, axis, _Label(0.0, 0.0, float("-inf"), problem.ceiling_m), None)
+    seeds = {start: (0.0, 0.0, (start,))} if problem.seeds is None else problem.seeds
+    for node, (seed_cost, seed_ft, _arm) in sorted(seeds.items()):
+        for axis in ("x", "y", "z"):
+            push(node, axis, _Label(seed_cost, seed_ft, float("-inf"), problem.ceiling_m,
+                                    takeoff=-1 if problem.seeds is None else node), None)
 
     while open_heap:
         (_f, index, _axis_key, developed, _seq, incoming, cost,
-         slot) = heapq.heappop(open_heap)
-        kept = frontier.get((index, incoming), ())
-        if slot >= len(kept) or kept[slot].cost != cost:
+         lid) = heapq.heappop(open_heap)
+        if lid not in alive:
             continue  # superseded by a label that dominated this one after it was pushed
-        label = kept[slot]
+        label = alive[lid][2]
         report.reached += 1
         report.furthest_ft = max(report.furthest_ft, developed)
 
@@ -206,7 +232,11 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
             floor_m = (float("-inf") if required is None
                        else required + problem.fall_over(developed) + label.drop_m)
             if floor_m <= label.hi_m + _TOL_M:
-                return _rebuild(graph, space, came, (index, incoming, slot))
+                found = _rebuild(graph, space, came, node_of, lid, seeds, label.takeoff)
+                # The lowest start every constraint met allows: over an obstacle that is
+                # its band's floor, not the arrival-anchored start.
+                found.start_m = max(floor_m, label.lo_m)
+                return found
             _note(report, f"the tie at node {index}", (floor_m - label.hi_m) / M_PER_IN)
             # Not a dead end: a longer route arrives LOWER, so nothing past here helps at
             # this goal — but another goal on the same stack may still accept it.
@@ -228,15 +258,28 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
                               next_drop, label, report)
             if band is None:
                 continue
-            turn = space.cost.bend_in if incoming and axis != incoming else 0.0
-            push(other, axis,
-                 _Label(cost + step + turn, developed + plan_ft, band[0], band[1],
-                        next_drop),
-                 (index, incoming, slot))
+            turn = turn_price(space, incoming, axis)
+            if turn is None:
+                continue
+            leg_m = plan_ft * 0.3048 if axis != "z" else -rise
+            if turn and not _fitting_fits(graph, space, problem, label, came, node_of,
+                                          lid, index, other):
+                continue
+            since = leg_m if turn else label.since_m + leg_m
+            for low, high in _clear_of(obstacles, problem, index, other, developed,
+                                       plan_ft, label.drop_m, next_drop, band, report):
+                push(other, axis,
+                     _Label(cost + step + turn, developed + plan_ft, low, high, next_drop,
+                            since, label.takeoff), lid)
     return None
 
 
-def _dominates(first: _Label, second: _Label) -> bool:
+#: Bands compared on the 1/16" grid the profile is snapped to (``route_fall._on_grid``):
+#: two starts closer than that are one start, and 1/256" kept 1,300 labels on one state.
+_BAND_GRID_M = 0.0015875
+
+
+def _dominates(first: _Label, second: _Label, nipple_m: float = 0.0) -> bool:
     """Is ``first`` at least as good as ``second`` in every dimension?
 
     Cheaper, shorter, and with a band of legal starts that contains the other's. All three,
@@ -245,8 +288,22 @@ def _dominates(first: _Label, second: _Label) -> bool:
     """
     return (first.cost <= second.cost + 1e-12
             and first.developed_ft <= second.developed_ft + 1e-12
-            and first.lo_m <= second.lo_m + _TOL_M
-            and first.hi_m >= second.hi_m - _TOL_M)
+            # ``nipple_ok`` as a flag, never the length: at most two labels per state.
+            and (first.since_m >= nipple_m - _TOL_M or second.since_m < nipple_m - _TOL_M)
+            and first.lo_m <= second.lo_m + _BAND_GRID_M
+            and first.hi_m >= second.hi_m - _BAND_GRID_M)
+
+
+def _fitting_fits(graph: Graph, space: RoutingSpace, problem: GravityProblem,
+                  label: _Label, came: dict[int, int], node_of: dict[int, int], lid: int,
+                  index: int, other: int) -> bool:
+    """A turn at ``index`` needs its nipple behind it and its heel clear (Phase 3)."""
+    # Not ``_note``d: a lattice step a hair under the nipple is never why a route failed.
+    if label.since_m < problem.nipple_m - _TOL_M:
+        return False
+    parent = came.get(lid)
+    return (parent is None or problem.heel_m <= 0.0
+            or heel_clear(graph, space, node_of[parent], index, other, problem.heel_m))
 
 
 def _edge_band(problem: GravityProblem, constraints: Constraints | None,
@@ -279,6 +336,38 @@ def _edge_band(problem: GravityProblem, constraints: Constraints | None,
             _note(report, "a member window", (low - high) / M_PER_IN)
             return None
     return (low, high)
+
+
+def _clear_of(obstacles: Obstacles | None, problem: GravityProblem, a: int, b: int,
+              developed_ft: float, plan_ft: float, drop_before: float, drop_after: float,
+              band: tuple[float, float], report: GravityRefusal
+              ) -> list[tuple[float, float]]:
+    """``band`` less every start that puts the centreline inside a banded prism here.
+
+    Over fractions ``[t0, t1]`` the centreline spans ``[start - shift(t1), start -
+    shift(t0)]``; it meets ``[z0, z1]`` iff ``start`` is in ``[z0 + shift(t0), z1 +
+    shift(t1)]``. A drop spans its own fall at one station. See §8a.
+    """
+    if obstacles is None:
+        return [band]
+    bands = [band]
+    for t0, t1, z0, z1, tag in obstacles(a, b):
+        if drop_after > drop_before:
+            shift = problem.fall_over(developed_ft)
+            forbidden = (z0 + shift + drop_before, z1 + shift + drop_after)
+        else:
+            forbidden = (z0 + problem.fall_over(developed_ft + t0 * plan_ft) + drop_before,
+                         z1 + problem.fall_over(developed_ft + t1 * plan_ft) + drop_before)
+        split = [piece for low_high in bands
+                 for piece in subtract(low_high, forbidden, _TOL_M)]
+        if not split:
+            low, high = min(b[0] for b in bands), max(b[1] for b in bands)
+            _note(report, f"{tag} across the fall band",
+                  min(max(0.0, low - forbidden[0]), max(0.0, forbidden[1] - high))
+                  / M_PER_IN)
+            return []
+        bands = split
+    return bands
 
 
 def _note(report: GravityRefusal, what: str, shortfall_in: float) -> None:
@@ -315,15 +404,18 @@ def _heuristic(graph: Graph, space: RoutingSpace,
     return estimate
 
 
-def _rebuild(graph: Graph, space: RoutingSpace,
-             came: dict[tuple[int, str, int], tuple[int, str, int]],
-             state: tuple[int, str, int]) -> Route:
-    chain = [state]
-    while state in came:
-        state = came[state]
-        chain.append(state)
-    chain.reverse()
-    return price_route(graph, space, [index for index, _axis, _slot in chain])
+def _rebuild(graph: Graph, space: RoutingSpace, came: dict[int, int],
+             node_of: dict[int, int], lid: int,
+             seeds: dict[int, tuple[float, float, tuple[int, ...]]], takeoff: int) -> Route:
+    chain = [lid]
+    while chain[-1] in came:
+        chain.append(came[chain[-1]])
+    nodes = [node_of[i] for i in reversed(chain)]
+    if takeoff >= 0:
+        nodes = [*seeds[takeoff][2][:-1], *nodes]  # the arm, trap to take-off
+    found = price_route(graph, space, nodes, "drain")
+    found.takeoff = takeoff if takeoff >= 0 else None
+    return found
 
 
 def member_constraints(model, graph: Graph,

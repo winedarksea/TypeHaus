@@ -148,14 +148,27 @@ def proposal_prisms(proposal: RouteProposal, *, inflate_m: float) -> list[HardPr
     here is how a campaign comes back internally consistent and externally wrong.
     """
     from typehaus.resolve.mep_envelopes import run_envelope
+    from typehaus.resolve.pipe_sections import (
+        pipe_outside_diameter_m,
+        raceway_outside_diameter_m,
+    )
     from typehaus.routing.obstacles import HardPrism
 
     rectangular = proposal.width_m > 0.0 or proposal.depth_m > 0.0
+    material = proposal.echo.get("material")
+    material = getattr(material, "value", material)
     if rectangular:
-        section = (proposal.width_m / 2.0, proposal.depth_m / 2.0, None)
+        section = (proposal.width_m / 2.0, proposal.depth_m / 2.0,
+                   proposal.echo.get("insulation"))
     else:
-        half = proposal.diameter_m / 2.0
-        section = (half, half, None)
+        # The REAL outside, as a pasted run's envelope reads it: 3" DWV laid first is 3.5".
+        if proposal.kind == "pipe":
+            half = pipe_outside_diameter_m(proposal.diameter_m, material) / 2.0
+        elif proposal.kind == "conduit":
+            half = raceway_outside_diameter_m(proposal.diameter_m, material or "emt") / 2.0
+        else:
+            half = proposal.diameter_m / 2.0
+        section = (half, half, proposal.echo.get("insulation"))
     envelope = run_envelope(proposal.kind, proposal.tag,
                             [(x, y) for x, y, _z in proposal.points],
                             [z for _x, _y, z in proposal.points],

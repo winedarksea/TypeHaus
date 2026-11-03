@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import pytest
 
+pytestmark = pytest.mark.autorouter
+
 # The PR-A tees, plus one riser-gap refusal so the refusal wording stays graded.
 _REFUSED = "PR-M-CW-PLANT-STUB"
 
@@ -29,9 +31,6 @@ def test_the_supply_slot_in_trade_order_is_no_longer_decorative(request) -> None
     from typehaus.cli.app import app
     from typehaus.routing.campaign import order_targets
 
-    if not request.config.getoption("--autorouter"):
-        pytest.skip("run with --autorouter after changing typehaus/routing/")
-    # Looked up after the skip, so a skipped run never resolves the house.
     model = request.getfixturevalue("catlin_model_ro")
     scope = order_targets(model, trades=["supply"], storey="main")
     tees = [t.tag for t in scope if t.tag.startswith("PR-A-")]

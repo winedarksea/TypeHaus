@@ -10,7 +10,8 @@ depths unless the upper is a street pattern whose spigot seats in the lower's hu
 grades the authored spacing against it: PASS at or above it, FAIL below.
 
 Which patterns may serve an inlet follows how it arrives: a branch within 22.5 degrees of
-level takes a sanitary pattern (tee, combo, street tee), one near 45 degrees a wye. A
+level takes a sanitary pattern (tee, combo, street tee), one near 45 degrees a wye
+(``resolve/mep_fitting_direction``, which the router reads too). A
 reducing pair, an uncatalogued size or any other approach stays UNKNOWN, named with the
 spacing so somebody opening a submittal knows which number to look up.
 
@@ -39,6 +40,7 @@ from typehaus.hardware.fittings import (
     fitting_catalog,
 )
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.mep_fitting_direction import approach_kinds
 
 _CID = "mep.drain_inlet_spacing"
 
@@ -54,9 +56,6 @@ SAME_BARREL_M = 0.0015875
 #: The same sixteenth, as the slack a spacing may fall short of a published stack.
 _SLACK_IN = 1.0 / 16.0
 
-#: The patterns an inlet may be, by how it arrives (degrees off level, inclusive bands).
-_SANITARY = (KIND_TEE, KIND_COMBO, KIND_STREET_TEE)
-_WYES = (KIND_WYE, KIND_STREET_WYE)
 _LABEL = {KIND_TEE: "sanitary tee 400", KIND_WYE: "wye 600", KIND_COMBO: "combo 501",
           KIND_STREET_TEE: "street sanitary tee 403", KIND_STREET_WYE: "street wye 602"}
 
@@ -154,7 +153,7 @@ def _candidates(run, point, size: float) -> list[FittingSpec]:
     slope = _approach_deg(run, point)
     if slope is None:
         return []
-    kinds = _SANITARY if slope <= 22.5 else _WYES if slope <= 67.5 else ()
+    kinds = approach_kinds(slope)
     return [f for f in fitting_catalog()
             if f.service == SERVICE_DRAIN and f.kind in kinds and f.nominal_in == size
             and f.branch_in == size and f.branch_to_top_in is not None

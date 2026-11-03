@@ -376,21 +376,54 @@ def fitting_records(model: ResolvedModel) -> list[FittingRecord]:
             continue
         run_in, branch_in = _nominal_in(parent.diameter_m), _nominal_in(child.diameter_m)
         service, bonus = _pipe_service(parent.system, run_in)
-        # A tube-sized gravity branch is a tee, not a wye: B16.22 makes no wye, and a
-        # condensate line tees into its neighbour.
-        kind = KIND_WYE if service != SERVICE_SUPPLY else KIND_TEE
-        spec, gap = _match(service, kind, 45.0 if kind == KIND_WYE else 90.0,
-                           run_in, branch_in, False, bonus)
         point = _tie_point(child)
+        kind = _tie_kind(service, parent, child, point)
+        angle = 45.0 if kind == KIND_WYE else 90.0
+        spec, gap = _match(service, kind, angle, run_in, branch_in, False, bonus)
         out.append(FittingRecord(
             run_tag=parent_tag, family=FAMILY_PIPE, kind=kind, service=service,
             system=parent.system,
-            index=None, point=point, angle_deg=45.0, plan_angle_deg=45.0,
+            index=None, point=point, angle_deg=angle, plan_angle_deg=angle,
             nominal_in=run_in, branch_in=branch_in,
             order_key=(f"wye-{size_text(parent.diameter_m)[:-2]}x"
                        f"{size_text(child.diameter_m)}"),
             spec=spec, gap=gap, bendable=False, branch_tag=child_tag))
     return out
+
+
+def _tie_kind(service: str, parent: Any, child: Any,
+              point: tuple[float, float, float]) -> str:
+    """UPC 706: a near-level branch onto a vertical barrel is a sanitary tee; else a wye.
+
+    A tube-sized gravity branch is a tee, not a wye: B16.22 makes no wye, and a condensate
+    line tees into its neighbour.
+    """
+    from typehaus.resolve.mep_fitting_direction import LEVEL_MAX_DEG
+    from typehaus.resolve.mep_inlet_spacing import approach_deg
+
+    if service == SERVICE_SUPPLY:
+        return KIND_TEE
+    slope = approach_deg(child, point[:2])
+    if slope is not None and slope <= LEVEL_MAX_DEG and _vertical_at(parent, point):
+        return KIND_TEE
+    return KIND_WYE
+
+
+def _vertical_at(run: Any, point: tuple[float, float, float]) -> bool:
+    """Whether ``run`` passes ``point`` on a vertical segment."""
+    if run.z_m is None:
+        return False
+    for i in range(len(run.path) - 1):
+        (a, za), (b, zb) = (run.path[i], run.z_m[i]), (run.path[i + 1], run.z_m[i + 1])
+        if (math.hypot(a[0] - b[0], a[1] - b[1]) < _SAME_M
+                and math.hypot(a[0] - point[0], a[1] - point[1]) < _SAME_M
+                and min(za, zb) - _SAME_M <= point[2] <= max(za, zb) + _SAME_M):
+            return True
+    return False
+
+
+#: The 1/16" grid: closer than this in plan is one point.
+_SAME_M = 0.0015875
 
 
 def _tie_point(child: Any) -> tuple[float, float, float]:

@@ -440,14 +440,139 @@ starts no lower), and that is sound because every constraint tested is monotone 
 invert once the ceiling is fixed — a longer route arrives lower, and lower is worse at a
 window and worse at a tie.
 
-**The one case that is NOT monotone, and is refused rather than exploited.** An existing
-run's prism could in principle be passed *under* by a longer route that has fallen further.
-Those are treated as blocking anywhere in the drain's possible band, `[required, ceiling]`,
-and the refusal says so. Lengthening a drain to slip beneath a duct is a decision with a
-head cost somebody has to want; the search will not make it quietly.
+**The one case that is NOT monotone.** A prism spanning only part of the drain's possible
+band, `[required, ceiling]`, can be passed over or under. §8a is how the search reads it.
 
 **Rises never.** A vertical edge downward lowers the ceiling for the remainder — a drop is
 free fall and takes no grade — and a vertical edge upward is not relaxed at all.
+
+## 8a. A duct over the lane, read at the drain's real height
+
+Until 2026-11-03 a drain was tested for obstacles only in its one search plane, the TIE's
+elevation (`cmd_route` searched `levels=[root z]`), while its real invert stood
+`slope x remaining` above it. A duct at the drain's true height was invisible, and a duct at
+the tie's height blocked a run that would have passed over it. `routing/gravity_band.py`
+moves every hard prism that spans only part of `[required, ceiling]` out of the plan set and
+grades it per edge as an interval of **start** elevations.
+
+**The rule.** Over fractions `[t0, t1]` of an edge, with `d` developed feet at the edge's
+start and `L` its plan length, the centreline spans `[start − s(t1), start − s(t0)]` where
+`s(t) = slope × (d + t·L)`. It meets a prism `[z0, z1]` (already inflated by radius +
+clearance) iff `start ∈ [z0 + s(t0), z1 + s(t1)]`. That interval is subtracted from the
+label's band of legal starts; one in the middle leaves an "under" band and an "over" band,
+and both become labels.
+
+**The world.** Four nodes in a row, A B C D at x = 0, 24, 48, 72", every edge 24" of travel.
+Ceiling **116.50"**, grade **0.25"/ft**, the tie at D accepts **≥ 114.00"**, so the lowest
+start that reaches it is 114.00 + 6.00 × 0.25 = **115.50"**. One duct, `DU-ORACLE`, already
+inflated, stands over x = 30"..42": a quarter to three quarters of edge B–C, developed
+2.50 ft to 3.50 ft, so `s(t0)` = **0.625"** and `s(t1)` = **0.875"**.
+
+| duct band | forbidden starts | under | over | answer |
+|---|---|---|---|---|
+| 114.50 .. 115.40 | 115.125 .. 116.275 | ≤ 115.125 | 116.275 .. 116.50 | **over, start 116.275"** |
+| 114.50 .. 116.00 | 115.125 .. 116.875 | ≤ 115.125 | empty | **refused** |
+| 115.40 .. 116.20 | 116.025 .. 117.075 | ≤ 116.025 | empty | **under, start 115.50"** |
+
+* **Row 1 is the bug.** The old search saw nothing at 114.00" and drew the run at a 115.50"
+  start, which puts it at 114.875" .. 114.625" across the duct — **inside** it. The new search
+  starts at 116.275", clears the duct's top by 116.275 − 0.625 − 115.40 = **0.25"** at its
+  near end, arrives at D at 116.275 − 1.50 = **114.775"**, 0.775" above the tie, and drops
+  into it at D's station (`cli/route_support._fall`).
+* **Row 2 is refused**: under the duct the run reaches D no higher than 115.125 − 1.50 =
+  113.625", 0.375" below the tie, and over it there is no start left under the ceiling.
+* **Row 3 is the ordinary case**: the arrival-anchored 115.50" start passes under, at
+  114.875" against the duct's 115.40" floor. Nothing changes.
+
+`tests/test_gravity_search.py` reproduces all three rows.
+
+## 9. One fixture's arm and its vent, searched together: FX-S-SUITEBATH-LAV (2026-11-03)
+
+**The arm.** The suite lavatory drains through a 1 1/4" arm. Table 1002.2 allows **30"**
+developed at that size, and over 30" at 1/4"/ft the arm falls 30 / 12 x 0.25 = **0.625"**.
+While the arm is open the search may not drop (a fall of more than a pipe diameter before
+the vent is an S-trap) and may not develop past 30". It closes at a take-off: a node in a
+wall cavity whose clear width holds the vent, paying that node's vent cost-to-go.
+`routing/trap_vent.py`, `gravity_search` (`arm_limit_ft`, `takeoffs`).
+
+**Already vented?** `PR-S-SUITEBATH-VENT` names the LAV in `serves`, but naming is not
+reaching: the check's own walk (`resolve/mep_trap_arm.arm_is_vented`, the same one
+`mep.trap_arm_developed` grades) finds no vent within 30" of the trap, so the router
+searches one.
+
+**The vent.** UPC 904: half the drain, never under 1 1/4" — so 1 1/4", OD 1.660", radius
+0.830". UPC 905.3: plumb to 6" over the flood rim before any level leg; the rim is read as
+the fixture body's top, which no rim exceeds, so the line is conservative.
+
+**The blocker, by hand.** Every take-off within 30" stands on the wet wall's y = 268"
+station. `PR-S-SUITE-LAV-HW` (1/2" PEX, OD 0.625") runs a level leg along y = 266.5" at
+148" (`plan/mep_lavatories.py`). A riser and that leg need
+
+    0.830 + 0.3125 + 0.500 (CLEARANCE_M) = 1.6425"
+
+between centrelines and have 268 - 266.5 = **1.5"**: short **0.1425"**. Upward, the clash
+band starts 1.6425" under the leg's centre, and the router's first 1/4" step inside it is
+**25.75"** over the arm. So `haus route --fixture FX-S-SUITEBATH-LAV` refuses with "the
+cheapest, at (165.50", 268.00"), rises into PR-S-SUITE-LAV-HW 25.75" above the arm" — and
+the fix it points at is the supply: move that leg to y <= 266.36" (or under the arm), and the
+vent rises.
+
+`tests/test_routing_trap_vent.py` pins the two rules on a hand-built ladder: with no arm the
+cheap route drops at the trap; with a 3.5 ft arm and take-offs at 2, 3 and 4 ft, the one at
+3 ft wins over a free one at 4 ft.
+
+---
+
+## 10. Fittings by flow direction: one jog, one turn, one tie (2026-11-03)
+
+**The turn.** UPC 706 lets a short 1/4 bend or a sanitary tee take flow from horizontal to
+vertical and nowhere else. Horizontal-to-horizontal and vertical-to-horizontal take a wye,
+a combination wye and 1/8 bend, or a fitting of equivalent sweep: a long-sweep 1/4 bend or
+two 1/8 bends. The router prices those transitions at `dwv_sweep_in` = **30"** against
+`bend_in` = **24"** for horizontal-to-vertical, and a turn upward is not a drain at all
+(`resolve/mep_fitting_direction.py`, `RouteCost.turn_cost`). A proposal names the pattern
+at each vertex, so a lane is never billed as a part the code forbids there.
+
+**The jog.** A 3" drain runs east 48", jogs 6" north and carries on east 48":
+
+    A (0, 0) -> B (48, 0) -> C (48, 6) -> D (96, 6)
+
+Drawn square, that is two horizontal 90s, each a long sweep, and 48 + 6 + 48 = **102"**
+developed. `routing/compaction.py` redraws a level jog shorter than `offset_jog_max_in`
+(18") between legs running the same way as a 45 pair. With j = 6", B' = B - 3" along the
+run and C' = C + 3":
+
+    A (0, 0) -> B' (45, 0) -> C' (51, 6) -> D (96, 6)
+
+The diagonal is sqrt(6² + 6²) = **8.485"**, so the run develops 45 + 8.485 + 45 =
+**98.485"**: 3.515" shorter, with 3.515 / 12 x 0.25 = **0.073"** of head handed back to
+whatever ties in downstream, and two 1/8 bends instead of two long sweeps. The pair is
+re-graded before it is kept — against every prism its z range enters, every wall member it
+would cut, and every floor window it crosses — and a pair that fails keeps the jog.
+`PR-B-KITCH-DRAIN`'s hand-drawn 45 pair at x = 240" is the case.
+
+**The tie.** A branch onto a horizontal main enters by a wye or a combo, and two branches
+on one main keep the tightest catalogued pitch between their centrelines
+(`resolve/mep_inlet_spacing.main_inlet_pitch_m`, the stations `mep.drain_inlet_spacing`
+grades a barrel against). At 3" the full-size Charlotte rows give:
+
+| lower | upper | branch-to-top + branch-to-bottom + nipple | pitch |
+|---|---|---|---|
+| wye 600 | wye 600 | 5.000 + 1.625 + 2 x 1.906 | 10.4375" |
+| wye 600 | street wye 602 | 5.000 + 3.125 + 0 | **8.125"** |
+
+So the tightest is **8.125"**, and a new 3" branch may not tie within 8.125" of an inlet
+already on the main: with one at station 60", stations 51.875" .. 68.125" leave the goal
+set. (1 1/2": 4.75"; 2": 5.875"; 4": 9.9375".)
+
+**The fitting's room (`routing/fitting_room.py`).** A turn needs its nipple behind it and its
+heel clear. `library/fittings.py` publishes no DWV elbow body, so the nipple floor is the
+hub OD (two hubs cannot overlap): at 1 1/2" PVC, 1.900 + 2 x 0.145 = **2.190"**. The heel
+reaches past the pipe by the hub's extra radius plus the joint's tool: (2.190 - 1.900) / 2
++ 1.0 (solvent weld) = **1.145"**, tested in the turn's own plane only, so a bend in a stud
+bay is not refused by the bay's faces.
+
+`tests/test_routing_compaction.py` reproduces the jog and the pitch, and the fitting's room.
 
 ---
 

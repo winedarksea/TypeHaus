@@ -14,18 +14,18 @@
 from typehaus import MovementJoint, inch, pt
 
 JOINTS = [
-    # EAST, 3/8": the mortar-joint width TN 18A calls typical. DOWSIL 790 (ASTM C920 Type S,
-    # Grade NS, Class 100/50 — so 50% in compression) tooled 1/4" deep (TN 18A's minimum;
-    # half the width would be 3/16") over 1/2" Nomaco HBR closed-cell rod (ASTM C1330
-    # Type C, ~25% over the joint width as TN 18A asks).
+    # EAST, 3/8": the mortar-joint width TN 18A calls typical. Spec'd by class, not brand:
+    # Class 50 is the compression_pct the check reads; a general-purpose Class 25 silicone
+    # halves it, and acetoxy cure is not for alkaline masonry. Tooled 1/4" deep (TN 18A's
+    # minimum) over 1/2" closed-cell rod, ~25% over the joint width as TN 18A asks.
     MovementJoint(uid="8C4QVJG0H7", tag="MJ-B-BRICK-E",
                   path=(pt(inch(317.625), inch(-13.56)),
                         pt(inch(318), inch(-13.56))),
                   top_elevation=inch(-13.333), depth=inch(89.104), thickness=inch(0.25),
-                  material="DOWSIL 790 silicone, brick-matched", host_ref="W-B-BRICK",
-                  abuts="W-SG-E1", compression_pct=50.0,
-                  backer="1/2\" Nomaco HBR closed-cell backer rod",
-                  source="Dow DOWSIL 790 TDS form 61-884-01 (C920 Class 100/50, +100/-50); Nomaco HBR (ASTM C1330 Type C)"),
+                  material="neutral-cure low-modulus silicone, ASTM C920 Type S Grade NS Class 50 or better, brick-matched",
+                  host_ref="W-B-BRICK", abuts="W-SG-E1", compression_pct=50.0,
+                  backer="1/2\" closed-cell backer rod (ASTM C1330 Type C)",
+                  source="ASTM C920 Type S Grade NS Class 50+ (e.g. DOWSIL 790/795, GE SilPruf SCS2000, Pecora 890NST); backer ASTM C1330 Type C"),
     # WEST, 4": a precompressed foam seal rather than a 4"-wide bead — Sika Emseal Seismic
     # Colorseal, +/-50% of nominal, 4 1/2" deep at 4" (its size table), listed for brick and
     # masonry cavity walls. Deeper than the 3 5/8" wythe: the back 7/8" stands in the cavity.

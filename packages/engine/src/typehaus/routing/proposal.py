@@ -86,6 +86,8 @@ class RouteProposal:
     #: A raceway's pull boxes (interior ``points`` indices) and how they were assigned.
     pull_points: tuple[int, ...] = ()
     pull_assignment: Any = None  # trades.conduit.PullPointAssignment
+    #: UPC 707.4 cleanouts placed on a drain (``cli/route_cleanouts``), printed after it.
+    cleanouts: tuple[ProposedCleanout, ...] = ()
 
     def snapped(self) -> RouteProposal:
         """The same proposal on the 1/16" grid, with collinear vertices already collapsed.
@@ -106,7 +108,8 @@ class RouteProposal:
             terms=dict(self.terms), notes=list(self.notes), width_m=self.width_m,
             depth_m=self.depth_m, routing=self.routing, floor_ref=self.floor_ref,
             soffit_ref=self.soffit_ref, echo=dict(self.echo), after=self.after,
-            pull_points=self.pull_points, pull_assignment=self.pull_assignment)
+            pull_points=self.pull_points, pull_assignment=self.pull_assignment,
+            cleanouts=self.cleanouts)
 
     def with_pull_points(self, boxes: tuple[tuple[float, float, float], ...]) -> RouteProposal:
         """A raceway keeping its authored boxes and gaining what 360 degrees needs.
@@ -267,6 +270,39 @@ _CONSTRUCTOR = {"pipe": "PipeRun", "duct": "DuctRun", "conduit": "ConduitRun"}
 _WIDTH = 96
 
 
+@dataclass(frozen=True)
+class ProposedCleanout:
+    """One cleanout a proposed drain needs, at the station whose access ray is clear."""
+
+    tag: str
+    point: tuple[float, float, float]
+    reason: str
+    access: str  # wall | ceiling | floor
+    wall_ref: str | None
+    clear_in: float
+    concealed: bool
+    #: The cap, on its access extension (integrity.drain_cleanout: at least 2" off).
+    cap: tuple[float, float, float] = (0.0, 0.0, 0.0)
+
+    def source(self, run_tag: str, storey_datum_m: float) -> str:
+        from typehaus.source.serialize import value_source
+
+        def at(p: tuple[float, float, float]) -> str:
+            return value_source(Point2D(length_source(p[0]), length_source(p[1])))
+
+        def z(p: tuple[float, float, float]) -> str:
+            return value_source(length_source(p[2] - storey_datum_m))
+
+        wall = f', wall_ref="{self.wall_ref}"' if self.wall_ref else ""
+        return (f'DrainCleanout(tag="{self.tag}", pipe_ref="{run_tag}", '
+                f"position={at(self.point)}, fitting_elevation={z(self.point)}, "
+                f"cap_position={at(self.cap)}, cap_elevation={z(self.cap)}, "
+                f'access="{self.access}"{wall}, '
+                f"clear_width=inch({self.clear_in:g}), clear_depth=inch({self.clear_in:g})),"
+                f"  # {self.reason}" + ("; concealed: an access panel (UPC 707.9)"
+                                        if self.concealed else ""))
+
+
 def _wrapped(name: str, values: Iterable[object]) -> list[str]:
     """``name=(a, b, c)`` over as many 8-space-indented lines as it takes.
 
@@ -316,6 +352,7 @@ def render(proposals: Sequence[RouteProposal], *, storey_datum_m: float = 0.0,
             # not a cost breakdown, it is something the person pasting has to decide about.
             lines.extend(f"# {line}" for line in proposal.fitting_lines())
         lines.append(proposal.source(storey_datum_m=storey_datum_m))
+        lines.extend(c.source(proposal.tag, storey_datum_m) for c in proposal.cleanouts)
         lines.extend(f"# AFTER PASTING: {line}" for line in proposal.after)
         lines.append("")
     return "\n".join(lines)

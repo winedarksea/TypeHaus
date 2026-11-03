@@ -5,6 +5,7 @@ branches target feeder segments with their own elevations. See docs/routing.md."
 
 from __future__ import annotations
 
+from dataclasses import replace
 from functools import partial
 from typing import TYPE_CHECKING, Any
 
@@ -319,7 +320,10 @@ def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None)
     Drains carry developed length and legal start-elevation bands in gravity_search's labels,
     so constraints steer the lane at their crossing station (drain oracle §8). Pressurised
     runs use plain A*; vent/radon searches use rising=True and may never lose elevation."""
+    from typehaus.cli.route_fixture_vent import arm_problem
+    from typehaus.routing.fitting_room import fitting_terms
     from typehaus.routing.gravity import minimum_slope
+    from typehaus.routing.gravity_band import band_obstacles, terminal_pardons
     from typehaus.routing.gravity_search import (
         GravityProblem,
         GravityRefusal,
@@ -343,11 +347,53 @@ def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None)
     grade = slope if slope is not None else minimum_slope(ends.diameter_m)
 
     def search(a_graph, a_space, start, goals):
+        goals = _spaced_goals(model, a_graph, goals, ends, report)
+        nipple, heel = fitting_terms(a_space.cost, "drain", ends.diameter_m,
+                                     ends.echo.get("material"), ends.radius_m)
         problem = GravityProblem(
             ceiling_m=ends.origin[2], grade_in_per_ft=grade,
-            diameter_m=ends.diameter_m,
-            required_m=dict.fromkeys(goals, ends.root[2]))
-        return sloped_route(a_graph, a_space, start, goals, problem,
-                            constraints=constraints, refusal=report)
+            diameter_m=2.0 * ends.radius_m,
+            required_m=dict.fromkeys(goals, ends.root[2]), nipple_m=nipple, heel_m=heel)
+        heights = {**dict.fromkeys(goals, ends.root[2]), start: ends.origin[2]}
+        obstacles = band_obstacles(a_space, a_graph,
+                                   terminal_pardons(a_space, a_graph, heights))
+        arm, vent = arm_problem(model, ends, a_graph, a_space, start, goals, grade,
+                                obstacles, report)
+        if arm:
+            problem = replace(problem, **arm)
+        found = sloped_route(a_graph, a_space, start, goals, problem,
+                             constraints=constraints, refusal=report, obstacles=obstacles)
+        if found is not None and found.takeoff is not None:
+            found.vent = vent
+        return found
 
     return search, report
+
+
+def _spaced_goals(model: ResolvedModel, graph: Any, goals: set[int], ends: Any,
+                  report: Any) -> set[int]:
+    """Goals on a level main that keep the wye-to-wye pitch from every inlet on it (§10).
+
+    A vertical barrel's stack pitch stays with ``mep.drain_inlet_spacing``. An emptied set is
+    returned empty, with a note naming the inlet, so the refusal says what crowded it.
+    """
+    from typehaus.resolve.mep_inlet_spacing import level_inlets, main_inlet_pitch_m
+
+    inlets = level_inlets(model.pipe_runs, frozenset(ends.touch))
+    pitch = main_inlet_pitch_m(ends.diameter_m)
+    if not inlets or pitch is None:
+        return goals
+    kept, crowded = set(), None
+    for goal in goals:
+        node = graph.nodes[goal]
+        near = next((tag for x, y, z, tag in inlets
+                     if abs(z - node.z) < pitch and abs(x - node.x) + abs(y - node.y)
+                     < pitch - 1e-6), None)
+        if near is None:
+            kept.add(goal)
+        else:
+            crowded = near
+    if not kept and crowded is not None:
+        report.notes.append(f"every tie on {crowded} is within {pitch / 0.0254:.3f}\" of an "
+                            "inlet already on it (two wyes cannot stack closer)")
+    return kept

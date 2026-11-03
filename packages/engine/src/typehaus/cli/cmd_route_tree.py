@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from typehaus.cli.route_fall import _fall
 from typehaus.cli.route_support import (
-    _fall,
     _nearest,
     _storey_datum,
     _storey_of,
@@ -111,8 +111,8 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
     root_z = max(z for _p, z in reachable)
     tie_path = [p for p, _z in reachable]
 
-    replaced = {run.tag for run in model.pipe_runs
-                if any(tag in run.serves for tag in points)}
+    replaced = {run.tag for run in model.pipe_runs  # drains: never the basins' supplies
+                if run.system == "drain" and any(tag in run.serves for tag in points)}
 
     # **One world per branch SIZE, widest first.** A tree used to be searched in a single
     # world inflated at one 2" literal; now every branch is sized from its own drainage
@@ -166,6 +166,7 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
                  ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str]]:
     """One RSPH tree over the branches of a single size. Appends what it routes to
     ``accepted``, so the next (narrower) group can tie onto it."""
+    from typehaus.routing.fitting_room import fitting_terms
     from typehaus.routing.graph import build_graph
     from typehaus.routing.gravity import (
         HeadBudget,
@@ -173,6 +174,7 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
         minimum_slope,
         profile_for,
     )
+    from typehaus.routing.gravity_band import band_obstacles, prepare_falling, terminal_pardons
     from typehaus.routing.gravity_search import (
         GravityProblem,
         GravityRefusal,
@@ -195,7 +197,10 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
         with clock.stage(f"build-space {size / 0.0254:.3g}in"):
             space = build_space(model, radius_m=pipe_trade.radius_m(size),
                                 terminals=terminals_xyz, margin_ft=margin_ft, avoid=avoid,
-                                cost=cost, touch=touch)
+                                cost=cost, touch=touch,
+                                cavity_radius_m=pipe_trade.cavity_radius_m(size, "drain"))
+        # Inverts lie between the main's tie and the highest fixture floor (§8a).
+        prepare_falling(space, (root_z, max(floors[tag] for tag in group)))
         with clock.stage(f"build-graph {size / 0.0254:.3g}in"):
             graph = build_graph(space, terminals_xyz, [root_z])
     except RoutingSpaceTooLarge as exc:
@@ -246,12 +251,18 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
     report = GravityRefusal()
 
     def search(a_graph, a_space, start, targets):
+        nipple, heel = fitting_terms(a_space.cost, "drain", size, None,
+                                     pipe_trade.radius_m(size))
         problem = GravityProblem(ceiling_m=max(floors.values()), grade_in_per_ft=grade,
-                                 diameter_m=size,
+                                 diameter_m=2.0 * pipe_trade.radius_m(size),
                                  required_m={n: inverts[n] for n in targets
-                                             if n in inverts})
+                                             if n in inverts},
+                                 nipple_m=nipple, heel_m=heel)
+        heights = {**problem.required_m, start: problem.ceiling_m}
+        obstacles = band_obstacles(a_space, a_graph,
+                                   terminal_pardons(a_space, a_graph, heights))
         return sloped_route(a_graph, a_space, start, targets, problem,
-                            constraints=constraints, refusal=report)
+                            constraints=constraints, refusal=report, obstacles=obstacles)
 
     with clock.stage(f"search {size / 0.0254:.3g}in"):
         built = build_tree(graph, space, min(goals), terminals, root_nodes=goals,
@@ -287,7 +298,8 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
                             developed_ft=lengths[-1], diameter_m=size)
         profile = profile_for(budget, grade_in_per_ft=grade)
         origin = (legs[0][0], legs[0][1], floors[tag])
-        fallen = _fall(legs, origin, budget, grade, tag, problems)
+        fallen = _fall(legs, origin, budget, grade, tag, problems,
+                       start_m=route_found.start_m)
         if fallen is None:
             continue
         fell, note = fallen
