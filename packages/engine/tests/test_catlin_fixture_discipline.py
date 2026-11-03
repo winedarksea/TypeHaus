@@ -49,6 +49,7 @@ _BUDGET: dict[str, tuple[int, str]] = {
     "test_catlin_towel_holders.py": (0, "towel placement/support checks reuse plan, model, context and IFC fixtures"),
     "test_catlin_toilet_paper_holders.py": (0, "holder/support review reuses plan, model, context and IFC fixtures"),
     "test_window_return_exports.py": (0, "return exports reuse catlin_model_ro and catlin_ifc_path"),
+    "test_catlin_tapestries.py": (0, "opposed theatre hangings reuse catlin_model_ro"),
     "test_catlin_sauna_seating.py": (0, "seating checks reuse catlin_plan and catlin_model_ro"),
     "conftest.py": (
         1, "the fixture itself — this is the one load the whole suite shares"),

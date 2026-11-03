@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 8417e4986809c588  
-**Lines:** 206
+**Model hash:** 490ad8f938549865  
+**Lines:** 202
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -18,7 +18,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade — blocking (0.75x3.5:poplar-trim-paint) | 16 | LF ordered | 14 pcs, 15.0 LF cut | building |
 | 1.0x3.5 SPF framing lumber — blocking (1.0x3.5:spf) | 8 | LF ordered | 1 pcs, 2.3 LF cut | building |
-| 1.125x1.5 KDAT southern yellow pine (treated exterior framing) — girt strapping (1.125x1.5:kdat) | 48 | LF ordered | 6 pcs, 24.5 LF cut | building |
 | 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | 20 | LF ordered | 2 pcs, 19.1 LF cut | building |
 | 1.25x11.875 rim — rim board (1.25x11.875 rim) | 148 | LF ordered | 6 pcs, 143.6 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
@@ -73,8 +72,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 662.4 SF net | building |
 | 5/8" CDX sheathing plywood, 19/32" roof (cdx-plywood:roof) | 49 | sheets 4x8 | 49 sheets 4x8 over 1544.4 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 2.5 SF net | building |
-| 5/8" APA Exterior plywood, 4x9 stock, 5/8" exterior wall (entry-screen-exterior-plywood:exterior wall) | 1 | sheets 4x9 | 1 sheets 4x9 over 27.0 SF net | building |
-| 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" exterior wall (permabase-exterior:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 27.0 SF net | building |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 10.5 SF net | building |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3566.6 SF net | building |
@@ -248,9 +245,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | 5/8" CDX sheathing plywood, 19/32" — roof (cdx-plywood:0.594) | 1,544.4 | SF net |  | building |
 | 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | 689.3 | SF net |  | building |
-| 5/8" APA Exterior plywood, 4x9 stock sheathing, 5/8" — wall (entry-screen-exterior-plywood:0.625) | 27 | SF net |  | building |
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | 84.4 | SF net |  | building |
-| 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" — wall (permabase-exterior:0.5) | 25.1 | SF net |  | building |
 | Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,171.9 | SF net |  | building |
 | Structural 1 plywood sheathing, 19/32" — roof (struct-1-plywood:0.594) | 882.8 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | 4.3 | SF net |  | building |
@@ -267,6 +262,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | rough opening, 2.5" x 2.5" (no type) (None) | 1 | ea | 2 1/2" x 2 1/2" | main |
 | rough opening, 2.5" x 2.5" (no type) (None) | 1 | ea | 2 1/2" x 2 1/2" | second |
+| rough opening, 2.75" x 3.75" (no type) (None) | 1 | ea | 2 3/4" x 3 3/4" | main |
 | rough opening, 9" x 9" (no type) (None) | 2 | ea | 9" x 9" | main, second |
 | rough opening, 14" x 20" arched (no type) (None) | 1 | ea | 14" x 20" | basement |
 | rough opening, 30" x 80" (no type) (None) | 1 | ea | 30" x 80" | second |
@@ -289,7 +285,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade — blocking (0.75x3.5:poplar-trim-paint) | — |
 | 1.0x3.5 SPF framing lumber — blocking (1.0x3.5:spf) | — |
-| 1.125x1.5 KDAT southern yellow pine (treated exterior framing) — girt strapping (1.125x1.5:kdat) | — |
 | 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | — |
 | 1.25x11.875 rim — rim board (1.25x11.875 rim) | — |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | — |
@@ -339,8 +334,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
 | 5/8" CDX sheathing plywood, 19/32" roof (cdx-plywood:roof) | — |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | — |
-| 5/8" APA Exterior plywood, 4x9 stock, 5/8" exterior wall (entry-screen-exterior-plywood:exterior wall) | — |
-| 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" exterior wall (permabase-exterior:exterior wall) | — |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | — |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | — |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | — |
@@ -474,15 +467,14 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | — |
 | 5/8" CDX sheathing plywood, 19/32" — roof (cdx-plywood:0.594) | — |
 | 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | — |
-| 5/8" APA Exterior plywood, 4x9 stock sheathing, 5/8" — wall (entry-screen-exterior-plywood:0.625) | — |
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | — |
-| 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" — wall (permabase-exterior:0.5) | — |
 | Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | — |
 | Structural 1 plywood sheathing, 19/32" — roof (struct-1-plywood:0.594) | — |
 | Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | — |
 | STAIRWELL_PARTITION_4H, SPF framing lumber (STAIRWELL_PARTITION_4H:spf) | W-B-WELL, W-M-WELL |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-M-PORCH-HYD |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-S-BALC-HYD |
+| rough opening, 2.75" x 3.75" (no type) (None) | AO-BW-MDO-TIE-RELIEF |
 | rough opening, 9" x 9" (no type) (None) | AO-M-ERV-OA, AO-S-ERV-EA |
 | rough opening, 14" x 20" arched (no type) (None) | AO-B-BRICK-WIN |
 | rough opening, 30" x 80" (no type) (None) | D-S-STUDY2 |

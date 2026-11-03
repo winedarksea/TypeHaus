@@ -101,6 +101,11 @@ from typehaus import WallBacking, ft, inch
 # by storey, so a band cannot ride in a list that mixes them.
 
 BASEMENT_BACKING = [
+    # The west theatre rod's three brackets need wood through the furred finish.
+    # Run to the wall's end packs so the band ends have a fastening target.
+    WallBacking(uid="THHUNT0003", tag="BK-B-PLAY-TAPESTRY-ROD", wall_ref="W-B-CN", face="right",
+                elevation=inch(70), datum="finished-floor", height=inch(5.5), profile="2x6",
+                material_ref="spf", purpose="west theatre tapestry rod brackets at 74 1/2 in. AFF"),
 ]
 
 MAIN_BACKING = [

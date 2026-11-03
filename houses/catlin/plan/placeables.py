@@ -95,7 +95,7 @@ BASEMENT_PLACEABLES = [
               position=pt(ft(33, 7.75), ft(18, 8.875)), rotation=deg(180)),
     # ** FIRST REFLECTIONS ** (nothing in the engine grades room acoustics; this is the
     # record). Floor: carpet. Back wall: the loaded bookcases diffuse it. Ceiling (y ≈ 29'-4",
-    # bare 5/8" gypsum) and the WEST wall are still open.
+    # bare 5/8" gypsum) is still open.
     #
     # EAST WALL: the dragon tapestry (owner, 2026-11-01). Ears at about (26'-9", 24'-0"),
     # speakers assumed at x 22'-6" / 31'-0" beside the screen: the mirror construction on
@@ -112,10 +112,23 @@ BASEMENT_PLACEABLES = [
                   wall_ref="W-B-E2", face="left", distance_from_start=inch(135),
                   normal_gap=inch(3), rotation_offset=deg(-180)))),
     Furniture(uid="DERM7T3B1G", tag="FURN-B-PLAY-TAPESTRY-ROD", type_ref="FT-TAPESTRY-ROD-96", room="RM-B-PLAY-N",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(71.5)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-B-E2", face="left", distance_from_start=inch(135),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # WEST WALL: mirror the east hanging at y=29'-3", 12"..72" AFF (owner, 2026-11-02).
+    # W-B-CN starts at y=21'-9 3/8" and runs north; its right face opens into the theatre.
+    # Rod brackets fasten through the finish into studs/blocking on this framed wall.
+    Furniture(uid="THHUNT0001", tag="FURN-B-PLAY-TAPESTRY-W", type_ref="FT-TAPESTRY-HUNT-80X60", room="RM-B-PLAY-N",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(12)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-B-CN", face="right", distance_from_start=inch(89.625),
+                  normal_gap=inch(3), rotation_offset=deg(0)))),
+    Furniture(uid="THHUNT0002", tag="FURN-B-PLAY-TAPESTRY-W-ROD", type_ref="FT-TAPESTRY-ROD-96", room="RM-B-PLAY-N",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(71.5)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-B-CN", face="right", distance_from_start=inch(89.625),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 MAIN_PLACEABLES = [
     # --- the sitting circle, turned onto the fire (2026-09-06) ---------------------------

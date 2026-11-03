@@ -12,6 +12,9 @@ from __future__ import annotations
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 
+import numpy as np
+
+from typehaus.routing.graph_batch import edges_state, points_blocked
 from typehaus.routing.space import (
     MAX_CANDIDATE_LINES,
     MAX_LATTICE_NODES,
@@ -295,12 +298,15 @@ def build_graph(space: RoutingSpace,
     for kz, z in enumerate(zs):
         level_xs, level_ys = per_level[kz]
         plan_index: dict[tuple[float, float], int] = {}
+        grid_x, grid_y = np.meshgrid(np.array(level_xs), np.array(level_ys))
+        is_blocked = points_blocked(space, grid_x.ravel(), grid_y.ravel(),
+                                    np.full(grid_x.size, z)).reshape(grid_x.shape)
         for ky, y in enumerate(level_ys):
             for kx, x in enumerate(level_xs):
-                offender = space.blocked((x, y), z)
-                if offender is not None:
+                if is_blocked[ky, kx]:
                     if (round(x, 6), round(y, 6)) not in fixed:
                         continue
+                    offender = space.blocked((x, y), z)
                     blocked_terminals.append(offender)
                     lenient[len(nodes)] = space.blocked_all((x, y), z)
                 lookup[(kx, ky, kz)] = len(nodes)
@@ -310,7 +316,7 @@ def build_graph(space: RoutingSpace,
 
     graph = Graph(nodes=nodes, blocked_terminals=sorted(set(blocked_terminals)))
 
-    def connect(index: int, other: int, axis: str) -> None:
+    def connect(index: int, other: int, axis: str, state: tuple | None = None) -> None:
         # **One lattice step of leniency at a blocked terminal, and exactly one.** The node
         # rule above keeps a terminal that stands inside something — a branch's tie point
         # usually sits on the very run it ties into, and an ERV manifold packs ten ports
@@ -322,7 +328,11 @@ def build_graph(space: RoutingSpace,
         # IN, and nothing else**: the step off catlin's chase point used to be free to pass
         # through any prism at all, so a vent's first leg could cross the radon riser.
         ignore = lenient.get(index, frozenset()) | lenient.get(other, frozenset())
-        priced = _price(space, nodes[index], nodes[other], axis, ignore=ignore)
+        if state is not None and not ignore:
+            priced = (None if state[0] else
+                      _finish(space, nodes[index], nodes[other], axis, state[1]))
+        else:
+            priced = _price(space, nodes[index], nodes[other], axis, ignore=ignore)
         if priced is None:
             return
         weight, terms, corridor = priced
@@ -336,11 +346,21 @@ def build_graph(space: RoutingSpace,
         graph.terms[(index, other)] = terms
         graph.terms[(other, index)] = terms
 
+    steps: list[tuple[int, int, str]] = []
     for (kx, ky, kz), index in lookup.items():
         for axis, key in (("x", (kx + 1, ky, kz)), ("y", (kx, ky + 1, kz))):
             other = lookup.get(key)
             if other is not None:
-                connect(index, other, axis)
+                steps.append((index, other, axis))
+    # Blocking and soft lookups for every level step in one pass; connect order unchanged.
+    ends_a = np.array([(nodes[i].x, nodes[i].y, nodes[i].z) for i, _, _ in steps]
+                      ).reshape(-1, 3)
+    ends_b = np.array([(nodes[j].x, nodes[j].y, nodes[j].z) for _, j, _ in steps]
+                      ).reshape(-1, 3)
+    axes = np.array([0 if ax == "x" else 1 for _, _, ax in steps], dtype=int)
+    step_blocked, step_soft = edges_state(space, ends_a, ends_b, axes)
+    for n, (index, other, axis) in enumerate(steps):
+        connect(index, other, axis, (bool(step_blocked[n]), step_soft[n]))
 
     # Vertical edges between consecutive levels, at every plan point BOTH levels hold. The
     # two levels no longer nominate the same lines, so a riser lands where the work actually
@@ -366,11 +386,16 @@ def _price(space: RoutingSpace, a: Node, b: Node, axis: str, *,
     ``ignore`` is set for the one step off a terminal that stands inside something: the
     prisms it stands in. See :func:`build_graph`; it buys one lattice step and never a lane.
     """
-    mid = ((a.x + b.x) / 2.0, (a.y + b.y) / 2.0)
-    midz = (a.z + b.z) / 2.0
     if space.edge_blocked(a.plan, b.plan, a.z, b.z, ignore=ignore) is not None:
         return None
+    mid = ((a.x + b.x) / 2.0, (a.y + b.y) / 2.0)
+    return _finish(space, a, b, axis, space.soft_at(mid, (a.z + b.z) / 2.0))
 
+
+def _finish(space: RoutingSpace, a: Node, b: Node, axis: str, soft: list
+            ) -> tuple[float, dict[str, float], str | None] | None:
+    """The pricing half of :func:`_price`, given what the soft prisms at the midpoint are."""
+    midz = (a.z + b.z) / 2.0
     length_m = abs(b.x - a.x) + abs(b.y - a.y) + abs(b.z - a.z)
     if length_m <= 0:
         return None
@@ -385,7 +410,7 @@ def _price(space: RoutingSpace, a: Node, b: Node, axis: str, *,
                 else space.corridor_at(axis, station, lo, hi, midz))
 
     room_ft, occupancy, in_wall_ft = 0.0, None, 0.0
-    for prism in space.soft_at(mid, midz):
+    for prism in soft:
         if prism.kind == "room":
             room_ft, occupancy = length_ft, prism.occupancy
         elif prism.kind == "wall":

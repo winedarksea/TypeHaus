@@ -20,6 +20,10 @@ Note that many of the pinned decisions in the code base here aren't as fixed as 
 
 ## Remaining Work
 
+- **Blind ROs export as full-depth IFC voids** (`AO-BW-MDO-TIE-RELIEF`, `AO-M-FIRE-NICHE`,
+  the hydrant bores): the elevation honours `depth_from` via `geometry_walls.cuts_layer`, the
+  IFC void (`emit/ifc/architectural._opening_profile`) and its diff adapter do not.
+
 - **Concrete spec UNKNOWNs (8) wait on the mix submittal and a soil test:** chloride x4
   (ASTM C1218), ASR x2 (the aggregate's C1293/C1260 result plus a C1778 structure class), SCM
   x1 (cement standard/type), sulfate x1 (soil test, ASTM C1580). They sit on the permit

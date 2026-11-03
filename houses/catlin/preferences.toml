@@ -279,6 +279,9 @@ permit_drop = ["A-502", "A-507"]
 # 2026-10-08 and `test_catlin_erv_clearance.py` ratchets it at zero, every pair.
 [checks]
 suppress = [
+  # The west tapestry is clipped to FURN-B-PLAY-TAPESTRY-W-ROD, not fastened at its bottom.
+  # BK-B-PLAY-TAPESTRY-ROD backs the rod brackets; no backing belongs behind the loose hem.
+  "advisory.wall_backing_present:FURN-B-PLAY-TAPESTRY-W",
   # FURN-M-LIV-TRACK-BALC, 2026-10-29: the middle VIDGA wall fitting lands over D-M-BALC's
   # header, which the engine sets 1 1/4" behind the stud face and no backing band may cross.
   # Field item: a ripped 2x nailer on the header's room face at the rail line (88 1/2"

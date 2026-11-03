@@ -285,6 +285,8 @@ The compact report preserves actionable diagnostics; full geometry/source is sav
 selective reading. Routing stays separate from checks. Accepting a route requires an
 explicit edit to its authored plan and design explanation. Pipe/duct elevations are
 storey-relative; conduit elevations are absolute. `--out` never applies a route.
+After editing `typehaus/routing/`, run
+`pytest packages/engine/tests/test_routing_campaign_cli.py --autorouter` (opt-in, skipped otherwise).
 
 `haus serve` watches `houses/<name>/` only. After editing anything under
 `packages/engine/`, **restart the server** or the viewer shows stale geometry.

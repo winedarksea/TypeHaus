@@ -285,7 +285,7 @@ export function buildCanvasObjectParts(
     const key = `${part.role === "tapestry" ? "tapestry" : ""}|${board ? board.key : ""}|${part.material_ref}|${part.color}|${opacity}|${part.metalness}|${part.roughness}`;
     let material = materials.get(key);
     if (!material) {
-      material = (isTapestry(part.role) && mode === "nordic" ? createTapestryMaterial() : null)
+      material = (isTapestry(part.role) && mode === "nordic" ? createTapestryMaterial(item.type) : null)
         ?? (board ? createPlankMaterial(mode, board, part.color, part.roughness,
         authoredAppearance(part.material_ref, catalog))
         : marble ? createMarbleMaterial(mode, part.color, 0.3)

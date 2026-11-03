@@ -353,8 +353,9 @@ def _opening_profile(rw: ResolvedWall, opening: Any) -> list[tuple[float, float]
     ])
     # On the overlay grid: a lapped sheathing band is snapped to it, so a bare union
     # leaves a 1-ulp seam against its neighbour and max() below keeps only one half.
+    # Bodies, not depth: depth keeps a slot's first region only, so a later one drops out.
     host_footprint = union_all(
-        Polygon(layer.polygon) for layer in rw.depth_layers()
+        Polygon(layer.polygon) for layer in rw.body_layers()
         if len(layer.polygon) >= 3
     )
     clipped = intersection(host_footprint, station_strip)

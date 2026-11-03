@@ -57,6 +57,8 @@ import heapq
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
+import numpy as np
+
 from typehaus.quantities import M_PER_IN
 from typehaus.routing.graph import Graph
 from typehaus.routing.search import Route, price_route
@@ -294,13 +296,21 @@ def _heuristic(graph: Graph, space: RoutingSpace,
     """
     floor = space.cost.heuristic_floor()
     riser = space.cost.riser_per_ft
-    targets = [(graph.nodes[g].x, graph.nodes[g].y, graph.nodes[g].z) for g in goals]
+    # Vectorised over the goals and memoised per node: same IEEE operations in the same
+    # order as the scalar form, so every f value (and so every tie-break) is bit-identical.
+    gx = np.array([graph.nodes[g].x for g in goals])
+    gy = np.array([graph.nodes[g].y for g in goals])
+    gz = np.array([graph.nodes[g].z for g in goals])
+    memo: dict[int, float] = {}
 
     def estimate(index: int) -> float:
-        node = graph.nodes[index]
-        return min(((abs(node.x - gx) + abs(node.y - gy)) / 0.3048 * 12.0
-                    + abs(node.z - gz) / 0.3048 * 12.0 * riser) * floor
-                   for gx, gy, gz in targets)
+        hit = memo.get(index)
+        if hit is None:
+            node = graph.nodes[index]
+            hit = float((((np.abs(node.x - gx) + np.abs(node.y - gy)) / 0.3048 * 12.0
+                          + np.abs(node.z - gz) / 0.3048 * 12.0 * riser) * floor).min())
+            memo[index] = hit
+        return hit
 
     return estimate
 

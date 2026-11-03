@@ -83,6 +83,7 @@ from typehaus.model.placeable_symbols._slat_partition import slat_partition
 from typehaus.model.placeable_symbols._strandmon import strandmon
 from typehaus.model.placeable_symbols._tannforsen import tannforsen_wall
 from typehaus.model.placeable_symbols._tapestry import wall_tapestry
+from typehaus.model.placeable_symbols._tapestry_rod import tapestry_rod_clips
 from typehaus.model.placeable_symbols._towel_hardware import towel_bar, towel_hook
 from typehaus.model.placeable_symbols._wardrobe import (
                                                         DOUBLE_HANG_INTERIOR,
@@ -122,6 +123,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "towel-hook-chrome": partial(towel_hook, color="metal"),
     "footrest": footrest,
     "curtain-rod": curtain_rod,
+    "tapestry-rod-clips": tapestry_rod_clips,
     "cellular-blind": cellular_blind,
     "solid-surface-access-leaf": solid_surface_access_leaf,
     # Seating. Seat count is what separates a sofa from a loveseat from an armchair.

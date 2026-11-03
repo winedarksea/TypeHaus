@@ -7036,8 +7036,10 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # east wall. The listing read CA$96-175 for its SMALLEST size; this size's price was not read.
 # Confirm at order.
 "FT-TAPESTRY-DRAGON-80X60" = { low = 90, high = 200 }  # 1 ea
-# Its rod: 96" 1" black adjustable rod, three 4"-return brackets, masonry anchors, 14 clip rings.
-"FT-TAPESTRY-ROD-96" = { low = 40, high = 80 }  # 1 ea
+# West-wall hunting tapestry: matching size and fabric allowance; product not selected.
+"FT-TAPESTRY-HUNT-80X60" = { low = 90, high = 200 }  # 1 ea
+# Each rod: 96" 1" black adjustable rod, three 4"-return brackets, masonry anchors, 14 clip rings.
+"FT-TAPESTRY-ROD-96" = { low = 40, high = 80 }  # 2 ea; stud fasteners west, masonry east
 # Frailey JW0510 rustic brown/black, Home Depot 326090309: $109.45 sale; Tribesigns
 # $149.99 direct, checked 2026-10-14. One compact upstairs study corner shelf.
 "FT-STUDY-CORNER-BOOKCASE" = { low = 109.45, high = 149.99 }

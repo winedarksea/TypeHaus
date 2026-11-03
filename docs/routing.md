@@ -111,3 +111,6 @@ router with its grader; `test_package_leaves` enforces the dependency boundary. 
 numerical notes remain in `houses/catlin/notes/mep_drain_routing_basis.md`,
 `mep_duct_routing_basis.md`, and `vent_grade_basis.md`; `routing/oracle.py` maps them to
 modules and tests. Keep equations, tolerances, and local algorithm invariants beside code.
+
+`test_routing_campaign_cli` runs a real campaign and is opt-in: after editing
+`typehaus/routing/`, run `pytest packages/engine/tests/test_routing_campaign_cli.py --autorouter`.
