@@ -7418,3 +7418,25 @@ facts read 2026-11-02 and cited in each `Product.source`):
   low-tilt mounts sit 1-2 5/8"). VESA 600 x 500 is the 98QM8K sibling's: confirm.
 - **Garden flood:** the Alcon stays; its 60 deg / 1,800 lm is now written as an allowance
   until the IES file is read at order.
+
+## Drain fixtures vented in 3D; wet vents graded under 908 (2026-11-02, C6-E7)
+
+`mep.trap_arm_developed` now grades a wet vent against MN 4714 / UPC 908 before it may end
+a trap arm (`checks/mep/wet_vent.py`, oracle `notes/wet_vent_basis.md`); a failing one is
+walked past. The basement WC's "wet vent" through the utility sink fails four ways (not a
+bathroom group, Ø1.5" for 6 DFU, two drains upstream, WC first), so it got a dry tee.
+
+Ten of the thirteen open fixtures now meet a vent in 3D, all individual tees (no AAVs):
+
+- **Basement:** BATH-WC 69" of 72" (tee under the slab, up W-B-STR2 onto the lav vent;
+  the footing and towel-bar backing hold it there); SAUNA-SH 10", SAUNA-FD 8". Three new
+  cast slab sleeves in `mep_sleeves.py`.
+- **BATH2/laundry:** WC 22" (up W-M-HS1), SH 22" (up W-M-BA2E2), laundry sink 15" (up W-M-CLN).
+- **Hall bath:** WC 18" (up W-S-W1), SH 26" (west of the ERV chase header, 0.75" off
+  CD-M-DATA-PORCH).
+- **Suite WC** 9", up at x=112" west of DU-S-ERV-HP-FEED. **Attic SH** 5", east via W-A-C2M
+  because the FO-A-HALL trimmer blocks the straight riser.
+
+Three stay open, each boxed in by another trade, so `mep.trap_arm_length` keeps its plan
+`hypot` and the 3D walk stays ADVISORY (plans/TODO.md). The suite lav and tub-shower cannot
+wet-vent: the WC joins upstream of both, against 908.2.1.4.

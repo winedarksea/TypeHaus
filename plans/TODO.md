@@ -250,7 +250,10 @@ the future.
   - [ ] C3-E3 follow-up: the three exterior doors (D-M-ENTRY, D-M-BALC, D-S-DECK-E) keep their RO base on the joist top, 3/4" under the subfloor the walls now stand on (decision #110); their sill pans, thresholds and landings are coordinated off that datum, and moving D-S-DECK-E onto the subfloor broke its catalog installation (6 FAILs). Owner: confirm the subfloor is cut back for each sill, or re-derive the three installations off the subfloor.
 - Left open by the 2026-11-01 fit and product-data pass (REPORT items 14-24; plan `make-a-plan-to-warm-otter`):
   - [ ] ERV OA/EA/RET still leave the case at service level: under Broan's 2x2 port grid they cannot all reach the two basement plenums in 21.3" of headroom (8" ducts at 12" wrapped OD, OA/EA wraps overlap 2 1/4"). Owner held it; options are rearranging the plenums or moving the ERV (C6-E1). `erv_static_budget` stays 0.441" > 0.4".
-  - [ ] 13 drain fixtures have no 3D vent (`mep.trap_arm_developed` ADVISORY worklist) (12 unvented fixtures plus one overlength, wet-vented WC arm): basement bath WC/sauna, BATH2 WC/SH/TUB/laundry, hall-bath WC/SH, suite WC/LAV/TUBSH, attic SH. Owner: plumber-led layout pass, wet or individual vents case by case. Before switching it to the CODE `mep.trap_arm_length`, grade UPC 908's wet-vent limits in `checks/mep/trap_arm.py` (C6-E7).
+  - [ ] 3 drain fixtures have no 3D vent (`mep.trap_arm_developed` ADVISORY; C6-E7, wet-vent grading done):
+    - FX-M-BATH2-TUB: no lane. Options: a FloorOpening on FS-M-WEST near (97.3", 213.5"), re-box the W-B-CW3 blocking, or re-route HW/CW-WASH.
+    - FX-S-SUITEBATH-LAV, -TUBSH: no wet vent (the WC joins upstream, 908.2.1.4). The y=269.25" lane passed both arms (27", 6") but hit PR-B-CW-SUITE's riser by 0.14" and PR-B-HW-SUITE / PR-A-HW-STUBATH on y=268". Move those supplies, or re-route DU-S-ERV-HP-FEED's last leg.
+    - When all three pass, move the 3D walk under the CODE id `mep.trap_arm_length` and retire `mep.trap_arm_developed`.
   - [ ] TB-SG-W1/E1 closure boards are 8" while FT-B-S2/S3 are now 10": 2" x 32" of strip faces the court footing with no board. Extend to 10" (moves §11l and test_thermal_break) or accept.
   - [ ] Doorway transitions: D-A-STUDY / D-A-POCKET open onto unfinished subfloor (`compatible_finish_pairs` can't name it); D-M-MECH's floor varies across its doorway.
   - [ ] Leader straps bill twice: `CN-A-LEADER-*` (SS316 standoff strap #13, sized for the old 4" round) and the leader's 58110XX. Pick one product for the 4x3 1/2 leader on the ribbed panel.
@@ -301,7 +304,7 @@ the future.
   - Real outlet fitting and the north tail.
   - Snow protection: gutter front is about 2" above the snow-slide line.
   - Confirm strip-in width (provisional 9") with GCP, and Image II + deck + membrane acceptance with Metal Sales; deck bearing is 2.036" vs 2" min, provisional.
-- Consider 1/2" advantech for walls sheathing
+- Consider 1/2" advantech for walls sheathing, maybe 1/2" osb and tape the seams
 - Pg 288 of the book has a roof eave detail where the roof and drip flashing alone extend out about an inch (no metal or sheathing).
 - Pick a soffit product and close the garage attic ventilation grading, and the corrugated soffit to sill junction detailed. Also fix the garage soffit end detail (north and south gable ends) where the sofit is too flat and isn't inline with the roof slope there
 - D-B-PATIO has too short a threshold, it needs to go out over the foam gap. And it has some weird top flashing that isn't needed here it seems.
