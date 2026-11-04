@@ -37,6 +37,7 @@ from typehaus.resolve.geometry_walls import layer_solids
 from typehaus.resolve.layer_bands import at_body_band, wall_body_band
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.model_window_seat import window_frame_dimensions
+from typehaus.resolve.room_paint import paint_standard, unroomed_coat
 from typehaus.resolve.overlay import intersection, union_all
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.topology import _added_thicknesses
@@ -114,7 +115,10 @@ def _assembly_default_signature(model: ResolvedModel, assembly_tag: str) -> tupl
         return None
     stack = list(assembly.default_lining) + list(assembly.layers)
     coatings = coating_tags(model.plan.library)
-    return tuple((layer.name, layer.material_ref,
+    # A default coat resolves to the PaintStandard's walls system (resolve/room_paint): the
+    # house-wide swap is the type's paint, not a lining.
+    standard, _ = paint_standard(model.plan)
+    return tuple((layer.name, unroomed_coat(standard, layer.material_ref),
                   round(0.0 if layer.material_ref in coatings else layer.thickness.meters, 6))
                  for (layer, _added, cavity) in _added_thicknesses(stack, coatings)
                  if not cavity and getattr(layer, "extent", None) is None

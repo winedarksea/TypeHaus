@@ -110,7 +110,8 @@ def test_catlin_hardware_scope_takeoff_and_finish(catlin_model_ro):
     expected = {"D-M-ENTRY", "D-M-BALC", "D-B-PATIO", "D-S-DECK-E"}
     rows = opening_takeoff(model)
     authored = {tag for row in rows if row["hardware_authored"] for tag in row["tags"]}
-    assert authored == expected
+    # D-B-SHOP's keyed steel prehung is the one interior door with authored hardware.
+    assert authored == expected | {"D-B-SHOP"}
     assert {fill.opening_tag for fill in model.jamb_fills} == expected
     assert {fill.replaced_material_ref for fill in model.jamb_fills} == {"fiberglass", "mineral-wool"}
     hardware_rows = authored_hardware_rows(model)

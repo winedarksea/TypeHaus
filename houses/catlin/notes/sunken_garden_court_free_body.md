@@ -2628,7 +2628,13 @@ Uncapped (basis 8, the ablation): S = 2 × 525 × 672/2.0 × 1.65e-4 + 2 × 275,
 (239.484 + 603.764) = **182.29"**; T = **43,656.2 lb**; a footing board's closure 0.030078" (σ
 7.896 psi), the stem's 0.0050277" (σ 1.0558 psi, floor line 778.4 lb); line 42,099.5 lb
 (sustained 0.835, OVER only past ×1.5 as before). The near-line rows uncapped are the line
-solver's (62,320 lb·in, 0.734), not re-worked here.
+solver's (62,320 lb·in, 0.734). **Independent cross-check (review, 2026-11-04):** a separate
+finite-element solve of §11m.1's beam (Hermite elements at 1/4", the same EI, k and
+compression-only bed and end struts) on these loads — footing boards 7.896 x 8 = 63.17 lb/in,
+stem bottoms 608.1 / 12 = 50.68 lb/in, the beam's board 7.896 x 17.75 = 140.15 lb/in, Σ 42,100
+— reads M 62,515 lb·in, V 1,534 lb, σ 46.21 psi, neither strut bearing: within 0.3% of the
+solver's 62,320 / 1,529.6 / 46.17. The same script on basis 9 reads 46,966 / 1,409 / 22.75
+against §11m.1's 46,396 / 1,405 / 22.65 (its moment from finite-differenced curvature).
 
 **Two engine defects the flush board found.** (1) `facing_footings` tested the gap as `0 ≤ gap`;
 a board flush on the strip is a few nanometres either side of zero after the metre-to-inch

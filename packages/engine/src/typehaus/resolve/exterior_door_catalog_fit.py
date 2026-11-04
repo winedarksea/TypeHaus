@@ -1,5 +1,6 @@
 """Independent geometric checks on generated catalog-installation coordination parts."""
 
+import re
 from dataclasses import replace
 
 from shapely.geometry import Polygon
@@ -44,19 +45,22 @@ def catalog_section_clashes(model, wall, opening, placement):
         return (sum(delta[i] * normal[i] for i in (0, 1)),
                 sum(delta[i] * tangent[i] for i in (0, 1)))
 
-    pieces = [(s.name, Polygon(s.polygon_m), s.along_m - s.span_m / 2, s.along_m + s.span_m / 2)
+    # (name, body, along lo, along hi, film): a membrane film (the pan's drop) laps under a
+    # neighbour's skin by design, so only structure is a clash for it.
+    pieces = [(s.name, Polygon(s.polygon_m), s.along_m - s.span_m / 2, s.along_m + s.span_m / 2,
+               s.material_key == "membrane")
               for s in placement.sections if s.name.startswith(_TESTED_SECTIONS)]
     pieces += [(b.name, Polygon(((b.normal_m - b.depth_m / 2, b.z_m - b.height_m / 2),
                                  (b.normal_m + b.depth_m / 2, b.z_m - b.height_m / 2),
                                  (b.normal_m + b.depth_m / 2, b.z_m + b.height_m / 2),
                                  (b.normal_m - b.depth_m / 2, b.z_m + b.height_m / 2))),
-                b.along_m - b.width_m / 2, b.along_m + b.width_m / 2)
+                b.along_m - b.width_m / 2, b.along_m + b.width_m / 2, False)
                for b in placement.boards if b.name.startswith("exterior")]
     if not pieces:
         return (), ()
-    stations = sorted({0.0, *(round((lo + hi) / 2, 6) for *_, lo, hi in pieces)})
-    reach = _bounds(body for _, body, _, _ in pieces)
-    half = max(max(abs(lo), abs(hi)) for *_, lo, hi in pieces)
+    stations = sorted({0.0, *(round((lo + hi) / 2, 6) for *_, lo, hi, _f in pieces)})
+    reach = _bounds(body for _, body, *_ in pieces)
+    half = max(max(abs(lo), abs(hi)) for *_, lo, hi, _f in pieces)
     conflicts, coordination = set(), set()
     # The opening's own derived parts (its flashing, trim) are the installation, not a clash.
     own = f"{opening.tag}-"
@@ -64,12 +68,18 @@ def catalog_section_clashes(model, wall, opening, placement):
         for station in stations:
             for profile in slice_solid(solid, CutPlane("x", station)):
                 body = Polygon(profile.outline, profile.voids)
-                for name, piece, lo, hi in pieces:
-                    if lo - 1e-9 <= station <= hi + 1e-9 and \
+                for name, piece, lo, hi, film in pieces:
+                    if (hard or not film) and lo - 1e-9 <= station <= hi + 1e-9 and \
                             piece.intersection(body).area > _TOUCH_M2:
                         (conflicts if hard else coordination).add(
-                            f"{name.split('-board')[0]} intersects remaining {label}")
+                            f"{_part(name)} intersects remaining {label}")
     return tuple(sorted(conflicts)), tuple(sorted(coordination))
+
+
+def _part(name):
+    """A section's part name without its board/station suffix (``-board-envelope-6``,
+    ``-0.0005``), so one part reads as one finding."""
+    return re.sub(r"-[-\d.]+$", "", name.split("-board")[0])
 
 
 def _bounds(polygons):
