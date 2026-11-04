@@ -177,7 +177,10 @@ def test_reflow_beats_a_single_column_on_the_sheet(catlin_model):
 #:
 #: 1.4 -> 1.45 (2026-11-01): FT-B-S2/S3 went 8" -> 10" deep, adding an F-mark row, two STEP
 #: FTG. and one undercut callout and two notes (1.279 -> 1.404); both papers kept their scale.
-SCENE_TO_PLAN_HEIGHT_REPORTED = 1.45
+#: 1.45 -> 1.5 (2026-11-04): W-SG-BRKBM bedded on stone (FB-SG-BRKBM, c81337c8) is a real bed
+#: the excavator digs, a two-line keynote (1.404 -> 1.454). Width still binds by 86" (~3
+#: rows) and both papers keep their scale, so this still fires before the property does.
+SCENE_TO_PLAN_HEIGHT_REPORTED = 1.5
 
 
 def test_the_schedule_no_longer_governs_the_sheet_height(catlin_model):

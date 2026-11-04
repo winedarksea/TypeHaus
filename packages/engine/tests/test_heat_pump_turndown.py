@@ -80,7 +80,9 @@ _CATLIN = {
     # 14,273 before the attic WC chase (2026-11-02) moved the ventilation share.
     # 14,274 / 25.5 °F before the Max Light retype (2026-10-31): kitchen pair U .18 -> .20,
     # BATH1-W .15 -> .20, (2 x .02 + .05) x 2.33 sf x 85 F = +17.8 Btu/h.
-    "EQ-M-HP2-OD": (14_292, 8_800, 5.0, 0.62, 25.6, not _ADVISED),
+    # 14,292 / 0.62 / 25.6 °F before W-B-BRICK's backup lost its 2" EPS (c81337c8,
+    # 2026-11-04): +0.369 UA x 85 F = +31 Btu/h (the note's addendum of that date).
+    "EQ-M-HP2-OD": (14_323, 8_800, 5.0, 0.61, 25.8, not _ADVISED),
     # D-M-ENTRY's Therma-Tru unit replaces its 36x80 void (2026-10-29): 905 -> 921.
     # 921 / 3.04 before RM-M-MUD-CLOSET went 13.84 -> 12.96 sf (2x6 STOS wall, 2026-11-01).
     # 919 before #112 (2026-11-01): the same ventilation-share dilution, 918.59 -> 918.46.

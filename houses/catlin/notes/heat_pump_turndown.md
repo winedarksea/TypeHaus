@@ -432,3 +432,17 @@ These loads use the provisional CPD U 0.21; the laminated-triple pair's label is
 All three retyped units are on the main storey, in HP2's zone: ΔUA +0.210 × 85 °F = +17.9
 Btu/h. HP2 14,274 → **14,292**, factor 8,800 / 14,292 = **0.62**, crossover 25.5 → **25.6 °F**
 (the air term's slope grows by 0.21 Btu/h·°F). HP1 and HP3 are unchanged; no verdict moves.
+
+## Addendum 2026-11-04 — W-B-BRICK's backup loses its 2" EPS (HP2 only)
+
+The court veneer simplification (c81337c8) takes the 2" EPS off the walkout backup behind
+the brick: about R-8 off a backup that is R-37.0 framed without it (R-50.4 under the
+sauna), so R-45 → R-37 on the plain stretch. Areas are unchanged; the
+zone's UA rises 0.280 on `walls` and 0.089 on `foundation_walls_above_grade`, ΔUA +0.369.
+At design (85 °F ΔT) that is +31.4 Btu/h: HP2 14,292 → **14,323**, factor 8,800 / 14,323 =
+**0.61**, Manual S cap 0.80 × 14,323 = **11,459**.
+
+Crossover, the 17/47 °F bracket: load(17) = 9,830 + 0.369 × 53 = 9,850, load(47) = 5,648 +
+0.369 × 23 = 5,656, so 8,800 − 9,850 = −1,050 and 8,200 − 5,656 = +2,544, and
+T = 17 + 30 × 1,050 / 3,594 = 17 + 8.8 = **25.8 °F** (was 25.6). HP1 and HP3 are unchanged;
+HP2 still passes the cap and no verdict moves.

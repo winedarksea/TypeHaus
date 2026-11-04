@@ -175,7 +175,10 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
     house cuts in the field qualifies the same way a fabricated plenum's collar does. The
     PROPH80's sheets publish the heights (K, C 59", E 42 3/8") and a drawing the stations
     are scaled from (2026-10-29: four exact ports now, incl. condensate and T&P). The collar assertion
-    is therefore now scoped to the ERV boxes, where it is still the thing worth pinning."""
+    is therefore now scoped to the ERV boxes, where it is still the thing worth pinning.
+
+    The hot-water header (2026-11-04) is exact the same way: Uponor's LF2821050 submittal
+    dimensions the sweat inlet and the eight outlets (A, B + C, D pitch, G)."""
     from typehaus.resolve.mep_ports import placed_ports
 
     ports = placed_ports(catlin_model)
@@ -188,6 +191,8 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
                      "EQ-B-ERV-MAN-SUP.collar-play",
                      "EQ-B-ERV-MAN-SUP.collar-sauna",
                      "EQ-B-ERV.supply",
+                     "EQ-B-HW-HEADER.inlet",
+                     *(f"EQ-B-HW-HEADER.out-{i}" for i in range(1, 9)),
                      "EQ-B-WH.cold",
                      "EQ-B-WH.condensate",
                      "EQ-B-WH.hot",
