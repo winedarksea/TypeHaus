@@ -8,7 +8,7 @@ export function runFloorDeckGeometryTests() {
     subfloor: { material: "aluminum-deck", thickness_m: 0.04 },
     members: [{ p0: [10, 20], p1: [12, 20], z1_m: 3 }], deck_z0_m: 3,
     deck_plane: { origin: [10, 20], lift_at_origin_m: 0, gradient: [0, 1/48] },
-  } as Floor;
+  } as unknown as Floor;
   const geometry = createFloorDeckGeometry(floor, [10, 20])!;
   const positions = geometry.getAttribute("position");
   for (let i = 0; i < positions.count; i++) {

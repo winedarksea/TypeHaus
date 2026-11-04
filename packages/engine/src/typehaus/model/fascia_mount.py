@@ -31,6 +31,7 @@ class FasciaMountSpec(HausModel):
     display_head_width: Length
     display_head_height: Length
     insert_thickness: Length
+    foot_block_fascia_screw_length: Length
     foot_block_product: str
     display_foot_block_width: Length
     display_foot_block_thickness: Length

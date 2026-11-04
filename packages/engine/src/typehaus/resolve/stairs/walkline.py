@@ -199,7 +199,8 @@ def flight_walklines(stair, include_arrival: bool = True, flights_only: bool = F
 
 def walkline_z_at(lines: list[list[tuple[float, float, float]]],
                   point: tuple[float, float],
-                  max_lateral_m: float) -> float | None:
+                  max_lateral_m: float, *,
+                  extrapolate_ends: bool = False) -> float | None:
     """Walking-surface elevation under plan ``point``, off the nearest flight centreline.
 
     The point is projected onto every centreline segment; the closest one in plan wins and
@@ -221,13 +222,16 @@ def walkline_z_at(lines: list[list[tuple[float, float, float]]],
     px, py = point
     for line in lines:
         # Pairwise along the polyline: ``line[1:]`` is one shorter on purpose.
-        for (x0, y0, z0), (x1, y1, z1) in zip(line, line[1:], strict=False):
+        for index, ((x0, y0, z0), (x1, y1, z1)) in enumerate(
+                zip(line, line[1:], strict=False)):
             dx, dy = x1 - x0, y1 - y0
             run2 = dx * dx + dy * dy
             raw = 0.0 if run2 < 1e-18 else ((px - x0) * dx + (py - y0) * dy) / run2
             t = max(0.0, min(1.0, raw))
             dist = math.hypot(px - (x0 + dx * t), py - (y0 + dy * t))
-            candidate = (dist, z0 + (z1 - z0) * t)
+            height_t = (raw if extrapolate_ends and (
+                (index == 0 and raw < 0) or (index == len(line)-2 and raw > 1)) else t)
+            candidate = (dist, z0 + (z1 - z0) * height_t)
             if -1e-9 <= raw <= 1.0 + 1e-9:
                 if interior is None or dist < interior[0]:
                     interior = candidate

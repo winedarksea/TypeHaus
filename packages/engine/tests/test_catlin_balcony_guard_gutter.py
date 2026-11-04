@@ -30,10 +30,17 @@ def test_the_guard_draws_a_bracket_at_each_post_station(catlin_model):
     posts = [s for s in catlin_model.solids
              if s.tag.startswith("RL-SG-BALCONY-POST") and s.category == "railing"]
     assert len(brackets) == len(posts)
-    fascia_top = max(s.z1_m for s in catlin_model.solids if s.tag.startswith("TR-SG-FASCIA"))
-    for b in brackets:
-        assert b.z1_m == pytest.approx(fascia_top - 0.5 * IN)  # 1/2" below the rim top
-        assert b.z1_m - b.z0_m == pytest.approx(5.0 * IN)      # Ultralox flat cut
+    from typehaus.resolve.railings.guard_line import guard_line_offset_m
+    from typehaus.resolve.railings.spans import deck_surface
+    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-DECK")
+    guard = catlin_model.plan.by_tag("RL-SG-BALCONY")
+    surface = deck_surface(deck, [p.xy_m for p in guard.path],
+                           guard_line_offset_m(catlin_model.plan.library, guard))
+    for bracket, post in zip(brackets, posts, strict=True):
+        point = tuple(sum(p[i] for p in post.outline)/len(post.outline) for i in range(2))
+        assert bracket.z1_m == pytest.approx(surface.height_at(point)-2*IN)
+        assert bracket.z1_m-bracket.z0_m == pytest.approx(6*IN)
+
 
 
 def test_each_post_stands_in_its_brackets_pocket(catlin_model):
@@ -47,7 +54,7 @@ def test_each_post_stands_in_its_brackets_pocket(catlin_model):
         p, b = _box(post), brackets[post.tag.rsplit("POST", 1)[1]]
         assert b[0] - 1e-9 <= p[0] and p[1] <= b[1] + 1e-9, post.tag
         assert b[2] - 1e-9 <= p[2] and p[3] <= b[3] + 1e-9, post.tag
-        assert p[4] == pytest.approx(b[4]), post.tag
+        assert p[4] == pytest.approx(b[4] + 0.125*IN), post.tag
 
 
 def test_the_gutter_clears_the_guard_brackets(catlin_model):

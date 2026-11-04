@@ -11,6 +11,7 @@ from typehaus.model.enums import ConnectorKind, RailingKind
 from typehaus.model.rebar import ReinforcementSpec
 from typehaus.model.refs import FaceRef, HeadConnector, InServiceMoisture, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
+from typehaus.model.surface_mount import SurfacePostMount
 from typehaus.quantities import Length, Point2D, inch
 
 #: How a handrail end is finished (R311.7.8.2): see ``Railing.start_termination``.
@@ -1000,6 +1001,9 @@ class Railing(Element):
     # its rails terminate on that one (one post, one base). Its end must be on that station.
     start_post_ref: str | None = None
     end_post_ref: str | None = None
+    # Empty preserves generic surface posts; otherwise one bearing per station, including
+    # shared ends. Rail elevations still follow the nosing line, not these level bearings.
+    surface_post_mounts: tuple[SurfacePostMount, ...] = ()
     assembly: str | None = None  # optional finish assembly for render/IFC material
     # --- guard vs handrail (R311.7.8, R312.1.3) ------------------------------------------
     # A Railing was only ever a *guard*: a plan path with a height, framed into posts and
@@ -1011,6 +1015,8 @@ class Railing(Element):
     # a house that says nothing gets UNKNOWN rather than a fabricated verdict.
     role: Literal["guard", "handrail", "guard_and_handrail"] = "guard"
     serves_stair: str | None = None  # Stair tag; None for a floor-edge guard
+    # Keep stair panels straight when posts stand beyond the end nosings on landings.
+    extend_stair_rake: bool = False
     # Handrail top above the *nosings*, which is not the same datum as ``height`` (the guard
     # height above the deck). R311.7.8.1 wants 34"-38" measured from the nosing line.
     top_height: Length | None = None

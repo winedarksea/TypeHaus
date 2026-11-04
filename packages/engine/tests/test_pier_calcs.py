@@ -217,16 +217,16 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 # (C3-E13): 105.125/106.958 -> 104.375/106.208", wind follows the height; the guard's lever
 # is guard top to the column BASE, which did not move.
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 1097.3, "guard_lb_ft": 2675.0},
-    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 1097.3, "guard_lb_ft": 2675.0},
+    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 1099.0, "guard_lb_ft": 2675.0},
+    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 1099.0, "guard_lb_ft": 2675.0},
     # The rear row runs 2" proud for the deck's drainage crown.
     # ** THE REAR PAIR LOST 1/6" ON 2026-09-14. ** ``SPEC.rear_pillar_rise_in = 2.0`` became
     # ``SPEC.balcony_fall_in_per_ft = 0.25``: the FALL is the authored number now and the rise
     # follows the run between the bearing rows, which over 7'-4" is 1.833" rather than 2.000".
     # Both base moments are ``shear x height``, so they follow it exactly and by the same
     # 0.15%. Nothing else about the rear row moved.
-    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 1116.6, "guard_lb_ft": 2675.0},
-    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 1116.6, "guard_lb_ft": 2675.0},
+    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 1118.3, "guard_lb_ft": 2675.0},
+    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 1118.3, "guard_lb_ft": 2675.0},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
 #:

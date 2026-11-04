@@ -81,6 +81,8 @@ from typehaus import (
     TrimKind,
 )
 
+from typehaus.model.surface_mount import SurfacePostMount
+
 from typehaus.library import (
     TREX_ENHANCE_BASICS,
     TREX_ENHANCE_BASICS_DECK_LAYER,
@@ -2189,7 +2191,7 @@ PORCH_STAIR = Stair(
 # 33 7/8" from it to the north posts (R311.7.1's 31 1/2"), which `code.R311_7_1_stair_width`
 # measures along with the 36 1/2" between the posts.
 #
-# These stop at the flight — x 27'-6", the head — and the threshold beyond it is guarded
+# These meet the threshold guards on one shared head post. The level threshold is guarded
 # by PORCH_STAIR_THRESHOLD_RAILS below rather than by extending these. A `serves_stair`
 # Railing is RAKED along the nosing line for its whole authored path, so level wall top on
 # the end of one resolves at 0" above the (absent) nosings. Two elements is the true
@@ -2199,36 +2201,63 @@ PORCH_STAIR = Stair(
 # system from the porch. On the rake the posts stand on treads into the KDAT stringers: ESR
 # wants 4 GRK RSS 5/16" x 6" into SG >= 0.50 (prices.toml's surface row says so).
 #
-# ** THE HEAD POST IS THE THRESHOLD CHEEK'S** (owner, 2026-10-31): each raked guard ends on
-# `RL-SG-PTHRESH-S/N`'s east post (`end_post_ref`), one 42" post on one cast base astride
-# W-SG-E1's east face. The foot and middle posts stay on riser lines, their bases straddling
-# the riser (notes/porch_stair.md).
+# One shared head base directly on the concrete wall (notch the threshold plank around
+# it), one foot base wholly on the pad.
+# The middle base lands on tread 3 over KDAT backing between the outer two stringers.
+# Move the guard/handrail ends together: the handrail still covers every nosing.
+_PORCH_BASE_EDGE_CLEARANCE_IN = 3.0  # 4.99 inch base leaves 0.505 inch clear of the edge.
+_PORCH_GUARD_FOOT_X = _PORCH_STAIR_X1 + _PORCH_BASE_EDGE_CLEARANCE_IN / 12
+_PORCH_GUARD_HEAD_INSET_IN = 5.0  # outer anchor row stays >3 inches from the concrete face
+_PORCH_GUARD_HEAD_X = _PORCH_STAIR_X0 - _PORCH_GUARD_HEAD_INSET_IN / 12
+_PORCH_GUARD_MIDDLE_X = _PORCH_STAIR_X1 - 2.5 * PORCH_STAIR.tread_depth.feet
+_PORCH_STAIR_RISER = (_porch_walking_surface - _STAIR_PAD_TOP) / 5
+
+
+def _porch_stair_mounts(side):
+    # Six stringers over 45 inches: outer two axes are 9 inches apart. The block
+    # fits their 1.5 inch side faces and both base screw rows, beneath the plank.
+    return (
+        SurfacePostMount(elevation=_STAIR_PAD_TOP, substrate="concrete"),
+        SurfacePostMount(elevation=_STAIR_PAD_TOP + _PORCH_STAIR_RISER * 3,
+                         substrate="wood", backing_size=(inch(5.5), inch(7.5), inch(5.5)),
+                         backing_offset=(inch(0), inch(side * 1.75)),
+                         finish_thickness=TREX_ENHANCE_BASICS_DECK_LAYER.thickness),
+        SurfacePostMount(elevation=ft(0), substrate="concrete"),
+    )
+
+
 _HANDRAIL_INBOARD_FT = 3.375 / 12.0
 PORCH_STAIR_RAILS = [
     Railing(uid=f"SGRA0{_si}AAAA", tag=f"RL-SG-PSTAIR-{_sh}",
             type_ref="RAILING-EXT-ALUMINUM-SURFACE",
-            path=(pt(ft(_PORCH_STAIR_X1), ft(_sy)), pt(ft(_PORCH_STAIR_X0), ft(_sy))),
+            path=(pt(ft(_PORCH_GUARD_FOOT_X), ft(_sy)),
+                  pt(ft(_PORCH_GUARD_MIDDLE_X), ft(_sy)),
+                  pt(ft(_PORCH_GUARD_HEAD_X), ft(_sy))),
+            surface_post_mounts=_porch_stair_mounts(1 if _sh == "S" else -1),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
             base_elevation=_STAIR_PAD_TOP, post_spacing=inch(36), post_size="3x3",
             rail_count=2, mount="surface", assembly="RAILING_DARK_METAL",
             role="guard", serves_stair="ST-SG-PORCH", top_height=inch(36),
+            extend_stair_rake=True,
             end_post_ref=f"RL-SG-PTHRESH-{_sh}",
             infill="balusters", baluster_spacing=inch(4))
     for _si, _sh, _sy in ((3, "S", _GUARD_LINE_S), (4, "N", _GUARD_LINE_N))
 ]
 # South side: the right hand going down. Supported at its two ends only, the 90 deg kit's
-# returns into RL-SG-PSTAIR-S's end posts (ESR-3485 Table 1 lists that return on a 3" post;
-# its midspan bracket only on a 2" post), 52.3" apart on the rake against the kit's 72".
+# returns into the south guard's foot and shared head posts (ESR-3485 Table 1: 3" post;
+# its midspan bracket only on a 2" post), within the kit's 72" maximum support spacing.
 # Centreline 34 1/4" over the nosings puts the pipe's top at 35". The returns' standoff is
 # unpublished: confirm on delivery. uid minted 2026-10-30 with
 # typehaus.model.ids.new_uid() (`haus fmt` does not visit params/); unique by grep.
 _HANDRAIL_Y = _GUARD_LINE_S + _HANDRAIL_INBOARD_FT
 PORCH_STAIR_RAILS.append(Railing(
     uid="9ETPM8ZA74", tag="RL-SG-PSTAIR-HR", type_ref="RAILING-EXT-ALUMINUM-ADA-HANDRAIL",
-    path=(pt(ft(_PORCH_STAIR_X1), ft(_HANDRAIL_Y)), pt(ft(_PORCH_STAIR_X0), ft(_HANDRAIL_Y))),
+    path=(pt(ft(_PORCH_GUARD_FOOT_X), ft(_HANDRAIL_Y)),
+          pt(ft(_PORCH_GUARD_HEAD_X), ft(_HANDRAIL_Y))),
     kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(34.25),
     base_elevation=_STAIR_PAD_TOP, post_spacing=inch(72), rail_count=1, mount="post",
     assembly="RAILING_DARK_METAL", role="handrail", serves_stair="ST-SG-PORCH",
+    extend_stair_rake=True,
     top_height=inch(34.25), graspable_profile="1.5in round — Type I",
     start_termination="newel", end_termination="newel"))
 
@@ -2249,7 +2278,10 @@ PORCH_STAIR_RAILS.append(Railing(
 PORCH_STAIR_THRESHOLD_RAILS = [
     Railing(uid=f"SGRA0{_ti}AAAA", tag=f"RL-SG-PTHRESH-{_th}",
             type_ref="RAILING-EXT-ALUMINUM-SURFACE",
-            path=(pt(ft(_x_in_e), ft(_ty)), pt(ft(_PORCH_STAIR_X0), ft(_ty))),
+            path=(pt(ft(_x_in_e), ft(_ty)), pt(ft(_PORCH_GUARD_HEAD_X), ft(_ty))),
+            surface_post_mounts=(
+                SurfacePostMount(elevation=ft(0), substrate="concrete"),
+                SurfacePostMount(elevation=ft(0), substrate="concrete")),
             kind=RailingKind.METAL_SURFACE_MOUNT,
             height=ft(SPEC.railing_height_ft),
             base_elevation=_porch_walking_surface,
@@ -2567,11 +2599,18 @@ _DECK_JOIST_OUTLINE = (pt(ft(_deck_x_w), ft(_bal_y0)), pt(ft(_deck_x_e), ft(_bal
 _BALCONY_RIM_MEMBER = f"1.25x{_balcony_joist_depth_ft * 12:g} rim"
 _BALCONY_RIM_HALF_FT = cross_section(_BALCONY_RIM_MEMBER).width_m / 0.3048 / 2
 # Guard datum: outer framing face. The flank rim extends beyond the deck sheet.
-_GUARD_PATH = (
+_GUARD_EDGE_PATH = (
     pt(ft(_deck_x_w - _BALCONY_RIM_HALF_FT), ft(_y_in_n)),
     pt(ft(_deck_x_w - _BALCONY_RIM_HALF_FT), ft(_y_balcony_front)),
     pt(ft(_deck_x_e + _BALCONY_RIM_HALF_FT), ft(_y_balcony_front)),
     pt(ft(_deck_x_e + _BALCONY_RIM_HALF_FT), ft(_y_in_n)),
+)
+# Seat the end bolt patterns on the rim, retaining <4 inches to the house cladding.
+_BALCONY_END_POST_INSET = inch(2.6875)
+_GUARD_PATH = (
+    pt(_GUARD_EDGE_PATH[0].x, _GUARD_EDGE_PATH[0].y - _BALCONY_END_POST_INSET),
+    *_GUARD_EDGE_PATH[1:-1],
+    pt(_GUARD_EDGE_PATH[-1].x, _GUARD_EDGE_PATH[-1].y - _BALCONY_END_POST_INSET),
 )
 _deck_top = ft(SPEC.balcony_level_ft)  # 9'-9" joist top at the south edge
 # Guard height is measured from the surface a person stands on, which is the top of the
@@ -2592,7 +2631,7 @@ _deck_walking_surface = _deck_top + inch(SPEC.balcony_deck_thickness_in)
 # instructions (four 5/16" x 4" bolts, nuts on the rim's inside face, reachable from the
 # open bays below), landing in the rim blocking authored in ``FS-SG-DECK.reinforcements``.
 # ``type_ref`` stays the library's fascia type for exactly that reason.
-_BALCONY_BRACKET_DROP_IN = 2.0  # walking surface to bracket top: plank 1 1/2" + 1/2"
+_BALCONY_BRACKET_DROP_IN = SPEC.balcony_deck_thickness_in + 0.5  # half inch below rim
 _BALCONY_BRACKET_BOTTOM = (_deck_walking_surface - inch(_BALCONY_BRACKET_DROP_IN)
                            - RAILING_EXT_ALUMINUM_FASCIA.fascia_mount.overall_height)
 BALCONY_GUARD = Railing(
@@ -2620,7 +2659,7 @@ _BALCONY_MOUNT_LAYOUT = fascia_stations(
 # The front guard needs rollover blocks between the edge joist and its neighbour.
 # The shared layout's post x coordinates locate these blocks; placing the entries
 # inside the field ensures the reinforcement resolver retains them.
-_GUARD_BLOCK_INSET_FT = 2.0 / 12.0
+_GUARD_BLOCK_INSET_FT = 4.0 / 12.0  # clear the through-bolt tails and nut access
 _BALCONY_GUARD_STATIONS = [
     (station.post[0] / 0.3048, _y_balcony_front + _GUARD_BLOCK_INSET_FT)
     for station in _BALCONY_MOUNT_LAYOUT
@@ -2741,6 +2780,7 @@ BALCONY_JOISTS = FloorSystem(
                      # joists behind them stay bare KDAT: nothing sees a joist once the band
                      # and the fascia are on.
                      rim_material="post-paint-white", rim_member=_BALCONY_RIM_MEMBER,
+                     rim_end_extensions=(inch(0), inch(_END_JOIST_INSET_FT * 12)),
                      bearing_refs=("BM-SG-BLW", "BM-SG-BLE")),
     # BLOCKING UNDER THE GUARD AND PORCH TRACKS; the centre front block also carries
     # the garden flood's underside box. The two heat-pump hosts that used to be here went to grade on 2026-09-02
@@ -3008,7 +3048,7 @@ for _row, _y, _rise in _PILLAR_ROWS:
 BALCONY_FASCIA = Fascia(
     uid="SGFC01AAAA", tag="TR-SG-FASCIA", kind=TrimKind.FASCIA,
     path=tuple(pt(m(x), m(y)) for x, y in offset_path(
-        [point.xy_m for point in _GUARD_PATH], inch(0.5).meters)),
+        [point.xy_m for point in _GUARD_EDGE_PATH], inch(0.5).meters)),
     # 11 1/4" of rim + the 1 1/2" plank, rounded up: 13". Ripped from PVC SHEET — cellular
     # PVC trim board stops at 11 1/4" — and still one board, so the Ultralox brackets
     # through-bolt fascia and rim exactly as before (bracket top 1/2" below the rim top).
@@ -3111,7 +3151,7 @@ BALCONY_RUNNEL = Gutter(
 
 BALCONY_DRIP = Flashing(
     uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,
-    top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(3),
+    top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(4),
     material="metal-flat-sheet", host_ref="FS-SG-DECK",
     section=FormedFlashingSection(drip=inch(_drip_depth_in)))
 # The gutter apron (2026-10-31): a "counter" section — the upstand lies on the fascia face

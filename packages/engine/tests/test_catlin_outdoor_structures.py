@@ -1056,7 +1056,7 @@ def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catl
     for tag in ("RL-SG-PTHRESH-S", "RL-SG-PTHRESH-N"):
         rail = rails[tag]
         assert rail.serves_stair is None, tag  # level on the wall top, never raked
-        assert [round(p.xy_m[0] / FT, 4) for p in rail.path] == [26.5, 27.5], tag
+        assert [round(p.xy_m[0] / FT, 4) for p in rail.path] == [26.5, 27.0833], tag
     # ** THE OPENING IS IN THE MIDDLE OF THE EAST LEG, SO IT TAKES TWO ELEMENTS. ** A `path`
     # cannot carry a hole. RL-SG-PORCH runs up the east edge and stops on the south stair
     # guard's line, 2 3/4" inside the flight; RL-SG-PORCH-NE picks up on the north one.

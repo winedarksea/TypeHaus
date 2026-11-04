@@ -463,7 +463,7 @@ def _grade_guard(ctx: CheckContext, guard, cid: str, code: str) -> Finding:
                         "the model draws", (guard.tag,), code)
     return _pass(cid, f"{guard.tag} holds its {guard.infill} to "
                  f"{guard.baluster_spacing.inches:.1f}\" (<= 4\"), and draws "
-                 f"{drawn / .0254:.1f}\" between adjacent {guard.infill}", code)
+                 f"{drawn / .0254:.1f}\" between adjacent guard members", code)
 
 
 def _largest_screen_opening_m(ctx: CheckContext, guard) -> float | None:
@@ -519,7 +519,10 @@ def _largest_drawn_opening_m(ctx: CheckContext, guard) -> float | None:
     guard = guard.source
     solids = children_of(ctx.model, guard, _INFILL_CATEGORIES)
     if not solids:
-        return None
+        from .short_guard_openings import short_bay_opening_m
+
+        return (short_bay_opening_m(ctx, guard, _GUARD_SPHERE.meters)
+                if guard.infill == "balusters" else None)
     # Off the line the guard stands on (a fascia guard's is outboard of its path).
     stations = guard_post_stations(ctx.plan.library, guard)
     if len(stations) < 2:

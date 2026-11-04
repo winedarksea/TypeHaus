@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import type { Model } from "../model/types";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
-import { buildFloor, buildSolid } from "../three/builders/structure";
+import { buildFloor, buildSolid, buildStair } from "../three/builders/structure";
 
 declare global {
   interface Window {
@@ -30,6 +30,13 @@ const point = (index: number): [number, number, number] => {
 };
 const overview = point(5);
 overview[1] += 0.65;
+const stairSolids = model.solids!.filter(s => s.host_ref?.startsWith("RL-SG-PSTAIR-")
+  || s.host_ref?.startsWith("RL-SG-PTHRESH-"));
+const stairPoint = (tag: string): [number, number, number] => {
+  const solid = stairSolids.find(s => s.tag === tag)!;
+  return [solid.outline.reduce((sum, p) => sum + p[0], 0) / solid.outline.length,
+    solid.z0_m + 0.04, solid.outline.reduce((sum, p) => sum + p[1], 0) / solid.outline.length];
+};
 const cases = [
   { name: "Complete guard · continuous deck slope", target: overview, span: 8,
     eye: [-5, 3.5, 6] },
@@ -40,28 +47,64 @@ const cases = [
     eye: [0.25, -0.45, -1] },
   { name: "Flank mount · sloping rim", target: point(2), span: 0.75,
     eye: [-1, 0.2, 0.2] },
+  { name: "Porch stair · shared head and complete handrail", target: stairPoint("RL-SG-PSTAIR-S-BASE2"),
+    span: 3.2, eye: [2, 1.5, 3] },
+  { name: "Stair foot · concrete pad", target: stairPoint("RL-SG-PSTAIR-S-BASE1"),
+    span: 0.5, eye: [1, 0.45, 1] },
+  { name: "Shared head · concrete wall top", target: stairPoint("RL-SG-PTHRESH-S-BASE2"),
+    span: 0.65, eye: [1, 0.4, 1] },
+  { name: "Middle tread · backing cutaway", target: stairPoint("RL-SG-PSTAIR-S-BASE2"),
+    span: 0.65, eye: [0.7, -0.4, 1] },
 ];
 if (dark) { document.body.style.background = "#22262a"; document.body.style.color = "#eee"; }
 for (const sample of cases) {
   const center: [number, number] = [sample.target[0], sample.target[2]];
-  const target = new THREE.Vector3(0, sample.target[1], 0);
+  const target = new THREE.Vector3(0, sample.target[1]
+    + (sample.name.startsWith("Porch stair") ? 0.45 : 0), 0);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(dark ? 0x22262a : 0xe5e3df);
   scene.add(new THREE.HemisphereLight(0xffffff, 0x9b8f80, 2));
   const sun = new THREE.DirectionalLight(0xffffff, 3); sun.position.set(-3, 5, 4); scene.add(sun);
   const fill = new THREE.DirectionalLight(0xffffff, 1); fill.position.set(3, -1, -4); scene.add(fill);
   const group = new THREE.Group(), frame = new THREE.Group(); scene.add(group, frame);
   const picks: THREE.Mesh[] = [], byUid = new Map<string, THREE.Material[]>();
+  const isStair = sample.name.startsWith("Porch stair") || sample.name.startsWith("Stair foot")
+    || sample.name.startsWith("Shared head") || sample.name.startsWith("Middle tread");
   const context = model.solids!.filter(s => s.tag.startsWith("TR-SG-FASCIA-")
     || s.tag.startsWith("TR-SG-GUTTER-") || s.tag.startsWith("TR-SG-APRON-"));
-  for (const solid of [...guard, ...context]) {
+  const visible = isStair ? [...stairSolids, ...model.solids!.filter(s => s.tag === "SL-SG-STAIRPAD")]
+    : [...guard, ...context];
+  if (isStair) {
+    const stair = model.stairs!.find(s => s.tag === "ST-SG-PORCH")!;
+    const cut = sample.name.startsWith("Middle tread") ? { ...stair,
+      members: stair.members.filter(m => m.category === "stringer"
+        && m.p0[1] > sample.target[2]), finish_parts: [] } : stair;
+    buildStair(group, cut, center, mode, palette, picks, byUid, model.catalog?.materials);
+    const wall = model.walls.find(w => w.tag === "W-SG-E1")!;
+    for (const layer of wall.layers.filter(l => l.polygon.length >= 3)) {
+      buildSolid(group, { uid: `review-${layer.name}`, tag: wall.tag, category: "concrete",
+        storey: wall.storey, outline: layer.polygon, z0_m: wall.z0_m, z1_m: wall.z1_m,
+        material: layer.material, voids: [], assembly: null, provenance: null }, center, mode, palette, model.catalog, picks, byUid,
+        model.catalog?.materials);
+    }
+  }
+  for (const solid of visible) {
+    const previousPickCount = picks.length;
+    const pickUid = solid.group
+      ? model.solids!.find(candidate => candidate.group === solid.group)?.uid : undefined;
     buildSolid(group, solid, center, mode, palette, model.catalog, picks, byUid,
-      model.catalog?.materials, undefined, solid.host_ref === "RL-SG-BALCONY" ? guard[0].uid : undefined);
+      model.catalog?.materials, undefined, pickUid);
+    if (solid.body_mesh && picks.length === previousPickCount) {
+      failures.push(`${solid.tag}: mounting mesh has no selection target`);
+    }
+    if (pickUid && picks.slice(previousPickCount).some(pick => pick.userData.uid !== pickUid)) {
+      failures.push(`${solid.tag}: mounting mesh lost its railing selection`);
+    }
   }
   const deck = model.floors!.find(f => f.tag === "FS-SG-DECK")!;
   const cutaway = sample.name.includes("cutaway") ? { ...deck, subfloor: null,
     members: deck.members.filter(member => Math.abs(member.p0[1] - sample.target[2]) < 0.15
       && Math.abs(member.p1[1] - sample.target[2]) < 0.15) } : deck;
-  buildFloor(group, cutaway, center, mode, palette, picks, byUid, frame, model.catalog?.materials);
+  if (!isStair) buildFloor(group, cutaway, center, mode, palette, picks, byUid, frame, model.catalog?.materials);
   const camera = new THREE.OrthographicCamera(-sample.span * 1.35 / 2, sample.span * 1.35 / 2,
     sample.span / 2, -sample.span / 2, 0.01, 100);
   camera.position.copy(target).add(new THREE.Vector3(...sample.eye)); camera.lookAt(target);

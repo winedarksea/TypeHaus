@@ -17,6 +17,7 @@ from __future__ import annotations
 from typehaus import RailingType
 from typehaus.model.fascia_mount import FasciaMountSpec
 from typehaus.model.product import Product
+from typehaus.model.surface_mount import SurfaceMountSpec
 from typehaus.quantities import inch
 
 _ESR_3485 = "https://icc-es.org/wp-content/uploads/report-directory/ESR-3485.pdf"
@@ -54,13 +55,14 @@ ULTRALOX_3_INCH_FASCIA_MOUNT = FasciaMountSpec(
     outside_corner_product="FM244390", pocket_width=inch(3.036),
     overall_height=inch(6), flange_height=inch(5), flange_width=inch(5.64),
     wall_thickness=inch(0.25), corner_wing_length=inch(5.966),
-    inside_corner_envelope=inch(4.286), display_corner_hole_inset=inch(0.8125),
+    inside_corner_envelope=inch(4.286), display_corner_hole_inset=inch(0.4375),
     mounting_hole_spacing=(inch(4.63), inch(4)), mounting_hole_top_drop=inch(0.5),
     bolt_diameter=inch(5 / 16), bolt_length=inch(4),
     post_screw_diameter=inch(0.242), post_screw_length=inch(1),
-    washer_diameter=inch(0.875), rear_washer_diameter=inch(1.25),
+    washer_diameter=inch(0.6875), rear_washer_diameter=inch(0.6875),
     display_washer_thickness=inch(0.0625), display_head_width=inch(0.5),
     display_head_height=inch(0.22), insert_thickness=inch(0.125),
+    foot_block_fascia_screw_length=inch(2),
     foot_block_product="FM025900", display_foot_block_width=inch(1),
     display_foot_block_thickness=inch(0.125), bottom_clearance=inch(3),
     source="Ultralox 2025 product guide: FM044300 5.64 x 3.036 x 6; FM244390 "
@@ -104,6 +106,17 @@ RAILING_INT_STAIR_GUARD = RailingType(
 
 RAILING_EXT_ALUMINUM_SURFACE = RailingType(
     tag="RAILING-EXT-ALUMINUM-SURFACE",
+    surface_mount=SurfaceMountSpec(
+        product="BP04450", bottom_clearance=inch(3), stair_bottom_clearance=inch(1),
+        base_width=inch(4.99),
+        display_base_thickness=inch(0.5), display_hole_spacing=inch(3.75),
+        wood_screw_diameter=inch(5/16), wood_screw_length=inch(6),
+        concrete_anchor_diameter=inch(0.25), concrete_anchor_length=inch(3),
+        display_head_width=inch(0.5), display_head_height=inch(0.22),
+        source="Ultralox BP04450: 4.99 inch cast base; ESR-3485 Table 1 / Fig.9 "
+               "wood and concrete fasteners. Thickness, hole centres and head contours "
+               "are display approximations; verify actual base before drilling.",
+    ),
     name="Exterior aluminum surface-mounted guard",
     product_ref=WILLIAMS_COLONIAL_42_BLACK.tag,
     post_width=inch(3), baluster_width=inch(0.5),

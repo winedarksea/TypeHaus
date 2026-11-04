@@ -63,7 +63,7 @@ def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Find
              if el.serves_stair is not None else None)
     base = el.base_elevation.meters
     if stair is not None:
-        surface = raking_surface(stair, base)
+        surface = raking_surface(stair, base, extend_ends=el.extend_stair_rake)
         # R311.7.8.1 measures a handrail above the *nosings*, which is not the datum
         # ``height`` uses (guard height above the deck); ``height`` stands in when the
         # element states no ``top_height``.
@@ -83,6 +83,9 @@ def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Find
         surface = deck_surface(deck, [p.xy_m for p in el.path],
                                guard_line_offset_m(model.plan.library, el))
     stations = railing_post_stations(path, max(el.post_spacing.meters, MIN_POST_SPACING_M))
+    if el.surface_post_mounts and len(el.surface_post_mounts) != len(stations):
+        return findings + [element_error("geometry.railing_surface_layout",
+            f"{el.tag}: surface_post_mounts must match all post stations", el.tag)]
     shared, shared_findings = shared_post_ends(model.plan, el, stations)
     findings += shared_findings
     first = len(model.solids)
@@ -98,13 +101,29 @@ def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Find
             return findings + [element_error("geometry.railing_fascia_layout", str(exc), el.tag)]
     else:
         findings += emit_posts(model, el, storey, stations, surface, parts, rail_h, shared)
-    bottom_clearance = mount_spec.bottom_clearance.meters if mount_spec else 0.0
+    if el.surface_post_mounts:
+        from typehaus.resolve.railings.surface_assembly import emit_surface_mounts
+
+        if product is None or product.surface_mount is None or el.mount != "surface":
+            del model.solids[first:]
+            return findings + [element_error("geometry.railing_surface_layout",
+                f"{el.tag}: surface bearings need a surface mount product", el.tag)]
+        try:
+            emit_surface_mounts(model, el, storey, stations, parts, product.surface_mount, shared)
+        except ValueError as exc:
+            del model.solids[first:]
+            return findings + [element_error("geometry.railing_surface_layout", str(exc), el.tag)]
+    surface_spec = product.surface_mount if el.surface_post_mounts else None
+    detailed_mount = mount_spec or surface_spec
+    bottom_clearance = detailed_mount.bottom_clearance.meters if detailed_mount else 0.0
+    if surface_spec is not None and stair is not None:
+        bottom_clearance = surface_spec.stair_bottom_clearance.meters
     emit_rails(model, el, storey, path, surface, parts, rail_h,
-               bottom_clearance_m=bottom_clearance, face_height=mount_spec is not None)
+               bottom_clearance_m=bottom_clearance, face_height=detailed_mount is not None)
     findings.extend(emit_terminations(model, el, storey, path, surface, parts, rail_h))
     findings += emit_infill(model, el, storey, stations, surface, parts, rail_h,
                             bottom_clearance_m=bottom_clearance,
-                            face_height=mount_spec is not None)
+                            face_height=detailed_mount is not None)
     # Every part of the guard is addressable as the railing it belongs to.
     for i in range(first, len(model.solids)):
         model.solids[i] = replace(model.solids[i], host_ref=el.tag, group=el.tag)

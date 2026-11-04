@@ -41,6 +41,7 @@ from typehaus.model.placeables import (
 )
 from typehaus.model.refs_holes import PublishedHole
 from typehaus.model.registry import register_constructor
+from typehaus.model.surface_mount import SurfaceMountSpec, SurfacePostMount
 from typehaus.model.track_lighting import (
     ASSEMBLY_DIMENSION_RELATIVE_TOLERANCE,
     ASSEMBLY_DIMENSION_TOLERANCE_M,
@@ -529,6 +530,7 @@ class RailingType(HausModel):
     # ``Railing.fascia_face_offset`` plus this, not on the path.
     fascia_post_offset: Length | None = None
     fascia_mount: FasciaMountSpec | None = None
+    surface_mount: SurfaceMountSpec | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None
@@ -1131,6 +1133,8 @@ for _name, _obj in (
     ("FurnitureType", FurnitureType),
     ("RailingType", RailingType),
     ("FasciaMountSpec", FasciaMountSpec),
+    ("SurfaceMountSpec", SurfaceMountSpec),
+    ("SurfacePostMount", SurfacePostMount),
     ("FixtureType", FixtureType),
     ("ProductPart", ProductPart),
     ("ApplianceType", ApplianceType),

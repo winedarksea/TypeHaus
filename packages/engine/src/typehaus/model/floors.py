@@ -52,6 +52,10 @@ class JoistSpec(HausModel):
     # narrower than a whole-system material: the joists behind the band are still bare
     # lumber, and saying so per member is the only honest way to bill the paint.
     rim_material: str | None = None
+    # Low/high extensions along the rim, beyond the edge-joist axes. This permits
+    # the band to reach an edge joist face when the field outline names its axis.
+    rim_end_extensions: tuple[Length, Length] | None = None
+
     # The band board's own SECTION, where the derived 1 1/4" rim is not enough stick. A rim
     # under a *bearing* line is a squash block a hundred feet long: the load crossing it is
     # not the deck's own but whatever stands on the plate above — a story-and-a-half's
@@ -102,6 +106,11 @@ class JoistSpec(HausModel):
     sill_tie: str | None = None
     sill_ties_per_end: int = 1
 
+    @model_validator(mode="after")
+    def validate_rim_extensions(self):
+        if self.rim_end_extensions and any(v.meters < 0 for v in self.rim_end_extensions):
+            raise ValueError("rim end extensions must be nonnegative")
+        return self
 
 class JoistReinforcement(HausModel):
     """Extra joist plies sistered under a concentrated load, plus solid blocking.

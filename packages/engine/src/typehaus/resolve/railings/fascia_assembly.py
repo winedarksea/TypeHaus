@@ -1,6 +1,6 @@
 """Resolve purchased fascia mounts into shared export/viewer bodies."""
 
-from shapely.geometry import MultiPoint
+import math
 
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.connector_geometry.mesh import box_mesh, combine_meshes, transform_mesh
@@ -15,6 +15,7 @@ from typehaus.resolve.railings.fascia_mesh import (
     pocket_mesh,
     post_screw_mesh,
 )
+from typehaus.resolve.railings.mounting_solids import mounting_solid
 
 
 def mounting_layout(library, railing):
@@ -23,15 +24,6 @@ def mounting_layout(library, railing):
                           railing.fascia_face_offset.meters,
                           product.fascia_post_offset.meters)
 
-
-def _solid(model, railing, storey, suffix, mesh, material, product=None):
-    outline = tuple(MultiPoint([p[:2] for p in mesh.positions]).convex_hull.exterior.coords)[:-1]
-    model.solids.append(ResolvedSolid(
-        uid=f"{railing.uid}-{suffix.lower()}", tag=f"{railing.tag}-{suffix}",
-        storey=storey, category="railing", outline=outline,
-        z0_m=min(p[2] for p in mesh.positions), z1_m=max(p[2] for p in mesh.positions),
-        assembly=railing.assembly, material=material, product=product, body_mesh=mesh,
-    ))
 
 
 def emit_fascia_assembly(model, railing, storey, surface, parts, spec, shared):
@@ -112,20 +104,24 @@ def emit_fascia_assembly(model, railing, storey, surface, parts, spec, shared):
                                 top - spec.overall_height.meters * fraction)
                 screws.append(place(post_screw_mesh(spec), screw_origin, first.outward,
                                     tuple(side * v for v in first.tangent)))
-        _solid(model, railing, storey, f"FASCIA-BRACKET{index + 1}",
+        mounting_solid(model, railing, storey, f"FASCIA-BRACKET{index + 1}",
                combine_meshes(*leaves), parts.post_material,
                getattr(spec, f"{station.variant}_product"))
-        _solid(model, railing, storey, f"FASCIA-BOLTS{index + 1}",
+        mounting_solid(model, railing, storey, f"FASCIA-BOLTS{index + 1}",
                combine_meshes(*bolts), parts.post_material)
-        _solid(model, railing, storey, f"FASCIA-SCREWS{index + 1}",
+        mounting_solid(model, railing, storey, f"FASCIA-SCREWS{index + 1}",
                combine_meshes(*screws), parts.post_material)
         insert = box_mesh((-half, -half, -spec.overall_height.inches),
                           (half, half, -spec.overall_height.inches + spec.insert_thickness.inches))
-        _solid(model, railing, storey, f"FASCIA-INSERT{index + 1}",
+        mounting_solid(model, railing, storey, f"FASCIA-INSERT{index + 1}",
                place(insert, origin, first.tangent, first.outward), parts.post_material)
+        corners = [(station.post[0] + first.tangent[0]*x + first.outward[0]*y,
+                    station.post[1] + first.tangent[1]*x + first.outward[1]*y)
+                   for x, y in square(0, 0, post_half, post_half)]
+        corners.sort(key=lambda p: math.atan2(p[1]-station.post[1], p[0]-station.post[0]))
         model.solids.append(ResolvedSolid(
             uid=f"{railing.uid}-p{index:02d}", tag=f"{railing.tag}-POST{index + 1}",
-            storey=storey, category="railing", outline=square(*station.post, post_half, post_half),
+            storey=storey, category="railing", outline=corners,
             z0_m=bottom + spec.insert_thickness.meters, z1_m=walking_z + railing.height.meters,
             assembly=railing.assembly, material=parts.post_material,
         ))
@@ -150,13 +146,13 @@ def _emit_foot_blocks(model, railing, storey, stations, surface, parts, spec):
                      (width/2, -post_offset+thickness, clearance)),
             box_mesh((-width/2, -post_offset, clearance-thickness),
                      (width/2, thickness, clearance)),
-            place(post_screw_mesh(spec),
+            place(post_screw_mesh(spec, length_in=spec.foot_block_fascia_screw_length.inches),
                   (0, -post_offset*M_PER_IN, (-mounting_drop-0.5)*M_PER_IN),
                   (1, 0), (0, 1)),
             transform_mesh(post_screw_mesh(spec),
                            origin_m=(0, 0, (clearance-thickness)*M_PER_IN),
                            y_axis=(0, 0, -1), z_axis=(0, 1, 0)),
         )
-        _solid(model, railing, storey, f"FASCIA-FOOTBLOCK{index + 1}",
+        mounting_solid(model, railing, storey, f"FASCIA-FOOTBLOCK{index + 1}",
                place(bracket, origin, tangent, outward), parts.post_material,
                spec.foot_block_product)

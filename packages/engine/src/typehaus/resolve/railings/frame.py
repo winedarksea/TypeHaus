@@ -105,7 +105,9 @@ def emit_posts(model: ResolvedModel, el: Railing, storey: str, stations: list[Ve
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-p{index:02d}", tag=f"{el.tag}-POST{index + 1}", storey=storey,
             category=RAILING_CATEGORY, outline=square(px, py, half, half),
-            z0_m=z0 - below, z1_m=z0 + rail_h, assembly=el.assembly,
+            z0_m=(el.surface_post_mounts[index].elevation.meters
+                  if el.surface_post_mounts else z0 - below),
+            z1_m=z0 + rail_h, assembly=el.assembly,
             material=parts.post_material,
         ))
     return []
@@ -274,6 +276,21 @@ def _rail_path(path: list[Vec], surface: RailingSurface, rise_m: float) -> tuple
     a corner can never be rounded off, and the sampling in between is what makes the bar
     follow the flight. ``rise_m`` is this level's height above that surface.
     """
+    # A short level extension must meet the rake at the actual end nosing. Uniform
+    # samples alone can cut that corner and lower a handrail below its stated height.
+    sampled_path = []
+    for a, b in zip(path[:-1], path[1:], strict=True):
+        dx, dy = b[0]-a[0], b[1]-a[1]
+        run_sq = dx*dx+dy*dy
+        fractions = {0.0}
+        if run_sq > 1e-12:
+            for point in surface.breakpoints:
+                t = ((point[0]-a[0])*dx+(point[1]-a[1])*dy)/run_sq
+                if 0 < t < 1:
+                    fractions.add(t)
+        sampled_path.extend((a[0]+t*dx, a[1]+t*dy) for t in sorted(fractions))
+    sampled_path.append(path[-1])
+    path = sampled_path
     points: list[Vec3] = []
     starting_z = surface.height_at(path[0]) + rise_m
     leading_level = True

@@ -225,18 +225,21 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
     for rim_index, boundary in enumerate((ends.rim_lo, ends.rim_hi)):
         if boundary is None:
             continue  # shared plate: blocking, not a band — see floor_ends
+        extensions = spec.rim_end_extensions
+        rim_start = perp0 - (extensions[0].meters if extensions else 0)
+        rim_end = perp1 + (extensions[1].meters if extensions else 0)
         if along_x:
-            r0, r1 = (boundary, perp0), (boundary, perp1)
+            r0, r1 = (boundary, rim_start), (boundary, rim_end)
         else:
-            r0, r1 = (perp0, boundary), (perp1, boundary)
+            r0, r1 = (rim_start, boundary), (rim_end, boundary)
         # A rim runs from ``perp0`` to ``perp1`` — ALONG the fall — so on a tilted field it
         # is a raked member, and it says so through the end elevations rather than being
         # drawn level and left to interpenetrate the joists it closes.
-        rim_a, rim_b = lift(boundary, perp0), lift(boundary, perp1)
+        rim_a, rim_b = lift(boundary, rim_start), lift(boundary, rim_end)
         rim_rakes = abs(rim_b - rim_a) > 1e-9
         members.append(FramedMember(
             system.uid, f"rim-{rim_index}", "rim", rim_profile, r0, r1, z0 + rim_a, z1 + rim_a,
-            perp1 - perp0, material=spec.rim_material,
+            rim_end - rim_start, material=spec.rim_material,
             z0_end_m=(z0 + rim_b) if rim_rakes else None,
             z1_end_m=(z1 + rim_b) if rim_rakes else None,
         ))

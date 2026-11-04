@@ -90,9 +90,10 @@ def bolt_mesh(spec, grip_in):
     )
 
 
-def post_screw_mesh(spec):
+def post_screw_mesh(spec, *, length_in=None):
+    length = spec.post_screw_length.inches if length_in is None else length_in
     return combine_meshes(
-        cylinder(spec.post_screw_diameter.inches / 2, -spec.post_screw_length.inches, 0),
+        cylinder(spec.post_screw_diameter.inches / 2, -length, 0),
         cylinder(spec.display_head_width.inches / 2, 0,
                  spec.display_head_height.inches / 2),
     )

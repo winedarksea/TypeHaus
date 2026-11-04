@@ -44,6 +44,15 @@ def test_corner_assembly_rotates_with_both_mounting_faces(angle, turn, variant):
     assert sum(s.product == getattr(PRODUCT.fascia_mount, f"{variant}_product")
                for s in brackets) == 1
     assert all(s.body_mesh is not None for s in brackets)
+    for index, station in enumerate(layout, 1):
+        post = next(s for s in model.solids if s.tag.endswith(f"-POST{index}"))
+        face = station.faces[0]
+        for point in post.outline:
+            relative = tuple(point[i]-station.post[i] for i in range(2))
+            assert abs(sum(relative[i]*face.tangent[i] for i in range(2))) < (
+                PRODUCT.fascia_mount.pocket_width.meters/2)
+            assert abs(sum(relative[i]*face.outward[i] for i in range(2))) < (
+                PRODUCT.fascia_mount.pocket_width.meters/2)
 
 
 def test_unsupported_corner_reports_an_error_without_partial_hardware():
@@ -64,6 +73,29 @@ def test_mounting_flange_has_open_holes_not_a_solid_envelope():
     assert caps
     assert not any(p.covers(Point(inch(-2.315).meters, inch(-0.5).meters)) for p in caps)
     assert any(p.covers(Point(0, inch(-2).meters)) for p in caps)
+
+
+def test_straight_mount_has_four_full_length_bolts_on_the_catalog_pattern():
+    guard = _guard([(0, 0), (2, 0)])
+    model = resolve_railings([guard], types=[PRODUCT])
+    bolts = next(s.body_mesh for s in model.solids if s.tag.endswith("FASCIA-BOLTS1"))
+    # Shaft tips are behind every washer/nut. Read their circles from the emitted mesh,
+    # rather than re-running the assembly's hole loop.
+    tip_y = max(p[1] for p in bolts.positions)
+    tips = {(round(x, 9), round(z, 9)) for x, y, z in bolts.positions if abs(y-tip_y) < 1e-9}
+    spec = PRODUCT.fascia_mount
+    assert tip_y == pytest.approx(-guard.fascia_face_offset.meters
+                                  - spec.wall_thickness.meters + spec.bolt_length.meters)
+    for x in (-spec.mounting_hole_spacing[0].meters/2,
+              spec.mounting_hole_spacing[0].meters/2):
+        for z in (-guard.fascia_bracket_drop.meters-spec.mounting_hole_top_drop.meters,
+                  -guard.fascia_bracket_drop.meters-spec.mounting_hole_top_drop.meters
+                  -spec.mounting_hole_spacing[1].meters):
+            circle = {(px, pz) for px, pz in tips
+                      if abs(math.hypot(px-x, pz-z)-spec.bolt_diameter.meters/2) < 1e-8}
+            assert len(circle) == 12
+            tips -= circle
+    assert not tips
 
 
 def test_deck_surface_samples_the_edge_instead_of_extrapolating_under_outboard_posts():
@@ -102,6 +134,14 @@ def test_balcony_mounts_follow_deck_and_preserve_order_quantities(catlin_model_r
     surface = deck_surface(deck, [p.xy_m for p in guard.path],
                            guard.fascia_face_offset.meters + PRODUCT.fascia_post_offset.meters)
     spec = PRODUCT.fascia_mount
+    counter = model.plan.by_tag("TR-SG-COUNTER-FLASH-W")
+    house_face_y = counter.path[0].y.meters + counter.thickness.meters/2
+    north_edge = max(y for _x, y in deck.deck_outline)
+    assert all(member.p1[1] == pytest.approx(north_edge)
+               for member in deck.members if member.category == "rim")
+    for index in (1, 9):
+        post = solids[f"{guard.tag}-POST{index}"]
+        assert 0 < house_face_y-max(y for _x, y in post.outline) < inch(4).meters
     for index, station in enumerate(layout, 1):
         post = solids[f"{guard.tag}-POST{index}"]
         mount = solids[f"{guard.tag}-FASCIA-BRACKET{index}"]
@@ -109,6 +149,27 @@ def test_balcony_mounts_follow_deck_and_preserve_order_quantities(catlin_model_r
         assert mount.z1_m == pytest.approx(walking_z - guard.fascia_bracket_drop.meters)
         assert post.z0_m == pytest.approx(mount.z0_m + spec.insert_thickness.meters)
         assert post.z1_m - walking_z == pytest.approx(inch(42).meters)
+        # Every rear washer fits on its actual member, including both corner faces.
+        from typehaus.resolve.framing.profiles import cross_section
+        bolts = solids[f"{guard.tag}-FASCIA-BOLTS{index}"].body_mesh
+        for face in station.faces:
+            candidates = []
+            for member in deck.members:
+                run = math.dist(member.p0, member.p1)
+                axis = tuple((member.p1[i]-member.p0[i])/run for i in range(2))
+                if member.category in ("rim", "joist") and abs(sum(
+                        axis[i]*face.outward[i] for i in range(2))) < 1e-8:
+                    distance = abs(sum((member.p0[i]-face.origin[i])*face.outward[i]
+                                       for i in range(2)))
+                    candidates.append((distance, member, axis, run))
+            _distance, member, axis, run = min(candidates, key=lambda item: item[0])
+            half = cross_section(member.profile).width_m/2
+            rear_face = [p for p in bolts.positions if abs(sum(
+                (p[i]-member.p0[i])*face.outward[i] for i in range(2))+half) < 1e-8]
+            assert rear_face, mount.tag
+            for point in rear_face:
+                along = sum((point[i]-member.p0[i])*axis[i] for i in range(2))
+                assert -1e-8 <= along <= run+1e-8, (mount.tag, member.child_key)
     assert mounts[0].z1_m > mounts[2].z1_m + inch(2).meters
     gutter = model.plan.by_tag("TR-SG-GUTTER")
     assert min(s.z0_m for s in mounts) - gutter.top_elevation.meters == pytest.approx(
@@ -136,6 +197,35 @@ def test_balcony_fascia_tracks_rim_and_foot_fasteners_stay_below_deck(catlin_mod
     assert max(x for x, _y in boards[0].outline) == pytest.approx(
         west.p0[0] - inch(1.25).meters/2)
     assert not deck.penetrations
+    from typehaus.resolve.framing.profiles import cross_section
+
+    # Roll restraints must leave the bolt tails and wrench access outside the wood.
+    blocking = []
+    for member in deck.members:
+        if member.category != "blocking":
+            continue
+        profile = cross_section(member.profile)
+        from typehaus.resolve.geometry import rect_between
+        blocking.append(Polygon(rect_between(member.p0, member.p1,
+                                              -profile.width_m/2, profile.width_m/2)))
+    for solid in model.solids:
+        if solid.host_ref != "RL-SG-BALCONY" or "FASCIA-BOLTS" not in solid.tag:
+            continue
+        mesh = solid.body_mesh
+        assert not any(Polygon([mesh.positions[i][:2] for i in triangle]).intersection(
+            block).area > 1e-10 for triangle in mesh.triangles for block in blocking), solid.tag
+    deck_plan = Polygon(deck.deck_outline)
+    for solid in model.solids:
+        if (solid.host_ref != "RL-SG-BALCONY" or solid.body_mesh is None
+                or not any(part in solid.tag for part in ("BOLTS", "SCREWS", "FOOTBLOCK"))):
+            continue
+        mesh = solid.body_mesh
+        for triangle in mesh.triangles:
+            vertices = [mesh.positions[i] for i in triangle]
+            heights = [z-deck.deck_top_at(x, y) for x, y, z in vertices]
+            if min(heights) < 0 and max(heights) > -(deck.deck_z1_m-deck.deck_z0_m):
+                assert Polygon([(x, y) for x, y, _ in vertices]).intersection(
+                    deck_plan).area < 1e-10, solid.tag
 
 
 def test_layout_rejects_repeated_points():
@@ -157,7 +247,9 @@ def test_mount_meshes_survive_json_geometry_ir_and_ifc(catlin_model_ro):
     origin = exported.createIfcAxis2Placement3D(exported.createIfcCartesianPoint((0., 0., 0.)))
     context = exported.createIfcGeometricRepresentationContext(None, "Model", 3, 1e-5, origin)
     for solid in model.solids:
-        if solid.host_ref != "RL-SG-BALCONY" or solid.body_mesh is None:
+        if (solid.host_ref not in {"RL-SG-BALCONY", "RL-SG-PSTAIR-S", "RL-SG-PSTAIR-N",
+                                   "RL-SG-PTHRESH-S", "RL-SG-PTHRESH-N"}
+                or solid.body_mesh is None):
             continue
         assert_wire_mesh(serialized[solid.uid]["body_mesh"],
                          solid.body_mesh.positions, solid.body_mesh.triangles)

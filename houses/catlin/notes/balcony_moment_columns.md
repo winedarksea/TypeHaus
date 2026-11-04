@@ -1380,3 +1380,11 @@ out of it.
 - ICC-ES ESR-3485
 - IRC R106, IRC R202, IRC R301.1.3, IRC R301.5, IRC R402.2, IRC R507.1, IRC R507.4, IRC Table R507.5(1
 - MN Rules 1309.0301
+
+### Fascia mounting geometry, 2026-11-04
+
+Moving the guard datum outside the flank rim members increases the front run by
+1.25 inches. With the existing wind assumptions and column heights, the base wind
+moments become 1,099.0 lb-ft at BF1/BF3 and 1,118.3 lb-ft at BR1/BR3. This is a
+geometry update to the earlier hand-worked values; the guard point-load lever and
+column design remain unchanged. Regression oracles use these updated wind demands.

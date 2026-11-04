@@ -45,3 +45,18 @@ screws enter the fascia below the plank or the bottom rail, leaving the deck sur
 
 Run `npm --prefix ui run railing-review` after rebuilding model.json for production-builder
 close-ups, including an explicitly labelled framing cutaway showing the inner nuts.
+
+Foot-block fascia screws are modeled at 2 inches rather than reusing the 1 inch post
+TEKs: they pass the 1 inch PVC fascia and enter the rim. Their heads stay below the
+waterproof deck; the rail attachment points upward into the bottom rail.
+
+The two rear end posts stop 2 11/16 inches south of the deck edge so all four bolts
+and washers bear on the flank rims. The rims extend the final 3/4 inch from the rear
+joist axis to its outside face; the fascia continues to the full deck edge. Combined
+with the existing 2 3/4 inch house gap and 3 inch post, this leaves a 3 15/16 inch clear
+opening beside the house. The post count and eight panel supports remain unchanged.
+
+Washers are standard 5/16 inch SAE flat washers (11/16 inch outside diameter) on both
+sides. Corner-hole centres remain display dimensions; their positions and every rear
+washer's footprint are checked against the actual rim/edge-joist faces. These contours
+are not a drilling template or a wood-connection capacity verification.

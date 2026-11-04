@@ -13,17 +13,13 @@ import pytest
 from _helpers import catlin_params
 
 from typehaus.model import (
-    Connector,
     ConnectorKind,
     Dowel,
     Fascia,
-    Flashing,
     Gutter,
     Railing,
     RailingKind,
-    Sump,
     TrimKind,
-    VentRun,
     element_kinds,
     ft,
     inch,
@@ -73,7 +69,7 @@ def _solids(model, category):
     return [s for s in model.solids if s.category == category]
 
 
-def _balcony_deck_top(model) -> float:
+def _balcony_deck_top(model):
     """Top of the aluminium boards over FS-SG-DECK — the balcony walking surface.
 
     The plank is the floor system's own ``subfloor``, so the surface underfoot is the
@@ -81,7 +77,12 @@ def _balcony_deck_top(model) -> float:
     """
     deck = next(f for f in model.floors if f.tag == "FS-SG-DECK")
     assert deck.deck_z1_m > deck.deck_z0_m, "FS-SG-DECK must resolve a deck sheet"
-    return deck.deck_z1_m
+    from typehaus.resolve.railings.guard_line import guard_line_offset_m
+    from typehaus.resolve.railings.spans import deck_surface
+
+    guard = model.plan.by_tag("RL-SG-BALCONY")
+    return deck_surface(deck, [p.xy_m for p in guard.path],
+                        guard_line_offset_m(model.plan.library, guard)).height_at
 
 
 def test_catlin_resolves_all_accessory_categories(catlin_model) -> None:
@@ -514,9 +515,11 @@ def test_catlin_balcony_guard_is_a_42in_railing(catlin_model) -> None:
                 if "RL-SG-BALCONY-FASCIA-BRACKET" in s.tag}
     assert posts, "railing posts expected"
     for post in posts:
-        assert math.isclose(post.z1_m - deck_top, 3.5 * FT, abs_tol=0.02)
+        point = tuple(sum(p[i] for p in post.outline)/len(post.outline) for i in range(2))
+        assert math.isclose(post.z1_m - deck_top(point), 3.5 * FT, abs_tol=1e-8)
         bracket = brackets[post.tag.rsplit("POST", 1)[1]]
-        assert math.isclose(post.z0_m, bracket.z0_m, abs_tol=1e-9), "post seats in its bracket"
+        assert math.isclose(post.z0_m, bracket.z0_m + 0.125*0.0254, abs_tol=1e-9), (
+            "post seats on the bracket insert")
 
 
 def test_catlin_stair_guard_still_resolves_flat(catlin_model) -> None:
@@ -621,9 +624,11 @@ def test_catlin_balcony_guard_draws_its_balusters(catlin_model) -> None:
     assert len(pickets) > 80, "a 38' guard at a 4\" clear gap is ~90 pickets"
     rail_half = 0.75 * 0.0254
     for picket in pickets:
-        assert math.isclose(picket.z0_m, deck_top + rail_half, abs_tol=1e-9), (
+        point = tuple(sum(p[i] for p in picket.outline)/len(picket.outline) for i in range(2))
+        local_top = deck_top(point)
+        assert math.isclose(picket.z0_m, local_top + 3*0.0254 + 2*rail_half, abs_tol=1e-9), (
             "a picket's foot sits on the walking surface, trimmed under the bottom rail")
-        assert math.isclose(picket.z1_m, deck_top + 3.5 * FT - rail_half, abs_tol=1e-9), (
+        assert math.isclose(picket.z1_m, local_top + 3.5 * FT - 2*rail_half, abs_tol=1e-9), (
             "...and its head stops under the top rail")
 
 
@@ -664,7 +669,8 @@ def test_infill_never_lands_on_the_frame_category(catlin_model) -> None:
     squares on every floor plan and silently move the frame row's count."""
     frame = [s for s in catlin_model.solids if s.category == "railing"]
     assert frame
-    assert all(any(part in s.tag for part in ("POST", "RAIL", "BRACKET", "RETURN", "ENDPLATE"))
+    assert all(any(part in s.tag for part in ("POST", "RAIL", "BRACKET", "RETURN", "ENDPLATE",
+                                                         "FASCIA", "BASE", "ANCHORS", "BACKING"))
                for s in frame)
     # Not pinned to a count any more. A raking rail is banded finely enough to draw as one
     # continuous bar and a round one is faceted on top of that, so the frame's solid count

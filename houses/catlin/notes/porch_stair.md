@@ -99,8 +99,8 @@ Williams Colonial panel on the 42" surface post kit (ICC-ES ESR-3485 black, the
 `RAILING-EXT-ALUMINUM-SURFACE` product `RL-SG-PORCH` uses), 36" over the nosings, which clears
 R312.1.2's 34" stair minimum; the Williams stair panel (CS252306B) spans 34"-38" there. Their
 path runs **2 3/4" inside each flight edge** (`_POST_INSET_FT`) so the 3" post's 4.99" cast
-base lands wholly on a tread, screwed into the KDAT stringers with ESR-3485's 4 GRK RSS
-5/16" x 6" (SG >= 0.50). Clear between the post faces: **36 1/2"**.
+base fits across the flight. The middle bases stand on treads over KDAT backing;
+the end bases stand on concrete, as detailed below. Clear between post faces: **36 1/2"**.
 
 **The Colonial top rail is not a handrail** — ESR-3485 §5.7 puts it outside the report's
 scope, and it is 2.25" wide. Until 2026-10-30 the two guards claimed `guard_and_handrail` on a
@@ -109,8 +109,7 @@ gets one real one: **`RL-SG-PSTAIR-HR`**, the Williams Black ADA Pipe Rail and 9
 Kit (AD901102B, `RAILING-EXT-ALUMINUM-ADA-HANDRAIL`), on the **south** side — the right hand
 going down. It is `mount="post"`: its two 90 deg returns fix to the south guard's end posts (the head one
 is `RL-SG-PTHRESH-S`'s)
-with 3 x #10 TEK screws and a backer (`newel` ends), 52.3" apart on the rake against the
-kit's 72", so there is no mid bracket — ESR-3485 Table 1 lists the midspan bracket on a 2"
+with 3 x #10 TEK screws and a backer (`newel` ends), within the kit's 72 inch support spacing, so there is no mid bracket — ESR-3485 Table 1 lists the midspan bracket on a 2"
 post only, and the guard's middle post is 3". Its
 line is 3 3/8" inboard of the guard line, 1 1/2" clear of the Colonial rail, with its
 centreline 34 1/4" over the nosings (pipe top 35"). The ~1.5" OD is read off the part names
@@ -125,19 +124,38 @@ kit's 72".
 4'-5" south of the house and 1'-6" north of the `W-RG-EAST-BALCONY` apron, so there is no
 wall on either side that `code.R312_1_1_stair_open_side` could credit even in principle.
 
-**Post bases (owner, 2026-10-31).** One post per junction: each raked guard ends on its
-threshold cheek's east post (`end_post_ref`), a single 42" post on one cast base centred on
-W-SG-E1's east face, so the head is drawn and billed once. The foot and middle posts stay on
-riser lines, where 36" spacing puts them; two posts would stop the handrail short of the end
-risers. **Site detail:** a base on a riser line straddles the riser: half bears on the upper
-tread, half on a solid KDAT block cut to the 6.79" rise, set on the tread below (the pad at
-the foot) tight to the riser and screwed through it. Two of ESR-3485's four GRK RSS 5/16" x
-6" go into the framing under the upper tread, two through the block. The block is the flat
-SG >= 0.50 substrate the ESR's wood row assumes; confirm it with Ultralox before ordering.
+**Modeled mounting assembly (2026-11-04).** Each side retains three post stations and
+one shared head post. Foot bases stand on `SL-SG-STAIRPAD`, 3 inches beyond the lowest
+riser. Head bases stand directly on W-SG-E1's concrete top, 5 inches back from its east
+face; notch the composite threshold board around them. The threshold cheek owns that
+post, base and four anchors; the raked guard emits none at its shared end. The middle
+base is centered on the third tread, with four 5/16 x 6 inch GRK RSS screws into a
+5.5 x 7.5 x 5.5 inch KDAT block below the plank, spanning the outer two stringer faces.
+The block-to-stringer connection remains a construction detail to confirm; the mesh is
+bearing/fit evidence, not a connection capacity calculation.
+
+The cast BP04450 base envelope is 4.99 inches square. Base thickness, hole spacing and
+fastener head contours are display dimensions, identified in `SurfaceMountSpec`; use
+the physical product as the drilling template. Concrete anchors use the existing
+ESR-3485 1/4 x 3 inch schedule. Both end bases fit entirely on their supporting concrete;
+the modeled head anchor row is more than 3 inches from the wall's east face.
+
+The panels and handrail keep the straight nosing-line rake between the landing-mounted
+end posts (`extend_stair_rake`). Posts remain plumb and their bases use actual level
+bearings independently of the rail's nosing datum. Stair bottom rails clear the nosing
+line by 1 inch; level threshold bottom rails by 3 inches. The short raked portion over
+the threshold still has less than 4 inches of opening at the head post's inside face.
+The handrail extends beyond both end risers and keeps its two post returns; there is no
+second post at either head. The existing 42 inch post kit has **43.5 inches actual length**,
+so the pad-mounted foot post fits it: see the
+[Williams project planner](https://www.williamsrailing.com/filesimages/Resources/Project%20Planner/williams-project-planner-baluster-railing.pdf).
+
+Production viewer reviews: `cd ui && npm run railing-review`, after building Catlin JSON.
+The review includes foot, head, tread backing and the complete stair guard/handrail.
 
 ### The threshold's two cheeks
 
-`RL-SG-PTHRESH-S` and `RL-SG-PTHRESH-N`, 1'-0" each, **level** at 42" to match `RL-SG-PORCH`,
+`RL-SG-PTHRESH-S` and `RL-SG-PTHRESH-N`, 7 inches each, **level** at 42" to match `RL-SG-PORCH`,
 on the wall top between the porch plank and the head of the flight — on the stair guards'
 lines, 2 3/4" inside y -9'-0" and -5'-3" (since 2026-10-31). Each draws ONE post: its west
 end is `RL-SG-PORCH`'s (or `-NE`'s) end post (`start_post_ref`), which stops on the same

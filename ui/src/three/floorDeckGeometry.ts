@@ -1,11 +1,11 @@
-import type { Floor } from "../model/types";
+import type { Floor, Vec2 } from "../model/types";
 import { createPlanPrismGeometry, type PlanCenter } from "./planGeometry";
 
 /** The engine's deck datum and slope, with legacy payload support for level floors. */
 export function createFloorDeckGeometry(floor: Floor, center: PlanCenter) {
   if (!floor.subfloor || !floor.members.length) return null;
   const points = floor.members.flatMap(member => [member.p0, member.p1]);
-  const outline = floor.deck_outline?.length ? floor.deck_outline : [
+  const outline: Vec2[] = floor.deck_outline?.length ? floor.deck_outline : [
     [Math.min(...points.map(p => p[0])), Math.min(...points.map(p => p[1]))],
     [Math.max(...points.map(p => p[0])), Math.min(...points.map(p => p[1]))],
     [Math.max(...points.map(p => p[0])), Math.max(...points.map(p => p[1]))],

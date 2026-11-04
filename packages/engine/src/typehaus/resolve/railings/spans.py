@@ -66,6 +66,8 @@ class RailingSurface:
     #: as it takes for the drawn bar to be continuous — the guard case has a picket in each
     #: gap to hide a coarse band, but a bare ``rail_count=1`` handrail has nothing to hide it.
     rail_bands: RailBandFn
+    # Exact slope transitions projected onto the rail before regular sampling.
+    breakpoints: tuple[Vec, ...] = ()
 
 
 def flat_surface(base_m: float) -> RailingSurface:
@@ -86,7 +88,7 @@ def flat_surface(base_m: float) -> RailingSurface:
     return RailingSurface(height_at=height_at, spans=spans, rail_bands=rail_bands)
 
 
-def raking_surface(stair, base_m: float) -> RailingSurface:
+def raking_surface(stair, base_m: float, *, extend_ends: bool = False) -> RailingSurface:
     """A ``serves_stair`` railing raking along its stair's sloped nosing line.
 
     A flat resolver extrudes every rail at one elevation, which turns an authored stair
@@ -106,7 +108,7 @@ def raking_surface(stair, base_m: float) -> RailingSurface:
     def height_at(point: Vec) -> float:
         z = winder_surface_z_at(stair, point)
         if z is None:
-            z = walkline_z_at(lines, point, RAIL_STAIR_REACH_M)
+            z = walkline_z_at(lines, point, RAIL_STAIR_REACH_M, extrapolate_ends=extend_ends)
         return base_m if z is None else z
 
     def _split(a: Vec, b: Vec, steps: int) -> list[tuple[Vec, Vec]]:
@@ -139,7 +141,8 @@ def raking_surface(stair, base_m: float) -> RailingSurface:
         steps = max(int(math.ceil(run / step)), 1)
         return [(pa, pb, height_at(pa), height_at(pb)) for pa, pb in _split(a, b, steps)]
 
-    return RailingSurface(height_at=height_at, spans=spans, rail_bands=rail_bands)
+    return RailingSurface(height_at=height_at, spans=spans, rail_bands=rail_bands,
+                          breakpoints=tuple((p[0], p[1]) for line in lines for p in line))
 
 
 def deck_surface(deck, protected_path: list[Vec], guard_offset_m: float) -> RailingSurface:
