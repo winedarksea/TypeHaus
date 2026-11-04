@@ -16,12 +16,14 @@ from typehaus.findings import Finding, element_error
 from typehaus.model.enums import RailingKind
 from typehaus.model.structure import Railing
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.railings.column_ends import column_end_indices, emit_column_brackets
 from typehaus.resolve.railings.fascia_assembly import emit_fascia_assembly
 from typehaus.resolve.railings.fascia_layout import fascia_deck
 from typehaus.resolve.railings.frame import (
     MIN_POST_SPACING_M,
     emit_posts,
     emit_rails,
+    rail_rises,
     railing_post_stations,
 )
 from typehaus.resolve.railings.guard_line import (
@@ -120,10 +122,18 @@ def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Find
         bottom_clearance = surface_spec.stair_bottom_clearance.meters
     emit_rails(model, el, storey, path, surface, parts, rail_h,
                bottom_clearance_m=bottom_clearance, face_height=detailed_mount is not None)
+    # An end on a column face has no post: one bracket per rail, and the bay runs to the face.
+    columns = [i for i in column_end_indices(model.plan, el, path)
+               if (i % len(stations)) in shared]
+    if columns:
+        emit_column_brackets(model, el, storey, path, surface, parts,
+                             rail_rises(el, parts, rail_h, bottom_clearance,
+                                        detailed_mount is not None), columns)
     findings.extend(emit_terminations(model, el, storey, path, surface, parts, rail_h))
     findings += emit_infill(model, el, storey, stations, surface, parts, rail_h,
                             bottom_clearance_m=bottom_clearance,
-                            face_height=detailed_mount is not None)
+                            face_height=detailed_mount is not None,
+                            postless=frozenset(i % len(stations) for i in columns))
     # Every part of the guard is addressable as the railing it belongs to.
     for i in range(first, len(model.solids)):
         model.solids[i] = replace(model.solids[i], host_ref=el.tag, group=el.tag)

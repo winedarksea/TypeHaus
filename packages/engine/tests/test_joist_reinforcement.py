@@ -253,10 +253,9 @@ def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_mode
     entry blocks the bay on EACH side of its line — for ten blocks a flank. Authoring every
     line would put two blocks in every bay, a real ``structural.member_interference`` FAIL.
 
-    ``FS-SG-PORCH`` carries THREE: one 2" inside the south edge joist under each of
-    RL-SG-PORCH's three south-leg guard posts (17'-0" at <= 60" o.c.), the balcony's inset
-    pattern, since the porch joists run E-W with that leg too. (The centre pillars' packs,
-    and the station they collapsed into a guard post, retired with the centre line, 2026-09.)
+    ``FS-SG-PORCH`` carries EIGHT: one in the first bay behind the south edge joist under
+    each inner screw column of RL-SG-PORCH's five bases that the ledgers do not carry
+    (2026-11-04), the balcony's inset pattern, since the porch joists run E-W with that leg.
 
     Every entry on both decks is ``plies=1``: blocks and plies answer different limit
     states — rollover and cross-grain bearing — and nothing in this house has the second one
@@ -267,7 +266,7 @@ def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_mode
     deck_blocks = [m for m in by_tag["FS-SG-DECK"].members if m.category == "blocking"]
     assert len(deck_blocks) == 29, len(deck_blocks)
     porch_blocks = [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"]
-    assert len(porch_blocks) == 3, len(porch_blocks)
+    assert len(porch_blocks) == 8, len(porch_blocks)
     for tag in ("FS-SG-DECK", "FS-SG-PORCH"):
         assert [m for m in by_tag[tag].members
                 if m.category == "sister_joist"] == [], f"plies=1 must sister nothing ({tag})"

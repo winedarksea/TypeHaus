@@ -245,17 +245,11 @@ def emit_rails(model: ResolvedModel, el: Railing, storey: str, path: list[Vec],
 
     Posts, brackets and infill are untouched: those are genuinely discrete pieces.
     """
-    levels = el.rail_count if el.rail_count > 0 else 1
     radius = parts.rail_round_radius_m
     profile = (round_profile(radius, RAILING_FACETS) if radius is not None
                else rect_profile(parts.rail_section_m, parts.rail_section_m))
-    for level in range(levels):
-        frac = 1.0 - (level / max(levels - 1, 1)) if levels > 1 else 1.0
-        rise = rail_h * frac
-        if face_height:
-            half = parts.rail_section_m / 2
-            rise = bottom_clearance_m + half + (rail_h - bottom_clearance_m
-                                               - 2*half) * frac
+    for level, rise in enumerate(rail_rises(el, parts, rail_h, bottom_clearance_m,
+                                            face_height)):
         sweep = SolidSweep(path=_rail_path(path, surface, rise), profile=profile)
         if len(sweep.path) < 2:
             continue
@@ -266,6 +260,21 @@ def emit_rails(model: ResolvedModel, el: Railing, storey: str, path: list[Vec],
             outline=sweep_plan_silhouette(sweep), z0_m=z0, z1_m=z1,
             assembly=el.assembly, material=parts.rail_material, sweep=sweep,
         ))
+
+
+def rail_rises(el: Railing, parts: RailingParts, rail_h: float, bottom_clearance_m: float = 0,
+               face_height: bool = False) -> list[float]:
+    """Each rail's centreline height above the walking surface, top rail first."""
+    levels = el.rail_count if el.rail_count > 0 else 1
+    out = []
+    for level in range(levels):
+        frac = 1.0 - (level / max(levels - 1, 1)) if levels > 1 else 1.0
+        rise = rail_h * frac
+        if face_height:
+            half = parts.rail_section_m / 2
+            rise = bottom_clearance_m + half + (rail_h - bottom_clearance_m - 2*half) * frac
+        out.append(rise)
+    return out
 
 
 def _rail_path(path: list[Vec], surface: RailingSurface, rise_m: float) -> tuple[Vec3, ...]:

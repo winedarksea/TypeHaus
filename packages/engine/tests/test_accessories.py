@@ -670,7 +670,7 @@ def test_infill_never_lands_on_the_frame_category(catlin_model) -> None:
     frame = [s for s in catlin_model.solids if s.category == "railing"]
     assert frame
     assert all(any(part in s.tag for part in ("POST", "RAIL", "BRACKET", "RETURN", "ENDPLATE",
-                                                         "FASCIA", "BASE", "ANCHORS", "BACKING"))
+                                                         "FASCIA", "BASE", "ANCHORS", "BACKING", "COLBRK"))
                for s in frame)
     # Not pinned to a count any more. A raking rail is banded finely enough to draw as one
     # continuous bar and a round one is faceted on top of that, so the frame's solid count

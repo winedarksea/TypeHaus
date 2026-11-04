@@ -11,7 +11,7 @@ from __future__ import annotations
 import math
 
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.structure import Railing
+from typehaus.model.structure import Post, Railing
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import Vec, length, sub
 from typehaus.resolve.railings.parts import railing_type
@@ -70,7 +70,8 @@ def shared_post_ends(plan, el: Railing, stations: list[Vec]) -> tuple[set[int], 
     """Station indices whose post another guard draws, and a WARN for each that does not.
 
     An end naming ``start_post_ref``/``end_post_ref`` draws no post only when the named guard
-    draws one on that very station; otherwise this guard keeps its own and says why.
+    draws one on that very station, or the named column's face is there; otherwise this
+    guard keeps its own and says why.
     """
     skipped: set[int] = set()
     findings: list[Finding] = []
@@ -81,6 +82,18 @@ def shared_post_ends(plan, el: Railing, stations: list[Vec]) -> tuple[set[int], 
             continue
         other = plan.by_tag(ref) if plan is not None else None
         station = stations[index]
+        if isinstance(other, Post):  # a column is this end's post (→ .column_ends)
+            from typehaus.resolve.railings.column_ends import column_face_distance
+
+            if column_face_distance(other, station) <= _SHARED_POST_TOL_M:
+                skipped.add(index)
+                continue
+            findings.append(Finding(
+                severity=Severity.WARN, check_id="geometry.railing_shared_post_missing",
+                message=(f"railing {el.tag} ends on column {ref}, but ({station[0]:.3f}, "
+                         f"{station[1]:.3f}) m is not on its face; its own post is drawn"),
+                element_tags=(el.tag, ref), result=Result.FAIL))
+            continue
         # Two guards deferring to each other would leave the station bare.
         if (isinstance(other, Railing) and other.mount not in _POSTLESS_MOUNTS
                 and el.tag not in (other.start_post_ref, other.end_post_ref)

@@ -268,10 +268,9 @@ def test_the_porch_deck_is_unbroken_and_blocks_only_its_guard_posts(catlin_model
 
     The two 9" chases (``FO-SG-BF2`` / ``FO-SG-BR2``) that let the centre pillars through the
     joist plane retired with them on 2026-09-22, and with them the headers and trimmers.
-    What is left is the south guard: its leg runs WITH the joists now, over the south edge
-    joist, so a block 2" inside that joist at each interior post station takes the baseplate
-    bolts — posts at 60" on the 17'-0" leg, so x 13'-9", 18'-0" and 22'-3"; the two corner
-    posts land on the wall tops.
+    What is left is the south guard (2026-11-04): its five bases stand on the plank 2 5/8"
+    inside the edge, outer screws in the edge joist (or a ledger), inner screws in a block
+    in the first bay behind it — one under each inner screw column the ledgers miss.
     """
     floor = _floor(catlin_model, "FS-SG-PORCH")
     assert [m for m in floor.members if m.category == "sister_joist"] == []
@@ -279,8 +278,15 @@ def test_the_porch_deck_is_unbroken_and_blocks_only_its_guard_posts(catlin_model
     assert not [o for o in catlin_model.plan.all_elements()
                 if o.element_kind == "FloorOpening" and o.tag in ("FO-SG-BF2", "FO-SG-BR2")]
     blocks = [m for m in floor.members if m.category == "blocking"]
-    assert sorted(round(m.p0[0] / FT, 4) for m in blocks) == [13.75, 18.0, 22.25]
-    edge = min(p.xy_m[1] for p in catlin_model.plan.by_tag("RL-SG-PORCH").path)
+    from typehaus.resolve.railings.guard_line import guard_post_stations
+
+    guard = catlin_model.plan.by_tag("RL-SG-PORCH")
+    posts = [x for x, _y in guard_post_stations(catlin_model.plan.library, guard)]
+    columns = [x + side * 1.875 * INCH for x in posts for side in (-1, 1)]
+    assert len(blocks) == 8
+    for block in blocks:
+        assert min(abs(block.p0[0] - x) for x in columns) < 1e-6, block.child_key
+    edge = min(_porch_outline(catlin_model), key=lambda p: p[1])[1]
     for block in blocks:
         # In the first bay behind the edge joist (inset 3/4"), not on the edge itself.
         assert min(block.p0[1], block.p1[1]) > edge, block.child_key
@@ -701,9 +707,10 @@ def test_porch_joists_run_ledger_to_ledger_with_no_oversail(catlin_model) -> Non
     sheet = [p for p in _floor(catlin_model, "FS-SG-PORCH").deck_outline]
     assert min(p[1] for p in sheet) == pytest.approx(south)
     assert max(p[1] for p in sheet) == pytest.approx(north)
-    # No setback: the guard's south leg stands on the sheet's own edge.
+    # The guard's south leg stands 2 5/8" inside the sheet's edge: its bases' outer screw
+    # row on the edge joist's centreline.
     guard_y = min(p.xy_m[1] for p in catlin_model.plan.by_tag("RL-SG-PORCH").path)
-    assert guard_y == pytest.approx(south)
+    assert guard_y == pytest.approx(south + 2.625 * INCH)
     joist = catlin_model.plan.by_tag("FS-SG-PORCH").joists
     assert joist.cantilever is None or joist.cantilever.inches == pytest.approx(0.0)
     # The balcony keeps its own symmetric 9". 9", not 6", since 2026-09-03: the deck edge
@@ -1031,13 +1038,13 @@ def test_the_porch_stair_climbs_five_risers_from_the_pad_to_the_plank(catlin_mod
 
 def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catlin_model
                                                                             ) -> None:
-    """Two raked guards and one ADA handrail on the flight, two level cheeks on the threshold,
-    and RL-SG-PORCH's east leg opened in its MIDDLE with RL-SG-PORCH-NE carrying the stub.
+    """Two raked guards and one ADA handrail on the flight, and the porch guard's east leg
+    opened between the two stair guards' head posts.
 
-    Nothing in the engine asks for the threshold pair — R312.1.1 measures the FLIGHT, whose
-    top tread is only 27.152" over the pad, and `code.R312_1_guard_height` cannot see a guard
-    opening in a deck edge at all, at the end or in the middle (plans/TODO.md). They are the
-    author's guard return, so they are asserted here or they are nothing.
+    Since 2026-11-04 the east leg runs on the head posts' line on W-SG-E1's top, so it passes
+    through both: RL-SG-PORCH-SE and -NE draw them at the porch's 42", and each stair guard
+    ends on one (`end_post_ref`). `code.R312_1_guard_height` cannot see a guard opening in a
+    deck edge, so the doorway is asserted here or it is nothing.
     """
     rails = {e.tag: e for s in catlin_model.plan.storeys
              for e in catlin_model.plan.storey_elements(s.tag)
@@ -1053,33 +1060,22 @@ def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catl
     handrail = rails["RL-SG-PSTAIR-HR"]
     assert (handrail.role, handrail.mount, handrail.serves_stair) == (
         "handrail", "post", "ST-SG-PORCH")
-    for tag in ("RL-SG-PTHRESH-S", "RL-SG-PTHRESH-N"):
-        rail = rails[tag]
-        assert rail.serves_stair is None, tag  # level on the wall top, never raked
-        assert [round(p.xy_m[0] / FT, 4) for p in rail.path] == [26.5, 27.0833], tag
-    # ** THE OPENING IS IN THE MIDDLE OF THE EAST LEG, SO IT TAKES TWO ELEMENTS. ** A `path`
-    # cannot carry a hole. RL-SG-PORCH runs up the east edge and stops on the south stair
-    # guard's line, 2 3/4" inside the flight; RL-SG-PORCH-NE picks up on the north one.
+    assert not any(tag.startswith("RL-SG-PTHRESH") for tag in rails)
     inset = 2.75 / 12.0
-    porch = rails["RL-SG-PORCH"]
-    assert porch.path[-1].xy_m[1] / FT == pytest.approx(-9.0 + inset, abs=1e-3)
-    assert porch.path[-1].xy_m[0] / FT == pytest.approx(26.5)
-    stub = rails["RL-SG-PORCH-NE"]
-    assert [round(p.xy_m[0] / FT, 4) for p in stub.path] == [26.5, 26.5]
-    assert stub.path[0].xy_m[1] / FT == pytest.approx(-5.25 - inset, abs=1e-3)
-    # Same product, same mount, same height — it is one run of guard with a doorway in it.
-    assert stub.type_ref == porch.type_ref and stub.mount == porch.mount
-    assert stub.height.inches == pytest.approx(porch.height.inches)
-    # The doorway is the 45" flight less the two insets: 39 1/2" between the guard lines.
-    assert (stub.path[0].xy_m[1] - porch.path[-1].xy_m[1]) / FT == pytest.approx(
+    south, north = rails["RL-SG-PORCH-SE"], rails["RL-SG-PORCH-NE"]
+    assert south.path[0].xy_m[1] / FT == pytest.approx(-9.0 + inset, abs=1e-3)
+    assert north.path[0].xy_m[1] / FT == pytest.approx(-5.25 - inset, abs=1e-3)
+    # The doorway is the 45" flight less the two insets: 39 1/2" between the head posts.
+    assert (north.path[0].xy_m[1] - south.path[0].xy_m[1]) / FT == pytest.approx(
         3.75 - 2 * inset, abs=1e-3)
-    # ** ONE POST AT EACH JUNCTION** (owner, 2026-10-31): the cheek draws only its east post,
-    # which the stair guard's head shares; its west end is the porch guard's end post.
-    for side, owner in (("S", "RL-SG-PORCH"), ("N", "RL-SG-PORCH-NE")):
-        cheek, stair = rails[f"RL-SG-PTHRESH-{side}"], rails[f"RL-SG-PSTAIR-{side}"]
-        assert (cheek.start_post_ref, stair.end_post_ref) == (owner, cheek.tag)
-        assert stair.path[-1].xy_m == pytest.approx(cheek.path[-1].xy_m)
-        for rail, drawn in ((cheek, ["POST2"]), (stair, ["POST1"])):  # one bay, 2026-11-04
+    # ** ONE POST AT EACH JUNCTION**: the porch piece draws the head post, the stair guard
+    # draws only its foot.
+    for side, owner in (("S", south), ("N", north)):
+        stair = rails[f"RL-SG-PSTAIR-{side}"]
+        assert stair.end_post_ref == owner.tag
+        assert stair.path[-1].xy_m == pytest.approx(owner.path[0].xy_m)
+        assert owner.height.inches == pytest.approx(42.0)
+        for rail, drawn in ((owner, ["POST1"]), (stair, ["POST1"])):
             assert [s.tag.rsplit("-", 1)[1] for s in catlin_model.solids
                     if s.host_ref == rail.tag and "-POST" in s.tag] == drawn, rail.tag
 

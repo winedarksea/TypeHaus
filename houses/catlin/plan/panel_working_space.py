@@ -18,9 +18,10 @@ PANEL_WORKING_SPACE = [
                        pt(inch(48), inch(333.9375)), pt(inch(12.0625), inch(333.9375))),
               bottom=inch(0), top=inch(78),
               purpose="NEC 110.26(A) working space, ED-B-BACKUP-PANEL"),
+    # ED-B-PANEL's front is 4.79" proud (QO box 3.75" + QOCMF54UC cover 1.04").
     ClearZone(uid="XJW4X47MYM", tag="CZ-B-WS-PANEL",
-              outline=(pt(inch(12.0625), inch(338.0625)), pt(inch(48), inch(338.0625)),
-                       pt(inch(48), inch(368.0625)), pt(inch(12.0625), inch(368.0625))),
+              outline=(pt(inch(12.875), inch(338.0625)), pt(inch(48.8125), inch(338.0625)),
+                       pt(inch(48.8125), inch(368.0625)), pt(inch(12.875), inch(368.0625))),
               bottom=inch(0), top=inch(78),
               purpose="NEC 110.26(A) working space, ED-B-PANEL"),
     ClearZone(uid="CBWDYWN9AK", tag="CZ-B-WS-BACKUP-ENCL",
@@ -34,8 +35,8 @@ PANEL_WORKING_SPACE = [
     # pipe may enter. Pardoned by exact tag: the enclosures and the raceways, boxes and
     # relays of the electrical installation.
     # https://ecmweb.com/national-electrical-code/article/55341309/understanding-general-requirements-of-the-nec-part-14
-    # ONE zone over the three 4" panels, 6" deep and 6" past PANEL-2's south edge: the
-    # stricter envelope reuses routing-lattice lines that four tight boxes added
+    # ONE zone over the three panels (4.79" deep at most), 6" deep and 6" past PANEL-2's south
+    # edge: the stricter envelope reuses routing-lattice lines that four tight boxes added
     # (test_routing_perf_guard). The 2 3/8" south over-reach on ENCL is the same trade.
     ClearZone(uid="WSQTAZRM6J", tag="CZ-B-DS-W1",
               outline=(pt(inch(8), inch(286)), pt(inch(14), inch(286)),

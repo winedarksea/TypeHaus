@@ -76,6 +76,15 @@ def test_rake_detail_leaders_land_on_cut_geometry(catlin_model_ro):
         tip = Point(found[0].to)
         assert any(tag.startswith(prefixes) and shape.distance(tip) <= 0.75
                    for tag, shape in shapes), f"{text!r} leader tip is off {prefixes}"
+    # Every label stays on the card: the two-fill rafter bay's names wrap to the gutter.
+    from typehaus.emit.draw.annotate import leader_box
+
+    frame = scene.frame
+    left, width = frame.viewport[0], frame.viewport[2]
+    for leader in leaders:
+        u0, _z0, u1, _z1 = leader_box(leader, scale=frame.scale)
+        x0, x1 = (left + width / 2 + (u - frame.center[0]) * frame.scale / 12.0 for u in (u0, u1))
+        assert left - 1e-6 <= x0 and x1 <= left + width + 1e-6, f"{leader.text!r} leaves the card"
 
 
 def test_foundation_overlay_emits_flashings_and_gasket(catlin_model):

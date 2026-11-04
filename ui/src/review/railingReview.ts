@@ -31,14 +31,13 @@ const point = (index: number): [number, number, number] => {
 const overview = point(5);
 overview[1] += 0.65;
 const stairSolids = model.solids!.filter(s => s.host_ref?.startsWith("RL-SG-PSTAIR-")
-  || s.host_ref?.startsWith("RL-SG-PTHRESH-") || s.host_ref === "RL-SG-PORCH"
-  || s.host_ref === "RL-SG-PORCH-NE");
+  || s.host_ref?.startsWith("RL-SG-PORCH"));
 const stairPoint = (tag: string): [number, number, number] => {
   const solid = stairSolids.find(s => s.tag === tag)!;
   return [solid.outline.reduce((sum, p) => sum + p[0], 0) / solid.outline.length,
     solid.z0_m + 0.04, solid.outline.reduce((sum, p) => sum + p[1], 0) / solid.outline.length];
 };
-const foot = stairPoint("RL-SG-PSTAIR-S-BASE1"), head = stairPoint("RL-SG-PTHRESH-S-BASE2");
+const foot = stairPoint("RL-SG-PSTAIR-S-BASE1"), head = stairPoint("RL-SG-PORCH-SE-BASE1");
 const stairMid = foot.map((v, i) => (v + head[i]) / 2) as [number, number, number];
 const footBlock = footBlocks[3];
 const footTarget: [number, number, number] = [
@@ -66,9 +65,12 @@ const cases = [
     span: 0.5, eye: [1, 0.45, 1] },
   { name: "Shared head · concrete wall top", target: head,
     span: 0.65, eye: [1, 0.4, 1] },
-  // Open item: the level porch guard's leg posts have no authored bases yet.
-  { name: "Porch leg · east end post on W-SG-E1's inner face", target: stairPoint("RL-SG-PORCH-POST8"),
-    span: 1.2, eye: [-1, 0.5, 1] },
+  { name: "Porch leg · rails into PT-SG-BF3", target: stairPoint("RL-SG-PORCH-SE-COLBRK1"),
+    span: 1.2, eye: [1, 0.5, 1] },
+  { name: "Porch leg · house-end post on W-SG-E1", target: stairPoint("RL-SG-PORCH-E-HOUSE-BASE2"),
+    span: 0.8, eye: [1, 0.45, -1] },
+  { name: "Porch leg · south-leg plank base over its block", target: stairPoint("RL-SG-PORCH-BASE1"),
+    span: 0.65, eye: [1, 0.7, 1] },
 ];
 if (dark) { document.body.style.background = "#22262a"; document.body.style.color = "#eee"; }
 for (const sample of cases) {
@@ -86,8 +88,9 @@ for (const sample of cases) {
   const context = model.solids!.filter(s => s.tag.startsWith("TR-SG-FASCIA-")
     || s.tag.startsWith("TR-SG-GUTTER-") || s.tag.startsWith("TR-SG-APRON-")
     || (sample.name.startsWith("Rear end") && s.tag.startsWith("TR-SG-BASE-FLASH-")));
-  const visible = isStair ? [...stairSolids, ...model.solids!.filter(s => s.tag === "SL-SG-STAIRPAD")]
-    : [...guard, ...context];
+  // The cast columns are the porch guard's posts at its leg ends.
+  const visible = isStair ? [...stairSolids, ...model.solids!.filter(s => s.tag === "SL-SG-STAIRPAD"
+    || /^PT-SG-B[RF][13]$/.test(s.tag))] : [...guard, ...context];
   if (isStair) {
     const stair = model.stairs!.find(s => s.tag === "ST-SG-PORCH")!;
     buildStair(group, stair, center, mode, palette, picks, byUid, model.catalog?.materials);

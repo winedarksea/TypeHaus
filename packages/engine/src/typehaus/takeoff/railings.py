@@ -121,12 +121,15 @@ def _top_rail_length_ft(model: ResolvedModel, tag: str) -> float:
 
 
 def _hardware_quantities(model: ResolvedModel, element: Railing) -> dict[str, object]:
-    """Wall returns (an elbow + end plate each) and, where the type states its stock
-    length, the sticks the top rail takes and the splices between them."""
+    """Wall returns (an elbow + end plate each), rail brackets on a column face and, where
+    the type states its stock length, the sticks the top rail takes and the splices."""
     out: dict[str, object] = {}
     returns = len(_by_part(model, element.tag, "RETURN"))
     if returns:
         out["return_count"] = returns
+    column_brackets = len(_by_part(model, element.tag, "COLBRK"))  # a rail end on a column
+    if column_brackets:
+        out["column_bracket_count"] = column_brackets
     product = railing_type(model.plan.library, element)
     if product is not None and product.stock_length is not None:
         run_ft = _top_rail_length_ft(model, element.tag)

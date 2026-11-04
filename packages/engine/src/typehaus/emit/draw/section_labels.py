@@ -9,13 +9,15 @@ lives here rather than inside the per-family cut handlers.
 
 from __future__ import annotations
 
+import re
+import textwrap
 from typing import NamedTuple
 
 from typehaus.emit.draw.annotate import LEGACY_IN_PER_PT, LabelSpec, dodge, place_column
 from typehaus.emit.draw.annotation_ladders import LadderRequest
 from typehaus.emit.draw.plan_labels import inches_fraction
 from typehaus.emit.draw.scene import Leader, NamedPoint
-from typehaus.emit.draw.typography import TEXT_PT
+from typehaus.emit.draw.typography import CHAR_ASPECT, TEXT_PT, model_in_per_pt
 from typehaus.quantities import M_PER_IN
 
 # Vertical step between successive layer labels, **points**. A rung step is a property of
@@ -24,8 +26,34 @@ from typehaus.quantities import M_PER_IN
 LABEL_RUNG_PT = 2.6 / LEGACY_IN_PER_PT
 
 
+def view_span(frame) -> tuple[float, float] | None:
+    """The framed viewport's ``(left, right)`` in model inches along the cut, or ``None``."""
+    if frame is None:
+        return None
+    half = frame.viewport[2] / 2.0 * 12.0 / frame.scale
+    return frame.center[0] - half, frame.center[0] + half
+
+
+def fit_to_room(text: str, room_in: float | None, scale: float | None) -> str:
+    """``text`` wrapped to the ``room_in`` model inches a ladder column has on its card.
+
+    A two-fill bay's label ("rafter fill (closed-cell-spray-foam) 5\"") is wider than the
+    card's ladder gutter and ran off the paper. Frameless output is re-flowed by
+    ``annotation_ladders.resolve_ladders`` instead, so it is left alone. A thickness never
+    splits from its fraction.
+    """
+    if room_in is None or scale is None:
+        return text
+    columns = int(room_in / model_in_per_pt(scale) / (TEXT_PT * CHAR_ASPECT))
+    if len(text) <= columns:
+        return text
+    held = re.sub(r'(\d) (\d+/\d+")$', "\\1\u00a0\\2", text)
+    return "\n".join(textwrap.wrap(held, max(columns, 8))).replace("\u00a0", " ")
+
+
 def wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels,
-                      scale: float | None = None, either_side: bool = False) -> None:
+                      scale: float | None = None, either_side: bool = False,
+                      view_u: tuple[float, float] | None = None) -> None:
     """Name every layer of a wall's assembly, hung from a single anchor at its top.
 
     The whole ladder hangs from one anchor: the wall's top as seen in the crop. Rungs step
@@ -60,7 +88,10 @@ def wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels,
         z_top = wall_top
         text_u = min(mid_u for (_lab, mid_u) in fresh.values()) - 14.0
     # Sorted by mid_u toward the column: the horizontal leader lines nest, never cross.
-    entries = [LabelSpec(text=label, target=(mid_u, 0.0), key=(assembly, name))
+    room = None if view_u is None else (
+        text_u - view_u[0] if align == "right" else view_u[1] - text_u)
+    entries = [LabelSpec(text=fit_to_room(label, room, scale), target=(mid_u, 0.0),
+                         key=(assembly, name))
                for name, (label, mid_u) in
                sorted(fresh.items(), key=lambda item: item[1][1], reverse=align == "left")]
     ladder_labels.extend(place_column(entries, x=text_u, z_top=z_top / M_PER_IN - 1.0,
@@ -119,7 +150,8 @@ def _point_on_band(outlines, probe: float) -> tuple[float, float] | None:
 
 
 def roof_layer_ladder(roof, bands, crop, z_at, ladder_labels,
-                      scale: float | None = None) -> None:
+                      scale: float | None = None,
+                      view_u: tuple[float, float] | None = None) -> None:
     """Name every band of a roof's assembly, the way ``wall_layer_ladder`` names a wall's.
 
     Without this the one drawing whose subject is the roof-to-wall junction labelled the
@@ -161,13 +193,15 @@ def roof_layer_ladder(roof, bands, crop, z_at, ladder_labels,
         outlines.setdefault(band.name, []).append(band.points)
         thickness.setdefault(band.name, band.thickness_in)
 
+    column_u = u_lo / M_PER_IN - 1.0
+    room = None if view_u is None else column_u - view_u[0]
     entries = []
     for name, band_outlines in outlines.items():
         point = _point_on_band(band_outlines, probe_in)
         if point is None:
             continue
-        entries.append(LabelSpec(text=f'{name} {inches_fraction(thickness[name])}',
-                                 target=point, key=(roof.uid, name)))
+        text = fit_to_room(f'{name} {inches_fraction(thickness[name])}', room, scale)
+        entries.append(LabelSpec(text=text, target=point, key=(roof.uid, name)))
     if not entries:
         return
     # **Highest band first**, off the targets themselves — not off each band's offset from
@@ -177,7 +211,7 @@ def roof_layer_ladder(roof, bands, crop, z_at, ladder_labels,
     # and a cat's cradle.
     entries.sort(key=lambda entry: -entry.target[1])
     ladder_labels.extend(place_column(
-        entries, x=u_lo / M_PER_IN - 1.0, z_top=z_hi / M_PER_IN - 1.0,
+        entries, x=column_u, z_top=z_hi / M_PER_IN - 1.0,
         step_pt=LABEL_RUNG_PT, height_pt=TEXT_PT, align="right", scale=scale))
 
 

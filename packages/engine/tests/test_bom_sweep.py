@@ -38,8 +38,9 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # The flight guard stops at the newel; RL-A-FLIGHT-SKIRT closes the band under it.
     # 19 since 2026-10-13: RL-BW-GARAGE-E left with the garage's interior landing; 20 since
     # 2026-10-30, with ST-SG-PORCH's ADA handrail RL-SG-PSTAIR-HR; 21 since 2026-10-31, when
-    # RL-S-STAIRHEAD's partition leg became RL-S-STAIRHEAD-N.
-    assert sum(int(row["count"]) for row in rows) == 21
+    # RL-S-STAIRHEAD's partition leg became RL-S-STAIRHEAD-N; 23 since 2026-11-04, when the
+    # porch guard split at its four cast columns (six pieces) and the two PTHRESH cheeks left.
+    assert sum(int(row["count"]) for row in rows) == 23
     masonry = [row for row in bom["railings"] if row["style"] == "masonry"]
     assert [row["tags"] for row in masonry] == [["W-BW-SCREEN"]]
     assert all(row["post_count"] == 0 and row["bracket_count"] == 0 for row in masonry), \
@@ -83,7 +84,9 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(38.6, abs=0.05)
     # 40.6 since 2026-11-04: the porch deck's north edge followed W-B-BRICK 3/8" north.
     # Landing-mounted stair foot bases extend both guards by 3 inches net.
-    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(41.1, abs=0.1)
+    # 36.8 later that day: the columns are the porch guard's posts, so the four 12" spans
+    # through them, the PTHRESH cheeks and the plank's corners left the run.
+    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(36.8, abs=0.1)
     # 27.3 for RAILING-INT-STAIR-GUARD: RL-M-STAIRHEAD's 4 1/2" and RL-A-STAIR's run joined the
     # group, but the well's east leg is inside the roof past x=29'-4 1/2" (a 42" guard's top
     # at 282" meets the roof underside there) and carries nothing — a raked ToRoof partition,

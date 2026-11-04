@@ -7541,3 +7541,18 @@ wet-vent: the WC joins upstream of both, against 908.2.1.4.
 - **`D-M-STUDY`** keeps its glazed swing door and opens to 174 deg on a 3" magnetic holder,
   out of the living-room walkway. A bifold or a tracked panel was the alternative.
 - Record: `notes/interior_door_schedule.md`.
+
+## Porch guard on its columns; QO depth; roof and rake drawings (2026-11-04)
+
+- **Porch guard** (owner): the cast columns PT-SG-BR1/BF1/BR3/BF3 are its posts. One
+  `RL-SG-PORCH-*` per span (`params/porch_guards.py`), each end on a column face by
+  `start_post_ref`/`end_post_ref`: the engine draws a rail bracket per rail there
+  (`COLBRK`, billed as a count) and no post. Side legs on the W-SG-W1/E1 tops, a post at each
+  house end; only the south leg is on the plank (8 blocks). The PTHRESH cheeks are gone; the
+  stair guards' head posts belong to `-SE`/`-NE`. Every base sits wholly on one substrate
+  (test-graded). 36.8 LF, 12 posts, 12 column brackets. Record: `notes/porch_stair.md`.
+- **ED-B-PANEL** depth 4.79": the QO154M200P box is 3.75" (data sheet p.4) plus the separately
+  ordered QOCMF54UC surface cover (1.04"). Its working-space zones re-datum off that front.
+- **Drawings:** the roof plan keeps the 7/8" garage/canopy edge offset (first merge gap 1/2");
+  layer-ladder labels wrap to the room left inside the viewport, so the rake detail's roof
+  labels stay on the sheet.

@@ -248,7 +248,7 @@ def test_mount_meshes_survive_json_geometry_ir_and_ifc(catlin_model_ro):
     context = exported.createIfcGeometricRepresentationContext(None, "Model", 3, 1e-5, origin)
     for solid in model.solids:
         if (solid.host_ref not in {"RL-SG-BALCONY", "RL-SG-PSTAIR-S", "RL-SG-PSTAIR-N",
-                                   "RL-SG-PTHRESH-S", "RL-SG-PTHRESH-N"}
+                                   "RL-SG-PORCH", "RL-SG-PORCH-SE", "RL-SG-PORCH-NE"}
                 or solid.body_mesh is None):
             continue
         assert_wire_mesh(serialized[solid.uid]["body_mesh"],

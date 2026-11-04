@@ -40,6 +40,7 @@ from typehaus.emit.draw.section_labels import (
     DrawnBand,
     emit_ladders,
     roof_layer_ladder,
+    view_span,
     wall_layer_ladder,
 )
 from typehaus.emit.draw.section_members import (
@@ -93,6 +94,7 @@ def build_section(model: ResolvedModel, view: Slice, joints=None,
     b = SceneBuilder(name=f"{view.kind.value}-{view.tag}", units="in",
                      library=model.plan.library)
     scale = frame.scale if frame is not None else None
+    view_u = view_span(frame)
 
     # Layer-label ladders are collected per wall and emitted once, after every wall has
     # been cut, so ladders from different walls (and later the seed-callout column) can be
@@ -101,7 +103,7 @@ def build_section(model: ResolvedModel, view: Slice, joints=None,
     ladder_labels: list = []
     for wall in model.walls:
         _emit_wall_cut(b, model, wall, plane, crop, is_detail, min_draw,
-                       joints, ladder_labels, scale)
+                       joints, ladder_labels, scale, view_u)
 
     # Sheet metal is drawn last, in lap order; a cut with no Image II eave keeps its old order.
     sheet_cuts: list | None = [] if sheet_metal.image_ii_eave_in_cut(model, plane, crop) else None
@@ -117,7 +119,7 @@ def build_section(model: ResolvedModel, view: Slice, joints=None,
         _emit_solid_cut(b, model, solid, plane, crop)
 
     for roof in model.roofs:
-        _emit_roof_cut(b, model, roof, plane, crop, joints, ladder_labels, scale)
+        _emit_roof_cut(b, model, roof, plane, crop, joints, ladder_labels, scale, view_u)
 
     emit_framing_cuts(b, model, model.floors, plane, crop)
     emit_framing_cuts(b, model, model.stairs, plane, crop)
@@ -223,7 +225,7 @@ def build_annotated_section(model: ResolvedModel, view: Slice,
 
 def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
                    is_detail, min_draw, joints=None, ladder_labels=None,
-                   scale=None) -> None:
+                   scale=None, view_u=None) -> None:
     """One wall's cut, sliced out of the geometry IR (already jamb-split, banded, raked and
     arched). What stays here is drawing-side: the crop, thin-layer exaggeration (#36), the
     true-dimension label, the authored joint termination, the glazing and coating lines.
@@ -303,7 +305,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
     # A crop opening onto an R.O. (an enlarged sill) has void above the wall it cuts.
     ladder_top = wall_top if cut_top is None else min(wall_top, cut_top)
     wall_layer_ladder(wall, label_entries, ladder_top, crop, ladder_labels, scale,
-                      either_side=joints is None)
+                      either_side=joints is None, view_u=view_u)
 
 
 def _emit_glazing_lines(b, model, wall, plane: CutPlane, crop, is_detail) -> None:
@@ -404,7 +406,7 @@ def _wall_top_at_cut(wall: ResolvedWall, direction: str, station: float) -> floa
 
 
 def _emit_roof_cut(b, model, roof, plane: CutPlane, crop, joints=None,
-                   ladder_labels=None, scale=None) -> None:
+                   ladder_labels=None, scale=None, view_u=None) -> None:
     """One roof's cut: the above-structure stack sliced out of the IR, plus the bay fill.
 
     ``geometry_roofs.roof_parts`` builds exactly the layers the sky sees, each already
@@ -446,4 +448,4 @@ def _emit_roof_cut(b, model, roof, plane: CutPlane, crop, joints=None,
         # The ladder names every band that was drawn, the cavity fill included, and aims
         # each leader by measuring that band's own outline — see ``roof_layer_ladder``.
         roof_layer_ladder(roof, bands, crop,
-                          lambda u: roof_plane_z(roof, u), ladder_labels, scale)
+                          lambda u: roof_plane_z(roof, u), ladder_labels, scale, view_u)

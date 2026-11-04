@@ -405,7 +405,7 @@
 # KDAT southern pine 2x12, the garden's two deck fields (12" o.c.) and ST-SG-PORCH's stringers.
 # The porch ledgers are Beams and bill in [timber] "beam:BEAM_KDAT". Treated 2x12 runs ~25-40%
 # over the SPF stick above, and 20' lengths carry a further premium.
-"2x12:kdat" = { material = { low = 2.4, high = 3.6 }, labour = { low = 1.4, high = 2.6 } }  # 456 LF ordered — 424 (joists, spare joist, blocks) + 32 (ST-SG-PORCH stringers)
+"2x12:kdat" = { material = { low = 2.4, high = 3.6 }, labour = { low = 1.4, high = 2.6 } }  # 520 LF ordered (2026-11-04 takeoff) — joists, spare joist, blocks (8 under the porch guard's south leg) and ST-SG-PORCH's six stringers
 # The court daybed's two built-up porch lines (plan/court_daybed.py): three plies of the row
 # above per LF of line, nailed up on site.
 "3-2x12:kdat" = { material = { low = 7.2, high = 10.8 }, labour = { low = 4.2, high = 7.8 } }  # 40 LF ordered — FS-SG-PORCH lines 003 and 006
@@ -2884,7 +2884,9 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # certification report; the low end is a short one in an open basement.
 "ED-T-DATA-JACK" = { material = { low = 12, high = 45 }, labour = { low = 90, high = 260 } }  # 3 ea
 "ED-T-NET-ENCLOSURE" = { material = { low = 300, high = 900 }, labour = { low = 150, high = 400 } }  # 1 ea
-"ED-T-PANEL" = { material = { low = 250, high = 700 }, labour = { low = 1700, high = 3600 } }  # 1 ea
+# Material includes the QOCMF54UC surface cover (ordered separately from the QO154M200P;
+# retail ~$513-703, 2026-11-04).
+"ED-T-PANEL" = { material = { low = 760, high = 1400 }, labour = { low = 1700, high = 3600 } }  # 1 ea
 # Feeder 2's panel (2026-09-12). Material is a 20-space 200 A main-lug load centre; labour is
 # a fraction of ED-T-PANEL's because it carries four 2-pole circuits that were already being
 # run — the home runs land here instead of there.
@@ -6694,10 +6696,10 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 #
 #   RAILING-EXT-ALUMINUM-FASCIA  40.3 LF — the BALCONY guard alone (RL-SG-BALCONY) since
 #                                2026-09-03, when the porch's went to surface mount below.
-#   RAILING-EXT-ALUMINUM-SURFACE 40.4 LF over six runs — the PORCH guard (RL-SG-PORCH, which
-#                                replaced the masonry parapet on 2026-08-18) plus the stub
-#                                RL-SG-PORCH-NE past ST-SG-PORCH's doorway, the flight's two
-#                                raked guards and the two threshold cheeks.
+#   RAILING-EXT-ALUMINUM-SURFACE 36.8 LF over eight runs — the PORCH guard (which replaced
+#                                the masonry parapet on 2026-08-18), six pieces between its
+#                                four cast columns since 2026-11-04, and the flight's two
+#                                raked guards.
 #   RAILING-EXT-ALUMINUM-ADA-HANDRAIL 3.7 LF — RL-SG-PSTAIR-HR, the Williams ADA pipe rail on
 #                                the south raked guard's posts (2026-10-30).
 #
@@ -6765,7 +6767,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # 2026-11-04 mounting geometry: landing-mounted stair end bases add 0.5 LF net to
 # the surface run (about 41.1 LF total); do not bill mesh subparts again. End posts fit
 # the existing kit's 43.5 inch actual length.
-"RAILING-EXT-ALUMINUM-SURFACE" = { material = { low = 30, high = 45 }, labour = { low = 25, high = 40 } }  # 40.4 LF over 6 runs — RL-SG-PORCH 28.3 + RL-SG-PORCH-NE 4.6 + PSTAIR-S/N 3.7 ea (RAKED guards, see above) + PTHRESH-S/N 1.0 ea (the doorway 3'-3 1/2" between the stair guards' lines since 2026-10-31); the porch guard split in two on 2026-09-04 when the stair doorway moved to the MIDDLE of its east leg, which changed the TOTAL by nothing (the doorway is 3'-0" wherever it sits) but adds one run start/stop and two end posts to the labour; 14 posts: 8 on RL-SG-PORCH, 2 on -NE, 1 per stair run (foot; the middle post went 2026-11-04) and 1 per threshold cheek, which is also its stair guard's head post (one post per junction, 2026-10-31). Same rail, same alloy, same listing as the fascia row; the post kit carries its cast 4.99" base, so the bracket kit the fascia row excludes is INSIDE this material rate and there is nothing to add per post. Labour is lower for the same reason: no through-bolting from underneath. NOT INCLUDED: the four 1/4" x 3" concrete anchors per post on the west/east/threshold legs, the ~5 solid blocks under the south leg where there is no wall top, and the stair-panel premium above — the first two are in [framing]
+"RAILING-EXT-ALUMINUM-SURFACE" = { material = { low = 30, high = 45 }, labour = { low = 25, high = 40 } }  # 36.8 LF over 8 runs (2026-11-04) — RL-SG-PORCH 16.6 (south leg, on the plank) + -W 6.3 + -NE 2.5 + -W-HOUSE 1.0 + -E-HOUSE 1.1 + -SE 0.6 + PSTAIR-S/N 4.4 ea (RAKED guards, see above). The cast corner columns PT-SG-BR1/BF1/BR3/BF3 are the porch guard's posts: its west/east legs run on the W-SG-W1/E1 tops and end into them, and the PTHRESH cheeks left. 12 posts: 5 on RL-SG-PORCH, 1 each on -W, -W-HOUSE, -E-HOUSE, -SE and -NE (the last two are the stair guards' head posts), and 1 per stair run (foot). Same rail, same alloy, same listing as the fascia row; the post kit carries its cast 4.99" base, so there is nothing to add per post. Labour is lower for the same reason: no through-bolting from underneath. NOT INCLUDED: the four 1/4" x 3" concrete anchors per wall-top post, the 12 rail-to-column brackets (2 per column end, Titen Turbo at >= 3" edge distance; the rail maker's anchor schedule governs), the 8 solid blocks under the south leg (in [framing]) and the stair-panel premium above
 # ESTIMATE 2026-10-30: Williams ADA Pipe Rail and 90 deg Return Kit AD901102B (Menards 1717885),
 # ~$158 a kit over ~3.7 LF plan = ~$43/LF; one kit covers the flight. Labour: two returns TEK-
 # screwed to the guard's end posts (no mid bracket: 52.3" span against 72"), about an hour.

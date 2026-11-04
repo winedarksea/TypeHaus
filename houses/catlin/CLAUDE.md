@@ -2478,20 +2478,23 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Every guard (porch, balcony, interior stairs): Williams Architectural Products 42"
   Colonial black (CP262406B), ICC-ES ESR-3485 (Ultralox; Menards; Eagan MN); alternate
   Fortress Al13 Home. Library types carry the real sections: 3" posts, 0.5" pickets.
-- `RL-SG-PORCH` is surface-mounted (`RAILING-EXT-ALUMINUM-SURFACE`): west/east
-  legs on 12" concrete wall tops take ESR-3485's anchors through the post kit's cast
-  4.99" base (screwed, not welded).
+- The porch guard is surface-mounted (`RAILING-EXT-ALUMINUM-SURFACE`,
+  `params/porch_guards.py`): **the cast columns BR1/BF1/BR3/BF3 are its posts** (owner
+  2026-11-04), so it is one `RL-SG-PORCH-*` per span, ending on a column face by
+  `start_post_ref`/`end_post_ref` (a rail bracket per rail, no post). Side legs on the
+  W-SG-W1/E1 tops (ESR-3485 anchors through the cast 4.99" base, rows >= 3" off a face),
+  a post at each house end, not a wall bracket. Every base sits wholly on one substrate.
 - `ST-SG-PORCH` is 45" wide (y -9'-0"..-5'-3", widened north 2026-10-30) so the cast bases
   fit, 2 3/4" in (`code.R311_7_1_stair_width`). Each raked guard is ONE bay (2026-11-04):
   foot base on `SL-SG-STAIRPAD`, head base on W-SG-E1, no tread post (Williams planner's
   55.68" is horizontal, ~59.3" at 31.7 deg against 52 3/4");
-  each head post IS its threshold cheek's (`end_post_ref`, one post per junction, owner
-  2026-10-31; `notes/porch_stair.md`). Its two raked guards are
+  each head post IS `RL-SG-PORCH-SE`/`-NE`'s (`end_post_ref`, one post per junction;
+  `notes/porch_stair.md`). Its two raked guards are
   guards only (the Colonial top rail is no handrail, ESR §5.7); `RL-SG-PSTAIR-HR` is the
   Williams ADA pipe rail, `mount="post"` on the south guard's posts
   (`notes/porch_stair.md`). Do not widen further north: HP2's disconnect working space. The south leg
-  stands over the porch's south EDGE JOIST (the joists run with it now) and bolts through the
-  plank into a block 2" inside it at each post — the balcony's inset pattern.
+  (`RL-SG-PORCH`, the only one on the plank) runs 2 5/8" inside the plank edge; each base's
+  outer screw row lands on the edge joist, the inner on a block (8 in `FS-SG-PORCH`).
 - `RL-SG-BALCONY` stays fascia-mounted (through-bolted PVC fascia + 2x8 rim)
   because `FS-SG-DECK`'s aluminium plank is the porch roof and carries no other
   penetrations — do not switch to surface mounting. Needs rim blocking in

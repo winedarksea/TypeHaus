@@ -34,7 +34,8 @@ from typehaus.resolve.geometry import opening_center
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 #: Station merge gaps tried, finest first, until a chain letters without sliding a string.
-_MERGE_GAPS_IN = (1.0, 6.0, 12.0, 24.0, 48.0)
+#: Under 1" so a 7/8" step between two roof edges (garage vs canopy) keeps both stations.
+_MERGE_GAPS_IN = (0.5, 6.0, 12.0, 24.0, 48.0)
 #: A wall is "across" an axis when its run along that axis is under this fraction of it.
 _PARALLEL_TOLERANCE = 0.05
 _LEADER_TEXT_H_IN = 1.6  # pdf_writer's default leader height, model inches
@@ -136,8 +137,9 @@ def emit_structural_tiers(b: SceneBuilder, tiers: Sequence[Tier | None],
 
 
 def _repeats(tier: Tier, later: Sequence[Tier], axis: int) -> bool:
-    mine = _chain(tier.xs if axis == 0 else tier.ys, 1.0)
-    return any(_chain(other.xs if axis == 0 else other.ys, 1.0) == mine for other in later)
+    floor = _MERGE_GAPS_IN[0]
+    mine = _chain(tier.xs if axis == 0 else tier.ys, floor)
+    return any(_chain(other.xs if axis == 0 else other.ys, floor) == mine for other in later)
 
 
 def _chain(stations: Iterable[float], gap_in: float) -> list[float]:

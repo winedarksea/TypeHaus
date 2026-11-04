@@ -389,6 +389,10 @@ def test_handrail_not_required_under_four_risers():
     assert [f.result for f in stair_handrail(_ctx(stub))] == [Result.PASS]
 
 
+_PORCH_PIECES = ("RL-SG-PORCH", "RL-SG-PORCH-E-HOUSE", "RL-SG-PORCH-NE", "RL-SG-PORCH-SE",
+                 "RL-SG-PORCH-W", "RL-SG-PORCH-W-HOUSE")
+
+
 def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     """R312.1.3 measures all six authored guards: baluster infill at a 4" clear gap — the
     largest opening the sphere rule admits — flips the census from UNKNOWN to PASS. The
@@ -411,8 +415,9 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
 
     findings = guard_opening_limit(catlin_ctx)
     tags = sorted(t for f in findings for t in (f.message.split()[0],))
-    # Eleven since 2026-09-03: ST-SG-PORCH's two raked guard-handrails (RL-SG-PSTAIR-*) and
-    # the two level cheeks that return the guard across its threshold (RL-SG-PTHRESH-*).
+    # ST-SG-PORCH's two raked guard-handrails (RL-SG-PSTAIR-*) since 2026-09-03; since
+    # 2026-11-04 the porch guard is six pieces between its four cast columns, and the
+    # threshold cheeks (RL-SG-PTHRESH-*) are gone.
     # RL-BW-SCREEN left the census on 2026-09-10 and `W-BW-SCREEN` replaced it: a solid
     # sheathed guard WALL, which passes the way a masonry parapet does. `SB-BW-BAND`, the
     # slat band above it, is deliberately NOT here — it starts at +4'-0", above the guard
@@ -422,9 +427,8 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     # The flight guard stops at the newel; RL-A-FLIGHT-SKIRT closes the band under it.
     assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-FLIGHT-SKIRT", "RL-A-STAIR", "RL-BW-ENTRY",
                     "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-S-STAIRHEAD-N",
-                    "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE",
-                    "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N",
-                    "RL-SG-PTHRESH-S", "W-BW-SCREEN"], \
+                    "RL-SG-BALCONY", *_PORCH_PIECES,
+                    "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S", "W-BW-SCREEN"], \
         [f.message for f in findings]
     assert {f.result for f in findings} == {Result.PASS}
 
@@ -443,8 +447,7 @@ def test_the_sphere_rule_is_measured_off_the_drawn_infill_not_only_the_field(cat
     assert sorted(f.message.split()[0] for f in drawn) == [
         "RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY",
         "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-S-STAIRHEAD-N",
-        "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE", "RL-SG-PSTAIR-N",
-        "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N", "RL-SG-PTHRESH-S"]
+        "RL-SG-BALCONY", *_PORCH_PIECES, "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S"]
 
 
 # --- R312.1 stair-well guards ----------------------------------------------------------

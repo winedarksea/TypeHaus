@@ -332,3 +332,5 @@ def test_roof_plan_locating_chains_sum_to_the_overall_roof_extent(catlin_model, 
         starts = [min(d.p0[axis], d.p1[axis]) for d in strings]
         assert min(starts) == pytest.approx(min(points), abs=1e-6)  # the SW reference
     assert len(tiers) > 2  # separate roofs are located, not just the overall
+    # The garage and canopy edges sit 7/8" apart on y; both keep their station.
+    assert any(abs(abs(d.p1[1] - d.p0[1]) - 0.875) < 1e-6 for d in tiers if d.p0[0] == d.p1[0])

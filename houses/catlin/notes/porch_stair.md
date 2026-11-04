@@ -1,7 +1,7 @@
 # The porch stair to grade — ST-SG-PORCH
 
 Model: `params/sunken_garden.py` (`PORCH_STAIR`, `PORCH_STAIR_RAILS`,
-`PORCH_STAIR_THRESHOLD_RAILS`, `_PORCH_STAIR_*`, `_PORCH_GUARD_PATH`, `HP_PAD`),
+`_PORCH_STAIR_*`, `HP_PAD`), `params/porch_guards.py` (the level porch guard),
 `plan/electrical.py` (the two disconnects), `plan/porch_lighting.py` (`ED-M-STAIR-LT`),
 `plan/site.py` (the pads' fall), `prices.toml`. Authored 2026-09-03; **moved to the pocket's
 south half and given its own pad on 2026-09-04**, when `PT-SG-BR3` turned out to be standing
@@ -108,7 +108,7 @@ scope, and it is 2.25" wide. Until 2026-10-30 the two guards claimed `guard_and_
 gets one real one: **`RL-SG-PSTAIR-HR`**, the Williams Black ADA Pipe Rail and 90 deg Return
 Kit (AD901102B, `RAILING-EXT-ALUMINUM-ADA-HANDRAIL`), on the **south** side — the right hand
 going down. It is `mount="post"`: its two 90 deg returns fix to the south guard's end posts (the head one
-is `RL-SG-PTHRESH-S`'s)
+is `RL-SG-PORCH-SE`'s)
 with 3 x #10 TEK screws and a backer (`newel` ends), within the kit's 72 inch support spacing, so there is no mid bracket — ESR-3485 Table 1 lists the midspan bracket on a 2"
 post only, and there is no middle post. Its
 line is 3 3/8" inboard of the guard line, 1 1/2" clear of the Colonial rail, with its
@@ -166,55 +166,35 @@ so the pad-mounted foot post fits it: see the
 Production viewer reviews: `cd ui && npm run railing-review`, after building Catlin JSON.
 The review includes foot, head and the complete stair guard/handrail.
 
-### The threshold's two cheeks
+### The porch guard: the columns are its posts (2026-11-04)
 
-`RL-SG-PTHRESH-S` and `RL-SG-PTHRESH-N`, 7 inches each, **level** at 42" to match `RL-SG-PORCH`,
-on the wall top between the porch plank and the head of the flight — on the stair guards'
-lines, 2 3/4" inside y -9'-0" and -5'-3" (since 2026-10-31). Each draws ONE post: its west
-end is `RL-SG-PORCH`'s (or `-NE`'s) end post (`start_post_ref`), which stops on the same
-line, and its east post is the stair guard's head. That foot of walking
-surface is 33.94" above the pad on **both** its north and south sides, and nothing in the engine
-asks for a guard there:
+The level porch guard's bases used to hang half off their substrate: west/east-leg posts
+centred on W-SG-W1/E1's inner face, south-leg posts on the plank's south edge. The house
+rule is that a base sits wholly on one substrate and a concrete anchor row stays >= 3" off a
+face. Owner call: the side legs run on the wall tops and **the cast corner columns
+PT-SG-BR1/BF1/BR3/BF3 are their posts**; only the south leg stands on the plank; at the house
+each side leg ends on its own post, not a wall bracket.
 
-- `code.R312_1_1_stair_open_side` measures the FLIGHT, whose top tread is only 27.152" over the
-  pad — under the 30" trigger. It reports PASS on this stair with or without any guard at all.
-- `code.R312_1_guard_height` tests `RL-SG-PORCH` against the deck edge **segment** with a
-  plain `LineString` distance (`_railing_runs_edge`,
-  `checks/code/mn_residential/fall_protection.py`), and the east edge's midpoint stays
-  guarded, so the 3'-9" opening reports PASS either way. Splitting the run in two on
-  2026-09-04 did not improve that: the two pieces together still cover the midpoint, and the
-  check would report PASS if the gap were 9'. Recorded in `plans/TODO.md`.
+- A `path` cannot carry a hole, so the guard is one `Railing` per span between columns
+  (`params/porch_guards.py`): `RL-SG-PORCH-W-HOUSE` and `-W` on W-SG-W1's centreline (anchor
+  rows 4 1/8" off both faces); `RL-SG-PORCH` (south leg, wood mounts) 2 5/8" inside the
+  plank's edges, its end posts 2 3/4" clear of BF1/BF3; `-SE`, `-NE` and `-E-HOUSE` on the
+  stair guards' head-post line, 5" back from W-SG-E1's east face.
+- A column end is named by `start_post_ref`/`end_post_ref` and the path stops on the
+  column's drawn face. The engine draws no post there, only one rail bracket per rail
+  (`{tag}-COLBRK{n}`, `resolve/railings/column_ends.py`), and the infill bay runs to the face.
+  A path end off that face draws the post and WARNs `railing_shared_post_missing`.
+- **The threshold cheeks `RL-SG-PTHRESH-S/N` are gone.** `-SE` and `-NE` start on the stair
+  guards' head posts and draw them at the porch's 42"; `RL-SG-PSTAIR-S/N` name them with
+  `end_post_ref`. The threshold's foot of walking surface is guarded by those two pieces.
+- The south leg's eight solid blocks (`FS-SG-PORCH.reinforcements`, `_PORCH_GUARD_BLOCK_XS`)
+  take each base's inner screw row; the outer row lands on the edge joist / ledger centre.
+- Graded by tests, not a check: `test_porch_guard_bases_stand_wholly_on_one_substrate`.
 
-The guard return at an opening is on the author, and these are it. They are separate elements
-rather than 12" more on the two stair rails because a `serves_stair` `Railing` is **raked
-along the nosing line for its whole authored path** — a foot of level wall top on the end of
-one resolves at 0" above the (absent) nosings. Two elements is not a workaround: one raked
-guard on the flight, one level guard on the wall top, is the true statement.
-
-### And the porch guard has to split in two
-
-`RL-SG-PORCH` opened for the flight at the **end** of its east leg while the stair was in the
-north strip: `_PORCH_GUARD_PATH`'s last point moved from `_y_in_n` (-0'-10") to the flight's
-edge, one path edit, no split. Moving the flight to y -9'-0"..-6'-0" put the opening in the
-**middle** of that leg instead, and a `path` cannot carry a hole.
-
-So the east leg is two elements now. `RL-SG-PORCH` runs the west leg, the south leg and the
-east leg up to the south stair guard's line (-9'-0" plus 2 3/4", since 2026-10-31);
-**`RL-SG-PORCH-NE`** picks up on the north one (-5'-3" less 2 3/4") and runs to the porch's
-north edge. Each end post is also its threshold cheek's west post. Same `type_ref`, same mount, same
-height, same assembly — it is one run of guard with a doorway in it, and it is two elements
-only because the schema says so. The long one keeps its uid: it is the same element,
-shortened.
-
-**The split moved no footage**: 42.7 LF over six runs instead of five, because the doorway
-was 3'-0" wherever it sat. Widening the flight to 45" opened it to 3'-9" (40.0 LF,
-2026-10-30); closing it to the stair guards' lines makes it 3'-3 1/2" (40.4 LF, 2026-10-31).
-What the split does cost is a run start/stop, flagged on the `RAILING-EXT-ALUMINUM-SURFACE`
-price row.
-
-The four `_PORCH_STAIR_*` constants are shared by the flight, its pad, the opening and all
-four rails, so none of them can drift apart. `_PORCH_GUARD_SOUTH_STATIONS` reads the *middle*
-path segment and is unaffected either way.
+Open with the trade: GRK RSS 5/16" edge distance in a single 1 1/2" member (0.75" as centred;
+a third-party sheet asks 0.8-1.0", so double the member if the ESR agrees); and the
+rail-to-column bracket and its concrete anchor (Titen Turbo at >= 3" edge distance; the rail
+maker's anchor schedule governs).
 
 ## Electrical
 

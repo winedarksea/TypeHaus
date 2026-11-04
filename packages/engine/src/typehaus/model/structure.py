@@ -999,6 +999,7 @@ class Railing(Element):
     fascia_bracket_drop: Length | None = None
     # Tag of another railing whose post stands at this end: this one draws no post there and
     # its rails terminate on that one (one post, one base). Its end must be on that station.
+    # Or a structural ``Post``: the path ends on its face and a bracket per rail fixes there.
     start_post_ref: str | None = None
     end_post_ref: str | None = None
     # Empty preserves generic surface posts; otherwise one bearing per station, including

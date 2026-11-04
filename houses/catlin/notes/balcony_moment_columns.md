@@ -573,11 +573,9 @@ Three things it costs, none of them structural:
 - **8" of back span**, 93.25" → 88.0", which takes R507.5.1's overhang limit from 23.3" to
   22.0" against an unmoved 20" rear overhang (§5). The row cannot go north again without
   taking PT-SG-BR1/2/3 with it.
-- **RL-SG-PORCH's two front corner posts.** They stand at the rounds' west/east tangent in
-  x; the modelled 1-1/2" post still clears by 3/4", but a real 5x5 surface baseplate lands
-  inside the concrete. The guard's front corners **die into the columns** — rail ends on the
-  concrete, Titen Turbo at ≥3" edge distance, no baseplate at those two stations. The engine
-  models no baseplate and will never ask.
+- **The porch guard's corners.** Since 2026-11-04 the four cast columns ARE the guard's
+  posts: each leg ends on a column face with a rail bracket per rail, Titen Turbo at ≥3"
+  edge distance (`params/porch_guards.py`, `notes/porch_stair.md`).
 - **The porch enclosure's two front track runs** (`plan/placeables.py`, and
   `notes/porch_enclosure.md`). These were curtain rods until 2026-09-03; the rods had already
   moved from y −9'-6" to −9'-1" for the rounds, because at −9'-6" the bare rod would have run
@@ -714,13 +712,14 @@ rejected on the report, not on the price.
 
 **The two mounts split, and the substrate is why.**
 
-- **RL-SG-PORCH → surface mount.** Its west and east legs run along the inner face of
-  W-SG-W1/E1, so each 5×5 baseplate lands on a 12" concrete wall top and takes ESR-3485's
+- **RL-SG-PORCH → surface mount.** Its west and east legs (since 2026-11-04 separate
+  `RL-SG-PORCH-*` pieces between the columns) run on W-SG-W1/E1's tops, so each 4.99" base
+  lands on a 12" concrete wall top and takes ESR-3485's
   concrete-baseplate row: four 1/4" × 3" corrosion-resistant anchors, no bracket, no
   through-bolt. Top mount is cheaper and is taken wherever the substrate allows it. The
   SOUTH leg has no wall under it — it runs over BM-SG-FRW/FRE, whose tops carry
-  TR-SG-CAP-FRW/FRE and their butyl — so those five posts bolt through the composite plank
-  into solid blocking in the joist bay just north of the beam. **Never anchor through a beam
+  TR-SG-CAP-FRW/FRE and their butyl — so its five posts screw through the composite plank
+  into solid blocking in the joist bay just north of the beam (outer row on the edge member). **Never anchor through a beam
   cap:** a 304-stainless plate on 0.019" aluminium coil in a wet exterior location pits the
   aluminium (it is anodic), and the fastener pierces the butyl that IS the dielectric between
   that coil and the copper-treated framing.

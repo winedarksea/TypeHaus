@@ -27,8 +27,8 @@ from library import (
 )
 
 from params import (breezeway, driveway, entry_band_brace, foundations, hp1_north_pad, hp3_pad,
-                    landscape_gardens, landscape_walk, main_deck, raised_garden, roof_trim,
-                    roof_wind_clamps, second_deck, solar,
+                    landscape_gardens, landscape_walk, main_deck, porch_guards, raised_garden,
+                    roof_trim, roof_wind_clamps, second_deck, solar,
                     sunken_garden, sunken_garden_drainage)
 from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, lav_types, products_bath_lavs, backing, backing_wet, bath1_storage,
                   decking_selection, flooring_selection, plant_liner_selection, handrail_types, mirrors, mirror_types,
@@ -496,7 +496,7 @@ PLAN = (
     .with_elements("court-low", [*sunken_garden.BASEMENT_ELEMENTS,
                                  *sunken_garden_drainage.BASEMENT_ELEMENTS,
                                  *court_daybed.COURT_DAYBED])
-    .with_elements("court-main", [*sunken_garden.MAIN_ELEMENTS])
+    .with_elements("court-main", [*sunken_garden.MAIN_ELEMENTS, *porch_guards.MAIN_ELEMENTS])
     .with_elements("court-upper", [*sunken_garden.SECOND_ELEMENTS])
     # --- entry (north bridge) --------------------------------------------------------------
     #

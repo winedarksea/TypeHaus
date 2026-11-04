@@ -84,6 +84,8 @@ def _railing(row: Row) -> str:
     parts = [f"{posts} post(s)", f"{brackets} bracket(s)"]
     if row.get("return_count"):
         parts.append(f"{row['return_count']} wall return(s)")
+    if row.get("column_bracket_count"):
+        parts.append(f"{row['column_bracket_count']} rail bracket(s) on a concrete column")
     if row.get("splice_count"):
         parts.append(f"{row['splice_count']} splice(s)")
     return ", ".join(parts)

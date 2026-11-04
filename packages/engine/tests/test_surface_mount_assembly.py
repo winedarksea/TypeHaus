@@ -64,7 +64,7 @@ def test_porch_stair_bases_land_on_pad_and_wall(catlin_model_ro):
     for side in ("S", "N"):
         tag = f"RL-SG-PSTAIR-{side}"
         foot = solids[f"{tag}-BASE1"]
-        head = solids[f"RL-SG-PTHRESH-{side}-BASE2"]
+        head = solids[f"RL-SG-PORCH-{side}E-BASE1"]
         assert Polygon(pad.outline).covers(Polygon(foot.outline))
         assert foot.z0_m == pytest.approx(pad.z1_m)
         assert wall_plan.covers(Polygon(head.outline))
@@ -76,9 +76,9 @@ def test_porch_stair_bases_land_on_pad_and_wall(catlin_model_ro):
         a, b = bottom.path[0], bottom.path[-1]
         z = a[2] + (b[2]-a[2])*(x-a[0])/(b[0]-a[0])
         clearance = z - resolve_parts(model, guard).rail_section_m/2
-        clearance -= model.plan.by_tag(f"RL-SG-PTHRESH-{side}").base_elevation.meters
+        clearance -= model.plan.by_tag(f"RL-SG-PORCH-{side}E").base_elevation.meters
         assert 0 < clearance < inch(4).meters
-        # One bay since 2026-11-04: the head base is the cheek's, nothing stands on a tread.
+        # One bay since 2026-11-04: the head base is the porch guard's, none is on a tread.
         assert not any(f"{tag}-{part}2" in solids for part in ("BASE", "POST", "BACKING"))
     handrail = model.plan.by_tag("RL-SG-PSTAIR-HR")
     tread_xs = [p[0] for m in stair.members if m.riser_line for p in m.riser_line]
@@ -87,3 +87,41 @@ def test_porch_stair_bases_land_on_pad_and_wall(catlin_model_ro):
     without_mounts = replace(model, solids=[s for s in model.solids
         if not any(part in s.tag for part in ("-BASE", "-ANCHORS", "-BACKING"))])
     assert railing_takeoff(model) == railing_takeoff(without_mounts)
+
+
+def test_porch_guard_bases_stand_wholly_on_one_substrate(catlin_model_ro):
+    """The owner's rule (2026-11-04): a base sits wholly on one substrate, a concrete anchor
+    row stays >= 3" off a face, and a wood screw lands in a framing member. No check grades
+    a base, so this is where the rule lives."""
+    from shapely.geometry import Point, box
+    from shapely.ops import unary_union
+
+    from typehaus.resolve.wall_faces import wall_body
+
+    model = catlin_model_ro
+    concrete = unary_union([wall_body(w, w.z0_m, w.z1_m) for w in model.walls
+                            if w.tag in ("W-SG-W1", "W-SG-E1")])
+    porch = next(f for f in model.floors if f.tag == "FS-SG-PORCH")
+    half = 1.5 * 0.0254 / 2
+    framing = unary_union(
+        [Polygon(s.outline) for s in model.solids if s.tag.startswith("BM-SG-LDG")]
+        + [box(min(m.p0[0], m.p1[0]) - (half if m.p0[0] == m.p1[0] else 0),
+               min(m.p0[1], m.p1[1]) - (half if m.p0[1] == m.p1[1] else 0),
+               max(m.p0[0], m.p1[0]) + (half if m.p0[0] == m.p1[0] else 0),
+               max(m.p0[1], m.p1[1]) + (half if m.p0[1] == m.p1[1] else 0))
+           for m in porch.members if m.category in ("joist", "blocking")])
+    plank = Polygon(porch.deck_outline)
+    hole = PRODUCT.surface_mount.display_hole_spacing.meters / 2
+    bases = [s for s in model.solids if s.tag.startswith("RL-SG-PORCH") and "-BASE" in s.tag]
+    assert len(bases) == 10  # five on the plank, five on the wall tops; the columns take none
+    for base in bases:
+        outline = Polygon(base.outline)
+        cx, cy = outline.centroid.x, outline.centroid.y
+        holes = [Point(cx + dx * hole, cy + dy * hole) for dx in (-1, 1) for dy in (-1, 1)]
+        if concrete.covers(outline):
+            assert all(concrete.boundary.distance(h) >= inch(3).meters - 1e-6
+                       for h in holes), base.tag
+        else:
+            assert plank.covers(outline), base.tag
+            assert all(framing.covers(h) for h in holes), base.tag
+

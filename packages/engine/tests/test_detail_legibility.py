@@ -37,6 +37,11 @@ def _eave(model):
 _RUNG_TEXT = re.compile(r'^(?P<name>.+?) (?:\d+ )?[\d./]+"$')  # 0.03" or 11 7/8"
 
 
+def _unwrap(text: str) -> str:
+    """A ladder label as one line: ``gutter_wrap`` breaks after a hyphen or at a space."""
+    return re.sub(r"(?<=-)\n", "", text).replace("\n", " ")
+
+
 def _rungs(scene):
     """Every roof ladder rung as ``(name, tip)``, where ``tip`` is ``to``.
 
@@ -51,7 +56,7 @@ def _rungs(scene):
     for node in scene.nodes:
         if not isinstance(node, Leader) or node.layer != "A-ANNO-TEXT":
             continue
-        match = _RUNG_TEXT.match(node.text)
+        match = _RUNG_TEXT.match(_unwrap(node.text))
         if match is None or abs(node.at[1] - node.to[1]) <= 1e-9:
             continue
         out.append((match.group("name"), node.to))
@@ -240,7 +245,7 @@ def test_the_roof_ladder_steps_the_same_way_the_roof_stacks(catlin_model):
     rung_text = _RUNG_TEXT
     rungs = [(n.at[1], n.anchor.xy[1]) for n in scene.nodes
              if isinstance(n, Leader) and n.layer == "A-ANNO-TEXT"
-             and rung_text.match(n.text) and abs(n.at[1] - n.anchor.xy[1]) > 1e-9]
+             and rung_text.match(_unwrap(n.text)) and abs(n.at[1] - n.anchor.xy[1]) > 1e-9]
     # ROOF is four layers and two bay fills. The property under test is the ORDER of
     # the rungs, not how many there are; the >= 5 floor only guards against the ladder
     # collapsing to nothing.
@@ -292,7 +297,7 @@ def test_a_leader_points_where_its_arrowhead_lands(catlin_model):
     """
     scene = _eave(catlin_model)
     for node in scene.nodes:
-        if not isinstance(node, Leader) or not _RUNG_TEXT.match(node.text):
+        if not isinstance(node, Leader) or not _RUNG_TEXT.match(_unwrap(node.text)):
             continue
         assert node.anchor.xy == node.to, (
             f"{node.text!r} claims to point at {node.anchor.xy} but its arrowhead lands at "

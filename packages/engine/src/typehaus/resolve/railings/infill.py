@@ -42,8 +42,12 @@ _BAY_OVERSIZE_FACTOR = 1.5
 def emit_infill(model: ResolvedModel, el: Railing, storey: str, stations: list[Vec],
                 surface: RailingSurface, parts: RailingParts,
                 rail_h: float, *, bottom_clearance_m: float = 0,
-                face_height: bool = False) -> list[Finding]:
+                face_height: bool = False,
+                postless: frozenset[int] = frozenset()) -> list[Finding]:
     """Fill every bay of ``stations``, appending to ``model.solids``.
+
+    ``postless`` are stations with no post at all (a column face, → ``.column_ends``): a
+    bay runs right to them instead of stopping half a post short.
 
     Returns WARN findings for the two conditions worth a build message: a truncated budget,
     and a bay too wide for the sheet product authored into it.
@@ -64,14 +68,15 @@ def emit_infill(model: ResolvedModel, el: Railing, storey: str, stations: list[V
     truncated = False
 
     # strict=True: two slices of the same station list, both one shorter than it.
-    for a, b in zip(stations[:-1], stations[1:], strict=True):
-        bay = length(sub(b, a))
-        clear = bay - parts.post_section_m
+    half = parts.post_section_m / 2.0
+    for index, (a, b) in enumerate(zip(stations[:-1], stations[1:], strict=True)):
+        inset_a = 0.0 if index in postless else half
+        inset_b = 0.0 if index + 1 in postless else half
+        clear = length(sub(b, a)) - inset_a - inset_b
         if clear <= 1e-6:
             continue
         direction = unit(sub(b, a))
-        inset = scale(direction, parts.post_section_m / 2.0)
-        face_a, face_b = add(a, inset), sub(b, inset)
+        face_a, face_b = add(a, scale(direction, inset_a)), sub(b, scale(direction, inset_b))
         if el.infill in ("panel", "mesh") and clear > _BAY_OVERSIZE_FACTOR * post_spacing:
             oversize.append(f"{clear / 0.3048:.2f}'")
 
