@@ -267,7 +267,7 @@ def test_every_finish_row_resolved_a_real_material(bom):
         "catlin-theater-carpet", "catlin-carpet-raised", "lvp", "oak-floor-custom",
         "catlin-tile-opera-blue", "catlin-tile-kaleo-brick",
         "catlin-tile-agua-linda", "catlin-tile-carrara", "sealed-concrete",
-        "catlin-rubber-stall-mat", "vinyl-sheet", "catlin-plant-vinyl-raised",
+        "catlin-rubber-stall-mat", "catlin-plant-vinyl-raised",
         "catlin-vinyl-gatsby", None}
 
 

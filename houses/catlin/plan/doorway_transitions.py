@@ -146,7 +146,7 @@ D_B_BATH_VINYL_REDUCER = DoorwayTreatment(transition=_bevel(
     RUBBER_REDUCER, "rubber reducer for 1/8 in. sheet vinyl", "Glued to the slab; vinyl "
     "tucks under its high lip, sealed", "rubber", sign=-1, rise_in=0.12, run_in=1.0,
     depth_in=0.0, land_in=0.5, max_in=0.125,
-    pairs=(("vinyl-sheet", "sealed-concrete"),)))
+    pairs=(("catlin-vinyl-gatsby", "sealed-concrete"),)))
 
 # Attic study oak 0.63" over the studio's sheet vinyl (oak on -normal).
 D_A_HALVES_OAK_REDUCER = DoorwayTreatment(transition=_bevel(

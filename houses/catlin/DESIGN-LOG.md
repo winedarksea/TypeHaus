@@ -7457,3 +7457,6 @@ wet-vent: the WC joins upstream of both, against 908.2.1.4.
   `FX-M-PORCH-HYD` in the stud-003 / WIN-S-PLANT4 king bay; its riser tees off the porch leg
   in the wall plane, and `PR-M-CW-HYD-DIST` now reaches that tee (it used to stop 8" short).
   The watering stub, sleeve, bore and backing moved with it.
+- **Basement bath follows (owner, same day).** `RM-B-BATH` leaves the library `vinyl-sheet`
+  and its flash cove for `catlin-vinyl-gatsby` and the rubber base, so all four sheet rooms
+  are one sheet and one base; `flash-cove` and `vinyl-sheet` bill nothing and stay priced.

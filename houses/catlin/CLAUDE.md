@@ -870,7 +870,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     fall-protection checking entirely. Never add x=10' to `FS-ATTIC.joists.bearing_refs`
     for this void — the field is global to the deck and would cut all ~34 joist lines
     including the 17 over the suite.
-  - `RM-A-STUDIO`: `Occupancy.BEDROOM`, `floor_finish="vinyl-sheet"` over
+  - `RM-A-STUDIO`: `Occupancy.BEDROOM`, `floor_finish="catlin-vinyl-gatsby"` over
     `plywood-subfloor`, uid `CAR401AAAA` (retagged in place). `RM-A-STUDY` next door is
     oak. BEDROOM occupancy is load-bearing for R310, the ventilation bedroom count,
     R314/R315, and whether `electrical.receptacle_spacing` evaluates the room at all. (→
@@ -892,7 +892,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `RM-A-STUDIO.exposed_services`. UPC 312.4 / IMC 603.15 ask protection only where damage is
     likely, never concealment (code basis at the Room). Boxing them into the pocket by moving
     `W-A-STU-N` was rejected (DESIGN-LOG, "Studio eave services").
-  - `RM-A-STUBATH` (x 9'-10 7/8"..17'-8 5/8", y 17'-6 3/8"..22'-1 5/8", vinyl-sheet). Tag
+  - `RM-A-STUBATH` (x 9'-10 7/8"..17'-8 5/8", y 17'-6 3/8"..22'-1 5/8", catlin-vinyl-gatsby). Tag
     must stay `RM-A-STUBATH`, never `RM-A-STUDIO-BATH` — `electrical.room_lighting`
     matches `ED-{room.tag[3:]}-*` and the longer tag would prefix-match the studio,
     merging luminaire sets. x=9'-7 1/2" is `W-S-DC2`'s axis (no stud to bore); y=17'-4" is

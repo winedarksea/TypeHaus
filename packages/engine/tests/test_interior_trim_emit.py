@@ -20,10 +20,10 @@ def _drawn_casings(model):
 
 
 def test_trim_reaches_the_viewer_as_drawable_boards(catlin_model_ro):
-    """Every base run is sent, the flash-cove and rubber bases included, with its kind."""
+    """Every base run is sent, the rubber bases included, with its kind."""
     payload = model_to_dict(catlin_model_ro)
     runs = catlin_model_ro.base_runs
-    assert {r.kind for r in runs} == {"trim", "integral_cove", "resilient_base"}
+    assert {r.kind for r in runs} == {"trim", "resilient_base"}
     assert {(row["uid"], row["kind"]) for row in payload["base_runs"]} == {
         (r.uid, r.kind) for r in runs}
     rooms = {room.uid for room in catlin_model_ro.rooms}
@@ -101,7 +101,7 @@ def test_trim_exports_as_ifc_skirting_and_moldings(catlin_model_ro, catlin_ifc_p
         assert product.GlobalId == derive_guid(project, run.uid)
         assert ifcopenshell.util.element.get_psets(product)[PSET_SOURCE]["room"] == run.room
         assert ifcopenshell.util.element.get_psets(product)[PSET_SOURCE]["kind"] == run.kind
-    assert {r.kind for r in drawn} == {"trim", "integral_cove", "resilient_base"}
+    assert {r.kind for r in drawn} == {"trim", "resilient_base"}
     for casing in _drawn_casings(catlin_model_ro):
         product = coverings[casing.tag]
         assert product.PredefinedType == "MOLDING"

@@ -23,7 +23,7 @@ from typehaus.resolve.solid_categories import in_slab_family
 # went to wood trusses, decision #112). Kept explicit rather
 # than derived so that adding a finish to a storey without adding its material trips here.
 _CATLIN_FINISHES = {"oak-floor-custom", "lvp", "catlin-theater-carpet", "sealed-concrete",
-                    "catlin-rubber-stall-mat", "vinyl-sheet", "catlin-plant-vinyl-raised",
+                    "catlin-rubber-stall-mat", "catlin-plant-vinyl-raised",
                     "catlin-vinyl-gatsby", "catlin-carpet-raised",
                     "catlin-tile-opera-blue", "catlin-tile-kaleo-brick",
                     "catlin-tile-agua-linda", "catlin-tile-carrara"}
@@ -282,8 +282,9 @@ def test_the_billed_finishes_are_one_lvp_field(catlin_model):
     assert {"RM-M-MECH", "RM-M-MUD-CLOSET"} <= set(rows["lvp"]["rooms"])
     assert "lvp-underlayment" not in rows
     assert {"RM-S-HALL", "RM-S-NCLOSET"} <= set(rows["oak-floor-custom"]["rooms"])
-    assert rows["vinyl-sheet"]["rooms"] == ["RM-B-BATH"]
-    assert set(rows["catlin-vinyl-gatsby"]["rooms"]) == {"RM-A-STUBATH", "RM-A-STUDIO"}
+    assert "vinyl-sheet" not in rows
+    assert set(rows["catlin-vinyl-gatsby"]["rooms"]) == {
+        "RM-A-STUBATH", "RM-A-STUDIO", "RM-B-BATH"}
     assert rows["catlin-plant-vinyl-raised"]["rooms"] == ["RM-S-PLANT"]
     assert rows["catlin-plant-sureply"]["rooms"] == ["RM-S-PLANT"]
     assert rows["catlin-plant-sureply"]["under"] == "catlin-plant-vinyl-raised"
@@ -294,8 +295,7 @@ def test_the_billed_finishes_are_one_lvp_field(catlin_model):
     # 529.6 SF after the 1/2" walls, less the attic's 8.1 SF neo-angle receptor, less
     # ~0.6 SF the D-A-HALVES / D-B-BATH reducers cover in their reveals (2026-11-01), less
     # the attic WC chase's 1.3 SF (2026-11-02).
-    assert (float(rows["vinyl-sheet"]["net_area_sqft"])
-            + float(rows["catlin-vinyl-gatsby"]["net_area_sqft"])
+    assert (float(rows["catlin-vinyl-gatsby"]["net_area_sqft"])
             + float(rows["catlin-plant-vinyl-raised"]["net_area_sqft"])) == pytest.approx(
                 519.3, abs=0.5)
     assignments = {

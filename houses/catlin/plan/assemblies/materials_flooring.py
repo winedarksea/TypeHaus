@@ -28,7 +28,7 @@ MATERIALS_FLOORING = [
              hatch="membrane", color="#e2e1e0", finish="tile-gatsby-grid",
              finish_thickness_in=0.120, base_detail="resilient_base",
              base_joint_ref="catlin-base-toe-silicone",
-             source='RM-A-STUDIO and RM-A-STUBATH, owner 2026-11-03: Tarkett First Class '
+             source='RM-A-STUDIO, RM-A-STUBATH, RM-B-BATH, owner 2026-11-03: Tarkett First Class '
                     'FiberFloor, Windsor Gatsby 87061, 12 ft, glue-down on the subfloor. 4" '
                     'Johnsonite rubber cove base, silicone toe, as the plant room. '
                     'Alternatives: Beauflor Blacktex HD Canvas 109M; Mannington Platinum '

@@ -1330,11 +1330,11 @@ ROOMS = [
     # whole test: tile earns its cost where it is the emitter's mass (RM-M-BATH2 keeps its
     # tile for exactly that reason, at 98% of FH-M-BATH2's load). Here it buys grout to
     # keep, a backer board, a membrane and a threshold at the door, for a floor three feet
-    # wide under a stair. Heat-welded sheet with a 6" integral flash cove that laps the wall
-    # and dies behind the wall finish: floor and wall are one tray with no base joint, and
-    # the cove IS the waterproofing — nothing impermeable goes under it.
+    # wide under a stair. Since 2026-11-03 it is the attic rooms' First Class Gatsby sheet
+    # (`catlin-vinyl-gatsby`) under a 4" rubber cove base with a silicone toe: Tarkett
+    # publishes no flash cove for First Class. Nothing impermeable goes under the sheet.
     Room(uid="CBR407AAAA", tag="RM-B-BATH", seed=pt(ft(12), ft(22)),
-         occupancy=Occupancy.BATHROOM, floor_finish="vinyl-sheet",
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-vinyl-gatsby",
          ceiling_lining=(
              Layer(name="gwb-ceil", material_ref="gwb-mr", thickness=inch(0.625),
                    function=LayerFunction.FINISH),

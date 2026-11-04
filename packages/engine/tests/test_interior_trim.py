@@ -383,7 +383,7 @@ def test_catlin_base_scope_follows_the_standard_and_the_floor(catlin_model_ro) -
     tile_baths = ("RM-M-BATH2", "RM-S-BATH1", "RM-S-SUITEBATH", "RM-S-VANITY")
     assert all(stock[room] == "pvc-trim" for room in ("RM-M-BATH1", *tile_baths))
     kinds = {r.room: r.kind for r in catlin_model_ro.base_runs}
-    assert kinds["RM-B-BATH"] == "integral_cove" and kinds["RM-A-STUDIO"] == "resilient_base"
+    assert kinds["RM-B-BATH"] == "resilient_base" and kinds["RM-A-STUDIO"] == "resilient_base"
     assert kinds["RM-S-PLANT"] == "resilient_base" and kinds["RM-S-HALL"] == "trim"
     # MDF casing; PVC on the wet faces; cedar in the sauna; two hardwood accent faces.
     casing = {(c.opening_ref, c.room): c.material_ref for c in catlin_model_ro.door_casings}
