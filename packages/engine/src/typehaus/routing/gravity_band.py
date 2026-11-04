@@ -41,7 +41,25 @@ def prepare_falling(space: RoutingSpace, band: tuple[float, float],
     space.hard.extend(rail_prisms(space))
     if model is not None:
         space.hard.extend(outside_prisms(model, space))
+        space.hard.extend(exterior_prisms(model, space))
     split_banded(space, band)
+
+
+def exterior_prisms(model: ResolvedModel, space: RoutingSpace) -> list:
+    """An exterior insulated wall's stud cavity, at its own height, is no lane for a drain.
+
+    Its soft price is read at the lattice's plane, which a falling run never shares: the
+    main tree ran FX-M-BATH2-SH 92" along x = 4" at -7.6..-9.6", inside W-M-W3's cavity
+    (-13.44" up, it drops to the foundation) against a -16" plane (§13).
+    """
+    from shapely.geometry import Polygon
+
+    from typehaus.routing.obstacles import HardPrism, exterior_cavities
+
+    grow = space.radius_m + space.clearance_m
+    return [HardPrism(tag=tag, kind="exterior", footprint=Polygon(ring).buffer(grow),
+                      z0_m=z0 - grow, z1_m=z1 + grow)
+            for tag, ring, z0, z1 in exterior_cavities(model)]
 
 
 def outside_prisms(model: ResolvedModel, space: RoutingSpace) -> list:
@@ -124,12 +142,14 @@ def split_banded(space: RoutingSpace, band: tuple[float, float]) -> None:
 
 
 def band_obstacles(space: RoutingSpace, graph: Graph,
-                   pardon: dict[int, frozenset[str]] | None = None) -> Obstacles:
+                   pardon: dict[int, frozenset[str]] | None = None,
+                   start: int | None = None) -> Obstacles:
     """Per-edge banded obstacles, cached per undirected edge and reversed on the way back.
 
     ``pardon`` names, per terminal node, the prisms the terminal stands in at its own
     height — the step off it may pass through those, as ``graph.build_graph`` pardons a
-    plan-hard terminal.
+    plan-hard terminal. Across such a prism (never along it), a step heading for a tie, or
+    away from ``start``, is excused all the way through (§13).
     """
     from shapely import STRtree
     from shapely.geometry import LineString, Point
@@ -138,7 +158,18 @@ def band_obstacles(space: RoutingSpace, graph: Graph,
     tree = STRtree([p.footprint for p in prisms]) if prisms else None
     eroded: dict[int, object] = {}
     excused = pardon or {}
-    cache: dict[tuple[int, int], list[Obstacle]] = {}
+    cache: dict[tuple[int, int], tuple[list[Obstacle], list, bool]] = {}
+    # §13: the step INTO a tie crosses its own run, a wye's last inches. Pardoned nodes by
+    # lattice line, so a crossing edge can find the tie it is heading for.
+    ties_on: dict[tuple[bool, int], list[tuple[float, frozenset[str]]]] = {}
+    for n, tags in excused.items():
+        if n == start:
+            continue  # the start is left, never approached
+        node = graph.nodes[n]
+        ties_on.setdefault((True, round(node.y / _ERODE_M)), []).append((node.x, tags))
+        ties_on.setdefault((False, round(node.x / _ERODE_M)), []).append((node.y, tags))
+    origin = graph.nodes[start] if start is not None else None
+    leaving = excused.get(start, frozenset()) if start is not None else frozenset()
     # Every edge on one lattice line meets a prism in the same spans: clip the line once.
     spans: dict[tuple[int, bool, int], list[tuple[float, float]]] = {}
 
@@ -158,13 +189,18 @@ def band_obstacles(space: RoutingSpace, graph: Graph,
 
     def obstacles(a: int, b: int) -> list[Obstacle]:
         key = (a, b) if a < b else (b, a)
-        found = cache.get(key)
-        if found is None:
-            found = []
+        cached = cache.get(key)
+        if cached is None:
+            found: list[Obstacle] = []
+            approach: list[tuple[int, tuple[float, ...]]] = []
+            along_x = False
             if tree is not None:
                 first, second = graph.nodes[key[0]], graph.nodes[key[1]]
-                skip = excused.get(key[0], frozenset()) | excused.get(key[1], frozenset())
                 riser = abs(first.x - second.x) + abs(first.y - second.y) < _ERODE_M
+                ex0, ex1 = excused.get(key[0], frozenset()), excused.get(key[1], frozenset())
+                # A pardon excuses the step OFF a terminal; a level edge between two pardoned
+                # nodes rides inside the very thing they stand in, so it excuses nothing.
+                skip = (ex0 | ex1) if riser else (ex0 ^ ex1)
                 along_x = abs(first.x - second.x) > abs(first.y - second.y)
                 axis = "z" if riser else "x" if along_x else "y"
                 line = (Point(first.plan) if riser
@@ -182,13 +218,37 @@ def band_obstacles(space: RoutingSpace, graph: Graph,
                             found.append((0.0, 1.0, prism.z0_m, prism.z1_m, prism.tag))
                         continue
                     run = hi_end - lo_end
+                    x0, y0, x1, y1 = prism.footprint.bounds
+                    width = min(x1 - x0, y1 - y0) + _ERODE_M
                     for s0, s1 in line_spans(int(index), along_x, across):
                         start = max(min(lo_end, hi_end), s0)
                         end = min(max(lo_end, hi_end), s1)
                         if end > start:
                             t0, t1 = sorted(((start - lo_end) / run, (end - lo_end) / run))
                             found.append((t0, t1, prism.z0_m, prism.z1_m, prism.tag))
-            cache[key] = found
+                            if s1 - s0 > width:
+                                continue  # riding along a prism is never an approach
+                            at = tuple(c for c, tags in ties_on.get(
+                                (along_x, round(across / _ERODE_M)), ())
+                                if prism.kind == "run" and prism.tag in tags
+                                and s0 <= c <= s1)
+                            away: tuple[float, ...] = ()
+                            if prism.tag in leaving and origin is not None:
+                                c, off = ((origin.x, origin.y) if along_x
+                                          else (origin.y, origin.x))
+                                if abs(off - across) < _ERODE_M and s0 <= c <= s1:
+                                    away = (c,)
+                            if at or away:
+                                approach.append((len(found) - 1, at, away))
+            cached = cache[key] = (found, approach, along_x)
+        found, approach, along_x = cached
+        if approach:  # into a tie, or out of the start; never the other way
+            ca, cb = ((graph.nodes[a].x, graph.nodes[b].x) if along_x
+                      else (graph.nodes[a].y, graph.nodes[b].y))
+            drop = {i for i, at, away in approach
+                    if any(abs(cb - c) < abs(ca - c) for c in at)
+                    or any(abs(cb - c) > abs(ca - c) for c in away)}
+            found = [e for i, e in enumerate(found) if i not in drop]
         if a < b:
             return found
         return [(1.0 - t1, 1.0 - t0, z0, z1, tag) for t0, t1, z0, z1, tag in found]

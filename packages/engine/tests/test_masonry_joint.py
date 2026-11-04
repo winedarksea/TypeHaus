@@ -117,4 +117,4 @@ def test_the_joints_bill_by_the_foot(catlin_model_ro) -> None:
     assert sorted(r["tags"][0] for r in rows) == ["MJ-B-BRICK-E", "MJ-B-BRICK-W"]
     assert all(r["length_ft"] == pytest.approx(89.104 / 12, abs=0.05) for r in rows)
     east = next(r for r in rows if r["tags"] == ["MJ-B-BRICK-E"])
-    assert "over 1/2\" Nomaco HBR" in east["material"]
+    assert "over 1/2\" closed-cell backer rod" in east["material"]

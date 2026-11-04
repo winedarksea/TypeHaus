@@ -47,12 +47,14 @@ class ArmReach:
 
 def arm_reach(graph: Graph, space: RoutingSpace, start: int, *, limit_ft: float,
               weir_m: float, grade_in_per_ft: float,
-              obstacles: Obstacles | None = None) -> dict[int, ArmReach]:
+              obstacles: Obstacles | None = None,
+              stopped: dict[str, int] | None = None) -> dict[int, ArmReach]:
     """Every node the arm reaches level-by-level from ``start`` within ``limit_ft``.
 
     Horizontal edges only (a drop before the vent is an S-trap), each turn at its UPC 706
     price, and a banded prism forbids an edge where the arm's known invert —
-    ``weir - slope x developed`` — passes inside it.
+    ``weir - slope x developed`` — passes inside it. ``stopped`` counts those prisms by
+    tag, so a refusal can name what held the arm.
     """
     best: dict[tuple[int, str], float] = {(start, ""): 0.0}
     found: dict[int, ArmReach] = {start: ArmReach(start, 0.0, 0.0, (start,))}
@@ -74,8 +76,11 @@ def arm_reach(graph: Graph, space: RoutingSpace, start: int, *, limit_ft: float,
             reach = developed + plan_ft
             if reach > limit_ft + 1e-9:
                 continue
-            if obstacles is not None and _blocked(obstacles(index, other), weir_m,
-                                                  grade_in_per_ft, developed, plan_ft):
+            hit = None if obstacles is None else _blocked(
+                obstacles(index, other), weir_m, grade_in_per_ft, developed, plan_ft)
+            if hit is not None:
+                if stopped is not None:
+                    stopped[hit] = stopped.get(hit, 0) + 1
                 continue
             turn = turn_price(space, incoming, axis)
             if turn is None:
@@ -91,13 +96,14 @@ def arm_reach(graph: Graph, space: RoutingSpace, start: int, *, limit_ft: float,
     return found
 
 
-def _blocked(hits, weir_m: float, grade: float, developed_ft: float, plan_ft: float) -> bool:
-    for t0, t1, z0, z1, _tag in hits:
+def _blocked(hits, weir_m: float, grade: float, developed_ft: float,
+             plan_ft: float) -> str | None:
+    for t0, t1, z0, z1, tag in hits:
         high = weir_m - (developed_ft + t0 * plan_ft) * grade * M_PER_IN
         low = weir_m - (developed_ft + t1 * plan_ft) * grade * M_PER_IN
         if high >= z0 - _TOL_M and low <= z1 + _TOL_M:
-            return True
-    return False
+            return tag
+    return None
 
 
 def vent_cost_to_go(graph: Graph, goals: set[int], *, level_floor_m: float

@@ -251,8 +251,11 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
                     return found
                 if blocker is not None:
                     _note(report, f"{blocker} across the drop into the tie", 0.0)
-                floor_m = snapped
-            _note(report, f"the tie at node {index}", (floor_m - label.hi_m) / M_PER_IN)
+                else:
+                    _note(report, f"the tie at node {index}",
+                          (snapped - label.hi_m) / M_PER_IN)
+            else:
+                _note(report, f"the tie at node {index}", (floor_m - label.hi_m) / M_PER_IN)
             # Not a dead end: another goal on the same stack may still accept it.
 
         for other, axis in graph.neighbours(index):
@@ -406,7 +409,7 @@ def _heuristic(graph: Graph, space: RoutingSpace,
     additive and non-negative and the one discount is capped, so this never over-estimates.
     A heuristic that also guessed at the head would stop A* being optimal without saying so.
     """
-    floor = space.cost.heuristic_floor()
+    floor = space.cost.heuristic_floor(rack=any(c.kind == "rack" for c in space.corridors))
     riser = space.cost.riser_per_ft
     # Vectorised over goals, memoised per node; bit-identical to the scalar form.
     gx = np.array([graph.nodes[g].x for g in goals])

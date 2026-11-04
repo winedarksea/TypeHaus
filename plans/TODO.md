@@ -251,8 +251,8 @@ the future.
 - Left open by the 2026-11-01 fit and product-data pass (REPORT items 14-24; plan `make-a-plan-to-warm-otter`):
   - [ ] ERV OA/EA/RET still leave the case at service level: under Broan's 2x2 port grid they cannot all reach the two basement plenums in 21.3" of headroom (8" ducts at 12" wrapped OD, OA/EA wraps overlap 2 1/4"). Owner held it; options are rearranging the plenums or moving the ERV (C6-E1). `erv_static_budget` stays 0.441" > 0.4".
   - [ ] 3 drain fixtures have no 3D vent (`mep.trap_arm_developed` ADVISORY; C6-E7, wet-vent grading done):
-    - FX-M-BATH2-TUB: `haus route --fixture` refuses: the take-off at (98", 216") in W-M-BA2E rises into PR-B-HW-WASH 61" over the arm (drain basis §9). Re-route HW-WASH out of that cavity and the vent rises.
-    - FX-S-SUITEBATH-LAV: refused, the take-off at (165.5", 268") rises into PR-S-SUITE-LAV-HW 25.75" over the arm; move that leg to y <= 266.36" (§9). -TUBSH: no wall cavity holding a 1 1/4" vent to 6" over the rim within its 42" arm. No wet vent either (the WC joins upstream, 908.2.1.4).
+    - FX-M-BATH2-TUB: `haus route --fixture` refuses: no 1 1/4" vent cavity within its 42" arm, the arm held by the FS-M-WEST joist lines at y=208"/224" (it may not ride a TJI) and W-M-TUBDK-W. With blocking flanges ignored the take-off at (98", 216") in W-M-BA2E rose into PR-B-HW-WASH 61" over the arm (drain basis §9, §13).
+    - FX-S-SUITEBATH-LAV: refused, the take-off at (165.5", 268") rises into PR-S-SUITE-LAV-HW 25.75" over the arm; move that leg to y <= 266.36" (§9). -TUBSH: no wall cavity holding a 1 1/4" vent to 6" over the rim within its 42" arm; the arm is held by DU-M-ERV-R-LAUNDRY, W-S-SN3 and W-S-C2C. No wet vent either (the WC joins upstream, 908.2.1.4).
     - When all three pass, move the 3D walk under the CODE id `mep.trap_arm_length` and retire `mep.trap_arm_developed`.
     - Fitting detail: PR-M-LSINK-VENT and PR-M-BATH2-WC-VENT tee into the drain where CO-B-LSINK / CO-B-WC2-HEAD sit (solids overlap 32 / 86 cm^3, blessed). A plumber's combo-fitting sketch, or nudge the tee off the cleanout.
   - [ ] TB-SG-W1/E1 closure boards are 8" while FT-B-S2/S3 are now 10": 2" x 32" of strip faces the court footing with no board. Extend to 10" (moves §11l and test_thermal_break) or accept.
@@ -286,10 +286,10 @@ the future.
 - House K2 base flashing and wall-top closures now derive, bill and receive coverage checks; coordinate the garage Sill to Soffit panel break and installation order, which the fit check records UNKNOWN. See the trim note for the selected aluminium section, isolation and quantities.
 - Add the eased edges and rounded corners to the shown tabletop model.
 - Autorouter open items (plumber's-rules pass, 2026-11-03; drain basis §13, `docs/routing.md`):
-  - [ ] FX-M-KITCH-SINK refuses in the main tree at 1.5" (715k labels, tightest PR-B-CW-WH across the fall band); the authored run stands. tree:second's TUBSH branch refuses too.
-  - [ ] `--tree` grades each branch alone, so FX-M-BATH2-SH-PROPOSED reads as interfering with PR-B-TUB2-DRAIN, which the TUB branch replaces; grade the tree's drains together there as the scorecard does (`evaluate_network`).
-  - [ ] `test_routing_perf_guard::test_every_catlin_duct_builds_a_lattice_that_fits` fails: DU-B-ERV-R-SAUNA-SUP is 548,354 nodes against 500,000 (529,787 at c00e4356 already).
-  - [ ] `test_cmd_route::test_a_congested_terminal_is_refused_with_the_tags_that_block_it` fails at c00e4356 too.
+  - [ ] `haus route --manifold EQ-TAG` / `--topology trunk` (plan Phase 6) deferred by the owner, 2026-11-03: catlin models no water manifold (no equipment, no outlet ports), so there is nothing to route or test it on. Model the manifold first.
+  - [ ] FX-M-KITCH-SINK refuses in the main tree at 1.5" (146k labels, tightest PR-B-CW-WH across the fall band); the authored run stands. tree:second's TUBSH branch refuses too.
+  - [ ] FX-M-BATH2-SH refuses in the main tree and walks the whole 1.5M-label budget (~100 s of tree:main's 148 s). With exact ties and exterior cavities hard it has no lane to BATH2-WC's drop; the earlier "routes" crossed BATH2-WC or ran 92" in W-M-W3. Likely needs BATH2-WC laid lower (it runs "over" at -2.6..-4" and drops 12", taking the head the shallow fixtures need) — an RSPH order/depth question, not a search bug.
+  - [ ] `test_routing_perf_guard::test_every_catlin_duct_builds_a_lattice_that_fits` fails: DU-B-ERV-R-SAUNA-SUP is 548,354 nodes against 500,000 (529,787 at c00e4356 already; this pass's real foundation-wall concrete hosts and NEC 110.26 clear zones added 18.6k), so `haus route --run` refuses it for size. Owner chose 2026-11-03 to leave it as separate lattice-reduction work; the test stays red, not loosened.
 - Plant supply fabrication hold: dry-fit A220V / ZD12X6TZ / TH-HP-PLANT-BOOT-01 and gasketed
   service hatch, including actuator fasteners, hand/tool access, seams/supports and the
   approximately 3/8-inch deck margin. Geometry and connection are specified; see
@@ -342,6 +342,8 @@ the future.
 - Specify paint in detail
 - Specify leak detectors, in useful places, linked to Home Assitant
 - Is TypeHaus organized such that a contractor building typehaus could hand their chatbot/llm of choice the github repo link and easily get answers they need on the design?
+- Model a bird feeder outside the kitchen window
+- Reverse osmosis sink?
 
 # Project Management
 

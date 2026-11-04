@@ -270,7 +270,15 @@ def route(
     if proposals and (evaluate or as_json):
         from typehaus.cli.route_eval import evaluate_proposals
 
-        evaluations = evaluate_proposals(directory, model, [p for p, _s in proposals])
+        laid = [p for p, _s in proposals]
+        evaluations = evaluate_proposals(directory, model, laid)
+        if tree and len(laid) > 1:
+            # Alone, a branch meets the authored drain another branch replaces (§13).
+            from typehaus.cli.route_eval import evaluate_network
+
+            network = evaluate_network(directory, model, laid)
+            network.tag = f"{tree} (all branches together)"
+            evaluations.append(network)
     report_proposals(
         model, directory, proposals, evaluations=evaluations, problems=problems,
         notices=notices, refusals=refusals, clock=clock, cost=cost, explain=explain,

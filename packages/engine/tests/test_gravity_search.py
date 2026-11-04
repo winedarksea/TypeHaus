@@ -240,3 +240,37 @@ def test_the_drop_into_the_tie_meets_a_heater_line_as_section_13_says() -> None:
 
     assert drop_blocker(at_node, 0, -4.0 * M_PER_IN, -16.0 * M_PER_IN) == "PR-B-CW-WH"
     assert drop_blocker(at_node, 0, -10.0 * M_PER_IN, -16.0 * M_PER_IN) is None
+
+
+def test_the_step_into_a_tie_crosses_its_collector_and_riding_it_does_not() -> None:
+    """§13: inside a tie's own run, an edge heading for the tie is the wye; along it is not."""
+    from shapely.geometry import LineString, Point
+
+    from typehaus.routing.gravity_band import band_obstacles
+    from typehaus.routing.obstacles import HardPrism
+
+    xs = [0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 12.0, 14.0, 16.0]  # inches; the foot at 5"
+    graph = Graph(nodes=[Node(index=k, x=x * M_PER_IN, y=0.0, z=0.0)
+                         for k, x in enumerate(xs)])
+    tall = (-20 * M_PER_IN, 0.0)
+    drop = HardPrism(tag="WC", kind="run", footprint=Point(5 * M_PER_IN, 0).buffer(
+        2.5 * M_PER_IN), z0_m=tall[0], z1_m=tall[1])
+    leg = HardPrism(tag="LEG", kind="run", footprint=LineString(
+        [(10 * M_PER_IN, 0), (30 * M_PER_IN, 0)]).buffer(1 * M_PER_IN),
+        z0_m=tall[0], z1_m=tall[1])
+    space = RoutingSpace(radius_m=0.0, clearance_m=0.0, cost=RouteCost(bend_in=6.0),
+                         hard=[], soft=[], corridors=[], bbox=(0.0, 0.0, 30 * M_PER_IN, 0.0),
+                         storeys=("main",), banded=[drop, leg])
+    obstacles = band_obstacles(space, graph, {4: frozenset({"WC"}), 9: frozenset({"LEG"})})
+
+    def tags(a: int, b: int) -> set[str]:
+        return {o[4] for o in obstacles(a, b)}
+
+    assert "WC" not in tags(2, 3)       # 3" -> 4", heading for the foot: the wye
+    assert "WC" in tags(3, 2)           # the same edge leaving it
+    assert "WC" in tags(5, 6)           # 6" -> 8", past the foot: through the drop
+    assert "LEG" in tags(7, 8)          # 12" -> 14", along the leg for 16": riding
+    # The same disc as the START's own wall: stepping out of it is excused, back in is not.
+    out_of = band_obstacles(space, graph, {4: frozenset({"WC"})}, start=4)
+    assert "WC" not in {o[4] for o in out_of(5, 6)}
+    assert "WC" in {o[4] for o in out_of(6, 5)}

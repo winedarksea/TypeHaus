@@ -314,6 +314,8 @@ living north-run bases have doors and shelves, including the north-hinged B24 be
 the slat partition. High frames use 50-inch lower and 30-inch upper fronts; retain the
 Rev-A-Shelf inserts and coordinate linked fronts/door brackets with their full deployment.
 
+ERV trash-odour pickup (2026-11-03): a ~3-4 cfm return in the B18's floor is an option, but there is no clear path yet. `EQ-B-ERV-MAN-EXH` has no free collar, and `haus route`'s best route was 53 ft through `RM-B-ESS`, two bored top plates and the x=18' blocking.
+
 Both cold-storage tops remain stock 30x24x20 frames with paired solid 15x20 fronts.
 Glass is deferred: IKEA US lists AXSTAD glass fronts at 30/40-inch heights, not 20.
 The 494.549.71 link above documents the prior VOXTORP frame configuration only; it is

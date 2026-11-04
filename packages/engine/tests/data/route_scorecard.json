@@ -14,7 +14,7 @@
    "proposals": 0,
    "rack_shared": 0,
    "refusals": 1,
-   "search_s": 0.97,
+   "search_s": 1.03,
    "trap_arm_gaps": 0,
    "vent_gaps": 0
   },
@@ -32,7 +32,7 @@
    "proposals": 0,
    "rack_shared": 0,
    "refusals": 1,
-   "search_s": 1.88,
+   "search_s": 1.9,
    "trap_arm_gaps": 0,
    "vent_gaps": 0
   },
@@ -50,7 +50,7 @@
    "proposals": 0,
    "rack_shared": 0,
    "refusals": 1,
-   "search_s": 0.64,
+   "search_s": 0.68,
    "trap_arm_gaps": 0,
    "vent_gaps": 0
   },
@@ -74,7 +74,7 @@
    "proposals": 1,
    "rack_shared": 0,
    "refusals": 0,
-   "search_s": 1.27,
+   "search_s": 1.35,
    "trap_arm_gaps": 0,
    "vent_gaps": 0
   },
@@ -100,7 +100,7 @@
    "proposals": 1,
    "rack_shared": 0,
    "refusals": 0,
-   "search_s": 24.69,
+   "search_s": 25.07,
    "trap_arm_gaps": 0,
    "vent_gaps": 0
   },
@@ -124,7 +124,7 @@
    "proposals": 1,
    "rack_shared": 0,
    "refusals": 0,
-   "search_s": 3.36,
+   "search_s": 3.88,
    "trap_arm_gaps": 0,
    "vent_gaps": 0
   },
@@ -149,16 +149,20 @@
    "proposals": 1,
    "rack_shared": 0,
    "refusals": 0,
-   "search_s": 5.28,
+   "search_s": 5.39,
    "trap_arm_gaps": 0,
    "vent_gaps": 0
   },
   "tree:basement": {
-   "bores": {},
+   "bores": {
+    "i_joist": 0,
+    "joist": 0,
+    "truss_pass": 0
+   },
    "cleanouts_placed": 0,
    "cleanouts_required": 0,
-   "developed_ft": 0.0,
-   "eval_fail": 1,
+   "developed_ft": 0.71,
+   "eval_fail": 0,
    "eval_unknown": 0,
    "exterior_wall_ft": 0.0,
    "fittings": {},
@@ -167,32 +171,32 @@
    "proposals": 1,
    "rack_shared": 0,
    "refusals": 2,
-   "search_s": 0.69,
+   "search_s": 0.72,
    "trap_arm_gaps": 0,
    "vent_gaps": 0
   },
   "tree:main": {
    "bores": {
-    "i_joist": 10,
+    "i_joist": 12,
     "joist": 0,
     "plate": 3,
     "truss_pass": 0
    },
    "cleanouts_placed": 0,
-   "cleanouts_required": 2,
-   "developed_ft": 37.6,
-   "eval_fail": 13,
-   "eval_unknown": 4,
+   "cleanouts_required": 4,
+   "developed_ft": 37.07,
+   "eval_fail": 9,
+   "eval_unknown": 3,
    "exterior_wall_ft": 0.0,
    "fittings": {
-    "elbow-90": 18
+    "elbow-90": 20
    },
-   "forbidden_fittings": 15,
+   "forbidden_fittings": 17,
    "illegal_bores": 0,
-   "proposals": 7,
+   "proposals": 6,
    "rack_shared": 0,
-   "refusals": 1,
-   "search_s": 45.73,
+   "refusals": 2,
+   "search_s": 147.74,
    "trap_arm_gaps": 0,
    "vent_gaps": 0
   },
@@ -210,34 +214,34 @@
    "proposals": 0,
    "rack_shared": 0,
    "refusals": 3,
-   "search_s": 2.63,
+   "search_s": 2.05,
    "trap_arm_gaps": 0,
    "vent_gaps": 0
   }
  },
  "totals": {
   "bores": {
-   "i_joist": 10,
+   "i_joist": 12,
    "joist": 0,
    "plate": 7,
    "stud": 2,
    "truss_pass": 4
   },
   "cleanouts_placed": 0,
-  "cleanouts_required": 3,
-  "developed_ft": 105.62,
-  "eval_fail": 20,
-  "eval_unknown": 9,
+  "cleanouts_required": 5,
+  "developed_ft": 105.8,
+  "eval_fail": 15,
+  "eval_unknown": 8,
   "exterior_wall_ft": 0.0,
   "fittings": {
-   "elbow-90": 28
+   "elbow-90": 30
   },
-  "forbidden_fittings": 17,
+  "forbidden_fittings": 19,
   "illegal_bores": 0,
-  "proposals": 12,
+  "proposals": 11,
   "rack_shared": 0,
-  "refusals": 9,
-  "search_s": 87.14,
+  "refusals": 10,
+  "search_s": 189.81,
   "trap_arm_gaps": 0,
   "vent_gaps": 0
  }

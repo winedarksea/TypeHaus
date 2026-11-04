@@ -79,7 +79,8 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | A campaign's laid level legs offer rack lanes to the same trade | `routing/rack.py` | drain basis §12 |
 | Couplings per stock length are disclosed, not counted (no stock length on record) | `trades/pipe.coupling_disclosure` | — |
 | A falling run's arrival holds the 1/16" snap's head; a band that cannot reach any tie by plan distance is dropped | `gravity.grid_allowance`, `gravity.head_floor_fn` | drain basis §13 |
-| A falling run crosses rims and joists, never rides them, and never a blocking flange; foundation walls and the outside of the decks are hard; a tie is pardoned only its own run; the drop into a tie is tested | `gravity_band.rail_prisms`, `obstacles`, `gravity_band.terminal_pardons` | drain basis §13 |
+| A falling run crosses rims and joists, never rides them, and never a blocking flange; foundation walls, exterior insulated cavities (at their own height) and the outside of the decks are hard; a tie is pardoned only its own run; the drop into a tie is tested | `gravity_band.rail_prisms`, `obstacles`, `gravity_band.terminal_pardons` | drain basis §13 |
+| A tree tie is ON its collector (1/8"); the step into it may cross the collector, never ride or leave it; a branch ties into a plumb drop's side at its own height; a refusal is reported per fixture | `cmd_route_tree.TIE_TOLERANCE_M`, `gravity_band.band_obstacles`, `route_tree_branches.Branches` | drain basis §13 |
 
 **A fixture's arm and vent.** `--fixture` on a drain fixture searches the arm and its vent
 together: the arm's reachable take-offs (`arm_reach`) seed the gravity search at their arm

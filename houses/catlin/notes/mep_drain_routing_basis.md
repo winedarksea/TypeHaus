@@ -698,6 +698,53 @@ riser through PR-B-CW-WH (-9.61..-3.99") before. Such a branch's inverts are its
 the fall, not the arrival-anchored line, so a branch tying onto it lands on the pipe.
 `obstacles.hard_prisms`, `gravity_band.outside_prisms`, `gravity.drop_blocker`.
 
+**A tree's branches are each other's obstacles, and each carries what ties onto it.** Every
+branch a tree lays is a banded run prism for the branches searched after it (its radius
+plus theirs), so two branches no longer pass through each other; a tie node is pardoned
+only the branch it lies on, never a neighbour's wye (that pardon put FX-M-BATH1-WC through
+FX-M-BATH2-WC at (6'-0", 22'-5.4")). A branch may tie onto
+another only if every line downstream still carries the combined load at its laid size:
+before this, FX-M-LAUNDRY-SINK's 1 1/2" branch took the shower and the tub onto it, 6 DFU,
+which Table 703.2 sizes at 2" (`mep.pipe_sizing` FAILed it); that tie is now refused and
+the shower looks elsewhere.
+`cli/route_tree_branches.py`. `haus route --tree` now also prints the tree graded as one
+network, beside each branch graded alone.
+
+**A tie is ON its collector, the last inches into it are the wye, and a drop takes branches
+down its side.** Ties were every lattice node within 2" of a laid line. Each size group
+builds its own lattice, which has lines through every accepted vertex, so the centreline is
+always there; the 2" only added near-ties. FX-M-BATH2-SH ended 1.64" off FX-M-BATH1-WC,
+and with nodes at 246.5/248/249.5" all pardoned it stepped tie to node to tie straight
+through FX-M-BATH2-WC's y = 248" leg (`mep.run_interference`, 2.61" inside each other). A tie
+is now within 1/8" of the line (the 1/16" snap). With exact ties, the step INTO one has to
+cross its own collector's prism: 1.75 + 0.95" plus clearance from a 3" collector's axis for
+a 1 1/2" branch, several lattice nodes deep, and only the last edge was pardoned. A level
+edge on a lattice line that CROSSES a run prism (span no wider than the prism) and heads
+toward a tie pardoned that prism is excused; riding along a leg (its span is the leg's
+length plus the width) and leaving a tie are not. Each branch is one prism per straight leg
+so "crosses" means what it says. FX-M-BATH2-WC runs at -2.6 to -4" and drops plumb 12" into
+the stack head (6'-0", 22'-7"), the main's only node in reach. That drop is now a leg of its
+own, and its foot belongs to the WC branch in every later group, not to the main. A branch
+tying there enters the drop's side at its own height: inverts at a coincident vertex read the
+lowest (-16", the foot), and the branch ends at start less its fall, clamped to the drop's
+top. FX-M-LAUNDRY-SINK enters at -7.31", FX-M-BATH2-SH at -11.44"; before, LAUNDRY drew a
+second 12" riser inside the WC's. Each terminal now gets its own refusal report: a group
+shared one, so FX-M-KITCH-SINK, LAUNDRY, SH and TUB all printed the same 34,024 labels and
+the same 0.004" head shortfall.
+`gravity_band.band_obstacles`, `cmd_route_tree.TIE_TOLERANCE_M`, `Branches.drop_top`.
+
+**An exterior cavity, at its own height.** An exterior insulated wall's stud cavity is a
+soft price (`exterior_wall_per_ft`) read at the lattice's plane, which a falling run never
+shares. With the ties exact, FX-M-BATH2-SH went round the west side: 92" along x = 4" at
+-7.6..-9.6", inside W-M-W3 (structure x = 0.5..6", -13.44" up: it drops to the foundation
+and owns the band) against the -16" plane, 8.17 ft the scorecard caught. For a falling run
+each exterior cavity is now a banded prism over its own z0..z1, grown by radius plus
+clearance. The fixture's start is pardoned the wall it stands in, and, as a tie's approach,
+every step heading AWAY from it across that wall (never along it, never back): FX-M-BATH2-SINK
+at x = 6.5" stands inside W-M-W3 grown to 7.4", and with the first step alone excused it was
+refused in 7 labels; it now leaves east and ties onto FX-M-LAUNDRY-SINK.
+`gravity_band.exterior_prisms`, `band_obstacles(..., start)`.
+
 ---
 
 ## 6. What this note does not do

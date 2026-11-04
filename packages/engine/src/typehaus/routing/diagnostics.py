@@ -56,6 +56,7 @@ _KIND_MOBILITY = {
     "member": Mobility.FIXED,
     "rail": Mobility.FIXED,  # a floor member a falling run would ride (``rail_prisms``)
     "flange": Mobility.FIXED,  # an I-joist blocking flange: no cut, ever
+    "exterior": Mobility.FIXED,  # an exterior insulated cavity, for a falling run
     "outside": Mobility.FIXED,  # past the decks, within a floor's depth: not the house
     # A flight's R311.7.2 headroom and its stringers: the stair does not move for a duct.
     "stair": Mobility.FIXED,

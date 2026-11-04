@@ -165,7 +165,7 @@ def _heuristic(graph: Graph, space: RoutingSpace,
     Over a set of goals it is the minimum over them, which is still admissible: the true
     remaining cost is at least the cheapest way to the nearest goal.
     """
-    floor = space.cost.heuristic_floor()
+    floor = space.cost.heuristic_floor(rack=any(c.kind == "rack" for c in space.corridors))
     riser = space.cost.riser_per_ft
     # Vectorised over the goals and memoised per node: same IEEE operations in the same
     # order as the scalar form, so every f value (and so every tie-break) is bit-identical.

@@ -226,7 +226,9 @@ def grid_allowance(found: Any, grade_in_per_ft: float, required_m: float | None)
 
 
 def drop_blocker(obstacles: Any, index: int, top_m: float, required_m: float) -> str | None:
-    """A banded prism across the plumb drop an "over" route makes into its tie (§13)."""
+    """A banded prism across the plumb drop an "over" route makes into its tie (§13).
+
+    ``obstacles(index, index)`` already leaves out what the tie node is pardoned."""
     tol = 0.0015875
     if obstacles is None or top_m <= required_m + tol:
         return None

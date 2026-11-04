@@ -128,6 +128,9 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
     # there is no later group — the sizes run widest first for exactly that reason.
     accepted: list[tuple[list[tuple[float, float]], list[float]]] = [
         (tie_path, [z for _p, z in reachable])]
+    from typehaus.cli.route_tree_branches import Branches
+
+    branches = Branches.of_main(target, [(x, y, z) for (x, y), z in reachable])
     proposals: list[tuple[RouteProposal, str]] = []
     notices: list[str] = []
     sizes = sorted({diameters[tag] for tag in points}, reverse=True)
@@ -141,7 +144,8 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
         group = sorted(tag for tag in points if diameters[tag] == size)
         made, group_problems, group_notices = _route_group(
             model, target, group, points=points, floors=floors, storeys=storeys,
-            size=size, root_z=root_z, accepted=accepted, via=via, slope=slope,
+            size=size, root_z=root_z, accepted=accepted, branches=branches, via=via,
+            slope=slope,
             margin_ft=margin_ft, level=level, avoid=avoid,
             touch=frozenset({target, *replaced}), explain=explain, cost=cost,
             clock=clock)
@@ -160,7 +164,8 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
                  points: dict[str, tuple[float, float]], floors: dict[str, float],
                  storeys: dict[str, str], size: float, root_z: float,
                  accepted: list[tuple[list[tuple[float, float]], list[float]]],
-                 via: list[tuple[float, float]], slope: float | None, margin_ft: float,
+                 branches: Any, via: list[tuple[float, float]], slope: float | None,
+                 margin_ft: float,
                  level: str | None, avoid: frozenset[str], touch: frozenset[str],
                  explain: bool, cost: Any, clock: Any
                  ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str]]:
@@ -210,8 +215,8 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
     clock.lattice(graph)
 
     goals: set[int] = set()
-    for path, _z in accepted:
-        goals |= _line_nodes(graph, path)
+    for path, _z in accepted:  # on the line, not near it: its vertices are lattice lines (§13)
+        goals |= _line_nodes(graph, path, TIE_TOLERANCE_M)
     if not goals:
         return [], [f"{label}: no lattice node lies on the reachable part of the main or "
                     "on any branch already accepted, so there is nowhere to tie into. "
@@ -248,26 +253,58 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
     grade = slope if slope is not None else minimum_slope(size)
     constraints = member_constraints(
         model, graph, (min(inverts.values()), max(floors.values())))
-    report = GravityRefusal()
+    reports: dict[str, GravityRefusal] = {}  # per terminal: a shared one reads as each's
+    arrivals: dict[str, float] = {}  # a branch entering a plumb drop ends at its own height
+    tag_at = {t.node: t.tag for t in terminals}
+    owners = branches.owners(graph)
+    base_banded = list(space.banded)
 
     def search(a_graph, a_space, start, targets):
+        # Only a line that still carries the load at its size, all the way down (§13).
+        tag = tag_at.get(start, "")
+        report = reports[tag] = GravityRefusal()
+        targets = {n for n in targets
+                   if n not in owners or branches.admits(model, owners[n], tag)}
+        if not targets:
+            report.notes.append("every branch in reach is full at its size")
+            return None
+        a_space.banded = base_banded + branches.prisms(a_space.radius_m,
+                                                       a_space.clearance_m)
         nipple, heel = fitting_terms(a_space.cost, "drain", size, None,
                                      pipe_trade.radius_m(size))
-        problem = GravityProblem(ceiling_m=max(floors.values()), grade_in_per_ft=grade,
+        ceiling = max(floors.values())
+        required = {n: inverts[n] for n in targets if n in inverts}
+        pardons = terminal_pardons(a_space, a_graph, {**required, start: ceiling}, start,
+                                   frozenset({target}))
+        for n in required:  # a tie is pardoned the branch it lies on, never a neighbour's wye
+            if owners.get(n, 0):
+                own = f"{branches.lines[owners[n]].tag}-PROPOSED"
+                pardons[n] = pardons.get(n, frozenset()) | {own}
+        obstacles = band_obstacles(a_space, a_graph, pardons, start)
+        # A goal whose own plumb is inside a prism cannot be tied at: drop it, so the head
+        # bound is taken over the ties that are really there (§13).
+        live = {n for n, z in required.items()
+                if not any(z0 < z < z1 for _a, _b, z0, z1, _t in obstacles(n, n))}
+        if not live:
+            report.notes.append("every tie in reach is inside something")
+            return None
+        targets = {n for n in targets if n in live or n not in inverts}
+        problem = GravityProblem(ceiling_m=ceiling, grade_in_per_ft=grade,
                                  diameter_m=2.0 * pipe_trade.radius_m(size),
-                                 required_m={n: inverts[n] for n in targets
-                                             if n in inverts},
+                                 required_m={n: required[n] for n in live},
                                  nipple_m=nipple, heel_m=heel)
-        heights = {**problem.required_m, start: problem.ceiling_m}
-        obstacles = band_obstacles(a_space, a_graph,
-                                   terminal_pardons(a_space, a_graph, heights, start,
-                                                    frozenset({target})))
         found = sloped_route(a_graph, a_space, start, targets, problem,
                              constraints=constraints, refusal=report, obstacles=obstacles)
         if found is not None and found.nodes[-1] in inverts:
             # Its own inverts, now: the next branch may tie onto this one (§13).
             lengths = developed_lengths(found.points)
             arrival = inverts[found.nodes[-1]]
+            end = a_graph.nodes[found.nodes[-1]]
+            top = branches.drop_top(owners.get(found.nodes[-1], 0), (end.x, end.y))
+            if top is not None and found.start_m is not None:
+                # Into the side of that plumb drop at its own height: no drop of its own.
+                arrival = arrivals[tag] = min(top, max(
+                    arrival, found.start_m - problem.fall_over(lengths[-1])))
             # An "over" route runs at its start and drops plumb into the tie at the end.
             over = (found.start_m is not None
                     and found.start_m > arrival + problem.fall_over(lengths[-1]) + 1e-6)
@@ -275,6 +312,15 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
                 inverts.setdefault(index, found.start_m - problem.fall_over(length)
                                    if over and index != found.nodes[-1]
                                    else arrival + problem.fall_over(lengths[-1] - length))
+            laid = [(a_graph.nodes[n].x, a_graph.nodes[n].y, inverts[n]) for n in found.nodes]
+            laid[-1] = (*laid[-1][:2], arrival)
+            if over:  # its plumb drop is a leg of its own
+                laid.insert(-1, (*laid[-1][:2], found.start_m - problem.fall_over(lengths[-1])))
+            line = branches.add(tag, size, laid, owners.get(found.nodes[-1], 0))
+            for index in found.nodes:
+                owners.setdefault(index, line)
+            if over:  # its plumb drop now stands on the tie: a later branch enters it there
+                owners[found.nodes[-1]] = line
         return found
 
     with clock.stage(f"search {size / 0.0254:.3g}in"):
@@ -285,7 +331,7 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
         problems.append(
             f"{tag}: no route to {target} at "
             f'{size / 0.0254:.3g}" — '
-            + (report.sentence() if report.reached else "every lane is blocked")
+            + _refusal(reports.get(tag))
             if shortfall == float("inf") else
             f'{tag}: short {shortfall:.2f}" of head to {target} at the minimum grade')
 
@@ -302,7 +348,7 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
             continue
         legs = route_found.polyline()
         lengths = developed_lengths(route_found.points)
-        arrival = inverts.get(route_found.nodes[-1])
+        arrival = arrivals.get(tag, inverts.get(route_found.nodes[-1]))
         if arrival is None:
             problems.append(f"{tag}: it ties onto a branch whose own invert is not "
                             "known, so its head cannot be graded — route that branch "
@@ -337,9 +383,15 @@ def _invert_of(lines: list[tuple[list[tuple[float, float]], list[float]]],
 
     Nearest, because a goal node may lie on the main and on a branch already accepted at
     once — a branch ties onto the main, so their nodes coincide where it does — and the
-    wye is cut at the invert of the thing actually under it.
+    wye is cut at the invert of the thing actually under it. Where two vertices share the
+    point — a plumb drop — the lowest: a branch may enter the drop anywhere down its side.
     """
     best: tuple[float, float] | None = None
+
+    def better(distance: float, z: float) -> bool:
+        return best is None or distance < best[0] - 1e-9 or (
+            distance <= best[0] + 1e-9 and z < best[1])
+
     for path, elevations in lines:
         for (ax, ay), az, (bx, by), bz in zip(path, elevations, path[1:], elevations[1:],
                                               strict=False):
@@ -348,13 +400,26 @@ def _invert_of(lines: list[tuple[list[tuple[float, float]], list[float]]],
             t = 0.0 if span <= 0 else max(0.0, min(1.0, ((point[0] - ax) * dx
                                                          + (point[1] - ay) * dy) / span))
             distance = ((ax + t * dx - point[0]) ** 2 + (ay + t * dy - point[1]) ** 2)
-            if best is None or distance < best[0]:
+            if better(distance, az + t * (bz - az)):
                 best = (distance, az + t * (bz - az))
         if len(path) == 1 and elevations:
             distance = (path[0][0] - point[0]) ** 2 + (path[0][1] - point[1]) ** 2
-            if best is None or distance < best[0]:
+            if better(distance, elevations[0]):
                 best = (distance, elevations[0])
     return best[1] if best is not None else 0.0
+
+
+def _refusal(report: Any) -> str:
+    if report is not None and report.reached:
+        return report.sentence()
+    return "; ".join(report.notes) if report is not None and report.notes else (
+        "every lane is blocked")
+
+
+#: A tie is ON a laid line: each group's lattice has lines through every accepted vertex,
+#: so this only covers the 1/16" snap. Two inches made a band of near-ties a branch could
+#: chain through and a wye that missed its collector's centreline (§13).
+TIE_TOLERANCE_M = 0.0032
 
 
 def _line_nodes(graph: Graph, path: Any, tolerance: float = 0.05,

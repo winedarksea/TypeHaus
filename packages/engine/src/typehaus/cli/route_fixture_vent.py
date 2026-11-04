@@ -59,8 +59,9 @@ def arm_problem(model: Any, ends: Any, graph: Any, space: Any, start: int, goals
                             "arm, so its vent is not searched")
         return {}, None
     vented = frozenset(g for g in goals if _on_stack(model, ends, graph.nodes[g]))
+    stopped: dict[str, int] = {}
     reach = arm_reach(graph, space, start, limit_ft=limit_in / 12.0, weir_m=ends.origin[2],
-                      grade_in_per_ft=grade, obstacles=obstacles)
+                      grade_in_per_ft=grade, obstacles=obstacles, stopped=stopped)
     vent_d = vent_size_m(ends.diameter_m)
     keywords: dict[str, Any] = {"seeds": arm_seeds(reach, {}, vented)}
     rim = _rim_m(model, ends.fixture)
@@ -71,8 +72,10 @@ def arm_problem(model: Any, ends: Any, graph: Any, space: Any, start: int, goals
     candidates = takeoff_candidates(graph, space, reach, rise_to_m=rim + _OVER_RIM_M,
                                     vent_od_m=2.0 * pipe_trade.cavity_radius_m(vent_d, "vent"))
     if not candidates:
+        held = ", ".join(sorted(stopped, key=lambda t: -stopped[t])[:3])
         report.notes.append(f'no wall cavity that holds a {vent_d / M_PER_IN:g}" vent to 6" '
-                            f'over the rim within {limit_in:g}" developed of the trap')
+                            f'over the rim within {limit_in:g}" developed of the trap'
+                            + (f"; the arm is held by {held}" if held else ""))
         return keywords, None
     context = _vent_context(model, ends, graph, space.cost, candidates, rim + _OVER_RIM_M,
                             vent_d, report)

@@ -191,17 +191,16 @@ def test_a_duct_run_is_routed_rather_than_called_not_a_run(runner) -> None:
 def test_a_congested_terminal_is_refused_with_the_tags_that_block_it(runner) -> None:
     """"Every lane is blocked" is true and useless.
 
-    `CD-M-DATA-PORCH` leaves the NW chase at the second floor, boxed in by the chase's own
-    conduit risers and the ERV risers. The refusal names them and says how much of the lattice
-    was reachable at all, which is the difference between "move something" and "give up".
-    (`CD-B-PV-INV` was the example until 2026-09-23, when its start left the vent bundle's
-    line with the conduit risers and became routable.)
+    `FX-S-SUITEBATH-LAV`'s only vent take-off rises into `PR-S-SUITE-LAV-HW`. The refusal
+    names it and says how much of the lattice was reachable at all, which is the difference
+    between "move something" and "give up". (`CD-B-PV-INV` was the example until 2026-09-23,
+    `CD-M-DATA-PORCH` until 2026-11-03; both became routable.)
     """
-    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "CD-M-DATA-PORCH",
+    result = runner.invoke(app, ["route", str(_CATLIN), "--fixture", "FX-S-SUITEBATH-LAV",
                                  "--margin", "2"])
     assert result.exit_code == 1, result.output
     assert "lattice nodes are reachable" in result.output
-    assert "CD-B-" in result.output
+    assert "PR-S-SUITE-LAV-HW" in result.output
     assert "Traceback" not in result.output
 
 
