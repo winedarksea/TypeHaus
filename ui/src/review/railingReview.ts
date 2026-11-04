@@ -37,6 +37,12 @@ const stairPoint = (tag: string): [number, number, number] => {
   return [solid.outline.reduce((sum, p) => sum + p[0], 0) / solid.outline.length,
     solid.z0_m + 0.04, solid.outline.reduce((sum, p) => sum + p[1], 0) / solid.outline.length];
 };
+const footBlock = footBlocks[3];
+const footTarget: [number, number, number] = [
+  footBlock.outline.reduce((sum, p) => sum + p[0], 0) / footBlock.outline.length,
+  (footBlock.z0_m + footBlock.z1_m) / 2,
+  footBlock.outline.reduce((sum, p) => sum + p[1], 0) / footBlock.outline.length,
+];
 const cases = [
   { name: "Complete guard · continuous deck slope", target: overview, span: 8,
     eye: [-5, 3.5, 6] },
@@ -47,6 +53,10 @@ const cases = [
     eye: [0.25, -0.45, -1] },
   { name: "Flank mount · sloping rim", target: point(2), span: 0.75,
     eye: [-1, 0.2, 0.2] },
+  { name: "Rear end · washers fully backed by rim", target: point(1), span: 0.8,
+    eye: [-1, 0.3, -0.7] },
+  { name: "Panel support · fascia and bottom-rail attachments", target: footTarget, span: 0.5,
+    eye: [0.3, 0.2, 1] },
   { name: "Porch stair · shared head and complete handrail", target: stairPoint("RL-SG-PSTAIR-S-BASE2"),
     span: 3.2, eye: [2, 1.5, 3] },
   { name: "Stair foot · concrete pad", target: stairPoint("RL-SG-PSTAIR-S-BASE1"),
@@ -70,7 +80,8 @@ for (const sample of cases) {
   const isStair = sample.name.startsWith("Porch stair") || sample.name.startsWith("Stair foot")
     || sample.name.startsWith("Shared head") || sample.name.startsWith("Middle tread");
   const context = model.solids!.filter(s => s.tag.startsWith("TR-SG-FASCIA-")
-    || s.tag.startsWith("TR-SG-GUTTER-") || s.tag.startsWith("TR-SG-APRON-"));
+    || s.tag.startsWith("TR-SG-GUTTER-") || s.tag.startsWith("TR-SG-APRON-")
+    || (sample.name.startsWith("Rear end") && s.tag.startsWith("TR-SG-BASE-FLASH-")));
   const visible = isStair ? [...stairSolids, ...model.solids!.filter(s => s.tag === "SL-SG-STAIRPAD")]
     : [...guard, ...context];
   if (isStair) {

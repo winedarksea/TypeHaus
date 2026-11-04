@@ -22,7 +22,7 @@ let session;
 try {
   session = await attachToPage(browser.port);
   await session.send("Emulation.setDeviceMetricsOverride", {
-    width: 1600, height: 3210, deviceScaleFactor: 1, mobile: false,
+    width: 1600, height: 3830, deviceScaleFactor: 1, mobile: false,
   });
   await mkdir(output, { recursive: true });
   for (const theme of ["light", "dark", "schematic"]) {

@@ -50,11 +50,13 @@ Foot-block fascia screws are modeled at 2 inches rather than reusing the 1 inch 
 TEKs: they pass the 1 inch PVC fascia and enter the rim. Their heads stay below the
 waterproof deck; the rail attachment points upward into the bottom rail.
 
-The two rear end posts stop 2 11/16 inches south of the deck edge so all four bolts
-and washers bear on the flank rims. The rims extend the final 3/4 inch from the rear
-joist axis to its outside face; the fascia continues to the full deck edge. Combined
-with the existing 2 3/4 inch house gap and 3 inch post, this leaves a 3 15/16 inch clear
-opening beside the house. The post count and eight panel supports remain unchanged.
+Rear end-post locations are derived from the actual house cladding face, leaving
+a 3 15/16 inch clear opening beside the house. The current deck-to-cladding gap is
+3 1/4 inches, so the posts stop 2 3/16 inches south of the sheet edge. Both rear rims
+extend 1 1/4 inches beyond the edge-joist axes: 3/4 inch to the joist face plus a
+1/2 inch projection under the rear flashing. The fascia and deck-side flashing cap
+that rim projection, retaining 2 3/4 inches to the house. All four end-mount washers
+bear on the rims. Nine posts and eight panel supports remain unchanged.
 
 Washers are standard 5/16 inch SAE flat washers (11/16 inch outside diameter) on both
 sides. Corner-hole centres remain display dimensions; their positions and every rear

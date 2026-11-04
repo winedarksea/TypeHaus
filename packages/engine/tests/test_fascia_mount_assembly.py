@@ -137,7 +137,7 @@ def test_balcony_mounts_follow_deck_and_preserve_order_quantities(catlin_model_r
     counter = model.plan.by_tag("TR-SG-COUNTER-FLASH-W")
     house_face_y = counter.path[0].y.meters + counter.thickness.meters/2
     north_edge = max(y for _x, y in deck.deck_outline)
-    assert all(member.p1[1] == pytest.approx(north_edge)
+    assert all(member.p1[1] == pytest.approx(north_edge + inch(0.5).meters)
                for member in deck.members if member.category == "rim")
     for index in (1, 9):
         post = solids[f"{guard.tag}-POST{index}"]

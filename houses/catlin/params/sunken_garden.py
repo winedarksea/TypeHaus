@@ -2606,7 +2606,11 @@ _GUARD_EDGE_PATH = (
     pt(ft(_deck_x_e + _BALCONY_RIM_HALF_FT), ft(_y_in_n)),
 )
 # Seat the end bolt patterns on the rim, retaining <4 inches to the house cladding.
-_BALCONY_END_POST_INSET = inch(2.6875)
+_BALCONY_END_POST_HOUSE_CLEARANCE_IN = 3.9375
+_BALCONY_REAR_RIM_OVERSAIL_IN = 0.5
+_BALCONY_HOUSE_GAP_IN = -SPEC.house_ext_layers_in - _y_in_n*12
+_BALCONY_END_POST_INSET = inch(_BALCONY_END_POST_HOUSE_CLEARANCE_IN
+    + RAILING_EXT_ALUMINUM_FASCIA.post_width.inches/2 - _BALCONY_HOUSE_GAP_IN)
 _GUARD_PATH = (
     pt(_GUARD_EDGE_PATH[0].x, _GUARD_EDGE_PATH[0].y - _BALCONY_END_POST_INSET),
     *_GUARD_EDGE_PATH[1:-1],
@@ -2780,7 +2784,8 @@ BALCONY_JOISTS = FloorSystem(
                      # joists behind them stay bare KDAT: nothing sees a joist once the band
                      # and the fascia are on.
                      rim_material="post-paint-white", rim_member=_BALCONY_RIM_MEMBER,
-                     rim_end_extensions=(inch(0), inch(_END_JOIST_INSET_FT * 12)),
+                     rim_end_extensions=(inch(0), inch(_END_JOIST_INSET_FT * 12
+                                                      + _BALCONY_REAR_RIM_OVERSAIL_IN)),
                      bearing_refs=("BM-SG-BLW", "BM-SG-BLE")),
     # BLOCKING UNDER THE GUARD AND PORCH TRACKS; the centre front block also carries
     # the garden flood's underside box. The two heat-pump hosts that used to be here went to grade on 2026-09-02
@@ -3048,7 +3053,9 @@ for _row, _y, _rise in _PILLAR_ROWS:
 BALCONY_FASCIA = Fascia(
     uid="SGFC01AAAA", tag="TR-SG-FASCIA", kind=TrimKind.FASCIA,
     path=tuple(pt(m(x), m(y)) for x, y in offset_path(
-        [point.xy_m for point in _GUARD_EDGE_PATH], inch(0.5).meters)),
+        [(point.x.meters, point.y.meters + (inch(_BALCONY_REAR_RIM_OVERSAIL_IN).meters
+           if index in (0, len(_GUARD_EDGE_PATH)-1) else 0))
+         for index, point in enumerate(_GUARD_EDGE_PATH)], inch(0.5).meters)),
     # 11 1/4" of rim + the 1 1/2" plank, rounded up: 13". Ripped from PVC SHEET — cellular
     # PVC trim board stops at 11 1/4" — and still one board, so the Ultralox brackets
     # through-bolt fascia and rim exactly as before (bracket top 1/2" below the rim top).
@@ -3180,8 +3187,9 @@ BALCONY_APRON = Flashing(
 # Both break beyond D-S-DECK-E's wrapped 3-1/2" casing with a 1/8" side joint. The
 # door pan discharges into the gap; the flashing end transition still needs detailing.
 _REAR_CLAD_Y_IN = -SPEC.house_ext_layers_in       # house cladding face
-_REAR_DECK_Y_IN = _y_in_n * 12.0                  # deck north edge
-_REAR_PLANK_TOP = _deck_walking_surface + _balcony_beam_rise
+_REAR_DECK_Y_IN = _y_in_n * 12.0 + _BALCONY_REAR_RIM_OVERSAIL_IN  # capped rim edge
+_REAR_PLANK_TOP = (_deck_walking_surface + _balcony_beam_rise
+                   + inch(SPEC.balcony_fall_in_per_ft * _BALCONY_REAR_RIM_OVERSAIL_IN / 12))
 _REAR_UPSTAND_IN = 3.5
 _REAR_BASE_W_IN = 4.0
 _REAR_COUNTER_W_IN = _REAR_CLAD_Y_IN - _REAR_DECK_Y_IN + 0.5

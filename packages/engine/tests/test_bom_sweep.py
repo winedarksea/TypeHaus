@@ -79,7 +79,8 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     #
     # 40.41 since 2026-10-31: the doorway closed to the stair guards' lines, 2 3/4" inside
     # each flight edge, so RL-SG-PORCH and -NE each gained 2 3/4" (one post per junction).
-    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(38.5, abs=0.1)
+    # Rear mounts stop 2 3/16 inches short of the sheet: 462.875 inches of guard datum.
+    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(38.6, abs=0.05)
     # 40.6 since 2026-11-04: the porch deck's north edge followed W-B-BRICK 3/8" north.
     # Landing-mounted stair foot bases extend both guards by 3 inches net.
     assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(41.1, abs=0.1)

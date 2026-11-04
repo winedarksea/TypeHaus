@@ -1385,6 +1385,7 @@ out of it.
 
 Moving the guard datum outside the flank rim members increases the front run by
 1.25 inches. With the existing wind assumptions and column heights, the base wind
-moments become 1,099.0 lb-ft at BF1/BF3 and 1,118.3 lb-ft at BR1/BR3. This is a
+moments become 1,100.7 lb-ft at BF1/BF3 and 1,120.0 lb-ft at BR1/BR3, including
+the final 1/2 inch rear rim/flashing projection in the wind footprint. This is a
 geometry update to the earlier hand-worked values; the guard point-load lever and
 column design remain unchanged. Regression oracles use these updated wind demands.
