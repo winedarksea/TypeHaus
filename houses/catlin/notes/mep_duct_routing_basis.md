@@ -133,6 +133,33 @@ at the travel term and never applied to the bend penalty.
 
 ---
 
+## 5. Which z planes a 3-D lattice needs (2026-11-04)
+
+A corridor's window `z_window(r) = (z0 + r, z1 - r)` is every centreline height at which a run
+of radius `r` rides it, and `corridor_at` tests the window, not the midpoint. So a corridor
+needs *a* plane inside its window, not a plane of its own. `graph._merged_levels` keeps the
+terminals' z and an occupied bay's two tiers first, then adds an empty corridor's midpoint
+only when no kept plane already lies inside that corridor's window.
+
+Worked on `DU-B-ERV-R-SAUNA-SUP` (4" duct, r = 0.051 m), every window read off the space:
+
+| Corridors | Window (m) | Midpoint | Kept plane inside the window |
+| --- | --- | --- | --- |
+| FS-M-* bays, FO-M-ERV-OA | -0.251 .. -0.051 | -0.151 | none yet: keep -0.151 |
+| FS-SG-PORCH | -0.235 .. -0.051 | -0.143 | -0.151, merge |
+| FS-BW-FLOOR | -0.157 .. -0.075 | -0.116 | -0.151, merge |
+| SF-B-BATH | -0.530 .. -0.352 | -0.441 | terminal -0.494, merge |
+| FS-S-WEST (occupied) | 2.797 .. 2.997 | tiers 2.797, 2.997 | anchors |
+| FS-SG-DECK | 2.737 .. 2.982 | 2.860 | 2.797, merge |
+| FS-S-EAST, FO-S-* chases | 2.797 .. 2.997 | 2.897 | 2.797, merge |
+| SF-S-HP1 / SF-S-DUCT | 5.261 .. 5.744 / 5.486 .. 5.744 | 5.502 / 5.615 | 5.615 merges into 5.502 |
+
+13 planes become 7 and the lattice 545,331 → 281,426 nodes (cap 500,000). A merged plane
+sits at a window's edge, which is the run hard against a chord: legal by the window's own
+definition, and the same reading §3a gives the two FS-S-WEST tiers.
+
+---
+
 ## 6. What this note does not do
 
 * **No fittings, no pressure drop.** Everything here is centrelines and sections. Whether the

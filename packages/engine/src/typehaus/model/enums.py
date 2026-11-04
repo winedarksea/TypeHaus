@@ -445,6 +445,10 @@ class EquipmentKind(Enum):
     # The thing that makes a semi-rigid radial install a radial install, and a real box with
     # a real footprint that has to fit the space it hangs in.
     DUCT_MANIFOLD = "duct_manifold"
+    # The water-side twin: one supply inlet, N branch outlets (a hot-water header or a PEX
+    # home-run manifold). Its outlets are exact ports, so each branch tees off a port, and
+    # `haus route --manifold` routes the branches together.
+    WATER_MANIFOLD = "water_manifold"
     # A remote or inline fan moving air through a duct of its own — a stall-drying or
     # transfer fan, not a ventilator. It earns no ventilation credit: its run is filed under
     # the duct system it serves (often ``DuctSystem.TRANSFER``), and only ERV is counted.

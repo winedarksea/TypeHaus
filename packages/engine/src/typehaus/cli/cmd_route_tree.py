@@ -179,13 +179,13 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
         minimum_slope,
         profile_for,
     )
-    from typehaus.routing.gravity_band import band_obstacles, prepare_falling, terminal_pardons
-    from typehaus.routing.gravity_search import (
-        GravityProblem,
-        GravityRefusal,
+    from typehaus.routing.gravity_band import (
+        band_obstacles,
         member_constraints,
-        sloped_route,
+        prepare_falling,
+        terminal_pardons,
     )
+    from typehaus.routing.gravity_search import GravityProblem, GravityRefusal, sloped_route
     from typehaus.routing.proposal import RouteProposal
     from typehaus.routing.space import RoutingSpaceTooLarge, build_space
     from typehaus.routing.trades import pipe as pipe_trade
@@ -213,6 +213,10 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
     if level is not None and level not in space.storeys:
         return [], [f"{target}: --level {level} is not a storey in this model"], []
     clock.lattice(graph)
+    # Searched once per terminal: the memo pays here (space.py), and so does a shared heel
+    # memo, since both read hard prisms only and those are fixed within one size group.
+    space.reuse = True
+    heels: dict[tuple[int, int, int], bool] = {}
 
     goals: set[int] = set()
     for path, _z in accepted:  # on the line, not near it: its vertices are lattice lines (§13)
@@ -294,7 +298,8 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
                                  required_m={n: required[n] for n in live},
                                  nipple_m=nipple, heel_m=heel)
         found = sloped_route(a_graph, a_space, start, targets, problem,
-                             constraints=constraints, refusal=report, obstacles=obstacles)
+                             constraints=constraints, refusal=report, obstacles=obstacles,
+                             heels=heels)
         if found is not None and found.nodes[-1] in inverts:
             # Its own inverts, now: the next branch may tie onto this one (§13).
             lengths = developed_lengths(found.points)

@@ -102,11 +102,7 @@ def candidate_levels(space: RoutingSpace,
     """
     zs = [t[2] for t in terminals] if levels is None else list(levels)
     if levels is None:
-        for corridor in space.corridors:
-            window = corridor.z_window(space.radius_m)
-            if window is None or corridor.kind == "wall":
-                continue
-            zs.extend(_corridor_levels(corridor, window, space))
+        zs = _merged_levels(space, zs)
     zs = _unique(zs)
     if space.z_band is not None:
         # ``--level``: the lattice keeps only the planes inside one storey's band. A
@@ -118,6 +114,38 @@ def candidate_levels(space: RoutingSpace,
         if inside:
             zs = inside
     return zs
+
+
+def _merged_levels(space: RoutingSpace, anchors: list[float]) -> list[float]:
+    """Terminal z values plus one plane per corridor window no other plane already serves.
+
+    **A corridor needs a plane inside its window, not a plane of its own.** Its midpoint is
+    one legal choice among the whole window; a run at any z the window holds still rides it
+    (``corridor_at`` tests the window, not the midpoint). So a midpoint is merged into an
+    already-kept plane that lies inside that corridor's own window, the same argument as "a
+    wall contributes a line, not a level". Catlin's basement ceiling nominated -0.151,
+    -0.143 and -0.116 m for three floors whose windows all hold -0.151; the second floor's
+    2.797..2.997 band nominated four planes where its occupied tiers serve every window.
+
+    Kept first and never moved: the terminals' own z, then an occupied corridor's two tiers
+    (a deliberate pair, see :func:`_corridor_levels`). Midpoints follow, ascending, each
+    merged into the first kept plane its window holds. Deterministic by construction.
+    """
+    kept = list(anchors)
+    midpoints: list[tuple[float, tuple[float, float]]] = []
+    for corridor in space.corridors:
+        window = corridor.z_window(space.radius_m)
+        if window is None or corridor.kind == "wall":
+            continue
+        planes = _corridor_levels(corridor, window, space)
+        if len(planes) == 2:
+            kept.extend(planes)
+        else:
+            midpoints.append((planes[0], window))
+    for z, (low, high) in sorted(midpoints):
+        if not any(low <= other <= high for other in kept):
+            kept.append(z)
+    return kept
 
 
 def _corridor_levels(corridor, window: tuple[float, float],

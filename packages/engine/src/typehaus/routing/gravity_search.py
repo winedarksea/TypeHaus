@@ -61,8 +61,8 @@ import numpy as np
 from typehaus.quantities import M_PER_IN
 from typehaus.routing.fitting_room import heel_clear
 from typehaus.routing.graph import Graph
-from typehaus.routing.gravity import drop_blocker, grid_allowance, head_floor_fn
-from typehaus.routing.gravity_band import Obstacles, subtract
+from typehaus.routing.gravity import drop_blocker, grid_allowance, head_floor_fn, tie_reach
+from typehaus.routing.gravity_band import Constraints, Obstacles, subtract
 from typehaus.routing.search import Route, price_route, turn_price
 from typehaus.routing.space import RoutingSpace
 
@@ -72,11 +72,6 @@ _AXIS_ORDER = {"x": 0, "y": 1, "z": 2}
 #: A sixteenth of slop on every elevation comparison: the repo's authoring grid, not noise.
 _TOL_M = 0.0015875 / 16.0
 
-#: ``(low, high)`` the run's CENTRELINE may occupy at a fraction along one edge.
-Window = tuple[float, float, float]
-
-#: ``(from, to) -> the windows on that edge``. Lazily consulted, once per edge relaxed.
-Constraints = Callable[[int, int], "list[Window]"]
 
 
 @dataclass(frozen=True)
@@ -168,7 +163,8 @@ class GravityRefusal:
 def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
                  problem: GravityProblem, *, constraints: Constraints | None = None,
                  refusal: GravityRefusal | None = None,
-                 obstacles: Obstacles | None = None) -> Route | None:
+                 obstacles: Obstacles | None = None,
+                 heels: dict[tuple[int, int, int], bool] | None = None) -> Route | None:
     """The cheapest route whose invert is legal at every point along it, or None.
 
     The head budget is the **goal test**, not a post-check: a label arriving at a goal below
@@ -182,13 +178,18 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
     heuristic = _heuristic(graph, space, goals)
     head_floor = head_floor_fn(graph, goals, problem.required_m, problem.grade_in_per_ft)
     # Labels have stable ids, not frontier slots: pruning shifts slots.
-    frontier: dict[tuple[int, str], list[tuple[_Label, int]]] = {}
+    # Per state: ``(cost, developed, lo, hi, nipple ok, label id)``, ``_dominates`` unrolled:
+    # it runs ~10^8 times on a refused tree branch.
+    frontier: dict[tuple[int, str], list[tuple[float, float, float, float, bool, int]]] = {}
     alive: dict[int, tuple[int, str, _Label]] = {}
     came: dict[int, int] = {}
     node_of: dict[int, int] = {}  # every label ever pushed, never pruned: for the rebuild
     counter = 0
     open_heap: list[tuple[float, int, int, float, int, str, float, int]] = []
-    heels: dict[tuple[int, int, int], bool] = {}  # a corner's heel is geometry: once each
+    # A corner's heel reads hard prisms only: a caller searching one space many times at
+    # one heel (a tree's size group) may share the memo.
+    heels = {} if heels is None else heels
+    nipple_floor = problem.nipple_m - _TOL_M
     expanded = 0  # this call's labels; ``report`` may be shared by a tree's searches
 
     def push(node: int, axis: str, label: _Label, parent: int | None) -> None:
@@ -196,16 +197,20 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
         key = (node, axis)
         kept = frontier.setdefault(key, [])
         pruned = False  # one pass: a Pareto-clean frontier cannot both dominate and lose
-        for other, lid in kept:
-            if _dominates(other, label, problem.nipple_m):
+        cost, dev, lo, hi = label.cost, label.developed_ft, label.lo_m, label.hi_m
+        nip = label.since_m >= nipple_floor
+        for o_cost, o_dev, o_lo, o_hi, o_nip, lid in kept:  # == _dominates, both ways
+            if (o_cost <= cost + 1e-12 and o_dev <= dev + 1e-12 and (o_nip or not nip)
+                    and o_lo <= lo + _BAND_GRID_M and o_hi >= hi - _BAND_GRID_M):
                 return
-            if _dominates(label, other, problem.nipple_m):
+            if (cost <= o_cost + 1e-12 and dev <= o_dev + 1e-12 and (nip or not o_nip)
+                    and lo <= o_lo + _BAND_GRID_M and hi >= o_hi - _BAND_GRID_M):
                 alive.pop(lid, None)
                 pruned = True
         if pruned:
-            kept[:] = [(o, lid) for o, lid in kept if lid in alive]
+            kept[:] = [entry for entry in kept if entry[5] in alive]
         counter += 1
-        kept.append((label, counter))
+        kept.append((cost, dev, lo, hi, nip, counter))
         alive[counter] = (node, axis, label)
         node_of[counter] = node
         if parent is not None:
@@ -215,6 +220,18 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
                                    label.cost, counter))
 
     seeds = {start: (0.0, 0.0, (start,))} if problem.seeds is None else problem.seeds
+    ties = goals & set(problem.required_m)
+    # §13: the head floor over the lattice's legal edges, not Manhattan, once per search.
+    reach, stopped = tie_reach(graph, ties, set(seeds), problem.required_m, problem.ceiling_m,
+                               problem.diameter_m, problem.grade_in_per_ft, constraints,
+                               obstacles)
+    if not any(seed in reach for seed in seeds):
+        report.notes.append(f"no plan lane to any tie: {len(reach):,} of {len(graph.nodes):,} "
+                            "lattice nodes reach one, the start is not among them"
+                            + (f"; stopped by {', '.join(stopped[:6])}" if stopped else ""))
+        return None
+    if len(ties) == len(goals):
+        head_floor = reach.__getitem__
     for node, (seed_cost, seed_ft, _arm) in sorted(seeds.items()):
         for axis in ("x", "y", "z"):
             push(node, axis, _Label(seed_cost, seed_ft, float("-inf"), problem.ceiling_m,
@@ -260,7 +277,7 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
 
         for other, axis in graph.neighbours(index):
             step = graph.weights.get((index, other))
-            if step is None:
+            if step is None or other not in reach:
                 continue
             node, target = graph.nodes[index], graph.nodes[other]
             rise = target.z - node.z
@@ -441,60 +458,3 @@ def _rebuild(graph: Graph, space: RoutingSpace, came: dict[int, int],
     found = price_route(graph, space, nodes, "drain")
     found.takeoff = takeoff if takeoff >= 0 else None
     return found
-
-
-def member_constraints(model, graph: Graph,
-                       band: tuple[float, float] | None = None) -> Constraints:
-    """The crossing windows every lattice edge meets, as a lazily-cached lookup.
-
-    One entry per member the edge crosses: where along the edge, and the band that member's
-    section gives the run's centreline. The band is ``resolve/mep_crossings.member_window``
-    — the same three readings ``mep.run_member_crossing`` grades against — so a route this
-    search accepts is a route that check will pass, which is the whole point of putting the
-    constraint in the search rather than after it.
-
-    ``band`` is the elevations this run can possibly occupy — its tie at the bottom, its
-    ceiling at the top — and **it is not an optimisation.** A floor whose window lies wholly
-    outside that band cannot constrain this run, and including it is not conservative, it is
-    wrong: ``leg_crossings`` is probed at each floor's OWN window middle (the run's real z
-    being exactly what is not yet known), so every floor in the model answers "yes, a run in
-    me would meet this member" and a second-floor branch comes back refused by 112 inches
-    against a basement joist. Omitting the band is only safe when the model has one floor.
-
-    **Cached per undirected edge and reversed on the way back.** The same edge is relaxed
-    from both ends and the geometry does not change between them, but the *fraction* does:
-    a crossing a quarter of the way along A→B is three quarters of the way along B→A, and
-    the developed length at it differs by half the edge. Getting that backwards would test
-    the invert at the wrong station.
-    """
-    from typehaus.resolve.mep_crossings import leg_crossings, member_window
-
-    floors = [(floor, member_window(floor)) for floor in model.floors]
-    floors = [(floor, window) for floor, window in floors
-              if window is not None
-              and (band is None
-                   or (window.z0_m <= band[1] and window.z1_m >= band[0]))]
-    cache: dict[tuple[int, int], list[Window]] = {}
-
-    def constraints(a: int, b: int) -> list[Window]:
-        key = (a, b) if a < b else (b, a)
-        found = cache.get(key)
-        if found is None:
-            first, second = graph.nodes[key[0]], graph.nodes[key[1]]
-            found = []
-            for floor, window in floors:
-                # The z handed to `leg_crossings` is the window's own middle: the function
-                # also tests that the run is INSIDE the floor's depth rather than passing
-                # over or under it, and at search time the run's real z is exactly what is
-                # not yet known. The middle is the honest probe — it asks "would a run in
-                # this floor meet this member", which is the question.
-                middle = (window.z0_m + window.z1_m) / 2.0
-                for crossing in leg_crossings(floor, (first.x, first.y),
-                                              (second.x, second.y), middle, middle):
-                    found.append((crossing.t, window.z0_m, window.z1_m))
-            cache[key] = found
-        if a < b:
-            return found
-        return [(1.0 - t, low, high) for t, low, high in found]
-
-    return constraints

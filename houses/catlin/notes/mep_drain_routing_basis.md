@@ -745,6 +745,23 @@ at x = 6.5" stands inside W-M-W3 grown to 7.4", and with the first step alone ex
 refused in 7 labels; it now leaves east and ties onto FX-M-LAUNDRY-SINK.
 `gravity_band.exterior_prisms`, `band_obstacles(..., start)`.
 
+**The head floor over legal edges, before any label (2026-11-04).** `head_floor_fn` reads
+plan distance as Manhattan, through walls. `gravity.tie_reach` instead runs one reverse
+Dijkstra from the live ties over the lattice, seeded at each tie's required invert and adding
+grade x plan length per edge, and skips an edge only for what no start fixes: a rise, a
+member window shallower than the pipe, or a banded prism from the downstream node's floor up
+to the ceiling (the invert falls monotonically onto a tie, so it can be nowhere else there).
+Every route is at least as long as that path, so the floor is admissible and only tighter
+than Manhattan; a node it never reaches is pruned, and a start it never reaches is refused at
+once ("no plan lane to any tie", naming the prisms that stop the start's own region). Worked
+case, §8a's row with a duct from 113" to 117" over B-C: the tie needs 114.00", the ceiling is
+116.50", the duct spans both, so A has no lane and zero labels are expanded
+(`test_a_prism_spanning_tie_to_ceiling_refuses_before_any_label`). On FX-M-BATH2-SH it prunes
+nothing: every node keeps a head-feasible band and the 1.5M labels are the frontier's band
+fragments, not dead ends. The same tree's searches now share the heel memo and the space's
+`reuse` memo (one size group, one set of hard prisms), and the label frontier compares
+unrolled; routes and refusals are byte-identical before and after.
+
 ---
 
 ## 6. What this note does not do

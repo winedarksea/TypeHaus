@@ -462,3 +462,17 @@ def _friction_rate(model: ResolvedModel) -> float:
     from typehaus.checks import load_preferences
 
     return friction_rate_from_preferences(load_preferences(Path(root)).mep.routing)
+
+
+def storey_band(model: ResolvedModel, level: str) -> tuple[float, float] | None:
+    """``--level``'s z band: this storey's datum up to the next one's.
+
+    The top storey runs to infinity, which is right: an attic run is on the top storey and
+    there is no plane above it to stop at.
+    """
+    elevations = sorted({s.elevation.meters for s in model.plan.storeys})
+    datum = next((s.elevation.meters for s in model.plan.storeys if s.tag == level), None)
+    if datum is None:
+        return None
+    above = [e for e in elevations if e > datum + 1e-9]
+    return (datum, min(above) if above else float("inf"))

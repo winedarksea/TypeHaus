@@ -22,6 +22,7 @@ from typehaus.cli.route_support import (
     _nearest,
     _points,
     _root_nodes,
+    storey_band,
 )
 from typehaus.model.spatial import Fixture
 
@@ -59,20 +60,6 @@ def _route_cost(directory: Path) -> RouteCost:
     return cost_from_preferences(load_preferences(directory).mep.routing)
 
 
-def _storey_band(model: ResolvedModel, level: str) -> tuple[float, float] | None:
-    """``--level``'s z band: this storey's datum up to the next one's.
-
-    The top storey runs to infinity, which is right: an attic run is on the top storey and
-    there is no plane above it to stop at.
-    """
-    elevations = sorted({s.elevation.meters for s in model.plan.storeys})
-    datum = next((s.elevation.meters for s in model.plan.storeys if s.tag == level), None)
-    if datum is None:
-        return None
-    above = [e for e in elevations if e > datum + 1e-9]
-    return (datum, min(above) if above else float("inf"))
-
-
 #: The trades ``--house`` lays, named here so a typo is refused with the list rather than
 #: silently emptying the campaign. Kept in step with ``routing.campaign.TRADE_ORDER`` by
 #: ``tests/test_routing_campaign.py``.
@@ -100,6 +87,9 @@ def route(
         False, "--scorecard", help="Search and grade the fixed scorecard targets "
                                    "(cli/route_scorecard.py); --out writes report.json "
                                    "and scorecard.md."),
+    manifold: str | None = typer.Option(
+        None, "--manifold", help="Lay every supply branch leaving this manifold's outlet "
+                                 "ports as one campaign (shared occupancy, rip-up)."),
     whole_house: bool = typer.Option(
         False, "--house", help="Lay every run in scope as one coordinated campaign: a "
                                "stated trade order, one shared occupancy, bounded rip-up."),
@@ -172,10 +162,10 @@ def route(
     directory, model = _load(house)
     validate_output_directory(out_dir, directory)
     selectors = [bool(run), bool(fixture), bool(tree), unconnected, whole_house,
-                 bool(space_of), scorecard]
+                 bool(space_of), scorecard, bool(manifold)]
     if sum(selectors) != 1:
-        console.print("[red]choose exactly one of --run, --fixture, --tree, "
-                      "--unconnected, --house, --space, --scorecard[/red]")
+        console.print("[red]choose exactly one of --run, --fixture, --tree, --unconnected, "
+                      "--house, --manifold, --space, --scorecard[/red]")
         raise typer.Exit(2)
     if not 1 <= alternatives <= len(_LETTERS):
         console.print(f"[red]--alternatives wants 1..{len(_LETTERS)}[/red]")
@@ -191,7 +181,7 @@ def route(
 
     band: tuple[float, float] | None = None
     if level is not None:
-        band = _storey_band(model, level)
+        band = storey_band(model, level)
         if band is None:
             console.print(f"[red]--level {level} is not a storey in this model[/red]")
             raise typer.Exit(2)
@@ -210,16 +200,22 @@ def route(
             model, space_of, margin_ft=margin_ft, band=band, avoid=frozenset(avoid),
             cost=cost, as_json=as_json, svg_path=out_dir))
 
-    if whole_house:
-        from typehaus.cli.cmd_route_house import run_house_campaign
+    if whole_house or manifold:
+        from typehaus.cli.cmd_route_house import manifold_branches, run_house_campaign
 
+        only = None if manifold is None else manifold_branches(model, manifold)
+        if only is not None and not only:
+            console.print(f"[red]--manifold {manifold}: no supply run starts on an outlet "
+                          "port of it (resolve/mep_tie_ins)[/red]")
+            raise typer.Exit(2)
         unknown = sorted(set(trades) - set(_CAMPAIGN_TRADES))
         if unknown:
             console.print(f"[red]--trades {unknown} is not a trade this campaign lays; "
                           f"the trades are {', '.join(_CAMPAIGN_TRADES)}[/red]")
             raise typer.Exit(2)
         code = run_house_campaign(
-            model, directory=directory, trades=list(trades) or None, storey=storey,
+            model, directory=directory, only=only,
+            trades=["supply"] if manifold else list(trades) or None, storey=storey,
             locked=frozenset(locked), margin_ft=margin_ft, band=band,
             avoid=frozenset(avoid), cost=cost, slope=slope, alternatives=alternatives,
             rip_up_budget=rip_up_budget, out_dir=out_dir, as_json=as_json,
@@ -292,14 +288,14 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
              avoid: frozenset[str], via: list[tuple[float, float]], explain: bool,
              cost: RouteCost, alternatives: int = 1, timing: list[str] | None = None,
              counterfactual: bool = False, extra_prisms: list | None = None,
-             hold: int = 0, racks: list | None = None
+             hold: int = 0, racks: list | None = None, lifted: frozenset[str] = frozenset()
              ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str], list]:
     """Return (proposal/storey pairs, problems, notices, structured refusals).
 
     ``extra_prisms`` are already-inflated campaign occupancy, appended without further
     inflation; ``racks`` the laid proposals whose level legs offer rack lanes
-    (``routing/rack.py``). Every target refusal is reported; it never becomes an
-    approximate route."""
+    (``routing/rack.py``); ``lifted`` authored runs a campaign re-lays, never obstacles.
+    Every target refusal is reported; it never becomes an approximate route."""
     from typehaus.routing.alternatives import alternative_routes
     from typehaus.routing.diagnostics import Refusal, refusal
     from typehaus.routing.graph import build_graph
@@ -334,7 +330,7 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
             try:
                 with clock.stage("build-space"):
                     space = build_space(model, radius_m=ends.radius_m, terminals=terminals,
-                                        margin_ft=margin_ft, avoid=avoid, touch=ends.touch,
+                                        margin_ft=margin_ft, avoid=avoid, touch=ends.touch | lifted,
                                         cost=cost.for_run(ends.kind, ends.system), z_band=band,
                                         cavity_radius_m=ends.cavity_radius_m or None,
                                         panel_space=ends.kind != "conduit")

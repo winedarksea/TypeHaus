@@ -205,6 +205,17 @@ def test_a_banded_duct_is_passed_over_under_or_refused_as_section_8a_works_it(
     assert route.start_m / M_PER_IN == pytest.approx(start_in, abs=2e-3)
 
 
+def test_a_prism_spanning_tie_to_ceiling_refuses_before_any_label() -> None:
+    """§13's reachability pass: a duct from below the tie to above the ceiling leaves the
+    start no lane at any head, so nothing is expanded and the blocker is named."""
+    graph, space, problem, obstacles = _row_world((113.00, 117.00))
+    report = GravityRefusal()
+    assert sloped_route(graph, space, 0, {3}, problem, obstacles=obstacles,
+                        refusal=report) is None
+    assert report.reached == 0
+    assert "no plan lane to any tie" in report.notes[0] and "DU-ORACLE" in report.notes[0]
+
+
 def test_the_grid_allowance_covers_section_13s_three_legs() -> None:
     """§13: 5.1 + 3.3 + 2.0 ft at 1/4"/ft is 2.600" exact, 2.6875" on the grid."""
     from typehaus.cli.route_fall import _on_grid

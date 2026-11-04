@@ -44,6 +44,7 @@ routing exit codes.
 | `--tree MAIN` | All fixtures served by this drain main, coordinated together |
 | `--unconnected` | Branches for fixtures reported by `mep.fixture_drain_reach` |
 | `--house --trades drain --storey basement` | Coordinate a scoped campaign with shared occupancy |
+| `--manifold EQ-TAG` | Every supply branch leaving that manifold's outlet ports, as one campaign |
 | `--alternatives N` | Distinct lanes for a target; incompatible with trees |
 | `--orders N` | Try up to three campaign conflict orders; fewest refusals ranks first |
 | `--locked TAG` / `--rip-up N` | Preserve an authored run / bound campaign rip-up |
@@ -77,6 +78,8 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | Supply and drain in an exterior insulated cavity pay per foot; vents, ducts, conduit exempt | `graph._finish`, `RouteCost.for_run` | drain basis §11 |
 | NEC 110.26(E)(1) dedicated space is hard for pipe and duct | `resolve/panel_space.py`, `routing/obstacles` | drain basis §11 |
 | A campaign's laid level legs offer rack lanes to the same trade | `routing/rack.py` | drain basis §12 |
+| A 3-D lattice adds a corridor's plane only where no kept plane lies inside its window | `graph._merged_levels` | duct basis §5 |
+| A falling run's start with no lane to any tie (rises, too-shallow windows, prisms spanning tie to ceiling) is refused before the search | `gravity.tie_reach` | drain basis §13 |
 | Couplings per stock length are disclosed, not counted (no stock length on record) | `trades/pipe.coupling_disclosure` | — |
 | A falling run's arrival holds the 1/16" snap's head; a band that cannot reach any tie by plan distance is dropped | `gravity.grid_allowance`, `gravity.head_floor_fn` | drain basis §13 |
 | A falling run crosses rims and joists, never rides them, and never a blocking flange; foundation walls, exterior insulated cavities (at their own height) and the outside of the decks are hard; a tie is pardoned only its own run; the drop into a tie is tested | `gravity_band.rail_prisms`, `obstacles`, `gravity_band.terminal_pardons` | drain basis §13 |
@@ -92,8 +95,9 @@ one pays `cleanout_concealed_in`.
 
 **Limitations.** Wet vents are ungraded in `arm_is_vented`; seeds keep the two cheapest
 take-offs (`keep=2`); a vertical barrel's stack pitch is left to the check; a tie's fitting
-is named but not priced; `--manifold` and trunk topologies are not implemented (no water
-manifold is modelled); rack lanes exist only inside `--house` campaigns. `--tree` prints each
+is named but not priced; `--topology trunk` is not implemented (catlin's cold side is a
+trunk with nothing to replace, and `--tree` is drain-only); rack lanes exist only inside
+`--house` and `--manifold` campaigns. `--tree` prints each
 branch graded alone, so a branch meets the authored drain another branch replaces; the
 scorecard grades the tree as one network.
 
@@ -117,6 +121,12 @@ unknown. A failed search is not proof of impossibility: inspect `established`, t
 margin, shortages, and reachable-node counts. A counterfactual prices a world with one
 blocker lifted; that blocker still needs a route. A sweep moves the drain point, not the
 fixture, and does not establish trap-arm or fixture-clearance compliance.
+
+`--manifold EQ-TAG` targets each supply run whose tie-in resolves to an exact outlet port
+of that machine (`resolve/mep_tie_ins`: a first vertex on a port outranks a run passing
+over it). Each search ends at its port's stub tip, and the branches share one occupancy, so
+`--orders`, `--rip-up`, exit codes and `--json --summary` are the campaign's.
+`mep.water_manifold_ports` grades that every outlet carries exactly one run.
 
 Campaigns normally lay drains deepest first, then vents, ducts largest first, supply, and
 conduit. Accepted proposals occupy space for later searches. Rip-up only lifts proposals

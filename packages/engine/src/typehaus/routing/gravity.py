@@ -210,6 +210,77 @@ def head_floor_fn(graph: Any, goals: set[int], required_m: dict[int, float],
     return floor
 
 
+def tie_reach(graph: Any, ties: set[int], starts: set[int], required_m: dict[int, float],
+              ceiling_m: float, diameter_m: float, grade_in_per_ft: float,
+              constraints: Any = None, obstacles: Any = None
+              ) -> tuple[dict[int, float], list[str]]:
+    """``(node -> head floor, blockers)``: the least start a node can still tie from (§13).
+
+    ``head_floor_fn`` with the plan distance taken over the lattice's legal edges instead of
+    Manhattan: a reverse Dijkstra from the ties, seeded at each tie's required invert, each
+    edge adding its fall at grade. A node absent from the map has no lane to any tie. An edge
+    is out only for a reason no start fixes: a rise, a member window shallower than the pipe,
+    or a banded prism spanning every invert the run could hold there (from the head floor at
+    the edge's downstream end up to the ceiling: below it no start still ties in). Every route
+    is at least as long as this path, so pruning by it is admissible. ``blockers`` names what
+    stops the starts' own region when none of them has a lane.
+    """
+    import heapq
+
+    lowest = min(required_m.values(), default=float("-inf"))
+    per_m = grade_in_per_ft * M_PER_IN / 0.3048
+
+    def blocker(a: int, b: int, axis: str, below: float = lowest) -> str | None:
+        """Why the step a -> b can never be part of a falling run, or None. ``below`` is
+        the least invert the run can hold at ``b`` (its head floor)."""
+        if (a, b) not in graph.weights:
+            return ""  # not a lattice edge: the plan geometry already refused it
+        if axis == "z" and graph.nodes[b].z - graph.nodes[a].z > _REACH_TOL_M:
+            return ""
+        if constraints is not None and any(high - low < diameter_m - _REACH_TOL_M
+                                           for _t, low, high in constraints(a, b)):
+            return "a member window shallower than the pipe"
+        if obstacles is not None:
+            for _t0, _t1, z0, z1, tag in obstacles(a, b):
+                if z0 <= below + _REACH_TOL_M and z1 >= ceiling_m - _REACH_TOL_M:
+                    return tag
+        return None
+
+    floor: dict[int, float] = {}
+    heap = [(required_m[t], t) for t in ties]
+    heapq.heapify(heap)
+    while heap:
+        value, here = heapq.heappop(heap)
+        if here in floor:
+            continue
+        floor[here] = value
+        to = graph.nodes[here]
+        for other, axis in graph.neighbours(here):
+            # The invert on other -> here is at least here's floor: a prism over that band
+            # up to the ceiling leaves no start that both clears it and still ties in.
+            if other not in floor and blocker(other, here, axis, value) is None:
+                at = graph.nodes[other]
+                plan = abs(at.x - to.x) + abs(at.y - to.y)
+                heapq.heappush(heap, (value + per_m * plan, other))
+    if any(start in floor for start in starts):
+        return floor, []
+    stopped: set[str] = set()
+    seen, stack = set(starts), list(starts)
+    while stack:
+        here = stack.pop()
+        for other, axis in graph.neighbours(here):
+            why = blocker(here, other, axis)
+            if why:
+                stopped.add(why)
+            elif why is None and other not in seen:
+                seen.add(other)
+                stack.append(other)
+    return floor, sorted(stopped)
+
+
+_REACH_TOL_M = 0.0015875 / 16.0
+
+
 def grid_allowance(found: Any, grade_in_per_ft: float, required_m: float | None) -> float:
     """The head ``route_fall._on_grid`` adds: each leg's fall rounded UP, the tie snapped (§13)."""
     import math

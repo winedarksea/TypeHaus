@@ -14,7 +14,7 @@ import pytest
 
 from typehaus.routing.corridors import Corridor
 from typehaus.routing.cost import RouteCost
-from typehaus.routing.graph import build_graph
+from typehaus.routing.graph import build_graph, candidate_levels
 from typehaus.routing.obstacles import HardPrism
 from typehaus.routing.search import shortest_route
 from typehaus.routing.space import MAX_LATTICE_NODES, RoutingSpace, RoutingSpaceTooLarge
@@ -97,6 +97,17 @@ def test_the_lattice_guard_raises_rather_than_coarsening() -> None:
     assert "MAX_LATTICE_NODES" in str(caught.value) or "MAX_CANDIDATE_LINES" in str(
         caught.value)
     assert MAX_LATTICE_NODES > 0
+
+
+def test_overlapping_corridor_windows_share_one_level_and_terminals_stay() -> None:
+    """Two bays whose windows both hold the lower midpoint give one plane, not two; a third
+    whose window holds a terminal's z adds none, and the terminal's own z is never moved."""
+    def bay(tag, z0, z1):
+        return Corridor(tag=tag, kind="bay", axis="x", station=4.0, z0_m=z0, z1_m=z1,
+                        clear_width_m=1.0, lo_m=-10.0, hi_m=20.0)
+
+    space = _space(corridors=[bay("A", 2.0, 2.4), bay("B", 2.1, 2.4), bay("C", 0.9, 1.3)])
+    assert candidate_levels(space, [(0.0, 0.0, 1.05), (9.0, 8.0, 1.05)]) == [1.05, 2.2]
 
 
 def test_a_terminal_inside_an_obstacle_is_kept_and_reported() -> None:

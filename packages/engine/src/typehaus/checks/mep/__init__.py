@@ -65,6 +65,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     terminal_necks,
     vent_geometry,
     water_heater,
+    water_manifold_ports,
 )
 
 __all__: list[str] = []

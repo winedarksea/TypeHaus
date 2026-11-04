@@ -28,6 +28,10 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 #: be inside ``[z0, z1]``. A riser reports ``(0, 1, ...)`` for every prism at its point.
 Obstacle = tuple[float, float, float, float, str]
 Obstacles = Callable[[int, int], "list[Obstacle]"]
+#: ``(fraction along the edge, low, high)``: the band a member gives the run's centreline.
+Window = tuple[float, float, float]
+#: ``(from, to) -> the windows on that edge``. Lazily consulted, once per edge relaxed.
+Constraints = Callable[[int, int], "list[Window]"]
 
 #: A run riding exactly on an inflated prism's boundary is at its clearance, not inside it.
 _ERODE_M = 0.0015875
@@ -306,3 +310,60 @@ def subtract(band: tuple[float, float], forbidden: tuple[float, float],
     if f1 < high - tol:
         out.append((f1, high))
     return out
+
+
+def member_constraints(model, graph: Graph,
+                       band: tuple[float, float] | None = None) -> Constraints:
+    """The crossing windows every lattice edge meets, as a lazily-cached lookup.
+
+    One entry per member the edge crosses: where along the edge, and the band that member's
+    section gives the run's centreline. The band is ``resolve/mep_crossings.member_window``
+    — the same three readings ``mep.run_member_crossing`` grades against — so a route this
+    search accepts is a route that check will pass, which is the whole point of putting the
+    constraint in the search rather than after it.
+
+    ``band`` is the elevations this run can possibly occupy — its tie at the bottom, its
+    ceiling at the top — and **it is not an optimisation.** A floor whose window lies wholly
+    outside that band cannot constrain this run, and including it is not conservative, it is
+    wrong: ``leg_crossings`` is probed at each floor's OWN window middle (the run's real z
+    being exactly what is not yet known), so every floor in the model answers "yes, a run in
+    me would meet this member" and a second-floor branch comes back refused by 112 inches
+    against a basement joist. Omitting the band is only safe when the model has one floor.
+
+    **Cached per undirected edge and reversed on the way back.** The same edge is relaxed
+    from both ends and the geometry does not change between them, but the *fraction* does:
+    a crossing a quarter of the way along A→B is three quarters of the way along B→A, and
+    the developed length at it differs by half the edge. Getting that backwards would test
+    the invert at the wrong station.
+    """
+    from typehaus.resolve.mep_crossings import leg_crossings, member_window
+
+    floors = [(floor, member_window(floor)) for floor in model.floors]
+    floors = [(floor, window) for floor, window in floors
+              if window is not None
+              and (band is None
+                   or (window.z0_m <= band[1] and window.z1_m >= band[0]))]
+    cache: dict[tuple[int, int], list[Window]] = {}
+
+    def constraints(a: int, b: int) -> list[Window]:
+        key = (a, b) if a < b else (b, a)
+        found = cache.get(key)
+        if found is None:
+            first, second = graph.nodes[key[0]], graph.nodes[key[1]]
+            found = []
+            for floor, window in floors:
+                # The z handed to `leg_crossings` is the window's own middle: the function
+                # also tests that the run is INSIDE the floor's depth rather than passing
+                # over or under it, and at search time the run's real z is exactly what is
+                # not yet known. The middle is the honest probe — it asks "would a run in
+                # this floor meet this member", which is the question.
+                middle = (window.z0_m + window.z1_m) / 2.0
+                for crossing in leg_crossings(floor, (first.x, first.y),
+                                              (second.x, second.y), middle, middle):
+                    found.append((crossing.t, window.z0_m, window.z1_m))
+            cache[key] = found
+        if a < b:
+            return found
+        return [(1.0 - t, low, high) for t, low, high in found]
+
+    return constraints

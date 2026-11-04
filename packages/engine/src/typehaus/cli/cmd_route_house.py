@@ -13,13 +13,49 @@ from rich.console import Console
 console = Console()
 
 
+def manifold_branches(model: Any, equipment_tag: str) -> frozenset[str]:
+    """Supply runs whose tie-in is an outlet port of ``equipment_tag`` (``--manifold``)."""
+    from typehaus.resolve.mep_ports import placed_ports
+    from typehaus.resolve.mep_tie_ins import supply_tie_in_records
+
+    prefix = f"{equipment_tag}."
+    return frozenset(record.child for record in supply_tie_in_records(
+        model.pipe_runs, placed_ports(model))
+        if record.reason == "equipment_port" and (record.port or "").startswith(prefix))
+
+
+def _port_leads(model: Any, tags: frozenset[str], *, inflate_m: float) -> dict[str, list]:
+    """Each target's port lead (``cli/route_ports``) as hard prisms, by target tag."""
+    from typehaus.cli.route_support import _endpoints
+    from typehaus.resolve.mep_envelopes import run_envelope
+    from typehaus.routing.obstacles import HardPrism
+
+    out: dict[str, list] = {}
+    for tag in sorted(tags):
+        ends = _endpoints(model, tag, "run", [])
+        if ends is None:
+            continue
+        for lead in (ends.origin_lead, ends.root_lead):
+            if lead is None:
+                continue
+            half = ends.radius_m
+            envelope = run_envelope("pipe", f"{tag}-LEAD", [lead.port[:2], lead.tip[:2]],
+                                    [lead.port[2], lead.tip[2]], (half, half, None),
+                                    inflate_m=inflate_m)
+            out.setdefault(tag, []).extend(
+                HardPrism(tag=envelope.tag, kind="run", footprint=prism.footprint,
+                          z0_m=prism.z0_m, z1_m=prism.z1_m) for prism in envelope.prisms)
+    return out
+
+
 def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
                        storey: str | None, locked: frozenset[str], margin_ft: float,
                        band: tuple[float, float] | None, avoid: frozenset[str],
                        cost: Any, slope: float | None, alternatives: int,
                        rip_up_budget: int, out_dir: Path | None,
                        as_json: bool, explain: bool, evaluate: bool = False,
-                       orders: int = 1, summary: bool = False) -> int:
+                       orders: int = 1, summary: bool = False,
+                       only: frozenset[str] | None = None) -> int:
     """Lay every target in scope. Returns the process exit code.
 
     Exit 1 when anything was refused — a campaign that could not serve a terminal is a
@@ -39,6 +75,8 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
     from typehaus.routing.obstacles import CLEARANCE_M
 
     targets = order_targets(model, trades=trades, storey=storey, locked=locked)
+    if only is not None:  # --manifold: one machine's branches, nothing else in scope
+        targets = [t for t in targets if t.tag in only]
     unassigned = [t.tag for t in targets if not t.trade]
     targets = [t for t in targets if t.trade]
     if not targets and not as_json:
@@ -47,6 +85,7 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
     if not as_json and targets:
         console.print(f"[bold]{len(targets)} target(s)[/bold] in campaign order")
 
+    leads = _port_leads(model, only, inflate_m=CLEARANCE_M) if only is not None else {}
     diagnostics: dict[str, tuple[list[str], list[str], list]] = {}
     made: dict[str, Any] = {}  # every proposal laid so far; occupancy says which still are
 
@@ -56,7 +95,14 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
             model, [target.tag], mode="run", slope=slope, margin_ft=margin_ft, band=band,
             avoid=avoid, via=[], explain=explain or as_json or out_dir is not None,
             cost=cost, alternatives=alternatives,
-            extra_prisms=occupancy, racks=[p for tag, p in made.items() if tag in laid])
+            # Every other branch's straight lead off its outlet is reserved: outlets 1 1/2"
+            # apart leave no room to cross a neighbour's lead and still let it out.
+            extra_prisms=[*occupancy, *(prism for tag, prisms in leads.items()
+                                        if tag != target.tag for prism in prisms)],
+            racks=[p for tag, p in made.items() if tag in laid],
+            # A manifold's branches are re-laid together: none of their authored lines is a
+            # fact the others must route round (only the campaign's own occupancy is).
+            lifted=only or frozenset())
         diagnostics[target.tag] = (problems, notices, refusals)
         if proposals:
             made[proposals[0][0].tag] = proposals[0][0]
@@ -88,6 +134,7 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
     result.settings.update({
         "storey": storey, "trades": trades, "margin_ft": margin_ft,
         "locked": sorted(locked), "alternatives": alternatives,
+        **({"targets": sorted(only)} if only is not None else {}),
     })
     if unassigned:
         result.skipped.extend(

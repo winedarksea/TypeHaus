@@ -294,15 +294,16 @@ def supply_tie_in_records(pipe_runs, ports=()) -> list[SupplyTieIn]:
                 nearest = (gap, parent.tag)
             if abs(gap) <= _SUPPLY_TEE_TOL_M:
                 same.append((parent.tag, frozenset(parent.serves or ())))
-        if same:
+        if (port := _source_port(child, tee, tee_z, ports)) is not None:
+            # Outranks everything, a passing run included: the tap a run starts on is its
+            # source. A header's outlets sit 1 1/2" apart, so a sibling branch leaving along
+            # the header passes over its neighbours' tips (EQ-B-HW-HEADER).
+            out.append(SupplyTieIn(child.tag, None, True, "equipment_port", tee, 0.0,
+                                   port=port))
+        elif same:
             parent_tag = _best_by_load(frozenset(child.serves or ()), same)
             out.append(SupplyTieIn(child.tag, parent_tag, True, "accepted", tee,
                                    0.0 if nearest is None else nearest[0], parent_tag))
-        elif (port := _source_port(child, tee, tee_z, ports)) is not None:
-            # Outranks every refusal below: a run 52" up is a coincidence, the tap the run
-            # starts on is its source.
-            out.append(SupplyTieIn(child.tag, None, True, "equipment_port", tee, 0.0,
-                                   port=port))
         elif cross is not None and abs(cross[0]) <= _SUPPLY_TEE_TOL_M:
             # A source that really is there and really is not a run of this system. It
             # outranks a same-system sibling further away: PR-B-HW-TRUNK leaves EQ-B-WH,

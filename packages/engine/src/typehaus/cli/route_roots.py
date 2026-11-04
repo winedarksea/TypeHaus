@@ -323,13 +323,12 @@ def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None)
     from typehaus.cli.route_fixture_vent import arm_problem
     from typehaus.routing.fitting_room import fitting_terms
     from typehaus.routing.gravity import minimum_slope
-    from typehaus.routing.gravity_band import band_obstacles, terminal_pardons
-    from typehaus.routing.gravity_search import (
-        GravityProblem,
-        GravityRefusal,
+    from typehaus.routing.gravity_band import (
+        band_obstacles,
         member_constraints,
-        sloped_route,
+        terminal_pardons,
     )
+    from typehaus.routing.gravity_search import GravityProblem, GravityRefusal, sloped_route
     from typehaus.routing.search import shortest_route
     from typehaus.routing.trades.pipe import rises
 

@@ -481,6 +481,8 @@ def _product_words(product, type_ref: str) -> str:
 #: hoods before "erv" itself, which their tags also carry).
 _EQUIPMENT_KIND_TOKENS = (
     ("mixing", EquipmentKind.MIXING_BOX),
+    ("water manifold", EquipmentKind.WATER_MANIFOLD),
+    ("water header", EquipmentKind.WATER_MANIFOLD),
     ("manifold", EquipmentKind.DUCT_MANIFOLD), ("plenum", EquipmentKind.DUCT_MANIFOLD),
     ("hood", EquipmentKind.DUCT_MANIFOLD),
     ("water heater", EquipmentKind.WATER_HEATER),
