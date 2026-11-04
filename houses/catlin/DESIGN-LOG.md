@@ -1,3 +1,17 @@
+## Kitchen waste: B18 pull-out, garage carts (2026-11-03)
+
+- **Flow.** Compost: a stainless counter caddy by the sink, emptied to the on-site pile (not
+  modelled). Trash + recycling: `FURN-M-KIT-E2`, the B18 east of the sink, is now
+  `SEKT-B18-WASTE`: one AXSTAD 18x30 on a Rev-A-Shelf 5149-18DM-217 (double 35 qt,
+  bottom-mount, soft-close, door-mount; min opening 14 1/2 W x 22 D vs 16 1/2 inside). The
+  peninsula keeps the cutlery drawers. The engine gained a `waste` SEKTION front
+  (`pullout`: one door, one pull, no hinges, no shelf).
+- **IKEA rejected.** IKEA US sells its MAXIMERA + HÅLLBAR waste drawer only as the 24"/30"
+  sink-combo base; its 18" option is a 10 3/8" frame of 3 gal bins behind a hinged door.
+- **Garage.** Two Saint Paul 64 gal carts (`FURN-G-CART-64`, 22 x 26.5 x 44, city chart),
+  trash and recycling, in the NE corner, backs on `W-G-E`, east of the overhead door's
+  jamb. Hauler-supplied: a $0 row in `prices.toml`.
+
 ## Court stems `#5 @ 10"`; layer boards bear only on house concrete (2026-11-02)
 
 - **Stems.** `_RET_STEM_STEEL`'s verticals `#5 @ 7"` → `#5 @ 10"` on W2/E2/S (owner). §6 of the

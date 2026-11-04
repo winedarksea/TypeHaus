@@ -139,7 +139,8 @@ MAIN_KITCHEN_CASEWORK = [
     # Door face flush with the AXSTAD fronts at y=400 5/8: the 24 5/8" body ends 1/4" off the wall.
     Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-LG-DISHWASHER", room="RM-M-LIVING",
               position=pt(inch(321.375), inch(412.9375))),
-    Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="SEKT-B18", room="RM-M-LIVING",
+    # Trash + recycling, emptied to the garage carts; compost is a counter caddy.
+    Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="SEKT-B18-WASTE", room="RM-M-LIVING",
               position=pt(inch(378.375), inch(413.375))),
 
     # A single W36 over B12/DW avoids inventing a 12x20 stacker IKEA does not list.

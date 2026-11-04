@@ -97,7 +97,7 @@ _library = Library(
                      living_puzzle_table_types.PUZZLE_COFFEE_TABLE_ELM_PREVIEW,
                      *STARTER_CASEWORK_TYPES,
                      *kitchen_front_types.KITCHEN_SEKTION_TYPES,
-                     *kitchen_front_types.LIVING_DOOR_TYPES, *furniture_types.FURNITURE_TYPES, *mirror_types.MIRROR_FURNITURE_TYPES,
+                     *kitchen_front_types.LIVING_DOOR_TYPES, *kitchen_front_types.WASTE_TYPES, *furniture_types.FURNITURE_TYPES, *mirror_types.MIRROR_FURNITURE_TYPES,
                      *dining_types.DINING_TYPES, *media_types.MEDIA_TYPES,
                      *closet_types.CLOSET_FURNITURE_TYPES,
                      *bedroom_wardrobe_types.BEDROOM_WARDROBE_TYPES,

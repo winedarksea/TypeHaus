@@ -215,6 +215,13 @@ REV_A_SHELF_SWING_OUT = Product(
     name="Swing-out pantry insert, 24-inch, with door mount brackets",
     source="Kept in each 24-inch high pantry (notes/kitchen_stock_cabinet_details.md K4); "
            "needs a 22 1/4-inch clear opening.")
+REV_A_SHELF_WASTE_PULLOUT = Product(
+    tag="PROD-REVASHELF-5149-18DM-217", brand="Rev-A-Shelf", model="5149-18DM-217",
+    sku="5149-18DM-217",
+    name="Double 35 qt bottom-mount waste pull-out, Rev-A-Motion soft-close, door mount, silver",
+    source="Kitchen B18 trash/recycling (FURN-M-KIT-E2). Retail listings read 2026-11-04: "
+           "min opening 14 1/2 W x 22 D x 20 H, unit 14.2 x 22 x 19.5; fits the SEKTION "
+           "18x24x30 (16 1/2 inside, 3/4 sides). Door bracket included.")
 AXILO_LEVELER = Product(
     tag="PROD-HAFELE-AXILO-637-76-355", brand="Häfele", model="AXILO 637.76.355",
     sku="637.76.355", name="AXILO plinth leveler, 140-170 mm, with screw-mount plate",
@@ -235,5 +242,5 @@ IKEA_PRODUCTS = (
     *AXSTAD_DOORS, *AXSTAD_DRAWER_FRONTS, *MAXIMERA_MEDIUM, *VOXTORP_FRONTS,
     UTRUSTA_HINGE, UTRUSTA_HORIZONTAL_HINGE, UTRUSTA_CORNER_HINGES, UTRUSTA_CAROUSEL,
     SEKTION_LEG, FORBATTRA_TOE_KICK, *UTRUSTA_SHELVES,
-    REV_A_SHELF_SWING_OUT, AXILO_LEVELER, MITTLED,
+    REV_A_SHELF_SWING_OUT, REV_A_SHELF_WASTE_PULLOUT, AXILO_LEVELER, MITTLED,
 )

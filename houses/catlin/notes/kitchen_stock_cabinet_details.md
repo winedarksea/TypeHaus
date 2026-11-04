@@ -14,7 +14,7 @@ its pantry face is x=292 5/8. Keep the kitchen sink window and its stud-grid fra
 | E1, door and shelves | 12 | 297 3/8 | 309 3/8 |
 | Dishwasher installation bay | 24 | 309 3/8 | 333 3/8 |
 | Sink base | 36 | 333 3/8 | 369 3/8 |
-| E2, drawers | 18 | 369 3/8 | 387 3/8 |
+| E2, trash/recycling | 18 | 369 3/8 | 387 3/8 |
 | NE carousel | 38 | 387 3/8 | 425 3/8 |
 
 **Counter build-up (2026-11-01).** Every kitchen top uses the peninsula's stack (K6):
@@ -308,8 +308,9 @@ long, 5 1/16-inch mounting centres, with the included washers. Door-front thickn
 and handles a further 1 1/4 inch. Frame locations, cabinet heights and clearances stay
 on the existing installation datums. Recheck front alignment against actual shop drawings.
 
-The kitchen B12 is a door/shelf unit; B18 and the peninsula are three 10-inch drawer
-fronts each. Sink fronts are paired doors; carousel fronts are bifold leaves. All four
+The kitchen B12 is a door/shelf unit; the peninsula bases are three 10-inch drawer
+fronts each. The B18 is the trash/recycling pull-out: one 18x30 front on a Rev-A-Shelf
+5149-18DM-217 (min opening 14 1/2 W x 22 D, inside 16 1/2 W; 2026-11-03). Sink fronts are paired doors; carousel fronts are bifold leaves. All four
 living north-run bases have doors and shelves, including the north-hinged B24 beside
 the slat partition. High frames use 50-inch lower and 30-inch upper fronts; retain the
 Rev-A-Shelf inserts and coordinate linked fronts/door brackets with their full deployment.

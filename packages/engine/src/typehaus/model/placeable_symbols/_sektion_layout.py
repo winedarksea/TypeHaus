@@ -16,7 +16,7 @@ TALL_LOWER_FRONT_IN = 50.0
 DRAWER_STACK_COUNT = 3
 NOMINAL_GRID_PER_IN = 8
 
-FrontKind = Literal["door", "drawer", "lift", "open"]
+FrontKind = Literal["door", "drawer", "lift", "open", "pullout"]
 
 
 @dataclass(frozen=True)
@@ -65,6 +65,9 @@ def front_layout(config: SektionCabinetConfiguration, width_in: float,
     if config.fronts == "drawers":
         drawer = frame / DRAWER_STACK_COUNT
         return FrontLayout(frame, (FrontRow("drawer", drawer),) * DRAWER_STACK_COUNT)
+    if config.fronts == "waste":
+        # One door-mounted bin pull-out: the slide carries the front, the bins fill the bay.
+        return FrontLayout(frame, (FrontRow("pullout", frame, 1, shelf_bay=False),))
     if config.fronts in ("lift", "garage"):
         return FrontLayout(frame, (FrontRow("lift", frame, across,
                                             shelf_bay=config.fronts == "lift"),))

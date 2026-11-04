@@ -36,6 +36,7 @@ from typehaus.model import (
     pt,
 )
 
+from .garage_cart_types import GARAGE_CART_TYPES
 from .study_booth_types import FOLD_LEAF, STUDY_BENCH, STUDY_DESK, STUDY_FOOTREST
 from .tub_access_panel_types import TUB_ACCESS_PANEL_1414, TUB_ACCESS_PANEL_2015
 
@@ -532,4 +533,5 @@ FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF, STUDY_FOOTREST,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
                    CLOSET_SHELF_36, TANNFORSEN_1806, STUDIO_KITCHENETTE_4422,
-                   MANTEL_ELM_46, SPLASH_BASIN_GRANITE_24, STRW_BENCH)
+                   MANTEL_ELM_46, SPLASH_BASIN_GRANITE_24, STRW_BENCH,
+                   *GARAGE_CART_TYPES)

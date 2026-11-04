@@ -125,3 +125,18 @@ LIVING_DOOR_TYPES = tuple(
 )
 LIVING_DOOR_TYPE_REFS = {cabinet.tag.removesuffix("-AXSTAD-DOOR"): cabinet.tag
                          for cabinet in LIVING_DOOR_TYPES}
+
+# The B18 east of the sink: trash + recycling on one door-mounted pull-out (DESIGN-LOG 2026-11-03).
+WASTE_TYPES = tuple(
+    cabinet.model_copy(update={
+        "tag": "SEKT-B18-WASTE",
+        "name": 'SEKTION 18" base, trash/recycling pull-out',
+        "plan_symbol": PREFIX + "waste",
+        "parts": sektion_parts(18, 24, kitchen_layout(PREFIX + "waste", 18, 36), "legs",
+                               AXSTAD_HARDWARE, extra=(ProductPart(
+                                   role="fitting",
+                                   product_ref="PROD-REVASHELF-5149-18DM-217"),)),
+        "source": (cabinet.source or "") + " One 18x30 front on a Rev-A-Shelf 5149-18DM-217 "
+                  "double 35 qt pull-out; no hinges, one pull.",
+    }) for cabinet in KITCHEN_SEKTION_TYPES if cabinet.tag == "SEKT-B18"
+)

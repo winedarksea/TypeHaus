@@ -10,7 +10,7 @@ Rules (oracle: houses/catlin/notes/ikea_sektion_order.md):
 
 * hinges per door by door height — 2 up to 40", 3 to 60", 4 above (IKEA planner output;
   the installation guide prints no chart). A lift front takes one horizontal-hinge pair.
-* one knob per door or lift front, one pull per drawer front.
+* one knob per door or lift front, one pull per drawer or pull-out front (no hinges).
 * legs per floor-standing frame: 4, or 6 from 30" wide (assumed, as above).
 * toe kick and suspension rail run the frame's width, rounded to sticks per run in takeoff.
 * shelves: enough that no compartment exceeds 20", over each unbroken stack of door
@@ -123,6 +123,13 @@ def _row_parts(row: FrontRow, width_in: float, hardware: SektionHardware, out: _
                                  "drawer front"), row.count)
         out.add("drawer", _lookup(hardware.drawers, (front_width, row.height_in), "drawer"),
                 row.count)
+        if hardware.pull:
+            out.add("pull", hardware.pull, row.count)
+        return
+    if row.kind == "pullout":
+        # A door-mounted pull-out: the slide carries the door, so no hinges and a pull.
+        out.add("front", _lookup(hardware.fronts, ("door", front_width, row.height_in),
+                                 "pull-out door"), row.count)
         if hardware.pull:
             out.add("pull", hardware.pull, row.count)
         return

@@ -50,6 +50,7 @@ from typehaus.model.placeable_symbols._plants import (
                                                         small_potted_plant,
                                                         wall_plant_stand,
 )
+from typehaus.model.placeable_symbols._rolling_cart import rolling_cart
 from typehaus.model.placeable_symbols._sauna_bench import sauna_open_bench
 from typehaus.model.placeable_symbols._sauna_recliner import (
                                                         sauna_recliner,
@@ -167,6 +168,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "seat-cushion": seat_cushion,
     "dresser": case(rows=3, cols=2),
     "chest": case(rows=5, cols=1),
+    "rolling-cart": rolling_cart,
     "nightstand": case(rows=2, cols=1),
     "media-console": case(rows=2, cols=3, pulls=False),
     "bookcase": shelving(shelves=5),

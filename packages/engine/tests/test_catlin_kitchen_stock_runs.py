@@ -34,7 +34,7 @@ def test_stock_north_modules_close_without_a_filler(catlin_plan, kitchen_objects
     modules = (
         ("FURN-M-KIT-E1", "SEKT-B12", 297.375, 309.375),
         ("FURN-M-KIT-SINKBASE", "SEKT-SINK-B36", 333.375, 369.375),
-        ("FURN-M-KIT-E2", "SEKT-B18", 369.375, 387.375),
+        ("FURN-M-KIT-E2", "SEKT-B18-WASTE", 369.375, 387.375),
     )
     for tag, type_ref, west, east in modules:
         obj = kitchen_objects[tag]
@@ -403,7 +403,7 @@ def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, cat
     prices = load_prices(Path(catlin_plan.source_root))
     expected = {
         "SEKT-B12": 1,
-        "SEKT-B18": 1,
+        "SEKT-B18-WASTE": 1,
         "SEKT-B24": 2,
         "SEKT-B36": 1,
         "SEKT-B18-AXSTAD-DOOR": 1,

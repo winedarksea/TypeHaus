@@ -3062,7 +3062,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Fronts (owner, 2026-10-22):** AXSTAD matte white with BAGGANÄS black knobs on doors
   and 5 5/8-inch black pulls with washers on drawers. Configurations live in
   `plan/kitchen_front_types.py`; the shared dimensional catalog remains finish-neutral.
-  Living bases are doors/shelves, kitchen B18/peninsula are three-drawer stacks. Cold
+  Living bases are doors/shelves, the peninsula bases are three-drawer stacks, and
+  the kitchen B18 is the trash/recycling pull-out (`SEKT-B18-WASTE`). Cold
   tops retain paired solid 15x20 doors; glass is deferred. Actual 3/4-inch fronts and
   hardware project beyond nominal frame/rail footprints. The custom garage retains
   its roll-up front. Other rooms keep their own fronts and hardware.

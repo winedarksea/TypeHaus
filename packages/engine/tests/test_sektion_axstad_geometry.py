@@ -4,6 +4,7 @@ import math
 
 import pytest
 
+from typehaus.library.placeables.sektion_parts import kitchen_layout, shelves_for
 from typehaus.model.placeable_symbols import model_parts
 from typehaus.model.placeable_symbols._sektion_fronts import (
     axstad_front,
@@ -78,6 +79,7 @@ def test_axstad_has_stock_envelope_and_softened_profile():
         ("base-door", 12, 36, 1),
         ("sink", 36, 36, 2),
         ("drawers", 24, 36, 3),
+        ("waste", 18, 36, 1),
         ("wall", 24, 30, 1),
         ("wall", 30, 20, 2),
         ("tall", 18, 83.5, 2),
@@ -94,6 +96,12 @@ def test_configured_stock_front_sizes_and_actual_projection(symbol, width, heigh
         assert [p["center"][2] / INCH for p in fronts] == pytest.approx([8.5, 18.5, 28.5])
     elif symbol == "tall":
         assert [p["size"][2] / INCH for p in fronts] == pytest.approx([49.875, 29.875])
+    elif symbol == "waste":
+        # One full-height pull-out front, its pull near the top, and no shelf behind it.
+        pull = [p for p in parts if p["color"] == "metal-black"]
+        assert pull and all(p["center"][2] > 30 * INCH for p in pull)
+        assert shelves_for(kitchen_layout(PREFIX + symbol, width, height),
+                           fixed_frame_shelf=False) == 0
     elif symbol == "wall" and width == 30:
         assert [p["size"][0] / INCH for p in fronts] == pytest.approx([14.875, 14.875])
 

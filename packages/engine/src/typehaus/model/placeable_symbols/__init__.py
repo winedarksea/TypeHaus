@@ -74,6 +74,7 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS
     "desk", "wall-desk", "footrest",
     "drawer-desk", "sit-stand-desk",
     "sektion-drawer-base", "dresser", "chest", "nightstand", "media-console", "bookcase",
+    "rolling-cart",
     "hemnes-bookcase", "corner-bookcase", "slat-partition",
     "sektion-tall-drawers", "sektion-tall-open-lower", "sektion-cover-panel",
     "sektion-seat-base", "sektion-open-high", "sektion-open-base",

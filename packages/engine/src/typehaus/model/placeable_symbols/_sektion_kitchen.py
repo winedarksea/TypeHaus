@@ -100,7 +100,7 @@ def sektion_axstad_cabinet(configuration: SektionCabinetConfiguration) -> Builde
         sink = configuration.fronts == "sink"
         garage = configuration.fronts == "garage"
         shelves = (
-            () if sink or garage or configuration.fronts == "drawers"
+            () if sink or garage or configuration.fronts in ("drawers", "waste")
             else (base + (top - base) / 2,)
         )
         parts = sektion_carcass(
@@ -131,6 +131,12 @@ def sektion_axstad_cabinet(configuration: SektionCabinetConfiguration) -> Builde
                         min(1.0, width / inch(8).meters, (upper - bottom) / inch(3).meters),
                     )
                 )
+        elif configuration.fronts == "waste":
+            bottom, upper = base + reveal / 2, top - reveal / 2
+            parts.extend(axstad_front(width - reveal, front, thickness, bottom, upper))
+            pull_scale = min(1.0, width / inch(8).meters, (upper - bottom) / inch(3).meters)
+            pull_drop = min(HARDWARE_EDGE_OFFSET_M, (upper - bottom) / 4)
+            parts.extend(bagganas_pull(0, front, upper - pull_drop, pull_scale))
         elif configuration.fronts == "garage":
             # A lift-up front preserves headroom without an internal tambour coil.
             parts.extend(
@@ -257,6 +263,7 @@ KITCHEN_SEKTION_CONFIGURATIONS = {
     "sektion-axstad-kitchen-base-door-right": SektionCabinetConfiguration("base", hinge_right=True),
     "sektion-axstad-kitchen-drawers": SektionCabinetConfiguration("base", "drawers"),
     "sektion-axstad-kitchen-sink": SektionCabinetConfiguration("base", "sink"),
+    "sektion-axstad-kitchen-waste": SektionCabinetConfiguration("base", "waste"),
     "sektion-axstad-kitchen-wall": SektionCabinetConfiguration(),
     "sektion-axstad-kitchen-lift": SektionCabinetConfiguration(fronts="lift"),
     "sektion-axstad-kitchen-tall": SektionCabinetConfiguration("tall"),

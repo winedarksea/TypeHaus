@@ -13,6 +13,7 @@ Revision 2026-10-30. Oracle for `library/placeables/sektion_parts.py` and for
 | Lift-up front | One UTRUSTA horizontal hinge pair (804.654.15) | IKEA's 24x24x15 top configuration |
 | Knobs | One per door or lift front | Owner, 2026-10-22 (BAGGANÄS 903.384.17) |
 | Pulls | One per drawer front | Owner, 2026-10-22 (BAGGANÄS 803.384.13); the bed desk too, owner 2026-10-30 |
+| Waste pull-out | One door front, one pull, no hinges: the Rev-A-Shelf slide carries the door; no shelf | Kitchen B18, owner 2026-11-03 |
 | Legs | 4 per floor-standing frame; 6 from 30 in. wide | **Assumed.** IKEA publishes no count. Legs may be shared at a joint, so this rule over-orders. |
 | Toe kick | The frame's width, rounded to 84 in. sticks per touching run | FÖRBÄTTRA 602.668.17, 84 in. |
 | Suspension rail | The frame's width, rounded to 84 in. sticks per touching run | 602.615.27. Not used under the peninsula, which stands on the floor anchoring frame. |

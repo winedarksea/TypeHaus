@@ -2561,7 +2561,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # cabinet: they are [framing] and the countertop's own substrate.
 #
 # Configured in kitchen_front_types.py: the peninsula SEKT-B36 and two SEKT-B24 are
-# three-drawer MAXIMERA stacks opening to the kitchen; north SEKT-B18 is drawers; SEKT-SINK-B36
+# three-drawer MAXIMERA stacks opening to the kitchen; north SEKT-B18-WASTE is the trash/recycling pull-out; SEKT-SINK-B36
 # is doors, because the bowls take the space; the two SEKT-CORNER-B38 are carousels behind a
 # bifold. B12 uses a 12x30 door and shelves; the living north run is doors/shelves per K5.
 # Kitchen/living configuration was selected 2026-10-22; K5 door storage dates to 2026-10-20.
@@ -2569,7 +2569,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # Bases. Same box at the same size as the CASE-B* rows, so the same material.
 "SEKT-B12" = { material = { low = 53, high = 61 }, labour = { low = 120, high = 300 } }  # 1 ea, 102.653.92
 "SEKT-B15" = { material = { low = 130, high = 330 }, labour = { low = 90, high = 220 } }  # 0 ea
-"SEKT-B18" = { material = { low = 63, high = 72 }, labour = { low = 90, high = 220 } }  # 1 ea, 202.653.96, kitchen drawers
+"SEKT-B18" = { material = { low = 63, high = 72 }, labour = { low = 90, high = 220 } }  # 0 ea, 202.653.96
+"SEKT-B18-WASTE" = { material = { low = 63, high = 72 }, labour = { low = 90, high = 220 } }  # 1 ea, the frame; pull-out below
 "SEKT-B24" = { material = { low = 70, high = 85 }, labour = { low = 90, high = 220 } }  # 2 ea, 902.653.88 unread: between the 18 and 36 frames
 "SEKT-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-B36" = { material = { low = 97, high = 112 }, labour = { low = 90, high = 220 } }  # 1 ea, 802.653.98, kitchen drawers
@@ -2687,6 +2688,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "PROD-IKEA-SEKTION-WALL-12-AXSTAD" = { material = 132, labour = 0 }  # bath2's 12" combination
 # Bought elsewhere. The swing-out moved here from [allowances] (2 x Rev-A-Shelf 5374-24FL).
 "PROD-REVASHELF-5374-24FL" = { material = { low = 450, high = 1100 }, labour = 0 }
+# Kitchen B18 waste pull-out: supremekitchenbath.com lists 5149-18DM-217 at $520.49 (2026-11-04).
+"PROD-REVASHELF-5149-18DM-217" = { material = { low = 400, high = 560 }, labour = 0 }
 "PROD-HAFELE-AXILO-637-76-355" = { material = { low = 6, high = 15 }, labour = 0 }  # unread
 # The rest of the SEKTION ladder (SEKT-B12/B18, the 12"/18"/36" wall frames,
 # SEKT-HIGH30-90, SEKT-TS30-15) has no instance in this house and no row
@@ -3287,6 +3290,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "FURN-BESTA-2358" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 160 } }  # 0 ea, retired 2026-10-02 for the SEKTION line; kept as the glazed-green-brick rows are
 # 2026-10-29: high trimmed from $900 (premium cabinet bench) to retail 60x30 steel/wood bench $200-600, assemble + anchor.
 "FURN-G-WORKBENCH" = { material = { low = 200, high = 600 }, labour = { low = 60, high = 150 } }  # 3 ea (garage bench + FURN-B-WORKSHOP-BENCH-N/-S)
+"FURN-G-CART-64" = { material = 0, labour = 0 }  # 2 ea, hauler-supplied (Saint Paul coordinated collection)
 # The two mudroom and two sauna rows are millwork, not catalogue furniture — they are
 # built, and the range is what the built article costs in materials and shop time.
 "FURN-M-MUD-BENCH" = { material = { low = 150, high = 700 }, labour = { low = 80, high = 250 } }  # 1 ea

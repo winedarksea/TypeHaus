@@ -60,8 +60,9 @@ one per appliance, with paired AXSTAD 15 by 20 fronts. Bottoms remain 73 1/2 and
 drop to 93 1/2; leave the space above open. Split 2 7/8 end scribes remain, cut to the
 new 20-inch height. Top rail backing and installation are specified in detail K7.
 
-MAXIMERA is a product choice, not a geometry vocabulary. North B18 and peninsula
-B36/B24/B24 are drawer stacks. The kitchen B12 and all six living B36 use doors and
+MAXIMERA is a product choice, not a geometry vocabulary. Peninsula B36/B24/B24 are
+drawer stacks. North B18 is trash/recycling: one AXSTAD 18x30 on a Rev-A-Shelf
+5149-18DM-217 double 35 qt pull-out (2026-11-03). The kitchen B12 and all six living B36 use doors and
 shelves; the living MAXIMERA specification is superseded. Sink base uses
 doors, carousel corners use the retained bifold/carousel hardware. The tall pantry retains
 Rev-A-Shelf 5374-24FL swing-out inserts. The garage retains its full-extension shelf and

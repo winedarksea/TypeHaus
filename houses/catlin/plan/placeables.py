@@ -501,6 +501,12 @@ GARAGE_PLACEABLES = [
     # the stair end 2026-10-30 (centre y 52'-2 5/8", 2'-2" north of the stair foot).
     Furniture(uid="CGF601AAAA", tag="FURN-G-WORKBENCH", type_ref="FURN-G-WORKBENCH",
               room="RM-GARAGE", position=pt(m(2.449983), m(15.91628)), rotation=deg(90)),
+    # City carts in the NE corner, east of D-G-OVERHEAD's jamb (x 26'-2"): backs 1/2" off
+    # W-G-E's face (x 29'-5 1/4"), handles west, so each rolls straight out the door.
+    Furniture(uid="ENQ35VXAD1", tag="FURN-G-CART-TRASH", type_ref="FURN-G-CART-64", room="RM-GARAGE",
+              position=pt(inch(339.5), inch(787.875)), rotation=deg(-90)),
+    Furniture(uid="GGJA7VAM4J", tag="FURN-G-CART-RECYCLE", type_ref="FURN-G-CART-64", room="RM-GARAGE",
+              position=pt(inch(339.5), inch(764.875)), rotation=deg(-90)),
 ]
 # The beds are placed per room: BED1 and BED2 face north; BED3 faces east. The integration
 # assertion in test_catlin_source_alignment checks their clearances and door swings.
