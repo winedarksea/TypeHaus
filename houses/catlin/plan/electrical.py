@@ -2375,7 +2375,7 @@ NEC_FILL_SECOND = [
     # WIN-S-PLANT4 stands in its place, so this is now an ordinary station on a continuous
     # wall: a window sill 2'-8" up breaks no wall space, and 210.52(A) is satisfied by RC1/RC2
     # on their own spacing. The bay is still the right one — it stays.
-    # FX-S-BALC-HYD gave up this bay for it and moved to 7'-4" (plan/fixtures.py).
+    # FX-S-BALC-HYD stands one bay east at 12'-8" (2026-11-03, plan/fixtures.py).
     ElectricalDevice(uid="NEC021AAAA", tag="ED-S-PLANT-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-WR",
                      circuit="CKT-RC-SECOND",
@@ -2383,8 +2383,8 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-S1", face="left", distance_from_start=inch(136),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
-    # RC2 is the outlet nearest FX-S-BALC-HYD (1'-5 3/4" in plan) and it is deliberately NOT
-    # the power for the room's drip-irrigation timer: the hydrant's thread is outdoors, so a
+    # Neither RC1 (1'-4" from FX-S-BALC-HYD in plan) nor RC2 is the power for the room's
+    # drip-irrigation timer: the hydrant's thread is outdoors, so a
     # cord from here would cross W-S-S1's Class I liner and 4" of continuous exterior foam
     # for a device that ships as a battery unit. Nothing is authored on the balcony either.
     # See notes/plant_room.md, open item 2.

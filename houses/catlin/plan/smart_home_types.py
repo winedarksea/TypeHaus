@@ -93,19 +93,8 @@ WARMUP_7IE = Product(
     source="Warmup NAM submittal, read 2026-10-30: Matter over Wi-Fi, 110-240 VAC, 15 A "
            "resistive, integral Class A GFCI (5 mA), 10 ft NTC10K floor sensor, ~114 x 90 mm "
            "face. Schluter cable warranty with a non-Schluter stat: ask in writing." + _NOTE)
-ZOOZ_ZAC36 = Product(
-    tag="PROD-ZOOZ-ZAC36-LR", brand="Zooz", model="ZAC36 LR",
-    name="Titan water valve actuator, Z-Wave Long Range, wired leak probe",
-    url="https://apolloautomation.com/products/"
-        "zooz-z-wave-long-range-700-series-titan-water-valve-actuator-zac36-lr",
-    source="Retailer listing, read 2026-10-30 (Zooz pages did not load): clamps a quarter-turn "
-           "lever ball valve; 12 VDC 1 A plug-in adapter; the wired probe closes the valve with "
-           "no hub. Optional backup battery pack. Envelope is an allowance until the manual "
-           "is read." + _NOTE)
-
 SMART_HOME_PRODUCTS = (REOLINK_DOORBELL, REOLINK_OMVI_3I, REOLINK_DUO3, LIFTMASTER_8550W,
-                       GRIZZLE_SMART, KIDDE_SM120X, KIDDE_CO120X, AQARA_W200, WARMUP_7IE,
-                       ZOOZ_ZAC36)
+                       GRIZZLE_SMART, KIDDE_SM120X, KIDDE_CO120X, AQARA_W200, WARMUP_7IE)
 
 # --- low-voltage endpoints (DATA_OUTLET kind; PoE from the switch in ED-B-NET-PATCH) ----------
 # 12.95 W is the 802.3af PD ceiling, used where the maker publishes no draw; the Duo 3
@@ -164,8 +153,4 @@ APPLIANCE_TYPES = (
         product_ref=GRIZZLE_SMART.tag, footprint=(inch(6.25), inch(3.75)),
         height=inch(10.25), needs=frozenset({Service.POWER_240}), ports=_P240,
         source=GRIZZLE_SMART.source),
-    ApplianceType(
-        tag="APPL-ZOOZ-ZAC36", name="Leak shutoff actuator on a lever ball valve (Zooz ZAC36)",
-        product_ref=ZOOZ_ZAC36.tag, footprint=(inch(4), inch(3.5)), height=inch(5),
-        needs=frozenset({Service.POWER_120}), ports=_P120, source=ZOOZ_ZAC36.source),
 )

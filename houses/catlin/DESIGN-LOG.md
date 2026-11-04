@@ -7440,3 +7440,20 @@ Ten of the thirteen open fixtures now meet a vent in 3D, all individual tees (no
 Three stay open, each boxed in by another trade, so `mep.trap_arm_length` keeps its plan
 `hypot` and the 3D walk stays ADVISORY (plans/TODO.md). The suite lav and tub-shower cannot
 wet-vent: the WC joins upstream of both, against 908.2.1.4.
+
+## Plant room: rubber base kept, sheet re-patterned, valve and spigot (2026-11-03)
+
+- **Flash cove re-examined, rubber base kept.** Tarkett publishes no coving detail for First
+  Class; Mannington (6" cove, MLG-33 seams) and AHF/Armstrong (S-761 at the cove seams) do.
+  The owner kept First Class and the 4" Johnsonite base with a silicone toe, re-patterned to
+  **Windsor Gatsby 87061** (~$2.50/SF) in RM-S-PLANT, and the attic studio and studio bath
+  take the same sheet and base as `catlin-vinyl-gatsby`. Named alternatives: Beauflor Blacktex
+  HD Canvas 109M, Mannington Platinum Tapestry 130451. The print is a 9" white-marble tile
+  with black diamonds and a gold pinstripe; the viewer draws it as `tile-gatsby-grid`
+  (`ui/src/three/tileMaterial.ts`, inlay not drawn).
+- **Leak valve dropped.** `APPL-S-PLANT-VALVE` and its ZAC36 type are deleted; the stub's
+  stop and the main are the shutoffs.
+- **Spigot onto the balcony.** `FX-S-BALC-HYD` moved 7'-4" -> 12'-8", directly over
+  `FX-M-PORCH-HYD` in the stud-003 / WIN-S-PLANT4 king bay; its riser tees off the porch leg
+  in the wall plane, and `PR-M-CW-HYD-DIST` now reaches that tee (it used to stop 8" short).
+  The watering stub, sleeve, bore and backing moved with it.

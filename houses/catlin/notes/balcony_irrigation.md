@@ -27,8 +27,8 @@ Two frost-free wall hydrants on the house's south face, one per outdoor room:
 
 | tag | storey | wall | x | handle | serves |
 | --- | --- | --- | --- | --- | --- |
-| `FX-M-PORCH-HYD` | main | `W-M-S1` | 12'-0" | 2'-0" over the porch deck | the porch, and anything a hose reaches at grade |
-| `FX-S-BALC-HYD` | second | `W-S-S1` | 16'-8" | 2'-0" over the balcony deck | the balcony's plants — the irrigation this whole item started as |
+| `FX-M-PORCH-HYD` | main | `W-M-S1` | 12'-8" | 2'-0" over the porch deck | the porch, and anything a hose reaches at grade |
+| `FX-S-BALC-HYD` | second | `W-S-S1` | 12'-8", over the porch hydrant (2026-11-03) | 2'-0" over the balcony deck | the balcony's plants — the irrigation this whole item started as |
 
 Both are on the south face because that is where the outdoor rooms are. The freestanding
 sunken-garden structure carries the porch at 0'-0" and the balcony 10' above it, and its
@@ -98,9 +98,10 @@ PR-B-CW-TRUNK  (5', 1') .. (29', 16')      the 1 1/4" cold trunk, basement ceili
    |  tee at (6', 16')                      PA-B-HYD-ISO — the one valve that reaches both
 PR-B-CW-HYD          -> (6', 13'-4")        lacquered copper, exposed under the deck
 PR-B-CW-HYD-RISER    up through SP-M-CW-HYD, inside W-M-BDN1, to 9'-3"   PEX
-PR-M-CW-HYD-DIST     south to y=0'-9", then east along one joist bay     PEX
-   |-- PR-M-CW-PORCH-HYD   down inside W-M-S1 to 2'-0"     -> PR-M-CW-PORCH-HYD-CU  (barrel)
-   `-- PR-M-CW-BALC-HYD    up   inside W-S-S1 to 12'-0"    -> PR-S-CW-BALC-HYD-CU   (barrel)
+PR-M-CW-HYD-DIST     south to y=0'-9", then east along one joist bay to x=12'-8"   PEX
+   `-- PR-M-CW-PORCH-HYD   down inside W-M-S1 to 2'-0"     -> PR-M-CW-PORCH-HYD-CU  (barrel)
+        `-- PR-M-CW-BALC-HYD  tees in the wall plane, up inside W-S-S1 to 12'-0"
+                                                         -> PR-S-CW-BALC-HYD-CU   (barrel)
 ```
 
 Three numbers in there are not free choices:

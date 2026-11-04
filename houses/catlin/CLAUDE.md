@@ -219,7 +219,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   `out/model.json` is unchanged, and only `contentHash` — which hashes the plan SOURCE —
   moved.
 - `plan/smart_home.py` — `# haus: editable` doorbell, cameras, opener, EVSE, HP1 stat, alarm
-  relays and leak valve; types in `plan/smart_home_types.py`. Local-only HA register:
+  relays; types in `plan/smart_home_types.py`. Local-only HA register:
   `notes/smart_home.md`.
 - `plan/drywall.py` — `# haus: editable` `DRYWALL-STANDARD` (decision #103) with its bead
   products. The four gypsum-hosted coves sit in a 5/8" shadow gap (Trim-Tex AS6010 Z bead,

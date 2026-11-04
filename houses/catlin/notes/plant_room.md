@@ -37,14 +37,14 @@ source:
 - Room design condition: 75 F at 70% RH. Dew point 64.4 F.
 - Liner, inside out: 1/2" PVC panel, 3/4" furring, membrane. Walls and ceiling.
 - The membrane is the air and vapour barrier. Continuous on all six sides.
-- Floor: 1/4" SurePly + seamless vinyl; 6" cove pending approval. No drain.
+- Floor: SurePly + seamless sheet; 4" rubber base, silicone toe. No drain.
 - Glazing: fixed units only, U-0.14, warm-edge spacer, thermally broken frame.
 - No suspended ceiling. No roofing membrane under the vinyl.
 - Ventilation: 25 cfm in, 25 cfm out, both dampered. Extract high, far end.
 - Damp location throughout; wet location wherever misted or hosed.
 
 ### Keyed
-- [K1] Lap the floor cove up the wall and terminate it behind the wall membrane.
+- [K1] Liner trim laps the rubber base, sealed; weep kept open (K4).
 - [K2 @ host#layer:humid-membrane:out] Membrane continuous wall to ceiling; seal each penetration.
 - {opening_perimeter:*} [K3] Sloped, drained sill pan over the stool, flashed into the membrane; drains to the room, never into framing.
 - [K4 @ host#layer:liner-furring:out] Keep the 3/4" furring gap open behind the panel; it is the drying path.
@@ -61,7 +61,7 @@ source:
 - If this wall is ever built with board insulation, use glass-faced or unfaced polyiso. Never foil-faced.
 
 ### Spec 09 65 16
-- One sheet, no seam. The cove is the waterproofing; add no second impermeable layer under it.
+- One sheet, no seam; the base toe is a maintained sealant joint. Nothing impermeable under it.
 
 ### Spec 23 00 00
 - Plant HP supply: [dimensioned boot, damper and sealed service hatch](plant_supply_connection.md).
@@ -194,8 +194,8 @@ A materials review asked about UV on the PVC. Answer: keep PVC, name the product
   sheens and T&G profiles do not mix.
 - **SDI 450 is exactly IRC R302.9.2's limit.** Confirm it on the current ESR at order.
 - **White, not gray**: most light back onto the plants; matches the white uPVC window
-  frames inside and sets off the black SKUGGRÖNA stands and grow tubes. A touch cooler than
-  the warm-white sheet floor (#f2ede6), accepted.
+  frames inside and sets off the black SKUGGRÖNA stands and grow tubes, over the white
+  marble-tile print of the sheet floor.
 - **Install** per Extrutech's panel instructions: ends cut 1/4-5/16" short, seam gap by
   install temperature, stainless screws snug, not tight. **PVC heat-distorts at 120 F**:
   keep heaters and the grow tubes 24" off it. Confirm support spacing against ESR-4583;
@@ -319,9 +319,12 @@ Sources: [IKEA product details](https://www.ikea.com/us/en/p/skuggroena-wall-mou
 
 ### Floor
 
-The plant-only `catlin-plant-vinyl-raised` finish is Tarkett First Class, Monaco
-Calacatta, 120 mil, 12' rolls, fully adhered over one nominal 1/4" SurePly plywood
-underlayment. Its modeled 0.370" build-up above the 3/4" subfloor puts the walking
+The plant-only `catlin-plant-vinyl-raised` finish is Tarkett First Class FiberFloor,
+**Windsor Gatsby 87061** (a 9" white-marble tile print with black diamonds and a gold
+pinstripe, 3 mm, 12' rolls; owner 2026-11-03, ~$2.50/SF),
+fully adhered over one nominal 1/4" SurePly plywood underlayment. Named alternatives, both
+cushioned like First Class: Beauflor Blacktex HD Canvas 109M (13'-2" roll, 16 mil wear
+layer, textile back) and Mannington Platinum Tapestry 130451 (12', 130 mil). Its modeled 0.370" build-up above the 3/4" subfloor puts the walking
 surface at +1.120" relative to the second-storey datum, 0.380" below the study oak.
 The underlayment is a smooth base for the sheet and closes part of the doorway gap;
 it is not waterproof. Its exterior-glue bond does not make the wood safe for exposure
@@ -339,19 +342,19 @@ sits outside the guide is the room's **70% operating RH** (the guide states 40�
 installation). Install with the room dry and conditioned, and accept the operating RH as the
 owner's risk. The room has **no floor drain or slope**; it is not hoseable.
 
+**Flash cove re-examined, base kept (2026-11-03).** Tarkett publishes no coving detail for
+First Class. Mannington (6" cove, MLG-33 chemical seams) and AHF/Armstrong (flash-cove system
+guide, S-761 at the cove seams) do, for their 12' sheets; a compact light-commercial sheet
+was the firm option. The owner kept the set-on base and First Class.
+
 At `D-S-PLANT`, fit a restrained, shallow solid-surface reducer from the study oak
 plane down to the vinyl over roughly 4 1/2" of run. Turn the vinyl up against a
 continuous water-stop riser under the reducer and seal the turn and both ends into
 the jamb membrane returns, so a spill cannot pass under the profile. The final
 profile follows measured installed planes and the delivered door's swing clearance.
-The nominal 0.380" drop offers limited passive spill storage. **The leak sensor shuts the
-plant room's branch only (owner, 2026-10-22; hardware 2026-10-30):** a 1/2" full-port lever
-ball valve at `PA-S-PLANT-WATER-STUB`'s outlet, under a Zooz ZAC36 Titan actuator
-(`APPL-S-PLANT-VALVE`, Z-Wave LR). Its wired probe at the stub closes the valve with no hub and
-no internet, so a leak here leaves the rest of the house's water on. A Zooz ZSE42 at the lowest
-corner closes it through Home Assistant. Mount the valve exposed at the box so the actuator
-clamps on; its 12 V adapter takes `ED-S-PLANT-RC2`. YoLink is retired: see
-[smart_home.md](smart_home.md).
+The nominal 0.380" drop offers limited passive spill storage. **No automatic shutoff
+(owner, 2026-11-03):** the Zooz ZAC36 actuator is dropped. The stub's own quarter-turn stop
+and the house main remain the shutoffs.
 
 **No seam, so nothing to weld (2026-09-25).** The room is 17'-0" x 8'-1" clear, so one
 sheet laid across the 8'-1" width covers it whole. That is what retired the earlier
@@ -530,12 +533,13 @@ misted or hosed.
    the hydrant, whose thread is outdoors. `PR-M-CW-PLANT-STUB` tees off the hydrant riser in
    `W-S-S1`'s bay to `PA-S-PLANT-WATER-STUB`, a capped 1/2" stop in a recessed box 14" AFF,
    gasketed to the membrane (`plan/mep_supply_plant.py`). The no-drain answer below stands
-   for it: bench trays take the drip, the sealed base holds a spill, and the stub's branch
-   valve shuts on a floor leak sensor (2026-10-22, Floor above). Hard-piping irrigation off it
+   for it: bench trays take the drip and the sealed base holds a spill; there is no
+   automatic shutoff (2026-11-03, Floor above). Hard-piping irrigation off it
    is P2902.5.3's case (PVB or RPZ). The stated need was never a sink: it is *watering that runs while the house is
    empty*. That is an irrigation question, and irrigation takes no fixture.
    - **The room is served by `FX-S-BALC-HYD`**, already modelled: `PR-M-CW-BALC-HYD` rises
-     inside `W-S-S1` to the seat at 2'-0" over the balcony deck, with
+     inside `W-S-S1` at x=12'-8" (on the balcony, over `FX-M-PORCH-HYD`, since 2026-11-03)
+     to the seat at 2'-0" over the balcony deck, with
      `PA-S-BALC-HYD-SEAT` behind it (`plan/mep_supply_devices.py`). Watering is a
      **hose-connected drip system on a timer** — tubing, emitters and a hose-thread timer,
      all of it a *purchase* and none of it a plumbing change. Nothing is added to the model
@@ -545,8 +549,8 @@ misted or hosed.
      `FS-S-WEST`'s trusses for a fixture the need does not want. It would also have put a
      trap in a room nobody uses in February — the dry-trap problem `TRAP_PRIMER` exists for.
      Deleting the requirement deletes the drain line, the primer and the slope in
-     `FS-SECOND` that this item used to ask for. **The vinyl's 6" flash cove stays**
-     — it is the waterproofing whether or not anything drains, and with no drain it is the
+     `FS-SECOND` that this item used to ask for. **The sheet and its sealed base toe**
+     are the waterproofing whether or not anything drains, and with no drain they are the
      *only* thing between a spill and the plywood.
    - **Backflow is already bought, and irrigation is exactly why it matters.** Tubing lying
      in wet growing medium is a cross connection in a way a watering can never was.
@@ -562,7 +566,7 @@ misted or hosed.
      vacuum breaker — or an RPZ — on a dedicated, hard-piped irrigation branch. The day any
      of it is hard-piped, that far heavier assembly is owed.
    - **Controller: a battery hose-end timer, and nothing is authored for it.** The hydrant's
-     thread is outdoors. `ED-S-PLANT-RC2` is the nearest receptacle at 1'-5 3/4" in plan,
+     thread is outdoors. `ED-S-PLANT-RC1` is the nearest receptacle at 1'-4" in plan,
      but it is on the *far side* of `W-S-S1` — a cord to it would cross the Class I liner
      and 4" of continuous exterior insulation, which is a hole in the one membrane this
      room is designed around, punched for a device that does not want one. Hose-end timers
@@ -572,11 +576,8 @@ misted or hosed.
    - **The residual risk, stated rather than hidden: a leak with nothing to catch it.** No
      drain means a burst emitter, a split tube or a timer that fails open empties onto the
      floor until somebody walks in — and the premise of this system is that nobody does.
-     The cove holds a spill inside the room; it does nothing about the hours. **The answer
-     to that residual is a water-leak sensor on the floor, wired to shut the timer off.**
-     The engine has no element kind for a sensor, so it cannot be modelled — the same gap
-     the cavity "canary" RH sensors above run into, and it is already tracked in
-     `plans/TODO.md`.
+     The base holds a spill inside the room; it does nothing about the hours. The owner
+     accepts that residual (2026-11-03): no automatic shutoff.
    - **What is NOT settled: how the tubing crosses the wall.** The hydrant's escutcheon is
      outdoors at y=−5" (`PR-S-CW-BALC-HYD-CU`), so the timer and manifold hang on the
      balcony. That waters balcony planters directly. Reaching the benches *inside*

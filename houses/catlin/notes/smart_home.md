@@ -17,11 +17,10 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
      motion sensors). It cannot run Thread and Zigbee at once (Nabu Casa FAQ), so Zigbee
      (wanted since 2026-10-31: the GL-C-001P controllers) runs on a second dongle, a Zigbee
      coordinator on ZHA.
-   - A Z-Wave 800 LR stick serves the leak valve and its sensors.
+   - A Z-Wave 800 LR stick serves the ZEN32 scene keypad.
    - No vendor hubs: no MyQ, no DIRIGERA, no Reolink Home Hub, no YoLink hub.
 3. **Safety stands alone.** These work with HA down; HA observes them and may notify:
    - the alarm interconnect;
-   - the leak shutoff, through its wired probe;
    - the sump alarm;
    - the sauna controller.
 
@@ -77,7 +76,6 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | HP2/HP3 heads | `EQ-*-HP2-*`, `EQ-M-HP3-STAIR` | Gree built-in Wi-Fi | core `gree` (local polling) | Gree+ once, then WAN blocked | IR remote | GCM-encrypted firmware may not pair |
 | ERV boost | `EQ-B-ERV` | Shelly relay on the Broan dry-contact aux input (manual §3.2.2) | Shelly core (local push) | none | Broan wall control | read the terminal names before wiring |
 | Floor heat (3 zones) | `ED-*-FH-STAT` | Warmup 7iE | Matter over Wi-Fi (local push) | Warmup app for firmware | own schedule, own sensor | Schluter warranty letter |
-| Leak shutoff | `APPL-S-PLANT-VALVE` | Zooz ZAC36 Titan (Z-Wave LR) + ZSE42 | Z-Wave JS (local push) | none | wired probe closes the valve | confirm the stub valve is a lever ball valve |
 | Water heater | `EQ-B-WH` | Rheem ProTerra Plug-in, EcoNet Wi-Fi + CTA-2045 port | none needed: power is switched by `CKT-WH`'s relay | Wi-Fi module never registered | tank controls | whether `esphome-econet` reaches the plug-in; not needed for backup |
 | Inverter/battery | `EQ-B-ESS-INV` | EG4 12kPV | EG4 web monitor, local Modbus (HACS) | none | inverter runs itself | firmware support for local mode |
 | Lighting | `ED-T-LEV-MATTER*` | Leviton D215S / D2ELV / companion | Matter (local push) | one My Leviton session (D215S firmware) | paddles | confirm companion `DD0SR-DLZ` |
@@ -164,7 +162,7 @@ setpoint and mode, so bench one unit on the AH before buying more. It sits on th
 library stat on all three zones and uses its own floor sensor. Ask Schluter in writing whether
 the cable warranty survives a non-Schluter thermostat.
 
-**Leak shutoff.** It replaces YoLink. See [plant_room.md](plant_room.md).
+**No leak shutoff** (owner, 2026-11-03): the plant room's ZAC36 is dropped, and YoLink was already retired. See [plant_room.md](plant_room.md).
 
 **Recording, alarms, UPS.** No cloud recording plans. The HA host, router and PoE switch share
 `CKT-HA` (ALWAYS_ON); a small UPS for them is the separate backup-battery TODO. On battery the

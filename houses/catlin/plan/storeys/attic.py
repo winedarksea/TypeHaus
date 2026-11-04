@@ -855,7 +855,7 @@ FLOOR = [
                 # ** BACK TO `plywood-subfloor`, THE HOUSE STANDARD, 2026-09-09. ** It was
                 # the sanded-face underlayment grade from 2026-08-27 for one reason: the
                 # attic rooms took no covering, so this sheet was their finished floor. That
-                # reason is gone. RM-A-STUDIO now carries `floor_finish="vinyl-sheet"`
+                # reason is gone. RM-A-STUDIO now carries sheet vinyl
                 # (storeys/attic_studio.py), which wants a flat structural deck and supplies
                 # its own wear surface; RM-A-STUBATH was already vinyl; RM-A-STUDY is oak
                 # over it and was always indifferent. What is left walking on the bare panel

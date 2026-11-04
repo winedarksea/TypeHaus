@@ -39,6 +39,12 @@ export const TILE_STYLES: Readonly<Record<string, TileStyle>> = {
     pattern: "grid", sizeM: [24 * INCH, 12 * INCH], jointM: INCH / 8,
     color: [244, 246, 246], grout: [250, 249, 245], roughness: 0.58, veinWeight: 0.42,
   },
+  // Tarkett First Class Windsor Gatsby 87061: 9" printed white-marble squares, grey joints.
+  // The black diamonds and gold inlay are not modelled; the face is the print's white.
+  "tile-gatsby-grid": {
+    pattern: "grid", sizeM: [9 * INCH, 9 * INCH], jointM: INCH / 16,
+    color: [240, 240, 240], grout: [200, 200, 198], roughness: 0.4, veinWeight: 0.3,
+  },
   // Swanstone Modern Subway: a 6x24 relief moulded into one gloss panel, so the "grout" is
   // the body colour and only the recess reads.
   "tile-swanstone-modern-subway": {

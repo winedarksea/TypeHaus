@@ -268,7 +268,7 @@ def test_every_finish_row_resolved_a_real_material(bom):
         "catlin-tile-opera-blue", "catlin-tile-kaleo-brick",
         "catlin-tile-agua-linda", "catlin-tile-carrara", "sealed-concrete",
         "catlin-rubber-stall-mat", "vinyl-sheet", "catlin-plant-vinyl-raised",
-        None}
+        "catlin-vinyl-gatsby", None}
 
 
 def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
@@ -277,10 +277,10 @@ def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
     from the schedule — but it orders zero, because there is nothing to order.
 
     ** 2026-09-09: 965.3 -> 609.5 SF, and RM-A-STUDIO LEFT THIS ROW. ** The studio took
-    `vinyl-sheet` over a plain `plywood-subfloor` deck (storeys/attic_studio.py), which
+    sheet vinyl over a plain `plywood-subfloor` deck (storeys/attic_studio.py), which
     retired both the sanded-panel premium and the sealer allowance it used to need. What is
     left here is the two genuinely unfinished lofts. RM-A-STUBATH is billed separately
-    (vinyl-sheet), and FO-A-HALL's stair-hall void left the schedule entirely because there
+    (`catlin-vinyl-gatsby` since 2026-11-03), and FO-A-HALL's stair-hall void left the schedule entirely because there
     is no deck there.
 
     This row is asserted on its area AND separately on ordering zero AND on its room list:

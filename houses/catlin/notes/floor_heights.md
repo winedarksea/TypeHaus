@@ -147,13 +147,12 @@ upstand. The water path still relies on the sill and pan, not on floor-level fal
 the mudroom so standing snowmelt does not sit at floating plank seams.
 
 `RM-S-PLANT` stays fully adhered sheet vinyl over one nominal 1/4-in SurePly layer.
-The nominal remaining drop contains only incidental spills, and the room has no drain;
-the leak shutoff is required: the ZAC36 valve actuator and its wired probe
-(`APPL-S-PLANT-VALVE`). SurePly is an interior,
+The nominal remaining drop contains only incidental spills, and the room has no drain
+and no automatic shutoff (owner, 2026-11-03). SurePly is an interior,
 weather-protected underlayment, not a waterproof layer. Do not order the reducer until
-the delivered underlayment and vinyl stack has been measured. The [plant-room note](plant_room.md)
-and `plans/TODO.md` require Tarkett's written approval for First Class flash coving,
-the adhesive and the 70%-RH design condition before construction.
+the delivered underlayment and vinyl stack has been measured. The perimeter is a 4" rubber
+cove base, not a flash cove, so the sheet stays inside Tarkett's guide; the 70%-RH
+operating condition remains the owner's risk ([plant-room note](plant_room.md)).
 
 ## Estimate comparison
 

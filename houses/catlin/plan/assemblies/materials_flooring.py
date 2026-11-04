@@ -15,15 +15,24 @@ _LARGE_FORMAT = ("Large format: substrate flat to 1/8 inch in 10 ft (ANSI A108.0
 
 MATERIALS_FLOORING = [
     Material(tag="catlin-plant-vinyl-raised", name="Plant-room sheet vinyl over SurePly",
-             hatch="membrane", color="#f2ede6", finish="veined-marble",
+             hatch="membrane", color="#e2e1e0", finish="tile-gatsby-grid",
              finish_thickness_in=0.370, floor_waste_fraction=0.12,
              floor_companion_refs=("catlin-plant-sureply",), base_detail="resilient_base",
              base_joint_ref="catlin-base-toe-silicone",
-             source='Tarkett First Class 0.120" fully adhered sheet over one nominal '
-                    '1/4" SurePly resilient-flooring underlayment panel. The combined '
-                    'height is provisional until the installed stack is measured. '
-                    'Perimeter: 4" Johnsonite rubber cove base, silicone at its toe '
-                    '(owner 2026-10-22, no flash cove; notes/plant_room.md).'),
+             source='Tarkett First Class FiberFloor, Windsor Gatsby 87061, 12 ft (no seam), '
+                    'fully adhered over one nominal 1/4" SurePly; the combined height is '
+                    'provisional until measured. Perimeter: 4" Johnsonite rubber cove base, '
+                    'silicone toe (owner 2026-10-22, reaffirmed 2026-11-03). Alternatives: '
+                    'Beauflor Blacktex HD Canvas 109M; Mannington Platinum Tapestry 130451.'),
+    Material(tag="catlin-vinyl-gatsby", name="Tarkett First Class Windsor Gatsby sheet vinyl",
+             hatch="membrane", color="#e2e1e0", finish="tile-gatsby-grid",
+             finish_thickness_in=0.120, base_detail="resilient_base",
+             base_joint_ref="catlin-base-toe-silicone",
+             source='RM-A-STUDIO and RM-A-STUBATH, owner 2026-11-03: Tarkett First Class '
+                    'FiberFloor, Windsor Gatsby 87061, 12 ft, glue-down on the subfloor. 4" '
+                    'Johnsonite rubber cove base, silicone toe, as the plant room. '
+                    'Alternatives: Beauflor Blacktex HD Canvas 109M; Mannington Platinum '
+                    'Tapestry 130451.'),
     Material(tag="catlin-plant-sureply", name='SurePly plywood underlayment, nominal 1/4"',
              hatch="lumber", color="#d5c4a6",
              source="Patriot Timber SurePly, nominal 1/4 in, exterior-glue, "

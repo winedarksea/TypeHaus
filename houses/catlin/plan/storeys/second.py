@@ -932,8 +932,8 @@ ROOMS = [
     # figure, which is the one the assemblies have to survive.
     #
     # The plant-only finish adds one 1/4" SurePly layer below the seamless 12' sheet,
-    # retaining a nominal 3/8" drop to the study as spill containment. The proposed 6"
-    # flash cove and sealed doorway reducer still require Tarkett's written approval.
+    # retaining a nominal 3/8" drop to the study as spill containment. The perimeter is a
+    # 4" rubber cove base with a silicone toe, not a flash cove (Tarkett publishes none).
     # Nothing impermeable goes under the sheet: a second Class I layer would trap the
     # plywood subfloor between barriers with no drying path.
     # Ceiling: PVC panel on furring over the same membrane as the walls, continuous with

@@ -110,11 +110,14 @@ def test_a_run_with_no_candidate_at_all_says_so(catlin_model_ro) -> None:
 
     PR-G-SERVICE-CW is the lateral (every fixture's load, 1 1/4"), drawn street to house so
     the trunk tees onto its END; the hydrant is the trunk's own branch (owner, 2026-10-29).
+    PR-M-CW-PORCH-HYD sat here too while PR-M-CW-HYD-DIST stopped 8" short of it; since
+    2026-11-03 the distribution reaches it and the balcony leg tees off it.
     """
     records = _records(catlin_model_ro)
-    for tag in ("PR-G-SERVICE-CW", "PR-M-CW-PORCH-HYD"):
-        assert records[tag].reason == "no_candidate", tag
-        assert records[tag].parent is None
+    assert records["PR-G-SERVICE-CW"].reason == "no_candidate"
+    assert records["PR-G-SERVICE-CW"].parent is None
+    assert records["PR-M-CW-PORCH-HYD"].parent == "PR-M-CW-HYD-DIST"
+    assert records["PR-M-CW-BALC-HYD"].parent == "PR-M-CW-PORCH-HYD"
     assert records["PR-B-CW-TRUNK"].parent == "PR-G-SERVICE-CW"
     assert records["PR-G-HYDRANT-CW"].parent == "PR-B-CW-TRUNK"
 

@@ -305,7 +305,7 @@ SUPPLY_DEVICES_GARAGE = [
 SUPPLY_DEVICES_MAIN = [
     PipeAccessory(uid="A5VK7BND3T", tag="PA-M-PORCH-HYD-SEAT",
                   kind=PipeAccessoryKind.SHUTOFF, pipe_ref="PR-M-CW-PORCH-HYD",
-                  position=pt(ft(12, 8), ft(0, 3.25)), room="RM-M-BED",
+                  position=pt(ft(12, 8), ft(0, 3.25)), elevation=ft(2), room="RM-M-BED",
                   model="hydrant's own compression seat, inboard end of the barrel",
                   serves=("FX-M-PORCH-HYD",)),
     # The penetration itself: says "protected by the envelope, not bury depth", which
@@ -359,18 +359,19 @@ SUPPLY_DEVICES_MAIN = [
 # → notes/plant_room.md, open item 2.
 #
 # Neither is an independent position: the seat is the inboard end of the barrel and the
-# seal is its escutcheon, so both are the hydrant's own station — the riser's, at x=7'-4".
+# seal is its escutcheon, so both are the hydrant's own station — the riser's, at x=12'-8".
 # Nothing checks that these accessories still track a station the pipe they name actually
-# sits at; only `mep.run_through_opening` grades the pipe itself.
+# sits at; only `mep.run_through_opening` grades the pipe itself. Both seats author their
+# barrel's elevation: off a vertical riser the host-run fallback lands them at the 9'-3" tee.
 SUPPLY_DEVICES_SECOND = [
     PipeAccessory(uid="S6BN1JXV7Q", tag="PA-S-BALC-HYD-SEAT",
                   kind=PipeAccessoryKind.SHUTOFF, pipe_ref="PR-M-CW-BALC-HYD",
-                  position=pt(ft(7, 4), ft(0, 3.25)), room="RM-S-PLANT",
+                  position=pt(ft(12, 8), ft(0, 3.25)), elevation=inch(24.829), room="RM-S-PLANT",
                   model="hydrant's own compression seat, inboard end of the barrel",
                   serves=("FX-S-BALC-HYD",)),
     PipeAccessory(uid="M4TQ8HRC1Z", tag="PA-S-BALC-HYD-SEAL",
                   kind=PipeAccessoryKind.PENETRATION_SEAL, pipe_ref="PR-S-CW-BALC-HYD-CU",
-                  position=pt(ft(7, 4), ft(0)),
+                  position=pt(ft(12, 8), ft(0)),
                   model="gasketed escutcheon over a foamed barrel penetration",
                   install_parts=("silicone gasket, hydrant escutcheon",
                                  "plastic mounting bracket, non-conductive",

@@ -2415,7 +2415,6 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # `finish-garage-door-opener` allowance, which is deleted so it does not bill twice.
 "APPL-LIFTMASTER-8550W" = { material = { low = 330, high = 480 }, labour = { low = 150, high = 350 } }  # 1 ea, ratgdo32 in [install_parts]
 "APPL-GRIZZLE-SMART-40" = { material = { low = 400, high = 600 }, labour = { low = 40, high = 100 } }  # 1 ea, hardwired from ED-G-EV-1450
-"APPL-ZOOZ-ZAC36" = { material = { low = 110, high = 180 }, labour = { low = 60, high = 150 } }  # 1 ea, incl. the 1/2" lever ball valve and a ZSE42
 "ED-T-DOORBELL-POE" = { material = { low = 100, high = 160 }, labour = { low = 60, high = 140 } }  # 1 ea + plug-in chime
 "ED-T-CAM-PANTILT" = { material = { low = 315, high = 315 }, labour = { low = 60, high = 140 } }  # 1 ea, Omvi 3i $315 (owner, 2026-11-02)
 "ED-T-CAM-WIDE" = { material = { low = 150, high = 230 }, labour = { low = 60, high = 140 } }  # 1 ea
@@ -3716,14 +3715,15 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "catlin-tile-carrara" = { material = { low = 3.5, high = 6 }, labour = { low = 8, high = 15 } }
 "catlin-ditra-xl" = { material = { low = 2.5, high = 4.5 }, labour = { low = 0, high = 0.75 } }
 "catlin-ditra-heat" = { material = { low = 5, high = 7 }, labour = { low = 0, high = 0.75 } }
-# The shared sheet serves RM-A-STUBATH, RM-A-STUDIO and RM-B-BATH. RM-S-PLANT has a
-# separate finish row so its SurePly companion is billed only in that room.
-# RM-S-PLANT takes a set-on rubber base, not a flash cove (2026-10-22); re-price the
-# plant row against the doorway detail before buying.
-# 2026-10-29: labour $3.5-7.5 (was $6-12): glue-down sheet vinyl ~$1.5-4/SF plus seams/cuts in three small wet rooms. Prep is separate.
+# The library sheet now serves RM-B-BATH only.
+# 2026-10-29: labour $3.5-7.5 (was $6-12): glue-down sheet vinyl ~$1.5-4/SF plus seams/cuts in small wet rooms. Prep is separate.
 "vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 3.5, high = 7.5 } }
+# RM-A-STUDIO + RM-A-STUBATH, 2026-11-03: First Class Windsor Gatsby 87061 at the owner's ~$2.50/SF;
+# labour as vinyl-sheet. Alternatives Blacktex HD Canvas 109M, Mannington Platinum Tapestry 130451.
+"catlin-vinyl-gatsby" = { material = { low = 2.5, high = 3 }, labour = { low = 3.5, high = 7.5 } }
+# RM-S-PLANT, 2026-11-03: the same Gatsby sheet over SurePly, set-on rubber base (no flash cove).
 # 2026-10-29: labour $4-8 (was $6-12): vinyl-sheet's band + $0.5-1 for the raised SurePly edge and doorway detail.
-"catlin-plant-vinyl-raised" = { material = { low = 4, high = 8 }, labour = { low = 4, high = 8 } }  # doorway scope provisional
+"catlin-plant-vinyl-raised" = { material = { low = 2.5, high = 3 }, labour = { low = 4, high = 8 } }  # doorway scope provisional
 "catlin-plant-sureply" = { material = { low = 0.65, high = 1.5 }, labour = { low = 0.75, high = 1.5 } }  # provisional plywood panel allowance; confirm with SurePly quote
 # ** TOMBSTONE: `walnut-floor`, rated and retired 2026-09-05. ** For a few hours RM-S-SUITE
 # and RM-S-CLOSET were 181.7 SF net of the family's own site-milled 4/4 walnut T&G, rated
@@ -5542,11 +5542,11 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # A poplar alternate to the painted pine and MDF, kept priced.
 "poplar-trim-paint" = { material = { low = 1.6, high = 2.75 }, labour = { low = 3.0, high = 5.5 } }
 "poplar-trim-paint:door casing" = { material = { low = 1.6, high = 2.75 }, labour = { low = 4.0, high = 8.0 } }
-# Sheet-vinyl rooms flash the sheet up the wall on a cove stick with a cap strip.
+# RM-B-BATH's sheet vinyl flashes up the wall on a cove stick with a cap strip.
 "flash-cove" = { material = { low = 1.5, high = 3 }, labour = { low = 6, high = 12 } }
-# RM-S-PLANT: 4" Johnsonite rubber cove base, adhered. Allowance; the toe bead is its own row.
+# RM-S-PLANT, RM-A-STUDIO, RM-A-STUBATH: 4" Johnsonite rubber cove base, adhered. Allowance; the toe bead is its own row.
 "resilient-base" = { material = { low = 1.5, high = 3.5 }, labour = { low = 2, high = 4 } }
-# Silicone toe bead under the tile baths' PVC base and the plant room's cove base (GE 2812565).
+# Silicone toe bead under the tile baths' PVC base and the sheet rooms' rubber cove base (GE 2812565).
 # ESTIMATE: ~$8-11 per 10.1 oz tube over ~30-45 LF of 1/4" bead; tooled at base install.
 "catlin-base-toe-silicone" = { material = { low = 0.2, high = 0.4 }, labour = { low = 0.4, high = 0.9 } }
 # Derived jamb depth (2026-11-01, C2-E4): a stock 4 9/16 / 6 9/16 prehung jamb built out to a
@@ -7485,7 +7485,7 @@ cabinet-study-booth-cushions = { low = 250, high = 800 }
 # THE GUEST STUDIO'S FLOOR SEALER IS DELETED (2026-08-29, removed 2026-09-09). It bought two
 # coats of clear penetrating sealer over ~357 SF of sanded-face underlayment, because that
 # panel was RM-A-STUDIO's finished floor and unsealed it greys and stains. The room now takes
-# `floor_finish="vinyl-sheet"` over a standard `plywood-subfloor` deck, so there is no exposed
+# sheet vinyl (`catlin-vinyl-gatsby`) over a standard `plywood-subfloor` deck, so there is no exposed
 # panel left to seal and this allowance would bill a coating nobody applies. Deleted rather
 # than zeroed, the same call the wet-bar casework allowance above got: a zeroed row still
 # reads as scope somebody has to account for. The revert is `floor_finish=None` on the Room

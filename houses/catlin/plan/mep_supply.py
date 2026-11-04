@@ -726,15 +726,14 @@ HYDRANT_BRANCH_BASEMENT = [
 # x=6' drilled through their webs — 3/4" PEX in an 11 7/8" I-joist web is within every
 # manufacturer's hole chart.
 HYDRANT_BRANCH_MAIN = [
-    # The east end stops at x=12'-0", the porch tee — extending further would be 4'-8" of
-    # dead leg on a cold line feeding nothing, stagnant water on a branch used a handful of
-    # times a summer. Both tees sit ON this polyline: balcony at 7'-4", porch at 12'-0".
+    # The east end stops at x=12'-8", where both hydrant legs leave it (2026-11-03): the porch
+    # leg drops in W-M-S1 and the balcony leg rises off it in W-S-S1, one station.
     PipeRun(uid="R9TC5VZ1WQ", tag="PR-M-CW-HYD-DIST", system=PipeSystem.WATER_COLD,
             # ** THE SOUTH LEG IS ON THE UPPER TIER AT x=6'-3" SINCE 2026-09-24. ** On x=6'-0"
             # at +9'-3" it crossed DU-M-ERV-R-LIVING, -BED and -PLANT on their lower-tier bay
             # legs; 3" east it clears DU-M-ERV-R-BED's upper-tier lane and rides over all three.
             path=(pt(ft(6), ft(13)), pt(ft(6, 3), ft(13)), pt(ft(6, 3), ft(13)),
-                  pt(ft(6, 3), ft(0, 9)), pt(ft(6, 3), ft(0, 9)), pt(ft(12), ft(0, 9))),
+                  pt(ft(6, 3), ft(0, 9)), pt(ft(6, 3), ft(0, 9)), pt(ft(12, 8), ft(0, 9))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(9, 3), ft(9, 3), inch(117.5), inch(117.5), ft(9, 3), ft(9, 3)),
             serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
@@ -747,26 +746,23 @@ HYDRANT_BRANCH_MAIN = [
             elevations=(ft(9, 3), ft(9, 3), ft(2)),
             wall_refs=(None, "W-M-S1"),
             serves=("FX-M-PORCH-HYD",)),
-    # Balcony leg: the same jog into the wall plane, then up. Split at 10'-0" because the
-    # second floor is between: below that line the pipe is crossing the deck and hosted by
-    # nothing, above it it is inside W-S-S1's cavity (which starts at 10'-0"), and
-    # `mep.wet_wall_occupancy` grades a declared segment against the wall's own z-extent.
+    # Balcony leg: tees off the porch leg in the wall plane and rises straight over it. Split
+    # at 10'-0" because the second floor is between: below that line the pipe is crossing the
+    # deck and hosted by nothing, above it it is inside W-S-S1's cavity (which starts at
+    # 10'-0"), and `mep.wet_wall_occupancy` grades a declared segment against the wall's own
+    # z-extent.
     #
-    # x=7'-4" is the hydrant's own station and it is a real bay, not just a number copied
-    # across: W-S-S1 resolves king-1-r0 at x=5'-5 1/4" (face 5'-6") and king-2-l0 at
-    # x=7'-10 3/4" (face 7'-10") with ONE stud between them, at x=6'-8". That leaves two
-    # 13 1/4" bays, and 7'-4" is 7 1/4" off the stud's east face and 6" off the king's — the
-    # 16" module bay centre. It is also well clear of the openings east of it — 4'-8" to
-    # what was D-S-DECK-W's west jamb pack, and 5'-11" to WIN-S-PLANT4's, the window that
-    # replaced that door on 2026-09-03 (mep.run_through_opening).
+    # x=12'-8" (2026-11-03, on the balcony and over FX-M-PORCH-HYD): W-S-S1 resolves stud-003
+    # at 144" and king-2-l0 (WIN-S-PLANT4) at 158 3/4", a clear bay of 144 3/4"..158", so
+    # the riser is 7 1/4" off the stud and 6" off the king, the 16" bay centre.
     PipeRun(uid="V2FJ8LRY6P", tag="PR-M-CW-BALC-HYD", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(7, 4), ft(0, 9)), pt(ft(7, 4), ft(0, 3.25)),
-                  pt(ft(7, 4), ft(0, 3.25)), pt(ft(7, 4), ft(0, 3.25))),
+            path=(pt(ft(12, 8), ft(0, 3.25)), pt(ft(12, 8), ft(0, 3.25)),
+                  pt(ft(12, 8), ft(0, 3.25))),
             diameter=inch(0.75), material="pex",
             # 12'-0.829": the seat is 24" over RM-S-PLANT's finished floor, 0.829" over the
             # deck, and so are AO-S-BALC-HYD and SP-S-BALC-HYD — one centreline.
-            elevations=(ft(9, 3), ft(9, 3), ft(10), inch(144.829)),
-            wall_refs=(None, None, "W-S-S1"),
+            elevations=(ft(9, 3), ft(10), inch(144.829)),
+            wall_refs=(None, "W-S-S1"),
             serves=("FX-S-BALC-HYD",)),
     # The barrel: the hydrant's own metal tube + sleeve, modelled as a run so the insulation
     # can be billed and `mep.exterior_hydrant_protection` has something to grade. The one
@@ -836,7 +832,7 @@ KITCHEN_STUB_MAIN = [
 # independently chosen. PA-S-BALC-HYD-SEAL (plan/mep_supply_devices.py) shares the station.
 HYDRANT_BRANCH_SECOND = [
     PipeRun(uid="G7YB4XN2SD", tag="PR-S-CW-BALC-HYD-CU", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(7, 4), ft(0, 3.25)), pt(ft(7, 4), inch(-5))),
+            path=(pt(ft(12, 8), ft(0, 3.25)), pt(ft(12, 8), inch(-5))),
             diameter=inch(0.75), material="pex",
             insulation='1/2" closed-cell elastomeric sleeve, foil-faced, over the barrel',
             elevations=(inch(24.829), inch(24.829)),
@@ -914,7 +910,7 @@ PENETRATIONS_HYDRANT_MAIN = [
 ]
 PENETRATIONS_HYDRANT_SECOND = [
     RoughOpening(uid="AZMYHB7P8J", tag="AO-S-BALC-HYD", host="W-S-S1",
-                 position=from_node("N-S-SW", inch(86.75)),
+                 position=from_node("N-S-SW", inch(150.75)),
                  width=inch(2.5), height=inch(2.5), sill_height=inch(23.579),
                  depth=inch(12), depth_from="exterior",
                  penetration_for=("PR-S-CW-BALC-HYD-CU", "PR-M-CW-BALC-HYD")),

@@ -1,5 +1,5 @@
 # haus: editable
-# Smart-home instances: doorbell, cameras, opener, EVSE, thermostat, alarm relays, leak valve.
+# Smart-home instances: doorbell, cameras, opener, EVSE, thermostat, alarm relays.
 # Every device runs locally in Home Assistant with no vendor cloud after setup
 # (notes/smart_home.md). Types and products: plan/smart_home_types.py.
 #
@@ -104,7 +104,7 @@ ENTRY_ELEMENTS = [
                      mount=Mount(kind=MountKind.CEILING, elevation=inch(71.75))),
 ]
 
-# --- second: HP1 thermostat and the plant-room leak shutoff ----------------------------------
+# --- second: HP1 thermostat -----------------------------------------------------------------
 SECOND_ELEMENTS = [
     # System 1's zone stat, on the hall face of W-S-BW2 between D-S-BED1 and D-S-BED2, at
     # the floor stats' 54" centre. 24 VAC from EQ-S-HP1-AH; no branch circuit.
@@ -113,12 +113,6 @@ SECOND_ELEMENTS = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BW2", face="left", distance_from_start=inch(42),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # On the lever ball valve at PA-S-PLANT-WATER-STUB's outlet: carried by the valve, not the
-    # wall (FLOOR kind at its height, so no backing is owed). Its probe on the floor closes the
-    # valve with HA down; 12 V adapter in ED-S-PLANT-RC2, 1'-9" west.
-    Appliance(uid="18N1177G8A", tag="APPL-S-PLANT-VALVE", type_ref="APPL-ZOOZ-ZAC36", room="RM-S-PLANT",
-              position=pt(ft(7, 9), ft(0, 10.75)),
-              mount=Mount(kind=MountKind.FLOOR, elevation=inch(15))),
 ]
 
 # --- garage: opener, its ceiling receptacle, the EVSE ----------------------------------------

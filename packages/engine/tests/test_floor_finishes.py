@@ -24,9 +24,12 @@ from typehaus.resolve.solid_categories import in_slab_family
 # than derived so that adding a finish to a storey without adding its material trips here.
 _CATLIN_FINISHES = {"oak-floor-custom", "lvp", "catlin-theater-carpet", "sealed-concrete",
                     "catlin-rubber-stall-mat", "vinyl-sheet", "catlin-plant-vinyl-raised",
-                    "catlin-carpet-raised",
+                    "catlin-vinyl-gatsby", "catlin-carpet-raised",
                     "catlin-tile-opera-blue", "catlin-tile-kaleo-brick",
                     "catlin-tile-agua-linda", "catlin-tile-carrara"}
+# One printed sheet under two tags (the plant room's carries a SurePly companion): they
+# share a colour by design, so the distinct-colour checks count the pair once.
+_SAME_SHEET = {"catlin-plant-vinyl-raised"}
 
 
 def _library(catlin_model):
@@ -60,8 +63,10 @@ def test_each_finish_material_declares_what_it_looks_like(catlin_model):
         assert material.color, f"{tag} declares no colour"
         assert material.hatch, f"{tag} declares no hatch family"
         colors[tag] = material.color
+    assert colors["catlin-plant-vinyl-raised"] == colors["catlin-vinyl-gatsby"]
     # ...and they have to be *different* colours, or the viewer separates nothing.
-    assert len(set(colors.values())) == len(colors), colors
+    distinct = {tag: c for tag, c in colors.items() if tag not in _SAME_SHEET}
+    assert len(set(distinct.values())) == len(distinct), colors
 
 
 def test_the_companion_layers_a_finish_implies_are_in_the_library(catlin_model):
@@ -81,7 +86,8 @@ def test_the_glb_paints_a_room_in_its_own_finish(catlin_model):
         material = _material(catlin_model, tag)
         color = _room_floor_color(catlin_model, tag)
         assert color == _authored_material_color(material)
-        seen[tag] = color
+        if tag not in _SAME_SHEET:
+            seen[tag] = color
     assert len(set(seen.values())) == len(seen), "finishes must not export the same colour"
     assert _color("floor") not in seen.values()
 
@@ -276,8 +282,8 @@ def test_the_billed_finishes_are_one_lvp_field(catlin_model):
     assert {"RM-M-MECH", "RM-M-MUD-CLOSET"} <= set(rows["lvp"]["rooms"])
     assert "lvp-underlayment" not in rows
     assert {"RM-S-HALL", "RM-S-NCLOSET"} <= set(rows["oak-floor-custom"]["rooms"])
-    assert set(rows["vinyl-sheet"]["rooms"]) == {
-        "RM-A-STUBATH", "RM-A-STUDIO", "RM-B-BATH"}
+    assert rows["vinyl-sheet"]["rooms"] == ["RM-B-BATH"]
+    assert set(rows["catlin-vinyl-gatsby"]["rooms"]) == {"RM-A-STUBATH", "RM-A-STUDIO"}
     assert rows["catlin-plant-vinyl-raised"]["rooms"] == ["RM-S-PLANT"]
     assert rows["catlin-plant-sureply"]["rooms"] == ["RM-S-PLANT"]
     assert rows["catlin-plant-sureply"]["under"] == "catlin-plant-vinyl-raised"
@@ -289,6 +295,7 @@ def test_the_billed_finishes_are_one_lvp_field(catlin_model):
     # ~0.6 SF the D-A-HALVES / D-B-BATH reducers cover in their reveals (2026-11-01), less
     # the attic WC chase's 1.3 SF (2026-11-02).
     assert (float(rows["vinyl-sheet"]["net_area_sqft"])
+            + float(rows["catlin-vinyl-gatsby"]["net_area_sqft"])
             + float(rows["catlin-plant-vinyl-raised"]["net_area_sqft"])) == pytest.approx(
                 519.3, abs=0.5)
     assignments = {

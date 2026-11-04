@@ -153,4 +153,4 @@ D_A_HALVES_OAK_REDUCER = DoorwayTreatment(transition=_bevel(
     OAK_REDUCER, "3/4 in. oak reducer, 2 in. bevel to the vinyl", "Rabbeted over the oak's "
     "end, glued and pinned to the subfloor; vinyl stops at its low edge, sealed",
     "oak-floor-custom", sign=-1, rise_in=0.63, run_in=2.0, depth_in=0.12, land_in=0.75,
-    min_in=0.5, max_in=0.75, pairs=(("oak-floor-custom", "vinyl-sheet"),)))
+    min_in=0.5, max_in=0.75, pairs=(("oak-floor-custom", "catlin-vinyl-gatsby"),)))

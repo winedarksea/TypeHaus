@@ -517,14 +517,12 @@ ATTIC_FIXTURES = (
 #                   barrel was bored straight through a stud and nothing in the model
 #                   graded it. W-M-S1 resolves stud-006 at 144"..145 1/2" and king-1-l0 at
 #                   158 3/4", so the clear bay is 145 1/2"..158 3/4" and its centre is
-#                   152 1/8". 12'-8" is that centre to the nearest inch — the same rounding
-#                   FX-S-BALC-HYD already carries (authored 88", clear centre 88 1/8").
+#                   152 1/8". 12'-8" is that centre to the nearest inch.
 #                   BK-M-S1-HYD spans 128 3/4"..158" and covers the new station unchanged.
-#   FX-S-BALC-HYD   x=7'-4" on W-S-S1, a 16" module bay centre behind RM-S-PLANT (which
-#                   the balcony irrigation this hydrant feeds actually waters). It lands in
-#                   the 2'-10" of blank wall between WIN-S-PLANT1 and WIN-S-PLANT2 — the
-#                   only bay left on this wall not spoken for, since the 1'-7" west of the
-#                   door took ED-S-PLANT-RC1 (plan/electrical.py).
+#   FX-S-BALC-HYD   x=12'-8" on W-S-S1, directly over FX-M-PORCH-HYD (2026-11-03). The
+#                   balcony runs x 8'..28', so the old 7'-4" station was just off it. The
+#                   bay is stud-003 (144") to WIN-S-PLANT4's king (158 3/4"): clear
+#                   144 3/4"..158", the same 7 1/4" / 6" split as the porch bay below.
 #
 # Each names the room *behind* it, which draws an `integrity.placeable_room_mismatch`
 # (footprint centre outside its assigned room) — correct for an exterior hose bib whose
@@ -562,6 +560,6 @@ BALCONY_HYDRANT = (
             room="RM-S-PLANT", wall_ref="W-S-S1",
             mount=Mount(kind=MountKind.WALL, elevation=inch(24), recessed_into_host_surface=True),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-S-S1", face="right", distance_from_start=inch(88),
+                wall_ref="W-S-S1", face="right", distance_from_start=inch(152),
                 normal_gap=inch(-10.25), rotation_offset=deg(0)))),
 )

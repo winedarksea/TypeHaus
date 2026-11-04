@@ -238,7 +238,8 @@ the future.
 - W-BW-SCREEN's shear role is already redundant with the garage path (graded 100%). Relaxing its 4″ edge nailing needs the reviewer to accept `canopy_garage_diaphragm.md`'s 'garage takes the whole load'.
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps a vertical grab bar between the toilet and the tub, serving both.
 - [ ] Before fabricating RM-M-STUDY-CLOSET: complete the 60-minute seating mock-up, verify occupied cushion height, lumbar fit and bracket/blocking connections, and record any dimensional changes in the bench spec.
-- Plant room needs review on bottom of wall detail (switch to a flash cove capable vinyl?) and also a review on if plumbing or drainage is present.
+- Plant-room sink (replaces `PA-S-PLANT-WATER-STUB`): feasibility test reported 2026-11-03, awaiting the owner; `haus route --fixture` crashes on an empty goal set (`routing/gravity_search.py` `_heuristic`) when every tie on the suite stack is spaced out.
+- RM-B-BATH's `vinyl-sheet` is First Class with `base_detail="integral_cove"`, but Tarkett publishes no flash-cove detail for First Class: owner to pick a coving sheet or the plant room's 4" rubber base.
 - Maybe add a lighting view to the UI (lights generate cast lighting effect, background otherwise goes to full shadow/black)
 - Window bottoms in 3D: the cause (stool top coplanar with a frame drawn 5.44" deep) is fixed in engine and viewer (geometry review O4-001); confirm by eye in the viewer, then delete this line.
 - Geometry & dimensional-accuracy review 2026-10-31 done: [report](geometry-review/REPORT.md) (244 findings; ~84 fixed). Open escalations, ranked (detail in `geometry-review/adjudicated/`):

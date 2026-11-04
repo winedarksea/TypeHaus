@@ -419,7 +419,7 @@ ROOMS = [
     # (6:12, current since 2026-09-01), not the pre-6:12 `5'-0" + x/3` this passage used to quote:
     # 7'-0" now arrives at x=13'-9" and 5'-0" at x=9'-9".
     #
-    # ** `vinyl-sheet` OVER A STANDARD SUBFLOOR, 2026-09-09, AND IT IS THE CHEAPER OF THE TWO
+    # ** SHEET VINYL OVER A STANDARD SUBFLOOR, 2026-09-09, AND IT IS THE CHEAPER OF THE TWO
     # ANSWERS THIS ROOM HAS HAD. ** It carried `floor_finish=None` on a
     # `plywood-underlayment-sanded` deck: the room walked on the structural panel, the takeoff
     # correctly ordered no covering, and the room still showed on the schedule as a None row so
@@ -430,9 +430,9 @@ ROOMS = [
     # Sheet vinyl retires both. FS-ATTIC drops to `plywood-subfloor`, the grade every other deck
     # in the house uses (storeys/attic.py), the panel premium comes off ~40 sheets, the sealer
     # allowance is deleted, and the room gets a covering that is genuinely durable and genuinely
-    # cheap — the same product RM-M-BATH1, RM-M-LAUNDRY, the main hall band and RM-A-STUBATH
-    # already buy, at ~$4-8/SF material. It is also seamless and waterproof, which a room with a
-    # wet bar in it wants. ~357 SF. The carpet alternative that used to be written here is still
+    # cheap. It is also seamless and waterproof, which a room with a wet bar in it wants. ~357 SF.
+    # Since 2026-11-03 it is `catlin-vinyl-gatsby` (First Class Windsor Gatsby, ~$2.50/SF) with
+    # the plant room's 4" rubber base, shared with RM-A-STUBATH. The carpet alternative that used to be written here is still
     # one word and still ~$1,200; vinyl is the cheaper and harder-wearing of the two.
     # Exposed eave services, owner 2026-10-29 ("it can be a little rustic"). Code: MN 4714 (UPC
     # 2018) 312.4 asks protection only where piping is subject to mechanical damage, and 4714.0312
@@ -442,7 +442,7 @@ ROOMS = [
     # them into RM-A-POCKET was rejected: it needs a 4 1/2" stub at the bath's NW corner and
     # re-routes W-A-STU-N's conduits. DESIGN-LOG, "Studio eave services".
     Room(uid="CAR401AAAA", tag="RM-A-STUDIO", seed=pt(ft(7), ft(8)),
-         occupancy=Occupancy.BEDROOM, floor_finish="vinyl-sheet",
+         occupancy=Occupancy.BEDROOM, floor_finish="catlin-vinyl-gatsby",
          ceiling=FollowRoof(roof_ref="RF-HOUSE"),
          exposed_services="owner accepts exposed services in the studio's eave, a rustic attic: the lavatory lines along W-A-STU-W and the ERV and heat-pump branches on the west deck run open under less than 5'-0\" of head, where nobody walks into them"),
     # ** THE TAG IS `RM-A-STUBATH`, NOT `RM-A-STUDIO-BATH`, AND THAT IS NOT COSMETIC. **
@@ -451,12 +451,11 @@ ROOMS = [
     # two rooms' luminaire sets would silently merge. The three prefixes ED-A-STUDIO-,
     # ED-A-STUBATH- and ED-A-POCKET- must stay disjoint.
     #
-    # `vinyl-sheet` is already the house's cheap waterproof answer (RM-M-BATH1, RM-M-LAUNDRY, the
-    # main hall band): no grout, no backer, no threshold. R305.1 passes on Exception 2, the
+    # The studio's Gatsby sheet carries on in here: no grout, no backer, no threshold. R305.1 passes on Exception 2, the
     # bathroom rule (6'-8" at each fixture's front-clearance centre): the WC's 6'-8 7/16" is
     # the tight one, bought by W-A-STU-W's furred chase (plan/fixtures.py).
     Room(uid="ACQ0FY2BZD", tag="RM-A-STUBATH", seed=pt(ft(13), ft(20)),
-         occupancy=Occupancy.BATHROOM, floor_finish="vinyl-sheet",
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-vinyl-gatsby",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     # Occupancy.STORAGE keeps this out of `_HABITABLE`, which is what keeps R210.52 receptacle
     # spacing and the R303.1 glazing rule off a room nobody occupies.

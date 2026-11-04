@@ -35,9 +35,6 @@
 "canvas_objects/APPL-M-RANGE/body_z0_m": 0.02605,
 "canvas_objects/APPL-M-RANGE/body_z1_m": 0.95315,
 "canvas_objects/APPL-M-RANGE/z_m": 0.02605,
-"canvas_objects/APPL-S-PLANT-VALVE/body_z0_m": 3.457448,
-"canvas_objects/APPL-S-PLANT-VALVE/body_z1_m": 3.584448,
-"canvas_objects/APPL-S-PLANT-VALVE/z_m": 3.457448,
 "canvas_objects/ED-A-EAST-LT/body_z0_m": 8.09625,
 "canvas_objects/ED-A-EAST-LT/body_z1_m": 8.31215,
 "canvas_objects/ED-A-EAST-LT/z_m": 8.09625,
@@ -8013,10 +8010,10 @@
 "6be4faac9cfd"
 ],
 "geometry/A5VK7BND3T/body": [
-2.7432,
-2.8956,
+0.5334,
+0.6858,
 2,
-"10b0f17aa581"
+"6fa2c879a285"
 ],
 "geometry/A82N47N43Z/body": [
 3.2131,
@@ -47400,7 +47397,7 @@
 3.048,
 6.096,
 26,
-"d08131b7c758"
+"4d30e5838f45"
 ],
 "geometry/CSW101AAAA/layer:gwb-plant": [
 3.048,
@@ -47424,7 +47421,7 @@
 3.048,
 6.096,
 26,
-"d08131b7c758"
+"4d30e5838f45"
 ],
 "geometry/CSW101AAAA/layer:pvc-panel": [
 3.048,
@@ -47436,25 +47433,25 @@
 3.048,
 6.096,
 26,
-"d08131b7c758"
+"4d30e5838f45"
 ],
 "geometry/CSW101AAAA/layer:spray-foam": [
 3.048,
 6.096,
 26,
-"d08131b7c758"
+"4d30e5838f45"
 ],
 "geometry/CSW101AAAA/layer:stud": [
 3.048,
 6.096,
 26,
-"d08131b7c758"
+"4d30e5838f45"
 ],
 "geometry/CSW101AAAA/layer:vent-gap": [
 3.048,
 6.096,
 26,
-"d08131b7c758"
+"4d30e5838f45"
 ],
 "geometry/CSW101AAAA::framing/member:backing-0-000": [
 3.5814,
@@ -68319,10 +68316,10 @@
 "503261d051c6"
 ],
 "geometry/S6BN1JXV7Q/body": [
-2.7432,
-2.8956,
+3.6024566,
+3.7548566,
 2,
-"10b0f17aa581"
+"95853f6f9fca"
 ],
 "geometry/S7ANA4Q300-box/body": [
 1.044575,
@@ -71871,10 +71868,10 @@
 "6fa2c879a285"
 ],
 "geometry/V2FJ8LRY6P-run/body": [
-2.809875,
+2.8194,
 3.6786566,
-72,
-"a213dd733318"
+48,
+"91d76341ef9a"
 ],
 "geometry/V36FYER5MV/body": [
 4.1275594,
@@ -111477,14 +111474,14 @@
 "pipe_accessories/PA-M-KITCH-STOP-CW/z_m": 0.2682875,
 "pipe_accessories/PA-M-KITCH-STOP-HW/z_m": 0.2301875,
 "pipe_accessories/PA-M-PORCH-HYD-SEAL/z_m": 0.6096,
-"pipe_accessories/PA-M-PORCH-HYD-SEAT/z_m": 2.8194,
+"pipe_accessories/PA-M-PORCH-HYD-SEAT/z_m": 0.6096,
 "pipe_accessories/PA-M-RO-STUB/z_m": 0.508,
 "pipe_accessories/PA-M-WASH-STOP-CW/z_m": -0.22352,
 "pipe_accessories/PA-M-WASH-STOP-HW/z_m": -0.3048,
 "pipe_accessories/PA-M-WASH-WHA-CW/z_m": -0.22352,
 "pipe_accessories/PA-M-WASH-WHA-HW/z_m": -0.3048,
 "pipe_accessories/PA-S-BALC-HYD-SEAL/z_m": 3.6786566,
-"pipe_accessories/PA-S-BALC-HYD-SEAT/z_m": 2.8194,
+"pipe_accessories/PA-S-BALC-HYD-SEAT/z_m": 3.6786566,
 "pipe_accessories/PA-S-BATH1-LAV-CW/z_m": 3.6957,
 "pipe_accessories/PA-S-BATH1-LAV-HW/z_m": 3.6957,
 "pipe_accessories/PA-S-BATH1-STOP-CW/z_m": -0.17272,
@@ -112216,8 +112213,8 @@
 "pipe_runs/PR-M-CW-BALC-HYD/z_m": [
 2.8194,
 3.6786566,
-4,
-"b7884972540f"
+3,
+"6d31b78bd999"
 ],
 "pipe_runs/PR-M-CW-BALC-HYD/z_start_m": 2.8194,
 "pipe_runs/PR-M-CW-BATH1-LAV/z_end_m": 0.63565,
@@ -116423,8 +116420,8 @@
 "solids/PA-M-KITCH-STOP-HW/z1_m": 0.3063875,
 "solids/PA-M-PORCH-HYD-SEAL/z0_m": 0.5334,
 "solids/PA-M-PORCH-HYD-SEAL/z1_m": 0.6858,
-"solids/PA-M-PORCH-HYD-SEAT/z0_m": 2.7432,
-"solids/PA-M-PORCH-HYD-SEAT/z1_m": 2.8956,
+"solids/PA-M-PORCH-HYD-SEAT/z0_m": 0.5334,
+"solids/PA-M-PORCH-HYD-SEAT/z1_m": 0.6858,
 "solids/PA-M-RO-STUB/z0_m": 0.4318,
 "solids/PA-M-RO-STUB/z1_m": 0.5842,
 "solids/PA-M-WASH-STOP-CW/z0_m": -0.29972,
@@ -116437,8 +116434,8 @@
 "solids/PA-M-WASH-WHA-HW/z1_m": -0.2286,
 "solids/PA-S-BALC-HYD-SEAL/z0_m": 3.6024566,
 "solids/PA-S-BALC-HYD-SEAL/z1_m": 3.7548566,
-"solids/PA-S-BALC-HYD-SEAT/z0_m": 2.7432,
-"solids/PA-S-BALC-HYD-SEAT/z1_m": 2.8956,
+"solids/PA-S-BALC-HYD-SEAT/z0_m": 3.6024566,
+"solids/PA-S-BALC-HYD-SEAT/z1_m": 3.7548566,
 "solids/PA-S-BATH1-LAV-CW/z0_m": 3.6195,
 "solids/PA-S-BATH1-LAV-CW/z1_m": 3.7719,
 "solids/PA-S-BATH1-LAV-HW/z0_m": 3.6195,
@@ -117835,7 +117832,7 @@
 "solids/PR-M-BATH2-WC-VENT-RUN/z1_m": 2.26568,
 "solids/PR-M-COND-HEADS-RUN/z0_m": -0.5278217,
 "solids/PR-M-COND-HEADS-RUN/z1_m": 0.762,
-"solids/PR-M-CW-BALC-HYD-RUN/z0_m": 2.809875,
+"solids/PR-M-CW-BALC-HYD-RUN/z0_m": 2.8194,
 "solids/PR-M-CW-BALC-HYD-RUN/z1_m": 3.6786566,
 "solids/PR-M-CW-BATH1-LAV-RUN/z0_m": 0.6035228,
 "solids/PR-M-CW-BATH1-LAV-RUN/z1_m": 0.6417272,
