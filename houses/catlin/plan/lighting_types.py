@@ -104,14 +104,14 @@ AMBIENT_LUMINAIRE_TYPES = (
          "Nora NSIC-401QAT + NS-76W + wet-rated 90-CRI PAR20 (CONFIRM the NS-76W listing).",
          **_WET),
     # B1/B2: RM-M-BATH2's two layers (notes/bath2_lighting.md): 5000 K on the day toggle,
-    # 2700 K on the evening Matter relay. Separate marks so the electrician knows which lamp
+    # 2700 K on the evening toggle. Separate marks so the electrician knows which lamp
     # goes where.
     _can("ED-T-LT-CAN4-WET-5000", "B1", '4" recessed can, wet, white shower baffle, 5000K',
          _SHOWER, "PROD-PAR20-90-50K-WET", 6.5, 520.0, 5000, 90,
          "Mark B with a wet-rated 5000 K lamp: BATH2's day layer (CONFIRM the lamp).", **_WET),
     _can("ED-T-LT-CAN4-WET-2700", "B2", '4" recessed can, wet, white shower baffle, 2700K',
          _SHOWER, "PROD-BULBRITE-PAR20-90-27K", 6.5, 480.0, 2700, 90,
-         "Mark B with a 2700 K lamp, on BATH2's evening relay inside the shower glass.",
+         "Mark B with a 2700 K lamp, on BATH2's evening toggle inside the shower glass.",
          **_WET),
     LuminaireType(tag="ED-T-LT-WAFER4",
                   replaceable_lamp=False, name='4" wafer downlight, deep regressed, wet',
@@ -157,9 +157,9 @@ AMBIENT_LUMINAIRE_TYPES = (
                          "(and mark T's tape). The coves are E4/E6 since 2026-10-31."),
 
     # --- E3: RM-M-BATH2's evening glow (2026-10-12) ------------------------------------
-    # Mark E's tape in a fixed 2700 K, damp-rated (silicone-coated): under the over-toilet
-    # cabinet and in the ceiling over the tub (the vanity toe kick is E5 since 2026-10-31).
-    # The evening layer, on a Matter relay; the halo mirror is on its own plug. Prices on its
+    # Mark E's tape in a fixed 2700 K, damp-rated (silicone-coated), in the ceiling over the
+    # tub (the cabinet run retired 2026-11-03). The evening layer, on a plain toggle; the
+    # halo mirror is on its own plug. Prices on its
     # own [light_run_materials] keys.
     LuminaireType(tag="ED-T-LT-STRIP24-2700", replaceable_lamp=True,
                   name="24V COB LED tape, 2700K, damp, in aluminium channel",
@@ -170,10 +170,10 @@ AMBIENT_LUMINAIRE_TYPES = (
                   damp_rated=True,
                   product_ref="PROD-ARMACOST-RIBBONFLEX-COB-2700",
                   source="Armacost RibbonFlex Pro 24V COB family in 2700K, silicone-coated "
-                         "for a damp room (confirm the damp SKU). Cabinet underside and "
-                         "ceiling over the tub in RM-M-BATH2."),
+                         "for a damp room (confirm the damp SKU). Ceiling over the tub in "
+                         "RM-M-BATH2."),
 
-    # --- E4/E5/E6: the 2026-10-31 review's tape variants ------------------------------
+    # --- E4/E6: the 2026-10-31 review's tape variants (E5 retired 2026-11-03) --------
     # E4: the lounge and dining coves in RGB+CCT. The white channels carry the room; colour
     # is a scene. Fed by a non-dimming HLG driver through a 5-in-1 controller, which dims.
     LuminaireType(tag="ED-T-LT-STRIP24-RGBCCT",
