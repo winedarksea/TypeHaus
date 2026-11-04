@@ -47,8 +47,13 @@ INTERIOR_DOOR_TYPES = (
         hardware=(
             DoorHardwareItem(role="passage", product_ref=HALIFAX_KEYED.tag, height=inch(36),
                              installation="Keyed entry, locked from the hall; 2-3/8in backset."),
-            DoorHardwareItem(role="hinge", product_ref=STEEL_PREHUNG_HINGE.tag, quantity=3,
-                             installation="Order the prehung with US15 hinges."),
+            # One item per hinge, at a height (the plan/door_types.py idiom): a heightless
+            # quantity=3 item draws one hinge on EACH edge at mid-leaf, latch side included.
+            *(DoorHardwareItem(role="hinge", product_ref=STEEL_PREHUNG_HINGE.tag,
+                               height=inch(height),
+                               installation="Coordination height; order the prehung with US15 "
+                                            "hinges.")
+              for height in (10, 40, 70)),
         ),
         source="Stock 36x80 flush insulated steel prehung (the cheap exterior line) in a wood "
                "jamb, ordered without a sill: compression weatherstrip at jambs and head plus a "

@@ -61222,10 +61222,22 @@
 "0e013bb79a43"
 ],
 "geometry/GEVMH8HHZ9/hardware:1": [
+-2.5665125,
+-2.4649125,
+2,
+"ac56c3d777d9"
+],
+"geometry/GEVMH8HHZ9/hardware:2": [
 -1.8045125,
 -1.7029125,
-4,
-"d0697115bd65"
+2,
+"ddc952f9041e"
+],
+"geometry/GEVMH8HHZ9/hardware:3": [
+-1.0425125,
+-0.9409125,
+2,
+"c71ecdfc2343"
 ],
 "geometry/GEVMH8HHZ9/jamb_liner": [
 -2.7797125,

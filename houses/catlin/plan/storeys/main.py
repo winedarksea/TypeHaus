@@ -96,7 +96,7 @@ DOOR_TYPES = [
     # relieves the ERV's 15 cfm supply / 10 cfm extract (mep_registers.py): no bottom seal.
     DoorType(tag="DT-INT-SWING30-GLAZED-TRIMLESS", width=ft(2, 6), height=ft(6, 8),
              glazed=True, tempered=True, trimless=True, leaf_set="pull", core="solid", function="passage",
-             source="Site-built kerfed hardwood flat jamb to the wall's full depth, matching D-M-BED2 with tear-away L-bead both faces and no applied casing; 1 3/4in wood stile-and-rail slab with tempered glass, pull-set flush at the living-room face, 3 ball-bearing butts, kerf-in perimeter seal. Retain an open undercut above the finished floor for the study's 5 cfm relief; no sweep, automatic door bottom or saddle. Jamb before drywall, slab after paint; no STC claimed. Held open at ~174 deg by an Emtek 2256US15 3in magnetic wall stop/holder on W-M-C3's living face, deep enough to clear the Halifax lever (D-M-STUDY.maximum_opening_degrees)."),
+             source="Site-built kerfed hardwood flat jamb to the wall's full depth, matching D-M-BED2 with tear-away L-bead both faces and no applied casing; 1 3/4in wood stile-and-rail slab with tempered glass, pull-set flush at the living-room face, 3 ball-bearing butts, kerf-in perimeter seal. Retain an open undercut above the finished floor for the study's 5 cfm relief; no sweep, automatic door bottom or saddle. Jamb before drywall, slab after paint; no STC claimed. Held open at ~174 deg by an Emtek 2256US15 3in magnetic wall stop/holder on W-M-C2's living face ~29in south of the hinge (the leaf folds back past N-M-E4), deep enough to clear the Halifax lever (D-M-STUDY.maximum_opening_degrees)."),
     # Nominal 30 x 80 leaf, a custom width (owner, 2026-11-01): the 36's RO put W-A-SN's
     # east jack and header into the raked plate. Murphy sells by the inch of RO; 32 x 82 is
     # the widest that clears with the west king on the wall's end. The maker's RO is
@@ -1224,7 +1224,7 @@ OPENINGS = [
     # 2026-08-29 `exterior_only` fix there could not be one anyway.
     # Derived RO since 2026-10-29; ED-M-STUDY-SPOT moved 1" north to clear it.
     # ** OPENS TO 174 DEG (owner, 2026-11-03), out of the walkway. ** A 3" magnetic holder on
-    # the living face ~29" from the hinge: 180 - asin(3/29) = 174.1 deg, deep enough to clear
+    # W-M-C2's living face ~29" south of the hinge: 180 - asin(3/29) = 174.1 deg, deep enough to clear
     # the lever.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED-TRIMLESS",
          position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True,

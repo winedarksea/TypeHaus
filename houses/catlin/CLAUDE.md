@@ -2041,7 +2041,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     condensate drops descend inside the north-wall cavity; outlets land over the grate at
     (162, 98 3/16) and (160, 98 3/16) inches, 9 inches AFF. Inset posts
     preserve the west exhaust; `CO-B-SAUNA-HEAD` has a flush aisle cap at **(181", 60")**.
-  - Vents: `REG-B-SUP3` (over the heater) and `REG-B-EXH2` keep their stations and cfm and are
+  - Vents: `REG-B-SUP3` (over the heater) and `REG-B-EXH2` keep their stations (20/20 cfm since 2026-11-03, sealed door) and are
     house-local `REG-T-SAUNA-VENT-SUP`/`-EXH`: a ProSaunas 11" x 5.2" aspen sliding vent hatch
     on a 4" round-to-rectangular boot (`PROD-PROSAUNAS-VENT-HATCH-ASPEN`, owner 2026-10-29).
     Wood, not plastic, at both ends; a shop-built sliding hatch is the DIY fallback.
