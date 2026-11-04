@@ -2691,7 +2691,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # Kitchen B18 waste pull-out: supremekitchenbath.com lists 5149-18DM-217 at $520.49 (2026-11-04).
 "PROD-REVASHELF-5149-18DM-217" = { material = { low = 400, high = 560 }, labour = 0 }
 "PROD-HAFELE-AXILO-637-76-355" = { material = { low = 6, high = 15 }, labour = 0 }  # unread
-# The rest of the SEKTION ladder (SEKT-B12/B18, the 12"/18"/36" wall frames,
+# The rest of the SEKTION ladder (the 18" wall frames,
 # SEKT-HIGH30-90, SEKT-TS30-15) has no instance in this house and no row
 # here. Add one when a box is added; an unpriced type is silently DROPPED from the takeoff
 # and the total falls, which looks like a cheaper kitchen and is not one.
