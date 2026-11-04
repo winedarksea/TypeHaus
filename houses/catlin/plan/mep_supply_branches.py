@@ -36,9 +36,10 @@ BASEMENT_SUPPLY_BRANCHES = [
             elevations=(inch(100.6375), inch(100.6375), inch(118.9375),),
             diameter=inch(0.5), material="pex", serves=("FX-M-BATH2-WC",)),
     # FX-M-BATH2-SH's valve in W-M-BA2E2. Cold off the trunk at x=7'-0", 2" over the band to
-    # cross PR-B-HW-SAUNA, and up the wall at 8'-1 1/2"; hot off PR-B-HW-TRUNK's low x=7'-6"
-    # leg, up into the joist web (over PR-M-S-SUITE-DRAIN) and south to 8'-0 1/2". Both rise
-    # in the wall and stub west to the valve body.
+    # cross PR-B-HW-SAUNA, and up the wall at 8'-1 1/2"; hot off EQ-B-HW-HEADER's out-4, south
+    # in the 83 1/2" lanes under the drains, up into the joist web at y=17'-2" (over
+    # PR-M-S-SUITE-DRAIN) and south to 8'-0 1/2". Both rise in the wall and stub west to the
+    # valve body. PR-B-FILLER-HW leaves out-5 the same way, west at x=7'-2 1/2".
     PipeRun(uid="A4PYMFZWY8", tag="PR-B-BATH2-SH-CW", system=PipeSystem.WATER_COLD,
             path=(pt(inch(84), inch(192)), pt(inch(84), inch(192)), pt(inch(84), inch(174.25)),
                   pt(inch(97.5), inch(174.25)), pt(inch(97.5), inch(174.25)),
@@ -47,11 +48,12 @@ BASEMENT_SUPPLY_BRANCHES = [
                         inch(158.1875), inch(158.1875),),
             diameter=inch(0.5), material="pex", serves=("FX-M-BATH2-SH",)),
     PipeRun(uid="7QKQM2TYZV", tag="PR-B-BATH2-SH-HW", system=PipeSystem.WATER_HOT,
-            path=(pt(inch(90), inch(206)), pt(inch(90), inch(206)), pt(inch(96.5), inch(206)),
-                  pt(inch(96.5), inch(178.25)), pt(inch(96.5), inch(178.25)),
-                  pt(inch(94.615), inch(178.25)),),
-            elevations=(inch(84.4375), inch(99.4375), inch(99.4375), inch(99.4375),
-                        inch(158.1875), inch(158.1875),),
+            path=(pt(inch(90), inch(299.874)), pt(inch(90), inch(299.874)),
+                  pt(inch(96.5), inch(299.874)), pt(inch(96.5), inch(206)),
+                  pt(inch(96.5), inch(206)), pt(inch(96.5), inch(178.25)),
+                  pt(inch(96.5), inch(178.25)), pt(inch(94.615), inch(178.25)),),
+            elevations=(inch(86.149), inch(83.5), inch(83.5), inch(83.5), inch(99.4375),
+                  inch(99.4375), inch(158.1875), inch(158.1875),),
             diameter=inch(0.5), material="pex", serves=("FX-M-BATH2-SH",)),
     # FX-M-BATH2-FILLER: the 4794 rough's inlets, inside the tub deck's foot bay (reached
     # through FURN-M-BATH2-TUBDK-AP). Both rise inside the trim's footprint, between
@@ -67,11 +69,13 @@ BASEMENT_SUPPLY_BRANCHES = [
             diameter=inch(0.5), material="pex",
             serves=("FX-M-BATH2-TUB", "FX-M-BATH2-FILLER")),
     PipeRun(uid="TAXS7CPYFM", tag="PR-B-FILLER-HW", system=PipeSystem.WATER_HOT,
-            path=(pt(inch(83.49), inch(204)), pt(inch(83.49), inch(204)),
+            path=(pt(inch(90), inch(298.374)), pt(inch(90), inch(298.374)),
+                  pt(inch(86.5), inch(298.374)), pt(inch(86.5), inch(206)),
+                  pt(inch(83.49), inch(206)), pt(inch(83.49), inch(206)),
                   pt(inch(83.49), inch(201.5)), pt(inch(83.49), inch(201.5)),
                   pt(inch(83.49), inch(200.41)),),
-            elevations=(inch(84.4375), inch(91.4375), inch(91.4375), inch(126.9375),
-                        inch(126.9375),),
+            elevations=(inch(86.149), inch(83.5), inch(83.5), inch(83.5), inch(83.5),
+                  inch(91.4375), inch(91.4375), inch(126.9375), inch(126.9375),),
             diameter=inch(0.5), material="pex",
             serves=("FX-M-BATH2-TUB", "FX-M-BATH2-FILLER")),
 ]

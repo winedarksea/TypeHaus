@@ -51,6 +51,7 @@ from plan import (
                   mep_sleeves,
                   mep_supply,
                   mep_supply_devices,
+                  mep_supply_header,
                   mep_supply_plant,
                   mep_vent_tees,
                   mep_venting,
@@ -58,7 +59,8 @@ from plan import (
 
 # Catalogs, re-exported so ``manifest.py``'s Library(...) call is untouched by the split.
 REGISTER_TYPES = mep_erv_types.REGISTER_TYPES_ERV
-EQUIPMENT_TYPES = (*mep_hvac.EQUIPMENT_TYPES, *mep_erv_types.EQUIPMENT_TYPES_ERV)
+EQUIPMENT_TYPES = (*mep_hvac.EQUIPMENT_TYPES, *mep_erv_types.EQUIPMENT_TYPES_ERV,
+                   *mep_supply_header.EQUIPMENT_TYPES_HEADER)
 ELECTRICAL_DEVICE_TYPES = mep_electrical.ELECTRICAL_DEVICE_TYPES
 
 MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
@@ -124,6 +126,7 @@ BASEMENT_ELEMENTS = [*mep_drainage.DRAINS,
                      *mep_sleeves.SLAB_STUBS,
                      *mep_venting.VENT_BRANCHES_BASEMENT,
                      *mep_hvac.EQUIPMENT,
+                     *mep_supply_header.EQUIPMENT_HEADER,
                      *mep_electrical.PANEL,
                      *mep_electrical.BASEMENT_DEVICES,
                      *mep_drainage.RADON_SUMP, *mep_drainage.SUMP_DISCHARGE,

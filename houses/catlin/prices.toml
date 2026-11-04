@@ -3048,6 +3048,11 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # truss chords over its intake grille and lands the circuit. ESTIMATE; confirm the model.
 "EQ-T-INLINE-FAN-4" = { material = { low = 130, high = 260 }, labour = { low = 150, high = 350 } }  # 1 ea
 "EQ-T-WATER-HEATER" = { material = { low = 1900, high = 3000 }, labour = { low = 550, high = 1300 } }  # 1 ea
+# Hot-water header (2026-11-04): Uponor LF2821050, 1" copper, eight 1/2" ProPEX outlets.
+# ESTIMATE off SupplyHouse's $202.82 for the 10-outlet LF2831050 (read 2026-11-04); the
+# range allows a made-to-order lead. Labour hangs it and sweats the 1" inlet; each branch's
+# ProPEX joint is in its run.
+"EQ-T-HW-HEADER-8" = { material = { low = 160, high = 240 }, labour = { low = 90, high = 200 } }  # 1 ea
 "FT-ACCESS-PANEL-1414" = { material = { low = 35, high = 90 }, labour = { low = 45, high = 110 } }  # 1 ea, standard metal panel
 # Bath2 Corian leaves: sheet stock already included in the GROSS apron paneling area.
 # Incremental cutting/edge finishing, concealed retainers/stops and fitting only.
@@ -6467,7 +6472,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # elastomeric foil-faced sleeve a little dearer per foot for the same bore. The second row
 # is 1.4 LF and cannot move the estimate.
 # $/LF, by spec
-"1\" fiberglass sleeve, ASJ jacket (R-3.5)" = { material = { low = 1.5, high = 3.5 }, labour = { low = 0.9, high = 1.8 } }  # 146.9 LF
+"1\" fiberglass sleeve, ASJ jacket (R-3.5)" = { material = { low = 1.5, high = 3.5 }, labour = { low = 0.9, high = 1.8 } }  # 11.4 LF
 # 1/2" wall on 3/4" tube where a crossing leaves no room for 1": R-3.1 (Owens Corning
 # 722579, k 0.16 by ASTM C547) still meets IECC R403.5.3's R-3. ESTIMATE, set under the 1" row.
 "1/2\" fiberglass sleeve, ASJ jacket (R-3.1)" = { material = { low = 1.2, high = 3.0 }, labour = { low = 0.9, high = 1.8 } }

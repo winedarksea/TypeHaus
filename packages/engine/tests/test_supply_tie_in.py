@@ -28,8 +28,8 @@ def test_the_basement_branches_derive_their_trunk(catlin_model_ro) -> None:
     ties = supply_tie_ins(catlin_model_ro.pipe_runs)
     assert ties["PR-B-CW-BATH1"] == "PR-B-CW-TRUNK"
     assert ties["PR-M-CW-BATH1-LAV"] == "PR-B-CW-BATH1"
-    assert ties["PR-B-HW-BATH1"] == "PR-B-HW-TRUNK"
-    assert ties["PR-B-HW-BATH2"] == "PR-B-HW-TRUNK"
+    assert ties["PR-B-HW-SBATH"] == "PR-B-HW-TRUNK"
+    assert ties["PR-B-HW-SUITE"] == "PR-B-HW-TRUNK"
     assert ties["PR-B-CW-SUITE"] == "PR-B-CW-TRUNK"
     # The 2026-10-31 branches tee where they are drawn: the hall-bath WC off its shower cold.
     assert ties["PR-S-BATH1-WC-CW"] == "PR-S-BATH1-SH-CW"
@@ -142,14 +142,14 @@ def test_the_derivation_is_acyclic(catlin_model_ro) -> None:
             cursor = ties[cursor]
 
 
-def test_a_manifold_at_the_trunks_south_turn_is_not_a_sibling(catlin_model_ro) -> None:
-    """Four hot branches tee off PR-B-HW-TRUNK's south turn, clear of the ERV service lane.
-    A bare same-origin sibling test leaves the whole hot tree parentless, which is why the
-    guard also asks who carries whose load."""
-    ties = supply_tie_ins(catlin_model_ro.pipe_runs)
-    at_the_heater = ("PR-B-HW-BATH1", "PR-B-HW-WASH", "PR-B-HW-SBATH", "PR-B-HW-BATH")
-    assert all(ties.get(tag) == "PR-B-HW-TRUNK" for tag in at_the_heater), \
-        {tag: ties.get(tag) for tag in at_the_heater}
+def test_the_header_outlets_feed_the_hot_branches(catlin_model_ro) -> None:
+    """Eight hot branches start on EQ-B-HW-HEADER's outlets, 1 1/2" apart, so a sibling's
+    lane passes over a neighbour's tip: the port a run starts on outranks a passing run."""
+    records = _records(catlin_model_ro)
+    on_header = {tag: rec.port for tag, rec in records.items()
+                 if rec.reason == "equipment_port" and (rec.port or "").startswith("EQ-B-HW-")}
+    assert len(on_header) == 8 and len(set(on_header.values())) == 8, on_header
+    assert on_header["PR-B-HW-KITCH"] == "EQ-B-HW-HEADER.out-6"
 
 
 def test_the_nearest_ancestor_wins_not_the_largest(catlin_model_ro) -> None:

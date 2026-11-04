@@ -2983,19 +2983,28 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 ### Water supply
 
-- **Supply is PEX-A, except the seven runs on `EQ-B-WH`'s taps** (owner, 2026-09-26). UPC
-  604.13 keeps PEX out of the first 18" of piping on any water heater, graded by
-  `mep.pex_water_heater_clearance` along the developed piping. The trunk and feed are the
-  only runs inside 18" (the five branches tee on 29" up), but all seven stay copper.
+- **Supply is PEX-A, except copper at `EQ-B-WH`'s taps** (owner, 2026-09-26): `PR-B-HW-TRUNK`,
+  `PR-B-CW-WH`, and the two branches still teed near them (`PR-B-HW-SBATH`, `PR-B-CW-BATH`).
+  UPC 604.13 keeps PEX out of the first 18" of piping on any water heater, graded by
+  `mep.pex_water_heater_clearance` along the developed piping; the header's PEX branches
+  start over 9 ft of trunk out.
   A PEX turn off a stock elbow is a BEND graded against Uponor's 6 x OD
   (`library/fittings.TUBE_BEND_RULES`); a short jog wants a plumb step, not a diagonal.
+- **Hot side is a header since 2026-11-04** (owner, 2026-11-03; `plan/mep_supply_header.py`,
+  `notes/water_service.md` §6). `PR-B-HW-TRUNK` (1" copper) ends at `EQ-B-HW-HEADER`, an Uponor
+  LF2821050 (1" copper, eight 1/2" ProPEX outlets) hung at 88" on x=7'-6" in RM-B-FURNACE; eight
+  1/2" PEX branches leave one outlet each, uninsulated (N1103.4.2 starts at 3/4").
+  `PR-B-HW-SBATH` and `PR-B-HW-SUITE` stay 3/4" (5.25 / 6.75 WSFU; SUITE carries the studio)
+  and tee off the trunk ahead of the header. A branch whose first vertex is on an outlet
+  derives that port as its source; `mep.water_manifold_ports` holds one run per outlet, and
+  `haus route --manifold EQ-B-HW-HEADER` re-lays the eight together. Cold side unchanged.
 - **The heater is the 120 V PROPH80 T0 RH120-MSO since 2026-11-02** (Rheem RH-PIHP-SC-SO
   Rev. 7 p.2; `notes/water_service.md` §1). Modelled 24 1/4" round x 74 3/16" (A; not 91",
   ducted), with the HydroBoost riser as a lobe on the 16-gon (40-75 deg right of front, r 15",
   scaled). **Rotation -90 at (8'-9", 29'-5")** (owner, 2026-10-29): exhaust SOUTH into the room,
   back on `W-B-STR3`, front (display, condensate 59", T&P ~46" under the ERV case) west. SIDE
   taps on the riser: hot E 42 3/8" and cold K 5 1/16" at the SW, x/y scaled; `D-B-CLOSET`'s
-  sweep clears the riser by 2 1/4". `PR-B-HW-TRUNK` leaves west along the riser, `PR-B-CW-WH`
+  sweep clears the riser by 2 1/4". `PR-B-HW-TRUNK` leaves west along the riser to the header, `PR-B-CW-WH`
   drops at (93 1/2", 335 1/2") with `PA-B-WH-STOP-CW`, `PR-B-CW-BATH` tees off its ceiling leg,
   `PR-B-WH-TPR` falls straight to an air gap under the case. The cord plugs into `ED-B-WH-RC`
   (`CKT-WH`) on `W-B-ESS-S` over the tank. On the slab, no plinth or pan.

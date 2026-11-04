@@ -143,9 +143,9 @@ def test_R602_6_exterior_is_a_weather_skin_and_lagging_stops_at_the_framing(catl
     roles = r602_6_role(catlin_ctx)
     assert "W-A-HALL-S" not in roles
     assert roles.get("W-M-W3") == "exterior"
-    extra, phrase = lagging_at_framing(catlin_ctx)["PR-B-HW-WASH"]
+    extra, phrase = lagging_at_framing(catlin_ctx)["PR-B-HW-SUITE"]
     assert extra == 0.0 and "stops at the framing" in phrase
     washed = [f for f in run_through_stud(catlin_ctx)
-              if f.element_tags == ("PR-B-HW-WASH", "W-M-CLN")]
+              if f.element_tags == ("PR-B-HW-SUITE", "W-B-CW")]
     assert washed and washed[0].result.value == "pass"
     assert "stops at the framing" in washed[0].message

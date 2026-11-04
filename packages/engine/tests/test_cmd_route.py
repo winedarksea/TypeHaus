@@ -441,14 +441,11 @@ def test_a_supply_branch_ties_onto_its_trunk_rather_than_a_vent_chase() -> None:
 
 def test_a_supply_proposal_lands_on_the_trunks_LINE_not_its_endpoint(runner) -> None:
     before = _plan_digest()
-    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "PR-B-HW-BATH2"])
+    # PR-B-CW-SAUNA tees mid-leg on PR-B-CW-TRUNK (the hot branches leave a header's ports
+    # since 2026-11-04, so none of them tees on a line any more).
+    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "PR-B-CW-SAUNA"])
     assert result.exit_code == 0, result.output
-    assert "PR-B-HW-BATH2-PROPOSED" in result.output
-    # The fixed terminal is inside the route-clearance envelope of the existing bath vent.
-    # The router reports that obstruction and still proposes a route; it does not treat the
-    # vent as the trunk.
-    assert "PR-M-BATH2-VENT" in result.output
-    assert "routed anyway" in result.output
+    assert "PR-B-CW-SAUNA-PROPOSED" in result.output
     assert _plan_digest() == before
 
 
@@ -464,8 +461,8 @@ def test_a_trunk_leaving_an_equipment_port_roots_on_the_port() -> None:
     # An exact, directed port moves the search terminal to its stub tip (route_ports).
     assert (ends.root_lead.port if ends.root_lead else ends.root) == port.point
     assert ends.root_paths == ()
-    assert {"PR-B-HW-TRUNK", "PR-B-HW-BATH2", "PR-B-HW-KITCH"} <= ends.touch
-    assert ends.after_paste and "PR-B-HW-KITCH" in ends.after_paste[0]
+    assert {"PR-B-HW-TRUNK", "PR-B-HW-SBATH", "PR-B-HW-SUITE"} <= ends.touch
+    assert ends.after_paste and "PR-B-HW-SUITE" in ends.after_paste[0]
 
 
 def test_an_unplaceable_equipment_port_still_refuses(monkeypatch) -> None:
@@ -508,7 +505,7 @@ def test_a_port_rooted_trunk_proposal_starts_on_the_port(runner) -> None:
     # `points_m` is project-frame; the source is what carries the storey datum.
     first = proposal["points_m"][0]
     assert max(abs(a - b) for a, b in zip(first, port.point, strict=True)) <= 0.0254 / 16
-    assert "PR-B-HW-KITCH" in " ".join(proposal["after_paste"])
+    assert "PR-B-HW-SUITE" in " ".join(proposal["after_paste"])
     assert _plan_digest() == before
 
 
@@ -540,3 +537,27 @@ def test_the_root_line_z_gate_keeps_a_branch_off_the_trunks_plan_shadow() -> Non
                          Node(index=1, x=2.0, y=0.0, z=0.5)])
     assert _line_nodes(graph, line) == {0, 1}                     # plan-only, as before
     assert _line_nodes(graph, line, z_tolerance=0.05) == {0}      # the gate
+
+
+def test_manifold_selects_exactly_the_branches_on_its_outlets(runner) -> None:
+    """``--manifold`` targets the runs whose tie-in is one of the header's outlet ports."""
+    from typehaus.cli.cmd_route_house import manifold_branches
+    from typehaus.cli.route_support import _load
+
+    _directory, model = _load(_CATLIN)
+    assert manifold_branches(model, "EQ-B-HW-HEADER") == {
+        "PR-B-HW-BATH1", "PR-B-HW-WASH", "PR-B-HW-BATH", "PR-B-BATH2-SH-HW",
+        "PR-B-FILLER-HW", "PR-B-HW-KITCH", "PR-B-HW-SAUNA", "PR-B-HW-BATH2"}
+    refused = runner.invoke(app, ["route", str(_CATLIN), "--manifold", "EQ-B-WH-NOPE"])
+    assert refused.exit_code == 2
+
+
+@pytest.mark.autorouter
+def test_manifold_proposes_one_route_per_outlet(runner, tmp_path) -> None:
+    import json
+
+    result = runner.invoke(app, ["route", str(_CATLIN), "--manifold", "EQ-B-HW-HEADER",
+                                 "--json", "--summary", "--out", str(tmp_path)])
+    assert result.exit_code == 0, result.output
+    report = json.loads((tmp_path / "report.json").read_text())
+    assert len(report["accepted"]) == 8 and not report["refused"]

@@ -6,6 +6,8 @@ applied_to:
   - pipe_run: PR-G-HYDRANT-CW
   - pipe_run: PR-G-SERVICE-CW
   - pipe_run: PR-B-CW-TRUNK
+  - equipment: EQ-B-HW-HEADER
+  - pipe_run: PR-B-HW-TRUNK
 tags:
   - plumbing
   - water-supply
@@ -14,6 +16,7 @@ source:
   - plan/mep_hvac.py
   - plan/mep_supply.py
   - plan/mep_drainage.py
+  - plan/mep_supply_header.py
 ---
 
 # Notes
@@ -175,3 +178,55 @@ The tank stays on the slab (`MountKind.FLOOR`, `elevation=None`).
   onto a drained court with a 7 1/4" threshold. A 4" pad would buy a few inches against a
   slow leak and would move every port literal and the 6" filter clearance; not worth it.
   Closed.
+
+## 6. The hot side: a header, not a trunk with tees (owner, 2026-11-03; modelled 2026-11-04)
+
+**The study** (2026-11-03, prices are ranges, no quotes). A full PEX home-run with a
+two-sided manifold came out about level with the trunk-and-branch it would replace
+(~$7.3-12.3k against ~$7.2-11.9k): catlin is already PEX-A, so the labour a home-run saves on
+fittings is mostly already saved, MN 4714.0610 holds every branch to 1/2" (no 3/8" lav runs),
+and ~26 tubes would have to rise through cavities that are already tight. A hot-side header
+alone is ~$0.3-0.7k cheaper and cuts the wait for hot water; the cold side has nothing to
+gain and stays a trunk. No recirculation is modelled and the header makes one unnecessary,
+which suits a heat-pump heater that should not be fed a recirc loop's return.
+
+**What is built.** `PR-B-HW-TRUNK` (1" copper, 11.35 ft developed) ends at `EQ-B-HW-HEADER`,
+an Uponor LF2821050: 1" copper body, 1" sweat supply, eight 1/2" ProPEX LF brass outlets on
+1 1/2" centres (Uponor submittal "ProPEX (type L) copper branch manifolds", read 2026-11-04;
+SupplyHouse lists the 10-outlet LF2831050 at $202.82 the same day, and Uponor's sheet calls
+the line made to order). It hangs outlets down at 88" (body centre) on x=7'-6" in
+RM-B-FURNACE, so the eight 1/2" PEX branches leave at 83 1/2", under the ceiling drains, where
+the old trunk ran, and rise into the joist bays only south of y=17'-2". `PR-B-HW-SBATH`
+(5.25 WSFU) and `PR-B-HW-SUITE` (6.75 WSFU: it carries the studio, which its `serves` now
+says) need 3/4" by `mep.pipe_sizing`, and a 1/2" outlet cannot feed them, so both tee off the
+trunk ahead of the header. 1/2" lines need no insulation (N1103.4.2 starts at 3/4"). Copper
+stays within UPC 604.13's 18" of the tap: the PEX starts over 9 ft of trunk out.
+
+**Volumes, worked by hand** (gal/ft from the inside diameter: 1" type L copper, ID 1.025",
+0.0429; 1/2" PEX-A, ID 0.475", 0.0092; 3/4" PEX-A, ID 0.681", 0.0189; 3/4" type L copper, ID
+0.785", 0.0251). Developed lengths off the model, tap to fixture stub. A header branch adds the
+whole trunk, 11.35 x 0.0429 = 0.49 gal.
+
+| fixture | trunk + tees (was) | header (now) |
+| --- | --- | --- |
+| kitchen sink, `PR-B-HW-KITCH` | 1.89 gal | 0.49 + 56.5 ft x 0.0092 = 1.01 gal |
+| main bath shower, `PR-B-BATH2-SH-HW` | 0.93 | 0.65 |
+| main bath tub, `PR-B-FILLER-HW` | 0.91 | 0.61 |
+| main bath sink, `PR-B-HW-BATH2` | 1.21 | 0.70 |
+| laundry, `PR-B-HW-WASH` | 0.94 | 0.67 |
+| sauna shower, `PR-B-HW-SAUNA` | 1.23 | 0.81 |
+| powder lav, `PR-B-HW-BATH1` | 0.71 | 0.60 |
+| basement lav, `PR-B-HW-BATH` | 0.64 | 0.64 |
+| attic shower (via SUITE, still 3/4") | 1.94 | 1.64 |
+
+At 1.5 gpm the kitchen waits ~40 s instead of ~76 s. The study's 0.72 gal kitchen figure
+assumed every branch on the header; the two 3/4" branches teed ahead of it and the eight
+branches' route under the drains (a 1/2" line runs 56.5 ft to the sink against the old 3/4"
+line's 44 ft) are why the built figure is higher. The open move is the attic shower: a ninth
+outlet for the studio would take ~1 gal off it, on a 10-outlet header.
+
+`mep.water_manifold_ports` holds one run per outlet. `haus route houses/catlin --manifold
+EQ-B-HW-HEADER` re-lays the eight together; its first pass proposed several branches running
+exposed at fixture height across the furnace room and workshop, so the lanes above were drawn
+by hand on the old trunk's lane and graded by `haus check` (0 FAIL).
+
