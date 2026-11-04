@@ -328,6 +328,22 @@ REGISTERS_SECOND = [
             position=pt(ft(5), ft(32, 8)), duct_ref="DU-A-ERV-R-BATH1",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9)), rotation=deg(90)),
+    # D-S-BATH1 is sealed (2026-11-03), so REG-S-EXH1's 20 cfm makes up through an offset
+    # pair in W-S-BD-N's west bay (x 8"..15 1/4"), lined, insulation out: high on the bath
+    # face above the SEKTION rail backing, lower on the vanity face over the mirror arches.
+    # notes/system1_return_path.md, "Sealed doors".
+    Register(uid="WRHS831M9S", tag="REG-S-XFER-BATH1", kind=DuctSystem.TRANSFER, room="RM-S-BATH1",
+            type_ref="REG-T-TRANSFER-0606",
+            mount=Mount(kind=MountKind.WALL, elevation=inch(95.375)),
+            location=Location(attachment=WallAttachment(
+                wall_ref="W-S-BD-N", face="left", distance_from_start=inch(11.625),
+                normal_gap=inch(0), rotation_offset=deg(-180)))),
+    Register(uid="XX9YQFJ8PT", tag="REG-S-XFER-VANITY", kind=DuctSystem.TRANSFER, room="RM-S-VANITY",
+            type_ref="REG-T-TRANSFER-0606",
+            mount=Mount(kind=MountKind.WALL, elevation=inch(82)),
+            location=Location(attachment=WallAttachment(
+                wall_ref="W-S-BD-N", face="right", distance_from_start=inch(11.625),
+                normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
 # Main-storey terminals are ceiling grilles fed from the FS-S-WEST bays overhead, each with
@@ -351,6 +367,8 @@ REGISTERS_MAIN = [
     # engine grades no device-vs-device collision. 7'-0" keeps it on DU-M-ERV-R-BED's own
     # east leg along y=6'-0" (that run's last point shortens; no new turn, no re-route) and
     # leaves 2'-2" to the fan hub, so the 15 cfm supply is not blowing into the motor.
+    # D-M-BED2 is sealed (auto bottom), so these 15 cfm leave under D-M-BATH2 to REG-M-EXH2:
+    # D-M-BATH2 keeps its 3/4" undercut (notes/interior_door_schedule.md).
     Register(uid="CMRV03AAAA", tag="REG-M-SUP3", kind=DuctSystem.SUPPLY, room="RM-M-BED",
             position=pt(ft(7), ft(6)), duct_ref="DU-M-ERV-R-BED",
             type_ref="REG-T-ERV-VALVE-SUP", design_cfm=15,
@@ -537,8 +555,9 @@ REGISTERS_BASEMENT = [
             # corner. DU-B-ERV-R-GYM's last leg follows it: a register and the duct that
             # feeds it have to end at the same point. 13'-4" since 2026-10-31: on 13'-0" the
             # valve's collar stood on an FS-M-EAST joist (`mep.terminal_neck_fit`).
+            # 10 cfm since 2026-11-03: 8 went to the sauna's supply (REG-B-SUP3).
             position=pt(ft(19), ft(13, 4)), duct_ref="DU-B-ERV-R-GYM",
-            type_ref="REG-T-ERV-VALVE-SUP", design_cfm=18,
+            type_ref="REG-T-ERV-VALVE-SUP", design_cfm=10,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # RM-B-PLAY-N is 324 sf of windowless habitable MEDIA space, legal only under R303.1
     # Exception 1, whose second half requires outdoor air supplied to *the room* — an
@@ -595,9 +614,11 @@ REGISTERS_BASEMENT = [
     # the boot doesn't fight the drop ceiling the condensate line already runs above. It
     # moved 1'-5" east with the heater, and DU-B-ERV-R-SAUNA-SUP's east leg moved with both:
     # the register sits on the heater's own centre, which is what "over the stones" means.
+    # 20 cfm since 2026-11-03, balancing REG-B-EXH2 behind the sealed sauna door; the 8 cfm
+    # came off REG-B-SUP1 on the same plenum (notes/erv_static_budget.md §10.8).
     Register(uid="CBRV06AAAA", tag="REG-B-SUP3", kind=DuctSystem.SUPPLY, room="RM-B-SAUNA",
             position=pt(inch(199.75), inch(20.5)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
-            type_ref="REG-T-SAUNA-VENT-SUP", design_cfm=12,
+            type_ref="REG-T-SAUNA-VENT-SUP", design_cfm=20,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(7))),
     # RM-B-BATH. Filed as EXHAUST rather than RETURN, like RM-S-BATH1's terminal and unlike
     # the basement's other two stale pickups: a bathroom's air is pulled and not

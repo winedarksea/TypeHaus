@@ -90,6 +90,14 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
         # 36". Nothing else interior did.
         "DT-INT-SWING36": (36.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING30": (30.0, DoorOperation.SWING, False, False),
+        # Interior function/core split, 2026-11-03 (plan/interior_door_types.py).
+        "DT-INT-SWING30-PRIV": (30.0, DoorOperation.SWING, False, False),
+        "DT-INT-SWING30-PRIV-SOLID": (30.0, DoorOperation.SWING, False, False),
+        "DT-INT-SWING32-PRIV": (32.0, DoorOperation.SWING, False, False),
+        "DT-INT-SWING32-PRIV-SOLID": (32.0, DoorOperation.SWING, False, False),
+        "DT-INT-SWING24-PRIV": (24.0, DoorOperation.SWING, False, False),
+        "DT-INT-STEEL36-KEYED": (36.0, DoorOperation.SWING, False, False),
+        "DT-INT-SAUNA24": (24.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING30-GLAZED": (30.0, DoorOperation.SWING, False, True),
         "DT-INT-SWING30-GLAZED-TRIMLESS": (30.0, DoorOperation.SWING, False, True),
         # The library's EzyJamb-type preset, spliced in with STANDARD_DOOR_TYPES; no catlin
@@ -120,17 +128,12 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
         # D-B-ESS (2026-10-30): unrated steel leaf with a small tempered vision lite.
         "DT-INT-STEEL24-LITE": (24.0, DoorOperation.SWING, False, True),
     }
-    # The house catalog is its own types plus the ONE library pocket size it hangs —
-    # DT-POCKET-INT-36, shared by D-M-LAUN and D-B-BATH. It is not the whole pocket
-    # ladder: until 2026-09-12 the manifest spliced all six `POCKET_DOOR_TYPES` in and five
-    # of them had no door, no price row and nothing to bill. A catalog entry is a size this
-    # house hangs, and that is what this asserts.
-    #
-    # The house and library tag sets must still stay disjoint — `integrity.duplicate_catalog_tag`
-    # proves it at load time, and this pins that the promotion did not shadow a house type.
-    house_pockets = {"DT-POCKET-INT-36"}
+    # The catalog carries the pocket sizes the house hangs, not the library's whole ladder:
+    # the 36" Eclisse pocket in its passage and privacy functions (2026-11-03), and no other
+    # Johnson 1500PF size with no door or price row behind it.
+    house_pockets = {"DT-POCKET-INT-36", "DT-POCKET-INT-36-PRIV"}
     library_pockets = {door_type.tag for door_type in POCKET_DOOR_TYPES}
-    assert house_pockets < library_pockets
+    assert "DT-POCKET-INT-36" in library_pockets
     assert set(types) == set(expected) | house_pockets
     assert not (set(expected) & library_pockets)
     assert all(types[tag].operation is DoorOperation.POCKET for tag in house_pockets)
@@ -729,7 +732,7 @@ def test_catlin_bath_pocket_crosses_into_the_matching_section(catlin_model_ro):
     model = catlin_model_ro
     bath = next(op for op in model.openings if op.tag == "D-B-BATH")
     laundry = next(op for op in model.openings if op.tag == "D-M-LAUN")
-    assert bath.type_ref == laundry.type_ref == "DT-POCKET-INT-36"
+    assert (bath.type_ref, laundry.type_ref) == ("DT-POCKET-INT-36-PRIV", "DT-POCKET-INT-36")
     assert bath.pocket_sign == 1 and not bath.swing_clearance
     segments, shortfall = pocket_segments(model.plan, model, bath)
     assert shortfall == pytest.approx(0)

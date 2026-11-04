@@ -95,6 +95,10 @@ A pair of 12x10 aluminium fixed-bar return grilles (TRUaire A170 class, or equal
 a lined sleeve through `W-M-STRW`'s bay. Acoustic alternative: Tamarack RAPR (baffled; no
 published STC or free area found). `CD-M-DATA-DOORBELL` was moved 1/2" north to clear it.
 
+`REG-T-TRANSFER-0606` (2026-11-03) is D-S-BATH1's offset pair: one 6x6 grille of the same
+family on each face of `W-S-BD-N`'s lined west bay. The steel 170 6x6 lists 0.17 sf (~24 in^2)
+effective; the aluminium A170's figure is unpublished. 20 cfm at 3 Pa needs 10.8 in^2.
+
 ## 7. Dampers, balancing and connectors
 
 | item | basis of design | or equal | note |

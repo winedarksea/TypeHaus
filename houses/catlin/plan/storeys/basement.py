@@ -781,7 +781,7 @@ WALLS = [
     # gets a door of its own (D-B-SHOP in W-B-HALL-W) rather than being walked through.
     # W-M-CLN2 no longer stacks on anything; see storeys/main.py and params/main_deck.py.
     # The playroom's south wall, 18'-0" of it, and the one that keeps D-B-PLAY (the 5'-0"
-    # glazed double). Staggered studs: it is the long wall between the playroom and the gym,
+    # solid-core pair, gasketed). Staggered studs: it is the long wall between the playroom and the gym,
     # and it also runs under the concrete band, so it wants the sound break.
     Wall(uid="CBW115AAAA", tag="W-B-CE", start_node="N-B-C",
          end_node="N-B-E1", assembly="INT_2X6_STAGGERED_PLUMBING_HALF", top=ft(8)),
@@ -1124,7 +1124,7 @@ OPENINGS = [
     # Derived 83 1/4" Eclisse RO since 2026-10-29 under a flat 2x6 (the kit hangs its track
     # from its own steel pocket header, screwed up into this one; nothing bears on it).
     # DU-B-ERV-R-GYM rose 1/2" to pass over it.
-    Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-POCKET-INT-36",
+    Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-POCKET-INT-36-PRIV",
          position=from_node("N-B-BA-NE", ft(2, 9.9375)), header_spec="flat 2x6 nonbearing", doorway=D_B_BATH_VINYL_REDUCER),
     # ESS closet door: a cheap 24x80 steel leaf with a small tempered vision lite in a KD
     # frame, on spring hinges (DT-INT-STEEL24-LITE; owner 2026-10-30, not a rated door). It
@@ -1167,14 +1167,14 @@ OPENINGS = [
     # face at the south end.
     # Derived RO since 2026-10-29: stays on D-B-GYM's centre (module suppressed) and
     # ED-B-WORKSHOP-SW moved north to clear it.
-    Door(uid="GEVMH8HHZ9", tag="D-B-SHOP", host="W-B-HALL-W", type_ref="DT-INT-SWING36",
+    Door(uid="GEVMH8HHZ9", tag="D-B-SHOP", host="W-B-HALL-W", type_ref="DT-INT-STEEL36-KEYED",
          position=from_node("N-B-HALL-S", inch(9.4375)), flip_swing=True),
     # The sauna is entered FROM THE GYM since the rotation — the short route to D-B-PATIO
     # and the sunken garden, which is what the brief asks the room for. Same uid, same 24"
     # leaf, rehosted from W-B-SA-W onto W-B-CS. y 4'-10"..2'-10": far enough north to clear
     # D-B-PATIO's inswing arc and the shower pan in the sauna's NE corner, far enough south
     # to keep clear of D-B-GYM. Swings out into the gym on the default.
-    Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-CS", type_ref="DT-INT-SWING24",
+    Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-CS", type_ref="DT-INT-SAUNA24",
          position=from_node("N-B-SA-NE", ft(4, 10.3125)), flip_hinge=True, doorway=D_B_SAUNA_MAT_REDUCER),
     # The framed-wall datum is the curb top; the rough sill is recessed 1.75 inches
     # into the curb seat while the installed threshold remains above the court.

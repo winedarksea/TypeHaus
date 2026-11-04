@@ -215,6 +215,18 @@ AIR_REGISTER_TYPES = (
                  source=f"Two grilles back to back on a lined sleeve; 12in fits a 14 1/2in "
                         f"bay without cutting a stud. Face estimated at +1 3/4in. {_NOTE} §6.",
                  ports=()),
+    # D-S-BATH1's sealed door (2026-11-03): one grille per face of W-S-BD-N's west bay,
+    # offset in height on a lined bay. The bath face's only clear patch is 7 1/4 x 7 1/8 in.
+    # between the SEKTION rail backing and the top plate, so 6x6 is the size.
+    RegisterType(tag="REG-T-TRANSFER-0606",
+                 name="Transfer grille, 6x6 aluminium return grille, one face of a lined bay",
+                 footprint=(inch(7.75), inch(0.75)), height=inch(7.75), plan_symbol="register",
+                 product_ref="PROD-AIR-RETURN-GRILLE-6X6",
+                 neck=TerminalNeck(width=inch(6), height=inch(6), depth=inch(1.5),
+                                   part="6x6 sheet-metal collar into the lined bay"),
+                 source=f"Face estimated at +1 3/4in. ~24 in2 effective (steel 170 6x6 listing), "
+                        f"against 10.8 in2 for 20 cfm at 3 Pa. {_NOTE} §6.",
+                 ports=()),
 )
 
 # 8in hoods, 1/4in screen. Curves are RenewAire's FA8 chart end points (0.34 in. w.g.

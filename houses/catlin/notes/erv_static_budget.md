@@ -714,6 +714,25 @@ supply 0.4206 + 0.0154 = **0.4360**. `DU-B-ERV-R-SAUNA-EXH` shortens 45.50 → 4
 `DU-ERV-RISER-EXH` and `DU-B-ERV-RET-TRUNK` (+0.0006): extract **0.4413**, unchanged to the
 fourth place. Extract still governs, by 0.005 in.; 203.9 cfm.
 
+### 10.8 The sealed sauna door (2026-11-03)
+
+`D-B-SAUNA` became a sealed insulated sauna door, so the room has to balance. The 20 cfm
+extract (`REG-B-EXH2`) is R303.3's continuous rate on a BATHROOM-occupancy room, graded by
+`code.R303_3_local_exhaust`, so it stays and the supply rises instead: `REG-B-SUP3` 12 → 20
+cfm, `REG-B-SUP1` (gym) 18 → 10, on the same `EQ-B-ERV-MAN-SUP` plenum, so the plenum, riser
+and trunk flows do not move.
+
+| branch | cfm | duct | terminal | branch total |
+|---|---|---|---|---|
+| `DU-B-ERV-R-SAUNA-SUP`, was | 12 | 0.0103" | 2.6 Pa | 0.0207" |
+| `DU-B-ERV-R-SAUNA-SUP`, now | 20 | 0.0250" (x (20/12)^1.8 ≈ 2.5) | 6.5 Pa (§5, 8 cfm row scaled) | 0.0511" |
+| `DU-B-ERV-R-GYM`, now | 10 | 0.0050" | 1.8 Pa | 0.0122" |
+| `DU-B-ERV-R-PLAY` (governs supply) | 30 | 0.0333" | 8.2 Pa | 0.0662" |
+
+The play radial still governs the supply column at **0.4383** and extract still governs the
+machine at **0.441**; delivered stays 203.9 cfm against 203.0. The gym keeps fresh air at
+10 cfm plus System 1's conditioned supply.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

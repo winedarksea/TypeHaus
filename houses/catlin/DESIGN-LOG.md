@@ -7483,3 +7483,23 @@ wet-vent: the WC joins upstream of both, against 908.2.1.4.
   five device-GFCI baths, the plain T6525-W on the two whose breaker is the GFCI (`RM-B-BATH`,
   `RM-A-STUBATH`), so no outlet sits behind two GFCIs.
 - **Premium now** about $300-600. Notes: `notes/smart_home.md`, `notes/workshop_receptacles.md`.
+
+## Interior doors and hardware finalized (2026-11-03)
+
+- **Hardware.** Kwikset Halifax Square in satin nickel 15 (US15 / 619), house-wide, hinges in
+  the same finish; Schlage Latitude is the fallback. Privacy on every bath and bedroom,
+  passage elsewhere. Pockets use retail parts: a privacy lock plus edge pull at `D-B-BATH`,
+  flush and edge pulls at the pantry and laundry. The 28-set lump became six rows driven by
+  `DoorType.function`; it could not split while `DT-INT-SWING32` hung at baths and studies.
+- **Core.** Hollow on every commodity leaf. The exceptions: `D-M-BED2` stays solid and sealed
+  (its 15 cfm leaves under `D-M-BATH2`); `D-S-BATH1` goes solid and sealed, making up through
+  an offset 6x6 grille pair in `W-S-BD-N`'s west bay; `D-M-BATH1` goes solid with its
+  undercut; `D-B-SAUNA` is a stock insulated wood sauna door; `D-B-PLAY` keeps its solid pair
+  with gaskets and an astragal, but no automatic bottom (its 30 cfm supply leaves under it);
+  `D-B-SHOP` is a cheap keyed 36" steel prehung, sealed, made up through `D-B-FURN`.
+- **Sauna balance.** The sealed door needed the room balanced. The 20 cfm extract is
+  R303.3's graded continuous rate, so the supply rose from 12 to 20 cfm and the gym gave up
+  the 8 cfm on the same plenum. Static and delivered flow are unchanged (0.441", 203.9 cfm).
+- **`D-M-STUDY`** keeps its glazed swing door and opens to 174 deg on a 3" magnetic holder,
+  out of the living-room walkway. A bifold or a tracked panel was the alternative.
+- Record: `notes/interior_door_schedule.md`.

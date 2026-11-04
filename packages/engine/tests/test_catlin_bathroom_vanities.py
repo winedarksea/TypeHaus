@@ -199,7 +199,7 @@ def test_the_basement_vanity_is_shallow_and_clears_the_pocket_door(catlin_model_
     assert round(x1 - x0, 2) == 37.0
 
     door = next(o for o in model.openings if o.tag == "D-B-BATH")
-    assert door.type_ref == "DT-POCKET-INT-36"
+    assert door.type_ref == "DT-POCKET-INT-36-PRIV"
     assert not door.swing_clearance
     assert door.pocket_sign == 1
 
@@ -303,7 +303,7 @@ def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(catlin_mo
     assert room.bounds[2] / IN - (bx0 + bx1) / 2 >= 15
     assert (bx0 + bx1 - tx0 - tx1) / 2 >= 30
     door = next(o for o in model.openings if o.tag == "D-M-BATH1")
-    assert door.type_ref == "DT-INT-SWING32"
+    assert door.type_ref == "DT-INT-SWING32-PRIV-SOLID"
     assert door.sizing.leaf_w_m / IN == pytest.approx(32)  # derived RO since 2026-10-29
     assert door.width_m / IN == pytest.approx(34.236, abs=0.01)
     door_south = min(y for _, y in door.swing_clearance) / IN

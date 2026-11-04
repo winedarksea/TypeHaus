@@ -60,6 +60,23 @@ all; the fan sees the extra external static and the balance moves elsewhere.
 * **Every bathroom.** They are extract terminals at 20 cfm; makeup *in* under a conventional
   3/4" undercut is 0.36" worth of free area. Nothing to do.
 
+## Sealed doors (owner, 2026-11-03)
+
+Four leaves are sealed at the bottom; each needs a named path for the air it would have
+passed. Per-door detail: `notes/interior_door_schedule.md`.
+
+| Door | Seal | Air that must move | Path | A at 3 Pa |
+|---|---|---|---|---|
+| `D-S-BATH1` | kerf seal + sweep, no undercut | `REG-S-EXH1` 20 cfm in | `REG-S-XFER-VANITY` → lined bay → `REG-S-XFER-BATH1`, 6x6 each (~24 in^2) | 10.8 in^2 |
+| `D-M-BED2` | kerf seal + automatic bottom | `REG-M-SUP3` 15 cfm out | under `D-M-BATH2` (32" x 3/4" = 24 in^2) to `REG-M-EXH2`; **keep that undercut** | 8.1 in^2 |
+| `D-B-SHOP` | weatherstrip + sweep, no undercut | `REG-B-RET1` 12 cfm in | under `D-B-FURN` (36" x 3/4" = 27 in^2) from the furnace room; **keep that undercut** | 6.5 in^2 |
+| `D-B-SAUNA` | insulated sauna door | none | supply and exhaust balanced 20/20 (`notes/erv_static_budget.md` §10.8) | - |
+
+`D-B-PLAY` takes gaskets and an astragal but keeps its 3/4" undercut for its 30 cfm supply
+(16.2 in^2 needed, 45 in^2 under a 60" pair); `D-M-BATH1` keeps 3/4" for its 20 cfm exhaust.
+The bath pair is 6x6 because the bath face of `W-S-BD-N`'s west bay is clear only between the
+SEKTION rail backing (top 97 1/4") and the top plate (104 3/8"), 7 1/4" wide.
+
 ## The two honest costs
 
 1. **Sound.** `W-S-BW1/2/3` are `INT_2X4_RC` — resilient channel, chosen for acoustic

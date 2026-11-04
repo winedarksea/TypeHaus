@@ -256,7 +256,7 @@ DUCTS_ERV_BASEMENT = [
                   pt(ft(17), ft(13, 4)), pt(ft(17), ft(13, 4)), pt(ft(19), ft(13, 4))),
             elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(89),
                         inch(88.5), inch(84), inch(90.125), inch(90.125)),
-            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=18),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=10),
     # THE PLAY RADIAL GOES THROUGH SF-B-BATH. From the plenum's east end it drops to -25 7/16"
     # on x=9'-6" (east of the sauna vent, under everything), rises to 91 1/4" at
     # y=19'-7 1/4" and crosses W-B-STR2 in its 19'-4"..20'-8" bay under the top plate
@@ -307,7 +307,7 @@ DUCTS_ERV_BASEMENT = [
                   pt(inch(199.75), inch(20.5))),
             elevations=(ft(7, 6), inch(89), inch(89), inch(92.5), inch(92.5), inch(87.5),
                         inch(87.5), inch(86.5), inch(86.5), inch(92.5), inch(92.5), ft(7)),
-            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=12),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
     # The bench hood's pull. It drops out of the ceiling chase to the hood face at 5'-6",
     # which is the vertical leg that makes it a capture hood rather than a ceiling diffuser.
     # It steps south to y=27'-0" before turning west so that its own drop and the plenum's

@@ -113,7 +113,20 @@ FLA_ASTRAGAL = Product(tag='PROD-ENDURA-FLA', brand='Endura', model='Ultimate Fl
 SECURITY_STRIKE = Product(tag='PROD-THERMATRU-SECURITY-STRIKE', brand='Therma-Tru', model='Security Strike Plate',
     name='Therma-Tru Security Strike Plate', url='https://www.thermatru.com/explore-products/safety-and-security/', source='Requested factory component; dealer to confirm price and compatibility with reinforcement and approved 3 inch screws.')
 
+# Interior door hardware (owner, 2026-11-03): Kwikset Halifax Square, satin nickel 15
+# (US15/619) house-wide, hinges in the same finish; Schlage Latitude 619 is the fallback.
+# Only D-B-SHOP's set is authored; levers bill by function in [allowances].
+HALIFAX_KEYED = Product(tag='PROD-KWIKSET-740HFLSQT-15-SMT', brand='Kwikset', model='740HFL SQT 15 SMT',
+    name='Halifax Square keyed entry lever, SmartKey, satin nickel 15',
+    url='https://www.homedepot.com/p/Kwikset-Halifax-Square-Satin-Nickel-Keyed-Entry-Door-Handle-Handle-Featuring-SmartKey-Security-740HFLSQT15SMTCPK4/316638861',
+    source='D-B-SHOP. Same Halifax Square line as the passage/privacy sets; keyed alike to the house '
+           'only if the owner asks. Listed $56-90 (Shell Lumber, Home Depot 4-pack, 2026-11).')
+STEEL_PREHUNG_HINGE = Product(tag='PROD-HINGE-4IN-US15', brand='Prehanger supplied', model='4 x 4 in. butt, US15',
+    name='4in residential butt hinge, satin nickel 15', url='https://www.kwikset.com',
+    source='D-B-SHOP: three per leaf, ordered in US15 to match the lever (US15A is antique nickel).')
+
 OPENING_PRODUCTS = (
+    HALIFAX_KEYED, STEEL_PREHUNG_HINGE,
     SENSE_PRO, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS, DOOR_HINGE, PANOLOCK, BE365, FLA_ASTRAGAL, SECURITY_STRIKE,
     DRUTEX_ALUCOVER_TT, DRUTEX_ALUCOVER_FIX, ALIPLAST_MAXLIGHT_TT, ANDERSEN_400_CASEMENT,
     THERMATRU_SMOOTHSTAR_FULLLITE, THERMATRU_SMOOTHSTAR, MMI_STEEL_SIX_PANEL, CLOPAY_CLASSIC_STEEL,

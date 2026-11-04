@@ -95,6 +95,12 @@ astragal seal at the meeting stiles, and an automatic door bottom. The undercut 
 pair's meeting gap leak more than W-B-CE's wall does. Air transfer is not lost, because
 D-B-GYM is a doorless opening to the hall.
 
+**2026-11-03 (owner): jamb/head gaskets and the astragal are in; the automatic door bottom
+is dropped.** The play room is windowless and its 30 cfm ERV supply (`REG-B-SUP2`) has no
+other way out, so the pair keeps its 3/4" undercut. Sealing the bottom would pressurise the
+room against the only path that relieves it. `DT-INT-DOUBLE60` in
+`plan/interior_door_types.py`.
+
 ## 5. Stall-mat practicalities
 
 - 4' x 6' x 3/4", ~94-100 lb each. Lay them with two people. 13 mats (312 SF) cover the

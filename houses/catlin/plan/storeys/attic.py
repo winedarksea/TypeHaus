@@ -331,7 +331,7 @@ WALLS = [
 
 OPENINGS = [
     # Derived RO since 2026-10-29: 1 5/16" south of where it stood, so it clears the wall end.
-    Door(uid="CAD201AAAA", tag="D-A-HALVES", host="W-A-C1B", type_ref="DT-INT-SWING32",
+    Door(uid="CAD201AAAA", tag="D-A-HALVES", host="W-A-C1B", type_ref="DT-INT-SWING32-PRIV",
          position=from_node("N-A-C1", inch(3.75)), doorway=D_A_HALVES_OAK_REDUCER),
     # The band wall's opening onto the stair head — the source's 2'-7 1/2" gap at
     # x 18'-6"..21'-1 3/4", the only way between the east loft and the stair vestibule.

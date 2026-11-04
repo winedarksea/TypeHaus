@@ -386,7 +386,7 @@ OPENINGS = [
     # x 15'-4 3/4"..17'-4 3/4" into the studio, 1'-9" clear of the kitchenette's east end.
     # Inside, the door now faces the pan's flat south side, 18 3/8" off the wall face; the
     # pan's own SW-facing entrance keeps its 38 1/2" (plan/fixture_types_wc.py).
-    Door(uid="ENHDGC87MN", tag="D-A-STUBATH", host="W-A-BATH-S", type_ref="DT-INT-SWING24",
+    Door(uid="ENHDGC87MN", tag="D-A-STUBATH", host="W-A-BATH-S", type_ref="DT-INT-SWING24-PRIV",
          position=from_node("N-A-WW-S", ft(5, 8)), flip_hinge=False, flip_swing=True,
          header_spec="flat 2x4 nonbearing"),
 ]

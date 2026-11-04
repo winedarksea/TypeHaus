@@ -65,6 +65,12 @@ RETURN_GRILLE_1210 = Product(
     source=f"Basis of design, or equal: Hart & Cooley A650. Acoustic alternative: Tamarack "
            f"RAPR return-air pathway (baffled, no published STC). {_SPEC} §6.",
 )
+RETURN_GRILLE_0606 = Product(
+    tag="PROD-AIR-RETURN-GRILLE-6X6", brand="TRUaire", model="A170 6X6",
+    name="6x6 aluminium fixed-bar return grille, white (one per face, offset)",
+    source=f"Basis of design, or equal: Hart & Cooley A650. The steel 170 6x6 lists 0.17 sf "
+           f"effective area. {_SPEC} §6.",
+)
 ROUND_DAMPER_4_24V = Product(
     tag="PROD-AIR-DAMPER-4-24V", brand="EWC", model="4RSD",
     name="4in round 24 VAC spring-return motorised damper, galvanized",
@@ -165,6 +171,6 @@ SPOT_NOZZLE_4 = Product(
 AIR_PRODUCTS = (
     SUITEBATH_EXTRACT_BOOT,
     DISC_VALVE_100, FLOOR_GRILLE_ERV, SIDEWALL_DD_OBD, FLOOR_REGISTER_HP,
-    FILTER_RETURN_GRILLE, RETURN_GRILLE_1210, ROUND_DAMPER_4_24V, STAIR_REGISTER_BOX, PLANT_CEILING_GRILLE, PLANT_ZONE_DAMPER, PLANT_END_BOOT, PLANT_COLLAR, PLANT_SERVICE_HATCH,
+    FILTER_RETURN_GRILLE, RETURN_GRILLE_1210, RETURN_GRILLE_0606, ROUND_DAMPER_4_24V, STAIR_REGISTER_BOX, PLANT_CEILING_GRILLE, PLANT_ZONE_DAMPER, PLANT_END_BOOT, PLANT_COLLAR, PLANT_SERVICE_HATCH,
     WALL_HOOD_8, BACKDRAFT_DAMPER_8, WALL_SEAL_FOAM, ELASTOMERIC_SHEET, SPOT_NOZZLE_4,
 )

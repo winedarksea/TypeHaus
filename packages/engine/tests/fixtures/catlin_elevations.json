@@ -2291,6 +2291,12 @@
 "canvas_objects/REG-S-RET-BED3/body_z0_m": 5.83565,
 "canvas_objects/REG-S-RET-BED3/body_z1_m": 5.86105,
 "canvas_objects/REG-S-RET-BED3/z_m": 5.83565,
+"canvas_objects/REG-S-XFER-BATH1/body_z0_m": 5.508625,
+"canvas_objects/REG-S-XFER-BATH1/body_z1_m": 5.705475,
+"canvas_objects/REG-S-XFER-BATH1/z_m": 5.508625,
+"canvas_objects/REG-S-XFER-VANITY/body_z0_m": 5.1689,
+"canvas_objects/REG-S-XFER-VANITY/body_z1_m": 5.36575,
+"canvas_objects/REG-S-XFER-VANITY/z_m": 5.1689,
 "ceilings/CEIL-RM-B-BATH/z0_m": -0.3175,
 "ceilings/CEIL-RM-B-BATH/z1_m": -0.301625,
 "ceilings/CEIL-RM-B-ESS/z0_m": -0.422275,
@@ -61209,11 +61215,17 @@
 6,
 "f1108d50704f"
 ],
-"geometry/GEVMH8HHZ9/hardware": [
--1.8977125,
--1.8337125,
+"geometry/GEVMH8HHZ9/hardware:0": [
+-1.8873125,
+-1.8233125,
 12,
-"fc8d96f834ec"
+"0e013bb79a43"
+],
+"geometry/GEVMH8HHZ9/hardware:1": [
+-1.8045125,
+-1.7029125,
+4,
+"d0697115bd65"
 ],
 "geometry/GEVMH8HHZ9/jamb_liner": [
 -2.7797125,
@@ -72297,6 +72309,12 @@
 2,
 "1151fa0eb90a"
 ],
+"geometry/WRHS831M9S-neck/body": [
+5.53085,
+5.68325,
+2,
+"486104eea4cf"
+],
 "geometry/WSTK6T5E4K-box/body": [
 -2.3764875,
 -2.2812375,
@@ -72500,6 +72518,12 @@
 -1.4843125,
 2,
 "4c0c32157368"
+],
+"geometry/XX9YQFJ8PT-neck/body": [
+5.191125,
+5.343525,
+2,
+"e7ee1d182aba"
 ],
 "geometry/XZPB2TEJ3P/layer:brick": [
 -0.3413125,
@@ -117910,6 +117934,10 @@
 "solids/REG-S-RET-BED2-NECK/z1_m": 3.09245,
 "solids/REG-S-RET-BED3-NECK/z0_m": 5.83565,
 "solids/REG-S-RET-BED3-NECK/z1_m": 5.9102625,
+"solids/REG-S-XFER-BATH1-NECK/z0_m": 5.53085,
+"solids/REG-S-XFER-BATH1-NECK/z1_m": 5.68325,
+"solids/REG-S-XFER-VANITY-NECK/z0_m": 5.191125,
+"solids/REG-S-XFER-VANITY-NECK/z1_m": 5.343525,
 "solids/RG-E-BASIN-STONE/z0_m": -1.7018,
 "solids/RG-E-BASIN-STONE/z1_m": -1.5494,
 "solids/RG-E-BASIN/z0_m": -1.5494,

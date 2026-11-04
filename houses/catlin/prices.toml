@@ -774,6 +774,10 @@ PROD-THERMATRU-HINGE = { low = 0, high = 0 }
 PROD-ENDURA-PANOLOCK-PLUS = { low = 0, high = 0 }
 PROD-SCHLAGE-BE365 = { low = 100, high = 160 }
 PROD-ENDURA-FLA = { low = 0, high = 0 }
+# 2026-11-03: D-B-SHOP's keyed Halifax Square (listed $56-90) and its US15 hinges (the
+# prehung's finish upcharge).
+PROD-KWIKSET-740HFLSQT-15-SMT = { low = 56, high = 90 }
+PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 
 # Added diaphragm framing, 2026-10-06: material-only per-nail budget bands. Driving labour
 # stays in framing. Retail package benchmarks (confirm quantities with the supplier):
@@ -3616,6 +3620,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "REG-T-HP-RET-FILTER" = { material = { low = 60, high = 130 }, labour = { low = 18, high = 45 } }  # 1 ea
 # The passive transfer: two 12x10 aluminium return grilles on a lined sleeve through the bay.
 "REG-T-TRANSFER-PAIR-1210" = { material = { low = 60, high = 110 }, labour = { low = 30, high = 70 } }  # 1 ea
+# D-S-BATH1's offset pair (2026-11-03): one 6x6 grille plus half the bay's sheet-metal liner.
+"REG-T-TRANSFER-0606" = { material = { low = 30, high = 60 }, labour = { low = 30, high = 70 } }  # 2 ea
 
 [floor_finishes]
 # RESEARCHED 2026-08-08 — [low, high] $/SF on the ORDER quantity (waste already in the
@@ -5796,11 +5802,13 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "DT-EXT-OVERHEAD192" = { material = { low = 2298, high = 2700 }, labour = { low = 550, high = 1150 } }  # 1 ea — Clopay Classic Steel GDU293 16x7 R-12.9 Charcoal, HD $2,298 (2026-10-29, owner swap from R-18.4)
 
 # --- interior doors ---------------------------------------------------------------------------
-# Low is hollow-core molded prehung (Steves 5-pack works out to $161.60 ea at Home Depot);
-# high is solid-core MDF prehung ($519 Masonite 5-panel, $548 Stile 7-lite).
+# 2026-11-03 (owner): hollow core on every commodity leaf, the low end of the old bands (Steves
+# 5-pack works out to $161.60 ea at Home Depot); solid-core MDF prehung $300-550 ($519 Masonite
+# 5-panel). Seals sit in the material band. Per door: notes/interior_door_schedule.md.
 # ** THE SAME MINIMUM-SIZE FLOOR APPLIES: a 24" door is barely cheaper than a 30". **
 # 2026-10-29: prehung hang labour $115-240 = 1.5-3 h at $60-85; casing is in [interior_trim], hardware in finish-door-hardware.
-"DT-INT-SWING24" = { material = { low = 145, high = 480 }, labour = { low = 115, high = 240 } }  # 2 ea (D-A-STUBATH joined 2026-09-09; D-B-ESS went steel 2026-10-30) — was 26% low at the top for exactly the floor reason
+"DT-INT-SWING24" = { material = { low = 145, high = 480 }, labour = { low = 115, high = 240 } }  # 0 ea since 2026-11-03 (D-A-STUBATH -> -PRIV, D-B-SAUNA -> SAUNA24); kept priced, catalog-only
+"DT-INT-SWING24-PRIV" = { material = { low = 145, high = 175 }, labour = { low = 115, high = 240 } }  # 1 ea, D-A-STUBATH
 # 24x36, RM-A-POCKET's ERV service access under the attic's 6:12 west rake (2026-08-29). The
 # ONE place the minimum-size floor above does NOT apply: this is not a prehung passage door in
 # a smaller leaf, it is an access panel with hinges and a knob — a flush hollow-core blank cut
@@ -5817,22 +5825,34 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 2026-10-30, D-B-ESS: a 24x80 hollow-metal leaf, KD steel frame, small tempered lite, spring
 # hinges. Estimate, no quote: stock is 32" and up, so 24" is a distributor special order.
 "DT-INT-STEEL24-LITE" = { material = { low = 450, high = 1100 }, labour = { low = 150, high = 320 } }  # 1 ea
-"DT-INT-SWING30" = { material = { low = 150, high = 520 }, labour = { low = 115, high = 240 } }  # 7 ea — high end is solid-core paint-grade. Was "11 ea" until 2026-09-12: the 2026-09-09 note that D-A-STUBATH left was right, but the count never followed it. Read off `haus takeoff`, which splits this type across three rows (4+3+1) by host assembly
-"DT-INT-SWING32" = { material = { low = 155, high = 540 }, labour = { low = 115, high = 240 } }  # 6 ea — was 7 until D-B-FURN widened to 36" and D-B-GYM took the glazed 32" (2026-09-07); the "9 ea" this line carried was already two stale
+"DT-INT-SWING30" = { material = { low = 150, high = 175 }, labour = { low = 115, high = 240 } }  # 2 ea, D-M-MECH, D-S-NCLOSET (hollow passage)
+"DT-INT-SWING30-PRIV" = { material = { low = 150, high = 175 }, labour = { low = 115, high = 240 } }  # 4 ea, D-S-BED1/2/3, D-S-SUITEBATH
+# D-S-BATH1: solid-core plus a kerf-in seal set and a door-bottom sweep ($40-90).
+"DT-INT-SWING30-PRIV-SOLID" = { material = { low = 340, high = 640 }, labour = { low = 140, high = 280 } }  # 1 ea
+"DT-INT-SWING32" = { material = { low = 155, high = 180 }, labour = { low = 115, high = 240 } }  # 2 ea, D-M-MUD, D-M-BED (hollow passage)
+"DT-INT-SWING32-PRIV" = { material = { low = 155, high = 180 }, labour = { low = 115, high = 240 } }  # 3 ea, D-M-BATH2, D-S-SUITE, D-A-HALVES
+"DT-INT-SWING32-PRIV-SOLID" = { material = { low = 300, high = 550 }, labour = { low = 115, high = 240 } }  # 1 ea, D-M-BATH1
 # 2026-09-07, the basement equipment route: D-B-FURN widened and D-B-SHOP is new. Bracketed off
 # the 32" row above with a shade added for the wider leaf and slab — a 36" prehung is a stock
 # size, not a special, so the step is small; labour is the same hang either way plus the wider
 # jamb pack.
-"DT-INT-SWING36" = { material = { low = 175, high = 590 }, labour = { low = 120, high = 250 } }  # 2 ea
+"DT-INT-SWING36" = { material = { low = 175, high = 210 }, labour = { low = 120, high = 250 } }  # 1 ea, D-B-FURN (hollow; keeps its undercut)
+# 2026-11-03, D-B-SHOP: a stock 36" insulated steel prehung (exterior line, $250-450) ordered
+# without a sill, plus jamb weatherstrip and a door-bottom sweep ($20-50). Keyed set in [hardware].
+"DT-INT-STEEL36-KEYED" = { material = { low = 270, high = 500 }, labour = { low = 140, high = 300 } }  # 1 ea
+# D-B-SAUNA: stock insulated all-wood sauna door with its own handle, catch and hinges.
+# ESTIMATE, not quoted. Hung on the cedar flat jamb billed in [interior_trim].
+"DT-INT-SAUNA24" = { material = { low = 600, high = 1300 }, labour = { low = 150, high = 320 } }  # 1 ea
 "DT-INT-SWING30-GLAZED" = { material = { low = 350, high = 900 }, labour = { low = 165, high = 350 } }  # 1 ea, D-S-PLANT; D-M-STUDY uses its own kerfed-jamb type since 2026-10-09
-"DT-INT-DOUBLE60" = { material = { low = 400, high = 1000 }, labour = { low = 255, high = 500 } }  # 1 ea — flush solid-core pair, paint-grade to stain-grade
+"DT-INT-DOUBLE60" = { material = { low = 460, high = 1150 }, labour = { low = 255, high = 500 } }  # 1 ea — flush solid-core pair plus jamb/head gaskets and an astragal ($60-150), 2026-11-03
 # 56" needs a FOUR-panel bifold, not a two-panel — doornmore prices a 4-door at $302.40 against
 # $103.50-206.50 for a 2-door, which is why the old $150 floor was wrong.
 "DT-INT-BIFOLD56" = { material = { low = 175, high = 500 }, labour = { low = 105, high = 225 } }  # 1 ea — was 2 until D-M-LAUN became a pocket (2026-08-21); O-S-CLOSET is the last one
 # The 36" slab is priced separately from the counted frame kits in [hardware]. Labour
 # includes setting the frame before drywall and hanging and adjusting each leaf. The Eclisse
 # cassette arrives assembled, so the setting half sits nearer the low end.
-"DT-POCKET-INT-36" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 3 ea, slab and installation; frame kits above
+"DT-POCKET-INT-36" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 2 ea (D-M-PANTRY, D-M-LAUN), slab and installation; frame kits above
+"DT-POCKET-INT-36-PRIV" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 1 ea, D-B-BATH; its lock bills in [allowances]
 "DT-INT-BYPASS48" = { material = { low = 200, high = 500 }, labour = { low = 100, high = 220 } }  # 1 ea — stock molded pair + track, to solid-core or mirrored
 # D-M-BED2 since 2026-10-05: a push-set in-swing in a site-built kerfed hardwood jamb (see
 # the type in plan/storeys/main.py). ESTIMATE, built up from parts and not quoted:
@@ -5849,9 +5869,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # D-M-STUDY: the same kerfed-jamb finish, with a tempered-glass wood leaf and no door
 # bottom or saddle (the ERV's 5 cfm relief must escape under the leaf). Parts estimate,
 # not a supplier quote: glazed slab 350-900, jamb/stop 90-220, butts 30-90, perimeter
-# seals 30-70; labour: jamb 200-400, hang/mortise/seal 200-400. L-bead in [drywall_trims].
-# Lockset remains in the existing door-hardware allowance.
-"DT-INT-SWING30-GLAZED-TRIMLESS" = { material = { low = 500, high = 1280 }, labour = { low = 400, high = 800 } }  # 1 ea
+# seals 30-70, Emtek 2256US15 3in magnetic holder 25-40 (opens to 174 deg); labour: jamb
+# 200-400, hang/mortise/seal 200-400. L-bead in [drywall_trims]. Lever in [allowances].
+"DT-INT-SWING30-GLAZED-TRIMLESS" = { material = { low = 525, high = 1320 }, labour = { low = 400, high = 800 } }  # 1 ea
 
 # D-A-STUDY's selected 36 x 80 nominal Murphy Door unit. One purchased assembly includes
 # its factory cabinet shelves, jamb/face-frame/casing hardware and concealed pivot system;
@@ -8033,39 +8053,35 @@ plumbing-faucets-and-tub-filler = { low = 1210, high = 1990 }
 # reaches the bill; the setting labour and the waterproofing stay in that row and are NOT
 # duplicated here. ** Read the two together before concluding what tile costs. **
 finish-wall-tile-material = { low = 900, high = 1800 }
-# ** RETUNED 2026-09-06: THE BAND IS RIGHT ON AVERAGE AND WRONG IN DISTRIBUTION. ** Schlage
-# Latitude on a SQUARE rose in satin nickel 619 is ~$39 passage / ~$45 privacy, which sits
-# near the low end and is the correct product for a trimless house (a round rose on a flush
-# jamb reads as a leftover, and that upcharge is essentially what the Custom collection
-# sells). So the swing doors are generous at $84. ** The POCKET doors are short by $100-200
-# each: ** a privacy pocket needs a purpose-built pocket-door privacy latch with a turn one
-# side and an emergency release the other — a mechanism, not a plate, $150-300 an opening —
-# and ** every pocket door needs TWO pulls, ** a flush pull on the face AND an edge pull on
-# the leading edge, because once the door is three-quarters into the pocket the face pull is
-# unreachable. That is the single most common omission in this scope. Where the leaf is a
-# Cavity Sliders CS For Wood, buy THEIR hardware: it is designed around their jamb geometry.
-#
-# Whole-house lands at ~$1,800-2,400 either way, so the range is kept rather than re-cut —
-# what changes is that the distribution is now written down. Hinges are ball-bearing over
-# ~35 lb or in daily use, 5/8" corner radius for prehung, 3.5" interior and 4" solid-core;
-# at $4-9 each across ~54 they are not a place to spend, but the ** finish code is a trap:
-# satin nickel is US15 = 619, and US15A is ANTIQUE nickel and a different colour. ** Buy
-# levers and hinges in the same finish family and the same lot.
-#
-# The Murphy Door bookcase leaf ships as a complete unit and draws from this row not at all;
-# confirm a TOUCH-LATCH release at order, since any visible pull defeats a flush bookcase.
-#
-# `DoorType.function` is already reported by opening_takeoff and can drive future rows:
-#   finish-door-hardware-passage = { ..., driver = "openings.count[function=passage,hardware_authored=False]" }
-#   finish-door-hardware-privacy = { ..., driver = "openings.count[function=privacy,hardware_authored=False]" }
-# Catlin still shares commodity interior types across baths/studies; split those types
-# before assigning function-specific prices. This generic row covers the remaining 28 sets.
-# The four exterior swings carry authored hardware (plan/door_types.py) and leave this count.
-# 2026-10-29: blended 25 swing sets ($84-150: lever $39-95 + 3 hinges + strike/bore) + 3 pocket sets ($184-420: privacy pocket
-# latch $150-300 + two pulls); 28 x $95-180 = $2.7-5.0k. Low rises, high falls.
-finish-door-hardware = { low = 95, high = 180, unit = "ea", driver = "openings.count[takes_hardware=True,hardware_authored=False]" }
-# D-G-SERVICE: ordinary hinges and frame-mounted overhead stop-only are included in
-# finish-door-hardware; confirm reinforced mounting with the prehanger. No closer allowance.
+# ** DOOR HARDWARE BY FUNCTION (owner, 2026-11-03). ** Kwikset Halifax Square, satin nickel
+# 15 (US15 = 619; US15A is ANTIQUE nickel, a different colour), house-wide; Schlage Latitude
+# 619 is the fallback. Hinges in the same finish and lot. Each row is the set, the US15 hinge
+# upgrade on the prehung, and the bore/strike time. Driven off `DoorType.function` in
+# plan/interior_door_types.py; each opening lands in exactly one row (28 sets in the old lump:
+# 9 passage + 11 privacy + 3 closet + 1 pair + D-G-SERVICE, with D-B-SHOP, D-B-SAUNA and
+# D-A-STUDY leaving it — authored, own handle, filtered touch latch). Pockets never counted in the
+# lump (`takes_hardware` excludes them) and now have rows of their own.
+#   passage: Halifax passage ~$25-35 + hinge upgrade + bore/strike.
+#   D-A-STUDY's Murphy unit is filtered out: its concealed touch latch ships with it (confirm
+#   at order; a visible pull defeats a flush bookcase).
+finish-door-hardware-passage = { low = 45, high = 95, unit = "ea", driver = "openings.count[function=passage,operation=swing,hardware_authored=False,type!=DT-INT-BOOKCASE30]" }
+#   privacy: every bath and bedroom; Halifax privacy ~$28-38, push-button inside, emergency
+#   release outside.
+finish-door-hardware-privacy = { low = 50, high = 100, unit = "ea", driver = "openings.count[function=privacy,hardware_authored=False]" }
+#   pocket privacy (D-B-BATH): retail pocket privacy lock, turn inside / emergency release
+#   outside, $30-60, plus an edge pull — the face pull is unreachable once the leaf is pocketed.
+finish-door-hardware-pocket-privacy = { low = 45, high = 110, unit = "ea", driver = "openings.count[function=pocket_privacy]" }
+#   pocket passage (D-M-PANTRY, D-M-LAUN): a flush pull and an edge pull, retail.
+finish-door-hardware-pocket-passage = { low = 20, high = 60, unit = "ea", driver = "openings.count[operation=pocket,function=passage]" }
+#   closet: D-B-CLOSET's dummy knob; the bifold's and the bypass's track hardware ship with
+#   them, so their share is a pull or knob each.
+finish-door-hardware-closet = { low = 15, high = 40, unit = "ea", driver = "openings.count[function=closet]" }
+#   pair (D-B-PLAY): passage set on the active leaf, a dummy on the passive, top/bottom flush bolts.
+finish-door-hardware-pair = { low = 70, high = 150, unit = "ea", driver = "openings.count[operation=double_swing,hardware_authored=False]" }
+# Residual: an entry door with no authored set, D-G-SERVICE alone today — its keyed lever,
+# ordinary hinges and frame-mounted overhead stop-only. Confirm reinforced mounting with the
+# prehanger. No closer allowance.
+finish-door-hardware = { low = 95, high = 180, unit = "ea", driver = "openings.count[function=entry,takes_hardware=True,hardware_authored=False]" }
 # DRIVEN 2026-08-27 off the window count; 41 are authored as of 2026-09-27. It was
 # $73-164 per window covering stool
 # STOCK, apron, jamb extension and the carpenter's hour.

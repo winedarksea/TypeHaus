@@ -20,7 +20,7 @@ from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_bas
 
 from library import (
     ALL_DUCT_PRODUCT_TYPES, ALL_ELECTRICAL_DEVICE_TYPES, ALL_RAILING_TYPES, RAILING_PRODUCTS,
-    ALL_REGISTER_TYPES, ALL_VENTILATION_EQUIPMENT_TYPES, DT_POCKET_INT_36,
+    ALL_REGISTER_TYPES, ALL_VENTILATION_EQUIPMENT_TYPES,
     MICROWAVE_COUNTERTOP_NN_SN686S, STANDARD_DOOR_TYPES, STARTER_APPLIANCE_TYPES,
     STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES,
     WINDOW_TYPES_16_INCH_MODULE,
@@ -41,7 +41,7 @@ from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, 
                   bedroom_wardrobes, braced_walls,
                   circuits, closet, closet_types, countertops, court_daybed, panel_types,
                   dry_fire_lane, panel_working_space, device_boxes, device_types, drywall, earthwork, electrical, electrical_attic, electrical_branches, electrical_stair_ext, electrical_floor_types, equipment_types,
-                  dining_types, door_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets, kitchen_front_types,
+                  dining_types, door_types, interior_door_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets, kitchen_front_types,
                   landscape, lighting_basement, lighting_entry, lighting_garage,
                   lighting_living, lighting_main, lighting_second, living_east_run, living_east_run_types,
                   living_puzzle_table_types, media_types,
@@ -76,20 +76,14 @@ _library = Library(
               *window_covering_types.WINDOW_COVERING_PRODUCTS, *smart_home_types.SMART_HOME_PRODUCTS,
               *media_types.MEDIA_PRODUCTS,
               *RAILING_PRODUCTS),
-    # The one library pocket size this house hangs, alongside the house's own catalog. Only
-    # the pocket types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for
-    # another day, and `integrity.duplicate_catalog_tag` proves the tag sets stay disjoint.
-    #
-    # ** THE CATALOG CARRIES WHAT THE HOUSE HANGS, NOT THE WHOLE LADDER (2026-09-12). ** This
-    # was the whole pocket ladder, which pulled all six Johnson 1500PF sizes in and left five of
-    # them with no door, no price row and nothing to bill — the same dead weight the two
-    # retired house types in `main.DOOR_TYPES` carried. All three house pockets use 36" frames.
-    # Bought as Eclisse steel cassettes (2026-10-09): stiffer than loose split studs and
-    # forgiving of the framer. Its 74 1/2" RO is 1 1/2" wider than the 2W + 1" commodity one.
-    # notes/pocket_frame_eclisse.md.
-    door_types=(DT_POCKET_INT_36.model_copy(update={"pocket_frame": "eclisse"}),
-                *(t for t in STANDARD_DOOR_TYPES if t.tag not in door_types.HOUSE_DOOR_TAGS),
-                *door_types.DOOR_TYPES, *main.LOCAL_DOOR_TYPES),
+    # The catalog carries what the house hangs, not the whole library ladder (2026-09-12).
+    # The 36" pocket is bought as an Eclisse steel cassette (notes/pocket_frame_eclisse.md).
+    # Interior types (function, core, seals) since 2026-11-03: plan/interior_door_types.py,
+    # which also carries the Eclisse 36" pocket in both functions.
+    door_types=(*(t for t in STANDARD_DOOR_TYPES
+                  if t.tag not in door_types.HOUSE_DOOR_TAGS | interior_door_types.INTERIOR_DOOR_TAGS),
+                *door_types.DOOR_TYPES, *interior_door_types.INTERIOR_DOOR_TYPES,
+                *main.LOCAL_DOOR_TYPES),
     # The house's chosen window products replace the library preset of the same tag; the
     # presets stay as they are for other houses, and catalog-only sizes stay presets.
     window_types=(*(t for t in WINDOW_TYPES_16_INCH_MODULE

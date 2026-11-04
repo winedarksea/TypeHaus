@@ -213,12 +213,6 @@ the future.
   `integrity.unknown_product_ref` ERROR. Same seam as the Bituthene selection. Needs a
   house-level catalog-override mechanism, or the type retagged house-local (which moves the
   `[placeables]` price key and four tests).
-- **Door hardware still bills as one lump in catlin.** Openings rows now carry
-  `DoorType.function`, but catlin hangs one commodity type (`DT-INT-SWING32`) at both a bath and
-  a study, so the type has to split before a per-function allowance means anything.
-- We can perhaps do a cost optimization on where solid core doors are used versus hollow core doors.
-- D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door. A simpler option is probably to just make sure the hinge can open to close to 180 degrees so the door can be flat against the wall, out of the way of the walking space.
-- Check the door handle specification, interior doors. Make sure bathroom doors are simple locks.
 - **Plan lettering residue after 96b845f4 (3/32" lettering):** at 1/4" a few small rooms still
   touch a tag (PANTRY/D8, STUDY/D13, MECH's "CHASE TYP. OF 2"), and on the 11x17 reduced check
   print the 12 pt room names spill past small rooms' walls.
@@ -231,7 +225,6 @@ the future.
 - Open (drywall overhaul): mudroom wainscot could be LP SmartSide 38 Series 7/16" (sidings used indoors) instead of the shiplap; the shiplap stays until someone prices it.
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so
 - Make sure all handrail brackets are stock, avoid custom needs. Remaining: titanium railing brackets (aim to use standard as much as possible). Also attic rail, bracket 7 needs a rethink, ideally to an off the shelf part.
-- The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
 - W-BW-SCREEN's shear role is already redundant with the garage path (graded 100%). Relaxing its 4″ edge nailing needs the reviewer to accept `canopy_garage_diaphragm.md`'s 'garage takes the whole load'.

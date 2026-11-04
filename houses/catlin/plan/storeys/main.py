@@ -89,14 +89,14 @@ DOOR_TYPES = [
     # and so only flush in the living room while it swung into it. 32" accepts ~29 1/2" clear
     # (the 36" gave ~33") for the 4" of wall the latch-side switches needed.
     DoorType(tag="DT-INT-SWING32-TRIMLESS-PUSH", width=ft(2, 8), height=ft(6, 8),
-             trimless=True, leaf_set="push", core="solid",
+             trimless=True, leaf_set="push", core="solid", function="privacy",
              source="Site-built kerfed hardwood flat jamb to the wall's full depth, leaf set behind a rabbeted stop at the push face; 1 3/4in solid-core slab, 3 ball-bearing butts, kerf-in compression seal at stop and head, mortised automatic door bottom on a hardwood saddle; tear-away L-bead both faces. No STC claimed: no tested assembly."),
     # Match D-M-BED2's casing-free jamb, but keep the booth's outward swing and borrowed
     # light. Pull-set puts this leaf at the same living-room finish face. Its undercut
     # relieves the ERV's 15 cfm supply / 10 cfm extract (mep_registers.py): no bottom seal.
     DoorType(tag="DT-INT-SWING30-GLAZED-TRIMLESS", width=ft(2, 6), height=ft(6, 8),
-             glazed=True, tempered=True, trimless=True, leaf_set="pull", core="solid",
-             source="Site-built kerfed hardwood flat jamb to the wall's full depth, matching D-M-BED2 with tear-away L-bead both faces and no applied casing; 1 3/4in wood stile-and-rail slab with tempered glass, pull-set flush at the living-room face, 3 ball-bearing butts, kerf-in perimeter seal. Retain an open undercut above the finished floor for the study's 5 cfm relief; no sweep, automatic door bottom or saddle. Jamb before drywall, slab after paint; no STC claimed."),
+             glazed=True, tempered=True, trimless=True, leaf_set="pull", core="solid", function="passage",
+             source="Site-built kerfed hardwood flat jamb to the wall's full depth, matching D-M-BED2 with tear-away L-bead both faces and no applied casing; 1 3/4in wood stile-and-rail slab with tempered glass, pull-set flush at the living-room face, 3 ball-bearing butts, kerf-in perimeter seal. Retain an open undercut above the finished floor for the study's 5 cfm relief; no sweep, automatic door bottom or saddle. Jamb before drywall, slab after paint; no STC claimed. Held open at ~174 deg by an Emtek 2256US15 3in magnetic wall stop/holder on W-M-C3's living face, deep enough to clear the Halifax lever (D-M-STUDY.maximum_opening_degrees)."),
     # Nominal 30 x 80 leaf, a custom width (owner, 2026-11-01): the 36's RO put W-A-SN's
     # east jack and header into the raked plate. Murphy sells by the inch of RO; 32 x 82 is
     # the widest that clears with the west king on the wall's end. The maker's RO is
@@ -1113,7 +1113,7 @@ OPENINGS = [
     # South-wall basin: INT32 outswing moved north for sink clearance; its derived RO
     # (2026-10-29) leaves no room for full casing, so the powder-room face takes a 1 1/2"
     # casing (plan/millwork.py) and the living-room north leg scribes to 2.55".
-    Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING32",
+    Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING32-PRIV-SOLID",
          position=from_node("N-M-BA1", inch(4))),
     # RM-M-MECH's hinged utility door, not the mudroom closets' bypass style.
     # Shift 8" east to 2'-9", keeping both jamb packs inside the existing walls.
@@ -1176,7 +1176,7 @@ OPENINGS = [
     # Derived 34 1/4" RO since 2026-10-29 (owner: keep 32"): the east jamb grew 2 1/4", so
     # the bed and nightstands moved 0.6" east and ED-M-BED-RC9 went behind the nightstand
     # (deleted the same day; ED-M-BED-RC8 there is the GFCI now).
-    Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING32",
+    Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING32-PRIV",
          position=from_node("N-M-W3", inch(24.635)), flip_swing=True, flip_hinge=True, doorway=BEDROOM_ZBAR),
     # Pocket, not the 56" bifold it was. The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
@@ -1223,8 +1223,12 @@ OPENINGS = [
     # `office` is not a sleeping occupancy, so there is no R310 exposure — and since the
     # 2026-08-29 `exterior_only` fix there could not be one anyway.
     # Derived RO since 2026-10-29; ED-M-STUDY-SPOT moved 1" north to clear it.
+    # ** OPENS TO 174 DEG (owner, 2026-11-03), out of the walkway. ** A 3" magnetic holder on
+    # the living face ~29" from the hinge: 180 - asin(3/29) = 174.1 deg, deep enough to clear
+    # the lever.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED-TRIMLESS",
-         position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True),
+         position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True,
+         maximum_opening_degrees=174),
     # ** 6'-0" OFF N-M-D3 SINCE 2026-09-15. ** `from_node` resolves to the NEAR JAMB, so
     # the RO is x=170"..202". The king is centred between this opening and D-M-BATH2:
     # its east edge is x=153.3175", and the matching 16" east nightstand ends 0.6825"

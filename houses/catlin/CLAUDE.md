@@ -84,6 +84,10 @@
 > egress door (`egress=True`): R311.2 grades only it, on Therma-Tru's published 33-5/16" x
 > 79-1/4" clear (`notes/egress_door_clear_width.md`).
 
+> **Interior doors, 2026-11-03:** function, core, seal, relief path and hardware per door are
+> in `notes/interior_door_schedule.md` (types in `plan/interior_door_types.py`). Halifax Square
+> US15 house-wide; hardware bills by `DoorType.function` in `[allowances]`.
+
 > **Exterior door hardening, 2026-10-25:** `plan/door_types.py` owns hardware, doubled
 > jamb packs, local ccSPF and entry field finish. `notes/exterior_door_hardening.md`
 > records installation, the W-M-N3 fit and open dealer items. A-601 prints the HW sets.
@@ -1876,6 +1880,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       undercut column in the A-601 schedule, so an unspecified door defaults to 3/4". Required:
       `D-S-BED1/2/3` 1 1/2", `D-S-SUITE`/`D-A-STUDY` 1 3/4", `D-A-HALVES` 1 1/4"; `D-S-PLANT`
       deliberately none (interlocked damper). Full arithmetic: `notes/system1_return_path.md`.
+      Sealed doors (2026-11-03): `D-S-BATH1` (makes up through `REG-S-XFER-BATH1`/`-VANITY`),
+      `D-B-SHOP` (through `D-B-FURN`, which must keep its undercut), `D-M-BED2` (RM-M-BED
+      exhausts through `D-M-BATH2`, which must keep its undercut) and `D-B-SAUNA` (balanced
+      20/20). `D-B-PLAY` and `D-M-BATH1` keep 3/4".
     - **`AO-S-HP1-AP` (30" x 29" clear) must stay gasketed.** Leaving the soffit's bottom
       open in the closet makes the closet itself the return plenum, which IMC 601.5(7)
       forbids.
