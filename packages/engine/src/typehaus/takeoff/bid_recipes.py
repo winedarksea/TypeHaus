@@ -232,7 +232,8 @@ RECIPES: dict[str, Recipe] = {
     "paint": Recipe("Paint", "Wall, ceiling and door coats by area, painted base and casing by "
                     "the foot, the foundation coating and the residual allowance; the systems "
                     "and accepted products are on the A-604 paint schedule.",
-                    ("envelope_layers", "trim_paint", "allowances"), ("A-101", "A-603")),
+                    ("envelope_layers", "trim_paint", "allowances"),
+                    ("A-101", "A-603", "A-604")),
     "openings": Recipe("Windows and doors", "Every product by type and size, the pocket "
                        "frames, and the hardware allowances.",
                        ("openings", "hardware", "solids", "allowances"), ("A-601",)),

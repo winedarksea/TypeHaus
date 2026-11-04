@@ -60,7 +60,7 @@ def product_label(product: Any) -> str:
     return label or product.name or product.tag
 
 
-def _with_equals(library: Any, product: Any) -> str:
+def product_with_equals(library: Any, product: Any) -> str:
     """"BM N538 or SW B20W12651" — the basis of design, then each accepted equal."""
     equals = (library.product(tag) for tag in getattr(product, "equals", ()) or ())
     return " or ".join((product_label(product),
@@ -82,7 +82,7 @@ def product_labels(plan: PlanModel) -> dict[tuple[str, str], str]:
                 product = library.product(getattr(entry, "product_ref", None) or "")
                 if product is None:
                     continue
-                labels[(section, entry.tag)] = _with_equals(library, product)
+                labels[(section, entry.tag)] = product_with_equals(library, product)
     for entry in (*library.fixture_types, *library.furniture_types,
                   *library.electrical_device_types):
         for part in entry.parts:

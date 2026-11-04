@@ -33,6 +33,11 @@ def authored_hardware_rows(model):
     return rows
 
 
+#: Door parts a painter coats; a bifold's and a bypass's leaves are their own keys.
+_PAINTED_DOOR_PARTS = {"leaf", "frame", "jamb_liner", "mullion", "bifold_leaf",
+                       "sliding_panel", "sliding_stile"}
+
+
 def door_face_area_m2(model, opening) -> float:
     """One face of a door's leaf and frame, projected on its wall; glass is never painted."""
     geometry = model.geometry.by_uid(opening.uid)
@@ -40,7 +45,7 @@ def door_face_area_m2(model, opening) -> float:
     origin, tangent, _normal, _run = wall_frame(wall)
     face_area = 0.0
     for part in geometry.parts:
-        if part.key.split(":")[0] not in {"leaf", "frame", "jamb_liner", "mullion"}:
+        if part.key.split(":")[0] not in _PAINTED_DOOR_PARTS:
             continue
         if part.key.endswith(":interior"):
             continue

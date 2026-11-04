@@ -198,7 +198,7 @@ divided.
 | scope | prices.toml row(s) | labour low | labour high | skill | risk |
 |---|---|---:|---:|---|---|
 | Drywall hang + finish | `envelope_layers.gwb`, `.gwb-x`, `sheet_goods.gwb` | 20,189 | 35,082 | high finish skill, low tool cost | A level-5 ceiling under raking light is where amateurs lose. Sequencing gate for every trade after it |
-| Interior + trim paint | `envelope_layers.latex-paint`, `.latex-paint-accent`, `[allowances] paint-trim-and-doors` | 16,621 | 33,140 | low | Time, not skill. It is the last trade and it is on the critical path to occupancy |
+| Interior + trim paint | `envelope_layers.paint-wall`, `.paint-ceiling`, `.paint-wet`, `.paint-enamel`, `.latex-paint-accent`, `[trim_paint]`, `[allowances] paint-trim-residual` (keys since decision #113; the figures predate it) | 16,621 | 33,140 | low | Time, not skill. It is the last trade and it is on the critical path to occupancy |
 | Trim and baseboard | `[allowances] finish-interior-trim-and-baseboard` | 7,800 | 13,000 | medium–high | Interacts with the trim-simplification row in table 1; do not price both |
 | Floor finishes | `[floor_finishes]` — all 10 rows | 11,409 | 23,214 | mixed | Oak sand-and-finish and heat-welded sheet vinyl are **not** DIY; LVP, carpet and rubber are |
 | Cavity insulation | `mineral-wool`, `fiberglass`, `fiberglass-r19`, `blown-fiberglass` | 4,619 | 9,082 | low | **Batts only.** The 3,094.9 SF of ccSPF is a licensed sprayer and is not on this table |

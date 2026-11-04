@@ -188,8 +188,18 @@ def _price_index(estimate: Mapping[str, Any] | None
     return index
 
 
+def _equals_labels(model: Any) -> frozenset[str]:
+    """The BOM labels of products that name accepted equals: "basis or equal or equal"."""
+    from typehaus.takeoff.product_labels import product_with_equals
+
+    library = getattr(getattr(model, "plan", None), "library", None)
+    return frozenset(product_with_equals(library, product)
+                     for product in getattr(library, "products", ()) if product.equals)
+
+
 def _line(item: BomRow, trade: str, storey_of: Mapping[str, str], labels: LabelIndex,
-          prices: Mapping[tuple[str, str], Mapping[str, Any]], priced: bool) -> BidLine:
+          prices: Mapping[tuple[str, str], Mapping[str, Any]], priced: bool,
+          equals_labels: frozenset[str] = frozenset()) -> BidLine:
     shape = shape_for(item.section)
     detail = shape.detail(item.row) if shape.detail else ""
     spelled = shape.unit_of(item.row) if shape.unit_of else (shape.unit or item.unit)
@@ -200,7 +210,7 @@ def _line(item: BomRow, trade: str, storey_of: Mapping[str, str], labels: LabelI
     row = prices.get((item.section, item.qualified_key)) or prices.get((item.section, item.key))
     # A product with accepted equals (#113) is named on the RFQ: the bidder picks the line.
     product = str((row or {}).get("product") or "")
-    if " or " in product:
+    if product in equals_labels:
         detail = f"{product}; {detail}".strip("; ")
     if priced and row is not None:
         unit_price = (float(row["unit_price"]["low"]), float(row["unit_price"]["high"]))
@@ -252,12 +262,13 @@ def build_bid_packages(model: Any, bom: Mapping[str, Any], *,
     labels = labels or EMPTY_LABELS
     storey_of = _storey_of_tag(model)
     prices = _price_index(estimate)
+    equals_labels = _equals_labels(model)
     by_trade: dict[str, dict[str, list[BidLine]]] = {}
     for item in walk_bom(bom):
         if _mirrored(item):
             continue
         trade = cost_code(item.section, item.key, material=item.material, row=item.row).trade
-        line = _line(item, trade, storey_of, labels, prices, priced)
+        line = _line(item, trade, storey_of, labels, prices, priced, equals_labels)
         by_trade.setdefault(trade, {}).setdefault(item.section, []).append(line)
     if estimate is not None:
         for row in estimate.get("sections", {}).get("allowances", {}).get("rows", []):

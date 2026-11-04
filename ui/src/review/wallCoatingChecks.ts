@@ -24,7 +24,7 @@ export function runWallCoatingChecks(model: Model, renderer: THREE.WebGLRenderer
   };
   const postCentres = posts.map(post =>
     (Math.min(...post.outline.map(p => p[1])) + Math.max(...post.outline.map(p => p[1]))) / 2);
-  const paintFace = Math.max(...wall.layers.find(layer => layer.material === "latex-paint")!
+  const paintFace = Math.max(...wall.layers.find(layer => layer.coating)!
     .polygon.map(point => point[0]));
   try {
     for (const mode of ["nordic", "schematic"] as const) {
@@ -34,7 +34,7 @@ export function runWallCoatingChecks(model: Model, renderer: THREE.WebGLRenderer
       Object.values(groups).forEach(group => scene.add(group));
       const picks: THREE.Mesh[] = [], selected = new Map<string, THREE.Material[]>();
       buildWall(groups, { ...wall, members: [], layers: wall.layers.filter(layer =>
-        layer.material === "latex-paint" || layer.material === "gwb") }, [], [0, 0], mode,
+        layer.coating || layer.material === "gwb") }, [], [0, 0], mode,
       RESOLVED_NORDIC_PALETTE.light, picks, selected, model.catalog!.materials);
       for (const post of posts) buildSolid(groups.framing, post, [0, 0], mode,
         RESOLVED_NORDIC_PALETTE.light, model.catalog, picks, selected, model.catalog!.materials);

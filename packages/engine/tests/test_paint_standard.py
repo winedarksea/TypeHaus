@@ -78,3 +78,12 @@ def test_trim_paint_bills_painted_stock_only(catlin_model_ro) -> None:
     rows = trim_paint_rows(catlin_model_ro)
     assert oiled and {r["material"] for r in rows} == {"paint-enamel"}
     assert abs(sum(r["length_ft"] for r in rows) - painted) < 0.05
+
+
+def test_folding_and_sliding_leaves_are_painted(catlin_model_ro) -> None:
+    from typehaus.takeoff.door_hardening import door_face_area_m2
+
+    # A bifold's and a bypass's leaves are their own part keys; the frame alone is ~0.3 m2.
+    for tag in ("O-S-CLOSET", "D-M-MUDC"):
+        opening = next(o for o in catlin_model_ro.openings if o.tag == tag)
+        assert door_face_area_m2(catlin_model_ro, opening) > 2.0

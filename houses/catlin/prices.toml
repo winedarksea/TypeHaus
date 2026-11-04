@@ -3747,8 +3747,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "closed-cell-spray-foam:5.5" = { material = { low = 2.2, high = 3.3 }, labour = { low = 3.3, high = 4.95 } }
 "door-paint-exterior" = { material = { low = 0.4, high = 0.8 }, labour = { low = 2, high = 4 } }
 # PT-4 (decision #113): the interior door leaves and frames, both faces, glass out, off
-# takeoff/trim_paint.py, plus D-M-ENTRY's inside face (was `door-paint-white`).
-"paint-enamel" = { material = { low = 0.4, high = 0.8 }, labour = { low = 2, high = 4 } }  # 936.1 SF
+# takeoff/trim_paint.py (bifold and bypass panels included), plus D-M-ENTRY's inside face (was `door-paint-white`).
+"paint-enamel" = { material = { low = 0.4, high = 0.8 }, labour = { low = 2, high = 4 } }  # 1,051.4 SF
 
 # RESEARCHED 2026-08-07 — [low, high] $/SF net, material only. IMPORTANT: this section is
 # keyed by material tag with no thickness in the key, so each range is the $/SF at the
@@ -3935,7 +3935,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "geotextile-separation" = { material = { low = 0.2, high = 0.45 }, labour = { low = 0.25, high = 0.6 } }  # 160.3 SF — non-woven, lapped 12", on the clay subgrade only
 "kbg-sod" = { material = { low = 0.75, high = 1.4 }, labour = { low = 0.6, high = 1.4 } }  # 160.3 SF — Kentucky bluegrass sod, laid and rolled. USGA Step 7 requires it washed or sand-grown, which is the premium over field-grown sod. Irrigation is an [allowances] line, not a layer
 "cabinet-plywood" = { material = { low = 2.5, high = 4.5 }, labour = { low = 4, high = 8 } }  # 0 SF since 2026-10-23 (W-M-STRW went to MDO); kept priced. Nominal 5/8" paint-grade veneer-core stair paneling; fabrication/fit labor, not a sheet-goods rate
-"mdo-plywood-interior" = { material = { low = 2.2, high = 3.6 }, labour = { low = 3, high = 6 } }  # 84.4 SF — W-M-STRW's 1/2" MDO 2S stair face and nook backs; fit and edge-seal. Both paint coats bill on latex-paint
+"mdo-plywood-interior" = { material = { low = 2.2, high = 3.6 }, labour = { low = 3, high = 6 } }  # 84.4 SF — W-M-STRW's 1/2" MDO 2S stair face and nook backs; fit and edge-seal. Both paint coats bill on paint-wall (PT-1)
 # RETIRED 2026-08-23, kept as a row rather than deleted. The 3,515.7 SF was the outer 2" of
 # EXT_2X6's rigid-CI stack, which the truss wall replaced with spray foam; EPS is now
 # used nowhere in this house, so the row bills nothing. It stays because the rate is
