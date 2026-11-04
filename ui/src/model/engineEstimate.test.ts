@@ -7,12 +7,11 @@
 import type { EngineEstimate } from "../engine/EngineClient";
 import {
   barWidths,
-  defaultCollapsed,
+  displayName,
   rowDescription,
   basisSlices,
   estimateSubtitle,
   flattenEstimate,
-  groupRows,
   ladderStages,
   maxHigh,
   shareOfTotal,
@@ -92,6 +91,8 @@ const ESTIMATE: EngineEstimate = {
   unpriced: [{ section: "framing", key: "2x10", quantity: 768, unit: "LF" }],
 };
 
+export const ESTIMATE_FIXTURE = ESTIMATE;
+
 export function runEngineEstimateTests(): void {
   // --- flatten ----------------------------------------------------------------------------
 
@@ -118,92 +119,11 @@ export function runEngineEstimateTests(): void {
   assert(rowDescription({ ...slab, key: "slab:CATLIN_DECK_9", description: "CATLIN_DECK_9" })
     === null, "…nor is the qualifier a qualified key already prints");
   assert(rowDescription({ ...slab, description: null }) === null, "…and a null one is null");
-
-  // --- sorting, both levels by one key ----------------------------------------------------
-
-  const byCost = groupRows(rows, "trade", "cost", ESTIMATE.total);
-  assert(byCost.map((g) => g.label).join(",") === "earth,concrete,furniture",
-    "Cost order: the biggest trade first, and the excluded one last regardless");
-  assert(byCost[1].rows.map((r) => r.key).join(",") === "slab,footing",
-    "…and the biggest row first inside it");
-
-  const bySpread = groupRows(rows, "trade", "spread", ESTIMATE.total);
-  assert(bySpread[0].label === "earth", "Spread order: the least certain trade first");
-  assert(bySpread[bySpread.length - 1].label === "furniture",
-    "Furnishings still group last — they are not what the total is made of");
-  assert(bySpread[1].rows[0].key === "slab", "…widest row first inside the group");
-
-  const byName = groupRows(rows, "trade", "key", ESTIMATE.total);
-  assert(byName.map((g) => g.label).join(",") === "earth,concrete,furniture",
-    "Name order puts trades in construction sequence, not alphabetically");
-  assert(byName[1].rows.map((r) => r.key).join(",") === "footing,slab",
-    "…and rows alphabetically inside");
-
-  const byPackage = groupRows(rows, "group", "key", ESTIMATE.total);
-  assert(byPackage.map((g) => g.label).join(",") === "Site,Concrete & masonry,Furniture",
-    "Grouping by package names the viewer's toggle groups, in their order");
-  assert(byPackage[0].rows[0].key === "site-excavation" && byPackage[1].rows.length === 2,
-    "…with each trade's rows under its package");
-
-  const bySection = groupRows(rows, "section", "cost", ESTIMATE.total);
-  assert(bySection.map((g) => g.label).join(",") === "allowances,concrete,furnishings",
-    "Grouping by section names the prices.toml block a row lives in");
-
-  const flat = groupRows(rows, "none", "cost", ESTIMATE.total);
-  assert(flat.length === 2 && flat[0].rows.length === 3,
-    "'none' is one flat ranked list — plus the excluded rows, which never rank among the "
-    + "things the construction total is made of");
-  assert(flat[0].rows[0].key === "site-excavation", "…ranked by the same measure");
-  // --- what starts collapsed ---------------------------------------------------------------
-
-  assert(defaultCollapsed(byCost, "trade").size === byCost.length,
-    "Grouped by trade, every group starts closed — the page opens on the headlines, not on "
-    + "470 rows");
-  assert([...defaultCollapsed(bySection, "section")].sort().join(",")
-    === bySection.map((g) => g.id).sort().join(","),
-    "…and by section the same, ids and all");
-  assert(defaultCollapsed(flat, "none").size === 0,
-    "'none' is never collapsed: its one group IS the table, and closing it leaves a blank "
-    + "page rather than a summary");
-  assert(defaultCollapsed(byCost, "trade", true).size === 0,
-    "An active filter expands everything — a page of closed headlines cannot tell a filter "
-    + "that matched from one that did not");
-
-  assert(flat[1].label === "Beside the total" && flat[1].rows[0].key === "sofa",
-    "…and the trailing block says what it is");
-
-  // --- what the headers print -------------------------------------------------------------
-
-  const concrete = byCost.find((g) => g.label === "concrete")!;
-  assert(concrete.subtotal.low === 6_340 && concrete.subtotal.high === 7_432,
-    "A group subtotal is the sum of its rows' ranges");
-  assert(Math.abs(concrete.share - 6_886 / 46_386) < 1e-9,
-    "…and its share is against the construction total, midpoint over midpoint");
-  const furniture = byCost.find((g) => g.label === "furniture")!;
-  assert(furniture.inTotal === false, "The excluded group says it is excluded");
-  assert(groupRows(rows, "trade", "cost", null)[0].share === 0,
-    "No total to divide by is a share of zero, never a NaN on screen");
-
-  // A trade shared by an in-total section and an excluded one buckets twice, not once: the
-  // catlin house prices sofas in [furnishings] and cabinets in [placeables], both trade
-  // "furniture", and one bucket would print a subtotal the construction total does not
-  // contain and then divide it by that total.
-  const mixed = groupRows(
-    [...rows, { ...rows.find((r) => r.key === "sofa")!, key: "cabinet", section: "placeables",
-      inTotal: true }],
-    "trade", "cost", ESTIMATE.total);
-  const furnitureGroups = mixed.filter((g) => g.label === "furniture");
-  assert(furnitureGroups.length === 2, "One trade, two buckets: in the total and beside it");
-  assert(furnitureGroups.some((g) => g.inTotal) && furnitureGroups.some((g) => !g.inTotal),
-    "…and each says which it is");
-  assert(mixed[mixed.length - 1].inTotal === false, "The excluded bucket is still last");
-  assert(furnitureGroups.find((g) => !g.inTotal)!.share === 0,
-    "An excluded bucket has no share of a total it is not part of");
-
-  const untraded = groupRows(
-    [{ ...slab, trade: undefined }], "trade", "cost", ESTIMATE.total);
-  assert(untraded[0].label === "unfiled" && untraded[0].rows.length === 1,
-    "A row with no trade code is filed, never dropped — dropping it understates the trade");
+  assert(displayName({ ...slab, description: "2x6 spf — stud (2x6)", key: "2x6" })
+    === "2x6 spf — stud", "The Item column drops the ' (key)' the engine appends");
+  assert(displayName({ ...slab, product: "LG WKHC252HBA", description: "washer" })
+    === "LG WKHC252HBA", "…and prefers the specified product");
+  assert(displayName(slab) === "slab", "…falling back to the key");
 
   // --- the marks ---------------------------------------------------------------------------
 

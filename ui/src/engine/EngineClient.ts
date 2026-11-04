@@ -296,6 +296,10 @@ export interface EngineEstimateRow {
   nahb_code?: string;
   csi_code?: string | null;
   trade?: string;
+  // The level under trade (takeoff/cost_categories.py) and the one level the row's elements
+  // stand on, or "building" (takeoff/tasks.row_level). Labels only, never arithmetic.
+  category?: string;
+  level?: string;
 }
 /** One rung of the `net → waste → ordered → contingency → overhead → profit → tax → total`
  *  ladder. `rate` is present only on the stages that are a percentage of something. */

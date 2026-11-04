@@ -34,6 +34,7 @@ def build_costs_payload(model: Any, house_dir: Path) -> dict:
     from typehaus.server.space_summary import build_space_summary
     from typehaus.takeoff.bom import bill_of_materials
     from typehaus.takeoff.product_labels import product_labels
+    from typehaus.takeoff.tasks import level_index
 
     try:
         prices = load_prices(house_dir)
@@ -45,7 +46,7 @@ def build_costs_payload(model: Any, house_dir: Path) -> dict:
     summary = cast("dict[str, float]", build_space_summary(model)["overall"])
     areas = {"conditioned": summary["conditioned_sf"], "gross": summary["gross_sf"]}
     return costs_payload(bill_of_materials(model), prices, state, areas,
-                         product_labels(model.plan))
+                         product_labels(model.plan), level_index(model))
 
 
 def apply_costs_ops(house_dir: Path, ops: Any) -> None:

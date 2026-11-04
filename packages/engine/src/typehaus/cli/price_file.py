@@ -454,6 +454,8 @@ class Prices:
     basis_notes: Mapping[str, str] = field(default_factory=dict)
     #: ``[codes]`` — a builder's own NAHB numbers, keyed "section" or "section:key" (#28).
     codes: Mapping[str, str] = field(default_factory=dict)
+    #: ``[categories]`` — the Estimate page's sub-trade group, keyed like ``codes``.
+    categories: Mapping[str, str] = field(default_factory=dict)
     adjustments: Adjustments = field(default_factory=lambda: Adjustments())
 
     def basis_for(self, section: str, key: str) -> str:
@@ -619,7 +621,7 @@ def _price(section: str, key: str, raw: object, path: Path,
 #: Tables that are *not* price sections: they describe the file rather than price a row.
 #: Split out so an unknown-section error still names real typos.
 _META_SECTIONS = ("basis", "basis_notes", "waste", "contingency", "markup", "tax",
-                  "tax_included", "codes", "rebar_inclusive", "retired")
+                  "tax_included", "codes", "categories", "rebar_inclusive", "retired")
 
 #: The $/cy sections whose rate has historically CONTAINED its own reinforcing steel.
 #: Keyed to what the money is, because "your rate includes rebar" is useless without
@@ -783,9 +785,11 @@ def load_prices(house_dir: Path) -> Prices | None:
     if unknown_notes:
         raise ValueError(f"{path}: [basis_notes] names unknown section(s) {unknown_notes}")
     codes = {str(k): str(v) for k, v in (data.get("codes") or {}).items()}
-    for key in codes:
-        if key.split(":", 1)[0] not in _SECTIONS:
-            raise ValueError(f"{path}: [codes] {key!r} names an unknown section")
+    categories = {str(k): str(v) for k, v in (data.get("categories") or {}).items()}
+    for table, keyed in (("codes", codes), ("categories", categories)):
+        for key in keyed:
+            if key.split(":", 1)[0] not in _SECTIONS:
+                raise ValueError(f"{path}: [{table}] {key!r} names an unknown section")
     # [placeables] and [furnishings] price the same BOM rows, so a type in both would be
     # billed twice — once in the construction total and once beside it.
     both = sorted(set(sections["placeables"]) & set(sections["furnishings"]))
@@ -795,6 +799,7 @@ def load_prices(house_dir: Path) -> Prices | None:
                          "reported beside the construction total, not inside it)")
     retired = {str(k): str(v) for k, v in (data.get("retired") or {}).items()}
     return Prices(path=path, basis=basis, basis_notes=notes, codes=codes,
+                  categories=categories,
                   retired=retired, basis_declared=bool(data.get("basis")),
                   adjustments=_load_adjustments(data, path), **sections)
 

@@ -66,6 +66,7 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
     from typehaus.takeoff.labels import LabelIndex
     from typehaus.takeoff.product_labels import product_labels
     from typehaus.takeoff.runs import run_schedule
+    from typehaus.takeoff.tasks import level_index
 
     d = _resolve_house(house)
     loaded = load_plan(d)
@@ -179,7 +180,8 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
         areas = estimate_areas(model)
         payload["cost_estimate"] = estimate_costs(bom, prices, areas,
                                                   product_labels(loaded.plan),
-                                                  LabelIndex.from_plan(loaded.plan))
+                                                  LabelIndex.from_plan(loaded.plan),
+                                                  level_of=level_index(model))
         payload["space_summary"] = space_summary
     if csv is not None:
         if prices is None:

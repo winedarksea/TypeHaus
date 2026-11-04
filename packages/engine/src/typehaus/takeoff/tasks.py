@@ -97,7 +97,7 @@ class _Bucket:
     has_actual: bool = False
 
 
-def _storey_of_tag(model: Any) -> dict[str, str]:
+def level_index(model: Any) -> dict[str, str]:
     """tag -> **level**, for every authored element. Built once per export.
 
     The level, not the storey: a storey is a datum within one building, so the sunken
@@ -120,7 +120,7 @@ def _storey_of_tag(model: Any) -> dict[str, str]:
     return index
 
 
-def _row_storey(tags: Any, storey_of: Mapping[str, str]) -> str:
+def row_level(tags: Any, storey_of: Mapping[str, str]) -> str:
     """The one storey a BOM row belongs to, or :data:`BUILDING` when it is not one storey.
 
     Untagged rows and rows spanning storeys both land building-wide — see the module
@@ -141,7 +141,7 @@ def build_work_items(model: Any, bom: dict[str, Any], estimate: dict[str, Any] |
     """
     from typehaus.model.ids import derive_guid
 
-    storey_of = _storey_of_tag(model)
+    storey_of = level_index(model)
     tags_by_row = _tags_by_row(bom)
     entries = getattr(costs_state, "entries", {}) or {}
     labels = LabelIndex.from_plan(model.plan)
@@ -156,7 +156,7 @@ def build_work_items(model: Any, bom: dict[str, Any], estimate: dict[str, Any] |
         trade = trade_of[(section, key)]
         nahb_of.setdefault((section, key), code.nahb)
         tags = tags_by_row.get((section, key), ())
-        slot = (trade, _row_storey(tags, storey_of))
+        slot = (trade, row_level(tags, storey_of))
         bucket = buckets.setdefault(slot, _Bucket())
         if (section, key) not in bucket.rows:
             bucket.rows.append((section, key))

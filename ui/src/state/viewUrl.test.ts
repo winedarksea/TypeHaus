@@ -58,6 +58,14 @@ export function runViewUrlTests(): void {
   assert(parseViewParams("?group=mep").visible?.includes("drainage"),
     "a role preset name is a group too");
 
+  assert(parseViewParams("?reader=engineering").detailView === "engineering",
+    "every report is linkable, not only the ones a hand list remembered");
+  const estimate = snapshot({ detailView: "estimate", estimateView: { group: "level", sort: "cost" } });
+  assert(viewParamsFor(estimate) === "reader=estimate&egroup=level",
+    `estimate grouping prints only what differs: ${viewParamsFor(estimate)}`);
+  assert(parseViewParams("?egroup=level&esort=nope").estimateGroup === "level"
+    && parseViewParams("?esort=nope").estimateSort === undefined, "estimate params validate");
+
   assert(mergeSearch("?foo=1&mode=3d&preset=framer", "mode=split") === "?foo=1&mode=split",
     "foreign params survive, ours are replaced");
   assert(mergeSearch("?preset=framer", "") === "", "an empty view clears the query");

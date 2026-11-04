@@ -20,15 +20,27 @@ export function ReaderShell({ title, subtitle, onClose, toolbar, children, wide,
    *  so a page with fewer columns is not stretched thin for no reason. */
   wide?: boolean;
 }) {
+  // Full-size by default; `wide` is the card width once restored.
+  const full = useStore((s) => s.readerFull);
+  const setFull = useStore((s) => s.setReaderFull);
   return (
-    <div className="workbench-backdrop">
-      <div className={["workbench", wide && "workbench-wide", className].filter(Boolean).join(" ")} role="dialog" aria-label={title}>
+    <div className={full ? "workbench-backdrop is-full" : "workbench-backdrop"}>
+      <div className={["workbench", wide && "workbench-wide", full && "workbench-full", className].filter(Boolean).join(" ")} role="dialog" aria-label={title}>
         <div className="workbench-bread">
           <button className="btn" onClick={onClose} title="Back to canvas"><Icon name="arrow-left" size={18} /> Back</button>
           <span className="workbench-title">{title}</span>
           <span className="muted reader-subtitle">{subtitle}</span>
           <span className="spacer" style={{ flex: 1 }} />
           {toolbar}
+          <button
+            className="btn reader-size-btn"
+            onClick={() => setFull(!full)}
+            title={full ? "Restore to a card" : "Fill the window"}
+            aria-label={full ? "Restore reader size" : "Maximize reader"}
+            aria-pressed={full}
+          >
+            <Icon name={full ? "restore" : "maximize"} size={18} />
+          </button>
         </div>
         <div className="workbench-body">{children}</div>
       </div>

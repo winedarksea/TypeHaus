@@ -272,6 +272,8 @@ class OfflineEngine:
         from typehaus.server.space_summary import build_space_summary
         from typehaus.takeoff.bom import bill_of_materials
         from typehaus.takeoff.costs import CostsState, costs_payload, load_costs
+        from typehaus.takeoff.product_labels import product_labels
+        from typehaus.takeoff.tasks import level_index
 
         if self.model is None:
             return {}
@@ -286,7 +288,8 @@ class OfflineEngine:
         # surface must not show a different estimate from the same house.
         summary = build_space_summary(self.model)["overall"]
         areas = {"conditioned": summary["conditioned_sf"], "gross": summary["gross_sf"]}
-        return costs_payload(bill_of_materials(self.model), prices, state, areas)
+        return costs_payload(bill_of_materials(self.model), prices, state, areas,
+                             product_labels(self.model.plan), level_index(self.model))
 
     def detail_index(self) -> list[dict[str, Any]]:
         from typehaus.emit.draw.details import detail_index

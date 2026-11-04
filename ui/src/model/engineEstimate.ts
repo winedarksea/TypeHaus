@@ -16,8 +16,6 @@ import type {
   EnginePerSf,
   EnginePriceRange,
 } from "../engine/EngineClient";
-import { ALL_TRADES } from "../state/vocabulary";
-import { TRADE_GROUP_OF, TRADE_GROUPS, TRADE_LABEL } from "./tradeVisibility";
 import { formatRange } from "./engineCosts";
 
 /** One priced row, lifted out of its section and told what it is worth relative to itself. */
@@ -63,218 +61,7 @@ export function sumRanges(ranges: readonly EnginePriceRange[]): EnginePriceRange
   );
 }
 
-// --- sorting ------------------------------------------------------------------------------
-
-export type SortKey = "cost" | "spread" | "quantity" | "key";
-
-/**
- * One sort, as data: a label, the measure it reads off a row, and the measure it reads off a
- * *group*. One key governs both levels — sorting by cost with trade grouping puts the biggest
- * trade first and its biggest row first inside it, and sorting by spread puts the trade
- * nobody is sure about first. Two independent controls would have let the two disagree.
- *
- * `groupValue` for "quantity" is the row count, not a sum: quantities across a group are in
- * mixed units (cubic yards beside each), and adding them would produce a number that means
- * nothing. Counting rows is the honest reading of "most rows by quantity" at group level.
- */
-export interface SortSpec {
-  key: SortKey;
-  label: string;
-  /** How rows compare; already oriented (biggest-first for the numeric measures). */
-  rowValue: (row: EstimateRow) => number | string;
-  groupValue: (group: EstimateGroup) => number | string;
-  /** True for the measures that read best largest-first. */
-  descending: boolean;
-}
-
-export const SORTS: Record<SortKey, SortSpec> = {
-  cost: {
-    // The measure is the midpoint of low/high — the closest thing the payload carries to a
-    // "most likely" figure, since prices.toml authors a range rather than a third point
-    // estimate. Labelled "Expected" rather than "Cost" so the sort's own name says what
-    // number it orders by, matching the column that now prints that number.
-    key: "cost", label: "Expected", descending: true,
-    rowValue: (row) => row.mid,
-    groupValue: (group) => group.mid,
-  },
-  spread: {
-    key: "spread", label: "Uncertainty", descending: true,
-    // Absolute dollars, not spreadPct: a 2× range on a $400 row is not the thing to look at
-    // first when a $60k row is ±$30k. The percentage is a column, not the ranking.
-    rowValue: (row) => row.spread,
-    groupValue: (group) => group.spread,
-  },
-  quantity: {
-    key: "quantity", label: "Quantity", descending: true,
-    rowValue: (row) => row.quantity,
-    groupValue: (group) => group.rows.length,
-  },
-  key: {
-    key: "key", label: "Name", descending: false,
-    rowValue: (row) => row.key,
-    // The grouping's own order — construction sequence for trades, alphabetical for
-    // sections — rather than the group label, so "Name" reads as the file does.
-    groupValue: (group) => group.order,
-  },
-};
-
-export const SORT_KEYS: SortKey[] = ["cost", "spread", "quantity", "key"];
-
-function compare(a: number | string, b: number | string, descending: boolean): number {
-  if (typeof a === "string" || typeof b === "string") {
-    return String(a).localeCompare(String(b)) * (descending ? -1 : 1);
-  }
-  return descending ? b - a : a - b;
-}
-
-// --- grouping -----------------------------------------------------------------------------
-
-export type GroupKey = "trade" | "group" | "section" | "none";
-
-/**
- * The construction trades in build order (`emit/trades.py::CONSTRUCTION_SEQUENCE`), the same
- * vocabulary the viewer's toggles use, generated into vocabulary.json rather than copied.
- */
-export const TRADE_SEQUENCE: readonly string[] = ALL_TRADES;
-
-/** The viewer's toggle groups, in the same order — a "Package" is one sub's bundle of
- *  trades (Walls = siding + insulation + drywall + paint). */
-const PACKAGE_ORDER: readonly string[] = TRADE_GROUPS.map((group) => group.label);
-
-/** What a trade chip prints; an unfiled row keeps its raw token. */
-export function tradeLabel(trade: string | null | undefined): string {
-  if (!trade) return "unfiled";
-  return (TRADE_LABEL as Record<string, string>)[trade] ?? trade;
-}
-
-/** A set of rows that share a trade or a section, with what the header has to print. */
-export interface EstimateGroup {
-  id: string;
-  label: string;
-  /** Position in the grouping's own vocabulary — the "Name" sort's group measure. */
-  order: number;
-  rows: EstimateRow[];
-  subtotal: EnginePriceRange;
-  mid: number;
-  spread: number;
-  /** Fraction of the construction total, 0 when there is no total to divide by. */
-  share: number;
-  /** False when every row here comes from a section reported beside the total. */
-  inTotal: boolean;
-}
-
-function groupLabelOf(row: EstimateRow, group: GroupKey): string {
-  if (group === "section") return row.section;
-  if (group === "group") {
-    const id = row.trade ? (TRADE_GROUP_OF as Record<string, string>)[row.trade] : undefined;
-    return TRADE_GROUPS.find((g) => g.id === id)?.label ?? "unfiled";
-  }
-  // Even ungrouped, the excluded rows keep their own trailing block and say so: a reader
-  // scanning a "flat ranked list" from the top must not meet a sofa among the things the
-  // construction total is made of.
-  if (group === "none") return row.inTotal ? "All rows" : "Beside the total";
-  // A row whose section has no cost-code default is filed rather than dropped: an unlabelled
-  // row that vanished from a trade view would understate that trade silently.
-  return row.trade || "unfiled";
-}
-
-/**
- * The bucket a row falls in. Excluded rows bucket SEPARATELY even when they share a label
- * with rows that are in the total — `furnishings` and `placeables` are both trade
- * `furniture`, and one bucket for the two would print a subtotal containing money the
- * construction total does not, then divide it by that total to get a share. A sofa and a
- * kitchen cabinet are the same trade and not the same number.
- */
-function bucketKeyOf(row: EstimateRow, group: GroupKey): string {
-  const label = groupLabelOf(row, group);
-  return row.inTotal ? label : `\u0000excluded:${label}`;
-}
-
-const GROUP_LABELS: Record<GroupKey, string> = {
-  trade: "Trade", group: "Package", section: "Section", none: "Ranked",
-};
-
-export const GROUP_KEYS: GroupKey[] = ["trade", "group", "section", "none"];
-
-/** The grouping vocabulary as data, for the segmented control. */
-export const GROUPS = GROUP_KEYS.map((key) => ({ key, label: GROUP_LABELS[key] }));
-
-/**
- * Rank `rows` into groups, both levels by the same sort.
- *
- * Excluded sections (furnishings) group last whatever the sort says: they are not in the
- * construction total, and a reader scanning from the top must not meet a sofa among the
- * things the total is made of.
- */
-export function groupRows(
-  rows: readonly EstimateRow[],
-  group: GroupKey,
-  sort: SortKey,
-  total?: EnginePriceRange | null,
-): EstimateGroup[] {
-  const spec = SORTS[sort];
-  const order = group === "trade" ? TRADE_SEQUENCE : group === "group" ? PACKAGE_ORDER : null;
-  const buckets = new Map<string, EstimateRow[]>();
-  for (const row of rows) {
-    const id = bucketKeyOf(row, group);
-    const bucket = buckets.get(id);
-    if (bucket) bucket.push(row);
-    else buckets.set(id, [row]);
-  }
-  const totalMid = total ? midOf(total) : 0;
-  const labels = [...new Set(rows.map((row) => groupLabelOf(row, group)))].sort();
-  const groups: EstimateGroup[] = [...buckets.entries()].map(([id, bucketRows]) => {
-    const subtotal = sumRanges(bucketRows.map((row) => row.cost));
-    const label = groupLabelOf(bucketRows[0], group);
-    const rank = order ? order.indexOf(label) : labels.indexOf(label);
-    return {
-      id,
-      label,
-      // An id outside the vocabulary ("unfiled") sorts after every known one rather than
-      // to the front, which is where indexOf's -1 would have put it.
-      order: rank < 0 ? Number.MAX_SAFE_INTEGER : rank,
-      rows: [...bucketRows].sort((a, b) =>
-        compare(spec.rowValue(a), spec.rowValue(b), spec.descending)
-        || a.key.localeCompare(b.key)),
-      subtotal,
-      mid: midOf(subtotal),
-      spread: subtotal.high - subtotal.low,
-      // Only meaningful for a bucket the total contains; an excluded bucket prints "beside
-      // the total" instead of a share of a number it is not part of.
-      share: totalMid && bucketRows[0].inTotal ? midOf(subtotal) / totalMid : 0,
-      inTotal: bucketRows[0].inTotal,
-    };
-  });
-  return groups.sort((a, b) =>
-    Number(a.inTotal === false) - Number(b.inTotal === false)
-    || compare(spec.groupValue(a), spec.groupValue(b), spec.descending)
-    || a.label.localeCompare(b.label));
-}
-
-/**
- * The groups that start COLLAPSED, so the page opens on the trade headlines rather than
- * on ~470 rows.
- *
- * Here rather than in the component for the same reason every other ordering decision on
- * this page is: it is a rule with cases, and a rule with cases belongs somewhere a test can
- * reach without a DOM (`engineEstimate.test.ts`).
- *
- * Three cases:
- *  - `"none"` is one group holding the whole table. Collapsing it collapses the page, which
- *    is not a summary, it is a blank screen.
- *  - An ACTIVE FILTER expands everything. A reader who typed "gwb" and got a page of closed
- *    headlines has no way to tell a filter that found nothing from one that found plenty,
- *    and would reasonably conclude the filter is broken.
- *  - Otherwise every group starts closed, including the excluded (furnishings) one.
- */
-export function defaultCollapsed(
-  groups: readonly EstimateGroup[],
-  group: GroupKey,
-  filtered = false,
-): Set<string> {
-  if (group === "none" || filtered) return new Set();
-  return new Set(groups.map((entry) => entry.id));
-}
+// Sorting and grouping live in estimateGroups.ts.
 
 // --- the numbers a mark needs -------------------------------------------------------------
 
@@ -318,6 +105,18 @@ export function rowDescription(row: EngineEstimateRow): string | null {
   if (description === row.key) return null;
   if (row.key.endsWith(`:${description}`)) return null;
   return description;
+}
+
+/**
+ * What the Item column prints: the specified product, else the description without the
+ * `" (key)"` that `cli/prices._describe` appends, else the key itself.
+ */
+export function displayName(row: EngineEstimateRow): string {
+  if (row.product?.trim()) return row.product.trim();
+  const description = rowDescription(row);
+  if (!description) return row.key;
+  const suffix = ` (${row.key})`;
+  return description.endsWith(suffix) ? description.slice(0, -suffix.length) : description;
 }
 
 /** The widest high end across the rows on screen — the range bars' shared denominator. */

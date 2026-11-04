@@ -29,6 +29,17 @@
 .workbench-wide {
   width: min(1500px, 100%);
 }
+/* Full-size (the default; ReaderShell's toggle). Keeps the top-bar and status-rail
+   clearance, drops the side gutter. */
+.workbench-backdrop.is-full {
+  padding-left: var(--space-2);
+  padding-right: var(--space-2);
+}
+.workbench-full {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
 .workbench-bread {
   display: flex;
   align-items: center;
@@ -233,7 +244,8 @@
 @media (max-width: 679px) {
   /* Readers go full-bleed: the shell's chrome insets describe a layout the phone does
      not have, and a reader is the whole screen here. */
-  .workbench-backdrop {
+  .workbench-backdrop,
+  .workbench-backdrop.is-full {
     padding: 0;
   }
   .workbench {

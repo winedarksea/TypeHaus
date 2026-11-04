@@ -22,7 +22,7 @@ from typehaus.takeoff.costs import CostsState
 
 #: One row per priced BOM line. Order is the contract — see the module docstring.
 ESTIMATE_COLUMNS = (
-    "nahb_code", "csi_code", "trade", "section", "key", "description",
+    "nahb_code", "csi_code", "trade", "section", "key", "description", "category", "level",
     "quantity", "unit", "waste_pct", "order_quantity", "basis",
     "unit_price_low", "unit_price_high",
     "material_low", "material_high", "labour_low", "labour_high",
@@ -78,6 +78,8 @@ def estimate_rows(estimate: dict[str, Any],
                 "total_high": row["cost"]["high"],
                 "actual_cost": getattr(entry, "actual_cost", None),
                 "paid": getattr(entry, "paid", False),
+                "category": row.get("category"),
+                "level": row.get("level"),
             }
             slot = (section, row["key"])
             descriptions.setdefault(slot, [])
@@ -96,6 +98,9 @@ def estimate_rows(estimate: dict[str, Any],
                     left + right, 2)
             first["unit_price_low"] = min(first["unit_price_low"], built["unit_price_low"])
             first["unit_price_high"] = max(first["unit_price_high"], built["unit_price_high"])
+            # Lines on two levels under one key are, together, the whole building's.
+            if first["level"] != built["level"]:
+                first["level"] = "building"
     for slot, row in merged.items():
         names = descriptions.get(slot, [])
         row["description"] = "; ".join(names[:4]) + (" …" if len(names) > 4 else "")

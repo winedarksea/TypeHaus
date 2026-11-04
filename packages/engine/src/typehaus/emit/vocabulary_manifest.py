@@ -70,6 +70,7 @@ from typehaus.emit.trades import (
     TRADE_GROUPS,
     TRADE_LABELS,
 )
+from typehaus.takeoff.cost_categories import CATEGORY_LABEL
 
 
 def _to_hex(rgba: tuple[float, float, float, float]) -> int:
@@ -112,6 +113,9 @@ def build_vocabulary_manifest() -> dict[str, object]:
         # panel fell through to "framing" and hid with the sticks instead of the siding.
         "memberCategoryTrades": dict(MEMBER_CATEGORY_TRADE),
         "canvasDomainTrades": dict(CANVAS_DOMAIN_TRADE),
+        # The Estimate page's sub-trade groups (takeoff/cost_categories.py), in display order.
+        "costCategories": [{"id": token, "label": label}
+                           for token, label in CATEGORY_LABEL.items()],
         "solidTradeSets": {category: list(solid_trades(category))
                            for category in SOLID_CATEGORY_TRADE},
         "solidTradeFallback": FALLBACK_TRADE,

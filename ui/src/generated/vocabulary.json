@@ -7,6 +7,120 @@
     "opening": "openings",
     "plumbing": "plumbing"
   },
+  "costCategories": [
+    {
+      "id": "lighting",
+      "label": "Lighting"
+    },
+    {
+      "id": "devices",
+      "label": "Devices & panels"
+    },
+    {
+      "id": "low_voltage",
+      "label": "Low voltage"
+    },
+    {
+      "id": "rough_in",
+      "label": "Rough-in: wire, conduit, boxes"
+    },
+    {
+      "id": "solar_backup",
+      "label": "Solar & backup"
+    },
+    {
+      "id": "fixtures",
+      "label": "Fixtures & trim"
+    },
+    {
+      "id": "pipe",
+      "label": "Pipe & fittings"
+    },
+    {
+      "id": "equipment",
+      "label": "Equipment"
+    },
+    {
+      "id": "ductwork",
+      "label": "Ductwork"
+    },
+    {
+      "id": "terminals",
+      "label": "Registers & terminals"
+    },
+    {
+      "id": "windows",
+      "label": "Windows"
+    },
+    {
+      "id": "doors",
+      "label": "Doors"
+    },
+    {
+      "id": "door_hardware",
+      "label": "Door hardware"
+    },
+    {
+      "id": "lumber",
+      "label": "Lumber"
+    },
+    {
+      "id": "engineered",
+      "label": "Engineered lumber & trusses"
+    },
+    {
+      "id": "connectors",
+      "label": "Connectors"
+    },
+    {
+      "id": "fasteners",
+      "label": "Fasteners"
+    },
+    {
+      "id": "sheathing",
+      "label": "Sheathing"
+    },
+    {
+      "id": "membranes",
+      "label": "Membranes & barriers"
+    },
+    {
+      "id": "insulation",
+      "label": "Insulation"
+    },
+    {
+      "id": "cladding",
+      "label": "Cladding"
+    },
+    {
+      "id": "finish",
+      "label": "Finishes"
+    },
+    {
+      "id": "flashing_trim",
+      "label": "Trim & flashing"
+    },
+    {
+      "id": "trim",
+      "label": "Trim"
+    },
+    {
+      "id": "cabinetry",
+      "label": "Cabinetry"
+    },
+    {
+      "id": "appliances",
+      "label": "Appliances"
+    },
+    {
+      "id": "placeables",
+      "label": "Built-ins & fixtures"
+    },
+    {
+      "id": "allowances",
+      "label": "Allowances"
+    }
+  ],
   "layerFunctionTrades": {
     "air_gap": "siding",
     "airgap": "siding",

@@ -313,7 +313,8 @@ def apply_costs_op(state: CostsState, op: Mapping[str, Any]) -> CostsState:
 
 def costs_payload(bom: dict, prices: Prices | None, state: CostsState,
                   areas: Mapping[str, float] | None = None,
-                  products: Mapping[tuple[str, str], str] | None = None) -> dict:
+                  products: Mapping[tuple[str, str], str] | None = None,
+                  level_of: Mapping[str, str] | None = None) -> dict:
     """Everything the costs view needs in one JSON-ready dict.
 
     ``join`` tells the client how each estimate section maps onto BOM rows (bom key, key
@@ -334,7 +335,8 @@ def costs_payload(bom: dict, prices: Prices | None, state: CostsState,
     second, unchecked copy of the specification: the view can show what was specified, so
     the estimator only writes down what differed.
     """
-    estimate = estimate_costs(bom, prices, areas, products) if prices is not None else None
+    estimate = (estimate_costs(bom, prices, areas, products, level_of=level_of)
+                if prices is not None else None)
     join = {name: {"bom_key": bom_key, "key_field": key_field,
                    "quantity_field": quantity_field, "unit": unit,
                    # False for a section reported beside the construction total

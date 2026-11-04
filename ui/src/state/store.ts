@@ -30,6 +30,7 @@ import { createMutationActions, markSavedIfDrained, type MutationActions } from 
 import { createSiteSlice, type SiteSlice } from "./site";
 import { createPendingSlice, type PendingSlice } from "./pending";
 import { createPlacementSlice, type PlacementSlice } from "./placement";
+import { createReaderViewSlice, type ReaderViewSlice } from "./readerView";
 import { emptySessionEdits, type SessionEdits } from "./sessionEdits";
 import {
   DEFAULT_EARTH_OPACITY, DEFAULT_EARTH_TONE,
@@ -39,7 +40,8 @@ import {
   type ViewMode, type ViewTransform, type Workspace,
 } from "./vocabulary";
 
-export interface StoreState extends MutationActions, SiteSlice, PendingSlice, PlacementSlice {
+export interface StoreState
+  extends MutationActions, SiteSlice, PendingSlice, PlacementSlice, ReaderViewSlice {
   client: EngineClient;
   offline: boolean; // true once running against the in-browser pyodide engine
   offlineHouse: string | null;
@@ -188,6 +190,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
   ...createSiteSlice(set, get, store),
   ...createPendingSlice(set, get, store),
   ...createPlacementSlice(set, get, store),
+  ...createReaderViewSlice(set, get, store),
 
   client: new HttpEngineClient(),
   offline: false,

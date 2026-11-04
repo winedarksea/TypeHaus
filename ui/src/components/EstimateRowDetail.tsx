@@ -11,6 +11,8 @@
 // that gets quietly flattened.
 
 import type { EngineEstimateRow, EngineEstimateSection } from "../engine/EngineClient";
+import { formatRange } from "../model/engineCosts";
+import { categoryLabel, tradeLabel } from "../model/estimateGroups";
 import { rowBasisShares, rowDetailFacts, type DetailFact } from "../model/estimateRowDetail";
 
 /** The row's own material/labour/merged proportions, in the Basis block's colours. */
@@ -42,6 +44,13 @@ function Fact({ fact }: { fact: DetailFact }) {
   );
 }
 
+function spreadNote(row: EngineEstimateRow): string {
+  const spread = row.cost.high - row.cost.low;
+  if (!spread) return "priced exactly";
+  const mid = (row.cost.low + row.cost.high) / 2;
+  return `${formatRange({ low: spread, high: spread })} unknown, ${Math.round((spread / mid) * 100)}% of the expected`;
+}
+
 /**
  * `section` is the row's block from the payload — the basis note and the waste treatment live
  * there, and the row cannot answer for either on its own.
@@ -56,6 +65,17 @@ export function EstimateRowDetail({ row, section, sectionName }: {
     <div className="estimate-detail">
       <BasisBar row={row} />
       <dl className="estimate-facts">
+        <Fact fact={{
+          key: "filed", label: "Filed under",
+          text: `${tradeLabel(row.trade)} · ${categoryLabel(row.category)}`,
+          note: row.level ? `level: ${row.level === "building" ? "whole building" : row.level}`
+            : undefined,
+        }} />
+        <Fact fact={{
+          key: "spread", label: "Range",
+          text: formatRange(row.cost) ?? "—",
+          note: spreadNote(row),
+        }} />
         {facts.map((fact) => <Fact key={fact.key} fact={fact} />)}
         <div className="estimate-fact">
           <dt>Authored in</dt>

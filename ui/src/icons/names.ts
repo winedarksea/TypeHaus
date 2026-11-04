@@ -37,6 +37,8 @@ export type IconName =
   | "drawing"
   | "note"
   | "open-in-new"
+  | "maximize"
+  | "restore"
   | "view-2d"
   | "view-split"
   | "view-3d"

@@ -6,6 +6,9 @@
 // is validated and an unknown one is dropped, so a stale link degrades to the default view.
 import type { Model } from "../model/types";
 import { levelsOf } from "../model/levels";
+import { GROUP_KEYS, SORT_KEYS, type GroupKey, type SortKey } from "../model/estimateGroups";
+import { REPORTS } from "../components/shell/navigationConfig";
+import { DEFAULT_ESTIMATE_VIEW, type EstimateViewState } from "./readerView";
 import {
   ALL_VISIBILITY_KEYS, DEFAULT_OFF_KEYS, defaultVisibleTrades, expandRolePreset, ROLE_PRESETS, TRADE_GROUPS,
   type VisibilityKey, type VisibleTrades,
@@ -26,6 +29,8 @@ export interface ViewParams {
   activeLens?: Lens;
   activeWorkspace?: Workspace;
   detailView?: DetailView;
+  estimateGroup?: GroupKey;
+  estimateSort?: SortKey;
 }
 
 const MODES: ViewMode[] = ["2d", "split", "3d"];
@@ -33,9 +38,8 @@ const THREE: ThreeMode[] = ["nordic", "schematic"];
 const LABELS: LabelMode[] = ["all", "hover", "off"];
 const LENSES: Lens[] = ["none", "air", "water", "thermal", "vapor"];
 const WORKSPACES: Workspace[] = ["design", "analyze", "document"];
-const READERS: DetailView[] = [
-  "assembly", "bom", "circuits", "lighting", "hvac", "plumbing", "data", "estimate", "documents",
-];
+// Every report is linkable: a hand list here silently dropped the ones added after it.
+const READERS: DetailView[] = [...REPORTS.map((report) => report.id), "documents"];
 
 /** The store's initial values (store.ts). A param equal to one of these is not printed. */
 const DEFAULTS = {
@@ -46,6 +50,7 @@ const DEFAULTS = {
 /** Every query key this module owns; anything else in the search string is left alone. */
 const OWN_KEYS = [
   "preset", "mode", "three", "show", "group", "storey", "hideLevels", "labels", "lens", "ws", "reader",
+  "egroup", "esort",
 ];
 
 const structure = () => expandRolePreset(ROLE_PRESETS.Structure);
@@ -88,6 +93,8 @@ export function parseViewParams(search: string): ViewParams {
   set("activeLens", pick(q.get("lens"), LENSES));
   set("activeWorkspace", pick(q.get("ws"), WORKSPACES));
   set("detailView", pick(q.get("reader"), READERS));
+  set("estimateGroup", pick(q.get("egroup"), GROUP_KEYS));
+  set("estimateSort", pick(q.get("esort"), SORT_KEYS));
   set("activeStorey", q.get("storey") || undefined);
   const hidden = list(q.get("hideLevels"));
   if (hidden.length) out.hiddenLevels = hidden;
@@ -112,6 +119,8 @@ export interface ViewSnapshot {
   activeLens: Lens;
   activeWorkspace: Workspace;
   detailView: DetailView;
+  /** Printed only while the Estimate reader is open. */
+  estimateView?: EstimateViewState;
   model: Model | null;
 }
 
@@ -138,6 +147,10 @@ export function viewParamsFor(state: ViewSnapshot): string {
   put("lens", state.activeLens, DEFAULTS.activeLens);
   put("ws", state.activeWorkspace, DEFAULTS.activeWorkspace);
   put("reader", state.detailView, DEFAULTS.detailView);
+  if (state.detailView === "estimate" && state.estimateView) {
+    put("egroup", state.estimateView.group, DEFAULT_ESTIMATE_VIEW.group);
+    put("esort", state.estimateView.sort, DEFAULT_ESTIMATE_VIEW.sort);
+  }
   // Commas and colons read better unescaped, and both are legal in a query.
   return q.toString().replace(/%2C/gi, ",").replace(/%3A/gi, ":");
 }
@@ -160,6 +173,7 @@ interface ViewSetters {
   setActiveLens: (l: Lens) => void;
   setActiveWorkspace: (w: Workspace) => void;
   setDetailView: (v: DetailView) => void;
+  setEstimateView: (next: Partial<EstimateViewState>) => void;
   openDocuments: () => void;
   setViewMode: (v: ViewMode) => void;
 }
@@ -176,6 +190,8 @@ function applyModelFree(s: ViewSetters, p: ViewParams): void {
   if (p.labelMode) s.setLabelMode(p.labelMode);
   if (p.activeLens) s.setActiveLens(p.activeLens);
   if (p.activeWorkspace) s.setActiveWorkspace(p.activeWorkspace);
+  if (p.estimateGroup) s.setEstimateView({ group: p.estimateGroup });
+  if (p.estimateSort) s.setEstimateView({ sort: p.estimateSort });
 }
 
 /** Storey and reader wait for the model: a storey is checked against it. The view mode goes

@@ -9,11 +9,21 @@
    rather than CSS. */
 
 
-/* Sortable column header — a button that looks like the th it replaces. */
 /* The estimate's toolbar is wide enough to wrap on a narrow window rather than clip. */
-.workbench-bread {
+.estimate-reader .workbench-bread {
   flex-wrap: wrap;
 }
+/* The subtitle repeats the summary strip; a zero basis lets it give way before the
+   controls wrap. */
+.estimate-reader .reader-subtitle {
+  flex: 1 1 0;
+  min-width: 8ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Sortable column header — a button that looks like the th it replaces. */
 
 .reader-sort {
   display: inline-flex;
@@ -60,6 +70,47 @@
 .estimate-seg-btn.is-on {
   background: var(--md-secondary-container);
   color: var(--md-on-secondary-container);
+}
+
+/* Summary strip: the few numbers worth reading first, the full ladder behind a disclosure. */
+.estimate-strip-wrap {
+  margin-bottom: var(--space-4);
+}
+.estimate-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3) var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--md-shape-md);
+  background: var(--md-surface-container-lowest);
+}
+.estimate-strip-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.estimate-strip-item > .muted {
+  font-size: var(--text-xs);
+}
+.estimate-strip-item.is-basis {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+.estimate-strip-item.is-basis .estimate-basis-bar {
+  margin: 0;
+  height: 10px;
+}
+.estimate-buildup {
+  margin-top: var(--space-2);
+}
+.estimate-buildup > summary {
+  cursor: pointer;
+  color: var(--md-primary);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-3);
 }
 
 /* Totals */
@@ -213,9 +264,60 @@
   width: 1ch;
   color: var(--md-on-surface-variant);
 }
+/* Fixed widths so the bars and figures of every header line up in columns. */
 .estimate-group-label {
+  flex: 0 0 15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-weight: 600;
-  text-transform: capitalize;
+}
+.estimate-group-mid {
+  flex: 0 0 9ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.estimate-group-range { flex: 0 0 17ch; }
+.estimate-group-share { flex: 0 0 13ch; }
+.estimate-group-gsf { flex: 0 0 10ch; }
+/* Share of the total, one scale across every group on the page. */
+.estimate-share-bar {
+  display: inline-block;
+  align-self: center;
+  width: 160px;
+  height: 8px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-surface-container-high);
+  overflow: hidden;
+}
+.estimate-share-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--md-shape-full);
+  background: var(--md-primary);
+}
+.estimate-allowance-chip {
+  padding: 0 6px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface-variant);
+  font-size: var(--text-xs);
+}
+/* The tree: a category sits indented under its trade, quieter than it. */
+.estimate-children {
+  margin: var(--space-2) 0 0 var(--space-4);
+}
+.estimate-group.depth-1 {
+  margin-bottom: var(--space-2);
+}
+.estimate-group-head.depth-1 {
+  background: var(--md-surface-container-low);
+  font-size: 0.95em;
+}
+.estimate-group-head.depth-1 .estimate-group-label {
+  /* Less the children's indent, so the bars stay on one x. */
+  flex-basis: calc(15rem - var(--space-4));
+  font-weight: 500;
 }
 .estimate-key {
   display: flex;
@@ -223,9 +325,6 @@
 }
 .estimate-desc {
   font-size: var(--text-xs);
-}
-.estimate-trade {
-  text-transform: capitalize;
 }
 
 /* The range bar: position is magnitude, width is uncertainty. One mark that answers both of
@@ -259,6 +358,9 @@
 }
 .estimate-cost-range {
   font-size: var(--text-xs);
+}
+.estimate-cost .estimate-bar {
+  margin: 3px 0 1px;
 }
 
 .estimate-basis-badge {

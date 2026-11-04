@@ -177,6 +177,69 @@ export function LadderBlock({ estimate }: { estimate: EngineEstimate }) {
   );
 }
 
+/**
+ * One line above the rows: bid total, $/gsf, net, contingency and the material/labour bar.
+ * The three full blocks sit behind a disclosure so the rows start above the fold.
+ */
+export function SummaryStrip({ estimate }: { estimate: EngineEstimate }) {
+  const stages = ladderStages(estimate);
+  const net = stages.find((stage) => stage.key === "subtotal_net");
+  const contingency = stages.find((stage) => stage.key === "contingency");
+  const perSf = formatPerSf(estimate.per_sf?.bid_total ?? estimate.per_sf?.total, "gross", "gsf");
+  const slices = basisSlices(estimate);
+  return (
+    <section className="estimate-strip-wrap">
+      <div className="estimate-strip">
+        <div className="estimate-strip-item is-lead">
+          <span className="muted">{estimate.bid ? "Bid total" : "Construction total"}</span>
+          <Money value={estimate.bid?.total ?? estimate.total} className="estimate-total-figure" />
+        </div>
+        {perSf && (
+          <div className="estimate-strip-item">
+            <span className="muted">Per gross sf</span>
+            <span className="reader-mono">{perSf}</span>
+          </div>
+        )}
+        {net && (
+          <div className="estimate-strip-item">
+            <span className="muted">Net</span>
+            <Money value={net.value} />
+          </div>
+        )}
+        {contingency && (
+          <div className="estimate-strip-item">
+            <span className="muted">Contingency{contingency.rate ? ` (${contingency.rate})` : ""}</span>
+            <Money value={contingency.value} />
+          </div>
+        )}
+        {slices.length > 0 && (
+          <div className="estimate-strip-item is-basis">
+            <span className="muted">
+              {slices.map((slice) => `${slice.label} ${Math.round(slice.share * 100)}%`).join(" · ")}
+            </span>
+            <div className="estimate-basis-bar" role="presentation">
+              {slices.map((slice) => (
+                <span
+                  key={slice.key}
+                  className={`estimate-basis-slice is-${slice.key}`}
+                  style={{ width: `${slice.share * 100}%` }}
+                  title={`${slice.label}: ${formatRange(slice.value)}`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+      <details className="estimate-buildup">
+        <summary>How the total builds up</summary>
+        <TotalsBlock estimate={estimate} />
+        <BasisBlock estimate={estimate} />
+        <LadderBlock estimate={estimate} />
+      </details>
+    </section>
+  );
+}
+
 /** The rows the price file has nothing to say about — this page's to-do list. */
 export function UnpricedBlock({ estimate }: { estimate: EngineEstimate }) {
   const unpriced = estimate.unpriced;

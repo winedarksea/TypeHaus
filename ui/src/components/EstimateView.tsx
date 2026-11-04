@@ -12,33 +12,38 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useStore } from "../state/store";
-import type { EngineCosts } from "../engine/EngineClient";
-import { formatRange } from "../model/engineCosts";
+import type { EngineCosts, EngineEstimate } from "../engine/EngineClient";
+import { levelsOf } from "../model/levels";
+import {
+  displayName,
+  estimateSubtitle,
+  flattenEstimate,
+  maxHigh,
+  type EstimateRow,
+} from "../model/engineEstimate";
 import {
   GROUPS,
-  tradeLabel,
   SORTS,
   SORT_KEYS,
-  barWidths,
+  allGroupIds,
+  categoryLabel,
+  cumulativeShares,
   defaultCollapsed,
-  flattenEstimate,
-  groupRows,
-  maxHigh,
-  rowDescription,
-  estimateSubtitle,
+  groupTree,
+  tradeLabel,
   type EstimateGroup,
-  type EstimateRow,
-  type GroupKey,
   type SortKey,
-} from "../model/engineEstimate";
-import { BasisBlock, LadderBlock, TotalsBlock, UnpricedBlock } from "./EstimateSummary";
+} from "../model/estimateGroups";
+import { SummaryStrip, UnpricedBlock } from "./EstimateSummary";
 import { EstimateRowDetail } from "./EstimateRowDetail";
+import { GroupHeader, rowColumns } from "./EstimateRows";
 import {
-  ReaderColumn,
   ReaderFilter,
   ReaderSection,
   ReaderShell,
   ReaderTable,
+  type ReaderColumn,
+  type ReaderSort,
 } from "./ReaderShell";
 
 /** MD3 segmented button. The selected segment carries the same secondary-container tint the
@@ -65,163 +70,92 @@ function Segmented<T extends string>({ label, value, options, onChange }: {
   );
 }
 
-const BASIS_BADGE: Record<string, string> = {
-  material: "material", labour: "labour", installed: "installed",
-};
-
-function rowColumns(widest: number): ReaderColumn<EstimateRow>[] {
-  return [
-    {
-      key: "key", header: "item", sortKey: "key",
-      cell: (row) => (
-        <div className="estimate-key">
-          <span className="reader-mono">{row.key}</span>
-          {rowDescription(row)
-            && <span className="muted estimate-desc">{rowDescription(row)}</span>}
-        </div>
-      ),
-    },
-    {
-      key: "trade", header: "trade",
-      cell: (row) => row.trade
-        ? <span className="reader-chip estimate-trade" title={row.trade}>{tradeLabel(row.trade)}</span>
-        : <span className="muted">—</span>,
-    },
-    {
-      key: "section", header: "block", cellClass: "reader-mono muted",
-      // The prices.toml block to open to change this row — the reason the page is
-      // reviewable against the file rather than only against itself.
-      cell: (row) => row.section,
-    },
-    {
-      key: "quantity", header: "qty", num: true, sortKey: "quantity",
-      cell: (row) => `${row.quantity.toLocaleString()} ${row.unit}`,
-    },
-    {
-      key: "unit_price", header: "unit price", num: true,
-      cell: (row) => formatRange(row.unit_price) ?? "—",
-    },
-    {
-      key: "bar", header: "range", sortKey: "cost",
-      cell: (row) => {
-        const bar = barWidths(row, widest);
-        return (
-          <span className="estimate-bar" title={formatRange(row.cost) ?? undefined}>
-            <span
-              className="estimate-bar-fill"
-              style={{ marginLeft: `${bar.left}%`, width: `${bar.width}%` }}
-            />
-          </span>
-        );
-      },
-    },
-    {
-      // Leads with the single number the "Expected" sort actually ranks by — a bare
-      // low-high range gave no way to tell, on a wide-spread row, what value put it where
-      // it landed in the order. The range moves to a muted line underneath, still there for
-      // the reader who wants both ends.
-      key: "cost", header: "expected", num: true, sortKey: "cost",
-      cell: (row) => (
-        <div className="estimate-cost">
-          <span className="estimate-cost-mid">
-            {formatRange({ low: row.mid, high: row.mid })}
-          </span>
-          {row.basis && (
-            <span className={`estimate-basis-badge is-${row.basis}`}>
-              {BASIS_BADGE[row.basis] ?? row.basis}
-            </span>
-          )}
-          <span className="muted estimate-cost-range">{formatRange(row.cost)}</span>
-        </div>
-      ),
-    },
-    {
-      key: "spread", header: "spread", num: true, sortKey: "spread",
-      cell: (row) => row.spread
-        ? <>
-          {formatRange({ low: row.spread, high: row.spread })}
-          <span className="muted estimate-spread-pct">
-            {" "}{Math.round(row.spreadPct * 100)}%
-          </span>
-        </>
-        : <span className="muted">exact</span>,
-    },
-  ];
+/** What the filter box matches a row against: every name the page prints for it. */
+function haystack(row: EstimateRow): string {
+  return [row.key, displayName(row), row.description ?? "", row.section, row.trade ?? "",
+    tradeLabel(row.trade), categoryLabel(row.category), row.level ?? ""].join(" ").toLowerCase();
 }
 
-/** The headline for one group, and the control that opens it.
- *
- *  A `<button>` rather than a div with an onClick: this is the page's primary navigation now
- *  that groups start closed, so it has to be reachable by keyboard and has to announce its
- *  state. `aria-expanded` is what says "closed" to a screen reader; the caret is what says it
- *  to everyone else.
- *
- *  When the header is not shown (grouping by "none", where the single group is the whole
- *  table) there is nothing to collapse and no control is rendered — the caller keeps the
- *  table open in that case. */
-function GroupHeader({ group, showLabel, collapsed, onToggle }: {
-  group: EstimateGroup;
-  showLabel: boolean;
-  collapsed: boolean;
-  onToggle: () => void;
-}) {
-  if (!showLabel) return null;
+/** Shared by every level of the tree, so one prop list does not ripple through the recursion. */
+interface TreeContext {
+  estimate: EngineEstimate;
+  columns: ReaderColumn<EstimateRow>[];
+  sort: ReaderSort;
+  collapsed: ReadonlySet<string>;
+  toggleGroup: (id: string) => void;
+  opened: ReadonlySet<string>;
+  toggleRow: (id: string) => void;
+  /** False under Ranked, where the one in-total group IS the table and has no header. */
+  headed: (group: EstimateGroup) => boolean;
+  scale: number;
+  grossSf: number | null;
+}
+
+const rowId = (row: EstimateRow) => `${row.section}:${row.key}`;
+
+function GroupBlock({ group, ctx }: { group: EstimateGroup; ctx: TreeContext }) {
+  const headed = ctx.headed(group);
+  // A group with no header has no control to reopen it, so it is never closed.
+  const isCollapsed = headed && ctx.collapsed.has(group.id);
   return (
-    <button
-      type="button"
-      className="estimate-group-head"
-      aria-expanded={!collapsed}
-      onClick={onToggle}
-    >
-      <span className="estimate-group-caret" aria-hidden="true">
-        {collapsed ? "\u25b8" : "\u25be"}
-      </span>
-      <span className="estimate-group-label">{group.label}</span>
-      <span className="reader-mono">
-        {formatRange({ low: group.mid, high: group.mid })}
-        <span className="muted"> ({formatRange(group.subtotal)})</span>
-      </span>
-      <span className="muted">
-        {group.inTotal ? `${(group.share * 100).toFixed(1)}% of total`
-          : "beside the total"}
-      </span>
-      <span className="muted">{group.rows.length} rows</span>
-    </button>
+    <div className={`estimate-group depth-${group.depth}`}>
+      {headed && (
+        <GroupHeader
+          group={group}
+          collapsed={isCollapsed}
+          onToggle={() => ctx.toggleGroup(group.id)}
+          scale={ctx.scale}
+          grossSf={ctx.grossSf}
+        />
+      )}
+      {!isCollapsed && (group.children
+        ? <div className="estimate-children">
+          {group.children.map((child) => <GroupBlock key={child.id} group={child} ctx={ctx} />)}
+        </div>
+        : <ReaderTable
+          columns={ctx.columns}
+          rows={group.rows}
+          expand={{
+            isOpen: (row) => ctx.opened.has(rowId(row)),
+            onToggle: (row) => ctx.toggleRow(rowId(row)),
+            label: (row) => displayName(row),
+            render: (row) => (
+              <EstimateRowDetail
+                row={row}
+                section={ctx.estimate.sections[row.section]}
+                sectionName={row.section}
+              />
+            ),
+          }}
+          // Index-suffixed: (section, key) is NOT unique — one key can price several BOM rows.
+          rowKey={(row, index) => `${rowId(row)}:${index}`}
+          sort={ctx.sort}
+        />)}
+    </div>
   );
+}
+
+function toggled(prev: ReadonlySet<string>, id: string): Set<string> {
+  const next = new Set(prev);
+  if (!next.delete(id)) next.add(id);
+  return next;
 }
 
 export function EstimateView() {
   const model = useStore((s) => s.model);
   const client = useStore((s) => s.client);
   const closeReader = useStore((s) => s.closeReader);
+  // Group and sort live in the store (and the URL), read by both the segmented controls and
+  // the sortable headers, so the two can never disagree about the table's order.
+  const view = useStore((s) => s.estimateView);
+  const setView = useStore((s) => s.setEstimateView);
   const [costs, setCosts] = useState<EngineCosts | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
-  // Group and sort live in ONE piece of state, read by both the segmented controls and the
-  // sortable column headers — so the control and the headers can never disagree about what
-  // the table is ordered by.
-  const [view, setView] = useState<{ group: GroupKey; sort: SortKey }>(
-    { group: "trade", sort: "cost" });
-  // Open detail panels, keyed by `section:key` rather than by table index: the row order
-  // changes under every sort and grouping control on this page, and a panel that jumped to a
-  // different line when the reader re-sorted would be worse than no panel. A Set because
-  // several may be open at once — comparing two rows' splits is the whole point.
+  // Open detail panels by `section:key`, not table index: the order changes under every sort.
   const [opened, setOpened] = useState<ReadonlySet<string>>(() => new Set());
-  const toggleRow = (id: string) => setOpened((prev) => {
-    const next = new Set(prev);
-    if (!next.delete(id)) next.add(id);
-    return next;
-  });
-  // Collapsed GROUPS, deliberately separate state from `opened` above, which is per-row
-  // detail. They answer different questions ("which trades am I reading" against "which rows
-  // am I comparing") and merging them would make closing a trade forget every split a reader
-  // had open inside it.
+  // Collapsed groups by path id; separate from `opened`, so closing a trade keeps its panels.
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => new Set());
-  const toggleGroup = (id: string) => setCollapsed((prev) => {
-    const next = new Set(prev);
-    if (!next.delete(id)) next.add(id);
-    return next;
-  });
 
   useEffect(() => {
     let cancelled = false;
@@ -242,34 +176,38 @@ export function EstimateView() {
   const rows = useMemo(() => flattenEstimate(estimate), [estimate]);
   const needle = filter.trim().toLowerCase();
   const filtered = useMemo(() => needle
-    ? rows.filter((row) => `${row.key} ${row.description ?? ""} ${row.section} ${row.trade ?? ""}`
-      .toLowerCase().includes(needle))
-    : rows, [rows, needle]);
+    ? rows.filter((row) => haystack(row).includes(needle)) : rows, [rows, needle]);
+  const levels = useMemo(() => (model ? levelsOf(model) : []).map((level) => ({
+    key: level.key, label: level.key.charAt(0).toUpperCase() + level.key.slice(1),
+  })), [model]);
   const groups = useMemo(
-    () => groupRows(filtered, view.group, view.sort, estimate?.total ?? null),
-    [filtered, view, estimate]);
-  // One denominator for every bar on screen, so bars stay comparable across groups. Taken
-  // from the filtered set: a filter that leaves only small rows should still use the width.
+    () => groupTree(filtered, view.group, view.sort, estimate?.total ?? null, levels),
+    [filtered, view, estimate, levels]);
+  // One denominator for every range bar on screen, so bars compare across groups.
   const widest = useMemo(() => maxHigh(filtered), [filtered]);
-  // Re-seeded on a grouping or filter change, NOT merged with what the reader had open: the
-  // group ids change meaning under a new grouping ("electrical" the trade against
-  // "envelope_layers" the block), so carrying the old set across would reopen an arbitrary
-  // subset. Typing in the filter expands everything, or a filter with matches would look
-  // exactly like a filter with none.
+  const ranked = view.group === "none";
+  const cumulative = useMemo(() => {
+    if (!ranked || !groups[0]?.inTotal) return null;
+    const shares = cumulativeShares(groups[0].rows, estimate?.total);
+    return new Map(groups[0].rows.map((row, i) => [row, shares[i]]));
+  }, [ranked, groups, estimate]);
+  const columns = useMemo(
+    () => rowColumns({ widest, total: estimate?.total ?? null, cumulative }),
+    [widest, estimate, cumulative]);
+  // Re-seeded on a grouping or filter change, and once rows first arrive; never on a sort,
+  // which would slam shut the group the reader just opened.
+  const hasRows = rows.length > 0;
   useEffect(() => {
     setCollapsed(defaultCollapsed(groups, view.group, needle !== ""));
-    // `groups` is deliberately absent: it changes identity on every sort, and re-seeding on a
-    // sort would slam shut the group the reader just opened.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view.group, needle]);
-  const columns = useMemo(() => rowColumns(widest), [widest]);
+  }, [view.group, needle, hasRows]);
 
   if (!model) return null;
 
-  const close = closeReader;
   const subtitle = error !== null ? `${model.project.name} · estimate unavailable`
     : costs === null ? `${model.project.name} · pricing…`
       : estimateSubtitle(estimate, model.project.name);
+  const anyOpen = collapsed.size < allGroupIds(groups).length;
 
   const toolbar = (
     <>
@@ -283,25 +221,53 @@ export function EstimateView() {
         label="Group rows by"
         value={view.group}
         options={GROUPS}
-        onChange={(group) => setView((prev) => ({ ...prev, group }))}
+        onChange={(group) => setView({ group })}
       />
       <Segmented
         label="Sort rows by"
         value={view.sort}
         options={SORT_KEYS.map((key) => ({ key, label: SORTS[key].label }))}
-        onChange={(sort) => setView((prev) => ({ ...prev, sort }))}
+        onChange={(sort) => setView({ sort })}
       />
+      {!ranked && (
+        <button
+          className="btn"
+          onClick={() => setCollapsed(anyOpen ? new Set(allGroupIds(groups)) : new Set())}
+        >
+          {anyOpen ? "Collapse all" : "Expand all"}
+        </button>
+      )}
     </>
   );
 
-  const sort = {
+  const sort: ReaderSort = {
     key: view.sort,
     descending: SORTS[view.sort].descending,
-    onSort: (key: string) => setView((prev) => ({ ...prev, sort: key as SortKey })),
+    onSort: (key: string) => setView({ sort: key as SortKey }),
+  };
+
+  const ctx: TreeContext | null = estimate && {
+    estimate,
+    columns,
+    sort,
+    collapsed,
+    toggleGroup: (id) => setCollapsed((prev) => toggled(prev, id)),
+    opened,
+    toggleRow: (id) => setOpened((prev) => toggled(prev, id)),
+    headed: (group) => !ranked || !group.inTotal,
+    scale: groups.reduce((acc, g) => Math.max(acc, g.mid), 0),
+    grossSf: estimate.areas?.gross ?? null,
   };
 
   return (
-    <ReaderShell title="Estimate" subtitle={subtitle} onClose={close} toolbar={toolbar} wide>
+    <ReaderShell
+      title="Estimate"
+      subtitle={subtitle}
+      onClose={closeReader}
+      toolbar={toolbar}
+      wide
+      className="estimate-reader"
+    >
       {error !== null && (
         <p className="estimate-warn">Could not load the estimate: {error}</p>
       )}
@@ -312,56 +278,17 @@ export function EstimateView() {
           owns its own numbers.
         </p>
       )}
-      {estimate && (
+      {estimate && ctx && (
         <>
-          <TotalsBlock estimate={estimate} />
-          <BasisBlock estimate={estimate} />
-          <LadderBlock estimate={estimate} />
+          <SummaryStrip estimate={estimate} />
           <ReaderSection
             title="Rows"
-            note="Every priced row, ranked. The bar's position is what a row costs; its width
-              is how much of that is still unknown. Open a row for its material/labour split,
-              its waste treatment, and the accounts it books to."
+            note="The bar on a group is its share of the total, on one scale. Under a row, the
+              bar's position is what it costs and its width how much is still unknown. Open a
+              row for its split, its waste, and the accounts it books to."
             count={filtered.length}
           >
-            {groups.map((group) => {
-              // A group with no header has no control to reopen it, so it must never be
-              // closed — that is the "none" grouping, where the one group IS the table.
-              const showsHeader = view.group !== "none" || !group.inTotal;
-              const isCollapsed = showsHeader && collapsed.has(group.id);
-              return (
-              <div key={group.id} className="estimate-group">
-                <GroupHeader
-                  group={group}
-                  showLabel={showsHeader}
-                  collapsed={isCollapsed}
-                  onToggle={() => toggleGroup(group.id)}
-                />
-                {!isCollapsed && <ReaderTable
-                  columns={columns}
-                  rows={group.rows}
-                  expand={{
-                    isOpen: (row) => opened.has(`${row.section}:${row.key}`),
-                    onToggle: (row) => toggleRow(`${row.section}:${row.key}`),
-                    label: (row) => row.key,
-                    render: (row) => (
-                      <EstimateRowDetail
-                        row={row}
-                        section={estimate.sections[row.section]}
-                        sectionName={row.section}
-                      />
-                    ),
-                  }}
-                  // Index-suffixed: (section, key) is NOT unique here. One prices.toml key
-                  // can price several BOM rows (`standing-seam-nailstrip` bills the garage
-                  // roof; `standing-seam` can bill wall and roof out of one [envelope_layers]
-                  // line), and the colliding React keys rendered one of them twice.
-                  rowKey={(row, index) => `${row.section}:${row.key}:${index}`}
-                  sort={sort}
-                />}
-              </div>
-              );
-            })}
+            {groups.map((group) => <GroupBlock key={group.id} group={group} ctx={ctx} />)}
           </ReaderSection>
           <UnpricedBlock estimate={estimate} />
         </>

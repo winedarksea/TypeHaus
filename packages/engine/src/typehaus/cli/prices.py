@@ -663,6 +663,7 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                    areas: Mapping[str, float] | None = None,
                    products: Mapping[tuple[str, str], str] | None = None,
                    labels: LabelIndex | None = None,
+                   level_of: Mapping[str, str] | None = None,
                    ) -> dict[str, Any]:
     """Price a :func:`typehaus.takeoff.bill_of_materials` payload against ``prices``.
 
@@ -694,8 +695,13 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
     ``labels`` is what the plan calls its own types, materials and assemblies
     (:class:`typehaus.takeoff.labels.LabelIndex`); it only sharpens ``description`` and,
     like ``products``, takes no part in any arithmetic.
+
+    Every row carries a ``category`` (:mod:`typehaus.takeoff.cost_categories`) and, given
+    ``level_of`` (tag -> level, :func:`typehaus.takeoff.tasks.level_index`), a ``level``:
+    one level, or ``building``. Both are labels only.
     """
     labels = labels or EMPTY_LABELS
+    from typehaus.takeoff.cost_categories import CategoryFacts, category_of
     from typehaus.takeoff.cost_codes import cost_code
     from typehaus.takeoff.cost_model import (
         apply_waste,
@@ -705,6 +711,7 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
         roll_up,
         split_by_basis,
     )
+    from typehaus.takeoff.tasks import row_level
     sections: dict[str, dict[str, Any]] = {}
     total = ZERO
     excluded_total = ZERO
@@ -727,6 +734,7 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
     # The allowances "BOM" is the price table itself — see ``ALLOWANCES``. Written into a
     # local copy so a caller's payload is never mutated by having been priced.
     driver_consumed: dict[str, list[tuple[str, Mapping[str, Any]]]] = {}
+    facts = CategoryFacts.from_bom(bom)
     if prices.allowances:
         allowance_rows, driver_consumed = _allowance_rows(prices, bom, areas)
         bom = {**bom, ALLOWANCES: allowance_rows}
@@ -844,7 +852,11 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                          "order_quantity": round(quantity * (1.0 + (
                              0.0 if waste_in_quantity(name)
                              else adjustments.waste_rate(name, key))), 2),
-                         **code.as_dict()})
+                         **code.as_dict(),
+                         "category": category_of(name, key, code.trade, row, facts,
+                                                 prices.categories),
+                         **({"level": row_level(row.get("tags"), level_of)}
+                            if level_of is not None else {})})
         if rows:
             subtotal = _sum(PriceRange(r["cost"]["low"], r["cost"]["high"]) for r in rows)
             in_total = name not in EXCLUDED_FROM_TOTAL

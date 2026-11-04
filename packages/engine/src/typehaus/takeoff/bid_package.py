@@ -257,10 +257,10 @@ def build_bid_packages(model: Any, bom: Mapping[str, Any], *,
     """
     if priced and estimate is None:
         raise ValueError("a priced package needs an estimate; without prices.toml there is none")
-    from typehaus.takeoff.tasks import _storey_of_tag
+    from typehaus.takeoff.tasks import level_index
 
     labels = labels or EMPTY_LABELS
-    storey_of = _storey_of_tag(model)
+    storey_of = level_index(model)
     prices = _price_index(estimate)
     equals_labels = _equals_labels(model)
     by_trade: dict[str, dict[str, list[BidLine]]] = {}
