@@ -7450,7 +7450,9 @@ wet-vent: the WC joins upstream of both, against 908.2.1.4.
   take the same sheet and base as `catlin-vinyl-gatsby`. Named alternatives: Beauflor Blacktex
   HD Canvas 109M, Mannington Platinum Tapestry 130451. The print is a 9" white-marble tile
   with black diamonds and a gold pinstripe; the viewer draws it as `tile-gatsby-grid`
-  (`ui/src/three/tileMaterial.ts`, inlay not drawn).
+  (`ui/src/three/tileMaterial.ts`). The renderer now includes the alternating black-marble
+  corner diamonds and paired gold diagonals, matched to the product swatch; the printed
+  joints stay flat on the sheet-vinyl surface. Browser review covers all four Gatsby rooms.
 - **Leak valve dropped.** `APPL-S-PLANT-VALVE` and its ZAC36 type are deleted; the stub's
   stop and the main are the shutoffs.
 - **Spigot onto the balcony.** `FX-S-BALC-HYD` moved 7'-4" -> 12'-8", directly over

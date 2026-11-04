@@ -22,8 +22,11 @@ try {
     width: 1600, height: 2320, deviceScaleFactor: 1, mobile: false,
   });
   await mkdir(output, { recursive: true });
-  for (const view of ["rooms", "detail"]) {
-    const url = `http://127.0.0.1:${server.httpServer.address().port}/tile-review.html${view === "detail" ? "?detail" : ""}`;
+  for (const view of ["rooms", "detail", "gatsby-rooms", "gatsby-detail"]) {
+    const query = new URLSearchParams();
+    if (view.includes("detail")) query.set("detail", "");
+    if (view.startsWith("gatsby")) query.set("gatsby", "");
+    const url = `http://127.0.0.1:${server.httpServer.address().port}/tile-review.html?${query}`;
     await session.send("Page.navigate", { url });
     const deadline = Date.now() + 60000;
     while (!(await evaluate(session, "return window.tileReviewReady === true"))) {

@@ -344,6 +344,9 @@ the future.
 - Is TypeHaus organized such that a contractor building typehaus could hand their chatbot/llm of choice the github repo link and easily get answers they need on the design?
 - Model a bird feeder outside the kitchen window
 - Reverse osmosis sink?
+- See if we can reduce the remove/reduce the RM-S-SUITE door (such that a switch to a solid door makes sense too)
+- See if we can switch the LED strips to HA compatible Matter/Thread (or if to stay Zigbee). Also ideally reduce the number, ie just one or two for the soffits, not six
+- The extra furring on the stairs, C-B-CN, seems a little ridiculous. Should we just go to wider stairs?
 
 # Project Management
 

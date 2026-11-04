@@ -4,6 +4,7 @@ import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
 import { latticeHash, tiledFbm } from "./valueNoise";
 import { ONYX_PRINTS, onyxFace, type OnyxPrintKey } from "./onyxPixels";
 import { buildOnyxMaps, disposeOnyxTextures } from "./onyxMaps";
+import { sampleGatsbyPrint } from "./gatsbyPrint";
 
 const INCH = 0.0254;
 export const TILE_RENDER_SETTINGS = {
@@ -24,6 +25,9 @@ export interface TileStyle {
   readonly veinWeight?: number;
   /** Joint roughness when the "joint" is the panel's own relief, not grout. */
   readonly jointRoughness?: number;
+  /** Printed sheet joints have no physical grout recess. */
+  readonly jointDepthM?: number;
+  readonly inlay?: "gatsby";
   /** Tiles per repeat, [cols, rows]; default [2, 2]. */
   readonly repeat?: readonly [number, number];
   /** A fixed full-colour print (onyx kernel) instead of the tinted procedural face. */
@@ -39,11 +43,11 @@ export const TILE_STYLES: Readonly<Record<string, TileStyle>> = {
     pattern: "grid", sizeM: [24 * INCH, 12 * INCH], jointM: INCH / 8,
     color: [244, 246, 246], grout: [250, 249, 245], roughness: 0.58, veinWeight: 0.42,
   },
-  // Tarkett First Class Windsor Gatsby 87061: 9" printed white-marble squares, grey joints.
-  // The black diamonds and gold inlay are not modelled; the face is the print's white.
+  // Printed marble, alternating black corner diamonds and paired diagonal gold pinstripes.
   "tile-gatsby-grid": {
     pattern: "grid", sizeM: [9 * INCH, 9 * INCH], jointM: INCH / 16,
-    color: [240, 240, 240], grout: [200, 200, 198], roughness: 0.4, veinWeight: 0.3,
+    color: [245, 245, 245], grout: [176, 177, 175], roughness: 0.4,
+    inlay: "gatsby", jointDepthM: 0, jointRoughness: 0.4, variation: "none",
   },
   // Swanstone Modern Subway: a 6x24 relief moulded into one gloss panel, so the "grout" is
   // the body colour and only the recess reads.
@@ -99,6 +103,15 @@ export function sampleTile(style: TileStyle, u: number, v: number): TileSample {
   const [cols, rows] = style.repeat ?? [2, 2];
   const id = latticeHash(wrap(col, cols), wrap(row, rows));
   const tileFraction = clamp(distance / TILE_RENDER_SETTINGS.bevelM);
+  if (style.inlay === "gatsby") {
+    const face = sampleGatsbyPrint(u, v, localX / px, localY / py, col, row, px, style.color);
+    return {
+      color: style.grout.map((channel, i) => channel * (1 - tileFraction) + face[i] * tileFraction),
+      heightM: tileFraction * (style.jointDepthM ?? TILE_RENDER_SETTINGS.groutDepthM),
+      roughness: (style.jointRoughness ?? TILE_RENDER_SETTINGS.groutRoughness) * (1 - tileFraction)
+        + style.roughness * tileFraction,
+    };
+  }
   if (style.print) {
     // Face by cell; coarse (60 px/m) so headless sampling stays cheap.
     const face = (wrap(row, rows) * cols + wrap(col, cols)) % ONYX_PRINTS[style.print].faces;
@@ -108,7 +121,7 @@ export function sampleTile(style: TileStyle, u: number, v: number): TileSample {
     const face3 = [s.r, s.g, s.b];
     return {
       color: style.grout.map((g, i) => g * (1 - tileFraction) + face3[i] * tileFraction),
-      heightM: tileFraction * TILE_RENDER_SETTINGS.groutDepthM,
+      heightM: tileFraction * (style.jointDepthM ?? TILE_RENDER_SETTINGS.groutDepthM),
       roughness: TILE_RENDER_SETTINGS.groutRoughness * (1 - tileFraction) + style.roughness * tileFraction,
     };
   }
@@ -126,7 +139,7 @@ export function sampleTile(style: TileStyle, u: number, v: number): TileSample {
     return style.grout[i] * 0.90 * (1 - tileFraction) + tile * tileFraction;
   });
   return {
-    color, heightM: tileFraction * TILE_RENDER_SETTINGS.groutDepthM,
+    color, heightM: tileFraction * (style.jointDepthM ?? TILE_RENDER_SETTINGS.groutDepthM),
     roughness: (style.jointRoughness ?? TILE_RENDER_SETTINGS.groutRoughness) * (1 - tileFraction)
       + style.roughness * tileFraction,
   };

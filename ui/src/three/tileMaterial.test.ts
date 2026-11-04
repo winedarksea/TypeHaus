@@ -22,6 +22,36 @@ export function runTileMaterialTests() {
   assert(close(carrara.sizeM[0], 24 * 0.0254) && close(carrara.sizeM[1], 12 * 0.0254),
     "Economy Carrara is 12 by 24 inches");
   assert(close(carrara.jointM, 1 / 8 * 0.0254), "Carrara joint follows manufacturer recommendation");
+  const gatsby = TILE_STYLES["tile-gatsby-grid"];
+  assert(close(gatsby.sizeM[0], 9 * 0.0254) && close(gatsby.sizeM[1], 9 * 0.0254),
+    "Gatsby keeps the 9-inch printed squares");
+  // Probe all four quarters of a diamond, including across the repeat boundary.
+  for (const vertex of [0, 0.5, 1]) {
+    for (const dx of [-0.025, 0.025]) for (const dy of [-0.025, 0.025]) {
+      assert(sampleTile(gatsby, vertex + dx, vertex + dy).color.every(channel => channel < 90),
+        "Black marble quarters meet into diamonds at alternating grid intersections");
+    }
+  }
+  assert(sampleTile(gatsby, 0.025, 0.475).color.every(channel => channel > 190),
+    "The other grid intersections remain white marble");
+  for (const [u, v] of [[0.1875, 0.1875], [0.3125, 0.3125], [0.8125, 0.1875]]) {
+    const gold = sampleTile(gatsby, u, v).color;
+    assert(gold[0] > gold[1] && gold[1] > gold[2] * 1.5,
+      "Paired gold diagonals mirror in adjacent squares");
+  }
+  let dark = 0, gold = 0;
+  const samplesPerAxis = 128;
+  for (let y = 0; y < samplesPerAxis; y++) for (let x = 0; x < samplesPerAxis; x++) {
+    const sample = sampleTile(gatsby, (x + 0.5) / samplesPerAxis, (y + 0.5) / samplesPerAxis);
+    if (sample.color.every(channel => channel < 90)) dark++;
+    if (sample.color[0] > sample.color[1] && sample.color[1] > sample.color[2] * 1.5) gold++;
+    assert(sample.heightM === 0 && sample.roughness === gatsby.roughness,
+      "Printed joints and inlays stay on the same vinyl surface");
+  }
+  assert(dark / samplesPerAxis ** 2 > 0.06 && dark / samplesPerAxis ** 2 < 0.10,
+    "Black diamonds occupy the swatch's approximate area, keeping them visible at room scale");
+  assert(gold / samplesPerAxis ** 2 > 0.01 && gold / samplesPerAxis ** 2 < 0.03,
+    "The gold remains a pinstripe across the repeat");
   for (const [key, style] of Object.entries(TILE_STYLES)) {
     assert(tileStyleOrNull(key) === style, "Declared recipe selects its configuration");
     for (const [u, v] of [[0.13, 0.27], [0.89, 0.61], [-0.27, 0.91]]) {
