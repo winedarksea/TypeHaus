@@ -28,6 +28,8 @@ try {
     while (Date.now() < d) { c = document.querySelector("canvas");
       if (c && c.getBoundingClientRect().width > 100) break; await new Promise(r => setTimeout(r, 200)); }
     if (!c) throw new Error("3D canvas never mounted");
+    // The scene builds progressively (→ sceneStages); picks are partial until it is done.
+    while (Date.now() < d && window.__haus.sceneBuilding !== false) await new Promise(r => setTimeout(r, 200));
     await new Promise(r => setTimeout(r, 5000));
     return 1;`);
 

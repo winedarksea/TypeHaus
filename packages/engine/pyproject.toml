@@ -26,6 +26,9 @@ dependencies = [
     "typer>=0.12",
     "rich>=13.0",
     "shapely>=2.1",
+    # The model payload's mesh encode and furniture normals. 1.x API only: the PWA's
+    # Pyodide v0.26.2 ships numpy 1.26.
+    "numpy>=1.24",
     "libcst>=1.1",
     "ifcopenshell>=0.8,<0.9",
     "ezdxf>=1.1",
@@ -75,8 +78,7 @@ dev = [
 # without the whole dev toolchain.
 fea = ["PyNiteFEA>=1.0"]
 # `haus print3d` and `typehaus.solids3d`: manifold3d has no Pyodide build, so it is an opt-in
-# export and a test oracle, never a dependency of resolve or checks (decision #106). numpy is
-# imported directly; shapely brings it anyway, so it is named here, not in the core list.
+# export and a test oracle, never a dependency of resolve or checks (decision #106).
 print3d = ["manifold3d>=3.5", "numpy>=1.24"]
 
 [project.urls]

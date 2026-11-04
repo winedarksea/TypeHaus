@@ -4,6 +4,7 @@
 // is one sheet. Like the plank maps, the tile is neutral luminance and `material.color`
 // tints it, so the authored colour still answers "what colour is this floor".
 import * as THREE from "three";
+import { textureTimer } from "./buildTimings";
 import { tiledFbm } from "./valueNoise";
 
 const MARBLE_TEX_PX = 1024;
@@ -67,6 +68,7 @@ let marbleMap: THREE.Texture | null = null;
 export function buildMarbleMap(): THREE.Texture | null {
   if (marbleMap) return marbleMap;
   if (typeof document === "undefined") return null;
+  const timed = textureTimer("marble");
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = MARBLE_TEX_PX;
   const ctx = canvas.getContext("2d");
@@ -86,6 +88,7 @@ export function buildMarbleMap(): THREE.Texture | null {
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
   marbleMap = texture;
+  timed();
   return marbleMap;
 }
 

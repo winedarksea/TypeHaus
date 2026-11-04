@@ -40,6 +40,7 @@ from typehaus.model.remap import MutationResult
 from typehaus.resolve import resolve, resolve_preview
 from typehaus.resolve.model import ResolvedModel
 from typehaus.server.model_json import load_variant_catalog, model_to_dict, preview_to_dict
+from typehaus.server.model_payload import PayloadCache
 from typehaus.source import load_plan
 from typehaus.source.coordinator import ProjectCoordinator
 from typehaus.source.inmemory import InMemoryApplyError, apply_ops_to_plan, can_apply_in_memory
@@ -90,8 +91,7 @@ class ProjectState:
     _revision_aliases: set[str] = field(default_factory=set)
     _undo_depth: int = 0
     _redo_depth: int = 0
-    _model_cache: tuple[str, dict[str, Any]] | None = None
-    _model_bytes: tuple[dict[str, Any], bytes] | None = None  # keyed on the payload object
+    _payload: PayloadCache = field(default_factory=PayloadCache)  # keyed on the revision
     _lock: threading.RLock = field(default_factory=threading.RLock)
     # Background source-writeback worker (lazily started): a single thread applies queued
     # writebacks in order, so disk source is a faithful, serialized replay of the fast edits.
@@ -137,13 +137,13 @@ class ProjectState:
     def _bump_revision(self) -> None:
         self._revision = uuid.uuid4().hex[:16]
         self._revision_aliases.clear()
-        self._model_cache = None
+        self._payload.invalidate()
 
     # --- full rebuild from source (open, undo/redo, watcher, build) ----------
     def rebuild(self) -> None:
         """Reload plan source, re-resolve, and refresh findings (the shared rebuild path)."""
         with self._lock:
-            self._model_cache = None
+            self._payload.invalidate()
             timings: dict[str, float] = {}
             t0 = time.perf_counter()
             result = load_plan(self.house_dir)
@@ -228,7 +228,9 @@ class ProjectState:
                     self.ok = report.ok
                     self.timings["run_checks"] = elapsed
                     self.checks_pending = False
-                    self._model_cache = None
+                    self._payload.with_findings(revision, self.findings, self.ok, {
+                        "perf": {**self.timings, **self._payload.timings},
+                        "checksPending": False})
             with self._checks_cv:
                 if self._checks_request is None:
                     self._checks_idle.set()
@@ -432,7 +434,7 @@ class ProjectState:
                 # Refresh provenance (line numbers shifted by the writeback) for pick→source.
                 gained = reloaded.provenance.tags() - self.provenance.tags()
                 self.provenance = reloaded.provenance
-                self._model_cache = None
+                self._payload.invalidate()
                 if gained:
                     # A freshly added element only now has a source location; a new revision
                     # makes clients refetch it, and the alias keeps their pending commits valid.
@@ -454,9 +456,7 @@ class ProjectState:
                     "perf": dict(self.timings),
                     "checksPending": self.checks_pending,
                 }
-            if self._model_cache is not None and self._model_cache[0] == revision:
-                return self._model_cache[1]
-            payload = model_to_dict(
+            return self._payload.get(revision, lambda: model_to_dict(
                 self.model,
                 revision=revision,
                 content_hash=self.content_hash,
@@ -466,20 +466,16 @@ class ProjectState:
                 # Graceful: absent or malformed variants.toml serves an empty catalog
                 # rather than failing the GET /model contract.
                 variants=load_variant_catalog(self.house_dir),
-            )
-            payload["ok"] = self.ok
-            payload["perf"] = dict(self.timings)
-            payload["checksPending"] = self.checks_pending
-            self._model_cache = (revision, payload)
-            return payload
+            ), {"ok": self.ok, "perf": dict(self.timings), "checksPending": self.checks_pending})
 
     def model_json_bytes(self) -> bytes:
-        """``model_json()`` encoded once per payload. Unlocked: a race only encodes it twice."""
-        payload, cached = self.model_json(), self._model_bytes
-        if cached is None or cached[0] is not payload:
-            body = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-            self._model_bytes = cached = (payload, body.encode("utf-8"))
-        return cached[1]
+        """``model_json()`` encoded once per payload (→ server/model_payload.py). The encode
+        runs outside the state lock; a payload swapped in meanwhile is simply newer."""
+        payload = self.model_json()
+        encoded = self._payload.encoded()
+        # An unresolved model's stub payload is never cached.
+        return encoded if encoded is not None else json.dumps(
+            payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
 
     def findings_json(self) -> list[dict[str, Any]]:
         with self._lock:

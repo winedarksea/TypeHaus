@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { textureTimer } from "./buildTimings";
 import { authoredAppearance, type MaterialAppearance } from "../nordic/palette";
 import { tiledValueNoise } from "./valueNoise";
 
@@ -32,8 +33,9 @@ export function frostWhiteLuminance(u: number, v: number): number {
 }
 
 let aggregateMap: THREE.DataTexture | undefined;
-function frostWhiteMap(): THREE.DataTexture {
+export function frostWhiteMap(): THREE.DataTexture {
   if (aggregateMap) return aggregateMap;
+  const timed = textureTimer("quartz");
   const size = FROST_WHITE_SURFACE.textureSizePx;
   const pixels = new Uint8Array(size * size * 4);
   for (let y = 0; y < size; y++) {
@@ -52,6 +54,7 @@ function frostWhiteMap(): THREE.DataTexture {
   aggregateMap.generateMipmaps = true;
   aggregateMap.anisotropy = 4;
   aggregateMap.needsUpdate = true;
+  timed();
   return aggregateMap;
 }
 

@@ -27,7 +27,7 @@ const step = (m) => console.log(`[${((Date.now() - t0) / 1000).toFixed(1)}s] ${m
 // --- dynamic half: the real overlay/union code under GEOS 3.12 --------------------------
 const py = await loadPyodide();
 step("pyodide booted");
-await py.loadPackage(["pydantic", "shapely"]); // exactly what worker.ts loads
+await py.loadPackage(["pydantic", "shapely", "numpy"]); // exactly what worker.ts loads
 step("packages loaded");
 
 py.FS.mkdirTree("/repo");
@@ -55,6 +55,7 @@ state = ENGINE.rebuild()
 assert state["ok"], "rebuild not ok: " + json.dumps(state["findings"][:5])
 
 payload = ENGINE.model_json()
+assert json.loads(ENGINE.model_bytes()) == json.loads(json.dumps(payload))  # the worker's wire bytes
 bom = ENGINE.bom_json()
 calculations = ENGINE.engineering_calculations()
 assert calculations["revision"] == state["revision"]

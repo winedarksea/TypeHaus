@@ -3,6 +3,8 @@
 // swatch, with ~2.5 mm loop rows running along the 18 in direction. Same cheap recipe as the
 // cut pile, but the colour map carries the product's own colours (material.color is white).
 import * as THREE from "three";
+import { textureTimer } from "./buildTimings";
+import { writeHeightNormals } from "./heightNormals";
 import type { PlanCenter } from "./planGeometry";
 import { applyWorldBoxUv } from "./worldBoxUv";
 import { latticeHash, tiledFbm, tiledValueNoise } from "./valueNoise";
@@ -61,9 +63,39 @@ const SEGMENTS = PX.map(([a, b, c, d]) => [a / 500, b / 250, c / 500, d / 250] a
 
 export interface CarpetLoopSample { rgb: readonly [number, number, number]; luminance: number; height: number; roughness: number; line: number }
 
+// Beyond this distance (in) a line covers nothing, whatever its gap (→ lineCoverage's clamp).
+const REACH_IN = LINE_HALF_IN + 0.06;
+type Candidate = readonly [ax: number, ay: number, sx: number, sy: number];
+// Per 1" cell of the tile, the (segment, repeat offset) pairs within reach of it: the rest
+// cannot change the coverage, and testing all 270 per pixel was the whole map's cost.
+const CELLS: readonly Candidate[][] = (() => {
+  const cells: Candidate[][] = [];
+  for (let cy = 0; cy < TILE_IN[1]; cy++) for (let cx = 0; cx < TILE_IN[0]; cx++) {
+    const list: Candidate[] = [];
+    for (const [ax, ay, bx, by] of SEGMENTS) for (let ox = -1; ox <= 1; ox++) for (let oy = -1; oy <= 1; oy++) {
+      const x0 = (Math.min(ax, bx) + ox) * TILE_IN[0], x1 = (Math.max(ax, bx) + ox) * TILE_IN[0];
+      const y0 = (Math.min(ay, by) + oy) * TILE_IN[1], y1 = (Math.max(ay, by) + oy) * TILE_IN[1];
+      const gx = Math.max(x0 - (cx + 1), cx - x1, 0), gy = Math.max(y0 - (cy + 1), cy - y1, 0);
+      if (gx >= REACH_IN || gy >= REACH_IN) continue;
+      list.push([(ax + ox) * TILE_IN[0], (ay + oy) * TILE_IN[1], (bx - ax) * TILE_IN[0], (by - ay) * TILE_IN[1]]);
+    }
+    cells.push(list);
+  }
+  return cells;
+})();
+
 function lineCoverage(u: number, v: number): number {
   let best = Infinity;
-  for (const [ax, ay, bx, by] of SEGMENTS) for (let ox = -1; ox <= 1; ox++) for (let oy = -1; oy <= 1; oy++) {
+  const qx = u * TILE_IN[0], qy = v * TILE_IN[1];
+  const cx = Math.floor(qx), cy = Math.floor(qy);
+  const inTile = cx >= 0 && cx < TILE_IN[0] && cy >= 0 && cy < TILE_IN[1];
+  if (inTile) {
+    for (const [ax, ay, sx, sy] of CELLS[cy * TILE_IN[0] + cx]) {
+      const px = qx - ax, py = qy - ay;
+      const t = clamp01((px * sx + py * sy) / (sx * sx + sy * sy));
+      best = Math.min(best, Math.hypot(px - t * sx, py - t * sy));
+    }
+  } else for (const [ax, ay, bx, by] of SEGMENTS) for (let ox = -1; ox <= 1; ox++) for (let oy = -1; oy <= 1; oy++) {
     const px = (u - ox - ax) * TILE_IN[0], py = (v - oy - ay) * TILE_IN[1];
     const sx = (bx - ax) * TILE_IN[0], sy = (by - ay) * TILE_IN[1];
     const t = clamp01((px * sx + py * sy) / (sx * sx + sy * sy));
@@ -75,12 +107,24 @@ function lineCoverage(u: number, v: number): number {
   return clamp01((half + 0.06 - best) / 0.12);
 }
 
+// The per-loop flicker seed, hashed once per (row, along) cell.
+let seedTable: Float64Array | null = null;
+function rowSeeds(): Float64Array {
+  if (seedTable) return seedTable;
+  seedTable = new Float64Array(ROWS * 180);
+  for (let row = 0; row < ROWS; row++) for (let along = 0; along < 180; along++) {
+    seedTable[row * 180 + along] = latticeHash(row, along);
+  }
+  return seedTable;
+}
+
 /** The tile at `u, v` in [0, 1): pure; `line` is 1 on the high level. */
 export function carpetLoopSample(u: number, v: number): CarpetLoopSample {
   const line = lineCoverage(u, v);
   const row = Math.floor(u * ROWS);
   const along = Math.floor(v * ROWS * 0.5 * (TILE_IN[1] / TILE_IN[0]) * 2);
-  const seed = latticeHash(row % ROWS, along % 180);
+  const seed = row >= 0 && along >= 0 ? rowSeeds()[(row % ROWS) * 180 + (along % 180)]
+    : latticeHash(row % ROWS, along % 180);
   const phase = u * ROWS - row;
   const ridge = Math.sin(Math.PI * phase) ** 2;
   const flicker = 0.93 + 0.07 * ridge + 0.05 * (seed - 0.5) + tiledFbm(u, v, MOTTLE);
@@ -99,9 +143,10 @@ export function isCarpetRefineStructural(finish: string | null | undefined): boo
 interface LoopMaps { color: THREE.Texture; normal: THREE.Texture; roughness: THREE.Texture }
 let loopMaps: LoopMaps | null = null;
 
-function buildLoopMaps(): LoopMaps | null {
+export function buildLoopMaps(): LoopMaps | null {
   if (loopMaps) return loopMaps;
   if (typeof document === "undefined") return null;
+  const timed = textureTimer("carpetLoop");
   const canvases = Array.from({ length: 3 }, () => {
     const canvas = document.createElement("canvas");
     canvas.width = W; canvas.height = H;
@@ -122,14 +167,8 @@ function buildLoopMaps(): LoopMaps | null {
     heights[y * W + x] = s.height;
     for (const image of images) image.data[offset + 3] = 255;
   }
-  const height = (x: number, y: number) => heights[((y % H) + H) % H * W + ((x % W) + W) % W];
   const scale = W / (2 * CARPET_LOOP_TILE_M[0]);
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const n = new THREE.Vector3(-(height(x + 1, y) - height(x - 1, y)) * scale,
-      -(height(x, y + 1) - height(x, y - 1)) * scale, 1).normalize();
-    const offset = (y * W + x) * 4;
-    [n.x, n.y, n.z].forEach((value, i) => { images[1].data[offset + i] = (value * 0.5 + 0.5) * 255; });
-  }
+  writeHeightNormals(heights, W, H, scale, scale, images[1].data);
   const textures = canvases.map((canvas, index) => {
     contexts[index]!.putImageData(images[index], 0, 0);
     const texture = new THREE.CanvasTexture(canvas);
@@ -139,6 +178,7 @@ function buildLoopMaps(): LoopMaps | null {
     return texture;
   });
   loopMaps = { color: textures[0], normal: textures[1], roughness: textures[2] };
+  timed();
   return loopMaps;
 }
 

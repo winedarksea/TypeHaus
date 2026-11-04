@@ -171,7 +171,7 @@ def emit_fixtures(b: SceneBuilder, model: ResolvedModel, storey: str,
     layers = {"furniture": "A-FURN", "plumbing": "A-FIXT", "appliance": "A-FIXT",
               "mechanical": "M-EQPT", "electrical": "E-POWR"}
     symbols = {item["tag"]: item.get("plan_strokes", ())
-               for item in canvas_object_types(model.plan)}
+               for item in canvas_object_types(model.plan, parts_for=())}
     for item in model.canvas_objects:
         if item.storey != storey or (domains is not None and item.domain not in domains):
             continue

@@ -9,6 +9,21 @@ export function latticeHash(x: number, y: number): number {
   return h - Math.floor(h);
 }
 
+// The wrapped lattice of one integer frequency, hashed once: a map pass samples it ~10^6 times,
+// and `latticeHash` (a sin) per corner was most of a procedural map's build time.
+const lattices = new Map<number, Float64Array>();
+function lattice(frequency: number): Float64Array {
+  let table = lattices.get(frequency);
+  if (!table) {
+    table = new Float64Array(frequency * frequency);
+    for (let y = 0; y < frequency; y++) for (let x = 0; x < frequency; x++) {
+      table[y * frequency + x] = latticeHash(x, y);
+    }
+    lattices.set(frequency, table);
+  }
+  return table;
+}
+
 /** Smoothstep-bilinear value noise in [0, 1) at integer `frequency`, wrapping over the tile. */
 export function tiledValueNoise(u: number, v: number, frequency: number): number {
   const fx = u * frequency;
@@ -19,11 +34,20 @@ export function tiledValueNoise(u: number, v: number, frequency: number): number
   const ty = fy - y0;
   const sx = tx * tx * (3 - 2 * tx);
   const sy = ty * ty * (3 - 2 * ty);
-  const wrap = (n: number) => ((n % frequency) + frequency) % frequency;
-  const n00 = latticeHash(wrap(x0), wrap(y0));
-  const n10 = latticeHash(wrap(x0 + 1), wrap(y0));
-  const n01 = latticeHash(wrap(x0), wrap(y0 + 1));
-  const n11 = latticeHash(wrap(x0 + 1), wrap(y0 + 1));
+  let n00, n10, n01, n11;
+  if (Number.isInteger(frequency) && frequency > 0 && frequency <= 4096) {
+    const table = lattice(frequency);
+    const xa = ((x0 % frequency) + frequency) % frequency, xb = xa + 1 === frequency ? 0 : xa + 1;
+    const ya = ((y0 % frequency) + frequency) % frequency, yb = ya + 1 === frequency ? 0 : ya + 1;
+    n00 = table[ya * frequency + xa]; n10 = table[ya * frequency + xb];
+    n01 = table[yb * frequency + xa]; n11 = table[yb * frequency + xb];
+  } else {
+    const wrap = (n: number) => ((n % frequency) + frequency) % frequency;
+    n00 = latticeHash(wrap(x0), wrap(y0));
+    n10 = latticeHash(wrap(x0 + 1), wrap(y0));
+    n01 = latticeHash(wrap(x0), wrap(y0 + 1));
+    n11 = latticeHash(wrap(x0 + 1), wrap(y0 + 1));
+  }
   const top = n00 + (n10 - n00) * sx;
   const bottom = n01 + (n11 - n01) * sx;
   return top + (bottom - top) * sy;
@@ -33,8 +57,9 @@ export function tiledValueNoise(u: number, v: number, frequency: number): number
 export function tiledFbm(u: number, v: number,
   octaves: readonly (readonly [number, number])[]): number {
   let value = 0;
-  for (const [frequency, amplitude] of octaves) {
-    value += (tiledValueNoise(u, v, frequency) - 0.5) * amplitude;
+  for (let i = 0; i < octaves.length; i++) {
+    const octave = octaves[i];
+    value += (tiledValueNoise(u, v, octave[0]) - 0.5) * octave[1];
   }
   return value;
 }

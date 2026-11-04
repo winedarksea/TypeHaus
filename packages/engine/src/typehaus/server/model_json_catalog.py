@@ -198,6 +198,7 @@ def catalog_json(
     model: ResolvedModel,
     provenance: Provenance | None,
     variants: Sequence[VariantSpec] | None,
+    types: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """The payload's catalog tail: the declared variants plus the authoring palette."""
     return {
@@ -205,21 +206,27 @@ def catalog_json(
         # alternatives this house can build, so the UI's variant picker never shells out.
         # Always present — an empty list *is* the absent-catalog story.
         "variants": [spec.as_dict() for spec in (variants or ())],
-        "catalog": {**_catalog(model, provenance), **_placed_types(model)},
+        "catalog": {**_catalog(model, provenance), **_placed_types(model, types)},
     }
 
 
-def _placed_types(model: ResolvedModel) -> dict[str, Any]:
+def placed_type_tags(model: ResolvedModel) -> set[str]:
+    return {item.type_ref for item in model.canvas_objects}
+
+
+def _placed_types(model: ResolvedModel, types: list[dict[str, Any]] | None) -> dict[str, Any]:
     """Every product type, with 3D parts only where something places it.
 
     A part's mesh moves to the shared ``meshes`` table and the part keeps its
     ``mesh_index``: the same bowl or rod recurs across types, and an unplaced type's massing
-    was megabytes nothing drew. Plan strokes and metadata stay on every type.
+    was megabytes nothing drew. Plan strokes and metadata stay on every type. The items
+    are mutated, so ``types`` must be this call's own copy.
     """
-    placed = {item.type_ref for item in model.canvas_objects}
+    placed = placed_type_tags(model)
     meshes: list[dict[str, Any]] = []
     indices: dict[tuple, int] = {}
-    types = canvas_object_types(model.plan)
+    if types is None:
+        types = canvas_object_types(model.plan, parts_for=placed)
     for item in types:
         if item["tag"] not in placed:
             item.pop("model_parts", None)

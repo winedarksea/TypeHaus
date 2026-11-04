@@ -1,9 +1,6 @@
-// One model.json → one populated set of trade groups.
-//
-// Split out of components/Panel3D.tsx's setModel, which was doing three jobs at once: work out
-// the plan centre, walk every record family into its builder, and re-frame the camera. Only the
-// middle one is about the *model*, and it is the part that grows every time the resolver learns
-// to emit something new — so it lives here, with the builders it dispatches to.
+// The shared pieces of one model.json → one populated set of trade groups: the plan centre,
+// the snapshot-and-tag bookkeeping every builder call goes through, and the placed-object
+// builder with its async glb swap. The stage order and the runner live in sceneStages.ts.
 //
 // The registry is passed as an object rather than as two loose values because the async
 // furniture loader below *replaces* the pick list (it drops the fallback massing's picks when
@@ -12,29 +9,15 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { Model, RebarSet } from "../../model/types";
 import type { ResolvedNordicPalette } from "../../nordic/palette";
-import { disposeGroup, type SkinLine } from "../members";
-import {
-  canvasObjectTrades, primaryTrade, RECORD_FAMILY_TRADES, roofTrades, solidTrades,
-  solidVisibilityKeys, type VisibilityKey, wallTrades,
-} from "../../model/tradeVisibility";
+import { disposeGroup } from "../members";
+import { canvasObjectTrades, primaryTrade, type VisibilityKey } from "../../model/tradeVisibility";
 import {
   projectPlanRotationToSceneRadians, projectPointToScene, type PlanCenter,
 } from "../planGeometry";
 import { ALL_TRADES, type EarthTone, type Trade } from "../../state/vocabulary";
-import { buildLightRun } from "./lightRun";
-import { baseRunTrade, buildBaseRun, buildCountertop, buildDoorCasing, buildWindowStool } from "./millwork";
-import { buildAlarms } from "./alarms";
-import { buildPlants, instancedPlantUids } from "./plants";
 import type { RebarLayer } from "./rebar";
 import { tagStorey as tagStoreyChildren, tagTrades } from "./registry";
-import { buildCanvasObject, buildEarth, buildSuspension, type PartGeometries } from "./site";
-import { buildOpening } from "./openings";
-import { buildWall } from "./walls";
-import {
-  buildBrace, buildFloor, buildFootingBedding, buildRoof, buildRoomFloor,
-  buildPaneling, buildSoffitFraming, buildSolarPanel, buildSolid, buildStair,
-  storeyFloorTopM,
-} from "./structure";
+import { buildCanvasObject, buildSuspension, type PartGeometries } from "./site";
 
 /** What a click can land on, and which materials the highlight pass drives per uid. */
 export interface SceneRegistry {
@@ -88,8 +71,20 @@ export function planCenterOf(model: Model): PlanCenter {
 }
 
 /** The storey elevation a placeable sits on when it declares no z of its own. */
-function placeableElevationM(model: Model, storeyTag: string | null | undefined): number {
-  return model.storeys.find((storey) => storey.tag === storeyTag)?.elevation_m ?? 0;
+export function placeableElevationM(model: Model, storeyTag: string | null | undefined): number {
+  return (storeyTag != null ? storeyElevations(model).get(storeyTag) : undefined) ?? 0;
+}
+
+// One tag → elevation map per model, not a `.find` per placeable.
+const elevationsByModel = new WeakMap<Model, Map<string, number>>();
+function storeyElevations(model: Model): Map<string, number> {
+  let map = elevationsByModel.get(model);
+  if (!map) {
+    map = new Map();
+    for (const storey of model.storeys) if (!map.has(storey.tag)) map.set(storey.tag, storey.elevation_m);
+    elevationsByModel.set(model, map);
+  }
+  return map;
 }
 
 // Every builder writes into one or more trade containers; the container is the element's
@@ -171,212 +166,60 @@ function instantiatePlaceableAsset(prototype: THREE.Object3D): THREE.Object3D {
   return copy;
 }
 
-export function populateScene(options: PopulateSceneOptions) {
+type CanvasObject = NonNullable<Model["canvas_objects"]>[number];
+type CanvasObjectType = NonNullable<NonNullable<Model["catalog"]>["canvas_object_types"]>[number];
+
+/** One placed canvas object: its fallback massing now, its glb in place of it when that lands. */
+export function buildCanvasObjectItem(options: PopulateSceneOptions, item: CanvasObject,
+  types: ReadonlyMap<string, CanvasObjectType>) {
   const {
-    tradeGroups, model, center, mode, palette, earthOpacity, earthTone, registry, generation,
-    currentGeneration, requestRender, tradeVisible, rebar,
+    tradeGroups, model, center, mode, palette, registry, generation, currentGeneration,
+    requestRender, tradeVisible,
   } = options;
-  const build = (trades: readonly VisibilityKey[], storey: string | null | undefined,
-    run: () => void) => {
-    const before = snapshot(tradeGroups);
-    run();
-    tagNew(tradeGroups, before, trades);
-    tagStorey(tradeGroups, before, storey ?? null);
-  };
-  const family = (name: string) => RECORD_FAMILY_TRADES[name] ?? ["concrete"];
   const container = (trades: readonly Trade[]) => tradeGroups[primaryTrade(trades)];
-
-  for (const wall of model.walls) {
-    const wallOpenings = model.openings.filter((opening) => opening.host === wall.tag);
-    build(wallTrades(wall), wall.storey, () => buildWall(tradeGroups, wall, wallOpenings, center, mode,
-      palette, registry.picks, registry.byUid, model.catalog?.materials));
-    for (const opening of wallOpenings) {
-      const doorType = model.catalog?.door_types.find((type) => type.tag === opening.type_ref);
-      build(family("opening"), wall.storey, () => buildOpening(tradeGroups.openings, opening, wall, center,
-        mode, palette, { bookcaseDoor: doorType?.bookcase_door, materials: model.catalog?.materials },
-        registry.picks, registry.byUid));
-    }
-  }
-  for (const stool of model.window_stools ?? []) {
-    build(["millwork"], stool.storey, () => buildWindowStool(
-      tradeGroups.millwork, stool, center, mode, palette, model.catalog?.materials,
-      registry.picks, registry.byUid));
-  }
-  for (const run of model.base_runs ?? []) {
-    const trade = baseRunTrade(run);
-    build([trade], run.storey, () => buildBaseRun(
-      tradeGroups[trade], run, center, mode, palette, model.catalog?.materials,
-      registry.picks, registry.byUid));
-  }
-  for (const casing of model.door_casings ?? []) {
-    build(["millwork"], casing.storey, () => buildDoorCasing(
-      tradeGroups.millwork, casing, center, mode, palette, model.catalog?.materials,
-      registry.picks, registry.byUid));
-  }
-  for (const top of model.countertops ?? []) {
-    build(["millwork"], top.storey, () => buildCountertop(
-      tradeGroups.millwork, top, center, mode, palette, model.catalog?.materials,
-      registry.picks, registry.byUid));
-  }
-  // The site sheet is context, not an element: it has no uid in model.json, so it stays out
-  // of the raycast set and a click through it falls to whatever building geometry is behind.
-  build(family("earth"), null, () => buildEarth(tradeGroups.earth, model, center, mode, earthOpacity, earthTone));
-  // A solid is not automatically concrete: a standalone beam or post is framing, a routed pipe
-  // run is plumbing, a cast column is concrete. The set is stamped by the engine
-  // (model.json `trades`) and falls back to the generated category map.
-  // A plant with a procedural model draws as an instance below, not as its bounding prism.
-  const instancedPlants = instancedPlantUids(model.plants, model.plant_models);
-  // Solids of one part (a gutter's boards, a guard) pick as the first of the group.
-  const groupLeader = new Map<string, string>();
-  for (const solid of model.solids ?? []) {
-    if (solid.group && !groupLeader.has(solid.group)) groupLeader.set(solid.group, solid.uid);
-  }
-  for (const solid of model.solids ?? []) {
-    if (solid.category === "plant" && instancedPlants.has(solid.uid)) continue;
-    // Two answers, deliberately. `solidTrades` decides the CONTAINER (a connector's is
-    // framing, and `primaryTrade` maps its facet back to framing anyway); the keys decide
-    // what it is TAGGED with, which is what its own toggle reaches.
-    const trades = solidTrades(solid);
-    build(solidVisibilityKeys(solid), solid.storey, () => buildSolid(container(trades), solid, center,
-      mode, palette, model.catalog, registry.picks, registry.byUid,
-      model.catalog?.materials, earthOpacity,
-      solid.group ? groupLeader.get(solid.group) : undefined));
-  }
-  // Plants, instanced per storey; each takes its solid's trade set (landscaping).
-  const solidsByUid = new Map((model.solids ?? []).map((solid) => [solid.uid, solid]));
-  const plantMaterials = new Map<string, THREE.Material>();
-  const plantsByStorey = new Map<string, NonNullable<Model["plants"]>>();
-  for (const plant of model.plants ?? []) {
-    if (!instancedPlants.has(plant.uid)) continue;
-    const list = plantsByStorey.get(plant.storey) ?? [];
-    list.push(plant);
-    plantsByStorey.set(plant.storey, list);
-  }
-  for (const [storey, plants] of plantsByStorey) {
-    const solid = solidsByUid.get(plants[0].uid);
-    const trades = solid ? solidTrades(solid) : family("plant");
-    build(solid ? solidVisibilityKeys(solid) : trades, storey, () => buildPlants(container(trades),
-      plants, model.plant_models ?? [], center, mode, registry.picks, plantMaterials));
-  }
-  // A paneling band is the millworker's applied surface on a wall.
-  for (const band of model.panelings ?? []) {
-    const trades = (band.trades?.length ? band.trades : family("paneling")) as Trade[];
-    build(trades, band.storey, () => buildPaneling(container(trades), band, center, mode, palette,
-      model.catalog?.materials, registry.picks, registry.byUid));
-  }
-  for (const bedding of model.footing_beddings ?? []) {
-    // Washed stone with the tile bedded in it: drainage first, and the excavator's too.
-    const trades = (bedding.trades?.length ? bedding.trades : family("footing_bedding")) as Trade[];
-    build(trades, bedding.storey, () => buildFootingBedding(container(trades), bedding, center, mode,
-      registry.picks, registry.byUid));
-  }
-  for (const floor of model.floors ?? []) {
-    build(family("floor_deck"), floor.storey, () => buildFloor(tradeGroups.framing, floor, center, mode,
-      palette, registry.picks, registry.byUid, tradeGroups.framing, model.catalog?.materials));
-  }
-  // Room finishes go over the decks, so they build after every floor is in. Each room's
-  // `field_finish` is already cut by the wells at its level (resolve/room_finish.py).
-  for (const room of model.rooms ?? []) {
-    const floors = model.floors ?? [];
-    const top = storeyFloorTopM(floors, room.storey, placeableElevationM(model, room.storey));
-    build(family("room_floor"), room.storey, () => buildRoomFloor(container(family("room_floor")), room, top,
-      center, mode, palette, model.catalog?.materials, registry.picks, registry.byUid));
-  }
-  // The facade datums every wall's cladding is framed on (builders/walls.ts uses the same
-  // `layout_axis ?? axis`), handed to the roofs so a wall→roof closure band's panel module
-  // continues the wall's instead of restarting at the band (→ members.ts skinUvSpanM).
-  const skinLines: SkinLine[] = (model.walls ?? []).map((wall) => ({
-    axis: wall.axis, datum: wall.layout_axis ?? wall.axis,
-  }));
-  for (const roof of model.roofs ?? []) {
-    const trades = roofTrades(roof);
-    build(trades, roof.storey, () => buildRoof(container(trades), roof, center, mode, palette,
-      model.catalog, registry.picks, registry.byUid, tradeGroups.framing, skinLines,
-      tradeGroups));
-  }
-  for (const panel of model.solar_panels ?? []) {
-    build(family("solar_panel"), panel.storey, () => buildSolarPanel(tradeGroups.electrical, panel, center,
-      mode, registry.picks, registry.byUid));
-  }
-  const alarmsByStorey = new Map<string, NonNullable<Model["alarms"]>>();
-  for (const alarm of model.alarms ?? []) {
-    alarmsByStorey.set(alarm.storey, [...(alarmsByStorey.get(alarm.storey) ?? []), alarm]);
-  }
-  for (const [storey, alarms] of alarmsByStorey) {
-    build(["electrical"], storey, () => buildAlarms(tradeGroups.electrical, alarms, center, mode,
-      palette, registry.picks, registry.byUid));
-  }
-  for (const run of model.light_runs ?? []) {
-    build(family("light_run"), run.storey, () => buildLightRun(tradeGroups.electrical, run, center, mode,
-      registry.picks, registry.byUid));
-  }
-  for (const stair of model.stairs ?? []) {
-    build(family("stair"), stair.storey, () => buildStair(tradeGroups.stairs, stair, center, mode, palette,
-      registry.picks, registry.byUid, model.catalog?.materials));
-  }
-  for (const soffit of model.soffits ?? []) {
-    build(family("soffit_framing"), soffit.storey, () => buildSoffitFraming(tradeGroups.framing, soffit,
-      center, mode, palette, registry.picks, registry.byUid, model.catalog?.materials));
-  }
-
-  for (const brace of model.braces ?? []) {
-    build(family("brace"), brace.storey, () => buildBrace(tradeGroups.framing, brace, center, mode, palette,
-      registry.picks, registry.byUid, model.catalog?.materials));
-  }
-
-  // Bars ride their own layer (builders/rebar.ts), tagged with the facet alone.
-  if (rebar) {
-    if (rebar.sets) rebar.layer.show(rebar.sets, center, mode);
-    else rebar.layer.clear();
-  }
-
-  const types = new Map((model.catalog?.canvas_object_types ?? []).map((type) => [type.tag, type]));
-  for (const item of model.canvas_objects ?? []) {
-    // Hosted openings retain their dedicated cut/fill meshes above. The normalized
-    // record is for shared inspection and interchange, not a second 3D proxy.
-    if (item.domain === "opening") continue;
-    if (!item.position_m) continue;
-    const trades = canvasObjectTrades(item);
-    const group = container(trades);
-    const type = types.get(item.type ?? "");
-    const elevation = item.z_m ?? placeableElevationM(model, item.storey);
-    const before = snapshot(tradeGroups);
-    const fallback = buildCanvasObject(group, item, type, center, mode, palette, elevation,
-      registry.picks, registry.byUid, model.catalog?.materials, model.catalog?.meshes,
-      registry.partGeometries);
-    buildSuspension(group, item, center, mode, registry.picks, registry.byUid);
-    tagNew(tradeGroups, before, trades);
-    tagStorey(tradeGroups, before, item.storey ?? null);
-    if (!type?.model_glb || !fallback) continue;
-    loadPlaceableAsset(type.model_glb).then((prototype) => {
-      if (generation !== currentGeneration() || !item.position_m) return;
-      const visual = instantiatePlaceableAsset(prototype);
-      // The fallback may be a whole group of massing parts now, not one mesh, so drop
-      // every pick it owns and dispose it as a subtree.
-      group.remove(fallback);
-      const replaced = new Set<THREE.Object3D>();
-      fallback.traverse((node) => replaced.add(node));
-      disposeGroup(fallback);
-      registry.picks = registry.picks.filter((mesh) => !replaced.has(mesh));
-      visual.position.copy(projectPointToScene(item.position_m, elevation, center));
-      visual.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
-      visual.userData.trades = [...trades];
-      if (item.storey) visual.userData.storey = item.storey;
-      visual.visible = tradeVisible?.(trades, item.storey ?? null) ?? true;
-      const materials: THREE.Material[] = [];
-      visual.traverse((node) => {
-        if (!(node instanceof THREE.Mesh)) return;
-        node.castShadow = true;
-        node.receiveShadow = true;
-        node.userData.uid = item.uid;
-        node.userData.selectionKind = "canvas_object";
-        registry.picks.push(node);
-        const material = node.material;
-        materials.push(...(Array.isArray(material) ? material : [material]));
-      });
-      registry.byUid.set(item.uid, materials);
-      group.add(visual);
-      requestRender();
-    }).catch(() => { /* keep the fallback massing the placement already drew */ });
-  }
+  // Hosted openings keep their dedicated cut/fill meshes (the openings stage). The normalized
+  // record is for shared inspection and interchange, not a second 3D proxy.
+  if (item.domain === "opening" || !item.position_m) return;
+  const trades = canvasObjectTrades(item);
+  const group = container(trades);
+  const type = types.get(item.type ?? "");
+  const elevation = item.z_m ?? placeableElevationM(model, item.storey);
+  const before = snapshot(tradeGroups);
+  const fallback = buildCanvasObject(group, item, type, center, mode, palette, elevation,
+    registry.picks, registry.byUid, model.catalog?.materials, model.catalog?.meshes,
+    registry.partGeometries);
+  buildSuspension(group, item, center, mode, registry.picks, registry.byUid);
+  tagNew(tradeGroups, before, trades);
+  tagStorey(tradeGroups, before, item.storey ?? null);
+  if (!type?.model_glb || !fallback) return;
+  loadPlaceableAsset(type.model_glb).then((prototype) => {
+    if (generation !== currentGeneration() || !item.position_m) return;
+    const visual = instantiatePlaceableAsset(prototype);
+    // The fallback may be a whole group of massing parts now, not one mesh, so drop
+    // every pick it owns and dispose it as a subtree.
+    group.remove(fallback);
+    const replaced = new Set<THREE.Object3D>();
+    fallback.traverse((node) => replaced.add(node));
+    disposeGroup(fallback);
+    registry.picks = registry.picks.filter((mesh) => !replaced.has(mesh));
+    visual.position.copy(projectPointToScene(item.position_m, elevation, center));
+    visual.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
+    visual.userData.trades = [...trades];
+    if (item.storey) visual.userData.storey = item.storey;
+    visual.visible = tradeVisible?.(trades, item.storey ?? null) ?? true;
+    const materials: THREE.Material[] = [];
+    visual.traverse((node) => {
+      if (!(node instanceof THREE.Mesh)) return;
+      node.castShadow = true;
+      node.receiveShadow = true;
+      node.userData.uid = item.uid;
+      node.userData.selectionKind = "canvas_object";
+      registry.picks.push(node);
+      const material = node.material;
+      materials.push(...(Array.isArray(material) ? material : [material]));
+    });
+    registry.byUid.set(item.uid, materials);
+    group.add(visual);
+    requestRender();
+  }).catch(() => { /* keep the fallback massing the placement already drew */ });
 }

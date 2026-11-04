@@ -148,6 +148,29 @@
   align-items: center;
 }
 
+/* Loading3D: neutral, centred in its pane, out of the pointer's way. */
+.loading-3d {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: var(--z-canvas-overlay);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px;
+  border-radius: var(--radius-menu);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--panel-line);
+  box-shadow: var(--shadow-1);
+  color: var(--ink);
+  font-size: var(--text-xs);
+  pointer-events: none;
+}
+
 /* Lens legend — the one lens surface that stays on the canvas, because it annotates
    the drawing rather than choosing what to draw. */
 .lens-legend {

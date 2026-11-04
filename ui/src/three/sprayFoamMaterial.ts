@@ -1,5 +1,7 @@
 // Sprayed skin relief affects lighting only; the resolved insulation keeps its geometry.
 import * as THREE from "three";
+import { textureTimer } from "./buildTimings";
+import { writeHeightNormals } from "./heightNormals";
 import type { PlanCenter } from "./planGeometry";
 import { standardMaterial, type ShadingMode } from "./surfaces";
 import { latticeHash, tiledFbm } from "./valueNoise";
@@ -22,18 +24,34 @@ export function isSprayFoamFinish(finish: string | null | undefined): boolean {
   return finish === "spray-foam";
 }
 
+// Each cell's seed and centre jitter, hashed once rather than 27 sins per pixel.
+let cellTable: Float64Array | null = null;
+function cells(): Float64Array {
+  if (cellTable) return cellTable;
+  const { cellsPerTile: n, centerJitter } = SPRAY_FOAM_SURFACE;
+  cellTable = new Float64Array(n * n * 3);
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    const i = (y * n + x) * 3;
+    cellTable[i] = latticeHash(x, y);
+    cellTable[i + 1] = 0.5 + centerJitter * (latticeHash(x + 0.37, y) - 0.5);
+    cellTable[i + 2] = 0.5 + centerJitter * (latticeHash(x, y + 0.71) - 0.5);
+  }
+  return cellTable;
+}
+
 /** Periodic, overlapping rounded lobes avoid a visible square noise lattice. */
 export function sprayFoamSample(u: number, v: number): { height: number; luminance: number } {
   const config = SPRAY_FOAM_SURFACE;
   const x = u * config.cellsPerTile, y = v * config.cellsPerTile;
   const wrap = (value: number) => ((value % config.cellsPerTile) + config.cellsPerTile) % config.cellsPerTile;
+  const table = cells();
   let relief = 0;
   for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
     const cellX = Math.floor(x) + dx, cellY = Math.floor(y) + dy;
-    const seedX = wrap(cellX), seedY = wrap(cellY);
-    const seed = latticeHash(seedX, seedY);
-    const centerX = cellX + 0.5 + config.centerJitter * (latticeHash(seedX + 0.37, seedY) - 0.5);
-    const centerY = cellY + 0.5 + config.centerJitter * (latticeHash(seedX, seedY + 0.71) - 0.5);
+    const i = (wrap(cellY) * config.cellsPerTile + wrap(cellX)) * 3;
+    const seed = table[i];
+    const centerX = cellX + table[i + 1];
+    const centerY = cellY + table[i + 2];
     const radius = config.cellRadius + config.cellRadiusVariation * seed;
     const distance = Math.hypot(x - centerX, y - centerY) / radius;
     // Compact smooth support keeps both height and slope continuous at each lobe's edge.
@@ -53,6 +71,7 @@ let sharedMaps: SprayFoamMaps | null = null;
 /** Typed pixel buffers also work in headless previews; no canvas dependency. */
 export function buildSprayFoamMaps(): SprayFoamMaps {
   if (sharedMaps) return sharedMaps;
+  const timed = textureTimer("sprayFoam");
   const { textureSizePx: size, tileSizeM, anisotropy } = SPRAY_FOAM_SURFACE;
   const heights = new Float32Array(size * size);
   const colorPixels = new Uint8Array(size * size * 4);
@@ -62,20 +81,11 @@ export function buildSprayFoamMaps(): SprayFoamMaps {
     const index = y * size + x, offset = index * 4;
     heights[index] = sample.height;
     const level = Math.round(255 * Math.max(0, Math.min(1, sample.luminance)));
-    colorPixels.set([level, level, level, 255], offset);
+    colorPixels[offset] = colorPixels[offset + 1] = colorPixels[offset + 2] = level;
+    colorPixels[offset + 3] = normalPixels[offset + 3] = 255;
   }
-  const height = (x: number, y: number) => heights[((y + size) % size) * size + (x + size) % size];
   const derivativeScale = size / (2 * tileSizeM);
-  const normal = new THREE.Vector3();
-  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
-    normal.set(
-      -(height(x + 1, y) - height(x - 1, y)) * derivativeScale,
-      -(height(x, y + 1) - height(x, y - 1)) * derivativeScale, 1,
-    ).normalize();
-    const offset = (y * size + x) * 4;
-    normalPixels.set([normal.x, normal.y, normal.z].map(value => Math.round((value * 0.5 + 0.5) * 255)), offset);
-    normalPixels[offset + 3] = 255;
-  }
+  writeHeightNormals(heights, size, size, derivativeScale, derivativeScale, normalPixels);
   const texture = (pixels: Uint8Array<ArrayBuffer>, colorSpace: THREE.ColorSpace) => {
     const map = new THREE.DataTexture(pixels, size, size);
     map.wrapS = map.wrapT = THREE.RepeatWrapping;
@@ -88,6 +98,7 @@ export function buildSprayFoamMaps(): SprayFoamMaps {
     return map;
   };
   sharedMaps = { color: texture(colorPixels, THREE.SRGBColorSpace), normal: texture(normalPixels, THREE.NoColorSpace) };
+  timed();
   return sharedMaps;
 }
 

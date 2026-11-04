@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Collection
 from math import atan2, degrees
 from typing import Any
 
@@ -48,8 +49,12 @@ def wood_material(item: Any, materials: dict[str, Any]) -> Any | None:
     return material if material is not None and material.color else None
 
 
-def canvas_object_types(plan: PlanModel) -> list[dict[str, Any]]:
-    """Return all catalog types with a uniform placement declaration."""
+def canvas_object_types(plan: PlanModel, *,
+                        parts_for: Collection[str] | None = None) -> list[dict[str, Any]]:
+    """Return all catalog types with a uniform placement declaration.
+
+    ``parts_for`` limits the 3D ``model_parts`` (the costly half) to those type tags; the
+    rest get ``[]``. ``None`` builds them for every type."""
     materials = {material.tag: material for material in plan.library.materials}
     result: list[dict[str, Any]] = []
     for collection, domain, kind, default_strategy in _TYPE_COLLECTIONS:
@@ -80,7 +85,8 @@ def canvas_object_types(plan: PlanModel) -> list[dict[str, Any]]:
                 "model_primitive": (
                     item.model_representation.primitive
                     if getattr(item, "model_representation", None) is not None else None),
-                **_symbol_geometry(item, footprint, wood_material(item, materials), materials),
+                **_symbol_geometry(item, footprint, wood_material(item, materials), materials,
+                                   with_parts=parts_for is None or item.tag in parts_for),
             })
     return result
 
@@ -114,7 +120,7 @@ def model_symbol_for(item: Any) -> str | None:
 
 
 def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None,
-                     materials: dict | None = None) -> dict[str, Any]:
+                     materials: dict | None = None, *, with_parts: bool = True) -> dict[str, Any]:
     """Project a type's generated plan glyph and 3D massing into the wire contract.
 
     Colours resolve to hex *here*, so the UI needs no palette table of its own — the viewer
@@ -171,10 +177,11 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None,
 
         strokes, parts = curtain_track_type_geometry(item)
     else:
+        # Not one build for both halves: some builders' strokes do read the height.
         strokes = plan_symbol_strokes(symbol, width_m, depth_m)
         parts = model_parts(model_symbol, width_m, depth_m, height_m,
                             material_refs=getattr(getattr(item, "model_representation", None),
-                                                  "material_refs", None))
+                                                  "material_refs", None)) if with_parts else ()
     return {
         "plan_strokes": [{"points": [list(point) for point in stroke["points"]],
                           "closed": stroke["closed"], "weight": stroke["weight"],
@@ -211,7 +218,8 @@ def _lamp(role: str, lamp: str) -> str:
 
 def canvas_objects(plan: PlanModel) -> list[dict[str, Any]]:
     """Project authored placeables to a stable, domain-neutral inspection shape."""
-    type_domains = {item["tag"]: item["domain"] for item in canvas_object_types(plan)}
+    type_domains = {item["tag"]: item["domain"]
+                    for item in canvas_object_types(plan, parts_for=())}
     objects: list[dict[str, Any]] = []
     for storey in plan.storeys:
         for item in plan.storey_elements(storey.tag):
@@ -240,16 +248,19 @@ def canvas_objects(plan: PlanModel) -> list[dict[str, Any]]:
 
 
 def resolved_canvas_objects(
-    model: Any, provenance_of: Any = None
+    model: Any, provenance_of: Any = None, types: list[dict[str, Any]] | None = None
 ) -> list[dict[str, Any]]:
     """Serialize resolver-owned object geometry without exposing internal dataclasses.
 
     ``provenance_of`` is an optional ``tag -> provenance dict | None`` callable (the server
     passes ``model_json._provenance``). Canvas objects are *the* drag-and-move population, so
     without it the UI cannot tell a movable object from one authored in a file it can never
-    write back to — the drag would appear to work and then revert.
+    write back to — the drag would appear to work and then revert. ``types`` is a prebuilt
+    ``canvas_object_types`` (read only), so a payload builds it once.
     """
-    type_metadata = {item["tag"]: item for item in canvas_object_types(model.plan)}
+    if types is None:
+        types = canvas_object_types(model.plan, parts_for=())
+    type_metadata = {item["tag"]: item for item in types}
     prov_of = provenance_of if provenance_of is not None else (lambda _tag: None)
     from typehaus.resolve.suspension import hung_types
 

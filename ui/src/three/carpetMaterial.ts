@@ -4,6 +4,8 @@
 // that tells textile from matte paint. No fibres, shells or displacement. The colour map is
 // luminance only and `material.color` tints it, so one tile serves every carpet colour.
 import * as THREE from "three";
+import { textureTimer } from "./buildTimings";
+import { writeHeightNormals } from "./heightNormals";
 import type { PlanCenter } from "./planGeometry";
 import { applyWorldBoxUv } from "./worldBoxUv";
 import { latticeHash, tiledFbm } from "./valueNoise";
@@ -52,6 +54,7 @@ let carpetMaps: CarpetMaps | null = null;
 export function buildCarpetMaps(): CarpetMaps | null {
   if (carpetMaps) return carpetMaps;
   if (typeof document === "undefined") return null;
+  const timed = textureTimer("carpet");
   const size = CARPET_TEX_PX;
   const canvases = Array.from({ length: 3 }, () => {
     const canvas = document.createElement("canvas");
@@ -74,16 +77,8 @@ export function buildCarpetMaps(): CarpetMaps | null {
     heights[y * size + x] = sample.height;
     for (const image of images) image.data[offset + 3] = 255;
   }
-  const wrap = (n: number) => ((n % size) + size) % size;
-  const height = (x: number, y: number) => heights[wrap(y) * size + wrap(x)];
   const scale = size / (2 * CARPET_TILE_M);
-  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
-    const dx = (height(x + 1, y) - height(x - 1, y)) * scale;
-    const dy = (height(x, y + 1) - height(x, y - 1)) * scale;
-    const n = new THREE.Vector3(-dx, -dy, 1).normalize();
-    const offset = (y * size + x) * 4;
-    [n.x, n.y, n.z].forEach((value, i) => { images[1].data[offset + i] = (value * 0.5 + 0.5) * 255; });
-  }
+  writeHeightNormals(heights, size, size, scale, scale, images[1].data);
   const textures = canvases.map((canvas, index) => {
     contexts[index]!.putImageData(images[index], 0, 0);
     const texture = new THREE.CanvasTexture(canvas);
@@ -93,6 +88,7 @@ export function buildCarpetMaps(): CarpetMaps | null {
     return texture;
   });
   carpetMaps = { color: textures[0], normal: textures[1], roughness: textures[2] };
+  timed();
   return carpetMaps;
 }
 

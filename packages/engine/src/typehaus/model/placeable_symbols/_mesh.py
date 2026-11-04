@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import math
 
+import numpy as np
+
 from typehaus.model.placeable_symbols._frame import Part, PartMesh
 
 Point3D = tuple[float, float, float]
@@ -33,21 +35,24 @@ def outward(positions, triangles) -> list[tuple[int, int, int]]:
 def mesh_part(positions: list[Point3D], triangles: list[tuple[int, int, int]],
                color: str) -> Part:
     # Split triangle vertices so adjacent faces retain crisp normals.
-    vertices, normals = [], []
-    for first, second, third in triangles:
-        a, b, c = positions[first], positions[second], positions[third]
-        normal = _unit(_cross(tuple(b[i] - a[i] for i in range(3)),
-                              tuple(c[i] - a[i] for i in range(3))))
-        vertices.extend((a, b, c))
-        normals.extend((normal,) * 3)
-    bounds = [(min(point[axis] for point in vertices),
-               max(point[axis] for point in vertices)) for axis in range(3)]
+    corners = np.asarray(positions, dtype=np.float64)[np.asarray(triangles, dtype=np.intp)]
+    a, b, c = corners[:, 0], corners[:, 1], corners[:, 2]
+    e1, e2 = b - a, c - a
+    # Same operation order as _cross/_unit, so the floats match the scalar path bit for bit.
+    normal = np.stack([e1[:, 1] * e2[:, 2] - e1[:, 2] * e2[:, 1],
+                       e1[:, 2] * e2[:, 0] - e1[:, 0] * e2[:, 2],
+                       e1[:, 0] * e2[:, 1] - e1[:, 1] * e2[:, 0]], axis=1)
+    magnitude = np.sqrt(normal[:, 0] * normal[:, 0] + normal[:, 1] * normal[:, 1]
+                        + normal[:, 2] * normal[:, 2])
+    normal = normal / magnitude[:, None]
+    flat = corners.reshape(-1, 3)
+    vertices = tuple(map(tuple, flat.tolist()))
+    low, high = flat.min(axis=0).tolist(), flat.max(axis=0).tolist()
     mesh: PartMesh = {
-        "positions": tuple(vertices),
+        "positions": vertices,
         "triangles": tuple((i, i + 1, i + 2) for i in range(0, len(vertices), 3)),
-        "normals": tuple(normals),
+        "normals": tuple(map(tuple, np.repeat(normal, 3, axis=0).tolist())),
     }
-    return {"center": tuple((low + high) / 2 for low, high in bounds),
-            "size": tuple(high - low for low, high in bounds), "color": color,
+    return {"center": tuple((lo + hi) / 2 for lo, hi in zip(low, high, strict=True)),
+            "size": tuple(hi - lo for lo, hi in zip(low, high, strict=True)), "color": color,
             "points": (), "shape": "mesh", "mesh": mesh}
-

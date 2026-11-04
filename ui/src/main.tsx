@@ -33,7 +33,8 @@ window.addEventListener("vite:preloadError", () => {
 // gate matters most. Posing states through the store instead keeps the harness stable across
 // the layout work. Read-only from the harness's side; ships in prod because `haus serve`
 // serves the production build and there is nothing here a user cannot already do in the UI.
-(window as unknown as { __haus?: unknown }).__haus = { store: useStore };
+const hausWindow = window as unknown as { __haus?: Record<string, unknown> };
+(hausWindow.__haus ??= {}).store = useStore;
 
 // Before the first render, so a cold load of `#/site/board` never paints the design
 // workbench first — which would mount the canvas and fetch the three.js chunk on a phone

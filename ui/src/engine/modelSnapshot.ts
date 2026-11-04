@@ -1,9 +1,12 @@
 import type { Model } from "../model/types";
+import { bootMark } from "./bootMarks";
+import { decodeJson } from "./decodeModel";
 import { unpackSnapshot, validateSnapshotManifest } from "./snapshotFormat.mjs";
 
 // A missing, stale HTML fallback, or truncated asset must leave boot on the engine path.
 export async function loadModelSnapshot(file = "catlin-model.json"): Promise<Model> {
   const url = new URL(file, document.baseURI).href;
+  const t0 = performance.now();
   const response = await fetch(url);
   if (!response.ok) throw new Error(`model snapshot ${response.status} @ ${url}`);
   const manifest = validateSnapshotManifest(await response.json());
@@ -23,8 +26,9 @@ export async function loadModelSnapshot(file = "catlin-model.json"): Promise<Mod
     bytes.set(chunk, offset);
     offset += chunk.byteLength;
   }
+  bootMark("modelFetch", performance.now() - t0);
   // Decode after concatenation: a chunk boundary may bisect a UTF-8 character.
-  const model: unknown = unpackSnapshot(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)));
+  const model: unknown = unpackSnapshot(decodeJson(bytes));
   if (!model || typeof model !== "object") throw new Error("model snapshot is invalid");
   const candidate = model as Partial<Model>;
   if (typeof candidate.revision !== "string" ||

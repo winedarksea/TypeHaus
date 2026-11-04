@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { useStore } from "../state/store";
@@ -31,10 +31,19 @@ import { applyWholeHouseGlb, loadWholeHouseGlb } from "../three/wholeHouseGlbSce
 import {
   applyVisibility, indexPieces, isRenderedInScene, objectVisible, pieceKey,
 } from "../three/builders/registry";
-import { planCenterOf, populateScene, type SceneRegistry } from "../three/builders/scene";
+import { planCenterOf, type SceneRegistry } from "../three/builders/scene";
+import {
+  applyVisibilitySince, buildSceneProgressively, sceneStages, type BuildProgress,
+} from "../three/builders/sceneStages";
+import { takeTextureMs } from "../three/buildTimings";
+import { publishBuilding, publishFrame, publishPerf, type SceneBuildCost } from "../three/scenePerf";
+import { bootMark } from "../engine/bootMarks";
+import { Loading3D } from "./Loading3D";
+import { fitSunToBox } from "../three/sunFit";
 import { onWoodMapsReady } from "../three/woodMaps";
 import { onOnyxMapsReady } from "../three/onyxMaps";
 import { onTapestryMapReady } from "../three/tapestryMaterial";
+import { onTileMapsReady } from "../three/tileMaps";
 import { applyEarthOpacity, applyEarthTone, PartGeometries } from "../three/builders/site";
 import {
   geographicBearingToSceneDirection,
@@ -43,6 +52,8 @@ import {
 } from "../three/planGeometry";
 import { useTheme } from "../theme/theme";
 import { ZoomControls } from "./ZoomControls";
+
+export { warmProceduralTextures } from "../three/warmTextures";
 
 // The 3D panel behind an implicit ModelViewer seam (→ 21 §3D panel).
 //
@@ -94,10 +105,13 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
   const api = useRef<SceneApi | null>(null);
   // Which engine client this panel has already framed a building for (→ preserveView below).
   const framedForClient = useRef<EngineClient | null>(null);
+  // The progressive build's progress; null once the scene is complete (→ Loading3D).
+  const [building, setBuilding] = useState<BuildProgress | null>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
-    const a = createScene(mountRef.current, compassRef.current, (kind, uid, piece) => select(kind, uid, piece));
+    const a = createScene(mountRef.current, compassRef.current, (kind, uid, piece) => select(kind, uid, piece),
+      (progress) => setBuilding(progress.complete ? null : progress));
     api.current = a;
     return () => a.dispose();
   }, [select]);
@@ -230,6 +244,7 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
         <ZoomControls label="3D view zoom" onZoom={(factor) => api.current?.zoomBy(factor)} />
       </div>}
       {/* Nordic/schematic switch + discipline toggles live in the shared Views panel (Phase 6). */}
+      {(building || !model) && <Loading3D progress={building} />}
     </div>
   );
 }
@@ -266,28 +281,11 @@ export function compassBearingScreenDirection(
   return length < 1e-9 ? [0, -1] : [dx / length, dy / length];
 }
 
-// Scene cost of the last rebuild, on `window.__haus.perf` for `npm run perf-check`. Draw calls
-// and the build time are what lag tracks; a headless frame time is not (swiftshader).
-function publishPerf(renderer: THREE.WebGLRenderer, buildMs: number, renderMs: number) {
-  const haus = (window as unknown as { __haus?: Record<string, unknown> }).__haus;
-  if (!haus) return;
-  const { render, memory } = renderer.info;
-  haus.perf = {
-    buildMs, renderMs, calls: render.calls, triangles: render.triangles,
-    geometries: memory.geometries, textures: memory.textures,
-  };
-}
-
-// A later frame (orbit, dolly) without a rebuild: what the camera alone costs to redraw.
-function publishFrame(renderer: THREE.WebGLRenderer) {
-  const perf = (window as unknown as { __haus?: { perf?: Record<string, unknown> } }).__haus?.perf;
-  if (perf) perf.frameCalls = renderer.info.render.calls;
-}
-
 function createScene(
   mount: HTMLElement,
   compass: SVGSVGElement | null,
   onPick: (kind: SelectionKind, uid: string, piece?: string | null) => void,
+  onBuildProgress: (progress: BuildProgress) => void,
 ): SceneApi {
   const scene = new THREE.Scene();
   // The backdrop is a disposable texture rather than a Color, so it goes through one closure
@@ -450,8 +448,10 @@ function createScene(
   // orbit/dolly, resize, setModel, or a highlight toggle.
   let raf = 0;
   let renderPending = false;
-  // Set by setModel: the next frame is the first of a rebuilt scene, and is timed (→ publishPerf).
-  let buildMs: number | null = null;
+  // Set when a rebuild completes: the next frame is its first full one, and is timed (→ publishPerf).
+  let buildCost: SceneBuildCost | null = null;
+  // Set when a rebuild's shell is in: the next frame is the first that shows it.
+  let shellStart: number | null = null;
   const requestRender = () => {
     if (renderPending) return;
     renderPending = true;
@@ -462,9 +462,14 @@ function createScene(
       const t0 = performance.now();
       renderer.info.reset();
       renderer.render(scene, camera);
-      if (buildMs !== null) {
-        publishPerf(renderer, buildMs, performance.now() - t0);
-        buildMs = null;
+      if (buildCost !== null) {
+        const renderMs = performance.now() - t0;
+        publishPerf(renderer, buildCost, renderMs);
+        bootMark("firstFrame", renderMs);
+        buildCost = null;
+      } else if (shellStart !== null) {
+        bootMark("shellVisible", performance.now() - shellStart);
+        shellStart = null;
       } else if (!shadowPass) publishFrame(renderer);
     });
   };
@@ -478,6 +483,7 @@ function createScene(
   const stopWoodMaps = onWoodMapsReady(requestRender);
   const stopOnyxMaps = onOnyxMapsReady(requestRender);
   const stopTapestryMap = onTapestryMapReady(requestRender);
+  const stopTileMaps = onTileMapsReady(requestRender);
 
   // Eased camera move (reset view): interpolate orbit angles / dolly / target over a short
   // ease-in-out so the reset glides instead of snapping. Any user interaction cancels it.
@@ -810,38 +816,49 @@ function createScene(
     sceneMode = mode;
     highlightSourceModel = m;
     highlightPlanCenter = center;
+    takeTextureMs(); // idle warm-up is not this build's cost
     const buildStart = performance.now();
-    populateScene({
+    const generation = sceneGeneration;
+    const stages = sceneStages({
       tradeGroups, model: m, center, mode, palette, earthOpacity, earthTone, registry,
-      generation: sceneGeneration, currentGeneration: () => sceneGeneration,
+      generation, currentGeneration: () => sceneGeneration,
       requestRender: invalidateShadows,
       tradeVisible: (trades, storey) => objectVisible({ trades, storey }, visibleTrades, hiddenStoreys),
       rebar: { layer: rebarLayer, sets: rebar?.sets ?? null },
     });
-    registry.byPiece = indexPieces(registry.picks);
-    buildMs = performance.now() - buildStart;
-
-    // Frame the building bounds (earth excluded, or the site sheet dominates), including its
-    // vertical origin, so a model whose base sits above zero is not left low in the canvas.
-    const box = buildingBox();
-    if (!box.isEmpty()) {
-      // Fit the sun's orthographic shadow frustum to the building, otherwise the default
-      // 5m box clips every house and the shadow map resolution is wasted on empty space.
-      const bounds = box.getBoundingSphere(new THREE.Sphere());
-      const cam = key.shadow.camera;
-      cam.left = -bounds.radius; cam.right = bounds.radius;
-      cam.top = bounds.radius; cam.bottom = -bounds.radius;
-      cam.near = 0.1; cam.far = bounds.radius * 6;
-      cam.updateProjectionMatrix();
-      key.target.position.copy(bounds.center);
-      key.position.copy(bounds.center).add(
-        new THREE.Vector3(0.6, 1.1, 0.45).normalize().multiplyScalar(bounds.radius * 2.5),
-      );
-      key.target.updateMatrixWorld();
-    }
-    if (!preserveView) applyFraming(false);
-    applyVisibility(content, visibleTrades, hiddenStoreys); // the rebuild dropped the tagged meshes
-    invalidateShadows();
+    publishBuilding(true);
+    void buildSceneProgressively(stages, {
+      tradeGroups,
+      aborted: () => generation !== sceneGeneration,
+      onProgress: onBuildProgress,
+      // What a slice added arrives under the user's filter, not all-visible.
+      onSlice: (before) => applyVisibilitySince(tradeGroups, before, visibleTrades, hiddenStoreys),
+      // The building box is the shell: fit the sun and the camera to it, then draw it.
+      onShell: async () => {
+        fitSunToBox(key, buildingBox()); // earth excluded, or the site sheet dominates
+        if (!preserveView) applyFraming(false);
+        // Compile the shell's programs off the frame where the driver can (→ completion).
+        await renderer.compileAsync(scene, camera).catch(() => undefined);
+        if (generation !== sceneGeneration) return;
+        shellStart = buildStart;
+        invalidateShadows();
+      },
+    }).then(async (stageMs) => {
+      if (!stageMs) return;
+      registry.byPiece = indexPieces(registry.picks);
+      applyVisibility(content, visibleTrades, hiddenStoreys);
+      // The registry filled while the build ran; re-apply the selection against all of it.
+      highlight(highlighted, highlightedPiece);
+      const buildMs = performance.now() - buildStart;
+      bootMark("sceneComplete", buildMs);
+      // Compile every program before the first full frame, so the frame does not stall on it.
+      const compileStart = performance.now();
+      await renderer.compileAsync(scene, camera).catch(() => undefined);
+      if (generation !== sceneGeneration) return;
+      buildCost = { buildMs, stageMs, textureMs: takeTextureMs(), compileMs: performance.now() - compileStart };
+      publishBuilding(false);
+      invalidateShadows();
+    });
   };
 
   const setWholeHouseGlb = (blob: Blob) => {
@@ -967,10 +984,13 @@ function createScene(
     setEarthOpacity,
     setEarthTone,
     dispose: () => {
+      sceneGeneration++; // abandons an in-flight progressive build
+      publishBuilding(false);
       cancelAnimationFrame(raf);
       stopWoodMaps();
       stopOnyxMaps();
       stopTapestryMap();
+      stopTileMaps();
       stopTween();
       ro.disconnect();
       for (const trade of ALL_TRADES) disposeGroup(tradeGroups[trade]);

@@ -76,7 +76,8 @@ class CanvasDrawContext:
     def of(cls, model: ResolvedModel) -> CanvasDrawContext:
         return cls(types={item.tag: item for name in _PLACEABLE_TYPE_COLLECTIONS
                           for item in getattr(model.plan.library, name)},
-                   heights={t["tag"]: t.get("height_m") for t in canvas_object_types(model.plan)},
+                   heights={t["tag"]: t.get("height_m")
+                            for t in canvas_object_types(model.plan, parts_for=())},
                    materials={m.tag: m for m in model.plan.library.materials},
                    root=Path(model.plan.source_root or "."), hosted=set(slab_hosts(model)))
 

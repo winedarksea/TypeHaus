@@ -18,11 +18,11 @@ from urllib.parse import quote
 from typehaus.checks.registry import Preferences
 from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
 from typehaus.findings import Finding
-from typehaus.model.canvas import resolved_canvas_objects
+from typehaus.model.canvas import canvas_object_types, resolved_canvas_objects
 from typehaus.resolve import site_earth
 from typehaus.resolve.geometry_countertops import slab_hosts
 from typehaus.resolve.model import ResolvedModel
-from typehaus.server.model_json_catalog import catalog_json
+from typehaus.server.model_json_catalog import catalog_json, placed_type_tags
 from typehaus.server.model_json_fabric import framing_json, shell_json, wall_graph_json
 from typehaus.server.model_json_placeables import placeables_json
 from typehaus.server.model_json_rebar import rebar_summary_json
@@ -43,6 +43,7 @@ def _document_header(
     provenance: Provenance | None,
     findings: list[Finding] | None,
     preferences: Preferences | None,
+    types: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """The payload preamble: revision/hash/units plus the project, site and storey frame."""
     return {
@@ -59,7 +60,7 @@ def _document_header(
              "countertop_ref": hosted.get(str(item.get("tag")))}
             for hosted in (slab_hosts(model),)
             for item in resolved_canvas_objects(
-                model, lambda tag: _provenance(provenance, tag))
+                model, lambda tag: _provenance(provenance, tag), types)
         ],
         "projectNorth": model.plan.project.site.true_north.degrees,
         "findings": _findings_json(findings),
@@ -183,10 +184,13 @@ def model_to_dict(
     the monolith emitted them, so re-splitting a domain later cannot silently reorder the
     payload out from under ``test_every_payload_key_has_a_ui_type``.
     """
+    # Symbol tessellation is most of the payload's cost: build the types once, with parts
+    # only for placed ones, and give the catalog (which pops keys) its own item copies.
+    types = canvas_object_types(model.plan, parts_for=placed_type_tags(model))
     return {
         **_document_header(
             model, revision=revision, content_hash=content_hash, provenance=provenance,
-            findings=findings, preferences=preferences,
+            findings=findings, preferences=preferences, types=types,
         ),
         **wall_graph_json(model, provenance),
         **placeables_json(model, provenance),
@@ -196,7 +200,7 @@ def model_to_dict(
         **rebar_summary_json(model, provenance),
         **spaces_json(model, provenance),
         "building_science": _building_science(model, preferences),
-        **catalog_json(model, provenance, variants),
+        **catalog_json(model, provenance, variants, [dict(item) for item in types]),
     }
 
 

@@ -104,4 +104,4 @@ def serve(
     console.print(
         "[dim]watching plan source under this house only — engine edits under "
         "packages/engine/ need a restart of this command.[/dim]")
-    uvicorn.run(create_app(d, ui_dist), host=host, port=port)
+    uvicorn.run(create_app(d, ui_dist, warm_payload=True), host=host, port=port)

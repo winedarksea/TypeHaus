@@ -3,8 +3,9 @@
 //     .venv/bin/haus serve houses/catlin --port 8791     # in another shell
 //     cd ui && npm run build && npm run perf-check
 //
-// Prints the /model payload, its fetch+parse time, the scene build time and the first frame's
-// draw calls. Swiftshader frame times are meaningless; bytes, build ms and draw calls are not.
+// Prints the /model payload, its fetch+parse time, the server's payload build, the boot
+// timeline (→ engine/bootMarks.ts), the scene build and its per-builder split, and the first
+// frame's draw calls. Swiftshader frame times are meaningless; bytes, build ms and draw calls are not.
 import { launchChromium, attachToPage, evaluate, navigate, setViewport } from "./lib/cdp.mjs";
 
 const url = process.env.HAUS_URL ?? "http://127.0.0.1:8791/";
@@ -73,9 +74,21 @@ try {
     while (Date.now() < d) { if (window.__haus.perf) return window.__haus.perf;
       await new Promise(r => setTimeout(r, 100)); }
     throw new Error("no rebuild after a revision bump");`);
+  const boot = await evaluate(session, "return window.__haus.boot ?? {};");
+  const serverPerf = await evaluate(session, "return window.__haus.store.getState().model?.perf ?? {};");
   const mb = (wire.bytes / 1e6).toFixed(1);
   console.log(`/model        ${mb} MB  fetch ${wire.fetchMs.toFixed(0)} ms  parse ${wire.parseMs.toFixed(0)} ms`);
+  const payloadMs = Object.entries(serverPerf).filter(([k]) => k.startsWith("payload."));
+  console.log(`server        ${payloadMs.map(([k, v]) => `${k} ${v.toFixed(0)} ms`).join("  ") || "no payload.* timings"}`);
+  console.log("boot timeline (ms the step took, ending at page ms):");
+  for (const [name, { ms, at }] of Object.entries(boot).sort((a, b) => a[1].at - b[1].at)) {
+    console.log(`  ${name.padEnd(20)} ${ms.toFixed(0).padStart(7)}  @ ${at.toFixed(0)}`);
+  }
   console.log(`scene build   ${perf.buildMs.toFixed(0)} ms  (first frame ${perf.renderMs.toFixed(0)} ms, swiftshader)`);
+  for (const [name, ms] of Object.entries(perf.builders ?? {}).sort((a, b) => b[1] - a[1])) {
+    console.log(`  ${name.padEnd(20)} ${ms.toFixed(0).padStart(7)} ms`);
+  }
+  if (perf.texturesMs !== undefined) console.log(`  textures generated  ${perf.texturesMs.toFixed(0).padStart(7)} ms`);
   console.log(`first frame   ${perf.calls} draw calls  ${perf.triangles} triangles  `
     + `${perf.geometries} geometries  ${perf.textures} textures`);
   console.log(`dolly frame   ${frameCalls} draw calls  (${baseCalls} with every trade hidden)`);

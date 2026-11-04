@@ -55,6 +55,26 @@ no voids, no sweep, no assembly. The cost scales with how many roles `joints/mar
 `test_resolve_perf_guard.py` instead of hiding inside resolve's total. Re-measure this row
 with `scripts/verify.sh` on a quiet machine.
 
+## 3D view load (2026-11-04)
+
+`cd ui && npm run build`, `haus serve houses/catlin --port 8791`, `npm run perf-check`
+(headless Chromium, swiftshader). Boot marks are `window.__haus.boot` (`ui/src/engine/bootMarks.ts`),
+the same names in both engines; the PWA's are read by `measure-first-house --3d`.
+
+| step | before | after |
+|---|---|---|
+| `payload.model_to_dict` (catlin, idle) | 2017 ms | 1540 ms (byte-identical) |
+| ↳ furniture symbol tessellation | 2430 ms profiled | 680 ms profiled |
+| ↳ mesh wire encode | 820 ms profiled | 270 ms profiled (numpy) |
+| `payload.encode` | ~300 ms | ~300 ms, once per payload, warmed at `haus serve` start |
+| `/model` over loopback | 26.9 MB | 26.9 MB; gzip level 3 (2.9 MB, ~190 ms) for non-loopback clients only |
+| scene build, JS time all stages | ~7.1 s | ~0.77 s (walls 223, components 130, stairs 118, finishes 93) |
+| procedural textures | ~5.5 s | ~300 ms; tile maps moved to a worker |
+
+Swiftshader's `sceneComplete` (~13 s) is mostly shader compile (`compileMs`) and means nothing
+about a GPU. A check-tier landing now swaps `findings` into the cached payload
+(`server/model_payload.py`) instead of dropping it.
+
 ### The two `move_nodes` commit paths
 
 | path | median ms |

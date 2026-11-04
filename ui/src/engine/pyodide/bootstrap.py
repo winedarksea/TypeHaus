@@ -104,6 +104,10 @@ class OfflineEngine:
         self._calculation_cache: Any = None
         # The latest rebuild's split in ms (→ worker.ts markEngine, window.__haus.boot).
         self.timings: dict[str, float] = {}
+        from typehaus.server.model_payload import PayloadCache
+
+        # The same per-revision cache and encode `haus serve` uses (→ server/model_payload.py).
+        self._payload = PayloadCache()
 
     def load_house(self, root: str, files: dict[str, str]) -> dict[str, Any]:
         base = Path(root)
@@ -160,6 +164,7 @@ class OfflineEngine:
 
     def rebuild(self) -> dict[str, Any]:
         self._calculation_cache = None
+        self._payload.invalidate()
         # Offline load path (→ 40 gate b): import the manifest directly (pure `exec`, no
         # libcst) instead of load_plan(), whose dialect-lint + provenance steps are the
         # libcst-gated parts. We reuse the engine's own _import_manifest so library-root
@@ -195,7 +200,6 @@ class OfflineEngine:
         from typehaus.checks import load_preferences
         from typehaus.server.model_json import load_variant_catalog, model_to_dict
 
-        t0 = time.perf_counter()
         if self.model is None:
             return {
                 "revision": self._revision,
@@ -204,7 +208,7 @@ class OfflineEngine:
                 "findings": [f.model_dump(mode="json") for f in self.findings],
                 "ok": False,
             }
-        payload = model_to_dict(
+        payload = self._payload.get(self._revision, lambda: model_to_dict(
             self.model,
             revision=self._revision,
             provenance=self.provenance,
@@ -213,10 +217,20 @@ class OfflineEngine:
             # Offline PWA: a house bundle without variants.toml (or one whose catalog fails
             # to parse in-worker) degrades to an empty variant list, never a worker error.
             variants=load_variant_catalog(self.house_dir),
-        )
-        payload["ok"] = self.ok
-        self.timings["modelJson"] = (time.perf_counter() - t0) * 1000
+        ), {"ok": self.ok})
+        self.timings["modelJson"] = self._payload.timings["payload.model_to_dict"]
         return payload
+
+    def model_bytes(self) -> bytes:
+        """The payload as the exact bytes ``GET /model`` serves (→ worker.ts ``model``)."""
+        import json
+
+        payload = self.model_json()
+        encoded = self._payload.encoded()
+        if encoded is None:
+            return json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        self.timings["modelEncode"] = self._payload.timings["payload.encode"]
+        return encoded
 
     def findings_json(self) -> list[dict[str, Any]]:
         return [f.model_dump(mode="json") for f in self.findings]

@@ -10,13 +10,14 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-import json
+import threading
 from pathlib import Path
 from typing import Any
 
 from typehaus.server.documents_api import register_documents_routes
 from typehaus.server.engineering_api import register_engineering_routes
 from typehaus.server.events import EventBus
+from typehaus.server.model_response import ModelResponse
 from typehaus.server.state import ProjectState
 from typehaus.server.storeys_api import register_storeys_routes
 from typehaus.source.coordinator import ExternalEdit, RevisionMismatch
@@ -24,7 +25,8 @@ from typehaus.source.ops import PatchOp
 from typehaus.source.writeback import WritebackError
 
 
-def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
+def create_app(house_dir: Path, ui_dist: Path | None = None, *,
+               warm_payload: bool = False) -> Any:
     """Build the FastAPI app.
 
     ``ui_dist`` — when given a built UI directory (``ui/dist`` holding ``index.html``) the
@@ -36,10 +38,13 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
     """
     from contextlib import asynccontextmanager
 
-    from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+    from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
     from fastapi.responses import FileResponse, JSONResponse, Response
 
     state = ProjectState.open(house_dir)
+    if warm_payload:  # the first GET /model is then a cache hit
+        threading.Thread(target=state.model_json_bytes, name="haus-warm", daemon=True).start()
+    model_response = ModelResponse()
     bus = EventBus()
 
     @asynccontextmanager
@@ -95,17 +100,15 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
     app.state.project = state
     app.state.bus = bus
 
-    @app.get("/model")
-    def get_model() -> Any:
-        from typehaus.server.engine_stamp import engine_stamp
+    def get_model(request) -> Any:
+        body, headers = model_response.body(
+            state.model_json_bytes(), request.headers.get("accept-encoding", ""),
+            request.client.host if request.client else None)
+        return Response(body, media_type="application/json", headers=headers)
 
-        # The engine stamp rides on /model rather than living at its own endpoint so the
-        # browser learns the server is running stale engine code on the same poll that
-        # brings it the geometry that code produced — see server/engine_stamp.py.
-        # The cached body with the stamp spliced in before its closing brace.
-        stamp = json.dumps({"engine": engine_stamp()}, separators=(",", ":")).encode("utf-8")
-        return Response(state.model_json_bytes()[:-1] + b"," + stamp[1:],
-                        media_type="application/json")
+    # The deferred-import ForwardRef trap `events` below explains: bind the class itself.
+    get_model.__annotations__["request"] = Request
+    app.get("/model")(get_model)
 
     @app.get("/model/rebar")
     def get_model_rebar() -> Any:
@@ -476,7 +479,7 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
 
     # Revision the glb sitting in out/model.glb was emitted from, so a repeat request for an
     # unchanged model serves the file instead of re-running the whole emitter. Same key GET
-    # /model caches on (``ProjectState._model_cache``); kept here rather than on ProjectState
+    # /model caches on (``ProjectState._payload``); kept here rather than on ProjectState
     # because the artifact lives on disk, not in the payload the state object serializes.
     emitted_glb_revision: str | None = None
 

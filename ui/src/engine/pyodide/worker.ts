@@ -86,9 +86,10 @@ async function init(msg: InitMsg): Promise<void> {
     /* @vite-ignore */ `${msg.pyodideIndexUrl}pyodide.mjs`
   ));
   pyodide = await timed("runtime", () => loadPyodide({ indexURL: msg.pyodideIndexUrl }));
-  // pydantic (+ pydantic-core) and shapely ship in the pyodide distribution — the only
+  // pydantic (+ pydantic-core), shapely and numpy ship in the pyodide distribution — the only
   // third-party imports the offline compute path reaches.
-  await timed("loadPackage", () => pyodide.loadPackage(["pydantic", "shapely"]));
+  // numpy (a shapely dependency anyway) is named because the payload encode imports it.
+  await timed("loadPackage", () => pyodide.loadPackage(["pydantic", "shapely", "numpy"]));
 
   // Unpack the engine source tree onto sys.path.
   const buf = await tar;
@@ -179,11 +180,12 @@ async function handle(msg: InMsg): Promise<unknown> {
     case "model": {
       await ensureReady();
       const t0 = performance.now();
-      const d = engine.model_json();
-      const out = d.toJs({ dict_converter: Object.fromEntries });
-      d.destroy();
+      // The exact bytes `GET /model` serves, transferred (not cloned) to the page's decodeModel.
+      const b = engine.model_bytes();
+      const bytes = b.toJs(); // Uint8Array
+      b.destroy();
       markEngine("model", t0);
-      return out;
+      return bytes;
     }
     case "engineering": {
       await ensureReady();
@@ -293,7 +295,7 @@ self.onmessage = async (e: MessageEvent<InMsg>) => {
   const msg = e.data;
   try {
     const result = await handle(msg);
-    // Transfer the glb bytes to avoid a copy.
+    // Transfer byte results (model, glb, ifc) to avoid a copy.
     const transfer =
       result instanceof Uint8Array ? [result.buffer] : [];
     (self as unknown as Worker).postMessage(

@@ -6,6 +6,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { TILE_STYLES, applyTileUv, buildTileMaps, createTileMaterial, disposeTileTextures,
   tileRepeatSizeM } from "../three/tileMaterial";
 import { onyxMapsSettled } from "../three/onyxMaps";
+import { tileMapsSettled } from "../three/tileMaps";
 
 const model: Model = await (await fetch("/__tile-review-house")).json();
 const materials = model.catalog!.materials;
@@ -53,6 +54,7 @@ for (const key of Object.keys(TILE_STYLES).filter(k => gatsby
   const plane = new THREE.PlaneGeometry(w * 2, h * 2).rotateX(-Math.PI / 2).translate(w, 0, h);
   applyTileUv(plane, [w, h], style);
   const material = createTileMaterial("nordic", style, "#ffffff");
+  await tileMapsSettled(); // the raster lands off-thread (→ tileMaps.ts)
   if (style.print && !(material instanceof THREE.MeshPhysicalMaterial)) failures.push(`${key}: not a physical material`);
   if (style.inlay === "gatsby") {
     const canvas = material.map!.image as HTMLCanvasElement;
@@ -96,6 +98,7 @@ for (const tag of gatsby ? ["RM-S-PLANT", "RM-A-STUDIO", "RM-A-STUBATH", "RM-B-B
   buildRoomFloor(floor, room, 0, [0, 0], "nordic", RESOLVED_NORDIC_PALETTE.light,
     materials, picks, new Map());
   scene.add(floor);
+  await tileMapsSettled();
   const bounds = new THREE.Box3().setFromObject(floor);
   const center = bounds.getCenter(new THREE.Vector3());
   const size = bounds.getSize(new THREE.Vector3());

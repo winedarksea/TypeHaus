@@ -14,13 +14,23 @@ from __future__ import annotations
 
 from typing import Any
 
+import numpy as np
+
 MESH_QUANTUM = 1e-5
 POSITION_SCALE = 100_000  # 1 / MESH_QUANTUM, multiplied rather than divided
 NORMAL_SCALE = 10_000
 
 
-def _delta(values: list[int], stride: int) -> list[int]:
-    return values[:stride] + [values[i] - values[i - stride] for i in range(stride, len(values))]
+def _delta(values, stride: int) -> list[int]:
+    flat = np.asarray(values, dtype=np.int64).reshape(-1)
+    out = flat.copy()
+    out[stride:] -= flat[:-stride]
+    return out.tolist()
+
+
+def _quantized(points, scale: float) -> np.ndarray:
+    # np.rint rounds half to even, as round() does, so the wire stays byte-identical.
+    return np.rint(np.asarray(points, dtype=np.float64).reshape(-1) * scale).astype(np.int64)
 
 
 def _undelta(values: list[int], stride: int) -> list[int]:
@@ -34,11 +44,11 @@ def mesh_json(positions, triangles, normals=None) -> dict[str, Any]:
     """A mesh on the wire; ``normals`` are omitted when there are none."""
     out: dict[str, Any] = {
         "quantum": MESH_QUANTUM,
-        "positions": _delta([round(c * POSITION_SCALE) for p in positions for c in p], 3),
-        "triangles": _delta([i for t in triangles for i in t], 1),
+        "positions": _delta(_quantized(positions, POSITION_SCALE), 3),
+        "triangles": _delta(triangles, 1),
     }
     if normals:
-        out["normals"] = _delta([round(c * NORMAL_SCALE) for n in normals for c in n], 3)
+        out["normals"] = _delta(_quantized(normals, NORMAL_SCALE), 3)
     return out
 
 

@@ -1,3 +1,5 @@
+import { bootMark } from "./bootMarks";
+import { decodeModel } from "./decodeModel";
 import type { EngineeringCalculations } from "./engineeringTypes";
 // The M2 EngineClient implementation: fetch + WebSocket against `haus serve`
 // (server/app.py). Same-origin relative paths — the Vite dev proxy and the wheel-served
@@ -62,9 +64,12 @@ export class HttpEngineClient implements EngineClient {
   }
 
   async getModel(): Promise<Model> {
+    const t0 = performance.now();
     const res = await fetch(this.url("/model"));
     if (!res.ok) throw new EngineError(await readError(res), res.status);
-    return (await res.json()) as Model;
+    const bytes = await res.arrayBuffer();
+    bootMark("modelFetch", performance.now() - t0);
+    return decodeModel(bytes);
   }
 
   async getChecks(): Promise<Finding[]> {

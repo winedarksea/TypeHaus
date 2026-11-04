@@ -39,6 +39,7 @@ try {
     while (Date.now() < d) { c = document.querySelector("canvas");
       if (c && c.getBoundingClientRect().width > 100) break; await new Promise(r => setTimeout(r, 200)); }
     if (!c) throw new Error("3D canvas never mounted");
+    while (Date.now() < d && window.__haus.sceneBuilding !== false) await new Promise(r => setTimeout(r, 200));
     await new Promise(r => setTimeout(r, 4000));
     const r = c.getBoundingClientRect();
     return { storey: st.getState().activeStorey, viewMode: st.getState().viewMode,
@@ -104,6 +105,8 @@ try {
     while (Date.now() < d) { const c = document.querySelector("canvas");
       if (c && c.getBoundingClientRect().width > 100 && window.__haus.probe) break;
       await new Promise(r => setTimeout(r, 200)); }
+    // The scene builds progressively (→ sceneStages); picks are partial until it is done.
+    while (Date.now() < d && window.__haus.sceneBuilding !== false) await new Promise(r => setTimeout(r, 200));
     await new Promise(r => setTimeout(r, 3000));
     return 1;`);
 

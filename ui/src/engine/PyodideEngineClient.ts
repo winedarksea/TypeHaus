@@ -1,3 +1,5 @@
+import { bootMark } from "./bootMarks";
+import { decodeModel } from "./decodeModel";
 import type { EngineeringCalculations } from "./engineeringTypes";
 // The offline EngineClient (→ 40 WP4.2; editing added in U9). Runs the engine in a pyodide Web
 // Worker; no server, no network after first load. Read/compute is fully supported — getModel,
@@ -70,14 +72,6 @@ interface BootMark {
   ms: number;
   at: number;
 }
-// `window.__haus.boot` for `measure-first-house`: each step's duration and when it ended, in page
-// ms. First landing only — a later edit's resolve is not boot.
-function publishBootMark({ name, ms, at }: BootMark): void {
-  const haus = (window as unknown as { __haus?: Record<string, unknown> }).__haus;
-  if (!haus) return;
-  const boot = (haus.boot ??= {}) as Record<string, { ms: number; at: number }>;
-  boot[name] ??= { ms, at: at - performance.timeOrigin };
-}
 
 interface Pending {
   resolve: (v: unknown) => void;
@@ -101,7 +95,7 @@ export class PyodideEngineClient implements EngineClient {
   }
 
   private onMessage(data: { id: number; ok: boolean; result?: unknown; error?: string } | BootMark): void {
-    if ("type" in data) return publishBootMark(data);
+    if ("type" in data) return bootMark(data.name, data.ms, data.at);
     const p = this.pending.get(data.id);
     if (!p) return;
     this.pending.delete(data.id);
@@ -136,7 +130,7 @@ export class PyodideEngineClient implements EngineClient {
     // snapshot's 3D build can hold for seconds.
     const files = await this.files;
     const loaded = this.call("loadHouse", { root: this.root, files });
-    this.firstModel = this.call<Model>("model");
+    this.firstModel = this.model();
     this.firstModel.catch(() => undefined); // surfaced by getModel
     await Promise.all([init, loaded]);
     for (const l of this.statusListeners) l(true);
@@ -154,7 +148,15 @@ export class PyodideEngineClient implements EngineClient {
     await this.initialized;
     const first = this.firstModel;
     this.firstModel = null;
-    return first ?? this.call<Model>("model");
+    return first ?? this.model();
+  }
+
+  // The worker hands over the bytes `GET /model` serves; the round trip is `modelFetch`.
+  private async model(): Promise<Model> {
+    const t0 = performance.now();
+    const bytes = await this.call<Uint8Array>("model");
+    bootMark("modelFetch", performance.now() - t0);
+    return decodeModel(bytes);
   }
 
   async getChecks(): Promise<Finding[]> {

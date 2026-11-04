@@ -14,7 +14,9 @@ import { Workbench } from "./components/Workbench";
 import { LensBar } from "./components/LensBar";
 import { Preview3D } from "./components/Preview3D";
 import { Canvas2D } from "./components/Canvas2D";
-import { Panel3D, preloadPanel3D } from "./components/Panel3DLazy";
+import { Panel3D, preloadPanel3D, preloadPanel3DWhenIdle } from "./components/Panel3DLazy";
+import { Loading3D } from "./components/Loading3D";
+import { parseViewParams } from "./state/viewUrl";
 import { Inspector } from "./components/Inspector";
 import { ConflictBanner, EngineStaleBanner, LoadErrorBanner } from "./components/ConflictBanner";
 import { ExtentsHUD } from "./components/ExtentsHUD";
@@ -114,12 +116,15 @@ export function App() {
     void init();
   }, [init]);
 
-  // The snapshot preview is up and the engine is still booting: fetch three.js now, so a
-  // switch to 3D waits on neither.
-  const previewing = !!model && !engineReady;
+  // One preload rule for both engines. A 3D-first load (`?mode=3d`) fetches three.js beside
+  // the model; otherwise it comes in idle time once the first model has landed, so the first
+  // 2D→3D switch waits on neither.
   useEffect(() => {
-    if (previewing) preloadPanel3D();
-  }, [previewing]);
+    const urlMode = parseViewParams(window.location.search).viewMode;
+    if ((urlMode ?? useStore.getState().viewMode) !== "2d") void preloadPanel3D();
+  }, []);
+  const hasModel = !!model;
+  useEffect(() => (hasModel ? preloadPanel3DWhenIdle() : undefined), [hasModel]);
 
   // Split is not viable on a phone: two ~195px panes render the plan illegibly and cost a
   // second GPU surface. Coerce on entry only — one tap restores it, so there is no state to
@@ -230,10 +235,9 @@ export function App() {
             <div className="pane">
               {/* The snapshot builds the scene; the engine's first model carries the same revision,
                   so its arrival does not rebuild it. */}
-              {model ? <Panel3D /> : <div className="muted" style={{ padding: 24 }}>
-                {error ? <>Engine startup failed: {error} <button className="btn" onClick={() => void retryEngine()}>Retry engine</button></>
-                  : "Preparing engine for 3D…"}
-              </div>}
+              {model ? <Panel3D /> : error ? <div className="muted" style={{ padding: 24 }}>
+                Engine startup failed: {error} <button className="btn" onClick={() => void retryEngine()}>Retry engine</button>
+              </div> : <Loading3D label="Loading model…" />}
               {viewMode === "3d" && engineBanner}
             </div>
           )}

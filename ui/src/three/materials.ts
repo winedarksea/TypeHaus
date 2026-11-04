@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { textureTimer } from "./buildTimings";
 import { createBoardBattenMaterial, PROFILED_METAL_SKIN_POLYGON_OFFSET } from "./boardBattenMaterial";
 export { createProfiledMetalSkinMaterial } from "./boardBattenMaterial";
 import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
@@ -143,9 +144,10 @@ export function metalPanelProfileForFinish(
  * rather than as siding. A smooth ridge profile and a waviness term with no per-row phase
  * keep the 16" rhythm identical on every pan and at every distance.
  */
-function metalPanelNormalMap(profile: MetalPanelProfile = SEAM_PROFILE): THREE.Texture {
+export function metalPanelNormalMap(profile: MetalPanelProfile = SEAM_PROFILE): THREE.Texture {
   const cached = sharedNormalMaps.get(profile.key);
   if (cached) return cached;
+  const timed = textureTimer("metalPanel");
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = NORMAL_MAP_PX;
   const ctx = canvas.getContext("2d");
@@ -184,11 +186,11 @@ function metalPanelNormalMap(profile: MetalPanelProfile = SEAM_PROFILE): THREE.T
         dx += profile.oilCanning * Math.sin(t * Math.PI * 1.3);
       }
       const dy = 0.015 * Math.sin(y * 0.05 + x * 0.003);
-      const n = new THREE.Vector3(-dx, -dy, 1).normalize();
+      const inv = 1 / Math.sqrt(dx * dx + dy * dy + 1);
       const i = (y * NORMAL_MAP_PX + x) * 4;
-      image.data[i] = (n.x * 0.5 + 0.5) * 255;
-      image.data[i + 1] = (n.y * 0.5 + 0.5) * 255;
-      image.data[i + 2] = (n.z * 0.5 + 0.5) * 255;
+      image.data[i] = (-dx * inv * 0.5 + 0.5) * 255;
+      image.data[i + 1] = (-dy * inv * 0.5 + 0.5) * 255;
+      image.data[i + 2] = (inv * 0.5 + 0.5) * 255;
       image.data[i + 3] = 255;
     }
   }
@@ -198,6 +200,7 @@ function metalPanelNormalMap(profile: MetalPanelProfile = SEAM_PROFILE): THREE.T
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
   texture.colorSpace = THREE.NoColorSpace;
   sharedNormalMaps.set(profile.key, texture);
+  timed();
   return texture;
 }
 
@@ -750,8 +753,9 @@ export function applyMasonryWallUv(
 const WASH_TILE_M = 1.2192; // 4 ft — the scale of a roller lap, not of a unit
 let washMaps: { colorMap: THREE.Texture; roughnessMap: THREE.Texture } | null = null;
 
-function buildWashMaps(): { colorMap: THREE.Texture; roughnessMap: THREE.Texture } {
+export function buildWashMaps(): { colorMap: THREE.Texture; roughnessMap: THREE.Texture } {
   if (washMaps) return washMaps;
+  const timed = textureTimer("mineralWash");
   const size = 512;
   const colorCanvas = document.createElement("canvas");
   colorCanvas.width = colorCanvas.height = size;
@@ -760,15 +764,12 @@ function buildWashMaps(): { colorMap: THREE.Texture; roughnessMap: THREE.Texture
   const cx = colorCanvas.getContext("2d");
   const rx = roughCanvas.getContext("2d");
   if (!cx || !rx) throw new Error("2d context unavailable for the mineral wash tile");
-  // White base; the material tints it, so the tile carries modulation only.
-  cx.fillStyle = "#ffffff";
-  cx.fillRect(0, 0, size, size);
-  rx.fillStyle = "#f0f0f0"; // dead matte everywhere, mottled a little darker where thicker
-  rx.fillRect(0, 0, size, size);
+  // White base, modulated; the material tints it. Every pixel is written below, so the buffers
+  // start blank: reading a filled canvas back (getImageData) is a GPU readback, ~0.7 s headless.
   // Deterministic tileable value noise at three octaves (valueNoise.ts).
   const octaves: Array<[number, number]> = [[4, 0.055], [11, 0.03], [29, 0.016]];
-  const image = cx.getImageData(0, 0, size, size);
-  const rough = rx.getImageData(0, 0, size, size);
+  const image = cx.createImageData(size, size);
+  const rough = rx.createImageData(size, size);
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const value = tiledFbm(x / size, y / size, octaves);
@@ -795,6 +796,7 @@ function buildWashMaps(): { colorMap: THREE.Texture; roughnessMap: THREE.Texture
     return texture;
   };
   washMaps = { colorMap: finish(colorCanvas, true), roughnessMap: finish(roughCanvas, false) };
+  timed();
   return washMaps;
 }
 
