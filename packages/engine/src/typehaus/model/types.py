@@ -26,6 +26,7 @@ from typehaus.model.enums import (
     WindowOperation,
 )
 from typehaus.model.exterior_door import DoorCatalogDimensions
+from typehaus.model.fascia_mount import FasciaMountSpec
 from typehaus.model.furniture_cut import FurnitureCut
 from typehaus.model.opening_size import OpeningSize
 from typehaus.model.placeables import (
@@ -527,6 +528,7 @@ class RailingType(HausModel):
     # Set, a fascia guard's posts, rails and infill stand on the path offset by
     # ``Railing.fascia_face_offset`` plus this, not on the path.
     fascia_post_offset: Length | None = None
+    fascia_mount: FasciaMountSpec | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None
@@ -1128,6 +1130,7 @@ for _name, _obj in (
     ("WindowType", WindowType),
     ("FurnitureType", FurnitureType),
     ("RailingType", RailingType),
+    ("FasciaMountSpec", FasciaMountSpec),
     ("FixtureType", FixtureType),
     ("ProductPart", ProductPart),
     ("ApplianceType", ApplianceType),

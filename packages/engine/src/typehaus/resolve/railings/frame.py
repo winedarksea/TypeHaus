@@ -223,7 +223,8 @@ def _directions_at(stations: list[Vec], index: int) -> tuple[Vec, ...]:
 
 
 def emit_rails(model: ResolvedModel, el: Railing, storey: str, path: list[Vec],
-               surface: RailingSurface, parts: RailingParts, rail_h: float) -> None:
+               surface: RailingSurface, parts: RailingParts, rail_h: float, *,
+               bottom_clearance_m: float = 0, face_height: bool = False) -> None:
     """``rail_count`` evenly spaced runs, top rail at the guard height — **one solid each**.
 
     A rail is one bar. It is cut once, ordered once and installed once, so it is one solid
@@ -248,7 +249,12 @@ def emit_rails(model: ResolvedModel, el: Railing, storey: str, path: list[Vec],
                else rect_profile(parts.rail_section_m, parts.rail_section_m))
     for level in range(levels):
         frac = 1.0 - (level / max(levels - 1, 1)) if levels > 1 else 1.0
-        sweep = SolidSweep(path=_rail_path(path, surface, rail_h * frac), profile=profile)
+        rise = rail_h * frac
+        if face_height:
+            half = parts.rail_section_m / 2
+            rise = bottom_clearance_m + half + (rail_h - bottom_clearance_m
+                                               - 2*half) * frac
+        sweep = SolidSweep(path=_rail_path(path, surface, rise), profile=profile)
         if len(sweep.path) < 2:
             continue
         z0, z1 = sweep_z_extent(sweep)

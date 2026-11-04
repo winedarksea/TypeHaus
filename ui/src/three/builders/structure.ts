@@ -5,6 +5,7 @@
 // — each is geometry the resolver computed from something else — so all of them extrude a
 // resolved outline or lay out a member list, and none carries an editing path.
 import * as THREE from "three";
+import { createFloorDeckGeometry } from "../floorDeckGeometry";
 import { createSurfaceMeshGeometry } from "../surfaceMesh";
 import { createProfiledMetalSkinMaterial } from "../boardBattenMaterial";
 import { applySprayFoamUv, createSprayFoamMaterial, isSprayFoamFinish } from "../sprayFoamMaterial";
@@ -190,20 +191,7 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
   materials?: readonly MaterialAppearance[]) {
   const firstChildIndex = parent.children.length;
   if (floor.subfloor && floor.members.length) {
-    const points = floor.members.flatMap((member) => [member.p0, member.p1]);
-    const minX = Math.min(...points.map((point) => point[0]));
-    const maxX = Math.max(...points.map((point) => point[0]));
-    const minY = Math.min(...points.map((point) => point[1]));
-    const maxY = Math.max(...points.map((point) => point[1]));
-    const z = Math.max(...floor.members.map((member) => member.z1_m));
-    const geometry = createPlanPrismGeometry(
-      floor.deck_outline?.length ? floor.deck_outline
-        : [[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]],
-      z,
-      z + floor.subfloor.thickness_m,
-      floor.deck_voids ?? floor.openings,
-      center,
-    );
+    const geometry = createFloorDeckGeometry(floor, center);
     if (!geometry) return;
     const materialRef = floor.subfloor.material;
     const appearance = authoredAppearance(materialRef, materials);

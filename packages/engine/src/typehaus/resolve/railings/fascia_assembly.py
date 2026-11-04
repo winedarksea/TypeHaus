@@ -1,0 +1,162 @@
+"""Resolve purchased fascia mounts into shared export/viewer bodies."""
+
+from shapely.geometry import MultiPoint
+
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.connector_geometry.mesh import box_mesh, combine_meshes, transform_mesh
+from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.geometry import square
+from typehaus.resolve.model import ResolvedSolid
+from typehaus.resolve.railings.fascia_layout import fascia_deck, fascia_stations
+from typehaus.resolve.railings.fascia_mesh import (
+    bolt_mesh,
+    pierced_plate,
+    place,
+    pocket_mesh,
+    post_screw_mesh,
+)
+
+
+def mounting_layout(library, railing):
+    product = next(t for t in library.railing_types if t.tag == railing.type_ref)
+    return fascia_stations([p.xy_m for p in railing.path], railing.post_spacing.meters,
+                          railing.fascia_face_offset.meters,
+                          product.fascia_post_offset.meters)
+
+
+def _solid(model, railing, storey, suffix, mesh, material, product=None):
+    outline = tuple(MultiPoint([p[:2] for p in mesh.positions]).convex_hull.exterior.coords)[:-1]
+    model.solids.append(ResolvedSolid(
+        uid=f"{railing.uid}-{suffix.lower()}", tag=f"{railing.tag}-{suffix}",
+        storey=storey, category="railing", outline=outline,
+        z0_m=min(p[2] for p in mesh.positions), z1_m=max(p[2] for p in mesh.positions),
+        assembly=railing.assembly, material=material, product=product, body_mesh=mesh,
+    ))
+
+
+def emit_fascia_assembly(model, railing, storey, surface, parts, spec, shared):
+    stations = mounting_layout(model.plan.library, railing)
+    thickness = spec.wall_thickness.inches
+    half = spec.pocket_width.inches / 2
+    post_half = parts.post_section_m / 2
+    drop = railing.fascia_bracket_drop.meters
+    fascia = model.plan.by_tag(railing.fascia_ref) if railing.fascia_ref else None
+    deck = fascia_deck(model, railing)
+    for index, station in enumerate(stations):
+        if index in shared:
+            continue
+        walking_z = surface.height_at(station.post)
+        top = walking_z - drop
+        bottom = top - spec.overall_height.meters
+        first = station.faces[0]
+        origin = (*station.post, top)
+        shell = place(pocket_mesh(spec, station.variant != "straight"), origin,
+                      first.tangent, first.outward)
+        leaves, bolts, screws = [shell], [], []
+        for face_index, face in enumerate(station.faces):
+            grip = thickness + (fascia.thickness.inches if fascia else 0)
+            if deck is not None:
+                # Only a member parallel to this face is its band; a joist extending
+                # away from it cannot supply a reachable back face for a through-bolt.
+                candidates = []
+                for member in deck.members:
+                    if member.category not in ("rim", "joist"):
+                        continue
+                    dx, dy = member.p1[0]-member.p0[0], member.p1[1]-member.p0[1]
+                    length = (dx*dx+dy*dy)**0.5
+                    if length and abs(dx*face.outward[0]+dy*face.outward[1])/length < 1e-8:
+                        distance = abs(sum((member.p0[i]-face.origin[i])*face.outward[i]
+                                           for i in range(2)))
+                        candidates.append((distance, cross_section(member.profile).width_m))
+                if not candidates:
+                    raise ValueError(f"{railing.tag}: no rim behind fascia mounting face")
+                distance, width_m = min(candidates)
+                grip = thickness + (distance + width_m/2) / M_PER_IN
+            if grip + spec.display_head_height.inches >= spec.bolt_length.inches:
+                raise ValueError(f"{railing.tag}: fascia bolt too short for mounting stack")
+            if station.variant == "straight":
+                width = spec.flange_width.inches
+                along = (-spec.mounting_hole_spacing[0].inches / 2,
+                         spec.mounting_hole_spacing[0].inches / 2)
+                leaf_origin = face.origin
+            else:
+                # Outside leaves run away from the corner along each fascia; inside leaves
+                # reverse that handedness. The post pocket remains one physical part.
+                direction = (-1 if face_index == 0 else 1)
+                if station.variant == "inside_corner":
+                    direction *= -1
+                envelope = (spec.corner_wing_length.inches if station.variant == "outside_corner"
+                            else spec.inside_corner_envelope.inches)
+                width = envelope - 2*half - thickness
+                shift = direction * (half + width / 2) * M_PER_IN
+                leaf_origin = tuple(face.origin[i] + face.tangent[i] * shift for i in range(2))
+                along = (direction * (width/2-spec.display_corner_hole_inset.inches),)
+            holes = [(x, -spec.mounting_hole_top_drop.inches - z,
+                      spec.bolt_diameter.inches / 2 + 0.005)
+                     for x in along for z in (0, spec.mounting_hole_spacing[1].inches)]
+            leaf = pierced_plate(width, -spec.flange_height.inches, 0, thickness, holes)
+            leaves.append(place(leaf, (*leaf_origin, top), face.tangent, face.outward))
+            for x, z, _radius in holes:
+                bolt_origin = (leaf_origin[0] + face.tangent[0] * x * M_PER_IN
+                               + face.outward[0] * thickness * M_PER_IN,
+                               leaf_origin[1] + face.tangent[1] * x * M_PER_IN
+                               + face.outward[1] * thickness * M_PER_IN, top + z * M_PER_IN)
+                bolts.append(place(bolt_mesh(spec, grip), bolt_origin,
+                                   face.tangent, face.outward))
+        # Two screws on each side of the pocket, through the shell into the post tube.
+        for side in (-1, 1):
+            for fraction in (0.25, 0.75):
+                u = side * (half + thickness) * M_PER_IN
+                screw_origin = (station.post[0] + first.tangent[0] * u,
+                                station.post[1] + first.tangent[1] * u,
+                                top - spec.overall_height.meters * fraction)
+                screws.append(place(post_screw_mesh(spec), screw_origin, first.outward,
+                                    tuple(side * v for v in first.tangent)))
+        _solid(model, railing, storey, f"FASCIA-BRACKET{index + 1}",
+               combine_meshes(*leaves), parts.post_material,
+               getattr(spec, f"{station.variant}_product"))
+        _solid(model, railing, storey, f"FASCIA-BOLTS{index + 1}",
+               combine_meshes(*bolts), parts.post_material)
+        _solid(model, railing, storey, f"FASCIA-SCREWS{index + 1}",
+               combine_meshes(*screws), parts.post_material)
+        insert = box_mesh((-half, -half, -spec.overall_height.inches),
+                          (half, half, -spec.overall_height.inches + spec.insert_thickness.inches))
+        _solid(model, railing, storey, f"FASCIA-INSERT{index + 1}",
+               place(insert, origin, first.tangent, first.outward), parts.post_material)
+        model.solids.append(ResolvedSolid(
+            uid=f"{railing.uid}-p{index:02d}", tag=f"{railing.tag}-POST{index + 1}",
+            storey=storey, category="railing", outline=square(*station.post, post_half, post_half),
+            z0_m=bottom + spec.insert_thickness.meters, z1_m=walking_z + railing.height.meters,
+            assembly=railing.assembly, material=parts.post_material,
+        ))
+    _emit_foot_blocks(model, railing, storey, stations, surface, parts, spec)
+
+
+def _emit_foot_blocks(model, railing, storey, stations, surface, parts, spec):
+    width = spec.display_foot_block_width.inches
+    thickness = spec.display_foot_block_thickness.inches
+    for index, (a, b) in enumerate(zip(stations[:-1], stations[1:], strict=True)):
+        point = tuple((a.post[i] + b.post[i]) / 2 for i in range(2))
+        run = tuple(b.post[i] - a.post[i] for i in range(2))
+        length = sum(v*v for v in run)**0.5
+        tangent = tuple(v / length for v in run)
+        outward = (tangent[1], -tangent[0])
+        post_offset = spec.pocket_width.inches / 2
+        origin = (*point, surface.height_at(point))
+        clearance = spec.bottom_clearance.inches
+        mounting_drop = railing.fascia_bracket_drop.inches
+        bracket = combine_meshes(
+            box_mesh((-width/2, -post_offset, -mounting_drop-1),
+                     (width/2, -post_offset+thickness, clearance)),
+            box_mesh((-width/2, -post_offset, clearance-thickness),
+                     (width/2, thickness, clearance)),
+            place(post_screw_mesh(spec),
+                  (0, -post_offset*M_PER_IN, (-mounting_drop-0.5)*M_PER_IN),
+                  (1, 0), (0, 1)),
+            transform_mesh(post_screw_mesh(spec),
+                           origin_m=(0, 0, (clearance-thickness)*M_PER_IN),
+                           y_axis=(0, 0, -1), z_axis=(0, 1, 0)),
+        )
+        _solid(model, railing, storey, f"FASCIA-FOOTBLOCK{index + 1}",
+               place(bracket, origin, tangent, outward), parts.post_material,
+               spec.foot_block_product)

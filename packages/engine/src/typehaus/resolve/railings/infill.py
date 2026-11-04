@@ -41,7 +41,8 @@ _BAY_OVERSIZE_FACTOR = 1.5
 
 def emit_infill(model: ResolvedModel, el: Railing, storey: str, stations: list[Vec],
                 surface: RailingSurface, parts: RailingParts,
-                rail_h: float) -> list[Finding]:
+                rail_h: float, *, bottom_clearance_m: float = 0,
+                face_height: bool = False) -> list[Finding]:
     """Fill every bay of ``stations``, appending to ``model.solids``.
 
     Returns WARN findings for the two conditions worth a build message: a truncated budget,
@@ -77,6 +78,9 @@ def emit_infill(model: ResolvedModel, el: Railing, storey: str, stations: list[V
         if el.infill == "balusters":
             bay_solids = _balusters(el, storey, face_a, face_b, direction, clear,
                                     gap, surface, parts, rail_h, rail_half)
+            if face_height:
+                bay_solids = [replace(s, z0_m=s.z0_m + bottom_clearance_m + rail_half,
+                                      z1_m=s.z1_m - rail_half) for s in bay_solids]
         elif el.infill == "cable":
             bay_solids = _cables(el, storey, face_a, face_b, gap, surface, parts,
                                  rail_h, rail_half)

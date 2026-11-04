@@ -236,15 +236,15 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
 def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_model):
     """Every block on these two decks answers a named joint, and nothing else does.
 
-    ``FS-SG-DECK`` carries TWENTY-THREE, and they answer two different joints.
+    ``FS-SG-DECK`` carries TWENTY-NINE, and they answer two different joints.
 
     THREE are structural: one under each of RL-SG-BALCONY's south-leg guard posts (19'-6"
     of front edge at <= 60" o.c. is four bays, three interior posts; the 21'-6" deck before
     the 17'-0" court had four). That guard stays fascia-mounted because this plank is the
     porch roof and carries no penetrations, and a fascia bracket through-bolts the rim,
     which then needs something behind it so it cannot roll under R301.5's 200 lb at 42".
-    **The west and east legs get none** — the joists run E-W, so those legs stand over the
-    joist TIPS and bolt into the joists themselves.
+    SIX further blocks brace the flank rims at their straight guard stations. They sit
+    behind the bolt tails, leaving the nuts accessible from below.
 
     TWENTY answer an **envelope** joint. The porch enclosure's two flank tracks run N-S at
     x = 10'-0"/26'-0", PERPENDICULAR to these joists, so the curtain plane crosses every bay
@@ -265,7 +265,7 @@ def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_mode
     """
     by_tag = {floor.tag: floor for floor in catlin_model.floors}
     deck_blocks = [m for m in by_tag["FS-SG-DECK"].members if m.category == "blocking"]
-    assert len(deck_blocks) == 23, len(deck_blocks)
+    assert len(deck_blocks) == 29, len(deck_blocks)
     porch_blocks = [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"]
     assert len(porch_blocks) == 3, len(porch_blocks)
     for tag in ("FS-SG-DECK", "FS-SG-PORCH"):

@@ -88,6 +88,9 @@ from typehaus.library import (
 )
 from typehaus.library.railings import RAILING_EXT_ALUMINUM_FASCIA
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.railings.fascia_layout import fascia_stations
+from typehaus.resolve.railings.guard_line import offset_path
+from typehaus.quantities import m
 from typehaus.model.structure import CompliantLayer
 from params.column_heads import HETA20Z_PAIR_HEAD, STANDOFF_PACK_IN
 from params.cladding import HOUSE_NS_OUTBOARD_IN
@@ -2561,30 +2564,83 @@ _DECK_JOIST_OUTLINE = (pt(ft(_deck_x_w), ft(_bal_y0)), pt(ft(_deck_x_e), ft(_bal
 # Defined here rather than beside BALCONY_GUARD below because FS-SG-DECK's rim blocking is
 # authored at this path's own post stations — the blocks and the posts cannot be allowed to
 # drift apart.
-_GUARD_PATH = (pt(ft(_deck_x_w), ft(_y_in_n)), pt(ft(_deck_x_w), ft(_y_balcony_front)),
-               pt(ft(_deck_x_e), ft(_y_balcony_front)), pt(ft(_deck_x_e), ft(_y_in_n)))
-# THE BLOCKING GOES UNDER THE SOUTH LEG'S POSTS ONLY, and which leg gets it is decided by
-# which way the joists run rather than by where the guard is.
+_BALCONY_RIM_MEMBER = f"1.25x{_balcony_joist_depth_ft * 12:g} rim"
+_BALCONY_RIM_HALF_FT = cross_section(_BALCONY_RIM_MEMBER).width_m / 0.3048 / 2
+# Guard datum: outer framing face. The flank rim extends beyond the deck sheet.
+_GUARD_PATH = (
+    pt(ft(_deck_x_w - _BALCONY_RIM_HALF_FT), ft(_y_in_n)),
+    pt(ft(_deck_x_w - _BALCONY_RIM_HALF_FT), ft(_y_balcony_front)),
+    pt(ft(_deck_x_e + _BALCONY_RIM_HALF_FT), ft(_y_balcony_front)),
+    pt(ft(_deck_x_e + _BALCONY_RIM_HALF_FT), ft(_y_in_n)),
+)
+_deck_top = ft(SPEC.balcony_level_ft)  # 9'-9" joist top at the south edge
+# Guard height is measured from the surface a person stands on, which is the top of the
+# aluminum boards, not the joists they sit on. Basing the guard on _deck_top instead would
+# make the authored 42" measure 40.5" in the field and fail the guard-height rule.
+_deck_walking_surface = _deck_top + inch(SPEC.balcony_deck_thickness_in)
+# ``_GUARD_PATH`` is hoisted up beside ``_DECK_OUTLINE``, because FS-SG-DECK's rim
+# blocking is authored at this guard's own post stations.
+# **THE PRODUCT IS WILLIAMS ARCHITECTURAL PRODUCTS, ICC-ES ESR-3485, 42" BLACK** — the
+# same guard as RL-SG-PORCH below it, and see that block for why it replaced Trex Signature
+# and what the alternate is.
 #
-# FS-SG-DECK's joists run E-W. So:
-#   * the WEST and EAST legs stand over the joist TIPS — a fascia bracket there bolts through
-#     the PVC and the rim band into the ends of the joists themselves, which is backing
-#     already and cannot roll;
-#   * the SOUTH leg runs PARALLEL to the joists, over the front rim, with the first joist
-#     16" behind it. That rim is what a 200 lb load at 42" tries to roll, and blocking
-#     between the two is what stops it.
-#
-# The stations are INSET 2" off the guard line, and the inset is not cosmetic: a guard path
-# is the deck EDGE, and a JoistReinforcement authored exactly on the edge falls outside the
-# joist field the resolver lays blocks in — it is silently dropped. The model would then
-# show a guard with backing at some posts and none at others, at 0 FAIL. 2" also happens to
-# be where the block physically sits: against the rim, in the first bay behind it.
+# **THIS ONE STAYS FASCIA-MOUNTED, and that is a roofing decision rather than a railing
+# one.** FS-SG-DECK's aluminium plank is the porch roof, and since 2026-09-02 it carries NO
+# penetrations at all — the two heat-pump stands went to grade. Surface posts would put
+# ~36 holes through the only waterproof plane in this structure to save bracket money. The
+# brackets through-bolt the PVC fascia and the 2x8 rim per Ultralox's own fascia-mount
+# instructions (four 5/16" x 4" bolts, nuts on the rim's inside face, reachable from the
+# open bays below), landing in the rim blocking authored in ``FS-SG-DECK.reinforcements``.
+# ``type_ref`` stays the library's fascia type for exactly that reason.
+_BALCONY_BRACKET_DROP_IN = 2.0  # walking surface to bracket top: plank 1 1/2" + 1/2"
+_BALCONY_BRACKET_BOTTOM = (_deck_walking_surface - inch(_BALCONY_BRACKET_DROP_IN)
+                           - RAILING_EXT_ALUMINUM_FASCIA.fascia_mount.overall_height)
+BALCONY_GUARD = Railing(
+    uid="SGRA01AAAA", tag="RL-SG-BALCONY", type_ref="RAILING-EXT-ALUMINUM-FASCIA",
+    path=_GUARD_PATH,
+    kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
+    base_elevation=_deck_walking_surface,
+    # Moving the fascia outside the flank rims adds 1 1/4 inch to the front.
+    # 60 1/8 inch retains four front bays, well within the 72.43 inch product span.
+    post_spacing=inch(60.125), post_size="3x3", rail_count=2, mount="fascia",
+    # The path is the outer framing face; a 1 inch fascia stands entirely outboard.
+    # Deck slope supplies the local walking/rim elevation at every mounting station.
+    fascia_face_offset=inch(1), fascia_ref="TR-SG-FASCIA", fascia_bracket_drop=inch(_BALCONY_BRACKET_DROP_IN),
+    assembly="RAILING_DARK_METAL",
+    # R312.1.3: vertical balusters between the 60" posts at a 4" clear gap — the largest
+    # opening the 4"-sphere rule admits.
+    infill="balusters", baluster_spacing=inch(4))
+
+# Both authored backing and resolved mounts consume this exact post layout.
+_BALCONY_MOUNT_LAYOUT = fascia_stations(
+    [point.xy_m for point in BALCONY_GUARD.path], BALCONY_GUARD.post_spacing.meters,
+    BALCONY_GUARD.fascia_face_offset.meters,
+    RAILING_EXT_ALUMINUM_FASCIA.fascia_post_offset.meters,
+)
+# The front guard needs rollover blocks between the edge joist and its neighbour.
+# The shared layout's post x coordinates locate these blocks; placing the entries
+# inside the field ensures the reinforcement resolver retains them.
 _GUARD_BLOCK_INSET_FT = 2.0 / 12.0
 _BALCONY_GUARD_STATIONS = [
-    (_gx, _y_balcony_front + _GUARD_BLOCK_INSET_FT)
-    for _gx, _gy in _guard_post_stations(
-        [(_deck_x_w, _y_balcony_front), (_deck_x_e, _y_balcony_front)], 60.0 / 12.0)
-    if _deck_x_w + 0.01 < _gx < _deck_x_e - 0.01]
+    (station.post[0] / 0.3048, _y_balcony_front + _GUARD_BLOCK_INSET_FT)
+    for station in _BALCONY_MOUNT_LAYOUT
+    if station.variant == "straight" and station.faces[0].outward[1] < -0.9
+]
+
+# Flank brackets need rollover backing too. Set it behind the bolt tails so the
+# washers/nuts remain accessible from the open bays below.
+_BALCONY_FLANK_BLOCK_INSET = inch(4).feet
+_BALCONY_BACKING_EDGE_CLEARANCE = inch(1/16).feet
+_BALCONY_FLANK_STATIONS = [
+    ((_deck_x_w + _BALCONY_FLANK_BLOCK_INSET
+      if station.post[0] < (_deck_x_w + _deck_x_e)/2
+      else _deck_x_e - _BALCONY_FLANK_BLOCK_INSET),
+     min(_bal_y1 - _BALCONY_BACKING_EDGE_CLEARANCE,
+         max(_bal_y0 + _BALCONY_BACKING_EDGE_CLEARANCE, station.post[1] / 0.3048)))
+    for station in _BALCONY_MOUNT_LAYOUT
+    if station.variant == "straight" and abs(station.faces[0].outward[0]) > 0.9
+]
+
 
 # --- joist framing under the two decks (rendered members beneath the surface slabs) ---
 PORCH_JOISTS = FloorSystem(
@@ -2684,7 +2740,7 @@ BALCONY_JOISTS = FloorSystem(
                      # white pillars and knee braces — so they are painted with them. The
                      # joists behind them stay bare KDAT: nothing sees a joist once the band
                      # and the fascia are on.
-                     rim_material="post-paint-white",
+                     rim_material="post-paint-white", rim_member=_BALCONY_RIM_MEMBER,
                      bearing_refs=("BM-SG-BLW", "BM-SG-BLE")),
     # BLOCKING UNDER THE GUARD AND PORCH TRACKS; the centre front block also carries
     # the garden flood's underside box. The two heat-pump hosts that used to be here went to grade on 2026-09-02
@@ -2709,10 +2765,10 @@ BALCONY_JOISTS = FloorSystem(
     reinforcements=(
         *(JoistReinforcement(
             at=pt(ft(_gx), ft(_gy)), plies=1, blocking=True,
-            source="rim block behind an RL-SG-BALCONY fascia bracket — the four 5/16\" "
+            source="rollover backing behind an RL-SG-BALCONY fascia bracket — the four 5/16\" "
                    "through-bolts land in this block so the 2x8 rim cannot roll under the "
                    "guard's 200 lb top load")
-        for _gx, _gy in _BALCONY_GUARD_STATIONS),
+        for _gx, _gy in (*_BALCONY_GUARD_STATIONS, *_BALCONY_FLANK_STATIONS)),
         *(JoistReinforcement(
             at=pt(ft(_ex), ft(_ey)), plies=1, blocking=True,
             source="joist-bay closure under the porch enclosure's flank track — the "
@@ -2948,45 +3004,11 @@ for _row, _y, _rise in _PILLAR_ROWS:
 # draining deck via a front-edge drip flashing; the rear (house) edge gets a base flashing
 # and a separate house-side counterflashing (below). Deck drains SOUTH (rear pillars 2" taller).
 # ============================================================================
-_deck_top = ft(SPEC.balcony_level_ft)  # 9'-9" joist top at the south edge
-# Guard height is measured from the surface a person stands on, which is the top of the
-# aluminum boards, not the joists they sit on. Basing the guard on _deck_top instead would
-# make the authored 42" measure 40.5" in the field and fail the guard-height rule.
-_deck_walking_surface = _deck_top + inch(SPEC.balcony_deck_thickness_in)
-# ``_GUARD_PATH`` is hoisted up beside ``_DECK_OUTLINE``, because FS-SG-DECK's rim
-# blocking is authored at this guard's own post stations.
-# **THE PRODUCT IS WILLIAMS ARCHITECTURAL PRODUCTS, ICC-ES ESR-3485, 42" BLACK** — the
-# same guard as RL-SG-PORCH below it, and see that block for why it replaced Trex Signature
-# and what the alternate is.
-#
-# **THIS ONE STAYS FASCIA-MOUNTED, and that is a roofing decision rather than a railing
-# one.** FS-SG-DECK's aluminium plank is the porch roof, and since 2026-09-02 it carries NO
-# penetrations at all — the two heat-pump stands went to grade. Surface posts would put
-# ~36 holes through the only waterproof plane in this structure to save bracket money. The
-# brackets through-bolt the PVC fascia and the 2x8 rim per Ultralox's own fascia-mount
-# instructions (four 5/16" x 4" bolts, nuts on the rim's inside face, reachable from the
-# open bays below), landing in the rim blocking authored in ``FS-SG-DECK.reinforcements``.
-# ``type_ref`` stays the library's fascia type for exactly that reason.
-_BALCONY_BRACKET_DROP_IN = 2.0  # walking surface to bracket top: plank 1 1/2" + 1/2"
-_BALCONY_BRACKET_BOTTOM = (_deck_walking_surface - inch(_BALCONY_BRACKET_DROP_IN)
-                           - RAILING_EXT_ALUMINUM_FASCIA.fascia_bracket_height)
-BALCONY_GUARD = Railing(
-    uid="SGRA01AAAA", tag="RL-SG-BALCONY", type_ref="RAILING-EXT-ALUMINUM-FASCIA",
-    path=_GUARD_PATH,
-    kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
-    base_elevation=_deck_walking_surface,
-    post_spacing=inch(60), post_size="3x3", rail_count=2, mount="fascia",
-    # Fascia outer face = half TR-SG-FASCIA's 1"; bracket top = plank 1 1/2" + 1/2" below the
-    # rim top. The posts stand in the brackets, 1.518" past that face (the type's
-    # `fascia_post_offset`), not on the path. TR-SG-GUTTER hangs under the bracket bottoms.
-    fascia_face_offset=inch(0.5), fascia_bracket_drop=inch(_BALCONY_BRACKET_DROP_IN),
-    assembly="RAILING_DARK_METAL",
-    # R312.1.3: vertical balusters between the 60" posts at a 4" clear gap — the largest
-    # opening the 4"-sphere rule admits.
-    infill="balusters", baluster_spacing=inch(4))
 
 BALCONY_FASCIA = Fascia(
-    uid="SGFC01AAAA", tag="TR-SG-FASCIA", kind=TrimKind.FASCIA, path=_GUARD_PATH,
+    uid="SGFC01AAAA", tag="TR-SG-FASCIA", kind=TrimKind.FASCIA,
+    path=tuple(pt(m(x), m(y)) for x, y in offset_path(
+        [point.xy_m for point in _GUARD_PATH], inch(0.5).meters)),
     # 11 1/4" of rim + the 1 1/2" plank, rounded up: 13". Ripped from PVC SHEET — cellular
     # PVC trim board stops at 11 1/4" — and still one board, so the Ultralox brackets
     # through-bolt fascia and rim exactly as before (bracket top 1/2" below the rim top).
@@ -3015,7 +3037,7 @@ _SG_LEADER_DIA_IN = 3.0
 # The trough is centred on its path and its back sheet is on the north side, so the path
 # sits half the trough's 5" plus the fascia's outer 1/2" south of the fascia line: the back
 # sheet lies flush on the fascia face and the AridDek board ends drain straight into it.
-_SG_GUTTER_Y = _y_balcony_front - (2.5 + 0.5) / 12.0
+_SG_GUTTER_Y = _y_balcony_front - (2.5 + BALCONY_GUARD.fascia_face_offset.inches) / 12.0
 _GUTTER_PATH = (pt(ft(_deck_x_w), ft(_SG_GUTTER_Y)),
                 pt(ft(_deck_x_e + _SG_GUTTER_OVERSAIL), ft(_SG_GUTTER_Y)))
 # ** THE TROUGH HANGS 1" UNDER THE GUARD BRACKETS (owner, 2026-10-31). ** Its back sheet
@@ -3098,7 +3120,7 @@ BALCONY_DRIP = Flashing(
 _APRON_KICK_IN = 0.75
 _APRON_KICK_TOP = _SG_GUTTER_TOP + inch(0.5)
 _APRON_UPSTAND_TOP = _deck_top - inch(_drip_depth_in) + inch(1.5)  # behind the drip's face
-_APRON_Y = _y_balcony_front - (0.5 + _APRON_KICK_IN / 2.0) / 12.0
+_APRON_Y = _y_balcony_front - (BALCONY_GUARD.fascia_face_offset.inches + _APRON_KICK_IN / 2.0) / 12.0
 BALCONY_APRON = Flashing(
     uid="0R90J0KW4T", tag="TR-SG-APRON", kind=TrimKind.DRIP_FLASHING,
     path=(pt(ft(_deck_x_w), ft(_APRON_Y)), pt(ft(_deck_x_e), ft(_APRON_Y))),

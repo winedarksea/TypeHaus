@@ -408,6 +408,11 @@ def framing_json(model: ResolvedModel, provenance: Provenance | None) -> dict[st
         "floors": [
             {"uid": floor.uid, "tag": floor.tag, "storey": floor.storey,
              "direction": floor.direction,
+             "deck_z0_m": floor.deck_z0_m,
+             "deck_plane": ({"origin": list(floor.deck_plane.origin),
+                             "lift_at_origin_m": floor.deck_plane.lift_at_origin_m,
+                             "gradient": list(floor.deck_plane.gradient)}
+                            if floor.deck_plane is not None else None),
              "deck_outline": [list(point) for point in floor.deck_outline],
              "deck_voids": [[list(point) for point in ring] for ring in floor.deck_voids],
              # `trades` so the viewer can tell a plywood deck (sheathing, hidden with the

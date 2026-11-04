@@ -16,6 +16,8 @@ from typehaus.findings import Finding, element_error
 from typehaus.model.enums import RailingKind
 from typehaus.model.structure import Railing
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.railings.fascia_assembly import emit_fascia_assembly
+from typehaus.resolve.railings.fascia_layout import fascia_deck
 from typehaus.resolve.railings.frame import (
     MIN_POST_SPACING_M,
     emit_posts,
@@ -24,12 +26,13 @@ from typehaus.resolve.railings.frame import (
 )
 from typehaus.resolve.railings.guard_line import (
     guard_line,
+    guard_line_offset_m,
     guard_post_stations,
     shared_post_ends,
 )
 from typehaus.resolve.railings.infill import emit_infill
-from typehaus.resolve.railings.parts import resolve_parts
-from typehaus.resolve.railings.spans import flat_surface, raking_surface
+from typehaus.resolve.railings.parts import railing_type, resolve_parts
+from typehaus.resolve.railings.spans import deck_surface, flat_surface, raking_surface
 from typehaus.resolve.railings.terminations import emit_terminations
 
 __all__ = ["guard_line", "guard_post_stations", "railing_post_stations", "resolve_railing"]
@@ -70,14 +73,38 @@ def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Find
         rail_h = el.height.meters
 
     parts = resolve_parts(model, el)
+    product = railing_type(model.plan.library, el)
+    mount_spec = product.fascia_mount if product is not None and el.mount == "fascia" else None
+    if el.fascia_ref is not None:
+        deck = fascia_deck(model, el)
+        if deck is None:
+            return findings + [element_error("geometry.railing_fascia_host",
+                f"{el.tag}: fascia_ref must identify a fascia with a resolved floor host", el.tag)]
+        surface = deck_surface(deck, [p.xy_m for p in el.path],
+                               guard_line_offset_m(model.plan.library, el))
     stations = railing_post_stations(path, max(el.post_spacing.meters, MIN_POST_SPACING_M))
     shared, shared_findings = shared_post_ends(model.plan, el, stations)
     findings += shared_findings
     first = len(model.solids)
-    findings += emit_posts(model, el, storey, stations, surface, parts, rail_h, shared)
-    emit_rails(model, el, storey, path, surface, parts, rail_h)
+    if mount_spec is not None:
+        if el.fascia_face_offset is None or el.fascia_bracket_drop is None:
+            return findings + [element_error("geometry.railing_fascia_dimensions",
+                f"{el.tag}: detailed mounts need fascia_face_offset "
+                "and fascia_bracket_drop", el.tag)]
+        try:
+            emit_fascia_assembly(model, el, storey, surface, parts, mount_spec, shared)
+        except ValueError as exc:
+            del model.solids[first:]
+            return findings + [element_error("geometry.railing_fascia_layout", str(exc), el.tag)]
+    else:
+        findings += emit_posts(model, el, storey, stations, surface, parts, rail_h, shared)
+    bottom_clearance = mount_spec.bottom_clearance.meters if mount_spec else 0.0
+    emit_rails(model, el, storey, path, surface, parts, rail_h,
+               bottom_clearance_m=bottom_clearance, face_height=mount_spec is not None)
     findings.extend(emit_terminations(model, el, storey, path, surface, parts, rail_h))
-    findings += emit_infill(model, el, storey, stations, surface, parts, rail_h)
+    findings += emit_infill(model, el, storey, stations, surface, parts, rail_h,
+                            bottom_clearance_m=bottom_clearance,
+                            face_height=mount_spec is not None)
     # Every part of the guard is addressable as the railing it belongs to.
     for i in range(first, len(model.solids)):
         model.solids[i] = replace(model.solids[i], host_ref=el.tag, group=el.tag)

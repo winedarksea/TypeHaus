@@ -8,7 +8,9 @@ from __future__ import annotations
 import math
 
 from typehaus.model.enums import TrimKind
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry import circle_outline, rect_between
+from typehaus.resolve.geometry_ir import GMesh
 from typehaus.resolve.gutter_formed import resolve_formed_gutter
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 from typehaus.resolve.round_solids import PIPE_FACETS as _PIPE_FACETS
@@ -75,10 +77,24 @@ def resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:
                             recipe(2.0 * half, el.depth.meters))
         return
     for i, (a, b) in enumerate(zip(path[:-1], path[1:], strict=True)):
+        outline = rect_between(a, b, -half, half)
+        deck = next((floor for floor in model.floors if floor.tag == el.host_ref), None)
+        mesh = None
+        low, high = z0, top
+        if el.kind is TrimKind.FASCIA and deck is not None and deck.deck_plane is not None:
+            # A fascia has vertical ends and follows the rim's rise, rather than tilting
+            # its thickness or leaving a level strip hanging below a sloped deck.
+            from typehaus.resolve.connector_geometry.mesh import plate_mesh
+
+            prism = plate_mesh(tuple((x/M_PER_IN, y/M_PER_IN, z0/M_PER_IN)
+                                     for x, y in outline), (0, 0, el.depth.inches))
+            mesh = GMesh(positions=tuple((x, y, z + deck.deck_lift_at(x, y))
+                                        for x, y, z in prism.positions), triangles=prism.triangles)
+            low, high = min(p[2] for p in mesh.positions), max(p[2] for p in mesh.positions)
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-{i:02d}", tag=f"{el.tag}-{i + 1}", storey=storey,
-            category=category, outline=rect_between(a, b, -half, half), z0_m=z0, z1_m=top,
-            material=el.material,
+            category=category, outline=outline, z0_m=low, z1_m=high,
+            material=el.material, body_mesh=mesh,
         ))
 
 

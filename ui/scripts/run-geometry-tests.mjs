@@ -34,6 +34,7 @@ try {
   const { runSwingDoorSymbolTests } = await server.ssrLoadModule("/src/model/swingDoorSymbols.test.ts");
   const { runRoofGeometryTests } = await server.ssrLoadModule("/src/three/roofGeometry.test.ts");
   const { runSweepParityTests, runSweepFrameTests, runSweepMeshTests } = await server.ssrLoadModule("/src/three/tubeGeometry.test.ts");
+  const { runFloorDeckGeometryTests } = await server.ssrLoadModule("/src/three/floorDeckGeometry.test.ts");
   const { runMaterialGeometryTests, runMemberColorTests, runSkinBandUvTests } = await server.ssrLoadModule("/src/three/materials.test.ts");
   const { runProfiledMetalSkinTests } = await server.ssrLoadModule("/src/three/profiledMetalSkins.test.ts");
   const { runPlankMaterialTests } = await server.ssrLoadModule("/src/three/plankMaterial.test.ts");
@@ -128,6 +129,7 @@ try {
   runSweepParityTests();
   runSweepFrameTests();
   runSweepMeshTests();
+  runFloorDeckGeometryTests();
   runMaterialGeometryTests();
   runProfiledMetalSkinTests();
   runPlankMaterialTests();

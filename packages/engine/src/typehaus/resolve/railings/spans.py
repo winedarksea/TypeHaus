@@ -140,3 +140,35 @@ def raking_surface(stair, base_m: float) -> RailingSurface:
         return [(pa, pb, height_at(pa), height_at(pb)) for pa, pb in _split(a, b, steps)]
 
     return RailingSurface(height_at=height_at, spans=spans, rail_bands=rail_bands)
+
+
+def deck_surface(deck, protected_path: list[Vec], guard_offset_m: float) -> RailingSurface:
+    """Sample the walking surface at the protected edge, never beyond it under a post."""
+    from typehaus.resolve.railings.guard_line import offset_path
+
+    guard_path = offset_path(protected_path, guard_offset_m)
+
+    def height_at(point):
+        candidates = []
+        for index, (a, b) in enumerate(zip(guard_path[:-1], guard_path[1:], strict=True)):
+            dx, dy = b[0] - a[0], b[1] - a[1]
+            run_sq = dx*dx + dy*dy
+            t = max(0, min(1, ((point[0]-a[0])*dx + (point[1]-a[1])*dy) / run_sq))
+            nearest = (a[0]+t*dx, a[1]+t*dy)
+            # Parallel projection onto the original edge retains the post's along-run
+            # coordinate. At the mitred corner the deck's own vertex is the datum.
+            edge_a, edge_b = protected_path[index:index+2]
+            ex, ey = edge_b[0]-edge_a[0], edge_b[1]-edge_a[1]
+            edge_t = max(0, min(1, ((point[0]-edge_a[0])*ex
+                                   + (point[1]-edge_a[1])*ey) / (ex*ex+ey*ey)))
+            edge = (edge_a[0]+edge_t*ex, edge_a[1]+edge_t*ey)
+            candidates.append((math.dist(point, nearest), deck.deck_top_at(*edge)))
+        return min(candidates, key=lambda item: item[0])[1]
+
+    def spans(a, b):
+        return [(a, b, height_at(((a[0]+b[0])/2, (a[1]+b[1])/2)))]
+
+    def rail_bands(a, b, _max_rise):
+        return [(a, b, height_at(a), height_at(b))]
+
+    return RailingSurface(height_at, spans, rail_bands)

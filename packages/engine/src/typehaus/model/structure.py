@@ -994,6 +994,7 @@ class Railing(Element):
     # Fascia brackets (``RailingType.fascia_bracket_*``): the fascia's outer face stands this
     # far outboard of ``path``, and the bracket top this far below ``base_elevation``.
     fascia_face_offset: Length | None = None
+    fascia_ref: str | None = None  # Fascia tag; its host supplies the resolved deck plane.
     fascia_bracket_drop: Length | None = None
     # Tag of another railing whose post stands at this end: this one draws no post there and
     # its rails terminate on that one (one post, one base). Its end must be on that station.

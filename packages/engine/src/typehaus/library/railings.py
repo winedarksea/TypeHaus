@@ -15,6 +15,7 @@ its 0.50" face along the run, the face R312.1.3's sphere meets.
 from __future__ import annotations
 
 from typehaus import RailingType
+from typehaus.model.fascia_mount import FasciaMountSpec
 from typehaus.model.product import Product
 from typehaus.quantities import inch
 
@@ -48,6 +49,29 @@ WILLIAMS_ADA_HANDRAIL_BLACK = Product(
 )
 RAILING_PRODUCTS = (WILLIAMS_COLONIAL_42_BLACK, WILLIAMS_ADA_HANDRAIL_BLACK)
 
+ULTRALOX_3_INCH_FASCIA_MOUNT = FasciaMountSpec(
+    straight_product="FM044300", inside_corner_product="FM144390",
+    outside_corner_product="FM244390", pocket_width=inch(3.036),
+    overall_height=inch(6), flange_height=inch(5), flange_width=inch(5.64),
+    wall_thickness=inch(0.25), corner_wing_length=inch(5.966),
+    inside_corner_envelope=inch(4.286), display_corner_hole_inset=inch(0.8125),
+    mounting_hole_spacing=(inch(4.63), inch(4)), mounting_hole_top_drop=inch(0.5),
+    bolt_diameter=inch(5 / 16), bolt_length=inch(4),
+    post_screw_diameter=inch(0.242), post_screw_length=inch(1),
+    washer_diameter=inch(0.875), rear_washer_diameter=inch(1.25),
+    display_washer_thickness=inch(0.0625), display_head_width=inch(0.5),
+    display_head_height=inch(0.22), insert_thickness=inch(0.125),
+    foot_block_product="FM025900", display_foot_block_width=inch(1),
+    display_foot_block_thickness=inch(0.125), bottom_clearance=inch(3),
+    source="Ultralox 2025 product guide: FM044300 5.64 x 3.036 x 6; FM244390 "
+           "5.966 x 5.966 x 6. ESR-3485 Fig.10: 1/4 wall, 5 inch mounting flange, "
+           "4.63 x 4 mounting holes. 06/24 fascia instructions: four 5/16 x 4 bolts; "
+           "post screw text says 1 inch, figure says 1.5: use 1 inch per ESR Fig.10. "
+           "Head/washer thickness, corner-hole inset, insert and foot-block contours "
+           "are illustrative. "
+           "Shallow-slope compatibility remains an unverified product assumption.",
+)
+
 RAILING_EXT_ALUMINUM_FASCIA = RailingType(
     tag="RAILING-EXT-ALUMINUM-FASCIA",
     name="Exterior aluminum fascia-mounted guard",
@@ -62,6 +86,7 @@ RAILING_EXT_ALUMINUM_FASCIA = RailingType(
     fascia_bracket_width=inch(5.64),
     fascia_bracket_projection=inch(3.29),
     fascia_post_offset=inch(1.518),
+    fascia_mount=ULTRALOX_3_INCH_FASCIA_MOUNT,
 )
 
 RAILING_INT_STAIR_GUARD = RailingType(
