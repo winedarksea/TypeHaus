@@ -17,6 +17,7 @@ from typehaus.emit.draw.bracedwallplan import (
     build_braced_wall_plan,
     has_braced_wall_content,
 )
+from typehaus.emit.draw.cover_sheets import add_cover, cover_inputs
 from typehaus.emit.draw.datum import at_level, model_at_level
 from typehaus.emit.draw.detail_enlarged import enlarged_details
 from typehaus.emit.draw.details import build_authored_detail_scene, derive_detail_slices
@@ -37,11 +38,10 @@ from typehaus.emit.draw.plan_enlarged import (
 )
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
 from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
-from typehaus.emit.draw.roofplan import build_roof_plan
+from typehaus.emit.draw.roofplan_sheet import roof_plan_sheet
 from typehaus.emit.draw.schedule_plan_sheet import schedule_plan_sheet
 from typehaus.emit.draw.schedules import (
     _has_data_content,
-    _write_cover,
     _write_data_schedule,
     _write_energy_sheet,
     _write_engineering_register,
@@ -153,6 +153,7 @@ def build_sheet_index(model: ResolvedModel,
     # 5 details, 6 schedules, 7-8 user-defined, 9 3D. Sequence within a type is
     # deliberately non-consecutive so a sheet can be inserted without renumbering the set.
     # The cover is G-001, not A-000: a cover is general information, not architectural.
+    cover_profile, report = cover_inputs(model, profile, preferences, house_dir, report)
     sheets: list[SheetSpec] = [SheetSpec("G-001", "Cover / code summary")]
     sheets.append(SheetSpec("G-002", "General notes",
                             page=partial(_write_general_notes, profile=profile)))
@@ -276,7 +277,7 @@ def build_sheet_index(model: ResolvedModel,
                                 north_arrow=True))
 
     sheets.append(SheetSpec(f"A-{101 + len(floor_pages):03d}", "Roof plan",
-                            scene=build_roof_plan, north_arrow=True))
+                            scene=roof_plan_sheet(), north_arrow=True))
     # Elevations BEFORE sections: the type digit is the order (2 then 3), and the set was
     # emitting A-301 first. A reviewer works outside-in — what the building looks like, then
     # what it is cut open to show — and the numbering already said so. One scale for all
@@ -422,7 +423,8 @@ def build_sheet_index(model: ResolvedModel,
                                       structural_notes_pages(model, paper, **notes))
             if in_set(sheet, chosen, preferences)]
     at = sum(1 for sheet in sheets[:notes_at] if in_set(sheet, chosen, preferences))
-    return [replace(sheet, paper=paper) for sheet in kept[:at] + s001 + kept[at:]]
+    final = [replace(sheet, paper=paper) for sheet in kept[:at] + s001 + kept[at:]]
+    return add_cover(final, model, cover_profile, report, paper)
 
 
 def write_permit_set(model: ResolvedModel, output: Path,
@@ -463,9 +465,7 @@ def write_permit_set(model: ResolvedModel, output: Path,
     seal = seal_block_for(profile, house_dir)
     with PdfPages(output) as pdf, set_paper(paper), set_seal_block(seal):
         for sheet in sheets:
-            if sheet.number == "G-001":
-                _write_cover(pdf, model, index, profile, preferences)
-            elif sheet.page is not None:
+            if sheet.page is not None:
                 sheet.page(pdf, model, sheet.number, sheet.title)
             elif sheet.scene is not None:
                 fig = compose_sheet(sheet.scene(model), sheet, model, size=sheet.size)

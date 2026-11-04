@@ -21,9 +21,13 @@ from typehaus.model.surface_mount import SurfaceMountSpec
 from typehaus.quantities import inch
 
 _ESR_3485 = "https://icc-es.org/wp-content/uploads/report-directory/ESR-3485.pdf"
-_SPACING = ("ESR-3485 Table 1: 91.313\" max post spacing inside face to inside face; 6' "
-            "panels 72.43\" c/c; raked bays use the 36\" x 6' stair panel CS252306B "
-            "(Menards 1717812), 30-40 deg, 55.68\" max c/c at 37 deg")
+#: ESR-3485 has no stair row (§2.0: balconies, porches, decks); the raked limit is the
+#: Williams planner's, and it is HORIZONTAL: 55.68 = the 69.43" panel x cos 37 (+0.23), as
+#: the 8' panel's 72.89 = 91.31 x cos 37. A fixed panel reaches ~69.43 cos(angle) + 0.2.
+_SPACING = ("ESR-3485 Table 1 (IRC): 91.313\" max post spacing inside face to inside face; "
+            "6' panels 72.43\" c/c; raked bays use the 36\" x 6' stair panel CS252306B "
+            "(Menards 1717812), 30-40 deg, 55.68\" max c/c at 37 deg measured in plan "
+            "(Williams Picket Panel Planner p.1), ~59.3\" at 31.7 deg")
 #: Ultralox 3" Fascia Mount Post & Bracket (straight / inside / outside corner): four
 #: 5/16" x 4" bolts, bracket top 1/2" below the rim, double blocking. Ultralox dealers only.
 _FASCIA_BRACKET = ("Ultralox 3\" Fascia Mount Post & Bracket (straight / inside / outside "

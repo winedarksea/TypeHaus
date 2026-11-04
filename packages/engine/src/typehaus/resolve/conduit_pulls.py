@@ -26,14 +26,18 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from typehaus.quantities import inch
 from typehaus.resolve.geometry_ir import Vec3
 from typehaus.resolve.mep_queries import conduit_vertical_profile
-from typehaus.resolve.mep_soffit import DUCT_JOINT_TOLERANCE_M
 from typehaus.resolve.model import ResolvedConduitRun
 from typehaus.resolve.sweep import path_turns
 
 #: The equivalent of four quarter bends, the same figure in every raceway article.
 MAX_BEND_DEG_BETWEEN_PULLS = 360.0
+
+#: Two run ends this close (plan and z) are one coupled joint. Conduit-specific and tight:
+#: the 3" duct-joint tolerance chained independent runs whose ends merely stood nearby.
+CONDUIT_ENDPOINT_TOLERANCE_M = inch(1 / 16).meters
 
 #: Consecutive vertices closer than this are one vertex (a repeated plan point at one z).
 _SAME_VERTEX_M = 1e-6
@@ -89,8 +93,8 @@ def _profile(run: ResolvedConduitRun) -> tuple[list[Vec3], list[int], bool] | No
 
 
 def _near(a: Vec3, b: Vec3) -> bool:
-    return (math.hypot(a[0] - b[0], a[1] - b[1]) <= DUCT_JOINT_TOLERANCE_M
-            and abs(a[2] - b[2]) <= DUCT_JOINT_TOLERANCE_M)
+    return (math.hypot(a[0] - b[0], a[1] - b[1]) <= CONDUIT_ENDPOINT_TOLERANCE_M
+            and abs(a[2] - b[2]) <= CONDUIT_ENDPOINT_TOLERANCE_M)
 
 
 def _chains(runs: list[ResolvedConduitRun],

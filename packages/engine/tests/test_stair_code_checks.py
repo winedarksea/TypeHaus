@@ -272,7 +272,7 @@ def test_width_past_rails_both_sides_uses_the_27_inch_limit():
 def test_width_between_surface_guard_posts_uses_the_36_inch_limit(catlin_ctx):
     """Posts standing on the treads bound R311.7.1's 36" above the handrail: 3" posts with
     their faces 1 1/2" in leave ~36.4" of the 39.4" flight; 3 1/2" in, ~32.4" and FAIL. On
-    catlin it is ST-SG-PORCH's 45" flight: 36 1/2" between posts, ~33.9" past the ADA rail."""
+    catlin ST-SG-PORCH's guards are one bay (2026-11-04), so no post stands over its 45"."""
     from typehaus.model import pt
     from typehaus.model.structure import Railing
 
@@ -294,8 +294,8 @@ def test_width_between_surface_guard_posts_uses_the_36_inch_limit(catlin_ctx):
     assert narrow.result is Result.FAIL and "between its guard posts" in narrow.message
     (porch,) = [f for f in stair_width(catlin_ctx) if f.message.startswith("ST-SG-PORCH")]
     assert porch.result is Result.PASS
-    assert "36.50\" between its guard posts" in porch.message, porch.message
-    assert "33.88\" clear past its handrail" in porch.message, porch.message
+    assert "between its guard posts" not in porch.message, porch.message
+    assert "45.00\" >= 36\"" in porch.message, porch.message
 
 
 # ------------------------------------------------------------------- landings

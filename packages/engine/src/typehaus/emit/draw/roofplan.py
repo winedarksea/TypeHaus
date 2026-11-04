@@ -4,13 +4,16 @@ Beyond the plane outlines this now reads like a roof plan: dashed ridge lines,
 downslope arrows with the authored pitch at each gable plane, the bearing-wall face
 ghosted below the roof, and an eave-overhang dimension per distinct overhang value.
 Valleys/hips are not drawn because the constrained roof vocabulary (gable/shed over
-parallel bearing walls) cannot produce them — nothing is fabricated.
+parallel bearing walls) cannot produce them — nothing is fabricated. Roof edges, ridges and
+the roofs' overall extent are located from a common south-west corner (``roof_dimensions``).
 """
 
 from __future__ import annotations
 
+from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.lineweights import CUT, CUT_HEAVY, LIGHT
+from typehaus.emit.draw.roof_dimensions import footprint_box, ridge_line, roof_tiers
 from typehaus.emit.draw.scene import (
     ArchDimension,
     NamedPoint,
@@ -20,6 +23,7 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
+from typehaus.emit.draw.structural_dimensions import emit_structural_tiers
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof
 
@@ -29,26 +33,28 @@ _ARROW_HALF_IN = 24.0
 _OVERHANG_INSET_M = 1.2
 # The roof tag label steps this far (inches) off the ridge line so neither hides the other.
 _LABEL_CLEAR_IN = 30.0
+# The first south label is wider than a short end segment: the legend stands this clear
+# (printed points, about half a label).
+_LEGEND_PAD_PT = 24.0
 # Overhangs shorter than this (inches) are construction laps, not designed eaves.
 _MIN_OVERHANG_IN = 1.0
 
 
 
-def build_roof_plan(model: ResolvedModel) -> Scene:
-    """Draw gable/shed plane outlines, ridges, slope arrows, and eave dims."""
+def build_roof_plan(model: ResolvedModel,
+                    dimension_scale: float = PLAN_RESERVATION_SCALE) -> Scene:
+    """Draw gable/shed plane outlines, ridges, slope arrows, eave dims and locating tiers.
+
+    ``dimension_scale`` is the scale the tiers are spaced for (paper-constant, like the
+    floor plans'); the sheet wrapper (``roofplan_sheet``) rebuilds at the scale it lands on.
+    """
     b = SceneBuilder(name="roof-plan", units="in")
     for roof in model.roofs:
         footprint = tuple(_in(p) for p in roof.footprint)
         b.add(Polyline(points=footprint, layer="A-ROOF", closed=True, lineweight=CUT,
                        uid=roof.uid, tag=roof.tag))
-        xs = [point[0] for point in roof.footprint]
-        ys = [point[1] for point in roof.footprint]
-        minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
-        if roof.ridge_direction == "x":
-            ridge = ((minx, (miny + maxy) / 2), (maxx, (miny + maxy) / 2))
-        else:
-            ridge = (((minx + maxx) / 2, miny), ((minx + maxx) / 2, maxy))
-        b.add(Polyline(points=tuple(_in(p) for p in ridge), layer="A-ROOF",
+        minx, maxx, miny, maxy = footprint_box(roof)
+        b.add(Polyline(points=tuple(_in(p) for p in ridge_line(roof)), layer="A-ROOF",
                        lineweight=CUT_HEAVY, linetype="DASHED",
                        uid=roof.uid, tag=f"{roof.tag}-ridge"))
         authored = model.plan.by_tag(roof.tag)
@@ -65,6 +71,8 @@ def build_roof_plan(model: ResolvedModel) -> Scene:
             label_y -= _LABEL_CLEAR_IN  # ...and below the slope arrow's pitch note
         b.add(Text(anchor=(label_x, label_y), content=f"{roof.tag}  {pitch_label}",
                    height=3.5, align="center"))
+    emit_structural_tiers(b, roof_tiers(model), dimension_scale,
+                          legend_pad_pt=_LEGEND_PAD_PT)
     return b.build()
 
 

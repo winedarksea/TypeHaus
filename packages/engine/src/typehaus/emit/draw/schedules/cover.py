@@ -14,9 +14,16 @@ red the issue stamp uses, rather than sit quietly under a "LOT AREA" number.
 from __future__ import annotations
 
 import textwrap
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from typehaus.checks.soil import site_soil_bearing_psf, site_soil_class
+from typehaus.emit.draw.schedules.cover_index import (
+    HEADING_GAP_IN,
+    INDEX_PITCH_IN,
+    INDEX_PT,
+    draw_index,
+)
 from typehaus.emit.draw.sheet_writer import schedule_sheet, section
 from typehaus.emit.draw.typography import CHAR_ASPECT, wrap_columns_for
 from typehaus.findings import Result
@@ -25,39 +32,7 @@ from typehaus.resolve.model import ResolvedModel
 if TYPE_CHECKING:  # pragma: no cover — annotations only
     from typehaus.checks.jurisdiction import JurisdictionProfile
     from typehaus.checks.permit import PermitChecklist
-    from typehaus.checks.registry import Preferences
-
-#: Lettering pitch for the sheet index, inches per row. 8pt monospace on a 0.135" pitch is
-#: the density a real index prints at.
-_INDEX_PITCH_IN = 0.135
-
-#: Narrowest index column, inches — the width the *column count* is decided against, so that
-#: 11x17 still gets five columns rather than three luxurious ones and an overflow note.
-_INDEX_COLUMN_IN = 2.95
-
-#: Widest index column, inches. A derived detail's title carries the assembly pair that
-#: distinguishes it ("TR-CATLIN-RIM-BAND · EXT_2X6 / ROOF"), which is what a
-#: column this wide is for; past it the eye stops associating a number with its title.
-_INDEX_COLUMN_MAX_IN = 6.2
-
-#: Clear space between one index column's text and the next column's number, inches.
-_INDEX_GUTTER_IN = 0.20
-
-#: Index lettering. The number field is 9 characters plus its separating space, which is
-#: where the ``- 10`` in the title's character budget comes from.
-_INDEX_PT = 8.0
-
-#: Longest index column worth printing, rows. Nothing but the paper stops a 24x36 cover
-#: putting all 98 of catlin's sheets in one 13"-tall column — which fits, and is a worse
-#: index than three short ones: the eye tracks a column top-to-bottom, and past about this
-#: many rows it is scanning a wall of numbers. Above the cap the list balances across as
-#: many columns as the sheet is wide enough to hold.
-_INDEX_MAX_ROWS = 48
-
-#: The last step before an index overflows: one point smaller, on a tighter pitch. Still
-#: above the 6.5 pt of the plans' own tags, so the map stays as legible as the sheets.
-_INDEX_TIGHT_PT = 7.0
-_INDEX_TIGHT_PITCH_IN = 0.118
+    from typehaus.emit.draw.cover_sheets import CoverPlan
 
 #: Narrowest the deferred-submittal statement may print beside the data blocks, inches.
 #: Narrower and it stacks under them, as it did before ledger ran out of index rows.
@@ -143,30 +118,63 @@ def _survey_basis_row(site) -> tuple[str, str, bool]:
     return ("Survey basis", "PARCEL NOT SURVEYED", True)
 
 
-def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]],
-                 profile: JurisdictionProfile,
-                 preferences: Preferences | None = None) -> None:
-    """A-000 — the identity of the set, the code data behind it, and the sheet index.
+@dataclass(frozen=True)
+class CoverHeader:
+    """The cover's data blocks and where the sheet index starts below them (paper inches)."""
+    top: float
+    column_2: float
+    data_rows: list[tuple[str, str, bool]]
+    code_rows: list[tuple[str, str, bool]]
+    deferred_x: float | None     # beside the blocks when the paper has the width, else None
+    deferred_heading: str
+    deferred_lines: list[str]
+    index_top: float             # the "SHEET INDEX" heading's baseline
 
-    The checklist is evaluated with the actual ``preferences`` (from the set writer): without
-    them ``[envelope].ach50`` is unreadable and the air-leakage item reads UNKNOWN even on a
-    house that passes it, and ``haus print`` gates on that same evaluation being clean.
 
-    The index layout is in paper inches and takes its row count from :func:`content_box`, so
-    the column count follows the paper. Every sheet is listed (three steps, below); only
-    a set past even the tightest step states its overflow on the sheet.
+def cover_header(model: ResolvedModel, profile: JurisdictionProfile,
+                 box: tuple[float, float, float, float]) -> CoverHeader:
+    """Lay out everything above the index. Pure, so the plan and the page agree on its height."""
+    x0, _, x1, y1 = box
+    top = y1 - 2.70
+    column_2 = x0 + min(_DATA_COLUMN_MAX_IN, (x1 - x0) / 2.0)
+    data_rows = _project_data_rows(model.plan.project, model.plan.project.site)
+    code_rows = [(label, value, False) for label, value
+                 in _code_summary_rows(profile, model.plan)]
+    cursor = top - 0.42 - max(len(data_rows), len(code_rows)) * INDEX_PITCH_IN
+    # Beside the data blocks where the paper has the width: stacked under them it cost
+    # ledger's index eight rows, and the index is the one list that must be whole.
+    widest = max(len(f"{label:<22}{value}") for label, value, _ in code_rows)
+    deferred_x = column_2 + 0.1 + widest * INDEX_PT * CHAR_ASPECT / 72.0 + 0.4
+    heading, _, body = " ".join(DEFERRED_SUBMITTALS.split()).partition(" — ")
+    if x1 - deferred_x >= _DEFERRED_MIN_IN:
+        lines = textwrap.wrap(
+            body, wrap_columns_for(min(x1 - deferred_x, _DATA_COLUMN_MAX_IN), INDEX_PT))
+        side = top - 0.42 - len(lines) * INDEX_PITCH_IN
+        return CoverHeader(top, column_2, data_rows, code_rows, deferred_x, heading, lines,
+                           min(cursor, side) - 0.34)
+    lines = DEFERRED_SUBMITTALS.splitlines()
+    return CoverHeader(top, column_2, data_rows, code_rows, None, heading, lines,
+                       cursor - 0.34 - len(lines) * INDEX_PITCH_IN - 0.32)
+
+
+def footer_height_in(footer: tuple[tuple[str, ...], ...]) -> float:
+    """Height the gate statement and certification take above the title strip."""
+    return 0.10 + _FOOTER_STEP_IN * (sum(len(p) for p in footer) + 0.4 * len(footer) + 1)
+
+
+def _write_cover(pdf, model: ResolvedModel, number: str, title: str, *,
+                 plan: CoverPlan, page: int, profile: JurisdictionProfile) -> None:
+    """G-001 (``page`` 0) or a continuation G-001.n: one page of the planned cover.
+
+    G-001 carries the identity of the set, the code data, the first part of the index and
+    the gate statement; a continuation carries index alone. Everything about the layout
+    was decided in ``cover_sheets.plan_cover`` -- the checklist is not re-evaluated here --
+    so the index this letters is the one the page count was computed from.
     """
-    from typehaus.checks import evaluate_permit_checklist, run_from_model
     from typehaus.emit.draw.sheet_writer import content_box
 
-    site = model.plan.project.site
-    checklist = evaluate_permit_checklist(
-        run_from_model(model, [], profile=profile.name, preferences=preferences), profile)
-    # G-001, not A-000. The sheet index, the manifest and every cross-reference in the set
-    # call this page G-001 (a cover is general information, not architectural); the title
-    # block was still lettering the pre-NCS number, so the one page whose job is to be the
-    # map disagreed with itself.
-    with schedule_sheet(pdf, model, "G-001", "Cover / code summary", heading="") as fig:
+    index_page = plan.pages[page]
+    with schedule_sheet(pdf, model, number, title, heading="") as fig:
         width, height = fig.get_size_inches()
         x0, y0, x1, y1 = content_box((width, height))
 
@@ -176,6 +184,12 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]],
         def _y(inches: float) -> float:
             return inches / height
 
+        if page:
+            section(fig, _x(x0), _y(y1 - 0.35), "SHEET INDEX (CONT.)", fontsize=12)
+            draw_index(fig, index_page, x0=x0, x1=x1, top=y1 - 0.35 - HEADING_GAP_IN)
+            return
+        site = model.plan.project.site
+        head = cover_header(model, profile, (x0, y0, x1, y1))
         fig.text(_x(x0), _y(y1 - 0.55), model.plan.project.name, fontsize=28,
                  family="monospace")
         fig.text(_x(x0), _y(y1 - 1.15), f"{profile.edition.upper()} PERMIT SET",
@@ -187,91 +201,34 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]],
 
         # PROJECT DATA and CODE SUMMARY sit side by side: both are short label/value lists
         # and stacking them cost the sheet index a whole column of rows.
-        top = y1 - 2.70
-        column_2 = x0 + min(_DATA_COLUMN_MAX_IN, (x1 - x0) / 2.0)
-        section(fig, _x(x0), _y(top), "PROJECT DATA", fontsize=12)
-        section(fig, _x(column_2), _y(top), "CODE SUMMARY", fontsize=12)
-        code_rows = [(label, value, False) for label, value
-                     in _code_summary_rows(profile, model.plan)]
-        rows = 0
-        for column_x, entries in ((x0, _project_data_rows(model.plan.project, site)),
-                                  (column_2, code_rows)):
-            cursor = top - 0.42
+        section(fig, _x(x0), _y(head.top), "PROJECT DATA", fontsize=12)
+        section(fig, _x(head.column_2), _y(head.top), "CODE SUMMARY", fontsize=12)
+        for column_x, entries in ((x0, head.data_rows), (head.column_2, head.code_rows)):
+            cursor = head.top - 0.42
             for label, value, warn in entries:
                 fig.text(_x(column_x + 0.1), _y(cursor), f"{label:<22}{value}", fontsize=8,
                          family="monospace",
                          color=_PLACEHOLDER_INK if warn else "#1a1a1a",
                          weight="bold" if warn else "normal")
-                cursor -= _INDEX_PITCH_IN
-            rows = max(rows, len(entries))
-
-        cursor = top - 0.42 - rows * _INDEX_PITCH_IN
-        # Beside the data blocks where the paper has the width: stacked under them it cost
-        # ledger's index eight rows, and the index is the one list that must be whole.
-        widest = max(len(f"{label:<22}{value}") for label, value, _ in code_rows)
-        deferred_x = column_2 + 0.1 + widest * _INDEX_PT * CHAR_ASPECT / 72.0 + 0.4
-        if x1 - deferred_x >= _DEFERRED_MIN_IN:
-            heading, _, body = " ".join(DEFERRED_SUBMITTALS.split()).partition(" — ")
-            section(fig, _x(deferred_x), _y(top), heading, fontsize=12)
-            side = top - 0.42
-            measure = min(x1 - deferred_x, _DATA_COLUMN_MAX_IN)
-            for deferred_line in textwrap.wrap(body, wrap_columns_for(measure, _INDEX_PT)):
-                fig.text(_x(deferred_x), _y(side), deferred_line, fontsize=8,
+                cursor -= INDEX_PITCH_IN
+        if head.deferred_x is not None:
+            section(fig, _x(head.deferred_x), _y(head.top), head.deferred_heading,
+                    fontsize=12)
+            side = head.top - 0.42
+            for deferred_line in head.deferred_lines:
+                fig.text(_x(head.deferred_x), _y(side), deferred_line, fontsize=8,
                          family="monospace")
-                side -= _INDEX_PITCH_IN
-            cursor = min(cursor, side) - 0.34
+                side -= INDEX_PITCH_IN
         else:
-            cursor -= 0.34
-            for deferred_line in DEFERRED_SUBMITTALS.splitlines():
-                fig.text(_x(x0), _y(cursor), deferred_line, fontsize=8, family="monospace")
-                cursor -= _INDEX_PITCH_IN
-            cursor -= 0.32
-        section(fig, _x(x0), _y(cursor), "SHEET INDEX", fontsize=12)
-        cursor -= 0.42
-        # The footer is laid out first, in lines, because the index gets whatever height is
-        # left above it — a statement that grew (the draft gate now names every unsealed
-        # requirement) used to run off the bottom of the sheet and through the title block.
-        register = next((number for number, name in index
-                         if name == "Engineering register"), None)
-        footer_lines = _footer_paragraphs(profile, checklist, wrap_columns_for(x1 - x0, 9.0),
-                                          register=register)
-        footer_in = 0.10 + _FOOTER_STEP_IN * (sum(len(p) for p in footer_lines)
-                                              + 0.4 * len(footer_lines) + 1)
-        # Every sheet is listed. Three steps, each only when the one before will not fit:
-        # one row per sheet; continuations and enlarged parts on their parent's row
-        # ("A-512/.1/.2"); then a point smaller on a tighter pitch.
-        entries, size_pt, pitch = list(index), _INDEX_PT, _INDEX_PITCH_IN
-        for step in ("rows", "grouped", "tight"):
-            if step == "grouped":
-                entries = _grouped(index)
-            elif step == "tight":
-                size_pt, pitch = _INDEX_TIGHT_PT, _INDEX_TIGHT_PITCH_IN
-            per_column, columns = _index_shape(
-                len(entries),
-                rows=max(1, int((cursor - (y0 + footer_in)) / pitch)),
-                columns=max(1, int((x1 - x0) / (_INDEX_COLUMN_IN * size_pt / _INDEX_PT))))
-            if per_column * columns >= len(entries):
-                break
-        shown, dropped = entries[:per_column * columns], entries[per_column * columns:]
-        # Having settled how many columns there are, spend the leftover width on them. Three
-        # columns on 24x36 leave 34.8" to fill, and a title clipped to the 11x17 column
-        # width on a sheet with that much room to spare is a clip for no reason.
-        pitch_in = min(_INDEX_COLUMN_MAX_IN, (x1 - x0) / columns)
-        # The title is fitted to its column, or it runs through the next column's number.
-        field = max([9, *(len(number) for number, _ in shown)])
-        room = wrap_columns_for(pitch_in - _INDEX_GUTTER_IN, size_pt) - (field + 1)
-        for row, (number, name) in enumerate(shown):
-            column, line = divmod(row, per_column)
-            fig.text(_x(x0 + 0.1 + column * pitch_in),
-                     _y(cursor - line * pitch),
-                     f"{number:{field}} {_fit(name, room)}",
-                     fontsize=size_pt, family="monospace")
-        if dropped:
-            footer_lines.insert(0, [
-                f"Index continues: {len(dropped)} further sheet(s) "
-                f"{dropped[0][0]}–{dropped[-1][0]} are in the set and not listed above."])
-        cursor = y0 + 0.10 + _FOOTER_STEP_IN * sum(len(p) for p in footer_lines)
-        for paragraph in footer_lines:
+            side = head.top - 0.42 - max(len(head.data_rows),
+                                         len(head.code_rows)) * INDEX_PITCH_IN - 0.34
+            for deferred_line in head.deferred_lines:
+                fig.text(_x(x0), _y(side), deferred_line, fontsize=8, family="monospace")
+                side -= INDEX_PITCH_IN
+        section(fig, _x(x0), _y(head.index_top), "SHEET INDEX", fontsize=12)
+        draw_index(fig, index_page, x0=x0, x1=x1, top=head.index_top - HEADING_GAP_IN)
+        cursor = y0 + 0.10 + _FOOTER_STEP_IN * sum(len(p) for p in plan.footer)
+        for paragraph in plan.footer:
             for footer_line in paragraph:
                 fig.text(_x(x0), _y(cursor), footer_line, fontsize=_FOOTER_PT,
                          family="sans-serif")
@@ -297,54 +254,6 @@ def _footer_paragraphs(profile, checklist, columns: int,
               "the title block of each sheet the licensee is responsible for.",
             width=columns))
     return paragraphs
-
-
-def _fit(text: str, room: int) -> str:
-    """``text`` clipped to ``room`` characters, ellipsised so the clip is visible.
-
-    A silently truncated title reads as the real title. The ellipsis is the difference
-    between "this sheet is called that" and "this sheet's name is longer than the column".
-    """
-    if room <= 1 or len(text) <= room:
-        return text
-    return text[:room - 1].rstrip() + "…"
-
-
-def _grouped(index: list[tuple[str, str]]) -> list[tuple[str, str]]:
-    """Continuation and enlarged sub-sheets folded onto their parent's row.
-
-    ``S-602.1`` "(cont.)" and ``A-512.1`` "… · head" carry their parent's title, so their
-    numbers join its row ("A-512/.1/.2"). ``A-301.1`` names its own section and keeps one.
-    """
-    rows: list[tuple[str, str, list[str]]] = []
-    for number, title in index:
-        if rows:
-            head, head_title, parts = rows[-1]
-            if number.startswith(head + ".") and title.startswith(head_title):
-                parts.append(number[len(head):])
-                continue
-        rows.append((number, title, []))
-    return [("/".join([head, *parts]), title) for head, title, parts in rows]
-
-
-def _index_shape(entries: int, *, rows: int, columns: int) -> tuple[int, int]:
-    """(rows per column, columns) for ``entries`` index lines in a ``rows`` x ``columns`` grid.
-
-    Two rules, in order. Cap a column at :data:`_INDEX_MAX_ROWS` so a tall sheet does not
-    print one enormous column, then **balance**: having decided three columns are needed,
-    print 33/33/32 rather than 48/48/2. An unbalanced index looks like the list was
-    truncated and continues somewhere else, which is the exact thing this page must not
-    suggest.
-
-    The grid is a hard bound, not a target — a set too big for the paper returns the
-    largest whole grid that fits and the caller says on the sheet what did not make it.
-    """
-    if entries <= 0:
-        return (1, 1)
-    per_column = min(rows, _INDEX_MAX_ROWS)
-    needed = -(-entries // per_column)  # ceil
-    columns = max(1, min(needed, columns))
-    return (min(rows, -(-entries // columns)), columns)
 
 
 def _code_summary_rows(profile: JurisdictionProfile, plan: Any = None) -> list[tuple[str, str]]:

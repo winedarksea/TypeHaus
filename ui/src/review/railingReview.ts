@@ -31,12 +31,15 @@ const point = (index: number): [number, number, number] => {
 const overview = point(5);
 overview[1] += 0.65;
 const stairSolids = model.solids!.filter(s => s.host_ref?.startsWith("RL-SG-PSTAIR-")
-  || s.host_ref?.startsWith("RL-SG-PTHRESH-"));
+  || s.host_ref?.startsWith("RL-SG-PTHRESH-") || s.host_ref === "RL-SG-PORCH"
+  || s.host_ref === "RL-SG-PORCH-NE");
 const stairPoint = (tag: string): [number, number, number] => {
   const solid = stairSolids.find(s => s.tag === tag)!;
   return [solid.outline.reduce((sum, p) => sum + p[0], 0) / solid.outline.length,
     solid.z0_m + 0.04, solid.outline.reduce((sum, p) => sum + p[1], 0) / solid.outline.length];
 };
+const foot = stairPoint("RL-SG-PSTAIR-S-BASE1"), head = stairPoint("RL-SG-PTHRESH-S-BASE2");
+const stairMid = foot.map((v, i) => (v + head[i]) / 2) as [number, number, number];
 const footBlock = footBlocks[3];
 const footTarget: [number, number, number] = [
   footBlock.outline.reduce((sum, p) => sum + p[0], 0) / footBlock.outline.length,
@@ -57,14 +60,15 @@ const cases = [
     eye: [-1, 0.3, -0.7] },
   { name: "Panel support · fascia and bottom-rail attachments", target: footTarget, span: 0.5,
     eye: [0.3, 0.2, 1] },
-  { name: "Porch stair · shared head and complete handrail", target: stairPoint("RL-SG-PSTAIR-S-BASE2"),
+  { name: "Porch stair · one bay, shared head and complete handrail", target: stairMid,
     span: 3.2, eye: [2, 1.5, 3] },
-  { name: "Stair foot · concrete pad", target: stairPoint("RL-SG-PSTAIR-S-BASE1"),
+  { name: "Stair foot · concrete pad", target: foot,
     span: 0.5, eye: [1, 0.45, 1] },
-  { name: "Shared head · concrete wall top", target: stairPoint("RL-SG-PTHRESH-S-BASE2"),
+  { name: "Shared head · concrete wall top", target: head,
     span: 0.65, eye: [1, 0.4, 1] },
-  { name: "Middle tread · backing cutaway", target: stairPoint("RL-SG-PSTAIR-S-BASE2"),
-    span: 0.65, eye: [0.7, -0.4, 1] },
+  // Open item: the level porch guard's leg posts have no authored bases yet.
+  { name: "Porch leg · east end post on W-SG-E1's inner face", target: stairPoint("RL-SG-PORCH-POST8"),
+    span: 1.2, eye: [-1, 0.5, 1] },
 ];
 if (dark) { document.body.style.background = "#22262a"; document.body.style.color = "#eee"; }
 for (const sample of cases) {
@@ -78,7 +82,7 @@ for (const sample of cases) {
   const group = new THREE.Group(), frame = new THREE.Group(); scene.add(group, frame);
   const picks: THREE.Mesh[] = [], byUid = new Map<string, THREE.Material[]>();
   const isStair = sample.name.startsWith("Porch stair") || sample.name.startsWith("Stair foot")
-    || sample.name.startsWith("Shared head") || sample.name.startsWith("Middle tread");
+    || sample.name.startsWith("Shared head") || sample.name.startsWith("Porch leg");
   const context = model.solids!.filter(s => s.tag.startsWith("TR-SG-FASCIA-")
     || s.tag.startsWith("TR-SG-GUTTER-") || s.tag.startsWith("TR-SG-APRON-")
     || (sample.name.startsWith("Rear end") && s.tag.startsWith("TR-SG-BASE-FLASH-")));
@@ -86,10 +90,11 @@ for (const sample of cases) {
     : [...guard, ...context];
   if (isStair) {
     const stair = model.stairs!.find(s => s.tag === "ST-SG-PORCH")!;
-    const cut = sample.name.startsWith("Middle tread") ? { ...stair,
-      members: stair.members.filter(m => m.category === "stringer"
-        && m.p0[1] > sample.target[2]), finish_parts: [] } : stair;
-    buildStair(group, cut, center, mode, palette, picks, byUid, model.catalog?.materials);
+    buildStair(group, stair, center, mode, palette, picks, byUid, model.catalog?.materials);
+    if (sample.name.startsWith("Porch leg")) {
+      buildFloor(group, model.floors!.find(f => f.tag === "FS-SG-PORCH")!, center, mode,
+        palette, picks, byUid, frame, model.catalog?.materials);
+    }
     const wall = model.walls.find(w => w.tag === "W-SG-E1")!;
     for (const layer of wall.layers.filter(l => l.polygon.length >= 3)) {
       buildSolid(group, { uid: `review-${layer.name}`, tag: wall.tag, category: "concrete",

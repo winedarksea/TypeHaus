@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 from _railing_fixtures import railing, resolve_railings
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Polygon
 
 from typehaus.library.railings import RAILING_EXT_ALUMINUM_SURFACE as PRODUCT
 from typehaus.model.surface_mount import SurfacePostMount
@@ -52,7 +52,7 @@ def test_surface_bases_rotate_and_use_authored_level_bearings(angle):
                for s in model.solids if "-POST" in s.tag)
 
 
-def test_porch_stair_bases_land_on_pad_treads_and_wall(catlin_model_ro):
+def test_porch_stair_bases_land_on_pad_and_wall(catlin_model_ro):
     model = catlin_model_ro
     solids = {s.tag: s for s in model.solids}
     stair = next(s for s in model.stairs if s.tag == "ST-SG-PORCH")
@@ -63,7 +63,7 @@ def test_porch_stair_bases_land_on_pad_treads_and_wall(catlin_model_ro):
     wall_plan = wall_body(wall, wall.z0_m, wall.z1_m)
     for side in ("S", "N"):
         tag = f"RL-SG-PSTAIR-{side}"
-        foot, middle = (solids[f"{tag}-BASE{i}"] for i in (1, 2))
+        foot = solids[f"{tag}-BASE1"]
         head = solids[f"RL-SG-PTHRESH-{side}-BASE2"]
         assert Polygon(pad.outline).covers(Polygon(foot.outline))
         assert foot.z0_m == pytest.approx(pad.z1_m)
@@ -78,25 +78,8 @@ def test_porch_stair_bases_land_on_pad_treads_and_wall(catlin_model_ro):
         clearance = z - resolve_parts(model, guard).rail_section_m/2
         clearance -= model.plan.by_tag(f"RL-SG-PTHRESH-{side}").base_elevation.meters
         assert 0 < clearance < inch(4).meters
-        assert f"{tag}-BASE3" not in solids
-        assert f"{tag}-POST3" not in solids
-        tread = next(m for m in stair.members if m.child_key == "tread-002")
-        assert middle.z0_m == pytest.approx(tread.z1_m + stair.finish_thickness_m)
-        # A full base fits within the 11 inch tread, clear of both riser lines.
-        xs = [x for x, _ in middle.outline]
-        assert min(xs) > tread.p0[0]-inch(5.5).meters
-        assert max(xs) < tread.p0[0]+inch(5.5).meters
-        backing = solids[f"{tag}-BACKING2"]
-        assert backing.z1_m == pytest.approx(middle.z0_m-inch(0.94).meters)
-        anchor = solids[f"{tag}-ANCHORS2"]
-        assert backing.z0_m < anchor.z0_m < backing.z1_m-inch(4).meters
-        # The two shaft rows fall inside the backing, not into the stair cavity.
-        centre_x = sum(x for x, _ in middle.outline)/len(middle.outline)
-        centre_y = sum(y for _, y in middle.outline)/len(middle.outline)
-        half_spacing = PRODUCT.surface_mount.display_hole_spacing.meters/2
-        assert all(Polygon(backing.outline).contains(Point(centre_x+dx, centre_y+dy))
-                   for dx in (-half_spacing, half_spacing)
-                   for dy in (-half_spacing, half_spacing))
+        # One bay since 2026-11-04: the head base is the cheek's, nothing stands on a tread.
+        assert not any(f"{tag}-{part}2" in solids for part in ("BASE", "POST", "BACKING"))
     handrail = model.plan.by_tag("RL-SG-PSTAIR-HR")
     tread_xs = [p[0] for m in stair.members if m.riser_line for p in m.riser_line]
     assert handrail.path[0].xy_m[0] > max(tread_xs)

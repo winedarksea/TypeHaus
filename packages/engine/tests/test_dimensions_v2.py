@@ -316,3 +316,19 @@ def test_roof_plan_symbols_are_known_to_both_writers(roof_scene):
 
     names = {n.name for n in roof_scene.nodes if isinstance(n, Symbol)}
     assert names <= DXF_GLYPHS and names <= PDF_GLYPHS
+
+
+def test_roof_plan_locating_chains_sum_to_the_overall_roof_extent(catlin_model, roof_scene):
+    """One chain per axis spans every roof from the common SW corner and closes the overall."""
+    tiers = [d for d in _dims(roof_scene) if d.uid is None]  # overhang strings carry a uid
+    for axis in (0, 1):
+        strings = [d for d in tiers
+                   if abs(d.p1[1 - axis] - d.p0[1 - axis]) < 1e-9 and d.p1[axis] != d.p0[axis]]
+        lengths = sorted(abs(d.p1[axis] - d.p0[axis]) for d in strings)
+        points = [p[axis] / M_PER_IN for r in catlin_model.roofs for p in r.footprint]
+        overall = max(points) - min(points)
+        assert lengths[-1] == pytest.approx(overall, abs=1e-6)
+        assert sum(lengths[:-1]) == pytest.approx(overall, abs=1e-6)
+        starts = [min(d.p0[axis], d.p1[axis]) for d in strings]
+        assert min(starts) == pytest.approx(min(points), abs=1e-6)  # the SW reference
+    assert len(tiers) > 2  # separate roofs are located, not just the overall

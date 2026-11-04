@@ -1181,6 +1181,10 @@ PV_JBOX_CLAMP = []
 # The spa feed's southward leg station, shared by the run and BOTH of its sleeves — see the
 # comment on CD-B-SPA below for why it is 1/8" inside W-SG-W1's court face (9'-5 7/8" vs 9'-6").
 _SPA_CHASE_X = ft(9, 5.875)
+# The shared PV chase station (x 1'-8", y 33'-8"): the riser's head, CD-A-PV-EAST's start and
+# CD-B-PV-INV's start. They chain only on an exact match (conduit_pulls, 1/16" tolerance), and
+# 20" holds 0.28" off the ERV supply elbow where 19.6" held 0.
+_PV_CHASE_X = inch(20)
 
 CONDUIT_TRUNKS = [
     # Up the mechanical chase beside the radon vent to the PV junction box, at
@@ -1197,8 +1201,8 @@ CONDUIT_TRUNKS = [
                # stand in its south band between the ERV supply and exhaust risers, each on
                # its own -4'-0" basement lane.
                # Up out of the panel top to 80" AFF, under DU-B-ERV-R-SAUNA-SUP (86 1/2").
-               path=(pt(inch(10), inch(354)), pt(inch(10), inch(354)), pt(inch(19.6), inch(354)),
-                     pt(inch(19.6), inch(404)), pt(inch(19.6), inch(404))),
+               path=(pt(inch(10), inch(354)), pt(inch(10), inch(354)), pt(_PV_CHASE_X, inch(354)),
+                     pt(_PV_CHASE_X, inch(404)), pt(_PV_CHASE_X, inch(404))),
                start_elevation=inch(-31.4375), end_elevation=ft(20, 6),
                elevations=(inch(-31.4375), inch(-29.4375), inch(-29.4375), inch(-29.4375),
                            ft(20, 6)),
@@ -1220,13 +1224,13 @@ CONDUIT_TRUNKS = [
     # carries why that station.
     ConduitRun(uid="XJR4KE400J", tag="CD-A-PV-EAST", trade_size=inch(1.5),
                # Up 3" off the riser head first: DU-ERV-RISER-EXH's top leg runs east at 20'-4",
-               # and 20'-9" clears it under the roof, whose underside at x=1'-7.6" is 20'-10.6"
+               # and 20'-9" clears it under the roof, whose underside at x=1'-8" is 20'-10.8"
                # since the heel-anchored plane (decision #109; 21'-1" stood 3.3" through it).
                # Then 4" south onto the chase's south trimmer (y=33'-4"), where it can be
                # strapped: 20'-9" is under a foot over the deck, so a leg east across the chase
                # void would hang over nothing (`mep.run_over_void`).
-               path=(pt(inch(19.6), inch(404)), pt(inch(19.6), inch(404)),
-                     pt(inch(19.6), inch(400)),
+               path=(pt(_PV_CHASE_X, inch(404)), pt(_PV_CHASE_X, inch(404)),
+                     pt(_PV_CHASE_X, inch(400)),
                      pt(inch(104), inch(400)), pt(inch(104), ft(35, 10)),
                      pt(ft(10, 2), ft(35, 10)), pt(ft(10, 2), ft(35, 10))),
                start_elevation=ft(20, 6), end_elevation=ft(25),
@@ -1245,10 +1249,10 @@ CONDUIT_TRUNKS = [
     # bottom from its own height — PV 30", grid 26", load 22" AFF, so they cross 4" apart —
     # north of CZ-B-DRYFIRE's y=411.6" end, and the two panel runs turn south either side of
     # PR-B-KITCH-DRAIN's x=32.5" drop, short of the NW corner's VR-M-STACK and sump risers,
-    # to reach W-B-W1 at y~400" under its boxes. One conduit body each splits the bends. PV comes from the attic riser's chase station (1'-7.6", 33'-8").
+    # to reach W-B-W1 at y~400" under its boxes. One conduit body each splits the bends. PV comes from the attic riser's chase station (1'-8", 33'-8").
     ConduitRun(uid="CDT005AAAA", tag="CD-B-PV-INV", trade_size=inch(1),
-               path=(pt(inch(19.6), inch(404)), pt(inch(19.6), inch(404)),
-                     pt(inch(19.6), inch(416)), pt(inch(45), inch(416)),
+               path=(pt(_PV_CHASE_X, inch(404)), pt(_PV_CHASE_X, inch(404)),
+                     pt(_PV_CHASE_X, inch(416)), pt(inch(45), inch(416)),
                      pt(inch(45), inch(416))),
                start_elevation=inch(-29.4375), end_elevation=inch(-76.4375),
                elevations=(inch(-29.4375), inch(-79.4375), inch(-79.4375), inch(-79.4375),

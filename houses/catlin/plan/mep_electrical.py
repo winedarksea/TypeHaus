@@ -72,7 +72,8 @@ ELECTRICAL_DEVICE_TYPES = (
 # --- Electrical: symbols-only (decision 1 — panel/circuit schedule deferred) -------
 # ** ALL FOUR PANEL TOPS ON ONE LINE, 6'-6" AFF (2026-10-31). ** NEC 240.24(A)/404.8(A) cap
 # the top handle at 6'-7"; `electrical.panel_handle_height` grades the body top. Bottoms:
-# ED-B-PANEL 38.63" (39.37" can), PANEL-2 48", BACKUP-PANEL/-ENCL 58" (plan/electrical.py).
+# ED-B-PANEL 38.63" (QO154M200P, 39.37" can), PANEL-2 48.16" (HOM2040M200PC, 29.84" can),
+# BACKUP-PANEL/-ENCL 58" (plan/electrical.py). Both panels are 14.25" wide (Square D sheets).
 # Each panel's 110.26(A) working space is a ClearZone in plan/panel_working_space.py.
 PANEL = [
     ElectricalDevice(uid="CEP901AAAA", tag="ED-B-PANEL", kind=DeviceKind.PANEL,
@@ -87,13 +88,13 @@ PANEL = [
     # runs ED-B-BACKUP-PANEL 26'-5"..27'-7", ED-B-UTIL-RC1 27'-10"..28'-2", ED-B-PANEL
     # 28'-2"..29'-10", ED-B-NET-PATCH 30'-4 1/2"..31'-7 1/2", the ERV duct crossing at
     # 31'-4" and ED-B-BACKUP-ENCL 31'-10"..33'-2" — the one gap between them is 6 1/2" wide.
-    # 25'-0" centres this 16" enclosure at 24'-4"..25'-8", 9" clear of the backup panel,
+    # 25'-0" centres this 14.25" enclosure at 24'-4 7/8"..25'-7 1/8", 9 7/8" clear of the backup panel,
     # with the whole 23'..26' band empty. NEC 110.26 working space (36" deep, 30" wide) runs
     # east into open basement floor (CZ-B-WS-PANEL-2 grades it); device overlap is held
     # by the measurements above.
     ElectricalDevice(uid="F7T26XHBCR", tag="ED-B-PANEL-2", kind=DeviceKind.PANEL,
                      type_ref="ED-T-PANEL-2",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48.16)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-W1", face="left", distance_from_start=inch(132),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),

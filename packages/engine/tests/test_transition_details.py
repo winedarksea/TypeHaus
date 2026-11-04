@@ -9,7 +9,7 @@ from typehaus.emit.draw.details import (
     derive_detail_slices,
     resolve_anchor,
 )
-from typehaus.emit.draw.scene import ArchDimension, Hatch, Polyline, Text
+from typehaus.emit.draw.scene import ArchDimension, Hatch, Leader, Polyline, Text
 
 
 def _eave(model):
@@ -47,6 +47,35 @@ def test_eave_overlay_draws_only_the_cut_metal(catlin_model):
             "detail-component:gutter-hanger"} <= tags
     # Flashings are polyline+hatch geometry, never a bare Symbol.
     assert not any(getattr(n, "node", None) == "symbol" for n in scene.nodes)
+
+
+def test_rake_detail_leaders_land_on_cut_geometry(catlin_model_ro):
+    """The gable's rake detail names its products, and each leader tip lies on the piece
+    it names: derived from the model, so a moved rake cannot leave a leader pointing at air."""
+    from shapely.geometry import Point, Polygon
+
+    model = catlin_model_ro
+    detail = next((d for d in derive_detail_slices(model)
+                   if d.transition is not None and d.transition.tag == "TR-CATLIN-RAKE"), None)
+    assert detail is not None, "the N/S gable wall/roof joint binds TR-CATLIN-RAKE"
+    scene, findings = build_detail(model, detail)
+    assert not findings
+    shapes = [(n.tag, Polygon(n.points)) for n in scene.nodes
+              if isinstance(n, Polyline) and n.tag and n.closed and len(n.points) > 2]
+    leaders = [n for n in scene.nodes if isinstance(n, Leader)]
+    expect = {  # leader text -> cut-piece tag prefixes its tip must touch
+        "Image II": ("RF-HOUSE/roofing",),
+        "52126XX": ("rake-hi", "RF-HOUSE/roofing"),  # thin metal: the tip sits at its edge
+        "Universal Closure": ("W-A-N1/cladding", "W-A-N1-closure"),
+        "rake nailer": ("plate-raked",),
+        "wall foam": ("W-A-N1/spray-foam",),
+    }
+    for text, prefixes in expect.items():
+        found = [n for n in leaders if text in n.text]
+        assert found, f"no rake leader names {text!r}"
+        tip = Point(found[0].to)
+        assert any(tag.startswith(prefixes) and shape.distance(tip) <= 0.75
+                   for tag, shape in shapes), f"{text!r} leader tip is off {prefixes}"
 
 
 def test_foundation_overlay_emits_flashings_and_gasket(catlin_model):

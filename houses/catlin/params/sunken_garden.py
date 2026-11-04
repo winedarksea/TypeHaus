@@ -2198,44 +2198,32 @@ PORCH_STAIR = Stair(
 # statement: one raked guard on the flight, one level guard on the wall top.
 #
 # Same product as RL-SG-PORCH (Williams ESR-3485 black, surface-mounted), so they read as one
-# system from the porch. On the rake the posts stand on treads into the KDAT stringers: ESR
-# wants 4 GRK RSS 5/16" x 6" into SG >= 0.50 (prices.toml's surface row says so).
+# system from the porch. Both bases are concrete: ESR-3485 Table 1 fn 3, 4 x 1/4" x 3".
 #
 # One shared head base directly on the concrete wall (notch the threshold plank around
-# it), one foot base wholly on the pad.
-# The middle base lands on tread 3 over KDAT backing between the outer two stringers.
+# it), one foot base wholly on the pad, and no middle post (2026-11-04): the bay is 52 3/4"
+# c/c in plan. The Williams planner's 6' stair panel is 55.68" max c/c at 37 deg, which is
+# its 69.43" panel projected HORIZONTALLY (69.43 cos 37 = 55.45; the 8' panel's 72.89 is
+# 91.31 cos 37 the same way), so at this flight's 31.7 deg it reaches ~59.3".
 # Move the guard/handrail ends together: the handrail still covers every nosing.
 _PORCH_BASE_EDGE_CLEARANCE_IN = 3.0  # 4.99 inch base leaves 0.505 inch clear of the edge.
 _PORCH_GUARD_FOOT_X = _PORCH_STAIR_X1 + _PORCH_BASE_EDGE_CLEARANCE_IN / 12
 _PORCH_GUARD_HEAD_INSET_IN = 5.0  # outer anchor row stays >3 inches from the concrete face
 _PORCH_GUARD_HEAD_X = _PORCH_STAIR_X0 - _PORCH_GUARD_HEAD_INSET_IN / 12
-_PORCH_GUARD_MIDDLE_X = _PORCH_STAIR_X1 - 2.5 * PORCH_STAIR.tread_depth.feet
-_PORCH_STAIR_RISER = (_porch_walking_surface - _STAIR_PAD_TOP) / 5
-
-
-def _porch_stair_mounts(side):
-    # Six stringers over 45 inches: outer two axes are 9 inches apart. The block
-    # fits their 1.5 inch side faces and both base screw rows, beneath the plank.
-    return (
-        SurfacePostMount(elevation=_STAIR_PAD_TOP, substrate="concrete"),
-        SurfacePostMount(elevation=_STAIR_PAD_TOP + _PORCH_STAIR_RISER * 3,
-                         substrate="wood", backing_size=(inch(5.5), inch(7.5), inch(5.5)),
-                         backing_offset=(inch(0), inch(side * 1.75)),
-                         finish_thickness=TREX_ENHANCE_BASICS_DECK_LAYER.thickness),
-        SurfacePostMount(elevation=ft(0), substrate="concrete"),
-    )
-
+_PORCH_STAIR_PANEL_SPAN_IN = 59.0  # planner 55.68" at 37 deg, horizontal, -> 59.3" at 31.7
 
 _HANDRAIL_INBOARD_FT = 3.375 / 12.0
 PORCH_STAIR_RAILS = [
     Railing(uid=f"SGRA0{_si}AAAA", tag=f"RL-SG-PSTAIR-{_sh}",
             type_ref="RAILING-EXT-ALUMINUM-SURFACE",
             path=(pt(ft(_PORCH_GUARD_FOOT_X), ft(_sy)),
-                  pt(ft(_PORCH_GUARD_MIDDLE_X), ft(_sy)),
                   pt(ft(_PORCH_GUARD_HEAD_X), ft(_sy))),
-            surface_post_mounts=_porch_stair_mounts(1 if _sh == "S" else -1),
+            surface_post_mounts=(
+                SurfacePostMount(elevation=_STAIR_PAD_TOP, substrate="concrete"),
+                SurfacePostMount(elevation=ft(0), substrate="concrete")),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
-            base_elevation=_STAIR_PAD_TOP, post_spacing=inch(36), post_size="3x3",
+            base_elevation=_STAIR_PAD_TOP, post_spacing=inch(_PORCH_STAIR_PANEL_SPAN_IN),
+            post_size="3x3",
             rail_count=2, mount="surface", assembly="RAILING_DARK_METAL",
             role="guard", serves_stair="ST-SG-PORCH", top_height=inch(36),
             extend_stair_rake=True,

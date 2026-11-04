@@ -2482,8 +2482,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   legs on 12" concrete wall tops take ESR-3485's anchors through the post kit's cast
   4.99" base (screwed, not welded).
 - `ST-SG-PORCH` is 45" wide (y -9'-0"..-5'-3", widened north 2026-10-30) so the cast bases
-  fit the tread width, 2 3/4" in, with 36 1/2" between post faces (graded by
-  `code.R311_7_1_stair_width`). Run posts stay on riser lines, bases straddling the riser;
+  fit, 2 3/4" in (`code.R311_7_1_stair_width`). Each raked guard is ONE bay (2026-11-04):
+  foot base on `SL-SG-STAIRPAD`, head base on W-SG-E1, no tread post (Williams planner's
+  55.68" is horizontal, ~59.3" at 31.7 deg against 52 3/4");
   each head post IS its threshold cheek's (`end_post_ref`, one post per junction, owner
   2026-10-31; `notes/porch_stair.md`). Its two raked guards are
   guards only (the Colonial top rail is no handrail, ESR §5.7); `RL-SG-PSTAIR-HR` is the

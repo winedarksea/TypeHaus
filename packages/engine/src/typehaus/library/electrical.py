@@ -215,13 +215,25 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
 # must state it. ``bus_amps`` is stated only where it exceeds the main (a backfed bus).
 _PANEL_SOURCE = ("UL 67 panelboard / load centre class (NEC 408); spaces and bus rating per "
                  "the selected product's label")
+# Square D datasheets (Schneider Electric product data sheets): HOM2040M200PC Oct 2020, QO154M200P
+# Jul 2025. The QO sheet and its drawing print no depth (retailers list the box at 3.75" and the
+# cover is ordered separately), so its footprint keeps 4": box plus surface cover, unconfirmed.
+_HOM_SOURCE = ("Square D Homeline HOM2040M200PC, box 9, 29.84 x 14.25 x 3.74 in: "
+               "media.distributordatasolutions.com/schneider2/2020q4/documents/"
+               "697d8684e4e82cb187f72cbf4195e8da2353500a.pdf")
+_QO_SOURCE = ("Square D QO154M200P, box 12, 39.37 x 14.25 in; the datasheet "
+              "prints no depth (retailers: 3.75 in box), 4 in modelled with its surface cover: "
+              "media.distributordatasolutions.com/schneider_synd/2023q3/documents/"
+              "058cd7d643227d93951a735234764cda7597a89b.pdf")
+_PANEL_DEPTH = inch(4)
 
 
 def _panel(tag: str, name: str, width, height, *, spaces: int, main: int,
-           bus: int | None = None) -> ElectricalDeviceType:
+           bus: int | None = None, depth=_PANEL_DEPTH,
+           source: str = _PANEL_SOURCE) -> ElectricalDeviceType:
     return ElectricalDeviceType(
-        tag=tag, name=name, footprint=(width, inch(4)), height=height, plan_symbol="panel",
-        spaces=spaces, service_amps=main, bus_amps=bus, source=_PANEL_SOURCE,
+        tag=tag, name=name, footprint=(width, depth), height=height, plan_symbol="panel",
+        spaces=spaces, service_amps=main, bus_amps=bus, source=source,
         ports=(ServicePort(tag="service", service=Service.POWER_240,
                            position=(ft(0), ft(0), ft(0))),))
 
@@ -229,15 +241,10 @@ def _panel(tag: str, name: str, width, height, *, spaces: int, main: int,
 PANEL_TYPES = (
     _panel("ED-T-PANEL-100A", "100A load centre, 20 spaces", inch(14), ft(2),
            spaces=20, main=100),
-    # 30" tall: Homeline HOM2040M200PC (20-space, 200A main) is 758 mm (29.84") H x 14.25" W
-    # (powermatic.net/part/schneider-electric/hom2040m200pc/1896701, read 2026-10-31).
-    _panel("ED-T-PANEL-200A", "200A main, 200A bus, 20 spaces", inch(16), ft(2, 6),
-           spaces=20, main=200, bus=200),
-    # 39.37" (1000 mm) tall, not 36": a 54-space 200A-main QO154M200P is 39.37" H x 14.25" W
-    # x 3.75" D, box 12 (royalwholesaleelectric.com and standardelectricsupply.com listings,
-    # read 2026-10-31); the 40-space HOM4080M200PC is the same 39.37".
-    _panel("ED-T-PANEL-225A", "225A bus, 200A main, 54 spaces", inch(20), inch(39.37),
-           spaces=54, main=200, bus=225),
+    _panel("ED-T-PANEL-200A", "200A main, 200A bus, 20 spaces", inch(14.25), inch(29.84),
+           spaces=20, main=200, bus=200, depth=inch(3.74), source=_HOM_SOURCE),
+    _panel("ED-T-PANEL-225A", "225A bus, 200A main, 54 spaces", inch(14.25), inch(39.37),
+           spaces=54, main=200, bus=225, source=_QO_SOURCE),
 )
 
 _PANEL_BY_TAG = {t.tag: t for t in PANEL_TYPES}

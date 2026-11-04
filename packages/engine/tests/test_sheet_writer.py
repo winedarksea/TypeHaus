@@ -152,8 +152,10 @@ def test_index_gains_general_notes_after_cover(catlin_sheet_index):
     sheets = catlin_sheet_index()
     numbers = [s.number for s in sheets]
     assert numbers[0] == "G-001"
-    assert numbers[1] == "G-002"
-    assert sheets[1].page is not None
+    # The cover's own index continuation sheets (G-001.n) follow it immediately.
+    after = next(i for i, n in enumerate(numbers) if not n.startswith("G-001"))
+    assert numbers[after] == "G-002"
+    assert sheets[after].page is not None
 
 
 def test_plan_sheets_carry_north_arrows(catlin_sheet_index):

@@ -97,6 +97,8 @@ def _general_note_blocks(model: ResolvedModel,
             "  or foundation (O/A FACE WALL).",
             "• Foundation plan S-100: overall to face of foundation;",
             "  footings, pads, posts and sleeves to centreline.",
+            "• Roof plan: strings to ROOF EDGE and ridge, chained from",
+            "  the roofs' SW corner; overhangs from the wall face.",
             "• Report a discrepancy before proceeding.",
         ]),
         ("SCOPE", [

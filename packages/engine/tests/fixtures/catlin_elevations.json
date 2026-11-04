@@ -287,9 +287,9 @@
 "canvas_objects/ED-B-NET-PATCH/body_z0_m": -1.2557125,
 "canvas_objects/ED-B-NET-PATCH/body_z1_m": -0.5445125,
 "canvas_objects/ED-B-NET-PATCH/z_m": -1.2557125,
-"canvas_objects/ED-B-PANEL-2/body_z0_m": -1.5605125,
+"canvas_objects/ED-B-PANEL-2/body_z0_m": -1.5564485,
 "canvas_objects/ED-B-PANEL-2/body_z1_m": -0.7985125,
-"canvas_objects/ED-B-PANEL-2/z_m": -1.5605125,
+"canvas_objects/ED-B-PANEL-2/z_m": -1.5564485,
 "canvas_objects/ED-B-PANEL/body_z0_m": -1.7985105,
 "canvas_objects/ED-B-PANEL/body_z1_m": -0.7985125,
 "canvas_objects/ED-B-PANEL/z_m": -1.7985105,
@@ -70430,101 +70430,83 @@
 144,
 "3c573a9e3152"
 ],
-"geometry/SGRA03AAAA-anchors2/body": [
--0.4606544,
--0.3026664,
-144,
-"cdb9e2e61137"
-],
-"geometry/SGRA03AAAA-backing2/body": [
--0.4845304,
--0.3448304,
-8,
-"0b62289cd61d"
-],
 "geometry/SGRA03AAAA-base1/body": [
 -0.8382,
 -0.8255,
 556,
 "cbf312241ea7"
 ],
-"geometry/SGRA03AAAA-base2/body": [
--0.3209544,
--0.3082544,
-556,
-"cab15eca9385"
-],
 "geometry/SGRA03AAAA-i000/body": [
--0.5670181,
-0.2457819,
+-0.5640792,
+0.2487208,
 2,
-"4f9fdeee958a"
+"63b2f411d64f"
 ],
 "geometry/SGRA03AAAA-i001/body": [
--0.5043216,
-0.3084784,
+-0.4984438,
+0.3143562,
 2,
-"a596cba64248"
+"a2438f1e77e6"
 ],
 "geometry/SGRA03AAAA-i002/body": [
--0.4416252,
-0.3711748,
+-0.4328085,
+0.3799915,
 2,
-"86a98bc02a82"
+"a9af60c0126d"
 ],
 "geometry/SGRA03AAAA-i003/body": [
--0.3789287,
-0.4338713,
+-0.3671732,
+0.4456268,
 2,
-"1dfa23968c14"
+"8537c077c226"
 ],
 "geometry/SGRA03AAAA-i004/body": [
--0.3162323,
-0.4965677,
+-0.3015378,
+0.5112622,
 2,
-"0d414f0cac64"
+"4e9548773fd1"
 ],
 "geometry/SGRA03AAAA-i005/body": [
--0.2535359,
-0.5592641,
+-0.2359025,
+0.5768975,
 2,
-"7a83c2c00ddc"
+"216c0e3be42d"
 ],
 "geometry/SGRA03AAAA-i006/body": [
--0.0897414,
-0.7230586,
+-0.1702672,
+0.6425328,
 2,
-"8b65265c6a93"
+"b8282a7b9ba7"
 ],
 "geometry/SGRA03AAAA-i007/body": [
--0.0278287,
-0.7849713,
+-0.1046318,
+0.7081682,
 2,
-"a1f44f0dfabe"
+"5d74ed79f74c"
 ],
 "geometry/SGRA03AAAA-i008/body": [
-0.034084,
-0.846884,
+-0.0389965,
+0.7738035,
 2,
-"390b4e0406d7"
+"3bdd24d8e796"
 ],
 "geometry/SGRA03AAAA-i009/body": [
-0.0959968,
-0.9087968,
+0.0266388,
+0.8394388,
 2,
-"21cc661bec8e"
+"887b51294a1f"
+],
+"geometry/SGRA03AAAA-i010/body": [
+0.0922742,
+0.9050742,
+2,
+"9981ee53bdf3"
 ],
 "geometry/SGRA03AAAA-p00/body": [
 -0.8382,
 0.2015929,
 2,
 "b8cd43e76c92"
-],
-"geometry/SGRA03AAAA-p01/body": [
--0.3209544,
-0.6796532,
-2,
-"795b45f54052"
 ],
 "geometry/SGRA03AAAA-r00/body": [
 0.1663311,
@@ -70544,101 +70526,83 @@
 144,
 "3c573a9e3152"
 ],
-"geometry/SGRA04AAAA-anchors2/body": [
--0.4606544,
--0.3026664,
-144,
-"cdb9e2e61137"
-],
-"geometry/SGRA04AAAA-backing2/body": [
--0.4845304,
--0.3448304,
-8,
-"0b62289cd61d"
-],
 "geometry/SGRA04AAAA-base1/body": [
 -0.8382,
 -0.8255,
 556,
 "cbf312241ea7"
 ],
-"geometry/SGRA04AAAA-base2/body": [
--0.3209544,
--0.3082544,
-556,
-"cab15eca9385"
-],
 "geometry/SGRA04AAAA-i000/body": [
--0.5670181,
-0.2457819,
+-0.5640792,
+0.2487208,
 2,
-"4f9fdeee958a"
+"63b2f411d64f"
 ],
 "geometry/SGRA04AAAA-i001/body": [
--0.5043216,
-0.3084784,
+-0.4984438,
+0.3143562,
 2,
-"a596cba64248"
+"a2438f1e77e6"
 ],
 "geometry/SGRA04AAAA-i002/body": [
--0.4416252,
-0.3711748,
+-0.4328085,
+0.3799915,
 2,
-"86a98bc02a82"
+"a9af60c0126d"
 ],
 "geometry/SGRA04AAAA-i003/body": [
--0.3789287,
-0.4338713,
+-0.3671732,
+0.4456268,
 2,
-"1dfa23968c14"
+"8537c077c226"
 ],
 "geometry/SGRA04AAAA-i004/body": [
--0.3162323,
-0.4965677,
+-0.3015378,
+0.5112622,
 2,
-"0d414f0cac64"
+"4e9548773fd1"
 ],
 "geometry/SGRA04AAAA-i005/body": [
--0.2535359,
-0.5592641,
+-0.2359025,
+0.5768975,
 2,
-"7a83c2c00ddc"
+"216c0e3be42d"
 ],
 "geometry/SGRA04AAAA-i006/body": [
--0.0897414,
-0.7230586,
+-0.1702672,
+0.6425328,
 2,
-"8b65265c6a93"
+"b8282a7b9ba7"
 ],
 "geometry/SGRA04AAAA-i007/body": [
--0.0278287,
-0.7849713,
+-0.1046318,
+0.7081682,
 2,
-"a1f44f0dfabe"
+"5d74ed79f74c"
 ],
 "geometry/SGRA04AAAA-i008/body": [
-0.034084,
-0.846884,
+-0.0389965,
+0.7738035,
 2,
-"390b4e0406d7"
+"3bdd24d8e796"
 ],
 "geometry/SGRA04AAAA-i009/body": [
-0.0959968,
-0.9087968,
+0.0266388,
+0.8394388,
 2,
-"21cc661bec8e"
+"887b51294a1f"
+],
+"geometry/SGRA04AAAA-i010/body": [
+0.0922742,
+0.9050742,
+2,
+"9981ee53bdf3"
 ],
 "geometry/SGRA04AAAA-p00/body": [
 -0.8382,
 0.2015929,
 2,
 "b8cd43e76c92"
-],
-"geometry/SGRA04AAAA-p01/body": [
--0.3209544,
-0.6796532,
-2,
-"795b45f54052"
 ],
 "geometry/SGRA04AAAA-r00/body": [
 0.1663311,
@@ -119037,76 +119001,64 @@
 "solids/RL-SG-PSTAIR-HR-RAIL1/z1_m": 1.0001639,
 "solids/RL-SG-PSTAIR-N-ANCHORS1/z0_m": -0.9017,
 "solids/RL-SG-PSTAIR-N-ANCHORS1/z1_m": -0.819912,
-"solids/RL-SG-PSTAIR-N-ANCHORS2/z0_m": -0.4606544,
-"solids/RL-SG-PSTAIR-N-ANCHORS2/z1_m": -0.3026664,
-"solids/RL-SG-PSTAIR-N-BACKING2/z0_m": -0.4845304,
-"solids/RL-SG-PSTAIR-N-BACKING2/z1_m": -0.3448304,
-"solids/RL-SG-PSTAIR-N-BAL1/z0_m": -0.5670181,
-"solids/RL-SG-PSTAIR-N-BAL1/z1_m": 0.2457819,
-"solids/RL-SG-PSTAIR-N-BAL10/z0_m": 0.0959968,
-"solids/RL-SG-PSTAIR-N-BAL10/z1_m": 0.9087968,
-"solids/RL-SG-PSTAIR-N-BAL2/z0_m": -0.5043216,
-"solids/RL-SG-PSTAIR-N-BAL2/z1_m": 0.3084784,
-"solids/RL-SG-PSTAIR-N-BAL3/z0_m": -0.4416252,
-"solids/RL-SG-PSTAIR-N-BAL3/z1_m": 0.3711748,
-"solids/RL-SG-PSTAIR-N-BAL4/z0_m": -0.3789287,
-"solids/RL-SG-PSTAIR-N-BAL4/z1_m": 0.4338713,
-"solids/RL-SG-PSTAIR-N-BAL5/z0_m": -0.3162323,
-"solids/RL-SG-PSTAIR-N-BAL5/z1_m": 0.4965677,
-"solids/RL-SG-PSTAIR-N-BAL6/z0_m": -0.2535359,
-"solids/RL-SG-PSTAIR-N-BAL6/z1_m": 0.5592641,
-"solids/RL-SG-PSTAIR-N-BAL7/z0_m": -0.0897414,
-"solids/RL-SG-PSTAIR-N-BAL7/z1_m": 0.7230586,
-"solids/RL-SG-PSTAIR-N-BAL8/z0_m": -0.0278287,
-"solids/RL-SG-PSTAIR-N-BAL8/z1_m": 0.7849713,
-"solids/RL-SG-PSTAIR-N-BAL9/z0_m": 0.034084,
-"solids/RL-SG-PSTAIR-N-BAL9/z1_m": 0.846884,
+"solids/RL-SG-PSTAIR-N-BAL1/z0_m": -0.5640792,
+"solids/RL-SG-PSTAIR-N-BAL1/z1_m": 0.2487208,
+"solids/RL-SG-PSTAIR-N-BAL10/z0_m": 0.0266388,
+"solids/RL-SG-PSTAIR-N-BAL10/z1_m": 0.8394388,
+"solids/RL-SG-PSTAIR-N-BAL11/z0_m": 0.0922742,
+"solids/RL-SG-PSTAIR-N-BAL11/z1_m": 0.9050742,
+"solids/RL-SG-PSTAIR-N-BAL2/z0_m": -0.4984438,
+"solids/RL-SG-PSTAIR-N-BAL2/z1_m": 0.3143562,
+"solids/RL-SG-PSTAIR-N-BAL3/z0_m": -0.4328085,
+"solids/RL-SG-PSTAIR-N-BAL3/z1_m": 0.3799915,
+"solids/RL-SG-PSTAIR-N-BAL4/z0_m": -0.3671732,
+"solids/RL-SG-PSTAIR-N-BAL4/z1_m": 0.4456268,
+"solids/RL-SG-PSTAIR-N-BAL5/z0_m": -0.3015378,
+"solids/RL-SG-PSTAIR-N-BAL5/z1_m": 0.5112622,
+"solids/RL-SG-PSTAIR-N-BAL6/z0_m": -0.2359025,
+"solids/RL-SG-PSTAIR-N-BAL6/z1_m": 0.5768975,
+"solids/RL-SG-PSTAIR-N-BAL7/z0_m": -0.1702672,
+"solids/RL-SG-PSTAIR-N-BAL7/z1_m": 0.6425328,
+"solids/RL-SG-PSTAIR-N-BAL8/z0_m": -0.1046318,
+"solids/RL-SG-PSTAIR-N-BAL8/z1_m": 0.7081682,
+"solids/RL-SG-PSTAIR-N-BAL9/z0_m": -0.0389965,
+"solids/RL-SG-PSTAIR-N-BAL9/z1_m": 0.7738035,
 "solids/RL-SG-PSTAIR-N-BASE1/z0_m": -0.8382,
 "solids/RL-SG-PSTAIR-N-BASE1/z1_m": -0.8255,
-"solids/RL-SG-PSTAIR-N-BASE2/z0_m": -0.3209544,
-"solids/RL-SG-PSTAIR-N-BASE2/z1_m": -0.3082544,
 "solids/RL-SG-PSTAIR-N-POST1/z0_m": -0.8382,
 "solids/RL-SG-PSTAIR-N-POST1/z1_m": 0.2015929,
-"solids/RL-SG-PSTAIR-N-POST2/z0_m": -0.3209544,
-"solids/RL-SG-PSTAIR-N-POST2/z1_m": 0.6796532,
 "solids/RL-SG-PSTAIR-N-RAIL1/z0_m": 0.1663311,
 "solids/RL-SG-PSTAIR-N-RAIL1/z1_m": 1.0255639,
 "solids/RL-SG-PSTAIR-N-RAIL2/z0_m": -0.6845689,
 "solids/RL-SG-PSTAIR-N-RAIL2/z1_m": 0.1746639,
 "solids/RL-SG-PSTAIR-S-ANCHORS1/z0_m": -0.9017,
 "solids/RL-SG-PSTAIR-S-ANCHORS1/z1_m": -0.819912,
-"solids/RL-SG-PSTAIR-S-ANCHORS2/z0_m": -0.4606544,
-"solids/RL-SG-PSTAIR-S-ANCHORS2/z1_m": -0.3026664,
-"solids/RL-SG-PSTAIR-S-BACKING2/z0_m": -0.4845304,
-"solids/RL-SG-PSTAIR-S-BACKING2/z1_m": -0.3448304,
-"solids/RL-SG-PSTAIR-S-BAL1/z0_m": -0.5670181,
-"solids/RL-SG-PSTAIR-S-BAL1/z1_m": 0.2457819,
-"solids/RL-SG-PSTAIR-S-BAL10/z0_m": 0.0959968,
-"solids/RL-SG-PSTAIR-S-BAL10/z1_m": 0.9087968,
-"solids/RL-SG-PSTAIR-S-BAL2/z0_m": -0.5043216,
-"solids/RL-SG-PSTAIR-S-BAL2/z1_m": 0.3084784,
-"solids/RL-SG-PSTAIR-S-BAL3/z0_m": -0.4416252,
-"solids/RL-SG-PSTAIR-S-BAL3/z1_m": 0.3711748,
-"solids/RL-SG-PSTAIR-S-BAL4/z0_m": -0.3789287,
-"solids/RL-SG-PSTAIR-S-BAL4/z1_m": 0.4338713,
-"solids/RL-SG-PSTAIR-S-BAL5/z0_m": -0.3162323,
-"solids/RL-SG-PSTAIR-S-BAL5/z1_m": 0.4965677,
-"solids/RL-SG-PSTAIR-S-BAL6/z0_m": -0.2535359,
-"solids/RL-SG-PSTAIR-S-BAL6/z1_m": 0.5592641,
-"solids/RL-SG-PSTAIR-S-BAL7/z0_m": -0.0897414,
-"solids/RL-SG-PSTAIR-S-BAL7/z1_m": 0.7230586,
-"solids/RL-SG-PSTAIR-S-BAL8/z0_m": -0.0278287,
-"solids/RL-SG-PSTAIR-S-BAL8/z1_m": 0.7849713,
-"solids/RL-SG-PSTAIR-S-BAL9/z0_m": 0.034084,
-"solids/RL-SG-PSTAIR-S-BAL9/z1_m": 0.846884,
+"solids/RL-SG-PSTAIR-S-BAL1/z0_m": -0.5640792,
+"solids/RL-SG-PSTAIR-S-BAL1/z1_m": 0.2487208,
+"solids/RL-SG-PSTAIR-S-BAL10/z0_m": 0.0266388,
+"solids/RL-SG-PSTAIR-S-BAL10/z1_m": 0.8394388,
+"solids/RL-SG-PSTAIR-S-BAL11/z0_m": 0.0922742,
+"solids/RL-SG-PSTAIR-S-BAL11/z1_m": 0.9050742,
+"solids/RL-SG-PSTAIR-S-BAL2/z0_m": -0.4984438,
+"solids/RL-SG-PSTAIR-S-BAL2/z1_m": 0.3143562,
+"solids/RL-SG-PSTAIR-S-BAL3/z0_m": -0.4328085,
+"solids/RL-SG-PSTAIR-S-BAL3/z1_m": 0.3799915,
+"solids/RL-SG-PSTAIR-S-BAL4/z0_m": -0.3671732,
+"solids/RL-SG-PSTAIR-S-BAL4/z1_m": 0.4456268,
+"solids/RL-SG-PSTAIR-S-BAL5/z0_m": -0.3015378,
+"solids/RL-SG-PSTAIR-S-BAL5/z1_m": 0.5112622,
+"solids/RL-SG-PSTAIR-S-BAL6/z0_m": -0.2359025,
+"solids/RL-SG-PSTAIR-S-BAL6/z1_m": 0.5768975,
+"solids/RL-SG-PSTAIR-S-BAL7/z0_m": -0.1702672,
+"solids/RL-SG-PSTAIR-S-BAL7/z1_m": 0.6425328,
+"solids/RL-SG-PSTAIR-S-BAL8/z0_m": -0.1046318,
+"solids/RL-SG-PSTAIR-S-BAL8/z1_m": 0.7081682,
+"solids/RL-SG-PSTAIR-S-BAL9/z0_m": -0.0389965,
+"solids/RL-SG-PSTAIR-S-BAL9/z1_m": 0.7738035,
 "solids/RL-SG-PSTAIR-S-BASE1/z0_m": -0.8382,
 "solids/RL-SG-PSTAIR-S-BASE1/z1_m": -0.8255,
-"solids/RL-SG-PSTAIR-S-BASE2/z0_m": -0.3209544,
-"solids/RL-SG-PSTAIR-S-BASE2/z1_m": -0.3082544,
 "solids/RL-SG-PSTAIR-S-POST1/z0_m": -0.8382,
 "solids/RL-SG-PSTAIR-S-POST1/z1_m": 0.2015929,
-"solids/RL-SG-PSTAIR-S-POST2/z0_m": -0.3209544,
-"solids/RL-SG-PSTAIR-S-POST2/z1_m": 0.6796532,
 "solids/RL-SG-PSTAIR-S-RAIL1/z0_m": 0.1663311,
 "solids/RL-SG-PSTAIR-S-RAIL1/z1_m": 1.0255639,
 "solids/RL-SG-PSTAIR-S-RAIL2/z0_m": -0.6845689,

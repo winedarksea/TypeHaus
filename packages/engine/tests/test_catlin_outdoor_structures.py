@@ -1079,7 +1079,7 @@ def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catl
         cheek, stair = rails[f"RL-SG-PTHRESH-{side}"], rails[f"RL-SG-PSTAIR-{side}"]
         assert (cheek.start_post_ref, stair.end_post_ref) == (owner, cheek.tag)
         assert stair.path[-1].xy_m == pytest.approx(cheek.path[-1].xy_m)
-        for rail, drawn in ((cheek, ["POST2"]), (stair, ["POST1", "POST2"])):
+        for rail, drawn in ((cheek, ["POST2"]), (stair, ["POST1"])):  # one bay, 2026-11-04
             assert [s.tag.rsplit("-", 1)[1] for s in catlin_model.solids
                     if s.host_ref == rail.tag and "-POST" in s.tag] == drawn, rail.tag
 

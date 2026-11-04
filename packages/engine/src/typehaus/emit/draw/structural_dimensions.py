@@ -102,12 +102,14 @@ def overall_tier(label: str, walls: Sequence[ResolvedWall]) -> Tier | None:
 
 
 def emit_structural_tiers(b: SceneBuilder, tiers: Sequence[Tier | None],
-                          scale: float) -> tuple[float, float] | None:
+                          scale: float, legend_pad_pt: float = 0.0
+                          ) -> tuple[float, float] | None:
     """Draw ``tiers`` inner to outer, south and west of everything already in ``b``.
 
     Each side stacks only the tiers it has, each as deep as the stagger rows it used, so
     the band costs the sheet no more paper than it prints. Returns ``(x, y)``, model
-    inches: how far west and south the tiers reach (``None`` if none drew).
+    inches: how far west and south the tiers reach (``None`` if none drew). A legend steps
+    ``legend_pad_pt`` printed points west, clear of a first label wider than its segment.
     """
     box = drawn_box(b.build().nodes, scale)
     if box is None:
@@ -123,7 +125,9 @@ def emit_structural_tiers(b: SceneBuilder, tiers: Sequence[Tier | None],
             distance = reach[axis] * per_paper_in
             rows = _emit_chain(b, tier, axis, edge, -distance, scale)
             if rows and axis == 0:
-                _emit_legend(b, tier.label, (west, south - distance), scale)
+                _emit_legend(b, tier.label,
+                             (west - legend_pad_pt * model_in_per_pt(scale), south - distance),
+                             scale)
             if rows:
                 reach[axis] += (rows - 1) * row_pitch_in() + TIER_GAP_IN
     if reach == [TIER_FIRST_IN, TIER_FIRST_IN]:

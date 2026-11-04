@@ -156,7 +156,7 @@ def test_a_post_mounted_rail_hangs_on_its_guards_posts(catlin_model):
     posts = [Polygon(s.outline) for tag in ("RL-SG-PSTAIR-S", "RL-SG-PTHRESH-S")
              for s in _solids(catlin_model, tag, "POST")]
     brackets = [Polygon(s.outline) for s in _solids(catlin_model, "RL-SG-PSTAIR-HR", "BRACKET")]
-    assert (len(brackets), len(posts)) == (2, 3)
+    assert (len(brackets), len(posts)) == (2, 2)  # foot + shared head, one bay
     for bracket in brackets:  # touches a post face, never buried in it
         assert any(bracket.distance(post) < 1e-6 and bracket.intersection(post).area < 1e-9
                    for post in posts)
