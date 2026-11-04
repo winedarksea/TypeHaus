@@ -142,8 +142,9 @@ def _merged_levels(space: RoutingSpace, anchors: list[float]) -> list[float]:
             kept.extend(planes)
         else:
             midpoints.append((planes[0], window))
+    lo, hi = space.z_band or (float("-inf"), float("inf"))  # ``--level`` drops the rest
     for z, (low, high) in sorted(midpoints):
-        if not any(low <= other <= high for other in kept):
+        if not any(max(low, lo - _LINE_TOL_M) <= o <= min(high, hi + _LINE_TOL_M) for o in kept):
             kept.append(z)
     return kept
 

@@ -37,9 +37,9 @@ from typehaus.resolve.geometry_walls import layer_solids
 from typehaus.resolve.layer_bands import at_body_band, wall_body_band
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.model_window_seat import window_frame_dimensions
-from typehaus.resolve.room_paint import paint_standard, unroomed_coat
 from typehaus.resolve.overlay import intersection, union_all
 from typehaus.resolve.room_floor import room_finished_floor_elevation
+from typehaus.resolve.room_paint import paint_standard, unroomed_coat
 from typehaus.resolve.topology import _added_thicknesses
 
 

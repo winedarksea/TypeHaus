@@ -334,9 +334,11 @@ SUPPLY = [
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
     # Basin hot rises in the shared wet wall; the insulated ceiling run stays below it.
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
+            # Rises EAST of the header (2026-11-04): at x=88" it stood 1.63" off the
+            # trunk's centre, inside its 1" lagging.
             path=(pt(inch(90), inch(304.374)), pt(inch(90), inch(304.374)),
-                  pt(inch(88), inch(304.374)), pt(inch(88), inch(304.374)),
-                  pt(inch(88), inch(309.75)), pt(inch(50.5), inch(309.75)),
+                  pt(inch(91.5), inch(304.374)), pt(inch(91.5), inch(304.374)),
+                  pt(inch(91.5), inch(309.75)), pt(inch(50.5), inch(309.75)),
                   pt(inch(50.5), inch(266.25)), pt(inch(50.5), inch(266.25)),
                   pt(inch(50.5), inch(271.375)),),
             diameter=inch(0.5), material="pex",
