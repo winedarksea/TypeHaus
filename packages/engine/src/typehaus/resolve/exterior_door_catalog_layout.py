@@ -77,8 +77,14 @@ def catalog_installation_layout(model, wall, opening, assembly, clad):
                 landing_edge = edge
                 outlet = max(outlet, edge - installation.drainage_gap.meters)
                 landing_gap = edge - outlet
+    foam_bed = spec.support_kind == "foam_bed"
+    if foam_bed:
+        # One tread, its own width out from the sill: what lies past it is not the door's.
+        outlet = end + spec.approach_board_width.meters
+        landing_gap = landing_edge = None
     crest = seat + max(z for _, z in spec.sill_outline_m)
-    width = opening.width_m - 2 * installation.return_thickness.meters
+    returns = installation.exterior_return_thickness or installation.return_thickness
+    width = opening.width_m - 2 * returns.meters
     sizing = opening.sizing
     unit = sizing.installed_unit if sizing is not None else None
     unit_width = unit[0] if unit is not None else width
@@ -97,9 +103,11 @@ def catalog_installation_layout(model, wall, opening, assembly, clad):
     approach_back = max(seat + 0.5 * _IN, nose)
     approach_front = approach_back - (outlet - end) * slope
     thickness = spec.approach_thickness.meters
-    board_count = ceil(width / spec.approach_board_width.meters)
+    board_count = 1 if foam_bed else ceil(width / spec.approach_board_width.meters)
     # Drop the apron below the approach/bearers without burying the sill's level bearing.
+    # On a foam bed the water sheet lies directly under the tread.
     apron_back = (
+        approach_back - thickness - membrane if foam_bed else
         approach_front
         - thickness
         - spec.cross_bearer_depth.meters
@@ -108,8 +116,8 @@ def catalog_installation_layout(model, wall, opening, assembly, clad):
     )
     pan_front = apron_back - (outlet - end) * slope
     pan_back = base + spec.pan_height.meters - membrane
-    count = max(2, ceil(width / spec.support_spacing.meters) + 1)
-    spacing = (width - spec.support_width.meters) / (count - 1)
+    count = 1 if foam_bed else max(2, ceil(width / spec.support_spacing.meters) + 1)
+    spacing = width if foam_bed else (width - spec.support_width.meters) / (count - 1)
     projection = outlet - sign * placement.frame_outer_m
     support_top = pan_front - membrane
     return CatalogInstallationLayout(

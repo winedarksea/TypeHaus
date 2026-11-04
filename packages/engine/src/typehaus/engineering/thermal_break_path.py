@@ -65,10 +65,12 @@ def house_slab(ctx, footings: list[str]):
     return best
 
 
-def take_down(ctx, slab_solid) -> tuple[float, str]:
+def take_down(ctx, slab_solid, court: frozenset[str] = frozenset()) -> tuple[float, str]:
     """``(lb, basis)`` — every Footing and Slab solid and every concrete wall's STRUCTURE
     layer inside the slab's outline + reach at 150 pcf, every other wall at
-    ``FRAMED_WALL_PSF``. Floors, roof, finishes and contents are left off."""
+    ``FRAMED_WALL_PSF``. Floors, roof, finishes and contents are left off. ``court`` is the
+    structure across the break: a court pour inside the reach (catlin's W-SG-BRKBM flush on
+    the strips since 2026-11-04) is not the house's weight."""
     from shapely.geometry import LineString
 
     from typehaus.model.floors import Slab
@@ -85,7 +87,7 @@ def take_down(ctx, slab_solid) -> tuple[float, str]:
             parts[kind] += p.area * (s.z1_m - s.z0_m) * _IN * CONCRETE_PCF / 1728.0
     for w in ctx.model.walls:
         axis = LineString([(x * _IN, y * _IN) for x, y in w.axis])
-        if not zone.contains(axis):
+        if w.tag in court or not zone.contains(axis):
             continue
         height = (w.z1_m - w.z0_m) * _IN
         core = next((ly for ly in w.depth_layers() if ly.function == "structure"), None)
@@ -191,7 +193,7 @@ def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missin
             f"{line:,.0f} lb over {t:.2f}\" x {edge_len:.0f}\" of {slab.tag}; phi 0.60 x 0.85 "
             f"f'c (plain, ACI 318-19 Table 21.2.1, §14.5.6). Buckling not credible: a slab on "
             f"grade is braced continuously by its subgrade"))
-    dead, basis = take_down(ctx, solid)
+    dead, basis = take_down(ctx, solid, frozenset(t for b in boards for t in b.structure))
     # The shallowest: a stepped near line (FT-B-S2/S3 2" deeper) must not credit the far
     # wall with soil down to the deeper step.
     bottom = max(s.z0_m * _IN for s in ctx.model.solids

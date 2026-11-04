@@ -280,17 +280,20 @@ def test_catlin_closure_boards_are_a_pure_isolation_joint(catlin_model) -> None:
     for name in ("TB-SG-W1", "TB-SG-E1"):
         base = next(b for b in foam if b.tag == name)
         stem = next(b for b in foam if b.tag == f"{name}-STEM")
-        assert [round(y, 9) for y in sorted({y for _, y in base.outline})] == \
-               [round(y, 9) for y in sorted({y for _, y in stem.outline})]
+        # Since 2026-11-04 the footing board is 2" on the beam board's plane (-4..-6") and
+        # the 2.5" stem board stands on FT-SG-W1/E1's extension: the two still overlap.
+        base_y = sorted({y for _, y in base.outline})
+        stem_y = sorted({y for _, y in stem.outline})
+        assert min(base_y[1], stem_y[1]) - max(base_y[0], stem_y[0]) > inch(1.5).meters
         assert base.z1_m == pytest.approx(stem.z0_m)
 
 
 def test_foam_thermal_break_lies_in_the_joint_it_breaks(catlin_model) -> None:
     """The board's thin dimension crosses the joint; its long one runs along it.
 
-    Catlin's boards are thin in Y between the house and the sunken-garden footings, so each
-    must be ``THERMAL_BREAK_IN`` (2.5" since basis 4) deep in Y and long in X. Rotated 90° it
-    stops separating the two structures at all.
+    Catlin's boards are thin in Y between the house and the sunken-garden footings: the
+    stem boards ``THERMAL_BREAK_IN`` (2.5"), the footing boards ``VENEER_BEAM_BREAK_IN`` (2",
+    since 2026-11-04) deep in Y, and long in X. Rotated 90° it stops separating anything.
     """
     sunken_garden = catlin_params("sunken_garden")
 
@@ -299,7 +302,9 @@ def test_foam_thermal_break_lies_in_the_joint_it_breaks(catlin_model) -> None:
         ys = [y for _, y in block.outline]
         depth_across_joint = max(ys) - min(ys)
         run_along_joint = max(xs) - min(xs)
-        assert abs(depth_across_joint - inch(sunken_garden.THERMAL_BREAK_IN).meters) < 1e-9
+        thickness = (sunken_garden.THERMAL_BREAK_IN if block.tag.endswith("-STEM")
+                     else sunken_garden.VENEER_BEAM_BREAK_IN)
+        assert abs(depth_across_joint - inch(thickness).meters) < 1e-9
         assert run_along_joint > depth_across_joint
 
 

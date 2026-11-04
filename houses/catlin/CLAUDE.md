@@ -2013,9 +2013,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `-CS2`/`-CN2`/`-CN`, decision #112) are 2x6 bearing **stud** walls: no interior pour is
     left. Do not retype any of the nine to 12" without
     cause — `structural.foundation_unbalanced_fill` FAILs correctly otherwise.
-  - Cladding: `N-B-BRICK-W`/`-E` stand off `inch(-4.05)` on bare XPS; veneer clear cavity is
-    **4"** behind the backup's 2" EPS (IRC R703.8.4 min 1"; `basement_to_framed_wall_detail.md`). Never re-strike this node off a parge finish face — it
-    must sit on the foam itself (→ DESIGN-LOG.md, "Basement"). Walls align on
+  - Cladding: `N-B-BRICK-W`/`-E` sit on the backup's bare XPS face, `inch(-4.06)`; the
+    veneer's clear cavity is **1.94"** (IRC R703.8.4 min 1"), brick to studs 6 1/2" (2026-11-04,
+    no EPS). Never re-strike this node off a parge finish face — it must sit on the foam
+    itself (→ DESIGN-LOG.md, "Basement"). Walls align on
     `face("concrete-ext")`: the furnace room and workshop gained 4" of clear on the inside
     face, and `clear_face` (the finish face) shows it (`notes/basement_to_framed_wall_detail.md`).
 
@@ -2499,26 +2500,20 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   drip's face into the trough; `test_catlin_balcony_guard_gutter.py` holds the clearance.
 - Veneer `W-B-BRICK` (both faces exposed; top at -13 1/3" since 2026-09-22 so
   `FS-SG-PORCH`'s 2x12s pass over it with 2 1/12" of air — nothing grades that gap) stands on
-  `W-SG-BRKBM`, a 12" x 17-3/4" grade beam bearing on `FT-SG-W1`/`E1`'s 3'-0" toes and
-  spanning the **11'-0" between the toe faces** — not on the house footing (`FT-B-BRICK`,
-  retired). Basis: `notes/sunken_garden_veneer_beam.md` §6j (2026-10-10).
-- **The beam is an ordinary simple span because it sits on the toes.** Its lower 10 3/4"
-  is inside each toe for 3'-6", and `engineering/veneer_beam` takes the innermost concrete the
-  pour overlaps (wall or footing) as the support. At 11'-0", Tu is **0.935 φT_th**
-  (§22.7.4.1), so torsion is neglected: no closed hoops, side bars, fy hooks into the walls, or
-  `end_restraint`. The steel is 2 #5 bottom, 2 #4 straight hangers, #3 cage ties @ 12" (Vu is
-  under §9.6.3.1's trigger), and 2 #5 dowels per end cast straight in the toe (§9.7.3.8.1,
-  class B lap 27.58" in a 30" projection), at **3" cover**, since the soffit is cast on the bed.
-  The total is 78.5 lb; it was 251. Flexure 0.333; TMS ℓ/600 deflection 0.103. As laid: ties
-  only between the toe faces, and each dowel one db beside its bar (a contact lap).
-  - **Torsion is graded at the brick's ±1/4" bearing tolerance** (`bearing_tolerance` on the
-    beam; `AN-SG-PLACEMENTS` states it): **0.992**. The tolerance is the whole margin;
-    φT_th is reached at +0.286". A heavier wythe, a longer span or a looser tolerance puts
-    the torsion cage back (about 100 lb).
-  - **What would undo it:** narrowing `FT-SG-W1`/`E1`'s toes, or raising the beam off them.
-    Either puts the span back to 17'-0" and Tu to 1.35 φT_th, and
-    `test_without_the_toe_bearing_the_light_cage_would_not_do` fails at once. So does moving
-    the brick further off the beam's centre (e 4.13").
+  `W-SG-BRKBM`, a 12" x 17-3/4" grade beam **bedded on stone** (`FB-SG-BRKBM`, drained NFS
+  on the wall-bed plane): a soil-supported veneer footing, not a span (owner, 2026-11-04;
+  `notes/sunken_garden_veneer_beam.md` §6k). `engineering/veneer_beam` skips a wall a
+  bedding hosts, so `veneer_beam/W-SG-BRKBM` is retired; §6j's cage is kept as nominal and
+  `bearing_tolerance` is no longer authored. Nothing grades its ~0.5 ksf bearing.
+- **Flush on the house strips:** board -4..-6" on FT-B-S1..S4's face, concrete -6..-18",
+  brick -6.0..-9.625". FT-SG-W1/E1 run 0.685" north to -6" so TB-SG-W1/E1 (now 2") share
+  the beam board's plane; the stem boards stay at -6.685..-4.185" and stand on the extension.
+  **The brick is 6 1/2" off the studs** — IRC 2024 Table R703.8.4(1)'s W2.8 row stops at
+  6 5/8", so the margin is 1/8". Anything that moves the strip face, the board, the beam or
+  the stud line spends it; `structural.veneer_cavity_width` measures it.
+- **The ties are W2.8 adjustable wire, an R104.11 alternate.** MN 2020 is the 2018 IRC,
+  whose table stops at 4 1/2", so the check reports `veneer_anchor/W-B-BRICK` (the AHJ
+  request, no seal). It retires with no house edit when the profile adopts the 2021/2024 IRC.
 - Nothing in the engine grades a thermal break for continuity — a `Footing`
   resolves to one blob with no polygon, so verify an adjacent gap directly (→
   DESIGN-LOG.md, "Exterior colour, balcony and veneer").
@@ -2526,34 +2521,32 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   own open wall-graph chain and takes the FALLBACK outward sign — do not trust
   it; verify against
   `test_catlin_contract_m3.test_the_veneer_beam_isolates_the_house_footing`.
-- `FT-B-S2`/`FT-B-S3` south face is now at **-8"** (via `offset`, not width,
-  keeping all 20" of bearing) — anything re-centring these footings must keep
-  that face.
-- Brick's y is fixed at -10.05"..-13.675" by the beam; `N-B-BRICK-W`/`-E` sit
-  at -8.05". `N-B-BRICK-E` is at **27'-5 5/8"** — 28'-0" is `W-SG-E1`'s axis and would walk
-  the east wythe inside the retaining wall, 27'-6" is that wall's clear face and left the
-  brick HARD against it. The 3/8" back off the face (2026-09-22) is the east **soft joint**:
-  BIA Technical Note 18A's minimum vertical expansion joint, against the ~0.15" of moisture
-  plus thermal movement an 18'-8" clay run wants. The west end has 4". Both joints are
-  `MovementJoint`s since 2026-09-22 (`plan/masonry_joints.py`, A6): DOWSIL 790 over HBR rod
-  east (d/c 0.537), Emseal Seismic Colorseal 4" west (0.050), graded by
-  `structural.masonry_movement_joint` on BIA TN 18A Eq. 1 and billed in `[edge_trim]`.
-  Move either brick node and the check says the joint no longer fits (note §6g).
-- 2" EPS (ASTM C578 **Type II**, 15 psi — not Type I) is in the BACKUP wall's
-  `_GARDEN_CURB_CORE`/`_GARDEN_FRAMED_OUTBOARD` layers, not in
-  `BASEMENT_BRICK_VENEER` — blast radius is `W-B-S2`/`S3`/`S2-FR`/`S3-FR` only.
-  `code.energy_prescriptive` grades one assembly at a time, so foam in the
-  veneer's own stack would earn no R.
-- `eps:2.0` is a distinct price key for labour, not thickness —
-  `envelope_layers` qualifies on `thickness_in` only, so any other 2" EPS
-  elsewhere would silently inherit this rate. None exists today.
+- `FT-B-S1`..`S4`'s south face is **-4"** (`_GARDEN_END_TOE_TRIM`, via `offset`, keeping all
+  20" of bearing); the beam's board and the footing boards sit flush on it. Anything
+  re-centring these footings must keep that face (`_HOUSE_STRIP_FACE_IN` transcribes it).
+- Brick's y is fixed at -6.0"..-9.625" by the beam; `N-B-BRICK-W`/`-E` sit at -4.06" with
+  a 1.94" `air-gap`. x: **9'-6 1/2" / 26'-5 1/2"**, 1/2" off W-SG-W1/E1's clear faces — the
+  two soft joints, both 1/2" Class 50 neutral-cure silicone over 5/8" rod (`plan/masonry_joints.py`,
+  d/c 0.365, 0.731 if one takes the whole run; a Class 25 sealant FAILs that case). The 4"
+  Emseal is gone. The reveals are `from_node("N-B-BRICK-W", ...)`, so moving that node means
+  moving both offsets with it; `integrity.reveal_concentric` is the guard.
+- **No EPS on the backup since 2026-11-04.** `_GARDEN_CURB_CORE`/`_GARDEN_FRAMED_OUTBOARD` are
+  membrane + 4" XPS again; the 2" EPS would leave no cavity at all.
+- **D-B-PATIO's approach is one Trex Tide Pool tread on a 40 psi foam bed** (owner,
+  2026-11-03; `support_kind="foam_bed"`, `notes/french_door_catalog_installation.md` §6): no
+  AridDek, no cross bearers, no concrete cantilever, nothing fastened to W-SG-BRKBM. Two blind
+  recesses (`AO-B-PATIO-TREAD-BED` in the curb's tail, `AO-SG-BRKBM-TREAD-BED` in the beam's
+  board) make room; Trex fascia box sides close the cavity at the reveal. The tread's back
+  sits at the sill nose (6.6" above the court), ~1/2" under the beam top: its slot's outlet
+  is an open UNKNOWN. `integrity.doorway_assembly` tests the sections against every nearby
+  solid, so a tread that grows into the beam is a FAIL.
 - Do not anchor the wythe to `W-SG-W1`/`W-SG-E1` to cut anchor count:
   unreinforced brick can't span 18'-8" horizontally, and both ends want a soft
-  joint — authored and graded since 2026-09-22 (4" west, 3/8" east) (→
+  joint — authored and graded since 2026-09-22, both 1/2" since 2026-11-04 (→
   DESIGN-LOG.md, "Exterior colour, balcony and veneer").
 - Do not describe this beam as reinforcing `W-SG-W1`/`E1` — those walls already
-  PASS `structural.foundation_unbalanced_fill` independently; the beam's only
-  job is the thermal break.
+  PASS `structural.foundation_unbalanced_fill` independently; the beam is the
+  brick's footing and its thermal break, nothing more.
 - Two engine bugs fixed here: `local_grade_elevation_m` now uses whole-polygon
   containment, not centroid, for footing shelter; `_exterior_shells_by_storey`
   now keeps holes over an open excavation floor rather than filling every

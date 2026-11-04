@@ -41,6 +41,11 @@ TRANSITIONS = (
                notes="notes/court_opening_detail.md", star=False,
                suppress=True,
                suppress_reason="formed concrete door-seat recess, not a framed opening; coordinated in the patio installation review"),
+    Transition(uid="109WBK5F0T", tag="TR-CATLIN-PATIO-TREAD-BED", title="Patio tread bed in the veneer beam's board",
+               condition_pattern="opening_perimeter:SG_VENEER_BEAM_14",
+               notes="notes/court_opening_detail.md", star=False,
+               suppress=True,
+               suppress_reason="the beam's XPS board cut down under the patio tread, not a framed opening; coordinated in the patio installation review"),
     # Two eaves in this project and they are genuinely two drawings: the house's
     # zero-overhang eave over EXT_2X6, and the garage's over a trussed roof with a raised
     # heel on a wall with no WRB. The four interior-partition-to-roof keys are unstarred —

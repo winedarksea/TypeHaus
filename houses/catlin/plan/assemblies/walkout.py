@@ -45,7 +45,7 @@ from .mixes import BURIED_MIX
 #
 # **The stack is the concrete one with studs where the pour was**, not EXT_2X6: the
 # outboard face has to stay exactly where it is. The waterproofing and the 4" of XPS continue
-# from W-B-S1 and W-B-S4 either side, and W-B-BRICK stands 4.05" off its own footing with two
+# from W-B-S1 and W-B-S4 either side, and W-B-BRICK stands 1.94" off its foam with two
 # arched reveals dimensioned to it. `alignment=face("sheathing-ext")` puts the sheathing's
 # outboard face on the node line exactly where `face("concrete-ext")` put the pour's, so the
 # whole outboard tail lands on the plane it always did. (The parge was once a third layer
@@ -68,49 +68,11 @@ _GARDEN_FRAMED_OUTBOARD = (
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-    # ** 2" EPS, 2026-09-05, AND IT IS HERE RATHER THAN IN THE VENEER'S CAVITY. **
-    # It is fastened to THIS wall, so this is where it belongs — and putting it in
-    # BASEMENT_BRICK_VENEER instead would have been worse than untidy:
-    # `code.energy_prescriptive` grades one assembly at a time, so foam parked in the
-    # veneer's stack would have earned this wall no R at all and the check would still
-    # have read R-37.0.
-    #
-    # **What it is actually for, because the heat is a rounding error.** The backup here
-    # is already R-37.0 framed (R-50.4 under the sauna); 2" of EPS takes it to R-45 and
-    # saves on the order of $2/year. The reason it is worth ~$200-350 is the veneer ANCHOR.
-    # W-SG-BRKBM fixed the wythe's foot 6" off this face and no closer (notes/
-    # sunken_garden_veneer_beam.md), so the tie already had to reach ~10" from brick to
-    # stud whatever we did. What it could not do was reach 6" of that UNBRACED, through
-    # open air, which is what made it a TMS 402 engineered anchor. Filling 2" of the gap
-    # leaves 4" of open cavity and braces that much of the anchor's length in foam.
-    #
-    # ** 2" AND NOT 4", AND TWO SEPARATE BOUNDS SAY SO. ** Both were found by building 4"
-    # first and reading what moved. Neither is graded by any check; the house sat at 0 FAIL
-    # at 4", at 3" and at 2" alike.
-    #
-    #   1. `EXT_2X6` stands on this wall's seat at -13 7/16" with its cladding face
-    #      at **-7.25"**, and this tail may not pass it. The basement skin's head TUCKS
-    #      UNDER the main storey's rainscreen Z-flashing (see
-    #      notes/basement_to_framed_wall_detail.md); a lower wall standing PROUD of the one
-    #      above turns that lap into an upward-facing ledge. 4" put the face at -8.05",
-    #      0.8" proud. 2" lands at -6.05", a 1.2" setback the flashing can actually cover.
-    #   2. `resolve/stacking.py` raises `stack_width_change` on the |total thickness|
-    #      difference against a 0.5" `_TOL`, so ANY thickness added here reshuffles which
-    #      junctions get a width-change DETAIL DRAWN. 4" pushed `GARDEN_CURB_6`
-    #      inside the tolerance and 3" pushed `GARDEN_FRAMED_2X6` inside it — each
-    #      silently deleting the drawing of a junction that still exists. 2" is the one
-    #      value that is purely ADDITIVE: every golden at HEAD survives and the two sauna
-    #      walls gain the detail they now genuinely warrant. Re-run the goldens.
-    #
-    # It is EPS and not more XPS on purpose. The stack outboard of the concrete/sheathing
-    # is already 4" of XPS plus the 60-mil membrane at 0.05 perm, so this wall can only
-    # dry inward. EPS at 3.9 perm/in is ~2 perms at 2" — it adds R without adding a second
-    # vapour shutter, and it lets the assembly dry OUTWARD into the ventilated cavity.
-    # EPS also holds up better than XPS in long-term ground contact, and the bottom of
-    # this run sits in a court that can stand water. Lower R per inch (4.0 vs 5.0) is the
-    # price, and here it is the right trade.
-    Layer(name="eps-ci", material_ref="eps", thickness=inch(2.0),
-          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    # ** NO EPS SINCE 2026-11-04. ** The 2" EPS (2026-09-05) braced an engineered anchor
+    # across a 4" cavity. W-SG-BRKBM now sits flush on the house strips, so the brick's back
+    # is at -6.0", 6 1/2" off the studs (IRC 2024 Table R703.8.4(1) W2.8: <= 6 5/8") and
+    # 1.94" off this foam (notes/sunken_garden_veneer_beam.md §6k). With the EPS there
+    # would be no cavity at all.
 )
 
 _GARDEN_FRAMED_STUD = Layer(
@@ -144,49 +106,7 @@ _GARDEN_CURB_CORE = (
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-    # ** 2" EPS, 2026-09-05, AND IT IS HERE RATHER THAN IN THE VENEER'S CAVITY. **
-    # It is fastened to THIS wall, so this is where it belongs — and putting it in
-    # BASEMENT_BRICK_VENEER instead would have been worse than untidy:
-    # `code.energy_prescriptive` grades one assembly at a time, so foam parked in the
-    # veneer's stack would have earned this wall no R at all and the check would still
-    # have read R-37.0.
-    #
-    # **What it is actually for, because the heat is a rounding error.** The backup here
-    # is already R-37.0 framed (R-50.4 under the sauna); 2" of EPS takes it to R-45 and
-    # saves on the order of $2/year. The reason it is worth ~$200-350 is the veneer ANCHOR.
-    # W-SG-BRKBM fixed the wythe's foot 6" off this face and no closer (notes/
-    # sunken_garden_veneer_beam.md), so the tie already had to reach ~10" from brick to
-    # stud whatever we did. What it could not do was reach 6" of that UNBRACED, through
-    # open air, which is what made it a TMS 402 engineered anchor. Filling 2" of the gap
-    # leaves 4" of open cavity and braces that much of the anchor's length in foam.
-    #
-    # ** 2" AND NOT 4", AND TWO SEPARATE BOUNDS SAY SO. ** Both were found by building 4"
-    # first and reading what moved. Neither is graded by any check; the house sat at 0 FAIL
-    # at 4", at 3" and at 2" alike.
-    #
-    #   1. `EXT_2X6` stands on this wall's seat at -13 7/16" with its cladding face
-    #      at **-7.25"**, and this tail may not pass it. The basement skin's head TUCKS
-    #      UNDER the main storey's rainscreen Z-flashing (see
-    #      notes/basement_to_framed_wall_detail.md); a lower wall standing PROUD of the one
-    #      above turns that lap into an upward-facing ledge. 4" put the face at -8.05",
-    #      0.8" proud. 2" lands at -6.05", a 1.2" setback the flashing can actually cover.
-    #   2. `resolve/stacking.py` raises `stack_width_change` on the |total thickness|
-    #      difference against a 0.5" `_TOL`, so ANY thickness added here reshuffles which
-    #      junctions get a width-change DETAIL DRAWN. 4" pushed `GARDEN_CURB_6`
-    #      inside the tolerance and 3" pushed `GARDEN_FRAMED_2X6` inside it — each
-    #      silently deleting the drawing of a junction that still exists. 2" is the one
-    #      value that is purely ADDITIVE: every golden at HEAD survives and the two sauna
-    #      walls gain the detail they now genuinely warrant. Re-run the goldens.
-    #
-    # It is EPS and not more XPS on purpose. The stack outboard of the concrete/sheathing
-    # is already 4" of XPS plus the 60-mil membrane at 0.05 perm, so this wall can only
-    # dry inward. EPS at 3.9 perm/in is ~2 perms at 2" — it adds R without adding a second
-    # vapour shutter, and it lets the assembly dry OUTWARD into the ventilated cavity.
-    # EPS also holds up better than XPS in long-term ground contact, and the bottom of
-    # this run sits in a court that can stand water. Lower R per inch (4.0 vs 5.0) is the
-    # price, and here it is the right trade.
-    Layer(name="eps-ci", material_ref="eps", thickness=inch(2.0),
-          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    # No EPS since 2026-11-04: see `_GARDEN_FRAMED_OUTBOARD`.
 )
 
 GARDEN_CURB_6 = Assembly(

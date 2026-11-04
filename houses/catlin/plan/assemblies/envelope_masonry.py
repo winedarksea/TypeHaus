@@ -46,42 +46,21 @@ _VENEER_WYTHE = inch(3.625)
 BASEMENT_BRICK_VENEER = Assembly(
     tag="BASEMENT_BRICK_VENEER",
     layers=(
-        # ** 4" OF OPEN CAVITY, AND THE OTHER 2" IS NOW FOAM ON THE BACKUP WALL. **
-        # The 6" between this wall's finished face and the brick is FIXED and always was:
-        # W-SG-BRKBM's north face can reach y=-10" and no further (FT-B-S2/S3 hold the 2"
-        # isolation joint north of it), and the wythe bears on the beam, so the brick sits
-        # at **-10.06..-13.685"** and cannot move north. (This read "-10.05..-13.675" until
-        # 2026-09-15: it was struck off a -6.05" node and N-B-BRICK-W/-E are at -6.06".
-        # -13.685" is the resolved south face, and it is the line the porch deck stops
-        # 1" clear of — see `_y_porch_deck_n` in params/sunken_garden.py.) The only question was ever how to
-        # SPLIT that 6", and the answer is 2" of EPS on the backup (see _GARDEN_CURB_CORE
-        # and _GARDEN_FRAMED_OUTBOARD, which carry the two bounds that set that 2") plus 4"
-        # of drained air here.
-        #
-        # **Why the split and not 6" of air.** A drainage cavity is not optional — brick is
-        # a reservoir cladding and IRC R703.8.4 asks 1" minimum — but 6" of it bought
-        # nothing except an unbraced anchor. 4" is well past the 1" minimum and is generous
-        # drainage; the 2" that comes out of the cavity does not disappear, it goes onto the
-        # wall, where it insulates and braces the inboard third of the anchor.
-        #
-        # **Do not read the 4-1/2" prescriptive airspace as settled.** 4.0" is inside it,
-        # but the anchor still spans ~10" brick-to-stud through 6" of foam and that is past
-        # what the tables contemplate. notes/sunken_garden_veneer_beam.md Sec. 5 keeps the
-        # tie an engineered item and says why; what changed is that it is now a designable
-        # one instead of a 6" unbraced strut.
-        #
-        # This layer's inboard face IS the node line (the wall aligns on
-        # ``face("air-gap-int")``), so N-B-BRICK-W/-E moved to -6.05" with the backup's new
-        # face rather than this thickness absorbing the change — the reverse of the
-        # 2026-09-04 edit. Either way the brick does not move and the two arched reveals,
-        # positioned ``from_node`` along the wall AXIS, stay concentric.
-        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(4.0),
+        # ** 1.94" OF DRAINED CAVITY: MEASURED, NOT CHOSEN (2026-11-04). ** The wythe bears
+        # on W-SG-BRKBM, whose concrete north face sits 2" off the house strips (-4") on
+        # its board, so the brick's back is at -6.0". The node is the backup's foam face
+        # (-4.06"); the gap is the difference. Brick to stud face is then 6 1/2", inside
+        # IRC 2024 Table R703.8.4(1)'s W2.8 row (6 5/8") and over R703.8.4's 1" airspace
+        # minimum (notes/sunken_garden_veneer_beam.md §6k, `structural.veneer_cavity_width`).
+        # If the beam or the backup's foam moves, re-measure this; the reveals are
+        # ``from_node`` along the axis and do not care.
+        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.94),
               function=LayerFunction.AIRGAP),
         # The field: unglazed brown face brick, base to wall top, 8'-5" of it.
         Layer(name="brick", material_ref="brown-brick", thickness=_VENEER_WYTHE,
               function=LayerFunction.STRUCTURE),
     ),
-    source="basement south veneer over the sunken garden (2026-09-04) — one flat field of ordinary unglazed buff/brown face brick, ASTM C216 Grade SW, running modular coursing full height; one 3 5/8\" wythe, 4\" ventilated airgap (2\" EPS on the backup) on the grade beam W-SG-BRKBM (not the house footing toe), TMS 402 engineered ties back to the existing south basement wall (no CMU backer: the basement concrete is the backer). Was the Ishtar scheme (2026-08-20 to 2026-09-04): a glazed-lapis field with glazed-gold register bands over this same brown plinth, banded by Layer.slot; and before that one flat field of glazed-green-brick. All three glazed materials stay in the catalog, so any of the schemes is a material_ref away",
+    source="basement south veneer over the sunken garden (2026-09-04) — one flat field of ordinary unglazed buff/brown face brick, ASTM C216 Grade SW, running modular coursing full height; one 3 5/8\" wythe, 1.94\" drained airgap on the soil-bedded grade beam W-SG-BRKBM (not the house footing toe), W2.8 adjustable wire ties screwed to the backup studs at 6 1/2\" brick-to-stud (IRC 2024 Table R703.8.4(1), an R104.11 alternate under MN 2020). Was the Ishtar scheme (2026-08-20 to 2026-09-04): a glazed-lapis field with glazed-gold register bands over this same brown plinth, banded by Layer.slot; and before that one flat field of glazed-green-brick. All three glazed materials stay in the catalog, so any of the schemes is a material_ref away",
 )
 
 # Cost/design alternate for the same walkout face. The panel is represented as the skin's

@@ -2012,12 +2012,14 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
     assert sunken_garden.SPEC.closure_break_in == pytest.approx(
         sunken_garden.THERMAL_BREAK_IN)
 
-    # Both closure blocks, as resolved solids: same thickness across the joint, same rating.
+    # Both closure blocks, as resolved solids: one rating. The stems are 2.5"; the footing
+    # boards 2" since 2026-11-04, on the veneer beam board's plane flush on the house strips.
     for block in ("TB-SG-W1", "TB-SG-E1", "TB-SG-W1-STEM", "TB-SG-E1-STEM"):
         solid = next(s for s in catlin_model.solids if s.tag == block)
         ys = [y for _x, y in solid.outline]
         assert (max(ys) - min(ys)) / 0.0254 == pytest.approx(
-            sunken_garden.THERMAL_BREAK_IN, abs=1e-6), block
+            sunken_garden.THERMAL_BREAK_IN if block.endswith("-STEM")
+            else sunken_garden.VENEER_BEAM_BREAK_IN, abs=1e-6), block
         board = catlin_model.plan.by_tag(block)
         assert board.psi == pytest.approx(sunken_garden.THERMAL_BREAK_PSI), block
         assert board.modulus_estimated, block  # no Type X sheet publishes E
@@ -2105,9 +2107,10 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
         ys = [y for _x, y in polygon]
         return min(ys) / inch_m, max(ys) / inch_m
 
-    # North of the concrete, not south of it: the board faces the house.
-    assert span_in(layers["xps-break"].polygon) == pytest.approx((-10.0, -8.0), abs=1e-6)
-    assert span_in(layers["concrete"].polygon) == pytest.approx((-22.0, -10.0), abs=1e-6)
+    # North of the concrete, not south of it: the board faces the house. Flush on the house
+    # strips' -4" face since 2026-11-04 (notes/sunken_garden_veneer_beam.md §6k).
+    assert span_in(layers["xps-break"].polygon) == pytest.approx((-6.0, -4.0), abs=1e-6)
+    assert span_in(layers["concrete"].polygon) == pytest.approx((-18.0, -6.0), abs=1e-6)
 
     # And the toes it faces are clear of it — an `offset`, so each strip keeps its full 20"
     # of bearing and simply sits further under the house.
@@ -2121,9 +2124,8 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     # porch footings rose to the court plane. Which strip a given inch of that joint faces
     # is an accident of where W-B-S1 stops (x = 8'-10"); no thermal detail should turn on it.
     #
-    # The beam's own board is not weakened by the retreat. It still separates the veneer
-    # pour from the house pour, now across 4" of bedding stone IN SERIES with the same 2" of
-    # XPS, and the beam bears nothing on that toe — it spans between the side walls.
+    # Since 2026-11-04 the beam's board sits flush on that -4" face: the beam is bedded on
+    # its own stone (FB-SG-BRKBM) and bears nothing on the strips.
     for tag in ("FT-B-S1", "FT-B-S2", "FT-B-S3", "FT-B-S4"):
         strip = next(s for s in catlin_model.solids if s.tag == tag)
         south_in = min(y for _x, y in strip.outline) / inch_m
@@ -2132,8 +2134,14 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
         depth = 10.0 if tag in ("FT-B-S2", "FT-B-S3") else 8.0
         assert (strip.z1_m - strip.z0_m) / inch_m == pytest.approx(depth, abs=1e-3), tag
 
-    # No concrete-to-concrete anywhere on that plane: 2" of board, then 4" of bedding stone.
-    assert -4.0 - (-10.0) == pytest.approx(6.0)
+    # No concrete-to-concrete anywhere on that plane: the board fills the 2" exactly, and
+    # neither the board nor the concrete laps a strip in plan.
+    from shapely.geometry import Polygon as _Poly
+    for tag in ("FT-B-S1", "FT-B-S2", "FT-B-S3", "FT-B-S4"):
+        house = _Poly(next(s for s in catlin_model.solids if s.tag == tag).outline)
+        for name in ("xps-break", "concrete"):
+            lap = _Poly(layers[name].polygon).intersection(house).area
+            assert lap == pytest.approx(0.0, abs=1e-9), (tag, name)
 
     # ** THE CLOSURE JOINT, END TO END. ** The board between each garden footing and the
     # house strips it faces must cover the WHOLE 84" of that joint, and it must have room to
@@ -2183,10 +2191,12 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     # further off the beam changes nothing about the bearing.) What fills the 6" behind it has
     # already changed twice and may change again — 6" of bare air on 2026-09-04, then 2" of
     # EPS on the backup wall plus a 4" cavity on 2026-09-05.
+    # Since 2026-11-04 the brick's back is the concrete's north face, -6.0": 1.94" of cavity
+    # off the backup's XPS, 6 1/2" off its studs (IRC 2024 W2.8 reaches 6 5/8").
     brick = catlin_model.wall("W-B-BRICK")
     faces = {ly.name: span_in(ly.polygon) for ly in brick.layers}
-    assert faces["brick"] == pytest.approx((-13.685, -10.06), abs=1e-6)
-    assert faces["air-gap"] == pytest.approx((-10.06, -6.06), abs=1e-6)
+    assert faces["brick"] == pytest.approx((-9.625, -6.0), abs=1e-6)
+    assert faces["air-gap"] == pytest.approx((-6.0, -4.06), abs=1e-6)
 
     # ** NO UNDESCRIBED VOID BETWEEN THE BACKUP AND THE CAVITY. ** This detail has fallen
     # into that trap once already: on 2026-09-04 the south wall's parge was deleted and
@@ -2196,17 +2206,17 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     # outermost layer, whatever either of them happens to be on the day.
     for backup in ("W-B-S2", "W-B-S3", "W-B-S2-FR", "W-B-S3-FR"):
         outermost = catlin_model.wall(backup).layers[-1]
-        assert span_in(outermost.polygon)[0] == pytest.approx(-6.06, abs=1e-6), backup
-    assert faces["air-gap"][1] == pytest.approx(-6.06, abs=1e-6)
+        assert span_in(outermost.polygon)[0] == pytest.approx(-4.06, abs=1e-6), backup
+    assert faces["air-gap"][1] == pytest.approx(-4.06, abs=1e-6)
 
     # And the backup's face must stay INBOARD of the wall standing on its seat: the basement
     # skin tucks under EXT_2X6's rainscreen Z-flashing, so a lower wall proud of the
     # upper one turns that lap into an upward-facing ledge. 4" of EPS did exactly that at
     # -8.05" and nothing in `haus check` noticed.
     main_face = min(y for ly in catlin_model.wall("W-M-S1").layers for _x, y in ly.polygon)
-    assert -6.06 * inch_m > main_face, "the court walls must not stand proud of W-M-S1"
+    assert -4.06 * inch_m > main_face, "the court walls must not stand proud of W-M-S1"
     beam_lo, beam_hi = span_in(layers["concrete"].polygon)
-    assert beam_lo <= faces["brick"][0] and faces["brick"][1] <= beam_hi, \
+    assert beam_lo <= faces["brick"][0] and faces["brick"][1] <= beam_hi + 1e-6, \
         "the wythe must sit wholly on the beam, not overhang its north edge"
     assert brick.z0_m == pytest.approx(beam.z1_m, abs=1e-9), "wythe bears on the beam top"
 

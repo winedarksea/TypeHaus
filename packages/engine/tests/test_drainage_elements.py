@@ -185,7 +185,8 @@ def test_the_soakaway_is_a_course_below_the_drained_section(catlin_model):
     # daylight it does not have. W1/E1, with no course, name the bed their stone abuts.
     assert not any(b.drain_tile for b in beds.values())
     assert {b.tag: b.discharge_ref for b in beds.values() if b.discharge_ref} == {
-        "FB-SG-W1": "FB-SG-W2", "FB-SG-E1": "FB-SG-E2"}
+        "FB-SG-W1": "FB-SG-W2", "FB-SG-E1": "FB-SG-E2", "FB-SG-BRKBM": "FB-SG-W2"}
+    assert beds["FB-SG-BRKBM"].stone_z0_m == beds["FB-SG-BRKBM"].z0_m, "no course of its own"
     # The balcony leader is NOT an inlet: it hangs outside the east wall.
     arch = catlin_model.plan.by_tag("FB-SG-ARCH")
     assert "TR-SG-LEADER-SE" not in arch.inlet_refs
@@ -529,7 +530,8 @@ def test_every_bedding_that_names_a_receiver_has_a_way_to_reach_it(catlin_model)
     house = bodies["FB-B-W1"]
     assert len(house) == 21, sorted(house)
     court = bodies["FB-SG-W1"]
-    assert court == {"FB-SG-ARCH", "FB-SG-E1", "FB-SG-E2", "FB-SG-S", "FB-SG-W1", "FB-SG-W2"}
+    assert court == {"FB-SG-ARCH", "FB-SG-BRKBM", "FB-SG-E1", "FB-SG-E2", "FB-SG-S",
+                     "FB-SG-W1", "FB-SG-W2"}
     assert set(bodies) == set(house) | set(court), "a bed in a body of its own is orphaned"
     assert catlin_model.plan.by_tag("FB-SG-COL") is None
     assert catlin_model.plan.by_tag("FD-SG-COL-LEAD") is None

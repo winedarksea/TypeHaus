@@ -2,7 +2,10 @@
 
 from dataclasses import replace
 
-from typehaus.engineering.exterior_door_support import cantilever_support_report
+from typehaus.engineering.exterior_door_support import (
+    cantilever_support_report,
+    foam_bed_support_report,
+)
 from typehaus.resolve.exterior_door_catalog_layout import catalog_installation_layout
 from typehaus.resolve.exterior_door_catalog_parts import catalog_sill_sections
 
@@ -16,7 +19,9 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
     layout = catalog_installation_layout(model, wall, opening, assembly, clad)
     sections = catalog_sill_sections(spec, installation, placement, opening, layout)
     unknown, conflicts = (list(assembly.unknown), list(assembly.conflicts))
-    support = cantilever_support_report(spec, layout.projection, layout.spacing)
+    foam_bed = spec.support_kind == "foam_bed"
+    support = (foam_bed_support_report(spec) if foam_bed
+               else cantilever_support_report(spec, layout.projection, layout.spacing))
     if not any(item.tag == spec.support_ref for item in (*model.walls, *model.floors)):
         conflicts.append(f"approach support reference {spec.support_ref} does not resolve")
     if support["member_status"] == "FAIL":
@@ -30,7 +35,9 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
         conflicts.append("approach support connection exceeds its documented capacity")
     if layout.end >= layout.outlet:
         conflicts.append("catalog sill leaves no exterior approach")
-    if layout.approach_front - layout.thickness <= layout.pan_front + layout.membrane:
+    # A foam-bed tread lies ON its water sheet by design, with no bearers in its path.
+    if (not foam_bed
+            and layout.approach_front - layout.thickness <= layout.pan_front + layout.membrane):
         conflicts.append("catalog approach blocks the membrane drainage path")
     if layout.crest - spec.receiver_depth.meters < layout.seat + spec.receiver_pan_clearance.meters:
         conflicts.append(
@@ -43,6 +50,10 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
         conflicts.append("house/deck movement exhausts flashing overlap")
     unknown.extend(
         (
+            "foam-bed tread: the outlet of its drain slot, the water sheet's laps (under "
+            "the pan lip, onto the next solid) and the box sides' seal need installed "
+            "sections"
+            if foam_bed else
             "AridDek approach is an outer envelope; board/rib and cross-bearer drainage "
             "detailing needs installed sections",
             "catalog outline does not establish installed sweep compression or hinge datum",
@@ -83,11 +94,12 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
     )
     from typehaus.resolve.exterior_door_catalog_fit import (
         catalog_drainage_conflicts,
-        catalog_seat_conflicts,
+        catalog_section_clashes,
     )
 
     conflicts.extend(catalog_drainage_conflicts(placement))
-    seat_conflicts = catalog_seat_conflicts(model, wall, opening, placement)
+    seat_conflicts, coordination = catalog_section_clashes(model, wall, opening, placement)
+    unknown.extend(f"{clash}: cut or coordinate it in the field" for clash in coordination)
     report["seat_interference_status"] = "FAIL" if seat_conflicts else "PASS"
     report["seat_interference_conflicts"] = seat_conflicts
     conflicts.extend(seat_conflicts)

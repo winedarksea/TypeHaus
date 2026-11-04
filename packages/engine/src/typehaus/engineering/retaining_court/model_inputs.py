@@ -265,7 +265,7 @@ def court_wall_tags(ctx: EngineeringContext, walls: list, pair: tuple[str, str],
     tie = None
     if lu and ru:
         la, lb = _axis_ft(ctx, lu), _axis_ft(ctx, ru)
-        for beam, _carried in veneer_beams(ctx):
+        for beam, _carried in veneer_beams(ctx, bedded=True):
             axis = _axis_ft(ctx, beam.tag)
             if axis is None:
                 continue

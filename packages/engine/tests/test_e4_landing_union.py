@@ -83,9 +83,14 @@ def test_catlin_porch_north_line_did_not_move(catlin_model):
     10" (7.25" of wall + 2.75" of air) and must not have re-cut it: widening the gap back
     to a nominal 5" pushes the court 2.25" south and off D-B-PATIO's landing patch.
     """
-    porch = catlin_model.plan.by_tag("FS-SG-PORCH")
-    north = max(p.xy_m[1] for p in (porch.subfloor_outline or porch.outline))
-    assert north == pytest.approx(-10 * INCH, abs=1e-6)
+    def north(tag):
+        floor = catlin_model.plan.by_tag(tag)
+        return max(p.xy_m[1] for p in (floor.subfloor_outline or floor.outline))
+
+    # The balcony still reads the line; the porch deck follows W-B-BRICK's south face, 3/8"
+    # north of it, since the brick moved onto W-SG-BRKBM's new face (2026-11-04).
+    assert north("FS-SG-DECK") == pytest.approx(-10 * INCH, abs=1e-6)
+    assert north("FS-SG-PORCH") == pytest.approx(-9.625 * INCH, abs=1e-6)
 
 
 def test_catlin_patio_door_still_lands_on_the_court(catlin_check_report):

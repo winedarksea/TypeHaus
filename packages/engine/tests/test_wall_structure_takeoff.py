@@ -236,7 +236,8 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
     # to -13.333" under the porch's 2x12 ledger field, so 89.104" tall.
     # 199.625 x 89.104 / 144 = 123.5 SF gross, less the reveals (32.5 + 1.9) = 89.1.
     # The 80-inch patio arch raises the net face to 86.4 square feet.
-    assert 86 < float(row["net_area_sqft"]) < 87
+    # 88.5 since 2026-11-04: both ends 1/2" off the court walls (114.5"..317.5", 203.0").
+    assert 88 < float(row["net_area_sqft"]) < 89
 
 
 def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) -> None:

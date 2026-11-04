@@ -335,9 +335,16 @@ def _opening_frame_bounds(wall: ResolvedWall, opening: object) -> list[tuple[flo
     # are emitted as their intentionally thin filling frame.
     half_width = opening.width_m / 2
     half_depth = (wall.thickness_m / 2) if opening.kind == "rough_opening" else 0.025
+    lo, hi = -half_depth, half_depth
+    if opening.kind == "rough_opening" and getattr(opening, "arch_rise_m", 0.0) <= 1e-6:
+        # A rectangular void is the host's layer band (emit/ifc/architectural._opening_profile),
+        # which a face-aligned wall does not centre on its node line; an arched one is still
+        # swept symmetric about the axis there.
+        offsets = [(p[0] - origin[0]) * nx + (p[1] - origin[1]) * ny
+                   for layer in wall.body_layers() for p in layer.polygon]
+        lo, hi = (min(offsets), max(offsets)) if offsets else (lo, hi)
     return [(center[0] + x * ux + y * nx, center[1] + x * uy + y * ny)
-            for x, y in ((-half_width, -half_depth), (half_width, -half_depth),
-                         (half_width, half_depth), (-half_width, half_depth))]
+            for x, y in ((-half_width, lo), (half_width, lo), (half_width, hi), (-half_width, hi))]
 
 
 def _placeable_height(model: ResolvedModel, item: object, source: object | None) -> float:

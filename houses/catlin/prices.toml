@@ -3972,7 +3972,9 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # attached cladding — though R703.15 does not govern here: it excepts anchored masonry
 # veneer to R703.8, which is why 6" of total foam is fine on this wall when 4" is the limit
 # that killed the ccSPF swap under *Do not reopen*. Do not substitute Type I (10 psi).
-"eps:2.0" = { material = { low = 0.7, high = 1.4 }, labour = { low = 1.1, high = 2.1 } }  # 139.1 SF — sunken-garden brick cavity CI
+# RETIRED 2026-11-04: the court backup's 2" EPS came out when W-SG-BRKBM moved flush onto the
+# house strips (the brick is 1.94" off the XPS now). Kept priced for the revert.
+"eps:2.0" = { material = { low = 0.7, high = 1.4 }, labour = { low = 1.1, high = 2.1 } }  # 0 SF since 2026-11-04 — was 89.0 SF of sunken-garden brick cavity CI
 # ** THE BARE KEY IS A 3-1/2" RATE, AND THE 5-1/2" BAYS NEEDED THEIR OWN ROW (2026-08-31). **
 # The mineral-wool sweep of that date moved 2,884 SF of EXT_2X6 stud bay onto this
 # material, and those bays are 5-1/2". Left on the bare key they would have billed a
@@ -5017,7 +5019,10 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # is one `material_ref` edit on FIREPLACE_BRICK_WYTHE plus un-commenting this line.
 # "FIREPLACE_BRICK_WYTHE:white-brick" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }
 "BASEMENT_BRICK_VENEER" = { low = 19, high = 30, unit = "SF" }  # fallback; 112.2 SF of face
-"BASEMENT_BRICK_VENEER:brown-brick" = { low = 19, high = 30, unit = "SF" }  # 112.2 SF, the whole field
+# Ties stay inside this installed rate: W2.8 adjustable wire (3/16"), ~40 ea, screwed to the
+# backup studs through 4 1/2" of XPS and plywood at 6 1/2" brick-to-stud (IRC 2024 Table
+# R703.8.4(1); an R104.11 alternate under MN 2020, `veneer_anchor/W-B-BRICK`).
+"BASEMENT_BRICK_VENEER:brown-brick" = { low = 19, high = 30, unit = "SF" }  # 88.5 SF net, the whole field
 # RETIRED 2026-09-04 with the Ishtar scheme. Kept for the revert, NOT dead weight to tidy up:
 #   glazed-lapis  90.1 SF   the field. A GLAZED specialty face brick is a special order at
 #                           1.5-2x the body price, with lead time and no local substitute.
@@ -5574,6 +5579,16 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # D-B-SAUNA's full-depth 3/4 x 9 1/4 cedar flat jamb (owner, 2026-11-01): owner-milled stock at
 # the low end, a joiner's fit at the labour band. ESTIMATE.
 "cedar-sauna-trim:door jamb" = { material = { low = 0, high = 4.0 }, labour = { low = 8.0, high = 15.0 } }  # 15.4 LF
+# D-B-PATIO's foam-bed tread (owner, 2026-11-03), by the LF of the 5.2' reveal. ESTIMATE.
+# One 12' Trex Enhance Basics board (~$35-45) yields the 63" tread with a spare; labour fits
+# it between the box sides on the PVC sheet. The 40 psi XPS course is an offcut-sized piece
+# of a 2x8 sheet. The PVC sheet laps under the SureSill lip and onto the beam top.
+"trex-enhance-basics" = { material = { low = 7, high = 9 }, labour = { low = 15, high = 30 } }  # 5.2 LF — the patio tread
+"xps-40" = { material = { low = 2, high = 5 }, labour = { low = 2, high = 4 } }  # 5.2 LF — the tread's 40 psi bed course
+"pvc-door-water-sheet" = { material = { low = 3, high = 6 }, labour = { low = 4, high = 8 } }  # 5.2 LF — the tread's water sheet
+# The patio's box sides: Trex Tide Pool fascia, 0.56 x 7 1/4 x 12', ripped to ~6". The jambs
+# (2 x 6.8') and head (5.3') need THREE 12' boards (~$55-80 each): no two pieces share one. ESTIMATE.
+"trex-tide-pool-fascia" = { material = { low = 6, high = 9 }, labour = { low = 6, high = 12 } }  # 18.9 LF — D-B-PATIO's jambs and head
 
 [trim_paint]
 # NEW 2026-11-03 (decision #113): PT-4 on the painted base and casing by the LF, off
@@ -6521,12 +6536,11 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # four are 22'-4" tall each, so they are a staging job rather than a ladder job, which is where
 # the high end goes.
 "wall_corner" = { material = { low = 3, high = 7 }, labour = { low = 2.5, high = 5 } }  # 89.5 LF — 4 pieces, 22.37' each, at the four house corners. The PBR<->board & batten transition
-# RESEARCHED 2026-09-22 (A6). W-B-BRICK's two soft end joints, 15.7 LF, one BLEND: the east
-# 3/8" is DOWSIL 790 over 1/2" HBR rod (~$1-3/LF of material); the west 4" is Sika Emseal
-# Seismic Colorseal at $904.65-977 per 6.56' stick (Sunshine Supply, 2026-09) — ~$138-149/LF,
-# and 7.9 LF buys TWO sticks, which is what the high end carries. Labour is a mason's small
-# lump, not a per-foot rate. notes/sunken_garden_veneer_beam.md §6g.
-"movement_joint" = { material = { low = 70, high = 125 }, labour = { low = 6, high = 15 } }  # 15.7 LF — MJ-B-BRICK-E/-W
+# W-B-BRICK's two soft end joints (2026-11-04, owner): both 1/2" wide, tooled 1/4" deep over
+# 5/8" closed-cell rod, 14.9 LF. A neutral-cure ASTM C920 Class 50 silicone (DOWSIL 790/795,
+# GE SCS2000, Pecora 890NST as equals) and rod run ~$2-5/LF; the Emseal 4" stick is gone.
+# Labour is a mason's small lump spread over the run. notes/sunken_garden_veneer_beam.md §6k.
+"movement_joint" = { material = { low = 2, high = 5 }, labour = { low = 10, high = 20 } }  # 14.9 LF — MJ-B-BRICK-E/-W
 "drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 132.0 LF — 19.5 LF plain aluminium + 19.5 LF balcony gutter apron (TR-SG-APRON, 2026-10-31) + 80.0 LF garage STEM_TOP_Z_FLASHING + ~13 LF other. The 321.6 LF of derived roof-edge drip (house 149.7 + garage/canopy 171.9) bills as Image II pieces since 2026-10-27: 52124XX Extended Eave and 52126XX Rake sticks in [cladding_trim]. $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
 # 251.8 LF in three runs (81.2 / 96.4 / 74.2): the wall-top closure band, wall-panel metal that
 # the roof edge closes between the wall cladding and the roofing (resolve/roof_edge._closure_segment).

@@ -3620,6 +3620,8 @@
 "footing_beddings/FB-SG-ARCH/soakaway_z0_m": -4.4561125,
 "footing_beddings/FB-SG-ARCH/z0_m": -4.1513125,
 "footing_beddings/FB-SG-ARCH/z1_m": -3.0845125,
+"footing_beddings/FB-SG-BRKBM/z0_m": -4.1513125,
+"footing_beddings/FB-SG-BRKBM/z1_m": -3.0527625,
 "footing_beddings/FB-SG-E1/z0_m": -4.1513125,
 "footing_beddings/FB-SG-E1/z1_m": -3.0845125,
 "footing_beddings/FB-SG-E2/soakaway_z0_m": -4.4561125,
@@ -5108,12 +5110,6 @@
 5.334,
 2,
 "0228df0c8014"
-],
-"geometry/3BF9ZDQPT1/layer:eps-ci": [
--2.5955625,
--0.3413125,
-8,
-"12e4cc821f4a"
 ],
 "geometry/3BF9ZDQPT1/layer:foil-polyiso": [
 -2.5955625,
@@ -17495,9 +17491,9 @@
 ],
 "geometry/CBD206AAAA-flashing-perimeter/body": [
 -2.5955625,
--0.3112161,
+-0.3133646,
 88,
-"251179ff729e"
+"9309d53045f1"
 ],
 "geometry/CBD206AAAA/frame": [
 -2.6304875,
@@ -17553,95 +17549,11 @@
 2,
 "e2c2c0385935"
 ],
-"geometry/CBD206AAAA/installation:approach-cross-bearer-0.0005": [
--2.7468143,
--2.6579143,
-8,
-"a61f08f71a7a"
-],
-"geometry/CBD206AAAA/installation:approach-cross-bearer-0.3317": [
--2.7468143,
--2.6579143,
-8,
-"a61f08f71a7a"
-],
-"geometry/CBD206AAAA/installation:approach-support-0": [
--2.9110987,
--2.7586987,
-8,
-"c35e93301cb9"
-],
-"geometry/CBD206AAAA/installation:ariddek-approach-board-envelope-0": [
--2.6579143,
+"geometry/CBD206AAAA/installation:approach-tread": [
+-2.6389073,
 -2.6121209,
 8,
-"f85d799c5d31"
-],
-"geometry/CBD206AAAA/installation:ariddek-approach-board-envelope-1": [
--2.6579143,
--2.6121209,
-8,
-"f85d799c5d31"
-],
-"geometry/CBD206AAAA/installation:ariddek-approach-board-envelope-10": [
--2.6579143,
--2.6121209,
-8,
-"f85d799c5d31"
-],
-"geometry/CBD206AAAA/installation:ariddek-approach-board-envelope-2": [
--2.6579143,
--2.6121209,
-8,
-"f85d799c5d31"
-],
-"geometry/CBD206AAAA/installation:ariddek-approach-board-envelope-3": [
--2.6579143,
--2.6121209,
-8,
-"f85d799c5d31"
-],
-"geometry/CBD206AAAA/installation:ariddek-approach-board-envelope-4": [
--2.6579143,
--2.6121209,
-8,
-"f85d799c5d31"
-],
-"geometry/CBD206AAAA/installation:ariddek-approach-board-envelope-5": [
--2.6579143,
--2.6121209,
-8,
-"f85d799c5d31"
-],
-"geometry/CBD206AAAA/installation:ariddek-approach-board-envelope-6": [
--2.6579143,
--2.6121209,
-8,
-"f85d799c5d31"
-],
-"geometry/CBD206AAAA/installation:ariddek-approach-board-envelope-7": [
--2.6579143,
--2.6121209,
-8,
-"f85d799c5d31"
-],
-"geometry/CBD206AAAA/installation:ariddek-approach-board-envelope-8": [
--2.6579143,
--2.6121209,
-8,
-"f85d799c5d31"
-],
-"geometry/CBD206AAAA/installation:ariddek-approach-board-envelope-9": [
--2.6579143,
--2.6121209,
-8,
-"f85d799c5d31"
-],
-"geometry/CBD206AAAA/installation:ariddek-stock-profile-trim": [
--2.6579143,
--2.6198143,
-8,
-"69b9d157de7d"
+"e702cd120b35"
 ],
 "geometry/CBD206AAAA/installation:catalog-sill-outline": [
 -2.6305055,
@@ -17650,28 +17562,34 @@
 "b54e8b8f0652"
 ],
 "geometry/CBD206AAAA/installation:exterior-return-head": [
--0.5540375,
+-0.5492115,
 -0.5349875,
 2,
-"4153e3b7698a"
+"4bb43431043e"
 ],
 "geometry/CBD206AAAA/installation:exterior-return-jamb--1": [
 -2.6304875,
--0.5540375,
+-0.5492115,
 2,
-"d55440f4b0b8"
+"4148bceac39a"
 ],
 "geometry/CBD206AAAA/installation:exterior-return-jamb-1": [
 -2.6304875,
--0.5540375,
+-0.5492115,
 2,
-"d55440f4b0b8"
+"4148bceac39a"
+],
+"geometry/CBD206AAAA/installation:foam-bed-course": [
+-2.6648153,
+-2.6365049,
+8,
+"744b40f1b759"
 ],
 "geometry/CBD206AAAA/installation:impermeable-pan-apron": [
--2.7581907,
--2.7499893,
+-2.6394153,
+-2.6359969,
 8,
-"0ed43b79d97a"
+"26e53694c868"
 ],
 "geometry/CBD206AAAA/installation:interior-extension-head": [
 -0.5540375,
@@ -17710,10 +17628,10 @@
 "991c4f36bb4d"
 ],
 "geometry/CBD206AAAA/installation:pan-outlet-drop": [
--2.7504973,
+-2.6365049,
 -2.6309955,
 8,
-"2729ca7b9d7f"
+"dfa000a44ea6"
 ],
 "geometry/CBD206AAAA/installation:stock-headflash-cap-envelope": [
 -0.4460875,
@@ -18333,12 +18251,6 @@
 2,
 "4ae448fa6191"
 ],
-"geometry/CBW102AAAA/layer:eps-ci": [
--2.7797125,
--2.5955625,
-2,
-"4ae448fa6191"
-],
 "geometry/CBW102AAAA/layer:foil-polyiso": [
 -2.7797125,
 -2.5955625,
@@ -18393,29 +18305,23 @@
 6,
 "9589afdcb647"
 ],
-"geometry/CBW103AAAA/layer:eps-ci": [
--2.7797125,
--2.5955625,
-6,
-"1f4fffe57e5f"
-],
 "geometry/CBW103AAAA/layer:waterproofing": [
 -2.7797125,
 -2.5955625,
 6,
-"1f4fffe57e5f"
+"eb252ade79a2"
 ],
 "geometry/CBW103AAAA/layer:xps-a": [
 -2.7797125,
 -2.5955625,
 6,
-"1f4fffe57e5f"
+"eb252ade79a2"
 ],
 "geometry/CBW103AAAA/layer:xps-b": [
 -2.7797125,
 -2.5955625,
 6,
-"1f4fffe57e5f"
+"eb252ade79a2"
 ],
 "geometry/CBW104AAAA/layer:concrete": [
 -2.7797125,
@@ -70191,6 +70097,18 @@
 2,
 "43a4689eff75"
 ],
+"geometry/SGRA02AAAA-i061/body": [
+0.042926,
+1.071626,
+2,
+"43a4689eff75"
+],
+"geometry/SGRA02AAAA-i062/body": [
+0.042926,
+1.071626,
+2,
+"43a4689eff75"
+],
 "geometry/SGRA02AAAA-p00/body": [
 0.023876,
 1.090676,
@@ -70932,8 +70850,8 @@
 "geometry/SGW108AAAA/layer:xps-break": [
 -3.0527625,
 -2.6019125,
-2,
-"bfc90fb72181"
+6,
+"f3ba4189af49"
 ],
 "geometry/SMGEY3KGXE-trim-head-0/body": [
 5.2864905,
@@ -73353,12 +73271,6 @@
 2,
 "27451ade3bd7"
 ],
-"geometry/Z4NRTGEDY5/layer:eps-ci": [
--2.5955625,
--0.3413125,
-6,
-"9057d6e61aa5"
-],
 "geometry/Z4NRTGEDY5/layer:gwb-a": [
 -2.5955625,
 -0.3413125,
@@ -73831,6 +73743,10 @@
 "layout_lines/LL-W-B-ESS-W/top_z_m": 2.7432,
 "layout_lines/LL-W-B-S1/base_z_m": -2.7797125,
 "layout_lines/LL-W-B-S1/top_z_m": -0.3413125,
+"layout_lines/LL-W-B-S2/base_z_m": -2.7797125,
+"layout_lines/LL-W-B-S2/top_z_m": -2.5955625,
+"layout_lines/LL-W-B-S3/base_z_m": -2.7797125,
+"layout_lines/LL-W-B-S3/top_z_m": -2.5955625,
 "layout_lines/LL-W-B-S4/base_z_m": -2.7797125,
 "layout_lines/LL-W-B-S4/top_z_m": -0.3413125,
 "layout_lines/LL-W-B-SA-N/base_z_m": -2.7797125,
@@ -115051,7 +114967,7 @@
 "solids/CR-M-LAUNDRY-24V-RUN/z0_m": 2.2951364,
 "solids/CR-M-LAUNDRY-24V-RUN/z1_m": 2.7394662,
 "solids/D-B-PATIO-FLASH-PERIMETER/z0_m": -2.5955625,
-"solids/D-B-PATIO-FLASH-PERIMETER/z1_m": -0.3112161,
+"solids/D-B-PATIO-FLASH-PERIMETER/z1_m": -0.3133646,
 "solids/D-G-OVERHEAD-FLASH-PERIMETER/z0_m": -0.3048,
 "solids/D-G-OVERHEAD-FLASH-PERIMETER/z1_m": 1.3977276,
 "solids/D-G-OVERHEAD-TRIM-HEAD-1/z0_m": 1.22936,
@@ -118608,6 +118524,10 @@
 "solids/RL-SG-PORCH-BAL60/z1_m": 1.071626,
 "solids/RL-SG-PORCH-BAL61/z0_m": 0.042926,
 "solids/RL-SG-PORCH-BAL61/z1_m": 1.071626,
+"solids/RL-SG-PORCH-BAL62/z0_m": 0.042926,
+"solids/RL-SG-PORCH-BAL62/z1_m": 1.071626,
+"solids/RL-SG-PORCH-BAL63/z0_m": 0.042926,
+"solids/RL-SG-PORCH-BAL63/z1_m": 1.071626,
 "solids/RL-SG-PORCH-BAL7/z0_m": 0.042926,
 "solids/RL-SG-PORCH-BAL7/z1_m": 1.071626,
 "solids/RL-SG-PORCH-BAL8/z0_m": 0.042926,

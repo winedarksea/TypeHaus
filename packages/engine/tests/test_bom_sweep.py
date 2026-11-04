@@ -80,7 +80,8 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # 40.41 since 2026-10-31: the doorway closed to the stair guards' lines, 2 3/4" inside
     # each flight edge, so RL-SG-PORCH and -NE each gained 2 3/4" (one post per junction).
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(38.8, abs=0.1)
-    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(40.41, abs=0.1)
+    # 40.6 since 2026-11-04: the porch deck's north edge followed W-B-BRICK 3/8" north.
+    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(40.6, abs=0.1)
     # 27.3 for RAILING-INT-STAIR-GUARD: RL-M-STAIRHEAD's 4 1/2" and RL-A-STAIR's run joined the
     # group, but the well's east leg is inside the roof past x=29'-4 1/2" (a 42" guard's top
     # at 282" meets the roof underside there) and carries nothing — a raked ToRoof partition,
@@ -425,7 +426,8 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
     court = [r for r in rows if any(tag.startswith("FB-SG-") for tag in r["tags"])]
     assert court and all(not r["drain_tile"] and float(r["drain_tile_ft"]) == 0 for r in court)
     assert {tag for r in court for tag in r["tags"] if tag.startswith("FB-SG-")} == {
-        "FB-SG-W1", "FB-SG-E1", "FB-SG-W2", "FB-SG-E2", "FB-SG-S", "FB-SG-ARCH"}
+        "FB-SG-W1", "FB-SG-E1", "FB-SG-W2", "FB-SG-E2", "FB-SG-S", "FB-SG-ARCH",
+        "FB-SG-BRKBM"}
 
 
 def test_drainage_bills_the_whole_storm_run_by_the_foot(catlin_model, bom):

@@ -53,7 +53,9 @@ from typehaus.resolve.solid_categories import in_slab_family
 # 2026-10-29 D-M-ENTRY's derived RO: its 37-5/8 x 82 unit replaces the 36 x 80 void,
 # +1.43 sf of door from wall, +0.18 UA, +15.4 heating, +2.7 cooling.
 # 29,997.3 before the door holds released (2026-10-29): D-M-BALC bills its published unit.
-_HEATING_BTUH = 30_170.7
+# The court backup's 2" EPS came off (2026-11-04, the brick moved flush onto the strips):
+# heating 30,170.7 -> 30,182.8, cooling 20,231.9 -> 20,337.4.
+_HEATING_BTUH = 30_182.8
 # SENSIBLE, and the tonnage is the TOTAL over 12,000. The Manual-J-shaped cooling pass
 # (hourly glass at one house-wide peak hour + AED excursion, internal gains, occupant
 # latent) moved this from 22,154.4 and the tonnage from 1.8462: the hourly walk took 5.2
@@ -64,9 +66,9 @@ _HEATING_BTUH = 30_170.7
 # The same west glass lifts the day's average more than its 10:30 peak, so the AED
 # excursion falls 1,070 -> 740 and cooling 21,847 -> 21,707 while the glass peak rises 162.
 # French pairs: +90 conduction -1,452.2 peak glass -183.2 AED = -1,545.4 sensible.
-_COOLING_SENSIBLE_BTUH = 20_231.9
+_COOLING_SENSIBLE_BTUH = 20_337.4
 _LATENT_BTUH = 1_400.0
-_COOLING_TONS = 1.8027
+_COOLING_TONS = 1.8115
 _SOLAR_PEAK_BTUH = 12_076.0
 _SOLAR_PEAK_HOUR = 10.0
 _AED_EXCURSION_BTUH = 487.3
@@ -80,12 +82,14 @@ _COMPONENTS = (
     # (290.8 / 48.673).
     # W-B-S2-FR/-S3-FR stop at their plates under W-M-S1/-S2's band (#107, 2026-10-31): the
     # band was counted twice, −25.2 sf.
-    ("walls", 3157.5, 72.15),
+    # The court backup's EPS off (2026-11-04): the proud walkout loses R-8 (11.677 -> 11.766)
+    # and the shell it bounds re-cuts walls, roof and glass by a few sf.
+    ("walls", 3151.6, 72.30),
     ("foundation_walls", 775.5, 28.604),
-    ("foundation_walls_above_grade", 255.7, 11.677),
-    ("roof", 1547.9, 29.103),
+    ("foundation_walls_above_grade", 255.7, 11.766),
+    ("roof", 1544.4, 29.059),
     ("slab", 1296.0, 25.468),
-    ("windows", 293.6, 49.171),
+    ("windows", 293.65, 49.381),
     # Two revised catalog pairs use assembled unit area, not their wider framed ROs. D-M-BALC
     # left its held 60x80 void for its 62 9/16 x 82 unit (2026-10-29): +2.29 sf.
     ("doors", 128.30, 25.66),
@@ -364,7 +368,7 @@ def test_the_above_grade_band_sees_air(catlin_model_ro) -> None:
     proud = by_kind["foundation_walls_above_grade"]
     buried = by_kind["foundation_walls"]
     assert proud.area_ft2 == pytest.approx(255.7, rel=0.005)
-    assert proud.ua_btu_per_hour_f == pytest.approx(11.676, rel=0.005)
+    assert proud.ua_btu_per_hour_f == pytest.approx(11.766, rel=0.005)
     assert proud.heating_delta_f == pytest.approx(85.0)
     assert buried.area_ft2 == pytest.approx(775.5, rel=0.005)
     assert buried.ua_btu_per_hour_f == pytest.approx(28.604, rel=0.005)

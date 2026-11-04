@@ -76,18 +76,20 @@ ROWS: tuple[ItemRow, ...] = (
             "a cast beam carrying a masonry wythe — flexure, shear, torsion, "
             "deflection and end anchorage",
             "ACI 318-19 §9, §22.7, §24.2, §25.4.3",
-            "no footingless wall in this plan carries another wall on its top",
+            "no footingless wall in this plan carries another wall on its top over a "
+            "span (a wall bedded on stone is a footing, not a span)",
             "Cast beam carrying a masonry veneer",
             ("ACI 318-19 §9.5", "ACI 318-19 §22.7", "ACI 318-19 §24.2.2",
              "ACI 318-19 §25.4.3", "TMS 402-22 §13.1.2.3")),
     ItemRow("veneer_anchor", "veneer_anchor",
-            "The anchors tying a beam-borne masonry wythe back across its insulated standoff.",
-            "masonry veneer anchors across the insulated standoff — anchor capacity, "
-            "buckling and the wythe's bending between rows",
-            "TMS 402-16 §12.2; IRC R703.8.4",
-            "no masonry wythe in this plan stands on a veneer beam",
-            "Masonry veneer anchorage over an insulated standoff",
-            ("TMS 402-16 §12.2", "IRC R703.8.4")),
+            "The ties of an anchored masonry wythe standing past the adopted IRC tie table.",
+            "masonry veneer ties past the adopted IRC Table R703.8.4(1) — an R104.11 "
+            "alternate on a later edition's row, or a TMS 402 anchor design",
+            "IRC R703.8.4, Table R703.8.4(1); IRC R104.11; TMS 402-16 §12.2",
+            "every anchored masonry wythe in this plan is inside the adopted IRC's "
+            "Table R703.8.4(1)",
+            "Masonry veneer ties beyond the IRC tie table",
+            ("IRC R703.8.4", "IRC Table R703.8.4(1)", "IRC R104.11", "TMS 402-16 §12.2")),
     ItemRow("thermal_break", "thermal_break_transfer",
             "An isolation joint between two separately founded pours — the board and its thrust.",
             "an isolation board between separately founded pours — the board's "

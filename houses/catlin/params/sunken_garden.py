@@ -72,6 +72,7 @@ from typehaus import (
     Post,
     pt,
     PublishedSpan,
+    RoughOpening,
     Railing,
     RailingKind,
     ReinforcementSpec,
@@ -494,14 +495,17 @@ _y_wall_end = -(SPEC.house_below_grade_face_in + SPEC.closure_break_in) / 12.0  
 _y_closure_break = _y_wall_end + SPEC.closure_break_in / 24.0  # -5.435"
 # The veneer grade beam's isolation board, and the axis that places it.
 #
-# The beam's CONCRETE north face has to land exactly on `_y_ax_n` (-10"), the line
-# FT-B-S2/S3's south face used to hold: any further south and W-B-BRICK cannot reach a 6"
-# cavity, any further north and the two pours touch. The 2" break therefore sits NORTH of
-# -10", in the 2" those footings give up (their `offset` in params/foundations.py), which
-# puts the 14" section at -8"..-22" and its axis at -15". Both derived off `_y_ax_n`, so
-# trimming the footing and moving the beam can never drift apart.
+# ** FLUSH ON THE HOUSE STRIPS SINCE 2026-11-04 (owner). ** The board sits on FT-B-S1..S4's
+# south face (-4", params/foundations._GARDEN_END_TOE_TRIM, transcribed), the concrete on
+# the board (-6"..-18"), and W-B-BRICK's back on the concrete's north face. That puts the
+# brick 6 1/2" off the backup studs: IRC 2024 Table R703.8.4(1)'s W2.8 row (<= 6 5/8"),
+# with 1/8" to spare (notes/sunken_garden_veneer_beam.md §6k). The beam is bedded on
+# stone (FB-SG-BRKBM), so it no longer has to reach the side walls' toes as a span.
+# Derived off the strip face so the strip and the beam can never drift apart.
+_HOUSE_STRIP_FACE_IN = -4.0
 _break_in = 2.0
-_y_ax_brkbm = _y_ax_n - (SPEC.wall_thickness_in - _break_in) / 24.0  # -1.25' = -15"
+_y_brkbm_conc_n = (_HOUSE_STRIP_FACE_IN - _break_in) / 12.0       # -6": brick's back
+_y_ax_brkbm = (_HOUSE_STRIP_FACE_IN - (SPEC.wall_thickness_in + _break_in) / 2.0) / 12.0  # -11"
 _brkbm_half = (SPEC.wall_thickness_in + _break_in) / 24.0  # half the 14" section
 # The porch's front edge: the axis of the two front beams, of RL-SG-PORCH's south run and
 # of the porch deck itself, at -9.5'.
@@ -526,16 +530,14 @@ _y_ax_mid = _y_ax_front - SPEC.side_wall_south_extension_in / 12.0  # -11.0'
 _y_in_s = _y_in_n - SPEC.clear_length_ft
 _y_ax_s = _y_in_s - _half
 
-# ============================================================================
-# ** THE PORCH DECK'S NORTH EDGE IS `_y_in_n`, OVER THE BRICK (2026-09-16). **
-# ============================================================================
-# The deck reaches the cladding line so D-M-BALC's 36" R311.3 patch is covered (~89%;
-# pulled 1" off the brick face at -14.685" it was 78%, a FAIL). The joists clear
-# `W-B-BRICK` VERTICALLY: its top is -8", their soffit -7 1/4". Nothing grades that gap —
-# `structural.member_interference` ignores wall layers — so hold the two numbers together.
-# Kept as its own name for what stands ON the deck: `_PORCH_OUTLINE`, the guard path and
-# its NE stub, and the joists' north cantilever.
-_y_porch_deck_n = _y_in_n
+# ** THE PORCH DECK'S NORTH EDGE IS W-B-BRICK'S SOUTH FACE (2026-11-04). **
+# The deck reaches toward the cladding so D-M-BALC's 36" R311.3 patch is covered. It stood on
+# `_y_in_n` (-10") while the brick was at -10.06..-13.685"; the brick moved north to
+# -6.0..-9.625" with W-SG-BRKBM, so the deck follows it 3/8" north rather than stop short of
+# it. The joists clear the brick VERTICALLY (top -13 1/3", soffit -11 1/4"); nothing grades
+# that gap — `structural.member_interference` ignores wall layers — so hold the two together.
+_VENEER_WYTHE_IN = 3.625                                   # BASEMENT_BRICK_VENEER, transcribed
+_y_porch_deck_n = _y_brkbm_conc_n - _VENEER_WYTHE_IN / 12.0  # -9.625"
 
 # ** THE COURT SURFACE. ** -109 7/16": the basement floor plane less the flood step,
 # which is now zero.
@@ -627,13 +629,9 @@ _grade_beam_bottom = _wall_bottom - inch(SPEC.footing_thickness_in)
 # underside and the bottom IS the garden slab's, so the beam exactly fills the void already
 # between them. If either moves, this beam has to be re-derived rather than nudged.
 _veneer_beam_top = inch(-102.4375)          # = W-B-BRICK.bottom_elevation
-# ** THE BOTTOM IS HELD, NOT DERIVED, SINCE THE COURT CAME BACK UP (2026-09-05). ** It used
-# to read `_court_top - rim_thickness_in`, which was the garden slab's underside; with the
-# court flush again that expression gives -112 15/16" and a 10 1/2" beam. This beam spans
-# 17'-0" (19'-0" until 2026-09-22) and ACI 318-19 Table 9.3.1.1 wants L/16 minimum depth on
-# a simple span before deflection has to be computed, so 10 1/2" is not a shallower beam, it
-# is a different design. 17 3/4" is what notes/sunken_garden_veneer_beam.md Sec. 3 actually
-# grades. The beam is now buried 7 1/4" below the court rather than forming its north edge.
+# ** THE BOTTOM IS HELD, NOT DERIVED. ** 17 3/4" was sized as a span (§3, §6j). Bedded on
+# FB-SG-BRKBM's stone since 2026-11-04 it spans nothing, and the depth is kept: it is the
+# section the board, the dowels and the bed were all drawn to, and 7 1/4" below the court.
 _veneer_beam_bottom = inch(-120.1875)
 # Vertical steel on the three retaining walls' stems, on the RETAINED face — that is
 # where a cantilever puts its tension, and getting it on the wrong face is the classic
@@ -708,14 +706,10 @@ _BRACED_STEM_STEEL = ReinforcementSpec(
     source="IRC Table R404.1.2(8), braced top and bottom; 3\" cover with the rest of the court (see _RET_STEM_STEEL)",
 )
 
-# W-SG-BRKBM's steel (2026-10-10, notes/sunken_garden_veneer_beam.md §6j). The beam's ends
-# sit on FT-SG-W1/E1's 3'-0" toes, so it spans 11'-0" between the toe faces, not 17'-0"
-# between the walls. At that span Tu is 0.94 φT_th: ACI 318-19 §22.7.4.1 lets torsion be
-# neglected, and with it the closed hoops @ 5", the side bars, the fy hooks into the walls,
-# their confining ties and the end-fixity claim. What is left is an ordinary simple span:
-# 2 #5 bottom (§9.6.1.3: As ≥ 4/3 As,req), 2 #4 straight hangers, #3 cage ties (Vu is under
-# §9.6.3.1's Av,min trigger), and 2 #5 dowels per end cast straight in the footing toe —
-# §9.7.3.8.1's extension of the bottom row into its support, lapped class B.
+# W-SG-BRKBM's steel (2026-10-10, notes/sunken_garden_veneer_beam.md §6j), KEPT AS NOMINAL
+# since the beam was bedded on stone (2026-11-04, §6k): a continuously supported veneer footing
+# needs no span steel, but the cage ties it to the toes and holds it together over a soft spot
+# in the bed. Nothing grades it any more; it is not re-sized down either.
 _VENEER_BEAM_STEEL = ReinforcementSpec(
     bars=(
         BarSpec(role="top-y", bar=4, count=2,
@@ -725,12 +719,12 @@ _VENEER_BEAM_STEEL = ReinforcementSpec(
         BarSpec(role="dowels", bar=5, count=2, embedment=inch(12.0), projection=inch(30.0),
                 note="per end, cast horizontal in FT-SG-W1/E1 (placement 1) through the toe face; 12 + 30 = a 3'-6\" bar, and the 30\" clears the 27.58\" class B lap to bottom-y"),
         BarSpec(role="ties", bar=3, spacing=inch(12.0),
-                note="cage ties; ACI 318-19 §9.6.3.1 asks no shear steel at Vu 4,210 lb"),
+                note="cage ties, nominal"),
     ),
     # 3": the soffit between the toes is cast on the bed (ACI 318-19 Table 20.5.1.3.1), as
     # every other court pour is. It was 2" until 2026-10-11; the span does not miss the inch.
     cover=inch(3.0),
-    source="notes/sunken_garden_veneer_beam.md §6j",
+    source="notes/sunken_garden_veneer_beam.md §6j (sized as a span); nominal since §6k (bedded)",
 )
 
 _RET_REBAR = '#5 @ 10" o.c.'
@@ -913,38 +907,31 @@ WALLS = [
     # was ~R-0.4 over 16.0 SF where R-10 was meant, into a footing whose underside is level
     # with the court floor and whose frost protection is the R403.3 wings.
     #
-    # **Why a beam and not a better bed.** A strip bearing on soil cannot be had: the wythe
-    # sits inside FT-B-S2/S3's 10" toe, and a separate pour bottoming on the wing plane has
-    # to stay outside the 45 deg line off their bearing edge — y = -12.76" — which pushes the
-    # brick to -15.95" and opens an 11.9" slot between it and the house. A beam SPANNING
-    # between FT-SG-W1/E1's toes needs no soil bearing in the house's zone, so that
-    # constraint does not apply, and the wythe lands at -10.05" for a 6" cavity.
+    # ** BEDDED ON STONE, A SOIL-SUPPORTED VENEER FOOTING (owner, 2026-11-04, note §6k). **
+    # From 2026-10-10 it was graded as an 11'-0" span between FT-SG-W1/E1's toes, its torsion
+    # at 0.99 of ACI's threshold on a ±1/4" bearing tolerance. It was always cast on the
+    # bed, so the span was an assumption; FB-SG-BRKBM now states the bed, and
+    # `engineering/veneer_beam` skips a wall a bedding hosts. Its ends still run into the toes
+    # with the steel kept as nominal. Nothing grades its bearing (~0.5 ksf); nor W-SG-ARCH's.
     #
-    # **It reinforces nothing, and that is worth saying.** The obvious hope is that a north
-    # strut helps the side walls. It does not: W-SG-W1/E1 are already restrained top and
-    # bottom (porch beams pocketed in HUCQ410-SDS hangers, deck diaphragm, garden slab at
-    # their feet) and PASS `structural.foundation_unbalanced_fill` on the last row of
-    # IRC Table R404.1.2(8). This beam earns its 1.0 cy on the thermal argument alone.
+    # Flush on the house strips: board -4"..-6", concrete -6"..-18", and W-B-BRICK's back on
+    # the concrete's north face, 6 1/2" off the backup studs (`_y_ax_brkbm` above).
     #
-    # **17 3/4" deep, between two surfaces that were already there**: its top IS W-B-BRICK's
-    # underside (-8'-6 7/16") and its bottom is held at -10'-0 3/16". The house's frost wings
-    # stay CONTINUOUS underneath — the beam delivers nothing to the compressible foam.
+    # **It reinforces nothing.** W-SG-W1/E1 are restrained top and bottom and PASS
+    # `structural.foundation_unbalanced_fill` on their own; this beam is the brick's footing
+    # and its thermal break, nothing more.
     #
-    # **It bears on FT-SG-W1/E1's toes and spans 11'-0" between them** (2026-10-10, note
-    # §6j). Its lower 10 3/4" runs into the toe zone for 3'-6" at each end, so the span the
-    # engine grades is between the toe faces, not the walls. The wythe's 4.1" eccentricity
-    # (kept for the 6" cavity) then twists the section below ACI's §22.7.4.1 threshold, which
-    # is why `_VENEER_BEAM_STEEL` is a plain simple-span cage. Placement 2 still casts it with
-    # the side walls; no end fixity is claimed and none is needed (ℓ/600 at 0.08).
+    # **17 3/4" deep**: its top IS W-B-BRICK's underside (-8'-6 7/16"), its bottom is held at
+    # -10'-0 3/16" on the bed.
     #
     # No Footing of its own: a `FT-SG-BRKBM` solid would land inside the excavation and
-    # reopen the frost question ASCE 32 closes.
+    # reopen the frost question ASCE 32 closes; the bed is the frost answer, as for W-SG-ARCH.
     # ** WHICH FACE THE BOARD LANDS ON IS NOT OBVIOUS, AND IT IS THE WHOLE POINT. ** This
     # beam is its own open wall-graph chain (both ends `open_end`), so
     # `resolve/orientation.py` hands it the fallback outward sign rather than a winding's,
     # and that sign plus the assembly's layer ORDER is what decides whether the 2"
     # `xps-break` builds north or south. Get either wrong and the concrete lands hard against
-    # FT-B-S2/S3 — the exact contact this beam exists to remove — at 0 FAIL, because nothing
+    # FT-B-S1..S4 — the exact contact this beam exists to remove — at 0 FAIL, because nothing
     # grades a thermal break for continuity. The face is pinned by
     # `test_the_veneer_beam_isolates_the_house_footing`; do not trust the sign.
     FoundationWall(uid="SGW108AAAA", tag="W-SG-BRKBM", start_node="N-SG-BMW",
@@ -952,9 +939,6 @@ WALLS = [
                    top_elevation=_veneer_beam_top, bottom_elevation=_veneer_beam_bottom,
                    unbalanced_fill=inch(0),
                    lateral_support="top_and_bottom",
-                   # ±1/4" on W-B-BRICK's bearing line (AN-SG-PLACEMENTS); torsion is graded
-                   # at e + 1/4" = 0.99 φT_th, so the tolerance is the whole margin.
-                   bearing_tolerance=inch(0.25),
                    reinforcement=_VENEER_BEAM_STEEL),
     # Garden retaining run (to just above grade), the U south of the porch.
     #
@@ -1287,7 +1271,14 @@ _STRIP_BY_WALL = {
 # steel there and the court's south tie.
 _SIDE_REACH_FT = (_RETAINING_FOOTING_WIDTH_IN / 2.0 - _RETAINING_FOOTING_OFFSET_IN) / 12.0
 _SOUTH_REACH_FT = (_STRIP_BY_WALL["W-SG-S"][0] / 2.0 + _STRIP_BY_WALL["W-SG-S"][1]) / 12.0
+# ** FT-SG-W1/E1 RUN 0.685" PAST THEIR WALLS' NORTH END, TO -6" (2026-11-04). ** The veneer
+# beam's ends land there now, and it puts the footing-level boards (TB-SG-W1/E1) on the beam
+# board's plane, -4"..-6", flush on the house strips. The stem boards stay at the wall end
+# and stand on the extension, so the board lines still overlap.
+_N_TOE_EXT_IN = (_y_brkbm_conc_n - _y_wall_end) * 12.0
 _EXTENSIONS = {
+    "W-SG-W1": {"start_extension": inch(_N_TOE_EXT_IN)},     # NW -> MW: north is the start
+    "W-SG-E1": {"end_extension": inch(_N_TOE_EXT_IN)},       # ME -> NE: north is the end
     "W-SG-S": {"start_extension": ft(_SIDE_REACH_FT), "end_extension": ft(_SIDE_REACH_FT)},
     "W-SG-W2": {"end_extension": ft(-_SOUTH_REACH_FT)},      # MW -> SW: south is the end
     "W-SG-E2": {"start_extension": ft(-_SOUTH_REACH_FT)},    # SE -> ME: south is the start
@@ -1331,7 +1322,7 @@ _BEDDING_UID = {"FT-SG-W1": "SGB002AAAA", "FT-SG-E1": "SGB003AAAA",
 # own, so their stone lets go into the retaining bed it abuts at the grade-beam line.
 _STONE_TO = {"FT-SG-W1": "FB-SG-W2", "FT-SG-E1": "FB-SG-E2"}
 # W2/E2 also take the house's court-face beds through FD-B-S-LEAD-W/E (2026-11-02).
-_STONE_FROM = {"FT-SG-W2": ("FB-SG-W1", "FB-B-S1", "FB-B-S2", "FD-B-S-LEAD-W"),
+_STONE_FROM = {"FT-SG-W2": ("FB-SG-W1", "FB-SG-BRKBM", "FB-B-S1", "FB-B-S2", "FD-B-S-LEAD-W"),
                "FT-SG-E2": ("FB-SG-E1", "FB-B-S3", "FB-B-S4", "FD-B-S-LEAD-E")}
 # ** THE COURT'S RELIEF IS AT W1 (2026-09-23), where FD-SG-OVERFLOW starts in its stone on the
 # west heel. The lip is the field profile's underside, -127 7/16": the body spills into that
@@ -1436,6 +1427,22 @@ FOOTING_BEDDING.append(
     )
 )
 
+# W-SG-BRKBM's bed (2026-11-04, note §6k): the veneer beam is a soil-supported footing on
+# this stone, not a span between the toes. FB-SG-ARCH's section on the same wall-bed plane,
+# one concrete width (12") wide on the beam's concrete. Pipeless and with NO soakaway course
+# of its own, as FB-SG-W1/E1: flood water is kept off the basement. Its stone runs into
+# FB-SG-W1's at the west toe and lets go, as W1's does, into FB-SG-W2's course.
+FOOTING_BEDDING.append(
+    FootingBedding(
+        uid="W0JG1DDWET", tag="FB-SG-BRKBM", host_ref="W-SG-BRKBM",
+        width=inch(SPEC.wall_thickness_in),
+        undercut=_veneer_beam_bottom - _SG_WALL_BED_BOTTOM,
+        non_frost_susceptible=True,
+        drain_tile=False,
+        discharge_ref="FB-SG-W2",
+    )
+)
+
 # --- garden floor: a concrete RIM around an open gravel field ---------------------
 #
 # ** ONE SLAB WITH A HOLE, NOT FOUR RECTANGLES, AND THAT IS THE WHOLE TRICK. **
@@ -1526,11 +1533,10 @@ GARDEN_FLOOR_OPENINGS = [
                           pt(ft(_field_x_e), ft(_y_ax_mid - 0.5)),
                           pt(ft(_field_x_e), ft(_y_ax_mid + 0.5)),
                           pt(ft(_field_x_w), ft(_y_ax_mid + 0.5)))),
-    # And the same cut around W-SG-BRKBM at the north end. The beam drops through the rim's
-    # full 3 1/2" (its underside IS the rim's), so the slab cannot pour through it either —
-    # it dies into the beam's south face and the beam becomes the court floor's north edge.
-    # The full 14" section, not just the concrete: the 2" XPS break is north of the rim
-    # anyway, and cutting the section as one keeps this outline derived off one number.
+    # And the same cut around W-SG-BRKBM at the north end: the rim's net north edge is the
+    # beam's south face (-18" since 2026-11-04). The OUTLINE stays on `_y_in_n` (-10") and is
+    # voided here, because `code.R311_3_exterior_landing` reads outlines and ignores voids:
+    # stopped at -18" the outline left D-B-PATIO with no landing.
     FloorOpening(uid="SGO003AAAA", tag="FO-SG-BRKBM", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(_x_in_w), ft(_y_ax_brkbm - _brkbm_half)),
                           pt(ft(_x_in_e), ft(_y_ax_brkbm - _brkbm_half)),
@@ -1599,9 +1605,7 @@ GARDEN_FLOOR_OPENINGS = [
     # `footing_width/2` from the axis and only `footing_width/2 - _half` past the wall's
     # court face. Derived from the same field, so a footing-width change moves the cut.
     #
-    # The north end stops on the veneer beam's south face rather than on the court's own
-    # north edge, because `FO-SG-BRKBM` already voids the full width of that last 1'-0" and
-    # two openings over one piece of floor is a hole cut twice.
+    # The north end stops on the veneer beam's south face, where FO-SG-BRKBM takes over.
     FloorOpening(uid="SGO007AAAA", tag="FO-SG-TOE-N-W", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(_x_in_w), ft(_y_ax_mid)),
                           pt(ft(_x_ax_w + _ret_toe_reach_ft), ft(_y_ax_mid)),
@@ -2773,7 +2777,8 @@ _board_z = _wall_bottom - inch(_HOUSE_FOOTING_DEPTH_IN / 2.0)
 # nothing reconciles them, so `test_catlin_contract_m3` pins every site to these numbers.
 # `Layer` has no compressive field: the beam's 15 psi lives in SG_VENEER_BEAM_14's prose.
 # Basis 6 (2026-09-21, owner): ASTM C578 Type X, 15 psi (FOAMULAR 150 class) on all five
-# boards — the closure boards at 2.5", the veneer beam's at 2" (on FT-B-S2/S3's toe trim).
+# boards — the stem closure boards at 2.5", the veneer beam's and (since 2026-11-04) the two
+# footing-level boards at 2", all three on one plane flush on the house strips (-4"..-6").
 THERMAL_BREAK_IN = SPEC.closure_break_in
 THERMAL_BREAK_PSI = 15.0
 VENEER_BEAM_BREAK_IN = 2.0
@@ -2808,12 +2813,12 @@ _BOARD_PRODUCT = dict(
 #    that joint; the model cannot draw a lap.
 # 2. NO BOARD IS IN A POUR ANY MORE (basis 7). Every court face that meets a board is cast
 #    against a greased, pull-rodded BLOCKOUT of the board's own thickness, stripped, and the
-#    board is set into the slot afterwards: TB-SG-W1/E1 2.5" x 8" x 84", TB-SG-*-STEM 2.5" x
-#    12" x 109 7/16", W-SG-BRKBM's 2.0" x 17 3/4" x 18'-0", pulled up out of the stone side.
+#    board is set into the slot afterwards: TB-SG-W1/E1 2" x 8" x 84", TB-SG-*-STEM 2.5" x
+#    12" x 109 7/16", W-SG-BRKBM's 2.0" x 17 3/4" x 18'-0", against the house strips' face.
 #    A board cast against locks in the pour's squeeze for good; the beam's alone was 41,162 lb,
 #    76% of the 54,105 lb that put basis 6 OVER. Nothing floats and nothing is braced.
-# 3. The beam's board depends on FT-B-S2/S3's 2" toe trim — a HOLD POINT before the house
-#    footing pour, not after.
+# 3. The beam's and footing boards depend on FT-B-S1..S4's -4" south face — a HOLD POINT
+#    before the house footing pour, not after.
 # 4. The boards are set on the WALLS visit (`tasks.toml` checkpoint `boards`, after `strip`),
 #    not the footings' `forms`: the footing blockouts stay in through the wall pour, and
 #    every board goes in once the walls are stripped. `AN-SG-BLOCKOUTS` is the drawing's copy.
@@ -2825,6 +2830,8 @@ _BOARD_PRODUCT = dict(
 _BOARD_AT = (("W1", _x_ax_w, "FT-B-S1", "W-B-S1", +1.0),
              ("E1", _x_ax_e, "FT-B-S4", "W-B-S4", -1.0))
 _stem_height = _porch_top - _wall_bottom
+# The footing-level boards' centre: mid-way between the strips' face and the extended toes.
+_y_footing_break = (_HOUSE_STRIP_FACE_IN / 12.0 + _y_brkbm_conc_n) / 2.0   # -5"
 ISOLATION_BOARDS = [
     board
     for i, (name, x, house_footing, house_wall, court) in enumerate(_BOARD_AT)
@@ -2832,8 +2839,8 @@ ISOLATION_BOARDS = [
         IsolationBoard(
             uid=f"SGTB0{2 * i + 1}AAAA", tag=f"TB-SG-{name}",
             position=pt(ft(x + court * _RETAINING_FOOTING_OFFSET_IN / 12.0),
-                        ft(_y_closure_break)),
-            axis="y", thickness=inch(THERMAL_BREAK_IN), height=inch(_HOUSE_FOOTING_DEPTH_IN),
+                        ft(_y_footing_break)),
+            axis="y", thickness=inch(VENEER_BEAM_BREAK_IN), height=inch(_HOUSE_FOOTING_DEPTH_IN),
             length=inch(_RETAINING_FOOTING_WIDTH_IN), elevation=_board_z,
             connects=(f"FT-SG-{name}", house_footing), **_BOARD_PRODUCT),
         # The wall end: flush with both faces of the 12" pour, so the board is a form face.
@@ -3163,7 +3170,7 @@ BALCONY_REAR_FLASH = [
 SEQUENCE_NOTES = [
     Annotation(
         uid="SGAN01AAAA", tag="AN-SG-PLACEMENTS", position=pt(ft(_cx), ft(-20)),
-        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND STRUT: the five strip footings FT-SG-W1/E1/W2/E2/S and the 12in x 12in strut W-SG-ARCH in one placement, all on one bed plane — the court loop is closed before any wall is formed. FT-SG-W2/E2's 6 #4 longitudinals are spliced across both of their joints, into FT-SG-W1/E1 and into FT-SG-S (a 50in #4 splice bar beside each, class B each side). The court has no column pads since 2026-09-22 — the porch spans wall to wall on two ledgers — so nothing in this court is dug below the wall beds. (2) WALLS AND VENEER BEAM: all five court walls and W-SG-BRKBM, one form height (every wall top is the porch datum 0ft 0in), one strip-and-set. W-SG-BRKBM IS CAST MONOLITHIC WITH THE TWO SIDE WALLS, NOT DOWELLED INTO THEM (settled 2026-09-14): it is a blockout inside this same form between -8ft 6-7/16in and -10ft 0-3/16in, bearing on FT-SG-W1/E1's toes and spanning the 11ft 0in between them; its 2 #4 hangers run straight into the walls, its 2 #5 bottom bars lap (contact, beside them) the 2 #5 dowels cast in each toe, and its #3 cage ties stop at the toe faces. LAY W-B-BRICK'S FIRST COURSE ON ITS DRAWN BEARING LINE WITHIN +/-1/4in: the beam carries no torsion steel, and is graded at that tolerance (0.99 of the ACI 318-19 22.7.4.1 threshold). It was named in NO placement until now, while notes/sunken_garden_veneer_beam.md called it cast in one section and chipped-and-dowelled in another - and there is no existing pour to chip, because this placement is where those side walls are themselves cast. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — every thermal-break blockout is set against its face (AN-SG-BLOCKOUTS; the dowels that once needed it are deleted). (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all four 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
+        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND STRUT: the five strip footings FT-SG-W1/E1/W2/E2/S and the 12in x 12in strut W-SG-ARCH in one placement, all on one bed plane — the court loop is closed before any wall is formed. FT-SG-W2/E2's 6 #4 longitudinals are spliced across both of their joints, into FT-SG-W1/E1 and into FT-SG-S (a 50in #4 splice bar beside each, class B each side). The court has no column pads since 2026-09-22 — the porch spans wall to wall on two ledgers — so nothing in this court is dug below the wall beds. (2) WALLS AND VENEER BEAM: all five court walls and W-SG-BRKBM, one form height (every wall top is the porch datum 0ft 0in), one strip-and-set. W-SG-BRKBM IS CAST MONOLITHIC WITH THE TWO SIDE WALLS, NOT DOWELLED INTO THEM (settled 2026-09-14): it is a blockout inside this same form between -8ft 6-7/16in and -10ft 0-3/16in, cast on the drained stone of FB-SG-BRKBM (a soil-supported veneer footing; its ends run into FT-SG-W1/E1's toes) with its 2in board flush on the house strips' south face; its 2 #4 hangers run straight into the walls, its 2 #5 bottom bars lap (contact, beside them) the 2 #5 dowels cast in each toe, and its #3 cage ties stop at the toe faces. It was named in NO placement until now, while notes/sunken_garden_veneer_beam.md called it cast in one section and chipped-and-dowelled in another - and there is no existing pour to chip, because this placement is where those side walls are themselves cast. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — every thermal-break blockout is set against its face (AN-SG-BLOCKOUTS; the dowels that once needed it are deleted). (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all four 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
     Annotation(
         uid="SGAN02AAAA", tag="AN-SG-MIX", position=pt(ft(_cx), ft(-23)),
         text="ONE TICKET: every placement in this court specifies EXPOSED_MIX (5,000 psi, w/cm <= 0.40, class F3+C2 air entrainment and SCM caps). The two column pads that specified BURIED_MIX (PIER_BASE_12) were retired with the porch's centre line on 2026-09-22, so there is no substitution left to permit: supply the whole court from one ticket"),
@@ -3173,7 +3180,7 @@ SEQUENCE_NOTES = [
     # Hand-minted 2026-09-22 (`haus fmt` does not visit params/); unique by grep.
     Annotation(
         uid="SGAN04AAAA", tag="AN-SG-BLOCKOUTS", position=pt(ft(_cx), ft(-29)),
-        text="THERMAL-BREAK BLOCKOUTS — NO BOARD IS CAST AGAINST (basis 7, free body 11j). Every court face that meets an isolation board is formed against a greased, pull-rodded blockout of the board's own thickness, stripped, and the board set into the slot afterwards: TB-SG-W1/E1 2-1/2in x 8in x 84in (placement 1, left in until the walls strip), TB-SG-W1/E1-STEM 2-1/2in x 12in x 9ft 1-7/16in and W-SG-BRKBM's 2in x 17-3/4in x 19ft 0in (placement 2, the beam's pulled up out of the bedding-stone side). Boards are set after the walls are stripped, before backfill, and the owner walks the empty slots first (inspection break_blockouts_stripped). The board is FOAMULAR-class XPS as scheduled; nothing holds it but the slot. A board cast against the pour locks in its fresh-concrete squeeze for good — the beam's alone was 41,162 lb — and puts the house's slab edge and global sliding back over"),
+        text="THERMAL-BREAK BLOCKOUTS — NO BOARD IS CAST AGAINST (basis 7, free body 11j). Every court face that meets an isolation board is formed against a greased, pull-rodded blockout of the board's own thickness, stripped, and the board set into the slot afterwards: TB-SG-W1/E1 2in x 8in x 84in (placement 1, left in until the walls strip), TB-SG-W1/E1-STEM 2-1/2in x 12in x 9ft 1-7/16in and W-SG-BRKBM's 2in x 17-3/4in x 18ft 0in (placement 2, against the house strips' south face). Boards are set after the walls are stripped, before backfill, and the owner walks the empty slots first (inspection break_blockouts_stripped). The board is FOAMULAR-class XPS as scheduled; nothing holds it but the slot. A board cast against the pour locks in its fresh-concrete squeeze for good — the beam's alone was 41,162 lb — and puts the house's slab edge and global sliding back over"),
     # Minted 2026-10-31 with typehaus.model.ids.new_uid() (C3-E14).
     Annotation(
         uid="5N3QKZFZ9Y", tag="AN-SG-HETA-TRIM", position=pt(ft(_cx), ft(-35)),
@@ -3198,7 +3205,18 @@ SEQUENCE_NOTES = [
 # SGFD03AAAA/SGFD04AAAA. **
 # ** And with the overflow's move to the west heel (2026-09-23): SP-SG-ARCH-OVERFLOW
 # SGSP01AAAA, PR-SG-ARCH-OVERFLOW SGPR01AAAA. **
-BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS,
+# D-B-PATIO's tread bed through W-SG-BRKBM's board (2026-11-04): the 2" XPS is cut down
+# under the Trex tread and the 40 psi course, the twin of AO-B-PATIO-TREAD-BED in the curb's
+# tail (plan/storeys/basement.py). Same width and floor (z -104 15/16"); its near jamb is
+# the door's, x 224 11/32" (D-B-PATIO centred at x 256"), 116 11/32" from N-SG-BMW.
+BRKBM_OPENINGS = [
+    RoughOpening(uid="F8CP1XGJ8Q", tag="AO-SG-BRKBM-TREAD-BED", host="W-SG-BRKBM",
+                 position=from_node("N-SG-BMW", inch(116.34375)),
+                 width=inch(63.3125), height=inch(2.5), sill_height=inch(15.25),
+                 depth=inch(VENEER_BEAM_BREAK_IN), depth_from="exterior",
+                 framing_required=False),
+]
+BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS, *BRKBM_OPENINGS,
                      *FOOTING_BEDDING, *SEQUENCE_NOTES,
                      *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
                      GARDEN_FIELD, *FROST_WINGS, *ISOLATION_BOARDS]
@@ -3211,7 +3229,7 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS,
 # the deck; this closes the slot they stop over.
 #
 # ** IT FASTENS TO THE GARDEN AND NOTHING ELSE. ** Screws into the porch deck's north rim
-# only; the piece cantilevers 2 1/2" north, stopping 1/4" off the cladding face at
+# only; the piece cantilevers 2 1/8" north, stopping 1/4" off the cladding face at
 # -0'-7 1/2" like the curtain tracks (4" stood 1 1/4" inside the panel, measured
 # 2026-09-23), and a compressible foam or brush lip BEARS on the cladding without
 # penetrating it. Sloped south to drain back over the deck. That lip, and the weighted flap
@@ -3230,8 +3248,11 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS,
 #
 # `top_elevation=_porch_top` is the top of the JOISTS, which is where a piece screwed to the
 # rim lands: the composite plank's north edge laps over it.
-_SLOT_CLOSURE_REACH_IN = 2.5
-_slot_closure_y = _y_out_n + (_SLOT_CLOSURE_REACH_IN / 2.0) / 12.0  # band centre
+# From the porch deck's north rim to 1/4" off the cladding (-7 1/2"): 2 1/8" since the deck
+# followed the brick 3/8" north (2026-11-04); it was 2 1/2" off `_y_out_n`.
+_SLOT_CLOSURE_NORTH_IN = -7.5
+_SLOT_CLOSURE_REACH_IN = _SLOT_CLOSURE_NORTH_IN - _y_porch_deck_n * 12.0
+_slot_closure_y = _y_porch_deck_n + (_SLOT_CLOSURE_REACH_IN / 2.0) / 12.0  # band centre
 PORCH_SLOT_CLOSURE = Flashing(
     uid="SGFF03AAAA", tag="TR-SG-SLOT", kind=TrimKind.BUG_SCREEN,
     # `_x_in_w`/`_x_in_e` (9'-6"/26'-6") is the porch's clear width — the inner faces of

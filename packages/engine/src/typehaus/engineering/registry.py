@@ -56,6 +56,10 @@ class EngineeringContext:
     #: fact like the soil class; what a calc may do with it is EARN a NOT-APPLICABLE on a
     #: provision that is seismic-only (SDPWS 4.2.5.2's drift limit), never branch arithmetic.
     seismic_design_category: str | None = None
+    #: The adopted IRC edition (the profile's ``irc_base``), or ``None``. A site fact like the
+    #: soil class: what it may do is KEY a deferral off the prescriptive table it adopts
+    #: (``veneer_anchor``), never branch a calculation's arithmetic.
+    irc_base: str | None = None
 
 
 #: ``kind`` -> the function that enumerates and computes every item of that kind.

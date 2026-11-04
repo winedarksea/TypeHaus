@@ -94,18 +94,24 @@ def _near(first: Any, second: Any, tol: float = 0.3048) -> bool:
                 and first[1] - tol <= second[3] and second[1] - tol <= first[3])
 
 
-def veneer_beams(ctx: EngineeringContext) -> list[tuple[Any, tuple[Any, ...]]]:
+def veneer_beams(ctx: EngineeringContext, *,
+                 bedded: bool = False) -> list[tuple[Any, tuple[Any, ...]]]:
     """``(beam, walls it carries)``: a footingless wall whose TOP is the BOTTOM of another
     footingless wall that declares no lateral support, the two overlapping in plan.
 
     The relation, not a tag. A screening predicate stated as one: a beam carrying a slab
     edge or a stair is not found here, and a house that builds one should widen this.
+
+    A beam a ``FootingBedding`` hosts is a soil-supported footing, not a span, and is skipped
+    (catlin's W-SG-BRKBM, note §6k) unless ``bedded=True`` (the court study's tie).
     """
+    from typehaus.model.structure import FootingBedding
+    on_stone = {b.host_ref for b in ctx.plan.all_elements() if isinstance(b, FootingBedding)}
     walls = _footingless_walls(ctx)
     boxes = {w.tag: _extent(ctx, w.tag) for w in walls}
     out = []
     for beam in sorted(walls, key=lambda w: w.tag):
-        if beam.top_elevation is None:
+        if beam.top_elevation is None or (beam.tag in on_stone and not bedded):
             continue
         carried = tuple(
             w for w in sorted(walls, key=lambda w: w.tag)
@@ -121,11 +127,6 @@ def veneer_beams(ctx: EngineeringContext) -> list[tuple[Any, tuple[Any, ...]]]:
 @keys(KIND)
 def enumerate_veneer_beams(ctx: EngineeringContext) -> list[str]:
     return [beam.tag for beam, _carried in veneer_beams(ctx)]
-
-
-def carried_wythes(ctx: EngineeringContext) -> list[str]:
-    """Every wall a veneer beam carries — ``veneer_anchor``'s keys, off the same relation."""
-    return sorted({w.tag for _beam, carried in veneer_beams(ctx) for w in carried})
 
 
 # --- geometry off the resolved model ------------------------------------------------------
@@ -477,8 +478,8 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
             "NOT GRADED (moved from the deferral): the stirrup form; "
             + ("which way each hook turns (it must stay inside the wall it anchors in); "
                if torsion else "")
-            + "shrinkage restraint between the two side walls; the masonry anchors over the "
-            "insulated standoff, which are `veneer_anchor/<wythe>`, their own deferral.",
+            + "shrinkage restraint between the two side walls; the wythe's ties, which "
+            "structural.veneer_cavity_width grades (past the table, `veneer_anchor/<wythe>`).",
             f"SOFT JOINTS: the wythe ends {_end_gaps(wythe_bands, w_sup, e_sup)}; each end's "
             f"seal over compressible filler is a MovementJoint, billed by the foot and graded "
             f"by structural.masonry_movement_joint (BIA Technical Note 18A; notes §6g).",

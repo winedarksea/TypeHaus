@@ -3,6 +3,33 @@
 from math import sqrt
 
 
+def foam_bed_support_report(specification):
+    """A tread laid continuously on rated foam, not fastened to anything.
+
+    The concentrated load spreads over a square of the tread's own width; the uniform
+    live + dead load is added on top. Allowable is the foam's rated psi over the creep
+    divisor. There is no root connection and no bar to develop, so neither is UNKNOWN.
+    """
+    width = specification.approach_board_width.meters / 0.0254
+    area = width * width
+    uniform = (specification.live_load_psf + specification.dead_load_psf) / 144
+    bearing = specification.concentrated_load_lb / area + uniform
+    allowable = specification.foam_rated_psi / specification.foam_creep_divisor
+    return dict(
+        spread_area_in2=area,
+        uniform_psi=uniform,
+        bearing_psi=bearing,
+        allowable_psi=allowable,
+        bearing_dcr=bearing / allowable,
+        connection_demand_lb=0.0,
+        connection_capacity_lb=None,
+        connection_source=None,
+        connection_dcr=None,
+        member_status="PASS" if bearing <= allowable else "FAIL",
+        connection_status="NOT_APPLICABLE",
+    )
+
+
 def cantilever_support_report(specification, projection_m, tributary_width_m):
     """ASD timber or strength-design concrete strip, with an independent point load.
 

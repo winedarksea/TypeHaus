@@ -1,13 +1,12 @@
-"""``veneer_beam/W-SG-BRKBM`` against ``notes/sunken_garden_veneer_beam.md`` §6j.
+"""``engineering/veneer_beam`` against ``notes/sunken_garden_veneer_beam.md`` §6j.
 
-Since 2026-10-10 the record reads the beam's real bearing (§6j): its pour sits on
-FT-SG-W1/E1's toes, so it spans 11'-0" between the toe faces — design span 12.255', wythe
-268.86 plf, wu 687.03 plf — and Tu falls below §22.7.4.1's threshold. The pure-arithmetic
-test at the end still runs the old 19.5' inputs, which is a function check, not a house one.
-
-Every number below was worked by hand in the note, at the model's own geometry, before this
-file was re-based. Inputs are read off the resolved model where the test asserts on them, so
-a geometry move fails here loudly rather than silently re-basing the oracle.
+Since 2026-11-04 catlin keys no ``veneer_beam`` item: W-SG-BRKBM is bedded on stone
+(``FB-SG-BRKBM``, §6k) and a bedded wall is a footing, not a span. The kind stays for a true
+spanning beam, so §6j stays its oracle on a SYNTHETIC catlin: the beam unbedded, its ±1/4"
+``bearing_tolerance`` authored again, and the wythe 0.06" further off the beam's north face,
+where §6j measured it (the backup's membrane; e 4.1275"). Every other input is catlin's own.
+§6j: 11'-0" between the toe faces, design span 12.172', wythe 268.86 plf, Tu under φT_th.
+The pure-arithmetic test at the end still runs the old 19.5' inputs (a function check).
 """
 
 from __future__ import annotations
@@ -24,7 +23,6 @@ from typehaus.engineering.retaining_court.veneer_beam import (
 )
 from typehaus.engineering.veneer_beam import (
     _one,
-    carried_wythes,
     enumerate_veneer_beams,
     veneer_beams,
 )
@@ -33,23 +31,47 @@ from typehaus.model import EndRestraint, HookConfinement
 from typehaus.quantities import inch
 
 
+#: How far §6j's wythe stood off the beam's concrete north face: the 0.06" membrane.
+_SECTION_6J_OFFSET_IN = 0.06
+
+
+def _section_6j_model(model):
+    """catlin's resolved model with W-B-BRICK moved 0.06" south, where §6j measured it."""
+    import dataclasses
+
+    dy = -_SECTION_6J_OFFSET_IN * 0.0254
+
+    def moved(wall):
+        return dataclasses.replace(wall, layers=[
+            dataclasses.replace(ly, polygon=[(x, y + dy) for x, y in ly.polygon])
+            for ly in wall.layers])
+
+    return dataclasses.replace(model, walls=[moved(w) if w.tag == "W-B-BRICK" else w
+                                             for w in model.walls])
+
+
+def _section_6j(ctx):
+    beam, carried = veneer_beams(ctx, bedded=True)[0]
+    return beam.model_copy(update={"bearing_tolerance": inch(0.25)}), carried
+
+
 @pytest.fixture(scope="module")
 def record(catlin_plan, catlin_model_ro):
-    ctx = EngineeringContext(plan=catlin_plan, model=catlin_model_ro)
-    from typehaus.engineering.veneer_beam import compute
-
-    records = {r.key: r for r in compute(ctx)}
-    return ctx, records["W-SG-BRKBM"]
+    ctx = EngineeringContext(plan=catlin_plan, model=_section_6j_model(catlin_model_ro))
+    beam, carried = _section_6j(ctx)
+    return ctx, _one(ctx, beam, carried)
 
 
 def _state(record, name):
     return next(s for s in record.limit_states if s.name.startswith(name))
 
 
-def test_the_relation_finds_the_beam_and_the_wythe(record) -> None:
+def test_a_bedded_beam_is_a_footing_not_an_item(record) -> None:
+    """catlin's W-SG-BRKBM carries W-B-BRICK, and FB-SG-BRKBM beds it: no item (§6k)."""
     ctx, _ = record
-    assert enumerate_veneer_beams(ctx) == ["W-SG-BRKBM"]
-    assert carried_wythes(ctx) == ["W-B-BRICK"]
+    assert enumerate_veneer_beams(ctx) == []
+    ((beam, carried),) = veneer_beams(ctx, bedded=True)
+    assert beam.tag == "W-SG-BRKBM" and [w.tag for w in carried] == ["W-B-BRICK"]
 
 
 def test_inputs_are_the_concrete_layer_and_the_drawn_wythe(record) -> None:
@@ -148,7 +170,7 @@ def test_without_the_toe_bearing_the_light_cage_would_not_do(record) -> None:
     model = dataclasses.replace(ctx.model, solids=[
         s for s in ctx.model.solids if s.tag not in ("FT-SG-W1", "FT-SG-E1")])
     bare = EngineeringContext(plan=ctx.plan, model=model)
-    beam, carried = veneer_beams(bare)[0]
+    beam, carried = _section_6j(bare)
     rec = _one(bare, beam, carried)
     assert {q.name: q.value for q in rec.inputs}["clear_span"] == pytest.approx(17.0)
     hoops = _state(rec, "closed hoop spacing")
@@ -160,7 +182,7 @@ def test_an_authored_fixity_still_buys_no_strength(record) -> None:
     """§6f's machinery survives the re-base: author an `end_restraint` and the joint rows
     appear, while every strength row is identical with and without it."""
     ctx, rec = record
-    beam, carried = veneer_beams(ctx)[0]
+    beam, carried = _section_6j(ctx)
     credited = _one(ctx, beam.model_copy(update={"end_restraint": EndRestraint(
         fixity=0.25, elastic_fixity=0.487, effective_width=inch(36.0), source="§6f")}),
         carried)
@@ -211,9 +233,8 @@ def test_hooked_anchorage_reproduces_section_6e() -> None:
 def test_the_soft_joint_gap_is_named_with_its_geometry(record) -> None:
     _, rec = record
     note = next(n for n in rec.notes if n.startswith("SOFT JOINTS"))
-    # 3/8" at the east end since 2026-09-22 — N-B-BRICK-E moved west so BIA TN 18A's
-    # sealant joint over compressible filler has somewhere to go at BOTH ends.
-    assert "4.00\" clear of W-SG-W1" in note and "0.38\" clear of W-SG-E1" in note
+    # Both ends 1/2" since 2026-11-04 (§6k): BIA TN 18A's sealant joint at each.
+    assert "0.50\" clear of W-SG-W1" in note and "0.50\" clear of W-SG-E1" in note
 
 
 def test_pure_arithmetic_matches_the_note_without_the_model() -> None:

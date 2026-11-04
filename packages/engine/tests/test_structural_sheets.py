@@ -174,7 +174,7 @@ def test_s100_calls_frost_depth_drainage_and_steps(catlin_model):
     # which the note says are not frost section.
     assert "DRAIN TILE" in notes
     assert "DRAINING TO FB-SG-E2, FB-SG-W2, SM-B-RADON." in notes
-    assert "6 BEDS RUN NO PIPE" in notes
+    assert "7 BEDS RUN NO PIPE" in notes  # FB-SG-BRKBM joined on 2026-11-04
     assert "INTO 4 SOAKAWAY COURSES BELOW THE DRAINED SECTION" in notes
     assert "NOT FROST SECTION" in notes
     assert "DAYLIGHT" not in notes

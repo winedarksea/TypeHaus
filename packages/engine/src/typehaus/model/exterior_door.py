@@ -66,12 +66,20 @@ class ExteriorDoorCatalogInstallation(HausModel):
     head_material_ref: str = Field(min_length=1)
     transition_material_ref: str = Field(min_length=1)
     support_ref: str = Field(min_length=1)
-    support_kind: Literal["timber_outriggers", "concrete_cantilever"]
+    # ``foam_bed``: one tread laid continuously on rated foam, not fastened to anything; its
+    # bearing is graded at ``foam_rated_psi / foam_creep_divisor`` and it has no root
+    # connection or bar development to document.
+    support_kind: Literal["timber_outriggers", "concrete_cantilever", "foam_bed"]
     support_spacing: Length = inch(12)
     support_width: Length = inch(1.5)
     support_depth: Length = inch(5.5)
     support_backspan: Length = inch(24)
     support_material_ref: str = "kdat"
+    foam_rated_psi: float | None = Field(default=None, gt=0)
+    foam_creep_divisor: float = Field(default=3.0, gt=1)
+    foam_course_depth: Length = inch(1)
+    # The water layer under the approach; the pan's own membrane when not stated.
+    apron_material_ref: str | None = None
     support_connection_capacity_lb: float | None = Field(default=None, gt=0)
     support_connection_source: str | None = None
     live_load_psf: float = Field(default=60, gt=0)
@@ -127,6 +135,8 @@ class ExteriorDoorCatalogInstallation(HausModel):
             raise ValueError("catalog installation dimensions must be positive")
         if self.support_connection_capacity_lb is not None and not self.support_connection_source:
             raise ValueError("a connection capacity requires published/design evidence")
+        if self.support_kind == "foam_bed" and self.foam_rated_psi is None:
+            raise ValueError("a foam-bed approach needs the foam's rated compressive psi")
         if (self.support_kind == "concrete_cantilever" and self.support_depth.meters
                 <= self.concrete_cover.meters + self.reinforcement_diameter.meters / 2):
             raise ValueError("concrete support depth must exceed cover plus bar radius")
@@ -186,6 +196,11 @@ class ExteriorDoorInstallation(HausModel):
     casing_thickness: Length = inch(0.75)
     exterior_material_ref: str = Field(default="kdat", min_length=1)
     exterior_wrap_material_ref: str | None = None
+    # Run the exterior returns past the host's face to the back of a masonry reveal, so the
+    # box sides close the veneer cavity at the opening.
+    exterior_return_to_reveal_back: bool = False
+    # The exterior returns' own stock thickness where it differs from the interior's.
+    exterior_return_thickness: Length | None = None
     exterior_wrap_thickness: Length = inch(0.024)
     wrap_isolation_material_ref: str = "fluid-applied-flashing"
     wrap_isolation_thickness: Length = inch(0.020)

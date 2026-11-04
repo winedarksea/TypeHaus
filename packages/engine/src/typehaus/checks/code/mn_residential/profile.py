@@ -56,7 +56,9 @@ MN_2020 = JurisdictionProfile(
         "Energy: the N1102.1.2 prescriptive envelope and the N1102.4.1.2 air-leakage "
         "target. "
         "Attic: R807.1 access and R806.2 ventilation net free area. "
-        "Structural: frost depth, the IRC span tables, and manufacturers' published span "
+        "Structural: frost depth, the IRC span tables, R703.8.4 anchored-veneer tie reach "
+        "and airspace (Table R703.8.4(1) by the adopted edition), and manufacturers' "
+        "published span "
         "tables where an element authors the row it was read at — no engineered analysis, "
         "no lateral system, no connection design. "
         "Plumbing: rough-in geometry and MN ch. 4714 sizing tables (sleeving, drain slope, "
@@ -376,6 +378,13 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Envelope air-leakage target", ("code.N1102_4_air_leakage",),
                        ("IRC N1102.4.1.2", "MN Rules 1322")),
         PermitItemSpec("Foundation frost depth", ("structural.frost_depth",), ("IRC R403.1.4",)),
+        # Added 2026-11-04. Non-blocking: catlin's W-B-BRICK reaches 6 1/2" to the studs,
+        # inside only the 2024 IRC's W2.8 row, so under this 2018 base the line reads its
+        # `veneer_anchor` item (an R104.11 alternate). It flips when that item closes.
+        PermitItemSpec("Anchored masonry veneer tie reach and airspace",
+                       ("structural.veneer_cavity_width",),
+                       ("IRC R703.8.4", "IRC R703.8.4.1", "IRC Table R703.8.4(1)"),
+                       blocking=False),
         PermitItemSpec("Footings under framed bearing walls",
                        ("structural.bearing_wall_footing",), ("IRC R403.1", "IRC R403.1.1")),
         PermitItemSpec("Sill-plate anchorage", ("code.R403_1_6_foundation_anchorage",),

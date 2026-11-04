@@ -115,7 +115,7 @@ def place_exterior_door(model, wall, opening, assembly, specification):
     thickness = specification.return_thickness.meters
     half = opening.width_m / 2
     boards = []
-    def reveal(prefix, a, b, material, key):
+    def reveal(prefix, a, b, material, key, thickness=thickness):
         if abs(a - b) <= DOORWAY.height_tolerance_m:
             return
         mid, length = (a + b) / 2, abs(a - b)
@@ -139,8 +139,16 @@ def place_exterior_door(model, wall, opening, assembly, specification):
             ) for layer in reveal_wall.depth_layers()
         )
     trim_face = (faces[1] if sign > 0 else faces[0]) if masonry_reveal else clad
+    if masonry_reveal and specification.exterior_return_to_reveal_back:
+        # The box sides cross the veneer's cavity and stop on the back of the wythe.
+        wythe = [sign * n for layer in reveal_wall.depth_layers()
+                 if layer.function == "structure" for n in offsets(layer)]
+        if wythe:
+            trim_face = sign * min(wythe)
+    outer_thickness = (specification.exterior_return_thickness.meters
+                       if specification.exterior_return_thickness else thickness)
     reveal("exterior-return", frame_outer, trim_face,
-           specification.exterior_material_ref, "window_trim")
+           specification.exterior_material_ref, "window_trim", outer_thickness)
     interior_face = faces[0] if sign > 0 else faces[1]
     reveal("interior-extension", interior_face, frame_inner,
            specification.interior_material_ref, "door_frame")

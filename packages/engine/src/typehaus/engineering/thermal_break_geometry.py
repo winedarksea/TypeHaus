@@ -14,6 +14,9 @@ from dataclasses import dataclass, field
 _IN = 1.0 / 0.0254
 #: How far past its own face a board may look for the house element it bears on, in.
 FACING_REACH_IN = 12.0
+#: A board laid flush on house concrete faces it: the metre-to-inch round trip can put the
+#: two faces a few nanometres apart either way (catlin's W-SG-BRKBM on FT-B-S1..S4, -4").
+_FLUSH_IN = 1e-6
 
 
 @dataclass
@@ -235,7 +238,7 @@ def house_concrete_tops(ctx, board: Board) -> list[tuple[float, float, float]]:
         if min(z[1], board.top_in) - max(z[0], board.bottom_in) <= 0.5:
             continue
         near = across[0] if board.toward_house > 0 else across[1]
-        if 0.0 <= (near - board.house_face_in) * board.toward_house <= FACING_REACH_IN:
+        if -_FLUSH_IN <= (near - board.house_face_in) * board.toward_house <= FACING_REACH_IN:
             out.append((*along, z[1]))
     return out
 
@@ -278,8 +281,8 @@ def facing_footings(ctx, board: Board) -> list[str]:
         n0, n1 = _extent(solid.outline, board.ax)
         near = n0 if board.toward_house > 0 else n1
         gap = (near - board.house_face_in) * board.toward_house
-        if 0.0 <= gap <= FACING_REACH_IN:
-            out.append((gap, f.tag))
+        if -_FLUSH_IN <= gap <= FACING_REACH_IN:
+            out.append((max(gap, 0.0), f.tag))
     # The FIRST line only: a strip teeing in behind it (FT-B-CS) is not faced.
     first = min((g for g, _t in out), default=0.0)
     return sorted(t for g, t in out if g <= first + 1.0)

@@ -143,6 +143,7 @@ def build_engineering(model: ResolvedModel, prefs: Preferences, house_dir: Path 
                       soil_class: str | None = None,
                       soil_basis: object = None,
                       seismic_design_category: str | None = None,
+                      irc_base: str | None = None,
                       ) -> tuple[EngineeringResults,
                                                           EngineeringRegister]:
     """The suite's result map and the house's seal register, for one CheckContext.
@@ -159,7 +160,8 @@ def build_engineering(model: ResolvedModel, prefs: Preferences, house_dir: Path 
         EngineeringContext(plan=model.plan, model=model, preferences=prefs,
                            soil_class=soil_class, soil_basis=soil_basis,
                            bracing=surplus_reader(model),
-                           seismic_design_category=seismic_design_category))
+                           seismic_design_category=seismic_design_category,
+                           irc_base=irc_base))
     return results, load_register(house_dir)
 
 
@@ -180,7 +182,8 @@ def build_context_from_model(
     # The site's soil report wins over the jurisdiction's regional presumption.
     engineering, register = build_engineering(
         model, prefs, house_dir, site_soil_class(model.plan, jurisdiction),
-        site_soil_basis(model.plan, jurisdiction), jurisdiction.seismic_design_category)
+        site_soil_basis(model.plan, jurisdiction), jurisdiction.seismic_design_category,
+        jurisdiction.irc_base)
     return CheckContext(
         plan=model.plan, model=model, preferences=prefs, profile=jurisdiction,
         resolve_findings=list(resolve_findings), engineering=engineering,

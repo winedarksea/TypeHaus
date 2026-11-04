@@ -67,8 +67,10 @@ _ALLOWED: dict[str, set[str]] = {
     "analytical": {"model", "resolve", "quantities", "engineering", "wind", "wind_tables",
                    "loads", "findings", "analytical"},
     "routing": {"model", "resolve", "quantities", "routing"},
-    "engineering": {"model", "resolve", "quantities", "wind", "wind_tables", "loads",
-                    "engineering", "findings"},
+    # ``veneer_ties`` (2026-11-04) is the same class: IRC Table R703.8.4(1) and the wythe's
+    # measured reach, read by ``structural.veneer_cavity_width`` and the ``veneer_anchor`` keys.
+    "engineering": {"model", "resolve", "quantities", "wind", "wind_tables", "veneer_ties",
+                    "loads", "engineering", "findings"},
     "schedule": {"model", "resolve", "quantities", "findings", "takeoff", "emit",
                  "schedule", "hardware"},
     "joints": {"model", "resolve", "quantities", "hardware", "joints"},

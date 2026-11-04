@@ -200,7 +200,8 @@ the future.
 - Orientation-tuned glass, particularly second-story south-facing windows.
 - **OPEN: `_y_in_n` is datumed off the ABOVE-GRADE cladding face, and nothing at the porch
   deck's own elevation faces cladding.** Below z=0 the house's south face is `W-B-BRICK`,
-  which stands **6.435" south of that line** (cladding -7.25", brick -13.685"). The two halves
+  which stands **2.375" south of that line** (cladding -7.25", brick -9.625" since 2026-11-04;
+  the porch deck now stops on the brick's face). The two halves
   that were closed on 2026-09-20: `house_ext_layers_in` now derives from `_WALL_OUTBOARD_IN`
   (and `gap_to_house_in` absorbs the difference, so no geometry moved), and
   `code.R311_3_exterior_landing` can now union two abutting surfaces into one landing. What
@@ -271,7 +272,7 @@ the future.
 - Oksana wants an elm slab sofa table
 - See if we can practically use the fleur de lis molds on the top of PT-BW-PE and PT-BW-PNE https://historystones.com/collections/business-industrial-construction-building-materials-supplies-marble-tile-stone/products/fluer-de-lys-tuscany-column-insert
 - Workshop receptacles: RC1's 120/240 V circuit and RC2's 120 V quad are modeled, with their boxes, covers and raceway. Resolve the required tamper-resistant listings and the field wiring before installation; see [workshop receptacles](../houses/catlin/notes/workshop_receptacles.md).
-- D-B-PATIO: separate brick reveal, widened RO, 5-1/2 inch concrete seat, composite returns, and one blind curb-skin recess are modeled (XMN5 dropped 2026-11-01). Sill/approach/pan intersections pass; crest heights come from the [engine-generated review](../houses/catlin/notes/french_door_catalog_installation.md#3-height-and-geometry-review). Complete concrete reinforcement/development, support root and cross-bearer bearing, field membrane bonds, installed pan/sweep/hinge sections, and assembled-unit label/warranty evidence. Standard rainproofing only; drainage/sump back up the revised concrete curb. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
+- D-B-PATIO: separate brick reveal, widened RO, 5-1/2 inch concrete seat and a foam-bed Trex tread with fascia box sides (2026-11-04, §6 of the note) are modeled; the section-intersection check passes against every nearby solid. Still open: the tread's drain-slot outlet (its outer edge sits ~1/2" under W-SG-BRKBM's top), the PVC water sheet's laps and the box sides' seal to the brick, installed pan/sweep/hinge sections, and assembled-unit label/warranty evidence. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
 - D-S-DECK-E: catalog coordination replaces the schematic plate/wrapped trim with a digitized ZAI outline, composite returns and short AridDek boards. BE365 adapter F is documented; crest heights come from the [engine-generated review](../houses/catlin/notes/french_door_catalog_installation.md#3-height-and-geometry-review). Complete house-root connections and cross-bearer bearing, installed pan/sweep/hinge sections and the flexible flashing-end application; confirm assembly dimensions/label/warranty. Complete preferred/Tru-Defense prices remain unavailable publicly. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
 - Research most commonly failed residential code items and make sure checks or tests exist for those here.
 - Metal trim kit ([notes/metal_trim_kit.md](../houses/catlin/notes/metal_trim_kit.md)): the garage soffit's net free area is still unauthored; authoring it would give R806.2 real margin through the 1/300 balanced route.
@@ -304,7 +305,7 @@ the future.
 - Consider 1/2" advantech for walls sheathing, maybe 1/2" osb and tape the seams
 - Pg 288 of the book has a roof eave detail where the roof and drip flashing alone extend out about an inch (no metal or sheathing).
 - Pick a soffit product and close the garage attic ventilation grading, and the corrugated soffit to sill junction detailed. Also fix the garage soffit end detail (north and south gable ends) where the sofit is too flat and isn't inline with the roof slope there
-- D-B-PATIO has too short a threshold, it needs to go out over the foam gap. And it has some weird top flashing that isn't needed here it seems.
+- D-B-PATIO has some weird top flashing that isn't needed here it seems (the threshold now reaches over the foam gap: the foam-bed tread, 2026-11-04).
 - D-B-PATIO has an STHD14 connector sprouting up in the middle.
 - Might be worth writing up ICF in cost options as an alternative exterior wall setup (for the house) something like the Quadlock 'plus' form which with 4.25" of EPS on each side delivers R-38.
 - Fixture connections (audit 2026-10-30): every fixture and appliance now declares ports and

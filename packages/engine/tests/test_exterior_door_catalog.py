@@ -6,7 +6,10 @@ import pytest
 from shapely.geometry import Point, Polygon
 
 from typehaus import ExteriorDoorCatalogInstallation, inch
-from typehaus.engineering.exterior_door_support import cantilever_support_report
+from typehaus.engineering.exterior_door_support import (
+    cantilever_support_report,
+    foam_bed_support_report,
+)
 from typehaus.resolve.doorway import doorway_json
 from typehaus.resolve.doorway_heights import installed_threshold_elevation
 from typehaus.resolve.exterior_door_boundary import (
@@ -47,6 +50,21 @@ def test_member_pass_does_not_verify_missing_connection():
     assert result["connection_dcr"] is None
     overloaded = _catalog(concentrated_load_lb=30_000)
     assert cantilever_support_report(overloaded, 0.2, 0.25)["member_status"] == "FAIL"
+
+
+def test_a_foam_bed_grades_bearing_and_owes_no_connection():
+    """notes/french_door_catalog_installation.md §6, by hand: 300 / 5.5² + 70 / 144 psf
+    = 10.403 psi against 40 / 3 = 13.333 psi."""
+    result = foam_bed_support_report(_catalog(
+        support_kind="foam_bed", foam_rated_psi=40.0, approach_board_width=inch(5.5)))
+    assert result["bearing_psi"] == pytest.approx(10.403, abs=1e-3)
+    assert result["allowable_psi"] == pytest.approx(13.333, abs=1e-3)
+    assert result["bearing_dcr"] == pytest.approx(0.780, abs=1e-3)
+    assert (result["member_status"], result["connection_status"]) == ("PASS", "NOT_APPLICABLE")
+    soft = _catalog(support_kind="foam_bed", foam_rated_psi=15.0, approach_board_width=inch(5.5))
+    assert foam_bed_support_report(soft)["member_status"] == "FAIL"  # 10.4 > 15 / 3
+    with pytest.raises(ValueError, match="rated compressive"):
+        _catalog(support_kind="foam_bed")
 
 
 def test_known_inadequate_connection_fails():
@@ -95,17 +113,20 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
 
         schedule_rows = opening_takeoff(model)
         clearance_rows = [row for row in schedule_rows if any(
-            tag == "AO-B-PATIO-CURB-APPROACH" for tag in row["tags"]
+            tag == "AO-B-PATIO-TREAD-BED" for tag in row["tags"]
         )]
         assert len(clearance_rows) == 1
         assert all(not row["framing_required"] for row in clearance_rows)
     assert "approach-walking-plate" not in names
     assert all(Polygon(s.polygon_m).is_valid for s in placement.sections)
     report = placement.installation_report
-    assert report["support"]["connection_status"] == "UNKNOWN"
+    # The patio's tread lies on its foam (owner, 2026-11-03): no root connection to document.
+    assert report["support"]["connection_status"] == (
+        "NOT_APPLICABLE" if tag == "D-B-PATIO" else "UNKNOWN")
     assert report["support"]["member_status"] == "PASS"
     assert report["approach_slope"] == pytest.approx(1 / 48)
-    assert report["drainage_clearance_in"] > 0
+    if tag == "D-S-DECK-E":
+        assert report["drainage_clearance_in"] > 0
     assert report["receiver_pan_clearance_in"] >= 0.0625
     if tag == "D-S-DECK-E":
         assert report["minimum_movement_gap_in"] > 0
@@ -149,7 +170,7 @@ def test_patio_reveal_reference_and_concrete_seat_are_real(catlin_model_ro):
         s.z1_m > notch_z + 1e-6 and Polygon(s.ring).contains(Point(center)) for s in pieces
     )
     approach_recess = next(
-        o for o in model.openings if o.tag == "AO-B-PATIO-CURB-APPROACH"
+        o for o in model.openings if o.tag == "AO-B-PATIO-TREAD-BED"
     )
     host = model.wall(approach_recess.host_wall)
     assert approach_recess.depth_from == "exterior"
@@ -230,10 +251,17 @@ def test_receiver_and_movement_conflicts_are_measured(catlin_model_ro):
     assert any("movement closes" in message for message in changed.conflicts)
 
 
-# Since the frame anchors at the sheathing face (2026-11-01, C2-E8) the sill stands 1/2"
-# further out and the recess alone clears the seat; the XMN5 extender is dropped (owner).
-def test_patio_clearance_requires_the_recess(catlin_model_ro):
-    from typehaus.resolve.exterior_door_catalog_fit import catalog_seat_conflicts
+# The tread's bed recesses are what clear it. The check reads every solid near the door, not
+# only the walls the installation names — how the old AridDek approach was found inside the
+# beam. A neighbour's STRUCTURE (or a named wall) is a conflict; a neighbour's foam skin is a
+# field cut, reported as coordination.
+@pytest.mark.parametrize(("recess", "board_in", "clash", "hard"), [
+    ("AO-B-PATIO-TREAD-BED", 5.5, "W-B-S3/xps-a", True),
+    ("AO-SG-BRKBM-TREAD-BED", 5.5, "W-SG-BRKBM/xps-break", False),
+    (None, 8.0, "W-SG-BRKBM/concrete", True),
+])
+def test_patio_clearance_requires_the_recess(catlin_model_ro, recess, board_in, clash, hard):
+    from typehaus.resolve.exterior_door_catalog_fit import catalog_section_clashes
     from typehaus.resolve.exterior_door_catalog_layout import catalog_installation_layout
     from typehaus.resolve.exterior_door_catalog_parts import catalog_sill_sections
 
@@ -241,16 +269,20 @@ def test_patio_clearance_requires_the_recess(catlin_model_ro):
     opening = next(o for o in model.openings if o.tag == "D-B-PATIO")
     wall = model.wall(opening.host_wall)
     placement = opening.doorway.exterior_placement
-    spec = placement.specification.catalog_installation
-    installation = placement.specification
-    model = replace(model, openings=[o for o in model.openings
-                                    if o.tag != "AO-B-PATIO-CURB-APPROACH"])
+    assert catalog_section_clashes(model, wall, opening, placement) == ((), ())
+    spec = placement.specification.catalog_installation.model_copy(
+        update={"approach_board_width": inch(board_in)})
+    installation = placement.specification.model_copy(update={"catalog_installation": spec})
+    placement = replace(placement, specification=installation)
+    model = replace(model, openings=[o for o in model.openings if o.tag != recess])
     assembly = replace(opening.doorway, exterior_placement=placement)
     clad, _ = exterior_door_boundary(model, wall, opening, installation)
     layout = catalog_installation_layout(model, wall, opening, assembly, clad)
     placement = replace(placement, sections=catalog_sill_sections(
         spec, installation, placement, opening, layout))
-    assert catalog_seat_conflicts(model, wall, opening, placement)
+    conflicts, coordination = catalog_section_clashes(model, wall, opening, placement)
+    found = conflicts if hard else coordination
+    assert f"approach-tread intersects remaining {clash}" in found
 
 
 def test_flashing_selection_and_dimensions_are_independent_of_support(catlin_model_ro):
@@ -296,12 +328,16 @@ def test_schematic_and_catalog_must_be_selected_exclusively():
 def test_catalog_trim_layout_is_derived_across_doors(catlin_model_ro):
     from typehaus.takeoff.door_trim_layout import TrimSheetStock, door_trim_sheet_layouts
 
-    stock = TrimSheetStock("selected sheet", "finish", .75, 48, 96, .125)
-    layouts = door_trim_sheet_layouts(catlin_model_ro, {"captivate-sheet": stock})
-    assert len(layouts) == 2
-    assert {p["door"] for s in layouts for p in s["pieces"]} == {"D-B-PATIO", "D-S-DECK-E"}
-    assert sum(len(s["pieces"]) for s in layouts) == 9
-    assert all(s["used_width_in"] <= 48 and s["maximum_length_in"] <= 96 for s in layouts)
+    sheet = TrimSheetStock("selected sheet", "finish", .75, 48, 96, .125)
+    fascia = TrimSheetStock("Trex fascia", "finish", .56, 7.25, 144, .125)
+    layouts = door_trim_sheet_layouts(catlin_model_ro, {"captivate-sheet": sheet,
+                                                        "trex-tide-pool-fascia": fascia})
+    doors = {s["material"]: {p["door"] for p in s["pieces"]} for s in layouts}
+    assert doors == {"captivate-sheet": {"D-S-DECK-E"}, "trex-tide-pool-fascia": {"D-B-PATIO"}}
+    # The patio's two 81.9" jambs and 63.3" head share no 12' fascia board: three boards.
+    assert sum(1 for s in layouts if s["material"] == "trex-tide-pool-fascia") == 3
+    assert all(s["used_width_in"] <= s["sheet_width_in"]
+               and s["maximum_length_in"] <= s["sheet_length_in"] for s in layouts)
 
 
 def test_patio_brick_trim_and_crown_clearance(catlin_model_ro):
@@ -313,11 +349,17 @@ def test_patio_brick_trim_and_crown_clearance(catlin_model_ro):
     wall = model.wall(door.host_wall)
     placement = door.doorway.exterior_placement
     assert not any("exterior-casing" in b.name for b in placement.boards)
-    face = finish_faces(wall)[1 if placement.outward_sign > 0 else 0]
+    # The box sides cross the cavity to the brick's back (exterior_return_to_reveal_back).
+    assert finish_faces(wall) is not None
+    brick = next(ly for ly in model.wall(reveal.host_wall).depth_layers()
+                 if ly.function == "structure")
+    origin, _, normal, _ = wall_frame(wall)
+    back = min(placement.outward_sign * sum((p[i] - origin[i]) * normal[i] for i in (0, 1))
+               for p in brick.polygon)
     returns = [b for b in placement.boards if b.name.startswith("exterior-return")]
     assert len(returns) == 3
     for board in returns:
-        assert board.normal_m + placement.outward_sign * board.depth_m / 2 == pytest.approx(face)
+        assert placement.outward_sign * board.normal_m + board.depth_m / 2 == pytest.approx(back)
     crown = model.wall(reveal.host_wall).base_ref_z_m + reveal.sill_m + reveal.height_m
     head = wall.base_ref_z_m + door.sill_m + door.height_m
     assert crown < head

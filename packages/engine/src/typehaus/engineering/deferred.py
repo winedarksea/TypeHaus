@@ -179,32 +179,32 @@ def _rafter_keys(ctx: EngineeringContext) -> list[str]:
 
 _declare(Deferral(
     kind="veneer_anchor",
-    reason="a masonry wythe stands on a beam that fixes its foot well off the backing wall's "
-           "structural face — catlin's W-B-BRICK reaches ~10in brick-to-stud through 6in of "
-           "foam and 4in of cavity — and no prescriptive anchor table contemplates that "
-           "standoff. TMS 402's engineered path governs: eccentric compression and buckling "
-           "of the anchor over its unbraced length, and the wythe's out-of-plane bending "
-           "between anchor rows. This engine has no masonry-anchor calculation, and the "
-           "anchor is a product selection against a published insulation thickness",
-    designer="the masonry anchor supplier's engineer for the product and its published "
-             "standoff rating, with the structural engineer of record for the wind demand "
-             "and the anchor layout",
-    deliverable="a TMS 402 anchor design for the full insulated standoff — anchor type, "
-                "spacing both ways, embedment into the backing, and the wythe's out-of-plane "
-                "check between rows — plus the supplier's written confirmation that the "
-                "product is rated for the insulation thickness it passes through",
+    reason="an anchored masonry wythe stands farther off its backing than any row of the "
+           "adopted IRC Table R703.8.4(1) — catlin's W-B-BRICK is 6 1/2in back of brick to "
+           "face of stud, where the 2018 IRC (MN 2020) stops at 4 1/2in for W1.7 wire and "
+           "publishes no W2.8 row. The 2021/2024 IRC's W2.8 adjustable wire row reaches 6 "
+           "5/8in, so the same wall is prescriptive there; under the adopted edition it is "
+           "an alternate. This engine computes no masonry anchor",
+    designer="the owner, asking the building official to accept the 2024 IRC row under "
+             "R104.11; failing that, the structural engineer of record (or the anchor "
+             "supplier's engineer) for a TMS 402 anchor design",
+    deliverable="AHJ acceptance under R104.11 of IRC 2024 Table R703.8.4(1)'s W2.8 "
+                "adjustable wire row (6 5/8in max to the backing) with R703.8.4.1's "
+                "spacing, or a TMS 402 anchor design for the measured standoff. Retires "
+                "with no house edit once the profile adopts the 2021 or 2024 IRC",
     unblocks="the veneer anchorage detail and the wall section through the wythe",
-    oracle=(Oracle(note="sunken_garden_veneer_beam.md", section="§5",
-                   test="tests/test_veneer_beam_calc.py"),),
+    oracle=(Oracle(note="sunken_garden_veneer_beam.md", section="§6k",
+                   test="tests/test_veneer_cavity.py"),),
 ))
 
 
 @keys("veneer_anchor")
 def _veneer_anchor_keys(ctx: EngineeringContext) -> list[str]:
-    """Every wythe a veneer beam carries — the same relation ``veneer_beam`` keys off."""
-    from typehaus.engineering.veneer_beam import carried_wythes
+    """Every anchored wythe the adopted IRC table does not cover — the measurement
+    ``structural.veneer_cavity_width`` grades, not the beam it stands on."""
+    from typehaus.veneer_ties import beyond_table
 
-    return carried_wythes(ctx)
+    return beyond_table(ctx.model, ctx.irc_base)
 
 
 # NOTE — ``thermal_break_transfer`` is COMPUTED since 2026-09-20, in

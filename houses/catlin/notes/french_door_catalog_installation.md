@@ -91,21 +91,16 @@ new 5-1/2 inch minimum; the sauna curb retains 7-1/4 inches. The door is not cre
 as a flood barrier. Overflow drainage and the sump remain the backup provisions.
 
 The pan's level bearing envelope is over the concrete seat. **No sill extender** (owner,
-2026-11-01): since the frame anchors at the sheathing the sill stands 1/2 inch further out,
-and the recess alone clears the seat; the approach boards run 14.54 inches (13.35 with the
-XMN5). One **blind, nonstructural curb-skin
-recess** clears the approach and pan drop through insulation and membrane, stopping at
-the concrete layer. The approach remains below the framed wall's base, so its exterior
-layers are not recessed. The blind curb recess does not lower the concrete seat or
-flood-containment edge. Generated section-intersection
-checks pass for the sill, boards, pan drop and cross bearers. The exposed
-water-control layers still need a compatible, bonded membrane apron and field sealant
-sequence; catalog geometry alone does not establish those bonds.
-A concrete cantilever envelope supports the approach without relying on the veneer,
-foam or plywood buck. It is a **candidate six-inch reinforced section**, not an
-approved pour: root reinforcement, hooked-bar development, the curb/footing interface,
-concrete cover, existing reinforcement and construction-joint details remain unresolved.
-Keep the cavity, weeps and the isolation from the separately supported brick open.
+2026-11-01). **Since 2026-11-04 the approach is one composite tread on a foam bed (§6)**:
+the AridDek boards, both cross bearers and the concrete cantilever are deleted with
+`AO-B-PATIO-CURB-APPROACH`. Two blind recesses cut the foam down under the tread —
+`AO-B-PATIO-TREAD-BED` through the curb's membrane/XPS tail (stopping at concrete) and
+`AO-SG-BRKBM-TREAD-BED` through W-SG-BRKBM's 2" board — and neither lowers the concrete seat
+or the flood-containment edge. The section-intersection check now tests the sill, tread,
+pan drop and box sides against every solid and wall layer near the door, not only the host
+(it is how the old approach was found 2.2" inside the beam), and passes. The box sides
+(Trex fascia, frame to the brick's back) close the cavity at the reveal. Keep the cavity,
+weeps and the isolation from the separately supported brick open.
 
 ### Study
 
@@ -206,3 +201,43 @@ unit label, order confirmation or warranty extension was obtained.
    and the stock head kit, and verify both leaf swings, bolt operation and weather seals.
 8. Measure finished crest/landing heights and clear headroom; water-test drainage and
    adhesion in the completed detail before concealing inaccessible joints.
+
+## 6. The patio's foam-bed tread (owner, 2026-11-03; modelled 2026-11-04)
+
+Measured off the court floor (−109 7/16"): beam top **7.0"** (held; never lower), threshold
+crest **7.4"** (R311.3.2 reads 7.6" with the 1/4" tolerance, ≤ 7.75").
+
+- **Tread:** one Trex Enhance Basics board, Tide Pool, 0.94 × 5 1/2", the reveal's width,
+  laid continuously on the curb's foam, whose top course is cut down and refilled in 40 psi
+  XPS (`foam-bed-course`, ASTM C578 Type VI). Not fastened to the beam: nothing metal crosses
+  from the house into the court, and the tread is free for the 1/4" each way reserved.
+- **Water layer:** a PVC sheet under the board, lapped under the SureSill pan's front lip,
+  over the foam, turned onto the beam top.
+- **Box sides:** Trex Tide Pool fascia, 0.56 × 7 1/4", ripped ~6" for the jambs and head,
+  frame to the brick's back, sealed to the brick. Replaces the patio's Captivate returns
+  (the study keeps Captivate). Three 12' boards: no two of the 6.8' jambs and 5.3' head share one.
+- **Accepted (owner):** Trex publishes its boards on joists at 16" with air under them; laid
+  continuously on foam is outside that install — a warranty exposure, not a code one.
+
+**Bearing, by hand** (`engineering/exterior_door_support.foam_bed_support_report`; reproduced
+by `tests/test_exterior_door_catalog.py`). The 300 lb concentrated load is taken over a
+square of the tread's own width, and the 60 + 10 psf uniform load added on top:
+
+    spread area    5.5 × 5.5                       = 30.25 in²
+    point          300 / 30.25                     =  9.917 psi
+    uniform        70 / 144                        =  0.486 psi
+    bearing                                          10.403 psi
+    allowable      40 psi rated / 3 (creep)        = 13.333 psi
+    d/c            10.403 / 13.333                 =  0.780   ✓
+
+No root connection and no bar development exist, so neither is UNKNOWN.
+
+**The heights the engine drew differ from the owner's sketch, and the engine's rule is the
+honest one.** The tread's back is set at the sill's NOSE (`approach_back = max(seat + 1/2",
+nose)`), so the sill drains onto it: 6.60" above the court at the sill, 6.49" at its outer
+edge (1:48 over 5 1/2"). The sketch had 7 1/4" → 7 1/8", which is above the sill nose (6.60")
+and would dam it. So the tread's outer edge stands ~1/2" BELOW the beam top, not 1/8" above
+it, and its 1/2" slot at the beam's arris drains down onto the sheet rather than over the
+beam. **Open:** where that slot's water goes once the sheet is turned up onto the beam — an
+installed section has to give it an outlet (a sheet that stops at the board face and lets go
+into the drained bed, or a lower beam top). `integrity.doorway_assembly` carries it as UNKNOWN.

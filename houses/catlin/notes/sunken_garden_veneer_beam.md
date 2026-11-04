@@ -5,13 +5,15 @@
 `FT-B-S3` (the footings it is isolated from), `SG_VENEER_BEAM_14` (the assembly).
 **Written:** 2026-09-05, by hand. §6e re-worked 2026-09-21 (hooks, enclosing ties, footing
 dowels); §6f added 2026-09-22 (TMS ℓ/600, end fixity, the joint rows) and §6d superseded by it.
-**§6j (2026-10-10) is the graded basis now:** the beam bears on FT-SG-W1/E1's toes, spans
-11'-0", and its torsion falls under §22.7.4.1's threshold — a simple-span cage, 91.9 lb.
-**Oracle for:** `checks/structural/masonry_joint.py` (§6g, `tests/test_masonry_joint.py`), and
-`engineering/veneer_beam.py` (`veneer_beam/W-SG-BRKBM`) since 2026-09-20 —
-§6j is worked at the model's own geometry and `tests/test_veneer_beam_calc.py` reproduces it;
-§3/§4 still oracle the report-side `engineering/retaining_court/veneer_beam.py` at their literals.
-The masonry anchors (§5.1) are NOT computed: they are `veneer_anchor/W-B-BRICK`, a deferral.
+**§6k (2026-11-04) is the basis now:** the beam is bedded on stone (`FB-SG-BRKBM`) flush on
+the house strips, a soil-supported veneer footing; `veneer_beam/W-SG-BRKBM` retired, and the
+brick stands 6 1/2" off the studs, inside the 2024 IRC's W2.8 tie row. §6j (the 11'-0" span
+on the toes) is kept as the record of the member as it was graded.
+**Oracle for:** `checks/structural/masonry_joint.py` (§6g/§6k, `tests/test_masonry_joint.py`),
+`checks/structural/veneer_cavity.py` and the `veneer_anchor` keys (§6k,
+`tests/test_veneer_cavity.py`), and `engineering/veneer_beam.py` — §6j's arithmetic, at a
+synthetic span now that catlin keys no beam (`tests/test_veneer_beam_calc.py`); §3/§4 still
+oracle the report-side `engineering/retaining_court/veneer_beam.py` at their literals.
 The geometry is pinned by
 `tests/test_catlin_contract_m3.py::test_the_veneer_beam_isolates_the_house_footing`.
 **Companions:** `notes/sunken_garden_court_free_body.md` — the court's retaining system,
@@ -26,11 +28,10 @@ one that needs a seal.
 > `structural.foundation_unbalanced_fill` on the last published row of IRC Table
 > R404.1.2(8). This beam is a thermal device that happens to be made of concrete.
 
-> ⚠ **The veneer anchor is an engineered item.** The airspace itself is 4" and compliant,
-> but the beam holds the wythe ~10" off the backup's structural face and no prescriptive
-> table reaches that. See §5.1 — including why IRC R703.15's 4" foam limit does *not*
-> apply here, and why the wythe must NOT be anchored to the side retaining walls.
-> The ties are an engineered item under TMS 402 and are NOT designed in this note (§5).
+> ⚠ **The ties are prescriptive on the 2024 IRC, an alternate under the adopted 2018 one
+> (§6k).** 6 1/2" back of brick to face of stud: W2.8 adjustable wire reaches 6 5/8"; the
+> 2018 table stops at 4 1/2". `veneer_anchor/W-B-BRICK` is the R104.11 request. §5.1's
+> reasons not to anchor the wythe to the side walls, and why R703.15 does not govern, stand.
 
 ---
 
@@ -246,7 +247,9 @@ corner continuity into the side walls (§5.2) is still the engineer's.
 
 ## 5. What is NOT graded here, and what needs a seal
 
-1. **The veneer ties — still engineered, but for a different reason since 2026-09-05.**
+1. **The veneer ties.** ⛔ *Superseded by §6k (2026-11-04): the brick is 6 1/2" off the studs
+   and the EPS is gone. The R703.15 and side-wall paragraphs below still hold.*
+   **Still engineered, but for a different reason since 2026-09-05.**
    The airspace is **4"** now, not 6", which is inside IRC R703.8.4's 1"-minimum and inside
    the 4-1/2" the prescriptive tables stop at. That is not what makes this hard. The beam
    fixes the wythe's foot 6" off the backup's structural face, so the anchor must reach
@@ -772,7 +775,7 @@ closes ℓ/600 on its own. The elastic estimate at the new span is α = 1/(1 + 2
 cast monolithic with the walls (placement 2) and its added rows all pass; whether to keep
 claiming it is the engineer's call, and nothing now depends on it.
 
-### 6j. The beam bears on the court footings' toes (2026-10-10) — the record now
+### 6j. The beam bears on the court footings' toes (2026-10-10) — ⛔ superseded by §6k
 
 > **Supersedes §3's span, §4a's steel, §6c–§6f and §6i as the graded basis.** They are kept
 > as written: each was right about the member the engine was then asked to grade.
@@ -889,6 +892,74 @@ above the footing top that leaves it bearing on a 7" lip) puts the span back to 
 back to 1.35 φT_th; `test_without_the_toe_bearing_the_light_cage_would_not_do` shows the
 record failing at once. So does moving the brick further off the beam's centre.
 
+### 6k. Bedded on stone, flush on the house strips (2026-11-04, owner) — the basis now
+
+**The member.** `W-SG-BRKBM` was always cast on the court's bed; grading it as an 11'-0" span
+(§6j) was an assumption. It now states its bed — `FB-SG-BRKBM`, drained NFS stone on the
+court's wall-bed plane (−163 7/16"), 12" wide, 43 1/4" under the beam, pipeless, letting go
+through FB-SG-W1's stone into FB-SG-W2's course — and `engineering/veneer_beam` skips a wall a
+bedding hosts. `veneer_beam/W-SG-BRKBM` retires; the kind stays for a true spanning beam. The
+§6j cage is kept as nominal. **Nothing grades its bearing**: the wythe's 268.86 plf (§6j) plus
+12" × 17 3/4" at 150 pcf = 221.9 plf is 490.8 plf on 12", ≈ 0.49 ksf — the same gap
+`W-SG-ARCH` has.
+
+**The geometry (y, inches; north toward the house).**
+
+| element | before | now |
+|---|---|---|
+| FT-B-S1..S4 south face | −4 | −4 |
+| beam board (2" XPS) | −8..−10, 4" stone behind | **−4..−6**, flush on the strips |
+| beam concrete | −10..−22 | **−6..−18** (same 12" × 17 3/4", same z) |
+| FT-SG-W1/E1 north end | −6.685 | **−6** (0.685" extension) |
+| TB-SG-W1/E1 (footing level) | 2.5", −4.185..−6.685 | **2", −4..−6** — one plane with the beam's |
+| backup foam | 4" XPS + 2" EPS, face −6.06 | **4" XPS**, face −4.06 |
+| W-B-BRICK back / front | −10.06 / −13.685 | **−6.000 / −9.625** |
+| N-B-BRICK-W / -E (x) | 9'-10" / 26'-5 5/8" | **9'-6 1/2" / 26'-5 1/2"** |
+
+**The cavity, by hand.** Sheathing (or curb concrete) outer face y = 0; stud face +1/2"
+(1/2" plywood). Membrane 0.06 + 2 × 2" XPS: foam face −4.06.
+
+    airspace           6.000 − 4.060                 = 1.940"   ≥ 1" nominal          ✓
+    brick to studs     6.000 + 0.500                 = 6.500"   W-B-S2-FR / W-B-S3-FR
+    brick to concrete  6.000 + 0                     = 6.000"   W-B-S1 / W-B-S4 ends
+    2024 W2.8 row      6.625 − 6.500                 = 0.125" of margin
+    2018 W1.7 row      4.500 < 6.500                 → past the adopted table
+
+No sheathing change moves the margin: brick-to-stud is set by the strip face, the 2" board and
+the stud line. **Field note for the section: 6 1/2" max, back of brick to face of stud** — the
+mason lines the brick off the studs, not off the beam's edge, so the pour's tolerance cannot
+spend it. Fallback, not planned: the strips 5/8" north (deepened to keep P ≤ T).
+
+**Table R703.8.4(1), by edition (checked 2026-11-03).** Maximum is to the BACKING; minimum
+airspace 1" nominal from the sheathing or foam in every edition.
+
+| edition | W1.7 adjustable wire | W2.8 adjustable wire |
+|---|---|---|
+| 2018 IRC (MN 2020, adopted) | 4 1/2" | no row |
+| 2021 / 2024 IRC (= TMS 402-16) | 4 5/8" | **6 5/8"** |
+
+**The anchors.** Basis (owner, 2026-11-03): the 2024 IRC W2.8 row, claimed under R104.11 as an
+alternate to MN 2020 — one AHJ request, no seal. W2.8 adjustable wire (3/16"), screwed to the
+studs through 4" XPS and 1/2" plywood, ~40 ea. R703.8.4.1: one tie per 2.67 sf, ≤ 32" o.c.
+horizontally and 24" vertically; 2 sf only over 30 psf. ASD Zone 5 wall suction at h = 25.5',
+V 115, Exp B: q_h = 0.00256 × 0.669 × 0.85 × 115² = 19.25 psf; × (1.4 + 0.18) = 30.42 psf;
+× 0.6 = **18.25 psf** < 30 → 2.67 sf. `structural.veneer_cavity_width` grades all of this;
+under the 2018 base it reports `veneer_anchor/W-B-BRICK`, which keys off the same measurement
+and retires with no house edit when the profile adopts the 2021 or 2024 IRC.
+
+**The joints (both 1/2", Class 50).** Run 317.5 − 114.5 = **203.0"**. TN 18A Eq. 1:
+0.0009 × 203.0 / 2 = **0.09135"** per joint against 0.5 × 0.50 = 0.25" → **d/c 0.365** each.
+One joint taking the whole run: 0.1827 / 0.25 = **0.731**. A general-purpose Class 25 silicone
+doubles both (0.731 / **1.462, FAIL**), which is why the spec names ASTM C920 Type S Grade NS
+Class 50 neutral cure (DOWSIL 790/795, GE SCS2000, Pecora 890NST as equals); acetoxy cure is
+not for alkaline masonry. Tooled 1/4" deep over 5/8" closed-cell rod (C1330 Type C).
+
+**What did not move.** The beam's section, z and steel; `W-SG-ARCH`; the free body's
+`thermal_break_transfer` inputs (board height and length) — only the board's plane, and the
+footing-level boards' thickness (2.5" → 2"), which `notes/sunken_garden_court_free_body.md`
+§11o records. The patio's tread over the cavity is
+`notes/french_door_catalog_installation.md` §6.
+
 ## Sources
 
 - IRC 2018 R703.8.4 — anchored masonry veneer, airspace and tie spacing.
@@ -900,10 +971,12 @@ record failing at once. So does moving the brick further off the beam's centre.
 - TMS 402/602-16 §6.2 — anchored veneer, and the engineered path a ~10" anchor reach requires.
 - IRC 2021 R703.15 — cladding attachment over foam sheathing; **excepts anchored masonry
   veneer to R703.8**, which is why the 4" foam limit in `plans/cost-options.md` §6 is not
-  this wall's limit. Note the Airspace column of Table R703.8.4(1) could NOT be sourced:
-  ICC publishes the table with the rows "not shown for brevity" and the full text is
-  paywalled. The 1" minimum is confirmed; the 4-1/2" ceiling rests on TMS 402, not on a
-  quoted IRC row.
+  this wall's limit. Table R703.8.4(1) by edition is §6k's (checked 2026-11-03).
+- IRC 2018 / 2021 / 2024 Table R703.8.4(1) and R703.8.4.1 — tie types, the maximum distance
+  to the backing (W1.7 4 1/2" in 2018; 4 5/8" and W2.8 6 5/8" in 2021/2024, = TMS 402-16),
+  1" nominal airspace, 2.67 sf per tie (2 sf over 30 psf), 32"/24" o.c.; IRC R104.11
+  (alternative materials and methods). TMS 402-22 / BIA TN 3C measure 6" to the face of
+  ≥100 psi sheathing instead; not the basis here.
 - BIA Technical Note 18 — clay masonry movement; the basis for the end soft joints in §5.1.
 - BIA Technical Note 18A, *Accommodating Expansion of Brickwork* (May 2019), Eq. 1, sealant
   and backer-rod guidance — §6g.

@@ -2607,6 +2607,41 @@ boards — a conservatism of the axis-to-axis drawing, to settle if that wall is
 Without the clip the same board reads 106.85", 6× today's thrust. Pinned by
 `test_thermal_break.py::test_a_raised_layer_board_stops_at_the_house_concrete`.
 
+### 11o. Addendum 2026-11-04 — one board plane, flush on the house strips
+
+`W-SG-BRKBM` was bedded on stone and moved 4" north so its 2" board sits flush on
+FT-B-S1..S4's −4" face (`notes/sunken_garden_veneer_beam.md` §6k). FT-SG-W1/E1 run 0.685" north
+to −6", so `TB-SG-W1`/`E1` are now **2"** (not 2.5") on the same −4..−6" plane; the stem boards
+stay 2.5" at −4.185..−6.685". Board heights and lengths are unchanged (ΣA 7,804.5 in²), so the
+capped thrust is unchanged: **T = 3.5 × 7,804.5 = 27,315.75 lb**, line 22,155 lb, and every
+near-line and slab-edge row reads as before.
+
+| row (capped, basis 9) | before | now |
+|---|---|---|
+| court run off the footing/beam plane | 322.565" / 319.0" | **323.0"** (328.0 − 5.0) |
+| compliant strain, footing + beam boards | 0.053223 / 0.052635 | **5.5e-6 × 30 × 323.0 = 0.053295** (0.426) |
+| board strain, footing boards | 3.5/525 × 2.5 = 0.016667 / 0.071429 | **× 2.0 = 0.013333 / 0.057143** (0.233) |
+| global sliding FS | 3.4586 | **3.4588** — D +16.7 lb, the 3.375" longer brick at 8 psf |
+
+Uncapped (basis 8, the ablation): S = 2 × 525 × 672/2.0 × 1.65e-4 + 2 × 275,782.5 × 2.758e-5 +
+1,006,425 × 1.65e-4 = **239.484 lb/in**; μw = 97,508 / 323.0 = 301.882; x = (56,210 + 97,508) /
+(239.484 + 603.764) = **182.29"**; T = **43,656.2 lb**; a footing board's closure 0.030078" (σ
+7.896 psi), the stem's 0.0050277" (σ 1.0558 psi, floor line 778.4 lb); line 42,099.5 lb
+(sustained 0.835, OVER only past ×1.5 as before). The near-line rows uncapped are the line
+solver's (62,320 lb·in, 0.734), not re-worked here.
+
+**Two engine defects the flush board found.** (1) `facing_footings` tested the gap as `0 ≤ gap`;
+a board flush on the strip is a few nanometres either side of zero after the metre-to-inch
+round trip, so it read the strips as unfaced and took `FT-B-CS`'s end, 4" behind, as the line —
+near-line flexure fell to zero. A 1e-6" flush tolerance fixes it. (2) `take_down` counts every
+wall whose axis lies within 12" of the house slab as house dead load; the beam's axis is −11"
+now, so it booked the court's own 3,994 lb as house weight. The court structure is excluded.
+
+**One plane, drawn twice.** Where the beam runs into the toes (x 108..150" and 282..324") its
+board and TB-SG-W1/E1 are the same 2" plane, so 2 x 42" x 8" (672 in²) is counted in both:
+ΣA over-states T by 3.5 x 672 = 2,352 lb (the safe side) and the take-off orders that XPS twice.
+Not corrected here; `solids3d_overlaps.json` records it (thermal_break|wall).
+
 ## 12. The court narrowed to 17'-0" clear (2026-09-22)
 
 The side walls came 1'-0" in each so both decks span wall to wall (DESIGN-LOG.md, "Sunken

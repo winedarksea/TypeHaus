@@ -84,14 +84,10 @@ def test_the_south_wall_carries_no_parge_and_bands_only_its_buried_ends(catlin_m
         wall = catlin_model.wall(tag)
         assert not any(ly.name == _PANEL for ly in wall.layers), tag
         names = [ly.name for ly in wall.layers]
-        # The outermost layer is the 4" EPS since 2026-09-05, not `xps-b`. The assertion
-        # this test is making has NOT been relaxed: what must not be out here is a
-        # *protective skin* (`_PANEL`, checked just above), and the reason is unchanged —
-        # this foam lives inside W-B-BRICK's ventilated cavity where there is no UV and no
-        # impact. EPS outboard of XPS is more insulation, not a finish. Its 2" thickness is
-        # bounded by the wall above (see test_catlin_contract_m3), not by anything here.
-        assert names[-1] == "eps-ci", tag
-        assert names[-2] == "xps-b", tag
+        # The outermost layer is `xps-b` again since 2026-11-04 (the 2" EPS came off). What
+        # must not be out here is a *protective skin* (`_PANEL`, checked just above): this
+        # foam lives inside W-B-BRICK's ventilated cavity, with no UV and no impact.
+        assert names[-1] == "xps-b", tag
 
 
 def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model):
@@ -276,8 +272,8 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
 # of the sunken garden where 3 5/8" of brick does.
 
 _WYTHE_IN = 3.625
-#: The cavity, set by where W-SG-BRKBM can put its north face — not by R703.8.4.
-_CAVITY_IN = 4.0
+#: The cavity, measured: W-SG-BRKBM's north face (-6.0") less the backup's XPS (-4.06").
+_CAVITY_IN = 1.94
 
 
 def test_the_veneer_is_one_wythe_and_the_cavity_is_clear(catlin_model):
@@ -291,7 +287,9 @@ def test_the_veneer_is_one_wythe_and_the_cavity_is_clear(catlin_model):
     a live feature.
 
     What is pinned here is the depth itself. The wythe is still one 3 5/8" layer, and the
-    open CAVITY is 4".
+    open CAVITY is 1.94" since 2026-11-04 (notes/sunken_garden_veneer_beam.md §6k): the beam
+    moved flush onto the house strips and the backup's EPS came off. The history below is
+    the 2026-09 arrangement.
 
     The 2" is not a loosened 6". The wythe's position is a foundation fact: it was re-founded
     2026-09-05 onto the grade beam W-SG-BRKBM, whose concrete north face can reach y=-10" and

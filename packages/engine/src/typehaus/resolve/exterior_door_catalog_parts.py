@@ -10,10 +10,45 @@ _IN = 0.0254
 def catalog_sill_sections(spec, installation, placement, opening, layout):
     builder = DoorSectionBuilder(placement.outward_sign, layout.width)
     _add_factory_sill(builder, spec, layout)
-    _add_approach_boards(builder, spec, layout)
+    if spec.support_kind == "foam_bed":
+        _add_foam_bed_tread(builder, spec, layout)
+    else:
+        _add_approach_boards(builder, spec, layout)
     _add_pan_and_apron(builder, spec, opening, layout)
-    _add_approach_supports(builder, spec, placement, layout)
+    if spec.support_kind != "foam_bed":
+        _add_approach_supports(builder, spec, placement, layout)
     return tuple(builder.sections)
+
+
+def _add_foam_bed_tread(builder, spec, layout):
+    """One board the reveal's width, laid on the foam; the foam is the host's own layers."""
+    builder.section(
+        "approach-tread",
+        (
+            (layout.end, layout.approach_back - layout.thickness),
+            (layout.outlet, layout.approach_front - layout.thickness),
+            (layout.outlet, layout.approach_front),
+            (layout.end, layout.approach_back),
+        ),
+        spec.approach_material_ref,
+        "floor",
+        span=layout.width,
+        source_url=spec.approach_source_url,
+    )
+    # The host foam's top course, cut down and replaced in the rated foam under the sheet.
+    bottom = layout.pan_front - spec.foam_course_depth.meters
+    builder.section(
+        "foam-bed-course",
+        (
+            (layout.end, bottom),
+            (layout.outlet, bottom),
+            (layout.outlet, layout.pan_front),
+            (layout.end, layout.apron_back),
+        ),
+        spec.support_material_ref,
+        "rigid",
+        span=layout.width,
+    )
 
 
 def _add_factory_sill(builder, spec, layout):
@@ -95,7 +130,7 @@ def _add_pan_and_apron(builder, spec, opening, layout):
             (layout.outlet, layout.pan_front + layout.membrane),
             (layout.end, layout.apron_back + layout.membrane),
         ),
-        spec.pan_material_ref,
+        spec.apron_material_ref or spec.pan_material_ref,
         "membrane",
     )
     section(

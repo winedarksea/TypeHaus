@@ -274,62 +274,22 @@ NODES = [
     # the concrete, both ends ``open_end`` like the sunken garden's N-SG-NW/NE (not part of
     # any wall loop). x runs only as far as the excavation in front of it: N-B-S1's x (8'-10")
     # to 28'-0" (params/sunken_garden.py's ``_x_ax_e``, where grade comes back up).
-    # y is NOT 0'-0": the south walls' node line is the concrete face, and the south stack
-    # carries 4.06" outboard of it (0.06" waterproofing + 2x 2" XPS) — a tail that is
-    # independent of the pour thickness; the veneer stands off that finished face, hence
-    # the -4.55".
+    # y is the backup's FOAM face (-4.06": 0.06" membrane + 2x 2" XPS off the sheathing /
+    # curb face on y=0), and the 1.94" `air-gap` puts the brick's back on -6.0", flush with
+    # W-SG-BRKBM's concrete north face (2026-11-04; notes/sunken_garden_veneer_beam.md §6k).
+    # Re-strike this node off the foam itself, never off a finish face: a face that moves
+    # without its node leaves a void no layer describes (the 2026-09-04 parge lesson).
+    # The reveals are `from_node` along the axis, so a y-move leaves them concentric.
     #
-    # ** THE STAND-OFF IS 8.05" SINCE 2026-09-05, NOT 4.05". ** The court walls' outboard
-    # tail grew 4" when `_GARDEN_CURB_CORE` / `_GARDEN_FRAMED_OUTBOARD` picked up their EPS
-    # (plan/assemblies.py), and this node is pinned to that finished face, so it followed.
-    # The BRICK does not move: `BASEMENT_BRICK_VENEER`'s `air-gap` came down 6" -> 2" in the
-    # same edit and the two cancel, leaving the wythe on W-SG-BRKBM at -10.05..-13.675"
-    # exactly where the beam puts it. The reveals are `from_node` along the AXIS, so a
-    # y-move leaves them concentric — `integrity.reveal_concentric` is unmoved by this.
-    #
-    # Note this is the OPPOSITE bookkeeping from 2026-09-04, when the cavity absorbed the
-    # change and the node held still. Whichever side moves, the invariant to protect is the
-    # brick's own y, which the grade beam fixes and nothing else may.
-    #
-    # The history below is the 4.05" era and is kept because the trap it records is live:
-    # a face that moves without its node leaves a void no layer describes.
-    #
-    # The stand-off was 4.05" — the south stack's finished face, bare XPS. It was 4.55" while
-    # the south wall carried a 1/2" parge, because the wall aligns on face("air-gap-int")
-    # and that face sat on the parge. **When the parge was deleted the node did not follow
-    # it, and that left a 0.5" void between the XPS at -4.05" and the veneer's air-gap layer
-    # at -4.55" which NO layer described** — the built cavity was 1-1/2" while the model said
-    # 1". Fixed 2026-09-04 by moving the node onto the foam and growing `air-gap` to 1-1/2"
-    # to suit (plan/assemblies.py BASEMENT_BRICK_VENEER).
-    #
-    # ** THE VENEER ITSELF DOES NOT MOVE, WHICH IS THE WHOLE POINT OF FIXING IT THIS WAY. **
-    # The two edits cancel at the air gap's outboard face: the wythe stays at -5.55..-9.175",
-    # so the two arched reveals, the veneer's own footing and every garage-relative literal
-    # downstream are all untouched. Only the 0.5" of nothing becomes something.
-    Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(9, 10), inch(-6.06)),
+    # x: 9'-6 1/2", 1/2" off W-SG-W1's clear face (9'-6") — the west soft joint
+    # (plan/masonry_joints.py).
+    Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(9, 6.5), inch(-4.06)),
          open_end=True),
-    # ** 27'-6", NOT 28'-0", SINCE 2026-09-05. ** 28'-0" is W-SG-E1's AXIS, and while the
-    # wythe stood at y -5.55..-9.175" that was harmless: it ended north of the retaining
-    # wall's north end (-10") and the two never met in plan. Moving the veneer south to
-    # -10.05..-13.675" for its 6" cavity walked its east 6" straight INSIDE that wall —
-    # 4.25 SF of brick with concrete already in it, billed and drawn and unbuildable, at
-    # 0 FAIL (nothing grades masonry against concrete; `structural.concrete_interference`
-    # only sees pours). 27'-6" is `_x_in_e`, the court's own clear face, so the wythe now
-    # dies against the retaining wall instead of into it.
-    #
-    # The reveals do NOT move: they are positioned `from_node("N-B-BRICK-W", ...)`, measured
-    # from the WEST node, so shortening the east end leaves every station where it was.
-    # `integrity.reveal_concentric` is what proves that, and it still passes.
-    #
-    # ** 3/8" WEST OF THE CLEAR FACE SINCE 2026-09-22, AND THE 3/8" IS THE SOFT JOINT. **
-    # At 27'-6" the wythe ended HARD against W-SG-E1's face: BIA Technical Note 18A's
-    # sealant joint over compressible filler — which §5.1 of notes/sunken_garden_veneer_
-    # beam.md has required since the wythe was drawn — had nowhere to go, while the west end
-    # had 4". 27'-5 5/8" leaves 3/8" clear at this end, TN 18A's minimum for a vertical
-    # expansion joint and comfortably over the ~0.15" of moisture-plus-thermal movement the
-    # 18'-8" run wants. The FILLER is still carried by no element and graded by no rule; the
-    # record's MODEL GAP note says so. Costs 0.3 SF of brick (112.5 -> 112.2).
-    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(26, 5.625), inch(-6.06)),
+    # 26'-5 1/2": 1/2" west of W-SG-E1's clear face (26'-6"), the east soft joint. Not
+    # 28'-0" (W-SG-E1's axis), which walks the wythe inside the retaining wall at 0 FAIL —
+    # nothing grades masonry against concrete. `structural.masonry_movement_joint` grades
+    # both 1/2" joints off these two nodes.
+    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(26, 5.5), inch(-4.06)),
          open_end=True),
 ]
 
@@ -547,9 +507,8 @@ WALLS = [
     # of XPS continue on exactly the plane they occupy on W-B-S1 and W-B-S4 either side, and
     # W-B-BRICK's stand-off and its two arched reveals do not move (see N-B-BRICK-W
     # above).
-    # The tie hardware does change in reality — corrugated ties into framing instead of
-    # anchors into concrete — which is ordinary for veneer over wood, and is said out loud
-    # here because the model cannot say it.
+    # The ties are W2.8 adjustable wire screwed to these studs through the foam and plywood
+    # (IRC 2024 Table R703.8.4(1)); `structural.veneer_cavity_width` grades the reach.
     #
     # `interior_room` is authored on both rather than left to the storey's outward sign:
     # there are two wall edges on each of these node pairs now (the curb and the framing),
@@ -1007,18 +966,16 @@ WALLS = [
     # footing — the footing whose underside is level with the court floor and whose frost
     # cover is the R403.3 wings. The break meant to interrupt it was authored twice and
     # drawn never (see SG_VENEER_BEAM_14 in plan/assemblies.py for both spellings and why
-    # neither existed). It now bears on a grade beam spanning to W-SG-W1 and W-SG-E1, so
-    # its whole load and heat path goes into the court's own structure, which is already
-    # broken from the house at the TB-SG-* isolation boards.
+    # neither existed). It now bears on W-SG-BRKBM, a grade beam bedded on the court's
+    # stone (FB-SG-BRKBM) behind a 2" board flush on the house strips, so its load goes to
+    # the court's own bed and its heat path is broken at that board.
     #
     # Bottom stays at -8'-9", now because that is the beam's top rather than a plinth's: it
     # still has to clear D-B-PATIO's raised threshold, and a base course should not sit in
     # standing water whatever the brick is.
     #
-    # ** THE WYTHE MOVED 4 1/2" SOUTH, AND NOT FROM HERE. ** The 6" cavity is authored as
-    # BASEMENT_BRICK_VENEER's `air-gap` thickness, not as a node position, precisely so the
-    # two arched reveals below — positioned `from_node` along the wall AXIS — do not move
-    # with it. N-B-BRICK-W/-E are untouched at -4.05".
+    # The node line is the backup's foam face (-4.06"); the 1.94" `air-gap` puts the brick's
+    # back on the beam's north face (-6.0"), 6 1/2" off the studs (§6k of the veneer note).
     #
     # Authored EAST->WEST — opposite W-B-S2/W-B-S3 — deliberately: this wythe is its own
     # wall-graph component (two open ends, no loop), so resolve/orientation.py hands it
@@ -1199,13 +1156,14 @@ OPENINGS = [
                  position=from_node("N-B-S2", inch(8.34375)),
                  width=inch(63.3125), height=inch(1.75), sill_height=inch(5.5),
                  depth=inch(6), depth_from="interior"),
-    # Blind recess through the curb's membrane/XPS tail, stopping at concrete. The approach
-    # remains below W-B-S3-FR's base; no opening is cut into the framed wall above it. The
-    # 6.06" depth is checked against GARDEN_CURB_6's resolved exterior layers.
-    RoughOpening(uid="CBPCURBAPP", tag="AO-B-PATIO-CURB-APPROACH", host="W-B-S3",
+    # The tread's bed (2026-11-04): the curb's membrane/XPS tail cut down under D-B-PATIO's
+    # Trex tread, stopping at concrete, and refilled with 40 psi XPS (the installation's
+    # `foam-bed-course`). Its floor is that course's underside. Replaced
+    # AO-B-PATIO-CURB-APPROACH, the AridDek approach's 6 1/2" recess.
+    RoughOpening(uid="N1SP53PC4S", tag="AO-B-PATIO-TREAD-BED", host="W-B-S3",
                  position=from_node("N-B-S2", inch(8.34375)),
-                 width=inch(63.3125), height=inch(6.5), sill_height=inch(0.75),
-                 depth=inch(6.06), depth_from="exterior", framing_required=False),
+                 width=inch(63.3125), height=inch(2.75), sill_height=inch(4.5),
+                 depth=inch(4.06), depth_from="exterior", framing_required=False),
     # WT-1424: a sauna wants a small window, less glass to lose heat through. The 14"
     # family's one appearance in a concrete wall, where the usual 16" stud-module reason for
     # that width doesn't apply — size is the point here. The retired WT-3660 type and
@@ -1234,16 +1192,17 @@ OPENINGS = [
     # WIN-B-SAUNA and D-B-PATIO sit in the framed walls; these are RoughOpenings for the
     # holes the wythe in front of them needs, each with its own segmental brick arch — not a
     # duplicate Window/Door, which would double the schedule and takeoff.
-    # Positioned off N-B-BRICK-W (shares N-B-S1's x). Segmental, not semicircular: the
+    # Positioned off N-B-BRICK-W, 3 1/2" west of N-B-S1F (2026-11-04), so each offset is
+    # the window's/door's own plus 3 1/2". Segmental, not semicircular: the
     # rise is ~1/7 of clear width, and ``height`` includes it, so the springline is
     # ``height - rise``. ``sill_height`` is re-datumed off W-B-BRICK's own base
     # (-8'-5", not -9'): the window's 3'-8" becomes 3'-1", the door's 7" threshold becomes 0.
-    # 3'-7" follows WIN-B-SAUNA onto its stud bay centre. The reveal and the window it
+    # 3'-10 1/2" follows WIN-B-SAUNA (3'-7" off N-B-S1F) onto its stud bay centre. The reveal and the window it
     # reveals must stay concentric — `integrity.reveal_concentric` FAILs if they are more
     # than 1" apart — and only the offset moved; the elevations did not (both sills still
     # land at -65 7/16").
     RoughOpening(uid="CBO601AAAA", tag="AO-B-BRICK-WIN", host="W-B-BRICK",
-                 position=from_node("N-B-BRICK-W", ft(3, 7)),
+                 position=from_node("N-B-BRICK-W", inch(46.5)),
                  width=inch(14), height=inch(20), sill_height=inch(37),
                  arch=Arch(rise=inch(2))),
     # The 80-inch crown is below the door head, overlapping its rectangular opening.
@@ -1255,7 +1214,7 @@ OPENINGS = [
     # on its own wall and nothing carried the reveal with it. `integrity.reveal_concentric`
     # grades that now, and test_catlin_contract_m3 pins both pairs. Edit the two together.
     RoughOpening(uid="CBO602AAAA", tag="AO-B-BRICK-DOOR", host="W-B-BRICK",
-                 position=from_node("N-B-BRICK-W", inch(106.34375)),
+                 position=from_node("N-B-BRICK-W", inch(109.84375)),
                  width=inch(63.3125), height=inch(80), sill_height=ft(0),
                  arch=Arch(rise=inch(8))),
 ]

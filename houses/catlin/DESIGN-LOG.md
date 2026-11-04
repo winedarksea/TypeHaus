@@ -1,3 +1,27 @@
+## Court brick veneer simplified: bedded beam, W2.8 ties, 1/2" joints, foam-bed patio tread (2026-11-04)
+
+- **Beam bedded, not spanning (owner).** `W-SG-BRKBM` is cast on stone (`FB-SG-BRKBM`) and
+  moved 4" north, its 2" board flush on FT-B-S1..S4's -4" face. A bedded wall is a veneer
+  footing: `veneer_beam/W-SG-BRKBM` retired (the ±1/4" torsion tolerance with it), §6j's cage
+  kept as nominal. FT-SG-W1/E1 run 0.685" north so TB-SG-W1/E1 (now 2") share the plane.
+- **Ties: IRC 2024 W2.8, an R104.11 alternate.** The backup's 2" EPS came off; the brick's
+  back is -6.0", 1.94" off the XPS and **6 1/2" off the studs** (W2.8 reaches 6 5/8"; the
+  adopted 2018 table stops at 4 1/2"). New check `structural.veneer_cavity_width` grades it
+  by edition; `veneer_anchor/W-B-BRICK` is re-keyed to "past the adopted table" and reads as
+  the AHJ request, retiring on a 2021/2024 profile. Rejected: a sealed TMS 402 design, 3"
+  foam, 5/8" plywood.
+- **Joints:** both ends 1/2" Class 50 neutral-cure silicone over 5/8" rod, d/c 0.365 (0.731
+  one-sided). The 4" Emseal ($1,000-1,900) is gone; `movement_joint` ~$180-370.
+- **Patio:** one Trex Tide Pool tread on a 40 psi XPS bed, PVC water sheet, Trex fascia box
+  sides to the brick; AridDek, cross bearers, the concrete cantilever and
+  `AO-B-PATIO-CURB-APPROACH` deleted. Bearing 10.40 / 13.33 psi = 0.78. The engine sets the
+  tread at the sill nose (6.6" above the court), ~1/2" under the beam top, not the sketch's
+  7 1/4" (which would dam the sill): the drain slot's outlet is open.
+- **Engine fixes found on the way:** `integrity.doorway_assembly` tests sections against
+  every nearby solid; two thermal-break defects the flush board exposed (a flush board read as
+  unfaced; the court beam booked as house dead load) — free body §11o.
+- Notes: `sunken_garden_veneer_beam.md` §6k, `french_door_catalog_installation.md` §6.
+
 ## Kitchen waste: B18 pull-out, garage carts (2026-11-03)
 
 - **Flow.** Compost: a stainless counter caddy by the sink, emptied to the on-site pile (not
