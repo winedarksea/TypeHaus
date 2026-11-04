@@ -2418,7 +2418,6 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-DOORBELL-POE" = { material = { low = 100, high = 160 }, labour = { low = 60, high = 140 } }  # 1 ea + plug-in chime
 "ED-T-CAM-PANTILT" = { material = { low = 315, high = 315 }, labour = { low = 60, high = 140 } }  # 1 ea, Omvi 3i $315 (owner, 2026-11-02)
 "ED-T-CAM-WIDE" = { material = { low = 150, high = 230 }, labour = { low = 60, high = 140 } }  # 1 ea
-"ED-T-MOTION-MYGGSPRAY" = { material = { low = 12, high = 20 }, labour = { low = 5, high = 20 } }  # 8 ea — IKEA $11.99 (2026-11-02) + 2 AAA, screwed or stuck on
 "ED-T-HP-STAT" = { material = { low = 130, high = 200 }, labour = { low = 60, high = 150 } }  # 1 ea, Aqara W200 on 24 VAC
 "ED-T-ALARM-RELAY-SMOKE" = { material = { low = 40, high = 80 }, labour = { low = 45, high = 95 } }  # 1 ea, SM120X + 4" box
 "ED-T-ALARM-RELAY-CO" = { material = { low = 50, high = 90 }, labour = { low = 45, high = 95 } }  # 1 ea, CO120X + 4" box
@@ -2699,35 +2698,37 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # which replaced the Emporia: local OCPP to Home Assistant (notes/smart_home.md).
 # Device schedule rows (owner decisions 2026-10-27, notes/workshop_receptacles.md): ranges carry over from
 # the commodity class each replaced; Matter/occupancy/USB-C/surge lines carry a retail uplift. Estimates.
+# Smart switching trimmed 2026-11-03: 11 D315S relays (exterior, plant, gym, lounge groups), no
+# companions or Matter dimmer; about $300-600 over plain paddles, down from $1,200-1,900.
 "ED-T-LEV-620-DUPLEX" = { material = { low = 11, high = 24 }, labour = { low = 40, high = 85 } }  # 1 ea (workshop RC1); T5461 + E5825, device only: box and cover in [electrical_boxes] (2026-10-29)
 "ED-T-LEV-620-FLUSH" = { material = { low = 14, high = 44 }, labour = { low = 45, high = 95 } }  # 1 ea; kettle, flush 2-gang (the old 620-DUPLEX rate)
 "ED-T-LEV-DRYER-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
-"ED-T-LEV-DUPLEX-15" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 14 ea
+"ED-T-LEV-DUPLEX-15" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 15 ea
 "ED-T-LEV-DUPLEX-20-REC" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 2 ea — E5825 in a recessed DVFR1W behind the fridge pair (2026-11-01)
-"ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 56 ea since 2026-11-01; was 58 ea (incl. ED-G-GDO-RC, ED-G-RC-E, ED-G-RC-W, 2026-10-30)
+"ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 54 ea since 2026-11-03 (two bath outlets became guide-light duplexes)
 "ED-T-LEV-620" = { material = { low = 6, high = 16 }, labour = { low = 38, high = 78 } }  # 1 ea, garage ED-G-RC-240 (T5461 single 6-20R)
 "ED-T-EVSE-JB" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea, ED-G-EV-1450 hardwire box
-"ED-T-LEV-GFCI-15" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 6 ea
-"ED-T-LEV-GFCI-20" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 20 ea
+"ED-T-LEV-GFCI-15" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 8 ea
+"ED-T-LEV-GFCI-20" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 16 ea since 2026-11-03 (bath vanities to GFCI-GUIDE)
 "ED-T-LEV-GFCI-DF" = { material = { low = 30, high = 45 }, labour = { low = 48, high = 92 } }  # 1 ea, ED-G-GDO-GFCI (GFRBF-W ~$42, McNaughton-McKay 2026-10-30)
 "ED-T-LEV-GFCI-ALARM" = { material = { low = 30, high = 70 }, labour = { low = 48, high = 92 } }  # 1 ea
 "ED-T-LEV-GFCI-WR" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 8 ea
-"ED-T-LEV-GUIDE" = { material = { low = 12, high = 28 }, labour = { low = 38, high = 78 } }  # 4 ea
-"ED-T-LEV-MATTER" = { material = { low = 40, high = 70 }, labour = { low = 40, high = 80 } }  # 24 ea
+"ED-T-LEV-GUIDE" = { material = { low = 12, high = 28 }, labour = { low = 38, high = 78 } }  # 6 ea since 2026-11-03 (+ the two breaker-GFCI bath outlets)
+"ED-T-LEV-GFCI-GUIDE" = { material = { low = 30, high = 50 }, labour = { low = 48, high = 92 } }  # 5 ea, the device-GFCI bath vanity outlets with a dusk guide light (GFNL2-W, estimate, 2026-11-03)
+"ED-T-LEV-MATTER" = { material = { low = 34, high = 60 }, labour = { low = 40, high = 80 } }  # 11 ea since 2026-11-03 (was 24 + 2 companions + 1 ELV); D315S-1BW, ~$34 retail listing (estimate)
 "ED-T-ZOOZ-ZEN32" = { material = { low = 45, high = 60 }, labour = { low = 40, high = 80 } }  # 1 ea, lounge scene keypad (2026-10-31), retailer estimate
-"ED-T-LEV-MATTER-COMPANION" = { material = { low = 25, high = 50 }, labour = { low = 40, high = 80 } }  # 2 ea
-"ED-T-LEV-MATTER-ELV" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 110 } }  # 1 ea
 "ED-T-LEV-OCC-PANTRY" = { material = { low = 40, high = 80 }, labour = { low = 40, high = 80 } }  # 1 ea
 "ED-T-LEV-OCC-PIR" = { material = { low = 40, high = 80 }, labour = { low = 40, high = 80 } }  # 1 ea
 "ED-T-LEV-QUAD-520" = { material = { low = 5, high = 18 }, labour = { low = 45, high = 95 } }  # 1 ea; two E5825, device only: box and cover in [electrical_boxes] (2026-10-29)
 "ED-T-LEV-RANGE-1450" = { material = { low = 15, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-SINGLE-520" = { material = { low = 4, high = 14 }, labour = { low = 38, high = 78 } }  # 1 ea
 "ED-T-LEV-SURGE" = { material = { low = 25, high = 50 }, labour = { low = 40, high = 80 } }  # 2 ea
-"ED-T-LEV-SW1" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 37 ea
-"ED-T-LEV-SW3" = { material = { low = 4, high = 12 }, labour = { low = 32, high = 68 } }  # 6 ea
+"ED-T-LEV-SW1" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 41 ea since 2026-11-03
+"ED-T-LEV-SW3" = { material = { low = 4, high = 12 }, labour = { low = 32, high = 68 } }  # 10 ea since 2026-11-03 (hall and stair 3-ways went plain)
 "ED-T-LEV-USBC" = { material = { low = 30, high = 55 }, labour = { low = 40, high = 80 } }  # 2 ea
 "ED-T-LUT-COUNTDOWN" = { material = { low = 30, high = 80 }, labour = { low = 60, high = 130 } }  # 1 ea
 "ED-T-LUT-DIVA" = { material = { low = 25, high = 50 }, labour = { low = 52, high = 110 } }  # 1 ea since 2026-10-31 (ED-M-BED-SW went plain)
+"ED-T-LUT-DIVA-ELV" = { material = { low = 35, high = 60 }, labour = { low = 52, high = 110 } }  # 1 ea, ED-B-SAUNA-SW (DVELV-300P, estimate, 2026-11-03)
 "ED-T-FLOOR-STAT" = { material = { low = 130, high = 300 }, labour = { low = 150, high = 300 } }  # 0 ea: the library class, kept priced
 "ED-T-FLOOR-STAT-WARMUP" = { material = { low = 200, high = 300 }, labour = { low = 150, high = 300 } }  # 3 ea, Warmup 7iE (2026-10-30 allowance)
 "ED-T-JBOX" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
@@ -2814,7 +2815,6 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LT-PSU-96-WE" = { material = { low = 51, high = 63 }, labour = { low = 45, high = 95 } }  # 13 ea — the Class 2 driver for every coloured/tunable segment (8 garage/hall, 4 coves) and the pantry jambs since 2026-10-31; Mean Well HLG-100H-24A, distributor list $51-63 (researched 2026-10-28)
 # Lighting review 2026-10-31: every coloured/tunable segment is on its own Class 2
 # HLG-100H-24A (PSU-96-WE above) with a Gledopto GL-C-001P (~$25-40, retailer estimate).
-"ED-T-LT-PSU-20" = { material = { low = 12, high = 20 }, labour = { low = 45, high = 95 } }  # 7 ea, the bath night lights; Mean Well LPV-20-24 (estimate)
 "ED-T-LT-CTRL-5IN1" = { material = { low = 25, high = 40 }, labour = { low = 20, high = 45 } }  # 12 ea
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea — ED-M-BATH2-PSU, the sauna's surface-mounted ED-B-SAUNA-LT-PSU and the closet's PAX supply (the pantry went to a PSU-96-WE 2026-10-31)
 "ED-T-LT-SCONCE-EXT" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 4 ea — WAC WS-W2605-BK $186-232 (researched 2026-10-28)
@@ -6975,8 +6975,8 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # Mark E2, RM-M-CLOSET's two IKEA OVERSIDAN strips (38" each, 76" total since
 # 2026-10-04): a finished fixture bought by the piece ($36 per 38"), so the strip is billed as tape and the channel, caps
 # and connectors are $0 — they ship in the box. $36 / 3.17 ft = $11.40/LF.
-# Mark E3, BATH2's evening glow (2026-10-12): the cabinet underside and the tub-deck
-# nosing (the toe kick became the E5 night light 2026-10-31). Damp: silicone-coated tape and a gasketed lens, so a step
+# Mark E3, BATH2's evening glow (2026-10-12): the ceiling run over the tub (the cabinet run
+# retired 2026-11-03). Damp: silicone-coated tape and a gasketed lens, so a step
 # over the bare rows on material.
 "channel:ED-T-LT-STRIP24-2700" = { material = { low = 6, high = 14 }, labour = { low = 4, high = 10 } }
 "tape:ED-T-LT-STRIP24-2700" = { material = { low = 6, high = 15 }, labour = { low = 3, high = 7 } }
@@ -7009,17 +7009,13 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 "end_cap:ED-T-LT-STRIP24-SAUNA" = { unit = "EA", material = { low = 3, high = 6 }, labour = { low = 4, high = 8 } }
 "corner_connector:ED-T-LT-STRIP24-SAUNA" = { unit = "EA", material = { low = 4, high = 7 }, labour = { low = 5, high = 9 } }
 # Lighting review 2026-10-31 (retailer estimates, not quotes). E4 RGB+CCT COB coves bill
-# their Z bead in [drywall_trims] like E. E5 night tape in a frosted channel. E6 tunable
+# their Z bead in [drywall_trims] like E. E6 tunable
 # COB. U1 is IKEA MITTLED, a finished strip bought by the piece (~$10/LF), so the channel,
 # caps and connectors are $0 as for OVERSIDAN.
 "channel:ED-T-LT-STRIP24-RGBCCT" = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
 "tape:ED-T-LT-STRIP24-RGBCCT" = { material = { low = 8, high = 18 }, labour = { low = 4, high = 9 } }
 "end_cap:ED-T-LT-STRIP24-RGBCCT" = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
 "corner_connector:ED-T-LT-STRIP24-RGBCCT" = { unit = "EA", material = { low = 3, high = 7 }, labour = { low = 6, high = 13 } }
-"channel:ED-T-LT-STRIP24-NIGHT" = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
-"tape:ED-T-LT-STRIP24-NIGHT" = { material = { low = 4, high = 10 }, labour = { low = 3, high = 7 } }
-"end_cap:ED-T-LT-STRIP24-NIGHT" = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
-"corner_connector:ED-T-LT-STRIP24-NIGHT" = { unit = "EA", material = { low = 3, high = 7 }, labour = { low = 5, high = 11 } }
 "channel:ED-T-LT-STRIP24-TUNABLE" = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
 "tape:ED-T-LT-STRIP24-TUNABLE" = { material = { low = 6, high = 14 }, labour = { low = 3, high = 8 } }
 "end_cap:ED-T-LT-STRIP24-TUNABLE" = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }

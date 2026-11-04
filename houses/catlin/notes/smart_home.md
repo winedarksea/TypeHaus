@@ -13,8 +13,7 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
    exists, and this note names it: OCPP for the EVSE (`lbbrhzn/ocpp`), and the EG4 web
    monitor in local Modbus mode.
 2. **Radios.**
-   - The HA Connect ZBT-2 runs **Thread** (Sense Pro lock, SmartWings shades, the MYGGSPRAY
-     motion sensors). It cannot run Thread and Zigbee at once (Nabu Casa FAQ), so Zigbee
+   - The HA Connect ZBT-2 runs **Thread** (Sense Pro lock, SmartWings shades). It cannot run Thread and Zigbee at once (Nabu Casa FAQ), so Zigbee
      (wanted since 2026-10-31: the GL-C-001P controllers) runs on a second dongle, a Zigbee
      coordinator on ZHA.
    - A Z-Wave 800 LR stick serves the ZEN32 scene keypad.
@@ -78,12 +77,11 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Floor heat (3 zones) | `ED-*-FH-STAT` | Warmup 7iE | Matter over Wi-Fi (local push) | Warmup app for firmware | own schedule, own sensor | Schluter warranty letter |
 | Water heater | `EQ-B-WH` | Rheem ProTerra Plug-in, EcoNet Wi-Fi + CTA-2045 port | none needed: power is switched by `CKT-WH`'s relay | Wi-Fi module never registered | tank controls | whether `esphome-econet` reaches the plug-in; not needed for backup |
 | Inverter/battery | `EQ-B-ESS-INV` | EG4 12kPV | EG4 web monitor, local Modbus (HACS) | none | inverter runs itself | firmware support for local mode |
-| Lighting | `ED-T-LEV-MATTER*` | Leviton D215S / D2ELV / companion | Matter (local push) | one My Leviton session (D215S firmware) | paddles | confirm companion `DD0SR-DLZ` |
+| Lighting (11) | `ED-T-LEV-MATTER`: exterior (entry, garage doors, porch, flood), plant photoperiod, gym x2, lounge A/B/C and peninsula | Leviton D315S-1BW, no companions | Matter (local push), ready out of the box | none | paddles | power-on behaviour after an outage |
 | Shades | `plan/window_coverings.py` | SmartWings, Matter/Thread | Matter via ZBT-2 | none | wand and remote | none |
 | Scene keypad | `ED-M-LIVING-KEYPAD` | Zooz ZEN32 | Z-Wave JS on the 800 LR stick (local push) | none | does nothing | set scene-only (relay unwired) |
 | Tape controllers (12) | `ED-M-LIVING-LT-CTRL`/`-E`, `ED-M-DINING-LT-CTRL`/`-E`, `ED-S-HALL-LT-CTRL`/`-CTRL2`, `ED-G-EAVE-W/-W2/-E/-E2-CTRL`, `ED-G-GABLE-N/-N2-CTRL` | Gledopto GL-C-001P | Zigbee, ZHA (local push) | none | its power-on state | set power-on to "previous" |
-| Closet and kitchen tape | `ED-M-CLOSET-LT-PSU`, `ED-M-KITCH-LT-PSU` (MITTLED) | IKEA TRADFRI 30 W | unpaired, or Zigbee on ZHA to dim | none | powers on lit | bench-test power-on unpaired |
-| Night-light motion (8) | `ED-*-MOTION` (`plan/motion_sensors.py`): seven baths, one at the basement stair foot | IKEA MYGGSPRAY 806.194.51, 2x AAA | Matter over Thread via the ZBT-2 (not Zigbee/ZHA) | none | relay paddles | HA support rests on IKEA's "any Matter system with a Thread border router" claim, community-unconfirmed; depth unpublished (1" allowance); the stair has no night-light run yet |
+| Closet and kitchen tape | `ED-M-CLOSET-LT-PSU`, `ED-M-KITCH-LT-PSU` (MITTLED) | IKEA TRADFRI 30 W, unpaired; a plain paddle is the hard off | none (no scene uses them) | none | powers on lit | bench-test power-on unpaired; DUBBELKISEL (Matter over Thread, no DIRIGERA) is the drop-in once IKEA US stocks it (FCC-filed 2026-06, no US listing 2026-09) |
 | HA host | `ED-B-UTIL-RC1` / `CKT-HA` | mini PC + ZBT-2 + Z-Wave 800 LR stick + Zigbee coordinator dongle | wired LAN | none | none | UPS: the backup-battery TODO |
 
 Lighting, the fan and the RF-remote fixtures: `notes/workshop_receptacles.md`. Shades:
@@ -171,8 +169,9 @@ doorbell, cameras and two APs are shed (rule 6).
 ## Lighting scenes
 
 RM-M-LIVING's lights (2026-10-31, `plan/lighting_living.py`). The engine models no scenes; this
-table is the HA configuration. Every load is a Leviton D215S relay (on/off) except the coves,
-which dim and colour at their Gledopto GL-C-001P controllers (RGBCCT mode).
+table is the HA configuration. Groups A/B/C and the kitchen peninsula are Leviton D315S relays
+(on/off); the coves dim and colour at their Gledopto GL-C-001P controllers (RGBCCT mode). The
+pendant, kitchen perimeter and under-cabinet are plain paddles, outside the scenes (2026-11-03).
 
 | Group | Loads | Control |
 |---|---|---|
@@ -180,28 +179,25 @@ which dim and colour at their Gledopto GL-C-001P controllers (RGBCCT mode).
 | B downlights | `ED-M-LIVING-LT`, `-CAN5`, `-CAN6` | `ED-M-LIVING-SW` |
 | C day | `ED-M-LIVING-CAND1`/`2`, 5000 K over the puzzle table | `ED-M-LIVING-SW-DAY` |
 | D coves | lounge `LR-M-LIVING-W`/`-E` and dining `LR-M-DINING-W`/`-E`, E4 RGB+CCT | `ED-M-LIVING-SW-COVE` (all four Class 2 drivers) + lounge `ED-M-LIVING-LT-CTRL`/`-CTRL-E`, dining `ED-M-DINING-LT-CTRL`/`-CTRL-E` |
-| Pendant | `ED-M-DINING-PEND` (dims by its own remote) | `ED-M-DINING-SW` |
-| Kitchen | perimeter `ED-M-KITCH-CAN1`/`2`/`3`/`5`/`9`/`10`; peninsula `-CAN4`/`6`/`7`/`8` | `ED-M-KITCH-SW` / `ED-M-KITCH-SW-PEN` |
-| Under-cabinet | MITTLED on its TRADFRI's switched outlet `ED-M-KITCH-UC-RC` | `ED-M-KITCH-SW-UC` |
+| Peninsula | `ED-M-KITCH-CAN4`/`6`/`7`/`8` | `ED-M-KITCH-SW-PEN` |
 
-| Scene | A | B | C | Lounge coves | Dining coves | Pendant | Kitchen / peninsula / UC |
-|---|---|---|---|---|---|---|---|
-| Fireplace | on | off | off | 2200 K, 15% | off | off | off / off / off |
-| Evening | on | off | off | 2700 K, 40% | 2700 K, 25% | low | off / off / on |
-| Dinner | on | off | off | 2700 K, 20% | 2700 K, 50% | on | off / off / on |
-| Social | on | on | off | 3000 K, 60% | 3000 K, 60% | on | off / on / on |
-| Day / work | off | on | on | 5000 K, 100% | 5000 K, 60% | off | unchanged |
-| Cooking | unchanged | unchanged | unchanged | unchanged | unchanged | unchanged | on / on / on |
-| Night path | off | off | off | amber, 5% | amber, 5% | off | off / off / off |
-| Party | on | off | off | colour, slow fade | colour, slow fade | low | off / on / on |
+| Scene | A | B | C | Lounge coves | Dining coves | Peninsula |
+|---|---|---|---|---|---|---|
+| Fireplace | on | off | off | 2200 K, 15% | off | off |
+| Evening | on | off | off | 2700 K, 40% | 2700 K, 25% | off |
+| Dinner | on | off | off | 2700 K, 20% | 2700 K, 50% | off |
+| Social | on | on | off | 3000 K, 60% | 3000 K, 60% | unchanged |
+| Day / work | off | on | on | 5000 K, 100% | 5000 K, 60% | unchanged |
+| Night path | off | off | off | amber, 5% | amber, 5% | off |
+| Party | on | off | off | colour, slow fade | colour, slow fade | unchanged |
 
 - **Keypad** `ED-M-LIVING-KEYPAD` (Zooz ZEN32, beside the kitchen switches on `W-M-C3`): big
   button Evening, double-tap all lounge and dining off; small buttons Fireplace, Dinner,
-  Social, Day/work; a double-tap on Fireplace is Party, on Day/work Night path. Cooking stays
-  on the kitchen paddles. It joins the existing Z-Wave 800 LR stick (Z-Wave JS, local); its
+  Social, Day/work; a double-tap on Fireplace is Party, on Day/work Night path. Cooking is
+  the kitchen paddles. It joins the existing Z-Wave 800 LR stick (Z-Wave JS, local); its
   relay is unwired, so set it to scene-only.
 - **The coves need Zigbee.** The GL-C-001P is a Zigbee controller, so the coves take the second
-  dongle rule 2 allows, on ZHA. MITTLED's TRADFRI driver can pair there too to dim; no DIRIGERA.
+  dongle rule 2 allows, on ZHA. MITTLED's TRADFRI driver stays unpaired.
 - **Leave `ED-M-LIVING-SW-COVE` on.** The controllers do on/off, so a scene has no boot lag;
   the paddle is the hard off. Set all four controllers' power-on state to "previous".
 - **One HA light group per zone.** Each cove half has its own Class 2 driver and controller
@@ -210,37 +206,29 @@ which dim and colour at their Gledopto GL-C-001P controllers (RGBCCT mode).
   HA light group; the scenes above set the group, so both sides always match.
 - **Night path is the warm layer**: amber at 5% only, never a white channel. The day layer is
   the 5000 K cans plus the coves' white channels at 5000 K.
-- **Check items.** The dining pendant must come back at its last state when its relay powers
-  it, or a scene "on" leaves it dark; bench it before the trim-out. Confirm each D215S's
-  power-on behaviour after an outage.
-- **HA down**: every D215S paddle still switches its group; the keypad does nothing; the coves
+- **Check items.** Confirm each D315S's power-on behaviour after an outage.
+- **HA down**: every D315S paddle still switches its group; the keypad does nothing; the coves
   return at their last setting. Only the kitchen under-cabinet tape rides `CKT-LT-BACKUP`.
 
 ## Bath night lights
 
-Added 2026-10-31. Every bath has one, all built the same way: E5 2200 K tape (`ED-T-LT-STRIP24-NIGHT`, about 70 lm/ft, damp-rated, fixed CCT) in a frosted channel under the vanity. Each bath has its own `ED-T-LT-PSU-20` (Mean Well LPV-20-24) and its own D215S relay (`ED-T-LEV-MATTER`, Matter over Wi-Fi). Each relay sits on the same circuit as that bath's other lights.
+Owner, 2026-11-03: no tape, no relay, no motion sensor. Each bath's vanity receptacle carries
+a dusk-sensing LED guide light (about 1 W), the same idea as the stair's guide-light
+receptacles. Nothing battery-only, nothing for HA to run.
 
-| Bath | Run | PSU | Relay |
-|---|---|---|---|
-| B-BATH | `LR-B-BATH-NIGHT` | `ED-B-BATH-NL-PSU` | `ED-B-BATH-SW-NL`, on `CKT-LT-BSMT` |
-| M-BATH1 | `LR-M-BATH1-NIGHT`, on the wall under the basin | `ED-M-BATH1-NL-PSU` | `ED-M-BATH1-SW-NL` |
-| M-BATH2 | `LR-M-BATH2-TOEKICK` | `ED-M-BATH2-NL-PSU` | `ED-M-BATH2-SW-NL` |
-| S-VANITY | `LR-S-VANITY-NIGHT` | `ED-S-VANITY-NL-PSU` | `ED-S-VANITY-SW-NL` |
-| S-SUITEBATH | `LR-S-SUITEBATH-NIGHT` | `ED-S-SUITEBATH-NL-PSU` | `ED-S-SUITEBATH-SW-NL` |
-| S-BATH1 | `LR-S-BATH1-NIGHT` | `ED-S-BATH1-NL-PSU` | `ED-S-BATH1-SW-NL` |
-| A-STUBATH | `LR-A-STUBATH-NIGHT` | `ED-A-STUBATH-NL-PSU` | `ED-A-STUBATH-SW-NL` |
-
-- **The motion sensor.** Each bath gets one battery PIR on the Zigbee dongle (ZHA). It is not modelled. Mount it high, aimed at the door and the vanity, and keep it out of the shower's view.
-- **The automation** is one HA automation per bath:
-  - **Turn on** when motion is seen between 22:00 and 07:00.
-  - **Turn off** after 3 minutes with no motion.
-  - If the bath's main switch comes on, the night light stays on and still times out.
-- **When HA is down**, the relay paddle still switches the night light by hand. Set each relay's power-on state to "off", so the tape doesn't light the whole night after an outage.
-- **Nothing dims.** E5 is fixed at its low output, and the PSU only switches.
+- Device-GFCI baths take `ED-T-LEV-GFCI-GUIDE` (Leviton GFNL2-W, 20 A TR self-test):
+  `ED-M-BATH1-RC1`, `ED-M-BATH2-RC1`, `ED-S-VANITY-RC1`, `ED-S-SUITEBATH-RC1`,
+  `ED-S-BATH1-RC-MIRROR`.
+- Baths whose breaker is the GFCI take the plain guide-light duplex `ED-T-LEV-GUIDE`
+  (T6525-W), not a second GFCI: `ED-B-BATH-RC1` (`CKT-RC-BSMT`), `ED-A-STUBATH-GFCI`
+  (`CKT-BATH-ATTIC`).
 
 ## Other lighting automations
 
-- **Second-floor hall cove** (`LR-S-HALL-GAP`, E6 tunable): after dark HA recalls a low 2700 K night preset on both halves' controllers (`ED-S-HALL-LT-CTRL`, `-CTRL2`, one HA group). The 3-way relays `ED-S-HALL-SW`/`-SW2` cut the drivers' 120 V, so set both controllers' power-on state to "previous".
-- **Garage linear** (W, RGBW): HA turns `ED-G-SOFFIT-SW` on at dusk and off at a curfew (owner sets the time); the W channel at 3000 K is the default, a holiday colour is a scene on the six garage controllers.
+- **Second-floor hall cove** (`LR-S-HALL-GAP`, E6 tunable): after dark HA recalls a low 2700 K night preset on both halves' controllers (`ED-S-HALL-LT-CTRL`, `-CTRL2`, one HA group). The plain 3-ways `ED-S-HALL-SW`/`-SW2` stay on as the drivers' hard off, so set both controllers' power-on state to "previous".
+- **Garage linear** (W, RGBW): HA turns the six garage controllers on at dusk and off at a curfew (owner sets the time); `ED-G-SOFFIT-SW` is a plain paddle left on as the hard off. The W channel at 3000 K is the default; a holiday colour is a scene on the same controllers.
 - **Entry and garage door lights**: `ED-M-ENTRY-SW` and `ED-G-EXT-SW` come on at dusk and on arrival (the entry lock, the opener), then time out.
+- **Porch and garden flood**: `ED-M-PORCH-SW` (fan-light + landing sconce) at dusk, off at the curfew; leave the fan off at its own control so a dusk "on" lights only the lamp. `ED-M-PORCH-FLOOD-SW` on arrival from the garden side and by hand, timing out.
+- **Gym**: `ED-B-GYM-SW` (cans) and `-SW2` (T8 strips) for workout routines: strips on at a routine's start, all off after the gym is idle.
+- **Plant room photoperiod**: `ED-S-PLANT-SW-TIMER` (grow bars + spot, 185 W) on a fixed daily window the owner sets.
 - **Basement stair at night**: no night lights (owner, 2026-10-31); the railing tape on the stair 3-way and the landing guide-light receptacles light it.

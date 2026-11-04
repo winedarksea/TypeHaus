@@ -218,18 +218,6 @@ COB_TUNABLE_24V = Product(
     name="24V tunable-white COB LED tape, 10 mm, 3-wire",
     source=_REVIEW + "The second-floor hall cove (mark E6). CONFIRM CRI >= 90 at both ends.",
 )
-COB_NIGHT_2200 = Product(
-    tag="PROD-COB-24V-2200K-DAMP", brand="SuperLightingLED", model="DC24V COB 2200K, silicone coated",
-    name="24V COB LED tape, 2200 K, low output, damp",
-    source=_REVIEW + "Bath night light (mark E5): 2200 K (or amber), ~60-80 lm/ft, "
-           "silicone coated, in a frosted channel. CONFIRM the SKU and output.",
-)
-MEANWELL_LPV_20_24 = Product(
-    tag="PROD-MEANWELL-LPV-20-24", brand="Mean Well", model="LPV-20-24",
-    name="24V constant-voltage LED driver, 20 W, IP67",
-    source=_REVIEW + "Mean Well LPV-20-24: 20 W, 24 V, IP67, Class 2. One per bath night "
-           "light.",
-)
 GLEDOPTO_GL_C_001P = Product(
     tag="PROD-GLEDOPTO-GL-C-001P", brand="Gledopto", model="GL-C-001P",
     name="5-in-1 Zigbee 3.0 Pro LED controller (RGB/RGBW/RGBCCT/CCT/dim), 12-54 V",
@@ -294,8 +282,8 @@ SELECTED_LIGHTING_PRODUCTS = (
     WESTGATE_LP_2X4,
     SCHLUTER_SNLT, BARRON_VARIUS_AG90, WAC_LINE_24, WAC_ROLAND, WAC_STRETCH, NUVO_BOWMAN_36,
     MODERN_FORMS_MYKONOS, WAC_TUBE_EXT, SLL_COB_IP67, MEANWELL_HLG_100H_24A, LIVEX_4451,
-    SLL_COB_RGBCCT, SLL_COB_RGBW_IP67, COB_TUNABLE_24V, COB_NIGHT_2200,
-    MEANWELL_LPV_20_24, GLEDOPTO_GL_C_001P, HALCO_LED_READY_STRIP, WAVEFORM_T8_95,
+    SLL_COB_RGBCCT, SLL_COB_RGBW_IP67, COB_TUNABLE_24V,
+    GLEDOPTO_GL_C_001P, HALCO_LED_READY_STRIP, WAVEFORM_T8_95,
     LEVITON_9880, CHANNEL_45_GENERIC, WAVEFORM_A19_95, HINKLEY_SOREN_50910BK,
     WAVEFORM_MODERNVINTAGE_A19_30K,
 )

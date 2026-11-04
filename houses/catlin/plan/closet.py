@@ -113,7 +113,7 @@ MAIN_CLOSET = [
     # ** MOVED OFF THE WEST WALL (2026-10-01): ** at y 16'-10" it stood behind the west
     # bay's hanging clothes. Now on the south wall at x 13'-9", latch side of D-M-BED, 46".
     ElectricalDevice(uid="QTM000WAAA", tag="ED-M-CLOSET-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(

@@ -146,8 +146,8 @@ GARAGE_LIGHTING = [
     # hand). Walk in, one reach turns on the shop lights and BOTH door lights. One switch
     # for the pair, not one each: they light a single opening and there is no reason to run
     # half of it. It stays here though its luminaires crossed to the far wall: the switch
-    # belongs at the door you enter by, not under the lamp. A Matter relay since 2026-10-31,
-    # so HA can light the apron at dusk and on the opener's arrival.
+    # belongs at the door you enter by, not under the lamp. A D315S relay, so HA can light
+    # the apron at dusk and on the opener's arrival.
     ElectricalDevice(uid="QTG0005AAA", tag="ED-G-EXT-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
@@ -242,9 +242,9 @@ GARAGE_LIGHTING = [
     # building is never lit because nobody wants to leave the sconces on. They are two
     # LAYERS, not two halves of one thing — ED-G-EXT-LT-E/-W are a "somebody is at the door"
     # light aimed at the apron, and these three runs are an ambient wash that wants to come
-    # on at dusk and go off by itself. So it is a Matter relay, run by HA on a schedule:
-    # unattended is the whole point, and a run left on until somebody notices is the
-    # dark-sky failure mode.
+    # on at dusk and go off by itself. HA schedules it through the runs' Zigbee controllers;
+    # this paddle (plain since 2026-11-03) is a hard-off left on. Unattended is the whole
+    # point: a run left on until somebody notices is the dark-sky failure mode.
     #
     # Third in the gang at the service door, 6" east of ED-G-SW on the 6" spacing those two
     # already use (10'-2", 10'-8", 11'-2"), same 76" over the slab, 48.8" over the top tread.
@@ -332,7 +332,7 @@ GARAGE_LIGHTING = [
                          wall_ref="W-G-N", face="left", distance_from_start=inch(276),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="S7ANA4Q300", tag="ED-G-SOFFIT-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
                      location=Location(attachment=WallAttachment(

@@ -186,16 +186,6 @@ AMBIENT_LUMINAIRE_TYPES = (
                   product_ref="PROD-SLL-COB-RGBCCT-24V",
                   source="SuperLightingLED DC24V RGB+CCT COB, 12 mm, white channels 2700-6500 K "
                          "CRI 90+; GL-C-001P controller in RGBCCT mode."),
-    # E5: the bath night light under the vanity toe or bottom rail. Fixed 2200 K, low and
-    # warm so it does not wake anybody; a PIR automation runs it (notes/smart_home.md).
-    LuminaireType(tag="ED-T-LT-STRIP24-NIGHT", replaceable_lamp=True,
-                  name="24V COB night-light tape, 2200K, damp, frosted channel",
-                  form=LuminaireForm.STRIP, type_mark="E5",
-                  footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
-                  lamp="LED tape, 24V DC, COB, 2200 K, silicone-coated", watts_per_ft=1.5,
-                  lumens=70.0, cct_k=2200, cri=90, voltage=24, dimmable=False,
-                  damp_rated=True, product_ref="PROD-COB-24V-2200K-DAMP",
-                  source="24V COB 2200 K, ~70 lm/ft, silicone-coated, frosted channel."),
     # E6: the second-floor hall cove in tunable white, with a low warm night preset.
     LuminaireType(tag="ED-T-LT-STRIP24-TUNABLE",
                   replaceable_lamp=True, color_mode="tunable", cct_range_k=(2700, 6500),
@@ -426,13 +416,6 @@ LIGHTING_DEVICE_TYPES = (
                          product_ref="PROD-MEANWELL-HLG-100H-24A",
                          source="Mean Well HLG-100H-24A: 96 W, 24 V / 4 A, IP65, UL 8750, "
                                 "228 x 68 x 38.8 mm, not dimmable."),
-    # The bath night lights (E5): a few watts of fixed tape each, so a 20 W driver, not a
-    # 60 W OMNIDRIVE counted at nameplate on the lighting circuit.
-    ElectricalDeviceType(tag="ED-T-LT-PSU-20", name="24V LED driver, 20 W, IP67",
-                         footprint=(inch(6.5), inch(1.7)), height=inch(1.4),
-                         load_va=20.0, output_voltage=24, ports=_POWER_120,
-                         product_ref="PROD-MEANWELL-LPV-20-24",
-                         source="Mean Well LPV-20-24: 20 W, 24 V, IP67, Class 2, not dimmable."),
     # The controller is on the 24V side: no branch circuit, no load of its own worth summing.
     ElectricalDeviceType(tag="ED-T-LT-CTRL-5IN1", name="5-in-1 Zigbee LED controller, 12-54 V",
                          footprint=(inch(4.5), inch(1.8)), height=inch(0.9),

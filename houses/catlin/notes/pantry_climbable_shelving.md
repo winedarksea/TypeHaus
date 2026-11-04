@@ -210,8 +210,8 @@ every bay is lit from both sides.
 `W-M-PAN-E`, 56" above the floor, with the lens's south half masked so it sees along the
 shelves and not the kitchen (moved inside 2026-10-27). It switches the driver's 120V line on
 `CKT-LT-BACKUP`, so all four channels come on together. There is no manual pantry switch on
-the kitchen side; the 46" box on `W-M-PAN-E`'s kitchen face is the undercabinet relay
-(`ED-M-KITCH-SW-UC`, a D215S) only.
+the kitchen side; the 46" box on `W-M-PAN-E`'s kitchen face is the undercabinet switch
+(`ED-M-KITCH-SW-UC`, a plain paddle since 2026-11-03) only.
 
 ## Sources
 

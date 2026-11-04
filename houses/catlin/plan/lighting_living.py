@@ -55,7 +55,7 @@ LIVING_LIGHTING = [
     # HLG-100H-24A (non-dimming) with its own GL-C-001P beside it, which dims and mixes; HA
     # groups each zone's pair. Lounge halves 12' x 5 W/ft = 60 W, x1.25 = 75 W; dining
     # 8.5' = 42.5 W, x1.25 = 53 W; all on 96 W. At the old OMNIDRIVE's spot by the kitchen
-    # soffit's service hatch; the cove relay cuts all four drivers' 120 V.
+    # soffit's service hatch; the cove paddle (a hard-off, left on) cuts all four drivers' 120 V.
     ElectricalDevice(uid="QTM0001AAA", tag="ED-M-LIVING-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(19), ft(22, 6)), type_ref="ED-T-LT-PSU-96-WE",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
@@ -89,8 +89,8 @@ LIVING_LIGHTING = [
     # aimed at the mantel; CAN3/CAN4 gimbals 33" off the south glazing, washing the curtains;
     # CAN5/CAN6 their mirror about the fire axis. Nothing over the sofa or armchairs, every can
     # in a joist mid-bay clear of the ERV returns at y=10'-0"/12'-8".
-    # Four D215S groups so scenes can mix them (2026-10-31): A accents CAN2-4 on -SW-ACCENT,
-    # B downlights LT/CAN5/CAN6 on -SW, C day CAND1/2 on -SW-DAY, D coves on -SW-COVE.
+    # Scene groups (2026-11-03): A accents CAN2-4 on -SW-ACCENT, B downlights LT/CAN5/CAN6 on
+    # -SW, C day CAND1/2 on -SW-DAY, all D315S relays; D coves via their Zigbee controllers.
     ElectricalDevice(uid="QTM0002AAA", tag="ED-M-LIVING-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(33, 2), ft(7, 4)), type_ref="ED-T-LT-CAN4-PREM-GIMBAL",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
@@ -129,11 +129,11 @@ LIVING_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The lounge station: a 4-gang of D215S relays on W-M-C1's east face, COVE, ACCENT,
-    # ED-M-LIVING-SW (plan/mep_electrical.py, at 12'-0") and DAY. No dimmers: the cans run
-    # full or off, and the coves dim at their controllers.
+    # The lounge station, a 4-gang on W-M-C1's east face: COVE (a plain hard-off left on), then
+    # D315S relays ACCENT, ED-M-LIVING-SW (plan/mep_electrical.py, at 12'-0") and DAY. No
+    # dimmers: the cans run full or off, and the coves dim at their controllers.
     ElectricalDevice(uid="DS30ANGPH9", tag="ED-M-LIVING-SW-COVE", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
@@ -162,11 +162,10 @@ LIVING_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-DINING-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(3, 6))),
-    # A D215S relay since 2026-10-31, so scenes reach the chandelier; it still dims by its own
-    # remote (the accepted integrated exception). CHECK ITEM: the fixture must come back at
-    # its last state on power-up, or a relay "on" leaves it dark.
+    # A plain paddle since 2026-11-03; the chandelier dims by its own remote (the accepted
+    # integrated exception).
     ElectricalDevice(uid="QTM0006AAA", tag="ED-M-DINING-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
@@ -249,15 +248,15 @@ LIVING_LIGHTING = [
     # leaf) and N-M-C2 at y=268": the wall you pass walking into the kitchen through the
     # BM-M-HALL beam line. ED-M-KITCH-SW-UC stays at the pantry corner for the counter tape.
     #
-    # A 3-gang since 2026-10-31: the lounge scene keypad, then the perimeter and peninsula
-    # relays, in the 7 1/2" bay between D-M-STUDY's north king (y=260.24") and the end pack
+    # A 3-gang since 2026-10-31: the lounge scene keypad, the perimeter paddle and the
+    # peninsula D315S relay, in the 7 1/2" bay between D-M-STUDY's north king (y=260.24") and the end pack
     # (267.75"). A real 3-gang (~5.7") fits it; the modelled 1-gang boxes sit at a 2 5/16"
     # pitch, centred on y=22'-0", 5/16" clear of each stud. At 44", not 46": the keypad's box
     # is back to back with ED-M-STUDY-SW's (48") in the same cavity, and 44" puts them apart.
     #
     # ED-M-LIVING-RC7 was moved north on this wall to clear D-M-STUDY's jamb pack; its
     # spacing position remains governed by the NEC 210.52 run in electrical.py.
-    # A ZEN32 on the house's Z-Wave stick; its relay is unwired (every load has its own D215S).
+    # A ZEN32 on the house's Z-Wave stick; its relay is unwired (scenes reach the D315S groups).
     ElectricalDevice(uid="65D56B3E59", tag="ED-M-LIVING-KEYPAD", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-ZOOZ-ZEN32",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
@@ -266,7 +265,7 @@ LIVING_LIGHTING = [
                          wall_ref="W-M-C3", face="right", distance_from_start=inch(45.6875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTM000DAAA", tag="ED-M-KITCH-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
@@ -332,7 +331,7 @@ LIVING_LIGHTING = [
     # 2026-10-27), at 46 inches above the north base counter and below its uppers.
     # Keep the box out of the corner pack.
     ElectricalDevice(uid="EX3ZQQPM9K", tag="ED-M-KITCH-SW-UC", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(

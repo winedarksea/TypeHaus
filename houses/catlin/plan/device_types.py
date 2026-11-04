@@ -50,6 +50,7 @@ T5836 = _prod("T5836-W", "Decora duplex with 60 W USB-C PD, 20 A TR, white")
 T5380 = _prod("T5380-W", "Decora surge duplex, 20 A TR, white",
               _LEV + "t5380")
 T6525 = _prod("T6525-W", "Decora guide-light duplex, 15 A TR, white")
+GFNL2 = _prod("GFNL2-W", "SmartlockPro GFCI with dusk-sensing LED guide light, 20 A TR, white")
 T5020 = _prod("T5020-W", "Decora single receptacle 5-20R, TR, white", "https://leviton.com/")
 T5461 = _prod("T5461-W", "Decora 6-20R receptacle, 20 A 250 V, TR, white")
 R278 = _prod("278", "30 A dryer receptacle 14-30R", _LEV + "278")
@@ -82,6 +83,8 @@ RECEPTACLE_TYPES = (
          nema="5-20R", **_DEEP),
     _dev("ED-T-LEV-SURGE", "Surge duplex 20 A TR (T5380-W)", T5380, nema="5-20R"),
     _dev("ED-T-LEV-GUIDE", "Guide-light duplex 15 A TR (T6525-W)", T6525, nema="5-15R"),
+    # A bath's night light (owner, 2026-11-03): the vanity GFCI's own ~1 W dusk guide light.
+    _dev("ED-T-LEV-GFCI-GUIDE", "GFCI 20 A TR, dusk guide light (GFNL2-W)", GFNL2, nema="5-20R"),
     _dev("ED-T-LEV-SINGLE-520", "Single 5-20R TR (T5020-W)", T5020, nema="5-20R",
          symbol="receptacle-single-120"),
     _dev("ED-T-LEV-620-DUPLEX",
@@ -111,19 +114,19 @@ E5601 = _prod("E5601-W", "Lever Edge single-pole switch, white")
 E5603 = _prod("E5603-W", "Lever Edge 3-way switch, white")
 DIVA = _prod("DVCL-153P", "Diva LED+ dimmer, 150 W LED, single-pole/3-way", brand="Lutron",
              url="https://www.lutron.com/")
-D215S = _prod("D215S-1BW", "Decora Smart 2nd Gen Matter switch, 15 A, 600 W LED",
-              "https://www.leviton.com/en/products/d215s-1bw")
-D2ELV = _prod("D2ELV-1BW", "Decora Smart 2nd Gen Matter ELV dimmer",
-              "https://www.leviton.com/en/products/D2ELV-1BW")
-DD0SR = _prod("DD0SR-DLZ", "Decora Smart wired companion for a 3-way (CONFIRM model)",
-              "https://www.leviton.com/")
+# Reverse-phase, for the sauna's OMNIDRIVE X: on Diode LED's recommended-dimmer list.
+DIVA_ELV = _prod("DVELV-300P", "Diva ELV dimmer, 300 W, reverse phase, single-pole",
+                 brand="Lutron", url="https://www.lutron.com/")
+# The D215S's successor (D215S discontinued): Matter out of the box.
+D315S = _prod("D315S-1BW", "Decora Smart Wi-Fi switch, Matter, 15 A / 3 A LED",
+              "https://www.leviton.com/products/d315s-1bw")
 DOS02 = _prod("DOS02-LW", "Decora PIR occupancy sensor, 150 W LED, neutral optional")
 ODS10 = _prod("ODS10-IDW", "PIR occupancy sensor, 10 A, LED-rated, no neutral",
               "https://leviton.com/products/ODS10-IDW")
 MAT51 = _prod("MA-T51", "Maestro countdown timer, 5-60 min", brand="Lutron",
               url="https://www.lutron.com/")
 # The lounge's scene keypad (2026-10-31): five buttons on the house's Z-Wave 800 LR stick,
-# local in Z-Wave JS; its relay is unused (the loads are on their own D215S switches).
+# local in Z-Wave JS; its relay is unused (the loads are on their own D315S switches).
 ZEN32 = _prod("ZEN32", "ZEN32 800LR scene controller, 5 buttons, Z-Wave", brand="Zooz",
               url="https://www.getzooz.com/zooz-zen32-scene-controller/")
 
@@ -132,12 +135,10 @@ SWITCH_TYPES = (
     _dev("ED-T-LEV-SW3", "Lever Edge 3-way switch (E5603-W)", E5603, symbol=None),
     _dev("ED-T-LUT-DIVA", "Lutron Diva dimmer (DVCL-153P), Claro plate", DIVA, symbol=None,
          control="dimmer"),
-    _dev("ED-T-LEV-MATTER", "Matter switch, 15 A relay (D215S-1BW)", D215S, symbol=None,
-         control="smart"),
-    _dev("ED-T-LEV-MATTER-COMPANION", "Wired companion to a Matter switch (DD0SR-DLZ class)",
-         DD0SR, symbol=None),
-    _dev("ED-T-LEV-MATTER-ELV", "Matter ELV dimmer, reverse phase (D2ELV-1BW)", D2ELV,
+    _dev("ED-T-LUT-DIVA-ELV", "Lutron Diva ELV dimmer, reverse phase (DVELV-300P)", DIVA_ELV,
          symbol=None, control="dimmer"),
+    _dev("ED-T-LEV-MATTER", "Matter switch, 15 A relay (D315S-1BW)", D315S, symbol=None,
+         control="smart"),
     _dev("ED-T-LEV-OCC-PIR", "PIR occupancy sensor, same gang as a switch (DOS02-LW)", DOS02,
          symbol=None, control="occupancy"),
     _dev("ED-T-LEV-OCC-PANTRY",
@@ -152,6 +153,6 @@ SWITCH_TYPES = (
 
 DEVICE_TYPES = (*RECEPTACLE_TYPES, *SWITCH_TYPES)
 DEVICE_PRODUCTS = (
-    E5825, E5325, GFTR2, GFTR1, GFTA2, GFWT2, GFRBF, T5836, T5380, T6525, T5020, T5461,
-    R278, IN_USE, E5601, E5603, DIVA, D215S, D2ELV, DD0SR, DOS02, ODS10, MAT51, ZEN32,
+    E5825, E5325, GFTR2, GFTR1, GFTA2, GFWT2, GFRBF, T5836, T5380, T6525, GFNL2, T5020, T5461,
+    R278, IN_USE, E5601, E5603, DIVA, DIVA_ELV, D315S, DOS02, ODS10, MAT51, ZEN32,
 )

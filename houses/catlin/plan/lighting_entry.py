@@ -75,8 +75,8 @@ ENTRY_LIGHTING = [
     # Its switch, inside the dwelling (R303.8.1 — the garage's ED-G-EXT-SW is in the wrong
     # building for this one). D-M-ENTRY fills W-M-N3 to within 6" and 3 5/8" of its ends, so there is
     # no north-wall station beside the door; use the north gang on W-M-MUDC-E
-    # (see ED-M-STORAGE-SW), the one nearest the front door. A Matter relay since 2026-10-31,
-    # so HA can light the landing at dusk and on arrival.
+    # (see ED-M-STORAGE-SW), the one nearest the front door. A D315S relay, so HA can light
+    # the landing at dusk and on arrival.
     ElectricalDevice(uid="1XT4G5S2XX", tag="ED-M-ENTRY-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
@@ -199,7 +199,7 @@ ENTRY_LIGHTING = [
                      controlled_by=("ED-M-STAIR-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0016AAA", tag="ED-M-STAIR-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER-COMPANION",
+                     type_ref="ED-T-LEV-SW3",
                      circuit="CKT-LT-BSMT", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(

@@ -213,7 +213,7 @@ warmth; 2700 K also pushes white paint yellow and makes oak read orange. The exc
 each its own schedule mark:
 - day layers at 5000 K: A1 (lounge), B1 (RM-M-BATH2), Q1 (basement work light);
 - 2700 K: U1 (kitchen MITTLED, under 3000 K cans: the owner's accepted exception) and J2
-  (bed sconces); E5 night lights at 2200 K;
+  (bed sconces);
 - adjustable on a live control: E4 RGB+CCT coves, E6 tunable hall cove, W RGBW (white
   3000 K). The type records the white channel or warm end in `cct_k` and the range in
   `cct_range_k`.
@@ -229,7 +229,7 @@ smooth surface to wipe rather than a ribbed baffle that traps dust and shows a g
 
 **The 3" cans are gone.** Every can is now the 4" Nora housing with a replaceable PAR20
 (about 500-540 lm); output is split by lamp and trim, not by aperture. Few cans dim: most
-are on plain switches or D215S relays.
+are on plain switches or D315S relays.
 
 **COB retires the deep frosted diffuser.** The dots a tape shows are geometry: a diffuser only
 blends discrete emitters when the standoff is at least one LED pitch, which at 60 LED/m means

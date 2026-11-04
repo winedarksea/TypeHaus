@@ -155,8 +155,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # 220-240. Confirm the driver is ELV/TRIAC-dimmable AND replaceable — a captive
     # proprietary driver is the part that dies at 12-20 years and on an import there is no
     # replacement channel at all, so ** budget a spare driver with the order. ** Dim it on
-    # its own remote; the wall control (ED-M-DINING-SW) is a D215S relay for scenes, not a
-    # dimmer.
+    # its own remote; the wall control (ED-M-DINING-SW) is a plain paddle, not a dimmer.
     #
     # The look (2026-09-26): a WAVE chandelier — five flat LED strips side by side, each
     # rising and falling out of phase with its neighbours, off one canopy, brushed gold. The
@@ -172,7 +171,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   "gold. OPEN BEFORE ORDER: a UL/ETL/cETL mark ON THE FIXTURE (none is "
                   "published), 120 V, a replaceable ELV/TRIAC driver with a spare, and whether "
                   "the gold is PVD or lacquered. It dims by its own remote; the wall control "
-                  "(ED-M-DINING-SW) is a D215S relay for scenes."}),
+                  "(ED-M-DINING-SW) is a plain paddle."}),
 
     # M1: the attic studio's bar pendant (2026-09-06). A separate mark from M, not a second
     # instance of it: M is a 4'-0" dining fixture and this would have hung over a 4'-7" bar

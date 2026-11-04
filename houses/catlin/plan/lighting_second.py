@@ -28,7 +28,7 @@ SECOND_LIGHTING = [
     # and north return follow the resolved wall finishes; the south ends remain at 9'-7".
     # Clockwise path, opening left: west/east wall wash and the north bulkhead transition.
     # Tunable white (E6) since 2026-10-31: the controller holds a low 2700 K night preset that
-    # HA recalls after dark; the 3-way relays still switch both drivers' 120 V.
+    # HA recalls after dark while the plain 3-ways (2026-11-03) leave both drivers' 120 V on.
     # Two runs since 2026-10-31 (Class 2: a <=100 VA certified supply per segment), split at
     # the NW corner: the west leg keeps the tag, the north return and east leg are -GAP2. A
     # split mid-return does not hold: the resolver runs each piece's end to the reveal corner.
@@ -74,14 +74,14 @@ SECOND_LIGHTING = [
     # protected from. Authored x is the face LESS 1" (box back on the face, 2" box):
     # 21'-8 1/8" - 1" = 21'-7 1/8".
     ElectricalDevice(uid="QTS0005AAA", tag="ED-S-HALL-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
+                     type_ref="ED-T-LEV-SW3",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BW1", face="left", distance_from_start=inch(12),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTS0006AAA", tag="ED-S-HALL-SW2", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER-COMPANION",
+                     type_ref="ED-T-LEV-SW3",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
@@ -172,7 +172,7 @@ SECOND_LIGHTING = [
     # 6" beyond the stopped door tip; the mirror's south edge is y=359.5".
     ElectricalDevice(uid="QTS000MAAA", tag="ED-S-BATH1-RC-MIRROR",
                      kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-20",
+                     type_ref="ED-T-LEV-GFCI-GUIDE",
                      circuit="CKT-RC-SECOND", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
                      location=Location(attachment=WallAttachment(
@@ -187,68 +187,10 @@ SECOND_LIGHTING = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # The hall bath's lit niche and its PSU are gone too (2026-10-12), same reason.
 
-    # Bath night lights (2026-10-31), one per bath: E5 2200 K tape in a frosted channel under
-    # the vanity, its own PSU-20 in a clear ceiling bay and its own Matter relay, driven by the
-    # HA PIR automation in notes/smart_home.md. ANGSJON and SEKTION tape sits on the cabinet
-    # underside 2" behind its front (8 3/8" / 5 1/2" AFF); the Chulton's in its toe recess.
-    # A run's elevation is off the storey datum, 1 1/2" under the finished floor here.
-    LightRun(uid="B0QS7H2EFC", tag="LR-S-BATH1-NIGHT", type_ref="ED-T-LT-STRIP24-NIGHT",
-             path=(pt(inch(97.75), inch(357.5)), pt(inch(97.75), inch(391.5))),
-             room="RM-S-BATH1", psu_ref="ED-S-BATH1-NL-PSU",
-             controlled_by=("ED-S-BATH1-SW-NL",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(9.375))),
-    ElectricalDevice(uid="S795W51XFY", tag="ED-S-BATH1-NL-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(inch(90.5), inch(372.75)), type_ref="ED-T-LT-PSU-20",
-                     circuit="CKT-LT-UPPER", room="RM-S-BATH1",
-                     mount=Mount(kind=MountKind.CEILING)),
-    # Second gang 4" south of ED-S-BATH1-SW; its plate stops ~1/2" short of the stopped
-    # door tip at y=29'-0".
-    ElectricalDevice(uid="RWYMHC5KY8", tag="ED-S-BATH1-SW-NL", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
-                     circuit="CKT-LT-UPPER", room="RM-S-BATH1",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(50),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
-    LightRun(uid="HM05GX84BN", tag="LR-S-VANITY-NIGHT", type_ref="ED-T-LT-STRIP24-NIGHT",
-             path=(pt(inch(8.375), inch(300.25)), pt(inch(66.375), inch(300.25))),
-             room="RM-S-VANITY", psu_ref="ED-S-VANITY-NL-PSU",
-             controlled_by=("ED-S-VANITY-SW-NL",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(6.5))),
-    ElectricalDevice(uid="GB60Z87A1A", tag="ED-S-VANITY-NL-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(inch(44.5), inch(283.25)), type_ref="ED-T-LT-PSU-20",
-                     circuit="CKT-LT-UPPER", room="RM-S-VANITY",
-                     mount=Mount(kind=MountKind.CEILING)),
-    # ED-S-VANITY-SW has no room for a gang between the mirrors, so the relay is opposite it
-    # on W-S-SN1, centred between the two hand-towel bars.
-    ElectricalDevice(uid="MA2SAD3ZSK", tag="ED-S-VANITY-SW-NL", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
-                     circuit="CKT-LT-UPPER", room="RM-S-VANITY",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SN1", face="left", distance_from_start=inch(37.375),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
-    LightRun(uid="Q1KFEWDQK2", tag="LR-S-SUITEBATH-NIGHT", type_ref="ED-T-LT-STRIP24-NIGHT",
-             path=(pt(inch(151.5), inch(245.75)), pt(inch(179.5), inch(245.75))),
-             room="RM-S-SUITEBATH", psu_ref="ED-S-SUITEBATH-NL-PSU",
-             controlled_by=("ED-S-SUITEBATH-SW-NL",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(4.5))),
-    ElectricalDevice(uid="EYN307SYD5", tag="ED-S-SUITEBATH-NL-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(inch(166), inch(235.25)), type_ref="ED-T-LT-PSU-20",
-                     circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH",
-                     mount=Mount(kind=MountKind.CEILING)),
-    ElectricalDevice(uid="TDXF7F546T", tag="ED-S-SUITEBATH-SW-NL", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
-                     circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SBS", face="left", distance_from_start=inch(59.5),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
-
     # Both switches sit at x=17'-6 3/4", the humid liner on W-S-C1's plant-room face — a
     # switch authored to the bare wall face resolves inside the panel.
-    # RM-S-PLANT: two suspended tubes over the plants at the south windows, on a timer so
-    # they run a photoperiod rather than whenever somebody remembers. The fan-light
+    # RM-S-PLANT: two suspended tubes over the plants at the south windows, on a D315S relay
+    # so HA runs a photoperiod rather than whenever somebody remembers. The fan-light
     # (ED-S-PLANT-LT, re-typed) moves the humid air a plant room makes.
     ElectricalDevice(uid="QTS000PAAA", tag="ED-S-PLANT-TUBE1", kind=DeviceKind.LIGHT,
                      position=pt(m(1.62004), m(0.594343)), type_ref="ED-T-LT-GROW-BAR",

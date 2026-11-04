@@ -235,35 +235,13 @@ MAIN_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BAE", face="right", distance_from_start=inch(41.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # Bath night light (2026-10-31, every bath alike; HA automation in notes/smart_home.md):
-    # E5 2200 K tape in a frosted channel, its own PSU-20 and its own Matter relay on the
-    # bath's lighting circuit. No vanity here, so the channel is on W-M-HS1 just under the
-    # D-Code basin, facing down. The PSU is in a clear ceiling bay off the ERV radials; the
-    # relay is on W-M-HS1 east of the mirror (ED-M-HALL-SW is back to back with the switch
-    # bay on W-M-BAE, so no second gang fits there).
-    LightRun(uid="ZHSSP4TXSQ", tag="LR-M-BATH1-NIGHT", type_ref="ED-T-LT-STRIP24-NIGHT",
-             path=(pt(inch(47.75), inch(271.5)), pt(inch(61.5), inch(271.5))),
-             room="RM-M-BATH1", psu_ref="ED-M-BATH1-NL-PSU",
-             controlled_by=("ED-M-BATH1-SW-NL",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(28.75))),
-    ElectricalDevice(uid="4TXTJ74CX5", tag="ED-M-BATH1-NL-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(inch(35.5), inch(282)), type_ref="ED-T-LT-PSU-20",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH1",
-                     mount=Mount(kind=MountKind.CEILING)),
-    ElectricalDevice(uid="P187PZMSM0", tag="ED-M-BATH1-SW-NL", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH1",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-HS1", face="left", distance_from_start=inch(67),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-BATH2: two layers, two controls (2026-10-12, notes/bath2_lighting.md).
     # DAY, 5000 K on a plain toggle (ED-M-BATH2-SW-DAY): three B1 cans and the P3 make-up
     # Karlie task light (plan/mirrors.py). EVENING, 2700 K on ED-M-BATH2-SW-EVE:
-    # the B2 shower can and two E3 runs off ED-M-BATH2-PSU. NIGHT: the E5 toe kick on its own
-    # PSU and Matter relay (2026-10-31). The Halo Plus uses its own
-    # touch dimmer and unswitched plug power (2026-10-22). CAN1 is the vanity can, 23" off
+    # the B2 shower can and the E3 tub cove off ED-M-BATH2-PSU (16.5 W on the 60 W OMNIDRIVE
+    # X, which has no minimum load). NIGHT: RC1's guide light (2026-11-03). The Halo Plus uses
+    # its own touch dimmer and unswitched plug power (2026-10-22). CAN1 is the vanity can, 23" off
     # the mirror; CAN2 is centred on the tub. The radiant-floor stat ED-M-BATH2-FH-STAT is a
     # separate control and switches none of this.
     ElectricalDevice(uid="QTM000NAAA", tag="ED-M-BATH2-CAN1", kind=DeviceKind.LIGHT,
@@ -287,32 +265,6 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      controlled_by=("ED-M-BATH2-SW-EVE",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The night light: toe kick under the vanity's front, 3" back from its face, E5 since
-    # 2026-10-31 on its own PSU (same bay as ED-M-BATH2-PSU, 15" west) and relay.
-    LightRun(uid="X6JKNWY4BF", tag="LR-M-BATH2-TOEKICK", type_ref="ED-T-LT-STRIP24-NIGHT",
-             path=(pt(inch(21.5), inch(159.5)), pt(inch(21.5), inch(205.5))),
-             room="RM-M-BATH2", psu_ref="ED-M-BATH2-NL-PSU",
-             controlled_by=("ED-M-BATH2-SW-NL",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(3))),
-    ElectricalDevice(uid="QZ784AR0WC", tag="ED-M-BATH2-NL-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(inch(15), inch(200)), type_ref="ED-T-LT-PSU-20",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH2",
-                     mount=Mount(kind=MountKind.CEILING)),
-    # The 2-gang at W-M-BDN1 is full, so the night relay sits on W-M-W3 north of RC1.
-    ElectricalDevice(uid="3TDCM4KJQZ", tag="ED-M-BATH2-SW-NL", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH2",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-W3", face="left", distance_from_start=inch(47),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # The evening glow: two E3 runs, 8.4 ft at 3 W/ft = 25 W on a 60 W supply.
-    # Under the FURN-M-BATH2-CAB-W/-E pair's front edge at 4'-0", x 12" to 48".
-    LightRun(uid="ZCNWQ40D9A", tag="LR-M-BATH2-CAB", type_ref="ED-T-LT-STRIP24-2700",
-             path=(pt(inch(12.5), inch(259.25)), pt(inch(47.5), inch(259.25))),
-             room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
-             controlled_by=("ED-M-BATH2-SW-EVE",),
-             mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
     # Over the tub, in the ceiling's shadow gap at W-M-BA2E's face, north of the glass to
     # HS1: the LR-M-LIVING-* idiom, fixed to the board. It replaced the deck-nosing run
     # LR-M-BATH2-TUBDECK (owner, 2026-10-22: no LEDs near the floor). 5.5 ft against the
@@ -329,7 +281,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.CEILING)),
     # A 2-gang over the vanity's south end: day toggle (the old ED-M-BATH2-SW, same uid)
-    # and the evening Matter relay 4" west. A third gang does not fit: ED-M-BATH2-FH-STAT is at
+    # and the evening toggle 4" west. A third gang does not fit: ED-M-BATH2-FH-STAT is at
     # x 9 3/4"-13 3/4" and D-M-BATH2's casing starts ~22".
     ElectricalDevice(uid="QTM000RAAA", tag="ED-M-BATH2-SW-DAY", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
@@ -339,7 +291,7 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-BDN1", face="left", distance_from_start=inch(19.71875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="EDGKW1FCES", tag="ED-M-BATH2-SW-EVE", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
@@ -375,7 +327,7 @@ MAIN_LIGHTING = [
     # face. Left where they were, one buried 2 13/16" into the studs and the other floated
     # 5 3/8" into the room, and `haus check` graded neither.
     ElectricalDevice(uid="QTM000TAAA", tag="ED-M-LAUNDRY-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(

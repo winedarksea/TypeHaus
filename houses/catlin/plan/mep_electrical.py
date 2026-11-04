@@ -131,8 +131,9 @@ BASEMENT_DEVICES = [
                      position=pt(ft(27), ft(9)), type_ref="ED-T-LT-FAN52-FLUSH", circuit="CKT-LT-BSMT",
                      room="RM-B-GYM",
                      mount=Mount(kind=MountKind.CEILING, drop=inch(10.5625))),
+    # A D315S relay (2026-11-03), as is -SW2: HA runs the gym's workout routines.
     ElectricalDevice(uid="CED010K2AA", tag="ED-B-GYM-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-BSMT",
+                     type_ref="ED-T-LEV-MATTER", circuit="CKT-LT-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CE", face="right", distance_from_start=inch(66.5),

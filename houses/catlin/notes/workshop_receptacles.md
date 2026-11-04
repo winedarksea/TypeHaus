@@ -6,8 +6,7 @@ Leviton Decora, white (`-W`), tamper-resistant (NEC 2023 406.12) house-wide. Own
 Rating follows the circuit's breaker (15 A circuits get 15 A devices, e.g. `CKT-HA`,
 `CKT-BATH2-TUB`, `CKT-LT-*`); device GFCI stays only where the breaker is not GFCI.
 
-**Still open:** the `D215S-1BW` / companion pairing is by name only (`DD0SR-DLZ` model
-unconfirmed). Box sizes below are standard catalogue envelopes, not a chosen product; the
+**Still open:** box sizes below are standard catalogue envelopes, not a chosen product; the
 steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
 
 ## Device schedule
@@ -49,39 +48,32 @@ steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
 
 - **Plain switches:** Lever Edge `E5601-W` single-pole, `E5603-W` 3-way (`5604-2W` 4-way if one
   appears; none today). Fixtures that dim themselves (stair chandelier, mirrors, DC fans) stay
-  on plain switches; the dining pendant is on a `D215S-1BW` for scenes (2026-10-31).
-- **Dimmers, one Lutron Diva only**, under its own Lutron Claro plate:
+  on plain switches, the dining pendant included (2026-11-03).
+- **Dimmers, two Lutron Divas**, each under its own Lutron Claro plate:
   - `ED-B-PLAY-N-SW`, theatre sconces: `DVCL-153P`.
+  - `ED-B-SAUNA-SW`, the sauna tape's OMNIDRIVE X: `DVELV-300P`, reverse-phase (on Diode LED's
+    OMNIDRIVE X recommended-dimmer list). Never the forward-phase `DVCL-153P`.
 - **Plain since 2026-10-31:** `ED-M-BED-SW` / `-SW2` (two `E5603-W`; the bed sconces switch
   at the fixture), `ED-S-SUITE-SW`, `ED-S-STUDY2-NOOK-SW`.
 - **Smart control is Matter, local through Home Assistant**, never a vendor cloud. Leviton
-  Decora Smart 2nd Gen on Wi-Fi: commission from the strap QR straight into HA, no My Leviton
-  account, block the devices' internet at the router. Matter is enabled by a firmware update
-  out of the box, so plan one app session before cutting them off. Neutral required.
-- **Every LED tape gets a Matter switch on the 120 V side of its driver**, and either the
-  paddle or HA turns it on or off (last command wins; no lockout). `D215S-1BW` is a 15 A
-  relay, 600 W LED; neither the OMNIDRIVE X nor the HLG has a minimum load. A
-  controller-fed run (E4, E6, W) dims and colours at its GL-C-001P; its relay stays on and
-  is only the hard off.
-  - `ED-M-KITCH-SW-UC` (MITTLED's TRADFRI, on its switched outlet), `ED-M-BATH2-SW-EVE`
-    (cabinet and tub tape, the 2700 K shower can), `ED-M-LAUNDRY-SW` (PureEdge),
-    `ED-M-CLOSET-SW` (PAX strips), `ED-M-LIVING-SW-COVE` (the coves' HLG drivers):
-    `D215S-1BW`. The lounge's cans (`ED-M-LIVING-SW`, `-SW-ACCENT`, `-SW-DAY`), the
-    kitchen's (`ED-M-KITCH-SW`, `-SW-PEN`) and the dining pendant's `ED-M-DINING-SW` are
-    D215S too; scenes: [smart_home.md](smart_home.md).
-  - Night and dusk relays (2026-10-31), each a `D215S-1BW`: the seven bath `-SW-NL`
-    (BATH2's toe kick is one), `ED-M-ENTRY-SW`, `ED-G-EXT-SW`.
-  - 3-ways with tape: `ED-S-HALL-SW`/`-SW2` (the gap cove only) and `ED-B-STAIR-SW` /
-    `ED-M-STAIR-SW` (rail strip + cans): one `D215S-1BW` + one Leviton wired companion
-    (`DD0SR-DLZ` class, confirm).
-  - `ED-B-SAUNA-SW`: `D2ELV-1BW`, Matter, reverse-phase by default, replacing the Diva
-    `DVELV-300P`. Confirm HA sees it as a dimmer and not only on/off.
-  - **Exception:** `ED-M-PANTRY-LT` stays on its `ODS10-IDW` occupancy sensor (not Matter).
-- **Garage soffit** `ED-G-SOFFIT-SW` (eave + rake runs, RGBW, six Class 2 HLG-100H drivers
-  each behind a GL-C-001P): `D215S-1BW` in the existing third gang, scheduled in HA. The paddle is
-  spare, not required.
-- **Grow lights** `ED-S-PLANT-SW-TIMER` (two 6' tubes + spot, non-dimmable): `D215S-1BW`,
-  scheduled in HA.
+  Decora Smart `D315S-1BW` (the discontinued D215S's successor), Matter out of the box:
+  commission from the strap QR straight into HA, no My Leviton account, block the devices'
+  internet at the router. Neutral required. 15 A relay, 3 A LED (about 360 W), 1/3 HP.
+- **Smart only where it pays (owner, 2026-11-03): 11 relays, no companions, no Matter dimmer.**
+  Exterior: `ED-M-ENTRY-SW`, `ED-G-EXT-SW`, `ED-M-PORCH-SW` (fan-light + sconce, 33 W; set the
+  fan off at its own control), `ED-M-PORCH-FLOOD-SW` (20 W). Plant photoperiod:
+  `ED-S-PLANT-SW-TIMER` (two grow bars + spot, 185 W). Gym routines: `ED-B-GYM-SW` (cans,
+  26 W), `-SW2` (four T8 strips, 144 W). Lounge: `ED-M-LIVING-SW-ACCENT`, `-SW-DAY`,
+  `ED-M-LIVING-SW`, `ED-M-KITCH-SW-PEN`. Every load is well under 360 W. Scenes:
+  [smart_home.md](smart_home.md).
+- **Everything else is a plain paddle.** A controller-fed run (E4, E6, W) dims and colours at
+  its GL-C-001P, so its paddle is a hard off left on: `ED-M-LIVING-SW-COVE`, `ED-G-SOFFIT-SW`,
+  the hall 3-ways `ED-S-HALL-SW`/`-SW2`. The IKEA drivers need no relay: `ED-M-KITCH-SW-UC`
+  and `ED-M-CLOSET-SW` are plain hard offs. Also plain: `ED-M-DINING-SW`, `ED-M-KITCH-SW`,
+  `ED-M-LAUNDRY-SW`, `ED-M-BATH2-SW-EVE`, and the stair 3-ways `ED-B-STAIR-SW`/`ED-M-STAIR-SW`.
+- **Bath night lights** are the vanity receptacle's dusk guide light (2026-11-03): GFNL2-W
+  where the device is the GFCI, the plain `T6525-W` where the breaker is.
+- **Exception:** `ED-M-PANTRY-LT` stays on its `ODS10-IDW` occupancy sensor (not Matter).
 - **BATH2 shower fan** `ED-M-BATH2-SW-DRY`: Lutron Maestro `MA-T51` countdown, 5-60 min.
 
 ## Workshop (west wall bench)
@@ -163,7 +155,8 @@ box on the 1" CD-B-WORKSHOP trunk. The kettle's `ED-T-LEV-620-FLUSH` is flush in
 | Countdown timer, BATH2 fan | Lutron MA-T51 |
 | Switch, Lever Edge | [E5601-W](https://leviton.com/products/e5601-w) 1-pole, [E5603-W](https://leviton.com/products/e5603-w) 3-way |
 | Dimmer, LED cans/sconces | Lutron DVCL-153P |
-| Smart switch, Matter | [D215S-1BW](https://www.leviton.com/en/products/d215s-1bw) |
-| Smart dimmer, ELV, Matter | [D2ELV-1BW](https://www.leviton.com/en/products/D2ELV-1BW) |
+| Smart switch, Matter | [D315S-1BW](https://www.leviton.com/products/d315s-1bw) |
+| Dimmer, ELV (sauna) | Lutron DVELV-300P |
+| GFCI with guide light, bath vanities | [GFNL2-W](https://leviton.com/products/gfnl2-w) |
 | Range 14-50R | [1450R](https://leviton.com/products/1450r) |
 | Dryer 14-30R | [278](https://leviton.com/products/278) |

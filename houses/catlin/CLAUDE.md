@@ -291,13 +291,16 @@ not instruction: when it disagrees with this file or the model, it is the one th
   (<= 100 VA)**: the tape is unlisted, so the supply is the certified part (owner,
   2026-10-31). Coloured/tunable runs (E4, E6, W) take one 96 W HLG-100H-24A plus one
   `ED-T-LT-CTRL-5IN1` per segment; split a run rather than reach for a bigger driver.
-- **Lighting conventions (2026-10-31 review, `DESIGN-LOG.md` "Lighting review"):** the lounge
-  is four D215S groups (accents, downlights, day, coves) plus a ZEN32 scene keypad; scenes
-  live in `notes/smart_home.md`, not the engine. Coves are RGB+CCT (E4), the second-floor
-  hall cove tunable (E6), the garage linear RGBW (W, white 3000 K). Kitchen under-cabinet is
-  IKEA MITTLED (U1; mark U the revert). Every bath has an E5 2200 K night light on its own
-  driver and Matter relay, run by an HA PIR automation. The conditioned basement's work
-  light is the Q1 T8 strip on `CKT-LT-BSMT` (off backup); mark D is the revert.
+- **Lighting conventions (2026-10-31 review, trimmed 2026-11-03; `DESIGN-LOG.md` "Lighting
+  review", "Smart-switch reduction"):** smart switching is 11 D315S relays (`ED-T-LEV-MATTER`)
+  on exterior, plant, gym and the lounge's accent/downlight/day/peninsula groups; every other
+  control is plain, and a controller-fed run's paddle is a hard off left on. A ZEN32 keypad
+  runs the lounge scenes (coves via their controllers); scenes live in `notes/smart_home.md`.
+  Coves are RGB+CCT (E4), the second-floor hall cove tunable (E6), the garage linear RGBW (W,
+  white 3000 K). Kitchen under-cabinet is IKEA MITTLED (U1; mark U the revert). A bath's night
+  light is its vanity receptacle's dusk guide light (`ED-T-LEV-GFCI-GUIDE` GFNL2-W, or the
+  T6525-W where the breaker is the GFCI). The conditioned basement's work light is the Q1 T8
+  strip on `CKT-LT-BSMT` (off backup); mark D is the revert.
   `advisory.room_illuminance` grades average lux; `[mep.illuminance_lux]` adds the gym.
 - `params/solar.py` — rooftop PV array (12 × 440 W on the gable ridge, computed max fit).
 - `params/roof_trim.py` — the eave water chain on RF-HOUSE's west/east eaves, stacked bottom
@@ -1897,7 +1900,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **CCT rule (owner, 2026-10-31): one schedule mark per working CCT.** A selectable (5CCT)
   module is allowed, set once to its mark's `cct_k`; a tunable fixture records its working
   CCT in `cct_k` and its range in `cct_range_k`. BATH2 is 5000 K day / 2700 K evening
-  (`notes/bath2_lighting.md`); every bath's night layer is E5 at 2200 K.
+  (`notes/bath2_lighting.md`); a bath's night light is its vanity receptacle's guide light.
 - **Recessed cans are one replaceable-lamp housing** (2026-10-31): Nora NSIC-401QAT, 6" tall,
   with the tier set by its trim and lamp `parts`: A cheap PAR20, A1 5000 K (the lounge day
   layer), A2/A3 95-CRI in RM-M-LIVING and RM-M-BED, A4 95-CRI 25 deg kitchen task, B wet. Mark C (Juno wafer) only where 6" cannot fit. Every can sits in a

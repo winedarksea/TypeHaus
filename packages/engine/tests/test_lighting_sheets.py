@@ -96,36 +96,32 @@ def test_light_run_ticks_mark_every_end_cap_and_corner(catlin_model):
 
 
 def test_psu_leader_connects_a_run_to_its_shared_supply(catlin_model):
-    """Two runs share one PSU; the leader and its marker should appear once
-    per PSU, not once per run, and every leader should actually reach the PSU's position.
+    """Runs sharing one PSU draw one leader each, and every leader reaches the PSU's position;
+    the PSU marker appears once per supply, not once per run.
 
-    Filtered to the LIVING PSU's own leaders: the main sheet carries a SECOND supply, since
-    the kitchen's under-cabinet task light runs four LR-M-KIT-* runs on ED-M-KITCH-LT-PSU
-    (CKT-LT-BACKUP, where the living room's is CKT-LT-MAIN). Counting every dashed cove
-    leader on the sheet would only pin 6 == 6 and would stop saying anything about
-    one-marker-per-shared-PSU, which is the property under test.
+    The kitchen's four under-cabinet runs share ED-M-KITCH-LT-PSU, a wall-mounted supply,
+    so its point is read through `placed_xy`.
     """
+    from typehaus.resolve.placeables import placed_xy
+
     _M_TO_IN = 39.37007874015748
     scene = build_lighting_plan(catlin_model, "main")
-    # Every coloured cove half has its own Class 2 driver since 2026-10-31; BATH2's E3
-    # supply is the main storey's shared one (cabinet underside + tub ceiling).
     psu = next(element for storey in catlin_model.plan.storeys
               for element in catlin_model.plan.storey_elements(storey.tag)
-              if element.tag == "ED-M-BATH2-PSU")
-    psu_xy = psu.position.xy_m
+              if element.tag == "ED-M-KITCH-LT-PSU")
+    psu_xy = placed_xy(catlin_model, psu)
     psu_in = (psu_xy[0] * _M_TO_IN, psu_xy[1] * _M_TO_IN)
     leaders = [node for node in scene.nodes
-              if isinstance(node, Polyline) and node.layer == "E-LITE-COVE"
-              and node.linetype == "DASHED"
+              if isinstance(node, Polyline) and node.linetype == "DASHED"
               and any(pt == pytest.approx(psu_in, abs=1e-6) for pt in node.points)]
-    shared_runs = [r for r in catlin_model.light_runs if r.psu_ref == "ED-M-BATH2-PSU"]
-    assert len(leaders) == len(shared_runs) == 2
-    # Nine run supplies on the main sheet since 2026-10-31 (one Class 2 driver per cove half,
-    # two bath night-light drivers, and the kitchen, closet and BATH2 supplies).
+    shared_runs = [r for r in catlin_model.light_runs if r.psu_ref == "ED-M-KITCH-LT-PSU"]
+    assert len(leaders) == len(shared_runs) == 4
+    # Seven run supplies on the main sheet since 2026-11-03, when the two bath night-light
+    # drivers retired.
     psu_labels = [node for node in scene.nodes if isinstance(node, Text) and node.content == "PSU"]
     supplies = {r.psu_ref for r in catlin_model.light_runs if r.storey == "main"}
-    assert len(supplies) == 9
-    assert len(psu_labels) == 11, "one marker per supply, incl. laundry track and pantry jambs"
+    assert len(supplies) == 7
+    assert len(psu_labels) == 9, "one marker per supply, incl. laundry track and pantry jambs"
 
 
 def test_switch_legs_are_dashed_and_only_drawn_where_both_ends_are_on_the_sheet(catlin_model):

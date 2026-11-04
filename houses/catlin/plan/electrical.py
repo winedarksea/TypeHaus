@@ -324,9 +324,10 @@ BASEMENT_DEVICES = [
     # here), on W-B-STR2's bath face at x=10'-3 1/4" — beside the vanity across the room's
     # short dimension, with no wall between plate and basin. Rides CKT-RC-BSMT rather than
     # its own 20A circuit (the panel-slot trade recorded in plans/TODO.md's panel_spaces
-    # item).
+    # item). The breaker is the GFCI, so the night light is the plain guide-light duplex
+    # (2026-11-03), not a second GFCI.
     ElectricalDevice(uid="CEE040AAAA", tag="ED-B-BATH-RC1", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20",
+                     type_ref="ED-T-LEV-GUIDE",
                      circuit="CKT-RC-BSMT", room="RM-B-BATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
@@ -968,7 +969,7 @@ SECOND_DEVICES = [
     # it is nowhere near that envelope's clear FLOOR space, and `_clearance_conflicts` tests
     # bodies that stand in the zone, not things hung above it.
     ElectricalDevice(uid="ZQBJ03VGYD", tag="ED-S-SUITEBATH-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-20",
+                     type_ref="ED-T-LEV-GFCI-GUIDE",
                      circuit="CKT-RC-SECOND", room="RM-S-SUITEBATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
@@ -983,7 +984,7 @@ SECOND_DEVICES = [
     # receptacle between the mirrors is the fallback, and it does not fit today (the gap
     # there is 3" and a plate needs 4").
     ElectricalDevice(uid="J9JPM7DWDS", tag="ED-S-VANITY-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-20",
+                     type_ref="ED-T-LEV-GFCI-GUIDE",
                      circuit="CKT-RC-SECOND", room="RM-S-VANITY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
@@ -2112,7 +2113,7 @@ NEC_FILL_MAIN = [
     # Contrast ED-M-BATH2-TUB-RC, which is breaker-protected because it is sealed inside the
     # deck box and could never be reset.
     ElectricalDevice(uid="N7TTYA9RV6", tag="ED-M-BATH2-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-20",
+                     type_ref="ED-T-LEV-GFCI-GUIDE",
                      circuit="CKT-RC-MAIN", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
@@ -2128,7 +2129,7 @@ NEC_FILL_MAIN = [
     # East wall (adjacent to the basin, (D)(2)), under ED-M-BATH1-SW at its station, 40" AFF.
     # Not the south wall: FURN-M-BATH1-MIRROR covers it from 43" to 75" (2026-10-31).
     ElectricalDevice(uid="4KMFZPRJPX", tag="ED-M-BATH1-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-20",
+                     type_ref="ED-T-LEV-GFCI-GUIDE",
                      circuit="CKT-RC-MAIN", room="RM-M-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(40)),
                      location=Location(attachment=WallAttachment(

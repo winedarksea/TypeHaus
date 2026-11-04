@@ -13,8 +13,10 @@ PORCH_LIGHTING = [
                      position=pt(ft(13, 3), inch(-66)), type_ref="ED-T-LT-FAN60",
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 5))),
+    # A D315S relay (2026-11-03) for dusk and arrival. CHECK ITEM: set the fan off at its own
+    # control, so a dusk "on" lights the lamp without spinning the fan.
     ElectricalDevice(uid="QTM0018AAA", tag="ED-M-PORCH-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1",
+                     type_ref="ED-T-LEV-MATTER",
                      circuit="CKT-LT-MAIN", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-S2", face="left", distance_from_start=inch(78),
@@ -26,9 +28,10 @@ PORCH_LIGHTING = [
                      type_ref="ED-T-LT-FLOOD-GARDEN", position=GARDEN_FLOOD_POSITION,
                      rotation=deg(0), mount=GARDEN_FLOOD_MOUNT,
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-FLOOD-SW",)),
-    # Adjacent indoor gangs: porch ambient/landing on one, garden utility light on the other.
+    # Adjacent indoor gangs: porch ambient/landing on one, garden utility light on the other,
+    # both D315S relays.
     ElectricalDevice(uid="QTM001FAAA", tag="ED-M-PORCH-FLOOD-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1",
+                     type_ref="ED-T-LEV-MATTER",
                      circuit="CKT-LT-MAIN", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-S2", face="left", distance_from_start=inch(82),

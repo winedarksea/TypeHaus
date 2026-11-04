@@ -2,10 +2,10 @@
 
 **House:** catlin
 **Structure:** `ED-M-BATH2-CAN1`, `-CAN2`, `-CAN-SH` (B1), `-CAN-SH-EVE` (B2), `-MIRROR` (P3),
-`-MIRROR-HALO` (P4), `LR-M-BATH2-CAB` / `-TUB-CLG` (E3), `ED-M-BATH2-PSU`, `LR-M-BATH2-TOEKICK`
-(E5 night) / `ED-M-BATH2-NL-PSU` / `ED-M-BATH2-SW-NL`, `ED-M-BATH2-SW-DAY` / `-SW-EVE`, `ED-M-BATH2-RC1`, `BK-M-W3-MID` / `-HIGH`.
+`-MIRROR-HALO` (P4), `LR-M-BATH2-TUB-CLG` (E3), `ED-M-BATH2-PSU`, `ED-M-BATH2-SW-DAY` / `-SW-EVE`,
+`ED-M-BATH2-RC1` (guide-light GFCI, the night layer), `BK-M-W3-MID` / `-HIGH`.
 **Written:** 2026-10-12; mirror selection and controls amended 2026-10-22 (`mirror_selections.md`);
-night layer and the 42 × 36 halo, 2026-10-31.
+night layer and the 42 × 36 halo, 2026-10-31; night tape and cabinet run retired, 2026-11-03.
 **Oracle for:** nothing. A **decision record**: no engine module computes melanopic light,
 and none is proposed. It follows `notes/TEMPLATE.md`'s shape so each choice can be re-argued.
 **Companions:** `notes/bath2_shower.md` (the stall, its glass and the former drying fan);
@@ -31,14 +31,13 @@ coloured or tunable type records its white channel or warm end in `cct_k` and it
 | layer | control | fixtures | CCT | CRI |
 |---|---|---|---|---|
 | **day** | `ED-M-BATH2-SW-DAY`, plain toggle, no dimmer | B1 x3: CAN1 (2'-6", 15'-4"), CAN2 over the tub (6'-6 1/2", 19'-4"), CAN-SH inside the glass (5'-3", 15'-4"); P3 Karlie 54623CM over the mirror head | 5000 K (P3 may be up to 6000 K) | 90 (cans), **>= 95 with R9 published** (P3) |
-| **evening** | `ED-M-BATH2-SW-EVE`, Matter relay | B2 CAN-SH-EVE (6'-0", 15'-4"); E3 x2 off `ED-M-BATH2-PSU` | 2700 K | 90 |
-| **night** | `ED-M-BATH2-SW-NL`, Matter relay, HA PIR 22:00-07:00 | E5 toe kick off `ED-M-BATH2-NL-PSU` | 2200 K | 90 |
+| **evening** | `ED-M-BATH2-SW-EVE`, plain toggle | B2 CAN-SH-EVE (6'-0", 15'-4"); E3 tub cove off `ED-M-BATH2-PSU` | 2700 K | 90 |
+| **night** | none: dusk sensor | `ED-M-BATH2-RC1`'s guide light (GFNL2-W, about 1 W) | - | - |
 
-The evening relay controls the warm shower can and two low-voltage runs: under the
-over-toilet cabinet, and the ceiling over the tub (`LR-M-BATH2-TUB-CLG`, which replaced the
-deck-nosing run on 2026-10-22: no LEDs near the floor). The vanity toe kick became the 2200 K
-night light on 2026-10-31, on its own driver and relay (`notes/smart_home.md`, "Bath night
-lights"). The 42 × 36 MHAP4236 mirror has its own touch dimmer at 2700 K, independently powered
+The evening toggle controls the warm shower can and the ceiling run over the tub
+(`LR-M-BATH2-TUB-CLG`, which replaced the deck-nosing run on 2026-10-22: no LEDs near the
+floor). The over-toilet cabinet run and the E5 toe-kick night light were retired 2026-11-03;
+night light is RC1's guide light (`notes/smart_home.md`, "Bath night lights"). The 42 × 36 MHAP4236 mirror has its own touch dimmer at 2700 K, independently powered
 at full line voltage. Its lit border and wall glow are both accepted by the owner.
 The separate 5000 K Karlie remains the daytime task light.
 
@@ -52,22 +51,21 @@ The separate 5000 K Karlie remains the daytime task light.
 | P3 Karlie task light | 80" body bottom, 87 1/2" top, 2" over mirror head | same uid, 54623CM + three 80795-SU bulbs |
 | `ED-M-BATH2-RC1` | moved 85" -> 74" along `W-M-W3`, now y=16'-2", 44" | the mirror's glass would have buried it (the BATH1 lesson) |
 | mirror backing | `BK-M-W3-MID` (44") and `-HIGH` (72"), plan/backing_wet.py | whole bays; a free end FAILs `advisory.wall_backing_bearing` |
-| E3 runs | the `FURN-M-BATH2-CAB-W/-E` pair's front edge at 4'-0" (35"); the ceiling over the tub, 2" off `W-M-BA2E` (66") | 8.4 ft x 3 W/ft = 25 W on a 60 W supply |
-| E5 night run | toe kick 3" behind the vanity face (46") | 3.8 ft x 1.5 W/ft on its own 20 W supply (LPV-20) at (1'-3", 16'-8"), same bay as `ED-M-BATH2-PSU` |
+| E3 run | the ceiling over the tub, 2" off `W-M-BA2E` (66") | 5.5 ft x 3 W/ft = 16.5 W on the 60 W OMNIDRIVE X, which has no minimum load |
 | `ED-M-BATH2-PSU` | ceiling at (2'-6", 16'-8"), in the 192"-208" bay | outside the shower zone, off the extract trunk |
 
 **Controls.** The old single switch on `W-M-BDN1` (box x 17.7"-21.7", uid kept, now
-`-SW-DAY`) gains a second gang 4" west for the evening relay. A third gang does not fit:
+`-SW-DAY`) gains a second gang 4" west for the evening toggle. A third gang does not fit:
 `ED-M-BATH2-FH-STAT` is at x 9 3/4"-13 3/4", and `D-M-BATH2`'s casing starts about 22".
-The night relay `ED-M-BATH2-SW-NL` stays on `W-M-W3`, north of RC1 and outside the shower
-zone. The former adjacent dryer countdown timer was removed 2026-11-02.
+The former night relay on `W-M-W3` and the adjacent dryer countdown timer are gone
+(2026-11-03, 2026-11-02).
 
 ## 4. Evening light and sleep
 
 Brown et al. (2022) recommend **<= 10 lux melanopic EDI** at the eye in the 3 h before bed,
 and >= 250 lux melanopic EDI in the day. A 2700 K LED's melanopic DER is about 0.45, against
 ~0.85 for 5000 K. The evening layer is dimmed and indirect, so the eye sees a few tens of
-photopic lux at most, i.e. ~10 lux melanopic or less. It is a relay, not a dimmer: the layer is low by design. The day layer
+photopic lux at most, i.e. ~10 lux melanopic or less. It is a toggle, not a dimmer: the layer is low by design. The day layer
 goes the other way: four 5000 K sources and the window. Neither number is computed by the
 engine, and neither is graded.
 

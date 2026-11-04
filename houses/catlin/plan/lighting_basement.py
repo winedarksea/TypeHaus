@@ -101,7 +101,7 @@ BASEMENT_LIGHTING = [
     # Their toggle, 6 1/2" west of ED-B-GYM-SW (the cans', also CKT-LT-BSMT) inside D-B-PLAY, in
     # the bay across stud-007 (64").
     ElectricalDevice(uid="1NAESZJ528", tag="ED-B-GYM-SW2", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-BSMT", room="RM-B-GYM",
+                     type_ref="ED-T-LEV-MATTER", circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CE", face="right", distance_from_start=inch(60),
@@ -224,11 +224,11 @@ BASEMENT_LIGHTING = [
     # sauna is not, which is why an integral-switch J1 could never stand inside. On W-B-CS's
     # GYM face, 4 3/8" north of D-B-SAUNA's north jamb, so it is the switch you reach on the
     # way in; `room` is RM-B-GYM because the device is in the gym.
-    # ** A DIMMER, TO KEEP THE DIMMING MARK V HAD: ED-T-LEV-MATTER-ELV (D2ELV-1BW), a
-    # reverse-phase ELV control for the OMNIDRIVE X. NEVER a TRIAC DVCL-153P (the theatre's):
+    # ** A DIMMER, TO KEEP THE DIMMING MARK V HAD: ED-T-LUT-DIVA-ELV (DVELV-300P, on Diode
+    # LED's OMNIDRIVE X list), a reverse-phase ELV control. NEVER a TRIAC DVCL-153P (the theatre's):
     # that mis-pairing is the commonest cause of tape flicker. **
     ElectricalDevice(uid="MDVC5HGQZ8", tag="ED-B-SAUNA-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER-ELV",
+                     type_ref="ED-T-LUT-DIVA-ELV",
                      circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
@@ -424,7 +424,7 @@ BASEMENT_LIGHTING = [
     # face — and reads as 0.8" buried. Four inches north is clear of it and still the first
     # thing your hand finds at the stair foot.
     ElectricalDevice(uid="QTB000HAAA", tag="ED-B-STAIR-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
+                     type_ref="ED-T-LEV-SW3",
                      circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(

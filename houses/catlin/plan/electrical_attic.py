@@ -226,8 +226,9 @@ NEC_FILL_ATTIC = [
     # only station that satisfies IRC E3901.6's 36"-of-a-basin rule. The basin centres at
     # x 164 5/8", so this plate is 14 5/8" from it and has plenty of that margin; what it has
     # no margin in is the wall itself.
+    # The breaker is the GFCI, so the night light is the plain guide-light duplex (2026-11-03).
     ElectricalDevice(uid="N2Z2AA6EGB", tag="ED-A-STUBATH-GFCI", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20",
+                     type_ref="ED-T-LEV-GUIDE",
                      circuit="CKT-BATH-ATTIC", room="RM-A-STUBATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(

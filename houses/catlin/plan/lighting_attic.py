@@ -368,29 +368,6 @@ ATTIC_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-BATH-S", face="left", distance_from_start=inch(59.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # Bath night light (2026-10-31; the pattern is plan/lighting_second.py's): E5 under the
-    # SEKTION 24's 5 1/2" bottom. No ceiling bay under the rake and no second gang beside
-    # ED-A-STUBATH-SW (vent riser west, jamb pack east), so relay and PSU share W-A-HALL-S's
-    # west bay, x=10'-10", west of the hand towel bar.
-    LightRun(uid="74Q6JEA2H2", tag="LR-A-STUBATH-NIGHT", type_ref="ED-T-LT-STRIP24-NIGHT",
-             path=(pt(inch(153.625), inch(249.625)), pt(inch(175.625), inch(249.625))),
-             room="RM-A-STUBATH", psu_ref="ED-A-STUBATH-NL-PSU",
-             controlled_by=("ED-A-STUBATH-SW-NL",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(5.875))),
-    ElectricalDevice(uid="8DW8EBYM0H", tag="ED-A-STUBATH-NL-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-PSU-20",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(12)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-HALL-S", face="right", distance_from_start=inch(10),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
-    ElectricalDevice(uid="QW45BVQRN7", tag="ED-A-STUBATH-SW-NL", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-HALL-S", face="right", distance_from_start=inch(10),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # The pocket's light: its old station (14'-0", 30'-0") fell inside FO-A-HALL, open to
     # the roof with no ceiling to recess into. The pocket runs x 0..10' under the west rake
     # (ceiling 1 1/2" to 5'-1 1/2"), too shallow for a recessed can, and is entered on hands

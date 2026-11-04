@@ -37,10 +37,10 @@ Note that many of the pinned decisions in the code base here aren't as fixed as 
 
 ### From the 2026-09-10 `plans/notes.md` triage
 
-- **Low-voltage devices still unmodelled:** the doorbell, both cameras, the leak probe, the
-  lock and the bath motion sensors exist (`plan/smart_home.py`, `plan/motion_sensors.py`); an
-  outdoor weather station and any access reader do not, if wanted. Place them before drywall,
-  on the AP rollout's pattern (type, placement, PoE budget re-check). -- DEFERRED
+- **Low-voltage devices still unmodelled:** the doorbell, both cameras, the leak probe and
+  the lock exist (`plan/smart_home.py`); an outdoor weather station and any access reader
+  do not, if wanted. Place them before drywall, on the AP rollout's pattern (type,
+  placement, PoE budget re-check). -- DEFERRED
 
 ### MEP / lighting residuals
 
@@ -54,9 +54,8 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
   the Fleurco MHAP4236's CRI (swap if under 90); the Soren 50910BK's UL damp label and box
   offset (P6, 2026-11-02); CentricHOME R9 (the 2026-11-02 sheet says > 80, not 90+) and
   enclosed/damp rating; Waveform tubes are Type B double-ended; GL-C-001P cold rating in the
-  garage; power-on state of the D215S relays, the dining pendant and the six-plus
-  controllers; the Zigbee dongle; MYGGSPRAY on HA's Matter/Thread and its depth; the Omvi 3i
-  on HA's `reolink` integration (else RTSP/ONVIF); the TCL 98QM8L's VESA in its manual;
+  garage; power-on state of the D315S relays and the six-plus controllers; the Zigbee
+  dongle; the Omvi 3i on HA's `reolink` integration (else RTSP/ONVIF); the TCL 98QM8L's VESA in its manual;
   MITTLED's US article numbers, lengths and connector cords (the order list counts one piece
   per run until `stock_length` is set); Mean Well HLG-100H-24A's Class 2 marking.
 - **Determine basement backwater protection before under-slab rough-in.** Add the next

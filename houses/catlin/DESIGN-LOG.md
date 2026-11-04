@@ -7462,3 +7462,24 @@ wet-vent: the WC joins upstream of both, against 908.2.1.4.
 - **Basement bath follows (owner, same day).** `RM-B-BATH` leaves the library `vinyl-sheet`
   and its flash cove for `catlin-vinyl-gatsby` and the rubber base, so all four sheet rooms
   are one sheet and one base; `flash-cove` and `vinyl-sheet` bill nothing and stay priced.
+
+## Smart-switch reduction (2026-11-03)
+
+- **Why.** 24 D215S relays, 2 wired companions and a Matter ELV dimmer cost about
+  $1,200-1,900 over plain devices, and the D215S is discontinued. Smart control stays only
+  where it pays: exterior lights, the plant photoperiod, gym routines and the lounge scenes.
+- **11 relays, now the D315S-1BW** (`ED-T-LEV-MATTER`, Matter out of the box): entry, garage
+  door pair, porch, garden flood, plant timer, gym cans and strips, lounge accent / downlight /
+  day, kitchen peninsula. The largest load is the plant room's 185 W against the D315S's
+  3 A LED (about 360 W). No companions, no Matter dimmer.
+- **Plain:** the cove, soffit and hall paddles become hard offs left on (HA drives those runs
+  through their Zigbee controllers); dining, kitchen perimeter, under-cabinet, closet, laundry
+  and BATH2 evening are `E5601-W`; the hall and stair 3-way pairs are `E5603-W`. The IKEA
+  drivers need no relay: the TRÅDFRI stays unpaired, DUBBELKISEL is the drop-in once stocked
+  in the US. The sauna dimmer is the Lutron Diva `DVELV-300P` (on the OMNIDRIVE X list).
+- **Bath night lights retired** (owner): seven E5 runs, their PSU-20s and relays, the eight
+  MYGGSPRAY sensors (`plan/motion_sensors.py`) and `LR-M-BATH2-CAB` are deleted. Each bath's
+  vanity receptacle carries a dusk guide light instead: GFNL2-W (`ED-T-LEV-GFCI-GUIDE`) on the
+  five device-GFCI baths, the plain T6525-W on the two whose breaker is the GFCI (`RM-B-BATH`,
+  `RM-A-STUBATH`), so no outlet sits behind two GFCIs.
+- **Premium now** about $300-600. Notes: `notes/smart_home.md`, `notes/workshop_receptacles.md`.
