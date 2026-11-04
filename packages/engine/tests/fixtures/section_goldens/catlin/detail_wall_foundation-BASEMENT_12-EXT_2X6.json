@@ -764,7 +764,7 @@
       "closed": false,
       "uid": "CMW103AAAA",
       "tag": "W-M-E1/paint",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -4016,8 +4016,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "latex-paint",
-      "fill": "#f0ede6"
+      "material": "paint-wall",
+      "fill": "#f4f6f1"
     },
     {
       "space": "paper",
@@ -4054,7 +4054,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "latex-paint  0.01\"",
+      "content": "paint-wall  0.01\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

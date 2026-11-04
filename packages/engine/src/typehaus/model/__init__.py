@@ -137,6 +137,7 @@ from typehaus.model.millwork import (
 )
 from typehaus.model.opening_size import OpeningSize
 from typehaus.model.opening_supports import OpeningFrameEndSupports
+from typehaus.model.paint import PaintSpec, PaintStandard
 from typehaus.model.paneling import BoardAndBatten, PanelingSpan, WallPaneling
 from typehaus.model.placeables import (
     ClearancePolicy,
@@ -408,7 +409,7 @@ __all__ = [
     "SuspensionAnchor", "HangingSeatType",
     "Countertop", "MillworkStandard", "RoomTrim", "StairLandingMillwork", "ShelfBank", "ShelfBay",
     "DoorTrim", "StairSkirt", "TrimStandard", "TrimStock", "WindowStool",
-    "DrywallStandard", "ShadowGapProfile", "TerminationBead",
+    "DrywallStandard", "ShadowGapProfile", "TerminationBead", "PaintSpec", "PaintStandard",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
     "WallLiningException",

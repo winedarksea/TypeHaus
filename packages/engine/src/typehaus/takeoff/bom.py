@@ -81,6 +81,7 @@ from typehaus.takeoff.sitework import footing_bedding_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff, stair_tread_takeoff
 from typehaus.takeoff.steel import steel_members_takeoff
 from typehaus.takeoff.track_lighting import track_lighting_materials
+from typehaus.takeoff.trim_paint import trim_paint_rows
 from typehaus.takeoff.wall_structure import wall_structure_takeoff
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
@@ -147,6 +148,8 @@ def bill_of_materials(
         "envelope_layers": envelope_layer_takeoff(model),
         # Beads and LED shadow-gap beads by the LF, off the DrywallStandard (#103).
         "drywall_trims": drywall_trim_rows(model),
+        # Painted base and casing by the LF, off the PaintStandard's trim system (#113).
+        "trim_paint": trim_paint_rows(model),
         # The other half of the wall stack: a STRUCTURE layer that does not frame — a pour,
         # an ICF core, a CMU/SRW course, a brick wythe — produces no members and is not a
         # solid, so no other section can bill it. 43 of catlin's 154 walls, ~131 cy.

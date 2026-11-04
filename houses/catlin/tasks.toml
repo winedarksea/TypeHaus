@@ -205,8 +205,10 @@ checkpoints = [
 # is a warning, and a warning nobody reads is how scope goes missing).
 [visits."task/paint/building/interior"]
 label = "Interior paint — walls, ceilings, trim and doors"
-rows = ["envelope_layers:latex-paint", "envelope_layers:latex-paint-accent",
-        "allowances:paint-trim-and-doors"]
+rows = ["envelope_layers:paint-wall", "envelope_layers:paint-ceiling",
+        "envelope_layers:paint-wet", "envelope_layers:latex-paint-accent",
+        "envelope_layers:paint-enamel", "trim_paint:paint-enamel",
+        "allowances:paint-trim-residual"]
 depends_on = ["task/drywall/building"]
 constraints = [
   { label = "drywall finished to the agreed level" },
@@ -216,7 +218,9 @@ constraints = [
 # finish coats on the trim once it is up.
 checkpoints = [
   { id = "walls", label = "Walls and ceilings — primer and two coats" },
-  { id = "trim", label = "Trim and doors — fill, caulk and finish coats on the set base and casing", after = ["task/millwork/building/trim"] },
+  # The PT-4 enamel (BM Advance / SW Emerald Urethane) cures slowly: 5-7 days before doors
+  # are rehung or shelves loaded (notes/paint_selection.md).
+  { id = "trim", label = "Trim and doors — fill, caulk and finish coats on the set base and casing", after = ["task/millwork/building/trim"], cure_days = 7 },
 ]
 
 [visits."task/paint/building/foundation-coating"]

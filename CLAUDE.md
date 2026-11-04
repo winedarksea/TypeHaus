@@ -72,6 +72,9 @@ a release or for exhaustive local verification.
   face (`integrity.light_run_host`), the reveal cut from the board, `z_m` on the board face,
   the Z bead's depth graded by `mep.plaster_in_depth`. The run's swept section is served to
   the viewer, never copied there.
+- **Paint is derived from one `PaintStandard`** (decision #113, `model/paint.py`): rooms take its
+  `walls`/`ceilings`/`wet` system through `resolve/room_paint.py`, swapping default coats only;
+  trim and doors bill in `takeoff/trim_paint.py`; `Material.paint` + `Product.equals` feed A-604.
 - **A pour slab stops at what it is cast against; a rim band has one wall** (decision #107):
   `resolve/slab_clip.py` cuts flush footings and through-walls out of the slab; read the slab
   as a floor through `floor_plan`. A wall dropping to a foundation owns its band outright.

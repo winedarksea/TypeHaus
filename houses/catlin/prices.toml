@@ -3746,7 +3746,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Installed budget rates for full-depth jamb foam and site door paint.
 "closed-cell-spray-foam:5.5" = { material = { low = 2.2, high = 3.3 }, labour = { low = 3.3, high = 4.95 } }
 "door-paint-exterior" = { material = { low = 0.4, high = 0.8 }, labour = { low = 2, high = 4 } }
-"door-paint-white" = { material = { low = 0.4, high = 0.8 }, labour = { low = 2, high = 4 } }
+# PT-4 (decision #113): the interior door leaves and frames, both faces, glass out, off
+# takeoff/trim_paint.py, plus D-M-ENTRY's inside face (was `door-paint-white`).
+"paint-enamel" = { material = { low = 0.4, high = 0.8 }, labour = { low = 2, high = 4 } }  # 936.1 SF
 
 # RESEARCHED 2026-08-07 — [low, high] $/SF net, material only. IMPORTANT: this section is
 # keyed by material tag with no thickness in the key, so each range is the $/SF at the
@@ -4235,9 +4237,14 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Re-quoted 2026-08-23 for the **10" beam** (8" base panel + 2" top hat), not the 8" panel
 # the old rate was taken from: 25% more EPS in the section, and one more piece per bay to set.
 "eps-deck-form" = { material = { low = 6.25, high = 8.75 }, labour = { low = 4.5, high = 8 } }  # 0 since 2026-11-01 (decision #112: SL-M-DECK is FS-M-NE's trusses); kept priced as the BuildDeck revert (was 414 SF of 10" forms)
-# Every resolved coat: the rooms paint their faces and ceilings (resolve/room_paint.py), so the
-# five unpainted rooms (furnace, ESS, main mech, east unfinished attic, attic pocket) bill none.
-"latex-paint" = { material = { low = 0.35, high = 0.8 }, labour = { low = 1.2, high = 2.2 } }  # 13,385 SF walls, ceilings, linings, returns — ~75/25 LABOUR to material
+# Every resolved coat: the rooms paint their faces and ceilings with the PAINT-STANDARD's
+# systems (resolve/room_paint.py, decision #113), so the five unpainted rooms bill none. The
+# old 13,785.9 SF `latex-paint` row, split three ways (the split sums to it); primer rides in
+# each rate. ~75/25 LABOUR to material. Ceilings take a flat, cheaper per gallon; the bath and
+# laundry system a step over the walls (SW's equal is Duration Home).
+"paint-wall" = { material = { low = 0.35, high = 0.8 }, labour = { low = 1.2, high = 2.2 } }  # 8,736.0 SF walls, returns, the stair-well lining (PT-1)
+"paint-ceiling" = { material = { low = 0.3, high = 0.65 }, labour = { low = 1.2, high = 2.2 } }  # 3,136.8 SF (PT-2)
+"paint-wet" = { material = { low = 0.4, high = 0.9 }, labour = { low = 1.2, high = 2.2 } }  # 1,913.1 SF baths and laundry, walls and ceilings (PT-3)
 # The garage ceiling's one coat (owner: taped and primed, not painted). Material only: a
 # 5-gal PVA primer at $60-100 covers ~1,500 SF, and the labour rides in the `gwb` row's
 # hang-tape-finish rate.
@@ -5519,7 +5526,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # stock tag; `:door casing` prices the casing apart (more cuts per foot). Install is
 # butt-jointed S4S, flush base-to-leg; the base goes in after the hard floors, so no shoe.
 # 2026-10-19: bought and painted — finger-jointed pine base, MDF casing, PVC in the baths and
-# plant room; paint stays in [allowances] paint-trim-and-doors. Hardwood is left on the sauna
+# plant room; their paint bills in [trim_paint] (decision #113). Hardwood is left on the sauna
 # (locust base, cedar casing) and two accent faces (cherry D-S-SUITE, oak D-A-STUDY).
 # ESTIMATE, not researched: primed 1x4 at the yard ($/LF below); milled rough stock at
 # $5-9/bf (cherry), $4-8/bf (locust, cedar), ~0.33 rough bf per LF with waste. Owner-milled
@@ -5557,6 +5564,13 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # D-B-SAUNA's full-depth 3/4 x 9 1/4 cedar flat jamb (owner, 2026-11-01): owner-milled stock at
 # the low end, a joiner's fit at the labour band. ESTIMATE.
 "cedar-sauna-trim:door jamb" = { material = { low = 0, high = 4.0 }, labour = { low = 8.0, high = 15.0 } }  # 15.4 LF
+
+[trim_paint]
+# NEW 2026-11-03 (decision #113): PT-4 on the painted base and casing by the LF, off
+# [interior_trim]'s rows whose stock is `wood_surface="painted"` (oak, cherry, locust and
+# cedar are oiled or bare and stay out). Skirts and the suite battens carry paint in their
+# own rate. Rate from the 2026-10-29 bottom-up: hand-painted, fill, two coats, $1.70-3.40/LF.
+"paint-enamel" = { material = { low = 0.2, high = 0.4 }, labour = { low = 1.5, high = 3.0 } }  # 1,225.8 LF (518.9 base + 706.9 casing)
 
 [drywall_trims]
 # NEW 2026-10-30 (decision #103): every drywall accessory the model derives, by the LF of
@@ -7883,15 +7897,11 @@ permits-mep = { low = 1500, high = 4000 }
 # `finish-interior-trim-and-baseboard` is DELETED (2026-10-10), not zeroed: base and casing are
 # derived per room and per door (plan/millwork.py TRIM-STANDARD) and priced by the LF in
 # [interior_trim]. Leaving the lump would bill the trim twice.
-# [envelope_layers] `latex-paint` is WALL AND CEILING AREA ONLY — it cannot see a lineal foot
-# of trim or the face of a door. Painting is labour-dominated; the paint itself is ~20%.
-# NOT DRIVEN: the trim's LF now exists ([interior_trim]), so the trim half of this row could be
-# driven by it; the door-leaf FACE area the openings table does not report still cannot (it
-# has count, width and height, but painting a bifold is not painting a slab). Oak trim is
-# oiled, not painted, which is a second reason not to drive it off the trim LF blindly.
-# 2026-10-29 bottom-up (door-paint rate $2.40-4.80/SF; trim hand-painted two coats): ~1,240 LF primed trim x $1.70-3.40 = $2.1-4.2k;
-# ~30 leaves x 40 SF x $2.40-4.80 = $2.9-5.8k; 41 window aprons/returns ~$0.6-1.2k; caulk/fill/touch-up/mob $0.5-1.5k.
-paint-trim-and-doors = { material = { low = 1000, high = 2200 }, labour = { low = 5200, high = 10800 } }
+# `paint-trim-and-doors` is DELETED (2026-11-03, decision #113): trim paint is driven by the
+# LF in [trim_paint] and the door leaves by face area in [envelope_layers] `paint-enamel`.
+# What is still underived, from the 2026-10-29 bottom-up: 41 window aprons/returns ~$0.6-1.2k
+# and caulk/fill/touch-up/mobilisation $0.5-1.5k.
+paint-trim-residual = { material = { low = 200, high = 500 }, labour = { low = 900, high = 2200 } }
 # --- the court columns' mineral silicate wash, NEW 2026-09-13 --------------------------------
 # The four 12" round cast columns (PT-SG-BR1/BR3/BF1/BF3), washed white with the same Beeckosil
 # as the court walls. Heights off the resolved solids: 2 x 8.226' + 2 x 8.073' = 32.6 LF, and
@@ -8486,6 +8496,7 @@ shelving             = "material"   # its one row spells its own split
 countertops          = "material"
 interior_trim        = "material"
 drywall_trims        = "material"
+trim_paint           = "material"   # its one row spells its own split
 stair_treads         = "material"
 openings             = "material"
 footing_bedding      = "material"

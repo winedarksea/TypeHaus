@@ -33,7 +33,7 @@ from typehaus.findings import Finding, Result, Severity, not_applicable
 from typehaus.model.assembly import Assembly, Layer
 from typehaus.model.enums import ControlLayer, LayerFunction, Occupancy
 from typehaus.model.spatial import Room
-from typehaus.resolve.room_paint import paint_room, paint_stack_end
+from typehaus.resolve.room_paint import paint_room, paint_stack_end, paint_standard
 from typehaus.resolve.room_walls import bounding_walls
 
 __all__ = [
@@ -201,7 +201,7 @@ def _effective_lining(ctx: CheckContext, wall_tag: str, room: Room,
                    if exception.wall_ref == wall_tag),
                   tuple(room.wall_lining or assembly.default_lining))
     # The room's paint, as resolve builds it; an envelope face is never stripped.
-    painter = paint_room(room, Polygon(), 0.0, 0.0)
+    painter = paint_room(room, Polygon(), 0.0, 0.0, paint_standard(ctx.plan)[0])
     return tuple(paint_stack_end(list(lining), 0, [painter], ctx.plan.library, True)[0])
 
 

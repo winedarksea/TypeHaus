@@ -33,6 +33,30 @@ def authored_hardware_rows(model):
     return rows
 
 
+def door_face_area_m2(model, opening) -> float:
+    """One face of a door's leaf and frame, projected on its wall; glass is never painted."""
+    geometry = model.geometry.by_uid(opening.uid)
+    wall = model.wall(opening.host_wall)
+    origin, tangent, _normal, _run = wall_frame(wall)
+    face_area = 0.0
+    for part in geometry.parts:
+        if part.key.split(":")[0] not in {"leaf", "frame", "jamb_liner", "mullion"}:
+            continue
+        if part.key.endswith(":interior"):
+            continue
+        if part.material_key == "glass":
+            continue
+        projections = []
+        for solid in part.solids:
+            stations = [sum((point[i] - origin[i]) * tangent[i] for i in (0, 1))
+                        for point in solid.ring]
+            low, high = min(stations), max(stations)
+            projections.append(Polygon([(low, solid.z0_m), (high, solid.z0_m),
+                                        (high, solid.z1_m), (low, solid.z1_m)]))
+        face_area += union_all(projections).area
+    return face_area
+
+
 def door_field_paint_rows(model):
     types = {item.tag: item for item in model.plan.library.door_types}
     areas = defaultdict(float)
@@ -40,26 +64,7 @@ def door_field_paint_rows(model):
         spec = types.get(opening.type_ref) if opening.is_door else None
         if spec is None or spec.field_finish is None:
             continue
-        geometry = model.geometry.by_uid(opening.uid)
-        # Projected leaf/frame face area, once per face; glass is never painted.
-        wall = model.wall(opening.host_wall)
-        origin, tangent, _normal, _run = wall_frame(wall)
-        face_area = 0.0
-        for part in geometry.parts:
-            if part.key.split(":")[0] not in {"leaf", "frame", "jamb_liner", "mullion"}:
-                continue
-            if part.key.endswith(":interior"):
-                continue
-            if part.material_key == "glass":
-                continue
-            projections = []
-            for solid in part.solids:
-                stations = [sum((point[i] - origin[i]) * tangent[i] for i in (0, 1))
-                            for point in solid.ring]
-                low, high = min(stations), max(stations)
-                projections.append(Polygon([(low, solid.z0_m), (high, solid.z0_m),
-                                            (high, solid.z1_m), (low, solid.z1_m)]))
-            face_area += union_all(projections).area
+        face_area = door_face_area_m2(model, opening)
         for material in spec.field_finish:
             areas[material] += face_area
     return [dict(scope="door field paint", function="finish", material=ref,

@@ -374,9 +374,11 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
              for (scope, material), area in sorted(ceiling_coating_areas(model).items())
              if area > 0.0]
     from typehaus.takeoff.door_hardening import door_field_paint_rows
+    from typehaus.takeoff.trim_paint import door_leaf_paint_rows
     from typehaus.takeoff.window_returns import window_return_finish_rows
 
-    return rows + window_return_finish_rows(model) + door_field_paint_rows(model)
+    return (rows + window_return_finish_rows(model) + door_field_paint_rows(model)
+            + door_leaf_paint_rows(model))
 
 
 def bug_screen_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

@@ -116,10 +116,10 @@ MATERIALS: tuple[Material, ...] = (
         coating=True,
         source="IRC R702.7.1 vapour-retarder classes: Class III is 1.0-10 perm by ASTM "
         "E96 dry cup, and R702.7 names latex paint over gypsum board as the "
-        "canonical Class III retarder. Published permeances for a two-coat latex "
-        "film on gypsum spread over roughly 3-10 perm with coats and sheen; 5.0 "
-        "is a mid-band value biased to the tight end of that spread, quoted as a "
-        "band midpoint rather than as a single published test result",
+        "canonical Class III retarder. 5.0 is a value inside that prescriptive band, "
+        "NOT a published test: makers' own sheets read higher (Sherwin-Williams "
+        "publishes 25.8 perms for a drywall primer and 27.6 for an acrylic eggshell) "
+        "and state no coat count or method, so they do not fix a two-coat system",
     ),
     # A board that is taped and primed but not finished. Authoring it is what says so: bare
     # gypsum facing a used room is painted by the room (``resolve/room_paint.py``).

@@ -366,7 +366,7 @@ def test_catlin_allowances_split_across_their_trades(catlin_model, catlin_areas)
     assert by_key["permits-mep"] == "general"
     assert by_key["site-excavation-backfill-grading"] == "earth"
     assert by_key["envelope-air-sealing-and-blower-door"] == "insulation"
-    assert by_key["paint-trim-and-doors"] == "paint"
+    assert by_key["paint-trim-residual"] == "paint"
     assert by_key["finish-wall-tile-material"] == "tile"
     assert by_key["finish-floor-prep-and-self-levelling"] == "flooring"
     assert "earth" not in {t for k, t in by_key.items() if k.startswith("permits-")}

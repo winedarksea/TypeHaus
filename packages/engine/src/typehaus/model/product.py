@@ -48,6 +48,9 @@ class Product(HausModel):
     # Where the choice and its numbers were read (#46) — the same freeform provenance
     # every other catalog record carries.
     source: str | None = None
+    # Accepted alternates ("or equal"), as Product tags in order of preference; this
+    # record is the basis of design. Linted by ``integrity.unknown_product_ref``.
+    equals: tuple[str, ...] = ()
 
 
 register_constructor("Product", Product)

@@ -21,6 +21,7 @@ from typehaus.resolve.coatings import coating_tags
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedRoof, ResolvedWall
 from typehaus.resolve.overlay import difference
 from typehaus.resolve.roof_geometry import roof_is_trussed
+from typehaus.resolve.room_paint import paint_standard, unroomed_coat
 from typehaus.resolve.rooms import room_faces
 from typehaus.resolve.wall_faces import storey_wall_mass
 
@@ -63,7 +64,8 @@ def ceiling_coating_areas(model: ResolvedModel) -> dict[tuple[str, str], float]:
 
 def _unroomed_roof_ceiling(model: ResolvedModel, roof: ResolvedRoof, coatings, areas) -> None:
     """A roof's own ceiling coat under faces no Room claims (a stair hall): no Room decides
-    it, so it stays as authored, as a wall face with no Room does."""
+    it, so it stays as authored, as a wall face with no Room does — save a default coat,
+    which takes the ``PaintStandard``'s ceiling system."""
     plan = model.plan
     assembly = plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
     coats = []
@@ -81,8 +83,9 @@ def _unroomed_roof_ceiling(model: ResolvedModel, roof: ResolvedRoof, coatings, a
         return
     mass = storey_wall_mass(model, roof.storey, [face for _room, face in claimed] + open_faces)
     area = sum(difference(face, mass).area for face in open_faces) * _slope(model, roof)
+    standard = paint_standard(plan)[0]
     for tag in coats:
-        areas[("ceiling", tag)] += area
+        areas[("ceiling", unroomed_coat(standard, tag, "ceilings"))] += area
 
 
 def _slope(model: ResolvedModel, roof: ResolvedRoof | None) -> float:

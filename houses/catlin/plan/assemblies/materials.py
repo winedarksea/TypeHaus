@@ -3,6 +3,7 @@
 # Split out of plan/assemblies.py verbatim.
 from typehaus import (
     Material,
+    PaintSpec,
 )
 from library import (
     ALL_MATERIALS,
@@ -28,8 +29,6 @@ MATERIALS = [
              color="#41464a", source="2026 Comp 6.4/6.46; composite profiles, finish per Therma-Tru. No exposed wood."),
     Material(tag="impermeable-door-flashing", name="Impermeable door pan/apron membrane",
              color="#444444", source="opening_flashing_spec.md hybrid; exact PVC-pan bond remains unconfirmed."),
-    Material(tag="door-paint-white", name="White interior door field paint", coating=True,
-             color="#f4f3ee", finish="paint", source="Site-applied interior face finish; seal all leaf edges per manufacturer."),
     *ALL_MATERIALS,
     Material(tag="pax-frame-white", name="White PAX frame and shelf panels",
              color="#f0f0ed",
@@ -129,7 +128,8 @@ MATERIALS = [
     # above itself (see metal-dark-exterior below for the same effect).
     Material(tag="latex-paint-accent", name="Interior latex paint, spruce accent",
              r_per_inch=0.0, vapor_permeance_perms=5.0, color="#2e4a44",
-             finish="matte-latex", coating=True,
+             finish="matte-latex", coating=True, product_ref="PROD-BM-US500-EGGSHELL-N538",
+             paint=PaintSpec(sheen="eggshell", colour="custom spruce green-blue (#2e4a44); code from a chip, TBD", mark="PT-5", use="Accent wall, RM-S-BED1", primer_ref="paint-primer"),
              source="same film as latex-paint (IRC R702.7.1 Class III over gypsum); only the colour differs — a second Material tag is how a wall says it is a different colour, since Layer has no colour slot"),
     # The roof's DECK vapour barrier (ROOF), over the taped ZIP and under the foam.
     # This is the layer that makes the roof a "perfect wall": all four control layers land
@@ -319,22 +319,23 @@ MATERIALS = [
              finish="clear-satin-hardwax-oil", species="elm",
              milling_profile="S4S", requires_custom_milling=True,
              source="plans/TODO.md — suite bedroom tudor posts, 10' sections cut to fit"),
-    # Bought interior trim (plan/millwork.py TRIM-STANDARD), painted the walls' latex-paint
-    # white. No species: none of it reaches `haus millwork`; prices.toml bills it by the LF.
+    # Bought interior trim (plan/millwork.py TRIM-STANDARD), painted PT-4 (plan/paint.py) in
+    # the house white, #f4f6f1. `wood_surface="painted"` is what bills its paint by the LF
+    # in [trim_paint]. No species: none of it reaches `haus millwork`.
     Material(tag="pine-fj-base", name='Finger-jointed pine base, 3/4" x 3 1/2" S4S',
-             hatch="lumber", color="#f0ede6", finish="satin-enamel", milling_profile="S4S",
+             hatch="lumber", color="#f4f6f1", finish="satin-enamel", wood_surface="painted", milling_profile="S4S",
              product_ref="PROD-STOCK-PINE-FJ-1X4",
              source="Primed finger-jointed pine 1x4 from the yard, painted in the wall colour."),
     Material(tag="poplar-skirt-paint", name='Poplar skirt board, 1x12 S4S, paint grade',
-             hatch="lumber", color="#f0ede6", finish="satin-enamel", species="poplar",
-             milling_profile="S4S",
+             hatch="lumber", color="#f4f6f1", finish="satin-enamel", species="poplar",
+             wood_surface="painted", milling_profile="S4S",
              source='Stock 3/4" x 11 1/4" poplar 1x12 from the yard, primed and painted the wall white. The stair skirts, set before the treads and risers.'),
     Material(tag="mdf-casing", name='MDF door casing, 3/4" x 3 1/2" S4S',
-             hatch="lumber", color="#f0ede6", finish="satin-enamel", milling_profile="S4S",
+             hatch="lumber", color="#f4f6f1", finish="satin-enamel", wood_surface="painted", milling_profile="S4S",
              product_ref="PROD-STOCK-MDF-1X4",
              source="Primed MDF 1x4, painted in the wall colour. Kept out of the wet rooms: MDF swells at a cut edge."),
     Material(tag="pvc-trim", name='Cellular PVC trim, 3/4" x 3 1/2" S4S',
-             hatch="lumber", color="#f0ede6", finish="satin-enamel", milling_profile="S4S",
+             hatch="lumber", color="#f4f6f1", finish="satin-enamel", wood_surface="painted", milling_profile="S4S",
              product_ref="PROD-STOCK-PVC-1X4",
              source="White cellular PVC 1x4 (Azek/Versatex class), painted with the walls. The bathrooms and the 70% RH plant room. In the tile baths it goes in after tile: stainless trim nails + PVC adhesive, sitting on the tile."),
     Material(tag="mdf-panel-painted", name='Paint-grade MDF backing, 1/4", white enamel',

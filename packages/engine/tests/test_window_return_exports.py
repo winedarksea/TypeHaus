@@ -97,7 +97,7 @@ def test_bom_estimate_csv_and_drywall_bid_bill_each_item_once(catlin_model_ro, r
     assert not any(r['category'] == 'window_return' for r in return_bom['structural_solids'])
     rows = [r for r in return_bom['envelope_layers'] if r['scope'] == 'window return']
     assert {r['material'] for r in rows} == {
-        'gwb', 'gwb-ar', 'gwb-mr', 'latex-paint', 'latex-paint-accent'}
+        'gwb', 'gwb-ar', 'gwb-mr', 'paint-wall', 'paint-wet', 'latex-paint-accent'}
     assert all(not r['also_in_sheet_goods'] for r in rows)
     board_area = sum(l.area_m2 for r in model.window_returns for l in r.layers
                      if not l.coating)

@@ -135,6 +135,8 @@ ESTIMATE_PLANS = (
     # Firestop sealant by the foot of fireblock penetration (``takeoff/fireblocking.py``).
     ("fireblock_sealant", "fireblock_sealant", "material", "length_ft", "LF"),
     ("drywall_trims", "drywall_trims", "material", "length_ft", "LF"),
+    # Painted base and casing by the LF, keyed on the trim paint system (#113).
+    ("trim_paint", "trim_paint", "material", "length_ft", "LF"),
     # Placed by the yard, keyed on the assembly — see the field comment on ``Prices``.
     ("wall_structure", "wall_structure", "assembly", "volume_cubic_yards", "cy"),
     # Reinforcing steel by the POUND — how it is milled, shipped, and quoted. The key is the
@@ -263,6 +265,7 @@ QUALIFIED_KEY_FIELD: dict[str, str | tuple[str, ...]] = {
     # A casing leg is cut, mitred to nothing and nailed twice; a base run is one long board.
     # ``oak-trim:door casing`` prices the casing apart; a bare stock key prices both.
     "interior_trim": "kind",
+    "trim_paint": "kind",
     # One box product, two installs: RACO 232 is Tapcon-set on concrete (surface) and nailed
     # in a cavity where a raceway reaches it (flush_raceway), whose labour is the device's.
     "electrical_boxes": "mounting",

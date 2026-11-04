@@ -115,7 +115,7 @@ DOOR_TYPES = (
     DoorType(
         tag="DT-EXT-SWING36", width=ft(3), height=ft(6, 8), exterior=True, function="entry",
         hardware=_ENTRY_HARDWARE, jamb_framing=_JAMB,
-        field_finish=("door-paint-exterior", "door-paint-white"),
+        field_finish=("door-paint-exterior", "paint-enamel"),
         frame_material_ref="door-paint-exterior",
         u_factor=u_us(0.15), product_ref=THERMATRU_SMOOTHSTAR.tag, doorway=THERMATRU_SILL,
         catalog_dimensions=_ENTRY_DIMENSIONS,
@@ -169,7 +169,7 @@ ESS_STEEL_DOOR = DoorType(
     # `glazed` so R308.4.1 grades the lite; the engine has no partial-lite leaf, so the
     # viewer draws it all glass and it takes no leaf_material_ref.
     glazed=True, tempered=True, self_closing=True, core="hollow", factory_frame=True,
-    frame_material_ref="door-paint-white",
+    frame_material_ref="paint-enamel",
     source="24x80 hollow-metal steel leaf in a knock-down steel frame, small tempered "
            "vision lite (R308.4.1), spring hinges. No fire_rating_minutes: unrated by "
            "choice. Ceco/Steelcraft/Republic narrow-lite class; 24 in. is special order.")

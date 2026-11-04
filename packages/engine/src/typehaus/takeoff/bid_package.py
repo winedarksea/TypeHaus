@@ -197,11 +197,14 @@ def _line(item: BomRow, trade: str, storey_of: Mapping[str, str], labels: LabelI
     if unit != spelled and item.quantity:
         detail = f"{detail}; {item.quantity} {item.unit} in the takeoff".strip("; ")
     unit_price = total = None
-    if priced:
-        row = prices.get((item.section, item.qualified_key)) or prices.get((item.section, item.key))
-        if row is not None:
-            unit_price = (float(row["unit_price"]["low"]), float(row["unit_price"]["high"]))
-            total = (float(row["cost"]["low"]), float(row["cost"]["high"]))
+    row = prices.get((item.section, item.qualified_key)) or prices.get((item.section, item.key))
+    # A product with accepted equals (#113) is named on the RFQ: the bidder picks the line.
+    product = str((row or {}).get("product") or "")
+    if " or " in product:
+        detail = f"{product}; {detail}".strip("; ")
+    if priced and row is not None:
+        unit_price = (float(row["unit_price"]["low"]), float(row["unit_price"]["high"]))
+        total = (float(row["cost"]["low"]), float(row["cost"]["high"]))
     return BidLine(
         section=item.section, key=item.qualified_key,
         description=describe(item.section, item.qualified_key, item.row, labels),

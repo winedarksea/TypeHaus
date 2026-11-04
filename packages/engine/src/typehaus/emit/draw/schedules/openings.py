@@ -315,21 +315,34 @@ def _wall_finish(model, room) -> str:
 
     cx = sum(p[0] for p in room.clear_face) / max(len(room.clear_face), 1)
     cy = sum(p[1] for p in room.clear_face) / max(len(room.clear_face), 1)
+    from typehaus.emit.draw.schedules.paint import paint_mark
+
     names: set[str] = set()
+    marks: set[str] = set()
     for wall, _span in bounding_walls(model, room):
         n = normal(unit(sub(wall.axis[1], wall.axis[0])))
         sign = _room_side_sign(wall, (cx, cy))
         best, ref = float("-inf"), ""
+        coat_reach, coat = float("-inf"), None
         for layer in wall.layers:
-            if layer.thickness_m <= 0 or not layer.material_ref or not layer.polygon:
+            if not layer.material_ref or not layer.polygon:
                 continue
             reach = max(((x - wall.axis[0][0]) * n[0] + (y - wall.axis[0][1]) * n[1]) * sign
                         for x, y in layer.polygon)
+            if layer.thickness_m <= 0:
+                # A coating has no depth: the room-side one is the paint mark (A-604).
+                mark = paint_mark(model.plan.library, layer.material_ref)
+                if mark and reach > coat_reach + 1e-6:
+                    coat_reach, coat = reach, mark
+                continue
             if reach > best + 1e-6:
                 best, ref = reach, layer.material_ref
         if ref:
             names.add(ref)
-    return " / ".join(sorted(names)) if names else "—"
+            if coat is not None and coat_reach >= best - 1e-6:
+                marks.add(coat)
+    text = " / ".join(sorted(names)) if names else "—"
+    return f"{text} + {'/'.join(sorted(marks))}" if marks else text
 
 
 def _ceiling_finish(model, room) -> str:
@@ -365,7 +378,9 @@ def _room_side_material(ceiling, library) -> str:
         if not ref:
             continue
         if is_coating(library, ref):  # a coating takes no depth; name the board, then the coat
-            coat = coat or ref
+            from typehaus.emit.draw.schedules.paint import paint_mark
+
+            coat = coat or paint_mark(library, ref) or ref
             continue
         return f"{ref} + {coat}" if coat else ref
     return coat

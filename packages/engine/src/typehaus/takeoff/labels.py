@@ -42,6 +42,7 @@ SECTION_LABELS: dict[str, str] = {
     "bug_screens": "Rainscreen insect screens",
     "fireblock_sealant": "Firestop sealant",
     "drywall_trims": "Drywall beads and LED profiles",
+    "trim_paint": "Trim paint",
     "wall_structure": "Wall structure by the yard", "reinforcement": "Reinforcing steel",
     "timber": "Timber", "steel_members": "Rolled steel members",
     "railings": "Guards and handrails",

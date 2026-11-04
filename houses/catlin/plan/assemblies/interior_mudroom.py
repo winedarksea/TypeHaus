@@ -65,11 +65,12 @@ INT_2X6_BRG_MUDROOM_UPPER_GWB = Assembly(
                       function=LayerFunction.FINISH, extent=_UPPER_CLOSURE_EXTENT),
             ),
         ),
-        # The nook backs are the stair leaf's other face: 1/2" MDO, painted both sides.
+        # The nook backs are the stair leaf's other face: 1/2" MDO, painted both sides. The
+        # nook coat is mid-stack, so no room reaches it: it names PT-1 (plan/paint.py).
         Substitution(
             span=layers("ply-stair", "paint-stair"),
             replacement=(
-                Layer(name="paint-nook", material_ref="latex-paint", thickness=inch(0.01),
+                Layer(name="paint-nook", material_ref="paint-wall", thickness=inch(0.01),
                       function=LayerFunction.FINISH),
                 Layer(name="mdo-stair", material_ref="mdo-plywood-interior", thickness=inch(0.5),
                       function=LayerFunction.FINISH),

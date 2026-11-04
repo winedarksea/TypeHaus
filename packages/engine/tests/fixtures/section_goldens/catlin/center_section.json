@@ -679,7 +679,7 @@
       "closed": false,
       "uid": "CBW112AAAA",
       "tag": "W-B-CS2/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -700,7 +700,7 @@
       "closed": false,
       "uid": "CBW112AAAA",
       "tag": "W-B-CS2/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -1058,7 +1058,7 @@
       "closed": false,
       "uid": "CQRJZCM0R1",
       "tag": "W-B-HALL-W/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -1079,7 +1079,7 @@
       "closed": false,
       "uid": "CQRJZCM0R1",
       "tag": "W-B-HALL-W/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -1944,7 +1944,7 @@
       "closed": false,
       "uid": "CMW103AAAA",
       "tag": "W-M-E1/paint",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -1965,7 +1965,7 @@
       "closed": false,
       "uid": "CMW103AAAA",
       "tag": "W-M-E1/paint",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -2569,7 +2569,7 @@
       "closed": false,
       "uid": "CMW110AAAA",
       "tag": "W-M-W3/paint",
-      "material": "latex-paint"
+      "material": "paint-wet"
     },
     {
       "space": "model",
@@ -2759,7 +2759,7 @@
       "closed": false,
       "uid": "CMW113AAAA",
       "tag": "W-M-C2/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -2780,7 +2780,7 @@
       "closed": false,
       "uid": "CMW113AAAA",
       "tag": "W-M-C2/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -2998,7 +2998,7 @@
       "closed": false,
       "uid": "CMW127AAAA",
       "tag": "W-M-BA2E2/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -3019,7 +3019,7 @@
       "closed": false,
       "uid": "CMW127AAAA",
       "tag": "W-M-BA2E2/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wet"
     },
     {
       "space": "model",
@@ -3772,7 +3772,7 @@
       "closed": false,
       "uid": "CSW104AAAA",
       "tag": "W-S-E3/paint",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -4215,7 +4215,7 @@
       "closed": false,
       "uid": "CSW112AAAA",
       "tag": "W-S-W3/paint",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -4406,7 +4406,7 @@
       "closed": false,
       "uid": "CSW139AAAA",
       "tag": "W-S-C2C/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wet"
     },
     {
       "space": "model",
@@ -4427,7 +4427,7 @@
       "closed": false,
       "uid": "CSW139AAAA",
       "tag": "W-S-C2C/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -4617,7 +4617,7 @@
       "closed": false,
       "uid": "CSW123AAAA",
       "tag": "W-S-BW2/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -4638,7 +4638,7 @@
       "closed": false,
       "uid": "CSW123AAAA",
       "tag": "W-S-BW2/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -4940,7 +4940,7 @@
       "closed": false,
       "uid": "CSW142AAAA",
       "tag": "W-S-DC2/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -4961,7 +4961,7 @@
       "closed": false,
       "uid": "CSW142AAAA",
       "tag": "W-S-DC2/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wet"
     },
     {
       "space": "model",
@@ -5263,7 +5263,7 @@
       "closed": false,
       "uid": "78VGE6A81J",
       "tag": "W-A-C2M/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wet"
     },
     {
       "space": "model",
@@ -5452,7 +5452,7 @@
       "closed": false,
       "uid": "ZEF56D047J",
       "tag": "W-A-STU-W/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",

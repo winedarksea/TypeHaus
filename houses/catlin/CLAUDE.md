@@ -226,6 +226,10 @@ not instruction: when it disagrees with this file or the model, it is the one th
   owner 2026-10-30): the board stops short of the washed wall and the resolver centres each
   leg on the reveal if it is within 4" of a gypsum face (`integrity.light_run_host`). Move a
   cove and its `emission_side` must still face that wall. Beads bill in `[drywall_trims]`.
+- `plan/paint.py` — `# haus: editable` `PAINT-STANDARD` (decision #113): PT-1 walls, PT-2
+  ceilings, PT-3 baths and laundry, PT-4 trim and doors; systems and BM/SW/Home Depot products
+  in `plan/products_paint.py`, the one white (`WHITE`) in `plan/interior_palette.py`, basis in
+  `notes/paint_selection.md`. Author `paint-wall` only where a coat sits mid-stack.
 - `plan/fixtures.py` — `# haus: editable` plumbing-fixture *instances* (so UI drags
   round-trip). Only explicit constructors in any of these — no functions/generators.
 - `plan/electrical.py` — `# haus: editable` electrical service upgrade: meter, backup

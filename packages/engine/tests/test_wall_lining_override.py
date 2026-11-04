@@ -251,14 +251,14 @@ def test_authored_paint_colours_round_trip_to_base_color_factor(project) -> None
 
 def test_catlin_accent_and_latex_paint_reach_the_glb(catlin_model) -> None:
     """The real house: RM-S-BED1's feature wall (W-S-E2, storeys/second.py) ships the
-    spruce accent, and every other painted wall ships latex-paint's authored off-white."""
+    spruce accent, and every other painted wall ships PT-1's white (decision #113)."""
     from typehaus.emit.gltf import emit_gltf_dict
 
     accent = next(m for m in catlin_model.plan.library.materials
                   if m.tag == "latex-paint-accent")
     base = next(m for m in catlin_model.plan.library.materials
-                if m.tag == "latex-paint")
-    assert base.color == "#f0ede6"  # the pinned library value this test reads back
+                if m.tag == "paint-wall")
+    assert base.color == "#f4f6f1"  # BM Chantilly Lace, plan/interior_palette.py
     gltf, _blob = emit_gltf_dict(catlin_model)
     factors = {tuple(round(v, 6) for v in material["pbrMetallicRoughness"]
                ["baseColorFactor"]) for material in gltf["materials"]}

@@ -828,7 +828,7 @@
       "closed": false,
       "uid": "CMW103AAAA",
       "tag": "W-M-E1/paint",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -849,7 +849,7 @@
       "closed": false,
       "uid": "CMW103AAAA",
       "tag": "W-M-E1/paint",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",

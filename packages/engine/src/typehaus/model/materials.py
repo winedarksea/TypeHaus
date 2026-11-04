@@ -6,6 +6,7 @@ from typing import Literal
 
 from typehaus.model.base import HausModel
 from typehaus.model.cladding_trim import TrimCondition
+from typehaus.model.paint import PaintSpec
 from typehaus.model.published_cladding import PublishedCladdingLoad
 from typehaus.model.registry import register_constructor
 
@@ -291,6 +292,8 @@ class Material(HausModel):
     # The sealant along the base's toe where it meets this floor (the floor's perimeter
     # movement joint), billed by the LF of base. Authored on the floor (decision #57).
     base_joint_ref: str | None = None
+    # A paint coating's system: sheen, colour, primer, mark (``model/paint.py``, #113).
+    paint: PaintSpec | None = None
     # The chosen product this material *is*, by ``Product.tag`` (model/product.py).
     # ``None`` is the ordinary case: "5/8\" type X gypsum board" is a specification, and a
     # specification is what most of a house is bought against. Naming a product narrows it

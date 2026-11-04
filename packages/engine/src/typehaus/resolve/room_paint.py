@@ -3,12 +3,19 @@
 Applied to a wall's authored stack before it resolves, which moves nothing because a coating
 takes no depth (``resolve/coatings.py``). Per stack end, against every Room its face bounds:
 
-* no Room → as authored (an attic hall with no Room keeps what its assembly says);
+* no Room → as authored (an attic hall with no Room keeps what its assembly says), save a
+  default coat, which takes the standard's ``walls`` system;
 * every Room ``unpainted`` → the end's coatings are stripped, unless the wall is envelope:
   an exterior wall's room-face paint is its Class III vapour retarder and always stays;
 * a used Room (not UNCONDITIONED) on bare gypsum → ``room.paint or DEFAULT_PAINT`` is added;
 * an authored coating facing Rooms that agree on ``room.paint`` → swapped to it;
 * Rooms on one face that disagree → paint wins, and ``integrity.room_paint_conflict`` warns.
+
+With a ``PaintStandard`` (#113), a room naming no paint takes the standard's pick for the
+face (wet rooms ``wet``, ceilings ``ceilings``, else ``walls``; on a face shared by a wet and
+a dry room the wet system wins). It paints bare gypsum and swaps a *default coat* — an
+authored coat tagged ``DEFAULT_PAINT`` or one of the standard's surface systems; any other
+authored coat (an accent) stays. Without a standard nothing changes.
 
 A slotted end row is left as authored. Ceilings, floor-opening linings and the Glaser walk
 call :func:`paint_stack_end` with their own room.
@@ -22,9 +29,10 @@ from typing import Any
 from shapely.geometry import Point, Polygon
 from shapely.prepared import PreparedGeometry, prep
 
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.assembly import Layer
 from typehaus.model.enums import ControlLayer, LayerFunction, Occupancy
+from typehaus.model.paint import PaintStandard
 from typehaus.quantities import inch
 from typehaus.resolve.coatings import coating_tags
 from typehaus.resolve.rooms import claimed_room_faces
@@ -52,12 +60,54 @@ class PaintRoom:
     used: bool
     unpainted: bool
     paint: str | None
+    # The standard's system for this face, its rank (0 = wet, wins a shared face) and the
+    # coats it may swap; all empty without a PaintStandard.
+    pick: str | None = None
+    pick_rank: int = 1
+    default_coats: tuple[str, ...] = ()
 
 
-def paint_room(room: Any, face: Polygon, z0: float, z1: float) -> PaintRoom:
+def paint_room(room: Any, face: Polygon, z0: float, z1: float,
+               standard: PaintStandard | None = None, surface: str = "walls") -> PaintRoom:
+    occupancy = getattr(room, "occupancy", None)
+    pick = standard.pick(occupancy, surface) if standard is not None else None
     return PaintRoom(room.tag, face, prep(face), z0, z1,
-                     room.occupancy != Occupancy.UNCONDITIONED,
-                     bool(getattr(room, "unpainted", False)), getattr(room, "paint", None))
+                     occupancy != Occupancy.UNCONDITIONED,
+                     bool(getattr(room, "unpainted", False)), getattr(room, "paint", None),
+                     pick, 0 if standard is not None and pick == standard.wet else 1,
+                     (DEFAULT_PAINT, *standard.surface_refs()) if standard is not None else ())
+
+
+def paint_standard(plan: Any) -> tuple[PaintStandard | None, list[Finding]]:
+    """The house's one ``PaintStandard`` (or None), with ``integrity.paint_standard``."""
+    found = [el for el in plan.all_elements() if isinstance(el, PaintStandard)]
+    if not found:
+        return None, []
+    if len(found) > 1:
+        tags = ", ".join(sorted(el.tag for el in found))
+        return None, [element_error("integrity.paint_standard",
+                                    f"a house declares at most one PaintStandard; found "
+                                    f"{len(found)}: {tags}", found[0].tag)]
+    standard = found[0]
+    coatings = coating_tags(plan.library)
+    bad = [ref for ref in standard.material_refs() if ref not in coatings]
+    if bad:
+        return None, [element_error("integrity.paint_standard",
+                                    f"paint standard {standard.tag} names {bad[0]!r}, which "
+                                    "is not a coating material", standard.tag)]
+    return standard, []
+
+
+def unroomed_coat(standard: PaintStandard | None, tag: str, surface: str = "walls") -> str:
+    """A default coat on a face no Room claims (a stair hall) takes the standard's plain pick."""
+    if standard is None or tag not in (DEFAULT_PAINT, *standard.surface_refs()):
+        return tag
+    return standard.pick(None, surface)
+
+
+def _standard_pick(rooms: list[PaintRoom]) -> str | None:
+    picks = sorted((room.pick_rank, room.pick) for room in rooms if room.pick is not None)
+    return picks[0][1] if picks else None
 
 
 def _gypsum(library: Any, layer: Layer) -> bool:
@@ -77,16 +127,26 @@ def paint_stack_end(stack: list, end: int, rooms: list[PaintRoom], library: Any,
     paints = {room.paint for room in painted}
     conflict = (bool(painted) and len(painted) < len(rooms)) or len(paints) > 1
     if not painted:
+        if envelope and depth and any(order[0].material_ref in r.default_coats for r in rooms):
+            # An envelope face keeps its retarder coat: the standard's system, not unpainted.
+            tag = _standard_pick(rooms)
+            if tag is None or tag == order[0].material_ref:
+                return stack, False
+            kept = [order[0].model_copy(update={"material_ref": tag}), *order[1:]]
+            return (list(kept) if end == 0 else list(kept[::-1])), False
         if envelope or depth == 0:
             return stack, False
         kept = order[depth:]
     elif depth:
-        tag = paints.pop() if len(paints) == 1 else None
+        tag = next(iter(paints)) if len(paints) == 1 else None
+        if paints == {None} and any(order[0].material_ref in r.default_coats for r in painted):
+            tag = _standard_pick(painted)
         if tag is None or tag == order[0].material_ref:
             return stack, conflict
         kept = [order[0].model_copy(update={"material_ref": tag}), *order[1:]]
     elif depth < len(order) and _gypsum(library, order[0]) and any(r.used for r in painted):
-        tag = (paints.pop() if len(paints) == 1 else None) or DEFAULT_PAINT
+        tag = ((paints.pop() if len(paints) == 1 else None) or _standard_pick(painted)
+               or DEFAULT_PAINT)
         coat = Layer(name="room-paint-a" if end == 0 else "room-paint-b", material_ref=tag,
                      thickness=_PAINT_FILM, function=LayerFunction.FINISH,
                      control={ControlLayer.VAPOR})
@@ -101,18 +161,20 @@ class RoomPaint:
     """Every claimed Room of the plan, probed by wall faces as the walls resolve."""
 
     plan: Any
+    standard: PaintStandard | None = None
     rooms: list[PaintRoom] = field(default_factory=list)
     findings: list[Finding] = field(default_factory=list)
     stripped: set[str] = field(default_factory=set)
 
     @classmethod
     def of(cls, plan: Any) -> RoomPaint:
-        out = cls(plan)
+        standard, findings = paint_standard(plan)
+        out = cls(plan, standard, findings=findings)
         for storey in plan.storeys:
             z0 = storey.elevation.meters
             z1 = z0 + storey.default_ceiling_height.meters
             for room, face in claimed_room_faces(plan, storey.tag):
-                out.rooms.append(paint_room(room, face, z0, z1))
+                out.rooms.append(paint_room(room, face, z0, z1, standard))
         return out
 
     def edit_wall(self, wall: Any, stack: list, axis: tuple, sign: float, faces: tuple,
@@ -125,6 +187,11 @@ class RoomPaint:
             rooms = self._rooms_facing(axis, offset + away * FACE_PROBE_M, z_range)
             before = [layer.material_ref for layer in stack]
             stack, conflict = paint_stack_end(stack, end, rooms, self.plan.library, envelope)
+            if not rooms and stack and getattr(stack[end], "slot", None) is None:
+                tag = unroomed_coat(self.standard, stack[end].material_ref)
+                if tag != stack[end].material_ref:
+                    stack = list(stack)
+                    stack[end] = stack[end].model_copy(update={"material_ref": tag})
             if len(stack) < len(before):
                 self.stripped.add(wall.tag)
             if conflict:
@@ -196,7 +263,8 @@ def lining_coating(plan: Any, storey_tag: str, lining: tuple, centre: tuple[floa
     ordered = sorted(plan.storeys, key=lambda s: s.elevation.meters)
     index = next((i for i, s in enumerate(ordered) if s.tag == storey_tag), None)
     tags = {s.tag for s in ordered[max(0, (index or 0) - 1):(index or 0) + 1]}
-    rooms = [paint_room(room, face, 0.0, 0.0)
+    standard = paint_standard(plan)[0]
+    rooms = [paint_room(room, face, 0.0, 0.0, standard)
              for tag in sorted(tags) for room, face in claimed_room_faces(plan, tag)
              if face.contains(Point(centre))]
     face = paint_stack_end(list(lining), 0, rooms, plan.library, envelope=False)[0]

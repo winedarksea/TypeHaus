@@ -88,6 +88,18 @@ def unknown_product_ref(ctx: CheckContext) -> list[Finding]:
                     element_tags=(entry.tag,), result=Result.FAIL,
                     fix_hint=f"add Product(tag={ref!r}, ...) or correct the reference",
                 ))
+    # A product's accepted equals (#113) are references too.
+    for product in library.products:
+        for ref in product.equals:
+            if ref in known:
+                continue
+            findings.append(Finding(
+                severity=Severity.ERROR, check_id="integrity.unknown_product_ref",
+                message=(f"library.products entry {product.tag!r} equals names {ref!r}, "
+                         "which library.products does not define"),
+                element_tags=(product.tag,), result=Result.FAIL,
+                fix_hint=f"add Product(tag={ref!r}, ...) or correct the reference",
+            ))
     return findings
 
 

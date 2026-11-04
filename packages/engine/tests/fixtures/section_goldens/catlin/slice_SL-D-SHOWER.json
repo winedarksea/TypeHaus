@@ -443,7 +443,7 @@
       "closed": false,
       "uid": "CMW135AAAA",
       "tag": "W-M-N3B/paint",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -633,7 +633,7 @@
       "closed": false,
       "uid": "CMW137AAAA",
       "tag": "W-M-MECH-S/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -823,7 +823,7 @@
       "closed": false,
       "uid": "KKVYSAJKZF",
       "tag": "W-M-MUDC-N/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -844,7 +844,7 @@
       "closed": false,
       "uid": "KKVYSAJKZF",
       "tag": "W-M-MUDC-N/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -1288,7 +1288,7 @@
       "closed": false,
       "uid": "CSW109AAAA",
       "tag": "W-S-N3/paint",
-      "material": "latex-paint"
+      "material": "paint-wet"
     },
     {
       "space": "model",

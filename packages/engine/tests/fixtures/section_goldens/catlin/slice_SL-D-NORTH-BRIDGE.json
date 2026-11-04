@@ -1450,7 +1450,7 @@
       "closed": false,
       "uid": "CGW101AAAA",
       "tag": "W-G-S/paint",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -1471,7 +1471,7 @@
       "closed": false,
       "uid": "CGW101AAAA",
       "tag": "W-G-S/paint",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -2361,7 +2361,7 @@
       "closed": false,
       "uid": "CMW107AAAA",
       "tag": "W-M-N3/paint",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -2925,7 +2925,7 @@
       "closed": false,
       "uid": "CSW109AAAA",
       "tag": "W-S-N3/paint",
-      "material": "latex-paint"
+      "material": "paint-wet"
     },
     {
       "space": "model",

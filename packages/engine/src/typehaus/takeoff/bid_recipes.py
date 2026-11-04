@@ -138,6 +138,7 @@ SHAPES: dict[str, Shape] = {
     "member_protection": Shape("Member protection tape", None, "LF"),
     "fireblock_sealant": Shape("Firestop sealant", None, "LF"),
     "drywall_trims": Shape("Drywall beads and LED shadow gaps", None, "LF"),
+    "trim_paint": Shape("Trim paint, by the foot of base and casing", None, "LF"),
     "construction_returns": Shape("Construction returns", None, "LF"),
     "sill_gaskets": Shape("Sill gaskets", None, "LF"),
     "drainage": Shape("Stormwater runs", None, "LF"),
@@ -228,8 +229,10 @@ RECIPES: dict[str, Recipe] = {
                       ("sheet_goods", "envelope_layers", "construction_returns", "solids",
                        "drywall_trims"),
                       ("A-101",)),
-    "paint": Recipe("Paint", "Wall and ceiling coats by area, the foundation coating, and the "
-                    "trim allowance.", ("envelope_layers", "allowances"), ("A-101",)),
+    "paint": Recipe("Paint", "Wall, ceiling and door coats by area, painted base and casing by "
+                    "the foot, the foundation coating and the residual allowance; the systems "
+                    "and accepted products are on the A-604 paint schedule.",
+                    ("envelope_layers", "trim_paint", "allowances"), ("A-101", "A-603")),
     "openings": Recipe("Windows and doors", "Every product by type and size, the pocket "
                        "frames, and the hardware allowances.",
                        ("openings", "hardware", "solids", "allowances"), ("A-601",)),

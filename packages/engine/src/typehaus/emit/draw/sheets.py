@@ -60,6 +60,7 @@ from typehaus.emit.draw.schedules import (
 from typehaus.emit.draw.schedules.architectural import specification_sections
 from typehaus.emit.draw.schedules.openings import opening_tables
 from typehaus.emit.draw.schedules.paged_tables import page_count
+from typehaus.emit.draw.schedules.paint import has_paint_schedule, write_paint_schedule
 from typehaus.emit.draw.schedules.structural import framing_bom_tables, hardware_tables
 from typehaus.emit.draw.schedules.structural_notes import (
     _write_structural_notes,
@@ -352,6 +353,9 @@ def build_sheet_index(model: ResolvedModel,
                          page_count(opening_tables(model, "window"), paper)))
     sheets.append(SheetSpec("A-603", "Room finish schedule",
                             page=_write_room_finish_schedule, sets=FULL_ONLY))
+    if has_paint_schedule(model):
+        sheets.append(SheetSpec("A-604", "Paint schedule", page=write_paint_schedule,
+                                sets=FULL_ONLY))
 
     plumbing_storeys = [tag for tag in level_tags if has_plumbing_content(at[tag], tag)]
     for index, storey_tag in enumerate(plumbing_storeys, start=1):

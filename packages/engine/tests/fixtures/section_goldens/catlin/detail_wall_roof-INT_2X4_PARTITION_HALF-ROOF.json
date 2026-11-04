@@ -189,7 +189,7 @@
       "closed": false,
       "uid": "9WC345CCP1",
       "tag": "W-A-BA-E/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -1148,8 +1148,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "latex-paint",
-      "fill": "#f0ede6"
+      "material": "paint-wall",
+      "fill": "#f4f6f1"
     },
     {
       "space": "paper",
@@ -1186,7 +1186,7 @@
         0.7,
         1.3980000000000001
       ],
-      "content": "latex-paint  0.01\"",
+      "content": "paint-wall  0.01\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

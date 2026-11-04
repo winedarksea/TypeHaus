@@ -50,7 +50,7 @@ from typehaus.resolve.ceiling_over import (
 from typehaus.resolve.coatings import coating_tags, layer_depth_m
 from typehaus.resolve.model import ResolvedCeiling, ResolvedModel, ResolvedSolid, Ring
 from typehaus.resolve.overlay import union_all
-from typehaus.resolve.room_paint import paint_room, paint_stack_end
+from typehaus.resolve.room_paint import paint_room, paint_stack_end, paint_standard
 
 #: A ceiling's layer stack, room side first — the shape ``ResolvedCeiling.layers`` carries.
 Stack = tuple[Layer, ...]
@@ -66,6 +66,7 @@ def resolve_ceilings(plan: PlanModel, model: ResolvedModel) -> None:
     clear face, so a room that has not yet claimed one has nothing for this stage to hang a
     ceiling under.
     """
+    standard = paint_standard(plan)[0]
     for storey in plan.storeys:
         for room in (e for e in plan.storey_elements(storey.tag)
                      if e.element_kind == "Room"):
@@ -73,7 +74,7 @@ def resolve_ceilings(plan: PlanModel, model: ResolvedModel) -> None:
             if resolved_room is None or len(resolved_room.clear_face) < 3:
                 continue
             face = Polygon(resolved_room.clear_face)
-            painter = paint_room(room, face, 0.0, 0.0)
+            painter = paint_room(room, face, 0.0, 0.0, standard, "ceilings")
             coatings = coating_tags(plan.library)
             for uid, tag, outline, layers, structure_z, host in _pieces(
                     plan, storey.tag, room, face, resolved_room.clear_face, model.walls):

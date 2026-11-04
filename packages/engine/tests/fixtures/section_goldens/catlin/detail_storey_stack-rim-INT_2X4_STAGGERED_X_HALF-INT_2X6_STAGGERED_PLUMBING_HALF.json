@@ -219,7 +219,7 @@
       "closed": false,
       "uid": "CMW122AAAA",
       "tag": "W-M-HS1/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wet"
     },
     {
       "space": "model",
@@ -240,7 +240,7 @@
       "closed": false,
       "uid": "CMW122AAAA",
       "tag": "W-M-HS1/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wet"
     },
     {
       "space": "model",
@@ -459,7 +459,7 @@
       "closed": false,
       "uid": "CSW145AAAA",
       "tag": "W-S-SN1/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wet"
     },
     {
       "space": "model",
@@ -480,7 +480,7 @@
       "closed": false,
       "uid": "CSW145AAAA",
       "tag": "W-S-SN1/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -1321,8 +1321,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "latex-paint",
-      "fill": "#f0ede6"
+      "material": "paint-wet",
+      "fill": "#f4f6f1"
     },
     {
       "space": "paper",
@@ -1359,7 +1359,7 @@
         0.7,
         1.3980000000000001
       ],
-      "content": "latex-paint  0.01\"",
+      "content": "paint-wet  0.01\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1650,6 +1650,79 @@
         0.7180000000000002
       ],
       "content": "gwb-x  1/2\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          2.65,
+          1.328
+        ],
+        [
+          2.79,
+          1.328
+        ],
+        [
+          2.79,
+          1.468
+        ],
+        [
+          2.65,
+          1.468
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "paint-wall",
+      "fill": "#f4f6f1"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          2.65,
+          1.328
+        ],
+        [
+          2.79,
+          1.328
+        ],
+        [
+          2.79,
+          1.468
+        ],
+        [
+          2.65,
+          1.468
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        2.85,
+        1.3980000000000001
+      ],
+      "content": "paint-wall  0.01\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

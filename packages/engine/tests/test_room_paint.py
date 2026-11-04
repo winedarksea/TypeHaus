@@ -18,12 +18,12 @@ def _materials(model, tag: str) -> list[str]:
 
 def test_an_unpainted_room_strips_its_face_only(catlin_model_ro) -> None:
     """RM-M-MECH's partition face is bare; the mudroom face keeps its latex."""
-    assert _materials(catlin_model_ro, "W-M-MECH-S") == ["gwb", "spf", "gwb-ar", "latex-paint"]
+    assert _materials(catlin_model_ro, "W-M-MECH-S") == ["gwb", "spf", "gwb-ar", "paint-wall"]
 
 
 def test_an_envelope_wall_in_an_unpainted_room_keeps_its_paint(catlin_model_ro) -> None:
     """The exterior wall's room-face paint is its vapour retarder (RM-M-MECH's north wall)."""
-    assert _materials(catlin_model_ro, "W-M-N3B")[0] == "latex-paint"
+    assert _materials(catlin_model_ro, "W-M-N3B")[0] == "paint-wall"
 
 
 def test_an_stc_preset_is_painted_by_its_rooms(catlin_model_ro) -> None:
@@ -31,7 +31,7 @@ def test_an_stc_preset_is_painted_by_its_rooms(catlin_model_ro) -> None:
     assembly = catlin_model_ro.plan.library.resolve_assembly("INT_2X4_RC")
     assert all(layer.material_ref != "latex-paint" for layer in assembly.layers)
     materials = _materials(catlin_model_ro, "W-S-BD1")
-    assert materials[0] == materials[-1] == "latex-paint"
+    assert materials[0] == materials[-1] == "paint-wall"
 
 
 def test_rooms_that_disagree_paint_the_face_and_say_so(catlin_plan) -> None:
@@ -45,21 +45,22 @@ def test_rooms_that_disagree_paint_the_face_and_say_so(catlin_plan) -> None:
     assert [layer.material_ref for layer in stack] == ["latex-paint", "gwb"]
 
 
-def test_catlin_latex_paint_total(catlin_model_ro) -> None:
-    """A band, not a figure: about 13,300 SF once the five rooms opt out."""
+def test_catlin_paint_total(catlin_model_ro) -> None:
+    """A band, not a figure: about 13,800 SF once the five rooms opt out (#113 split)."""
     rows = envelope_layer_takeoff(catlin_model_ro)
-    total = sum(r["net_area_sqft"] for r in rows if r["material"] == "latex-paint")
+    total = sum(r["net_area_sqft"] for r in rows
+                if r["material"] in ("paint-wall", "paint-ceiling", "paint-wet"))
     assert 12_500 < total < 14_000
     assert not any("(derived)" in str(r["scope"]) for r in rows if "paint" in r["material"])
 
 
-def test_a_roof_ceiling_no_room_claims_keeps_its_authored_coat(catlin_model_ro) -> None:
-    """The attic stair hall (FO-A-HALL) has no Room, so RF-HOUSE's latex stays as authored."""
+def test_a_roof_ceiling_no_room_claims_takes_the_standard_ceiling(catlin_model_ro) -> None:
+    """The attic stair hall (FO-A-HALL) has no Room: RF-HOUSE's default coat takes PT-2."""
     from typehaus.takeoff.coating_areas import _ceiling_area_m2, ceiling_coating_areas
 
     rooms = sum(_ceiling_area_m2(catlin_model_ro, c) for c in catlin_model_ro.ceilings
-                if c.layers and c.layers[0].material_ref == "latex-paint")
-    unroomed = ceiling_coating_areas(catlin_model_ro)[("ceiling", "latex-paint")] - rooms
+                if c.layers and c.layers[0].material_ref == "paint-ceiling")
+    unroomed = ceiling_coating_areas(catlin_model_ro)[("ceiling", "paint-ceiling")] - rooms
     assert 9.0 < unroomed < 11.0  # m², ~109 SF of sloped hall ceiling
 
 

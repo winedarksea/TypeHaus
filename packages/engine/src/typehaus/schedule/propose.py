@@ -92,7 +92,7 @@ FAMILY_ORDER: dict[str, tuple[str, ...]] = {
     "siding": ("furring", "cladding", "trim"),
     "insulation": ("insulation", "rim-spray-foam"),
     "drywall": ("gwb", "resilient-channel", "soffit"),
-    "paint": ("latex-paint",),
+    "paint": ("latex-paint", "paint"),
     "openings": ("window", "door", "flashing", "hardware"),
     "tile": ("tile-uncoupling-membrane", "tile"),
     "flooring": ("floor_finish", "carpet-pad", "carpet", "lvp"),

@@ -330,7 +330,7 @@
       "closed": false,
       "uid": "CBW111AAAA",
       "tag": "W-B-CS/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -660,7 +660,7 @@
       "closed": false,
       "uid": "CBW117AAAA",
       "tag": "W-B-SA-W/room-paint-b",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -934,7 +934,7 @@
       "closed": false,
       "uid": "CMW112AAAA",
       "tag": "W-M-C1/paint-a",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -955,7 +955,7 @@
       "closed": false,
       "uid": "CMW112AAAA",
       "tag": "W-M-C1/paint-b",
-      "material": "latex-paint"
+      "material": "paint-wall"
     },
     {
       "space": "model",
