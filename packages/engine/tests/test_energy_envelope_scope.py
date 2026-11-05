@@ -66,12 +66,12 @@ _HEATING_BTUH = 30_182.8
 # The same west glass lifts the day's average more than its 10:30 peak, so the AED
 # excursion falls 1,070 -> 740 and cooling 21,847 -> 21,707 while the glass peak rises 162.
 # French pairs: +90 conduction -1,452.2 peak glass -183.2 AED = -1,545.4 sensible.
-_COOLING_SENSIBLE_BTUH = 20_337.4
-_LATENT_BTUH = 1_400.0
-_COOLING_TONS = 1.8115
-_SOLAR_PEAK_BTUH = 12_076.0
-_SOLAR_PEAK_HOUR = 10.0
-_AED_EXCURSION_BTUH = 487.3
+# 2026-11-04 (notes/block_load_basis.md Revisions): the glass is the daily average plus the
+# excursion, not the peak plus it (-3,216.4); summer 90 -> 88 F (-598.9); the air-side
+# latent at 88/72 F against 75 F / 50% (+4,676.4).
+_COOLING_SENSIBLE_BTUH = 16_522.1
+_LATENT_BTUH = 6_076.4
+_COOLING_TONS = 1.8832
 _INTERNAL_SENSIBLE_BTUH = 2_810.0
 
 # ``(kind, area_ft2, ua_btu_per_hour_f)`` in the order the report emits them.

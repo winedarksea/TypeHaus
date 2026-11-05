@@ -66,6 +66,7 @@ def load_preferences(house_dir: Path) -> Preferences:
         infiltration_storeys=env.get("infiltration_storeys"),
         interior_setpoint_f=env.get("interior_setpoint_f", 70.0),
         cooling_setpoint_f=env.get("cooling_setpoint_f", 75.0),
+        cooling_relative_humidity=env.get("cooling_relative_humidity", 0.50),
         interior_relative_humidity=env.get("interior_relative_humidity", 0.35),
         monthly_interior_relative_humidity=env.get(
             "monthly_interior_relative_humidity", 0.35),

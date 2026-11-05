@@ -361,10 +361,10 @@ def cooling_capacity(ctx: CheckContext) -> list[Finding]:
     over-sized compressor short-cycles, never reaches the steady-state coil condition its
     latent rating was measured at, and leaves a house cold and damp.
 
-    Advisory and deliberately partial. The block load's cooling side carries hourly glass at
-    one coincident peak hour, the AED excursion and Manual J internal gains, but no roof
-    sol-air term where no absorptance is stated and only occupant latent — so the LOAD is an
-    upper bound and the over-size RATIO is therefore a LOWER bound. Every message says so.
+    Advisory and deliberately partial. The block load's cooling side carries Manual J's
+    daily-average glass plus AED excursion and internal gains, but no roof sol-air term
+    where no absorptance is stated; the caveats each block load states ride in every
+    message.
     A unit with no ``cooling_capacity_btuh`` stays UNKNOWN — a heating rating is not a
     cooling rating.
     """

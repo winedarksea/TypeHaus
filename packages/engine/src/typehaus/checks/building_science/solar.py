@@ -26,9 +26,10 @@ cooling load.
 **What it is now.** The ASHRAE clear-sky model, evaluated at each solar hour from 08:00 to
 20:00 on the cooling design date, with shading derived from whatever is actually overhead —
 an eave, a deck, a balcony standing clear of the wall. The peak hour is selected across the
-whole house, and the **AED excursion** (ACCA TRB 2003-001a) is added to it: a house whose
-gain is concentrated in a few hours needs more capacity than its peak hour alone implies,
-because the structure cannot store the swing.
+whole house to test exposure diversity (ACCA TRB 2003-001a). The design glass load is
+Manual J's: the 08:00-20:00 **daily average**, which the structure's mass rides through, plus
+the **AED excursion** ``peak − 1.3 × average`` where the peak runs past what the mass can
+take. Charging the peak and then the excursion on top counted the swing twice.
 
 Nothing here is a rule of thumb. The clear-sky constants are ASHRAE's published monthly A/B/C
 values; the geometry is spherical trigonometry; the shading is the building's own roofs,
@@ -76,7 +77,7 @@ _HOUR_STEP = 0.5
 # is *diverse* — spread over the day, several orientations sharing it — rides its peak hour on
 # the structure's own thermal mass. A house whose gain is concentrated cannot, and the
 # excursion is the part of the peak the mass will not absorb: ``peak − 1.3 × average``, added
-# only when positive.
+# to the daily average only when positive.
 _AED_DIVERSITY_FACTOR = 1.3
 
 # Manual J residential internal gains, COOLING ONLY. Manual J credits no internal gain
@@ -94,7 +95,7 @@ _APPLIANCE_SENSIBLE_BTUH = 1200.0
 
 @dataclass(frozen=True)
 class SolarResult:
-    """One house's fenestration gain at its own peak hour, plus the AED excursion."""
+    """One house's hourly fenestration gain: peak hour, daily average and AED excursion."""
 
     peak_hour: float
     peak_btu_per_hour: float
@@ -108,7 +109,8 @@ class SolarResult:
 
     @property
     def design_btu_per_hour(self) -> float:
-        return self.peak_btu_per_hour + self.excursion_btu_per_hour
+        """Manual J's glass load: the daily average plus the AED excursion, not the peak."""
+        return self.average_btu_per_hour + self.excursion_btu_per_hour
 
 
 def _facade_for_wall(wall: ResolvedWall, model: ResolvedModel) -> str:
@@ -414,11 +416,10 @@ def _glazing(model: ResolvedModel, walls: dict[str, ResolvedWall],
 
 def fenestration_gain(model: ResolvedModel, walls: dict[str, ResolvedWall],
                       openings) -> SolarResult:
-    """The house's fenestration gain at its own peak hour, plus the AED excursion.
+    """The house's hourly fenestration gain: its peak hour, daily average and AED excursion.
 
-    One peak hour for the WHOLE house, which is the correction that matters most: the term it
-    replaced charged every orientation its own peak simultaneously, an hour that does not
-    exist.
+    One peak hour for the WHOLE house: the term it replaced charged every orientation its
+    own peak simultaneously, an hour that does not exist.
     """
     unknown: list[str] = []
     glazing = _glazing(model, walls, openings, unknown)

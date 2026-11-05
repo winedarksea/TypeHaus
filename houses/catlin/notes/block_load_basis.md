@@ -304,13 +304,44 @@ which is the same lesson again.
   term is 71% of the cooling load and a *partial* fix moves the number the wrong way —
   raising E/W without adding shading or fixing the all-orientations-peak-at-once error makes
   it worse. It changes once, with an hourly method and an AED excursion.
-- **Internal gains, latent load and SHR.** `cooling_tons = cooling / 12000` is sensible-only.
+- ~~Internal gains, latent load and SHR.~~ Carried since: internal gains and occupant latent
+  in `solar_gain_basis.md` §5, the air-side latent in §9 below.
 - **Buffer spaces.** A surface facing an unconditioned-but-enclosed space is charged the full
   outdoor ΔT — conservative, so it oversizes — and the gap is *named*. There is nowhere in
   this model to get a buffer temperature from, and "garage = (indoor + outdoor)/2" is the
   rule of thumb this package forbids. catlin emits zero such lines: its garage is detached.
 - **Duct losses.** System 1's trunk runs in a conditioned soffit, so the omission is small
   here and would not be in a house with attic duct.
+
+## 9. The air-side latent
+
+```
+q_lat = 0.68 × ACF × CFM × Δgr
+```
+
+Outdoor: MN Rule 1322 R403.5.17's Minneapolis/St. Paul row, 88 °F db / 72 °F coincident wb.
+Indoor: Manual J's 75 °F / 50% RH. Both at the site pressure, 14.696 × 0.97037 = 14.2605 psia
+(ASHRAE Fundamentals Ch. 1: Eq. 6 for p_ws, Eq. 35 for W off the wet bulb):
+
+```
+p_ws(72) = 0.38882 psia      W_s(72) = 0.62195 × 0.38882 / (14.2605 − 0.38882) = 0.017433
+W_out    = ((1093 − 0.556·72) × 0.017433 − 0.240 × 16) / (1093 + 0.444·88 − 72)
+         = 0.013694 lb/lb = 95.86 gr
+p_ws(75) = 0.43007 psia      p_w = 0.21504       W_in = 0.009522 = 66.65 gr
+Δgr      = 29.20 gr/lb
+```
+
+Infiltration at the cooling design rate, 38.92 × 0.84 = 32.69 cfm; the ERV at its 210 cfm with
+**no latent recovery**, because the B210E75RT's summer latent rating is not in hand (a
+retailer quotes 68% TRE at 95 °F; HVI's directory is the source to confirm). That makes the
+ventilation line an upper bound, and the engine says so in a caveat:
+
+```
+infiltration   0.68 × 0.97037 × 32.69 × 29.20 =   630 Btu/h
+ventilation    0.68 × 0.97037 × 210   × 29.20 = 4,046 Btu/h
+occupants      7 × 200                        = 1,400 Btu/h
+latent                                          6,076 Btu/h
+```
 
 ## Revisions
 
@@ -347,3 +378,12 @@ which is the same lesson again.
   = +0.210, so heating +17.9 Btu/h (all in HP2's zone, `heat_pump_turndown.md`). Cooling:
   +3.2 conduction, +80.9 glass and +23.2 AED (`solar_gain_basis.md`), +107.3 sensible:
   the pinned basis is 20,159.9 + 107.3 = **20,267.2 Btu/h**, **1.8056 tons**.
+- **2026-11-04, load-calc audit.** Two corrections and one new term, heating unchanged at
+  **30,183 Btu/h**:
+  - **The glass is Manual J's daily average plus the excursion, not the peak plus it**
+    (`solar_gain_basis.md` §4): −(12,217 − 9,001) = −3,216 sensible.
+  - **Summer design 90 → 88 °F**, the MN 1322 R403.5.17 table row (winter −15 °F already
+    matched): −2 × (188.17 UA + 1.08 × 0.97037 × (32.69 + 73.5) cfm) = −599.
+  - **Air-side latent** (§9): +4,676.
+  Sensible 20,337.4 − 3,216.4 − 598.9 = **16,522 Btu/h**; latent **6,076**; SHR 0.73;
+  (16,522 + 6,076) / 12,000 = **1.883 tons**.

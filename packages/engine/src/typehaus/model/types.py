@@ -733,8 +733,8 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     #: contributes nothing, and the engine can now say so instead of the catalog asserting
     #: it. Move the site and the answer moves with it.
     aux_lockout_above_f: float | None = None
-    # Rated sensible cooling output (Btu/h at the AHRI 95 °F point). Advisory only: the
-    # block load's cooling side is a UA + solar sum, not a Manual J latent split.
+    # Rated sensible cooling output (Btu/h at the AHRI 95 °F point), graded against the
+    # block load's SENSIBLE cooling; the latent is reported beside it.
     cooling_capacity_btuh: float | None = None
     # Ventilation equipment (ERV/HRV) only: the continuous balanced airflow it moves, and
     # the datasheet sensible recovery effectiveness (0..1) at that flow. Both feed the
@@ -742,6 +742,9 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     # the load by thousands of Btu/h.
     ventilation_cfm: float | None = None
     sensible_recovery_effectiveness: float | None = None
+    # Summer LATENT recovery (0..1). ``None`` charges the ventilation latent with none, an
+    # upper bound the block load states as a caveat.
+    latent_recovery_effectiveness: float | None = None
     #: The published fan curve, as ``((static in. w.g., net cfm), ...)`` — the whole table a
     #: ventilator's spec sheet prints, not the one point its model number is named for.
     #: ``ventilation_cfm`` is the DESIGN intent; this is what the machine can actually do

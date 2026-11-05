@@ -54,6 +54,11 @@ from typehaus.checks.building_science.ground import (
     slab_on_grade_f_factor,
     slab_on_grade_q,
 )
+from typehaus.checks.building_science.latent import (
+    LATENT_BTU_PER_CFM_GR,
+    design_grains_difference,
+    ventilation_latent_cfm,
+)
 from typehaus.checks.building_science.solar import (
     fenestration_gain,
     horizontal_surface_irradiance,
@@ -224,9 +229,11 @@ class EnergyReport:
     # moisture side, and ``cooling_tons`` is the TOTAL (sensible + latent) over 12,000,
     # because a ton of refrigeration is a total, not a sensible.
     latent_btu_per_hour: float = 0.0
-    #: Fenestration gain at the house's own peak solar hour (→ ``solar``), and that hour.
-    #: Already inside ``cooling_load_btu_per_hour``; carried so the sheet can print WHEN.
+    #: Manual J's glass load: the 08:00-20:00 daily AVERAGE fenestration gain (→ ``solar``),
+    #: inside ``cooling_load_btu_per_hour``. The peak hour and its gain are carried beside it
+    #: because the excursion below is measured against them.
     solar_btu_per_hour: float = 0.0
+    solar_peak_btu_per_hour: float = 0.0
     solar_peak_hour: float | None = None
     #: The AED excursion (ACCA TRB 2003-001a), also already inside the cooling load.
     solar_excursion_btu_per_hour: float = 0.0
@@ -254,6 +261,7 @@ class EnergyReport:
                 "infiltration_btu_per_hour": self.infiltration_btu_per_hour,
                 "ventilation_btu_per_hour": self.ventilation_btu_per_hour,
                 "solar_btu_per_hour": self.solar_btu_per_hour,
+                "solar_peak_btu_per_hour": self.solar_peak_btu_per_hour,
                 "solar_peak_hour": self.solar_peak_hour,
                 "solar_excursion_btu_per_hour": self.solar_excursion_btu_per_hour,
                 "internal_sensible_btu_per_hour": self.internal_sensible_btu_per_hour,
@@ -262,9 +270,10 @@ class EnergyReport:
                 "unknown_inputs": list(self.unknown_inputs),
                 "scope": "resolved walls, foundations, roof, slabs, windows, and doors, "
                          "plus blower-door infiltration and ERV ventilation air, hourly "
-                         "fenestration gain at the house's peak solar hour with its AED "
+                         "fenestration gain as Manual J's daily average plus its AED "
                          "excursion, the roof's sol-air excess where an absorptance is "
-                         "stated, and Manual J occupant/appliance internal gains"}
+                         "stated, Manual J internal gains, and occupant, infiltration and "
+                         "ventilation latent"}
 
 
 def estimate_block_load(
@@ -647,19 +656,20 @@ def estimate_block_load(
     gains = internal_gains(model)
     internal_sensible = gains.sensible_btu_per_hour * share
     internal_latent = gains.latent_btu_per_hour * share
-    # Latent is OCCUPANTS ONLY, and the two air-side latent terms are named rather than
-    # guessed: an infiltration or ventilation latent load needs the cooling design
-    # outdoor HUMIDITY RATIO, and nothing on ``Site`` carries one — ``monthly_normals``'
-    # RH is a monthly mean, not a 1% design coincident wet bulb. An ERV's latent recovery
-    # is a second gap: ``sensible_recovery_effectiveness`` is the only field there is.
+    # The air-side latent needs the design outdoor humidity ratio, i.e. the coincident wet
+    # bulb (→ ``latent``). Without one the two terms are omitted and the caveat says so.
     latent = internal_latent
-    cooling_caveats.append(
-        "latent load is occupant-only: no design outdoor humidity ratio is authored on "
-        "Site, so the infiltration and ventilation latent terms are omitted (understated)")
-    if ventilation_cfm > 0:
+    grains = design_grains_difference(
+        site, preferences, altitude_correction_factor(site.elevation.feet))
+    if grains is None:
         cooling_caveats.append(
-            "the ERV's LATENT recovery is unstated (only sensible_recovery_effectiveness "
-            "exists), so its moisture load is not carried either")
+            "latent load is occupant-only: no Site.design_wet_bulb_cooling is authored, so "
+            "the infiltration and ventilation latent terms are omitted (understated)")
+    else:
+        latent_cfm = (infiltration_cfm * _COOLING_DESIGN_INFILTRATION_UPLIFT
+                      + ventilation_latent_cfm(model, cooling_caveats) * share)
+        latent += (LATENT_BTU_PER_CFM_GR * altitude_correction_factor(site.elevation.feet)
+                   * latent_cfm * grains)
     cooling = (air_cooling + slab_on_grade_cooling + roof_sol_air_cooling
                + solar.design_btu_per_hour * share + internal_sensible
                + sum(component.ua_btu_per_hour_f * _deltas_for(component.kind)[1]
@@ -672,7 +682,8 @@ def estimate_block_load(
                         infiltration_btu_per_hour=infiltration_heating,
                         ventilation_btu_per_hour=ventilation_heating,
                         latent_btu_per_hour=latent,
-                        solar_btu_per_hour=solar.peak_btu_per_hour * share,
+                        solar_btu_per_hour=solar.average_btu_per_hour * share,
+                        solar_peak_btu_per_hour=solar.peak_btu_per_hour * share,
                         solar_peak_hour=solar.peak_hour,
                         solar_excursion_btu_per_hour=solar.excursion_btu_per_hour * share,
                         internal_sensible_btu_per_hour=internal_sensible,

@@ -410,8 +410,9 @@ def energy(
     console.print(f"[bold]Heating:[/bold] {report.heating_load_btu_per_hour:,.0f} BTU/h")
     hour = ("" if report.solar_peak_hour is None
             else f" at solar {report.solar_peak_hour:.1f}h")
-    console.print(f"  {'glass solar (peak hour)':30} {'':>12}  "
-                  f"{report.solar_btu_per_hour:>12,.0f} BTU/h{hour}")
+    console.print(f"  {'glass solar (daily average)':30} {'':>12}  "
+                  f"{report.solar_btu_per_hour:>12,.0f} BTU/h  "
+                  f"(peak {report.solar_peak_btu_per_hour:,.0f}{hour})")
     console.print(f"  {'AED excursion':30} {'':>12}  "
                   f"{report.solar_excursion_btu_per_hour:>12,.0f} BTU/h")
     console.print(f"  {'internal gains':30} {'':>12}  "

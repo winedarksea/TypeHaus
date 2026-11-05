@@ -4,6 +4,16 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
+- **The block load's glass is Manual J's daily average plus the AED excursion**, not the
+  peak plus it, which counted the swing twice. `EnergyReport.solar_btu_per_hour` is now that
+  average; the peak moves to `solar_peak_btu_per_hour`.
+- **The air-side latent cooling load is carried.** New `Site.design_wet_bulb_cooling`,
+  `Preferences.cooling_relative_humidity` (default 0.50, Manual J's) and
+  `EquipmentType.latent_recovery_effectiveness`; an ERV without the last is charged no
+  recovery, stated as a caveat (`checks/building_science/latent.py`).
+- **Catlin's summer design is MN 1322's 88/72 °F** (was 90 °F db, no wet bulb). Cooling
+  20,337 → 16,522 Btu/h sensible, latent 1,400 → 6,076; heating unchanged at 30,183.
+
 - **A bookcase door is a flush mount, cased in the house's trim.** The cabinet's face frame
   sits on the mounting face's finish and its body runs back through the rough opening (it
   used to hang proud of the wall, its back on the axis). The factory casing part is gone: a

@@ -145,8 +145,9 @@ def _write_ventilation_sheet(pdf, model: ResolvedModel, number: str, name: str,
         load_rows.append(("TOTAL HEATING", "", f"{load.heating_load_btu_per_hour:,.0f} BTU/h"))
         hour = ("" if load.solar_peak_hour is None
                 else f" at solar {load.solar_peak_hour:.1f}h")
-        load_rows.append(("glass solar (peak hour)", "",
-                          f"{load.solar_btu_per_hour:,.0f} BTU/h{hour}"))
+        load_rows.append(("glass solar (daily avg)", "",
+                          f"{load.solar_btu_per_hour:,.0f} BTU/h (peak "
+                          f"{load.solar_peak_btu_per_hour:,.0f}{hour})"))
         load_rows.append(("AED excursion", "",
                           f"{load.solar_excursion_btu_per_hour:,.0f} BTU/h"))
         load_rows.append(("internal gains", "",

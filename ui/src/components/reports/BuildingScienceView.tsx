@@ -17,7 +17,7 @@ export function BuildingScienceView() {
     ["Latent cooling load", formatLoadBtuPerHour(energy.latent_btu_per_hour)],
     ["Total cooling", `${energy.cooling_tons.toFixed(2)} tons`],
     ["Sensible heat ratio", energy.sensible_heat_ratio === null ? "—" : formatRatioPercent(energy.sensible_heat_ratio)],
-    ["Solar gain at peak", formatLoadBtuPerHour(energy.solar_btu_per_hour)],
+    ["Glass solar (daily avg)", formatLoadBtuPerHour(energy.solar_btu_per_hour)],
     ["Peak solar hour", energy.solar_peak_hour === null ? "—" : String(energy.solar_peak_hour)],
     ["Solar excursion", formatLoadBtuPerHour(energy.solar_excursion_btu_per_hour)],
     ["Internal sensible gain", formatLoadBtuPerHour(energy.internal_sensible_btu_per_hour)],

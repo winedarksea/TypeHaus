@@ -295,6 +295,8 @@ class Preferences:
     # seasons, which made catlin's cooling ΔT 20 °F where Manual J's is 15 — nobody holds a
     # house at 70 °F in July, and a 33% overstated ΔT reaches every cooling component line.
     cooling_setpoint_f: float = 75.0
+    # Manual J's cooling indoor RH, beside its 75 °F: sets the indoor humidity ratio.
+    cooling_relative_humidity: float = 0.50
     interior_relative_humidity: float = 0.35
     exterior_relative_humidity: float = 0.80
     # Interior winter design RH for the monthly (ISO 13788-style) condensation gate.

@@ -228,11 +228,10 @@ def test_catlins_balcony_door_is_shaded_by_the_balcony_and_the_window_beside_it_
 
 # --- §4. the AED excursion -------------------------------------------------------------------
 
-def test_the_aed_excursion_is_the_peak_over_a_diverse_day(catlin_model_ro) -> None:
-    """§4. ACCA TRB 2003-001a: a house whose gain is spread over the day rides its peak on
-    its own thermal mass; one whose gain is concentrated cannot. The excursion is
-    ``peak − 1.3 × average``, added only when positive — so a house with good exposure
-    diversity pays nothing and a glass wall facing one way pays a lot."""
+def test_the_glass_load_is_the_daily_average_plus_the_aed_excursion(catlin_model_ro) -> None:
+    """§4. ACCA TRB 2003-001a: the excursion is ``peak − 1.3 × average``, added only when
+    positive, and it is added to the DAILY AVERAGE — charging the peak plus the excursion
+    counted the swing twice."""
     walls, openings = _house_glazing(catlin_model_ro)
     result = fenestration_gain(catlin_model_ro, walls, openings)
     assert result.excursion_btu_per_hour == pytest.approx(
@@ -240,7 +239,7 @@ def test_the_aed_excursion_is_the_peak_over_a_diverse_day(catlin_model_ro) -> No
         abs=1.0)
     assert result.excursion_btu_per_hour == pytest.approx(510.5, rel=0.02)
     assert result.design_btu_per_hour == pytest.approx(
-        result.peak_btu_per_hour + result.excursion_btu_per_hour)
+        result.average_btu_per_hour + result.excursion_btu_per_hour)
 
 
 # --- §5. internal gains and the latent split ------------------------------------------------

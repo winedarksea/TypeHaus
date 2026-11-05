@@ -159,6 +159,19 @@ That is the honest answer for this house and it is worth writing down precisely 
 is small: the term exists to catch the house that is *not* diverse (a glass wall facing one
 way), and a term that is 7% here would be 30% there.
 
+**What the glass load is (corrected 2026-11-04).** Manual J's system-level glass load is the
+**daily average plus the excursion**, not the peak plus it: the mass rides the swing up to
+1.3 × the average, and only the excursion past that is added. This note and the engine
+charged the peak, so the swing was counted twice. Today's figures (§8 has the history):
+
+```
+average 9,000.7 + excursion (12,217.1 − 1.3 × 9,000.7 = 516.2)  =  9,516.9 Btu/h
+was     12,217.1 + 516.2                                          = 12,733.4 Btu/h
+```
+
+The peak is still the right test for the excursion, and still the hour the roof's sol-air
+term is evaluated at.
+
 ## 5. Internal gains, and the latent split
 
 Manual J, **cooling only**. There is no heating credit here and there should not be: a

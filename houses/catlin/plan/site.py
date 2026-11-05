@@ -104,8 +104,10 @@ SITE = Site(
     crs="EPSG:26915",
     true_north=deg(0),
     grade=ft(-2, -10),
+    # MN Rule 1322 R403.5.17 Table, Minneapolis/St. Paul: winter -15 F, summer 88/72 F.
     design_temp_heating=degF(-15),
-    design_temp_cooling=degF(90),
+    design_temp_cooling=degF(88),
+    design_wet_bulb_cooling=degF(72),
     monthly_normals=_MSP_1991_2020_NORMALS,
     # Deep-ground boundary temperature for below-grade envelope ΔT: the standard proxy is
     # the station's annual mean air temperature — 46.9 F over the twelve MSP 1991-2020
