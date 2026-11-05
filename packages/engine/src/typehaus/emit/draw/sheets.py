@@ -406,9 +406,8 @@ def build_sheet_index(model: ResolvedModel,
                                 page=_write_panel_schedule))
 
     if lighting_storeys:
-        sheets.append(SheetSpec("E-602", "Luminaire schedule / lighting controls",
-                                page=_write_luminaire_schedule, portrait=True,
-                                sets=FULL_ONLY))
+        sheets.extend(_paged("E-602", "Luminaire schedule / lighting controls",
+                             _write_luminaire_schedule, 2, portrait=True, sets=FULL_ONLY))
 
     if _has_data_content(model):
         sheets.append(SheetSpec("E-603", "Data / low-voltage schedule",

@@ -45,7 +45,7 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
-from typehaus.emit.draw.typography import TEXT_PT, model_in_per_pt
+from typehaus.emit.draw.typography import TEXT_PT, feet_inches_8th, model_in_per_pt
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
@@ -429,12 +429,21 @@ def _material_callouts(facade_pieces: list[VisiblePiece], column_u: float,
     for material, exposed in sorted(best.items(), key=lambda item: -item[1].area):
         centre = exposed.representative_point()
         anchor = nearest_points(exposed, Point(column_u, centre.y))[0]
-        out.append(LabelSpec(text=material.upper(), target=(anchor.x, anchor.y), key=material))
+        out.append(LabelSpec(text=_two_lines(material.upper()), target=(anchor.x, anchor.y),
+                             key=material))
     return out
 
 
+def _two_lines(tag: str, longest: int = 16) -> str:
+    """A long tag broken at the hyphen nearest its middle: "STANDING-SEAM-LINEN-WHITE" on
+    one line pushed A-203/A-204 off 3/32" (the four share one scale)."""
+    cuts = [i for i, ch in enumerate(tag) if ch == "-"]
+    if len(tag) <= longest or not cuts:
+        return tag
+    cut = min(cuts, key=lambda i: abs(i - len(tag) / 2))
+    return f"{tag[:cut + 1]}\n{tag[cut + 1:]}"
+
+
 def feet_inches_signed(z_m: float) -> str:
-    total_in = round(z_m / M_PER_IN)
-    sign = "-" if total_in < 0 else ""
-    total_in = abs(total_in)
-    return f"{sign}{total_in // 12}'-{total_in % 12}\""
+    """A level to 1/16" (F3-106): the 108 1/8" plate prints 9'-0 1/8", the slab -9'-1 7/16"."""
+    return feet_inches_8th(z_m / M_PER_IN, 16)

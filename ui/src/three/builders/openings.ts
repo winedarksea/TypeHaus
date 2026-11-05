@@ -90,7 +90,6 @@ function ringBoxMatrix(ring: readonly Vec2[], z0: number, z1: number,
 export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
   options: OpeningProductOptions, picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
-  if (opening.kind === "rough_opening") return;
   const [[x0, y0], [x1, y1]] = wall.axis;
   const length = Math.hypot(x1 - x0, y1 - y0);
   if (length < 1e-9) return;
@@ -108,6 +107,12 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
       : new THREE.Color(materialColor(ref, palette, materials)), mode,
       materialKey === "door_hardware" ? { metalness: 0.8, roughness: 0.35 }
         : { metalness: 0, roughness: 0.45 }));
+  if (opening.kind === "rough_opening") {   // only its floor-transition strip draws
+    if (parent.children.length > firstChildIndex) {
+      registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
+    }
+    return;
+  }
   for (const board of opening.doorway?.exterior_placement?.boards ?? []) {
     const material = standardMaterial(board.role && board.role !== "door_installation"
       ? materialColor(board.material_ref, palette, materials)

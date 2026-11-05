@@ -57,6 +57,24 @@ def _condition_opening(model: ResolvedModel, cond: BoundaryCondition):
     return condition_opening(model, cond)
 
 
+def _typical_first(model: ResolvedModel) -> list[BoundaryCondition]:
+    """Conditions with each opening key's TYPICAL kind first: a key's sheet is cut at its
+    first condition, and A-513 drew D-M-ENTRY under the window head/pan notes of a wall with
+    17 windows (O5-103). Windows lead only where they outnumber the rest; stable otherwise."""
+    kinds: dict[str, list[bool]] = {}
+    is_window: dict[int, bool] = {}
+    for index, cond in enumerate(model.conditions):
+        if cond.kind.value != "opening_perimeter":
+            continue
+        opening = _condition_opening(model, cond)
+        is_window[index] = opening is not None and opening.kind == "window"
+        kinds.setdefault(cond.key, []).append(is_window[index])
+    lead = {key for key, flags in kinds.items() if 2 * sum(flags) > len(flags)}
+    order = sorted(range(len(model.conditions)), key=lambda i: not (
+        model.conditions[i].key in lead and is_window.get(i, False)))
+    return [model.conditions[i] for i in order]
+
+
 def derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
     """One derived DETAIL slice per distinct bound condition key (skip authored-claimed keys).
 
@@ -70,7 +88,7 @@ def derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
     }
     out: list[DerivedDetail] = []
     seen: set[str] = set()
-    for cond in model.conditions:
+    for cond in _typical_first(model):
         if cond.key in seen or cond.key in claimed:
             continue
         tr = _matched_transition(model, cond)

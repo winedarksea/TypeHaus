@@ -16,13 +16,13 @@ source:
 
 ### General
 - ICF stem: 42" below grade to frost, 22" above. 8'-0" max, IRC R404.1.4.2.
-- Stem footing: 12"x6" over compacted stone per IRC R403.1 and R403.4.1.
-- Slab: 3-1/2" min, 3,500 psi min per IRC R506.1, sloped to the door.
+- Stem footing: 20"x8" crushed stone, IRC R403.5.
+- Slab: 3-1/2", 5,000 psi exposed mix, sloped to the door.
 - Wood wall: 2x6 at 24" o.c., 5/8" CDX, 2" of 2 lb closed-cell foam per bay.
 - Cladding: 7/8" corrugated 24 ga PVDF steel, house white, screwed at the crowns.
 - Stem band: PVDF aluminium sheet, 0.040" min, 2" below grade to the stem top.
 - Interior: 5/8" drywall on the wall, 5/8" exterior gypsum on the stem.
-- Roof: gable trusses at 24" o.c., OSB deck, underlayment, standing-seam metal.
+- Roof: trusses at 24" o.c., 19/32" Str. I ply, membrane, standing seam.
 
 ### Keyed
 - [K1 @ host#layer:coil-gap:out] Stem band on a 1/4" vented standoff into the ICF webs. Hem each edge.
@@ -41,10 +41,10 @@ source:
 - Install ICF forms conforming to ASTM E2634, per the manufacturer's instructions.
 
 ### Spec 03 15 19
-- Canopy hold-down bolts AB-058-10-SS, 5/8" x 10", under CN-BW-BASE-W/-NW.
-- Graded at f_uta 57 ksi: unspecified 304 stainless, ACI 318-19 17.6.1.2 cap.
-- An ASTM F593 CW1 bolt is 100 ksi; rely on 57 ksi unless the bolt is F593 CW1.
-- 980.7 lb base shear split over two bases; on one anchor, interaction 0.692 < 1.0.
+- Canopy bases CN-BW-BASE-W/-NW: cast-in CBSQ66-SDS2 (ESR-3050), no anchor bolt.
+- Set the straps in the 14" piers with 3" side cover (ESR-3050 Table 1 fn. 4).
+- Uplift 2,217 lb vs 3,060 cracked (0.725); base shear on ONE base 1,034 vs 1,270 lb (0.815).
+- Arithmetic: notes/canopy_west_band.md §4b-§4c.
 
 ### Spec 07 42 13
 - Keep aluminium off concrete and fresh mortar: alkali strips the oxide film.
@@ -59,13 +59,13 @@ source:
 
 - **The 22" is not a concrete rule and RAISING IT IS NOT THE LEVER for anything.** R404.1.4.2 is an 8'-0" *maximum* and R403 a 6" *minimum*; 22" is an owner goal inside that window. What pins it is that `GARAGE_STEM_REVEAL` **is the garage storey datum** — the wood walls bear on the stem top — so raising it lifts the plates, the trusses, the ridge, the window sills and the service door's step count, and breaks `test_garage_overhead_door_opens_from_the_slab_at_grade`. Raising it only at the door piers puts a 48" concrete curb *inside* the garage and splits W-G-E three ways. Nothing wants it: a veneer needs a *ledge*, not a stem, and the band that replaced the wainscot (2026-09-03) is fixed to the stem face and needs neither.
 
-- Footing shown as 12"×6" compacted stone footing per IRC R403.1 and R403.4.1 (confirm soil bearing and local acceptance). Footing drain tile recommended.
+- Footing: 20"×8" consolidated crushed stone per IRC R403.5 (confirm soil bearing and local acceptance). Footing drain tile recommended.
 
 - **Exposed ICF EPS above grade requires protective covering on BOTH faces, and BOTH HALVES ARE NOW BUILT** (the exterior half was missing until 2026-09-02). Interior: 15-minute thermal barrier per IRC R316.4 — the `gwb-stem` band, 5/8" exterior-rated gypsum from grade up. Exterior: the `coil-gap` + `coil-ext` band, PVDF-painted aluminium flat sheet from **2" below grade to the stem top**, on a 1/4" vented standoff, fixed with #9 316 stainless gasketed screws into the ICF webs. The standoff is not optional and is not drainage alone: a painted sheet is **0 perms**, and laid flat on the EPS it is a Class I retarder on the cold side of the stem — `building_science.condensation` found a January dew point at the concrete against a monthly *mean*. The gap restores the outward drying path. It also keeps aluminium off damp foam and out of contact with the concrete, which matters independently: **alkali strips aluminium's oxide film**, so this metal must never touch concrete or fresh mortar.
 
 - Grade: IRC R401.3 requires minimum 6" fall within first 10 feet from foundation.
 
-- Slab: minimum 3.5" thick, ≥3,500 psi per IRC R506.1. Slab must be sloped (typically toward overhead door).
+- Slab: 3.5" thick at the exposed mix, 5,000 psi F3/C2 (IRC R506.1 floor is 3,500). Slab must be sloped (typically toward overhead door).
 
 - Wood wall (REBUILT 2026-08-31; what stood here before that date was 2×6 @16" o.c. with 1.5" Zip-R continuous sheathing, Method CS-G, and empty bays): 2×6 studs **@24" o.c.**, **5/8" CDX** sheathing, **2" of 2 lb closed-cell spray foam in the bays**, **7/8" corrugated 26 ga PVDF exposed-fastener steel panel** in the house white, screwed through its crowns into the studs with #9 × 1-1/2" 316 stainless gasketed panel screws. Interior finish: 5/8" drywall. Whole-wall R-13.2 (`haus explain GARAGE_WALL_2X6 --card`), roughly double the honest R-7–8 the empty-bay Zip-R wall carried — the R-14.3 that assembly's card used to read was an artifact of billing an uninsulated 5.5" stud bay as solid SPF.
 

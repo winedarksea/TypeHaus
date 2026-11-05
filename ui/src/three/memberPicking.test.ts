@@ -215,6 +215,18 @@ function checkIJoistPliesShareOneIdentity() {
   }
 }
 
+// A seated I-joist rafter draws the engine's notched sweep, never three plies below the plate.
+function checkSeatedIJoistIsNotchedNotPlied() {
+  const group = new THREE.Group();
+  const rafter = member({ key: "rafter-000", category: "rafter", shape: "i_joist", p0: [0, 0],
+    p1: [3, 0], z0_m: 3, z1_m: 3.3, z0_end_m: 4, z1_end_m: 4.3, orient: null,
+    seat: { plate_top_z_m: 3.2, heel: [0.3, 0], seat_run_m: 0.3 } });
+  buildMembers(group, [rafter], CENTER, "schematic", RESOLVED_NORDIC_PALETTE.light, "RF1");
+  assert(!group.children.some((child) => child instanceof THREE.InstancedMesh),
+    "A seated i-joist is not the three-ply instanced bucket");
+  assert(group.children.length === 1, "It draws as one notched sweep");
+}
+
 // A member skipped at build time (no plan run, so no raked box) must not shift the identities
 // of the members after it — that is exactly the off-by-one an index-based scheme invites.
 function checkSkippedMemberDoesNotShiftIdentities() {
@@ -373,6 +385,7 @@ export function runMemberPickingTests() {
   checkSectionRingIsSweptAndPickable();
   checkTrimDrawsAtItsDepthTier();
   checkIJoistPliesShareOneIdentity();
+  checkSeatedIJoistIsNotchedNotPlied();
   checkSkippedMemberDoesNotShiftIdentities();
   checkHighlightOutlineMatchesTheMember();
   checkLocateMemberAgainstTheModel();

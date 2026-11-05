@@ -87,7 +87,7 @@ def test_every_merged_level_gets_a_marker_and_a_caption(catlin_model_ro, section
 
 def test_datum_captions_name_floors_plates_grade_and_ridge(section):
     captions = " | ".join(n.text for n in _leaders(section))
-    for expected in ("MAIN FLOOR  EL. 0'-0\"", "BASEMENT FLOOR  EL. -9'-1\"",
+    for expected in ("MAIN FLOOR  EL. 0'-0\"", "BASEMENT FLOOR  EL. -9'-1 7/16\"",
                      "GRADE  EL. -2'-10\"", "RIDGE"):
         assert expected in captions
 

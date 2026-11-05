@@ -58,8 +58,8 @@ from typehaus.emit.draw.structural_dimensions import (
     BEARING,
     LOCATING,
     Tier,
+    bearing_stations,
     emit_structural_tiers,
-    line_stations,
     overall_tier,
     wall_opening_stations,
 )
@@ -147,7 +147,7 @@ def _foundation_tiers(model: ResolvedModel, walls: list[ResolvedWall],
     The sleeves above are the pour layout: they used to be strings struck inside the plan,
     unlabelled and under the K leaders (D1-004).
     """
-    bearing_xs, bearing_ys = line_stations(wall.axis for wall in walls)
+    bearing_xs, bearing_ys = bearing_stations(model, (wall.tag for wall in walls))
     xs, ys = list(bearing_xs), list(bearing_ys)
     for solid in bearing_solids(model):
         if solid.category == "pad":

@@ -43,6 +43,7 @@ from typehaus.emit.draw.structural_dimensions import (
     BEARING,
     LOCATING,
     Tier,
+    bearing_stations,
     emit_structural_tiers,
     line_stations,
     overall_tier,
@@ -103,7 +104,7 @@ def _framing_tiers(model: ResolvedModel,
     """Locating (bearing lines, posts, beams, floor-opening edges, openings in bearing walls),
     the declared bearing lines c/c, and the overall of the walls below to their faces."""
     bearing = {wall.tag: wall for level in levels for wall in level.declared_bearing_walls}
-    bearing_xs, bearing_ys = line_stations(wall.axis for wall in bearing.values())
+    bearing_xs, bearing_ys = bearing_stations(model, bearing)
     xs, ys = list(bearing_xs), list(bearing_ys)
     for level in levels:
         for post in level.posts:

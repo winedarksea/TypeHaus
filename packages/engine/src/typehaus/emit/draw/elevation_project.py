@@ -416,10 +416,16 @@ def collect_candidates(model: ResolvedModel, view: ElevationView) -> list[Candid
                                       kind=element.kind, family=family, material_ref=None)
                 candidates[key] = candidate
             part_depth = float("inf")
+            top = float("-inf")
             for solid in part.solids:
                 candidate.absorb(solid, view)
-                part_depth = min(part_depth, min(view.depth_of(x, y)
-                                                 for x, y, _z in solid_vertices(solid)))
+                vertices = solid_vertices(solid)
+                part_depth = min(part_depth, min(view.depth_of(x, y) for x, y, _z in vertices))
+                top = max(top, max(z for _x, _y, z in vertices))
+            if element.kind == "roof":
+                # A roof's outermost layer is its top one: by nearest vertex the deck, which
+                # runs past the roofing at the eave, was called out as the skin (D2-104).
+                part_depth = -top
             if part_depth < outermost.get(key, float("inf")):
                 outermost[key] = part_depth
                 candidate.material_ref = (part.catalog.material_ref

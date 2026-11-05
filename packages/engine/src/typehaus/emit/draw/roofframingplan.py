@@ -33,6 +33,7 @@ from typehaus.emit.draw.structural_dimensions import (
     BEARING,
     LOCATING,
     Tier,
+    bearing_stations,
     emit_structural_tiers,
     line_stations,
     overall_tier,
@@ -111,7 +112,9 @@ def _roof_tiers(model: ResolvedModel, roof: ResolvedRoof) -> list[Tier | None]:
     bearing = [wall for wall in walls
                if getattr(model.plan.by_tag(wall.tag), "structural_role", None)
                is StructuralRole.BEARING]
-    bearing_xs, bearing_ys = line_stations(wall.axis for wall in bearing)
+    # A roof that names its bearings (the canopy on BM-BW-RW/RE) is stationed on them.
+    refs = tuple(getattr(model.plan.by_tag(roof.tag), "bearing_refs", None) or ())
+    bearing_xs, bearing_ys = bearing_stations(model, refs or (wall.tag for wall in bearing))
     ridge_xs, ridge_ys = line_stations((member.p0, member.p1) for member in roof.members
                                        if member.category == _RIDGE_CATEGORY)
     located = (Tier(LOCATING, (*bearing_xs, *ridge_xs), (*bearing_ys, *ridge_ys))

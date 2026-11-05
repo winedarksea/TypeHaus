@@ -118,7 +118,8 @@ def _door_row(model, opening, spec, marks, hardware) -> tuple[str, ...]:
         nominal = _pair(sizing.nominal_w_m, sizing.nominal_h_m)
         unit = _pair(*(sizing.installed_unit or (None, None)))
         rough = _pair(sizing.rough_w_m, sizing.rough_h_m)
-    clear = (_pair(sizing.clear_w_m, sizing.clear_h_m)
+    # 1/16": a published clear (Therma-Tru 33-5/16") must not round up at 1/8".
+    clear = (_pair(sizing.clear_w_m, sizing.clear_h_m, 16)
              if sizing is not None and sizing.clear_w_m is not None else "—")
     return (marks.get(opening.tag, "—"), opening.tag, opening.type_ref or "RO", operation,
             _hand(model, opening, spec), nominal, unit, rough, _jamb_text(sizing),
@@ -342,7 +343,10 @@ def _wall_finish(model, room) -> str:
             if coat is not None and coat_reach >= best - 1e-6:
                 marks.add(coat)
     text = " / ".join(sorted(names)) if names else "—"
-    return f"{text} + {'/'.join(sorted(marks))}" if marks else text
+    text = f"{text} + {'/'.join(sorted(marks))}" if marks else text
+    # A WallPaneling band is a wall finish the layers never carry (I2-104: BATH2 surround).
+    panels = sorted({p.material_ref for p in model.panelings if p.room in (room.tag, room.uid)})
+    return f"{text}; {', '.join(panels)}" if panels else text
 
 
 def _ceiling_finish(model, room) -> str:

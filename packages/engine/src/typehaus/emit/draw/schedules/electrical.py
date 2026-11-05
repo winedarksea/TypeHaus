@@ -132,7 +132,8 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
             fig.text(_RIGHT_X, 0.275, verdict, fontsize=7, family="monospace", va="top")
 
 
-def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:
+def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str, *,
+                              page: int = 0) -> None:
     """Three tables that between them make the E-2xx plans readable.
 
     The plans carry marks, not specifications — that is the whole point of a mark — so this
@@ -142,6 +143,9 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
     control schedule, which is the authoritative statement of the switch legs the plans can
     only draw as dashed lines. Then the runs, with each supply sized against the tape it
     actually drives (→ takeoff/lighting.py — nothing here is hand-summed).
+
+    Two pages (D1-103, M3-101): on one, the ~250-row control schedule crushed the rest
+    into clipped cells and pushed the load table onto the title block. ``page`` 1 is it.
     """
     from typehaus.takeoff import (
         connected_lighting_va,
@@ -151,6 +155,24 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
     )
     with schedule_sheet(pdf, model, number, name,
                         size=PORTRAIT_LEDGER, heading_xy=(0.04, 0.97)) as fig:
+        if page == 1:
+            controls = lighting_controls(model)
+            section(fig, 0.04, 0.945, "LIGHTING CONTROL SCHEDULE")
+            control_rows = [
+                (row["tag"], row["mark"] or "—", row["room"] or "—",
+                 row["circuit"] or (f"via {row['psu']}" if row["psu"] else "—"),
+                 ", ".join(row["switches"]) or ("switch on fixture" if row["integral_switch"]
+                                                else "—"),
+                 ", ".join(sorted(set(row["controls"]))) or "—",
+                 "3-way+" if row["ways"] > 1 else "",
+                 "CROSS-CIRCUIT" if row["cross_circuit"] else "")
+                for row in controls
+            ]
+            _add_table(fig, control_rows,
+                       ("Load", "Mark", "Room", "Circuit", "Switched by", "Control", "Ways",
+                        "Note"),
+                       bbox=(0.03, 0.13, 0.94, 0.80), truncate=(4,))
+            return
         schedule = luminaire_schedule(model)
         section(fig, 0.04, 0.945, "LUMINAIRE SCHEDULE")
         schedule_rows = [
@@ -170,26 +192,10 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
         _add_table(fig, schedule_rows,
                    ("Mark", "Description", "Brand / Model", "Lamp", "Base", "W", "lm", "K",
                     "V", "Mount", "Dim-capable", "Listing", "Qty", "Locations"),
-                   bbox=(0.03, 0.72, 0.94, 0.215), truncate=(13,))
-
-        controls = lighting_controls(model)
-        section(fig, 0.04, 0.695, "LIGHTING CONTROL SCHEDULE")
-        control_rows = [
-            (row["tag"], row["mark"] or "—", row["room"] or "—",
-             row["circuit"] or (f"via {row['psu']}" if row["psu"] else "—"),
-             ", ".join(row["switches"]) or ("switch on fixture" if row["integral_switch"]
-                                            else "—"),
-             ", ".join(sorted(set(row["controls"]))) or "—",
-             "3-way+" if row["ways"] > 1 else "",
-             "CROSS-CIRCUIT" if row["cross_circuit"] else "")
-            for row in controls
-        ]
-        _add_table(fig, control_rows,
-                   ("Load", "Mark", "Room", "Circuit", "Switched by", "Control", "Ways", "Note"),
-                   bbox=(0.03, 0.32, 0.94, 0.365))
+                   bbox=(0.03, 0.55, 0.94, 0.385), truncate=(13,))
 
         runs = light_run_takeoff(model)
-        section(fig, 0.04, 0.295, "LED RUNS AND 24V SUPPLIES")
+        section(fig, 0.04, 0.525, "LED RUNS AND 24V SUPPLIES")
         run_rows = [
             (row["tag"], row["mark"], row["room"] or "—", f"{row['length_ft']:.1f}",
              f"{row['watts']:.0f}", f"{row['volts']}V", row["psu"] or "—")
@@ -198,7 +204,7 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
         run_rows.append(("TOTAL", "", "", f"{runs['total_length_ft']:.1f}", "", "", ""))
         _add_table(fig, run_rows,
                    ("Run", "Mark", "Room", "LF", "Watts", "Volts", "Supply"),
-                   bbox=(0.03, 0.195, 0.52, 0.09))
+                   bbox=(0.03, 0.31, 0.50, 0.20))
         supply_rows = [
             (row["psu"], row["type"] or "—", f"{row['connected_watts']:.0f}",
              f"{row['required_watts']:.0f}",
@@ -208,10 +214,10 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
         ]
         _add_table(fig, supply_rows,
                    ("Supply", "Type", "Connected W", "Req. W (125%)", "Rated W", ""),
-                   bbox=(0.57, 0.195, 0.40, 0.09))
+                   bbox=(0.55, 0.31, 0.42, 0.20))
 
         load = connected_lighting_va(model)
-        section(fig, 0.04, 0.17, "CONNECTED LIGHTING LOAD")
+        section(fig, 0.04, 0.285, "CONNECTED LIGHTING LOAD")
         load_rows = [(row["circuit"], str(row["fixtures"]), f"{row['connected_va']:,.0f}")
                      for row in load["per_circuit"]]
         load_rows.append(("TOTAL CONNECTED", "", f"{load['total_connected_va']:,.0f} VA"))
@@ -219,8 +225,8 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
                           f"{load['allowance_va']:,.0f} VA at "
                           f"{load['allowance_va_per_ft2']:.0f} VA/ft2"))
         _add_table(fig, load_rows, ("Circuit", "Fixtures", "Connected VA"),
-                   bbox=(0.03, 0.09, 0.52, 0.07))
-        fig.text(0.57, 0.15, str(load["basis"]), fontsize=6, family="sans-serif", wrap=True)
+                   bbox=(0.03, 0.15, 0.52, 0.12))
+        fig.text(0.57, 0.26, str(load["basis"]), fontsize=6, family="sans-serif", wrap=True)
 
 
 _COLOR_MODE = {"tunable": "TW", "rgb": "RGB", "rgbw": "RGBW", "rgbcct": "RGBCCT"}

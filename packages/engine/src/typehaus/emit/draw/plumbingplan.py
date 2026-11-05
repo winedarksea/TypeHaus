@@ -113,13 +113,42 @@ def _governing_grade(run) -> float | None:
     return min(grades) if grades else None
 
 
+def run_storeys(model: ResolvedModel) -> dict[str, str]:
+    """run uid -> the plan it prints on, where that is not its filing storey (M2-104, M5-108).
+
+    Pipe z is filed on one datum, so the suite bath's arms and risers sit on ``main``. A run
+    serving fixtures of ONE storey, lying wholly above the plate of the storey below that
+    one (in its floor framing or higher), prints with those fixtures.
+    """
+    fixture_storey = {element.tag: tag for tag in (s.tag for s in model.plan.storeys)
+                      for element in model.plan.storey_elements(tag)}
+    ladder = [primary.tag for primary, _here in model.plan.levels()]
+    floor_of: dict[str, float] = {}  # storey -> the plate top of the storey below it
+    for lower, upper in zip(ladder, ladder[1:], strict=False):
+        plates = [w.plate_top_z_m for w in model.walls
+                  if w.storey == lower and w.plate_top_z_m is not None]
+        if plates:
+            floor_of[upper] = max(plates)
+    out: dict[str, str] = {}
+    for run in model.pipe_runs:
+        served = {fixture_storey.get(tag) for tag in run.serves} - {None}
+        if len(served) != 1 or run.storey not in ladder or not run.z_m:
+            continue
+        target = served.pop()
+        if (target in floor_of and ladder.index(target) > ladder.index(run.storey)
+                and min(run.z_m) >= floor_of[target] - 1e-6):
+            out[run.uid] = target
+    return out
+
+
 def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
     b = SceneBuilder(name=f"plumbing-{storey}", units="in")
     emit_ghost_walls(b, model, storey)
     emit_fixtures(b, model, storey, frozenset({"plumbing", "appliance"}))
 
+    drawn_on = run_storeys(model)
     for run in model.pipe_runs:
-        if run.storey != storey:
+        if drawn_on.get(run.uid, run.storey) != storey:
             continue
         layer = ("P-SANR-PIPE" if run.system in _DRAIN_VENT
                  else "P-STRM-LEDR" if run.system == "sump_discharge" else "P-DOMW-PIPE")
@@ -130,7 +159,8 @@ def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
         diameter_in = run.diameter_m / M_PER_IN
         label = "SUMP DISCHARGE" if run.system == "sump_discharge" else run.system.upper()
         # A pump's pressure line rises out of its pit: it carries no slope label.
-        grade = None if run.system == "sump_discharge" else _governing_grade(run)
+        # Slope is a DWV statement; supply printed "@ 0.00\"/FT" (M2-105).
+        grade = _governing_grade(run) if run.system in _DRAIN_VENT else None
         size = _nominal(diameter_in)
         text = f'{size} {label} @ {grade:.2f}"/FT' if grade is not None else f"{size} {label}"
         b.add(Leader(anchor=NamedPoint(xy=_in(mid), name=run.tag), at=_in(mid),

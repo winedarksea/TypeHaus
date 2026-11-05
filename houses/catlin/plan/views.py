@@ -62,12 +62,12 @@ DETAIL_SLICES = [
          crop=(pt(ft(-2), ft(-12)), pt(ft(3), ft(1))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(2))),
     # FS-M-NE's open-web trusses seated on W-B-E1 (decision #112): the 3" seat, the PT
-    # mudsill and gasket on the pour, the MASA anchor and the H2.5A seat tie. Cut along the
-    # y=16' truss line, cropped to the east bearing. Tag and uid kept from the BuildDeck
-    # bearing detail it replaces.
+    # mudsill and gasket on the pour, the MASA anchor and the A35Z seat tie. Cut on the
+    # y=15'-8" truss line (lines at 156 + 16k", decision #112), cropped to the east bearing.
+    # Tag and uid kept from the BuildDeck bearing detail it replaces.
     Slice(uid="CVD902AAAA", tag="SL-D-DECKBRG", kind=SliceKind.DETAIL,
          title="Floor truss bearing detail",
-         cut_origin=pt(ft(0), ft(16)), cut_direction="x",
+         cut_origin=pt(ft(0), ft(15, 8)), cut_direction="x",
          dimensions=(
              _z("FS-M-NE:bottom", "FS-M-NE:top", inch(408), "{} truss"),) + _chain(
              "u", ("W-B-E1:left", "W-B-E1:right"), inch(-20), ("{} fdn wall",)),

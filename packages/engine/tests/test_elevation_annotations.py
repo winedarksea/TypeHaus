@@ -152,7 +152,7 @@ def test_coincident_level_datums_share_one_marker(catlin_model):
     floor (F3-002) — and coincident datums still share one label."""
     scene = build_elevation(catlin_model, "south")
     labels = [text for text in _leader_texts(scene) if "EL." in text]
-    assert any(text.startswith("MAIN T.O. PLATE\nEL. 9'-0\"") for text in labels), labels
+    assert any(text.startswith("MAIN T.O. PLATE\nEL. 9'-0 1/8\"") for text in labels), labels
     # ...and every printed elevation appears exactly once, however many names share it.
     elevations = [text.split("EL.")[1].strip() for text in labels]
     assert len(elevations) == len(set(elevations))

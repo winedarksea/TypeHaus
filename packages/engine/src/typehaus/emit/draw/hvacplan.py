@@ -99,13 +99,17 @@ def _emit_registers(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
 
 
 def _emit_equipment(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
+    canvas = {obj.uid: obj for obj in model.canvas_objects}
     for element in model.plan.storey_elements(storey):
         if element.element_kind != "Equipment":
             continue
         width, depth = (dim.meters for dim in element.footprint)
         x, y = placed_xy(model, element)
-        outline = ((x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
-                   (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2))
+        # The resolved ring carries the rotation (M2-103: the N-S HW header drew E-W).
+        placed = canvas.get(element.uid)
+        outline = (tuple(placed.footprint) if placed is not None and placed.footprint else
+                   ((x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
+                    (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2)))
         b.add(Polyline(points=tuple(_in(p) for p in outline), layer="M-HVAC-EQPM",
                        closed=True, lineweight=PROFILE, uid=element.uid, tag=element.tag))
         # Placed at frame time with the duct labels: at the mech room the plenums, ERV

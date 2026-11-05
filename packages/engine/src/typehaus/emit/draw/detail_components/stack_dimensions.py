@@ -22,8 +22,9 @@ from typehaus.resolve.geometry_slice import CutPlane, ring_intervals
 
 
 def dim_text(inches: float) -> str:
-    """A dimension string at 1/8": ``6 5/8"`` under a foot, ``2'-10 1/8"`` over."""
-    text = feet_inches(abs(inches), denominator=8)
+    """A detail string at 1/16" (I3-104: 84 1/16" headroom printed 7'-0 1/8"):
+    ``6 5/8"`` under a foot, ``2'-10 1/16"`` over."""
+    text = feet_inches(abs(inches), denominator=16)
     if text.startswith("0'-"):
         text = text[3:]
     return text[2:] if text.startswith("0 ") else text

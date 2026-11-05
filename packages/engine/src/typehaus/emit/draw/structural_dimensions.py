@@ -4,7 +4,7 @@ Three tiers, inner to outer, on the south (E-W chains) and west (N-S chains):
 
 * **LOCATING** — every bearing line plus what a framer or a form crew places off it: pad
   and post centres, beam lines, floor-opening edges and the openings in bearing walls.
-* **BEARING LINES C/C** — the bearing-line axes alone.
+* **BEARING LINES C/C** — the bearing members' centrelines alone (studs, ICF core, beam).
 * **OVERALL** — face of foundation (S-100) or face of sheathing / stud (S-101..S-103), the
   same extent the A-1xx sheets state.
 
@@ -68,6 +68,37 @@ def line_stations(axes: Iterable) -> tuple[list[float], list[float]]:
     """``(xs, ys)``: each line located on the axis it runs across."""
     axes = list(axes)
     return axis_stations(axes, 0), axis_stations(axes, 1)
+
+
+def bearing_stations(model: ResolvedModel, tags: Iterable[str]) -> tuple[list[float], list[float]]:
+    """``(xs, ys)`` of each bearing's member centreline (D1-102): a wall's STRUCTURE layer
+    (studs, ICF core), a beam's solid. The wall axis is a layout line on the sheathing or
+    form face, so stationing it called face-to-centre "c/c". Axis when nothing is framed."""
+    xs: list[float] = []
+    ys: list[float] = []
+    walls = {wall.tag: wall for wall in model.walls}
+    for tag in tags:
+        wall = walls.get(tag)
+        if wall is not None:
+            core = [point for layer in wall.layers
+                    if layer.function == "structure" and not layer.is_cavity
+                    for point in layer.polygon]
+            for axis, out in ((0, xs), (1, ys)):
+                if not crosses(wall.axis, axis):
+                    continue
+                values = [point[axis] for point in core] or [wall.axis[0][axis],
+                                                             wall.axis[1][axis]]
+                out.append((min(values) + max(values)) / 2.0)
+            continue
+        ring = [point for solid in model.solids if solid.tag == tag for point in solid.outline]
+        if len(ring) < 3:
+            continue
+        span_x = max(p[0] for p in ring) - min(p[0] for p in ring)
+        span_y = max(p[1] for p in ring) - min(p[1] for p in ring)
+        axis = 0 if span_x < span_y else 1  # a beam is a station across its short side
+        values = [point[axis] for point in ring]
+        (xs if axis == 0 else ys).append((min(values) + max(values)) / 2.0)
+    return xs, ys
 
 
 def wall_opening_stations(model: ResolvedModel, wall: ResolvedWall,

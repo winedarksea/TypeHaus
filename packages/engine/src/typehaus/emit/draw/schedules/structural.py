@@ -131,10 +131,12 @@ def _write_engineering_register(pdf, model: ResolvedModel, number: str, name: st
         _add_table(fig, rows,
                    ("Item", "Elements", "Basis", "Governing", "d/c", "Local", "Signoff",
                     "Seal", "Checked against"),
-                   bbox=(0.04, 0.58, 0.92, 0.30))
+                   # One full-width run down the page (D1-101): split in two, ids clipped
+                   # and "Checked against" ran into the right-hand run.
+                   bbox=(0.04, 0.33, 0.92, 0.55), truncate=(1, 2, 3, 8))
 
-        section(fig, 0.04, 0.535, "SIGNOFFS")
-        line = 0.515
+        section(fig, 0.04, 0.30, "SIGNOFFS")
+        line = 0.28
         if not register.signoffs:
             fig.text(0.04, line, "None recorded. Every item above rests on this engine's "
                                  "own calculation, or on none — this sheet carries no "
@@ -151,7 +153,7 @@ def _write_engineering_register(pdf, model: ResolvedModel, number: str, name: st
                          family="monospace")
             line -= 0.055
 
-        section(fig, 0.04, 0.16, "WHAT THIS PAGE DOES AND DOES NOT SAY")
+        section(fig, 0.04, 0.225, "WHAT THIS PAGE DOES AND DOES NOT SAY")
         for offset, text in enumerate((
             "\"draft\" means this engine computed the item from first principles and it "
             "checks out. It is NOT a professional seal.",
@@ -166,7 +168,8 @@ def _write_engineering_register(pdf, model: ResolvedModel, number: str, name: st
             "\"Checked against\" names the hand-worked note in `houses/<house>/notes/` "
             "that independently reproduces the item; `out/calcs/` prints both together.",
         )):
-            fig.text(0.04, 0.14 - offset * 0.016, f"\u2022 {text}", fontsize=5.5,
+            # Ends above the title block (F6-108).
+            fig.text(0.04, 0.205 - offset * 0.016, f"\u2022 {text}", fontsize=5.5,
                      family="monospace")
 
 

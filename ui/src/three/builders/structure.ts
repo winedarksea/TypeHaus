@@ -69,10 +69,9 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
     ? createSweepGeometry(solid, center)
     : (solid.outline.length < 3 ? null
       : createPlanPrismGeometry(solid.outline, solid.z0_m,
-        // Return coatings carry their real film thickness; inflating the head's film
-        // would overlap the board and disagree with the engine and exported solids.
-        solid.category === "window_return" ? solid.z1_m
-          : Math.max(solid.z1_m, solid.z0_m + 0.01), solid.voids ?? [], center));
+        // The served z0..z1 as-is (gaskets, flashing, films): a thickened sliver
+        // disagrees with the engine and exported solids. Guard only z1 <= z0.
+        solid.z1_m > solid.z0_m ? solid.z1_m : solid.z0_m + 1e-4, solid.voids ?? [], center));
   if (!geo) return;
   // A boarded ceiling: `resolve/ceilings.py` puts the ceiling stack's FINISH layer material
   // straight on the solid, so the sauna's shiplap arrives here as `material: "sauna-shiplap"` with no

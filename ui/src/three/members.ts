@@ -1,15 +1,14 @@
 // Solid framing-member rendering (→ 21 §3D panel WP8). Replaces the old zero-width
 // LineSegments pass: every member gets a real box built from its serialized
-// shape/width_m/depth_m/orient (never re-parses `profile` — that's the engine's job,
+// shape/width_m/depth_m/orient (never re-parses `profile` — the engine's job,
 // → server/model_json.py._member_json). Three buckets, each ~1-3 draw calls so a
 // trade with hundreds of members still costs a handful of draws:
 //   1. Rect prismatic, non-raked -> one InstancedMesh (unit box, per-instance matrix+color).
 //   2. Raked (z0_end_m != null: raked plates, rafters) -> one merged BufferGeometry with
 //      the exact 8-vertex box (vertical ends, sloped top/bottom), mirroring
 //      emit/gltf/emitter.py's add_member_box so the 3D panel and the glTF agree.
-//   3. I-joists -> three InstancedMeshes (top flange, bottom flange, web) sharing the
-//      member's axis transform; a sloped i-joist rafter (none in the current catalog)
-//      would render level rather than raked — square-cut, plumb ends not modeled.
+//   3. I-joists -> three InstancedMeshes (top flange, bottom flange, web) on the member's
+//      axis; a seated one (birdsmouth) takes the notched sweep via the raked merge.
 //   4. Open-web floor trusses -> chords + end blocks + diagonal webs (three/floorTruss.ts).
 //   5. Roof trusses -> a fink inside the member's envelope (three/roofTruss.ts).
 //   6. Formed trim (drip edge, corner trim, gutter) -> the raked merge again, one mesh per
@@ -224,7 +223,7 @@ interface Buckets {
   trim: Member[];
 }
 
-function bucket(members: Member[], materials?: readonly MaterialAppearance[]): Buckets {
+function bucket(members: Member[], center: PlanCenter, materials?: readonly MaterialAppearance[]): Buckets {
   const out: Buckets = { rect: [], raked: [], ijoist: [], truss: [], roofTruss: [], seam: [], trim: [] };
   for (const m of members) {
     // Seam first: a standing-seam or declared ribbed-panel band needs its own textured
@@ -234,7 +233,8 @@ function bucket(members: Member[], materials?: readonly MaterialAppearance[]): B
     const merge = metalDepthTier(m.category) ? out.trim : out.raked;
     if (m.section_ring || m.elevation_profile) merge.push(m);
     else if (isSeamMember(m, materials) && !isVerticalMember(m)) out.seam.push(m);
-    else if (m.shape === "i_joist") out.ijoist.push(m);
+    // A seated I-joist is the engine's notched sweep (decision #109).
+    else if (m.shape === "i_joist") (seatedProfileVertices(m, center) ? merge : out.ijoist).push(m);
     // An open-web floor truss is not a bar: it draws as chords + webs (three/floorTruss.ts),
     // and the open bay between the chords is the whole reason the member was specified.
     // A floor-truss-shaped BLOCK (bearing/partition blocking) is solid filler, not webs.
@@ -475,7 +475,7 @@ export function buildMembers(group: THREE.Group, members: Member[], center: Plan
   }
   const boxMembers = members.filter((member) => !member.surface_mesh && !member.plan_outline?.length);
   if (!boxMembers.length) return;
-  const buckets = bucket(boxMembers, materials);
+  const buckets = bucket(boxMembers, center, materials);
   buildRectInstances(group, buckets.rect, center, mode, palette, ownerUid, materials);
   buildRakedMesh(group, buckets.raked, center, mode, palette, ownerUid, materials);
   for (const offset of new Set(buckets.trim.map((m) => metalDepthTier(m.category)))) {

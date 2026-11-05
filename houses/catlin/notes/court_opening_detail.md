@@ -26,7 +26,7 @@ source:
 - [K4] D-B-SUNKEN: concrete curb with overflow drainage and sump pump; door is specified for standard rain exposure, not as a flood barrier.
 - [K5] D-B-SUNKEN: keep pan outlet open; confirm seat, sealant and drainage with the installed door and pan instructions.
 - [K6] D-B-SUNKEN: the blind curb-skin recess clears the approach (no sill extender); verify field membrane bonds.
-- [K7 @ host#layer:eps-ci:out] Veneer cavity: 4" clear air. Keep the base-course weeps open; they drain it after the court drains.
+- [K7 @ host#layer:xps-b:out] Veneer cavity: 1 15/16" clear air over the 4" XPS. Keep the base-course weeps open; they drain it after the court drains.
 
 # Notes
 

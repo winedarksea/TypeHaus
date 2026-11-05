@@ -89,7 +89,8 @@ def _shorten(text: str, budget: float) -> str:
     for index, item in enumerate(items):
         dropped = len(items) - index - 1
         tail = f" +{dropped} more" if dropped else ""
-        if kept and _text_width(", ".join([*kept, item]) + tail) > budget:
+        # 0.9: the render runs wider than measured (S-603 "+1 more" crossed its rule).
+        if kept and _text_width(", ".join([*kept, item]) + tail) > budget * 0.9:
             break
         kept.append(item)
     if len(kept) == 1 and _text_width(kept[0]) > budget:  # one item wider than the column
