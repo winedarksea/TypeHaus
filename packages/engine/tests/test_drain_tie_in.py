@@ -52,14 +52,25 @@ def test_the_projection_is_faithful(catlin_model_ro) -> None:
 def test_the_epsilon_is_a_thirty_second_not_zero(catlin_plan, catlin_model_ro) -> None:
     """**The assertion that stops a float from becoming a finding.**
 
-    ``PR-B-SAUNA-FD-DROP`` arrives -0.00025" below its collector. That is the last bit of
-    the interpolation, not geometry, and grading at ``< 0`` would report it.
+    ``PR-B-SAUNA-FD-DROP`` arrived -0.00025" below its collector until 2026-11-05: the last
+    bit of the interpolation, not geometry, and grading at ``< 0`` would report it. It now
+    arrives 0.083" above, so the end is lowered here to arrive 1/64" below.
     """
-    records = {t.child: t for t in drain_tie_in_records(_drains(catlin_model_ro))}
-    drop_in = records["PR-B-SAUNA-FD-DROP"].drop_m / M_PER_IN
-    assert -1.0 / 32.0 < drop_in < 0.0, drop_in
+    import copy
 
-    findings = drain_tie_in(check_context(plan=catlin_plan, model=catlin_model_ro))
+    records = {t.child: t for t in drain_tie_in_records(_drains(catlin_model_ro))}
+    index, run = next((i, r) for i, r in enumerate(catlin_model_ro.pipe_runs)
+                      if r.tag == "PR-B-SAUNA-FD-DROP")
+    low = copy.copy(run)
+    lower_m = records[run.tag].drop_m + M_PER_IN / 64.0
+    object.__setattr__(low, "z_m", (*run.z_m[:-1], run.z_m[-1] - lower_m))
+    model = copy.copy(catlin_model_ro)
+    object.__setattr__(model, "pipe_runs", (*catlin_model_ro.pipe_runs[:index], low,
+                                            *catlin_model_ro.pipe_runs[index + 1:]))
+    drop_in = {t.child: t for t in drain_tie_in_records(_drains(model))}[run.tag].drop_m
+    assert -1.0 / 32.0 < drop_in / M_PER_IN < 0.0, drop_in / M_PER_IN
+
+    findings = drain_tie_in(check_context(plan=catlin_plan, model=model))
     finding = next(f for f in findings if "PR-B-SAUNA-FD-DROP" in f.element_tags)
     assert finding.result is Result.PASS
     assert "on its centreline" in finding.message

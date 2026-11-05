@@ -88,13 +88,23 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 **A fixture's arm and vent.** `--fixture` on a drain fixture searches the arm and its vent
 together: the arm's reachable take-offs (`arm_reach`) seed the gravity search at their arm
 cost plus the vent's cost-to-go, and the vent is read back off a 3D lattice in which
-finished rooms are hard. The pair is proposed and evaluated together (`A + B`). A refusal
-names the cheapest take-off's first blocker. **Cleanouts** a proposed drain needs are placed
+finished rooms are hard. The pair is proposed and evaluated together (`A + B`). The arm is
+laid at the trap — a tub, shower or floor drain at the floor traps 3" under its datum
+(`under_floor_weir_m`) — holds grade to the take-off, and drops plumb there (`route_fall`).
+An arm that may end on a dry-vented bathroom-group drain as a UPC 908.2 wet vent is offered
+that join as a goal, graded by the check's own walk (`route_fixture_wet`,
+`resolve/mep_wet_tie`); the proposal then carries no vent, and its notes say which runs to
+upsize and which vent's `serves` to extend. A fixture whose authored arm already meets a vent
+(wet vents graded) is noted and its drain proposed alone. A refusal prints a **take-off
+table**: every candidate, its wall and arm length, and the first thing a plumb riser from
+the arm meets (`route_takeoff_table`); `--counterfactual` lifts those blockers in the vent
+lattice too, and `--summary` drops each row's station. **Cleanouts** a proposed drain needs are placed
 on it, each with access (wall, floor or ceiling), cap point and concealment; a concealed
 one pays `cleanout_concealed_in`.
 
-**Limitations.** Wet vents are ungraded in `arm_is_vented`; seeds keep the two cheapest
-take-offs (`keep=2`); a vertical barrel's stack pitch is left to the check; a tie's fitting
+**Limitations.** A 908.2-ordered bathroom-group campaign (`--group`) does not exist: a wet
+vent is offered only onto a drain already authored; seeds keep the two cheapest take-offs
+(`keep=2`); a vertical barrel's stack pitch is left to the check; a tie's fitting
 is named but not priced; `--topology trunk` is not implemented (catlin's cold side is a
 trunk with nothing to replace, and `--tree` is drain-only); rack lanes exist only inside
 `--house` and `--manifold` campaigns. `--tree` prints each

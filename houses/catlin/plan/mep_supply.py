@@ -597,15 +597,16 @@ SUPPLY = [
             # cold hold the west. So it rides under the waste at 9'-6 11/16" on a 1/2" sleeve
             # (R-3.1, as PR-A-HW-STUBATH), 3.06" over the BED2 and STUDY radials' crowns, dips
             # to 9'-6" under CD-M-DATA-KITCH at y=21'-1.3" and through truss 016's opening,
-            # steps to 9'-7" for DU-M-ERV-R-KITCH, and climbs past the tub drop to 9'-10"
-            # before turning west over the cold.
+            # steps to 9'-7" for DU-M-ERV-R-KITCH. North of truss 017 it jogs 5" west to
+            # x=16'-0" (2026-11-05), clear of the tub's trap and under its arm, and climbs to
+            # 9'-10" only under W-S-SN3 before turning west over the cold.
             path=(pt(inch(80), inch(306)), pt(inch(80), inch(306)), pt(inch(80), ft(17)),
                   pt(inch(101), ft(17)), pt(inch(101), ft(17)),
                   pt(ft(16, 5), ft(17)), pt(ft(16, 5), ft(18)),
                   pt(ft(16, 5), ft(18)),
                   pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(20, 9)),
                   pt(ft(16, 5), ft(20, 11.625)), pt(ft(16, 5), ft(21, 6.75)),
-                  pt(ft(16, 5), ft(21, 6.75)), pt(ft(16, 5), ft(22, 1)), pt(ft(16, 5), ft(22, 4)),
+                  pt(ft(16), ft(21, 6.75)), pt(ft(16), inch(265.5)), pt(ft(16), ft(22, 4)),
                   pt(ft(14, 3.6), ft(22, 4)), pt(ft(14, 3.6), ft(22, 4)),
                   pt(ft(14, 3.6), ft(22, 4))),
             diameter=inch(0.75), material="pex", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
@@ -613,7 +614,7 @@ SUPPLY = [
                         ft(8, 1.4375), ft(8, 1.4375),
                         ft(9, 1.4375),
                         ft(18, 1.3125), ft(18, 8.125), ft(18, 8.125), ft(18, 7.4375),
-                        ft(18, 7.4375), ft(18, 8.4375), ft(18, 8.4375), ft(18, 11.4375),
+                        ft(18, 7.4375), ft(18, 8.4375), ft(18, 8.4375), ft(18, 10.9375),
                         ft(18, 11.4375), ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, None, None, None, None, None, "W-M-CLN2", None, None, None, None, None,
                        None, None, None, None, "W-S-SN3"),

@@ -38,8 +38,10 @@ def runner() -> CliRunner:
 def test_a_fixture_proposal_prints_source_and_writes_nothing(runner) -> None:
     before = _plan_digest()
     result = runner.invoke(app, ["route", str(_CATLIN),
-                                 "--fixture", "FX-S-SUITEBATH-WC"])
+                                 "--fixture", "FX-A-STUBATH-WC"])
     assert result.exit_code == 0, result.output
+    # A vented fixture says so and still gets its drain proposed (no vent search).
+    assert "FX-A-STUBATH-WC: already vented (" in result.output
     assert "PROPOSED, NOT WRITTEN" in result.output
     assert "PipeRun(tag=" in result.output
     assert "uid=" not in result.output, "haus fmt mints uids; a proposal never hands one out"
@@ -58,7 +60,7 @@ def test_explain_prints_the_terms_the_route_was_chosen_on(runner) -> None:
 
 
 def test_exactly_one_selector_is_required(runner) -> None:
-    both = runner.invoke(app, ["route", str(_CATLIN), "--fixture", "FX-S-SUITEBATH-WC",
+    both = runner.invoke(app, ["route", str(_CATLIN), "--fixture", "FX-A-STUBATH-WC",
                                "--unconnected"])
     assert both.exit_code == 2
     neither = runner.invoke(app, ["route", str(_CATLIN)])
@@ -76,7 +78,7 @@ def test_unconnected_reads_the_check_rather_than_re_deriving_it(runner) -> None:
 
 def test_a_bad_via_is_refused_rather_than_guessed(runner) -> None:
     result = runner.invoke(app, ["route", str(_CATLIN), "--fixture",
-                                 "FX-S-SUITEBATH-WC", "--via", "nonsense"])
+                                 "FX-A-STUBATH-WC", "--via", "nonsense"])
     assert result.exit_code != 0
 
 
@@ -166,7 +168,7 @@ def test_a_branch_is_sized_from_its_own_drainage_load(runner) -> None:
     size the house itself authors.
     """
     result = runner.invoke(app, ["route", str(_CATLIN),
-                                 "--fixture", "FX-S-SUITEBATH-WC"])
+                                 "--fixture", "FX-A-STUBATH-WC"])
     assert result.exit_code == 0, result.output
     assert "diameter=inch(3)" in result.output
 
@@ -191,16 +193,16 @@ def test_a_duct_run_is_routed_rather_than_called_not_a_run(runner) -> None:
 def test_a_congested_terminal_is_refused_with_the_tags_that_block_it(runner) -> None:
     """"Every lane is blocked" is true and useless.
 
-    `FX-S-SUITEBATH-LAV`'s only vent take-off rises into `PR-S-SUITE-LAV-HW`. The refusal
+    `FX-S-BATH1-WC`'s drain leaves its flange into `PR-S-BATH1-SH-VENT`'s riser. The refusal
     names it and says how much of the lattice was reachable at all, which is the difference
     between "move something" and "give up". (`CD-B-PV-INV` was the example until 2026-09-23,
-    `CD-M-DATA-PORCH` until 2026-11-03; both became routable.)
+    `CD-M-DATA-PORCH` until 2026-11-03, `FX-S-SUITEBATH-LAV` until 2026-11-05.)
     """
-    result = runner.invoke(app, ["route", str(_CATLIN), "--fixture", "FX-S-SUITEBATH-LAV",
+    result = runner.invoke(app, ["route", str(_CATLIN), "--fixture", "FX-S-BATH1-WC",
                                  "--margin", "2"])
     assert result.exit_code == 1, result.output
     assert "lattice nodes are reachable" in result.output
-    assert "PR-S-SUITE-LAV-HW" in result.output
+    assert "PR-S-BATH1-SH-VENT" in result.output
     assert "Traceback" not in result.output
 
 
@@ -219,7 +221,7 @@ def test_explain_prints_the_weights_the_route_was_actually_priced_at(runner) -> 
     the module defaults while `--explain` printed a breakdown from a table the house had
     never been asked about."""
     result = runner.invoke(app, ["route", str(_CATLIN), "--fixture",
-                                 "FX-S-SUITEBATH-WC", "--explain"])
+                                 "FX-A-STUBATH-WC", "--explain"])
     assert result.exit_code == 0, result.output
     assert "weights:" in result.output
     assert "cheapest possible inch of travel" in result.output
@@ -227,7 +229,7 @@ def test_explain_prints_the_weights_the_route_was_actually_priced_at(runner) -> 
 
 def test_alternatives_reports_distinct_lanes_found(runner) -> None:
     result = runner.invoke(app, ["route", str(_CATLIN), "--fixture",
-                                 "FX-S-SUITEBATH-WC", "--alternatives", "3"])
+                                 "FX-A-STUBATH-WC", "--alternatives", "3"])
     assert result.exit_code == 0, result.output
     assert ("1 distinct route(s) found" in result.output
             or "paste exactly ONE" in result.output or "-PROPOSED-A" in result.output)
@@ -243,7 +245,7 @@ def test_an_unknown_level_is_refused_rather_than_silently_ignored(runner) -> Non
     """`--level` was implemented as a validation and nothing else: it checked the storey
     name and then changed no part of the lattice."""
     result = runner.invoke(app, ["route", str(_CATLIN), "--fixture",
-                                 "FX-S-SUITEBATH-WC", "--level", "not-a-storey"])
+                                 "FX-A-STUBATH-WC", "--level", "not-a-storey"])
     assert result.exit_code == 2, result.output
 
 
@@ -264,7 +266,7 @@ def test_json_emits_the_proposal_and_its_evaluation_together(runner) -> None:
     import json
 
     result = runner.invoke(app, ["route", str(_CATLIN), "--fixture",
-                                 "FX-S-SUITEBATH-WC", "--json"])
+                                 "FX-A-STUBATH-WC", "--json"])
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert set(payload) == {"house", "storey", "proposals", "evaluations",

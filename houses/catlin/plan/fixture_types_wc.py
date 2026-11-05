@@ -210,6 +210,7 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
     "excludes_floor_finish": True,
     "tag": "FX-SHOWER-36-THERMO-COMBO",
     "height": inch(BATH2_SHOWER.model_height),
+    "flood_rim_height": inch(4.5),  # the base's threshold
     "model_representation": ModelRepresentation(
         symbol="swanstone-flex-3636", material_refs={"solid-surface": "solid-surface-base"}),
     "name": 'Shower, 36", thermostatic valve with a two-in-one rainshower combo',
@@ -257,6 +258,8 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
 SHOWER_36_COMBO = SHOWER.model_copy(update={
     "excludes_floor_finish": True,
     "tag": "FX-SHOWER-36-COMBO",
+    # No base SKU: the threshold, at P2709.1's 9" most over the drain.
+    "flood_rim_height": inch(9),
     "name": 'Shower, 36", pressure-balance valve with a two-in-one combo head',
     "product_ref": "PROD-MOEN-26010SRN",
     # RM-B-SAUNA only (the attic took the neo-angle type): pan drain at its centre on the

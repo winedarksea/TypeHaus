@@ -4,6 +4,7 @@ search_for is injected so diagnostics use the same trade search as the original 
 
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import TYPE_CHECKING, Any
 
 import typer
@@ -16,6 +17,27 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.routing.cost import RouteCost
 
 console = Console()
+
+
+def refuse(space: Any, graph: Any, start: int, goals: set[int], *, target: str, ends: Any,
+           report: Any, alternatives: int, margin_ft: float,
+           band: tuple[float, float] | None) -> Any:
+    """The structured refusal for a search that returned nothing, take-off table and all."""
+    from typehaus.routing.diagnostics import refusal
+
+    attempts = (f"{alternatives} alternative(s) asked for" if alternatives > 1
+                else "one search",
+                f"{len(space.hard)} hard prism(s), {len(space.corridors)} corridor(s) in the "
+                "space", f"margin {margin_ft:.3g} ft"
+                + ("" if band is None else ", pruned to the --level band"))
+    # A gravity refusal knows whether the route ran out of HEAD, and where. Its number is
+    # the shortage, and the geometric record carries it rather than replacing it.
+    shortages = ((report.sentence(),) if report is not None
+                 and (report.tightest is not None or report.notes) else ())
+    takeoffs = report.takeoffs if report is not None else []
+    return refusal(space, graph, start, goals, target=target, service=str(ends.system),
+                   shortages=shortages, attempts=attempts, takeoffs=tuple(takeoffs),
+                   extra_blockers=tuple(t.blocker for t in takeoffs if t.blocker is not None))
 
 
 def counterfactual_lines(model: ResolvedModel, ends: Any, refused: Any, *,
@@ -36,8 +58,11 @@ def counterfactual_lines(model: ResolvedModel, ends: Any, refused: Any, *,
     from typehaus.routing.space import build_space
 
     terminals = [ends.origin, ends.root, *[(p[0], p[1], ends.root[2]) for p in via]]
+    lifted: list[frozenset[str]] = [frozenset()]
 
     def build(extra: frozenset[str]):
+        # The vent lattice is built inside the search: the lifted tag reaches it via touch.
+        lifted[0] = extra
         return build_space(model, radius_m=ends.radius_m, terminals=terminals,
                            margin_ft=margin_ft, avoid=avoid,
                            touch=ends.touch | extra, cost=cost, z_band=band,
@@ -52,7 +77,8 @@ def counterfactual_lines(model: ResolvedModel, ends: Any, refused: Any, *,
                             exact=ends.tie_is_the_goal)
         if start is None or not goals:
             return None
-        run, _report = search_for(model, graph, ends, slope)
+        run, _report = search_for(model, graph, replace(ends, touch=ends.touch | lifted[0]),
+                                  slope)
         found = run(graph, space, start, goals)
         return None if found is None else found.cost
 

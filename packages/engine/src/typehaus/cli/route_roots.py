@@ -341,7 +341,7 @@ def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None)
     # The band this run can possibly occupy: its tie at the bottom, its start ceiling at the
     # top. Without it every floor in the model constrains every run — see
     # ``member_constraints`` — and a second-floor branch is refused against a basement joist.
-    band = (min(ends.origin[2], ends.root[2]), max(ends.origin[2], ends.root[2]))
+    band = (min(ends.weir, ends.root[2]), max(ends.origin[2], ends.root[2]))
     constraints = member_constraints(model, graph, band)
     grade = slope if slope is not None else minimum_slope(ends.diameter_m)
 
@@ -350,21 +350,26 @@ def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None)
         nipple, heel = fitting_terms(a_space.cost, "drain", ends.diameter_m,
                                      ends.echo.get("material"), ends.radius_m)
         problem = GravityProblem(
-            ceiling_m=ends.origin[2], grade_in_per_ft=grade,
+            ceiling_m=ends.weir, grade_in_per_ft=grade,
             diameter_m=2.0 * ends.radius_m,
             required_m=dict.fromkeys(goals, ends.root[2]), nipple_m=nipple, heel_m=heel)
-        heights = {**dict.fromkeys(goals, ends.root[2]), start: ends.origin[2]}
+        heights = {**dict.fromkeys(goals, ends.root[2]), start: ends.weir}
         obstacles = band_obstacles(a_space, a_graph,
                                    terminal_pardons(a_space, a_graph, heights, start),
                                    start)
         arm, vent = arm_problem(model, ends, a_graph, a_space, start, goals, grade,
-                                obstacles, report)
+                                obstacles, report, constraints)
+        wet = arm.pop("wet", {})
+        if wet:  # a wet-vent join is a goal at the drain's own centreline there
+            goals = goals | set(wet)
+            arm["required_m"] = {**problem.required_m,
+                                 **{n: tie.join[2] for n, tie in wet.items()}}
         if arm:
             problem = replace(problem, **arm)
         found = sloped_route(a_graph, a_space, start, goals, problem,
                              constraints=constraints, refusal=report, obstacles=obstacles)
         if found is not None and found.takeoff is not None:
-            found.vent = vent
+            found.vent, found.wet = vent, wet.get(found.takeoff)
         return found
 
     return search, report

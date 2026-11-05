@@ -70,7 +70,7 @@ def test_the_gaps_reproduce_what_fixture_drain_reach_measured() -> None:
 # --- §2 the head budget ----------------------------------------------------------------
 
 def test_the_collector_profile_is_the_note_s_arithmetic(catlin_model_ro) -> None:
-    """§2's table: two legs, their lengths, their falls and their slopes.
+    """§2's table: six legs, their lengths, their falls and their slopes.
 
     An invert is `start - slope x developed plan length` and nothing else, which is what
     `GravityProfile.invert_at` has to reproduce. Read off the authored run so the note and
@@ -84,33 +84,30 @@ def test_the_collector_profile_is_the_note_s_arithmetic(catlin_model_ro) -> None
     assert z[1] == pytest.approx(116.75, abs=0.001)   # the drop bottom, under the chord
     assert z[-1] == pytest.approx(111.0, abs=0.001)   # on the stack barrel
 
-    legs = [math.dist(path[i], path[i + 1]) for i in (1, 2, 3)]
-    assert legs == pytest.approx([9.19, 36.406, 6.0], abs=0.001)   # east, south, east
-    slopes = [(z[i] - z[i + 1]) / (leg / 12.0) for i, leg in zip((1, 2, 3), legs, strict=True)]
-    assert slopes == pytest.approx([0.326, 1.286, 3.2], abs=0.001)
+    legs = [math.dist(path[i], path[i + 1]) for i in range(1, 7)]
+    # east, north (the loop under W-S-SN3), east, south, south, east
+    assert legs == pytest.approx([4.69, 13.844, 4.5, 20.25, 30.0, 6.0], abs=0.001)
+    slopes = [(z[i] - z[i + 1]) / (leg / 12.0) for i, leg in zip(range(1, 7), legs, strict=True)]
+    assert slopes == pytest.approx([0.256, 0.260, 0.267, 0.326, 1.240, 3.2], abs=0.001)
 
     developed_ft = sum(legs) / 12.0
-    assert developed_ft == pytest.approx(4.2997, abs=0.001)
-    assert 0.25 * developed_ft == pytest.approx(1.0749, abs=0.001)
+    assert developed_ft == pytest.approx(6.607, abs=0.001)
+    assert 0.25 * developed_ft == pytest.approx(1.652, abs=0.001)
 
 
 def test_the_two_arms_arrive_above_the_collector_they_tie_into(catlin_model_ro) -> None:
-    """§2's closing paragraph. The collector's invert is interpolated at each tie station
-    and each arm arrives above it — a side entry into the upper half of the 3", inside
-    `_TIE_IN_INVERT_TOL_M` so `drain_tie_ins` still links the load."""
+    """§2's closing paragraph. The parent's centreline is interpolated at each tie station
+    and each arm arrives above it — a side entry into the upper half, inside
+    `_TIE_IN_INVERT_TOL_M` so `drain_tie_ins` still links the load. The tub ties onto the
+    collector's south leg, the lav onto the tub's arm (2026-11-05)."""
     runs = {r.tag: r for r in catlin_model_ro.pipe_runs}
-    collector = runs["PR-M-S-SUITE-WC-DRAIN"]
-    start, south_fall, south = 116.5, 3.9, 36.406
-
-    for tag, station, expected in (("PR-M-S-SUITE-LAV-DRAIN", 246.0, 115.814),
-                                   ("PR-M-S-SUITE-TUB-DRAIN", 228.0, 113.886)):
-        travelled = 252.406 - station
-        invert = start - south_fall * (travelled / south)
-        assert invert == pytest.approx(expected, abs=0.001)
+    for tag, parent_at, expected in (
+            ("PR-M-S-SUITE-TUB-DRAIN", 115.7 - 3.1 * (18 / 30), 113.84),
+            ("PR-M-S-SUITE-LAV-DRAIN", 115.85 - 0.2 * (5.5 / 8), 115.7125)):
+        assert parent_at == pytest.approx(expected, abs=0.001)
         arrival = _in(runs[tag].z_m[-1])
-        assert arrival > invert
-        assert arrival - invert < 1.0, tag
-    del collector
+        assert arrival > parent_at
+        assert arrival - parent_at < 1.0, tag
 
 
 # --- §3 the bay ------------------------------------------------------------------------

@@ -2,9 +2,9 @@
 
 MN 4714 (UPC) 1002.2 measures the developed length from the trap weir to the vent, against
 Table 1002.2 (``resolve/plumbing_tables.TRAP_ARM_MAX_IN``); 908 lets a legal WET VENT end it
-too. ``mep.trap_arm_developed`` wraps :func:`developed_arm` in a Finding, and
-``routing``'s arm-and-vent search closes an arm only where :func:`grade_wet_vent` or a true
-vent tee would, so the router and the check cannot disagree.
+too. ``mep.trap_arm_length`` wraps :func:`developed_arm` in a Finding; the router reads the
+same walk, wet vents graded, through :func:`arm_is_vented` and :func:`grade_hypothetical_tie`,
+so the router and the check cannot disagree.
 
 A vent tee is a serving VENT run's endpoint on a drain segment in 3D (within
 ``TEE_TOL_M``). The walk starts at the fixture's most upstream serving drain, follows it
@@ -18,6 +18,7 @@ Wet-vent data in: ``fx`` maps fixture tag -> ``(leaf drain run, DFU, plan symbol
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.plumbing_tables import (
@@ -131,6 +132,67 @@ def grade_wet_vent(child: str, parent: str, join: Order, drains: dict[str, list]
     return (not bad), (f"{sec}: " + ("; ".join(bad) if bad else f"ok for {dfu:g} DFU"))
 
 
+#: A floor-outlet fixture's port this close over its storey datum is at the floor, and its
+#: 1 1/2" P-trap hangs just under the subfloor, outlet this far under the datum (top of
+#: joists): its arm lies in the bay, not through the plates (``mep_drain_routing_basis`` §14).
+FLOOR_OUTLET_M = 6 * M_PER_IN
+UNDER_FLOOR_WEIR_M = 3 * M_PER_IN
+_FLOOR_OUTLETS = ("tub", "shower", "kohler-underscore", "floor-drain")
+
+
+def under_floor_weir_m(model, fixture: str, datum_m: float, port) -> float | None:
+    """A tub, shower or floor drain's under-floor trap weir, or None: the port is the weir.
+
+    ``port`` is storey-relative. A water closet traps in its bowl and a sink in its cabinet,
+    so neither is ever lowered, wherever its port is authored."""
+    types = {t.tag: t.plan_symbol for t in model.plan.library.fixture_types}
+    symbol = types.get(getattr(model.plan.by_tag(fixture), "type_ref", None)) or ""
+    if port is None or port[2] > FLOOR_OUTLET_M or not symbol.startswith(_FLOOR_OUTLETS):
+        return None
+    return datum_m - UNDER_FLOOR_WEIR_M
+
+
+def trap_weir_m(model, fixture: str, datum_m: float, port, arm: list[Point3]) -> float:
+    """The weir a graded arm starts from, for the checks: the drain point; a floor outlet's
+    under-floor trap on a framed floor (:func:`under_floor_weir_m`); and on a pour slab, where
+    the trap is set in the fill at whatever depth the arm wants, the foot of the authored
+    plumb drop under the drain point."""
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.resolve.slab_clip import floor_outline
+    from typehaus.resolve.solid_categories import is_pour_slab
+
+    weir = under_floor_weir_m(model, fixture, datum_m, port)
+    if weir is None:
+        return arm[0][2]
+    here = Point(arm[0][:2])
+    if any(is_pour_slab(s.category) and len(s.outline) >= 3
+           and abs(s.z1_m - datum_m) <= FLOOR_OUTLET_M
+           and Polygon(floor_outline(model, s)).contains(here) for s in model.solids):
+        foot = arm[0]
+        for p in arm[1:]:
+            if math.dist(p[:2], foot[:2]) > 1e-6:
+                break
+            foot = p
+        return foot[2]
+    return weir
+
+
+def fixture_rim_m(model, fixture: str) -> float | None:
+    """The flood rim: the type's ``flood_rim_height`` over the body's base, else the body's
+    top, which no rim exceeds (conservative for UPC 905.3's 6" line); None where the body
+    states no height."""
+    element = model.plan.by_tag(fixture)
+    uid = getattr(element, "uid", None)
+    obj = next((o for o in model.canvas_objects if o.uid == uid), None)
+    if obj is None:
+        return None
+    ftype = next((t for t in model.plan.library.fixture_types
+                  if t.tag == getattr(element, "type_ref", None)), None)
+    rim = getattr(ftype, "flood_rim_height", None)
+    return obj.body_z1_m if rim is None else obj.body_z0_m + rim.meters
+
+
 #: An inlet (vent end or child drain) meets a drain inside its bore plus this — an
 #: upper-half entry is on the pipe, which ``mep.drain_tie_in`` grades on its own.
 TEE_TOL_M = 0.5 * M_PER_IN
@@ -224,6 +286,29 @@ def developed_arm(start_run: str, drains: dict[str, list[Point3]], radii: dict[s
     return None, "", gap, notes
 
 
+def walk_to(start_run: str, drains: dict[str, list[Point3]], radii: dict[str, float],
+            length_m: float) -> Point3:
+    """The point :func:`developed_arm`'s walk stands at ``length_m`` downstream: the tee."""
+    run, index, t0, left = start_run, 0, 0.0, length_m
+    visited: set[str] = set()
+    while run not in visited:
+        visited.add(run)
+        pts = drains[run]
+        for i in range(index, len(pts) - 1):
+            a, b = pts[i], pts[i + 1]
+            start = t0 if i == index else 0.0
+            span = (1.0 - start) * math.dist(a, b)
+            if left <= span + 1e-9:
+                t = start + (left / math.dist(a, b) if span > 0 else 0.0)
+                return tuple(a[k] + t * (b[k] - a[k]) for k in range(3))
+            left -= span
+        parent = drain_parent(pts[-1], run, drains, radii)
+        if parent is None:
+            return pts[-1]
+        run, index, t0 = parent
+    return drains[run][-1]
+
+
 def arm_leaves(serving: list, point, drains, radii) -> list:
     """Serving drains by distance from the fixture's drain point, most upstream only:
     ``[((dist, tag), run), ...]`` — a run no other serving drain ends on."""
@@ -234,27 +319,70 @@ def arm_leaves(serving: list, point, drains, radii) -> list:
                                drains[r.tag][0][1] - point[1]), r.tag), r) for r in leaves)
 
 
-def arm_is_vented(model, fixture: str, drain_point) -> bool:
-    """Whether ``fixture``'s authored arm already meets a vent within Table 1002.2.
+@dataclass(frozen=True)
+class WetVentData:
+    """The model's drains read once for :func:`developed_arm` with wet vents graded.
 
-    The check's own walk (``mep.trap_arm_developed``), wet vents ungraded: a wet-vented
-    fixture reads as unvented here, so the router offers it a vent rather than skip one.
+    ``fx`` is ``grade_wet_vent``'s fixture table; ``vent_ends`` maps a fixture to the ends of
+    the vents whose ``serves`` names it — the only vents the check walks for that fixture.
     """
-    from typehaus.resolve.plumbing_tables import trap_arm_limit_in
+
+    drains: dict[str, list[Point3]]
+    radii: dict[str, float]
+    fx: dict[str, Fx]
+    vent_ends: dict[str, list[Point3]]
+    all_vent_ends: list[Point3]
+
+
+def wet_vent_data(model) -> WetVentData:
+    """The check's and the router's one reading of the drains, vents and fixture loads."""
+    from typehaus.resolve.fixture_units import fixture_units
+    from typehaus.resolve.mep_sleeves import _expected_drain_point
 
     drains = {r.tag: pts for r in model.pipe_runs
               if r.system == "drain" and (pts := run_points(r)) is not None}
     radii = {r.tag: r.diameter_m / 2.0 for r in model.pipe_runs if r.tag in drains}
+    units = {u.tag: u for u in fixture_units(model.plan)}
+    vent_ends: dict[str, list[Point3]] = {}
+    all_ends: list[Point3] = []
+    for r in model.pipe_runs:
+        if r.system == "vent" and (pts := run_points(r)):
+            all_ends += [pts[0], pts[-1]]
+            for tag in r.serves:
+                vent_ends.setdefault(tag, []).extend((pts[0], pts[-1]))
+    fx: dict[str, Fx] = {}
+    for storey in model.plan.storeys:
+        for f in model.plan.storey_elements(storey.tag):
+            row, pt = units.get(f.tag), _expected_drain_point(model, f.tag)
+            serv = [r for r in model.pipe_runs
+                    if r.system == "drain" and f.tag in r.serves and r.tag in drains]
+            if f.element_kind == "Fixture" and row and row.dfu and pt and serv:
+                fx[f.tag] = (arm_leaves(serv, pt, drains, radii)[0][1].tag, row.dfu,
+                             row.symbol, storey.tag)
+    return WetVentData(drains, radii, fx, vent_ends, all_ends)
+
+
+def arm_is_vented(model, fixture: str, drain_point,
+                  data: WetVentData | None = None) -> tuple[bool, str]:
+    """``(vented, what vents it)``: the check's own walk, wet vents graded under 908.
+
+    A vent named in ``serves`` must also be reached within Table 1002.2; ``what`` is
+    :func:`developed_arm`'s verdict ("a vent tee", or the wet vent and its 908 grade).
+    """
+    from typehaus.resolve.plumbing_tables import trap_arm_limit_in
+
+    data = data or wet_vent_data(model)
     serving = [r for r in model.pipe_runs
-               if r.system == "drain" and fixture in r.serves and r.tag in drains]
-    vents = [r for r in model.pipe_runs if r.system == "vent" and fixture in r.serves]
-    if drain_point is None or not serving or not vents:
-        return False
-    starts = arm_leaves(serving, drain_point, drains, radii)
+               if r.system == "drain" and fixture in r.serves and r.tag in data.drains]
+    ends = data.vent_ends.get(fixture, [])
+    if drain_point is None or not serving or not ends:
+        return False, ""
+    starts = arm_leaves(serving, drain_point, data.drains, data.radii)
     if starts[0][0][0] > START_TOL_M:
-        return False
+        return False, ""
     run = starts[0][1]
     limit_in = trap_arm_limit_in(run.diameter_m)
-    ends = [p for r in vents if (pts := run_points(r)) for p in (pts[0], pts[-1])]
-    arm_m, _what, _gap, _notes = developed_arm(run.tag, drains, radii, ends)
-    return arm_m is not None and limit_in is not None and arm_m / M_PER_IN <= limit_in + 1e-6
+    arm_m, what, _gap, _notes = developed_arm(run.tag, data.drains, data.radii, ends,
+                                              (data.fx, fixture))
+    ok = arm_m is not None and limit_in is not None and arm_m / M_PER_IN <= limit_in + 1e-6
+    return ok, (f"{arm_m / M_PER_IN:.0f}\" to {what}" if ok else "")

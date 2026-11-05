@@ -50,8 +50,9 @@ def test_catlin_vents_all_pass_the_code_check(catlin_model_ro) -> None:
     """Note §3: nothing in this house drops or sags on its way to a terminal."""
     findings = _grade(catlin_model_ro)
     # includes powder basin and local kitchen protecting vents, and since 2026-11-01 the
-    # five trap-arm risers in plan/mep_vent_tees.py, and since 2026-11-02 the C6-E7 vent tees
-    assert len(findings) == 28
+    # five trap-arm risers in plan/mep_vent_tees.py, and since 2026-11-02 the C6-E7 vent tees,
+    # and since 2026-11-05 the BATH2 tub's and the suite lav's and tub's
+    assert len(findings) == 31
     assert all(f.result is Result.PASS for f in findings)
     assert all(f.code_ref == "MN Plumbing Code (ch. 4714) 905.1" for f in findings)
 
@@ -104,21 +105,22 @@ def test_bath2_vent_is_the_interpolated_branch_and_both_branches_agree(
 
 
 def test_four_runs_clear_the_house_grade(catlin_model_ro) -> None:
-    """The three original graded vents plus the local kitchen protecting vent clear 1/8 inch/ft."""
+    """Every vent clears 1/8 inch/ft but the attic bar's header, which MN 905.3's rim line and
+    the stack tee pin to ~0.1 (2026-11-05)."""
     findings = _margin(catlin_model_ro)
     assert _MIN_VENT_GRADE_IN_PER_FT == 0.125
     plain = [f for f in findings if not f.message.startswith("ADVISORY — ")]
     assert {t for f in plain for t in f.element_tags} == {
-        "PR-A-STUBATH-VENT", "PR-A-BAR-VENT", "PR-B-BATH-VENT", "PR-M-KITCH-LOCAL-VENT",
+        "PR-B-BATH-VENT", "PR-M-KITCH-LOCAL-VENT",
         "PR-A-STUBATH-LAV-REVENT", "PR-M-BATH2-LAV-VENT", "PR-A-STUBATH-SH-VENT",
         "PR-A-STUBATH-WC-VENT", "PR-S-VANITY-VENT", "PR-S-BATH1-LAV-VENT",
         "PR-B-BATH-LAV-VENT", "PR-B-BATH-WC-VENT", "PR-B-SAUNA-FD-VENT",
-        "PR-M-BATH2-WC-VENT", "PR-S-BATH1-WC-VENT", "PR-S-BATH1-SH-VENT",
+        "PR-S-SUITEBATH-WC-VENT", "PR-S-SUITEBATH-LAV-VENT", "PR-S-SUITEBATH-TUB-VENT",
+        "PR-S-BATH1-WC-VENT", "PR-S-BATH1-SH-VENT",
         "PR-A-STUBATH-SH-TEE"}
     assert '2.217"/ft' in _for(findings, "PR-B-BATH-VENT").message
-    assert '0.218"/ft' in _for(findings, "PR-A-STUBATH-VENT").message
-    # 0.125" over 6.26" since the riser moved onto the trap outlet (2026-11-01)
-    assert '0.240"/ft' in _for(findings, "PR-A-BAR-VENT").message
+    assert '0.097"/ft' in _for(findings, "PR-A-STUBATH-VENT").message
+    assert _for(findings, "PR-A-BAR-VENT").message.startswith("ADVISORY — ")
     assert all(f.result is Result.PASS for f in findings), "advisory never FAILs"
 
 

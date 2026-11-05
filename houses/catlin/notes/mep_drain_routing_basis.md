@@ -59,23 +59,30 @@ drop, east in its bay to the x=144 lane, south across the trusses, east onto the
 (2026-10-26: the south leg moved 134.81 → 144 to clear the truss webs; 2026-10-30: the flange
 moved 1.781" north onto the Aquia IV's 12" rough-in, its `FX-TOTO-AQUIA-IV` DRAIN port, and
 the head rose 1/4" so the longer south leg still clears `DU-M-ERV-R-STUDY` at y=242.3).
+**2026-11-05:** it now loops north under `W-S-SN3` (y=266.25) before the x=144 lane so its
+vent rises plumb from the crown; both legs share the 137.5"-150.5" web opening.
 
 **`PR-M-S-BATH1-WC-DRAIN` (2026-10-31).** `FX-S-BATH1-WC` moved 1.78" west onto `W-S-W1`, so
 its flange is at x=18 1/2", the 12" rough-in. The closet bend now also offsets 1.78" east,
 back to x=20.278": on x=18 1/2" the south leg sat on `FS-S-WEST`'s 1'-5 1/2" truss web. Every
 invert and the downstream legs are unchanged.
 
+As authored since 2026-11-05 (the loop north; it was 9.19" east, 36.406" south, 6" east):
+
 | leg | from → to | plan length | fall | slope |
 |---|---|---|---|---|
 | flange drop | (134.81, 252.406) 120.75 → 116.75 | 0 | 4.0" | vertical |
-| east | → (144, 252.406) 116.5 | 144 − 134.81 = 9.19" = 0.7658 ft | 0.25" | 0.326"/ft |
-| south | → (144, 216) 112.6 | 252.406 − 216 = 36.406" = 3.0338 ft | 3.9" | 1.286"/ft |
-| east | → (150, 216) 111.0 | 150 − 144 = 6" = 0.5 ft | 1.6" | 3.2"/ft |
+| east | → (139.5, 252.406) 116.65 | 139.5 − 134.81 = 4.69" | 0.10" | 0.256"/ft |
+| north | → (139.5, 266.25) 116.35 | 266.25 − 252.406 = 13.844" | 0.30" | 0.260"/ft |
+| east | → (144, 266.25) 116.25 | 144 − 139.5 = 4.5" | 0.10" | 0.267"/ft |
+| south | → (144, 246) 115.7 | 266.25 − 246 = 20.25" | 0.55" | 0.326"/ft |
+| south | → (144, 216) 112.6 | 246 − 216 = 30" | 3.1" | 1.240"/ft |
+| east | → (150, 216) 111.0 | 150 − 144 = 6" | 1.6" | 3.2"/ft |
 
-Developed plan length 51.596" = 4.2997 ft; total fall 5.75"; **mean 1.337"/ft**, and the
-flattest segment is 0.326"/ft against ch. 4714 (UPC) 708.0's 0.25"/ft minimum, which asks
-1.0749" of it. The surplus is in the total (5.75 − 1.0749 = 4.675"), not in the first leg:
-that 9.19" holds +0.076"/ft, which is what `mep.drain_slope_margin` reports. (2026-09-26: the tie dropped 112.0 → 111.0 so the attic branch's street
+Developed plan length 79.284" = 6.607 ft; total fall 5.75"; **mean 0.870"/ft**, and the
+flattest segment is 0.256"/ft against ch. 4714 (UPC) 708.0's 0.25"/ft minimum, which asks
+1.652" of it. The surplus is in the total (5.75 − 1.652 = 4.098"), not in the first leg:
+that 4.69" holds +0.006"/ft, which is what `mep.drain_slope_margin` reports. (2026-09-26: the tie dropped 112.0 → 111.0 so the attic branch's street
 sanitary tee can spigot into this branch's combo, 3 1/2" apart — Charlotte Pipe
 SUB-PAC-PVC-DWV, parts 501 and 403.) `mep.drain_slope` grades the flattest and reports it.
 
@@ -103,30 +110,28 @@ the number has been read the other way. It is measured to the stack **head** at 
 because that is the arrival a *search* must assume before it knows where on the barrel the
 tie will land. The authored run tied at **112.0** (111.0 since 2026-09-26), 3.5" lower, so what the pipe as
 drawn holds is **3.062" of surplus fall** in that world (0.779"/ft flattest then; the
-current run's surplus is §2's 4.675", spent mostly past its first leg). `mep.drain_slope_margin` is the check that reports the build number; `slack_in` is
+current run's surplus is §2's 4.098", spent mostly past its first legs). `mep.drain_slope_margin` is the check that reports the build number; `slack_in` is
 an ordering key and reports the search number. Had the stack head stayed at 115.5 with the
 collector tying there, rather than at 112 on the barrel below it, there would have been 1/16"
 in hand — which is exactly what makes 0.0622" the right *ordering* number and the wrong
 *margin* number.
 
-**The two 1 1/2" arms**, each tying onto the collector's south leg rather than onto the stack
-(two wyes 18" apart on a 3" beats three pipes at one point):
+**The two 1 1/2" arms** (since 2026-11-05): the tub's ties onto the collector's south leg, and
+the lav's onto the tub's, each fixture with its own vent tee at the top of its drop:
 
-| arm | route | plan length | start → end | flattest |
-|---|---|---|---|---|
-| LAV | (165.5, 268) ↓ → (165.5, 246) → (144, 246) | 22" + 21.5" = 3.625 ft | 117.5625 → 116.2 | 0.307"/ft |
-| TUB | (197.615, 261.125) ↓ → (195, 261.125) → (195, 228) → (144, 228) | 2.615" + 33.125" + 51" = 7.2283 ft | 117.4375 → 114.3 | 0.308"/ft |
+| arm | route | start → end | ties onto |
+|---|---|---|---|
+| LAV | (165.5, 268) tee 141.43 ↓ 116.2 → (165.5, 264) | 141.43 → 115.85 | the tub arm, at x = 165.5 |
+| TUB | (197.615, 264) tee 117.38 → (163, 264) → (163, 228) → (144, 228) | 117.38 → 114.45 | the collector, at y = 228 |
 
-Each end elevation is checked against the collector's own **centreline** at that station
+Each end elevation is checked against its parent's own **centreline** at that station
 (`pipe_invert_at` interpolates the authored elevations, and an authored elevation is a
-centreline — see `model/mep.py`). An arm entering in the collector's upper half is an
-ordinary side entry; `mep.drain_tie_in` grades it. That station is
-the interpolation along the south leg as authored: at y=246 the collector reads
-116.5 − 3.9 × (6.406/36.406) = 115.814, and the arm arrives at 116.2 — **0.386" above
-it**, a side entry into the upper half of the 3". At y=228 it reads
-116.5 − 3.9 × (24.406/36.406) = 113.886 against the arm's 114.3, **0.414" above**. Both are inside `_TIE_IN_INVERT_TOL_M` (1"), which is what keeps
-`drain_tie_ins` linking them and `accumulated_serves` rolling the load up: 13 DFU on the
-stack, 48 still on `PR-B-MAIN-DRAIN`'s 4".
+centreline — see `model/mep.py`). An arm entering in the parent's upper half is an ordinary
+side entry; `mep.drain_tie_in` grades it. At y=228 the collector reads
+115.7 − 3.1 × (18/30) = 113.84 against the tub arm's 114.45, **0.61" above**; at x=165.5 the
+tub arm reads 115.85 − 0.2 × (5.5/8) = 115.7125 against the lav's 115.85, **0.1375" above**.
+Both are inside `_TIE_IN_INVERT_TOL_M` (1"), which keeps `drain_tie_ins` linking them and
+`accumulated_serves` rolling the load up.
 
 ---
 
@@ -501,7 +506,7 @@ gravity search starts from the take-offs, the arm walked to each prepended.
 
 **Already vented?** `PR-S-SUITEBATH-VENT` names the LAV in `serves`, but naming is not
 reaching: the check's own walk (`resolve/mep_trap_arm.arm_is_vented`, the same one
-`mep.trap_arm_developed` grades) finds no vent within 30" of the trap, so the router
+`mep.trap_arm_length` grades) finds no vent within 30" of the trap, so the router
 searches one.
 
 **The vent.** UPC 904: half the drain, never under 1 1/4" — so 1 1/4", OD 1.660", radius
@@ -527,6 +532,9 @@ off the trap. The take-off at (98", 216") rises 21.69" to the plate and on up th
 into `PR-B-HW-WASH`, which crosses the cavity at 39.23"..44.77", **61"** over the arm.
 Refused with exactly that; the vent air of the finished bath (ceiling 107.5") is hard,
 so the riser cannot step out of the wall around it. Fix the supply, and the vent rises.
+**2026-11-05:** both closed in the house without moving a supply — the suite lav tees 3 1/4"
+from its trap and the BATH2 tub at W-M-BA2E2 (y=204); this section is the search's oracle as
+it stood (DESIGN-LOG, "905 vents").
 
 `tests/test_routing_trap_vent.py` pins the two rules on a hand-built ladder: with no arm the
 cheap route drops at the trap; with a 3.5 ft arm and take-offs at 2, 3 and 4 ft, the one at
@@ -762,6 +770,64 @@ nothing: every node keeps a head-feasible band and the 1.5M labels are the front
 fragments, not dead ends. The same tree's searches now share the heel memo and the space's
 `reuse` memo (one size group, one set of hard prisms), and the label frontier compares
 unrolled; routes and refusals are byte-identical before and after.
+
+---
+
+## 14. The arm at the trap, the take-off table, and a wet vent as a goal (2026-11-05)
+
+**Where the arm starts.** A lavatory's trap is in the wall at its stub-out, so its weir is the
+port. A tub, shower or floor drain whose port sits within 6" of its storey datum traps UNDER
+the floor: a 1 1/2" P-trap hung just under the subfloor has its outlet about 3" below the top
+of joists (`resolve/mep_trap_arm.under_floor_weir_m`). The arm is laid from there, not from the
+port — at the port (+1.75" on FX-M-BATH2-TUB) the arm runs through W-M-BA2E's sole plate and
+the tub-deck knee walls, and the arm reaches no wall at all. On a pour slab the trap is set in
+the fill at the arm's own height, so the checks read the foot of the authored drop instead
+(`trap_weir_m`).
+
+**(a) FX-M-BATH2-TUB by hand.** Main datum 0; weir 0 - 3 = **-3.00"**. The trap at
+(78.49", 215.18") to W-M-BA2E2's station x = 98": 98 - 78.49 = 19.51" east and 0.65" north,
+**20.2"** Manhattan (the lattice's best is 21.9"). At 1/4"/ft over 21.9": 21.9 / 12 x 0.25 =
+**0.456"**, so the tee is at -3.46" and the arm is legal against 42" (Table 1002.2, 1 1/2").
+The drain then drops plumb at the tee to the remainder's profile and runs on to the 4" main
+at -21.69" — the drop is AFTER the vent, which is what a plumber does and what the old
+plane-at-the-tie profile drew the other way round (a 23" S-trap at the tub).
+The riser at x = 98" meets the I-joist blocking under the wall line (its top flange from
+-1 3/8", less the vent's inflation): a flange is never cut, so that station is closed. The next
+candidate, W-M-CLN's station (100.64", 216"), arm ~25", rises clear until the laundry cold
+supply `PR-B-CW-WASH` crosses the cavity, ~35" up, with `PR-B-HW-WASH` behind it — C4 E12's
+pair. Lifting either alone opens nothing. The house closed it a third way (2026-11-05): the
+arm crosses joist 13's web to a tee under W-M-BA2E2 at (98", 204"), 27", where the bay has no
+block, and the laundry supplies stayed put (`DESIGN-LOG.md`, "905 vents").
+
+**The take-off table.** A refusal lists every candidate (`cli/route_takeoff_table`): station,
+wall, arm length, and the first hard prism a plumb riser from the arm's own invert meets, the
+prisms the take-off stands in pardoned (as `graph.build_graph` pardons them); then framing
+(`members.riser_blocker`). Those blockers join the refusal, so `--counterfactual` lifts them —
+and it lifts them in the VENT lattice too, which the drain's `touch` never reached.
+
+**(b) A wet vent as the arm's goal.** UPC 908.2 (MN unamended; DLI "Horizontal Wet Venting";
+PB0225 on sizing): a bathroom group on one floor may be wet-vented through the dry-vented
+lavatory's drain, one wet-vented arm upstream of the dry-vent connection, the water closet
+last. The check's walk (`developed_arm`) recognises a wet vent where a dry-vented drain JOINS
+the run the arm is walking downstream of the arm's own entry — so the wet vent is modelled as
+the tub's run carrying on to the WC, with the lav's short drain joining it at the lav's tee.
+An arm joining the lav drain itself never meets that drain's (upstream) vent tee.
+
+Sizing, by Table 702.1 and 908.2.2: lav 1 + tub 2 = **3 DFU, so 2"**; with the WC on the wet
+length, 1 + 2 + 3 = **6 DFU, so 3"**, the whole length (PB0225). The dry vent at the lav is
+1 1/2" (Table 703.2 holds 8 DFU at 1 1/2"; 1 1/4" carries 1). Order: the suite's WC branch
+today takes the WC at y = 252.4", upstream of the lav (y = 246) and tub (y = 228) ties — the
+WC discharges first and 908.2.4 refuses it. Re-ordered (tub, then lav, then WC), it passes.
+The tub's arm from the W&O at (197.615", 261.125") west to the lav's tee near x = 165.5" is
+32.1" plan, under 42". The house did not take it (2026-11-05): every lane from the lav toward
+the tub crosses CD-M-DATA-KITCH, so each suite fixture has its own dry vent instead.
+
+**The hand ladder** (`tests/test_routing_trap_vent.py`): collector C falls 1.5" over 6' south;
+L (the lav, 1 1/2") joins it at y = 0 with its vent a sixth of the way down; the tub's arm runs
+18" west to C at y = 1.5' and 18" down C to L's join: **36"**, inside 42". DFU 6, so 3" is
+wanted and L is upsized to 3"; with the WC joining at y = 0.5' (between the tub and L) the
+same branch is refused, 908.2.4 and two wet-vented drains upstream. A wet goal is seeded at
+the arm's cost alone, so it beats a take-off whose vent costs 30".
 
 ---
 

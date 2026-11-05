@@ -25,6 +25,8 @@ _LEGS = 8
 #: The vent lattice's margin round its terminals, feet: room to step round a member.
 _VENT_MARGIN_FT = 3.0
 _TOL_M = 0.05
+#: How far the vent lattice's nearest level may stand off the arm's invert at a take-off.
+_TEE_SNAP_M = 0.5 * M_PER_IN
 
 
 @dataclass
@@ -36,22 +38,27 @@ class VentContext:
     level_floor_m: float
     diameter_m: float
     by_drain: dict[int, int] = field(default_factory=dict)
+    space: Any = None
+    top_m: float = 0.0
 
 
 def arm_problem(model: Any, ends: Any, graph: Any, space: Any, start: int, goals: set[int],
-                grade: float, obstacles: Any, report: Any
+                grade: float, obstacles: Any, report: Any, constraints: Any = None
                 ) -> tuple[dict[str, Any], VentContext | None]:
     """``(GravityProblem keywords, vent context)``; empty keywords when no arm applies."""
+    from typehaus.cli.route_takeoff_table import takeoff_table
     from typehaus.resolve.plumbing_tables import trap_arm_limit_in
     from typehaus.routing.trades import pipe as pipe_trade
     from typehaus.routing.trap_vent import (
+        arm_invert_m,
         arm_reach,
         arm_seeds,
         takeoff_candidates,
+        takeoff_wall,
         vent_size_m,
     )
 
-    if ends.fixture is None or _already_vented(model, ends.fixture):
+    if ends.fixture is None or already_vented(model, ends.fixture):
         return {}, None
     limit_in = trap_arm_limit_in(ends.diameter_m)
     if limit_in is None:
@@ -60,37 +67,66 @@ def arm_problem(model: Any, ends: Any, graph: Any, space: Any, start: int, goals
         return {}, None
     vented = frozenset(g for g in goals if _on_stack(model, ends, graph.nodes[g]))
     stopped: dict[str, int] = {}
-    reach = arm_reach(graph, space, start, limit_ft=limit_in / 12.0, weir_m=ends.origin[2],
-                      grade_in_per_ft=grade, obstacles=obstacles, stopped=stopped)
+    reach = arm_reach(graph, space, start, limit_ft=limit_in / 12.0, weir_m=ends.weir,
+                      grade_in_per_ft=grade, obstacles=obstacles, stopped=stopped,
+                      constraints=constraints, radius_m=ends.radius_m)
     vent_d = vent_size_m(ends.diameter_m)
-    keywords: dict[str, Any] = {"seeds": arm_seeds(reach, {}, vented)}
+    wet = _wet(model, ends, graph, reach, grade, limit_in, report)
+    vented |= frozenset(wet)
+    keywords: dict[str, Any] = {"seeds": arm_seeds(reach, {}, vented), "wet": wet}
     rim = _rim_m(model, ends.fixture)
     if rim is None:
         report.notes.append(f"{ends.fixture} states no body height, so the 905.3 line (6\" "
                             "over its flood rim) is unknown and its vent is not searched")
         return keywords, None
+    vent_od = 2.0 * pipe_trade.cavity_radius_m(vent_d, "vent")
     candidates = takeoff_candidates(graph, space, reach, rise_to_m=rim + _OVER_RIM_M,
-                                    vent_od_m=2.0 * pipe_trade.cavity_radius_m(vent_d, "vent"))
+                                    vent_od_m=vent_od)
+    # Each candidate at the arm's own invert: the arm is laid at the trap, not the tie.
+    arm_z = {n: arm_invert_m(reach[n], ends.weir, grade) for n in reach}
     if not candidates:
         held = ", ".join(sorted(stopped, key=lambda t: -stopped[t])[:3])
         report.notes.append(f'no wall cavity that holds a {vent_d / M_PER_IN:g}" vent to 6" '
                             f'over the rim within {limit_in:g}" developed of the trap'
                             + (f"; the arm is held by {held}" if held else ""))
+        report.takeoffs = takeoff_table(None, graph, reach, [], arm_z, 0.0, walls={})
         return keywords, None
+    walls = {c: w.tag for c in candidates
+             if (w := takeoff_wall(space, graph.nodes[c], vent_od_m=vent_od,
+                                   rise_to_m=rim + _OVER_RIM_M)) is not None}
     context = _vent_context(model, ends, graph, space.cost, candidates, rim + _OVER_RIM_M,
-                            vent_d, report)
+                            vent_d, report, arm_z=arm_z)
+    if context is not None and not context.by_drain:
+        report.takeoffs = takeoff_table(context.space, graph, reach, candidates, arm_z,
+                                        context.top_m, walls=walls)
     if context is not None:
         keywords["seeds"] = arm_seeds(
             reach, {c: context.dist[v] for c, v in context.by_drain.items()}, vented)
     return keywords, context
 
 
-def _already_vented(model: Any, fixture: str) -> bool:
-    """The check's own arm walk: a vent named in ``serves`` must also be reached in time."""
+def _wet(model: Any, ends: Any, graph: Any, reach: dict, grade: float, limit_in: float,
+         report: Any) -> dict:
+    """The 908.2 wet-vent goals the arm reaches, kept off any wye's inlet pitch (§10)."""
+    from typehaus.cli.route_fixture_wet import wet_goals
+    from typehaus.cli.route_roots import _spaced_goals
+
+    rejected: list[str] = []
+    wet = wet_goals(model, ends, graph, reach, grade, limit_in, rejected)
+    if rejected and not wet:
+        report.notes.append("no 908.2 wet vent ends the arm: " + "; ".join(rejected[:2]))
+    kept = _spaced_goals(model, graph, set(wet), ends, report) if wet else set()
+    return {n: tie for n, tie in wet.items() if n in kept}
+
+
+def already_vented(model: Any, fixture: str) -> str | None:
+    """What already vents ``fixture``'s authored arm — the check's own walk, 908 wet vents
+    graded — or None. A vent named in ``serves`` must also be reached in time."""
     from typehaus.resolve.mep_sleeves import _expected_drain_point
     from typehaus.resolve.mep_trap_arm import arm_is_vented
 
-    return arm_is_vented(model, fixture, _expected_drain_point(model, fixture))
+    ok, what = arm_is_vented(model, fixture, _expected_drain_point(model, fixture))
+    return what if ok else None
 
 
 def _on_stack(model: Any, ends: Any, node: Any) -> bool:
@@ -108,13 +144,14 @@ def _on_stack(model: Any, ends: Any, node: Any) -> bool:
 
 
 def _rim_m(model: Any, fixture: str) -> float | None:
-    uid = getattr(model.plan.by_tag(fixture), "uid", None)
-    obj = next((o for o in model.canvas_objects if o.uid == uid), None)
-    return None if obj is None else obj.body_z1_m
+    from typehaus.resolve.mep_trap_arm import fixture_rim_m
+
+    return fixture_rim_m(model, fixture)
 
 
 def _vent_context(model: Any, ends: Any, drain_graph: Any, cost: Any, candidates: list[int],
-                  level_floor_m: float, vent_d: float, report: Any) -> VentContext | None:
+                  level_floor_m: float, vent_d: float, report: Any, *,
+                  arm_z: dict[int, float]) -> VentContext | None:
     from typehaus.routing.graph import build_graph
     from typehaus.routing.space import RoutingSpaceTooLarge, build_space
     from typehaus.routing.trades import pipe as pipe_trade
@@ -126,7 +163,7 @@ def _vent_context(model: Any, ends: Any, drain_graph: Any, cost: Any, candidates
                             f"{_STACK_REACH_M:g} m stands 6\" over {ends.fixture}'s rim")
         return None
     terminals = [(n.x, n.y, z) for c in candidates for n in (drain_graph.nodes[c],)
-                 for z in (n.z, level_floor_m)]
+                 for z in (arm_z.get(c, n.z), level_floor_m)]
     terminals += [p for _t, a, b in legs for p in (a, b)]
     try:
         space = build_space(model, radius_m=pipe_trade.radius_m(vent_d), terminals=terminals,
@@ -142,17 +179,18 @@ def _vent_context(model: Any, ends: Any, drain_graph: Any, cost: Any, candidates
         return None
     goals = _leg_nodes(graph, legs)
     dist = vent_cost_to_go(graph, goals, level_floor_m=level_floor_m)
-    context = VentContext(graph, dist, level_floor_m, vent_d)
+    top = max(p[2] for _t, a, b in legs for p in (a, b))
+    context = VentContext(graph, dist, level_floor_m, vent_d, space=space, top_m=top)
     for c in candidates:
-        d = drain_graph.nodes[c]
-        v = next((n.index for n in graph.nodes if abs(n.x - d.x) < 1e-4
-                  and abs(n.y - d.y) < 1e-4 and abs(n.z - d.z) < 1e-4), None)
-        if v is not None and v in dist:
-            context.by_drain[c] = v
+        # The lattice merges near levels: the take-off is the node nearest the arm's invert.
+        d, z = drain_graph.nodes[c], arm_z.get(c, drain_graph.nodes[c].z)
+        near = [(abs(n.z - z), n.index) for n in graph.nodes if abs(n.x - d.x) < 1e-4
+                and abs(n.y - d.y) < 1e-4 and abs(n.z - z) <= _TEE_SNAP_M]
+        if near and min(near)[1] in dist:
+            context.by_drain[c] = min(near)[1]
     if not context.by_drain:
-        report.notes.append("no take-off in reach rises clear to a vent stack"
-                            + _first_blocker(space, drain_graph.nodes[candidates[0]],
-                                             max(p[2] for _t, a, b in legs for p in (a, b))))
+        report.notes.append(f"none of the {len(candidates)} take-off(s) in reach rises "
+                            "clear to a vent stack (the take-off table below says why)")
     return context
 
 
@@ -252,32 +290,13 @@ def _on_drain(drain: list, at: tuple) -> tuple | None:
     return None
 
 
-def _first_blocker(space: Any, node: Any, top_m: float) -> str:
-    """What a plumb riser from the cheapest take-off meets first, for the refusal."""
-    z, step = node.z, 0.25 * M_PER_IN
-    while z <= top_m:
-        tag = space.blocked((node.x, node.y), z)
-        if tag is not None:
-            return (f"; the cheapest, at ({node.x / M_PER_IN:.2f}\", "
-                    f"{node.y / M_PER_IN:.2f}\"), rises into {tag} "
-                    f"{(z - node.z) / M_PER_IN:.2f}\" above the arm")
-        z += step
-    members = getattr(space, "members", None)
-    hit = None if members is None else members.riser_blocker(node.x, node.y, node.z, top_m)
-    if hit is None:
-        return ""
-    return (f"; the cheapest, at ({node.x / M_PER_IN:.2f}\", {node.y / M_PER_IN:.2f}\"), "
-            f"rises into {hit[0]}'s framing {(hit[1] - node.z) / M_PER_IN:.2f}\" above the arm "
-            "(a member no hole is allowed through, or a stud plane the vent cannot fit)")
-
-
 def vent_proposal(found: Any, drain: Any, ends: Any, target: str, suffix: str) -> Any:
     """The vent half of the pair, from the take-off the drain search closed its arm at."""
     from typehaus.routing.proposal import RouteProposal
     from typehaus.routing.trap_vent import vent_path
 
     context: VentContext = found.vent
-    if found.takeoff not in context.by_drain:
+    if getattr(found, "wet", None) is not None or found.takeoff not in context.by_drain:
         return None  # the arm reached a vented stack itself: no vent to propose
     start = context.by_drain[found.takeoff]
     nodes = vent_path(context.graph, context.dist, start,

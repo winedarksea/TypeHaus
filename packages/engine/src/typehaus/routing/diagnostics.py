@@ -194,6 +194,8 @@ class Refusal:
     #: True only when the geometry itself forecloses it; False means "not within this
     #: search", which is a statement about the search and says so.
     established: bool = False
+    #: A fixture arm's candidate take-offs, each with ``line()`` and ``payload()``.
+    takeoffs: list = field(default_factory=list)
 
     def movable(self) -> list[Blocker]:
         return [b for b in self.blockers if b.mobility is Mobility.MOVABLE]
@@ -207,6 +209,8 @@ class Refusal:
         parts = [head + "."]
         if self.shortages:
             parts.append("Short by: " + "; ".join(self.shortages) + ".")
+        if self.takeoffs:
+            parts.append("Take-offs: " + "; ".join(t.line() for t in self.takeoffs) + ".")
         if self.attempts:
             parts.append("Tried: " + "; ".join(self.attempts) + ".")
         movable = self.movable()
@@ -226,25 +230,32 @@ class Refusal:
             "blockers": [b.payload() for b in self.blockers],
             "shortages": list(self.shortages), "attempts": list(self.attempts),
             "established": self.established,
+            **({"takeoffs": [t.payload() for t in self.takeoffs]} if self.takeoffs else {}),
         }
 
 
 def refusal(space: RoutingSpace, graph: Graph, start: int, goals: set[int],
             *, target: str = "", service: str = "", shortages: tuple[str, ...] = (),
-            attempts: tuple[str, ...] = ()) -> Refusal:
+            attempts: tuple[str, ...] = (), extra_blockers: tuple[Blocker, ...] = (),
+            takeoffs: tuple = ()) -> Refusal:
     """Build the record for a search that returned nothing.
 
     Which end to probe is decided by reachability, not by guessing: a terminal that can
     reach almost nothing is walled in, and one that can reach most of the lattice has a
-    problem at the far end instead.
+    problem at the far end instead. ``extra_blockers`` are what another lattice met — a
+    fixture vent's riser — so ``--counterfactual`` may lift them too.
     """
     seen = reachable(graph, start)
     walled = len(seen) < max(8, len(graph.nodes) // 100)
     end, node = ("origin", start) if walled or not goals else ("root", min(goals))
+    found = blockers(space, graph, node)
+    for extra in extra_blockers:
+        if all(b.tag != extra.tag for b in found):
+            found.append(extra)
     return Refusal(
         target=target, service=service, end=end,
         reachable_nodes=len(seen), total_nodes=len(graph.nodes),
-        blockers=blockers(space, graph, node),
+        blockers=found, takeoffs=list(takeoffs),
         shortages=shortages, attempts=attempts,
         # Established only where the terminal is sealed in by things that cannot move: with
         # a movable run in the way, or an unexplored lattice, "impossible" is unearned.

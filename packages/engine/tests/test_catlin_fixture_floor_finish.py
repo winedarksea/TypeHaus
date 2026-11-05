@@ -66,7 +66,7 @@ def test_tub_deck_cutout_and_aprons_do_not_restore_tile(catlin_model_ro):
 def test_takeoff_and_membranes_bill_only_retained_floor(catlin_model_ro):
     rows = floor_finish_rows(catlin_model_ro)
     for finish, net, order in (("catlin-tile-opera-blue", 39.5, 48),
-                                ("catlin-tile-carrara", 59.9, 69),
+                                ("catlin-tile-carrara", 60.1, 70),  # FO-S-BATH1-WC-DRAIN left the floor, 2026-11-05
                                 ("catlin-tile-kaleo-brick", 34.2, 40)):
         row = next(row for row in rows if row["finish"] == finish)
         assert row["net_area_sqft"] == net

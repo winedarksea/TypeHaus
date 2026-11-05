@@ -69,6 +69,10 @@ class Route:
     start_m: float | None = None
     #: Where a fixture's trap arm closed with a vent take-off (``gravity_search``), or None.
     takeoff: int | None = None
+    #: That take-off's plan point: the arm is laid off the weir to here, then drops.
+    takeoff_xy: tuple[float, float] | None = None
+    #: The arm ended on a 908.2 wet vent instead (``resolve/mep_wet_tie.WetTie``), or None.
+    wet: Any = None
     #: The vent side of a fixture's pair (``cli/route_fixture_vent.VentContext``), or None.
     vent: Any = None
 

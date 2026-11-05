@@ -185,3 +185,30 @@ was routed into the radon pipe. The root is now the VENT riser's own leg, clippe
 vent's own elevation band plus 24" of headroom (`_STACK_HEADROOM_M`). The radon riser stays
 a hard prism, and a terminal's one-step leniency covers only the prisms the terminal itself
 stands in (`routing/graph.build_graph`).
+
+## 6. `mep.vent_connection` — one vent where it leaves its drain: `PR-M-LSINK-VENT` (2026-11-05)
+
+The laundry sink's drain `PR-B-LSINK-DRAIN` (2") leaves the drain point at (144", 226.63", 0)
+and drops plumb to -15.4" before running west to the 4" main. Its vent's first vertex is
+(144", 226.63", -15.2") — on the drop, 0.2" above the bend — and its first leg runs to
+(156", 216", -14.9"): 16.0" of plan for 0.3" of rise.
+
+1. **905.2** (invert above the centreline; the first leg rising at 45 degrees or steeper): the
+   end is on the drop's own centreline, but 0.3" of rise over 16.0" is a level leg — a side
+   inlet. **Fails.**
+2. **MN 905.3** (plumb to 6" over the flood rim before any offset): the rim is the sink body's
+   top, 44.03"; the line is 50.03". The first leg flatter than 45 degrees starts at -15.2",
+   **65.2"** under it. **Fails.**
+3. **905.5 / 1002.4** (the vent opening not below the weir): a sink traps in its cabinet, so the
+   weir is the drain point, z = 0. The tee is 15.2" under it against the arm's 2" diameter —
+   an S-trap. **Fails.** (The weir is `resolve/mep_trap_arm.trap_weir_m`: a tub, shower or
+   floor drain at the floor would trap 3" under a framed floor, or at the foot of its drop on
+   a slab.)
+4. **MN 1002.2** (twice the arm's diameter): the arm walked from the drain point to the tee is
+   15.2" + ~0" = 15.2", over the 4" minimum. Passes.
+
+The fix is a san tee at the TOP of the drop: the vent leaves plumb from the arm's level at
+z = 0 and rises to 50.03" before it offsets, and the drain drops below the tee. All four rules
+then pass. The check is ADVISORY until every vent
+in the house reads PASS.
+

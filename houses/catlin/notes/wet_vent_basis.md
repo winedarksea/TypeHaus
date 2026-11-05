@@ -1,6 +1,6 @@
 # Wet vent basis — FX-B-BATH-WC through PR-B-USINK-DRAIN
 
-Oracle for `checks/mep/wet_vent.py` (`mep.trap_arm_developed`). Worked by hand from
+Oracle for `checks/mep/wet_vent.py` (`mep.trap_arm_length`). Worked by hand from
 `plan/mep_drainage.py` and `plan/mep_lavatories.py`.
 
 ## Code read
@@ -49,7 +49,14 @@ in the sense of 1002.2** — the 116" figure is moot. `PR-B-BATH-VENT` serves th
 but does not meet the drain. A fix is house work: a true vent tee on the WC arm within 72", or a bathroom-group-only,
 3" wet vent with the WC last.
 
-**Status 2026-11-05: the fix landed.** `PR-B-BATH-WC-VENT` is a true tee on `PR-B-BATH-DRAIN` at (144", 231.3"), so the
-WC's arm is 8.55" (slab drop) + 60.5" (south to the tee) = **69.1"** against 72", and `mep.trap_arm_developed` walks 69".
+**Status 2026-11-05: the fix landed.** `PR-B-BATH-WC-VENT` is a true tee on `PR-B-BATH-DRAIN`. Since the 905 reroute it
+sits at (120", 240"), the end of the 45-degree run: the WC's arm is 8.55" (slab drop) + 27.81" (south to (144", 264")) +
+33.94" (the diagonal, 24" x sqrt 2) = **70.3"** against 72", and `mep.trap_arm_length` walks 70".
 The 116" arm and "unvented" above describe the model before that tee; the wet-vent verdict table still stands as the
 oracle for `grade_wet_vent` (the utility sink is not a legal wet vent).
+
+**The suite, 2026-11-05: considered and not built.** A 908.2 horizontal wet vent (tub, then lav,
+then WC; 6 DFU, so 3" the whole length) grades legal on paper (`mep_drain_routing_basis.md` §14),
+but the lav's drain, as the wet vent, must run flatter than 45 degrees, and every lane from it
+toward the tub crosses `CD-M-DATA-KITCH` at 115.5" under the 118.5" box rail (~0.1" margin). Each
+suite fixture takes its own dry vent instead (`DESIGN-LOG.md`, "905 vents").

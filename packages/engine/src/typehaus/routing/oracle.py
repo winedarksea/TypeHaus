@@ -22,7 +22,9 @@ from typehaus.engineering.item import Oracle
 #: exactly what the lint reports. The two that are deliberately absent are named below.
 ORACLES: dict[str, tuple[Oracle, ...]] = {
     "gravity": (Oracle(note="mep_drain_routing_basis.md", section="§2",
-                       test="tests/test_routing_oracle.py"),),
+                       test="tests/test_routing_oracle.py"),
+                Oracle(note="mep_drain_routing_basis.md", section="§14",
+                       test="tests/test_routing_trap_vent.py"),),
     "corridors": (Oracle(note="mep_drain_routing_basis.md", section="§3",
                          test="tests/test_routing_oracle.py"),
                   Oracle(note="mep_duct_routing_basis.md", section="§3",
@@ -56,6 +58,8 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
     "fitting_room": (Oracle(note="mep_drain_routing_basis.md", section="§10",
                             test="tests/test_routing_compaction.py"),),
     "trap_vent": (Oracle(note="mep_drain_routing_basis.md", section="§9",
+                         test="tests/test_routing_trap_vent.py"),
+                  Oracle(note="mep_drain_routing_basis.md", section="§14",
                          test="tests/test_routing_trap_vent.py"),),
     "rack": (Oracle(note="mep_drain_routing_basis.md", section="§12",
                     test="tests/test_routing_supply.py"),),

@@ -12,6 +12,7 @@ import typer
 
 from typehaus.cli._shared import app, console
 from typehaus.cli.cmd_route_tree import _line_nodes, _propose_tree
+from typehaus.cli.route_fixture_wet import wet_terminals
 from typehaus.cli.route_ports import terminal_refusal
 from typehaus.cli.route_proposal import one_proposal as _one_proposal
 from typehaus.cli.route_roots import hold_upstream
@@ -279,7 +280,7 @@ def route(
         model, directory, proposals, evaluations=evaluations, problems=problems,
         notices=notices, refusals=refusals, clock=clock, cost=cost, explain=explain,
         as_json=as_json, summary=summary, out_dir=out_dir)
-    if not proposals and (tree or targets):
+    if not proposals and (tree or targets) and (problems or refusals):
         raise typer.Exit(1)
 
 
@@ -297,7 +298,7 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
     (``routing/rack.py``); ``lifted`` authored runs a campaign re-lays, never obstacles.
     Every target refusal is reported; it never becomes an approximate route."""
     from typehaus.routing.alternatives import alternative_routes
-    from typehaus.routing.diagnostics import Refusal, refusal
+    from typehaus.routing.diagnostics import Refusal
     from typehaus.routing.graph import build_graph
     from typehaus.routing.space import RoutingSpaceTooLarge, build_space
     from typehaus.routing.timing import Timer
@@ -313,6 +314,13 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
             ends = hold_upstream(model, ends, target, hold, problems)
         if ends is None:
             continue
+        if ends.fixture is not None and mode == "fixture":
+            from typehaus.cli.route_fixture_vent import already_vented
+
+            # Its authored arm already meets a vent: the drain is still proposed, alone.
+            vented = already_vented(model, ends.fixture)
+            if vented:
+                notices.append(f"{target}: already vented ({vented}); no vent to search")
         if explain:
             notices.extend(ends.advice)
         terminals = [ends.origin, ends.root, *[(p[0], p[1], ends.root[2]) for p in via]]
@@ -325,6 +333,7 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
         # for most of its length.
         terminals.extend((v[0], v[1], v[2] if len(v) > 2 else ends.root[2])
                          for path in ends.root_paths for v in path)
+        terminals.extend(wet_terminals(model, ends))
         clock = Timer(target, enabled=timing is not None)
         try:
             try:
@@ -418,24 +427,11 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
             for found in found_all:
                 clock.route(found)
             if not found_all:
-                attempts = (f"{alternatives} alternative(s) asked for"
-                            if alternatives > 1 else "one search",
-                            f"{len(space.hard)} hard prism(s), "
-                            f"{len(space.corridors)} corridor(s) in the space",
-                            f"margin {margin_ft:.3g} ft"
-                            + ("" if band is None else ", pruned to the --level band"))
-                if report is not None and (report.tightest is not None or report.notes):
-                    # A gravity refusal knows something a geometric one does not: whether
-                    # the route ran out of HEAD, and where. Its number is the shortage, and
-                    # the geometric record carries it rather than replacing it — "a quarter
-                    # inch under the web fourteen feet in" and "what is standing there" are
-                    # both wanted, and the two used to be mutually exclusive.
-                    shortages = (report.sentence(),)
-                else:
-                    shortages = ()
-                refused = refusal(space, graph, start, goals, target=target,
-                                  service=str(ends.system), shortages=shortages,
-                                  attempts=attempts)
+                from typehaus.cli.route_diagnose import refuse
+
+                refused = refuse(space, graph, start, goals, target=target, ends=ends,
+                                 report=report, alternatives=alternatives,
+                                 margin_ft=margin_ft, band=band)
                 refusals.append(refused)
                 problems.append(refused.render())
                 if counterfactual and refused.movable():

@@ -1,4 +1,4 @@
-"""Wet-vent grading for ``mep.trap_arm_developed`` — MN 4714 (UPC) 908, pure of the model.
+"""Wet-vent grading for ``mep.trap_arm_length`` — MN 4714 (UPC) 908, pure of the model.
 
 The rule lives in ``resolve/mep_trap_arm`` since 2026-11-03, where the router reads it too;
 this module keeps the name the check and its tests import.

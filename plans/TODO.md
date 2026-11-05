@@ -238,8 +238,8 @@ the future.
   - [ ] Ducts are not specified: no gauge, hangers, dampers, tees/take-offs/boots, Broan port kit or duct schedule; 15 legs too short for an elbow pair. One `DuctStandard` (C4 E1).
   - [ ] ERV OA/EA/RET hold: EA and RET start on each other's Broan ports (cross-wired); `DU-ERV-OA` rises through the FO-M-ERV-OA chase under D-M-MECH's doorway, lidded only by a 3/4" fireblock that cannot be deck. Re-route with a ledgered lid. `erv_static_budget` 0.441" > 0.4" (C4 E2/E9, C2 E13).
   - [ ] Balcony fascia guard mounts: 4" bolts can't reach a block, non-stock 1.25x11.25 rim, drip through every bracket, 49 7/8" post vs Ultralox's 48". One package: 2x12 rim, double blocks, SD04964 screws (C1 E9 + C2 E2).
-  - [ ] DWV: 9 vents leave their drain horizontally at centreline (UPC 905.2 / MN 905.3); `mep.trap_arm_developed` counts a drop as arm; 2 vent tees on cleanouts (C4 E11/E13). Promoting the 3D walk to the CODE id adds 3 FAILs.
-    - FX-M-BATH2-TUB, FX-S-SUITEBATH-LAV, FX-S-SUITEBATH-TUBSH still have no 3D vent (`haus route --fixture` refuses). The suite-lav supply lane is now open; TUBSH's 1 1/2" arm develops 90" against 42" and needs re-routing first (C4 E12).
+  - [ ] DWV: `PR-M-BATH2-WC-VENT` runs level under TJI 16/17 and the CMFS01/03 seam joist at -13 1/2" (MN 905.3, under the bowl's real rim too); no 45-degree path crosses them to W-M-HS1. A headered chase in that band, or move the fixture or wall. `mep.vent_connection` stays ADVISORY until it closes (C4 E11).
+  - [ ] `PR-M-S-BATH1-TUB-DRAIN`'s arm crosses FO-S-ERV-CHASE's 2-1.75x11.875 LVL header at x 33-36 1/2" (`mep.run_through_floor_member` UNKNOWN): maker's hole chart or a re-route.
   - [ ] Exterior doors D-M-ENTRY / D-M-PORCH / D-S-BALCONY keep their RO base on the joist top, 3/4" under the subfloor (decision #110); the model keeps the subfloor under the sills, A-513.2 draws it cut back. Owner: confirm the cut-back and model a deck void per sill, or re-derive the installations (C1 E1).
   - [ ] Holes through floor framing: `PR-S-SUITEBATH-VENT` bores 9 TJI 230s 10.7" from support vs ESR-1153 Table A's 18" (move to x <= 100.7", add the rule); the 8" `DU-M-ERV-EXH-TRUNK` through 23 FS-S-WEST trusses has 0.25-0.44" spare: fabricator submittal or a 7" / twin-6" trunk (C2 E3/E4, C4 E6/E7).
   - [ ] S-102.1/.2 snow note prints 35 psf at Ct 1.0 for the unheated garage and canopy; the basis is 42 psf (Ct 1.2) + drift (C5 #3).
@@ -256,7 +256,7 @@ the future.
   - **Engineer hold, 14" north-entry pier cage (C3-E21):** PT-BW-W/-GW and PT-BW-PE/-PNE (`PIER_CONCRETE_14`, (4) #5) are 0.806% of gross, under ACI 318-19 §10.6.1.1's 1%; met only on §10.3.1.2's reduced area (0.770 in2 on 76.97 in2). EOR to confirm the basis or go to (6) #5. `notes/north_entry_piers.md` §13.
   - Broan: the derived 9 3/4" port 3-4 spacing; 8" flex on those centres. Weyerhaeuser: TJI 230 row assumes a glue-nailed subfloor. BuildBlock: BB600 course height vs the 64" stem.
   - Frigidaire TWINSPAIRKIT 1/8" seam; LG LDTS5552S side-mount with no sub-top. Carpet backing thickness (Z-bar answer holds to 0.10"); Mohawk on the 3/8" pad. WAC Roland on a flat 753 cover; DVFR1W trim stand-off. Bypass/bifold 1/2" head allowance.
-  - Plumber: the attic WC's 1 1/2" vent (UPC 904.1); basement WC re-route under the slab to W-B-BA-E; a vent lane for FX-M-BATH2-TUB (PR-B-HW-TRUNK no longer runs it; the take-off at (98", 216") sits 1.0" from PR-B-HW-WASH and 2.0" from PR-B-CW-WASH); a hall-bath WC vent in exterior W-S-W1.
+  - Plumber: the attic WC's 1 1/2" vent (UPC 904.1); basement WC re-route under the slab to W-B-BA-E.
   - Product/cost review holds (2026-11-04, `plans/catlin-product-cost-review/REPORT.md`):
     - 03-004 Simpson: HHUS410 fastener option and coating.
     - 07-001 Breezeway: the 5.9 LF guard package (product, posts, price).

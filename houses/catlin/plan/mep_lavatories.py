@@ -26,8 +26,8 @@ BASEMENT_LAV_CONNECTIONS = [
     # drop, so no S-trap — then drops through SP-B-SLAB-USINK and runs 20 3/4" south under
     # the slab onto PR-B-BATH-DRAIN's y=17'-4 3/4" leg, upper half.
     PipeRun(uid="TV31MEHNBX", tag="PR-B-USINK-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(115), inch(229.5)), pt(inch(120), inch(229.5)), pt(inch(120), inch(229.5)), pt(inch(120), inch(208.75)),),
-            elevations=(inch(16), inch(15.84375), inch(-8.25), inch(-8.8125),),
+            path=(pt(inch(115), inch(229.5)), pt(inch(120), inch(229.5)), pt(inch(120), inch(229.5)),),
+            elevations=(inch(16), inch(15.84375), inch(-9.0),),
             diameter=inch(1.5), material="pvc", serves=("FX-B-UTIL-SINK",)),
     # Stubs tee off the bath branches' W-B-STR2 drop ends (the hot carries on down to 24",
     # under the lavatory's cold terminal) and drop in the cabinet: hot at 18'-8 1/2", south
@@ -64,11 +64,15 @@ MAIN_LAV_CONNECTIONS = [
                   pt(inch(12), inch(182.375))),
             elevations=(inch(21.5), inch(21.38), inch(0.0),),
             diameter=inch(1.5), material="pvc", serves=("FX-M-BATH2-SINK",)),
+    # The tee is the top of a 1 1/2" drop in the wall (y=267.2"), so the arm develops 3 1/16"
+    # from the drain point (>= 2 x 1 1/2", MN 1002.2) and the trap weir stands 1.47" over it.
     PipeRun(uid="8THKM8NHG0", tag="PR-A-STUBATH-LAV-ARM", system=PipeSystem.DRAIN,
-            path=(pt(inch(164.625), inch(265.625)), pt(inch(164.625), inch(268)),
+            path=(pt(inch(164.625), inch(265.625)), pt(inch(164.625), inch(267.2)),
+                  pt(inch(164.625), inch(267.2)), pt(inch(164.625), inch(268)),
                   pt(inch(111.5), inch(268)), pt(inch(111.5), inch(253.375)),
                   pt(inch(115.5), inch(253.375)), pt(inch(115.5), inch(253.375))),
-            elevations=(inch(260.87), inch(260.77), inch(259.65), inch(259.34), inch(259.25), inch(240.75),),
+            elevations=(inch(260.87), inch(260.82), inch(259.35), inch(259.3), inch(258.19),
+                        inch(257.88), inch(257.79), inch(240.75),),
             diameter=inch(1.5), material="pvc", serves=("FX-A-STUBATH-LAV",)),
 
     PipeRun(uid="5DWWZMQPJQ", tag="PR-M-BATH2-LAV-HW", system=PipeSystem.WATER_HOT,
@@ -108,7 +112,7 @@ MAIN_LAV_CONNECTIONS = [
                   accessible=True, room="RM-S-BATH1", model='1/2 in. quarter-turn fixture angle stop',
                   serves=("FX-S-BATH1-LAV",)),
     PipeRun(uid="5CN18FGW1Y", tag="PR-S-SUITE-LAV-HW", system=PipeSystem.WATER_HOT,
-            path=(pt(inch(171.6), inch(268)), pt(inch(171.6), inch(266.25)), pt(inch(162.5), inch(266.25)), pt(inch(162.5), inch(264.755)),),
+            path=(pt(inch(171.6), inch(268)), pt(inch(171.6), inch(266.125)), pt(inch(162.5), inch(266.125)), pt(inch(162.5), inch(264.755)),),
             elevations=(inch(148.0), inch(148.0), inch(148.0), inch(145.5),),
             diameter=inch(0.5), material="pex",
             serves=("FX-S-SUITEBATH-LAV",)),
@@ -117,7 +121,7 @@ MAIN_LAV_CONNECTIONS = [
                   accessible=True, room="RM-S-SUITEBATH", model='1/2 in. quarter-turn fixture angle stop',
                   serves=("FX-S-SUITEBATH-LAV",)),
     PipeRun(uid="BCY1W95BMD", tag="PR-S-SUITE-LAV-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(163.2), inch(268)), pt(inch(163.2), inch(269.75)), pt(inch(168.5), inch(269.75)), pt(inch(168.5), inch(264.755)),),
+            path=(pt(inch(163.2), inch(268)), pt(inch(163.2), inch(269.875)), pt(inch(168.5), inch(269.875)), pt(inch(168.5), inch(264.755)),),
             elevations=(inch(150), inch(150), inch(150), inch(145.5),),
             diameter=inch(0.5), material="pex",
             serves=("FX-S-SUITEBATH-LAV",)),
@@ -145,7 +149,7 @@ MAIN_LAV_CONNECTIONS = [
                   serves=("FX-S-VANITY-LAV1",)),
     PipeRun(uid="KAVRX4JYTP", tag="PR-S-VANITY-LAV1-ARM", system=PipeSystem.DRAIN,
             path=(pt(inch(22.375), inch(316.245)), pt(inch(22.375), inch(318)),),
-            elevations=(inch(141.5), inch(140.5),),
+            elevations=(inch(141.5), inch(141.2),),
             diameter=inch(1.5), material="pvc",
             serves=("FX-S-VANITY-LAV1",)),
     PipeRun(uid="XTC3P8T0BG", tag="PR-S-VANITY-LAV2-HW", system=PipeSystem.WATER_HOT,
@@ -168,7 +172,7 @@ MAIN_LAV_CONNECTIONS = [
                   serves=("FX-S-VANITY-LAV2",)),
     PipeRun(uid="F85SRM3ZCE", tag="PR-S-VANITY-LAV2-ARM", system=PipeSystem.DRAIN,
             path=(pt(inch(52.375), inch(316.245)), pt(inch(52.375), inch(318)),),
-            elevations=(inch(141.5), inch(139.875),),
+            elevations=(inch(141.5), inch(140.55),),
             diameter=inch(1.5), material="pvc",
             serves=("FX-S-VANITY-LAV2",)),
     # Both also feed FX-A-STUBATH-SH, whose pair tees on at the stop corners
@@ -213,14 +217,18 @@ MAIN_LAV_CONNECTIONS = [
                   pipe_ref="PR-A-BAR-LAV-CW", position=pt(inch(155.5), inch(201.74)), elevation=inch(264.87000000),
                   accessible=True, room="RM-A-STUDIO", model='1/2 in. quarter-turn fixture angle stop',
                   serves=("FX-A-STUDIO-BAR-SINK",)),
+    # From the arm's tee at the top of its drop (y=267.2") on a 45 deg+ leg into the cavity's
+    # axis, plumb to 283 1/2" (6" over the 36" rim, MN 905.3), then west to PR-A-STUBATH-VENT.
     PipeRun(uid="TQJNK78P3P", tag="PR-A-STUBATH-LAV-REVENT", system=PipeSystem.VENT,
-            path=(pt(inch(164.625), inch(268)), pt(inch(164.625), inch(268)), pt(inch(115.5), inch(268)),),
-            elevations=(inch(260.77), inch(283.5), inch(284.1213),),
+            path=(pt(inch(164.625), inch(267.2)), pt(inch(164.625), inch(268)),
+                  pt(inch(164.625), inch(268)), pt(inch(115.5), inch(268)),),
+            elevations=(inch(259.35), inch(260.15), inch(283.5), inch(284.1213),),
             diameter=inch(1.5), material="pvc",
             serves=("FX-A-STUBATH-LAV",)),
+    # Leaves the stub-out on a 45 (UPC 905.2), between the two stops, then plumb in W-M-W3.
     PipeRun(uid="JF3FFPAR08", tag="PR-M-BATH2-LAV-VENT", system=PipeSystem.VENT,
             path=(pt(inch(6.51), inch(182.25)), pt(inch(2.5), inch(182.25)), pt(inch(2.5), inch(182.25)), pt(inch(2.5), inch(268)), pt(inch(58), inch(268)),),
-            elevations=(inch(21.5), inch(21.55), inch(88), inch(88.91), inch(89.51),),
+            elevations=(inch(21.5), inch(25.6), inch(88), inch(88.91), inch(89.51),),
             diameter=inch(1.5), material="pvc",
             serves=("FX-M-BATH2-SINK",)),
 ]

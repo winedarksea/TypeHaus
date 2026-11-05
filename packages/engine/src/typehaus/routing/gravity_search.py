@@ -150,6 +150,8 @@ class GravityRefusal:
     #: ``(what, shortfall in inches)`` for the tightest refusal seen.
     tightest: tuple[str, float] | None = None
     notes: list[str] = field(default_factory=list)
+    #: A fixture arm's candidate take-offs (``cli/route_takeoff_table.TakeoffRow``).
+    takeoffs: list = field(default_factory=list)
 
     def sentence(self) -> str:
         head = (f"no route falls: {self.reached:,} label(s) expanded, the furthest reaching "
@@ -457,4 +459,7 @@ def _rebuild(graph: Graph, space: RoutingSpace, came: dict[int, int],
         nodes = [*seeds[takeoff][2][:-1], *nodes]  # the arm, trap to take-off
     found = price_route(graph, space, nodes, "drain")
     found.takeoff = takeoff if takeoff >= 0 else None
+    if takeoff >= 0:
+        node = graph.nodes[takeoff]
+        found.takeoff_xy = (node.x, node.y)
     return found

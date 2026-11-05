@@ -83,13 +83,15 @@ def test_per_crossing_beats_the_envelope_on_the_bld05_run(
     +1.209" since 0db0c103 re-laned the suite stack out of the master closet; +1.477" since
     its tie dropped to 9'-3" (2026-09-26), the leg's 0.268" fall at the 240" truss; +1.585"
     since the south leg moved to x=144 and starts at 116.3 (2026-10-26); +1.579" since the
-    flange moved onto the Aquia's 12" rough-in and the leg starts at 116.5 (2026-10-30).
+    flange moved onto the Aquia's 12" rough-in and the leg starts at 116.5 (2026-10-30);
+    +0.178" at the 256" truss since the collector loops north under W-S-SN3 for its vent
+    (2026-11-05), the loop's north leg at 116.6 in that truss's web.
     """
     findings = _findings(catlin_plan, catlin_model_ro)
     finding = _for(findings, "PR-M-S-SUITE-WC-DRAIN", "FS-S-WEST")
     assert finding.result is Result.PASS
-    assert _crown_in(finding.message) == pytest.approx(1.579, abs=0.001)
-    assert "joist-0-015-0" in finding.message
+    assert _crown_in(finding.message) == pytest.approx(0.178, abs=0.001)
+    assert "joist-0-016-0" in finding.message
 
 
 def test_the_envelope_would_have_failed_three_real_runs(
@@ -100,15 +102,13 @@ def test_the_envelope_would_have_failed_three_real_runs(
     ``PR-M-S-SUITE-LAV-DRAIN`` -0.013" and +0.294". The tub drain reads +0.093" at
     FO-S-ERV-CHASE's trimmer, a truss line graded in the web since 2026-09-24 (it read
     +0.465" at the tightest joist before, and +0.048" until the pack stood outboard of the
-    chase, 2026-09-25). It left FS-S-WEST on 2026-10-26, dropping through the deck instead.
+    chase, 2026-09-25). It left FS-S-WEST on 2026-10-26, dropping through the deck instead;
+    the lav drain left it on 2026-11-05, dropping in W-S-SN3 onto the tub's arm.
     """
     findings = _findings(catlin_plan, catlin_model_ro)
-    assert not [f for f in findings if "PR-M-S-BATH1-TUB-DRAIN" in f.element_tags
-                and "FS-S-WEST" in f.element_tags]
-    for tag, crown in (("PR-M-S-SUITE-LAV-DRAIN", 0.294),):
-        finding = _for(findings, tag, "FS-S-WEST")
-        assert finding.result is Result.PASS, finding.message
-        assert _crown_in(finding.message) == pytest.approx(crown, abs=0.001), tag
+    for tag in ("PR-M-S-BATH1-TUB-DRAIN", "PR-M-S-SUITE-LAV-DRAIN"):
+        assert not [f for f in findings if tag in f.element_tags
+                    and "FS-S-WEST" in f.element_tags], tag
 
 
 def test_a_diagonal_raceway_crosses_what_it_crosses(catlin_plan, catlin_model_ro) -> None:

@@ -49,7 +49,7 @@ BORE_CHECKS = frozenset({
     "mep.run_through_stud", "mep.run_through_plate", "mep.run_through_header",
     "mep.run_member_crossing", "mep.run_through_floor_member", "mep.run_in_joist_flange",
     "mep.run_through_blocking", "mep.run_through_beam"})
-TRAP_ARM_CHECKS = frozenset({"mep.trap_arm_developed", "mep.trap_arm_length"})
+TRAP_ARM_CHECKS = frozenset({"mep.trap_arm_length"})
 VENT_CHECKS = frozenset({"mep.vent_reachability", "mep.vent_grade",
                          "mep.vent_termination_height"})
 CLEANOUT_CHECKS = frozenset({"mep.drain_cleanouts"})

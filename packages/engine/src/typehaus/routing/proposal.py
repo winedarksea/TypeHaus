@@ -88,6 +88,8 @@ class RouteProposal:
     pull_assignment: Any = None  # trades.conduit.PullPointAssignment
     #: UPC 707.4 cleanouts placed on a drain (``cli/route_cleanouts``), printed after it.
     cleanouts: tuple[ProposedCleanout, ...] = ()
+    #: A fixture arm ending on a 908.2 wet vent (``cli/route_fixture_wet``): what it joins.
+    wet_vent: dict | None = None
 
     def snapped(self) -> RouteProposal:
         """The same proposal on the 1/16" grid, with collinear vertices already collapsed.
@@ -201,6 +203,7 @@ class RouteProposal:
             "terms_in": {k: round(v, 4) for k, v in sorted(self.terms.items())},
             "notes": list(self.notes),
             "after_paste": list(self.after),
+            **({"wet_vent": self.wet_vent} if self.wet_vent is not None else {}),
             **({"pull_points": list(self.pull_points),
                 "pull_point_assignment": self.pull_assignment.as_dict()}
                if self.pull_assignment is not None else {}),

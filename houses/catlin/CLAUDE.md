@@ -36,7 +36,7 @@
 >   R403.1(1), `structural.footing_size`, 2026-11-05): 25x10, 25x15 under S1..S4 (tops held). PT-BW-W/-GW/-PE/-PNE are `PIER_CONCRETE_14` (`east_posts.pier_assembly`).
 > - **W-M-STOS is a staggered 2x6 wet wall** carrying the hall-bath 3" stack at y=26'-8" (powder
 >   face held, mud closet 29 1/2"); `haus route` found no lane into HS1 or the chase.
->   `mep.trap_arm_developed` (ADVISORY) is the 3D trap-arm walk; 13 fixtures await a plumber pass.
+>   `mep.trap_arm_length` (CODE) is the 3D trap-arm walk; `mep.vent_connection` (ADVISORY) grades each tee; BATH2-WC is the one open vent.
 > - **ERV:** EQ-B-ERV carries Broan's port pattern (`rotation=deg(0)`: box west, door south); only
 >   the supply lands on its collar. OA/EA/RET are held at service level by the owner.
 > - **Roof:** RF-GARAGE is the RDM vented peak under the same 7" 52131XX as the canopy (one cap

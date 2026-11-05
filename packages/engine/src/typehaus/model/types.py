@@ -543,6 +543,10 @@ class FixtureType(HausModel):
     name: str
     footprint: tuple[Length, Length]
     height: Length
+    # Flood-level rim above the body's base, like ``height``: a basin's rim, a shower's
+    # threshold, a bowl's rim. None reads the body's top, which no rim exceeds but a
+    # surround, backsplash or tank does (UPC 905.3, ``mep.vent_connection``).
+    flood_rim_height: Length | None = None
     # Prefabricated receptors bear on the slab/subfloor, without the room's covering.
     # Enclosed drop-in baths exclude their enclosure rather than just the rim footprint.
     excludes_floor_finish: bool = False

@@ -35,10 +35,16 @@ def decision_summary(report: dict, out_dir: Path) -> dict:
         {**{name: row[name] for name in _DECISION_FIELDS},
          "fitting_gaps": [fitting for fitting in row["fittings"]
                           if fitting["catalog"] is None or fitting["gap"]],
+         **({"wet_vent": row["wet_vent"]} if "wet_vent" in row else {}),
          **({"pull_point_assignment": row["pull_point_assignment"]}
             if "pull_point_assignment" in row else {})}
         for row in rows
     ]
+    # A take-off row's station stays in report.json; the summary keeps what decides.
+    summary["refusals"] = [
+        {**item, "takeoffs": [{k: v for k, v in row.items() if k != "station_in"}
+                              for row in item["takeoffs"]]} if "takeoffs" in item else item
+        for item in report.get("refusals", ())]
     summary["artifacts"] = {
         "report": str(out_dir / "report.json"),
         "source": str(out_dir / "proposed.py"),

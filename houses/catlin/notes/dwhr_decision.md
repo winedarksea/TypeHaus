@@ -27,10 +27,10 @@ attic 240". `VERT` is a segment whose plan position does not move.
 
 | Shower | Storey | Its own waste run | Vertical drop before the first turn | Then |
 |---|---|---|---|---|
-| `FX-S-BATH1-SH` (60" tub-shower) | second | `PR-M-S-BATH1-TUB-DRAIN`, 1 1/2" | **3.00"** (z 120.75 → 117.75) at (3'-3 1/4", 34'-1 1/2") | 4'-1" horizontal south inside the deck |
-| `FX-S-SUITEBATH-TUBSH` (60" tub-shower) | second | `PR-M-S-SUITE-TUB-DRAIN`, 1 1/2" | **3.32"** (120.75 → 117.44) at (16'-5 5/8", 21'-9 1/8") | 2'-9" + 5'-2 3/4" horizontal inside the deck |
-| `FX-A-STUBATH-SH` (36" neo) | attic | `PR-A-STUBATH-SH-DRAIN`, 2" | **7.00"** (240.75 → 233.75) at (16'-2 5/8", 20'-7 5/8") | 6'-7" horizontal west inside the deck |
-| `FX-M-BATH2-SH` (36" diverted) | main | `PR-B-SH2-DRAIN`, 2" | **15.40"** (0.00 → −15.40) at (1'-9", 17'-3") | 45° to the basement collector |
+| `FX-S-BATH1-SH` (60" tub-shower) | second | `PR-M-S-BATH1-TUB-DRAIN`, 1 1/2" | **3.75"** (z 120.75 → 117.00) at (3'-3 1/4", 34'-1 1/2") | 11" arm west to its vent tee, 13.2" down (116.7 → 103.5), then south inside the deck (2026-11-05) |
+| `FX-S-SUITEBATH-TUBSH` (60" tub-shower) | second | `PR-M-S-SUITE-TUB-DRAIN`, 1 1/2" | **3.30"** (120.75 → 117.45) at (16'-5 5/8", 21'-9 1/8") | 3" north to its vent tee, then 7'-5 1/2" west and south inside the deck (2026-11-05) |
+| `FX-A-STUBATH-SH` (36" neo) | attic | `PR-A-STUBATH-SH-DRAIN`, 2" | **3.75"** (240.75 → 237.00) at (16'-2 5/8", 20'-7 5/8") | 20 3/8" arm east to its vent tee, 2.4" down, then 8'-0" west inside the deck (2026-11-05) |
+| `FX-M-BATH2-SH` (36" diverted) | main | `PR-B-SH2-DRAIN`, 2" | **3.00"** (0.00 → −3.00) at (6'-4 5/8", 14'-11") | 21 1/2" arm east to its vent tee, **18.50"** down (−3.5 → −22.0), then west to the collector (2026-11-05) |
 | `FX-B-SAUNA-SH` | basement | `PR-B-SAUNA-DRAIN`, 2" | 10.5", then under-slab | nothing below it — it is the bottom storey |
 
 **What is in the way is the floor deck, and it is 12" deep.** Main's ceiling plane resolves at
@@ -42,8 +42,8 @@ shower) — two of the three are finished living space, so dropping a stack thro
 vertical is not on offer either.
 
 **Conclusion of §1: a shower-only (greywater) DWHR is geometrically impossible in this house.**
-The longest dedicated shower vertical is 15.4", and the three upper-storey showers — the only
-ones with anything below them — give 3", 3 1/4" and 7". The smallest unit on the market
+The longest dedicated shower vertical is 18.5" (BATH2's, after its arm), and the three upper-storey
+showers — the only ones with anything below them — give 13.2" at most. The smallest unit on the market
 (`Power-Pipe R3-36`, 3" × 36") wants 39" between fittings. Nothing here is close.
 
 ## 2. The collected stacks, which are long enough
@@ -205,7 +205,7 @@ water it would be recovering.
 The reasoning, in the order it matters:
 
 1. **A shower-only unit is impossible.** The longest vertical directly under any shower is
-   15.4" (`PR-B-SH2-DRAIN`) and the three upper-storey showers give 3", 3 1/4" and 7" — a 12"
+   18.5" (`PR-B-SH2-DRAIN`) and the three upper-storey showers give 13.2" at most — a 12"
    floor deck is the constraint and it is not negotiable. The highest-value DWHR arrangement
    is off the table by geometry alone.
 2. **A soil-stack unit is possible and easy, and still does not pay.** `PR-B-MAIN-DRAIN` gives

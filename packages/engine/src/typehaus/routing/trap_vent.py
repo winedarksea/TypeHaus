@@ -26,7 +26,7 @@ from dataclasses import dataclass
 
 from typehaus.quantities import M_PER_IN
 from typehaus.routing.graph import Graph
-from typehaus.routing.gravity_band import Obstacles
+from typehaus.routing.gravity_band import Constraints, Obstacles
 from typehaus.routing.search import turn_price
 from typehaus.routing.space import RoutingSpace
 
@@ -48,13 +48,16 @@ class ArmReach:
 def arm_reach(graph: Graph, space: RoutingSpace, start: int, *, limit_ft: float,
               weir_m: float, grade_in_per_ft: float,
               obstacles: Obstacles | None = None,
-              stopped: dict[str, int] | None = None) -> dict[int, ArmReach]:
+              stopped: dict[str, int] | None = None,
+              constraints: Constraints | None = None,
+              radius_m: float = 0.0) -> dict[int, ArmReach]:
     """Every node the arm reaches level-by-level from ``start`` within ``limit_ft``.
 
     Horizontal edges only (a drop before the vent is an S-trap), each turn at its UPC 706
     price, and a banded prism forbids an edge where the arm's known invert —
-    ``weir - slope x developed`` — passes inside it. ``stopped`` counts those prisms by
-    tag, so a refusal can name what held the arm.
+    ``weir - slope x developed`` — passes inside it, as does a member window (a joist
+    crossing, ``gravity_band.member_constraints``) the arm's outside does not fit at that
+    station. ``stopped`` counts what held the arm, so a refusal can name it.
     """
     best: dict[tuple[int, str], float] = {(start, ""): 0.0}
     found: dict[int, ArmReach] = {start: ArmReach(start, 0.0, 0.0, (start,))}
@@ -78,6 +81,10 @@ def arm_reach(graph: Graph, space: RoutingSpace, start: int, *, limit_ft: float,
                 continue
             hit = None if obstacles is None else _blocked(
                 obstacles(index, other), weir_m, grade_in_per_ft, developed, plan_ft)
+            if hit is None and constraints is not None and not _fits(
+                    constraints(index, other), weir_m, grade_in_per_ft, developed, plan_ft,
+                    radius_m):
+                hit = "a joist member window"
             if hit is not None:
                 if stopped is not None:
                     stopped[hit] = stopped.get(hit, 0) + 1
@@ -104,6 +111,16 @@ def _blocked(hits, weir_m: float, grade: float, developed_ft: float,
         if high >= z0 - _TOL_M and low <= z1 + _TOL_M:
             return tag
     return None
+
+
+def _fits(windows, weir_m: float, grade: float, developed_ft: float, plan_ft: float,
+          radius_m: float) -> bool:
+    """The arm's outside inside every member window it crosses, at that station's invert."""
+    for fraction, low, high in windows:
+        z = weir_m - (developed_ft + fraction * plan_ft) * grade * M_PER_IN
+        if z - radius_m < low - _TOL_M or z + radius_m > high + _TOL_M:
+            return False
+    return True
 
 
 def vent_cost_to_go(graph: Graph, goals: set[int], *, level_floor_m: float
@@ -156,20 +173,29 @@ def takeoff_candidates(graph: Graph, space: RoutingSpace, reach: dict[int, ArmRe
     room. An arm in the floor depth may tee up through the plate, within ``_PLATE_REACH_M``.
     ``limit`` bounds the vent lattice.
     """
-    out = []
-    for index, arm in reach.items():
-        node = graph.nodes[index]
-        for corridor in space.corridors:
-            if (corridor.kind != "wall" or corridor.clear_width_m + _TOL_M < vent_od_m
-                    or corridor.z1_m + _TOL_M < rise_to_m):
-                continue
-            across, along = (node.y, node.x) if corridor.axis == "x" else (node.x, node.y)
-            if (abs(across - corridor.station) <= _TOL_M
-                    and corridor.lo_m - _TOL_M <= along <= corridor.hi_m + _TOL_M
-                    and corridor.z0_m - _PLATE_REACH_M <= node.z <= corridor.z1_m + _TOL_M):
-                out.append((arm.cost, index))
-                break
+    out = [(arm.cost, index) for index, arm in reach.items()
+           if takeoff_wall(space, graph.nodes[index], vent_od_m=vent_od_m,
+                           rise_to_m=rise_to_m) is not None]
     return [index for _cost, index in sorted(out)[:limit]]
+
+
+def takeoff_wall(space: RoutingSpace, node, *, vent_od_m: float, rise_to_m: float):
+    """The wall corridor whose station ``node`` stands on and whose cavity holds the vent."""
+    for corridor in space.corridors:
+        if (corridor.kind != "wall" or corridor.clear_width_m + _TOL_M < vent_od_m
+                or corridor.z1_m + _TOL_M < rise_to_m):
+            continue
+        across, along = (node.y, node.x) if corridor.axis == "x" else (node.x, node.y)
+        if (abs(across - corridor.station) <= _TOL_M
+                and corridor.lo_m - _TOL_M <= along <= corridor.hi_m + _TOL_M
+                and corridor.z0_m - _PLATE_REACH_M <= node.z <= corridor.z1_m + _TOL_M):
+            return corridor
+    return None
+
+
+def arm_invert_m(arm: ArmReach, weir_m: float, grade_in_per_ft: float) -> float:
+    """The arm's centreline where it reaches ``arm.node``: the weir less its graded fall."""
+    return weir_m - arm.developed_ft * grade_in_per_ft * M_PER_IN
 
 
 def vent_path(graph: Graph, dist: dict[int, float], start: int, *,

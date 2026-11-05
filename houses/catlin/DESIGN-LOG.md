@@ -7587,3 +7587,53 @@ wet-vent: the WC joins upstream of both, against 908.2.1.4.
   the kitchen drain and main drain re-jogged round the new cleanout. Thermal-break oracle
   re-run (`sunken_garden_court_free_body.md` §11p).
 
+
+## 905 vents and the 3D trap arm under the CODE id (2026-11-05, C4 E11-E13)
+
+Every fixture vent now leaves its drain at a sanitary tee at the top of its drop, within one
+arm diameter of the trap weir, its first leg rising at 45 degrees or steeper, and plumb to 6"
+over the flood rim before it offsets (`mep.vent_connection`, UPC 905.2 / MN 905.3 / 905.5 /
+MN 1002.2; oracle `notes/vent_grade_basis.md` §6). `mep.trap_arm_length` is the 3D walk
+(`checks/mep/trap_arm.py`) since then; the plan-`hypot` version is deleted. One vent is open.
+
+- **The weir under a framed floor is 3" below the datum** (owner): a tub, shower or floor
+  drain whose outlet is within 6" of the floor traps in the joist bay; on a slab the trap is
+  at the foot of the authored drop. WCs and sinks keep their port. `trap_weir_m`.
+- **A flood rim is declared, never the body top.** `FixtureType.flood_rim_height` (over the
+  body's base): the tub-shower types carry their 7' surround and the vanities a backsplash, so
+  the body top asked the attic vents for 289". Declared only where the type's own source
+  states it (SEKTION/Chulton 36", ÄNGSJÖN 36" AFF, SUNNERSTA 36" AFF, D-Code 34" AFF,
+  Swanstone threshold 4 1/2", the liner pans P2709.1's 9"); the rest keep the conservative top.
+- **Basement:** a vent cannot rise through the 3 1/2" slab except in a cavity, so each tee sits
+  where its drain passes under the riser's wall. The lav leaves its stub at 45 degrees into
+  W-B-CW2. The sauna branch runs north to W-B-SA-N2 and west under W-B-SA-N (shower arm 34",
+  FD 38"), with CO-B-SAUNA-TURN for the 180 degrees. The WC's x=12' leg met a wall only at
+  84", so the 3" branch runs south, 45 degrees SW to W-B-STR2 (arm 70" of 72") and down that
+  line; CO-B-BATH moved onto the diagonal and CO-B-STACK-BASE 7" north between the bath tie
+  and the main's two 1/8 bends. 0.250"/ft on two segments has no spare.
+- **Main floor:** the BATH2 tub's router take-off (100.64", 216") is inside the BA2E/CLN
+  corner studs and x=98" is shut by partition-block-W-B-CW3-001, so its arm crosses joist
+  13's web to a tee under W-M-BA2E2 at (8'-2", 17'-0") (27" of 42") and the laundry supplies
+  stay put. The shower tees under the same wall; its level leg runs at 115.4" to clear
+  DU-M-ERV-R-SUITEBATH. The laundry sink tees where its waste crosses the floor (arm 0") and
+  leaves at 46 degrees into W-M-CLN. CO-B-WC2-HEAD's cap leaves on a 45 wye, clear of the WC
+  vent; SH2's longer arm took it past 707.4's 5', so CO-M-SH2-HEAD is new.
+- **Open, BATH2-WC:** no 45-degree path from the closet bend crosses TJI 16/17 and the
+  CMFS01/03 seam joist to W-M-HS1 (a 5.4" climb against a 3.9" window per joist), so its
+  level leg runs under them at -13 1/2", under the bowl's real rim. A headered chase or a
+  moved fixture/wall closes it; until then `mep.vent_connection` stays ADVISORY.
+- **Suite: individual vents; a 908.2 wet vent was rejected.** The grader reads the lav's 2"
+  drain as the wet vent and wants it flatter than 45 degrees, and every lane toward the tub
+  crosses CD-M-DATA-KITCH at 115.5" (a 2" needs 117.15"), under the 118.5" box rail and
+  PR-A-HW-STUBATH (best margin ~0.1"). Each fixture takes a 1 1/2" dry vent in W-S-SN3 onto a
+  1 1/2" header inside the wall at +17'-10" (8 DFU per Table 703.2 against 6): no vent rises
+  through FS-ATTIC east of x=10' (FO-A-HALL's trimmers and DU-S-ERV-HP-FEED leave 0.4"). The
+  WC collector loops north under the wall so its vent rises plumb.
+- **Second floor:** the hall tub's arm runs 11" west under W-S-CH-W to a tee in the chase,
+  crossing FO-S-ERV-CHASE's LVL header (UNKNOWN, TODO). The BATH1 WC's arm runs on to
+  W-S-BD-N's plumbing cavity (58" of 72"); the vent rises there, not in exterior W-S-W1, and
+  FO-S-BATH1-WC-DRAIN moved with the drop. The vanity arms are re-profiled to a 1.1" fall.
+- **Attic:** the shower's arm runs 20" east to a tee in W-A-C2M; the lav tees at the top of a
+  1.5" drop. The bar's header rose to 3'-7" (6" over its 36" rim) and PR-A-STUBATH-VENT's low
+  end with it; both hold ~0.1"/ft, under the house's 1/8", because the stack tee at 3'-9"
+  caps them. A split into a graded riser plus an ungraded branch was tried and refused.

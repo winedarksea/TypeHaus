@@ -70,10 +70,10 @@ VENT_BRANCHES_MAIN = [
             # two storeys instead of jogging into this chase. `mep.vent_reachability` says
             # so in as many words ("wall W-M-HS1 continues up for the vent").
             serves=("FX-M-BATH1-WC",)),
-    # BATH2's shower and tub and the laundry sink: from 58" east of the shower's authored
-    # drain point (1'-9", 17'-3") along the 16'-8" bay, then up W-M-BA2E's line on the upper
-    # tier onto WC-VENT's riser foot. On one run with WC-VENT their trap arms were 99" and
-    # 61" against Table 1002.2's 60" (2026-09-24).
+    # BATH2's shower and tub and the laundry sink: the header their tee risers
+    # (plan/mep_vent_tees.py) climb to. It starts at (6'-7", 17'-0") in the upper floor's
+    # 16'-8" bay, takes the tub riser at (8'-2", 17'-0"), turns north on W-M-BA2E's line over
+    # the laundry riser at y=18'-0", and ends on WC-VENT's riser foot.
     PipeRun(uid="YTKPDYS5YV", tag="PR-M-BATH2-VENT", system=PipeSystem.VENT,
             path=(pt(inch(79), inch(204)), pt(inch(98.5), inch(204)),
                   pt(inch(98.5), inch(266.5))),
@@ -192,20 +192,23 @@ VENT_BRANCHES_SECOND = [
     # The south stub is the only thing on x=1'-0" north of the chase, so it does not
     # touch PR-S-BATH1-VENT, which arrives on that same line from the SOUTH. -2 pairs, and
     # both of this run's remaining clashes are at its terminals, where a re-route cannot
-    # reach them. The header's three trap arms (39" to the tub-shower, 0" to the lav, 17" to
-    # the WC at y=21'-11") are measured off it; see the header note below for 2026-09-24.
+    # reach them. Each suite fixture has its own vent tee (plan/mep_vent_tees.py).
     PipeRun(uid="CSP902AAAA", tag="PR-S-SUITEBATH-VENT", system=PipeSystem.VENT,
             # ** IT MEETS THE STACK AT ITS JOG CORNER SINCE 2026-09-23. ** It ran on to y=35'-7.5"
             # — inside W-S-N3's framing — and back west to the chase. The stack now turns up at
             # (9'-7 1/2", 34'-4.9") at +19'-6", so this rises into that corner from the south.
             # North on x=9'-0" onto the jog's crown just west of FO-A-VENT-STACK (a run
             # inside that hole has nothing to strap to).
-            # ** HEADER AT +19'-8", y=22'-1", SINCE 2026-09-24 **: over DU-S-ERV-HP-FEED
-            # rather than beside it, on W-S-SN3's cavity face; clears PR-S-BATH1-VENT by 3".
-            path=(pt(ft(16, 4.5), inch(265)), pt(ft(9), inch(265)),
-                  pt(ft(9), inch(412.9))),
-            diameter=inch(2),
-            elevations=(inch(116), inch(116.3), inch(116.7)),
+            # ** IT STARTS INSIDE W-S-SN3 SINCE 2026-11-05 **: the suite's three vents land on
+            # a 1 1/2" leg in the cavity's south half (1.9" bores 54% of the 2x4 south studs),
+            # rising west from the tub riser to x=9'-5" in W-S-SN2, west of FO-A-HALL's
+            # trimmers; up there and west onto x=9'-0" at +19'-8", north of DU-S-ERV-HP-FEED.
+            path=(pt(inch(197.615), inch(266.25)), pt(inch(113), inch(266.25)),
+                  pt(inch(113), inch(268)), pt(inch(113), inch(268)),
+                  pt(ft(9), inch(268)), pt(ft(9), inch(412.9))),
+            diameter=inch(1.5),
+            elevations=(inch(93.8), inch(96.2), inch(98.0), inch(114.0), inch(116.3),
+                        inch(116.7)),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
 ]
@@ -253,9 +256,9 @@ VENT_BRANCHES_ATTIC = [
     # The vertex at (9'-7 1/2", 20'-8") is what `mep.vent_reachability` reads — it requires a
     # vertex ON the served fixtures' wet wall (W-A-STU-W's axis).
     #
-    # Every vertex clears the flood-level rims by more than P3104.4's 6": the highest rim served
-    # is the lavatory at ~2'-10" AFF (22'-10"), so 23'-4" is the floor for a dry horizontal vent
-    # and the lowest vertex here is 23'-6". It rises monotonically into the stack, so condensate
+    # Every vertex clears the flood-level rims by MN 905.3's 6": the highest rims served are the
+    # lavatory and bar sink at 3'-0" AFF (23'-0 7/8"), so 23'-6 7/8" is the floor for a dry
+    # horizontal vent and the lowest vertex here is 23'-7 2/3". It rises monotonically into the stack, so condensate
     # drains back to the fixtures and there is no pocket to hold water. The last vertex at
     # 23'-9" ties in 1" BELOW the riser's 23'-10" exit, on the vertical part of the stack.
     # It passes OVER DU-A-ERV-R-STUBATH's riser, which stops at REG-A-STUBATH-EXH's 3'-0"
@@ -265,7 +268,7 @@ VENT_BRANCHES_ATTIC = [
             # of the pair; the radon riser 6.2" north is no longer in its way.
             path=(pt(ft(9, 7.5), ft(20, 8)), pt(ft(9, 7.5), inch(412.9))),
             diameter=inch(2),
-            elevations=(ft(3, 6), ft(3, 9)),
+            elevations=(inch(43.67), ft(3, 9)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),
     # ** THE SHOWER'S TRAP-ARM VENT, IN W-A-HALL-S. ** From the pan's north edge (a 1'-8" arm)
@@ -294,24 +297,24 @@ VENT_BRANCHES_ATTIC = [
     # The repeated first vertex is the riser — the idiom PR-A-STUBATH-DRAIN uses. Elevations
     # are STOREY-RELATIVE (the attic datum is ft(20); see the note above on what an absolute
     # would do here) and rise monotonically from -4 1/4", PR-A-BAR-DRAIN's own head in the
-    # joist band, to 3'-6" — which is exactly PR-A-STUBATH-VENT's elevation at the plan point
+    # joist band, to 3'-7 2/3" — which is exactly PR-A-STUBATH-VENT's elevation at the plan point
     # they share, so the two profiles meet rather than pass.
     #
-    # ** THE HORIZONTAL MUST STAY 6" ABOVE THE BOWL'S FLOOD RIM, P3104.4, AND THAT IS THE
-    # WORKTOP MEASUREMENT. ** At the authored 27" mount the rim is ~2'-3" AFF and the 3'-4"
-    # horizontal clears it by 13"; if the SUNNERSTA's top measures nearer 36" the rim climbs
-    # with it and this run has to climb too. The vertex on x 9'-7 1/2" is what `mep.vent_reachability` reads —
+    # ** THE HORIZONTAL MUST STAY 6" ABOVE THE BOWL'S FLOOD RIM, MN 905.3. ** The rim is 36"
+    # AFF (the type's `flood_rim_height`); re-measure it if the unit's mount moves. The vertex on x 9'-7 1/2" is what `mep.vent_reachability` reads —
     # it wants a vertex on the served fixture's wet wall (W-A-STU-W's axis) — so keep it.
     PipeRun(uid="VK3C96KFRF", tag="PR-A-BAR-VENT", system=PipeSystem.VENT,
             # ** IT RISES CLEAR OF THE WALL, THEN STEPS IN (2026-09-23). ** W-A-BATH-S sits on
             # joist-0-013 (y=17'-4"), so a riser in its cavity came up through that joist's
             # top flange. Since 2026-11-01 it tees on the arm at the trap outlet (16'-9 3/4"),
-            # rises behind the unit's back panel and enters the wall at the horizontal's 3'-4".
+            # rises behind the unit's back panel and enters the wall at the horizontal.
+            # ** 3'-7" SINCE 2026-11-05: ** 6" over the SUNNERSTA's 36" rim (MN 905.3);
+            # PR-A-STUBATH-VENT's low end and PR-A-STUBATH-WC-VENT's tee rose with it. Both
+            # now hold ~0.1"/ft, under the house's 1/8": the stack tee at 3'-9" caps it.
             path=(pt(inch(152.5), inch(201.74)), pt(inch(152.5), inch(201.74)),
-                  pt(inch(152.5), ft(17, 4)),
-                  pt(ft(9, 7.5), ft(17, 4)), pt(ft(9, 7.5), ft(20, 8))),
+                  pt(inch(152.5), ft(17, 4)), pt(ft(9, 7.5), ft(17, 4)), pt(ft(9, 7.5), ft(20, 8))),
             diameter=inch(2),
-            elevations=(inch(20.87), ft(3, 3.875), ft(3, 4), ft(3, 5), ft(3, 6)),
+            elevations=(inch(20.87), inch(43.0), inch(43.05), inch(43.35), inch(43.67)),
             serves=("FX-A-STUDIO-BAR-SINK",)),
 ]
 
@@ -474,12 +477,13 @@ VENT_BRANCHES_BASEMENT = [
     # onto the vent riser at x=10". PR-B-BATH-VENT ties into it at (9'-0", 19'-1 1/2").
     PipeRun(uid="CBPV02AAAA", tag="PR-B-SAUNA-VENT", system=PipeSystem.VENT,
             # ** THE RISER IS IN W-B-SA-N2'S 2x4 CAVITY SINCE 2026-11-01 ** (the stud-002/-003
-            # bay; x=16'-9" since 2026-11-05, 1" clear of the 25" FT-B-CS's west face). At (17'-3", 8'-2 3/16") it stood
+            # bay; x=15'-11 3/4" since 2026-11-05, plumb off the branch corner and clear of the 25"
+            # FT-B-CS). At (17'-3", 8'-2 3/16") it stood
             # in the pan, 3" in front of the liner, and its north leg ran through the sauna
             # ceiling's foil. It clears the wall's top plates (+90") before jogging north.
-            path=(pt(inch(191.75), inch(98.1875)), pt(inch(201), inch(121.375)),
-                  pt(inch(201), inch(121.375)), pt(inch(201), inch(121.375)),
-                  pt(inch(201), ft(10, 6)), pt(ft(9), ft(10, 6)),
+            path=(pt(inch(191.75), inch(121.375)), pt(inch(191.75), inch(121.375)),
+                  pt(inch(191.75), inch(121.375)),
+                  pt(inch(191.75), ft(10, 6)), pt(ft(9), ft(10, 6)),
                   pt(ft(9), ft(19)), pt(ft(9), ft(28, 8)), pt(inch(51.5), ft(28, 8)),
                   pt(inch(51.5), inch(400)), pt(inch(10), inch(400)),
                   pt(inch(10), inch(412.9))),
@@ -494,7 +498,7 @@ VENT_BRANCHES_BASEMENT = [
             # dry-fire collector lift, keeping clear of the raised laundry drain. The
             # north profile retains the half-inch clearance over
             # DU-B-ERV-R-PLAY at y=30'-6", where D3 left it 2 1/2 thousandths of an inch.
-            elevations=(inch(-8.3), inch(-7.8), ft(0, 3.4375), inch(90.5), inch(90.5625),
+            elevations=(inch(-9.0), ft(0, 3.4375), inch(90.5), inch(90.5625),
                         inch(91.75), inch(93.75), ft(7, 10.4375), ft(7, 11.14), ft(7, 11.54),
                         ft(8, 0.0375), ft(8, 0.1375)),
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
@@ -502,9 +506,9 @@ VENT_BRANCHES_BASEMENT = [
     # slab on the drop's fall, up W-B-SA-N's cavity through SP-B-SLAB-SA-FDV, and over the
     # plates onto PR-B-SAUNA-VENT's y=10'-6" run. Arm ~9" against Table 1002.2's 60".
     PipeRun(uid="D9Z3MBW6KV", tag="PR-B-SAUNA-FD-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(162), inch(98.1875)), pt(inch(152), inch(121.375)),
-                  pt(inch(152), inch(121.375)), pt(inch(152), ft(10, 6))),
+            path=(pt(inch(155.5), inch(121.375)), pt(inch(155.5), inch(121.375)),
+                  pt(inch(155.5), ft(10, 6))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(-8.5), inch(-8.0), inch(90.6), inch(91.2)),
+            elevations=(inch(-9.8), inch(90.6), inch(91.05)),
             serves=("FX-B-SAUNA-FD",)),
 ]

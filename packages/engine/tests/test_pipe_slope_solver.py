@@ -184,10 +184,14 @@ def test_a_solved_endpoint_does_not_argue_with_the_field_it_came_from() -> None:
 #: PR-B-COND regraded 0.3 -> 0.26"/ft 2026-11-01 so its sauna leg clears the raised ceiling's
 #: foil: same 7'-8" head, so legs of 9', 23", 4'-6" and 13.4" fall 2.34", 0.50", 1.17" and
 #: 0.29"; the authored low-leg inverts (index 5, 6) are unchanged.
+#:
+#: BATH and SAUNA re-pinned 2026-11-05 (the 905 vent reroute): the bath branch runs south, a
+#: 45 SW and down W-B-STR2; the sauna north and west under W-B-SA-N. Both keep their authored
+#: tie inverts, so the last leg takes the difference: 0.293 and 0.382"/ft, steeper than 1/4.
 _PINNED_FT = {
     "PR-B-COND": [-1.45313, -1.64813, -1.68965, -1.78715, -1.81141, -8.32135, -8.36979],
-    "PR-B-BATH-DRAIN": [-9.11979, -9.83229, -9.9765, -10.16479],
-    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.90495, -10.12474, -10.34896],
+    "PR-B-BATH-DRAIN": [-9.11979, -9.83229, -9.88058, -9.9395, -9.99376, -10.16479],
+    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.87505, -10.14545, -10.34896],
 }
 
 #: The grade each of the three declares in its own comment. PR-B-BATH-DRAIN went to
@@ -200,8 +204,10 @@ _GRADE_IN_PER_FT = {
     "PR-B-BATH-DRAIN": 0.25,
     "PR-B-SAUNA-DRAIN": 0.25,
 }
-#: PR-B-COND's authored under-bench leg kept its 0.3"/ft when the run went to 0.26.
-_LEG_GRADE = {("PR-B-COND", 5): 0.3}
+#: PR-B-COND's authored under-bench leg kept its 0.3"/ft when the run went to 0.26; the bath
+#: and sauna last legs fall to their authored tie inverts.
+_LEG_GRADE = {("PR-B-COND", 5): 0.3, ("PR-B-BATH-DRAIN", 4): 0.293,
+              ("PR-B-SAUNA-DRAIN", 3): 0.382}
 
 
 @pytest.mark.parametrize("tag", sorted(_PINNED_FT))

@@ -48,10 +48,13 @@ def one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
         def fall(plan: list) -> tuple[list, str] | None:
             developed_ft = sum(((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
                                for a, b in zip(plan, plan[1:], strict=False)) / 0.3048
-            budget = HeadBudget(ceiling_m=ends.origin[2], required_m=ends.root[2],
+            wet = getattr(found, "wet", None)
+            budget = HeadBudget(ceiling_m=ends.weir,
+                                required_m=ends.root[2] if wet is None else wet.join[2],
                                 developed_ft=developed_ft, diameter_m=ends.diameter_m)
             return _fall(plan, ends.origin, budget, grade, target + suffix, problems,
-                         start_m=getattr(found, "start_m", None))
+                         start_m=getattr(found, "start_m", None),
+                         takeoff_xy=getattr(found, "takeoff_xy", None))
 
         fallen, compacted = None, _compacted(model, space, points)
         if compacted is not None:
@@ -87,13 +90,23 @@ def one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
         if disclosed:
             notes.append(disclosed)
 
+    after, wet_vent = tuple(ends.after_paste), None
+    if getattr(found, "wet", None) is not None:
+        from typehaus.cli.route_fixture_wet import disclosure
+
+        wet_notes, wet_after = disclosure(found.wet, ends.fixture)
+        notes += wet_notes
+        after += tuple(wet_after)
+        wet_vent = {"parent": found.wet.parent, "join_in": round(found.wet.arm_in, 2),
+                    "upsize": [list(u) for u in found.wet.upsize],
+                    "name_on_vent": list(found.wet.name_on_vent)}
     proposal = RouteProposal(
         tag=f"{target}-PROPOSED{suffix}", kind=ends.kind, points=[*ends.held, *points],
         diameter_m=ends.diameter_m, width_m=ends.width_m, depth_m=ends.depth_m,
         serves=ends.serves, system=ends.system, cost=found.cost, bends=found.bends + lead_bends,
         terms=dict(found.terms) if explain else {}, notes=notes, routing=routing,
         floor_ref=floor_ref, soffit_ref=soffit_ref, echo=dict(ends.echo),
-        after=ends.after_paste).snapped()
+        after=after, wet_vent=wet_vent).snapped()
     # After snapping: the indices must be the pasted run's own.
     return proposal.with_pull_points(ends.pull_boxes) if ends.kind == "conduit" else proposal
 

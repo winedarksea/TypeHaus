@@ -35,7 +35,6 @@ from typehaus.checks.mep.plumbing_concrete import (  # noqa: F401 - re-export + 
 from typehaus.checks.mep.plumbing_dwv import (  # noqa: F401 - re-export + register
     drain_slope,
     pipe_sizing,
-    trap_arm_length,
     vent_reachability,
     vent_termination_height,
     wet_wall_bearing,
@@ -47,4 +46,5 @@ from typehaus.checks.mep.plumbing_supply import (  # noqa: F401 - re-export + re
     hydrant_freeze_depth,
     pipe_material_preference,
 )
-from typehaus.checks.mep.trap_arm import trap_arm_developed  # noqa: F401 - register
+from typehaus.checks.mep.trap_arm import trap_arm_length  # noqa: F401 - register
+from typehaus.checks.mep.vent_connection import vent_connection  # noqa: F401 - register

@@ -188,22 +188,32 @@ DRAINS = [
     # Clearflo, PROD-KOHLER-7272 — is a 1 1/2" PVC tee.
     # One bathtub at 2 DFU, and 1 1/2" is the trap size the code tables give a
     # bathtub, so nothing about the sizing moves; only the pipe that gets ordered.
+    # The trap hangs 3" under the subfloor and the arm runs 22 1/2" SE at 1/4"/ft, through
+    # FS-M-WEST's partition block at x=6'-8" and joist 13's web, to a sanitary tee under
+    # W-M-BA2E2 at (8'-2", 17'-0") — PR-M-BATH2-TUB-VENT rises from it. The bay-209 station
+    # under the wall is shut by the x=8'-1" partition block's flange. From the tee it drops
+    # below the joists, runs 26" west on y=17'-0" (1.5" fall), into the main's upper half.
     PipeRun(uid="CBPD03AAAA", tag="PR-B-TUB2-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(78.49), inch(215.1775)), pt(inch(78.49), inch(215.1775)),
-                  pt(ft(6), inch(215.1775))),
+                  pt(inch(98), inch(204)), pt(inch(98), inch(204)),
+                  pt(ft(6), inch(204)), pt(ft(6), inch(204))),
             diameter=inch(1.5), material="pvc",
-            # The end drain drops in the 208"..224" joist bay and the leg runs west inside it to
-            # PR-B-MAIN-DRAIN: 11 1/4" of fall over 6 1/2", a 60-degree leg (1/6 bend).
-            elevations=(ft(9, 3.1875), inch(97.6), inch(86.35)),
+            elevations=(ft(9, 3.1875), inch(106.4375), inch(105.9375), inch(95.4375),
+                        inch(93.9375), inch(84.9375)),
             serves=("FX-M-BATH2-TUB",)),
     PipeRun(uid="CBPD04AAAA", tag="PR-B-SH2-DRAIN", system=PipeSystem.DRAIN,
             # Moved to the centre drain (2026-10-22). The drop at y=14'-11" is in joist 11's bay
             # (flanges 174 3/4"..177 1/4", its underside at 97 9/16" basement). The run stays
             # below the joists, west along y=14'-11" and south into PR-B-MAIN-DRAIN's corner.
+            # The trap sits 3" under the subfloor; its arm runs 21 1/2" east in the bay to a
+            # sanitary tee under W-M-BA2E2 at (8'-2", 15'-0 1/2") (PR-M-BATH2-SH-VENT up),
+            # 2" north of the shower's hot riser, and drops there to the old under-joist leg.
             path=(pt(ft(6, 4.615), ft(14, 11)), pt(ft(6, 4.615), ft(14, 11)),
+                  pt(inch(96), inch(180.36)), pt(inch(98), inch(180.5)), pt(inch(98), inch(180.5)),
                   pt(ft(3), ft(14, 11)), pt(ft(3), ft(16, 6))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 1.4375), inch(87.0625), inch(85.9375), inch(85.3875)),
+            elevations=(ft(9, 1.4375), inch(106.4375), inch(105.984), inch(105.9375), inch(87.4375),
+                        inch(85.9375), inch(85.3875)),
             serves=("FX-M-BATH2-SH",)),
     PipeRun(uid="CBPD05AAAA", tag="PR-B-SINK2-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(1), ft(15, 2.375)), pt(ft(1), ft(15, 2.375)),
@@ -264,10 +274,15 @@ DRAINS = [
     # It turns south then west, and the main carries it north: 180° in aggregate, so 707.4
     # wants a cleanout at the tie. CO-B-STACK-BASE is that cleanout.
     PipeRun(uid="CBPD07AAAA", tag="PR-B-BATH-DRAIN", system=PipeSystem.DRAIN,
+            # 905 REROUTE (basement vents): south 27 13/16", a 45-degree run SW to the
+            # W-B-STR2 line at (10'-0", 20'-0"), and south down that wall to y=17'-4 3/4". The
+            # WC's vent tee is the diagonal's end, under the wall's 232"-248" bay: its arm is
+            # 70" against 72", and the lavatory and utility sink now drop onto the x=10' leg.
             path=(pt(ft(12), inch(291.8125)), pt(ft(12), inch(291.8125)),
-                  pt(ft(12), ft(17, 4.75)), pt(ft(3), ft(17, 4.75))),
+                  pt(ft(12), inch(264)), pt(ft(10), inch(240)),
+                  pt(ft(10), ft(17, 4.75)), pt(ft(3), ft(17, 4.75))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(0), inch(-8.55), None, inch(-12.54)),
+            elevations=(ft(0), inch(-8.55), None, None, None, inch(-12.54)),
             slope_in_per_ft=0.25,
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
     # The lavatory's own 1 1/2" arm. The vanity sits on the same x=12' line as the WC, so
@@ -277,9 +292,10 @@ DRAINS = [
     # It arrives at -8", inside the 3" branch's upper half there (invert -9 15/16",
     # crown -6 7/16").
     PipeRun(uid="CBPD09AAAA", tag="PR-B-BATH-LAV-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(144), inch(218.25)), pt(inch(144), inch(224.375)), pt(inch(144), inch(224.375)),),
+            path=(pt(inch(144), inch(218.25)), pt(inch(144), inch(224.375)), pt(inch(144), inch(224.375)),
+                  pt(inch(120), inch(224.375)),),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(20.12), inch(19.99), inch(-8.0),),
+            elevations=(inch(20.12), inch(19.99), inch(-9.0), inch(-9.55),),
             serves=("FX-B-BATH-LAV",)),
     # The sauna group: the curbed pan's drop at the NE corner, then a 1/8 bend south-west to
     # y=5'-10", then west beneath the removable foot platform. The cleanout fitting stays
@@ -295,8 +311,11 @@ DRAINS = [
     # meet a south-flowing main, and needed CO-B-SAUNA-TURN for it. At 1/4"/ft over 24.6 ft
     # it arrives at -14.75", which is what sets the main's base.
     PipeRun(uid="CBPD08AAAA", tag="PR-B-SAUNA-DRAIN", system=PipeSystem.DRAIN,
+            # 905 REROUTE (basement vents): north 23 1/4" to the cavity of W-B-SA-N2 and west
+            # under the wall line to x=3'-0", so the shower and floor-drain vent tees sit where
+            # the drain passes under the wall that carries their risers. 256" at 0.29"/ft.
             path=(pt(inch(191.75), inch(98.1875)), pt(inch(191.75), inch(98.1875)),
-                  pt(ft(13, 6.6), ft(5, 10.2)), pt(ft(3), ft(5, 10.2)),
+                  pt(inch(191.75), inch(121.375)), pt(ft(3), inch(121.375)),
                   pt(ft(3), ft(16, 6))),
             diameter=inch(2), material="pvc",
             # As PR-B-BATH-DRAIN: the grade is authored and the intermediate inverts follow.
@@ -307,14 +326,14 @@ DRAINS = [
     # floor — the body *is* the penetration — so this is one vertical drop, authored
     # separately (not as a vertex on the branch) so `mep.sleeve_coverage` sees a run actually
     # passing through the cast stub rather than a stale or mis-routed sleeve.
-    # Since 2026-10-01 the branch no longer passes under the drain, so the drop takes a
-    # 2'-4" arm south onto it, landing on the branch's centreline. Under 5 ft and serving
-    # no sink, it needs no cleanout.
+    # Since the 905 reroute the branch runs west on y=10'-1 3/8" under W-B-SA-N, so the drop
+    # takes a 1'-11 3/8" arm north onto it, landing on the branch's centreline, and its vent
+    # tee is the arm's end. Under 5 ft and serving no sink, it needs no cleanout.
     PipeRun(uid="CBPD10AAAA", tag="PR-B-SAUNA-FD-DROP", system=PipeSystem.DRAIN,
             path=(pt(ft(13, 6), inch(98.1875)), pt(ft(13, 6), inch(98.1875)),
-                  pt(ft(13, 6), ft(5, 10.2))),
+                  pt(ft(13, 6), inch(121.375))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(0), inch(-8.7), inch(-9.4344)),
+            elevations=(ft(0), inch(-8.7), inch(-9.6)),
             serves=("FX-B-SAUNA-FD",)),
 ]
 
@@ -414,24 +433,38 @@ SECOND_BRANCH_DRAINS = [
     # hole (FO-S-BATH1-WC-DRAIN) into the closet ceiling — STORAGE, where exposed pipe is by
     # design — and east at 8'-4" onto the stack's side. Dropping early only gains head.
     PipeRun(uid="K28BQ29KCW", tag="PR-M-S-BATH1-WC-DRAIN", system=PipeSystem.DRAIN,
+            # ** THE ARM RUNS TO THE WALL AND TEES THERE (2026-11-05). ** It continues south on
+            # x=1'-8.3" to W-S-BD-N's plumbing cavity (y=26'-8.5"), 56" of developed arm (72"
+            # limit), and ends in a sanitary tee: PR-S-BATH1-WC-VENT rises plumb in that cavity
+            # from it (905.2/905.3). The drain drops through the truss zone and the plates of
+            # nonbearing W-M-STOS below it (no stud bored), leaves 5 3/4" north, clear of those
+            # plates, at 8'-7" under the deck, runs east in the mud closet's ceiling at 0.25"/ft
+            # and drops onto the stack.
             path=(pt(inch(18.5), inch(376)), pt(inch(20.278), inch(372.32)),
-                  pt(inch(20.278), inch(344)), pt(inch(20.278), inch(344)),
-                  pt(ft(5), inch(344)), pt(ft(5), ft(26, 8))),
+                  pt(inch(20.278), inch(344)), pt(inch(20.278), inch(320.5)),
+                  pt(inch(20.278), inch(320.5)), pt(inch(20.278), inch(326.25)),
+                  pt(ft(5), inch(326.25)), pt(ft(5), inch(326.25)), pt(ft(5), ft(26, 8))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(10, 0.75), inch(116.75), inch(116), inch(100.5), inch(99.51),
-                        inch(98.83)),
+            elevations=(ft(10, 0.75), inch(116.75), inch(116), inch(115.5), inch(103.3),
+                        inch(103.1), inch(102.27), inch(98.97), inch(98.83)),
             serves=("FX-S-BATH1-WC",)),
-    # The tub-shower's 1 1/2" waste: straight down THROUGH FS-S-WEST at the west end (x=3'-3 1/4"
-    # is a web band, and the 409 1/2" bay west of it is the ERV chase), south under the deck in
-    # RM-M-MECH's open ceiling and onto the top of the water closet's 28'-8" leg, a wye
-    # from above. 1 1/2"
-    # because the tub's waste-and-overflow is 1 1/2" and that is the trap size the table
-    # gives a bathtub (cf. PR-B-TUB2-DRAIN).
+    # The tub-shower's 1 1/2" waste: 3 3/4" down to the weir (117", 3" under the deck), an 11"
+    # arm west at 1/4"/ft under W-S-CH-W's plate to a sanitary tee in the chase's south band
+    # (30 1/4", 33 3/4" off the pan's drain), then straight down THROUGH FS-S-WEST (the chase
+    # opening, x 6"..33"), east 9" to the web band at x=3'-3 1/4", south 6'-1" under the deck in
+    # RM-M-MECH's open ceiling and the mud closet's, east to x=5'-0" and onto the water closet's
+    # last drop at (5'-0", 27'-1 1/2"), a side entry. The tee is the TOP of the drop, so
+    # PR-S-BATH1-SH-VENT rises plumb from it (UPC 905.2, MN 905.3) and stands 0.3" under the
+    # weir (905.5). 1 1/2" because the tub's waste-and-overflow is 1 1/2" and that is the trap
+    # size the table gives a bathtub (cf. PR-B-TUB2-DRAIN).
     PipeRun(uid="0W45BR6619", tag="PR-M-S-BATH1-TUB-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(39.25), inch(409.5)), pt(inch(39.25), inch(409.5)),
-                  pt(inch(39.25), inch(344))),
+                  pt(inch(30.3), inch(402.8)), pt(inch(30.3), inch(402.8)),
+                  pt(inch(39.25), inch(402.8)), pt(inch(39.25), inch(330)),
+                  pt(ft(5), inch(330)), pt(ft(5), inch(325.5))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(10, 0.75), inch(101.75), inch(100.3)),
+            elevations=(ft(10, 0.75), inch(117.0), inch(116.7), inch(103.5), inch(103.1),
+                        inch(101.2), inch(100.7), inch(100.5)),
             serves=("FX-S-BATH1-SH",)),
     # The 36" vanity keeps its 1 1/2" drop at y=372", in the 369.75"..382.25" truss
     # bay. The basin moved to y=374.5"; a 2.5" connection within the sink base reaches
@@ -458,49 +491,51 @@ SECOND_BRANCH_DRAINS = [
     PipeRun(uid="WJ1ZY1QTET", tag="PR-M-S-VANITY-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(22.375), inch(318)), pt(inch(52.375), inch(318)), pt(inch(60), inch(320)), pt(inch(60), inch(320)),),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(140.5), inch(139.875), inch(139.6875), inch(122.5625),),
+            elevations=(inch(141.2), inch(140.55), inch(140.38), inch(122.5625),),
             serves=("FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2"), wall_ref="W-S-BD-N"),
-    # ** THE SUITE BATH'S 3" COLLECTOR. ** The water closet is floor-drained and its flange
-    # at (134.81", 252.406"), the Aquia's 12" rough-in, lands in the 241.75"..254.25" bay with
-    # 0.09" to spare on the 3.5" OD, so this one drops
-    # vertically — no offset bend needed. East in that bay to x=12'-0" (x=11'-2.81" is a web
-    # band; 137 1/2"..150 1/2" is the opening), south across the trusses to the y=18'-0" bay
-    # the stack head sits in, then 6" east onto it. It starts at 9'-8 3/4".
+    # ** THE SUITE BATH: THREE INDIVIDUALLY VENTED ARMS (2026-11-05). ** A 908.2 wet vent
+    # was tried and does not fit: the lav's 2" wet vent must lie flatter than 45 deg (25" of
+    # drop wants 25" of plan) and every lane from the lav to the tub crosses CD-M-DATA-KITCH
+    # (x=15'-9", 115.5") under the 118.5" box rail at x=14'-9" and PR-A-HW-STUBATH at
+    # x=14'-0 3/4"; the margins left were 0.1". Each fixture has its own vent in W-S-SN3.
     #
-    # ** THE 1/2" IS THE WHOLE-LEG ENVELOPE, NOT WHAT THIS PIPE CLEARS. ** Taken as nominal
-    # 3" at the leg's HIGH end, the crown is 118.25 against the webs' 118.5 ceiling — but that
-    # high end (y=252.406) sits in the 241.75..254.25 clear bay, where there is no truss.
-    # Graded at the three truss lines the leg actually crosses, and at 3" PVC's real 3.500"
-    # OD, `mep.run_member_crossing` reports **+0.944"** of crown at `joist-0-015-0`, the
-    # tightest of them.
-    # It lands at 9'-3" on the stack, its only inlet there since PR-A-STUBATH-DRAIN moved onto
-    # this branch's north-south leg (2026-10-08). The final leg lies in the y=18'-0" bay, so
-    # nothing under it but the ceiling; its crown at the 240" truss is 117.0" against the web
-    # window's 118.5".
+    # The 3" collector. Flange at (134.81", 252.406") in the 241.75..254.25 bay; east to the
+    # 137 1/2"..150 1/2" opening, NORTH across the 256" truss under W-S-SN3, where
+    # PR-S-SUITEBATH-WC-VENT rises plumb off its crown, then south at x=12'-0" across three
+    # trusses (crown 117.7" at 256", 1/2" over DU-M-ERV-R-STUDY) to the stack at 9'-3". The
+    # two legs share the opening 1" apart. PR-A-STUBATH-DRAIN lands at y=19'-7"; the tub and
+    # lav branch at y=19'-0", both downstream of the closet.
     PipeRun(uid="885X4850FE", tag="PR-M-S-SUITE-WC-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(134.81), inch(252.406)), pt(inch(134.81), inch(252.406)),
-                  pt(ft(12), inch(252.406)), pt(ft(12), ft(18)), pt(ft(12, 6), ft(18))),
+                  pt(inch(139.5), inch(252.406)), pt(inch(139.5), inch(266.25)),
+                  pt(ft(12), inch(266.25)), pt(ft(12), inch(246)), pt(ft(12), ft(18)),
+                  pt(ft(12, 6), ft(18))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(10, 0.75), inch(116.75), inch(116.5), inch(112.6), ft(9, 3)),
+            elevations=(ft(10, 0.75), inch(116.75), inch(116.65), inch(116.35), inch(116.25),
+                        inch(115.7), inch(112.6), ft(9, 3)),
             serves=("FX-S-SUITEBATH-WC",)),
-    # The 30" vanity's 1 1/2" arm: down inside W-S-SN3 (the staggered wet wall this bath was
-    # laid out around), south across one truss, then west on the y=246" bay to the collector.
-    # The tie is at y=246" and not at the 240" truss line, which is where the arithmetic
-    # first put it — a wye centred on a chord is not a fitting anybody can install.
+    # The 30" vanity: a 3 1/4" arm into W-S-SN3 at 20 3/4" AFF to PR-S-SUITEBATH-LAV-VENT's
+    # tee (2D is 3"), down the wall between the cold riser and the hot tee, and 4" south onto
+    # the tub branch's crown.
     PipeRun(uid="HNBWJNTS71", tag="PR-M-S-SUITE-LAV-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(165.5), inch(264.755)), pt(inch(165.5), inch(268)), pt(inch(165.5), inch(268)), pt(inch(165.5), inch(246)), pt(ft(12), inch(246)),),
+            path=(pt(inch(165.5), inch(264.755)), pt(inch(165.5), inch(268)),
+                  pt(inch(165.5), inch(268)), pt(inch(165.5), inch(264)),),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(141.5), inch(141.43), inch(117.5625), inch(117.0), inch(116.2),),
+            elevations=(inch(141.5), inch(141.43), inch(116.2), inch(115.85),),
             serves=("FX-S-SUITEBATH-LAV",)),
-    # The tub-shower's 1 1/2" waste, from the north-end waste-and-overflow at
-    # (197.615", 261.125"): down its own bay, west in it to x=16'-3" (197.615" stood on the
-    # web at 204"), south under the tub across two trusses, then west on the y=19'-0" bay to the collector 1'-6" south of the vanity arm's tie. Two
-    # separate wyes on the 3", 18" apart, rather than one fitting taking both.
+    # The tub-shower, from the waste-and-overflow at (197.615", 261.125"): the trap hangs
+    # under the deck (weir 117"), its arm turns north 2 3/8" to PR-S-SUITEBATH-TUB-VENT's
+    # tee, then west on y=22'-0" over CD-M-DATA-KITCH (0.29") and under PR-A-HW-STUBATH
+    # (0.2"), takes the lav at x=13'-9 1/2", south at x=13'-7" (the 161 1/2"..174 1/2"
+    # opening, over DU-M-ERV-R-LAUNDRY and -STUDY) and west on y=19'-0" to the collector.
     PipeRun(uid="WVNA8G8ZHX", tag="PR-M-S-SUITE-TUB-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(197.615), inch(261.125)), pt(inch(197.615), inch(261.125)),
-                  pt(inch(195), inch(261.125)), pt(inch(195), ft(19)), pt(ft(12), ft(19))),
+                  pt(inch(197.615), inch(264)), pt(inch(189), inch(264)),
+                  pt(inch(171), inch(264)), pt(inch(163), inch(264)),
+                  pt(inch(163), ft(19)), pt(ft(12), ft(19))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(10, 0.75), ft(9, 9.4375), inch(117.35), inch(116.5), inch(114.3)),
+            elevations=(ft(10, 0.75), inch(117.45), inch(117.38), inch(117.2), inch(115.85),
+                        inch(115.65), inch(114.9), inch(114.45)),
             serves=("FX-S-SUITEBATH-TUBSH",)),
 ]
 
@@ -893,9 +928,15 @@ STUDIO_DRAINS = [
     # bay the pan's grate already sits in — and crosses nothing at all for 6'-7". It ties into
     # the leg above at (9'-11", 20'-7 5/8"), just over that pipe's CENTRELINE there.
     PipeRun(uid="BVZG9VAP7M", tag="PR-A-STUBATH-SH-DRAIN", system=PipeSystem.DRAIN,
+            # ** THE TEE IS AT THE TOP OF A DROP IN W-A-C2M'S CAVITY (2026-11-05). ** The trap
+            # drops 3 3/4" to the weir (237"), a 20 3/8" arm runs east at 1/4"/ft to a sanitary
+            # tee at (17'-11", 20'-7 5/8") — the shower's vent rises plumb from it (905.2) — and
+            # the drain drops 2 3/8" (a 2" OD is 2 3/8") and returns west under the arm. The tee
+            # stands 0.45" under the weir (905.5); the return falls 0.253"/ft.
             path=(pt(ft(16, 2.625), ft(20, 7.625)), pt(ft(16, 2.625), ft(20, 7.625)),
+                  pt(inch(215), ft(20, 7.625)), pt(inch(215), ft(20, 7.625)),
                   pt(ft(9, 11), ft(20, 7.625))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(20, 0.75), ft(19, 5.75), ft(19, 4.125)),
+            elevations=(ft(20, 0.75), inch(237.0), inch(236.55), inch(234.15), ft(19, 4.125)),
             serves=("FX-A-STUBATH-SH",)),
 ]

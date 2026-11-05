@@ -84,16 +84,14 @@ entry (`C2 E1` = C2.md, escalation E1). `carried` names the round-1 item.
    → One package: 2x12 KDAT rim, double blocks tight to the rim, and Ultralox's
    SD04964 5/16×6" screws (2025 guide p.37). M.
 5. **DWV vent rules and the three unvented fixtures** (C4 E11–E13, M5-101..105/109) ·
-   carried (item 18).
-   - Nine vents leave their drain horizontally at centreline height (UPC 905.2 / MN 905.3).
-   - `mep.trap_arm_developed` counts a vertical drop as arm (UPC 905.5/1002.4).
-   - FX-M-BATH2-TUB, FX-S-SUITEBATH-LAV and FX-S-SUITEBATH-TUBSH are still refused by
-     `haus route --fixture`. The suite-lav supply lane is now open, and TUBSH needs its arm
-     re-routed (90" against 42").
-   - Two vent tees sit on cleanouts.
-
-   Moving the 3D walk under the CODE id adds 3 FAILs today.
-   → A plumber layout pass, then the rules. M–L.
+   **closed 2026-11-05** but for one vent.
+   - Every vent now leaves its drain at a tee within one arm diameter of the weir, rising at
+     45 degrees or steeper; `mep.vent_connection` grades the four rules (ADVISORY).
+   - BATH2's tub and the suite's lav and tub have 3D vents; the suite takes individual dry
+     vents (a 908.2 wet vent had no legal lane). The two cleanout tees are separated.
+   - The 3D walk is `mep.trap_arm_length` (CODE) since then, and the plan-`hypot` check is
+     deleted; it counts a drop before the vent as an S-trap.
+   - Open: `PR-M-BATH2-WC-VENT` offsets under the bowl's rim (framing; TODO).
 6. **Exterior doors on the joist-top datum** (C1 E1, O3-103 = F1-102 = F3-107) · carried
    (TODO). D-M-ENTRY, D-M-PORCH and D-S-BALCONY keep their RO base at the joist top, ¾" under
    the subfloor their walls stand on. The model keeps the subfloor continuous under the

@@ -730,18 +730,17 @@ def test_the_wall_exit_leaves_from_the_jogged_station_not_the_chase():
 
 
 def test_trap_arms_are_walked_in_3d_to_a_vent_that_meets_the_drain(catlin_model):
-    """C6-E7: `mep.trap_arm_developed` walks the drain from the trap to the first vent tee
+    """C6-E7: `mep.trap_arm_length` walks the drain from the trap to the first vent tee
     (or a wet vent that grades legal under 908). The basement WC was the reviewer's case: the
     utility sink, 116" down the drain, is no legal wet vent (houses/catlin/notes/
-    wet_vent_basis.md), so it got its own tee 69" from the flange, against 72"."""
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY,
-                            only="mep.trap_arm_developed")
+    wet_vent_basis.md), so it got its own tee 70" from the flange, against 72"."""
+    report = run_from_model(catlin_model, [], tier=Tier.CODE, only="mep.trap_arm_length")
     by = {f.element_tags[0]: f for f in report.findings}
     assert by["FX-A-STUBATH-WC"].result.value == "pass"  # its riser, plan/mep_vent_tees.py
     assert by["FX-B-BATH-WC"].result.value == "pass"
-    assert 'develops 69"' in by["FX-B-BATH-WC"].message
-    # Still open: no lane for its vent (plans/TODO.md).
-    assert "no vent meets its drain" in by["FX-M-BATH2-TUB"].message
+    assert 'develops 70"' in by["FX-B-BATH-WC"].message
+    # Its vent tee since 2026-11-05: the arm crosses joist 13's web to W-M-BA2E2.
+    assert by["FX-M-BATH2-TUB"].result.value == "pass"
 
 def _wet_layout(child_in: float):
     """Lav arm -> main; a tub drain C (vent tee at its top) and a WC arm join the main."""

@@ -19,6 +19,7 @@ CORIAN_TOP = ProductPart(role="top", product_ref="PROD-CORIAN-GLACIER-WHITE")
 ANGSJON_36 = FixtureType(
     tag="FX-ANGSJON-36", name='ÄNGSJÖN 36 with ORRSJÖN 37 single-bowl top',
     footprint=(inch(37), inch(21.75)), height=inch(27.625 + 8.4375),
+    flood_rim_height=inch(27.625),  # 36 in. rim AFF on its 8 3/8 in. mount
     mount=Mount(elevation=inch(8.375)),
     plan_symbol="drawer-vanity", basin=True, needs=NEEDS,
     product_ref="PROD-IKEA-ANGSJON-36",
@@ -49,6 +50,7 @@ def sektion_vanity(width_in, product_ref, *, utility=False):
         tag=f"FX-VANITY-{width_in}-SEKTION" + ("-SS" if utility else ""),
         name=f'{width_in} in. floating SEKTION / AXSTAD, bonded Corian bowl',
         footprint=(inch(width_in), inch(18)), height=inch(36 + (6.25 if utility else 8.4375)),
+        flood_rim_height=inch(36),
         plan_symbol="vanity", model_representation=ModelRepresentation(
             symbol="sektion-vanity-indy" if utility else "sektion-vanity",
             material_refs=UTILITY_MATERIAL_REFS if utility else THEME_MATERIAL_REFS),
@@ -74,6 +76,7 @@ SEKTION_24_SS = sektion_vanity(24, "PROD-IKEA-SEKTION-WALL-24-AXSTAD", utility=T
 CHULTON_30 = FixtureType(
     tag="FX-CHULTON-30", name='Kohler Chulton 30, white quartz and undermount basin',
     footprint=(inch(30.9375), inch(22.4375)), height=inch(36 + 8.4375),
+    flood_rim_height=inch(36),
     plan_symbol="drawer-vanity", basin=True, needs=NEEDS,
     product_ref="PROD-KOHLER-REC39579",
     model_representation=ModelRepresentation(symbol="door-drawer-vanity", material_refs=THEME_MATERIAL_REFS),
@@ -91,6 +94,7 @@ CHULTON_30 = FixtureType(
 SUNNERSTA_BAR_SINK = FixtureType(
     tag="FX-SUNNERSTA-BAR-SINK", name="SUNNERSTA integral bar sink, Indy stainless",
     footprint=(inch(18), inch(14)), height=inch(20 + 6.25), basin=True,
+    flood_rim_height=inch(20),
     mount=Mount(elevation=inch(16)), plan_symbol="lavatory-wall-hung", needs=NEEDS,
     product_ref="PROD-IKEA-SUNNERSTA-SINK",
     parts=(UTILITY_FAUCET_PART, TUBULAR_TRAP),

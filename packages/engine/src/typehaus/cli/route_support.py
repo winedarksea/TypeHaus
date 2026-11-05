@@ -75,6 +75,16 @@ class Endpoints:
     #: An exact, directed equipment port at an end: that end is moved to the lead's stub tip.
     origin_lead: PortLead | None = None
     root_lead: PortLead | None = None
+    #: ``--fixture``: the trap's weir where it is not the port — a floor outlet's trap hangs
+    #: under the floor (``resolve/mep_trap_arm.under_floor_weir_m``). None: the origin.
+    weir_m: float | None = None
+    #: ``--fixture``: bathroom-group drains the arm may end on as a 908.2 wet vent.
+    wet_candidates: tuple[str, ...] = ()
+
+    @property
+    def weir(self) -> float:
+        """Where a falling run's profile starts: the trap weir, else the origin."""
+        return self.origin[2] if self.weir_m is None else self.weir_m
 
 
 from typehaus.cli.route_roots import (  # noqa: E402
@@ -200,7 +210,8 @@ def _target_endpoints(model: ResolvedModel, target: str, mode: str,
         from typehaus.resolve.mep_sleeves import expected_port_point
 
         port = expected_port_point(model, target, Service.DRAIN)
-        floor_m = _storey_datum(model, storey) + (port[2] if port is not None else 0.0)
+        datum_m = _storey_datum(model, storey)
+        floor_m = datum_m + (port[2] if port is not None else 0.0)
         near = _nearest_main(model, point, floor_m, problems, target, exclude=target)
         if near is None:
             return None
@@ -216,13 +227,18 @@ def _target_endpoints(model: ResolvedModel, target: str, mode: str,
         # touching them let the branch through its own supply lines.
         replaced = {run.tag for run in model.pipe_runs
                     if target in run.serves and run.system == "drain"}
+        from typehaus.cli.route_fixture_wet import wet_candidates
+        from typehaus.resolve.mep_trap_arm import under_floor_weir_m
+
+        wet = wet_candidates(model, target, point, floor_m)
         return Endpoints(
             origin=(point[0], point[1], floor_m), root=root, kind="pipe",
             radius_m=pipe_trade.radius_m(diameter_m),
             cavity_radius_m=pipe_trade.cavity_radius_m(diameter_m, "drain"),
             diameter_m=diameter_m, serves=(target,),
             storey=storey, system="drain", falls=True,
-            touch=frozenset({parent, *replaced}), fixture=target)
+            touch=frozenset({parent, *replaced, *wet}), fixture=target,
+            weir_m=under_floor_weir_m(model, target, datum_m, port), wet_candidates=wet)
 
     problems.append(f"{target}: not a run in this model")
     return None

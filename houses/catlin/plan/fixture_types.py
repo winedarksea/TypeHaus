@@ -86,6 +86,7 @@ MOEN_ALIGN_ROMAN = FixtureType(
 DCODE_WALL_BASIN = FixtureType(
     tag="FX-DURAVIT-DCODE-070545", name="D-Code wall-mounted basin, 15 3/8 x 8 1/2 in. bowl",
     footprint=(inch(17.75), inch(13.375)), height=m(0.285),
+    flood_rim_height=m(0.145),  # the china: 34 in. rim AFF
     plan_symbol="lavatory-wall-hung", basin=True,
     mount=Mount(kind=MountKind.WALL, elevation=m(0.7186)),
     product_ref="PROD-DURAVIT-07054500002",

@@ -62,10 +62,14 @@ def routing_cli(monkeypatch, tmp_path):
 
 
 def _blocked():
+    from typehaus.cli.route_takeoff_table import TakeoffRow
+
+    duct = Blocker("DUCT", "run", Mobility.MOVABLE, 1.0, 2.0, 3.0)
     return Refusal(
         target="BLOCKED", service="supply", end="origin", reachable_nodes=1, total_nodes=20,
-        blockers=[Blocker("DUCT", "run", Mobility.MOVABLE, 1.0, 2.0, 3.0)],
-        shortages=("bay is two inches narrow",), attempts=("margin 8 ft",))
+        blockers=[duct], shortages=("bay is two inches narrow",), attempts=("margin 8 ft",),
+        takeoffs=[TakeoffRow((98.0, 216.0), 22.0, "W-1", duct, 34.75),
+                  TakeoffRow((100.0, 216.0), 25.0, None)])
 
 
 def test_json_keeps_warning_timing_and_evaluation_without_console_prose(routing_cli):
@@ -128,8 +132,14 @@ def test_summary_preserves_decisions_and_full_artifacts(routing_cli, tmp_path, m
     summary = json.loads(result.stdout)
     full = json.loads((tmp_path / "report.json").read_text())
     assert summary["evaluations"] == full["evaluations"]
-    for key in ("problems", "notices", "refusals"):
+    for key in ("problems", "notices"):
         assert summary[key] == full[key]
+    # A take-off row's station stays in report.json; the summary keeps what decides.
+    rows = full["refusals"][0]["takeoffs"]
+    assert rows[0]["station_in"] == [98.0, 216.0] and rows[0]["blocker"] == "DUCT"
+    assert summary["refusals"][0]["takeoffs"] == [
+        {k: v for k, v in r.items() if k != "station_in"} for r in rows]
+    assert len(result.stdout.strip().splitlines()) == 1
     row = summary["proposals"][0]
     assert row["notes"] and row["after_paste"] and row["fitting_gaps"]
     assert row["storey"] == "main" and row["cost_in_equivalent"] == 36.0
