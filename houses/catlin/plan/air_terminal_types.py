@@ -142,6 +142,7 @@ AIR_REGISTER_TYPES = (
                  footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
                  plan_symbol="register", ventilation_terminal=True,
                  product_ref="PROD-AIR-DISC-VALVE-100",
+                 parts=(ProductPart(role="fitting", product_ref="PROD-AIR-DAMPER-4-24V"),),
                  static_loss_pa_at_cfm=_PLANT_PA, neck=_VALVE_NECK,
                  source=f"notes/plant_room.md — dedicated dampered extract off EQ-B-ERV; "
                         f"damper PROD-AIR-DAMPER-4-24V at the level-2 plenum. A stainless "

@@ -13,8 +13,12 @@ WC_ROUGH_IN_IN = 12.0
 VALVE_HALF_SPACING_IN = 2.0
 
 
-def floor_wc_ports(depth_in: float) -> tuple[ServicePort, ...]:
-    """Flange and supply stop for a floor bowl whose tank back stands at the finished wall."""
+def floor_wc_ports(depth_in: float, supply_left_in: float,
+                   supply_aff_in: float) -> tuple[ServicePort, ...]:
+    """Flange and supply stop for a floor bowl whose tank back stands at the finished wall.
+
+    The stop station is the TOTO sheet's suggested one ("Supply as Req'd"), per type.
+    """
     back_in = depth_in / 2
     return (
         ServicePort(tag="WC-DRAIN", service=Service.DRAIN,
@@ -23,10 +27,11 @@ def floor_wc_ports(depth_in: float) -> tuple[ServicePort, ...]:
                     notes='Closet flange at the finished floor, the 12" published rough-in off '
                           "the wall the tank back stands at."),
         ServicePort(tag="WC-WATER_COLD", service=Service.WATER_COLD,
-                    position=(inch(-6), inch(back_in), inch(8)),
+                    position=(inch(-supply_left_in), inch(back_in), inch(supply_aff_in)),
                     connection_size=inch(0.5), direction=(0, 1, 0),
-                    notes='Angle stop allowance, 6" left of centre and 8" AFF; TOTO publishes '
-                          "no inlet station for these bowls."),
+                    notes=f'Angle stop {supply_left_in}" left of centre, {supply_aff_in}" AFF: '
+                          "the TOTO spec sheet's suggested supply station, not a rough-in "
+                          "limit, so it stays approximate."),
     )
 
 

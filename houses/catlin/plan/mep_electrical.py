@@ -613,11 +613,11 @@ NEMA_CLAMP = []
 # at 17'-0" sits 3'-11" below the head, inside the same ~6' spacing the other three keep.
 # 6' apart is three 24" girt courses, so
 # every strap lands on a course and none of them needs its own blocking. Each on the wall
-# with cladding at that elevation. Plan position is the leader's own centreline, 8.77" outboard
+# with cladding at that elevation. Plan position is the leader's own centreline, 9.805" outboard
 # of the sheathing datum (trough mid-width, params/roof_trim.py::_TROUGH_MID_IN) — literal
 # offsets below, not arithmetic, since the editable-plan dialect forbids binary operators.
-_LEADER_X_W = inch(-8.77)
-_LEADER_X_E = ft(36, 8.77)
+_LEADER_X_W = inch(-9.805)
+_LEADER_X_E = ft(36, 9.805)
 _LEADER_Y = ft(35, 6)
 
 LEADER_CLAMPS = [

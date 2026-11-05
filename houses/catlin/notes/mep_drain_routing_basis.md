@@ -488,7 +488,8 @@ inflated, stands over x = 30"..42": a quarter to three quarters of edge B–C, d
 
 ## 9. One fixture's arm and its vent, searched together: FX-S-SUITEBATH-LAV (2026-11-03)
 
-**The arm.** The suite lavatory drains through a 1 1/4" arm. Table 1002.2 allows **30"**
+**The arm.** The search proposes a 1 1/4" arm for the suite lavatory (the authored `PR-M-S-SUITE-LAV-DRAIN` is
+Ø1.5", graded against 42", and runs 70.6" to its collector, 2026-11-05). Table 1002.2 allows **30"**
 developed at that size, and over 30" at 1/4"/ft the arm falls 30 / 12 x 0.25 = **0.625"**.
 While the arm is open the search may not drop (a fall of more than a pipe diameter before
 the vent is an S-trap) and may not develop past 30". It closes at a take-off: a node on a

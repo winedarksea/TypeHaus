@@ -37,7 +37,7 @@ projection, with the face height in `height`); its `TerminalNeck` is the part in
 | term | basis of design | or equal | value | source |
 |---|---|---|---|---|
 | valve, 100 mm | Vents-US AM 100 VRF (collar included) | Trox LVS/TVS 100, Lindab KU/KK 100, Zehnder ComfoValve 100 | face Ø 5 1/16" (128.5 mm), overall H 1 3/4", $19 | hvacdirect.com AM series sheet |
-| spigot | 98 mm (3 7/8") | Trox LVS 100 ØD 99 mm | slips into a 4" snap-lock collar (101.6 mm ID) with ~1/8" play: **mastic and UL 181A-P foil tape**, no adapter | inference, both sheets |
+| spigot | 98 mm (3 7/8") | Trox LVS 100 ØD 99 mm | slips into a 4" snap-lock collar (101.6 mm ID) with ~1/8" play: **UL 181B-M mastic and 181B-FX foil tape** (metal duct, IMC 603.9), no adapter | inference, both sheets |
 | loss, fully open (+5 mm) | — | Trox LVS 100, PD-02/2022 | 8 / 19 / 33 / 52 Pa at 10 / 15 / 20 / 25 L/s; <15 dB(A) to 15 L/s | Trox quick-sizing table |
 | valve, 125 mm | Vents-US AM 125 class | Trox LVS 125 | face Ø 162 mm; 9 / 15 / 24 / 35 Pa at 15-30 L/s | Trox table |
 
@@ -155,12 +155,13 @@ the corrosion answer. The intake keeps its filter grille.
 ## 11. Ducts
 
 - **ERV radials**: 4" galvanized snap-lock with stamped adjustable elbows (already billed).
-  The library row still calls it 26 ga; IRC M1601.1.1 asks 0.013" (30 ga) under 12".
-- **Trunks and risers**: 6"/8" galvanized; every seam UL 181 mastic or foil tape (IRC
-  M1601.4.1). House-air ducts bare; OA/EA per §9.
+  The library row still calls it 26 ga; IMC 2018 Table 603.4 (Minn. R. 1346, which replaces
+  IRC ch. 12-24 in Minnesota) asks 0.013" (30 ga) for round under 12".
+- **Trunks and risers**: 6"/8" galvanized; every seam UL 181B-M mastic or 181B-FX foil tape
+  (IMC 2018 603.9; 181A is the fibrous-glass class). House-air ducts bare; OA/EA per §9.
 - **System 1 rectangular trunks** (`DU-S-HP-SUP` 18x8, `-RET` 10x18, `-SUITE` 10x8,
   `-SOUTH`/`-SOUTH-RISE` 10x6): `material="galvanized"` now, matched to the gauge band rows
-  `DUCT-T-GALV-RECT-*` (IRC 2018 Table M1601.1.1, 1/2" w.g. column): **26 ga** for the 18"
+  `DUCT-T-GALV-RECT-*` (IMC 2018 Table 603.4 = IRC Table M1601.1.1, 1/2" w.g. column): **26 ga** for the 18"
   sides, **30 ga** for the 10" ones, printed on the duct schedule. Shop-fabricated,
   mastic-sealed, no liner (cleanability), canvas connectors at the air handler.
 

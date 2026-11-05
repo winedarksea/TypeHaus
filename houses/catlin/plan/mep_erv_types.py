@@ -60,12 +60,12 @@ EQUIPMENT_TYPES_ERV = (
                   # off the bottom of the table, it is out of its operating envelope. The
                   # check draws a harder line here than it does at 1.2.
                   fan_curve_max_static_in_wg=1.3,
-                  # The -13 F certified figure, NOT the 32 F one. This is a -15 F design
+                  # The -13 F figure (at 83 cfm, an upper bound at 204), NOT the 32 F one. This is a -15 F design
                   # house; grading its block load against a 32 F recovery number would
                   # credit the ventilation term with heat the core does not recover on the
                   # day that sizes the equipment.
                   sensible_recovery_effectiveness=0.65,
-                  source="Broan B210E75RT. HVI-certified 206 CFM net supply at 0.4 in. w.g. (HVI ID 2004940) — that is the rating point. The manufacturer's '210 CFM at 0.2 in. w.g.' is the model-name point off the fan curve and is NOT the certified rating; quoting it as one halves the apparent static budget. Six-inch round top ports, 24.8 in. W x 21.6 in. H x 21 in. D, MERV 8 filtration standard (MERV 13 optional), SRE 81% at 32 F and 65% at -13 F. The -13 F figure is the one authored above; see the note there. The spec sheet publishes the whole fan curve (214 cfm at 0.1 in. w.g. falling to 176 at 1.2; 1.3 in. w.g. is the ceiling above which the core deforms), which is authored as `fan_curve` — the 0.2 in. and 0.4 in. figures are two stations on it, not two claims. Broan's installation manual carries one distribution instruction and this house obeys it: above 200 cfm with long runs or many elbows, take the trunk up to 8 in. See notes/erv_static_budget.md for where this house stands against that advice and what the upsize would cost.",
+                  source="Broan B210E75RT. HVI-certified 206 CFM net supply at 0.4 in. w.g. (HVI ID 2004940) — that is the rating point. The manufacturer's '210 CFM at 0.2 in. w.g.' is the model-name point off the fan curve and is NOT the certified rating; quoting it as one halves the apparent static budget. Six-inch round top ports, 24.8 in. W x 21.6 in. H x 21 in. D, MERV 8 filtration standard (MERV 13 optional), SRE 78% at 32 F (81 cfm), 81% at 32 F (64 cfm), 72% at 32 F (161 cfm) and 65% at -13 F (83 cfm), spec sheet p.1 (not HVI-certified). The -13 F figure is the one authored above; it is read at 83 cfm and is an upper bound at the ~204 cfm this house runs (SRE falls with flow; no row near 204 cfm is published). The spec sheet publishes the whole fan curve (214 cfm at 0.1 in. w.g. falling to 176 at 1.2; 1.3 in. w.g. is the ceiling above which the core deforms), which is authored as `fan_curve` — the 0.2 in. and 0.4 in. figures are two stations on it, not two claims. Broan's installation manual carries one distribution instruction and this house obeys it: above 200 cfm with long runs or many elbows, take the trunk up to 8 in. See notes/erv_static_budget.md for where this house stands against that advice and what the upsize would cost.",
                   # ** THE COLLARS ARE BROAN'S DRAWING (spec sheet p. 2, "6\" Ports
                   # Dimensions"). ** Product frame: centre of the 24 13/16 x 21 footprint,
                   # +y the back; the electrical box is the 2 15/16" at -x and the door is
@@ -248,8 +248,9 @@ EQUIPMENT_TYPES_ERV = (
                   # 17.76 Pa expansion + 1.02 Pa port = 15.2 Pa at 210 cfm, Q^2 (§10.6).
                   static_loss_pa_at_cfm=((60.0, 1.24), (120.0, 4.96), (210.0, 15.2)),
                   source="Fabricated galvanized plenum for THIS house, 36 x 8 x 8 in: a 6 in trunk inlet and a 6 in riser takeoff in the underside, and three 4 in dampered start collars at the stations below. The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
+                  # Trunk inlet where DU-B-ERV-SUP-TRUNK rises off Broan port 2 (2026-11-05).
                   ports=(ServicePort(tag="trunk", service=Service.SUPPLY_AIR,
-                                     position=(inch(3), inch(0), inch(0))),
+                                     position=(inch(10.65625), inch(-0.875), inch(0))),
                          ServicePort(tag="riser", service=Service.SUPPLY_AIR,
                                      position=(inch(-12), inch(4), inch(4))),
                          ServicePort(tag="collar-sauna", service=Service.SUPPLY_AIR,

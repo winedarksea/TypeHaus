@@ -106,7 +106,7 @@ TOTO_CARLYLE_II = FixtureType(
     product_ref="PROD-TOTO-CST614CEFGAT40",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(water_closet_required_clearance(inch(28.3125)),),
-    ports=floor_wc_ports(28.3125),
+    ports=floor_wc_ports(28.3125, 6.0, 8.0),  # SS-01809
     source='TOTO Carlyle II CST614CEFGAT40#01, owner selection 2026-09-06. 28 5/16" D x '
            '16 1/2" W x 28 3/4" H (TOTO SS-01809, same bowl/tank as MS614124CEF(R)G; '
            'Ferguson CST614CEFGAT40 listing, 2026-10-31), 12" rough-in, 1.28 gpf '
@@ -130,7 +130,8 @@ TOTO_AQUIA_IV = FixtureType(
     product_ref="PROD-TOTO-CST446CEMGN",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(water_closet_required_clearance(inch(27.5625)),),
-    ports=floor_wc_ports(27.5625),
+    # SS-02072 suggests 4 3/4" AFF ("as req'd"); 7" clears the 3 1/2" base.
+    ports=floor_wc_ports(27.5625, 5.875, 7.0),
     source='TOTO Aquia IV CST446CEMGN#01, owner selection 2026-09-06. TOTO USA spec sheet '
            'read 2026-09-06: 27 9/16" D x 15 1/2" W x 29 1/8" H, rim 14 15/16", 12" '
            'rough-in, 1.28/0.9 gpf dual flush, CEFIONTECT, skirted trapway. ** THAT RIM '
@@ -152,7 +153,7 @@ TOTO_DRAKE = FixtureType(
     product_ref="PROD-TOTO-CST776CEFG",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(water_closet_required_clearance(inch(28.375)),),
-    ports=floor_wc_ports(28.375),
+    ports=floor_wc_ports(28.375, 4.3125, 7.5),  # SS-02049
     source='TOTO Drake CST776CEFG#01, owner selection 2026-09-06. Published dimensions read '
            '2026-09-06: 28 3/8" D x 17 3/16" W x 30 1/8" H, rim 16 1/8" (universal height), '
            '12" rough-in, 2 1/8" trapway, 1.28 gpf Tornado Flush, CEFIONTECT. Seat is the '

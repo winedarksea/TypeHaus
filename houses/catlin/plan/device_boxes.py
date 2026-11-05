@@ -83,7 +83,7 @@ BOX_STANDARD = [
                    box_size=(inch(4), inch(4), inch(2.125)), designation="4 x 2-1/8 square"),
             BoxRow(mounting="surface", gangs=1, use="luminaire", box_product_ref="PROD-RACO-192",
                    cover_product_ref="PROD-RACO-753",
-                   box_size=(inch(4), inch(4), inch(1.5)), designation="4 x 1-1/2 square",
+                   box_size=(inch(4), inch(4), inch(1.563)), designation="4 x 1-1/2 square",
                    cover_rise=inch(0.0625)),
             BoxRow(mounting="flush", gangs=1, use="recessed",
                    box_product_ref="PROD-ARLINGTON-DVFR1W",

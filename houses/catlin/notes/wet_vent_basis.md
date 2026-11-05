@@ -48,3 +48,8 @@ Vertical (908.1) is no help: the WC does not discharge into the sink's drop, and
 in the sense of 1002.2** — the 116" figure is moot. `PR-B-BATH-VENT` serves the WC by plan distance (67", `mep.trap_arm_length`)
 but does not meet the drain. A fix is house work: a true vent tee on the WC arm within 72", or a bathroom-group-only,
 3" wet vent with the WC last.
+
+**Status 2026-11-05: the fix landed.** `PR-B-BATH-WC-VENT` is a true tee on `PR-B-BATH-DRAIN` at (144", 231.3"), so the
+WC's arm is 8.55" (slab drop) + 60.5" (south to the tee) = **69.1"** against 72", and `mep.trap_arm_developed` walks 69".
+The 116" arm and "unvented" above describe the model before that tee; the wet-vent verdict table still stands as the
+oracle for `grade_wet_vent` (the utility sink is not a legal wet vent).

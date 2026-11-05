@@ -51,8 +51,10 @@ def wall_device_opening(ctx: CheckContext) -> list[Finding]:
             findings.append(unknown(_CHECK_ID, f"{device.tag}: body envelope is unresolved",
                                     (device.tag,)))
             continue
-        wall = walls.get(body.attachment_wall or "")
-        if wall is None or wall.storey != body.storey:
+        # A court wall is filed on its own building's storey and is absent from the house
+        # list; the attachment names it by tag, and the test below is absolute in z.
+        wall = walls.get(body.attachment_wall or "") or ctx.model.wall(body.attachment_wall or "")
+        if wall is None:
             findings.append(unknown(_CHECK_ID, f"{device.tag}: attachment wall is unresolved",
                                     (device.tag,)))
             continue

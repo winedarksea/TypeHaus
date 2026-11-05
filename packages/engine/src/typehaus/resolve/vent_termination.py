@@ -5,7 +5,8 @@ riser from it, and the ``mep.vent_termination_height`` check validates any hand-
 ``VentRun.roof_termination_elevation`` against it.  Nothing else may re-derive the number —
 a second copy is how the authored 33' riser drifted 6 ft above its own 4:12 roof.
 
-IRC P3103.1 sets a 6" minimum above the roof surface; TypeHaus terminates at 12", the
+IRC P3103.1 sets a 6" minimum above the roof surface (Minnesota deletes it, Minn. R. 1309;
+ch. 4714 / UPC 906 governs there); TypeHaus terminates at 12", the
 cold-climate practice value that keeps the terminal clear of drifted snow at the rake.
 """
 

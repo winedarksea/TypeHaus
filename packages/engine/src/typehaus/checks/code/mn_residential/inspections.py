@@ -155,7 +155,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         on_site=("duct runs complete and supported", "equipment set and level",
                  "combustion and exhaust terminations set"),
         milestone="rough_ins",
-        code_refs=("IRC M1601", "MN Rules 1322 R403.5"),
+        code_refs=("IMC 603 (MN Rules 1346)", "MN Rules 1322 R403.5"),
     ),
     InspectionSpec(
         id="rough_electrical", label="Rough electrical",

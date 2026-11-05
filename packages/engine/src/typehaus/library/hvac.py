@@ -146,7 +146,8 @@ ALL_DUCT_PRODUCT_TYPES = (
         tag=f"DUCT-T-GALV-RECT-{side}", section="rectangular", material="galvanized",
         name=f"Rectangular galvanized sheet-metal duct, largest side to {side}in, {gauge} ga",
         max_side=inch(side), gauge=gauge, thickness=inch(thickness),
-        source=("IRC 2018 Table M1601.1.1, single dwelling units, 1/2 in. w.g. static "
+        source=("IRC 2018 Table M1601.1.1 (= IMC 2018 Table 603.4, Minn. R. 1346), "
+                "1/2 in. w.g. static "
                 f"column: {thickness} in. minimum galvanized for a largest side to {side} in.; "
                 f"{gauge} ga is the stock sheet that meets it"),
     ) for side, gauge, thickness in ((10, 30, 0.013), (12, 28, 0.016), (18, 26, 0.019),

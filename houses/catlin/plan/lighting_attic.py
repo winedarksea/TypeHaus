@@ -340,10 +340,10 @@ ATTIC_LIGHTING = [
                      position=pt(ft(13, 9), ft(19, 6)), type_ref="ED-T-LT-WAFER4",
                      circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
                      controlled_by=("ED-A-STUBATH-SW",),
-                     # 7'-0" exactly: x 13'-9" is where H(x) reaches 7'-0", which is why
-                     # this can did not have to move when the roof did — it was already on
-                     # the one station in this bath the new plane keeps.
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7),
+                     # The wafer flange on the finished gypsum: at x 13'-9" the 13.98"
+                     # roof stack puts the board face 6'-9 11/16" AFF (2026-11-05; 7'-0"
+                     # left it 2.3" up in the bay).
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(6, 9.6875),
                                  recessed_into_host_surface=True)),
     # On W-A-BATH-S's north face — the wall you reach for on the way in. It was first put on
     # W-A-STU-W beside the lavatory, and `test_wall_mounted_devices_resolve_against_a_wall_face`

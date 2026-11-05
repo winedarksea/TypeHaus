@@ -406,7 +406,8 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     assert above_floor("ED-M-DINING-PEND") == pytest.approx(
         living_floor + ceiling["main"] - ft(3, 6).meters)
     # A stated elevation wins: the attic ceiling is a 6:12 rake, not the storey default.
-    # 7'-0" is `1 1/2" + x/2` at this can's x=13'-9" — the plane it is recessed into.
+    # 6'-9 11/16" is the finished gypsum at this can's x=13'-9" (the roof stack's 13.98" under
+    # the deck line) — the plane it is recessed into.
     # ** This used to read ED-A-EAST-CAN3 at 7'-1 1/2". ** The attic came off its recessed
     # cans on 2026-09-06 (plan/lighting_attic.py) and ED-A-STUBATH-CAN1, over the shower
     # pan, is the one the storey deliberately keeps — so it is now the only fitting that can
@@ -423,7 +424,7 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     # it misses the sheet as well as the covering (→ resolve/room_floor.py).
     assert stubath_build_up == pytest.approx(inch(0.75 + 0.120).meters)
     assert above_floor("ED-A-STUBATH-CAN1") == pytest.approx(
-        stubath_build_up + ft(7).meters)
+        stubath_build_up + ft(6, 9.6875).meters)
 
     switch = next(item for item in model.canvas_objects if item.tag == "ED-M-LIVING-SW")
     # A switch's 48" is AFF, off the plank like the pantry channels.
