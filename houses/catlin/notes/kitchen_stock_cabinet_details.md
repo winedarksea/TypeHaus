@@ -188,9 +188,9 @@ partition is open wall. The north run is 24-inch stock SEKTION (`SEKT-B24/B36/B1
 centres x=413 3/8, fronts flush with PANTRY-S2, with no fillers. Bases use doors and shelves
 in the AXSTAD matte-white family; legs, plinth and suspension rail are separate. Hang the
 B24's door on its north edge so it opens away from the slats. Standard SEKTION legs
-adjusted to 4 1/16 + 30 frame + 1 1/4 subtop + 1 1/4 ash = 36 9/16 installed height,
+adjusted to 4 1/4 + 30 frame + 1 1/4 subtop + 1 1/4 ash = 36 3/4 installed height,
 retaining the dining-window alignment. The legs and recessed toe panels begin at the
-finished floor. Do not raise the complete cabinet symbol by 9/16: that leaves a floating
+finished floor. Do not raise the complete cabinet symbol by 3/4: that leaves a floating
 toe kick. The render includes four load-bearing feet and a separate toe panel per cabinet.
 The taller 6-inch pantry toe is intentional to align its door joints with the hung upper.
 

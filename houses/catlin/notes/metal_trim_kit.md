@@ -189,7 +189,9 @@ cover runs across the canopy joint with no step. 52134XX is a single-slope peak 
 cap; neither is used. The deck slot is the ProfileVent sheet's 2 in (1 in each side), started 6 in from
 the gable ends. Net free area: SFS's ProfileVent sheet (05/2024) prints 23.4 sq in per linear foot,
 "varies with thickness and profile", at 1.20 in nominal; the model reads it per foot of ridge (562 sq in
-over the 24 ft of ridge above the attic, against 553). Every open ridge end (house both, garage north,
+over the 24 ft of ridge above the attic). With the soffit intake (6.48 sq in/LF x 48 LF = 311) R806.2
+passes 873 against 553; 6.48 is Gibraltar's rating for the full 16 in panel, which is ripped to 13 5/8 here
+(about 264 sq in if the rating scales with width, still 826). Every open ridge end (house both, garage north,
 canopy south) takes a field-formed end closure from the cover's coil; the canopy/garage joint stays
 open, one cover lapped across it.
 
@@ -260,7 +262,7 @@ What the model derives and bills, with the counts the tests pin
 | Small rough openings | 4-side window kit on the niche and both ERV hoods; the two 2.5 in hydrant bores are closed by the fixture's flange and sealant | 3 |
 | Screen ends | Corrugated Jamb on both open ends of W-BW-SCREEN and its skirt | 4 |
 | Roof eaves | Extended Eave 52124XX, pan hemmed to its lip (no cleat) | 16 sticks |
-| Roof rakes | House: stock Residential Rake 52126XX with its bottom 1.0 in under the wall head; Rake Cleat 52132XX. Garage and canopy: Flat Cleat 5806199 at 18 in | House 4 runs / 16 ea 52126XX; 5806199 40 ea |
+| Roof rakes | House: stock Residential Rake 52126XX with its bottom 1.0 in under the wall head; Rake Cleat 52132XX. Garage and canopy: Flat Cleat 5806199 at 18 in | All rake runs on slope length: 20 ea 52126XX, 20 ea 52132XX; 5806199 44 ea |
 | Closed ridges | 7 in cover 52131XX, Z-Closure 58603XX each side, double-bead tape 6403899 | 5 sticks |
 | Garage vented ridge | 7 in cover 52131XX over Profile Vent 6441899 (both slopes), 80 clips 6540000, 160 screws 8215100 | 25.4 ft / 3 sticks |
 | Ridge end closures | Field-formed from the cover coil (`ridge-end-closure`), tube sealant and 4 rivets each | 4 ea |
@@ -330,11 +332,14 @@ jambs and screen ends.
 
 ## Supplier confirmation
 
-Two items, plus one optional:
+Three items, plus one optional:
 
 1. Profile Vent 6441899's net free area as installed under the 1 in Image II clip (SFS prints 23.4 sq
    in/ft at 1.20 in nominal, "varies with thickness and profile"), and whether that figure is per
-   strip or per foot of ridge. R806.2 passes on it by 9 sq in.
-2. Whether a stock end closure exists for a gable ridge on the 7 in cover (none is printed).
-3. Optional: stock part numbers for the Corrugated Jamb and the 1.5 in Sill/Head, if stock is preferred
+   strip or per foot of ridge. R806.2 passes 873 vs 553 with the soffit intake; on the ridge alone
+   (562) by 9, and at half the rating (per strip) 592 with the intake.
+2. Whether Profile Vent + clip 6540000 under the 7 in 52131XX cover, both slopes of a gable, is an
+   approved assembly: RDM 5/2024 p. 41's Vented Peak is one-slope, on the Residential Peak 50134XX.
+3. Whether a stock end closure exists for a gable ridge on the 7 in cover (none is printed).
+4. Optional: stock part numbers for the Corrugated Jamb and the 1.5 in Sill/Head, if stock is preferred
    over the site bends.

@@ -36,6 +36,8 @@ from typehaus import (
     FloorOpening,
     FloorOpeningPurpose,
     FollowRoof,
+    Layer,
+    LayerFunction,
     LayerMaterial,
     Node,
     Occupancy,
@@ -454,9 +456,14 @@ ROOMS = [
     # The studio's Gatsby sheet carries on in here: no grout, no backer, no threshold. R305.1 passes on Exception 2, the
     # bathroom rule (6'-8" at each fixture's front-clearance centre): the WC's 6'-8 7/16" is
     # the tight one, bought by W-A-STU-W's furred chase (plan/fixtures.py).
+    # Bath ceilings are 5/8" mold-resistant (Wall board policy, 2026-10-23), here too.
     Room(uid="ACQ0FY2BZD", tag="RM-A-STUBATH", seed=pt(ft(13), ft(20)),
          occupancy=Occupancy.BATHROOM, floor_finish="catlin-vinyl-gatsby",
-         ceiling=FollowRoof(roof_ref="RF-HOUSE")),
+         ceiling=FollowRoof(roof_ref="RF-HOUSE"),
+         ceiling_lining=(
+             Layer(name="gwb-ceil", material_ref="gwb-mr", thickness=inch(0.625),
+                   function=LayerFunction.FINISH),
+         )),
     # Occupancy.STORAGE keeps this out of `_HABITABLE`, which is what keeps R210.52 receptacle
     # spacing and the R303.1 glazing rule off a room nobody occupies.
     Room(uid="17XB5CH977", tag="RM-A-POCKET", seed=pt(ft(5), ft(30)),

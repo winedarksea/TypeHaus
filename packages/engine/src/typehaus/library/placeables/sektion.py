@@ -28,8 +28,9 @@ clearance for mounting cabinets. The 80" high types below include a 3 1/2" suppo
 Catlin's layout; the 90" types retain their earlier 3" support as legacy catalog entries.
 
 The same arithmetic runs the other way at the counter. A 30" frame on a 3 1/2" leg tops at
-33 1/2". A 36" counter with 3 cm stone needs about 1 5/16" of substrate. That build-up is
-invisible under the top and is why the base types below are 36" tall rather than 33 1/2".
+33 1/2". A 36" counter with 3 cm stone needs about 1 5/16" of build-up (Catlin: the leg
+raised to 4" plus a 3/4" ply sub-top). That build-up is invisible under the top and is why
+the base types below are 36" tall rather than 33 1/2".
 
 Like ``casework.py``, nothing here carries a clearance zone: the aisle in front of a run is
 a property of the room, not of any one box.

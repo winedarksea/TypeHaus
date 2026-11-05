@@ -190,7 +190,7 @@ LG_DISHWASHER = ApplianceType(
 # all-freezer for the US market is the LROFC1104V, a 23 7/16" column. Dropping it in leaves
 # 12 9/16" of hole in a finished run, and the alternative (LG's 24" fridge column + 24"
 # freezer column as a 48" pair) throws away two feet of the bay. Frigidaire Professional's
-# single-door pair is 32 7/8" each, 65 3/4" together, and fits the bay it was measured for.
+# single-door pair is 32 7/8" each, 65 3/4" together, in Frigidaire's 66 1/4" paired cutout.
 #
 # **Why not Bosch, which was the other candidate.** Bosch's US column line is exactly two
 # models (a 30" refrigerator and an 18" freezer), and they are genuinely better on depth —
@@ -220,8 +220,8 @@ LG_DISHWASHER = ApplianceType(
 #
 # Dimensions are the cabinet, and the height is the one WITH the hinge cover (71 1/2" bare)
 # because the hinge is what has to clear the over-cabinet above. Frigidaire does not publish
-# depth-with-handle, depth-without-door, or width-at-90-degrees — flagged rather than
-# guessed; the projection past the cabinet faces wants a tape on a floor sample.
+# depth-with-handle or depth-without-door — flagged rather than guessed (width at 90 deg:
+# 35.82", Tall Twin Resource Guide); the projection past the cabinet faces wants a tape on a floor sample.
 _FRIGIDAIRE_SOURCE = (
     'Frigidaire Professional single-door column pair, manufacturer spec sheets rev 10/21 '
     'and the shared Use & Care manual, read 2026-08-24: 32 7/8" W x 27" D (with door) x '
@@ -229,7 +229,9 @@ _FRIGIDAIRE_SOURCE = (
     'degrees, 18.9 cu ft each. Clearances 3/16" sides, 1" top and rear. Each unit requires '
     'its OWN dedicated 115V 60Hz 15A grounded duplex outlet — the manual is explicit that a '
     'side-by-side pair takes two. Recommended paired cutout 66 1/4" wide. Depth with '
-    'handle, depth without door and width at 90 degrees are NOT published by Frigidaire.'
+    'handle and depth without door are NOT published; the Tall Twin Resource Guide (rev '
+    '2/4/2021) gives 35.82" wide with the door open 90 degrees (130 max) and warns to allow '
+    'for it beside a wall. Doors reverse only with kit TTDRRVFRKIT.'
 )
 
 # The `install_parts` is not an accessory, it is a condition of standing the two cabinets

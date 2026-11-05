@@ -28,8 +28,8 @@ From Karndean's [Rigid Core Plank and Tile installation guide](https://www.karnd
   needed (ASTM F1482). Flat to 3/16" in 10 ft in any direction. Wood moisture not above 13%.
 - Expansion gap at least 3/16" (5 mm) around the room perimeter and every fixed object
   including pipes; 5/16" (8 mm) for areas over 1000 SF. A joint (5/16") is also required
-  where a run exceeds 50 ft in either direction. The main floor is about 36 ft square, so one
-  field, but its area is over 1000 SF: use the 5/16" gap.
+  where a run exceeds 50 ft in either direction. The LVP field is about 841 SF of rooms (709 SF
+  net in the takeoff), under 1000 SF, so 3/16" is the minimum; 5/16" is kept as margin.
 - Install permanent fixtures before the floor, leaving the gap. Trim and base fix to the wall,
   not to the plank.
 - Underfloor heating is allowed if the interface between the backing and the subfloor stays at

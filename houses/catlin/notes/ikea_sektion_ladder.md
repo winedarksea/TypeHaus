@@ -16,9 +16,9 @@ is [Kitchen stock-frame installation details](kitchen_stock_cabinet_details.md).
 | Garage upper | stock 24 by 24 by 30 base frame | 76–106, no legs/counter |
 | Living bases | six stock 36 by 15 by 30 bases, paired 18-inch doors | 36-inch work surface |
 
-A kitchen base uses 3 1/2 support + 30 frame + approximately 1.319 substrate +
-1.181 quartz = 36. The living bases use 3 1/2 support + 30 frame + 1/2 subtop +
-2 oak = 36. Normal upper/high stacks finish at 103 1/2, below the finished ceiling.
+A kitchen base uses 4 support + 30 frame + 3/4 ply sub-top + 1/16 setting +
+1.181 quartz = 36 (K1). The living bases use 4 1/4 support + 30 frame + 1 1/4 subtop +
+1 1/4 ash = 36 3/4 (K5). Normal upper/high stacks finish at 103 1/2, below the finished ceiling.
 The garage upper reaches 106 and requires a field check of the remaining lift space.
 
 ## Closed runs

@@ -15,7 +15,7 @@ MAIN_KITCHEN_CASEWORK = [
     # Cabinets 24" deep (centre x=19'-3 3/8"); cold boxes 27" deep (centre 19'-5 3/4").
     #
     # ** THE RUN'S NORTH END IS A WALL, NOT A CABINET. ** RM-M-PANTRY's south partition
-    # W-M-PAN-S puts its face at y=32'-10 5/8"; the shared catalog's CASE-TALL-PANTRY-12/-18
+    # W-M-PAN-S puts its face at y=32'-10 3/4"; the shared catalog's CASE-TALL-PANTRY-12/-18
     # accordingly have no instance in this house — scattered tall storage became one framed
     # room.
     #
@@ -234,7 +234,8 @@ MAIN_KITCHEN_CASEWORK = [
                  spans=(PanelingSpan(wall_ref="W-M-E1", start=inch(352.6875),
                                      length=mm(1000)),)),
 
-    # Peninsula carcasses stay put; north aisle 58 inches, west aisle 56 1/2 inches.
+    # Peninsula carcasses stay put; north aisle 54 3/4" stone to stone (58" at the
+    # fronts), west aisle 56 1/2 inches.
     Furniture(uid="PSB290H9BR", tag="FURN-M-KIT-PEN-END", type_ref="FT-KIT-PEN-END-PANEL",
               room="RM-M-LIVING",
               position=pt(ft(25, 3.125), ft(27, 7.375)), rotation=deg(180)),

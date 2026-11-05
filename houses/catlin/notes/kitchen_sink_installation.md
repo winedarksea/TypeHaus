@@ -142,6 +142,9 @@ Badger flange and discharge, trap and rigid fittings in the assembled SEKTION bo
 Verify the ⅝-inch east clip access, all hub take-outs at the 16-inch tee, bottom
 penetrations, protected vent route, window operation, full hose stroke and service
 access. Leak-test filled bowl, disposer, dishwasher discharge and supply joints.
+The K1 3/4 ply sub-top runs over this base: cut it to the 32 x 19 flange plus the
+clip kit's clearance before the stone is set. The faucet hole leaves a 1 3/16-inch
+web to the scribed back edge (shop drawing A-N p. 3); get the fabricator's sign-off.
 
 The currently published Badger US sheet is internally inconsistent: its drawing
 labels **12⅝ inches overall**, while its table says **11½ inches**. It gives an

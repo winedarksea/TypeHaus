@@ -323,6 +323,14 @@ def _catalog_gutter_rows(model: ResolvedModel, rows: _Rows) -> None:
             _supply(rows, "trim-pop-rivet", 0.0, element.tag, count=straps)
 
 
+def catalog_leader_strap_tags(plan) -> frozenset[str]:
+    """Connectors a catalog leader bills as its own strap (58110XX), not as hardware."""
+    return frozenset(
+        ref for element in plan.all_elements()
+        if isinstance(element, Downspout) and PROFILES.get(element.product or "") is not None
+        for ref in element.clamp_refs)
+
+
 def _catalog_leader_rows(model: ResolvedModel, rows: _Rows) -> None:
     """Catalog leaders by part: the sticks, a 95 deg elbow pair per gooseneck, a strap at each
     authored strap station, and the adapter into a buried round extension."""

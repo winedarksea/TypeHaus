@@ -216,12 +216,18 @@ class RoomPaint:
             return []
         count = max(3, int(run / _STATION_M))
         hit: dict[str, PaintRoom] = {}
+        stations: dict[str, int] = {}
         for i in range(count):
             t = (i + 0.5) / count * run
             probe = Point(x0 + dx * t + nx * offset, y0 + dy * t + ny * offset)
             for room in near:
-                if room.tag not in hit and room.prepared.contains(probe):
+                if room.prepared.contains(probe):
                     hit[room.tag] = room
+                    stations[room.tag] = stations.get(room.tag, 0) + 1
+        # A room touching one end station beside another room is a corner sliver, not a
+        # face it shares (a stub bath's corner must not put PT-3 on 10' of studio wall).
+        if len(hit) > 1:
+            hit = {tag: room for tag, room in hit.items() if stations[tag] > 1} or hit
         return [hit[tag] for tag in sorted(hit)]
 
     def envelope_findings(self, model: Any) -> list[Finding]:

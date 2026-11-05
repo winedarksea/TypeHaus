@@ -359,8 +359,12 @@ def authored_connector_rows(model: ResolvedModel) -> list:
     groups: Counter = Counter()
     where: dict = {}
     carried: Counter = Counter()
+    from typehaus.takeoff.cladding_trim import catalog_leader_strap_tags
+
+    # A catalog leader's strap station bills once, as the leader's own strap.
+    leader_straps = catalog_leader_strap_tags(model.plan) if model.plan is not None else ()
     for _storey, element in _authored_connectors(model):
-        if element.kind is ConnectorKind.KNEEBRACE:
+        if element.kind is ConnectorKind.KNEEBRACE or element.tag in leader_straps:
             continue
         if element.hanger_spec_pair(model.plan) is not None:
             continue  # a per-joint hanger spec: joist_hanger_rows bills every hung end

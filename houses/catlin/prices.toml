@@ -1391,7 +1391,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # the deck anchor's row went with the stand — the part survives in library/hardware/ for
 # any house that does put equipment on a dry-below deck.
 "SS316-WEDGE-38x3" = { low = 4, high = 7 }  # 12 ea — four legs each under three stands. The "8 ea" this comment carried was stale from the day SL-M-HP3PAD shipped; on 2026-09-04 HP1 moved to its own north pad and the count is still 12, four to each of SL-SG-HPPAD, SL-M-HP3PAD and SL-M-HP1PAD
-"SS316-STANDOFF-STRAP #13" = { low = 3, high = 5.5 }  # 8 ea — roof leaders
+"SS316-STANDOFF-STRAP #13" = { low = 3, high = 5.5 }  # 0 ea since 2026-11-05: the leaders bill 58110XX (kept for a round leader)
 # NOT TAKEN as of 2026-08-31 — 0 ea, and it falls out on its own: `takeoff/fasteners.py`
 # derives the length and the count from the stack, and there is no longer a nailbase to screw
 # through. Kept for the rate.
@@ -3237,7 +3237,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # set on 4" of compacted stone, plus the 2' x 6' river-rock apron on fabric beyond its notch.
 # Placement is two people and a dolly for a ~250-400 lb stone — the rate, not a machine.
 "FT-SPLASH-BASIN-GRANITE-24" = { material = { low = 250, high = 800 }, labour = { low = 150, high = 400 } }  # 1 ea
-# The fold-down leaf is now 19 5/8" x 16" against the fixed desk's 29"; its allowance
+# The fold-down leaf is now 19 7/8" x 16" against the fixed desk's 29"; its allowance
 # is nearly the desk's, because on a leaf the BOARD is the cheap half. Material carries a pair
 # of Sugatsune EB-303/EP-BL folding table brackets (revised quote pending), a full-length
 # piano hinge, the let-in ledger, and two bullet catches. Rough-in blocking is below. Labour carries the part
@@ -8244,7 +8244,7 @@ finish-transitions-and-stair-nosings = { low = 4.5, high = 12, unit = "LF", driv
 cabinet-hung-frame-underside-and-fixing = { low = 60, high = 180 }
 cabinet-peninsula-rear-finish = { low = 70, high = 180 }  # paint and edge-band 25 inches; no projecting cover
 # The bars themselves bill in [placeables] as FT-KIT-CT-BRACKET-24. This is what they bear
-# on: a 3/4 ply sub-top over the three bases, legs lowered 1/2", five routed pockets, screws.
+# on: a 3/4 ply sub-top over the three bases, legs at 4" (K1), five routed pockets, screws.
 cabinet-peninsula-bar-subtop = { material = { low = 60, high = 130 }, labour = { low = 150, high = 350 } }
 # 3/4 ply sub-top over B12, sink base, B18 and both carousels (K1, 2026-11-01), screwed up through
 # the frame tops; stops at the DW bay. Legs reset to 4". ESTIMATE scaled from the peninsula row.

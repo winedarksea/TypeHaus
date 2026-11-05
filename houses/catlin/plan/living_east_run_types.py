@@ -46,21 +46,22 @@ LIVING_EAST_RUN_PRODUCTS = (SEKTION_FLOOR_ANCHOR, SEKTION_CONNECTOR_RAIL,
 _PANEL = "PROD-IKEA-FORBATTRA-MATTE-25-80"
 
 LIVING_END_PANEL = FurnitureType(
-    tag="FT-LIV-E-END-PANEL", name='FÖRBÄTTRA end panel, 1/2 x 24 x 34 9/16"',
-    footprint=(inch(0.5), inch(24)), height=inch(34.5625), plan_symbol="sektion-cover-panel",
+    tag="FT-LIV-E-END-PANEL", name='FÖRBÄTTRA end panel, 1/2 x 24 x 35 1/2"',
+    footprint=(inch(0.5), inch(24)), height=inch(35.5), plan_symbol="sektion-cover-panel",
     product_ref=_PANEL,
     source=("Closes the north run against the slat partition, floor to slab; seen through "
             "the slats. Cut from one 25x80 panel."),
 )
 PENINSULA_END_PANEL = FurnitureType(
-    tag="FT-KIT-PEN-END-PANEL", name='FÖRBÄTTRA end panel, 1/2 x 24 x 34"',
-    footprint=(inch(0.5), inch(24)), height=inch(34), plan_symbol="sektion-cover-panel",
+    tag="FT-KIT-PEN-END-PANEL", name='FÖRBÄTTRA end panel, 1/2 x 24 x 34 3/4"',
+    footprint=(inch(0.5), inch(24)), height=inch(34.75), plan_symbol="sektion-cover-panel",
     product_ref=_PANEL,
+    # K1 stack: 4 legs + 30 frame + 3/4 sub-top = 34 3/4; 1/16 setting to the stone.
     source="The peninsula's west end, floor to slab, under the quartz.",
 )
 PENINSULA_BACK_PANEL = FurnitureType(
-    tag="FT-KIT-PEN-BACK-PANEL", name='FÖRBÄTTRA seating face, 73 1/2 x 1/2 x 34"',
-    footprint=(inch(73.5), inch(0.5)), height=inch(34), plan_symbol="sektion-cover-panel",
+    tag="FT-KIT-PEN-BACK-PANEL", name='FÖRBÄTTRA seating face, 73 1/2 x 1/2 x 34 3/4"',
+    footprint=(inch(73.5), inch(0.5)), height=inch(34.75), plan_symbol="sektion-cover-panel",
     # Two panels, not one, so parts rather than a product_ref; the peninsula's IKEA
     # fittings ride here because no one base owns them.
     parts=(ProductPart(role="cover_panel", product_ref=_PANEL, quantity=2),
