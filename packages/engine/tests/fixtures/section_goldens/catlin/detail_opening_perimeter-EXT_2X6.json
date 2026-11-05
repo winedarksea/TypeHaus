@@ -280,7 +280,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "struct-1-plywood"
+      "material": "cdx-plywood",
+      "fill": "#c9a86a"
     },
     {
       "space": "model",
@@ -336,7 +337,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "struct-1-plywood"
+      "material": "cdx-plywood",
+      "fill": "#c9a86a"
     },
     {
       "space": "model",
@@ -3922,7 +3924,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "struct-1-plywood"
+      "material": "cdx-plywood",
+      "fill": "#c9a86a"
     },
     {
       "space": "paper",
@@ -3959,7 +3962,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "struct-1-plywood  1/2\"",
+      "content": "cdx-plywood  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

@@ -417,7 +417,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "struct-1-plywood"
+      "material": "cdx-plywood",
+      "fill": "#c9a86a"
     },
     {
       "space": "model",

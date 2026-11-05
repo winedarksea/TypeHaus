@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** efa844927dc07b6a  
-**Lines:** 203
+**Model hash:** b1a807f3d979f9bf  
+**Lines:** 204
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -68,18 +68,18 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | Aspen shiplap sauna ceiling liner (4/4), site-milled, 3/4" ceiling (catlin-sauna-ceiling-shiplap:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 65.1 SF net | building |
-| 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 27.0 SF net | building |
-| 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 662.4 SF net | building |
-| 5/8" CDX sheathing plywood, 19/32" roof (cdx-plywood:roof) | 49 | sheets 4x8 | 49 sheets 4x8 over 1544.4 SF net | building |
-| 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 2.5 SF net | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3062.5 SF net | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 27.0 SF net | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 662.4 SF net | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 19/32" roof (cdx-plywood:roof) | 49 | sheets 4x8 | 49 sheets 4x8 over 1544.4 SF net | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.0 SF net | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 2.5 SF net | building |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 10.5 SF net | building |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3566.6 SF net | building |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 43.7 SF net | building |
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 15 | sheets 4x8 | 15 sheets 4x8 over 381.1 SF net | building |
-| Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3062.5 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
-| Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.0 SF net | building |
 
 ## Connectors and fasteners, by part
 
@@ -243,10 +243,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| 5/8" CDX sheathing plywood, 19/32" — roof (cdx-plywood:0.594) | 1,544.4 | SF net |  | building |
-| 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | 689.3 | SF net |  | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" — wall (cdx-plywood:0.5) | 3,144.5 | SF net |  | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 19/32" — roof (cdx-plywood:0.594) | 1,544.4 | SF net |  | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" — wall (cdx-plywood:0.625) | 689.3 | SF net |  | building |
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | 84.4 | SF net |  | building |
-| Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,171.9 | SF net |  | building |
+| Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 27.4 | SF net |  | building |
 | Structural 1 plywood sheathing, 19/32" — roof (struct-1-plywood:0.594) | 882.8 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | 4.3 | SF net |  | building |
 
@@ -331,18 +332,18 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 6x6 KDAT southern yellow pine (treated exterior framing) — brace, stud (6x6:kdat) | — |
 | hanger — hanger board (hanger) | — |
 | Aspen shiplap sauna ceiling liner (4/4), site-milled, 3/4" ceiling (catlin-sauna-ceiling-shiplap:ceiling) | — |
-| 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
-| 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
-| 5/8" CDX sheathing plywood, 19/32" roof (cdx-plywood:roof) | — |
-| 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | — |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | — |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 19/32" roof (cdx-plywood:roof) | — |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" sheathing rip (cdx-plywood:sheathing rip) | — |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" sheathing rip (cdx-plywood:sheathing rip) | — |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | — |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | — |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | — |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | — |
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | — |
-| Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | — |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | — |
-| Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | — |
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail) | — |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | — |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | — |
@@ -466,8 +467,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Treated sill plate, Pressure-treated southern yellow pine (sill plate) (pt-sill-plate) | — |
 | Sill seal foam gasket, under the sill plate (sill-seal-foam) | — |
 | Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | — |
-| 5/8" CDX sheathing plywood, 19/32" — roof (cdx-plywood:0.594) | — |
-| 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | — |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" — wall (cdx-plywood:0.5) | — |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 19/32" — roof (cdx-plywood:0.594) | — |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" — wall (cdx-plywood:0.625) | — |
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | — |
 | Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | — |
 | Structural 1 plywood sheathing, 19/32" — roof (struct-1-plywood:0.594) | — |
