@@ -871,9 +871,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   on RF-HOUSE; 36 blocks, one per bay). Lower bay only, so ccSPF fills over it; the air
   barrier is the sheathing band plus that foam, not the block. It is also what the gutter
   girt screws into. See `notes/roof_wall_eave_detail.md` K3.
-- **The line every attic station answers to**: roof underside is `1 1/2" + x/2` above the
-  attic finished floor, mirrored past x=18'-0" — 9'-1 1/2" at the ridge, 7'-0" at
-  x=13'-9", 5'-0" at x=9'-9", 3'-0" at x=5'-9". Every height quoted in `plan/` (window
+- **The line every attic station answers to**: roof underside is `x/2` above the 3/4"
+  attic subfloor top (240.75"; decision #109, was `1 1/2" + x/2`), mirrored past x=18'-0" —
+  9'-0" at the ridge line, 6'-10 1/2" at x=13'-9", 4'-10 1/2" at x=9'-9", 2'-10 1/2" at x=5'-9". Every height quoted in `plan/` (window
   head, can light, receptacle, door, duct, furniture, vent riser) is measured from this
   line — **and since 2026-09-19 the seven attic partitions answer to it too**: their raked
   top plates stop 3/4" under it, where they used to rake to the roof DECK plane and run
@@ -1066,7 +1066,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     top is flush with the rafter tops at its faces, 7/8" under the peak
     (`roof_geometry.ridge_beam_top_m`), so each LSTA24 lies across it and the beam need
     only reach the 13.28" plumb cut: 14" would clear by 0.72", 16" clears by 2.72". The
-    centreline walls stop at its soffit, 346 1/8" (derived, never authored).
+    centreline walls stop at its soffit, 345 5/32" (derived, never authored).
     3 1/2" width only works because demand is small, and the 1-1/2" LSSR header nail that
     keeps mirrored patterns on 28 opposing rafter pairs from overlapping is a **published
     row**, not an ER-280 §3.2.2 derivation (C-C-2026 p. 178 sloped-only, DF/SP: 1,175 lbf).
@@ -1270,7 +1270,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   on its own 4'-0" sill and 6'-0" head (→ DESIGN-LOG.md).
   East main row (2026-10-16): E1/E2 at 4'-0"/10'-8", `WIN-M-DINING-E` at 18'-0", `WIN-M-KIT-E`
   at 34'-0". All but KIT-E sit on one **2'-10" sill, 6'-10" head** (the stool top sits on the
-  ash slab top: sill + 2.953" frame rail = 36 15/16" above datum). `WIN-M-KIT-E` is a 14"
+  ash slab top: RO sill 34 9/32" + 0.55" pan rise + 2.953" frame rail = 37.78" above datum,
+  36.76" over the LVP). `WIN-M-KIT-E` is a 14"
   unit at a 3'-6" sill (bay centre, 408" off `N-M-SE`) — a service window closing the row.
   The fireplace and its flanking E1/E2 moved **16" south** onto the LVP, a whole module, so
   every grid-locked station survives: brick centre on a bay centre, joist pockets on joists,
@@ -2036,7 +2037,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   for containment. The finished ceiling underside is **84 1/16" AFF** (raised 1" for R305.1, 2026-11-01), not the stale 90".
   - West upper lying bench **78 × 28, 42" AFF**, with a full unobstructed surface. Independent
     foot platform **78 3/16 × 20, 24" AFF**; south reading deck **58½ × 28, 24" AFF**;
-    access step **14 × 10, 12" AFF**. Upper headroom **41 1/16"**.
+    access step **14 × 10, 12" AFF**. Upper headroom **42 1/16"**.
   - Armless removable wood recliner faces east, back west, on the south deck near the window.
     Wood/pad share a **26 × 57½"** envelope and the platform datum. Drawn at 110°; positive
     locks 105/110/112°. Flat custom mattress **26 × 80 × 4"**, segmented linen/wool with
@@ -3109,7 +3110,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   fillers: 1/2 end panel, B24 (door hinged north), B36, B36, B18, then the 1/8 sealed joint
   to S2. One 25"-deep 1 1/4 white ash slab (`ash-counter-6q`, three-board glue-up), 1" proud
   of S2's front. Stools are 1 1/4 ash (`ash-stool-6q`): DINING-E flush with the slab, E1/E2
-  the house standard 3/4 overhang and 1 horn. Total installed height 36. The dining table's
+  the house standard 3/4 overhang and 1 horn. Total installed height 36 3/4. The dining table's
   east chair band laps the fronts ~5" (an expected advisory; owner's call).
 - **The owner's oak is RED oak (2026-10-16):** the `oak-*` tags keep their names, with
   `species="red-oak"` and one finish (A/B bleach, Bona NordicSeal, waterborne topcoat).

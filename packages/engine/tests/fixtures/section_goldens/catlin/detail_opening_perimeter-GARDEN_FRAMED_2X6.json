@@ -4116,6 +4116,123 @@
       "uid": null
     },
     {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          15.787999999999998,
+          -70.1815
+        ],
+        [
+          15.339650446491477,
+          -67.92749458336962
+        ],
+        [
+          14.062858941188765,
+          -66.01664105881123
+        ],
+        [
+          12.152005416630379,
+          -64.73984955350852
+        ],
+        [
+          9.898,
+          -64.2915
+        ],
+        [
+          7.643994583369622,
+          -64.73984955350852
+        ],
+        [
+          5.733141058811236,
+          -66.01664105881123
+        ],
+        [
+          4.456349553508522,
+          -67.92749458336962
+        ],
+        [
+          4.008000000000001,
+          -70.1815
+        ],
+        [
+          4.456349553508521,
+          -72.43550541663038
+        ],
+        [
+          5.733141058811235,
+          -74.34635894118877
+        ],
+        [
+          7.643994583369619,
+          -75.62315044649148
+        ],
+        [
+          9.897999999999998,
+          -76.0715
+        ],
+        [
+          12.152005416630379,
+          -75.62315044649148
+        ],
+        [
+          14.062858941188763,
+          -74.34635894118877
+        ],
+        [
+          15.339650446491476,
+          -72.43550541663038
+        ]
+      ],
+      "layer": "A-ANNO-KEYN",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        9.898,
+        -70.1815
+      ],
+      "content": "K7",
+      "height": 3.0,
+      "height_pt": 9.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-KEYN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -3.0599999999999996,
+          -57.81249999999999
+        ],
+        "name": ""
+      },
+      "at": [
+        9.898,
+        -70.1815
+      ],
+      "to": [
+        -3.0599999999999996,
+        -57.81249999999999
+      ],
+      "text": "",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
       "space": "paper",
       "node": "text",
       "anchor": [
@@ -4716,7 +4833,7 @@
     "K4  D-B-SUNKEN: concrete curb with overflow drainage and sump pump; door is specified for standard rain exposure, not as a flood barrier.",
     "K5  D-B-SUNKEN: keep pan outlet open; confirm seat, sealant and drainage with the installed door and pan instructions.",
     "K6  D-B-SUNKEN: the blind curb-skin recess clears the approach (no sill extender); verify field membrane bonds.",
-    "K7  Veneer cavity: 4\" clear air. Keep the base-course weeps open; they drain it after the court drains."
+    "K7  Veneer cavity: 1 15/16\" clear air over the 4\" XPS. Keep the base-course weeps open; they drain it after the court drains."
   ],
   "frame": {
     "paper": [

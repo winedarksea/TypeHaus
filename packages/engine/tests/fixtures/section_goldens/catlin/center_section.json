@@ -22177,7 +22177,7 @@
         546.5131102362205,
         -109.4375
       ],
-      "text": "BASEMENT FLOOR  EL. -9'-1\"",
+      "text": "BASEMENT FLOOR  EL. -9'-1 7/16\"",
       "height": 6.222222222222221,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -22255,7 +22255,7 @@
         546.5131102362205,
         -12.625
       ],
-      "text": "BASEMENT T.O. PLATE  EL. -1'-1\"",
+      "text": "BASEMENT T.O. PLATE  EL. -1'-0 5/8\"",
       "height": 6.222222222222221,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -22333,7 +22333,7 @@
         546.5131102362205,
         108.125
       ],
-      "text": "MAIN T.O. PLATE  EL. 9'-0\"",
+      "text": "MAIN T.O. PLATE  EL. 9'-0 1/8\"",
       "height": 6.222222222222221,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -22411,7 +22411,7 @@
         546.5131102362205,
         228.12500000000003
       ],
-      "text": "SECOND T.O. PLATE  EL. 19'-0\"",
+      "text": "SECOND T.O. PLATE  EL. 19'-0 1/8\"",
       "height": 6.222222222222221,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -22489,7 +22489,7 @@
         546.5131102362205,
         242.25000000000003
       ],
-      "text": "ATTIC T.O. PLATE  EL. 20'-2\"",
+      "text": "ATTIC T.O. PLATE  EL. 20'-2 1/4\"",
       "height": 6.222222222222221,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
