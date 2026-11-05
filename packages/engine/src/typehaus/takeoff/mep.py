@@ -25,23 +25,24 @@ _M_TO_FT = 3.280839895
 
 
 def pipe_run_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    """Lineal feet of pipe, grouped by system and nominal diameter.
+    """Lineal feet of pipe, grouped by system, material and nominal diameter.
 
     ``length_m`` is the resolver's own developed length — plan run plus any rise — so a
     drop through a floor is not billed as the zero plan length it projects to.
     """
-    runs: dict[tuple[str, float], dict[str, object]] = {}
+    runs: dict[tuple[str, str, float], dict[str, object]] = {}
     for run in model.pipe_runs:
-        key = (run.system, round(run.diameter_m / M_PER_IN, 3))
+        key = (run.system, run.material or "", round(run.diameter_m / M_PER_IN, 3))
         entry = runs.setdefault(key, {"length_m": 0.0, "count": 0, "tags": []})
         entry["length_m"] += run.length_m
         entry["count"] += 1
         entry["tags"].append(run.tag)
     return [
-        {"system": system, "diameter_in": diameter, "runs": int(entry["count"]),
+        {"system": system, "material": material, "diameter_in": diameter,
+         "runs": int(entry["count"]),
          "length_ft": round(float(entry["length_m"]) * _M_TO_FT, 1),
          "tags": sorted(entry["tags"])}
-        for (system, diameter), entry in sorted(runs.items())
+        for (system, material, diameter), entry in sorted(runs.items())
     ]
 
 

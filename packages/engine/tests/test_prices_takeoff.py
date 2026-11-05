@@ -358,6 +358,10 @@ def test_duct_prices_qualify_on_diameter_and_fall_back_through_shorter_keys() ->
     assert rate_for(prices, "ducts", "supply", ("", 0.0))[0] == "supply"
     # And ``:3`` is exactly the miss the comment in prices.toml warns about.
     assert rate_for(prices, "ducts", "supply", ("semi_rigid", 3))[0] == "supply:semi_rigid"
+    # Pipe runs chain the same way: copper prices apart, a PEX run (no material) stays bare.
+    pipes = _prices_from('[pipe_runs]\n"water_hot" = 1.0\n"water_hot:copper" = 4.0\n')
+    assert rate_for(pipes, "pipe_runs", "water_hot", ("copper", 0.75))[0] == "water_hot:copper"
+    assert rate_for(pipes, "pipe_runs", "water_hot", ("", 0.5))[0] == "water_hot"
 
 
 def _prices_from(body: str):

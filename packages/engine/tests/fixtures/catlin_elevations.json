@@ -6,7 +6,7 @@
 "canvas_objects/APPL-G-EVSE/body_z1_m": 0.46355,
 "canvas_objects/APPL-G-EVSE/z_m": 0.2032,
 "canvas_objects/APPL-G-GDO/body_z0_m": 1.3716,
-"canvas_objects/APPL-G-GDO/body_z1_m": 1.5748,
+"canvas_objects/APPL-G-GDO/body_z1_m": 1.579499,
 "canvas_objects/APPL-G-GDO/z_m": 1.3716,
 "canvas_objects/APPL-M-COFFEE/body_z0_m": 0.94045,
 "canvas_objects/APPL-M-COFFEE/body_z1_m": 1.3151,
@@ -71662,75 +71662,75 @@
 ],
 "geometry/SPVE1AAAA/module": [
 8.6415,
-9.1753836,
+9.1776554,
 8,
-"576007d008ca"
+"c07b7db4bc85"
 ],
 "geometry/SPVE2AAAA/module": [
 8.6415,
-9.1753836,
+9.1776554,
 8,
-"576007d008ca"
+"c07b7db4bc85"
 ],
 "geometry/SPVE3AAAA/module": [
 8.6415,
-9.1753836,
+9.1776554,
 8,
-"576007d008ca"
+"c07b7db4bc85"
 ],
 "geometry/SPVE4AAAA/module": [
 8.6415,
-9.1753836,
+9.1776554,
 8,
-"576007d008ca"
+"c07b7db4bc85"
 ],
 "geometry/SPVE5AAAA/module": [
 8.6415,
-9.1753836,
+9.1776554,
 8,
-"576007d008ca"
+"c07b7db4bc85"
 ],
 "geometry/SPVE6AAAA/module": [
 8.6415,
-9.1753836,
+9.1776554,
 8,
-"576007d008ca"
+"c07b7db4bc85"
 ],
 "geometry/SPVW1AAAA/module": [
 8.6415,
-9.1753836,
+9.1776554,
 8,
-"d08bed86169d"
+"5c3deb1c2953"
 ],
 "geometry/SPVW2AAAA/module": [
 8.6415,
-9.1753836,
+9.1776554,
 8,
-"d08bed86169d"
+"5c3deb1c2953"
 ],
 "geometry/SPVW3AAAA/module": [
 8.6415,
-9.1753836,
+9.1776554,
 8,
-"d08bed86169d"
+"5c3deb1c2953"
 ],
 "geometry/SPVW4AAAA/module": [
 8.6415,
-9.1753836,
+9.1776554,
 8,
-"d08bed86169d"
+"5c3deb1c2953"
 ],
 "geometry/SPVW5AAAA/module": [
 8.6415,
-9.1753836,
+9.1776554,
 8,
-"d08bed86169d"
+"5c3deb1c2953"
 ],
 "geometry/SPVW6AAAA/module": [
 8.6415,
-9.1753836,
+9.1776554,
 8,
-"d08bed86169d"
+"5c3deb1c2953"
 ],
 "geometry/SQVBR8AEND/body": [
 2.181225,

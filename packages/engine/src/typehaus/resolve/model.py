@@ -1353,7 +1353,7 @@ class ResolvedSolarPanel:
     product: str = ""
     # Electrical identity of the module, carried through unchanged from the authored
     # SolarPanel (→ model/structure.py): series string, rated and cold-corrected Voc, and
-    # whether a SunSpec RSD transmitter is fitted. The solar takeoff and the 690.12 check
+    # whether a SunSpec RSD receiver is fitted. The solar takeoff and the 690.12 check
     # read these; the tilt math ignores them.
     string: str = ""
     voc: float | None = None

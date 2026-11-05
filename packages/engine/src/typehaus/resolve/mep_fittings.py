@@ -392,7 +392,8 @@ def fitting_records(model: ResolvedModel) -> list[FittingRecord]:
             system=parent.system,
             index=None, point=point, angle_deg=angle, plan_angle_deg=angle,
             nominal_in=run_in, branch_in=branch_in,
-            order_key=(f"wye-{size_text(parent.diameter_m)[:-2]}x"
+            order_key=(f"{'tee' if kind == KIND_TEE else 'wye'}-"
+                       f"{size_text(parent.diameter_m)[:-2]}x"
                        f"{size_text(child.diameter_m)}"),
             spec=spec, gap=gap, bendable=False, branch_tag=child_tag))
     return out

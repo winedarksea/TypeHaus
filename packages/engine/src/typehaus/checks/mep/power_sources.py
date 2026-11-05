@@ -135,8 +135,8 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
 
     A *group* is one shutdown device together with the modules downstream of it that have
     none of their own — the device is inside the group it controls, not outside it. That
-    detail is the whole arithmetic: with a transmitter on every other module the groups are
-    pairs at 88.8 V cold, not singletons at 44.4 V, and a check that measured only the
+    detail is the whole arithmetic: with a receiver on every other module the groups are
+    pairs at 87.9 V cold, not singletons at 44.0 V, and a check that measured only the
     uncontrolled modules would call the every-other scheme compliant when it is not.
 
     The check does not assume the answer. It walks each string, builds those groups, and
@@ -184,7 +184,7 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
                 f"string {string_tag}: {len(uncontrolled)} module(s) are reached before any "
                 f"shutdown device on the string ({', '.join(tags)}), so nothing controls "
                 "them", tags, code,
-                "fit a SunSpec transmitter to the first module of the string"))
+                "fit a SunSpec receiver to the first module of the string"))
             continue
         worst = max(groups, key=lambda item: sum(p.voc_cold for p in item), default=[])
         run_v = sum(p.voc_cold for p in worst)
@@ -195,7 +195,7 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
                 f"string {string_tag}: the largest shutdown group is {len(worst)} module(s) "
                 f"at {run_v:.1f}V cold Voc, over the {_RAPID_SHUTDOWN_LIMIT_V:g}V limit "
                 f"({', '.join(tags)})", tags, code,
-                "fit a SunSpec transmitter to more modules until no group exceeds "
+                "fit a SunSpec receiver to more modules until no group exceeds "
                 f"{_RAPID_SHUTDOWN_LIMIT_V:g}V cold"))
         elif len(worst) == 1:
             out.append(by_result(

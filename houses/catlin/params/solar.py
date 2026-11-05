@@ -1,8 +1,8 @@
 """Rooftop PV array — parametric module.
 
 One row of 440 W modules each side of the house gable ridge (RF-HOUSE: ridge N-S at
-x=18', 6:12, 36' footprint), landscape orientation (69.4" edge along the ridge), max fit:
-floor(36' / 5.783') = 6 modules per row, centred, 12 x 440 W = 5,280 W installed. Mounted
+x=18', 6:12, 36' footprint), landscape orientation (67.7" edge along the ridge), max fit:
+floor(36' / 5.642') = 6 modules per row, centred, 12 x 440 W = 5,280 W installed. Mounted
 on S-5! PVKIT standing-seam kits (no penetrations), four per module; the DC/AC run leaves
 the roof at ED-A-PV-JB beside the radon-vent riser (plan/electrical.py) and lands on the
 EG4 12kPV's MPPTs (EQ-B-ESS-INV, plan/electrical.py) — the array does not backfeed on
@@ -25,17 +25,17 @@ from typehaus import Connector, ConnectorKind, SolarPanel, ft, inch, pt
 ROOF_TAG = "RF-HOUSE"
 RIDGE_X_FT = 18.0
 FOOTPRINT_FT = 36.0
-PANEL_W_IN = 69.4  # along-ridge edge (landscape)
+PANEL_W_IN = 67.7  # along-ridge edge (landscape)
 PANEL_L_IN = 44.6  # down-slope edge, in the panel plane
-PANEL_T_IN = 1.2
+PANEL_T_IN = 1.3
 PANEL_WATTS = 440.0
-PRODUCT = "Aptos 440 W module, 69.4 x 44.6 x 1.2 in"
+PRODUCT = "Aptos DNA-108-MFN10-440W (datasheet 08.04.2026), 67.7 x 44.6 x 1.3 in"
 
 # --- module electrical identity -----------------------------------------------------
-# Aptos 440 W: Voc 39.03 V, Vmp 33.48 V, temperature coefficients -0.30%/degC on Pmax,
-# -0.25%/degC on Voc, +0.046%/degC on Isc (owner-supplied datasheet figures).
+# Aptos 440 W: Voc 39.03 V, Vmp 33.48 V, temperature coefficients -0.29%/degC on Pmax,
+# -0.23%/degC on Voc, +0.046%/degC on Isc (Aptos DNA-108-MFN10-440W datasheet 08.04.2026).
 PANEL_VOC = 39.03
-VOC_TEMP_COEFF_PER_C = -0.0025
+VOC_TEMP_COEFF_PER_C = -0.0023
 # Site design low. -30 degC is the cold-side design temperature used for the array's
 # voltage correction — colder than the ASHRAE extreme annual mean minimum for the Twin
 # Cities, deliberately, because a string is sized on the coldest sunny morning and not on
@@ -43,20 +43,21 @@ VOC_TEMP_COEFF_PER_C = -0.0025
 # and the 690.12 grouping, not a heat load.
 DESIGN_LOW_C = -30.0
 STC_C = 25.0
-# 39.03 x (1 + (-0.0025)(-30 - 25)) = 44.40 V. The number every voltage rule must use:
-# rated Voc understates a January morning by 5.4 V per module, which is the difference
-# between a two-module group at 78.1 V (legal) and one at 88.8 V (not).
+# 39.03 x (1 + (-0.0023)(-30 - 25)) = 43.97 V. The number every voltage rule must use:
+# rated Voc understates a January morning by 4.9 V per module, which is the difference
+# between a two-module group at 78.1 V (legal) and one at 87.9 V (not).
 PANEL_VOC_COLD = PANEL_VOC * (1.0 + VOC_TEMP_COEFF_PER_C * (DESIGN_LOW_C - STC_C))
 
 # One string per roof side, six modules each, landing on the EG4 12kPV's two MPPTs
-# (EQ-B-ESS-INV, plan/electrical.py). 6 x 44.40 = 266.4 V cold per string, well inside the
+# (EQ-B-ESS-INV, plan/electrical.py). 6 x 43.97 = 263.8 V cold per string, well inside the
 # inverter's 600 VDC ceiling.
 #
 # RSD on every module, and that is a computed outcome rather than a preference: two
-# adjacent Aptos modules sum to 88.8 V cold against NEC 690.12(B)(2)'s 80 V limit, so
+# adjacent Aptos modules sum to 87.9 V cold against NEC 690.12(B)(2)'s 80 V limit, so
 # "every other module" — the option plans/TODO.md hoped for — does not clear it here. One
-# transmitter per module is what `code.NEC_690_12_rapid_shutdown` accepts, and if a future
-# module with a lower Voc changes that arithmetic the check will say so.
+# SunSpec receiver per module (the inverter carries the transmitter) is what
+# `code.NEC_690_12_rapid_shutdown` accepts, and if a future module with a lower Voc changes
+# that arithmetic the check will say so.
 PANEL_RSD = True
 RIDGE_CLEARANCE_FT = 1.0  # plan gap between the ridge line and the modules' top edge
 CLAMPS_PER_PANEL = 4

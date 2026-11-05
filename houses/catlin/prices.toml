@@ -621,8 +621,8 @@
 # left this table 2026-09-28 for [stair_treads], by the piece.
 # The two exterior PT flights' closed risers (2026-09-28): 1x6 KDAT ripped to the step,
 # $9-14 an 8' board, set like trim.
-"0.750x5.088" = { material = { low = 1.1, high = 1.8 }, labour = { low = 1, high = 2 } }  # 24 LF — ST-SG-PORCH
-"0.750x5.860" = { material = { low = 1.1, high = 1.8 }, labour = { low = 1, high = 2 } }  # ST-G-SERVICE KDAT closed risers
+"0.750x5.848" = { material = { low = 1.1, high = 1.8 }, labour = { low = 1, high = 2 } }  # 24 LF — ST-SG-PORCH
+"0.750x6.160" = { material = { low = 1.1, high = 1.8 }, labour = { low = 1, high = 2 } }  # ST-G-SERVICE KDAT closed risers
 # ST-B2M's carpet substrate (2026-11-01): plain 1" tread blanks and 1" landing decks, set by
 # the stair builder; the glued carpet over them is in [allowances]. ESTIMATES, unconfirmed.
 "deck 11x1" = { material = { low = 4.5, high = 7.5 }, labour = { low = 3, high = 6 } }  # 48 LF ordered — ST-B2M treads
@@ -1222,12 +1222,11 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # spacing of engineering letter L-A-THDSSLDGR23.
 "THD50600H6SS" = { material = { low = 7, high = 14 }, labour = { low = 4, high = 8 } }  # 18 ea — CN-SG-LDGW-1..9 / -LDGE-1..9; Type 316 Titen HD, no cure
 "AB-058-10-SS" = { low = 12, high = 28 }  # 2 ea — one cast-in bolt per POST BASE that lands on concrete AND takes one: the 2 basement ABU44 under P-M-STRWELL-S/SS (the canopy's cast-in CBSQs take none since 2026-09-30). The 2 garage-slab ABU44 under PT-BW-IC/-IE are authored `anchored=False` (2026-09-11): a 5/8x10in bolt needs ~8in of embedment and SL-G-FLOOR is 3-1/2in on foam, so the bolt dragged a slab thickening along to house itself and both went. Those bases are bearing-only — download through the plate, no uplift and no lateral claimed. `takeoff/uplift_joints.py::post_base_anchor_rows` gates on `bears_on_concrete`, so a base on framing never took one, and it unions the AUTHORED and DERIVED base populations. Was 10 before the balcony corner bases went (2026-09-03), 6 while the canopy had four wood columns, 4 since the east pair became cast, 5 since P-M-STRWELL-SS took an ABU44, 4 since P-M-STRWELL-N was retired (2026-09-24)
-# 2 ea, both CARRIED under the east-eave ColorGard rails (`requires_role`) — none directly
-# modeled. It was 19: two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP,
-# CN-A-PV-CLAMP) plus 11 carried under the CanDuit rings, and all thirteen went on
-# 2026-08-26 when the house walls became an exposed-fastener panel with no seam to clamp.
-# These two remain because each current east-eave ColorGard rail needs one seam clamp.
-"S-5!" = { low = 9, high = 15 }  # 2 ea
+# 0 ea. It was 19: two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP, CN-A-PV-CLAMP) plus
+# 11 carried under the CanDuit rings, and all thirteen went on 2026-08-26 when the house walls
+# became an exposed-fastener panel with no seam to clamp. The ColorGard carriers bill as
+# S-5-N (see "S-5! ColorGard" below), not here.
+"S-5!" = { low = 9, high = 15 }  # 0 ea
 # The two CanDuit rings are NOT TAKEN as of 2026-08-26 — 0 ea each. The house walls went to
 # `pbr-panel-24`, an exposed-fastener panel with no seam, and the ring mounts on a seam
 # clamp by its M8 shaft (`requires_role`): it would arrive with a bracket that has nothing
@@ -1239,11 +1238,12 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # `size=` change in the plan and nothing here.
 "S-5! CanDuit #11" = { low = 10, high = 22 }  # 0 ea (was 3 — vent riser, now a strap)
 "S-5! CanDuit #13" = { low = 10, high = 22 }  # 0 ea (was 8 — roof leaders, now straps)
-# ColorGard is a BAR system quoted by the foot of rail plus its clamps; the clamps are
-# already billed as the 2 carried-mount "S-5!" rows. This range treats each of the 2
-# modeled units as one 8' crossbar + colour strip at $10-16/LF. If the snow-retention
-# layout is ever run through the S-5! calculator, replace it with that output.
-"S-5! ColorGard" = { low = 80, high = 180 }  # 2 ea
+# ColorGard is a BAR system quoted by the foot of rail plus its clamps. What bills
+# (2026-11-04): each of the 2 modeled units as one 8' crossbar + colour strip at $10-16/LF
+# plus its one carried S-5-N at $8-10; that S-5-N row is $0 (PV), so the clamp is here.
+# NOT SCHEDULED: the second end clamp per bar and the calculator's clamp spacing/row count.
+# Replace this with the S-5! calculator output (plans/TODO.md).
+"S-5! ColorGard" = { low = 88, high = 190 }  # 2 ea
 # PVKIT 2.0 module grabs exclude the profile-matched seam clamp, ordered below.
 # S-5-S: published MSRP $7.34 (s-5.com/products/s-5-s-clamps/); carton/street range.
 # 2026-10-29: zeroed. [solar_modules] $/W covers modules + racking + rapid shutdown, so PVKIT and its S-5-N clamp
@@ -1284,7 +1284,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # GARAGE_WALL_2X6 is a 7/8" corrugated exposed-fastener panel now, with no seam of any kind
 # for an N clamp to close on — the same swap, and the same argument, as the 48 S-5-S house-
 # wall clamps that went on 2026-08-26. The garage roof remains nail strip.
-# 2026-10-29: zeroed, see S-5-PVKIT; the 2 ColorGard carriers sit inside the "S-5! ColorGard" row.
+# 2026-10-29: zeroed, see S-5-PVKIT; the 2 ColorGard carriers are priced in the "S-5! ColorGard" row.
 "S-5-N" = { low = 0, high = 0 }  # 50 ea — 48 PV seam clamps bill in [solar_modules] $/W
 # S-5-N Mini: one setscrew, wind (uplift-only) clamps on both nail-strip roofs. Price is a
 # placeholder range pending a quote; MSRP is below the full S-5-N's.
@@ -2414,10 +2414,13 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # De’Longhi US EXAM44055W listing, read 2026-10-25; owner-placed countertop appliance.
 "APPL-DELONGHI-EXAM44055W" = { material = { low = 1299.95, high = 1299.95 }, labour = { low = 0, high = 0 } }  # 1 ea
 "APPL-ISE-BADGER5" = { material = { low = 90, high = 300 }, labour = { low = 0, high = 0 } }  # 1 ea
+"APPL-MICROWAVE-NN-SN686S" = { material = { low = 260, high = 295 }, labour = { low = 0, high = 0 } }  # 1 ea; countertop plug-in, marketplace $259.95-294.95 (2026-11-04)
 # Smart-home register (notes/smart_home.md), 2026-10-30. Planning allowances from typical
 # retail, NOT read off a retailer; labour is set-and-commission. The opener row replaces the
 # `finish-garage-door-opener` allowance, which is deleted so it does not bill twice.
-"APPL-LIFTMASTER-8550W" = { material = { low = 330, high = 480 }, labour = { low = 150, high = 350 } }  # 1 ea, ratgdo32 in [install_parts]
+# 8550W discontinued; 87504-267 Secure View (belt, 485LM battery, Sec+ 2.0, camera). Dealer
+# listings 2026-11: Preferred Door $549.14, Low Voltage Dealer $614.10, gatehouse $719-799.
+"APPL-LIFTMASTER-87504-267" = { material = { low = 550, high = 800 }, labour = { low = 150, high = 350 } }  # 1 ea, ratgdo32 in [install_parts]
 "APPL-GRIZZLE-SMART-40" = { material = { low = 400, high = 600 }, labour = { low = 40, high = 100 } }  # 1 ea, hardwired from ED-G-EV-1450
 "ED-T-DOORBELL-POE" = { material = { low = 100, high = 160 }, labour = { low = 60, high = 140 } }  # 1 ea + plug-in chime
 "ED-T-CAM-PANTILT" = { material = { low = 315, high = 315 }, labour = { low = 60, high = 140 } }  # 1 ea, Omvi 3i $315 (owner, 2026-11-02)
@@ -2709,6 +2712,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # companions or Matter dimmer; about $300-600 over plain paddles, down from $1,200-1,900.
 "ED-T-LEV-620-DUPLEX" = { material = { low = 11, high = 24 }, labour = { low = 40, high = 85 } }  # 1 ea (workshop RC1); T5461 + E5825, device only: box and cover in [electrical_boxes] (2026-10-29)
 "ED-T-LEV-620-FLUSH" = { material = { low = 14, high = 44 }, labour = { low = 45, high = 95 } }  # 1 ea; kettle, flush 2-gang (the old 620-DUPLEX rate)
+"ED-T-FLOOR-RECEPTACLE-FLBR5420" = { material = { low = 90, high = 110 }, labour = { low = 60, high = 140 } }  # 1 ea; Arlington FLBR5420AB kit, $90.26 Dale Electric (2026-11-04); labour a floor-box device set
 "ED-T-LEV-DRYER-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-DUPLEX-15" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 15 ea
 "ED-T-LEV-DUPLEX-20-REC" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 2 ea — E5825 in a recessed DVFR1W behind the fridge pair (2026-11-01)
@@ -2883,6 +2887,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # and tested at both ends. The high end is a long pull through finished concrete with a
 # certification report; the low end is a short one in an open basement.
 "ED-T-DATA-JACK" = { material = { low = 12, high = 45 }, labour = { low = 90, high = 260 } }  # 3 ea
+# Excludes the Home Assistant host, ZBT-2, Z-Wave LR stick and Zigbee dongle: owner-furnished,
+# unpriced (notes/smart_home.md, 2026-11-04).
 "ED-T-NET-ENCLOSURE" = { material = { low = 300, high = 900 }, labour = { low = 150, high = 400 } }  # 1 ea
 # Material includes the QOCMF54UC surface cover (ordered separately from the QO154M200P;
 # retail ~$513-703, 2026-11-04).
@@ -6029,14 +6035,22 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "sump_discharge" = { material = { low = 1.5, high = 3 }, labour = { low = 7, high = 16 } }  # 10.6 LF
 "water_cold" = { material = { low = 0.9, high = 2.2 }, labour = { low = 3.25, high = 7.5 } }  # 319.4 LF
 "water_hot" = { material = { low = 0.9, high = 2.2 }, labour = { low = 3.25, high = 7.5 } }  # 194.3 LF
+# Type L copper, 10' sticks (2026-11-04): runs key on material since then, so copper no longer
+# bills at the PEX rate. 3/4" $4.2-6.2/LF (pexuniverse $41.75 - Boulevard $62.27 a stick),
+# 1" $6.6-9.4/LF (canarsee $65.95 - busybeaver $93.55). Labour sweated joints, an estimate.
+"water_cold:copper:0.75" = { material = { low = 4.2, high = 6.3 }, labour = { low = 5, high = 10 } }  # 17.3 LF, PR-B-CW-BATH
+"water_hot:copper:0.75" = { material = { low = 4.2, high = 6.3 }, labour = { low = 5, high = 10 } }  # 21.7 LF, PR-B-HW-SBATH
+"water_cold:copper:1.0" = { material = { low = 6.6, high = 9.4 }, labour = { low = 6, high = 12 } }  # 23.1 LF, PR-B-CW-WH
+"water_hot:copper:1.0" = { material = { low = 6.6, high = 9.4 }, labour = { low = 6, high = 12 } }  # 11.4 LF, PR-B-HW-TRUNK
+"drain:copper" = { material = { low = 4.2, high = 6.3 }, labour = { low = 5, high = 10 } }  # 3.5 LF, PR-B-WH-TPR (3/4")
 
 [pipe_fittings]
 # Kitchen local vent, 2026-10-24: same derived allowance basis as the other elbows.
 "elbow-45-1.5in" = { low = 1.75, high = 4 }
 "bend-60-1.5in" = { low = 3.5, high = 8 }  # two rolled 45s and connecting nipple
-# Only PR-M-KITCH-LOCAL-DRAIN: graph labels the upright tee as a generic wye.
-# Purchase the specified sanitary tee in the named connector kit, never this wye.
-"wye-2x1.5in" = { low = 0, high = 0 }
+# The kitchen's upright tee (PR-M-KITCH-LOCAL-DRAIN) is bought in the [install_parts]
+# connector kit; this row only keeps it from billing twice.
+"tee-2x1.5in" = { low = 0, high = 0 }
 # DERIVED 2026-08-24 — $ each, MATERIAL ONLY. The other half of the [pipe_runs] re-base
 # above: fittings are counted off the runs' own 3D polylines and the drainage graph
 # (takeoff/plumbing.py::fitting_takeoff), so the money that used to ride inside the drain and
@@ -6083,12 +6097,19 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "bend-70-2in" = { low = 4.5, high = 10 }          # 1 ea
 "bend-55-3in" = { low = 9, high = 20 }            # 1 ea
 "bend-75-3in" = { low = 9, high = 20 }            # 1 ea
-"wye-0.75x0.75in" = { low = 2, high = 5 }         # 1 ea
+"tee-0.75x0.75in" = { low = 2, high = 5 }         # 2 ea — the two condensate tees
+"wye-1.5x1.5in" = { low = 3, high = 7 }           # 2 ea
+"wye-2x1.5in" = { low = 5, high = 11 }            # 2 ea; as wye-2x2in (HD 2x2x1-1/2 reducer ~$4-5)
 "wye-2x0.75in" = { low = 4, high = 9 }            # 1 ea
 "wye-2x2in" = { low = 5, high = 11 }              # 2 ea
-"wye-3x1.5in" = { low = 7, high = 15 }            # 1 ea
+"wye-3x1.5in" = { low = 7, high = 15 }            # 6 ea
+"tee-3x1.5in" = { low = 7, high = 15 }            # 1 ea
+"wye-3x2in" = { low = 8, high = 17 }              # 2 ea
+"wye-3x3in" = { low = 9, high = 19 }              # 1 ea
+"tee-3x3in" = { low = 9, high = 19 }              # 2 ea
 "wye-4x1.5in" = { low = 10, high = 21 }           # 1 ea
-"wye-4x2in" = { low = 11, high = 23 }             # 7 ea
+"wye-4x2in" = { low = 11, high = 23 }             # 5 ea
+"tee-4x2in" = { low = 11, high = 23 }             # 1 ea
 "wye-4x3in" = { low = 14, high = 29 }             # 4 ea
 
 [ducts]
@@ -6205,8 +6226,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "elbow-90-3in" = { low = 3, high = 8 }             # 0 ea — retired 2026-09-12 with the 3" radial
 "elbow-90-4in" = { low = 4, high = 10 }            # 41 ea — 4" stamped adjustable galvanized elbow, the radials' bend (2026-09-12)
 "elbow-90-6in" = { low = 9, high = 22 }            # 9 ea — 6" insulated riser elbow
-# elbow-90-8in retired 2026-08-30 with DU-A-HP-STUDY, the run whose rise it turned. The one
-# vertical System 1 has now is DU-S-HP-SOUTH-RISE's, and that branch is 10x6.
+"elbow-90-8in" = { low = 11.01, high = 22 }          # 14 ea — SupplyHouse 26 ga adjustable, $11.01 (2026-11-04); high allows heavier gauge
 "elbow-90-10in" = { low = 16, high = 36 }          # 1 ea — DU-S-HP-SOUTH-RISE's drawn rise
 # The OA/EA wall seals (SleevePenetration.serves_duct, 2026-10-31): low-expansion window-and-
 # door foam, Great Stuff Pro W&D $21-26/can (Hemlock Hardware, Walmart 3-pack), half a can
@@ -6383,7 +6403,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # the model has 5,280 W. That drift is the whole reason for this section: the line now moves
 # when a module is added or deleted, and the old lump never did.
 # $/W DC, by module product
-"Aptos 440 W module, 69.4 x 44.6 x 1.2 in" = { material = { low = 1.95, high = 2.60 }, labour = { low = 1.05, high = 1.40 } }  # 12 modules, 5,280 W
+"Aptos DNA-108-MFN10-440W (datasheet 08.04.2026), 67.7 x 44.6 x 1.3 in" = { material = { low = 1.95, high = 2.60 }, labour = { low = 1.05, high = 1.40 } }  # 12 modules, 5,280 W
 
 [data_raceways]
 # NEW SECTION 2026-08-27 — [low, high] $/LF, split material/labour.
@@ -6425,6 +6445,11 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "shutoff" = { material = { low = 8, high = 25 }, labour = { low = 25, high = 70 } }  # 4 ea
 "vacuum_breaker" = { material = { low = 10, high = 35 }, labour = { low = 25, high = 70 } }  # 2 ea (PA-B-USINK-VB joined 2026-10-30; Woodford 34HD ~$32)
 "water_hammer_arrestor" = { material = { low = 12, high = 35 }, labour = { low = 25, high = 70 } }  # 3 ea
+# Cleanouts (2026-11-04). One-way is an access fitting + cap at 1.5-3" (estimate, no single
+# listing); it bills CO-M-KITCH-ARM too, so [install_parts] carries no separate arm cleanout.
+# Two-way 4": SquarePeg body $30.29, HD $39.97, Zoro $45.35, Tigre $19.99.
+"cleanout_one_way" = { material = { low = 6, high = 25 }, labour = { low = 25, high = 70 } }  # 10 ea (2 at 1.5", 4 at 2", 4 at 3")
+"cleanout_two_way:4.0" = { material = { low = 20, high = 45 }, labour = { low = 25, high = 70 } }  # 3 ea
 
 [install_parts]
 # Kitchen selection 2026-10-24. Material only; set/connect labour stays in the sink row.
@@ -6437,16 +6462,18 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "Kraus Bolden KPF-1610SFS faucet, spot-free stainless" = { low = 179.95, high = 214.95 }
 # 2026-10-30 allowance (typical retail, not read off a seller): the opener's ESPHome board.
 "ratgdo32 ESPHome opener controller (Security+ 2.0)" = { low = 35, high = 60 }
+# Severin WK 3422 adapter (3000 W = 12.5 A at 240 V). No >= 13 A grounded unit confirmed
+# (World Cord Sets AD-620UNIV $8.31 is 10 A; Amazon B0GKB57MPR 15 A unread), 2026-11-04.
+"NEMA 6-20P to UK BS 1363 grounded plug adapter, 250 V, 15 A min" = { low = 8, high = 15 }
 "Dearborn P9703WBG 1-1/2-inch tubular P-trap with PVC adapter" = { low = 1.89, high = 15 }
 "Kitchen trap PVC connector kit: reducing sanitary tee, vent reducer, joint consumables" = { low = 10.96, high = 20.96 }
-"Kitchen upper-arm cleanout fitting, access extension and threaded cap" = { low = 15, high = 40 }
 # 2026-10-29: the stop itself is PA-M-KITCH-STOP-CW/HW "shutoff" in [plumbing_specialties]; these keep the reducer / tee / branch only.
 "Kitchen cold PEX manifold reducer and 3/8-inch compression fixture stop" = { low = 7, high = 20 }
 "Kitchen hot PEX tee, dishwasher branch and 3/8-inch compression fixture stop" = { low = 12, high = 30 }
 # Connector kit includes Charlotte PVC004010800HD reducing sanitary tee, $5.96,
 # https://www.homedepot.com/p/203396197 (2026-10-24); reducer/consumables add $5-15.
-# Actual upright tee is NOT a wye: generic wye-2x1.5in graph row is zeroed below.
-# Rigid elbows bill separately through [pipe_fittings]; cleanout kit is material only.
+# The graph keys this upright tee tee-2x1.5in, zeroed in [pipe_fittings]. Rigid elbows bill
+# there too; the arm cleanout bills as cleanout_one_way in [plumbing_specialties].
 # 2026-08-24: the twin pairing kit for the Frigidaire column pair (plan/placeables.py, on
 # APPL-M-FRIDGE). It is a row here rather than folded into either appliance price because it
 # is ONE kit for TWO cabinets — carried on an appliance row it would read as a per-unit
@@ -6682,6 +6709,13 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # $/LF of member, by material tag
 "butyl-tape" = { material = { low = 0.40, high = 0.75 }, labour = { low = 0.30, high = 0.75 } }  # 420.8 LF — joists, rims and blocking on FS-SG-PORCH and FS-SG-DECK (+17.3 LF 2026-09-03: the porch enclosure's sixteen flank blocks, which inherit the deck's top_protection like every other stick), plus the four single-ply 2x12 girts. 1-5/8" roll
 "butyl-tape-beam" = { material = { low = 0.85, high = 1.75 }, labour = { low = 0.40, high = 1 } }  # 64.8 LF — the wide built-up beams, plus (2026-10-16) 15.5 LF on SB-BW-BAND's 2x6 sill under TR-BW-SCREEN-CAP: 4'-6" of sill and a 1" turn-up collar round each of the eight slats and the centre post that land on it. Wide roll, or two runs of the 3-1/8"
+
+[fireblock_sealant]
+# NEW 2026-11-04 — $/LF of annulus perimeter, by material tag (takeoff fireblock_sealant).
+# Basis 3M FB136 fireblocking sealant (non-rated, IRC R302.11), 10.1 oz tube ~$15-25 retail.
+# Assumes a 3/8" x 3/8" bead (~1.7 in3/ft), ~10 LF per 18.2 in3 tube: $1.5-2.5/LF material.
+# Labour is a short gun-and-tool per penetration, set by the trade that made the hole.
+"firestop-sealant" = { material = { low = 1.5, high = 2.5 }, labour = { low = 1.5, high = 4 } }  # 30.6 LF over 24 penetrations
 
 [railings]
 # RESEARCHED 2026-08-08b — [low, high] $/LF of guard line, MATERIALS including posts, caps
@@ -7069,7 +7103,10 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 "end_cap:ED-T-LT-STRIP24-TUNABLE" = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
 "corner_connector:ED-T-LT-STRIP24-TUNABLE" = { unit = "EA", material = { low = 3, high = 7 }, labour = { low = 5, high = 11 } }
 "channel:ED-T-LT-MITTLED" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
-"tape:ED-T-LT-MITTLED" = { material = { low = 9, high = 12 }, labour = { low = 3, high = 8 } }
+# MITTLED is bought as fixed modules, not cut tape. Schedule 2026-11-04: 36 = 24+12,
+# 30 = 18+12, 15.56 -> 15, 12 = 12: 6 modules ~$156 over 7.8 LF (~$20/LF), plus one VÅGDAL
+# ($8) per group, 4 groups: ~$188, ~$24/LF. High allows a price move.
+"tape:ED-T-LT-MITTLED" = { material = { low = 24, high = 28 }, labour = { low = 3, high = 8 } }
 "end_cap:ED-T-LT-MITTLED" = { unit = "EA", material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
 "corner_connector:ED-T-LT-MITTLED" = { unit = "EA", material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
 
@@ -7830,7 +7867,8 @@ plumbing-water-softener-and-filtration = { low = 2500, high = 6000 }
 # argument for drivers in one line — the lump was a guess about a design that was never drawn,
 # and this number will rise the moment the jacks are placed. $200-450 per drop is a Cat 6A home
 # run, box, termination and test.
-electrical-structured-low-voltage-drops = { low = 200, high = 450, unit = "ea", driver = "data_devices.rows" }
+# 2026-11-04: the head end is not a drop; ED-T-NET-ENCLOSURE bills in [placeables].
+electrical-structured-low-voltage-drops = { low = 200, high = 450, unit = "ea", driver = "data_devices.rows[type_ref!=ED-T-NET-ENCLOSURE]" }
 # ** RE-SCOPED 2026-08-30, renamed from `hvac-range-hood-and-makeup-air`. There is no makeup
 # air to buy and the hood is already bought. ** The old comment — "MN code makeup air follows
 # the hood" — is true and does not apply: makeup air is triggered by a DUCTED exhaust hood, and
@@ -8175,7 +8213,7 @@ finish-floor-stair-carpet-steps = { low = 33, high = 60, unit = "ea", driver = "
 finish-floor-stair-carpet-landings = { low = 3.5, high = 6, unit = "SF", driver = "stair_finish.landing_area_sqft[stair=ST-B2M]" }
 finish-transitions-and-stair-nosings = { low = 4.5, high = 12, unit = "LF", driver = "stair_finish.tread_lf[conditioned=True,has_nosing=True]" }
 # `finish-garage-door-opener` is DELETED (2026-10-30): the opener is APPL-G-GDO, priced as
-# APPL-LIFTMASTER-8550W in [placeables].
+# APPL-LIFTMASTER-87504-267 in [placeables].
 # ** TWO KITCHEN HARDWARE LINES WITH NO ELEMENT TO HANG ON (2026-08-24). ** The model has one
 # solid CARCASS per cabinet, not a fitting-out, so a pull-out mechanism inside a box is scope
 # no [casework] row can reach — and the allowance rule at the head of this section is
@@ -8278,6 +8316,7 @@ envelope_layers      = 0.10   # board cuts, membrane laps, and the offcut at eve
 # does not follow that you use every drop you buy. If a future pass wants 0.0 here, it needs to
 # change all three and say what it thinks happens to the bottom of the pail.
 edge_trim            = 0.10   # trim is cut from stock lengths and the drop is not reusable
+fireblock_sealant    = 0.15   # tube tails and tooling loss
 member_protection    = 0.10   # tape comes in 50' rolls and the tail of one is not the start of the next; laps eat a little more
 pipe_insulation      = 0.10   # split sleeve cut to fittings
 construction_returns = 0.10   # short pieces cut from stock: sill, channel, blocking
@@ -8559,6 +8598,7 @@ pipe_insulation      = "material"
 edge_trim            = "material"
 cladding_trim        = "material"
 bug_screens          = "material"
+fireblock_sealant    = "material"   # its one row spells its own split
 member_protection    = "material"
 wall_structure       = "installed"
 reinforcement        = "material"
@@ -8594,6 +8634,7 @@ ducts           = "material plus installed labour, UN-BLENDED 2026-08-27 by qual
 edge_trim       = "material plus installed labour. One row, drip_flashing, is commonly inside a roofer's price — check for a double count against any roofing bid"
 cladding_trim   = "ESTIMATES, NOT QUOTES: material plus installed labour per Metal Sales stock stick (ea) or per foot of custom cut, closure, tape and sealant bead (LF); fasteners each. RECONCILIATION 2026-10-27: this section ADDS the wall base, corners, band, window and door trim, screen ends, Image II eave/rake/ridge and their closures, sealant and fasteners; it REPLACES [allowances] envelope-pbr-profile-closures and envelope-garage-corrugated-closure-strips (both deleted), the derived drip/ridge-closed/panel-rake LF formerly in [edge_trim] (drip_flashing and corner_trim now cover only the authored runs; ridge_cap has no rows), and ~12% of the three wall panels' MATERIAL $/SF (pbr-panel-24 2.15-3.30 to 1.90-2.90, board-batten-24 2.30-4.05 to 2.00-3.55, corrugated-panel-24 2.00-3.15 to 1.75-2.75), the trim share TRIM IS PARITY left inside them. The 12% is an assumption with no source (the three rows cut 11.6-13.0%, about $1.0-1.7k of pre-tax material at the current SF): re-strike it when a supplier quote lands. Estimate moved $880k-1,738k to $895k-1,762k. The garage's vented peak (52131XX over Profile Vent 6441899 on 6540000 clips, 2026-11-01) and the house's 4x3 1/2 leaders bill here at estimates until Metal Sales quotes and confirms the vent's net free area; the PBR 5x4 box gutter is the catalog piece, sized in notes/box_gutter_sizing.md, and bills here by part. The 0.040 in aluminium K2, EPDM isolation and wall-top closures are added as measured runs, with lap sealant separately; prices are estimates pending supplier quotes"
 bug_screens     = "ESTIMATES, NOT QUOTES: material plus installed labour per lineal foot of perforated aluminium base screen, panel-end strip and band outlet strip; no supplier quote. NEW 2026-10-29: replaces the dead [solids] bug_screen:<assembly> rows (structural_solids never billed the category) and, at the bases and window heads, the 6460800 / 55548XX closures under [cladding_trim]"
+fireblock_sealant = "material plus installed labour, $/LF of annulus perimeter. Material assumes a 3/8 x 3/8 in bead of 3M FB136 at ~10 LF per 10.1 oz tube; a wider annulus scales it"
 member_protection = "material plus installed labour. Applied by the framer WITH the framing, not by a trade on a return visit — five of the seven capped beams carry joists on top, so the tape and the cap over it go on before the deck frames or not at all"
 railings        = "material plus installed labour. RAILING-INT-STAIR-GUARD is priced as a COMPONENT system; a shop-welded guard moves cost from labour into material and the two models must not be stacked"
 drainage        = "material plus installed labour for the prefinished K-style gutter and dark downspouts (the PBR box gutter bills by part under cladding_trim). Seamless is roll-formed on site, so its own split is inseparable and every quote will come back merged"

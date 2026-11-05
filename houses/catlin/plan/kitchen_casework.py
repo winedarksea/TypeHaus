@@ -104,13 +104,14 @@ MAIN_KITCHEN_CASEWORK = [
               position=pt(inch(303.375), inch(413.375))),
     # On CT-M-KIT-N above B12, west of the dishwasher/sink, beside KET1 at x=306".
     # Base cabinets' 36" envelope includes the stone; the kettle stands on that top.
-    # Owner-confirmed UK line-to-line use; selected adapter example:
-    # https://www.amazon.com/Universal-110-250V-American-Electrical-converter/dp/B07FKLRLRT
-    # Select the grounded 6-20P variant. The wall receptacle is 6-20R (P is the plug).
+    # Owner-confirmed UK line-to-line use. WK 3422 is 3000 W: 12.5 A at 240 V, so the adapter
+    # needs >= 13 A. Sold now (read 2026-11-04): World Cord Sets AD-620UNIV (6-20P to BS 1363
+    # angled F, 250 V, but only 10 A) and Amazon B0GKB57MPR (15 A 250 V title; ground and UL
+    # unconfirmed). Pick a grounded 6-20P unit marked >= 15 A. The receptacle is 6-20R.
     Appliance(uid="TEAKET3422", tag="APPL-M-KETTLE", type_ref="APPL-SEVERIN-WK3422",
               room="RM-M-LIVING", position=pt(inch(303.375), inch(416.375)),
               mount=Mount(kind=MountKind.FLOOR, elevation=inch(36)),
-              install_parts=("Grounded NEMA 6-20P to international UK Type G plug adapter",)),
+              install_parts=("NEMA 6-20P to UK BS 1363 grounded plug adapter, 250 V, 15 A min",)),
     # Beside the kettle over the dishwasher. Owner accepts 2 3/4" under WE1;
     # the manufacturer's overhead recommendation is 5.90" (see appliance type source).
     Appliance(uid="RIVELIA001", tag="APPL-M-COFFEE", type_ref="APPL-DELONGHI-EXAM44055W",
@@ -125,7 +126,6 @@ MAIN_KITCHEN_CASEWORK = [
               mount=Mount(kind=MountKind.WALL, elevation=inch(13.319)),
               install_parts=("Dearborn P9703WBG 1-1/2-inch tubular P-trap with PVC adapter",
                              "Kitchen trap PVC connector kit: reducing sanitary tee, vent reducer, joint consumables",
-                             "Kitchen upper-arm cleanout fitting, access extension and threaded cap",
                              "24V Class-2 control transformer, 40 VA",
                              "double-pole contactor, 30 A, 24V coil",
                              "NEMA 1 enclosure, 6x6x4, hinged",
@@ -288,10 +288,11 @@ MAIN_KITCHEN_CASEWORK = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(331.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # Microwave trial in the cave, centred (1 5/8" a side), front facing west, 2" off the wall
-    # so the plug behind it clears. Plugs into ED-M-LIVING-KGF4 (SA2) at 42".
+    # Microwave trial in the cave, front facing west, 2" off the wall so the plug clears. 20.69"
+    # wide: 3.00" off PANTRY-S1 (cave edge y 319 3/8, the closed side), 5/16" short of the open
+    # landing edge (343 3/8). Plugs into ED-M-LIVING-KGF4 (SA2) at 42".
     Appliance(uid="72YP0N77T2", tag="APPL-M-MICROWAVE", type_ref="APPL-MICROWAVE-NN-SN686S", room="RM-M-LIVING",
-              position=pt(inch(415.6), inch(331.375)), rotation=deg(-90),
+              position=pt(inch(415.6), inch(332.72)), rotation=deg(-90),
               mount=Mount(kind=MountKind.FLOOR, elevation=inch(36))),
 
     # Ply ladder, 18" deep and 1/4" off the north wall (the oak's movement), 8" of floor

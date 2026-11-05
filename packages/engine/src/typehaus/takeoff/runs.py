@@ -158,7 +158,9 @@ def run_schedule(model: ResolvedModel, prices: Any = None) -> list[dict[str, Any
                    run.length_m, run.diameter_m,
                    ", ".join(run.serves))
         if prices is not None:
-            row.update(_price(prices, "pipe_runs", run.system, None, row["developed_ft"]))
+            row.update(_price(prices, "pipe_runs", run.system,
+                              (run.material or "", round(run.diameter_m / M_PER_IN, 3)),
+                              row["developed_ft"]))
         rows.append(row)
 
     for duct in model.ducts:

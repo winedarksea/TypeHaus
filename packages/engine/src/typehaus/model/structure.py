@@ -1124,7 +1124,7 @@ class SolarPanel(Element):
     # rapid-shutdown grouping may be computed from (rated Voc understates it badly in MN).
     voc: float | None = None
     voc_cold: float | None = None
-    # A SunSpec rapid-shutdown transmitter/PLC device is fitted to this module. False on a
+    # A SunSpec rapid-shutdown receiver is fitted to this module. False on a
     # module means it must be covered by a group whose summed ``voc_cold`` stays under the
     # 690.12 limit.
     rsd: bool = False

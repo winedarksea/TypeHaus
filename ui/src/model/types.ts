@@ -860,7 +860,7 @@ export interface DeviceCountRow {
 export interface SolarTakeoff {
   panels: number;
   total_watts: number;
-  rsd_transmitters: number;
+  rsd_receivers: number;
   by_product: { product: string; panels: number; watts: number; tags: string[] }[];
   // Per series string. Either Voc sum is null when a module in the string does not declare
   // that voltage — a partial sum of a series string is a wrong number, not a smaller one.

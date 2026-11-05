@@ -312,9 +312,9 @@ owner standard, uncited), citing the 2021 book as the code the next adoption bri
 
 ## 8. Rapid shutdown
 
-The Aptos 440 W module is Voc 39.03 V at STC, -0.25%/°C, so **44.40 V** at the -30 °C design
-low; two sum to 88.8 V against NEC 690.12(B)(2)'s 80 V. Every module gets its own SunSpec
-transmitter. `code.NEC_690_12_rapid_shutdown` computes that from `voc_cold`; rated Voc
+The Aptos 440 W module (DNA-108-MFN10-440W) is Voc 39.03 V at STC, -0.23%/°C, so **43.97 V**
+at the -30 °C design low; two sum to 87.9 V against NEC 690.12(B)(2)'s 80 V. Every module gets
+its own SunSpec receiver; the 12kPV's built-in APsmart transmitter signals them. `code.NEC_690_12_rapid_shutdown` computes that from `voc_cold`; rated Voc
 would say 78.1 V for a pair and pass, which is why `voc_cold` is the only voltage it reads.
 
 ## 9. Wiring as built

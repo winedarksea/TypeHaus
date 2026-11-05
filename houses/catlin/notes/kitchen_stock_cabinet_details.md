@@ -134,7 +134,8 @@ are ordinary 42-inch countertop receptacles on its back wall.
 
 **Microwave trial.** A countertop microwave of 12–13 inches tall leaves about 7 inches over
 it, so about 3 inches of top clearance remains even for a manufacturer that asks for more.
-The open south side means only the north side, against S1, needs a side clearance. Check
+The Panasonic NN-SN686S (20.69 wide) stands at y 332.72, 3.00 inches off PANTRY-S1 on the
+closed side and 5/16 inch short of the open landing edge; no clearance zone is added. Check
 the actual unit's rear and side requirements before choosing this spot over the pantry
 east bay (notes/pantry_climbable_shelving.md).
 

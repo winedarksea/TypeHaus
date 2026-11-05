@@ -440,7 +440,7 @@ def solar_takeoff(model: ResolvedModel) -> dict[str, object]:
     return {
         "panels": len(model.solar_panels),
         "total_watts": round(sum(panel.watts for panel in model.solar_panels), 0),
-        "rsd_transmitters": sum(1 for panel in model.solar_panels if panel.rsd),
+        "rsd_receivers": sum(1 for panel in model.solar_panels if panel.rsd),
         "by_product": [
             {"product": row["product"], "panels": int(row["panels"]),
              "watts": round(float(row["watts"]), 0), "tags": sorted(row["tags"])}
@@ -565,9 +565,9 @@ def backup_component_rows(model: ResolvedModel) -> list[dict[str, object]]:
     rsd = sum(1 for panel in model.solar_panels if panel.rsd)
     if rsd:
         rows.append({
-            "component": "SunSpec rapid-shutdown transmitter (module level)",
+            "component": "SunSpec rapid-shutdown receiver (module level)",
             "count": rsd,
-            "basis": f"{rsd} modules carrying rsd=True (690.12; EG4 sends the keep-alive)",
+            "basis": f"{rsd} modules carrying rsd=True (690.12; inverter is the transmitter)",
         })
 
     rows.extend([

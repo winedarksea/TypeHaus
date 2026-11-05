@@ -158,10 +158,10 @@ labour only; the separate general faucet allowance excludes the kitchen. Factory
 trap adapter, washers, faucet hoses and Badger elbow are included, not extra orders.
 Rigid pipe and elbows bill in the existing pipe/fittings takeoffs; the loose
 kit carries the actual reducing sanitary tee, vent reducer and joint consumables.
-The generic graph labels that upright tie-in as a wye; its single wye-2x1.5in price
-row is zero because the named kit buys the correct tee. The upper-arm cleanout
-fitting, extension and cap have their own material kit; the cleanout schedule is
-a quantity view, not a second purchase. Connector/fixture-stop costs
+The graph keys that upright tie-in as `tee-2x1.5in`, whose price row is zero
+because the named kit buys it. The upper-arm cleanout bills once, as the
+schedule's `cleanout_one_way` row (2026-11-04); its extension and cap ride in that
+rate. Connector/fixture-stop costs
 remain labeled planning allowances; faucet and trap prices have dated retail links
 in prices.toml.
 

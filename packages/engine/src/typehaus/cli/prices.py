@@ -249,6 +249,11 @@ QUALIFIED_KEY_FIELD: dict[str, str | tuple[str, ...]] = {
     "drainage": "product", "wall_structure": "material",
     "framing": "material", "envelope_layers": "thickness_in",
     "ducts": ("material", "diameter_in"),
+    # Copper Type L is not PEX: `water_hot:copper:0.75` → `water_hot:copper` → `water_hot`.
+    # A run naming no material (PEX) has an empty string and keeps the bare system row.
+    "pipe_runs": ("material", "diameter_in"),
+    # A 4" two-way cleanout is not a 1-1/2" one-way: `cleanout_two_way:4.0` → bare kind.
+    "plumbing_specialties": "size_in",
     # ``sheet_goods`` keys on the MATERIAL, and a sheet that gets RIPPED INTO STRIPS is not
     # the same article as the same sheet hung flat: ``takeoff/sheet_rips`` already reports
     # the member category as ``scope`` ("buck rip", "sheathing rip") precisely so the two

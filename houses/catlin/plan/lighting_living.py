@@ -296,7 +296,8 @@ LIVING_LIGHTING = [
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
-    # Corner tape follows the diagonal front, inset one inch onto its real underside.
+    # Corner tape follows the diagonal front, inset one inch onto its real underside:
+    # 15.56" drawn, one 15" MITTLED module bought.
     LightRun(uid="5SGJTPFRSQ", tag="LR-M-KIT-N-WE3", type_ref="ED-T-LT-MITTLED",
              path=(pt(inch(400.375), inch(411.375)), pt(inch(411.375), inch(400.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",

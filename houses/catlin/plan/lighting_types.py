@@ -255,7 +255,8 @@ AMBIENT_LUMINAIRE_TYPES = (
     # U1: the owner's preferred under-cabinet light, IKEA MITTLED, fixed white on its own
     # TRADFRI driver. ~208 lm/ft at 2700 K against U's ~400 at 3000 K: U stays as the
     # fallback if the counter reads short (the 2026-10-31 rule: keep MITTLED unless it falls
-    # well short of ~300 lm/ft). Billed by the foot as tape, like the closet's OVERSIDAN.
+    # well short of ~300 lm/ft). Bought as fixed modules (24/18/15/12"); billed by the foot
+    # at the module schedule's rate (prices.toml tape:ED-T-LT-MITTLED).
     LuminaireType(tag="ED-T-LT-MITTLED",
                   replaceable_lamp=False, name="IKEA MITTLED LED countertop strip, dimmable",
                   form=LuminaireForm.STRIP, type_mark="U1",

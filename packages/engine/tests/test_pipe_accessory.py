@@ -133,8 +133,8 @@ def test_an_appliances_install_kit_bills_in_the_same_section(catlin_model_ro):
 
     disposer = next(element for element in model.plan.storey_elements("main")
                     if getattr(element, "tag", None) == "APPL-M-DISP")
-    # Seven controls plus trap, connector and cleanout kits.
-    assert len(disposer.install_parts) == 10
+    # Seven controls plus trap and connector kits; the arm cleanout bills as a cleanout.
+    assert len(disposer.install_parts) == 9
     for part in disposer.install_parts:
         assert rows[part]["count"] == 1
         assert rows[part]["tags"] == ["APPL-M-DISP"]

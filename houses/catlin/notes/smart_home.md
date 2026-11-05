@@ -68,7 +68,7 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Doorbell | `ED-M-DOORBELL` | Reolink D340P, PoE | core `reolink` (local push) | one Reolink app session | the chime rings locally | rated to 14 F, accepted; talk is app-only |
 | Backyard camera | `ED-M-CAM-PORCH` | Reolink Omvi 3i PoE (owner, 2026-11-02), PoE+ 20 W | core `reolink` if it lists the model, else RTSP/ONVIF (both local) | none | records to microSD | not on the integration's tested list; one 802.3at switch port |
 | Canopy camera | `ED-BW-CAM-CANOPY` | Reolink Duo 3 PoE | core `reolink` | none | records to microSD | none |
-| Garage opener | `APPL-G-GDO` | LiftMaster 8550W (Security+ 2.0) + ratgdo32 | ESPHome (local push) | none; MyQ never set up | wall button and remotes | head size; the manual's headroom figure |
+| Garage opener | `APPL-G-GDO` | LiftMaster 87504-267 (Security+ 2.0) + ratgdo32 | ESPHome (local push) | none; MyQ never set up | wall button and remotes | learn button colour (confirm yellow on arrival); head size is from reposted guides |
 | Smoke/CO/heat | `AL-*` (13) | Kidde hardwired interconnect | relay dry contacts into an isolated input in `ED-B-BACKUP-ENCL` | none | interconnect sounds every alarm | confirm part numbers on kidde.com |
 | EVSE | `APPL-G-EVSE` | Grizzl-E Smart 40 A, hardwired | OCPP 1.6J to HACS `ocpp` (local push) | none | charges at the DIP-set amps | the Smart's own UL file; 1.6J vs 1.6 |
 | HP1 thermostat | `ED-S-HP-STAT` | Aqara W200 | Matter over Wi-Fi (local push) | Aqara app for firmware | runs its schedule standalone | aux staging in HA (below) |
@@ -82,7 +82,7 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Scene keypad | `ED-M-LIVING-KEYPAD` | Zooz ZEN32 | Z-Wave JS on the 800 LR stick (local push) | none | does nothing | set scene-only (relay unwired) |
 | Tape controllers (12) | `ED-M-LIVING-LT-CTRL`/`-E`, `ED-M-DINING-LT-CTRL`/`-E`, `ED-S-HALL-LT-CTRL`/`-CTRL2`, `ED-G-EAVE-W/-W2/-E/-E2-CTRL`, `ED-G-GABLE-N/-N2-CTRL` | Gledopto GL-C-001P | Zigbee, ZHA (local push) | none | its power-on state | set power-on to "previous" |
 | Closet and kitchen tape | `ED-M-CLOSET-LT-PSU`, `ED-M-KITCH-LT-PSU` (MITTLED) | IKEA TRADFRI 30 W, unpaired; a plain paddle is the hard off | none (no scene uses them) | none | powers on lit | bench-test power-on unpaired; DUBBELKISEL (Matter over Thread, no DIRIGERA) is the drop-in once IKEA US stocks it (FCC-filed 2026-06, no US listing 2026-09) |
-| HA host | `ED-B-UTIL-RC1` / `CKT-HA` | mini PC + ZBT-2 + Z-Wave 800 LR stick + Zigbee coordinator dongle | wired LAN | none | none | UPS: the backup-battery TODO |
+| HA host | `ED-B-UTIL-RC1` / `CKT-HA` | mini PC + ZBT-2 + Z-Wave 800 LR stick + Zigbee coordinator dongle, **owner-furnished and not in the estimate** (2026-11-04) | wired LAN | none | none | UPS: the backup-battery TODO |
 
 Lighting, the fan and the RF-remote fixtures: `notes/workshop_receptacles.md`. Shades:
 `notes/window_coverings.md`. Water heater shedding: `notes/backup_power.md`. Plant-room water:
@@ -126,12 +126,19 @@ integration. There is no NVR; Frigate is optional later.
   figure of Table 1 is not binding on communications cable). The model has no cable count to
   grade it.
 
-**Garage opener.** It must be a yellow-button Security+ 2.0 unit. Not Security+ 3.0 (white
-button: ratgdo cannot speak it), and not the 8500/RJ020 jackshaft. The head is 11' back on the
-door's centreline, hung on straps. It plugs into `ED-G-GDO-RC`, on `CKT-LT-MAIN` behind the
-blank-face GFCI `ED-G-GDO-GFCI` by the light switch (2026-10-30). The ceiling is 10'-1" above the slab, so there is 3'-1" over the 7'-0" door:
-room for a standard-lift track and a trolley rail. The 8550W manual's own headroom figure is
-not yet read.
+**Garage opener.** The 8550W (and its 85503-267 sibling) is discontinued; the successor is the
+LiftMaster 87504-267 Secure View: belt drive, 485LM battery backup, Security+ 2.0. Its owner's
+manual says it is "ONLY compatible with myQ and Security+ 2.0 accessories", so the ratgdo32 drives
+it as a Security+ 2.0 unit (red/white/black on the opener's terminals), not dry contact. It must
+stay Security+ 2.0: not 3.0 (white button: ratgdo cannot speak it) and not the 8500/RJ020
+jackshaft. Two things are unverified: no ratgdo report for the 87504 was found, and the manual
+never names the learn-button colour, so confirm yellow when the box opens (if it is not, fall back
+to ratgdo's dry-contact mode with a door-position sensor). The built-in camera and MyQ are never
+set up. The head is 10.5 x 18.7 x 8.185 in (30 in wide with the decorative doors open; reposted
+product guides, not the LiftMaster PDF) and needs 2 in above the door's high point. It is 11' back
+on the door's centreline, hung on straps, and plugs into `ED-G-GDO-RC`, on `CKT-LT-MAIN` behind the
+blank-face GFCI `ED-G-GDO-GFCI` by the light switch (2026-10-30). The ceiling is 10'-1" above the
+slab, so there is 3'-1" over the 7'-0" door: room for a standard-lift track and a trolley rail.
 
 **Smoke/CO/heat.** One Kidde hardwired line, every unit with a sealed backup, all on
 `CKT-LT-BACKUP`. Kidde wants every interconnected unit on one branch. The line is:

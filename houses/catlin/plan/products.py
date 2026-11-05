@@ -154,6 +154,7 @@ EG4_12KPV = Product(
     name="12kPV hybrid inverter",
     source="EG4 spec sheet, read 2026-08-02. HA: RS-485 Modbus via an Ethernet adapter, EG4 "
            "web monitor in local mode (one client per link; firmware support to verify). "
+           "Built-in APsmart rapid-shutdown transmitter (module-level receivers pair to it). "
            "notes/smart_home.md.",
 )
 EG4_POWERPRO_WALLMOUNT = Product(

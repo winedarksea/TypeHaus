@@ -232,9 +232,9 @@ def _fitting(key: str, system: str) -> str | None:
         return f"{parts[1]}° {parts[0]}, {_fraction_in(parts[2][:-2])} {system}".strip()
     if len(parts) == 3 and parts[:2] == ["wall", "seal"] and parts[2].endswith("in"):
         return f"Wall penetration seal kit, {_fraction_in(parts[2][:-2])} {system}".strip()
-    if len(parts) == 2 and parts[0] == "wye" and parts[1].endswith("in"):
+    if len(parts) == 2 and parts[0] in ("wye", "tee") and parts[1].endswith("in"):
         a, _, b = parts[1][:-2].partition("x")
-        return f"Wye {_fraction_in(a)} x {_fraction_in(b)} {system}".strip()
+        return f"{parts[0].capitalize()} {_fraction_in(a)} x {_fraction_in(b)} {system}".strip()
     return None
 
 
@@ -268,7 +268,8 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
     if section == "pipe_runs":
         system = KEY_GLOSSARY.get((section, str(g("system") or bare)), str(g("system") or bare))
         size = f", {_fraction_in(g('diameter_in'))}" if g("diameter_in") else ""
-        return f"{system} pipe{size}"
+        material = f" {g('material')}" if g("material") else ""
+        return f"{system} pipe{size}{material}"
     if section == "pipe_fittings":
         return _fitting(bare, str(g("system") or ""))
     if section == "duct_fittings":
@@ -316,6 +317,10 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
     if section == "cladding_trim":
         name = g("profile") or bare
         return f"{name}, {g('stock_length_in'):g} in stock" if g("stock_length_in") else name
+    if section == "solar_modules":
+        return f"PV modules, {g('watts'):g} W DC" if g("watts") else None
+    if section == "fireblock_sealant":
+        return f"Fireblock sealant bead, {g('count')} penetrations" if g("count") else None
     if section == "member_protection":
         width = _fraction_in(g("width_in")) if g("width_in") else ""
         return f"{labels.material(g('material'))}, {width} on {g('scope') or ''}".strip(", ")

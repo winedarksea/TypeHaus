@@ -94,11 +94,9 @@ def test_selected_products_and_installation_parts_bill_once(catlin_model_ro):
     assert prices["install_parts"][faucet]["low"] == 179.95
     # 2026-10-24 lavatory selection: 5 Genta $150-250 + 3 Indy $100-160 + B.2 $160-260.
     assert prices["allowances"]["plumbing-faucets-and-tub-filler"] == {"low": 1210, "high": 1990}
-    # This fitting type also serves the attic lav and basement sink branch.
-    tie = next(row for row in fitting_takeoff(catlin_model_ro)
-               if row["fitting"] == "wye-2x1.5in")
-    assert set(tie["tags"]) == {
-        "PR-A-STUBATH-LAV-DRAIN", "PR-B-SINK2-DRAIN", "PR-M-KITCH-LOCAL-DRAIN",
-    }
-    assert tie["count"] == 3
-    assert prices["pipe_fittings"][tie["fitting"]] == {"low": 0, "high": 0}
+    # The kitchen's upright tee is its own order key (a tee, never a wye), bought in the kit.
+    rows = {row["fitting"]: row for row in fitting_takeoff(catlin_model_ro)}
+    assert rows["tee-2x1.5in"]["tags"] == ["PR-M-KITCH-LOCAL-DRAIN"]
+    assert set(rows["wye-2x1.5in"]["tags"]) == {"PR-A-STUBATH-LAV-DRAIN", "PR-B-SINK2-DRAIN"}
+    assert prices["pipe_fittings"]["tee-2x1.5in"] == {"low": 0, "high": 0}
+    assert prices["pipe_fittings"]["wye-2x1.5in"]["low"] > 0

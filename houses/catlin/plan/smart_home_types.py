@@ -47,16 +47,19 @@ REOLINK_DUO3 = Product(
     url="https://reolink.com/product/reolink-duo-3-poe/",
     source="Reolink page, read 2026-10-30: 195 x 103 x 56 mm, <12 W, 802.3af, 180 x 55 deg "
            "field, IP67, -10..55 C. microSD on board; no NVR." + _NOTE)
-LIFTMASTER_8550W = Product(
-    tag="PROD-LIFTMASTER-8550W", brand="LiftMaster", model="8550W",
-    name="Elite belt-drive opener, Security+ 2.0 (yellow learn button)",
-    url="https://support.chamberlaingroup.com/s/article/LiftMaster-Garage-Door-Opener-Models-"
-        "8550W-8550WL-8550WLB-8550WLB-267-8557W-WLED-WLED-267-85503-85503-267-8587W-8587WL-"
-        "and-8580WLB-Owner-s-Manual",
-    source="Chamberlain support, read 2026-10-30: Security+ 2.0, yellow learn button. Driven by "
-           "a ratgdo32 on ESPHome; MyQ is never set up. Not Security+ 3.0 (white button), not "
-           "the 8500/RJ020 jackshaft. Head size and headroom NOT read (manual is a viewer "
-           "shell): the envelope is an allowance." + _NOTE)
+LIFTMASTER_87504 = Product(
+    tag="PROD-LIFTMASTER-87504-267", brand="LiftMaster", model="87504-267",
+    name="Secure View belt-drive opener, Security+ 2.0, battery backup",
+    url="https://www.garaga.com/garage-door-openers/residential/belt/87504-267",
+    source="Replaces the discontinued 8550W (06-001). Owner's manual (Smart LED 87504-267/84501, "
+           "read 2026-11-04): 'ONLY compatible with myQ and Security+ 2.0'; control panel on red/"
+           "white terminals; 12 V 485LM battery. Garaga page: belt drive, battery backup, "
+           "headroom 2 in. Head 10.5 L x 18.7 W x 8.185 H in (30 in wide with the decorative "
+           "doors open) from reposted product guides, NOT the LiftMaster PDF. ratgdo32 supports "
+           "Security+ 2.0 (ratcloud / ratgdo docs); no 87504 report was found, and the manual "
+           "never names the learn-button colour: CONFIRM yellow on arrival. Driven by a ratgdo32 "
+           "on ESPHome; MyQ and its camera are never set up. Not Security+ 3.0 (white button)."
+           + _NOTE)
 GRIZZLE_SMART = Product(
     tag="PROD-GRIZZLE-SMART-40", brand="United Chargers", model="Grizzl-E Smart 40A, 14-50P",
     name="Grizzl-E Smart EVSE, 40 A (hardwired: 14-50P removed)",
@@ -93,7 +96,7 @@ WARMUP_7IE = Product(
     source="Warmup NAM submittal, read 2026-10-30: Matter over Wi-Fi, 110-240 VAC, 15 A "
            "resistive, integral Class A GFCI (5 mA), 10 ft NTC10K floor sensor, ~114 x 90 mm "
            "face. Schluter cable warranty with a non-Schluter stat: ask in writing." + _NOTE)
-SMART_HOME_PRODUCTS = (REOLINK_DOORBELL, REOLINK_OMVI_3I, REOLINK_DUO3, LIFTMASTER_8550W,
+SMART_HOME_PRODUCTS = (REOLINK_DOORBELL, REOLINK_OMVI_3I, REOLINK_DUO3, LIFTMASTER_87504,
                        GRIZZLE_SMART, KIDDE_SM120X, KIDDE_CO120X, AQARA_W200, WARMUP_7IE)
 
 # --- low-voltage endpoints (DATA_OUTLET kind; PoE from the switch in ED-B-NET-PATCH) ----------
@@ -145,9 +148,9 @@ DEVICE_TYPES = (
 # --- appliances: equipment the house names but does not wire in --------------
 APPLIANCE_TYPES = (
     ApplianceType(
-        tag="APPL-LIFTMASTER-8550W", name="Garage door opener, belt trolley (LiftMaster 8550W)",
-        product_ref=LIFTMASTER_8550W.tag, footprint=(inch(13), inch(20)), height=inch(8),
-        needs=frozenset({Service.POWER_120}), ports=_P120, source=LIFTMASTER_8550W.source),
+        tag="APPL-LIFTMASTER-87504-267", name="Garage door opener, belt trolley (LiftMaster 87504-267)",
+        product_ref=LIFTMASTER_87504.tag, footprint=(inch(18.7), inch(10.5)), height=inch(8.185),
+        needs=frozenset({Service.POWER_120}), ports=_P120, source=LIFTMASTER_87504.source),
     ApplianceType(
         tag="APPL-GRIZZLE-SMART-40", name="EVSE, 40 A hardwired (Grizzl-E Smart, plug removed)",
         product_ref=GRIZZLE_SMART.tag, footprint=(inch(6.25), inch(3.75)),

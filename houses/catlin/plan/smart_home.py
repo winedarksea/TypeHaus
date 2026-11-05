@@ -117,10 +117,11 @@ SECOND_ELEMENTS = [
 
 # --- garage: opener, its ceiling receptacle, the EVSE ----------------------------------------
 GARAGE_ELEMENTS = [
-    # Head 11' back from W-G-N on the door's centreline, hung on straps from the 10'-1" ceiling
-    # (3'-1" over the 7' door) at the rail's line; the rail runs to the header. The ratgdo32
+    # LiftMaster 87504-267 (8550W is discontinued). Head 11' back from W-G-N on the door's
+    # centreline, hung on straps from the 10'-1" ceiling (3'-1" over the 7' door; it needs 2"
+    # above the door's high point) at the rail's line; the rail runs to the header. The ratgdo32
     # wires to the opener's Security+ 2.0 terminals. Mount heights here read off the slab.
-    Appliance(uid="CC8K8WDGSR", tag="APPL-G-GDO", type_ref="APPL-LIFTMASTER-8550W", room="RM-GARAGE",
+    Appliance(uid="CC8K8WDGSR", tag="APPL-G-GDO", type_ref="APPL-LIFTMASTER-87504-267", room="RM-GARAGE",
               position=pt(ft(18), ft(56, 6)),
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 4)),
               install_parts=("ratgdo32 ESPHome opener controller (Security+ 2.0)",)),

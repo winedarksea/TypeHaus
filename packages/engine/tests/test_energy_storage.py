@@ -183,7 +183,7 @@ def test_every_module_carries_a_shutdown_device(catlin_plan, catlin_model):
 
 def test_dropping_rsd_from_alternate_modules_fails_on_cold_voc(catlin_model):
     """The "every other module" option plans/TODO.md hoped for, tested rather than assumed:
-    two Aptos modules sum to 88.8V at the -30 degC design low, over the 80V limit."""
+    two Aptos modules sum to 87.9V at the -30 degC design low, over the 80V limit."""
     from dataclasses import replace
 
     panels = [replace(p, rsd=(index % 2 == 0))
@@ -195,7 +195,7 @@ def test_dropping_rsd_from_alternate_modules_fails_on_cold_voc(catlin_model):
     try:
         fails = _fails(rapid_shutdown(_context(model.plan, model)))
         assert fails and all("over the 80V limit" in f.message for f in fails)
-        assert any("88.8V" in f.message for f in fails)
+        assert any("87.9V" in f.message for f in fails)
     finally:
         model.solar_panels[:] = original
 
