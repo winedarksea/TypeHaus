@@ -80,7 +80,10 @@ EXT_2X6 = Assembly(
               # value for a 5-1/2" bay (see the `fiberglass-r19` material comment), so this
               # is the correct 2x6 SKU and not a downgrade to a lofted R-19.
               cavity=CavityFill(material_ref="fiberglass")),
-        Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
+        # 15/32" (1/2") 4- or 5-ply CDX, Exposure 1 (owner, 2026-11-04). Not Structural I:
+        # CS-WSP takes any rated panel, and the girt screw bites the stud, not the ply.
+        # Not OSB: it must dry below 16% before the foam and can then dry only inward.
+        Layer(name="sheathing", material_ref="cdx-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING,
               sheet_length=inch(120.0)),  # 4x10: wall + rim above, one sheet
         # BAND A, 0 - 4" off the sheathing. ONE application of continuous ccSPF, crossed
@@ -294,7 +297,7 @@ EXT_2X6_SWINBURNE = Assembly(
               # assembly: a revert that silently reintroduced mineral wool would undo the
               # fiberglass batt sweep the day anyone took it.
               cavity=CavityFill(material_ref="fiberglass")),
-        Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
+        Layer(name="sheathing", material_ref="cdx-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
         # The band behind the outrigger: continuous, crossed by nothing but the blocks and
         # the tabs. There is no WRB above it because there is nothing left for one to do —
@@ -372,8 +375,8 @@ GARAGE_WALL_2X6 = Assembly(
                                 framing_factor=0.20,
                                 control={ControlLayer.AIR, ControlLayer.WATER,
                                          ControlLayer.VAPOR, ControlLayer.THERMAL})),
-        # Ordinary 5/8" CDX, NOT the house's shear-rated `struct-1-plywood` (see that
-        # material's comment). It carries NO `control` set on purpose: the ccSPF behind it
+        # 5/8" CDX, the house's panel one size up for the 24" o.c. studs. It carries NO
+        # `control` set on purpose: the ccSPF behind it
         # is the air, water and vapour plane, exactly the division EXT_2X6 draws, and
         # a bare sheathing panel that claimed those layers would be a WRB nobody is buying.
         #

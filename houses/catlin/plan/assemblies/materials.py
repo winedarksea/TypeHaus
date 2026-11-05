@@ -187,24 +187,10 @@ MATERIALS = [
     # The stair face. 3/4" rather than the 1/2" a plain panel finish would take, because
     # this panel is structural backing: coat hooks and the closet rail screw straight into
     # it anywhere along the wall, with no blocking behind and no stud to hunt for.
-    # GARAGE_WALL_2X6's sheathing, replacing the 1.5" Zip-R.
-    #
-    # A SEPARATE TAG FROM `struct-1-plywood`, and deliberately. Structural 1 is a premium
-    # shear-rated grade — a specific veneer layup ordered where a braced-wall line is being
-    # engineered for it — and the garage is not that wall. Billing this sheet at Structural
-    # 1's rate would overstate the sheathing on every square foot of a 24'x24' building and
-    # would quietly re-spec what the yard delivers. CDX is the ordinary sheathing panel:
-    # C-face, D-back, exterior glue.
-    #
-    # 5/8" and not 1/2": the studs are at 24" o.c. here, and 5/8" is the panel
-    # that spans it comfortably and takes a face-fastened screw without dishing between the
-    # crowns of the corrugated skin over it.
-    #
-    # Thermal/vapour numbers are the plywood series' — this is the same veneer panel as
-    # `struct-1-plywood` and `plywood-subfloor`, and nothing hygric moves with the grade.
-    # It carries NO `control` set in the assembly: the ccSPF in the bays behind it is the
-    # air/water plane now, exactly as EXT_2X6 does it, and a bare CDX sheet is not
-    # a WRB and must not be authored as one.
+    # `cdx-plywood` (library) is every exterior wall's sheathing: 15/32" on the house
+    # (owner, 2026-11-04; EXT_2X6 says why not Structural I or OSB), 5/8" on the garage's
+    # 24" o.c. studs. It carries NO `control` set: the ccSPF is the air/water plane, and a
+    # bare CDX sheet is not a WRB and must not be authored as one.
     # `ENTRY_SCREEN_WALL`'s EAST ply, and only that. One panel does two jobs there: it is a
     # rated wood structural panel (SDPWS Table 4.3B publishes shear values for Rated Siding
     # exactly as for Rated Sheathing) AND it is the finished, paint-ready face of the screen

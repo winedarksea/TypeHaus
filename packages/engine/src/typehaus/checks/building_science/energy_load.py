@@ -384,6 +384,7 @@ def estimate_block_load(
     # roof's sol-air term is evaluated at the same hour: the peak cooling condition is one
     # instant, and charging the glass its peak and the roof its own separate peak is the
     # every-orientation-peaks-at-once error in a different dress.
+    # Walked over the zone's OWN openings, so it takes no volume share.
     solar = fenestration_gain(model, wall_by_tag, envelope_openings)
     solar_peak_hour = solar.peak_hour
     unknown.extend(solar.unknown_inputs)
@@ -671,7 +672,7 @@ def estimate_block_load(
         latent += (LATENT_BTU_PER_CFM_GR * altitude_correction_factor(site.elevation.feet)
                    * latent_cfm * grains)
     cooling = (air_cooling + slab_on_grade_cooling + roof_sol_air_cooling
-               + solar.design_btu_per_hour * share + internal_sensible
+               + solar.design_btu_per_hour + internal_sensible
                + sum(component.ua_btu_per_hour_f * _deltas_for(component.kind)[1]
                      for component in components))
     # A ton of refrigeration is a TOTAL, not a sensible. ``cooling_load_btu_per_hour`` stays
@@ -682,10 +683,10 @@ def estimate_block_load(
                         infiltration_btu_per_hour=infiltration_heating,
                         ventilation_btu_per_hour=ventilation_heating,
                         latent_btu_per_hour=latent,
-                        solar_btu_per_hour=solar.average_btu_per_hour * share,
-                        solar_peak_btu_per_hour=solar.peak_btu_per_hour * share,
+                        solar_btu_per_hour=solar.average_btu_per_hour,
+                        solar_peak_btu_per_hour=solar.peak_btu_per_hour,
                         solar_peak_hour=solar.peak_hour,
-                        solar_excursion_btu_per_hour=solar.excursion_btu_per_hour * share,
+                        solar_excursion_btu_per_hour=solar.excursion_btu_per_hour,
                         internal_sensible_btu_per_hour=internal_sensible,
                         cooling_caveats=tuple(dict.fromkeys(cooling_caveats)))
 

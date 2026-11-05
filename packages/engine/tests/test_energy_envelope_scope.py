@@ -149,6 +149,21 @@ def test_the_catlin_block_load_is_pinned(catlin_model_ro) -> None:
         (report.cooling_load_btu_per_hour + report.latent_btu_per_hour) / 12000.0)
 
 
+def test_zone_glass_is_not_scaled_by_volume_share(catlin_model_ro) -> None:
+    """A zone's glass is walked over its own openings, so the zones' daily averages partition
+    the house's. Scaling it by volume share too cut each zone's glass about in half. The 2%
+    is the glass in rooms no heat pump zone lists."""
+    from typehaus.takeoff.hvac import heating_zones
+
+    preferences = Preferences(ach50=1.0, window_u=0.25, infiltration_storeys=2.0,
+                              adequate_overhang_ft=0.0)
+    zones, _ = heating_zones(catlin_model_ro, preferences)
+    parts = sum(estimate_block_load(catlin_model_ro, preferences,
+                                    rooms=frozenset(zone.rooms)).solar_btu_per_hour
+                for zone in zones if zone.rooms)
+    assert parts == pytest.approx(_report(catlin_model_ro).solar_btu_per_hour, rel=0.02)
+
+
 def test_every_component_line_is_pinned_not_only_the_total(catlin_model_ro) -> None:
     """**The total was right to 1% while every one of its parts was wrong.** A sum is not
     coverage: five corrections of 0.5-2.0 kBtu/h each moved this house's heating figure by

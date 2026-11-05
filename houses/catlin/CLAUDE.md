@@ -448,7 +448,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     Item 8's **x2.00** (horizontal blocking omitted) turns on the sheathing layer's
     `sheet_length` against the plates: **unstated is UNKNOWN**, and at 8-foot sheets FOUR
     lines FAIL (main E1 0.78, main S1 0.77, second S1 0.82, garage N 0.94). **The house
-    is 4x10 Structural-1 (OSB of the same size is the fallback), the garage 4x9 CDX**
+    is 4x10 15/32" 4- or 5-ply CDX (not OSB: it dries only inward once foamed), the garage 4x9 5/8" CDX**
     (owner, 2026-09-22; `notes/wall_bracing_layout.md` §4). Item 5's x0.80 hold-down credit cannot be taken at all — it is published for the
     intermittent methods, so the NE corner's devices buy an end condition, never length.
   - **The NE corner carries four 800-lb devices** (owner, 2026-09-22; R602.10.7 end

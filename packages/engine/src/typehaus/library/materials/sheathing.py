@@ -81,7 +81,8 @@ MATERIALS: tuple[Material, ...] = (
     ),
     Material(
         tag="cdx-plywood",
-        name='5/8" CDX sheathing plywood',
+        # No thickness: the layer carries it (15/32", 19/32" and 5/8" in catlin alone).
+        name="CDX sheathing plywood, 4- or 5-ply, Exposure 1",
         r_per_inch=1.25,
         density=600.0,
         perm_rating=0.30,

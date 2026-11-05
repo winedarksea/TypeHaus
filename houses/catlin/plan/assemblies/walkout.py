@@ -59,7 +59,7 @@ from .mixes import BURIED_MIX
 # R-21 of mineral wool between the studs plus the same continuous 4" of XPS the pour
 # carried reads better than the 8"-concrete stack it replaces.
 _GARDEN_FRAMED_OUTBOARD = (
-    Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
+    Layer(name="sheathing", material_ref="cdx-plywood", thickness=inch(0.5),
           function=LayerFunction.SHEATHING),
     Layer(name="waterproofing", material_ref="waterproofing", thickness=inch(0.06),
           function=LayerFunction.MEMBRANE,

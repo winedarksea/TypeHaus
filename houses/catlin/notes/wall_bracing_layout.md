@@ -141,8 +141,10 @@ penalty is taken. Line up the plant room in gypsum and both lines drop to 7.41'.
   wall-to-floor figures are R602.10.8(1)/(2), and those tie by plate nailing per Table
   R602.3(1). Uplift across the bands rides the CS16 straps, not the sheet. 4x10 is chosen
   for tolerance and one fewer strip, not for compliance.
-- **Grade: Structural-1 plywood; rated OSB of the same size is the fallback if 4x10
-  Structural-1 cannot be sourced** (Method CS-WSP asks only for wood structural panel).
+- **Grade: 15/32" (1/2") 4- or 5-ply CDX plywood, Exposure 1** (owner, 2026-11-04; was
+  Structural-1). Method CS-WSP asks only for a wood structural panel, so Structural I buys
+  no bracing length. OSB is not the fallback: the sheathing must dry below 16% before the
+  ccSPF and can then dry only inward, and plywood dries faster and swells less.
 - **The garage stays 5/8" CDX** at 4x9: 8" spare on a 100" wall, where a 4x10 would waste 20".
 
 ## 5. The panels

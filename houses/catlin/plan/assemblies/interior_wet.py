@@ -135,7 +135,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
               framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
                                   layout_origin="line", corner_style="4-stud"),
               cavity=CavityFill(material_ref="mineral-wool")),
-        Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
+        Layer(name="sheathing", material_ref="cdx-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING,
               sheet_length=inch(120.0)),  # 4x10: see EXT_2X6
         # BAND A, 0 - 4" off the sheathing. ONE application of continuous ccSPF, crossed

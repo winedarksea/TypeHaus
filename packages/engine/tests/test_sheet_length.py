@@ -98,21 +98,21 @@ def test_a_sheet_that_reaches_the_plate_takes_no_factor(catlin_model_ro, length)
 
 
 def _walls(model):
-    return {(r["material"], r["sheet"]): r for r in sheet_goods_takeoff(model)
-            if r["scope"] == "exterior wall"}
+    return {(r["material"], r["thickness_in"], r["sheet"]): r
+            for r in sheet_goods_takeoff(model) if r["scope"] == "exterior wall"}
 
 
 def test_the_order_bills_the_same_sheet(catlin_model_ro):
     """Catlin (owner, 2026-09-22): the house in 4x10, the garage in 4x9."""
     house = _walls(catlin_model_ro)
-    assert ("struct-1-plywood", "4x10") in house and ("cdx-plywood", "4x9") in house
-    for (_material, size), row in house.items():
+    assert ("cdx-plywood", 0.5, "4x10") in house and ("cdx-plywood", 0.625, "4x9") in house
+    for (_material, _t, size), row in house.items():
         length = {"4x8": 96.0, "4x9": 108.0, "4x10": 120.0}[size]
         assert abs(int(row["sheets"]) - sheets_for(float(row["net_area_sqft"]), length)) <= 1
     unstated = _walls(_with_sheets(catlin_model_ro, None))
-    assert {size for (_m, size) in unstated} == {"4x8"}
-    assert (unstated[("struct-1-plywood", "4x8")]["sheets"]
-            > house[("struct-1-plywood", "4x10")]["sheets"])
+    assert {size for (_m, _t, size) in unstated} == {"4x8"}
+    assert (unstated[("cdx-plywood", 0.5, "4x8")]["sheets"]
+            > house[("cdx-plywood", 0.5, "4x10")]["sheets"])
 
 
 def test_sheet_length_must_be_positive():

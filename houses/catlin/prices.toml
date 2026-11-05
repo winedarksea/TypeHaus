@@ -4735,6 +4735,9 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # Roof-specific 19/32 inch rates; do not reprice thicker wall/floor panels.
 # Comparison retail CDX $33-41/sheet; Structural I premium is a budget range, not a local quote.
 "cdx-plywood:0.594" = { material = { low = 1.03, high = 1.28 }, labour = { low = 1.0, high = 1.9 } }
+# House wall sheathing, 15/32" 4/5-ply CDX in 4x10 (2026-11-04, replacing Structural I). Budget
+# estimate, not a local quote: 4x8 retail scaled, plus a 4x10 special-order premium.
+"cdx-plywood:0.5" = { material = { low = 0.8, high = 1.4 }, labour = { low = 1, high = 1.9 } }
 "struct-1-plywood:0.594" = { material = { low = 1.2, high = 1.7 }, labour = { low = 1.0, high = 1.9 } }
 # Full-field HT rubberized asphalt replaces generic air-barrier and the garage ice-barrier allowance.
 # Provisional material budget pending local quotes; same full-deck rolling labour as butyl.

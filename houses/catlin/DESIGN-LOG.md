@@ -1,3 +1,14 @@
+## Wall sheathing: 15/32" 4/5-ply CDX, not Structural I or OSB (2026-11-04)
+
+- **Owner.** Every house exterior wall (`EXT_2X6`, `EXT_2X6_SWINBURNE`, `PLANT_EXT_2X6_HUMID`,
+  the garden framed wall) is `cdx-plywood` at 1/2" nominal, 4x10. Structural I bought nothing:
+  CS-WSP credits any rated panel and the TimberLOK's withdrawal is in the stud.
+- **Not OSB or AdvanTech.** The sheet must be < 16% MC before the ccSPF and then dries only
+  inward; plywood dries faster, recovers from edge swell and opens up in permeance when wet.
+  Taped seams would add nothing under a bonded foam air barrier.
+- The library `cdx-plywood` name dropped its "5/8"" (the roof deck was already 19/32") and
+  now reads "4- or 5-ply, Exposure 1". New price row `cdx-plywood:0.5`, a budget estimate.
+
 ## Court brick veneer simplified: bedded beam, W2.8 ties, 1/2" joints, foam-bed sunken-garden tread (2026-11-04)
 
 - **Beam bedded, not spanning (owner).** `W-SG-BRKBM` is cast on stone (`FB-SG-BRKBM`) and
