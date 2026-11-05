@@ -460,7 +460,7 @@ VENT_BRANCHES_BASEMENT = [
     # the slab 22.6" off the drain, so it vented nothing. It now leaves the pan drop's
     # bottom, 26" SW of the riser, runs NE under the slab on the drain's fall, and rises
     # through SP-B-SLAB-SA-VENT. Pan arm ~11" against Table 1002.2's 60".
-    # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-0", 10'-1 3/8") inside
+    # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (16'-9", 10'-1 3/8") inside
     # W-B-SA-N2's stud cavity, the pan's north wall, clear of the mixer's two supply drops.
     # (Both fixtures still declare W-B-CS as their wet wall, plan/fixtures.py.)
     #
@@ -473,13 +473,13 @@ VENT_BRANCHES_BASEMENT = [
     # the backup enclosure's 110.26 dedicated space, over the supply duct's leg — and north
     # onto the vent riser at x=10". PR-B-BATH-VENT ties into it at (9'-0", 19'-1 1/2").
     PipeRun(uid="CBPV02AAAA", tag="PR-B-SAUNA-VENT", system=PipeSystem.VENT,
-            # ** THE RISER IS IN W-B-SA-N2'S 2x4 CAVITY SINCE 2026-11-01 ** (x=17'-0", the
-            # stud-002/-003 bay, on the cavity centreline). At (17'-3", 8'-2 3/16") it stood
+            # ** THE RISER IS IN W-B-SA-N2'S 2x4 CAVITY SINCE 2026-11-01 ** (the stud-002/-003
+            # bay; x=16'-9" since 2026-11-05, 1" clear of the 25" FT-B-CS's west face). At (17'-3", 8'-2 3/16") it stood
             # in the pan, 3" in front of the liner, and its north leg ran through the sauna
             # ceiling's foil. It clears the wall's top plates (+90") before jogging north.
-            path=(pt(inch(191.75), inch(98.1875)), pt(ft(17), inch(121.375)),
-                  pt(ft(17), inch(121.375)), pt(ft(17), inch(121.375)),
-                  pt(ft(17), ft(10, 6)), pt(ft(9), ft(10, 6)),
+            path=(pt(inch(191.75), inch(98.1875)), pt(inch(201), inch(121.375)),
+                  pt(inch(201), inch(121.375)), pt(inch(201), inch(121.375)),
+                  pt(inch(201), ft(10, 6)), pt(ft(9), ft(10, 6)),
                   pt(ft(9), ft(19)), pt(ft(9), ft(28, 8)), pt(inch(51.5), ft(28, 8)),
                   pt(inch(51.5), inch(400)), pt(inch(10), inch(400)),
                   pt(inch(10), inch(412.9))),

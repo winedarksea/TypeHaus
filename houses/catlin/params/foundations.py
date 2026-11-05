@@ -1,6 +1,6 @@
 """Generated foundation support: house footings, garage ICF stem + slab.
 
-- House: strip footings (20" x 8") under every basement concrete wall.
+- House: strip footings (25" x 10", the garden ends 25" x 15") under every basement wall.
 - Garage: freestanding ICF stem (6" core) from frost depth to 22" above grade,
   wood walls bear on top (the ``garage`` storey elevation), footing under.
 - House footings additionally get a bedding-prep record (undercut, geotextile, drain
@@ -177,12 +177,21 @@ _TOE_TRIMMED: set[str] = set()
 _GARDEN_END_TOE_TRIM = inch(6)
 _GARDEN_END_TRIMMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
 
-# ** S2/S3 ARE 10" DEEP (owner, 2026-11-01). ** Their 10" north toe broke R403.1.1's P <= T
-# on an 8" strip; T = 10" keeps the width and the -4" face. Same top (the wall's underside),
-# bottom 2" lower at -9'-11 7/16"; the deep bed keeps its -151 7/16" floor (32" undercut).
-# The court footings' closure board still covers the whole shared concrete face: FT-SG-W1/E1
-# bottom at -9'-9 7/16", so S2/S3's extra 2" faces stone.
-_DEEP_STRIP = {"W-B-S2", "W-B-S3"}
+# ** EVERY HOUSE STRIP IS 25" WIDE (2026-11-05, geometry review C2 E1). ** IRC Table
+# R403.1(1), 3 story plus basement, 50 psf snow, 2,000 psf (GM, R401.4.1): 21x6, and
+# footnote b's 36' house adds 4" / 2" -> 25x8 (`structural.footing_size`). 20" failed it,
+# and the house's own centreline load (main_floor_truss_basis.md §5) is ~2,000 psf at 20".
+# Each perimeter strip keeps its OUTBOARD face (the PD-BW pads 7/8" off N1-N4, the court
+# closure at -4", the drain column) and grows 5" inboard: `_INBOARD_GROWTH` on its offset.
+_STRIP_WIDTH = inch(25)
+_INBOARD_GROWTH = inch(2.5)
+# T follows the widest toe, R403.1.1's P <= T: 10" on every strip (9.03" inboard toes on the
+# 8" walls, 9.75" on the 2x6 framed walls). The four garden-end strips, whose south face is
+# pinned, take 15": 13" north toe on S1/S4, 15" on S2/S3's 6" curb. Tops hold (the wall's
+# underside); bottoms drop. The court closure board covers the shared face to FT-SG-W1/E1's
+# -9'-9 7/16" bottom, and the deeper concrete below it faces stone.
+_GARDEN_END_DEPTH = inch(15)
+_STRIP_DEPTH = inch(10)
 
 # ** SUPERSEDED — KEPT FOR ITS REASONING, WHICH IS STILL WHY THE TRIM GOES NORTH AND NOT
 # SOUTH. `_TOE_TRIMMED` IS EMPTY, SO THIS CONSTANT IS NOW UNUSED. **
@@ -218,11 +227,11 @@ def _toe_offset(tag: str) -> Length | None:
     below); the eight band-centred perimeter strips take the 1/16" projection trim.
     """
     if tag in _GARDEN_END_TRIMMED:
-        return _GARDEN_END_TOE_TRIM
+        return _GARDEN_END_TOE_TRIM + _INBOARD_GROWTH
     if tag in _TOE_TRIMMED:
         return _SOUTH_TOE_TRIM
     if tag in _PROJECTION_TRIMMED:
-        return _PROJECTION_TRIM
+        return _PROJECTION_TRIM + _INBOARD_GROWTH
     return None
 
 
@@ -251,7 +260,7 @@ def _toe_offset(tag: str) -> Length | None:
 # 1. **The four garden-end strips.** Their south face is pinned at -4" by the closure joint
 #    against FT-SG-W1/E1 (see ``_GARDEN_END_TOE_TRIM`` above, and
 #    ``test_catlin_contract_m3.test_the_veneer_beam_isolates_the_house_footing``). With the
-#    face pinned and the width fixed at 20" the strip occupies -4"..+16" **whatever** datum
+#    face pinned and the width fixed at 25" the strip occupies -4"..+21" **whatever** datum
 #    its offset is measured from, so re-centring them buys no geometry whatever — it only
 #    re-expresses the same strip against a worse datum. Worse, because their band centres
 #    do not agree with each other: measured, +1 29/32" on S1/S4 (BASEMENT_8),
@@ -294,17 +303,20 @@ def _center_on(tag: str) -> str:
 
 HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,
-            width=inch(20), depth=inch(10) if t in _DEEP_STRIP else inch(8),
+            width=_STRIP_WIDTH,
+            depth=_GARDEN_END_DEPTH if t in _GARDEN_END_TRIMMED else _STRIP_DEPTH,
             center_on=_center_on(t), offset=_toe_offset(t),
             start_extension=_START_EXTENSION.get(t), end_extension=_END_EXTENSION.get(t),
             assembly="FOOTING_EXPOSED_20" if t in _FROST_FORMED else "FOOTING_20")
     for i, t in _HOUSE_WALL_TAGS
 ] + [
     # The outer 56" of S1 / S4 (x 0..56, x 376..432): unreached by the court, ordinary bed.
-    Footing(uid="CF031AAAAA", tag="FT-B-S1W", under="W-B-S1", width=inch(20), depth=inch(8),
+    Footing(uid="CF031AAAAA", tag="FT-B-S1W", under="W-B-S1", width=_STRIP_WIDTH,
+            depth=_GARDEN_END_DEPTH,
             center_on="axis", offset=_toe_offset("W-B-S1"), end_extension=inch(-62),
             assembly="FOOTING_EXPOSED_20"),
-    Footing(uid="CF032AAAAA", tag="FT-B-S4E", under="W-B-S4", width=inch(20), depth=inch(8),
+    Footing(uid="CF032AAAAA", tag="FT-B-S4E", under="W-B-S4", width=_STRIP_WIDTH,
+            depth=_GARDEN_END_DEPTH,
             center_on="axis", offset=_toe_offset("W-B-S4"), start_extension=inch(-62),
             assembly="FOOTING_EXPOSED_20"),
 ]
@@ -339,23 +351,24 @@ HOUSE_FOOTINGS = [
 # (→ notes/foundation_aggregate_and_backfill.md)
 _COLUMN_WALLS = {"W-B-S1", "W-B-S4", "W-B-E1", "W-B-E2", "W-B-N1", "W-B-N2", "W-B-N3",
                  "W-B-N4", "W-B-W1", "W-B-W2"}
-# 16", not 12": the width is off the foam face and the 20" footing projects 2-4" past it,
+# 16", not 12": the width is off the foam face and the footing projects 2-4" past it,
 # so 16" is what reaches R405.1's 12" past the footing edge (code.R405_1 grades it).
 WALL_COLUMN = DrainColumn(width=inch(16), cap_below_grade=inch(12))
 # ** THE FOUR COURT-FACE BEDS ARE DEEP STONE, AND THAT IS THE FROST PROTECTION (C3-E10). **
-# The court floor is -9'-1 7/16" and these strips bear at -9'-9 7/16" (S2/S3 2" lower).
+# The court floor is -9'-1 7/16" and these 15" strips bear at -10'-4 7/16".
 # Wings could not reach all of it (they stop at the FT-SG-W1/E1 toes, 46" short of S1/S4's
 # reached ends), so the bed goes down instead: #57 NFS stone to 42" under the court floor,
-# -151 7/16", i.e. 34" under S1/S4 and 32" under S2/S3. ASCE 32 soil replacement, IRC R403.1.4.1; it
+# -151 7/16", i.e. 27" under all four (`_DEEP_UNDERCUT`). ASCE 32 soil replacement, IRC R403.1.4.1; it
 # needs a drain to count. -151" is under SM-B-RADON's floor but 12" over the court soakaway
 # (-163 7/16"), so the beds drain by gravity through FD-B-S-LEAD-W/E into FB-SG-W2/E2
 # (plan/mep_drainage.py; the SM-B-SOUTH pit retired 2026-11-02). AHJ/engineer sign-off:
 # inspections.toml `frost_soil_replacement`.
+_DEEP_UNDERCUT = inch(27)
 _DEEP_STONE = {"W-B-S1": "FB-SG-W2", "W-B-S2": "FB-SG-W2",
                "W-B-S3": "FB-SG-E2", "W-B-S4": "FB-SG-E2"}
 HOUSE_FOOTING_BEDDING = [
     FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-{t[2:]}", host_ref=f"FT-{t[2:]}",
-                   undercut=(inch(32) if t in _DEEP_STRIP else inch(34)) if t in _DEEP_STONE
+                   undercut=_DEEP_UNDERCUT if t in _DEEP_STONE
                    else inch(7),
                    non_frost_susceptible=True if t in _DEEP_STONE else None,
                    perimeter_insulation=inch(4),

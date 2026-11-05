@@ -5,13 +5,13 @@ from typehaus import DrainCleanout, ft, inch, pt
 
 BASEMENT_CLEANOUTS = [
     # The building drain's cleanout at the sewer connection (UPC 719.1), INSIDE the wall:
-    # a two-way fitting 3'-0" short of FT-B-N4, capped flush in RM-B-FURNACE's floor beside
+    # a two-way fitting 2'-0" short of FT-B-N4 at x=3'-6", capped flush in RM-B-FURNACE's floor beside
     # SM-B-RADON. Two-way inside the wall is also 707.4 exception 4, so it stands in for an
     # upper-terminal cleanout at the collector's head. It was a 94" riser to grade in the
     # rear yard while the sewer left south.
     DrainCleanout(uid="COB0000001", tag="CO-B-SEWER", pipe_ref="PR-B-MAIN-DRAIN",
-                  position=pt(ft(3), ft(34)), fitting_elevation=inch(-19.375),
-                  cap_position=pt(ft(3), ft(34)), cap_elevation=inch(0),
+                  position=pt(inch(42), ft(34)), fitting_elevation=inch(-19.46875),
+                  cap_position=pt(inch(42), ft(34)), cap_elevation=inch(0),
                   direction="two_way", access="floor",
                   clear_width=inch(24), clear_depth=inch(24)),
     DrainCleanout(uid="COB0000009", tag="CO-B-COLLECTOR", pipe_ref="PR-B-MAIN-DRAIN",

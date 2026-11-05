@@ -48,7 +48,7 @@ DRAINS = [
     PipeRun(uid="CMP905AAAA", tag="PR-B-MAIN-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(6), ft(22, 7)), pt(ft(6), ft(16, 6)),
                   pt(ft(3), ft(16, 6)), pt(ft(3), ft(16, 6)),
-                  pt(ft(3), ft(37))),
+                  pt(ft(3), inch(214)), pt(inch(42), inch(220)), pt(inch(42), ft(37))),
             diameter=inch(4), material="pvc",
             # The drop is AT the collector's corner. The old 1'-0" jog south to y=15'-6" kept
             # it clear of FT-B-CW's 45° line, and FT-B-CW is retired. The jog also bent the
@@ -59,8 +59,12 @@ DRAINS = [
             # 1/4"/ft minimum from its -8.58" trap lands it at -14.75". The base sits 1/4"
             # under that, and the building drain then holds 1/4"/ft for 20'-6" to the exit
             # 1'-0" past FT-B-N4. Sized 4": the rolled-up basement load is past the 35 a 3"
-            # branch carries (Table 703.2), at 48 DFU.
-            elevations=(ft(7, 9.4375), ft(6, 11.9375), ft(6, 11.1375), inch(-15.0), inch(-20.125)),
+            # branch carries (Table 703.2), at 48 DFU. ** It jogs 6" east on a pair of 1/8
+            # bends at y=17'-10" (2026-11-05) ** so SM-B-RADON can sit clear of the 25" W1/N4
+            # strips: past the last tie and 10" from CO-B-STACK-BASE, which serves the jog's
+            # 707.4 aggregate too. 248.5" of buried line at 0.2525"/ft from the base.
+            elevations=(ft(7, 9.4375), ft(6, 11.9375), ft(6, 11.1375), inch(-15.0),
+                        inch(-15.3367), inch(-15.5152), inch(-20.2283)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-M-KITCH-SINK",
                     "FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
@@ -92,11 +96,14 @@ DRAINS = [
     # ** y=35'-0" WEST OF THE PLATE, NOT 35'-6". ** The north foundation walls W-B-N1..N4 are
     # 12 3/16" on the y=36' axis, so their inner face is y=35'-5 7/8" and a 2" pipe at 35'-6"
     # is INSIDE the pour.
-    # The kitchen leaves the lane ceiling entirely: west to x32.5", south to y406.5",
-    # down through SP-B-SLAB-KITCH, then 3 1/2" east into the buried main. The plan's
-    # x36",y418" stack sat inside the north footing's 45-degree influence line.
-    # y406.5" clears that line and the panel working space; x32.5" clears the two-way
-    # sewer cleanout's fitting at (36",408"). Seal the slab sleeve to the radon layer.
+    # ** THE NW CORNER IS THE ERV RISER CHASE, SO THE KITCHEN COMES IN UNDER IT (2026-11-05). **
+    # West along the north wall at the ceiling to x=5'-6 1/2" (east of DU-ERV-EA's leg, west
+    # of W-B-ESS-W), south at the ceiling to y=33'-7", then west in two steps down — over
+    # DU-ERV-EA's north leg at 7'-2 1/2" AFF, under DU-ERV-OA at 6'-4 1/2", above the dry-fire
+    # lane's 6'-0" and EQ-B-ESS-INV — and down at x=3'-2" through SP-B-SLAB-KITCH, 4" east
+    # into the buried main. y=33'-7" is outside the 25"
+    # FT-B-N4's 45-degree line (10.8" off its face, 10.3" under its bearing plane); x=3'-2"
+    # is 1.3" off the dry-fire lane and SM-B-RADON both. Seal the slab sleeve to the radon layer.
     # ** OVER THE STAIR WELL IT HUGS THE NORTH WALL, EXPOSED. ** At y=35'-3 1/4" it stands
     # 11/16" off the trimmer pack's face (35'-4 7/8", FO-M-STAIR's edge, on W-B-N2's sill) and
     # 5/16" off truss 022's chord, the one lane that clears both, so it never leaves that line
@@ -109,9 +116,9 @@ DRAINS = [
                   pt(inch(236.87), inch(423.25)),
                   pt(ft(18), inch(423.25)), pt(ft(17, 9.25), inch(423.25)),
                   pt(inch(119.25), inch(423.25)), pt(ft(9, 8), ft(35)),
-                  pt(ft(6), ft(35)), pt(inch(32.5), ft(35)),
-                  pt(inch(32.5), inch(406.5)), pt(inch(32.5), inch(406.5)),
-                  pt(ft(3), inch(406.5))),
+                  pt(ft(6), ft(35)), pt(inch(66.5), ft(35)), pt(inch(66.5), inch(403)),
+                  pt(inch(66.5), inch(403)), pt(inch(49), inch(403)), pt(inch(49), inch(403)),
+                  pt(inch(38), inch(403)), pt(inch(38), inch(403)), pt(inch(42), inch(403))),
             diameter=inch(2), material="pvc",
             # Starts 5 1/2" AFF at the local sink waste return and drops through the deck
             # into the truss window.
@@ -122,7 +129,8 @@ DRAINS = [
             elevations=(ft(9, 7.875), inch(106.25), inch(105.15), inch(101.37),
                         inch(101.05), inch(100.31), inch(100.2),
                         ft(8, 0.3125), inch(96.2),
-                        ft(7, 11.25), inch(94.2625), inch(93.925), inch(-19.1625), inch(-19.25)),
+                        ft(7, 11.25), inch(95.1125), inch(94.6875), inch(86.5), inch(86.0625),
+                        inch(76.5), inch(76.225), inch(-19.0), inch(-19.1)),
             serves=("FX-M-KITCH-SINK",)),
     # BATH2's WC, at its flange on the wet wall (→ SP-M-WC2): x 2'-6", y 21'-0 3/4", the
     # Carlyle's 12" rough-in off W-M-HS1's finish, starting at the finished floor.
@@ -657,9 +665,10 @@ TPR_DISCHARGE = [
 ]
 
 # --- Radon sump + shared radon/plumbing vent riser ---------------------------------
-# A sealed radon sump in the basement furnace room. ** BACK IN THE NW CORNER SINCE 2026-09-24,
-# at (1'-9", 34'-3"), ** tangent to FT-B-W1's inner edge (11.9") and FT-B-N4's south edge
-# (420.1") and outside both pours. It left on 2026-09-23 because `mep.pit_footing_clearance`
+# A sealed radon sump in the basement furnace room. ** IN THE NW CORNER, at (2'-2 1/2",
+# 33'-9 1/2") since 2026-11-05, ** 1/2" off the 25" FT-B-W1's inner edge (17.03") and
+# FT-B-N4's south edge (414.97"), outside both pours; it moved 5 1/2" each way with them, and
+# the main jogs east to make the room. It left on 2026-09-23 because `mep.pit_footing_clearance`
 # read UPC 314.1's 45° trench line onto the pit; a lined pit is not a trench alongside a
 # footing, so that check now fails only a pit that cuts footing concrete. The pit is a round
 # hole in SL-B-FLOOR, and the W1/N4 tile runs into it. Both lines rise out of its lid, so
@@ -673,7 +682,7 @@ TPR_DISCHARGE = [
 # roof surface, resolve/vent_termination.py), not authored — an authored absolute can't
 # follow a rake.
 RADON_SUMP = [
-    Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(inch(21), inch(411)),
+    Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(inch(26.5), inch(405.5)),
          diameter=inch(18), depth=inch(24), host_ref="SL-B-FLOOR",
          sealed_cover=True, radon_vent=True, vent_ref="VR-M-STACK",
          # CKT-SUMP was already on the panel schedule but the pit only implied a pump;
@@ -729,7 +738,7 @@ RADON_SUMP = [
     # soil-gas pipe on its own riser, never the plumbing vent beside it. It falls 1/4" back
     # to the pit so condensate drains there.
     PipeRun(uid="90RG08DW5Y", tag="PR-B-RADON-LEG", system=PipeSystem.RADON,
-            path=(pt(inch(14), inch(411)), pt(inch(14), inch(411)), pt(inch(14), inch(419.1)),
+            path=(pt(inch(21), inch(410)), pt(inch(21), inch(410)), pt(inch(21), inch(419.1)),
                   pt(inch(10), inch(419.1))),
             diameter=inch(3), material="pvc",
             elevations=(inch(-4), inch(3.1875), inch(3.3125), inch(3.4375))),
@@ -769,14 +778,18 @@ S_BED_LEADS = [
 # pump (SM-B-RADON).
 SUMP_DISCHARGE = [
     PipeRun(uid="23NF4WJS89", tag="PR-B-SUMP-DISCH", system=PipeSystem.SUMP_DISCHARGE,
-            # The rise stands between the ERV's supply riser (y <= 409.8") and DU-ERV-EA's
-            # insulated riser (x >= 18.6"), north of the panels' 110.26 space (ends y 33'-9"). The
-            # opening has no deck to hang from, so the leg west is strapped to the trimmer.
-            path=(pt(inch(17.25), inch(417.9)), pt(inch(17.25), inch(417.9)),
-                  pt(inch(17.25), inch(424.2)), pt(inch(-10.5), inch(424.2))),
+            # ** IT LEAVES NORTH THROUGH W-B-N4, ABOVE GRADE (2026-11-05). ** The pit moved with
+            # the 25" strips and the riser with it: x=2'-8 5/16", between DU-ERV-EA's riser
+            # (x <= 30.6") and DU-ERV-OA's (x >= 34"), rising to 7'-6" AFF — over EA's leg and
+            # under FO-M-ERV-OA's joist line, so it never spans the opening. Through
+            # SP-B-N4-SUMP 1'-2" above grade, west along the foundation's foam face, and into
+            # the leader extension riser from the north.
+            path=(pt(inch(32.3), inch(410)), pt(inch(32.3), inch(410)),
+                  pt(inch(32.3), inch(437.5)), pt(inch(-10.5), inch(437.5)),
+                  pt(inch(-10.5), inch(424.2))),
             diameter=inch(1.5), material="pvc",
             # From the pump in the pit; 1/4"/ft after the rise, nothing climbs again.
-            elevations=(inch(-18), inch(103.5), inch(103.375), inch(102.75))),
+            elevations=(inch(-18), inch(90.0), inch(89.43), inch(88.54), inch(88.26))),
 ]
 
 # --- the guest studio ---------------------------------------------------------------------

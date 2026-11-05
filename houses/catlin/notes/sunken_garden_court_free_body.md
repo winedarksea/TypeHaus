@@ -2648,6 +2648,45 @@ board and TB-SG-W1/E1 are the same 2" plane, so 2 x 42" x 8" (672 in²) is count
 ΣA over-states T by 3.5 x 672 = 2,352 lb (the safe side) and the take-off orders that XPS twice.
 Not corrected here; `solids3d_overlaps.json` records it (thermal_break|wall).
 
+### 11p. Addendum 2026-11-05 — the house strips are 25" wide
+
+IRC Table R403.1(1) put every house strip at 25" (`params/foundations.py`): FT-B-S1..S4 are
+25" x 15", south face still on −4", and the rest are 25" x 10". The boards, ΣA and T are
+unchanged (27,315.75 lb capped, line 22,155 lb). Three inputs move.
+
+**D.** Footings 32,773 → 54,831 lb. Solve the old weight for the lengths:
+32,773 x 1728 / (20 x 150) = 18,877 = 8 x 236 + 10 x 196 + 8R, where 236" is S1/S4/S1W/S4E at
+8", 196" is S2/S3 at 10" and R is every other strip. That gives R = 1,878.6". The new weight
+is 25 x 150 / 1728 x (15 x 432 + 10 x 1,878.6) = 54,831 lb, exact. The slab loses
+3,141 lb, roughly the 5" band cut out of 3.5" concrete along 192.6 ft of strip (3,510 lb)
+less the corner and tee laps. D = 267,687 + 22,058 − 3,141 = **286,605 lb**.
+
+**Depth.** The shallowest facing strip bottom drops 8" → 15", so the far wall's soil is
+6.953' + 7/12' = **7.536'**: at rest 0.5 x 60 x 7.536² = 1,703.9 plf.
+
+| row | before | now |
+|---|---|---|
+| global sliding FS, capped | 3.4588 | (0.25 x 286,605 + 1,703.9 x 19) / 27,315.75 = **3.8083** |
+| global sliding FS, basis 8 | 2.1642 | 104,026 / 43,656.2 = **2.3829** |
+| far-wall soil bearing | 52,214 / 130,534 | 1,703.9 x 36 = **61,342** / 0.5 x 150 x 7.536² x 36 = **153,355** (0.400) |
+| near-line flexure capacity | 84,853 | 0.60 x 5√5000 x 13 x 25²/6 = **287,262** lb·in |
+| near-line shear capacity | 6,788 | 0.60 x 4/3 √5000 x 13 x 25 = **18,385** lb |
+| near-line EI | — | 57,000√5000 x 15 x 25³/12 = 7.872e10 lb·in² |
+
+**The near line, cross-checked.** A separate dense FE solve (numpy, 1/2" elements,
+consistent Winkler bed and load, its own compression-only loop) on the engine's own loads, bed
+and struts reads:
+
+| case | engine M / peak | independent | ratio |
+|---|---|---|---|
+| capped | 72,809 lb·in / 0.009138" (22.540 psi) | 72,814 / 0.009138" | 0.253 / 0.676 |
+| uncapped (basis 8, TB-SG-W1) | 116,276 / 46.584 psi | (solved on the stem board's loads: 181,410 vs 181,414) | 0.405 / 1.398 |
+| unstated slab grade, capped | 239,446 / 20.063 psi | 239,423 / 20.063 psi, struts 1,597 / 1,640 lb | 0.834 / 1.338 |
+
+The stiffer beam takes more moment and spreads the bed. The governing row,
+peak sustained load, eases from 0.680 to 0.676. The unstated-grade fallback is still OVER, now
+on bearing rather than flexure.
+
 ## 12. The court narrowed to 17'-0" clear (2026-09-22)
 
 The side walls came 1'-0" in each so both decks span wall to wall (DESIGN-LOG.md, "Sunken

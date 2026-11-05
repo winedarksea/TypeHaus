@@ -48,12 +48,12 @@ def test_the_pit_clears_every_footing(catlin_model):
 
 
 def test_a_tangent_pit_below_the_bearing_passes(catlin_model):
-    """Tangent to both footings, 19 1/2" below their bearing: no concrete cut, so PASS."""
+    """1/2" off both 25" footings (2026-11-05), 17 1/2" below their bearing: no cut, PASS."""
     pit = next(s for s in catlin_model.solids if s.tag == "SM-B-RADON")
     for tag in ("FT-B-W1", "FT-B-N4"):
         footing = next(s for s in catlin_model.solids if s.tag == tag)
-        assert Polygon(pit.outline).distance(Polygon(footing.outline)) < 0.25 * _IN
-        assert footing.z0_m - pit.z0_m > 19 * _IN
+        assert Polygon(pit.outline).distance(Polygon(footing.outline)) < 0.75 * _IN
+        assert footing.z0_m - pit.z0_m > 17 * _IN
     found = pit_footing_clearance(check_context(model=catlin_model))
     assert found[0].result is Result.PASS and "cuts no footing" in found[0].message
 

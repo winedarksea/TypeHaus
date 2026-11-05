@@ -60,7 +60,7 @@ SLAB_STUBS = [
                       seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
     # The sauna vents' risers (mep_venting.py PR-B-SAUNA-VENT, PR-B-SAUNA-FD-VENT), up W-B-SA-N2/-N.
     SleevePenetration(uid="1RDFAM8VSF", tag="SP-B-SLAB-SA-VENT", host_ref="SL-B-FLOOR",
-                      position=pt(inch(204), inch(121.375)), pipe_diameter=inch(2),
+                      position=pt(inch(201), inch(121.375)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), purpose=Service.VENT,
                       seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
     SleevePenetration(uid="KY9JRBHRRZ", tag="SP-B-SLAB-SA-FDV", host_ref="SL-B-FLOOR",
@@ -79,7 +79,7 @@ SLAB_STUBS = [
     # Kitchen stack west of the dry-fire lane and south of FT-B-N4. Seal both
     # the sleeve-to-pipe annulus and sleeve-to-slab joint to the radon membrane.
     SleevePenetration(uid="CKSLAB0001", tag="SP-B-SLAB-KITCH", host_ref="SL-B-FLOOR",
-                      position=pt(inch(32.5), inch(406.5)), pipe_diameter=inch(2),
+                      position=pt(inch(38), inch(403)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3),
                       seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
     # Where the ceiling collector turns down to become the under-slab building drain; 4",
@@ -112,13 +112,20 @@ WALL_SLEEVES = [
     # Building drain leaves NORTH, *under* FT-B-N4, toward the street (2026-10-01; it left
     # south under FT-B-S1 until then). The walls stop at the slab top, above the sewer
     # connection, so this is an under-footing protection sleeve (UPC 314.1,
-    # `mep.footing_clearance`) on the wall line, the pipe 3 3/4" clear of SM-B-RADON.
-    # center_elevation = invert (-129.3125" project, the main's 1/4"/ft line at y=36')
-    # + half the 4" pipe = -127.3125", matched to within 1/2" by `mep.sewer_exit_invert`.
+    # `mep.footing_clearance`) on the wall line at x=3'-6", the pipe 4 1/4" clear of SM-B-RADON.
+    # center_elevation = invert (-129.36" project, the main's 1/4"/ft line at y=36')
+    # + half the 4" pipe = -127.375", matched to within 1/2" by `mep.sewer_exit_invert`.
+    # The sump discharge, above grade through W-B-N4 at x=2'-8 5/16" (2026-11-05):
+    # invert 89.63" AFF on its 1/4"/ft line at the wall centre, 14" over the -2'-10" grade;
+    # center_elevation is that invert + 3/4", project-absolute.
+    SleevePenetration(uid="SFAAA0K07N", tag="SP-B-N4-SUMP", host_ref="W-B-N4",
+                      position=pt(inch(32.3), ft(35, 8)), pipe_diameter=inch(1.5),
+                      sleeve_diameter=inch(2.5), axis="horizontal",
+                      center_elevation=inch(-19.0625)),
     SleevePenetration(uid="CBPW18AAAA", tag="SP-B-SEWER-EXIT", host_ref="FT-B-N4",
-                      position=pt(ft(3), ft(36)), pipe_diameter=inch(4),
+                      position=pt(inch(42), ft(36)), pipe_diameter=inch(4),
                       sleeve_diameter=inch(6), axis="horizontal",
-                      center_elevation=inch(-127.3125)),
+                      center_elevation=inch(-127.40625)),
     # The water's two wall crossings, side by side under ST-B2M's upper landing in W-B-N2, at
     # the 6' bury (-8'-10"): a sleeve at -6'-0" would be a bore the pipe misses by 2'-10".
     # Both sit 6" above the wall's own bottom, as low as a crossing goes before the footing.

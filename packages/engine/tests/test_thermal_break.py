@@ -52,6 +52,9 @@ _ALL = (*_FOOT, *_STEM, _BEAM)
 #     (FT-SG-S's 4'-4" toe, free body §12a; 70,634 at one 7'-0" strip);
 #   * W-B-S1/S4 are 118" panels (N-B-S1 at 9'-10", was 8'-10", 106"): φMn and φVc go with
 #     the panel, x 118/106 — 307,578 and 80,570.
+# 2026-11-05 (free body §11p): FT-B-S1..S4 are 25" x 15". D +18,918 lb (footings +22,058,
+# slab -3,141 for the wider cut-outs): 286,605; the far wall's soil is 7" deeper, 7.536'.
+# FS (71,651.3 + 32,375.0) / 27,315.75 = 3.8083; the near line is a 25" x 13" plain beam.
 # 2026-11-04 (veneer note §6k, free body §11o): W-SG-BRKBM's board and TB-SG-W1/E1 moved onto
 # one plane flush on the house strips, -4..-6", and the footing boards went 2.5" -> 2".
 #   * court run off that plane: 328.0 − 5.0 = 323.0" (the stems stay at 322.565");
@@ -64,8 +67,8 @@ _PATH = {
     "house slab-edge bearing": (22_155.0, 151_200.0, 0.1465),
     "house slab-edge sustained load": (22_155.0, 50_394.96, 0.4396),
     "house slab strut compression": (14.6528, 2_040.0, 0.00718),
-    "house global sliding": (1.5, 3.4588, 0.4337),
-    "house far-wall soil bearing": (52_213.6, 130_534.1, 0.4000),
+    "house global sliding": (1.5, 3.8083, 0.3939),
+    "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
     "court sliding under break thrust": (0.0, 71_474.1, 0.0),
 }
 # §11m: the exact beam-on-bed solution (transfer matrices, not FE) and the winter bound.
@@ -73,9 +76,9 @@ _PATH = {
 # when FT-SG-W2/E2's 6 #4 were spliced across them: now 6 splice bars, cracked, as the run.
 _WINTER = {"court winter tension, side run": (37_015.11, 64_800.0, 0.5712),
            "court winter tension, spliced joint": (37_015.11, 64_800.0, 0.5712)}
-_LINE = {"house near-line plan flexure": (46_396.3, 84_852.81, 0.5468),
-         "house near-line plan shear": (1_405.4, 6_788.23, 0.2070),
-         "house slab-edge peak sustained load": (22.6527, 33.33, 0.6796), **_WINTER}
+_LINE = {"house near-line plan flexure": (72_809.2, 287_262.1, 0.25346),
+         "house near-line plan shear": (1_694.09, 18_384.78, 0.09215),
+         "house slab-edge peak sustained load": (22.5404, 33.33, 0.67628), **_WINTER}
 _CAP = {"compliant layer strain": (0.053223, 0.125, 0.4258),
         "board strain, pour + closing": (0.016667, 0.071429, 0.2333)}
 _CAP_2IN = {"compliant layer strain": (0.053295, 0.125, 0.42636),
@@ -106,14 +109,14 @@ _PATH_8 = {
     "house slab-edge bearing": (42_099.5, 151_200.0, 0.27844),
     "house slab-edge sustained load": (42_099.5, 50_394.96, 0.83539),
     "house slab strut compression": (27.8436, 2_040.0, 0.013649),
-    "house global sliding": (1.5, 2.1642, 0.6931),
-    "house far-wall soil bearing": (52_213.6, 130_534.1, 0.4000),
+    "house global sliding": (1.5, 2.3829, 0.6295),
+    "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
     # Net thrust less the retained soil is NEGATIVE, so the row is a force, not an FS.
     "court sliding under break thrust": (0.0, 71_474.1, 0.0),
     # §11m.1 uncapped: the peak stress is OVER the 1/3 rule — the cap carries this row too.
-    "house near-line plan flexure": (62_320.3, 84_852.81, 0.73445),
-    "house near-line plan shear": (1_529.56, 6_788.23, 0.22533),
-    "house slab-edge peak sustained load": (46.174, 33.33, 1.3854),
+    "house near-line plan flexure": (116_276.1, 287_262.1, 0.40477),
+    "house near-line plan shear": (2_182.12, 18_384.78, 0.11869),
+    "house slab-edge peak sustained load": (46.5839, 33.33, 1.39766),
     **_WINTER,
 }
 # (demand, capacity, ratio) per row, hand-worked in §11j. No fresh-concrete pressure row on
@@ -378,9 +381,11 @@ def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
     assert "grade unstated" in state.citation
     assert _state(record, "house slab-edge sustained load") is None  # no sheet, no rule
     # §11m.1: the unstated break's E is ESTIMATED 35 x 15 = 525, a bed 7x softer, and the near
-    # line goes OVER even capped — both struts bear (147 / 176 lb) and still do not save it.
-    for name, (demand, ratio) in {"house near-line plan flexure": (99_103.3, 1.1679),
-                                  "house slab-edge peak bearing": (22.3759, 1.4917)}.items():
+    # line goes OVER even capped — both struts bear (1,598 / 1,641 lb) and still do not save
+    # it. Since the 25" x 15" strips (free body §11p) it is the bearing that is over, not the
+    # flexure.
+    for name, (demand, ratio) in {"house near-line plan flexure": (239_445.9, 0.83355),
+                                  "house slab-edge peak bearing": (20.0631, 1.33754)}.items():
         assert _state(record, name).demand == pytest.approx(demand, rel=5e-4), name
         assert _state(record, name).ratio == pytest.approx(ratio, abs=6e-4), name
     assert "ESTIMATED" in _state(record, "house near-line plan flexure").citation

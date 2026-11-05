@@ -2116,7 +2116,7 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     assert span_in(layers["xps-break"].polygon) == pytest.approx((-6.0, -4.0), abs=1e-6)
     assert span_in(layers["concrete"].polygon) == pytest.approx((-18.0, -6.0), abs=1e-6)
 
-    # And the toes it faces are clear of it — an `offset`, so each strip keeps its full 20"
+    # And the toes it faces are clear of it — an `offset`, so each strip keeps its full 25"
     # of bearing and simply sits further under the house.
     #
     # ** ALL FOUR SOUTH STRIPS ARE ON ONE FACE AT -4" SINCE 2026-09-05 (second pass). **
@@ -2134,8 +2134,8 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
         strip = next(s for s in catlin_model.solids if s.tag == tag)
         south_in = min(y for _x, y in strip.outline) / inch_m
         assert south_in == pytest.approx(-4.0, abs=1e-6), tag
-        # S2/S3 are 10" under the 6" curb (R403.1.1 P <= T, 2026-11-01).
-        depth = 10.0 if tag in ("FT-B-S2", "FT-B-S3") else 8.0
+        # All four are 15": the 13"/15" north toes of a 25" strip (R403.1.1 P <= T, 2026-11-05).
+        depth = 15.0
         assert (strip.z1_m - strip.z0_m) / inch_m == pytest.approx(depth, abs=1e-3), tag
 
     # No concrete-to-concrete anywhere on that plane: the board fills the 2" exactly, and
@@ -2267,23 +2267,24 @@ def test_the_house_strip_footings_sit_under_the_walls_they_carry(catlin_model):
         return project(strip.outline), project(structure.polygon)
 
     # The eight strips the re-centring actually moves, and the exact toes it leaves — each
-    # 1/16" inboard of the band midline so R403.1.1's 2" <= P <= T holds (C3-E18).
+    # 1/16" inboard of the band midline so R403.1.1's 2" <= P <= T holds (C3-E18), then
+    # widened 5" inboard to Table R403.1(1)'s 25" with the outboard face held (2026-11-05).
     for tag in ("W-B-N1", "W-B-N2", "W-B-N3", "W-B-N4", "W-B-W1", "W-B-W2"):
         footing, pour = spans(tag)
         assert pour == pytest.approx((0.0, 8.0), abs=1e-6), tag
-        assert footing == pytest.approx((-7.9675, 12.0325), abs=1e-6), tag
+        assert footing == pytest.approx((-7.9675, 17.0325), abs=1e-6), tag
     for tag in ("W-B-E1", "W-B-E2"):
         footing, pour = spans(tag)
         assert pour == pytest.approx((0.0, 12.0), abs=1e-6), tag
-        assert footing == pytest.approx((-5.9675, 14.0325), abs=1e-6), tag
+        assert footing == pytest.approx((-5.9675, 19.0325), abs=1e-6), tag
 
     # The eleven that stay on the node line: the garden-end four on their 6" trim, and the
-    # seven interior walls a 20" strip already straddles symmetrically.
+    # seven interior walls a 25" strip straddles symmetrically.
     for tag in ("W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"):
-        assert spans(tag)[0] == pytest.approx((-4.0, 16.0), abs=1e-6), tag
+        assert spans(tag)[0] == pytest.approx((-4.0, 21.0), abs=1e-6), tag
     for tag in ("W-B-CS", "W-B-CS2", "W-B-CN", "W-B-CN2",
                 "W-B-STR", "W-B-STR3", "W-B-STR3B"):
-        assert spans(tag)[0] == pytest.approx((-10.0, 10.0), abs=1e-6), tag
+        assert spans(tag)[0] == pytest.approx((-12.5, 12.5), abs=1e-6), tag
 
     # And the promise the whole change exists for, asserted for every strip in the house:
     # the wall's structure is entirely on its own footing. W-B-E1/E2 failed this before.

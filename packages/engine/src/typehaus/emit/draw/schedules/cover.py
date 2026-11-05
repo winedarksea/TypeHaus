@@ -17,7 +17,7 @@ import textwrap
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-from typehaus.checks.soil import site_soil_bearing_psf, site_soil_class
+from typehaus.checks.soil import site_soil_bearing_psf, site_soil_class, soil_bearing_basis
 from typehaus.emit.draw.schedules.cover_index import (
     HEADING_GAP_IN,
     INDEX_PITCH_IN,
@@ -283,9 +283,8 @@ def _code_summary_rows(profile: JurisdictionProfile, plan: Any = None) -> list[t
     site = getattr(getattr(plan, "project", None), "site", None)
     bearing = site_soil_bearing_psf(plan, profile)
     if bearing is not None:
-        basis = ("this site" if getattr(site, "soil_bearing_psf", None) is not None
-                 else "presumptive, IRC Table R401.4.1")
-        rows.append(("Soil bearing", f"{bearing:.0f} psf ({basis})"))
+        rows.append(("Soil bearing",
+                     f"{bearing:.0f} psf ({soil_bearing_basis(plan, profile)})"))
     soil_class = site_soil_class(plan, profile)
     if soil_class is not None:
         basis = ("this site" if getattr(site, "soil_class", None) is not None

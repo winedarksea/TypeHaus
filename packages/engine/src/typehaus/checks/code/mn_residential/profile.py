@@ -137,8 +137,9 @@ MN_2020 = JurisdictionProfile(
     # R602.10 with NO amendment, and R602.10.3 items 1-2 send an SDC A or B building to
     # Table R602.10.3(1) and its wind adjustments alone (decision #79).
     seismic_design_category="A",
-    # IRC Table R401.4.1 presumptive value for sandy/silty clay, the conservative default
-    # where no soils report exists. A real geotechnical report supersedes it.
+    # IRC Table R401.4.1's clay/silt row, read ONLY where no soil class is known at all:
+    # a declared class (the site's, else soil_class below) takes its own R401.4.1 row first
+    # (checks/soil.site_soil_bearing_psf). A real geotechnical report supersedes both.
     soil_bearing_psf=1500.0,
     # Twin Cities metro glacial till backfill reads as GM/ML (silty gravel to inorganic
     # silt) — IRC Table R405.1's 45 psf/ft equivalent-fluid group, the middle of the three
@@ -387,6 +388,8 @@ MN_2020 = JurisdictionProfile(
                        blocking=False),
         PermitItemSpec("Footings under framed bearing walls",
                        ("structural.bearing_wall_footing",), ("IRC R403.1", "IRC R403.1.1")),
+        PermitItemSpec("Strip footing width and thickness", ("structural.footing_size",),
+                       ("IRC R403.1.1", "IRC Table R403.1(1)")),
         PermitItemSpec("Sill-plate anchorage", ("code.R403_1_6_foundation_anchorage",),
                        ("IRC R403.1.6",)),
         # Added 2026-11-02. Non-blocking while catlin's W-B-N2 restraint (the stair well fills

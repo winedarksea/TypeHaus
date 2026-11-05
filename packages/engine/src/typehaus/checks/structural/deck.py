@@ -26,6 +26,7 @@ from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.guard_lines import guard_lines
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.checks.soil import site_soil_bearing_psf
 from typehaus.checks.structural.deck_tables import (
     DECK_DEAD_LOAD_PSF,
     DECK_TABLE_LIVE_PSF,
@@ -925,11 +926,11 @@ def deck_footing_size(ctx: CheckContext) -> list[Finding]:
     decks = _decks(ctx)
     if not decks:
         return []  # no exterior deck — R507 does not apply
-    soil_psf = ctx.profile.soil_bearing_psf
+    soil_psf = site_soil_bearing_psf(ctx.plan, ctx.profile) if ctx.plan is not None else None
     if soil_psf is None:
         return [_unknown("structural.deck_footing_size",
-                         f"profile {ctx.profile.name} declares no soil bearing value, so a "
-                         "footing cannot be sized")]
+                         "neither the site nor profile {} states a soil class or bearing "
+                         "value, so a footing cannot be sized".format(ctx.profile.name))]
     out: list[Finding] = []
     # Per post, not per deck: the beam-weighted split gives the centre pair half again the
     # share of the corners, and one pad size for all of them would either under-size those

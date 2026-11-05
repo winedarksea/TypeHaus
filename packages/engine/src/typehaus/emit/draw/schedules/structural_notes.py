@@ -17,6 +17,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from typehaus.checks.soil import site_soil_bearing_psf
 from typehaus.emit.draw.schedules.blocks import draw_note_page, paginate_note_blocks
 from typehaus.emit.draw.sheet_writer import schedule_sheet
 from typehaus.emit.draw.structural_common import truss_heel_note
@@ -132,8 +133,8 @@ def design_criteria_block(model: ResolvedModel,
         lines.append(_row("DESIGN WIND (V_ult)", NOT_STATED))
     lines.extend([
         _row("FROST DEPTH", _value(getattr(profile, "frost_depth_in", None), " in")),
-        _row("SOIL BEARING", _value(getattr(site, "soil_bearing_psf", None)
-                                    or getattr(profile, "soil_bearing_psf", None), " psf")),
+        _row("SOIL BEARING", _value(site_soil_bearing_psf(model.plan, profile)
+                                    if model.plan is not None else None, " psf")),
         _row("SOIL CLASS", _value(getattr(site, "soil_class", None)
                                   or getattr(profile, "soil_class", None))),
         _row("WINTER DESIGN TEMP", _value(_temp_f(getattr(site, "design_temp_heating", None)),

@@ -14,6 +14,7 @@ that builds its own profile green.
 from __future__ import annotations
 
 from typehaus.checks.jurisdiction import JurisdictionProfile
+from typehaus.engineering.soil import presumptive
 from typehaus.model.plan import PlanModel
 from typehaus.model.project import Site
 from typehaus.model.site import SoilBasis
@@ -47,9 +48,29 @@ def site_soil_basis(plan: PlanModel, profile: JurisdictionProfile | None) -> Soi
 def site_soil_bearing_psf(
     plan: PlanModel, profile: JurisdictionProfile | None,
 ) -> float | None:
-    """The presumptive bearing value: the site's, else the profile's, else None."""
+    """The bearing value every reader grades on — S-001, the footing checks, the calcs.
+
+    The site's stated value, else IRC Table R401.4.1's row for the governing soil class,
+    else the profile's number (a site with no class at all). The class row comes first
+    because a profile number beside a declared class was two answers: S-001 printed the
+    profile's 1,500 psf while the engineering records read GM at 2,000.
+    """
     site = _site(plan)
     value = site.soil_bearing_psf if site is not None else None
     if value is not None:
         return value
+    row = presumptive(site_soil_class(plan, profile))
+    if row is not None:
+        return row.allowable_bearing_psf
     return profile.soil_bearing_psf if profile is not None else None
+
+
+def soil_bearing_basis(plan: PlanModel, profile: JurisdictionProfile | None) -> str:
+    """Where :func:`site_soil_bearing_psf` came from, in a sheet's words."""
+    site = _site(plan)
+    if site is not None and site.soil_bearing_psf is not None:
+        return "this site"
+    soil_class = site_soil_class(plan, profile)
+    if presumptive(soil_class) is not None:
+        return f"presumptive for {soil_class}, IRC Table R401.4.1"
+    return "presumptive, IRC Table R401.4.1"
