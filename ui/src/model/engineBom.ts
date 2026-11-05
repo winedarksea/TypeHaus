@@ -76,7 +76,8 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     // a run rather than being one, they are billed the same way, and a cold-climate outdoor
     // run normally carries both — the cable first, the lagging over it.
     sections: ["pipe_runs", "plumbing_specialties", "install_parts", "pipe_insulation",
-      "freeze_protection", "ducts", "duct_fittings", "duct_insulation", "sleeves",
+      "freeze_protection", "ducts", "duct_fittings", "duct_insulation", "duct_parts", "duct_supports",
+      "duct_sealing", "sleeves",
       "floor_heat", "drainage"],
   },
   {

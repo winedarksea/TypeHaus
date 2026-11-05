@@ -162,10 +162,13 @@ DUCTS_ERV_RISERS = [
             # at x=1'-3.4" the drop stood 1.6" into ED-B-BACKUP-ENCL's NEC 110.26(E)
             # dedicated space (x <= 14", y 382..398"). North to y=401 1/2", then west onto
             # the riser foot, at the old -17 15/16".
+            # The 1 5/8" x-jog onto the riser foot is a PAIR OF 30 DEGREE bends (2026-11-05): two 90s
+            # on a 6" duct want 6" between them and the jog had 1.7". It starts at y=399 1/8", past
+            # the enclosure's y=398" space edge, so the duct never leaves x >= 14".
             path=(pt(inch(65), ft(30, 10)), pt(inch(65), inch(394.8)),
                   pt(inch(65), inch(394.8)), pt(inch(17.0625), inch(394.8)),
-                  pt(inch(17.0625), inch(394.8)), pt(inch(17.0625), inch(401.0625)),
-                  pt(inch(15.4), inch(401.0625)), pt(inch(15.4), inch(406.8)),
+                  pt(inch(17.0625), inch(394.8)), pt(inch(17.0625), inch(399.1)),
+                  pt(inch(15.4), inch(401.98)), pt(inch(15.4), inch(406.8)),
                   pt(inch(15.4), inch(406.8))),
             elevations=(inch(-19.4375), inch(-19.4375), inch(-7.4), inch(-7.4),
                         inch(-17.9375), inch(-17.9375), inch(-17.9375), inch(-17.9375),
@@ -202,14 +205,18 @@ DUCTS_ERV_RISERS = [
             # northern low tier stays below that radial; two extra elbows are budgeted.
             # Re-stationed at (2'-2.9", 33'-10.8") on 2026-09-23 — the east end of the chase's
             # south band, so DU-M-ERV-EXH-FEED arrives from the east with nothing between.
+            # (2026-11-05) The two short jogs are gone: the 1 9/16" lift at y=350" and the 2 1/2"
+            # rise into the box each sat between two 90s (a 6" duct wants 6" and 3"). It now
+            # runs level at -28.4" (underside 78" AFF: the NEC 110.26(A) working spaces of ED-B-PANEL and
+            # ED-B-BACKUP-ENCL) to x=34", climbs 6.4" on a pair of 30 degree bends, and enters the
+            # extract plenum's WEST face at -22", stopping at x=59.8" so it does not reach
+            # DU-B-ERV-R-SAUNA-EXH's collar at x=63".
             path=(pt(ft(4, 2), ft(34, 6)), pt(inch(26.9), ft(34, 6)),
                   pt(inch(26.9), inch(406.8)), pt(inch(26.9), inch(406.8)),
-                  pt(inch(26.9), inch(350)), pt(inch(26.9), inch(350)),
-                  pt(inch(26.9), ft(28, 5)), pt(ft(6, 1.5), ft(28, 5)),
-                  pt(ft(6, 1.5), ft(28, 5))),
-            elevations=(inch(244), inch(244), inch(244), inch(-27.5),
-                        inch(-27.5), inch(-25.9375), inch(-25.9375),
-                        inch(-25.9375), inch(-23.4375)),
+                  pt(inch(26.9), ft(28, 5)), pt(inch(34), ft(28, 5)),
+                  pt(inch(45.26), ft(28, 5)), pt(inch(59.8), ft(28, 5))),
+            elevations=(inch(244), inch(244), inch(244), inch(-28.4),
+                        inch(-28.4), inch(-28.4), inch(-22), inch(-22)),
             # 164 cfm below the level-2 tap (attic 50 + level-2 114), 50 above it: the
             # basement's 46 never enters it (notes/erv_static_budget.md §10.6).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
@@ -283,9 +290,11 @@ DUCTS_ERV_RISERS = [
             # under DU-B-ERV-R-SAUNA-SUP and east on y=29'-3" beside EQ-B-ERV-MAN-EXH (moved
             # 1" south for it) to its port. It holds -21" north of 31'-1" to clear DU-ERV-EA's
             # west leg. Length and elbow count are unchanged.
+            # (2026-11-05) The 3.9" step down at y=31'-1" (two 90s on an 8" duct want 8") is a pair
+            # of 30 degree bends, 7 7/8" long, from y=31'-8" to y=31'-1".
             path=(pt(ft(3, 4), ft(36, 8)), pt(ft(3, 4), ft(34, 1)),
-                  pt(ft(3, 4), ft(34, 1)), pt(ft(3, 4), ft(31, 1)),
-                  pt(ft(3, 4), ft(31, 1)), pt(ft(3, 4), ft(29, 3)),
+                  pt(ft(3, 4), ft(34, 1)), pt(ft(3, 4), ft(31, 8)),
+                  pt(ft(3, 4), inch(373.2)), pt(ft(3, 4), ft(29, 3)),
                   pt(ft(6, 2), ft(29, 3)), pt(ft(6, 2), ft(29, 3))),
             elevations=(inch(60), inch(60), inch(-21), inch(-21),
                         inch(-24.9375), inch(-24.9375), inch(-24.9375), inch(-33.8375)),
@@ -341,12 +350,19 @@ DUCTS_ERV_RISERS = [
             # (4'-7", 31'-1") its 2" wrap touched DU-ERV-OA's, 11" away.
             # (2026-10-17) Its port moved east with the ERV. It leaves the case's west edge at
             # 78 1/2" AFF (its 2" wrap clears the lane's 72" line) and joins the north leg.
+            # (2026-11-05) Short-leg clearing: it rises 4 1/8" off the port (an 8" duct wants 4" before
+            # its first elbow; its wrap top stops 1/4" under EQ-B-ERV-MAN-SUP). It steps down to -31.4" (lane
+            # bottom 72" AFF, the CZ-B-DRYFIRE ceiling) on 30 degree bends at y=372", and to -33 3/4"
+            # at x=52" (under DU-ERV-OA's -21" lane, outside the lane). The old 2.9" drop between two
+            # 90s wanted 8" and the x-jog at 58.5"/52" had 6.5".
             path=(pt(inch(74), inch(363)), pt(inch(74), inch(363)), pt(inch(58.5), inch(363)),
+                  pt(inch(58.5), inch(372)), pt(inch(58.5), inch(374.88)),
                   pt(inch(58.5), inch(418.5)), pt(inch(52), inch(418.5)),
-                  pt(inch(52), inch(418.5)), pt(inch(24.625), inch(418.5)),
+                  pt(inch(47.95), inch(418.5)), pt(inch(24.625), inch(418.5)),
                   pt(inch(24.625), inch(418.5)), pt(inch(24.625), ft(36, 8))),
-            elevations=(inch(-33.8375), inch(-30.9375), inch(-30.9375), inch(-30.9375),
-                        inch(-30.9375), inch(-33.8375), inch(-33.8375), inch(204), inch(204)),
+            elevations=(inch(-33.8375), inch(-29.7375), inch(-29.7375), inch(-29.7375),
+                        inch(-31.4), inch(-31.4), inch(-31.4), inch(-33.7375), inch(-33.7375),
+                        inch(204), inch(204)),
             # ** 8", NOT 6" (owner, in the measured package). ** This is the single biggest
             # lever in the static budget and the note prices it: the discharge leg is the
             # long one on the extract chain's worst path, and area goes as d^2 while friction

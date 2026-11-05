@@ -52,6 +52,7 @@ from typehaus.hardware.fittings import (
     tube_bend_rule,
 )
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.duct_standard import duct_elbow_key, duct_standard
 from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
 from typehaus.resolve.sweep import clean_path, sweep_turns
 
@@ -279,8 +280,8 @@ def _bend(path: Sequence[tuple[float, float, float]], index: int, angle_deg: flo
 
 def polyline_fittings(tag: str, family: str, system: str,
                       points: Sequence[tuple[float, float, float]], size_m: float,
-                      *, rectangular: bool = False,
-                      material: str | None = None) -> list[FittingRecord]:
+                      *, rectangular: bool = False, material: str | None = None,
+                      duct_standard: Any = None, order_size: str = "") -> list[FittingRecord]:
     """The elbows a bare 3D polyline takes — for a run that is not in the model yet.
 
     The router proposes geometry before anybody has pasted it, and "what parts does this
@@ -301,6 +302,9 @@ def polyline_fittings(tag: str, family: str, system: str,
     nominal = _nominal_in(size_m)
     cleaned = clean_path(list(points))
     sweep = SolidSweep(path=cleaned, profile=((size_m / 2.0, 0.0),))
+    duct_key = (lambda angle: duct_elbow_key(duct_standard, angle, order_size, None
+                                             if rectangular else size_m)
+                ) if family == FAMILY_DUCT and duct_standard is not None else None
     out: list[FittingRecord] = []
     for turn in sweep_turns(sweep):
         if turn.angle_deg < MIN_FITTING_TURN_DEG:
@@ -320,20 +324,21 @@ def polyline_fittings(tag: str, family: str, system: str,
             run_tag=tag, family=family, kind=KIND_ELBOW, service=service, system=system,
             index=turn.index, point=tuple(turn.point), angle_deg=turn.angle_deg,
             plan_angle_deg=turn.plan_angle_deg, nominal_in=nominal, branch_in=None,
-            order_key=order_key(turn.angle_deg, size_m), spec=spec, gap=gap,
+            order_key=(duct_key(turn.angle_deg) if duct_key
+                       else order_key(turn.angle_deg, size_m)), spec=spec, gap=gap,
             bendable=bendable, branch_tag=None))
     return out
 
 
-def _turn_records(run: Any, family: str, *, size_m: float,
-                  rectangular: bool = False) -> list[FittingRecord]:
+def _turn_records(run: Any, family: str, *, size_m: float, rectangular: bool = False,
+                  **duct: Any) -> list[FittingRecord]:
     z = getattr(run, "z_m", None)
     if z is None or len(z) != len(run.path):
         return []
     return polyline_fittings(
         run.tag, family, run.system,
         [(x, y, zz) for (x, y), zz in zip(run.path, z, strict=True)], size_m,
-        rectangular=rectangular, material=getattr(run, "material", None))
+        rectangular=rectangular, material=getattr(run, "material", None), **duct)
 
 
 def _pipe_service(system: str, nominal_in: float) -> tuple[str, float]:
@@ -363,8 +368,10 @@ def fitting_records(model: ResolvedModel) -> list[FittingRecord]:
     distinguishes a tee from two runs crossing — and a guess recorded as a fitting is worse
     than an absence.
     """
+    from typehaus.model.ducts import duct_size_text
     from typehaus.resolve.mep_queries import drain_tie_ins
 
+    standard = duct_standard(getattr(model, "plan", None))[0]
     out: list[FittingRecord] = []
     for run in model.pipe_runs:
         out.extend(_turn_records(run, FAMILY_PIPE, size_m=run.diameter_m))
@@ -373,8 +380,9 @@ def fitting_records(model: ResolvedModel) -> list[FittingRecord]:
         # The same size the duct take-off has always keyed its rows on: the diameter where
         # there is one, the larger plan dimension where there is not.
         size = duct.diameter_m if not rectangular else max(duct.width_m, duct.depth_m)
-        out.extend(_turn_records(duct, FAMILY_DUCT, size_m=size,
-                                 rectangular=rectangular))
+        out.extend(_turn_records(duct, FAMILY_DUCT, size_m=size, rectangular=rectangular,
+                                 duct_standard=standard, order_size=duct_size_text(
+                                     duct.diameter_m, duct.width_m, duct.depth_m)))
 
     by_tag = {run.tag: run for run in model.pipe_runs}
     for child_tag, parent_tag in sorted(drain_tie_ins(model.pipe_runs).items()):

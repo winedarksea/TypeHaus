@@ -63,7 +63,7 @@ def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
         mid = duct.path[len(duct.path) // 2]
         size = (f'{duct.diameter_m / M_PER_IN:.0f}" RD' if duct.diameter_m is not None
                 else f'{duct.width_m / M_PER_IN:.0f}×{duct.depth_m / M_PER_IN:.0f}')
-        label = f'{size} {duct.system.upper()}'
+        label = f'{size} {duct.system.replace("_", " ").upper()}'
         add_point_label(b, key=f"duct-{duct.uid}", text=label, target=_in(mid), layer=layer,
                         height_pt=TEXT_PT, priority=50, leader=True,
                         preferred_direction=(0.0, 1.0), avoid_obstacles=False)
@@ -114,6 +114,9 @@ def _emit_equipment(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                        closed=True, lineweight=PROFILE, uid=element.uid, tag=element.tag))
         # Placed at frame time with the duct labels: at the mech room the plenums, ERV
         # and water heater stand inches apart (C7-E8, M1-009).
-        add_point_label(b, key=f"equipment-{element.uid}", text=element.kind.value.upper(),
+        # A plenum prints its tag: "DUCT MANIFOLD" six times says nothing (M1-009).
+        text = (element.tag if element.kind.value == "duct_manifold"
+                else element.kind.value.replace("_", " ").upper())
+        add_point_label(b, key=f"equipment-{element.uid}", text=text,
                         target=_in((x, y)), layer="M-HVAC-EQPM", height_pt=TEXT_PT,
                         priority=60, leader=True, avoid_obstacles=False)

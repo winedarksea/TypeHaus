@@ -204,10 +204,11 @@ def test_the_intake_riser_is_out_of_the_chase_and_in_the_closet(catlin_model) ->
 
     verticals = [(a, max(za, zb)) for a, b, za, zb in zip(oa.path, oa.path[1:], oa.z_m, oa.z_m[1:])
                  if abs(a[0] - b[0]) < 1e-9 and abs(a[1] - b[1]) < 1e-9]
-    # Three: the storey drop at x=3'-4", the basement drop to the lane-crossing level beside
-    # it, and the fall onto the machine's port at x=6'-2" (east of the dry-fire lane since
-    # 2026-10-17). Only the first rises through the main storey, so only it is the riser.
-    assert len(verticals) == 3, [v[0][0] / M_PER_IN for v in verticals]
+    # Two: the storey drop at x=3'-4" and the fall onto the machine's port at x=6'-2" (east of
+    # the dry-fire lane since 2026-10-17). The basement drop beside the first became a 30
+    # degree pair on 2026-11-05 (the R = D/2 floor, note §10.9). Only the first rises through
+    # the main storey, so only it is the riser.
+    assert len(verticals) == 2, [v[0][0] / M_PER_IN for v in verticals]
     risers = [vertex for vertex, top in verticals if top > 0]
     assert len(risers) == 1
     for vertex in risers:

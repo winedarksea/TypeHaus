@@ -244,6 +244,13 @@ not instruction: when it disagrees with this file or the model, it is the one th
   ceilings, PT-3 baths and laundry, PT-4 trim and doors; systems and BM/SW/Home Depot products
   in `plan/products_paint.py`, the one white (`WHITE`) in `plan/interior_palette.py`, basis in
   `notes/paint_selection.md`. Author `paint-wall` only where a coat sits mid-stack.
+- `plan/ducts.py` — `# haus: editable` `DUCT-STANDARD` (decision #114) and its duct parts:
+  1/2" w.g., round 30 ga, Versa-Grip 181 + Nashua 324A, die-stamped elbows, Imperial spin
+  collars with dampers on the plenums, saddle taps, boots by (duct, neck), 1" x 22 ga straps
+  on SMACNA spacing, the Broan and air-handler port kits. A new duct size, neck or branch pair
+  needs a row here or `mep.duct_terminations` goes UNKNOWN. Basis: `notes/air_distribution_
+  products.md` "DuctStandard". The Broan's three non-supply ports are still approximate, so no
+  kit derives on them until the E2 rotate-and-swap (`plans/TODO.md`).
 - `plan/fixtures.py` — `# haus: editable` plumbing-fixture *instances* (so UI drags
   round-trip). Only explicit constructors in any of these — no functions/generators.
 - `plan/electrical.py` — `# haus: editable` electrical service upgrade: meter, backup

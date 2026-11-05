@@ -58,6 +58,11 @@ from typehaus.emit.draw.schedules import (
     write_compare_sheet,
 )
 from typehaus.emit.draw.schedules.architectural import specification_sections
+from typehaus.emit.draw.schedules.mechanical import (
+    has_mechanical_schedule,
+    mechanical_tables,
+    write_mechanical_schedule,
+)
 from typehaus.emit.draw.schedules.openings import opening_tables
 from typehaus.emit.draw.schedules.paged_tables import page_count
 from typehaus.emit.draw.schedules.paint import has_paint_schedule, write_paint_schedule
@@ -382,6 +387,11 @@ def build_sheet_index(model: ResolvedModel,
     for index, storey_tag in enumerate(hvac_storeys, start=1):
         sheets.append(SheetSpec(f"M-{100 + index}", f"HVAC plan — {storey_tag}",
                                 scene=at_level(build_hvac_plan, storey_tag)))
+    if has_mechanical_schedule(model):
+        # Duct construction + duct/terminal schedules (#114), paged like S-602.
+        sheets.extend(_paged("M-601", "Duct and air terminal schedules",
+                             write_mechanical_schedule,
+                             page_count(mechanical_tables(model), paper)))
 
     electrical_storeys = [tag for tag in level_tags if has_electrical_content(at[tag], tag)]
     for index, storey_tag in enumerate(electrical_storeys, start=1):

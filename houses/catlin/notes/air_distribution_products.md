@@ -105,7 +105,7 @@ effective; the aluminium A170's figure is unpublished. 20 cfm at 3 Pa needs 10.8
 |---|---|---|---|
 | plant extract, 4" 24 VAC | EWC 4RSD spring-return (~$177) | Duro Dyne NSPRD024-4, Zonefirst RDSC | **at `DU-M-ERV-R-PLANT`'s start collar on the level-2 plenum in RM-M-MECH**, not behind the valve: serviced with no access panel in the humid liner; RH sensor local |
 | plant HP supply, 12x6, 24 VAC | Honeywell Home ZD12X6TZ | dimensionally compatible equal | vertical airflow, west actuator, fabricated 26ga end boot; [dimensioned connection and service sequence](plant_supply_connection.md) |
-| 6" branch balancing | spin-in collar with damper (Master Flow LSCD6) | Speedi AC-VDQ 06 with quadrant | locking quadrant not confirmed on the collar; specify the quadrant damper where the collar lacks one |
+| 4"/6" branch balancing | Imperial GV0851 / GV0853 spin collar with damper (DuctStandard) | Speedi AC-VDQ with quadrant | LSCD6 was a flanged starting collar, listed discontinued; locking quadrant not confirmed on the GV085x |
 | air-handler connector | Duro Dyne MFN metal-fabric-metal | | NFPA 90A / 701 fabric; 3" fabric (suggested, not a code number) |
 | mastic / tape | Hardcast Versa-Grip 181 (UL 181A-M/B-M) | Nashua 324A tape (UL 181A-P/B-FX), 3M 3340 | Iron-Grip 601 is B-M only; 3M 3381 is not UL 181 |
 
@@ -115,11 +115,12 @@ The extract damper still needs its body and actuator dimensions confirmed (§13)
 ## 8. Hoods — `EQ-T-ERV-HOOD-8` / `-8-EXH`
 
 RenewAire **FA8-P** (102409, paintable galvanneal, 1/4" metal screen, no damper) on both
-legs, the discharge with a **BD8** (102401) inline backdraft damper; the intake stays
-undampered. Or equal: Fantech FML8 (white powder-coat aluminium, 9 x 9 plate) with its bug
+legs, **no backdraft damper on either** (2026-11-05, C4 E3): Broan's manual §2.4 forbids one on
+the discharge ("it can freeze in winter") and the ERV's own motorized port dampers close the
+legs; the BD8 (102401) is dropped, its 8 Pa with it. Or equal: Fantech FML8 (white powder-coat aluminium, 9 x 9 plate) with its bug
 screen swapped for 1/4" mesh — no curve published. 1/4" screen and not insect mesh, so frost
 does not blind it. Published loss (chart end points, Q² scaled): **intake 23.3 Pa, discharge
-22.7 Pa at 210 cfm** (budget §10.1). FA8 plate and projection are unpublished: the model keeps
+14.8 Pa at 210 cfm** (budget §10.1, §10.10). FA8 plate and projection are unpublished: the model keeps
 the 12 x 12 x 12 envelope, which is larger than either hood, so every clearance it passed
 still holds. Painted to the north-face cladding. **10" option**: budget §10.4.
 
@@ -155,8 +156,8 @@ the corrosion answer. The intake keeps its filter grille.
 ## 11. Ducts
 
 - **ERV radials**: 4" galvanized snap-lock with stamped adjustable elbows (already billed).
-  The library row still calls it 26 ga; IMC 2018 Table 603.4 (Minn. R. 1346, which replaces
-  IRC ch. 12-24 in Minnesota) asks 0.013" (30 ga) for round under 12".
+  **30 ga**, from the DuctStandard (the library rows no longer name a gauge): IRC 2018 Table
+  M1601.1.1 (= IMC 2018 Table 603.4, Minn. R. 1346) asks 0.013" for round to 14" at 1/2" w.g.
 - **Trunks and risers**: 6"/8" galvanized; every seam UL 181B-M mastic or 181B-FX foil tape
   (IMC 2018 603.9; 181A is the fibrous-glass class). House-air ducts bare; OA/EA per §9.
 - **System 1 rectangular trunks** (`DU-S-HP-SUP` 18x8, `-RET` 10x18, `-SUITE` 10x8,
@@ -211,6 +212,70 @@ mud-in face cannot hold one. (Whether the stairway request covered that return i
 
 Not graded: a damper actuator inside a duct (no element), the canvas connector length, and
 hanger space on the rectangular trunks (`mep.duct_soffit_occupancy` keeps its 2" gap).
+
+## DuctStandard (decision #114, read 2026-11-05)
+
+`plan/ducts.py` authors it; the engine derives every part off the resolved runs. This section is
+the oracle for the hanger and seam arithmetic (`tests/test_duct_standard.py`).
+
+**Class and gauge.** 1/2 in. w.g. Round to 14": 0.013" galvanized, 30 ga (IRC 2018 Table
+M1601.1.1, Seattle SRC ch. 16 copy; IMC 2018's own text was not readable; Minnesota's old
+amendment is repealed, 44 SR 1085). The 30/28/26 ga to thickness match is SMACNA App. A.1.
+
+**Elbows.** No retail die-stamped elbow exists (Imperial, Speedi, Master Flow, H&C read: every
+round 90 is a 4-piece adjustable or corrugated). With the adjustable's ASHRAE Fitting 3-2 loss
+(4-piece: C 0.50 / 0.37 / 0.27 at r/D 0.75 / 1.0 / 1.5) R403.5 delivered 197.8 / 200.1 / 202.2
+cfm against 203.0, so (owner, 2026-11-05) a 90 or 45 turn is a commercial **Linx E90/E45
+die-stamped** elbow (li-hvac.com: "Die stamped", 3-12", "1.5-inch or 1.0-inch radius"; 1.0 D
+taken), Fitting 3-1 C 0.22 at r/D 1.0, and any other turn is a **C.L. Ward adjustable 90** set
+down (dimension A 4.75/6/7" read as centre-to-face: to the far side it would put the 8"
+radius under D/2), C 0.37. The static budget takes C x the angle factor K per turn (Fitting
+3-1/3-2: 0.45 at 30, 0.60 at 45, 1.00 at 90). The stamped laying length is unpublished; 1.5 D
+stands in for `mep.fitting_pattern`, whose FAIL floor is two take-offs at R = D/2.
+
+**Parts.** Plenum collars: Imperial GV0851 4" spin collar with damper (13: 12 collars, 1
+take-off); the 8" trunk spigot is the plenum's own. Take-offs: GV0979 4" saddle on the 8"
+level-2 extract trunk (9), GV0853 6" spin collar on the System 1 trunks (4). Boots: disc valves,
+the stair box, the suite-bath box and neckless vents take the duct on their own collar; the
+2-1/4x10 floor grilles take a Snappy P13-204 (or Imperial GV0602); 12x6 sidewalls on 6" a GV0671
+end boot; REG-B-SUP2's 125 mm valve a GV0766 4-to-5 increaser (M4-120); every rectangular boot,
+the 10x8 branch, the 6" tee and both reducers are shop-fabricated. Imperial prints SKUs and
+gauges, no dimensions, so every part is drawn at its envelope.
+
+**Port kits.** Broan B210E75RT manual pp. 10-11: "If using 8-in. ducts, install 6-in. to 8-in.
+transitions on the ports, and secure using duct tape only. If rigid ducting is used, install a
+12-in. section of flexible duct between the transition and the rigid ducting." "Do not use
+screws to connect the ducts or transitions to the ports." Kit: GV0772 6-to-8 increaser (C 0.22,
+the sudden 6/8 in. contraction bound 0.5(1 - 0.5625)) + 12" JP Lamborn MHP-45R8 (UL 181 Class 1,
+R-8) on outdoor/exhaust; 12" flex on supply/return; a Duro Dyne MFN at the air handler. Only the
+supply port is EXACT today, so only its flex is derived (1.2 Pa); the rest follows E2. **Open:**
+the same manual says insulated ducts "must have the same diameter as the ports to ensure proper
+drainage", which contradicts its own 8" advice: ask Broan.
+
+**Supports.** SMACNA HVAC DCS 1995 + Add. 1 (law.resource.org): round to 10", 12' max, 1" x 22
+ga strap (Table 4-2); rectangular to 30" half-perimeter, 10', 1" x 22 ga (Table 4-1; every trunk
+here is P/2 <= 28"); flex 5' (S3.35); one within 2' of each elbow (S4.1; branches allow 4', 2' is
+used for both). Per horizontal leg: one hanger 2' in from each end, then even gaps within the
+spacing; a leg under 1' rides on its fittings; risers take none.
+*Worked:* `DU-M-ERV-EXH-TRUNK` rises 12.8" (no hanger) then runs 331.6" = 27.63' level. End
+hangers at 2' and 25.63': 23.63' between, ceil(23.63 / 12) = 2 gaps, **3 hangers**; the model
+places 3. House: 139 hangers, 18 with no framing within 48" above or 16" beside (the attic
+radials on the deck, the HP feed and one riser-exhaust leg): detail a saddle (`mep.duct_supports`).
+
+**Seams.** Tape (Nashua 324A, 2.5" x 60 yd = 180') on the longitudinal seams: one per round
+run, four per rectangular, over developed length. Mastic (Hardcast Versa-Grip 181, 11 oz, 130 LF
+per cartridge at a 1/8" bead, the only bead rate published) on transverse joints: one girth per
+5' stick, plus two per elbow and per billed part, each pi D or the perimeter.
+*Worked:* `DU-M-ERV-EXH-TRUNK`, 8" (girth pi x 8/12 = 2.094'), 28.7 LF: tape 28.7'; joints
+ceil(28.7/5) = 6 x 2.094 = 12.57', its 1 elbow 2 x 2.094 = 4.19', its 10 billed parts (9
+saddles, 1 reducer) 20 x 2.094 = 41.89': 58.6' of mastic seam. House: 888.7' tape, 4.94 rolls,
+**5**; 795.2' mastic, 6.12 cartridges, **7**. The take-off joint is counted at the main's girth,
+which overstates it.
+
+**Not read** (TODO): any laying length or boot height; a 4" collar damper with a locking
+quadrant; a retail 1" x 22 ga strap (MARS 3/4" x 20 ga is the nearest); a metal-seam mastic
+rate; IMC 2018 §603.10 / Table 603.4 verbatim; a 6x6x6 tee and an 8-to-4 reducer SKU; Linx
+gauges and dimensions (login).
 
 ## Sources
 

@@ -64,6 +64,7 @@ SECTION_CATEGORY: dict[str, str] = {
     "light_run_materials": "lighting",
     "solar_modules": "solar_backup",
     "ducts": "ductwork", "duct_fittings": "ductwork", "duct_insulation": "ductwork",
+    "duct_parts": "ductwork", "duct_supports": "ductwork", "duct_sealing": "ductwork",
     "interior_trim": "trim", "trim_paint": "trim",
     "edge_trim": "flashing_trim", "cladding_trim": "flashing_trim",
     "framing": "lumber",

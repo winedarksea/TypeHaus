@@ -239,6 +239,12 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         sheets = model.solids[first_new_solid:]
         del model.solids[first_new_solid:]
         model.solids[fireblock_solid_index:fireblock_solid_index] = sheets
+    with _stage("duct_parts"):
+        # After every run's final z (terminal_ducts): parts and hangers off the house's
+        # DuctStandard (decision #114); geometry draws them.
+        from typehaus.resolve.duct_parts import resolve_duct_parts
+
+        findings.extend(resolve_duct_parts(plan, model))
     # Apron cutouts use the resolved service leaves, including their final elevations.
     with _stage("paneling"):
         findings.extend(resolve_paneling(plan, model))

@@ -17,6 +17,7 @@ from typehaus.model.plan import PlanModel
 from typehaus.resolve.door_sizing import DoorSizing
 from typehaus.resolve.layout_lines import ResolvedLayoutLine
 from typehaus.resolve.model_door_products import CasedDoorSpec
+from typehaus.resolve.model_ducts import ResolvedDuctPart, ResolvedDuctSupport
 from typehaus.resolve.model_earthwork import ResolvedExcavation, ResolvedWallColumn
 from typehaus.resolve.model_trim import ResolvedBaseRun, ResolvedDoorCasing, ResolvedDrywallTrim
 from typehaus.resolve.model_window_returns import ResolvedWindowReturn
@@ -1705,6 +1706,9 @@ class ResolvedModel:
     pipe_accessories: list[ResolvedPipeAccessory] = field(default_factory=list)
     sleeves: list[ResolvedSleeve] = field(default_factory=list)
     ducts: list[ResolvedDuct] = field(default_factory=list)
+    # Derived off the house's DuctStandard (#114): parts and hangers (→ resolve/duct_parts.py).
+    duct_parts: list[ResolvedDuctPart] = field(default_factory=list)
+    duct_supports: list[ResolvedDuctSupport] = field(default_factory=list)
     conduits: list[ResolvedConduitRun] = field(default_factory=list)
     # Derived device boxes, one per boxed wall device (→ resolve/device_boxes.py, #93).
     device_boxes: list[Any] = field(default_factory=list)

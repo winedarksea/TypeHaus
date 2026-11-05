@@ -106,6 +106,11 @@ ESTIMATE_PLANS = (
     ("ducts", "ducts", "system", "length_ft", "LF"),
     ("duct_fittings", "duct_fittings", "fitting", "count", "ea"),
     ("duct_insulation", "duct_insulation", "spec", "length_ft", "LF"),
+    # Parts, hangers and sealant by the piece (#114). ``price_key`` is the product tag, or
+    # ``<kind>-<size>[-<branch>]`` for a part the shop makes (takeoff/bom.py).
+    ("duct_parts", "duct_parts", "price_key", "count", "ea"),
+    ("duct_supports", "duct_supports", "product", "count", "ea"),
+    ("duct_sealing", "duct_sealing", "product", "count", "ea"),
     ("sleeves", "sleeves", "sleeve_diameter_in", "count", "ea"),
     ("conduit", "conduit", "size", "length_ft", "LF"),
     ("conduit_fittings", "conduit_fittings", "fitting", "count", "ea"),

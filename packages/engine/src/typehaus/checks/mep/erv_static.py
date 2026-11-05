@@ -43,13 +43,15 @@ from __future__ import annotations
 from typehaus.checks._authoring import advisory, not_applicable, passed, unknown
 from typehaus.checks.mep.erv_network import connected_distribution
 from typehaus.checks.mep.erv_static_terms import (
-    hood_losses,
+    elbow_loss_sum,
     interpolate,
     machine_trunk_flows,
     product_for,
     radial_capacity,
     terminal_loss,
+    trunk_terms,
     type_for,
+    velocity_pressure_in_wg,
 )
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
@@ -117,10 +119,13 @@ def _duct_drop(ctx: CheckContext, duct, elbows: int) -> _Leg:
         return _Leg(duct.tag, None, "the run states no design_cfm")
     bend_m = (product.bend_equivalent_length.meters
               if product.bend_equivalent_length is not None else 0.0)
-    effective_m = duct.length_m + elbows * bend_m
+    # The house's bought elbows' C x K (#114) replaces the row's equivalent length.
+    c = elbow_loss_sum(ctx, duct)
+    effective_m = duct.length_m + (0.0 if c is not None else elbows * bend_m)
+    bore = product.bore_diameter.meters
     return _Leg(duct.tag, duct_sizing.leg_drop_in_wg(
-        duct.design_cfm, product.bore_diameter.meters, product.roughness_m, effective_m),
-        None)
+        duct.design_cfm, bore, product.roughness_m, effective_m) + (c or 0.0)
+        * velocity_pressure_in_wg(duct.design_cfm, bore), None)
 
 
 def _delivered(curve: tuple[tuple[float, float], ...], static: float) -> float | None:
@@ -339,10 +344,11 @@ def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
                 continue
             trunk_total += leg.drop_in_wg
             terms.append(f"{leg.tag} {leg.drop_in_wg:.3f}\"")
-            # The outdoor hood passes the whole side's air, so it rides with the trunk.
-            for hood, loss in hood_losses(ctx, duct, plenums, kinds):
-                trunk_total += loss / PA_PER_IN_WG
-                terms.append(f"{hood} {loss:.1f} Pa")
+            # The outdoor hood and the port kit pass the whole side's air: they ride here.
+            extra, missing = trunk_terms(ctx, duct, plenums, kinds)
+            trunk_total += sum(loss for _, loss in extra) / PA_PER_IN_WG
+            terms.extend(f"{name} {loss:.1f} Pa" for name, loss in extra)
+            gaps.extend(missing)
 
         # A plenum's curve is keyed on its trunk-collar flow (note §4). A trunk-and-branch
         # tree counts its trunk once, never the trunk plus the branches it carries; and a

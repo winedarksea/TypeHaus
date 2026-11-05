@@ -2975,11 +2975,12 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # The two north-face hoods, 8" since 2026-10-31 (RenewAire FA8-P basis, 1/4" screen,
 # notes/air_distribution_products.md §8). ESTIMATES: no retailer price was readable for the
 # FA8 (SupplyHouse/Young Supply refused the fetch); the band brackets the Fantech FML8 or-equal
-# class. The discharge adds the BD8 inline damper (Ferguson RBD8, price not read). The labour
+# class. The BD8 inline damper on the discharge was dropped 2026-11-05 (Broan forbids it; C4
+# E3), so both hoods take the same band. The labour
 # is setting the hood plate over the 9" RO on the cladding and sealing it; the wall seal
 # itself is [duct_fittings] "wall-seal-8in".
 "EQ-T-ERV-HOOD-8" = { material = { low = 60, high = 140 }, labour = { low = 140, high = 320 } }  # 1 ea — the intake
-"EQ-T-ERV-HOOD-8-EXH" = { material = { low = 100, high = 210 }, labour = { low = 140, high = 320 } }  # 1 ea — the discharge, hood + BD8
+"EQ-T-ERV-HOOD-8-EXH" = { material = { low = 60, high = 140 }, labour = { low = 140, high = 320 } }  # 1 ea — the discharge
 # 2026-10-29: EG4 WallMount Indoor 14.3 kWh street $3,109 (ShopSolarKits) to $3,431 (Signature Solar); the $2,400 in the header is
 # unsourced. One module (notes/backup_power.md). Labour: hang on W-B-N3 cast concrete, comms, commission.
 "EQ-T-ESS-BATT" = { material = { low = 2800, high = 3500 }, labour = { low = 700, high = 1500 } }  # 1 ea
@@ -6228,10 +6229,20 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # elbow-90-3in is the retired 75 mm semi-rigid bend (was 42 ea at 3/8). Kept unreferenced
 # with the [ducts] :semi_rigid rows, for the same reason.
 "elbow-90-3in" = { low = 3, high = 8 }             # 0 ea — retired 2026-09-12 with the 3" radial
-"elbow-90-4in" = { low = 4, high = 10 }            # 41 ea — 4" stamped adjustable galvanized elbow, the radials' bend (2026-09-12)
-"elbow-90-6in" = { low = 9, high = 22 }            # 9 ea — 6" insulated riser elbow
-"elbow-90-8in" = { low = 11.01, high = 22 }          # 14 ea — SupplyHouse 26 ga adjustable, $11.01 (2026-11-04); high allows heavier gauge
-"elbow-90-10in" = { low = 16, high = 36 }          # 1 ea — DU-S-HP-SOUTH-RISE's drawn rise
+# ** 2026-11-05, decision #114: keyed off the DuctStandard's elbows (plan/ducts.py). ** A 90 or
+# 45 turn is a die-stamped Linx E90/E45 (commercial; no price read, ESTIMATE); any other turn
+# is an adjustable 90 set down, keyed `elbow-adj-90-*` (the old rows' parts, prices kept).
+# Rectangular elbows are keyed W x D and shop-fabricated (estimate).
+"elbow-90-4in" = { low = 6, high = 14 }            # 63 ea — 4" die-stamped 90 (ESTIMATE)
+"elbow-45-4in" = { low = 6, high = 14 }            # 2 ea — 4" die-stamped 45 (ESTIMATE)
+"elbow-90-6in" = { low = 9, high = 20 }            # 19 ea — 6" die-stamped 90 (ESTIMATE)
+"elbow-90-8in" = { low = 14, high = 30 }           # 10 ea — 8" die-stamped 90 (ESTIMATE)
+"elbow-adj-90-4in" = { low = 4, high = 10 }        # 16 ea — 4" adjustable, set to the turn
+"elbow-adj-90-6in" = { low = 9, high = 22 }        # 4 ea — 6" adjustable
+"elbow-adj-90-8in" = { low = 11.01, high = 22 }    # 6 ea — SupplyHouse 26 ga adjustable, $11.01 (2026-11-04)
+"elbow-90-10x18" = { low = 30, high = 80 }         # 2 ea — DU-S-HP-RET, shop-fabricated (estimate)
+"elbow-90-10x6" = { low = 25, high = 70 }          # 1 ea — DU-S-HP-SOUTH-RISE, shop-fabricated (estimate)
+"elbow-45-10x6" = { low = 25, high = 70 }          # 2 ea — DU-S-HP-SOUTH, shop-fabricated (estimate)
 # The OA/EA wall seals (SleevePenetration.serves_duct, 2026-10-31): low-expansion window-and-
 # door foam, Great Stuff Pro W&D $21-26/can (Hemlock Hardware, Walmart 3-pack), half a can
 # each, plus foil tape to the wrap end. ESTIMATES; the labour is the foaming and taping visit.
@@ -6251,6 +6262,43 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # $16-28/LF (no sheet price was readable online). It replaces the "2" R-8 wrap" that named no
 # real product (2" FRK is ~R-6). Owner checkpoint: about +$600-1,000 over the old row.
 '2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed' = { material = { low = 16, high = 28 }, labour = { low = 6, high = 14 } }  # 48.9 LF
+
+[duct_parts]
+# NEW 2026-11-05 (#114): every duct part but the elbow, off ResolvedModel.duct_parts. ESTIMATES
+# 2026-11-05, no retailer price read (retail pages refused the fetch); material only, the
+# labour is inside [ducts]' installed $/LF. $ each, keyed on the product tag; a part the shop
+# makes has no product and keys "<kind>-<size>[-<branch>]".
+"PROD-DUCT-SPIN-4" = { low = 8, high = 15 }              # 13 ea — 4" spin collar with damper (12 collar_damper + 1 takeoff)
+"PROD-DUCT-SPIN-6" = { low = 9, high = 18 }              # 4 ea — 6" spin collar with damper
+"PROD-DUCT-SADDLE-4" = { low = 6, high = 12 }            # 9 ea — 4" wye saddle on the 8" trunk
+"PROD-DUCT-INCREASER-4-5" = { low = 4, high = 10 }       # 1 ea — 4" to 5" increaser at a boot
+"PROD-DUCT-BOOT-2X10X4" = { low = 6, high = 12 }         # 4 ea — 2-1/4 x 10 x 4 floor boot
+"PROD-DUCT-BOOT-12X6X6" = { low = 8, high = 16 }         # 3 ea — 12 x 6 x 6 end boot
+"PROD-DUCT-FLEX-R8" = { low = 8, high = 20 }             # 1 ea — R-8 flex kit piece (about 1 ft)
+"PROD-DUCT-CONNECTOR" = { low = 25, high = 60 }          # 2 ea — Duro Dyne MFN flexible connector
+# Shop fabrication, estimate (material only; the make-up time is the sheet-metal visit):
+"boot-10x18-28x12" = { low = 40, high = 80 }             # 1 ea — shop fabrication, estimate
+"boot-10x6-12x6" = { low = 25, high = 60 }               # 1 ea — shop fabrication, estimate
+"boot-10x8-12x6" = { low = 25, high = 60 }               # 2 ea — shop fabrication, estimate
+"boot-18x8-12x6" = { low = 30, high = 70 }               # 1 ea — shop fabrication, estimate
+"boot-6in-8x6" = { low = 25, high = 60 }                 # 1 ea — shop fabrication, estimate
+"reducer-18x8-10x6" = { low = 30, high = 70 }            # 1 ea — shop fabrication, estimate
+"reducer-8in-4in" = { low = 25, high = 55 }              # 1 ea — shop fabrication, estimate
+"takeoff-18x8-10x8" = { low = 30, high = 70 }            # 1 ea — shop fabrication, estimate
+"tee-6in-6in" = { low = 25, high = 55 }                  # 1 ea — shop fabrication, estimate
+
+[duct_supports]
+# NEW 2026-11-05 (#114). ESTIMATES 2026-11-05, no retailer price read (retail pages refused the
+# fetch); material only, the labour is inside [ducts]' installed $/LF. $ per hanger, keyed on
+# the product tag: a 1 in. x 22 ga galvanized strap cut to its drop, with its screws.
+"PROD-DUCT-STRAP" = { low = 0.50, high = 1.50 }          # 139 ea
+
+[duct_sealing]
+# NEW 2026-11-05 (#114). ESTIMATES 2026-11-05, no retailer price read (retail pages refused the
+# fetch); material only, the labour is inside [ducts]' installed $/LF. The allowance
+# hvac-duct-insulation-mastic-and-test dropped its mastic material to match (2026-11-05).
+"PROD-DUCT-MASTIC" = { low = 8, high = 14 }              # 7 ea — Hardcast Versa-Grip 181, 11 oz cartridge (transverse joints, 130 LF each)
+"PROD-DUCT-TAPE" = { low = 25, high = 45 }               # 5 ea — Nashua 324A foil tape, 60 yd roll (longitudinal seams)
 
 [sleeves]
 # RESEARCHED 2026-08-08 — [low, high] $ each, by sleeve diameter. Derived, not quoted: each
@@ -7912,7 +7960,8 @@ hvac-controls-and-zoning = { low = 1200, high = 3000 }
 # foot — this row is the mastic, the sealing and the MN energy-code test, and must not grow to
 # cover wrap.
 # 2026-10-29: $1.28-3.19 -> $1.00-2.40/LF: mastic ~$0.15-0.40 mat + $0.50-1.20 labour, plus a $300-600 test over ~784 LF (judgement).
-hvac-duct-insulation-mastic-and-test = { low = 1.00, high = 2.40, unit = "LF", driver = "ducts.length_ft" }
+# 2026-11-05: -> $0.85-2.00/LF. The mastic and tape MATERIAL bill in [duct_sealing] now (#114); this is the sealing labour and the test.
+hvac-duct-insulation-mastic-and-test = { low = 0.85, high = 2.00, unit = "LF", driver = "ducts.length_ft" }
 # ** RENAMED AND RE-SCOPED 2026-08-30, from `hvac-bath-exhaust-fans`. THIS HOUSE HAS NO BATH
 # FANS. ** Every wet room is served by ERV radial extract (plan/mep_erv_l1.py) — there is no
 # fan to buy in any of them, and the row was pricing $825-2,640 of hardware that the design
@@ -8592,6 +8641,9 @@ pipe_fittings        = "material"
 ducts                = "material"
 duct_fittings        = "material"
 duct_insulation      = "material"
+duct_parts           = "material"
+duct_supports        = "material"
+duct_sealing         = "material"
 sleeves              = "material"
 conduit              = "material"
 conduit_fittings     = "material"

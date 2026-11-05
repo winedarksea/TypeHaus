@@ -144,7 +144,10 @@ def test_every_catlin_duct_solid_is_a_declared_routed_run_category(catlin_model)
     generic loop — and it skips exactly ``ROUTED_RUN_CATEGORIES``."""
     from typehaus.emit.trades import ROUTED_RUN_CATEGORIES, solid_trade
 
-    minted = {s.category for s in catlin_model.solids if s.category.startswith("duct_")}
+    # Derived parts and hangers (``body_mesh``) are not runs: IFC exports them in the
+    # generic loop, so they must stay out of ROUTED_RUN_CATEGORIES.
+    minted = {s.category for s in catlin_model.solids
+              if s.category.startswith("duct_") and s.body_mesh is None}
     assert minted
     assert minted <= ROUTED_RUN_CATEGORIES
     assert {solid_trade(c) for c in minted} == {"mechanical"}

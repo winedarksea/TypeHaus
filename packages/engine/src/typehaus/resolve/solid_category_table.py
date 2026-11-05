@@ -84,6 +84,15 @@ ROWS: tuple[C, ...] = (
     # with the terminal.
     C("terminal_neck", trade="mechanical", ifc_class="IfcDuctFitting",
       ifc_predefined="TRANSITION", billed_elsewhere=True),
+    # A duct run's derived parts and hangers (resolve/duct_part_solids.py), billed off
+    # ``model.duct_parts`` / ``duct_supports``. Not hard: a collar, boot or transition meets
+    # its own duct and the machine's port on purpose.
+    C("duct_fitting", trade="mechanical", ifc_class="IfcDuctFitting", billed_elsewhere=True),
+    C("duct_damper", trade="mechanical", ifc_class="IfcDamper", ifc_predefined="BALANCINGDAMPER",
+      billed_elsewhere=True),
+    C("duct_connector", trade="mechanical", ifc_class="IfcFlowFitting", billed_elsewhere=True),
+    C("duct_support", trade="mechanical", ifc_class="IfcMechanicalFastener",
+      billed_elsewhere=True),
     # Fenestration.
     _trim("glazing", "openings", ifc=_FOOTING, elevation="glaz"),
     _trim("glazing_trim", "openings", ifc=_FOOTING, elevation="sash"),

@@ -647,8 +647,9 @@ reads low:**
   extract 0.408 → ~205.6 cfm. **Unverified until RenewAire gives FA10 test data** (the chart
   footer cites "RD20200402 Collected Test Data"), and the 10" back plate needs a fit check at
   the HP3 cabinet and the disconnect's work space;
-- the BD8 off the discharge (−8 Pa, 204.6 cfm) — rejected here: a balanced ERV that stops
-  for defrost or service has nothing else keeping stack-driven backflow out of the leg;
+- the BD8 off the discharge (−8 Pa) — rejected here on 2026-10-31, and **reversed 2026-11-05**
+  (C4 E3, owner): Broan's manual §2.4 forbids a damper on the discharge hood (it freezes) and
+  the machine's motorized port dampers are what keep backflow out; see §10.10;
 - (§10.6 takes the risers to their real flows; what is left of §9's segmented conservatism
   is the 50 cfm above the level-2 tap.)
 
@@ -732,6 +733,59 @@ and trunk flows do not move.
 The play radial still governs the supply column at **0.4383** and extract still governs the
 machine at **0.441**; delivered stays 203.9 cfm against 203.0. The gym keeps fresh air at
 10 cfm plus System 1's conditioned supply.
+
+### 10.9 Short-leg clearing, routing only (2026-11-05)
+
+Geometry changes forced by `mep.fitting_pattern`'s FAIL floor (a straight under two take-offs at
+R = D/2). **The static arithmetic of this note is NOT redone here**; §10 is re-worked once, after
+the DuctStandard's elbow C, the Broan port kit and E3 land.
+
+| Run | Before | After |
+|---|---|---|
+| `DU-B-ERV-RET-TRUNK` | start 2.5" off the first elbow | 3.25" |
+| `DU-ERV-EA` | rise off the port 2.9"; 2.9" drop at x 52"; x-jog 6.5" | rise 4 1/8" (wrap top 1/4" under MAN-SUP); steps to -31.4" then -33 3/4" on 30 degree bends; no x-jog |
+| `DU-ERV-OA` | 3.9" step at y 31'-1" | 30 degree pair, y 31'-8" to 373.2" |
+| `DU-ERV-RISER-SUP` | 1.7" x-jog onto the foot | 30 degree pair from y 399 1/8" |
+| `DU-ERV-RISER-EXH` | 1 9/16" lift at y 350"; 2.5" rise into the box | level at -28.4" (NEC working spaces), 30 degree climb to -22" at x 34"-45", enters the plenum's WEST face (x 59.8") |
+| `DU-B-ERV-R-SAUNA-SUP` / `-EXH` | 1" and 2" jogs | collar drop 2.1", 86 1/2" lane from x 32", register end without the y jog |
+| `DU-S-ERV-HP-FEED` | 3.4" west jog at the deck | deck leg at x=15.4" |
+
+**Open (E2):** EA is still on Broan port 1's side and RET on port 3's; OA still ends 4.8" off port
+4. A swap cannot be drawn with the machine as it hangs: OA and EA (12" wrapped) cannot cross
+inside the 21.9" between the case top and the joists, and RET/SUP lie under MAN-SUP (10.4"). It
+needs the machine rotated 270 and the two plenums' roles swapped, or the EA riser re-sited east.
+**Drain-back (M1-114):** not drawn. Falling the EA basement leg toward the unit puts its foot above
+the radial layer, and a sloped straight turns every adjoining elbow into an off-pattern angle
+(`fitting_pattern` UNKNOWN); the EA leg is level.
+
+### 10.10 The DuctStandard rework (2026-11-05, decision #114)
+
+Three inputs changed together, and §10.1-§10.7's figures are superseded by these:
+
+1. **Elbows carry a published C.** Each duct turn now pays C x K x velocity pressure instead of
+   the duct row's `bend_equivalent_length`. A 90 or 45 is a die-stamped elbow, C 0.22 (ASHRAE
+   Fitting 3-1, r/D 1.0); any other angle is an adjustable 90 set down, C 0.37 (Fitting 3-2,
+   4-piece, r/D 1.0); K is Locklin's angle factor (0.45 at 30, 0.60 at 45, 1.00 at 90). The old
+   equivalent lengths came out near C 0.22, so the stamped elbow keeps this budget where it was.
+   With every turn a retail adjustable instead, delivered air was 197.8 / 200.1 / 202.2 cfm at C
+   0.50 / 0.37 / 0.27 (r/D 0.75 / 1.0 / 1.5): short of 203.0 at every reading. That is why the
+   stamped elbow was chosen (`notes/air_distribution_products.md`, "DuctStandard").
+2. **The BD8 is off** (E3): the discharge hood is 22.7 → **14.8 Pa** at 210 cfm.
+3. **The Broan port kit** rides with the trunk it lands on. Only the supply port is EXACT, so
+   only its 12" of 6" flex is counted, **1.2 Pa** (Darcy over the `DUCT-T-FLEX-6` row). The
+   6-to-8 transitions (C 0.22 on the 6" velocity pressure) and the other three flexes follow the
+   E2 rotate-and-swap (`plans/TODO.md`); on the extract side they would cost roughly 0.01-0.02".
+
+Result, as `mep.erv_static_budget` reads it (§10.9's re-routed legs included):
+
+| side | static | worst radial | terms |
+|---|---|---|---|
+| supply | **0.430"** | `DU-B-ERV-R-PLAY` | radial 0.031", valve 8.2 Pa, MAN-SUP 15.2 Pa, SUP-TRUNK 0.003", flex 1.2 Pa, RISER-SUP 0.104", OA 0.041", OA hood 23.3 Pa, HP-FEED 0.058" |
+| extract | 0.400" | `DU-B-ERV-R-SAUNA-EXH` | radial 0.019", valve 6.5 Pa, MAN-EXH 15.2 Pa, RET-TRUNK 0.037", RISER-EXH 0.121", EA 0.064", EA hood 14.8 Pa, EXH-FEED 0.012" |
+
+The governing side is supply again. Off the fan curve between 0.4" (206) and 0.5" (201) at
+0.430": 206 - (0.030 / 0.1) x 5 = **204.5 cfm**, which is what the check reads. Against R403.5's
+**203.0**: **+1.5 cfm** (was +0.9). Commissioning (§8) still closes it.
 
 ### 10.5 The thermal penalty of the legs (hand-worked)
 

@@ -212,7 +212,7 @@ DUCTS_ERV_BASEMENT = [
             design_cfm=210),
     # (2026-10-17) Off the case's north-east top, under the collars. Nothing west of x=6'-0".
     DuctRun(uid="6BTCWW2S1V", tag="DU-B-ERV-RET-TRUNK", system=DuctSystem.RETURN,
-            path=(pt(inch(86), ft(29, 2)), pt(ft(7, 4.5), ft(29, 2)),
+            path=(pt(inch(85.25), ft(29, 2)), pt(ft(7, 4.5), ft(29, 2)),
                   pt(ft(7, 4.5), ft(28, 5)), pt(ft(7, 4.5), ft(28, 5))),
             elevations=(inch(75.6), inch(75.6), inch(75.6), ft(7, 2)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
@@ -298,15 +298,18 @@ DUCTS_ERV_BASEMENT = [
     # PR-B-SAUNA-VENT, 92 1/2" over DU-ERV-OA's wrap (top 90 1/2"), 87 1/2" over
     # DU-ERV-RISER-EXH, then 86 1/2" down the lane to clear PR-B-SINK2-DRAIN's rake.
     DuctRun(uid="VXGA0P0V72", tag="DU-B-ERV-R-SAUNA-SUP", system=DuctSystem.SUPPLY,
+            # A 4" duct needs 2" between a run end and its first elbow, 4" between two 90s: the
+            # collar drop is 2 1/10" (to 88 1/2", 3/4" under DU-ERV-EA's wrap), both steps >= 4",
+            # and the 1" jog at x=19" is gone (the lane is 86 1/2" from x=32" on, under PR-B-SINK2-DRAIN's rake).
             path=(pt(ft(5, 3), inch(362.5)), pt(ft(5, 3), inch(362.5)),
                   pt(inch(48), inch(362.5)), pt(inch(48), inch(362.5)),
                   pt(inch(32), inch(362.5)), pt(inch(32), inch(362.5)),
-                  pt(ft(1, 7), inch(362.5)), pt(ft(1, 7), inch(362.5)),
+                  pt(ft(1, 7), inch(362.5)),
                   pt(ft(1, 7), inch(20.5)),
                   pt(ft(1, 7), inch(20.5)), pt(inch(199.75), inch(20.5)),
                   pt(inch(199.75), inch(20.5))),
-            elevations=(ft(7, 6), inch(89), inch(89), inch(92.5), inch(92.5), inch(87.5),
-                        inch(87.5), inch(86.5), inch(86.5), inch(92.5), inch(92.5), ft(7)),
+            elevations=(inch(90.6), inch(88.5), inch(88.5), inch(92.6), inch(92.6), inch(86.5),
+                        inch(86.5), inch(86.5), inch(92.5), inch(92.5), ft(7)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
     # The bench hood's pull. It drops out of the ceiling chase to the hood face at 5'-6",
     # which is the vertical leg that makes it a capture hood rather than a ceiling diffuser.
@@ -347,8 +350,8 @@ DUCTS_ERV_BASEMENT = [
             path=(pt(ft(5, 3), ft(28, 1)), pt(ft(5, 3), ft(27, 7)), pt(inch(49.5625), ft(27, 7)),
                   pt(ft(1, 7), ft(27, 7)), pt(ft(1, 7), inch(40)),
                   pt(inch(116.5625), inch(40)), pt(inch(116.5625), inch(40)),
-                  pt(inch(116.5625), ft(3, 2)), pt(inch(122), ft(3, 2))),
+                  pt(inch(122), inch(40))),
             elevations=(ft(7, 6), ft(7, 6), inch(82.25), inch(82.25), inch(82.25), inch(82.25),
-                        inch(4), inch(4), inch(4)),
+                        inch(4), inch(4)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
 ]

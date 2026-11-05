@@ -137,12 +137,6 @@ WALL_HOOD_8 = Product(
            f"must lap the 9x9in RO (AO-M-ERV-OA/AO-S-ERV-EA): Fantech's FML8 card lists "
            f"9 x 9in, which does not; FA8-P's plate is unpublished, confirm. {_SPEC} §8.",
 )
-BACKDRAFT_DAMPER_8 = Product(
-    tag="PROD-AIR-BACKDRAFT-8", brand="RenewAire", model="BD8 (102401)",
-    name="8in inline butterfly backdraft damper",
-    url="https://www.ferguson.com/product/renewaire-8-in.-backdraft-damper-rbd8/4781816.html",
-    source=f"On DU-ERV-EA only, inside the wall line; the intake stays undampered. {_SPEC} §8.",
-)
 WALL_SEAL_FOAM = Product(
     tag="PROD-AIR-WALL-SEAL-FOAM", brand="Great Stuff Pro", model="Window & Door",
     name="Low-expansion polyurethane foam, gun grade, 20 oz",
@@ -172,5 +166,5 @@ AIR_PRODUCTS = (
     SUITEBATH_EXTRACT_BOOT,
     DISC_VALVE_100, FLOOR_GRILLE_ERV, SIDEWALL_DD_OBD, FLOOR_REGISTER_HP,
     FILTER_RETURN_GRILLE, RETURN_GRILLE_1210, RETURN_GRILLE_0606, ROUND_DAMPER_4_24V, STAIR_REGISTER_BOX, PLANT_CEILING_GRILLE, PLANT_ZONE_DAMPER, PLANT_END_BOOT, PLANT_COLLAR, PLANT_SERVICE_HATCH,
-    WALL_HOOD_8, BACKDRAFT_DAMPER_8, WALL_SEAL_FOAM, ELASTOMERIC_SHEET, SPOT_NOZZLE_4,
+    WALL_HOOD_8, WALL_SEAL_FOAM, ELASTOMERIC_SHEET, SPOT_NOZZLE_4,
 )

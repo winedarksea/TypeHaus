@@ -139,3 +139,98 @@ def radial_capacity(ctx: CheckContext, landings: dict[str, str]) -> list[Finding
                 cid, f"{duct.tag} carries {duct.design_cfm:.0f} cfm in {product.tag} "
                      f"(<= {product.max_cfm:.0f} cfm)", ()))
     return out
+
+
+def velocity_pressure_in_wg(cfm: float, bore_m: float) -> float:
+    """Standard-air velocity pressure, (V / 4005)^2 in. w.g. with V in fpm."""
+    from typehaus.resolve.duct_sizing import velocity_fpm
+
+    return (velocity_fpm(cfm, bore_m) / 4005.0) ** 2
+
+
+#: ASHRAE Fitting 3-1/3-2 angle factor K_theta (Locklin 1950): C at an angle = C90 x K.
+ELBOW_ANGLE_FACTOR = ((0.0, 0.0), (20.0, 0.31), (30.0, 0.45), (45.0, 0.60), (60.0, 0.78),
+                      (90.0, 1.00))
+
+
+def elbow_loss_sum(ctx: CheckContext, duct) -> float | None:
+    """Sum of C x K over a round run's turns, off the house's bought elbows (#114).
+
+    Each turn takes ``elbow_for_turn``'s row at its own angle; a turn no row makes (a
+    reversal) is two 90s. None where the standard has no elbow at this size, so the
+    caller keeps the duct row's equivalent length.
+    """
+    from typehaus.checks.registry import shared
+    from typehaus.resolve.duct_standard import duct_standard, elbow_for_turn
+    from typehaus.resolve.mep_fittings import FAMILY_DUCT, fitting_records
+
+    standard = duct_standard(ctx.plan)[0]
+    size = getattr(duct, "diameter_m", None)
+    rows = [r for r in (standard.elbows if standard else ())
+            if size and abs(r.diameter.meters - size) < 1e-4 and r.loss_c is not None]
+    if not rows:
+        return None
+    turns = shared(ctx, "erv_static.duct_turns", lambda: _turns_by_run(
+        [r for r in fitting_records(ctx.model) if r.family == FAMILY_DUCT]))
+    total = 0.0
+    for angle in turns.get(duct.tag, ()):
+        hit = elbow_for_turn(standard, size, angle)
+        if hit is None or hit[0].loss_c is None:
+            total += 2 * max(r.loss_c for r in rows)
+        else:
+            total += hit[0].loss_c * interpolate(ELBOW_ANGLE_FACTOR, min(angle, 90.0))
+    return total
+
+
+def _turns_by_run(records) -> dict[str, list[float]]:
+    out: dict[str, list[float]] = {}
+    for record in records:
+        if record.index is not None:
+            out.setdefault(record.run_tag, []).append(record.angle_deg)
+    return out
+
+
+def trunk_terms(ctx: CheckContext, duct, plenums: dict[str, object],
+                kinds: dict[str, str]) -> tuple[list[tuple[str, float]], list[str]]:
+    """``([(term, Pa)], gaps)`` riding with a trunk: its hoods and its port kit (#114).
+
+    A kit's flex is friction over its length in the matching flex row; its transition is
+    C x the velocity pressure at the port. An unread number is a gap, not a zero.
+    """
+    from typehaus.checks.mep.erv_static import PA_PER_IN_WG
+    from typehaus.resolve.duct_sizing import leg_drop_in_wg
+    from typehaus.resolve.duct_standard import duct_standard
+
+    terms, gaps = hood_losses(ctx, duct, plenums, kinds), []
+    standard = duct_standard(ctx.plan)[0]
+    cfm = duct.design_cfm
+    for part in ctx.model.duct_parts:
+        if part.run_tag != duct.tag or part.kind not in ("flex", "transition") or not cfm:
+            continue
+        label = f"{part.kind} at {part.other}.{part.port}"
+        if part.kind == "flex":
+            row = product_for(ctx, "flex", duct.diameter_m)
+            if row is None or not part.length_m:
+                gaps.append(f"{duct.tag}: {label} has no flex row or length")
+                continue
+            loss = leg_drop_in_wg(cfm, row.bore_diameter.meters, row.roughness_m,
+                                  part.length_m) * PA_PER_IN_WG
+        else:
+            kit = standard.port_kit(_type_of(ctx, part.other), part.port) if standard else None
+            port_m = min(duct.diameter_m or 0.0, _diameter_in(part.branch) or 0.0) or None
+            if kit is None or kit.transition_loss_c is None or port_m is None:
+                gaps.append(f"{duct.tag}: {label} has no published loss coefficient")
+                continue
+            loss = kit.transition_loss_c * velocity_pressure_in_wg(cfm, port_m) * PA_PER_IN_WG
+        terms.append((label, loss))
+    return terms, gaps
+
+
+def _type_of(ctx: CheckContext, tag: str | None) -> str | None:
+    return next((o.type_ref for o in ctx.model.canvas_objects if o.tag == tag), None)
+
+
+def _diameter_in(size: str | None) -> float | None:
+    from typehaus.quantities import M_PER_IN
+
+    return float(size[:-2]) * M_PER_IN if size and size.endswith("in") else None

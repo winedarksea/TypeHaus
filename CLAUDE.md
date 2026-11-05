@@ -75,6 +75,13 @@ a release or for exhaustive local verification.
 - **Paint is derived from one `PaintStandard`** (decision #113, `model/paint.py`): rooms take its
   `walls`/`ceilings`/`wet` system through `resolve/room_paint.py`, swapping default coats only;
   trim and doors bill in `takeoff/trim_paint.py`; `Material.paint` + `Product.equals` feed A-604.
+- **Duct construction is derived from one `DuctStandard`** (decision #114, `model/ducts.py`):
+  round gauge by pressure class, sealing, the bought elbow (its centre-to-face and C feed
+  `mep.fitting_pattern` and `mep.erv_static_budget`), parts by (kind, size, branch), hangers and
+  equipment `PortKit`s. The `duct_parts` stage (`resolve/duct_parts.py`) derives take-offs, tees,
+  reducers, collar dampers, boots, port kits and hangers into `ResolvedModel.duct_parts` /
+  `duct_supports`; elbows stay `mep_fittings` records keyed off the standard's angles (rect W×D).
+  Billed in `[duct_parts]`/`[duct_supports]`/`[duct_sealing]`, printed on M-601.
 - **A pour slab stops at what it is cast against; a rim band has one wall** (decision #107):
   `resolve/slab_clip.py` cuts flush footings and through-walls out of the slab; read the slab
   as a floor through `floor_plan`. A wall dropping to a foundation owns its band outright.

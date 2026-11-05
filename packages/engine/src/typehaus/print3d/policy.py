@@ -52,6 +52,7 @@ KIND_POLICY: dict[str, Treatment] = {
                      "terminal_neck", "shutoff", "main_shutoff", "backflow_preventer",
                      "water_hammer_arrestor", "vacuum_breaker", "ro_stub", "cleanout_fitting",
                      "cleanout_extension", "cleanout_cap", "insulation_wrap",
+                     "duct_fitting", "duct_damper", "duct_connector", "duct_support",
                      "penetration_seal", "register", "electrical_device",
                      "luminaire_suspended"), _X),
     # Envelope accessories, glazing and leaves (openings print as clean holes).

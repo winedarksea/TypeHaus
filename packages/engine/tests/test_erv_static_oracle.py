@@ -162,7 +162,7 @@ def test_the_broan_carries_the_whole_published_curve(catlin_plan) -> None:
     assert broan.fan_curve_max_static_in_wg == pytest.approx(1.3)
 
 
-def test_the_governing_side_is_extract_via_the_sauna_radial(catlin_model_ro) -> None:
+def test_the_governing_side_is_supply_via_the_play_radial(catlin_model_ro) -> None:
     """Note §6, and the governing SIDE swapped THREE times on 2026-09-15.
 
     The machine's curve is an external static PER SIDE, so what governs is the worse of two
@@ -187,10 +187,13 @@ def test_the_governing_side_is_extract_via_the_sauna_radial(catlin_model_ro) -> 
     ** 2026-09-22: supply leads again, by 0.0027 in. ** ``DU-B-ERV-R-PLAY`` came off the
     basement stair (R311.7.2) and went round through SF-B-BATH: 15.50 ft on 2 elbows became
     30.48 on 8, 0.0141 -> 0.0347 (note §3). Delivered flow is 207.2 cfm either way.
+
+    ** 2026-11-05: supply leads, 0.430 against 0.400 (note §10.10). ** The elbows pay a
+    published C, the BD8 is off the discharge (-7.9 Pa) and the supply port's 12" flex counts.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "extract side via DU-B-ERV-R-SAUNA-EXH" in message
-    assert "supply side" not in message
+    assert "supply side via DU-B-ERV-R-PLAY" in message
+    assert "extract side" not in message
 
 
 def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> None:
@@ -248,12 +251,12 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     elbows, 0.1338 -> 0.1685 (§6). Delivered 206.6 cfm, which still reads as 207.
     """
     message = _machine_finding(catlin_model_ro).message
-    # Note §10.6 (2026-10-31): hoods counted, risers at their real flows, the basement
-    # plenums on their 6" trunk collars at 210 cfm: extract governs at 0.4413, 203.9 cfm.
-    assert "extract side" in message
-    assert "0.441 in. w.g." in message
-    assert "EQ-B-ERV-MAN-EXH 15.2 Pa at 210 cfm" in message
-    assert "delivering 204 cfm" in message
+    # Note §10.10 (2026-11-05): elbow C x K, no BD8, the supply port's flex: supply governs
+    # at 0.430, 204.5 cfm (§10.6's 0.441 / 203.9 before).
+    assert "supply side" in message
+    assert "0.430 in. w.g." in message
+    assert "EQ-B-ERV-MAN-SUP 15.2 Pa at 210 cfm" in message
+    assert "delivering 205 cfm" in message
 
 
 def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(
@@ -268,9 +271,9 @@ def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_confl
     schedule = {row["tag"]: row for row in run_schedule(catlin_model_ro)}
     exhaust = schedule["DU-B-ERV-R-SAUNA-EXH"]
     # 44.33 since the 2026-10-31 move to x=1'-7" (note §10.7); 43.86 since its collar
-    # step became a 30° ramp (2026-11-01).
-    assert exhaust["developed_ft"] == pytest.approx(43.86)
-    assert exhaust["elbows"] == 7
+    # step became a 30° ramp (2026-11-01); 43.69 without its 2" register-end jog (note §10.9).
+    assert exhaust["developed_ft"] == pytest.approx(43.69)
+    assert exhaust["elbows"] == 6  # the jog took one off
 
     routed_stud_passes = [finding for finding in catlin_model_report.findings
                           if finding.check_id == "mep.run_through_stud"

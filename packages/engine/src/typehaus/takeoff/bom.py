@@ -20,6 +20,11 @@ from typehaus.takeoff.data import data_device_schedule, data_raceway_takeoff, po
 from typehaus.takeoff.device_boxes import device_box_takeoff
 from typehaus.takeoff.drainage import drainage_takeoff
 from typehaus.takeoff.drywall_trims import drywall_trim_rows
+from typehaus.takeoff.duct_parts import (
+    duct_part_takeoff,
+    duct_sealing_takeoff,
+    duct_support_takeoff,
+)
 from typehaus.takeoff.edge_trim import edge_trim_takeoff
 from typehaus.takeoff.electrical import (
     backup_component_rows,
@@ -84,6 +89,12 @@ from typehaus.takeoff.track_lighting import track_lighting_materials
 from typehaus.takeoff.trim_paint import trim_paint_rows
 from typehaus.takeoff.wall_structure import wall_structure_takeoff
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
+
+
+def _part_price_keys(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    """``[duct_parts]`` price key: the product tag, else ``<kind>-<size>[-<branch>]``."""
+    return [{**row, "price_key": row["product"] or "-".join(
+        str(p) for p in (row["kind"], row["size"], row["branch"]) if p)} for row in rows]
 
 
 def bill_of_materials(
@@ -227,6 +238,10 @@ def bill_of_materials(
         # Duct wrap by the foot. An uninsulated outdoor-air duct through conditioned space
         # sweats, so this is not a finish line — it is why the ceiling below stays dry.
         "duct_insulation": duct_insulation_takeoff(model),
+        # Every other part, hanger and the sealant on a run (#114, → takeoff/duct_parts.py).
+        "duct_parts": _part_price_keys(duct_part_takeoff(model)),
+        "duct_supports": duct_support_takeoff(model),
+        "duct_sealing": duct_sealing_takeoff(model),
         "sleeves": sleeve_takeoff(model),
         # The electrical program (→ takeoff/electrical.py): devices by type, the panel
         # schedule + NEC 220.82-style service load, raceway LF, the PV array's installed

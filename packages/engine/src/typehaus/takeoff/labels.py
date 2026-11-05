@@ -32,6 +32,7 @@ SECTION_LABELS: dict[str, str] = {
     "excavation": "Excavation and backfill",
     "pipe_runs": "Pipe", "pipe_fittings": "Pipe fittings", "ducts": "Ducts",
     "duct_fittings": "Duct fittings", "duct_insulation": "Duct insulation",
+    "duct_parts": "Duct parts", "duct_supports": "Duct hangers", "duct_sealing": "Duct sealing",
     "sleeves": "Cast-in sleeves", "conduit": "Conduit", "conductors": "Conductors",
     "conduit_fittings": "Conduit fittings", "electrical_boxes": "Device boxes",
     "solar_modules": "PV modules", "data_raceways": "Data raceways",
@@ -282,6 +283,14 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         gauge = f" {g('gauge')} ga" if g("gauge") else ""
         where = f" in {g('routing')}" if g("routing") else ""
         return f"{system} duct, {size} {material}{gauge}{where}".replace("  ", " ").strip()
+    if section == "duct_parts":
+        kind = str(g("kind") or "part").replace("_", " ")
+        size = f"{g('size')}" + (f" x {g('branch')}" if g("branch") else "")
+        return f"{kind.capitalize()}, {size}" + (", shop-made" if g("fabricated") else "")
+    if section == "duct_supports":
+        return f"{str(g('hanger') or 'hanger').capitalize()} hanger, {g('size')} duct"
+    if section == "duct_sealing":
+        return f"Duct {g('use') or 'sealant'}"
     if section == "duct_insulation":
         return f"{g('spec')}, {_fraction_in(g('diameter_in'))} duct" if g("diameter_in") else None
     if section == "sleeves":
@@ -390,7 +399,7 @@ def describe(section: str, key: str, row: Mapping[str, Any] | None = None,
     bare = str(key).split(":", 1)[0]
     # ``drainage`` rows carry the material ref in ``product``; that is a tag, not a name. A
     # box row's ``product`` is its tag too, and its label must name the mounting it prices by.
-    readable = (() if section in ("drainage", "electrical_boxes")
+    readable = (() if section in ("drainage", "electrical_boxes", "duct_parts")
                 else ("description", "product", "name", "label"))
     for field_name in readable:
         value = row.get(field_name)

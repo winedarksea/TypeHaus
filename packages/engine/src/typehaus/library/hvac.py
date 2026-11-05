@@ -100,7 +100,7 @@ ALL_REGISTER_TYPES = (
 ALL_DUCT_PRODUCT_TYPES = (
     DuctProductType(
         tag="DUCT-T-GALV-4",
-        name="4in galvanized snap-lock round duct, 26 ga",
+        name="4in galvanized snap-lock round duct",
         material="galvanized",
         nominal_diameter=inch(4),
         bore_diameter=inch(4),
@@ -122,7 +122,7 @@ ALL_DUCT_PRODUCT_TYPES = (
     ),
     DuctProductType(
         tag="DUCT-T-GALV-6",
-        name="6in galvanized round duct, 26 ga",
+        name="6in galvanized round duct",
         material="galvanized",
         nominal_diameter=inch(6),
         bore_diameter=inch(6),
@@ -133,7 +133,7 @@ ALL_DUCT_PRODUCT_TYPES = (
     ),
     DuctProductType(
         tag="DUCT-T-GALV-8",
-        name="8in galvanized round duct, 26 ga",
+        name="8in galvanized round duct",
         material="galvanized",
         nominal_diameter=inch(8),
         bore_diameter=inch(8),
@@ -161,6 +161,15 @@ ALL_DUCT_PRODUCT_TYPES = (
         roughness_m=0.0009144,
         max_cfm=250.0,
         bend_equivalent_length=inch(84),
+        source=_SOURCE,
+    ),
+    DuctProductType(
+        tag="DUCT-T-FLEX-8",
+        name="8in insulated flexible duct, R-8 jacket",
+        material="flex",
+        nominal_diameter=inch(8),
+        bore_diameter=inch(8),
+        roughness_m=0.0009144,
         source=_SOURCE,
     ),
 )

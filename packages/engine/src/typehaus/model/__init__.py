@@ -38,6 +38,14 @@ from typehaus.model.door_hardware import DoorHardwareItem, JambFraming
 from typehaus.model.doorway import DoorwayProductSpec, DoorwaySectionPart, DoorwayTreatment
 from typehaus.model.drain_column import DrainColumn
 from typehaus.model.drywall import DrywallStandard, ShadowGapProfile, TerminationBead
+from typehaus.model.ducts import (
+    DuctElbowRow,
+    DuctPartRow,
+    DuctStandard,
+    DuctSupportRow,
+    PortKit,
+    RoundGaugeRow,
+)
 from typehaus.model.electrical import BoxRow, BoxStandard, Circuit, LoadManagement
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
 from typehaus.model.enums import (
@@ -432,6 +440,7 @@ __all__ = [
     "Register", "Equipment",
     "ElectricalDevice",
     "Circuit", "LoadManagement", "BoxStandard", "BoxRow", "ConduitRun", "LightRun",
+    "DuctStandard", "RoundGaugeRow", "DuctElbowRow", "DuctPartRow", "DuctSupportRow", "PortKit",
     "Sump", "SumpPump", "VentRun",
     "MonthlyNormal", "SubgradeModulus", "SoilBasis", "ConcreteServiceTemperature",
     "SetbackSpec",

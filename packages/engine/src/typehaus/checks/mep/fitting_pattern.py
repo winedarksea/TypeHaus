@@ -10,7 +10,7 @@ The reading is :mod:`typehaus.resolve.mep_fittings` — the same records the pip
 the duct take-off and the router's proposal read, so a fitting can never be priced as one
 part here and drawn as another there.
 
-**This check does not FAIL, and the reason is the point.** "No catalogued pattern turns 79
+**A pattern gap does not FAIL, and the reason is the point.** "No catalogued pattern turns 79
 degrees at 3 inches" is a statement about ``library/fittings.py``, not about the building: a
 fabricator makes off-angle turns every day, and whether *this* one is buildable depends on a
 laying length no submittal in this repo publishes. So a matched turn PASSes honestly and an
@@ -19,9 +19,9 @@ the catalog, or look at the run. Inventing a FAIL out of a gap in our own catalo
 the engine grading its own ignorance as the house's defect.
 
 **Laying length.** Where a pattern defines a centreline radius (a gored round duct elbow,
-1.5 D by SMACNA), its take-off ``R tan(theta/2)`` has to fit on the straight between it and
-the next fitting or the run's end. A shorter leg is UNKNOWN, not FAIL: the stocked stamped
-elbow is tighter than the gored pattern and no submittal publishes its radius.
+1.5 D by SMACNA, or the house's bought duct elbow, decision #114), its take-off
+``R tan(theta/2)`` has to fit on the straight between it and the next fitting or the run's
+end. Shorter is UNKNOWN; shorter than two elbows at R = D/2, the tightest throat made, FAIL.
 
 ``Tier.STRUCTURAL`` and **no** ``PermitItemSpec``, the same footing as
 ``mep.run_interference``: no IRC section says which pattern a turn must be, and a CODE tier
@@ -33,10 +33,14 @@ from __future__ import annotations
 import math
 from collections import defaultdict
 
+from typehaus.checks._authoring import failed
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.duct_standard import elbow_for_turn
+from typehaus.resolve.mep_fittings import FAMILY_DUCT, RECTANGULAR_DUCT_GAP
 
 _CID = "mep.fitting_pattern"
 
@@ -98,26 +102,45 @@ def fitting_pattern(ctx: CheckContext) -> list[Finding]:
     return out
 
 
-def _takeoff_in(record) -> float:
-    """Centre-to-tangent of a turn whose pattern defines a radius, inches; 0 otherwise."""
-    radius = getattr(record.spec, "bend_radius_in", None)
-    if not radius or record.bendable or record.index is None:
+def _takeoff_in(record, elbows: dict) -> float:
+    """Centre-to-tangent of a turn, inches: the house's bought duct elbow where the
+    ``DuctStandard`` reads its centre-to-face (#114, M4-107), else the pattern's radius; 0
+    where neither defines one. ``R tan(theta/2)`` with R the 90-degree centre-to-face."""
+    if record.bendable or record.index is None:
         return 0.0
-    return radius * math.tan(math.radians(record.angle_deg) / 2.0)
+    row = None
+    if record.family == FAMILY_DUCT and elbows and record.gap != RECTANGULAR_DUCT_GAP:
+        hit = elbow_for_turn(elbows["standard"], record.nominal_in * M_PER_IN,
+                             record.angle_deg)
+        row = hit[0] if hit is not None else None
+    radius = (row.center_to_face.meters / M_PER_IN if row is not None and row.center_to_face
+              else getattr(record.spec, "bend_radius_in", None))
+    return radius * math.tan(math.radians(record.angle_deg) / 2.0) if radius else 0.0
+
+
+def _floor_in(record) -> float:
+    """The take-off at R = D/2, the tightest throat any round duct elbow has (M4-101)."""
+    if record.family != FAMILY_DUCT or record.index is None or record.spec is None:
+        return 0.0
+    return record.nominal_in / 2.0 * math.tan(math.radians(record.angle_deg) / 2.0)
 
 
 def _laying_length(ctx: CheckContext, records: list) -> list[Finding]:
-    """One UNKNOWN per run with a straight shorter than the take-offs at its two ends.
+    """Per run, a straight shorter than the take-offs at its two ends.
 
-    A straight is measured along the cleaned path between consecutive fittings, or between
-    a fitting and the run's end (a collar, port or tee, which take no take-off of their own).
+    Measured along the cleaned path between consecutive fittings, or a fitting and the
+    run's end (a collar, port or tee, which take no take-off of their own). Shorter than the
+    R = D/2 floor is a FAIL — no elbow is made that tight. Shorter than the bought elbow
+    (or, unread, the 1.5 D pattern) is UNKNOWN: the installer cuts it to fit or it does not.
     """
-    from typehaus.quantities import M_PER_IN
+    from typehaus.resolve.duct_standard import duct_standard
     from typehaus.resolve.sweep import clean_path
 
+    standard, _ = duct_standard(ctx.plan)
+    elbows = {"standard": standard} if standard is not None else {}
     turns: dict[str, dict[int, object]] = defaultdict(dict)
     for record in records:
-        if _takeoff_in(record) > 0.0:
+        if _takeoff_in(record, elbows) > 0.0:
             turns[record.run_tag][record.index] = record
     out: list[Finding] = []
     for run in (*ctx.model.ducts, *ctx.model.pipe_runs):
@@ -128,21 +151,40 @@ def _laying_length(ctx: CheckContext, records: list) -> list[Finding]:
         path = clean_path([(x, y, zz) for (x, y), zz in zip(run.path, z, strict=True)])
         stops = sorted({0, len(path) - 1, *at})
         short: list[str] = []
+        impossible: list[str] = []
         for a, b in zip(stops, stops[1:], strict=False):
             length = sum(math.dist(path[i], path[i + 1]) for i in range(a, b)) / M_PER_IN
-            need = sum(_takeoff_in(at[i]) for i in (a, b) if i in at)
-            if length + 1.0 / 16.0 < need:
-                short.append(f"{length:.1f}\" between vertex {a} and {b} against "
-                             f"{need:.1f}\"")
+            need = sum(_takeoff_in(at[i], elbows) for i in (a, b) if i in at)
+            floor = sum(_floor_in(at[i]) for i in (a, b) if i in at)
+            text = f"{length:.1f}\" between vertex {a} and {b}"
+            if length + 1.0 / 16.0 < floor:
+                impossible.append(f"{text} against {floor:.1f}\" at R = D/2")
+            elif length + 1.0 / 16.0 < need:
+                short.append(f"{text} against {need:.1f}\"")
+        if impossible:
+            out.append(failed(
+                _CID, f"{run.tag}: {_listed(impossible)} — shorter than two elbows at the "
+                      "tightest radius any is made, so the run cannot be built as drawn",
+                (run.tag,), fix="lengthen the straight or drop a turn"))
         if short:
-            more = f" (+{len(short) - _MAX_LISTED} more)" if len(short) > _MAX_LISTED else ""
+            source = ("the house's bought elbow" if run.tag in _with_row(run, elbows)
+                      else "the catalogued 1.5 D radius")
             out.append(_unknown(
-                _CID,
-                f"{run.tag}: {len(short)} straight(s) shorter than the elbow take-offs at "
-                f"their ends at the catalogued centreline radius — "
-                f"{'; '.join(short[:_MAX_LISTED])}{more}. No submittal gives the stocked "
-                "stamped elbow's radius, so this is UNKNOWN, not a FAIL",
+                _CID, f"{run.tag}: {len(short)} straight(s) shorter than the elbow take-offs "
+                      f"at their ends at {source} — {_listed(short)}",
                 (run.tag,),
-                fix="lengthen the straight, or read the stocked elbow's radius into "
-                    "library/fittings.py"))
+                fix="lengthen the straight, or read the elbow's centre-to-face into the "
+                    "house's DuctStandard"))
     return out
+
+
+def _with_row(run, elbows: dict) -> set[str]:
+    size = getattr(run, "diameter_m", None)
+    rows = elbows["standard"].elbows if elbows else ()
+    return {run.tag} if size and any(abs(r.diameter.meters - size) < 1e-4
+                                     for r in rows) else set()
+
+
+def _listed(items: list[str]) -> str:
+    more = f" (+{len(items) - _MAX_LISTED} more)" if len(items) > _MAX_LISTED else ""
+    return "; ".join(items[:_MAX_LISTED]) + more

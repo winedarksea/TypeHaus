@@ -132,7 +132,9 @@ def duct_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     accidentally the same list.
     """
     from typehaus.resolve.duct_sizing import rectangular_row
+    from typehaus.resolve.duct_standard import duct_standard
 
+    standard, _ = duct_standard(model.plan)
     registered = {register.duct_ref for register in model.plan.all_elements()
                   if register.element_kind == "Register" and register.duct_ref is not None}
     runs: dict[tuple[str, float, float, float, str, str, bool], dict[str, object]] = {}
@@ -152,6 +154,9 @@ def duct_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             band = rectangular_row(model.plan.library, duct.material, duct.width_m,
                                    duct.depth_m)
             gauges[key] = band.gauge if band is not None else None
+        elif standard is not None:  # round gauge is the house's pressure class (#114)
+            row = standard.gauge_for(duct.diameter_m, duct.material or "galvanized")
+            gauges[key] = row.gauge if row is not None else None
     rows: list[dict[str, object]] = []
     for key, entry in sorted(runs.items()):
         system, diameter, width, depth, routing, material, terminal = key

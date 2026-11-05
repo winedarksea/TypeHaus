@@ -51,7 +51,7 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "site", "solids",
              "pipe_runs", "pipe_fittings", "ducts",
              # Duct elbows by the piece and duct wrap by the foot — the air-side mirrors of
              # pipe_fittings/pipe_insulation.
-             "duct_fittings", "duct_insulation",
+             "duct_fittings", "duct_insulation", "duct_parts", "duct_supports", "duct_sealing",
              "sleeves", "conduit",
              # Raceway parts and device boxes by the piece (→ takeoff/raceways.py,
              # takeoff/device_boxes.py).
@@ -296,6 +296,11 @@ class Prices:
     # ``pipe_fittings`` and ``pipe_insulation`` above.
     duct_fittings: Mapping[str, PriceRange] = field(default_factory=dict)
     duct_insulation: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Parts by the piece (product tag, or ``kind-size[-branch]`` when shop-made), hangers and
+    # sealant by product (#114).
+    duct_parts: Mapping[str, PriceRange] = field(default_factory=dict)
+    duct_supports: Mapping[str, PriceRange] = field(default_factory=dict)
+    duct_sealing: Mapping[str, PriceRange] = field(default_factory=dict)
     sleeves: Mapping[str, PriceRange] = field(default_factory=dict)
     # $/LF keyed on size: a bare size ("0.75") is EMT, anything else names its material
     # ("ENT 0.5", "PVC 1").

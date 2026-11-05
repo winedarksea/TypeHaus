@@ -227,6 +227,12 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "duct_outdoor_air": (0.360, 0.640, 0.780, 1.0),  # outdoor air, insulated and sealed
     "insulation_wrap": (0.160, 0.165, 0.170, 1.0),  # closed-cell elastomeric is black
     "terminal_neck": (0.700, 0.720, 0.740, 1.0),  # the stamped boot behind a grille
+    # Derived duct parts and hangers (-> resolve/duct_part_solids.py): the run's own galvanized,
+    # a shade off its duct so a collar or boot reads against the tube it joins.
+    "duct_fitting": (0.690, 0.710, 0.730, 1.0),    # take-off, tee, reducer, transition, boot
+    "duct_damper": (0.560, 0.580, 0.600, 1.0),     # collar with its balancing damper
+    "duct_connector": (0.300, 0.310, 0.320, 1.0),  # flex / vibration connector, a dark sleeve
+    "duct_support": (0.420, 0.440, 0.460, 1.0),    # strap or rod, darker than the duct
     "solar": (0.10, 0.14, 0.28, 1.0),      # PV module glass, deep blue
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
     "soffit": (0.88, 0.88, 0.85, 1.0),     # dropped soffit box / soffit skin member

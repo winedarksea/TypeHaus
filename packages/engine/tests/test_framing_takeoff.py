@@ -271,6 +271,8 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # foot — neither visible until `DuctRun` gained elevations and an
                         # `insulation` field (the ERV pass).
                         "duct_fittings", "duct_insulation",
+                        # Parts, hangers and sealant off the standard (#114).
+                        "duct_parts", "duct_supports", "duct_sealing",
                         # The species-wood rollup (hardwood pass).
                         "wood_surfaces",
                         # Edge trim by the lineal foot: the fascia/soffit/flashing family,
@@ -389,6 +391,9 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "drain_cleanouts": ("plumbing_specialties",),
     "sleeves": ("sleeves",),
     "ducts": ("ducts", "duct_fittings", "duct_insulation"),
+    # Parts, hangers and sealant off the DuctStandard (#114).
+    "duct_parts": ("duct_parts", "duct_sealing"),
+    "duct_supports": ("duct_supports",),
     "conduits": ("conduit", "conduit_fittings", "conductors"),
     "device_boxes": ("electrical_boxes",),
     "footing_beddings": ("footing_bedding",),

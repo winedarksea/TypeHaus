@@ -204,11 +204,15 @@
     "drain_tile": 2696737,
     "drip_edge": 12567756,
     "drywell": 8749176,
+    "duct_connector": 5001042,
+    "duct_damper": 9409689,
     "duct_dryer": 14396779,
     "duct_exhaust": 7897743,
+    "duct_fitting": 11580858,
     "duct_outdoor_air": 6071239,
     "duct_return": 9410206,
     "duct_supply": 13094097,
+    "duct_support": 7041141,
     "duct_transfer": 11712690,
     "earth": 8413248,
     "eave_soffit": 14737625,
@@ -418,11 +422,15 @@
     "drain_tile": 2696737,
     "drip_edge": 12567756,
     "drywell": 8749176,
+    "duct_connector": 5001042,
+    "duct_damper": 9409689,
     "duct_dryer": 14396779,
     "duct_exhaust": 7897743,
+    "duct_fitting": 11580858,
     "duct_outdoor_air": 6071239,
     "duct_return": 9410206,
     "duct_supply": 13094097,
+    "duct_support": 7041141,
     "duct_transfer": 11712690,
     "earth": 8413248,
     "eave_soffit": 14737625,
@@ -618,10 +626,19 @@
     "drywell": [
       "drainage"
     ],
+    "duct_connector": [
+      "mechanical"
+    ],
+    "duct_damper": [
+      "mechanical"
+    ],
     "duct_dryer": [
       "mechanical"
     ],
     "duct_exhaust": [
+      "mechanical"
+    ],
+    "duct_fitting": [
       "mechanical"
     ],
     "duct_outdoor_air": [
@@ -631,6 +648,9 @@
       "mechanical"
     ],
     "duct_supply": [
+      "mechanical"
+    ],
+    "duct_support": [
       "mechanical"
     ],
     "duct_transfer": [
@@ -857,11 +877,15 @@
     "drain_column": "drainage",
     "drain_tile": "drainage",
     "drywell": "drainage",
+    "duct_connector": "mechanical",
+    "duct_damper": "mechanical",
     "duct_dryer": "mechanical",
     "duct_exhaust": "mechanical",
+    "duct_fitting": "mechanical",
     "duct_outdoor_air": "mechanical",
     "duct_return": "mechanical",
     "duct_supply": "mechanical",
+    "duct_support": "mechanical",
     "duct_transfer": "mechanical",
     "eave_soffit": "siding",
     "electrical_box": "electrical",
