@@ -106,7 +106,7 @@ BALCONY_DECK_ALUMINUM = Assembly(
         Layer(name="aluminum-deck", material_ref="aluminum-deck", thickness=inch(1.5),
               function=LayerFunction.STRUCTURE),
     ),
-    source="catlin-house balcony — Wahoo AridDeck-style aluminum plank on 2x8 joists",
+    source="catlin-house balcony — Wahoo AridDeck-style aluminum plank on 2x12 joists",
 )
 
 # The balcony's three beams BM-SG-BLW/BLC/BLE — treated SYP structural glulam, 3-1/2" x

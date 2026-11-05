@@ -1,5 +1,7 @@
 """Purchased fascia-mount geometry; lengths are catalog facts, contours may be illustrative."""
 
+from typing import Literal
+
 from pydantic import model_validator
 
 from typehaus.model.base import HausModel
@@ -18,10 +20,18 @@ class FasciaMountSpec(HausModel):
     corner_wing_length: Length
     inside_corner_envelope: Length
     display_corner_hole_inset: Length
+    # Outside corner: each inboard pocket wall jogs out at 45 deg to a flange this far past
+    # the mounting-face corner, leaving the post's inboard corner open (product drawing).
+    display_corner_jog: Length
     mounting_hole_spacing: tuple[Length, Length]
     mounting_hole_top_drop: Length
+    # The mounting fastener: a through-bolt (nut on the band's back face) or a structural
+    # wood screw into backing. bolt_* size whichever it is.
+    fastener: Literal["through_bolt", "wood_screw"]
+    fastener_product: str
     bolt_diameter: Length
     bolt_length: Length
+    post_tube_length: Length  # the stocked post, cut to fit
     post_screw_diameter: Length
     post_screw_length: Length
     washer_diameter: Length

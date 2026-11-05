@@ -2523,10 +2523,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   (`notes/porch_stair.md`). Do not widen further north: HP2's disconnect working space. The south leg
   (`RL-SG-PORCH`, the only one on the plank) runs 2 5/8" inside the plank edge; each base's
   outer screw row lands on the edge joist, the inner on a block (8 in `FS-SG-PORCH`).
-- `RL-SG-BALCONY` stays fascia-mounted (through-bolted PVC fascia + 2x8 rim)
-  because `FS-SG-BALCONY`'s aluminium plank is the porch roof and carries no other
-  penetrations — do not switch to surface mounting. Needs rim blocking in
-  `FS-SG-BALCONY.reinforcements`. Its posts stand in the brackets 1.518" outboard of the fascia
+- `RL-SG-BALCONY` stays fascia-mounted (SD04964 5/16" x 6" screws through the PVC fascia
+  and the 2x12 KDAT rim into 4 1/2" of SYP backing, Ultralox Guide p.37) because
+  `FS-SG-BALCONY`'s aluminium plank is the porch roof and carries no other
+  penetrations — do not switch to surface mounting. The backing is
+  `FS-SG-BALCONY.reinforcements` (flank block pairs, front sisters, the doubled north edge
+  joist); the resolver refuses a screw that misses it. Height is what the stock 48" tube
+  gives, 40 1/8" (`notes/balcony_fascia_mounts.md`). Its posts stand in the brackets 1.518" outboard of the fascia
   face (`RailingType.fascia_post_offset`, ESR-3485 Fig. 10). `TR-SG-GUTTER` hangs 1" under
   the bracket bottoms (derived from them, 2026-10-31) and `TR-SG-APRON` laps from behind the
   drip's face into the trough; `test_catlin_balcony_guard_gutter.py` holds the clearance.

@@ -682,6 +682,11 @@
 # elsewhere — at roughly 70:30 material to labour, PLUS $400-900 of LTL freight on a factory-cut
 # small order to Minnesota. -> $5,862-10,362 over 6 sheets (2026-10-29: row was $6,948-12,252, above this basis;
 # HomeAdvisor 2nd-storey $40-55/SF argues the top is not low). CONFIDENCE: LOW above the Homewyse floor.
+# 2026-11-05: Versadeck Versadry publishes $42/SF (the page does not say supplied or
+# installed); Last-Deck (Jackson MN) and Versadeck are in-state makers, so the LTL freight
+# above may drop; LockDry is quote-only. Rejected as not watertight over the porch: DuxxBak,
+# NextDeck, under-deck drainage. A Duradek-type membrane was ~$2-4k cheaper but 15-20 yr.
+# Row value unchanged; the aluminium dry-deck is kept (owner).
 "aluminum-deck" = { material = { low = 704, high = 1254 }, labour = { low = 273, high = 473 } }  # 6 sheets = 182.0 SF
 # Ceiling gypsum (FS-S-WEST/FS-S-EAST's `ceiling_below`, since 2026-08-21's truss/I-joist
 # split — FS-SECOND before that), by the sheet. Distinct from the
@@ -6843,7 +6848,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # ESTIMATE 2026-10-30 (no live Menards price readable): 57-79 = the $30-45 panel rate plus an
 # Ultralox fascia bracket kit (~$75-92) and fascia post kit, ~$120-150 a post x ~9 posts
 # over 40.3 LF. Replaces the 2026-10-29 39.5-62 bracket guess.
-"RAILING-EXT-ALUMINUM-FASCIA" = { material = { low = 57, high = 79 }, labour = { low = 35, high = 55 } }  # 40.3 LF — RL-SG-BALCONY only. Williams ESR-3485 / Fortress Al13 Home; material dropped from 55-80 when the product left Trex Signature on 2026-09-02. Fascia-mount labour keeps its 25-40% premium over surface mount (through-bolting into rim blocking, cantilevered 200 lb load). 2026-10-29: material 30-45 -> 39.5-62 folds in the fascia-mount bracket kits ($40-60 per post + four 5/16" x 4" through-bolts, ~9 posts at 60" o.c. = $370-650 over the run)
+"RAILING-EXT-ALUMINUM-FASCIA" = { material = { low = 57, high = 79 }, labour = { low = 35, high = 55 } }  # 40.3 LF — RL-SG-BALCONY only. Williams ESR-3485 / Fortress Al13 Home; material dropped from 55-80 when the product left Trex Signature on 2026-09-02. Fascia-mount labour keeps its 25-40% premium over surface mount (screwing into rim backing, cantilevered 200 lb load). 2026-10-29: material 30-45 -> 39.5-62 folds in the fascia-mount bracket kits ($40-60 per post, ~9 posts at 60" o.c. = $370-650 over the run). 2026-11-05: the fastener is four SD04964 5/16" x 6" structural screws per bracket (Ultralox Guide p.37, replacing the 4" bolts) and the post is the stock 48" tube in the post kit with cap (guard 40 1/8"); screws, post screws and bottom plugs stay inside this rate
 # 2026-09-03: 42.7 LF over FIVE runs, where it was 36.3 LF over one. RL-SG-PORCH LOST 3.0 LF
 # (33.3) — its east leg stops at y -3'-10" to open a 3'-0" gap for the new porch stair — and
 # four short runs arrived around that opening: RL-SG-PSTAIR-S/N, 3.7 LF each, RAKED along
@@ -6862,6 +6867,11 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # 2026-11-04 mounting geometry: landing-mounted stair end bases add 0.5 LF net to
 # the surface run (about 41.1 LF total); do not bill mesh subparts again. End posts fit
 # the existing kit's 43.5 inch actual length.
+# 2026-11-05 retail snapshot (Menards/Home Depot): Williams 42" x 6' panel $219.89 plus its
+# surface post kit put the material near $52/LF, above this row's $30-45 — the row may be
+# light. Rate unchanged. No house-wide swap saves enough to break the match: Avant (Fortress,
+# $169.65/panel) saves ~$0.6-1.3k of ~$10k on a 15-yr warranty and no stocked fascia bracket;
+# Peak (HD) costs what Williams does; 36" panels save ~$200-400 in all.
 "RAILING-EXT-ALUMINUM-SURFACE" = { material = { low = 30, high = 45 }, labour = { low = 25, high = 40 } }  # 36.8 LF over 8 runs (2026-11-04) — RL-SG-PORCH 16.6 (south leg, on the plank) + -W 6.3 + -NE 2.5 + -W-HOUSE 1.0 + -E-HOUSE 1.1 + -SE 0.6 + PSTAIR-S/N 4.4 ea (RAKED guards, see above). The cast corner columns PT-SG-BR1/BF1/BR3/BF3 are the porch guard's posts: its west/east legs run on the W-SG-W1/E1 tops and end into them, and the PTHRESH cheeks left. 12 posts: 5 on RL-SG-PORCH, 1 each on -W, -W-HOUSE, -E-HOUSE, -SE and -NE (the last two are the stair guards' head posts), and 1 per stair run (foot). Same rail, same alloy, same listing as the fascia row; the post kit carries its cast 4.99" base, so there is nothing to add per post. Labour is lower for the same reason: no through-bolting from underneath. NOT INCLUDED: the four 1/4" x 3" concrete anchors per wall-top post, the 12 rail-to-column brackets (2 per column end, Titen Turbo at >= 3" edge distance; the rail maker's anchor schedule governs), the 8 solid blocks under the south leg (in [framing]) and the stair-panel premium above
 # ESTIMATE 2026-10-30: Williams ADA Pipe Rail and 90 deg Return Kit AD901102B (Menards 1717885),
 # ~$158 a kit over ~3.7 LF plan = ~$43/LF; one kit covers the flight. Labour: two returns TEK-

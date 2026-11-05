@@ -104,9 +104,10 @@ def test_joists_span_both_beams_and_cantilever_nine_inches(catlin_model):
     # 9", not 6", since 2026-09-03: at 6" the deck edge (and TR-SG-FASCIA's drip with it)
     # landed exactly on the outer face of the 12" columns, so the balcony shed water straight
     # down the concrete.
+    # The stick is cut to the rims' inboard faces (F3-108): half a 2x12 rim off each tip.
     deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-BALCONY")
     spans = {round(m.length_m, 3) for m in deck.members if m.category == "joist"}
-    expected = round(inch(216).meters + 2 * inch(9).meters, 3)
+    expected = round(inch(216).meters + 2 * inch(9).meters - inch(1.5).meters, 3)
     assert spans == {expected}
 
 

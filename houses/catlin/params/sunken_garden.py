@@ -2459,7 +2459,9 @@ _DECK_JOIST_OUTLINE = (pt(ft(_deck_x_w), ft(_bal_y0)), pt(ft(_deck_x_e), ft(_bal
 # Defined here rather than beside BALCONY_GUARD below because FS-SG-BALCONY's rim blocking is
 # authored at this path's own post stations — the blocks and the posts cannot be allowed to
 # drift apart.
-_BALCONY_RIM_MEMBER = f"1.25x{_balcony_joist_depth_ft * 12:g} rim"
+# A stock 2x12 KDAT band, the joists' own stock, painted (as FS-BW-FLOOR's 2x8): the 1.25x
+# rim profile is not sold.
+_BALCONY_RIM_MEMBER = SPEC.balcony_joist
 _BALCONY_RIM_HALF_FT = cross_section(_BALCONY_RIM_MEMBER).width_m / 0.3048 / 2
 # Guard datum: outer framing face. The flank rim extends beyond the deck sheet.
 _GUARD_EDGE_PATH = (
@@ -2470,7 +2472,9 @@ _GUARD_EDGE_PATH = (
 )
 # Seat the end bolt patterns on the rim, retaining <4 inches to the house cladding.
 _BALCONY_END_POST_HOUSE_CLEARANCE_IN = 3.9375
-_BALCONY_REAR_RIM_OVERSAIL_IN = 0.5
+# 1 1/2" past the plank, so the end post's rear screws hold 4D (1 1/4") to the rim's cut end;
+# the movement gap to the cladding is then 1 3/4" (was 2 3/4").
+_BALCONY_REAR_RIM_OVERSAIL_IN = 1.5
 _BALCONY_HOUSE_GAP_IN = -SPEC.house_ext_layers_in - _y_in_n*12
 _BALCONY_END_POST_INSET = inch(_BALCONY_END_POST_HOUSE_CLEARANCE_IN
     + RAILING_EXT_ALUMINUM_FASCIA.post_width.inches/2 - _BALCONY_HOUSE_GAP_IN)
@@ -2493,22 +2497,28 @@ _deck_walking_surface = _deck_top + inch(SPEC.balcony_deck_thickness_in)
 # **THIS ONE STAYS FASCIA-MOUNTED, and that is a roofing decision rather than a railing
 # one.** FS-SG-BALCONY's aluminium plank is the porch roof, and since 2026-09-02 it carries NO
 # penetrations at all — the two heat-pump stands went to grade. Surface posts would put
-# ~36 holes through the only waterproof plane in this structure to save bracket money. The
-# brackets through-bolt the PVC fascia and the flank/front rim per Ultralox's own fascia-mount
-# instructions (four 5/16" x 4" bolts, nuts on the rim's inside face, reachable from the
-# open bays below), landing in the rim blocking authored in ``FS-SG-BALCONY.reinforcements``.
-# ``type_ref`` stays the library's fascia type for exactly that reason.
+# ~36 holes through the only waterproof plane in this structure to save bracket money. Each
+# bracket takes four SD04964 5/16" x 6" structural screws through the PVC fascia and the
+# rim into 4 1/2" of SYP backing (Ultralox 2025 Product Guide p.37), authored in
+# ``FS-SG-BALCONY.reinforcements``. ``type_ref`` stays the library's fascia type for that.
+#
+# ** HEIGHT IS WHAT THE STOCK 48" TUBE GIVES (owner, 2026-11-05). ** The post bottom sits on
+# the bracket insert, the bracket top 1/2" under the rim: 48 - 6 + 1/8 - 2 = 40 1/8" over the
+# plank, against R312.1.2's 36". A taller authored height is refused by the resolver.
 _BALCONY_BRACKET_DROP_IN = SPEC.balcony_deck_thickness_in + 0.5  # half inch below rim
+_BALCONY_MOUNT = RAILING_EXT_ALUMINUM_FASCIA.fascia_mount
 _BALCONY_BRACKET_BOTTOM = (_deck_walking_surface - inch(_BALCONY_BRACKET_DROP_IN)
-                           - RAILING_EXT_ALUMINUM_FASCIA.fascia_mount.overall_height)
+                           - _BALCONY_MOUNT.overall_height)
+_BALCONY_GUARD_HEIGHT = (_BALCONY_MOUNT.post_tube_length - _BALCONY_MOUNT.overall_height
+                         + _BALCONY_MOUNT.insert_thickness - inch(_BALCONY_BRACKET_DROP_IN))
 BALCONY_GUARD = Railing(
     uid="SGRA01AAAA", tag="RL-SG-BALCONY", type_ref="RAILING-EXT-ALUMINUM-FASCIA",
     path=_GUARD_PATH,
-    kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
+    kind=RailingKind.METAL_FASCIA_MOUNT, height=_BALCONY_GUARD_HEIGHT,
     base_elevation=_deck_walking_surface,
-    # Moving the fascia outside the flank rims adds 1 1/4 inch to the front.
-    # 60 1/8 inch retains four front bays, well within the 72.43 inch product span.
-    post_spacing=inch(60.125), post_size="3x3", rail_count=2, mount="fascia",
+    # The fascia outside the 2x12 flank rims sets the front run; 60 1/4 inch retains four
+    # front bays, well within the 72.43 inch product span.
+    post_spacing=inch(60.25), post_size="3x3", rail_count=2, mount="fascia",
     # The path is the outer framing face; a 1 inch fascia stands entirely outboard.
     # Deck slope supplies the local walking/rim elevation at every mounting station.
     fascia_face_offset=inch(1), fascia_ref="TR-SG-FASCIA", fascia_bracket_drop=inch(_BALCONY_BRACKET_DROP_IN),
@@ -2523,30 +2533,29 @@ _BALCONY_MOUNT_LAYOUT = fascia_stations(
     BALCONY_GUARD.fascia_face_offset.meters,
     RAILING_EXT_ALUMINUM_FASCIA.fascia_post_offset.meters,
 )
-# The front guard needs rollover blocks between the edge joist and its neighbour.
-# The shared layout's post x coordinates locate these blocks; placing the entries
-# inside the field ensures the reinforcement resolver retains them.
-_GUARD_BLOCK_INSET_FT = 4.0 / 12.0  # clear the through-bolt tails and nut access
-_BALCONY_GUARD_STATIONS = [
-    (station.post[0] / 0.3048, _y_balcony_front + _GUARD_BLOCK_INSET_FT)
-    for station in _BALCONY_MOUNT_LAYOUT
+# ** 4 1/2" OF SYP BEHIND EVERY SCREW (2026-11-05). ** 1/4" bracket + 1" PVC + 4 1/2" of
+# band and backing is 5 3/4" of the 6" SD04964, so the tip ends 1/4" past the last ply. The
+# resolver walks each screw through the deck and refuses one that misses its backing.
+# Front: the edge joist plus two sister plies inboard, 10" each side of the post.
+_BALCONY_PLY_FT = cross_section(SPEC.balcony_joist).width_m / 0.3048
+_BALCONY_FRONT_POSTS_FT = [
+    station.post[0] / 0.3048 for station in _BALCONY_MOUNT_LAYOUT
     if station.variant == "straight" and station.faces[0].outward[1] < -0.9
 ]
-
-# Flank brackets need rollover backing too. Set it behind the bolt tails so the
-# washers/nuts remain accessible from the open bays below.
-_BALCONY_FLANK_BLOCK_INSET = inch(4).feet
+_BALCONY_SISTER_HALF_FT = 10.0 / 12.0
+# Flanks: the rim plus two blocks tight to its inside face. Joists run E-W, so a block is
+# parallel to the rim; ``at`` is clamped into the field so the line is the post's own.
 _BALCONY_BACKING_EDGE_CLEARANCE = inch(1/16).feet
 _BALCONY_FLANK_STATIONS = [
-    ((_deck_x_w + _BALCONY_FLANK_BLOCK_INSET
-      if station.post[0] / 0.3048 < (_deck_x_w + _deck_x_e)/2  # post is metres, deck x feet
-      else _deck_x_e - _BALCONY_FLANK_BLOCK_INSET),
+    (_rim + _side * (_BALCONY_RIM_HALF_FT + (_k + 0.5) * _BALCONY_PLY_FT),
      min(_bal_y1 - _BALCONY_BACKING_EDGE_CLEARANCE,
          max(_bal_y0 + _BALCONY_BACKING_EDGE_CLEARANCE, station.post[1] / 0.3048)))
     for station in _BALCONY_MOUNT_LAYOUT
     if station.variant == "straight" and abs(station.faces[0].outward[0]) > 0.9
+    for _rim, _side in ([(_deck_x_w, 1)] if station.faces[0].outward[0] < 0
+                        else [(_deck_x_e, -1)])
+    for _k in (0, 1)
 ]
-
 
 # --- joist framing under the two decks (rendered members beneath the surface slabs) ---
 PORCH_JOISTS = FloorSystem(
@@ -2647,8 +2656,11 @@ BALCONY_JOISTS = FloorSystem(
                      # joists behind them stay bare KDAT: nothing sees a joist once the band
                      # and the fascia are on.
                      rim_material="post-paint-white", rim_member=_BALCONY_RIM_MEMBER,
-                     rim_end_extensions=(inch(0), inch(_END_JOIST_INSET_FT * 12
-                                                      + _BALCONY_REAR_RIM_OVERSAIL_IN)),
+                     # Front: the rim laps the edge joist's end, closing the corner the
+                     # Ultralox FM244390 wraps. Rear: the oversail, for end distance.
+                     rim_end_extensions=(inch(_END_JOIST_INSET_FT * 12),
+                                         inch(_END_JOIST_INSET_FT * 12
+                                              + _BALCONY_REAR_RIM_OVERSAIL_IN)),
                      bearing_refs=("BM-SG-BLW", "BM-SG-BLE")),
     # BLOCKING UNDER THE GUARD AND PORCH TRACKS; the centre front block also carries
     # the garden flood's underside box. The two heat-pump hosts that used to be here went to grade on 2026-09-02
@@ -2657,26 +2669,36 @@ BALCONY_JOISTS = FloorSystem(
     # surface: FS-SG-BALCONY's aluminium plank is the porch roof, and ~36 surface baseplates
     # would be the only holes in the one waterproof plane in this structure.
     #
-    # What a fascia bracket needs instead is something behind the rim. Ultralox's own
-    # fascia-mount instructions (the accepted basis under IRC R106/R301.1.3 — ESR-3485's
-    # fascia row is written for concrete, and no PE letter is needed to follow the
-    # manufacturer) call for four 5/16" x 4" through-bolts per bracket with washers and
-    # nuts, the bracket top 1/2" below the rim top, and a foot block mid-panel. The bolts
-    # cross the PVC fascia and the rim; the nuts land on the rim's inside face, which
-    # is reachable from the open joist bays below. A solid block between that rim and the
-    # first joist at each post is what stops the rim rolling under the R301.5 200 lb load
-    # at 42".
+    # What a fascia bracket needs instead is backing behind the rim. Ultralox's 2025 Product
+    # Guide p.37 (the accepted basis under IRC R106/R301.1.3; ESR-3485's fascia row is
+    # written for concrete) calls for four SD04964 5/16" x 6" structural screws per bracket
+    # into SG >= 0.50 blocking, the bracket top 1/2" below the rim top, and a foot block
+    # mid-panel. The 06/24 sheet's 4" through-bolts are superseded: they could not reach a
+    # block. The backing also stops the band rolling under R301.5's 200 lb top load.
     #
-    # ``plies=1``: ``_reinforcement_members`` lays ``range(plies - 1)`` sisters, i.e. NONE,
-    # and only the blocks. These inherit the deck's ``top_protection`` tape with every other
-    # framing top.
+    # Flank ``plies=1``: ``_reinforcement_members`` lays ``range(plies - 1)`` sisters, i.e.
+    # NONE, and only the blocks. Front ``plies=3``: two sisters on the edge joist, clipped
+    # to ``extent``, plus a block to the next joist. All inherit ``top_protection`` tape.
     reinforcements=(
         *(JoistReinforcement(
+            at=pt(ft(_gx), ft(_bal_y0 + 1.0 / 12.0)), plies=3,
+            extent=(ft(_gx - _BALCONY_SISTER_HALF_FT), ft(_gx + _BALCONY_SISTER_HALF_FT)),
+            source="screw backing behind an RL-SG-BALCONY front fascia bracket — the four "
+                   "SD04964 5/16\" x 6\" screws cross the edge joist into these two sisters")
+          for _gx in _BALCONY_FRONT_POSTS_FT),
+        # The rear end posts' upper screws land in the rim's 1 1/2" oversail, north of the
+        # last joist: one ply outboard of it, the whole field, flush with the rim ends. It
+        # is also what the rear base flashing caps.
+        JoistReinforcement(
+            at=pt(ft((_deck_x_w + _deck_x_e) / 2), ft(_bal_y1 + 1.0 / 12.0)), plies=2,
+            blocking=False,
+            source="north edge joist doubled into the rim oversail — backing for RL-SG-BALCONY's "
+                   "end-post screws and the bed for TR-SG-BASE-FLASH"),
+        *(JoistReinforcement(
             at=pt(ft(_gx), ft(_gy)), plies=1, blocking=True,
-            source="rollover backing behind an RL-SG-BALCONY fascia bracket — the four 5/16\" "
-                   "through-bolts land in this block so the rim cannot roll under the "
-                   "guard's 200 lb top load")
-        for _gx, _gy in (*_BALCONY_GUARD_STATIONS, *_BALCONY_FLANK_STATIONS)),
+            source="screw backing behind an RL-SG-BALCONY flank fascia bracket — one of two "
+                   "blocks tight to the rim that the four SD04964 5/16\" x 6\" screws reach")
+          for _gx, _gy in _BALCONY_FLANK_STATIONS),
         *(JoistReinforcement(
             at=pt(ft(_ex), ft(_ey)), plies=1, blocking=True,
             source="joist-bay closure under the porch enclosure's flank track — the "
@@ -2920,8 +2942,8 @@ BALCONY_FASCIA = Fascia(
            if index in (0, len(_GUARD_EDGE_PATH)-1) else 0))
          for index, point in enumerate(_GUARD_EDGE_PATH)], inch(0.5).meters)),
     # 11 1/4" of rim + the 1 1/2" plank, rounded up: 13". Ripped from PVC SHEET — cellular
-    # PVC trim board stops at 11 1/4" — and still one board, so the Ultralox brackets
-    # through-bolt fascia and rim exactly as before (bracket top 1/2" below the rim top).
+    # PVC trim board stops at 11 1/4" — and still one board, so the Ultralox brackets screw
+    # through fascia and rim into the backing (bracket top 1/2" below the rim top).
     top_elevation=_deck_top,
     depth=inch(math.ceil(_balcony_joist_depth_ft * 12.0 + SPEC.balcony_deck_thickness_in)),
     thickness=inch(1), material="PVC",
@@ -3019,11 +3041,35 @@ BALCONY_RUNNEL = Gutter(
 # `_SG_LEADER_X`, `_SG_LEADER_DIA_IN` and `_SG_LEADER_BOTTOM`, above, and it discharges
 # into `TR-SG-RUNNEL`.
 
-BALCONY_DRIP = Flashing(
-    uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,
-    top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(4),
-    material="metal-flat-sheet", host_ref="FS-SG-BALCONY",
-    section=FormedFlashingSection(drip=inch(_drip_depth_in)))
+# ** THE DRIP STOPS AT EVERY BRACKET (2026-11-05). ** Its 3" skirt ran through each front
+# bracket's flange. Now one piece per bay, field-notched and sealed at each bracket's front
+# leaf; the brackets still sit over TR-SG-APRON's upstand. The single run's uid SGFF01AAAA is
+# spent. A corner leaf runs from the jog to the wing's end, away from the corner.
+_mount = RAILING_EXT_ALUMINUM_FASCIA.fascia_mount
+_corner_leaf_ft = (_mount.corner_wing_length - _mount.pocket_width
+                   - _mount.wall_thickness).feet
+_BALCONY_FRONT_LEAVES_FT = sorted(
+    (_px - _mount.flange_width.feet / 2, _px + _mount.flange_width.feet / 2)
+    if _st.variant == "straight" else
+    tuple(sorted(_cx + _dir * _d for _d in (_mount.display_corner_jog.feet, _corner_leaf_ft)))
+    for _st in _BALCONY_MOUNT_LAYOUT
+    if any(_f.outward[1] < -0.9 for _f in _st.faces)
+    for _px in (_st.post[0] / 0.3048,)
+    for _dir in (1 if _px < (_deck_x_w + _deck_x_e) / 2 else -1,)
+    for _cx in (_px + _dir * RAILING_EXT_ALUMINUM_FASCIA.fascia_post_offset.feet,)
+)
+_DRIP_BAYS_FT = [(max(_deck_x_w, _a[1]), min(_deck_x_e, _b[0]))
+                 for _a, _b in zip(_BALCONY_FRONT_LEAVES_FT[:-1], _BALCONY_FRONT_LEAVES_FT[1:],
+                                   strict=True)]
+BALCONY_DRIP = [
+    Flashing(
+        uid=f"SGDP{_i + 1:02d}AAAA", tag=f"TR-SG-DRIP-{_i + 1}", kind=TrimKind.DRIP_FLASHING,
+        path=(pt(ft(_x0), _FRONT_PATH[0].y), pt(ft(_x1), _FRONT_PATH[0].y)),
+        top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(4),
+        material="metal-flat-sheet", host_ref="FS-SG-BALCONY",
+        section=FormedFlashingSection(drip=inch(_drip_depth_in)))
+    for _i, (_x0, _x1) in enumerate(_DRIP_BAYS_FT)
+]
 # The gutter apron (2026-10-31): a "counter" section — the upstand lies on the fascia face
 # (the brackets bolt over it), the 3/4" leg kicks out over the back sheet 1/2" above the
 # rim, falling 3/8" outboard, and the drip leg ends 1 3/8" inside the trough.
@@ -3208,5 +3254,5 @@ MAIN_ELEMENTS = [*MAIN_NODES, *LEDGERS, *LEDGER_ANCHORS, *LEDGER_HANGERS, PORCH_
                  STAIR_PAD, PORCH_STAIR, *PORCH_STAIR_RAILS]
 SECOND_ELEMENTS = [*SECOND_NODES, *BALCONY_BEAMS, *PILLARS,
                    BALCONY_JOISTS, *BALCONY_TIES, BALCONY_GUARD, BALCONY_FASCIA,
-                   BALCONY_GUTTER, BALCONY_LEADER, BALCONY_RUNNEL, BALCONY_DRIP, BALCONY_APRON,
+                   BALCONY_GUTTER, BALCONY_LEADER, BALCONY_RUNNEL, *BALCONY_DRIP, BALCONY_APRON,
                    *BALCONY_REAR_FLASH]

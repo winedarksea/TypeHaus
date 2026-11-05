@@ -135,12 +135,14 @@ def test_blocking_sits_at_the_load_not_at_a_bearing_line() -> None:
     assert all(abs(m.p0[1] - ft(4).meters) < 0.3 for m in blocks)
 
 
-def test_blocking_is_held_inside_the_joist_tips_so_it_clears_the_rim() -> None:
+def test_blocking_is_held_inside_the_joist_tips_tight_to_the_rim() -> None:
+    """The tips stop at the rim's inboard face (``floor_ends``), so a block clamped to a tip
+    sits against the rim rather than in it."""
     system = _system(pt(inch(18), ft(20)), plies=3)  # load out past the axis extent
     members = _reinforcement_members(system, system.joists, _lines(4), False,
                                      0.0, 6.0, -0.2, 0.0)
     blocks = [m for m in members if m.category == "blocking"]
-    assert all(m.p0[1] == pytest.approx(6.0 - PLY_WIDTH_M) for m in blocks)
+    assert all(m.p0[1] == pytest.approx(6.0 - PLY_WIDTH_M / 2) for m in blocks)
 
 
 def test_blocking_false_emits_plies_only() -> None:
@@ -205,8 +207,11 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     ** AND ONE MORE, NOT ON A DECK AT ALL. ** ``FS-M-WEST`` carries a single full-span ply
     under RM-M-BATH2's drop-in bath, the built half of plans/TODO.md's 60 psf item. It is the
     only sister left in the house, which is what the exact list below says.
+
+    ** FS-SG-BALCONY SISTERS AGAIN, FOR FASTENERS (2026-11-05). ** Its plies back the guard
+    brackets' 6" screws, not a bearing or bending limit.
     """
-    unsistered = {"FS-SG-BALCONY", "FS-SG-PORCH", "SL-BW-DECK"}
+    unsistered = {"FS-SG-PORCH", "SL-BW-DECK"}
     sisters = []
     for floor in catlin_model.floors:
         found = [m for m in floor.members if m.category == "sister_joist"]
@@ -215,9 +220,11 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     # Two additional full-span plies carry ST-S2A's departing-rim reactions on FS-S-EAST;
     # FS-M-EAST's two LVL plies are D-B-SUNKEN's flush band header (``extent``-clipped);
     # FS-M-NE's two are the doubled 316/332 trusses under the peninsula.
+    # FS-SG-BALCONY (2026-11-05): two 20" plies behind each front guard bracket and the
+    # doubled north edge joist, all fastener backing for RL-SG-BALCONY's 6" screws.
     assert sorted(tag for tag, _ in sisters) == [
         "FS-M-EAST", "FS-M-EAST", "FS-M-NE", "FS-M-NE", "FS-M-WEST", "FS-S-EAST",
-        "FS-S-EAST"]
+        "FS-S-EAST"] + ["FS-SG-BALCONY"] * 7
     # Full span, tip to tip: a sister that stops short carries nothing where the load is
     # (``resolve/floors.py::_reinforcement_members``). 17.79' and not the 18'-0" bearing grid
     # — the joist it doubles starts 1 3/4" in, behind the west rim board, and since decision
@@ -230,21 +237,20 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}
     assert sorted(key for key in rows if key[1] == "sister_joist") == [
         ("1.75x11.875 LVL", "sister_joist"), ("11.875 TJI 230", "sister_joist"),
-        ("11.875 floor truss", "sister_joist")]
+        ("11.875 floor truss", "sister_joist"), ("2x12:kdat", "sister_joist")]
 
 
 def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_model):
     """Every block on these two decks answers a named joint, and nothing else does.
 
-    ``FS-SG-BALCONY`` carries TWENTY-NINE, and they answer two different joints.
+    ``FS-SG-BALCONY`` carries THIRTY-FIVE, and they answer two different joints.
 
-    THREE are structural: one under each of RL-SG-BALCONY's south-leg guard posts (19'-6"
-    of front edge at <= 60" o.c. is four bays, three interior posts; the 21'-6" deck before
-    the 17'-0" court had four). That guard stays fascia-mounted because this plank is the
-    porch roof and carries no penetrations, and a fascia bracket through-bolts the rim,
-    which then needs something behind it so it cannot roll under R301.5's 200 lb at 42".
-    SIX further blocks brace the flank rims at their straight guard stations. They sit
-    behind the bolt tails, leaving the nuts accessible from below.
+    FIFTEEN back RL-SG-BALCONY's fascia brackets (2026-11-05): that guard stays
+    fascia-mounted because this plank is the porch roof and carries no penetrations, and
+    each bracket's four 6" SD04964 screws need 4 1/2" of wood behind the fascia. THREE run
+    from the front sister pack under each interior front post to the next joist. TWELVE are
+    the flank stations' pairs, tight to the rim's inside face, one bay each side of the
+    post's line (one bay at the two rear stations, against the field edge).
 
     TWENTY answer an **envelope** joint. The porch enclosure's two flank tracks run N-S at
     x = 10'-0"/26'-0", PERPENDICULAR to these joists, so the curtain plane crosses every bay
@@ -257,19 +263,17 @@ def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_mode
     each inner screw column of RL-SG-PORCH's five bases that the ledgers do not carry
     (2026-11-04), the balcony's inset pattern, since the porch joists run E-W with that leg.
 
-    Every entry on both decks is ``plies=1``: blocks and plies answer different limit
-    states — rollover and cross-grain bearing — and nothing in this house has the second one
-    (see ``test_no_catlin_deck_sisters_a_joist``). A stray ``plies=3`` anywhere here would
-    silently sister a joist and buy its lumber; the assertion below is what catches it.
+    Every porch entry is ``plies=1``. A stray ``plies=3`` there would silently sister a
+    joist and buy its lumber; the assertion below is what catches it. The balcony's plies
+    are fastener backing, pinned in ``test_no_deck_sisters_a_joist_and_one_floor_does``.
     """
     by_tag = {floor.tag: floor for floor in catlin_model.floors}
     deck_blocks = [m for m in by_tag["FS-SG-BALCONY"].members if m.category == "blocking"]
-    assert len(deck_blocks) == 29, len(deck_blocks)
+    assert len(deck_blocks) == 35, len(deck_blocks)
     porch_blocks = [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"]
     assert len(porch_blocks) == 8, len(porch_blocks)
-    for tag in ("FS-SG-BALCONY", "FS-SG-PORCH"):
-        assert [m for m in by_tag[tag].members
-                if m.category == "sister_joist"] == [], f"plies=1 must sister nothing ({tag})"
+    assert [m for m in by_tag["FS-SG-PORCH"].members
+            if m.category == "sister_joist"] == [], "plies=1 must sister nothing"
 
 
 def test_a_guard_block_authored_on_the_deck_edge_would_be_dropped(catlin_model):
@@ -287,4 +291,5 @@ def test_a_guard_block_authored_on_the_deck_edge_would_be_dropped(catlin_model):
                 if getattr(e, "tag", "") == "FS-SG-BALCONY"][0].reinforcements
     assert authored
     for reinforcement in authored:
-        assert min(ys) < reinforcement.at.xy_m[1] < max(ys), reinforcement.at.xy_m
+        if reinforcement.blocking:  # the doubled north edge joist lays no block
+            assert min(ys) < reinforcement.at.xy_m[1] < max(ys), reinforcement.at.xy_m

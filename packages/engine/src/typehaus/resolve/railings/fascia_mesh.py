@@ -2,7 +2,7 @@
 
 import math
 
-from shapely.geometry import Point, Polygon
+from shapely.geometry import LineString, Point, Polygon
 from shapely.ops import triangulate
 
 from typehaus.quantities import M_PER_IN
@@ -74,20 +74,25 @@ def washer(outer_radius, inner_radius, y, thickness):
     return GMesh(positions=tuple(positions), triangles=tuple(triangles))
 
 
-def bolt_mesh(spec, grip_in):
+def bolt_mesh(spec, grip_in=None):
+    """A through-bolt with its rear washer and nut at ``grip_in``; None = a screw, no tail."""
     diameter = spec.bolt_diameter.inches
     thickness = spec.display_washer_thickness.inches
     head_height = spec.display_head_height.inches
-    return combine_meshes(
+    parts = [
         cylinder(diameter / 2, -spec.bolt_length.inches, 0),
         washer(spec.washer_diameter.inches / 2, diameter / 2, 0, thickness),
         cylinder(spec.display_head_width.inches / math.sqrt(3), thickness,
                  thickness + head_height, 6),
-        washer(spec.rear_washer_diameter.inches / 2, diameter / 2,
-               -grip_in - thickness, thickness),
-        cylinder(spec.display_head_width.inches / math.sqrt(3),
-                 -grip_in - thickness - head_height, -grip_in - thickness, 6),
-    )
+    ]
+    if grip_in is not None:
+        parts += [
+            washer(spec.rear_washer_diameter.inches / 2, diameter / 2,
+                   -grip_in - thickness, thickness),
+            cylinder(spec.display_head_width.inches / math.sqrt(3),
+                     -grip_in - thickness - head_height, -grip_in - thickness, 6),
+        ]
+    return combine_meshes(*parts)
 
 
 def post_screw_mesh(spec, *, length_in=None):
@@ -110,6 +115,25 @@ def pocket_mesh(spec, corner=False):
     if corner:
         plates.append(box_mesh((-half-wall, -half-wall, bottom), (half+wall, -half, 0)))
     return combine_meshes(*plates)
+
+
+def outside_corner_mesh(spec, mount_a, mount_b, side):
+    """FM244390 in the first face's frame (x tangent, y outward, post at the origin): the
+    post's two outboard walls run full, its two inboard walls jog out at 45 deg to the
+    flanges' inner ends. ``mount_*`` are the mounting faces' offsets from the post along
+    their own outward; ``side`` is the second face's outward along x (+/-1)."""
+    half = spec.pocket_width.inches / 2
+    mid = spec.wall_thickness.inches / 2
+    jog = spec.display_corner_jog.inches
+    out = half + mid
+    # (along the first face's outward, along the second face's outward)
+    path = ((mount_a + mid, mount_b - jog), (mount_a + jog, -out), (out, -out), (out, out),
+            (-out, out), (-out, mount_b + jog), (mount_a - jog, mount_b + mid))
+    wall = LineString([(side * v, u) for u, v in path]).buffer(
+        mid, cap_style="flat", join_style="mitre")
+    ring = tuple((x, y, -spec.overall_height.inches)
+                 for x, y in tuple(wall.exterior.coords)[:-1])
+    return plate_mesh(ring, (0, 0, spec.overall_height.inches))
 
 
 def place(mesh, origin, tangent, outward):

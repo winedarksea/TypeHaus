@@ -171,12 +171,12 @@ def floor_ends(model: ResolvedModel, system: FloorSystem, storey_tag: str,
 
     Four cases, in the order they are tested: a **shared** line, where the tip is this
     deck's authored share of the plate (``JoistSpec.end_bearing``) or half of it, and no rim
-    fits; a **cantilever**, where the tip is the authored fascia line and nothing is seated;
-    a **ledger** end, where the joist stops at the ledger's inboard face in a hanger (no
-    seat, no rim: the ledger is the band); a **beam-borne** end, unchanged from the span
-    line because a beam's section straddles its own axis; and a **free end on a wall
-    plate**, where the rim goes flush with the framing face and the joists stop against
-    its inboard face.
+    fits; a **cantilever**, where the rim's axis is the authored fascia line, the tip its
+    inboard face, and nothing is seated; a **ledger** end, where the joist stops at the
+    ledger's inboard face in a hanger (no seat, no rim: the ledger is the band); a
+    **beam-borne** end, rim on the span line (a beam's section straddles its own axis) and
+    the tip at the rim's inboard face; and a **free end on a wall plate**, where the rim
+    goes flush with the framing face and the joists stop against its inboard face.
     """
     lines = {line.coord: line for line in bearing_lines(model, system.joists, boundaries, across)}
     authored = {ref: length.meters for ref, length in system.joists.end_bearing}
@@ -198,10 +198,11 @@ def floor_ends(model: ResolvedModel, system: FloorSystem, storey_tag: str,
             ends.append((tip, None, coord,
                          None if near is None else abs(near - tip), shared))
         elif cantilever:
-            # Nothing is seated here. The tip is the authored fascia line and the rim keeps
-            # its axis on it, which is where every deck in the model already draws its band.
-            tip = coord - sign * cantilever
-            ends.append((tip, tip, tip, None, shared))
+            # Nothing is seated here. The rim keeps its axis on the authored fascia line,
+            # where every deck in the model draws its band, and the joist stops against its
+            # inboard face rather than running half a rim into it.
+            line_at = coord - sign * cantilever
+            ends.append((line_at + sign * rim_thickness_m / 2.0, line_at, line_at, None, shared))
         elif (line is not None and structure is not None and line.refs
               and all(is_ledger(model.plan.by_tag(ref)) for ref in line.refs)):
             # Hung on a ledger: the joist is cut to the ledger's inboard face and the
@@ -210,9 +211,11 @@ def floor_ends(model: ResolvedModel, system: FloorSystem, storey_tag: str,
             ends.append((near, None, far, None, shared))
         elif structure is None or not (line and line.has_wall):
             # A beam-borne end: the joists land on the beam, whose own section straddles its
-            # axis. There is no plate face to run out to, so the span line stands unchanged.
-            ends.append((coord, coord, coord,
-                         None if near is None else abs(near - coord), shared))
+            # axis. The rim keeps its axis on the span line and the joist stops at its
+            # inboard face.
+            tip = coord + sign * rim_thickness_m / 2.0
+            ends.append((tip, coord, coord,
+                         None if near is None else abs(near - tip), shared))
         else:
             # A free end on a wall plate — the ordinary platform-framing detail. The rim's
             # outboard face is flush with the framing face (the sheathing runs down over it)

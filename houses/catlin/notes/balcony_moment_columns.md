@@ -726,13 +726,12 @@ rejected on the report, not on the price.
 - **RL-SG-BALCONY stays fascia mount.** `FS-SG-BALCONY`'s aluminium plank is the porch roof and
   carries **no penetrations at all** since the heat pumps went to grade. Surface posts would
   put ~36 holes through the one waterproof plane in this structure to save bracket money.
-  Brackets through-bolt the PVC fascia and the 2x8 rim per **Ultralox's own fascia-mount
-  instructions** — four 5/16" × 4" bolts with washers and nuts per bracket, bracket top 1/2"
-  below the rim top, a foot block mid-panel — with nuts on the rim's inside face, reachable
-  from the open joist bays below. Manufacturer's instructions are the accepted basis under
-  IRC R106 / R301.1.3; no PE letter. A solid block between the rim and the first joist at
-  each post stops the rim rolling under the 200 lb load, and is authored in
-  `FS-SG-BALCONY.reinforcements`.
+  Brackets screw through the PVC fascia and the 2x12 KDAT rim into 4 1/2" of SYP backing
+  per **Ultralox's 2025 Product Guide p.37** — four SD04964 5/16" × 6" structural screws
+  per bracket, bracket top 1/2" below the rim top, a foot block mid-panel. Manufacturer's
+  instructions are the accepted basis under IRC R106 / R301.1.3; no PE letter. The backing,
+  authored in `FS-SG-BALCONY.reinforcements`, also stops the rim rolling under the 200 lb
+  load (`notes/balcony_fascia_mounts.md`).
 
 ESR-3485's fascia-bracket row is written for **concrete**, which is why the wood-rim detail
 above comes from the manufacturer's instructions rather than from the report.

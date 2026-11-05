@@ -7637,3 +7637,39 @@ MN 1002.2; oracle `notes/vent_grade_basis.md` §6). `mep.trap_arm_length` is the
   1.5" drop. The bar's header rose to 3'-7" (6" over its 36" rim) and PR-A-STUBATH-VENT's low
   end with it; both hold ~0.1"/ft, under the house's 1/8", because the stack tee at 3'-9"
   caps them. A split into a graded riser plus an ungraded branch was tried and refused.
+
+## Balcony fascia guard on screws and backing (2026-11-05, geometry review C1 E9 + C2 E2)
+
+RL-SG-BALCONY's Ultralox fascia mount is now buildable as drawn. The 06/24 install sheet's
+5/16" x 4" through-bolts could not reach a block (bracket + fascia + rim + block ≥ 3.75"). The
+2025 Product Guide p.37 governs instead: four SD04964 5/16" x 6" structural screws per bracket
+into SG ≥ 0.50 backing. The engine walks each screw through the deck
+(`resolve/railings/fascia_backing.py`) and refuses one that misses its backing or, on a
+straight bracket, holds under 4D to the band's end. Basis and hand check:
+`notes/balcony_fascia_mounts.md`.
+
+- **Rim:** `2x12:kdat`, painted, replacing the non-stock 1.25x11.25. The joist now stops at
+  the rim's inner face at cantilevered and beam-borne ends (F3-108, `resolve/floor_ends.py`),
+  so the stick is 1 1/2" shorter. That rule is house-wide: FS-BW-FLOOR's four beam-borne
+  joists lose 3/4" a side too. Post spacing is 60 1/4", which keeps four front bays.
+- **Backing:**
+  - Flanks: two blocks tight to the rim at each straight station.
+  - Front: two 20" sisters inboard of each interior post. `JoistReinforcement` packs now share
+    plies only within one `extent`.
+  - North edge joist: doubled into the 1 1/2" rim oversail, which is lengthened from 1/2" so
+    the end posts' rear screws hold 1 3/8" to the cut end. The movement gap to the cladding is
+    1 3/4" (was 2 3/4").
+- **Corners** (owner): FM244390 is the maker's own corner detail. It is drawn to the product
+  drawing, with the outboard walls full, the inboard walls jogging 45° to the flanges, and the
+  post corner open. Its screws are graded for reaching wood, not for end distance. The flank
+  rims now lap the edge joist's end.
+- **Height:** the stock 48" tube gives 40 1/8" over the plank, derived from
+  `post_tube_length` (≥ R312.1.2's 36"). The owner had no height preference. The resolver
+  refuses a post longer than the tube.
+- **Drip:** TR-SG-DRIP is four pieces, notched at each bracket's front leaf (uid SGFF01AAAA is
+  spent).
+- **Rejected:**
+  - A house-wide railing swap. Avant saves ≈$0.6–1.3k of ≈$10k on a shorter warranty, and
+    36" panels save ≈$200–400.
+  - Through-bolts with relieved fascia.
+- **Kept:** the aluminium dry-deck. Its price research is noted in `prices.toml`.

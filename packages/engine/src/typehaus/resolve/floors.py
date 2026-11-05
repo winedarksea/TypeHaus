@@ -379,13 +379,13 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
     through the sisters the first entry had laid (``structural.member_interference``, two
     FAILs). ``laid`` is what makes the second entry see the first: it tops the cluster up to
     the deepest ``plies`` any entry on that line asks for, and every entry's blocks are cut
-    against the finished cluster.
+    against the finished cluster. Plies clipped to different ``extent``s are separate packs.
     """
     out: list[FramedMember] = []
     if not positions:
         return out
-    #: joist line index -> (cluster lo, cluster hi, sisters laid, the side they went)
-    laid: dict[int, tuple[float, float, int, float]] = {}
+    #: (joist line index, ply extent) -> (cluster lo, cluster hi, sisters laid, their side)
+    laid: dict[tuple, tuple[float, float, int, float]] = {}
     widths = {position: cross_section(spec.member).width_m for position in positions}
     for member in field_members or ():
         position = member.p0[1 if along_x else 0]
@@ -400,21 +400,22 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
         ply_width = cross_section(member).width_m
         host_width = widths[perp]
         plies = max(int(reinforcement.plies), 1)
-        # The extra plies go on the side the load is on, so the cluster straddles it rather
-        # than leaving the post overhanging its own reinforcement. A load exactly on the
-        # line is arbitrary; +1 keeps it deterministic.
-        existing_lo, existing_hi, existing, existing_sign = laid.get(
-            line, (perp - host_width / 2.0, perp + host_width / 2.0, 0, 0.0))
-        # The first entry on a line picks the side (toward the load); later ones extend the
-        # pack that is already there rather than starting a second one on the other face.
-        sign = existing_sign or (1.0 if perp_at >= perp else -1.0)
-        normal = (0.0, sign) if along_x else (sign, 0.0)
         # An authored ``extent`` (a flush band header) clips the plies to its own stations.
         ply_lo, ply_hi = axis_lo, axis_hi
         extent = getattr(reinforcement, "extent", None)
         if extent is not None:
             ends = sorted(length.meters for length in extent)
             ply_lo, ply_hi = max(axis_lo, ends[0]), min(axis_hi, ends[1])
+        key = (line, round(ply_lo, 6), round(ply_hi, 6))
+        # The extra plies go on the side the load is on, so the cluster straddles it rather
+        # than leaving the post overhanging its own reinforcement. A load exactly on the
+        # line is arbitrary; +1 keeps it deterministic.
+        existing_lo, existing_hi, existing, existing_sign = laid.get(
+            key, (perp - host_width / 2.0, perp + host_width / 2.0, 0, 0.0))
+        # The first entry on a line picks the side (toward the load); later ones extend the
+        # pack that is already there rather than starting a second one on the other face.
+        sign = existing_sign or (1.0 if perp_at >= perp else -1.0)
+        normal = (0.0, sign) if along_x else (sign, 0.0)
         if along_x:
             p0, p1 = (ply_lo, perp), (ply_hi, perp)
         else:
@@ -438,12 +439,12 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
         spread = sign * sisters * ply_width
         cluster_lo = min(existing_lo, perp - host_width / 2.0 + min(0.0, spread))
         cluster_hi = max(existing_hi, perp + host_width / 2.0 + max(0.0, spread))
-        laid[line] = (cluster_lo, cluster_hi, sisters, sign)
+        laid[key] = (cluster_lo, cluster_hi, sisters, sign)
         if not reinforcement.blocking:
             continue
-        # Blocks sit at the load, held a full member width inside the joist tips so they
-        # clear the rim board riding on those tips.
-        block_axis = min(max(axis_at, ply_lo + ply_width), ply_hi - ply_width)
+        # Blocks sit at the load, held inside the joist tips, which stop at the rim's
+        # inboard face: a block at a tip is tight to the rim, not in it.
+        block_axis = min(max(axis_at, ply_lo + ply_width / 2), ply_hi - ply_width / 2)
         for key, neighbour in (("lo", line - 1), ("hi", line + 1)):
             if not 0 <= neighbour < len(positions):
                 continue  # the cluster is on the field edge — nothing to block against

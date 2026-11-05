@@ -738,9 +738,9 @@ def test_balcony_gutter_apron_carries_the_drip_into_the_trough(catlin_model) -> 
         low = min(z for _x, _y, z in mesh.positions)
         return low, [y for _x, y, z in mesh.positions if abs(z - low) < 1e-9]
 
-    drip = _solid(catlin_model, "TR-SG-DRIP-1")
+    drip = _solid(catlin_model, "TR-SG-DRIP-1-1")
     apron = _solid(catlin_model, "TR-SG-APRON-1")
-    drip_low, drip_ys = foot("TR-SG-DRIP-1")
+    drip_low, drip_ys = foot("TR-SG-DRIP-1-1")
     apron_low, apron_ys = foot("TR-SG-APRON-1")
     assert apron.z1_m > drip_low, "the apron's upstand laps up behind the drip"
     assert apron_low < rim, "and its turn-down ends inside the trough"

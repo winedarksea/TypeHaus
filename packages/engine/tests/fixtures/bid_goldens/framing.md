@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.2  
 **Model hash:** b1a807f3d979f9bf  
-**Lines:** 204
+**Lines:** 203
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -18,7 +18,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade — blocking (0.75x3.5:poplar-trim-paint) | 16 | LF ordered | 14 pcs, 15.0 LF cut | building |
 | 1.0x3.5 SPF framing lumber — blocking (1.0x3.5:spf) | 8 | LF ordered | 1 pcs, 2.3 LF cut | building |
-| 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | 20 | LF ordered | 2 pcs, 19.3 LF cut | building |
 | 1.25x11.875 rim — rim board (1.25x11.875 rim) | 148 | LF ordered | 6 pcs, 143.6 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
 | 1.75x11.875 LVL — sister joist, trimmer (1.75x11.875 LVL) | 200 | LF ordered | 18 pcs, 187.0 LF cut | building |
@@ -40,7 +39,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 336 | LF ordered | 38 pcs, 313.2 LF cut | building |
 | 2x10 — hanger board (2x10) | 58 | LF ordered | 9 pcs, 40.9 LF cut | building |
 | 2x10 SPF framing lumber — blocking, ceiling furring (2x10:spf) | 80 | LF ordered | 30 pcs, 72.6 LF cut | building |
-| 2x12 — blocking, joist (2x12:kdat) | 432 | LF ordered | 57 pcs, 396.5 LF cut | building |
+| 2x12 — blocking, joist, sister joist (2x12:kdat) | 476 | LF ordered | 70 pcs, 428.0 LF cut | building |
+| 2x12 White-painted PT lumber — rim board (2x12:kdat:post-paint-white) | 20 | LF ordered | 2 pcs, 19.6 LF cut | building |
 | 2x12 SPF framing lumber — blocking (2x12:spf) | 16 | LF ordered | 12 pcs, 15.2 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 260 | LF ordered | 77 pcs, 209.2 LF cut | building |
 | 2x3 — corner stud, plate, stud (2x3) | 48 | LF ordered | 12 pcs, 28.0 LF cut | building |
@@ -55,7 +55,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Laminated strand lumber — corner stud, cripple stud, door blocking, jack stud, king stud, stud (2x6:lsl) | 1,734 | LF ordered | 230 pcs, 1470.4 LF cut | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:oak-8q) | 32 | LF ordered | 21 pcs, 23.9 LF cut | building |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | 80 | LF ordered | 65 pcs, 73.7 LF cut | building |
-| 2x8 — joist, landing framing, plate, rim board (2x8) | 320 | LF ordered | 69 pcs, 274.4 LF cut | building |
+| 2x8 — joist, landing framing, plate, rim board (2x8) | 320 | LF ordered | 69 pcs, 273.9 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 296 | LF ordered | 286 pcs, 287.0 LF cut | building |
 | 3-2x12 — joist (3-2x12:kdat) | 40 | LF ordered | 2 pcs, 33.5 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 360 | LF ordered | 1157 pcs, 337.5 LF cut | building |
@@ -161,7 +161,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | PROD-SCHLUTER-SCHIENE — aluminium, height to the tile | 3 | ea |  | second |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375) | 3,138 | ea |  | building |
 | S-5-N Mini nail-strip seam clamp | 24 | ea |  | building |
-| 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN) | 686 | ea |  | building |
+| 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN) | 764 | ea |  | building |
 | 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN) | 73 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | 4 | ea |  | basement |
 | Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112) | 1,368 | ea |  | building |
@@ -209,8 +209,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | butyl-tape, 1 1/2" on beam (butyl-tape) | 18.1 | LF |  | main |
-| butyl-tape, 1 1/4" on deck (butyl-tape) | 19.3 | LF |  | second |
-| butyl-tape, 1 1/2" on deck (butyl-tape) | 427.1 | LF |  | main, second |
+| butyl-tape, 1 1/2" on deck (butyl-tape) | 448.3 | LF |  | main, second |
 | butyl-tape, 4 1/2" on deck (butyl-tape) | 33.5 | LF |  | main |
 | butyl-tape, 1 1/2" on stair (butyl-tape) | 65.7 | LF |  | main |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 4.5 | LF |  | main |
@@ -287,7 +286,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade — blocking (0.75x3.5:poplar-trim-paint) | — |
 | 1.0x3.5 SPF framing lumber — blocking (1.0x3.5:spf) | — |
-| 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | — |
 | 1.25x11.875 rim — rim board (1.25x11.875 rim) | — |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | — |
 | 1.75x11.875 LVL — sister joist, trimmer (1.75x11.875 LVL) | — |
@@ -309,7 +307,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | — |
 | 2x10 — hanger board (2x10) | — |
 | 2x10 SPF framing lumber — blocking, ceiling furring (2x10:spf) | — |
-| 2x12 — blocking, joist (2x12:kdat) | — |
+| 2x12 — blocking, joist, sister joist (2x12:kdat) | — |
+| 2x12 White-painted PT lumber — rim board (2x12:kdat:post-paint-white) | — |
 | 2x12 SPF framing lumber — blocking (2x12:spf) | — |
 | 2x2 — blocking, plate, stud (2x2) | — |
 | 2x3 — corner stud, plate, stud (2x3) | — |
@@ -453,7 +452,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — POST_KDAT (column:POST_KDAT) | PT-BW-CNW, PT-BW-CW |
 | Column — POST_KDAT_WRAPPED_PVC (column:POST_KDAT_WRAPPED_PVC) | PT-BW-RE, PT-BW-RNE |
 | butyl-tape, 1 1/2" on beam (butyl-tape) | BM-SG-LDGE, BM-SG-LDGW |
-| butyl-tape, 1 1/4" on deck (butyl-tape) | FS-SG-BALCONY |
 | butyl-tape, 1 1/2" on deck (butyl-tape) | FS-BW-FLOOR, FS-SG-BALCONY, FS-SG-PORCH |
 | butyl-tape, 4 1/2" on deck (butyl-tape) | FS-SG-PORCH |
 | butyl-tape, 1 1/2" on stair (butyl-tape) | ST-G-SERVICE, ST-SG-PORCH |

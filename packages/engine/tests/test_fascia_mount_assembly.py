@@ -20,7 +20,9 @@ from typehaus.takeoff.railings import railing_takeoff
 
 
 def _guard(path):
+    # The stock 48" tube with a 2" drop: 48 - 6 + 1/8 - 2 = 40 1/8" of guard.
     return railing(type_ref=PRODUCT.tag, path=tuple(pt(m(x), m(y)) for x, y in path),
+                   height=inch(40.125),
                    fascia_face_offset=inch(1), fascia_bracket_drop=inch(2),
                    infill="balusters", baluster_spacing=inch(4))
 
@@ -75,11 +77,11 @@ def test_mounting_flange_has_open_holes_not_a_solid_envelope():
     assert any(p.covers(Point(0, inch(-2).meters)) for p in caps)
 
 
-def test_straight_mount_has_four_full_length_bolts_on_the_catalog_pattern():
+def test_straight_mount_has_four_full_length_screws_on_the_catalog_pattern():
     guard = _guard([(0, 0), (2, 0)])
     model = resolve_railings([guard], types=[PRODUCT])
     bolts = next(s.body_mesh for s in model.solids if s.tag.endswith("FASCIA-BOLTS1"))
-    # Shaft tips are behind every washer/nut. Read their circles from the emitted mesh,
+    # Screw tips are the deepest points. Read their circles from the emitted mesh,
     # rather than re-running the assembly's hole loop.
     tip_y = max(p[1] for p in bolts.positions)
     tips = {(round(x, 9), round(z, 9)) for x, y, z in bolts.positions if abs(y-tip_y) < 1e-9}
@@ -137,7 +139,7 @@ def test_balcony_mounts_follow_deck_and_preserve_order_quantities(catlin_model_r
     counter = model.plan.by_tag("TR-SG-COUNTER-FLASH-W")
     house_face_y = counter.path[0].y.meters + counter.thickness.meters/2
     north_edge = max(y for _x, y in deck.deck_outline)
-    assert all(member.p1[1] == pytest.approx(north_edge + inch(0.5).meters)
+    assert all(member.p1[1] == pytest.approx(north_edge + inch(1.5).meters)
                for member in deck.members if member.category == "rim")
     for index in (1, 9):
         post = solids[f"{guard.tag}-POST{index}"]
@@ -148,28 +150,9 @@ def test_balcony_mounts_follow_deck_and_preserve_order_quantities(catlin_model_r
         walking_z = surface.height_at(station.post)
         assert mount.z1_m == pytest.approx(walking_z - guard.fascia_bracket_drop.meters)
         assert post.z0_m == pytest.approx(mount.z0_m + spec.insert_thickness.meters)
-        assert post.z1_m - walking_z == pytest.approx(inch(42).meters)
-        # Every rear washer fits on its actual member, including both corner faces.
-        from typehaus.resolve.framing.profiles import cross_section
-        bolts = solids[f"{guard.tag}-FASCIA-BOLTS{index}"].body_mesh
-        for face in station.faces:
-            candidates = []
-            for member in deck.members:
-                run = math.dist(member.p0, member.p1)
-                axis = tuple((member.p1[i]-member.p0[i])/run for i in range(2))
-                if member.category in ("rim", "joist") and abs(sum(
-                        axis[i]*face.outward[i] for i in range(2))) < 1e-8:
-                    distance = abs(sum((member.p0[i]-face.origin[i])*face.outward[i]
-                                       for i in range(2)))
-                    candidates.append((distance, member, axis, run))
-            _distance, member, axis, run = min(candidates, key=lambda item: item[0])
-            half = cross_section(member.profile).width_m/2
-            rear_face = [p for p in bolts.positions if abs(sum(
-                (p[i]-member.p0[i])*face.outward[i] for i in range(2))+half) < 1e-8]
-            assert rear_face, mount.tag
-            for point in rear_face:
-                along = sum((point[i]-member.p0[i])*axis[i] for i in range(2))
-                assert -1e-8 <= along <= run+1e-8, (mount.tag, member.child_key)
+        assert post.z1_m - walking_z == pytest.approx(guard.height.meters)
+        # The stock 48" tube, uncut: the guard height is what it gives.
+        assert post.z1_m - post.z0_m == pytest.approx(spec.post_tube_length.meters)
     assert mounts[0].z1_m > mounts[2].z1_m + inch(2).meters
     gutter = model.plan.by_tag("TR-SG-GUTTER")
     assert min(s.z0_m for s in mounts) - gutter.top_elevation.meters == pytest.approx(
@@ -195,11 +178,11 @@ def test_balcony_fascia_tracks_rim_and_foot_fasteners_stay_below_deck(catlin_mod
     # The supporting board is outside the west rim, rather than embedded in it.
     west = next(r for r in deck.members if r.child_key == "rim-0")
     assert max(x for x, _y in boards[0].outline) == pytest.approx(
-        west.p0[0] - inch(1.25).meters/2)
+        west.p0[0] - inch(1.5).meters/2)
     assert not deck.penetrations
     from typehaus.resolve.framing.profiles import cross_section
 
-    # Roll restraints must leave the bolt tails and wrench access outside the wood.
+    # Every straight flank bracket's screws bite the blocks behind its rim.
     blocking = []
     for member in deck.members:
         if member.category != "blocking":
@@ -208,12 +191,11 @@ def test_balcony_fascia_tracks_rim_and_foot_fasteners_stay_below_deck(catlin_mod
         from typehaus.resolve.geometry import rect_between
         blocking.append(Polygon(rect_between(member.p0, member.p1,
                                               -profile.width_m/2, profile.width_m/2)))
-    for solid in model.solids:
-        if solid.host_ref != "RL-SG-BALCONY" or "FASCIA-BOLTS" not in solid.tag:
-            continue
-        mesh = solid.body_mesh
-        assert not any(Polygon([mesh.positions[i][:2] for i in triangle]).intersection(
-            block).area > 1e-10 for triangle in mesh.triangles for block in blocking), solid.tag
+    for index in (2, 8):
+        mesh = next(s.body_mesh for s in model.solids
+                    if s.tag == f"RL-SG-BALCONY-FASCIA-BOLTS{index}")
+        assert any(Polygon([mesh.positions[i][:2] for i in triangle]).intersection(
+            block).area > 1e-10 for triangle in mesh.triangles for block in blocking), index
     deck_plan = Polygon(deck.deck_outline)
     for solid in model.solids:
         if (solid.host_ref != "RL-SG-BALCONY" or solid.body_mesh is None
@@ -265,3 +247,25 @@ def test_mount_meshes_survive_json_geometry_ir_and_ifc(catlin_model_ro):
     served = next(f for f in payload["floors"] if f["tag"] == floor.tag)
     assert served["deck_plane"]["gradient"] == list(floor.deck_plane.gradient)
     assert served["deck_z0_m"] == floor.deck_z0_m
+
+
+def test_a_screw_whose_block_stands_off_the_rim_misses_its_backing():
+    """A 6" screw needs plies contiguous with the band; a block 1" off it is no backing."""
+    from typehaus.resolve.model import FramedMember
+    from typehaus.resolve.railings.fascia_backing import check_screw
+    from typehaus.resolve.railings.fascia_layout import MountingFace
+
+    spec = PRODUCT.fascia_mount
+    rim = FramedMember("D", "rim-0", "rim", "2x12", (0, -1), (0, 1), 0, 0.3, 2)
+
+    def block(gap_in, key):
+        x = inch(0.75 + gap_in + 0.75).meters
+        return FramedMember("D", key, "blocking", "2x12", (x, -0.2), (x, 0.2), 0, 0.3, 0.4)
+
+    face = MountingFace(origin=(-inch(1).meters, 0), tangent=(0, -1), outward=(-1, 0))
+    head = (-inch(2).meters, 0)  # bracket face: 1/4" + 1" PVC + 3/4" to the rim axis
+    tight = SimpleNamespace(members=[rim, block(0, "a"), block(1.5, "b")])
+    check_screw(tight, rim, face, head, 0.1, spec, "RL-T")
+    for loose in ([rim, block(1, "a"), block(2.5, "b")], [rim]):
+        with pytest.raises(ValueError, match="misses its backing"):
+            check_screw(SimpleNamespace(members=loose), rim, face, head, 0.1, spec, "RL-T")

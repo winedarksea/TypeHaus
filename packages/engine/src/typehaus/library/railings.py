@@ -29,11 +29,17 @@ _SPACING = ("ESR-3485 Table 1 (IRC): 91.313\" max post spacing inside face to in
             "(Menards 1717812), 30-40 deg, 55.68\" max c/c at 37 deg measured in plan "
             "(Williams Picket Panel Planner p.1), ~59.3\" at 31.7 deg")
 #: Ultralox 3" Fascia Mount Post & Bracket (straight / inside / outside corner): four
-#: 5/16" x 4" bolts, bracket top 1/2" below the rim, double blocking. Ultralox dealers only.
+#: SD04964 5/16" x 6" structural screws into SG >= 0.50 backing (2025 Product Guide p.37,
+#: superseding the 06/24 sheet's 4" bolts), bracket top 1/2" below the rim, 48" tube.
 _FASCIA_BRACKET = ("Ultralox 3\" Fascia Mount Post & Bracket (straight / inside / outside "
-                   "corner; Ultralox dealer, not Menards): 4 x 5/16\" x 4\" bolts, top 1/2\" "
-                   "below the rim, double blocking behind. ESR-3485's fascia row (Fig. 10) "
-                   "covers concrete only; Ultralox's fascia instructions are the wood basis")
+                   "corner; Ultralox dealer, not Menards): 4 x SD04964 5/16\" x 6\" "
+                   "structural screws into SG >= 0.50 blocking, top 1/2\" below the rim, "
+                   "48\" post tube cut to fit (2025 Product Guide p.37; the 06/24 install "
+                   "sheet's 4\" bolts are superseded). Bought beside each bracket: the post "
+                   "kit with cap, the bracket screws, self-drilling post screws and the "
+                   "post-bottom plug. Corner brackets pair with straight brackets across each "
+                   "panel. ESR-3485's fascia row (Fig. 10) covers concrete only; Ultralox's "
+                   "guide is the wood basis")
 
 WILLIAMS_COLONIAL_42_BLACK = Product(
     tag="PROD-WILLIAMS-CP262406B", brand="Williams Architectural Products",
@@ -60,8 +66,10 @@ ULTRALOX_3_INCH_FASCIA_MOUNT = FasciaMountSpec(
     overall_height=inch(6), flange_height=inch(5), flange_width=inch(5.64),
     wall_thickness=inch(0.25), corner_wing_length=inch(5.966),
     inside_corner_envelope=inch(4.286), display_corner_hole_inset=inch(0.4375),
+    display_corner_jog=inch(0.875),
     mounting_hole_spacing=(inch(4.63), inch(4)), mounting_hole_top_drop=inch(0.5),
-    bolt_diameter=inch(5 / 16), bolt_length=inch(4),
+    fastener="wood_screw", fastener_product="SD04964",
+    bolt_diameter=inch(5 / 16), bolt_length=inch(6), post_tube_length=inch(48),
     post_screw_diameter=inch(0.242), post_screw_length=inch(1),
     washer_diameter=inch(0.6875), rear_washer_diameter=inch(0.6875),
     display_washer_thickness=inch(0.0625), display_head_width=inch(0.5),
@@ -71,9 +79,14 @@ ULTRALOX_3_INCH_FASCIA_MOUNT = FasciaMountSpec(
     display_foot_block_thickness=inch(0.125), bottom_clearance=inch(3),
     source="Ultralox 2025 product guide: FM044300 5.64 x 3.036 x 6; FM244390 "
            "5.966 x 5.966 x 6. ESR-3485 Fig.10: 1/4 wall, 5 inch mounting flange, "
-           "4.63 x 4 mounting holes. 06/24 fascia instructions: four 5/16 x 4 bolts; "
-           "post screw text says 1 inch, figure says 1.5: use 1 inch per ESR Fig.10. "
-           "Head/washer thickness, corner-hole inset, insert and foot-block contours "
+           "4.63 x 4 mounting holes. Guide p.37 (governs): four SD04964 5/16 x 6 "
+           "structural screws into SG >= 0.50 blocking; 48 inch tube for the 42 inch "
+           "system, cut to fit, post bottom flush with the bracket bottom. The 06/24 "
+           "sheet's 5/16 x 4 bolts are superseded. Post screw text says 1 inch, figure "
+           "says 1.5: use 1 inch per ESR Fig.10. "
+           "FM244390 drawing: outboard walls full, inboard walls jog 45 deg to the "
+           "flanges, post corner open. "
+           "Head/washer thickness, corner-hole inset and jog, insert and foot-block contours "
            "are illustrative. "
            "Shallow-slope compatibility remains an unverified product assumption.",
 )

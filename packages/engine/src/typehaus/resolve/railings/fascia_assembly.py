@@ -7,9 +7,11 @@ from typehaus.resolve.connector_geometry.mesh import box_mesh, combine_meshes, t
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import square
 from typehaus.resolve.model import ResolvedSolid
+from typehaus.resolve.railings.fascia_backing import band_behind, check_screw
 from typehaus.resolve.railings.fascia_layout import fascia_deck, fascia_stations
 from typehaus.resolve.railings.fascia_mesh import (
     bolt_mesh,
+    outside_corner_mesh,
     pierced_plate,
     place,
     pocket_mesh,
@@ -42,29 +44,26 @@ def emit_fascia_assembly(model, railing, storey, surface, parts, spec, shared):
         bottom = top - spec.overall_height.meters
         first = station.faces[0]
         origin = (*station.post, top)
-        shell = place(pocket_mesh(spec, station.variant != "straight"), origin,
-                      first.tangent, first.outward)
+        jog = 0.0
+        if station.variant == "outside_corner":
+            second = station.faces[1]
+            jog = spec.display_corner_jog.inches
+            offsets = [sum((face.origin[i]-station.post[i])*face.outward[i] for i in range(2))
+                       / M_PER_IN for face in station.faces]
+            side = 1 if sum(second.outward[i]*first.tangent[i] for i in range(2)) > 0 else -1
+            body = outside_corner_mesh(spec, *offsets, side)
+        else:
+            body = pocket_mesh(spec, station.variant != "straight")
+        shell = place(body, origin, first.tangent, first.outward)
         leaves, bolts, screws = [shell], [], []
         for face_index, face in enumerate(station.faces):
             grip = thickness + (fascia.thickness.inches if fascia else 0)
+            band = None
             if deck is not None:
-                # Only a member parallel to this face is its band; a joist extending
-                # away from it cannot supply a reachable back face for a through-bolt.
-                candidates = []
-                for member in deck.members:
-                    if member.category not in ("rim", "joist"):
-                        continue
-                    dx, dy = member.p1[0]-member.p0[0], member.p1[1]-member.p0[1]
-                    length = (dx*dx+dy*dy)**0.5
-                    if length and abs(dx*face.outward[0]+dy*face.outward[1])/length < 1e-8:
-                        distance = abs(sum((member.p0[i]-face.origin[i])*face.outward[i]
-                                           for i in range(2)))
-                        candidates.append((distance, cross_section(member.profile).width_m))
-                if not candidates:
-                    raise ValueError(f"{railing.tag}: no rim behind fascia mounting face")
-                distance, width_m = min(candidates)
-                grip = thickness + (distance + width_m/2) / M_PER_IN
-            if grip + spec.display_head_height.inches >= spec.bolt_length.inches:
+                distance, band = band_behind(deck, face, railing.tag)
+                grip = thickness + (distance + cross_section(band.profile).width_m/2) / M_PER_IN
+            if (spec.fastener == "through_bolt"
+                    and grip + spec.display_head_height.inches >= spec.bolt_length.inches):
                 raise ValueError(f"{railing.tag}: fascia bolt too short for mounting stack")
             if station.variant == "straight":
                 width = spec.flange_width.inches
@@ -79,8 +78,8 @@ def emit_fascia_assembly(model, railing, storey, surface, parts, spec, shared):
                     direction *= -1
                 envelope = (spec.corner_wing_length.inches if station.variant == "outside_corner"
                             else spec.inside_corner_envelope.inches)
-                width = envelope - 2*half - thickness
-                shift = direction * (half + width / 2) * M_PER_IN
+                width = envelope - 2*half - thickness - jog
+                shift = direction * (half + jog + width / 2) * M_PER_IN
                 leaf_origin = tuple(face.origin[i] + face.tangent[i] * shift for i in range(2))
                 along = (direction * (width/2-spec.display_corner_hole_inset.inches),)
             holes = [(x, -spec.mounting_hole_top_drop.inches - z,
@@ -93,8 +92,15 @@ def emit_fascia_assembly(model, railing, storey, surface, parts, spec, shared):
                                + face.outward[0] * thickness * M_PER_IN,
                                leaf_origin[1] + face.tangent[1] * x * M_PER_IN
                                + face.outward[1] * thickness * M_PER_IN, top + z * M_PER_IN)
-                bolts.append(place(bolt_mesh(spec, grip), bolt_origin,
-                                   face.tangent, face.outward))
+                if spec.fastener == "wood_screw":
+                    if band is not None:
+                        check_screw(deck, band, face, bolt_origin[:2], bolt_origin[2],
+                                    spec, railing.tag, corner=station.variant != "straight")
+                    bolts.append(place(bolt_mesh(spec), bolt_origin, face.tangent,
+                                       face.outward))
+                else:
+                    bolts.append(place(bolt_mesh(spec, grip), bolt_origin,
+                                       face.tangent, face.outward))
         # Two screws on each side of the pocket, through the shell into the post tube.
         for side in (-1, 1):
             for fraction in (0.25, 0.75):
@@ -119,10 +125,13 @@ def emit_fascia_assembly(model, railing, storey, surface, parts, spec, shared):
                     station.post[1] + first.tangent[1]*x + first.outward[1]*y)
                    for x, y in square(0, 0, post_half, post_half)]
         corners.sort(key=lambda p: math.atan2(p[1]-station.post[1], p[0]-station.post[0]))
+        z0, z1 = bottom + spec.insert_thickness.meters, walking_z + railing.height.meters
+        # Height stays authored: a post the stock tube cannot cut to is refused, not shortened.
+        if z1 - z0 > spec.post_tube_length.meters + 1e-6:
+            raise ValueError(f"{railing.tag}: post longer than stock tube")
         model.solids.append(ResolvedSolid(
             uid=f"{railing.uid}-p{index:02d}", tag=f"{railing.tag}-POST{index + 1}",
-            storey=storey, category="railing", outline=corners,
-            z0_m=bottom + spec.insert_thickness.meters, z1_m=walking_z + railing.height.meters,
+            storey=storey, category="railing", outline=corners, z0_m=z0, z1_m=z1,
             assembly=railing.assembly, material=parts.post_material,
         ))
     _emit_foot_blocks(model, railing, storey, stations, surface, parts, spec)
