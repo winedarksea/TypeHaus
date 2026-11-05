@@ -1,6 +1,6 @@
 # haus: editable
 # Basement — cast concrete walkout box, 18' center grid, sauna, stair (WP3.1).
-# The perimeter is 8" except the east wall, which is 12" because SL-M-DECK lands on it
+# The perimeter is 8" except the east wall, which is 12" for the fireplace brick wythe
 # (see the WALLS header below). South wall is the walkout side facing the sunken garden.
 # Perimeter walls align on the concrete exterior face so the 4" of exterior XPS stacks
 # directly under the framed wall's 4" polyiso+EPS (#43 control-layer continuity) — which
@@ -98,7 +98,7 @@ from typehaus import (
 #     a 3'-5 1/16" stair flight.
 #
 # Nothing on the x=18' bearing grid moved and no concrete wall moved; W-B-CS2, W-B-CN and
-# W-B-CN2 stay pours because they carry SL-M-DECK.
+# W-B-CN2 were pours then; they are framed since 2026-11-01 (decision #112, see below).
 #
 # **x=4'-8" and not the 5'-0" the plan was drawn at**, for one measured reason, and it is
 # recorded because it is the trap anyone re-splitting this wall will fall into:
@@ -351,19 +351,20 @@ WALLS = [
     # **Which wall gets which thickness.** There is one flat bearing seat now, at -13 7/16"
     # all the way round, and the deck's soffit lands on the same plane the mudsill sits on.
     # Nothing competes for width there, and no wall needs extra width for bearing at all:
-    # the 12" segments carry SL-M-DECK on 12" because they always did, and an 8" wall would
-    # carry it just as well.
+    # the 12" segments carried SL-M-DECK (retired 2026-11-01, now FS-M-NE trusses), and an 8"
+    # wall would carry the trusses just as well.
     #
     # So the three that stay 12" stay for reasons that are no longer about bearing width,
     # and each is worth stating.
     #
-    #   W-B-E1/E2 — the east perimeter. SL-M-DECK's east edge lands here, but 12" is not
+    #   W-B-E1/E2 — the east perimeter. FS-M-NE's truss ends land here, but 12" is not
     #     needed for the seat. **W-B-E1 is held at 12" by the fireplace**: the brick wythe
     #     (x 419 7/8"..423 1/2") bears on this pour (420"..432", outer face pinned on 36'-0"),
     #     and a 10" or 8" pour would put ~2" of it on the joists (notes/east_breast_bearing.md).
     #     E2 stays 12" so the east wall is one section, no inside-face step at y=18'. 10" was
     #     weighed and declined 2026-10-11: NR either way, ~2 cy saved, an odd form module.
-    #   W-B-CS2, W-B-CN2, W-B-CN — the centre line under the cast band, same reading.
+    #   W-B-CS2, W-B-CN2, W-B-CN — were the centre line under the cast band; framed 2x6
+    #     since 2026-11-01 (below).
     #   W-B-CS — FRAMED, and no longer on this list at all. It carried wood on both faces,
     #     so what it actually needed was a bearing wall and not a pour.
     #     The alignment trap that guarded it while it was concrete is still live and moved

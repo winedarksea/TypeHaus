@@ -240,7 +240,7 @@ MAIN_BACKING = [
                 elevation=inch(31.5), height=inch(7.25), profile="2x8",
                 material_ref="spf",
                 purpose="SEKTION base suspension rail (33 1/2 in.)"),
-    WallBacking(uid="SBE1761N5C", tag="BK-M-C5-MID", wall_ref="W-M-C5",
+    WallBacking(uid="SBE1761N5C", tag="BK-M-C5-MID", wall_ref="W-M-C5", face="right",
                 elevation=inch(71.5), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="over-fridge and over-freezer lower restraint (73 1/2 in.)"),
     # Stock cold-run frames hang from their TOP brackets; the bottom band cannot carry them.
@@ -257,12 +257,12 @@ MAIN_BACKING = [
                 material_ref="spf", purpose="FURN-M-BATH1-AP access panel frame"),
     # The tub deck's own skirt is a 19 1/4" wall, so this band sits inside a 16" stud run:
     # 2" clears the sole plate and the 2x8 tops out at 9 1/4", well under it.
-    WallBacking(uid="2WV5J50Q0C", tag="BK-M-TUBDK-AP", wall_ref="W-M-TUBDK-W",
+    WallBacking(uid="2WV5J50Q0C", tag="BK-M-TUBDK-AP", wall_ref="W-M-TUBDK-W", face="right",
                 start=inch(48.75), length=inch(16.99),
                 elevation=inch(2), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="bath 2 tub deck access panel frame"),
     # The heater-end leaf's frame, filling the knee wall's first 24" o.c. bay stud to stud.
-    WallBacking(uid="AJJ1CQY959", tag="BK-M-TUBDK-AP-N", wall_ref="W-M-TUBDK-W",
+    WallBacking(uid="AJJ1CQY959", tag="BK-M-TUBDK-AP-N", wall_ref="W-M-TUBDK-W", face="right",
                 start=inch(1.5), length=inch(21.75),
                 elevation=inch(2), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="bath 2 tub heater-end access panel frame"),

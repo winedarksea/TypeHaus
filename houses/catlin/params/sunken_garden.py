@@ -2494,7 +2494,7 @@ _deck_walking_surface = _deck_top + inch(SPEC.balcony_deck_thickness_in)
 # one.** FS-SG-BALCONY's aluminium plank is the porch roof, and since 2026-09-02 it carries NO
 # penetrations at all — the two heat-pump stands went to grade. Surface posts would put
 # ~36 holes through the only waterproof plane in this structure to save bracket money. The
-# brackets through-bolt the PVC fascia and the 2x8 rim per Ultralox's own fascia-mount
+# brackets through-bolt the PVC fascia and the flank/front rim per Ultralox's own fascia-mount
 # instructions (four 5/16" x 4" bolts, nuts on the rim's inside face, reachable from the
 # open bays below), landing in the rim blocking authored in ``FS-SG-BALCONY.reinforcements``.
 # ``type_ref`` stays the library's fascia type for exactly that reason.
@@ -2539,7 +2539,7 @@ _BALCONY_FLANK_BLOCK_INSET = inch(4).feet
 _BALCONY_BACKING_EDGE_CLEARANCE = inch(1/16).feet
 _BALCONY_FLANK_STATIONS = [
     ((_deck_x_w + _BALCONY_FLANK_BLOCK_INSET
-      if station.post[0] < (_deck_x_w + _deck_x_e)/2
+      if station.post[0] / 0.3048 < (_deck_x_w + _deck_x_e)/2  # post is metres, deck x feet
       else _deck_x_e - _BALCONY_FLANK_BLOCK_INSET),
      min(_bal_y1 - _BALCONY_BACKING_EDGE_CLEARANCE,
          max(_bal_y0 + _BALCONY_BACKING_EDGE_CLEARANCE, station.post[1] / 0.3048)))
@@ -2662,7 +2662,7 @@ BALCONY_JOISTS = FloorSystem(
     # fascia row is written for concrete, and no PE letter is needed to follow the
     # manufacturer) call for four 5/16" x 4" through-bolts per bracket with washers and
     # nuts, the bracket top 1/2" below the rim top, and a foot block mid-panel. The bolts
-    # cross the PVC fascia and the 2x8 rim; the nuts land on the rim's inside face, which
+    # cross the PVC fascia and the rim; the nuts land on the rim's inside face, which
     # is reachable from the open joist bays below. A solid block between that rim and the
     # first joist at each post is what stops the rim rolling under the R301.5 200 lb load
     # at 42".
@@ -2674,7 +2674,7 @@ BALCONY_JOISTS = FloorSystem(
         *(JoistReinforcement(
             at=pt(ft(_gx), ft(_gy)), plies=1, blocking=True,
             source="rollover backing behind an RL-SG-BALCONY fascia bracket — the four 5/16\" "
-                   "through-bolts land in this block so the 2x8 rim cannot roll under the "
+                   "through-bolts land in this block so the rim cannot roll under the "
                    "guard's 200 lb top load")
         for _gx, _gy in (*_BALCONY_GUARD_STATIONS, *_BALCONY_FLANK_STATIONS)),
         *(JoistReinforcement(

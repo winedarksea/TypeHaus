@@ -80,7 +80,9 @@ _KERF_FT = 0.125 / 12.0
 _MAX_SPLICE_PIECE_FT = 12
 #: A wall plate is joined over a stud (IRC R602.3.2 laps the top plates 24" min), so a run past
 #: the longest stock is bought in stock sticks; it is light, so its cap is the ladder's top.
+#: A girt/strap is joined over a block or stud and a rim over a joist on its sill, the same way.
 _PLATE_CATEGORY = "plate"
+_JOINED_ON_SUPPORT = (_PLATE_CATEGORY, "strapping", "rim")
 _MAX_PLATE_PIECE_FT = _STOCK_LENGTHS_FT[-1]
 
 
@@ -229,11 +231,11 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         key = (member.stock_profile or member.profile, member.category, member.material or "")
         cuts[key].append((member.cut_length_m or member.length_m) * _M_TO_FT)
         splice[key] = splice.get(key, True) and (member.continuously_supported
-                                                 or member.category == _PLATE_CATEGORY)
+                                                 or member.category in _JOINED_ON_SUPPORT)
 
     rows: list[dict[str, object]] = []
     for (profile, category, material), lengths in sorted(cuts.items()):
-        cap = _MAX_PLATE_PIECE_FT if category == _PLATE_CATEGORY else _MAX_SPLICE_PIECE_FT
+        cap = _MAX_PLATE_PIECE_FT if category in _JOINED_ON_SUPPORT else _MAX_SPLICE_PIECE_FT
         buckets = _bucket_cut_lengths(lengths, profile, splice[(profile, category, material)],
                                       cap)
         order_ft_total = sum(length_ft * count for length_ft, count in buckets.items())

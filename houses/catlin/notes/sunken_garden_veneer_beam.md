@@ -67,9 +67,9 @@ condition sat at 0 FAIL.
 | isolation board | 2" XPS, 40 psi, north face | −8" … −10" |
 | `FT-B-S2/S3` south face | 20" strip, `offset` **6"** off axis since 2026-09-05 | −4" |
 | wythe | 3-5/8", on the beam's north edge | −10.05" … −13.675" |
-| backup finished face | EPS face, since 2026-09-05 | −6.05" |
-| open cavity | EPS face (−6.05") to wythe | **4.0"** |
-| foam behind the wythe | 4" XPS + 2" EPS | 6.0" |
+| backup finished face | EPS face, since 2026-09-05 (**superseded** §6k: XPS face −4.06") | −6.05" |
+| open cavity | EPS face (−6.05") to wythe (**superseded** §6k: 1 15/16") | **4.0"** |
+| foam behind the wythe | 4" XPS + 2" EPS (**superseded** §6k: 2+2" XPS, no EPS) | 6.0" |
 | anchor reach | brick back to sheathing/stud | ~10.05" |
 
 **The strip retreated to −4" and the board did not follow it.** All four south strips are

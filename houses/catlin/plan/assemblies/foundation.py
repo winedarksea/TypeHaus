@@ -115,7 +115,7 @@ _PROTECTION_PANEL = Layer(name="foundation-coating",
 # carry. The layer, the assembly and the full argument are in git; `Material(tag="stucco")`
 # stays in library/materials/ because engine tests use the tag.
 
-# The east wall (W-B-E1/E2), the only perimeter run SL-M-DECK bears on.
+# The east wall (W-B-E1/E2): 12" for the fireplace brick wythe (notes/east_breast_bearing.md).
 # ** THE POUR IS AUTHORED HERE NOW, NOT SPLATTED FROM THE LIBRARY CORE. **
 # A ``ConcreteSpec`` is a purchase — one ticket from one plant — so it belongs to the house
 # and the library must not carry one in a shared core. Stating it means authoring this
@@ -132,7 +132,7 @@ BASEMENT_12 = Assembly(
         _PROTECTION_PANEL,
     ),
     interfaces=(CONCRETE_BEARING,),
-    source="library FOUNDATION_WALL_12_XPS4 + the house's above-grade acrylic coating band (catlin basement east, where SL-M-DECK bears)",
+    source="library FOUNDATION_WALL_12_XPS4 + the house's above-grade acrylic coating band (catlin basement east, 12\" for the fireplace brick wythe; FS-M-NE trusses bear on it)",
 )
 
 # The west and north walls (W-B-W1/W2, W-B-N1/N2/N3) — wood floor only, so 8" reinforced.

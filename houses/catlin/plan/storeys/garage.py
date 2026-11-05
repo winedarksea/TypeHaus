@@ -572,7 +572,7 @@ ROOFS = [
          diaphragm=DiaphragmSpec(
              sheathing_layer="deck",
              fastening='8d common (0.131" x 2 1/2") at 6" o.c. at the boundary and panel edges, 12" o.c. in the field; UNBLOCKED, Case 1',
-             source="AWC SDPWS-2015 Table 4.2A, UNBLOCKED wood structural panel diaphragm, Case 1, 15/32in Structural I with 8d at 6in boundary and edges — quoted conservatively for this 19/32in Structural I deck, v_w 335 plf nominal / 2.0",
+             source="AWC SDPWS-2015 Table 4.2C (unblocked), Case 1, Structural I, 8d at 6in boundary and supported edges, 2in framing: v_w 670 plf nominal; x 0.92 SPF (fn. 2, G 0.42) / 2.0 ASD = 308 plf. Carried at 167.5 plf, half the unadjusted 335, a deliberate round-down for this 19/32in deck",
              unit_shear_asd_plf=167.5,
              apparent_stiffness_kips_per_in=7.0,
              blocked=False,
@@ -636,7 +636,7 @@ ROOFS = [
              # purpose — a softer deck is the one more likely to read FLEXIBLE, which hands
              # the cast columns the larger share and is the direction that does not flatter
              # the member this whole calculation exists to grade.
-             source='AWC SDPWS-2015 Table 4.2A, blocked wood structural panel diaphragm, 15/32in sheathing with 8d at 6in boundary and edge spacing on 2in nominal framing, Case 1 — quoted conservatively for this 19/32in Structural I deck and at the soft end of the G_a band',
+             source='AWC SDPWS-2015 Table 4.2A (blocked), Structural I, 8d at 6in boundary and all edges, 6in other edges, 2in framing, Case 1: v_w 755 plf nominal; x 0.92 SPF (fn. 2, G 0.42) / 2.0 ASD = 347 plf. Carried at 190 plf, a deliberate round-down for this 19/32in deck, and G_a at the soft end of the band',
              unit_shear_asd_plf=190.0,
              apparent_stiffness_kips_per_in=12.0,
              blocked=True,

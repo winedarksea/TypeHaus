@@ -90,7 +90,7 @@ MAIN_WET_BACKING = [
                 profile=_MID_PROFILE, material_ref="spf",
                 purpose="FURN-M-BATH2-CAB-W/-E bottom fastening (48 in.)"),
     # Raised from the 72" course: the TÄNNFORSEN suspension rail sits just under the 85" tops.
-    WallBacking(uid="82SRRT7F5Z", tag="BK-M-HS1-HIGH", wall_ref="W-M-HS1",
+    WallBacking(uid="82SRRT7F5Z", tag="BK-M-HS1-HIGH", wall_ref="W-M-HS1", face="right",
                 elevation=inch(78), height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
                 purpose="FURN-M-BATH2-CAB-W/-E suspension rail (~83 in.)"),
