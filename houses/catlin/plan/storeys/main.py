@@ -338,17 +338,16 @@ NODES = [
     # where the eye goes, recoverable only with a 1 1/8" steel reveal frame that throws away
     # the trimless unit's one advantage.
     #
-    # ** THE AXIS IS x=35'-1 11/16" AND THAT IS A CHECK DECISION, NOT A DIMENSION. **
-    # FIREPLACE_BRICK_WYTHE is ONE 3 5/8" layer, so the centreline sits 3 11/16" off the
-    # room's finish face against a 1 13/16" half-thickness. `resolve/room_walls.bounding_walls`
-    # therefore does NOT pick it up, and `condensation._nearest_along_each_face` does not drop
-    # W-M-E1 for the whole 36' elevation — which is what a single thick wall aligned to the
-    # room face would have done, leaving RM-M-LIVING's east assembly as bare brick with no
-    # vapour retarder and no insulation. See the assembly's note in plan/assemblies.py.
-    # The face lands at x=34'-11 7/8" and the back at x=35'-3 1/2", 1 7/8" shy of the gwb:
-    # that gap is the tie space and the firebox's own framing, and it is why the whole
-    # footprint stands over W-B-E1's 12" pour (x 420"..432") bar 1/8" (3/16" since 2026-09-13:
-    # the 1/8" mineral silicate wash on the room face drifts the centred panel 1/16" west).
+    # ** THE AXIS IS x=35'-3 11/16" (2026-11-05; 35'-1 11/16" before). ** The brick lies
+    # tight on W-M-E1's 1/2" gwb (x 425 1/2"), face at x=35'-1 7/8", so the whole footprint
+    # stands over W-B-E1's 10" pour (x 422"..432") bar 1/8", and the firebox pocket is 9 5/8"
+    # from the brick face to the sheathing. The 2" tie gap went to the pour; ties screw
+    # through the gwb into the studs.
+    # ** WATCH `resolve/room_walls.bounding_walls`. ** A one-layer 3 5/8" wythe at the room
+    # face could be adopted as RM-M-LIVING's east wall, and `condensation._nearest_along_
+    # each_face` would then drop W-M-E1 for the whole 36' elevation (bare brick, no retarder,
+    # no insulation). Checked on the move: it is not picked up and no condensation finding
+    # moved. Re-check if the panel moves again. See the assembly's note in plan/assemblies.py.
     #
     # ** SEVEN WALLS ON ONE AXIS, FOURTEEN NODES (2026-09-19; five and ten from 2026-09-06).
     # ** The panel was one Wall and so it resolved to a plain 4-point rectangle: a solid brick
@@ -382,31 +381,31 @@ NODES = [
     # outright. The middle pier is 12" and has 1 1/8" of room. Do not widen the slots past
     # ~4 1/2" without re-checking that.
     Node(uid="8B5HVCT933", tag="N-M-FIRE-S",
-         position=pt(ft(35, 1.6875), ft(5, 5.25)), open_end=True),
+         position=pt(ft(35, 3.6875), ft(5, 5.25)), open_end=True),
     Node(uid="ZBDG33XN7Y", tag="N-M-FIRE-N",
-         position=pt(ft(35, 1.6875), ft(9, 2.75)), open_end=True),
+         position=pt(ft(35, 3.6875), ft(9, 2.75)), open_end=True),
     Node(uid="V4P9PHV0W4", tag="N-M-FIRE-STUB-S",
-         position=pt(ft(35, 1.6875), ft(5, 5.875)), open_end=True),
+         position=pt(ft(35, 3.6875), ft(5, 5.875)), open_end=True),
     Node(uid="97S4NK2GRX", tag="N-M-FIRE-STUB-N",
-         position=pt(ft(35, 1.6875), ft(9, 2.125)), open_end=True),
+         position=pt(ft(35, 3.6875), ft(9, 2.125)), open_end=True),
     # The four pocket jambs. `open_end=True` is NOT optional on any of them: a dry run
     # without it produced six `integrity.wall_loop_open` FAILs.
-    Node(uid="54QF6MV7B9", tag="N-M-FIRE-PIER-S2", position=pt(ft(35, 1.6875), ft(6, 6)), open_end=True),
-    Node(uid="GPPZEETR30", tag="N-M-FIRE-PIER-M1", position=pt(ft(35, 1.6875), ft(6, 10)), open_end=True),
-    Node(uid="7BKATS9ZS7", tag="N-M-FIRE-PIER-M2", position=pt(ft(35, 1.6875), ft(7, 10)), open_end=True),
-    Node(uid="0HTZA1YNJW", tag="N-M-FIRE-PIER-N1", position=pt(ft(35, 1.6875), ft(8, 2)), open_end=True),
+    Node(uid="54QF6MV7B9", tag="N-M-FIRE-PIER-S2", position=pt(ft(35, 3.6875), ft(6, 6)), open_end=True),
+    Node(uid="GPPZEETR30", tag="N-M-FIRE-PIER-M1", position=pt(ft(35, 3.6875), ft(6, 10)), open_end=True),
+    Node(uid="7BKATS9ZS7", tag="N-M-FIRE-PIER-M2", position=pt(ft(35, 3.6875), ft(7, 10)), open_end=True),
+    Node(uid="0HTZA1YNJW", tag="N-M-FIRE-PIER-N1", position=pt(ft(35, 3.6875), ft(8, 2)), open_end=True),
     Node(uid="D2CYZWEM2K", tag="N-M-FIRE-JS-S",
-         position=pt(ft(35, 1.6875), ft(5, 5.25)), open_end=True),
+         position=pt(ft(35, 3.6875), ft(5, 5.25)), open_end=True),
     Node(uid="5FH2RV57A3", tag="N-M-FIRE-JS-N",
-         position=pt(ft(35, 1.6875), ft(6, 1.25)), open_end=True),
+         position=pt(ft(35, 3.6875), ft(6, 1.25)), open_end=True),
     Node(uid="EN5H4QWC98", tag="N-M-FIRE-JN-S",
-         position=pt(ft(35, 1.6875), ft(8, 6.75)), open_end=True),
+         position=pt(ft(35, 3.6875), ft(8, 6.75)), open_end=True),
     Node(uid="21D53H2EMH", tag="N-M-FIRE-JN-N",
-         position=pt(ft(35, 1.6875), ft(9, 2.75)), open_end=True),
+         position=pt(ft(35, 3.6875), ft(9, 2.75)), open_end=True),
     Node(uid="PE5C0SVHZ7", tag="N-M-FIRE-HD-S",
-         position=pt(ft(35, 1.6875), ft(5, 5.25)), open_end=True),
+         position=pt(ft(35, 3.6875), ft(5, 5.25)), open_end=True),
     Node(uid="Y77DK1HWPJ", tag="N-M-FIRE-HD-N",
-         position=pt(ft(35, 1.6875), ft(9, 2.75)), open_end=True),
+         position=pt(ft(35, 3.6875), ft(9, 2.75)), open_end=True),
 ]
 
 # --- board & batten on the north and south elevations -----------------------
@@ -2213,12 +2212,11 @@ PANELING = [
     # panel's W-M-BA2E2 span in a silicone colour-break corner, the base flange tucked
     # behind it (notes/bath2_tub_deck_finish.md).
     #
-    # Behind every span: glass-mat or cement backer, then a bonded liquid membrane
-    # (RedGard / Hydro Ban class) lapped OVER the base's flange, then the panel. No niche,
-    # no penetration but the sealed valve and head (notes/bath2_shower.md §6). Swanstone
-    # lists drywall, greenboard, wood, plaster, cement, tile and Masonite, not foam board,
-    # so GoBoard was declined (2026-10-22): trial-bond the tape and adhesive on the cured
-    # membrane, or prime it first per Swanstone's surface-prep page.
+    # Behind every span: primed glass-mat or cement backer over the base's flange, then the
+    # panel siliconed and taped to it. No liquid membrane (owner 2026-11-05): the panel is
+    # nonabsorbent and Swan's guide calls for none. No niche, no penetration but the sealed
+    # valve and head (notes/bath2_shower.md §6). Swanstone lists drywall, greenboard, wood,
+    # plaster, cement, tile and Masonite, not foam board, so GoBoard was declined (2026-10-22).
     #
     # The 96" MSMK-9636-1 stands on the SS-3636's 5 1/2" top (the pan bears on the 3/4"
     # subfloor: +6 1/4" over datum) to +102 1/4" (owner 2026-11-01, review I2-002; it ran to
@@ -2226,7 +2224,7 @@ PANELING = [
     # 1/4" glue-up panel (plan/products_showering.py), not the 1/2" default.
     # Above it: a TK-105 strip caps the top edge (-CAP), then the backer board, painted, to
     # the ceiling at +107 1/2" (1 3/8"; the room paints it, an F reveal stops it on the cap).
-    # That board is the wet-rated glass-mat backer the membrane is on (notes/bath2_shower.md
+    # That board is the wet-rated glass-mat backer behind the panel (notes/bath2_shower.md
     # §6); the wall layer still says gwb-mr.
     #
     # Known limitation: `replaces_wall_finish` only nets out in `wood_surfaces`, so
@@ -2253,12 +2251,20 @@ PANELING = [
     # clamps a knee wall's band to its tub deck. FURN-M-BATH2-TUBDK-AP (foot: drain, filler
     # rough) and -AP-N (head: the Bask supply) are removable leaves cut from the apron, 1/8"
     # reveal, on BK-M-TUBDK-AP / -AP-N.
+    # The W apron runs past node C to the stall line (y 194 1/4"), flush with the pan's north
+    # edge. WP-M-BATH2-TUBDK-STALL is the stall face: it stands on the SS-3636's rim
+    # (+6 1/4", offset over the wall's 3/4" base) and starts 2 1/4" west of node C, wrapping
+    # the apron's end in the bonded SW corner, and runs the pan's 36" to the Swanstone E
+    # panel's face. Its 1/2" face is the Flex's north jamb below the deck, in plane with the
+    # post above (35 1/2" opening).
     WallPaneling(uid="EQGJVGPGEA", tag="WP-M-BATH2-TUBDK-APRON", room="RM-M-BATH2",
                  material_ref="solid-surface-fabricated",
                  spans=(PanelingSpan(wall_ref="W-M-TUBDK-W", start=inch(0),
-                                     length=inch(68.125), face="right"),
-                        PanelingSpan(wall_ref="W-M-TUBDK-S", start=inch(0),
-                                     length=inch(33.75), face="right"))),
+                                     length=inch(70.365), face="right"),)),
+    WallPaneling(uid="94974NRSX0", tag="WP-M-BATH2-TUBDK-STALL", room="RM-M-BATH2",
+                 material_ref="solid-surface-fabricated", offset=inch(5.5),
+                 spans=(PanelingSpan(wall_ref="W-M-TUBDK-S", start=inch(-2.25),
+                                     length=inch(36), face="right"),)),
     # A 6" Corian splash where the deck meets HS1 (N) and BA2E (E), so neither joint is
     # silicone to paint. `offset` is wall-local, up from the wall base at the storey datum:
     # 22 3/4" is the deck top. Spans follow the deck: HS1 from x 59.115" to its end at 72",

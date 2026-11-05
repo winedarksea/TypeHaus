@@ -115,7 +115,10 @@ _PROTECTION_PANEL = Layer(name="foundation-coating",
 # carry. The layer, the assembly and the full argument are in git; `Material(tag="stucco")`
 # stays in library/materials/ because engine tests use the tag.
 
-# The east wall (W-B-E1/E2): 12" for the fireplace brick wythe (notes/east_breast_bearing.md).
+# The east wall (W-B-E1/E2): 10" since 2026-11-05 (was 12"). It carries EXT_2X6 above and
+# the fireplace brick wythe laid tight to W-M-E1's gypsum (notes/east_breast_bearing.md):
+# 5 1/2" stud + 1/2" sheathing + 1/2" gwb + 3 5/8" brick = 10 1/8", the wythe 1/8" past the
+# pour's inside face. R404.1.2(8) (45, 8', 7') reads NR for 10" as for 12".
 # ** THE POUR IS AUTHORED HERE NOW, NOT SPLATTED FROM THE LIBRARY CORE. **
 # A ``ConcreteSpec`` is a purchase — one ticket from one plant — so it belongs to the house
 # and the library must not carry one in a shared core. Stating it means authoring this
@@ -123,16 +126,16 @@ _PROTECTION_PANEL = Layer(name="foundation-coating",
 # (``FOUNDATION_WALL_XPS4_OUTBOARD``, published for exactly this). Slicing the core at the
 # point of use is not available: this file is the constrained editable dialect and
 # subscripting is forbidden in it. The thicknesses are the library's, unchanged.
-BASEMENT_12 = Assembly(
-    tag="BASEMENT_12",
+BASEMENT_10 = Assembly(
+    tag="BASEMENT_10",
     layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+        Layer(name="concrete", material_ref="concrete", thickness=inch(10.0),
               function=LayerFunction.STRUCTURE, concrete=BURIED_MIX),
         *FOUNDATION_WALL_XPS4_OUTBOARD,
         _PROTECTION_PANEL,
     ),
     interfaces=(CONCRETE_BEARING,),
-    source="library FOUNDATION_WALL_12_XPS4 + the house's above-grade acrylic coating band (catlin basement east, 12\" for the fireplace brick wythe; FS-M-NE trusses bear on it)",
+    source="library FOUNDATION_WALL_12_XPS4's outboard stack on a 10\" house pour + the house's above-grade acrylic coating band (catlin basement east, 10\" for a 2x6 wall plus the fireplace brick wythe; FS-M-NE trusses bear on it)",
 )
 
 # The west and north walls (W-B-W1/W2, W-B-N1/N2/N3) — wood floor only, so 8" reinforced.

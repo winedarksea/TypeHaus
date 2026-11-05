@@ -360,7 +360,7 @@ class Prices:
     # Painted base and casing by the LF, keyed on the paint material, ``:kind`` (#113).
     trim_paint: Mapping[str, PriceRange] = field(default_factory=dict)
     # Monolithic wall structure, keyed on the *assembly* tag rather than the material: a
-    # placed yard of SUNKEN_GARDEN_WALL and a yard of BASEMENT_12 are both "concrete"
+    # placed yard of SUNKEN_GARDEN_WALL and a yard of BASEMENT_10 are both "concrete"
     # and are not the same price. Priced by the cubic yard; the rows also carry
     # net_area_sqft, so a face-priced second plan entry can be added later — but price each
     # assembly in one table only.

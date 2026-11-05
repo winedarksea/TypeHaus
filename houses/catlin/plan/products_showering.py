@@ -134,8 +134,8 @@ BATH2_FLEX_FRONT = Product(
            "minimum 1 3/8 in. FLAT threshold, finished solid jambs. Supplied top/bottom "
            "rails, pivot hardware and seals. Chrome with the room's plumbing. North "
            "jamb is a preliminary supported post on the Corian deck, not a bare glass "
-           "edge; confirm the hybrid mounting with DreamLine and the glazier. Custom "
-           "north pane and post are separately budgeted. See notes/bath2_shower.md §3.",
+           "edge; confirm the hybrid mounting with DreamLine. The stock 32 x 80 north "
+           "panel and post are separately budgeted. See notes/bath2_shower.md §3.",
 )
 
 # Retained library option; the BATH2 installation was removed 2026-11-02.

@@ -1319,6 +1319,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     touches). Masonry opening **29 1/2" x 24"** (sill 24" AFF, head 48" AFF) is the
     gap between elements, not a subtraction from one; elevations off the +15/16" finished
     floor: STUB -13 7/16"→+15/16", PLINTH →24 15/16", jamb piers →48 15/16", HEAD →64 15/16".
+    - **2026-11-05: THE POCKET IS 9 5/8" NOW.** `W-B-E1/E2` are a 10" pour (`BASEMENT_10`) and
+      the wythe lies tight on W-M-E1's 1/2" gwb (axis x=35'-3 11/16", face 35'-1 7/8"), still
+      on the pour bar 1/8". The tie gap is gone; ties screw through the gwb. The insert must be
+      INFRARED (owner) and no deeper than 9 5/8": the ClassicFlame 042 family (28"/26"/23")
+      and TURBRO INF23/26 fit; none found is fanless. Read the bullet below with that in mind.
     - **THE OPENING IS 24" HIGH AND THE POCKET BEHIND IT IS 11 1/2" DEEP, BOTH SINCE
       2026-09-20, AND THE DEPTH IS THE REASON FOR THE HEIGHT.** `AO-M-FIRE-NICHE` is a BLIND
       `RoughOpening` (the schema's first — `RoughOpening.depth` + `depth_from`) 34" x 25"
@@ -1920,7 +1925,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     and prices remain available in the library; `notes/bath2_shower.md` §7 is historical.
 - **Every shower is a wet wall, and nothing goes through an integral insert** (2026-10-12).
   Behind any panel or tile a shower wets: glass-mat or cement backer, then a bonded liquid
-  membrane lapped OVER the base flange, then the finish — never paper-faced gypsum. A
+  membrane lapped OVER the base flange, then the finish — never paper-faced gypsum. Factory
+  panels are the exception (owner, 2026-11-05), each per its maker's guide with no membrane:
+  BATH2's Swanstone on primed glass-mat backer, STUBATH's DreamLine QWALL-2 acrylic on
+  greenboard. A
   one-piece tub-shower insert takes no niche, screw or accessory: only the valve and spout
   knockouts. Both lit niches are gone. The spec lives on the fixture types' `source` and
   their price rows (`notes/bath2_shower.md` §6); the sauna rinse is the open exception.

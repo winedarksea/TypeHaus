@@ -117,7 +117,7 @@ TRANSITIONS = (
                documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-FOUNDATION-FOAM-RETURN"),
                star=False,
                starred_conditions=(
-                   "wall_foundation:BASEMENT_12|EXT_2X6",
+                   "wall_foundation:BASEMENT_10|EXT_2X6",
                    "wall_foundation:BASEMENT_8|EXT_2X6_BOARD_BATTEN",
                    "wall_foundation:GARAGE_ICF_6|GARAGE_WALL_2X6",
                )),

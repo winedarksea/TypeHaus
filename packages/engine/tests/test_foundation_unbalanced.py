@@ -272,7 +272,7 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     # check's own, not the house's.
     assert fails == ""
     # The east wall, the only perimeter run SL-M-DECK bears on, is still 12" and still NR.
-    assert "BASEMENT_12" in passes
+    assert "BASEMENT_10" in passes
     assert "needs no vertical reinforcement" in passes
     # ** THE GARAGE STEM LEFT THIS LIST ON 2026-09-15, AND THAT IS THE FINDING. ** It used
     # to report nine GARAGE_ICF_6 walls retaining 3'-6", which was the derived proxy talking:

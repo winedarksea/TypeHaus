@@ -862,14 +862,14 @@ MAIN_EQUIPMENT = [
     #
     # rotation -90 backs it to the wall and opens it west into the room.
     #
-    # ** THE BODY IS 9 1/2" DEEP SINCE 2026-09-20 AND SITS IN A FRAMED POCKET, NOT IN THE
-    # BRICK. ** The unit is a ClassicFlame 28II042FGL infrared now (see EQ-T-FIREPLACE-EL); the
-    # recess behind the panel is AO-M-FIRE-NICHE, a BLIND RoughOpening 6" into W-M-E1, which
-    # with the 3 5/8" brick and the 1 7/8" tie gap gives 11 1/2" from the brick face — so a
-    # 9 3/4" rough opening leaves 1 3/4" of pocket behind the appliance. `position` follows the
-    # depth rather than the face: the face stays at x=419 5/8" where it has always been, so the
-    # centre moves east from 35'-1 7/8" to 35'-4 1/2" — half the depth growth and nothing else.
-    # The 24" mount and the y=8'-8" centre are untouched.
+    # ** THE BODY IS 9 1/2" DEEP AND SITS IN A FRAMED POCKET, NOT IN THE BRICK. ** The unit is
+    # a ClassicFlame 28II042FGL infrared (see EQ-T-FIREPLACE-EL); the recess behind the panel
+    # is AO-M-FIRE-NICHE, a BLIND RoughOpening 6" into W-M-E1. Since 2026-11-05 the brick lies
+    # tight on the gwb over a 10" pour, so the pocket is 3 5/8" brick + 1/2" gwb + 5 1/2"
+    # cavity = 9 5/8" from the brick face to the sheathing. The footprint is the 9 1/2" BODY,
+    # back on the sheathing (x 431 1/2"), face 1/8" behind the brick face (x 422"):
+    # `normal_gap=-6` is the 6" let into the wall behind the gwb face. No pocket is left behind
+    # the unit; confirm the cutout against the delivered body before the jamb piers go up.
     #
     # ** `recessed_into_host_surface=True` IS THE HONEST FLAG AND IT MATTERS. ** The body is
     # let INTO the panel and the wall behind it, not stood in front, so its depth is a cavity
@@ -896,14 +896,14 @@ MAIN_EQUIPMENT = [
     # old unit at x=35'-8" with a 7" body had its BACK at 35'-11 1/2", so ** the fireplace has
     # been buried 6 1/8" inside the studs for as long as that comment has existed. **
     Equipment(uid="CEE022AAAA", tag="EQ-M-FIREPLACE", kind=EquipmentKind.SPACE_HEATER,
-              footprint=(inch(29.25), inch(9.75)),
+              footprint=(inch(29.25), inch(9.5)),
               room="RM-M-LIVING", type_ref="EQ-T-FIREPLACE-EL", circuit="CKT-FIREPLACE",
               # 24 3/16" AFF off the subfloor LVP (decision #111/#112) = the plinth top, 24 15/16" absolute.
               mount=Mount(kind=MountKind.WALL, elevation=inch(24.1875),
                           recessed_into_host_surface=True),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(88),
-                  normal_gap=inch(-4), rotation_offset=deg(-180)))),
+                  normal_gap=inch(-6), rotation_offset=deg(-180)))),
     # The pocket's receptacle. ** THE HARDWIRE SIDE IS NOT A SECOND ELEMENT: ** the J-box is
     # EQ-M-FIREPLACE's own `circuit=` and its type's POWER_120 ServicePort, which is how every
     # hard-wired appliance in this house is said. This is the OTHER half the owner asked for —

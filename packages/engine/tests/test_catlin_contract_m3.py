@@ -1376,7 +1376,7 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
 # the sauna's south face on the buried 8" pour west of the excavation, and the shrink that
 # followed pulled the room east to the excavation edge, so the whole south face is the
 # garden curb again and W-B-S1 is one unsplit segment.
-_BURIED_ASSEMBLIES = ("BASEMENT_12", "BASEMENT_8")
+_BURIED_ASSEMBLIES = ("BASEMENT_10", "BASEMENT_8")
 _COURT_ASSEMBLIES = ("GARDEN_CURB_6", "SAUNA_LINER_ON_GARDEN_CURB",
                      "GARDEN_FRAMED_2X6", "SAUNA_LINER_ON_GARDEN_FRAMED")
 _PERIMETER_ASSEMBLIES = _BURIED_ASSEMBLIES + _COURT_ASSEMBLIES
@@ -1419,10 +1419,10 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
             assert layer.thickness_m == pytest.approx(inch(2.0).meters)
 
 
-def test_only_the_deck_bearing_perimeter_stays_twelve_inches(catlin_model):
-    """12" is earned where a *cast* deck lands on the wall top beside the sill, and nowhere
-    else. SL-M-DECK spans east-west onto the east wall and the centre line, so W-B-E1/E2
-    keep the 12" pour and the other eight segments are 8" — which IRC Table R404.1.2(8)
+def test_only_the_fireplace_perimeter_is_ten_inches(catlin_model):
+    """10" is earned where the fireplace brick wythe stands on the pour beside a 2x6 wall
+    (2026-11-05; 12" under the retired SL-M-DECK), and nowhere else. W-B-E1/E2 carry the
+    10" pour and the other eight segments are 8" — which IRC Table R404.1.2(8)
     allows at 45 psf/ft on the 10' x 7' row only with vertical steel, so each of the eight
     must declare it or ``structural.foundation_unbalanced_fill`` FAILs.
 
@@ -1441,7 +1441,7 @@ def test_only_the_deck_bearing_perimeter_stays_twelve_inches(catlin_model):
     assert set(perimeter) - set(pours) == {"W-B-S2-FR", "W-B-S3-FR"}
     thick = {tag for tag, w in pours.items()
              if next(l for l in w.layers if l.name == "concrete").thickness_m
-             == pytest.approx(inch(12.0).meters)}
+             == pytest.approx(inch(10.0).meters)}
     assert thick == {"W-B-E1", "W-B-E2"}
     curbs = {"W-B-S2", "W-B-S3"}
     for tag, wall in pours.items():
@@ -2275,8 +2275,8 @@ def test_the_house_strip_footings_sit_under_the_walls_they_carry(catlin_model):
         assert footing == pytest.approx((-7.9675, 17.0325), abs=1e-6), tag
     for tag in ("W-B-E1", "W-B-E2"):
         footing, pour = spans(tag)
-        assert pour == pytest.approx((0.0, 12.0), abs=1e-6), tag
-        assert footing == pytest.approx((-5.9675, 19.0325), abs=1e-6), tag
+        assert pour == pytest.approx((0.0, 10.0), abs=1e-6), tag
+        assert footing == pytest.approx((-6.9675, 18.0325), abs=1e-6), tag
 
     # The eleven that stay on the node line: the garden-end four on their 6" trim, and the
     # seven interior walls a 25" strip straddles symmetrically.

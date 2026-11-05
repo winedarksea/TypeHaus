@@ -202,7 +202,8 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
                            "WP-M-BATH2-SURR", "WP-M-BATH2-SURR-CAP", "WP-S-SUITE-HEADBOARD",
                            "WP-A-STUBATH-SURR",
                            "WP-M-MUDROOM-SHIPLAP", "WP-M-KIT-BACKSPLASH",
-                           "WP-M-BATH2-TUBDK-APRON", "WP-M-BATH2-TUB-SPLASH"}
+                           "WP-M-BATH2-TUBDK-APRON", "WP-M-BATH2-TUBDK-STALL",
+                           "WP-M-BATH2-TUB-SPLASH"}
     # The range backsplash: an authored sheet thickness wins over the material's stock.
     (splash,) = by_tag["WP-M-KIT-BACKSPLASH"]
     assert splash.thickness_m == pytest.approx(0.004, abs=1e-9)
@@ -260,19 +261,22 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
         assert band.thickness_m == pytest.approx(0.25 * _IN, abs=1e-6)
     for cap in by_tag["WP-M-BATH2-SURR-CAP"]:
         assert (cap.z0_m, cap.z1_m) == pytest.approx((102.25 * _IN, 106.125 * _IN), abs=1e-6)
-    # The tub deck's Corian waterfall (2026-10-22): the W apron and the stall face under the
-    # north glass (the pan's 3' only), one material. Both knee walls stand INSIDE the room,
-    # so each span names its face; the stall face is on the south side. Each runs from the
-    # 3/4" subfloor to the deck's finished 22 3/4", past the 20" framing top.
-    faces = {b.wall_tag: b for b in by_tag["WP-M-BATH2-TUBDK-APRON"]}
-    assert set(faces) == {"W-M-TUBDK-W", "W-M-TUBDK-S"}
-    assert {b.material_ref for b in faces.values()} == {"solid-surface-fabricated"}
-    knee = faces["W-M-TUBDK-S"]
-    # Node to BA2E; the 1 3/4" west of the node is the knee wall's end, under the W apron's
-    # mitre, so the pan's 3' is faced in full (K-1130-W1 deck, 2026-10-22).
-    assert knee.run_m == pytest.approx(33.75 * _IN, abs=1e-3)
-    for band in faces.values():
-        assert (band.z0_m, band.z1_m) == pytest.approx((0.75 * _IN, 22.75 * _IN), abs=1e-6)
+    # The tub deck's Corian waterfall: the W apron from the 3/4" subfloor, and the stall face
+    # under the north glass standing on the pan's rim at 6 1/4" (2026-11-05). Both knee walls
+    # stand INSIDE the room, so each span names its face. Both rise to the deck's 22 3/4".
+    (apron,) = by_tag["WP-M-BATH2-TUBDK-APRON"]
+    (knee,) = by_tag["WP-M-BATH2-TUBDK-STALL"]
+    assert (apron.wall_tag, knee.wall_tag) == ("W-M-TUBDK-W", "W-M-TUBDK-S")
+    assert {apron.material_ref, knee.material_ref} == {"solid-surface-fabricated"}
+    # Each overruns its knee wall's axis to close the SW outside corner: the apron to the
+    # stall line, the stall face across the pan's full 3', wrapping the apron's end.
+    assert min(y for _, y in apron.outline) == pytest.approx(
+        max(y for _, y in knee.outline), abs=1e-6)
+    assert min(x for x, _ in knee.outline) == pytest.approx(
+        min(x for x, _ in apron.outline), abs=1e-6)
+    assert knee.run_m == pytest.approx(36 * _IN, abs=1e-3)
+    assert (apron.z0_m, apron.z1_m) == pytest.approx((0.75 * _IN, 22.75 * _IN), abs=1e-6)
+    assert (knee.z0_m, knee.z1_m) == pytest.approx((6.25 * _IN, 22.75 * _IN), abs=1e-6)
     wall = next(w for w in catlin_model.walls if w.tag == "W-M-TUBDK-S")
     assert Polygon(knee.outline).centroid.y < wall.axis[0][1]
     # The 6" splash where the deck meets HS1/HS2 and BA2E/BA2E2, standing on the deck top.

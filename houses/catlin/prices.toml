@@ -3525,28 +3525,34 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # bought as a matched pair; labour is up on the square only for the extra panel to set and
 # seal. An unpriced type is silently dropped from the takeoff, which is why this row lands in
 # the same commit as the type.
-# WET WALLS (2026-10-12): glass-mat or cement backer for WP-A-STUBATH-SURR's ~47 SF in place
-# of paper-faced gypsum (+$60-110) and a bonded liquid membrane, two coats lapped over the
-# base flange (1-2 gal RedGard/Hydro Ban class + corner fabric, +$90-190): material +150-300.
-# Labour +160-350 for the membrane coats and cure. ESTIMATE.
-"FX-SHOWER-36-NEO-COMBO" = { material = { low = 900, high = 2200 }, labour = { low = 440, high = 970 } }  # 1 ea
+# REBUILT 2026-11-05 around DreamLine DL-6040C-01 (owner): the SlimLine neo-angle base AND
+# the QWALL-2 acrylic/ABS corner walls in one kit, so WP-A-STUBATH-SURR bills $0 in
+# [wood_surfaces]. ESTIMATE, not quoted:
+#   material  DL-6040C-01 kit (Build.com / Vintage Tub $1,000, Quality Bath $1,100,
+#             read 2026-11-05)                                           1000-1170
+#             neo-angle pivot enclosure, Prism class (allowance)          +600-1000
+#             R10000 rough + PB trim + 26010SRN head                       +250-350
+#   labour    set base, glue up two panels, hang enclosure, set trim       380-820
+# The membrane and glass-mat backer are gone: DreamLine glues QWALL to greenboard.
+"FX-SHOWER-36-NEO-COMBO" = { material = { low = 1850, high = 2520 }, labour = { low = 380, high = 820 } }  # 1 ea
 # RM-M-BATH2, 2026-10-12. ESTIMATE, not quoted. Built on FX-SHOWER-36's basis (pan + KIT
 # surround + their labour), so `solid-surface-panel` in [wood_surfaces] stays a delta:
 #   material  FX-SHOWER-36 band                                  300-1000
 #             solid-surface base (SS-3636, White .010) over an acrylic pan  +150-500
 #             R10000 rough $55-65 + 17T trim $250-450 + 26008 $130-180   +435-695
 #             stock chrome Flex SHDR-22327200-01 front (allowance)       +550-800
-#             custom north pane + post/channels/backing (allowance)     +650-1600
-#             2026-10-22: separate allowances, NOT current supplier quotes;
-#             replaces the $1300-3000 custom 90-inch front/return allowance.
+#             stock 32x80 3/8" fixed north panel with clips $350-800 (36x80 siblings
+#             read 2026-11-05: Unikoo $434, Aston Elyse XL $804) + 1 1/2x2 1/2 alum.
+#             tube post, fasteners and backing $100-200                  +450-1000
+#             2026-11-05: replaced the custom north pane allowance (+650-1600).
+#             Still allowances, NOT quotes.
 #             wet walls (2026-10-12): glass-mat or cement backer behind the ~58 SF
-#             of panel in place of paper-faced gypsum +70-120, and a bonded liquid
-#             membrane, two coats lapped over the base flange (1-2 gal RedGard /
-#             Hydro Ban class + corner fabric) +100-210                     +170-330
+#             of panel in place of paper-faced gypsum                        +70-120
+#             (the liquid membrane, +100-210, came out 2026-11-05: Swan's guide names none)
 #   labour    FX-SHOWER-36 band 200-470 + thermostatic trim set 60-130 + glass hang 300-700
-#             + membrane coats and cure 180-380
+#             (membrane coats and cure, 180-380, out with it)
 # The glass is the biggest and widest number; a glazier's measure-and-quote collapses it.
-"FX-SHOWER-36-THERMO-COMBO" = { material = { low = 2270, high = 4930 }, labour = { low = 740, high = 1680 } }  # 1 ea
+"FX-SHOWER-36-THERMO-COMBO" = { material = { low = 1970, high = 4120 }, labour = { low = 560, high = 1300 } }  # 1 ea
 # +$65-100/ea for the 52535-SS head over the boxed one (2026-10-12; street $64-73).
 # 2026-10-29: high was $700 above FX-TUBSHOWER-60's; the trim delta is Delta T14459-SS $270-310 + R10000 $53-65 + head $65-100 + handshower ~$60-150 = ~$450-625.
 "FX-TUBSHOWER-60-DIVERTED" = { material = { low = 900, high = 2200 }, labour = { low = 450, high = 1050 } }  # 2 ea
@@ -4864,7 +4870,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # divided by the wall's own thickness, because that is how walls are actually quoted:
 #   poured 12" wall   $90-280/LF of a ~9' wall = 0.333 cy/LF -> $270-840/cy. Formwork, not
 #                     concrete, is the cost, which is why this is 2x the [concrete] footing
-#                     rate. BASEMENT_12, FOUNDATION_WALL_12_INT and
+#                     rate. BASEMENT_10, FOUNDATION_WALL_12_INT and
 #                     SUNKEN_GARDEN_WALL sit on this basis. SAUNA_LINER_ON_CONCRETE did
 #                     too until 2026-08-28, when W-B-CS was framed and the row retired.
 #   poured 8" wall    $110-180/LF of a 9'-0" wall is the market's OWN quote (the 12" row above
@@ -5075,7 +5081,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # product with its own quantity, its own trade and its own inspection.
 # The deduction, at each row's own yield, split 30/70 material/labour the way an adhered
 # membrane actually splits ($0.81-0.87/SF sheet against $1.70-3.80/SF to roll it):
-#   BASEMENT_12  0.3333 cy/LF -> $7-18/LF = $21-54/cy   -> material -$6/-$16, labour -$15/-$38
+#   BASEMENT_10  0.3333 cy/LF -> $7-18/LF = $21-54/cy   -> material -$6/-$16, labour -$15/-$38
 #   BASEMENT_8   0.2305 cy/LF -> $7-18/LF = $30-78/cy   -> material -$9/-$23, labour -$21/-$55
 # SPLIT 2026-08-27. Forming, bracing, placing and stripping are the labour residual and are
 # most of the number, which is exactly the paragraph above's point about thickness.
@@ -5083,7 +5089,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 #   BURIED_MIX: 5,000 psi $185-215 + macro fibre $8-12         $193-227
 #   form ties, release, keyway, bracing consumables (54 SF form/cy)  $ 15- 30
 #                                                              $208-257
-"BASEMENT_12" = { material = { low = 208, high = 257 }, labour = { low = 195, high = 402 } }  # W-B-E1/E2 only since 2026-08-21; net of the waterproofing, see above
+"BASEMENT_10" = { material = { low = 208, high = 257 }, labour = { low = 195, high = 402 } }  # W-B-E1/E2 only since 2026-08-21; net of the waterproofing, see above
 # 2026-08-21: the eight non-deck-bearing perimeter segments went 12" -> 8" (108 LF, -12.4 cy).
 # ** DO NOT price these off the 12" row. ** $420-700/cy was derived per-CY at 12"; applied to
 # an 8" volume it books the saving as ~$5,200-8,700, when the trade only gives back ~$25-45/LF
@@ -5453,9 +5459,9 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # Owner-furnished (Waltly, paid — costs.toml): two Gr 2 sheets hung uncut; labour only, MS-
 # polymer bond over the painted gypsum and the range/hood/upper cut-in.
 "titanium-gr2-sheet-brushed" = { material = { low = 0, high = 0 }, labour = { low = 15, high = 35 } }  # 12 SF ordered: WP-M-KIT-BACKSPLASH (2026-10-09)
-"marble-look-panel" = { low = 4, high = 11 }  # 47 SF ordered: WP-A-STUBATH-SURR only since 2026-10-12
-# ** OPEN: FX-SHOWER-36-NEO-COMBO (STUBATH) buys the pan and glass, not the walls, so its
-# 42 SF bills as a delta over a kit it never had. **
+"marble-look-panel" = { low = 4, high = 11 }  # 0 SF since 2026-11-05 (STUBATH went to acrylic-shower-panel)
+# The QWALL-2 half of DL-6040C-01; bought and set inside FX-SHOWER-36-NEO-COMBO.
+"acrylic-shower-panel" = { low = 0, high = 0 }  # WP-A-STUBATH-SURR
 # WP-M-BATH2-SURR, floor to ceiling, 53.0 SF net since 2026-10-22 (the W-M-TUBDK-S span went
 # to the Corian stall face). 2026-10-29: Swanstone Modern Subway in White (.010), 2 x
 # MSMK-9636-1 (36x96) at $987 list each (swanstone.com) = $1,974, ~$37/SF list; White lists a
@@ -8112,9 +8118,9 @@ finish-floor-prep-and-self-levelling = { low = 0.80, high = 2.09, unit = "SF", d
 # way. What changed under it:
 #   * RM-B-BATH went to sheet vinyl with a 6" integral flash cove. That floor now needs no
 #     backer and no membrane at all — the cove IS the waterproofing — and no threshold.
-#   * RM-M-BATH2's and RM-A-STUBATH's shower panels DO get backer and a membrane since
-#     2026-10-12, but both bill on their own fixture rows (FX-SHOWER-36-THERMO-COMBO,
-#     -NEO-COMBO), not here. Both lit niches are gone.
+#   * RM-M-BATH2's Swanstone gets glass-mat backer and RM-A-STUBATH's QWALL-2 greenboard;
+#     neither takes a membrane since 2026-11-05, and both bill on their own fixture rows
+#     (FX-SHOWER-36-THERMO-COMBO, -NEO-COMBO), not here. Both lit niches are gone.
 # What is left, and why this cannot go to zero: RM-M-BATH2's 39.5 SF of tiled floor over
 # FH-M-BATH2 and RM-B-SAUNA's 45 SF of splash tile. Halving the
 # lump is a defensible reading of that residue; it is not an arithmetic result, and the next

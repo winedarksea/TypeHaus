@@ -17,6 +17,14 @@ FS-M-EAST / SL-M-DECK boundary this opening sits south of.
 2026-09-19 this note asks nobody to open a manufacturer's book** — the floor opening that
 required one is gone, and with it the last Source line this note could not supply.
 
+> **Amendment 2026-11-05: `W-B-E1/E2` are a 10" pour (`BASEMENT_10`) and the wythe moved 2"
+> EAST** onto `W-M-E1`'s 1/2" gwb: brick x 421 7/8"–425 1/2", pour 422"–432", so it still
+> bears on the pour bar 1/8" (§1). The tie gap is gone (ties screw through the gwb, §5) and
+> the firebox pocket is **9 5/8"** brick face to sheathing, not 11 1/2"; the ClassicFlame's
+> 9 1/2" body fills it. Joists still clear: brick back 1/2" short of the 5 1/2" mudsill (§3).
+> Line load, piers and pockets are unchanged. Figures below that say 12", 419 7/8", 423 1/2"
+> or 1 7/8" are the pre-amendment values.
+
 > **Amendment 2026-10-16: the whole surround moved 16" south**, centre y=8'-8" -> 7'-4", one
 > joist module, so every clearance in §3 is unchanged and only the stations and joist numbers
 > below moved: pockets on joists 005/006 (y=80"/96"), piers 65 7/8"–78" / 82"–94" /

@@ -1,4 +1,4 @@
-"""BATH2's stock front, supported custom return, and molded pan drain."""
+"""BATH2's stock front, stock clipped return, and molded pan drain."""
 
 import ifcopenshell
 import pytest
@@ -29,7 +29,7 @@ def test_actual_finished_opening_and_outward_swing(catlin_model_ro):
     dimensions = BATH2_SHOWER
     width, depth = dimensions.pan_width * INCH, dimensions.pan_depth * INCH
     north, south = front_opening_limits(width)
-    assert (south - north) / INCH == pytest.approx(36)
+    assert (south - north) / INCH == pytest.approx(35.5)
     opening = (south - north) / INCH
     assert dimensions.front_minimum_width <= opening <= dimensions.front_maximum_width
     # Check the authored finish and deck, rather than trusting the nominal config alone.
@@ -45,14 +45,17 @@ def test_actual_finished_opening_and_outward_swing(catlin_model_ro):
     assert jamb[1] == pytest.approx(finished_south_face)
     north_jamb = place_local([(north, -depth / 2)], fixture.position, fixture.rotation_degrees)[0]
     actual_finished_opening = (north_jamb[1] - finished_south_face) / INCH
-    assert actual_finished_opening == pytest.approx(36)
+    assert actual_finished_opening == pytest.approx(35.5)
+    # One jamb plane: the Corian stall face below the deck, the post above it.
+    stall = next(panel for panel in model.panelings if panel.tag == "WP-M-BATH2-TUBDK-STALL")
+    assert min(y for _, y in stall.outline) == pytest.approx(north_jamb[1])
     deck = next(solid for solid in model.solids if solid.tag == "SL-M-TUBDK")
-    assert min(y for _, y in deck.outline) == pytest.approx(north_jamb[1])
     east_panel = next(panel for panel in model.panelings
                       if panel.tag == "WP-M-BATH2-SURR" and panel.wall_tag == "W-M-BA2E2")
     # Its run is clipped by the room's clear face (paint takes no depth): no corner gap.
     assert min(y for _, y in east_panel.outline) == pytest.approx(finished_south_face)
-    assert max(y for _, y in east_panel.outline) == pytest.approx(north_jamb[1])
+    assert max(y for _, y in east_panel.outline) == pytest.approx(
+        min(y for _, y in deck.outline))
     sweep = Polygon(place_local(door_swing_outline(width, depth), fixture.position,
                                 fixture.rotation_degrees))
     vanity = next(obj for obj in model.canvas_objects if obj.tag == "FX-M-BATH2-SINK")
@@ -77,13 +80,14 @@ def test_pan_glass_datums_and_solid_surface_wire_material(catlin_model_ro):
     def datum(part, sign):
         return (fixture.z_m + part["center"][2] + sign * part["size"][2] / 2) / INCH
 
-    assert datum(north, -1) == pytest.approx(22.75)
-    assert datum(north, 1) == pytest.approx(106)
+    # A stock 80" panel on 1/4" setting blocks, 3" short of the ceiling; the post runs up.
+    assert datum(north, -1) == pytest.approx(23)
+    assert datum(north, 1) == pytest.approx(103)
     assert max(datum(p, 1) for p in parts) == pytest.approx(106)
     assert fixture.z_m == pytest.approx(0.75 * INCH)
     assert max(datum(p, 1) for p in front) < 77.25  # glass sits within the top rail
     rails = [p for p in parts if p["color"] == "chrome"
-             and p["size"][0] == pytest.approx(width)
+             and p["size"][0] == pytest.approx(width - BATH2_SHOWER.north_jamb_inset * INCH)
              and p["size"][1] / INCH == pytest.approx(BATH2_SHOWER.rail_width)]
     assert max(datum(p, 1) for p in rails) == pytest.approx(77.25)
     assert fixture.body_z1_m == pytest.approx(106 * INCH)

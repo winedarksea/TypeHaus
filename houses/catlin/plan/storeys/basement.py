@@ -1,6 +1,6 @@
 # haus: editable
 # Basement — cast concrete walkout box, 18' center grid, sauna, stair (WP3.1).
-# The perimeter is 8" except the east wall, which is 12" for the fireplace brick wythe
+# The perimeter is 8" except the east wall, which is 10" for the fireplace brick wythe
 # (see the WALLS header below). South wall is the walkout side facing the sunken garden.
 # Perimeter walls align on the concrete exterior face so the 4" of exterior XPS stacks
 # directly under the framed wall's 4" polyiso+EPS (#43 control-layer continuity) — which
@@ -50,8 +50,8 @@ from typehaus import (
 # Two of those clears got 4" BIGGER on 2026-08-21 and the datums above are still the
 # back-calculation, not the built number: thinning W-B-W1/W2 to 8" moved the west wall's
 # inside face from x=1'-0" to 0'-8", so the furnace room reads 8'-10" and the workshop
-# 7'-10". Both rooms only gain. The playroom (16'-6", between the centre line and the east
-# wall, both 12") is unchanged, which is why the architect's dimension still holds.
+# 7'-10". Both rooms only gain. The playroom was the architect's 16'-6" between two 12"
+# walls; the east wall's 10" pour (2026-11-05) and the framed x=18' line make it larger.
 #
 # **The shaft is 7'-2 3/4" with 5/8" plywood**, and the furnace room 9'-1 1/8": framing
 # W-B-STR/W-B-STR3 (see WALLS) put the well's west face on x=10'-3 1/4" instead of
@@ -310,16 +310,16 @@ _B8_STEEL = ReinforcementSpec(
     cover=inch(1.25),
     source="IRC R404.1.2(8) verticals (the string beside it), R404.1.3.3.7.2 location; R404.1.2(1) horizontal rows",
 )
-# The 12" east walls read NR for verticals (R404.1.2(8) at 12"/45/8'/7'), and R404.1.2(1)'s
+# The 10" east walls read NR for verticals (R404.1.2(8) at 10"/45/8'/7'), and R404.1.2(1)'s
 # horizontal rows apply regardless (notes/basement_wall_horizontal_steel.md §2).
-_B12_STEEL = ReinforcementSpec(
+_B10_STEEL = ReinforcementSpec(
     bars=(BarSpec(role="horizontal", bar=4, count=3),),
     cover=inch(2.0),
     source="IRC Table R404.1.2(1) horizontal rows; verticals NR per R404.1.2(8)",
 )
 
 WALLS = [
-    # Perimeter foundation walls (8" or 12" + exterior XPS), CCW from SW corner.
+    # Perimeter foundation walls (8" or 10" + exterior XPS), CCW from SW corner.
     #
     # `lateral_support="top_and_bottom"` is the precondition for the prescriptive path, not a
     # detail: SL-B bears against the inside face at the bottom and FS-MAIN's diaphragm ties
@@ -354,15 +354,16 @@ WALLS = [
     # the 12" segments carried SL-M-DECK (retired 2026-11-01, now FS-M-NE trusses), and an 8"
     # wall would carry the trusses just as well.
     #
-    # So the three that stay 12" stay for reasons that are no longer about bearing width,
-    # and each is worth stating.
+    # So the walls that are not 8" are so for reasons that are no longer about bearing
+    # width, and each is worth stating.
     #
-    #   W-B-E1/E2 — the east perimeter. FS-M-NE's truss ends land here, but 12" is not
-    #     needed for the seat. **W-B-E1 is held at 12" by the fireplace**: the brick wythe
-    #     (x 419 7/8"..423 1/2") bears on this pour (420"..432", outer face pinned on 36'-0"),
-    #     and a 10" or 8" pour would put ~2" of it on the joists (notes/east_breast_bearing.md).
-    #     E2 stays 12" so the east wall is one section, no inside-face step at y=18'. 10" was
-    #     weighed and declined 2026-10-11: NR either way, ~2 cy saved, an odd form module.
+    #   W-B-E1/E2 — the east perimeter, **10" since 2026-11-05** (12" before; declined
+    #     2026-10-11 on the odd form module, taken on the owner's call). FS-M-NE's truss ends
+    #     land here and need no width. **W-B-E1 is held at 10" by the fireplace**: the brick
+    #     wythe moved 2" east to lie tight on W-M-E1's 1/2" gwb (x 421 7/8"..425 1/2") and
+    #     bears on this pour (422"..432", outer face pinned on 36'-0") bar 1/8". An 8" pour
+    #     would put ~2" of it on the joists (notes/east_breast_bearing.md). E2 matches so the
+    #     east wall is one section, no inside-face step at y=18'. NR either way.
     #   W-B-CS2, W-B-CN2, W-B-CN — were the centre line under the cast band; framed 2x6
     #     since 2026-11-01 (below).
     #   W-B-CS — FRAMED, and no longer on this list at all. It carried wood on both faces,
@@ -540,17 +541,17 @@ WALLS = [
                    vertical_reinforcement='#5 @ 41" o.c.',
                    reinforcement=_B8_STEEL),
     FoundationWall(uid="CBW104AAAA", tag="W-B-E1", start_node="N-B-SE",
-                   end_node="N-B-E1", assembly="BASEMENT_12",
+                   end_node="N-B-E1", assembly="BASEMENT_10",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   reinforcement=_B12_STEEL),
+                   reinforcement=_B10_STEEL),
     FoundationWall(uid="CBW105AAAA", tag="W-B-E2", start_node="N-B-E1",
-                   end_node="N-B-NE", assembly="BASEMENT_12",
+                   end_node="N-B-NE", assembly="BASEMENT_10",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   reinforcement=_B12_STEEL),
+                   reinforcement=_B10_STEEL),
     FoundationWall(uid="CBW106AAAA", tag="W-B-N1", start_node="N-B-NE",
                    end_node="N-B-N1", assembly="BASEMENT_8",
                    alignment=face("concrete-ext"),

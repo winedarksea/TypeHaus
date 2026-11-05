@@ -171,9 +171,9 @@ MAIN_PLACEABLES = [
     # is now hosted on this placeable, the same way FURN-B-PLAY-TV and the kitchen wall
     # cabinets are hung, and plan/millwork.py's bank hangs off it.
     #
-    # x=34'-11 5/8" is the CENTRE of an 11 1/2" depth, so the slab runs x 413 7/8"..425 3/8":
-    # its back lands exactly on the room's gwb face (35'-5 3/8"), covering the 1 7/8" tie
-    # space behind the brick, and it projects 6" past the brick face at 34'-11 7/8".
+    # The 11 1/2" slab is hosted on W-M-E1's gwb face (x 425 1/2"), so it runs x 414"..425 1/2"
+    # and, with the brick tight on the gwb since 2026-11-05, projects 7 7/8" past the brick
+    # face at x=35'-1 7/8" (6" before the move).
     # `rotation=deg(90)` turns the 45 1/2" onto y, flush with the panel's ends.
     #
     # ** `elevation` IS THE BASE, AND ITS DATUM IS THE FINISHED FLOOR (corrected 2026-09-11). **

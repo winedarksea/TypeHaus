@@ -495,11 +495,13 @@ ALARMS = [
 # neo-angle's base and glass enclosure close the cut corner, not the walls. Stations are the pan's
 # 36" legs along each axis: W-A-HALL-S from x=10'-0" (pan x 14'-8 5/8"..17'-8 5/8") and W-A-C2M
 # from y=17'-4" (pan y 19'-1 5/8"..22'-1 5/8"); both end on the other wall's finish face.
-# `height=ft(7)` is the type's own. `spans` keeps the band off the bath's other walls.
+# Since 2026-11-05 the panels are DreamLine QWALL-2 acrylic/ABS (DL-6040C-01's kit height,
+# 75 5/8"), glued to greenboard: no membrane, no glass-mat backer. `spans` keeps the band
+# off the bath's other walls.
 PANELING = [
     WallPaneling(uid="FV9CBHVTNC", tag="WP-A-STUBATH-SURR", room="RM-A-STUBATH",
-                 material_ref="marble-look-panel", height=ft(7),
-                 replaces_wall_finish=True,
+                 material_ref="acrylic-shower-panel", height=inch(75.625),
+                 replaces_wall_finish=True, thickness=inch(0.125),
                  spans=(PanelingSpan(wall_ref="W-A-HALL-S", start=ft(4, 8.625),
                                      length=ft(3)),
                         PanelingSpan(wall_ref="W-A-C2M", start=ft(1, 9.625),

@@ -128,6 +128,12 @@ MATERIALS_ISHTAR = [
              name="Marble-look cast shower wall panel (1/2\")",
              r_per_inch=0.0, density=1600.0, hatch="stone", color="#efece6",
              source="RM-M-BATH2 shower surround, 2026-09-02; \"marble-look\" spans cultured marble, cast solid surface and acrylic and the product family is an OPEN OWNER SELECTION — see prices.toml [wood_surfaces] for the price spread that collapses when it is made"),
+    # RM-A-STUBATH's shower walls since 2026-11-05, WP-A-STUBATH-SURR: the QWALL-2 half of
+    # DreamLine's DL-6040C-01 neo-angle kit. Billed in the kit (FX-SHOWER-36-NEO-COMBO).
+    Material(tag="acrylic-shower-panel",
+             name="Acrylic/ABS shower wall panel, DreamLine QWALL-2, white",
+             r_per_inch=0.0, density=1150.0, hatch="stone", color="#f6f6f4",
+             source="RM-A-STUBATH, owner 2026-11-05: stock white, cheap, nonporous and grout-free. DreamLine DL-6040C-01 (SlimLine 36x36 neo-angle base + QWALL-2 2-piece corner backwalls), glue-up over greenboard or cement board; no antimicrobial additive is claimed"),
     # RM-M-BATH2's shower walls since 2026-10-12, WP-M-BATH2-SURR, base to 96". Swanstone
     # Modern Subway relief in White (.010), owner 2026-10-29. Same reasoning as
     # marble-look-panel above: no species, no vapour field. The band authors the panel's 1/4".

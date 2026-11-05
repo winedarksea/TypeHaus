@@ -68,8 +68,11 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             spans_by_wall: dict[str, list] = {}
             for span in el.spans:
                 spans_by_wall.setdefault(span.wall_ref, []).append(span)
+            inner: set[str] = set()
             if room is not None:
-                walls = walls + _inner_walls(model, room, spans_by_wall, walls)
+                extra = _inner_walls(model, room, spans_by_wall, walls)
+                inner = {wall.tag for wall, _ in extra}
+                walls = walls + extra
             for ref in spans_by_wall:
                 if ref not in {wall.tag for wall, _ in walls}:
                     scope = f"bound room {room.tag}" if room is not None \
@@ -93,9 +96,13 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 if spans_by_wall:
                     if wall.tag not in spans_by_wall:
                         continue  # spans authored => only the named walls carry the band
+                    # A knee wall's span may run past its axis ends: the face wraps the
+                    # outside corner of the wall it meets (a waterfall's bonded corner).
                     intervals = [
-                        (max(u0, span.start.meters),
-                         min(u1, span.start.meters + span.length.meters))
+                        ((span.start.meters, span.start.meters + span.length.meters)
+                         if wall.tag in inner else
+                         (max(u0, span.start.meters),
+                          min(u1, span.start.meters + span.length.meters)))
                         for span in spans_by_wall[wall.tag]
                     ]
                 # Band in wall-local z, up from the wall base (== the room floor), clamped

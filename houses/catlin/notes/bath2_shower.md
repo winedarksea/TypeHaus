@@ -75,26 +75,41 @@ until the outlet itself is at about 105. That tail is the whole reason for the s
 
 | side | what | height | open above |
 |---|---|---|---|
-| north (tub) | custom fixed pane on Corian, independently supported at the east wall, ceiling and west post | deck 22¾" to ceiling 106" (83¼" high) | none |
+| north (tub) | stock 32 × 80" 3/8" fixed panel on Corian, clipped to the deck, east wall and west post | 23" (¼" setting blocks on the 22¾" deck) to 103" | 3" |
 | west (front) | DreamLine Flex SHDR-22327200-01, chrome, stock pivot front | 72" above threshold; top at datum 77¼" | 28¾" |
 | east, south | Swanstone Modern Subway panels, White (`WP-M-BATH2-SURR`) | 106" | none |
 
 **Selected 2026-10-22:** a stock framed pivot front and a custom north pane replace the
 90" custom front. The supplied top/bottom rails supersede the earlier trackless preference.
 Corrected 2026-10-29: the pan bears on the ¾" subfloor, without tile or DITRA beneath
-it. Its 4½" threshold puts the front's head at 77¼" above storey datum. The custom
-north glass remains anchored at deck datum 22¾" and modeled ceiling datum 106".
+it. Its 4½" threshold puts the front's head at 77¼" above storey datum.
 There is no transom, and the gap to the ceiling remains the steam path.
+
+**Stock north panel (owner, 2026-11-05)**, replacing the custom pane. 80" is the tallest stock
+height; 83¼" was open, so it stops 3" short of the ceiling, which the open front makes
+harmless. The width is the catch: the east end lands on the 6" Corian splash, ⅜" proud of
+the pan edge, so a 1½" post leaves ~33⅝", too tight for a 34" panel. So the panel is
+**32"** and the post is a **1½ × 2½" aluminium tube**, its depth taking up the difference
+with ~⅜" at the post and ⅛" at the splash. The post is the cheap, adjustable piece: buy the
+panel, measure its actual glass, then cut the post's depth to suit (1½" faces the door
+either way).
+
+**One jamb plane (2026-11-05).** The Corian stall face (`WP-M-BATH2-TUBDK-STALL`) stands on
+the base's rim and wraps the W apron's end in the bonded SW corner. Its ½" face is the
+Flex's north jamb below the deck, and the post moved ½" south so its inside face is in the
+same plane above. The rail mounts flat for its full height, and the opening is **35½"**,
+inside the Flex's 32–36" range rather than at its limit.
 
 `ModelRepresentation.symbol="swanstone-flex-3636"` generates the pan, door, post and return
 for the viewer, GLB and IFC. `WP-M-BATH2-SURR` supplies the two wall panels separately.
-The return is inset ¾" north onto the deck; the 1½" post sits wholly on Corian, with its
-inside face on the pan's north edge. Its front-to-back centre is 1⅜" in from the pan's west
-edge, so its base clears the deck's west edge. The resolved south panel's finished face is already flush with the pan edge (its ¼"
-thickness is on the wall side), so there is **36"** between it and the post: the upper
-limit of the Flex's 32–36" adjustment range. Do not subtract the wall panel twice.
+The return is inset ¾" north onto the deck; the post sits on the Corian, with its inside
+face in the stall face's plane, ½" inside the pan's north edge. Its front-to-back centre is
+1⅜" in from the pan's west edge, so its base clears the deck's west edge. The resolved south
+panel's finished face is already flush with the pan edge (its ¼" thickness is on the wall
+side), so there is **35½"** between it and the jamb, inside the Flex's 32–36" adjustment
+range. Do not subtract the wall panel twice.
 The MSMK-9636-1 panels are **¼"** (`thickness` on the band, 2026-10-30; it drew the ½"
-default before). The room face did not move, so the pan fit, the 36" opening and the reveal
+default before). The room face did not move, so the pan fit, the opening and the reveal
 bead LF are unchanged. On site the panel stands about ¼" proud of the painted board past its
 free edges, where the F reveal stops it; set the R10000 plaster guard to the actual panel
 face at rough-in, about ¼" nearer the backer than a ½" panel, and confirm that depth against
@@ -105,13 +120,13 @@ y=158.25"–194.25", flush with the south surround. The deck edge, west apron an
 surround/splash spans follow; the tub and its service connections stay put. Its internal
 foot-bay clearance grows from 4.740" to 4.865".
 Field-measure the finished opening and confirm tolerances before ordering.
-Post and channel dimensions are preliminary visualization allowances, not a shop drawing.
+Post and clip dimensions are preliminary visualization allowances, not a shop drawing.
 
 **Procurement confirms:** DreamLine requires finished solid jambs and at least **1⅜" of
 flat threshold**. The pan's modeled 2¾" threshold footprint is not certification of its flat
 bearing width: verify the top land and corner radii on the Swanstone dealer's submittal.
-Have DreamLine/glazier approve the supported-post jamb connection; size the post, its
-connections into deck/ceiling backing, channels and tempered north pane. Do not transfer
+Have DreamLine approve the post jamb connection; anchor the post into deck and ceiling
+backing, and clip the stock panel to it with the panel's own hardware. Do not transfer
 the door's load to the unsupported edge of the return. No glass drilling after tempering.
 The front pivots at the south wall and swings out toward the vanity; the integration test
 checks its conservative sweep, including the handle, against the vanity and bathroom door.
@@ -199,9 +214,9 @@ would retype the whole wall face).
 
 | shower | behind the finish | rule |
 |---|---|---|
-| BATH2 (`FX-M-BATH2-SH`) | glass-mat gypsum or cement backer, floor to ceiling, on both closed walls; bonded liquid membrane (RedGard / Hydro Ban class) lapped OVER the base flange; panel bonded over that | neither wall is exterior, so no double vapour barrier |
-| BATH2 knee wall `W-M-TUBDK-S` | the Corian stall face (`WP-M-BATH2-TUBDK-APRON`, since 2026-10-22), bonded to the deck top and run 3/4"-22 3/4" with no horizontal joint under the glass; its E end meets the Swanstone E panel in a silicone corner, the base flange tucked behind it | the top slopes >= 1/4" into the stall on the stall side of the glass; glass in a routed channel or clamps, bedded in silicone (`notes/bath2_tub_deck_finish.md` §3) |
-| STUBATH neo-angle | the same backer and membrane under `WP-A-STUBATH-SURR` | priced on `FX-SHOWER-36-NEO-COMBO` |
+| BATH2 (`FX-M-BATH2-SH`) | primed glass-mat gypsum or cement backer, floor to ceiling, on both closed walls, over the base flange; panel siliconed and taped to it; **no liquid membrane** (owner, 2026-11-05) | neither wall is exterior, so no double vapour barrier |
+| BATH2 knee wall `W-M-TUBDK-S` | the Corian stall face (`WP-M-BATH2-TUBDK-APRON`, since 2026-10-22), bonded to the deck top and run 3/4"-22 3/4" with no horizontal joint under the glass; its E end meets the Swanstone E panel in a silicone corner, the base flange tucked behind it | the top slopes >= 1/4" into the stall on the stall side of the glass; stock panel on clips and setting blocks, sealed in silicone (`notes/bath2_tub_deck_finish.md` §3) |
+| STUBATH neo-angle | DreamLine DL-6040C-01: QWALL-2 acrylic/ABS panels (`WP-A-STUBATH-SURR`) glued to greenboard or cement board, base flange to the studs; no membrane (owner, 2026-11-05) | the kit, panels included, is priced on `FX-SHOWER-36-NEO-COMBO` |
 | BATH1, SUITEBATH tub-showers | the one-piece insert IS the wall | **nothing penetrates the insert** but the valve and spout knockouts; use the moulded shelves. Both lit niches are dropped (`notes/superseded/shower_niche.md`) |
 | BATH1's back, exterior `W-S-N3` | insert inside, ccSPF outside: ~0 perm both faces | never penetrate it |
 | sauna rinse | model: tile on shiplap; note: foam backer | OPEN — `notes/sauna_shower_basement_detail.md` |
@@ -209,11 +224,16 @@ would retype the whole wall face).
 **Backer: the spec above stands** (owner, 2026-10-22, after a reviewer suggested GoBoard).
 Swanstone's shower-wall-kit guide prepares sheetrock/greenboard/cementboard/wood, plaster,
 cement/concrete, old tile, wallpaper and Masonite. It lists no foam board, and it wants
-every one sealed with a water- or oil-based primer/sealer. So **trial-bond Swanstone's tape
-and adhesive to the cured membrane, or prime over the membrane with a water-based primer**
-first. GoBoard (JM polyiso tile backer, ICC-ES ESR-4812) was considered and declined: it is
-a tile backer, Swanstone does not list foam board, and the liquid membrane already provides
-the waterproofing GoBoard would add.
+every one sealed with a water- or oil-based primer/sealer. GoBoard (JM polyiso tile backer,
+ICC-ES ESR-4812) was considered and declined: it is a tile backer, and Swanstone does not
+list foam board.
+
+**No membrane behind the Swanstone** (owner, 2026-11-05). The panel is the nonabsorbent
+surface IRC R307.2 asks for, and Swan's wall guide mounts it with 100% silicone and tape
+on primed board, naming no membrane. Water is kept out at the joints: the panel laps the
+base's lip in silicone, the flange sits behind the backer, and the corner and escutcheons
+are sealed. The glass-mat backer stays, as cheap insurance. A membrane under tile or under
+a jointed panel system is still the house rule elsewhere.
 
 BATH2's base: integral flanges E, S and N, threshold W, fully bedded with no voids, and no
 radiant cable under it. Joints: mould-inhibiting 100% silicone at panel-to-base, the corner

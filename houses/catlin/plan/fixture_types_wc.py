@@ -205,7 +205,7 @@ TOTO_DRAKE = FixtureType(
 # R10000 rough, one magnetic combo outlet (the diverter rough, second riser and slide bar of
 # FX-SHOWER-36-DIVERTED are gone, 2026-10-12), solid-surface walls and base, and glass that
 # stops short of the ceiling on purpose. The generated model carries the stock Flex
-# front and the independently supported custom return; shop connections remain open.
+# front and the stock clipped return (2026-11-05); the post detail remains open.
 SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
     "excludes_floor_finish": True,
     "tag": "FX-SHOWER-36-THERMO-COMBO",
@@ -227,22 +227,24 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
               'outlet. Base: a Swanstone SS-3636 36x36 centre-drain solid-surface base '
               '(PROD-SOLID-SURFACE-SHOWER) under floor-to-ceiling Modern Subway panels '
               '(WP-M-BATH2-SURR), White (.010), owner 2026-10-29. '
-              'GLASS: on the tub (north) side, floor to ceiling on the Corian deck\'s S leg over '
-              'W-M-TUBDK-S, in a routed channel or clamps, the top sloped >= 1/4 in. into the '
-              'stall, no joint under the glass (notes/bath2_tub_deck_finish.md); on '
+              'GLASS: on the tub (north) side, a STOCK 32 x 80 in. 3/8 in. clear frameless '
+              'fixed panel, chrome clips (owner 2026-11-05), on 1/4 in. setting blocks on the '
+              'Corian deck\'s S leg over W-M-TUBDK-S, top at 103 in., 3 in. open to the '
+              'ceiling; deck top sloped >= 1/4 in. into the stall, no joint under the glass '
+              '(notes/bath2_tub_deck_finish.md); on '
               'the front (west), DreamLine Flex SHDR-22327200-01, chrome, 32-36 in. opening, '
               '72 in. above the 4 1/2 in. threshold, with supplied rails, seals and south-side '
-              'pivot. PROD-DREAMLINE-FLEX-3272. A preliminary 1 1/2 in. north post sits on '
-              'the Corian deck with ceiling backing; its inside face forms the north jamb. '
-              'Custom north glass in channels to the 106 in. ceiling. Manufacturer/glazier '
-              'confirmation required for the post, channels, glass thickness and hybrid '
-              'connection before ordering. Base bears on the 3/4 in. subfloor without '
+              'pivot. PROD-DREAMLINE-FLEX-3272. The north post is a 1 1/2 x 2 1/2 in. aluminium '
+              'tube, deck to ceiling backing; its inside face forms the north jamb, its depth '
+              'takes up the 36 in. pan the 32 in. panel does not, and the panel clips to it '
+              'and the east wall. Buy the panel first and cut the post to its actual glass '
+              'width. DreamLine confirms the door-to-post mounting. Base bears on the 3/4 in. subfloor without '
               'room tile beneath it. Front rail top 77 1/4 in. above storey datum, '
               'leaving 28 3/4 in. open to the ceiling. No transom: the gap leads to REG-M-EXH2, '
               'which sits just outside it (notes/bath2_shower.md). WET WALLS: behind every '
-              'panel, floor to ceiling, glass-mat gypsum or cement backer, then a bonded '
-              'liquid membrane (RedGard / Hydro Ban class) lapped OVER the base flange, then '
-              'the panel bonded over that. Base flanged E/S/N, threshold W, fully bedded, no '
+              'panel, floor to ceiling, primed glass-mat gypsum or cement backer over the '
+              'base flange, then the panel siliconed and taped to it per Swan\'s guide; no '
+              'liquid membrane (owner 2026-11-05). Base flanged E/S/N, threshold W, fully bedded, no '
               'radiant cable under it. Mould-inhibiting 100% silicone at panel-to-base, the '
               'corner and the Corian stall face; escutcheons sealed to the panel and the R10000 '
               'plaster guard set to the panel face. No niche. The stock Flex bottom rail '
@@ -327,16 +329,18 @@ SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
     "source": 'RM-A-STUBATH, owner selection 2026-09-09, replacing the 36" square pan. Same '
               'Delta MultiChoice R10000-UNBX rough (ASSE 1016), same single-function trim, '
               'same Moen Engage Magnetix 26010SRN two-in-one head; what changes is the base '
-              'and the enclosure. CLASS ALLOWANCE for the base and glass: a 36" x 36" '
-              'neo-angle acrylic or solid-surface receptor with a three-panel pivot '
-              'enclosure (DreamLine Prism / Kohler Purist class). ** THE 16" CORNER CUT IS '
-              'THE SPECIFICATION AND IT IS NOT UNIVERSAL: ** confirm the ordered base before '
-              'the enclosure is bought, because a deeper cut takes the P2708.1 circle under '
-              '30". The freeze note on SHOWER_36_COMBO applies unchanged — every supply and '
-              'this valve stay on an interior partition inside the thermal envelope. WET '
-              'WALLS: glass-mat gypsum or cement backer behind WP-A-STUBATH-SURR, then a '
-              'bonded liquid membrane (RedGard / Hydro Ban class) lapped over the base '
-              'flange, then the panel; silicone at every panel joint and escutcheon.',
+              'and the enclosure. BASE AND WALLS (owner 2026-11-05): DreamLine DL-6040C-01, '
+              'a SlimLine 36" x 36" neo-angle acrylic base with QWALL-2 two-piece white '
+              'acrylic/ABS corner backwalls (WP-A-STUBATH-SURR). GLASS: class allowance for '
+              'a matching three-panel neo-angle pivot enclosure (DreamLine Prism class). ** '
+              'THE 16" CORNER CUT IS THE SPECIFICATION AND IT IS NOT UNIVERSAL: ** confirm '
+              'the SlimLine base\'s cut and its drain position before the enclosure is '
+              'bought, because a deeper cut takes the P2708.1 circle under 30". The freeze '
+              'note on SHOWER_36_COMBO applies unchanged — every supply and this valve stay '
+              'on an interior partition inside the thermal envelope. WET WALLS: base flange '
+              'to the studs, greenboard or cement board over it, QWALL-2 panels glued to '
+              'that per DreamLine; no liquid membrane. Silicone at the panel-to-base joint, '
+              'the corner and every escutcheon.',
 })
 
 # RM-S-BATH1 and RM-S-SUITEBATH. The two 60" combos, and the two places a handshower earns

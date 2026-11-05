@@ -1,7 +1,7 @@
-"""Swanstone pan, stock Flex front and separately supported custom north glass.
+"""Swanstone pan, stock Flex front and a stock fixed north panel on clips.
 
-The front is a stock-size design intent, not an approved hybrid installation. A glazier
-must size the post/connections and confirm the door-to-post and pane-to-channel details.
+The front is a stock-size design intent, not an approved hybrid installation. The
+installer must confirm the door-to-post and panel-to-post details.
 """
 
 from math import cos, pi, sin
@@ -16,7 +16,7 @@ def front_opening_limits(width: float) -> tuple[float, float]:
     """Local x of the post's inside face and the finished south wall, metres."""
     dimensions = BATH2_SHOWER
     scale = width / dimensions.pan_width
-    return (-width / 2,
+    return (-width / 2 + dimensions.north_jamb_inset * scale,
             width / 2 - dimensions.finished_wall_inset * scale)
 
 
@@ -88,10 +88,12 @@ def swanstone_flex(width: float, depth: float, height: float):
                        dimensions.drain_floor_height * sz, "chrome"))
 
     front = -half_depth + dimensions.threshold_depth / 2
-    post = -half_width - dimensions.post_width / 2
+    post = -half_width + dimensions.north_jamb_inset - dimensions.post_width / 2
     deck = dimensions.deck_datum - dimensions.base_datum
-    solid(post, front, deck, dimensions.model_height,
-          dimensions.post_width, dimensions.post_width, "chrome")
+    post_front = front - dimensions.post_width / 2
+    post_back = post_front + dimensions.post_depth
+    solid(post, (post_front + post_back) / 2, deck, dimensions.model_height,
+          dimensions.post_width, dimensions.post_depth, "chrome")
     north, south = (value / sx for value in front_opening_limits(width))
     rail = dimensions.rail_width
     z0 = dimensions.threshold_height
@@ -117,16 +119,20 @@ def swanstone_flex(width: float, depth: float, height: float):
         solid(meeting + rail, front - dimensions.handle_projection / 2,
               z, z + dimensions.seal_width, dimensions.seal_width * 2,
               dimensions.handle_projection, "chrome")
-    # The return starts on Corian, not on the pan, and has its own three-sided support.
-    channel = dimensions.channel_width
-    back = half_depth
-    solid(post, (front + back) / 2, deck, dimensions.model_height,
-          dimensions.north_glass_thickness, back - front, "clear-glass")
-    for z in (deck, dimensions.model_height - channel):
-        solid(post, (front + back) / 2, z, z + channel,
-              channel, back - front, "chrome")
-    solid(post, back - channel / 2, deck, dimensions.model_height,
-          channel, channel, "chrome")
+    # The return stands on Corian, not on the pan: a stock panel clipped to the deck, the
+    # east wall and the post, open to the ceiling above.
+    east = half_depth - dimensions.north_glass_wall_gap
+    west = east - dimensions.north_glass_width
+    glass_z0 = deck + dimensions.north_glass_setting
+    glass_z1 = glass_z0 + dimensions.north_glass_height
+    solid(post, (west + east) / 2, glass_z0, glass_z1,
+          dimensions.north_glass_thickness, east - west, "clear-glass")
+    clip, grip = dimensions.clip_size, dimensions.north_glass_thickness + 0.5
+    for y in (west + 3 * clip, east - 3 * clip):
+        solid(post, y, deck, glass_z0 + clip, grip, clip, "chrome")
+    for y in (post_back, half_depth):
+        for z in (glass_z0 + 12, glass_z1 - 12):
+            solid(post, y, z, z + clip, grip, clip, "chrome")
     # Retain visible showering trim as the generic symbol did. These are product-family
     # massing at illustrative mounting heights, not rough-in coordinates or service ports.
     head_z = (dimensions.head_height - dimensions.base_datum) * sz

@@ -222,12 +222,12 @@ def test_no_detail_component_is_ever_a_symbol(catlin_model):
     # The vocabulary itself is untouched and still fires for any stack with an AIRGAP or
     # FURRING band above the deck — this parametrization simply has no such stack left to
     # point at. Restore the row the moment one exists again.
-    ("wall_foundation:BASEMENT_12", "z-flashing"),
-    ("wall_foundation:BASEMENT_12", "l-flashing"),
-    ("wall_foundation:BASEMENT_12", "sealant-bead"),
-    ("wall_foundation:BASEMENT_12", "sill-gasket"),
+    ("wall_foundation:BASEMENT_10", "z-flashing"),
+    ("wall_foundation:BASEMENT_10", "l-flashing"),
+    ("wall_foundation:BASEMENT_10", "sealant-bead"),
+    ("wall_foundation:BASEMENT_10", "sill-gasket"),
     # The rainscreen's base vent/insect strip — the same closure the resolver bills.
-    ("wall_foundation:BASEMENT_12", "bug-screen"),
+    ("wall_foundation:BASEMENT_10", "bug-screen"),
     # The unheated slab-on-grade base: water on the stem's interior face is turned in
     # onto the sloped slab (``garage_wall_detail_side_ifc.png``).
     ("wall_foundation:GARAGE_ICF_6", "interior-drip-flashing"),
@@ -386,7 +386,7 @@ def test_the_exposed_basement_band_draws_the_layer_the_order_bills(catlin_model)
     from typehaus.quantities import M_PER_IN
 
     _derived, scene = _exact_detail_scene(
-        catlin_model, "wall_foundation:BASEMENT_12|EXT_2X6")
+        catlin_model, "wall_foundation:BASEMENT_10|EXT_2X6")
     board = _component_nodes(scene, "foam-protection-board")[0]
     grade_in = catlin_model.plan.project.site.grade.meters / M_PER_IN
     # Drawn from the resolved layer: its head is the top of the wall, where the Z-flashing
@@ -428,7 +428,7 @@ def test_suspended_deck_base_gets_no_interior_drip(catlin_model):
     ``SL-M-DECK`` is 9" of suspended structural concrete with rooms beneath it, not a
     slab-on-grade — it drains to no apron, so drawing the drip there would be fiction.
     """
-    _derived, scene = _detail_scene(catlin_model, "wall_foundation:BASEMENT_12")
+    _derived, scene = _detail_scene(catlin_model, "wall_foundation:BASEMENT_10")
     assert "interior-drip-flashing" not in _component_tags(scene)
 
 
@@ -465,7 +465,7 @@ def test_sill_gasket_is_the_compressed_sixteenth(catlin_model):
     assert uncompressed == pytest.approx(0.25)
     assert BASEMENT_TO_FRAMED_WALL.sill_gasket_in == pytest.approx(0.0625)
 
-    _derived, scene = _detail_scene(catlin_model, "wall_foundation:BASEMENT_12")
+    _derived, scene = _detail_scene(catlin_model, "wall_foundation:BASEMENT_10")
     gasket = _component_nodes(scene, "sill-gasket")[0]
     height = (max(z for _u, z in gasket.points) - min(z for _u, z in gasket.points))
     # EXT_2X6 authors the same 1/16" on its own FramingSpec, so the drawn joint and

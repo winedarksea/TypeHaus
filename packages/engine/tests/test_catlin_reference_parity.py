@@ -92,8 +92,8 @@ WALL_PARITY = [
     # by ``test_the_wall_still_carries_four_inches_of_exterior_insulation`` below, which is
     # the fact the reference was actually fixing.
     ("basementtoframedwalldetail", "wall/cladding_in", ("EXT_2X6", "cladding")),
-    ("basementconstruction", "foundation/wall_thickness_in",
-     ("BASEMENT_12", "concrete")),
+    # ``foundation/wall_thickness_in`` (the reference's 12" pour) has no counterpart: the
+    # east wall is 10" since 2026-11-05 and the rest 8" (plan/assemblies/foundation.py).
     ("basementconstruction", "slab/slab_thickness_in", ("SLAB_FLOOR", "concrete")),
     ("basementconstruction", "slab/xps_under_in", ("SLAB_FLOOR", "xps-below")),
     # Sauna liner, per notes/sauna_basement_wall_detail.md + the shower detail's params.
@@ -130,7 +130,7 @@ def test_layer_thickness_matches_the_reference(catlin_model, fixture, path, targ
 def test_basement_exterior_insulation_matches_the_reference(catlin_model):
     """Two staggered layers of XPS on the foundation, not one thick one — seams matter."""
     params = _params("basementtoframedwalldetail")["basement_exterior"]
-    asm = catlin_model.plan.library.resolve_assembly("BASEMENT_12")
+    asm = catlin_model.plan.library.resolve_assembly("BASEMENT_10")
     xps = [ly for ly in asm.layers if ly.material_ref == "xps"]
     assert len(xps) == int(params["xps_layers"])
     for layer in xps:
@@ -144,7 +144,7 @@ def test_basement_wall_layers_run_interior_to_exterior(catlin_model):
     # everything, 1/8" (these walls align on face("concrete-ext"), so the skin's thickness
     # is free to change without moving the wall). The court walls carry no fifth layer at
     # all and are not perimeter-pour assemblies — see test_layer_extent.py.
-    for tag, outermost in (("BASEMENT_12", "foundation-coating"),
+    for tag, outermost in (("BASEMENT_10", "foundation-coating"),
                            ("BASEMENT_8", "foundation-coating")):
         asm = catlin_model.plan.library.resolve_assembly(tag)
         assert [layer.name for layer in asm.layers] == [
@@ -285,7 +285,7 @@ def test_below_grade_detail_draws_the_reference_context(catlin_model):
     The reference's basement detail sits in earth; without the grade line and the soil
     body the drawing gives no clue which side is outdoors.
     """
-    _, scene = _detail(catlin_model, "wall_foundation:BASEMENT_12")
+    _, scene = _detail(catlin_model, "wall_foundation:BASEMENT_10")
     assert {"grade-line", "soil"} <= _component_tags(scene)
 
 
@@ -307,7 +307,7 @@ def test_interior_foundation_walls_get_no_soil(catlin_model):
 
 def test_detail_components_stay_inside_their_crop(catlin_model):
     """A component that escapes the crop drags the sheet bounds and strands the drawing."""
-    for prefix in ("wall_foundation:BASEMENT_12", "wall_roof:EXT_2X6"):
+    for prefix in ("wall_foundation:BASEMENT_10", "wall_roof:EXT_2X6"):
         derived, scene = _detail(catlin_model, prefix)
         (cu0, cz0), (cu1, cz1) = derived.view.crop[0].xy_m, derived.view.crop[1].xy_m
         to_in = 39.37007874015748

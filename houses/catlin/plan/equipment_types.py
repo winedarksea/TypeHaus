@@ -238,29 +238,25 @@ EQUIPMENT_TYPES = (
     # `supplemental_heat` so it never opens its own HVAC zone — counts toward RM-M-LIVING's
     # zone (takeoff/hvac.py supplemental_heat_by_room).
     #
-    # ** THE UNIT IS AN INNOFLAME 28" SINCE 2026-09-20, AND THE POCKET IS WHY. ** It was the
-    # Amantii BI-30-XTRASLIM (BI-X190030-1) from 2026-09-06, chosen under a paragraph that
-    # began: "EVERY UNIT ON THE MARKET THAT IS 26-32" WIDE AND <= 6" DEEP AND HARDWIREABLE IS
-    # AN AMANTII." That sweep was correct and it is RETIRED, because its premise was the 4 1/2"
-    # recess and the recess is 11 1/2" now (AO-M-FIRE-NICHE, plan/storeys/main.py). ** DEPTH
-    # WAS THE SOLE-SOURCE CONSTRAINT — nothing else. ** Depth is what buys brands: 6" -> 8"
-    # adds one, 8" -> 10" adds four brands and twelve units, 10" -> 11 1/2" adds one more,
-    # while brand coverage is FLAT from 29 1/2" to 36" of width. Which is why the panel did not
-    # get wider and the hole behind it got deeper: roughly ten brands accept the pocket now
-    # against two before it — Napoleon (NEFB26H/30H, UL 2021, hardwire kit in the box), Modern
-    # Flames (RS-2621/3021), ClassicFlame (23II/26II/28II), Dimplex (DFI2310), Real Flame
-    # (4199), PuraFlame (Western 23/26), SimpliFire (SF-INS25), Innoflame 28", the Clihome-OEM
-    # 28", and the incumbent Amantii.
-    #
-    # ** WHAT IS STILL EXCLUDED, DELIBERATELY. ** Amantii TRD, Dimplex Revillusion and
-    # MagikFlame all want 12-12 1/8" and the building cannot offer it (going deeper means
-    # moving the panel west off W-B-E1's pour). SimpliFire INS30/35 and the 33"/36" tier want
-    # 30-35" of width, which costs the 8" whole-brick piers.
-    #
-    # ** THE 1/8" AT THE BACK IS REAL. ** 11 1/2" is measured to the FINISHED back face. If the
-    # chosen unit's manual requires a non-combustible back liner, 1/2" of cement board takes
-    # the pocket to 11" and loses SimpliFire INS25 and nothing else. Frame to the sheathing and
-    # line only if a manual demands it.
+    # ** THE FIELD IS INFRARED ONLY, AND THE POCKET IS 9 5/8" (2026-11-05). ** Owner: the insert
+    # MUST heat by infrared, which drops every fan-forced resistance unit the 2026-09-20 sweep
+    # counted (Napoleon NEFB, Modern Flames Redstone, Dimplex DFI, Real Flame 4199, SimpliFire,
+    # Amantii, R.W. Flame). The east pour went 12" -> 10" the same day and the wythe moved onto
+    # the gwb, so the pocket is brick face to sheathing = 9 5/8" (was 11 1/2"). Depth cost no
+    # infrared unit found: every one deeper than 9 5/8" (ClassicFlame 33II, 26II310 at ~9.9") is
+    # also over the 29 1/2" x 24" aperture or unconfirmed. What fits the 29 1/2" x 24" x 9 5/8"
+    # opening, which admits the most:
+    #   ClassicFlame 28II042FGL  29.1 x 23.1 x 9.5   (basis; 1/8" behind, 0.4" a side)
+    #   ClassicFlame 26II042FGL  ~27 x 17.7 x 8.9    (named alternate, same family/listing)
+    #   ClassicFlame 23II042FGL / ChimneyFree Aviston 23  23.6 x 20 x 8.5-8.7
+    #   ClassicFlame 18II332FGL  ~18.8 x 16.4 x 7.5  (unverified)
+    #   TURBRO In Flames INF23/INF26  INF26 ~26 x 8.7; manual asks 9.25" min, 9.65" suggested;
+    #     no UL/CSA file found in the manual
+    # A 27 1/2" x 20 1/4" opening admits all but the 28"; the 28" is what holds it at 24".
+    # ** NONE IS FANLESS. ** Twin-Star's spec sheet calls the 26" "fan-forced" over the IR
+    # element, and its siblings' manuals run the blower on after shutoff; no radiant-only insert
+    # turned up at this size. ClassicFlame's 042 framing table is in its manual and was not
+    # read: confirm it (Twin-Star 866-661-1218) before the mason lays the jamb piers.
     #
     # ** WHY THE ClassicFlame AND NOT THE CHEAP OEM ONE (owner, 2026-09-20). ** The first
     # pass through this field landed on an Innoflame 28" on one argument — it is the only unit
@@ -350,7 +346,7 @@ EQUIPMENT_TYPES = (
     # complaint, Modern Flames' HelioVision, starts at 52" and never reaches this decision.)
     EquipmentType(tag="EQ-T-FIREPLACE-EL",
                   name="ClassicFlame 28II042FGL infrared electric fireplace, 1.5 kW built-in",
-                  footprint=(inch(29.25), inch(9.75)), height=inch(23.25),
+                  footprint=(inch(29.25), inch(9.5)), height=inch(23.25),
                   # Resistance heat, so a SCALAR and not a table: an element's output is
                   # flat with outdoor temperature, and no lockout is wired on this circuit
                   # (it is a fireplace somebody switches on), so its at-design contribution

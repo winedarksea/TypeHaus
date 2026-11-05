@@ -63,8 +63,10 @@ top out at 96" against the 106" ceiling, so `bath2_shower.md` §5 confirm 3 stay
   is template-cut to the rim outline plus ⅛", with a silicone joint. There is no E leg: the
   rim stands ⅛" off BA2E, in silicone.
 - **Waterfall faces.** The W apron and the S stall face are mitred and bonded to the top,
-  with an eased ⅛" arris. Both run down to the floor tile with a ⅛" silicone joint, and the
-  SW outside corner is bonded. Bond over the existing ½" exterior ply.
+  with an eased ⅛" arris. The W apron runs down to the floor tile with a ⅛" silicone joint;
+  the stall face (`WP-M-BATH2-TUBDK-STALL`) stands on the SS-3636's rim in silicone, like
+  the wall panels, and wraps the apron's end in the bonded SW outside corner (2026-11-05).
+  Its face is the Flex's north jamb below the deck. Bond over the existing ½" exterior ply.
 - **Wall joints.** ⅛" expansion and silicone at HS1 and BA2E. At the E end the stall face
   meets the Swanstone E-wall panel (`WP-M-BATH2-SURR` on BA2E2) in a silicone colour-break
   corner, and the SS-3636's flange tucks behind the stall face.
@@ -74,10 +76,10 @@ top out at 96" against the 106" ceiling, so `bath2_shower.md` §5 confirm 3 stay
   silicone, like an alcove flange. Painted gypsum above meets only the splash's eased top
   edge, and its SW and E ends are finished, eased edges. It clears the towel-bar posts
   (54") and every bathroom-face device on BA2E/HS1, all above 28" or west of the deck.
-- **Glass.** The custom north pane stands ¾" onto the S leg, in support channels to the
-  east wall, ceiling and a preliminary 1½" chrome post on the west end. The stock Flex
-  front rail is inset 1⅜" from the pan/apron west edge, on the threshold. Confirm the
-  hybrid jamb and post connections with DreamLine/glazier (`bath2_shower.md` §3). On the
+- **Glass.** A stock 32 × 80" fixed panel (2026-11-05) stands ¾" onto the S leg on setting
+  blocks, clipped to the deck, the east wall and a 1½ × 2½" aluminium post on the west end,
+  top at 103". The stock Flex front rail is inset 1⅜" from the pan/apron west edge, on the
+  threshold. Confirm the door-to-post connection with DreamLine (`bath2_shower.md` §3). On the
   stall side of the glass the top slopes ≥ ¼" into the stall. There is no horizontal
   joint under the glass.
 - **Filler.** The fabricator drills the two 1¼" handle holes and the spout hole to the Moen

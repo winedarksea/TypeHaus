@@ -42,7 +42,7 @@ from .footings import (
 )
 from .foundation import (
     BASEMENT_8,
-    BASEMENT_12,
+    BASEMENT_10,
     DECK_EPS_INT,
     GARAGE_ICF_6,
     GARAGE_ICF_CORE,
@@ -147,7 +147,7 @@ __all__ = [
     "FOOTING_25",
     "PIER_BASE_12",
     "FOOTING_EXPOSED_25",
-    "BASEMENT_12",
+    "BASEMENT_10",
     "BASEMENT_8",
     "SLAB_FLOOR",
     "DECK_EPS_INT",

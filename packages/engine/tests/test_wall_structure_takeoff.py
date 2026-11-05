@@ -245,10 +245,10 @@ def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) 
     are both `concrete` and they are not the same order or the same price."""
     by_assembly = {row["assembly"]: row for row in wall_structure_takeoff(catlin_model)}
     for assembly in ("SUNKEN_GARDEN_WALL", "RETAINING_BLOCK_12",
-                     "BASEMENT_BRICK_VENEER", "BASEMENT_12",
+                     "BASEMENT_BRICK_VENEER", "BASEMENT_10",
                      "BASEMENT_8"):
         assert assembly in by_assembly, f"{assembly} lost its own row"
-    house = by_assembly["BASEMENT_12"]
+    house = by_assembly["BASEMENT_10"]
     garden = by_assembly["SUNKEN_GARDEN_WALL"]
     assert set(house["tags"]).isdisjoint(garden["tags"])
     # And the 2026-08-21 pour split bills separately too, which is the whole point of it:
@@ -301,8 +301,8 @@ def test_openings_are_deducted_from_area_and_volume(catlin_model) -> None:
 
 def test_icf_and_masonry_walls_are_both_caught(catlin_model) -> None:
     """The three-armed predicate, pinned. GARAGE_ICF_6 is concrete *with* a `masonry=`
-    spec and BASEMENT_12 is concrete *without* one, so neither "is masonry" nor
+    spec and BASEMENT_10 is concrete *without* one, so neither "is masonry" nor
     "is not masonry" alone selects the right set — only "no masonry AND has framing"
     frames, and everything else bills here."""
     assemblies = {row["assembly"] for row in wall_structure_takeoff(catlin_model)}
-    assert {"GARAGE_ICF_6", "BASEMENT_12"} <= assemblies
+    assert {"GARAGE_ICF_6", "BASEMENT_10"} <= assemblies

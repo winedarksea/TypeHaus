@@ -323,7 +323,7 @@ HOUSE_FOOTINGS = [
 
 # Bearing prep below every house footing: 7" undercut, geotextile, drain tile, washed stone
 # seated (not Proctor-compacted) on a proof-rolled subgrade — a drained bearing surface that also breaks footing-to-wet-clay thermal
-# contact. 4" perimeter foam matches BASEMENT_12's exterior XPS.
+# contact. 4" perimeter foam matches BASEMENT_10's exterior XPS.
 # One bedding per footing, sharing the footing's own permanent index for the same reason.
 #
 # ** THE TILE FALLS TO SM-B-RADON, NOT TO DAYLIGHT (corrected 2026-09-05). ** It said

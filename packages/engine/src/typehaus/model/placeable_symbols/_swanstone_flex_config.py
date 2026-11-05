@@ -1,7 +1,8 @@
 """BATH2 visualization dimensions, inches; fabrication details remain preliminary.
 
-SS-3636: Swan SF03636MD specification. Flex: SHDR-22327200-01 manual.
-The post, channels and internal pan contours are visualization allowances, not shop drawings.
+SS-3636: Swan SF03636MD specification. Flex: SHDR-22327200-01 manual. North return: a
+stock 32 x 80 in. fixed panel (owner 2026-11-05). The post, clips and internal pan contours
+are visualization allowances, not shop drawings.
 Local -x is the tub/north side, -y the entrance/west side at Catlin's -90° rotation.
 """
 
@@ -30,11 +31,20 @@ class SwanstoneFlexDimensions:
     front_maximum_width: float = 36.0
     door_swing_radius: float = 22.875
     post_width: float = 1.5
+    # A 1 1/2 x 2 1/2 tube: its depth takes up what the stock panel's width leaves of the pan.
+    post_depth: float = 2.5
     finished_wall_inset: float = 0.0
+    # The north jamb is the Corian stall face (1/2") below the deck and the post above it.
+    north_jamb_inset: float = 0.5
     rail_width: float = 0.875
-    channel_width: float = 0.625
     front_glass_thickness: float = 0.25
     north_glass_thickness: float = 0.375
+    north_glass_width: float = 32.0
+    north_glass_height: float = 80.0
+    north_glass_setting: float = 0.25  # setting blocks on the deck
+    # Off the pan edge: the 6" Corian splash stands 3/8" proud of it, plus 1/8" clear.
+    north_glass_wall_gap: float = 0.5
+    clip_size: float = 2.0
     seal_width: float = 0.125
     handle_height: float = 8.0
     handle_projection: float = 1.0
@@ -55,8 +65,8 @@ class SwanstoneFlexDimensions:
 
     @property
     def finished_opening(self) -> float:
-        # The post sits on the deck, outside the pan; its inside face is the pan edge.
-        return self.pan_width - self.finished_wall_inset
+        # The post's inside face is in the stall face's plane, 1/2" inside the pan edge.
+        return self.pan_width - self.finished_wall_inset - self.north_jamb_inset
 
 
 BATH2_SHOWER = SwanstoneFlexDimensions()

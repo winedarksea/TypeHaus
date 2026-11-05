@@ -138,13 +138,13 @@ def test_foundation_wall_patch_applies_rather_than_422(tmp_path: Path) -> None:
     state = ProjectState.open(dst)
     basement = dst / "plan" / "storeys" / "basement.py"
     assert 'FoundationWall(uid="CBW101AAAA", tag="W-B-S1"' in basement.read_text()
-    before = basement.read_text().count('assembly="BASEMENT_12"')
+    before = basement.read_text().count('assembly="BASEMENT_10"')
 
     state.apply_edit([PatchOp("update", "FoundationWall", "W-B-S1",
-                              {"assembly": "BASEMENT_12"})], None)
+                              {"assembly": "BASEMENT_10"})], None)
     state._flush_writes()
     assert 'tag="W-B-S1"' in basement.read_text()
-    assert basement.read_text().count('assembly="BASEMENT_12"') > before
+    assert basement.read_text().count('assembly="BASEMENT_10"') > before
 
     # The literal match is the point: the base kind is NOT a valid address for a subclass.
     with pytest.raises(WritebackError):
@@ -165,9 +165,9 @@ def test_model_json_kind_is_what_the_writeback_accepts(tmp_path: Path) -> None:
 
     state = ProjectState.open(dst)
     state.apply_edit([PatchOp("update", kinds["W-B-S1"], "W-B-S1",
-                              {"assembly": "BASEMENT_12"})], None)
+                              {"assembly": "BASEMENT_10"})], None)
     state._flush_writes()
-    assert 'assembly="BASEMENT_12"' in (
+    assert 'assembly="BASEMENT_10"' in (
         dst / "plan" / "storeys" / "basement.py").read_text()
 
 

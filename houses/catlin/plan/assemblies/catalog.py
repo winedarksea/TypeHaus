@@ -53,7 +53,7 @@ from .footings import (
     PIER_CONCRETE_14,
     POST_STEEL_HSS,
 )
-from .foundation import BASEMENT_12, BASEMENT_8, DECK_EPS_INT, GARAGE_ICF_6, SLAB_FLOOR
+from .foundation import BASEMENT_10, BASEMENT_8, DECK_EPS_INT, GARAGE_ICF_6, SLAB_FLOOR
 from .interior import (
     INT_2X6_BRG_EXPOSED_PLY,
     INT_2X6_BRG_HALF_DFL,
@@ -224,7 +224,7 @@ ASSEMBLIES = [
     RAFTER_PLATE,
     EXT_2X6_SWINBURNE,
     ROOF,
-    BASEMENT_12,
+    BASEMENT_10,
     BASEMENT_8,
     SLAB_FLOOR,
     DECK_EPS_INT,
