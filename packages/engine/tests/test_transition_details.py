@@ -320,7 +320,7 @@ def test_authored_non_sauna_detail_is_unchanged(catlin_model):
     scene = build_authored_detail_scene(catlin_model, fndn)
     dims = [n for n in scene.nodes if n.layer == "A-ANNO-DIMS"]
     assert {d.text for d in dims if d.node == "dimension"} >= {
-        "9'-1 7/16\" fl. to fl.", "8'-0\" fdn wall", "1'-8\" ftg"}
+        "9'-1 7/16\" fl. to fl.", "8'-0\" fdn wall", "2'-1\" ftg"}
     bare = scene.model_copy(update={"nodes": tuple(
         n for n in scene.nodes if n.layer != "A-ANNO-DIMS")})
     assert bare.to_json() == build_section(catlin_model, fndn).to_json()

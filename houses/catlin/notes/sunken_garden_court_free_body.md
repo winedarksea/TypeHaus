@@ -1739,7 +1739,7 @@ strip's -4" toe leaves) and **6.685" at the stem**, where the bars also cross th
   2023, <https://par.nsf.gov/servlets/purl/10451919>; the Code,
   <https://www.concrete.org/store/productdetail.aspx?ItemID=44011U22>). Design rupture load
   `T_d = 0.85 × 44,200 = 37,570 lb`. At 0.7 every bar row below would be 21% worse.
-- **House concrete**: 5,000 psi (`BASEMENT_8` / `FOOTING_EXPOSED_20` mixes); `W-B-S1`/`-S4` 8",
+- **House concrete**: 5,000 psi (`BASEMENT_8` / `FOOTING_EXPOSED_25` mixes); `W-B-S1`/`-S4` 8",
   **#5 @ 41" vertical at the interior face**, cover 1.25", Grade 60.
 
 ```
@@ -1848,7 +1848,7 @@ bottom 2" lower. Their self-weight went 166.67 → 208.33 plf (was D 10,482.0, r
 carries 79% of D; on S2's own plane each arm is 2" longer. The board stops at S1's underside,
 so S2's lowest 2" faces the court footing across the 2 11/16" slot below the board.
 
-`FT-B-S1` bears on its washed-stone bedding (`FOOTING_EXPOSED_20`; the 2" of XPS it once bore
+`FT-B-S1` bears on its washed-stone bedding (`FOOTING_EXPOSED_25`; the 2" of XPS it once bore
 on is gone); 0.25 is the soil's, taken for the stone-to-soil plane below it. **The slab strut is not credited**: `SL-B-FLOOR` abuts the wall through a
 1" XPS perimeter break (`perimeter_thermal_break`), 3.5" × 106" of it at ≤ 25 psi is ≤ 9.3 kip,
 which would not close the row either.

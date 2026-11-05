@@ -32,8 +32,8 @@
 >   out-of-plane nailer; a band goes on its body's face.
 > - **Concrete:** GARAGE_ICF_6 is BuildBlock BB600. Mudsill and gasket are drawn
 >   (`resolve/sill_solids.py`), billed on the return. The 8 band-centred house strips sit 1/16"
->   inboard so 2" <= P <= T holds (live in `bearing_wall_footing`); FT-B-S2/S3 are 20x10 (top held,
->   32" undercut). PT-BW-W/-GW/-PE/-PNE are `PIER_CONCRETE_14` (`east_posts.pier_assembly`).
+>   inboard so 2" <= P <= T holds (live in `bearing_wall_footing`); every FT-B-* is 25" (IRC Table
+>   R403.1(1), `structural.footing_size`, 2026-11-05): 25x10, 25x15 under S1..S4 (tops held). PT-BW-W/-GW/-PE/-PNE are `PIER_CONCRETE_14` (`east_posts.pier_assembly`).
 > - **W-M-STOS is a staggered 2x6 wet wall** carrying the hall-bath 3" stack at y=26'-8" (powder
 >   face held, mud closet 29 1/2"); `haus route` found no lane into HS1 or the chase.
 >   `mep.trap_arm_developed` (ADVISORY) is the 3D trap-arm walk; 13 fixtures await a plumber pass.
@@ -2538,7 +2538,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   it; verify against
   `test_catlin_contract_m3.test_the_veneer_beam_isolates_the_house_footing`.
 - `FT-B-S1`..`S4`'s south face is **-4"** (`_GARDEN_END_TOE_TRIM`, via `offset`, keeping all
-  20" of bearing); the beam's board and the footing boards sit flush on it. Anything
+  25" of bearing); the beam's board and the footing boards sit flush on it. Anything
   re-centring these footings must keep that face (`_HOUSE_STRIP_FACE_IN` transcribes it).
 - Brick's y is fixed at -6.0"..-9.625" by the beam; `N-B-BRICK-W`/`-E` sit at -4.06" with
   a 1.94" `air-gap`. x: **9'-6 1/2" / 26'-5 1/2"**, 1/2" off W-SG-W1/E1's clear faces — the
@@ -2787,14 +2787,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `drainage.soakaway_storage` says so as an UNKNOWN, **accepted by the owner (2026-09-26)**:
   storage passes on volume, and a dedicated pit-to-court pipe is the one-invert fix if it is
   ever wanted.
-- **`SM-B-RADON` is back in the NW corner at (1'-9", 34'-3") (2026-09-24)**, tangent to FT-B-W1
-  and FT-B-N4 and outside both pours. `mep.pit_footing_clearance` is an INTEGRITY clash (the pit
+- **`SM-B-RADON` is in the NW corner at (2'-2 1/2", 33'-9 1/2") (2026-11-05)**, ~1/2" off the
+  25" FT-B-W1 and FT-B-N4 and outside both pours. `mep.pit_footing_clearance` is an INTEGRITY clash (the pit
   may not cut footing concrete), not UPC 314.1's trench line. The pit voids `SL-B-FLOOR` and
-  the W1/N4 tile runs into it (subp. 4.E). Both lines rise out of its lid and cross no
-  concrete: `PR-B-RADON-LEG` to the radon riser's foot, and `PR-B-SUMP-DISCH` up into
-  FS-M-MECH's joist band, west along FO-M-ERV-OA's north trimmer and out through the rim
-  into `TR-RF-LEADER-W`'s extension riser. The station is boxed in by the ERV supply riser
-  (y <= 409.8"), DU-ERV-EA's insulated riser (x >= 18.6") and the chase risers (x <= 11.5").
+  the W1/N4 tile runs into it (subp. 4.E). Both lines rise out of its lid:
+  `PR-B-RADON-LEG` to the radon riser's foot, and `PR-B-SUMP-DISCH` at x=2'-8 5/16" (between
+  DU-ERV-EA's and DU-ERV-OA's risers), north through W-B-N4 in `SP-B-N4-SUMP` 1'-2" above
+  grade, west along the foundation face into `TR-RF-LEADER-W`'s extension riser.
+  `CO-B-SEWER` moved to (3'-6", 34'-0") with the main drain's jog, out of the pit's way.
   `RG-W-BASIN` also takes pumped water (a `rain_garden_capacity` UNKNOWN); the pump's
   `check_valve`/`freeze_relief` are graded by `drainage.pump_discharge`.
 - `Dowel` z is derived off the shared 8" footing-to-footing joint face (mid-way through it);

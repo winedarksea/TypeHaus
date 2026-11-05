@@ -280,13 +280,13 @@ SUNKEN_GARDEN_COLUMN_12 = Assembly(
 # ASCE 32 method and the engineer's drainage sign-off: inspections.toml
 # `frost_soil_replacement`. The library FROST_WING_XPS_* assemblies are unused here.
 
-# The footings the wings protect are plain strips on their stone bedding (FOOTING_EXPOSED_20); no foam under a footing (owner: creep).
+# The footings the wings protect are plain strips on their stone bedding (FOOTING_EXPOSED_25); no foam under a footing (owner: creep).
 # The 20x8 strip under every house and garage wall that is NOT one of the four
 # sunken-garden-face runs. It carried no assembly at all until 2026-09-03, which meant its
 # pour had nowhere to state a mix and ``structural_solids`` grouped it with every other
 # bare pour under one blended $/cy. Naming it costs nothing in the estimate — ``[concrete]``
 # keys on the solid CATEGORY qualified by assembly, and ``cli/prices.candidate_keys`` falls
-# ``footing:FOOTING_20`` back to ``footing`` — and it is what lets the mix be said.
+# ``footing:FOOTING_25`` back to ``footing`` — and it is what lets the mix be said.
 #
 # No reinforcement, deliberately. These are plain strips under IRC Table R403.1, which is a
 # prescriptive answer to a prescriptive question; a 4-6" projection on an 8" depth satisfies

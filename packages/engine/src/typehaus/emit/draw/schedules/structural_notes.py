@@ -236,9 +236,13 @@ def footing_dowel_lines(model: ResolvedModel, profile: JurisdictionProfile | Non
 
     from typehaus.emit.draw.foundation_schedule import slabs_on_grade
     from typehaus.model.structure import Footing, FoundationWall
+    from typehaus.resolve.overlay import union_all
 
-    plain = {el.under for el in model.plan.all_elements()
-             if isinstance(el, Footing) and el.reinforcement is None}
+    plain: dict[str, list[str]] = {}
+    for el in model.plan.all_elements():
+        if isinstance(el, Footing) and el.reinforcement is None:
+            plain.setdefault(el.under, []).append(el.tag)
+    strips = {s.tag: s for s in model.solids if s.category == "footing"}
     slabs = slabs_on_grade(model)
     walls, held_by = [], set()
     for el in model.plan.all_elements():
@@ -249,7 +253,10 @@ def footing_dowel_lines(model: ResolvedModel, profile: JurisdictionProfile | Non
             continue
         if not any(b.role == "vertical" and "start" not in (b.hooks or ()) for b in spec.bars):
             continue
-        band = LineString(wall.axis).buffer(wall.thickness_m)
+        # The slab is cast against the wall or against its strip's toe, flush with it.
+        band = union_all([LineString(wall.axis).buffer(wall.thickness_m)]
+                           + [Polygon(strips[t].outline).buffer(0.01)
+                              for t in plain[el.tag] if t in strips])
         on = [s.tag for s in slabs if abs(s.z0_m - wall.z0_m) < 0.15
               and Polygon(s.outline).intersects(band)]
         if on:

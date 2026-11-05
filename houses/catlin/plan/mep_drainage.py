@@ -769,11 +769,9 @@ S_BED_LEADS = [
                 discharge_ref="FB-SG-E2"),
 ]
 
-# --- the sump's pumped discharge (2026-09-22; re-routed 2026-09-24) ----------------------
-# 1 1/2" PVC Sch 40 up out of the pit's lid at (1'-5 1/4", 34'-9.9"), into FS-M-MECH's
-# joist band at -5 15/16" (above the -11.9" sill, below the deck), north 6" to the face of
-# FO-M-ERV-OA's north trimmer pack, west along it (parallel to the joists) through the rim,
-# and out to a wye on TR-RF-LEADER-W-EXT-RISER (-40" to +12"). It crosses no concrete.
+# --- the sump's pumped discharge (2026-09-22; re-routed 2026-11-05) ----------------------
+# 1 1/2" PVC Sch 40 up out of the pit's lid, north through W-B-N4 in SP-B-N4-SUMP (the one
+# concrete it crosses), and out to a wye on TR-RF-LEADER-W-EXT-RISER (-40" to +12").
 # Elevations are basement-relative (datum -109 7/16"). Check valve and ice guard are on the
 # pump (SM-B-RADON).
 SUMP_DISCHARGE = [

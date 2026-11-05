@@ -176,8 +176,9 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     total_cy = concrete_cy + walls_cy
     # 137.30 -> 113.49 on 2026-11-01 (#112): SL-M-DECK's 17.24 cy (56,700 in² x 14.1875",
     # the whole prism) and FOUNDATION_WALL_12_INT's 6.57 cy (W-B-CN/CN2/CS2, now framed) out.
-    # The note's §2 table still lists both.
-    assert total_cy == pytest.approx(113.49, rel=0.02), (
+    # 113.49 -> 118.25 on 2026-11-05: the house strips to 25" x 10"/15" (Table R403.1(1)),
+    # less the slab they now displace.
+    assert total_cy == pytest.approx(118.25, rel=0.02), (
         f"the concrete volume moved to {total_cy:.2f} cy; notes/rebar_backout.md §2 and the "
         f"lb/cy figure in §3 both need re-working")
 
@@ -231,4 +232,5 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # deck at W-M-E1's band (#107), −3.4 cy billed twice before, −26 lb of deck bar.
     # 47.2 on 2026-11-01 (#112): the deck and three 12" pours out, 5,357.1 lb / 113.49 cy.
     # 44.9 on 2026-11-02: the court stems at #5 @ 10" (−265.9 lb), 5,091.2 lb / 113.49 cy.
-    assert total_lb / total_cy == pytest.approx(44.86, rel=0.02)
+    # 43.1 on 2026-11-05: plain concrete in, no steel — the wider house strips, 118.25 cy.
+    assert total_lb / total_cy == pytest.approx(43.06, rel=0.02)

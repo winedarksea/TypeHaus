@@ -111,13 +111,13 @@ def test_the_rain_garden_still_holds_its_roofs_and_names_the_pump(ctx):
                for f in found)
 
 
-def test_the_sump_line_crosses_no_concrete(catlin_model_ro, ctx):
+def test_the_sump_line_crosses_concrete_only_in_its_sleeve(catlin_model_ro, ctx):
     from typehaus.checks.mep.run_interference import run_interference
     from typehaus.resolve.mep_concrete import concrete_crossings
 
-    crossings = [c for c in concrete_crossings(catlin_model_ro)
+    crossings = [(c["host"], c["sleeve"]) for c in concrete_crossings(catlin_model_ro)
                  if c["run"] == "PR-B-SUMP-DISCH"]
-    # Out of the pit's lid and through the rim band over the pour (2026-09-24): no concrete.
-    assert crossings == []
+    # Out of the pit's lid and north through W-B-N4 above grade (2026-11-05), in its cast sleeve.
+    assert crossings == [("W-B-N4", "SP-B-N4-SUMP")]
     assert not [f for f in run_interference(ctx)
                 if "PR-B-SUMP-DISCH" in f.element_tags and f.result is Result.FAIL]

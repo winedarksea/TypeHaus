@@ -86,11 +86,11 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     # plinth cast on the house footing's toe, which also supported a "W-B-" wall; it was
     # retired 2026-09-05 when W-B-BRICK was re-founded on the spanning beam W-SG-BRKBM, and
     # a wall that spans has no footing. The filter is kept so the schedule cannot silently
-    # start reporting a non-strip pour against this 20"x8" claim again.
+    # start reporting a non-strip pour against this 25"x10" claim again.
     strip = next(row for row in footings.rows
                  if row[5].startswith("W-B-") and row[5] != "W-B-BRICK")
-    # -9.79': the strips follow the basement slab, bearing on the deck's flat bearing seat.
-    assert strip[2] == '20" W × 8" D' and strip[3] == "-9.79'"
+    # -9.95': the strips follow the basement slab, top held; 2" deeper since 2026-11-05.
+    assert strip[2] == '25" W × 10" D' and strip[3] == "-9.95'"
     walls = tables["FOUNDATION WALL SCHEDULE"]
     # A whole-inch monolithic pour, thickness and run both stated: the 12" side/retaining
     # walls. Every THK is an inch string and every RUN a lineal foot.

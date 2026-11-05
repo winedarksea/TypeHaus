@@ -33,8 +33,8 @@ from .envelope_walls import (
 )
 from .footings import (
     COURT_FOOTING_12,
-    FOOTING_20,
-    FOOTING_EXPOSED_20,
+    FOOTING_25,
+    FOOTING_EXPOSED_25,
     PIER_BASE_12,
     PIER_CONCRETE_12,
     PIER_CONCRETE_14,
@@ -144,9 +144,9 @@ __all__ = [
     "PIER_CONCRETE_14",
     "POST_STEEL_HSS",
     "COURT_FOOTING_12",
-    "FOOTING_20",
+    "FOOTING_25",
     "PIER_BASE_12",
-    "FOOTING_EXPOSED_20",
+    "FOOTING_EXPOSED_25",
     "BASEMENT_12",
     "BASEMENT_8",
     "SLAB_FLOOR",

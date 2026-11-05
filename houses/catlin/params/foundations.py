@@ -106,7 +106,7 @@ _HOUSE_WALL_TAGS = (
     (24, "W-B-STR3B"),
 )
 
-# The four south strips take FOOTING_EXPOSED_20 (the EXPOSED mix, F3), the rest FOOTING_20;
+# The four south strips take FOOTING_EXPOSED_25 (the EXPOSED mix, F3), the rest FOOTING_25;
 # all are plain strips on the bedding, with no foam under them (owner: creep). They are the
 # strips the sunken garden runs along: the garden floor is at -9'-1 7/16" and they bottom
 # out at -9'-9 7/16" (S2/S3 -9'-11 7/16"), **8" (10") of frost cover** against MN Rules
@@ -307,18 +307,18 @@ HOUSE_FOOTINGS = [
             depth=_GARDEN_END_DEPTH if t in _GARDEN_END_TRIMMED else _STRIP_DEPTH,
             center_on=_center_on(t), offset=_toe_offset(t),
             start_extension=_START_EXTENSION.get(t), end_extension=_END_EXTENSION.get(t),
-            assembly="FOOTING_EXPOSED_20" if t in _FROST_FORMED else "FOOTING_20")
+            assembly="FOOTING_EXPOSED_25" if t in _FROST_FORMED else "FOOTING_25")
     for i, t in _HOUSE_WALL_TAGS
 ] + [
     # The outer 56" of S1 / S4 (x 0..56, x 376..432): unreached by the court, ordinary bed.
     Footing(uid="CF031AAAAA", tag="FT-B-S1W", under="W-B-S1", width=_STRIP_WIDTH,
             depth=_GARDEN_END_DEPTH,
             center_on="axis", offset=_toe_offset("W-B-S1"), end_extension=inch(-62),
-            assembly="FOOTING_EXPOSED_20"),
+            assembly="FOOTING_EXPOSED_25"),
     Footing(uid="CF032AAAAA", tag="FT-B-S4E", under="W-B-S4", width=_STRIP_WIDTH,
             depth=_GARDEN_END_DEPTH,
             center_on="axis", offset=_toe_offset("W-B-S4"), start_extension=inch(-62),
-            assembly="FOOTING_EXPOSED_20"),
+            assembly="FOOTING_EXPOSED_25"),
 ]
 
 # Bearing prep below every house footing: 7" undercut, geotextile, drain tile, washed stone
@@ -627,7 +627,7 @@ _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
 #   4. GONE. `FootingBedding` is not what was used — `Footing.material` is a discriminator on
 #      the footing itself, so a stone footing is still a Footing and stays in all six
 #      `isinstance(el, Footing)` consumers instead of vanishing from them.
-#   5. GONE. `FOOTING_STONE_20` is its own assembly; `FOOTING_20` is untouched under every
+#   5. GONE. `FOOTING_STONE_20` is its own assembly; `FOOTING_25` is untouched under every
 #      FT-B-* strip in the house.
 #
 # ** THE SIZE CLEARS TABLE R403.4 WITH ROOM, AND THE 6" STEM IS THE ONE SUBTLETY. ** The row
@@ -689,7 +689,7 @@ _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
 #    `FootingBedding(aggregate="MnDOT Class 5 aggregate base")` hosts on a FoundationWall
 #    because that wall is a DRY-STACKED SRW — a wall type that by design has no concrete
 #    under it. An ICF stem is the other case the element's own docstring separates.
-# 5. **`FOOTING_20` is shared with the house**, so this could not be a retype in any event:
+# 5. **`FOOTING_25` is shared with the house**, so this could not be a retype in any event:
 #    every FT-B-* strip is on it too.
 #
 # Frost is not the obstacle and should not be offered as one. These bases sit at -7'-0"
@@ -701,7 +701,7 @@ _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
 # ** WHAT THE REQUEST IS ACTUALLY POINTING AT, AND IT IS REAL. ** These eight are the only
 # footings in this house with NO `FootingBedding` under them. `HOUSE_FOOTING_BEDDING` above
 # beds every FT-B-* on 7" of stone; `sunken_garden.py` beds every FT-SG-*; `raised_garden.py`
-# beds all five W-RG-*. `FOOTING_20`'s own `source` string even says the strip is "poured
+# beds all five W-RG-*. `FOOTING_25`'s own `source` string even says the strip is "poured
 # against the bedding prep" — and for these eight there is none. Left open rather than
 # authored here for one honest reason: a bed's drain tile needs a collector below it, and the
 # garage has none. The house's falls to SM-B-RADON and the court's to its soakaway course; there is

@@ -246,10 +246,10 @@ ducts or pipes". The owner's bounce goal, so two:
 
 ## 5. The framed centreline (W-B-CS2 / -CN2 / -CN)
 
-2x6 SPF studs at 16" o.c., 8'-0" plate top at the -13 7/16" seat, on the existing 20" strip
+2x6 SPF studs at 16" o.c., 8'-0" plate top at the -13 7/16" seat, on the existing strip
 footings (`FT-B-CS2`/`-CN`/`-CN2`). They are re-centred on the stud axis by
-`params/foundations._FRAMED_WALLS`, projecting 7 1/4" a side, within R403.1.1's
-2" <= P <= T = 8".
+`params/foundations._FRAMED_WALLS`, projecting 9 3/4" a side on the 25" x 10" strips (2026-11-05), within R403.1.1's
+2" <= P <= T = 10".
 
 Tributary line load, 9' each side per floor, ASD D + L. The roof comes through `RB-HOUSE`:
 half of each 18' rafter.

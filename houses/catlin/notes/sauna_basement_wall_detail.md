@@ -27,7 +27,7 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 - Sauna floor: 4" slab on R-10 XPS at 25 psi on 10 mil polyethylene.
 - Slab perimeter isolation joint: 1" XPS with 1/2" polyurethane sealant.
 - Base: 6" fiber cement replaces shiplap and furring, membrane lapped up it.
-- Foundation: 8" wall, #6 at 48" o.c., on a 20"x8" footing over washed stone.
+- Foundation: 8" wall, #6 at 48" o.c., on a 25"x15" footing over washed stone.
 
 ### Keyed
 - [K1 @ host#layer:liner-furring:out] Furring to the pour: masonry anchors, embedment verified for the substrate.
@@ -58,7 +58,7 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 
 - Concrete-substrate case (`SAUNA_LINER_ON_CONCRETE`, `SAUNA_LINER_ON_BASEMENT_8_GARDEN`): on the east face (the center bearing wall) and the south face (the sunken-garden foundation wall) there is no stud bay behind the liner — the 1/2" plywood furring is fastened to the pour itself, so use masonry fasteners with an embedment verified for the substrate rather than the R703.15.2 table cited above, which is written for framing. Layer order, thickness and taping are otherwise identical to the framed case. Consequences to draw: the south wall's rough jamb is 11 1/2" deep — the 8" pour plus the 3 1/2" liner — rather than the bare 8", so the window buck deepens with it, and the foil facing returns into that jamb per `TR-CATLIN-SAUNA-OPENING` rather than dying at the opening. The liner is banded to 90 inches AFF on the south face (`LayerExtent` relative to `LINE_BASE`), above the finished ceiling at 84 1/16 inches because the foundation wall runs its full storey height — 9'-4", so the basement storey can carry a 12 5/8" deck and keep its headroom. The band uses the layout-line slab datum so curb-supported and floor-supported walls terminate at the same elevation. The basement ceiling is joists over the gym and the whole west half — the sauna included, since it sits at x 8'-10" to 18', west of the band — and drywalled everywhere.
 
-- **The south wall is 8".** A 12" pour is needed only to seat a cast concrete deck; the only cast deck in the house, `SL-M-DECK`, lands on the east wall and the centre line, not this one. The south wall (`BASEMENT_8_GARDEN`, and `SAUNA_LINER_ON_BASEMENT_8_GARDEN` here) carries `#6 @ 48" o.c.` vertical steel, which IRC Table R404.1.2(8) requires at 8" against 45 psf/ft GM soil on a 10' unsupported wall retaining 7' — where 12" and 10" both read NR. The 20"x8" footing under it sits inside its own strip with a 2" toe each side.
+- **The south wall is 8".** A 12" pour is needed only to seat a cast concrete deck; the only cast deck in the house, `SL-M-DECK`, lands on the east wall and the centre line, not this one. The south wall (`BASEMENT_8_GARDEN`, and `SAUNA_LINER_ON_BASEMENT_8_GARDEN` here) carries `#6 @ 48" o.c.` vertical steel, which IRC Table R404.1.2(8) requires at 8" against 45 psf/ft GM soil on a 10' unsupported wall retaining 7' — where 12" and 10" both read NR. Its 25"x15" footing projects 4" outboard.
 
 - Support framing: 2x4 wall framed against concrete supports the dropped 2x4 ceiling. The primary structure above this room is joists, not a deck — `FS-M-WEST`, 11 7/8" I-joists at 16" o.c. spanning east-west. Hang the drop framing from the joists (the concrete band is east of x=18' and does not reach this room). `emit/draw/detail_components/sauna.py::ceiling_underside_over` reads a joist soffit as readily as a slab's.
 

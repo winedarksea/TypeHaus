@@ -198,43 +198,43 @@ def test_framing_matches_the_reference(catlin_model):
     assert rise_over_run > reference_pitch
 
 
-# Footings sharing the house's FT-B- prefix that the 20"x8" rule below does not govern.
+# Footings sharing the house's FT-B- prefix that the strip rule below does not govern.
 # FT-B-BRICK — the plinth under the brick veneer, cast on the house footing's toe — was the
 # only member and was retired 2026-09-05, when W-B-BRICK was re-founded on the spanning grade
 # beam W-SG-BRKBM. The set stays as the seam: a non-strip pour on this prefix must be named
 # here rather than quietly widening the rule.
 _NON_STRIP_FT_B: set[str] = {"FT-B-BRICK"}
-# Deepened past the reference, 8" -> 10" (owner, 2026-11-01): a 10" north toe under
-# GARDEN_CURB_6 broke R403.1.1's P <= T on an 8" strip (params/foundations.py `_DEEP_STRIP`).
-_DEEP_FT_B = {"FT-B-S2": 10.0, "FT-B-S3": 10.0}
+# The house departs from the reference's 20"x8" (2026-11-05): IRC Table R403.1(1) asks 25" at
+# 3 story plus basement, and the 5" grown inboard puts P past 8", so T follows R403.1.1's
+# P <= T — 10" everywhere, 15" under the four garden-end strips (params/foundations.py).
+_STRIP_WIDTH_IN = 25.0
+_STRIP_DEPTH_IN = 10.0
+_DEEP_FT_B = {t: 15.0 for t in ("FT-B-S1", "FT-B-S1W", "FT-B-S2", "FT-B-S3",
+                                 "FT-B-S4", "FT-B-S4E")}
 
 
 def test_house_footings_match_the_reference(catlin_model):
-    """20\"x8\" footing per IRC Table R403.1, as the reference and the notes both fix it —
-    except the two deepened strips in ``_DEEP_FT_B``.
+    """The reference's 20\"x8\" strip, re-sized to IRC Table R403.1(1): 25\" x 10\", and 15\"
+    deep where ``_DEEP_FT_B`` says.
 
     Scoped to the house (``FT-B-*``): the freestanding court structure carries its
     own heavier footing, which these basement params do not govern.
     """
-    params = _params("basementconstruction")["foundation"]
-    depth_in = float(params["footing_thickness_in"])
     footings = [s for s in catlin_model.solids
                 if s.category == "footing" and s.tag.startswith("FT-B-")
                 and s.tag not in _NON_STRIP_FT_B]
     assert footings, "catlin should resolve house footings"
     for footing in footings:
         assert (footing.z1_m - footing.z0_m) * 39.37007874015748 == pytest.approx(
-            _DEEP_FT_B.get(footing.tag, depth_in), abs=0.01), footing.tag
+            _DEEP_FT_B.get(footing.tag, _STRIP_DEPTH_IN), abs=0.01), footing.tag
 
 
-def test_house_footing_width_matches_the_reference(catlin_model):
-    params = _params("basementconstruction")["foundation"]
+def test_house_footing_width_matches_the_table(catlin_model):
     footings = [e for e in catlin_model.plan.elements_of_kind("Footing")
                 if e.tag.startswith("FT-B-") and e.tag not in _NON_STRIP_FT_B]
     assert footings, "catlin should author house footings"
     for footing in footings:
-        assert footing.width.inches == pytest.approx(
-            float(params["footing_width_in"]), abs=1e-6), footing.tag
+        assert footing.width.inches == pytest.approx(_STRIP_WIDTH_IN, abs=1e-6), footing.tag
 
 
 def test_footing_bedding_carries_the_reference_drainage_vocabulary(catlin_model):

@@ -386,7 +386,7 @@ WALLS = [
     # adding forming — so 10" would keep an odd-thickness forming premium and hand back
     # half the yardage to save ~245 LF of bar. See prices.toml's [wall_structure].
     #
-    # The 8" walls also sit better than the 12" ones did: FT-B-* is a 20" strip on
+    # The 8" walls also sit better than the 12" ones did: FT-B-* was a 20" strip on
     # `center_on="axis"`, so a 12" pour overhung its inside edge by 2" and an 8" one has a
     # 2" inboard toe. The footings follow the slab up 2 9/16" (params/foundations.py). Two of
     # them DO move in plan now: FT-B-S2/S3 carry a 2" `offset` since 2026-09-05, so their
@@ -529,7 +529,7 @@ WALLS = [
     # The east 8'-10" of the old W-B-S3, split off 4" west of the court's east face
     # (see N-B-S3 — the split used to sit on the wall AXIS, half a wall inside the soil).
     # Buried like W-B-S1, so it keeps the 7'-row bar — and it must join
-    # ``params/foundations._FROST_FORMED`` with it, or FT-B-S4 loses FOOTING_EXPOSED_20
+    # ``params/foundations._FROST_FORMED`` with it, or FT-B-S4 loses FOOTING_EXPOSED_25
     # (the F3 exposed mix) the garden floor's low adjacent grade is the reason for.
     FoundationWall(uid="72HXFS8M11", tag="W-B-S4", start_node="N-B-S3",
                    end_node="N-B-SE", assembly="BASEMENT_8",

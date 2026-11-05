@@ -1207,6 +1207,34 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
+      "uid": "51B78YHGNF-BF-038",
+      "tag": "EX-HOUSE-BF-39"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          452.06,
+          -54.0
+        ],
+        [
+          471.4930708661418,
+          -54.0
+        ],
+        [
+          471.4930708661418,
+          -52.0
+        ],
+        [
+          452.06,
+          -52.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
       "uid": "51B78YHGNF-BF-039",
       "tag": "EX-HOUSE-BF-40"
     },
@@ -1216,34 +1244,6 @@
       "points": [
         [
           452.06,
-          -54.0
-        ],
-        [
-          471.4930708661418,
-          -54.0
-        ],
-        [
-          471.4930708661418,
-          -52.0
-        ],
-        [
-          452.06,
-          -52.0
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "51B78YHGNF-BF-040",
-      "tag": "EX-HOUSE-BF-41"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          452.06,
           -52.0
         ],
         [
@@ -1263,8 +1263,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-042",
-      "tag": "EX-HOUSE-BF-43"
+      "uid": "51B78YHGNF-BF-041",
+      "tag": "EX-HOUSE-BF-42"
     },
     {
       "space": "model",
@@ -1291,8 +1291,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-049",
-      "tag": "EX-HOUSE-BF-50"
+      "uid": "51B78YHGNF-BF-048",
+      "tag": "EX-HOUSE-BF-49"
     },
     {
       "space": "model",
@@ -1319,8 +1319,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-055",
-      "tag": "EX-HOUSE-BF-56"
+      "uid": "51B78YHGNF-BF-054",
+      "tag": "EX-HOUSE-BF-55"
     },
     {
       "space": "model",
@@ -1347,8 +1347,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-057",
-      "tag": "EX-HOUSE-BF-58"
+      "uid": "51B78YHGNF-BF-056",
+      "tag": "EX-HOUSE-BF-57"
     },
     {
       "space": "model",
@@ -1375,8 +1375,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-059",
-      "tag": "EX-HOUSE-BF-60"
+      "uid": "51B78YHGNF-BF-058",
+      "tag": "EX-HOUSE-BF-59"
     },
     {
       "space": "model",
@@ -1403,8 +1403,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-063",
-      "tag": "EX-HOUSE-BF-64"
+      "uid": "51B78YHGNF-BF-062",
+      "tag": "EX-HOUSE-BF-63"
     },
     {
       "space": "model",
@@ -1431,8 +1431,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-067",
-      "tag": "EX-HOUSE-BF-68"
+      "uid": "51B78YHGNF-BF-066",
+      "tag": "EX-HOUSE-BF-67"
     },
     {
       "space": "model",
@@ -1459,8 +1459,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-070",
-      "tag": "EX-HOUSE-BF-71"
+      "uid": "51B78YHGNF-BF-069",
+      "tag": "EX-HOUSE-BF-70"
     },
     {
       "space": "model",
@@ -1487,8 +1487,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-073",
-      "tag": "EX-HOUSE-BF-74"
+      "uid": "51B78YHGNF-BF-072",
+      "tag": "EX-HOUSE-BF-73"
     },
     {
       "space": "model",
@@ -1515,8 +1515,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-077",
-      "tag": "EX-HOUSE-BF-78"
+      "uid": "51B78YHGNF-BF-076",
+      "tag": "EX-HOUSE-BF-77"
     },
     {
       "space": "model",
@@ -3171,7 +3171,7 @@
         398.3464566929134,
         -74.61860236220473
       ],
-      "content": "FTG 1'-8\" x 8\" · TOES 2 1/16\" / 5 15/16\" · BRG EL. -9'-9 1/2\"",
+      "content": "FTG 2'-1\" x 10\" · TOES 7 1/16\" / 5 15/16\" · BRG EL. -9'-11 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

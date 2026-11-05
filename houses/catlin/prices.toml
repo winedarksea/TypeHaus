@@ -1741,7 +1741,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # and footings stepped down the walk-out side.
 # SPLIT 2026-08-27; labour is the residual — see the [basis_notes] on this section.
 # ** RE-ANCHORED 2026-10-11, REBAR OUT. ** The court's 1,701 lb (89 lb/cy over 19.09 cy) bills
-# in [reinforcement]; FOOTING_20/_EXPOSED_20 are plain. Material, per cy:
+# in [reinforcement]; FOOTING_25/_EXPOSED_25 are plain. Material, per cy:
 #   5,000 psi ready-mix, Twin Cities 2026                      $185-215
 #   + macro fibre 4 lb/cy                                      $  8- 12
 #   + air, EXPOSED_MIX only (20.6 of 27 cy)                    $  0-  8
@@ -1751,7 +1751,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # ready-mix by PSI ($185-215 delivered), slabcalc.co 2026 (air +$3-8/cy).
 # The old $195-240 was a 3,000-psi $180-200 plus steel: the mix was under-read by about what
 # the steel was worth, which is why this band RISES with the rebar out of it.
-"footing" = { material = { low = 203, high = 255 }, labour = { low = 85, high = 210 } }  # 26.92 cy MEASURED (19.09 COURT_FOOTING_12 + 6.35 FOOTING_20 + 1.48 FOOTING_EXPOSED_20) — 30.87 until 2026-09-15, when the garage's nine (3.95 cy) went to stone. The 33.25/31.52/1.73 this comment carried was stale again; re-read off `haus takeoff` rather than re-derived
+"footing" = { material = { low = 203, high = 255 }, labour = { low = 85, high = 210 } }  # 32.66 cy MEASURED 2026-11-05 (19.12 COURT_FOOTING_12 + 10.07 FOOTING_25 + 3.47 FOOTING_EXPOSED_25; 26.92 at 20"x8") — 30.87 until 2026-09-15, when the garage's nine (3.95 cy) went to stone. The 33.25/31.52/1.73 this comment carried was stale again; re-read off `haus takeoff` rather than re-derived
 # ** THE GENERIC ROW, AND CATLIN NO LONGER USES IT (2026-09-14). ** It is a lump for a pad
 # nobody has sized — all setup and no volume, really a $300-600 minimum charge — and the
 # "0.59 cy" in this comment was stale for as long as the house had no `Pad` at all. Kept

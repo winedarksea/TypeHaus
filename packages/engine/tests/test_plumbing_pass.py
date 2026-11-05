@@ -54,8 +54,10 @@ def test_dry_fire_collector_and_access_fittings_clear_eighty_and_a_half_inches(c
     floor = room_floor_elevation(catlin_model_ro, next(r for r in catlin_model_ro.rooms if r.tag == "RM-B-WORKSHOP"))
     lane = box(40.5 * M_PER_IN, 13 * M_PER_IN, 68 * M_PER_IN, 352 * M_PER_IN)
     main = next(run for run in catlin_model_ro.pipe_runs if run.tag == "PR-B-MAIN-DRAIN")
+    # The under-slab leg's jog (2026-11-05) passes beneath the lane, buried; only what stands
+    # above the floor has to clear it.
     envelopes = [prism for prism in next(e for e in run_envelopes(catlin_model_ro) if e.tag == main.tag).prisms
-                 if prism.footprint.intersection(lane).area > 0]
+                 if prism.footprint.intersection(lane).area > 0 and prism.z1_m > floor]
     assert envelopes
     assert min(prism.z0_m for prism in envelopes) >= floor + 80.5 * M_PER_IN
     fittings = [solid for solid in catlin_model_ro.solids
@@ -243,9 +245,11 @@ def test_the_basement_slab_fixtures_drain_by_gravity(catlin_model):
     for arm_tag, (fixtures, vent_tag) in branches.items():
         arm = next(r for r in catlin_model.pipe_runs if r.tag == arm_tag)
         assert set(fixtures) <= set(arm.serves), arm_tag
-        # Each ties onto the main's under-slab leg, and arrives no lower than the main's
-        # invert where it lands — a branch below the main it joins would not flow.
-        assert _on_segment(arm.path[-1], main.path[-2], main.path[-1]), arm_tag
+        # Each ties onto the main's under-slab leg (three segments since its 2026-11-05 jog),
+        # and arrives no lower than the main's invert where it lands — a branch below the
+        # main it joins would not flow.
+        assert any(_on_segment(arm.path[-1], a, b)
+                   for a, b in zip(main.path[-4:], main.path[-3:], strict=False)), arm_tag
         assert arm.z_m[-1] >= _invert_at(main, arm.path[-1]) - 1e-9, arm_tag
         # Buried, not cast into the slab.
         assert max(arm.z_m[1:]) + arm.diameter_m / 2.0 <= slab.z0_m, arm_tag

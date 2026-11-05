@@ -228,6 +228,25 @@ per-side grade, not a billing error: ~6 cy moves between two placement rows pric
 cap that followed a graded surface would close it, and would need the site's grade as a
 surface rather than as stations.
 
+### 7d. Amended 2026-11-05: the house strips 2" deeper
+
+The 25" x 10" strips (IRC Table R403.1(1)) keep their tops, so the house excavation floor drops
+-124 7/16" -> **-126 7/16"** and every house column, ring strip and the interior stone gain 2"
+(0.1667'). Outboard faces are held, so no plan dimension above changes.
+
+- Column: house main plan 20,396 in² = 141.64 SF x 0.1667 = +23.6 cf -> **1,369.6 cf = 50.7 cy**.
+- Geotextile: house soil faces 1,664.8 in x 2" = +23.1 SF -> **1,419 SF**.
+- Ring: d(∫d dh)/dH = the lip d, 6.235' x 0.1667 = 1.039 SF/ft over 127.74 LF of house side =
+  +132.7 cf; corners 4 x 6.235² x 0.1667 = +25.9 cf; **ring 13,653 cf**. Each house lip moves
+  out 0.75 x 2" = 1 1/2" (west lip 3 1/2" inside the lot line, was 5").
+- Cut: + ring 158.6 + interior stone 1,296 SF x 0.1667 = 216 -> **28,641 cf = 1,060.8 cy**.
+- Fill 13,653 - 3,102 = 10,551 cf (390.8 cy). Cap: the 1 1/2" wider lip band, 127.74 x 0.125 +
+  corners = +16.5 cf -> **1,794.5 cf = 66.5 cy**. Native 8,756.5 cf = 324.3 cy; **backfill
+  324.3 + 50.7 = 375.1 cy**. Haul (28,641 - 10,551 / 0.85) x 1.30 = **21,096 cf = 781.3 cy**.
+
+Against the model (cut 1,070.9, backfill 375.6, cap 72.6, column 50.9, haul 784.7): cut +1.0%,
+backfill +0.1%, cap +9.1%, column +0.4%, haul +0.4% — the same per-bed-cone gap as 7c.
+
 ## 8. What is NOT graded here
 
 The slope's stability and the soil's OSHA class (no soils report; Type A is presumed, §7a);

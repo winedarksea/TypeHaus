@@ -122,13 +122,13 @@ COURT_FOOTING_12 = Assembly(
     source="every strip footing in the sunken-garden court, 1'-0\" deep, its top at the garden floor: FT-SG-W1/E1/W2/E2 at 7'-0\" wide and FT-SG-S at 8'-4\", every one reinforced top and bottom (the bars are their rebar sets, printed in S-100's reinforcement schedule; notes/sunken_garden_court_free_body.md §7). One F3+C2 mix throughout: every footing here stands INSIDE the excavation, under a garden floor itself 9' below site grade, frost-protected by drained NFS stone rather than by depth, and concrete in the freezing zone is F3 concrete however it got protected",
 )
 
-FOOTING_20 = Assembly(
-    tag="FOOTING_20",
+FOOTING_25 = Assembly(
+    tag="FOOTING_25",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
               function=LayerFunction.STRUCTURE, concrete=BURIED_MIX),
     ),
-    source="the ordinary 20\" x 8\" cast strip under the house and garage walls (IRC Table R403.1), poured against the bedding prep",
+    source="the ordinary 25\" cast strip under the house walls, 10\" deep (IRC R403.1.1, Table R403.1(1): 3 story plus basement, 50 psf snow, 2,000 psf GM, footnote b at 36'), poured against the bedding prep",
 )
 
 # ** THE GARAGE'S NINE, ON STONE RATHER THAN CONCRETE (owner, 2026-09-15). ** 2024 IRC
@@ -138,8 +138,8 @@ FOOTING_20 = Assembly(
 # and the fill stands level on both faces. MN adopts the 2024 edition in 2027 and this build
 # starts after it.
 #
-# A SEPARATE assembly and not a retype of FOOTING_20, because FOOTING_20 is under every
-# FT-B-* strip in the house and those are staying concrete. Same 20" x 8" section, same
+# A SEPARATE assembly and not a retype of FOOTING_25, because FOOTING_25 is under every
+# FT-B-* strip in the house and those are staying concrete. Same 20" x 8" section the house had then, same
 # bearing plane at -7'-0"; what changes is the material, and with it the price table row
 # (`footing:FOOTING_STONE_20` in [concrete]) and the trade that places it.
 #
@@ -170,14 +170,14 @@ PIER_BASE_12 = Assembly(
     source="the 12\" plain bases under the round piers — the sunken garden's two belled footings and the four breezeway pads, all bearing at or below frost depth (IRC R403.1.4); unreinforced by design and graded as plain concrete under ACI 318-19 §14.1.4, see notes/sunken_garden_piers.md §5",
 )
 
-# FOOTING_20's section on the EXPOSED mix (F3): these strips sit inside the court's frost zone.
-FOOTING_EXPOSED_20 = Assembly(
-    tag="FOOTING_EXPOSED_20",
+# FOOTING_25's section on the EXPOSED mix (F3): these strips sit inside the court's frost zone.
+FOOTING_EXPOSED_25 = Assembly(
+    tag="FOOTING_EXPOSED_25",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
-    source="the 20\" x 8\" plain strip under the four sunken-garden-face walls (FT-B-S1..S4), on a 34\" drained #57 bed that is its frost protection (ASCE 32 soil replacement, IRC R403.1.4.1), EXPOSED_MIX because the strip is inside the frost zone",
+    source="the 25\" x 15\" plain strip under the four sunken-garden-face walls (FT-B-S1..S4), on a 34\" drained #57 bed that is its frost protection (ASCE 32 soil replacement, IRC R403.1.4.1), EXPOSED_MIX because the strip is inside the frost zone",
 )
 
 

@@ -7567,3 +7567,23 @@ wet-vent: the WC joins upstream of both, against 908.2.1.4.
 - **Drawings:** the roof plan keeps the 7/8" garage/canopy edge offset (first merge gap 1/2");
   layer-ladder labels wrap to the room left inside the viewport, so the rake detail's roof
   labels stay on the sheet.
+
+## House strips to IRC Table R403.1(1); NW corner re-fitted (2026-11-05, geometry review C2 E1)
+
+- **The finding was true, and wider than reported.** Table R403.1(1), 50 psf snow, 3 story
+  plus basement (the habitable attic read as a storey, conservative), footnote b at 36': 32x11
+  at 1,500 psf, **25x8 at 2,000**. Every FT-B-* strip was 20" — the perimeter too, since the
+  table covers a light-frame house on a concrete basement.
+- **Soil is one value now:** `checks/soil.site_soil_bearing_psf` reads GM's IBC 1806.2 row
+  (2,000) before the profile's 1,500, so S-001, S-100's notes and the deck check print the
+  number the engine grades with, with its basis.
+- **Prescriptive widening, outboard faces held:** 25" everywhere, grown 5" inboard;
+  `_STRIP_DEPTH` 10" because the inboard toe passes 8" and R403.1.1 wants P <= T; 15" under
+  S1..S4 (13-15" toes). Assemblies renamed `FOOTING_25`/`FOOTING_EXPOSED_25`. +5.45 cy of strip,
+  -0.76 cy of slab. `structural.footing_size` grades it (21 PASS), and is a permit item.
+- **NW corner:** the pit moved 5 1/2" east and 5 1/2" south (owner: a few inches at most);
+  the cleanout moved instead of the pit (owner). The sump discharge could no longer reach the
+  old rim route between the ERV risers and leaves through W-B-N4 above grade in a new sleeve;
+  the kitchen drain and main drain re-jogged round the new cleanout. Thermal-break oracle
+  re-run (`sunken_garden_court_free_body.md` §11p).
+

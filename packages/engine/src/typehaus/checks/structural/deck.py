@@ -929,8 +929,8 @@ def deck_footing_size(ctx: CheckContext) -> list[Finding]:
     soil_psf = site_soil_bearing_psf(ctx.plan, ctx.profile) if ctx.plan is not None else None
     if soil_psf is None:
         return [_unknown("structural.deck_footing_size",
-                         "neither the site nor profile {} states a soil class or bearing "
-                         "value, so a footing cannot be sized".format(ctx.profile.name))]
+                         f"neither the site nor profile {ctx.profile.name} states a soil "
+                         "class or bearing value, so a footing cannot be sized")]
     out: list[Finding] = []
     # Per post, not per deck: the beam-weighted split gives the centre pair half again the
     # share of the corners, and one pad size for all of them would either under-size those

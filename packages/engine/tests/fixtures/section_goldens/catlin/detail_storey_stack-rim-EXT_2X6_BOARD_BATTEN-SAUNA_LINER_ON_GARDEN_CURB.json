@@ -1103,71 +1103,15 @@
       "node": "polyline",
       "points": [
         [
-          16.0,
-          -112.93750000000001
-        ],
-        [
-          19.09251968503937,
-          -112.93750000000001
-        ],
-        [
-          19.09251968503937,
-          -109.4375
-        ],
-        [
-          16.0,
-          -109.4375
-        ]
-      ],
-      "layer": "A-SLAB",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CBS501AAAA",
-      "tag": "SL-B-FLOOR"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          16.0,
-          -112.93750000000001
-        ],
-        [
-          19.09251968503937,
-          -112.93750000000001
-        ],
-        [
-          19.09251968503937,
-          -109.4375
-        ],
-        [
-          16.0,
-          -109.4375
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           -4.0,
-          -119.4375
+          -123.84104330708661
         ],
         [
-          16.0,
-          -119.4375
+          19.09251968503937,
+          -123.84104330708661
         ],
         [
-          16.0,
+          19.09251968503937,
           -109.4375
         ],
         [
@@ -1188,14 +1132,14 @@
       "boundary": [
         [
           -4.0,
-          -119.4375
+          -123.84104330708661
         ],
         [
-          16.0,
-          -119.4375
+          19.09251968503937,
+          -123.84104330708661
         ],
         [
-          16.0,
+          19.09251968503937,
           -109.4375
         ],
         [
@@ -2185,191 +2129,6 @@
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "4\" XPS (2 layers)",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            -4.000000000000001,
-            -132.4375
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            16.0,
-            -132.4375
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        -4.000000000000001,
-        -132.4375
-      ],
-      "p1": [
-        16.0,
-        -132.4375
-      ],
-      "offset": 0.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "1'-8\" ftg",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            -10.0,
-            -119.4375
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            -10.0,
-            -109.4375
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        -10.0,
-        -119.4375
-      ],
-      "p1": [
-        -10.0,
-        -109.4375
-      ],
-      "offset": 0.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "10\" ftg",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            -4.000000000000001,
-            -127.9375
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            0.0,
-            -127.9375
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        -4.000000000000001,
-        -127.9375
-      ],
-      "p1": [
-        0.0,
-        -127.9375
-      ],
-      "offset": 0.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "4\"",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            0.0,
-            -127.9375
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            5.999999999999999,
-            -127.9375
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        0.0,
-        -127.9375
-      ],
-      "p1": [
-        5.999999999999999,
-        -127.9375
-      ],
-      "offset": 0.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "6\"",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            5.999999999999999,
-            -127.9375
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            16.0,
-            -127.9375
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        5.999999999999999,
-        -127.9375
-      ],
-      "p1": [
-        16.0,
-        -127.9375
-      ],
-      "offset": 0.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "10\"",
       "text_along": 0.0,
       "uid": null
     },

@@ -60,7 +60,7 @@ def _house_width_ft(model, storey_tag: str) -> float | None:
     # oriented envelope warns on a plain rectangle.
     ring = list(hull.exterior.coords)
     best: tuple[float, float] | None = None
-    for (x0, y0), (x1, y1) in zip(ring, ring[1:]):
+    for (x0, y0), (x1, y1) in zip(ring, ring[1:], strict=False):
         run = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
         if run <= 1e-9:
             continue

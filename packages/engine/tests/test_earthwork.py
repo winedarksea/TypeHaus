@@ -16,10 +16,10 @@ from typehaus.takeoff.excavation import excavation_takeoff
 
 #: The hand note's totals (§6-7), and how close a modelled number must land. Cut, cap and
 #: the rows built on them differ for the reason §7 states (per-bed cones topped at their own
-#: grade); each tolerance sits just over that stated gap.
-HAND = {"drain-column-stone": (49.9, 0.01), "drain-column-geotextile": (1396.0, 0.01),
-        "cut": (1046.9, 0.015), "backfill": (369.8, 0.01), "cap": (65.9, 0.10),
-        "haul-off": (771.0, 0.01)}
+#: grade); each tolerance sits just over that stated gap. §7d (2026-11-05) for the deeper strips.
+HAND = {"drain-column-stone": (50.7, 0.01), "drain-column-geotextile": (1419.0, 0.01),
+        "cut": (1060.8, 0.015), "backfill": (375.1, 0.01), "cap": (66.5, 0.10),
+        "haul-off": (781.3, 0.01)}
 
 
 def _columns(model):

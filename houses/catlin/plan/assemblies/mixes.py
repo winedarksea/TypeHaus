@@ -30,7 +30,7 @@ from typehaus import (
 # and a strip footing bearing below Ramsey County's 42" frost depth does not freeze. The
 # three sunken-garden-face strips are the exception that proves it — they bottom out 8"
 # below the garden floor and are frost-protected by wings under IRC R403.3
-# (FOOTING_EXPOSED_20 below), which is a detail precisely because the concrete there IS in the
+# (FOOTING_EXPOSED_25 below), which is a detail precisely because the concrete there IS in the
 # freezing zone. ``exposure_s`` is left UNSET on all three: nobody has run a soil sulfate
 # test, and "S0" would be an assumption wearing a measurement's clothes.
 # ** 5,000 psi, AND THAT SETTLES A STANDING OPEN QUESTION. ** IRC Table R402.2's basement-

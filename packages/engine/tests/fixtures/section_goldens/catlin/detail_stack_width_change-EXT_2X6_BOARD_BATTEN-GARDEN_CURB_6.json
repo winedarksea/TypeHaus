@@ -843,11 +843,11 @@
       "points": [
         [
           -4.0,
-          -119.4375
+          -121.87253937007874
         ],
         [
           15.84251968503937,
-          -119.4375
+          -121.87253937007874
         ],
         [
           15.84251968503937,
@@ -871,11 +871,11 @@
       "boundary": [
         [
           -4.0,
-          -119.4375
+          -121.87253937007874
         ],
         [
           15.84251968503937,
-          -119.4375
+          -121.87253937007874
         ],
         [
           15.84251968503937,
@@ -1703,191 +1703,6 @@
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "4\" XPS (2 layers)",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            -4.000000000000001,
-            -132.4375
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            16.0,
-            -132.4375
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        -4.000000000000001,
-        -132.4375
-      ],
-      "p1": [
-        16.0,
-        -132.4375
-      ],
-      "offset": 0.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "1'-8\" ftg",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            -10.0,
-            -119.4375
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            -10.0,
-            -109.4375
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        -10.0,
-        -119.4375
-      ],
-      "p1": [
-        -10.0,
-        -109.4375
-      ],
-      "offset": 0.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "10\" ftg",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            -4.000000000000001,
-            -127.9375
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            0.0,
-            -127.9375
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        -4.000000000000001,
-        -127.9375
-      ],
-      "p1": [
-        0.0,
-        -127.9375
-      ],
-      "offset": 0.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "4\"",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            0.0,
-            -127.9375
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            5.999999999999999,
-            -127.9375
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        0.0,
-        -127.9375
-      ],
-      "p1": [
-        5.999999999999999,
-        -127.9375
-      ],
-      "offset": 0.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "6\"",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            5.999999999999999,
-            -127.9375
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            16.0,
-            -127.9375
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        5.999999999999999,
-        -127.9375
-      ],
-      "p1": [
-        16.0,
-        -127.9375
-      ],
-      "offset": 0.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "10\"",
       "text_along": 0.0,
       "uid": null
     },

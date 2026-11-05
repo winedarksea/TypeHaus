@@ -249,16 +249,16 @@ beam     SUNKEN_GARDEN_GRADE_BEAM_12            0.67
 column   PIER_CONCRETE_12                       0.36
 column   PIER_CONCRETE_14                       1.09
 column   SUNKEN_GARDEN_COLUMN_12                0.89
-footing  COURT_FOOTING_12                      19.09
-footing  FOOTING_20                             6.44
-footing  FOOTING_EXPOSED_20                     1.65
+footing  COURT_FOOTING_12                      19.12
+footing  FOOTING_25                            10.07
+footing  FOOTING_EXPOSED_25                     3.47
 pad      PIER_BASE_12                           0.80
 slab     ENTRY_STEP_TIER                        1.86
 slab     GARAGE_SLAB_ON_GRADE                   5.43
-slab     GARDEN_COURT_SLAB                      1.02
+slab     GARDEN_COURT_SLAB                      1.06
 slab     HP_PAD_ON_GRADE                        0.73
-slab     SLAB_FLOOR                            11.45
-                                     solids   51.48 cy
+slab     SLAB_FLOOR                            10.69
+                                     solids   56.24 cy
 
 BASEMENT_8                                    18.11
 SUNKEN_GARDEN_WALL_DRAINED                    17.11
@@ -269,8 +269,12 @@ SG_VENEER_BEAM_14                              0.99
 GARDEN_CURB_6 + SAUNA_LINER_ON_GARDEN_CURB     0.17
                                       walls   62.01 cy
 
-                                      TOTAL  113.49 cy
+                                      TOTAL  118.25 cy
 ```
+
+**Re-read 2026-11-05 (IRC Table R403.1(1)):** the house strips went 20" x 8" -> 25" x 10"
+(15" under the four garden-end strips); `FOOTING_25`/`_EXPOSED_25` 8.09 -> 13.54 cy, and the
+slab, which stops at them, 11.45 -> 10.69. 113.49 -> **118.25 cy**.
 
 **Re-read 2026-11-01 (decision #112):** `DECK_EPS_INT` (17.24 cy, the whole 56,700 in2 x
 14.1875" prism) and `FOUNDATION_WALL_12_INT` (6.57 cy; `W-B-CS2`/`CN2`/`CN` are framed 2x6
@@ -808,3 +812,9 @@ addendum above is moot (no cap). `DECK_CAP_MIX` and the BuildDeck schedule are t
 §6c). W-SG-S 32 → 23 (−95.7 lb), W2/E2 29 → 21 each (−85.1 lb each): foundation wall #5
 **135 → 110 pieces, 1,311.7 → 1,045.8 lb**. Total **5,091.2 lb / 813 pieces** over the same
 113.49 cy, **44.9 lb/cy**. Billed `#5:hdg-a767` 3,247.9 → 2,982.0 lb, −$346–572.
+
+## Addendum 2026-11-05 — the house strips to IRC Table R403.1(1)
+
+Every FT-B-* strip 20" x 8" -> 25" x 10", 15" under FT-B-S1..S4 (geometry review C2 E1;
+`structural.footing_size`). Plain strips, no steel added: concrete 113.49 -> **118.25 cy**
+(§2), steel 5,091.6 lb, **43.1 lb/cy**.

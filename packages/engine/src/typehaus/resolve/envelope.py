@@ -20,7 +20,7 @@ from typehaus.resolve.ceiling_over import (
     ceiling_decks_over,
     deck_structure_underside_m,
 )
-from typehaus.resolve.drain_tile import drain_tile_solids, resolved_spec
+from typehaus.resolve.drain_tile import clear_of_pours, drain_tile_solids, resolved_spec
 from typehaus.resolve.framing.profiles import cross_section, post_outline
 from typehaus.resolve.framing.solver import band_axis
 from typehaus.resolve.geometry import polygon_area, rect_between
@@ -366,8 +366,10 @@ def _resolve_footing_bedding(
     # the excavation. Emitted here so the drainage toggle and the IFC stormwater system see
     # the ring the take-off has always billed by the foot.
     if bedding.drain_tile:
-        model.solids.extend(drain_tile_solids(
-            bedding.uid, bedding.tag, storey, outline, z0, spec))
+        pours = [s for s in model.solids
+                 if s.category == "footing" and s.tag != bedding.host_ref]
+        model.solids.extend(clear_of_pours(drain_tile_solids(
+            bedding.uid, bedding.tag, storey, outline, z0, spec), pours))
     return ResolvedFootingBedding(
         bedding.uid, bedding.tag, storey, bedding.host_ref, outline,
         z0, z1, bedding.aggregate,

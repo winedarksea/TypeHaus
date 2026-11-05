@@ -13,6 +13,10 @@ take-off measures and what the 3D drainage toggle needs to show a continuous rin
 
 from __future__ import annotations
 
+from dataclasses import replace
+
+from shapely.geometry import Polygon
+
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.model import ResolvedDrainTile, ResolvedSolid
 
@@ -83,3 +87,31 @@ def drain_tile_solids(uid: str, tag: str, storey: str, path, floor_z_m: float,
             z0_m=z0, z1_m=z0 + diameter,
         ))
     return solids
+
+
+def clear_of_pours(solids: list[ResolvedSolid], pours: list[ResolvedSolid]) -> list[ResolvedSolid]:
+    """Each band less any pour it would run through: a tile ends at the concrete face it meets.
+
+    A bed's ring follows its own footing's footprint, which laps a neighbour at a corner or a
+    tee. Where the neighbour is deeper (catlin's 15" garden-end strips against 10" ones), the
+    ring would run through its concrete; there the tile stops and the stone carries on.
+    """
+    from typehaus.resolve.overlay import union_all
+
+    out: list[ResolvedSolid] = []
+    for solid in solids:
+        band = Polygon(solid.outline)
+        cuts = [Polygon(p.outline) for p in pours
+                if p.z0_m < solid.z1_m - 1e-9 and p.z1_m > solid.z0_m + 1e-9
+                and Polygon(p.outline).intersects(band)]
+        if not cuts:
+            out.append(solid)
+            continue
+        rest = band.difference(union_all(cuts))
+        parts = [g for g in getattr(rest, "geoms", [rest]) if g.area > 1e-6]
+        for k, part in enumerate(parts):
+            out.append(replace(solid, uid=solid.uid if k == 0 else f"{solid.uid}-{k}",
+                               tag=solid.tag if k == 0 else f"{solid.tag}-{k}",
+                               outline=[tuple(xy) for xy in part.exterior.coords[:-1]]))
+    return out
+
