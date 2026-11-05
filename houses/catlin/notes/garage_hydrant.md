@@ -26,7 +26,7 @@ washing a vehicle down and for anything else a hose reaches. It is the project's
 
 It is not a *wall* hydrant, and it does not stand against a wall either — see "Why it
 stands in the floor" below. The two south-face hydrants (`FX-M-PORCH-HYD`,
-`FX-S-BALC-HYD`) are the wall kind; the difference is the whole design, and
+`FX-S-BALCONY-HYD`) are the wall kind; the difference is the whole design, and
 `mep.hydrant_freeze_depth` grades the two families on different rules.
 
 ## Why there is no floor drain

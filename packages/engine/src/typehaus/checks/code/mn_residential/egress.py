@@ -218,7 +218,7 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
 
     Every candidate is filtered by elevation first, and that is not a refinement — it is what
     makes the rule mean anything. In the plan frame a second-floor deck door sits directly
-    over the sunken-garden patio, and a coverage test that ignores z reports that the door
+    over the sunken garden, and a coverage test that ignores z reports that the door
     "lands on" a slab twenty feet below it. So a surface qualifies only if its top sits at
     the threshold or within one riser under it, which is also exactly R311.3.1's own
     measurement — presence and step-down turn out to be one test, not two.
@@ -262,7 +262,7 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
         # ``base_ref_z_m`` answers — never the storey datum and never ``z0_m`` (a wall
         # extended down over the rim starts 13 7/16" under its own floor). The two agree
         # for an ordinary wall and differ by exactly the curb for a framed wall standing
-        # on one (``Wall.base_elevation``): reading the storey put D-B-PATIO's threshold
+        # on one (``Wall.base_elevation``): reading the storey put D-B-SUNKEN's threshold
         # 7 1/4" low and reported its step down into the sunken garden as 0.0".
         from typehaus.resolve.doorway_heights import installed_threshold_elevation
 

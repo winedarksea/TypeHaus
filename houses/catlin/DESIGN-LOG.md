@@ -1,4 +1,4 @@
-## Court brick veneer simplified: bedded beam, W2.8 ties, 1/2" joints, foam-bed patio tread (2026-11-04)
+## Court brick veneer simplified: bedded beam, W2.8 ties, 1/2" joints, foam-bed sunken-garden tread (2026-11-04)
 
 - **Beam bedded, not spanning (owner).** `W-SG-BRKBM` is cast on stone (`FB-SG-BRKBM`) and
   moved 4" north, its 2" board flush on FT-B-S1..S4's -4" face. A bedded wall is a veneer
@@ -12,9 +12,9 @@
   foam, 5/8" plywood.
 - **Joints:** both ends 1/2" Class 50 neutral-cure silicone over 5/8" rod, d/c 0.365 (0.731
   one-sided). The 4" Emseal ($1,000-1,900) is gone; `movement_joint` ~$180-370.
-- **Patio:** one Trex Tide Pool tread on a 40 psi XPS bed, PVC water sheet, Trex fascia box
+- **Sunken-garden door:** one Trex Tide Pool tread on a 40 psi XPS bed, PVC water sheet, Trex fascia box
   sides to the brick; AridDek, cross bearers, the concrete cantilever and
-  `AO-B-PATIO-CURB-APPROACH` deleted. Bearing 10.40 / 13.33 psi = 0.78. The engine sets the
+  `AO-B-SUNKEN-CURB-APPROACH` deleted. Bearing 10.40 / 13.33 psi = 0.78. The engine sets the
   tread at the sill nose (6.6" above the court), ~1/2" under the beam top, not the sketch's
   7 1/4" (which would dam the sill): the drain slot's outlet is open.
 - **Engine fixes found on the way:** `integrity.doorway_assembly` tests sections against
@@ -400,8 +400,8 @@ MN U 0.32. This row is not certification of laminated triple or the assembled pa
 The prehanger must supply Therma-Tru system approval and the pair's NFRC/NAFS label.
 Cascadia and imported European uPVC (Drutex DRU-K-20, ~U 0.17) remain alternatives to revert
 to. Keep price bands pending quotes, including laminated glass and BE365 / passage hardware.
-D-M-BALC now uses a schematic 4-9/16 × 1-3/8-inch ZAI envelope; installed section, support,
-drainage and patio/deck threshold heights remain supplier questions.
+D-M-PORCH now uses a schematic 4-9/16 × 1-3/8-inch ZAI envelope; installed section, support,
+drainage and sunken-garden/balcony threshold heights remain supplier questions.
 
 ## Kitchen sink: Bolden faucet and Dearborn trap (2026-10-24)
 
@@ -887,7 +887,7 @@ the spec, and some spec gaps only showed once the model drew them. Fixed:
   two pieces across the movement gap.
 - **Spec gaps closed in the notes.** Strip-in over the head upstand, an unsealed sill flange,
   1/4"/ft minimum, tape under TR-BW-SCREEN-CAP (billed), and the garage and court openings
-  (spec §7, §8). D-B-PATIO and WIN-B-SAUNA stay unmodelled and are named by
+  (spec §7, §8). D-B-SUNKEN and WIN-B-SAUNA stay unmodelled and are named by
   `integrity.opening_flashing_coverage`. The overhead door's membrane got a price row.
 
 Not done: `siding:flashing` still includes wall corners and roof corner trim (owner's call).
@@ -1435,10 +1435,10 @@ on its seat (no 1/16" lift). `EPDM_BASE_ISOLATION` at the steel-trim lap stays.
 Owner's review of the +17'-4" band. **It was not integrated with the heads; it clashed with
 them.** The trim was swept along the whole wall, so over `WIN-S-HALL-N`/`-STAIR-N` (heads at
 208") it sat on top of their own 58114XX heads and K6 caps, and over `AO-S-ERV-EA` on top of its
-head; only the strips skipped openings. `D-S-DECK-E` had no head of its own, "the band was its
+head; only the strips skipped openings. `D-S-BALCONY` had no head of its own, "the band was its
 head", although the band's leg stopped 2 1/2" above the casing. A single band can't serve heads at
 200", 202 7/8", 208" and 208 1/2". Moving the band above all of them gives each opening its own
-head. `D-S-DECK-E` now takes the kit drip head, like `D-M-BALC`. The trim now runs over the
+head. `D-S-BALCONY` now takes the kit drip head, like `D-M-PORCH`. The trim now runs over the
 strips' own spans (`cladding_trim/bands.band_spans`), so it can't cross an opening again.
 
 **Not at the gutter line.** The owner leaned towards gutter height (bottom 20'-7"), but the lower
@@ -3085,7 +3085,7 @@ replace the lumber forms and the bedding tile, and serve as the sub-slab radon c
     the two liner faces at x=8'-10"** that nothing in the model drew. The `W-B-S1B` segment
     and the `SAUNA_LINER_ON_BASEMENT_8` assembly that carried it both existed for one
     afternoon and are gone. What survives the rotation: the room keeps `WIN-B-SAUNA` and is
-    entered **from the gym** through framed `W-B-CS`, a short walk from `D-B-PATIO` and the
+    entered **from the gym** through framed `W-B-CS`, a short walk from `D-B-SUNKEN` and the
     sunken garden, which is what the brief asks the room for.
   - **x=4'-8" was a footing's doing, and it went away with the split.**
     `structural.frost_depth` lowers a footing's local grade by any open excavation within a
@@ -3391,7 +3391,7 @@ replace the lumber forms and the bedding tile, and serve as the sub-slab radon c
 ## Decks and the garage
 
 - **Deck-plank-as-sheet conversion, and the breezeway's part in it (RETIRED structure).**
-  As of 2026-09-03, `FS-SG-PORCH` (composite, 3bf2f48), `FS-SG-DECK` (aluminium), and
+  As of 2026-09-03, `FS-SG-PORCH` (composite, 3bf2f48), `FS-SG-BALCONY` (aluminium), and
   `FS-BW-FLOOR` (composite, at the time a deck joist field) all carried their boards as
   `subfloor=DeckLayer(...)`; the `SL-SG-PORCH`, `SL-SG-DECK`, and `SL-BW-DECK` slabs that
   used to stand beside the framing were deleted, and all three planks moved from billing by
@@ -3970,12 +3970,12 @@ which is already two named **deferred** items (`column_support/W-SG-W1`/`E1`).
     through `TR-SG-CAP-FRW/FRE` and its butyl, which is the dielectric between
     an aluminium cap and copper-treated framing.
   - `RL-SG-BALCONY` staying fascia-mounted is a roofing decision:
-    `FS-SG-DECK`'s aluminium plank is the porch roof and has carried no
+    `FS-SG-BALCONY`'s aluminium plank is the porch roof and has carried no
     penetrations since the heat pumps went to grade; surface posts would put
     ~36 holes through the only waterproof plane here. Brackets through-bolt the
     PVC fascia and the 2x8 rim per Ultralox's own instructions (four 5/16" x 4"
     bolts, nuts on the rim's inside face), landing in rim blocking authored in
-    `FS-SG-DECK.reinforcements`.
+    `FS-SG-BALCONY.reinforcements`.
 
 - **The veneer stands on a grade beam, not on the house footing** (2026-09-05).
   `W-B-BRICK` is 129 SF of masonry exposed on both faces at the bottom of an
@@ -4276,7 +4276,7 @@ retired: both cast columns and their pads, the four porch beams, both wood pilla
   snow not concurrent, so the table governs (`preferences.toml [structural] deck_snow_psf`).
 - **What moved with the walls:** the basement's N-B-S1/S3 split nodes 1'-0" in, the sauna
   1'-0" narrower from the west (owner: shrink, not shift — its east wall is the x=18'
-  bearing line and D-B-PATIO starts at 18'-10"), the brick's ends and soft joints, the
+  bearing line and D-B-SUNKEN starts at 18'-10"), the brick's ends and soft joints, the
   spa feed and disconnects, the HP2 pad and stand, the stair pad, the two court spots, and
   `W-B-BRICK`'s top (-8" -> -13 1/3", under the 2x12 soffit). The balcony hydrant did NOT
   move: its only free bay on W-S-S1 is 7'-4", 11" outside the new deck edge, because
@@ -4439,7 +4439,7 @@ and the veneer beam. The owner called it back to one flush plane.
   (`_MAX_NONREQUIRED_STEP_DOWN`) at a non-required, inward-swinging door. A lower court needs
   a landing — which is exactly what `SL-SG-STOOP` had been, for two days, before it was
   retired (uid `SGS503AAAA`, never reuse). `code.R311_3_exterior_landing` now reads
-  "D-B-PATIO lands on SL-SG-FLOOR, 7.3" below the threshold".
+  "D-B-SUNKEN lands on SL-SG-FLOOR, 7.3" below the threshold".
 - `W-SG-ARCH` did not move: it carries Pu 62,051 lb and closes the walls' loop before
   backfill, and dropping its top to the rim underside gives phi-Pn 60,712, d/c 1.02. Its top
   and `_rim_underside_in` are now the same expression, so the rim bears on it, and
@@ -4845,7 +4845,7 @@ ever been on it and the only one a Twin Cities yard stocks off the shelf.
   no longer exercises — the machinery, and the emitter regression it exists to catch, are now
   guarded on a synthetic fixture in `packages/engine/tests/test_emitter_band_parity.py`.
   Anything that had been true about band heights on the 2 2/3" course, `applyMasonryWallUv`,
-  or the upper register riding `D-B-PATIO`'s head line at 88" is history, not a constraint.
+  or the upper register riding `D-B-SUNKEN`'s head line at 88" is history, not a constraint.
 - It had to stay a STRUCTURE layer, not CLADDING — the backer is a different wall, so this
   has to be the structure layer or `integrity.assembly_layers` finds none. Same precedent as
   `RETAINING_BLOCK_12`. One BOM row resulted, `BASEMENT_BRICK_VENEER:brown-brick`, 129.2 SF.
@@ -4865,7 +4865,7 @@ ever been on it and the only one a Twin Cities yard stocks off the shelf.
   its full width and the sauna window loses its top 6". Neither opening is a daylight or
   egress subject.
 - A reveal must stay concentric with the opening it reveals, and for five days one was not.
-  `AO-B-BRICK-DOOR` had been authored against `D-B-PATIO`'s position; on 2026-08-30 the door
+  `AO-B-BRICK-DOOR` had been authored against `D-B-SUNKEN`'s position; on 2026-08-30 the door
   moved 6" west off a different node on a different wall and the reveal did not follow.
   `haus check` reported 0 FAIL the whole time, because the two are individually correct and
   nothing compared them. `integrity.reveal_concentric` now grades that — every rough opening
@@ -6818,14 +6818,14 @@ in place at two spots before choosing.
 No microwave is modelled. Supersedes the two 2026-10-23 garage entries.
 
 
-## Patio sill interference: retain XMN5 and formed approach recess (2026-10-26)
+## Sunken-garden door sill interference: retain XMN5 and formed approach recess (2026-10-26)
 
 > Superseded 2026-11-01: XMN5 dropped after the sheathing frame anchor moved the sill 1/2" out;
 > the recess alone now clears the seat.
 
 Reviewer follow-up confirms the FAIL → PASS change is a deliberate design revision.
 The approach originally intersected the remaining W-B-S3 curb assembly. Retain both
-catalog Endura XMN5 and AO-B-PATIO-CURB-APPROACH: the extender moves the approach start
+catalog Endura XMN5 and AO-B-SUNKEN-CURB-APPROACH: the extender moves the approach start
 beyond the concrete face; the blind recess clears insulation/membrane down to that face.
 This adds a purchased accessory and formed clearance; it does not remove a part to hide
 the clash. It does not further cut the structural concrete or lower the seat/flood edge.
@@ -6840,7 +6840,7 @@ Height values are regenerated from installation_report, not maintained in prose.
 ## Main-floor sills: retain explicit schematic selections pending coordinated replacement (2026-10-26)
 
 Owner permits replacement if real-world quality is maintained, and retaining the current
-choices if that yields the better house. Retain D-M-ENTRY and D-M-BALC for this pass.
+choices if that yields the better house. Retain D-M-ENTRY and D-M-PORCH for this pass.
 The available digitized catalog installation is not a drop-in replacement: the entry
 specifies a 7-3/4-inch Therma-Tru sill, while the digitized Endura profile is 4-9/16 inches;
 the balcony's existing 60-inch modeled opening is narrower than the catalog pair's
@@ -6857,7 +6857,7 @@ replaced; a catalog error never falls back to it automatically. Both fits remain
 
 ## Exterior door sill follow-up (2026-10-25 status, superseded)
 
-The patio brick arch crown is 80 inches above the veneer base, below the door head; the
+The sunken-garden brick arch crown is 80 inches above the veneer base, below the door head; the
 78-inch project headroom criterion is measured at its centreline. Brick provides the trim,
 with returns ending at the host wall. The garage service door has a schematic outswing sill;
 its supplier section and support remain to be confirmed.
@@ -7006,14 +7006,14 @@ drawn inside the enclosed tub deck. A raised platform is now a base obstacle.
 ## Window coverings: ceiling tracks and cellular shades (2026-10-29)
 
 The seven main-floor rods became four VIDGA runs (`notes/window_coverings.md`): the living
-south wall and the bedroom west wall on ceiling tracks, `D-M-BALC` on a lower wall track
+south wall and the bedroom west wall on ceiling tracks, `D-M-PORCH` on a lower wall track
 under `EQ-M-HP2-LIVING`, and Study 2's deck door on a ceiling track. A rod leaks at the top
 and ends, so the curtain drives a convective loop. Every closed edge now ends against a
 wall. The upstairs studies take motorized SmartWings cellular shades (Matter over Thread,
 solar); the main bedroom's south pair and `WIN-A-S3` take the cordless version.
 
 Alternatives not taken:
-- **Moving `EQ-M-HP2-LIVING` / `EQ-M-HP2-BED` to free a ceiling run over `D-M-BALC` and
+- **Moving `EQ-M-HP2-LIVING` / `EQ-M-HP2-BED` to free a ceiling run over `D-M-PORCH` and
   `WIN-M-BED-S2`.** The heads stay. BALC takes a wall track under its head, and the bedroom
   south pair takes inside-mount shades.
 - **An extra floor truss for a ceiling run over `WIN-M-BED-S1`.** The 64" run did not
@@ -7189,15 +7189,15 @@ header/plate contact, so nothing said so. `integrity.header_under_plate` is the 
   RO), and W-G-S is a nonbearing gable, so R602.7.4 applies: 1 1/2" nailer, 2" under the
   plates. RO, sill, plates and ST-G-SERVICE unchanged. O3-010 closes with it: K7's "2-ply
   14" LVL" is D-G-OVERHEAD and was right; CLAUDE.md's "3-ply" was this door.
-- **D-B-PATIO: a flush rim header in FS-M-EAST's band (owner).** The 2-2x10 stood 4 5/8"
+- **D-B-SUNKEN: a flush rim header in FS-M-EAST's band (owner).** The 2-2x10 stood 4 5/8"
   into the plates. W-B-S3-FR bears the band but runs parallel to its joists, so the beam is a
   2-ply 1 3/4" x 11 7/8" Microllam beside the edge joist (`JoistReinforcement.extent`), not a
   bearing ref (that would cut every joist). `Door.header_in_band` frames no wall header, runs
   the jacks to the plates and lays a flat nailer at the head. Graded as
-  `band_header/D-B-PATIO`, d/c 0.017 on shear (TJ-9000 July 2026;
-  `notes/patio_band_header.md`): no table publishes a flush beam with jamb stacks on its
-  seats. The review's "point load at 19'-1"" was the stale CN-*-HD-BALC-W strap station;
-  D-M-BALC's packs stand on the seats. All four balcony-jamb straps moved onto the packs.
+  `band_header/D-B-SUNKEN`, d/c 0.017 on shear (TJ-9000 July 2026;
+  `notes/sunken_door_band_header.md`): no table publishes a flush beam with jamb stacks on its
+  seats. The review's "point load at 19'-1"" was the stale CN-*-HD-PORCH-W strap station;
+  D-M-PORCH's packs stand on the seats. All four porch-jamb straps moved onto the packs.
 
 
 ## Panels under the handle limit (2026-10-31, geometry review C6-E8 / M3-002, M3-006)
@@ -7493,7 +7493,7 @@ wet-vent: the WC joins upstream of both, against 908.2.1.4.
   joints stay flat on the sheet-vinyl surface. Browser review covers all four Gatsby rooms.
 - **Leak valve dropped.** `APPL-S-PLANT-VALVE` and its ZAC36 type are deleted; the stub's
   stop and the main are the shutoffs.
-- **Spigot onto the balcony.** `FX-S-BALC-HYD` moved 7'-4" -> 12'-8", directly over
+- **Spigot onto the balcony.** `FX-S-BALCONY-HYD` moved 7'-4" -> 12'-8", directly over
   `FX-M-PORCH-HYD` in the stud-003 / WIN-S-PLANT4 king bay; its riser tees off the porch leg
   in the wall plane, and `PR-M-CW-HYD-DIST` now reaches that tee (it used to stop 8" short).
   The watering stub, sleeve, bore and backing moved with it.

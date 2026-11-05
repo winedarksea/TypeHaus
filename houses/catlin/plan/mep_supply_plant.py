@@ -16,8 +16,8 @@ from typehaus import (
 )
 
 # --- the automatic-watering stub (2026-09-23) --------------------------------------------
-# The owner wants the room hookable to automatic watering from INSIDE; FX-S-BALC-HYD's thread
-# is outdoors and does not count. So a capped 1/2" PEX tee off PR-M-CW-BALC-HYD's riser, which
+# The owner wants the room hookable to automatic watering from INSIDE; FX-S-BALCONY-HYD's thread
+# is outdoors and does not count. So a capped 1/2" PEX tee off PR-M-CW-BALCONY-HYD's riser, which
 # already stands in W-S-S1's x 144 3/4"..158" bay: 3" east of the riser at 14" AFF,
 # under BK-S-S1-HYD (21") and the hydrant seat (24"). Nothing crosses the floor, so no new
 # penetration; the only hole is the recessed box, gasketed to the humid membrane like the
@@ -46,20 +46,20 @@ PLANT_STUB_DEVICES_SECOND = [
                   model='1/2" quarter-turn stop, capped hose-thread outlet, in a recessed box gasketed to the humid membrane'),
 ]
 
-# --- FX-S-BALC-HYD's sleeve (2026-09-23) ------------------------------------------------
+# --- FX-S-BALCONY-HYD's sleeve (2026-09-23) ------------------------------------------------
 # The barrel crosses W-S-S1 from its seat in the stud cavity to the escutcheon, and the bore
-# (AO-S-BALC-HYD, blind 12" from outside) stops 1 1/4" short of the humid membrane, so the
+# (AO-S-BALCONY-HYD, blind 12" from outside) stops 1 1/4" short of the humid membrane, so the
 # plant room's liner is NOT pierced. What the barrel does cross is the air/water/vapour
 # plane — the 4" ccSPF on the sheathing — into a -15 F wall. This sleeve is that crossing:
-# 2 1/2" PVC set in the sheathing at rough-in, pitched out, lining AO-S-BALC-HYD's hole,
+# 2 1/2" PVC set in the sheathing at rough-in, pitched out, lining AO-S-BALCONY-HYD's hole,
 # concentric with it and the barrel (144.829" = 24" AFF over the 0.829" build-up).
 # `position` is the barrel's escutcheon vertex, so mep.sleeve_alignment reads it on the run.
 HYDRANT_SLEEVE_SECOND = [
-    SleevePenetration(uid="X4W3WBMX9T", tag="SP-S-BALC-HYD", host_ref="W-S-S1",
+    SleevePenetration(uid="X4W3WBMX9T", tag="SP-S-BALCONY-HYD", host_ref="W-S-S1",
                       position=pt(ft(12, 8), inch(-5)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(2.5), serves_fixture="FX-S-BALC-HYD",
+                      sleeve_diameter=inch(2.5), serves_fixture="FX-S-BALCONY-HYD",
                       purpose=Service.WATER_COLD, axis="horizontal",
                       center_elevation=inch(144.829),
-                      seal="flanged sleeve taped to the sheathing (butyl), ccSPF sprayed tight to it; escutcheon gasket at the cladding (PA-S-BALC-HYD-SEAL)",
+                      seal="flanged sleeve taped to the sheathing (butyl), ccSPF sprayed tight to it; escutcheon gasket at the cladding (PA-S-BALCONY-HYD-SEAL)",
                       insulation="closed-cell foam annulus over the barrel's half-inch elastomeric sleeve"),
 ]

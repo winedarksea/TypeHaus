@@ -119,7 +119,7 @@ for (const sample of cases) {
       failures.push(`${solid.tag}: mounting mesh lost its railing selection`);
     }
   }
-  const deck = model.floors!.find(f => f.tag === "FS-SG-DECK")!;
+  const deck = model.floors!.find(f => f.tag === "FS-SG-BALCONY")!;
   const cutaway = sample.name.includes("cutaway") ? { ...deck, subfloor: null,
     members: deck.members.filter(member => Math.abs(member.p0[1] - sample.target[2]) < 0.15
       && Math.abs(member.p1[1] - sample.target[2]) < 0.15) } : deck;

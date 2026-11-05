@@ -137,7 +137,7 @@ curtain plane and is open inside↔outside above the track. Sixteen `JoistReinfo
 blocks close them (`params/sunken_garden.py`, `_ENCLOSURE_BLOCK_LINES`) — the only
 reinforcement on either garden deck answering an *envelope* joint rather than a structural
 one. They resolve at the joists' full depth, land flush with the soffit, and inherit
-`FS-SG-DECK.top_protection` butyl.
+`FS-SG-BALCONY.top_protection` butyl.
 
 `plies=1` throughout: `_reinforcement_members` lays `range(plies - 1)` sisters, i.e. none.
 **The trap** is that one entry lays a block in the bay on *each* side of its line, so the
@@ -149,7 +149,7 @@ rear rim at `max(joist y)` and every authored `at` must sit strictly inside the 
 One admitted waste: the line-1 entry's second block lands in bay 0–1, the balcony's front
 overhang south of the front track — one per flank, doing nothing for the enclosure.
 
-**8 entries, 16 blocks, 17.3 lf.** `FS-SG-DECK` blocking goes 4 → 20; sisters stay 0.
+**8 entries, 16 blocks, 17.3 lf.** `FS-SG-BALCONY` blocking goes 4 → 20; sisters stay 0.
 
 ## Money
 

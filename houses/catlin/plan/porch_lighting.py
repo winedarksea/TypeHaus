@@ -36,7 +36,7 @@ PORCH_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-S2", face="left", distance_from_start=inch(82),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # East circulation/landing sconce, between D-M-BALC and WIN-M-LIV-S2. Together with
+    # East circulation/landing sconce, between D-M-PORCH and WIN-M-LIV-S2. Together with
     # the west fan light it lights the porch even when the garden flood is switched off.
     ElectricalDevice(uid="QTM001GAAA", tag="ED-M-STAIR-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-EXT",

@@ -1,4 +1,4 @@
-# Patio and study French pairs — catalog coordination
+# Sunken-garden and study French pairs — catalog coordination
 
 Owner scope, 2026-10-26: standard rainproofing, catalog parts and ordinary field
 fitting; no inquiries, custom metal fabrication or purchases. Keep the nominal
@@ -9,7 +9,7 @@ with no exposed wood. Main-floor door installations and WIN-B-SAUNA are unchange
 their host wall and landing geometry. Door installation status remains UNKNOWN until the
 support connections, product interfaces and bonds have evidence.
 The exterior boundaries,
-formed patio seat, catalog sill outline, approach boards, support envelopes and
+formed sunken-garden door seat, catalog sill outline, approach boards, support envelopes and
 flashing-end envelopes are modeled. Member feasibility and installed-height checks
 are calculated. Root connections, concrete bar development, cross-bearer bearing and
 several installed product interfaces remain UNKNOWN. Do not close these as purchase-only
@@ -71,19 +71,19 @@ The working catalog envelope is **62-9/16 × 82 inches**, with a **63-5/16 × 82
 RO**, from Therma-Tru's 7/8-astragal table. The modeled framed height is
 **82-7/8 inches**, adding the 3/8 inch pan allowance above that published RO. That table does **not** establish the Endura
 FLA assembly's exact unit dimensions. The delivered Endura assembly still requires dimensional confirmation. `assembly_confirmed=False`.
-The new `DT-EXT-FRENCH60-CATALOG` applies only to D-B-PATIO and D-S-DECK-E; it does not
-resize D-M-BALC.
+The new `DT-EXT-FRENCH60-CATALOG` applies only to D-B-SUNKEN and D-S-BALCONY; it does not
+resize D-M-PORCH.
 
 ## 2. Placement, support and water paths
 
-### Patio
+### Sunken-garden door
 
-D-B-PATIO stays on W-B-S3-FR. AO-B-BRICK-DOOR supplies its separate exterior boundary;
+D-B-SUNKEN stays on W-B-S3-FR. AO-B-BRICK-DOOR supplies its separate exterior boundary;
 it supplies no door anchorage. The openings stay concentric. Their wider ROs preserve
 the original centerline; the brick arch keeps its 8 inch rise and has a coordinated
 86-1/4 inch overall opening height measured from the brick wall's own base.
 
-AO-B-PATIO-SEAT is a real formed recess in W-B-S3, across the door RO, **1-3/4 inches
+AO-B-SUNKEN-SEAT is a real formed recess in W-B-S3, across the door RO, **1-3/4 inches
 down** from the adjacent 7-1/4 inch curb. Its concrete seat is **5-1/2 inches above the
 court datum**. Jamb/adjacent curb tops and the footing stay in place. The flood-step
 check reads this actual lower edge, not the unrecessed wall top. W-B-S3 declares the
@@ -93,8 +93,8 @@ as a flood barrier. Overflow drainage and the sump remain the backup provisions.
 The pan's level bearing envelope is over the concrete seat. **No sill extender** (owner,
 2026-11-01). **Since 2026-11-04 the approach is one composite tread on a foam bed (§6)**:
 the AridDek boards, both cross bearers and the concrete cantilever are deleted with
-`AO-B-PATIO-CURB-APPROACH`. Two blind recesses cut the foam down under the tread —
-`AO-B-PATIO-TREAD-BED` through the curb's membrane/XPS tail (stopping at concrete) and
+`AO-B-SUNKEN-CURB-APPROACH`. Two blind recesses cut the foam down under the tread —
+`AO-B-SUNKEN-TREAD-BED` through the curb's membrane/XPS tail (stopping at concrete) and
 `AO-SG-BRKBM-TREAD-BED` through W-SG-BRKBM's 2" board — and neither lowers the concrete seat
 or the flood-containment edge. The section-intersection check now tests the sill, tread,
 pan drop and box sides against every solid and wall layer near the door, not only the host
@@ -104,7 +104,7 @@ weeps and the isolation from the separately supported brick open.
 
 ### Study
 
-The composite factory jamb anchors at the structural wall. At the patio the composite
+The composite factory jamb anchors at the structural wall. At the sunken-garden door the composite
 returns stop at the host wall face; the brick reveal is the trim and has no casing. The supported factory sill is level.
 The short AridDek boards run outward and are supported by two cross bearers over the
 concealed 2×6 outrigger envelopes. Their root connection to FS-S-EAST must be designed
@@ -148,7 +148,7 @@ The selected pan maximum-rise allowance and digitized cap setting are explicit a
 [Minnesota R311.3.2](https://www.revisor.mn.gov/rules/1309.0311/) measures from the top
 of the threshold. The landing check now reads an installed/schematic crest when known;
 a selected product without a section gets UNKNOWN rather than a rough-sill PASS.
-The patio arch is checked at the crown centreline against a 78 inch project headroom
+The sunken-garden arch is checked at the crown centreline against a 78 inch project headroom
 criterion. Source/fit/supplier statuses stay independent in JSON and IFC.
 
 Reproduce the actual resolved sections, height table, takeoff, flashing-end plots,
@@ -188,7 +188,7 @@ unit label, order confirmation or warranty extension was obtained.
 1. Confirm the exact catalog unit/hinge/sweep/pan sections and adjust the RO/head allowance.
 2. Detail the support root connections, concrete development and actual cross-bearer bearing;
    coordinate reinforcement and independently moving structures before forming/framing.
-3. Form the patio recess and support; frame both enlarged openings and the study approach
+3. Form the sunken-garden door recess and support; frame both enlarged openings and the study approach
    supports. Check the resulting clear openings, concrete edge and landing elevations.
 4. Install the supported sloping apron and catalog pan, with their prescribed end caps,
    corners, bonds and sealant. Join the jamb/head bands to the actual water plane.
@@ -202,7 +202,7 @@ unit label, order confirmation or warranty extension was obtained.
 8. Measure finished crest/landing heights and clear headroom; water-test drainage and
    adhesion in the completed detail before concealing inaccessible joints.
 
-## 6. The patio's foam-bed tread (owner, 2026-11-03; modelled 2026-11-04)
+## 6. The sunken-garden door's foam-bed tread (owner, 2026-11-03; modelled 2026-11-04)
 
 Measured off the court floor (−109 7/16"): beam top **7.0"** (held; never lower), threshold
 crest **7.4"** (R311.3.2 reads 7.6" with the 1/4" tolerance, ≤ 7.75").
@@ -214,7 +214,7 @@ crest **7.4"** (R311.3.2 reads 7.6" with the 1/4" tolerance, ≤ 7.75").
 - **Water layer:** a PVC sheet under the board, lapped under the SureSill pan's front lip,
   over the foam, turned onto the beam top.
 - **Box sides:** Trex Tide Pool fascia, 0.56 × 7 1/4", ripped ~6" for the jambs and head,
-  frame to the brick's back, sealed to the brick. Replaces the patio's Captivate returns
+  frame to the brick's back, sealed to the brick. Replaces the sunken-garden door's Captivate returns
   (the study keeps Captivate). Three 12' boards: no two of the 6.8' jambs and 5.3' head share one.
 - **Accepted (owner):** Trex publishes its boards on joists at 16" with air under them; laid
   continuously on foam is outside that install — a warranty exposure, not a code one.

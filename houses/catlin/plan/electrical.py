@@ -38,7 +38,7 @@
 #   basement — shortest run from the underground POWER entry at (0', 18').
 # - Garage south wall W-G-S at y=40'-6 7/8", service door at x=5'-8'; both EV receptacles east
 #   of it, clear of the door swing.
-# - Sunken-garden porch: west wall W-SG-W1 axis x=9', inner face x=9.5', north end
+# - Court porch: west wall W-SG-W1 axis x=9', inner face x=9.5', north end
 #   y=-0.833'. Hot tub disconnect 7' south of that, under the deck — basement storey, so
 #   Mount elevation 5' is -4' absolute.
 # - PV junction box on the north gable (W-A-N2B) beside the radon riser
@@ -410,7 +410,7 @@ BASEMENT_EQUIPMENT = [
     # FS-M-EAST's gypsum here, which is the air Gree's Multi R32 wall-mount installation
     # wants over the cabinet (restated 2026-10-30 for the 3/4" mats).
     # On W-B-S4 at 1'-5", wholly east of the jog at x=26'-2" that it straddled 5/8" deep
-    # (`integrity.wall_mount_on_face`); west of it, D-B-PATIO's leaf swings through it.
+    # (`integrity.wall_mount_on_face`); west of it, D-B-SUNKEN's leaf swings through it.
     Equipment(uid="CEE031AAAA", tag="EQ-B-HP2-GYM", kind=EquipmentKind.INDOOR_HEAD,
               footprint=(inch(32), inch(8)),
               room="RM-B-GYM", type_ref="EQ-T-GREE-HEAD-9", outdoor_ref="EQ-M-HP2-OD",
@@ -613,7 +613,7 @@ MAIN_EQUIPMENT = [
     # are deliberately not modeled (the outdoor_ref pairing IS the record, plans/TODO.md).
     # ** SYSTEMS 1 AND 2 STAND ON THE GROUND, NOT ON THE BALCONY. ** Moved 2026-09-02
     # (notes/heat_pump_ground_pad.md, which carries the clearances, the line-set routes and
-    # the sound reasoning). They stood on FS-SG-DECK at +10' — the watertight aluminium roof
+    # the sound reasoning). They stood on FS-SG-BALCONY at +10' — the watertight aluminium roof
     # of an occupied porch — on a lagged aluminium stand that cost eight through-plank
     # penetrations, sixteen sacrificial blocks, two traced condensate runs, and a standing
     # "never soffit this deck" constraint, all of it over the master bedroom's south
@@ -1559,7 +1559,7 @@ MAIN_DATA_TRUNKS = [
                            ft(8, 8)),
                # Pull box at 4 (2'-5 1/2", 1'-0"), the foot of the drop to the south bay, behind
                # a ceiling access cover: re-laid round the extract trunk 2026-09-24, the head's
-               # jog and tier drop put 630 deg before the old box under FS-SG-DECK. Re-index it
+               # jog and tier drop put 630 deg before the old box under FS-SG-BALCONY. Re-index it
                # if the head is re-laid again.
                pull_points=(4,),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-PORCH-AP"),
@@ -2025,7 +2025,7 @@ NEC_FILL_MAIN = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-E1", face="left", distance_from_start=inch(258.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # RC5 is the only receptacle covering BOTH ends of the south run — D-M-BALC's east jamb
+    # RC5 is the only receptacle covering BOTH ends of the south run — D-M-PORCH's east jamb
     # at 23'-10" and the far end near the SE corner, where RC13's coverage comes round the
     # east wall to meet it — and the two ends together pin it to a ~5" window, about
     # 29'-5"..29'-10". 29'-7" splits it: 5'-9" to the jamb, 5'-9 3/4" to the far point. No
@@ -2380,7 +2380,7 @@ NEC_FILL_SECOND = [
     # WIN-S-PLANT4 stands in its place, so this is now an ordinary station on a continuous
     # wall: a window sill 2'-8" up breaks no wall space, and 210.52(A) is satisfied by RC1/RC2
     # on their own spacing. The bay is still the right one — it stays.
-    # FX-S-BALC-HYD stands one bay east at 12'-8" (2026-11-03, plan/fixtures.py).
+    # FX-S-BALCONY-HYD stands one bay east at 12'-8" (2026-11-03, plan/fixtures.py).
     ElectricalDevice(uid="NEC021AAAA", tag="ED-S-PLANT-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-WR",
                      circuit="CKT-RC-SECOND",
@@ -2388,7 +2388,7 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-S1", face="left", distance_from_start=inch(136),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
-    # Neither RC1 (1'-4" from FX-S-BALC-HYD in plan) nor RC2 is the power for the room's
+    # Neither RC1 (1'-4" from FX-S-BALCONY-HYD in plan) nor RC2 is the power for the room's
     # drip-irrigation timer: the hydrant's thread is outdoors, so a
     # cord from here would cross W-S-S1's Class I liner and 4" of continuous exterior foam
     # for a device that ships as a battery unit. Nothing is authored on the balcony either.

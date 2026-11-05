@@ -74,7 +74,7 @@ from typehaus import (
 #     x 8'-10"..18'-0" by y 0'-0"..10'-0" on the node lines — an 8'-3 15/16" x 8'-10 11/16"
 #     clear box against the 8'-1" x 12'-7" it was. (The north wall went to 10'-0" on
 #     2026-09-05, round three; the node block below says what stopped it there.) It keeps WIN-B-SAUNA and is entered FROM
-#     THE GYM through framed W-B-CS, a short walk from D-B-PATIO and the sunken garden,
+#     THE GYM through framed W-B-CS, a short walk from D-B-SUNKEN and the sunken garden,
 #     which is what the brief asks the room for. (The rotation drew it x 4'-8"..18'-0", a
 #     12'-2" box straddling two substrates; ROUND TWO the same afternoon pulled the west
 #     wall onto N-B-S1 — see the node block below.)
@@ -459,8 +459,8 @@ WALLS = [
     # curb on the old element rather than the framing: FT-B-S2/FT-B-S3, `_FROST_FORMED`,
     # `structural.frost_depth` and W-B-BRICK's dimensions all still name a piece of
     # concrete on a footing, and none of them moved. The balcony jamb holdowns did move
-    # (2026-10-09): an STHD14 in the curb (CN-B-HD-BALC-*) and an MSTC52 across the floor
-    # band (CN-M-HD-BALC-*), since their old +1" embedment had landed in W-B-S3-FR's studs.
+    # (2026-10-09): an STHD14 in the curb (CN-B-HD-PORCH-*) and an MSTC52 across the floor
+    # band (CN-M-HD-PORCH-*), since their old +1" embedment had landed in W-B-S3-FR's studs.
     # The STHD14's 14" embed is deeper than this 7 1/4" curb, so W-B-S3 is cast monolithic
     # with FT-B-S3 (tasks.toml, the walls visit), straps set before that one pour.
     #
@@ -469,9 +469,9 @@ WALLS = [
     # heavy rain can stand in it. A concrete curb runs under the whole framed run so standing water
     # reaches concrete and not a bottom plate. 7 1/4" is the actual width of a 2x8, so the
     # curb is one board deep and the framed plate lands on it flat. It is also exactly
-    # D-B-PATIO's old raised threshold — the door used to carry `sill_height=inch(7)` off
+    # D-B-SUNKEN's old raised threshold — the door used to carry `sill_height=inch(7)` off
     # this same base — so the curb top IS the threshold now and the door's sill_height
-    # goes to zero rather than to 7 1/4" (see D-B-PATIO in OPENINGS).
+    # goes to zero rather than to 7 1/4" (see D-B-SUNKEN in OPENINGS).
     #
     # `min_threshold_step` is the 7 1/4" above, stated where a checker can read it. Until
     # it was authored the curb height was a literal in two `top_elevation` values and a
@@ -479,7 +479,7 @@ WALLS = [
     # the water line moves with nothing in the engine saying so.
     # `building_science.flood_step_threshold` grades each wall's TOP against the highest
     # surface below it outside — SL-SG-FLOOR, the court floor at -109 7/16" — so both
-    # curbs are held, not only the one D-B-PATIO happens to stand over.
+    # curbs are held, not only the one D-B-SUNKEN happens to stand over.
     FoundationWall(uid="CBW102AAAA", tag="W-B-S2", start_node="N-B-S1",
                    end_node="N-B-S2", assembly="SAUNA_LINER_ON_GARDEN_CURB",
                    interior_room="RM-B-SAUNA",
@@ -971,7 +971,7 @@ WALLS = [
     # the court's own bed and its heat path is broken at that board.
     #
     # Bottom stays at -8'-9", now because that is the beam's top rather than a plinth's: it
-    # still has to clear D-B-PATIO's raised threshold, and a base course should not sit in
+    # still has to clear D-B-SUNKEN's raised threshold, and a base course should not sit in
     # standing water whatever the brick is.
     #
     # The node line is the backup's foam face (-4.06"); the 1.94" `air-gap` puts the brick's
@@ -986,7 +986,7 @@ WALLS = [
     # far end, so naming the west node still works when it's where the run finishes.
     #
     # ** TOP AT -13 1/3", UNDER THE PORCH JOISTS (2026-09-22). ** FS-SG-PORCH's 2x12s
-    # (soffit -11 1/4") run over the wythe to the cladding line, so D-M-BALC keeps its
+    # (soffit -11 1/4") run over the wythe to the cladding line, so D-M-PORCH keeps its
     # R311.3 landing. Two modular courses under the old -8" top leaves 2 1/12" of air.
     # Nothing grades that gap: hold the two numbers together.
     FoundationWall(uid="CBW126AAAA", tag="W-B-BRICK", start_node="N-B-BRICK-E",
@@ -1126,10 +1126,10 @@ OPENINGS = [
     # ED-B-WORKSHOP-SW moved north to clear it.
     Door(uid="GEVMH8HHZ9", tag="D-B-SHOP", host="W-B-HALL-W", type_ref="DT-INT-STEEL36-KEYED",
          position=from_node("N-B-HALL-S", inch(9.4375)), flip_swing=True),
-    # The sauna is entered FROM THE GYM since the rotation — the short route to D-B-PATIO
+    # The sauna is entered FROM THE GYM since the rotation — the short route to D-B-SUNKEN
     # and the sunken garden, which is what the brief asks the room for. Same uid, same 24"
     # leaf, rehosted from W-B-SA-W onto W-B-CS. y 4'-10"..2'-10": far enough north to clear
-    # D-B-PATIO's inswing arc and the shower pan in the sauna's NE corner, far enough south
+    # D-B-SUNKEN's inswing arc and the shower pan in the sauna's NE corner, far enough south
     # to keep clear of D-B-GYM. Swings out into the gym on the default.
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-CS", type_ref="DT-INT-SAUNA24",
          position=from_node("N-B-SA-NE", ft(4, 10.3125)), flip_hinge=True, doorway=D_B_SAUNA_MAT_REDUCER),
@@ -1149,18 +1149,18 @@ OPENINGS = [
     # (integrity.header_under_plate; geometry review C3-E2). FS-M-EAST's flush 2-ply LVL
     # (params/main_deck.py) carries the band over the opening; this wall runs its jacks to
     # the plates and takes a flat nailer at the head for the liner.
-    Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3-FR", type_ref="DT-EXT-FRENCH60-CATALOG",
+    Door(uid="CBD206AAAA", tag="D-B-SUNKEN", host="W-B-S3-FR", type_ref="DT-EXT-FRENCH60-CATALOG",
          position=from_node("N-B-S2F", inch(8.34375)), sill_height=inch(-1.75),
          header_in_band="FS-M-EAST"),
-    RoughOpening(uid="CBPSEAT0001", tag="AO-B-PATIO-SEAT", host="W-B-S3",
+    RoughOpening(uid="CBPSEAT0001", tag="AO-B-SUNKEN-SEAT", host="W-B-S3",
                  position=from_node("N-B-S2", inch(8.34375)),
                  width=inch(63.3125), height=inch(1.75), sill_height=inch(5.5),
                  depth=inch(6), depth_from="interior"),
-    # The tread's bed (2026-11-04): the curb's membrane/XPS tail cut down under D-B-PATIO's
+    # The tread's bed (2026-11-04): the curb's membrane/XPS tail cut down under D-B-SUNKEN's
     # Trex tread, stopping at concrete, and refilled with 40 psi XPS (the installation's
     # `foam-bed-course`). Its floor is that course's underside. Replaced
-    # AO-B-PATIO-CURB-APPROACH, the AridDek approach's 6 1/2" recess.
-    RoughOpening(uid="N1SP53PC4S", tag="AO-B-PATIO-TREAD-BED", host="W-B-S3",
+    # AO-B-SUNKEN-CURB-APPROACH, the AridDek approach's 6 1/2" recess.
+    RoughOpening(uid="N1SP53PC4S", tag="AO-B-SUNKEN-TREAD-BED", host="W-B-S3",
                  position=from_node("N-B-S2", inch(8.34375)),
                  width=inch(63.3125), height=inch(2.75), sill_height=inch(4.5),
                  depth=inch(4.06), depth_from="exterior", framing_required=False),
@@ -1189,7 +1189,7 @@ OPENINGS = [
            type_ref="WT-1424-FIX-T", position=from_node("N-B-S1F", ft(3, 7)),
            sill_height=inch(36.75)),
     # --- reveals through the brick veneer -------------------------------------------
-    # WIN-B-SAUNA and D-B-PATIO sit in the framed walls; these are RoughOpenings for the
+    # WIN-B-SAUNA and D-B-SUNKEN sit in the framed walls; these are RoughOpenings for the
     # holes the wythe in front of them needs, each with its own segmental brick arch — not a
     # duplicate Window/Door, which would double the schedule and takeoff.
     # Positioned off N-B-BRICK-W, 3 1/2" west of N-B-S1F (2026-11-04), so each offset is
@@ -1210,7 +1210,7 @@ OPENINGS = [
     # The sauna reveal also overlaps its window; neither is an egress opening.
     #
     # WIDTH AND POSITION ARE NOT FREE THE WAY HEIGHT IS. This reveal drifted 6" east of
-    # D-B-PATIO between 2026-08-30 and 2026-09-04, because the door moved off its own node
+    # D-B-SUNKEN between 2026-08-30 and 2026-09-04, because the door moved off its own node
     # on its own wall and nothing carried the reveal with it. `integrity.reveal_concentric`
     # grades that now, and test_catlin_contract_m3 pins both pairs. Edit the two together.
     RoughOpening(uid="CBO602AAAA", tag="AO-B-BRICK-DOOR", host="W-B-BRICK",

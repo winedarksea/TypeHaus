@@ -76,7 +76,7 @@ def sleeve_alignment(ctx: CheckContext) -> list[Finding]:
 
 def _missing_sleeve_findings(ctx: CheckContext) -> list[Finding]:
     """A storey tag alone isn't enough: multiple freestanding structures can share one
-    (catlin's sunken-garden balcony slab is also tagged "second") — a fixture only needs a
+    (catlin's court balcony slab is also tagged "second") — a fixture only needs a
     sleeve through the specific slab its footprint actually sits on."""
     from shapely.geometry import Point, Polygon
 

@@ -17,7 +17,7 @@ in the registry:
 * ``CD-A-PV-EAST`` clipped ``WIN-A-N1``'s head corner, following a junction box that a rake fix
   had walked 3" inside the window's jamb.
 * ``PR-B-CW-BATH1`` and ``PR-B-HW-BATH1`` each STOOD 42" inside ``D-M-BATH1``'s opening, and
-  ``PR-M-CW-BALC-HYD`` 24" inside ``D-S-DECK-W``'s.
+  ``PR-M-CW-BALCONY-HYD`` 24" inside ``D-S-DECK-W``'s.
 * ``DU-M-ERV-R-PLANT``'s riser stood 78 1/2" inside ``D-S-PLANT``'s opening and then bored a
   2-ply 2x8 header. ``mep.duct_joist_bay`` PASSED it and printed the station twice in its own
   R302.11 fire-blocking list — it grades the bay a duct is in and never asks what its riser
@@ -147,7 +147,7 @@ def test_a_penetration_is_exempt_only_for_the_run_it_exists_for(catlin_model) ->
         "AO-M-ERV-OA": ("DU-ERV-OA",),
         "AO-S-ERV-EA": ("DU-ERV-EA",),
         "AO-M-PORCH-HYD": ("PR-M-CW-PORCH-HYD-CU", "PR-M-CW-PORCH-HYD"),
-        "AO-S-BALC-HYD": ("PR-S-CW-BALC-HYD-CU", "PR-M-CW-BALC-HYD"),
+        "AO-S-BALCONY-HYD": ("PR-S-CW-BALCONY-HYD-CU", "PR-M-CW-BALCONY-HYD"),
     }
 
     # Still one-to-one the other way: no run is exempted at more than one hole, so a duct

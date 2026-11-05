@@ -405,8 +405,8 @@ def test_the_yard_hydrant_and_the_wall_hydrants_are_graded_differently(catlin_mo
     findings = hydrant_freeze_depth(_context(catlin_model))
     assert not [f for f in findings if f.result is Result.FAIL]
     graded = {tag for f in findings for tag in f.element_tags if tag.startswith("FX-")}
-    assert {"FX-G-HYDRANT", "FX-M-PORCH-HYD", "FX-S-BALC-HYD"} <= graded
-    for tag in ("FX-M-PORCH-HYD", "FX-S-BALC-HYD"):
+    assert {"FX-G-HYDRANT", "FX-M-PORCH-HYD", "FX-S-BALCONY-HYD"} <= graded
+    for tag in ("FX-M-PORCH-HYD", "FX-S-BALCONY-HYD"):
         message = " | ".join(f.message for f in findings if tag in f.element_tags)
         assert "no bury depth to grade" in message
         assert "below grade" not in message

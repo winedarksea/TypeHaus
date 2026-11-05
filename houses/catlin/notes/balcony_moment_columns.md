@@ -2,7 +2,7 @@
 
 **House:** catlin, Ramsey County, Minnesota (Minnesota Residential Code 2020, adopting the
 2018 IRC).
-**Structure:** the sunken garden's balcony — a 21'-6" × 9'-8" deck at +10'-0" (+9'-9" since
+**Structure:** the court's balcony — a 21'-6" × 9'-8" deck at +10'-0" (+9'-9" since
 2026-09-23, §15), carried on
 **four 12" round reinforced-concrete columns fixed at the base** (PT-SG-BR1, PT-SG-BR3,
 PT-SG-BF1, PT-SG-BF3) and two 6x6 wood centre pillars bearing on the porch framing under
@@ -125,7 +125,7 @@ centre pillars hand their share down to it and it is at d/c 0.83 in bearing
 **No equipment dead load.** The two Gree condensers (330 lb the pair) left this deck on
 2026-09-02 for a poured pad in the yard pocket east of the porch — see
 `heat_pump_ground_pad.md`. They were negligible on a 200-odd ft² deck before that, so no member
-changed when they went; what changed is that `FS-SG-DECK`'s aluminium plank now carries
+changed when they went; what changed is that `FS-SG-BALCONY`'s aluminium plank now carries
 **zero penetrations**, which is what keeps RL-SG-BALCONY on fascia brackets (§7).
 
 ### 2b. Wind — ASCE 7-16 §29.3, on the same basis as the superseded note
@@ -138,7 +138,7 @@ and the physical one.
 **That ground has now moved twice, and on 2026-09-05 it came back up.**
 `balcony_wind.ground_below_ft` takes the lowest of the site's spot elevations, and the two
 over the court govern it. They read -9'-4" (stale by 1 7/16") until 2026-09-03, then
--9'-8 11/16" when the court fell 7 1/4" for the flood step at `D-B-PATIO`, and now
+-9'-8 11/16" when the court fell 7 1/4" for the flood step at `D-B-SUNKEN`, and now
 **-9'-1 7/16"**: `court_step_down_in` went back to 0 and the court is flush with the
 basement floor plane again, so the whole court is one surface with a single riser at the
 door. `h` fell 23.3' -> **22.7'**, `K_z` with it, and q_h 18.8 -> **18.6 psf**.
@@ -723,7 +723,7 @@ rejected on the report, not on the price.
   cap:** a 304-stainless plate on 0.019" aluminium coil in a wet exterior location pits the
   aluminium (it is anodic), and the fastener pierces the butyl that IS the dielectric between
   that coil and the copper-treated framing.
-- **RL-SG-BALCONY stays fascia mount.** `FS-SG-DECK`'s aluminium plank is the porch roof and
+- **RL-SG-BALCONY stays fascia mount.** `FS-SG-BALCONY`'s aluminium plank is the porch roof and
   carries **no penetrations at all** since the heat pumps went to grade. Surface posts would
   put ~36 holes through the one waterproof plane in this structure to save bracket money.
   Brackets through-bolt the PVC fascia and the 2x8 rim per **Ultralox's own fascia-mount
@@ -732,7 +732,7 @@ rejected on the report, not on the price.
   from the open joist bays below. Manufacturer's instructions are the accepted basis under
   IRC R106 / R301.1.3; no PE letter. A solid block between the rim and the first joist at
   each post stops the rim rolling under the 200 lb load, and is authored in
-  `FS-SG-DECK.reinforcements`.
+  `FS-SG-BALCONY.reinforcements`.
 
 ESR-3485's fascia-bracket row is written for **concrete**, which is why the wood-rim detail
 above comes from the manufacturer's instructions rather than from the report.
@@ -927,7 +927,7 @@ restraint (`base_rotation/PT-SG-*`) and the stem's own flexure under the moment 
 ## 12. The 17'-0" court frame (2026-09-22) — §2-§4 and §11 re-worked
 
 The court went to 17'-0" clear and the centre support line retired (`PT-SG-BR2/BF2`,
-`BM-SG-BLC`). `FS-SG-DECK` is 2x12 SP @ 12" spanning **18'-0"** between `BM-SG-BLW`/`-BLE`
+`BM-SG-BLC`). `FS-SG-BALCONY` is 2x12 SP @ 12" spanning **18'-0"** between `BM-SG-BLW`/`-BLE`
 with a 9" cantilever each side; the four corner columns are the only posts. Everything
 below supersedes the matching figure above; the method is unchanged. The record's lever is
 still the AUTHORED `Post.height` (108.125" front, 109.958" rear) although the resolved
@@ -1202,7 +1202,7 @@ tension rows at all three covers.
 
 ## 15. The balcony 3" lower (2026-09-23) — §13 re-worked
 
-Owner's call, to land `D-S-DECK-E` (R311.3): `balcony_level_ft` 10.0 → 9.75', and the
+Owner's call, to land `D-S-BALCONY` (R311.3): `balcony_level_ft` 10.0 → 9.75', and the
 `court-upper` storey datum reads it. The fall and every seat are unchanged; the whole balcony
 drops 3". The record's lever is still the AUTHORED `Post.height`, now **105.125"** front
 (9.75' − 11 7/8" glulam) and **106.958"** rear (+ 1.833" rise) — still 11 1/4" (the joist

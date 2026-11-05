@@ -69,7 +69,7 @@ _CATLIN = {
     # 13,861 before the 27 1/2" ROs (2026-10-23); 13,879 after the 1/2" walls (2026-10-23).
     # Two French pairs: +4 UA x85 F = +340 Btu/h.
     # BBD75 layer depth correction (2026-10-25): -1 Btu/h, the same envelope-area shift as HP1.
-    # D-M-BALC's published unit replaces its held 60x80 void (2026-10-29): +2.29 sf at
+    # D-M-PORCH's published unit replaces its held 60x80 void (2026-10-29): +2.29 sf at
     # U 0.21 x 85 F, 14,255 / 25.5 °F -> 14,291 / 25.6 °F.
     # 14,291 before paint took no depth (2026-10-30).
     # 14,292 / 25.6 °F before one owner per rim band (ab6a8179, 2026-10-31): W-B-S2-FR/-S3-FR

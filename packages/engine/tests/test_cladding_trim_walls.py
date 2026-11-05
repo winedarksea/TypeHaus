@@ -46,7 +46,7 @@ def test_screen_ends_close_both_edges_of_the_screen_and_its_skirt(catlin_model_r
 
 def test_catalog_door_takes_the_kit_jambs_and_head(catlin_model_ro):
     pieces = _pieces(catlin_model_ro)
-    deck = [s for s in pieces if s.host_ref == "D-S-DECK-E"]
+    deck = [s for s in pieces if s.host_ref == "D-S-BALCONY"]
     assert sorted(s.product for s in deck) == [
         "BBD_PANEL_STARTER", "BBD_PANEL_STARTER", "DOOR_HEAD_CUSTOM"]
     bands = [s for s in pieces if s.product == "BBD_TRANSITION"]
@@ -56,7 +56,7 @@ def test_catalog_door_takes_the_kit_jambs_and_head(catlin_model_ro):
 def test_penetrations_under_six_inches_take_no_trim(catlin_model_ro):
     hosts = {s.host_ref for s in _pieces(catlin_model_ro)}
     assert {"AO-M-ERV-OA", "AO-S-ERV-EA"} <= hosts
-    assert not hosts & {"AO-M-FIRE-NICHE", "AO-M-PORCH-HYD", "AO-S-BALC-HYD"}
+    assert not hosts & {"AO-M-FIRE-NICHE", "AO-M-PORCH-HYD", "AO-S-BALCONY-HYD"}
 
 
 def test_interior_fireplace_niche_has_no_exterior_trim_or_trim_findings(catlin_model_ro):

@@ -184,13 +184,13 @@ def test_catlin_stair_headroom_is_measured_and_passes(catlin_ctx):
     #
     # ST-SG-PORCH was the exception, and stopped being one on 2026-09-03. It stands in open
     # yard east of the porch and read N/A — no deck, roof plane or soffit over any part of
-    # it — until FS-SG-DECK's joist cantilever went 6" -> 9" and the balcony's east edge
+    # it — until FS-SG-BALCONY's joist cantilever went 6" -> 9" and the balcony's east edge
     # crossed x 28'-6" onto the flight's first 3". So the rule now MEASURES it, at 9.31'
     # plumb under the balcony against R311.7.2's 6'-8". A 3" strip of overhead is enough to
     # make the rule applicable; earning N/A back would mean pulling the deck edge off the
     # flight, and the balcony has better reasons to be where it is.
     assert set(findings) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH", "ST-BW-ENTRY"}
-    assert "FS-SG-DECK" in findings["ST-SG-PORCH"].message
+    assert "FS-SG-BALCONY" in findings["ST-SG-PORCH"].message
     for finding in findings.values():
         assert finding.result is Result.PASS, finding.message
         assert "plumb under" in finding.message  # a measurement, not a storey attribute

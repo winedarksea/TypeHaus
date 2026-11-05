@@ -100,7 +100,7 @@ def _eave_water(side: str, index: int, eave_x, outward: float):
 # 4 in deep in the 5 in gutter floor, so PGI-15 holds. Its 4 in face lies along the wall.
 #
 # Both go to the NORTH end, discharging into the 4' gap toward the garage rather than onto
-# the freestanding sunken-garden structure 5" off the south face. Each hangs on the trough's
+# the freestanding court structure 5" off the south face. Each hangs on the trough's
 # centre line, so it takes the outlet straight down out of the gutter floor (no elbows), and
 # drops into its buried extension's 4" PVC riser through a rect-to-round adapter, on to its
 # own rain garden, mirrored about x=18'-0" (`_discharge`). Its straps sit at the stations

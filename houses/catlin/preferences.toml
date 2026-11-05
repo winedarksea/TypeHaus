@@ -297,11 +297,11 @@ suppress = [
   # The west tapestry is clipped to FURN-B-PLAY-TAPESTRY-W-ROD, not fastened at its bottom.
   # BK-B-PLAY-TAPESTRY-ROD backs the rod brackets; no backing belongs behind the loose hem.
   "advisory.wall_backing_present:FURN-B-PLAY-TAPESTRY-W",
-  # FURN-M-LIV-TRACK-BALC, 2026-10-29: the middle VIDGA wall fitting lands over D-M-BALC's
+  # FURN-M-LIV-TRACK-PORCH, 2026-10-29: the middle VIDGA wall fitting lands over D-M-PORCH's
   # header, which the engine sets 1 1/4" behind the stud face and no backing band may cross.
   # Field item: a ripped 2x nailer on the header's room face at the rail line (88 1/2"
   # above datum). The two end fittings land on BK-M-S2-ROD and the king packs.
-  "advisory.wall_fixing_support:FURN-M-LIV-TRACK-BALC",
+  "advisory.wall_fixing_support:FURN-M-LIV-TRACK-PORCH",
   # Kitchen local vent, 2026-10-24: 22-inch 45-degree rise below the window and
   # 18-inch high tie-in deliberately bore the 2x6 wall. This advisory flags any
   # travel >16 inches, not a failed bore calculation. The focused installation test
@@ -372,12 +372,12 @@ suppress = [
   # leaves one extra interrupted stud on W-M-HS3; the nearest module station would move the
   # opening, so keep the advisory visible in the raw report but accept it by tag.
   "structural.door_framing_module:D-M-LAUN",
-  # Owner 2026-10-26: retain the patio/study centerlines with nominal 60x80 catalog
+  # Owner 2026-10-26: retain the sunken-garden/study centerlines with nominal 60x80 catalog
   # pairs. Their wider ROs interrupt one additional stud; headers/jamb packs still grade.
-  "structural.door_framing_module:D-B-PATIO",
-  "structural.door_framing_module:D-S-DECK-E",
-  # Owner 2026-10-29: D-M-BALC re-centred under D-S-DECK-E; the mirror beats the module.
-  "structural.door_framing_module:D-M-BALC",
+  "structural.door_framing_module:D-B-SUNKEN",
+  "structural.door_framing_module:D-S-BALCONY",
+  # Owner 2026-10-29: D-M-PORCH re-centred under D-S-BALCONY; the mirror beats the module.
+  "structural.door_framing_module:D-M-PORCH",
   # Owner 2026-10-29: D-B-PLAY stays visually centred on W-B-CE and D-B-SHOP on D-B-GYM's
   # line; one extra stud each beats moving them.
   "structural.door_framing_module:D-B-PLAY",

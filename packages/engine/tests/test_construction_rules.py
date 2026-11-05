@@ -358,7 +358,7 @@ def test_patio_sill_and_anchors_stop_at_door(catlin_model_ro):
     from typehaus.resolve.geometry import unit, sub
 
     model = catlin_model_ro
-    door = next(o for o in model.openings if o.tag == "D-B-PATIO")
+    door = next(o for o in model.openings if o.tag == "D-B-SUNKEN")
     wall = model.wall(door.host_wall)
     direction = unit(sub(wall.axis[1], wall.axis[0]))
     def along(point):

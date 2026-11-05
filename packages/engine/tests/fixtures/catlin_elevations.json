@@ -1763,9 +1763,9 @@
 "canvas_objects/FURN-M-LIV-SLAT-FULL/body_z0_m": 0.02605,
 "canvas_objects/FURN-M-LIV-SLAT-FULL/body_z1_m": 2.7263875,
 "canvas_objects/FURN-M-LIV-SLAT-FULL/z_m": 0.02605,
-"canvas_objects/FURN-M-LIV-TRACK-BALC/body_z0_m": 0.03875,
-"canvas_objects/FURN-M-LIV-TRACK-BALC/body_z1_m": 2.26125,
-"canvas_objects/FURN-M-LIV-TRACK-BALC/z_m": 0.03875,
+"canvas_objects/FURN-M-LIV-TRACK-PORCH/body_z0_m": 0.03875,
+"canvas_objects/FURN-M-LIV-TRACK-PORCH/body_z1_m": 2.26125,
+"canvas_objects/FURN-M-LIV-TRACK-PORCH/z_m": 0.03875,
 "canvas_objects/FURN-M-LIV-TRACK-S/body_z0_m": 0.03875,
 "canvas_objects/FURN-M-LIV-TRACK-S/body_z1_m": 2.7327375,
 "canvas_objects/FURN-M-LIV-TRACK-S/z_m": 0.03875,
@@ -2027,9 +2027,9 @@
 "canvas_objects/FURN-S-STUDY-TABLE/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-STUDY-TABLE/body_z1_m": 3.7846,
 "canvas_objects/FURN-S-STUDY-TABLE/z_m": 3.0861,
-"canvas_objects/FURN-S-STUDY-TRACK-DECK/body_z0_m": 3.0988,
-"canvas_objects/FURN-S-STUDY-TRACK-DECK/body_z1_m": 5.7785,
-"canvas_objects/FURN-S-STUDY-TRACK-DECK/z_m": 3.0988,
+"canvas_objects/FURN-S-STUDY-TRACK-BALCONY/body_z0_m": 3.0988,
+"canvas_objects/FURN-S-STUDY-TRACK-BALCONY/body_z1_m": 5.7785,
+"canvas_objects/FURN-S-STUDY-TRACK-BALCONY/z_m": 3.0988,
 "canvas_objects/FURN-S-STUDY2-SHADE-E/body_z0_m": 3.9624,
 "canvas_objects/FURN-S-STUDY2-SHADE-E/body_z1_m": 5.1816,
 "canvas_objects/FURN-S-STUDY2-SHADE-E/z_m": 3.9624,
@@ -2165,9 +2165,9 @@
 "canvas_objects/FX-M-PORCH-HYD/body_z0_m": 0.65405,
 "canvas_objects/FX-M-PORCH-HYD/body_z1_m": 0.85725,
 "canvas_objects/FX-M-PORCH-HYD/z_m": 0.65405,
-"canvas_objects/FX-S-BALC-HYD/body_z0_m": 3.686048,
-"canvas_objects/FX-S-BALC-HYD/body_z1_m": 3.889248,
-"canvas_objects/FX-S-BALC-HYD/z_m": 3.686048,
+"canvas_objects/FX-S-BALCONY-HYD/body_z0_m": 3.686048,
+"canvas_objects/FX-S-BALCONY-HYD/body_z1_m": 3.889248,
+"canvas_objects/FX-S-BALCONY-HYD/z_m": 3.686048,
 "canvas_objects/FX-S-BATH1-LAV/body_z0_m": 3.298825,
 "canvas_objects/FX-S-BATH1-LAV/body_z1_m": 4.2148125,
 "canvas_objects/FX-S-BATH1-LAV/z_m": 3.298825,
@@ -3564,8 +3564,8 @@
 "floors/FS-S-EAST/deck_z1_m": 3.06705,
 "floors/FS-S-WEST/deck_z0_m": 3.048,
 "floors/FS-S-WEST/deck_z1_m": 3.06705,
-"floors/FS-SG-DECK/deck_z0_m": 2.9718,
-"floors/FS-SG-DECK/deck_z1_m": 3.0099,
+"floors/FS-SG-BALCONY/deck_z0_m": 2.9718,
+"floors/FS-SG-BALCONY/deck_z1_m": 3.0099,
 "floors/FS-SG-PORCH/deck_z0_m": 0.0,
 "floors/FS-SG-PORCH/deck_z1_m": 0.023876,
 "footing_beddings/FB-B-CN/z0_m": -3.1607125,
@@ -31472,13 +31472,13 @@
 16,
 "58dea6e54f3d"
 ],
-"geometry/CMW102AAAA-d-m-balc-trim-jamb-left-0/body": [
+"geometry/CMW102AAAA-d-m-porch-trim-jamb-left-0/body": [
 0.0,
 2.193925,
 12,
 "9fee92c0bb52"
 ],
-"geometry/CMW102AAAA-d-m-balc-trim-jamb-right-0/body": [
+"geometry/CMW102AAAA-d-m-porch-trim-jamb-right-0/body": [
 0.0,
 2.193925,
 12,
@@ -32174,61 +32174,61 @@
 8,
 "6b214ef9d671"
 ],
-"geometry/CMW102AAAA::framing/member:door-block-D-M-BALC--1-0": [
+"geometry/CMW102AAAA::framing/member:door-block-D-M-PORCH--1-0": [
 0.23495,
 0.27305,
 8,
 "00444f3ee7b9"
 ],
-"geometry/CMW102AAAA::framing/member:door-block-D-M-BALC--1-1": [
+"geometry/CMW102AAAA::framing/member:door-block-D-M-PORCH--1-1": [
 0.89535,
 0.93345,
 8,
 "4586c6b5efe9"
 ],
-"geometry/CMW102AAAA::framing/member:door-block-D-M-BALC--1-2": [
+"geometry/CMW102AAAA::framing/member:door-block-D-M-PORCH--1-2": [
 0.99695,
 1.03505,
 8,
 "7391a23ab201"
 ],
-"geometry/CMW102AAAA::framing/member:door-block-D-M-BALC--1-3": [
+"geometry/CMW102AAAA::framing/member:door-block-D-M-PORCH--1-3": [
 1.03505,
 1.07315,
 8,
 "263feaed44bb"
 ],
-"geometry/CMW102AAAA::framing/member:door-block-D-M-BALC--1-4": [
+"geometry/CMW102AAAA::framing/member:door-block-D-M-PORCH--1-4": [
 1.75895,
 1.79705,
 8,
 "29549fd38dd2"
 ],
-"geometry/CMW102AAAA::framing/member:door-block-D-M-BALC-1-0": [
+"geometry/CMW102AAAA::framing/member:door-block-D-M-PORCH-1-0": [
 0.23495,
 0.27305,
 8,
 "00444f3ee7b9"
 ],
-"geometry/CMW102AAAA::framing/member:door-block-D-M-BALC-1-1": [
+"geometry/CMW102AAAA::framing/member:door-block-D-M-PORCH-1-1": [
 0.89535,
 0.93345,
 8,
 "4586c6b5efe9"
 ],
-"geometry/CMW102AAAA::framing/member:door-block-D-M-BALC-1-2": [
+"geometry/CMW102AAAA::framing/member:door-block-D-M-PORCH-1-2": [
 0.99695,
 1.03505,
 8,
 "7391a23ab201"
 ],
-"geometry/CMW102AAAA::framing/member:door-block-D-M-BALC-1-3": [
+"geometry/CMW102AAAA::framing/member:door-block-D-M-PORCH-1-3": [
 1.03505,
 1.07315,
 8,
 "263feaed44bb"
 ],
-"geometry/CMW102AAAA::framing/member:door-block-D-M-BALC-1-4": [
+"geometry/CMW102AAAA::framing/member:door-block-D-M-PORCH-1-4": [
 1.75895,
 1.79705,
 8,
@@ -48488,13 +48488,13 @@
 8,
 "fc9a10467dcb"
 ],
-"geometry/CSW102AAAA-d-s-deck-e-trim-jamb-left-0/body": [
+"geometry/CSW102AAAA-d-s-balcony-trim-jamb-left-0/body": [
 3.048,
 5.241925,
 12,
 "35c5f4aebdcc"
 ],
-"geometry/CSW102AAAA-d-s-deck-e-trim-jamb-right-0/body": [
+"geometry/CSW102AAAA-d-s-balcony-trim-jamb-right-0/body": [
 3.048,
 5.241925,
 12,
@@ -49136,61 +49136,61 @@
 8,
 "9b3de8fd7362"
 ],
-"geometry/CSW102AAAA::framing/member:door-block-D-S-DECK-E--1-0": [
+"geometry/CSW102AAAA::framing/member:door-block-D-S-BALCONY--1-0": [
 3.28295,
 3.32105,
 8,
 "378ee28d5b58"
 ],
-"geometry/CSW102AAAA::framing/member:door-block-D-S-DECK-E--1-1": [
+"geometry/CSW102AAAA::framing/member:door-block-D-S-BALCONY--1-1": [
 3.94335,
 3.98145,
 8,
 "00dd869f2a5d"
 ],
-"geometry/CSW102AAAA::framing/member:door-block-D-S-DECK-E--1-2": [
+"geometry/CSW102AAAA::framing/member:door-block-D-S-BALCONY--1-2": [
 4.04495,
 4.08305,
 8,
 "4c2a854b899c"
 ],
-"geometry/CSW102AAAA::framing/member:door-block-D-S-DECK-E--1-3": [
+"geometry/CSW102AAAA::framing/member:door-block-D-S-BALCONY--1-3": [
 4.08305,
 4.12115,
 8,
 "3dca8bd5daf1"
 ],
-"geometry/CSW102AAAA::framing/member:door-block-D-S-DECK-E--1-4": [
+"geometry/CSW102AAAA::framing/member:door-block-D-S-BALCONY--1-4": [
 4.80695,
 4.84505,
 8,
 "a07c06260c00"
 ],
-"geometry/CSW102AAAA::framing/member:door-block-D-S-DECK-E-1-0": [
+"geometry/CSW102AAAA::framing/member:door-block-D-S-BALCONY-1-0": [
 3.28295,
 3.32105,
 8,
 "378ee28d5b58"
 ],
-"geometry/CSW102AAAA::framing/member:door-block-D-S-DECK-E-1-1": [
+"geometry/CSW102AAAA::framing/member:door-block-D-S-BALCONY-1-1": [
 3.94335,
 3.98145,
 8,
 "00dd869f2a5d"
 ],
-"geometry/CSW102AAAA::framing/member:door-block-D-S-DECK-E-1-2": [
+"geometry/CSW102AAAA::framing/member:door-block-D-S-BALCONY-1-2": [
 4.04495,
 4.08305,
 8,
 "4c2a854b899c"
 ],
-"geometry/CSW102AAAA::framing/member:door-block-D-S-DECK-E-1-3": [
+"geometry/CSW102AAAA::framing/member:door-block-D-S-BALCONY-1-3": [
 4.08305,
 4.12115,
 8,
 "3dca8bd5daf1"
 ],
-"geometry/CSW102AAAA::framing/member:door-block-D-S-DECK-E-1-4": [
+"geometry/CSW102AAAA::framing/member:door-block-D-S-BALCONY-1-4": [
 4.80695,
 4.84505,
 8,
@@ -73778,61 +73778,61 @@
 6,
 "9057d6e61aa5"
 ],
-"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-PATIO--1-0": [
+"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-SUNKEN--1-0": [
 -2.4050625,
 -2.3669625,
 8,
 "5b48a116cbff"
 ],
-"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-PATIO--1-1": [
+"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-SUNKEN--1-1": [
 -1.7446625,
 -1.7065625,
 8,
 "9b0c83356b09"
 ],
-"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-PATIO--1-2": [
+"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-SUNKEN--1-2": [
 -1.6430625,
 -1.6049625,
 8,
 "58cb0fef9e68"
 ],
-"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-PATIO--1-3": [
+"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-SUNKEN--1-3": [
 -1.6049625,
 -1.5668625,
 8,
 "c6e39f5b4c4f"
 ],
-"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-PATIO--1-4": [
+"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-SUNKEN--1-4": [
 -0.8810625,
 -0.8429625,
 8,
 "7c6befb9f8de"
 ],
-"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-PATIO-1-0": [
+"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-SUNKEN-1-0": [
 -2.4050625,
 -2.3669625,
 8,
 "5b48a116cbff"
 ],
-"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-PATIO-1-1": [
+"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-SUNKEN-1-1": [
 -1.7446625,
 -1.7065625,
 8,
 "9b0c83356b09"
 ],
-"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-PATIO-1-2": [
+"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-SUNKEN-1-2": [
 -1.6430625,
 -1.6049625,
 8,
 "58cb0fef9e68"
 ],
-"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-PATIO-1-3": [
+"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-SUNKEN-1-3": [
 -1.6049625,
 -1.5668625,
 8,
 "c6e39f5b4c4f"
 ],
-"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-PATIO-1-4": [
+"geometry/Z4NRTGEDY5::framing/member:door-block-D-B-SUNKEN-1-4": [
 -0.8810625,
 -0.8429625,
 8,
@@ -87612,61 +87612,61 @@
 2,
 "8be9ca9b1e71"
 ],
-"member/CMW102AAAA/door-block-D-M-BALC--1-0": [
+"member/CMW102AAAA/door-block-D-M-PORCH--1-0": [
 0.23495,
 0.27305,
 2,
 "9de59db1c470"
 ],
-"member/CMW102AAAA/door-block-D-M-BALC--1-1": [
+"member/CMW102AAAA/door-block-D-M-PORCH--1-1": [
 0.89535,
 0.93345,
 2,
 "11c488ab4679"
 ],
-"member/CMW102AAAA/door-block-D-M-BALC--1-2": [
+"member/CMW102AAAA/door-block-D-M-PORCH--1-2": [
 0.99695,
 1.03505,
 2,
 "ed1bb52493c7"
 ],
-"member/CMW102AAAA/door-block-D-M-BALC--1-3": [
+"member/CMW102AAAA/door-block-D-M-PORCH--1-3": [
 1.03505,
 1.07315,
 2,
 "a0faf4a90241"
 ],
-"member/CMW102AAAA/door-block-D-M-BALC--1-4": [
+"member/CMW102AAAA/door-block-D-M-PORCH--1-4": [
 1.75895,
 1.79705,
 2,
 "ecb9b373957f"
 ],
-"member/CMW102AAAA/door-block-D-M-BALC-1-0": [
+"member/CMW102AAAA/door-block-D-M-PORCH-1-0": [
 0.23495,
 0.27305,
 2,
 "9de59db1c470"
 ],
-"member/CMW102AAAA/door-block-D-M-BALC-1-1": [
+"member/CMW102AAAA/door-block-D-M-PORCH-1-1": [
 0.89535,
 0.93345,
 2,
 "11c488ab4679"
 ],
-"member/CMW102AAAA/door-block-D-M-BALC-1-2": [
+"member/CMW102AAAA/door-block-D-M-PORCH-1-2": [
 0.99695,
 1.03505,
 2,
 "ed1bb52493c7"
 ],
-"member/CMW102AAAA/door-block-D-M-BALC-1-3": [
+"member/CMW102AAAA/door-block-D-M-PORCH-1-3": [
 1.03505,
 1.07315,
 2,
 "a0faf4a90241"
 ],
-"member/CMW102AAAA/door-block-D-M-BALC-1-4": [
+"member/CMW102AAAA/door-block-D-M-PORCH-1-4": [
 1.75895,
 1.79705,
 2,
@@ -99522,61 +99522,61 @@
 2,
 "aaa9e067085d"
 ],
-"member/CSW102AAAA/door-block-D-S-DECK-E--1-0": [
+"member/CSW102AAAA/door-block-D-S-BALCONY--1-0": [
 3.28295,
 3.32105,
 2,
 "98b31ae63cd3"
 ],
-"member/CSW102AAAA/door-block-D-S-DECK-E--1-1": [
+"member/CSW102AAAA/door-block-D-S-BALCONY--1-1": [
 3.94335,
 3.98145,
 2,
 "549d8fece574"
 ],
-"member/CSW102AAAA/door-block-D-S-DECK-E--1-2": [
+"member/CSW102AAAA/door-block-D-S-BALCONY--1-2": [
 4.04495,
 4.08305,
 2,
 "141e3d87e3e4"
 ],
-"member/CSW102AAAA/door-block-D-S-DECK-E--1-3": [
+"member/CSW102AAAA/door-block-D-S-BALCONY--1-3": [
 4.08305,
 4.12115,
 2,
 "9ec05dad86bd"
 ],
-"member/CSW102AAAA/door-block-D-S-DECK-E--1-4": [
+"member/CSW102AAAA/door-block-D-S-BALCONY--1-4": [
 4.80695,
 4.84505,
 2,
 "d1ce4756ca64"
 ],
-"member/CSW102AAAA/door-block-D-S-DECK-E-1-0": [
+"member/CSW102AAAA/door-block-D-S-BALCONY-1-0": [
 3.28295,
 3.32105,
 2,
 "98b31ae63cd3"
 ],
-"member/CSW102AAAA/door-block-D-S-DECK-E-1-1": [
+"member/CSW102AAAA/door-block-D-S-BALCONY-1-1": [
 3.94335,
 3.98145,
 2,
 "549d8fece574"
 ],
-"member/CSW102AAAA/door-block-D-S-DECK-E-1-2": [
+"member/CSW102AAAA/door-block-D-S-BALCONY-1-2": [
 4.04495,
 4.08305,
 2,
 "141e3d87e3e4"
 ],
-"member/CSW102AAAA/door-block-D-S-DECK-E-1-3": [
+"member/CSW102AAAA/door-block-D-S-BALCONY-1-3": [
 4.08305,
 4.12115,
 2,
 "9ec05dad86bd"
 ],
-"member/CSW102AAAA/door-block-D-S-DECK-E-1-4": [
+"member/CSW102AAAA/door-block-D-S-BALCONY-1-4": [
 4.80695,
 4.84505,
 2,
@@ -111522,61 +111522,61 @@
 2,
 "375655139c1d"
 ],
-"member/Z4NRTGEDY5/door-block-D-B-PATIO--1-0": [
+"member/Z4NRTGEDY5/door-block-D-B-SUNKEN--1-0": [
 -2.4050625,
 -2.3669625,
 2,
 "0f88a1d711a9"
 ],
-"member/Z4NRTGEDY5/door-block-D-B-PATIO--1-1": [
+"member/Z4NRTGEDY5/door-block-D-B-SUNKEN--1-1": [
 -1.7446625,
 -1.7065625,
 2,
 "7c5f9a7023ec"
 ],
-"member/Z4NRTGEDY5/door-block-D-B-PATIO--1-2": [
+"member/Z4NRTGEDY5/door-block-D-B-SUNKEN--1-2": [
 -1.6430625,
 -1.6049625,
 2,
 "4bc9b2a964b2"
 ],
-"member/Z4NRTGEDY5/door-block-D-B-PATIO--1-3": [
+"member/Z4NRTGEDY5/door-block-D-B-SUNKEN--1-3": [
 -1.6049625,
 -1.5668625,
 2,
 "a5b08f07794a"
 ],
-"member/Z4NRTGEDY5/door-block-D-B-PATIO--1-4": [
+"member/Z4NRTGEDY5/door-block-D-B-SUNKEN--1-4": [
 -0.8810625,
 -0.8429625,
 2,
 "a3e9f1d9d654"
 ],
-"member/Z4NRTGEDY5/door-block-D-B-PATIO-1-0": [
+"member/Z4NRTGEDY5/door-block-D-B-SUNKEN-1-0": [
 -2.4050625,
 -2.3669625,
 2,
 "0f88a1d711a9"
 ],
-"member/Z4NRTGEDY5/door-block-D-B-PATIO-1-1": [
+"member/Z4NRTGEDY5/door-block-D-B-SUNKEN-1-1": [
 -1.7446625,
 -1.7065625,
 2,
 "7c5f9a7023ec"
 ],
-"member/Z4NRTGEDY5/door-block-D-B-PATIO-1-2": [
+"member/Z4NRTGEDY5/door-block-D-B-SUNKEN-1-2": [
 -1.6430625,
 -1.6049625,
 2,
 "4bc9b2a964b2"
 ],
-"member/Z4NRTGEDY5/door-block-D-B-PATIO-1-3": [
+"member/Z4NRTGEDY5/door-block-D-B-SUNKEN-1-3": [
 -1.6049625,
 -1.5668625,
 2,
 "a5b08f07794a"
 ],
-"member/Z4NRTGEDY5/door-block-D-B-PATIO-1-4": [
+"member/Z4NRTGEDY5/door-block-D-B-SUNKEN-1-4": [
 -0.8810625,
 -0.8429625,
 2,
@@ -111845,8 +111845,8 @@
 "pipe_accessories/PA-M-WASH-STOP-HW/z_m": -0.3048,
 "pipe_accessories/PA-M-WASH-WHA-CW/z_m": -0.22352,
 "pipe_accessories/PA-M-WASH-WHA-HW/z_m": -0.3048,
-"pipe_accessories/PA-S-BALC-HYD-SEAL/z_m": 3.6786566,
-"pipe_accessories/PA-S-BALC-HYD-SEAT/z_m": 3.6786566,
+"pipe_accessories/PA-S-BALCONY-HYD-SEAL/z_m": 3.6786566,
+"pipe_accessories/PA-S-BALCONY-HYD-SEAT/z_m": 3.6786566,
 "pipe_accessories/PA-S-BATH1-LAV-CW/z_m": 3.6957,
 "pipe_accessories/PA-S-BATH1-LAV-HW/z_m": 3.6957,
 "pipe_accessories/PA-S-BATH1-STOP-CW/z_m": -0.17272,
@@ -112574,14 +112574,14 @@
 "49ea2c4c8e91"
 ],
 "pipe_runs/PR-M-COND-HEADS/z_start_m": 0.762,
-"pipe_runs/PR-M-CW-BALC-HYD/z_end_m": 3.6786566,
-"pipe_runs/PR-M-CW-BALC-HYD/z_m": [
+"pipe_runs/PR-M-CW-BALCONY-HYD/z_end_m": 3.6786566,
+"pipe_runs/PR-M-CW-BALCONY-HYD/z_m": [
 2.8194,
 3.6786566,
 3,
 "6d31b78bd999"
 ],
-"pipe_runs/PR-M-CW-BALC-HYD/z_start_m": 2.8194,
+"pipe_runs/PR-M-CW-BALCONY-HYD/z_start_m": 2.8194,
 "pipe_runs/PR-M-CW-BATH1-LAV/z_end_m": 0.63565,
 "pipe_runs/PR-M-CW-BATH1-LAV/z_m": [
 0.6096,
@@ -112838,14 +112838,14 @@
 "caf6e14b90dc"
 ],
 "pipe_runs/PR-S-BATH1-WC-VENT/z_start_m": 2.9718,
-"pipe_runs/PR-S-CW-BALC-HYD-CU/z_end_m": 3.6786566,
-"pipe_runs/PR-S-CW-BALC-HYD-CU/z_m": [
+"pipe_runs/PR-S-CW-BALCONY-HYD-CU/z_end_m": 3.6786566,
+"pipe_runs/PR-S-CW-BALCONY-HYD-CU/z_m": [
 3.6786566,
 3.6786566,
 2,
 "140ecceb4472"
 ],
-"pipe_runs/PR-S-CW-BALC-HYD-CU/z_start_m": 3.6786566,
+"pipe_runs/PR-S-CW-BALCONY-HYD-CU/z_start_m": 3.6786566,
 "pipe_runs/PR-S-SUITE-LAV-CW/z_end_m": 3.6957,
 "pipe_runs/PR-S-SUITE-LAV-CW/z_m": [
 3.6957,
@@ -113600,9 +113600,9 @@
 "sleeves/SP-M-ERV-OA-SEAL/center_z_m": 1.524,
 "sleeves/SP-M-ERV-OA-SEAL/z0_m": -0.3413125,
 "sleeves/SP-M-ERV-OA-SEAL/z1_m": 3.048,
-"sleeves/SP-S-BALC-HYD/center_z_m": 3.6786566,
-"sleeves/SP-S-BALC-HYD/z0_m": 3.048,
-"sleeves/SP-S-BALC-HYD/z1_m": 6.096,
+"sleeves/SP-S-BALCONY-HYD/center_z_m": 3.6786566,
+"sleeves/SP-S-BALCONY-HYD/z0_m": 3.048,
+"sleeves/SP-S-BALCONY-HYD/z1_m": 6.096,
 "sleeves/SP-S-ERV-EA-SEAL/center_z_m": 5.1816,
 "sleeves/SP-S-ERV-EA-SEAL/z0_m": 3.048,
 "sleeves/SP-S-ERV-EA-SEAL/z1_m": 6.096,
@@ -113963,10 +113963,10 @@
 "solids/CN-A-WIND-RFSW-2/z1_m": 6.5312179,
 "solids/CN-A-WIND-RFSW-3/z0_m": 6.4712739,
 "solids/CN-A-WIND-RFSW-3/z1_m": 6.5312179,
-"solids/CN-B-HD-BALC-E/z0_m": -2.9321125,
-"solids/CN-B-HD-BALC-E/z1_m": -1.9129375,
-"solids/CN-B-HD-BALC-W/z0_m": -2.9321125,
-"solids/CN-B-HD-BALC-W/z1_m": -1.9129375,
+"solids/CN-B-HD-PORCH-E/z0_m": -2.9321125,
+"solids/CN-B-HD-PORCH-E/z1_m": -1.9129375,
+"solids/CN-B-HD-PORCH-W/z0_m": -2.9321125,
+"solids/CN-B-HD-PORCH-W/z1_m": -1.9129375,
 "solids/CN-BW-A35-CNWS/z0_m": 1.933575,
 "solids/CN-BW-A35-CNWS/z1_m": 2.047875,
 "solids/CN-BW-A35-CWN/z0_m": 1.933575,
@@ -114129,14 +114129,14 @@
 "solids/CN-M-BWHD-NE-E/z1_m": 1.031875,
 "solids/CN-M-BWHD-NE-N/z0_m": -0.3302,
 "solids/CN-M-BWHD-NE-N/z1_m": 1.031875,
-"solids/CN-M-HD-BALC-E/z0_m": -0.83185,
-"solids/CN-M-HD-BALC-E/z1_m": 0.48895,
-"solids/CN-M-HD-BALC-W/z0_m": -0.83185,
-"solids/CN-M-HD-BALC-W/z1_m": 0.48895,
 "solids/CN-M-HD-ENTRY-E/z0_m": -0.3302,
 "solids/CN-M-HD-ENTRY-E/z1_m": 0.688975,
 "solids/CN-M-HD-ENTRY-W/z0_m": -0.3302,
 "solids/CN-M-HD-ENTRY-W/z1_m": 0.688975,
+"solids/CN-M-HD-PORCH-E/z0_m": -0.83185,
+"solids/CN-M-HD-PORCH-E/z1_m": 0.48895,
+"solids/CN-M-HD-PORCH-W/z0_m": -0.83185,
+"solids/CN-M-HD-PORCH-W/z1_m": 0.48895,
 "solids/CN-M-HP1-A1/z0_m": -0.8636,
 "solids/CN-M-HP1-A1/z1_m": -0.762,
 "solids/CN-M-HP1-A2/z0_m": -0.8636,
@@ -115503,8 +115503,8 @@
 "solids/CO-M-SUITE/z1_m": -0.0254,
 "solids/CR-M-LAUNDRY-24V-RUN/z0_m": 2.2951364,
 "solids/CR-M-LAUNDRY-24V-RUN/z1_m": 2.7394662,
-"solids/D-B-PATIO-FLASH-PERIMETER/z0_m": -2.5955625,
-"solids/D-B-PATIO-FLASH-PERIMETER/z1_m": -0.3133646,
+"solids/D-B-SUNKEN-FLASH-PERIMETER/z0_m": -2.5955625,
+"solids/D-B-SUNKEN-FLASH-PERIMETER/z1_m": -0.3133646,
 "solids/D-G-OVERHEAD-FLASH-PERIMETER/z0_m": -0.3048,
 "solids/D-G-OVERHEAD-FLASH-PERIMETER/z1_m": 1.3977276,
 "solids/D-G-OVERHEAD-TRIM-HEAD-1/z0_m": 1.22936,
@@ -115527,20 +115527,6 @@
 "solids/D-G-SERVICE-TRIM-JAMB-LEFT-1/z1_m": 2.159,
 "solids/D-G-SERVICE-TRIM-JAMB-RIGHT-1/z0_m": -0.0,
 "solids/D-G-SERVICE-TRIM-JAMB-RIGHT-1/z1_m": 2.159,
-"solids/D-M-BALC-FLASH-PERIMETER/z0_m": 0.0,
-"solids/D-M-BALC-FLASH-PERIMETER/z1_m": 2.297665,
-"solids/D-M-BALC-FLASH-SILL-SUPPORT/z0_m": 0.0,
-"solids/D-M-BALC-FLASH-SILL-SUPPORT/z1_m": 0.0381,
-"solids/D-M-BALC-FLASH-SILL/z0_m": -0.01905,
-"solids/D-M-BALC-FLASH-SILL/z1_m": 0.1524,
-"solids/D-M-BALC-HEADSTRIP-1/z0_m": 2.1946265,
-"solids/D-M-BALC-HEADSTRIP-1/z1_m": 2.1958029,
-"solids/D-M-BALC-TRIM-HEAD-1/z0_m": 2.153285,
-"solids/D-M-BALC-TRIM-HEAD-1/z1_m": 2.246865,
-"solids/D-M-BALC-TRIM-JAMB-LEFT-1/z0_m": 0.0,
-"solids/D-M-BALC-TRIM-JAMB-LEFT-1/z1_m": 2.193925,
-"solids/D-M-BALC-TRIM-JAMB-RIGHT-1/z0_m": 0.0,
-"solids/D-M-BALC-TRIM-JAMB-RIGHT-1/z1_m": 2.193925,
 "solids/D-M-ENTRY-FLASH-PERIMETER/z0_m": 0.0,
 "solids/D-M-ENTRY-FLASH-PERIMETER/z1_m": 2.297665,
 "solids/D-M-ENTRY-FLASH-SILL-SUPPORT/z0_m": 0.0,
@@ -115555,16 +115541,30 @@
 "solids/D-M-ENTRY-TRIM-JAMB-LEFT-1/z1_m": 2.193925,
 "solids/D-M-ENTRY-TRIM-JAMB-RIGHT-1/z0_m": 0.0,
 "solids/D-M-ENTRY-TRIM-JAMB-RIGHT-1/z1_m": 2.193925,
-"solids/D-S-DECK-E-FLASH-PERIMETER/z0_m": 3.048,
-"solids/D-S-DECK-E-FLASH-PERIMETER/z1_m": 5.3456417,
-"solids/D-S-DECK-E-HEADSTRIP-1/z0_m": 5.2426032,
-"solids/D-S-DECK-E-HEADSTRIP-1/z1_m": 5.2437796,
-"solids/D-S-DECK-E-TRIM-HEAD-1/z0_m": 5.201285,
-"solids/D-S-DECK-E-TRIM-HEAD-1/z1_m": 5.2948417,
-"solids/D-S-DECK-E-TRIM-JAMB-LEFT-1/z0_m": 3.048,
-"solids/D-S-DECK-E-TRIM-JAMB-LEFT-1/z1_m": 5.241925,
-"solids/D-S-DECK-E-TRIM-JAMB-RIGHT-1/z0_m": 3.048,
-"solids/D-S-DECK-E-TRIM-JAMB-RIGHT-1/z1_m": 5.241925,
+"solids/D-M-PORCH-FLASH-PERIMETER/z0_m": 0.0,
+"solids/D-M-PORCH-FLASH-PERIMETER/z1_m": 2.297665,
+"solids/D-M-PORCH-FLASH-SILL-SUPPORT/z0_m": 0.0,
+"solids/D-M-PORCH-FLASH-SILL-SUPPORT/z1_m": 0.0381,
+"solids/D-M-PORCH-FLASH-SILL/z0_m": -0.01905,
+"solids/D-M-PORCH-FLASH-SILL/z1_m": 0.1524,
+"solids/D-M-PORCH-HEADSTRIP-1/z0_m": 2.1946265,
+"solids/D-M-PORCH-HEADSTRIP-1/z1_m": 2.1958029,
+"solids/D-M-PORCH-TRIM-HEAD-1/z0_m": 2.153285,
+"solids/D-M-PORCH-TRIM-HEAD-1/z1_m": 2.246865,
+"solids/D-M-PORCH-TRIM-JAMB-LEFT-1/z0_m": 0.0,
+"solids/D-M-PORCH-TRIM-JAMB-LEFT-1/z1_m": 2.193925,
+"solids/D-M-PORCH-TRIM-JAMB-RIGHT-1/z0_m": 0.0,
+"solids/D-M-PORCH-TRIM-JAMB-RIGHT-1/z1_m": 2.193925,
+"solids/D-S-BALCONY-FLASH-PERIMETER/z0_m": 3.048,
+"solids/D-S-BALCONY-FLASH-PERIMETER/z1_m": 5.3456417,
+"solids/D-S-BALCONY-HEADSTRIP-1/z0_m": 5.2426032,
+"solids/D-S-BALCONY-HEADSTRIP-1/z1_m": 5.2437796,
+"solids/D-S-BALCONY-TRIM-HEAD-1/z0_m": 5.201285,
+"solids/D-S-BALCONY-TRIM-HEAD-1/z1_m": 5.2948417,
+"solids/D-S-BALCONY-TRIM-JAMB-LEFT-1/z0_m": 3.048,
+"solids/D-S-BALCONY-TRIM-JAMB-LEFT-1/z1_m": 5.241925,
+"solids/D-S-BALCONY-TRIM-JAMB-RIGHT-1/z0_m": 3.048,
+"solids/D-S-BALCONY-TRIM-JAMB-RIGHT-1/z1_m": 5.241925,
 "solids/DRW-G-HYDRANT/z0_m": -2.9972,
 "solids/DRW-G-HYDRANT/z1_m": -2.54,
 "solids/DU-A-ERV-R-ATTIC-RUN/z0_m": 5.9944,
@@ -116783,10 +116783,10 @@
 "solids/PA-M-WASH-WHA-CW/z1_m": -0.14732,
 "solids/PA-M-WASH-WHA-HW/z0_m": -0.381,
 "solids/PA-M-WASH-WHA-HW/z1_m": -0.2286,
-"solids/PA-S-BALC-HYD-SEAL/z0_m": 3.6024566,
-"solids/PA-S-BALC-HYD-SEAL/z1_m": 3.7548566,
-"solids/PA-S-BALC-HYD-SEAT/z0_m": 3.6024566,
-"solids/PA-S-BALC-HYD-SEAT/z1_m": 3.7548566,
+"solids/PA-S-BALCONY-HYD-SEAL/z0_m": 3.6024566,
+"solids/PA-S-BALCONY-HYD-SEAL/z1_m": 3.7548566,
+"solids/PA-S-BALCONY-HYD-SEAT/z0_m": 3.6024566,
+"solids/PA-S-BALCONY-HYD-SEAT/z1_m": 3.7548566,
 "solids/PA-S-BATH1-LAV-CW/z0_m": 3.6195,
 "solids/PA-S-BATH1-LAV-CW/z1_m": 3.7719,
 "solids/PA-S-BATH1-LAV-HW/z0_m": 3.6195,
@@ -118183,8 +118183,8 @@
 "solids/PR-M-BATH2-WC-VENT-RUN/z1_m": 2.26568,
 "solids/PR-M-COND-HEADS-RUN/z0_m": -0.5278217,
 "solids/PR-M-COND-HEADS-RUN/z1_m": 0.762,
-"solids/PR-M-CW-BALC-HYD-RUN/z0_m": 2.8194,
-"solids/PR-M-CW-BALC-HYD-RUN/z1_m": 3.6786566,
+"solids/PR-M-CW-BALCONY-HYD-RUN/z0_m": 2.8194,
+"solids/PR-M-CW-BALCONY-HYD-RUN/z1_m": 3.6786566,
 "solids/PR-M-CW-BATH1-LAV-RUN/z0_m": 0.6035228,
 "solids/PR-M-CW-BATH1-LAV-RUN/z1_m": 0.6417272,
 "solids/PR-M-CW-COLDSTORE-STUB-RUN/z0_m": 0.50165,
@@ -118249,8 +118249,8 @@
 "solids/PR-S-BATH1-WC-CW-RUN/z1_m": 3.82905,
 "solids/PR-S-BATH1-WC-VENT-RUN/z0_m": 2.9527618,
 "solids/PR-S-BATH1-WC-VENT-RUN/z1_m": 5.9245342,
-"solids/PR-S-CW-BALC-HYD-CU-RUN/z0_m": 3.6691316,
-"solids/PR-S-CW-BALC-HYD-CU-RUN/z1_m": 3.6881816,
+"solids/PR-S-CW-BALCONY-HYD-CU-RUN/z0_m": 3.6691316,
+"solids/PR-S-CW-BALCONY-HYD-CU-RUN/z1_m": 3.6881816,
 "solids/PR-S-SUITE-LAV-CW-RUN/z0_m": 3.6910925,
 "solids/PR-S-SUITE-LAV-CW-RUN/z1_m": 3.81635,
 "solids/PR-S-SUITE-LAV-HW-RUN/z0_m": 3.6920655,
@@ -119443,8 +119443,8 @@
 "solids/SP-GF-S-SVC/z1_m": -2.6543,
 "solids/SP-M-ERV-OA-SEAL/z0_m": 1.4097,
 "solids/SP-M-ERV-OA-SEAL/z1_m": 1.6383,
-"solids/SP-S-BALC-HYD/z0_m": 3.6469066,
-"solids/SP-S-BALC-HYD/z1_m": 3.7104066,
+"solids/SP-S-BALCONY-HYD/z0_m": 3.6469066,
+"solids/SP-S-BALCONY-HYD/z1_m": 3.7104066,
 "solids/SP-S-ERV-EA-SEAL/z0_m": 5.0673,
 "solids/SP-S-ERV-EA-SEAL/z1_m": 5.2959,
 "solids/SP-SG-W1-CD-SPA/z0_m": -1.241425,

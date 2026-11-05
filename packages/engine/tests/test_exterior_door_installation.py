@@ -18,7 +18,7 @@ from typehaus.takeoff.doors import door_hardware_rows, door_installation_rows
 from typehaus.takeoff.interior_trim import interior_trim_takeoff
 
 
-@pytest.mark.parametrize("tag", ["D-M-ENTRY", "D-M-BALC", "D-S-DECK-E"])
+@pytest.mark.parametrize("tag", ["D-M-ENTRY", "D-M-PORCH", "D-S-BALCONY"])
 def test_catlin_doors_have_structural_mount_and_independent_returns(catlin_model_ro, tag):
     model = catlin_model_ro
     opening = next(o for o in model.openings if o.tag == tag)
@@ -237,7 +237,7 @@ def test_catlin_garage_keeps_raised_service_support_and_overhead_operation(catli
     assert len(next(p for p in parts if p.key == "frame").solids) == 3
 
 
-@pytest.mark.parametrize("tag", ["D-M-ENTRY", "D-M-BALC"])
+@pytest.mark.parametrize("tag", ["D-M-ENTRY", "D-M-PORCH"])
 def test_sill_design_conceals_pan_without_claiming_factory_approval(catlin_model_ro, tag):
     from shapely.geometry import LineString
     from shapely.ops import unary_union
@@ -317,9 +317,9 @@ def test_sill_design_conceals_pan_without_claiming_factory_approval(catlin_model
 
 
 def test_study_door_uses_oak_floor_and_sloping_balcony(catlin_model_ro):
-    opening = next(o for o in catlin_model_ro.openings if o.tag == "D-S-DECK-E")
+    opening = next(o for o in catlin_model_ro.openings if o.tag == "D-S-BALCONY")
     exterior, interior = opening.doorway.adjacent_floors
-    assert exterior.deck_tag == "FS-SG-DECK" and exterior.room_tag is None
+    assert exterior.deck_tag == "FS-SG-BALCONY" and exterior.room_tag is None
     assert interior.room_tag == "RM-S-STUDY2" and interior.finish_ref == "oak-floor-custom"
     deck = next(f for f in catlin_model_ro.floors if f.tag == exterior.deck_tag)
     low, high = deck.deck_top_range()

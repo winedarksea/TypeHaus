@@ -243,7 +243,7 @@ def nearest(plan: PlanModel, anchors: Any, kind: type, storey: str | None = None
     #
     Applying the gate to a Railing had a consequence that stayed hidden while every structure
     shared the house's storey keys: the north entry's landing piers took their base moment
-    from ``RL-SG-PORCH``, the sunken-garden porch guard forty feet away, because it was the
+    from ``RL-SG-PORCH``, the court porch guard forty feet away, because it was the
     ONLY railing filed on ``main`` that cleared three points. Its base is +0'-1" where the
     entry's is -2'-10", so the demand those four piers were graded on described a different
     structure at a different elevation. Giving the entry its own building made the borrowing

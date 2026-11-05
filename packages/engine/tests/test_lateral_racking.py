@@ -303,7 +303,7 @@ def test_a_deck_hung_in_a_shear_wall_is_not_reported_as_column_braced(catlin_mod
     named = {t for f in _findings_for(catlin_model) for t in f.element_tags}
     assert "FS-SG-PORCH" not in named
     assert "PT-SG-COL" not in named and "PT-SG-FCOL" not in named
-    assert "FS-SG-DECK" in named
+    assert "FS-SG-BALCONY" in named
 
 
 def _findings_for(catlin_model):
@@ -361,7 +361,7 @@ def test_the_corner_columns_are_delegated_not_graded_here(catlin_findings,
     # FS-BW-FLOOR left on 2026-09-21: tied to the garage stem, its piers lean and the tie is
     # graded instead (`structural.deck_tie`, notes/north_entry_piers.md §10).
     decks = {t for f in catlin_findings for t in f.element_tags if t.startswith("FS-")}
-    assert decks == {"FS-SG-DECK"}
+    assert decks == {"FS-SG-BALCONY"}
 
     # The active KDAT canopy posts are pinned gravity supports. Their concrete piers
     # receive base drag, while the canopy diaphragm delivers lateral load to the garage.

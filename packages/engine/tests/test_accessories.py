@@ -70,13 +70,13 @@ def _solids(model, category):
 
 
 def _balcony_deck_top(model):
-    """Top of the aluminium boards over FS-SG-DECK — the balcony walking surface.
+    """Top of the aluminium boards over FS-SG-BALCONY — the balcony walking surface.
 
     The plank is the floor system's own ``subfloor``, so the surface underfoot is the
     resolved deck sheet.
     """
-    deck = next(f for f in model.floors if f.tag == "FS-SG-DECK")
-    assert deck.deck_z1_m > deck.deck_z0_m, "FS-SG-DECK must resolve a deck sheet"
+    deck = next(f for f in model.floors if f.tag == "FS-SG-BALCONY")
+    assert deck.deck_z1_m > deck.deck_z0_m, "FS-SG-BALCONY must resolve a deck sheet"
     from typehaus.resolve.railings.guard_line import guard_line_offset_m
     from typehaus.resolve.railings.spans import deck_surface
 

@@ -51,12 +51,12 @@ Revised 2026-10-16, after a review measured the built model against the specs:
 - **The pan falls 1/4″/ft on a tapered KDAT shim**, its back dam up a 1/2″ KDAT strip
   (`sill-support`, filed with the pan). A window's outie pan turns down over the buck's
   front edge, at the outer girt face, behind the sill trim. **A door's pan runs past the
-  cladding** (D-M-ENTRY, D-S-DECK-E, D-G-SERVICE): a threshold has no trim to hide behind.
+  cladding** (D-M-ENTRY, D-S-BALCONY, D-G-SERVICE): a threshold has no trim to hide behind.
 - **Jamb membranes stop at the wall's base**: D-G-OVERHEAD's no longer hang over the stem
   end. Overhead doors get head and perimeter flashing without a pan.
 - **Coverage**: `integrity.opening_flashing_coverage` names every exterior opening that draws
-  none. Today that is D-B-PATIO and WIN-B-SAUNA, behind the court's brick veneer (spec §8);
-  their hand spec prints on D-B-PATIO's starred detail (`court_opening_detail.md`).
+  none. Today that is D-B-SUNKEN and WIN-B-SAUNA, behind the court's brick veneer (spec §8);
+  their hand spec prints on D-B-SUNKEN's starred detail (`court_opening_detail.md`).
   Interior openings and bare rough openings receive no derived flashing.
 - **`integrity.derived_solid_material`** fails a derived solid whose material is not in the
   catalog. `fluid-applied-flashing` and `aluminum` dangled before, so the look fell back to
@@ -71,7 +71,7 @@ The stem Z (`TR-G-STEMZ-*`) is a `counter` section, its 2″ back leg standing u
 the panel. The balcony's rear edge is two pieces across the movement gap: a deck-side
 aluminium base flashing with a 3 1/2″ upstand, and a house-side steel counterflashing lapping
 2″ over it with 1/2″ of air beside it. Neither is fastened across the gap, and both break at
-D-S-DECK-E.
+D-S-BALCONY.
 
 The existing construction specifications still govern, including their open substrate
 approval item: [opening flashing specification](opening_flashing_spec.md) and

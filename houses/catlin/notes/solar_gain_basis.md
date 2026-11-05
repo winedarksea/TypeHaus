@@ -95,10 +95,10 @@ that hour and has fallen to under 1,200 by noon, while south only gains 840 betw
 **`RF-HOUSE` projects nothing past the main-floor south wall.** Measured: the roof covers
 that wall in plan and its footprint edge lands on the wall's own exterior face, so the
 overhang there is 0.00 ft. An eave-only shading model therefore reports *no shading on any
-south glass in this house* — including on `D-M-BALC`, 33 sf of glazed door and the largest
+south glass in this house* — including on `D-M-PORCH`, 33 sf of glazed door and the largest
 single piece of south glass there is.
 
-What actually shades it is `FS-SG-DECK`, the sunken-garden **balcony deck**: a
+What actually shades it is `FS-SG-BALCONY`, the sunken-garden **balcony**: a
 `FloorSystem`, 0.98 m above the door head (1.05 m until it came down 3", 2026-09-23), its
 near edge 2 3/4" clear of the wall face and its far edge 9.9 ft out.
 
@@ -112,7 +112,7 @@ bottom of the shadow   = z_plane − far  × drop     ← the FAR edge
 ```
 
 An eave is the degenerate case: `near = 0`, so the band's top is the eave itself and the
-depth is the classic `P tan β / cos γ`. Worked for `D-M-BALC` at the 10:30 peak (β = 59.4°,
+depth is the classic `P tan β / cos γ`. Worked for `D-M-PORCH` at the 10:30 peak (β = 59.4°,
 γ = 44.7° east of the south normal):
 
 ```
@@ -127,17 +127,17 @@ and what nothing in the engine could see.
 
 Three disciplines worth naming:
 
-- **The bands are a UNION, not a sum.** `D-B-PATIO` in the court wall has both the porch
+- **The bands are a UNION, not a sum.** `D-B-SUNKEN` in the court wall has both the porch
   deck and the balcony deck over it, overlapping. Shading the same inch twice is not more
   shade, and a sum would run past 1.0 and turn the gain *negative*.
 - **Only the DIRECT beam is shaded.** Diffuse sky and ground bounce still reach glass under
   an overhang, so a fully shaded south window is not a zero-gain window — of the 144.2
-  Btu/h·ft² incident on `D-M-BALC` at the peak hour, 98.6 is direct and blocked and
+  Btu/h·ft² incident on `D-M-PORCH` at the peak hour, 98.6 is direct and blocked and
   **45.6 still reaches the glass**. This is conservative in one further respect: a plane
   overhead also blocks part of the sky the diffuse term integrates over, and that is not
   subtracted.
 - **It is lateral as well as vertical.** `WIN-M-LIV-S1` is in the same wall 10 ft east of
-  `D-M-BALC` and is **not** shaded, because the balcony stops at x = 8.76 m and the window
+  `D-M-PORCH` and is **not** shaded, because the balcony stops at x = 8.76 m and the window
   is at 9.75. A model that shades everything on the south wall is as wrong as one that
   shades nothing.
 
@@ -307,8 +307,8 @@ since its shading differs window to window:
 | W | 20.985 → 22.776 | 957.3 × 1.0853 = **1,038.9** |
 | S | see below | 7,894.6 + 192.5 = **8,087.1** |
 
-South at 10:30 is 144.2 Btu/h·ft² incident, 98.6 of it direct. Fully shaded (`D-B-PATIO`,
-`WIN-B-SAUNA`, `D-M-BALC`, `WIN-M-BED-S2`, `WIN-M-LIV-S2`): Δ A·SHGC −0.941 × 45.6 = −42.9.
+South at 10:30 is 144.2 Btu/h·ft² incident, 98.6 of it direct. Fully shaded (`D-B-SUNKEN`,
+`WIN-B-SAUNA`, `D-M-PORCH`, `WIN-M-BED-S2`, `WIN-M-LIV-S2`): Δ A·SHGC −0.941 × 45.6 = −42.9.
 Unshaded (the rest): +1.633 × 144.2 = +235.4. The house still peaks at 10:30, now at
 **13,829 Btu/h**, south 58% of it. The day's average rises 9,489 → 10,111, so the AED
 excursion is 13,829 − 1.3 × 10,111 = **684** (was 740). The engine agrees to the Btu/h.

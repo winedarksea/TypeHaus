@@ -1,4 +1,4 @@
-"""The court's hanging daybed hangs clear of the walls, the patio door and the court's other
+"""The court's hanging daybed hangs clear of the walls, the sunken-garden door and the court's other
 objects, from two derived 3-ply porch lines (``houses/catlin/notes/court_daybed_anchor.md``)."""
 
 from types import SimpleNamespace
@@ -32,7 +32,7 @@ def test_body_and_sway_clear_the_walls_the_door_and_the_court(catlin_model_ro):
     sway = Polygon(sway)
     for tag in ("W-SG-W1", "W-B-BRICK"):
         assert all(face.distance(sway) > 0 for face in _wall_faces(catlin_model_ro, tag)), tag
-    door = next(o for o in catlin_model_ro.openings if o.tag == "D-B-PATIO")
+    door = next(o for o in catlin_model_ro.openings if o.tag == "D-B-SUNKEN")
     assert Polygon(door.swing_clearance).distance(sway) >= inch(12).meters
     for other in catlin_model_ro.canvas_objects:
         if other.tag == BED or other.storey not in ("court-low", "court-main"):

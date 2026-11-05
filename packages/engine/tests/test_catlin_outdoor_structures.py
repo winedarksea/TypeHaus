@@ -129,7 +129,7 @@ def test_the_centre_support_line_is_retired(catlin_model) -> None:
     tags = {getattr(e, "tag", None) for e in catlin_model.plan.all_elements()}
     assert not tags & set(RETIRED_CENTRE_LINE), sorted(tags & set(RETIRED_CENTRE_LINE))
     assert not [t for t in tags if t and t.startswith(("CN-SG-HGR-", "TR-SG-CAP-"))]
-    assert catlin_model.plan.by_tag("FS-SG-DECK").joists.bearing_refs == ("BM-SG-BLW",
+    assert catlin_model.plan.by_tag("FS-SG-BALCONY").joists.bearing_refs == ("BM-SG-BLW",
                                                                          "BM-SG-BLE")
     assert catlin_model.plan.by_tag("FS-SG-PORCH").joists.bearing_refs == ("BM-SG-LDGW",
                                                                           "BM-SG-LDGE")
@@ -717,7 +717,7 @@ def test_porch_joists_run_ledger_to_ledger_with_no_oversail(catlin_model) -> Non
     # used to land exactly on the outer face of the 12" rounds, so the plank shed its water
     # down the columns. The step is 3" because the AridDek main board is 6" and a deck width
     # not divisible by 6 costs a ripped board.
-    balcony = catlin_model.plan.by_tag("FS-SG-DECK").joists
+    balcony = catlin_model.plan.by_tag("FS-SG-BALCONY").joists
     assert balcony.cantilever.inches == pytest.approx(9.0)
     assert balcony.cantilever_start is None and balcony.cantilever_end is None
 
@@ -751,7 +751,7 @@ def test_balcony_gutter_apron_carries_the_drip_into_the_trough(catlin_model) -> 
 
 # --- the heat-pump ground pad, east of the porch --------------------------------------
 #
-# Both condensers stood on FS-SG-DECK at +10' until 2026-09-02 and now stand on a poured pad
+# Both condensers stood on FS-SG-BALCONY at +10' until 2026-09-02 and now stand on a poured pad
 # in the yard pocket east of the porch (houses/catlin/notes/heat_pump_ground_pad.md). What
 # used to hold this together was ``mep.deck_equipment_support_coverage``, which read the
 # stand and the cabinets and reconciled a dimension written in two modules that cannot import

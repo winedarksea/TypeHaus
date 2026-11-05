@@ -68,7 +68,7 @@ DOOR_TYPES = [
     # French pairs: Smooth-Star full-lite / Endura ZAI, PanoLock+ / BE365 / passage lever
     # (2026-10-25). Laminated low-E triple and the assembled pair label remain quote items.
     # DT-EXT-SLIDE60 retired 2026-09-12: a 5'-0" glazed exterior slider that never hung.
-    # All three exterior glazed openings (D-M-BALC, D-S-DECK-E, D-B-PATIO) are French pairs
+    # All three exterior glazed openings (D-M-PORCH, D-S-BALCONY, D-B-SUNKEN) are French pairs
     # on DT-EXT-FRENCH60 — a swing pair weathers better at a threshold this house raises
     # above a flood step, and a slider's fixed half buys nothing a window does not.
     # 3'-0" interior leaf, new 2026-09-07: the basement equipment route. D-B-FURN and
@@ -1091,10 +1091,10 @@ OPENINGS = [
                  source_url="https://outdoorsandsecurity.widen.net/content/6ybzlyty7g/original/2026-Arch-Comp-BOOK---COMP-7-Sills.pdf",
                  source_drawing="2026 Comp 7.3: 7-3/4 inch inswing; schematic design envelope",
                  threshold_depth=inch(7.75), threshold_height=inch(1.5), cap_depth=inch(1.5)))),
-    # Stands directly under D-S-DECK-E, so the south face reads as one column of French
+    # Stands directly under D-S-BALCONY, so the south face reads as one column of French
     # pairs. Its published 63 5/16" RO is re-centred at 8 11/32" off N-M-S1, like the pair
     # above (owner, 2026-10-29: the mirrored facade beats the stud module, suppressed).
-    Door(uid="CMD202AAAA", tag="D-M-BALC", host="W-M-S2", type_ref="DT-EXT-FRENCH60",
+    Door(uid="CMD202AAAA", tag="D-M-PORCH", host="W-M-S2", type_ref="DT-EXT-FRENCH60",
          position=from_node("N-M-S1", inch(8.34375)), flip_swing=True,
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
              exterior_wrap_material_ref="metal-dark-exterior",
@@ -1339,7 +1339,7 @@ OPENINGS = [
            sill_height=ft(3, 6)),
     # South living pair: centres x=26'-8"/32'-0" stack under WIN-S-STUDY1/2 on the shared
     # 16" stud grid. S2 restores the west column retired in 2026; its RO x=25'-5"..27'-11"
-    # is 17 11/32" from D-M-BALC's east jamb, so it takes the tempered twin WT-3048-T.
+    # is 17 11/32" from D-M-PORCH's east jamb, so it takes the tempered twin WT-3048-T.
     Window(uid="CMX308AAAA", tag="WIN-M-LIV-S2", host="W-M-S2",
            type_ref="WT-3048-TT-T", position=from_node("N-M-S1", ft(7, 5)),
            sill_height=ft(2, 8)),
@@ -2305,23 +2305,23 @@ CONNECTORS = [
     Connector(uid="V5HNZ3S6Q1", tag="CN-M-HD-ENTRY-W", kind=ConnectorKind.HOLD_DOWN,
               position=pt(ft(6, 3), _JAMB_Y_NORTH), elevation=_JAMB_Z,
               size="STHD", connects=("W-M-N3", "W-B-N3")),
-    # The balcony door stands on W-B-S3-FR, a framed wall, not on concrete: W-B-S3 is a
+    # The porch door stands on W-B-S3-FR, a framed wall, not on concrete: W-B-S3 is a
     # 7 1/4" curb at -102 3/16". So each jamb is two parts — an MSTC52 across the floor
     # band into W-B-S3-FR's jamb studs, and an STHD14 cast in the curb under them.
     # Re-stationed 2026-10-31 onto the French pair's 2-jack + 2-king packs (6" outboard of
     # the 63 5/16" RO, x 18'-2 11/32" / 24'-5 21/32"): they sat at 19'-1"/24'-7" from before
-    # the 2026-10-29 re-centring, the west pair inside both openings, where D-B-PATIO's
+    # the 2026-10-29 re-centring, the west pair inside both openings, where D-B-SUNKEN's
     # band header now has no stud under the strap.
-    Connector(uid="5D80PTSEWM", tag="CN-M-HD-BALC-W", kind=ConnectorKind.TENSION_TIE,
+    Connector(uid="5D80PTSEWM", tag="CN-M-HD-PORCH-W", kind=ConnectorKind.TENSION_TIE,
               position=pt(inch(218.34375), _JAMB_Y_SOUTH), elevation=_BAND_Z,
               size="MSTC52", connects=("W-M-S2", "W-B-S3-FR")),
-    Connector(uid="PJMETCQPK0", tag="CN-M-HD-BALC-E", kind=ConnectorKind.TENSION_TIE,
+    Connector(uid="PJMETCQPK0", tag="CN-M-HD-PORCH-E", kind=ConnectorKind.TENSION_TIE,
               position=pt(inch(293.65625), _JAMB_Y_SOUTH), elevation=_BAND_Z,
               size="MSTC52", connects=("W-M-S2", "W-B-S3-FR")),
-    Connector(uid="0NMTQ0A5A4", tag="CN-B-HD-BALC-W", kind=ConnectorKind.HOLD_DOWN,
+    Connector(uid="0NMTQ0A5A4", tag="CN-B-HD-PORCH-W", kind=ConnectorKind.HOLD_DOWN,
               position=pt(inch(218.34375), _JAMB_Y_SOUTH), elevation=_CURB_Z,
               size="STHD14", connects=("W-B-S3-FR", "W-B-S3")),
-    Connector(uid="V3TS8F7C9A", tag="CN-B-HD-BALC-E", kind=ConnectorKind.HOLD_DOWN,
+    Connector(uid="V3TS8F7C9A", tag="CN-B-HD-PORCH-E", kind=ConnectorKind.HOLD_DOWN,
               position=pt(inch(293.65625), _JAMB_Y_SOUTH), elevation=_CURB_Z,
               size="STHD14", connects=("W-B-S3-FR", "W-B-S3")),
 ]

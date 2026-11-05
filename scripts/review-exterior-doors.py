@@ -27,7 +27,7 @@ from typehaus.source import load_plan
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "out/exterior-door-review"
-TAGS = ("D-M-ENTRY", "D-M-BALC", "D-S-DECK-E", "D-B-PATIO", "D-G-SERVICE")
+TAGS = ("D-M-ENTRY", "D-M-PORCH", "D-S-BALCONY", "D-B-SUNKEN", "D-G-SERVICE")
 
 
 def color(part):
@@ -117,7 +117,7 @@ def render_cuts(model):
                                 if len(hits) >= 2:
                                     line = hits + hits[:1] if len(hits) > 2 else hits
                                     ax.plot(*zip(*line, strict=True), color=color(part), lw=.65)
-            ax.set_xlim(-9, 18 if tag == "D-B-PATIO" else 12)
+            ax.set_xlim(-9, 18 if tag == "D-B-SUNKEN" else 12)
             if row==0:
                 ax.set_ylim(-5,10)
                 report = opening.doorway.exterior_placement.installation_report
@@ -181,7 +181,7 @@ def write_catalog_review(model):
     })
     (OUTPUT / "catalog-trim-sheet-layout.json").write_text(json.dumps(layouts, indent=2) + "\n")
     figure, axes = plt.subplots(1, 2, figsize=(14, 6))
-    study = next(o for o in model.openings if o.tag == "D-S-DECK-E")
+    study = next(o for o in model.openings if o.tag == "D-S-BALCONY")
     placement = study.doorway.exterior_placement
     base = study.doorway.rough_opening_z_m
     for axis, side in zip(axes, (-1, 1), strict=True):
@@ -193,7 +193,7 @@ def write_catalog_review(model):
             axis.add_patch(PlotPolygon(points, alpha=.6, label=section.name))
         axis.autoscale_view()
         axis.set_aspect('equal')
-        axis.set_title(f'D-S-DECK-E end {side}: envelopes, bonds unconfirmed')
+        axis.set_title(f'D-S-BALCONY end {side}: envelopes, bonds unconfirmed')
         axis.set_xlabel('Outward from host axis (in)')
         axis.set_ylabel('Above rough sill (in)')
         axis.grid(alpha=.2)

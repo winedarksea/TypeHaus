@@ -502,33 +502,33 @@ def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_m
             "the two leaves must sit symmetrically either side of the mullion")
 
 
-def test_the_balcony_door_ships_the_french_door_solid_shape(catlin_model):
-    """D-M-BALC was retyped from a slider to a French pair (DT-EXT-FRENCH60) — a locked
+def test_the_porch_door_ships_the_french_door_solid_shape(catlin_model):
+    """D-M-PORCH was retyped from a slider to a French pair (DT-EXT-FRENCH60) — a locked
     design decision (the door stays a french door), not a bug — so it now ships the same
     double-swing shape as any other French door: four frame pieces, a center mullion, and
     two leaves (see ``test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion``
     for the same math against the exterior French door).
     """
     gltf, blob = emit_gltf_dict(catlin_model)
-    balcony = next(op for op in catlin_model.openings if op.tag == "D-M-BALC")
-    wall = _host_wall(catlin_model, balcony)
+    porch = next(op for op in catlin_model.openings if op.tag == "D-M-PORCH")
+    wall = _host_wall(catlin_model, porch)
     solids, _hardware = _split_hardware(
-        gltf, _product_solids_of_node(gltf, blob, catlin_model, balcony))
+        gltf, _product_solids_of_node(gltf, blob, catlin_model, porch))
 
-    available_height = min(balcony.height_m, wall.z1_m - wall.z0_m - balcony.sill_m)
-    frame_width = _frame_width_m(balcony, available_height)
-    clear_width = balcony.width_m - 2 * frame_width
+    available_height = min(porch.height_m, wall.z1_m - wall.z0_m - porch.sill_m)
+    frame_width = _frame_width_m(porch, available_height)
+    clear_width = porch.width_m - 2 * frame_width
     mullion_width = min(frame_width, clear_width / _DOUBLE_SWING_MULLION_CLEAR_WIDTH_DIVISOR)
     leaf_width = (clear_width - mullion_width) / 2
 
     assert len(solids) == _FRAME_PIECE_COUNT + 2, "three frame pieces, a mullion and two leaves"
-    balcony_leaves = [solid for solid in solids
+    porch_leaves = [solid for solid in solids
                       if solid.has_thickness(_WINDOW_GLAZING_THICKNESS_M)]
-    assert len(balcony_leaves) == 2, "the balcony french door is two glazed leaves"
-    for leaf in balcony_leaves:
+    assert len(porch_leaves) == 2, "the porch french door is two glazed leaves"
+    for leaf in porch_leaves:
         assert leaf.plan_dimensions_m[1] == pytest.approx(leaf_width, abs=_DIMENSION_TOLERANCE_M)
     assert all(gltf["materials"][leaf.material_index]["alphaMode"] == "BLEND"
-               for leaf in balcony_leaves)
+               for leaf in porch_leaves)
 
 
 def test_the_laundry_pocket_ships_one_leaf_on_a_head_track(catlin_model):
@@ -558,7 +558,7 @@ def test_the_laundry_pocket_ships_one_leaf_on_a_head_track(catlin_model):
 
 
 def test_a_synthetic_slider_ships_two_panels_without_an_assumed_bottom_track():
-    """A synthetic opening, since D-M-BALC is a French door: a closed slider stays
+    """A synthetic opening, since D-M-PORCH is a French door: a closed slider stays
     coplanar, with two glazed panels meeting at a narrow stile over a low track.
     """
     parts = opening_parts(_synthetic_wall(), _synthetic_opening("door"),

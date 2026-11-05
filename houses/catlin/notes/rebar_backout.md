@@ -306,7 +306,7 @@ the pour did: 9" across the whole under-porch footprint, and the same 9" off `DR
 5.75 -> 3.96 on 2026-09-03 when the court dropped 7 1/4" for a flood step and the floor
 became a **rim** around an open field, with `GARDEN_STOOP` adding 0.53 back as the
 door's landing. On **2026-09-05 the court came back flush** (`court_step_down_in` -> 0, one
-riser at D-B-PATIO instead of two): the stoop is retired, `FO-SG-ARCH` is retired with it —
+riser at D-B-SUNKEN instead of two): the stoop is retired, `FO-SG-ARCH` is retired with it —
 `W-SG-ARCH`'s top is now the rim's underside, so the slab bears on the beam rather than
 being cut around it — and only `FO-SG-FIELD` and `FO-SG-BRKBM` still void the pour. The
 belled piers did NOT follow the court up; they are pinned at their augered elevation and
@@ -343,7 +343,7 @@ the hole.
 
 And **the denominator grew by 6.54 cy on 2026-09-03 without a cubic inch of concrete being
 added to the building.** This filter can only count a pour whose assembly confirms it is
-concrete, and three sets of real pours named no assembly at all: the two sunken-garden porch
+concrete, and three sets of real pours named no assembly at all: the two court porch
 strips `FT-SG-W1/E1` (5.71 cy), the two belled pier footings (0.57), and the four breezeway
 pads (0.26). They now name `PORCH_FOOTING_84` and `PIER_BASE_12`, so they are
 counted — and **the rebar ratio in §3 got worse, 28.2 to 27.0 lb/cy, which is the honest

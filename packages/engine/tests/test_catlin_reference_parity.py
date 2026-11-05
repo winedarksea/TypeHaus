@@ -166,7 +166,7 @@ def test_framing_matches_the_reference(catlin_model):
     params = _params("houseframing")
     joist_depth = float(params["floor_joists"]["depth_in"])
     # The freestanding structures frame with their own PT 2x8 deck joists, not the house's
-    # I-joists: the sunken-garden porch/balcony decks and the breezeway between the house and
+    # I-joists: the court's porch/balcony floors and the breezeway between the house and
     # the garage. Check only the house floors against the reference.
     freestanding = ("FS-SG-", "FS-BW-")
     floors = [f for f in catlin_model.floors
@@ -213,7 +213,7 @@ def test_house_footings_match_the_reference(catlin_model):
     """20\"x8\" footing per IRC Table R403.1, as the reference and the notes both fix it —
     except the two deepened strips in ``_DEEP_FT_B``.
 
-    Scoped to the house (``FT-B-*``): the freestanding sunken-garden structure carries its
+    Scoped to the house (``FT-B-*``): the freestanding court structure carries its
     own heavier footing, which these basement params do not govern.
     """
     params = _params("basementconstruction")["foundation"]

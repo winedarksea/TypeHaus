@@ -985,7 +985,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "PJMETCQPK0",
-      "tag": "CN-M-HD-BALC-E"
+      "tag": "CN-M-HD-PORCH-E"
     },
     {
       "space": "model",
@@ -1025,7 +1025,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "PJMETCQPK0",
-      "tag": "CN-M-HD-BALC-E"
+      "tag": "CN-M-HD-PORCH-E"
     },
     {
       "space": "model",
@@ -1249,8 +1249,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW102AAAA-d-m-balc-trim-jamb-right-0",
-      "tag": "D-M-BALC-TRIM-JAMB-RIGHT-1"
+      "uid": "CMW102AAAA-d-m-porch-trim-jamb-right-0",
+      "tag": "D-M-PORCH-TRIM-JAMB-RIGHT-1"
     },
     {
       "space": "model",

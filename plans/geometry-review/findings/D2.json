@@ -520,12 +520,12 @@
    },
    "confidence": 0.8,
    "evidence": {
-    "measured": "First bullet of A-515 NOTES reads 'D-B-PATIO geometry coordinated; support/bonds UNKNOWN. WIN-B-SAUNA: no flashing.' -- a haus-check verdict and a developer remark, not a construction instruction (and it reads as if the sauna window has no flashing). court_opening_detail.md:17 under '## Sheet notes / General'.",
+    "measured": "First bullet of A-515 NOTES reads 'D-B-SUNKEN geometry coordinated; support/bonds UNKNOWN. WIN-B-SAUNA: no flashing.' -- a haus-check verdict and a developer remark, not a construction instruction (and it reads as if the sauna window has no flashing). court_opening_detail.md:17 under '## Sheet notes / General'.",
     "expected": "General notes state what to build; check status stays in checks.",
     "method": "permit_set.pdf p47; notes file line 17."
    },
    "source": "houses/catlin/notes/court_opening_detail.md",
-   "proposed_fix": "Rewrite as 'WIN-B-SAUNA: head flashing per K2; door D-B-PATIO bonds per K6' and drop UNKNOWN.",
+   "proposed_fix": "Rewrite as 'WIN-B-SAUNA: head flashing per K2; door D-B-SUNKEN bonds per K6' and drop UNKNOWN.",
    "size_guess": "small",
    "seam_with": [
     "O4",

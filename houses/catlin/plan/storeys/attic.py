@@ -823,7 +823,7 @@ FLOOR = [
                                  # absorbed instead of standing 1 1/4" off it.
                                  # Keep the new basin dry vent out of the 320" flange.
                                  line_overrides=((inch(64), inch(66)), (inch(320), inch(324))),
-                                 # FURN-S-STUDY-TRACK-DECK's ceiling track screws up into
+                                 # FURN-S-STUDY-TRACK-BALCONY's ceiling track screws up into
                                  # this line (it also crosses the plant room, harmlessly).
                                  extra_lines=(inch(9.5),),
                                  # ** LSL RIM SINCE 2026-08-29, AND THE REASON IS BEARING,

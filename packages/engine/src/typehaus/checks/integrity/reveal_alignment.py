@@ -8,7 +8,7 @@ fills a rough opening, and every geometry, framing and egress consumer is satisf
 both. Move one and the other does not follow, and ``haus check`` reports 0 FAIL over a
 brick arch sitting half a leaf off the door it arches over.
 
-That is not hypothetical. catlin's ``AO-B-BRICK-DOOR`` sat 6" east of ``D-B-PATIO`` for
+That is not hypothetical. catlin's ``AO-B-BRICK-DOOR`` sat 6" east of ``D-B-SUNKEN`` for
 five days: the reveal was authored against the door's position, the door later moved 6"
 west, and the reveal stayed. The stale comment above it still claimed the door's head was
 "covered across its full width" while the reveal in fact left the west 6" of the leaf pair

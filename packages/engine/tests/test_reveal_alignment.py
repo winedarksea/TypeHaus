@@ -1,7 +1,7 @@
 """``integrity.reveal_concentric`` — a hole in a wythe must line up with what it reveals.
 
 The bug this check exists for was silent for five days at 0 FAIL: catlin's brick reveal
-``AO-B-BRICK-DOOR`` was authored against ``D-B-PATIO``'s position, the door later moved 6"
+``AO-B-BRICK-DOOR`` was authored against ``D-B-SUNKEN``'s position, the door later moved 6"
 west off a different node on a different wall, and nothing in the engine compared them.
 
 The fixture is the smallest thing that can go wrong that way: a 20' backer wall with a

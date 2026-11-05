@@ -48,7 +48,7 @@ def test_catlin_has_no_stale_host_reference(findings) -> None:
 
 
 def test_catlin_floor_system_hosts_are_graded_in_plan(findings) -> None:
-    """FS-SG-DECK and FS-SG-PORCH resolve no solid, but their authored outlines place them:
+    """FS-SG-BALCONY and FS-SG-PORCH resolve no solid, but their authored outlines place them:
     the three runs naming them are graded, not left UNKNOWN."""
     assert [f.result for f in findings] == [Result.PASS], [f.message for f in findings]
 

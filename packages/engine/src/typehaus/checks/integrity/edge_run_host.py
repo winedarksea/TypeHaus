@@ -30,7 +30,7 @@ so it is not the rule:
 
 **A ``FloorSystem`` host is graded in plan against its authored outlines.** It resolves to
 no solid of its own tag, but ``outline`` (the joist field) and ``subfloor_outline`` (the
-sheet) say where its edges are. Plan only: ``FS-SG-DECK`` is tilted, and a WRB counter-
+sheet) say where its edges are. Plan only: ``FS-SG-BALCONY`` is tilted, and a WRB counter-
 flashing stands above the deck by design. A floor system with neither outline stays
 UNKNOWN — silently skipping it would make this check quietly narrower than it reads.
 

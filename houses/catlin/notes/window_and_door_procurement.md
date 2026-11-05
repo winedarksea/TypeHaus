@@ -109,7 +109,7 @@ and fixed; LC-PG45/CW-PG80 tilt-turn. Every value is over §1's DP 20.
 | Door | Line | CPD | U | SHGC | VT | Notes |
 |---|---|---|---|---|---|---|
 | `D-M-ENTRY` | Therma-Tru Smooth-Star flush, inswing | THC-M-5-03881 | 0.15 | — | — | opaque; polyurethane core; single-point Sense Pro (was Encode Plus); DS2000; black / white field paint |
-| `D-B-PATIO`, `D-M-BALC`, `D-S-DECK-E` | Therma-Tru Smooth-Star full-lite, composite frame / Endura | THC-M-5-04493-00001 | 0.21 | 0.12 | 0.27 | provisional CPD basis; laminated triple and assembled pair NFRC/NAFS label are dealer items |
+| `D-B-SUNKEN`, `D-M-PORCH`, `D-S-BALCONY` | Therma-Tru Smooth-Star full-lite, composite frame / Endura | THC-M-5-04493-00001 | 0.21 | 0.12 | 0.27 | provisional CPD basis; laminated triple and assembled pair NFRC/NAFS label are dealer items |
 | `D-G-SERVICE` | MMI Z0364688R stock six-panel insulated steel, 32x80 RH outswing, 6-9/16 composite frame; included fixed composite sill, weatherstrip and NRP hinges; HD Supply 219385, $1,023 listed 2026-10-27 | none | — | — | — | `DT-EXT-SWING32-G`: framed RO 34x81.5; west hinges; black outside/white inside; retain factory sill; see service-door installation note |
 | `D-G-OVERHEAD` | Clopay Classic Steel long panel GDU293, R-12.9, Charcoal, 16x7 | none | — | — | — | unconditioned; wind rating for q_h 19.3 psf to confirm |
 
@@ -210,7 +210,7 @@ than ±20% without it.
 5. Therma-Tru pair NFRC/NAFS label under its product approval with the specified Endura
    components; laminated triple CPD row and SHGC (0.12 is only the provisional basis row);
    BE365 on PanoLock+'s compatibility list; stile width ≥ 4 inches; installed threshold
-   heights at D-B-PATIO and D-S-DECK-E, measured from the installed crest rather than
+   heights at D-B-SUNKEN and D-S-BALCONY, measured from the installed crest rather than
    floor-to-landing drop. Request the composite frame/hinge section, ZAI sill and
    compatible sweep, corner seals, FLA sill receiver and installation details, bearing
    contacts, and written assembled-system compatibility, approval and warranty. Price a
@@ -277,7 +277,7 @@ Obtain separate add prices for ordinary safety lamination and the proposed secur
 lamination, including any hardware, freight and duty changes. No confirmed security
 upgrade allowance is entered in the model or prices.
 
-**Patio/study catalog coordination, 2026-10-26:** use
+**Sunken-garden/study catalog coordination, 2026-10-26:** use
 [french_door_catalog_installation.md](french_door_catalog_installation.md) for the current
 component/evidence matrix, separate nominal/unit/RO sizes, adapter F, installed-height
 calculations and public-price comparison. No inquiry or order was made. Complete preferred

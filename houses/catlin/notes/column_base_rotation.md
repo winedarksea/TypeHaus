@@ -363,7 +363,7 @@ The balcony is back within 2% of §4's own P_u and δ. The landing rows stay his
 
 ## Addendum 2026-09-23b — the balcony 3" lower
 
-`balcony_level_ft` 10.0 → 9.75' (R311.3 at `D-S-DECK-E`): L 108.125 → **105.125"** (BF),
+`balcony_level_ft` 10.0 → 9.75' (R311.3 at `D-S-BALCONY`): L 108.125 → **105.125"** (BF),
 109.958 → **106.958"** (BR); self weight −29 lb; k_θ unchanged (7.2833e7 at 0.25", 6.8706e7 at
 1.0" — the wall and footing did not move).
 

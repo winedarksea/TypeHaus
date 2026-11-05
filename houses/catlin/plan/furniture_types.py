@@ -64,7 +64,7 @@ STUDY_BUILT_IN_BOOKCASE = FurnitureType(
 )
 
 # 48" is the standard rod length for main-storey windows that use curtains — the widest RO
-# is 30" (WT-3048), leaving 9" of stackback each side. 84" is D-M-BALC's french pair (60"
+# is 30" (WT-3048), leaving 9" of stackback each side. 84" is D-M-PORCH's french pair (60"
 # RO, 12" each side). Depth is the bracket projection, height the rod and finial.
 # --- the porch enclosure track -------------------------------------------------------
 # NOT A CURTAIN ROD. 2026-09-03: the two 114" rods and the two 98" side rods were replaced

@@ -20,9 +20,9 @@ MAIN_WINDOW_COVERINGS = [
     Furniture(uid="BZJF36KH8Q", tag="FURN-M-LIV-TRACK-S", type_ref="FT-CURTAIN-TRACK-LIV-S", room="RM-M-LIVING",
               position=pt(inch(363.125), inch(9.5625)), rotation=deg(180),
               mount=Mount(kind=MountKind.CEILING, elevation=inch(0.5))),
-    # D-M-BALC: wall run, rail top 88" AFF under EQ-M-HP2-LIVING, x 219 1/2"..291".
+    # D-M-PORCH: wall run, rail top 88" AFF under EQ-M-HP2-LIVING, x 219 1/2"..291".
     # The door swings out, so the split stacks sit either side of it.
-    Furniture(uid="WJTG6V6T09", tag="FURN-M-LIV-TRACK-BALC", type_ref="FT-CURTAIN-TRACK-LIV-BALC",
+    Furniture(uid="WJTG6V6T09", tag="FURN-M-LIV-TRACK-PORCH", type_ref="FT-CURTAIN-TRACK-LIV-PORCH",
               room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(0.5)),
               location=Location(attachment=WallAttachment(
@@ -48,8 +48,8 @@ MAIN_WINDOW_COVERINGS = [
 ]
 
 SECOND_WINDOW_COVERINGS = [
-    # D-S-DECK-E: x 219 1/2" (corner) to 291" (end-closing), one panel stacking west.
-    Furniture(uid="H99NTV3GRV", tag="FURN-S-STUDY-TRACK-DECK", type_ref="FT-CURTAIN-TRACK-STUDY-DECK",
+    # D-S-BALCONY: x 219 1/2" (corner) to 291" (end-closing), one panel stacking west.
+    Furniture(uid="H99NTV3GRV", tag="FURN-S-STUDY-TRACK-BALCONY", type_ref="FT-CURTAIN-TRACK-STUDY-BALCONY",
               room="RM-S-STUDY2",
               position=pt(inch(255.25), inch(9.5625)), rotation=deg(180),
               mount=Mount(kind=MountKind.CEILING, elevation=inch(0.5))),

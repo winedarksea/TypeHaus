@@ -8,7 +8,7 @@ one shared loop:
 bay, two bays less the broken stud, that again less a jack each side — because a window that
 wide breaks more than one stud line and wants a wider header than the prescriptive table gives.
 A door is chosen by what has to pass through it. Run catlin's doors through the ladder and it
-reports ``D-B-PLAY``, ``D-B-PATIO`` and ``D-G-OVERHEAD`` (192",
+reports ``D-B-PLAY``, ``D-B-SUNKEN`` and ``D-G-OVERHEAD`` (192",
 with a named engineered header) as exceeding a 30" limit: three FAILs the house must not act on,
 because narrowing a garage door to fit a stud module is not a thing anyone does.
 

@@ -150,7 +150,7 @@ Worked on `DU-B-ERV-R-SAUNA-SUP` (4" duct, r = 0.051 m), every window read off t
 | FS-BW-FLOOR | -0.157 .. -0.075 | -0.116 | -0.151, merge |
 | SF-B-BATH | -0.530 .. -0.352 | -0.441 | terminal -0.494, merge |
 | FS-S-WEST (occupied) | 2.797 .. 2.997 | tiers 2.797, 2.997 | anchors |
-| FS-SG-DECK | 2.737 .. 2.982 | 2.860 | 2.797, merge |
+| FS-SG-BALCONY | 2.737 .. 2.982 | 2.860 | 2.797, merge |
 | FS-S-EAST, FO-S-* chases | 2.797 .. 2.997 | 2.897 | 2.797, merge |
 | SF-S-HP1 / SF-S-DUCT | 5.261 .. 5.744 / 5.486 .. 5.744 | 5.502 / 5.615 | 5.615 merges into 5.502 |
 

@@ -517,7 +517,7 @@ def test_a_tie_at_a_beam_s_own_bearing_does_not_stand_down_the_joists_above_it(
     witness; they retired, and the porch now hangs on ledgers, 2026-09.)
 
     The coarse reading is still right one level up: a tie naming the FLOOR is the plan saying
-    it owns that deck's uplift (FS-SG-DECK's authored CN-SG-TIE-*), and nothing here changes
+    it owns that deck's uplift (FS-SG-BALCONY's authored CN-SG-TIE-*), and nothing here changes
     that.
     """
     from typehaus.model.enums import ConnectorKind
@@ -534,8 +534,8 @@ def test_a_tie_at_a_beam_s_own_bearing_does_not_stand_down_the_joists_above_it(
     assert {c.support_tag for c in tied} == seats, \
         "the entry joists bear on both seats and must be tied at each"
     assert {c.assembly_tag for c in tied} == {"FS-BW-FLOOR"}
-    assert not [c for c in connections if c.assembly_tag == "FS-SG-DECK"], \
-        "FS-SG-DECK's ties are authored against the floor, so none is derived"
+    assert not [c for c in connections if c.assembly_tag == "FS-SG-BALCONY"], \
+        "FS-SG-BALCONY's ties are authored against the floor, so none is derived"
 
 
 # --- rule 4: lateral tie plates -------------------------------------------------------

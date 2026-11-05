@@ -253,7 +253,7 @@ the foam was sprayed in (60-80 F, `ccspf_spec.md` §3) and set the windows behin
 
 ## 6. The two exterior swing doors (2026-10-13)
 
-**2026-10-24 update:** D-M-ENTRY and D-M-BALC now use structural-wall mounting
+**2026-10-24 update:** D-M-ENTRY and D-M-PORCH now use structural-wall mounting
 with deep exterior returns. Their coordinated frame/pan/support detail and remaining
 supplier requirements are in [exterior_door_structural_mount.md](exterior_door_structural_mount.md).
 The older entry description below does not establish its factory sill or support.
@@ -306,7 +306,7 @@ laps onto, and the opening is an innie: no buck projection, no vent gap.
 - **Aluminium never touches the steel panel.** The stem Z and band are aluminium; the opening
   heads are steel. Where they meet, EPDM or sealant between.
 
-## 8. The court openings behind the brick veneer: `D-B-PATIO` and `WIN-B-SAUNA` (2026-10-16)
+## 8. The court openings behind the brick veneer: `D-B-SUNKEN` and `WIN-B-SAUNA` (2026-10-16)
 
 Both sit in the garden's framed backup walls (`GARDEN_FRAMED_2X6`, `SAUNA_LINER_ON_GARDEN_FRAMED`):
 studs, sheathing, the **60-mil waterproofing** (the water plane), 4" XPS and 2" EPS, then a
@@ -323,7 +323,7 @@ no sheet of its own.
 - **Veneer.** The arches are self-supporting, with no lintel or shelf angle, so R703.8.5 asks for
   no head flashing there; the porch keeps rain off them. The base course is flashed and weeped
   over the beam (R703.8.6, 33" o.c. max, 3/16" min). Do not over-detail the wythe.
-- **`D-B-PATIO` rainproofing basis (owner, 2026-10-26).** The concrete curb is
+- **`D-B-SUNKEN` rainproofing basis (owner, 2026-10-26).** The concrete curb is
   intended to contain flooding, backed by overflow drainage and a sump pump. Design the
   door for standard rain exposure, not as a flood barrier. The curb top is the rough
   opening datum, not the installed threshold height. Retain a drained sill pan with
@@ -335,7 +335,7 @@ no sheet of its own.
   geometric fit checks pass. The concrete support connection, reinforcement development,
   membrane bonds and installed product sections remain design holds; the model is not an
   installed product section.
-- **Catalog coordination update, 2026-10-26:** D-B-PATIO now references its separate
+- **Catalog coordination update, 2026-10-26:** D-B-SUNKEN now references its separate
   brick opening and draws the backup-wall flashing band, formed concrete seat recess,
   sill/pan/approach coordination envelopes and composite returns. The seat is 5-1/2 inches
   above the court; adjacent curb tops remain 7-1/4 inches. The XMN5 sill extender was

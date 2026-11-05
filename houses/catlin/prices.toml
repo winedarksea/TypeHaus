@@ -228,8 +228,8 @@
 # ST-S2A's three stringers (2026-09-28) bill here too: 42 LF, 3 x 14'.
 "1.75x11.875 LSL" = { material = { low = 5.5, high = 8 }, labour = { low = 1.1, high = 2.1 } }  # 114 LF
 "1.25x7.25 rim" = { material = { low = 2, high = 3.25 }, labour = { low = 0.9, high = 1.7 } }  # 8 LF — the breezeway's two short bands, and all that is left bare on this key since the porch joined the balcony in paint (2026-09-05)
-# The balcony's two rim bands (FS-SG-DECK) AND the porch's two (FS-SG-PORCH), by
-# `JoistSpec.rim_material`: 20 LF of that same stock, WHITE-PAINTED — FS-SG-DECK's two
+# The balcony's two rim bands (FS-SG-BALCONY) AND the porch's two (FS-SG-PORCH), by
+# `JoistSpec.rim_material`: 20 LF of that same stock, WHITE-PAINTED — FS-SG-BALCONY's two
 # rim bands only since 2026-09-22 (the porch hangs on ledgers and has no rim). Qualified
 # key, so the bare band above keeps its own rate. The delta over that rate is primer + 2 coats at $2.00-4.50/SF, the same paint the pillars carry in
 # [solids] "column:POST_WHITE_PAINT", over 0.75 SF of face per LF (the 7 1/4" outer face
@@ -572,7 +572,7 @@
 # moved onto the back-beam line and the pillar stopped standing on a cantilevered joist tip.
 # The comment previously read "# 708 LF", which was several revisions stale.
 # 2026-09-03: 524 -> 548 LF ordered. The porch enclosure's flank blocking — sixteen blocks
-# closing FS-SG-DECK's joist bays where the curtain plane crosses them, 17.3 LF cut, three
+# closing FS-SG-BALCONY's joist bays where the curtain plane crosses them, 17.3 LF cut, three
 # more 8' sticks. The "# 464 LF" this comment used to carry was itself 60 LF stale.
 "2x8" = { material = { low = 1.1, high = 1.55 }, labour = { low = 1.3, high = 2.4 } }  # 1,010 LF — +148 for the wet-wall -GRAB/-HIGH courses (2026-09-12); 2x8 backing 624 -> 356 LF ordered (2026-10-10 trim)
 # D-G-SERVICE's continuous header (2026-08-18). Three plies at $3-5/LF per 1.75" ply, on
@@ -662,7 +662,7 @@
 # The LABOUR is not, and +$20-45 is the cut-in and the anchoring of a single trim board onto
 # a wall top, added below.
 "trex-enhance-basics" = { material = { low = 130, high = 320 }, labour = { low = 173, high = 391 } }  # FS-SG-PORCH + FS-BW-FLOOR; per 32 SF equivalent. Includes 316 stainless Cap-Tor xd face screws. Threshold trim remains included in the porch installation scope.
-# The balcony's waterproof interlocking aluminium plank (FS-SG-DECK's subfloor). Bought by
+# The balcony's waterproof interlocking aluminium plank (FS-SG-BALCONY's subfloor). Bought by
 # the board like the composite above it, so this is the same sheet-EQUIVALENT conversion —
 # 32 SF at the researched installed rate. It carried the identical money as
 # [concrete] `slab:BALCONY_DECK_ALUMINUM` until 2026-08-22, when the plank stopped being a
@@ -1085,7 +1085,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # A house that knows the member authors the size and prices it on its own row, as the four
 # beam pockets below do.
 "HUC" = { low = 12, high = 70 }  # 4 ea derived — the stair hangers on W-B-CN
-# The triple-2x12 concealed-flange hanger carrying **all four** sunken-garden porch beams
+# The triple-2x12 concealed-flange hanger carrying **all four** court porch beams
 # into pockets cast in concrete (params/sunken_garden.py: CN-SG-HGR-W/E on the back pair,
 # CN-SG-HGR-FW/FE on the front). It replaced HUCQ410-SDS on 2026-09-12; the count is
 # unchanged and has been four since 2026-08-23.
@@ -1201,7 +1201,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # to $2.78 (Home Depot) for the MASAZ.
 "MASAZ" = { low = 1.95, high = 3 }  # 77 ea (was 91; the garage 2x8 sill takes bolts; +8 at the Minn. R. 1309.0404 wall-top block stations, 2026-11-02)
 # Retail, 2026-10-09: ToolUp/Total Fastening $14.54 to McCoy's $19.99.
-"MSTC52" = { low = 14.5, high = 20 }  # 2 ea — CN-M-HD-BALC-W/E
+"MSTC52" = { low = 14.5, high = 20 }  # 2 ea — CN-M-HD-PORCH-W/E
 # Retail, 2026-10-09: $25-38 per 100 (PDPAWL-287MG), plus ~$0.10 of powder load each.
 "PDPAWL-287MG" = { low = 0.35, high = 0.55 }  # 50 ea — non-bearing slab partitions
 # 1/2" x 10" cast-in anchor bolt with the BP1/2 plate washer R602.11.1 requires,
@@ -1386,7 +1386,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # the road salt every winter.
 #
 # It REPLACES "SS316-LAG-38x4-EPDM" ($4-8, 8 ea), the through-deck lag this house needed
-# while both condensers stood on FS-SG-DECK. Nothing is bolted through that plank now, so
+# while both condensers stood on FS-SG-BALCONY. Nothing is bolted through that plank now, so
 # the deck anchor's row went with the stand — the part survives in library/hardware/ for
 # any house that does put equipment on a dry-below deck.
 "SS316-WEDGE-38x3" = { low = 4, high = 7 }  # 12 ea — four legs each under three stands. The "8 ea" this comment carried was stale from the day SL-M-HP3PAD shipped; on 2026-09-04 HP1 moved to its own north pad and the count is still 12, four to each of SL-SG-HPPAD, SL-M-HP3PAD and SL-M-HP1PAD
@@ -1813,7 +1813,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # five FO-SG-TOE-* voids opened over the wall strips, and came back UP to 1.32 on 2026-09-10
 # when the strips narrowed 8'-0" -> 7'-0" and handed the rim back 12" of walking surface on
 # three sides. Shortening the court 28' -> 26' took 38 sf off the other way; the narrowing
-# wins. And SL-SG-STOOP, D-B-PATIO's 7 1/4" landing, added 0.53. Both
+# wins. And SL-SG-STOOP, D-B-SUNKEN's 7 1/4" landing, added 0.53. Both
 # are the same pour on the same day as the rest of this row's slabs-on-grade, so neither
 # earns a qualified key or a short-load premium — unlike HP_PAD_ON_GRADE below, which is a
 # separate trip. The field itself is sand and stone and is zeroed by qualified key above.
@@ -1948,7 +1948,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "slab:DECK_EPS_INT" = { low = 9.77, high = 20.14, unit = "SF" }  # 0 since 2026-11-01 (decision #112: SL-M-DECK is FS-M-NE's trusses); kept priced as the BuildDeck revert (was 414 SF, EPS-formed deck, concrete + temporary shoring, pump in [allowances])
 # 2026-08-20: RE-UNITED, and REPRICED — the old rate was not just mis-keyed, it was wrong.
 # It read $15-60/LF for a structural bearing break (Armatherm FRR, Foamglas Perinsul) under
-# three ~0.3 SF pads at the sunken-garden column and drywell, giving $25-90 each against the
+# three ~0.3 SF pads at the court column and drywell, giving $25-90 each against the
 # $9-15 TOTAL the $/cy rate was quietly producing. Small money, wrong by 10x in the direction
 # that hides scope.
 #
@@ -2157,7 +2157,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "glazing:GLAZED_WALL_MULTIWALL_16MM" = { material = { low = 7200, high = 16600 }, labour = { low = 8800, high = 15400 } }  # 0.03 cy = 16.0 SF
 #
 # ALUMINIUM BALCONY DECK — moved to [sheet_goods] `aluminum-deck` on 2026-08-22, when
-# SL-SG-DECK stopped being a Slab and became FS-SG-DECK's `subfloor`. Same boards, same
+# SL-SG-DECK stopped being a Slab and became FS-SG-BALCONY's `subfloor`. Same boards, same
 # money, an honest unit: 182.0 SF / 6 sheets instead of 0.84 cubic yards of plank.
 #
 # ELM TIMBER COLUMNS — the two suite tudor posts, 6-1/4" square S4S, 20 LF / 65.1 bf. There is
@@ -3255,9 +3255,9 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # locating the joist line, the rail, and hanging and hemming. The rows the rods held
 # (FT-CURTAIN-ROD-48/-84) are deleted with them.
 "FT-CURTAIN-TRACK-LIV-S" = { material = { low = 130, high = 300 }, labour = { low = 80, high = 200 } }  # 1 ea — 124" ceiling run, 1 end-closing set, ~5 panels
-"FT-CURTAIN-TRACK-LIV-BALC" = { material = { low = 110, high = 220 }, labour = { low = 60, high = 150 } }  # 1 ea — 72" wall run, 2 end-closing sets, ~3 panels
+"FT-CURTAIN-TRACK-LIV-PORCH" = { material = { low = 110, high = 220 }, labour = { low = 60, high = 150 } }  # 1 ea — 72" wall run, 2 end-closing sets, ~3 panels
 "FT-CURTAIN-TRACK-BED-W" = { material = { low = 150, high = 320 }, labour = { low = 80, high = 200 } }  # 1 ea — 147" corner-to-corner ceiling run, ~6 panels
-"FT-CURTAIN-TRACK-STUDY-DECK" = { material = { low = 90, high = 200 }, labour = { low = 60, high = 150 } }  # 1 ea — 72" ceiling run, 1 end-closing set, ~3 panels
+"FT-CURTAIN-TRACK-STUDY-BALCONY" = { material = { low = 90, high = 200 }, labour = { low = 60, high = 150 } }  # 1 ea — 72" ceiling run, 1 end-closing set, ~3 panels
 # SmartWings made-to-measure cellular, light filtering, inside mount. Motorized carries the
 # Matter-over-Thread motor, battery and solar panel; labour includes pairing to HA.
 "FT-CELLULAR-SHADE-3048-MOTOR" = { material = { low = 250, high = 420 }, labour = { low = 40, high = 100 } }  # 2 ea — WIN-S-STUDY1/-2
@@ -5592,16 +5592,16 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # D-B-SAUNA's full-depth 3/4 x 9 1/4 cedar flat jamb (owner, 2026-11-01): owner-milled stock at
 # the low end, a joiner's fit at the labour band. ESTIMATE.
 "cedar-sauna-trim:door jamb" = { material = { low = 0, high = 4.0 }, labour = { low = 8.0, high = 15.0 } }  # 15.4 LF
-# D-B-PATIO's foam-bed tread (owner, 2026-11-03), by the LF of the 5.2' reveal. ESTIMATE.
+# D-B-SUNKEN's foam-bed tread (owner, 2026-11-03), by the LF of the 5.2' reveal. ESTIMATE.
 # One 12' Trex Enhance Basics board (~$35-45) yields the 63" tread with a spare; labour fits
 # it between the box sides on the PVC sheet. The 40 psi XPS course is an offcut-sized piece
 # of a 2x8 sheet. The PVC sheet laps under the SureSill lip and onto the beam top.
-"trex-enhance-basics" = { material = { low = 7, high = 9 }, labour = { low = 15, high = 30 } }  # 5.2 LF — the patio tread
+"trex-enhance-basics" = { material = { low = 7, high = 9 }, labour = { low = 15, high = 30 } }  # 5.2 LF — the sunken-garden tread
 "xps-40" = { material = { low = 2, high = 5 }, labour = { low = 2, high = 4 } }  # 5.2 LF — the tread's 40 psi bed course
 "pvc-door-water-sheet" = { material = { low = 3, high = 6 }, labour = { low = 4, high = 8 } }  # 5.2 LF — the tread's water sheet
-# The patio's box sides: Trex Tide Pool fascia, 0.56 x 7 1/4 x 12', ripped to ~6". The jambs
+# The sunken-garden door's box sides: Trex Tide Pool fascia, 0.56 x 7 1/4 x 12', ripped to ~6". The jambs
 # (2 x 6.8') and head (5.3') need THREE 12' boards (~$55-80 each): no two pieces share one. ESTIMATE.
-"trex-tide-pool-fascia" = { material = { low = 6, high = 9 }, labour = { low = 6, high = 12 } }  # 18.9 LF — D-B-PATIO's jambs and head
+"trex-tide-pool-fascia" = { material = { low = 6, high = 9 }, labour = { low = 6, high = 12 } }  # 18.9 LF — D-B-SUNKEN's jambs and head
 
 [trim_paint]
 # NEW 2026-11-03 (decision #113): PT-4 on the painted base and casing by the LF, off
@@ -6585,7 +6585,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # this row's band. Edge trim is keyed by category alone, so it cannot take its own row.
 "fascia" = { material = { low = 3, high = 9 }, labour = { low = 4, high = 8 } }  # 251.5 LF — material low raised from $2.50, which only buys primed pine or coil-wrap; this run is PVC (sunken garden) and formed solid-colour PVDF (garage near-black since 2026-09-08, metal since 2026-08-26) over SPF
 "soffit" = { material = { low = 3.5, high = 9 }, labour = { low = 3, high = 5.5 } }  # 101.1 LF — the depth question is SETTLED by the model: the profile is 13.625" wide, so this is the 12-16" overhang band at $3-5.50/LF. Every published $/LF silently assumes a depth; at 24" it would be $5-9 and at 36" $8-13, and the material rate would be understated ~2x
-"wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # ~29 LF since 2026-10-16: the balcony's rear edge is TWO pieces either side of D-S-DECK-E, a deck-side base flashing and a house-side counterflashing (params/sunken_garden.py) — 21 feet is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate
+"wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # ~29 LF since 2026-10-16: the balcony's rear edge is TWO pieces either side of D-S-BALCONY, a deck-side base flashing and a house-side counterflashing (params/sunken_garden.py) — 21 feet is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate
 
 [cladding_trim]
 # TR-RF-GUTTER-E/W (2026-10-27): the PBR 5x4 box, 24 ga PVDF 20'-3" sticks (58079XX, PBR p. 12),
@@ -6683,7 +6683,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 [member_protection]
 # RESEARCHED 2026-08-27 — [low, high] $/LF of MEMBER covered, by material tag. New section,
 # and new BOM table behind it (takeoff/member_protection.py): self-adhered butyl over the
-# framing tops of the two sunken-garden decks and all eleven of their beams and girts.
+# framing tops of the porch and balcony floors and all eleven of their beams and girts.
 #
 # ** NOTHING PRICED THIS BEFORE, BECAUSE NOTHING COULD MEASURE IT. ** [framing] counts sticks
 # by (profile, category) across the whole house, so "the two garden decks' joists" is not a
@@ -6707,7 +6707,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # only because two runs is two passes.
 # CONFIDENCE: HIGH on the narrow row, MEDIUM on the wide one (the 11" roll is unpriceable).
 # $/LF of member, by material tag
-"butyl-tape" = { material = { low = 0.40, high = 0.75 }, labour = { low = 0.30, high = 0.75 } }  # 420.8 LF — joists, rims and blocking on FS-SG-PORCH and FS-SG-DECK (+17.3 LF 2026-09-03: the porch enclosure's sixteen flank blocks, which inherit the deck's top_protection like every other stick), plus the four single-ply 2x12 girts. 1-5/8" roll
+"butyl-tape" = { material = { low = 0.40, high = 0.75 }, labour = { low = 0.30, high = 0.75 } }  # 420.8 LF — joists, rims and blocking on FS-SG-PORCH and FS-SG-BALCONY (+17.3 LF 2026-09-03: the porch enclosure's sixteen flank blocks, which inherit the deck's top_protection like every other stick), plus the four single-ply 2x12 girts. 1-5/8" roll
 "butyl-tape-beam" = { material = { low = 0.85, high = 1.75 }, labour = { low = 0.40, high = 1 } }  # 64.8 LF — the wide built-up beams, plus (2026-10-16) 15.5 LF on SB-BW-BAND's 2x6 sill under TR-BW-SCREEN-CAP: 4'-6" of sill and a 1" turn-up collar round each of the eight slats and the centre post that land on it. Wide roll, or two runs of the 3-1/8"
 
 [fireblock_sealant]
@@ -7375,7 +7375,7 @@ plumbing-kohler-k7272-clearflo-overflow = { low = 100, high = 200 }
 # tags (two brick, two interior cased openings).
 # Driven, the answer is 2 — but they are **D-B-GYM and D-B-NE**, two doors through
 # FOUNDATION_WALL_12_INT. The 2026-08-30 comment named "the sunken garden's patio door and the
-# sauna window, both in the basement's daylight wall", and the model disagrees: D-B-PATIO is
+# sauna window, both in the basement's daylight wall", and the model disagrees: D-B-SUNKEN is
 # hosted by W-B-S3-FR (GARDEN_FRAMED_2X6) and WIN-B-SAUNA by W-B-S2-FR
 # (SAUNA_LINER_ON_GARDEN_FRAMED). Both are FRAMED walls standing in front of the pour, not
 # openings through it — they need a rough opening, not a buck. The count happened to be right
@@ -7383,7 +7383,7 @@ plumbing-kohler-k7272-clearflo-overflow = { low = 100, high = 200 }
 # ** AND ON 2026-09-05 THE DRIVER WENT TO ZERO. ** Both of those doors were retired with the
 # basement's west-side replan: D-B-NE is deleted outright and D-B-GYM moved onto W-B-CS3, a
 # framed 2x6 segment of the x=18' line. There is now no opening anywhere in this house whose
-# host wall's STRUCTURE layer is concrete, so this row billed nothing until AO-B-PATIO-SEAT (1 ea, $250-600) hosted a concrete-wall opening; it showed up in the
+# host wall's STRUCTURE layer is concrete, so this row billed nothing until AO-B-SUNKEN-SEAT (1 ea, $250-600) hosted a concrete-wall opening; it showed up in the
 # takeoff's unpriced-group list for that reason, not because a rate is missing.
 # The row is KEPT, on the `glazed-green-brick` convention: the rate is researched, the driver
 # is correct, and the day a door or window is formed through a pour again it prices itself
@@ -7408,7 +7408,7 @@ concrete-window-bucks-and-blockouts = { low = 250, high = 600, unit = "ea", driv
 #
 #   THERE ARE NO EGRESS WINDOW WELLS. The basement has NO BEDROOM — the R310 emergency escape
 #   trigger never fires — and its daylight side is the sunken garden, which is a walk-out:
-#   D-B-PATIO and WIN-B-SAUNA open directly onto grade. A well is scope this house does not
+#   D-B-SUNKEN and WIN-B-SAUNA open directly onto grade. A well is scope this house does not
 #   have, and the old comment's "they ride inside the rate" was carrying it anyway.
 #
 # What survives is the PIPE AND STACK the model genuinely does not resolve: the perforated
@@ -8186,7 +8186,7 @@ finish-canopy-east-pvc-column-wrap = { material = { low = 200, high = 450 }, lab
 # WAS NOT THE STAIR THIS NOTE SAID IT WAS. ** ST-G-SERVICE, the four-riser service stair in
 # the UNCONDITIONED GARAGE, was already dropping out correctly — `[conditioned=True]` has
 # excluded it since RM-GARAGE is a real Room carrying conditioned=False. The 12.0 LF being
-# billed was ST-SG-PORCH, the exterior sunken-garden porch stair, added after this note was
+# billed was ST-SG-PORCH, the exterior court porch stair, added after this note was
 # written and coincidentally the same length. It stands in no `Room` at all, and
 # `_in_conditioned_space` reports a stair that lands in no room as CONDITIONED — the safe
 # default for a finish schedule, and exactly wrong for a stair that is outdoors.

@@ -175,7 +175,7 @@ ESS_STEEL_DOOR = DoorType(
            "choice. Ceco/Steelcraft/Republic narrow-lite class; 24 in. is special order.")
 DOOR_TYPES = (*DOOR_TYPES, ESS_STEEL_DOOR)
 
-# D-B-PATIO and D-S-DECK-E; D-M-BALC keeps DT-EXT-FRENCH60 for its own hardware and
+# D-B-SUNKEN and D-S-BALCONY; D-M-PORCH keeps DT-EXT-FRENCH60 for its own hardware and
 # installation review (plans/door-sizing.md, decision 10). Same product, same sizes.
 DOOR_TYPES = (*DOOR_TYPES, DOOR_TYPES[2].model_copy(update={
     "tag": "DT-EXT-FRENCH60-CATALOG"}))

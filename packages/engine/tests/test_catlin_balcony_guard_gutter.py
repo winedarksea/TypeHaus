@@ -32,7 +32,7 @@ def test_the_guard_draws_a_bracket_at_each_post_station(catlin_model):
     assert len(brackets) == len(posts)
     from typehaus.resolve.railings.guard_line import guard_line_offset_m
     from typehaus.resolve.railings.spans import deck_surface
-    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-DECK")
+    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-BALCONY")
     guard = catlin_model.plan.by_tag("RL-SG-BALCONY")
     surface = deck_surface(deck, [p.xy_m for p in guard.path],
                            guard_line_offset_m(catlin_model.plan.library, guard))

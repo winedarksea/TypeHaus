@@ -72,7 +72,7 @@ STRUCTURE layer**
 
 **They grew 7 1/4" on 2026-09-03 and gave it back on 2026-09-05, and the bells never moved
 relative to the beam soffits.** The court surface dropped 7 1/4" so heavy rain would pond
-outside `D-B-PATIO` rather than cross its threshold, and `_pier_bell_bottom_ft` is measured
+outside `D-B-SUNKEN` rather than cross its threshold, and `_pier_bell_bottom_ft` is measured
 from the court — 42" below it, by excavation — so the bells followed the ground down and the
 shafts made up the difference. Then the court came back flush and the bells came back with
 it. **In between, `_pier_bell_bottom_ft` was PINNED at the dropped elevation for a day** on
@@ -111,7 +111,7 @@ IRC Table R301.5 via R507.1: **40 psf live, 10 psf dead.**
 
 **Tributary is BEAM-WEIGHTED as of 2026-09-03, not an even split among the posts.** The old
 rule was `deck area / post count`, which is exact only where every post carries the same bay,
-and neither of these decks is that. `FS-SG-DECK`'s centre beam runs the deck's full depth
+and neither of these decks is that. `FS-SG-BALCONY`'s centre beam runs the deck's full depth
 onto two posts while its two edge beams share four; `FS-SG-PORCH`'s four beams each run from
 a bearing WALL to one of these columns. The rule now is a beam's own strip — the joist span
 it carries, the same width `glulam_beam.py` puts under its 500 plf — times that beam's length,
@@ -166,7 +166,7 @@ sixth of the deck was never what a pillar under the centre beam carried. **The s
 one that matters**: it is the same error, seen from the pier end, that
 `post_bearing/PT-SG-BR2` found at the pillar end (`notes/centre_pillar_bearing.md`).
 
-**`FS-SG-DECK` went 203.00 → 207.83 ft² on 2026-09-03**, when `joist_cantilever_in` went
+**`FS-SG-BALCONY` went 203.00 → 207.83 ft² on 2026-09-03**, when `joist_cantilever_in` went
 6" → 9" so the balcony plank would drip clear of the 12" rounds' outer faces rather than
 onto them (3" per side is the smallest step that keeps the deck width a whole number of
 6" AridDek boards). That is +0.81 ft² of tributary on each of these two piers, and §3c is

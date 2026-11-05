@@ -276,7 +276,7 @@ lands at 0'-0" on a deck, or at -9'-1" inside a walled court. Verified against t
 only at-grade opening in the entire complex is `D-G-OVERHEAD`, a 16'-0" vehicle door.
 
 So the great room's outdoor room — a 19'-0" x 8'-8" porch — is a **balcony you can only
-leave by going back indoors**, and `D-M-BALC`'s 60" French pair opens into the air.
+leave by going back indoors**, and `D-M-PORCH`'s 60" French pair opens into the air.
 
 - **Change:** five 7" risers off the porch's **east** edge (the rise is only **2'-11"**:
   porch walking surface +0'-1" to yard -2'-10"), landing on a frost pad clear of `FT-SG-E1`.
@@ -386,7 +386,7 @@ door.**
   route already exist and do not move.
 - **A permit risk worth taking to the AHJ before framing.** IRC R311.2 requires the egress
   door to open "into a public way or to a yard or court that opens to a public way." Neither
-  `D-M-ENTRY` (onto a breezeway deck) nor `D-M-BALC` (onto a railed porch, no stair) does.
+  `D-M-ENTRY` (onto a breezeway deck) nor `D-M-PORCH` (onto a railed porch, no stair) does.
   **The engine has no rule for it** — `code.R311_door_width` and `code.R311_2_door_height`
   grade width and height only — which is why 0 FAIL is silent here. Item A5's stair is the
   cheapest thing that answers it.
@@ -779,7 +779,7 @@ worth doing it is worth doing for winter sun in the room, not for the meter.**
 > ⚠ **ERRATUM, 2026-09-06 — every glazing number in §5 and §6 below was taken before
 > glazed doors were counted, and the three exterior French pairs are 33.3 sf of fenestration
 > apiece.** IRC R202 measures *glazing area* over glazed **fenestration**, which its own
-> definition says includes glazed doors, and `D-S-DECK-E`, `D-M-BALC` and `D-B-PATIO` reached
+> definition says includes glazed doors, and `D-S-BALCONY`, `D-M-PORCH` and `D-B-SUNKEN` reached
 > no glazing number in the engine at all. `resolve/room_openings.room_glazed_doors` counts
 > them now (exterior only — a borrowed-light interior leaf is not light to the outdoors).
 > What moves: **`RM-M-LIVING` 48.4 → 81.7 sf (10.9%)**, **`RM-B-GYM` 0.0 → 33.3 sf (10.3%)**
@@ -982,7 +982,7 @@ to cans in a cathedral ceiling does not apply here.
 `RM-B-GYM` is **324.0 sf of `LIVING` occupancy with 0.0 sf of glazing against 25.9 sf
 required** — the worst absolute daylight number in the house. It is not buried: its south wall
 `W-B-S3-FR` stands **inside the excavated sunken-garden court** and has been a framed 2x6 wall
-since 2026-08-28. One **WT-2748** (existing, priced) east of `D-B-PATIO`, in the 3'-8" of wall
+since 2026-08-28. One **WT-2748** (existing, priced) east of `D-B-SUNKEN`, in the 3'-8" of wall
 left to the court's east face, sill 24" off the wall base.
 
 **Honest about what it does not do:** +9.0 sf against 25.9 sf does **not** take the gym off
@@ -1044,11 +1044,11 @@ realm onto a shared room. Put it to the owner as a taste question and let them k
   runs it over the cooktop backsplash, 34'-8" leaves under 7" to the corner pack. **The 14"
   bay-centre unit at 34'-0" is correct as authored** and the 2026-08-24 reasoning stands. The
   kitchen wants a different corner of the plan, which is far past $5,000.
-- **A check under-count worth knowing about.** `D-M-BALC` is a `DT-EXT-FRENCH60` with
+- **A check under-count worth knowing about.** `D-M-PORCH` is a `DT-EXT-FRENCH60` with
   `glazed=True` — ~16.7 sf of tempered glass on `RM-M-LIVING`'s south wall — and
   `_room_windows` skips doors, so **no glazed door anywhere in this house counts toward
   R303.1.** The great room's real aperture is ~65 sf, not 48.4. `RM-B-GYM` is in the same
-  position with `D-B-PATIO`. That is a check under-count, not a design defect, and it is the
+  position with `D-B-SUNKEN`. That is a check under-count, not a design defect, and it is the
   companion to the R303.1 half of the fix in §3.1 — the same rule, the same deliberate
   conservatism, now written down in both places.
 

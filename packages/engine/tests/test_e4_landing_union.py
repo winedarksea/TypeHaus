@@ -81,7 +81,7 @@ def test_catlin_porch_north_line_did_not_move(catlin_model):
     whole porch — deck, back beams, column line, veneer grade beam — is laid out from it.
     Deriving ``house_ext_layers_in`` from the live 7.25" cladding stand-off re-split that
     10" (7.25" of wall + 2.75" of air) and must not have re-cut it: widening the gap back
-    to a nominal 5" pushes the court 2.25" south and off D-B-PATIO's landing patch.
+    to a nominal 5" pushes the court 2.25" south and off D-B-SUNKEN's landing patch.
     """
     def north(tag):
         floor = catlin_model.plan.by_tag(tag)
@@ -89,7 +89,7 @@ def test_catlin_porch_north_line_did_not_move(catlin_model):
 
     # The balcony still reads the line; the porch deck follows W-B-BRICK's south face, 3/8"
     # north of it, since the brick moved onto W-SG-BRKBM's new face (2026-11-04).
-    assert north("FS-SG-DECK") == pytest.approx(-10 * INCH, abs=1e-6)
+    assert north("FS-SG-BALCONY") == pytest.approx(-10 * INCH, abs=1e-6)
     assert north("FS-SG-PORCH") == pytest.approx(-9.625 * INCH, abs=1e-6)
 
 
@@ -97,5 +97,5 @@ def test_catlin_patio_door_still_lands_on_the_court(catlin_check_report):
     from typehaus.findings import Result
 
     landings = [f for f in catlin_check_report().findings
-                if f.check_id == "code.R311_3_exterior_landing" and "D-B-PATIO" in f.message]
+                if f.check_id == "code.R311_3_exterior_landing" and "D-B-SUNKEN" in f.message]
     assert landings and all(f.result is Result.PASS for f in landings), landings

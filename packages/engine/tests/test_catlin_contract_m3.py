@@ -3,7 +3,7 @@
 Declared facts, not a comparison: 36' house at sheathing, 16" o.c., 18' grid, 4:12 hot roof
 with knee 5' / ridge 11' over the attic floor, 12" basement walls + 2x2" XPS, 24' ICF garage
 4'-6 3/8" north at the wall lines (4'-0 1/2" of clear slot once both skins are on), the
-freestanding arched sunken-garden structure — plus the views, checks and emitters those
+freestanding arched court structure — plus the views, checks and emitters those
 numbers feed. They guard the design against silent drift.
 
 Equivalence to the old catlin-house IFC is a separate claim, checked in
@@ -81,7 +81,7 @@ def test_floor_joist_counts_match_old_model(catlin_model):
         joists = [m for m in floor.members if m.category == "joist"]
         # Less one: FO-A-STAIR's south edge is ON the y=5'-4" line, and its east-span joist
         # is the trimmer pack now (resolve/floor_openings.py). Plus each authored extra line
-        # across both spans (y=9 1/2", FURN-S-STUDY-TRACK-DECK's track).
+        # across both spans (y=9 1/2", FURN-S-STUDY-TRACK-BALCONY's track).
         extra = len(catlin_model.plan.by_tag(tag).joists.extra_lines)
         assert len(joists) == expected_pair_count - 1 + 2 * extra, tag
         # A full-bay joist is NOT ``GRID_FT`` long, and the difference is the point of
@@ -168,16 +168,16 @@ def test_catlin_sunken_garden_decks_are_graded_and_the_guard_rule_resolves(
 
     decks = {e.tag: e for e in catlin_plan.all_elements()
              if isinstance(e, FloorSystem) and e.service == "deck"}
-    assert {"FS-SG-PORCH", "FS-SG-DECK"} <= set(decks)
+    assert {"FS-SG-PORCH", "FS-SG-BALCONY"} <= set(decks)
     report = catlin_check_report()
     guard = {tag: [f for f in report.findings if f.check_id == "structural.deck_guard"
                    and tag in f.element_tags]
-             for tag in ("FS-SG-PORCH", "FS-SG-DECK")}
+             for tag in ("FS-SG-PORCH", "FS-SG-BALCONY")}
     for tag, findings in guard.items():
         assert findings, f"{tag} produced no deck_guard finding"
         assert all(f.result is Result.PASS for f in findings), \
             [f.message for f in findings if f.result is not Result.PASS]
-    balcony = guard["FS-SG-DECK"][0]
+    balcony = guard["FS-SG-BALCONY"][0]
     assert "RL-SG-BALCONY" in balcony.element_tags
 
 
@@ -272,7 +272,7 @@ def test_centerline_bearing_wall_runs_full_length_on_both_framed_storeys(catlin_
             if max(xs) - min(xs) > ft(1).meters:
                 continue
             ys = [y for _, y in solid.outline]
-            # ...and inside the house: the sunken garden's balcony beams share this storey
+            # ...and inside the house: the court balcony's beams share this storey
             # and this x, but they are a separate structure south of the south wall.
             if min(ys) < -1e-6 or max(ys) > ft(HOUSE_SIZE_FT).meters + 1e-6:
                 continue
@@ -1201,7 +1201,7 @@ def test_deck_slabs_render_on_their_storey_plans(catlin_model):
     from typehaus.emit.draw.floorplan import build_floorplan
     from typehaus.emit.draw.scene import Polyline
 
-    for storey, tag in (("second", "FS-SG-DECK"), ("main", "FS-SG-PORCH"),
+    for storey, tag in (("second", "FS-SG-BALCONY"), ("main", "FS-SG-PORCH"),
                         ("main", "FS-BW-FLOOR")):
         scoped = model_at_level(catlin_model, storey)
         outlines = [node for node in build_floorplan(scoped, storey).nodes
@@ -1485,7 +1485,7 @@ def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):
 
 
 def test_the_brick_reveals_are_concentric_with_the_openings_they_reveal(catlin_model):
-    """``AO-B-BRICK-DOOR``/``-WIN`` are holes FOR ``D-B-PATIO``/``WIN-B-SAUNA``, not openings
+    """``AO-B-BRICK-DOOR``/``-WIN`` are holes FOR ``D-B-SUNKEN``/``WIN-B-SAUNA``, not openings
     of their own, and nothing but this pin and ``integrity.reveal_concentric`` says so.
 
     They are authored on a different wall, off a different node, in a different paragraph of
@@ -1495,7 +1495,7 @@ def test_the_brick_reveals_are_concentric_with_the_openings_they_reveal(catlin_m
     """
     by_tag = {o.tag: o for o in catlin_model.openings}
     walls = {w.tag: w for w in catlin_model.walls}
-    for reveal_tag, opening_tag in (("AO-B-BRICK-DOOR", "D-B-PATIO"),
+    for reveal_tag, opening_tag in (("AO-B-BRICK-DOOR", "D-B-SUNKEN"),
                                     ("AO-B-BRICK-WIN", "WIN-B-SAUNA")):
         reveal, opening = by_tag[reveal_tag], by_tag[opening_tag]
         # WORLD centres, not ``center_along_m``: the two walls start at different x
@@ -1976,7 +1976,7 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # Both exterior decks carry their walking surface, and both do it the same way: the
     # plank is the floor system's own deck sheet, so the surface follows the framing instead
     # of floating beside it as a second element. No Slab is left over either deck.
-    for tag, material in (("FS-SG-PORCH", "trex-enhance-basics"), ("FS-SG-DECK", "aluminum-deck")):
+    for tag, material in (("FS-SG-PORCH", "trex-enhance-basics"), ("FS-SG-BALCONY", "aluminum-deck")):
         system = catlin_model.plan.by_tag(tag)
         assert system.subfloor is not None and system.subfloor.material_ref == material
     assert not [s for s in catlin_model.solids

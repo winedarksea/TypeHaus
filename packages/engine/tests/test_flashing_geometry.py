@@ -399,7 +399,7 @@ def test_balcony_rear_edge_is_two_pieces_that_lap_without_touching(catlin_model_
               if s.tag.startswith(("TR-SG-BASE-FLASH", "TR-SG-COUNTER-FLASH"))}
     assert set(solids) == {"TR-SG-BASE-FLASH-W", "TR-SG-BASE-FLASH-E",
                            "TR-SG-COUNTER-FLASH-W", "TR-SG-COUNTER-FLASH-E"}
-    door = next(o for o in model.openings if o.tag == "D-S-DECK-E")
+    door = next(o for o in model.openings if o.tag == "D-S-BALCONY")
     lo = door.center_along_m - door.width_m / 2
     wall = next(w for w in model.walls if w.tag == door.host_wall)
     x0 = min(wall.axis[0][0], wall.axis[1][0])

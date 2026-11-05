@@ -328,13 +328,13 @@ SECOND_BACKING = [
                 start=inch(72.75), length=inch(14.5),
                 elevation=inch(4), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="FURN-S-SUITEBATH-AP access panel frame"),
-    # FX-S-BALC-HYD's seat, the balcony half of the same 2026-09-15 mount fix. One bay, one
+    # FX-S-BALCONY-HYD's seat, the balcony half of the same 2026-09-15 mount fix. One bay, one
     # block, both ends bearing: W-S-S1's stud-003 at 144" to king-2-l0 at 158 3/4", so the
     # block runs 144 3/4"..158" under the hydrant at 12'-8" (2026-11-03).
     WallBacking(uid="E5817BZ266", tag="BK-S-S1-HYD", wall_ref="W-S-S1",
                 start=inch(144.75), length=inch(13.25),
                 elevation=inch(21), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="wall hydrant seat (FX-S-BALC-HYD, 24 in.)"),
+                material_ref="spf", purpose="wall hydrant seat (FX-S-BALCONY-HYD, 24 in.)"),
     # BED1-3's PAX rails (plan/bedroom_wardrobes.py), one 2x8 at 86" as BK-M-CLN-PAX. BW1/BW2
     # run the corner frame (4" off the south wall) plus the 19 5/8" frame, stud-000 to the
     # door's king; it stays under the REG-S-HP-BED1/2 side collar at 97 1/8". BD2 runs all

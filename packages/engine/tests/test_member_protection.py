@@ -49,7 +49,7 @@ def test_only_authored_members_are_taped(rows):
     # arrived in the same pass — the west screen panel's sill, which doubles as the deck's
     # west rim, and which is an exposed treated top like every other member in this set.
     assert taped == BUILT_UP_BEAMS | LEDGERS | {
-        "FS-SG-PORCH", "FS-SG-DECK", "FS-BW-FLOOR",
+        "FS-SG-PORCH", "FS-SG-BALCONY", "FS-BW-FLOOR",
         "BM-BW-SCSILL",
         "BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT", "ST-G-SERVICE",
         # The slat brace's sill under TR-BW-SCREEN-CAP (2026-10-16).

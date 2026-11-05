@@ -71,7 +71,7 @@ unit and RO), and `emit/ifc/architectural`. All four read `catalog_dimensions` d
    - Accept the hinge-side casing scribed to about 2.2" against W-M-MECH-E.
    - Check the raised head (+2-7/8") against the canopy truss chords at +7'-4"
      (lighting.py ~1074).
-10. **D-M-BALC stays its own type.** It differs from the patio and study pairs on purpose:
+10. **D-M-PORCH stays its own type.** It differs from the patio and study pairs on purpose:
     the main-floor pair is the more secure one (dearer hardware against break-in), and the
     other two relax that where it clearly saves cost. All three are the same Therma-Tru
     Smooth-Star full-lite pair with a 7/8" astragal, so `DT-EXT-FRENCH60` takes the same
@@ -79,7 +79,7 @@ unit and RO), and `emit/ifc/architectural`. All four read `catalog_dimensions` d
     allowance). It keeps its own hardware and installation and is **not** retired. Goals
     for its main-floor installation review: secure, well designed, ready to build, with
     rot-resistant detailing.
-    **Agreed: re-centre it under D-S-DECK-E.** Grown in place it would sit 1.66" off the
+    **Agreed: re-centre it under D-S-BALCONY.** Grown in place it would sit 1.66" off the
     pair above and clip the porch switch casing. Re-centred (offset 8-11/32" off N-M-S1,
     like upstairs), it clears the switch and the exterior GFCI.
     - Shorten corner braced panel BWP-M-S2-0000 to about 8.3" (corner panel about 33"),
@@ -87,9 +87,9 @@ unit and RO), and `emit/ifc/architectural`. All four read `catalog_dimensions` d
     - About 2.3" remains between the doubled pack and the W-M-C1 tee.
     - Raise curtain-rod backing BK-M-S2-ROD (backing.py:164) above the new head.
     - Correct the 19" gap comment at main.py:1328 (WIN-M-LIV-S2 is now about 17" off).
-    **But first, try moving all three French pairs together.** D-B-PATIO, D-M-BALC and
-    D-S-DECK-E may shift together so that each lands on an ideal façade line *and* the stud
-    module, if a shared position exists. Today D-M-BALC is 8" off the module
+    **But first, try moving all three French pairs together.** D-B-SUNKEN, D-M-PORCH and
+    D-S-BALCONY may shift together so that each lands on an ideal façade line *and* the stud
+    module, if a shared position exists. Today D-M-PORCH is 8" off the module
     (`structural.door_framing_module` suggests centre 48"). Give this its own
     investigation in phase 2, and come back with the options before settling on the plain
     re-centre.
@@ -199,12 +199,12 @@ says so.
   opening would hit and the options (widen and move X, or step down a leaf size), and does
   not edit. Each one comes back to you as a question.
 - `DT-EXT-SWING36` and `DT-EXT-FRENCH60` get their Arch 1 sizes and clear figures in
-  phase 1 (decisions 9 and 10), with D-M-ENTRY and D-M-BALC held at today's framing. Both
+  phase 1 (decisions 9 and 10), with D-M-ENTRY and D-M-PORCH held at today's framing. Both
   were investigated on 2026-10-28 (each change measured in a detached worktree; baseline 0
   FAIL). Release the holds here with the agreed changes:
   - D-M-ENTRY grows west: one braced-panel FAIL, fixed by trimming the panel, plus one
     casing scribe advisory.
-  - D-M-BALC is re-centred: one braced-panel FAIL and one stud-module advisory. Before
+  - D-M-PORCH is re-centred: one braced-panel FAIL and one stud-module advisory. Before
     settling it, the three-pair façade/stud-line study from decision 10 runs (one sonnet
     subagent, report only).
 - Since the inferred leaf equals the nominal once the RO is derived, leaves barely move.
@@ -351,7 +351,7 @@ minimal or no casing. Every opening now frames its derived or published RO.
 
 | Opening | Resolution |
 |---|---|
-| D-M-BALC | Plain re-centre under D-S-DECK-E at 8 11/32" off N-M-S1 (the mirrored facade wins), the third French-pair module suppression; BWP-M-S2-0000 trimmed to 8 11/32" like BWP-S-S2-0000. BK-M-S2-ROD needed no edit: the solver already stops it at the new header, which carries the rod brackets over the door. |
+| D-M-PORCH | Plain re-centre under D-S-BALCONY at 8 11/32" off N-M-S1 (the mirrored facade wins), the third French-pair module suppression; BWP-M-S2-0000 trimmed to 8 11/32" like BWP-S-S2-0000. BK-M-S2-ROD needed no edit: the solver already stops it at the new header, which carries the rod brackets over the door. |
 | D-M-ENTRY | Released 2026-10-29 (decision 9). |
 | D-M-BATH1 | Door unmoved. The powder-room face takes a minimal 1 1/2" PVC casing (`DoorTrim.casing_width`, new), and ED-M-BATH1-SW slid 5/8" south to stand 3/16" clear of it. The switch body spans 4", so a casing that cleared the switch where it stood would have been 1", under the 1 1/2" minimum leg. |
 | D-M-BATH2 | Keeps 32". ED-M-BED-RC9 went behind the west nightstand (58 7/8" -> 64"); it was already a GFCI. The bed and both nightstands moved 0.6" east. The answer said "west", but the nightstand is east of the door, and the measured option put the box there. RC7, which the wider opening brings within 6' of the sink, became the GFCI the answer asked for. Later the same day RC9 was deleted (owner: it stood 5 7/8" from RC8 behind one nightstand) and RC8 took its device GFCI. |

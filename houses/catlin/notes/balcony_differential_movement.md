@@ -3,7 +3,7 @@
 **House:** catlin
 **Structure:** `BM-SG-BLW/BLC/BLE` (the three treated-glulam balcony beams), the six pillars
 under them (`PT-SG-B{R,F}{1,2,3}`), the six `SS316-SHIM-35` standoff packs at their seats
-(`CN-SG-STDF-*`), `FS-SG-DECK`'s aluminium plank, and the four beam-pocket hangers
+(`CN-SG-STDF-*`), `FS-SG-BALCONY`'s aluminium plank, and the four beam-pocket hangers
 `CN-SG-HGR-W/-E/-FW/-FE`.
 **Written:** 2026-09-12, by hand. It oracles no calculation module: nothing here is encoded,
 and §7 says so positively.
@@ -15,7 +15,7 @@ pack under `PT-SG-BR2`/`BF2` and says nothing about its shrinkage — §6 is the
 expansion gap — the number has to come from Wahoo's installation guide and could not be
 retrieved; the arithmetic beside it says how large the movement is. (2) §3's lapped-shim
 taper, as a detail a carpenter can actually build. (3) §2's door: the tilted deck now meets
-`D-S-DECK-E` 2.42" ABOVE the study's finished floor.
+`D-S-BALCONY` 2.42" ABOVE the study's finished floor.
 
 > ## ⚠ THE THERMAL QUESTION THAT PROMPTED THIS NOTE IS A NON-ISSUE, AND SAYING SO IS THE
 > ## POINT — BECAUSE TWO OTHER MOVEMENTS ARE NOT.
@@ -27,9 +27,9 @@ taper, as a detail a carpenter can actually build. (3) §2's door: the tilted de
 > the other two.
 
 > ## ⚠ THE DECK IS A PLANE NOW, AND ITS HIGH EDGE IS AT THE STUDY DOOR.
-> Since 2026-09-23 `resolve/floor_tilt.py` seats each `FS-SG-DECK` joist on the tilted beams
+> Since 2026-09-23 `resolve/floor_tilt.py` seats each `FS-SG-BALCONY` joist on the tilted beams
 > at its own station and resolves the plank as the plane over them (§2). The datum is the
-> beams' south node; the north edge, at `D-S-DECK-E`, stands **2.42"** higher. That put it
+> beams' south node; the north edge, at `D-S-BALCONY`, stands **2.42"** higher. That put it
 > above the study's finished floor, so the datum came down 3" to 9'-9" (owner, 2026-09-23).
 
 ---
@@ -101,7 +101,7 @@ nothing is authored twice (`FloorSystem.top_rise`, which restated the beams' ris
 gone). Both beams rise alike, so each joist is level E-W: a staircase of 1/4" steps across
 the 12" o.c. field. The plank is the plane over those tops. Worked by hand at 1/4 in/ft
 (1/48 in/in), datum at the beams' SOUTH node, y = −10'-6" (the plank's south edge), joist
-top 9'-9" = 117.000" since 2026-09-23 (`FS-SG-DECK.top_elevation`; 3" under the old 10'-0"):
+top 9'-9" = 117.000" since 2026-09-23 (`FS-SG-BALCONY.top_elevation`; 3" under the old 10'-0"):
 
 | station | y | rise over datum | joist seat (beam top) | plank top |
 |---|---|---|---|---|
@@ -113,7 +113,7 @@ top 9'-9" = 117.000" since 2026-09-23 (`FS-SG-DECK.top_elevation`; 3" under the 
 Until this change the datum sat at the first joist line, so every joist hung **1/64"** inside
 its beam (`joints/bearing.py` carried the slack for it); now the seat is exact.
 
-**What it found — `D-S-DECK-E`.** The door is in `W-S-S2` (axis y = 0, exterior face
+**What it found — `D-S-BALCONY`.** The door is in `W-S-S2` (axis y = 0, exterior face
 −6.94"), over the deck's HIGH edge. Model threshold = wall framing base 120.000" + sill 0;
 `RM-S-STUDY2`'s finished floor (oak) 121.500". At the 10'-0" datum the deck there was
 123.917": **3.92" above the model threshold and 2.42" above the finished floor** — it was

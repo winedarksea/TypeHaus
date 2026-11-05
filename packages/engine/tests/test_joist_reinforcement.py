@@ -206,14 +206,14 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     under RM-M-BATH2's drop-in bath, the built half of plans/TODO.md's 60 psf item. It is the
     only sister left in the house, which is what the exact list below says.
     """
-    unsistered = {"FS-SG-DECK", "FS-SG-PORCH", "SL-BW-DECK"}
+    unsistered = {"FS-SG-BALCONY", "FS-SG-PORCH", "SL-BW-DECK"}
     sisters = []
     for floor in catlin_model.floors:
         found = [m for m in floor.members if m.category == "sister_joist"]
         assert floor.tag not in unsistered or found == [], floor.tag
         sisters.extend((floor.tag, m) for m in found)
     # Two additional full-span plies carry ST-S2A's departing-rim reactions on FS-S-EAST;
-    # FS-M-EAST's two LVL plies are D-B-PATIO's flush band header (``extent``-clipped);
+    # FS-M-EAST's two LVL plies are D-B-SUNKEN's flush band header (``extent``-clipped);
     # FS-M-NE's two are the doubled 316/332 trusses under the peninsula.
     assert sorted(tag for tag, _ in sisters) == [
         "FS-M-EAST", "FS-M-EAST", "FS-M-NE", "FS-M-NE", "FS-M-WEST", "FS-S-EAST",
@@ -236,7 +236,7 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
 def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_model):
     """Every block on these two decks answers a named joint, and nothing else does.
 
-    ``FS-SG-DECK`` carries TWENTY-NINE, and they answer two different joints.
+    ``FS-SG-BALCONY`` carries TWENTY-NINE, and they answer two different joints.
 
     THREE are structural: one under each of RL-SG-BALCONY's south-leg guard posts (19'-6"
     of front edge at <= 60" o.c. is four bays, three interior posts; the 21'-6" deck before
@@ -263,11 +263,11 @@ def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_mode
     silently sister a joist and buy its lumber; the assertion below is what catches it.
     """
     by_tag = {floor.tag: floor for floor in catlin_model.floors}
-    deck_blocks = [m for m in by_tag["FS-SG-DECK"].members if m.category == "blocking"]
+    deck_blocks = [m for m in by_tag["FS-SG-BALCONY"].members if m.category == "blocking"]
     assert len(deck_blocks) == 29, len(deck_blocks)
     porch_blocks = [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"]
     assert len(porch_blocks) == 8, len(porch_blocks)
-    for tag in ("FS-SG-DECK", "FS-SG-PORCH"):
+    for tag in ("FS-SG-BALCONY", "FS-SG-PORCH"):
         assert [m for m in by_tag[tag].members
                 if m.category == "sister_joist"] == [], f"plies=1 must sister nothing ({tag})"
 
@@ -280,11 +280,11 @@ def test_a_guard_block_authored_on_the_deck_edge_would_be_dropped(catlin_model):
     model would show a guard with backing at some posts and none at others, at 0 FAIL. Every
     authored station must therefore sit strictly inside the joist field's own extent.
     """
-    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-DECK")
+    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-BALCONY")
     joists = [m for m in deck.members if m.category == "joist"]
     ys = [p[1] for m in joists for p in (m.p0, m.p1)]
     authored = [e for e in catlin_model.plan.all_elements()
-                if getattr(e, "tag", "") == "FS-SG-DECK"][0].reinforcements
+                if getattr(e, "tag", "") == "FS-SG-BALCONY"][0].reinforcements
     assert authored
     for reinforcement in authored:
         assert min(ys) < reinforcement.at.xy_m[1] < max(ys), reinforcement.at.xy_m

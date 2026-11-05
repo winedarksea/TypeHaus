@@ -387,7 +387,7 @@ GARDEN_PUTTING_GREEN = Assembly(
     source="sunken-garden court field: USGA Recommendations for a Method of Putting Green Construction (2018), Steps 3-5 — 12\" rootzone over a 2\" intermediate choker sand over 4\" bridging gravel, on a subgrade separation fabric, underdrained by FD-SG-FIELD into FB-SG-ARCH's soakaway course. 18\" is USGA's depth for the intermediate-layer build-up",
 )
 
-# D-B-PATIO's landing: the piece of the old flush garden floor the door still stands on,
+# D-B-SUNKEN's landing: the piece of the old flush garden floor the door still stands on,
 # now a 7 1/4" block cast on the dropped court (params/sunken_garden.GARDEN_STOOP).
 #
 # Its own assembly rather than GARDEN_COURT_SLAB because `integrity.slab_thickness` wants a
@@ -399,7 +399,7 @@ GARDEN_STOOP = Assembly(
         Layer(name="concrete", material_ref="concrete", thickness=inch(7.25),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
-    source="sunken-garden court: D-B-PATIO's landing, one 7 1/4\" riser above the court and 7 1/4\" below the threshold (IRC R311.3.2). Sky-exposed, F3+C2 mix; its base is the court floor",
+    source="sunken-garden court: D-B-SUNKEN's landing, one 7 1/4\" riser above the court and 7 1/4\" below the threshold (IRC R311.3.2). Sky-exposed, F3+C2 mix; its base is the court floor",
 )
 
 GARAGE_STEP_6 = Assembly(

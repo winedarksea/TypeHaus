@@ -188,7 +188,7 @@ assert abs(_site.grade.meters - sunken_garden.SPEC.site_grade_in * 0.0254) < 1e-
 # (``-RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN``) bound to ``plan/site.py``'s spot elevations
 # by nothing but ``test_retaining_court``, while its two siblings above are asserted here.
 #
-# ** IT NOW CARRIES REAL ENGINEERING. ** Since 2026-09-14 the courtyard study derives its
+# ** IT NOW CARRIES REAL ENGINEERING. ** Since 2026-09-14 the court study derives its
 # ordinary retained height from these same spot elevations
 # (``engineering/sunken_garden/model_inputs.py``), so a spot that moves without this
 # constant moving makes the study and the params file describe two different yards — which
@@ -337,7 +337,7 @@ _storeys = (
            default_ceiling_height=main_deck.BASEMENT_CEILING_HEIGHT),
     Storey(uid="NNYT3PHSZM", tag="court-main", building="court",
            elevation=main_deck.MAIN_DATUM, default_ceiling_height=ft(9)),
-    # The balcony's own datum, 3" under `second` (2026-09-23, R311.3 at D-S-DECK-E); drawn
+    # The balcony's own datum, 3" under `second` (2026-09-23, R311.3 at D-S-BALCONY); drawn
     # on the second-floor sheets.
     Storey(uid="XX5J0ZSNDQ", tag="court-upper", building="court", level="second",
            elevation=ft(sunken_garden.SPEC.balcony_level_ft), default_ceiling_height=ft(9)),

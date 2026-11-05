@@ -55,7 +55,7 @@ EXTERIOR_MAIN = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N2", face="right", distance_from_start=inch(18),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # Rear: south face of W-M-S2 between D-M-BALC and WIN-M-LIV-S2, x=24'-7".
+    # Rear: south face of W-M-S2 between D-M-PORCH and WIN-M-LIV-S2, x=24'-7".
     ElectricalDevice(uid="7QVNCGSY39", tag="ED-M-REAR-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18)),

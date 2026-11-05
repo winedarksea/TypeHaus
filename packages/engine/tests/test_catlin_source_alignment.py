@@ -297,7 +297,7 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     # room, was deleted on 2026-09-03 (a 60" French door is the one hole in RM-S-PLANT's
     # sealed liner no detail fixes — plan/storeys/second.py states the case). WIN-S-PLANT4
     # holds its station. Asserted as an absence so the door cannot come back unnoticed.
-    x, _y = centres["D-S-DECK-E"]
+    x, _y = centres["D-S-BALCONY"]
     assert ft(18, 8).meters < x < ft(23, 11).meters
     assert "D-S-DECK-W" not in centres, \
         "the plant room's balcony door is back — see notes/plant_room.md"
@@ -307,7 +307,7 @@ def test_balcony_french_door_uses_the_standard_60_inch_type(catlin_plan):
     from typehaus.resolve import resolve
 
     model, _ = resolve(catlin_plan)
-    opening = next(opening for opening in model.openings if opening.tag == "D-S-DECK-E")
+    opening = next(opening for opening in model.openings if opening.tag == "D-S-BALCONY")
     door_type = next(door_type for door_type in model.plan.library.door_types
                      if door_type.tag == opening.type_ref)
     assert door_type.tag == "DT-EXT-FRENCH60-CATALOG"

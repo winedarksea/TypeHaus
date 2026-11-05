@@ -308,7 +308,7 @@ MAIN_PLACEABLES = [
     # --- window coverings -------------------------------------------
     # The seven curtain rods are retired (2026-10-29): plan/window_coverings.py holds the
     # ceiling tracks and the shades. Spent rod uids: RDS2LIV001, EYJ3ZHXFSF, BYYY8GG7E6,
-    # R4A47142RN, 320A53KSR4, 9222FS9Q20 (WJTG6V6T09 is the balcony door's wall track).
+    # R4A47142RN, 320A53KSR4, 9222FS9Q20 (WJTG6V6T09 is the porch door's wall track).
     # Three cellular blinds cover WIN-M-LIV-E1/E2 (27x48) and WIN-M-DINING-E (63x48), the
     # east-facing living-room windows. Their 34" sill and 82" head match the rough openings.
     # Mount elevations are AFF; the 3/4" finished-floor build-up means 33 1/4" AFF puts
@@ -399,7 +399,7 @@ MAIN_PLACEABLES = [
     # files cannot import params: this is `_balcony_beam_soffit` + the 2x12 depth by hand.
     #
     # ** FRONT LINE y = -8'-11 1/4", ON THE SPARE JOIST. ** At 12" o.c. the balcony joists sit
-    # at -9'-5 1/4" and -8'-5 1/4", so FS-SG-DECK carries one extra 2x12 line at -8'-11 1/4"
+    # at -9'-5 1/4" and -8'-5 1/4", so FS-SG-BALCONY carries one extra 2x12 line at -8'-11 1/4"
     # (`JoistSpec.extra_lines`) and the front run screws up into it for its whole length. One
     # continuous run: nothing splits the curtain plane now the centre beam and pillar are
     # gone. Two 90-degree curves at (10'-0", -9'-0") and (26'-0", -9'-0") turn the corners,
@@ -411,7 +411,7 @@ MAIN_PLACEABLES = [
               mount=Mount(kind=MountKind.CEILING, elevation=inch(104.75))),
     # The two FLANKS, x = 10'-0" and 26'-0": 6" inside the side walls' court faces and the
     # guard's side legs, which is where they have always stood relative to the court. Each
-    # crosses every joist bay perpendicular; the bay closures are FS-SG-DECK's blocks.
+    # crosses every joist bay perpendicular; the bay closures are FS-SG-BALCONY's blocks.
     #
     # ** THE NORTH END RUNS PAST THE DECK EDGE, AND NO FASTENER TOUCHES THE HOUSE. ** The
     # porch deck edge is -0'-10"; the cladding face is -0'-7 1/4" (`_WALL_OUTBOARD_IN`), not
@@ -439,7 +439,7 @@ MAIN_PLACEABLES = [
     # the shared `library.placeables.furniture` catalog).
     #
     # ** THE WEST BAY. ** (A centre pillar split this porch until 2026-09-22.) The east half is
-    # circulation: D-M-BALC lands at x 21'-4" and the porch's only route to grade is
+    # circulation: D-M-PORCH lands at x 21'-4" and the porch's only route to grade is
     # RL-SG-PORCH's 3'-0" guard opening at x 26'-6", y -6'-0"..-9'-0", so the door-to-stair
     # diagonal owns the east bay. West of it is a dead end, and that is where seating goes.
     # The pair is centred on x=13'-0": 7 1/2" of margin to the west guard (x 9'-6", W-SG-W1's

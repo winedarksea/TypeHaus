@@ -957,7 +957,7 @@ not for alkaline masonry. Tooled 1/4" deep over 5/8" closed-cell rod (C1330 Type
 **What did not move.** The beam's section, z and steel; `W-SG-ARCH`; the free body's
 `thermal_break_transfer` inputs (board height and length) — only the board's plane, and the
 footing-level boards' thickness (2.5" → 2"), which `notes/sunken_garden_court_free_body.md`
-§11o records. The patio's tread over the cavity is
+§11o records. The sunken-garden door's tread over the cavity is
 `notes/french_door_catalog_installation.md` §6.
 
 ## Sources

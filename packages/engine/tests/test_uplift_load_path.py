@@ -352,7 +352,7 @@ def _without_connector(plan, tag: str):
 
 def test_the_balcony_ties_cover_every_crossing(findings) -> None:
     """24 authored ties (H10ASS x 20, H2.5ASS x 4), one per joist line per beam."""
-    deck = [f for f in findings if f.element_tags and f.element_tags[0] == "FS-SG-DECK"]
+    deck = [f for f in findings if f.element_tags and f.element_tags[0] == "FS-SG-BALCONY"]
     assert deck and all(f.result is Result.PASS for f in deck), [f.message for f in deck]
     assert any("at every derived bearing" in f.message for f in deck)
 
@@ -363,6 +363,6 @@ def test_a_missing_authored_tie_is_named_at_its_crossing(catlin_plan) -> None:
     fails = [f for f in uplift_path_coverage(check_context(plan, profile=None))
              if f.result is Result.FAIL]
     assert len(fails) == 1, [f.message for f in fails]
-    assert fails[0].element_tags == ("FS-SG-DECK", "BM-SG-BLW")
+    assert fails[0].element_tags == ("FS-SG-BALCONY", "BM-SG-BLW")
     assert "no authored tie within 3\"" in fails[0].message
     assert "(9.00'," in fails[0].message

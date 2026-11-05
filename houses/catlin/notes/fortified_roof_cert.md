@@ -31,7 +31,7 @@ not modeled ones), and every other edit made for this certification cites it.
   is moot — there is no attic to ventilate.
 - PV is S-5! clamped to standing seam with zero penetrations (not ballasted, which would
   be disqualifying) — meets the *form* of §4.10; the paperwork gap is tracked below.
-- The heat-pump condensers sit on `FS-SG-DECK`, the sunken garden's freestanding balcony —
+- The heat-pump condensers sit on `FS-SG-BALCONY`, the sunken garden's freestanding balcony —
   a separate unconditioned structure with a 5" gap from the house, not a roof over living
   space, so §2.6/§2.7's scope does not reach it.
 - `checks/structural/uplift_path.py` already grades the roof-to-wall, wall-to-foundation,

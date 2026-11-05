@@ -1,3 +1,12 @@
+> **Court naming (2026-11-04).** The freestanding structure south of the house is the **court**
+> (building `court`, tag prefix `SG` for every element of it). Its three levels are the **sunken
+> garden** (`court-low`), the **porch** (`court-main`) and the **balcony** (`court-upper`); a tag
+> naming a space uses `SUNKEN` / `PORCH` / `BALCONY`, spelled out: doors `D-B-SUNKEN`,
+> `D-M-PORCH`, `D-S-BALCONY`; floors `FS-SG-PORCH`, `FS-SG-BALCONY`; guards `RL-SG-PORCH`,
+> `RL-SG-BALCONY`. "Deck" is a floor build-up or decking product, never a space; "patio" is
+> only the retired east side patio. Old tags: `D-B-PATIO`, `D-M-BALC`, `D-S-DECK-E`,
+> `FS-SG-DECK`, `*-BALC-HYD`, `CN-[MB]-HD-BALC-*` (now `-PORCH-`), `*-LIV-BALC`, `*-STUDY-DECK`.
+
 > **Main deck is wood, 2026-11-01 (decision #112):** `SL-M-DECK` is `FS-M-NE`, 11 7/8" open-web
 > trusses at 16" o.c. (TRIFORCE OJ418S published row, 40/25 psf L/480, the 316/332 lines doubled under the peninsula, two strongbacks; amended 2026-11-02), and `W-B-CS2`/`-CN2`/`-CN`
 > are framed 2x6 bearing walls; one flat basement ceiling, no movement joint, no cast sleeves.
@@ -17,7 +26,7 @@
 >   proud of the casing), poplar skirt on 10' stock. Jamb depth is derived and billed as a rip or
 >   extension on 4 9/16 / 6 9/16 stock; D-B-SAUNA hangs on a full-depth 3/4 x 9 1/4 cedar flat jamb
 >   (`DoorTrim.jamb_material_ref`). Bypass/bifold ROs have their own branch; documented exterior
->   frames anchor at the sheathing (D-G-SERVICE 6-9/16"); D-B-PATIO has no XMN5 extender.
+>   frames anchor at the sheathing (D-G-SERVICE 6-9/16"); D-B-SUNKEN has no XMN5 extender.
 > - **TJI 230 house-wide** (floors on TJ-4000 p.7, IUS2.37/11.88). Backing bands are cut at the
 >   studs; `WallBacking.datum="finished-floor"` puts grab courses at true AFF; `furred=True` is an
 >   out-of-plane nailer; a band goes on its body's face.
@@ -2158,7 +2167,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Decks and the garage
 
 - **Every exterior deck's plank is the floor system's own sheet, no exception.**
-  `FS-SG-PORCH` (composite, 3bf2f48) and `FS-SG-DECK` (aluminium) carry their boards as
+  `FS-SG-PORCH` (composite, 3bf2f48) and `FS-SG-BALCONY` (aluminium) carry their boards as
   `subfloor=DeckLayer(...)`; the old `SL-SG-PORCH`/`SL-SG-DECK` slabs beside the framing are
   gone, and both planks bill by the square foot in `[sheet_goods]`, not by the cubic yard out
   of `[concrete]`.
@@ -2461,7 +2470,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **The balcony is at 9'-9", 3" under `second`** (owner, 2026-09-23): `SPEC.balcony_level_ft`
   is the `court-upper` datum (`level="second"`), so beams, columns, trim and guard follow; the
   porch fan and the three enclosure tracks are hand-transcribed (104.75", 7'-5"). Lands
-  `D-S-DECK-E` (R311.3, 0.58" under the study floor). `notes/balcony_moment_columns.md` §15.
+  `D-S-BALCONY` (R311.3, 0.58" under the study floor). `notes/balcony_moment_columns.md` §15.
 - `structural.deck_post_bearing` is now NOT_APPLICABLE house-wide and
   `post_bearing/*` has left the engineering register — no post in catlin stands
   on a floor system. `notes/centre_pillar_bearing.md` is KEPT (registered kinds
@@ -2496,9 +2505,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   (`RL-SG-PORCH`, the only one on the plank) runs 2 5/8" inside the plank edge; each base's
   outer screw row lands on the edge joist, the inner on a block (8 in `FS-SG-PORCH`).
 - `RL-SG-BALCONY` stays fascia-mounted (through-bolted PVC fascia + 2x8 rim)
-  because `FS-SG-DECK`'s aluminium plank is the porch roof and carries no other
+  because `FS-SG-BALCONY`'s aluminium plank is the porch roof and carries no other
   penetrations — do not switch to surface mounting. Needs rim blocking in
-  `FS-SG-DECK.reinforcements`. Its posts stand in the brackets 1.518" outboard of the fascia
+  `FS-SG-BALCONY.reinforcements`. Its posts stand in the brackets 1.518" outboard of the fascia
   face (`RailingType.fascia_post_offset`, ESR-3485 Fig. 10). `TR-SG-GUTTER` hangs 1" under
   the bracket bottoms (derived from them, 2026-10-31) and `TR-SG-APRON` laps from behind the
   drip's face into the trough; `test_catlin_balcony_guard_gutter.py` holds the clearance.
@@ -2536,10 +2545,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   moving both offsets with it; `integrity.reveal_concentric` is the guard.
 - **No EPS on the backup since 2026-11-04.** `_GARDEN_CURB_CORE`/`_GARDEN_FRAMED_OUTBOARD` are
   membrane + 4" XPS again; the 2" EPS would leave no cavity at all.
-- **D-B-PATIO's approach is one Trex Tide Pool tread on a 40 psi foam bed** (owner,
+- **D-B-SUNKEN's approach is one Trex Tide Pool tread on a 40 psi foam bed** (owner,
   2026-11-03; `support_kind="foam_bed"`, `notes/french_door_catalog_installation.md` §6): no
   AridDek, no cross bearers, no concrete cantilever, nothing fastened to W-SG-BRKBM. Two blind
-  recesses (`AO-B-PATIO-TREAD-BED` in the curb's tail, `AO-SG-BRKBM-TREAD-BED` in the beam's
+  recesses (`AO-B-SUNKEN-TREAD-BED` in the curb's tail, `AO-SG-BRKBM-TREAD-BED` in the beam's
   board) make room; Trex fascia box sides close the cavity at the reveal. The tread's back
   sits at the sill nose (6.6" above the court), ~1/2" under the beam top: its slot's outlet
   is an open UNKNOWN. `integrity.doorway_assembly` tests the sections against every nearby
@@ -2652,8 +2661,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   name no oracle and the lint would have nothing to bind. Do not add one.
 - **The court is one surface, one riser.** `SPEC.court_step_down_in = 0`; `SL-SG-FLOOR` is
   flush with the basement floor plane and the 442 sf court reads as one floor. The only step
-  is the 7 1/4" riser at `D-B-PATIO`. `SL-SG-STOOP` is retired — never reuse uid `SGS503AAAA`.
-  `code.R311_3_exterior_landing` reads "D-B-PATIO lands on SL-SG-FLOOR, 7.3" below threshold".
+  is the 7 1/4" riser at `D-B-SUNKEN`. `SL-SG-STOOP` is retired — never reuse uid `SGS503AAAA`.
+  `code.R311_3_exterior_landing` reads "D-B-SUNKEN lands on SL-SG-FLOOR, 7.3" below threshold".
 - **Do not lower the court below the flush plane** — 7 1/4" is the legal ceiling, not a
   preference: R311.3.2 caps a non-required, inward-swinging door's riser at 7 3/4"
   (`_MAX_NONREQUIRED_STEP_DOWN`), and any lower step needs its own landing (→ DESIGN-LOG.md,

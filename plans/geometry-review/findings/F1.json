@@ -7,7 +7,7 @@
   "All framed walls: stud top = bottom of lowest top plate and stud bottom = sole plate top (stack continuous, no gaps), main/second 103.5 in. ext (108 in. plates), partitions 102.875 (107.375 top, deliberate 3/4 in. clear per CLAUDE.md), basement/garage consistent",
   "Actual lumber dims: 2x4=1.5x3.5, 2x6=1.5x5.5, 2x8 7.25, 2x10 9.25 in headers; LVL header depths exact (9.5, 14, 5.5)",
   "Jack inner faces land on RO edge (e.g. 38.24 in. RO: jack centre 19.87 in. = 19.12+0.75) with kings packed outboard, jack bottoms on sole plate, tops on header bottom",
-  "Every header except D-G-SERVICE and D-B-PATIO tops below the lowest top plate (p14.py)",
+  "Every header except D-G-SERVICE and D-B-SUNKEN tops below the lowest top plate (p14.py)",
   "Window RO jamb packs 27.5/30 in.: 1 king+1 jack per side, header 2-2x8 sits at RO head; no stud/jack stacking conflicts",
   "Garage walls frame at 24 in. o.c. (2x6, 95.5 in. studs) as designed; W-B/W-M partition gaps only at doors/walls ends",
   "R602.7.5 jack/king table not independently verified (ICC site 403, web search inconclusive)",
@@ -53,9 +53,9 @@
   {
    "id": "F1-002",
    "area": "F1",
-   "title": "D-B-PATIO liner header stands 1.6 in. above the framed liner wall top",
+   "title": "D-B-SUNKEN liner header stands 1.6 in. above the framed liner wall top",
    "elements": [
-    "D-B-PATIO",
+    "D-B-SUNKEN",
     "W-B-S3-FR"
    ],
    "files": [
@@ -76,13 +76,13 @@
     "method": "Probe: load_plan(houses/catlin)+resolve; scratchpad geometry-review/F1/p13.py, p14.py (header z1 > lowest top-plate z0 per wall). (HDR over plate list: W-B-S3-FR header-0)."
    },
    "source": "Model geometry; IRC R602.7",
-   "proposed_fix": "Decide what carries load over D-B-PATIO in the garden liner; if the concrete does, frame a flat nailer only; else reduce RO or raise the liner wall.",
+   "proposed_fix": "Decide what carries load over D-B-SUNKEN in the garden liner; if the concrete does, frame a flat nailer only; else reduce RO or raise the liner wall.",
    "size_guess": "large",
    "seam_with": [
     "F2",
     "F3"
    ],
-   "dedupe_key": "D-B-PATIO:liner-header-over-top"
+   "dedupe_key": "D-B-SUNKEN:liner-header-over-top"
   },
   {
    "id": "F1-003",
@@ -321,7 +321,7 @@
    },
    "confidence": 0.55,
    "evidence": {
-    "measured": "MEMBER SCHEDULE's QTY/MARK columns run into BEAM / POST SCHEDULE's first column (e.g. 'MARKMARK', span values stacked on mark text) and the HEADER SCHEDULE span/qty values overprint mark text. Header schedule values themselves match the model (D-B-CLOSET/GYM 2-2x8, D-B-PATIO 2-2x10, span = RO + jacks).",
+    "measured": "MEMBER SCHEDULE's QTY/MARK columns run into BEAM / POST SCHEDULE's first column (e.g. 'MARKMARK', span values stacked on mark text) and the HEADER SCHEDULE span/qty values overprint mark text. Header schedule values themselves match the model (D-B-CLOSET/GYM 2-2x8, D-B-SUNKEN 2-2x10, span = RO + jacks).",
     "expected": "Columns separated; every value readable.",
     "method": "permit_set.pdf page 9."
    },

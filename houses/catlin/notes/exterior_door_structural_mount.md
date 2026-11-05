@@ -1,10 +1,10 @@
 # Exterior doors: structural-wall mounting
 
-**Current study/patio coordination (2026-10-26):**
+**Current study/sunken-garden coordination (2026-10-26):**
 [french_door_catalog_installation.md](french_door_catalog_installation.md) supersedes
-D-S-DECK-E's schematic steel-wrapped/aluminum-plate installation below. Those two doors
+D-S-BALCONY's schematic steel-wrapped/aluminum-plate installation below. Those two doors
 now have independent catalog ROs, composite exterior trim, a digitized ZAI outline and
-stock AridDek approach envelopes. The patio has no sill extender (XMN5 dropped 2026-11-01,
+stock AridDek approach envelopes. The sunken-garden door has no sill extender (XMN5 dropped 2026-11-01,
 once the frame anchored at the sheathing) and blind recesses through the exterior layers, stopping at structural framing and concrete. Both
 approach sections pass the geometric interference check. Study nominal crest differences are about 0.397 inch
 above oak and 0.988 inch above the landing, with a separate +0.250 inch allowance.
@@ -12,8 +12,8 @@ The support member checks pass; root connections, concrete development, installe
 pan/apron interfaces and flashing-end application evidence remain open. The main-floor
 installations described below are unchanged. This is not a construction-ready detail.
 
-Design decision, 2026-10-24; extended to **D-S-DECK-E** on 2026-10-26.
-Applies to **D-M-ENTRY**, **D-M-BALC**, and **D-S-DECK-E**.
+Design decision, 2026-10-24; extended to **D-S-BALCONY** on 2026-10-26.
+Applies to **D-M-ENTRY**, **D-M-PORCH**, and **D-S-BALCONY**.
 Their door products, handing, rough openings and landings remain as authored.
 
 The factory jambs anchor into the structural stud opening. The 3/8-inch plywood
@@ -82,7 +82,7 @@ purchase confirmation. Doorway JSON/IFC expose section, supplier and fit statuse
 Missing geometry or installation data remains UNKNOWN; measured conflicts remain FAIL.
 Existing `verified` section records retain their behavior for compatibility.
 
-The main entry D-M-ENTRY and main balcony D-M-BALC retain an explicitly selected
+The main entry D-M-ENTRY and porch door D-M-PORCH retain an explicitly selected
 **schematic sill design**, rather than leaving the exposed pan as the only bottom
 geometry. It does **not**
 set `section_documented`, `supplier_confirmed`, or a VERIFIED fit. The factory frame,
@@ -130,7 +130,7 @@ The model explicitly reports this as UNKNOWN. Do not use these envelopes as fabr
 or installation drawings. The interior back-dam cover is also a project design envelope,
 not an assertion that either manufacturer's optional cap supplies it.
 
-**Study balcony, current coordination.** D-S-DECK-E uses the digitized catalog ZAI
+**Study balcony, current coordination.** D-S-BALCONY uses the digitized catalog ZAI
 outline, composite exterior returns and short AridDek approach boards. It no longer uses
 the schematic plate or steel-wrapped returns described above for the main-floor doors.
 Independent house/deck flashing ends are modeled as coordination envelopes. Current
@@ -233,7 +233,7 @@ is schematic; it is not a documented factory jamb depth.
 | Door | Interior finished floor | Exterior landing | Exterior return depth |
 | --- | ---: | ---: | ---: |
 | D-M-ENTRY | +0.94685 in | 0 in | 7.75 in |
-| D-M-BALC | +0.94685 in | +0.9400 in | 7.75 in |
+| D-M-PORCH | +0.94685 in | +0.9400 in | 7.75 in |
 
 Each doorway has nine measured trim pieces: three exterior returns, three exterior
 casing boards and three interior extensions. Cut schedules retain the 3/4-inch stock

@@ -37,7 +37,7 @@ def test_a_joist_rakes_between_a_wall_and_a_tilted_beam() -> None:
 
 
 def test_catlin_balcony_joists_sit_on_their_beams_and_the_deck_follows(catlin_model_ro) -> None:
-    floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-SG-DECK")
+    floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-SG-BALCONY")
     assert floor.deck_plane is not None
     ys = [p[1] for p in floor.deck_outline]
     x = floor.deck_outline[0][0]

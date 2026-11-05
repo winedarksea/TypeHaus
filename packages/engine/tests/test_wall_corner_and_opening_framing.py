@@ -670,7 +670,7 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # window the same framing problem.
     #
     # ** 17 ON 2026-09-15, AND THE TWO ADDITIONS ARE THE PARAGRAPH ABOVE AGAIN. **
-    # `AO-M-PORCH-HYD` and `AO-S-BALC-HYD` are the wall hydrants' 2 1/2" barrel bores
+    # `AO-M-PORCH-HYD` and `AO-S-BALCONY-HYD` are the wall hydrants' 2 1/2" barrel bores
     # (plan/mep_supply.py). They join for exactly the reason the ERV pair did: each lands
     # wholly inside a bay, takes no header, no jack and no king, and leaves the bay's
     # bounding studs to carry its rough sill. FX-M-PORCH-HYD had to MOVE to earn that — at

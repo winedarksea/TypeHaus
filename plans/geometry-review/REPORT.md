@@ -67,7 +67,7 @@ plant-rim details, A-512.1/.2, A-513.1/.2). New checks: `integrity.header_under_
    `*PLANT_*` rim keys print the generic band. About 20 interior rim/stack details also inherit
    envelope continuity data. The drawing side is fixed; the data is not. → Reorder the
    transitions and add interior transitions without continuity. The set gains up to 5 sheets.
-6. **Headers run into the top plates**: D-G-SERVICE by 2" (C3-E1) and D-B-PATIO by 4⅝" on a
+6. **Headers run into the top plates**: D-G-SERVICE by 2" (C3-E1) and D-B-SUNKEN by 4⅝" on a
    bearing wall (C3-E2). → Re-seat each header under the plates. This moves the RO or plate
    height, which is an owner call.
 7. **Service panels sit 60–96" AFF**, so the top breaker handle is about 90" against

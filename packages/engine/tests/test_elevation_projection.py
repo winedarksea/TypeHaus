@@ -158,8 +158,8 @@ def test_a_facade_draws_as_one_run_not_one_rectangle_per_segment(catlin_model):
 def test_a_window_and_a_door_are_told_apart(catlin_model):
     scene = build_elevation(catlin_model, "south")
     assert _tags(scene, "A-GLAZ", "A-GLAZ-SASH") & {"WIN-M-BED-S1"}
-    assert _tags(scene, "A-DOOR") & {"D-M-BALC"}
-    assert "D-M-BALC" not in _tags(scene, "A-GLAZ-SASH")
+    assert _tags(scene, "A-DOOR") & {"D-M-PORCH"}
+    assert "D-M-PORCH" not in _tags(scene, "A-GLAZ-SASH")
 
 
 def test_the_south_gable_carries_four_openings_mirrored_about_the_ridge(catlin_model):

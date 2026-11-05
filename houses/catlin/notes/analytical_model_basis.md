@@ -3,7 +3,7 @@
 **House:** catlin
 **Structure:** the engineered items and their load path — the balcony's four moment
 columns (PT-SG-BF1/BF3, PT-SG-BR1/BR3), the two pinned pillars between them (PT-SG-BF2,
-PT-SG-BR2), the sunken-garden columns PT-SG-COL/FCOL, the breezeway posts PT-BW-*, and
+PT-SG-BR2), the court columns PT-SG-COL/FCOL, the breezeway posts PT-BW-*, and
 the beams they carry.
 **Written:** 2026-09-12, by hand, before `typehaus/analytical/` was oracled against it.
 **Oracle for:** `analytical/supports.py`, `analytical/post_caps.py`, `analytical/loads.py`, `analytical/solve.py`, `analytical/ties.py`;
@@ -282,7 +282,7 @@ FE's own end piece over the garage seat.
 
 ## Addendum 2026-09-23b — the balcony 3" lower
 
-`balcony_level_ft` 10.0 → 9.75' (R311.3 at `D-S-DECK-E`); the frame, the record and the
+`balcony_level_ft` 10.0 → 9.75' (R311.3 at `D-S-BALCONY`); the frame, the record and the
 load move together. Record levers are the authored heights, 105.125" / 106.958" (8.760' /
 8.913'); q_h 18.63 → 18.57 psf at the lower guard top (balcony note §15a), so 126.16 lb per
 column:

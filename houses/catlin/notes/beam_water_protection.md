@@ -20,7 +20,7 @@ Both floor systems and the ledgers and balcony beams carry `top_protection`.
 The BOM reads the member width from `cross_section`. Cover the whole framing top;
 a 3 1/8" roll does not cover a 3 1/2" glulam.
 
-On `FS-SG-DECK`, tape separates the aluminium plank from the treated wood below.
+On `FS-SG-BALCONY`, tape separates the aluminium plank from the treated wood below.
 On `FS-SG-PORCH`, the composite boards are gapped, so rain reaches the framing tops.
 Keep the specified separation between aluminium and copper-treated wood at any
 added flashing or hardware.
@@ -49,7 +49,7 @@ field-cut end, notch and drilled hole**, per AWPA M4. See
 
 ## 4. Preserve the watertight balcony surface
 
-`FS-SG-DECK` carries no equipment penetrations. The heat pumps are on ground
+`FS-SG-BALCONY` carries no equipment penetrations. The heat pumps are on ground
 pads (`notes/heat_pump_ground_pad.md`). Any future deck-mounted equipment must
 satisfy `mep.deck_equipment_support_coverage`; its anchors must land in authored
 sacrificial blocking rather than in a beam.

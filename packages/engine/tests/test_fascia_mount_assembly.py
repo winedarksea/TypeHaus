@@ -121,7 +121,7 @@ def test_shared_end_omits_its_post_and_all_of_its_mount_hardware():
 def test_balcony_mounts_follow_deck_and_preserve_order_quantities(catlin_model_ro):
     model = catlin_model_ro
     guard = model.plan.by_tag("RL-SG-BALCONY")
-    deck = next(f for f in model.floors if f.tag == "FS-SG-DECK")
+    deck = next(f for f in model.floors if f.tag == "FS-SG-BALCONY")
     layout = mounting_layout(model.plan.library, guard)
     assert len(layout) == 9
     assert [s.variant for s in layout].count("outside_corner") == 2
@@ -183,7 +183,7 @@ def test_balcony_mounts_follow_deck_and_preserve_order_quantities(catlin_model_r
 
 def test_balcony_fascia_tracks_rim_and_foot_fasteners_stay_below_deck(catlin_model_ro):
     model = catlin_model_ro
-    deck = next(f for f in model.floors if f.tag == "FS-SG-DECK")
+    deck = next(f for f in model.floors if f.tag == "FS-SG-BALCONY")
     fascia = model.plan.by_tag("TR-SG-FASCIA")
     boards = [s for s in model.solids if s.tag.startswith("TR-SG-FASCIA-")]
     assert len(boards) == 3
@@ -261,7 +261,7 @@ def test_mount_meshes_survive_json_geometry_ir_and_ifc(catlin_model_ro):
         assert tuple(tuple(p) for p in face_set.Coordinates.CoordList) == solid.body_mesh.positions
         assert tuple(tuple(i-1 for i in tri) for tri in face_set.CoordIndex) == (
             solid.body_mesh.triangles)
-    floor = next(f for f in model.floors if f.tag == "FS-SG-DECK")
+    floor = next(f for f in model.floors if f.tag == "FS-SG-BALCONY")
     served = next(f for f in payload["floors"] if f["tag"] == floor.tag)
     assert served["deck_plane"]["gradient"] == list(floor.deck_plane.gradient)
     assert served["deck_z0_m"] == floor.deck_z0_m

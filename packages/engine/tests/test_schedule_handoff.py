@@ -33,7 +33,7 @@ def test_a_framed_wall_sleeve_rides_the_trade_that_sets_it(catlin_model_ro) -> N
     def wall_tags(trade):
         return {tag for i in handoff_items(catlin_model_ro, _visit(trade))
                 if i.id.startswith("wall_sleeves:") for tag in i.element_tags}
-    assert wall_tags("plumbing") == {"SP-S-BALC-HYD"}
+    assert wall_tags("plumbing") == {"SP-S-BALCONY-HYD"}
     assert wall_tags("mechanical") == {"SP-M-ERV-OA-SEAL", "SP-S-ERV-EA-SEAL"}
     assert not wall_tags("concrete")
 

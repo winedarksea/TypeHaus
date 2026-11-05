@@ -56,7 +56,7 @@ def test_it_grades_doors_and_bare_openings_and_nothing_else(catlin_model, findin
 
 def test_the_ro_ladder_is_not_applied_to_doors(findings):
     """**The reason this is a second file.** ``window_module._ro_caps`` caps an opening's
-    WIDTH at 27"/30". Run catlin's doors through it and three of them — ``D-B-PLAY`` (60"), ``D-B-PATIO`` (60") and ``D-G-OVERHEAD`` (192", with a named
+    WIDTH at 27"/30". Run catlin's doors through it and three of them — ``D-B-PLAY`` (60"), ``D-B-SUNKEN`` (60") and ``D-G-OVERHEAD`` (192", with a named
     engineered header) — report as over the limit. Those are three findings the house must not
     act on: nobody narrows a garage door to fit a stud module.
 
@@ -70,8 +70,8 @@ def test_the_ro_ladder_is_not_applied_to_doors(findings):
     # visually centred by the owner (2026-10-29; suppressed in the house).
     assert {"D-G-OVERHEAD", "D-B-PLAY"} <= named
     # The catalog pair's wider RO now interrupts an extra stud at its held centerline.
-    patio = next(f for f in findings if "D-B-PATIO" in f.element_tags)
-    assert "stud(s)" in patio.message
+    sunken = next(f for f in findings if "D-B-SUNKEN" in f.element_tags)
+    assert "stud(s)" in sunken.message
 
 
 def test_the_criterion_is_studs_cut_not_distance_from_ideal(catlin_model, findings):

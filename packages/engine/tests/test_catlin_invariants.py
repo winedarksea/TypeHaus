@@ -68,7 +68,7 @@ def test_both_breezeway_doors_open_onto_the_deck_at_the_same_level(catlin_model)
 
 
 # --- the flood threshold at the sunken-garden door ----------------------------
-PATIO_DOOR = "D-B-PATIO"
+SUNKEN_DOOR = "D-B-SUNKEN"
 GARDEN_FLOOR = "SL-SG-FLOOR"
 # ** THE LANDING IS THE COURT FLOOR AGAIN (2026-09-05). ** It was SL-SG-FLOOR, then
 # SL-SG-STOOP for two days, and is SL-SG-FLOOR once more. The court dropped 7 1/4" on
@@ -78,7 +78,7 @@ GARDEN_FLOOR = "SL-SG-FLOOR"
 # to 0 on 2026-09-05, the whole 494 sf court is that plane again, and the stoop was retired
 # as redundant. The step from the threshold has been the SAME 7 1/4" throughout all three
 # arrangements — it is the curb, and the curb never moved.
-PATIO_LANDING = "SL-SG-FLOOR"
+SUNKEN_LANDING = "SL-SG-FLOOR"
 # checks/code/mn_residential/egress.py::_MAX_NONREQUIRED_STEP_DOWN. Restated rather than
 # imported on purpose: this test is a statement about the HOUSE, and it must fail if the
 # engine's constant moves under it rather than move with it.
@@ -87,7 +87,7 @@ MAX_NONREQUIRED_STEP_DOWN_IN = 7.75
 
 def test_patio_concrete_seat_is_lower_than_the_adjacent_curb(catlin_model):
     """The owner permits a formed recess to fit the installed catalog sill above the floor."""
-    door = next(o for o in catlin_model.openings if o.tag == PATIO_DOOR)
+    door = next(o for o in catlin_model.openings if o.tag == SUNKEN_DOOR)
     wall = catlin_model.wall(door.host_wall)
     floor = next(s for s in catlin_model.solids if s.tag == "SL-B-FLOOR")
     assert wall.base_ref_z_m + door.sill_m - floor.z1_m == pytest.approx(5.5 * INCH)
@@ -120,20 +120,20 @@ def test_the_flood_threshold_stays_under_one_riser_of_step_down(catlin_model):
     drifts BELOW this plane again the step exceeds one riser and R311.3 fails, and if it
     drifts above, the dam is gone entirely.
     """
-    door = next(o for o in catlin_model.openings if o.tag == PATIO_DOOR)
+    door = next(o for o in catlin_model.openings if o.tag == SUNKEN_DOOR)
     wall = next(w for w in catlin_model.walls if w.tag == door.host_wall)
-    landing = next(s for s in catlin_model.solids if s.tag == PATIO_LANDING)
+    landing = next(s for s in catlin_model.solids if s.tag == SUNKEN_LANDING)
     garden = next(s for s in catlin_model.solids if s.tag == GARDEN_FLOOR)
 
     step_down = (wall.z0_m + door.sill_m) - landing.z1_m
     assert 0.0 <= step_down / INCH <= MAX_NONREQUIRED_STEP_DOWN_IN, (
-        f"{PATIO_DOOR} steps {step_down / INCH:.2f}\" down to {PATIO_LANDING}; "
+        f"{SUNKEN_DOOR} steps {step_down / INCH:.2f}\" down to {SUNKEN_LANDING}; "
         f"R311.3.1 allows {MAX_NONREQUIRED_STEP_DOWN_IN}\" for a door that is not the "
         "required egress door"
     )
     # And the court IS the landing: one surface, no second riser anywhere in it.
     assert (landing.z1_m - garden.z1_m) / INCH == pytest.approx(0.0, abs=0.05), (
-        f"{PATIO_LANDING} stands {(landing.z1_m - garden.z1_m) / INCH:.2f}\" over "
+        f"{SUNKEN_LANDING} stands {(landing.z1_m - garden.z1_m) / INCH:.2f}\" over "
         f"{GARDEN_FLOOR}; the court is one plane and the 7 1/4\" curb is the whole flood "
         "dam (params/sunken_garden.SPEC.court_step_down_in, back to 0 on 2026-09-05)"
     )
@@ -155,11 +155,11 @@ def test_the_landing_check_measures_the_step_the_curb_actually_makes(catlin_plan
     from typehaus.checks.code.mn_residential.egress import exterior_door_landing
 
     ctx, _findings = build_context(catlin_plan)
-    finding = next(f for f in exterior_door_landing(ctx) if PATIO_DOOR in f.message)
+    finding = next(f for f in exterior_door_landing(ctx) if SUNKEN_DOOR in f.message)
 
-    door = next(o for o in ctx.model.openings if o.tag == PATIO_DOOR)
+    door = next(o for o in ctx.model.openings if o.tag == SUNKEN_DOOR)
     wall = next(w for w in ctx.model.walls if w.tag == door.host_wall)
-    landing = next(s for s in ctx.model.solids if s.tag == PATIO_LANDING)
+    landing = next(s for s in ctx.model.solids if s.tag == SUNKEN_LANDING)
     from typehaus.resolve.doorway_heights import installed_threshold_elevation
     threshold, _ = installed_threshold_elevation(door, wall)
     expected = (threshold - landing.z1_m) / INCH
@@ -169,7 +169,7 @@ def test_the_landing_check_measures_the_step_the_curb_actually_makes(catlin_plan
 
 
 def test_the_patio_door_swings_clear_of_the_landing_it_steps_down_to(catlin_model_ro):
-    """D-B-PATIO must swing IN, and it is R311.3.2 that says so — not taste.
+    """D-B-SUNKEN must swing IN, and it is R311.3.2 that says so — not taste.
 
     The curb makes this door a 7 1/4" step down to the court, which is legal only under
     R311.3.2's one-riser allowance, and that allowance is conditioned on the door not
@@ -180,10 +180,10 @@ def test_the_patio_door_swings_clear_of_the_landing_it_steps_down_to(catlin_mode
     `code.R311_3_exterior_landing` tests this now, but the check can only fail the house
     after the fact; this pins the intent at the door where someone would flip it back.
     """
-    door = next(o for o in catlin_model_ro.openings if o.tag == PATIO_DOOR)
+    door = next(o for o in catlin_model_ro.openings if o.tag == SUNKEN_DOOR)
     wall = next(w for w in catlin_model_ro.walls if w.tag == door.host_wall)
 
-    assert door.swing_clearance, f"{PATIO_DOOR} resolved no leaf sweep to test"
+    assert door.swing_clearance, f"{SUNKEN_DOOR} resolved no leaf sweep to test"
     (sx, sy), (ex, ey) = wall.axis
     ux, uy = ex - sx, ey - sy
     run = (ux ** 2 + uy ** 2) ** 0.5
@@ -196,7 +196,7 @@ def test_the_patio_door_swings_clear_of_the_landing_it_steps_down_to(catlin_mode
     court_side = (court - sy) * ny
 
     assert side * court_side < 0.0, (
-        f"{PATIO_DOOR} swings toward the court it steps down into; R311.3.2's one-riser "
+        f"{SUNKEN_DOOR} swings toward the court it steps down into; R311.3.2's one-riser "
         "allowance needs the leaf clear of its landing (drop `flip_swing`)"
     )
 
@@ -204,8 +204,8 @@ def test_the_patio_door_swings_clear_of_the_landing_it_steps_down_to(catlin_mode
 # The three exterior French pairs, and the room each one lights. Every one of them is a
 # DT-EXT-FRENCH60 — 5'-0" x 6'-8" = 33.33 sf of glazed fenestration (IRC R202), which
 # reached no glazing number in the engine at all until 2026-09-06.
-FRENCH_DOORS = {"D-B-PATIO": "RM-B-GYM", "D-M-BALC": "RM-M-LIVING",
-                "D-S-DECK-E": "RM-S-STUDY2"}
+FRENCH_DOORS = {"D-B-SUNKEN": "RM-B-GYM", "D-M-PORCH": "RM-M-LIVING",
+                "D-S-BALCONY": "RM-S-STUDY2"}
 FRENCH_DOOR_SF = 33.33
 
 

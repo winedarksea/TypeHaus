@@ -126,7 +126,7 @@ trim's leg laps the U (item 3). The model draws and bills no pads
 | Eaves and rakes | Closed by the deck oversail |
 | Outside corners | Closed |
 | ERV, hydrant and VR-M-STACK sleeves | Sealed |
-| `D-S-DECK-E` head | Kit drip head over the casing, as `D-M-BALC` |
+| `D-S-BALCONY` head | Kit drip head over the casing, as `D-M-PORCH` |
 
 ### Open with suppliers (not blocking)
 
@@ -163,7 +163,7 @@ rough opening occupy 0.645 in, or 0.6875 in at the Andersen sizes.
   number) at the garage door jambs and screen ends. Door heads are a site-brake drip cap (legacy
   drip geometry, about 6 to 6.5 in girth, three bends), over the 0.75 in casing projection plus 1/4 in.
 - Five small rough openings receive four-side trim or their hood's trim ring, as
-  appropriate to the product. Brick openings D-B-PATIO and WIN-B-SAUNA are excluded.
+  appropriate to the product. Brick openings D-B-SUNKEN and WIN-B-SAUNA are excluded.
 
 ## Roof edges
 
@@ -256,7 +256,7 @@ What the model derives and bills, with the counts the tests pin
 | BBD75 band | Transition Trim at +19'-0", one run per N/S wall segment, Linen White | 10 |
 | Window head, jamb, sill | 1.5 in Sill/Head 58114XX at every head; PBR jamb 58208XX (unpriced); BBD75 and corrugated jambs and every sill: site-brake (`WINDOW_JAMB_CUSTOM` 146.9 LF, `WINDOW_SILL_CUSTOM` 87.3 LF) | 43 heads / 86 jambs / 43 sills; heads and PBR jambs pooled FFD from 10'-2" stock (heads 42 cuts, 91.5 LF, 10 sticks) |
 | Door jambs | Panel Starter 58728XX (BBD75); Corrugated Jamb at the garage door jambs (stock, no part number) | 6 + 4 |
-| Door heads | site-brake drip cap, legacy head section swept at stock, catalog unit D-S-DECK-E included | 6 |
+| Door heads | site-brake drip cap, legacy head section swept at stock, catalog unit D-S-BALCONY included | 6 |
 | Small rough openings | 4-side window kit on the niche and both ERV hoods; the two 2.5 in hydrant bores are closed by the fixture's flange and sealant | 3 |
 | Screen ends | Corrugated Jamb on both open ends of W-BW-SCREEN and its skirt | 4 |
 | Roof eaves | Extended Eave 52124XX, pan hemmed to its lip (no cleat) | 16 sticks |

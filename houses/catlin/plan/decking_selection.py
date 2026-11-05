@@ -30,7 +30,7 @@ TREX_TIDE_POOL = TREX_ENHANCE_BASICS.model_copy(update={
 })
 
 
-# D-B-PATIO's box sides (owner, 2026-11-03): the matching fascia, ripped ~6" deep for the
+# D-B-SUNKEN's box sides (owner, 2026-11-03): the matching fascia, ripped ~6" deep for the
 # jambs and head, frame to the brick's back. The house's one composite colour.
 TREX_TIDE_POOL_FASCIA = Material(
     tag="trex-tide-pool-fascia",
@@ -38,14 +38,14 @@ TREX_TIDE_POOL_FASCIA = Material(
     density=1000.0, r_per_inch=1.0, perm_rating=0.5, hatch="lumber", color=TIDE_POOL_COLOR,
     finish="composite-deck-board",
     source="Trex Enhance fascia board, Tide Pool, actual 0.56 x 7.25 in x 12 ft; ripped to "
-           "~6 in for D-B-PATIO's jambs and head (owner 2026-11-03).",
+           "~6 in for D-B-SUNKEN's jambs and head (owner 2026-11-03).",
 )
-# The top course under D-B-PATIO's tread: the curb's 15 psi foam cut down and replaced.
+# The top course under D-B-SUNKEN's tread: the curb's 15 psi foam cut down and replaced.
 XPS_40_TREAD_BED = Material(
     tag="xps-40", name="XPS rigid insulation, 40 psi (ASTM C578 Type VI)",
     r_per_inch=5.0, perm_rating=1.1, hatch="rigid", color="#f2b8c6", foam_plastic=True,
     source="ASTM C578 Type VI, 40 psi min at yield or 10% deformation (e.g. Owens Corning "
-           "FOAMULAR 400); D-B-PATIO's tread bed, graded at 40/3 psi for creep.",
+           "FOAMULAR 400); D-B-SUNKEN's tread bed, graded at 40/3 psi for creep.",
 )
 HOUSE_DECK_MATERIALS = (TREX_TIDE_POOL_FASCIA, XPS_40_TREAD_BED)
 

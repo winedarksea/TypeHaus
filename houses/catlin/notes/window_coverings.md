@@ -22,16 +22,16 @@ open, in the listed stacks. `CurtainTrackSpec.show_curtains=False` draws the rai
 | Run | Mount | Line | Extent | Stacks (open) | Fixing |
 |---|---|---|---|---|---|
 | `FURN-M-LIV-TRACK-S` | ceiling, 107½" datum | y 9 9/16" | x 301" (end-closing) → 425¼" (SE corner) | 337–352", 352–367" (mid-pier) | `FS-S-EAST` extra joist line y 9½" |
-| `FURN-M-LIV-TRACK-BALC` | wall `W-M-S2`, rail top 88" AFF | 3" off wall | x 219½" (C1 corner) → 291" (end-closing) | 219½–226½", 284–291" | 3 fittings; ends on `BK-M-S2-ROD` + king packs |
+| `FURN-M-LIV-TRACK-PORCH` | wall `W-M-S2`, rail top 88" AFF | 3" off wall | x 219½" (C1 corner) → 291" (end-closing) | 219½–226½", 284–291" | 3 fittings; ends on `BK-M-S2-ROD` + king packs |
 | `FURN-M-BED-TRACK-W` | ceiling, 107½" datum | x 9 9/16" | y 6¾" (SW corner) → 153½" (NW corner) | y 73–88", 88–103" (W1/W2 pier) | crosses `FS-S-WEST` trusses at 16" |
-| `FURN-S-STUDY-TRACK-DECK` | ceiling, 227½" | y 9 9/16" | x 219½" (corner) → 291" (end-closing) | 219½–233½" (one-way, west) | `FS-ATTIC` extra joist line y 9½" |
+| `FURN-S-STUDY-TRACK-BALCONY` | ceiling, 227½" | y 9 9/16" | x 219½" (corner) → 291" (end-closing) | 219½–233½" (one-way, west) | `FS-ATTIC` extra joist line y 9½" |
 
 The two extra lines are 6½" off the y=16" line and 9½" off y=0, so both keep their own tie
 (`resolve/floor_lines.extra_lines`). They add three I-joist pieces (FS-ATTIC's is in two
 pieces at the centre bearing), 60 LF ordered. The FS-ATTIC line also runs over the plant
 room's ceiling, which is harmless.
 
-**The BALC middle fitting is a field item.** The run spans `D-M-BALC`'s header (x 221⅓–
+**The BALC middle fitting is a field item.** The run spans `D-M-PORCH`'s header (x 221⅓–
 290⅔"), which sits 1¼" behind the stud face; a backing band cannot cross a header. VIDGA
 wants a fitting every ≤ 140 cm, so the middle one needs a ripped 2x nailer on the header's
 room face at the rail line (88½" above datum). The two end fittings land on wood

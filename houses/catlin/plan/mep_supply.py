@@ -88,7 +88,7 @@ WATER_SUPPLY = [
                     "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
                     "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
-                    "FX-S-SUITEBATH-TUBSH", "FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
+                    "FX-S-SUITEBATH-TUBSH", "FX-M-PORCH-HYD", "FX-S-BALCONY-HYD")),
 ]
 
 # --- Domestic hot/cold distribution (2026-07-29 plumbing pass) -----------------------
@@ -238,7 +238,7 @@ SUPPLY = [
                     # The two south-face wall hydrants, 2.5 WSFU cold each — 39 total on a
                     # 1 1/4" trunk that carries 64 in Table 610.4's 46-60 psi column, so the
                     # tee costs nothing in size.
-                    "FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
+                    "FX-M-PORCH-HYD", "FX-S-BALCONY-HYD")),
     # The downstream branch tees stay fixed. North of the lane,
     # the low jog reaches x83" before rising to 83 7/16" AFF; its jacket stays below
     # the extract plenum and east of its riser and BENCH collar. The y310" jog returns
@@ -729,7 +729,7 @@ HYDRANT_BRANCH_BASEMENT = [
             path=(pt(ft(6), ft(16)), pt(ft(6), ft(13))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375)),
-            serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
+            serves=("FX-M-PORCH-HYD", "FX-S-BALCONY-HYD")),
     PipeRun(uid="Z5NB8QMK2H", tag="PR-B-CW-HYD-RISER", system=PipeSystem.WATER_COLD,
             path=(pt(ft(6), ft(13)), pt(ft(6), ft(13)), pt(ft(6), ft(13)),
                   pt(ft(6), ft(13))),
@@ -742,7 +742,7 @@ HYDRANT_BRANCH_BASEMENT = [
             # the wall's own z-extent; a straight riser would escape it by 3".
             elevations=(ft(8, 4.6375), ft(9, 1.4375), ft(18, 1.4375), ft(18, 4.4375)),
             wall_refs=(None, "W-M-BDN1", None),
-            serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
+            serves=("FX-M-PORCH-HYD", "FX-S-BALCONY-HYD")),
 ]
 
 # Joist-space distribution, filed on ``main`` (datum 0'-0") so 9'-3" reads as the ceiling
@@ -760,7 +760,7 @@ HYDRANT_BRANCH_MAIN = [
                   pt(ft(6, 3), ft(0, 9)), pt(ft(6, 3), ft(0, 9)), pt(ft(12, 8), ft(0, 9))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(9, 3), ft(9, 3), inch(117.5), inch(117.5), ft(9, 3), ft(9, 3)),
-            serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
+            serves=("FX-M-PORCH-HYD", "FX-S-BALCONY-HYD")),
     # Porch leg: south into the wall's own plane (y=3 1/4", the 2x6 cavity's centre line),
     # then straight down inside W-M-S1 to the hydrant's seat at 2'-0".
     PipeRun(uid="B6HD0NKX3M", tag="PR-M-CW-PORCH-HYD", system=PipeSystem.WATER_COLD,
@@ -779,15 +779,15 @@ HYDRANT_BRANCH_MAIN = [
     # x=12'-8" (2026-11-03, on the balcony and over FX-M-PORCH-HYD): W-S-S1 resolves stud-003
     # at 144" and king-2-l0 (WIN-S-PLANT4) at 158 3/4", a clear bay of 144 3/4"..158", so
     # the riser is 7 1/4" off the stud and 6" off the king, the 16" bay centre.
-    PipeRun(uid="V2FJ8LRY6P", tag="PR-M-CW-BALC-HYD", system=PipeSystem.WATER_COLD,
+    PipeRun(uid="V2FJ8LRY6P", tag="PR-M-CW-BALCONY-HYD", system=PipeSystem.WATER_COLD,
             path=(pt(ft(12, 8), ft(0, 3.25)), pt(ft(12, 8), ft(0, 3.25)),
                   pt(ft(12, 8), ft(0, 3.25))),
             diameter=inch(0.75), material="pex",
             # 12'-0.829": the seat is 24" over RM-S-PLANT's finished floor, 0.829" over the
-            # deck, and so are AO-S-BALC-HYD and SP-S-BALC-HYD — one centreline.
+            # deck, and so are AO-S-BALCONY-HYD and SP-S-BALCONY-HYD — one centreline.
             elevations=(ft(9, 3), ft(10), inch(144.829)),
             wall_refs=(None, "W-S-S1"),
-            serves=("FX-S-BALC-HYD",)),
+            serves=("FX-S-BALCONY-HYD",)),
     # The barrel: the hydrant's own metal tube + sleeve, modelled as a run so the insulation
     # can be billed and `mep.exterior_hydrant_protection` has something to grade. The one
     # place in the house where a supply pipe is *in* the envelope rather than behind it — 10"
@@ -853,14 +853,14 @@ KITCHEN_STUB_MAIN = [
 
 # The balcony hydrant's barrel, filed on ``second`` (datum 10'-0") with the wall it pierces.
 # The barrel is the escutcheon-to-seat penetration, so its x IS the riser's x and is not
-# independently chosen. PA-S-BALC-HYD-SEAL (plan/mep_supply_devices.py) shares the station.
+# independently chosen. PA-S-BALCONY-HYD-SEAL (plan/mep_supply_devices.py) shares the station.
 HYDRANT_BRANCH_SECOND = [
-    PipeRun(uid="G7YB4XN2SD", tag="PR-S-CW-BALC-HYD-CU", system=PipeSystem.WATER_COLD,
+    PipeRun(uid="G7YB4XN2SD", tag="PR-S-CW-BALCONY-HYD-CU", system=PipeSystem.WATER_COLD,
             path=(pt(ft(12, 8), ft(0, 3.25)), pt(ft(12, 8), inch(-5))),
             diameter=inch(0.75), material="pex",
             insulation='1/2" closed-cell elastomeric sleeve, foil-faced, over the barrel',
             elevations=(inch(24.829), inch(24.829)),
-            serves=("FX-S-BALC-HYD",)),
+            serves=("FX-S-BALCONY-HYD",)),
 ]
 
 # ======================== THE TWO HYDRANT BARREL PENETRATIONS =========================
@@ -933,11 +933,11 @@ PENETRATIONS_HYDRANT_MAIN = [
                  penetration_for=("PR-M-CW-PORCH-HYD-CU", "PR-M-CW-PORCH-HYD")),
 ]
 PENETRATIONS_HYDRANT_SECOND = [
-    RoughOpening(uid="AZMYHB7P8J", tag="AO-S-BALC-HYD", host="W-S-S1",
+    RoughOpening(uid="AZMYHB7P8J", tag="AO-S-BALCONY-HYD", host="W-S-S1",
                  position=from_node("N-S-SW", inch(150.75)),
                  width=inch(2.5), height=inch(2.5), sill_height=inch(23.579),
                  depth=inch(12), depth_from="exterior",
-                 penetration_for=("PR-S-CW-BALC-HYD-CU", "PR-M-CW-BALC-HYD")),
+                 penetration_for=("PR-S-CW-BALCONY-HYD-CU", "PR-M-CW-BALCONY-HYD")),
 ]
 
 

@@ -60,7 +60,7 @@ def test_local_grade_drops_to_the_garden_floor_beside_it(catlin_model):
     assert source == "SL-SG-FLOOR"
     assert grade_m == pytest.approx(garden.z1_m)
     # 8", then 3/4" from 2026-09-03 when the court dropped 7 1/4" for the flood step at
-    # D-B-PATIO, and 8" again from 2026-09-05 when `court_step_down_in` went back to 0. The
+    # D-B-SUNKEN, and 8" again from 2026-09-05 when `court_step_down_in` went back to 0. The
     # footing has never moved through any of it; the ground beside it did, twice, and the
     # cover went with it both times. This is the number that made the R403.3 wings load-
     # bearing on the argument, and it is the reason raising the court is a frost IMPROVEMENT.

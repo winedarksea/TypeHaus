@@ -77,7 +77,7 @@ def test_known_inadequate_connection_fails():
     assert result["connection_dcr"] > 1
 
 
-@pytest.mark.parametrize("tag", ("D-B-PATIO", "D-S-DECK-E"))
+@pytest.mark.parametrize("tag", ("D-B-SUNKEN", "D-S-BALCONY"))
 def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     model = catlin_model_ro
     opening = next(o for o in model.openings if o.tag == tag)
@@ -88,7 +88,7 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     assert placement.factory_depth_documented
     assert assembly.supplier_status == "PENDING"
     assert assembly.fit_status == "UNKNOWN"
-    if tag == "D-B-PATIO":
+    if tag == "D-B-SUNKEN":
         assert placement.installation_report["seat_interference_status"] == "PASS"
         # The XMN5 extender is dropped (owner, 2026-11-01): the recess alone clears the seat.
         assert placement.specification.catalog_installation.sill_extender_ref is None
@@ -104,7 +104,7 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     names = {s.name for s in placement.sections}
     assert "catalog-sill-outline" in names
     assert not any(n.startswith("catalog-sill-extender") for n in names)
-    if tag == "D-B-PATIO":
+    if tag == "D-B-SUNKEN":
         from typehaus.takeoff.doors import door_installation_rows
 
         assert not [row for row in door_installation_rows(model)
@@ -113,22 +113,22 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
 
         schedule_rows = opening_takeoff(model)
         clearance_rows = [row for row in schedule_rows if any(
-            tag == "AO-B-PATIO-TREAD-BED" for tag in row["tags"]
+            tag == "AO-B-SUNKEN-TREAD-BED" for tag in row["tags"]
         )]
         assert len(clearance_rows) == 1
         assert all(not row["framing_required"] for row in clearance_rows)
     assert "approach-walking-plate" not in names
     assert all(Polygon(s.polygon_m).is_valid for s in placement.sections)
     report = placement.installation_report
-    # The patio's tread lies on its foam (owner, 2026-11-03): no root connection to document.
+    # The sunken-garden door's tread lies on its foam (owner, 2026-11-03): no root connection to document.
     assert report["support"]["connection_status"] == (
-        "NOT_APPLICABLE" if tag == "D-B-PATIO" else "UNKNOWN")
+        "NOT_APPLICABLE" if tag == "D-B-SUNKEN" else "UNKNOWN")
     assert report["support"]["member_status"] == "PASS"
     assert report["approach_slope"] == pytest.approx(1 / 48)
-    if tag == "D-S-DECK-E":
+    if tag == "D-S-BALCONY":
         assert report["drainage_clearance_in"] > 0
     assert report["receiver_pan_clearance_in"] >= 0.0625
-    if tag == "D-S-DECK-E":
+    if tag == "D-S-BALCONY":
         assert report["minimum_movement_gap_in"] > 0
     assert report["minimum_flashing_overlap_in"] > 0
     height, basis = installed_threshold_elevation(opening, wall)
@@ -146,19 +146,19 @@ def test_nominal_unit_and_rough_opening_are_independent(catlin_plan):
     dimensions, ro = product.catalog_dimensions, product.rough_opening
     assert product.width.meters < dimensions.unit_width.meters < ro.width.meters
     assert product.height.meters < dimensions.unit_height.meters < ro.height.meters
-    main = catlin_plan.by_tag("D-M-BALC")
+    main = catlin_plan.by_tag("D-M-PORCH")
     assert main.type_ref == "DT-EXT-FRENCH60"
 
 
-def test_patio_reveal_reference_and_concrete_seat_are_real(catlin_model_ro):
+def test_sunken_door_reveal_reference_and_concrete_seat_are_real(catlin_model_ro):
     model = catlin_model_ro
-    door = next(o for o in model.openings if o.tag == "D-B-PATIO")
+    door = next(o for o in model.openings if o.tag == "D-B-SUNKEN")
     wall = model.wall(door.host_wall)
     face, sign = exterior_door_boundary(model, wall, door)
     assert sign == door.doorway.exterior_placement.outward_sign
     assert abs(face) > wall.thickness_m / 2
     assert all(f is not None for f in door.doorway.adjacent_floors)
-    notch = next(o for o in model.openings if o.tag == "AO-B-PATIO-SEAT")
+    notch = next(o for o in model.openings if o.tag == "AO-B-SUNKEN-SEAT")
     curb = model.wall(notch.host_wall)
     assert notch.width_m == door.width_m
     assert curb.base_ref_z_m + notch.sill_m == pytest.approx(door.doorway.rough_opening_z_m)
@@ -170,7 +170,7 @@ def test_patio_reveal_reference_and_concrete_seat_are_real(catlin_model_ro):
         s.z1_m > notch_z + 1e-6 and Polygon(s.ring).contains(Point(center)) for s in pieces
     )
     approach_recess = next(
-        o for o in model.openings if o.tag == "AO-B-PATIO-TREAD-BED"
+        o for o in model.openings if o.tag == "AO-B-SUNKEN-TREAD-BED"
     )
     host = model.wall(approach_recess.host_wall)
     assert approach_recess.depth_from == "exterior"
@@ -185,7 +185,7 @@ def test_patio_reveal_reference_and_concrete_seat_are_real(catlin_model_ro):
 
 def test_invalid_explicit_reveal_does_not_fall_back_to_host(catlin_model_ro):
     model = catlin_model_ro
-    opening = next(o for o in model.openings if o.tag == "D-B-PATIO")
+    opening = next(o for o in model.openings if o.tag == "D-B-SUNKEN")
     wall = model.wall(opening.host_wall)
     spec = opening.doorway.exterior_placement.specification.model_copy(
         update={"exterior_opening_ref": "DOES-NOT-EXIST"}
@@ -196,7 +196,7 @@ def test_invalid_explicit_reveal_does_not_fall_back_to_host(catlin_model_ro):
 
 def test_mirrored_reveal_uses_host_coordinates(catlin_model_ro):
     model = catlin_model_ro
-    opening = next(o for o in model.openings if o.tag == "D-B-PATIO")
+    opening = next(o for o in model.openings if o.tag == "D-B-SUNKEN")
     wall = model.wall(opening.host_wall)
     face, sign = exterior_door_boundary(model, wall, opening)
     _, _, _, run = wall_frame(wall)
@@ -211,7 +211,7 @@ def test_mirrored_reveal_uses_host_coordinates(catlin_model_ro):
 
 
 def test_selected_undocumented_sill_cannot_get_rough_sill_height(catlin_model_ro):
-    opening = next(o for o in catlin_model_ro.openings if o.tag == "D-B-PATIO")
+    opening = next(o for o in catlin_model_ro.openings if o.tag == "D-B-SUNKEN")
     without_geometry = replace(opening, doorway=replace(opening.doorway, exterior_placement=None))
     height, _ = installed_threshold_elevation(
         without_geometry, catlin_model_ro.wall(opening.host_wall)
@@ -222,7 +222,7 @@ def test_selected_undocumented_sill_cannot_get_rough_sill_height(catlin_model_ro
 def test_full_width_cross_bearer_cannot_block_apron(catlin_model_ro):
     from typehaus.resolve.exterior_door_catalog_fit import catalog_drainage_conflicts
 
-    opening = next(o for o in catlin_model_ro.openings if o.tag == "D-S-DECK-E")
+    opening = next(o for o in catlin_model_ro.openings if o.tag == "D-S-BALCONY")
     placement = opening.doorway.exterior_placement
     assert catalog_drainage_conflicts(placement) == ()
     apron = next(s for s in placement.sections if s.name == "impermeable-pan-apron")
@@ -235,7 +235,7 @@ def test_receiver_and_movement_conflicts_are_measured(catlin_model_ro):
     from typehaus.resolve.exterior_door_catalog import add_catalog_installation
 
     model = catlin_model_ro
-    opening = next(o for o in model.openings if o.tag == "D-S-DECK-E")
+    opening = next(o for o in model.openings if o.tag == "D-S-BALCONY")
     wall = model.wall(opening.host_wall)
     original = opening.doorway.exterior_placement
     catalog = original.specification.catalog_installation.model_copy(
@@ -256,17 +256,17 @@ def test_receiver_and_movement_conflicts_are_measured(catlin_model_ro):
 # beam. A neighbour's STRUCTURE (or a named wall) is a conflict; a neighbour's foam skin is a
 # field cut, reported as coordination.
 @pytest.mark.parametrize(("recess", "board_in", "clash", "hard"), [
-    ("AO-B-PATIO-TREAD-BED", 5.5, "W-B-S3/xps-a", True),
+    ("AO-B-SUNKEN-TREAD-BED", 5.5, "W-B-S3/xps-a", True),
     ("AO-SG-BRKBM-TREAD-BED", 5.5, "W-SG-BRKBM/xps-break", False),
     (None, 8.0, "W-SG-BRKBM/concrete", True),
 ])
-def test_patio_clearance_requires_the_recess(catlin_model_ro, recess, board_in, clash, hard):
+def test_sunken_door_clearance_requires_the_recess(catlin_model_ro, recess, board_in, clash, hard):
     from typehaus.resolve.exterior_door_catalog_fit import catalog_section_clashes
     from typehaus.resolve.exterior_door_catalog_layout import catalog_installation_layout
     from typehaus.resolve.exterior_door_catalog_parts import catalog_sill_sections
 
     model = catlin_model_ro
-    opening = next(o for o in model.openings if o.tag == "D-B-PATIO")
+    opening = next(o for o in model.openings if o.tag == "D-B-SUNKEN")
     wall = model.wall(opening.host_wall)
     placement = opening.doorway.exterior_placement
     assert catalog_section_clashes(model, wall, opening, placement) == ((), ())
@@ -289,7 +289,7 @@ def test_flashing_selection_and_dimensions_are_independent_of_support(catlin_mod
     from typehaus.resolve.exterior_door_catalog_flashing import catalog_flashing_sections
 
     model = catlin_model_ro
-    opening = next(o for o in model.openings if o.tag == "D-S-DECK-E")
+    opening = next(o for o in model.openings if o.tag == "D-S-BALCONY")
     original = opening.doorway.exterior_placement
     clad, _ = exterior_door_boundary(model, model.wall(opening.host_wall), opening)
 
@@ -333,18 +333,18 @@ def test_catalog_trim_layout_is_derived_across_doors(catlin_model_ro):
     layouts = door_trim_sheet_layouts(catlin_model_ro, {"captivate-sheet": sheet,
                                                         "trex-tide-pool-fascia": fascia})
     doors = {s["material"]: {p["door"] for p in s["pieces"]} for s in layouts}
-    assert doors == {"captivate-sheet": {"D-S-DECK-E"}, "trex-tide-pool-fascia": {"D-B-PATIO"}}
-    # The patio's two 81.9" jambs and 63.3" head share no 12' fascia board: three boards.
+    assert doors == {"captivate-sheet": {"D-S-BALCONY"}, "trex-tide-pool-fascia": {"D-B-SUNKEN"}}
+    # The sunken-garden door's two 81.9" jambs and 63.3" head share no 12' fascia board: three boards.
     assert sum(1 for s in layouts if s["material"] == "trex-tide-pool-fascia") == 3
     assert all(s["used_width_in"] <= s["sheet_width_in"]
                and s["maximum_length_in"] <= s["sheet_length_in"] for s in layouts)
 
 
-def test_patio_brick_trim_and_crown_clearance(catlin_model_ro):
+def test_sunken_door_brick_trim_and_crown_clearance(catlin_model_ro):
     from typehaus.resolve.geometry_door_products import finish_faces
 
     model = catlin_model_ro
-    door = next(o for o in model.openings if o.tag == "D-B-PATIO")
+    door = next(o for o in model.openings if o.tag == "D-B-SUNKEN")
     reveal = next(o for o in model.openings if o.tag == "AO-B-BRICK-DOOR")
     wall = model.wall(door.host_wall)
     placement = door.doorway.exterior_placement

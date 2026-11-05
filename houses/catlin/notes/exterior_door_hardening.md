@@ -1,6 +1,6 @@
 # Exterior swing door hardening — 2026-10-25
 
-Owner scope: D-M-ENTRY, D-M-BALC, D-B-PATIO and D-S-DECK-E. Garage service and
+Owner scope: D-M-ENTRY, D-M-PORCH, D-B-SUNKEN and D-S-BALCONY. Garage service and
 sectional doors are excluded. Product identity, quantities, heights, framing and
 finish live on DT-EXT-SWING36 and DT-EXT-FRENCH60 in `plan/door_types.py`; the
 hardware sets and installation instructions print on A-601.
@@ -62,7 +62,7 @@ framing into W-M-N2 and W-M-N3B for the actual adjoining bays and backing.
 ## Moisture coordination
 
 The exterior foam is interrupted at the returns and buck, which is why these
-jamb bays receive ccSPF rather than the usual batt. This applies to D-B-PATIO as
+jamb bays receive ccSPF rather than the usual batt. This applies to D-B-SUNKEN as
 well: its exterior XPS is interrupted at the door in the same way.
 
 Interior cavity ccSPF plus 4-inch exterior ccSPF (or XPS at the basement walkout)

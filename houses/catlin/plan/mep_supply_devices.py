@@ -103,7 +103,7 @@ SUPPLY_DEVICES_BASEMENT = [
     PipeAccessory(uid="Y6MT3HKB1F", tag="PA-B-HYD-ISO", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-B-CW-HYD", position=pt(ft(6), ft(16)), accessible=True,
                   room="RM-B-GYM", model='3/4" quarter-turn ball valve',
-                  serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
+                  serves=("FX-M-PORCH-HYD", "FX-S-BALCONY-HYD")),
 ]
 
 # --- Branch and fixture stops -----------------------------------------------------------
@@ -340,7 +340,7 @@ SUPPLY_DEVICES_MAIN = [
                   model='1/4" compression stop on a capped tee, behind the cold-storage bay'),
 ]
 
-# The balcony hydrant's two, on ``second``. No PA-S-BALC-HYD-VB, same reason as the porch's
+# The balcony hydrant's two, on ``second``. No PA-S-BALCONY-HYD-VB, same reason as the porch's
 # — see the note above SUPPLY_DEVICES_MAIN.
 #
 # ** AND THAT STILL HOLDS WITH DRIP IRRIGATION ON THE END OF IT (2026-09-11). ** RM-S-PLANT
@@ -364,19 +364,19 @@ SUPPLY_DEVICES_MAIN = [
 # sits at; only `mep.run_through_opening` grades the pipe itself. Both seats author their
 # barrel's elevation: off a vertical riser the host-run fallback lands them at the 9'-3" tee.
 SUPPLY_DEVICES_SECOND = [
-    PipeAccessory(uid="S6BN1JXV7Q", tag="PA-S-BALC-HYD-SEAT",
-                  kind=PipeAccessoryKind.SHUTOFF, pipe_ref="PR-M-CW-BALC-HYD",
+    PipeAccessory(uid="S6BN1JXV7Q", tag="PA-S-BALCONY-HYD-SEAT",
+                  kind=PipeAccessoryKind.SHUTOFF, pipe_ref="PR-M-CW-BALCONY-HYD",
                   position=pt(ft(12, 8), ft(0, 3.25)), elevation=inch(24.829), room="RM-S-PLANT",
                   model="hydrant's own compression seat, inboard end of the barrel",
-                  serves=("FX-S-BALC-HYD",)),
-    PipeAccessory(uid="M4TQ8HRC1Z", tag="PA-S-BALC-HYD-SEAL",
-                  kind=PipeAccessoryKind.PENETRATION_SEAL, pipe_ref="PR-S-CW-BALC-HYD-CU",
+                  serves=("FX-S-BALCONY-HYD",)),
+    PipeAccessory(uid="M4TQ8HRC1Z", tag="PA-S-BALCONY-HYD-SEAL",
+                  kind=PipeAccessoryKind.PENETRATION_SEAL, pipe_ref="PR-S-CW-BALCONY-HYD-CU",
                   position=pt(ft(12, 8), ft(0)),
                   model="gasketed escutcheon over a foamed barrel penetration",
                   install_parts=("silicone gasket, hydrant escutcheon",
                                  "plastic mounting bracket, non-conductive",
                                  'closed-cell spray foam, 1/4" annulus around the barrel'),
-                  serves=("FX-S-BALC-HYD",)),
+                  serves=("FX-S-BALCONY-HYD",)),
 ]
 
 

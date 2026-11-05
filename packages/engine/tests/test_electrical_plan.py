@@ -246,7 +246,7 @@ def test_the_porch_stair_has_its_R303_8_top_landing_light(catlin_model):
     sentence with no illuminance, no switching and no distance from the treads in it.
 
     So the pin is the landing, not a radius: the fitting stands over FS-SG-PORCH, and the
-    lane between D-M-BALC's RO (..23'-10") and WIN-M-LIV-S1's (32'-8"..) straddles that
+    lane between D-M-PORCH's RO (..23'-10") and WIN-M-LIV-S1's (32'-8"..) straddles that
     deck's east edge at x=27'-6" — 30'-0" is in the lane and over the heat-pump pocket.
 
     ED-T-LT-SCONCE-EXT rather than a new type, deliberately — a LuminaireType with no

@@ -367,7 +367,7 @@ def test_catlin_trimless_and_overhead_doors_take_no_casing(catlin_model_ro) -> N
     cased = {c.opening_ref for c in catlin_model_ro.door_casings}
     assert cased.isdisjoint({"D-M-STUDY", "D-M-BED2", "D-G-OVERHEAD"})
     # An exterior door is cased on its room face only.
-    for door in ("D-M-ENTRY", "D-M-BALC", "D-S-DECK-E"):
+    for door in ("D-M-ENTRY", "D-M-PORCH", "D-S-BALCONY"):
         assert len([c for c in catlin_model_ro.door_casings if c.opening_ref == door]) == 1
 
 

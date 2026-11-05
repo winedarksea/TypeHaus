@@ -176,7 +176,7 @@ def nearest_bearing_gap(jamb: float, spans: list[tuple[float, float, float, floa
     inside this very opening's width has been cut around it — it exists below the sill and
     above the head and nowhere in between, so counting it as wood at the jamb reports a
     bearing the window would fall straight through. That is not a hypothetical:
-    D-S-DECK-E's east jamb measured 1-1/4" to an outrigger 2" inside the door.
+    D-S-BALCONY's east jamb measured 1-1/4" to an outrigger 2" inside the door.
     """
     reachable = [(lo, hi) for lo, hi, mz0, mz1 in spans
                  if mz0 < z1 - _TOL and z0 < mz1 - _TOL]

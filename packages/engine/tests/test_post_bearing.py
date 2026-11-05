@@ -80,7 +80,7 @@ def _deck_borne_pillars():
     * ``BM-SG-BLC``, 3-1/2" x 11-7/8", node to node y = -0'-10" .. -10'-6" at x = 18'-0",
       bearing on ``PT-SG-BR2`` (y = -2'-6") and ``PT-SG-BF2`` (y = -9'-6"), both 5-1/2"
       square (§1, §2);
-    * ``FS-SG-DECK``, a deck on that beam with a 10'-0" joist span and 9" cantilevers — the
+    * ``FS-SG-BALCONY``, a deck on that beam with a 10'-0" joist span and 9" cantilevers — the
       500 plf strip §2 takes (two resolved bays of 10'-0" either side of x = 18');
     * ``FS-SG-PORCH``, 2x8 running N-S, the field from y = -116.75" (the 2-3/4"
       ``cantilever_start``) to 17" north of the back beam, with a 3-ply pack on x = 18'
@@ -118,7 +118,7 @@ def _deck_borne_pillars():
                              size="4.5x7.25", bearing_refs=()),
     ]
     balcony = FloorSystem.model_construct(
-        tag="FS-SG-DECK", service="deck",
+        tag="FS-SG-BALCONY", service="deck",
         joists=JoistSpec(member="2x10", direction="x", bearing_refs=("BM-SG-BLC",),
                          cantilever=inch(9.0)))
     porch = FloorSystem.model_construct(
@@ -142,7 +142,7 @@ def _deck_borne_pillars():
     bays = [member("joist", (x0 * m, -5.0 * m), (x1 * m, -5.0 * m), "2x10")
             for x0, x1 in ((7.25, x), (x, 28.75))]
     model = SimpleNamespace(floors=[SimpleNamespace(tag="FS-SG-PORCH", members=pack),
-                                    SimpleNamespace(tag="FS-SG-DECK", members=bays)])
+                                    SimpleNamespace(tag="FS-SG-BALCONY", members=bays)])
     plan = SimpleNamespace(by_tag=by_tag.get, all_elements=lambda: list(by_tag.values()))
     return SimpleNamespace(plan=plan, model=model, soil_class="GM")
 

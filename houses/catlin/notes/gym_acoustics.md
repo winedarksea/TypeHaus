@@ -25,7 +25,7 @@ mats, so V ~ 64 m3. RT60 = 0.161 V / A.
 | ceiling | painted 5/8" gwb | 26.5 | 0.05 | 1.33 |
 | walls, gypsum | W-B-CE, W-B-CS, W-B-CS3, W-B-S3-FR above the curb | ~18 | 0.05 | 0.90 |
 | walls, bare concrete | W-B-E1, W-B-S4, W-B-CS2, W-B-S3 curb | ~23 | 0.02 | 0.46 |
-| glazing | D-B-PATIO | 3.4 | 0.15 | 0.51 |
+| glazing | D-B-SUNKEN | 3.4 | 0.15 | 0.51 |
 | door leaves | D-B-PLAY, D-B-SAUNA | 4.7 | 0.08 | 0.38 |
 | open doorway | D-B-GYM, 36" x 80", no leaf | 1.9 | 0.5-1.0 | 0.9-1.9 |
 | **empty room** | | | | **~5.6-6.5 -> RT60 ~1.6-1.9 s** |
@@ -75,7 +75,7 @@ $1.50-3.50/SF to glue it down.
   - E-W pair: the bare-concrete east wall (W-B-E1/E2) against the west centre wall.
     Panels go on the **east** wall (4-5), the hardest surface in the room.
   - N-S pair: W-B-CE against the south walkout. Panels go on **W-B-CE** (3-4), clear of
-    D-B-PLAY's swing and the switch at 66 1/2". The south wall has the patio glass and
+    D-B-PLAY's swing and the switch at 66 1/2". The south wall has the sunken-garden door glass and
     EQ-B-HP2-GYM.
   - Floor-ceiling pair: **ceiling** (4-6), hung flat on Z-clips or cleats into the joists.
 - **Wall band:** panels long-side vertical, spanning about 2'-0" to 7'-0" AFF. That is the

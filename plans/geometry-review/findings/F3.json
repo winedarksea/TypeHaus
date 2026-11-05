@@ -2,7 +2,7 @@
  "area": "F3",
  "model": "houses/catlin @247a13e9",
  "review_sha": "247a13e9",
- "inventory_summary": "Inventoried 10 ResolvedFloors (FS-M-WEST/MECH/STAIR/EAST, FS-S-WEST/EAST, FS-ATTIC, FS-SG-PORCH/DECK, FS-BW-FLOOR): member profiles, z extents, rim/tip/seat ends, subfloor, wall base/plate/storey chain. Opened S-100, S-101.1-3, A-301 and rim-band A-553, A-556, A-565, A-566, A-575 (5 of 32 rim/foundation sheets). NOT examined: A-554..A-584 remainder, floor_opening_pockets/support/blocking internals, hanger-vs-LVL-size table (HHUS410 row flagged 'not transcribed'), THA422 vs 3.5 in truss chord, FS-SG-DECK sloped joist geometry, web-searches for TJI/rim product data (WebSearch unavailable).",
+ "inventory_summary": "Inventoried 10 ResolvedFloors (FS-M-WEST/MECH/STAIR/EAST, FS-S-WEST/EAST, FS-ATTIC, FS-SG-PORCH/DECK, FS-BW-FLOOR): member profiles, z extents, rim/tip/seat ends, subfloor, wall base/plate/storey chain. Opened S-100, S-101.1-3, A-301 and rim-band A-553, A-556, A-565, A-566, A-575 (5 of 32 rim/foundation sheets). NOT examined: A-554..A-584 remainder, floor_opening_pockets/support/blocking internals, hanger-vs-LVL-size table (HHUS410 row flagged 'not transcribed'), THA422 vs 3.5 in truss chord, FS-SG-BALCONY sloped joist geometry, web-searches for TJI/rim product data (WebSearch unavailable).",
  "verified_clean": [
   "Storey elevations: basement -109.4376 in (-9'-1 7/16), main 0, second 120.0001, attic 240.0001; S-100 T.O.W. -1.12' = -13.44 in matches bearing seat -13 7/16",
   "Basement seat chain: -13.4375 + 1/16 gasket + 1.5 PT mudsill = -11.875 joist soffit (11.875 depth) exact",

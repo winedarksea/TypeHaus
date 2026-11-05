@@ -36,16 +36,16 @@ TRANSITIONS = (
                condition_pattern="opening_perimeter:ENTRY_SCREEN_WALL",
                notes="notes/entry_screen_mdo.md", star=False, suppress=True,
                suppress_reason="finish-only end relief, not a framed opening; dimensioned in the MDO screen detail"),
-    Transition(uid="CATPATIOSEAT", tag="TR-CATLIN-PATIO-SEAT", title="Patio door seat",
+    Transition(uid="CATPATIOSEAT", tag="TR-CATLIN-SUNKEN-SEAT", title="Sunken-garden door seat",
                condition_pattern="opening_perimeter:GARDEN_CURB_6",
                notes="notes/court_opening_detail.md", star=False,
                suppress=True,
-               suppress_reason="formed concrete door-seat recess, not a framed opening; coordinated in the patio installation review"),
-    Transition(uid="109WBK5F0T", tag="TR-CATLIN-PATIO-TREAD-BED", title="Patio tread bed in the veneer beam's board",
+               suppress_reason="formed concrete door-seat recess, not a framed opening; coordinated in the sunken-garden door installation review"),
+    Transition(uid="109WBK5F0T", tag="TR-CATLIN-SUNKEN-TREAD-BED", title="Sunken-garden tread bed in the veneer beam's board",
                condition_pattern="opening_perimeter:SG_VENEER_BEAM_14",
                notes="notes/court_opening_detail.md", star=False,
                suppress=True,
-               suppress_reason="the beam's XPS board cut down under the patio tread, not a framed opening; coordinated in the patio installation review"),
+               suppress_reason="the beam's XPS board cut down under the sunken-garden tread, not a framed opening; coordinated in the sunken-garden door installation review"),
     # Two eaves in this project and they are genuinely two drawings: the house's
     # zero-overhang eave over EXT_2X6, and the garage's over a trussed roof with a raised
     # heel on a wall with no WRB. The four interior-partition-to-roof keys are unstarred —
@@ -220,7 +220,7 @@ TRANSITIONS = (
                suppress=True,
                # (single literal: the editable dialect forbids concatenated strings)
                suppress_reason="the veneer reveal is a self-supporting segmental arch in a wythe on its own beam, under the porch — no lintel, buck or frame, so nothing is flashed at its perimeter; the opening behind it is flashed on the backup wall, detailed by TR-CATLIN-GARDEN-FRAMED-OPENING"),
-    # The sunken garden's framed walkout. D-B-PATIO is an ordinary innie opening in a 2x6
+    # The sunken garden's framed walkout. D-B-SUNKEN is an ordinary innie opening in a 2x6
     # wall — buck, pan, jamb flashing — standing on the 7 1/4" concrete curb.
     # `window-head-jamb-sill` rather than the `outie-window-truss` the above-grade
     # EXT_* walls take: there is no truss plane down here, the unit sits in the stud

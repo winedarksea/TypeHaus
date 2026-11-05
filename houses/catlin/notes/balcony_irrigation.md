@@ -2,7 +2,7 @@
 title: "South-Face Wall Hydrants — Porch and Balcony Irrigation"
 applied_to:
   - fixture: FX-M-PORCH-HYD
-  - fixture: FX-S-BALC-HYD
+  - fixture: FX-S-BALCONY-HYD
   - fixture_type: FX-HYDRANT-SD34
 tags:
   - plumbing
@@ -28,10 +28,10 @@ Two frost-free wall hydrants on the house's south face, one per outdoor room:
 | tag | storey | wall | x | handle | serves |
 | --- | --- | --- | --- | --- | --- |
 | `FX-M-PORCH-HYD` | main | `W-M-S1` | 12'-8" | 2'-0" over the porch deck | the porch, and anything a hose reaches at grade |
-| `FX-S-BALC-HYD` | second | `W-S-S1` | 12'-8", over the porch hydrant (2026-11-03) | 2'-0" over the balcony deck | the balcony's plants — the irrigation this whole item started as |
+| `FX-S-BALCONY-HYD` | second | `W-S-S1` | 12'-8", over the porch hydrant (2026-11-03) | 2'-0" over the balcony deck | the balcony's plants — the irrigation this whole item started as |
 
 Both are on the south face because that is where the outdoor rooms are. The freestanding
-sunken-garden structure carries the porch at 0'-0" and the balcony 10' above it, and its
+court structure carries the porch at 0'-0" and the balcony 10' above it, and its
 north edge stops 5" short of the house cladding — so a hydrant on this wall is at arm's
 length from the deck in front of it.
 
@@ -62,8 +62,8 @@ A metal tube running from outside air to inside air is a thermal bridge, and on 
 good it is *the* thermal bridge. Three things answer it, and all three are billed:
 
 1. **PEX at the seat.** The supply stops being metal the moment it is inboard of the
-   hydrant. `PR-M-CW-PORCH-HYD` / `PR-M-CW-BALC-HYD` are PEX; only the barrel legs
-   (`PR-M-CW-PORCH-HYD-CU`, `PR-S-CW-BALC-HYD-CU`) are copper, and they are 10" long.
+   hydrant. `PR-M-CW-PORCH-HYD` / `PR-M-CW-BALCONY-HYD` are PEX; only the barrel legs
+   (`PR-M-CW-PORCH-HYD-CU`, `PR-S-CW-BALCONY-HYD-CU`) are copper, and they are 10" long.
    Continuing in copper inboard would extend the bridge into the room.
 2. **A sleeve over the barrel** — 1/2" closed-cell elastomeric, foil-faced. It is authored
    as `PipeRun.insulation` on those two copper legs, which is what puts it in the
@@ -71,7 +71,7 @@ good it is *the* thermal bridge. Three things answer it, and all three are bille
 3. **The hole itself**, sealed: a silicone gasket under the escutcheon, a non-conductive
    plastic mounting bracket (a steel one would short the break the gasket just made), and
    closed-cell spray foam in the 1/4" annulus. Those three ride `install_parts` on
-   `PA-M-PORCH-HYD-SEAL` / `PA-S-BALC-HYD-SEAL` and bill individually — nobody stocks them
+   `PA-M-PORCH-HYD-SEAL` / `PA-S-BALCONY-HYD-SEAL` and bill individually — nobody stocks them
    as "a hydrant", and the same hydrant through a different wall takes a different kit.
 
 `EXT_2X6` is what makes any of this safe. It carries 4" of continuous exterior
@@ -100,8 +100,8 @@ PR-B-CW-HYD          -> (6', 13'-4")        lacquered copper, exposed under the 
 PR-B-CW-HYD-RISER    up through SP-M-CW-HYD, inside W-M-BDN1, to 9'-3"   PEX
 PR-M-CW-HYD-DIST     south to y=0'-9", then east along one joist bay to x=12'-8"   PEX
    `-- PR-M-CW-PORCH-HYD   down inside W-M-S1 to 2'-0"     -> PR-M-CW-PORCH-HYD-CU  (barrel)
-        `-- PR-M-CW-BALC-HYD  tees in the wall plane, up inside W-S-S1 to 12'-0"
-                                                         -> PR-S-CW-BALC-HYD-CU   (barrel)
+        `-- PR-M-CW-BALCONY-HYD  tees in the wall plane, up inside W-S-S1 to 12'-0"
+                                                         -> PR-S-CW-BALCONY-HYD-CU   (barrel)
 ```
 
 Three numbers in there are not free choices:
@@ -113,7 +113,7 @@ Three numbers in there are not free choices:
   there; the joist bay above runs 9'-0 1/8" to 10'-0". A riser drawn straight from the deck
   to the bay escapes its declared wall by 3", which is exactly what
   `mep.wet_wall_occupancy` caught the first time it was tried.
-- **`PR-M-CW-BALC-HYD` splits again at 10'-0"**, the second floor. Below that line the pipe
+- **`PR-M-CW-BALCONY-HYD` splits again at 10'-0"**, the second floor. Below that line the pipe
   is crossing the deck and hosted by nothing; above it, it is inside `W-S-S1`, whose extent
   starts there.
 

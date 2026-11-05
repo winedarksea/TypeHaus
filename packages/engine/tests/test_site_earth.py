@@ -47,11 +47,11 @@ def test_raised_walking_surfaces_do_not_displace_soil(catlin_model) -> None:
     void starts at the west wall's inner face, 9'-6": the strip between is covered by the
     balcony deck and by nothing at grade — earth belongs there.
 
-    Read off FS-SG-DECK's deck sheet, not a SL-SG-DECK solid: the aluminium plank is the
+    Read off FS-SG-BALCONY's deck sheet, not a SL-SG-DECK solid: the aluminium plank is the
     floor system's ``subfloor`` — there is no deck Slab.
     """
     grade = site_grade_elevation_m(catlin_model)
-    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-DECK")
+    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-BALCONY")
     balcony = Polygon(deck.deck_outline)
     assert deck.deck_z1_m > grade
     under_the_overhang = Point(8.75 * FT, -2.0 * FT)

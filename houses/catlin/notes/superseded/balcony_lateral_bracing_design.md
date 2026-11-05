@@ -28,7 +28,7 @@
 
 **House:** catlin, Ramsey County, Minnesota (Minnesota Residential Code 2020, adopting the
 2018 IRC).
-**Structure:** the sunken garden's balcony — a 21'-6" × 9'-8" deck at +10'-0" (21'-0" when this
+**Structure:** the court's balcony — a 21'-6" × 9'-8" deck at +10'-0" (21'-0" when this
 superseded note was written), carried on six
 6x6 pillars on pinned standoff post bases, braced by eight 2x6 knee braces: four N-S bearing
 on the pillar faces, four E-W lying in the brace rails' plane with **lapped, bolted feet**.

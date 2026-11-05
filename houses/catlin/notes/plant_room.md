@@ -403,7 +403,7 @@ over TPO/EPDM. The sheet plus the sealed base toe is the waterproofing.
   that cannot be a fixed, gasketed unit. The replacement is another `WT-3048-HP` at the
   door's exact centre (x 14'-8"), which is a stud line on `W-S-S1` and continues `PLANT1`/
   `PLANT2`'s 5'-4" beat, still columning over `WIN-M-BED-S2` below. The balcony is reached
-  from the study through `D-S-DECK-E`, the only balcony door the source ever drew.
+  from the study through `D-S-BALCONY`, the only balcony door the source ever drew.
 - Every opening returns the membrane into the jamb — `TR-CATLIN-PLANT-OPENING`, cloned from
   `TR-CATLIN-SAUNA-OPENING`. Butting the panel at the jamb is not sealing it.
 
@@ -427,10 +427,10 @@ Every hole is a hole in the only barrier.
   need `construction_returns` to become a *priced* section at all — until now every return
   in that table was a lap of material some other table already bought, and foam in a rim
   cavity is in no assembly and no other table.
-- **`FX-S-BALC-HYD` pierces `W-S-S1`** — a wall hydrant whose escutcheon is outdoors, plus
-  `PA-S-BALC-HYD-SEAT` behind it. Its bore (`AO-S-BALC-HYD`, blind 12" from outside) stops
+- **`FX-S-BALCONY-HYD` pierces `W-S-S1`** — a wall hydrant whose escutcheon is outdoors, plus
+  `PA-S-BALCONY-HYD-SEAT` behind it. Its bore (`AO-S-BALCONY-HYD`, blind 12" from outside) stops
   1 1/4" short of the humid membrane, so the liner is not pierced; what the barrel crosses is
-  the ccSPF air/vapour plane into a −15 °F wall. **Closed 2026-09-23 by `SP-S-BALC-HYD`**
+  the ccSPF air/vapour plane into a −15 °F wall. **Closed 2026-09-23 by `SP-S-BALCONY-HYD`**
   (`plan/mep_supply_plant.py`): a 2 1/2" PVC sleeve set in the sheathing, taped to it, foam
   sprayed tight to it, the annulus foamed over the barrel's elastomeric sleeve, and the
   escutcheon gasket at the cladding. `mep.exterior_hydrant_protection` grades both halves.
@@ -527,7 +527,7 @@ misted or hosed.
 
 1. ~~**`D-S-DECK-W`** — keep balcony access through the plant room, or relocate it?~~
    CLOSED 2026-09-03: the door is deleted, `WIN-S-PLANT4` takes its station, and balcony
-   access is `D-S-DECK-E` off the study. See Openings.
+   access is `D-S-BALCONY` off the study. See Openings.
 2. ~~**Floor drain** — confirm.~~ CLOSED 2026-09-11, and the answer is **no drain and no
    basin**. **2026-09-23: an interior supply was added anyway** — the owner does not count
    the hydrant, whose thread is outdoors. `PR-M-CW-PLANT-STUB` tees off the hydrant riser in
@@ -537,10 +537,10 @@ misted or hosed.
    automatic shutoff (2026-11-03, Floor above). Hard-piping irrigation off it
    is P2902.5.3's case (PVB or RPZ). The stated need was never a sink: it is *watering that runs while the house is
    empty*. That is an irrigation question, and irrigation takes no fixture.
-   - **The room is served by `FX-S-BALC-HYD`**, already modelled: `PR-M-CW-BALC-HYD` rises
+   - **The room is served by `FX-S-BALCONY-HYD`**, already modelled: `PR-M-CW-BALCONY-HYD` rises
      inside `W-S-S1` at x=12'-8" (on the balcony, over `FX-M-PORCH-HYD`, since 2026-11-03)
      to the seat at 2'-0" over the balcony deck, with
-     `PA-S-BALC-HYD-SEAT` behind it (`plan/mep_supply_devices.py`). Watering is a
+     `PA-S-BALCONY-HYD-SEAT` behind it (`plan/mep_supply_devices.py`). Watering is a
      **hose-connected drip system on a timer** — tubing, emitters and a hose-thread timer,
      all of it a *purchase* and none of it a plumbing change. Nothing is added to the model
      because nothing about the plumbing moves.
@@ -558,7 +558,7 @@ misted or hosed.
      backflow preventer** — not the ASSE 1011 vacuum breaker on the garage yard hydrant.
      The distinction is the one a timer raises: an 1011 device may not sit under continuous
      pressure and a timer holds pressure at the thread between cycles; a 1052 device is
-     built for it. So no `PA-S-BALC-HYD-VB` is authored — `mep.backflow_prevention` reads
+     built for it. So no `PA-S-BALCONY-HYD-VB` is authored — `mep.backflow_prevention` reads
      the flag off the fixture type, and a screw-on accessory would double-bill a part the
      hydrant's price already includes.
    - **Keep it hose-connected and portable.** That is what keeps this out of P2902.5.3's
@@ -579,7 +579,7 @@ misted or hosed.
      The base holds a spill inside the room; it does nothing about the hours. The owner
      accepts that residual (2026-11-03): no automatic shutoff.
    - **What is NOT settled: how the tubing crosses the wall.** The hydrant's escutcheon is
-     outdoors at y=−5" (`PR-S-CW-BALC-HYD-CU`), so the timer and manifold hang on the
+     outdoors at y=−5" (`PR-S-CW-BALCONY-HYD-CU`), so the timer and manifold hang on the
      balcony. That waters balcony planters directly. Reaching the benches *inside*
      `RM-S-PLANT` means a tubing pass through `W-S-S1` — through the liner, the foam and the
      rainscreen — and that is a detail, not a run of tubing out a window. It belongs with

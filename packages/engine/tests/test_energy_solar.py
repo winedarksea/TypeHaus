@@ -9,7 +9,7 @@ Section by section:
   8 a.m. peak and the west glass its 4 p.m. peak in the same hour, an hour that does not
   exist.
 * **§3** — shading from whatever is actually overhead. Not just an eave: catlin's balcony
-  door is shaded by a FLOOR — the sunken-garden balcony deck — over a roof that projects
+  door is shaded by a FLOOR — the court balcony deck — over a roof that projects
   nothing past that face.
 * **§4** — the AED excursion (ACCA TRB 2003-001a).
 * **§5** — internal gains, cooling only, and the latent split.
@@ -190,8 +190,8 @@ def test_catlins_balcony_door_is_shaded_by_the_balcony_and_the_window_beside_it_
         catlin_model_ro) -> None:
     """§3's specific case, and the one that made the general shading plane necessary.
 
-    ``D-M-BALC`` — 33 sf of glazed door, the largest single piece of south glass in the
-    house — is shaded by ``FS-SG-DECK``, the sunken-garden balcony deck: its near edge is
+    ``D-M-PORCH`` — 33 sf of glazed door, the largest single piece of south glass in the
+    house — is shaded by ``FS-SG-BALCONY``, the court balcony deck: its near edge is
     2 3/4" clear of the wall face, its surface is 0.98 m above the door head, and it reaches
     9.9 ft out. **No roof projects past this face at all** (``RF-HOUSE`` covers the wall in
     plan with zero overhang here), so a model that only understood eaves found no shading on
@@ -209,9 +209,9 @@ def test_catlins_balcony_door_is_shaded_by_the_balcony_and_the_window_beside_it_
         head_m = wall.base_ref_z_m + opening.sill_m + opening.height_m
         return _shade_planes(catlin_model_ro, wall, opening, head_m), head_m
 
-    shaded, head_m = planes_over("D-M-BALC")
-    assert "FS-SG-DECK" in {plane.tag for plane in shaded}
-    balcony = next(plane for plane in shaded if plane.tag == "FS-SG-DECK")
+    shaded, head_m = planes_over("D-M-PORCH")
+    assert "FS-SG-BALCONY" in {plane.tag for plane in shaded}
+    balcony = next(plane for plane in shaded if plane.tag == "FS-SG-BALCONY")
     assert balcony.near_ft == pytest.approx(0.23, abs=0.05)
     assert balcony.far_ft == pytest.approx(9.9, abs=0.2)
     # 1.05 m until the balcony came down 3" (2026-09-23); a lower plane only shades more.
@@ -223,7 +223,7 @@ def test_catlins_balcony_door_is_shaded_by_the_balcony_and_the_window_beside_it_
     assert roof.far_ft == pytest.approx(0.0, abs=0.01)
 
     unshaded, _ = planes_over("WIN-M-LIV-S1")
-    assert "FS-SG-DECK" not in {plane.tag for plane in unshaded}
+    assert "FS-SG-BALCONY" not in {plane.tag for plane in unshaded}
 
 
 # --- §4. the AED excursion -------------------------------------------------------------------

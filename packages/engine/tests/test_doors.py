@@ -767,7 +767,7 @@ def test_catlin_murphy_door_keeps_published_dimensions_and_hinge_clearance(catli
 def test_catlin_exterior_bottom_components_wait_for_approved_sections(catlin_model_ro):
     """Read-only shared resolve: product identities survive while unapproved shapes stay absent."""
     types = {t.tag: t for t in catlin_model_ro.plan.library.door_types}
-    selected = {"D-M-ENTRY", "D-M-BALC", "D-G-SERVICE", "D-G-OVERHEAD"}
+    selected = {"D-M-ENTRY", "D-M-PORCH", "D-G-SERVICE", "D-G-OVERHEAD"}
     for opening in catlin_model_ro.openings:
         if opening.tag not in selected:
             continue

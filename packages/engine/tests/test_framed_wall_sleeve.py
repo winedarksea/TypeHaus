@@ -1,4 +1,4 @@
-"""A sleeve through a FRAMED exterior wall: catlin's SP-S-BALC-HYD, the balcony hydrant's
+"""A sleeve through a FRAMED exterior wall: catlin's SP-S-BALCONY-HYD, the balcony hydrant's
 barrel through W-S-S1. It spans the sheathing and everything outboard of it, carries its
 seal and annulus insulation, and ``mep.exterior_hydrant_protection`` grades both."""
 
@@ -13,7 +13,7 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve import resolve
 from typehaus.takeoff.mep import sleeve_takeoff
 
-_TAG = "SP-S-BALC-HYD"
+_TAG = "SP-S-BALCONY-HYD"
 
 
 def _sleeve(model):
@@ -49,7 +49,7 @@ def test_the_takeoff_bills_the_bore_not_the_wall_height(catlin_model_ro):
 
 def test_hydrant_protection_names_the_sleeve(catlin_plan, catlin_model_ro):
     findings = exterior_hydrant_protection(check_context(catlin_plan, catlin_model_ro))
-    balcony = [f for f in findings if f.element_tags[0] == "FX-S-BALC-HYD"]
+    balcony = [f for f in findings if f.element_tags[0] == "FX-S-BALCONY-HYD"]
     assert [f.result for f in balcony] == [Result.PASS]
     assert f"sleeved by {_TAG}" in balcony[0].message
 
@@ -63,5 +63,5 @@ def test_a_sleeve_that_states_no_seal_or_insulation_fails(catlin_plan, field):
     model, _ = resolve(plan)
     failed = [f for f in exterior_hydrant_protection(check_context(plan, model))
               if f.result is Result.FAIL]
-    assert [f.element_tags for f in failed] == [("FX-S-BALC-HYD", _TAG)]
+    assert [f.element_tags for f in failed] == [("FX-S-BALCONY-HYD", _TAG)]
     assert f"states no {field}" in failed[0].message

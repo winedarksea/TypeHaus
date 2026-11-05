@@ -1,9 +1,9 @@
-# `D-B-PATIO` flush band header — hand check
+# `D-B-SUNKEN` flush band header — hand check
 
-**House:** catlin. **Element:** `D-B-PATIO` (63 5/16" RO French pair) in `W-B-S3-FR`, headed
+**House:** catlin. **Element:** `D-B-SUNKEN` (63 5/16" RO French pair) in `W-B-S3-FR`, headed
 in `FS-M-EAST`'s band (`Door.header_in_band`). **Written:** 2026-10-31, by hand from the maker's
 document, before the record was compared against it.
-**Oracle for:** `typehaus/engineering/band_header.py` (`band_header/D-B-PATIO`), reproduced by
+**Oracle for:** `typehaus/engineering/band_header.py` (`band_header/D-B-SUNKEN`), reproduced by
 `tests/test_band_header.py`.
 
 ## 1. Why the header is in the band
@@ -29,10 +29,10 @@ It is NOT a bearing ref: `resolve/floors.py` would cut every joist at that line.
 | w total | 50 x 0.6667 + 12.2 | **45.53 plf** |
 | w live | 40 x 0.6667 | **26.67 plf** |
 
-**The jamb loads are not in the span.** `D-M-BALC` above is the same 63 5/16" RO on the same
+**The jamb loads are not in the span.** `D-M-PORCH` above is the same 63 5/16" RO on the same
 centre, so its 2-jack + 2-king packs stand on these seats exactly (x 18'-2 11/32"..18'-8 11/32"
 and 23'-11 21/32"..24'-5 21/32"). The review's "west jamb at x≈19'-1"" was the stale
-`CN-M-HD-BALC-W` strap station, from before the 2026-10-29 re-centring; it is re-stationed onto
+`CN-M-HD-PORCH-W` strap station, from before the 2026-10-29 re-centring; it is re-stationed onto
 the pack. Nothing else of `W-M-S2` stands on its bottom plate inside the RO.
 
 ## 3. The check (Weyerhaeuser TJ-9000, July 2026)
@@ -52,7 +52,7 @@ not by this span.
 ## 4. Not graded here
 
 - **Bearing under the stacked jambs** (Fc⊥: LVL 750 psi, the SPF plates under it ~425 psi):
-  the `D-S-DECK-E`/`D-M-BALC` jamb loads reach the seats through the plies. No load takedown
+  the `D-S-BALCONY`/`D-M-PORCH` jamb loads reach the seats through the plies. No load takedown
   exists in this engine; the same stack bore on the old I-joist edge and plates.
 - The two-ply nailing, the plies' connection to the edge I-joist, and dry-use service (the
   band is inside the envelope; TJ-9000 p.5: Microllam is for dry use).

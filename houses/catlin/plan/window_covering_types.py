@@ -76,21 +76,21 @@ def _track(tag: str, name: str, run: float, height: float, mount: Mount,
 # anchored mid-pier at x 352"; open, they stack 337-352" and 352-367".
 TRACK_LIV_S = _track("FT-CURTAIN-TRACK-LIV-S", 'Ceiling curtain track, living south, 124 1/4"',
                      124.25, 106.0625, _CEILING, ((58.25, 15), (73.25, 15)))
-# D-M-BALC: wall run under EQ-M-HP2-LIVING (its bottom 90" AFF), rail top 88" AFF.
+# D-M-PORCH: wall run under EQ-M-HP2-LIVING (its bottom 90" AFF), rail top 88" AFF.
 # x 219 1/2" (C1 corner) to 291" (end-closing, 1" short of ED-M-PORCH-SW). A split pair.
 # Three wall fittings (<= 140 cm apart): the ends on BK-M-S2-ROD and the king packs at x 220"
-# and 290 3/4"; the middle over D-M-BALC's header, which stands 1 1/4" behind the stud face,
+# and 290 3/4"; the middle over D-M-PORCH's header, which stands 1 1/4" behind the stud face,
 # so it takes a ripped 2x nailer on the header face (preferences.toml suppress).
-TRACK_LIV_BALC = _track("FT-CURTAIN-TRACK-LIV-BALC", 'Wall curtain track, balcony door, 71 1/2"',
+TRACK_LIV_PORCH = _track("FT-CURTAIN-TRACK-LIV-PORCH", 'Wall curtain track, porch door, 71 1/2"',
                         71.5, 87.5, _WALL, ((0, 7), (64.5, 7)),
                         fixings=(-35.5, 0, 35.25))
 # Bedroom west: SW corner to NW corner (y 6 3/4"-153 1/2"); panels anchored mid-pier at
 # y 88", stacked in the W1/W2 pier.
 TRACK_BED_W = _track("FT-CURTAIN-TRACK-BED-W", 'Ceiling curtain track, main bedroom west, 146 3/4"',
                      146.75, 105.5, _CEILING, ((66.25, 15), (81.25, 15)))
-# Study 2, D-S-DECK-E: x 219 1/2" (corner) to 291" (end-closing, 1" clear of
+# Study 2, D-S-BALCONY: x 219 1/2" (corner) to 291" (end-closing, 1" clear of
 # ED-S-STUDY2-SPOT1). One panel, stacking into the west corner.
-TRACK_STUDY_DECK = _track("FT-CURTAIN-TRACK-STUDY-DECK",
+TRACK_STUDY_BALCONY = _track("FT-CURTAIN-TRACK-STUDY-BALCONY",
                           'Ceiling curtain track, study 2 deck door, 71 1/2"',
                           71.5, 105.5, _CEILING, ((57.5, 14),))
 
@@ -112,6 +112,6 @@ SHADE_3048_CORDLESS = _shade("FT-CELLULAR-SHADE-3048-CORDLESS", 30, 48,
 SHADE_1424_CORDLESS = _shade("FT-CELLULAR-SHADE-1424-CORDLESS", 14, 24,
                              SMARTWINGS_CELLULAR_CORDLESS)
 
-WINDOW_COVERING_TYPES = (TRACK_LIV_S, TRACK_LIV_BALC, TRACK_BED_W, TRACK_STUDY_DECK,
+WINDOW_COVERING_TYPES = (TRACK_LIV_S, TRACK_LIV_PORCH, TRACK_BED_W, TRACK_STUDY_BALCONY,
                          SHADE_3048_MOTOR, SHADE_2748_MOTOR, SHADE_2754_MOTOR,
                          SHADE_3048_CORDLESS, SHADE_1424_CORDLESS)

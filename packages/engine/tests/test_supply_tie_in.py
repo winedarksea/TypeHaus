@@ -117,7 +117,7 @@ def test_a_run_with_no_candidate_at_all_says_so(catlin_model_ro) -> None:
     assert records["PR-G-SERVICE-CW"].reason == "no_candidate"
     assert records["PR-G-SERVICE-CW"].parent is None
     assert records["PR-M-CW-PORCH-HYD"].parent == "PR-M-CW-HYD-DIST"
-    assert records["PR-M-CW-BALC-HYD"].parent == "PR-M-CW-PORCH-HYD"
+    assert records["PR-M-CW-BALCONY-HYD"].parent == "PR-M-CW-PORCH-HYD"
     assert records["PR-B-CW-TRUNK"].parent == "PR-G-SERVICE-CW"
     assert records["PR-G-HYDRANT-CW"].parent == "PR-B-CW-TRUNK"
 

@@ -48,7 +48,7 @@ def test_porch_ambient_and_garden_utility_controls_are_independent(catlin_plan):
 def test_flood_box_is_on_blocking_beyond_the_porch_floor(catlin_model_ro):
     model = catlin_model_ro
     flood, product = _flood(model)
-    balcony = next(floor for floor in model.floors if floor.tag == "FS-SG-DECK")
+    balcony = next(floor for floor in model.floors if floor.tag == "FS-SG-BALCONY")
     porch = next(floor for floor in model.floors if floor.tag == "FS-SG-PORCH")
     assert flood.position[0] == pytest.approx(18 * 0.3048)
     assert not Polygon(porch.deck_outline).intersects(Polygon(flood.footprint))
@@ -80,7 +80,7 @@ def test_flood_aim_reaches_the_open_garden_without_crossing_the_porch(catlin_mod
     target = tuple(lens[i] + distance * direction[i] for i in range(3))
     assert Polygon([p.xy_m for p in garden.outline]).contains(Point(*target[:2]))
     assert FLOOD_DOWNWARD_AIM_DEGREES - FLOOD_BEAM_DEGREES / 2 > 0
-    for tag in ("FS-SG-PORCH", "FS-SG-DECK"):
+    for tag in ("FS-SG-PORCH", "FS-SG-BALCONY"):
         floor = next(f for f in model.floors if f.tag == tag)
         if lens[2] < floor.deck_z0_m:
             continue

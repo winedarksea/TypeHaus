@@ -11,7 +11,7 @@ are `notes/heat_pump_ground_pad.md`.
 ## Why
 
 The porch floor sits at 0'-0" and grade east of it at -2'-10", and until now there was **no
-way down**. You reached the porch through `D-M-BALC`, the French pair at x 21'-4", and
+way down**. You reached the porch through `D-M-PORCH`, the French pair at x 21'-4", and
 `RL-SG-PORCH` railed all three open edges. The owner wanted a stair off the east edge into
 the yard pocket — which is where `EQ-M-HP1-OD` and `EQ-M-HP2-OD` had stood since the
 2026-09-02 move off the balcony. Turning both condensers to face south, and then moving the

@@ -189,7 +189,7 @@ class _ShadePlane:
     """A horizontal surface overhead that can shade a window, in that window's own frame.
 
     ``near_ft`` / ``far_ft`` are its edges measured out from the WALL FACE along the wall's
-    outward normal. An eave has ``near_ft == 0``. catlin's sunken-garden balcony deck is
+    outward normal. An eave has ``near_ft == 0``. catlin's court balcony deck is
     2 3/4" clear of the main-floor south wall and reaches 9.9 ft out — a FLOOR doing an
     eave's job over a roof that projects nothing past that face, so a model that only
     understood eaves saw no shading at all on the largest piece of south glass in the
@@ -322,8 +322,8 @@ def _shade_planes(model: ResolvedModel, wall: ResolvedWall, opening,
     surface people stand on. All three are plan polygons at a known elevation, and the
     shadow arithmetic does not care which kind of element cast it.
 
-    Why it is not just the eave: catlin's ``D-M-BALC`` is shaded by the sunken-garden
-    **balcony deck**, a ``FloorSystem`` reaching 9.9 ft out a metre above the door head,
+    Why it is not just the eave: catlin's ``D-M-PORCH`` is shaded by the sunken-garden
+    **balcony**, a ``FloorSystem`` reaching 9.9 ft out a metre above the door head,
     while ``RF-HOUSE`` — the only roof over that wall in plan — projects nothing past its
     face. An eave-only reading calls the largest piece of south glass in the house
     unshaded.

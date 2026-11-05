@@ -519,7 +519,7 @@ ATTIC_FIXTURES = (
 #                   158 3/4", so the clear bay is 145 1/2"..158 3/4" and its centre is
 #                   152 1/8". 12'-8" is that centre to the nearest inch.
 #                   BK-M-S1-HYD spans 128 3/4"..158" and covers the new station unchanged.
-#   FX-S-BALC-HYD   x=12'-8" on W-S-S1, directly over FX-M-PORCH-HYD (2026-11-03). The
+#   FX-S-BALCONY-HYD   x=12'-8" on W-S-S1, directly over FX-M-PORCH-HYD (2026-11-03). The
 #                   balcony runs x 8'..28', so the old 7'-4" station was just off it. The
 #                   bay is stud-003 (144") to WIN-S-PLANT4's king (158 3/4"): clear
 #                   144 3/4"..158", the same 7 1/4" / 6" split as the porch bay below.
@@ -538,7 +538,7 @@ ATTIC_FIXTURES = (
 # `Placeable.mount` is NON-OPTIONAL (`model/spatial.py`), so an element that says nothing
 # still carries a default `Mount()` — FLOOR, no elevation — and a default beats a type. Both
 # hydrants were therefore resolving at their storey's floor: FX-M-PORCH-HYD at 1 1/4", and
-# FX-S-BALC-HYD a full 24" BELOW the ft(2) supply barrel that feeds it (plan/mep_supply.py).
+# FX-S-BALCONY-HYD a full 24" BELOW the ft(2) supply barrel that feeds it (plan/mep_supply.py).
 #
 # The fix is not a resolver-wide "fall back to the type when the element is silent", because
 # a non-optional field cannot tell "the author said FLOOR" from "the author said nothing" —
@@ -556,7 +556,7 @@ PORCH_HYDRANT = (
                 normal_gap=inch(-10.25), rotation_offset=deg(0)))),
 )
 BALCONY_HYDRANT = (
-    Fixture(uid="D3NLW8VC5T", tag="FX-S-BALC-HYD", type_ref="FX-HYDRANT-SD34",
+    Fixture(uid="D3NLW8VC5T", tag="FX-S-BALCONY-HYD", type_ref="FX-HYDRANT-SD34",
             room="RM-S-PLANT", wall_ref="W-S-S1",
             mount=Mount(kind=MountKind.WALL, elevation=inch(24), recessed_into_host_surface=True),
             location=Location(attachment=WallAttachment(

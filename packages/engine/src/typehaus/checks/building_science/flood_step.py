@@ -15,7 +15,7 @@ judgement, so it is **authored**: ``Wall.min_threshold_step``, the way
 ``WindowType.fall_protection`` is authored so R312.2 can fail fairly.
 
 Why the wall's top and not a door's threshold. The curb runs the whole length of the court's
-north side and only part of it has a door in it — grading D-B-PATIO alone would leave
+north side and only part of it has a door in it — grading D-B-SUNKEN alone would leave
 W-B-S2, the sauna's curb, ungraded, and a sauna's bottom plate drowns exactly as well as a
 gym's. The wall top is also the plane every threshold over it is measured from: an opening
 in a wall standing on the curb has ``base_ref_z_m`` equal to the curb top, so a curb that

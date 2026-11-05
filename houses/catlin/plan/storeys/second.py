@@ -599,7 +599,7 @@ OPENINGS = [
          header_spec="flat 2x4 nonbearing"),                     # x 19'-10 3/8"
     # O-S-STAIRTOP, the 6'-0" cased stair head, went with its host wall W-S-BD-N2.
     # Balcony door. The source draws ONE opening (x 18'-8"..23'-11", 5'-3", with two
-    # leaves), east of the centre line; that is D-S-DECK-E, standardized to the catalog's
+    # leaves), east of the centre line; that is D-S-BALCONY, standardized to the catalog's
     # 5'-0" French pair rather than distorted into a narrow 3'-0" double door.
     #
     # There was a second, D-S-DECK-W, a mirror of this one at x 14'-8" giving the plant room
@@ -609,8 +609,8 @@ OPENINGS = [
     # a door has far more frame than a window), every use of it dumps 70%-RH air onto the
     # balcony and pulls -15 F air onto the liner, and it is the one opening in the room that
     # cannot be a fixed, gasketed, thermally broken unit. WIN-S-PLANT4 takes its station.
-    # The study still reaches the balcony through D-S-DECK-E, which is what the source drew.
-    Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-EXT-FRENCH60-CATALOG",
+    # The study still reaches the balcony through D-S-BALCONY, which is what the source drew.
+    Door(uid="CSD211AAAA", tag="D-S-BALCONY", host="W-S-S2", type_ref="DT-EXT-FRENCH60-CATALOG",
          position=from_node("N-S-S1", inch(8.34375)), flip_swing=True),
     # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap).
     # WIN-S-STUDY3 moved off its source position (y 3'-10") to y=5'-4" for an
@@ -767,7 +767,7 @@ OPENINGS = [
            position=from_node("N-S-W1", inch(16.5)), sill_height=ft(3, 6)),       # y 24'-4"
     # Study 2's south pair: resolved centres x=26'-8"/32'-0" are stud lines on the shared
     # facade grid and stack over WIN-M-LIV-S2/S1. Their 2'-8" sills hold the 6'-8" head line.
-    # The west unit is tempered for its proximity to D-S-DECK-E.
+    # The west unit is tempered for its proximity to D-S-BALCONY.
     Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3048-TT-T",
            position=from_node("N-S-S1", ft(7, 5)), sill_height=ft(2, 8)),     # x 26'-8"
     Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3048-TT-T",

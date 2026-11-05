@@ -1276,7 +1276,7 @@ The garden slab is cheaper and does not work:
 * `SL-SG-FLOOR` is **untouched by the strut question** — the beam needs nothing from it.
 
   It has since moved twice for unrelated reasons — dropped 7 1/4" on 2026-09-03 so heavy
-  rain would pond outside `D-B-PATIO` rather than cross its threshold, and put back flush on
+  rain would pond outside `D-B-SUNKEN` rather than cross its threshold, and put back flush on
   2026-09-05 — and the floor is now a 3 1/2" **rim** around a 160 sf gravel-and-turf field.
   **None of this note's arithmetic moves with any of that.** The free body is bounded by the
   wall tops and the footing undersides; `_ret_unbalanced_fill` is `_ret_top − _wall_bottom`

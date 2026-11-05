@@ -113,7 +113,7 @@ Plan — a U whose north corners return three feet to the balcony railing:
   uid preservation ``sunken_garden.py`` already practises.
 
 The apron is filed on the ``basement`` storey key with the rest of the freestanding
-sunken-garden structure (absolute elevations, same as the masonry railing walls) — the
+court structure (absolute elevations, same as the masonry railing walls) — the
 house's own main/second wall loops must contain only house walls or storey-orientation
 detection traces this structure by mistake.
 

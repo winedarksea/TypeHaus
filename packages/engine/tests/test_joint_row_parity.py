@@ -109,7 +109,7 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     #
     # 131 -> 82 in 2026-09 (the 17'-0" court): the sunken garden derives NO tie any more
     # (-49). The balcony's joist-to-beam ties are authored stainless (CN-SG-TIE-W/E01..12,
-    # naming FS-SG-DECK), which stands the derivation down, and the porch hangs ledger to
+    # naming FS-SG-BALCONY), which stands the derivation down, and the porch hangs ledger to
     # ledger on LUS210Z with no beam to bear on. What is left: 64 rafter-to-plate ties on
     # RF-HOUSE / RF-GARAGE, 10 along the ridge, and FS-BW-FLOOR's 4 + 4 on its two seats.
     # 82 -> 130 on 2026-11-01 (decision #112): FS-M-NE sets ``JoistSpec.seat_ties``, so its

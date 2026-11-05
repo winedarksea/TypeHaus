@@ -133,7 +133,7 @@ def test_a_hydrant_without_its_vacuum_breaker_fails(catlin_plan):
     assert [f.element_tags[0] for f in failed] == ["FX-G-HYDRANT"]
     # And the other two hydrants still pass, which is what makes it per-hydrant.
     passed = {f.element_tags[0] for f in findings if f.result is Result.PASS}
-    assert {"FX-M-PORCH-HYD", "FX-S-BALC-HYD"} <= passed
+    assert {"FX-M-PORCH-HYD", "FX-S-BALCONY-HYD"} <= passed
 
 
 def test_a_wall_hydrant_needs_no_accessory_for_its_integral_vacuum_breaker(
@@ -146,7 +146,7 @@ def test_a_wall_hydrant_needs_no_accessory_for_its_integral_vacuum_breaker(
     """
     findings = backflow_prevention(_context(catlin_plan, catlin_model))
     assert not _fails(findings), [f.message for f in _fails(findings)]
-    for tag in ("FX-M-PORCH-HYD", "FX-S-BALC-HYD"):
+    for tag in ("FX-M-PORCH-HYD", "FX-S-BALCONY-HYD"):
         message = next(f.message for f in findings if f.element_tags[0] == tag)
         assert "integral" in message
         assert "PA-" not in message  # no accessory tag to name — there is none
@@ -239,7 +239,7 @@ def test_a_wall_hydrant_is_exempt_from_bury_depth_and_a_yard_hydrant_is_not(
     assert "below grade over its whole length" in garage
     assert "SP-G-HYDRANT" in garage
     # The wall hydrants are graded on neither, and say why.
-    for tag in ("FX-M-PORCH-HYD", "FX-S-BALC-HYD"):
+    for tag in ("FX-M-PORCH-HYD", "FX-S-BALCONY-HYD"):
         message = " | ".join(by_hydrant[tag])
         assert "no bury depth to grade" in message
         assert "below grade" not in message
@@ -260,13 +260,13 @@ def test_an_uninsulated_barrel_is_an_advisory_failure(catlin_plan):
     from typehaus.findings import Severity
 
     plan = catlin_plan
-    run = plan.by_tag("PR-S-CW-BALC-HYD-CU")
+    run = plan.by_tag("PR-S-CW-BALCONY-HYD-CU")
     bare = run.model_copy(update={"insulation": None})
     kept = [e for e in plan.storey_elements("second") if e.tag != run.tag]
     plan = plan.with_elements("second", (*kept, bare))
     findings = exterior_hydrant_protection(_context(plan, _resolved(plan)))
     failed = _fails(findings)
-    assert [f.element_tags[0] for f in failed] == ["FX-S-BALC-HYD"]
+    assert [f.element_tags[0] for f in failed] == ["FX-S-BALCONY-HYD"]
     assert failed[0].severity is Severity.WARN
     assert "thermal bridge" in failed[0].message
 

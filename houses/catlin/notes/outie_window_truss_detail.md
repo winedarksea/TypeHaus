@@ -394,7 +394,7 @@ are not outlets (owner, 2026-10-28). At an opening that means:
 **Closure inventory** (recorded, no geometry change): jamb buck returns, hold point; sills,
 closed; eaves and rakes, closed by the roof deck oversailing the girt face; outside corners,
 closed by the Wide Outside Corner; ERV, hydrant and `VR-M-STACK` sleeves, sealed;
-`D-S-DECK-E`'s head is its catalog unit's (no kit head trim, so no strip): a hold point.
+`D-S-BALCONY`'s head is its catalog unit's (no kit head trim, so no strip): a hold point.
 
 The base (inlet), the band (outlet) and the panel-end strips are in `metal_trim_kit.md`,
 "Wall base stack" and "Band outlet".

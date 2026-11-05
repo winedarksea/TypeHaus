@@ -287,7 +287,7 @@ def test_an_undriven_allowance_can_never_report_an_overlap(tmp_path) -> None:
 #: ``concrete-window-bucks-and-blockouts`` joined this list on 2026-09-05: the basement's
 #: west-side replan retired ``D-B-NE`` and moved ``D-B-GYM`` onto framed ``W-B-CS3``, so
 #: catlin has no opening left whose host wall's STRUCTURE layer is concrete.
-# The patio seat now requires one formed concrete blockout (2026-10-26).
+# The sunken-garden door seat now requires one formed concrete blockout (2026-10-26).
 _DRIVES_TO_ZERO: set[str] = set()
 
 

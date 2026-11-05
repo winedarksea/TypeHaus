@@ -3,7 +3,7 @@ from typehaus import Furniture, Mount, MountKind, SuspensionAnchor
 from typehaus.model import ft, inch, pt
 
 # The court's hanging daybed, under the porch outside WIN-B-SAUNA, centred in the west bay
-# between W-SG-W1 and D-B-PATIO (owner, 2026-10-13: twin, four ropes, 500 lb). Long axis
+# between W-SG-W1 and D-B-SUNKEN (owner, 2026-10-13: twin, four ropes, 500 lb). Long axis
 # east-west.
 #
 # Four ropes, four anchors at the type's hang_points (76 x 36 in). They land exactly on

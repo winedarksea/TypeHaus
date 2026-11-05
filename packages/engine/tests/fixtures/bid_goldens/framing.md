@@ -451,8 +451,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — POST_KDAT (column:POST_KDAT) | PT-BW-CNW, PT-BW-CW |
 | Column — POST_KDAT_WRAPPED_PVC (column:POST_KDAT_WRAPPED_PVC) | PT-BW-RE, PT-BW-RNE |
 | butyl-tape, 1 1/2" on beam (butyl-tape) | BM-SG-LDGE, BM-SG-LDGW |
-| butyl-tape, 1 1/4" on deck (butyl-tape) | FS-SG-DECK |
-| butyl-tape, 1 1/2" on deck (butyl-tape) | FS-BW-FLOOR, FS-SG-DECK, FS-SG-PORCH |
+| butyl-tape, 1 1/4" on deck (butyl-tape) | FS-SG-BALCONY |
+| butyl-tape, 1 1/2" on deck (butyl-tape) | FS-BW-FLOOR, FS-SG-BALCONY, FS-SG-PORCH |
 | butyl-tape, 4 1/2" on deck (butyl-tape) | FS-SG-PORCH |
 | butyl-tape, 1 1/2" on stair (butyl-tape) | ST-G-SERVICE, ST-SG-PORCH |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | BM-BW-SCSILL |
@@ -473,7 +473,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | — |
 | STAIRWELL_PARTITION_4H, SPF framing lumber (STAIRWELL_PARTITION_4H:spf) | W-B-WELL, W-M-WELL |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-M-PORCH-HYD |
-| rough opening, 2.5" x 2.5" (no type) (None) | AO-S-BALC-HYD |
+| rough opening, 2.5" x 2.5" (no type) (None) | AO-S-BALCONY-HYD |
 | rough opening, 2.75" x 3.75" (no type) (None) | AO-BW-MDO-TIE-RELIEF |
 | rough opening, 9" x 9" (no type) (None) | AO-M-ERV-OA, AO-S-ERV-EA |
 | rough opening, 14" x 20" arched (no type) (None) | AO-B-BRICK-WIN |
@@ -481,8 +481,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 32" x 80" (no type) (None) | O-S-VANITY |
 | rough opening, 34" x 25" (no type) (None) | AO-M-FIRE-NICHE |
 | rough opening, 36" x 80" (no type) (None) | D-B-GYM |
-| rough opening, 63.31" x 1.75" (no type) (None) | AO-B-PATIO-SEAT |
-| rough opening, 63.31" x 6.5" (no type) (None) | AO-B-PATIO-CURB-APPROACH |
+| rough opening, 63.31" x 1.75" (no type) (None) | AO-B-SUNKEN-SEAT |
+| rough opening, 63.31" x 6.5" (no type) (None) | AO-B-SUNKEN-CURB-APPROACH |
 | rough opening, 63.31" x 80" arched (no type) (None) | AO-B-BRICK-DOOR |
 | L3 1/2" x 3 1/2" x 1/4" steel angle (L3.5x3.5x0.25) | BM-M-FIRE-LINTEL |
 

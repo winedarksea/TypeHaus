@@ -95,13 +95,13 @@
     "AO-M-ERV-OA",
     "AO-M-PORCH-HYD",
     "AO-S-ERV-EA",
-    "AO-S-BALC-HYD",
+    "AO-S-BALCONY-HYD",
     "D-B-GYM",
     "D-S-STUDY2",
     "O-S-VANITY",
     "AO-M-FIRE-NICHE",
-    "AO-B-PATIO-SEAT",
-    "AO-B-PATIO-CURB-APPROACH"
+    "AO-B-SUNKEN-SEAT",
+    "AO-B-SUNKEN-CURB-APPROACH"
    ],
    "files": [
     "packages/engine/src/typehaus/emit/draw/schedules/openings.py"

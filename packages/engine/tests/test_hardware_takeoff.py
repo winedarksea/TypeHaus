@@ -320,7 +320,7 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # The wider study RO removes one girt block; its centerline remains held.
     # 1136 -> 1164 on 2026-10-27: the BBD75 band's +17'-4" backing course packs 28 more
     # girt stations across the N/S walls. 1163 since the door holds released (2026-10-29):
-    # D-M-BALC's re-centred 63 5/16" RO packs one girt station fewer.
+    # D-M-PORCH's re-centred 63 5/16" RO packs one girt station fewer.
     # 1165 since the band moved to +19'-0" (2026-10-31): its course now runs unbroken past
     # the north window heads it used to stop at. 1157 on 2026-11-01: 8 rake-cut attic course
     # ends land on a stud that already has a block (`land_free_ends`).
@@ -503,15 +503,15 @@ def test_exterior_door_jambs_are_strapped_to_the_foundation(catlin_model) -> Non
                      and element.size == "STHD"]
     assert {element.tag for element in jamb_holdowns} == {
         "CN-M-HD-ENTRY-E", "CN-M-HD-ENTRY-W"}
-    # The balcony door stands on W-B-S3-FR, a framed wall on a curb: a strap across the
+    # The porch door stands on W-B-S3-FR, a framed wall on a curb: a strap across the
     # floor band into its studs, and an STHD14 cast into the curb under them. Never an
     # embedded part into wood.
     by_tag = {tag: catlin_model.plan.by_tag(tag) for tag in (
-        "CN-M-HD-BALC-W", "CN-M-HD-BALC-E", "CN-B-HD-BALC-W", "CN-B-HD-BALC-E")}
-    for tag in ("CN-M-HD-BALC-W", "CN-M-HD-BALC-E"):
+        "CN-M-HD-PORCH-W", "CN-M-HD-PORCH-E", "CN-B-HD-PORCH-W", "CN-B-HD-PORCH-E")}
+    for tag in ("CN-M-HD-PORCH-W", "CN-M-HD-PORCH-E"):
         assert by_tag[tag].kind is ConnectorKind.TENSION_TIE and by_tag[tag].size == "MSTC52"
         assert by_tag[tag].connects == ("W-M-S2", "W-B-S3-FR")
-    for tag in ("CN-B-HD-BALC-W", "CN-B-HD-BALC-E"):
+    for tag in ("CN-B-HD-PORCH-W", "CN-B-HD-PORCH-E"):
         assert by_tag[tag].kind is ConnectorKind.HOLD_DOWN and by_tag[tag].size == "STHD14"
         assert by_tag[tag].connects == ("W-B-S3-FR", "W-B-S3")
     # Each one names the framed wall it straps and the foundation wall it is cast into.

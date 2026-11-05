@@ -565,7 +565,7 @@ def test_opening_and_ridge_conditions_scaffold_detail_slices(catlin_model):
     """
     keys = {d.key for d in derive_detail_slices(catlin_model)}
     assert "opening_perimeter:EXT_2X6" in keys
-    # The south wall's openings (D-B-PATIO, WIN-B-SAUNA) are all in the sunken-garden face,
+    # The south wall's openings (D-B-SUNKEN, WIN-B-SAUNA) are all in the sunken-garden face,
     # a FRAMED assembly, so the key follows it. The door's perimeter is bound by
     # TR-CATLIN-GARDEN-FRAMED-OPENING (an innie opening in a
     # 2x6 wall, `window-head-jamb-sill`); the sauna window's is still

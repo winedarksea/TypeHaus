@@ -290,7 +290,7 @@
         "FX-S-BATH1-WC",
         "FX-G-HYDRANT",
         "FX-M-PORCH-HYD",
-        "FX-S-BALC-HYD"
+        "FX-S-BALCONY-HYD"
       ],
       "files": [
         "houses/catlin/plan/mep_supply_devices.py",
@@ -305,7 +305,7 @@
       },
       "confidence": 0.4,
       "evidence": {
-        "measured": "mep.fixture_port_connection UNKNOWN: FX-S-BATH1-WC cold port vs PR-S-BATH1-WC-CW 4.67\" away; FX-G-HYDRANT inlet vs PR-G-SERVICE-CW 6.16\"; PORCH-HYD 3.13\"; BALC-HYD 2.77\". Approximate-port products are I2.",
+        "measured": "mep.fixture_port_connection UNKNOWN: FX-S-BATH1-WC cold port vs PR-S-BATH1-WC-CW 4.67\" away; FX-G-HYDRANT inlet vs PR-G-SERVICE-CW 6.16\"; PORCH-HYD 3.13\"; BALCONY-HYD 2.77\". Approximate-port products are I2.",
         "expected": "stub within ~1\" of the product's published supply station",
         "method": "checks.json fixture_port_connection messages; scratchpad M2/p8.py lists port z AFF"
       },

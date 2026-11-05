@@ -74,12 +74,12 @@ def test_deck_stacks_post_beam_joist(catlin_model):
     BM-SG-BLW tilts 2 5/8" over its run for drainage (``Beam.top_rise_end``), so its
     ``z0_m``/``z1_m`` are the whole run's Z extent and comparing either against one joist is
     comparing two different places. The sweep path is what says where the member is at a
-    given plan y, and FS-SG-DECK's field rises with it.
+    given plan y, and FS-SG-BALCONY's field rises with it.
     """
     tol = inch(0.25).meters
     solids = {s.tag: s for s in catlin_model.solids}
     post, beam = solids["PT-SG-BF1"], solids["BM-SG-BLW"]
-    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-DECK")
+    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-BALCONY")
 
     (_x0, y0, cz0), (_x1, y1, cz1) = beam.sweep.path
     depth = (beam.z1_m - beam.z0_m) - abs(cz1 - cz0)
@@ -104,7 +104,7 @@ def test_joists_span_both_beams_and_cantilever_nine_inches(catlin_model):
     # 9", not 6", since 2026-09-03: at 6" the deck edge (and TR-SG-FASCIA's drip with it)
     # landed exactly on the outer face of the 12" columns, so the balcony shed water straight
     # down the concrete.
-    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-DECK")
+    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-BALCONY")
     spans = {round(m.length_m, 3) for m in deck.members if m.category == "joist"}
     expected = round(inch(216).meters + 2 * inch(9).meters, 3)
     assert spans == {expected}

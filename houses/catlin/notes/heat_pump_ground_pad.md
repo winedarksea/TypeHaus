@@ -26,7 +26,7 @@ member — still governs any future deck. The stair that shares this pad and mad
 ## Why the balcony was left
 
 Owner decision, 2026-09-02. `EQ-M-HP1-OD` (Gree FLEXX Ultra 24k, 187 lb) and `EQ-M-HP2-OD`
-(Gree Multi R32 30k, 145 lb) stood on `FS-SG-DECK` at +10'-0", the watertight aluminium
+(Gree Multi R32 30k, 145 lb) stood on `FS-SG-BALCONY` at +10'-0", the watertight aluminium
 roof of an occupied porch. Nothing about that was unbuildable; the previous note works the
 whole detail through and it holds. It was simply expensive in kinds of cost that do not
 appear in a bid:

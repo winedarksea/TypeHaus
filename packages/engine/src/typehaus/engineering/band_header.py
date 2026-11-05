@@ -2,7 +2,7 @@
 
 ``Door.header_in_band`` hands an opening's header to the floor above it: the host wall frames
 none, and the floor's ``JoistReinforcement`` plies (``resolve/band_headers.py``) are the beam,
-seated on the jamb packs through the plates. catlin's D-B-PATIO is the case: W-B-S3-FR bears
+seated on the jamb packs through the plates. catlin's D-B-SUNKEN is the case: W-B-S3-FR bears
 FS-M-EAST's edge line but runs PARALLEL to its joists (geometry review C3-E2).
 
 **What loads it, from the model.** The floor strip the edge line carries — half the way to
@@ -17,7 +17,7 @@ its p.5 deflection equation with the shear term, at IRC Table R301.7's L/360 liv
 
 **Not graded here:** bearing (Fc_perp) under the stacked jamb loads at the seats, the ply
 connection, and lateral support (the subfloor sheathes the top edge). Oracle:
-``houses/catlin/notes/patio_band_header.md``.
+``houses/catlin/notes/sunken_door_band_header.md``.
 """
 
 from __future__ import annotations
@@ -184,7 +184,7 @@ def _one(ctx: EngineeringContext, door) -> EngineeringRecord:
     )
 
 
-oracled_by(KIND, Oracle(note="patio_band_header.md", section="§3",
+oracled_by(KIND, Oracle(note="sunken_door_band_header.md", section="§3",
                         test="tests/test_band_header.py"))
 
 

@@ -1,4 +1,4 @@
-"""``band_header/D-B-PATIO`` against ``houses/catlin/notes/patio_band_header.md`` (§2-§3)."""
+"""``band_header/D-B-SUNKEN`` against ``houses/catlin/notes/sunken_door_band_header.md`` (§2-§3)."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ _ROWS = {"bending": (189.9, 17849.0), "shear": (131.5, 7897.0),
 
 
 def test_the_record_reproduces_the_note(catlin_ctx) -> None:
-    record = catlin_ctx.engineering["band_header/D-B-PATIO"]
+    record = catlin_ctx.engineering["band_header/D-B-SUNKEN"]
     assert record.status is Status.OK, record.summary
     states = {s.name: s for s in record.limit_states}
     for name, (demand, capacity) in _ROWS.items():
@@ -25,7 +25,7 @@ def test_the_record_reproduces_the_note(catlin_ctx) -> None:
     values = {q.name: q.value for q in record.inputs}
     assert values["tributary"] == pytest.approx(8 / 12, abs=1e-6)
     assert (values["seat_lo"], values["seat_hi"]) == pytest.approx((6.0, 6.0))
-    # §2: D-M-BALC's packs stand on the seats, so nothing lands in the span.
+    # §2: D-M-PORCH's packs stand on the seats, so nothing lands in the span.
     assert values["loads_inside_span"] == 0
     assert "W-M-S2:king-0-l1" in record.notes[0]
 

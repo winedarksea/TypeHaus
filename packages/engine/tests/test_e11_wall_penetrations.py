@@ -8,7 +8,7 @@ axis length put the cut somewhere else in every layer — by inches, differently
 Two consequences, and the second is why the hydrants drew nothing: the elevation projector
 groups a wall's layers into ONE candidate, so the drawn hole is the intersection of the
 per-layer holes. A 2'-6" window survived as a narrower hole; the 2 1/2" frost-free wall
-hydrant penetrations (``AO-M-PORCH-HYD``, ``AO-S-BALC-HYD``) did not overlap at all and the
+hydrant penetrations (``AO-M-PORCH-HYD``, ``AO-S-BALCONY-HYD``) did not overlap at all and the
 cladding read unbroken across both.
 """
 
@@ -22,7 +22,7 @@ from typehaus.emit.draw.elevation_project import collect_candidates, view_for
 from typehaus.emit.draw.elevation_project import project_solids
 from typehaus.resolve.geometry_walls import cuts_layer, layer_solids
 
-_HYDRANT_PENETRATIONS = (("AO-M-PORCH-HYD", "W-M-S1"), ("AO-S-BALC-HYD", "W-S-S1"))
+_HYDRANT_PENETRATIONS = (("AO-M-PORCH-HYD", "W-M-S1"), ("AO-S-BALCONY-HYD", "W-S-S1"))
 
 
 def _along(wall, point) -> float:

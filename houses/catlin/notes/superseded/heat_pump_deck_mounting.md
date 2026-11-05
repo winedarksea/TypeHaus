@@ -1,7 +1,7 @@
 > # ⛔ SUPERSEDED 2026-09-02
 >
 > **Read `notes/heat_pump_ground_pad.md` instead.** Both condensers moved off the
-> balcony to a poured pad in the yard pocket east of the porch. `FS-SG-DECK` carries no
+> balcony to a poured pad in the yard pocket east of the porch. `FS-SG-BALCONY` carries no
 > equipment, no stand, no blocking and no penetrations, and `HP_CONDENSATE` is deleted. This
 > note is kept because the RULE it established is not superseded: a fastener through a deck
 > that is also a roof over occupied space lands in a sacrificial member, never in a beam and
@@ -11,13 +11,13 @@
 # Balcony heat pumps — mounting, and the eight holes
 
 Model: `params/sunken_garden.py` (`_HP_STAND_AT`, `HP_STAND_LEGS`,
-`HP_STAND_ANCHORS`, `FS-SG-DECK.reinforcements`), `plan/electrical.py` (the two units),
+`HP_STAND_ANCHORS`, `FS-SG-BALCONY.reinforcements`), `plan/electrical.py` (the two units),
 `plan/mep_drainage.py` (`HP_CONDENSATE`). Graded by `mep.deck_equipment_support`.
 Companion to `notes/beam_water_protection.md`, whose cap-on-tape order this must not violate.
 
 ## What had to be decided
 
-`EQ-M-HP1-OD` (Gree Vireo GEN3) and `EQ-M-HP2-OD` (Multi 30k) stand on `FS-SG-DECK` at
+`EQ-M-HP1-OD` (Gree Vireo GEN3) and `EQ-M-HP2-OD` (Multi 30k) stand on `FS-SG-BALCONY` at
 +10'-0". That deck is a **watertight aluminium plank that is also the roof of an occupied
 porch**, and before this change it had **zero penetrations** — both guards are
 `METAL_FASCIA_MOUNT`, hung off `TR-SG-FASCIA`, which was deliberate.
@@ -62,11 +62,11 @@ replaced without dismantling the balcony. Stiffness is not the scarce thing here
 2. **Holes in the high, dry third.** The units sit at the north end of the deck's 2"-in-8'-8"
    southward fall, so only ~3' of deck sheds across the penetrations.
 3. **Sacrificial host.** Every lag lands in new full-depth 2x8 blocking
-   (`FS-SG-DECK.reinforcements`, `plies=1` so it emits blocks and no sister plies). Sixteen
+   (`FS-SG-BALCONY.reinforcements`, `plies=1` so it emits blocks and no sister plies). Sixteen
    blocks, two per anchor, one either side of the nearest joist line.
 4. **Butyl under everything, for free.** `"blocking"` is already in
    `takeoff/member_protection._TAPED_CATEGORIES`, so every block inherits
-   `FS-SG-DECK.top_protection` and tapes and bills itself. The butyl is under the base plate
+   `FS-SG-BALCONY.top_protection` and tapes and bills itself. The butyl is under the base plate
    by construction.
 5. **A sealed hole, not just a sealed surface.** Bonded EPDM washer on the shank, butyl gasket
    under the plate, and sealant in the pilot hole. A sealed surface over an unsealed hole is
@@ -84,7 +84,7 @@ replaced without dismantling the balcony. Stiffness is not the scarce thing here
 **Nothing dries upward.** `aluminum-deck` is 0.05 perm — vapour-impermeable. Water that gets
 into a penetration cannot dry up through the plank. Its only escape is downward.
 
-**`FS-SG-DECK` has no `ceiling_below`**, so the joist bays are open to the porch. That is both
+**`FS-SG-BALCONY` has no `ceiling_below`**, so the joist bays are open to the porch. That is both
 the drying path and the inspection path: a weeping anchor is visible from a chair on the porch
 years before it is structural.
 

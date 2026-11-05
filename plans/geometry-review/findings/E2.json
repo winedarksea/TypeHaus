@@ -66,8 +66,8 @@
    "title": "BBD75 section is drawn symmetric with the 2in batten centred mid-pitch; the product has its batten at the panel edge, so drawn battens and corner/jamb relations are off by up to 1in",
    "elements": [
     "board-batten-24",
-    "W-M-S2/D-M-BALC",
-    "W-S-S2/D-S-DECK-E"
+    "W-M-S2/D-M-PORCH",
+    "W-S-S2/D-S-BALCONY"
    ],
    "files": [
     "packages/engine/src/typehaus/resolve/metal_skin_profiles.py:27",
@@ -88,7 +88,7 @@
    },
    "confidence": 0.35,
    "evidence": {
-    "measured": "_board_batten_profile: crown +-1in about 0, flats +-6in, battens at 12in*k from the layout-line origin (a half rib at station 0 = the corner). D-M-BALC jamb sits 0.34in from a batten centreline, so a 2in rib straddles its RO edge; WIN-M-BED-S2 jamb 1.0in, WIN-S-PLANT2 1.0in.",
+    "measured": "_board_batten_profile: crown +-1in about 0, flats +-6in, battens at 12in*k from the layout-line origin (a half rib at station 0 = the corner). D-M-PORCH jamb sits 0.34in from a batten centreline, so a 2in rib straddles its RO edge; WIN-M-BED-S2 jamb 1.0in, WIN-S-PLANT2 1.0in.",
     "expected": "BBD75-1212 profile (guide p.12): 12in coverage with the 2in batten at ONE EDGE of the panel (rib centre 11in from the start edge); runs either hand. Rib centres therefore sit 1in off the 12in*k grid and the installer sets the start line to place ribs ('plan the work to get the ribs where desired').",
     "method": "Read guide p.12 image; probe scratchpad geometry-review/E2/p6.py prints jamb-to-batten-centre distance for every N/S opening."
    },

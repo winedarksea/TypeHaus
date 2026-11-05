@@ -52,7 +52,7 @@ def _hits(member, kings) -> list:
 def _slid_off(member, hit, wall, others):
     """The rung slid along ``wall`` to butt the king(s) it clips, or None.
 
-    A king standing under the branch replaces the rung; one that only clips its edge (D-M-BALC
+    A king standing under the branch replaces the rung; one that only clips its edge (D-M-PORCH
     beside W-M-C1's tee) leaves the branch's far face and its end stud with nothing else to
     nail to, so the rung keeps its station less the overlap.
     """

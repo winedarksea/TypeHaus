@@ -126,7 +126,7 @@ _BREEZEWAY_PIERS = ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4")
 # this structure.
 #
 # ** THE SHAFTS GREW 7 1/4" ON 2026-09-03 AND GAVE IT BACK ON 2026-09-05. ** The court
-# dropped that far (the flood step at D-B-PATIO) and `_pier_bell_bottom_ft` is 42" below the
+# dropped that far (the flood step at D-B-SUNKEN) and `_pier_bell_bottom_ft` is 42" below the
 # COURT, so both bells followed the ground down and the shafts made up the difference; then
 # the court came back flush and they came back with it. No beam soffit moved in either
 # direction. In between, `_pier_bell_bottom_ft` was PINNED at the dropped elevation for a
@@ -206,7 +206,7 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 # with the centre line and the 2x12 deck edge is 13", so A_s 35.94 -> 29.60 sf, 506 lb of
 # storey shear over the same four columns. The guard rows did not move.
 #
-# ** 3" LOWER ON 2026-09-23 (note §15). ** The balcony came down for R311.3 at D-S-DECK-E:
+# ** 3" LOWER ON 2026-09-23 (note §15). ** The balcony came down for R311.3 at D-S-BALCONY:
 # columns 108.125/109.958 -> 105.125/106.958", q_h 18.63 -> 18.57 psf at the lower guard top.
 #
 # ** GUARD 2,452 -> 2,675 LATER ON 2026-09-23 (note §16). ** Its lever is guard top to the

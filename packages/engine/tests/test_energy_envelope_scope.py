@@ -52,7 +52,7 @@ from typehaus.resolve.solid_categories import in_slab_family
 # 2026-10-25 French pairs: 100 sf x (0.21 - 0.15) = +6 UA, x85 F = +510 heating.
 # 2026-10-29 D-M-ENTRY's derived RO: its 37-5/8 x 82 unit replaces the 36 x 80 void,
 # +1.43 sf of door from wall, +0.18 UA, +15.4 heating, +2.7 cooling.
-# 29,997.3 before the door holds released (2026-10-29): D-M-BALC bills its published unit.
+# 29,997.3 before the door holds released (2026-10-29): D-M-PORCH bills its published unit.
 # The court backup's 2" EPS came off (2026-11-04, the brick moved flush onto the strips):
 # heating 30,170.7 -> 30,182.8, cooling 20,231.9 -> 20,337.4.
 _HEATING_BTUH = 30_182.8
@@ -90,7 +90,7 @@ _COMPONENTS = (
     ("roof", 1544.4, 29.059),
     ("slab", 1296.0, 25.468),
     ("windows", 293.65, 49.381),
-    # Two revised catalog pairs use assembled unit area, not their wider framed ROs. D-M-BALC
+    # Two revised catalog pairs use assembled unit area, not their wider framed ROs. D-M-PORCH
     # left its held 60x80 void for its 62 9/16 x 82 unit (2026-10-29): +2.29 sf.
     ("doors", 128.30, 25.66),
 )
@@ -242,7 +242,7 @@ def test_the_sunken_garden_walkout_walls_are_envelope(catlin_model_ro) -> None:
     assert not any(tag in item for tag in brick_openings
                    for item in report.unknown_inputs)
     # And the real glazing in that elevation is the court wall's, on the south facade.
-    for tag in ("D-B-PATIO", "WIN-B-SAUNA"):
+    for tag in ("D-B-SUNKEN", "WIN-B-SAUNA"):
         opening = next(o for o in catlin_model_ro.openings if o.tag == tag)
         host = catlin_model_ro.wall(opening.host_wall)
         assert geometry.is_envelope_wall(host), tag

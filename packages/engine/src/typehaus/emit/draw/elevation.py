@@ -241,7 +241,7 @@ def _dominant_plane_depth(pieces: list[VisiblePiece]) -> float:
     """The depth of the plane carrying the most visible area — the facade's own cladding.
 
     Taking the *frontmost* plane instead is the obvious rule and it is wrong here: on this
-    house's south elevation the freestanding sunken-garden structure stands 30 feet in front
+    house's south elevation the freestanding court structure stands 30 feet in front
     of the building, and making that the reference greys out the entire house on its own
     principal elevation.
     """

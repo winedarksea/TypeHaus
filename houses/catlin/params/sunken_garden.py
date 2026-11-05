@@ -33,7 +33,7 @@ Vertical stack (project-north frame; +X east, +Y north, +Z up):
 
 Everything here is generated — these elements carry no editable-source location. Both decks
 are FloorSystems outright, joists plus the plank as the deck sheet: FS-SG-PORCH (composite),
-FS-SG-DECK (aluminium).
+FS-SG-BALCONY (aluminium).
 """
 
 from __future__ import annotations
@@ -134,7 +134,7 @@ class SunkenGardenSpec:
     # sum `_y_out_n` is what the whole porch is laid out from and it does NOT move, so the
     # current split of the same -0'-10" is 6.75" of wall + 3.25" of air. Widening the gap
     # back to 5" is a DESIGN MOVE, not a cleanup: it pushes the court 2.25" south, off
-    # D-B-PATIO's landing patch (coverage drops under R311.3's 85% and the check FAILs).
+    # D-B-SUNKEN's landing patch (coverage drops under R311.3's 85% and the check FAILs).
     gap_to_house_in: float = 10.0 - HOUSE_NS_OUTBOARD_IN  # 3.25 inches to BBD75 crown
     # The house's real BELOW-GRADE outboard face, on the south run: 0.06" waterproofing +
     # 2" + 2" XPS + 0.125" acrylic foundation coating over BASEMENT_8's pour
@@ -210,7 +210,7 @@ class SunkenGardenSpec:
     # house-wide number transcribed rather than a second derivation, and
     # ``integrity.basement_bearing_seat`` checks the two agree. This is the BASEMENT floor
     # plane, and ``SL-SG-FLOOR`` tops out on it again: ``court_step_down_in`` is back to 0,
-    # SL-SG-STOOP is retired, and D-B-PATIO takes its single 7 1/4" riser off the court
+    # SL-SG-STOOP is retired, and D-B-SUNKEN takes its single 7 1/4" riser off the court
     # itself. W-B-S2/W-B-S3 are 7 1/4" curbs (``storeys/basement.py``); W-B-S3-FR stands on
     # one at ``base_elevation=inch(-102.1875)`` and carries the door at
     # ``sill_height=inch(0)``.
@@ -223,7 +223,7 @@ class SunkenGardenSpec:
     # ** THE FLOOD STEP IS BACK TO ZERO (2026-09-05), AND THE CURB IS NOW THE WHOLE DAM. **
     # The court surface is FLUSH with the basement floor plane again. Owner's call, taken on
     # a stated trade: the court reads as ONE surface with a single 7 1/4" riser at
-    # D-B-PATIO, instead of a 23.7 sf landing perched a riser above 508 sf of floor.
+    # D-B-SUNKEN, instead of a 23.7 sf landing perched a riser above 508 sf of floor.
     #
     # **What it costs is half the freeboard, and that is the whole cost.** Water in the
     # court climbs 7 1/4" to the threshold instead of 14 1/2". Over the court's 442 sf (17'-0"
@@ -375,7 +375,7 @@ class SunkenGardenSpec:
     # at `balcony_level_ft` is unaffected.
     #
     # Worth keeping straight while reading this file: the balcony beams sit under a
-    # DRY-BELOW surface — `FS-SG-DECK`'s plank is `aluminum-deck`, a Wahoo AridDeck-style
+    # DRY-BELOW surface — `FS-SG-BALCONY`'s plank is `aluminum-deck`, a Wahoo AridDeck-style
     # watertight system with a drip trough and leader (see the deck's own comment) — while
     # the porch beams sit under GAPPED composite. That asymmetry is the real ESR-1387 5.3
     # exposure story, and it is why the two pairs were never the same problem.
@@ -443,7 +443,7 @@ class SunkenGardenSpec:
     joist_cantilever_in: float = 9.0  # deck joist tips overhang the outer beams
     # Joist top at the deck's low south edge, and the court-upper storey's datum
     # (plan/manifest.py reads it). 3" under the second storey (owner, 2026-09-23) so the north
-    # edge, 2.42" up the 1/4"/ft fall, lands under D-S-DECK-E's threshold (R311.3).
+    # edge, 2.42" up the 1/4"/ft fall, lands under D-S-BALCONY's threshold (R311.3).
     balcony_level_ft: float = 10.0 - 3.0 / 12.0
 
 
@@ -536,7 +536,7 @@ _y_in_s = _y_in_n - SPEC.clear_length_ft
 _y_ax_s = _y_in_s - _half
 
 # ** THE PORCH DECK'S NORTH EDGE IS W-B-BRICK'S SOUTH FACE (2026-11-04). **
-# The deck reaches toward the cladding so D-M-BALC's 36" R311.3 patch is covered. It stood on
+# The deck reaches toward the cladding so D-M-PORCH's 36" R311.3 patch is covered. It stood on
 # `_y_in_n` (-10") while the brick was at -10.06..-13.685"; the brick moved north to
 # -6.0..-9.625" with W-SG-BRKBM, so the deck follows it 3/8" north rather than stop short of
 # it. The joists clear the brick VERTICALLY (top -13 1/3", soffit -11 1/4"); nothing grades
@@ -1541,7 +1541,7 @@ GARDEN_FLOOR_OPENINGS = [
     # And the same cut around W-SG-BRKBM at the north end: the rim's net north edge is the
     # beam's south face (-18" since 2026-11-04). The OUTLINE stays on `_y_in_n` (-10") and is
     # voided here, because `code.R311_3_exterior_landing` reads outlines and ignores voids:
-    # stopped at -18" the outline left D-B-PATIO with no landing.
+    # stopped at -18" the outline left D-B-SUNKEN with no landing.
     FloorOpening(uid="SGO003AAAA", tag="FO-SG-BRKBM", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(_x_in_w), ft(_y_ax_brkbm - _brkbm_half)),
                           pt(ft(_x_in_e), ft(_y_ax_brkbm - _brkbm_half)),
@@ -1561,7 +1561,7 @@ GARDEN_FLOOR_OPENINGS = [
     # `_frost_protection_footprints` ALL gate on `category == "slab"`. Take the rim away and
     # `open_excavation_floors()` returns nothing for this court: FT-B-S2's frost cover reads
     # ~86" instead of 8" and PASSES FOR THE WRONG REASON at 0 FAIL; `code.R311_3_exterior_
-    # landing` loses D-B-PATIO's landing, which has only ~2 points of coverage margin;
+    # landing` loses D-B-SUNKEN's landing, which has only ~2 points of coverage margin;
     # `space_summary` puts 610 sf of open sky onto the basement's gross area. A north-bay
     # fragment does not rescue it either — `local_grade_elevation_m` measures
     # `here.distance(polygon) <= reach_m`, and a fragment over the porch bay leaves FT-SG-S
@@ -1645,7 +1645,7 @@ GARDEN_FIELD = Slab(
 
 # ** SL-SG-STOOP IS RETIRED (2026-09-05). uid SGS503AAAA MUST NOT BE REUSED. **
 #
-# It existed for exactly one reason: when the court dropped 7 1/4" it left D-B-PATIO's
+# It existed for exactly one reason: when the court dropped 7 1/4" it left D-B-SUNKEN's
 # threshold 14 1/2" above the floor in front of it — past `_MAX_NONREQUIRED_STEP_DOWN`
 # (7 3/4") by nearly a riser, with no landing, which is a hard R311.3 FAIL. So a 23.7 sf
 # block of the OLD flush floor was left standing where the door needed it, and the court
@@ -1674,7 +1674,7 @@ FROST_WINGS: list[Slab] = []
 # ============================================================================
 # Heat-pump equipment pad, in the yard pocket east of the porch.
 # ============================================================================
-# EQ-M-HP1-OD and EQ-M-HP2-OD (authored in plan/electrical.py) stood on FS-SG-DECK at +10'
+# EQ-M-HP1-OD and EQ-M-HP2-OD (authored in plan/electrical.py) stood on FS-SG-BALCONY at +10'
 # until 2026-09-02. They stand on the ground now, and the whole detail this file used to
 # carry — eight lags through a watertight plank, sixteen sacrificial blocks, four
 # reinforcements, two traced condensate runs — went with them. See
@@ -2008,7 +2008,7 @@ _y_porch_guard_block = _y_ax_front + 2.0 / 12.0
 # PORCH_STAIR — the porch's only way down to grade (2026-09-03).
 # ============================================================================
 # The porch floor is at 0'-0" and grade east of it at -2'-10"; until now the only way onto
-# the porch was D-M-BALC, the French pair at x 21'-4". The flight goes east off the porch's
+# the porch was D-M-PORCH, the French pair at x 21'-4". The flight goes east off the porch's
 # east edge into the yard pocket, from the clear stretch of W-SG-E1's top between its two
 # columns, landing on STAIR_PAD below. See notes/porch_stair.md.
 #
@@ -2220,7 +2220,7 @@ _WALL_UNDER_PILLAR = {
 # That arithmetic is written down because nothing checks it: checks/structural/deck.py
 # grades beam *span* only and has no beam-cantilever rule, so this overhang would pass
 # silently either way — and so would the 8" one at the south end, against the same 22".
-# IRC Table R507.5(1) is keyed on the JOIST span, which is unchanged at FS-SG-DECK's 10.00'
+# IRC Table R507.5(1) is keyed on the JOIST span, which is unchanged at FS-SG-BALCONY's 10.00'
 # (limit 9.17' for a 3-2x12), so what this buys is margin: the three balcony beams are at
 # 7.33' against 9.17' span, 22" of headroom. They pass even on the 12' row (8.33'), which is
 # what any further increase in the deck's joist span would drop the lookup to.
@@ -2456,7 +2456,7 @@ _bal_y1 = _y_in_n - _END_JOIST_INSET_FT
 _DECK_JOIST_OUTLINE = (pt(ft(_deck_x_w), ft(_bal_y0)), pt(ft(_deck_x_e), ft(_bal_y0)),
                        pt(ft(_deck_x_e), ft(_bal_y1)), pt(ft(_deck_x_w), ft(_bal_y1)))
 # Guard the three open edges (west, front/south, east); the north edge abuts the house.
-# Defined here rather than beside BALCONY_GUARD below because FS-SG-DECK's rim blocking is
+# Defined here rather than beside BALCONY_GUARD below because FS-SG-BALCONY's rim blocking is
 # authored at this path's own post stations — the blocks and the posts cannot be allowed to
 # drift apart.
 _BALCONY_RIM_MEMBER = f"1.25x{_balcony_joist_depth_ft * 12:g} rim"
@@ -2484,19 +2484,19 @@ _deck_top = ft(SPEC.balcony_level_ft)  # 9'-9" joist top at the south edge
 # aluminum boards, not the joists they sit on. Basing the guard on _deck_top instead would
 # make the authored 42" measure 40.5" in the field and fail the guard-height rule.
 _deck_walking_surface = _deck_top + inch(SPEC.balcony_deck_thickness_in)
-# ``_GUARD_PATH`` is hoisted up beside ``_DECK_OUTLINE``, because FS-SG-DECK's rim
+# ``_GUARD_PATH`` is hoisted up beside ``_DECK_OUTLINE``, because FS-SG-BALCONY's rim
 # blocking is authored at this guard's own post stations.
 # **THE PRODUCT IS WILLIAMS ARCHITECTURAL PRODUCTS, ICC-ES ESR-3485, 42" BLACK** — the
 # same guard as RL-SG-PORCH below it, and see that block for why it replaced Trex Signature
 # and what the alternate is.
 #
 # **THIS ONE STAYS FASCIA-MOUNTED, and that is a roofing decision rather than a railing
-# one.** FS-SG-DECK's aluminium plank is the porch roof, and since 2026-09-02 it carries NO
+# one.** FS-SG-BALCONY's aluminium plank is the porch roof, and since 2026-09-02 it carries NO
 # penetrations at all — the two heat-pump stands went to grade. Surface posts would put
 # ~36 holes through the only waterproof plane in this structure to save bracket money. The
 # brackets through-bolt the PVC fascia and the 2x8 rim per Ultralox's own fascia-mount
 # instructions (four 5/16" x 4" bolts, nuts on the rim's inside face, reachable from the
-# open bays below), landing in the rim blocking authored in ``FS-SG-DECK.reinforcements``.
+# open bays below), landing in the rim blocking authored in ``FS-SG-BALCONY.reinforcements``.
 # ``type_ref`` stays the library's fascia type for exactly that reason.
 _BALCONY_BRACKET_DROP_IN = SPEC.balcony_deck_thickness_in + 0.5  # half inch below rim
 _BALCONY_BRACKET_BOTTOM = (_deck_walking_surface - inch(_BALCONY_BRACKET_DROP_IN)
@@ -2580,7 +2580,7 @@ PORCH_JOISTS = FloorSystem(
 )
 
 # --- the porch enclosure's flank blocking (2026-09-03) --------------------------------
-# The bug path nobody would have seen. FS-SG-DECK's joists run E-W and the enclosure's two
+# The bug path nobody would have seen. FS-SG-BALCONY's joists run E-W and the enclosure's two
 # FLANK tracks run N-S at x = 9'-0"/27'-0" (plan/placeables.py), so the curtain plane crosses
 # EVERY 16" joist bay perpendicular. Above the track each bay is open inside<->outside — a
 # continuous 7 1/4" x 16" hole every 16" along both flanks, straight past a sealed curtain.
@@ -2591,7 +2591,7 @@ PORCH_JOISTS = FloorSystem(
 # only the blocks — the same idiom as the guard's rim blocks above, and what keeps
 # ``test_no_catlin_deck_sisters_a_joist`` green. A stray ``plies=3`` here would silently add
 # sisters and their lumber. The blocks resolve at the joists' full depth, land flush with the
-# soffit the track screws to, and inherit FS-SG-DECK's ``top_protection`` butyl.
+# soffit the track screws to, and inherit FS-SG-BALCONY's ``top_protection`` butyl.
 # 6" inside the side walls' court faces, as they have always been.
 _ENCLOSURE_TRACK_X = (_x_in_w + 0.5, _x_in_e - 0.5)   # 10'-0" / 26'-0"
 # The front track's line, and the spare joist it screws to (BALCONY_JOISTS.extra_lines):
@@ -2629,7 +2629,7 @@ GARDEN_FLOOD_SUPPORT_ELEVATION = (
 # cantilevers, by the joists' perpendicular extent — _x_ax_w - 6" to _x_ax_e + 6" by the
 # balcony's front plane to _y_in_n.
 BALCONY_JOISTS = FloorSystem(
-    uid="SGFS02AAAA", tag="FS-SG-DECK",
+    uid="SGFS02AAAA", tag="FS-SG-BALCONY",
     # ** THE FIELD FOLLOWS THE BEAMS, AND SO DOES THE DECK. ** BM-SG-BLW/BLE tilt
     # (`_balcony_beam_rise`); `resolve/floor_tilt.py` seats each joist on them at its own
     # station — level E-W, a ~1/4" step per 12" line — and the plank is the plane over those
@@ -2654,7 +2654,7 @@ BALCONY_JOISTS = FloorSystem(
     # the garden flood's underside box. The two heat-pump hosts that used to be here went to grade on 2026-09-02
     # (notes/heat_pump_ground_pad.md), which left this plank with ZERO penetrations — and
     # that is exactly why the balcony's guard stays FASCIA-mounted while the porch's goes
-    # surface: FS-SG-DECK's aluminium plank is the porch roof, and ~36 surface baseplates
+    # surface: FS-SG-BALCONY's aluminium plank is the porch roof, and ~36 surface baseplates
     # would be the only holes in the one waterproof plane in this structure.
     #
     # What a fascia bracket needs instead is something behind the rim. Ultralox's own
@@ -2701,7 +2701,7 @@ BALCONY_JOISTS = FloorSystem(
 # ** THE BALCONY'S TIES ARE AUTHORED, NOT DERIVED (owner, 2026-09-22). ** One tie per joist
 # per beam: an H10ASS where a joist crosses BM-SG-BLW/BLE, and an H2.5ASS on the two END
 # joists of each beam (the deck's north and south edge lines). Stainless like every other tie
-# on a treated member here. Naming FS-SG-DECK is what stands the derived H2.5AZ rule down for
+# on a treated member here. Naming FS-SG-BALCONY is what stands the derived H2.5AZ rule down for
 # this deck (`joints/bearing.py`, a tie naming the assembly owns its uplift). The lines are
 # the field's own: 12" o.c. from the front edge, the north edge, and the spare joist.
 _balcony_tie_lines = sorted(
@@ -2714,7 +2714,7 @@ BALCONY_TIES = [
               position=pt(ft(_bx), ft(_ty)),
               elevation=_balcony_beam_top + _balcony_rise_at(_ty),
               size=("H2.5ASS" if _k in (1, len(_balcony_tie_lines)) else "H10ASS"),
-              connects=(_beam, "FS-SG-DECK"))
+              connects=(_beam, "FS-SG-BALCONY"))
     for _bs, _bx, _beam in (("W", _x_ax_w, "BM-SG-BLW"), ("E", _x_ax_e, "BM-SG-BLE"))
     for _k, _ty in enumerate(_balcony_tie_lines, start=1)
 ]
@@ -2925,7 +2925,7 @@ BALCONY_FASCIA = Fascia(
     top_elevation=_deck_top,
     depth=inch(math.ceil(_balcony_joist_depth_ft * 12.0 + SPEC.balcony_deck_thickness_in)),
     thickness=inch(1), material="PVC",
-    host_ref="FS-SG-DECK")
+    host_ref="FS-SG-BALCONY")
 # Front (south, low) edge only — the drip flashing follows the deck edge itself.
 _FRONT_PATH = (pt(ft(_deck_x_w), ft(_y_balcony_front)),
                pt(ft(_deck_x_e), ft(_y_balcony_front)))
@@ -3022,7 +3022,7 @@ BALCONY_RUNNEL = Gutter(
 BALCONY_DRIP = Flashing(
     uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,
     top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(4),
-    material="metal-flat-sheet", host_ref="FS-SG-DECK",
+    material="metal-flat-sheet", host_ref="FS-SG-BALCONY",
     section=FormedFlashingSection(drip=inch(_drip_depth_in)))
 # The gutter apron (2026-10-31): a "counter" section — the upstand lies on the fascia face
 # (the brackets bolt over it), the 3/4" leg kicks out over the back sheet 1/2" above the
@@ -3035,7 +3035,7 @@ BALCONY_APRON = Flashing(
     uid="0R90J0KW4T", tag="TR-SG-APRON", kind=TrimKind.DRIP_FLASHING,
     path=(pt(ft(_deck_x_w), ft(_APRON_Y)), pt(ft(_deck_x_e), ft(_APRON_Y))),
     top_elevation=_APRON_KICK_TOP, depth=_APRON_UPSTAND_TOP - _SG_GUTTER_TOP + inch(1),
-    thickness=inch(_APRON_KICK_IN), material="metal-flat-sheet", host_ref="FS-SG-DECK",
+    thickness=inch(_APRON_KICK_IN), material="metal-flat-sheet", host_ref="FS-SG-BALCONY",
     section=FormedFlashingSection(profile="counter", slope=0.5, hem=inch(0),
                                   upstand=_APRON_UPSTAND_TOP - _APRON_KICK_TOP,
                                   drip=inch(1.5)))
@@ -3047,7 +3047,7 @@ BALCONY_APRON = Flashing(
 # steel trim coil) screwed through the panel into the girts with the cladding's gasketed
 # screws, its top leg in butyl, lapping 2" down over the upstand with 1/2" of air beside it
 # and ~1" over the plank. Neither touches the other or crosses the gap fastened.
-# Both break beyond D-S-DECK-E's wrapped 3-1/2" casing with a 1/8" side joint. The
+# Both break beyond D-S-BALCONY's wrapped 3-1/2" casing with a 1/8" side joint. The
 # door pan discharges into the gap; the flashing end transition still needs detailing.
 _REAR_CLAD_Y_IN = -SPEC.house_ext_layers_in       # house cladding face
 _REAR_DECK_Y_IN = _y_in_n * 12.0 + _BALCONY_REAR_RIM_OVERSAIL_IN  # capped rim edge
@@ -3072,7 +3072,7 @@ BALCONY_REAR_FLASH = [
              path=_rear_run(_REAR_DECK_Y_IN - _REAR_BASE_W_IN / 2.0, x0, x1),
              top_elevation=_REAR_PLANK_TOP, depth=inch(_REAR_UPSTAND_IN),
              thickness=inch(_REAR_BASE_W_IN), material="metal-flat-sheet",
-             host_ref="FS-SG-DECK", back_side="left",
+             host_ref="FS-SG-BALCONY", back_side="left",
              section=FormedFlashingSection(profile="counter", slope=0.25 / 12,
                                            upstand=inch(_REAR_UPSTAND_IN), drip=inch(0),
                                            hem=inch(0)))
@@ -3138,10 +3138,10 @@ SEQUENCE_NOTES = [
 # SGFD03AAAA/SGFD04AAAA. **
 # ** And with the overflow's move to the west heel (2026-09-23): SP-SG-ARCH-OVERFLOW
 # SGSP01AAAA, PR-SG-ARCH-OVERFLOW SGPR01AAAA. **
-# D-B-PATIO's tread bed through W-SG-BRKBM's board (2026-11-04): the 2" XPS is cut down
-# under the Trex tread and the 40 psi course, the twin of AO-B-PATIO-TREAD-BED in the curb's
+# D-B-SUNKEN's tread bed through W-SG-BRKBM's board (2026-11-04): the 2" XPS is cut down
+# under the Trex tread and the 40 psi course, the twin of AO-B-SUNKEN-TREAD-BED in the curb's
 # tail (plan/storeys/basement.py). Same width and floor (z -104 15/16"); its near jamb is
-# the door's, x 224 11/32" (D-B-PATIO centred at x 256"), 116 11/32" from N-SG-BMW.
+# the door's, x 224 11/32" (D-B-SUNKEN centred at x 256"), 116 11/32" from N-SG-BMW.
 BRKBM_OPENINGS = [
     RoughOpening(uid="F8CP1XGJ8Q", tag="AO-SG-BRKBM-TREAD-BED", host="W-SG-BRKBM",
                  position=from_node("N-SG-BMW", inch(116.34375)),

@@ -107,7 +107,7 @@ def test_jamb_foam_replaces_exact_clear_bay_area_and_blocks_at_anchors(hardware,
 
 def test_catlin_hardware_scope_takeoff_and_finish(catlin_model_ro):
     model = catlin_model_ro
-    expected = {"D-M-ENTRY", "D-M-BALC", "D-B-PATIO", "D-S-DECK-E"}
+    expected = {"D-M-ENTRY", "D-M-PORCH", "D-B-SUNKEN", "D-S-BALCONY"}
     rows = opening_takeoff(model)
     authored = {tag for row in rows if row["hardware_authored"] for tag in row["tags"]}
     # D-B-SHOP's keyed steel prehung is the one interior door with authored hardware.
