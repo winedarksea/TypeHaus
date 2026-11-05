@@ -23,7 +23,7 @@ AZEK_CAPTIVATE_SHEET = Product(
            "returns and casing.",
 )
 MDF_CASING_1X4 = Product(
-    tag="PROD-STOCK-MDF-1X4", brand="Stock primed MDF", model='3/4" x 3 1/2" S4S',
+    tag="PROD-STOCK-MDF-1X4", brand="Stock primed MDF", model='11/16" x 3 1/2" S4S',
     name="Primed MDF door casing, painted in the wall colour",
     source="Primed MDF 1x4 from the yard. Kept out of the wet rooms: MDF swells at a cut edge.",
 )
@@ -35,7 +35,7 @@ PVC_TRIM_1X4 = Product(
 )
 PINE_FJ_BASE_1X4 = Product(
     tag="PROD-STOCK-PINE-FJ-1X4", brand="Stock primed finger-jointed pine",
-    model='3/4" x 3 1/2" S4S', name="Primed finger-jointed pine base, painted in the wall colour",
+    model='23/32" x 3 1/2" S4S', name="Primed finger-jointed pine base, painted in the wall colour",
     source="Primed finger-jointed pine 1x4 from the yard.",
 )
 DARK_TRIM_COIL = Product(

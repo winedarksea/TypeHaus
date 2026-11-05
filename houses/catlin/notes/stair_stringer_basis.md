@@ -5,6 +5,8 @@ Model: `Stair.stringer_profile` / `stringer_material` / `stringer_spacing` /
 (`attic.py`). Graded by `structural.stair_stringer` and `structural.stair_tread_span`
 (`checks/structural/stair_stringers.py`). `tests/test_stair_stringers.py` reproduces §2–§4.
 
+Rises are the decision #112 values (7 mm Cotton Oak, main floor +1.0255906"; amended 2026-11-05).
+
 ## 1. Why
 
 Every flight had two 2x12s, one at each lane edge, whatever its width or run, and nothing
@@ -27,8 +29,8 @@ R = riser, T = going, run = treads × T on the free stringer.
 
 | Flight | R | T | run | profile | throat | limit |
 |---|---|---|---|---|---|---|
-| ST-B2M lower/upper | 110.38435/15 = 7.3590" | 10" | 6 × 10 = 60" = 5.00' | 2x12 | 11.25 − 73.590/12.424 = **5.32"** | 6'-0", 5" |
-| ST-M2S lower/upper | 120.55315/16 = 7.5346" | 10" | 7 × 10 = 70" = 5.83' | 2x12 | 11.25 − 75.346/12.520 = **5.23"** | 6'-0", 5" |
+| ST-B2M lower/upper | 110.46309/15 = 7.3642" | 10" | 6 × 10 = 60" = 5.00' | 2x12 | 11.25 − 73.642/12.419 = **5.32"** | 6'-0", 5" |
+| ST-M2S lower/upper | 120.47441/16 = 7.5297" | 10" | 7 × 10 = 70" = 5.83' | 2x12 | 11.25 − 75.297/12.518 = **5.23"** | 6'-0", 5" |
 | ST-S2A straight | 120/16 = 7.5" | 10" | 12 × 10 = 120" = 10.00' | 1.75x11.875 LSL | 11.875 − 75/12.5 = **5.875"** | 11'-8", 5.75" |
 
 ST-S2A was **10.00' against 6'-0"** on sawn 2x12 — the FAIL this note retires. By beam

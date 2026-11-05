@@ -95,7 +95,7 @@ nails. Set the strap at the stem top, z=−12 inches, with 14 inches of embedmen
 continuous 6-inch concrete core and one centered No. 4 × 40 inch bar 4 inches below the
 pour top. The calculated delivered tension is 276.50 lb (2026-10-28) against the documented 3,065 lb
 end-wall allowable. See [canopy_garage_diaphragm.md](canopy_garage_diaphragm.md) §3f for
-the load path and reinforcement basis. The existing 90° stop-only operation remains.
+the load path and reinforcement basis. The door keeps its stop-only operation, at the 81° stop.
 
 The separate plan-review question about the stair-to-threshold exception remains in §1.
 

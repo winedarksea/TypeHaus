@@ -97,7 +97,42 @@ def clear_doorway_sole_plates(model):
                 members.append(replace(member, child_key=f"{member.child_key}-passage-{index}",
                                        p0=p0, p1=p1, length_m=remaining_length))
         walls.append(replace(wall, members=_seat_split_studs(wall, members, origin, tangent)))
-    model.walls = walls
+    model.walls = _seat_overhanging_split_studs(model.walls, walls)
+
+
+def _plate_at(walls, member):
+    """A sole plate of any wall whose top carries ``member``'s foot (a cavity runs on)."""
+    tol, reach = DOORWAY.height_tolerance_m, 0.1
+    x, y = member.p0[0], member.p0[1]
+    for wall in walls:
+        for p in wall.members:
+            if not p.child_key.startswith("plate-bottom") or abs(p.z1_m - member.z0_m) > tol:
+                continue
+            dx, dy = p.p1[0] - p.p0[0], p.p1[1] - p.p0[1]
+            run = hypot(dx, dy)
+            if run <= tol:
+                continue
+            along = ((x - p.p0[0]) * dx + (y - p.p0[1]) * dy) / run
+            across = abs((x - p.p0[0]) * dy - (y - p.p0[1]) * dx) / run
+            if -tol <= along <= run + tol and across <= reach:  # foot centre over the plate
+                return p
+    return None
+
+
+def _seat_overhanging_split_studs(before, after):
+    """A split stud past its host wall's end stood on a colinear neighbour's cut plate."""
+    out = []
+    for wall in after:
+        members = []
+        for member in wall.members:
+            cut = (member.child_key.startswith("pocketsplit")
+                   and _plate_at(after, member) is None and _plate_at(before, member))
+            if cut:
+                member = replace(member, z0_m=cut.z0_m,
+                                 length_m=member.length_m + member.z0_m - cut.z0_m)
+            members.append(member)
+        out.append(replace(wall, members=tuple(members)))
+    return out
 
 
 def _seat_split_studs(wall, members, origin, tangent):

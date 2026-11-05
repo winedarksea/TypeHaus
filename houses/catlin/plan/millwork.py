@@ -89,7 +89,7 @@ MILLWORK = [
         board_furniture_refs=("FURN-A-STUDY-BRIDGE-FRONT",),
     ),
     # Base and door casing, derived per room and per door face (resolve/interior_trim.py),
-    # 3/4" x 3 1/2" S4S, butt-jointed, flush where base meets leg (2026-10-19). Bought and
+    # 1x4 S4S (thicknesses in `stocks`), butt-jointed, flush where base meets leg (2026-10-19). Bought and
     # painted the wall white: finger-jointed pine base, MDF casing. The baths and the plant
     # room take PVC casing, and PVC base wherever the floor is not vinyl. The sauna keeps
     # locust base and cedar casing. Two hardwood accents: cherry on D-S-SUITE's bedroom face,
@@ -119,8 +119,9 @@ MILLWORK = [
             DoorTrim(doors=("D-A-STUDY",), material_ref="oak-trim"),
             # A full-depth cedar flat jamb, one piece to the wall's depth, not a 6 9/16"
             # stock jamb with a 2 11/16" extension (owner, 2026-11-01).
+            # 2 1/2" so the head clears the sauna ceiling (84 1/16" AFF; 3 1/2" topped 84.95").
             DoorTrim(doors=("D-B-SAUNA",), room="RM-B-SAUNA", material_ref="cedar-sauna-trim",
-                     jamb_material_ref="cedar-sauna-trim"),
+                     jamb_material_ref="cedar-sauna-trim", casing_width=inch(2.5)),
             # One-off widths where 3 1/2" will not fit (owner, 2026-10-29). D-M-BATH1's
             # powder-room face is the minimum leg, 1 1/2", so ED-M-BATH1-SW (5/8" south) clears.
             DoorTrim(doors=("D-M-BATH1",), room="RM-M-BATH1", material_ref="pvc-trim",
@@ -216,7 +217,7 @@ MAIN_SHELVES = [
     ShelfBank(uid="T0BJ1M256G", tag="SB-M-STUDY-LEAF", host="FURN-M-STUDY-DESK-LEAF",
               material_ref="walnut-shelf-5q", thickness=inch(1), profile="S4S",
               procurement=ShelfProcurement.CUSTOM_MILLED,
-              bays=(ShelfBay(width=inch(19.625), clear_height=inch(28.5), shelf_count=1),)),
+              bays=(ShelfBay(width=inch(19.875), clear_height=inch(28.5), shelf_count=1),)),
     # --- RM-M-LIVING's fireplace mantel, on FURN-M-FIRE-MANTEL --------------------------
     #
     # A custom-milled walnut shelf, 2 1/4" thick — one brick bed height, so it reads as a

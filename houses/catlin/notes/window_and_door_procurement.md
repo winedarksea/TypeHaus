@@ -361,11 +361,16 @@ trim kit is ordered**.
   (`plan/storeys/main.py`, the 2026-10-02 east-wall note). That is a US-casement rail. An
   inward sash overlaps the frame on the room side, and its bottom edge can sweep below the
   rail top. **Replace 2.953" with the chosen product's rail height, minus the sash overlap**,
-  and drop the stools to clear it. Where a stool is flush with the counter (`WIN-M-LIV-E1`/
+  and drop the stools to clear it. This holds for all three suppliers, not only Alucover: the
+  Max Light units' stools sit on the drawn 35 mm frame sill (sash 84 mm deep against a 75 mm
+  frame) and the Andersen units' on the schematic 75 mm face; ask Aliplast/Debesto and the
+  Andersen dealer for the sill rail height and sash overlap too. Where a stool is flush with the counter (`WIN-M-LIV-E1`/
   `E2`, and `WIN-M-KITCH` over the counter), turn mode needs a clear counter. Tilt is the
   daily mode there. The Max Light kitchen pair (`WIN-M-KITCH-N`, `WIN-M-KIT-E`, sill 42" over
   the counter and backsplash) turns its sash over the counter too: keep the sill clear of
-  appliances and canisters, and fit an exterior screen (inward sash).
+  appliances and canisters, and fit an exterior screen (inward sash). **Order the pair hinged
+  on the far jambs** (`WIN-M-KITCH-N` west, `WIN-M-KIT-E` south): hinged toward the corner,
+  the two turned sashes meet at about (34'-7", 34'-7").
 - **Window seats.** In `plan/study_nook.py`, the seat top is 19½" and the
   `WIN-S-STUDY1`/`2` sills are 32", so it is clear. The suite desk moved ½" east so
   `WIN-S-SUITE1`'s stool (now ~29" AFF, under the 30" desk top) clears it by ⅛".

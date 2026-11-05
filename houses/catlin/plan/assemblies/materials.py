@@ -310,7 +310,7 @@ MATERIALS = [
     # Bought interior trim (plan/millwork.py TRIM-STANDARD), painted PT-4 (plan/paint.py) in
     # the house white, #f4f6f1. `wood_surface="painted"` is what bills its paint by the LF
     # in [trim_paint]. No species: none of it reaches `haus millwork`.
-    Material(tag="pine-fj-base", name='Finger-jointed pine base, 3/4" x 3 1/2" S4S',
+    Material(tag="pine-fj-base", name='Finger-jointed pine base, 23/32" x 3 1/2" S4S',
              hatch="lumber", color="#f4f6f1", finish="satin-enamel", wood_surface="painted", milling_profile="S4S",
              product_ref="PROD-STOCK-PINE-FJ-1X4",
              source="Primed finger-jointed pine 1x4 from the yard, painted in the wall colour."),
@@ -318,7 +318,7 @@ MATERIALS = [
              hatch="lumber", color="#f4f6f1", finish="satin-enamel", species="poplar",
              wood_surface="painted", milling_profile="S4S",
              source='Stock 3/4" x 11 1/4" poplar 1x12 from the yard, primed and painted the wall white. The stair skirts, set before the treads and risers.'),
-    Material(tag="mdf-casing", name='MDF door casing, 3/4" x 3 1/2" S4S',
+    Material(tag="mdf-casing", name='MDF door casing, 11/16" x 3 1/2" S4S',
              hatch="lumber", color="#f4f6f1", finish="satin-enamel", wood_surface="painted", milling_profile="S4S",
              product_ref="PROD-STOCK-MDF-1X4",
              source="Primed MDF 1x4, painted in the wall colour. Kept out of the wet rooms: MDF swells at a cut edge."),

@@ -1,8 +1,8 @@
 # The U split-landing riser budget, hand-worked — ST-B2M
 
 ST-M2S used this layout before its level turn. It now uses `u_level_landing`:
-16 risers over 120.55315" (7.5346" each), seven treads per flight, and two adjoining
-42.25" half-decks at the same finished elevation, 61.22343". Its flights both
+16 risers over 120.47441" (7.5297" each; decision #112, was 120.55315"), seven treads per flight, and two adjoining
+42.25" half-decks at the same finished elevation, 61.26281" (was 61.22343"). Its flights both
 run 70" from the floor edge, leaving the far bearing line unchanged. The
 historical ST-M2S figures below document the former split design and its
 old upper-flight alignment defect; they are no longer the current house.

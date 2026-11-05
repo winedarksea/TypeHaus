@@ -1421,7 +1421,7 @@ OPENINGS = [
     # ** TWO OTHER BAYS WERE CONSIDERED AND SPENT. ** y=32'-8" is also a legal bay centre,
     # and it is behind the induction cooktop under APPL-M-HOOD. y=35'-4" leaves 1 3/8" of
     # wall to the inside corner face. 34'-0" is the only bay over N4's counter — and the
-    # 5 5/8" it leaves to the hood's north end is real clearance, not a lap.
+    # 13 7/8" it leaves from the hood's north end (y 387 1/8") to the RO is real clearance.
     #
     # It was 33'-4" while the plan for this work was being written, on W-M-E2's grid off
     # N-M-E1. That wall no longer exists: W-M-E1/E2 were merged for WIN-M-EAST-MID
@@ -2363,7 +2363,7 @@ POSTS = [
     # supposed to reach the slab. It is 9'-1 7/16" of clear height, so that is the post.
     #
     # Now that the bearing is declared, `takeoff/uplift.py::post_base_rows` derives an ABU44
-    # under each — the 4x4 rung of the same size ladder the ten ABU66SS outside sit on, ZMAX
+    # under each — the 4x4 rung of the ABU size ladder, ZMAX
     # rather than stainless because this is a dry interior slab.
     Post(uid="A9J80KK6AE", tag="P-M-STRWELL-S", position=pt(inch(167.9375), ft(31, 11.124)), size="4x4",
          height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),

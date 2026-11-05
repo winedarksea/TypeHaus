@@ -69,7 +69,10 @@ OPENING_HEAD = TrimProfile(
     _pvdf("58114XX"),
     section_in=((0, 2.5), (0, 0), (1.5, 0), (1.853553, -0.353553)),
     receiver_throat_in=1.5,
-    source="PBR Install Guide 4/2024 pp. 20, 68-72",
+    # Also the BBD75 kit's window head: an accepted deviation, not a BBD75 row.
+    source="PBR Install Guide 4/2024 pp. 20, 68-72. Not in the BBD75 Install Guide "
+           "10/2025, which publishes only the trim-first 58720XX (p. 28); used on BBD75 "
+           "walls because a window-first outie frame cannot go in under 58720XX's return",
 )
 #: BBD75's own head: 2-1/2 back leg, 1-1/8 seat at 95 deg, 2-1/2 face leg, a 4" return back
 #: over the frame head and a 1/2" kick. A trim-first head: the frame goes in last under the
