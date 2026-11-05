@@ -22616,6 +22616,12 @@
 8,
 "7a3d0a4dba27"
 ],
+"geometry/CGRF01AAAA::framing/member:eave-hi-soffit-return-1": [
+2.0548005,
+2.1828588,
+8,
+"a2a0802ec60c"
+],
 "geometry/CGRF01AAAA::framing/member:eave-lo-drip-edge-face": [
 2.1818005,
 2.2114685,
@@ -22675,6 +22681,12 @@
 2.0675005,
 8,
 "7a3d0a4dba27"
+],
+"geometry/CGRF01AAAA::framing/member:eave-lo-soffit-return-1": [
+2.0548005,
+2.1828588,
+8,
+"a2a0802ec60c"
 ],
 "geometry/CGRF01AAAA::framing/member:joint-nailer-CN-BW-JOINT-1-north": [
 2.2421255,
@@ -23031,10 +23043,10 @@
 "2e2c6ea4bdd0"
 ],
 "geometry/CGRF01AAAA::framing/member:rake-hi-0-soffit": [
-2.1828588,
+2.0675005,
 3.4221672,
 8,
-"8fc02e85c6bc"
+"1e6519df7092"
 ],
 "geometry/CGRF01AAAA::framing/member:rake-hi-1-drip-edge-face": [
 2.1649018,
@@ -23073,10 +23085,10 @@
 "ad46ae8de5d3"
 ],
 "geometry/CGRF01AAAA::framing/member:rake-hi-1-soffit": [
-2.1828588,
+2.0675005,
 3.4221672,
 8,
-"b2d2793675e9"
+"005fbbb80841"
 ],
 "geometry/CGRF01AAAA::framing/member:ridge-end-closure-hi": [
 3.5131943,
@@ -83922,6 +83934,12 @@
 4,
 "b980269da6f2"
 ],
+"member/CGRF01AAAA/eave-hi-soffit-return-1": [
+2.0548005,
+2.1828588,
+4,
+"23f0c095387c"
+],
 "member/CGRF01AAAA/eave-lo-drip-edge-face": [
 2.1818005,
 2.2114685,
@@ -83981,6 +83999,12 @@
 2.0675005,
 4,
 "b980269da6f2"
+],
+"member/CGRF01AAAA/eave-lo-soffit-return-1": [
+2.0548005,
+2.1828588,
+4,
+"23f0c095387c"
 ],
 "member/CGRF01AAAA/joint-nailer-CN-BW-JOINT-1-north": [
 2.2421255,
@@ -84337,10 +84361,10 @@
 "f6fae5ed8e6a"
 ],
 "member/CGRF01AAAA/rake-hi-0-soffit": [
-2.1828588,
+2.0675005,
 3.4221672,
 4,
-"36b5b26d8032"
+"bf466345981b"
 ],
 "member/CGRF01AAAA/rake-hi-1-drip-edge-face": [
 2.1649018,
@@ -84379,10 +84403,10 @@
 "ffc368e7a346"
 ],
 "member/CGRF01AAAA/rake-hi-1-soffit": [
-2.1828588,
+2.0675005,
 3.4221672,
 4,
-"30255cae4a5b"
+"a62d2e20e579"
 ],
 "member/CGRF01AAAA/ridge-end-closure-hi": [
 3.5131943,

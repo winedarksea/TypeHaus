@@ -419,12 +419,16 @@ def mitred_span(
     Returns ``None`` when the cuts consume the whole run.
     """
     shift = outer_inboard_m if run.is_eave else inner_inboard_m
+    return cut_span(run, shift if run.corner_at_p0 else 0.0,
+                    shift if run.corner_at_p1 else 0.0)
+
+
+def cut_span(run: EdgeRun, start: float, end: float) -> MitredSpan | None:
+    """``run`` cut back ``start`` from ``p0`` and ``end`` from ``p1``; ``None`` if consumed."""
     dx, dy = run.p1[0] - run.p0[0], run.p1[1] - run.p0[1]
     length = math.hypot(dx, dy)
     if length < 1e-9:
         return None
-    start = shift if run.corner_at_p0 else 0.0
-    end = shift if run.corner_at_p1 else 0.0
     if start + end >= length - CLOSURE_TOLERANCE_M:
         return None
     t0, t1 = start / length, 1.0 - end / length

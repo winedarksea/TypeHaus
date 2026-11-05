@@ -364,6 +364,7 @@
 "36 roof truss" = { material = { low = 7.60, high = 13.60 }, labour = { low = 1.90, high = 3.40 } }  # 0 LF — dormant, nothing here spans 36'
 # "12x4 panel" =    # 66 LF — ridge_cap, billed in [cladding_trim] since 2026-10-27 (not [edge_trim])
 # "13.625x0.5 panel" =    # 112 LF — PVC soffit, billed in [edge_trim]
+# "0.5x5.04167 panel" =    # 2.3 LF — the two garage soffit corner returns, billed in [edge_trim] soffit
 # 1x4 furring/strapping is not in the 2026-08-07 sweep above — it had no members to
 # price then. $0.45-0.85/LF is 8' furring strips at $3.50-6.75 a piece, 2026 Midwest
 # retail (SPF strapping runs a little under a 2x4 by the foot).
@@ -6587,7 +6588,10 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # from cellular PVC SHEET (trim board stops at 11 1/4"), ~$9-15/LF material for that 38.8 LF, over
 # this row's band. Edge trim is keyed by category alone, so it cannot take its own row.
 "fascia" = { material = { low = 3, high = 9 }, labour = { low = 4, high = 8 } }  # 251.5 LF — material low raised from $2.50, which only buys primed pine or coil-wrap; this run is PVC (sunken garden) and formed solid-colour PVDF (garage near-black since 2026-09-08, metal since 2026-08-26) over SPF
-"soffit" = { material = { low = 3.5, high = 9 }, labour = { low = 3, high = 5.5 } }  # 101.1 LF — the depth question is SETTLED by the model: the profile is 13.625" wide, so this is the 12-16" overhang band at $3-5.50/LF. Every published $/LF silently assumes a depth; at 24" it would be $5-9 and at 36" $8-13, and the material rate would be understated ~2x
+# Gibraltar 4PVS16-WH aluminium, owner 2026-11-04: $34.98 per 16" x 12' panel (Home Depot, owner-read).
+# Cut to 13 5/8" pieces, a panel is 10 pieces x 16" = 13.3 LF of run, so $2.62/LF; + $0.40-1.40/LF
+# of F/J channel (~$5-8 per 12' stick, one or two runs per LF). Vinyl at ~$18/12' is the fallback.
+"soffit" = { material = { low = 3, high = 4 }, labour = { low = 3, high = 5.5 } }  # 78.2 LF (75.9 panel + 2.3 corner returns) — the depth question is SETTLED by the model: the profile is 13.625" wide, so this is the 12-16" overhang band at $3-5.50/LF. Every published $/LF silently assumes a depth; at 24" it would be $5-9 and at 36" $8-13, and the material rate would be understated ~2x
 "wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # ~29 LF since 2026-10-16: the balcony's rear edge is TWO pieces either side of D-S-BALCONY, a deck-side base flashing and a house-side counterflashing (params/sunken_garden.py) — 21 feet is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate
 
 [cladding_trim]

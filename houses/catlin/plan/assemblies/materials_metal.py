@@ -402,4 +402,10 @@ MATERIALS_METAL = [
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
              color="#1b4332", finish="glazed-green-brick",
              source="basement south veneer over the sunken garden until 2026-08-20 — glazed brick, 1\" airgap off the existing concrete wall; kept in the catalog as the revert target for the Ishtar scheme"),
+    # RF-GARAGE's soffit, eaves and rakes, and its corner returns. White, so the overhang
+    # does not read as a shadow; aluminium over cellular PVC as cheaper and more durable.
+    Material(tag="soffit-alum-vented", name="Aluminium center-vent soffit, 0.019 in., Birch White",
+             r_per_inch=0.0, density=2700.0, vapor_permeance_perms=0.0, hatch="metal",
+             color="#f3f1ea", finish="metal", product_ref="PROD-GIBRALTAR-4PVS16-WH",
+             source="Gibraltar 4PVS16-WH, 16 in. x 12 ft panels cut to the overhang, in F/J channel; 6.48 in2/LF NFA"),
 ]

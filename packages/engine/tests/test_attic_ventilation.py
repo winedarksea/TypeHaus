@@ -58,14 +58,14 @@ def _rated_garage_ctx(catlin_plan, catlin_ctx, *, soffit, ridge, model=None):
 
 
 def test_nested_vented_eave_is_graded_on_the_profile_vent_rating(catlin_ctx):
-    """RF-GARAGE vents through its nested trim; the ridge alone carries Profile Vent's 23.4."""
+    """RF-GARAGE vents through its nested trim: 6.48 at the eaves, Profile Vent's 23.4 up top."""
     findings = attic_ventilation(catlin_ctx)
     assert len(findings) == 1
     finding = findings[0]
     assert "no vented eave" not in finding.message
-    # 23.4 in²/ft over the 24'-0" of ridge above the attic: 562 against 1/150 = 553.
+    # 23.4 in²/ft over 24'-0" of ridge (562) + 6.48 over 48 LF of eave (311); rakes are not intake.
     assert finding.result is Result.PASS
-    assert finding.message.startswith("562 in² net free area over 576 sf")
+    assert finding.message.startswith("873 in² net free area over 576 sf")
 
 
 @pytest.mark.parametrize("soffit, ridge", [(10.0, 12.5), (10.0, None)])
@@ -97,7 +97,7 @@ def test_known_short_ratings_fail(catlin_plan, catlin_ctx):
 
 def test_balanced_exhaust_clears_the_one_three_hundredth_exception(catlin_plan, catlin_ctx):
     """283 in² with 47% up high clears 1/300 (~277 in²) though it misses 1/150 (553 in²)."""
-    ctx = _rated_garage_ctx(catlin_plan, catlin_ctx, soffit=2.0, ridge=5.6)
+    ctx = _rated_garage_ctx(catlin_plan, catlin_ctx, soffit=3.1, ridge=5.6)
     (finding,) = attic_ventilation(ctx)
     assert finding.result is Result.PASS
     assert "exception 2" in finding.message

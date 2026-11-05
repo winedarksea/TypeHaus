@@ -400,10 +400,14 @@ ROOMS = [
 # a solar-reflective vinyl-safe coating and an LRV cap), and this colour is darker than the
 # one that argument was written for. See the `metal-dark-exterior` Material comment in
 # plan/assemblies.py.
-# The SOFFIT stays cellular PVC and stays white: vented, out of the weather, and a white
-# soffit is what keeps an overhang from reading as a shadow. A vented PVC soffit closes the
-# overhang and feeds the vent channel. Elevations derive from the resolved roof plane so the
-# truss heel lift carries the trim with it.
+# The SOFFIT is white pre-finished aluminium (Gibraltar 4PVS16-WH, owner 2026-11-04): a white
+# soffit keeps the overhang from reading as a shadow, and aluminium is cheaper and more durable
+# than cellular PVC (no rot, yellowing or thermal movement). Vinyl at ~$18/12' is the fallback.
+# One vented SKU on eaves and rakes; only the eaves count as intake (resolve/roof_soffit.py).
+# 6.48 in2/LF (Gibraltar support page) x 48 LF of eave = 311 in2, + 562 ridge = 873 in2
+# against 553 at 1/150. 0.5" is the modeled envelope (V panel + F/J channel), not the 0.019"
+# sheet, which would z-fight. Elevations derive from the resolved roof plane so the truss
+# heel lift carries the trim with it.
 # BOTH eaves get a 5" gutter in the house's dark exterior coil (params/roof_trim.py
 # ::_CHAIN_MATERIAL — mill aluminium read as a pale band under a dark edge). The eaves are
 # EAST and WEST since the ridge turned on 2026-09-07: east discharges beside the HP1 pad and
@@ -418,7 +422,8 @@ _GARAGE_EAVE_TRIM = EaveTrim(
     fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),
             FasciaBoard(material="metal-dark-exterior", thickness=inch(1), depth=inch(6))),
     fascia_edges=("east", "west", "north"),
-    soffit_material="pvc-cellular", soffit_thickness=inch(0.5), soffit_vented=True,
+    soffit_material="soffit-alum-vented", soffit_thickness=inch(0.5), soffit_vented=True,
+    soffit_nfva_in2_per_ft=6.48,
     gutter=EaveGutter(material="metal-dark-kstyle", depth=inch(5), thickness=inch(5),
                       top_drop=inch(0.5), edges=("east", "west"),
                       slope="1/16 in/ft north on both eaves — east to TR-G-LEADER-E, west to TR-G-LEADER-W",
@@ -443,13 +448,13 @@ _GARAGE_EAVE_TRIM = EaveTrim(
 # garage's own leaders were moved north to avoid, and the reason that paragraph above is
 # written the way it is.
 #
-# ** NO SOFFIT, AND THAT IS THE ONE PIECE THAT DOES NOT CONTINUE. ** `_soffit_member` closes
+# ** NO SOFFIT, AND THAT IS THE ONE PIECE THAT DOES NOT CONTINUE. ** `soffit_members` closes
 # the overhang from the fascia's inner face back to a WALL face (`wall_face_inset` reads the
 # resolved cladding polygons), and this canopy has no wall under either eave — it has a
 # header on columns, with open air under it. Declaring a soffit thickness here derived a
 # 5'-9 5/8" panel, which is the measure running away rather than a piece anyone would cut.
 # An open canopy has nothing to close anyway: the underside between the headers is exposed
-# framing by design, and the garage's white PVC soffit is there to feed a VENTED ATTIC this
+# framing by design, and the garage's white aluminium soffit is there to feed a VENTED ATTIC this
 # roof does not have. So the tails are exposed, and the fascia and trough on exposed edges
 # match the garage's.
 #

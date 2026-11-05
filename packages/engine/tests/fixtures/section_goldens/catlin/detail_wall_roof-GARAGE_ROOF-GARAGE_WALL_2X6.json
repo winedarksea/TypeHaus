@@ -1295,7 +1295,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pvc-cellular"
+      "material": "soffit-alum-vented",
+      "fill": "#f3f1ea"
     },
     {
       "space": "model",

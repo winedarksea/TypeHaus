@@ -17,7 +17,9 @@ Three pieces:
   ``ridge_z_m`` so a truss roof (no ridge beam) carries one exactly like a rafter roof.
 
 Every run is cut back at the four rake corners (``mitred_span``) so the eave and rake pieces
-tile each corner exactly once instead of doubling up in it.
+tile each corner exactly once instead of doubling up in it. The soffit is the exception: a
+level eave panel through the corner leaves the sloped rake panel stepping up off it, so the
+rake owns that corner (:mod:`typehaus.resolve.roof_soffit`).
 """
 
 from __future__ import annotations
@@ -48,7 +50,6 @@ from typehaus.resolve.roof_edge_geometry import (
     roof_edge_runs,
     roof_slope,
     skin_layers,
-    wall_face_inset,
 )
 from typehaus.resolve.roof_image_ii import image_ii_members, wrapped_image_ii_edges
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
@@ -57,6 +58,7 @@ from typehaus.resolve.roof_panel_trim import (
     rake_panel_trim,
 )
 from typehaus.resolve.roof_ridge_trim import ridge_vent_members as _ridge_vent_members
+from typehaus.resolve.roof_soffit import SoffitRun, soffit_members, soffit_runs
 from typehaus.resolve.trim_bands import formed_edge_bands, open_channel_bands
 
 # A fascia board is envelope trim by category, but it is also the nailer the carpenter hangs
@@ -121,15 +123,20 @@ def _eave_trim_members(
     members: list[FramedMember] = []
     catalog = wrapped_image_ii_edges(model, roof)
     abutted = abutted_run_keys(model, roof)
-    for run in roof_edge_runs(roof):
-        if run.key in abutted:
-            continue  # another roof's plane runs on across this run: no edge to trim
-        edge_trim = (trim.model_copy(update={"fascia": ()})
-                     if trim.fascia_edges and run.edge_name not in trim.fascia_edges
-                     else trim)
+    runs = roof_edge_runs(roof)
+    # Another roof's plane runs on across an abutted run: no edge to trim.
+    trims = {run.key: (trim.model_copy(update={"fascia": ()})
+                       if trim.fascia_edges and run.edge_name not in trim.fascia_edges
+                       else trim)
+             for run in runs if run.key not in abutted}
+    # Which runs close a soffit decides who owns each corner, so it is settled once per roof.
+    soffits = soffit_runs(runs, trims, walls)
+    for run in runs:
+        if run.key not in trims:
+            continue
         # An Image II catalog piece replaces the derived drip on its wrapped edge.
         run_drip = None if run.edge_name in catalog else drip
-        members.extend(_edge_trim(roof, edge_trim, run, walls, fascia_rise, run_drip))
+        members.extend(_edge_trim(roof, trims[run.key], run, soffits, fascia_rise, run_drip))
     return tuple(members)
 
 
@@ -140,7 +147,7 @@ def _roofing_material(layers) -> str | None:
 
 
 def _edge_trim(
-    roof: ResolvedRoof, trim: EaveTrim, run: EdgeRun, walls: tuple[ResolvedWall, ...],
+    roof: ResolvedRoof, trim: EaveTrim, run: EdgeRun, soffits: dict[str, SoffitRun],
     fascia_rise_m: float, drip=None,
 ) -> tuple[FramedMember, ...]:
     members: list[FramedMember] = []
@@ -176,7 +183,7 @@ def _edge_trim(
         inner = outer
     # After the loop ``inner`` is the outermost board's outer face — the plane the gutter and
     # anything else hung off the stack registers against.
-    soffit = _soffit_member(roof, trim, run, walls)
+    soffit = soffit_members(roof, run.key, soffits)
     gutters = _gutter_members(roof, trim, run, fascia_outer_m=inner)
     spec = drip_spec(trim, run) if drip is not None else None
     if spec is not None:
@@ -185,46 +192,12 @@ def _edge_trim(
             roof, run, spec, trim, slope=roof_slope(roof),
             deck_top=deck_top_m(layers, slope_factor), bend=deck_edge_m(roof, layers, run),
             fascia_outer=inner, fascia_rise=fascia_rise_m, material=material))
-    return tuple(members) + tuple(m for m in (soffit,) if m is not None) + gutters
+    return tuple(members) + soffit + gutters
 
 
 def _offset(point: tuple[float, float], normal: tuple[float, float],
             distance: float) -> tuple[float, float]:
     return (point[0] + normal[0] * distance, point[1] + normal[1] * distance)
-
-
-def _soffit_member(
-    roof: ResolvedRoof, trim: EaveTrim, run: EdgeRun, walls: tuple[ResolvedWall, ...],
-) -> FramedMember | None:
-    """The panel closing the overhang underside, fascia back to the wall face."""
-    if trim.soffit_thickness is None:
-        return None
-    inset = wall_face_inset(run.normal, run.p0, walls)
-    # Inner face of the innermost fascia board — or the roof edge itself when the trim
-    # declares no fascia at all (the soffit is not the fascia's dependent).
-    outer = -trim.fascia[0].thickness.meters if trim.fascia else 0.0
-    width = outer - inset
-    if width <= CLOSURE_TOLERANCE_M:
-        return None  # a flush (zero-overhang) edge has no underside to close
-    span = mitred_span(run, -outer, -inset)
-    if span is None:
-        return None
-    center = (inset + outer) / 2.0
-    thickness = trim.soffit_thickness.meters
-    # The panel hangs at the fascia's underside; with no fascia it tucks directly under the
-    # roof edge instead (its own thickness down, so it closes against the plane).
-    drop = trim.fascia[0].depth.meters if trim.fascia else thickness
-    a, b = _offset(span.p0, run.normal, center), _offset(span.p1, run.normal, center)
-    return FramedMember(
-        parent_uid=roof.uid, child_key=f"{run.key}-soffit", category="soffit",
-        profile=panel_profile(width / M_PER_IN, thickness / M_PER_IN),
-        p0=a, p1=b, z0_m=span.z0_m - drop, z1_m=span.z0_m - drop + thickness,
-        length_m=math.hypot(b[0] - a[0], b[1] - a[1], span.z1_m - span.z0_m),
-        z0_end_m=span.z1_m - drop, z1_end_m=span.z1_m - drop + thickness,
-        connection=("eave-trim:vented-soffit" if trim.soffit_vented
-                    else f"eave-trim:{trim.soffit_material}"),
-        material=trim.soffit_material,
-    )
 
 
 def _gutter_members(

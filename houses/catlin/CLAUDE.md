@@ -40,7 +40,8 @@
 > - **ERV:** EQ-B-ERV carries Broan's port pattern (`rotation=deg(0)`: box west, door south); only
 >   the supply lands on its collar. OA/EA/RET are held at service level by the owner.
 > - **Roof:** RF-GARAGE is the RDM vented peak under the same 7" 52131XX as the canopy (one cap
->   ring, no step); R806.2 passes 562/553 in2 on Profile Vent's 23.4 in2/ft. Coplanar abutting roofs
+>   ring, no step); R806.2 passes 873/553 in2: 562 ridge on Profile Vent's 23.4 in2/ft + 311 eave intake
+  (48 LF x 6.48). Rake soffits are not intake. Coplanar abutting roofs
 >   share the longest roof's seam datum. Open ridge ends take field-formed closures. House leaders
 >   are Metal Sales 4 x 3 1/2 with a rect-to-round adapter into the 4" PVC.
 > - **Electrical:** `BoxRow.use` rows — wall lights on concrete take RACO 192 + flat 753;
@@ -2355,8 +2356,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **Changing the accent colour is a two-place edit** — miss one and the cap and fascia
     drift apart, reading as a mistake.
   - Fascia substrate is formed metal over a wood nailer, not 5/4 cellular PVC — dark colour on
-    PVC forces a solar-reflective coating that caps the LRV below `#1c1f24`. **The soffit
-    stays cellular PVC and stays white** so the overhang doesn't read as a shadow.
+    PVC forces a solar-reflective coating that caps the LRV below `#1c1f24`. **The soffit is
+    white pre-finished aluminium** (Gibraltar 4PVS16-WH) so the overhang doesn't read as a
+    shadow; cheaper and more durable than cellular PVC. Vinyl at ~$18/12' is the fallback.
   - The colour is authored on the house `Material` (`color`/`hatch`); both renderers read it
     through `authored_colors` / `model.json`. No engine or UI table names a catlin tag.
 - **The garage ICF stem is covered on both faces above grade.**

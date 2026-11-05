@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from plan.exterior_palette import AZEK, METAL
 from typehaus.model import Product
-from typehaus.quantities import inch
+from typehaus.quantities import ft, inch
 
 AZEK_CAPTIVATE_SHEET = Product(
     tag="PROD-AZEK-CAPTIVATE-SHEET", brand="AZEK", model="Captivate",
@@ -60,8 +60,17 @@ MAPLE_PLY_PREFIN_34 = Product(
     source="The maple-ply-prefin-34 material's own wording: A-1 face, HPVA Type II glue, "
            "UV-cured clear both faces. The pantry's three 18 x 84 uprights nest on two sheets.",
 )
+GIBRALTAR_SOFFIT_VENTED = Product(
+    tag="PROD-GIBRALTAR-4PVS16-WH", brand="Gibraltar Building Products", model="4PVS16-WH",
+    name='Aluminium center-vent soffit, 16" x 12\', 0.019", Birch White',
+    sku="Home Depot 202093052",
+    url="https://www.homedepot.com/p/202093052", stock_length=ft(12),
+    source="Owner 2026-11-04. 6.48 in2/LF net free area, built-in screen (Gibraltar support "
+           "page). One SKU on eaves and rakes; the solid twin 4PSS16-WH is the same price if "
+           "a rake must be closed. Vinyl (~$18 per 12') is the fallback.",
+)
 
 TRIM_STOCK_PRODUCTS = (
     AZEK_CAPTIVATE_SHEET, MDF_CASING_1X4, PVC_TRIM_1X4, PINE_FJ_BASE_1X4,
-    DARK_TRIM_COIL, DARK_KSTYLE_COIL, MAPLE_PLY_PREFIN_34,
+    DARK_TRIM_COIL, DARK_KSTYLE_COIL, MAPLE_PLY_PREFIN_34, GIBRALTAR_SOFFIT_VENTED,
 )

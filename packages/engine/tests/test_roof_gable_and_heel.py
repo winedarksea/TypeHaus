@@ -341,11 +341,20 @@ def test_a_wall_already_raked_to_the_roof_gets_no_closure(resolved):
 def test_two_fascia_layers_and_a_soffit_on_every_roof_edge(resolved):
     fascia = _members(resolved, "fascia")
     soffit = _members(resolved, "soffit")
-    # Two level eaves + two rakes split at the ridge = six runs.
+    # Two level eaves + two rakes split at the ridge = six runs, and a return per rake corner.
     assert len(fascia) == 6 * 2
-    assert len(soffit) == 6
+    returns = [m for m in soffit if m.connection == "eave-trim:soffit-return"]
+    assert len(soffit) == 6 + 4 and len(returns) == 4
     assert {m.connection for m in fascia} == {"eave-trim:spf", "eave-trim:pvc-cellular"}
-    assert {m.connection for m in soffit} == {"eave-trim:vented-soffit"}
+    # Only the eave panels are attic intake (R806.2); the rakes sit outboard of the gable.
+    assert {m.child_key.split("-")[0]: m.connection for m in soffit
+            if m not in returns} == {"eave": "eave-trim:vented-soffit",
+                                     "rake": "eave-trim:rake-soffit"}
+    # The rake owns the corner: it starts at the eave fascia, level with the eave panel.
+    eave = next(m for m in soffit if m.child_key == "eave-lo-soffit")
+    rake = next(m for m in soffit if m.child_key == "rake-lo-0-soffit")
+    assert abs(rake.p0[1] - eave.p0[1]) < cross_section(eave.profile).width_m / 2.0
+    assert rake.z0_m == pytest.approx(eave.z0_m, abs=inch(1).meters)
 
 
 def test_fascia_tops_sit_on_the_roof_plane_and_the_rake_slopes(resolved):
@@ -639,7 +648,9 @@ def test_eave_and_rake_trim_tile_the_rake_corners_instead_of_overlapping(stacked
     and what doubling did not. Checked per elevation band: the fascia and soffit hang under
     the roof plane, the edge cladding stands on top of it, so the two never share space.
     """
-    hanging = [m for m in _roof(stacked).members if m.category in ("fascia", "soffit")]
+    # A soffit return stands under the rake panel in plan by design: it closes the riser.
+    hanging = [m for m in _roof(stacked).members if m.category in ("fascia", "soffit")
+               and m.connection != "eave-trim:soffit-return"]
     standing = [m for m in _roof(stacked).members if m.child_key.endswith("-edge-cladding")]
     members = hanging if band == "below" else standing
     assert len(members) >= 6  # at least one piece on each of the six runs
