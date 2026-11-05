@@ -136,7 +136,7 @@ def _laying_length(ctx: CheckContext, records: list) -> list[Finding]:
     from typehaus.resolve.duct_standard import duct_standard
     from typehaus.resolve.sweep import clean_path
 
-    standard, _ = duct_standard(ctx.plan)
+    standard, _ = duct_standard(getattr(ctx, "plan", None))
     elbows = {"standard": standard} if standard is not None else {}
     turns: dict[str, dict[int, object]] = defaultdict(dict)
     for record in records:

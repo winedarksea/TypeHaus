@@ -6,7 +6,7 @@ import pytest
 
 m3d = pytest.importorskip("manifold3d")
 
-from typehaus.resolve.duct_part_solids import parse_section  # noqa: E402
+from typehaus.resolve.duct_part_solids import neck_drawn, parse_section  # noqa: E402
 from typehaus.resolve.solid_categories import solid_category  # noqa: E402
 from typehaus.solids3d.convert import mesh_manifold  # noqa: E402
 
@@ -23,8 +23,10 @@ def test_sections_parse_as_ordered():
 def test_one_closed_solid_per_non_integral_part_and_hanger(catlin_model_ro):
     model = catlin_model_ro
     drawn = [s for s in model.solids if s.category in _CATEGORIES]
-    expected = (sum(1 for p in model.duct_parts if not p.integral)
-                + len(model.duct_supports))
+    necked = neck_drawn(model)
+    parts = [p for p in model.duct_parts if not p.integral
+             and not (p.kind == "boot" and p.other in necked)]
+    expected = len(parts) + len(model.duct_supports)
     assert expected and len(drawn) == expected
     assert all(s.derived and s.body_mesh is not None and s.host_ref for s in drawn)
     assert len({s.uid for s in drawn}) == len(drawn)
@@ -35,5 +37,5 @@ def test_one_closed_solid_per_non_integral_part_and_hanger(catlin_model_ro):
         if manifold.status() != m3d.Error.NoError or manifold.volume() <= 0:
             bad.append(solid.tag)
     assert not bad, bad[:10]
-    named = {p.product_ref for p in model.duct_parts if p.product_ref and not p.integral}
+    named = {p.product_ref for p in parts if p.product_ref}
     assert named <= {s.product for s in drawn}

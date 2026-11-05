@@ -275,12 +275,20 @@ def _solid(uid: str, tag: str, storey: str, category: str, mesh: GMesh,
                          body_mesh=mesh, derived=True)  # billed off its record, not measured
 
 
+def neck_drawn(model: ResolvedModel) -> set[str]:
+    """Registers whose type's ``neck`` already draws the boot (``resolve/terminal_necks``)."""
+    types = {t.tag: t for t in getattr(model.plan.library, "register_types", ())}
+    return {o.tag for o in model.canvas_objects if o.kind == "Register"
+            and getattr(types.get(o.type_ref), "neck", None) is not None}
+
+
 def part_solids(model: ResolvedModel) -> None:
-    """Append one solid per non-integral part and per hanger."""
+    """Append one solid per non-integral part (a boot a neck draws excepted) and hanger."""
     uids = {d.tag: d.uid for d in model.ducts}
+    necked = neck_drawn(model)
     seen: dict[tuple[str, str], int] = {}
     for part in model.duct_parts:
-        if part.integral:
+        if part.integral or (part.kind == "boot" and part.other in necked):
             continue
         mesh = _part_mesh(model, part, model.duct_parts)
         if mesh is None:

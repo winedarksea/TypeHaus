@@ -229,8 +229,15 @@ EMPTY_LABELS = LabelIndex()
 
 def _fitting(key: str, system: str) -> str | None:
     parts = key.split("-")
-    if len(parts) == 3 and parts[0] in ("bend", "elbow") and parts[2].endswith("in"):
-        return f"{parts[1]}° {parts[0]}, {_fraction_in(parts[2][:-2])} {system}".strip()
+    if parts[0] in ("bend", "elbow") and len(parts) in (3, 4):
+        adjustable = len(parts) == 4 and parts[1] == "adj"
+        angle, size = parts[-2], parts[-1]
+        w, x, d = size.partition("x")
+        if (adjustable or len(parts) == 3) and (size.endswith("in") or x):
+            text = (_fraction_in(size[:-2]) if size.endswith("in")
+                    else f"{_fraction_in(w)} x {_fraction_in(d)}")
+            kind = "adjustable elbow" if adjustable else parts[0]
+            return f"{angle}° {kind}, {text} {system}".strip()
     if len(parts) == 3 and parts[:2] == ["wall", "seal"] and parts[2].endswith("in"):
         return f"Wall penetration seal kit, {_fraction_in(parts[2][:-2])} {system}".strip()
     if len(parts) == 2 and parts[0] in ("wye", "tee") and parts[1].endswith("in"):
