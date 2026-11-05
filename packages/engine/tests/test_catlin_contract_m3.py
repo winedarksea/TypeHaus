@@ -1939,7 +1939,11 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     assert guard.mount == "surface"
     assert catlin_model.plan.by_tag("RL-SG-BALCONY").mount == "fascia"
     assert guard.height.inches == pytest.approx(42.0)
-    assert len(guard.path) == 4  # west / south / east; the north edge is the house gap
+    # One span between columns since 2026-11-04 (params/porch_guards.py): RL-SG-PORCH is the
+    # south leg; the west and east legs end on the four corner columns as their posts.
+    assert len(guard.path) == 2
+    assert catlin_model.plan.by_tag("RL-SG-PORCH-W").start_post_ref == "PT-SG-BR1"
+    assert catlin_model.plan.by_tag("RL-SG-PORCH-W").end_post_ref == "PT-SG-BF1"
 
     garden = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
     xs = [p[0] for p in garden.outline]

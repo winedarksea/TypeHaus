@@ -46,7 +46,7 @@ def test_no_new_erv_duct_vent_or_radon_riser_interpenetrations(catlin_ctx) -> No
 #: routes through by design (FS-S-WEST, storeys/second.py). The engine answers UNKNOWN
 #: because whether a 1 1/2" vent may share a web is a fabricator's chart it does not hold.
 #: Anything else standing in a web, or on a member, still fails this test.
-_WEB_PASSING_VENTS = {"PR-M-BATH1-LAV-VENT"}
+_WEB_PASSING_VENTS = {"PR-M-BATH1-LAV-VENT", "PR-M-BATH2-SH-VENT", "PR-M-LSINK-VENT"}
 
 
 def test_every_erv_duct_and_vent_riser_stands_in_a_drawn_hole(catlin_ctx) -> None:
@@ -58,7 +58,9 @@ def test_every_erv_duct_and_vent_riser_stands_in_a_drawn_hole(catlin_ctx) -> Non
 
 #: Trap-arm vents rising out of the joist band into the wet wall over it: clear of every
 #: member, through the subfloor and the wall's own bottom plate, like the drain they tee off.
-_WALL_FOOT_VENTS = {"PR-A-STUBATH-WC-VENT"}
+#: The three main-storey tees (mep_vent_tees.py) rise the same way through the TJI decks.
+_WALL_FOOT_VENTS = {"PR-A-STUBATH-WC-VENT", "PR-M-BATH2-WC-VENT", "PR-M-BATH2-SH-VENT",
+                    "PR-M-LSINK-VENT"}
 
 
 def _web_passing(finding) -> bool:

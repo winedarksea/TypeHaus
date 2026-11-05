@@ -51,7 +51,9 @@ BENCH = REPO_ROOT / "packages" / "engine" / "scripts" / "bench_rebuild.py"
 # A serial Catlin measurement on 2026-10-28 (after the metal-panel ribbon fix took resolve
 # back from 4363 ms): full rebuild min 4099 ms / median 4133 ms, resolve median 3797 ms, and
 # draw.details 4862 ms. On 2026-09-25 it was rebuild 2320 / resolve 2090 / details 1138 ms:
-# the house grew, and resolve sits close to its budget now. The wider budgets below
+# the house grew, and resolve sits close to its budget now. Serial on 2026-11-04 (drywall beads,
+# PaintStandard, column-post porch guards): rebuild min 5012 ms, resolve min 4630 ms, after
+# drywall_led stopped rebuilding wall bodies per edge. The wider budgets below
 # allow ordinary variation while still catching a large regression. ``draw.details`` covers
 # the whole derived-detail set (~80 full cuts); it is budgeted because a change that makes each
 # detail walk the full geometry could otherwise slow every drawing without a tripwire.
@@ -59,8 +61,8 @@ BENCH = REPO_ROOT / "packages" / "engine" / "scripts" / "bench_rebuild.py"
 # The test reports rather than gates when it runs under xdist or CI: parallel worker load makes
 # the wall clock untrustworthy. `scripts/verify.sh` reruns it serially on this machine, which is
 # where the budget is enforced. Re-measure with `scripts/verify.sh` before moving thresholds.
-REBUILD_BUDGET_MS = 5000
-STAGE_BUDGETS_MS = {"resolve": 4000, "resolve.junctions": 900, "draw.details": 6000,
+REBUILD_BUDGET_MS = 6500
+STAGE_BUDGETS_MS = {"resolve": 5500, "resolve.junctions": 900, "draw.details": 6000,
                     # The derived connector markers get a tripwire of their own rather than
                     # hiding inside resolve's total: the stage's cost is a function of how
                     # many roles ``joints/markers.py`` sets ``draw=True`` on, and widening

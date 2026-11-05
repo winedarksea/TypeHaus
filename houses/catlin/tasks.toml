@@ -561,18 +561,17 @@ constraints = [
 
 # --- BASE AND CASING: after the hard floors, before the carpet (2026-10-10) --------------------
 # The base is set ON the finished floor, so there is no shoe moulding to hide a gap — which
-# only works if the oak, LVP, tile and sheet vinyl are down first. Carpet tucks under a base,
+# only works if the oak, LVP and tile are down first. Carpet tucks under a base,
 # so it goes in after it. Both packages are split in full so no row falls to no visit.
 [visits."task/flooring/building/hard"]
-label = "Hard floors — red oak, LVP, tile setting, coatings, rubber, sheet vinyl and its flash cove"
+label = "Hard floors — red oak, LVP, tile setting, coatings and rubber"
 rows = ["allowances:finish-floor-prep-and-self-levelling",
         "allowances:finish-transitions-and-stair-nosings",
         "floor_finishes:catlin-ditra-heat", "floor_finishes:catlin-ditra-xl",
         "floor_finishes:catlin-plant-sureply", "floor_finishes:catlin-plant-vinyl-raised",
         "floor_finishes:lvp",
         "floor_finishes:oak-floor-custom", "floor_finishes:catlin-rubber-stall-mat",
-        "floor_finishes:sealed-concrete", "floor_finishes:vinyl-sheet",
-        "interior_trim:flash-cove",
+        "floor_finishes:sealed-concrete",
         "sheet_goods:aluminum-deck", "sheet_goods:trex-enhance-basics"]
 
 [visits."task/flooring/building/carpet"]

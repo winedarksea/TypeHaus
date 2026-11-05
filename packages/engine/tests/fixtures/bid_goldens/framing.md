@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 8e60cdb9715893fd  
-**Lines:** 202
+**Model hash:** efa844927dc07b6a  
+**Lines:** 203
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -18,11 +18,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade — blocking (0.75x3.5:poplar-trim-paint) | 16 | LF ordered | 14 pcs, 15.0 LF cut | building |
 | 1.0x3.5 SPF framing lumber — blocking (1.0x3.5:spf) | 8 | LF ordered | 1 pcs, 2.3 LF cut | building |
-| 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | 20 | LF ordered | 2 pcs, 19.1 LF cut | building |
+| 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | 20 | LF ordered | 2 pcs, 19.3 LF cut | building |
 | 1.25x11.875 rim — rim board (1.25x11.875 rim) | 148 | LF ordered | 6 pcs, 143.6 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
 | 1.75x11.875 LVL — sister joist, trimmer (1.75x11.875 LVL) | 200 | LF ordered | 18 pcs, 187.0 LF cut | building |
-| 11.875 TJI 230 — blocking, joist, rafter, sister joist (11.875 TJI 230) | 3,256 | LF ordered | 286 pcs, 3003.7 LF cut | building |
+| 11.875 TJI 230 — blocking, joist, rafter, sister joist (11.875 TJI 230) | 3,256 | LF ordered | 285 pcs, 3002.6 LF cut | building |
 | 11.875 floor truss — blocking, joist, sister joist, trimmer (11.875 floor truss) | 87 | ea | 87 pcs, 879.5 LF cut; 914.0 LF in the takeoff | building |
 | 1x4 SPF framing lumber — ceiling furring, girt strapping (1x4:spf) | 556 | LF ordered | 73 pcs, 472.8 LF cut | building |
 | 1x4 Structural 1 plywood — ceiling furring, girt strapping (1x4:struct-1-plywood) | 342 | LF ordered | 51 pcs, 286.4 LF cut | building |
@@ -40,7 +40,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 336 | LF ordered | 38 pcs, 313.2 LF cut | building |
 | 2x10 — hanger board (2x10) | 58 | LF ordered | 9 pcs, 40.9 LF cut | building |
 | 2x10 SPF framing lumber — blocking, ceiling furring (2x10:spf) | 80 | LF ordered | 30 pcs, 72.6 LF cut | building |
-| 2x12 — blocking, joist (2x12:kdat) | 424 | LF ordered | 46 pcs, 387.8 LF cut | building |
+| 2x12 — blocking, joist (2x12:kdat) | 432 | LF ordered | 57 pcs, 396.5 LF cut | building |
 | 2x12 SPF framing lumber — blocking (2x12:spf) | 16 | LF ordered | 12 pcs, 15.2 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 260 | LF ordered | 77 pcs, 209.2 LF cut | building |
 | 2x3 — corner stud, plate, stud (2x3) | 48 | LF ordered | 12 pcs, 28.0 LF cut | building |
@@ -48,7 +48,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,660 | LF ordered | 660 pcs, 3942.1 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,934 | LF ordered | 477 pcs, 2515.5 LF cut | building |
 | 2x4 SPF framing lumber — blocking, ceiling furring, girt strapping (2x4:spf) | 128 | LF ordered | 41 pcs, 97.2 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud (2x6) | 7,210 | LF ordered | 1233 pcs, 6205.2 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud (2x6) | 7,202 | LF ordered | 1230 pcs, 6202.6 LF cut | building |
 | 2x6 Douglas fir-larch No. 2 framing — plate (2x6:df-l-no2) | 80 | LF ordered | 10 pcs, 69.4 LF cut | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | 90 | LF ordered | 9 pcs, 77.2 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | 130 | LF ordered | 14 pcs, 93.6 LF cut | building |
@@ -161,7 +161,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | PROD-SCHLUTER-SCHIENE — aluminium, height to the tile | 3 | ea |  | second |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375) | 3,138 | ea |  | building |
 | S-5-N Mini nail-strip seam clamp | 24 | ea |  | building |
-| 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN) | 620 | ea |  | building |
+| 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN) | 686 | ea |  | building |
 | 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN) | 73 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | 4 | ea |  | basement |
 | Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112) | 1,368 | ea |  | building |
@@ -208,9 +208,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| butyl-tape, 1 1/2" on beam (butyl-tape) | 18 | LF |  | main |
-| butyl-tape, 1 1/4" on deck (butyl-tape) | 19.1 | LF |  | second |
-| butyl-tape, 1 1/2" on deck (butyl-tape) | 418.4 | LF |  | main, second |
+| butyl-tape, 1 1/2" on beam (butyl-tape) | 18.1 | LF |  | main |
+| butyl-tape, 1 1/4" on deck (butyl-tape) | 19.3 | LF |  | second |
+| butyl-tape, 1 1/2" on deck (butyl-tape) | 427.1 | LF |  | main, second |
 | butyl-tape, 4 1/2" on deck (butyl-tape) | 33.5 | LF |  | main |
 | butyl-tape, 1 1/2" on stair (butyl-tape) | 65.7 | LF |  | main |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 4.5 | LF |  | main |
@@ -224,7 +224,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| firestop-sealant | 30 | LF |  | attic, main, second |
+| Fireblock sealant bead, 24 penetrations (firestop-sealant) | 30.6 | LF |  | attic, main, second |
 
 ## Construction returns
 
@@ -270,7 +270,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 34" x 25" (no type) (None) | 1 | ea | 34" x 25" | main |
 | rough opening, 36" x 80" (no type) (None) | 1 | ea | 36" x 80" | basement |
 | rough opening, 63.31" x 1.75" (no type) (None) | 1 | ea | 63 5/16" x 1 3/4" | basement |
-| rough opening, 63.31" x 6.5" (no type) (None) | 1 | ea | 63 5/16" x 6 1/2" | basement |
+| rough opening, 63.31" x 2.5" (no type) (None) | 1 | ea | 63 5/16" x 2 1/2" | basement |
+| rough opening, 63.31" x 2.75" (no type) (None) | 1 | ea | 63 5/16" x 2 3/4" | basement |
 | rough opening, 63.31" x 80" arched (no type) (None) | 1 | ea | 63 5/16" x 80" | basement |
 
 ## Steel members
@@ -461,7 +462,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | BM-BW-FE |
 | butyl-tape-beam, 5 1/2" on beam (butyl-tape-beam) | BM-BW-RE, BM-BW-RW |
 | butyl-tape-beam, 5 1/2" on brace (butyl-tape-beam) | SB-BW-BAND |
-| firestop-sealant | FO-A-ERV-CHASE, FO-M-ERV-OA, FO-S-ERV-CHASE |
+| Fireblock sealant bead, 24 penetrations (firestop-sealant) | FO-A-ERV-CHASE, FO-M-ERV-OA, FO-S-ERV-CHASE |
 | Treated sill plate, Pressure-treated southern yellow pine (sill plate) (pt-sill-plate) | — |
 | Sill seal foam gasket, under the sill plate (sill-seal-foam) | — |
 | Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | — |
@@ -482,7 +483,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 34" x 25" (no type) (None) | AO-M-FIRE-NICHE |
 | rough opening, 36" x 80" (no type) (None) | D-B-GYM |
 | rough opening, 63.31" x 1.75" (no type) (None) | AO-B-SUNKEN-SEAT |
-| rough opening, 63.31" x 6.5" (no type) (None) | AO-B-SUNKEN-CURB-APPROACH |
+| rough opening, 63.31" x 2.5" (no type) (None) | AO-SG-BRKBM-TREAD-BED |
+| rough opening, 63.31" x 2.75" (no type) (None) | AO-B-SUNKEN-TREAD-BED |
 | rough opening, 63.31" x 80" arched (no type) (None) | AO-B-BRICK-DOOR |
 | L3 1/2" x 3 1/2" x 1/4" steel angle (L3.5x3.5x0.25) | BM-M-FIRE-LINTEL |
 

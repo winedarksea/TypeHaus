@@ -37,7 +37,8 @@ def test_ifc_hardware_accessories_have_product_quantity_installation_and_geometr
         spec = ifcopenshell.util.element.get_pset(accessory, "TypeHaus_DoorHardware")
         if spec:
             hardware.append((accessory, spec))
-    assert len(hardware) == 33  # nine entry items plus eight for each French pair
+    # nine entry items, eight for each French pair, and D-B-SHOP's keyed lever + three hinges
+    assert len(hardware) == 37
     viewer = [(accessory, spec) for accessory, spec in hardware if spec["Role"] == "viewer"]
     assert len(viewer) == 1
     accessory, spec = viewer[0]

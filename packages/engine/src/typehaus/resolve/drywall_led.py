@@ -47,10 +47,11 @@ def host_shadow_gap_runs(model: ResolvedModel, standard: DrywallStandard | None)
     reveal = profile.reveal.meters
     parts = shadow_gap_parts(reveal, profile.depth.meters, profile.flange.meters)
     findings: list[Finding] = []
+    bodies: dict[int, object] = {}  # wall bodies are fixed for the pass; built once each
     for index, run in enumerate(model.light_runs):
         if run.z_path_m and len(set(run.z_path_m)) > 1:
             continue  # a raked run is never set into a flat board
-        host = _host(model, run, materials)
+        host = _host(model, run, materials, bodies)
         if host is None:
             continue
         host_ref, face_z, candidates = host
@@ -67,7 +68,7 @@ def host_shadow_gap_runs(model: ResolvedModel, standard: DrywallStandard | None)
     return findings
 
 
-def _host(model: ResolvedModel, run: ResolvedLightRun, materials: dict):
+def _host(model: ResolvedModel, run: ResolvedLightRun, materials: dict, bodies: dict):
     """``(host ref, board face z, wash candidates)`` or None for a surface run.
 
     Candidates are ``(segment, wall or None)``: the room's clear-face edges with their wall,
@@ -81,7 +82,7 @@ def _host(model: ResolvedModel, run: ResolvedLightRun, materials: dict):
             return None
         ring = list(soffit.outline)
         edges = [((ring[i], ring[(i + 1) % len(ring)]), None) for i in range(len(ring))]
-        return soffit.tag, soffit.z0_m, edges + _room_edges(model, room)
+        return soffit.tag, soffit.z0_m, edges + _room_edges(model, room, bodies)
     for ceiling in model.ceilings:
         if (ceiling.z0_m is None or ceiling.z1_m is None or ceiling.storey != run.storey
                 or len(ceiling.outline) < 3
@@ -94,7 +95,7 @@ def _host(model: ResolvedModel, run: ResolvedLightRun, materials: dict):
                                     None) is None:
             return None
         owner = next((r for r in model.rooms if r.tag == ceiling.room_ref), room)
-        return ceiling.uid, ceiling.z0_m, _room_edges(model, owner)
+        return ceiling.uid, ceiling.z0_m, _room_edges(model, owner, bodies)
     return None
 
 
@@ -102,7 +103,7 @@ def _in_board(z: float, face: float, thickness: float) -> bool:
     return face - _BOARD_TOL_M <= z <= face + thickness + _BOARD_TOL_M
 
 
-def _room_edges(model: ResolvedModel, room) -> list:
+def _room_edges(model: ResolvedModel, room, bodies: dict) -> list:
     """The room's clear-face edges, each with the wall whose body it lies on (or None)."""
     from typehaus.resolve.room_walls import _TOUCH_M
     from typehaus.resolve.wall_faces import wall_body
@@ -111,6 +112,12 @@ def _room_edges(model: ResolvedModel, room) -> list:
         return []
     ring = list(room.clear_face)
     walls = [w for w in model.walls if w.storey == room.storey and w.layers]
+
+    def body(w):
+        if id(w) not in bodies:
+            bodies[id(w)] = wall_body(w, w.z0_m, w.z1_m)
+        return bodies[id(w)]
+
     out = []
     for i in range(len(ring)):
         segment = (ring[i], ring[(i + 1) % len(ring)])
@@ -119,7 +126,7 @@ def _room_edges(model: ResolvedModel, room) -> list:
             continue
         mid = line.interpolate(0.5, normalized=True)
         wall = next((w for w in walls
-                     if wall_body(w, w.z0_m, w.z1_m).distance(mid) <= _TOUCH_M), None)
+                     if body(w).distance(mid) <= _TOUCH_M), None)
         out.append((segment, wall))
     return out
 
