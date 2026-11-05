@@ -1,0 +1,393 @@
+{
+  "area": "O1",
+  "model": "houses/catlin",
+  "review_sha": "539d9a81",
+  "inventory_summary": "35 interior door openings (+9 exterior/garage seen for seam) inventoried from the resolved model (sizing, jamb depth/stock/rip/extension, leaf bottom vs finished floor both sides, host wall stack, doorway floors): cased swing/pocket doors plus bypass/bifold, trimless, bookcase and steel/KD leaves. Product sources: interior_door_types.py rows (commodity hollow and MDF prehung 1 3/8in, steel prehung, sauna slab, double pair), door_types.py (D-B-ESS), storeys/main.py (trimless, bookcase), library/doors.py (access, closet, pocket), notes/interior_door_schedule.md and pocket_frame_eclisse.md. Web-checked: Eclisse Single 2x4-2x6 tech sheet 11/2022 (read in full: RO 74.5 x 83.25, H1 from finished floor, max 1-3/4in), JELD-WEN prehung RO (38.063 x 82.438, 4-9/16 jamb), Masonite Logan 33.5 x 81.5 unit, TRUporte 48x80 bypass RO 46, retail 56x80 bifold, ProSaunas 24x80 sauna door (frame 25.5 x 81.5, RO 26 x 82, 1 3/4in), Murphy flush-mount sheet (datum not stated), Steelcraft/Trudoor KD frame throat rule. Sheets opened: A-101..A-104, A-516..A-524, A-527, A-528, A-530, A-601, A-601.1. 8 new findings (O1-101 and O1-102 are large-fix interface items). NOT examined: Eclisse jamb-kit thickness (readable text not extractable, so mouth 36.00 vs bare-frame A=36 7/8 unverified); JELD-WEN/Masonite RO datum (subfloor vs finished floor) from a maker drawing; D-B-PLAY double 60 RO against a maker table; glazed 30x80 tempered prehung (D-S-PLANT, D-M-STUDY) product page; Kwikset Halifax / Emtek holder dimensions; swing clearances and hinge-side casing fit (O2/M3); the exterior doors (O3).",
+  "verified_clean": [
+    "Interior swing RO width: leaf + 2.236in (1in jamb + 3 mm gap each side) vs JELD-WEN +2.063in and Masonite 34in for a 32in leaf: fits every swing door (all sizing.fits true).",
+    "Pocket kit RO: D-M-PANTRY/D-M-LAUN 74.5 x 83.53in and D-B-BATH 74.5 x 83.37in equal Eclisse 74-1/2 x 83-1/4 over the finished floor plus the room build-up; pocket run 38.5in; walls 4.5in (2x4) and 6.5in (2x6) match the kit's 3-1/2 / 5-1/2in structure plus 1/2in board each side.",
+    "Jamb depth column: 17 doors on 4.5in walls take 4 9/16 stock (1/16in proud), 6.5in walls 6 9/16 stock; D-S-SUITE (7.0in) and D-S-PLANT (7.29in) extensions, D-B-CLOSET 6 1/8in rip and D-B-SAUNA 9 1/4in flat cedar jamb (a 1x10 is 9 1/4in actual) agree with the wall stacks.",
+    "D-B-SAUNA 24x80: RO 26.24 x 82.26in vs ProSaunas 24x80 RO 26 x 82 (frame 25.5 x 81.5, 1 3/4in); D-B-ESS 24x80 KD: RO 26.24 x 81.51 vs distributor rule opening + 2 x +1 (26 x 81).",
+    "D-M-MUDC bypass RO 50.00 x 81.78 and O-S-CLOSET bifold RO 58 x 82.25 now come from a finished-opening rule (nominal + 1in jamb each side, +0.5in head) consistent with the 46-48in / 80-81in fit ranges of retail 48x80 bypass sets.",
+    "D-A-STUDY 32 x 82.75in over the sill (Murphy 30x80 = RO 32 x 82, +0.75in oak); header 323.5..325.0in clears W-A-SN's rake plate by 1/8in; checks 0 FAIL.",
+    "Finished floors feeding door heights: carpet 1.0, LVP 0.276, oak 0.75, tile 0.75, vinyl 0.12, mat 0.75 recovered from doorway.adjacent_floors; steps across thresholds (D-M-BATH2 0.25in, D-A-HALVES 0.63in, D-B-SAUNA 0.75in, D-B-BATH 0.12in) each carry a named reducer/Z-bar on A-601.",
+    "integrity.door_floor_finish passes for 29 doors; A-516..A-519, A-521..A-524, A-527, A-528, A-530 RO labels equal the resolved heights (A-520 excepted).",
+    "A-601 marks (D16a/b, D19a/b, D21a/b, D26) are split exactly where the RO height differs; plan marks on A-101..A-104 resolve to A-601 rows."
+  ],
+  "findings": [
+    {
+      "id": "O1-101",
+      "area": "O1",
+      "title": "Interior swing RO is 81.51in over the finished floor (leaf + 0.394 undercut + 0.118 gap + 1.0 jamb); maker tables give 82.0-82.44in for the same 80in prehung",
+      "elements": [
+        "D-M-MUD",
+        "D-M-BATH1",
+        "D-M-MECH",
+        "D-M-BED",
+        "D-M-BATH2",
+        "D-S-BED1",
+        "D-S-SUITE",
+        "D-S-NCLOSET",
+        "D-A-HALVES",
+        "D-A-STUBATH",
+        "D-B-FURN",
+        "D-B-SHOP",
+        "D-B-PLAY",
+        "D-B-SAUNA",
+        "D-B-ESS"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/door_sizing.py:49",
+        "packages/engine/src/typehaus/resolve/door_sizing.py:202"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-601"
+        ],
+        "pages": [
+          149
+        ]
+      },
+      "confidence": 0.4,
+      "evidence": {
+        "measured": "door_sizing head = floor_finish + undercut_m (0.010 m = 0.394in) + leaf_gap (0.118in) + jamb_allowance (1.0in) = leaf + 1.512in over the finished floor for every interior swing door. Resolved RO heights over the finished floor: 81.51in on every swing door (A-601 prints 81.51 above the subfloor on slab/0in floors, 81.79 on LVP, 82.26 on oak/tile, 82.51 on carpet, 81.63 on attic vinyl). Retail stock prehung unit is 81.5in tall (Masonite Logan 32x80 listed 'actual 33.5 x 81.5'): slack at the head is 0.01in on slab and LVP rooms, no room to shim or level the head jamb. JELD-WEN lists RO 38.063 x 82.438 (36x80) and 26.063 x 82.438 (24x80) with 4-9/16 jamb: the model is 0.93in short above a slab, 0.65in short above 0.276in LVP (measured from the subfloor), 0.18in short on 3/4in oak/tile; carpet rooms (82.51 above subfloor) are the only ones at 82.44.",
+        "expected": "RO height of 82-82.5in for a 6'-8\" prehung unit, measured from the floor the unit stands on (retail range 82.0 Masonite Riverside/Logan listing, 82.438 JELD-WEN listing), i.e. leaf + ~2.0-2.4in, with the maker's datum confirmed. Widths are fine: model 34.24in (+2.24) vs JELD-WEN +2.063.",
+        "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p1.py (sizing.rough_h_m, floor_finish_m per door) and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p3.py (leaf_bottom, head_z, finished_floor_z); web: JELD-WEN 36x80 HD listing 203497121 (RO 38.063 x 82.438) and 24x80 202037814 (26.063 x 82.438); Lowe's Masonite Logan 1000497081 title 'Actual 33.5 x 81.5'. Datum (subfloor vs finished floor) is not stated in the retail listings, hence confidence 0.4."
+      },
+      "source": "Retail listings (HD/Lowe's) for JELD-WEN and Masonite 32/36x80 prehung; no manufacturer drawing read. Engine default CASED_DOOR_DEFAULTS in door_sizing.py.",
+      "proposed_fix": "Confirm the datum from a maker's installation sheet (JELD-WEN or Masonite). If it is the finished floor, raise the head allowance (undercut 3/4in per the owner schedule plus 1/4in head shim gives +0.5in) in CASED_DOOR_DEFAULTS; every interior head, jack and header moves.",
+      "size_guess": "large",
+      "seam_with": [
+        "O4",
+        "O2"
+      ],
+      "dedupe_key": "O1:interior-ro-height"
+    },
+    {
+      "id": "O1-102",
+      "area": "O1",
+      "title": "Undercut is not modelled or scheduled: every leaf floats 0.394in over the higher finished surface, while the owner schedule needs 3/4in (default), 1 1/4-1 3/4in (six System 1 return doors) and none (sealed doors)",
+      "elements": [
+        "D-S-BED1",
+        "D-S-BED2",
+        "D-S-BED3",
+        "D-S-SUITE",
+        "D-A-STUDY",
+        "D-A-HALVES",
+        "D-M-BATH2",
+        "D-B-FURN",
+        "D-S-BATH1",
+        "D-B-SHOP",
+        "D-B-SAUNA",
+        "D-M-BED2"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/door_sizing.py:49",
+        "packages/engine/src/typehaus/resolve/door_product_spec.py:71",
+        "houses/catlin/plan/mep_registers.py:40",
+        "houses/catlin/notes/interior_door_schedule.md:15"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-601"
+        ],
+        "pages": [
+          149,
+          150
+        ]
+      },
+      "confidence": 0.6,
+      "evidence": {
+        "measured": "cased_product.leaf_bottom_z_m minus the higher finished floor = 0.394in on all 28 cased swing/pocket doors (lower side: 0.514 D-B-BATH, 0.644 D-M-BATH2 and D-S-BED1-3 over the 0.75in oak hall, 1.024 D-A-HALVES over studio vinyl, 1.144 D-B-SAUNA over the sauna slab, 0.514 D-A-POCKET). Owner schedule (notes/interior_door_schedule.md, system1_return_path.md): D-S-BED1/2/3 1 1/2in, D-S-SUITE 1 3/4in, D-A-STUDY 1 3/4in, D-A-HALVES 1 1/4in, D-M-BATH2 and D-B-FURN 3/4in must stay, D-S-BATH1/D-B-SHOP/D-B-SAUNA/D-M-BED2 sealed (no undercut). Opening has no undercut field and A-601 has no column: mep_registers.py:40 says 'so a door with no undercut on it gets cut at 3/4in and six rooms do not get their air'. The datum over carpet (1.0in raised carpet vs 0.75in oak hall) is also unstated.",
+        "expected": "A-601 (or a door-schedule note) states the bottom clearance per door and its datum (top of finished surface or carpet pile), and the model leaf bottom follows; relief-path doors carry their 1 1/4-1 3/4in, sealed doors 0.",
+        "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p3.py (undercuts list per side); read A-601 pages 149-150 (no undercut/bottom column; grep -i undercut returns nothing); notes/system1_return_path.md table lines 33-40."
+      },
+      "source": "houses/catlin/notes/interior_door_schedule.md and system1_return_path.md (owner decisions 2026-11-03); engine default undercut_m=0.010.",
+      "proposed_fix": "Add Opening.undercut (default 0.75in) read by door_product_spec and the head sizing, print a Bottom column on A-601; until then print the six larger undercuts as a General Note on A-601.",
+      "size_guess": "large",
+      "seam_with": [
+        "M5",
+        "O2"
+      ],
+      "dedupe_key": "O1:undercut-unmodelled"
+    },
+    {
+      "id": "O1-103",
+      "area": "O1",
+      "title": "Pocket split studs at the far end of a cavity still hang at plate-top height with no plate under them (4 of 9)",
+      "elements": [
+        "D-M-LAUN",
+        "D-B-BATH",
+        "W-M-HS3",
+        "W-B-BA-E"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/doorway_framing.py:103",
+        "packages/engine/src/typehaus/resolve/doorway_framing.py:117"
+      ],
+      "kind": "engine-geometry",
+      "severity": "model-only",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.7,
+      "evidence": {
+        "measured": "After the C2 fix the bottom plate is cut under the whole cavity, but _seat_split_studs only looks for a plate in the stud's own wall. W-M-HS3 pocketsplit-0-02/-03 stand at x=170/182in with z0 2.25in (subfloor 0.75in) over the cut plate of W-M-HS4 (plate-bottom-passage-0 now starts at x=184.5in); W-B-BA-E pocketsplit-0-02/-03 at y=212.06/200.06 with z0 -107.938in (slab -109.438in) over W-B-HALL-W's cut plate. 1.5in floating, 4 studs. W-M-PAN-S's 3 studs (all within the host wall) are seated at 0.75in correctly.",
+        "expected": "Every pocketsplit stud drops to the subfloor/slab where the plate under it was cut, including studs listed on the host wall but standing in a colinear neighbour (stations past the host wall's end).",
+        "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p5.py: prints plate-bottom* and pocketsplit* world coordinates and z for W-M-HS3/HS4 and W-B-BA-E/HALL-W."
+      },
+      "source": "plans/geometry-review/adjudicated/C2.md O1-001 (fix claims 5 split studs z0 1.5in -> 0.0in)",
+      "proposed_fix": "In _seat_split_studs search the plates of every wall in _pocket_cavity's cut list (colinear neighbours), not wall.members alone.",
+      "size_guess": "small",
+      "seam_with": [
+        "O4"
+      ],
+      "dedupe_key": "O1:pocketsplit-stud-seat"
+    },
+    {
+      "id": "O1-104",
+      "area": "O1",
+      "title": "A-520 prints '6'-8\" R.O.' for INT_2X6_BRG_HALF, whose doors are 6'-9 3/4\" (D-M-STUDY) and 6'-10 1/4\" (D-A-HALVES); no range note",
+      "elements": [
+        "D-M-STUDY",
+        "D-A-HALVES",
+        "D-B-GYM"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/detail_components/opening_unit.py:79"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-520"
+        ],
+        "pages": [
+          71
+        ]
+      },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "A-520 dimension reads 6'-8\" (80in) with no 'R.O. HEIGHTS IN THIS ASSEMBLY' line. Model: INT_2X6_BRG_HALF hosts D-M-STUDY (81.79in) and D-A-HALVES (82.26in); the only 80.0in opening nearby is the leafless rough_opening D-B-GYM on the _DFL variant. The detail appears to take its representative opening from that passage (kind rough_opening), so _ro_range_note, which compares same-kind openings only, sees one height and stays silent. Every other interior detail (A-516, 517, 518, 519, 521-524, 527, 528, 530) matches the model heights.",
+        "expected": "A-520 shows the door ROs it hosts (6'-9 3/4in - 6'-10 1/4in, see A-601) or states it is a leafless passage.",
+        "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p6.py (door and rough_opening heights per wall.assembly); Read permit_set_full.pdf page 71."
+      },
+      "source": "n/a (drawing)",
+      "proposed_fix": "Pick the representative opening by assembly and prefer a door; or print the range for both kinds.",
+      "size_guess": "small",
+      "seam_with": [
+        "C7"
+      ],
+      "dedupe_key": "O1:a520-ro"
+    },
+    {
+      "id": "O1-105",
+      "area": "O1",
+      "title": "A-601 gives no hardware function for the 30 interior leaves (privacy / passage / dummy / pull) and no hardware set for any of them",
+      "elements": [
+        "DT-INT-SWING30-PRIV",
+        "DT-INT-SWING32-PRIV",
+        "DT-POCKET-INT-36-PRIV",
+        "DT-INT-DOUBLE60"
+      ],
+      "files": [
+        "houses/catlin/plan/interior_door_types.py:28",
+        "packages/engine/src/typehaus/emit/draw/schedules/openings.py"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-601",
+          "A-601.1"
+        ],
+        "pages": [
+          149,
+          150
+        ]
+      },
+      "confidence": 0.55,
+      "evidence": {
+        "measured": "HW sets on A-601.1 are HW-1..HW-4 (exterior and D-B-SHOP only); the HW set column is '-' for every other interior door. Function (privacy on baths/bedrooms, passage elsewhere, pocket privacy lock plus edge pull, dummy and flush bolts on D-B-PLAY, touch latch on D-A-STUDY) lives in DoorType.function and notes/interior_door_schedule.md, which are not on the set.",
+        "expected": "A-601 carries a function or hardware-set column (or a note) so the finish-hardware order (Kwikset Halifax Square US15, privacy vs passage) can be read from the set.",
+        "method": "Read A-601/A-601.1 (pages 149-150): table columns and HARDWARE SETS list; compare notes/interior_door_schedule.md rows."
+      },
+      "source": "houses/catlin/notes/interior_door_schedule.md (owner decisions 2026-11-03)",
+      "proposed_fix": "Add DoorType.function as an A-601 column or generate HW-5..HW-8 from function.",
+      "size_guess": "small",
+      "seam_with": [
+        "C7"
+      ],
+      "dedupe_key": "O1:a601-interior-hardware"
+    },
+    {
+      "id": "O1-106",
+      "area": "O1",
+      "title": "D-B-ESS knock-down steel frame has no throat/jamb depth on A-601 ('\u2014') in a 6.75in wall; D-M-BED2 (7.0in) and D-M-STUDY (6.5in) site-built flat jambs print '\u2014' too",
+      "elements": [
+        "D-B-ESS",
+        "D-M-BED2",
+        "D-M-STUDY"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/door_sizing.py:278",
+        "packages/engine/src/typehaus/resolve/door_sizing.py:282"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-601"
+        ],
+        "pages": [
+          149
+        ]
+      },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "_jamb returns (None, None) for factory_frame, trimless and bookcase doors. Finish-to-finish wall depths: W-B-ESS-W 6.75in (D-B-ESS), W-M-C1 7.0in (D-M-BED2), W-M-C3 6.5in (D-M-STUDY). A-601 Jamb column is '\u2014' for all three. A hollow-metal KD frame is ordered by throat (Steelcraft: jamb depth 1/8in over wall thickness; drywall-frame distributors: wall + 1/2in a return), and the two flat hardwood jambs are milled to the wall depth: a framer or the mill has no number. A-601 also gives mark D22a to D-A-HALVES (stock) and D-S-SUITE (stock + 7/16in extension) although their Jamb entries differ.",
+        "expected": "Jamb column states the throat/depth (6 3/4 to 6 7/8in KD frame, 7in and 6 1/2in flat jamb) and marks split where Jamb differs.",
+        "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p1.py (jd/js None for D-B-ESS, D-M-STUDY, D-M-BED2) and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p7.py; A-601 page 149 rows D13, D18, D24, D22a."
+      },
+      "source": "Steelcraft installation sheet C/CK (allegion.com) 'jamb depth 1/8in greater than wall'; Trudoor KD drywall frame page; houses/catlin/CLAUDE.md note on D-M-BED2 jamb.",
+      "proposed_fix": "Print wall_depth_m in the Jamb column for the no-stock cases ('7 flat, milled', 'KD 6 7/8 throat').",
+      "size_guess": "small",
+      "seam_with": [
+        "O2"
+      ],
+      "dedupe_key": "O1:jamb-no-stock"
+    },
+    {
+      "id": "O1-107",
+      "area": "O1",
+      "title": "Every swing leaf is modelled 45 mm (1.77in) thick, including the 1 3/8in hollow-core and MDF prehungs; Eclisse limit is 1 3/4in",
+      "elements": [
+        "DT-INT-SWING30",
+        "DT-INT-SWING32",
+        "DT-INT-SWING30-PRIV",
+        "DT-POCKET-INT-36",
+        "DT-POCKET-INT-36-PRIV"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/doorway.py:28",
+        "packages/engine/src/typehaus/resolve/door_product_spec.py:56"
+      ],
+      "kind": "product-data",
+      "severity": "model-only",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.6,
+      "evidence": {
+        "measured": "CasedDoorSpec.leaf_thickness_m = DOORWAY.leaf_thickness_m = 0.045 m for all cased doors (p3 probe: 0.045). interior_door_types.py sources every commodity leaf as '1 3/8in hollow-core' (34.9 mm) or 1 3/8in solid-core MDF; sauna and steel leaves are 1 3/4in. Pocket slot = leaf + 2 x 3 mm. Eclisse Single 2x4-2x6 sheet: 'Max door thickness 1-3/4 in', so the modelled 1.77in pocket leaf is 0.02in over the kit's maximum.",
+        "expected": "Leaf thickness from DoorType.core/product: 1 3/8in (0.0349 m) hollow/solid-core prehungs, 1 3/4in for the steel, sauna and custom slabs.",
+        "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p3.py prints cased_product.leaf_thickness_m; Eclisse tech sheet (eclisse.us documents/import_us/Schede tecniche/eclisse_single_2x4-2x6_22.pdf)."
+      },
+      "source": "Eclisse Single 2x4-2x6 technical sheet 11/2022 (max door thickness 1-3/4in); JELD-WEN/Masonite hollow-core 1 3/8in listings.",
+      "proposed_fix": "Add DoorType.leaf_thickness (or derive from core and product) and read it in door_product_spec.",
+      "size_guess": "small",
+      "seam_with": [
+        "O2"
+      ],
+      "dedupe_key": "O1:leaf-thickness"
+    },
+    {
+      "id": "O1-108",
+      "area": "O1",
+      "title": "A-601 net clear for interior leaves borrows the exterior Therma-Tru deduction (2 11/16in) for 1 3/8in interior prehungs",
+      "elements": [
+        "D-M-MUD",
+        "D-S-BED1",
+        "D-B-FURN"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/door_sizing.py:36"
+      ],
+      "kind": "drawing",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-601"
+        ],
+        "pages": [
+          149
+        ]
+      },
+      "confidence": 0.3,
+      "evidence": {
+        "measured": "clear_w = leaf - 2.6875in for every interior swing leaf (basis string 'estimated: Therma-Tru deduction (2026 Arch 1.29-1.30)'); A-601 prints 2'-5 3/8in for a 32in leaf, 2'-3 3/8in for 30in. No interior-door source for the deduction; an interior leaf is 1 3/8in thick with a 1/2in stop, so the true figure is likely 2in-2 1/4in larger-clear. No code consumes it (R311.2 grades D-M-ENTRY only).",
+        "expected": "Interior net clear from a cited interior prehung geometry (leaf thickness + stop + hinge swing), or the column labelled 'estimated'.",
+        "method": "Read A-601 net clear column; door_sizing.py:154 and the basis string via sizing.basis."
+      },
+      "source": "n/a",
+      "proposed_fix": "Relabel the column or derive from leaf_thickness (see O1-107).",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "O1:interior-clear-estimate"
+    }
+  ],
+  "prior_findings": [
+    {
+      "id": "O1-001",
+      "status": "partial",
+      "evidence": "Plates are now cut under the whole cavity (W-M-PAN-S none left; W-M-HS3 plate only x98..110; W-M-HS4 184.5..213.25; W-B-BA-E 0..33.94 in station; W-B-HALL-W 197.56..167.67 and 129.44..123.63 y), leaf bottoms 1.419 / 1.419 / -108.924in sit above bare subfloor/slab. Residue: 4 of 9 pocketsplit studs (W-M-HS3 -02/-03 at z0 2.25in, W-B-BA-E -02/-03 at z0 -107.938in) still stand at old plate-top height with no plate: see O1-103.",
+      "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p4.py and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p5.py"
+    },
+    {
+      "id": "O1-002",
+      "status": "closed",
+      "evidence": "A-601 now prints the kit RO: D-M-PANTRY and D-M-LAUN 6'-2 1/2 x 6'-11 1/2 (74.5 x 83.53in = Eclisse 74-1/2 x 83-1/4 + 0.276in LVP build-up), D-B-BATH 6'-2 1/2 x 6'-11 3/8 (74.5 x 83.37 = 83.25 + 0.12 vinyl); nominal 3'-0 x 6'-8 shown. Eclisse tech sheet 11/2022 read: 36in door F.S. 74 x H1 83 (H1 from intended finished floor), R.O. = F.S.+1/2in wide, H1+1/4in high. The kit model (EKC/EKQ) is not named on A-601 (minor doc).",
+      "method": "pdftotext -f 149 -l 149 -layout permit_set_full.pdf; sizing.rough_w_m in p1.py; Eclisse PDF via eclisse.us support/product/single"
+    },
+    {
+      "id": "O1-003",
+      "status": "closed",
+      "evidence": "door_sizing now has a track branch: D-M-MUDC RO 50.00 x 81.78in over the sill (finished opening 48 x 80.5 = nominal + 0.5in head; 1in jamb each side), O-S-CLOSET 58.00 x 82.25. TRUporte 48x80 bypass lists RO 46 x 80 (fit range 80-81in high); Chadwell: finished opening 79.5-81in; a 48in set overlaps 2-3in so a 48in finished opening is within range. Retail 56x80 bifold sets exist (HD 54x80 'fits a finished opening of 54 x 80'). Basis string still says 'estimated: retail set, no sourced track'.",
+      "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p1.py (D-M-MUDC, O-S-CLOSET) and p7.py basis strings; WebSearch results HD 202519228, chadwellsupply, doornmore"
+    },
+    {
+      "id": "O1-004",
+      "status": "partial",
+      "evidence": "DoorSizing now carries jamb_depth/stock/rip/extension and A-601 has a Jamb column: D-S-SUITE 6 9/16 + 7/16in ext (wall 7.0), D-S-PLANT 7 5/16 = stock + 3/4 ext (7.29), D-B-CLOSET 6 1/8 rip of 6 9/16, D-B-SAUNA 9 1/4 flat cedar, 2x4 doors 4 9/16 stock; A-002 notes billing as rip/extension. Still '\u2014': D-B-ESS (KD frame, 6.75in wall), D-M-BED2 (7.0), D-M-STUDY (6.5): see O1-106.",
+      "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p1.py (jd, js, rip, ext) and A-601 page 149 Jamb column"
+    },
+    {
+      "id": "O1-005",
+      "status": "closed",
+      "evidence": "published branch now adds the build-up: D-A-STUDY RO 32 x 82.75in over the sill (82 + 0.75in oak), basis 'published RO, from the finished floor'; header-0 z 323.5..325.0in, W-A-SN raked lower plate bottom at the header's east end 325.12in (343.37 - 0.5 x 36.5), 1/8in clear, and haus check shows no member_interference. Murphy's datum is still not stated in the install sheets read (pre-hung flush mount PDF: threshold must not sit over carpet); the finished-floor reading errs on the safe side (if Murphy means subfloor the head is 3/4in high).",
+      "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O1/p8.py (header, plate-raked, wall_top_at); Murphy FM pre-hung installation PDF (images.thdstatic.com 72d46e24)"
+    },
+    {
+      "id": "O1-006",
+      "status": "partial",
+      "evidence": "Detail sheets now print 'R.O. HEIGHTS IN THIS ASSEMBLY lo - hi: SEE A-601' (A-516 3'-1 5/8 - 6'-11 1/2, A-522, A-523, A-524) and the single-door sheets A-517/518/519/521/527/528/530 match the model (6'-10 1/4, 6'-9 1/2, 6'-9 1/2, 6'-10 1/4, 6'-10 1/4, 6'-10 1/4, 6'-1 1/2). A-520 still prints 6'-8 R.O. for doors of 81.79/82.26in with no range: O1-104. No sheet states the datum (RO sill column on A-601 = bottom above storey datum, G-003).",
+      "method": "Read permit_set_full.pdf pages 67-75, 78, 79, 81; p6.py"
+    },
+    {
+      "id": "O1-007",
+      "status": "closed",
+      "evidence": "A-601 RO now prints in feet-inches to 1/8in (e.g. 2'-10 1/4 x 6'-9 3/4), shows nominal for every door, marks are split by RO (D16a/D16b, D19a/D19b, D21a/D21b); G-003 defines 'RO sill' as the rough-opening bottom above the storey datum and 'Jamb'. The RO height datum is implicit (from RO bottom).",
+      "method": "pdftotext -f 149 -l 150 -layout permit_set_full.pdf; pdftotext -f 4 -l 4"
+    },
+    {
+      "id": "O1-008",
+      "status": "closed",
+      "evidence": "A-528 keyed notes now read K1, K3, K4, K5, K6; K2 (11 1/2in rough jamb) and the overprinted title text are gone; the 6'-10 1/4in RO matches D-B-SAUNA 82.26in.",
+      "method": "Read permit_set_full.pdf page 79"
+    }
+  ]
+}

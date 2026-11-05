@@ -1,0 +1,400 @@
+{
+ "area": "M3",
+ "model": "houses/catlin (resolved model, SHA 539d9a81)",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventoried (round 2): 233 derived device boxes (flush Carlon B122A 211, BH235A 1, flush_raceway 4, surface RACO 232 x12, luminaire RACO 192+753 x3, Arlington DVFR1W x2), 41 conduit runs (10 derived NM sleeves), 22 light runs, 82 recessed cans, 4 panels, 5 disconnects/meter, 26 conduit/data solids. Sources read this round: Hubbell RACO 192 and 753 sheets, Arlington Q-3 (DVFR1W), Carlon catalog p.4/p.12 (B122A, BH235A), WAC Roland WS-83212 spec sheet (line drawing), Elliott 3/4 ENT listing, engine RACEWAY_OD_IN. Opened every listed sheet: E-101..E-104 (pp166-169), E-201..E-204 (pp170-173), E-601..E-603 (pp174-176). Probes in scratchpad M3/ (load.py, pm.pkl, p1-p22.py). 11/11 prior ids reconciled (10 closed, 1 open); 9 new findings. NOT examined: IC/insulation contact rating of cans in the attic and second-floor ceilings; the Nora NSIC-401QAT sheet (not re-fetched; NS-12/NS-76W trims unread); non-Nora luminaire dimensions (Sprig, Livex, Hunter, Karlie, Hinkley); box fill beyond the check's 230 PASS; receptacle spacing; shadow-gap bead geometry; E-602 control-schedule cell text (unreadable at print size); the PSU/LED run capacity tables beyond OK flags; device-vs-door swing and latch-side clearance; the 26 flush-box stud overlaps were estimated with a square stud footprint (profile depth not used).",
+ "verified_clean": [
+  "ED-B-PANEL/PANEL-2/BACKUP-PANEL/BACKUP-ENCL: tops 78.0\" AFF < 79\" (NEC 240.24(A)); ED-T-PANEL 39.37 x 14.25 x 3.75 = Square D QO154M200P data sheet",
+  "ED-M-METER: base at main datum, grade -34\" => glass ~ grade+62\" inside the utility's 4'-6' window (plan/electrical.py:174-182)",
+  "ED-M-HP1/HP2/HP3-DISC and ED-B-SPA-DISC: handles <= 79\" above grade; HP2 at -10\" is 24\" above its grade pocket (documented, plan/electrical.py:488-545)",
+  "Device boxes vs casing: no plate within 0.6\" of a casing, base or door leg (min 0.70\", LIVING-RC10); 16 plates within 2.5\"",
+  "RACO 192 4.00 x 4.00 x 1.563 and 753 4 x 4 x 0.063 per Hubbell sheets; B122A-UPC 3-3/4 x 2-1/4 x 3-1/2 per Carlon catalog",
+  "Flush boxes: all 3.5\" (B122A/BH235A) or 3.875\" (DVFR1W) bodies sit inside 5.5\" stud cavities; DVFR1W boxes' device_footprint 0 proud, fridge 0.95\" off the wall",
+  "FURN-B-PLAY-TV 5.125\" off wall clears RC1/DATA1 surface boxes (2.625\" + plug)",
+  "Recessed cans: 82 housings all in a framed host; housing top 6.0\" (main, second) / 6.5\" (basement) under the deck underside; no can in the theatre (resilient-channel ceiling)",
+  "TJI 230 floor bays 108.12..120.0\" (main) and 228.12..240.0\" (second): 11-7/8\" depth holds a 6\" housing with the 5/8\" gypsum at 107.5..108.12\"",
+  "Conduit solids swept at outside diameter; ENT 3/4 1.05\" = Carlon listing",
+  "Raceway starts at the panel top inside the 8..12.8\" footprint; 110.26 working-space ClearZones 36\" x 30\" x 78\" present and graded (4 PASS)",
+  "E-601 4,900 ft2, 19,200 VA general lighting; E-602 14,700 VA at 3 VA/ft2; E-603 data elevations (PLAY-N-DATA1 2'-6\" authored base; model body 30.7..35.2\" AFF)",
+  "Basement sconce tops 90.7\" AFF < gypsum underside 96.9\"",
+  "WAC Roland sheet: 12 x 4.5 x 2.5, backplate 4.5 x 4.5 x 1 = ED-T-LT-SCONCE-UD",
+  "NM sleeve drops: 10 derived 3/4\" EMT (0.922\" OD); nm_sleeve_reach 8 PASS, 2 advisory unchanged"
+ ],
+ "findings": [
+  {
+   "id": "M3-101",
+   "area": "M3",
+   "title": "E-602 overflows its title block: the NEC 220.82 allowance row prints over the footer, and the LED-run and supply tables truncate names and run into each other",
+   "elements": [
+    "E-602"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/electrical.py:218"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "E-602"
+    ],
+    "pages": [
+     175
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "p175 of permit_set_full.pdf (200 dpi crop): the last row of CONNECTED LIGHTING LOAD ('NEC 220.82 allowance | 4,900 ft2 | 14,700 VA at 3 VA/ft2') sits across the title-block top rule and 'Catlin House'/'PROJECT NO' text. LED RUNS table 1 clips 'ED-B-SAUNA-LT-PSU' past its column and abuts table 2; Run column shows 'LR-B-SAUNA-SC', 'LR-M-KIT-N-WE1', Room 'RM-B-SAU', 'RM-M-LIV'. Luminaire schedule columns Description/Brand/Lamp/Listing/Dim-capable are cut ('Nora Lightin', 'PAR20 LE', 'dam'). Control schedule rows are ~3 px high, unreadable.",
+    "expected": "Every cell legible and every table inside the drawing area, clear of the title block (a reviewer cannot confirm lamp, listing or dimmer from a clipped cell).",
+    "method": "Read p175 of baseline/permit_set_full.pdf; pdftoppm -f 175 -l 175 -r 200, crop the lower third (scratchpad M3/e602_crop.png)."
+   },
+   "source": "plans/geometry-review/2026-11-04 baseline permit_set_full.pdf p175",
+   "proposed_fix": "Let the E-602 tables paginate (a second sheet) or shrink the font/auto-size columns to content; clip the lower block above the title block.",
+   "size_guess": "large",
+   "seam_with": [
+    "D1"
+   ],
+   "dedupe_key": "E-602:overflow-titleblock"
+  },
+  {
+   "id": "M3-102",
+   "area": "M3",
+   "title": "E-101 and E-102 plot the house at 1/16\" and 3/32\" on a 24x36 sheet: devices and labels overprint into unreadable clusters",
+   "elements": [
+    "E-101",
+    "E-102"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/electrical.py"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "E-101",
+     "E-102"
+    ],
+    "pages": [
+     166,
+     167
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "E-101 scale 1/16\"=1'-0\" and E-102 3/32\"=1'-0\"; the 36 ft house is ~230-340 px of a 1400 px drawing field (E-103/E-104/E-203 use 3/16\" and 1/8\"). Panel-wall, kitchen, bath and workshop clusters on E-101/E-102 show tag text stacked over tag text (e.g. 'B-WORKSHOP-LT5/RC1/RC2', 'M-BATH1/BATH2 PSU' blocks). The garage/canopy storey plan share the sheet, which sets the scale.",
+    "expected": "Plan scale large enough that each device tag is readable (E-103/E-104 at 3/16\" are legible); or split the garage/court onto its own sheet so the house plots at 3/16\".",
+    "method": "Open permit_set_full.pdf pp166-167; compare with pp168-169 (same generator)."
+   },
+   "source": "baseline permit_set_full.pdf pp166-169",
+   "proposed_fix": "Plot the house alone at >=3/16\" (garage and court as a separate or inset view).",
+   "size_guess": "large",
+   "seam_with": [
+    "D1"
+   ],
+   "dedupe_key": "E-101:scale-overprint"
+  },
+  {
+   "id": "M3-103",
+   "area": "M3",
+   "title": "ED-A-STUBATH-CAN1 (2-1/4\" wafer) sits 2.3\" above the finished sloped ceiling it lights through, inside the rafter bay",
+   "elements": [
+    "ED-A-STUBATH-CAN1",
+    "RF-HOUSE",
+    "CEIL-RM-A-STUBATH"
+   ],
+   "files": [
+    "houses/catlin/plan/lighting_attic.py:339",
+    "packages/engine/src/typehaus/resolve/roof_geometry.py:137"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Can body z 324.87..327.12\" (mount ft(7) off the finished floor at x=165\", y=234\"). Finished gypsum at that point: roof_height_at 336.53\" - roof_underside_depth_m(RM-A-STUBATH) 13.975\" = 322.55\"; rafter bottom 323.25\". So the body floats 2.32\" above the ceiling face and its base is 1.6\" up inside the TJI bay (the 6-7/8\" batt holds it, so no clash). The authoring comment says x=13'-9\" is where H(x)=7'-0\"; the roof assembly was deepened to 13.28\" plumb since.",
+    "expected": "Wafer flange on the finished face (322.55\") i.e. mount ~ 6'-9 11/16\" AFF at x=13'-9\"; or re-station x so H(x)=7'-0\".",
+    "method": "$M3/p17.py: roof_height_at(RF-HOUSE,(165,234)) - roof_underside_depth_m(model, roof, 'RM-A-STUBATH'); compare ED-A-STUBATH-CAN1 canvas body_z0."
+   },
+   "source": "typehaus.resolve.roof_geometry; CLAUDE.md 'line every attic station answers to' (1 1/2\" + x/2 - now 1 1/2\" + x/2 minus lining)",
+   "proposed_fix": "Mount the can at the resolved ceiling plane (derive z from roof_underside_at) or lower the elevation 2.3\".",
+   "size_guess": "small",
+   "seam_with": [
+    "E1"
+   ],
+   "dedupe_key": "ED-A-STUBATH-CAN1:ceiling-plane"
+  },
+  {
+   "id": "M3-104",
+   "area": "M3",
+   "title": "Sconces on concrete stand 1.6\" farther off the wall than modelled: the footprint ignores the RACO 192 + 753 stand-off under the fixture",
+   "elements": [
+    "ED-B-PLAY-N-SCONCE1",
+    "ED-B-PLAY-N-SCONCE2",
+    "ED-B-PLAY-N-SCONCE3"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/device_boxes.py:226",
+    "houses/catlin/plan/lighting_types_decor.py:40"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "WAC sheet (Nov 2026 revision, line drawing read): body 12 H x 4-1/2 W, backplate 4-1/2 x 4-1/2 x 1 in., 2-1/2 in. overall projection from the mounting plane. The fixture mounts on the cover face 1.5625\" off the concrete (resolved projection_m), so true projection from the wall = 1.56 + 2.5 = ~4.1\". The device footprint is 2.5\" from the wall face and place_box only hulls it with the 1.56\" box ring (hull = max 2.5\"). The 1\" canopy is also shallower than the 1.56-1.63\" box+cover, so the box sides show (accepted, field-painted, notes/basement_surface_wiring.md).",
+    "expected": "Fixture footprint offset by box projection on surface boxes (approx 4.1\" from wall) for clearance, collision and the plan symbol.",
+    "method": "$M3/p3.py (box projection) + WAC Roland spec sheet drawing (waclighting.com/product/roland/?download=specs3, p1 line drawing)."
+   },
+   "source": "WAC WS-83212 spec sheet line drawing; houses/catlin/notes/basement_surface_wiring.md",
+   "proposed_fix": "In place_box, shift a surface-box device body out by projection_m (BoxRow.use=luminaire); no catalog change.",
+   "size_guess": "small",
+   "seam_with": [
+    "O3"
+   ],
+   "dedupe_key": "M3:surface-sconce-projection"
+  },
+  {
+   "id": "M3-105",
+   "area": "M3",
+   "title": "RACO 192 box is authored 1-1/2\" deep; the RACO sheet it cites says 1.563\" (plus a 0.063\" 753 cover = 1.626\", model 1.5625\")",
+   "elements": [
+    "PROD-RACO-192",
+    "PROD-RACO-753"
+   ],
+   "files": [
+    "houses/catlin/plan/device_boxes.py:84"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "BoxRow(box_size depth inch(1.5), cover_rise inch(0.0625)) -> projection 1.5625\". The row's own comment says 'drawn ... 1.563\" deep'. Hubbell 192 sheet: 'Ea Length/Depth (in.): 1.563'; 753 sheet: thickness 0.063 in. Box + cover = 1.626\".",
+    "expected": "box_size depth 1.563 so projection = 1.626\" (0.06\" more).",
+    "method": "pdftotext of hubbellcdn.com/specsheet/192.pdf and RACO-753-SPEC-EN.pdf (read this round)."
+   },
+   "source": "https://hubbellcdn.com/specsheet/192.pdf ; https://hubbellcdn.com/specsheet/RACO-753-SPEC-EN.pdf",
+   "proposed_fix": "Set the BoxRow depth to inch(1.563).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "RACO-192:depth"
+  },
+  {
+   "id": "M3-106",
+   "area": "M3",
+   "title": "26 nail-on flush boxes sit on a stud, king or jack (full stud width inside the box ring); the resolved model gives no stud-adjacent box station",
+   "elements": [
+    "ED-M-LAUNDRY-DR1",
+    "ED-M-LIVING-RC12",
+    "ED-M-BATH2-SW-EVE",
+    "ED-S-STUDY2-SW",
+    "ED-S-BED3-SW-READ",
+    "ED-B-GYM-RC4",
+    "ED-S-BED1-RC1",
+    "ED-M-BATH1-SW",
+    "ED-M-BATH1-RC1",
+    "ED-S-NCLOSET-SW"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/device_boxes.py:230"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Probe $M3/p8.py: ring of every flush box (B122A 2.25 wide, BH235A 4.0) vs studs/kings/jacks (1.5\" wide, z-overlap): 39 boxes overlap, 26 by >=1.0 in2 (e.g. LAUNDRY-DR1 on W-M-CLN, LIVING-RC12 on W-M-HS4, BATH2-SW-EVE, STUDY2-SW on a jack: 2.25 in2 = a whole stud inside the box). Round 1 checked only box depth vs cavity. A nail-on B122A bears on a stud's side, so the box must move up to ~1.1-2.6\" along the wall.",
+    "expected": "Station each box beside a stud (as the 2026-10-03 design log did for KMX1/KGF3), or let the engine snap the box ring to the nearest stud edge and report the move.",
+    "method": "$M3/p8.py: shapely ring vs Point(mem.p0).buffer(0.75\", square) for stud/king/jack/corner/cripple/trimmer, z-overlap with box."
+   },
+   "source": "DESIGN-LOG 2026-10-03 (receptacles 'nudged off studs'); Carlon catalog p.4 B122A 3-3/4 L x 2-1/4 W",
+   "proposed_fix": "Nudge the 26 stations (<=2.6\") or add a stud-clash advisory; no model change needed for the build (electrician shifts at rough-in).",
+   "size_guess": "small",
+   "seam_with": [
+    "O2",
+    "F2"
+   ],
+   "dedupe_key": "M3:flush-box-on-stud"
+  },
+  {
+   "id": "M3-107",
+   "area": "M3",
+   "title": "Fridge/freezer DVFR1W boxes are 2.4\"-5.8\" off the nearest stud, and the new-work screw mounting needs one; trim stand-off still unpublished",
+   "elements": [
+    "ED-M-LIVING-KRF1",
+    "ED-M-LIVING-KFZ1",
+    "W-M-C5"
+   ],
+   "files": [
+    "houses/catlin/plan/device_boxes.py:56"
+   ],
+   "kind": "interface-fit",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.35,
+   "evidence": {
+    "measured": "W-M-C5 studs at y=352, 368, 384\" (1.5\" wide); KFZ1 box y 355.15..359.35 (2.40\" from the 352 stud edge); KRF1 y 374.52..378.72 (4.53\" and 5.77\" clear of its neighbours). Arlington Q-3 sheet: 4.200 x 6.698 x 3.875 in., 'New Work: screws provided for easy mounting to stud'; no trim thickness is printed. Cavity 5.5\" vs 3.875\" body: fits; the fridge back stands 0.95\" off the wall face (220.2 vs 219.25).",
+    "expected": "Box adjacent to a stud (or a 2x blocking pad) so the wings screw home; confirm trim proud dimension against the 0.95\" fridge gap.",
+    "method": "$M3/p21.py + pdftotext aifittings.com/media/catalog-pages/Q-3.pdf"
+   },
+   "source": "https://www.aifittings.com/media/catalog-pages/Q-3.pdf",
+   "proposed_fix": "Add a 2x4 flat block at each box or move 2.4\"/4.5\" to a stud; ask Arlington for trim thickness.",
+   "size_guess": "small",
+   "seam_with": [
+    "I1"
+   ],
+   "dedupe_key": "DVFR1W:stud-and-standoff"
+  },
+  {
+   "id": "M3-108",
+   "area": "M3",
+   "title": "electrical.wall_device_opening cannot grade the three court-concrete devices: its wall map holds framed walls only (FoundationWall W-SG-W1/E1 are skipped, 3 UNKNOWN)",
+   "elements": [
+    "ED-B-SPA-DISC",
+    "ED-B-SPA-RC",
+    "ED-M-HP2-DISC"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/checks/mep/electrical_openings.py:37",
+    "packages/engine/src/typehaus/checks/mep/electrical_openings.py:56"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "baseline checks.json: three UNKNOWN 'attachment wall is unresolved'. model.wall('W-SG-W1') resolves (FoundationWall) but `walls = {wall.tag: wall for wall in ctx.model.walls}` (line 37) does not contain it, so the lookup at line 56 fails. Round-2 baseline 208 UNKNOWN includes these.",
+    "expected": "Foundation/retaining walls in the map (or N/A earned: no opening in W-SG-W1/E1 at the device station).",
+    "method": "$M3/p22.py; read electrical_openings.py:35-60."
+   },
+   "source": "packages/engine/src/typehaus/checks/mep/electrical_openings.py",
+   "proposed_fix": "Fall back to ctx.model.wall(tag) for foundation walls.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "wall_device_opening:court-walls"
+  },
+  {
+   "id": "M3-109",
+   "area": "M3",
+   "title": "TODO says 13 wall-light types state no canopy; the check reports 12 types / 29 lights, all on flush B122A boxes",
+   "elements": [
+    "electrical.canopy_covers_box"
+   ],
+   "files": [
+    "plans/TODO.md:255",
+    "packages/engine/src/typehaus/checks/mep/electrical_canopy.py:62"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "checks.json: 'UNKNOWN - 29 wall light(s) of 12 type(s) state no canopy'. Probe $M3/p21.py: 12 types (KARLIE-2/3, MIRROR-DAY, HALO, SCONCE-CANDLE/SPOT/STAIR/VANITY, SPOT-SW, WALL-LINEAR) x 29 devices, all mounting 'flush' (2.25 x 3.75 box); none on a surface box; every authored footprint is >= 4.25 wide, so none is likely to leave the 2.25\" face bare.",
+    "expected": "TODO count 12; note that no unstated canopy sits on a concrete surface box, so the residual risk is only a body narrower than 2.25 x 3.75.",
+    "method": "grep the unknown text in baseline/checks.json; $M3/p21.py."
+   },
+   "source": "plans/TODO.md; baseline/checks.json",
+   "proposed_fix": "Correct the TODO count; author canopy on the 12 types when sheets are read.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "canopy-unknown:count"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "M3-001",
+   "status": "closed",
+   "evidence": "Six PLAY-N sconces: boxes are now 3 on concrete (RACO 192 4x4x1.5 + flat 753, projection 1.5625\") and 3 on the framed x=18' wall (flush B122A); round 1 was 2.625\" proud. electrical.canopy_covers_box: 13 PASS incl. all six ('4.5 x 4.5 canopy covers the 4 x 4 surface box (PROD-RACO-192)'). WAC sheet re-read this round: 12 H x 4.5 W, backplate 4.5 x 4.5 x 1, projection 2.5. Residuals are M3-104 (stand-off ignored in footprint) and M3-105 (192 depth 1.563). Supplier hold (Roland on flat 753) stands.",
+   "method": "$M3/p3.py (BoxRow rows); baseline/checks.json canopy_covers_box; WAC spec p1 line drawing."
+  },
+  {
+   "id": "M3-002",
+   "status": "closed",
+   "evidence": "All four panels now top out at 78.0\" AFF (ED-B-PANEL z 38.6..78.0, PANEL-2 48.2..78.0, BACKUP-PANEL/ENCL 58..78); electrical.panel_handle_height 4 PASS ('body top 78.0\" vs 79\" max'). Type height is now the Square D QO154M200P 39.37\" box (data sheet), resolving round 1's 36\" under-height. Check reads Mount.elevation + body height; verified against resolved canvas z0/z1.",
+   "method": "$M3/p1.py; baseline checks.json."
+  },
+  {
+   "id": "M3-003",
+   "status": "closed",
+   "evidence": "mep.py:243 and device_drops.py:47 now sweep raceway_outside_diameter_m (RACEWAY_OD_IN: EMT 3/4 0.922, 1 1.163, 1-1/2 1.740; ENT 3/4 1.050 = Carlon 12007 listing 1.05). routing/trades/conduit.py:46 radius_m (trade/2) and mep_concrete.py:183 stay by adjudication, ungraded.",
+   "method": "read resolve/pipe_sections.py:58-64, mep.py:243, device_drops.py:47; Elliott 12007100 listing."
+  },
+  {
+   "id": "M3-004",
+   "status": "closed",
+   "evidence": "ED-A-POCKET-SW plate edge now 0.94\" from the D-A-POCKET casing leg (was an overlap 0.56\"); no advisory.trim_device_clash UNKNOWN (1 PASS).",
+   "method": "$M3/p10.py (plate polygon vs door_casing_prisms, z-overlap)."
+  },
+  {
+   "id": "M3-005",
+   "status": "closed",
+   "evidence": "Rejection holds: gaps unchanged and positive: LIVING-RC10 0.70\", BATH1-RC1/SW 0.83\", PLANT-SW-TIMER/M-CLOSET-SW 0.94\", NCLOSET-SW 0.95\" (final doors and casing did not move them). 16 plates within 2.5\" of a casing, none touching.",
+   "method": "$M3/p10.py: Decora plate 2.75\" (1-gang) vs door_casing_prisms and base_run_prisms, same z band."
+  },
+  {
+   "id": "M3-006",
+   "status": "closed",
+   "evidence": "Raceways now start inside the panel footprint at z=78\" on the panel top (CD-B-ATTIC-RISER/KITCHEN/SPA/GARAGE/WORKSHOP start x 9-11\", panel x 8..12.8\"); the four 110.26(A) ClearZones (CZ-B-WS-*, 12-48\" x 30\" x 78\") and dedicated-space zones exist; electrical.panel_working_space and panel_dedicated_space 4 PASS each.",
+   "method": "$M3/p20.py conduit starts; baseline checks.json."
+  },
+  {
+   "id": "M3-007",
+   "status": "closed",
+   "evidence": "FURN-B-PLAY-TV now has normal_gap 5.125\" (back at y=418.87\", wall face 424\"); RC1/DATA1 box rings reach 2.625\" off the wall (y 421.37): footprint overlap 0.00 in2, 2.5\" air between the 808C cover face and the TV back for a flat plug. Round 1 was 16 in2.",
+   "method": "$M3/p11.py (Polygon intersection, z AFF)."
+  },
+  {
+   "id": "M3-008",
+   "status": "closed",
+   "evidence": "E-601 service load now prints 'Conditioned floor area 4,900 ft2' (p174); E-602 prints 'NEC 220.82 allowance 4,900 ft2, 14,700 VA at 3 VA/ft2'; E-601 general lighting + small appliance/laundry 19,200 VA = 14,700 + 4,500.",
+   "method": "Read pp174-175 of permit_set_full.pdf."
+  },
+  {
+   "id": "M3-009",
+   "status": "open",
+   "evidence": "Rejection no longer holds: the Carlon catalog PDF (Home Depot, p.12 table) is now read and lists BH235A 3 7/8 L x 4 1/8 W x 3 1/2 D; model 4.0 x 3.75 x 3.5 (1/8\" under each way). Same catalog gives B122A-UPC 3 3/4 L x 2 1/4 W x 3 1/2 D = the model's 2.25 x 3.75 x 3.5 (verified). One BH235A box in the plan (ED-M-LIVING-KET1); nothing graded is near a margin, so severity stays doc.",
+   "method": "pdftotext of images.homedepot-static.com/catalog/pdfImages/c7/c7a6058e-6e69-4431-adc7-58f7211eea51.pdf, grep BH235A."
+  },
+  {
+   "id": "M3-010",
+   "status": "closed",
+   "evidence": "Rejection holds. Model 6.0\" housing body in ceilings with 6.0\" (main/second) to 6.5\" (basement) clear above it to the deck underside, so a 6-3/8\" retailer depth would still clear; ceiling_can_framing 82 PASS (this round re-measured headroom for all 82 cans). NS-12/NS-76W trims remain explicit CONFIRM items; the Nora sheet itself was not re-fetched.",
+   "method": "$M3/p12.py (floor deck_z0 - can body_z1)."
+  },
+  {
+   "id": "M3-011",
+   "status": "closed",
+   "evidence": "Rejection holds, now from the WAC spec sheet itself (p1 line drawing): 12 in. tall, 4-1/2 in. wide, backplate 4-1/2 x 4-1/2 x 1 in., 2-1/2 in. projection = the type (footprint 4.5 x 2.5, height 12, canopy 4.5 x 4.5).",
+   "method": "Read WAC Roland spec sheet PDF line drawing."
+  }
+ ]
+}

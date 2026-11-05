@@ -1,0 +1,281 @@
+{
+  "area": "F4",
+  "model": "claude-sonnet-5-5",
+  "review_sha": "539d9a81",
+  "inventory_summary": "Inventory: 3 roofs (RF-HOUSE 594 members: 38 TJI 230 rafters, RB-HOUSE 2-1.75x16 LVL, 76 stiffener panels, 36 eave blocks; RF-GARAGE 127 and RF-BW-CANOPY 110 members: 13 + 3 two-by-four trusses at 24in, outlookers, barge rafters, blocking), 2 canopy glulam headers, 4 seat-beam/sill hangers, 10 standoff packs, 6 truss ties; sources: TJ-4000 (Jul 2019 edition read directly, pp.6, 14, 27-30), SBCA Raised Heels Q&A, notes roof_wall_eave_detail.md / ridge_beam_detail.md / north_entry_piers.md, decisions #108/#109. Pre-brief questions answered: items 9 (RF-HOUSE birdsmouth) and 12 (canopy bearing / heel lift / seat-beam hangers / shim pack) are both TRUE-RESOLVED in the model, so plans/TODO.md L240 and L242 are stale lines (the L238-L242 block also still lists HU28-2Z -> LUS28Z, which is also resolved: LUS28Z on BM-BW-SCSILL). Round 1's premise that the TJI 230 flange is 1-1/2in was wrong (TJ-4000 p.6: 1-1/4..1-3/8in). Sheets opened: S-101.3 (p13, text only), S-102.1/.2/.3 (pp14-16, images), S-602/.1/.2 (pp24-26, text rows), A-105 (p33, image), A-301 (p38, image), A-301.1/.2 (pp39-40, text), A-504 (p51), A-531 (p82), A-591..A-594 (pp142-145, images), A-595..A-597 (pp146-148, text; A-594 image). NOT examined: roof cladding and trim code (roof_soffit, roof_ridge_trim, roof_trim, roof_panel_*, roof_drip_edge, roof_edge*, roof_image_ii*, roof_layer_setbacks: seam to the roof-cladding area); the Jul/Aug 2025 TJ-4000 PDF itself (could not be retrieved; the house notes' page numbers 29-32 are unverified); whether 2x4 chords carry 42 psf + 50 psf drift over 23'-10 3/4in (the fabricator's sealed design); S-101.3 attic floor framing (not a roof item); S-602.1/.2 non-roof rows; A-596 and A-597 as images; the H2.5A / I-joist nailing row (no Simpson page read); roof_ridge_trim.py and the draw code beyond roofframingplan.py/elevation_annotate.py. TODO lines reviewed: L118-121 (PV ridge/pathway study, planning), L160-161 (I-joist hung header table), L227 (SDPWS specific-gravity factor on the 190/167.5 plf diaphragm rows: engineering, not geometry), L240/L242 (stale, see above), L334 (FS-M-NE, other area).",
+  "verified_clean": [
+    "RF-HOUSE rafters x38: heel x=0.50in, seat 2.50in, notch 1.25in, deck at heel 254.277in, eave 250.402in, ridge 362.027in; arithmetic reproduced by hand from rafter_seat.py (plumb 13.277in, 1.25 x 1.118 = 1.40in flange plumb, max seat 2.795in).",
+    "RB-HOUSE 2-1.75x16 LVL z 345.152..361.152: top flush with rafter top at its faces (z1_end 361.152) and 0.875in under the peak; soffit = centreline wall plate tops (345.152in); rafter underside at the beam face 347.875 clears the beam top/soffit as the 16in depth intends.",
+    "Stiffener panels: 4in x 1.75in (7/8in ply pair), 9.25in web x 1.118 = 10.34in tall, fit TJI 230 web pocket ((2.3125 - 0.375)/2 = 0.97in a side) and meet TJ-4000 p.27 minimum 7/8 x 2-5/16in; sheet-goods 43.7 sf = 152 plies x 41.4 sq in.",
+    "Canopy/garage trusses: p0 72.625, p1 359.375 (286.75in), tails 16.625in, footprint 56..376 = 320in = 26'-8in; heel 3.939in (3.689 plumb + 1/4); deck at bearing face 91.939in; eave 86.398in; ridge 139.731in; same truss and plane on both roofs.",
+    "BM-BW-RW/RE and W-G-W/E plates share x faces 72.625..78.125 and 353.875..359.375, top z=88.0 (beam top = plate top); trusses 000-002 at y 448/472/496 sit wholly on beams y 447.25..512.5; CN-BW-TRTIE ties at the truss stations; roof_beam truss-bearing ratio 0.877.",
+    "Seat-beam hangers: CN-BW-HGR-CW/-CNW LUS26-2Z z -15.488..-10.613 (H 4 7/8in on a 7 1/4in beam, 67%); column base z=-15.085 so the lowest 0.40in of the face is unbacked (91.7% backed, the 92.6% of the adjudication within rounding); hanger_seat_fit PASS (93 hangers).",
+    "Shim packs: CN-BW-STDF-E/-GE z -16.19..-15.44 (0.75in, drawn solid); -W/-GW 0.70in plus the 0.047in hanger seat under the soffit; garden CN-SG-STDF-R1/R3/F1/F3 0.75in each (E13 holds). HETA20Z trim hold point AN-BW-HETA-TRIM present (E14).",
+    "A-105 (p33): house roof 37'-2 1/2in x 37'-1 1/2in = footprints 446.5 x 445.5in; garage/canopy chain 25'-4 / 5'-11 1/8 / 0'-0 7/8 matches the 0.875in footprint overlap at y=517.75..518.625.",
+    "A-301 (p38): ridge-to-second-plate dimension 11'-1 7/8in = 362.027 - 228.125; attic plate 20'-2 1/4in vs attic floor 20'-0in (2.25in = 1.5in plate + 0.75in subfloor); notes 102 7/8in studs + 108 1/8in match decision #110.",
+    "S-602 roof rows: H2.5A rafter bearing 38 = 38 rafters; H2.5A truss bearing 4+22 = 26 = 13 garage trusses x 2; H2.5ASS 10 = 6 canopy ties + 4 garden; LSSR 38; LSTA24 19.",
+    "Girt course module on W-M-W1, W-S-W1, W-A-N1: 24.0in spacing, 3.5in course height, phase 0 off the storey datum.",
+    "Attic partitions' raked top plates stop 0.75..1.8in under the rafter underside (probe of W-A-SN-WR/-ER, W-A-STU-W, W-A-STU-N, W-A-BA-E, W-A-GC-S).",
+    "A-592/A-593/A-594: deck 19/32in, 5in ccSPF + 6 7/8in R-30C in the 11 7/8in bay, plate 5 1/2in, gwb 1/2in, truss tail 16in overhang note agree with the model (tail 16.625in = 1'-4 5/8in is stated correctly in the truss order, garage.py:877)."
+  ],
+  "findings": [
+    {
+      "id": "F4-101",
+      "area": "F4",
+      "title": "S-102.1/.2 print the flat-roof snow load as 35 psf at Ct=1.0 for the UNHEATED canopy and garage; the house's own basis and the truss order say 42 psf (Ct=1.2) plus drift",
+      "elements": [
+        "RF-BW-CANOPY",
+        "RF-GARAGE"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/roofframingplan.py:288",
+        "packages/engine/src/typehaus/emit/draw/roofframingplan.py:299",
+        "houses/catlin/notes/north_entry_piers.md:127",
+        "houses/catlin/plan/storeys/garage.py:877"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "S-102.1",
+          "S-102.2"
+        ],
+        "pages": [
+          14,
+          15
+        ]
+      },
+      "confidence": 0.55,
+      "evidence": {
+        "measured": "S-102.1 and S-102.2 note 4: 'GROUND SNOW LOAD Pg = 50 PSF; FLAT-ROOF Pf = 35 PSF AT Ce = Ct = Is = 1.0'. _snow_load_note prints 0.7 x Pg for every roof with the comment 'fully-exposed, heated'. A-593 says the garage attic is 'vented, unconditioned'; the canopy is an open, unheated roof. The truss-order annotation (garage.py:877, printed on the truss sheets' source) states 'flat 42 psf balanced' and the roof-step drift; north_entry_piers.md s.3 line 127 derives p_f = 0.7(1.0)(1.2)(1.0)(50) = 42 psf with 'C_t = 1.2 because this is an unheated open canopy'. The fabricator therefore receives two flat-roof numbers (35 vs 42 psf) on one permit set. RF-HOUSE (heated, 35 psf) is correct.",
+        "expected": "Each roof sheet states the flat-roof snow at that roof's own thermal factor: 42 psf (Ct 1.2) for the canopy and the unheated garage, 35 psf for the house, or no number at all and a pointer to the truss order. ASCE 7-16 Table 7.3-2 Ct for unheated structures is the source the house note already cites; not re-quoted here.",
+        "method": "Read note 4 on pp.14-16 of permit_set_full.pdf; read _snow_load_note in roofframingplan.py:299-307; compare north_entry_piers.md:127-134 and garage.py:877."
+      },
+      "source": "plans: houses/catlin/notes/north_entry_piers.md s.3 (Ct=1.2, 42 psf); roofframingplan.py comment",
+      "proposed_fix": "Print the Ct basis per roof (needs a Roof/assembly thermal-condition input) or emit 'SNOW: SEE TRUSS ORDER, S-102 ANNOTATION' on the canopy and garage sheets; house sheet unchanged.",
+      "size_guess": "small",
+      "seam_with": [
+        "E1"
+      ],
+      "dedupe_key": "S-102:snow-note-ct"
+    },
+    {
+      "id": "F4-102",
+      "area": "F4",
+      "title": "S-102.1/.2 'BRG LINES C/C 24'-0\"' is the garage wall axes (sheathing faces), not the truss bearings; the canopy sheet also labels the garage walls as its bearings",
+      "elements": [
+        "RF-BW-CANOPY",
+        "RF-GARAGE",
+        "BM-BW-RW",
+        "BM-BW-RE",
+        "W-G-W",
+        "W-G-E"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/roofframingplan.py:108",
+        "packages/engine/src/typehaus/emit/draw/roofframingplan.py:140"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "S-102.1",
+          "S-102.2"
+        ],
+        "pages": [
+          14,
+          15
+        ]
+      },
+      "confidence": 0.45,
+      "evidence": {
+        "measured": "Printed: BRG LINES C/C 24'-0\" (288in = wall axes at x=72 and 360, the sheathing outer faces) and 'BRG: W-G-W / BRG: W-G-E' on the canopy sheet. Model: truss bottom chord runs 72.625..359.375 = 286.75in (23'-10 3/4in) out to out of bearing; plate/beam centres are 75.375 and 356.625 = 281.25in (23'-5 1/4in) c/c; the canopy's actual bearings are BM-BW-RW/RE (x 72.625..78.125 / 353.875..359.375). Round 1 saw 24'-0\" correctly because the trusses then ran 72->360; decision #108 moved them.",
+        "expected": "The bearing tier states the span a truss order uses: 23'-10 3/4in out to out (and/or 23'-5 1/4in c/c of bearings), with BM-BW-RW/RE named on S-102.1.",
+        "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q8.py (beam and plate x extents), /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q4.py (truss p0/p1); read S-102.1/.2 pp.14-15 of permit_set_full.pdf; _roof_tiers uses model.walls of the roof's storey with structural_role BEARING."
+      },
+      "source": "model + roofframingplan.py:_roof_tiers",
+      "proposed_fix": "Build the BEARING tier from resolved_bearings(roof) support faces (RoofBearing.support_span) instead of every BEARING wall on the storey, and take the labels from the roof's own bearing_refs.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "S-102:brg-lines-cc"
+    },
+    {
+      "id": "F4-103",
+      "area": "F4",
+      "title": "Ridge connection: A-504/A-531/S-102.3 carry no ridge-beam size, LSSR size or LSTA24 callout, S-602 lists 'LSSR' without the 2.37Z size, and the 38 ridge-end stiffener pairs are on no sheet",
+      "elements": [
+        "RB-HOUSE",
+        "RF-HOUSE"
+      ],
+      "files": [
+        "houses/catlin/notes/ridge_beam_detail.md",
+        "packages/engine/src/typehaus/library/hardware/simpson_hangers.py:24"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-504",
+          "A-531",
+          "S-102.3",
+          "S-602"
+        ],
+        "pages": [
+          51,
+          82,
+          16,
+          24
+        ]
+      },
+      "confidence": 0.55,
+      "evidence": {
+        "measured": "Text search of all 176 pages for stiffener|birdsmouth|LSSR: only p24 (S-602 row 34 'LSSR 11.875 TJI 230 x38'), p143 K1 (eave stiffeners) and the roof-note bullets pp143-148. The model carries 76 stiffener panels: 38 at the eaves (x 0.5..4.5 and 431.5..427.5) and 38 at the ridge (x 210.25..214.25 and 221.75..217.75), billed as 2 sheets of 7/8in ply. A-504 prints only 'gwb-mr 1/2, stud 5 1/2, gwb 1/2' and the plate-to-ridge dimension; A-531 only layer labels; the catalog row is model='LSSR' (simpson_hangers.py:29) while TJ-4000 p.14 gives TJI 230 -> LSSR2.37Z (1,090 lbf sloped only / 1,060 skewed).",
+        "expected": "A framer buying from the set can name the hanger SKU (LSSR2.37Z), sees 2-1.75x16 LVL, 19 LSTA24 over the ridge and the beveled 7/8in x 4in web stiffeners at BOTH ends (TJ-4000 p.14 and Simpson require stiffeners with the LSSR; the house note ridge_beam_detail.md s.152 already says so).",
+        "method": "pdftotext -layout permit_set_full.pdf; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q11.py; Weyerhaeuser TJ-4000 TJI Specifier's Guide, July 2019 edition (read in full, 32 pp., cdn.shopify.com/s/files/1/0516/3866/5392/files/INFO_TJ-4000.pdf) p.14 hanger table."
+      },
+      "source": "TJ-4000 Jul 2019 p.14 (LSSR2.37Z row); houses/catlin/notes/ridge_beam_detail.md",
+      "proposed_fix": "Name the part LSSR2.37Z in the catalog row and S-602, add a connector key (LSSR2.37Z, LSTA24, 7/8in beveled stiffeners both sides, H2.5A at beam) to S-102.3 and key A-504/A-531.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "RB-HOUSE:ridge-callouts"
+    },
+    {
+      "id": "F4-104",
+      "area": "F4",
+      "title": "A-301 'RIDGE EL. 30'-2\"' is the rafter-top (deck underside) plane at the peak, not the roof surface the model's own peak height uses (1.8in higher)",
+      "elements": [
+        "RF-HOUSE"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/elevation_annotate.py:323"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-301",
+          "A-301.1",
+          "A-301.2"
+        ],
+        "pages": [
+          38,
+          39,
+          40
+        ]
+      },
+      "confidence": 0.35,
+      "evidence": {
+        "measured": "elevation_annotate.py:323 labels max(roof.ridge_z_m) = 362.027in = 30'-2 1/32in. model.json building_height_summary roofs[RF-HOUSE].peak_above_grade_m = 10.1052 m against ridge_z 9.19548 m + 0.8636 m grade = 10.0591 m, a difference of 0.0461 m = 1.815in (sheathing 19/32 + membrane + 1in roofing = 1.624in x 1.118). The surface at the peak is therefore 363.84in = 30'-3 27/32in, before the ridge cap.",
+        "expected": "A section labelled RIDGE EL. reads the top of the finished roof (or says 'TOP OF RAFTERS AT RIDGE'); a zoning height read off the sheet (33'-0\" above the 2'-10\" grade) is 1 3/4in short of the model's 33'-1 3/4in.",
+        "method": "python read of baseline/model.json building_height_summary; A-301 p38 of permit_set_full.pdf; arithmetic from the ROOF layers."
+      },
+      "source": "model.json building_height_summary; elevation_annotate.py",
+      "proposed_fix": "Label the datum 'T.O. RAFTER AT RIDGE' or add the roof-layer thickness (roof_underside_depth_m's counterpart) to the RIDGE label.",
+      "size_guess": "small",
+      "seam_with": [
+        "F1"
+      ],
+      "dedupe_key": "A-301:ridge-datum-basis"
+    },
+    {
+      "id": "F4-105",
+      "area": "F4",
+      "title": "houses/catlin/CLAUDE.md still states the pre-#109 attic roof line (1 1/2in + x/2, 9'-1 1/2in at the ridge) and the 346 1/8in ridge soffit",
+      "elements": [
+        "RF-HOUSE",
+        "RB-HOUSE"
+      ],
+      "files": [
+        "houses/catlin/CLAUDE.md:874",
+        "houses/catlin/CLAUDE.md:1069",
+        "houses/catlin/notes/roof_wall_eave_detail.md:85"
+      ],
+      "kind": "drawing",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.8,
+      "evidence": {
+        "measured": "CLAUDE.md:874-876 ('the line every attic station answers to': underside = 1 1/2in + x/2 above the attic finished floor; 9'-1 1/2in at the ridge, 7'-0 at x=13'-9, 5'-0 at 9'-9, 3'-0 at 5'-9') and :1069 ('centreline walls stop at its soffit, 346 1/8in'). Measured: rafter underside = 240.75 + x/2 (z0 241.00 at the heel x=0.5; z0_end 347.875 at x=214.25), i.e. x/2 over the 3/4in subfloor top (107.1in at the rafter end, 108in at the ridge line), 1.5in lower than the guide; RB-HOUSE z 345.152..361.152 and W-A-C1/C2 top plate top z=345.152in = 345 5/32in. roof_wall_eave_detail.md:85-88 already records 'x/2 over the 3/4in attic subfloor (was 1 1/2in + x/2)'.",
+        "expected": "The agent guide's 'must stay true' facts match the resolved model after decision #109 (ridge 363.0 -> 362.03in).",
+        "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q3.py (rafter z0), /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q5.py (RB-HOUSE and W-A-C wall tops)."
+      },
+      "source": "decision #109; roof_wall_eave_detail.md:85-88",
+      "proposed_fix": "Rewrite the two CLAUDE.md lines to x/2 over the subfloor (6'-10 1/2in at x=13'-9, 4'-10 1/2in at 9'-9, 2'-10 1/2in at 5'-9, 9'-0in at the ridge line) and 345 1/8in; re-check any attic height authored off the old line.",
+      "size_guess": "small",
+      "seam_with": [
+        "F3"
+      ],
+      "dedupe_key": "CLAUDE.md:attic-roof-line"
+    }
+  ],
+  "prior_findings": [
+    {
+      "id": "F4-001",
+      "status": "closed",
+      "evidence": "Resolved by decision #109, and the open TODO line (plans/TODO.md L240 'RF-HOUSE birdsmouth notches the TJI 230 flange') is STALE. Measured now: all 38 RF-HOUSE rafters carry a SeatCut with seat run 2.50in, heel at x=0.50in (plate outer face), plate top 242.25in, bearing_run 5.50in; rafter underside at the heel z=241.00in, seat cut flat at 242.25in, so the notch is 1.25in; deck at the heel 254.277in (12.03in over the plate); ridge 362.027in (was 363.0). Round 1 measured a 1.47in notch against a '1-1/2in' flange: the flange is NOT 1-1/2in. TJ-4000 (Jul 2019) p.6 draws the TJI 230 flange 2-5/16in wide x 1-1/4in..1-3/8in thick (web 3/8in); at 6:12 a 1-1/4in flange is 1.398in plumb, so the 1.25in cut leaves 0.148in at the heel (0.29in if the flange is 1-3/8in). The birdsmouth is published: p.28 'birdsmouth cut (at low end of joist only) is required' above 1/4:12; p.29 detail R5 'Allowed at low end of joist only', 'Beveled web stiffeners required on both sides. Cut to match roof slope', 'TJI joist flange must bear fully on plate', 'Birdsmouth cut must not overhang inside face of plate' (detail BC, p.30); p.30 Required Bearing Length 1-3/4in (1/2:12 without a bevel plate); p.27 min web stiffener for TJI 230 = 7/8 x 2-5/16in. Model: seat 2.50in >= 1.75in and <= 5.50in plate; 76 'bearing_stiffener' panels (4in x 1.75in = a 7/8in ply pair, 10.34in tall = 9.25in web x 1.118; 19 at each eave side and 19 at each ridge side) billed as 2 sheets of 7/8in struct-1 ply; structural.ijoist_birdsmouth PASS ('worst cut 1.25in of a 1.40in flange, seat 2.50in on a 5.50in plate, stiffened'). A-592 (p143) K1 prints 'heel at plate outer face, 2-1/2in seat, 1-1/4in cut, 7/8in beveled stiffeners both sides, H2.5A each rafter'. CAVEAT: the house notes cite the Jul 2025 edition's pp.29-32; Weyerhaeuser's library lists TJ-4000 with file date Aug 2025 but I could not retrieve that PDF, so those page numbers are unverified (the same details are at pp.27-30 of the 2019 edition).",
+      "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q3.py (SeatCut on rafter-000; plumb math), /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q11.py (stiffener panels), baseline checks.json id structural.ijoist_birdsmouth, A-592 p143 of permit_set_full.pdf; Weyerhaeuser TJ-4000 TJI Specifier's Guide, July 2019 edition (read in full, 32 pp., cdn.shopify.com/s/files/1/0516/3866/5392/files/INFO_TJ-4000.pdf) pp.6, 27-30."
+    },
+    {
+      "id": "F4-002",
+      "status": "closed",
+      "evidence": "Resolved by decision #108 and the TODO line (plans/TODO.md L242 'Canopy truss bearing 2 3/4in...') is STALE for this item. Measured now: BM-BW-RW x=72.625..78.125in and BM-BW-RE x=353.875..359.375in (5.50in glulam, moved 3-3/8in inboard onto the garage plates, W-G-W/E plate faces 72.625..78.125); canopy truss-000..002 p0=72.625, p1=359.375 (286.75in = 23'-10 3/4in), bottom chord ends on the OUTER face of each header, so each heel bears the full 5.50in (round 1: 2.75in). Same truss and plane as RF-GARAGE (garage trusses p0/p1 identical). engineering.json roof_beam/BM-BW-RW and /RE 'truss bearing on the beam' demand 302.0 lb vs capacity 344.5 lb, ratio 0.877. Truss ties CN-BW-TRTIE-W1..3/E1..3 (H2.5ASS) sit at x 72.58..74.0 and 358.0..359.42 on the beam outer faces at the truss stations.",
+      "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q8.py (solids BM-BW-RW/RE, W-G-W/E plate layers), /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q4.py (truss p0/p1), /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q10.py (tie solids); baseline engineering.json items[34..35]."
+    },
+    {
+      "id": "F4-003",
+      "status": "closed",
+      "evidence": "Resolved by decision #108 (and the TODO line is stale for it). The heel is now the SBCA standard heel measured at the outside face of bearing: TrussShape.heel_m=0.100059 m = 3.939in = 3.5 x sqrt(1+(1/3)^2)=3.689in plumb + 1/4in butt cut (framing/truss_heel.py:standard_truss_heel_m). Deck at the outside bearing face x=72.625 = 88.0 + 3.939 = 91.939in; eave 86.398in at the footprint edge (16.625in out at 1/3), ridge 139.731in (was 143.0). SBCA 'Raised Heels' Q&A (sbcindustry.com/content/1/raised-heels): standard heel = top chord height + pre-set butt cut, most plants 1/4in (some 3/8in): a 3/8in plant adds 0.125in, immaterial.",
+      "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q4.py (roof.eave_z_m, ridge_z_m, TrussShape); hand arithmetic 88+3.939-(72.625-56)/3."
+    },
+    {
+      "id": "F4-004",
+      "status": "closed",
+      "evidence": "S-102.1 (p14) and S-102.2 (p15) now print MAX LENGTH 26'-8in for T1/T2 (roofframingplan.py:192 _overall_m adds the tails). Model: bearing-to-bearing 286.75in + 2 x 16.625in tails = 320.0in = 26'-8in = footprint x 56..376. Residual: the sheets' 'BRG LINES C/C 24'-0\"' no longer equals the truss span; see new F4-102.",
+      "method": "Read S-102.1/S-102.2 schedules (permit_set_full.pdf pp.14-15); /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q4.py."
+    },
+    {
+      "id": "F4-005",
+      "status": "closed",
+      "evidence": "Garage eave detail is now A-593 (p144; the old A-594 number now belongs to the INT_2X4 partition-to-roof section). Its note reads 'Deck: 19/32in Structural 1 plywood (40/20)' and the leader 'deck 19/32in'; model ROOF_DECK_THICKNESS = 19/32in = 0.594in.",
+      "method": "Read A-593 p144 of permit_set_full.pdf; houses/catlin/notes/garage_eave_detail.md."
+    },
+    {
+      "id": "F4-006",
+      "status": "open",
+      "evidence": "Unchanged. A-593 (p144) still labels 'truss 11 7/8in' and 'truss fill 14 1/2in'; envelope_roofs.py:186 and :251 still carry Layer(name='truss', thickness=inch(11.875)) for 2x4-chord trusses whose heel is 3.939in. The 11.875in is a layer-thickness placeholder (same as the rafter's 11 7/8in), so the label reads as a truss depth.",
+      "method": "Read A-593 p144; grep 'truss' houses/catlin/plan/assemblies/envelope_roofs.py."
+    },
+    {
+      "id": "F4-007",
+      "status": "closed",
+      "evidence": "A-592 (p143) now draws the real eave: rafter heel on the plate, 2x6 eave block, gutter chain, K1..K9 keyed notes (K1 birdsmouth/stiffener/H2.5A, K3 eave block, K9 girt standoffs). A-594..A-597 (pp145-148) are partition-to-roof sections that each draw the sloped roof slab with the partition box under it and carry only the roof notes plus K2 (foam lap); the eave gutter K-notes are gone from them. A-591 (p142) rake draws with K1..K6.",
+      "method": "Opened pp.142-148 of permit_set_full.pdf (images for 142, 143, 144, 145; text for 146-148)."
+    },
+    {
+      "id": "F4-008",
+      "status": "partial",
+      "evidence": "Hardware now reaches the set through S-602 (p24): LSSR x38 (row 34), LSTA24 x19 at the ridge (row 38), H2.5A x38 rafter bearing (row 45), H2.5A x10 ridge beam continuous bearing (row 48), and A-592 K1 names the eave stiffeners and H2.5A. Still open: A-504 (p51) and A-531 (p82) carry only layer labels plus a '1'-6 3/4in plate to ridge' dimension (no ridge-beam size, LSSR, LSTA24 or stiffener callout), S-102.3 (p16) schedule lists R1/RB1/BK1 only, and the 38 ridge-end stiffener pairs appear on no sheet. See new F4-103.",
+      "method": "pdftotext -layout of permit_set_full.pdf, grep stiffener|birdsmouth|LSSR -> only pp.8, 24, 143, 145-148; images of A-504 and A-531."
+    },
+    {
+      "id": "F4-009",
+      "status": "closed",
+      "evidence": "A-301 (p38) now separates the datums: 'RIDGE EL. 30'-2\"' (model 362.027in = 30'-2 1/32in), 'ATTIC T.O. PLATE EL. 20'-2\"' (242.25in = 20'-2 1/4in), 'SECOND T.O. PLATE EL. 19'-0\"' (228.125in), and the dimension 11'-1 7/8in = 362.027 - 228.125 = 133.9in exactly. A-301.1/.2 (pp39-40) print the same chain. Labels round to the whole inch by design.",
+      "method": "Read A-301 p38 and compare with /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F4/q5.py/q3.py; wall frame tops from model."
+    },
+    {
+      "id": "F4-010",
+      "status": "obsolete",
+      "evidence": "The 3.5in _SEAT_LEN_M and its '1.17in notch' comment no longer exist in resolve/framing/roof.py (grep finds neither); decision #109 replaced them with rafter_seat.RAFTER_SEAT_RUN_M = 2.5in. The new docstring's arithmetic checks: 2.5 x 0.5 = 1.25in cut vs 1.25in x 1.118 = 1.40in flange plumb depth, seat <= 2.80in (measured max 2.795in).",
+      "method": "grep -n '_SEAT_LEN_M\\|1.17' packages/engine/src/typehaus/resolve/framing/roof.py (no hits); read resolve/rafter_seat.py."
+    }
+  ]
+}

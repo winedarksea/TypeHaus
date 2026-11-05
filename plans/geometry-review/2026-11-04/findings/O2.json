@@ -1,0 +1,449 @@
+{
+ "area": "O2",
+ "model": "catlin",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Resolved model at 539d9a81: 180 base runs (31 rooms + 4 stair-landing runs; kinds trim, resilient_base), 46 door casings on 28 doors, 39 window stools (stool top = frame sill rail top, checked), skirts, TrimStandard.stocks, jamb stock depths, PaintStandard trim/door paint rows. Sheets opened: A-002 (viewed), A-516 (viewed), A-603 (viewed), A-601/A-601.1 (text, jamb column vs model checked), A-517..A-530 (text layer searched; A-525..A-527 plant-room notes read). Products web-checked: FJ pine 1x4 0.719\", MDF 11/16\" (round 1 HD), PVC 3/4\", prehung FJ jamb 11/16\", rubber base 4\"/1/8\" (retailer listings only). NOT examined: window stool/returns geometry beyond the top-height probe (O1/O4), exterior-door casing, the drywall return at uncased faces (drywall owner), Johnsonite manufacturer data sheet (retailer pages only), Masonite/JELD-WEN unit data (no unit chosen), A-518..A-524, A-528..A-530 visually (text layer only).",
+ "verified_clean": [
+  "Base z0 = the room's finished floor in all 31 rooms (0.000\") on LVP, oak, carpet, tile, sheet vinyl, concrete; landing base at 61.26\" on the landing finish (ST-M2S).",
+  "Base thickness follows stock: pine 23/32, pvc 3/4, locust 3/4, rubber 1/8 (interior_trim_base._runs thickness_for).",
+  "Casing head bottom = RO head - 13/16\"; 0.306\" above the leaf top and 3/16\" above the jamb head face on every swing door (jamb head 2.0894 m vs casing 2.0942 m on D-M-BED).",
+  "Casing legs start at the finished floor of their own room; carpet-side heads 1/4\" higher AFF than hall-side, consistent with the Z-bar rule.",
+  "Trim paint LF ties to the resolved model: baseboard 518.88 billed vs 518.85 (pine 442.15 + pvc 76.70), door casing 706.91 vs 706.91 (mdf 623.99 + pvc 82.92); oiled hardwood (locust, cedar, cherry, oak) and rubber base excluded.",
+  "A-601 Jamb column matches the model: 4 9/16 / 6 9/16 stock, D-B-CLOSET 6 1/8\" rip, D-S-SUITE 7\" and D-S-PLANT 7 5/16\" extensions, D-B-SAUNA 9 1/4\" flat cedar.",
+  "ST-M2S skirt: 4 blanks, longest 103.45\", 10' stock (4 boards).",
+  "Mudroom base/shiplap: shiplap band starts at the base top (4.526\"), PVC base 3/4\" flush with the 3/4\" shiplap; no base offset.",
+  "A-603 Base/Walls populated for all 36 rooms; excluded rooms (furnace, ESS, workshop, gym, garage, unfinished attic) show em-dash, as A-002 says.",
+  "Casing/base stock sizes: FJ pine 23/32 (HD 0.719\", Lowe's 23/32\"), PVC 3/4, MDF 11/16 (round-1 HD 0.669\" listing)."
+ ],
+ "findings": [
+  {
+   "id": "O2-101",
+   "area": "O2",
+   "title": "Sheet-vinyl rooms: base modelled and printed 3 1/2\" tall; the specified product is a 4\" Johnsonite rubber cove base (A-525..A-527 say 4\")",
+   "elements": [
+    "RM-A-STUBATH",
+    "RM-A-STUDIO",
+    "RM-B-BATH",
+    "RM-S-PLANT",
+    "catlin-vinyl-gatsby",
+    "catlin-plant-vinyl-raised"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/interior_trim_base.py:80",
+    "houses/catlin/plan/assemblies/materials_flooring.py:17",
+    "houses/catlin/plan/assemblies/materials_flooring.py:27"
+   ],
+   "kind": "engine-geometry",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-603",
+     "A-525",
+     "A-526",
+     "A-527"
+    ]
+   },
+   "confidence": 0.75,
+   "evidence": {
+    "measured": "4 rooms, 25 resilient_base runs, 118.0 LF: height_m = 3.5\" (TrimStandard.base_height, taken for every base kind), thickness 1/8\", z0 = finished floor (0.0\" off, correct). A-603 prints 'catlin-vinyl-gatsby 3.5\"'; A-525/526/527 notes print 'Floor: SurePly + seamless sheet; 4\" rubber base, silicone toe'. Both material sources say '4\" Johnsonite rubber cove base'.",
+    "expected": "Base height 4\" for the rubber cove (Johnsonite/Tarkett rubber base ships in 2.5\", 4\", 6\" heights at 1/8\" gauge); A-603 and A-525..527 agree. LF billing is unaffected, only the drawn height and the printed 3.5\".",
+    "method": "m.base_runs filtered kind=='resilient_base': {height_m*39.37, thickness_m*39.37}; pdftotext -f 152 -l 152 and -f 76 -l 78 -layout permit_set_full.pdf. Probe: scratchpad O2/p1.py"
+   },
+   "source": "https://www.floorcity.com/products/johnsonite-129-silk-rubber-wall-base-4-inch-height (retailer listing: 4\" height, 1/8\" gauge); materials_flooring.py source strings. Not from Tarkett's own data sheet.",
+   "proposed_fix": "Give resilient_base its own height (Material.base_height or a TrimStandard per-kind height) = 4\"; the check/clearance readers of base_height_m (base breaks at obstacles, _obstacles top) follow.",
+   "size_guess": "small",
+   "seam_with": [
+    "O5"
+   ],
+   "dedupe_key": "resilient-base:height-3.5-vs-4"
+  },
+  {
+   "id": "O2-102",
+   "area": "O2",
+   "title": "A-603 names the floor sheet as the base stock in 4 rooms; A-002 interior-trim block says '+6' wet rooms take PVC base and never mentions the rubber cove base",
+   "elements": [
+    "TRIM-STANDARD",
+    "RM-B-BATH",
+    "RM-A-STUBATH",
+    "RM-S-PLANT",
+    "RM-A-STUDIO"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/openings.py",
+    "houses/catlin/plan/millwork.py:103"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-002",
+     "A-603"
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "A-002 (06 22 00): 'RM-M-BATH1, RM-M-BATH2 +6: base pvc-trim 3/4\", bought; base and casing flush.' The RoomTrim lists 8 rooms; 3 of them (RM-B-BATH, RM-A-STUBATH, RM-S-PLANT) have no PVC base (vinyl floors' base_detail=resilient_base) and RM-A-STUDIO is not named at all. A-603 Base column reads 'catlin-vinyl-gatsby 3.5\"' / 'catlin-plant-vinyl-raised 3.5\"' (the sheet-goods tags). Only 5 rooms have pvc-trim base.",
+    "expected": "A-002: one line for the resilient base (4\" rubber cove, silicone toe, in RM-A-STUDIO, RM-A-STUBATH, RM-B-BATH, RM-S-PLANT) and the PVC-base list limited to the 5 tile/LVP baths; A-603 prints the base product ('rubber cove 4\"'), not the floor material tag.",
+    "method": "pdftotext -f 28 -l 28 -layout permit_set_full.pdf; python: {b.room: b.material_ref for b in m.base_runs if b.kind=='resilient_base'}. Probe O2/p1.py"
+   },
+   "source": "houses/catlin/plan/millwork.py RoomTrim list; materials_flooring.py base_detail",
+   "proposed_fix": "Generate the A-002 room list from the resolved base runs (kind and material) instead of the authored RoomTrim rooms; schedule Base column from the base product.",
+   "size_guess": "small",
+   "seam_with": [
+    "O5",
+    "I1"
+   ],
+   "dedupe_key": "A-002:resilient-base-unspecified"
+  },
+  {
+   "id": "O2-103",
+   "area": "O2",
+   "title": "D-M-ENTRY mudroom casing leg_right (scribed to 2.19\") still overlaps the 3/4\" shiplap on W-M-MECH-E; scribe is taken to the gypsum, not the shiplap",
+   "elements": [
+    "CASING-D-M-ENTRY-L",
+    "WP-M-MUDROOM-SHIPLAP",
+    "W-M-MECH-E"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/interior_trim_casing.py:107"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Leg_right plan overlap with a shiplap piece 3.33 cm2 (3/4\" x 11/16\") over 67.5\" of z = 570 cm3. It is the only casing/shiplap volume clash (all 10 other mudroom casing pieces: 0.0). After the 0.75\" shiplap clearance the leg would be 1.44\" wide, under min_leg_width 1.5\".",
+    "expected": "Clip obstacle walls at their finished face including a paneling band (shiplap 3/4\" proud of gypsum): leg is either 1.44\" (dropped under min_leg_width) or butts the shiplap edge.",
+    "method": "O2/p7.py: intersect casing piece outlines with m.panelings 'WP-M-MUDROOM-SHIPLAP'.pieces (outline,z0,z1) and z overlap"
+   },
+   "source": "decision #85; interior_trim_casing._obstacles uses scope.body(wall), which excludes paneling",
+   "proposed_fix": "Let _obstacles include a wall's wood paneling thickness (WallPaneling bands) when clipping legs.",
+   "size_guess": "small",
+   "seam_with": [
+    "O1",
+    "O5"
+   ],
+   "dedupe_key": "mudroom:casing-vs-shiplap"
+  },
+  {
+   "id": "O2-104",
+   "area": "O2",
+   "title": "Stock descriptions still say 3/4\" for the two yard stocks that are 11/16\" (MDF casing) and 23/32\" (FJ pine base)",
+   "elements": [
+    "PROD-STOCK-MDF-1X4",
+    "PROD-STOCK-PINE-FJ-1X4",
+    "mdf-casing",
+    "pine-fj-base"
+   ],
+   "files": [
+    "houses/catlin/plan/products_trim_stock.py:27",
+    "houses/catlin/plan/products_trim_stock.py:35",
+    "houses/catlin/plan/assemblies/materials.py:313",
+    "houses/catlin/plan/assemblies/materials.py:321"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-002"
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Geometry now uses 11/16\" / 23/32\" (TrimStandard.stocks) and A-002 prints them, but Product.model reads '3/4\" x 3 1/2\" S4S' for both, the Material names say '3/4\" x 3 1/2\"', and the BOM description prints 'Door casing, MDF door casing, 3/4\" x 3 1/2\" S4S' and 'Baseboard, Finger-jointed pine base, 3/4\" x 3 1/2\" S4S'.",
+    "expected": "'11/16\" x 3 1/2\"' for the MDF 1x4, '23/32\" x 3 1/2\"' for FJ pine (HD primed FJ 1x4 actual 0.719\", Lowe's 23/32\").",
+    "method": "grep products_trim_stock.py/materials.py; takeoff.json interior_trim descriptions"
+   },
+   "source": "https://www.homedepot.com/p/Trim-Board-Primed-Pine-Finger-Joint-Common-1-in-x-3-in-x-8-ft-Actual-719-in-x-2-5-in-x-96-in-424600/202085979 ; Home Depot MDF 242738 (round 1)",
+   "proposed_fix": "Reword the two Products and Materials; the order list is built from them.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "trim-stock:description-3/4"
+  },
+  {
+   "id": "O2-105",
+   "area": "O2",
+   "title": "Casing reveal assumes a 3/4\" jamb; stock prehung FJ pine jambs are 11/16\"",
+   "elements": [
+    "TRIM-STANDARD",
+    "DT-INT-SWING32"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/door_product_spec.py:49",
+    "houses/catlin/plan/millwork.py:172"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-002"
+    ]
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "jamb_thickness_m = 0.01905 (3/4\") and jamb_allowance 1\" = '3/4\" jamb + 1/4\" shim'; casing inner edge 13/16\" inside the RO, reveal printed on A-002 as 3/16\". Door types name no maker ('1 3/8in hollow-core molded prehung').",
+    "expected": "Primed FJ pine 4-9/16\" jambs are 11/16\" (0.687\" actual at Lowe's): jamb face 15/16\" in, reveal 1/8\" (inside the 1/8-1/4\" norm). A 5/4 or 3/4\" jamb is the exception. Unit maker unchosen, so low confidence.",
+    "method": "O2/p2.py (CasedDoorSpec.jamb_thickness_m); web: HD/Lowe's 11/16 x 4-9/16 jamb listings"
+   },
+   "source": "https://www.lowes.com/pd/EverTrue-4-56-in-x-6-8-ft-Pine-Primed-Finger-Joint-Interior-Door-Jamb/1000444453",
+   "proposed_fix": "State 'reveal 1/8\"-3/16\" to the stock jamb' on A-002 or set the default jamb to 11/16\" once a unit is chosen.",
+   "size_guess": "small",
+   "seam_with": [
+    "O1"
+   ],
+   "dedupe_key": "door:jamb-11-16"
+  },
+  {
+   "id": "O2-106",
+   "area": "O2",
+   "title": "Door-leaf paint (PT-4) omits the jamb inner faces: area is a projection on the wall plane, so a jamb counts as its 3/4\" edge, not its 4 1/2\"-7\" depth",
+   "elements": [
+    "PAINT-STANDARD",
+    "paint-enamel"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/takeoff/trim_paint.py:55",
+    "packages/engine/src/typehaus/takeoff/door_hardening.py:41"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "28 doors, 1,001.3 sf billed. Jamb inner faces (jamb_depth x (2 x RO height + width)) = about 195 sf, 19% of the bill, not in the area; the 121.8 LF painted pine jamb extensions and 14.1 LF rip are not in trim LF either. Trim LF does tie out: base 442.15 pine + 76.70 pvc = 518.85 LF vs billed 518.88; casing 623.99 mdf + 82.92 pvc = 706.91 LF vs billed 706.91.",
+    "expected": "Painted jamb faces billed (door_leaf_paint_rows adds jamb_depth_m x jamb length, or LF x depth) for non-factory-finished interior doors.",
+    "method": "O2/p11.py: sum 2*door_face_area_m2 per door vs sizing.jamb_depth_m*(2*height+width); O2/p12.py for LF tie-out"
+   },
+   "source": "decision #113",
+   "proposed_fix": "Add the jamb inner faces to door_leaf_paint_rows.",
+   "size_guess": "small",
+   "seam_with": [
+    "I1"
+   ],
+   "dedupe_key": "paint:door-jamb-faces"
+  },
+  {
+   "id": "O2-107",
+   "area": "O2",
+   "title": "Movable furniture is placed through casing legs: both main-bedroom nightstands and the mud bench overlap an 11/16\" casing leg",
+   "elements": [
+    "FURN-M-BED-NIGHTSTAND-E",
+    "FURN-M-BED-NIGHTSTAND-W",
+    "FURN-M-MUD-BENCH",
+    "CASING-D-M-BED-R",
+    "CASING-D-M-BATH2-R",
+    "CASING-D-M-MUDC-R"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/interior_trim_casing.py:41"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.35,
+   "evidence": {
+    "measured": "Plan overlap 9.45 / 12.7 / 9.88 cm2 of 15.5 cm2 leg area, z overlap 26\" / 26\" / 18\". None is is_fixed, so only fixed casework clips a leg (_obstacles). Curtain tracks over the porch and balcony doors also span the casing; they hang in front, so not a clash.",
+    "expected": "Furniture stands the 11/16\" off the wall the casing projects, or the owner accepts the scribed leg.",
+    "method": "O2/p9.py: Polygon(piece.outline).intersection(Polygon(canvas_object.footprint)) with z overlap"
+   },
+   "source": "decision #84 (equipment collides); placeable_fixity",
+   "proposed_fix": "Offer a 'clearance to casing' advisory for non-fixed furniture, or nudge the three pieces 3/4\" off the wall.",
+   "size_guess": "small",
+   "seam_with": [
+    "M3"
+   ],
+   "dedupe_key": "casing:furniture-overlap"
+  },
+  {
+   "id": "O2-108",
+   "area": "O2",
+   "title": "The bath face of D-M-BATH2 is uncased (sink 0.94\", shower 0.56\" from the jamb) but A-002 lists only D-B-CLOSET and D-B-ESS as uncased, and no bead or return is specified there",
+   "elements": [
+    "D-M-BATH2",
+    "CASING-D-M-BATH2-L"
+   ],
+   "files": [
+    "houses/catlin/plan/millwork.py:103"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-002"
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "CASING-D-M-BATH2-L: pieces [] (both legs dropped), clips leg_left 0.94\" and leg_right 0.56\" < min_leg_width 1.5\". A-002: 'Uncased (jamb and drywall): D-B-CLOSET, D-B-ESS.' drywall_trims has no bead for D-M-BATH2. The owner choice (round 1 E5: return/uncased_doors vs a 1 1/2\" DoorTrim) is still not made.",
+    "expected": "A-002 names every face the engine leaves uncased and says what closes it.",
+    "method": "O2/p3.py; takeoff.json drywall_trims tags; checks.json advisory.casing_clipped"
+   },
+   "source": "C2.md E5",
+   "proposed_fix": "Owner: add D-M-BATH2's bath face to the uncased list (drywall return) or give it a narrow DoorTrim; print the derived list on A-002.",
+   "size_guess": "small",
+   "seam_with": [
+    "O1",
+    "M3"
+   ],
+   "dedupe_key": "D-M-BATH2:bath-face-uncased"
+  },
+  {
+   "id": "O2-109",
+   "area": "O2",
+   "title": "Interior-opening sections A-516..A-524 draw no jamb, casing, reveal or base; trim exists only as an A-002 list",
+   "elements": [
+    "A-516",
+    "A-517",
+    "A-518",
+    "A-519",
+    "A-520",
+    "A-521",
+    "A-522",
+    "A-523",
+    "A-524"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-516",
+     "A-517",
+     "A-518",
+     "A-519",
+     "A-520",
+     "A-521",
+     "A-522",
+     "A-523",
+     "A-524"
+    ]
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "A-516 (page 67, viewed): a bare wall section with 'R.O. 6'-9 3/4\"' and the deck. No jamb, shim, casing, reveal or base; the other eight interior-opening sheets have no trim words in their text layer.",
+    "expected": "A casing/base/jamb detail with the 13/16\" casing offset, 3/16\" reveal, base butt and the 23/32 vs 11/16 step (round 1 E11 asked for the A-002 block only).",
+    "method": "pdftotext -f 67..75 permit_set_full.pdf | grep -i 'casing|base|jamb|reveal'; Read page 67"
+   },
+   "source": "C7.md E11",
+   "proposed_fix": "One generated interior-trim detail from TrimStandard (A-002 block exists; add a section).",
+   "size_guess": "large",
+   "seam_with": [
+    "C7"
+   ],
+   "dedupe_key": "A-516:no-trim-detail"
+  },
+  {
+   "id": "O2-110",
+   "area": "O2",
+   "title": "Pocket-door casing head stands 2.04\" above the leaf top (D-M-LAUN, D-M-PANTRY, D-B-BATH); the visible 2\" head strip is unspecified",
+   "elements": [
+    "CASING-D-M-LAUN-L",
+    "CASING-D-M-PANTRY-R",
+    "CASING-D-B-BATH-L"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/interior_trim_scope.py:123"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "Head bottom 82.44\" AFF against leaf top 80.39\" (standard swing doors: 0.31\"). The RO head is 3.25\" over the leaf (pocket_frame_eclisse.md).",
+    "expected": "A head jamb or track cover at the leaf head, or the casing head dropped to the leaf; Eclisse finishing detail not read.",
+    "method": "O2/p3.py headgap_to_leaf column"
+   },
+   "source": "houses/catlin/notes/pocket_frame_eclisse.md",
+   "proposed_fix": "Confirm the Eclisse head finish (O1) and state it.",
+   "size_guess": "small",
+   "seam_with": [
+    "O1"
+   ],
+   "dedupe_key": "pocket:casing-head-gap"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "O2-001",
+   "status": "closed",
+   "evidence": "A-603 Base and Walls columns are populated for all 36 rooms (e.g. RM-M-LIVING 'pine-fj-base 3.5\"', Walls 'gwb / gwb-ar / mdo-plywood-interior + PT-1'); round 1 had em-dashes. Residual: vinyl rooms name the floor sheet and 3.5\" (see O2-101/102).",
+   "method": "pdftotext -f 152 -l 152 -layout permit_set_full.pdf; Read page 152"
+  },
+  {
+   "id": "O2-002",
+   "status": "partial",
+   "evidence": "A-002 now has a 06 22 00 INTERIOR TRIM block (stock, thickness, 3/16\" reveal, milled vs bought, jambs, skirt 10', uncased, no-base rooms). Still: it omits the rubber cove base and mislists '+6' PVC rooms (O2-102), omits the D-M-BATH2 uncased face (O2-108), and A-516..A-524 draw no trim (O2-109).",
+   "method": "Read page 28; pdftotext page 28"
+  },
+  {
+   "id": "O2-003",
+   "status": "closed",
+   "evidence": "TrimStandard.stocks: mdf-casing 0.6875\", pine-fj-base 0.71875\", PVC/locust/cedar/cherry/oak 0.75\"; all 46 casings and 180 base runs carry them. Base proud of casing: pine on mdf 0.031\" (44 meetings), pvc on mdf 0.062\" (7), cherry casing over pine -0.031\"; A-002 states it. Residual wording: O2-104.",
+   "method": "O2/p4.py (base thickness+offset minus casing thickness at 66 meetings); O2/p1.py"
+  },
+  {
+   "id": "O2-004",
+   "status": "partial",
+   "evidence": "Base proud by 3/4\" is gone: the mudroom shiplap band now starts at z 4.526\" (= LVP 1.026\" + the 3.5\" base), so all mudroom base runs have offset 0 and PVC base 3/4\" is flush to the shiplap. Remaining: D-M-ENTRY-L leg_right overlaps the W-M-MECH-E shiplap by 3.33 cm2 x 67.5\" (O2-103; round 1 said 3.6 cm2). Only 3 base runs now carry an offset (study-closet walnut 0.75\", suite 0.25\").",
+   "method": "O2/p5.py (base offsets, panelings), O2/p6.py, O2/p7.py"
+  },
+  {
+   "id": "O2-005",
+   "status": "closed",
+   "evidence": "CASING-D-M-BATH2-L pieces = [] (head dropped with both legs); clips remain (0.94\", 0.56\", dropped). Only such face. The design half (E5) is not decided, tracked as O2-108.",
+   "method": "O2/p3.py"
+  },
+  {
+   "id": "O2-006",
+   "status": "closed",
+   "evidence": "Rejection holds: no head is floating. Head stays within its legs on all 45 headed casings; scribed legs unchanged (HALVES-R 1.58, ENTRY-L 2.19, BATH1-L 2.56, BED2-R 2.94, SUITE 2.44/2.45, POCKET-R 3.33).",
+   "method": "O2/p3.py clips column"
+  },
+  {
+   "id": "O2-007",
+   "status": "closed",
+   "evidence": "Rejection holds (tuck-under practice). Base z0 = finished floor in all 31 rooms (z0-ff 0.000\"), carpet ff-subfloor 1.75\" bedrooms (1.0\" carpet over the 3/4\" deck), 0.735\" theatre; tile, LVP, oak, vinyl and concrete the same.",
+   "method": "O2/p1.py z0-ff column"
+  },
+  {
+   "id": "O2-008",
+   "status": "closed",
+   "evidence": "Rejection holds. Footprints are the 4\"-wide box, 0.076-0.33\" off the casing; a 2.75\" Decora plate sits 0.70-0.95\" off. ED-M-BATH1-RC1 (new) 0.20\" footprint, 0.83\" plate. No overlap; trim_device_clash passes ('no wall-hosted body of 435 overlaps the trim').",
+   "method": "O2/p8.py, p10.py; checks.json advisory.trim_device_clash"
+  },
+  {
+   "id": "O2-009",
+   "status": "closed",
+   "evidence": "ED-A-POCKET-SW and ED-A-STUDIO-AP now 0.31\" (footprint) from the casing, was 0.0 and overlapping; trim_device_clash UNKNOWNs gone. Fixed by C6 (M3-004).",
+   "method": "O2/p8.py"
+  },
+  {
+   "id": "O2-010",
+   "status": "closed",
+   "evidence": "poplar-skirt-paint stock_length 10' (TrimStock); ST-M2S blank 103.45\" bills 4 stock boards at 120\"; A-002 prints '10' stock'.",
+   "method": "takeoff.json interior_trim kind 'stair skirt' (stock_length_in 120, stock_boards 4)"
+  },
+  {
+   "id": "O2-011",
+   "status": "closed",
+   "evidence": "Rejection holds: 66 base/casing meetings, only D-S-SUITE's two scribed legs stand 0.299\" and 0.312\" off the base; the rest 0.000\".",
+   "method": "O2/p4.py"
+  }
+ ]
+}

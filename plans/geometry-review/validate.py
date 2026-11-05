@@ -1,6 +1,7 @@
-"""Validate findings/*.json against findings.schema.json (stdlib only; no jsonschema in .venv).
+"""Validate findings/*.json against a findings schema (stdlib only; no jsonschema in .venv).
 
-Usage: .venv/bin/python plans/geometry-review/validate.py [findings/S1.json ...]
+Usage: .venv/bin/python plans/geometry-review/validate.py [--schema PATH] [findings/S1.json ...]
+The schema defaults to round 1's; round 2 passes 2026-11-04/findings.schema.json.
 """
 import json
 import re
@@ -8,7 +9,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).parent
-SCHEMA = json.loads((HERE / "findings.schema.json").read_text())
+SCHEMA: dict = {}
 
 
 def _check(value, schema, path, errors):
@@ -38,8 +39,15 @@ def _check(value, schema, path, errors):
         errors.append(f"{path}: {value} out of range")
 
 
-def main(paths):
-    paths = [Path(p) for p in paths] or sorted((HERE / "findings").glob("*.json"))
+def main(argv):
+    global SCHEMA
+    schema_path = HERE / "findings.schema.json"
+    if "--schema" in argv:
+        i = argv.index("--schema")
+        schema_path = Path(argv[i + 1])
+        argv = argv[:i] + argv[i + 2:]
+    SCHEMA = json.loads(schema_path.read_text())
+    paths = [Path(p) for p in argv] or sorted((schema_path.parent / "findings").glob("*.json"))
     bad = 0
     for p in paths:
         errors: list[str] = []

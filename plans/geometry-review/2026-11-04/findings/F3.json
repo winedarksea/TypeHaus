@@ -1,0 +1,524 @@
+{
+ "area": "F3",
+ "model": "houses/catlin @539d9a81",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventory: 11 FS-* decks (FS-M-WEST/-MECH/-STAIR/-EAST TJI 230, FS-M-NE and FS-S-WEST open-web trusses, FS-S-EAST and FS-ATTIC TJI 230, FS-SG-PORCH/-BALCONY KDAT 2x12, FS-BW-FLOOR 2x8), 285 TJI pieces, 87 trusses, 8 strongbacks, 113 TJI blocks, 10 sill+gasket solids, 6 rim stocks, 6 stair flights, 22 room finished-floor groups. Measured from a fresh resolved model pickle in /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/ (p0-p20). Sheets opened: S-101.1/.2/.3, S-601, S-601.1, A-301, A-301.1, A-301.2, A-502, A-550, A-551, A-552..A-584 (all 33 rim-band pages; A-588 for comparison). Hole charts: ICC-ES ESR-1153 Fig. 2 Tables A/B (rev. July 2026, fetched) and Weyerhaeuser TJ-9001 p.1 (fetched; 6 in no-cut zone figure); TRIFORCE U.S. Specifier Guide pp.19-22 (fetched). Karndean page fetched. NOT examined: TJ-4000 (Jul 2025) itself and the TJI 230 span table row (19'-10 in) it is cited for; TRIFORCE span tables vs OJ418S 18'-0 in (taken from the house note); LVL trimmer/header hole rules (ESR-1387 Microllam) and the TRIFORCE OSB end-panel hole rule (p.19) against the truss ends; FS-SG-PORCH/-BALCONY 2x12 KDAT hole limits (R502.8.1) beyond the engine's own checks; ducts through TJI webs (none cross; ERV ducts ride bays); hanger capacities (IUS/THA/HHUS410 vs the 11 7/8 in LVL ply count - F1/S2); A-5xx sheet linework below ledger-print resolution (rim board labels, sealant beads) was read at ~110-330 dpi crops only; exterior-door sill pan/threshold stack (known open TODO C3-E3, F3-107). Hole size assumed OD + 1/4 in; real drilled hole sizes may differ.",
+ "verified_clean": [
+  "Datum chain, per storey: sole on subfloor 0.75/120.75/240.75; plate top 108.125/228.125 = joist soffit; partitions 0.75 under; finished floors LVP +1.0256, carpet +1.75, oak +1.5, tile +1.5 (rooms via room_finished_floor_elevation); basement ceiling 96.94 in, main 106.47 in over LVP (ceiling 107.5), second 106.0 over oak.",
+  "Stair rises after decision #112: ST-M2S 16 x 7.5297 in (1.0256 -> 121.5), ST-B2M 15 x 7.3642 (-109.4375 -> 1.0256), ST-S2A 16 x 7.5 (121.5 -> 241.5), ST-G-SERVICE 7.1, ST-SG-PORCH 6.788, ST-BW-ENTRY 6.6; riser_uniformity 0.00 on all six; every one under the 7 3/4 in max.",
+  "Rim/seat per field: FS-M-WEST 4.25/2.0, FS-M-MECH 4.25/2.87, FS-M-STAIR 2.62/2.0, FS-M-EAST 2.75/4.25, FS-S-EAST 2.0/4.25, FS-ATTIC 3.75/3.75, truss FS-M-NE 3.5 on the x=18' plate (5.5 in plate split 3.5 + 2.0); rims flush with each wall's framing face; integrity.floor_end_bearing and floor_bearing_grid pass.",
+  "Karndean Cotton Oak AKP-RL38: karndean.com product page confirms 48 x 7 in, 7.0 mm, 30 mil, Art Select Rigid Core (backing not stated; model treats 7.0 mm as the whole plank, as lvp_flooring.md says).",
+  "TJI 230 flange 1.25 x 2.3 min and web 3/8 (ESR-1153 Table 1) agree with profiles._TJI_SERIES_IN (2.3125 x 1.25).",
+  "Web holes through FS-M-EAST, FS-M-STAIR, FS-S-EAST and the rest of FS-M-WEST/-MECH/-ATTIC: 149 TJI joist-hole crossings measured against ESR-1153 Tables A/B (11 7/8 TJI 230); all but F3-101/F3-102 clear (min 16 in from a face for 1 1/2 in-class holes; 3 1/2 in drain PR-M-S-SUITE-DRAIN 61 in vs 24 in; PR-M-WC-VENT 20 in vs 18 in).",
+  "FS-M-NE strongbacks: 2 x 4 pieces of 2x6 on edge at z -10.375..-4.875 in the 26'/28' web openings (WebPanels.opening_at), pieces 16/80/108/12 in, 8 pcs 36 LF = S-601; no run's envelope meets a strongback (mep.run_through_floor_member PASS).",
+  "S-101.1/.2/.3 member counts vs S-601: floor truss 87 pcs = 19+25 joists, 2 sisters, 6 trimmers, 35 blocks; TJI blocking 113 = 35+21+6+17+17+17; strongback 8.",
+  "A-301 dimension chain: 11'-10 1/8\" = grade (-34) to plate 108.125; 11'-1 7/8\" = ridge 362.03 minus plate 228.125; 6'-3 1/2\" grade to slab; 10'-0\" second to attic floor.",
+  "integrity.plate_in_deck (180 plates stand on, not in, a deck) and the through_deck_clearance values for the fireplace pockets (0.72-0.84 in vs 0.50 in)."
+ ],
+ "findings": [
+  {
+   "id": "F3-101",
+   "area": "F3",
+   "title": "Attic 2-in vents bore 2 5/8-in holes in nine TJI 230 webs 10 3/4 in from the hung end (and one 6 3/4 in): Table A needs 18 in",
+   "elements": [
+    "FS-ATTIC",
+    "PR-S-SUITEBATH-VENT",
+    "PR-S-BATH1-VENT",
+    "BM-S-HALL"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/checks/mep/framing_envelope.py:1",
+    "packages/engine/src/typehaus/resolve/mep_bores.py:130"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "FS-ATTIC joist-0-017..025 (x 2.2..120.0, simple span 9'-9 3/4 in, hung off the x=120 beam, bearing face = tip 120.0). PR-S-SUITEBATH-VENT (OD 2.375, hole OD+1/4 = 2.625 in = 3 in row) crosses all nine at x=108.0: centre 12.0 in, hole edge 10.7 in from the support face; PR-S-BATH1-VENT crosses joist-0-023 at x=112.1: edge 6.8 in (and its holes overlap the SH-CW/SH-HW holes in 0-020/0-021). Table A needs 1'-6\" (18 in) for a 3 in round hole; short 7.3 in (nine joists) and 11.2 in (one). PR-M-WC-VENT (x=98.5) is 20.2 in: passes by 2.2 in. mep.run_member_crossing PASSes all of them ('hole's allowable zone still comes off the fabricator's chart, which this engine does not hold').",
+    "expected": "Hole edge >= 18 in from the inside face of the nearest support for a 2 5/8 in round hole in a 11 7/8 in TJI 230 (Table A, uniform-load basis); otherwise a Forte / Weyerhaeuser written OK (footnote 6), or a hole centred on span for one maximum hole (footnote 5).",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p9.py: legs() x mep_crossings.leg_crossings(floor, a, b, za, zb) for every TJI joist, station minus (tip + seat at floor ends, tip at cut ends), minus hole radius; compare with ESR-1153 Table A."
+   },
+   "source": "ICC-ES ESR-1153 (reissued May 2025, revised July 2026) Fig. 2 Tables A/B and footnotes 1-6, https://www.icc-es.org/wp-content/uploads/report-directory/ESR-1153.pdf; same rows and the 6-inch 'no field cut holes in hatched zone' figure in Weyerhaeuser TJ-9001 Installation Guide p.1 (Allowable Holes, TJI joists). 11 7/8 in TJI 230, Table A (end support, round): 2 in 1'-0, 3 in 1'-6, 4 in 2'-0, 6 1/2 in 3'-0, 8 7/8 in 6'-6; Table B (intermediate) 1'-0/2'-0/2'-6/5'-0/10'-0. TJ-4000 (Jul 2025) not fetched; the house cites it for the same series.",
+   "proposed_fix": "Move the two vents to x <= 100 in (hole edge >= 18 in); or run the vent along a bay instead of across nine webs. Optionally teach mep_bores.joist_bore the TJI Tables A/B (the engine reports UNKNOWN for every I-joist hole).",
+   "size_guess": "small",
+   "seam_with": [
+    "M5",
+    "F5"
+   ],
+   "dedupe_key": "F3:attic-vent-webholes-near-support"
+  },
+  {
+   "id": "F3-102",
+   "area": "F3",
+   "title": "Small service holes in FS-M-WEST/-MECH webs land inside the 6 in no-field-cut zone at the x=18' and x=0 bearings (sauna supplies, CW trunk, bath-2 CW)",
+   "elements": [
+    "FS-M-WEST",
+    "FS-M-MECH",
+    "PR-B-HW-SAUNA",
+    "PR-B-CW-SAUNA",
+    "PR-B-CW-TRUNK",
+    "PR-B-CW-BATH2"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/checks/mep/floor_members.py:85"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Support face on FS-M-WEST hi end = 215.25 - 2.0 = 213.25 in; lo end 1.75 + 4.25 = 6.0 in. PR-B-HW-SAUNA (OD 0.625) x=207.0 on joists 005-011 and PR-B-CW-SAUNA x=208.0 on 005-012: hole centres 6.25 / 5.25 in from the face, hole edges 5.8 / 4.8 in (hatched zone is 6 in). PR-B-CW-TRUNK (OD 1.375, hole 1.6 in, 2 in class) x=209.0 on joist-0-012: edge 3.4 in vs 12 in; the CW-SAUNA hole is also inside its 2xD spacing. PR-B-CW-BATH2 (OD 0.875) x=12.0 on FS-M-WEST 013-017 and FS-M-MECH 000: edge 5.4 in vs 6 in. All other 40+ small holes clear (>= 16 in).",
+    "expected": "TJ-9001 figure: 'No field cut holes in hatched zone' = within 6 in of each support; a 1 1/2 in hole may be cut anywhere else; 1 1/2-2 in holes need Table A's 2 in row (1'-0 at 11 7/8 TJI 230). Holes 2xD apart (ESR-1153 fn. 1).",
+    "method": "Same probe as F3-101 (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p9.py), rule d<=1.5 in -> 6 in, else Table A."
+   },
+   "source": "ICC-ES ESR-1153 (reissued May 2025, revised July 2026) Fig. 2 Tables A/B and footnotes 1-6, https://www.icc-es.org/wp-content/uploads/report-directory/ESR-1153.pdf; same rows and the 6-inch 'no field cut holes in hatched zone' figure in Weyerhaeuser TJ-9001 Installation Guide p.1 (Allowable Holes, TJI joists). 11 7/8 in TJI 230, Table A (end support, round): 2 in 1'-0, 3 in 1'-6, 4 in 2'-0, 6 1/2 in 3'-0, 8 7/8 in 6'-6; Table B (intermediate) 1'-0/2'-0/2'-6/5'-0/10'-0. TJ-4000 (Jul 2025) not fetched; the house cites it for the same series.",
+   "proposed_fix": "Shift the sauna pair and CW-BATH2 stations 1-2 in inboard (x<=205 and x>=13) and the CW-TRUNK crossing >=13 in inboard of 213.25; one-line moves of lanes that already run along y.",
+   "size_guess": "small",
+   "seam_with": [
+    "M2",
+    "M4"
+   ],
+   "dedupe_key": "F3:smallholes-in-hatched-zone"
+  },
+  {
+   "id": "F3-103",
+   "area": "F3",
+   "title": "8 in round ERV extract trunk runs through 23 trusses of FS-S-WEST; TRIFORCE publishes 7 1/4 in as the largest round through an 11 7/8 in truss",
+   "elements": [
+    "FS-S-WEST",
+    "DU-M-ERV-EXH-TRUNK"
+   ],
+   "files": [
+    "houses/catlin/params/second_deck.py:116",
+    "packages/engine/src/typehaus/resolve/mep_crossings.py:65"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "DU-M-ERV-EXH-TRUNK is 8.0 in round (no lagging) and crosses 23 truss lines of FS-S-WEST (x=3'-10.5 in, y 7'-4..35'); the engine reads the opening as the 8.875 in chord-to-chord by 13 in rectangle (open_web_opening_m, WebPanels) and mep.open_web_panel PASSes. The only published truss chart, TRIFORCE U.S. Specifier Guide p.19 'Mechanical Clearances - Maximum size of pipes, ducts and cable trays through diagonal web members', 11 7/8 in: round 7 1/4 in, square 5 3/4 x 5 3/4, rectangular 3 x 13. Every other run through FS-S-WEST is <= 4 in OD.",
+    "expected": "Round duct <= 7 1/4 in through an 11 7/8 in TRIFORCE-type open web (or a fabricator's submittal stating a larger opening). The house's 24/13/12 layout is an owner-confirmed basis (second_deck.py:116), not a published row; a 45 degree Warren diagonal leaves triangular, not rectangular, openings.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p16.py (runs crossing FS-S-WEST/FS-M-NE truss lines, width = 2 x leg.radius_m); chart read from TRIFORCE guide text (pdftotext) p.19."
+   },
+   "source": "TRIFORCE U.S. Specifier Guide (dated 2023-05-11; copy https://www.rbscorp.com/wp-content/uploads/2025/11/USA-EN-TRIFORCE-Specifier-guide-1.pdf) p.19; ESR-2999 says ducts pass the open web and no hole may be cut in the OSB panel.",
+   "proposed_fix": "Get the fabricator to confirm an 8 in round (a plated parallel-chord floor truss may allow it) in writing before ordering, or drop the trunk to 7 in (flow/static: erv_static_budget is already 0.441 > 0.4) or split it into two 6 in. Add the published row (or the fabricator's) as a typed web-opening size so open_web_panel grades the diameter, not just the 8.875 in window.",
+   "size_guess": "large",
+   "seam_with": [
+    "M1",
+    "M4"
+   ],
+   "dedupe_key": "F3:erv-8in-trunk-vs-triforce-7p25"
+  },
+  {
+   "id": "F3-104",
+   "area": "F3",
+   "title": "A-502 'Floor truss bearing detail' is cut at y=16'-0\" between trusses (188 and 204): it draws no truss, mudsill, gasket or A35Z",
+   "elements": [
+    "SL-D-DECKBRG",
+    "FS-M-NE"
+   ],
+   "files": [
+    "houses/catlin/plan/views.py:68"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-502"
+    ],
+    "pages": [
+     49
+    ]
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "FS-M-NE lines now sit at y = 156 + 16k (156,172,188,204,...; 316/332 doubled); the slice cut_origin is y=ft(16)=192 in, 4 in from truss 188 (member 1.5 in wide). Sheet A-502 (p49) shows a bare subfloor strip, the wall stack and a '1'-0 5/8\" truss' dimension but no truss/chords, no PT mudsill + gasket, no MASA or A35Z. The comment on the slice promises 'the 3 in seat, the PT mudsill and gasket, the MASA anchor and the H2.5A seat tie' (and the tie is now A35Z).",
+    "expected": "Cut on a truss line (y = 15'-8\" = 188 in, or 17'-0\" = 204 in): truss seat on the plate, 1 1/4 in rim, mudsill/gasket, A35Z outer faces.",
+    "method": "Model probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p10.py (truss y list); sheet permit_set_full.pdf p49."
+   },
+   "source": "decision #112 amendment 2026-11-02 (16 in o.c.), notes/main_floor_truss_basis.md s.1",
+   "proposed_fix": "Change cut_origin to pt(ft(0), ft(15, 8)); the title still says SL-D-DECKBRG (shown as a 40 pt sheet title) - rename to A-502's own title.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "F3:a502-cut-misses-truss"
+  },
+  {
+   "id": "F3-105",
+   "area": "F3",
+   "title": "Rim-band sheets print the house's 11 7/8 in TJI + 3/4 in band on junctions with no such floor (A-564 garage, A-558/A-561 porch band is 2x12 KDAT)",
+   "elements": [
+    "A-564",
+    "A-558",
+    "A-561",
+    "GARAGE_ICF_6",
+    "GARDEN_FRAMED_2X6"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/detail_components/geometry.py:332",
+    "packages/engine/src/typehaus/emit/draw/detail_components/stack_dimensions.py:189"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-558",
+     "A-561",
+     "A-564"
+    ],
+    "pages": [
+     109,
+     112,
+     115
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "band_strings() calls floor_band_at(model, lower.z1_m), which scans EVERY floor's joists/rims anywhere in the house for one straddling z +/- 0.05 m and keeps the tallest. The garage stem top is -12.0 in (W-GF-*) and the court walls' tops are 0.0 (W-SG-*): both straddle the main deck's -11.875..0 band, so A-564 prints 'FLOOR BAND 1'-0 5/8\": 11 7/8\" JOIST + 3/4\" SUBFLOOR' over a garage ICF stem with a truss roof and slab (no floor band exists); A-558/A-561 print it over the porch where the band is 2x12 KDAT 11 1/4 in + 15/16 in deck (FS-SG-PORCH deck z 0..0.94, joist -11.25..0). A-557/A-560 (same curb junctions) print no caption.",
+    "expected": "Caption only where a floor of that junction's own storey/footprint crosses the plane; porch/balcony bands read their own members (11 1/4 in joist).",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p11.py (floor_band_at for every foundation wall); sheets p109,p112,p115 caption text."
+   },
+   "source": "model (floor_band_at); F3-004 caption added 2026-11-02",
+   "proposed_fix": "Filter floor_band_at to floors whose outline touches the junction wall (or whose host wall is in the condition); skip when none.",
+   "size_guess": "small",
+   "seam_with": [
+    "F2"
+   ],
+   "dedupe_key": "F3:band-caption-wrong-floor"
+  },
+  {
+   "id": "F3-106",
+   "area": "F3",
+   "title": "A-301 'FLOOR EL.' labels are the top-of-joist datum, rounded to the inch; no finished-floor or subfloor level is printed, and the chain does not add",
+   "elements": [
+    "A-301",
+    "A-301.1",
+    "A-301.2"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/elevation_annotate.py:313",
+    "packages/engine/src/typehaus/emit/draw/elevation_annotate.py:436"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-301",
+     "A-301.1",
+     "A-301.2"
+    ],
+    "pages": [
+     38,
+     39,
+     40
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Printed: MAIN FLOOR EL. 0'-0\", SECOND FLOOR 10'-0\", ATTIC FLOOR 20'-0\", BASEMENT FLOOR -9'-1\", BASEMENT T.O. PLATE -1'-1\", ATTIC T.O. PLATE 20'-2\". Model: finished floors are +1.0256 in (LVP), +121.5 (oak) / +121.75 (carpet), +241.5; slab -109.4375 (-9'-1 7/16\"), basement plate -13.4375, attic plate 242.25 (20'-2 1/4\"). feet_inches_signed rounds to whole inches while the dimension chain beside it prints 1/8 in (6'-3 1/2\" from grade): -9'-1\" + 6'-3 1/2\" does not reach -2'-10\".",
+    "expected": "Say what the level is (TOP OF JOISTS) and add the finished-floor levels the trades set from (MAIN FIN. FLR +1 1/32\", SECOND +1'-1 1/2\"...), labels to 1/8 in like the chain. The F3-002 plate fix landed (9'-0\", 19'-0\", -1'-1\").",
+    "method": "Sheet p38 crop; probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p5.py (room finished-floor elevations) and merged_levels() source."
+   },
+   "source": "model; notes/floor_heights.md",
+   "proposed_fix": "Label storey datums 'T.O. JOISTS' and add FIN. FLR levels per storey (merged_levels); use typography.feet_inches_8th.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "F3:a301-level-labels-joist-datum"
+  },
+  {
+   "id": "F3-107",
+   "area": "F3",
+   "title": "Known open item (TODO C3-E3): exterior door ROs run 0..82 7/8 in off the joist top while the sole plate stands at 3/4 in and the LVP at 1 1/32 in",
+   "elements": [
+    "D-M-ENTRY",
+    "D-M-PORCH",
+    "D-S-BALCONY"
+   ],
+   "files": [
+    "plans/TODO.md:243"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1",
+     "A-301"
+    ],
+    "pages": [
+     11,
+     38
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "RO z: D-M-ENTRY and D-M-PORCH 0.0..82.875 abs, D-S-BALCONY 120.0..202.875; walls' frame_base 0.75 / 120.75 (base_ref 0 / 120), interior doors (D-M-BED2, D-M-MUDC) sit at sill 0.75. A framer working from the subfloor gets an RO 0.75 in shorter than the door needs unless the subfloor is cut back for each sill; header bottom is drawn 82.875 above the joists, 82.125 above the subfloor.",
+    "expected": "RO measured from the subfloor top (or the subfloor cut back and stated), sill pans and thresholds coordinated to the LVP/oak plane.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p20.py (opening sill_m, height_m, wall base_ref/frame_base)."
+   },
+   "source": "plans/TODO.md line 243; decisions #110/#111",
+   "proposed_fix": "Owner decision already requested in TODO; recommend re-deriving the three installations off frame_base (+0.75) so the RO height is the door's published value above the subfloor.",
+   "size_guess": "large",
+   "seam_with": [
+    "O1",
+    "O3"
+   ],
+   "dedupe_key": "F3:exterior-door-ro-vs-subfloor"
+  },
+  {
+   "id": "F3-108",
+   "area": "F3",
+   "title": "Rim boards straddle the joist tip on cantilever and beam-borne ends: tips run 5/8 in (balcony) and 3/4 in (breezeway) into the rim",
+   "elements": [
+    "FS-SG-BALCONY",
+    "FS-BW-FLOOR"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/floor_ends.py:200",
+    "packages/engine/src/typehaus/resolve/floor_ends.py:212"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "FS-SG-BALCONY tip_lo = rim_lo = 99.0 in, rim 1.25 in wide, 2x12 KDAT joists start at x=99: overlap = half the rim = 0.625 in; FS-BW-FLOOR (2x8 rim, 1.5 in) tip = rim axis = 440.5: 0.75 in. Footprint overlap joist/rim: 24 pairs (balcony), 8 pairs (breezeway). The ordinary wall-plate branch (FS-M-WEST tip 1.75, rim 0.5..1.75) abuts correctly.",
+    "expected": "Rim inboard face = joist tip (joist cut 5/8 in / 3/4 in shorter each end, rim outer face on the authored fascia line).",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p18.py (pairwise floor-member footprints x z overlap), /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p19.py ends."
+   },
+   "source": "floor_ends docstring (its own wall-plate branch)",
+   "proposed_fix": "In the cantilever and beam-borne branches set tip = coord - sign*rim_thickness and keep the rim axis on coord - sign*rim/2 as in the plate branch.",
+   "size_guess": "small",
+   "seam_with": [
+    "F5"
+   ],
+   "dedupe_key": "F3:rim-straddles-tip"
+  },
+  {
+   "id": "F3-109",
+   "area": "F3",
+   "title": "Rim-board cut list buys 22 ft, 24 ft and 36 ft sticks; the 1 1/4 x 11 7/8 LSL rim is stocked at 20 ft",
+   "elements": [
+    "rim:1.25x11.875 rim"
+   ],
+   "files": [
+    "houses/catlin/prices.toml:221"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-601"
+    ],
+    "pages": [
+     22
+    ]
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "S-601 cut list 1.25x11.875 rim, 6 pcs 148 LF: 1x14', 1x16', 1x22', 1x24', 2x36'. Weyerhaeuser's 1.3E TimberStrand rim stock sheet lists 1 1/4 x 11 7/8 at 20 ft (retail listings none longer); FL evaluation covers up to 48 ft only as a manufacturable length.",
+    "expected": "Order in 16'/20' sticks (splices lapped at blocking or an I-joist) or flag a special-order 36 ft.",
+    "method": "takeoff.json framing_bom rim rows; WebSearch weyerhaeuser.com/download_file/5429/0."
+   },
+   "source": "Weyerhaeuser TimberStrand LSL rim board stock list (https://weyerhaeuser.com/download_file/5429/0), not re-fetched",
+   "proposed_fix": "Cap the LSL rim ladder at 20 ft and bill splices, or note 'special order'.",
+   "size_guess": "small",
+   "seam_with": [
+    "F5"
+   ],
+   "dedupe_key": "F3:rim-stock-lengths"
+  },
+  {
+   "id": "F3-110",
+   "area": "F3",
+   "title": "Derived I-joist hangers at FO-A-STAIR and FO-M-ERV-OA bill an unsized 'IUS'; authored joints carry IUS2.37/11.88",
+   "elements": [
+    "FO-A-STAIR",
+    "FO-M-ERV-OA"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/takeoff/hangers.py:118"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "takeoff.json hardware: IUS x2 (header-FO-A-STAIR-0), IUS x2 (header-FO-M-ERV-OA-1) with no size; IUS2.37/11.88 x3 BM-M-HALL, x3 BM-S-BATH-E, x7 BM-S-HALL ('part authored for this joint'). TJI 230 flange is 2.3 in min (ESR-1153 Table 1: 1.25 x 2.3).",
+    "expected": "IUS2.37/11.88 for 11 7/8 in TJI 230 (the series' own flange) on every I-joist end.",
+    "method": "json.load(takeoff.json)['hardware'] filter role=='ijoist_face_mount_hanger'."
+   },
+   "source": "ESR-1153 Table 1; Simpson IUS family",
+   "proposed_fix": "Let hanger_part pick the sized IUS from the profile's flange and depth when no spec is authored.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "F3:derived-ius-unsized"
+  },
+  {
+   "id": "F3-111",
+   "area": "F3",
+   "title": "Two derived blocking boxes overlap in FS-S-WEST (bearing-block rail-top x partition-block rail-top)",
+   "elements": [
+    "FS-S-WEST",
+    "W-M-HS4"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/floor_blocking.py:1"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.35,
+   "evidence": {
+    "measured": "bearing-block-1-016-rail-top and partition-block-W-M-HS4-003-rail-top share 5.12 in^2 at the same z in plan overlap; FS-SG-BALCONY has three sister-block/sister-block overlaps of 7.5 in^2.",
+    "expected": "One block where two derivations land (no double billing, no collision).",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p18.py"
+   },
+   "source": "model",
+   "proposed_fix": "Merge coincident derived blocks per bay.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "F3:blocking-overlap"
+  },
+  {
+   "id": "F3-112",
+   "area": "F3",
+   "title": "A-557 and A-560 are titled 'Rim band' but show the framed wall on its curb footing with no floor, while A-588/A-589 draw the same junction; A-569/A-577/A-578/A-579/A-582 cut a joist bay so the band is empty",
+   "elements": [
+    "A-557",
+    "A-560",
+    "A-569",
+    "A-577",
+    "A-578",
+    "A-579",
+    "A-582"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/construction_rim.py:1"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-557",
+     "A-560",
+     "A-569",
+     "A-577",
+     "A-578",
+     "A-579",
+     "A-582"
+    ],
+    "pages": [
+     108,
+     111,
+     120,
+     128,
+     129,
+     130,
+     133
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Opened all 33. A-557/A-560 (garden curb) show brick wythe, stud wall, 12 in pour and the 1'-8 in footing, no joist/rim/subfloor, no caption. A-569, A-577, A-578, A-579, A-582 show only the lower partition top and the upper subfloor with the band caption but no joist, blocking or rim between them (cut falls in a bay; A-569's upper wall is absent).",
+    "expected": "Rim sheets show the floor band members at the cut (rim or blocking) or the sheet is dropped as a duplicate.",
+    "method": "permit_set_full.pdf p103-135."
+   },
+   "source": "model",
+   "proposed_fix": "Cut the rim slices on a joist/rim line, or fold A-557/A-560 into A-588/A-589.",
+   "size_guess": "small",
+   "seam_with": [
+    "F2"
+   ],
+   "dedupe_key": "F3:rimband-sheets-empty-bands"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "F3-001",
+   "status": "closed",
+   "evidence": "Main/second exterior sole plate z 0.75..2.25 / 120.75..122.25 on subfloor top 0.75 / 120.75; top plates end 108.125 / 228.125 = joist soffit (joist z0 108.125 / 228.125); partitions end 0.75 under. Stack per storey: 11.875 TJI + 0.75 subfloor + 1.5 sole + 102.875 stud + 3.0 double top = 120.0 + 0.75 - 0.75 closed. A-301 and S-101.1/.2 notes print the stack (decision #110/#111). Ceiling 107.5 (5/8 in board) = plate 108.125 - 0.625.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p12.py (plate z0/z1 vs deck_z1, joist z0); /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p2.py; sheets p11,p12,p38."
+  },
+  {
+   "id": "F3-002",
+   "status": "closed",
+   "evidence": "A-301 now prints MAIN T.O. PLATE 9'-0\", SECOND T.O. PLATE 19'-0\", BASEMENT T.O. PLATE -1'-1\" (plate_top_z_m: 108.125, 228.125, -13.4375); merged_levels reads plate_top_z_m. New residual (rounding, joist-datum labels): F3-106.",
+   "method": "Sheet p38 crop at 220 dpi; elevation_annotate.py:313-321."
+  },
+  {
+   "id": "F3-003",
+   "status": "closed",
+   "evidence": "Main-storey rim now x 0.5..1.75 (FS-M-WEST rim axis 1.125, width 1.25) = W-M-W1 structure span 0.5..6.0; east rim 430.25..431.5 vs W-M-E1 426..431.5; FS-S-EAST/-WEST identical; seats 4.25 / 2.0 in (not 6.75/10.75). floor_end_bearing 16 ends pass.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p12.py rim x vs structure_span; floor_ends._sill_span."
+  },
+  {
+   "id": "F3-004",
+   "status": "partial",
+   "evidence": "Band dimension now printed ('FLOOR BAND 1'-0 5/8\": 11 7/8\" JOIST + 3/4\" SUBFLOOR') and the PT sill + 1/16 gasket are solids (sill -13.4375..-11.875 on the pour). But the rim board/joist are still not drawn at most cuts (A-569, A-577..579, A-582 empty bands), the 1 1/4 in rim is not labelled, and the caption itself is wrong on garage/porch junctions: see F3-105, F3-112.",
+   "method": "Opened A-552..A-584 (p103-135); band_strings(); /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p13.py sill solids."
+  },
+  {
+   "id": "F3-005",
+   "status": "closed",
+   "evidence": "Floor joist profile is '11.875 TJI 230' (flange 2.3125 x 1.25, web 3/8; ESR-1153 Table 1 min 1.25 x 2.3) house-wide; hangers IUS2.37/11.88 on authored joints; spans 17.79-17.85 ft vs 19'-10 in row. Residual: derived hangers unsized, F3-110.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p1.py member profiles; takeoff hardware."
+  },
+  {
+   "id": "F3-006",
+   "status": "closed",
+   "evidence": "Derived I-joist ends now bill IUS (x4) and trusses THA422 (x3); LUS remains only on the sawn-lumber wall hangers (9 generic LUS on W-B-CN/W-M-* ledgers). Unsized IUS residual: F3-110.",
+   "method": "takeoff.json hardware roles ijoist_face_mount_hanger / floor_truss_hanger."
+  },
+  {
+   "id": "F3-007",
+   "status": "closed",
+   "evidence": "S-101.1, S-101.2, S-101.3 at 1700 px: member, beam/post, header and connector schedule blocks sit in separate stacked blocks with no overprint; NOT SHOWN note ends above the connector table.",
+   "method": "permit_set_full.pdf p11-13 read at full width."
+  },
+  {
+   "id": "F3-008",
+   "status": "closed",
+   "evidence": "S-101.1 NOT SHOWN note 2 is now only about FS-BW-FLOOR (zero blocking members); schedule BL rows no longer contradicted. S-101.2/.3 carry no such note. Blocking counts agree with S-601 (TJI blocking 113 pcs).",
+   "method": "Page 11 text; model blocking count per floor (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p1.py)."
+  },
+  {
+   "id": "F3-009",
+   "status": "closed",
+   "evidence": "Rejection holds: notes/floor_heights.md records 3/4 in nominal vs 23/32 in panel (1/32 in), every deck uses one value so no doorway spends it; S-101 note prints 0.75 in. No door flush target uses it (LVP 1.0256 over 0.75).",
+   "method": "floor_heights.md lines 20-22; decks z1-z0 = 0.75 on all FS-* (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p1.py)."
+  },
+  {
+   "id": "F3-010",
+   "status": "closed",
+   "evidence": "prices.toml now labels the stock '1 1/4 in LSL rim (TimberStrand / LP SolidStart)' and the attic rims '1 3/4 in LSL'; Weyerhaeuser lists 1.3E TimberStrand rim 1 1/4 x 11 7/8 and 1.55E 1 3/4 x 11 7/8 headers. Residual stock lengths: F3-109.",
+   "method": "prices.toml:221-229; WebSearch Weyerhaeuser rim board thickness/stock."
+  },
+  {
+   "id": "F3-011",
+   "status": "closed",
+   "evidence": "resolve/sill_solids.py draws gasket (z -13.4375..-13.375) + PT sill (-13.375..-11.875) for the 10 returns no framed wall draws (127.7 of 320.2 LF; the rest are framed plates drawn by their own wall); note quantity corrected to 329.3 LF. Seat -13.4375 + 1/16 + 1.5 = -11.875 = joist soffit. The return z1 (-11.9375) omits the gasket's 1/16 in (billing only).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F3/p13.py, p14.py (solids category sill_plate/sill_gasket vs construction_returns)."
+  }
+ ]
+}

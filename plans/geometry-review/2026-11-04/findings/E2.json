@@ -1,0 +1,286 @@
+{
+ "area": "E2",
+ "model": "houses/catlin @539d9a81",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventory (resolved model pickled at /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/E2/model.pkl; probes p2-p11 in /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/E2/): entry screen W-BW-SCREEN (4 MDO panels, 6 edge nailers, 3 KDAT 2x6 plies, 91 MDO face screws, 8 ply screws, tie relief AO-BW-MDO-TIE-RELIEF; sources notes/entry_screen_mdo.md, entry_screen_mdo_calculations.json, entry_screen_metal_cassettes.md (now a withdrawal stub), plan/entry_screen_finish_spec.py, plan/entry_screen_finish_checks.py, plan/products_entry_screen.py, params/entry_screen_finish.py, plan/assemblies/entry_screen.py, materials_entry_screen.py); BBD75 band on 7 N/S wall segments (W-S-S1/S2/N1/N1B/N2/N3/N3B, joint 228, panel top 227, girt 226-229.5, trim body lap 1.59 in); W-B-BRICK court veneer (89.1 in, 33.41 courses, air-gap 1.94, brick 3.625, MJ-B-BRICK-E/W now 1/2 in); brick, PBR and rainscreen derivations read through checks.json (cladding_trim_fit: 4 BBD runs <= 20 ft, 7 band laps, 56 panel-top girts; all PASS). Products web-checked: Roseburg DuraGard Premium MDO (flyer fetched to /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/E2/duragard.pdf; Menards 4x10 listing gives actual 0.734 x 47-7/8 x 119-7/8); BBD75 install guide p.11/13 (batten phase) from the vendored PDF. All 22 listed sheets opened (permit_set_full pp. 28, 34-37, 50, 62-64, 86-88, 105-112, 139-140) plus A-508 (p55), A-586 (p137) and text of pp. 136, 138, 141, 142 for the E2-003/-004 re-probes. All 9 prior ids re-probed (see prior_findings). NOT examined: the screen's top interface (MDO top 47.5 vs SB-BW-BAND sill/cap above 48 in) and the D-G-SERVICE 81-degree sweep (O3/F6); entry_screen_mdo_calculations.json numbers were not re-derived (structural, F6/S-areas); Roseburg actual 8 ft sheet thickness/size not published (only the 4x10 listing); PBR/corrugated rainscreen closures, window trim and corner-trim sweeps in resolve/cladding_trim/* were read only through the passing check messages (0 FAIL, one UNKNOWN: corrugated sill-to-soffit panel break), not re-measured; masonry_joints.py movement-joint arithmetic (BIA TN 18A) not re-derived; PBR panel wall allowables not re-checked against the unvendored 1/2026 CTR.",
+ "verified_clean": [
+  "MDO sheet fit: 4 panels = 7.750 / 24.125 / 24.125 / 5.875 x 45.5 in; the note's nest (two 24.125 panels end to end = 48.25 + kerf in one 45.5 in strip, the 7.75 and 5.875 strips in the remaining 47.75 in of the 95-7/8 in length) fits one 47-7/8 x 95-7/8 sheet; net area 19.482 sf matches the takeoff's 19.5 sf; the sheet is bought as $/SF net, not in sheet_goods (takeoff.json envelope_layers[46]).",
+  "MDO grain/span: the 24 in panel dimension runs along the sheet's long (face-grain) axis, i.e. across the vertical supports, the strong direction.",
+  "Lumber purchase: 6 nailers x 44.44 in = 3 boards of 8 ft 2x4 (2 per board, 89.13 in used); 3 plies = 2 boards of 8 ft 2x6; 44.44 = 45.0 - 0.56 matches plate-to-plate; KDAT 2x6 actual 1.5 x 5.5 in.",
+  "Roseburg flyer (ROS MDO 030926): 3/4 in = 8d, 6 in o.c. at edges / 12 in at intermediates, max support spacing 24 in o.c., 1 in min substrate penetration, edge-seal with two heavy coats of exterior paint; model screw lines are 6 in max (9 rows over 44.75 in = 5.59 in) at edges, 11.19 in at intermediates, on 24 in max support spacing (edge nailers + 16 in o.c. field studs at stations 16/32/48/64); No. 8 x 2-1/2 gives 1.75 in into the nailer. The note's finish spec (primer + two topcoats, both faces, cut edges, holes) matches the flyer.",
+  "MDO support geometry (resolved model): studs at stations 0.75/16/32/48/64/78.625 (2x4 flat-wise 1.5 in, 16 in o.c. from the wall start), edge nailers flush to each panel edge (13.625-15.125, 36.25-37.75, 43.5-45.0, 66.125-67.625, 73.375-74.875, 6.375-7.875), every screw line lands on a stud or nailer; top plates 45-48 take the top screw row (z 47.125), bottom plate top 0.56 under the bottom row (z 2.375); panel gaps to the 6x6 posts (447.125/447.25, 452.75/452.875, 506.875/507.0, 512.5/512.625) and to the timber (37.75/37.875, 43.375/43.5) are all 0.125 in.",
+  "MDO / timber planes: MDO back x 77.125 = nailer and stud east face; MDO face 77.875; timber plies x 73.625-78.125 (3 x 1.5), east face 78.125 = 0.25 in proud of the MDO as the note says; panel bottom +2.0 in above the deck finish (4 in sphere rule: 2.0 in open under the panels), panel top +47.5 (guard 48 in); checks.json reports the screen a solid guard.",
+  "House end of the screen: wall starts y 439.25 against the house cladding face 438.75 (0.5 in gap, = the deck sheet's 0.5 in), MDO starts 439.375 (0.625 in off the BBD75 face).",
+  "BBD75 band (all 7 N/S segments): joint 228.0, lower panel top 227.0, band girt 226.0-229.5 backs the panel's top 1.0 in and the trim shelf; lap check 1.59 in vs 1.50 needed; panel-top girt check 56 PASS; lower panel run from the base strip seat (-11.4) to 227 = 238.4 in = 19.87 ft <= 20 ft (BBD75 p.13 recommended maximum).",
+  "A-513/.1/.2 notes: 'E/W PBR 7-1/4 in; N/S BBD75 6-3/4 in' matches sheathing outer 432.0 to cladding face 438.75 (6.75) and PBR 1.25 thickness (7.25); stud/sheathing/foam/vent-gap/girt/cladding callouts 5 1/2 / 1/2 / 4 / 1/2 / 1 1/2 / 3/4 match W-M-N2's resolved layers.",
+  "W-B-BRICK: layers air-gap 1.94 + brick 3.625; brick south face y -9.625 matches MJ-B-BRICK-E/-W path (-9.5 = half the 1/4 in seal depth in); joints 1/2 in with 5/8 in rod (+25% as TN 18A asks).",
+  "A-554..A-561 floor band callout 'FLOOR BAND 1'-0 5/8 in: 11 7/8 in joist + 3/4 in subfloor' = 12.625 in; A-535..A-537 and A-557/558/560/561 print 'air-gap 1 15/16 in', 'brick 3 5/8 in', xps-b/a 2 in consistent with the model.",
+  "A-201/A-202 elevations: band line, 12 in battens and BOARD-BATTEN-24 / PBR-PANEL-24 labels agree with the cladding split (BBD N/S, PBR E/W); A-002 carries no cladding spec to check (see E2-103)."
+ ],
+ "findings": [
+  {
+   "id": "E2-101",
+   "area": "E2",
+   "title": "Screen wall, end stud and MDO panel 4 run 0.75-0.875 in into the garage W-G-S corrugated cladding layer; no notch or stop is drawn",
+   "elements": [
+    "W-BW-SCREEN",
+    "W-G-S",
+    "mdo-in-4",
+    "CN-BW-GWTIE-LO/-HI/-BLK"
+   ],
+   "files": [
+    "houses/catlin/params/breezeway.py:258",
+    "houses/catlin/params/landing_tie.py:40",
+    "houses/catlin/plan/entry_screen_finish_spec.py:30"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "W-BW-SCREEN runs y 439.25 to 518.625 (SCREEN_END_Y_FT = GARAGE_Y_SOUTH, the garage's CDX/stud face). W-G-S's corrugated cladding layer occupies y 517.75-518.625 across x 71.12-360.88. Shapely intersection of the screen's layers with it: mdo-in-4 0.563 in2 (x 77.125-77.875, y 517.75-518.5, 0.75 in deep, 45.5 in tall), stud 3.063 in2 (end stud 517.125-518.625), cdx-out 0.547, cladding-out 0.766. The tie connectors (CN-BW-GWTIE-*, AO-BW-MDO-TIE-RELIEF relief ends at 79.375 = 518.625) sit on GARAGE_CLADDING_Y_FT = 517.75, the cladding face, so the connection plane and the wall end disagree by 7/8 in.",
+    "expected": "The screen's last stud/MDO edge should stop at the garage cladding face (y 517.75, MDO at <= 517.625) or the set should say the 7/8 in corrugated is notched around the screen end; at present both claim the same 7/8 in of space.",
+    "method": "Python: m=load model; Polygon(screen layer.polygon).intersection(Polygon(W-G-S layer.polygon)) per layer pair, scratchpad /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/E2/p6.py; params/breezeway.py:257-263 (SCREEN_START_Y_FT/SCREEN_END_Y_FT) vs landing_tie.py:40-45 (GARAGE_CLADDING_Y_FT)."
+   },
+   "source": "resolved model; houses/catlin/CLAUDE.md 'ICF stem and wood wall are coplanar outside' (7/8 in of corrugated projects past the sheathing plane)",
+   "proposed_fix": "Either end SCREEN node N at GARAGE_CLADDING_Y_FT (shortens the wall 7/8 in; MDO panel 4 and the relief re-dimension, shear panel length and chord geometry unchanged within 0.01) or keep the wall and author the corrugated notch at W-G-S (note + sheet detail). Decide with F6; no check sees a screen-to-garage-cladding overlap.",
+   "size_guess": "large",
+   "seam_with": [
+    "F6",
+    "O3"
+   ],
+   "dedupe_key": "W-BW-SCREEN:north-end-in-garage-cladding"
+  },
+  {
+   "id": "E2-102",
+   "area": "E2",
+   "title": "A-588/A-589 key note K7 prints '2 in EPS, 4 in air' while the same detail's legend and the model have a 1 15/16 in air-gap over 2+2 in XPS; the source notes still say 4 in",
+   "elements": [
+    "BASEMENT_BRICK_VENEER",
+    "W-B-BRICK"
+   ],
+   "files": [
+    "houses/catlin/notes/basement_to_framed_wall_detail.md:34",
+    "houses/catlin/notes/basement_to_framed_wall_detail.md:74",
+    "houses/catlin/notes/sunken_garden_veneer_beam.md:71",
+    "houses/catlin/notes/sunken_garden_veneer_beam.md:253",
+    "houses/catlin/plan/assemblies/envelope_masonry.py:51"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-588",
+     "A-589"
+    ],
+    "pages": [
+     139,
+     140
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "Model (2026-11-04 simplification, c81337c8): air-gap layer 1.94 in, brick 3.625 in, brick back to stud face 6 1/2 in. A-588 p.139 and A-589 p.140 print the legend rows 'xps-b 2, air-gap 1 15/16, xps-a 2' and, in the same sheet's NOTES, 'K7 Veneer: 2 in EPS, 4 in air, weeps at the beam; two-piece anchors through 6 in'. notes/basement_to_framed_wall_detail.md:34 (K7 source) and :74 ('4 in of air behind 6 in of foam') and sunken_garden_veneer_beam.md:71 (table 'open cavity 4.0 in') and :253 ('The airspace is 4 in now') were not updated; the same note's own cavity hand calc (line 922) says 1.940 in.",
+    "expected": "One cavity figure: 1.94 in drained air (>= 1 in, R703.8.4) over 2 in EPS-class foam as the legend shows; K7 and the notes agree.",
+    "method": "Read permit_set_full.pdf pp.139-140 NOTES vs legend; grep -n 'weeps at' notes/basement_to_framed_wall_detail.md; probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/E2/p11.py (air-gap 1.94)."
+   },
+   "source": "houses/catlin/plan/assemblies/envelope_masonry.py:51-58 (measured cavity comment); IRC R703.8.4 1 in minimum (quoted in the assembly comment)",
+   "proposed_fix": "Edit K7 to '2 in foam, 1-15/16 in air' (or derive it from the assembly layer) and fix the note lines 34, 74 (basement_to_framed_wall_detail.md) and 71, 253 (sunken_garden_veneer_beam.md). Text only.",
+   "size_guess": "small",
+   "seam_with": [
+    "D2",
+    "F5"
+   ],
+   "dedupe_key": "veneer:K7-air-4in-stale"
+  },
+  {
+   "id": "E2-103",
+   "area": "E2",
+   "title": "The entry-screen MDO face is on no printed sheet: no panel schedule, fastener or edge-seal note, no MDO layer on A-508, and the 'not accepted for construction' status is not printed",
+   "elements": [
+    "W-BW-SCREEN",
+    "AO-BW-MDO-TIE-RELIEF",
+    "TR-BW-MDO-NAILER-*",
+    "TR-BW-MDO-TIMBER-PLY-*"
+   ],
+   "files": [
+    "houses/catlin/notes/entry_screen_mdo.md:7",
+    "houses/catlin/params/breezeway.py:230",
+    "houses/catlin/plan/assemblies/entry_screen.py:79"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-508"
+    ],
+    "pages": [
+     55
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "pdftotext of permit_set_full.pdf (176 pages): 'MDO' occurs once on a screen-related line, the RO schedule row 'AO-BW-MDO-TIE-RELIEF  0'-2 3/4 x 0'-3 3/4  sill 1'-11 1/8' (p.151); the panel schedule (4 panels, sizes, +2 to +47.5), nailer/ply schedule, No. 8 x 2-1/2 screw spacing 6/12 in, 1/8 in gaps, two-face + edge sealing, and the 'lower attachment NOT accepted' hold are on no sheet. A-508 (p.55) cuts the screen and labels only 'cladding-out 7/8, cdx-out 5/8, stud 3 1/2, skirt-panel 7/8'; the MDO east face and nailers are not drawn or labelled. The RO row prints 2 3/4 in wide where the note says 2.625 in (notch is open-ended; RO is 2.75, panel notch 2.625).",
+    "expected": "The note's own '## Sheet notes / ### General' bullets (white 3/4 in exterior MDO, removable stainless screws, 1/8 in gaps, keep the tie relief and drainage open, lower timber not released) printed with the screen section, and the MDO layer shown/labelled on the cut.",
+    "method": "pdftotext -layout permit_set_full.pdf; grep -n -i 'MDO|W-BW-SCREEN'; Read p.55 (A-508) and p.151."
+   },
+   "source": "houses/catlin/notes/entry_screen_mdo.md 'Sheet notes' (written to be printed)",
+   "proposed_fix": "Attach the three note bullets to the A-508 / elevation sheet via the sheet-notes mechanism and let the section show the MDO slot layer; print the RO as 2 5/8 or document the 1/8 in overrun.",
+   "size_guess": "small",
+   "seam_with": [
+    "D2",
+    "F6"
+   ],
+   "dedupe_key": "W-BW-SCREEN:MDO-not-on-sheets"
+  },
+  {
+   "id": "E2-104",
+   "area": "E2",
+   "title": "Panel 4 edge fastening skips an 11.2 in run (19.16 to 30.34 in) at the tie relief against the 6 in edge spacing the note and Roseburg specify",
+   "elements": [
+    "mdo-in-4",
+    "TR-BW-MDO-SCREW-4-1-4"
+   ],
+   "files": [
+    "houses/catlin/params/entry_screen_finish.py:88",
+    "houses/catlin/notes/entry_screen_mdo.md:56"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Panel 4 (stations 73.375-79.25) screw column 1 sits at 78.875 with 9 rows (z 2.375-47.125, 5.59 in pitch); the relief filter (TIE_RELIEF_BOTTOM_IN-0.1875 < z < TIE_RELIEF_TOP_IN+0.1875, station > 76.625) drops row 4 (z 24.75), leaving 19.16 to 30.34 = 11.19 in with no screw along that vertical edge. Tag list: TR-BW-MDO-SCREW-4-1-0..3 and 5..8 (no -4).",
+    "expected": "Roseburg flyer and the note: 6 in o.c. around all panel edges. The notched edge (relief west edge 76.625, 3.75 in tall, and the strip above/below at 78.875) should get a screw within 6 in of each cut corner, e.g. at z 22.125-0.375 and 25.875+0.375 on station 77.0-78.0 into the stud at 77.875-79.375.",
+    "method": "Python: regenerate rows with the loop in params/entry_screen_finish.py:88-115; or takeoff.json edge_trim[14].tags (4-1-4 absent)."
+   },
+   "source": "Roseburg DuraGard Premium flyer (ROS MDO 030926): 6 in edges, 12 in intermediates; notes/entry_screen_mdo.md",
+   "proposed_fix": "Add two screws flanking the relief into the north end stud (stations ~77.9) or state 'two extra screws at the relief'. Immaterial structurally (the MDO has no shear credit).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "MDO-panel4:edge-screw-gap-at-relief"
+  },
+  {
+   "id": "E2-105",
+   "area": "E2",
+   "title": "plans/TODO.md still tracks 'W-BW-SCREEN metal cassette engineering' and points at a note that now says the cassettes are withdrawn",
+   "elements": [
+    "W-BW-SCREEN"
+   ],
+   "files": [
+    "plans/TODO.md:371",
+    "houses/catlin/notes/entry_screen_metal_cassettes.md:1"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "TODO.md:371: '[ ] Complete W-BW-SCREEN metal cassette engineering, support/trim details, complete loads and fabrication estimate ... See entry_screen_metal_cassettes.md.' notes/entry_screen_metal_cassettes.md (15 lines) states 'metal proposal superseded ... aluminum cassette design ... withdrawn' (owner, 2026-11-02) and points to entry_screen_mdo.md, whose open items are the ply-transfer/A35Z-bent/SD9112/sweep blockers.",
+    "expected": "The open item names the live work: the MDO screen's four acceptance blockers (entry_screen_mdo_calculations.json acceptance_blockers) and the 81-degree sweep.",
+    "method": "sed -n 371p plans/TODO.md; cat notes/entry_screen_metal_cassettes.md."
+   },
+   "source": "notes/entry_screen_mdo.md header",
+   "proposed_fix": "Reword TODO.md:371 to the MDO blockers; the cassette note can be deleted once nothing links it (decision #57-style stale-doc cleanup).",
+   "size_guess": "small",
+   "seam_with": [
+    "F6"
+   ],
+   "dedupe_key": "TODO:cassette-stale"
+  },
+  {
+   "id": "E2-106",
+   "area": "E2",
+   "title": "cladding_trim_fit band-lap threshold is the model's own leg-minus-slot, with no cited minimum lap, so it cannot fail",
+   "elements": [
+    "BBD_TRANSITION",
+    "W-S-N2"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/checks/integrity/cladding_trim_fit.py:253"
+   ],
+   "kind": "engine-geometry",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "required = hypot(leg) - BAND_PANEL_GAP_IN = 2.5 - 1.0 = 1.50 in; measured lap = band_panel_top(joint) - min(trim body z) = 1.59 in (7 joints, PASS). Both sides move one-for-one with BAND_PANEL_GAP_IN, so lap - required stays 0.09 in whatever the slot is. BBD75 p.40 publishes the 2-1/2 in leg and no minimum lap on the panel.",
+    "expected": "A cited minimum lap (or a stated 'none published') against which the slot, 1.0 in, is graded.",
+    "method": "Read cladding_trim_fit.py:244-271; checks.json 'band joints lap the lower panel 1.59 in, 1.50 in needed'; vary BAND_PANEL_GAP_IN mentally. Round-1 adjudication C4 E2-001 said the threshold needs a cited value first."
+   },
+   "source": "houses/catlin/DESIGN-LOG.md decision #99; BBD75 Install Guide 10/2025 p.40",
+   "proposed_fix": "Ask Metal Sales for the minimum leg-on-panel lap (already a supplier hold in TODO.md:262) and put the number in; until then say so in the check message.",
+   "size_guess": "small",
+   "seam_with": [
+    "O5"
+   ],
+   "dedupe_key": "BBD-band:lap-threshold-self-referential"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "E2-001",
+   "status": "closed",
+   "evidence": "Measured on all 7 BBD75 N/S wall segments (W-S-S1, S2, N1, N1B, N2, N3, N3B): joint 228.0, outlet slot 1.0 -> lower panel top 227.0; the derived band girt is now 226.0-229.5 (was 228-231.5 on W-S-N2) so it backs the panel's top 1.0 in and the trim shelf; tail past the last fastener ~0.5 in (was 9.25 in). _band_laps reads 1.59 in against 1.50 in (7 joints PASS) and panel_top_girts passes 56 tops. Lower panel run 238.4 in = 19.87 ft. Supplier hold on the 1 in slot (TODO.md:262) is still open, and the lap threshold has no cited minimum (E2-106).",
+   "method": "Python: for w in model.walls with panel_joints_m: strapping member z0/z1 (scratchpad /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/E2/p7.py); rainscreen_strips.band_panel_top/band_girt_bottom; checks.json messages 'band joints lap' and 'metal panel tops have a girt'."
+  },
+  {
+   "id": "E2-002",
+   "status": "closed",
+   "evidence": "Rejection holds: batten phase is installer-set. The vendored BBD75 guide (notes/sources/metal-sales-bbd75-install-2025.pdf pdftotext pp.11 and 13) prints 'Plan the work to get the ribs where desired'; resolve/metal_skin_profiles.py and emit/draw/elevation_finish.py unchanged since 247a13e9 (git diff --stat empty). No dimensioned sheet depends on the phase.",
+   "method": "pdftotext -f 11 -l 13 -layout metal-sales-bbd75-install-2025.pdf | grep -i 'plan the work'; git diff 247a13e9..HEAD --stat -- the two files."
+  },
+  {
+   "id": "E2-003",
+   "status": "partial",
+   "evidence": "C7's fix landed: A-588/A-589 (pp.139/140) now carry the full brick-stack legend and A-586 (p.137) the framed wall's cladding/girt/foam/stud rows, all readable. Residuals on the 2026-11-04 print: (a) A-586, A-588, A-589 and A-561 still over-print the detail title 'TR-CATLIN-FOUNDATION / RIM-BAND' with K-bubbles or legend rows; (b) the white-boxed '4 in CI' / '5 1/2 in stud' dimension labels sit on the section body and leaders on A-554/555/556/558/559/561; (c) A-557 and A-560 dimension text ('4 in 6 in 10 in') runs through the title; A-588/589 show the same two dimension labels floating above the drawing with nothing under them.",
+   "method": "Read permit_set_full.pdf pp.105-112, 137, 139-140 (images)."
+  },
+  {
+   "id": "E2-004",
+   "status": "closed",
+   "evidence": "Notes are now keyed per assembly: A-591 (p.141) prints 'Framed wall: 2x6 at 24 in o.c., 2 in ccSPF' (was 16 in o.c. R-19 / 4 in continuous), K7 appears only on the GARDEN_CURB details (A-588 p.139, A-589 p.140; A-585..A-587 no longer carry it) and A-586 (p.137) prints K1-K6 only; K7's own content is stale (E2-102).",
+   "method": "pdftotext -f 136 -l 142 permit_set_full.pdf | grep -n 'K[0-9] \\|Framed wall'; Read p.137, 139, 140."
+  },
+  {
+   "id": "E2-005",
+   "status": "partial",
+   "evidence": "Inch formatting fixed: 'brick 3 5/8 in', 'sheathing 1/2 in', 'air-gap 1 15/16 in' print as fractions on A-503/A-535..A-537/A-557..A-561/A-588/A-589. A-503 (p.50) is still titled 'Typical exterior wall section' and shows only the board-and-batten stack (cladding 3/4 on both storeys, no 1 1/4 in PBR section for the E/W walls); A-513 note does say E/W PBR 7-1/4 in, N/S BBD75 6-3/4 in.",
+   "method": "Read permit_set_full.pdf p.50; page-manifest title 'Typical exterior wall section'."
+  },
+  {
+   "id": "E2-006",
+   "status": "closed",
+   "evidence": "Rejection holds and nothing moved: W-B-BRICK z -102.4375 to -13.333 = 89.1045 in = 33.41 courses; AO-B-BRICK-WIN sill 37.0 in = 13.875 courses, head 57.0 = 21.375; AO-B-BRICK-DOOR sill 0, head 80 = 30.0 courses. Residual <= 1/3 in per datum absorbed in the bed joints (+-1/8 in x 13.9 joints); wythe now sits between 1/2 in movement joints (114.5 to 317.5).",
+   "method": "Python /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/E2/p11.py: (sill, head, z1-z0)/(8/3)."
+  },
+  {
+   "id": "E2-007",
+   "status": "partial",
+   "evidence": "The cited line (sunken_garden_veneer_beam.md 'airspace itself is 2 in') is gone, but the cavity changed on 2026-11-04 to 1.94 in (envelope_masonry.py:51, 'measured, not chosen') and the notes are now internally inconsistent: sunken_garden_veneer_beam.md:71 'open cavity 4.0 in' and :253 'airspace is 4 in now' vs its own hand calc at :922 'airspace 6.000 - 4.060 = 1.940 in'; BASEMENT_BRICK_VENEER.source reads 1.94 in (correct). Printed consequence tracked as E2-102.",
+   "method": "grep -n 'airspace\\|open cavity' notes/sunken_garden_veneer_beam.md; sed -n 45,60p plan/assemblies/envelope_masonry.py."
+  },
+  {
+   "id": "E2-008",
+   "status": "closed",
+   "evidence": "library/trim/metal_sales.py:40 now reads 'PBR Install Guide 4/2024 pp. 18, 66; BBD75 Install Guide 10/2025 pp. 16, 30' (round-1 correction applied).",
+   "method": "grep -n -A12 WIDE_OUTSIDE_CORNER packages/engine/src/typehaus/library/trim/metal_sales.py | grep source."
+  },
+  {
+   "id": "E2-009",
+   "status": "closed",
+   "evidence": "Rejection holds: library/materials/cladding.py:328/335 still cite the Metal Sales PBR CTR 1/2026 (236 / 318 psf outward at 2'-0 in), the document named in notes/board_batten_girt_span.md:894 and CLAUDE.md as a dated basis; it is still not vendored under notes/sources (vendored 4/2024 prints 223/314 psf). Demand ~18 psf, so no verdict moves. Recommendation unchanged: vendor the CTR.",
+   "method": "sed -n 320,336p library/materials/cladding.py; ls houses/catlin/notes/sources | grep metal-sales."
+  }
+ ]
+}

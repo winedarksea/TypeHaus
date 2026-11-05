@@ -1,0 +1,641 @@
+{
+ "area": "D2",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Area D2 (construction set: elevations, sections, details). Opened every one of the 59 listed sheets in permit_set_full.pdf (pages 21, 34-40, 48-66, 82-90, 101-110, 136-148): S-501.1; A-201..A-204; A-301/.1/.2; A-501..A-511 (authored details); A-512/.1/.2, A-513/.1/.2, A-514, A-515 (derived opening details); A-531..A-539 (ridge beam, stack shelves); A-550..A-559 (interior stack shelf, rim bands, plant rim); A-585..A-590 (wall on foundation); A-591..A-597 (rake, eave, garage eave, partition eaves). 15 prior ids re-probed (closed 10, partial 5, open 0, regressed 0, obsolete 0). 12 new findings. Dimensions cross-checked to model.json: elevation datum rungs, A-501/A-503 heights, A-505 bench heights/widths, A-508/A-509 riser arithmetic, A-535/A-557 court footing 4+6+10 = 20 in, A-559 floor band 1'-0 5/8\" (11 7/8\" + 3/4\"), door ROs 82.875 in = 6'-10 7/8\" (A-513/A-515), garage footing 20 x 8 in. Round-1 REPORT item 4 (detail dimensions/enlarged parts): resolved for A-501..A-510 and A-512.1/.2, A-513.1/.2 (A-507 now has tub 1'-8 1/8\", valve 2'-6\", integral surround and the VALVE (BEYOND) box); A-511 and the stack/rim sheets keep only the stack strings. Item 5 (plant-room rim): resolved, 5 of 5 PLANT-keyed rim sheets (A-559, A-562, A-575, A-580, A-584) now resolve to TR-CATLIN-PLANT-RIM (A-559 read in full: plant notes K1/K2/K4/K8 and the humid-membrane ladder; the other four read by transition name only, being F3's sheets), and A-581 resolves to TR-CATLIN-SAUNA-RIM; no PLANT key prints the generic band. Other reviewers' reports, confirmed once: label overprints on A-585/A-586/A-588/A-589 (caption/FTG line under the K2/K5 bubbles, 4\" CI box over leaders) CONFIRMED, A-561 not in my list; A-502 draws no truss CONFIRMED (the cut at y=16' shows only the subfloor strip, the ceiling strip and the '1'-0 5/8\" truss' dimension across empty paper; F3-104); A-513/A-513.1/A-513.2 draw a 6'-10 7/8\" door with threshold dimensions but print the window key notes and omit the 'R.O. HEIGHTS IN THIS ASSEMBLY' line CONFIRMED (O5-103); A-301 levels rounded to the inch CONFIRMED (printed -1'-1\" basement plate vs -12.625 in = -1'-0 5/8\"; -9'-1\" floor vs -9'-1 7/16\"; second plate 19'-0\" vs 19'-0 1/8\"; while the rung dimensions beside them are exact: 10'-0 3/4\", 8'-0 7/8\"; F3-106). Product truth: this area quotes catalog and note values rather than owning products; manufacturer sections (Metal Sales Image II, Drutex/Andersen frames, Simpson hardware) were not re-sourced here (their areas own them). NOT examined: PDF vector-level geometry (no per-line extraction; dimension arrow extents were read from 100-300 dpi renders, +-3 px); the 24x36 permit_set.pdf (only the reduced ledger permit_set_full.pdf snapshot was read; the clipped titles/index may fit on 24x36); haus render/print were not run so no re-render after any proposed fix; A-505/A-506 bench and heater dimensions vs the sauna notes beyond arithmetic; A-511 gutter projection '4 1/2\"' (measured 4.2 +- 0.2 in off the render, inconclusive); A-512/A-513 window frame/shim values vs the Drutex/Andersen catalogs (O4); A-504 '1'-6 3/4\" plate to ridge' source (D2-110, low confidence); fascia/eave layer thicknesses on A-591..A-593 (E1/F4).",
+ "verified_clean": [
+  "A-201..A-204: elevation lettering 8.2 pt; one scale 3/32\"; no rung overprint; orientation (A-203 east: court at left, garage right; A-204 west: garage left) correct.",
+  "A-201..A-204 / A-301 datum rungs match the model to 1/16\": 11'-1 7/8\" (ridge 362.027 - plate 228.125), 10'-0\", 10'-0 3/4\" (108.125 - -12.625), 8'-0 7/8\" (-12.625 - -109.4375).",
+  "A-301 NOTES arithmetic: 3/4\" + 1 1/2\" + 102 7/8\" + 3\" = 108 1/8\" = main plate_top 108.125 in.",
+  "A-301.1 lane dimension 33'-7 5/8\" = CZ-B-DRYFIRE 403.56 in (10.25 m).",
+  "A-501: 8'-0\" wall (pour), 9'-1 1/2\" floor to floor (109.44 in), 8\" x 1'-8\" footing; garage footing FT-GF-* 20.0 x 8.0 in bearing -7'-0\" matches A-590.",
+  "A-503: 10'-0\" storeys, 9'-1 1/2\" basement, 6'-2\" attic-floor-to-top figure consistent with the 3/16\" scale bar.",
+  "A-505: bench heights 1'-0\"+1'-0\"+1'-6\"+3'-6 1/8\" = 7'-0 1/8\" headroom; bench widths 2'-4\"/1'-8\"/1'-2\" agree with drawn extents.",
+  "A-508/A-509: risers 2'-9\"/5 = 6.6\" (6 5/8\"), 2'-11 1/2\"/5 = 7.1\" (7 1/8\") equal ST-G-SERVICE's five 7.10 in risers (CLAUDE.md).",
+  "A-535/A-557: court footing 4\" + 6\" + 10\" = 1'-8\", 10\" thick = FT-B-S2/S3 20x10 (CLAUDE.md).",
+  "A-559 and rim sheets: 'FLOOR BAND 1'-0 5/8\": 11 7/8\" JOIST + 3/4\" SUBFLOOR' correct.",
+  "A-513/A-513.x/A-515: door R.O. 6'-10 7/8\" = D-S-BALCONY/D-M-PORCH/D-B-SUNKEN height 82.875 in; A-514 range '6'-9 1/2\" - 7'-0\"' covers D-G-SERVICE 81.5 in.",
+  "A-585: seat 'pour top -13 7/16\"', slab '3-1/2\" at 4,000 psi on 2\" XPS' agree with CLAUDE.md and mixes.py.",
+  "A-591/A-592/A-593: rake/eave notes agree with CLAUDE.md (TJI 230 at 24\", 19/32\" CDX house / Structural I garage, 4:12 + 16\" tails on the garage, 'Bearing 2.04\"').",
+  "A-559/A-562/A-575/A-580/A-584: all PLANT-keyed rim conditions resolve to TR-CATLIN-PLANT-RIM, none to TR-CATLIN-RIM-BAND.",
+  "A-512.1/A-513.1: '3 5/8\" frame' = Drutex 3.66 in to 1/8\"; '6\" mount plane to sheathing' agrees with the outie rule (CLAUDE.md)."
+ ],
+ "findings": [
+  {
+   "id": "D2-101",
+   "area": "D2",
+   "title": "A-514 general notes contradict the model and A-590/A-593: stem footing '12\"x6\"', 'OSB deck', slab '3,500 psi min'",
+   "elements": [
+    "TR-CATLIN-GARAGE-OPENING (A-514)",
+    "FT-GF-S1/E/N/W (FOOTING_STONE_20)",
+    "SL-G-FLOOR (GARAGE_SLAB_ON_GRADE)",
+    "RF-GARAGE deck"
+   ],
+   "files": [
+    "houses/catlin/notes/garage_wall_detail_side.md:18",
+    "houses/catlin/notes/garage_wall_detail_side.md:20",
+    "houses/catlin/notes/garage_wall_detail_side.md:24",
+    "houses/catlin/plan/assemblies/site_hardscape.py:208",
+    "houses/catlin/plan/assemblies/mixes.py:75"
+   ],
+   "kind": "drawing",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-514",
+     "A-590",
+     "A-593"
+    ],
+    "pages": [
+     65,
+     141,
+     144
+    ]
+   },
+   "confidence": 0.75,
+   "evidence": {
+    "measured": "A-514 (p65) prints 'Stem footing: 12\"x6\" over compacted stone', 'Slab: 3-1/2\" min, 3,500 psi min' and 'Roof: gable trusses ... OSB deck'. Model (model.json solids): FT-GF-S1/E footing assembly FOOTING_STONE_20, outline 20.0 in wide, z -84.0..-76.0 = 8.0 in thick (consolidated crushed stone, bearing -7'-0\"); A-590 (p141) prints 'FTG 1'-8\" x 8\" ... BRG EL. -7'-0\"'. SL-G-FLOOR is 3.5 in on EXPOSED_MIX = 5,000 psi F3/W1/C2 (mixes.py:75-80). Garage roof deck is 19/32\" Structural I plywood (A-593 note 'Deck: 19/32\" Structural 1 plywood (40/20)'; plans/TODO.md:303). So one sheet says 12x6 and another 20x8, one says OSB and another Structural I plywood, and the slab note quotes the code floor, not the pour spec.",
+    "expected": "A-514 general notes state what A-590/A-593/S-100 state: 20\"x8\" crushed-stone strip footing (R403.5), slab 3-1/2\" at the EXPOSED_MIX 5,000 psi, 19/32\" Structural I plywood deck.",
+    "method": "python: json.load(baseline/model.json); S={s['tag']:s for s in solids}; FT-GF-S1 outline bbox 27x20 in (corner) / FT-GF-E 20x288, z0/z1 -84/-76 in; SL-G-FLOOR z -37.5..-34.0. pdftotext -f 65 -l 65 permit_set_full.pdf vs -f 141 and -f 144. grep OSB in full text: only A-514."
+   },
+   "source": "houses/catlin/notes/garage_wall_detail_side.md lines 18/20/24 (stale prose, not driven from the assemblies); mixes.py EXPOSED_MIX; A-590 and A-593 prints",
+   "proposed_fix": "Edit the three bullets, or better derive the footing, slab and deck bullets from the resolved assemblies so they cannot drift.",
+   "size_guess": "small",
+   "seam_with": [
+    "F5",
+    "O3"
+   ],
+   "dedupe_key": "A-514:stale-general-notes"
+  },
+  {
+   "id": "D2-102",
+   "area": "D2",
+   "title": "K7 on A-515, A-588 and A-589 says the veneer cavity is '4\" clear air' / '2\" EPS, 4\" air'; the same sheets' ladders (and the 2026-11-04 measurement) say 1 15/16\" of air and no EPS",
+   "elements": [
+    "TR-CATLIN-GARDEN-FRAMED-OPENING (A-515)",
+    "TR-CATLIN-FOUNDATION EXT_2X6_BOARD_BATTEN/GARDEN_CURB_6 (A-588, A-589)",
+    "W-B-BRICK (BASEMENT_BRICK_VENEER)"
+   ],
+   "files": [
+    "houses/catlin/notes/court_opening_detail.md:29",
+    "houses/catlin/notes/basement_to_framed_wall_detail.md:34",
+    "houses/catlin/notes/basement_to_framed_wall_detail.md:74",
+    "houses/catlin/plan/assemblies/envelope_masonry.py:57",
+    "houses/catlin/notes/sunken_garden_veneer_beam.md:905"
+   ],
+   "kind": "drawing",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-515",
+     "A-588",
+     "A-589"
+    ],
+    "pages": [
+     66,
+     139,
+     140
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "A-515 K7 (p66): 'Veneer cavity: 4\" clear air.' A-588/A-589 K7 (p139-140): 'Veneer: 2\" EPS, 4\" air, weeps at the beam; two-piece anchors through 6\".' Their own ladders print 'brick 3 5/8\", xps-b 2\", air-gap 1 15/16\", xps-a 2\"'. envelope_masonry.py:57 BASEMENT_BRICK_VENEER air-gap = 1.94 in 'MEASURED, NOT CHOSEN (2026-11-04)'. sunken_garden_veneer_beam.md s6k table (line 905-925): backup foam 4\" XPS + 2\" EPS (old) -> 4\" XPS, face -4.06; airspace 6.000-4.060 = 1.940 in; brick to studs 6.500 in against the note's 2024 W2.8 row of 6.625 in (0.125 in margin). A mason who builds the printed '4\" air' puts the wythe 2.06 in further out (brick to stud ~8.6 in), outside that W2.8 row and off the beam the wythe bears on.",
+    "expected": "K7 reads '1.94\" drained cavity; brick back face 6.00\" off the sheathing/curb face; no EPS', matching the ladder and the veneer-cavity check.",
+    "method": "pdftotext -f 66/139/140 permit_set_full.pdf | grep -n 'K7'; envelope_masonry.py:57; sunken_garden_veneer_beam.md:905-925 (house note, cites IRC 2024 Table R703.8.4(1) W2.8 row; I did not re-read the code table)."
+   },
+   "source": "houses/catlin/notes/sunken_garden_veneer_beam.md s6k (table 2026-11-04) and plan/assemblies/envelope_masonry.py:57",
+   "proposed_fix": "Rewrite K7 in both notes (and the line 74 prose) to 1.94\" / no EPS; scope the A-588/589 line with the existing {*GARDEN_CURB*} glob.",
+   "size_guess": "small",
+   "seam_with": [
+    "F5",
+    "E2",
+    "O3"
+   ],
+   "dedupe_key": "veneer-K7:4in-air-stale"
+  },
+  {
+   "id": "D2-103",
+   "area": "D2",
+   "title": "A-501 'Foundation detail' is cut at y=18'-0\" exactly on the axis of W-B-CW, so a 2x4 plumbing partition is drawn as a 2'-4\" x 8'-0\" solid wood-hatched block over the basement face of the wall being detailed",
+   "elements": [
+    "SL-D-FNDN (CVD901AAAA)",
+    "W-B-CW (INT_2X4_PLUMBING, x 0..81 in at y=216 in)",
+    "W-B-W1"
+   ],
+   "files": [
+    "houses/catlin/plan/views.py:57",
+    "houses/catlin/plan/views.py:58"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-501"
+    ],
+    "pages": [
+     48
+    ]
+   },
+   "confidence": 0.75,
+   "evidence": {
+    "measured": "Slice SL-D-FNDN cut_origin = pt(ft(0), ft(18)), direction x. Basement walls with both axis ends at y=216 in: W-B-CW 0..81 in (INT_2X4_PLUMBING, z -109.4..-12.6), W-B-CE, W-B-CW2, W-B-CW3. A-501 (p48) shows an 8'-0\"-tall wood-hatched block, ~2'-4\" wide inside the crop (x 0.6..3.0 ft), labelled 'stud 3 1/2\"', with the '9'-1 1/2\" fl. to fl.' dimension running through it. The cut is lengthwise through the partition, so it prints as a solid, not as the foundation wall, footing and slab edge the slice comment promises.",
+    "expected": "Detail cut on a clean line (e.g. y=17'-0\"), or the partition excluded from the slice, so the wall/footing/slab edge reads.",
+    "method": "python: for w in model.json walls (storey=basement) with |y0-216|<8 and |y1-216|<8; pdftoppm -f 48 -l 48 -r 100. views.py:57-63."
+   },
+   "source": "houses/catlin/plan/views.py:57 (SL-D-FNDN)",
+   "proposed_fix": "Move cut_origin y off 216 in (nothing in the basement has an axis between 150 and 210 in at x 0..60), re-check the crop.",
+   "size_guess": "small",
+   "seam_with": [
+    "F5"
+   ],
+   "dedupe_key": "A-501:cut-on-partition-axis"
+  },
+  {
+   "id": "D2-104",
+   "area": "D2",
+   "title": "East and west elevations call the roof 'CDX-PLYWOOD'; the visible roof skin is Image II standing seam (standing-seam-linen-white)",
+   "elements": [
+    "A-203",
+    "A-204",
+    "RF-HOUSE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/elevation_project.py:418",
+    "packages/engine/src/typehaus/emit/draw/elevation_project.py:425",
+    "packages/engine/src/typehaus/emit/draw/elevation_annotate.py:401"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-203",
+     "A-204"
+    ],
+    "pages": [
+     36,
+     37
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "pdftotext p36/p37 bbox: leader word 'CDX-PLYWOOD' at the roof band (x 821..868, y 233). model.json catalog ROOF layers: spf 11.875, cdx-plywood 0.594, roof-adhered-butyl-ht 0.03, standing-seam-linen-white 1.0 (outermost). elevation_project.py:418-427 sets candidate.material_ref from whichever PART has the smallest vertex depth toward the eye; the deck oversails the roofing setbacks (layer_edge_setbacks), so the CDX part wins and _material_callouts (elevation_annotate.py:401) prints its name for the whole roof facade. A-201/A-202 do not show the roof plane, so only the two side elevations misprint.",
+    "expected": "ROOF callout reads the outermost layer by layer order (STANDING-SEAM-LINEN-WHITE, or 'IMAGE II 24 GA PVDF'), as it does for the walls.",
+    "method": "pdftotext -f 36 -l 37 -bbox permit_set_full.pdf | grep CDX; python: next(a for a in model.json catalog.assemblies if a['tag']=='ROOF')['layers']."
+   },
+   "source": "model.json catalog ROOF assembly; RF-HOUSE roof panel params (params/roof_panel.py)",
+   "proposed_fix": "Choose the callout material from the outermost layer (by layer index or LayerFunction.ROOFING) when the candidate kind is roof, not by nearest vertex.",
+   "size_guess": "small",
+   "seam_with": [
+    "E1"
+   ],
+   "dedupe_key": "elevation:roof-callout-cdx"
+  },
+  {
+   "id": "D2-105",
+   "area": "D2",
+   "title": "A-504 'Ridge beam connection' (and derived A-531) never names the ridge beam, its hangers or the roof stack; the only ladder is the partition under it",
+   "elements": [
+    "SL-D-RIDGE (CVD904AAAA)",
+    "RB-HOUSE",
+    "TR-CATLIN-RIDGE-BEAM (A-531)"
+   ],
+   "files": [
+    "houses/catlin/plan/views.py:98",
+    "packages/engine/src/typehaus/emit/draw/section_labels.py:48"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-504",
+     "A-531"
+    ],
+    "pages": [
+     51,
+     82
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "A-504 (p51): labels are only 'gwb-mr 1/2\", stud 5 1/2\", gwb 1/2\"' (the W-A-C2M partition) and one dimension '1'-6 3/4\" plate to ridge'. No '2-1.75x16 LVL', no LSSR/LSTA24/H2.5A, no roof ladder, no rafter size, although the slice is titled 'Ridge beam connection' and the model resolves all of them (RB-HOUSE, 38 LSSR hangers, 19 LSTA24, 10 H2.5A per houses/catlin/CLAUDE.md). A-531 (p82) labels roofing/membrane/sheathing/rafter fill/rafter 11 7/8\" and the same 3-line wall ladder; again no beam label. Round 1 D2-008 asked for dimensions; this is the label half of the same gap.",
+    "expected": "A ridge-beam sheet states the beam (size/ply/depth), rafter bearing and hanger/strap callouts, and a roof ladder.",
+    "method": "pdftotext -f 51 -l 51 and -f 82 -l 82 permit_set_full.pdf (no 'LVL', 'hanger', 'LSSR' word)."
+   },
+   "source": "houses/catlin/CLAUDE.md 'Structural ridge' section; model.json roofs[0].members connection 'ridge:adjustable-slope-hanger'",
+   "proposed_fix": "Add a hosted leader for the beam and hanger on the slice (or a TR-CATLIN-RIDGE-BEAM keyed note anchored to rb:*), plus the roof ladder on A-504.",
+   "size_guess": "small",
+   "seam_with": [
+    "F4"
+   ],
+   "dedupe_key": "A-504:ridge-beam-unlabelled"
+  },
+  {
+   "id": "D2-106",
+   "area": "D2",
+   "title": "Keyed notes print in the notes block with no bubble on the drawing for about half the keys on derived opening, foundation and rim sheets, so K2-K5 on A-512 or K1/K4/K6/K7/K8 on A-514 cannot be located",
+   "elements": [
+    "TR-CATLIN-FRAMED-OPENING (A-512..A-513.2)",
+    "TR-CATLIN-GARAGE-OPENING (A-514)",
+    "TR-CATLIN-GARDEN-FRAMED-OPENING (A-515)",
+    "TR-CATLIN-FOUNDATION (A-585..A-589)",
+    "TR-CATLIN-PLANT-RIM (A-559)"
+   ],
+   "files": [
+    "houses/catlin/notes/outie_window_truss_detail.md:39",
+    "houses/catlin/notes/garage_wall_detail_side.md:30",
+    "houses/catlin/notes/court_opening_detail.md:23",
+    "packages/engine/src/typehaus/emit/draw/detail_annotations.py"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-512",
+     "A-513",
+     "A-514",
+     "A-515",
+     "A-559",
+     "A-585",
+     "A-588"
+    ],
+    "pages": [
+     59,
+     62,
+     65,
+     66,
+     110,
+     136,
+     139
+    ]
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "Printed keys vs bubbles on the drawing: A-512 K1-K7 / bubbles K1,K6,K7; A-513 same; A-514 K1-K8 / K2,K3,K5; A-515 K1-K7 / K2 only; A-559 K1,K2,K4,K8 / K2,K4; A-585 K1-K6 / K1,K2,K5; A-588/589 K1-K5,K7 / K1,K2,K5. The missing ones are notes authored without an '@ host#layer' anchor (e.g. outie_window_truss_detail.md K2-K5, garage_wall_detail_side.md K4,K6,K7,K8, court_opening_detail.md K1,K3-K7) or whose anchor layer is not in the cut (A-514 K1 'coil-gap:out'; A-515 K7 'eps-ci:out'). They are still printed, so a reader sees a key with nowhere to find it. K7 on A-514 (header) and K2-K5 on A-512 (head/sill courses, blocks, pan) are location-specific.",
+    "expected": "Every printed key has a bubble at the thing it describes, or is printed as a general note without a K number.",
+    "method": "pdftoppm the pages; count 'K<n>' circles vs lines in the KEYED NOTES block; grep '^- \\[K' houses/catlin/notes/{outie_window_truss_detail,garage_wall_detail_side,court_opening_detail,plant_room}.md."
+   },
+   "source": "notes files above (anchors authored per note)",
+   "proposed_fix": "Anchor the location-specific keys (head course, pan, header, stem band) with @ host#layer, and print unanchored ones as plain bullets under General.",
+   "size_guess": "small",
+   "seam_with": [
+    "O4",
+    "O3",
+    "O5",
+    "F5"
+   ],
+   "dedupe_key": "detail:keys-without-bubbles"
+  },
+  {
+   "id": "D2-107",
+   "area": "D2",
+   "title": "The ridge-beam keyed note 'K2 Foam first lift 1-1/2\" min; lap ridge beam and hanger flanges in one pass' prints on the three eave sheets that have no ridge (A-594, A-596, A-597)",
+   "elements": [
+    "TR-CATLIN-EAVE INT_2X4_PARTITION_HALF/ROOF (A-594)",
+    "INT_2X6_PLUMBING_HALF_FURRED/ROOF (A-596)",
+    "INT_2X6_PLUMBING_HALF/ROOF (A-597)"
+   ],
+   "files": [
+    "houses/catlin/notes/roof_wall_eave_detail.md:26",
+    "packages/engine/src/typehaus/emit/draw/sheet_notes.py:84"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-594",
+     "A-596",
+     "A-597"
+    ],
+    "pages": [
+     145,
+     147,
+     148
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "C7's D2-002 scoping left 'K2' in the partition scope for A-594..A-597. A-595 is the ridge (partition under the peak) so K2 is right there; A-594 and A-596 (partition meeting a sloped rafter) and A-597 (cut along the ridge direction, roof drawn flat) show no ridge beam or hanger flange, and K2 has no bubble on any of the four.",
+    "expected": "K2 only where the cut shows the ridge beam/hanger.",
+    "method": "pdftotext -f 145 -l 148 permit_set_full.pdf | grep -n 'K2'; roof_wall_eave_detail.md:26-39 scopes."
+   },
+   "source": "houses/catlin/notes/roof_wall_eave_detail.md",
+   "proposed_fix": "Scope K2 with {*|INT_2X6_BRG_HALF|*} or drop it from the partition line.",
+   "size_guess": "small",
+   "seam_with": [
+    "F4"
+   ],
+   "dedupe_key": "A-594-597:K2-ridge-note"
+  },
+  {
+   "id": "D2-108",
+   "area": "D2",
+   "title": "Captions, stack dimensions and R.O. dimension text overprint ladder rows or each other on A-513, A-514, A-515, A-535, A-537, A-538, A-551, A-557 and A-509 (sheets not yet reported)",
+   "elements": [
+    "A-513",
+    "A-514",
+    "A-515",
+    "A-509",
+    "A-535",
+    "A-537",
+    "A-538",
+    "A-551",
+    "A-557"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/detail_components/chrome.py",
+    "packages/engine/src/typehaus/emit/draw/detail_annotations.py",
+    "packages/engine/src/typehaus/emit/draw/details.py"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-509",
+     "A-513",
+     "A-514",
+     "A-515",
+     "A-535",
+     "A-537",
+     "A-538",
+     "A-551",
+     "A-557"
+    ],
+    "pages": [
+     56,
+     62,
+     65,
+     66,
+     86,
+     88,
+     89,
+     102,
+     108
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Read at 100-300 dpi: (a) caption 'TR-CATLIN-STACK-SHELF . stack-width-shelf' prints over the last ladder row ('gwb 1/2\"' on A-537/A-538, 'humid-membrane 0.04\"' on A-551); (b) the footing dims '4\" 6\" 10\"' print over the caption 'TR-CATLIN-STACK-SHELF' (A-535) and 'TR-CATLIN-RIM-BAND . rim-band-air-seal' (A-557); (c) '7'-0\" R.O.' (A-514) and '6'-10 7/8\" R.O.' (A-513, A-515) are crossed by the continuity/ladder leaders and half unreadable; (d) A-515/A-513 captions sit on the 'concrete 6\"'/'xps-a' ladder rows; (e) A-509 dims '7 1/8\" riser' and '2'-11 1/2\" (5 EQ.)' overprint each other, and the Image II roof note still prints over the 'sheathing/spray-fo' ladder rows (round-1 D2-015); (f) the dimension labels '4\" CI' and '5 1/2\" stud' on A-532..A-539/A-551..A-558 sit on a white backing box that hides the wall hatch and are crossed by the continuity-leader fan. Overprints already reported by E2/F5 (A-585/586/588/589, A-561) are confirmed, not repeated.",
+    "expected": "No text over text; captions below the lowest ladder row; dimension text placed clear of leaders.",
+    "method": "pdftoppm -r 300 -f 88 -l 88 (A-537 crop) and pages 56, 62, 65, 66, 86, 89, 102, 108 at 100 dpi."
+   },
+   "source": "n/a (layout)",
+   "proposed_fix": "Place the caption below max(ladder rows); give leaders a halo or route them around dimension text; move R.O. text off the continuity-leader fan.",
+   "size_guess": "small",
+   "seam_with": [
+    "E2",
+    "F5",
+    "O3"
+   ],
+   "dedupe_key": "detail:text-overprints-r2"
+  },
+  {
+   "id": "D2-109",
+   "area": "D2",
+   "title": "Section detail-callout bubbles are smaller than their own text: 'A-585', 'A-592', 'A-587' spill out of the circle and overprint the wall they point at (A-301, A-301.1, A-301.2)",
+   "elements": [
+    "A-301",
+    "A-301.1",
+    "A-301.2"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/section_callouts.py",
+    "packages/engine/src/typehaus/emit/draw/section.py:216"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-301",
+     "A-301.1",
+     "A-301.2"
+    ],
+    "pages": [
+     38,
+     39,
+     40
+    ]
+   },
+   "confidence": 0.75,
+   "evidence": {
+    "measured": "pdftoppm -r 220 crops of p38/p40: the bubble circle is ~62 px across, the sheet number text 'A-585' is ~88 px wide and centred on the wall top, so it reads as a label laid over the wall line and (A-301.1) over 'EXT_2X6_BOARD_BATTEN' and 'SL-S-DRYFIRE'. Round-1 D2-003 made the bubbles point at the right wall; they now carry the sheet number (C7 note: bubble number became the sheet) but were not resized.",
+    "expected": "Bubble radius from the text width, or a two-line 'A-585' stacked in the circle.",
+    "method": "pdftotext -f 38 -l 40 -bbox | grep 'A-5'; zoom the three bubbles."
+   },
+   "source": "n/a (layout)",
+   "proposed_fix": "Size the circle off the text, or put the sheet in the leader tail.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "A-301:bubble-text-overflow"
+  },
+  {
+   "id": "D2-110",
+   "area": "D2",
+   "title": "A-504 prints '1'-6 3/4\" plate to ridge'; the model's W-A-C2M top to RF-HOUSE ridge is 1'-4 7/8\"",
+   "elements": [
+    "SL-D-RIDGE",
+    "W-A-C2M",
+    "RF-HOUSE"
+   ],
+   "files": [
+    "houses/catlin/plan/views.py:102",
+    "packages/engine/src/typehaus/emit/draw/detail_anchors.py:96"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-504"
+    ],
+    "pages": [
+     51
+    ]
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "model.json: W-A-C2M z1 = 345.152 in (the beam soffit); RF-HOUSE ridge_z_m = 362.027 in (the 'RIDGE EL. 30'-2\"' datum on A-201..A-301). Difference 16.875 in = 1'-4 7/8\". Printed 18.75 in = 1'-6 3/4\", 1.875 in more. The dimension resolves 'RF-HOUSE:top' to the roof's own cut geometry at the station (detail_anchors.cut_anchor), which may include the ridge cap/trim rather than ridge_z_m. I could not confirm the source of the 1.875 in without a render (not allowed), hence low confidence.",
+    "expected": "The ridge dimension agrees with the RIDGE datum printed on A-301, or its anchor is named (top of ridge cap).",
+    "method": "python: z1_m of W-A-C2M and roofs[0].ridge_z_m from model.json (in); pdf p51 dimension text."
+   },
+   "source": "n/a",
+   "proposed_fix": "Name the upper anchor in the label ('soffit to ridge cap') or anchor to the roof deck-top.",
+   "size_guess": "small",
+   "seam_with": [
+    "F4"
+   ],
+   "dedupe_key": "A-504:plate-to-ridge-dim"
+  },
+  {
+   "id": "D2-111",
+   "area": "D2",
+   "title": "A-502 dimension '1'-4\" fdn wall' measures concrete + waterproofing + 4\" XPS (16 in); the ladder on the same sheet says concrete 12\"",
+   "elements": [
+    "SL-D-DECKBRG",
+    "W-B-E1"
+   ],
+   "files": [
+    "houses/catlin/plan/views.py:73"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-502"
+    ],
+    "pages": [
+     49
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "views.py:73 chains W-B-E1:left to :right at -20 in; the arrow on A-502 spans 199 px at 1 1/2\"=1'-0\" (1'-4\"), covering the dark waterproofing and the green XPS, while the ladder prints 'concrete 12\"' and a separate '4\" XPS (2 layers)' dimension sits on top of it. A trade reading '1'-4\" fdn wall' next to '8\" pour' elsewhere (A-501) will take it for a 16 in pour.",
+    "expected": "'1'-4\" wall + CI' or the 12\" pour only.",
+    "method": "pdftoppm -f 49 -l 49; views.py:72-74."
+   },
+   "source": "n/a",
+   "proposed_fix": "Retitle the chain '{} wall + CI' or split it.",
+   "size_guess": "small",
+   "seam_with": [
+    "F3"
+   ],
+   "dedupe_key": "A-502:fdn-wall-dim-name"
+  },
+  {
+   "id": "D2-112",
+   "area": "D2",
+   "title": "S-501.1 winder dimensions are printed to 0.001 in ('12.594\"', '12.469\"', '6.266\"') where every other sheet uses 1/8\" or 1/16\"; the rotated W1/W2 dimension text also runs through the plan outline",
+   "elements": [
+    "ST-S2A"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/winder_detail.py"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-501.1"
+    ],
+    "pages": [
+     21
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "S-501.1 (p21): 'W1-W3: 12.594\", 12.469\", 12.595\"' and 'MINIMUM CLEAR DEPTH: 6.266\", 6.270\", 6.518\"'. A tape reads 1/16\"; the R311.7.5.2.1 comparison is 12\" / 6\" so 12 5/8\" / 12 7/16\" / 12 5/8\" and 6 1/4\" / 6 1/4\" / 6 1/2\" convey the pass without false precision. Sheet seam with S1.",
+    "expected": "Dimensions to 1/16\" (or labelled 'calc').",
+    "method": "pdftotext -f 21 -l 21 permit_set_full.pdf."
+   },
+   "source": "n/a",
+   "proposed_fix": "Round in winder_detail.py with the shared inches_fraction (plan_labels.py:96).",
+   "size_guess": "small",
+   "seam_with": [
+    "S1"
+   ],
+   "dedupe_key": "S-501.1:decimal-dims"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "D2-001",
+   "status": "closed",
+   "evidence": "No paper-space pile: pdftotext of the full set has 0 hits for 'derived transition detail' and 0 for 'MATERIALS'; A-512, A-513, A-515, A-561, A-585, A-588 carry exactly one 'Catlin House' (the title block) and no 'SHEET A-nnn' line. Compose drops space='paper' nodes (sheet_writer.py:265).",
+   "method": "pdftotext -layout permit_set_full.pdf | grep -c 'derived transition detail'; per-page count of 'Catlin House'."
+  },
+  {
+   "id": "D2-002",
+   "status": "closed",
+   "evidence": "Scoped notes work: A-591 (rake) prints rake keys K1-K6 only; A-592 prints the eave K1-K9 with 'zero-overhang eave', A-594..A-597 no longer print the gutter K-list (K2 only, see D2-107); A-590 (ICF) prints K5 only; A-585..A-587 print the basement set; A-559 the plant-room set. Residual: A-512 and A-513 both still print the combined 'E/W PBR 7-1/4\"; N/S BBD75 6-3/4\"' sentence and the 1,131 TLOK08 total, which is a whole-house figure on a one-opening sheet.",
+   "method": "pdftotext of pages 59-66, 136-148; compare to houses/catlin/notes/roof_wall_eave_detail.md:26-39."
+  },
+  {
+   "id": "D2-003",
+   "status": "closed",
+   "evidence": "A-301 now prints two bubbles: A-592 at the west eave top (z=20'-2\") and A-585 at the east basement wall top; A-301.1 prints A-587, A-301.2 A-585; none floats in a room. Garage/A-514/A-591/A-515 bubbles gone. Residual: bubble text overflows its circle (D2-109).",
+   "method": "pdftotext -f 38 -l 40 -bbox | grep 'A-5'; pdftoppm -r 220 crops of p38/p40."
+  },
+  {
+   "id": "D2-004",
+   "status": "closed",
+   "evidence": "SUITE 'CLG 8'-10\"' and SUITEBATH 'CLG 8'-10\"' no longer overlap (x 263-343 vs 375-453 at 1/8\" scale); HALL and STAIR carry no CLG line. Residual: a partition stud hairline crosses BATH2's 'CLG 8'-10\"' at x~290 (cosmetic).",
+   "method": "p38 at 220 dpi, crop x 380-1680, y 1230-1710."
+  },
+  {
+   "id": "D2-005",
+   "status": "closed",
+   "evidence": "Rejection holds. Site.grade = -34.0 in (-2'-10\") is grade at the foundation (houses/catlin/CLAUDE.md 'Grade is 2'-10\" below the main floor'); the 16 grade spots are -36 (x4), -37 (x4), -40 (x8) in, the R401.3 fall ring 2-9 ft out. A-201..A-204 and A-301 draw the ground line falling away from the wall at -2'-10\".",
+   "method": "python: model.json site.grade_m/IN and Counter of site.spot_elevations (kind grade)."
+  },
+  {
+   "id": "D2-006",
+   "status": "closed",
+   "evidence": "All four elevations are now 3/32\" (A-201..A-204 title block 'SCALE 3/32\" = 1'-0\"'); no overprinted rung: pdftotext p36/p37 has no merged '6'-3\"2'-10\"'. Rung dimensions verified exact against the model: ridge 362.027 - second plate 228.125 = 133.90 = 11'-1 7/8\" (printed); 228.125-108.125 = 120.0 = 10'-0\"; 108.125-(-12.625) = 120.75 = 10'-0 3/4\"; -12.625-(-109.4375) = 96.8125 = 8'-0 13/16\" (printed 8'-0 7/8\").",
+   "method": "python: storeys[].elevation_m, walls[].plate_top_z_m max per storey, roofs[0].ridge_z_m (inches); pdftotext -bbox p34-37."
+  },
+  {
+   "id": "D2-007",
+   "status": "closed",
+   "evidence": "Elevation lettering is now 8.2 pt (bbox height of 'RIDGE', 'CDX-PLYWOOD', 'XPS', 'GRADE' on p36: 8.18 pt, 46-48 words), up from 4.7 pt; matches A-301's level captions.",
+   "method": "pdftotext -f 36 -l 36 -bbox permit_set_full.pdf; yMax-yMin per word."
+  },
+  {
+   "id": "D2-008",
+   "status": "partial",
+   "evidence": "Dimensions now exist on A-501 (8'-0\" wall, 9'-1 1/2\" fl. to fl., 8\" ftg, 1'-8\" ftg), A-502, A-503 (6'-2\"/10'-0\"/10'-0\"/9'-1 1/2\"), A-504 (1), A-505 (benches 1'-0\"/1'-0\"/1'-6\"/3'-6 1/8\" = 7'-0 1/8\" headroom, widths 2'-4\"/1'-8\"/1'-2\" all agree with the drawn pixels), A-506, A-507 (tub 1'-8 1/8\", valve 2'-6\", surround 5'-3 7/8\", with VALVE (BEYOND) and the integral-surround flange: the tub/valve gap in REPORT item 4 is closed), A-508 (4 x 1'-6\" treads, 6 5/8\" riser, 2'-9\" 5 EQ.), A-509 (7 1/8\" riser, 2'-11 1/2\" 5 EQ.), A-510. Still open: A-511 carries one dimension ('4 1/2\" gutter proj.'); A-504/A-531 do not label the subject (D2-105); the title is still the raw slice tag at wildly different sizes: SL-D-DECKBRG 42 pt, FNDN/SAUNA-READING/SHOWER ~21 pt, STAIRVOID/NORTH-ENTRY 10.5 pt, NORTH-BRIDGE 7 pt, WALLTYP 5.3 pt (pdftotext bbox heights).",
+   "method": "Read pages 48-58; pdftotext -f 48..57 -bbox | grep 'SL-D-' and yMax-yMin."
+  },
+  {
+   "id": "D2-009",
+   "status": "partial",
+   "evidence": "Fixed: A-590 (ICF) reads '2 1/2\" EPS' (was a summed '5\" XPS'); A-553/A-532 '4\" XPS (2 layers)' now sits on the XPS. Not fixed: on A-588, A-589 and A-591 the '4\" CI' and '5 1/2\" stud' strings still float in blank paper ~2-2.7 ft (150-200 px at 3/8\" and 3/4\") above the wall they measure, with their arrowheads detached from any material; on A-588/A-589 the wall top is clipped out of the crop but the strings are not clamped to it.",
+   "method": "Read p139, p140, p142; pdftoppm -r 100 and compare string y with wall top y."
+  },
+  {
+   "id": "D2-010",
+   "status": "closed",
+   "evidence": "Rejection holds. A-511 and A-592 still print 'strip-in ... 9\" PROVISIONAL (width: GCP)' and 'PROVISIONAL gutter hanger: bracket and sealed fastener pending'; houses/catlin/CLAUDE.md says the 9\" is provisional and plans/TODO.md:305-306 lists the hanger as open, so the print is honest. Still a hard-coded engine string (eave_water.py:16-19), which is cosmetic.",
+   "method": "pdftotext -f 58 -l 58 and -f 143 -l 143 permit_set_full.pdf | grep PROVISIONAL."
+  },
+  {
+   "id": "D2-011",
+   "status": "closed",
+   "evidence": "A-515 first bullet now reads 'D-B-SUNKEN: seat, support and membrane bonds per K4-K6.'; no 'UNKNOWN' remains in A-512..A-515 note blocks.",
+   "method": "pdftotext -f 66 -l 66; houses/catlin/notes/court_opening_detail.md:17."
+  },
+  {
+   "id": "D2-012",
+   "status": "closed",
+   "evidence": "0 hits for 'breezeway' in the whole PDF text; A-508's slice is SL-D-NORTH-ENTRY and its title block reads 'North entry: gable, bridge landing and east tiers' on two lines without clipping (A-509 and A-510 titles also fit). The gable roof is still drawn without rafter/purlin/gutter labels (A-508), a D2-008 residual.",
+   "method": "grep -ci breezeway full.txt; pages 55-57."
+  },
+  {
+   "id": "D2-013",
+   "status": "partial",
+   "evidence": "Title block now wraps to two lines (title_block._two_lines) so A-525/A-526-style twins differ; derived titles on my sheets fit except A-550 ('INT_2X6_PLUMBING_HALF_FURRED / INT_2X6_ST...'; also A-541, 543-545, 577-579, 582 on other sheets: 9 clipped title blocks in the set). The sheet index on G-001/G-001.1 still clips 76 titles with an ellipsis, so 13 groups of sheets read identically: A-556/557/558/560/561 'Rim band . EXT_2X6_BOARD_BA...', A-535/536/537 'Stack shelf . EXT_2X6_BOARD...', A-516/517/518, A-520..A-524, A-541..A-546+A-550, A-565..A-571 and so on. Internal keys (TR-.., GARDEN_CURB_6) are still the human title; no display name on Transition. (The set is a reduced ledger print; the index may fit on 24x36.)",
+   "method": "pdftotext -layout; regex over pages 1-2 for clipped titles grouped by identical text; per-page grep of '...' in title blocks."
+  },
+  {
+   "id": "D2-014",
+   "status": "partial",
+   "evidence": "A-301.1 now dimensions the lane: '33'-7 5/8\" usable (10.25 m)' (CZ-B-DRYFIRE 403.56 in = 33'-7 9/16\"; arrow 625 px at 3/16\" = 33.3 ft). Not fixed: A-301.1 and A-301.2 still print the whole-building datum ladder (ridge to basement, 10 levels) beside a basement-only strip / a 1 ft wall strip, and the sheet title text 'SL-S-DRYFIRE'/'SL-S-FIRE' is 5 pt over the bubble.",
+   "method": "Read p39, p40; arrow length vs scale bar."
+  },
+  {
+   "id": "D2-015",
+   "status": "partial",
+   "evidence": "Improved: A-505/A-506 now have a short ladder on each wall's own side (no crossing). Still open: A-507 has five ladder rows ('gwb 1/2\"', 'stud 5 1/2\"', 'stud 3 1/2\"', 'gwb 1/2\"', 'gwb-ar 1/2\"') whose arrows end in white space below the floor line (x 780-972, y 912-981) because the wall they name is outside the crop; A-510's six lower ladder rows run 300 px across the 7'-6 1/2\" void to the far wall; A-509's Image II roof note still prints over the 'sheathing / spray-fo' rows and its two riser dimensions overprint (D2-108).",
+   "method": "Read p54, p56, p57 at 100 dpi."
+  }
+ ]
+}

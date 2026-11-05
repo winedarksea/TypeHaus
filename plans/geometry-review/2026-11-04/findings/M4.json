@@ -1,0 +1,813 @@
+{
+ "area": "M4",
+ "model": "houses/catlin @539d9a81, resolved model re-loaded 2026-11-05 (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/model.pkl); baseline snapshot permit_set_full.pdf / takeoff.json / checks.json 539d9a81",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventoried 42 ducts (37 round: 23 ERV 4 in radials, 7 ERV 6 in / 8 in trunks, risers and feeds, 2 OA/EA 8 in, 4 System 1 6 in side-stubs + 1 4 in stair branch; 5 rectangular: 18x8, 10x18, 10x8, 10x6 and the 10x6 rise), 35 duct-fed registers plus 3 transfer grilles on 16 register types, 20 air products, the four M-10x sheets and A-402. Per run family, checklist items specified (Y) / not (N):\n| family (n) | material+gauge | insulation (R, jacket) | sealing UL 181 | fitting at every vertex | ends on matching collar/boot | hangers IMC 603.10 / SMACNA | balancing / backdraft | framing penetration graded | labels/schedule | BOM fittings/boots/hangers/tape |\n| ERV 4 in radials (23) | N: library 26 ga, note 30 ga, none in BOM (M4-106) | none stated, bare (inside envelope) | note only, 181A-P wrong class (M4-111); not on set | N: elbow count only, gored R 1.5 D in catalog vs adjustable bought; 22.5 key for 30/26/18 deg (M4-107/108) | start on dampered plenum collar Y; end disc valve Y, floor boot Y (5 in estimated), but 33 of 35 ends implicit boot (M4-114) | N (M4-109) | plenum collar damper Y; OBD n/a; no backdraft | Y: open_web_panel, run_through_stud/plate pass | size+system only (M4-104); cfm mismatch (M4-112) | elbows only; 16 elbow-22.5-4in unpriced (M4-108) |\n| ERV 6/8 in trunks+risers (M1 owns; 7) | as above | bare | as above | N; 15 impossible legs (M4-101) | plenum/hood ports Y | N | no balancing | Y | N | elbow-90-6/8in priced; reducers none |\n| L2 extract trunk takeoffs (9 taps) | as above | bare | as above | N: no tee/take-off, damper stated in a comment only (M4-102) | N | N | N (butterfly per takeoff not modelled) | Y | N | none |\n| OA/EA 8 in (2) | N (26 ga in library) | Y: 2 x 1 in Armaflex AP, R-8.4, own vapour retarder, 12 in OD | mastic stated in note \u00a79 | N: 4 + 3 impossible legs | hood collar Y; wall seal kits Y | N | EA backdraft BD8 attached to nothing (M4-110) | Y duct_penetration_fit 4 pass | 12 in OD not printed (M1-002) | wall-seal-8in x2, insulation LF Y; BD8 N |\n| System 1 6 in side stubs (4) + 4 in stair (1) | N (round gauge none) | none; condensation basis none (M4-116) | N | n/a (straight) | N: no take-off on 18x8, no 6 in to 12x6 boot (M4-102/103); stair box Y | N | register OBD Y; no collar damper | Y (checks pass) | size only | none |\n| System 1 rectangular (5) | Y: gauge 30/28/26 per IMC 603.4 1/2 in column, printed in takeoff only; class assumed (M4-115) | none | note only | N: rect turns no radius/vane (M4-117) | tap/reducer unnamed (M4-102); plant boot Y | N | n/a | Y duct_soffit_occupancy pass | size only | gauge in takeoff only |\n| Registers: ERV valves (17) | Vents-US AM 100 VRF verified (face 5 1/16, spigot 3 7/8) | n/a | n/a | n/a | collar Y, 125 mm increaser unnamed (M4-120) | n/a | adjustable valve Y | neck_fit Y | not on set | included in valve row |\n| Registers: floor grilles/registers (7) | Reggio 412-AH face 12x3.5 verified | n/a | n/a | n/a | boot 5 in estimate (M4-118) | n/a | 531SA multi-shutter Y, 412 none | Y | not on set | 200 lb rating unsourced (M4-113) |\n| Registers: System 1 side/ceiling (8) | TRUaire A220VO 12X06 face/neck verified; ZD12X6TZ verified | n/a | n/a | n/a | transitions N (M4-103) except stair, plant | n/a | OBD / zone damper Y | Y | not on set | boots in BOM only for stair, plant |\nFindings M4-101..M4-120 (20 new). Prior: M1-002 partial, M1-003 partial, M1-005 closed, M1-008 open.\nWEB-CHECKED: IMC 2018 ch.6 (Minnesota, up.codes) Table 603.4, 603.3, 603.9, 603.10, 603.12, 603.18; Minn. R. 1309 / 1346 (revisor.mn.gov); SMACNA HVAC Duct Construction Standards 1995 (law.resource.org) Tables 4-1/4-2, S3.35; Honeywell ZD datasheet 33-00264; TRUaire A220VO; Vents-US AM 100 VRF; Reggio 412-AH; Snappy wall-stack boot sheet; Master Flow LSCD6 (listing only).\nNOT examined: Lowe's/Home Depot/Ferguson product pages returned 403 (elbow listing used via search snippet only); no manufacturer submittal for any stamped/adjustable elbow, Snappy P13-204, Hart & Cooley 531SA depth, EWC 4RSD, RenewAire FA8 plate was readable; duct leakage/test requirement and Minnesota energy-code duct sealing (Minn. R. 1322); fireblocking at the X-marked crossings; fire-rated-floor duct penetrations (IMC 607.6.1 amended exceptions: 26 ga, 4 in max) were not evaluated because no rated floor was identified; the ERV machine, plenums, manifolds, hoods and wall seals (M1); IFC/GLB emitters and the UI viewer; the 8 in trunk's 19 truss-web crossings beyond the engine's own open_web_panel verdict (the fabricator's chart is not in the repo, seam F).",
+ "verified_clean": [
+  "M-101..M-104 / A-402 duct labels: 8/5/24/5 labels match 8/5/24/5 resolved ducts per storey; size (RD vs WxD) and system strings match the model.",
+  "DUCT-T-GALV-RECT rows vs IMC 2018 Table 603.4 at 1/2 in w.g.: 10 -> 0.013 (30 ga), 12 -> 0.016 (28 ga), 18 -> 0.019 (26 ga), 20 -> 0.024 (24 ga) agree with the table; takeoff prints 26 ga for 18x8 and 10x18, 30 ga for 10x8 and 10x6.",
+  "REG-T-ERV-EXH-FLOOR face 12 x 3.5 in and neck 10 x 2.25 in match the Reggio 412-AH listings (outside 3.5 x 12, duct opening 10 x 2.25).",
+  "REG-T-HP-SIDE-1206 / STUDY-SIDE: TRUaire A220VO 12X06 12x6 neck and 13.75 x 7.75 face agree with RectorSeal/HVACQuick listings.",
+  "PROD-AIR-DISC-VALVE-100: Vents-US AM 100 VRF dimension table lists 3 7/8 in (98.4 mm) and 5 1/16 in (128.6 mm), matching spigot and face.",
+  "PROD-AIR-PLANT-DAMPER-12X6: Honeywell ZD submittal 33-00264 says 4 in thick, actuator on the dimension-2 (6 in) side, 5/32 in undersize, 1 in w.c. maximum; the model uses exactly that.",
+  "IMC 603.18 balancing: every supply terminal carries its own volume control (disc valve, OBD, multi-shutter, zone damper) and the 4 in ERV radials start on dampered plenum collars.",
+  "mep.duct_connectivity 84 pass, mep.terminal_neck_fit 45 pass, mep.duct_penetration_fit 4 pass (8 in bare duct through 9x9 RO, 0.25 in spare each side).",
+  "No duct overlaps the z-band of any I-joist (TJI 230) member: depth-based probe over FS-M-*, FS-S-EAST and FS-ATTIC finds no crossing; the only member crossings are the FS-S-WEST floor trusses (DU-M-ERV-EXH-TRUNK x19 at z 114.1 in, the 4 in radials at 111.6/114.1/116.5), graded by mep.open_web_panel.",
+  "DU-ERV-OA/-EA insulation: spec string 2 x 1 in elastomeric, R-8.4, vapour-sealed on 48.9 LF; wall seals and 9x9 ROs graded.",
+  "Branch airflow arithmetic: DU-S-HP-SUP 750 cfm = 3x80 (BED1-3) + 50 (STAIR) + 75 (STUDY2) + 175 (SUITE: 100+75) + 175 (SOUTH: 75+100) + 35 (REG-A-HP-EAST); ERV extract radial totals 210 on both the duct and register sets."
+ ],
+ "findings": [
+  {
+   "id": "M4-101",
+   "title": "Fifteen straights in eight round runs are shorter than the two take-offs of the tightest possible round elbow (R = 0.5 D): no stocked fitting pair can be installed there",
+   "elements": [
+    "DU-B-ERV-RET-TRUNK",
+    "DU-B-ERV-R-SAUNA-SUP",
+    "DU-B-ERV-R-SAUNA-EXH",
+    "DU-ERV-RISER-SUP",
+    "DU-ERV-RISER-EXH",
+    "DU-ERV-OA",
+    "DU-ERV-EA",
+    "DU-S-ERV-HP-FEED"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_erv_risers.py",
+    "houses/catlin/plan/mep_erv_l1.py",
+    "packages/engine/src/typehaus/checks/mep/fitting_pattern.py:109"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101",
+     "M-102",
+     "M-103",
+     "M-104"
+    ],
+    "pages": [
+     162,
+     163,
+     164,
+     165
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Re-count of 159 round straights / 122 elbows (turn >= 10 deg, clean_path, take-off R*tan(theta/2)): 37 short at R = 1.5 D (the check's 36 + GYM), 27 at 1.0 D, 18 at 0.75 D, 15 at 0.5 D (a 2-piece mitre, the smallest elbow that exists). Round 1 counted 50 / 39 / 29 at 1.5 / 1.0 / 0.75 D, so the legs have improved but the hard cases are unchanged. Impossible even at R = 0.5 D (leg in vs both take-offs): DU-ERV-RISER-EXH v4-5 1.6 in vs 6.0; DU-ERV-RISER-SUP v5-6 1.7 vs 6.0 and v6-7 5.7 vs 6.0; DU-ERV-EA v0-1 2.9 vs 4.0, v3-4 6.5 vs 8.0, v4-5 2.9 vs 8.0; DU-ERV-OA v3-4 3.9 vs 8.0; DU-B-ERV-R-SAUNA-SUP v0-1 1.0 vs 2.0, v2-3 3.5 vs 4.0, v6-7 1.0 vs 4.0; DU-B-ERV-R-SAUNA-EXH v6-7 2.0 vs 4.0; DU-B-ERV-RET-TRUNK v0-1 2.5 vs 3.0; DU-S-ERV-HP-FEED v1-2 3.4 vs 6.0; DU-ERV-RISER-EXH v7-8 2.5 vs 3.0. Three of the 15 are start legs beside a plenum collar (which may carry a stub); 12 are interior legs between two elbows.",
+    "expected": "Every straight >= the sum of the take-offs of the stocked elbow at each end; the absolute floor for any round elbow is centreline radius D/2, so two 90s need >= D between them (6 in on a 6 in duct, 8 in on an 8 in duct).",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/legs.py on /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/model.pkl (loaded with the round-1 README snippet): per duct, clean_path of (path, z_m), turns >= 10 deg, take-off f*D*tan(theta/2) for f in 1.5/1.0/0.75/0.5, flag leg + 1/16 in < sum. checks.json mep.fitting_pattern lists the same runs at 1.5 D."
+   },
+   "source": "geometry only; floor of R >= D/2 is the geometry of any round elbow; stocked-elbow radii are unpublished (see M4-107)",
+   "proposed_fix": "Re-route or lengthen the 12 interior legs (a 3-4 in dogleg between two 90s becomes one 45-deg pair or a single 90 with the offset moved to a straight); give each start leg beside a plenum collar the 2-3 in stub a stamped elbow's crimp needs. Promote `mep.fitting_pattern`'s laying-length UNKNOWN to FAIL for legs under the R = 0.5 D floor, which needs no manufacturer data.",
+   "size_guess": "large",
+   "seam_with": [
+    "M1"
+   ],
+   "dedupe_key": "M-DUCT:impossible-legs",
+   "area": "M4"
+  },
+  {
+   "id": "M4-102",
+   "title": "No tee, take-off, reducer or transition exists in the model or the BOM: nine 4 in takeoffs on the 8 in level-2 extract trunk, six System 1 taps and two section changes are lines that meet",
+   "elements": [
+    "DU-M-ERV-EXH-TRUNK",
+    "DU-M-ERV-R-BATH1",
+    "DU-M-ERV-R-BATH2",
+    "DU-M-ERV-R-BED1",
+    "DU-M-ERV-R-BED2",
+    "DU-M-ERV-R-KITCH",
+    "DU-M-ERV-R-LAUNDRY",
+    "DU-M-ERV-R-MUD",
+    "DU-M-ERV-R-SUITEBATH",
+    "DU-M-ERV-R-VANITY",
+    "DU-M-ERV-R-PLANT",
+    "DU-S-HP-BED1",
+    "DU-S-HP-BED2",
+    "DU-S-HP-BED3",
+    "DU-S-HP-STAIR",
+    "DU-S-HP-STUDY2",
+    "DU-S-HP-SUITE",
+    "DU-S-HP-SUP",
+    "DU-S-HP-SOUTH-RISE",
+    "REG-M-RET3"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/mep_fittings.py:353",
+    "packages/engine/src/typehaus/takeoff/mep.py:200",
+    "houses/catlin/plan/mep_erv_l2.py:98",
+    "houses/catlin/plan/mep_hvac_branches.py"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101",
+     "M-102",
+     "M-103",
+     "M-104"
+    ],
+    "pages": [
+     162,
+     163,
+     164,
+     165
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Junction probe on the resolved ducts (end/start within 1.2 in of another duct's segment, z within its span): DU-M-ERV-EXH-TRUNK (8 in) has NINE 4 in TAP starts (BATH1, BATH2, BED1, BED2, KITCH, LAUNDRY, MUD, SUITEBATH, VANITY) and ENDS on DU-M-ERV-R-PLANT (8 -> 4 in change); System 1: DU-S-HP-BED1/2/3 (6 in) and DU-S-HP-STAIR (4 in) TAP the 18x8 trunk, DU-S-HP-STUDY2 (6 in) taps the 10x6 DU-S-HP-SOUTH-RISE, DU-S-HP-SUITE (10x8) taps the 18x8 trunk 2 in off its centreline, and DU-S-HP-SUP (18x8) ends on DU-S-HP-SOUTH-RISE (10x6): a rectangular reducer. REG-M-RET3 sits 57.6 in from the end of DU-M-ERV-R-LAUNDRY on its line (a 4 in tap in mid-run, not at an end). `fitting_records` derives elbows only (resolve/mep_fittings.py:361 'tees are not derived'; takeoff/mep.py:210 'No tees'). takeoff.json duct_fittings lists only elbows (elbow-90/45/22.5) and wall-seal-8in, zero tees, take-offs, reducers or dampers. mep_erv_l2.py:98-99 says each of the ten extracts is 'tee'd off one 8 in trunk with a butterfly damper at each takeoff', and none of the dampers is modelled or billed. Pressure budget aside, nothing says which fitting (conical tap, saddle tap, tee, button-lock take-off, 45 deg entry) is bought, its size or its balancing damper.",
+    "expected": "A named fitting at each junction (e.g. 8x4 take-off/tee with a quadrant damper; 6 in or 4 in starting collar on a rectangular trunk; a rectangular reducer or transition 18x8 -> 10x6; an 8 -> 4 in concentric/eccentric reducer), derived from the geometry, counted in duct_fittings, and graded for laying length and for the tap's reach into the host (a 6 in round tap on a 6 in-deep 10x6 duct has zero margin).",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/junc.py on /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/model.pkl; takeoff.json 'duct_fittings' (python json.load, keys system/fitting/count); read mep_fittings.py:353-365 and takeoff/mep.py:200-215."
+   },
+   "source": "IMC 2018 603.18 (volume dampers in branch ducts or at each register, with access) via up.codes Minnesota IMC 2018 ch.6; Minn. R. 1346.0603 subp. 10 (dampers locked); notes/air_distribution_products.md \u00a77 (spin-in collar with damper, quadrant unconfirmed)",
+   "proposed_fix": "Derive duct tees/take-offs/reducers in mep_fittings from the junction test duct_connectivity already uses (a branch start on another duct's segment; a section change at a continuation), add them to duct_fittings, and author the damper product (Master Flow LSCD6 is a 'starting collar with damper', not a spin-in) on each branch.",
+   "size_guess": "large",
+   "seam_with": [
+    "M1"
+   ],
+   "dedupe_key": "M-DUCT:branch-fittings",
+   "area": "M4"
+  },
+  {
+   "id": "M4-103",
+   "title": "Eight terminals sit on a duct of a different section than their neck with no boot or transition named: 6 in round into 12x6 and 8x6 boxes, 10x8 into 12x6, and three attic floor registers about 15 in above their trunk",
+   "elements": [
+    "REG-S-HP-BED1",
+    "REG-S-HP-BED2",
+    "REG-S-HP-BED3",
+    "REG-S-HP-STUDY2",
+    "REG-S-HP-SUITE",
+    "REG-A-HP-EAST",
+    "REG-A-HP-WEST",
+    "REG-A-HP-STUDY",
+    "REG-B-SUP2"
+   ],
+   "files": [
+    "houses/catlin/plan/air_terminal_types.py",
+    "houses/catlin/plan/mep_registers.py:221",
+    "packages/engine/src/typehaus/resolve/terminal_connections.py:12"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101",
+     "M-102",
+     "M-103",
+     "M-104"
+    ],
+    "pages": [
+     162,
+     163,
+     164,
+     165
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Only 2 of 35 duct-fed registers have a dimensioned inlet (REG-S-HP-STAIR on TH-HP-STAIR-BOX-01, REG-S-HP-PLANT); the other 33 rely on the implicit-boot allowance. Resolved sections vs necks: REG-S-HP-BED1/2/3 6 in round -> 12x6 OBD box (duct ends 0.4 / 0.4 / 2.8 in from the register); REG-S-HP-STUDY2 6 in -> 8x6; REG-S-HP-SUITE 10x8 -> 12x6 (end 7.8 in off); REG-A-HP-STUDY 10x6 -> 12x6; REG-A-HP-EAST on DU-S-HP-SUP 18x8 and REG-A-HP-WEST on DU-S-HP-SUITE 10x8 -> 12x6 floor registers with the trunk top at z 224.1 in and the neck bottom at 238.8 in (14.6 in of unmodelled boot/riser through the soffit top and the FS-ATTIC joist bay); REG-B-SUP2 4 in duct -> 5x5 valve collar 'on a 4x5in increaser' that exists only as a word in the type name. A 6 in round cannot slip onto a 12x6 register box; the house already authors the part for the stair (TH-HP-STAIR-BOX-01: 12x6x4 box, centred 4 in collar) and not for these. takeoff.json placeables carries no included_products for REG-T-HP-SIDE-1206 (4), REG-T-HP-STUDY-SIDE, REG-T-HP-FLOOR-0612 (3).",
+    "expected": "Each terminal names its boot/transition (round-to-rectangular register boot, take-off, riser) as a product with the size pair, billed with the register as REG-T-HP-STAIR-SIDE and REG-T-HP-CEIL-DAMPERED are.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/regs.py (type neck vs feeding duct section) and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/gap.py (duct end distance, duct z vs body z) on /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/model.pkl; resolve/terminal_connections.py:12 inlet_connection_error is only called for dimensioned inlets; takeoff.json placeables entries."
+   },
+   "source": "houses/catlin/plan/air_terminal_types.py REG-T-HP-STAIR-SIDE (the in-house precedent); TRUaire A220VO 12X06 12x6 neck / 13.75x7.75 face (RectorSeal, HVACQuick listings)",
+   "proposed_fix": "Author a boot or box product per type (12x6 box with a 6 in back collar, 8x6 with a 6 in collar, 12x6 to 10x8 transition) and give the three attic floor registers a rectangular take-off plus a vertical boot with its height, or move the registers' duct end to the neck as the stair's inlet does.",
+   "size_guess": "large",
+   "seam_with": [
+    "M1"
+   ],
+   "dedupe_key": "M-DUCT:terminal-transitions",
+   "area": "M4"
+  },
+  {
+   "id": "M4-104",
+   "title": "The construction set carries no duct schedule, terminal schedule or duct specification: no gauge, sealing class, insulation, hangers, cfm or fitting appears on M-101..M-104 or A-402",
+   "elements": [
+    "M-101",
+    "M-102",
+    "M-103",
+    "M-104",
+    "A-402",
+    "DU-*",
+    "REG-*"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/hvacplan.py:64",
+    "packages/engine/src/typehaus/resolve/model.py:1559"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101",
+     "M-102",
+     "M-103",
+     "M-104",
+     "A-402"
+    ],
+    "pages": [
+     162,
+     163,
+     164,
+     165,
+     47
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "pdftotext over all 177 pages of permit_set_full.pdf: zero hits for 'UL 181', 'SMACNA', 'M1601', 'IMC', 'balancing', 'backdraft', duct 'hanger' (the 'hanger' hits are joist hangers), and zero 'DU-' or 'REG-' tags. The only duct words on the mechanical sheets are the plan labels `<size> <SYSTEM>` (hvacplan.py:64-66: '4\" RD SUPPLY', '10x18 RETURN', '8\" RD OUTDOOR_AIR'); A-002 mentions only 'Plant HP supply: dimensioned boot, damper and sealed service hatch'; G-005 prints 'TESTED DUCT LEAKAGE __ cfm25'. ResolvedDuct.design_cfm is documented 'echoed for the duct schedule' (model.py:1559) but no emitter reads it (grep emit/ finds none): no airflow, tag, elevation tier (the level-2 radials ride 111.6 / 114.1 / 116.5 in) or insulated OD is printed; 38 registers are bare triangles with no tag, size or cfm; raw enum words (DUCT_MANIFOLD, OUTDOOR_AIR, SPACE_HEATER) are printed as labels. Label counts do match the model: 8 / 5 / 24 / 5 labels for 8 / 5 / 24 / 5 ducts on basement / main / second / attic, sizes and systems correct.",
+    "expected": "An M-6xx duct schedule (tag, section, material and gauge, seal class, insulation with R and jacket, cfm, support type and spacing) and a terminal schedule (tag, product, neck, boot, damper, cfm), plus a general note for sealing (UL 181B-FX / B-M), supports (SMACNA table) and duct pressure class.",
+    "method": "pdftotext -layout permit_set_full.pdf then grep (see scratchpad full.txt); Read pages 162-165 and 47; grep design_cfm packages/engine/src/typehaus/emit."
+   },
+   "source": "IMC 2018 603.3 / 603.4 / 603.9 / 603.10 (Minnesota IMC 2018 ch.6, up.codes); Minn. R. 1346.0603",
+   "proposed_fix": "Add a generated duct and terminal schedule sheet from takeoff duct rows + register types (the data exists), print the sealing/support/pressure-class notes once on M-10x, and label OA/EA with the 12 in wrapped OD.",
+   "size_guess": "large",
+   "seam_with": [
+    "M1"
+   ],
+   "dedupe_key": "M-HVAC:no-duct-schedule",
+   "area": "M4"
+  },
+  {
+   "id": "M4-105",
+   "title": "The house cites IRC M1601 for duct gauge, sealing and support, but Minnesota deletes IRC chapters 12-24 and applies Minn. R. 1346 (IMC 2018 ch.2-15): the governing sections are IMC 603.4 / 603.9 / 603.10 / 603.18 and Minn. R. 1346.0603",
+   "elements": [
+    "DUCT-T-GALV-RECT-10",
+    "DUCT-T-GALV-RECT-12",
+    "DUCT-T-GALV-RECT-18",
+    "DUCT-T-GALV-RECT-20",
+    "DU-S-HP-*"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/hvac.py:149",
+    "packages/engine/src/typehaus/takeoff/mep.py:151",
+    "packages/engine/src/typehaus/resolve/duct_sizing.py:178",
+    "packages/engine/src/typehaus/checks/code/mn_residential/inspections.py:158",
+    "houses/catlin/notes/air_distribution_products.md:11"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Minn. R. 1309 (revisor.mn.gov/rules/1309/full) states 'Chapters 12 to 24 of the 2018 IRC and any references to mechanical matters in this code are deleted and replaced with Minnesota Rules, chapter 1346, Minnesota Mechanical Code'; chapter 1346.0050 incorporates 'Chapters 2 to 15 of the 2018 edition of the International Mechanical Code'. The repo cites 'IRC M1601' in six places (library/hvac.py:149, takeoff/mep.py:151, duct_sizing.py:178, model/air_products.py:32, inspections.py:158 code_refs, notes \u00a711). The numbers are the same: IMC 2018 Table 603.4 (up.codes Minnesota IMC 2018 ch.6) rectangular 1/2 in w.g.: <=8 0.013, 9-10 0.013, 11-12 0.016, 13-16 0.019, 17-18 0.019, 19-20 0.024; round < 12 in 0.013 galvanized: the four DUCT-T-GALV-RECT rows (10 -> 30 ga, 12 -> 28 ga, 18 -> 26 ga, 20 -> 24 ga) match. What changes is the clause an inspector reads: 603.9 (joints, UL 181B), 603.10 (SMACNA supports), 603.12 (condensation), 603.18 (volume dampers with access) and the Minnesota amendment 1346.0603 subp. 10 (dampers adjusted and locked; a friction register box allowed where inaccessible).",
+    "expected": "Citations to Minn. R. 1346 / IMC 2018 603.x, with the Minnesota amendments.",
+    "method": "curl revisor.mn.gov/rules/1309/full and /1346/full (text in scratchpad src/m1309.html, m1346.txt); up.codes Minnesota IMC 2018 ch.6 (scratchpad src/imc6.txt); grep -rn M1601 packages houses."
+   },
+   "source": "https://www.revisor.mn.gov/rules/1309/full ; https://www.revisor.mn.gov/rules/1346/full ; https://up.codes/viewer/minnesota/imc-2018/chapter/6/duct-systems",
+   "proposed_fix": "Re-cite the six spots to IMC 2018 Table 603.4 / Minn. R. 1346; no number moves.",
+   "size_guess": "small",
+   "dedupe_key": "M-DUCT:wrong-code-cite",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-106",
+   "title": "Round duct gauge has three answers: library names 26 ga for 4/6/8 in, the note says the code minimum is 30 ga, and the takeoff prints no gauge for any round run",
+   "elements": [
+    "DUCT-T-GALV-4",
+    "DUCT-T-GALV-6",
+    "DUCT-T-GALV-8",
+    "DU-*-ERV-*"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/hvac.py:101",
+    "packages/engine/src/typehaus/takeoff/mep.py:151",
+    "houses/catlin/notes/air_distribution_products.md:11",
+    "houses/catlin/prices.toml:6233"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "library/hvac.py names DUCT-T-GALV-4/-6/-8 '26 ga'; notes/air_distribution_products.md \u00a711 says 'The library row still calls it 26 ga; IRC M1601.1.1 asks 0.013\" (30 ga) under 12\"'; duct_takeoff prints 'gauge' only for rectangular rows (takeoff.json ducts: rectangular rows carry 26 / 30, all 15 round rows carry none). Purchased parts differ too: prices.toml elbow-90-8in is a SupplyHouse '26 ga adjustable', retail 4 in elbows are listed at 30 ga (Imperial GVL0028-A adjustable 0-90 deg) and 4 in snap-lock pipe at 26 ga (designair 4x60). The code minimum (IMC Table 603.4) is 0.013 in for any round < 12 in at 1/2 in w.g., so 26 or 30 ga both pass, but the model, the BOM and the set state different things and a sub cannot tell which to buy.",
+    "expected": "One stated gauge per round size on the product row, the takeoff row and the schedule (30 ga snap-lock for 4/6 in is the stocked commodity; 26 ga is a deliberate upgrade if wanted for the 8 in OA/EA).",
+    "method": "read library/hvac.py:101-143; python json.load takeoff.json['ducts'] (gauge key present only where diameter_in == 0); prices.toml [duct_fittings]."
+   },
+   "source": "IMC 2018 Table 603.4 (up.codes Minnesota IMC 2018); Imperial 4 in 30 ga adjustable elbow (lowes.com 1000230213 listing); SupplyHouse listing cited at prices.toml:6233",
+   "proposed_fix": "Set the round rows to the gauge actually bought, add 'gauge' to the round takeoff rows, and print it on the schedule (M4-104).",
+   "size_guess": "small",
+   "dedupe_key": "M-DUCT:round-gauge",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-107",
+   "title": "The laying-length check grades every round elbow as a SMACNA gored R = 1.5 D elbow, but the BOM buys stamped/adjustable elbows and no source in the repo gives their radius or laying length",
+   "elements": [
+    "FIT-DUCT-90-4",
+    "FIT-DUCT-45-4",
+    "FIT-DUCT-30-4",
+    "elbow-90-4in",
+    "elbow-90-8in"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/fittings.py:218",
+    "packages/engine/src/typehaus/checks/mep/fitting_pattern.py:101",
+    "houses/catlin/prices.toml:6231"
+   ],
+   "kind": "product-data",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "library/fittings.py:222-241 makes `FIT-DUCT-{90,45,30}-{3..12}` 'gored elbow' rows with bend_radius_in = 1.5 x size and no center_to_face; `_takeoff_in` (fitting_pattern.py:101) turns that into R*tan(theta/2). prices.toml bills 'elbow-90-4in = 4 in stamped adjustable galvanized elbow' and 'elbow-90-8in = SupplyHouse 26 ga adjustable'. A retailer listing for the 4 in 30 ga adjustable 90 (Imperial GVL0028-A, lowes.com) gives a listed length of 6.875 in: the axis intersection is then 6.875 - 2 = 4.9 in from each arm end, so with a 1.25-2 in crimp stub the effective centreline radius is about 3-3.6 in (0.75-0.9 D), not 6 in. At R = 1.5 D, 37 straights fail; at 0.75 D, 18 (M4-101). No manufacturer submittal for a stamped or adjustable 4/6/8 in elbow was found (retail pages for Hart & Cooley, Snappy, Master Flow returned 403/no dimensions). Also: an adjustable elbow makes 0-90 deg only, so the 95.3 deg turn of DU-B-ERV-R-GYM (M1-008) cannot be one fitting.",
+    "expected": "The catalog row names the part that is bought (adjustable 4-piece or die-stamped, by gauge) with its published laying length, and the check uses that.",
+    "method": "read library/fittings.py:218-241, fitting_pattern.py:101-108, prices.toml [duct_fittings]; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/legs.py for the 1.5/1.0/0.75 D counts; WebSearch 'Imperial 4-in 30 Gauge Galvanized Steel Round Adjustable 90 Degree Duct Elbow' (listing quoted by the search tool; page itself 403)."
+   },
+   "source": "retailer listing only (not a submittal); SMACNA HVAC Duct Construction Standards 1995 law.resource.org copy for R/D by velocity",
+   "proposed_fix": "Read a Hart & Cooley / Snappy / Imperial submittal for the 4, 6, 8 in adjustable elbow into library/fittings.py with center_to_face_in and drop the gored row from the check's path, or keep UNKNOWN and add an 'adjustable' pattern with its own (smaller) take-off.",
+   "size_guess": "small",
+   "dedupe_key": "M-DUCT:elbow-radius-vs-stock",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-108",
+   "title": "BOM elbow keys disagree with the catalog and half of them have no price row: 30, 26 and 18 deg turns bill as elbow-22.5-4in, rectangular turns bill by the larger side only",
+   "elements": [
+    "DU-B-ERV-R-GYM",
+    "DU-M-ERV-R-LIVING",
+    "DU-M-ERV-R-BED",
+    "DU-M-ERV-R-BED2",
+    "DU-S-HP-RET",
+    "DU-S-HP-SOUTH",
+    "DU-S-HP-SOUTH-RISE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/mep_fittings.py:154",
+    "houses/catlin/prices.toml:6221"
+   ],
+   "kind": "product-data",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Turn histogram: round 90 deg x103, 30.0 deg x11, 26.0 deg x4 (LIVING, BED, BED2 x2), 45 deg x2, 18.2 deg x1, 95.3 deg x1; rectangular 90 deg x3 and 14 deg x2. `order_key` snaps to (90, 45, 22.5) within 10 deg, so the 11 x 30 deg, 4 x 26 deg and the 18.2 deg all bill as `elbow-22.5-4in` (16) while the catalog names FIT-DUCT-30 (the 26s snap to it within 5 deg) and no 22.5 duct pattern exists. takeoff.json duct_fittings also holds `elbow-90-18in` x2 (the 10x18 return, keyed by its larger side) and `elbow-22.5-10in` x2 (the 14 deg offsets of the 10x6). prices.toml [duct_fittings] has rows only for elbow-90-3/4/6/8/10in: elbow-22.5-4in (16), elbow-45-4in (2), elbow-90-18in (2), elbow-22.5-10in (2) have none and are dropped from a costed take-off.",
+    "expected": "The key a sub orders from: 4 in adjustable elbow (any angle) as one row; rectangular elbows keyed by W x D with throat radius or vanes; a price row for every key the take-off emits.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/angles.py on /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/model.pkl; takeoff.json 'duct_fittings'; prices.toml:6221-6238."
+   },
+   "source": "resolve/mep_fittings.py:154 (_ORDER_STOCK_DEG); library/fittings.py:222",
+   "proposed_fix": "Key duct elbows 'adjustable-<size>' (angle in the tag list) and rectangular elbows by W x D; add the missing price rows or accept the opt-in drop knowingly.",
+   "size_guess": "small",
+   "dedupe_key": "M-DUCT:bom-elbow-keys",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-109",
+   "title": "The BOM has no hangers or straps, no tape or mastic quantity, no take-off collars and no balancing dampers for ducts: 764.6 LF of duct and ~120 support points are one allowance",
+   "elements": [
+    "DU-*"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/takeoff/mep.py:115",
+    "houses/catlin/prices.toml:6119"
+   ],
+   "kind": "product-data",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "takeoff.json: ducts (LF by system/section), duct_fittings (elbows + 2 wall seals), duct_insulation (OA/EA only, 48.9 LF). The only mastic/test line is cost_estimate 'hvac-duct-insulation-mastic-and-test', $1.0-2.4 per LF x 764.6 LF, driver ducts.length_ft: a rate, not a quantity of tape, mastic, screws or straps. No 'hanger' row except joist hangers; no spin-in/starting collars, no balancing dampers (the 4RSD and BD8 in M4-110 included); no canvas connector for the air handler (note \u00a77 Duro Dyne MFN). Supports needed from the published table: SMACNA Table 4-2 (round) up to 10 in: max spacing 12 ft, one 12 ga wire / 1/4 in rod / 1 in x 22 ga strap; 11-18 in (the wrapped 12 in OA/EA): 12 ft, two 12 ga wire or one 8 ga / 1/4 in rod / 1 in x 22 ga strap; Table 4-1 (rectangular) P/2 = 26-28 in (18x8, 10x18) falls in the 30 in row: a pair at 10 ft of 1 in x 22 ga strap or 10 ga wire. The model's 631.4 ft of horizontal run is >= 120 support points at 12 ft (ceil(L/12)+1 per run; 17 chase, 15 joist-bay, 4 soffit, 6 exposed runs) plus riser supports, and the 44 ft of 4 in in FS-S-WEST rides 24 in-pitch truss webs with no hanging point authored.",
+    "expected": "Support points authored or derived per run at the SMACNA spacing and counted (strap/wire/rod by Table 4-1/4-2), sealing as counted LF of tape/mastic, collars and dampers as counted parts.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/hang.py (horizontal run per duct, ceil(L/12 ft)+1); takeoff.json keys ducts/duct_fittings/duct_insulation and cost_estimate item 'hvac-duct-insulation-mastic-and-test'; SMACNA Tables 4-1/4-2 from law.resource.org/pub/us/cfr/ibr/005/smacna.duct.1995.html (1995 edition; IMC 603.10 names the standard without an edition, confirm the one the AHJ holds)."
+   },
+   "source": "https://law.resource.org/pub/us/cfr/ibr/005/smacna.duct.1995.html Tables 4-1, 4-2; IMC 2018 603.10",
+   "proposed_fix": "Add a derived 'duct supports' row (count by SMACNA spacing and strap/wire size) and a tape/mastic LF row next to duct_fittings; keep the dollar allowance as the price, not the quantity.",
+   "size_guess": "large",
+   "dedupe_key": "M-DUCT:bom-supports-sealing",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-110",
+   "title": "Three air products are defined but attached to nothing: the plant extract RH damper (EWC 4RSD), the EA backdraft damper (RenewAire BD8) and the Armaflex insulation product",
+   "elements": [
+    "PROD-AIR-DAMPER-4-24V",
+    "PROD-AIR-BACKDRAFT-8",
+    "PROD-AIR-ELASTOMERIC-1IN",
+    "REG-S-ERV-PLANT-EXH",
+    "DU-M-ERV-R-PLANT",
+    "DU-ERV-EA",
+    "EQ-S-ERV-HOOD-EA"
+   ],
+   "files": [
+    "houses/catlin/plan/products_air.py:75",
+    "houses/catlin/plan/products_air.py:141",
+    "houses/catlin/plan/products_air.py:154",
+    "houses/catlin/plan/air_terminal_types.py:147"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "grep of houses/catlin/plan and prices.toml: PROD-AIR-DAMPER-4-24V appears only in its own definition and in a source string (air_terminal_types.py:147); PROD-AIR-BACKDRAFT-8 and PROD-AIR-ELASTOMERIC-1IN only in products_air.py; takeoff.json has 0 hits for PROD-AIR-DAMPER and the BD8 appears only inside the hood type's name string. The plant room's RH-controlled 24 VAC damper (the part that holds RM-S-PLANT slightly negative, per the type's source) is therefore not placed, not billed and not on the duct; the DU-ERV-EA backdraft damper ('inside the wall line') is likewise only prose; duct_insulation bills the wrap by its spec string, not by the Armaflex product. The other plant damper (Honeywell ZD12X6TZ) is correctly attached through REG-T-HP-CEIL-DAMPERED parts.",
+    "expected": "Each damper is a placed or attached product (REG type `parts`, an element on the duct, or the hood type's included product) so it reaches the BOM and the 24 VAC schedule.",
+    "method": "grep -rn 'PROD-AIR-DAMPER-4-24V\\|PROD-AIR-BACKDRAFT-8\\|PROD-AIR-ELASTOMERIC' houses/catlin/plan houses/catlin/prices.toml; grep over takeoff.json."
+   },
+   "source": "notes/air_distribution_products.md \u00a77 (4RSD at the level-2 plenum start collar), \u00a78 (BD8 on DU-ERV-EA), \u00a79 (Armaflex)",
+   "proposed_fix": "Add `parts=(ProductPart(role='fitting', product_ref='PROD-AIR-DAMPER-4-24V'),)` to REG-T-ERV-PLANT-EXH and the BD8 to the exhaust hood type, and give duct insulation a product_ref.",
+   "size_guess": "small",
+   "seam_with": [
+    "M1"
+   ],
+   "dedupe_key": "M-DUCT:unattached-products",
+   "area": "M4"
+  },
+  {
+   "id": "M4-111",
+   "title": "The disc-valve spigot is specified with 'UL 181A-P foil tape'; UL 181A is the fibrous-glass class, metal duct takes UL 181B (B-FX tape, B-M mastic)",
+   "elements": [
+    "REG-T-ERV-VALVE-SUP",
+    "REG-T-ERV-VALVE-EXH",
+    "REG-T-ERV-VALVE-EXH-WALL",
+    "PROD-AIR-DISC-VALVE-100"
+   ],
+   "files": [
+    "houses/catlin/notes/air_distribution_products.md:48",
+    "houses/catlin/plan/products_air.py:16"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.75,
+   "evidence": {
+    "measured": "notes \u00a72 reads 'mastic and UL 181A-P foil tape, no adapter' for the 98 mm spigot into the 4 in collar; \u00a77 lists Nashua 324A as 'UL 181A-P/B-FX' (it is the B-FX listing that matters). IMC 2018 603.9 (up.codes Minnesota IMC 2018): 'Tapes and mastics used to seal fibrous glass ductwork shall be listed and labeled in accordance with UL 181A ... marked 181 A-P ... Tapes and mastics used to seal metallic and flexible air ducts ... shall comply with UL 181B and shall be marked 181 B-FX for pressure-sensitive tape or 181 B-M for mastic.' IMC 603.9's exception (no extra closure for locking-type seams below 2 in w.c.) does not extend to snap-lock outside conditioned space; every run here is inside, so the house's mastic/tape on every joint is a deliberate extra that no set page states (M4-104).",
+    "expected": "'UL 181B-FX tape or 181B-M mastic' on every metal joint, spigot and take-off.",
+    "method": "read notes/air_distribution_products.md \u00a72, \u00a77, \u00a711; IMC 2018 603.9 text in scratchpad src/imc6.txt."
+   },
+   "source": "IMC 2018 603.9 (https://up.codes/viewer/minnesota/imc-2018/chapter/6/duct-systems)",
+   "proposed_fix": "Change 181A-P to 181B-FX/B-M in \u00a72 and in the product source string; print it once on M-10x.",
+   "size_guess": "small",
+   "dedupe_key": "M-DUCT:ul181-class",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-112",
+   "title": "Duct design_cfm disagrees with the registers it feeds on eight ERV runs (and the 750 cfm System 1 return carries 650 on its grille); the pressure budget reads the duct value",
+   "elements": [
+    "DU-B-ERV-R-BENCH",
+    "DU-M-ERV-R-PLANT",
+    "DU-M-ERV-R-KITCH",
+    "DU-M-ERV-R-MUD",
+    "DU-M-ERV-R-BED1",
+    "DU-M-ERV-R-BED2",
+    "DU-A-ERV-R-BED3",
+    "DU-M-ERV-R-LAUNDRY",
+    "DU-S-HP-RET",
+    "REG-B-RET1",
+    "REG-S-ERV-PLANT-EXH"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_registers.py:14",
+    "packages/engine/src/typehaus/checks/mep/erv_static.py:116"
+   ],
+   "kind": "interface-fit",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "duct.design_cfm vs sum of its registers' design_cfm: DU-B-ERV-R-BENCH 6 vs REG-B-RET1 12; DU-M-ERV-R-PLANT 5 vs 12; KITCH 6 vs 4; MUD 5 vs 4; BED1 5 vs 2; BED2 5 vs 2; DU-A-ERV-R-BED3 5 vs 2; LAUNDRY 8 vs 7 (RET-STUDY 5 + RET3 2); DU-S-HP-RET 750 vs REG-S-HP-RET 650. Extract radial totals balance at 210 on both sides, so the two sets are different splits of one total; the header comment of mep_registers.py (bench 12, plant 12) matches the registers, the budget (erv_static.py:116, erv_static_terms.py:62) uses the duct's.",
+    "expected": "One airflow per leg, the one the pressure budget and the future schedule both read.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/cfm.py on /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/model.pkl (plan.by_tag(register).design_cfm vs ResolvedDuct.design_cfm)."
+   },
+   "source": "houses/catlin/plan/mep_registers.py header comment (210 cfm split)",
+   "proposed_fix": "Take the register cfm from the duct (or the reverse) in one place; re-run mep.erv_static_budget.",
+   "size_guess": "small",
+   "seam_with": [
+    "M1"
+   ],
+   "dedupe_key": "M-DUCT:cfm-split",
+   "area": "M4"
+  },
+  {
+   "id": "M4-113",
+   "title": "Seven floor registers carry no load rating: IMC 603.18.1 asks 200 lb on a 2 in disc, and no product row states it",
+   "elements": [
+    "REG-T-ERV-EXH-FLOOR",
+    "REG-T-HP-FLOOR-0612",
+    "PROD-AIR-FLOOR-GRILLE-2X10",
+    "PROD-AIR-FLOOR-REG-6X12",
+    "REG-A-RET1",
+    "REG-S-EXH4",
+    "REG-S-RET-BED1",
+    "REG-S-RET-BED2",
+    "REG-A-HP-EAST",
+    "REG-A-HP-STUDY",
+    "REG-A-HP-WEST"
+   ],
+   "files": [
+    "houses/catlin/plan/products_air.py:27",
+    "houses/catlin/plan/products_air.py:50"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "4 Reggio 412-AH floor grilles (REG-A-RET1, REG-S-EXH4, REG-S-RET-BED1, REG-S-RET-BED2) and 3 Hart & Cooley 531SA 6x12 floor registers (REG-A-HP-EAST/-STUDY/-WEST) sit in walked-on floors. IMC 2018 603.18.1: 'Floor registers shall resist, without structural failure, a 200-pound concentrated load on a 2-inch-diameter disc applied to the most critical area of the exposed face.' The product rows (products_air.py FLOOR_GRILLE_ERV, FLOOR_REGISTER_HP) and the note give face, neck and loss only; the Lowe's/Amazon 412-AH listings say 'heat approved' and nothing on load. H&C's 531 page states 37 sq in free area, no load. Reggio 412-AH face 12 x 3.5 in and duct opening 10 x 2.25 in are confirmed by the retail listings (M1-005 closed).",
+    "expected": "A cited load rating (manufacturer data or 603.18.1 conformance statement) on each floor-register product.",
+    "method": "read products_air.py:27-60; WebSearch Reggio 412-AH listings; hartandcooley.com/product/531-aluminum-floor-register; IMC 603.18.1 text in scratchpad src/imc6.txt."
+   },
+   "source": "IMC 2018 603.18.1; hartandcooley.com/product/531-aluminum-floor-register",
+   "proposed_fix": "Ask Reggio/H&C for the 603.18.1 statement (or pick the series that publishes it) and add it to the product source.",
+   "size_guess": "small",
+   "dedupe_key": "M-DUCT:floor-register-load",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-114",
+   "title": "The end connection of 33 of 35 duct-fed registers is an implicit boot/flex tail: no flex class, length, collar or support is specified, and 16 of them sit 0.8-60 in off the duct end",
+   "elements": [
+    "REG-A-HP-EAST",
+    "REG-A-HP-STUDY",
+    "REG-A-HP-WEST",
+    "REG-A-STUBATH-EXH",
+    "REG-B-EXH1",
+    "REG-B-EXH2",
+    "REG-M-EXH1",
+    "REG-M-RET-STUDY",
+    "REG-M-RET3",
+    "REG-M-SUP4",
+    "REG-S-ERV-PLANT-EXH",
+    "REG-S-EXH3",
+    "REG-S-EXH4",
+    "REG-S-HP-BED3",
+    "REG-S-HP-RET",
+    "REG-S-HP-SUITE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/checks/mep/duct_connectivity.py:82",
+    "packages/engine/src/typehaus/checks/mep/duct_connectivity.py:186"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "duct_connectivity lets any register naming a run within BOOT_REACH_M = 36 in of its end (or of its last leg) stand in as 'the boot: the flex tail and collar between the end of the hard duct and the grille' unless the type has a dimensioned inlet (2 of 35 do). Distances duct end to register on the resolved model: REG-S-HP-RET 60.3, REG-M-RET3 57.6, REG-A-HP-STUDY 44.0, REG-A-HP-EAST 18.1, REG-A-HP-WEST 8.9, REG-S-HP-SUITE 7.8, REG-A-STUBATH-EXH 7.6, REG-S-ERV-PLANT-EXH 4.9, REG-B-EXH1 4.3, REG-M-RET-STUDY 4.1, REG-S-EXH3 4.1, REG-S-HP-BED3 2.8, REG-M-EXH1 2.0, REG-M-SUP4 2.0, REG-S-EXH4 2.0, REG-B-EXH2 0.8 in. No DUCT-T-FLEX-6 (or any flex) is used in the plan; the tails are neither modelled nor billed, and a flex tail has its own published support rule (SMACNA S3.35: support at least every 5 ft, sag <= 1/2 in per ft).",
+    "expected": "Each such tail is either modelled as a run with its flex spec or removed (end the hard duct on the neck).",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/gap.py on /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/model.pkl (distance from duct.path[-1] to register position and to the duct line); duct_connectivity.py:82,186; SMACNA 1995 S3.35 (law.resource.org copy)."
+   },
+   "source": "https://law.resource.org/pub/us/cfr/ibr/005/smacna.duct.1995.html S3.35",
+   "proposed_fix": "Move each duct end onto its register's neck (the stair's inlet pattern) so the connectivity allowance stops standing in for a part; where a tail is wanted, author it as a flex run.",
+   "size_guess": "large",
+   "dedupe_key": "M-DUCT:implicit-boots",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-115",
+   "title": "No duct pressure class is stated, and the gauge rows are the 1/2 in w.g. column only: at the air handler's 1 in w.g. point the 10, 18 and 10x18 trunks would need 28/24/24 ga",
+   "elements": [
+    "DU-S-HP-SUP",
+    "DU-S-HP-RET",
+    "DU-S-HP-SUITE",
+    "DU-S-HP-SOUTH",
+    "DU-S-HP-SOUTH-RISE",
+    "EQ-S-HP1-AH"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/hvac.py:145",
+    "houses/catlin/plan/equipment_types.py:142"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "IMC 603.3 requires the duct pressure classification to equal or exceed the design pressure; nothing in the model, notes or set states one. The rectangular rows quote 'the 1/2 in. w.g. static column'. equipment_types.py:142 records the Gree FLEXX Ultra 24 at 760 cfm at 0.5 in ESP (speed 3) and 850 cfm at 1.0 in (speed 5). IMC 2018 Table 603.4 at 1 in w.g.: 9-10 in galvanized 0.016 (28 ga, not the 30 ga printed for DU-S-HP-SUITE/-SOUTH), 17-18 in 0.024 (24 ga, not 26 ga for DU-S-HP-SUP and the 18 in side of DU-S-HP-RET). The duct system is sized to 750 cfm, inside the 0.5 in point, so 1/2 in is probably right, but the class is an assumption, not a recorded design input.",
+    "expected": "A stated pressure class (0.5 in w.g.) on the schedule, tied to a design static pressure from the Manual D / external-static calc.",
+    "method": "read library/hvac.py:145-153, equipment_types.py:125-150; IMC 2018 Table 603.4 (scratchpad src/imc6.txt)."
+   },
+   "source": "IMC 2018 603.3 and Table 603.4",
+   "proposed_fix": "Add `duct_pressure_class` to the HVAC project data and print it with the gauge on the schedule.",
+   "size_guess": "small",
+   "dedupe_key": "M-DUCT:pressure-class",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-116",
+   "title": "System 1 supply ducts are bare galvanized with no condensation provision stated (IMC 603.12): 18x8 trunk, 10x8, 10x6 and six branches in a closed soffit",
+   "elements": [
+    "DU-S-HP-SUP",
+    "DU-S-HP-SUITE",
+    "DU-S-HP-SOUTH",
+    "DU-S-HP-SOUTH-RISE",
+    "DU-S-HP-BED1",
+    "DU-S-HP-BED2",
+    "DU-S-HP-BED3",
+    "DU-S-HP-STUDY2",
+    "DU-S-HP-STAIR",
+    "SF-S-DUCT"
+   ],
+   "files": [
+    "houses/catlin/notes/air_distribution_products.md:11"
+   ],
+   "kind": "product-data",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "ResolvedDuct.insulation is None on all 40 runs except DU-ERV-OA/-EA ('2 in closed-cell elastomeric, two 1 in layers, R-8.4, vapour-sealed'); note \u00a711: 'House-air ducts bare'. IMC 2018 603.12: 'Provisions shall be made to prevent the formation of condensation on the exterior of any duct.' The heat pump cools through these ducts and DU-S-HP-SUP/-SOUTH-RISE/-SUITE run inside a boarded soffit (SF-S-DUCT) and a joist bay, where sweat has nowhere to go. No supply air temperature, surface-temperature or dew-point argument is recorded, so the bare spec is neither justified nor flagged. (Low confidence: the soffit is inside the conditioned envelope and the argument may exist elsewhere.)",
+    "expected": "Either a wrap/liner spec with R-value and jacket on the cooling supply trunks, or a written basis that the surface stays above the room dew point.",
+    "method": "python: [d.insulation for d in model.ducts]; read notes \u00a79, \u00a711; IMC 603.12."
+   },
+   "source": "IMC 2018 603.12 (https://up.codes/viewer/minnesota/imc-2018/chapter/6/duct-systems); Minn. R. 1346.0604 sends insulation to chapters 1322/1323",
+   "proposed_fix": "State the supply-duct insulation (or the dew-point basis) in the notes and on the schedule; price it in duct_insulation.",
+   "size_guess": "small",
+   "dedupe_key": "M-DUCT:supply-condensation",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-117",
+   "title": "Rectangular turns carry no radius, vane or mitre specification and are skipped by the laying-length check: DU-S-HP-RET has 18 in between two 90s on a 10 in duct",
+   "elements": [
+    "DU-S-HP-RET",
+    "DU-S-HP-SOUTH",
+    "DU-S-HP-SOUTH-RISE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/mep_fittings.py:235",
+    "packages/engine/src/typehaus/checks/mep/fitting_pattern.py:101"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101",
+     "M-102",
+     "M-103",
+     "M-104"
+    ],
+    "pages": [
+     162,
+     163,
+     164,
+     165
+    ]
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Five rectangular turns (RET: 90 deg x2 with 61 / 18 / 8 in legs; SOUTH: 14 deg x2 with 24 / 22.7 / 6 in legs; SOUTH-RISE: one 90 deg with 79 / 12 in legs) all get RECTANGULAR_DUCT_GAP ('fabricated to the duct ... a shop drawing') and `_takeoff_in` returns 0 for them (no bend_radius_in), so the check can never flag them. A radius elbow on a 10 in-wide duct whose centreline radius is 0.9 W or more takes 9 in per 90, i.e. both 90s on the 18 in leg would just fit; a heel radius of 1.0 W would not. The sheet prints neither.",
+    "expected": "Throat radius or turning-vane spec per turn (shop drawing or note) and the check applied with it.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/gym.py DU-S-HP-RET DU-S-HP-SOUTH DU-S-HP-SOUTH-RISE; read mep_fittings.py:235-245."
+   },
+   "source": "resolve/mep_fittings.py:235 RECTANGULAR_DUCT_GAP",
+   "proposed_fix": "Author `elbow_radius` (or vanes) on rectangular DuctRuns and let `_takeoff_in` read it.",
+   "size_guess": "small",
+   "dedupe_key": "M-DUCT:rect-elbows",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-118",
+   "title": "Several terminal neck dimensions remain planning figures: the 2 1/4x10 floor boot height (5 in) and the existence of a 4 in-collar Snappy P13-204, the OBD box depth (2 11/16 in), the 6x12 floor register face and damper depth",
+   "elements": [
+    "REG-T-ERV-EXH-FLOOR",
+    "REG-T-HP-SIDE-1206",
+    "REG-T-HP-STUDY-SIDE",
+    "REG-T-HP-FLOOR-0612",
+    "PROD-AIR-FLOOR-GRILLE-2X10"
+   ],
+   "files": [
+    "houses/catlin/plan/air_terminal_types.py:101",
+    "houses/catlin/plan/products_air.py:27"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Floor boot neck depth 5 in is stated 'unpublished, an estimate'; Snappy's own wall-stack boot sheet (page 10 of MMMFNGE00084_2_10.pdf, 2-1/4 x 10 No. 13 90 deg stack boot) lists collars of 5, 6 or 7 in only, no 4 in, and no height; 2-1/4 x 10 x 4 boots exist from other suppliers (RecPro, ecmdi center-end boot) with no published height. A220VO box depth 2 11/16 in is H&C HVD 3 7/16 in less face; 531SA face 13 3/8 x 7 3/8 and 2 in damper are planning figures (H&C's page gives 6x12 / 37 sq in free area only; a US Supply white-steel 6x12 lists 13 1/2 x 7 1/2 overall). These are the five types where the fit check (`mep.terminal_neck_fit`, 45 pass) rests on an estimate; the margins quoted in the note's \u00a713 are 1/8 in.",
+    "expected": "Published or submittal dimensions, or a margin that survives the range of makers.",
+    "method": "read air_terminal_types.py:101-120 and products_air.py; Snappy sheet fetched via WebFetch (cdn.lsicloud.net/wallington/specsheets/MMMFNGE00084_2_10.pdf, rendered with pdftoppm); WebSearch listings."
+   },
+   "source": "Snappy wall stack boots table p.10; hartandcooley.com/product/531-aluminum-floor-register; ussupply.com 6x12 floor register",
+   "proposed_fix": "Order one sample of each (or request the submittals) before fixing the framing around the necks; keep the 1/8 in margin only where the size is published.",
+   "size_guess": "small",
+   "dedupe_key": "M-DUCT:neck-estimates",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-119",
+   "title": "plan/mep_registers.py is 693 lines against the repo's 500-line rule",
+   "elements": [
+    "houses/catlin/plan/mep_registers.py"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_registers.py"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.9,
+   "evidence": {
+    "measured": "wc -l = 693 (one of the nine files changed since round 1, +/-133).",
+    "expected": "< 500 lines (CLAUDE.md, AGENTS.md).",
+    "method": "wc -l houses/catlin/plan/mep_registers.py"
+   },
+   "source": "CLAUDE.md 'Files under 500 lines'",
+   "proposed_fix": "Split by storey into mep_registers_{basement,main,second,attic}.py as mep_erv_l1/l2/l3 already are (byte-neutral).",
+   "size_guess": "small",
+   "dedupe_key": "mep_registers:size",
+   "area": "M4",
+   "seam_with": []
+  },
+  {
+   "id": "M4-120",
+   "title": "REG-B-SUP2's '4x5in increaser' is a phrase in the type name: no product, no neck inlet and no BOM line, and the 125 mm valve spigot (124 mm) is sized to a 5 in collar the 4 in duct does not reach",
+   "elements": [
+    "REG-B-SUP2",
+    "REG-T-ERV-VALVE-SUP-125",
+    "DU-B-ERV-R-PLAY"
+   ],
+   "files": [
+    "houses/catlin/plan/air_terminal_types.py:63"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "DU-B-ERV-R-PLAY is a 4 in round ending 0.0 in from the register; the type's neck is 5x5x2.94 in 'on a 4x5in increaser'; takeoff.json shows the word 'increaser' only in two name strings, never as a fitting; the product PROD-AIR-DISC-VALVE-100 (Vents-US AM 100 VRF) is the 100 mm part, and the 125 mm sibling is sourced to Trox LVS 125 (face 162 mm, spigot 124 mm) by the note, not to a purchasable Vents-US row.",
+    "expected": "An increaser/reducer fitting (4x5 in) in duct_fittings, and a 125 mm product row.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/regs.py (REG-B-SUP2 line); takeoff.json grep 'increaser'; read air_terminal_types.py:63-77."
+   },
+   "source": "notes/air_distribution_products.md \u00a72 (Trox LVS 125 table)",
+   "proposed_fix": "Add the 4x5 increaser as a fitting row and a product ref for the 125 mm valve.",
+   "size_guess": "small",
+   "dedupe_key": "REG-B-SUP2:increaser",
+   "area": "M4",
+   "seam_with": []
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "M1-002",
+   "status": "partial",
+   "evidence": "Round runs now print by diameter: M-101..M-104 and A-402 show '4\" RD SUPPLY', '6\" RD RETURN', '8\" RD EXHAUST', and rectangular '10x18 RETURN', '18x8 SUPPLY' (round 1 printed 4x4/6x6/8x8; hvacplan.py:64-66 now formats diameter when ResolvedDuct.diameter_m is set; the sheet note says '(round: diameter, RD)'). Label counts 8/5/24/5 equal the ducts per storey. Still missing from the round-1 expected: the 12 in wrapped OD of DU-ERV-OA/-EA (label reads '8\" RD OUTDOOR_AIR', and the double line is drawn at width_m = 8 in), and the raw enum 'OUTDOOR_AIR' is printed.",
+   "method": "Read permit_set_full.pdf pp.162-165, 47 (pdftotext -layout; counts of labels vs ducts per storey from the model); read emit/draw/hvacplan.py:56-90."
+  },
+  {
+   "id": "M1-003",
+   "status": "partial",
+   "evidence": "Laying-length term exists (checks/mep/fitting_pattern.py:109 `_laying_length`, UNKNOWN not FAIL; 18 per-run UNKNOWNs in checks.json). Re-count at R = 1.5 / 1.0 / 0.75 / 0.5 D: 37 / 27 / 18 / 15 short straights of 159 round legs (122 elbows); round 1 had 50 / 39 / 29 of ~156-163, and the 2026-11-01 note's 43 -> 28 is the check's own count at a different radius. The hard cases are the same ones: DU-ERV-RISER-EXH leg 4-5 1.6 in between two 90s (round 1 1.56), DU-ERV-EA 2.9 in at both v0-1 and v4-5, DU-ERV-OA 3.9 in, DU-B-ERV-R-SAUNA-EXH 2.0 in, DU-B-ERV-RET-TRUNK 2.5 in, DU-S-ERV-HP-FEED 3.4 in; 15 legs are impossible for any round elbow (M4-101). The cause is also unchanged: the pressure budget assumes r/D 1.5 while the BOM buys stamped/adjustable elbows (M4-107).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/legs.py on /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/model.pkl; checks.json mep.fitting_pattern messages."
+  },
+  {
+   "id": "M1-005",
+   "status": "closed",
+   "evidence": "REG-T-ERV-EXH-FLOOR footprint is now (12, 3.5) in (air_terminal_types.py:101-103) and the resolved REG-S-RET-BED1 footprint measures 12.000 x 3.500 in; the listing agrees (Reggio 412-AH: duct opening 10 x 2.25 in, outside 3.5 x 12 in, Lowe's/Amazon listings). The 5 in boot height is still an unpublished estimate (M4-118).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/fp.py on /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/model.pkl; WebSearch 'Reggio 412-AH' (Lowe's listing text)."
+  },
+  {
+   "id": "M1-008",
+   "status": "open",
+   "evidence": "Unchanged: DU-B-ERV-R-GYM (clean path) still turns 18.2 deg at vertex 4 (a 15.25 in x 5 in sloped jog, 18.2 deg off the y run) and 95.3 deg at vertex 7 (a 48.96 in leg dipping 5.3 deg, then a 6.12 in rise), with 6.12 in between the 95.3 and the next 90 (needs 12.6 in at 1.5 D; 6.3 at 0.75 D). mep.fitting_pattern still reports both as UNKNOWN ('no stock duct elbow turns 18.2 / 95.3 degrees at 4 in'). Adjustable elbows only make 0-90 deg, so 95.3 is not one part. Also new: three more off-stock turns (26.0 deg x4 on LIVING, BED, BED2 x2) that the check snaps to 30.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/gym.py DU-B-ERV-R-GYM; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M4/angles.py; checks.json mep.fitting_pattern."
+  }
+ ]
+}

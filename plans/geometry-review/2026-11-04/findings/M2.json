@@ -1,0 +1,464 @@
+{
+  "area": "M2",
+  "model": "claude-sonnet-5-5",
+  "review_sha": "539d9a81",
+  "inventory_summary": "Inventoried 67 supply PipeRuns (hot 1/2, 3/4 PEX and 3/4, 1 in copper; cold 1/2-1 1/4 in), 62 PipeAccessories, 22 non-duct sleeves, the new EQ-B-HW-HEADER (EQ-T-HW-HEADER-8) and its eight 1/2 in branches (BATH1, WASH, BATH, BATH2-SH, FILLER, KITCH, SAUNA, BATH2) and the two 3/4 in tees ahead of it; 45 fixture/appliance supply ports with their AFF stations. Web-checked: Uponor LF2821050 submittal (dimension table and drawing, read from the PDF), Delta R10000 instruction 50353, Kraus KPF-1610SFS supply-line length (retail), OC 722579 pipe insulation, LG LDTS5552S inlet location (sibling manual only). Opened A-401.1-.6, A-402, P-101..P-104 (permit_set_full pp.41-47, 154-157). Round 1: 4 priors, 3 closed (M2-001, M2-005, M2-009), 1 open (M2-008). Eleven new findings. NOT examined: Moen 4794 / Align Roman filler inlet height (17.5 in AFF, approximate), Delta/Kohler K-1130 tub-shower valve height and depth sheets, LG WashTower and LG dishwasher inlet stations (hose-reached, 60 in connector; DW 5.53 in AFF vs sibling manual 6 1/2-7 3/4 in floor run), Woodford hydrant Y34/Model 19 sheets, IKEA ANGSJON/ORRSJON/SUNNERSTA and Duravit/Chulton faucet supply connections (house stub allowances), UPC/IECC pipe-insulation code basis for no lagging on 1/2 in header branches (note cites N1103.4.2; not re-read from the code), PEX-a vs generic 'pex' material on a ProPEX header (the runs say material 'pex'; the notes say PEX-A), pricing and takeoff dollars (the 89 water_hot 1/2 in elbows bill as copper-pattern rows), UPC 604.13-style heat-trap and expansion-tank items, pressure at the street (unknown), the mep.riser_through_deck UNKNOWN list (54), and the DWV/vent side (M5).",
+  "verified_clean": [
+    "EQ-T-HW-HEADER-8 vs Uponor submittal (LF2821050): A 14.675 in = footprint length; D 1.5 in pitch = port spacing (out-1..out-8 at 5.7115 .. -4.7885 in from the body centre); B 0.987 + C 0.639 = 1.626 in end to first outlet = 7.3375 - 5.7115; closed-end margin 2.549 in = 14.675 - 1.626 - 7 x 1.5; G 2.479 and H 1.256 give inlet height G - H/2 = 1.851 in; 8 outlets 1/2 in ProPEX, 1 in sweat inlet; 200 F at 80 psi row quoted.",
+    "Header placement: body (90, 291.3-306.0), centre 88.0 in, tips 86.149 in; basement-relative; nearest duct DU-B-ERV-R-BATH 9.4 in, nearest other pipe PR-B-CW-BATH 12.3 in (SCRATCH M2/p16.py); 8.3 in under the 96.94 in clear height.",
+    "Header outlet use: mep.water_manifold_ports 8 of 8 outlets used, one run each; every branch starts exactly on its outlet tip (z -23.288 in abs); all eight branches 1/2 in material pex, no insulation (1/2 in lines, note section 6), bores 0.62 in bare OD.",
+    "Header branch routing: 8 branches show no concrete or masonry crossing (no sleeve needed); mep.run_through_stud/plate/member_crossing all PASS (PR-B-BATH2-SH-HW crown +8.438 in / invert +0.312 in in the TJI 230 window; PR-B-HW-SAUNA +7.238 / +1.512 in); the only UNKNOWNs are mep.riser_through_deck (floor holes under 4 in, a trade's drill).",
+    "PR-B-HW-TRUNK: 1 in copper, OD 1.125 in (TUBE_OD_IN), 1 in fiberglass lagging OD 3.125 in, 11.4 ft developed; mep.pipe_sizing 23.75 WSFU needs >= 1.0 in PASS; mep.pex_water_heater_clearance: nearest PEX tee 112 in out of the 18 in.",
+    "Pipe outside diameters (pipe_sections.TUBE_OD_IN): CTS = nominal + 1/8 in for copper and PEX (1/2 -> 0.625, 3/4 -> 0.875, 1 -> 1.125, 1 1/4 -> 1.375); matches ASTM B88 / F876 outside diameters used for stud-bore and sleeve fit.",
+    "Concrete/wall sleeves for water: SP-B-N2-SVC 2.5 in for 1 1/4 in PEX (OD 1.375), SP-GF-S-SVC 3 in, SP-B-N3-HYD 1.5 in and SP-GF-S-HYD 2 in for 3/4 in PEX (OD 0.875), SP-G-HYDRANT 2 in, SP-S-BALCONY-HYD 2.5 in for 3/4 in with a 1/2 in elastomeric sleeve (1.875 in OD): all leave an annulus; mep.sleeve_coverage 19 PASS.",
+    "Insulation spec: OC 722579 is 1/2 in wall, 7/8 in ID (fits 3/4 in CTS OD 0.875), k 0.16 -> R-3.1 per retail listings (Zoro, eBay); 1 in wall on the 1 in trunk is typed R-3.5 (conservative against k 0.16).",
+    "Hydrant/laundry/utility sink stubs: 20.00 / 20.08 in AFF supplies are house wall-stub allowances (lav_ports.py comment), not product claims; lavatory stubs 24 in AFF + base are the owner's setout (notes/main_bath1_basin_spec.md, section 'Supplies').",
+    "mep.hot_water_insulation PASS on the four insulated hot runs; mep.pipe_sizing 98 PASS; mep.fixture_port_connection: no FAIL, all 42 UNKNOWN are 'approximate station'; every exact lav port is 0.00 in from its stub.",
+    "P-103/P-104/A-401.1-.6 checked at full size: fixtures and plan labels agree with the model; the room labels over fixtures on A-401.1/.6 are I2-107."
+  ],
+  "findings": [
+    {
+      "id": "M2-101",
+      "area": "M2",
+      "title": "HW trunk meets the header's sweat inlet side-on: last leg runs east, the inlet faces north (90.0 degrees off axis, elbow at the port)",
+      "elements": [
+        "PR-B-HW-TRUNK",
+        "EQ-B-HW-HEADER"
+      ],
+      "files": [
+        "houses/catlin/plan/mep_supply.py:256",
+        "houses/catlin/plan/mep_supply_header.py:82"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.6,
+      "evidence": {
+        "measured": "Header at (90, 298.66) rotation 90: placed inlet port (90.0, 306.0, z 88.0) direction (0,1,0), i.e. the 1 in sweat socket opens NORTH and the tube must arrive heading south. PR-B-HW-TRUNK's last leg is (64, 306, 83.44) -> (90, 306, 88.0), direction (0.985, 0, 0.173): perpendicular (dot with the inlet axis = 0). The trunk's last vertex IS the port, so the 90 degree turn sits at the socket mouth with 0 in of tube to seat in it. mep.equipment_port_service grades air ports only, and mep.water_manifold_ports counts outlets, so nothing reads the inlet direction.",
+        "expected": "A straight stub along the inlet axis (a socket takes the tube end-on; Uponor's drawing shows the 1 in sweat end as a swaged tube end, B = 0.987 in), then the elbow: trunk arrives from y > 306 heading south, or the header is turned so its inlet faces the approach.",
+        "method": "Python probe: placed_ports(model) for EQ-B-HW-HEADER inlet direction; ResolvedPipeRun PR-B-HW-TRUNK path/z_m last two vertices; SCRATCH M2/p13.py. Uponor submittal PDF p.1 drawing (B, C, D) read at 400 dpi: SCRATCH M2/uponor/crop-1.png."
+      },
+      "source": "Uponor submittal 'ProPEX (type L) copper branch manifolds' (uponor.com/en-us/getsubmittalpdf/22338): End type 2 Sweat 1 in, drawing B = 0.987 in end cup",
+      "proposed_fix": "End the trunk with a straight N-S stub of >= 2 in into the socket, e.g. (83,310) -> (90,310) -> (90,306), or turn the header so its inlet faces the approach. The authored westward detour to x=64 (4 in then 26 in back east) may be there to clear something, so re-run mep.run_interference and check BATH1's y=309.75 leg (z 92.5 over the trunk top about 89.6).",
+      "size_guess": "small",
+      "seam_with": [
+        "M4"
+      ],
+      "dedupe_key": "PR-B-HW-TRUNK:header-inlet-axis"
+    },
+    {
+      "id": "M2-102",
+      "area": "M2",
+      "title": "All eight header branches turn 2.649 in below the outlet tip; Uponor requires a Tube Talon or bend support for any bend within 6 in, and three branches turn again 1.5 in later; none is billed",
+      "elements": [
+        "EQ-B-HW-HEADER",
+        "PR-B-HW-BATH1",
+        "PR-B-HW-WASH",
+        "PR-B-HW-BATH2",
+        "PR-B-HW-BATH",
+        "PR-B-BATH2-SH-HW",
+        "PR-B-FILLER-HW",
+        "PR-B-HW-KITCH",
+        "PR-B-HW-SAUNA"
+      ],
+      "files": [
+        "houses/catlin/plan/mep_supply.py:336",
+        "houses/catlin/plan/mep_supply.py:369",
+        "houses/catlin/plan/mep_supply.py:435",
+        "houses/catlin/plan/mep_supply_header.py:23"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "Outlet tips at z 86.149 (basement-relative); every branch's vertex 1 is at 83.5, a 2.649 in drop, then 90 degrees to horizontal (resolved fitting_records: FIT-CU-90-0.5 at vertices 1 and 2 for all 8). BATH1, WASH and BATH2 turn again after a 1.5 in leg (vertex 1 -> 2), FILLER 3.5 in, SAUNA 3 in. Maker's minimum PEX radius 6 x OD = 3.75 in (TUBE_BEND_RULES) exceeds the 2.649 in drop, so it can only be an elbow fitting, and the engine matches every 1/2 in PEX turn to a copper B16.22 pattern (library/fittings.py:193, _supply_elbows), never grading a tube leg between two fittings. takeoff.json pipe_fittings: 89 water_hot elbow-90-0.5in; no Tube Talon F7050750 or A5110500/A5150500 anywhere in prices.toml or the plan.",
+        "expected": "Uponor submittal p.2: 'Any bend within 6 inches of the ProPEX connection to the manifold requires the use of a Tube Talon (F7050750) or Bend Support (A5110500 and A5150500).' Either 8 bend supports on the BOM or a drop long enough to form the bend outside 6 in; and a leg between two ProPEX elbows that holds both fittings (not 1.5 in centre to centre).",
+        "method": "SCRATCH M2/p7.py (branch vertices, fitting_records); takeoff.json pipe_fittings; grep -n 'F7050750\\|Tube Talon' houses/catlin/prices.toml (none). Uponor submittal PDF p.2 text."
+      },
+      "source": "Uponor submittal p.2 (Installation)",
+      "proposed_fix": "Author the 8 branches with a straight vertical leg of >= 6 in below the tip (the lanes sit at 83.5; lower them to <= 80.1 or hang the header higher: its top is 8.3 in under the 96.94 clear height) or add 8 Tube Talons to [hardware]; lengthen the BATH1/WASH/BATH2 first horizontal leg past 3 in.",
+      "size_guess": "small",
+      "seam_with": [
+        "M4"
+      ],
+      "dedupe_key": "EQ-B-HW-HEADER:bend-within-6in"
+    },
+    {
+      "id": "M2-103",
+      "area": "M2",
+      "title": "A-402 draws the hot-water header unrotated: an E-W 14.7 x 1.5 in bar labelled WATER_MANIFOLD, but the header stands N-S (rotation 90)",
+      "elements": [
+        "EQ-B-HW-HEADER"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/hvacplan.py:101"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-402"
+        ],
+        "pages": [
+          47
+        ]
+      },
+      "confidence": 0.85,
+      "evidence": {
+        "measured": "Resolved canvas footprint x 89.2-90.8, y 291.3-306.0 (N-S, 14.7 in long). hvacplan._emit_equipment builds the outline from (width, depth) around placed_xy and never reads element.rotation; on A-402 (p.47, 1/2 in = 1 ft) the box is about 185 px x 20 px at 300 dpi = 14.8 x 1.6 in, horizontal, beside its text label 'WATER_MANIFOLD' (EquipmentKind.value upper-cased). Equipment rotated by other than 0/180 with a non-square footprint: EQ-B-HW-HEADER 90, EQ-B-SAUNA-HTR 270 (18x16), EQ-S-HP1-AH 90 (43.5x21.2).",
+        "expected": "Footprint rotated to the element's rotation (header N-S along x=90 from y 291.3 to 306), labelled 'HW HEADER' with the outlet count, not the enum text.",
+        "method": "SCRATCH M2/p14.py (canvas_objects footprint) and p15.py (rotated Equipment); pdftoppm -r 300 -f 47 on permit_set_full.pdf, crop around the WATER_MANIFOLD label (SCRATCH M2/a402-047.png)."
+      },
+      "source": "plan geometry (model) vs A-402 print",
+      "proposed_fix": "Rotate the outline by element.rotation (or read the resolved canvas footprint); label by type name.",
+      "size_guess": "small",
+      "seam_with": [
+        "M1",
+        "M4"
+      ],
+      "dedupe_key": "hvacplan:equipment-outline-rotation"
+    },
+    {
+      "id": "M2-104",
+      "area": "M2",
+      "title": "P-103 and P-104 print no water supply: 22 second-floor and attic supply runs are filed on the main storey and drawn on P-102",
+      "elements": [
+        "PR-S-BATH1-SH-CW",
+        "PR-S-BATH1-SH-HW",
+        "PR-S-SUITE-LAV-HW",
+        "PR-S-VANITY-LAV1-CW",
+        "PR-A-STUBATH-SH-HW",
+        "PR-A-BAR-LAV-CW",
+        "PR-A-HW-STUBATH"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/plumbingplan.py:121",
+        "houses/catlin/plan/mep.py:74",
+        "houses/catlin/plan/mep.py:81"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "P-102",
+          "P-103",
+          "P-104"
+        ],
+        "pages": [
+          155,
+          156,
+          157
+        ]
+      },
+      "confidence": 0.8,
+      "evidence": {
+        "measured": "build_plumbing_plan keeps a run when run.storey == storey. 22 of the 67 supply runs are filed on 'main' (MAIN lists in plan/mep.py) with every z in the second-floor or attic band (min z >= 118 in vs storey datum 120/240): PR-S-BATH1-LAV/SH, PR-S-SUITE-*, PR-S-VANITY-*, PR-A-STUBATH-*, PR-A-BAR-*, PR-A-HW-STUBATH, PR-S-BATH1-SH-*, PR-M-CW-PLANT-STUB. P-103 (second) shows only the vents and the balcony hydrant stub; P-104 (attic) only vents; P-102 (main) draws those 22 runs over the main-floor fixtures. 13 DWV/vent runs on 'main' are also wholly upstairs (M5). Pipe elevations in the model are right (storey-relative to the filing datum); only the sheet is wrong.",
+        "expected": "Each storey's plumbing sheet carries the supply serving its fixtures (P-103: suite, hall bath, vanity; P-104: studio bath and bar).",
+        "method": "SCRATCH M2/p3.py (supply runs by storey) and p12.py (runs whose z is wholly >= 117 in); view permit_set_full.pdf pp.155-157."
+      },
+      "source": "plan filing convention",
+      "proposed_fix": "Engine: assign a run to the storey whose datum band holds its fixture end (or split P-102 by elevation); or re-file the 22 runs on second/attic (elevation edits, haus fmt), which also changes every run_through_* storey context.",
+      "size_guess": "large",
+      "seam_with": [
+        "C7",
+        "M5"
+      ],
+      "dedupe_key": "plumbingplan:upper-supply-on-main"
+    },
+    {
+      "id": "M2-105",
+      "area": "M2",
+      "title": "Plumbing sheets label supply runs '1/2\" WATER_HOT @ 0.00\"/FT'; no material, lagging, or stub-out height is printed for any supply",
+      "elements": [
+        "PR-B-HW-TRUNK",
+        "PR-B-HW-KITCH",
+        "PR-B-CW-TRUNK"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/plumbingplan.py:129"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "P-101",
+          "P-102",
+          "P-103",
+          "P-104"
+        ],
+        "pages": [
+          154,
+          155,
+          156,
+          157
+        ]
+      },
+      "confidence": 0.7,
+      "evidence": {
+        "measured": "Leader text is f'{size} {run.system.upper()} @ {grade}\"/FT' for every pipe: pressure pipe prints the enum text 'WATER_COLD'/'WATER_HOT' and a flattest-segment grade of 0.00 (P-101 and P-102 labels). Nothing prints PEX vs copper, the 1 in R-3.5 / 1/2 in R-3.1 lagging that mep.hot_water_insulation grades, the header branch tags, or the AFF height of any stub (kitchen 20 in, lav 24 in, valves 30.75/48.75 in, hydrants): the rough-in crew has no height on P-101..P-104. A-401.x enlarged bath plans carry no supply either.",
+        "expected": "Supply: 'CW'/'HW', size, material, lagging, and a rough-in height schedule (or notes) per fixture; no slope label on pressure lines.",
+        "method": "Read plumbingplan.py:129-137; view pp.154-157 (P-101 labels '1-1/4\" WATER_COLD @ 0.00\"/FT')."
+      },
+      "source": "plumbingplan.py",
+      "proposed_fix": "Skip the grade for water systems; print 'HW 1/2\" PEX' and the lagging; add a stub-height table from the fixture ports.",
+      "size_guess": "small",
+      "seam_with": [
+        "C7"
+      ],
+      "dedupe_key": "plumbingplan:supply-label-text"
+    },
+    {
+      "id": "M2-106",
+      "area": "M2",
+      "title": "P-101 and P-102 are unreadable: the drawing fills about a quarter of the sheet at 3/32 in and 1/8 in = 1 ft with labels stacked on top of each other",
+      "elements": [
+        "P-101",
+        "P-102"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/plumbingplan.py:118"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "P-101",
+          "P-102"
+        ],
+        "pages": [
+          154,
+          155
+        ]
+      },
+      "confidence": 0.6,
+      "evidence": {
+        "measured": "P-101 (basement, 3/32 in = 1 ft) draws the garage and the sunken court around the house so the plumbing occupies roughly 330 x 340 px of a 1700 x 1100 page; dozens of '... WATER_COLD @ 0.00\"/FT' leaders and 'SP-B-...' sleeve tags overprint in the furnace-room/bath cluster (the header's eight branches and the other supply lanes are not individually legible). P-102 (1/8 in) overprints the same way at the main-floor wet wall. P-103/P-104 at 1/4 in are clean.",
+        "expected": "Plumbing sheets at 1/4 in with the basement wet cluster on an enlarged plan, or an enlarged detail of the furnace-room header and its eight lanes.",
+        "method": "View permit_set_full.pdf pp.154-155 at full size."
+      },
+      "source": "sheet scale schedule",
+      "proposed_fix": "Add a furnace-room enlarged plumbing plan (header, lanes, stops) as an A-402 companion and crop P-101 to the house.",
+      "size_guess": "large",
+      "seam_with": [
+        "C7",
+        "M5"
+      ],
+      "dedupe_key": "P-101:legibility"
+    },
+    {
+      "id": "M2-107",
+      "area": "M2",
+      "title": "Plant-room sink: the nearest drain or vent is 185 in from the watering stub and the nearest hot water 230 in; the stub station cannot take a basin",
+      "elements": [
+        "PA-S-PLANT-WATER-STUB",
+        "PR-M-CW-PLANT-STUB",
+        "RM-S-PLANT"
+      ],
+      "files": [
+        "houses/catlin/plan/mep_supply_plant.py:33",
+        "plans/TODO.md:234"
+      ],
+      "kind": "interface-fit",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.6,
+      "evidence": {
+        "measured": "Stub at (155 in, 3.25 in), 134.8 in storey-relative (14 AFF). Plan distances to the nearest pipe of each service: PR-M-BATH2-SH-VENT 185 in (at x 98.5, y 179), PR-M-BATH2-VENT 209 in, PR-M-S-SUITE-DRAIN 197 in (150, 200), PR-M-S-BATH1-DRAIN 217 in; nearest hot supply PR-M-BATH2-LAV-HW 230 in. The room spans x 7.8-212, y 7.8-105 in (clear face). The cold is 0 in away (PR-M-CW-BALCONY-HYD riser at x 152). A basin needs trap-arm reach to a vent (the engine's mep.trap_arm_length table; the TODO quotes 42 in for a 1 1/4 in arm), a drain with fall into FS-S-WEST's 12 in trusses and a hot line.",
+        "expected": "A fixture is feasible when a vent is inside its trap-arm limit and the drain can fall to a stack; here both are 15+ ft away across the suite.",
+        "method": "SCRATCH M2/p9.py and p10.py (shapely distance from the stub point to every drain/vent/hot run on main/second)."
+      },
+      "source": "model geometry; notes/plant_room.md item 2 (no drain, by owner decision 2026-09-11)",
+      "proposed_fix": "Answer for the owner: not at the current stub. Options: (a) keep the capped hose stub (no sink), (b) a bench-height tray sink with an air-gapped 3/4 in indirect waste to a mop-sink-style receptor near the suite stack and a point-of-use electric heater, (c) re-site the room's wet point to W-S-C1 beside PR-M-S-SUITE-DRAIN (a 150 in jog from the stub).",
+      "size_guess": "large",
+      "seam_with": [
+        "M5",
+        "O5"
+      ],
+      "dedupe_key": "RM-S-PLANT:sink-feasibility"
+    },
+    {
+      "id": "M2-108",
+      "area": "M2",
+      "title": "PR-S-SUITE-LAV-HW still stands 0.14 in over the TODO's limit: leg at y = 266.5 in, the suite-lav vent needs it at y <= 266.36 in",
+      "elements": [
+        "PR-S-SUITE-LAV-HW",
+        "FX-S-SUITEBATH-LAV",
+        "PR-S-SUITE-TUBSH-CW"
+      ],
+      "files": [
+        "houses/catlin/plan/mep_lavatories.py:110",
+        "plans/TODO.md:248"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "Resolved run: (171.6, 268, z 148) -> (171.6, 266.5) -> (162.5, 266.5, z 148) -> (162.5, 264.755, z 145.5). The horizontal leg is at y = 266.5 across x 162.5-171.6, so it still crosses the vent take-off at (165.5, 268); the TODO's requirement is y <= 266.36 (0.14 in lower). PR-S-SUITE-TUBSH-CW already runs at y = 266.25 from x 163.2 to 199.6 but at z 144 (4 in below), so the leg can drop to 266.25 without meeting it.",
+        "expected": "Hot leg at y <= 266.36 so the 1 1/4 in vent can rise from the arm at (165.5, 268).",
+        "method": "SCRATCH M2/p6.py (path/z of PR-S-SUITE-LAV-HW and -CW)."
+      },
+      "source": "plans/TODO.md:248 (route --fixture refusal, drain basis section 9)",
+      "proposed_fix": "Edit the two y values 266.5 -> 266.25 in the editable lav module (the stop at y 264.755 is unchanged); re-run haus route --fixture FX-S-SUITEBATH-LAV.",
+      "size_guess": "small",
+      "seam_with": [
+        "M5"
+      ],
+      "dedupe_key": "PR-S-SUITE-LAV-HW:vent-lane"
+    },
+    {
+      "id": "M2-109",
+      "area": "M2",
+      "title": "TODO 'BATH2 supplies and PR-B-HW-TRUNK for a vent lane' is stale: the trunk left that lane; what blocks the tub vent now are PR-B-HW-WASH and PR-B-CW-WASH in W-M-BA2E and the header's eight-lane bundle",
+      "elements": [
+        "PR-B-HW-WASH",
+        "PR-B-CW-WASH",
+        "FX-M-BATH2-TUB",
+        "PR-B-HW-TRUNK"
+      ],
+      "files": [
+        "plans/TODO.md:268",
+        "plans/TODO.md:247",
+        "houses/catlin/plan/mep_supply.py:435"
+      ],
+      "kind": "interface-fit",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "PR-B-HW-TRUNK now ends at the header (y 306-339 only, nothing south of y 306). In W-M-BA2E the tub-vent take-off at (98, 216) sits 1.0 in from PR-B-HW-WASH's corner (98, 217, 42 in abs) and 2.0 in from PR-B-CW-WASH (100, 217, 32 in); both stand in that stud cavity from y 217 to 249 at 32 and 42 in. Below, the eight branches hold x 83.5-99 at 83.5 in from y 206 to 300 and rise into the joist bay only at y = 206 (KITCH 95, SH-HW 96.5, BATH2 91.5, SAUNA 93, FILLER 83.5).",
+        "expected": "The hold should name the pipes that actually block (PR-B-HW-WASH / PR-B-CW-WASH 42 in and 32 in legs at y 217-245) and what moving them buys.",
+        "method": "SCRATCH M2/p11.py (pipes within 9 in of (98, 216) and the supply paths)."
+      },
+      "source": "model geometry",
+      "proposed_fix": "Re-lane the laundry pair around the tub vent: HW-WASH leg to x=92 or y>=226, or take the laundry hot from the header's outlet-2 lane at 83.5 and rise at the sink wall; update the TODO line.",
+      "size_guess": "small",
+      "seam_with": [
+        "M5"
+      ],
+      "dedupe_key": "M2:bath2-vent-lane-stale-todo"
+    },
+    {
+      "id": "M2-110",
+      "area": "M2",
+      "title": "Shower/tub valve inlets (4.0 in centres, 30.75 / 48.75 / 51.44 in AFF) are still house allowances; wet_ports.py says no Delta sheet was read and the sheet that now exists gives no inlet station",
+      "elements": [
+        "FX-B-SAUNA-SH",
+        "FX-M-BATH2-SH",
+        "FX-S-BATH1-SH",
+        "FX-S-SUITEBATH-TUBSH",
+        "FX-A-STUBATH-SH"
+      ],
+      "files": [
+        "houses/catlin/plan/wet_ports.py:4",
+        "houses/catlin/plan/wet_ports.py:14",
+        "houses/catlin/plan/mep_supply_devices.py"
+      ],
+      "kind": "product-data",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "valve_ports() places hot/cold 2.0 in either side of the valve centre (4 in c-c), 'R10000-UNBX valve-body allowance; no Delta rough-in sheet read'. Delta instruction 50353 Rev G (R10000, read from I2's download) states only: stringer to finished wall 2 3/4 +/- 1/4 in, stringer to bonnet front 3 7/8 in; no inlet spacing or height. Retail listings: body about 4 in x 5 1/16 in, 1/2 in inlets; the Delta Pivotal 17T spec sheet lists R10000-UNBX dimensions unlabeled. All eight valve inlets stay APPROXIMATE; the ten valve-inlet ports account for 10 of the 42 fixture_port_connection UNKNOWNs.",
+        "expected": "Inlet centre-to-centre and height from Delta's R10000-UNBX spec sheet (or a stock rough-in drawing) so the stub stations can be stated EXACT.",
+        "method": "pdftotext -layout of Delta 50353 (SCRATCH I2/dl/r10000.pdf); WebSearch R10000-UNBX dimensions."
+      },
+      "source": "Delta 50353 Rev G; build.com Delta Pivotal 17T spec sheet",
+      "proposed_fix": "Pull the R10000-UNBX spec sheet drawing, set inlet spacing/height, drop the 'no Delta rough-in sheet read' comment; leave valve centres at the 48/30 in class heights.",
+      "size_guess": "small",
+      "seam_with": [
+        "I2"
+      ],
+      "dedupe_key": "wet_ports:valve-inlet-spacing"
+    },
+    {
+      "id": "M2-111",
+      "area": "M2",
+      "title": "1/2 in hot branches have no hydraulic check: the kitchen branch is 56.2 ft with 13 turns; the header study sizes by fixture units and volume only",
+      "elements": [
+        "PR-B-HW-KITCH",
+        "PR-B-HW-SAUNA",
+        "EQ-B-HW-HEADER"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/checks/mep/plumbing_dwv.py:332",
+        "houses/catlin/notes/water_service.md"
+      ],
+      "kind": "interface-fit",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.3,
+      "evidence": {
+        "measured": "mep.pipe_sizing reads the fixture-unit table only (no psi, no developed length). Hazen-Williams, C=150, 1/2 in PEX-a ID 0.475 in, 13 ninety-degree turns at 30 D equivalent each (71.6 ft equivalent): 1.8 gpm (the faucet) -> 3.3 fps and 7.8 psi; 3.3 gpm (sink plus dishwasher fill) -> 6.0 fps and 24 psi. SAUNA branch (34.4 ft, 10 turns): 5.1 / 15.5 psi. The assumed flows and equivalent lengths are mine (not a published row), hence confidence 0.3. TODO.md:107 already asks for a pressure check of the smaller hot branches.",
+        "expected": "A branch is graded for developed length and fittings against the pressure available at the heater (Uponor's maximum velocity for PEX-a).",
+        "method": "python3: hw(Q,d,L)=0.2083*(100/C)**1.852*Q**1.852/d**4.8655*L/100; lengths from takeoff and SCRATCH M2/p7.py."
+      },
+      "source": "Hazen-Williams; ASTM F876 ID",
+      "proposed_fix": "Add a developed-length pressure check (or a worked oracle note) before rough-in; if it fails, step KITCH to 3/4 in off the header's out-6 reducer.",
+      "size_guess": "small",
+      "seam_with": [
+        "M5"
+      ],
+      "dedupe_key": "PR-B-HW-KITCH:hydraulics"
+    }
+  ],
+  "prior_findings": [
+    {
+      "id": "M2-001",
+      "status": "closed",
+      "evidence": "plumbingplan._nominal() now formats mixed fractions: _nominal(0.5)='1/2\"', 0.75='3/4\"', 1.25='1-1/4\"', 1.5='1-1/2\"', 2='2\"' (round 1: '0\"', '1\"', '1\"', '2\"'). P-102 p.155 prints '1/2\" WATER_HOT', '3/4\"', '1-1/4\" WATER_COLD'; P-103 vent '2\" VENT' is a 2 in run. Fixed by af24c4e2.",
+      "method": ".venv/bin/python -c \"from typehaus.emit.draw.plumbingplan import _nominal; print([_nominal(x) for x in (0.5,0.75,1.25,1.5)])\"; view permit_set_full.pdf pp.155-157."
+    },
+    {
+      "id": "M2-005",
+      "status": "closed",
+      "evidence": "Fixed by policy: PipeRun.lagging_at_framing ('stops' default; model/mep.py:122) bores the bare OD and each finding says so ('its 1/2\" fiberglass sleeve, ASJ jacket (R-3.1) lagging stops at the framing and the bare pipe is bored'). The original case is gone: PR-B-HW-WASH is a bare 1/2\" PEX header branch now, 0.62\" through W-M-BA2E/W-M-CLN 2x4 studs against the 2.10\" limit (round 1: 0.88\" bore for a 2.875\" lagged line). Remaining lagged runs PR-B-HW-SUITE/SBATH/PR-A-HW-STUBATH (0.88\" bare bore, 1/2\" sleeve, R-3.1): 14 run_through_* findings, all pass. Residual: the 'stop' is printed only in the check text; no sheet or spec line tells the plumber to cut the jacket back at studs (and the bare 1 1/2 in of tube per stud is uninsulated).",
+      "method": "checks.json mep.run_through_stud messages containing 'PR-B-HW-' ; routing_bore_scope.lagging_at_framing; SCRATCH M2/p1.py lists run insulation."
+    },
+    {
+      "id": "M2-008",
+      "status": "open",
+      "evidence": "Unchanged: mep.fixture_port_connection has 42 UNKNOWN (approximate station) and 32 PASS. FX-S-BATH1-WC cold 4.67 in off PR-S-BATH1-WC-CW (round 1 4.67), FX-G-HYDRANT 6.16 in, FX-M-PORCH-HYD 3.26 in (3.13), FX-S-BALCONY-HYD 2.77 in, FX-M-BATH2-WC 1.14 in, FX-B-BATH-WC 1.50 in. The WC part is now documented by I2-103 (TOTO publishes the stations: Aquia IV 5 7/8 in off centre / 4 3/4 in AFF, Drake 4 5/16 in / 7 1/2 in, Carlyle II 6 in / 8 in) so the C6 rejection ('TOTO publishes no inlet station') no longer holds. Hydrants are still 'class' types (Y34SS yard, SD34 Woodford Model 19) with estimated inlets. Hand-off to I2/product pass, no geometry change in M2.",
+      "method": "checks.json mep.fixture_port_connection unknown messages; SCRATCH M2/p5.py lists every fixture supply port height."
+    },
+    {
+      "id": "M2-009",
+      "status": "closed",
+      "evidence": "The kitchen sink supply ports are now EXACT at 35.84 in above the storey datum (34.9 AFF), the Kraus KPF-1610SFS's factory 26 1/2 in supply lines (ServicePort.hose_length), and fixture_port_connection passes: PR-B-HW-KITCH ends 19.74 in from the port, PR-B-CW-TRUNK 16.92 in, inside the 26.5 in connector. The stops are on the pipe at 9.6-10.6 in AFF (PA-M-KITCH-STOP-CW/HW, z 0.268/0.230 m, 3/8 in compression outlets). Retail listings give the lines as 26.5 in integrated nylon, 3/8 in compression; Kraus's own sheet was not retrievable.",
+      "method": "checks.json mep.fixture_port_connection pass lines for FX-M-KITCH-SINK; plan/kitchen_sink_types.py:55-62; notes/kitchen_sink_installation.md; WebSearch Kraus KPF-1610SFS."
+    }
+  ]
+}

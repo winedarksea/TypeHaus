@@ -1,0 +1,543 @@
+{
+ "area": "M5",
+ "model": "houses/catlin @539d9a81",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventoried 40 drain runs (35 DWV, 5 condensate/TPR), 28 vent runs + the VR-M-STACK vent/radon riser, 13 resolved cleanouts, 27 drain fixtures, the three 3\" stack walls. Sources: authored in plan/mep_drainage.py, mep_venting.py, mep_vent_tees.py, mep_cleanouts.py; tables in resolve/plumbing_tables.py (Table 1002.2 rows verified against a secondary 2018 UPC printout; MN 4714.1002 amendment read at revisor.mn.gov); pipe sizes in the catalogue (library/fittings.py has no laying lengths). Probes: per-segment slope of every drain; per-fixture arm walk (engine function) plus my own fall and first-leg analysis; vent connectivity in 3D; stack-in-wall plan overlap; cleanout fitting/vent coaxiality; three haus route --fixture feasibility runs. Verified clean: slope, vent grade direction, vent network, stack fit, cleanout access. NOT examined: vent SIZING vs developed length (UPC 904/906 tables) and vent roof-termination geometry beyond the citation; under-slab pipe bedding/cover and the building-sewer exit invert; fitting-body clearances (no laying lengths in the catalogue); cleanout front clearances against real obstacles (only authored clear_width/depth read); storm leaders, sump discharge and site drains (P-201..204 opened, not measured); condensate drains' fixture ends; the supply runs the vent routes collide with (M2 owns supply); engineering/seal impact of any moved pipe; permit-set dimension strings (D1). The PDF sheets A-401.1-.6 and P-101..P-204 were all opened.",
+ "verified_clean": [
+  "Drain slope, per horizontal segment, all 40 drain runs (35 DWV + 5 condensate/TPR): flattest 0.250\"/ft on PR-B-MAIN-DRAIN (O4\"), PR-B-BATH-DRAIN, PR-B-SAUNA-DRAIN, PR-M-KITCH-TRAP-ARM, PR-M-S-VANITY-DRAIN (zero margin, not a defect); none below 1/4\"/ft, none backward; probe p2.py/p3.py agree with mep.drain_slope. Steeper-than-12\"/ft segments are verticals/45 deg offsets (PR-M-KITCH-LOCAL-DRAIN 12.0, PR-M-S-BATH1-WC-DRAIN 11.7 at 44.4 deg, PR-B-TUB2-DRAIN 20.8 at 60 deg, PR-S-VANITY-LAV2-ARM 11.1) and are graded as drops.",
+  "FX-B-BATH-WC arm: independent hand sum 8.55\" (flange drop) + 60.5\" (south to the vent tee at y 231.3) = 69.1\", the check says 69\"; Table 1002.2 3\" = 72\".",
+  "Table 1002.2 rows in resolve/plumbing_tables.py:65 (1-1/4 30, 1-1/2 42, 2 60, 3 72, 4 120) agree with a 2018 UPC printout read through a search result (Lynnwood WA submittal checklist, Oregon excerpt); the MN rule page does not reproduce the table.",
+  "Vent network: 28 vent runs + VR-M-STACK vent riser connected in 3D within r+r+1/2\"; every non-WC fixture except the 3 in M5-103 has a vent tee on its drain; every vent leg rises away from its drain (no drop or sag among the legs probed).",
+  "3\" stacks fit their walls (M2-006 closed, above).",
+  "Cleanouts: 13 resolved (CO-B-SEWER .. CO-M-SUITE), all accessible=True with 18\" (<=2\") or 24\" (3\"/4\") clear zones; upper-terminal and >135 deg turn cleanouts present per mep.drain_cleanouts. Cap/fitting positions checked for coaxiality only (M5-105 found one).",
+  "haus route --fixture for FX-M-BATH2-TUB, FX-S-SUITEBATH-LAV, FX-S-SUITEBATH-TUBSH reproduces the three refusals (scratchpad route/*/report.json).",
+  "A-401.1-.6 (pp.41-46) opened: no DWV drawn, fixtures and room data consistent with the model; P-201..P-204 opened: storm/site drainage only."
+ ],
+ "findings": [
+  {
+   "id": "M5-101",
+   "area": "M5",
+   "title": "Nine vents leave their drain horizontally at the drain's centreline height, below the flood rim, instead of rising first; nothing grades it",
+   "elements": [
+    "PR-B-BATH-WC-VENT",
+    "PR-B-SAUNA-VENT",
+    "PR-B-SAUNA-FD-VENT",
+    "PR-M-BATH2-SH-VENT",
+    "PR-M-BATH2-WC-VENT",
+    "PR-M-LSINK-VENT",
+    "PR-S-BATH1-SH-VENT",
+    "PR-S-BATH1-WC-VENT",
+    "PR-S-SUITEBATH-WC-VENT"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_vent_tees.py",
+    "houses/catlin/plan/mep_venting.py",
+    "packages/engine/src/typehaus/checks/mep/vent_geometry.py",
+    "packages/engine/src/typehaus/checks/mep/trap_arm.py:85"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "P-101",
+     "P-102",
+     "P-103"
+    ],
+    "pages": [
+     154,
+     155,
+     156
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Each vent's first vertex is on its drain's centreline (|dz| <= 0.6\") and its FIRST segment is level, not vertical: PR-B-BATH-WC-VENT 22.4\" level (z -119.2 -> -118.8) before it rises 100\"; PR-B-SAUNA-VENT 26.2\"; PR-B-SAUNA-FD-VENT 25.3\"; PR-M-BATH2-SH-VENT 21.9\"; PR-S-BATH1-WC-VENT 17.0\"; PR-M-LSINK-VENT 16.0\"; PR-M-BATH2-WC-VENT 15.3\"; PR-S-SUITEBATH-WC-VENT 14.4\" then 2.4\" + 28.0\" + 1.2\" more, all within 2.5\" of the closet drain's elevation (z 116.6-118.2, flood rim 150.6); PR-S-BATH1-SH-VENT 9.0\". Every one stays more than 6\" below its fixture's rim for that leg (rim = fixture body top, the engine's own conservative read). No check reads this: mep.vent_grade grades only drops/sags, mep.trap_arm_developed accepts any vent end within r+1/2\" of the drain in 3D (TEE_TOL_M).",
+    "expected": "A vent connects ABOVE the centreline of a horizontal drain and rises vertically to 6\" over the fixture's flood-level rim before any horizontal leg; a leg under that line is a drainage-fitting, drain-graded pipe (UPC 905.2/905.3: the engine's own routing/trap_vent.py:5 and route_fixture_vent.py:20 apply exactly this rule to every route it proposes, but not to the authored ones). A level leg leaving at the centreline is a side inlet.",
+    "method": "Python probe on the pickled resolved model: for each vent run, take the end that lies on a drain (resolve.mep_trap_arm._project within radius+TEE_TOL_M), walk the vent from there, and list the first segments with max z <= rim+6\" (rim = model.canvas_objects body_z1_m of the fixture whose drain it tees) and plan length > 0.5\"; scripts /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/p4.py and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/p5.py."
+   },
+   "source": "UPC 905.3 'Vent Pipe Rise' as printed in the CPC (https://gocodebook.com/library/us/ca/ca-plumbing-code/chapter-9-vents/905.3-vent-pipe-rise.-unless-prohibited-by-structural-conditions-each-vent-shall-rise-verticall) and engine cite routing/trap_vent.py:5; MN 4714 adopts UPC ch. 9. The 2018 UPC page itself was not opened; 'unless prohibited by structural conditions' may excuse the floor-cavity legs, which then still need drainage fittings and 1/4\"/ft (see M5-107).",
+   "proposed_fix": "Add a vent-rise check (ADVISORY, then CODE) that grades first-leg direction, connection above the centreline and the 905.3 line, using the router's _OVER_RIM_M. Then give each tee a short vertical riser (a sanitary tee turned up, 90 into the level leg above the line) or record the structural exception per vent. The basement under-slab legs (BATH-WC, SAUNA, SAUNA-FD) are the plainest: rise at the tee, run level in the ceiling.",
+   "size_guess": "large",
+   "seam_with": [
+    "M4"
+   ],
+   "dedupe_key": "M5:vent-first-leg-level"
+  },
+  {
+   "id": "M5-102",
+   "area": "M5",
+   "title": "mep.trap_arm_developed counts a vertical drop as arm length and never grades the fall against the pipe diameter (the router refuses the same arm as an S-trap)",
+   "elements": [
+    "FX-M-LAUNDRY-SINK",
+    "FX-M-BATH2-SH",
+    "FX-S-BATH1-SH",
+    "FX-B-SAUNA-SH",
+    "FX-B-SAUNA-FD",
+    "FX-A-STUBATH-SH",
+    "PR-B-LSINK-DRAIN",
+    "PR-B-SH2-DRAIN",
+    "PR-M-S-BATH1-TUB-DRAIN"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/mep_trap_arm.py:178",
+    "packages/engine/src/typehaus/checks/mep/trap_arm.py:35",
+    "packages/engine/src/typehaus/routing/trap_vent.py:54"
+   ],
+   "kind": "engine-geometry",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "P-101",
+     "P-102"
+    ],
+    "pages": [
+     154,
+     155
+    ]
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Fall from the arm's first vertex (the fixture drain point) to the vent tee the check accepts, non-water-closet fixtures: FX-M-LAUNDRY-SINK 15.2\" on a O2\" arm (drain point z 0.0, tee z -15.2 at the bottom of the drop); FX-M-BATH2-SH 22.0\" (O2\"); FX-S-BATH1-SH 19.1\" (O1.5\"); FX-B-SAUNA-SH 10.3\" and FX-B-SAUNA-FD 8.3\" (O2\"); FX-A-STUBATH-SH 4.8\" (O2\"). The finding messages call these arms '15\"', '22\"', '26\"', '10\"', '8\"', '5\"', i.e. the drop itself. Water closets (closet-bend drops of 4-22\") excluded: the bend is the arm's first leg by practice. The model has no trap, so the weir is not known; the drain point is a floor or stub-out, which makes the true fall at least this large.",
+    "expected": "A trap arm may not fall more than one pipe diameter before its vent (otherwise an S-trap, UPC 1002.2 / 1001): the engine's own router enforces it (arm_reach: 'Horizontal edges only (a drop before the vent is an S-trap)') so the check and the router disagree about what a vented arm is; arm_is_vented uses the check's walk, so the router also never offers these fixtures a better vent.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/p8.py: for every Fixture, arm_leaves() then developed_arm() (the check's own walk), plus the nearest vent end on any drain (resolve.mep_trap_arm._project); fall = first-vertex z - tee z. Also read routing/trap_vent.py:3-6 and :54."
+   },
+   "source": "routing/trap_vent.py docstring (S-trap rule, UPC 1002.2 as the engine cites it); MN 4714.1002 as amended is silent on fall (https://www.revisor.mn.gov/rules/4714.1002/), so the diameter rule is the engine's own reading of the UPC, not verified in the 2018 text.",
+   "proposed_fix": "Add the router's fall rule to mep.trap_arm_developed (ADVISORY first): arm fall to the tee <= arm diameter, trap weir at the fixture's trap model if one exists. In the house: put the tee at the top of the drop (sanitary tee at the trap-arm stub, vent up, drain down), which also fixes M5-101 for LSINK/BATH2-SH/BATH1-SH.",
+   "size_guess": "large",
+   "seam_with": [
+    "M2",
+    "M4"
+   ],
+   "dedupe_key": "M5:arm-fall-s-trap"
+  },
+  {
+   "id": "M5-103",
+   "area": "M5",
+   "title": "Three drain fixtures are still unvented in 3D: re-measured, all three routes still refuse, for the reasons the TODO gives plus one it misses",
+   "elements": [
+    "FX-M-BATH2-TUB",
+    "FX-S-SUITEBATH-LAV",
+    "FX-S-SUITEBATH-TUBSH",
+    "PR-B-TUB2-DRAIN",
+    "PR-M-S-SUITE-LAV-DRAIN",
+    "PR-M-S-SUITE-TUB-DRAIN",
+    "PR-M-BATH2-VENT",
+    "PR-S-SUITEBATH-VENT"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_vent_tees.py",
+    "houses/catlin/plan/mep_drainage.py:482",
+    "plans/TODO.md:246",
+    "houses/catlin/notes/mep_drain_routing_basis.md:489"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "P-102",
+     "P-103"
+    ],
+    "pages": [
+     155,
+     156
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "mep.trap_arm_developed (baseline checks.json) still ADVISORY on all three; nearest serving vent end off any drain: TUB 35.8\", LAV 17.5\", TUBSH 17.5\". Arms as built: PR-B-TUB2-DRAIN O1.5\", 26.6\" developed, falls 24.8\" (13.6\" plumb, then 6.5\" plan x 11.25\" drop at 60 deg) to the main with no vent tee; PR-M-S-SUITE-LAV-DRAIN O1.5\", 70.6\" developed to the collector (limit 42\"); PR-M-S-SUITE-TUB-DRAIN O1.5\", 90.1\" developed (limit 42\"), so a vent at the collector could not serve it either. haus route --fixture, run today into the scratchpad (route/<tag>/report.json): TUB 'no wall cavity that holds a 1.25\" vent to 6\" over the rim within 42\" developed of the trap; the arm is held by FS-M-WEST (three joist lines)'; LAV 'no take-off in reach rises clear to a vent stack; the cheapest, at (165.50\", 268.00\"), rises into PR-S-SUITE-LAV-HW 25.75\" above the arm'; TUBSH 'no wall cavity holds a 1.25\" vent ... held by DU-M-ERV-R-LAUNDRY, W-S-SN3, W-S-C2C', blocker PR-B-HW-SUITE at (14.25', 22.18', z 9.80'). So none moved since the TODO block was written. Missed by the TODO for the LAV: see M5-106.",
+    "expected": "Each fixture's trap arm meets a vent tee inside Table 1002.2 (42\" for O1.5\") in 3D, or a graded 908 wet vent.",
+    "method": "Checks: baseline checks.json mep.trap_arm_developed. Routes: .venv/bin/haus route houses/catlin --fixture <tag> --json --summary --out /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/route/<tag> (three runs, ~1 min each, nothing written outside the scratchpad). Arm lengths: /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/p12.py and a path-length sum over run.path/z_m."
+   },
+   "source": "Table 1002.2 (engine resolve/plumbing_tables.py:65; 30/42/60/72/120 agree with a 2018 UPC printout reproduced at https://www.lynnwoodwa.gov/files/sharedassets/public/development-and-business-services/public-works/submittal-checklist/development-engineering/grease-interceptor/chapter-10-traps-and-interceptors-upc.pdf per a secondary search read); MN 4714.1002 amendment.",
+   "proposed_fix": "Owner/plumber decisions, not engine: TUB - open a vent lane (move a joist-line crossing by a web station, or tee the arm up through W-M-BA2E with PR-B-HW-WASH rerouted, drain basis section 9); LAV - move both supply legs off the riser line (M5-106); TUBSH - this arm is 90\" long, so re-route it (shorter, tee on its own arm) before any vent can be added.",
+   "size_guess": "large",
+   "seam_with": [
+    "M2",
+    "M4"
+   ],
+   "dedupe_key": "M5:three-unvented"
+  },
+  {
+   "id": "M5-104",
+   "area": "M5",
+   "title": "The CODE-tier mep.trap_arm_length still passes the three unvented fixtures and understates the developed arm elsewhere; mep.trap_arm_developed cannot move under the CODE id yet",
+   "elements": [
+    "FX-M-BATH2-TUB",
+    "FX-S-SUITEBATH-LAV",
+    "FX-S-SUITEBATH-TUBSH",
+    "FX-S-VANITY-LAV1",
+    "FX-S-BATH1-SH",
+    "FX-M-BATH2-WC",
+    "FX-M-LAUNDRY-SINK"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/checks/mep/plumbing_dwv.py:386",
+    "packages/engine/src/typehaus/checks/mep/plumbing_dwv.py:454",
+    "packages/engine/src/typehaus/checks/mep/trap_arm.py:35"
+   ],
+   "kind": "engine-geometry",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "Baseline checks.json, mep.trap_arm_length (plan hypot, drain point to nearest vent run point) vs mep.trap_arm_developed (3D walk), inches: FX-M-BATH2-TUB 11 PASS vs no vent (ADVISORY); FX-S-SUITEBATH-LAV 0 PASS vs no vent; FX-S-SUITEBATH-TUBSH 4 PASS vs no vent; FX-S-VANITY-LAV1 18 vs 40 (limit 42, margin 2\"); FX-S-BATH1-SH 1 vs 26; FX-M-LAUNDRY-SINK 0 vs 15; FX-M-BATH2-WC 0 vs 22; FX-B-BATH-WC 61 vs 69 (independent hand check: 8.55\" slab drop + 60.5\" south = 69.1\"). Answer to the TODO's 'can it move under CODE': not yet. Blockers: the three unvented fixtures (M5-103) would become 3 FAILs on the permit gate; the check lacks the fall rule (M5-102) and the connection-above-centreline / rise rules (M5-101); and the MN weir/inner-edge/2D wording (M5-109). Once those are in and the three are fixed, move it and delete the plan-distance version.",
+    "expected": "The permit-gating trap-arm check is the one that measures along the pipe to a vent that actually meets the drain.",
+    "method": "Compare the two check ids' messages per fixture in baseline/checks.json (python re over message text; table in this session), and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/p8.py for the 3D arm."
+   },
+   "source": "plans/TODO.md:246-252; checks/mep/trap_arm.py docstring ('ADVISORY until every vent meets its drain in 3D').",
+   "proposed_fix": "Keep ADVISORY until M5-101/102/103 land, then promote to Tier.CODE under mep.trap_arm_length and retire the hypot walk. Until then a FAIL-capable second reader of the 3D result would not hurt: have trap_arm_length return UNKNOWN for a fixture whose 3D walk finds no tee.",
+   "size_guess": "small",
+   "seam_with": [
+    "M2"
+   ],
+   "dedupe_key": "M5:trap-arm-code-id"
+  },
+  {
+   "id": "M5-105",
+   "area": "M5",
+   "title": "Two vent tees sit on a cleanout fitting, and CO-B-WC2-HEAD's cap stands inside the WC drain it is meant to access",
+   "elements": [
+    "CO-B-WC2-HEAD",
+    "PR-M-BATH2-WC-VENT",
+    "PR-B-WC2-DRAIN",
+    "CO-B-LSINK",
+    "PR-M-LSINK-VENT",
+    "PR-B-LSINK-DRAIN"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_cleanouts.py:73",
+    "houses/catlin/plan/mep_vent_tees.py",
+    "plans/TODO.md:252"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "P-101",
+     "P-102"
+    ],
+    "pages": [
+     154,
+     155
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "CO-B-LSINK fitting (144.0, 226.63, z -15.4) and PR-M-LSINK-VENT's first vertex (144.0, 226.63, -15.2): same plan point, 0.2\" apart vertically, on the 2\" drain bend (a 2\" cleanout wye, a 1.5\" vent tee and a bend in 0.2\"). CO-B-WC2-HEAD fitting (30.0, 252.74, -21.0) is the closet-bend vertex; the vent PR-M-BATH2-WC-VENT starts at (30.0, 252.7, -20.5), 0.5\" above it. The cleanout's cap is at (30.0, 252.74, -12.5), the same XY as the 3\" closet drop that runs z +1.5 -> -21.0: the access riser is coaxial with the pipe it serves (that is the blessed 86 cm3 overlap; LSINK's is the 32 cm3). Fitting stop-to-stop in the catalogue is 3.0625\" for a 3\" branch (library/fittings.py _STACK_DIMS), so neither pair fits.",
+    "expected": "A bend, a cleanout and a vent branch at separate stations at least one fitting apart (the engine's own mep.drain_inlet_spacing uses wye 600 5.000+1.625 and 1.906\" nipples at 3\"), and a cleanout cap reachable beside, not inside, the pipe.",
+    "method": "Resolved model: m.drain_cleanouts positions vs run.path/z_m of the drain and the vent's first vertex (probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/p7.py); solids overlap pair numbers from plans/TODO.md:252."
+   },
+   "source": "plans/TODO.md:252 ('tee into the drain where CO-B-LSINK / CO-B-WC2-HEAD sit'); library/fittings.py _STACK_DIMS; mep_drain_routing_basis.md section 10.",
+   "proposed_fix": "Move each vent tee 6-8\" downstream (or up the drop) from its cleanout, and offset CO-B-WC2-HEAD's cap a closet-bend sweep east or south so its riser leaves the closet axis (a wye with the cap on the branch). Both are one-run edits; re-run haus check for mep.drain_cleanouts, mep.drain_inlet_spacing and the blessed overlap list.",
+   "size_guess": "small",
+   "seam_with": [
+    "M4"
+   ],
+   "dedupe_key": "M5:tee-on-cleanout"
+  },
+  {
+   "id": "M5-106",
+   "area": "M5",
+   "title": "FX-S-SUITEBATH-LAV: moving PR-S-SUITE-LAV-HW to y<=266.36\" is not enough; the cold leg on the other side leaves the same 1.50\"",
+   "elements": [
+    "FX-S-SUITEBATH-LAV",
+    "PR-S-SUITE-LAV-HW",
+    "PR-S-SUITE-LAV-CW",
+    "PR-M-S-SUITE-LAV-DRAIN",
+    "W-S-SN3"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_lavatories.py",
+    "houses/catlin/notes/mep_drain_routing_basis.md:489",
+    "plans/TODO.md:248"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "A 1 1/4\" vent riser (OD 1.660\", r 0.830\") at the drain's wall station (165.5\", 268.0\"), clash band r + 5/16\" (PEX 1/2\" OD 0.625) + 1/2\" clearance = 1.6425\". PR-S-SUITE-LAV-HW runs level at z 148.0 along y = 266.5\" for x 162.5-171.6\" (1.50\" off: short 0.1425\", the router's refusal). PR-S-SUITE-LAV-CW runs level at z 150.0 along y = 269.5\" for x 163.2-168.5\" (also 1.50\" off, on the other side of x = 165.5\"). Both legs span the riser line, so the riser must clear BOTH; the router reports only the first it meets. Wall W-S-SN3 is 6.5\" thick on y = 268.0, stud plane 265.25-270.75.",
+    "expected": "Riser centreline >= 1.6425\" from both legs: HW at y <= 266.36\" AND CW at y >= 269.64\" (both fit the stud plane), or move the riser line past x = 171.6\".",
+    "method": "Pipe coordinates from m.pipe_runs (PR-S-SUITE-LAV-HW/-CW path, z_m); clash band arithmetic from mep_drain_routing_basis.md section 9; refusal reproduced with haus route --fixture FX-S-SUITEBATH-LAV (scratchpad route/FX-S-SUITEBATH-LAV/report.json)."
+   },
+   "source": "mep_drain_routing_basis.md section 9 (the 0.830 + 0.3125 + 0.500 arithmetic).",
+   "proposed_fix": "Move the HW leg to y 266.25 and the CW leg to y 269.75 (1/4\" each, inside the cavity), re-run haus route --fixture FX-S-SUITEBATH-LAV, and re-grade mep.run_interference and mep.run_through_stud for both legs.",
+   "size_guess": "small",
+   "seam_with": [
+    "M2"
+   ],
+   "dedupe_key": "M5:suite-lav-riser-both-legs"
+  },
+  {
+   "id": "M5-107",
+   "area": "M5",
+   "title": "Five vent legs run at drain level flatter than the 1/4\"/ft a drainage-graded vent needs; PR-S-SUITEBATH-WC-VENT holds 0.043\"/ft over 28\"",
+   "elements": [
+    "PR-S-SUITEBATH-WC-VENT",
+    "PR-B-BATH-WC-VENT",
+    "PR-B-SAUNA-VENT",
+    "PR-B-SAUNA-FD-VENT",
+    "PR-M-LSINK-VENT"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_vent_tees.py",
+    "houses/catlin/plan/mep_venting.py",
+    "packages/engine/src/typehaus/checks/mep/vent_geometry.py:143"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "P-101",
+     "P-102",
+     "P-103"
+    ],
+    "pages": [
+     154,
+     155,
+     156
+    ]
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Rise toward the stack over the first level leg (grade back to the drain, in/ft): PR-S-SUITEBATH-WC-VENT 0.043\" over its 28.0\" third leg (z 117.9 -> 118.0; the flattest, whose first two legs run 0.83 and 1.47\"/ft); PR-B-BATH-WC-VENT 0.214 (22.4\"); PR-B-SAUNA-VENT 0.229 (26.2\"); PR-B-SAUNA-FD-VENT 0.238 (25.3\"); PR-M-LSINK-VENT 0.225 (16.0\"). Each is within 12\" of its drain's elevation. mep.vent_grade_margin reports these as ADVISORY vs the house's 1/8\"/ft, a number that is a rise away from the drain, not the 1/4\" a vent below the rim needs. The sheet prints them as 'VENT @ 0.04\"/FT' with no remark.",
+    "expected": "A vent leg under the flood rim + 6\" is installed 'with approved drainage fittings, material, and grade to the drain' (UPC 905.3 as printed in the CPC): 1/4\"/ft minimum (the same 708.0 minimum mep.drain_slope uses).",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/p5.py (grade = rise over plan per leg for legs with max z <= rim+6\" and first on the vent); compare vent_geometry._HOUSE_GRADE."
+   },
+   "source": "UPC 905.3 text via CPC mirror (https://gocodebook.com/library/us/ca/ca-plumbing-code/chapter-9-vents/905.3-vent-pipe-rise.-unless-prohibited-by-structural-conditions-each-vent-shall-rise-verticall); engine drain_slope minimum plumbing_dwv.py:56-60.",
+   "proposed_fix": "Raise the far end of each leg a fraction of an inch (SUITEBATH-WC third leg needs +0.58\" over 28\", which the floor bay may not allow: then give it a riser at the tee per M5-101), or accept as structural exceptions and print the note.",
+   "size_guess": "small",
+   "seam_with": [
+    "M4"
+   ],
+   "dedupe_key": "M5:vent-drainage-grade"
+  },
+  {
+   "id": "M5-108",
+   "area": "M5",
+   "title": "P-101/P-102 print the DWV illegibly and file the second-floor bath drains on the main-floor plan; P-103 shows the second-floor baths with vents only",
+   "elements": [
+    "P-101",
+    "P-102",
+    "P-103",
+    "PR-M-S-BATH1-DRAIN",
+    "PR-M-S-SUITE-DRAIN",
+    "PR-S-VANITY-LAV1-ARM"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/plumbingplan.py:119",
+    "packages/engine/src/typehaus/emit/draw/plumbingplan.py:130"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "P-101",
+     "P-102",
+     "P-103",
+     "P-104"
+    ],
+    "pages": [
+     154,
+     155,
+     156,
+     157
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "P-101 (3/32\" = 1'-0\"): in the furnace/bath/sauna area about 60 supply, drain and vent labels overprint ('WATER_COLD @ 0.00\"/FT', '2\" DRAIN', 'DRAIN @ 0.25\"/FT', 'FX-FLOOR...' fixture names) so a plumber cannot read any run; supply runs carry '@ 0.00\"/FT' noise. P-102 likewise at the baths. The 11 second-floor drain runs (PR-M-S-*, PR-S-VANITY-LAV*; z 111-142\") are filed on storey 'main' (run.storey), so P-103 (second) shows the suite bath, hall bath and vanity fixtures with no drain, only the 2\" vents (e.g. '2\" VENT @ 0.03\"/FT'); their labels sit on P-102 over the living-room plan. No sheet in the set gives a DWV riser diagram, vent tee elevations, cleanout locations with heights or developed arm lengths; A-401.1-.6 draw fixtures only (A-401.4/5 mark two 'CHASE' squares, none the 3\" stack by name). P-201..P-204 are the site/roof storm 'Drainage plans', not DWV. Grade labels themselves are right (M2-002).",
+    "expected": "A plumber can read each drain/vent run's size and grade and find cleanouts and vent tees; second-floor DWV prints on the second-floor sheet.",
+    "method": "pdftoppm/Read of baseline/permit_set_full.pdf pp.154-161 and 41-46; model.pipe_runs storey per run (probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/p6.py)."
+   },
+   "source": "baseline/permit_set_full.json (sheet titles); plumbingplan.py per-storey filter run.storey != storey.",
+   "proposed_fix": "Split P-101/P-102 by trade (DWV only vs supply), 1/4\" scale for the bath clusters, drop '@ 0.00\"/FT' on supply, file a drain on the storey of its fixtures, and add a one-line vent/cleanout schedule (tag, size, grade, tee elevation).",
+   "size_guess": "large",
+   "seam_with": [
+    "D1"
+   ],
+   "dedupe_key": "M5:p10x-dwv-legibility"
+  },
+  {
+   "id": "M5-109",
+   "area": "M5",
+   "title": "MN's amended 1002.2 measures weir to the INNER EDGE of the vent and sets a 2 x diameter minimum; the check measures the drain point to the vent centreline and has no minimum",
+   "elements": [
+    "FX-S-VANITY-LAV1",
+    "FX-B-BATH-LAV",
+    "FX-M-BATH1-LAV",
+    "FX-M-BATH2-SINK",
+    "FX-A-STUBATH-LAV",
+    "FX-A-STUDIO-BAR-SINK"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/mep_trap_arm.py:1",
+    "packages/engine/src/typehaus/checks/mep/trap_arm.py:1",
+    "packages/engine/src/typehaus/resolve/plumbing_tables.py:64"
+   ],
+   "kind": "engine-geometry",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Check output: FX-S-VANITY-LAV1 arm 40\" vs Table 1002.2 42\" (O1.5\"); FX-B-BATH-LAV, FX-M-BATH1-LAV, FX-M-BATH2-SINK, FX-A-STUDIO-BAR-SINK read 0\" and FX-A-STUBATH-LAV 2\" (a 2D minimum would be 3\" for O1.5\" and 4\" for O2\"). The walk starts at the arm's first vertex (the stub-out), not at the trap weir, and stops at the vent tee centreline, not its inner edge (radius 0.75\" for the 1.5\" vents). The model has no trap, so the weir offset (a P-trap outlet is several inches downstream of its weir) cannot be added.",
+    "expected": "Minn. R. 4714.1002: 'the developed length of the trap arm from the trap weir to the inner edge of the vent shall be within the distance given in Table 1002.2 but in no case less than two times the diameter of the trap arm'.",
+    "method": "WebFetch https://www.revisor.mn.gov/rules/4714.1002/ (quoted); compare the check's start (trap_arm.py: starts = arm_leaves(...), START_TOL_M 12\") and stop (developed_arm hits on vent-end projection)."
+   },
+   "source": "Minn. R. 4714.1002 (https://www.revisor.mn.gov/rules/4714.1002/); the table values are not on that page (see M5-103 source).",
+   "proposed_fix": "State the measurement in the check's docstring (drain point to vent tee, plus an assumed weir offset), add a minimum-distance advisory at 2 x arm diameter, and keep VANITY-LAV1 under watch (2\" of margin before any weir offset).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "M5:mn-1002-2-wording"
+  },
+  {
+   "id": "M5-110",
+   "area": "M5",
+   "title": "mep.drain_tie_in prints arrival heights of +98.9\" to +144.6\" 'above the centreline' for ties onto vertical stacks",
+   "elements": [
+    "PR-B-WC2-DRAIN",
+    "PR-B-SH2-DRAIN",
+    "PR-B-SINK2-DRAIN",
+    "PR-M-S-BATH1-WC-DRAIN",
+    "PR-M-S-BATH1-LAV-DRAIN",
+    "PR-M-S-VANITY-DRAIN",
+    "PR-M-S-SUITE-WC-DRAIN",
+    "PR-A-BAR-DRAIN"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/mep_tie_ins.py:96",
+    "packages/engine/src/typehaus/checks/mep/drain_tie_in.py:115"
+   ],
+   "kind": "engine-geometry",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Baseline messages: PR-B-WC2-DRAIN '+98.938\"', PR-B-SH2-DRAIN +100.387, PR-B-SINK2-DRAIN +98.237, PR-M-S-BATH1-WC-DRAIN +120.830, PR-M-S-BATH1-LAV-DRAIN +134.550, PR-M-S-VANITY-DRAIN +144.562, PR-M-S-SUITE-WC-DRAIN +116.000, PR-A-BAR-DRAIN +117.750, PR-M-WASH-STANDPIPE +15.4, PR-M-BATH2-LAV-ARM +14.9. Cause: pipe_invert_at(parent, end_point) matches in plan only; on a vertical parent segment the plan point is degenerate and returns the segment's low end. Example: PR-B-WC2-DRAIN ends at (36.0, 198.0, -25.5), 0.8\" above PR-B-MAIN-DRAIN's stack-top vertex (36.0, 198.0, -26.3), which then falls to -124.4. The tie is fine; the number is not, and an arrival that is truly in the stack's lower half cannot be told from it.",
+    "expected": "'Arrives X above the pipe's centreline at the junction' for a stack means the height along the stack's own z span, 0.8\" here.",
+    "method": "Baseline checks.json mep.drain_tie_in messages; PR-B-MAIN-DRAIN path (36,198,-26.3)->(36,198,-124.4) from m.pipe_runs; read mep_tie_ins.py:96-104."
+   },
+   "source": "resolve/mep_tie_ins.py (drain_tie_in_records).",
+   "proposed_fix": "Return a station on the parent's 3D segment (nearest point to the child's end vertex in 3D) and report the child's z minus the parent's z at that station; for a vertical parent report the arrival as 'on a stack'.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "M5:tie-in-vertical-parent"
+  },
+  {
+   "id": "M5-111",
+   "area": "M5",
+   "title": "Two oracle notes describe a model that has moved: wet_vent_basis.md (FX-B-BATH-WC unvented, 116\" arm) and the drain basis section 9 (suite lav arm 1 1/4\", 30\")",
+   "elements": [
+    "houses/catlin/notes/wet_vent_basis.md",
+    "houses/catlin/notes/mep_drain_routing_basis.md",
+    "PR-B-BATH-WC-VENT",
+    "PR-M-S-SUITE-LAV-DRAIN"
+   ],
+   "files": [
+    "houses/catlin/notes/wet_vent_basis.md:27",
+    "houses/catlin/notes/mep_drain_routing_basis.md:491"
+   ],
+   "kind": "interface-fit",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "wet_vent_basis.md ('Developed arm', 'The model') says PR-B-BATH-VENT serves the WC by plan distance (67\") and 'does not meet the drain', arm 116\", WC 'unvented'. The model has PR-B-BATH-WC-VENT (tee on PR-B-BATH-DRAIN at (144, 231.3, -119.2)) and the check reports 69\" (hand check 8.55 + 60.5 = 69.1\") PASS; the note stays right as the oracle for grade_wet_vent (the sink is not a legal wet vent) but not for the arm. Drain basis section 9 states the suite lav 'drains through a 1 1/4\" arm ... Table 1002.2 allows 30\"'; the authored PR-M-S-SUITE-LAV-DRAIN is O1.5\" (mep_drainage.py:484) and the check grades it against 42\".",
+    "expected": "Oracle notes quote the current arm and size.",
+    "method": "Read both notes against m.pipe_runs and checks.json (this session)."
+   },
+   "source": "notes cited.",
+   "proposed_fix": "Refresh the two paragraphs; keep the wet-vent verdict table.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "M5:oracle-notes-stale"
+  },
+  {
+   "id": "M5-112",
+   "area": "M5",
+   "title": "vent_termination.py cites IRC P3103.1 for the 6\" roof clearance; MN deletes IRC chapters 25-33",
+   "elements": [
+    "VR-M-STACK"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/vent_termination.py:8"
+   ],
+   "kind": "engine-geometry",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "The docstring says 'IRC P3103.1 sets a 6\" minimum above the roof surface'. checks/mep/plumbing_dwv.py:56-60 and drain_tie_in.py:14 record that Minn. R. 1309.0010 subp. 3.D deletes IRC ch. 25-33 and the governing text is ch. 4714 (UPC); the vent_grade note makes the same correction. VENT_TERMINATION_CLEARANCE_M is 12\" either way. UPC termination section not opened.",
+    "expected": "Cite ch. 4714 (UPC 906) for the clearance.",
+    "method": "grep P3103 packages/engine/src (one hit)."
+   },
+   "source": "plumbing_dwv.py:56-60.",
+   "proposed_fix": "Change the cite; no number moves.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "M5:vent-term-cite"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "M2-002",
+   "status": "closed",
+   "evidence": "plumbingplan._governing_grade (plumbingplan.py:106-120) now takes the flattest grade over horizontal segments with plan run > 1 ft, never the whole-run average. Printed P-104 labels match my per-segment numbers: PR-A-STUBATH-VENT '2\" VENT @ 0.22\"/FT' (3.0\" over 165\" = 0.218), PR-A-BAR-VENT 0.30, PR-A-STUBATH-SH-VENT '1-1/2\" VENT @ 1.00\"/FT'; P-103 vents 0.03-0.05. Round 1 read 4.79\"/ft on PR-B-KITCH-DRAIN; now 0.259 (check message) and printed per segment. Residual: legibility, see M5-108.",
+   "method": "Read emit/draw/plumbingplan.py:_governing_grade; probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/p2.py (per-segment plan length, drop, slope for all 40 drain runs); Read of permit_set_full.pdf pp.156-157 and pdftotext pp.154-161."
+  },
+  {
+   "id": "M2-003",
+   "status": "partial",
+   "evidence": "Closed for the named fixture: PR-B-BATH-WC-VENT is a true tee on PR-B-BATH-DRAIN and mep.trap_arm_developed walks 69\" against 72\" (hand check 69.1\"); round 1 saw ~128\" developed with a 33\" 3D gap. The CODE check mep.trap_arm_length is unchanged (plumbing_dwv.py:454 plan hypot) and PASSes the three unvented fixtures (M5-104); the replacement walk is still ADVISORY with 3 advisories. Limits re-read: MN Table 1002.2 rows 30/42/60/72/120 agree with a 2018 UPC printout (secondary).",
+   "method": "baseline checks.json mep.trap_arm_length vs mep.trap_arm_developed per fixture; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/p8.py; hand path sum for FX-B-BATH-WC from PR-B-BATH-DRAIN (144,291.8,-109.4)->(144,291.8,-118.0)->tee at y 231.3."
+  },
+  {
+   "id": "M2-004",
+   "status": "partial",
+   "evidence": "Round 1: 14 vents 90-130\" from their drains. Today every fixture but three (M5-103) has a vent whose end lies on its drain in 3D (<= r+1/2\"), and all 28 vent runs plus the VR-M-STACK vent riser form ONE connected 3D network (tolerance r+r+1/2\"; tightest air gaps 0.1\", 0.2\", 0.4\" at PR-B-BATH-VENT, PR-S-SUITEBATH-VENT/riser, PR-M-BATH2-VENT/PR-M-WC-VENT). New problems the tees brought: level first legs below the rim (M5-101), falls before the tee (M5-102), flat legs (M5-107).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/p4.py (per vent: nearest drain, tee yes/no, z offset) and the connectivity script in this session (end-to-segment within r+r+0.5\" over vent runs plus riser_polylines of VR-M-STACK)."
+  },
+  {
+   "id": "M2-006",
+   "status": "closed",
+   "evidence": "The 3\" stacks now stand in 6.5\"-thick 2x6-plate walls: PR-M-S-BATH1-DRAIN in W-M-STOS (staggered, 2x6 plates, 2x4/2x6 studs) and W-S-BD-N, PR-M-S-SUITE-DRAIN in W-M-CLN (6.5\"), PR-A-STUBATH-DRAIN in W-S-DC2 (6.5\", 2x6 plates), PR-B-WC1-DRAIN in W-M-HS1 (6.5\"). Stud/plate plan outlines do not intersect any 3.5\" pipe disc (zero overlap, 4 stacks). mep.run_through_stud PASS 'its 3.50\" envelope fits the 5.50\" stud plane' and mep.run_through_plate PASS (non-bearing, 2x6 plate) for all four. Round 1 had 4.5\" walls and 2x4 plates. Hub OD (~4.0-4.2\" per round 1) fits the 5.5\" plane; hub dimensions are still not in the catalogue (see M2-007).",
+   "method": "probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M5/p9.py/p10.py/p11.py: vertical 3\" segments vs walls by axis distance, then Polygon(member.plan_outline) vs Point.buffer(r); baseline checks.json run_through_stud / run_through_plate."
+  },
+  {
+   "id": "M2-007",
+   "status": "open",
+   "evidence": "library.fittings.MEP_FITTINGS: 139 rows, 0 with center_to_face_in set (every laying length is still None; header and _NO_SUBMITTAL unchanged). Only the Charlotte stack stations (_STACK_DIMS) carry numbers. mep_drain_routing_basis.md section 10 now uses hub OD as the nipple floor in fitting_room, a partial workaround. This is why M5-105's cleanout/vent fitting overlap cannot be graded.",
+   "method": ".venv/bin/python: from typehaus.library.fittings import MEP_FITTINGS; sum(f.center_to_face_in is not None for f in MEP_FITTINGS) -> 0 of 139."
+  }
+ ]
+}

@@ -1,0 +1,333 @@
+{
+ "area": "I4",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventoried: 62 ceilings and 296 wall ends by room occupancy/coat (probe p5-p9), 37 rooms' floor stacks and 40 door/opening floor pairs (p2), 138 drywall trim records, 5 paint-standard materials/15 paint products, the LVP selection (Karndean AKP-RL38), vinyl (Tarkett First Class), carpet/pad, tile stacks and 8 transition products. Web-checked: Karndean product page + rigid-core install guide (KD8132GLO, pdftotext), BM Ultra Spec 500 N538 TDS and N534 coverage, Tarkett First Class spec, DITRA-HEAT 5.5 mm, SurePly/Patriot 0.205 in, ClarkDietrich M401-10, USG Firecode C vs 1/2 in Type X, retail 1/4 in Z-bars. Sheets opened: A-002 p28, A-101 p29, A-102 p30, A-103 p31, A-104 p32, A-541 p92, A-542 p93, A-543 p94, A-544 p95, A-545 p96, A-546 p97, A-550 p101, A-603 p152, A-604 p153, plus A-519 p70, A-520 p71, A-530 p81 (text), A-567 p118, A-577 p128 (text). 10 prior ids re-probed; 7 new findings. haus check was not re-run (baseline checks.json read: 0 FAIL). NOT examined: Sweet Spot I carpet backing/total thickness and the Emphatic II carpet, the 3/8 in rebond pad manufacturer acceptance; Johnsonite/rubber cove base product and its 4 in vs 3.5 in height (O2 owns the base side); the stall-mat thickness (Tractor Supply 3/4 in tolerance vs the D-B-SAUNA reducer's 0.75 in maximum); PT-4 ADVANCE 793 / Emerald / Behr alternates' data sheets and the SW/Behr perm figures (paint note's own 'TBD' items); Behr drywall primer TDS (marked TBD in the product row); the opened-package order rounding (780 SF = 33.2 boxes, takeoff does not round to whole boxes); Fry Reglet profiles; Trim-Tex AS6010/8710/9010/7010 re-fetch (round 1 verified); remaining A-517..A-584 detail sheets beyond the ones listed (same patterns); gym base (A-603 lists none beside the 3/4 in mats; not judged); 3D viewer finishes.",
+ "verified_clean": [
+  "PaintStandard picks (probe of all 296 non-foundation wall ends, +/-1 in off each face against claimed_room_faces): every gypsum face of a used room carries a coat (paint-wall 33 bedroom / 25 living / 33 storage / 16 hall ...; paint-wet on 35 bath and 4 laundry faces); the only bare gypsum faces are in the unpainted rooms RM-M-MECH, RM-B-FURNACE, RM-B-ESS, RM-A-POCKET, RM-A-EAST-UNFIN (and the shiplap/PVC/brick/plywood faces by design).",
+  "Unpainted rooms are really bare: ceilings of RM-M-MECH, RM-B-FURNACE, RM-A-POCKET, RM-A-EAST-UNFIN are plain gwb; exterior walls inside them keep PT-1 as the Class III retarder (A-603 RM-M-MECH 'gwb + PT-1').",
+  "All 62 ceilings: used rooms take paint-ceiling (PT-2) or paint-wet (baths/laundry); RM-B-SAUNA shiplap, RM-S-PLANT PVC, RM-B-ESS two Type X lids; only RM-GARAGE is primer-only (legacy gwb-primer, 523 SF, printed 'gwb + gwb-primer').",
+  "Paint quantities reproduce: takeoff paint-wall 8502.8 + lining 35.2 + window returns 198 = 8736.0 SF (prices.toml comment 8,736.0); paint-wet 1592 + 304.1 + 17 = 1913.1; gross coated face area by probe 10,433 SF paint-wall / 1,907 paint-wet (18% openings and covered paneling out); trim_paint 518.9 LF base = pine-fj 442.4 + pvc 76.8 from base_runs; door leaf paint 1001.3 SF.",
+  "BM Ultra Spec 500 Eggshell N538 TDS (read from the 2019 N538 US sheet): 350-400 SF/gal, volume solids 42 +/- 2%, MPI 52/145, eggshell 10-12 @ 60, 'apply one or two coats', mildew resistance statement present -> PT-1 (and PT-3, same can) match note and A-604; N534 primer 350-400 SF/gal. A-604 (p153) table matches products_paint.py rows.",
+  "Karndean AKP-RL38 product page: 48 x 7 in, 7.0 mm, 30 mil, rigid core, 23.51 SF/box -> lvp finish_thickness_in 0.2756 (7.0/25.4) and floor +1.0256 in over joists; no heated floor under LVP (FloorHeat only in RM-M-BATH2, RM-S-BATH1); 3/16 in min gap, undercut/skirting rules and 85 F interface limit as the note states (KD8132GLO).",
+  "Tarkett First Class Windsor Gatsby 87061: spec sheet overall thickness 0.120 in (3.05 mm), 16 mil wear layer -> catlin-vinyl-gatsby 0.120 in correct.",
+  "Drywall beads: M401-10 is a real 1/2 in J-trim; terminations by board thickness agree (12 x 1/2, 5 x 5/8); tile-reveal F beads only in RM-M-BATH2 and RM-A-STUBATH; L-beads on 4 trimless runs.",
+  "D-M-BED2 oak saddle: 5/4 oak = 1.0 in on the subfloor equals the carpet plane (1.0 in over subfloor) and the LVP drop 0.2756; rise 0.7244 inside its 0.65..0.75 range. D-S-PLANT 0.38 in 0.3..0.4; D-A-HALVES 0.63 in 0.5..0.75; D-B-PLAY mat/carpet step 0.015; integrity.door_floor_finish passes for all 31 doors.",
+  "Stack shelf sheets A-541..A-546 and A-550 (pages 92-97, 101): layer thicknesses (0.5 / 0.625 gypsum, 3.5 / 5.5 stud) match the resolved walls; A-002 trim spec lines match TrimStandard stocks (11/16 casing, 23/32 base).",
+  "RM-S-BED1..3 and the suite faces are regular gwb (TODO: kids' rooms not on the AR list) and RM-S-HALL, RM-M-MUDROOM, parts of RM-M-LIVING / RM-B-STAIR are gwb-ar; it is a recorded preference, not a defect."
+ ],
+ "findings": [
+  {
+   "id": "I4-101",
+   "area": "I4",
+   "title": "D-M-MECH's west 15.5 in of threshold opens onto the FS-M-MECH deck void: no subfloor and no LVP under half the doorway",
+   "elements": [
+    "D-M-MECH",
+    "RM-M-MECH",
+    "FS-M-MECH",
+    "FO-M-ERV-OA"
+   ],
+   "files": [
+    "houses/catlin/plan/storeys/main.py:1872",
+    "packages/engine/src/typehaus/resolve/doorway.py:184",
+    "houses/catlin/notes/floor_heights.md:126"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "FS-M-MECH.deck_voids has one void x 6.0..48.5 in, y 401.5..426.2 in (42.5 x 24.7 in). D-M-MECH spans x 33.0..65.2 in (RO 32.2 in) in W-M-MECH-S (y 400, 4.5 in thick), so 15.5 in of its width (x 33.0..48.5) sits over the void. surfaces_at(model,(41.1,402.8)) returns no FS-M-MECH surface (only the storeys above and below); at (57.2,402.8) it returns FS-M-MECH/RM-M-MECH lvp 1.026 in. DoorwayAssembly.adjacent_floors = (RM-M-MUDROOM lvp, None); unknown = 'floor varies across doorway side 1; split finish layout required' + 'adjacent walking surface or finish thickness is missing' (checks.json integrity.doorway_assembly UNKNOWN). The DU-ERV-OA riser (8 in at 3'-4\", 33'-11\") stands in the same west half. The note and TODO call this 'floor varies' but do not say there is no deck there.",
+    "expected": "A mech-closet threshold with a continuous subfloor and plank across the full door width; risers pass through ~9-10 in sleeved holes, not a 42 x 25 in void that starts 1.5 in inside the door.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I4/p16.py (doorway._floor_sample_stations + adjacent_floor at the 4 stations) and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I4/p17.py (FS-M-MECH.deck_voids bounds, surfaces_at at 5 points)."
+   },
+   "source": "model: FS-M-MECH.deck_voids; storeys/main.py FO-M-ERV-OA comment block; floor_heights.md 'Still open'",
+   "proposed_fix": "Either trim the void/lid it: author a plywood cover (cut for the risers, fire-stopped per R302.11) under x 33..48.5 and let the LVP run to the threshold, or shift the door east / narrow the void to x >= 33 in. Then D-M-MECH gets an LVP-to-LVP doorway (step 0) and the TODO closes.",
+   "size_guess": "small",
+   "seam_with": [
+    "M1",
+    "S1"
+   ],
+   "dedupe_key": "D-M-MECH:threshold-over-deck-void"
+  },
+  {
+   "id": "I4-102",
+   "area": "I4",
+   "title": "Carpet Z-bar section floats 1/2 in above the subfloor it is 'fastened to', and a stock 1/4 in bar cannot leave the carpet flush with 3/4 in oak",
+   "elements": [
+    "D-S-BED1",
+    "D-S-BED2",
+    "D-S-BED3",
+    "D-M-BATH2",
+    "PROD-CARPET-ZBAR"
+   ],
+   "files": [
+    "houses/catlin/plan/doorway_transitions.py:25-30",
+    "houses/catlin/plan/doorway_transitions.py:84-95",
+    "houses/catlin/plan/assemblies/materials_flooring.py:41"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "_zbar(): DoorwayProductSpec datum 'lower_floor' (the oak, 0.75 in above the subfloor), bar polygon z -0.25..0 relative to it, i.e. 0.50..0.75 in above the subfloor; product text says 'fastened to the subfloor against the hard floor's edge'. Carpet stack = 0.56 pile + 0.0625 backing + 0.375 cushion = 1.0 in; the note says the 0.62 in carpet is 'tucked flush with the 3/4 in hard floor', but a carpet 0.62 in thick tucked at the subfloor tops out at 0.62 in over it (0.13 in under the oak), and the carpet field stands 0.25 in over the oak. Retail Z-bars are about 1/4 in tall x 1 1/4 in wide (M-D 'Aluminum 0.25 in T x 1.25 in W x 48 in L Floor Z-bar', Lowe's 1000062539); the modelled bar is 0.25 x 0.75 in.",
+    "expected": "A bar standing on the subfloor (z 0..0.25 in) with the carpet edge below its lip; the oak/carpet junction is a 1/4 in field rise to the oak plus a lipped edge, or a 3/4 in-high bar (not a stock part).",
+    "method": "Read _zbar() and PROD-CARPET-ZBAR text; arithmetic from materials_flooring.py (1.0 in stack) and floor_heights.md; web: lowes.com/pd/M-D-Aluminum-0-25-in-T-x-1-25-in-W-x-48-in-L-Aluminum-Floor-Z-bar/1000062539."
+   },
+   "source": "notes/bedroom_carpet.md ('Z-bar answer holds to 0.10 inch'); retail Z-bar listing above",
+   "proposed_fix": "Re-draw the bar on the subfloor (z -0.75..-0.50 rel. oak) and say in the product text that the carpet edge lands ~1/8 in under the oak lip, or buy a measured bar; keep the 0.25 in rise.",
+   "size_guess": "small",
+   "seam_with": [
+    "I2"
+   ],
+   "dedupe_key": "Z-bar:flush-claim"
+  },
+  {
+   "id": "I4-103",
+   "area": "I4",
+   "title": "Five walls specify 1/2 in 'gwb-x' (Type X); A-541/A-545/A-567 print 'gwb-x 1/2\"', but the 1/2 in Type X board is Canadian: US stocks Firecode C",
+   "elements": [
+    "W-M-LS",
+    "W-M-CLN",
+    "W-M-CLN2",
+    "W-S-SN1",
+    "W-S-SN2",
+    "INT_2X4_STAGGERED_X_HALF"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/assemblies/partitions_half.py:85",
+    "packages/engine/src/typehaus/library/materials/finishes.py:54"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-541",
+     "A-545",
+     "A-567"
+    ],
+    "pages": [
+     92,
+     96,
+     118
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Resolved wall layers: gwb-x on INT_2X4_STAGGERED_X_HALF is 0.500 in (walls W-M-LS, W-M-CLN, W-M-CLN2, W-S-SN1, W-S-SN2); every other gwb-x layer in the house is 0.625 in. The assembly source cites NRC test 'one layer 13 mm Type X gypsum each side' (a Canadian board). Search 2026-11-05: the only 1/2 in US board with a Type X rating is USG Sheetrock Firecode C (UL type C, ASTM C1396); UltraLight Firecode X is 5/8 in.",
+    "expected": "A US-orderable 1/2 in part: gwb-c (the house already has it) with the STC cited as the Type X equivalent, or 5/8 in gwb-x and a 1/8 in thicker wall.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I4/p10.py (gypsum layer thickness by assembly); web search USG Firecode C 1/2 in; sheets A-541 (p92), A-545 (p96), A-567 (p118) labels."
+   },
+   "source": "partitions_half.py comment (NRC IR-761 TL-93-208, 13 mm Type X); https://www.usgme.com/default/sheetrock-brand-firecode-type-x-panels.html",
+   "proposed_fix": "Retype the two gwb-x layers of INT_2X4_STAGGERED_X_HALF to gwb-c and say 'Type C (US equivalent of the 13 mm Type X test board)' in the source; no geometry moves.",
+   "size_guess": "small",
+   "seam_with": [
+    "I3"
+   ],
+   "dedupe_key": "INT_2X4_STAGGERED_X_HALF:1/2-typeX"
+  },
+  {
+   "id": "I4-104",
+   "area": "I4",
+   "title": "RM-A-STUBATH ceiling is plain 5/8 in gwb under PT-3 while every other bath ceiling is gwb-mr via Room.ceiling_lining",
+   "elements": [
+    "RM-A-STUBATH",
+    "CEIL-RM-A-STUBATH",
+    "RM-M-LAUNDRY"
+   ],
+   "files": [
+    "houses/catlin/plan/storeys/attic_studio.py",
+    "houses/catlin/CLAUDE.md (Wall board policy 2026-10-23)"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-603"
+    ],
+    "pages": [
+     152
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "model.ceilings: CEIL-RM-A-STUBATH layers ['paint-wet','gwb']; the 8 other bathroom ceilings (RM-B-BATH, RM-M-BATH1/2, RM-S-BATH1/SUITEBATH/VANITY ...) are ['paint-wet','gwb-mr'] (5/8 in, ceiling_lining 'gwb-ceil'). Room.ceiling_lining exists on 8 rooms; RM-A-STUBATH is not one. Its walls are gwb-mr. RM-M-LAUNDRY ceiling is also ['paint-wet','gwb'] under gwb-mr walls. A-603 prints RM-A-STUBATH ceiling 'gwb + PT-3' beside 'gwb-mr + PT-3' on the walls.",
+    "expected": "House rule: 'Bath ceilings are 5/8\" mold-resistant via Room.ceiling_lining'; attic bath ceiling the same board as the other baths (a steamed shower under a roof underside is the worse case).",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I4/p5.py (ceilings, layer refs, room occupancy) and p19.py (Rooms with ceiling_lining); A-603 p152."
+   },
+   "source": "houses/catlin/CLAUDE.md 'Wall board policy (2026-10-23)'",
+   "proposed_fix": "Add ceiling_lining=(gwb-mr 5/8 'gwb-ceil') to RM-A-STUBATH (and decide the laundry); re-run takeoff (+34 SF gwb-mr, -34 SF gwb).",
+   "size_guess": "small",
+   "seam_with": [
+    "F2"
+   ],
+   "dedupe_key": "RM-A-STUBATH:ceiling-board"
+  },
+  {
+   "id": "I4-105",
+   "area": "I4",
+   "title": "A 120 in studio wall face takes the wet-room paint (PT-3) because the stub bath's clear face touches its last station",
+   "elements": [
+    "W-A-STU-N",
+    "RM-A-STUDIO",
+    "RM-A-STUBATH"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/room_paint.py:219-243"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-603"
+    ],
+    "pages": [
+     152
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "W-A-STU-N (INT_2X4_PARTITION_HALF, x 0..120 in, y 268) resolves layers ['gwb','spf','gwb','paint-wet']; the studio face (RM-A-STUDIO, BEDROOM) carries paint-wet. RM-A-STUBATH's clear_face reaches x 118.7..120 in at y <= 265.7, inside the 1 in probe offset (y 264.7) at the wall's last station, and _standard_pick ranks the wet room first. Only face in the house where a dry room gets paint-wet (all other dry faces are paint-wall: 33 BEDROOM, 25 LIVING, ... probe p7). A-603 prints RM-A-STUDIO walls 'PT-1/PT-3'. ~60 in x 120 in face billed as paint-wet instead of paint-wall.",
+    "expected": "The studio face painted PT-1 (eggshell ProMar HP/Ultra Spec) like the rest of the studio; PT-3 (Duration satin / Zinsser) only on the bath's own faces.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I4/p6.py/p7.py: probe every wall face (+/-1 in) against claimed_room_faces, tabulate coat by occupancy; p8.py prints W-A-STU-N layers; room_paint._rooms_facing station logic."
+   },
+   "source": "room_paint.py docstring: 'on a face shared by a wet and a dry room the wet system wins'",
+   "proposed_fix": "Make _rooms_facing require a room to hold more than one station or a minimum share of the face before it counts, or split the face at the stub bath's corner node; the real fix is a node split (guide: 'split the face with a node').",
+   "size_guess": "small",
+   "seam_with": [
+    "F2"
+   ],
+   "dedupe_key": "W-A-STU-N:wet-paint-on-studio"
+  },
+  {
+   "id": "I4-106",
+   "area": "I4",
+   "title": "lvp_flooring.md sizes the expansion gap off 'an area over 1000 SF' but the LVP field is 841 SF of rooms (709 SF net)",
+   "elements": [
+    "lvp",
+    "RM-M-LIVING",
+    "notes/lvp_flooring.md"
+   ],
+   "files": [
+    "houses/catlin/notes/lvp_flooring.md:29-33"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "A-603 LVP rooms: LIVING 701 + BATH1 20 + LAUNDRY 19 + MECH 10 + MUD-CLOSET 13 + MUDROOM 49 + PANTRY 13 + STUDY-CLOSET 16 = 841 SF; takeoff floor_finishes lvp net 708.9 SF (order 780). The note says 'the main floor is about 36 ft square ... its area is over 1000 SF: use the 5/16 in gap'. Karndean KD8132GLO (Jan 2024): 3/16 in (5 mm) minimum; 'must be increased to 5/16 in (8 mm) for areas larger than 1000 sq. ft.'; 5/16 in joint at runs over 50 ft. The bedroom (carpet), baths (tile) and hall saddle (D-M-BED2) already break the field.",
+    "expected": "Gap 3/16 in minimum (the 5/16 in used is conservative and fine); the note should state the LVP field (~841 SF), not the whole floor.",
+    "method": "A-603 p152 areas; baseline takeoff.json floor_finishes; pdftotext of the Karndean guide (kd.txt lines 118-126, 84-86)."
+   },
+   "source": "https://www.karndean.com/globalassets/karndean/b2c-blocks/b2c-document-listing-block/usa/installation-guides/karndean-rigid-core_plank-and-tile-installation-guide-usa.pdf",
+   "proposed_fix": "Reword lvp_flooring.md: 'one field of ~841 SF; 3/16 in is the minimum, 5/16 in kept as margin' (or drop to 3/16 and the base/kick details follow).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "lvp:expansion-gap-premise"
+  },
+  {
+   "id": "I4-107",
+   "area": "I4",
+   "title": "D-A-STUDY steps 3/4 in from oak to bare subfloor and D-A-POCKET 1/8 in from vinyl to bare subfloor with no transition named (open TODO, measured)",
+   "elements": [
+    "D-A-STUDY",
+    "D-A-POCKET",
+    "RM-A-EAST-UNFIN",
+    "RM-A-POCKET"
+   ],
+   "files": [
+    "houses/catlin/plan/doorway_transitions.py",
+    "packages/engine/src/typehaus/resolve/doorway.py"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "adjacent_floors: D-A-STUDY = RM-A-STUDY oak 0.75 in over deck vs RM-A-EAST-UNFIN finish None (0.0): step 0.75 in; D-A-POCKET = RM-A-STUDIO vinyl 0.12 in vs RM-A-POCKET None: 0.12 in. Both integrity.doorway_assembly UNKNOWN 'compatible flooring trim or documented transition is unspecified'. 'compatible_finish_pairs' holds (finish_ref, finish_ref) strings and cannot name None. D-A-STUDY is the Murphy flush-mount bookcase door (swing side is the unfinished loft).",
+    "expected": "A named end-of-flooring detail: oak end cap / 3/4 in nosing at the study oak's edge, bare-subfloor side labelled 'unfinished'; vinyl butt joint sealed at D-A-POCKET.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I4/p2.py (all doors: adjacent_floors, step, components, unknown)."
+   },
+   "source": "plans/TODO.md:252; floor_heights.md 'Still open'",
+   "proposed_fix": "Let compatible_finish_pairs accept a 'bare' sentinel (finish None), then author an oak nosing and a sealed vinyl edge; or declare both 'bare-edge, no product' accepted.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "D-A-STUDY:unfinished-side"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "I4-001",
+   "status": "closed",
+   "evidence": "Carpet is now finish_thickness_in 1.000 (catlin-carpet-raised: 0.56 pile + 1/16 backing allowance + 3/8 cushion, no plywood; 1.0 > the 0.9975 published floor from round 1). Rooms read 'walks on catlin-carpet-raised 1\" above its deck' (advisory.floor_finish_depth) and D-M-BED/D-S-BED1-3 RO sized for 1.000. Residual: the 1/16 in backing is an allowance and the Z-bar flush claim is soft (see I4-102).",
+   "method": "checks.json advisory.floor_finish_depth + integrity.door_floor_finish; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I4/p2.py step table; materials_flooring.py:41-52."
+  },
+  {
+   "id": "I4-002",
+   "status": "partial",
+   "evidence": "Round 1: 58 UNKNOWN, no transition product. Now doorway_transitions.py names a product per change (Z-bar x4, oak saddle D-M-BED2 rise 0.7244 within 0.65..0.75, Schluter SCHIENE x2, solid-surface reducer D-S-PLANT 0.38 within 0.3..0.4, rubber reducers D-B-SAUNA 0.75 (at its 0.75 max), D-B-BATH 0.12, oak reducer D-A-HALVES 0.63 within 0.5..0.75); integrity.doorway_assembly passes on all of them. Still UNKNOWN: D-A-STUDY (0.75 in step), D-A-POCKET (0.12) and D-M-MECH (see I4-107, I4-101).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I4/p2.py over every door; checks.json integrity.doorway_assembly lines."
+  },
+  {
+   "id": "I4-003",
+   "status": "closed",
+   "evidence": "DrywallStandard.termination_refs picks by board thickness: model.drywall_trims terminations = 12 x dw-j-bead-metal-half (ClarkDietrich M401-10, 1/2 in, verified at HD 311364897 and the CD submittal) on 1/2 in board and 5 x dw-j-bead-metal (JT6, 5/8 in) in RM-B-FURNACE/STAIR/ESS on the 5/8 in Type X faces.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I4/p13.py, p14.py (kind, material, room, length per trim); drywall.py:41-47."
+  },
+  {
+   "id": "I4-004",
+   "status": "partial",
+   "evidence": "Stacks still forced to 0.75 in: Opera Blue 0.25 DITRA-HEAT + 0.40 tile (unpublished allowance) + 0.10 mortar; Kaleo 5/16 + 5/16 + 1/8; Carrara 0.25 + ~0.354 + 0.146; Agua Linda 1/8 + 0.40 (10.16 mm published) + 0.225. The sources now state the mortar and tile figures are 'design allowances, verify' (materials_flooring.py:66-110, products_floor_tiles.py), so the unflagged-guess part is fixed; the 0.10 in bed under 24x48 tile is unchanged. DITRA-HEAT 5.5 mm (ceramed.ca/Schluter) = 0.217 in vs 0.25 nominal.",
+   "method": "Read materials_flooring.py tile rows; web: DITRA-HEAT 5.5 mm sheet (ceramed.ca DH5MA)."
+  },
+  {
+   "id": "I4-005",
+   "status": "open",
+   "evidence": "catlin-plant-vinyl-raised still 0.370 in (0.120 Tarkett First Class spec = 3.05 mm, verified now + 0.25 nominal SurePly). Patriot's 1/4 in underlayment lists 0.205 in actual at Lowe's (not named SurePly; no SurePly data sheet found again). Expected 0.325 in, step at D-S-PLANT 0.425 > the reducer's 0.40 max. Source string calls it 'provisional until measured'.",
+   "method": "materials_flooring.py:17-26; WebSearch Patriot SurePly thickness; doorway_transitions.py D_S_PLANT_REDUCER max_in=0.4."
+  },
+  {
+   "id": "I4-006",
+   "status": "closed",
+   "evidence": "A-567 (p118) / A-577 (p128) now print only layer labels and the floor-band note; no air/water/thermal continuity lines on interior rim bands. transition_shadowed passes 'no transition of 28 is shadowed'. A-562/A-584 print as 'Plant room rim'.",
+   "method": "pdftotext -f 118/128 permit_set_full.pdf; checks.json integrity.transition_shadowed; permit_set_full.json sheet titles."
+  },
+  {
+   "id": "I4-007",
+   "status": "closed",
+   "evidence": "ResolvedRoom.clear_height_m now follows the dropped ceiling: RM-B-SAUNA 84.06 in (was 96.94), RM-B-ESS 92.81, RM-S-PLANT 105.71 (was 106.38); equals ceiling z0 minus finished floor for every ceilinged room except those with a lower soffit (BATH 86.44, STUDY2 92.5, HALL/NCLOSET 83.62, all soffit heads).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I4/p15.py: clear_height_m vs min(ceiling.z0_m) - room_finished_floor_elevation."
+  },
+  {
+   "id": "I4-008",
+   "status": "closed",
+   "evidence": "Rejection holds: gwb-ar source text still states 1/2 in AR is a supply-yard item with 1/2 in regular or Type C as the accepted substitute; A-603 prints gwb-ar on RM-S-HALL, RM-M-MUDROOM, RM-B-STAIR faces. Not re-fetched this round (CGC AR Firecode C 1/2 in is the round-1 source).",
+   "method": "materials finishes.py:54; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I4/p9.py (gypsum type by room)."
+  },
+  {
+   "id": "I4-009",
+   "status": "closed",
+   "evidence": "A-519 (p70), A-520 (p71), A-530 (p81) each show one title/material block; the 'ening' clip and the doubled legend are gone (pdftotext prints one 'Catlin House' block, images checked).",
+   "method": "Read permit_set_full.pdf pages 70-71, pdftotext p81."
+  },
+  {
+   "id": "I4-010",
+   "status": "closed",
+   "evidence": "Opening detail layer labels now carry the board type: A-519 'gwb-x 5/8\"', A-520 'gwb-ar 1/2\" / gwb 1/2\"', A-530 'gwb-x 5/8\"'.",
+   "method": "pdftotext pages 70, 71, 81 of permit_set_full.pdf."
+  }
+ ]
+}

@@ -1,0 +1,211 @@
+{
+  "area": "S1",
+  "model": "claude-sonnet-5-5",
+  "review_sha": "539d9a81",
+  "inventory_summary": "Six resolved flights inventoried from a fresh load_plan+resolve (pickle at scratchpad geometry-review/S1/model.pkl): ST-B2M u_split 15 x 7.3642 in, ST-M2S u_level 16 x 7.5296, ST-S2A right-angle winder 16 x 7.500 (3 winders), ST-G-SERVICE 5 x 7.100, ST-SG-PORCH 5 x 6.788, ST-BW-ENTRY 4 cast tiers + deck 5 x 6.600. Every flight's riser chain, both end floors and its finished-floor stack were measured from members (walking-surface z per tread, rise between consecutive stations): all 6 flights have 0.000 in riser variation and both ends land on the finished plane (ST-B2M slab -109.4375 -> LVP +1.0256; ST-M2S LVP +1.0256 -> second-hall oak +121.5; ST-S2A oak +121.5 -> attic oak +241.5; ST-G-SERVICE slab -34 -> threshold crest +1.5; ST-SG-PORCH pad -33 -> plank/board +0.94; ST-BW-ENTRY walk -33 -> deck 0.0). Sources: stair notes (riser/stringer/skirt/nosing/winder/u-split/porch/garage-service), floor_heights.md, decking.py catalog row, Trex 2026 install guide (web-verified), Weyerhaeuser #9010 row (cited by note, not re-fetched). haus check --only all re-run today: 0 FAIL (baseline equal). All 11 listed sheets opened (S-501.1 p21, A-101..A-104 p29-32, A-301/.1/.2 p38-40, A-508 p55, A-509 p56, A-510 p57) plus C-101 p7 and S-100 p10 text. NOT examined: stair headroom (relied on code.R311_7_2_stair_headroom, not independently re-derived); guard/handrail products (S3 owns); stringer notch/cut-list geometry beyond throat values the check reports; MMI Z0364688R sill height (web search again finds no published sill height); Refine 54923 Structural carpet thickness 0.237 in (public product page lists no thickness, Shaw spec viewer not reachable); Weyerhaeuser #9010 stringer table not re-fetched; concrete tier footing/rebar (F5); door jamb/trim at stair heads (O1/O2); A-301 section does not cut a stair so no stair section dimensions could be compared.",
+  "verified_clean": [
+    "ST-S2A: flight width 36.00 in, 32.55 in clear past RL-A-HANDRAIL (check) and by hand: RL-A-STAIR posts y 65.62..68.62 vs flight edge y 69.75 (tread end), 1.13 in clear; RL-A-FLIGHT-GUARD posts inner face y 69.732 = 0.018 in outboard of the edge (no intrusion). stair_width.py counts a non-serving guard's posts only in the 34-80 in envelope over a tread and measures edges off tread endpoints, so surface-mount posts correctly cost 0.",
+    "ST-S2A head landing: code.R311_7_6_stair_head_landing source (stair_arrival.py ~L195-205) now tests solids with category railing and '-POST' in tag at z0 < arrival+0.05 < z1; POST3 y max 68.62 is 2.1 in outside the inset 36 x 36 rect (y 70.75..104.75). Falsified by hand: round-1 post y 69.64..72.64 would intersect the rect, so the check would FAIL it. Prints 36 x 36.00 clear.",
+    "ST-M2S: 41.06 in flight, 38.79 in between guard posts, 37.80 in past handrail, head landing 36 x 41.06; RL-S-STAIR* now state faces (round-1 UNKNOWN gone).",
+    "All six flights: riser chain uniform to 0.001 in (probe p5.py); R311.7.5 riser <= 7 3/4 in, going >= 10 in, nosing 1.000 in on the 10 in goings, none on the 11 in goings; stair_end_risers 0.00 in variation on all.",
+    "Floor-stack ends vs final finishes: ST-B2M arrival 1.02559 in = 0.75 subfloor + 7.0 mm Karndean AKP-RL38 (0.27559); ST-M2S/ST-B2M rises 7.3642/7.5296 match stair_riser_basis.md 2026-11-01 amendment and floor_heights.md; second hall/Study2/attic study oak +1.5 -> 121.5/241.5; ST-S2A foot oak in RM-S-STUDY2 and head oak in RM-A-STUDY; no stale 0.94685 or concrete-cap value remains in the resolved stairs.",
+    "ST-S2A winder: walkline depths 12.594/12.469/12.595, narrow 6.266/6.270/6.518 match S-501.1 printed values; rim stack 120.75 + 6.5/6.75 rips + 0.75 ply + 1.0 oak reproduces winder tops 129.0/136.5/144.0; first box bears on 120.75 subfloor.",
+    "No interior or exterior door leaf swings over any flight (swing_clearance vs stair outline = 0.00 sq in for all 6); D-G-SERVICE swing lies wholly on the deck side.",
+    "Trex Enhance Basics: 0.94 x 5.5 in, 9 in max stringer span, stair gap 1/4-3/8 in, tread >= 11 in, overhang <= 3/4 in, per Trex 2026 install guide p.36 (online.flippingbook.com/view/63974767/36/, fetched today); composite_decking.md already cuts the 11 in tread as 5.5 + 1/4 gap + 5.25 rip.",
+    "Concrete tiers: 5 x 6.600 = 33.000 in to deck 0.0; going 18 in; A-508 prints 4 x 1'-6\" and total 2'-9\" (5 EQ.), consistent with the model.",
+    "S-501.1 text: 1\" oak, 3/4\" structural plywood, ripped 2x8, supports <= 16 in match resolved members (oak 1.0, subdeck 0.75, rims 1.5 x 6.5/6.75).",
+    "Plan labels UP/DN counts match riser counts on A-101 (UP 15 R), A-102 (5, 5, 5, DN 15, UP 16), A-103 (DN 16, UP 16), A-104 (DN 16).",
+    "ST-SG-PORCH head: riser-004 5.848 in + 0.94 in board = 6.788 on the W-SG-E1 top (z 0.0, east face x 330.31); stair base = SL-SG-STAIRPAD top -33.0.",
+    "Known and recorded, not re-reported: ST-G-SERVICE riser-004 overlaps D-G-SERVICE's sill support (TODO.md L257, 90 cm3); RL-A-FLIGHT-GUARD newel junction not graded (TODO.md L325)."
+  ],
+  "findings": [
+    {
+      "id": "S1-101",
+      "area": "S1",
+      "title": "ST-M2S stringers and lower skirts stand on the floating LVP plane (+1.0256 in), not the 0.75 in subfloor that carries them",
+      "elements": ["ST-M2S", "FS-M-STAIR", "RM-M-LIVING"],
+      "files": [
+        "packages/engine/src/typehaus/resolve/stairs/dispatch.py:242",
+        "packages/engine/src/typehaus/resolve/stairs/dispatch.py:269",
+        "packages/engine/src/typehaus/resolve/stairs/winder_support.py:10"
+      ],
+      "kind": "engine-geometry",
+      "severity": "model-only",
+      "on_permit_set": { "printed": false },
+      "confidence": 0.6,
+      "evidence": {
+        "measured": "ST-M2S stringer-lower-0 z0 = 1.0256 in; skirt-lower-left / skirt-lower-right z0 = 1.0256 in; FS-M-STAIR deck z1 = 0.7500 in; main floor is Karndean 7 mm floating LVP (+0.2756 in over the subfloor). dispatch.py:242 sets support_floor_m = winder_supporting_floor(...) only for winder layouts, else the finished base z0; the 2026-11-02 change (bearing.py post_floor) moved only landing posts and the winder box onto the subfloor.",
+        "expected": "A stringer toe, skirt bottom and first riser bear on the structural 3/4 in sheet and the floating plank is cut round them (the rule bearing.py states: 'a post stands on the structural sheet, never on a floating finish'). Treads stay at 1.0256 + 7.5296; the stringer's foot notch is 0.2756 in deeper.",
+        "method": "Pickled resolved model (scratchpad geometry-review/S1/p18.py): print z0/z1 of ST-M2S 'stringer-lower-0', 'skirt-lower-*', FloorSystem FS-M-STAIR deck_z1_m; read dispatch.py L236-273."
+      },
+      "source": "notes/lvp_flooring.md (floating, 7.0 mm incl. backing, Karndean product page); engine rule in stairs/bearing.py post_floor comment",
+      "proposed_fix": "Generalise winder_supporting_floor (or a sibling) to every flight whose springing floor carries a floating finish and feed it to _clip_stair_to_subfloor / cut_stringer_profiles as support_floor_m, keeping the finished step datum. Elevation and ST-M2S section goldens move by 0.2756 in at the toe.",
+      "size_guess": "small",
+      "seam_with": ["F3"],
+      "dedupe_key": "ST-M2S:stringer-on-floating-lvp"
+    },
+    {
+      "id": "S1-102",
+      "area": "S1",
+      "title": "C-101 STAIR AREA (64 SF) still omits 6.9 SF of the 45 in porch stair pad: the authored impervious outline is the pre-widening 3 ft strip",
+      "elements": ["SL-SG-STAIRPAD", "SL-BW-TIER1", "ST-SG-PORCH"],
+      "files": [
+        "houses/catlin/plan/site.py:569",
+        "packages/engine/src/typehaus/emit/draw/site_metrics.py:130"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": { "printed": true, "sheets": ["C-101", "S-100"], "pages": [7, 10] },
+      "confidence": 0.8,
+      "evidence": {
+        "measured": "C-101 prints STAIR AREA 64 SF = 'north entry tiers' impervious ring 36.3 SF + 'porch stair pad' ring 27.5 SF (y -9'..-6'). The cast slab SL-SG-STAIRPAD resolves x 27.50..36.66 ft by y -9.00..-5.25 ft = 34.3 SF (S-100 row S11 prints 34 SF); SL-BW-TIER1 36.5 SF. So the table is 6.8 SF light (70.8 SF of stair-forming pours).",
+        "expected": "The ImperviousSurface ring follows the slab: y -9'..-5'-3\" (the 45 in flight widened 2026-10-30), 34.3 SF; STAIR AREA 71 SF, TOTAL IMPERVIOUS +7 SF.",
+        "method": "pdftotext -f 7 -l 7 permit_set_full.pdf | grep 'STAIR AREA'; scratchpad geometry-review/S1/p16.py (Polygon areas of SL-SG-STAIRPAD, SL-BW-TIER1..4); read site.py L568-577 and site_metrics.coverage_table (rows are f'{kind.upper()} AREA')."
+      },
+      "source": "model slabs; params/sunken_garden.py PORCH stair width 45 in; notes/porch_stair.md L67 (34.4 sf)",
+      "proposed_fix": "Change the 'porch stair pad' outline y from -6' to -5'-3\" in plan/site.py (editable file; no uid change) and fix the 27.5 sf comments in site.py and assemblies/site_hardscape.py. Totals move by 7 SF; no zoning limit is near.",
+      "size_guess": "small",
+      "seam_with": ["F5"],
+      "dedupe_key": "C-101:stair-area-pad-width"
+    },
+    {
+      "id": "S1-103",
+      "area": "S1",
+      "title": "The set prints no riser height, going, nosing or width for the interior flights or the porch stair; plans carry only 'UP 15 R'",
+      "elements": ["ST-B2M", "ST-M2S", "ST-S2A", "ST-SG-PORCH"],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/schedules/openings.py",
+        "houses/catlin/notes/stair_riser_basis.md"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": { "printed": true, "sheets": ["A-101", "A-102", "A-103", "A-104", "A-301", "A-510", "S-501.1"], "pages": [29, 30, 31, 32, 38, 57, 21] },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "pdftotext of permit_set_full.pdf pp.29-32 returns only run counts (UP 15 R, UP 5 R, DN 15 R, UP 16 R, DN 16 R). A grep of the full set for riser/tread/going/nosing finds riser heights only on A-508 (6 5/8\") and A-509 (7 1/8\") for the two exterior flights; S-501.1 prints winder depths only. No stair schedule exists. A-301 and A-510 do not cut a flight. ST-B2M 7.364/10/1 in, 41.12 wide; ST-M2S 7.530/10/1, 41.06; ST-S2A 7.500/10/1, 36.00; ST-SG-PORCH 6.788/11, 45.",
+        "expected": "R311.7 plan review and the framer need riser height (equal risers from finished floor to finished floor), going, nosing and clear width per flight; at least a stair schedule row or a section label per flight.",
+        "method": "pdftotext -layout permit_set_full.pdf (scratchpad geometry-review/S1/full.txt); grep -i -E 'riser|tread|going|nosing'; view pp.29-32, 38, 57."
+      },
+      "source": "IRC R311.7.1-R311.7.5 (as the repo's own checks cite); resolved model values",
+      "proposed_fix": "Add a stair schedule (tag, risers, rise per riser, going, nosing, width, finish-to-finish rise) to an existing sheet, or extend the 'UP n R' label with 'x 7 3/8\"'. Data already resolved on ResolvedStair.",
+      "size_guess": "large",
+      "seam_with": ["C7"],
+      "dedupe_key": "set:stair-schedule-absent"
+    },
+    {
+      "id": "S1-104",
+      "area": "S1",
+      "title": "Stair basis notes still carry the pre-decision-#112 rises (7.3590 / 7.5346, 110.38435 / 120.55315, 0.94685 floor)",
+      "elements": ["ST-B2M", "ST-M2S"],
+      "files": [
+        "houses/catlin/notes/stair_stringer_basis.md:30",
+        "houses/catlin/notes/stair_stringer_basis.md:31",
+        "houses/catlin/notes/u_stair_split_landing.md:4",
+        "houses/catlin/notes/stair_skirt_basis.md:48",
+        "houses/catlin/notes/stair_skirt_basis.md:98",
+        "houses/catlin/notes/stair_skirt_basis.md:142",
+        "houses/catlin/notes/stair_riser_basis.md:35"
+      ],
+      "kind": "drawing",
+      "severity": "doc",
+      "on_permit_set": { "printed": false },
+      "confidence": 0.8,
+      "evidence": {
+        "measured": "Resolved ST-B2M rise 110.4631 in / 15 = 7.3642 in and ST-M2S 120.4744 / 16 = 7.5296 in (floor +1.0255906). The notes' by-hand tables still read 110.38435/15 = 7.3590, 120.55315/16 = 7.5346 and a 0.94685 in floor. stair_riser_basis.md and stair_skirt_basis.md carry an amendment paragraph at the top; stair_stringer_basis.md and u_stair_split_landing.md have none. Throats recomputed at the new rise barely move (5.32 / 5.23 in), so no conclusion changes.",
+        "expected": "Each basis note states the current rise or points to the amendment, since tests pin the new values and a reader hand-checking §3 gets 7.3590.",
+        "method": "grep -n -E '7\\.359|7\\.5346|0\\.94685|110\\.384|120\\.553' houses/catlin/notes/stair_*.md houses/catlin/notes/u_stair_split_landing.md; scratchpad geometry-review/S1/p2.py for the resolved rises."
+      },
+      "source": "notes/stair_riser_basis.md 2026-11-01 amendment; notes/floor_heights.md",
+      "proposed_fix": "Add the same one-line decision #112 amendment to stair_stringer_basis.md and u_stair_split_landing.md, and update the §3 tables in the two notes that only flag it.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "stair-notes:stale-rise"
+    },
+    {
+      "id": "S1-105",
+      "area": "S1",
+      "title": "Interior stair guards are authored from the joist-top datum: bottom rails and post feet sit 1.5-2.25 in below the finished floor, inside the deck",
+      "elements": ["RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-S-STAIRHEAD-N"],
+      "files": [
+        "houses/catlin/plan/storeys/attic.py:900",
+        "houses/catlin/plan/storeys/second.py:1441"
+      ],
+      "kind": "interface-fit",
+      "severity": "model-only",
+      "on_permit_set": { "printed": false },
+      "confidence": 0.4,
+      "evidence": {
+        "measured": "RL-A-STAIR base_elevation ft(20) = 240.0 in: posts z 240.0..282.0, bottom rail z 239.25..240.75, top rail 281.25..282.75; attic subfloor top 240.75, finished oak 241.5. RL-S-STAIR*: posts z 120..162, bottom rail 119.25..120.75 vs subfloor 120.75 / oak 121.5. Top of rail is 41.25 in over the finished oak (not 42 in); the bottom rail lies 0.75 in below the subfloor top.",
+        "expected": "Surface-mount base on the finished/subfloor plane (the stated 'posts stand on the deck'); bottom rail above the floor by the panel's published clearance; 42 in kit measured from the floor it stands on.",
+        "method": "scratchpad geometry-review/S1/p8.py RL-A-STAIR and RL-S-STAIR (solid outline min/max z in inches); compare floors from p3.py."
+      },
+      "source": "attic.py comment 'posts stand on the deck'; houses/catlin/notes/winder_stair_basis.md ('42 inches, on the deck')",
+      "proposed_fix": "S3 to decide: author these base_elevation values off the finished floor (121.5 / 241.5) or have the surface-mount resolver add the floor finish. Heights stay >= 36 in either way; no check moves expected.",
+      "size_guess": "small",
+      "seam_with": ["S3"],
+      "dedupe_key": "interior-guards:joist-top-datum"
+    }
+  ],
+  "prior_findings": [
+    {
+      "id": "S1-001",
+      "status": "closed",
+      "evidence": "ST-S2A now 36.00 in flight / 32.55 in past handrail (was 33.11 / 29.66, 2 FAIL). RL-A-STAIR is mount=surface at y 67.125 path; posts y 65.62..68.62 vs flight edge 69.75 = 1.13 in clear; guard line RL-A-FLIGHT-GUARD posts inner face 69.732 (0.018 in outboard). haus check --only all today: 0 FAIL.",
+      "method": ".venv/bin/haus check houses/catlin --only all --json | grep R311_7_1_stair_width; scratchpad geometry-review/S1/p8.py RL-A-STAIR and p14.py"
+    },
+    {
+      "id": "S1-002",
+      "status": "closed",
+      "evidence": "stair_head_landing reads railing posts (stair_arrival.py ~L195-205: category railing, '-POST' in tag, z-range spans arrival+0.05). POST3 now y 65.62..68.62, outside the inset rect (y 70.75..104.75) by 2.1 in; check prints 36 x 36.00. Replaying the round-1 post (y 69.64..72.64) against the same rect intersects, so the check would FAIL it.",
+      "method": "read stair_arrival.py L137-215; haus check output; hand intersection of post polygons with the head rect (ax/ay/bx/by from stair_walk_stations)"
+    },
+    {
+      "id": "S1-003",
+      "status": "closed",
+      "evidence": "ST-M2S R311.7.1 is no longer UNKNOWN: 41.06 in flight, 38.79 in between guard posts, 37.80 in past handrail; head landing 36 x 41.06. RL-S-STAIR/-STAIRHEAD state faces and RL-S-STAIRHEAD-N is a surface kit.",
+      "method": ".venv/bin/haus check houses/catlin --only all --json | grep -E 'R311_7_1_stair_width|R311_7_6_stair_head_landing'"
+    },
+    {
+      "id": "S1-004",
+      "status": "closed",
+      "evidence": "Rejection holds. Subfloor still 0.75 nominal everywhere (F3-009 kept it deliberately); every stair end is built on the same 0.75 stack so uniformity holds (0.000 in variation on all six). A 23/32 sheet (0.71875) would shift the shared main-floor datum by 0.031 in, i.e. 0.002 in per riser on a 15-riser flight.",
+      "method": "scratchpad geometry-review/S1/p5.py (rise chain per flight); floor_heights.md 'Assemblies above the 3/4-in framed subfloor'"
+    },
+    {
+      "id": "S1-005",
+      "status": "closed",
+      "evidence": "Rejection holds and the gap is now documented: composite_decking.md 'Service-stair cut and support schedule' cuts each tread as 5.5 front + 1/4 drainage gap + 5.25 rear rip. Trex 2026 install guide p.36 (fetched today): stair gap 1/4-3/8 in, tread >= 11 in, overhang <= 3/4 in; board 0.94 x 5.5 in, Enhance stringers <= 9 in o.c. Model 11.000 in going, 9 in stringer spacing (5 stringers) agree. Round-1's '3/16 in gap' wording differs from Trex's 1/4-3/8 in but the note already uses 1/4.",
+      "method": "WebFetch https://online.flippingbook.com/view/63974767/36/; read decking.py L1-45 and composite_decking.md L26-62; model ST-G-SERVICE tread_depth 11.000, no nosing"
+    },
+    {
+      "id": "S2-001",
+      "status": "closed",
+      "evidence": "floor_heights.md opening schedule now reads D-M-ENTRY mudroom LVP +1.0255906 -> breezeway deck 0.0000, 1.0255906 down, and the section sketch matches. Resolved D-M-ENTRY.doorway.adjacent_floors: FS-BW-FLOOR deck_top 0.0; FS-M-MECH 0.019050 m (0.75 in) + LVP 0.2756 in = 1.0256 in. ST-BW-ENTRY arrival 0.0000.",
+      "method": "scratchpad geometry-review/S1/p12.py (o.doorway.adjacent_floors); sed -n 78,130p houses/catlin/notes/floor_heights.md"
+    },
+    {
+      "id": "S2-002",
+      "status": "partial",
+      "evidence": "Round-1 E2 landed: ST-G-SERVICE top_elevation is the +1.5 in threshold crest, 5 x 7.100 in (was 5 x 6.80 to the deck), stair_end_risers reads 'D-G-SERVICE's threshold (schematic crest estimate)'. D-G-SERVICE rough_opening_z 0.0, leaf_bottom 1.625 in, deck 0.0. Still open: the crest is a schematic estimate; web search for MMI Z0364688R today again finds no published sill or threshold height (HD Supply listing gives unit 33.5 x 81, RO 34 x 81.5 only). A crest error of +/-0.375 in would exceed the 3/8 in riser limit against 7.100; the note's 'cut the risers from the installed threshold' is the control. Also TODO L257: riser-004 overlaps the sill support (90 cm3).",
+      "method": "scratchpad geometry-review/S1/p2.py, p12.py; WebSearch 'MMI Door Z0364688R sill height'; haus check R311_7_5_1_stair_end_risers"
+    },
+    {
+      "id": "S2-003",
+      "status": "closed",
+      "evidence": "porch_stair.md run row now x 27'-6\"..31'-2\" and the pad paragraph x 27'-6\"..36'-7 7/8\"; resolved ST-SG-PORCH outline x 330.75..374.75 in (27.56..31.23 ft), W-SG-E1 east face 330.31 in, riser-004 x 330.37 in. sunken_garden.py no longer carries 28'-6\" for the flight. One 28'-6\" survives at porch_stair.md L236 in the superseded electrical history.",
+      "method": "grep -n \"28'-6\" houses/catlin/notes/porch_stair.md houses/catlin/params/sunken_garden.py; scratchpad geometry-review/S1/p2.py, p17.py"
+    },
+    {
+      "id": "S2-004",
+      "status": "partial",
+      "evidence": "A-508 now prints a tier stair dimension: 4 x 1'-6\" goings, '6 5/8\" riser', '2'-9\" (5 EQ.)'; A-509 prints '7 1/8\" riser, 2'-11 1/2\" (5 EQ.)' for ST-G-SERVICE. The labels are rounded to 1/8 in: 5 x 6 5/8 = 33 1/8 against 33.000 (model 6.600 = 6 19/32); 5 x 7 1/8 = 35 5/8 against 35.500 (model 7.100 = 7 3/32). The '5 EQ.' and the total govern, so the build is unaffected. S-100 rows S2..S5 still print thickness 6-5/8\" (model 6.600) and tops in decimal feet (-2.20', -1.65', -1.10', -0.55'). Interior and porch flights carry no dimension (see S1-103).",
+      "method": "pdftotext -f 55/56 -layout permit_set_full.pdf; pdftotext -f 10 -l 10 | grep TIER; view pp.55-56"
+    },
+    {
+      "id": "S2-005",
+      "status": "partial",
+      "evidence": "C-101 STAIR AREA moved 27 SF -> 64 SF: it is two ImperviousSurface rings, 'north entry tiers' 36.3 SF + 'porch stair pad' 27.5 SF (plan/site.py L535-577). The pad ring is still the pre-widening 3 ft strip; slab SL-SG-STAIRPAD is 34.3 SF, so the row is 6.8 SF light (new finding S1-102).",
+      "method": "pdftotext -f 7 -l 7 permit_set_full.pdf | grep 'STAIR AREA'; scratchpad geometry-review/S1/p15.py/p16.py; read site_metrics.coverage_table"
+    }
+  ]
+}

@@ -1,0 +1,446 @@
+{
+ "area": "F2",
+ "model": "houses/catlin @539d9a81",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventoried 128 authored WallBacking bands (405 resolved members on 48 walls, all non-empty, none overlapping a stud), 229 stud/king/jack/cripple bore crossings (all 137 pipe runs, ducts and conduits through every wall), 56 top-plate crossings, bearing/exterior scope (54 bearing, 77 outdoor walls), 6 insulated runs (all lagging 'stops'), 25 wall-mounted Equipment, the three stack bays (W-M-STOS, W-S-DC2, W-M-CLN), 6 R328.1.1 grab courses, the R302.11 note. Sources: notes/framing_bore_limits.md, notes/wall_backing.md, mep_bores.py constants; R602.6.1 tie numbers confirmed against the ICC CodeNotes 'Cutting, Drilling and Notching' (2021 IRC); the 5/8 in. edge text and percentage rows could not be fetched verbatim (codes.iccsafe.org 403; secondary sources agree on 25/40 notch and 40/60 bore). Sheets opened: S-001 (p8), S-001.1 (p9), S-101.1-.3 (p11-13), S-601 (p22), S-601.1 (p23), A-002 (p28, text), A-401.1-.6 (p41-46), plus G-002 (p3) and A-554 (p105). NOT examined: product data for individual bracket/rail sources (Moen, TANNFORSEN, SEKTION rails, Kohler mirrors); joist bores R502.8 beyond reading the checks.json verdicts (11 floor-member checks: 10 clean, 1 UNKNOWN truss); the 2 R602.6.1 plate ties' product row; furred bands (furred=True) against the 'out-of-plane nailer' rule; whether the IRC 2018 'entire wall side sheathed in WSP' exception to R602.6.1 should relax any plate verdict; framing_bore_limits.md s6/s8 tables are history (the model now has one header crossing, W-B-CW header-0) and were not re-oracled line by line.",
+ "verified_clean": [
+  "Band heights equal profile depth and every band resolves at least one member (128/128, no band lost to raking tops or openings)",
+  "All 6 grab courses are exactly 32.00-39.25 in. AFF on the finished floor of the face room (CRC R328.1.1 geometry), 2x8, flush with the stud face",
+  "BK-G-S-EVSE 7.5-18.75 in. abs covers APPL-G-EVSE 8.0-18.25 in.",
+  "Bands are cut at studs: 0 of 405 members overlap a stud/king/jack/cripple footprint",
+  "Stud bore limits 40%/60%, notch 25%/40%, 5/8 in. edge constant, top-plate 50% rule and 16 ga x 1 1/2 in. tie match the engine, the oracle note and the ICC CodeNotes (2021 IRC) summary",
+  "All 229 stud-category crossings PASS at their wall role; 2 UNKNOWN are the 5.75 in. cripple in W-B-CS3 (PR-B-COND 1.05 in.), correctly a block not a stud",
+  "Exterior set: 77 outdoor walls (weather skin or foundation); 18 exterior-wall crossings, max 1.9 in. in a 2x6 = 34.5% of 5.5 in. < 40%",
+  "Stack bays: PR-M-S-BATH1-DRAIN in W-M-STOS/W-S-BD-N and PR-A-STUBATH-DRAIN in W-S-DC2 clear the studs by 1.50 in. each side; interior non-bearing so R602.6.1 does not govern the 3.5/5.5 in. plate cut",
+  "Lagging: the 6 insulated pipe runs are bored bare ('stops'); the only one crossing studs, PR-B-HW-SUITE (0.875 in. bare, 1.875 in. lagged), would still pass 60% of 3.5 in. = 2.10 in.",
+  "W-B-CW header-0 flat 2x4 nailer: PR-M-S-BATH1-DRAIN notches 0.09 in., 1.41 in. of 1.50 in. left, matching framing_bore_limits.md s9",
+  "R302.11 note on G-002 matches R302.11 items (10 ft horizontal, soffits, stringers, penetrations, 11.1 materials); 3 floor-chase fireblocks PASS",
+  "wall_backing.md s4 gypsum thickness corrected; no 5/8 in. wall claim left"
+ ],
+ "findings": [
+  {
+   "id": "F2-101",
+   "area": "F2",
+   "title": "Eleven wall-hung bodies (plus two through-wall hydrants) have their covering backing band on the opposite face of the wall; the coverage check ignores face",
+   "elements": [
+    "BK-M-HS1-MID",
+    "BK-M-HS1-HIGH",
+    "BK-M-C5-MID",
+    "BK-M-C2-MIRROR-LO",
+    "BK-M-S2-ROD",
+    "BK-M-TUBDK-AP",
+    "BK-M-TUBDK-AP-N",
+    "BK-S-BD-N-VANITY-FOOT",
+    "FURN-M-BATH2-CAB-W",
+    "FURN-M-BATH2-CAB-E",
+    "FURN-M-KIT-OVER-FRIDGE",
+    "FURN-M-KIT-OVER-FREEZER",
+    "ED-M-LIVING-RC2",
+    "ED-M-STAIR-LT",
+    "advisory.wall_backing_present"
+   ],
+   "files": [
+    "houses/catlin/plan/backing_wet.py:88",
+    "houses/catlin/plan/backing_wet.py:93",
+    "houses/catlin/plan/backing.py:243",
+    "packages/engine/src/typehaus/checks/advisory/backing.py:204",
+    "packages/engine/src/typehaus/checks/advisory/backing.py:227"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Of 91 wall-mounted bodies a band covers by station and height, 78 sit on the band's face and 13 do not, 11 of them stud-cavity cases (canvas attachment_face and the body footprint centroid's side of the wall axis both agree). BK-M-HS1-MID (49.5-53.25 AFF, purpose 'FURN-M-BATH2-CAB-W/-E bottom fastening') and BK-M-HS1-HIGH (78-85.25, 'suspension rail') author no face, so they default to face='left' (north, the powder room), but both BATH2 wall cabinets stand on the south (right) face, body centroid 6.3 in. south of the axis; the 1.5 in. board sits in the far half of a 5.5 in. stud cavity, ~4 in. behind a screw's reach. Same on W-M-C5 BK-M-C5-MID (over-fridge/freezer cabinets, right face, band left), W-M-C2 BK-M-C2-MIRROR-LO (RC2 is right), W-M-S2 BK-M-S2-ROD (stair light is right), W-M-TUBDK-W AP frames (right vs left), W-S-BD-N VANITY-FOOT (body left, band right). The other two of the 13, FX-M-PORCH-HYD (W-M-S1) and FX-S-BALCONY-HYD (W-S-S1, 13 in. walls), are through-wall hydrants and probably benign. advisory.wall_backing_present passes all of them: _band_spans/_covers_station read station and height only. TODO.md L256 names the missing face grade.",
+    "expected": "Band face equals the body's attachment face (or the body's side of the axis) for every body the check calls 'backed'; the check should FAIL a wrong-face band.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p8.py (model pickle /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/m.pkl; load_plan+resolve): for each canvas object with attachment_wall, find authored bands covering its station and body_z0 within 1 in., compare band.face to attachment_face, then to the sign of the footprint centroid across the wall axis ((x-x0)*-uy+(y-y0)*ux, left=+)."
+   },
+   "source": "plans/TODO.md L256; notes/wall_backing.md s4 (band on the stud face the body stands on)",
+   "proposed_fix": "Set face='right' on BK-M-HS1-MID/-HIGH (BATH2 cabinets) and re-face the other 11 bands, or add a second band on the correct face; add a face test to _band_spans (compare band.face to attachment.face) so the advisory FAILs it. Check each band against the 2 in. cavity before adding (HS1 right face already carries BK-M-HS1-GRAB-S).",
+   "size_guess": "small",
+   "seam_with": [
+    "F1",
+    "E1"
+   ],
+   "dedupe_key": "backing:wrong-face"
+  },
+  {
+   "id": "F2-102",
+   "area": "F2",
+   "title": "Fourteen pipe/duct runs pass through the 1.5 in. backing boards in their own bay; nothing grades a band against a run (F2-003 remainder plus new vents and supplies)",
+   "elements": [
+    "PR-S-BATH1-LAV-VENT",
+    "PR-S-VANITY-VENT",
+    "PR-A-STUBATH-WC-VENT",
+    "PR-M-KITCH-LOCAL-VENT",
+    "PR-B-BATH-LAV-VENT",
+    "PR-A-STUBATH-LAV-HW",
+    "PR-A-STUBATH-SH-HW",
+    "PR-A-STUBATH-LAV-REVENT",
+    "PR-S-BATH1-LAV-HW",
+    "PR-S-BATH1-LAV-CW",
+    "PR-B-BATH2-SH-HW",
+    "PR-M-S-SUITE-DRAIN",
+    "DU-M-ERV-R-LAUNDRY",
+    "BK-S-BA-E1B-*",
+    "BK-B-CW2-*",
+    "BK-A-HALL-S-VANITY-RAIL"
+   ],
+   "files": [
+    "houses/catlin/plan/backing_wet.py",
+    "houses/catlin/plan/backing_towel_accessories.py",
+    "houses/catlin/notes/wall_backing.md:162",
+    "packages/engine/src/typehaus/resolve/framing/backing_panels.py:210"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Sampled swept envelope (0.25 in. steps, z interpolated along each leg) against the 405 resolved backing members: penetration into the board footprint (centre of run to face): PR-S-BATH1-LAV-VENT 1.9 in. OD, 1.45 in. into four bands of W-S-BA-E1B (VANITY-RAIL, MID, MIRROR-HANG, MIRROR-LIGHT); PR-S-VANITY-VENT 1.45 in. into BK-S-BD-N-SEKTION; PR-A-STUBATH-WC-VENT 1.20 in. into BK-A-STU-W-GRAB; PR-M-KITCH-LOCAL-VENT 1.70 in. into BK-M-N1-SINK; PR-B-BATH-LAV-VENT 0.70 in. into four W-B-CW2 bands; PR-A-STUBATH-LAV-HW/SH-HW run 50 in. horizontally at z=272 (0.56-1.03 in. into BK-A-HALL-S-VANITY-RAIL, 270-277.2); PR-S-BATH1-LAV-HW/CW drops 0.3-1.06 in. into MID/MIRROR-HANG; PR-M-S-SUITE-DRAIN (3.5 in. OD) 0.50 in. into BK-M-CLN-PAX and -RACK; DU-M-ERV-R-LAUNDRY (4 in.) 0.75 in. into BK-M-CLN2-PAX. Round 1's PR-M-S-BATH1-DRAIN vs BK-M-STOS-SHELF is gone (stack now in W-M-STOS's own bay). The vents sit against the wall face where the boards are (pipe axis across -1.75 in a band spanning -2.75..-1.25) although the cavity is 5.5 in.",
+    "expected": "Bands break at the stack/vent bay or the run centres in the cavity (axis 0 clears a 1.5 in. board with a 1.9 in. vent); a check flags a run whose envelope enters a resolved backing member.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p6.py (sampled envelope vs member_footprint of every child_key 'backing-*'), plus /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p5b.py for the plan-area version; wall_backing.md s5 still says nothing grades a band against a pipe."
+   },
+   "source": "notes/wall_backing.md s5 (line 162); C6 E5 ('C3 then splits the bands around the bay')",
+   "proposed_fix": "Cheapest: author start/length on the bands around each run, or shift the vents/supplies ~1 in. toward the cavity centre (M4/M5 routes). Add a run-vs-backing-member check in checks/mep (reuse leg_crossings with category 'blocking' and the backing- prefix).",
+   "size_guess": "small",
+   "seam_with": [
+    "M2",
+    "M4",
+    "M5",
+    "F1"
+   ],
+   "dedupe_key": "backing:vs-runs"
+  },
+  {
+   "id": "F2-103",
+   "area": "F2",
+   "title": "R602.6 edge rule (5/8 in.) is graded as if every bore were centred; 57 stud crossings have the pipe edge 0.04-0.62 in. from the stud face and still PASS",
+   "elements": [
+    "PR-B-BATH-LAV-VENT",
+    "PR-M-S-VANITY-DRAIN",
+    "PR-A-STUBATH-LAV-ARM",
+    "PR-S-SUITE-TUBSH-HW",
+    "PR-B-CW-WASH",
+    "W-B-CW2",
+    "W-B-CW3",
+    "W-S-BD-N",
+    "W-S-SN3",
+    "W-A-STU-N",
+    "W-M-BA2E",
+    "mep.run_through_stud"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/mep_bores.py:245",
+    "packages/engine/src/typehaus/resolve/mep_bores.py:257",
+    "packages/engine/src/typehaus/checks/mep/routing_bores.py:145"
+   ],
+   "kind": "engine-geometry",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "stud_bore computes edge=(depth-dia)/2 from the diameter alone (mep_bores.py:245) so a 1.9 in. bore in a 2x4 always reads 0.80 in. of wood each side. Using the real run-axis position across the wall vs the stud centre (MemberCut.station, member p0): PR-B-BATH-LAV-VENT crosses W-B-CW2 stud and W-B-CW3 stud 0.73 in. off-centre, leaving 0.07 in. of wood on one side; PR-M-S-VANITY-DRAIN (W-S-BD-N, 1.9 in., offsets -0.5/+0.45) leaves 0.30 in.; PR-A-STUBATH-LAV-ARM (W-A-STU-N, 1.9 in., offset -0.53) 0.27 in.; staggered walls W-S-SN3/W-S-BD-N pass 0.62-0.88 in. lines through every alternate row 1.0 in. off stud centre (0.31-0.44 in. left). 57 crossings in 25 run/wall pairs on 12 walls have 0 <= edge < 0.625 in.; 36 more clip a stud corner (pipe edge outside the stud) and are graded as full bores. All 229 stud-category crossings read PASS (or 2 UNKNOWN cripple). The 1.9 in. cases are the ones where the shortfall is a real hole against 5/8 in.",
+    "expected": "Pipe edge >= 0.625 in. from both faces of every bored stud (R602.6), graded from the run's actual across-wall offset; a clipped corner graded as a notch.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p11.py: legs via leg_crossings; across(run at station) minus across(stud p0), edge=min((pc-r)-(sc-d/2),(sc+d/2)-(pc+r))."
+   },
+   "source": "IRC R602.6 as encoded in mep_bores.STUD_EDGE_CLEAR_IN; framing_bore_limits.md s1 ('5/8 in. of stud must remain either side'); R602.6 percentages and the R602.6.1 tie numbers agree with ICC CodeNotes (2021 IRC) but the 5/8 in. verbatim text was not retrievable (icc codes site 403)",
+   "proposed_fix": "Pass the run's lateral offset into stud_bore (edge from the real position, notch rule for a clipped corner) and re-centre PR-B-BATH-LAV-VENT, PR-M-S-VANITY-DRAIN, PR-A-STUBATH-LAV-ARM in their bays.",
+   "size_guess": "large",
+   "seam_with": [
+    "M4",
+    "M5"
+   ],
+   "dedupe_key": "bore:edge-offset"
+  },
+  {
+   "id": "F2-104",
+   "area": "F2",
+   "title": "The construction set never tells the framer where the 128 backing bands are: no schedule, note or spec line; only unlabelled strokes on the enlarged bath plans",
+   "elements": [
+    "A-401.1",
+    "A-401.2",
+    "A-401.3",
+    "A-401.4",
+    "A-401.5",
+    "A-401.6",
+    "A-002",
+    "S-001",
+    "S-001.1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/",
+    "houses/catlin/notes/wall_backing.md"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-401.1",
+     "A-401.2",
+     "A-401.3",
+     "A-401.4",
+     "A-401.5",
+     "A-401.6",
+     "A-002",
+     "S-001",
+     "S-001.1"
+    ],
+    "pages": [
+     41,
+     42,
+     43,
+     44,
+     45,
+     46,
+     28,
+     8,
+     9
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "pdftotext of the full 176-page set: the word 'backing' appears once (p150, door jamb 'full-depth backing at hardware anchors'); 'blocking' appears only for floors, diaphragm and eave blocking. A-002 06 10 00 and S-001/S-001.1 carry no backing/blocking line. The model has 128 WallBacking bands (405 pieces, 48 walls, 2x8/2x10/2x12 at 2-93 in.) that draw on A-401.x only as thin brown strokes beside the wall with no tag, height or legend (viewed p41-46; A-401.1/.2/.6 also carry no dimension strings).",
+    "expected": "A backing schedule (wall, face, height AFF, length, size) or a general note with the CRC R328.1.1 grab courses, mirror/vanity/PAX rail heights; the strokes labelled.",
+    "method": "pdftotext -layout permit_set_full.pdf; grep -ci backing per page (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/full.txt); Read pages 41-46, 28, 8-9."
+   },
+   "source": "baseline permit_set_full.pdf; houses/catlin/notes/wall_backing.md",
+   "proposed_fix": "Add a WALL BACKING schedule to the S-series from model.walls[].members 'backing-*' (grouped by band tag) and a one-line spec in A-002 06 10 00.",
+   "size_guess": "large",
+   "seam_with": [
+    "C7"
+   ],
+   "dedupe_key": "A-401:backing-undocumented"
+  },
+  {
+   "id": "F2-105",
+   "area": "F2",
+   "title": "S-601 cut list hides the material column: red-oak and poplar blocking print as plain 2x6/0.75x3.5 rows, and one size/type pair prints on 2-3 identical-looking rows",
+   "elements": [
+    "S-601",
+    "S-601.1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/structural.py:36",
+    "packages/engine/src/typehaus/emit/draw/schedules/structural.py:38"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-601",
+     "S-601.1"
+    ],
+    "pages": [
+     22,
+     23
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "structural.py:30-39 prints profile and category only. takeoff framing_bom has 2x6 blocking as three rows (338 pcs material None; 65 pcs 'spf'; 21 pcs 'oak-8q', the W-M-STRW red-oak bench courses) and 2x4 blocking as two rows (47 None, 32 'spf'); S-601.1 shows them as '2x6 blocking 338 / 21 / 65' with no discriminator. A cutter or purchaser reads 21 pcs of 2x6 as SPF; 0.75x3.5 'blocking' (14 pcs, poplar trim stock) and the 1.0x3.5 row likewise. Round-1's F2-012 (1.5x11.25 vs 2x12) is fixed; this is the remaining ambiguity.",
+    "expected": "Material column (or a ':material' suffix as the 2x12:kdat rows already use) on every cut-list row.",
+    "method": "Read S-601 p22 / S-601.1 p23; takeoff.json framing_bom entries with category 'blocking'; structural.py:30-39."
+   },
+   "source": "baseline takeoff.json framing_bom",
+   "proposed_fix": "Add row['material'] to the cut-list columns (and merge None into the default species).",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "S-601:material-hidden"
+  },
+  {
+   "id": "F2-106",
+   "area": "F2",
+   "title": "S-001.1 prints engine-internal text in the PARTITION DEFLECTION SCREW note (code path, check id, backticks)",
+   "elements": [
+    "S-001.1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/takeoff/partition_fasteners.py:115",
+    "packages/engine/src/typehaus/takeoff/partition_fasteners.py:120"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-001.1"
+    ],
+    "pages": [
+     9
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "S-001.1 p9 prints 'The blocking itself is framed by ``resolve/floor_blocking.py`` over a FLOOR and is billed with the deck's own members' and 'graded against Simpson's own maximum-spacing table by `structural.partition_deflection_spacing`; nothing here grades a demand, because this engine carries no interior-partition out-of-plane load to grade' plus a run-on 'NOT BILLED at W-A-SN-ER: no wood stands over it ...' list. Source is _basis() in partition_fasteners.py, intended for the takeoff/bid outputs; hardware_tables was supposed to drop basis sentences (structural.py docstring) but this note reaches the sheet.",
+    "expected": "Sheet carries a builder-facing sentence (one blocked bay per 16 in., 0.75 in. gap + 3 in. plate + 0.75 in. embedment = 4.50 in. required).",
+    "method": "pdftotext -f 9 -l 9 permit_set_full.pdf; Read p9."
+   },
+   "source": "baseline permit_set_full.pdf p9",
+   "proposed_fix": "Strip the basis text from the sheet note or write a sheet-specific short form.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "S-001.1:engine-prose"
+  },
+  {
+   "id": "F2-107",
+   "area": "F2",
+   "title": "Six pairs of backing bands overlap on one face (BK-M-HS1-BASIN/-GRAB and five more): two boards in one space, billed twice",
+   "elements": [
+    "BK-M-HS1-BASIN",
+    "BK-M-HS1-GRAB",
+    "BK-M-HS1-MIRROR-LOW",
+    "BK-M-HS1-MID",
+    "BK-M-HS1-BASIN-MIRROR",
+    "BK-M-HS1-HIGH",
+    "BK-M-HS1-MIRROR-LIGHT",
+    "BK-M-E1-PANTRY-TOP",
+    "BK-M-E1-KIT-TOP"
+   ],
+   "files": [
+    "houses/catlin/plan/backing_wet.py:99",
+    "houses/catlin/plan/backing_wet.py:88",
+    "houses/catlin/plan/backing_wet.py:93",
+    "houses/catlin/plan/backing.py:116",
+    "houses/catlin/plan/backing.py:120"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.75,
+   "evidence": {
+    "measured": "Member-footprint intersection on the same wall: W-M-HS1 (all face left): BASIN 28.5-37.75 vs GRAB 32-39.25 overlap z 33.0-37.8 (4.75 in.), GRAB vs MIRROR-LOW 0.25 in., MIRROR-LOW 40-49.25 vs MID 44-53.25 (5.25 in.), BASIN-MIRROR 72-79.25 vs HIGH 78-85.25 (1.25 in.), HIGH vs MIRROR-LIGHT 80-87.25 (5.25 in.); W-M-E1: PANTRY-TOP 98-101.5 vs KIT-TOP 99.5-105 (2 in.). Intersection area 22-88 in2 per bay.",
+    "expected": "Bands on one face merge or stack without overlap (no board counted twice, no two boards in one bay).",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p9.py: pairwise member_footprint intersection of backing-i/backing-j on each wall."
+   },
+   "source": "plans/TODO.md L256 (BASIN/GRAB)",
+   "proposed_fix": "Merge each pair into one taller band (or trim start/length) in backing_wet.py / backing.py; add a band-vs-band overlap rule to integrity.wall_backing_ref.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "backing:band-overlap"
+  },
+  {
+   "id": "F2-108",
+   "area": "F2",
+   "title": "mep_bores.py is 507 lines against the repo's 500-line rule",
+   "elements": [
+    "packages/engine/src/typehaus/resolve/mep_bores.py"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/mep_bores.py:507"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.9,
+   "evidence": {
+    "measured": "wc -l: mep_bores.py 507; the other F2 files are 161-458 lines.",
+    "expected": "<= 500 lines (AGENTS.md).",
+    "method": "wc -l packages/engine/src/typehaus/resolve/mep_bore*.py houses/catlin/plan/backing*.py"
+   },
+   "source": "AGENTS.md / CLAUDE.md non-negotiables",
+   "proposed_fix": "Move the header/flat-header predicates (header_bore, flat_header_cut) into mep_bore_header.py.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "mep_bores:file-length"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "F2-001",
+   "status": "closed",
+   "evidence": "BK-G-S-EVSE now abs z 7.5-18.75 in. (W-G-S base_ref_z -12 in.) and APPL-G-EVSE body abs z 8.0-18.25 in.: covered. Round 1 measured a band at 29.5-40.75 in., 11.25 in. above it.",
+   "method": "probe: model.canvas_objects APPL-G-EVSE body_z0/z1 vs member_footprint of W-G-S 'backing-0-000' (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p10.py / inline)"
+  },
+  {
+   "id": "F2-002",
+   "status": "closed",
+   "evidence": "advisory/backing.py:_band_datum_low reads placed.body_z0_m - wall.base_ref_z_m and _band_spans adds band_datum_offset_m; WallBacking.datum='finished-floor' now lifts the members (resolve/backing_datum.py). All 6 GRAB bands resolve to exactly 32.00-39.25 in. AFF (BK-M-HS1-GRAB, -GRAB-S, BK-M-BA2E-GRAB, BK-M-BA2E2-GRAB, BK-S-SN3-GRAB, BK-A-STU-W-GRAB). Residual: the check still reads the authored bands, not the resolved members, and ignores face (new F2-101).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p12.py (member_footprint z minus room_finished_floor_elevation of the face room)"
+  },
+  {
+   "id": "F2-003",
+   "status": "partial",
+   "evidence": "Closed for round 1's PR-M-S-BATH1-DRAIN/BK-M-STOS-SHELF (W-M-STOS is now INT_2X6_STAGGERED_PLUMBING_HALF; the stack stands in its own bay). Still open: PR-M-S-SUITE-DRAIN (3.5 in.) 0.50 in. into BK-M-CLN-PAX/-RACK (was 0.84 in2 each, now 0.5 in. penetration) and DU-M-ERV-R-LAUNDRY (4 in.) 0.75 in. into BK-M-CLN2-PAX (1.63 in2, unchanged), plus 11 new run/band conflicts from the re-routed vents and HW supplies (F2-102). TODO: backing bands still not split around stack bays.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p6.py and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p5b.py"
+  },
+  {
+   "id": "F2-004",
+   "status": "closed",
+   "evidence": "W-M-STOS is INT_2X6_STAGGERED_PLUMBING_HALF (6.5 in., 5.5 in. stud plane); PR-M-S-BATH1-DRAIN (3.5 in. OD) at (60,320) clears stud-006/007 (2x4 at 3.25 in. from the axis) by 1.5 in. each side (hub ~4.2 in. fits: 2.5 in. axis-to-stud-face); mep.run_through_stud now PASS 'stands in W-M-STOS's stud cavity ... 3.50 in. envelope fits the 5.50 in. stud plane'. Plates are cut 3.5/5.5 in. (64%) on an interior non-bearing wall: R602.6.1 scope excludes it (mep.run_through_plate PASS). No UNKNOWN left on this stack.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p7.py; checks.json mep.run_through_stud / run_through_plate for PR-M-S-BATH1-DRAIN"
+  },
+  {
+   "id": "F2-005",
+   "status": "closed",
+   "evidence": "PR-A-STUBATH-DRAIN stack is now at (115.5,235) on W-S-DC2's axis (round 1: (115.5,232) on stud-005); nearest studs stud-005/006 clear the 3.5 in. envelope by 1.5 in.; check PASS 'stands in W-S-DC2's stud cavity'.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p7.py"
+  },
+  {
+   "id": "F2-006",
+   "status": "closed",
+   "evidence": "resolve/framing/backing_panels.py now cuts each band at every stud/king/jack/cripple on its face (_stud_breaks) unless furred=True: 0 of 405 backing members overlap a stud footprint (round 1: 380 overlaps, 130 runs). Billing follows the pieces.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p10.py (member_footprint intersection, backing-* vs stud/king/jack/cripple/corner)"
+  },
+  {
+   "id": "F2-007",
+   "status": "partial",
+   "evidence": "Exterior half fixed: mep_bore_scope.outdoor_wall_tags (weather skin or foundation) adds 41 exterior walls at the 40% limit; W-A-HALL-S is correctly non-bearing; no bore verdict flips (largest 1.9 in. vs 2.20 in. 40% of a 2x6; 18 exterior-wall crossings all PASS). Remaining: walls the plan authors BEARING and the engine knows carry beams or stacked walls are still graded 60%: W-M-C5, W-M-C5B, W-M-STRW, W-S-BD-N1B, W-S-BA-E1B, W-A-C2M (all bored, max 1.9 in. in 2x6 so still passing) and W-M-C1/C3, W-S-C2/C2B/C2C/C4B, W-S-BA-E, W-A-C1/C1B/C2/C2B, and the attic rafter-plate walls W-A-E1/E2/W1/W1B (unbored). bearing_wall_tags = foundation + JoistSpec.bearing_refs only (mep_bore_scope.py:20).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p3.py (walls with structural_role BEARING not in r602_6_roles) and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F2/p1.py"
+  },
+  {
+   "id": "F2-008",
+   "status": "closed",
+   "evidence": "No page of the 176-page set contains 'derived transition detail'; A-554 (now p105) and A-570 (p121) show the detail with leaders and a scale bar and no piled legend text (viewed p105). Closed by C7's sheet-composer change.",
+   "method": "pdftotext permit_set_full.pdf | grep -c 'derived transition detail' = 0; Read p105"
+  },
+  {
+   "id": "F2-009",
+   "status": "closed",
+   "evidence": "G-002 (p3) now carries FIREBLOCKING (R302.11): concealed wall spaces at each floor/ceiling and at 10 ft horizontally, soffits/drop ceilings, stair stringers, penetrations, and the R302.11.1 materials (2x lumber, 23/32 WSP, 1/2 in. gypsum, mineral wool/glass-fibre batts). code.fireblock_chase 3 PASS.",
+   "method": "pdftotext -f 3 -l 3 permit_set_full.pdf; checks.json code.fireblock_chase"
+  },
+  {
+   "id": "F2-010",
+   "status": "closed",
+   "evidence": "notes/wall_backing.md:101 now reads 'gypsum straight on the studs (5/8 in. then; 1/2 in. since the 2026-10-23 wall board policy)'.",
+   "method": "grep -n '5/8' houses/catlin/notes/wall_backing.md"
+  },
+  {
+   "id": "F2-011",
+   "status": "partial",
+   "evidence": "advisory.wall_backing_present now reads ElectricalDevice PANEL/METER/DISCONNECT and returns UNKNOWN (outdoor face; backer over cladding modelled nowhere) for ED-M-METER, ED-M-HP1-DISC, ED-M-HP3-DISC (3 UNKNOWN in checks.json). Equipment is still not read: 8 wall-mounted Equipment on framed walls (EQ-M-ERV-MAN-SUP/EXH, EQ-M-ERV-HOOD-OA, EQ-M-HP3-STAIR, EQ-S-ERV-HOOD-EA, EQ-M-HP2-BED/LIVING, EQ-G-HEATER) are ungraded; 5 of them stand on walls with 0 bands.",
+   "method": "grep WallMountedBody in checks/advisory/backing.py:46; canvas_objects kind=='Equipment' with attachment_wall (inline probe)"
+  },
+  {
+   "id": "F2-012",
+   "status": "closed",
+   "evidence": "BK-G-W-RAIL-TOP/-FOOT now profile '2x12' (backing.py:367-374); S-601 shows one '2x12 blocking 12 pcs' row and no '1.5x11.25 blocking'.",
+   "method": "grep backing.py; Read S-601 p22 / S-601.1 p23"
+  }
+ ]
+}

@@ -1,0 +1,604 @@
+{
+ "area": "D1",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventory: 33 listed sheets opened on permit_set_full.pdf (text for all; rendered/viewed G-004, G-005, S-100, S-101.1, S-101.3, S-102.2, S-103.1, S-103.2, S-603, A-101, A-102 (+crops), A-103, A-105, E-602, E-603; G-001/G-001.1 index parsed programmatically), plus permit_set.pdf's G-001 index and sheet map. Elements: 24 dimension chains on A-101..A-104; ~55 structural/roof chains; A-601 36 door rows; A-602 55 rows; A-603 37 rooms + fixtures; S-601 140 + 85 rows; S-602 137 hardware rows. Probes in /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/D1: load.py (model pickle), chains.py + sums.py (A-101..A-104 dimension nodes), structdims.py + structsum.py (S-100..S-103, A-105), pdfcmp.py/pdfcmp2.py (scene labels vs permit_set_full.pdf text). Model loaded from houses/catlin via load_plan/resolve (pickle in scratch); sheets rebuilt in-process (build_sheet_index + set_paper(LEDGER)) without writing out/. Caveat: the in-process S-100 LOC N-S chain merges 3 more stations than the printed PDF (printed values decoded from the image); all other structural labels match the PDF. NOT examined: manufacturer/web data for door and window products (unit sizes, net clear, hinge/hardware heights - owned by O1/O3/O4, A-601/A-602 values were checked against the model only); the 24x36 print (permit_set_24x36.pdf is not in the snapshot, S-603/E-602 clipping may differ there); S-001/S-001.1 and A-002 text; G-004/G-005 envelope numbers and efficiency rows; E-601 circuit data beyond area; A-604 paint product data; IFC/UI renderings. S-501.1 not in D1's sheet list.",
+ "verified_clean": [
+  "A-101..A-104 chains: 24/24 (I0/I1 interior, S/N/W/E facade per sheet) sum exactly to their overall string; A-101 98'-10 1/8\", A-102 67'-2 5/8\", A-103/A-104 36'-0\" (chains.py + sums.py).",
+  "A-101..A-104 printed text: all 176 dimension labels from the in-process scenes appear in permit_set_full.pdf p29-32 (pdfcmp.py).",
+  "A-101..A-104 facade chains: every opening on a facade line is a station (centreline; ICF/masonry by RO edges); extra stations are partition axis ends only (facade.py).",
+  "A-101..A-104 interior chain stations: every inner station is within 1/16\" of a resolved structure/sheathing wall face (stations.py).",
+  "A-601 (p149) 36/36 door rows: Nominal = type width x height; RO printed = sizing.rough_w/h to 1/8 (tie rounding aside, D1-112); RO width = innermost jack gap in the framing (e.g. D-M-BATH2 34.236, D-M-ENTRY 38.375, D-G-OVERHEAD 192.0); Hand 36/36 by independent geometric derivation; RO sill = opening.sill_m; pocket rows = 3 and match S-602.1 pocket kits (rows 98-99).",
+  "A-601.1 (p150) hardware sets HW-3/HW-4 and notes consistent with S-602.1 door hardware rows (counts 3 hinges/BE365 etc.); NOT verified against manufacturer data (O1/O3).",
+  "A-602 (p151) 55/55 rows: RO w x h printed = opening.width/height = jack gap and header-bottom minus sill-top in the framing (0 rows off by > 0.07\"); RO sill datum offset uniform per storey (0, 120, 240, -102.188 in); bedroom egress net clear: W8/W10 1'-8 3/8\" x 3'-5 5/8\" = 5.89 ft2, W13 6.7 ft2 (>= 5.7).",
+  "A-603 (p152) 37/37 room areas equal model areas; 14 doorway transition components (5 Z-bar, 2 oak, 1 solid-surface, 3 rubber, 3 Schluter) equal S-602.1 rows 100-107 and the model's doorway components.",
+  "S-601/S-601.1 (p22-23) 140/140 cut-list rows printed verbatim from takeoff.framing_takeoff; 96 of 120 (profile, category) groups equal an independent aggregation of model.all_members(); the 24 differences are the documented exclusions (stair skirts/treads, rips, bucks, stiffeners, hangers).",
+  "S-602/.1/.2 (p24-26) rows verified against the model: 1 (1,157 girt blocks = 1,157 'block' members), 34/38/45 (38 rafters = 19 ridge pairs; bearings W-A-E1 5 + E2 14 + W1 8 + W1B 11 = 38), 40 (36 = 10+12+14 joist ends), 46/47 (garage trusses 22+4 ends), 49 (22 = 5+3+3+3+3+5), 59 (SP6 323 = 2x6 corner/king/stud in EXT_2X6*, GARAGE_WALL_2X6, PLANT_EXT*), 60 (2 coils = 268.2 LF / 150), 98/99 (3 pocket kits), 100-107 (14 transitions).",
+  "S-100/S-101.x/S-102.x/S-103.x/A-105 chains: every chain is contiguous and sums to its own extent; E-W overalls = 36'-0\" (house) or 24'-0\" (garage), S-100 N-S overall 98'-10 1/8\" = A-101; A-105 roof chain stations = footprint corners + ridge (garage W edge 56, ridge 216, E edge 376).",
+  "E-601 (p174) conditioned area 4,900 ft2; E-603 (p176) heights ft-in with headers; G-002/G-003 state per-tier references and the A115.1G hand legend."
+ ],
+ "findings": [
+  {
+   "id": "D1-101",
+   "area": "D1",
+   "title": "S-603 engineering register prints clipped item ids and overflows: base_rotation/PT-SG-BF1/BF3/BR1/BR3 all read 'base_rotation/PT-SG-', Basis/Governing/Signoff/Seal cells are cut mid-word, the left table's 'Checked against' column runs into the right table, and the notes block prints through the title block",
+   "elements": [
+    "S-603"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/tables.py:123",
+    "packages/engine/src/typehaus/emit/draw/schedules/structural_notes.py:356"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-603"
+    ],
+    "pages": [
+     27,
+     24
+    ]
+   },
+   "confidence": 0.85,
+   "evidence": {
+    "measured": "permit_set_full.pdf p27 (permit_set.pdf p24), rendered at 170 dpi: Item column shows 'band_header/D-B-SU', 'column_head_joint/P', 'base_rotation/PT-SG-' x4 (four different items, identical visible id); header 'Signoff' prints 'Signo', status 'unsealed' prints 'unsea', Governing 'magnified moment (sw', Basis 'ACI 318-19 §6.6.4.5.2 and §6.2.5.'; left table's last column text ('...oads, Tal', 'CI 318-1', '.3.4 and') bleeds into the gap before the right table; right table's last column overruns the sheet margin ('northentry_piers.md, uplift_load_path.md' overprinted); the 'WHAT THIS PAGE DOES AND DOES NOT SAY' bullets at y>850 px of 990 print through the title-block cells (Catlin House / SITE / PROJECT NO).",
+    "expected": "Every item id (the string a PE's seal is pinned to: '<kind>/<element-tag>') fully legible, no cell clipped mid-word, nothing over the title block.",
+    "method": "pdftoppm -r 170 -f 27 -l 27 permit_set_full.pdf and view (x0,y180 and y1450 crops); pdftotext -layout -f 27 -l 27 shows the cut strings. Cell clipping is tables._fit_cells (truncate=) with the 3.2 pt floor in tables._add_table:149; see also S-603 builder."
+   },
+   "source": "n/a (drawing); register item ids per CLAUDE.md 'Engineering' section",
+   "proposed_fix": "Move S-603 onto paged_tables (as A-601/S-601 now are) with wrapped Item/Elements/Basis cells and a note block sized to the content box; or print item id on its own full-width line.",
+   "size_guess": "small",
+   "seam_with": [
+    "F6",
+    "F5"
+   ],
+   "dedupe_key": "D1:s603-clipped-register"
+  },
+  {
+   "id": "D1-102",
+   "area": "D1",
+   "title": "'BRG LINES C/C' strings are layout-line spacings, not centrelines: the garage prints 24'-0\" c/c and 24'-0\" O/A on the same sheet; exterior wall axes sit on the sheathing / ICF outer face, so house 18'-0\"/18'-0\" is face-to-centre; S-100's N-S chains run 2 1/2\" past their own overall",
+   "elements": [
+    "W-G-N",
+    "W-G-S",
+    "W-G-E",
+    "W-G-W",
+    "W-GF-N",
+    "W-GF-S2",
+    "W-M-W1",
+    "W-M-E1",
+    "W-M-C1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/structural_dimensions.py:62",
+    "packages/engine/src/typehaus/emit/draw/foundationplan.py:150",
+    "packages/engine/src/typehaus/emit/draw/framingplan.py:106"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-100",
+     "S-101.1",
+     "S-101.2",
+     "S-101.3",
+     "S-102.1",
+     "S-102.2",
+     "S-103.2"
+    ],
+    "pages": [
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     18
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "axis_stations() uses wall.axis (the layout line). Resolved layers: W-G-N axis y=806.625, structure 800.5..806.0 (centre 803.25), W-G-S axis 518.625, structure 519.25..524.75 (centre 522.0): printed BRG c/c 288\" = 24'-0\" (S-102.2 prints BRG 24'-0\" directly above O/A 24'-0\"), true stud c/c 281.25\" = 23'-5 1/4\", concrete c/c (W-GF-S2 core 521.125..527.125, W-GF-N 798.125..804.125) 277.0\" = 23'-1\". House: W-M-W1 axis x=0 (sheathing face), structure 0.5..6.0 (centre 3.25); the interior bearing wall W-M-C* centre is x=216, so S-101.1/2/3 '18'-0\" 18'-0\"' is face-to-centre; stud c/c is 212.75\" = 17'-8 3/4\" each side. S-100 BRG/LOC N-S chains end at 806.625 while S-100's own O/A FACE FDN ends at 804.125 (concrete face) - the 'inner' chain is 2 1/2\" longer than the overall that is supposed to contain it; they also start at -376 vs the overall's -382. In S-100's printed LOC chain a concrete centreline (524.125) and an ICF outer-face line (806.625) are adjacent stations (23'-6 1/2\").",
+    "expected": "A chain labelled c/c measures between member centrelines, or is relabelled 'LAYOUT LINES' with G-002 stating which face each line is on; the garage c/c must differ from its face-to-face overall.",
+    "method": ".venv/bin/python /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/D1/walls.py main 0 (layers) and the layer dump in /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/D1/prov.py; read pdf p10/p11/p15/p18 of permit_set_full.pdf. Layers: model.wall('W-G-N').layers polygon coords in y, wall.axis."
+   },
+   "source": "G-002 'bearing / braced wall lines c/c'; wall layer polygons (model.json)",
+   "proposed_fix": "Either station the BRG tier from each wall's structure-layer centre (c/c truthfully), or rename it 'LAYOUT LINE' and add a G-002 line 'exterior layout lines stand on the sheathing / ICF outer face'. Keep ICF set-out from the form face on S-100 but label it so.",
+   "size_guess": "small",
+   "seam_with": [
+    "F3",
+    "F4",
+    "F5"
+   ],
+   "dedupe_key": "D1:brg-cc-is-layout-line"
+  },
+  {
+   "id": "D1-103",
+   "area": "D1",
+   "title": "E-602 luminaire schedule: numeric cells are hidden by the next cell, so lumens read '1,11' (1,110), '1,40' (1,400), '5,40' (5,400), '11,2' (11,280); text columns and headers are cut mid-word (Description, Brand/Model, Lamp, 'Dim-ca', 'Listi', 'dam' for damp)",
+   "elements": [
+    "E-602",
+    "N",
+    "N1",
+    "M",
+    "F"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/electrical.py:157",
+    "packages/engine/src/typehaus/emit/draw/schedules/electrical.py:173",
+    "packages/engine/src/typehaus/emit/draw/schedules/tables.py:149"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [
+     "E-602"
+    ],
+    "pages": [
+     175
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "permit_set_full.pdf p175 at 130 dpi: row N lm cell shows '1,11' (luminaire_schedule row N lumens 1110.0), N1 '1,40' (1400), M '5,40' (5400), F '11,2' (11280), T '1,50' (1500); the full 5-digit value is in the PDF text ('1,1103000' in pdftotext) but the following cell's white backing covers the last digit. Only column 13 (Locations) is in truncate=(13,); Description is pre-clipped by _clip(...,22) then clipped again by the cell. Header cells print 'Mark', 'Dim-ca', 'Listi'. Round-1 D1-009 (overprint) is fixed; the replacement failure is silent data loss in a numeric column. E-602 is full-set only (permit set carries no E sheets).",
+    "expected": "Every cell visible in its column; numbers never clipped; headers whole.",
+    "method": "pdftoppm -r 130 -f 175 -l 175 -x0 -y0 -W1500 -H700 permit_set_full.pdf; takeoff.lighting.luminaire_schedule(model) rows for N/N1/M/F; schedules/electrical.py:157-175."
+   },
+   "source": "n/a (drawing); takeoff.lighting.luminaire_schedule",
+   "proposed_fix": "Move E-602's luminaire table to paged_tables with wrapped Description/Brand/Lamp cells (the A-601 pattern), or give lm/W/K their own width and truncate=(1,2,3,12,13).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "D1:e602-numeric-clip"
+  },
+  {
+   "id": "D1-104",
+   "area": "D1",
+   "title": "A-101 and A-102 interior E-W chains silently drop whole partitions, including the central bearing walls (x 213.25-218.75), while keeping the garage wall; G-002 states 'Interior strings: to face of stud, both faces' with no exception",
+   "elements": [
+    "W-M-C1",
+    "W-M-C2",
+    "W-M-C3",
+    "W-M-C5",
+    "W-M-C5B",
+    "W-B-CN",
+    "W-B-CS",
+    "W-B-CS2",
+    "W-B-CS3",
+    "W-B-CN2",
+    "W-G-W"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/plan_dimensions.py:93",
+    "packages/engine/src/typehaus/emit/draw/plan_dimensions.py:111",
+    "packages/engine/src/typehaus/emit/draw/plan_dimensions.py:57"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-101",
+     "A-102",
+     "G-002"
+    ],
+    "pages": [
+     29,
+     30,
+     3
+    ]
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "In-process build (framed_floorplan, LEDGER) vs plan_dimensions._face_stations: A-102 I0 chain stations 0, 72, 78.125, 158.25, 163.75, 293.25, 296.75, 432; 23 wall-face pairs are not on it, among them W-M-C1/C2/C3/C5/C5B (213.25-218.75, the main bearing line), W-M-BAE/MECH-E/MUDC-E (70.25-73.75), W-M-STRW (117.125-122.625) and W-M-WELL; but W-G-W (72.0-78.125, a garage exterior wall: 5.5\" stud + 5/8\" sheathing, printed '0'-6 1/8\"') is kept. A-101 I0: 17 faces omitted incl. W-B-CN/CS/CS2/CS3/CN2 (213.25-218.75); I1: 4 omitted incl. W-B-CW (214.25-217.75). A-103: 4+6, A-104: 1+3 omitted. The chain falls back through _COARSER_STATION_GAPS_IN to a gap larger than the 49.5\" between W-M-LS and the bearing line because the finer chains 'slide' strings. Nothing on the sheet says partitions were left off.",
+    "expected": "Each plan states which partitions its interior chain omits (or never omits a declared bearing wall), so a framer is not left to infer that the 18'-0\" bearing line is not dimensioned on A-102.",
+    "method": ".venv/bin/python /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/D1/stations.py prints per-sheet kept stations and omitted wall faces; compare with printed A-102 p30 interior chain (10'-9 1/2\" from 163.75 to 293.25 spans the bearing wall)."
+   },
+   "source": "plan_dimensions.py module docstring ('leaving whole partitions off'); G-002 text",
+   "proposed_fix": "Pin declared bearing walls (and walls with openings) as mandatory stations, then fall back; add 'Interior strings omit partitions under N in.; see S-101 for bearing lines' to G-002.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1",
+    "F3"
+   ],
+   "dedupe_key": "D1:interior-chain-drops-bearing-wall"
+  },
+  {
+   "id": "D1-105",
+   "area": "D1",
+   "title": "N-S locating chains on S-101.1/.2/.3 start at an unlabelled station and neither close on their overall nor tie to a datum (G-002 says chains sum to overall); the west tiers carry no legend and S-101.x have no N-S bearing tier",
+   "elements": [
+    "S-101.1",
+    "S-101.2",
+    "S-101.3",
+    "S-100"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/structural_dimensions.py:110",
+    "packages/engine/src/typehaus/emit/draw/structural_dimensions.py:127"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1",
+     "S-101.2",
+     "S-101.3",
+     "S-100"
+    ],
+    "pages": [
+     11,
+     12,
+     13,
+     10
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "structdims.py scenes: S-101.1 LOC N-S stations 48.569 .. 509.75 (sum 461 1/8\") vs O/A -9.625 .. 432 (36'-9 5/8\"); S-101.2 LOC -118 .. 425.5 (543 1/2\") vs O/A 0 .. 432; S-101.3 LOC 33.118 .. 432 (398 7/8\") vs O/A 0 .. 432. The first printed station is not tied to the face by any string (S-101.1 first N-S segment is '8'-0 7/8\"' between stations 48.569 and 145.444; the 48.569\" from the south face is never printed), so none of the N-S stations can be set out from the sheet. E-W tiers do close (0..432). _emit_legend draws the tier name only for axis 0 (south), so the three west chains are unlabelled; no N-S BRG tier on S-101.x (no declared N-S bearing lines).",
+    "expected": "N-S locating strings begin at the same datum as the overall (or an end string closes them); every tier labelled.",
+    "method": ".venv/bin/python /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/D1/structdims.py; .venv/bin/python /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/D1/structsum.py; view permit_set_full.pdf p11-13 left side."
+   },
+   "source": "G-002 'chains sum to overall'",
+   "proposed_fix": "Seed each LOCATING chain with both overall ends (like the facade chains), and emit the legend for the west tier too.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1",
+    "F3"
+   ],
+   "dedupe_key": "D1:ns-locating-chain-untied"
+  },
+  {
+   "id": "D1-106",
+   "area": "D1",
+   "title": "A-602 prints 'UNRESOLVED' as the modeled frame of WIN-B-SAUNA (mark W2a): a window with no resolved seat has no frame dimension on a permit schedule",
+   "elements": [
+    "WIN-B-SAUNA",
+    "A-602"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/openings.py:217",
+    "packages/engine/src/typehaus/resolve/model_window_seat.py:44"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-602"
+    ],
+    "pages": [
+     151,
+     78
+    ]
+   },
+   "confidence": 0.75,
+   "evidence": {
+    "measured": "A-602 row 'W2a WIN-B-SAUNA Window WT-1424-FIX-T FIXED 1'-2\" x 2'-0\" UNRESOLVED 3'-0 3/4\"'; opening.window_seat is None (host W-B-S2-FR, manually flashed), so window_frame_dimensions() returns None and _frame_size_text prints UNRESOLVED. 54 of 55 non-door rows resolve. Round-1 O4-003/C7-E3 remainder.",
+    "expected": "A frame size from the type (Drutex fixed 14 x 24 less its seat), or '-' with a note that the unit is ordered to the RO.",
+    "method": ".venv/bin/python /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/D1/wins.py (rows) ; pdftotext -layout -f 151 -l 151 permit_set_full.pdf | grep SAUNA."
+   },
+   "source": "WT-1424-FIX-T catalog row",
+   "proposed_fix": "Give the sauna window a seat (manual flashing detail) or print the RO as the contract with an explanatory note instead of a failure word.",
+   "size_guess": "small",
+   "seam_with": [
+    "O4",
+    "O5"
+   ],
+   "dedupe_key": "D1:a602-unresolved-frame"
+  },
+  {
+   "id": "D1-107",
+   "area": "D1",
+   "title": "G-001/G-001.1 sheet index truncates titles at ~30 characters, so 13 groups (about 45 sheets) print identical entries (A-565..A-571 all 'Interior rim · INT_2X4_PART…'); the permit set's single-page index repeats the problem for five pairs",
+   "elements": [
+    "G-001",
+    "G-001.1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/cover_index.py"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "G-001",
+     "G-001.1"
+    ],
+    "pages": [
+     1,
+     2
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "permit_set_full.pdf p1-2: 170 index cells, 14 duplicate titles; e.g. A-516/517/518, A-520..524, A-541..546+A-550, A-556/557/558/560/561, A-565..571 identical. permit_set.pdf p1: A-580/A-575, A-585/A-587, A-401.1/.2, A-401.4/.5, A-525/526 identical.",
+    "expected": "A reader can tell which of a series is which from the index (full title or the distinguishing token).",
+    "method": "pdftotext -layout -f 1 -l 2 permit_set_full.pdf; regex '([A-Z]-\\d{3}...)  title' and count duplicate titles (inline python in the session)."
+   },
+   "source": "n/a (drawing)",
+   "proposed_fix": "Wrap or elide the middle of the title so the wall/stack tag survives ('Interior rim · …_PART_HALF / FS-M-…').",
+   "size_guess": "small",
+   "seam_with": [
+    "D2"
+   ],
+   "dedupe_key": "D1:index-truncated-titles"
+  },
+  {
+   "id": "D1-108",
+   "area": "D1",
+   "title": "S-101.1's N-S overall 'O/A FACE WALL' reads 36'-9 5/8\" (it includes the basement's south brick veneer wall W-B-BRICK at y=-9.625) beside an E-W overall of 36'-0\", while every A-1xx house string stops at the sheathing plane",
+   "elements": [
+    "W-B-BRICK",
+    "S-101.1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/framingplan.py:129",
+    "packages/engine/src/typehaus/emit/draw/structural_dimensions.py:97"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1",
+     "A-102",
+     "A-103"
+    ],
+    "pages": [
+     11,
+     30,
+     31
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "framingplan._framing_tiers: below = walls on _bearing_storeys = ['basement']; wall_face_bounds picks W-B-BRICK structure 'brown-brick' min y = -9.625 in, giving O/A1 -9.625..432 = 441.625\" = 36'-9 5/8\". S-101.2 and S-101.3 overall N-S are 36'-0\" (0..432), A-103 N-S overall 36'-0\".",
+    "expected": "One stated extent per direction, or a note that the veneer is included.",
+    "method": ".venv/bin/python /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/D1/prov.py (S-101.1 O/A FACE WALL axis 1 raw -9.62, 432.0)."
+   },
+   "source": "G-002 'overall to face of sheathing or foundation (O/A FACE WALL)'",
+   "proposed_fix": "Exclude veneer/cladding-only walls (is_veneer) from overall_tier, or print the veneer as its own end string.",
+   "size_guess": "small",
+   "seam_with": [
+    "F5",
+    "E2"
+   ],
+   "dedupe_key": "D1:s101-overall-includes-brick"
+  },
+  {
+   "id": "D1-109",
+   "area": "D1",
+   "title": "Room labels collide on the A-101/A-102 plans: 'MUD CLOSET' prints through 'MUDROOM' and hexagons D9/D21a, 'LAUNDRY' through 'CLOSET', 'BATH1' through W4, 'PORCH' under the 3'-4\" string, 'WORKSHOP' into 'SAUNA'",
+   "elements": [
+    "A-101",
+    "A-102",
+    "RM-M-MUD-CLOSET",
+    "RM-M-LAUNDRY",
+    "RM-M-STUDY-CLOSET"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/plan_labels.py"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-101",
+     "A-102"
+    ],
+    "pages": [
+     29,
+     30
+    ]
+   },
+   "confidence": 0.75,
+   "evidence": {
+    "measured": "permit_set_full.pdf p30 at 260 dpi (x1500,y1250,1300x1000): 'LAUNDRY' and 'CLOSET' overprint to an illegible 'LAUNDRY C10SET' string, 'MUD CLOSET' crosses 'MUDROOM' and the D9/D21a bubbles, 'BATH1' sits on the W4 bubble; p29: 'WORKSHO|SAUNA' and 'FURNACE'/'D10' merge. Scale 3/32\" (A-102) and 1/16\" (A-101) on ledger.",
+    "expected": "No two labels printed through each other.",
+    "method": "pdftoppm -r 260 -f 30 -l 30 -x 1500 -y 1250 -W 1300 -H 1000 permit_set_full.pdf and view."
+   },
+   "source": "n/a (drawing)",
+   "proposed_fix": "Shrink/relocate room blocks in rooms narrower than the label at the sheet scale (plan_labels._place_block avoid list) or step the plan up a scale.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "D1:plan-room-label-collisions"
+  },
+  {
+   "id": "D1-110",
+   "area": "D1",
+   "title": "S-601 'SUMMARY BY LUMBER SIZE' still omits the Material column (11 sizes appear in 2-7 indistinguishable rows) and mixes 39 non-lumber rows (5-decimal panel/trim blanks) into a lumber table; the sheet does not say 477 of 6,268 resolved members are billed elsewhere",
+   "elements": [
+    "S-601",
+    "S-601.1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/structural.py:25",
+    "packages/engine/src/typehaus/takeoff/framing.py:208"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [
+     "S-601",
+     "S-601.1"
+    ],
+    "pages": [
+     22,
+     23
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "framing_bom_by_size: 85 rows, '2x6' appears 7 times (materials None, df-l-no2, df-select-s4s, kdat, lsl, oak-8q, spf), '2x4' 3x, '1x4' 2x; printed rows read '2x6 1,230 7,202', '2x6 10 80', '2x6 9 90' ... with no material. 39 of 85 rows have no board feet (e.g. '13.2816x3.16228 panel', '0.0239x1 panel'). framing_takeoff skips stair skirts/subdecks, wear boards, plywood rips, kit-supplied, straps, membrane: 6,235 members + 33 ceiling-lining sticks vs 5,791 pieces (477 not shown), docstring says 'Nothing is silently dropped'. Illegibility (round-1) is fixed: table text ~8 pt on continuation sheets.",
+    "expected": "Species/grade/treatment visible per lumber row; non-lumber stock in its own table; a scope note listing what is billed elsewhere.",
+    "method": ".venv/bin/python /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/D1/bom.py (140/140 cut-list rows printed verbatim; 96 of 120 groups agree with an independent member aggregation; the 24 that differ are the takeoff exclusions)."
+   },
+   "source": "takeoff.framing_bom_by_size",
+   "proposed_fix": "Add a Material column, split trim/panel rows to a second table, add a one-line exclusions note.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "D1:s601-no-material-no-scope"
+  },
+  {
+   "id": "D1-111",
+   "area": "D1",
+   "title": "G-004 'ENVELOPE AIR LEAKAGE' table and G-005's whole-house ventilation table print a blank header row",
+   "elements": [
+    "G-004",
+    "G-005"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/energy.py"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "G-004",
+     "G-005"
+    ],
+    "pages": [
+     5,
+     6
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "permit_set_full.pdf p5 (air leakage table, first row empty above REQUIRED / MODEL STATES / VERDICT) and p6 (first table, empty header above CONDITIONED FLOOR AREA ...). Same defect round-1 D1-011 fixed on E-603.",
+    "expected": "Header labels ('Item / Value / Basis').",
+    "method": "Read permit_set_full.pdf p5-6."
+   },
+   "source": "n/a (drawing)",
+   "proposed_fix": "Pass column labels in the two _add_table calls.",
+   "size_guess": "small",
+   "seam_with": [
+    "M3"
+   ],
+   "dedupe_key": "D1:g004-g005-blank-headers"
+  },
+  {
+   "id": "D1-112",
+   "area": "D1",
+   "title": "A-601 prints RO at 1/8\" with ties rounded up: the three French-door ROs (model 63 5/16\") print 5'-3 3/8\", while Unit/Jamb print at 1/16\"; schedule says 1/16\" for frames only",
+   "elements": [
+    "D-M-PORCH",
+    "D-B-SUNKEN",
+    "D-S-BALCONY"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/openings.py:44",
+    "packages/engine/src/typehaus/emit/draw/typography.py:99"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-601"
+    ],
+    "pages": [
+     149,
+     76
+    ]
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "sizing.rough_w_m = 63.3125\" (1.6081 m); _pair(...,8) -> round_to_fraction half-away -> '5'-3 3/8\"' (63.375\"). The framing jack gap measures 63.312\" for all three. 1/16\" over; harmless to fit but not the catalog number.",
+    "expected": "RO printed at the catalog resolution (1/16\") or rounded down.",
+    "method": ".venv/bin/python /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/D1/doors.py (RO column)."
+   },
+   "source": "catalog RO (O3)",
+   "proposed_fix": "Use denominator 16 for the RO pair.",
+   "size_guess": "small",
+   "seam_with": [
+    "O3"
+   ],
+   "dedupe_key": "D1:a601-ro-eighth-round-up"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "D1-001",
+   "status": "partial",
+   "evidence": "Fixed: both stud faces per partition (3 1/2\"/5 1/2\" segments), reference stated per tier in G-002 ('Interior strings: to face of stud, both faces'); plan_dimensions docstring matches. Still open: (a) chains silently omit partitions incl. the central bearing walls on A-101/A-102 (23 and 17 faces on the E-W chains) - see D1-104; (b) facade strings still place perpendicular partitions by AXIS (A-102 W facade stations 156, 268, 319.5, 355.5, 400 are partition axes) while G-002 only says 'Openings: to centreline'; (c) garage W wall segment '0'-6 1/8\"' includes 5/8\" sheathing in a 'face of stud' string.",
+   "method": "stations.py (kept vs omitted faces per chain), facade.py (facade stations vs opening centres: 16/16 chains have every opening on the facade as a station; extra stations are partition axis ends), G-002 text p3."
+  },
+  {
+   "id": "D1-002",
+   "status": "closed",
+   "evidence": "All 24 chains on A-101..A-104 (8 interior, 16 facade) sum to their overall exactly: A-101 I0 432.0 / I1 1186.125 (98'-10 1/8\"), A-102 I0 432.0 / I1 806.625 (67'-2 5/8\"), A-103 and A-104 432.0 both ways. Strings via typography.feet_inches_8th (half away from zero); 6.5\" prints 0'-6 1/2\"; A-104 south chain now 11'-4\",4'-8\",2'-0\",2'-0\",4'-8\",11'-4\" = 36'-0\". Printed labels: every scene label found in the PDF text (38/49/56/33 labels on A-101..A-104).",
+   "method": "chains.py + sums.py (Fraction sum of printed labels vs overall label) and pdfcmp.py (labels vs pdftotext -raw)."
+  },
+  {
+   "id": "D1-003",
+   "status": "closed",
+   "evidence": "S-101.x/S-100 overalls are now face-based (O/A FACE WALL / O/A FACE FDN): S-101.3 36'-0\" both ways (was 22'-4\"), S-100 N-S 98'-10 1/8\" = A-101 (was 98'-7\"). One residual ambiguity (S-101.1 N-S includes the brick veneer, 36'-9 5/8\") is D1-108.",
+   "method": "structsum.py rows O/A0/O/A1; pdftotext p10-13."
+  },
+  {
+   "id": "D1-004",
+   "status": "partial",
+   "evidence": "Fixed: S-100 has LOCATING (7 E-W, 8 N-S printed stations), BRG and O/A tiers; the two stray unlabelled strings and their K-leader clutter are gone; S-101.1-3 have locating/BRG/O-A tiers (E-W close 0..432); A-105 now has roof edge + ridge chains (5'-3 1/4\",13'-4\",13'-4\",5'-3 1/4\" = 37'-2 1/2\"; N-S 69'-1 3/8\") and the 1'-3 1/8\" garage overhangs. Still open: N-S locating chains on S-101.x are untied to a datum (D1-105), BRG tier is layout lines not c/c (D1-102), west tiers unlabelled.",
+   "method": "structdims.py/structsum.py; pdfcmp2.py: all structural scene labels appear in the PDF except S-100's LOC N-S chain, which prints at finer merge than the in-process rebuild (printed LOC N-S decoded from p10: 4'-0\",16'-10\",6'-2\",3'-5\",1'-5\",35'-0\",2'-0\",4'-11 3/4\",1'-2 3/8\",23'-6 1/2\" = 1182 5/8\" = its extent)."
+  },
+  {
+   "id": "D1-005",
+   "status": "partial",
+   "evidence": "Fixed: one mark per (type, RO, unit, jamb) with letter suffix (D16a RO 6'-9 3/4\" vs D16b 6'-10 1/4\"; D19a/D19b); no mark in A-601/A-602 spans two ROs (checked all 36 door and 55 window rows); G-003 states 'one per type, RO and frame'. Open: numbers are still assigned by sorted type tag (plan_marks.py:57) so adding or renaming a type renumbers every later mark; marks D2 (D-B-SUNKEN sill -0'-1 3/4\" PAIR vs D-S-BALCONY sill 0'-0\" PAIR R) and D19b (LH x2, RH x1) cover rows that differ in hand/sill (Hand column resolves it).",
+   "method": "doors.py (hand/RO per row), wins.py, plan_marks.opening_type_marks source read."
+  },
+  {
+   "id": "D1-006",
+   "status": "partial",
+   "evidence": "Illegibility fixed: S-601/S-601.1 now flow on continuation sheets at ~8 pt (bbox 11.3 pt vs 3.2 pt font before). Still open: Material column not printed - '2x6' appears 7 times, '2x4' 3x, 11 profiles ambiguous; 39 of 85 summary rows are non-lumber (e.g. '0.0239x1 panel', '13.2816x3.16228 panel', '0.750x5.848'/'0.750x6.160' risers) - D1-110.",
+   "method": "bom.py; pdftotext p22-23."
+  },
+  {
+   "id": "D1-007",
+   "status": "closed",
+   "evidence": "A-603 footprints to 1/8 under 'Footprint (envelope)': FX-DURAVIT-DCODE 17.75\" x 13.375\" (was 18 x 13), TOTO AP 15\" x 21.25\" (was 15 x 21; 14 15/16\" is a rounding tie, prints 15).",
+   "method": "pdftotext -layout -f 152 -l 152 permit_set_full.pdf."
+  },
+  {
+   "id": "D1-008",
+   "status": "closed",
+   "evidence": "A-603 Ceiling column now board + coat: 'gwb-mr + PT-3', 'gwb + PT-2', 'gwb-x'; Base and Walls filled (e.g. RM-B-BATH 'catlin-vinyl-gatsby 3.5\"', Walls 'gwb-mr + PT-3'). All 37 room areas equal model area_m2 x 10.764 (0 mismatches).",
+   "method": "inline probe (rooms vs A-603 rows)."
+  },
+  {
+   "id": "D1-009",
+   "status": "partial",
+   "evidence": "Run-together '6 W5003012' fixed (W, lm, K, V are separate columns); but cells now clip mid-word and mid-number (lm '1,11' for 1,110 etc.), headers cut ('Dim-ca', 'Listi'). Replaced by D1-103.",
+   "method": "pdftoppm -r 130 -f 175 -l 175 permit_set_full.pdf."
+  },
+  {
+   "id": "D1-010",
+   "status": "closed",
+   "evidence": "E-601 now prints 'Conditioned floor area 4,900 ft2' (= G-001 and resolve/conditioned_area); NEC 220.82 general lighting+small appliance 19,200 VA = 4,900 x 3 + 3,000 + 1,500; demand 270.3 A of 320 A. G-005 also says 4,900 sf 'to the structural face'.",
+   "method": "pdftotext -layout -f 174 -l 174 permit_set_full.pdf."
+  },
+  {
+   "id": "D1-011",
+   "status": "closed",
+   "evidence": "E-603 heights in ft-in AFF ('2'-2\"', '3'-9 1/2\"', '5'-0\"'), PoE table headed 'Item / Value'. (Blank headers remain on G-004/G-005, D1-111.)",
+   "method": "view permit_set_full.pdf p176."
+  },
+  {
+   "id": "D1-012",
+   "status": "closed",
+   "evidence": "A-601 has Hand (LH/RH/LHR/RHR/PAIR/PAIR R) and Jamb columns, legend on G-003. Hand re-derived independently from each opening's swing_clearance polygon (pivot, swing side) and room_at occupancy ranks (outdoors > garage/unconditioned > hall/stair > larger room): 36/36 match the printed hand; Jamb = 'stock / rip of / = stock + ext. / flat, <material>' from sizing.",
+   "method": "doors.py (hand_for)."
+  }
+ ]
+}

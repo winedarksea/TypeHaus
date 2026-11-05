@@ -1,0 +1,501 @@
+{
+ "area": "F6",
+ "model": "houses/catlin @ 539d9a81 (baseline/model.json, resolved via typehaus.source.load_plan + resolve)",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventoried: north-entry landing (FS-BW-FLOOR, 2 seat beams on 6 piers, BM-BW-SCSILL, BM-BW-FE, 4 CBSQ bases, 4 ACE6Z caps, 8 LUS-family hangers, 12 HETA20Z, ~60 other connectors), canopy RF-BW-CANOPY bearings and ties, the balcony (FS-SG-BALCONY, 2 glulam beams, 4 HETA pairs, 24 H10ASS/H2.5ASS, RL-SG-BALCONY nine fascia mounts and 29 blocks), porch FS-SG-PORCH and its ledgers, the main wood deck FS-M-NE. Briefing note: no concrete deck exists at 539d9a81. The 'great concrete deck swap' (commit 1ee44369, decision #112) REMOVED the concrete SL-M-DECK and replaced it with the wood floor-truss deck FS-M-NE; the only cast flatwork in F6 is the four SL-BW-TIER slabs and the court. Simpson dimensions were read from the full C-C-2026 PDF (pp. 22, 84-85, 114-116, 276, 315) downloaded from strongtie.com; sheets opened: S-001, S-001.1, S-100, S-102.1, S-602, S-602.1, S-602.2, S-603, A-508, A-509 (images or text). NOT examined: Titen HD SS 1/2 x 6 anchor values (C-A catalog, not downloaded); ACE6Z/A35Z/H10ASS/H2.5ASS/LSTA24/KBS1Z allowables and ESR numbers (families only, no dimension change since round 1); NDS 12.5 edge/end distance tables (cited for the engineer, not re-read); S-103.x garage wall sheets; the ultralox bracket hole pattern beyond what notes/balcony_fascia_mounts.md cites; the ui/railing-review geometry; main_deck.py truss web geometry (F3); balcony_moment_columns.md / north_entry_piers.md calculations (oracle notes, 1,390 and 1,600 lines).",
+ "verified_clean": [
+  "LUS26-2Z / LUS28Z / LUS210SS / LUS210-3Z: dimensions in the repo records equal C-C-2026 p.114-115 (W, H, B, ga); every seat fits its true member (3.0 in. in 3-1/8; 1.5 in. in 1-9/16; 3 x 1.5 in. in 4-5/8; H 4-7/8 / 6-5/8 / 7-13/16 / 8-3/16 over 7.25 / 7.25 / 11.25 / 11.25 in. = 67/91/69/73%, all >= 60%). LUS210 and LUS210-3 are listed for 2x12 and triple 2x12 (p.115-116).",
+  "HU28-2Z record: 14 ga, W 3-1/8, H 6-5/16, B 2-1/2 equals p.114.",
+  "HETA20: strap H 16 in., 4 in. embed, 1-1/8 wide (C-C-2026 p.276); model 12 in. exposed after trim, 4 in. embed.",
+  "CBSQ66 geometry: D 6-7/8, H 8-3/4 above concrete, 3 in. straps, 10 ga (p.84-85); model base z -23.07..-7.44 = 6.875 below + 1.105 standoff + 8.75... matches (part number: F6-105).",
+  "Balcony bracket top 0.5 in. below the sloping rim top at all three flank stations (rim top 117.02..119.43 vs bracket top 116.5/117.66/118.87 -> 0.52/0.50/0.50), flange inner face on the fascia outer face (x 97.375), front bays 60.1 in. c/c <= 72.43 in. (Ultralox).",
+  "Bolt grip: 0.25 bracket + 1.0 fascia + 1.25 rim = 2.5 in.; 5/16 x 4 bolt leaves ~1.1 in. past washer and nut; blocks stand clear of the tails.",
+  "FS-M-NE (the wood deck that replaced SL-M-DECK): 19 floor trusses 11-7/8 at 16 in. (y 156..432), tips x 215.25..430.25 (17'-11\"), seats 3.5 in. (shared x=18' plate) and 4.25 in. on the concrete wall, rim 1.25 x 11.875 LSL (a stocked size), A35Z each end; clear span 17'-3 1/4\" under the 18'-0\" OJ418S row.",
+  "FS-BW-FLOOR: 2x8 joists and 2x8 rims on 2-2x8 seat beams, H2.5AZ x8 and LUS28Z x2 on BM-BW-FE; FS-SG-PORCH/BALCONY joists hang on 1.5 in. KDAT ledgers with Titen HD SS 1/2 x 6 (4.5 in. embed in a 12 in. wall).",
+  "S-602/S-602.1/S-602.2 columns legible and consistent with takeoff hardware rows 15-19, 72-77; A-508 riser 6 5/8 in. x 5 = 2'-9\" matches SL-BW-TIER1..4 (6.6 in. each); A-509 2'-11 1/2\" (5 x 7.10) matches; S-100 pad/pier callouts match the model (PT-BW-W/GW/PE/PNE 14 in., E/GE/RE 12 in.)."
+ ],
+ "findings": [
+  {
+   "id": "F6-101",
+   "area": "F6",
+   "title": "FS-SG-BALCONY rim is a 1-1/4 x 11-1/4 in. 'rim' on 2x12 KDAT joists: no such stock exists (and prose still says 2x8 rim)",
+   "elements": [
+    "FS-SG-BALCONY",
+    "rim-0",
+    "rim-1",
+    "TR-SG-FASCIA",
+    "RL-SG-BALCONY"
+   ],
+   "files": [
+    "houses/catlin/params/sunken_garden.py:2462",
+    "houses/catlin/params/sunken_garden.py:2497",
+    "houses/catlin/params/sunken_garden.py:2665"
+   ],
+   "kind": "commodity-size",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.2",
+     "S-601"
+    ],
+    "pages": [
+     12,
+     22
+    ]
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "model.floors FS-SG-BALCONY has 2 members category 'rim', profile '1.25x11.25 rim', material post-paint-white, p0/p1 x=99.0 and 333.0 (centre line), y -125.25..-9.5, z 105.77..117.02 (to 108.18..119.43 at the high end). Joists are 2x12:kdat (1.5 x 11.25). takeoff.json framing_bom row '1.25x11.25 rim': 2 pieces, 19.3 ft cut, stock 2 x 10 ft, 23.4 bf. Printed on S-101.2 p12 ('R3 RIM BOARD 1.25x11.25 rim x2 9-7 3/4') and S-601 p22. Round-1 F6-005 was the same defect on FS-BW-FLOOR (fixed to 2x8). sunken_garden.py:2497 and :2665 still describe 'the 2x8 rim' although the joists are 2x12.",
+    "expected": "The rim of a 2x12 deck is a 2x12 (1.5 x 11.25 in.), the same KDAT as the joists. 1-1/4 in. rim stock (LSL Versa-Rim type) is made for 9-1/2/11-7/8/14/16 in. I-joist depths, not 11-1/4 in.; 5/4 decking is 1.0 in. A 1.5 in. rim moves the fascia and guard line 1/8 in. outboard on each flank (rim outer face x 98.375 -> 98.25) and the rear-end bolt geometry in notes/balcony_fascia_mounts.md.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p9.py (members of FS-SG-BALCONY: category, profile, p0/p1, z); takeoff.json framing_bom filter 'rim'; pdftotext permit_set_full.pdf p12/p22 grep '1.25x11.25'."
+   },
+   "source": "Round-1 F6-005 precedent (C3.md); WoodWorks/Boise LSL rim stocks are 1-1/4 in. x 9-1/2..16 in. only.",
+   "proposed_fix": "Author rim_member='2x12' (profile exists) for FS-SG-BALCONY, re-derive _BALCONY_RIM_HALF_FT (it is read from the profile), rebuild the fascia-mount layout (fascia_stations reads fascia_face_offset from the path), fix the '2x8 rim' prose. Check rear-end washer margins (F6-103) after the change.",
+   "size_guess": "small",
+   "seam_with": [
+    "S3"
+   ],
+   "dedupe_key": "FS-SG-BALCONY:rim-1.25x11.25"
+  },
+  {
+   "id": "F6-102",
+   "area": "F6",
+   "title": "North-entry seat-beam ends (2-2x8, 3.0 in.) land on the post face where the cast-in CBSQ66 3-in. strap and its SDS screws stand: beam end sits inside the strap volume and exceeds Simpson's 1/8 in. hanger gap",
+   "elements": [
+    "BM-BW-HOUSE-SEAT",
+    "BM-BW-GARAGE-SEAT",
+    "PT-BW-CW",
+    "PT-BW-CNW",
+    "CN-BW-BASE-W",
+    "CN-BW-BASE-NW",
+    "CN-BW-HGR-CW",
+    "CN-BW-HGR-CNW"
+   ],
+   "files": [
+    "houses/catlin/params/breezeway.py:561",
+    "houses/catlin/params/breezeway.py:485",
+    "packages/engine/src/typehaus/resolve/connector_geometry/bases_caps.py:170",
+    "houses/catlin/notes/canopy_west_band.md:633"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1",
+     "A-508"
+    ],
+    "pages": [
+     11,
+     55
+    ]
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Resolved geometry (in.): PT-BW-CW x 72.62..78.12, y 447.25..452.75; CN-BW-BASE-W (CBSQ66-SDS2, axis y) outline x 72.49..78.26 (strap leaves on the +/-x faces, 10 ga = 0.1345 thick, 3.0 wide centred y 450, z -23.07..-7.44); BM-BW-HOUSE-SEAT outline x 78.13..115.0, y 448.5..451.5 (3.0 wide, centred on the strap), z -15.44..-8.19; CN-BW-HGR-CW (LUS26-2Z) x 78.08..80.13. So the beam end starts 0.13 in. INSIDE the strap's outer face (78.26) over its whole 7.25 in. depth, and the strap carries 7 SDS 1/4 x 2 screws (C-C-2026 p.84-85: 14 SDS per base, 3 in. strap, H 8-3/4). canopy_west_band.md:633 checks only the hanger FLANGES against the strap (0.110 in. a side), not the beam end.",
+    "expected": "A hanger's carried member must bear on the seat with the gap between its end and the carrying face <= 1/8 in. (C-C-2026 General Notes item m, p.22: 'the gap between the end of the joist and the header or any hanger section including fastener heads between the header and the joist shall not exceed 1/8 in.'). Strap 0.1345 + SDS head already exceeds that, or the beam must be notched/spaced off the post.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p8.py (outline bounds of PT-BW-CW, CN-BW-BASE-W, CN-BW-HGR-CW, BM-BW-HOUSE-SEAT); catalog p.84-85 table in /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/web/cc.txt (page 84/85) and note m on page 22."
+   },
+   "source": "Simpson C-C-2026 p.22 (General Notes m), p.84-85 (CBSQ/CBSTQ: 10 ga x 3 in. straps, (14) 1/4 x 2 SDS, H 8-3/4), p.114 (LUS26-2 W 3-1/8 H 4-7/8 B 2).",
+   "proposed_fix": "Rotate the base so its straps face the faces that carry no beam (needs the SCSILL faces re-checked: the sill hangers are on the +/-y faces), or order the hanger/beam with a 3/16 in. spacer and ask Simpson/EOR whether the strap+SDS stack is a permitted 'gap'. Mark the strap face on the cast-in detail. Needs the EOR for the hanger allowable at the larger gap.",
+   "size_guess": "large",
+   "seam_with": [
+    "F5",
+    "S3"
+   ],
+   "dedupe_key": "CN-BW-HGR-CW:strap-conflict"
+  },
+  {
+   "id": "F6-103",
+   "area": "F6",
+   "title": "Balcony guard: the two rear-end bracket bolts sit 0.385 in. from the cut end of the 1-1/4 in. flank rim",
+   "elements": [
+    "RL-SG-BALCONY",
+    "FS-SG-BALCONY",
+    "RL-SG-BALCONY-FASCIA-BRACKET1",
+    "RL-SG-BALCONY-FASCIA-BRACKET9",
+    "rim-0",
+    "rim-1"
+   ],
+   "files": [
+    "houses/catlin/params/sunken_garden.py:2474",
+    "houses/catlin/notes/balcony_fascia_mounts.md:49"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Model: flank rim ends at y = -9.5 in. (rim p1). Bracket 1 (and 9) flange spans y -15.02..-9.38; straight-bracket hole spacing 4.63 in. (ESR-3485 Fig.10, library/railings.py) puts the rear bolt centres at y -9.885 and -14.52: end distance of the north bolt = 0.385 in. in a 1.25 in. thick board, and the 11/16 in. washer reaches y -9.54, 0.04 in. from the end. That bolt passes through the rim only (the last joist spans y -11.5..-10.0, the bolt is 0.1 in. outside it). The note says 'all four end-mount washers bear on the rims' (balcony_fascia_mounts.md:49) but gives no edge distance.",
+    "expected": "A 5/16 in. through-bolt in KDAT should keep >= 4D = 1.25 in. from a loaded end (NDS 12.5, bolts loaded in tension/bearing); an 0.385 in. end distance on a 1-1/4 in. board splits. Either shorten the rear bay so the end post stands >= 1.25 in. inboard (post spacing is 60 in. max, 4 front bays), or add a full-thickness end block/doubler behind the rim's last 6 in. and keep the washers off the end grain.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p16.py (rim y range, bracket outlines) plus hole positions = flange centre +/- 2.315 in.; ESR-3485 Fig.10 hole pattern 4.63 x 4 per notes/balcony_fascia_mounts.md."
+   },
+   "source": "Ultralox fascia-mount instructions 06/24 (ultralox.com ...fascia-mount-install-instructions.pdf) give hole pattern only, no edge distances; NDS 2018 12.5.1 (not re-read: cite for the engineer).",
+   "proposed_fix": "Move the rear end post 1-1/2..2 in. south or extend the flank rim past the house-end joist; author the edge distance on the guard so the fascia layout checks it. Engineer to confirm NDS 12.5 / washer bearing.",
+   "size_guess": "small",
+   "seam_with": [
+    "S3"
+   ],
+   "dedupe_key": "RL-SG-BALCONY:rear-bolt-edge-distance"
+  },
+  {
+   "id": "F6-104",
+   "area": "F6",
+   "title": "Balcony guard: the EAST flank's two fascia brackets have no rollover blocking (west/east test mixes metres with feet) and the west blocks are doubled; none of them touches the rim",
+   "elements": [
+    "FS-SG-BALCONY",
+    "RL-SG-BALCONY",
+    "RL-SG-BALCONY-FASCIA-BRACKET8",
+    "RL-SG-BALCONY-FASCIA-BRACKET9",
+    "RL-SG-BALCONY-FASCIA-BRACKET2",
+    "rim-0",
+    "rim-1"
+   ],
+   "files": [
+    "houses/catlin/params/sunken_garden.py:2542",
+    "houses/catlin/params/sunken_garden.py:2529",
+    "houses/catlin/params/sunken_garden.py:2676"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.2"
+    ],
+    "pages": [
+     12
+    ]
+   },
+   "confidence": 0.75,
+   "evidence": {
+    "measured": "_BALCONY_FLANK_STATIONS (sunken_garden.py:2540-2549) picks the west or east block column with `station.post[0] < (_deck_x_w + _deck_x_e)/2`: station.post is METRES (2.5..8.5 m) but the midpoint is FEET (~19.5), so the test is always True and every flank station is blocked at the WEST column x = _deck_x_w + 4 in. Resolved FS-SG-BALCONY blocking: west column x=103.0 holds 6 members (y -76.5..-66.0 x2, -64.5..-54.0 x2, -16.5..-11.5 x2: three coincident pairs); east column (x ~ 329.0, the rim is at 333.0): 0 members. Brackets 8 and 9 (x 334.6..337.9, y -73.2..-67.5 and -15.0..-9.4) therefore have no backing, and the takeoff counts 3 phantom blocks. Separately, the west blocks (x faces 102.25..103.75) sit 2.625 in. clear of the rim inside face (99.625), parallel to it, so even where present they do not back the rim; the authored source string says 'the four 5/16 in. through-bolts land in this block' while the note says they stand behind the tails. Ultralox's figure shows 'DOUBLE BLOCKING' behind the rim. No check reads a fascia-mounted guard's attachment (baseline checks.json: no finding naming fascia mounts) and S-603 has no such item.",
+    "expected": "Rollover backing at each of the 4 flank straight stations (two per flank) and in contact with the rim, not duplicated; a wood basis stated for 4 x 5/16 in. bolts at 42 in. guard height (200 lb, IRC R301.5) or an explicit 'manufacturer's instructions, no seal' line. ESR-3485's fascia row is for concrete (library/railings.py:35).",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p17.py (blocking by x/y; east x 325..332 empty, west x=103 doubled) and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p9.py; read sunken_garden.py:2540-2549 (units); bracket outlines from /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p16.py."
+   },
+   "source": "Ultralox Fascia Mount Post & Bracket instructions 06/24, Fig.4 ('DOUBLE BLOCKING'); sunken_garden.py units; ESR-3485 Fig.10 (concrete only).",
+   "proposed_fix": "Convert before comparing (station.post[0]/0.3048 < mid) so the east column x = _deck_x_e - 4 in. is used, dedupe the entries, and bring the blocks tight to the rim's inside face with 4 in. nut pockets between bolt rows; fix the source string; add an S-101.2 note naming the Ultralox instructions as the wood basis.",
+   "size_guess": "small",
+   "seam_with": [
+    "S3"
+   ],
+   "dedupe_key": "FS-SG-BALCONY:east-flank-guard-blocks"
+  },
+  {
+   "id": "F6-105",
+   "area": "F6",
+   "title": "CBSQ66-SDS2 (printed 4x on S-101.1 and S-602.1) is discontinued; Simpson's 2026 catalog lists the 6x6 as CBSTQ66Z-SDS2 (ZMAX)",
+   "elements": [
+    "CN-BW-BASE-W",
+    "CN-BW-BASE-NW",
+    "CN-BW-BASE-E",
+    "CN-BW-BASE-NE"
+   ],
+   "files": [
+    "houses/catlin/params/breezeway.py:564",
+    "packages/engine/src/typehaus/library/hardware/simpson_caps_bases.py:106",
+    "docs/simpson-base-cap-geometry.md:16"
+   ],
+   "kind": "product-data",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1",
+     "S-602.1"
+    ],
+    "pages": [
+     11,
+     25
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "S-602.1 row 77 'CBSQ66-SDS2 x4' and S-101.1 rows CN-BW-BASE-W/-NW print the old designation. C-C-2026 p.84-85 (read from the 388-page PDF) lists only CBSTQ44Z/46Z/66Z-SDS2 (ZMAX) plus CBSQ86/88-SDS2; the 6x6 row reads 'CBSTQ66Z-SDS2, 6x6, 12 ga base, 10 ga x 3 in. straps, W1/W2 5-1/2, D 6-7/8, H 8-3/4, (14) 1/4 x 2 SDS' (the first block's uncracked/cracked 4,375/3,060 and download 19,335 are printed on the typo'd line 'CBSQT66Z-SDS2'). strongtie.com's CBSQ page says CBSQ44/46/66 are discontinued and replaced by CBSTQ. Geometry (D, H, strap width, gauge) is identical to the drawn body. docs/simpson-base-cap-geometry.md already notes 'similar CBSTQ replacement ... designation retained'.",
+    "expected": "Order part number CBSTQ66Z-SDS2 (ZMAX, which also matches IRC R317.3.1 on treated posts better than the plain-galvanized CBSQ). Update record, takeoff model string, schedules and notes citing ESR-3050 for the old part.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/web/cc.txt page 84/85 (python3 /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/web/pg.py 'CBSQ'); web search for CBSQ66 discontinued; pdftotext p25 S-602.1."
+   },
+   "source": "Simpson C-C-2026 p.84-85 (CBSTQ/CBSQ column bases); strongtie.com/standoffcolumnbases_columnbases/cbsq_base/p/cbsq (retired notice).",
+   "proposed_fix": "Retype CN-BW-BASE-* size to CBSTQ66Z-SDS2, move the allowable to the CBSTQ row (C-C-2026 p.85: SDC A&B wind 4,375/3,060; download 19,335) and re-cite the evaluation report; the 14,420 download in the record is the ESR-3050 value (conservative).",
+   "size_guess": "small",
+   "seam_with": [
+    "S1"
+   ],
+   "dedupe_key": "CBSQ66-SDS2:discontinued"
+  },
+  {
+   "id": "F6-106",
+   "area": "F6",
+   "title": "S-001.1 division 03 15 19 prints 'Canopy hold-down bolts AB-058-10-SS ... under CN-BW-BASE-W/-NW' and a 980.7 lb/0.692 anchor check: those bases are cast-in CBSQ66 with no anchor bolt",
+   "elements": [
+    "CN-BW-BASE-W",
+    "CN-BW-BASE-NW"
+   ],
+   "files": [
+    "houses/catlin/notes/garage_wall_detail_side.md:44",
+    "packages/engine/src/typehaus/emit/draw/schedules/structural_notes.py:457"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-001.1"
+    ],
+    "pages": [
+     9
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "pg9 (S-001.1, right column): '03 15 19 CONCRETE: Canopy hold-down bolts AB-058-10-SS, 5/8 in. x 10 in., under CN-BW-BASE-W/-NW. Graded at f_uta 57 ksi ... 980.7 lb base shear split over two bases; on one anchor, interaction 0.692 < 1.0.' Model: CN-BW-BASE-W/-NW are CBSQ66-SDS2 cast-in bases (size, axis y) with no anchor bolt; house CLAUDE.md 'Current canopy' says 'no AB-058-10-SS, no ACI Ch.17 row'. S-602 row 52 AB-058-10-SS x2 belongs to P-M-STRWELL-S/-SS, not the canopy. Source text is notes/garage_wall_detail_side.md lines 44-47 (stale).",
+    "expected": "S-001.1 specification matches the cast-in CBSQ base (uplift/lateral rows of its own, no bolt group) and does not cite a retired 980.74 lb split.",
+    "method": "pdftotext -f 9 -l 9 permit_set_full.pdf; grep -n 'Canopy hold-down' houses/catlin/notes/garage_wall_detail_side.md; Artifact image /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/img9-009.png."
+   },
+   "source": "notes/garage_wall_detail_side.md:44-47; params/breezeway.py:561-568.",
+   "proposed_fix": "Rewrite the note lines to the CBSQ66 cast-in base (cover, side cover 3 in., 14 SDS) or delete them; the sheet prints them verbatim.",
+   "size_guess": "small",
+   "seam_with": [
+    "F5"
+   ],
+   "dedupe_key": "S-001.1:canopy-anchor-bolt-text"
+  },
+  {
+   "id": "F6-107",
+   "area": "F6",
+   "title": "S-102.1 labels the canopy's bearings 'BRG: W-G-W / W-G-E' and dimensions 'BRG LINES C/C 24'-0\"'; the canopy trusses bear on BM-BW-RW/-RE, 23'-5 1/4\" c/c",
+   "elements": [
+    "RF-BW-CANOPY",
+    "BM-BW-RW",
+    "BM-BW-RE",
+    "W-G-W",
+    "W-G-E"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/roofframingplan.py:108",
+    "packages/engine/src/typehaus/emit/draw/roofframingplan.py:127"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-102.1"
+    ],
+    "pages": [
+     14
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "RF-BW-CANOPY.bearing_refs = (BM-BW-RW, BM-BW-RE). Model: BM-BW-RW x 72.625..78.125 (centre 75.375), BM-BW-RE x 353.875..359.375 (centre 356.625): 281.25 in. = 23'-5 1/4\" c/c; garage walls W-G-W/W-G-E sit at x 72.0 and 360.0 (288 in. = 24'-0\"). S-102.1 p14 prints 'BRG: W-G-W', 'BRG: W-G-E', 'BRG LINES C/C 24'-0\"' and 'O/A FACE WALL 24'-0\"' for this canopy roof (the drawn 24 x 24 outline is the garage storey's walls; the canopy strip is the 6 ft band below it). _roof_tiers and _emit_bearing_walls read every BEARING wall on the roof's STOREY, never roof.bearing_refs.",
+    "expected": "Canopy bearing lines c/c = 23'-5 1/4\" (beam centres) and the member labels BM-BW-RW/-RE; the 24'-0\" wall pair belongs to RF-GARAGE.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p14.py (beam outlines, wall axes, roof.bearing_refs); Artifact image /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/img14-014.png."
+   },
+   "source": "Model; round-1 C3-E6 note that the beams were moved onto the garage truss bearing lines (centres 3-3/8 in. inboard of the wall plates).",
+   "proposed_fix": "In roofframingplan._roof_tiers/_emit_bearing_walls prefer roof.bearing_refs (beams) when the roof declares them; label 'BRG: BM-BW-RW'.",
+   "size_guess": "small",
+   "seam_with": [
+    "F4"
+   ],
+   "dedupe_key": "S-102.1:canopy-bearing-labels"
+  },
+  {
+   "id": "F6-108",
+   "area": "F6",
+   "title": "S-603 prints its 'WHAT THIS PAGE DOES AND DOES NOT SAY' notes across the title block and truncates the Basis/Governing/Checked-against columns",
+   "elements": [
+    "S-603"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/structural.py:154"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-603"
+    ],
+    "pages": [
+     27
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "permit_set_full.pdf p27 (image /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/img27-027.png): the section heading is anchored at y=0.16 and its five bullets run down into the title block ('Catlin House / LOT TBD' and 'SITE 44.97780' overprint 'The CALCULATIONS behind this table...'); columns 'Basis', 'Governing' and 'Checked against' clip at the cell edge ('IRC R507.4 (no row); ACI 318-19', 'sunken_garden_piers.md, balcony_mome...'), so a reader cannot read the oracle note name. Not present in round 1 (S-603 was not an F6 sheet then).",
+    "expected": "Notes wrapped inside the sheet frame above the title block; cells wide enough for the oracle file names.",
+    "method": "Read permit_set_full.pdf pages=27 (map: permit_set_full.json S-603 -> 27)."
+   },
+   "source": "Snapshot sheet.",
+   "proposed_fix": "Anchor the notes block above the title-block top margin (move to y>=0.2 or paginate) and wrap/shrink the 'Checked against' column.",
+   "size_guess": "small",
+   "seam_with": [
+    "S3",
+    "C7"
+   ],
+   "dedupe_key": "S-603:notes-overprint-title-block"
+  },
+  {
+   "id": "F6-109",
+   "area": "F6",
+   "title": "CN-G-WIND-RFSW/SE-1..3 are 8.44 in. off the nearest seam (7.56 in. off the next) and name RF-GARAGE while standing on RF-BW-CANOPY; the NW/NE trio is 0.44 in. off its seams",
+   "elements": [
+    "CN-G-WIND-RFSW-1",
+    "CN-G-WIND-RFSW-2",
+    "CN-G-WIND-RFSW-3",
+    "CN-G-WIND-RFSE-1",
+    "CN-G-WIND-RFSE-2",
+    "CN-G-WIND-RFSE-3",
+    "CN-G-WIND-RFNE-1",
+    "CN-G-WIND-RFNW-1",
+    "RF-BW-CANOPY",
+    "RF-GARAGE"
+   ],
+   "files": [
+    "houses/catlin/plan/wind_clamps.py:80",
+    "packages/engine/src/typehaus/resolve/roof_panel_skin.py:56"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-602.1"
+    ],
+    "pages": [
+     25
+    ]
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "RF-BW-CANOPY footprint y 446.63..518.63, RF-GARAGE y 517.75..822.63 (one coplanar plane, one seam register: seam_anchor 670.19). resolve.roof_panel_skin.seam_stations: canopy seams y = 462.19, 478.19, 494.19, 510.19 (16 in. pitch); garage 526.19..814.19. Clamps RFSW/RFSE-1..3 at y = 454.63, 470.63, 486.63 -> 7.56 in. below the next seam and 8.44 in. above the previous one (mid-pan), all inside the CANOPY footprint, all connects=('RF-GARAGE',). Clamps RFNE/RFNW-1..3 at y = 814.63, 798.63, 782.63 vs seams 814.19, 798.19, 782.19 -> 0.44 in. off. Only 'S-5-N Mini'; S-602.1 rows 80-82 bill them.",
+    "expected": "A seam clamp centres on a seam (S-5! clamps close on the seam): clamp y = seam station, and the host is the roof under it. The authored stations (-8/+8/+24 in. off the rake line) pre-date the shared seam register.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p11.py (roof footprints, clamp outlines) and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p12.py (seam_stations of both roofs)."
+   },
+   "source": "TODO.md L254 (open item, confirmed); S-5!-N Mini installs on the seam of the nail-strip profile.",
+   "proposed_fix": "Place the 12 clamps at the derived seam stations (e.g. 462.19/478.19/494.19 south, 814.19/798.19/782.19 north) and name RF-BW-CANOPY for the south six; rest unchanged (count 24 stays).",
+   "size_guess": "small",
+   "seam_with": [
+    "E1"
+   ],
+   "dedupe_key": "wind-clamps:seam-register"
+  },
+  {
+   "id": "F6-110",
+   "area": "F6",
+   "title": "Canopy/garage diaphragm rows (190 / 167.5 plf) cite SDPWS Table 4.2A for the unblocked row and are not reproducible from SDPWS-2015; the SG factor is absent but would not bind",
+   "elements": [
+    "RF-BW-CANOPY",
+    "RF-GARAGE"
+   ],
+   "files": [
+    "houses/catlin/plan/storeys/garage.py:572",
+    "houses/catlin/plan/storeys/garage.py:631"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "garage.py:574 source: 'SDPWS-2015 Table 4.2A, UNBLOCKED ... Case 1, 15/32 Structural I with 8d at 6 in. ... v_w 335 plf nominal / 2.0' = 167.5. SDPWS-2015 (AWC chapter 4, p.9 and p.11): Table 4.2A is the BLOCKED table; the UNBLOCKED table is 4.2C. Table 4.2C, 8d common, Structural I 3/8 / sheathing 15/32, 2 in. framing, Case 1: seismic 480 plf, WIND 670 plf nominal; 335 is 670 / 2.0 (already ASD), then halved again. Blocked (Table 4.2A, 8d, 6 in. boundary and edges, 2 in. width, wind column): 755 plf nominal; 190 is not a table entry (380 = 6d/5-16 sheathing/3 in. width seismic). Footnote 2: reduce by 1-(0.5-G) for species other than DF-L/SP; neither source string applies it. For SPF G = 0.42 -> 0.92: 670 x 0.92 / 2.0 = 308 plf (Case 1 unblocked), 755 x 0.92 / 2.0 = 347 plf (blocked) against the 167.5 / 190 carried. So the answer to the open TODO (L227): the rows do NOT carry the 0.92, but they are about 1.8x below what the table gives after applying it; 'diaphragm 0.907 governs' (canopy_west_band.md) is therefore conservative by ~1.8x, not marginal.",
+    "expected": "Cite the correct table (4.2C unblocked, 4.2A blocked), carry nominal -> x(1-(0.5-G)) -> /2.0, or say plainly that the row is a deliberate conservative round-down; correct the 'v_w 335 nominal' wording.",
+    "method": "pdftotext -layout /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/web/sdpws_ch4.pdf; Table 4.2A on page 9, Table 4.2C on page 11, footnote 2; hand arithmetic above."
+   },
+   "source": "AWC SDPWS-2015 with Commentary, Chapter 4 (awc.org/wp-content/uploads/2021/12/AWC_SDPWS2015-withCommentary_20180401_AWCWebsite_Chapter04.pdf), Tables 4.2A/4.2C and footnote 2.",
+   "proposed_fix": "Re-state both DiaphragmSpec rows from the tables with the 0.92 and an explicit Omega; re-run lateral_system/RF-BW-CANOPY (oracle note canopy_garage_diaphragm.md).",
+   "size_guess": "small",
+   "seam_with": [
+    "F4"
+   ],
+   "dedupe_key": "RF-BW-CANOPY:diaphragm-row-source"
+  },
+  {
+   "id": "F6-111",
+   "area": "F6",
+   "title": "Stale prose in the F6 area: 'HU28-2Z -> LUS28Z' and 'seat-beam hangers/shim pack' still open in TODO.md, and the balcony source text says '2x8 rim'",
+   "elements": [
+    "BM-BW-SCSILL",
+    "BM-BW-HOUSE-SEAT",
+    "FS-SG-BALCONY"
+   ],
+   "files": [
+    "plans/TODO.md:241",
+    "plans/TODO.md:242",
+    "houses/catlin/params/sunken_garden.py:2497",
+    "houses/catlin/params/column_heads.py:35"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "TODO.md L241 ('HU28-2Z on a single 2x8 -> LUS28Z (C3-E11)') and L242 (hangers and shim pack, C3-E12-E14) both describe items the model already fixed: BM-BW-SCSILL hung by LUS28Z (W 1-9/16 vs 1.5 in.), seat beams by LUS26-2Z, pack 0.75 in. solid (CN-BW-STDF z -16.19..-15.44), HETA20Z straps trimmed to -8.19; the only open E-items are E6/E7 (done too, decisions #108/#109). TODO.md L242 is the owner's file: not edited here. sunken_garden.py:2497/:2665 say '2x8 rim' for a 2x12 deck; column_heads.py:35 and several comments still mention ABU66SS (see prior F6-007).",
+    "expected": "TODO lines reflect only genuinely open items; prose names the part that is modelled.",
+    "method": "grep -n 'HU28\\|LUS28Z' plans/TODO.md; model probes F6/p4.py, p5.py."
+   },
+   "source": "C3.md Resolved lines for E11-E14.",
+   "proposed_fix": "Delete the two TODO lines (owner), fix the rim wording with F6-101.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "F6:stale-prose"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "F6-001",
+   "status": "closed",
+   "evidence": "BM-BW-SCSILL (1.5 x 7.25) is now hung by LUS28Z at both posts (CN-BW-HGR-SCS-S/-N, z -8.24..-1.61). C-C-2026 p.114/115: LUS28 18 ga, W 1-9/16, H 6-5/8, B 1-3/4 -> 1/16 in. slack on 1.5 in. (limit 1/8), H = 91% of 7.25 in. (>= 60%, p.22 note m). HU28-2Z is a zero-quantity priced revert (prices.toml:1136).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p4.py, p8.py; catalog table via python3 /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/web/pg.py 'LUS28 '."
+  },
+  {
+   "id": "F6-002",
+   "status": "partial",
+   "evidence": "Hangers are now LUS26-2Z (W 3-1/8 H 4-7/8, p.114): z -15.49..-10.61 against post bottom -15.085, so 0.40 in. (8.3%) of the face still hangs below the post (was 1.18 in. / 19%); backed 91.7% (note claims 92.6%). The seat is 0.048 in. under the beam as designed. Residual: new beam-end vs CBSQ strap conflict (F6-102).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p8.py: CN-BW-HGR-CW z0/z1 vs PT-BW-CW z0."
+  },
+  {
+   "id": "F6-003",
+   "status": "closed",
+   "evidence": "Pier tops now -16.19 in., beam soffit -15.44: CN-BW-STDF-E/GE solids z -16.19..-15.44 (0.75 in. pack, STANDOFF_PACK_IN = 0.75; W/GW end at -15.49 under the hanger seat). Garden: CN-SG-STDF-R1 z 94.96..95.71 under BM-SG-BLW soffit, F1 93.12..93.88 = 93.88 soffit. Pack drawn as a solid.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p4.py (z of CN-BW-STDF-*, CN-SG-STDF-*), p3.py (pier/beam z)."
+  },
+  {
+   "id": "F6-004",
+   "status": "closed",
+   "evidence": "HETA20Z straps now end at the beam top: CN-BW-TIE-EA/EB/GEA/GEB z -20.19..-8.19 (12 in. exposed; was 16 in. to +0.56); balcony CN-SG-SEAT-* z 90.96..105.75 stay inside the 14.3 in. beam. Annotations AN-BW-HETA-TRIM / AN-SG-HETA-TRIM exist. HETA20: H 16 in., 4 in. embed (C-C-2026 p.276); HETA20Z is a retail ZMAX SKU.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p4.py; grep AN-BW-HETA-TRIM houses/catlin/params."
+  },
+  {
+   "id": "F6-005",
+   "status": "closed",
+   "evidence": "FS-BW-FLOOR members: 4 joists 2x8 and 2 rims 2x8 (round 1: 1.25x7.25 rim). takeoff.json hardware[14]: LUS28Z x2 on BM-BW-FE (W 1-9/16 vs 1.5 in.). Same defect now exists on FS-SG-BALCONY: see F6-101.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/p6.py counters; takeoff hardware[14]."
+  },
+  {
+   "id": "F6-006",
+   "status": "closed",
+   "evidence": "S-602 was split: p24 S-602 (rows 1-66), p25 S-602.1 (67-132), p26 S-602.2 (133-137 plus the solids table in two columns); all tables clear of the title block, rows legible at 110 dpi. (Round 1 overprint is gone; a similar overprint now exists on S-603, F6-108.)",
+   "method": "Read images /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/img24-024.png and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/img26-026.png."
+  },
+  {
+   "id": "F6-007",
+   "status": "partial",
+   "evidence": "Orphan ABU66SS_HEAD deleted and the four named files fixed, but ABU66SS remains in prose: column_heads.py:35, sunken_garden.py:2182/2304, plan/assemblies/site_hardscape.py:136, plan/storeys/main.py:2366, and the superseded 'The north entry is engineered' bullet in houses/catlin/CLAUDE.md (two mentions). takeoff has CBSQ66 only; nothing printed on the set (the printed part-number problem is F6-105).",
+   "method": "grep -rn ABU66SS houses/catlin/params houses/catlin/plan houses/catlin/CLAUDE.md"
+  },
+  {
+   "id": "F6-008",
+   "status": "closed",
+   "evidence": "simpson_hangers.py:338 now transcribes HU28-2Z '14 ga, W 3-1/8, H 6-5/16, B 2-1/2'; C-C-2026 p.114 HU28-2 / HUC28-2 rows read 14 ga, 3 1/8, 6 5/16, 2 1/2 Min./Max. The allowable stays untranscribed by design, and the part is now a priced revert with zero quantity.",
+   "method": "python3 /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F6/web/pg.py 'HU28-2' ; page 114 of the catalog PDF."
+  }
+ ]
+}

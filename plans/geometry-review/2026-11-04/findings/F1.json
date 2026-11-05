@@ -1,0 +1,335 @@
+{
+ "area": "F1",
+ "model": "houses/catlin @539d9a81",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventory: 184 resolved walls (main 50, second 46, basement 37, attic 26, garage 4, foundation/court/yard 21), 4,511 framed wall members, 67 headers, 36 doors with their king/jack/header packs, plus S-601 stock rows. Measured from the resolved model (pickled) with probes in /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/: per-wall stack (frame_base_z_m vs base_ref_z_m, plate-bottom, stud z0/z1, top plates, joist soffit above); stud cut lengths vs storey stack and stock; every header against its overlapping top plates; stud/king/jack gaps and overlaps; door RO/header/jack packs for all interior doors changed by the 2026-11-03 retype; cripples; lapped-corner plate coverage. All 34 listed sheets opened (S-101.1-.3, S-103.1-.4, S-601/.1, A-301/.1/.2, A-512-A-529) plus A-532 and A-544 for F1-010. Sources: IRC R602.7.5 reproduced at gocodebook.com (CRC) for the king-stud rows; engine tables.py/takeoff/framing.py read directly; ECLISSE row from notes/pocket_frame_eclisse.md. NOT examined: IRC Table R602.7(1) (ICC returns 403; reproductions omit the rows), so the 2-2x8/2-2x10 header sizes and jack counts are not graded against a table (F1-104); LSL stud maker lengths (Timberstrand stud stock not web-checked); girt/truss-wall framing in truss_girts.py, backing and fireblocking (F2); roof framing (roof*.py) except wall tops; geometry inside the attic raked-plate walls beyond top-plate/header clearance; per-bay stud pitch on attic walls. Note (not a geometry finding): framing/openings.py is 697 lines against AGENTS.md's 500.",
+ "verified_clean": [
+  "Storey stack, main/second: 0.75 subfloor + 1.5 sole + 102.875 stud + 3.0 double top = 108.125 in = 120 - 11.875 joist soffit; partitions 102.125 stud end 0.75 under it (frame_base 120.75 on second; 240.75 attic).",
+  "Basement: bearing walls 91.5 in studs from -107.9375 to -16.4375, top plate -13.4375 = the -13 7/16 mudsill seat; partitions 92.3125 end at -12.625 (0.75 under the -11.875 soffit); liner walls W-B-S2-FR/S3-FR on the 7.25 in curb (base -102.1875) reach the same -13.4375.",
+  "Garage: plate-bottom 2x8 PT -12.0..-10.5, studs 95.5, double top 85.0..88.0 = 8'-4\" over the -12 base; 24 in o.c. matches A-514's note.",
+  "integrity.plate_in_deck passes (180 bottom plates stand on, not in, a deck); no vertical members overlap (stud/king/jack/corner min centre spacing >= 1.5 in on every wall).",
+  "Every header clears its plates (min 1.24 in, D-S-NCLOSET flat 2x4; D-G-SERVICE 2.00 in); jacks top = header bottom on every door pack; header ends land on the king inner faces; D-G-OVERHEAD 2-ply 14 in LVL z 50..64, trackbacking 64..65.5, cripples 65.5..85.0 at 24 in o.c.",
+  "Lapped corner plates: 57 wall-end studs sit 1.5 in under plate-top-0 only, and in the 9 cases where no plate bottom matches at the same z the neighbouring wall's plate-top-1 (5.5 in wide) covers the stud (W-M-S1 stud-000 under W-M-W4's lap).",
+  "Interior doors retyped 2026-11-03: leaf 6'-8\" throughout, RO width leaf + 2.24 in (derived 1 in jamb allowance) and heights 81.5..82.5 in off the finished floor per storey; headers/jacks consistent (D-B-SHOP steel 36 in RO 38.24x81.51 with 2-2x8; D-B-SAUNA 26.24x82.26; D-S-BATH1 solid 32.24x82.26; D-M-STUDY 32.24x81.79); pocket kits at the Eclisse 74.5 in RO with 83.5 in head, both walls frame_end_supported.",
+  "king_jack_counts matches IRC Table R602.7.5 at <=115 mph Exposure B (kings 1 to 8 ft, 2 at 10-18 ft); catlin basis V_ult 115, Exp B.",
+  "S-601/S-601.1: stud rows 10 ft stock for 102.875/102.125 cuts, 8 ft for <=96 in; plates <=20 ft; 2x6 LSL stud/king/jack/cripple rows stamped lsl on main exterior and x=18' centreline.",
+  "A-301 note prints the 108 1/8 in stack, 102 7/8 in bearing and 102 1/8 in partition studs (matches model); A-512..A-529 RO heights agree with model RO heights per assembly (6'-10 7/8 doors 82.875, 6'-9 1/2 garage service 81.5, 7'-0 overhead 84, 6'-10 1/4 sauna 82.25).",
+  "D-B-SUNKEN band header engineered (band_header d/c 0.02) with kings/jacks bearing to the plate underside; headnailer at RO head."
+ ],
+ "findings": [
+  {
+   "id": "F1-101",
+   "area": "F1",
+   "title": "2x4 KDAT outer girts on W-M-E1 (35.9 ft) and the two gable-rake girts (20.05 ft) are bought as 36 ft and 22 ft sticks, unspliced",
+   "elements": [
+    "W-M-E1",
+    "W-A-N1",
+    "W-A-S3"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/takeoff/framing.py:231",
+    "packages/engine/src/typehaus/takeoff/framing.py:236",
+    "packages/engine/src/typehaus/takeoff/framing.py:39"
+   ],
+   "kind": "engine-geometry",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-601.1"
+    ],
+    "pages": [
+     23
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "takeoff.json framing_bom '2x4 strapping kdat': 391 pieces, stock 181x8', 30x10', 11x12', 9x14', 7x16', 18x20', 2x22', 5x36' (printed on S-601.1 p23). Members: W-M-E1 strapping-outer-girt-000/001/002/012/013 are each 35.88 ft (continuously_supported False); W-A-S3 and W-A-N1 outer-girt-rake-000 are 20.05 ft. _order_length_ft rounds past 20 ft to the next even foot, and splicing is only granted to category plate or members flagged continuously_supported (framing.py:231), and one non-spliceable member sinks the whole (profile, category, material) group.",
+    "expected": "Dimension lumber is stocked to 16/20 ft (24 ft special); a girt lies on 4-1/2 in blocks every other stud, so it can lap over any block like the plates do (round-1 F1-003 fix). Largest stick 20 ft; the 20.05 ft rakes need a 22 ft non-stock or two pieces.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p10.py lists the girts > 19 ft; takeoff.json framing_bom row 2x4/strapping/kdat; S-601.1 p23 'Stock lengths' column."
+   },
+   "source": "S-601.1 stock column; plates' IRC R602.3.2 lap precedent in takeoff/framing.py:84-89",
+   "proposed_fix": "Mark outer-girt strapping continuously_supported (they bear on blocks along their whole length) or extend the plate rule to category strapping with a 20 ft cap; the rake girts then split 12+10. Ordered LF rises ~0 (36 ft = 2x20 or 3x12).",
+   "size_guess": "small",
+   "seam_with": [
+    "F2"
+   ],
+   "dedupe_key": "takeoff:girt-strapping-stock-over-20ft"
+  },
+  {
+   "id": "F1-102",
+   "area": "F1",
+   "title": "Three exterior doors keep their rough opening on the joist top, 3/4 in under the subfloor their walls now stand on (known, TODO C3-E3 follow-up)",
+   "elements": [
+    "D-M-ENTRY",
+    "D-M-PORCH",
+    "D-S-BALCONY",
+    "W-M-N3",
+    "W-M-S2",
+    "W-S-S2"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/framing/openings.py:263",
+    "packages/engine/src/typehaus/resolve/plate_seat.py:181",
+    "plans/TODO.md:243"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-513",
+     "S-101.1"
+    ],
+    "pages": [
+     62,
+     11
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "W-M-N3 / W-M-S2: frame_base 0.75 in, bottom plate cut at the passage (plate-bottom-passage-*, 0.75..2.25), jacks/kings stand on z0 2.25 in, D-M-ENTRY and D-M-PORCH sill_m 0.0 and RO head 82.875 in => header bottom at 82.875 in above the joist top, i.e. 82.125 in above the 3/4 in subfloor a framer stands on (jack length 80.625 in). A published RO of 82 7/8 in (Therma-Tru) measured from the subfloor would put the head at 83.625. A-513 prints 'R.O. 6'-10 7/8\"' with no datum.",
+    "expected": "The RO and the printed dimension name one datum. Either the subfloor is cut back under each door sill (owner confirmation requested in TODO L243) and that is drawn, or the RO base moves to the subfloor with the pan/threshold coordination re-derived (6 FAILs on D-S-BALCONY when tried).",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p13.py W-M-N3 / W-M-S2 (jack z0 2.25, header-0 z0 82.875, plate-bottom-passage); /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p16.py; plans/TODO.md line 243."
+   },
+   "source": "plans/01-decisions.md #110 ('an exterior door keeps the datum its installation is coordinated off'); notes/exterior_door_hardening.md",
+   "proposed_fix": "Owner decision already pending. Minimum: print the datum on A-513/A-512 ('R.O. from top of joists; subfloor cut back at sill') and add a cut-back note to S-101.1/S-101.2 framing notes.",
+   "size_guess": "large",
+   "seam_with": [
+    "O3",
+    "O5",
+    "F3"
+   ],
+   "dedupe_key": "exterior-doors:ro-datum-vs-subfloor"
+  },
+  {
+   "id": "F1-103",
+   "area": "F1",
+   "title": "S-101.1 member schedule omits D-B-SUNKEN's flush LVL band header (2-ply 1.75x11.875, 75 in) in FS-M-EAST",
+   "elements": [
+    "D-B-SUNKEN",
+    "FS-M-EAST"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/",
+    "packages/engine/src/typehaus/resolve/band_headers.py:62"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1",
+     "S-601"
+    ],
+    "pages": [
+     11,
+     22
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "S-101.1 MEMBER SCHEDULE rows for FS-M-EAST are J2 (11), R2 (1), BL1 (20) only; the model has sister-0-0 and sister-0-1 (1.75x11.875 LVL, z -11.875..0, x 218.3..293.7 in, 75.4 in) that are the whole header over the 63 in French pair. HEADER SCHEDULE - BEARING WALLS BELOW lists only H1/H2 (D-B-CLOSET, D-B-SAUNA, D-B-GYM). S-601 bills them (1.75x11.875 LVL sister_joist 2 pcs, 13 LF) and G-001's engineered register names band_header/D-B-SUNKEN, but no framing sheet tells the framer which joist-bay pair is the header.",
+    "expected": "A one-line schedule row (mark, 2-1.75x11.875 LVL, span 6'-3 1/2\", over D-B-SUNKEN, bears on W-B-S3-FR jacks) in S-101.1.",
+    "method": "pdftotext permit_set_full.pdf page 11; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p6.py prints the two sister members; grep -i 'band header' of the full set text finds only G-001 and the engineering register."
+   },
+   "source": "plans/01-decisions.md (C3-E2 resolution); notes/sunken_door_band_header.md",
+   "proposed_fix": "Emit Door.header_in_band openings as a HEADER SCHEDULE row (over D-B-SUNKEN) and a MEMBER SCHEDULE row for sister_joist.",
+   "size_guess": "small",
+   "seam_with": [
+    "C7",
+    "F3"
+   ],
+   "dedupe_key": "S-101.1:band-header-not-scheduled"
+  },
+  {
+   "id": "F1-104",
+   "area": "F1",
+   "title": "Headers up to 8 ft are sized by a span-only ladder, and nothing grades them against IRC Table R602.7(1)",
+   "elements": [
+    "header_size",
+    "king_jack_counts"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/framing/tables.py:37",
+    "packages/engine/src/typehaus/resolve/framing/tables.py:49",
+    "packages/engine/src/typehaus/checks/structural/checks.py:139"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1",
+     "S-101.2",
+     "S-101.3"
+    ],
+    "pages": [
+     11,
+     12,
+     13
+    ]
+   },
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "header_size() returns 2-2x8 to 4 ft, 2-2x10 to 6 ft, 2-2x12 to 8 ft with no snow, building-width, floor-load or species input; structural.header_prescriptive only grades openings past 8 ft or those that author header_spec + published_span; baseline checks.json has 2 header_prescriptive findings and no R602.7(1) grade for the ~45 bearing-wall 2-2x8/2-2x10 headers (e.g. W-M-E1 WIN-M-LIV-E1/E2 30.5 in, W-S-S1 33 in, D-M-PORCH 69.3 in 2-2x10 on a 36 ft-wide house with 50 psf snow, roof + attic floor + floor). I could not read the table: ICC's page returns 403 and the CRC/jaspector pages omit its rows, so I cannot say any size is wrong.",
+    "expected": "Each bearing-wall header either read off R602.7(1) for the site (snow 50 psf, 36 ft width, roof+ceiling+floors, jack count NJ) or carried by a published row, as the dining window and garage already are.",
+    "method": "Read tables.py:37-70 and checks/structural/checks.py:139-210; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p5.py lists every header, profile and span; checks.json check_id counts. Same gap noted in plans/TODO.md L159-163 for single-member headers."
+   },
+   "source": "IRC 2021 Table R602.7(1) (not read: fetch blocked); houses/catlin/notes/dining_window_header.md for the published-row precedent",
+   "proposed_fix": "Add a header_within_r602_7 grade that reads the table row for the site and reports PASS/UNKNOWN per header, or at least UNKNOWN with the missing inputs.",
+   "size_guess": "large",
+   "seam_with": [
+    "F2",
+    "E2"
+   ],
+   "dedupe_key": "framing:header-ladder-ungraded"
+  },
+  {
+   "id": "F1-105",
+   "area": "F1",
+   "title": "A-301 elevation labels say MAIN/SECOND T.O. PLATE 9'-0\" / 19'-0\" while the dimension strings and the note say 9'-0 1/8\" / 19'-0 1/8\"",
+   "elements": [
+    "A-301"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-301",
+     "A-301.1",
+     "A-301.2"
+    ],
+    "pages": [
+     38,
+     39,
+     40
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Model: main top plates top 108.125 in and second 228.125 in (p3.py). A-301 labels 'MAIN T.O. PLATE EL. 9'-0\"' and 'SECOND T.O. PLATE EL. 19'-0\"' (rounded to the inch) but the dimension from grade (-2'-10\") to the main plate reads 11'-10 1/8\", and the sheet's own note prints 108 1/8\" to the joist soffit. 2'-10\" + 9'-0\" would be 11'-10\".",
+    "expected": "Labels at 9'-0 1/8\" and 19'-0 1/8\" (the stack is a 1/8 in dimension that took a decision to build, #110) or a note that levels are rounded.",
+    "method": "permit_set_full.pdf p38 (A-301) vs /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p3.py (plate_top 108.125/228.125)."
+   },
+   "source": "plans/01-decisions.md #110; A-301 NOTES block",
+   "proposed_fix": "Print level labels to 1/8\" where the model value is not a whole inch.",
+   "size_guess": "small",
+   "seam_with": [
+    "C7"
+   ],
+   "dedupe_key": "A-301:plate-level-rounding"
+  },
+  {
+   "id": "F1-106",
+   "area": "F1",
+   "title": "S-101.2/S-101.3 floor-opening labels print on top of joist lines and of each other",
+   "elements": [
+    "FO-S-ERV-CHASE",
+    "FO-S-STAIR",
+    "FO-S-BATH1-WC-DRAIN",
+    "FO-S-ERV-LAUNDRY",
+    "FO-S-ERV-SUITEBATH"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.2",
+     "S-101.3"
+    ],
+    "pages": [
+     12,
+     13
+    ]
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "At 220 dpi S-101.2: 'BEARING' and 'FO-S-ERV-CHASE / HEADER / TRIMMER FH1 / TR1' stack on the NW corner, 'FO-S-ERV-LAUNDRY' and 'FO-S-ERV-SUITEBATH' labels cross joist lines and bearing labels ('BRG: W-M-C2'); same pattern on S-101.3's ERV/BATH openings. All legible but overprinted.",
+    "expected": "Leaders or offsets so a label does not lie across joists.",
+    "method": "pdftoppm -r 220 page 12, crop of the NW quadrant (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/crop_c.png)."
+   },
+   "source": "Sheet render",
+   "proposed_fix": "Offset/leader the opening labels.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "S-101:fo-label-overprint"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "F1-001",
+   "status": "closed",
+   "evidence": "D-G-SERVICE header is now an R602.7.4 flat 2x6 on W-G-S (nonbearing gable): z 81.5..83.0 in, lowest top plate (plate-top-1) z0 85.0 in, 2.00 in clear (round 1: 3-ply LVL z 81.5..87.0 ran 2 in into the plates). All 67 headers in the model clear their plates; tightest is W-S-CLN-S/D-S-NCLOSET 1.24 in, next D-G-SERVICE 2.00 in, W-B-CE/D-B-PLAY 2.30 in. Baseline checks.json has no integrity.header_under_plate finding (the check emits only failures).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p5.py: per wall, header z1 vs min z0 of top plates overlapping it along the axis; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p7.py W-G-S D-G-SERVICE lists the members."
+  },
+  {
+   "id": "F1-002",
+   "status": "closed",
+   "evidence": "W-B-S3-FR has no header member now. D-B-SUNKEN uses Door.header_in_band: kings/jacks run to the plate underside (z -100.688..-16.437 in), a flat headnailer sits at the RO head, and FS-M-EAST carries a 2-ply 1.75x11.875 LVL (sister-0-0/-0-1, z -11.875..0, x 218.3..293.7 in, 75.4 in long over the 63.31 in RO). structural.band_header/D-B-SUNKEN passes (d/c 0.02 in baseline checks.json). Round 1: header 2-2x10 z -21.06..-11.81 stood 4.6 in into the plates and 1.63 in above the wall top. Void between RO head (-21.06) and plate underside (-16.44) is 4.63 in, 3.1 in above the 1.5 in nailer: buildable, plates span it over the band LVL.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p6.py (W-B-S3-FR members, FS-M-EAST non-joist members); /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p14.py (door list: D-B-SUNKEN has jack 4/king 4/blocking 1)."
+  },
+  {
+   "id": "F1-003",
+   "status": "closed",
+   "evidence": "takeoff.json framing_bom: every plate row is marked spliceable and its longest stock stick is 20 ft (2x6 plate 134x8', 40x10', 5x12', 14x14', 13x16', 18x20'; 2x4 max 14'; 2x8 max 16'); S-601.1 prints the same. Round 1 had 3x36', 1x28', 1x22', 11x24'. (Same defect class survives on 2x4 KDAT girt strapping: see F1-101.)",
+   "method": "takeoff.json framing_bom rows with category plate/raked_plate; takeoff/framing.py:231-236 (plate cap = 20 ft)."
+  },
+  {
+   "id": "F1-004",
+   "status": "closed",
+   "evidence": "Rejection holds. W-S-W3 (axis y 268->108, 160 in) still has 32 in stud centres at 44..76 and 92..124 in, but P-S-TUDOR1/2 (6.25x6.25 elm posts, second.py:1478-1479, y 13'-2 7/16\" and 17'-5 9/16\") stand in those bays at along 109.6 and 58.4 in; clear bays beside each post are 11.3..14.4 in. Gap scan over all 2nd-storey exterior walls finds no other >16.35 in bay outside an opening except garage 24 in o.c. (deliberate, A-514 notes 2x6 at 24 in).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p11.py (stud/king/jack/corner gaps > 16.35 in outside opening spans) and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p12.py (post positions)."
+  },
+  {
+   "id": "F1-005",
+   "status": "closed",
+   "evidence": "Rejection holds and is now explained: W-M-PAN-S header-0 218.75..293.25 in (74.5 in) = ECLISSE 2x4-2x6 36 in kit RO 74 1/2 x 83 1/4 (notes/pocket_frame_eclisse.md rows 24-25); D-M-PANTRY authors frame_end_supports (W-M-C5B, W-M-PAN-E) so no king/jack is framed; 3 kit split studs carry the leaf (supplied_by pocket_door_frame_kit). The 0.5 in the header/cavity runs past the abutting finished face (219.25) is the stud face behind 1/2 in gypsum.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p13.py W-M-PAN-S."
+  },
+  {
+   "id": "F1-006",
+   "status": "closed",
+   "evidence": "Not a defect, still true. Stud cuts: main/second bearing 102.875 in, partitions 102.125; basement 91.5/92.3125; garage 95.5. They close the stack exactly: 0.75 + 1.5 + 102.875 + 3 = 108.125 = 120 - 11.875 joist soffit; partitions end 0.75 under it (107.375); basement 1.5+91.5+3 over -109.4375 = -13.4375 seat, partitions -12.625; garage -12+1.5+95.5+3 = 88.0 (8'-4\"). BOM buys them from 10 ft (2x4 209x10', 2x6 155x10', LSL 90x10') and 8 ft (<=96 in) stock; precut 104-5/8 would still need 1 3/4 in trimmed, so field cutting stands.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p1.py (stud length histogram per storey), /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p3.py (stack per wall), takeoff.json framing_bom."
+  },
+  {
+   "id": "F1-007",
+   "status": "open",
+   "evidence": "Unchanged. S-103.1/.2/.3/.4 (pp 17-20) still print the result lines and the 'PANELS SHOWN ARE THE DESIGNATED BRACED WALL PANELS...' note as single lines cut at the sheet border: S-103.1 ends '...A RIM JOIST, BAND JOIST OR BL', S-103.2 '...THE FULL LENG', S-103.4 '...WHERE JOISTS ARE PERPENDICULAR;', per-line results end 'Table R602.10'. pdftotext shows the full sentence continues past the border (e.g. p20 line 75 continues 'A PARALLEL FRAMING MEMBER OR FULL-DEPTH BLOCKING AT 16 I...').",
+   "method": "permit_set_full.pdf pages 17-20 (Read) and pdftotext -layout -f 20 -l 20."
+  },
+  {
+   "id": "F1-008",
+   "status": "closed",
+   "evidence": "At page resolution no overprint remains: S-103.2 'BWL-W-G-W 24.0' WSP' sits beside, not over, the 262\" CS-WSP label; 'BWL-W-A-S1 36.0' WSP' beside 34\" CS-WSP; S-103.3 'BWL-W-A-E1 36.0' WSP' beside 85\" CS-WSP. Visual check only, not a bbox test.",
+   "method": "permit_set_full.pdf pages 18-19."
+  },
+  {
+   "id": "F1-009",
+   "status": "closed",
+   "evidence": "S-101.1 (p11) MEMBER, BEAM/POST, HEADER and CONNECTOR schedules are now in separate columns; at 220 dpi every column reads (crop of the member schedule: QTY/MAX SPAN clear of the beam table). Header schedule values match model: H1 2-2x8 2'-5 1/4\" = D-B-CLOSET/D-B-SAUNA span 29.24 in, H2 3'-3\" D-B-GYM 39.0 in.",
+   "method": "pdftoppm -r 220 page 11, crop; compare with /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F1/p5.py spans."
+  },
+  {
+   "id": "F1-010",
+   "status": "partial",
+   "evidence": "A-532 (p83): the '4\" XPS (2 layers)' string now sits on the XPS (fixed), but the '4\" CI' string is still overprinted by the '5 1/2\" stud' dimension and clipped. A-544 (p95): the '3 1/2\" stud' string still floats over the staggered 2x6 wall's cavity above the 2x4 partition it measures.",
+   "method": "permit_set_full.pdf pages 83 and 95."
+  },
+  {
+   "id": "F1-011",
+   "status": "closed",
+   "evidence": "Rejection holds, re-verified from a published reproduction of IRC Table R602.7.5 (CRC, gocodebook.com): at <=115 mph Exposure B, minimum full-height studs each end are 1 for 4/6/8 ft and 2 for 10..18 ft (note a: next larger span between rows); the table covers exterior walls. king_jack_counts (tables.py:37-47) returns kings 1 up to 8 ft, 2 beyond. Jack counts (1 to 6 ft, 2 to 8 ft) are from Table R602.7(1)'s NJ column, which I could not fetch (see F1-104).",
+   "method": "WebFetch https://gocodebook.com/us/california/california-residential-code/wall-construction/openings-headers-and-alternate-systems/headers-and-openings-wood-codes ; read tables.py:37-47."
+  }
+ ]
+}

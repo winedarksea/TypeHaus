@@ -1,0 +1,244 @@
+{
+ "area": "O5",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventoried 38 metal-wall windows with K6 cap + 58114XX head + custom sill/jamb (cladding_trim/openings.py), 2 garage windows (head/sill trim, no cap), 36 doors (5 exterior with DOOR_HEAD_CUSTOM or catalog head envelope, D-B-SUNKEN/D-S-BALCONY catalog), 14 rough openings (2 ERV hoods with small-opening trim; AO-BW-MDO-TIE-RELIEF the only entry-screen opening, interior-blind), WIN-B-SAUNA (no flashing by design, spec s8). Dimensions from opening_flashing.py/opening_head_cap.py, library/trim/metal_sales.py, notes/opening_flashing_spec.md, french_door_catalog_installation.md; measured on the resolved model (pickle in scratch O5/). Opened all 15 sheets: A-002, A-201..204, A-512/.1/.2, A-513/.1/.2, A-514, A-515, A-525, A-526. Web: SureSill HeadFlash page (no section published), Metal Sales BBD75 install guide 10/2025 (58720XX p.28). Five prior ids reconciled; 5 new findings (1 model-only, 1 wrong-build, 2 drawing-error, 1 doc). NOT examined: the 3D viewer's K6 rendering (ui), IFC/GLB parity, A-511/A-503 and other detail sheets outside the listed set, rainscreen_closures net-free-area numbers (E2), BBD75 58720XX needed-over-frame arithmetic (0.38in vs 0.27in) re-derived (taken from round-1 note), D-B-SUNKEN court head/veneer reveal (spec s8 hand spec only), window_returns/stool (O4).",
+ "verified_clean": [
+  "WIN-M-BED-W1 K6: face leg 2.645in, lap over the 58114XX back leg 1.000in, span RO+7 = 34.5in, upstand 2in, fall 0.042in; hand count in opening_flashing_spec.md s3 4a reproduced (probe p2.py/p10.py: cap z 72.855..77.542, head trim back-leg top 73.855)",
+  "All 38 metal-wall windows: cap lap = 1.000in, water 4.0 / mount 6.0, cap span = RO + 7in (RO 63in WIN-M-DINING-E: 70in); the Andersen units (hd 0.95in) get a 2.95in leg that still laps 1.000in",
+  "K6 lap vs actual cladding depths: PBR walls clad 7.25in, BBD75 walls clad 6.75in; the cap face leg sits at depth 6.000..6.024in, inside the panel back by one sheet; head trim hook reaches 7.854in = 0.604in past the PBR rib face, 1.104in past BBD75 (>= 1/2in drip) (p10.py)",
+  "head_trim_back_leg_in() now reads OPENING_HEAD.section_in (2.5in): equal to the old constant, so cap geometry did not move with the C2 refactor",
+  "No head cap overlaps a neighbour: min along-wall gap between head spans on every wall >= 6in (p11.py)",
+  "D-M-ENTRY/D-M-PORCH/D-S-BALCONY head drip DOOR_HEAD_CUSTOM front 8.00/8.04in vs clad 6.75in + casing: 0.5in past the casing face, 1.25in past the cladding; D-G-SERVICE/D-G-OVERHEAD drips 1.29/0.5in past 7/8in corrugated",
+  "D-M-ENTRY/-PORCH sill pans: outlet 7.73in, 0.98in past BBD75, drop 0.75in below threshold; D-G-SERVICE pan outlet 1.854in, 0.98in past corrugated",
+  "Aluminum-capped units (Drutex IGLO Alucover frame_depth 3.661in, Aliplast Max Light 2.953in, Andersen 3.25in): jamb trim lap 1.0in onto a frame face of 35-75mm; sill upstand top at sill_rise - 1/8in = 0.425in under the unit; head seat at frame top (head_drop 0.645/0.95in); seat sill_rise 0.55in on all 38",
+  "Entry screen W-BW-SCREEN: only opening is AO-BW-MDO-TIE-RELIEF, a 2.75x3.75in interior-blind recess (depth 0.75in from interior) leaving the exterior corrugated skin whole; no weather-side flashing required",
+  "haus check baseline: 41 window/door heads capped and seated on strips, 5 door drips clear casings, 42 heads lap jambs, 42 sill upstands under unit, 78 reveal legs/head throats clear panel depth: all PASS",
+  "A-512 (p59): title/legend overprint gone, single title line printed (C7 D2-001 fix holds); A-512.1/.2 and A-513.1/.2 print at 3in=1ft with dims for head shim 5/8in, frame 3 5/8in, mount-to-sheathing 6in, sill rise 1/2in (0.55in)",
+  "A-525/A-526 RO and frame dims: 54in RO / 52.75in frame (4'-4 3/4in) and 48in / 46.75in (3'-10 3/4in) = RO - 0.55 - 0.645 as modelled",
+  "Window sill pans drain at the mount plane behind the sill trim, no visible drip: deliberate owner decision 2026-10-16 (not reported)"
+ ],
+ "findings": [
+  {
+   "id": "O5-101",
+   "area": "O5",
+   "title": "Cladding panel ends at the RO head (and starts at the RO sill), not on the head-trim strip and sill-trim: 0.61-0.92in gap over every window head, 3.5in over the BBD doors",
+   "elements": [
+    "all 38 metal-wall windows",
+    "D-M-ENTRY",
+    "D-M-PORCH",
+    "D-S-BALCONY",
+    "W-M-W4 cladding layer"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/geometry_walls.py:267",
+    "packages/engine/src/typehaus/resolve/rainscreen_strips.py:164"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-512.1",
+     "A-513.1"
+    ],
+    "pages": [
+     60,
+     63
+    ]
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "layer_solids(W-M-W4 cladding, openings): header prism z0 = 72.000in = RO head (WIN-M-BED-W1). PANEL_END_STRIP sits at z 71.355..71.387 (head_drop 0.645in below the RO head); 58114XX seat 70.985..71.355. Panel is modelled 0.613in above the strip it is specified to sit on; 0.95in on the 9 Andersen units (WIN-M-BED-S1: RO head 80.0, strip 79.05). D-M-ENTRY: PANEL_END_STRIP z 86.403 vs cladding header z 82.875 = 3.53in (DOOR_HEAD_CUSTOM z 84.775..88.459 front 8.044in passes through the modelled panel, whose face is 6.75in). Sill side: cladding sill band z1 = 36.000 = RO sill while WINDOW_SILL_CUSTOM drip leg runs z 35.474..35.96 at the panel face plane (depth 7.25), 0.53in overlap. A-512.1 prints the dark cladding block ending at the RO head, 5/8in above the trim seat.",
+    "expected": "Spec (opening_flashing_spec.md s4 and A-512 K6): panel end on a perforated strip lying on the head trim seat (strip top = seat + 0.032in); panel bottom therefore at z ~71.39, not 72.0. Sill trim drip leg laps the panel face, so the panel top stops under the drip.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O5/p5.py (layer_solids header z0) and p10.py (trim/strip extents per host_ref)."
+   },
+   "source": "notes/opening_flashing_spec.md s3 step 4a / s4 'panel end on a perforated strip'; rainscreen_strips.py docstring.",
+   "proposed_fix": "Give layer_solids a per-opening header/sill override (the panel-end z from the head strip and sill trim) for profiled-metal cladding, or lower the cladding cut to the seat; elevations, GLB and the panel SF/ trim-lap checks move by <1in x opening width. Not a build error: the crew cuts panels to the strip.",
+   "size_guess": "large",
+   "seam_with": [
+    "E2",
+    "O4"
+   ],
+   "dedupe_key": "O5:panel-end-vs-trim-seat"
+  },
+  {
+   "id": "O5-102",
+   "area": "O5",
+   "title": "Garage windows: sill pan discharges at the sheathing face, 7/8in behind the corrugated panel, against spec s7 (pan runs past the panel to a drip)",
+   "elements": [
+    "WIN-G-N1",
+    "WIN-G-S1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/opening_flashing.py:400",
+    "packages/engine/src/typehaus/resolve/opening_flashing.py:392"
+   ],
+   "kind": "engine-geometry",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "WIN-G-N1: frame mount = sheathing face (0.000in), clad 0.875in; flashing-sill solid spans depth -5.625..0.060in so the outlet is at 0.06in, 0.82in behind the panel face; pan drop to z 29.25 (0.75in below the sill) lies behind WINDOW_SILL_CUSTOM (depth -0.024..0.875, z 29.48..30.05). Same garage wall's D-G-SERVICE pan runs to depth 1.854in (0.98in past the panel).",
+    "expected": "notes/opening_flashing_spec.md s7: 'The pan runs out past the panel to a drip' on a wall with no WRB and no cavity (CDX is the water plane). Outlet at clad + 0.5in like the doors, or the spec amended.",
+    "method": "_pan_outlet returns frame.mount for any window whose seat has outer_m (metal_window), meant for the outie house walls where mount is 6in out; on the innie garage wall mount is the sheathing face. Re-run probe p10.py for WIN-G-N1 (flashing-sill depth range)."
+   },
+   "source": "opening_flashing_spec.md s7; _pan_outlet docstring 'An outie window's pan discharges at the mount plane'.",
+   "proposed_fix": "Gate the outlet-at-mount rule on frame.outie (not on metal_window) so garage windows use _drip_face; re-derive their seat sill_rise (window_seat uses the same outlet); 2 windows.",
+   "size_guess": "small",
+   "seam_with": [
+    "O4",
+    "E2"
+   ],
+   "dedupe_key": "O5:garage-window-pan-outlet"
+  },
+  {
+   "id": "O5-103",
+   "area": "O5",
+   "title": "A-513/.1/.2 (board-and-batten walls) draw the entry DOOR; the keyed notes K5/K6/K7 describe the window head cap and pan, and no B&B window head or sill is detailed",
+   "elements": [
+    "A-513",
+    "A-513.1",
+    "A-513.2",
+    "D-M-ENTRY"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/detail_enlarged.py:14"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-513",
+     "A-513.1",
+     "A-513.2"
+    ],
+    "pages": [
+     62,
+     63,
+     64
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "p4.py: derived detail opening_perimeter:EXT_2X6_BOARD_BATTEN is conditioned on D-M-ENTRY (R.O. 6'-10 7/8in, 5 1/2in frame, 'thr. above fin. floor'). Its nodes carry DOOR_HEAD_CUSTOM + panel-end-strip, not the K6 cap. Notes on all three sheets still read 'K6 Steel head cap from the foam face over the course, face leg over 58114XX'. 20 B&B-wall windows (WT-3048 etc, clad 6.75in, head trim 1.10in past the face) have no head/sill detail; A-512's window is a PBR wall (clad 7.25in).",
+    "expected": "Each wall assembly's window head/sill (BBD75 0.75in reveal: sill cap 0.75in deep, 58114XX seat 0.75in proud of the battens) detailed, or the door sheet's notes reworded to the door head drip cap.",
+    "method": "Read permit_set_full.pdf pp.62-64; run p4.py (derive_detail_slices + build_overlay_components) for the opening chosen per condition key."
+   },
+   "source": "sheet; opening_flashing_spec.md s4 (K6 is the window head; a door head is DOOR_HEAD_CUSTOM)",
+   "proposed_fix": "Key the opening_perimeter condition for a wall assembly to a window (or print both), or give a door its own keyed note set.",
+   "size_guess": "large",
+   "seam_with": [
+    "C7",
+    "O3"
+   ],
+   "dedupe_key": "O5:A-513-door-vs-window"
+  },
+  {
+   "id": "O5-104",
+   "area": "O5",
+   "title": "A-525/A-526 plant-room window details show only the interior humid liner; the exterior K6 cap, 58114XX head and outie pan on the same four windows are neither drawn nor noted",
+   "elements": [
+    "WIN-S-PLANT1",
+    "WIN-S-PLANT2",
+    "WIN-S-PLANT3",
+    "WIN-S-PLANT4",
+    "A-525",
+    "A-526"
+   ],
+   "files": [],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-525",
+     "A-526"
+    ],
+    "pages": [
+     76,
+     77
+    ]
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "p4.py: humid-liner-opening nodes are opening-unit + humid-membrane-return + humid-sill-pan only. Model has WIN-S-PLANT1..4 each with OPENING_HEAD_CAP (z 202.355..207.04 for PLANT3), OPENING_HEAD 58114XX and sill pan. Sheets show neither; K1-K7 cover the liner only.",
+    "expected": "The same exterior head/sill keyed note as A-512/513 (or a reference to A-512.1/.2), since the exterior leg of these walls is the standard outie truss wall.",
+    "method": "Read pp.76-77; run p4.py and compare node tags for WIN-S-PLANT3 against WIN-M-BED-W1."
+   },
+   "source": "sheet",
+   "proposed_fix": "Add a 'see A-512.1/.2 / A-513.1/.2 for exterior head and sill' note to the humid-liner recipe.",
+   "size_guess": "small",
+   "seam_with": [
+    "C7"
+   ],
+   "dedupe_key": "O5:plant-window-exterior-flashing-not-drawn"
+  },
+  {
+   "id": "O5-105",
+   "area": "O5",
+   "title": "Spec s7 describes a custom steel head over the casing for garage windows; the model gives them the stock 58114XX head with a 2.5in membrane upstand and no cap",
+   "elements": [
+    "WIN-G-N1",
+    "WIN-G-S1"
+   ],
+   "files": [
+    "houses/catlin/notes/opening_flashing_spec.md:297",
+    "packages/engine/src/typehaus/resolve/cladding_trim/openings.py:165"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "WIN-G-N1 solids: OPENING_HEAD 58114XX depth -0.024..1.854, z 53.36..56.23 (seat 0.27in below the RO head), perimeter membrane strip-in top = head - 0.27 + 2.5in; no OPENING_HEAD_CAP, no DOOR_HEAD_CUSTOM. Spec s7: 'The head is s4's steel, over the casing with end dams, and its 3in upstand is stripped in to the CDX.'",
+    "expected": "Spec and model say the same head: either the stock 58114XX (drip 0.98in past the 7/8in corrugated face) or the s4 custom brake.",
+    "method": "p10.py for WIN-G-N1; read spec s7."
+   },
+   "source": "opening_flashing_spec.md s7",
+   "proposed_fix": "Reword s7 to the 58114XX head the model draws (and its 2.5in upstand strip-in), or add the custom brake.",
+   "size_guess": "small",
+   "seam_with": [
+    "O4"
+   ],
+   "dedupe_key": "O5:garage-window-head-spec-vs-model"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "O5-001",
+   "status": "closed",
+   "evidence": "Rejection holds. Cap face leg depth 6.000..6.024in; 58114XX back leg 5.976..6.000in: touching with the cap outboard by one 24 ga sheet (shingle order). Lap 1.000in on all 38 windows. Water on the cap leaves in front of the back leg onto the strip-seat. head_trim_back_leg_in() reads the catalog section (2.5in); no geometry change since round 1.",
+   "method": "p10.py WIN-M-BED-W1 / WIN-M-BED-S1 depth and z extents of headcap-0 and trim-head-0; p2.py cap lap per window."
+  },
+  {
+   "id": "O5-002",
+   "status": "open",
+   "evidence": "Unchanged (resolver files not touched). D-S-BALCONY: stock-headflash cap envelope at depth 6.75..8.125in, z 206.375; upstand 1.5in at depth 6.75in (cladding face, water plane is 4.0in); DOOR_HEAD_CUSTOM also swept at depth 3.976..8.0in, z 204.775..208.458. Envelope dims are still COORDINATION_ENVELOPE (cap depth 1.375, upstand 1.5, dam 0.5in vs 3/4in spec dams); SureSill HeadFlash page publishes only width 1.38in and lengths, no section (WebFetch). D-B-SUNKEN: envelope on the brick face (depth 9.625), no derived head. Tags renamed (D-S-DECK-E -> D-S-BALCONY, D-B-PATIO -> D-B-SUNKEN), substance same. Escalated E12 in C2.",
+   "method": "p9.py (catalog_installation head_* fields, sections polygon_m) + p8.py (DOOR_HEAD_CUSTOM extents)."
+  },
+  {
+   "id": "O5-003",
+   "status": "closed",
+   "evidence": "A-512 (p59) now prints one title 'TR-CATLIN-FRAMED-OPENING . outie-window-truss' and 'R.O. HEIGHTS...' line; the stacked 'Catlin House / layer labels' overprint is gone. Same on A-512.1/.2, A-513/.1/.2.",
+   "method": "Read permit_set_full.pdf pp.59-64."
+  },
+  {
+   "id": "O5-004",
+   "status": "partial",
+   "evidence": "Enlarged head/sill sheets now exist for the outie recipe (A-512.1/.2, A-513.1/.2 at 3in=1ft) and carry dims (head shim 5/8in, 3 5/8in frame, 6in mount plane, 1/2in sill rise). Still: K6 cap, 58114XX and strip print as hairlines (24 ga sheet) beside a heavy-outlined trim blob, so the 1in lap and drip are not legible at 600 dpi; no K-bubbles on the enlarged sheets and no dimension on cap lap, girth or drip projection; A-513 enlargements depict a door (O5-103); A-514 garage and A-515 court have no enlargement and no head/sill flashing drawn (A-514 shows wall layers and slab only).",
+   "method": "Read pp.59-66; pdftoppm -r 600 crop of p60; p4.py node tags show opening-head-cap / panel-end-strip / opening-trim are emitted."
+  },
+  {
+   "id": "O5-005",
+   "status": "partial",
+   "evidence": "58720XX is now in the library (BBD_HEAD_TRIM, source BBD75 guide pp.15, 28-29) and the decision is recorded (WINDOW_HEAD_PRODUCT comment, metal_trim_kit.md:154, DESIGN-LOG:7234). BBD75 guide (10/2025, fetched, pdftotext) publishes only 'Head Channel with Return' 58720XX (p.28) and Sill/Jamb Trim 58718XX; 58114XX is not in it, so OPENING_HEAD on the 20 B&B windows still cites only the PBR guide (metal_sales.py:70 source='PBR Install Guide 4/2024 pp. 20, 68-72'). Fit measured fine: hook 1.10in past BBD75 face. Remaining gap is the citation/owner-accepted-deviation note on the OPENING_HEAD row.",
+   "method": "pdftotext of Install-Guide-BBD75_10-2025.pdf (lines 748-751, 1321-1343); read metal_sales.py:67-85."
+  }
+ ]
+}

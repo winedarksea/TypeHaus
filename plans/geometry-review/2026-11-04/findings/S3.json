@@ -1,0 +1,432 @@
+{
+ "area": "S3",
+ "model": "houses/catlin @ 539d9a81 (resolved with load_plan + resolve; pickled in scratchpad S3/m.pkl); baseline snapshot 2026-11-04",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventoried 19 railing elements (RL-SG-BALCONY fascia guard 9 posts/8 bays; RL-SG-PORCH family and RL-SG-PSTAIR surface guards; RL-A-STAIR, RL-A-FLIGHT-GUARD, RL-S-STAIR*, RL-BW-ENTRY; wall handrails RL-A/S/G/M-HANDRAIL*; RL-SG-PSTAIR-HR), 5 RailingTypes, and 4 products (Williams CP262406B / AD901102B, EZ EZA8KIT-HB, Waltly Ti tube; fittings unsourced). Dimensions traced to library/railings.py FasciaMountSpec/SurfaceMountSpec, handrail_types.py, titanium_types.py and notes/balcony_fascia_mounts.md. Product truth re-read from the Ultralox 2025 Product Guide (pp.24, 29, 30, 37, 41-45) and ESR-3485 (Table 1, section 4.2, Fig. 10) downloaded to the scratchpad; the Ultralox June 2024 fascia instruction PDF the note cites is a 404. Resolved-model probes: bracket/bolt/post/rail/baluster meshes, rim/joist/block members, fascia/drip/apron/gutter solids, roof_underside_at, finished-floor elevation. All 13 listed sheets opened (S-501.1, S-602/.1/.2, A-102/103/104, A-201/202/203/204, A-508, A-510; page numbers are those of permit_set_full.pdf). NOT examined: the Ultralox June 2024 fascia instruction (404) and the Ultralox/Williams edge-distance rules; fastener capacity of any bracket; RL-SG-PORCH*/RL-SG-PSTAIR-S/-N surface-mount anchorage on concrete/plank (heights and openings only via checks.json); RL-S-STAIR, RL-S-STAIRHEAD(-N) and RL-A-FLIGHT-GUARD mount faces (C1 E3, S1); RL-BW-ENTRY; handrail bracket counts against the EZ kit's contents; the rear-end post clear distance to the house cladding was taken from the deck outline and the note (3 15/16 in.), not re-measured against the resolved cladding; shallow-slope panel compatibility (owner's accepted assumption in the note).",
+ "verified_clean": [
+  "RL-SG-BALCONY posts 1-9: top = 42.00 in. above deck_top_at at each station (42.05 at the front); post spacing 60.07 in. (front, limit 60.125) and 58.16 in. (flank) c/c, under ESR-3485 Table 1's 91.313 in. clear maximum.",
+  "RL-SG-BALCONY rails (post-fix of S3-004): RAIL1 top = post top; RAIL2 bottom 3.00 in. above the plank at both ends (bottom_clearance 3 in.); balusters z 4.5..40.5 in. above the local plank; checks.json R312_1_3 draws 3.9 in. between members.",
+  "Bracket vs rim (front): bracket top 116.50 in. vs rim/joist top 117.02 = 0.52 in. below (note: 1/2 in.); bracket bottom 110.50 vs rim bottom 105.77; front gutter top 109.5 = 1.0 in. below the bracket bottom.",
+  "Flank bracket flange x 97.375 = fascia outer face (rim 98.375..99.625 + 1.0 in. fascia); front flange y -127.0 = fascia outer face; bolt tails stop 1.1 in. short of the flank blocks.",
+  "Rear flank rim tilts with the deck (z 108.18..119.43 at the house end) and the north brackets sit 0.48 in. under it; fascia flank reaches 119.43, over the bracket top 118.87.",
+  "ST-S2A: 36.00 in. flight, 32.55 in. past RL-A-HANDRAIL; RL-A-STAIR posts clear of the flight (y 65.62..68.62 vs 69.75).",
+  "Handrail wall clearances 1.55-1.92 in., projections 3.45-3.70 in. (limit 4.5), supports spaced 37.3 in. (Ti) and <= ~48 in. (attic), ends return to walls (checks.json).",
+  "Ultralox ADA pipe OD 1.5 in. matches library rail_diameter; Ti tube 42.0 mm (1.654 in.) is a round Type I grip per checks.json.",
+  "S-602 / S-602.1 / S-602.2 print without overlap (S3-006 closed)."
+ ],
+ "findings": [
+  {
+   "id": "S3-101",
+   "area": "S3",
+   "title": "RL-SG-BALCONY fascia mounts: the modelled 5/16 x 4 in. bolts cannot reach any backing, and the authored rollover blocks sit beside and behind the bolt lines, so the fixing is washer bearing on a 1.25 in. rim / 1.5 in. edge joist",
+   "elements": [
+    "RL-SG-BALCONY",
+    "FS-SG-BALCONY",
+    "TR-SG-FASCIA",
+    "FM044300"
+   ],
+   "files": [
+    "houses/catlin/params/sunken_garden.py:2498-2535",
+    "houses/catlin/params/sunken_garden.py:2954",
+    "packages/engine/src/typehaus/library/railings.py:36-41",
+    "houses/catlin/notes/balcony_fascia_mounts.md:23-31"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Stack through the bolt (resolved model): bracket flange 0.25 + PVC fascia 1.00 + rim 1.25 (flank) or edge joist 1.50 (front) = 2.50 / 2.75 in., against a 4.00 in. bolt, leaving ~1.2 in. for washer + nut: no room to pass a 1.5 in. block sitting directly behind the rim. Front post 4: bolt shanks at x 153.61 and 158.24, y -127.25..-123.25 (tail 1.25 in. into the bay); the rollover block is at x 155.18..156.68 (sister-0-block-hi, x 155.93 +/- 0.75), i.e. 1.57 in. clear of each bolt, so no bolt touches it. Flank post 2: bolt tails stop at x 101.12; the block (sister-4-block, x 103 +/- 0.75) starts at 102.25 and the rim's inner face is 99.625, so the block is 2.6 in. off the rim. Fastener basis conflict: Ultralox 2025 Product Guide p.37 (wood substrate) says 4 x 5/16 x 6 in. structural screw SD04964, 'Ensure proper blocking', 0.50 specific gravity lumber; the repo uses the June 2024 through-bolt text (see S3-110). Order of magnitude: R301.5 200 lb at 42 in. = 8,400 lb-in; across the 4 in. bolt-row spacing the top pair sees ~2,100 lb, ~1,050 lb per bolt. An 11/16 in. washer annulus is 0.295 in2; at the engine's own wet southern-pine Fc-perp (member_grades.py:57, 565 x 0.67 = 379 psi) that is ~112 lb per bolt before any Cb credit.",
+    "expected": "A fascia bracket's rollover load should reach lumber through fasteners that thread into, or bear on, backing directly behind the rim at the bolt rows (Ultralox's own 'double blocking behind', which the library string already quotes). Bolt length, stack (1 in. fascia + rim) and block position must close: either a screw/bolt long enough to seat in a block touching the rim, or backing placed on the bolt lines.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p5.py and p6.py (bolt shank centres and extents from body_mesh; clusters of connected triangles), /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p4.py (rim, joist and block extents from FS-SG-BALCONY.members). Block x/y from p4 rows sister-0..2-block-hi and sister-4/5-block. Fc-perp from library/member_grades.py:57. Ultralox Product Guide p.37 read from the 15 MB PDF in the scratchpad (pdftotext ug.pdf)."
+   },
+   "source": "Ultralox Product Guide (2025) p.37 'Post fasteners: wood substrate'; ESR-3485 Table 1 footnote 9 and Fig. 10 (fascia bracket is a CONCRETE row only); houses/catlin/notes/balcony_fascia_mounts.md; engine member_grades.py.",
+   "proposed_fix": "Decide the fastener family before the blocking: (a) adopt the guide's 4 x 5/16 x 6 in. SD04964 screws into SG >= 0.50 blocking set directly behind the rim at the bolt lines (move _GUARD_BLOCK_INSET / flank inset so a block spans each post's bolt x, y), or (b) shorten the stack (fascia relieved behind the bracket) and keep 4 in. bolts. Either swaps a product or moves backing, so owner-visible; get Ultralox to confirm the wood attachment for a 1 in. fascia over a 1.25 in. rim.",
+   "size_guess": "large",
+   "seam_with": [],
+   "dedupe_key": "S3:fascia-bolt-backing"
+  },
+  {
+   "id": "S3-102",
+   "area": "S3",
+   "title": "RL-A-STAIR is drawn from the joist datum: a 42 in. kit stood on the 241.5 in. finished floor runs its east post 1.0 in. into the roof structure at x 348.5 in.",
+   "elements": [
+    "RL-A-STAIR",
+    "RL-A-STAIR-POST1",
+    "RF-HOUSE",
+    "RM-A-STUDY"
+   ],
+   "files": [
+    "houses/catlin/plan/storeys/attic.py:900-914",
+    "houses/catlin/plan/storeys/attic.py:281-295",
+    "packages/engine/src/typehaus/library/railings.py:107-135"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "RL-A-STAIR-POST1 xy x 345.5..348.5, z 240.00..282.00; rails z 281.25..282.75 (x to 347.0). Finished floor under the posts (room_finished_floor_elevation, RM-A-STUDY) = 241.50 and ST-S2A arrival 241.50: the post is drawn 1.5 in. below its floor. roof_underside_at(RF-HOUSE) at y 67.1: 284.00 at x 345.5, 283.25 at 347.0, 282.50 at 348.5. A 42 in. surface kit (Menards 1717824 / Ultralox HK441342, 3 in. x 42 in.) on 241.50 tops at 283.50: 1.00 in. above the structure underside at the post's east face, 0.25 in. at the rail end. As drawn the clearance is 0.50 in. (post) and 0.50 in. (rail), so integrity.element_above_roof passes.",
+    "expected": "Post base on the finished floor (241.50) with the kit's 42 in. height above it; top clear of the roof underside at the guard's east end (the stated reason the guard stops at 28'-11 in.).",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p13.py (roof_underside_at at x 345.5/348.5/300/256), /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p14.py (room_finished_floor_elevation = 241.5), /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p9.py (post and rail extents) and p12.py (ST-S2A arrival)."
+   },
+   "source": "Ultralox Product Guide p.24: 3in x 42in post kit HK441342 (post, base plate, cap, skirt); ESR-3485 Table 1 system height 42.000; plan/storeys/attic.py comment at 281-295 for the 28'-11 in. cut-off.",
+   "proposed_fix": "Author base_elevation at the finished floor (or give RAILING-INT-STAIR-GUARD a SurfaceMountSpec so the base and floor datum are drawn), then re-test the east end: stop the guard one bay west, or use the 36 in. kit at POST1.",
+   "size_guess": "small",
+   "seam_with": [
+    "S1"
+   ],
+   "dedupe_key": "S3:RL-A-STAIR-roof-clearance"
+  },
+  {
+   "id": "S3-103",
+   "area": "S3",
+   "title": "TR-SG-DRIP's 3 in. skirt stands 1.0 in. proud of the fascia over the full front and passes through every front bracket and post",
+   "elements": [
+    "TR-SG-DRIP",
+    "TR-SG-FASCIA",
+    "RL-SG-BALCONY-FASCIA-BRACKET3",
+    "RL-SG-BALCONY-FASCIA-BRACKET4",
+    "RL-SG-BALCONY-FASCIA-BRACKET5",
+    "RL-SG-BALCONY-FASCIA-BRACKET6"
+   ],
+   "files": [
+    "houses/catlin/params/sunken_garden.py:3020-3035",
+    "houses/catlin/params/sunken_garden.py:2498-2503"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "TR-SG-DRIP-1 mesh: top flange z 117.0 from y -124 to -128.0, face at y -128.0..-128.03 down to z 114.0, x 99..333 (continuous). Front fascia outer face y -127.0. Straight front bracket 4: y -130.29..-127.0, z 110.50..116.50; post y -130.02..-127.02 up to z 160.5. The drip face (y -128.0, z 114..117) lies inside the bracket pocket and the post for z 114..116.5, i.e. 2.5 in. of every bracket height, at posts 4, 5, 6 and the corner wings (x to 100.05). TR-SG-APRON (y -127.0, z 110..115.5) already runs under the brackets, but the drip above it was not notched.",
+    "expected": "Bracket flange seated flat on the fascia face (y -127.0) with the drip either notched around each 5.64 in. flange or stopped short of the post stations; or the bracket top below the drip's lower edge (z 114.0).",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p19.py/p20.py/p21.py: body_mesh extents of TR-SG-DRIP-1, TR-SG-APRON-1 and the bracket solids."
+   },
+   "source": "houses/catlin/params/sunken_garden.py (_drip_depth_in = 3.0, drip kick, bracket top = rim - 1/2 in.); notes/balcony_fascia_mounts.md ('bracket top 1/2 in. below the rim').",
+   "proposed_fix": "Author a drip break at each post station (a notched/split TR-SG-DRIP) or lower the bracket below z 114 and re-check the gutter margin (it is 1.0 in. below the bracket bottom today: 110.5 vs 109.5).",
+   "size_guess": "small",
+   "seam_with": [
+    "S2"
+   ],
+   "dedupe_key": "S3:drip-vs-front-brackets"
+  },
+  {
+   "id": "S3-104",
+   "area": "S3",
+   "title": "RL-A-STAIR's 4.99 in. surface bases overhang the trimmer pack by 1.5 in. and the south screw row has nothing under it; no blocking is authored and no base is drawn",
+   "elements": [
+    "RL-A-STAIR",
+    "FS-ATTIC",
+    "FO-A-STAIR",
+    "BP04450"
+   ],
+   "files": [
+    "houses/catlin/plan/storeys/attic.py:900-914",
+    "packages/engine/src/typehaus/library/railings.py:107-117"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Posts y 65.62..68.62 (centre 67.12); BP04450 base 4.99 in. square = y 64.63..69.62, with its north edge on the well face (69.625). Trimmer pack = two 1.75 in. LVL plies y 66.125..69.625 (FS-ATTIC trimmer-FO-A-STAIR-0-0/-0-1, z 228.12..240.0). The south 1.5 in. of every base (y 64.63..66.125) is over open deck; with the library's display hole pitch 3.75 in. (y 65.25 and 69.0) one of the four 5/16 x 6 in. GRK RSS screws per base lands 0.9 in. south of the pack. FS-ATTIC has no JoistReinforcement or block at x 352.5 / 304.4 / 256.4 (grep of plan/storeys/attic*.py), although the adjudicated plan (C1 E1) says 'block under each base'. RAILING-INT-STAIR-GUARD carries no SurfaceMountSpec, so no base, screw or wood-substrate check exists for this guard (RAILING-EXT-ALUMINUM-SURFACE has them).",
+    "expected": "Four screws into SG >= 0.50 lumber under each base (ESR-3485 Table 1 footnote 2; Ultralox guide p.37 'ensure proper blocking').",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p9.py, p10.py, p11.py (post, trimmer and FS-ATTIC member extents)."
+   },
+   "source": "ESR-3485 section 4.2 and Table 1 fn 2; Ultralox Product Guide p.37; plans C1 E1 option A.",
+   "proposed_fix": "Give the interior guard type the same SurfaceMountSpec as the exterior one and author blocking (or a doubled flat 2x on the pack's south face) under the three bases; or move the guard line 1.5 in. north so the base sits on the pack.",
+   "size_guess": "small",
+   "seam_with": [
+    "S1"
+   ],
+   "dedupe_key": "S3:RL-A-STAIR-base-backing"
+  },
+  {
+   "id": "S3-105",
+   "area": "S3",
+   "title": "RL-A-HANDRAIL bracket 7 is a custom L-bracket with a 26.5 in. upright (the TODO's 'needs a rethink'), drawn and billed as a stock bracket",
+   "elements": [
+    "RL-A-HANDRAIL",
+    "RL-A-HANDRAIL-BRACKET7",
+    "PROD-EZ-HANDRAIL-EZA8KIT-HB"
+   ],
+   "files": [
+    "houses/catlin/plan/storeys/attic.py:948",
+    "packages/engine/src/typehaus/resolve/railings/frame.py:186-214",
+    "plans/TODO.md:228"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "BRACKET7 is a SolidSweep: (290.3, 105.75, 226.87) -> (290.3, 103.25, 226.87) -> (290.3, 103.25, 253.37): a 2.5 in. horizontal arm on the wall face at z 226.87 (14.6 in. below the 241.5 finished floor, in the floor band) and a 26.5 in. vertical upright to the rail (frame.py custom_drop / bracket_drop_overrides). Brackets 2-6 are the 3 in. arm. takeoff.json railings[6] bills bracket_count 6 and one product (EZA8KIT-HB, 8 ft kit), with no row for a fabricated bracket. Spans stay legal: rail developed 256 in., widest gap ~41.5 in. (brackets 5-6) and ~48 in. (bracket 7 to the top return) against the type's 48 in. limit.",
+    "expected": "A stock, retail-bought bracket on a solid face (owner rule 2026-10-22), or a documented fabricated item.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p15.py, p16.py, p17.py (bracket and rail sweep paths) and frame.py:186-214."
+   },
+   "source": "plans/TODO.md line 228; houses/catlin/plan/handrail_types.py header (stock US retail bracket); EZ Handrail EZA200 listing (no projection published).",
+   "proposed_fix": "Re-pin the top support onto a stud/blocking where the standard 3 in. arm reaches (move or drop bracket 7 and shorten the end span to the return), or catalogue the custom arm as a fabricated part. Check the 48 in. span after any move.",
+   "size_guess": "small",
+   "seam_with": [
+    "S1"
+   ],
+   "dedupe_key": "S3:attic-bracket-7-custom"
+  },
+  {
+   "id": "S3-106",
+   "area": "S3",
+   "title": "Fascia bolts at the outside corners and the rear end posts sit 0.4-0.6 in. from member ends",
+   "elements": [
+    "RL-SG-BALCONY-FASCIA-BOLTS1",
+    "RL-SG-BALCONY-FASCIA-BOLTS3",
+    "RL-SG-BALCONY-FASCIA-BOLTS7",
+    "RL-SG-BALCONY-FASCIA-BOLTS9",
+    "FS-SG-BALCONY"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/railings.py:63-66",
+    "houses/catlin/params/sunken_garden.py:2478-2482"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Post 1/9 (rear straight): shank centres y -14.50 and -9.87, rim end at y -9.5: 0.37 in. (1.2 bolt diameters) end distance, the 11/16 in. washer edge 0.03 in. from the rim end. Post 3/7 (outside corners): flank-face bolts at y -124.76 against the rim front end y -125.25 = 0.49 in.; front-face bolt at x 99.62 on the rim's inner face / 0.62 in. from the front joist's end (x 99.0). Top row 1.02 in. below the rim/joist top. Corner and rear hole positions are display values in the library ('display_corner_hole_inset', note 'checked against rim/edge-joist faces' only for washer footprint).",
+    "expected": "Hole positions from the manufacturer's FM244390/FM044300 template, with end/edge distances from Ultralox's instruction (not retrievable: S3-110), not display offsets.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p6.py (shank centres by connected component) against FS-SG-BALCONY rim/joist extents (p4.py/p18.py)."
+   },
+   "source": "Ultralox Product Guide p.29 (FM244390 5.966 x 5.966 x 6; hole pattern not given); library/railings.py ULTRALOX_3_INCH_FASCIA_MOUNT.",
+   "proposed_fix": "Obtain the corner bracket's drawn hole pattern and edge-distance rule from Ultralox; if the holes really fall within 1 in. of an end, lengthen the rim past the corner or add a blocked cleat. Confidence is low because the corner pattern is not published.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "S3:fascia-corner-end-distance"
+  },
+  {
+   "id": "S3-107",
+   "area": "S3",
+   "title": "The permit set carries no guard or handrail detail: no height, post spacing, product, bracket drop, bolt rows or blocking, and S-602 lists no guard hardware",
+   "elements": [
+    "RL-SG-BALCONY",
+    "RL-A-STAIR",
+    "RL-A-HANDRAIL",
+    "RL-S-HANDRAIL-E"
+   ],
+   "files": [
+    "houses/catlin/out/geometry-review-2026-11-04/baseline/permit_set_full.pdf"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-202",
+     "A-103",
+     "A-104",
+     "S-602",
+     "S-602.1",
+     "S-602.2"
+    ],
+    "pages": [
+     35,
+     31,
+     32,
+     24,
+     25,
+     26
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "pdftotext of all 158 sheets: zero hits for 'baluster', 'Williams', 'Ultralox', 'colonial', 'handrail'; 'guard' appears only as snow guards and a sheet-set note. A-202 and A-204 draw the balcony guard as an unlabelled symbol; A-103/A-104 draw stair rails without callouts. S-602 / S-602.1 / S-602.2 (137 rows) carry no FM044300/FM244390 bracket, bolt or screw, no GRK RSS, no EZ bracket, no BP04450. takeoff.json railings[] prices the guards by length only (balcony: post_count 9, bracket_count 0).",
+    "expected": "A guard and handrail detail sheet (height above finished surface, post pitch, mount, hardware, blocking location) and the hardware in the connection schedule.",
+    "method": "pdftotext -layout permit_set_full.pdf (scratchpad full.txt, grep); sheets A-202 p35, A-103 p31, A-104 p32, S-602/.1/.2 p24-26 opened as images."
+   },
+   "source": "Permit set snapshot permit_set_full.pdf (print.txt); takeoff.json railings.",
+   "proposed_fix": "Add a guards sheet (the model has every number: 42 in. above the local plank, 3 in. bottom gap, 58.2/60.1 in. c/c, bracket top 2.0 in. below the walking surface) and list the guard fasteners in S-602.",
+   "size_guess": "large",
+   "seam_with": [],
+   "dedupe_key": "S3:no-guard-detail-sheet"
+  },
+  {
+   "id": "S3-108",
+   "area": "S3",
+   "title": "Fascia post is drawn 49.875 in. long; Ultralox stocks 36/42/48 in. tubes and says a 42 in. system takes the 48 in. tube, which here ends 40.1 in. above the plank",
+   "elements": [
+    "RL-SG-BALCONY",
+    "RL-SG-BALCONY-POST1"
+   ],
+   "files": [
+    "houses/catlin/params/sunken_garden.py:2501-2503",
+    "packages/engine/src/typehaus/resolve/railings/fascia_assembly.py"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Posts 1-9: z0 112.996..110.625 to z1 162.87..160.50 = 49.875 in. long, top exactly 42.00 in. above the local deck_top_at (42.05 at the front). Bracket top = walking surface - 2.0 in. (1.5 plank + 0.5), bracket bottom -8.0 in. A 48 in. tube bottomed in the 6 in. bracket (-7.875) tops at +40.1 in.; to get 42.0 the bracket top would be 0.1 in. below the plank.",
+    "expected": "A stock 48 in. tube (PO843348); top height off the plank = 48 - 7.875 = 40.1 in. at this bracket drop.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p5.py (post z extents vs FS-SG-BALCONY.deck_top_at); Ultralox Product Guide p.24 and p.29 note 'with Fascia Mount order longer post tubes: 48in Post Tube for 42in Railing System'."
+   },
+   "source": "Ultralox Product Guide (2025) pp.24, 29 (PO843342/PO843348).",
+   "proposed_fix": "Draw the 48 in. tube and let the guard read 40.1 in. (still over the 36 in. the engine grades, but the note and CLAUDE.md say 42), or move the bracket up (conflicts with the 1/2 in.-below-rim rule and S3-103's drip).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "S3:fascia-post-length"
+  },
+  {
+   "id": "S3-109",
+   "area": "S3",
+   "title": "Flank fascia is drawn flat-bottom / tilted-top: 15.4 in. tall at the house end against the 13 in. sheet rip authored for it",
+   "elements": [
+    "TR-SG-FASCIA",
+    "FS-SG-BALCONY"
+   ],
+   "files": [
+    "houses/catlin/params/sunken_garden.py:2916-2928"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "TR-SG-FASCIA-1/-3 (flanks): z 103.99..119.43 (15.44 in.) while the front piece is 103.98..117.00 (13.00 in.). The rim underneath tilts both edges (105.77..117.02 at the front, 108.18..119.43 at the house end), so the flank fascia hangs 4.19 in. below the rim bottom at the north end.",
+    "expected": "A 13 in. board following the rim: bottom at 108.18 at the house end.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p19.py (fascia extents) vs p18.py (rim z0/z1 and z0_end/z1_end)."
+   },
+   "source": "houses/catlin/params/sunken_garden.py:2924-2927 (depth = ceil(11.25 + 1.5) = 13 in.).",
+   "proposed_fix": "Taper the fascia bottom with the deck fall in the resolver (or give the flank pieces a sloped bottom) so the drawn board is the 13 in. rip.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "S3:fascia-flank-depth"
+  },
+  {
+   "id": "S3-110",
+   "area": "S3",
+   "title": "Fascia-mount basis is unverifiable and does not cover wood: the cited Ultralox instruction PDF is a 404, ESR-3485's fascia row is concrete only, and no check grades a guard's R301.5 load",
+   "elements": [
+    "RL-SG-BALCONY",
+    "RAILING-EXT-ALUMINUM-FASCIA"
+   ],
+   "files": [
+    "houses/catlin/notes/balcony_fascia_mounts.md:23-35",
+    "packages/engine/src/typehaus/library/railings.py:36-41"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "https://ultralox.com/wp-content/uploads/2024/07/ultralox-aluminum-railing-fascia-mount-install-instructions.pdf and the www. host both returned HTTP 404 on 2026-11-05, so the '1/2 in. below the rim', '4 x 5/16 x 4 in.' and 'double blocking' statements could not be re-read. ESR-3485 (read from the PDF) Table 1: the 'fascia bracket assembly' row (IRC span 91.313 in.) is footnote 9 = concrete substrate only; section 4.2 gives four 1/4 x 3 in. concrete anchors for it. The wood row is the 5 x 5 in. base plate. Baseline checks.json has R301_5_handrail_support_spacing but no check of a guard's top load. The guide's current wood fastening is different (S3-101).",
+    "expected": "A retrievable manufacturer statement for the wood/fascia attachment, or a PE sign-off, and a guard-load check.",
+    "method": "WebFetch/curl of both URLs; pdftotext of ESR-3485 (scratchpad esr.txt, lines 193-196 and Table 1); grep of checks.json for R301.5 guard rows."
+   },
+   "source": "ESR-3485 Table 1 fn 9 and section 4.2; Ultralox Product Guide p.30, p.37.",
+   "proposed_fix": "Save a copy of the instruction sheet in notes/, or switch to the guide's wood fastener (S3-101); say plainly in the note that the wood attachment is an Ultralox-instruction basis, not an ESR row. Consider a guard R301.5 advisory.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "S3:fascia-basis-source"
+  },
+  {
+   "id": "S3-111",
+   "area": "S3",
+   "title": "Titanium handrail fittings are generic stock-316 parts with no Product row, and the splice sleeve fallback is machined, against the TODO's stock-only rule",
+   "elements": [
+    "RL-M-HANDRAIL-E",
+    "RL-M-HANDRAIL-W",
+    "RAILING-INT-TI-HANDRAIL-42"
+   ],
+   "files": [
+    "houses/catlin/plan/titanium_types.py:33-44",
+    "houses/catlin/notes/titanium_handrail_backsplash.md:58-66",
+    "plans/TODO.md:228"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Type source names 'saddle wall brackets at 60-93 mm wall-to-centre, >= 0.9 kN, 90 deg elbows, wall end plates, internal sleeves' but only the Waltly tube/sheet are Products. Modelled wall-to-centre: 1.92 in. clear (checks.json R311_7_8_2) + 21.0 mm radius = 69.8 mm, inside 60-93. Rail 42.0 mm OD (1.654 in.) vs 42.4 mm fittings; note section 2: catalogue splice sleeves 'likely too tight', fallback 'machine 316 bar to 36.85 x 100 mm'. Developed spans 37.3/36.8 in. (947 mm) under the 1000 mm limit.",
+    "expected": "Named catalogue parts (SKU, projection, rating) for bracket, elbow, plate and sleeve, with no machined item (owner: stock only).",
+    "method": "checks.json R311_7_8_2 and R301_5 rows; titanium_types.py; note sections 2 and 4."
+   },
+   "source": "plans/TODO.md line 228; titanium_handrail_backsplash.md.",
+   "proposed_fix": "Buy and log one real bracket/elbow/plate set (SKU + measured wall-to-centre), and either source a sleeve or drop the splice (single 1882 mm rail from a longer tube).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "S3:titanium-fittings-unsourced"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "S3-001",
+   "status": "closed",
+   "evidence": "RL-A-STAIR posts now y 65.62..68.62 against tread ends y 69.75..105.75 (was y 69.64..72.64, 2.89 in. inside). checks.json: ST-S2A flight width 36.00 in. >= 36 in. and 32.55 in. clear past its handrail; 0 FAIL in baseline.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p9.py (post outlines); checks.json code.R311_7_1_stair_width. New residual issues: S3-102, S3-104."
+  },
+  {
+   "id": "S3-002",
+   "status": "closed",
+   "evidence": "Same remount: 32.55 in. clear past RL-A-HANDRAIL (was 29.66 in.). Handrail unchanged: projection 3.50 in., wall clearance 1.55 in.",
+   "method": "checks.json code.R311_7_1_stair_width / R311_7_1_handrail_projection / R311_7_8_2_handrail_wall_clearance rows for ST-S2A / RL-A-HANDRAIL."
+  },
+  {
+   "id": "S3-003",
+   "status": "partial",
+   "evidence": "houses/catlin/plan/handrail_types.py:21-23 now says no wall-to-rail standoff is published and the paths set ~2.5 in. centre-to-wall. Re-searched: Home Depot / retailer listings and the EZ spec sheet (7b68db09...pdf: alloy, weight, '38 in. minimum height') still give no EZA200 projection. Margin unchanged: 1.55 in. clear (RL-A/RL-S), 1.61 in. (RL-G-SERVICE) vs 1.5 in.",
+   "method": "WebSearch 'EZ Handrail EZA200 bracket projection'; curl + pdftotext of the HD spec sheet; checks.json R311_7_8_2 rows."
+  },
+  {
+   "id": "S3-004",
+   "status": "partial",
+   "evidence": "Fixed for guards whose type has a mount spec: RL-SG-BALCONY RAIL1 centre 41.25 in. above the plank (top 42.00 = post top), RAIL2 bottom 3.00 in. above it (rail_rises face_height, frame.py:265-277). Still open for RAILING-INT-STAIR-GUARD (no mount spec): RL-A-STAIR RAIL1 z 281.25..282.75 (0.75 in. over the 282.0 post top), RAIL2 z 239.25..240.75, centred 1.5 in. below the 241.5 finished floor.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p8.py (balcony rail paths vs deck_top_at) and p9.py (RL-A-STAIR rails)."
+  },
+  {
+   "id": "S3-005",
+   "status": "closed",
+   "evidence": "Rejection holds: ESR-3485 Table 1 lists 91.313 in. as a maximum span (IRC, inside face to inside face). Balcony bays are 60.07 in. front and 58.16 in. flank c/c (posts 3 in.), within it. Panel cut-to-length is not stated in the guide; nothing contradicts the adjudicator.",
+   "method": "p5.py post centres; esr.txt Table 1."
+  },
+  {
+   "id": "S3-006",
+   "status": "closed",
+   "evidence": "S-602 (p24), S-602.1 (p25) and S-602.2 (p26) opened: three pages of one table each, no overprint, no text running into the title block (round 1 saw BASIS OF QUANTITY over the solids tables).",
+   "method": "Read permit_set_full.pdf pages 24-26."
+  },
+  {
+   "id": "S3-007",
+   "status": "closed",
+   "evidence": "Rejection holds. RL-SG-PSTAIR-HR sweep (377.75, z 6.19) -> (325.0, z 38.74): slope 0.617 = 6.788/11 in. (ST-SG-PORCH riser/going), 0.75 in. radius, centreline 34.2 in. per the check, pipe top ~35.1 in. over the nosing line; wall rails authored 36.0 in. (checks.json R311_7_8_handrail).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/S3/p22.py; checks.json code.R311_7_8_handrail."
+  },
+  {
+   "id": "S3-008",
+   "status": "closed",
+   "evidence": "Ultralox 2025 Product Guide p.45 lists 'ADA HAND RAILING 1.5in X 94in, P/N AD903194': OD 1.5 in. is published (library rail_diameter 1.5 in.). The return standoff stays unpublished (kit AD901102 p.41-43 gives parts, not a dimension); the 72 in. support span is ESR-3485 Table 1.",
+   "method": "pdftotext of Ultralox-Product-Guide.pdf (scratchpad ug.txt, lines ~1776-1925)."
+  }
+ ]
+}

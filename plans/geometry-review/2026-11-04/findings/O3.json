@@ -1,0 +1,387 @@
+{
+ "area": "O3",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventoried 6 exterior doors (D-M-ENTRY, D-M-PORCH, D-S-BALCONY, D-B-SUNKEN, D-G-SERVICE, D-G-OVERHEAD), their types/products (opening_products.py, door_types.py, french_door_installations.py, notes), resolved placement sections, heads, seats, landings and R311.3 checks; measured every sill/pan/threshold/landing against subfloor and finished floor (O3-103). All 18 listed sheets opened (permit_set_full pages 29-31, 34-37, 55, 59-66, 149-150). NOT examined: member-level bearing under a cut-back subfloor (rim/blocking coverage of the sill footprint; plan_width not exposed); catalog flashing/pan engine internals (exterior_door_catalog_*.py) beyond the resolved sections; Therma-Tru/Endura/MMI/Clopay manufacturer PDFs (widen.net and HD Supply pages returned HTTP 403, so product sizes are trusted from the note citations; Clopay headroom not re-searched because the headroom is 38 in); A-509 (not in this round's sheet list); IFC/GLB emitters; structural load takedown for the D-B-SUNKEN band header (TODO).",
+ "verified_clean": [
+  "D-M-ENTRY: unit 37 5/8 x 82, RO 38 3/8 x 82 7/8, clear 33 5/16 x 79 1/4 as cited (Therma-Tru Arch 1); threshold 2.000 in over landing FS-BW-FLOOR (limit 7 3/4 in), 0.974 in over LVP; A-513.2 prints 1 in / 2 in correctly for this door.",
+  "D-S-BALCONY: threshold crest 0.397 in over oak (121.5) and 0.988 in over the landing as the note says; head gap 0.500 in; seat 0.375 in; frame 4 9/16; approach envelope passes seat_interference.",
+  "D-B-SUNKEN: seat 0.375 in over RO bottom, head gap 0.500 in, crest 7.397 in over the court slab, interior step 6.65 in; R311.3 7.6 in passes.",
+  "D-G-SERVICE: unit 33.5 x 81 / RO 34 x 81.5 as cited; leaf bottom 1.625 in (>= 1 in); stair arrival 1.5 in = threshold top, 5 x 7.10 in risers; swing sweep clears W-BW-SCREEN layers by 5.7 in at the 81 degree stop.",
+  "D-G-OVERHEAD: RO 16'-0 x 7'-0 equals the nominal door; head at 50.0 in, truss bottom 88.0 in: 38 in headroom, 24 in over the LVL.",
+  "Landings: ENTRY on FS-BW-FLOOR, PORCH on FS-SG-PORCH (top 0.94), BALCONY on FS-SG-BALCONY (sloped 2%, 120.879 at the wall) - Trex or aluminium, no concrete outside any of the three; drops 2.0 / 1.31 / 1.02 in.",
+  "A-601 unit/RO/clear values for the six exterior doors equal the resolved sizing (except rounding, O3-106); HW-1..HW-3 present; Doorway column fits.",
+  "A-513, A-513.1, A-512.x, A-514, A-101..A-103, A-201..A-204, A-508 opened: no door dimension disagrees with the model other than the items above."
+ ],
+ "findings": [
+  {
+   "id": "O3-101",
+   "area": "O3",
+   "title": "D-M-PORCH unit top lands on the RO head: 0.000 in head gap, the generic sill seat (0.876 in) spends the 3/8 in pan allowance and the 1/2 in shim",
+   "elements": [
+    "D-M-PORCH",
+    "DT-EXT-FRENCH60"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/exterior_door_sill.py:53",
+    "houses/catlin/plan/door_types.py:157",
+    "houses/catlin/plan/french_door_installations.py:55"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-601"
+    ],
+    "pages": [
+     149
+    ]
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "RO bottom 0.0000 in (joist top), RO head 82.8750 in; doorway.jamb_bottom_z 0.8759 in; unit height 82.000 in -> unit top 82.8759 in = head gap -0.001 in. Siblings on the same product and RO: D-S-BALCONY seat 0.375, gap 0.500 in; D-B-SUNKEN seat 0.375, gap 0.500; D-M-ENTRY seat 0.500, gap 0.375. Generic threshold top 2.251 in vs 1.897 in for the catalog ZAI on BALCONY.",
+    "expected": "Published 62-9/16 x 82 unit in a 63-5/16 x 82-1/2 RO leaves 1/2 in at the head; the model's +3/8 in pan allowance is spent on the pan, so a unit on a 3/8 in pan keeps 1/2 in. A pair that touches the header cannot be shimmed or foamed at the head and cannot be plumbed.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p14.py (head gap = RO head - (jamb_bottom_z + sizing.unit_h)); seat arithmetic exterior_door_sill.py:53-58 (seat = max(base+seat_height, back_top - nose), back_top follows FS-SG-PORCH top 0.94 in); sections from /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p2.py."
+   },
+   "source": "Therma-Tru 2026 Arch 1.4 5/0 French inswing 7/8 astragal (houses/catlin/notes/french_door_catalog_installation.md primary docs; not re-fetched, widen.net PDF returned 403)",
+   "proposed_fix": "Apply the catalog installation to D-M-PORCH (O3-004), or cap the generic seat at base + 0.375 in so the head keeps 1/2 in; do not raise the RO head without re-reading the header and girt course.",
+   "size_guess": "large",
+   "seam_with": [
+    "O5"
+   ],
+   "dedupe_key": "D-M-PORCH:head-gap"
+  },
+  {
+   "id": "O3-102",
+   "area": "O3",
+   "title": "D-G-SERVICE unit top lands on the RO head (0.000 in): 81 in MMI unit on a sill seat 1/2 in above the RO bottom in a 81.5 in RO",
+   "elements": [
+    "D-G-SERVICE",
+    "DT-EXT-SWING32-G",
+    "W-G-S"
+   ],
+   "files": [
+    "houses/catlin/plan/door_types.py:130",
+    "houses/catlin/plan/storeys/garage.py:340",
+    "packages/engine/src/typehaus/resolve/exterior_door_sill.py:56"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-601"
+    ],
+    "pages": [
+     149
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "RO bottom 0.0000 in, head 81.5000 in; jamb_bottom_z 0.5000 in (KDAT under the sloped pan, sill sections z 0.5..1.5 in); unit 81.000 in -> unit top 81.5000 in, head gap 0.000 in. Leaf bottom 1.625 in (>= 1 in OK), clear height 78.49 in.",
+    "expected": "The listed 81 in unit / 81.5 in RO leaves 1/2 in at the head when the unit stands on the RO bottom. With the unit on KDAT and a sloped pan 1/2 in up, the head has 0 in for shims and foam. Round 1 verified 'RO 34x81.5, 1/2 in head' but did not subtract the 0.5 in seat.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p14.py; seat 0.5 in from the engine's default ExteriorDoorSillDesign.seat_height (model/exterior_door.py:156); note houses/catlin/notes/garage_service_door_outswing.md section 2 ('support the factory sill continuously on the KDAT sill'). Web: HD Supply MMI listings (P219656 inswing 6-9/16 shows unit 33.5 x 81.75, RO 34 x 82.25); outswing P219385/P219207 pages returned 403, so the 81/81.5 figures rest on the note's citation."
+   },
+   "source": "https://hdsupplysolutions.com/p/doors-00-145-10/mmi-door-6-panel-32-x-80-rh-out-on-6-9-16-primed-composite-frame-p219385",
+   "proposed_fix": "Either seat the unit with the pan only (sill seat 0 or 1/4 in) or raise the RO height 1/2 in; the garage plate height is derived from this door's head, so confirm the delivered unit's sill drawing first (O3-008).",
+   "size_guess": "large",
+   "seam_with": [
+    "S1",
+    "O1"
+   ],
+   "dedupe_key": "D-G-SERVICE:head-gap"
+  },
+  {
+   "id": "O3-103",
+   "area": "O3",
+   "title": "Exterior doors D-M-ENTRY, D-M-PORCH, D-S-BALCONY keep their RO base on the joist top while the subfloor is 0.75 in higher: sill, pan and drain strips sit inside the continuous subfloor in the model, A-513.2 draws it cut back",
+   "elements": [
+    "D-M-ENTRY",
+    "D-M-PORCH",
+    "D-S-BALCONY",
+    "FS-M-MECH",
+    "FS-M-EAST",
+    "FS-S-EAST",
+    "W-M-N3",
+    "W-M-S2",
+    "W-S-S2"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/plate_seat.py:170",
+    "packages/engine/src/typehaus/resolve/exterior_door.py:111",
+    "plans/TODO.md:243"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-513.2",
+     "A-601"
+    ],
+    "pages": [
+     64,
+     149
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Subfloor 0..0.75 in over the whole door footprint (deck_voids contain none of the sill points; deck edge at the sheathing face). W-M-N3 frame_base 0.75 vs RO bottom 0.0. D-M-ENTRY: sill bottom 0.50 in (0.25 in into the sheet), drain strips 0.06..0.60 in, threshold top 2.000 in = 1.25 over subfloor, 0.974 over LVP (1.026), 2.0 over landing FS-BW-FLOOR (0.0). D-M-PORCH: sill base 0.876, strips 0.06..1.105, threshold top 2.251 = 1.50 over subfloor, 1.225 over LVP, 1.31 over FS-SG-PORCH (0.94). D-S-BALCONY: pan 120.000..120.375 wholly inside the 120.0..120.75 sheet, sill outline top 121.897 = 1.15 over subfloor, 0.397 over oak (121.5), 1.02 over FS-SG-BALCONY near edge (120.879). Cut-back footprint: RO width (38.4 / 63.3 / 63.3 in) x about 5.8 in (frame 4.6 in for BALCONY).",
+    "expected": "A sill pan needs a flat, level, solid bearing (SureSill FAQ/install guide cited in the note); a model that keeps the subfloor under the pan is a 0.25..0.75 in interference, a cut-back leaves the pan bearing on rim/blocking only. Whichever the owner chooses, model, A-513.2 and A-601's RO sill must say the same: re-seating on the subfloor lifts every threshold 0.75 in (ENTRY 2.75 over joist top: 1.72 over LVP; BALCONY 1.15 over oak) and the head 0.75 in.",
+    "method": "Probes /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p3.py, p4.py, p6.py (surfaces_at outward of each RO, deck_top_at, deck_voids at 0.25..5.5 in inboard of the face), p2.py (sections). Sheet A-513.2 (page 64) draws the floor strip stopping at the sill; engine rule plate_seat.door_sill_m deliberately leaves exterior doors at the datum (decision #110)."
+   },
+   "source": "plans/01-decisions.md #110; plans/TODO.md C3-E3 follow-up; houses/catlin/notes/floor_heights.md",
+   "proposed_fix": "Owner call per TODO: (a) subfloor cut back and a drawn framing detail (rim/blocking under the pan), or (b) re-derive the three installations off the subfloor (+0.75 in on RO base, head, threshold). Model a deck_void under each sill so the interference is explicit either way.",
+   "size_guess": "large",
+   "seam_with": [
+    "F3",
+    "O5"
+   ],
+   "dedupe_key": "EXT-DOORS:ro-base-vs-subfloor"
+  },
+  {
+   "id": "O3-104",
+   "area": "O3",
+   "title": "A-513.2 prints one threshold pair (1 in above finished floor / 2 in above landing) for an assembly that serves three doors with different values",
+   "elements": [
+    "D-M-ENTRY",
+    "D-M-PORCH",
+    "D-S-BALCONY"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-513.2",
+     "A-513"
+    ],
+    "pages": [
+     64,
+     62
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "A-513.2 (EXT_2X6_BOARD_BATTEN sill) shows '1\" thr. above fin. floor' and '2\" thr. above landing': D-M-ENTRY (0.974 / 2.0 in). Same assembly hosts D-M-PORCH (1.225 over LVP / 1.31 over deck) and D-S-BALCONY (0.397 over oak / 1.02 over landing); the title names no door.",
+    "expected": "Each door's own threshold-over-floor and over-landing figures, or the detail labelled with its door.",
+    "method": "Read permit_set_full.pdf p62-64; values from /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p2.py/p3.py."
+   },
+   "source": "sheet A-513.2; model probes",
+   "proposed_fix": "Label the detail with the door it was cut at and add the other two doors' figures to the schedule (A-601).",
+   "size_guess": "small",
+   "seam_with": [
+    "D2"
+   ],
+   "dedupe_key": "A-513.2:three-doors-one-detail"
+  },
+  {
+   "id": "O3-105",
+   "area": "O3",
+   "title": "A-601 'RO sill' column has no datum: exterior rows read 0'-0\" (joist top) beside interior doors at 0'-3/4\"; D-B-SUNKEN prints -0'-1 3/4\" though its RO bottom is 5 1/2 in above the court slab",
+   "elements": [
+    "D-M-ENTRY",
+    "D-M-PORCH",
+    "D-S-BALCONY",
+    "D-B-SUNKEN",
+    "D-G-SERVICE",
+    "D-G-OVERHEAD"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/openings.py"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-601"
+    ],
+    "pages": [
+     149
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "A-601 prints RO sill D-M-ENTRY/PORCH/BALCONY 0'-0\", D-B-SUNKEN -0'-1 3/4\" (sill_m -0.0445 off the W-B-S3-FR wall base at the curb top, RO z -103.94 vs slab -109.44 = +5.5 in), D-G-SERVICE 1'-0\" and D-G-OVERHEAD -1'-10\" (off the stem top), interior doors 0'-3/4\" (subfloor). The three main/second doors are 0.75 in under the subfloor a framer measures from.",
+    "expected": "One stated datum (e.g. above subfloor or above finished floor, with the finished-floor value), so a framer cuts the RO base where the model puts it.",
+    "method": "Read permit_set_full.pdf p149; sill_m and frame_base_z from /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p2.py/p3.py."
+   },
+   "source": "sheet A-601",
+   "proposed_fix": "Print RO sill above the supported subfloor or above the room's finished floor and add a datum note; resolves with O3-103.",
+   "size_guess": "small",
+   "seam_with": [
+    "O1"
+   ],
+   "dedupe_key": "A-601:ro-sill-datum"
+  },
+  {
+   "id": "O3-106",
+   "area": "O3",
+   "title": "A-601 net clear: D-M-ENTRY prints 2'-9 3/8\" for the published 33-5/16\" egress clear; D-G-SERVICE prints 2'-0 1/4\" (81 degree stop estimate) with no footnote",
+   "elements": [
+    "D-M-ENTRY",
+    "D-G-SERVICE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/openings.py:210"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-601"
+    ],
+    "pages": [
+     149
+    ]
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "sizing.clear_w D-M-ENTRY 33.3125 in (published) prints 33.375 in (+1/16 in, _eighths rounds half up); D-G-SERVICE clear_w 24.31 in = 'estimated: Therma-Tru deduction at its 81 degree stop' (29.3 in at 90), clear_h 78.49 in; A-601 gives neither basis.",
+    "expected": "Published clear (33 5/16) not rounded up on the one egress door; an estimate flagged as such.",
+    "method": "Read p149 rows D4/D5; sizing basis from /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p11.py."
+   },
+   "source": "houses/catlin/notes/egress_door_clear_width.md; Therma-Tru Arch 1.29-1.30 as cited",
+   "proposed_fix": "Round clear dimensions down to the 1/8 in (or print 1/16) and footnote the 81 degree stop.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "A-601:net-clear-rounding"
+  },
+  {
+   "id": "O3-107",
+   "area": "O3",
+   "title": "garage_service_door_outswing.md still says 'The existing 90 degree stop-only operation remains' while the door is authored and calculated at an 81 degree stop",
+   "elements": [
+    "D-G-SERVICE"
+   ],
+   "files": [
+    "houses/catlin/notes/garage_service_door_outswing.md:98"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "Note line 98 says 90 degrees; storeys/garage.py:347 maximum_opening_degrees=81, the clearance table 4 lines up uses the 81 degree stop, sizing basis says 81. Swing polygon bounds x 82..114, y 492.7..524.3 in; nearest distance to W-BW-SCREEN's own layers 5.7 in (the governing obstacles are the landing ties CN-BW-GWTIE-LO/-HI at 0.38 in per the note).",
+    "expected": "One stop angle in the note.",
+    "method": "Read the note; probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p12.py."
+   },
+   "source": "houses/catlin/notes/garage_service_door_outswing.md:74,98",
+   "proposed_fix": "Change line 98 to 81 degrees.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "D-G-SERVICE:note-stop-angle"
+  },
+  {
+   "id": "O3-108",
+   "area": "O3",
+   "title": "A-515 (D-B-SUNKEN) prints no threshold-above-court dimension; the 7.4 in crest (7.65 in with the pan allowance, 0.10 in under the 7 3/4 in limit) and the foam-bed tread are not called out",
+   "elements": [
+    "D-B-SUNKEN"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-515"
+    ],
+    "pages": [
+     66
+    ]
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Model: threshold crest 7.397 in above the court slab (exterior_surface -109.44 in), conservative 7.647 in; R311.3 check prints 7.6 in vs 7.75 limit; interior step from the gym mat 6.65 in. A-515 shows RO 6'-10 7/8\" and K-notes only; none of those figures or the Trex tread/PVC sheet appears.",
+    "expected": "The single dimension the egress landing check turns on, printed where the curb section is drawn.",
+    "method": "Read p66; values from /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p2.py (installation_report)."
+   },
+   "source": "houses/catlin/notes/french_door_catalog_installation.md section 6",
+   "proposed_fix": "Add a crest-above-court dimension and tread callout to the A-515 section.",
+   "size_guess": "small",
+   "seam_with": [
+    "O5"
+   ],
+   "dedupe_key": "A-515:crest-dimension"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "O3-001",
+   "status": "closed",
+   "evidence": "ST-G-SERVICE arrival_elevation 1.500 in (threshold top), base -34.0, 5 risers x 7.100 in = 35.5; code.R311_7_5_1_stair_end_risers now reads '7.10 in onto D-G-SERVICE's threshold (schematic crest estimate)' (round 1: 6.8 in onto the deck, 8.3 in real).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p11.py; checks.json R311_7_5_1_stair_end_risers and R311_7_6_door_at_stair_head."
+  },
+  {
+   "id": "O3-002",
+   "status": "closed",
+   "evidence": "Rejection holds: R311_3 prints D-B-SUNKEN 7.6 in <= 7.75 in. Geometry changed (foam-bed tread, seat 1 3/4 in down): crest 7.397 in nominal over the court slab, 7.647 in with the 3/8 in pan allowance, margin 0.10 in (round 1 0.15 in); interior step 6.65 in. Recorded owner decision (note section 6).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p2.py installation_report crest_above_exterior_in; checks.json R311_3_exterior_landing."
+  },
+  {
+   "id": "O3-003",
+   "status": "partial",
+   "evidence": "D-G-SERVICE closed: factory_frame_depth 6-9/16 anchored at the sheathing, frame_inner 6.562 in, frame_outer 0.000 in, 3/16 in shy of the 6.75 in garage wall. D-M-ENTRY and D-M-PORCH still schematic: frame zone 0.5..6.0 in (5.5 in), factory depth None, 'factory jamb depth undocumented' UNKNOWN still in checks.json.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p2.py (placement frame_inner/outer); wall layers from p4.py."
+  },
+  {
+   "id": "O3-004",
+   "status": "open",
+   "evidence": "D-M-PORCH still on DT-EXT-FRENCH60 with the generic 7 3/4 in envelope: threshold top 2.251 in, frame zone 5.5 in, sill_design_status SCHEMATIC; BALCONY/SUNKEN catalog: 1.897 in / 1.523 in crest, 4.5625 in frame. door_types.py:177 now documents the split as deliberate ('keeps DT-EXT-FRENCH60 for its own hardware'); A-601 HW-1 and HW-2 still identical. New consequence: O3-101.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p2.py; A-601 p149."
+  },
+  {
+   "id": "O3-005",
+   "status": "closed",
+   "evidence": "A-601 Doorway column now wraps inside the table (right edge x1418 of 1420 px, frame 1675); D-G-SERVICE row fits too (C7 noted a few px overrun; none seen).",
+   "method": "Read permit_set_full.pdf p149."
+  },
+  {
+   "id": "O3-006",
+   "status": "closed",
+   "evidence": "sizing.basis clear_w reads 'estimated: Therma-Tru deduction (2026 Arch 1.29-1.30), at its 81 degree stop' (24.31 in); labelled as an estimate. Rejection holds.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p11.py (DoorSizing.basis)."
+  },
+  {
+   "id": "O3-007",
+   "status": "obsolete",
+   "evidence": "Round-1 premise was a datum misread. Door head is -34 + 84 = 50.0 in absolute; garage truss bottom (RF-GARAGE roof_truss z0) is 88.0 in; headroom above the door head is 38 in (24 in above the 14 in LVL), not 16 in. The plate 'at 100 in' was measured from the stem top (-12), not the slab (-34).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p13.py (RO z, head, roof_truss z0)."
+  },
+  {
+   "id": "O3-008",
+   "status": "open",
+   "evidence": "No sill height for MMI Z0364688R published in any listing found (HD Supply P219656/P219642/P219207 give unit/RO only; P219385 and P219207 returned 403 today); model threshold top still 1.5 in (0.5 seat + 1.0 sections), R311.3 drop 1.5 in exactly at the limit; note keeps it a supplier hold. Also see O3-102.",
+   "method": "WebSearch of MMI listings 2026-11-04; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O3/p2.py."
+  },
+  {
+   "id": "O3-009",
+   "status": "closed",
+   "evidence": "_FRENCH_DIMENSIONS.source_drawing now records '2026 Arch 1.4 French inswing, 7/8 astragal, 5/0 x 6/8; Arch 1.29-1.30 clear 56-3/8', and the note states the published RO 63-5/16 x 82-1/2 plus 3/8 in pan = 82-7/8. Model RO 63.3125 x 82.875, clear 56.375 x 79.25 match. The Therma-Tru PDF could not be re-fetched (403), so the row is trusted from the note; Endura FLA assembly stays assembly_confirmed=False.",
+   "method": "Read door_types.py:70-77, french_door_catalog_installation.md section 1; p14.py."
+  },
+  {
+   "id": "O3-010",
+   "status": "closed",
+   "evidence": "A-514 note now '7/8 corrugated 24 ga PVDF'; K7 '2-ply 14 in LVL' agrees with CLAUDE.md; A-513.2 now prints '1 in thr. above fin. floor' and '2 in thr. above landing'. Residual: one door's values on a three-door assembly (O3-104).",
+   "method": "Read permit_set_full.pdf p62-65."
+  },
+  {
+   "id": "O3-011",
+   "status": "partial",
+   "evidence": "A-204 datum labels (ATTIC T.O. PLATE, SECOND, BASEMENT FLOOR EL. -9'-1\") now fully inside the sheet; A-512/A-515 overprinted title text gone. Still no door head or sill-to-grade dimensions on A-201/A-202 (door heights only in A-601).",
+   "method": "Read permit_set_full.pdf p34-37, 59-66."
+  }
+ ]
+}

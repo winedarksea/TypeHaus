@@ -1,0 +1,351 @@
+{
+ "area": "I2",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventoried 21 bath/shower/WC/lav fixtures (ports, flange, side clearance, trap arms), 49 backing courses, 14 mirrors, panelings, and wall layers from the resolved model at 539d9a81; opened A-002 (p28), A-401.1-.6 (pp41-46), A-507 (p54), A-603 (p152). Downloaded and read TOTO SS-02072 (Aquia IV), SS-01809 (Carlyle II), SS-02049 (Drake), the Delta R10000 Rev G install sheet and the Swan SS-3636 sheet. Round 1: 10 priors, 7 closed, 2 partial, 1 open. NOT examined: TOTO AP wall-hung (FX-TOTO-AP-WH) and DuoFit carrier sheet, Duravit D-Code 070545 / Chulton K-REC / Fleurco MHAP4236 / ANGSJON rough-in sheets, Moen Align filler and Delta T17T/T14459 trim dims, Kohler K-1130 (round-1 clean, not re-read), sauna tile splash thickness, P-101..P-104 (not in this round's sheet list), stub heights for lavs/valves against product sheets (valve centres 48 in / 30 in are class allowances), basement sauna shower valve depth.",
+ "verified_clean": [
+  "FX-M-BATH2-WC: flange 12.01 in from the clear face, centre 23.5 in to the west wall, 24 in front clear; TOTO Carlyle II footprint 16.5 x 28.3125 x 28.75 and supply 6 in / 8 in AFF match SS-01809",
+  "All six floor/wall WCs: centre to nearest side wall or peer >= 16.06 in (SUITEBATH west 16.06, S-BATH1 east 18.6, B-BATH 19.4/20.75, STUBATH 20.75, BATH2 23.5)",
+  "mep.fixture_port_connection after the plumbing re-route: every drain port within 0.12 in of its pipe end (shower drains 0.75 in is the subfloor in z); no FAIL; only UNKNOWN are approximate-station UNKNOWNs",
+  "Trap arms (mep.trap_arm_length/_developed): all bath fixtures PASS; tightest FX-B-BATH-WC 69 in of 72 in, FX-S-VANITY-LAV1 40 in of 42 in (M5)",
+  "Delta R10000-UNBX (Rev G install sheet 50353 p.1): stringer to finished wall 2 3/4 in +/- 1/4 in, plaster guard flush or 1/4 in sub-flush; the finished BATH2 face (1/2 gwb + 1/4 panel = 3/4 in off stud face) leaves the stringer 2 in behind the stud face inside the 3 1/2 in staggered stud row: fits",
+  "BATH2 panel stack: panel 6.25-102.25 (96 in MSMK-9636-1, 36 x 96 x 1/4 in per swanstone.com), cap 102.25-106.125, board to 107.5; 1 3/8 in of painted board above the cap",
+  "Grab backing AFF: BK-M-BA2E-GRAB, -BA2E2-GRAB, -HS1-GRAB(-S), -SN3-GRAB, -STU-W-GRAB at 32 in above the finished floor (check message), 2x8 7.25 in",
+  "Main-floor limited-mobility bath (TODO): BATH2 WC east edge x 38.2 to tub west x 62.5 on W-M-HS1 leaves 24.3 in; the south-face courses BK-M-HS1-GRAB-S (32-39.25 in) and BK-M-HS1-MID (44-53.25 in) run the whole 72 in wall, so a vertical bar at x about 50 in has blocking at both ends; FURN-M-BATH2-CAB-E ends at x 48 in (2 in short of it) and ED-M-BATH2-TUB-RC sits at x 64.5 z 9.5 in",
+  "FX-M-BATH2-TUB (K-1130-W1), FX-M-BATH2-SH, TOTO Aquia IV 27 9/16 x 15 1/2 x 12 in rough-in (SS-02072), Drake 28 3/8 x 17 3/16 (SS-02049): footprints and rough-in agree with the manufacturer sheets",
+  "Hall-bath insert: tub gap to north wall 1.00 in, west scribe 0.49 in; nailers BK-S-N3-TUB-NAILER/BK-S-CH-W-TUB-NAILER exist and pass wall_backing_ref (height issue is I2-101)",
+  "ED-M-BATH1-RC1 on the east wall: 4.25 in from the lavatory edge (x 63.5), clear of the mirror (x 44.6-64.6)"
+ ],
+ "findings": [
+  {
+   "id": "I2-101",
+   "area": "I2",
+   "title": "Hall-bath insert nailers stand 81-84.5 in above the floor; stock 60x30 inserts flange at 71-76.5 in",
+   "elements": [
+    "BK-S-N3-TUB-NAILER",
+    "BK-S-CH-W-TUB-NAILER",
+    "FX-S-BATH1-SH",
+    "FX-TUBSHOWER-60-DIVERTED"
+   ],
+   "files": [
+    "houses/catlin/plan/backing_wet.py:182",
+    "houses/catlin/plan/backing_wet.py:186",
+    "packages/engine/src/typehaus/library/placeables/fixtures.py:103"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Both furred nailers (added after round 1 for I2-010/E9) are 3.5 in bands at 81 in above the finished floor (checks.json integrity.wall_backing_ref: 'BK-S-N3-TUB-NAILER ... 3.5\" of 2x4 at 81\" above the floor'), i.e. 81-84.5 in, sized to the type's placeholder head: FX-TUBSHOWER-60 height = ft(7) ('not a product dimension', fixture_types_wc.py comment). FX-TUBSHOWER-60-DIVERTED has no insert product_ref (only the Delta trim). Listed 60x30 inserts: Sterling Ensemble 60x30 kit 71 in (Lowe's), 72.5 in and 76.5 in (USSupply/Amazon/Studio41), Sterling Medley set 73-74.25 in.",
+    "expected": "A top flange nailer at the delivered insert's flange line, about 71-76.5 in for stock units. A flange at 76 in lands 4.5 in below the nailer's bottom edge and floats off the furred plane the nailer exists to give it.",
+    "method": "checks.json integrity.wall_backing_ref (baseline); Python probe SCRATCH/I2/p8-style: read WallBacking BK-S-N3-TUB-NAILER elevation/height from plan/backing_wet.py; web: Sterling Ensemble 60x30 listings (Lowes 1000618545, Ferguson 4705870, ussupply 1931716)."
+   },
+   "source": "plan/backing_wet.py comment 'confirm the flange line on the delivered unit'; listings above (class heights, not a spec sheet)",
+   "proposed_fix": "Name the 60x30 insert (product row with published height and flange line), then author the nailers at that flange: e.g. 2x4 at ~68-72 in plus the vertical returns. Until then print 'nailer top at delivered flange +/- 2 in' on S-601.",
+   "size_guess": "small",
+   "seam_with": [
+    "F2",
+    "I1"
+   ],
+   "dedupe_key": "BK-S-N3-TUB-NAILER:flange-height"
+  },
+  {
+   "id": "I2-102",
+   "area": "I2",
+   "title": "TOTO floor bowls: model puts the tank back on the finished wall; TOTO's own drawing stands it 3/4 in (Drake 13/16 in) off",
+   "elements": [
+    "FX-M-BATH2-WC",
+    "FX-S-BATH1-WC",
+    "FX-S-SUITEBATH-WC",
+    "FX-B-BATH-WC",
+    "FX-A-STUBATH-WC"
+   ],
+   "files": [
+    "houses/catlin/plan/wet_ports.py:16-27",
+    "houses/catlin/plan/fixture_types_wc.py:99-160"
+   ],
+   "kind": "product-data",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "floor_wc_ports puts the flange at (depth/2 - 12 in) from the footprint centre, so with the footprint back on the wall the flange is 12.00 in from the wall and the TANK BACK is at 0 in. Resolved: FX-M-BATH2-WC flange 12.01 in off clear face, FX-S-BATH1-WC 12.00, FX-S-SUITEBATH-WC 12.34, FX-B-BATH-WC/FX-A-STUBATH-WC 11.94. Footprint back = finish face in all five.",
+    "expected": "TOTO SS-02072 (Aquia IV CST446CEMGN) and SS-01809 (Carlyle II): finished wall to tank back 3/4 in [18-20 mm] with the flange at 12 in; SS-02049 (Drake CST776CEF(R)(G)): 13/16 in [20 mm]. All three sheets say 'to maintain adequate wall gap ... mount the floor flange at a nominal 12 in rough-in'. So the bowl front stands 0.75-0.81 in farther into the room than modelled and the room's front clearance and any peer margin shrinks by that. Re-measured margins stay positive: BATH2 WC zone to FX-M-BATH2-SINK 6.18 -> 5.43 in; STUBATH WC zone to FX-A-STUBATH-SH 2.06 -> 1.25 in; STUBATH lav 0.62 in unchanged (lateral).",
+    "method": "Downloaded SS-02072, SS-01809, SS-02049 from totousa.com/filemanager_uploads/product_assets/SpecSheet and read the DIMENSIONS drawing (page 2). Probe SCRATCH/I2/p5.py: shift each WC's required ClearanceZone toward the front by the gap and re-measure distance to peer footprints."
+   },
+   "source": "https://www.totousa.com/filemanager_uploads/product_assets/SpecSheet/SS-02072_CST446CEMGN.pdf ; SS-01809_MS614124CEFRG.pdf ; SS-02049_CST776CEF(R)(G).pdf",
+   "proposed_fix": "Put the 3/4 in gap into the bowl's footprint offset (shift each WC 0.75 in toward the room, keep the flange where it is: change floor_wc_ports to depth/2 - 12 + gap and move the 5 fixtures by +gap along their front), then re-run the five WC drains. Pure model fidelity: no print dimension changes except footprint.",
+   "size_guess": "small",
+   "seam_with": [
+    "M5"
+   ],
+   "dedupe_key": "TOTO-WC:tank-wall-gap"
+  },
+  {
+   "id": "I2-103",
+   "area": "I2",
+   "title": "Source text says TOTO publishes no WC inlet station; it does, and the 6 in / 8 in AFF allowance is right only for the Carlyle",
+   "elements": [
+    "FX-S-BATH1-WC",
+    "FX-S-SUITEBATH-WC",
+    "FX-B-BATH-WC",
+    "FX-A-STUBATH-WC",
+    "PR-S-BATH1-WC-CW"
+   ],
+   "files": [
+    "houses/catlin/plan/wet_ports.py:25-30",
+    "houses/catlin/plan/wet_ports.py:1-5"
+   ],
+   "kind": "product-data",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "WC-WATER_COLD is authored 6 in left of centre and 8 in AFF on every floor bowl ('TOTO publishes no inlet station'). mep.fixture_port_connection UNKNOWN at FX-S-BATH1-WC: pipe PR-S-BATH1-WC-CW ends 4.67 in from the port (pipe end 10.5 in left of centreline). TOTO sheets (suggested dimensions, 'Supply as Req'd'): Carlyle II 6 in off centreline, 8 in AFF (matches); Aquia IV 5 7/8 in off centreline, 4 3/4 in AFF (port 3.25 in high); Drake 4 5/16 in off centreline, 7 1/2 in AFF. Max protrusion with 90 degree stop 3 1/8 in.",
+    "expected": "Per-type stations from the sheets: Aquia 4 3/4 in AFF / 5 7/8 in left; Drake 7 1/2 / 4 5/16. The hall-bath cold stop then needs the stop within about 4.6 in of the pipe end it has now (a flex line, not a clash) but the stub height is 3 in lower than the allowance.",
+    "method": "Read the DIMENSIONS drawings of SS-02072 (Aquia) and SS-02049 (Drake) page 2 at 260 dpi (SCRATCH/I2/dl/aqz-2.png, drz-2.png); checks.json mep.fixture_port_connection."
+   },
+   "source": "https://www.totousa.com/filemanager_uploads/product_assets/SpecSheet/SS-02072_CST446CEMGN.pdf ; SS-02049_CST776CEF(R)(G).pdf ; SS-01809 (Carlyle)",
+   "proposed_fix": "Give floor_wc_ports a per-type (left, height) argument from the sheets and correct the comment; retarget PR-S-BATH1-WC-CW / PR-S-SUITE-WC-CW / PR-B-BATH-WC-CW / PR-A-STUBATH-WC-CW stubs to them. The sheets mark the values 'suggested', so it is allowance quality, not rough-in law.",
+   "size_guess": "small",
+   "seam_with": [
+    "M4",
+    "M2"
+   ],
+   "dedupe_key": "WC-WATER_COLD:published-station"
+  },
+  {
+   "id": "I2-104",
+   "area": "I2",
+   "title": "A-603 Walls column ignores WallPaneling: the BATH2 Swanstone surround, STUBATH marble-look panel and sauna tile splash do not print",
+   "elements": [
+    "RM-M-BATH2",
+    "RM-A-STUBATH",
+    "RM-B-SAUNA",
+    "WP-M-BATH2-SURR",
+    "WP-A-STUBATH-SURR",
+    "WP-B-SAUNA-SPLASH"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/openings.py:309-345"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-603"
+    ],
+    "pages": [
+     152
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "A-603 row RM-M-BATH2 Walls = 'gwb-mr + PT-3', RM-A-STUBATH 'gwb-mr + PT-3', RM-B-SAUNA 'catlin-sauna-shiplap'. Resolved panelings: WP-M-BATH2-SURR 24.0 + 23.86 sf solid-surface-panel (6.25-102.25 in) + WP-M-BATH2-SURR-CAP, WP-M-BATH2-TUBDK-APRON 15.6 sf, WP-A-STUBATH-SURR 42 sf marble-look-panel, WP-B-SAUNA-SPLASH 45 sf tile. _wall_finish reads only wall.layers (room-side board by reach) and never model.panelings.",
+    "expected": "Walls column lists the room-side finish actually seen: 'solid-surface-panel (shower), gwb-mr + PT-3' etc.; the schedule is where an inspector reads a bath's wet-wall finish. Round-1 I2-004 fix filled the column but only from the board layer.",
+    "method": "Open permit_set_full.pdf p.152; Python: [(p.tag,p.room,p.material_ref,p.area_m2) for p in model.panelings] (SCRATCH/I2/p4.py); read openings.py _wall_finish."
+   },
+   "source": "schedules/openings.py _wall_finish docstring",
+   "proposed_fix": "Append the distinct paneling material_ref of every ResolvedPaneling whose room == room.tag (mark 'replaces' where replaces_wall_finish) to the Walls cell.",
+   "size_guess": "small",
+   "seam_with": [
+    "O2",
+    "D1"
+   ],
+   "dedupe_key": "A603:walls-omits-paneling"
+  },
+  {
+   "id": "I2-105",
+   "area": "I2",
+   "title": "BATH2 shower walls print and bill as gwb-mr; the note specifies glass-mat or cement backer under the liquid membrane",
+   "elements": [
+    "W-M-BA2E2",
+    "W-M-BDN1",
+    "WP-M-BATH2-SURR",
+    "FX-M-BATH2-SH"
+   ],
+   "files": [
+    "houses/catlin/notes/bath2_shower.md:200-210",
+    "houses/catlin/plan/storeys/main.py:2233-2236",
+    "plans/TODO.md:260"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-603",
+     "A-002"
+    ],
+    "pages": [
+     152,
+     28
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Resolved room-face layers behind the panel: W-M-BA2E2 gwb-b = gwb-mr 0.5 in (room side), W-M-BDN1 gwb-b = gwb-mr 0.5 in; A-603 prints 'gwb-mr + PT-3' for RM-M-BATH2. A-002 has no wet-wall/backer spec section. bath2_shower.md section 6 and the type source require 'glass-mat gypsum or cement backer' with a lapped RedGard-class membrane. The only place the intent lives is a comment and prices.toml's allowance (+$170-330 on FX-SHOWER-36-THERMO-COMBO).",
+    "expected": "Wall layer, schedule and a spec line all say glass-mat/cement backer for the 2 shower walls (about 48 sf of 1/2 in board).",
+    "method": "Python probe SCRATCH/I2/p4.py (wall layers); permit_set_full.pdf p.28 and p.152."
+   },
+   "source": "houses/catlin/notes/bath2_shower.md section 6; main.py comment 'the wall layer still says gwb-mr'",
+   "proposed_fix": "Swap the shower-side layer material (Wall.layer_materials or a bath-2 variant assembly) to a glass-mat backer Material, add one A-002 line, keep gwb-mr elsewhere. Owner already has it on TODO.",
+   "size_guess": "small",
+   "seam_with": [
+    "O2",
+    "F1"
+   ],
+   "dedupe_key": "BATH2:surround-backer-gwb-mr"
+  },
+  {
+   "id": "I2-106",
+   "area": "I2",
+   "title": "SS-3636 spec sheet is internally inconsistent (4.5 in vs 5.5 in overall height); panel base, cap and door head are all struck off 5.5 in",
+   "elements": [
+    "FX-M-BATH2-SH",
+    "WP-M-BATH2-SURR",
+    "WP-M-BATH2-SURR-CAP"
+   ],
+   "files": [
+    "houses/catlin/plan/storeys/main.py:2235-2249",
+    "houses/catlin/plan/products_showering.py:117-132"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "Model: pan bottom 0.75, panel 6.25-102.25, cap 102.25-106.125, DreamLine rail 77.25 (0.75 + 4.5 threshold + 72). Swan spec sheet SF03636MD.130 prints 'Dimensions: 36 x 36 x 5.5' (header and page 2: 5 1/2 in) but its Standard Features list 'Model Size: 36 L x 36 W x 4.5 H' and '4.5 in. threshold'; the product page says the same 4 1/2 in threshold.",
+    "expected": "One height. If the overall is 4.5 in (flange = threshold), the panel base is 1 in lower, the 96 in panel tops at 101.25 and the cap/board split moves 1 in; if 5.5, as modelled, no change.",
+    "method": "Downloaded https://assets.unilogcorp.com/267/ITEM/DOC/Swan_SF03636MD_130_Specification_Sheet.pdf and read both pages; swanstone.com MSMK-9636-1 page (36 x 96 x 1/4 in)."
+   },
+   "source": "https://assets.unilogcorp.com/267/ITEM/DOC/Swan_SF03636MD_130_Specification_Sheet.pdf",
+   "proposed_fix": "Ask the Swan dealer for the SS-3636 submittal (flange height and top land) before ordering the panels; already listed as a dealer confirm in the note.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "SS-3636:overall-height"
+  },
+  {
+   "id": "I2-107",
+   "area": "I2",
+   "title": "A-401.1 and A-401.6 room labels print over the fixtures they label",
+   "elements": [
+    "A-401.1",
+    "A-401.6",
+    "RM-B-BATH",
+    "RM-A-STUBATH"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-401.1",
+     "A-401.6"
+    ],
+    "pages": [
+     41,
+     46
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "A-401.1: 'BATH / 24 SF / CLG 8'-0 13/16\"' sits on the lavatory basin ellipse. A-401.6: 'STUBATH / 34 SF / CLG FOLLOWS ROOF' prints across the water closet bowl and tank.",
+    "expected": "Room label in free floor, or leader off the fixture.",
+    "method": "Read permit_set_full.pdf p.41 and p.46 at 1/2 in = 1 ft."
+   },
+   "source": "n/a",
+   "proposed_fix": "Place enlarged-bath room labels by largest free rectangle (the label anchor is the centroid).",
+   "size_guess": "small",
+   "seam_with": [
+    "D1"
+   ],
+   "dedupe_key": "A401:room-label-over-fixture"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "I2-001",
+   "status": "closed",
+   "evidence": "ED-M-BATH1-RC1 now x 67.75-69.75, y 276.4-280.4, z 41.0-43.0 on the east wall under ED-M-BATH1-SW; FURN-M-BATH1-MIRROR x 44.62-64.62: 3.1 in clear in plan, no overlap. Only the six mirror/light pairs touch in plan (z gap -2 in = light above mirror) and the S-VANITY sconces stand 0.44 in off the mirrors.",
+   "method": "Python SCRATCH/I2/p7.py: footprints and body_z0/z1 of mirrors vs ED-* in bath rooms."
+  },
+  {
+   "id": "I2-002",
+   "status": "closed",
+   "evidence": "WP-M-BATH2-SURR is now 96 in (z 6.25-102.25, 24.0 + 23.86 sf), WP-M-BATH2-SURR-CAP (TK-105 strip) 102.25-106.125, painted board to the 107.5 in ceiling. PROD-SWAN-TK-105 exists. Open residue: the backer behind it is still gwb-mr (I2-105) and the SS-3636 height is self-contradictory (I2-106).",
+   "method": "Python SCRATCH/I2/p4.py over model.panelings."
+  },
+  {
+   "id": "I2-003",
+   "status": "closed",
+   "evidence": "WallBacking.datum='finished-floor' now on every grab course; checks.json integrity.wall_backing_ref reports BK-M-BA2E-GRAB, BK-M-BA2E2-GRAB, BK-M-HS1-GRAB(-S), BK-S-SN3-GRAB, BK-A-STU-W-GRAB as '7.2\" of 2x8 at 32\" above the finished floor'. Round 1: 30.5 in AFF.",
+   "method": "grep checks.json 'wall_backing_ref'; plan/backing_wet.py:60-90."
+  },
+  {
+   "id": "I2-004",
+   "status": "closed",
+   "evidence": "A-603 p.152 now prints Base (pvc-trim 3.5\", catlin-vinyl-gatsby 3.5\") and Walls (gwb-mr + PT-3 ...) for all 38 rooms. Residual: the Walls cell never names paneling (new I2-104).",
+   "method": "Read permit_set_full.pdf p.152; openings.py _base_finish/_wall_finish."
+  },
+  {
+   "id": "I2-005",
+   "status": "partial",
+   "evidence": "A-507 (now p.54, 3/4 in = 1 ft) draws the tub, the valve box and three dimensions: 1'-8 1/8\" tub, 2'-6\" valve, 5'-3 7/8\" surround, and labels the integral flange with a nailing block at the head. Still absent: showerhead/spout heights, nailer/furring detail (BK-S-N3-TUB-NAILER), drain offset; four small unlabelled squares float at about 6 ft.",
+   "method": "Read permit_set_full.pdf p.54."
+  },
+  {
+   "id": "I2-006",
+   "status": "partial",
+   "evidence": "Enlarged bath plans now exist: A-401.1-A-401.6 at 1/2 in = 1 ft (pp.41-46), with wall/opening chains on A-401.3/.4/.5. None carries fixture setout: no WC centreline or 12 in rough-in, no tub/shower drain or valve stations, no clearance dimensions; A-401.1, .2 and .6 carry no dimension at all. P-101..P-104 (pp.154-157) not re-opened (not in this round's sheet list).",
+   "method": "Read permit_set_full.pdf pp.41-46."
+  },
+  {
+   "id": "I2-007",
+   "status": "closed",
+   "evidence": "Rejection holds: FX-S-SUITEBATH-WC flange is still 12.34 in from the finished wall (tank back 0.34 in off). TOTO's own sheets stand the tank 3/4 in off the wall at a nominal 12 in flange, so 12.34 in is inside tolerance; the real defect is the opposite one for all five WCs (I2-102).",
+   "method": "Python SCRATCH/I2/p3.py: placed WC-DRAIN port to Room.clear_face."
+  },
+  {
+   "id": "I2-008",
+   "status": "closed",
+   "evidence": "FX-TOTO-CARLYLE-II now footprint 16.5 x 28.3125, height 28.75, flange 12.01 in from the wall, as TOTO SS-01809 (16 1/2 W, 28 5/16, 28 3/4 H, 12 in). A-603 prints 16.5 x 28.25. Supply stop 6 in/8 in AFF matches the sheet.",
+   "method": "Read fixture_types_wc.py:99-118; downloaded SS-01809 page 2."
+  },
+  {
+   "id": "I2-009",
+   "status": "open",
+   "evidence": "Unchanged: mep.fixture_port_connection UNKNOWN 4.67 in at FX-S-BATH1-WC. The C6 rejection ('TOTO publishes no inlet station') no longer holds: the Aquia IV sheet gives 5 7/8 in off centreline and 4 3/4 in AFF (suggested). Filed as I2-103.",
+   "method": "checks.json mep.fixture_port_connection; SS-02072 p.2."
+  },
+  {
+   "id": "I2-010",
+   "status": "closed",
+   "evidence": "Comments at fixtures.py:247-256 re-struck. Resolved rays: FX-S-BATH1-SH west 0.493 in, north 1.000 in (comment 0.49 / 1.00); BATH2 tub east 0.26 in to the clear face (note measures to the deck face, 1/8 in, as adjudicated); suite tub-shower 0.12-0.135 in all sides.",
+   "method": "Python SCRATCH/I2/p9.py: ray from each footprint edge midpoint to Room.clear_face."
+  }
+ ]
+}

@@ -1,0 +1,351 @@
+{
+ "area": "I1",
+ "model": "houses/catlin @539d9a81",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Re-measured the kitchen on the resolved model at 539d9a81: ~60 canvas objects in RM-M-LIVING (SEKTION bases, uppers, highs, corners, peninsula, brackets, panels, 11 appliances, sink), 4 quartz tops + 3 stools, 3 kitchen windows. Compared model.json, baseline countertops package (pieces.md/csv, shop-drawings.pdf pp1-8 all opened, 7 DXFs via ezdxf) and sheets A-002 (p28), A-102 (p30), A-603 (p152) of permit_set_full.pdf, all opened. Web: IKEA leg and base frame pages, Frigidaire Tall Twin Resource Guide 2021 (trim-kit cutout pages and pairing-kit sheet read), FPRU19F8WF manual snippets, LG LDTS5552S owner's manual (pdftotext), MSI Frost White slab listings. Supplier holds: TWINSPAIRKIT 1/8 seam: acceptable, no published pair gap (I1-002); LG side-mount: confirmed by the manual, no sub-top needed (I1-103 follows). NOT examined: slab nesting and slab count (the package gives area only), MSI's published unsupported-overhang cap and the Original Granite Bracket chart for the 15 in cantilever, Frigidaire door-reversal and handle projection, IKEA 402.655.12 / 902.653.88 / carousel article dims individually, Rev-A-Shelf 5374-24FL and 5149-18DM-217 dims, Broan BWP1 minimum mounting height above the cooktop, Severin/De'Longhi dims, hung-base mixer cave detail, the TWINSPAIRKIT seam on a physical unit, the living east run beyond its end panel and stack height, A-102 kitchen detail (3/32 in scale prints no kitchen dimension).",
+ "verified_clean": [
+  "Cabinet module north run: E1 297.375-309.375, DW bay 309.375-333.375, sink base 333.375-369.375, E2 369.375-387.375, corners 387.375-425.375 match K1 (probe p3.py)",
+  "CT-M-KIT-N 90 x 25.625 spans E1..E2; seam at x=387.375 over the corner west face with the ply continuous; faucet hole centre (54.625, 23.75) in package = model (352, 423.49) to 0.01; DXF circle 1.375 dia on layer HOLE",
+  "All seven DXF extents (E 38x38, N 90x25.625, NE 38x38, peninsula 84.5x40.625, stools 16x10.297 x2 and 29.5x9.589) equal the model outlines and pieces.csv; area sum 60.87 SF vs takeoff 60.89",
+  "Peninsula: 5 bars at x 306.875/323.25/339.625/356/372.375 centres, tops 34.75 AFF under underside 34.81 (1/16 setting); stone y 304.375-345.0, 15 in cantilever, 3 in short of the edge; knee clearance 15 in",
+  "Range 29.875 in the 30 in slot (357.375-387.375): 1/16 each side; DW 23.75 in the 24 in bay: 1/8 each side vs LG 0.1 in minimum; LG manual p.25-26: for stone the unit is screwed through its brackets into the cabinet frame, so the side-mount/no-sub-top supplier hold is answered",
+  "LG LDTS5552S 23 3/4 W x 24 5/8 D x 33 5/8 H confirmed in the owner's manual (p.13)",
+  "Frigidaire pair 32 7/8 W (closed-door width 32.86 in the Resource Guide), uppers at 73.5 AFF = 1 in over the 72.5 hinge",
+  "Microwave NN-SN686S y 322.375-343.065: 3.00 in off PANTRY-S1, 0.31 in short of the landing edge, 2.0 in off the wall, 7.75 in under the hung frame at 56",
+  "Max Light pair over the NE corner: stool top 41.72 AFF, 5.7 in above the 36 in stone; WN1 bottom 73.5 vs window head 66 AFF; stool nose 0.75 in into the room above the counter back strip",
+  "WIN-M-DINING-E ash stool top 37.78 abs = living slab top 37.776 (flush)",
+  "SEKTION base 24x24x30 and leg 905.560.71 (3 1/2-5 1/8) re-read on ikea.com/us 2026-11-05",
+  "Countertop package slab 120 x 55 is a conservative house number (MSI listings 126 x 63)"
+ ],
+ "findings": [
+  {
+   "id": "I1-101",
+   "area": "I1",
+   "title": "Frigidaire column on the partition end has 5/16 in to W-M-PAN-S; Frigidaire publishes 35.82 in width with the door open 90 deg (3.2 in past the cabinet side) and says to allow for it next to a wall; hinge handing is not authored",
+   "elements": [
+    "APPL-M-FRIDGE",
+    "APPL-M-FREEZER",
+    "W-M-PAN-S"
+   ],
+   "files": [
+    "houses/catlin/plan/appliance_types.py:225",
+    "houses/catlin/plan/kitchen_casework.py:36",
+    "houses/catlin/plan/kitchen_casework.py:50"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "RM-M-LIVING clear_face runs y=394.75 from x=219.25 to 297.25 (W-M-PAN-S axis y=397.0, 4.5 in thick). APPL-M-FRIDGE footprint y 361.5625-394.4375, x 220.25-247.25: side gap to the partition 0.3125 in, and the partition continues east past the door sweep (x 247-280). Frigidaire's 2021 Tall Twin Resource Guide (Installation Next To Wall): cabinet 32.63, closed door 32.86, cabinet + overhang one side + door open 90 deg = 35.82 (3.2 in past the side), door max 130 deg. Model carries a symmetric front_zone only; no hinge side exists in the model (door reversal needs kit TTDRRVFRKIT per retail listings).",
+    "expected": "Any unit whose hinge side faces a wall needs ~3.2 in at 90 deg (manufacturer's own warning). Handing and the open-door envelope should be authored, or the north end gap widened / the fridge door hinged to the seam side.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p7.py (room clear_face) + /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p3.py (footprints); guide pdftotext /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/dl/twin.txt lines 'Installation Next To Wall'; pdf https://p11.secure.hostingprod.com/@site.us-appliance.com/ssl/pdfs/twin_frigidaire_electrolux_resourceguide.pdf"
+   },
+   "source": "Frigidaire Tall Twin Resource Guide rev 2/4/2021 (width at 90 deg 35.82, 130 deg max, pairing kit required, push units together)",
+   "proposed_fix": "Decide handing: hinge the north (fridge) door at the seam or accept a field-reversed unit, or confirm with Frigidaire that the door opens far enough at 5/16 in. Add the 35.82 in figure to the type; author a door-swing envelope per unit. Owner-visible.",
+   "size_guess": "large",
+   "seam_with": [
+    "O1"
+   ],
+   "dedupe_key": "I1:fridge-hinge-vs-partition"
+  },
+  {
+   "id": "I1-102",
+   "area": "I1",
+   "title": "Peninsula end panel, seating-face panel and living end panel stop 13/16 to 15/16 in short of the stone underside after the sub-top stacks were added",
+   "elements": [
+    "FURN-M-KIT-PEN-END",
+    "FURN-M-KIT-PEN-BACK",
+    "FURN-M-LIV-E-END-N"
+   ],
+   "files": [
+    "houses/catlin/plan/living_east_run_types.py:48",
+    "houses/catlin/plan/living_east_run_types.py:55",
+    "houses/catlin/plan/living_east_run_types.py:61"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Panel tops: FT-KIT-PEN-END-PANEL and FT-KIT-PEN-BACK-PANEL height 34 in (z top 35.03 abs = 34.0 AFF); stone underside 34.81 AFF (model.json z0 0.91045 m) -> 0.81 in open slot above the end and seating-face panels, showing the 3/4 ply edge set back 1/2 in. FT-LIV-E-END-PANEL 34 9/16 vs ash underside 35.5 (36.75 top - 1.25) -> 0.94 in. Types say 'floor to slab, under the quartz'.",
+    "expected": "Panels reach the stone underside (34 13/16 kitchen; 35 1/2 living) or the sub-top is drawn over them; they are cut from one 25x80 sheet either way.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p3.py (z of PEN-END/PEN-BACK) + /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p10.py (living z) + model.json countertops z0_m/z1_m"
+   },
+   "source": "notes/kitchen_stock_cabinet_details.md K1/K6 (4 in legs + 30 + 3/4 ply + 1/16); K5 (living)",
+   "proposed_fix": "Raise PENINSULA_END_PANEL / PENINSULA_BACK_PANEL to 34 3/4 (ply top) and LIVING_END_PANEL to its slab-less stack; update names and the cut list.",
+   "size_guess": "small",
+   "seam_with": [
+    "I3"
+   ],
+   "dedupe_key": "I1:panel-height-vs-subtop"
+  },
+  {
+   "id": "I1-103",
+   "area": "I1",
+   "title": "North run leaves a 1 3/16 in open slot above the LG dishwasher: opening 34 13/16 vs a 33 5/8 unit whose feet move only 5/16 in",
+   "elements": [
+    "APPL-M-DW",
+    "CT-M-KIT-N"
+   ],
+   "files": [
+    "houses/catlin/notes/kitchen_stock_cabinet_details.md:30",
+    "houses/catlin/plan/appliance_types.py:159"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.35,
+   "evidence": {
+    "measured": "Stone underside 34.81 AFF over the DW bay (the sub-top stops at the bay by K1). APPL-M-DW height 33.625 (z 1.03-34.65 abs). Slot 1.19 in at the front, under a 7/8 in overhang past the door. LG owner's manual p.13: 33 5/16 in (846 mm) to 33 5/8 in (854 mm), i.e. 5/16 in of foot travel.",
+    "expected": "Typical opening 34-34.5 in (unit within ~1/2 in of the stone). A 3/4 ply across the 24 in bay (screwed to the E1/sink-base frame tops, no frame needed) gives a 34.0 in opening and a 3/8 in margin.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p3.py + /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p4.py; LG manual /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/dl/lg.txt 'Product Dimensions' (https://www.retailspecs.com/files/pdf/attachment/86088/LDTS5552S_O.pdf)"
+   },
+   "source": "LG LDTS5552S owner's manual p.13/16/25-26",
+   "proposed_fix": "Run the sub-top across the DW bay (LG screws the unit to the cabinet frame through its brackets for stone, p.25-26, so nothing hangs from the ply), or add a stone/panel filler; restate K1 and the `cabinet-kitchen-run-subtop` row.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "I1:dw-top-gap"
+  },
+  {
+   "id": "I1-104",
+   "area": "I1",
+   "title": "Stack height is stated four different ways: ladder note, engine docstring, prices.toml comment, K5 and CLAUDE.md still carry the pre-2026-11-01 numbers",
+   "elements": [
+    "FURN-M-KIT-E1",
+    "FURN-M-LIV-E-B24",
+    "CT-M-LIV-E-N"
+   ],
+   "files": [
+    "houses/catlin/notes/ikea_sektion_ladder.md:19",
+    "packages/engine/src/typehaus/library/placeables/sektion.py:31",
+    "houses/catlin/prices.toml:8247",
+    "houses/catlin/notes/kitchen_stock_cabinet_details.md:191",
+    "houses/catlin/CLAUDE.md:3112",
+    "houses/catlin/plan/kitchen_front_types.py:116"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "ladder note: 'kitchen base uses 3 1/2 support + 30 frame + approximately 1.319 substrate'; living 'rest 3 1/2 + 1/2 subtop + 2 oak = 36'. sektion.py docstring 'A 36 in counter with 3 cm stone needs about 1 5/16 in of substrate'. prices.toml 8247 'legs lowered 1/2 in' for the peninsula. K5: '4 1/16 + 30 + 1 1/4 + 1 1/4 = 36 9/16'. CLAUDE.md: living ash 'Total installed height 36'. Code/model: kitchen_front_types.py 4 1/4 in legs, height 36.75; CT-M-LIV-E-N top 36.75 AFF (model.json z1 37.7756 abs). Kitchen K1/K6: 4 in legs + 3/4 ply, 36.0. Ladder table 'East high frames 3 1/2-83 1/2' vs K4 6-86 (house types 86 in).",
+    "expected": "One stack per run, stated once: kitchen 4 + 30 + 3/4 + 1/16 + 1.181 = 36.0; living 4 1/4 + 30 + 1 1/4 + 1 1/4 = 36.75.",
+    "method": "grep -n for 'substrate|1 5/16|lowered|36 9/16|Total installed height' in the listed files; model.json countertops z0/z1 (probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p10.py)"
+   },
+   "source": "kitchen_front_types.py:113-124 (authoritative), K1/K6",
+   "proposed_fix": "Update the five strings; one line each.",
+   "size_guess": "small",
+   "seam_with": [
+    "I3"
+   ],
+   "dedupe_key": "I1:stale-stack-statements"
+  },
+  {
+   "id": "I1-105",
+   "area": "I1",
+   "title": "Corner pair of Max Light tilt-turns: hinge handing is not authored, and two inward 14 in sashes hinged toward the corner cross at (415,415)",
+   "elements": [
+    "WIN-M-KITCH-N",
+    "WIN-M-KIT-E"
+   ],
+   "files": [
+    "houses/catlin/plan/storeys/main.py:1406",
+    "houses/catlin/plan/storeys/main.py:1430"
+   ],
+   "kind": "interface-fit",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-602"
+    ],
+    "pages": [
+     151
+    ]
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "WIN-M-KITCH-N centre x=408 (RO 399.0-417.0) in W-M-N1; WIN-M-KIT-E centre y=408 in W-M-E1; both 14x24 inswing tilt-turns, sill 3'-6\" (rough sill 41.06 AFF, counter 36, stool top 41.72 AFF). Window has no handing field (flip_hinge exists on doors only). A turned sash swings ~12.7 in into the room: N hinged east (x~414.4) and E hinged north (y~414.4) occupy x=414.4 and y=414.4 and meet. Hinged to the far jambs (N west, E south) they clear each other; WN1 bottom 73.5 AFF clears the 65 AFF head by 8.5 in either way.",
+    "expected": "A-602 / procurement note state handing so the pair opens away from the corner and from the counter items; or a note that only one opens at a time.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p5.py (openings) and geometry by hand; A-602 permit_set_full.pdf p151 (W3 = WIN-M-KITCH-N, no handing column)"
+   },
+   "source": "houses/catlin/notes/window_and_door_procurement.md (Max Light 14 in tilt-turn; handing not stated)",
+   "proposed_fix": "Add 'hinges on the far jambs' to the schedule remarks for W3 and the east unit.",
+   "size_guess": "small",
+   "seam_with": [
+    "O4"
+   ],
+   "dedupe_key": "I1:maxlight-corner-handing"
+  },
+  {
+   "id": "I1-106",
+   "area": "I1",
+   "title": "The construction set carries no kitchen casework or countertop build-up: no spec section, no elevation, no dimension",
+   "elements": [
+    "CT-M-KIT-N",
+    "CT-M-KIT-PENINSULA",
+    "FURN-M-KIT-E1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/openings.py:292"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-002",
+     "A-102",
+     "A-603"
+    ],
+    "pages": [
+     28,
+     30,
+     152
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "A-002 (p28) sections printed: 04 21 13, 06 10 00, 06 17 53, 06 22 00, 06 64 00, 07 21 00..07 84 00, 09 65 16, 23 00 00, 26 05 00: no 06 40 00 casework, no 12 36 00 countertops. A-102 (p30) prints no kitchen dimension at 3/32 in scale. A-603 (p152) prints envelope footprints only (sink 32x22, hood 29.5x19.75, fridge 32.875x27). pdftotext of the 177-page full set finds no 'quartz', 'countertop', 'AXSTAD' or 'sub-top'; 'SEKTION' only as fixture type names on P-102..104.",
+    "expected": "The stack (4 in legs, 3/4 ply, 34 13/16 underside), 1 5/8 overhang, 54 3/4 aisle, 15 in cantilever with 5 bars and the 66 1/4 bay exist only in notes K1-K8 and the countertop package.",
+    "method": "pdftotext -layout permit_set_full.pdf -> /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/full.txt; grep; pages 28, 30, 152 read as PNG"
+   },
+   "source": "notes/kitchen_stock_cabinet_details.md K1/K6",
+   "proposed_fix": "Emit a one-sheet kitchen casework note (stack, overhangs, bay widths) or add a Division 06 40 00/12 36 00 stub to A-002.",
+   "size_guess": "large",
+   "seam_with": [],
+   "dedupe_key": "I1:no-kitchen-sheet"
+  },
+  {
+   "id": "I1-107",
+   "area": "I1",
+   "title": "Source strings and comments in the kitchen plan files still carry superseded numbers",
+   "elements": [
+    "APPL-FRIG-PRO-ALLFRIDGE",
+    "APPL-M-FRIDGE",
+    "FURN-M-KIT-PEN-B36",
+    "WIN-M-KIT-E"
+   ],
+   "files": [
+    "houses/catlin/plan/appliance_types.py:192",
+    "houses/catlin/plan/appliance_types.py:230",
+    "houses/catlin/plan/kitchen_casework.py:18",
+    "houses/catlin/plan/kitchen_casework.py:237",
+    "houses/catlin/plan/storeys/main.py:1424"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "appliance_types.py:192-193 'single-door pair is 32 7/8 each, 65 3/4 together, and fits the bay' (bay now 66 1/4). :230-232 'width at 90 degrees NOT published' (35.82 is published, Tall Twin Resource Guide). kitchen_casework.py:18 'W-M-PAN-S face y=32-10 5/8' = 394.625, but the resolved face is 394.75 (axis 397.0, 4.5 in): fridge north gap is 5/16 not 3/16, bay 66 3/8 not 66 1/4, north scribe ends 1/8 shy. :237 'north aisle 58 inches' (stone to stone 54.75, fronts 58.1). main.py:1424 '5 5/8 in to the hood's north end' (hood now 29.5 wide, y 357.6-387.1; WIN-M-KIT-E RO starts y=399.0: 11.9 in).",
+    "expected": "Strings agree with the model.",
+    "method": "grep the strings; RM-M-LIVING clear_face y=394.75 (probe p7.py); stone fronts (p4.py outline y 10.15365 m=399.75 vs 345.0)"
+   },
+   "source": "model (resolved clear_face), Frigidaire Resource Guide",
+   "proposed_fix": "Edit the five comments; decide whether the fridge pair should move 1/8 north to keep 3/16.",
+   "size_guess": "small",
+   "seam_with": [
+    "O1"
+   ],
+   "dedupe_key": "I1:stale-appliance-strings"
+  },
+  {
+   "id": "I1-108",
+   "area": "I1",
+   "title": "Sub-top at the sink base is unspecified: ply needs a cut-out to the 32x19 flange and the faucet hole web is 1.19 in to the scribed back edge",
+   "elements": [
+    "FURN-M-KIT-SINKBASE",
+    "FX-M-KITCH-SINK",
+    "CT-M-KIT-N"
+   ],
+   "files": [
+    "houses/catlin/notes/kitchen_stock_cabinet_details.md:27",
+    "houses/catlin/notes/kitchen_sink_installation.md:55"
+   ],
+   "kind": "interface-fit",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "countertop pieces"
+    ],
+    "pages": [
+     3
+    ]
+   },
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "K1 sends the 3/4 ply over the sink base; flange x 336-368, y 402.5-421.5 (model) sits 1.125 in behind the frame front 401.375. The earlier 'rails per cutout' wording is gone. Shop drawing A-N page 3: faucet hole web to slab edge 1.188 in (hole centre y=423.49, slab back 425.375, stone scribed to the wall so it can only shrink); 'dimensioned, not graded'. No manufacturer minimum found (Corian Quartz fundamentals give 2.5 in for drop-in cutouts, a different case).",
+    "expected": "Ply opening >= flange plus clip clearance; fabricator/MSI minimum for a 1 3/8 in hole near an edge.",
+    "method": "shop-drawings.pdf p3 (read), DXF CT-M-KIT-N circle at (54.625,23.75) via ezdxf; model.json countertops hole center"
+   },
+   "source": "Kraus KHU100-32 sheet; MSI fabrication guide not found",
+   "proposed_fix": "Add to the sink hold: ply cut-out, and fabricator sign-off on the 1.19 in web.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "I1:sink-ply-and-hole-web"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "I1-001",
+   "status": "closed",
+   "evidence": "Stone underside 34.81 AFF (model.json z0 0.91045 m, z1 0.94045 m; minus 1.03 floor datum) = K1/K6 stack 4 + 30 + 3/4 ply + 1/16 = 34.8125 (0.007 in). IKEA leg 905.560.71 page re-fetched: adjustable 3 1/2 to 5 1/8 in, nominal 4 1/2, so 4 in is mid-range. Base envelope 36 (z 1.03-37.03). `cabinet-kitchen-run-subtop` priced (prices.toml:8251) and K1 restated. Residual stale numbers filed as I1-104; the DW-bay slot as I1-103.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p3.py, p4.py; model.json countertops; https://www.ikea.com/us/en/p/sektion-leg-for-cabinet-90556071/"
+  },
+  {
+   "id": "I1-002",
+   "status": "closed",
+   "evidence": "Fridge/freezer x 220.25-247.25 vs west wall clear face x=219.25: rear 1.000 in (was 0.125). Freezer south end y=328.5625 vs PANTRYC north face 328.375: 0.1875; fridge north 394.4375 vs partition face 394.75: 0.3125 (was 0.125/0); seam 0.125. Bay 66 3/8 between PANTRYC and the face vs Frigidaire recommended paired cutout 66.25 +/-0.032 (Tall Twin Resource Guide p.3, trim-kit page). Install guide clearances: sides 3/16, top/rear 1 in (manualslib FPRU19F8WF p.7 conflicts in extraction; the type source and a second listing agree 3/16 sides). TWINSPAIRKIT: guide says 'push the two units together' and sets heaters 0.5 in from edges; the 1/8 in seam therefore does not violate it, and no published pair gap exists. Hinge/wall residual filed as I1-101.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p3.py, p7.py; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/dl/twin.txt and tw-03.png"
+  },
+  {
+   "id": "I1-003",
+   "status": "closed",
+   "evidence": "Stone overhang 1.625 in past the frames (overhang_m 0.041275): CT-M-KIT-N front y=399.75 vs door face 400.625 -> 0.875 past the 3/4 AXSTAD fronts; peninsula north edge 345.0 vs 344.125 (0.875), depth 40.625 (model + DXF extent 84.5 x 40.625). Aisle stone to stone 54.75 (K6 54 3/4). Slab fits 120 x 55 (largest piece 90 x 25.625; peninsula 84.5 x 40.625). MSI Frost White is listed at 126 x 63 (retail listings), so 120 x 55 is conservative.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p4.py outlines; ezdxf extents of countertops/quartz-counter/*.dxf"
+  },
+  {
+   "id": "I1-004",
+   "status": "open",
+   "evidence": "Unchanged: flange front y=402.5 vs sink-base frame front 401.375 (1.125 in), opening front 403.5. A 3/4 ply sub-top now runs over the sink base (K1) which adds a ply-vs-clip question (I1-108). Covered by the dry-fit hold in plans/TODO.md and kitchen_sink_installation.md section 5 (adjudicated: not re-opened), so no new severity.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p3.py (FX-M-KITCH-SINK footprint); kitchen_sink_installation.md section 2"
+  },
+  {
+   "id": "I1-005",
+   "status": "partial",
+   "evidence": "DW fixed: APPL-M-DW y 400.625-425.25 (door flush with the 3/4 fronts, 0.25 in off the wall; was 0.19 into it). Wall frames still 15 in deep (y 410.5-425.5, IKEA lists 14 3/4 with rail) and base backs 1/8 off the wall (425.375): dated house convention, model-only, rejection still holds.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p3.py"
+  },
+  {
+   "id": "I1-006",
+   "status": "closed",
+   "evidence": "A-603 (permit_set_full p152) now heads the column 'Footprint (envelope)' and prints FX-M-KITCH-SINK 32 x 22; the 22 is the documented envelope (19 in sink + 3 in faucet zone). Header change landed after the round-1 SHA (git log -S).",
+   "method": "pdftotext -f 152 -l 152 permit_set_full.pdf; git log 247a13e9..HEAD -S'Footprint (envelope)'"
+  },
+  {
+   "id": "I1-007",
+   "status": "closed",
+   "evidence": "APPL-M-HOOD footprint x 405.8-425.5 (19.69 deep), y 357.6-387.1 (29.5 wide), z 67.03-76.71 abs (66.0-75.7 AFF, 9.69 tall), centred on the range (y 372.375); matches the Broan BWP1 spec-sheet row cited in appliance_types.py:322-334. A-603 prints 29.5 x 19.75 (1/4 in rounding).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I1/p3.py; A-603 p152"
+  },
+  {
+   "id": "I1-008",
+   "status": "closed",
+   "evidence": "AXSTAD 24x50 604.260.81, corner pair 204.260.83 and drawer 24x15 304.260.68 now have skus (two flagged 'confirm at order'). Ladder note no longer says VOXTORP (K7:261/323 keep it deliberately as the prior frame configuration). Slab size 120 x 55 in pieces.md/shop drawings/K6 agree. One sku='' remains: MITTLED (new lighting, other area).",
+   "method": "grep -n 'sku=\"\"' houses/catlin/plan/products_ikea.py; grep VOXTORP notes; pieces.md"
+  }
+ ]
+}

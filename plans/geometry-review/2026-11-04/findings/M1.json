@@ -1,0 +1,582 @@
+{
+ "area": "M1",
+ "model": "houses/catlin (resolved at 539d9a81; probes on /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M1/model.pkl)",
+ "review_sha": "539d9a81",
+ "inventory_summary": "SCOPE: air side of the ERV: EQ-B-ERV (Broan B210E75RT), EQ-B-ERV-MAN-SUP/EXH, EQ-M/A plenums, EQ-S-ERV-MIX box, DU-B-ERV-SUP/RET-TRUNK, DU-ERV-RISER-SUP/EXH, DU-ERV-OA/EA (+wraps), DU-M-ERV-EXH-FEED/-TRUNK, DU-S-ERV-HP-FEED, two hoods, System 1 rectangular trunks DU-S-HP-SUP/-RET/-SUITE/-SOUTH/-SOUTH-RISE, 5 plenums + 1 mixing box (about 45 elements). Branch radials/fittings are M4's.\n\nCHECKLIST TABLE (Y specified / N missing / P partial). Cols: mat+gauge | wrap R+jacket | sealing UL181 | named fitting each vertex | ends on real collar/transition | hangers | dampers | framing penetration | M-10x labels | BOM\n- DU-B-ERV-SUP-TRUNK 6\": P(galvanized, no gauge) | N (bare by design) | P(note only) | N (fitting_pattern UNKNOWN; elbow type unnamed) | P (start exact on port 2; end 7.7\" off declared plenum station; 10.4\" rise cannot hold Broan 12\" flex) | N | P (Broan internal motorized damper only) | n/a boxed under TJI soffit | Y 6\" RD SUPPLY | elbows only\n- DU-B-ERV-RET-TRUNK 6\": P | N | P | N | N (start 16.8\" from port 1, on port 3) | N | P | n/a | Y | elbows only\n- DU-ERV-OA 8\": P | Y R-8.4 2x1\" AP Armaflex, own vapour retarder, no outer jacket (note s.9; NOT on the set; BOM duct_insulation LF only) | P | N (24\" take-offs UNKNOWN) | N (4.8\" off port 4; no 6x8 transition/flex named) | N | N (undampered intake, Broan motorized) | Y 9x9 RO + seal kit | P (only on M-102, missing M-101/A-402) | elbows + wall-seal\n- DU-ERV-EA 8\": P | Y as OA | P | N (2.9\" stub vs 12\" take-off) | N (on port-1 location, 15.2\" off port 3; wrap 1\" into case) | N | N (BD8 specified; contradicts Broan) | Y | P | elbows + wall-seal; BD8 inside hood price\n- DU-ERV-RISER-SUP/-EXH 6\": P | N bare | P | N (5 and 4 straights below take-off) | Y (EXH ends on plenum riser port 1.1\" ok) | N | N | fireblock Y; FO-* openings Y | Y | elbows\n- DU-M-ERV-EXH-TRUNK 8\": P | N | P | UNKNOWN | Y start on collar-trunk exact | N | N | Y 13\" truss opening (0.25\" margin) | Y 8\" RD EXHAUST | elbows\n- DU-M-ERV-EXH-FEED, DU-S-ERV-HP-FEED 6\": P | N | P | N (7.7\" vs 9\", 3.4\" vs 18\") | Y/Y | N | N | Y | Y | elbows\n- EQ-B-ERV-MAN-SUP/EXH (36x8x8 fabricated): P(no gauge/submittal) | N | P (mastic stated) | n/a | P (collars EXACT, 6\" ports not graded; SUP trunk station stale) | N | N (collar butterfly dampers unnamed) | n/a | N (prints 'DUCT_MANIFOLD') | no collar/damper lines\n- EQ-M-ERV-MAN-SUP: no feed (M1-111); EQ-M-ERV-MAN-EXH/EQ-A-ERV-MAN-EXH: same spec gaps as basement plenums\n- EQ-S-ERV-MIX: gravity backdraft damper unnamed (no Product), 26 ga stated in type note only\n- Hoods: RenewAire FA8-P basis (plate unpublished; not anti-gust; BD8 on discharge conflicts with Broan)\n- System 1 rect trunks: gauge Y (26 ga 18\"/10\"-sides 30 ga, takeoff only, not on set); mastic/canvas connector stated in note s.11; hangers N (note s.13 'not graded'); balancing N\n\nSYSTEMIC GAPS (each is a finding): ports cross-wired (M1-101), BD8 vs Broan (M1-102), required flex/transition connection (M1-103), elbow type vs static margin (M1-104), no supports (M1-105), no balancing-damper product (M1-106), BOM lacks fittings (M1-107), sheets carry no duct spec (M1-108/109), plenum station stale (M1-110), M-SUP unfed (M1-111).\n\nHOLDS CARRIED: TODO OA/EA/RET hold: measured collar top to joist soffit ~22\"; with Broan's 12\" flex (bendable R>=3\") the first leg can fit but the drawn stubs (EA 2.9\", OA 8.9\") do not, and the ports are cross-wired. TODO L86 (M-SUP feed): still unfed (M1-111). erv_static_budget 0.441\" vs 0.4\": the 0.441 is the genuine operating point (203.9 cfm interpolated 0.4\"=206..0.5\"=201 matches the spec fan table) and clears the 203.0 cfm code rate by 0.9 cfm; margin vanishes at +12 % elbow loss and 4 flex + 2 transitions are uncounted (M1-104).\n\nWEB CHECKS: Broan B210E75RT spec sheet (ports p.2, SRE p.1, curve p.3), Broan AI-series installation manual 52 pp (hood damper, 12\" flex, transitions, 3\"/13\" clearances, anti-gust, drainage), RenewAire FA8-P (no plate dims), RenewAire BD8 (P/N 102401 'mechanical butterfly, male/female ends'; no freeze guidance), Fantech FML8 store page 404, MN Rules 1322/1346/1309 (search snippets only).\n\nNOT examined: SMACNA hanger table (paywalled; IMC 603.10 only defers); ASHRAE/SMACNA published loss coefficient for stamped adjustable elbows; current text of MN Rule 1346 (snippets only); Fantech FML8 current page; Broan 8\"-collar/flex part numbers; TJI web-hole charts for System 1 joist-bay branches (M4); fabricator submittal for plenums (none exists); full-resolution zoom of M-102/M-103 label overprints beyond the page images.",
+ "verified_clean": [
+  "EQ-T-BROAN-B210E75RT fan_curve: ten points equal the spec sheet p.3 net-supply column (214/210/208/206/201/199/195/191/184/176 at 0.1-1.2 in.; 0.9 and 1.1 omitted, between neighbours).",
+  "EQ-T-BROAN-B210E75RT port stations: body 21 7/8 + box 2 15/16 = 24 13/16 overall; port offsets re-derived from the drawing match mep_erv_types.py (all four, x and y).",
+  "DU-B-ERV-SUP-TRUNK start: 0.0\" from Broan port 2 centre.",
+  "Hood separation: DU-ERV-OA to DU-ERV-EA hoods 12.1 ft (Broan >= 6 ft single-family); intake 94\" above grade (Broan >= 18\").",
+  "OA/EA rough openings: 8\" duct in 9x9 RO centred 0.00\" with 0.25\" foam annulus and 0.25\" spare (mep.duct_penetration_fit PASS x4).",
+  "DU-M-ERV-EXH-TRUNK (8\", x=45.75\") sits in FS-S-WEST's 13\" web opening n=1 (41.5..54.5\"): 41.75..49.75\" outside, 0.25\" to the west web; mep.open_web_panel PASS (tight; OD seam projection not read).",
+  "ERV service zones: nothing but DU-B-ERV-RET-TRUNK (9\" leg, bottom 0.9\" under case top) and OA/EA wraps enter the 13\" door and 3\" box-side zones at the case-top band; no pipe/conduit within their 0.5\" radius (PR-B-CW-WH x=93.5 and PR-B-HW-TRUNK x=94 are 0.7-1.2\" east of the case).",
+  "EQ-B-ESS room (x74-116.5, y374-424\"): none of OA, EA, RISER-EXH, RISER-SUP pass through it (shapely line vs clear_face).",
+  "RM-B-FURNACE 6\" ports: 6 ft intake/exhaust separation satisfied; DU-B-ERV-SUP-TRUNK 6\" vs 6\" plenum inlet needs no increaser (plenum is fabricated with 6\" inlets).",
+  "SF-S-DUCT/SF-S-HP1/SF-B-BATH soffits hold all occupants (checks.json).",
+  "Fire-blocking at chase crossings: code.fireblock_chase PASS x9 for these runs."
+ ],
+ "findings": [
+  {
+   "id": "M1-101",
+   "area": "M1",
+   "title": "DU-ERV-EA starts on Broan port 1 (exhaust FROM building) and DU-B-ERV-RET-TRUNK starts on port 3 (exhaust TO outside): the two exhaust ports are cross-connected",
+   "elements": [
+    "EQ-B-ERV",
+    "DU-ERV-EA",
+    "DU-B-ERV-RET-TRUNK",
+    "DU-ERV-OA",
+    "EQ-T-BROAN-B210E75RT"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_erv_risers.py:302",
+    "houses/catlin/plan/mep_erv_l1.py:214",
+    "houses/catlin/plan/mep_erv_types.py:87"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101",
+     "A-402"
+    ],
+    "pages": [
+     162,
+     47
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "Case centre (80.4375, 358)\" with rotation 0 (box W, door S). Authored port stations (Broan p.2) land at: port 1 return (75.28, 362.88), port 2 supply (88.66, 364.63), port 4 outdoor (77.03, 354.75), port 3 exhaust (86.78, 354.75). Run starts: SUP-TRUNK (88.66, 364.62) = 0.0\" off port 2 (exact, closed). OA end (74.0, 351.0) = 4.8\" off port 4 (nearest; ok-ish). DU-ERV-EA start (74.0, 363.0) is 1.3\" from PORT 1 and 15.2\" from its own port 3. DU-B-ERV-RET-TRUNK start (86.0, 350.0) is 4.8\" from PORT 3 and 16.8\" from its own port 1. mep.equipment_port_service passes both only at 'service level' because those port stations are certainty=APPROXIMATE (checks.json: 'no exact connection is established'), so nothing grades the swap.",
+    "expected": "EA (exhaust to outside, port 3, SE collar) and RET trunk (exhaust from building, port 1, NW collar) each start within ~1/2\" of THEIR OWN collar; the NW and SE collars carry the opposite streams to what is drawn.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M1/p8.py (port world = case centre + authored offset; distance to ducts[tag].path[0]/[-1]); .venv python; compare with Broan spec sheet p.2 labels 1 'Exhaust air from building', 3 'Exhaust air to outside'. CLAUDE.md records OA/EA/RET as held at service level by the owner: this finding says the held layout is not merely loose, it is cross-wired, so whoever releases the hold must not keep these starts."
+   },
+   "source": "https://broan-nutone.com/getmedia/9863cd5f-e206-478f-a30f-14d30c857c17/Spec_Sheet_B210E75RT_En_2.pdf p.2 (6\" Ports Dimensions: 1 exhaust air from building, 2 fresh air to building, 3 exhaust air to outside, 4 fresh air from outside); houses/catlin/plan/mep_erv_types.py:79-100",
+   "proposed_fix": "Re-start DU-ERV-EA on port 3 (86.78, 354.75) and DU-B-ERV-RET-TRUNK on port 1 (75.28, 362.88), or swap the two ports' tags; then mark all four ports certainty=EXACT so mep.equipment_port_service grades them. Routing re-proposal is a route-run job.",
+   "size_guess": "large",
+   "seam_with": [
+    "M4",
+    "M2"
+   ],
+   "dedupe_key": "EQ-B-ERV:ea-ret-swapped"
+  },
+  {
+   "id": "M1-102",
+   "area": "M1",
+   "title": "Discharge hood specifies an inline BD8 backdraft damper; Broan's manual says never put a non-return damper on the exhaust hood (it freezes), and the B210E75RT already has motorized port dampers",
+   "elements": [
+    "EQ-S-ERV-HOOD-EA",
+    "EQ-T-ERV-HOOD-8-EXH",
+    "PROD-AIR-BACKDRAFT-8",
+    "DU-ERV-EA"
+   ],
+   "files": [
+    "houses/catlin/plan/air_terminal_types.py:245",
+    "houses/catlin/plan/products_air.py:140",
+    "houses/catlin/notes/air_distribution_products.md:§8"
+   ],
+   "kind": "product-data",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "EQ-T-ERV-HOOD-8-EXH name/source: 'inline BD8 backdraft damper'; PROD-AIR-BACKDRAFT-8 'On DU-ERV-EA only, inside the wall line'; takeoff.json cost row EQ-T-ERV-HOOD-8-EXH $240-530 vs intake $200-460. Broan AI-series manual (covers B210E75RT, header p.1) s.2.4 p.9: '* Do not install exhaust hood with non-return damper since it can freeze in winter'; repeated at fault codes E32 and W32 ('Make sure no non-return damper is installed in exhaust hood'). Spec sheet p.1 'Motorized dampers (no additional backdraft dampers required)'. 22.7 Pa discharge-hood loss in the static budget includes the BD8.",
+    "expected": "Discharge hood without a non-return damper (the unit's own motorized exhaust damper closes the port); budget re-read without the BD8 term.",
+    "method": "pdftotext of the downloaded manual (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M1/dl_manual/ai.txt) grep 'non-return'; air_terminal_types.py:245-253; takeoff.json cost_estimate rows for the two hood types."
+   },
+   "source": "https://www.broan-nutone.com/getmedia/26847653-1424-49e1-9415-6b2e8becf223/Installation_Guide_AI_2_Broan_En_1.pdf p.9 (2.4 Exterior Hoods) and fault tables E32/W32; https://broan-nutone.com/getmedia/9863cd5f-e206-478f-a30f-14d30c857c17/Spec_Sheet_B210E75RT_En_2.pdf p.1",
+   "proposed_fix": "Drop BD8 from EQ-T-ERV-HOOD-8-EXH and PROD-AIR-BACKDRAFT-8 (and note §8); re-grade mep.erv_static_budget (loses a 22.7 Pa share only if the BD8 part of it is separable) and the hood price row.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "EQ-T-ERV-HOOD-8-EXH:bd8-freeze"
+  },
+  {
+   "id": "M1-103",
+   "area": "M1",
+   "title": "Broan's required port connection (6->8 transition, 12\" flex between port and rigid duct, tape only) is neither specified nor possible in the stubs above the collars",
+   "elements": [
+    "EQ-B-ERV",
+    "DU-ERV-OA",
+    "DU-ERV-EA",
+    "DU-B-ERV-SUP-TRUNK",
+    "DU-B-ERV-RET-TRUNK"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_erv_risers.py:246",
+    "houses/catlin/plan/mep_erv_risers.py:302",
+    "houses/catlin/plan/mep_erv_l1.py:214"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Straight rise from collar top (z -33.84\") to first bend: EA 2.9\" (z -30.94), OA 8.9\" (to -24.94), SUP trunk 10.4\" (to plenum underside -23.44), RET trunk 2.5\" then 9.0\" (checks.json mep.fitting_pattern: 'DU-ERV-EA 2.9\" between vertex 0 and 1 against 12.0\"'; 'DU-B-ERV-RET-TRUNK 2.5\" ... against 9.0\"'). Headroom collar top to joist underside (~-11.88\") ~22\". Broan s.2.5 p.10: 'If using 8-in. ducts, install 6-in. to 8-in. transitions on the ports, secure using duct tape only. If rigid ducting is used, install a 12-in. section of flexible duct between the transition and the rigid ducting'; 'To avoid transmission of vibrations, always use a 12-inch section of flexible duct to connect rigid ducts to the unit'; 'Do not use screws ... to the ports'. No transition, flex connector, or 'no screws' note exists in the plan, set, or takeoff.json duct_fittings (only elbows and wall-seal kits).",
+    "expected": "Each of the four ports shows port collar -> (6x8 transition on OA/EA) -> 12\" flex (insulated, vapour-barrier tucked, on OA/EA) -> rigid duct, with a named part and a stub long enough to hold them (a 12\" flex can itself bend, R>=3\", which fits the 22\" headroom, but the drawn 2.9\" EA stub cannot).",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M1/p3.py (z of each leg), checks.json mep.fitting_pattern; manual text lines ~517-546 of /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M1/dl_manual/ai.txt."
+   },
+   "source": "https://www.broan-nutone.com/getmedia/26847653-1424-49e1-9415-6b2e8becf223/Installation_Guide_AI_2_Broan_En_1.pdf p.10 (2.5 Connecting the Ducts to the Unit); p.11 (2.5.1: insulated ducts same diameter as the ports, R = 3\" min)",
+   "proposed_fix": "Author the transition + 12\" flex as named parts on each port (or a Product on the type's ports), lengthen the first leg, and bill them; this is part of the held OA/EA/RET re-route.",
+   "size_guess": "large",
+   "seam_with": [
+    "M4"
+   ],
+   "dedupe_key": "EQ-B-ERV:port-connection-method"
+  },
+  {
+   "id": "M1-104",
+   "area": "M1",
+   "title": "The static budget's elbow loss is a smooth r/D=1.5 coefficient while the notes buy stamped adjustable elbows; the 0.9 cfm code margin disappears at +12 % elbow loss, and Broan's required flex/transition losses are not counted",
+   "elements": [
+    "EQ-B-ERV",
+    "DUCT-T-GALV-4",
+    "DUCT-T-GALV-6",
+    "DUCT-T-GALV-8",
+    "FIT-DUCT-90-6"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/hvac.py:109",
+    "packages/engine/src/typehaus/library/fittings.py:238",
+    "houses/catlin/notes/erv_static_budget.md:§2",
+    "houses/catlin/notes/air_distribution_products.md:§11"
+   ],
+   "kind": "product-data",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "G-005"
+    ],
+    "pages": [
+     6
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "erv_static_budget: 0.441\" w.g. worst path (extract via SAUNA-EXH), 203.9 cfm delivered vs 203.0 required (code.N1103_6 PASS by 0.9 cfm), vs the HVI-certified point 0.4\"/206 cfm. Bend equivalent lengths are authored from C=0.22 'smooth r/D=1.5' (note §2) 'rounded up for a stamped adjustable elbow'; fittings.py names the catalog fitting 'gored elbow R=1.5D' while note §11/§3 say radials use 'stamped adjustable elbows' and mep.fitting_pattern is UNKNOWN on 17 runs ('No submittal gives the stocked stamped elbow's radius'). Sensitivity (round bend_equivalent_length x factor, engine check re-run): x1.0 -> 0.441\"/203.9 PASS; x1.1 -> 0.455\"/203.2 PASS; x1.2 -> 0.470\"/202.5 UNKNOWN; x1.5 -> 0.513\"/200.7 cfm code FAIL; x2.0 -> 0.585\"/199.3 FAIL. G-005 prints 'DELIVERED 203.9 cfm'.",
+    "expected": "Elbow type named (and its loss coefficient read from a published row), plus the manufacturer-required 12\" flex and 6x8 transitions entered in the budget, with the margin still >= 0 after them.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M1/p11.py <factor> (load_plan, model_copy each round DuctProductType.bend_equivalent_length*factor, checks.run; reports erv_static_budget and N1103)."
+   },
+   "source": "houses/catlin/out/geometry-review-2026-11-04/baseline/checks.json; https://broan-nutone.com/getmedia/9863cd5f-e206-478f-a30f-14d30c857c17/Spec_Sheet_B210E75RT_En_2.pdf p.3 (fan curve, 0.4\"=206, 0.5\"=201)",
+   "proposed_fix": "Name the elbow (stamped adjustable vs gored) in the catalog, read its published coefficient, add the flex/transition terms; or take the owner's 10\" hood margin option (note §10).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "ERV:static-margin-elbow-type"
+  },
+  {
+   "id": "M1-105",
+   "area": "M1",
+   "title": "No hanger, strap or support is specified for any ERV duct, plenum or riser (IMC 603.10 defers to SMACNA); note says hanger space is 'not graded'",
+   "elements": [
+    "EQ-B-ERV-MAN-SUP",
+    "EQ-B-ERV-MAN-EXH",
+    "DU-ERV-EA",
+    "DU-ERV-OA",
+    "DU-ERV-RISER-SUP",
+    "DU-ERV-RISER-EXH",
+    "DU-M-ERV-EXH-TRUNK",
+    "DU-S-ERV-HP-FEED"
+   ],
+   "files": [
+    "houses/catlin/notes/air_distribution_products.md:§13",
+    "houses/catlin/plan/mep_erv_l1.py:208"
+   ],
+   "kind": "product-data",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "takeoff.json duct_fittings holds only elbows and wall-seal kits; no hanger/strap/support row exists for ducts (grep of takeoff.json and permit_set_full text: 0 duct hanger). Spans that need support: 17'-0\" vertical 12\"-OD wrapped EA riser; 28'-8\" 8\" EXH trunk crossing FS-S-WEST (11 7/8\" open-web); 36\" plenums hung from the basement joists 5.5\" under the soffit; 6\" riser horizontal legs. Note §13: 'Not graded: ... hanger space on the rectangular trunks'. Broan: unit hung on supplied chains (no more than 1/4\" off level), duct supports not stated.",
+    "expected": "Support type and interval per duct size/orientation from the SMACNA table IMC 2018 s.603.10 adopts (Minnesota Mechanical Code ch.1346), drawn or noted, billed per LF/each; wrapped legs supported outside the wrap.",
+    "method": "grep takeoff.json keys 'duct_fittings', 'install_parts' for hanger/strap; pdftotext permit_set_full.pdf. Code row NOT retrieved: SMACNA HVAC Duct Construction Standards is paywalled; websearch confirms 2018 IMC s.603.10 contains no numeric table and points to SMACNA, so the interval must be taken from SMACNA, not memory."
+   },
+   "source": "IMC 2018 s.603.10 (support per SMACNA; flexible per maker); houses/catlin/out/geometry-review-2026-11-04/baseline/takeoff.json",
+   "proposed_fix": "Add a duct-support note and a billed row (strap/hanger by diameter and orientation) to the HVAC sheets and takeoff.",
+   "size_guess": "large",
+   "seam_with": [
+    "M4"
+   ],
+   "dedupe_key": "ERV:duct-supports"
+  },
+  {
+   "id": "M1-106",
+   "area": "M1",
+   "title": "No named product for the balancing dampers: 23 plenum start collars are 'integral butterfly dampers' with no part, quadrant or lock; no damper at any trunk/riser; the BOM carries none",
+   "elements": [
+    "EQ-B-ERV-MAN-SUP",
+    "EQ-B-ERV-MAN-EXH",
+    "EQ-M-ERV-MAN-SUP",
+    "EQ-M-ERV-MAN-EXH",
+    "EQ-A-ERV-MAN-EXH"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_erv_types.py:174",
+    "houses/catlin/notes/air_distribution_products.md:§7",
+    "houses/catlin/notes/erv_static_budget.md:§8"
+   ],
+   "kind": "product-data",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101",
+     "M-102",
+     "M-103",
+     "M-104"
+    ],
+    "pages": [
+     162,
+     163,
+     164,
+     165
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Note §8 balances 'at the plenum, never at the grille ... Every port has a butterfly damper at the start collar'. Plenum types say 'N x 4in dampered collars' as a shop fabrication with 'No submittal has been read'; prices.toml: 'the start collars and their dampers are in these rows'. Only 6\" spin-in (Master Flow LSCD6, 'locking quadrant not confirmed') and the plant 4\" EWC 4RSD are named; Section §7 says 'specify the quadrant damper where the collar lacks one'. takeoff.json: no damper/collar quantity line. Sheets print 'DUCT_MANIFOLD' only.",
+    "expected": "A named 4\" balancing damper (quadrant, lockable) at each of 23 start collars, shown as a count/schedule, plus a damper spec note on the HVAC sheets.",
+    "method": "grep plenum types in mep_erv_types.py; takeoff.json placeables/duct_fittings; pdftotext of sheets p162-165."
+   },
+   "source": "plan/mep_erv_types.py; notes/air_distribution_products.md s.7",
+   "proposed_fix": "Name a 4\" quadrant damper Product and a 'balance at collar' note/count; add to takeoff.",
+   "size_guess": "small",
+   "seam_with": [
+    "M4"
+   ],
+   "dedupe_key": "ERV:balancing-damper-product"
+  },
+  {
+   "id": "M1-107",
+   "area": "M1",
+   "title": "takeoff.json carries no ductwork parts beyond elbows and wall seals: no 6x8 transitions, flex, take-offs/start collars, dampers, hangers, tape or mastic quantities",
+   "elements": [
+    "DU-ERV-OA",
+    "DU-ERV-EA",
+    "DU-ERV-RISER-SUP",
+    "DU-ERV-RISER-EXH",
+    "DU-B-ERV-SUP-TRUNK",
+    "DU-B-ERV-RET-TRUNK"
+   ],
+   "files": [
+    "houses/catlin/prices.toml:7915",
+    "houses/catlin/prices.toml:2957"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "takeoff.json duct_fittings = elbow-22.5/45/90 (by size) + 2 wall-seal-8in rows; no increaser/reducer, no flex, no start collar, no damper, no hanger. 'hvac-duct-insulation-mastic-and-test' is a $1.00-2.40/LF allowance on ducts.length_ft (consumables not counted); prices.toml notes 'the reducer is inside the duct $/LF'. duct_insulation bills OA/EA wrap as 48.9 LF of '2\" elastomeric, two 1\" layers, R-8.4' and PROD-AIR-ELASTOMERIC-1IN / PROD-AIR-WALL-SEAL-FOAM / PROD-AIR-BACKDRAFT-8 never appear as takeoff lines; the BD8 is inside the hood price.",
+    "expected": "Parts a buyer orders appear as counted lines: transitions, flex, collars/take-offs, dampers, straps, UL 181 tape and mastic by LF/rolls, adhesive.",
+    "method": "json scan of takeoff.json keys 'duct_fittings','duct_insulation','install_parts','cost_estimate' for the PROD-AIR-* tags (all absent except hood rows)."
+   },
+   "source": "houses/catlin/out/geometry-review-2026-11-04/baseline/takeoff.json",
+   "proposed_fix": "Add fitting rows to resolve/mep_fittings consumers (transition, flex) and Product-backed install_parts on runs.",
+   "size_guess": "large",
+   "seam_with": [
+    "M4"
+   ],
+   "dedupe_key": "ERV:bom-fittings-missing"
+  },
+  {
+   "id": "M1-108",
+   "area": "M1",
+   "title": "The HVAC sheets state no duct specification: no material/gauge, insulation/wrap, sealing, supports, damper, balancing or leakage note and no duct schedule; the 8-inch OA/EA legs are omitted from M-101/A-402 where they meet the ERV",
+   "elements": [
+    "DU-ERV-OA",
+    "DU-ERV-EA",
+    "EQ-B-ERV"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101",
+     "M-102",
+     "M-103",
+     "M-104",
+     "A-402",
+     "G-005"
+    ],
+    "pages": [
+     162,
+     163,
+     164,
+     165,
+     47,
+     6
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "pdftotext of permit_set_full.pdf: 0 hits for 'UL 181', 'Armaflex', 'elastomeric', 'snap-lock', 'galvaniz', 'duct schedule', 'BD8', 'FA8'; one 'R-8' unrelated; 'hanger' only structural. M-103 notes are fireblocking and labelling only. Labels: M-101 and A-402 show 4\"/6\" RD labels only (no '8\" RD'); '8\" RD OUTDOOR_AIR/EXHAUST' appear only on M-102 because the legs are filed on the main storey although x40-74 stretch lies in the basement ceiling at z -24.94/-30.94\". ERV is labelled 'ERV' with no port tags; the 12\"-OD wrap (R-8.4) is not shown anywhere. G-005 prints 'TESTED DUCT LEAKAGE ____ cfm25' with no limit.",
+    "expected": "Duct material/gauge, UL 181 sealing, wrap R-value and jacket for OA/EA, support interval, damper types, balancing method and a leakage limit on the HVAC sheets; every ERV port and run drawn on the plan of the floor it physically occupies.",
+    "method": "Read permit_set_full.pdf pages 6, 47, 162-165 (opened); pdftotext -layout greps in /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M1/full.txt."
+   },
+   "source": "permit_set_full.json sheet map; plans/geometry-review/2026-11-04/README.md",
+   "proposed_fix": "Add a general duct-notes block and a duct schedule to M-101..104; draw OA/EA by physical storey (or split at the floor) and tag the ERV ports 1-4.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "M-10x:duct-spec-absent"
+  },
+  {
+   "id": "M1-109",
+   "area": "M1",
+   "title": "Hoods and plenums print as raw 'DUCT_MANIFOLD' with no tag; round-duct gauge is unstated (library says 26 ga, note says IRC asks 30 ga) and the notes cite IRC M1601 where Minnesota routes duct construction/sealing to Rule 1346",
+   "elements": [
+    "EQ-M-ERV-HOOD-OA",
+    "EQ-S-ERV-HOOD-EA",
+    "EQ-B-ERV-MAN-SUP",
+    "EQ-B-ERV-MAN-EXH",
+    "DUCT-T-GALV-4",
+    "DUCT-T-GALV-6",
+    "DUCT-T-GALV-8"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/hvac.py:101",
+    "houses/catlin/notes/air_distribution_products.md:158"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-102",
+     "M-103",
+     "M-104"
+    ],
+    "pages": [
+     163,
+     164,
+     165
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "M-102 prints two 'DUCT_MANIFOLD' for the OA and EA hoods plus further ones for the plenums; M-103 draws a 'DUCT_MANIFOLD' box OUTSIDE the north wall (the EA hood, tag EQ-S-ERV-HOOD-EA, equipment_kind duct_manifold). library DUCT-T-GALV-4/6/8 'galvanized ... 26 ga' while note s.11 says 'The library row still calls it 26 ga; IRC M1601.1.1 asks 0.013\" (30 ga) under 12\"'; the rectangular rows were fixed (takeoff prints gauge 26/30) but round rows print none. Websearch: MN 1322.1103 (N1103.2.2) says ducts shall be sealed per the Minnesota Mechanical Code ch.1346, and 1346.0603 covers UL 181A sealing; the notes cite 'IRC M1601.4.1'.",
+    "expected": "Hood and plenum labelled by function/tag; one gauge value stated per round size from the governing adopted mechanical code (ch.1346), not IRC chapter 16.",
+    "method": "pdftotext p163-165; takeoff.json 'ducts' (gauge only on rectangular rows); revisor.mn.gov rules 1322.1103 / 1346.0603 (search snippets; current ch.1346 text not read)."
+   },
+   "source": "https://www.revisor.mn.gov/rules/1346.0603/ (UL 181A); notes/air_distribution_products.md s.11",
+   "proposed_fix": "Label by tag or EquipmentKind display name; set round-duct gauge from ch.1346 and cite it.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "ERV:labels-gauge-code-basis"
+  },
+  {
+   "id": "M1-110",
+   "area": "M1",
+   "title": "EQ-T-ERV-PLENUM-B-SUP declares its 6\" trunk inlet at +3\" but the trunk lands at +10.66\" (7.7\" off); the plenum's two 6\" ports carry no connection_size so they are never graded as exact",
+   "elements": [
+    "EQ-B-ERV-MAN-SUP",
+    "EQ-T-ERV-PLENUM-B-SUP",
+    "DU-B-ERV-SUP-TRUNK"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_erv_types.py:243"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Plenum centre (78, 365.5)\"; type 'trunk' port at (+3, 0) = (81, 365.5); DU-B-ERV-SUP-TRUNK ends (88.66, 364.62) = 7.7\" east (type comment: 'the trunk now rises at x +10 5/8\"' - the station was not updated). checks.json mep.duct_connectivity: 'end lands on EQ-B-ERV-MAN-SUP - but 6.7\" off its dimensioned port collar-gym: connected to the machine, not to the spigot'. EXH plenum's stations (+10.5 trunk, -4.5 riser) match its runs. A 10.4\" rise separates collar top and plenum underside.",
+    "expected": "The fabricator's shop-drawing station equals the landing point (+10.66\").",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M1/p3.py (path ends) vs mep_erv_types.py stations; checks.json mep.duct_connectivity."
+   },
+   "source": "houses/catlin/plan/mep_erv_types.py:243-262",
+   "proposed_fix": "Move the 'trunk' port to inch(10.66) (and give the 6\" ports connection_size).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "EQ-T-ERV-PLENUM-B-SUP:trunk-station"
+  },
+  {
+   "id": "M1-111",
+   "area": "M1",
+   "title": "TODO L86 still true: EQ-M-ERV-MAN-SUP (3 radials, 50 cfm) has no drawn feed; its 8\" inlet would also meet a 6\" riser with no named transition",
+   "elements": [
+    "EQ-M-ERV-MAN-SUP",
+    "EQ-T-ERV-PLENUM-M-SUP",
+    "DU-ERV-RISER-SUP",
+    "DU-M-ERV-R-STUDY",
+    "DU-M-ERV-R-LIVING",
+    "DU-M-ERV-R-BED"
+   ],
+   "files": [
+    "plans/TODO.md:86",
+    "houses/catlin/plan/mep_erv_l2.py:54",
+    "houses/catlin/notes/erv_static_budget.md:§9"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-102"
+    ],
+    "pages": [
+     163
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "checks.json mep.duct_connectivity lists only the three radial STARTS on EQ-M-ERV-MAN-SUP's collars; no duct ends on its 8\" 'trunk' port. DU-ERV-RISER-SUP passes 6\" away in plan; notes/erv_static_budget.md s.9: gates 3 7/8\" and 3 5/8\" to the radon stack, 'no 6\" duct can reach that box'. Supply radials fed: 15+20+15 = 50 cfm of the 210 supply. The budget cannot segment the supply riser for the same reason.",
+    "expected": "A drawn feed (named transition 6->8 or a 6\" inlet) from DU-ERV-RISER-SUP to EQ-M-ERV-MAN-SUP's inlet, graded as an exact connection.",
+    "method": "mep.duct_connectivity rows for EQ-M-ERV-MAN-SUP in checks.json; erv_static_budget.md s.9."
+   },
+   "source": "plans/TODO.md:86; notes/erv_static_budget.md s.9",
+   "proposed_fix": "Owner's levers: move EQ-M-ERV-MAN-SUP, or re-pack the EA/EXH/conduit column (or ~2.5\" north move of VR-M-STACK); then author the feed.",
+   "size_guess": "large",
+   "seam_with": [
+    "M2",
+    "M5"
+   ],
+   "dedupe_key": "EQ-M-ERV-MAN-SUP:no-feed"
+  },
+  {
+   "id": "M1-112",
+   "area": "M1",
+   "title": "ERV sensible recovery effectiveness 0.65 is Broan's -13 F figure at 83 cfm, not at the ~204 cfm the house runs; G-005's 6,547 BTU/h ventilation load rides on it",
+   "elements": [
+    "EQ-B-ERV",
+    "EQ-T-BROAN-B210E75RT"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_erv_types.py:67"
+   ],
+   "kind": "product-data",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "G-005"
+    ],
+    "pages": [
+     6
+    ]
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Spec sheet p.1: 'SRE of 78% at 32 F (81 CFM) and 65% at -13 F (83 CFM) and SRE of 81% at 32 F (64 CFM)'. Type source string quotes '81% at 32 F and 65% at -13 F' without the flows; sensible_recovery_effectiveness=0.65 is applied to 203.9 cfm; G-005 'ventilation air 6,547 BTU/h'. Higher airflow lowers SRE; no value at 204 cfm is published on the sheet read.",
+    "expected": "SRE taken at (or interpolated to) the operating flow, or stated as an upper bound with the flow.",
+    "method": "Read spec sheet p.1 (image) and mep_erv_types.py:67."
+   },
+   "source": "https://broan-nutone.com/getmedia/9863cd5f-e206-478f-a30f-14d30c857c17/Spec_Sheet_B210E75RT_En_2.pdf p.1",
+   "proposed_fix": "Note the flow beside the SRE; ask Broan/HVI (ID 2004940) for SRE at ~200 cfm and use that.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "EQ-B-ERV:sre-flow"
+  },
+  {
+   "id": "M1-113",
+   "area": "M1",
+   "title": "Intake hood is a plain screened wall vent; Broan asks for an 'Anti-Gust' intake hood where snow is expected, and the FA8-P plate/projection is still unpublished (RO 9\" vs 12\" envelope)",
+   "elements": [
+    "EQ-M-ERV-HOOD-OA",
+    "EQ-T-ERV-HOOD-8",
+    "AO-M-ERV-OA",
+    "AO-S-ERV-EA"
+   ],
+   "files": [
+    "houses/catlin/plan/products_air.py:130",
+    "houses/catlin/plan/air_terminal_types.py:237"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Manual p.9: 'An Anti-Gust Intake Hood should be installed in regions where snow is expected' (St Paul, Ramsey Co.). Product PROD-AIR-HOOD-8 is RenewAire FA8-P 'wall hood, 1/4in screen'; its source still says FML8's 9x9 plate 'does not lap' the 9x9 RO and FA8-P plate 'is unpublished, confirm'; websearch this review again found no FA8-P plate dimensions (Young Supply listing: 8/10/12\" paintable galvanneal, spec sheet not readable). Model keeps a 12x12x12 envelope, 18\"+ hood height above grade passes (94\").",
+    "expected": "A published hood (plate, projection, snow-rated intake) whose plate laps the 9x9 RO by >= 3/4\" per side.",
+    "method": "Manual text p.9; WebSearch RenewAire FA8-P 102409 (no dimensions); RenewAire Hoods-Dampers PDF text has no FA8 dims."
+   },
+   "source": "https://www.broan-nutone.com/getmedia/26847653-1424-49e1-9415-6b2e8becf223/Installation_Guide_AI_2_Broan_En_1.pdf p.9; https://renewaire.com/wp-content/uploads/2025/09/Hoods-Dampers-.pdf",
+   "proposed_fix": "Select an anti-gust intake hood with published plate dimensions (and record it); keep the 12\" envelope until then.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "EQ-T-ERV-HOOD-8:anti-gust-plate"
+  },
+  {
+   "id": "M1-114",
+   "area": "M1",
+   "title": "DU-ERV-EA has no slope or drain: its base is a level pocket at the foot of a 17-ft riser, and OA descends into the unit",
+   "elements": [
+    "DU-ERV-EA",
+    "DU-ERV-OA",
+    "EQ-B-ERV"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_erv_risers.py:302"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.35,
+   "evidence": {
+    "measured": "EA path z (in): port (74,363) -33.84 -> -30.94 (rises 2.9\") west/north at -30.94 -> steps DOWN to -33.84 at (52,418.5) -> level west 27.4\" -> 17-ft riser to +204. The level run is 2.9\" below the leg that leads back to the unit, so condensate from the riser collects at the elbow with no drain or slope. OA: runs down from the hood (z +60) to -21 then -24.94 and finally DOWN 8.9\" into port 4. DuctRun.slope_in_per_ft is unused. Broan p.11: ducting must drain; 'Insulated ducts must have the same diameter as the ports to ensure proper drainage'. House has PR-B-ERV-COND on the case drain, but the manual states a drain is not required for ERV models.",
+    "expected": "Cold-side legs fall toward the hood (or a drain tee is shown) and the stated diameter rule is reconciled with the 8\" upsize.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M1/p3.py (z of each vertex), manual p.11 image."
+   },
+   "source": "https://www.broan-nutone.com/getmedia/26847653-1424-49e1-9415-6b2e8becf223/Installation_Guide_AI_2_Broan_En_1.pdf p.11",
+   "proposed_fix": "Set slope_in_per_ft on the cold legs or add a drain note; confirm with Broan whether the 6->8 upsize voids the same-diameter drainage caution.",
+   "size_guess": "large",
+   "seam_with": [
+    "M4"
+   ],
+   "dedupe_key": "DU-ERV-EA:condensate-pocket"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "M1-001",
+   "status": "partial",
+   "evidence": "Case now carries Broan's port pattern and rotation=deg(0) (box W, door S): authored stations equal the drawing (port1 -5.156/+4.875, port2 +8.219/+6.625, port4 -3.406/-3.25, port3 +6.344/-3.25 from case centre; 4-5/16, 4-3/16, 5-5/8, 3-7/8, 6-1/16, 13-3/4 in the drawing). SUP-TRUNK starts 0.0\" from port 2 (round 1: 5-16\"). OA end is 4.8\" from port 4, RET start 16.8\" from port 1, EA start 15.2\" from port 3 (and EA/RET starts sit on each other's ports, see M1-101); only 'supply' is certainty=EXACT, owner holds OA/EA/RET at service level (CLAUDE.md 2026-11-01). Handedness question is closed by the supply landing at the NE collar.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M1/p8.py (case centre 80.4375,358; offsets from mep_erv_types.py:79-100) vs Broan spec sheet p.2."
+  },
+  {
+   "id": "M1-004",
+   "status": "partial",
+   "evidence": "OA fixed: first leg raised to z -24.94 (wrap bottom -30.94, 5.0\" above the case body top -35.94). EA unchanged in kind: first horizontal leg still at z -30.94 (2.9\" stub), 12\"-OD wrap bottom -36.94 = 1.0\" BELOW the case top over x 68-74; OA and EA centres are 12.0\" apart in y at x=74 so the two 12\" wraps are tangent along the common 2.9\" of stub height. Fitting checks: EA 2.9\" vs 12.0\" and 15.5\"/6.5\"/2.9\" vs 24\" take-offs UNKNOWN.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/M1/p3.py (vertex z) and wrap radius 6\"; case top = -109.44+54+19.5 = -35.94 (Broan p.2 body 19-1/2)."
+  },
+  {
+   "id": "M1-006",
+   "status": "closed",
+   "evidence": "CLAUDE.md (houses/catlin/CLAUDE.md ~L1752) now reads SF-S-DUCT 41 1/2\" wide, drop 14 1/8\", clear section 37 1/4\" x 12\"; checks.json mep.duct_soffit_occupancy: SF-S-DUCT 37.25\" x 12.00\", SF-S-HP1 36.50\" x 20.87\", SF-B-BATH 20.37\" x 8.87\", all holding their occupants.",
+   "method": "checks.json findings check_id mep.duct_soffit_occupancy vs grep SF-S-DUCT houses/catlin/CLAUDE.md."
+  },
+  {
+   "id": "M1-007",
+   "status": "partial",
+   "evidence": "products_air.py:130 source now states the plate 'must lap the 9x9in RO' and that FML8's 9x9 does not and FA8-P is unpublished: the doc fix landed. The underlying gap is unchanged: FML8 (A8/B9/C9) cannot lap a 9\" RO and no FA8-P plate dimension exists (searched again). Hood envelope still 12x12x12; AO-M-ERV-OA/AO-S-ERV-EA 9x9; mep.duct_penetration_fit passes the 8\" duct + 1/4\" foam in the 9\" RO. See M1-113.",
+   "method": "Read products_air.py:130-139; WebSearch FA8-P 102409 (no plate dims); fml8 spec per round-1 URL."
+  },
+  {
+   "id": "M1-009",
+   "status": "partial",
+   "evidence": "A-402 (1/2\" scale enlarged mechanical plan, p47) now exists and labels the ERV, but labels still overlap: on A-402 the 'DUCT_MANIFOLD', '6\" RD SUPPLY' and 'ERV' leaders cross the case outline; on M-101 (3/32\") 'ERV WATER_HEATER' share a line and '6\" RD RETURN' abuts them; M-102 prints '6\" RD RETURN6\" RD SUPPLY' as one overprinted string; no port tags 1-4 on the ERV on any sheet; both manifolds and both hoods print as the raw kind 'DUCT_MANIFOLD' (M1-109).",
+   "method": "Opened permit_set_full.pdf p47, p162, p163 and pdftotext -layout of each."
+  }
+ ]
+}

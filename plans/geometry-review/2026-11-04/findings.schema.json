@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GeometryReviewFindings",
+  "description": "One reviewer's findings for one area of the 2026-11-04 geometry review (round 2). See plans/geometry-review/2026-11-04/README.md.",
+  "type": "object",
+  "required": [
+    "area",
+    "model",
+    "review_sha",
+    "inventory_summary",
+    "findings",
+    "prior_findings"
+  ],
+  "properties": {
+    "area": {
+      "type": "string",
+      "description": "Area id, e.g. O4."
+    },
+    "model": {
+      "type": "string"
+    },
+    "review_sha": {
+      "type": "string"
+    },
+    "inventory_summary": {
+      "type": "string",
+      "description": "A few lines: what was inventoried, how many items, what was verified clean."
+    },
+    "verified_clean": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Items measured and found correct, one line each (tag: what was checked)."
+    },
+    "findings": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "area",
+          "title",
+          "elements",
+          "files",
+          "kind",
+          "severity",
+          "on_permit_set",
+          "confidence",
+          "evidence",
+          "source",
+          "proposed_fix",
+          "size_guess",
+          "seam_with",
+          "dedupe_key"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Z][0-9]-[0-9]{3}$",
+            "description": "New ids start at -101 (e.g. M4-101) so they never collide with round-1 ids."
+          },
+          "area": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "elements": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tags and/or uids."
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "path:line"
+          },
+          "kind": {
+            "enum": [
+              "product-data",
+              "interface-fit",
+              "commodity-size",
+              "engine-geometry",
+              "drawing",
+              "viewer"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "build-blocker",
+              "wrong-build",
+              "drawing-error",
+              "model-only",
+              "doc"
+            ]
+          },
+          "on_permit_set": {
+            "type": "object",
+            "required": [
+              "printed"
+            ],
+            "properties": {
+              "printed": {
+                "type": "boolean"
+              },
+              "sheets": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "pages": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence": {
+            "type": "object",
+            "required": [
+              "measured",
+              "expected",
+              "method"
+            ],
+            "properties": {
+              "measured": {
+                "type": "string"
+              },
+              "expected": {
+                "type": "string"
+              },
+              "method": {
+                "type": "string",
+                "description": "Python probe (inline or scratchpad path) or sheet+page."
+              }
+            }
+          },
+          "source": {
+            "type": "string",
+            "description": "Where the real-world dimension comes from: manufacturer URL, note path, catalog source=."
+          },
+          "proposed_fix": {
+            "type": "string"
+          },
+          "size_guess": {
+            "enum": [
+              "small",
+              "large"
+            ]
+          },
+          "seam_with": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Other area ids this touches."
+          },
+          "dedupe_key": {
+            "type": "string",
+            "description": "Stable short key, e.g. 'D-M-BATH2:jamb-depth'."
+          }
+        }
+      }
+    },
+    "prior_findings": {
+      "type": "array",
+      "description": "Every round-1 id this area owns (areas.md), re-probed at the round-2 SHA.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "evidence",
+          "method"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Z][0-9]-[0-9]{3}$"
+          },
+          "status": {
+            "enum": [
+              "closed",
+              "open",
+              "partial",
+              "regressed",
+              "obsolete"
+            ]
+          },
+          "evidence": {
+            "type": "string",
+            "description": "Measured now vs round 1, or why obsolete."
+          },
+          "method": {
+            "type": "string",
+            "description": "Probe a second person can re-run."
+          }
+        }
+      }
+    }
+  }
+}

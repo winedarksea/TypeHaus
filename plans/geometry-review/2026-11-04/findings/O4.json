@@ -1,0 +1,372 @@
+{
+ "area": "O4",
+ "model": "houses/catlin @539d9a81, resolved model re-loaded 2026-11-04 (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O4/model.pkl); baseline snapshot permit_set_full.pdf",
+ "review_sha": "539d9a81",
+ "inventory_summary": "41 windows (23 operable): 29 Drutex Alucover (11 tilt-turn, 18 fixed incl. 4 -HP), 3 Aliplast Max Light Modern thermally broken aluminium tilt-turn (WIN-M-KITCH-N, WIN-M-KIT-E, WIN-M-BATH1-W), 9 Andersen 400 casements. Dimension sources: Drutex 93 mm and 75/50 mm faces in plan/window_types.py (drutex.pl, Phius W-102033); Max Light 75/84 mm and 35+35 mm in plan/opening_products.py (aliplast.com, Debesto); Andersen 3.25in preset with parts-catalog cross-check; seats from resolve/model_window_seat.py. Measured on the resolved model (frame, stool, return, fur, overlap audit) and 16 sheets opened (A-201..204, A-512..515 incl. .1/.2, A-525, A-526, A-529, A-602). NOT examined: DAKAM Alucover sill-adaptor section, Alucover aluminium cap sightline, Max Light minimum tilt-turn sash size (no published figure found), Andersen dealer section, nail-fin geometry, girt-course phase re-probe (relied on structural.girt_course_spacing PASS), the viewer by eye, IFC/GLB emitters, window plan symbols on the floor-plan sheets.",
+ "verified_clean": [
+  "Frame depth now drawn = product depth: Drutex 93 mm = 3.661in (drutex.pl Alucover 'installation depth 93 mm'), Max Light 75 mm = 2.953in (aliplast.com Modern: frame 75 mm, sash 84 mm), Andersen 3.25in (preset); stool back = frame face on all 38 seated stools.",
+  "Aluminium (Max Light) units: WIN-M-KITCH-N, WIN-M-KIT-E (WT-1424-TT) and WIN-M-BATH1-W (WT-1424-TT-T): RO 14 x 24in -> unit 12.710 x 22.805in (seat 0.645in jamb/head = 3/8in buck + 0.020in membrane + 1/4in shim, 0.55in sill rise), frame face 35 mm = 1.378in and sash 35 mm, stool depth 10.297in (= 12.5 - 2.953 + 0.75), NFRC STO-M-20 row U 0.20/0.40/0.58 on A-602; glass ~0.86 sf as the note claims.",
+  "Return geometry on the buck lining: every return ends at the frame face (0.00..8.84/9.25/9.55in), 102 3/8in ply fur rips fill the stud zone, no framing|window_return overlap, board lap on the frame 0.25in.",
+  "Stool lengths = RO + 2in horns (16/29.5/32in) and depths 9.589 (Drutex), 10.0 (Andersen), 10.297 (Max Light), 10.399 (sauna) match millwork.md.",
+  "East-row ash stool top 37.784in vs slab top 37.776in: 0.008in proud, one plane as intended.",
+  "R310: nine Andersen units, net clear 20.3x41.6in etc. on A-602; even measured to the bottom of the clear opening (unit bottom + ~2.2in) the highest sill (WIN-S-HALL-N 40in + 0.55 + 2.2 = 42.8in from the datum, less the oak) stays under 44in.",
+  "Unit sizes on A-602 equal the resolved model for all 41 windows within rounding (12.710 vs 1'-0 11/16in etc.).",
+  "A-602 shows 41 window rows = 41 resolved windows; garage frame 13.460 x 23.553in.",
+  "Elevations A-201..A-204 window rows and columns agree with the model; storey datums dimensioned.",
+  "structural.girt_course_spacing PASS on 36 walls; window head/sill heights unchanged since round 1 (probe not re-run beyond the check).",
+  "Solid overlaps near windows: no opening|framing pair for a window (the 7 framing|opening pairs are doors); window_return|window_stool 6 pairs / 14 cm3 are the three kitchen quartz-wrapped stools lapping the return (trivial)."
+ ],
+ "findings": [
+  {
+   "id": "O4-101",
+   "area": "O4",
+   "title": "Window stool tongue passes through the 3/8in buck jambs for 2.34in beyond the sheathing: 34 plain stools, 68 buck-jamb pieces, 1007 cm3 (known TODO, re-measured; the 5 countertop-wrapped stools are notched and clean)",
+   "elements": [
+    "STOOL-WIN-*",
+    "buck-jamb-* (34 windows)"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/geometry_millwork.py:48",
+    "packages/engine/src/typehaus/resolve/model.py:1096",
+    "plans/TODO.md:257"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Stool ring runs from -0.75in (room) to the frame face (8.84in Drutex / 9.25in Andersen / 9.55in Max Light off the interior face) at the full RO width (notch_inset_m = 0 on plain stools), so the last 2.34in (sheathing face 6.50in to frame face 8.84in) lies in the 0.395in (3/8in ply + 0.020in membrane) buck lining each side. Exact manifold clash of the 34 `framing|window_stool` pairs: all 68 hits are `member:buck-jamb-*`, 13.6-37.5 cm3 per stool, 1006.7 cm3 total (golden 0.001007 m3, unchanged since round 1). Per jamb 14.37 cm3 = 0.395in x 1in x 2.34in. No `framing|window_return` pair remains (was 102).",
+    "expected": "Stool tongue narrower than the buck-lined opening by 2 x 0.395in = 0.79in beyond the sheathing plane (or buck jambs stopped under the stool), so the cut list and the model describe a board that can be set without scribing the buck.",
+    "method": "load model (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O4/load.py), filter geometry elements to window_stool/framing/window_return/opening kinds and run typehaus.solids3d.audit.overlap_pairs (ov.py, 1.8 s); intersect each stool with each framing part (ov3.py): parts all `member:buck-jamb-*`. Stool ring extents in probe1.py (stool_s vs frame_s)."
+   },
+   "source": "geometry_millwork.window_stool_ring tongue = half_width - notch_inset_m; countertop_edges.stool_wrapping_return already sets notch_inset_m for the wrapped five.",
+   "proposed_fix": "In resolve_window_returns (it already knows buck_lining_m) set stool.notch_inset_m = max(notch_inset_m, lining) for plain stools on a buck-lined wall, or add a second step in window_stool_ring beyond shell_face. Tongue width then RO - 0.79in; cut-list length is unchanged (horns), only the plan ring changes. Re-bless solids3d_overlaps.json (framing|window_stool 34 -> 0).",
+   "size_guess": "small",
+   "seam_with": [
+    "O5"
+   ],
+   "dedupe_key": "O4:stool-through-buck-jambs"
+  },
+  {
+   "id": "O4-102",
+   "area": "O4",
+   "title": "A-602 does not say which supplier or frame depth each mark is: three products (Drutex Alucover uPVC 93mm, Aliplast Max Light aluminium 75mm, Andersen 400 wood/vinyl 3 1/4in) share one schedule with only a WT- type tag and no Product/Manufacturer, installation-depth or frame-material column",
+   "elements": [
+    "WIN-M-KITCH-N",
+    "WIN-M-KIT-E",
+    "WIN-M-BATH1-W",
+    "W3",
+    "W4"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/openings.py"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-602"
+    ],
+    "pages": [
+     151
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "A-602 (permit_set_full p151): columns Mark, Tag, Kind, Type, Operation, RO, Modeled frame, RO sill, Net clear, U, SHGC, VT, Tempered. W3 (WIN-M-KIT-E, WIN-M-KITCH-N) and W4 (WIN-M-BATH1-W) are the only thermally broken aluminium units (U 0.20/0.40/0.58) but read only `WT-1424-TT` / `WT-1424-TT-T`. Model frame depths: Drutex 3.661in, Andersen 3.250in, Max Light 2.953in (probe1.json frame_s). A-512.1/.2 print only the Drutex '3 5/8in frame'.",
+    "expected": "Schedule carries Product (Drutex IGLO Energy Alucover / Aliplast Max Light Modern / Andersen 400), installation depth and exterior frame colour per mark, because the order is split across three suppliers (procurement note 2: Drutex 29, Max Light 3, Andersen 9).",
+    "method": "Read permit_set_full.pdf p151 (pdftotext -layout); WindowType.product_ref in plan/window_types.py (every type names a Product)."
+   },
+   "source": "houses/catlin/notes/window_and_door_procurement.md lines 5-12 (supplier split), plan/window_types.py (product_ref, frame_depth)",
+   "proposed_fix": "Add Product and Depth columns to the window schedule from WindowType.product_ref / frame_depth.",
+   "size_guess": "small",
+   "seam_with": [
+    "C7"
+   ],
+   "dedupe_key": "O4:a602-no-product-column"
+  },
+  {
+   "id": "O4-103",
+   "area": "O4",
+   "title": "Typical window head/sill/jamb detail exists only for EXT_2X6 (PBR faces): the 20 windows in board-and-batten walls (and the 2 garage windows) have none; A-513.x is a DOOR detail (R.O. 6'-10 7/8in) on the batten wall",
+   "elements": [
+    "WIN-M-BED-S1",
+    "WIN-M-BED-S2",
+    "WIN-M-LIV-S1",
+    "WIN-M-LIV-S2",
+    "WIN-M-KITCH",
+    "WIN-M-KITCH-N",
+    "WIN-S-STUDY1",
+    "WIN-S-STUDY2",
+    "WIN-S-HALL-N",
+    "WIN-S-STAIR-N",
+    "WIN-S-BED3-N",
+    "WIN-A-S2",
+    "WIN-A-S3",
+    "WIN-A-S-JUL-W",
+    "WIN-A-S-JUL-E",
+    "WIN-A-N1",
+    "WIN-A-N2",
+    "WIN-G-N1",
+    "WIN-G-S1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/detail_components/opening_unit.py"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-512",
+     "A-512.1",
+     "A-512.2",
+     "A-513",
+     "A-513.1",
+     "A-513.2",
+     "A-514"
+    ],
+    "pages": [
+     59,
+     60,
+     61,
+     62,
+     63,
+     64,
+     65
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Windows by host assembly (probe asm.py): EXT_2X6 17, EXT_2X6_BOARD_BATTEN 17, PLANT_EXT_2X6_HUMID(_BOARD_BATTEN) 4, GARAGE_WALL_2X6 2, sauna 1. A-512/.1/.2 (p59-61) draw the unit, stool, shim and pan on EXT_2X6 with a 3'-0in window RO. A-513/.1/.2 (p62-64, EXT_2X6_BOARD_BATTEN) show a door: '6'-10 7/8in R.O.', '5 1/2in frame', threshold. A-514 (p65) is the 16ft overhead door; no sheet shows the garage window.",
+    "expected": "One window section per wall family (cladding 3/4in on batten vs 1 1/4in on PBR changes the head cap lap and the mount-to-cladding dimension), or a note that A-512 governs the batten walls with the 1/2in cladding change.",
+    "method": "pdftotext + Read of pages 59-66 at 80 dpi, crop of p59 at 260 dpi; opening host-wall assemblies from the resolved model (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O4/asm.py)."
+   },
+   "source": "plan/assemblies (EXT_2X6_BOARD_BATTEN), emit/draw/detail_components/opening_unit.py (C7-E4, O4-004)",
+   "proposed_fix": "Pick a window station on a batten wall for the A-513 series (or add a second typical), and one garage window detail on A-514.",
+   "size_guess": "large",
+   "seam_with": [
+    "O5",
+    "O3",
+    "C7"
+   ],
+   "dedupe_key": "O4:batten-and-garage-window-detail-missing"
+  },
+  {
+   "id": "O4-104",
+   "area": "O4",
+   "title": "Opening-detail dimension strings round the frame to 1/4in and the depth to 1/8in while A-602 prints 1/16in: A-512 '2'-10 3/4in frame' vs A-602 2'-10 13/16in; A-525 '4'-4 3/4in' vs 4'-4 13/16in; A-526 '3'-10 3/4in' vs 3'-10 13/16in; A-512.1 '3 5/8in frame' vs 3.661in",
+   "elements": [
+    "TR-CATLIN-FRAMED-OPENING",
+    "TR-CATLIN-PLANT-OPENING",
+    "WIN-M-BED-W1",
+    "WIN-S-PLANT1",
+    "WIN-S-PLANT3"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/detail_components/opening_unit.py",
+    "packages/engine/src/typehaus/emit/draw/detail_components/stack_dimensions.py"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-512",
+     "A-512.1",
+     "A-525",
+     "A-526",
+     "A-602"
+    ],
+    "pages": [
+     59,
+     60,
+     76,
+     77,
+     151
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Unit height 34.805in for a 36in RO (probe1.json unit_h): A-602 prints 2'-10 13/16in, A-512 prints 2'-10 3/4in (34.75in). Plant units 52.805in and 46.805in: A-602 4'-4 13/16in and 3'-10 13/16in; A-525/A-526 print 4'-4 3/4in and 3'-10 3/4in. Frame depth 3.661in prints '3 5/8in' (-0.036in); sill rise 0.550in prints '1/2in'.",
+    "expected": "Detail strings and the schedule quote the same modeled frame to the same precision (or the detail says 'nominal').",
+    "method": "pdftotext p59, p60, p61, p76, p77, p151 and probe1.json unit_w/unit_h."
+   },
+   "source": "emit/draw/detail_components/stack_dimensions.dim_text rounding",
+   "proposed_fix": "Round detail dimension text to 1/16in like A-602 for the unit height and depth, or label them 'approx'.",
+   "size_guess": "small",
+   "seam_with": [
+    "C7"
+   ],
+   "dedupe_key": "O4:detail-dimension-rounding"
+  },
+  {
+   "id": "O4-105",
+   "area": "O4",
+   "title": "Plant-room windows (4) have no reveal finish at all: no PVC-panel or membrane return solid or quantity through a 10.13in-deep reveal, although the plant note requires the membrane to return into every jamb",
+   "elements": [
+    "WIN-S-PLANT1",
+    "WIN-S-PLANT2",
+    "WIN-S-PLANT3",
+    "WIN-S-PLANT4"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/window_returns.py:36",
+    "houses/catlin/notes/plant_room.md:407"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-525",
+     "A-526"
+    ],
+    "pages": [
+     76,
+     77
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "resolve_window_returns skips the plant windows (_finish_stack finds no gypsum: wall layers are pvc-panel 0.5, liner-furring 0.75, humid-membrane 0.04, gwb-plant 0.5 ...). model.window_returns has 36 records, none for WIN-S-PLANT*; no window_return solid; takeoff window-return rows are gypsum/paint only. Interior face to frame face is 10.13in (PLANT1/2/4 and PLANT3). Perimeter reveal above the 0.472in solid-surface stool: 8.37 sf each (PLANT1/2/4), 9.04 sf (PLANT3), 34.1 sf in all, unmodelled and unbilled.",
+    "expected": "A modelled and billed return in the liner material (PVC panel or membrane-lined reveal) for each plant window, per plant_room.md 'Every opening returns the membrane into the jamb'; A-525/A-526 K3 flash the pan but show no jamb return.",
+    "method": "model.window_returns / model.solids window_return by host_ref (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O4/ret.py, plant.py); wall layer list W-S-S1; A-525/A-526 text and image; takeoff.json envelope_layers 'window return' rows."
+   },
+   "source": "plant_room.md 407-408 (TR-CATLIN-PLANT-OPENING), A-525/A-526 keyed notes",
+   "proposed_fix": "Either extend _finish_stack to treat the PVC panel as the return stock for a humid liner, or author the plant reveals as drawing_returns=False and add an explicit PVC-return note and allowance. Decide with the plant-room owner.",
+   "size_guess": "large",
+   "seam_with": [
+    "O5",
+    "S2"
+   ],
+   "dedupe_key": "O4:plant-window-reveal-unfinished"
+  },
+  {
+   "id": "O4-106",
+   "area": "O4",
+   "title": "House guide's east-row stool height is stale: CLAUDE.md says stool top = sill + 2.953in = 36 15/16in, the resolved stool top is 37.784in above the storey datum (36.76in above the LVP)",
+   "elements": [
+    "WIN-M-LIV-E1",
+    "WIN-M-LIV-E2",
+    "WIN-M-DINING-E"
+   ],
+   "files": [
+    "houses/catlin/CLAUDE.md (Rows paragraph)",
+    "houses/catlin/plan/living_east_run.py:5-13"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "RO sill 34.281in + pan rise 0.550in + frame rail 2.953in = 37.784in above datum; ash slab 4.25+30+1.25+1.25 = 36.75in over the +1.0256in LVP = 37.776in: stool top proud of the slab by 0.008in (0.2 mm), so the geometry is right and the 36 15/16in figure is not (it omits the pan rise and the 9/32in of sill).",
+    "expected": "Guide text states 37.78in above datum / 36.76in AFF, or drops the number.",
+    "method": "probe1.json LIV-E1 stool_z; living_east_run.py header comment arithmetic; floor +1.02559in from CLAUDE.md."
+   },
+   "source": "houses/catlin/CLAUDE.md Windows and facade, Rows",
+   "proposed_fix": "Edit the sentence.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "O4:east-row-stool-height-doc"
+  },
+  {
+   "id": "O4-107",
+   "area": "O4",
+   "title": "Max Light and Andersen operable units seat the stool on the drawn frame sill only: no sill_rail_height / sash_overlap authored, and the open DAKAM hold covers only Alucover; the Max Light kitchen pair turn their sash over the counter with the stool top at the 35 mm frame sill",
+   "elements": [
+    "WIN-M-KITCH-N",
+    "WIN-M-KIT-E",
+    "WIN-M-BATH1-W"
+   ],
+   "files": [
+    "houses/catlin/plan/window_types.py:33-40",
+    "houses/catlin/notes/window_and_door_procurement.md:363-367",
+    "plans/TODO.md:263"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Max Light stool top = unit bottom + 1.378in (35 mm frame sill), e.g. WIN-M-KIT-E z 42.747..43.928in over a unit bottom of 42.550in; the drawn sash bottom rail occupies 1.378..2.756in (frame + sash = 70 mm, Aliplast sheet: 35 mm + 35 mm visible, Debesto 'frame + sash height 70 mm'). Sash depth 84 mm vs frame 75 mm: the inward sash stands 9 mm (0.35in) proud of the frame face above the stool. TODO L263 holds Alucover sill rail/overlap and the Max Light fabricator items 11-13, none of which asks for the sill rail height or the tilt/turn sweep over the stool.",
+    "expected": "Max Light sill rail height and sash lap/turn clearance over a 1.18in quartz stool at 42in sill confirmed with the fabricator, or the stool dropped to the published rail.",
+    "method": "Resolved model: stool_z vs seat/frame sill (probe1.py); Aliplast fiche via web (frame 75 mm, sash 84 mm, 35 mm minimum visible, 15 mm rebate) and Debesto Max Light page (frame + sash 70 mm)."
+   },
+   "source": "https://www.aliplast.com/en/producten/ramen/max-light ; https://debesto.com/en/windows/products/aliplast-max-light-aluminium-windows",
+   "proposed_fix": "Add the sill rail height and turn clearance to procurement 2.6 item 11 and the TODO DAKAM line.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "O4:maxlight-sill-rail-open"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "O4-001",
+   "status": "closed",
+   "evidence": "Frame solids now span interior-face offsets 8.84..12.50in (3.66in, Drutex) on 27 units, 9.25..12.50in (3.25in) on the 9 Andersen units, 9.55..12.50in (2.95in) on the 3 Max Light units; round 1 measured 5.44in. Stool back edge = frame face on all 38 seated stools; stool/frame volume overlap 0 cm3 (sill/jambs); `opening|window_stool` ratchet is 1 pair (WIN-B-SAUNA, 452.7 cm3, no seat) as in the golden. Viewer: model.json serves opening_parts, so the viewer draws the same sweep (WIN-M-KIT-E frame x 435.05..438.00in = 2.95in).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O4/probe1.py (frame_s, stool_s, stool_frame_ov_cm3) on the resolved model; ov.py overlap_pairs; model.json opening_parts for WIN-M-KIT-E."
+  },
+  {
+   "id": "O4-002",
+   "status": "closed",
+   "evidence": "Returns now run to the real frame face: ret_s 0.00..8.84/9.25/9.55in on all 36 returns (was stopping at the sheathing, 6.50in, after the round-1 patch; before that at the drawn -0.56in face). The unfinished foam-zone reveal is now a board on the 3/8in buck lining with 102 buck-fur rips in the stud zone (68 jamb, 34 head, struct-1 ply 6in x 3/8in) and a lap board on the field. `framing|window_return` is 0 pairs (round 1 patch: 102). Board face laps the frame by 0.25in (Drutex) / 0.21in (Andersen jamb); Andersen head leaves a 0.055in gap (unit height rounded to the 1/8in step) - below tolerance. Totals: 36 returns, 211.2 sf of 1/2in board plus 2.3 sf of 5/8in, 223 sf of paint.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/O4/probe1.py ret_s; ret.py (fur count, quantities); ov.py (no framing|window_return)."
+  },
+  {
+   "id": "O4-003",
+   "status": "partial",
+   "evidence": "A-602 (p151) now has Mark grouping by type, RO sill and Net clear columns (Andersen 1'-8 3/8in x 3'-5 5/8in etc.) and prints 'Rough opening' instead of Window/UNRESOLVED for the service bores. Still lists 14 non-window rows (AO-*, D-B-GYM, D-S-STUDY2, O-S-VANITY are doors/bores) in the window schedule, sill is the datum sill not AFF, and WIN-B-SAUNA still reads UNRESOLVED. R312/R310 sills not printed beyond RO sill.",
+   "method": "pdftotext/Read permit_set_full.pdf p151."
+  },
+  {
+   "id": "O4-004",
+   "status": "partial",
+   "evidence": "A-512/.1/.2 (p59-61) now draw the unit (frame, sash, glass), stool, pan, head/sill shim dims ('5/8in head shim', '1/2in sill rise'), frame depth '3 5/8in frame' and the 6in mount plane. Fin and gypsum return are not dimensioned, only the Drutex depth is printed (Andersen 3.25in, Max Light 2.95in are not), and batten-wall windows have no detail (new O4-103).",
+   "method": "Read p59, p60, p61 at 80 and 260 dpi."
+  },
+  {
+   "id": "O4-005",
+   "status": "open",
+   "evidence": "WT-2748/-T/-2754/-3048 frame_depth still 3.25in (preset) and the faces still unauthored (Andersen frame face drawn at the schematic 2.953in). A web search of Andersen's parts catalog confirmed the 4-9/16in extension-jamb wall depth with a 1-23/32in face but no 2-7/8in base jamb; dealer section still needed (TODO L263).",
+   "method": "WebSearch parts.andersenwindows.com extension jamb pages; plan/window_types.py _ANDERSEN_DEPTH."
+  },
+  {
+   "id": "O4-006",
+   "status": "open",
+   "evidence": "WIN-B-SAUNA still has no window_seat; frame drawn 7.68..10.82in against a stool at -0.75..9.65in, stool/frame overlap 452.7 cm3 (sill) + 95.5 cm3 per jamb; A-602 UNRESOLVED; A-529 (p80) prints '2'-0in frame' equal to the 2'-0in R.O., so the detail and the schedule disagree; `integrity.opening_flashing_coverage` UNKNOWN. court_opening_detail.md says the sauna opening shares the K1-K3 sequence.",
+   "method": "probe1.py WIN-B-SAUNA; checks.json; Read p80 and p151."
+  },
+  {
+   "id": "O4-007",
+   "status": "closed",
+   "evidence": "Procurement note now says 13.460 x 23.553in (note lines 406); model unit 13.460 x 23.553in; A-602 1'-1 7/16in x 1'-11 9/16in.",
+   "method": "probe1.py WIN-G-N1 unit_w/unit_h; note text; p151."
+  },
+  {
+   "id": "O4-008",
+   "status": "closed",
+   "evidence": "Rejection holds: WIN-S-BED1 keeps WT-2748-T for the stair band, WIN-S-STAIR-N is -FIX-T over the stairwell (second.py comments at 681-685, 866-868); extra tempering is not a defect. checks.json R308.4 still cites 9 of the 11 tempered windows; no FAIL.",
+   "method": "checks.json code.R308_4_safety_glazing; plan/storeys/second.py."
+  },
+  {
+   "id": "O4-009",
+   "status": "partial",
+   "evidence": "Model now authors Drutex faces (frame 75 mm, sash 50 mm, Phius W-102033: fixed lite 75 mm, operable lite 125 mm), so operable Drutex units draw a 2.953in frame sill under a 1.97in sash (4.92in total) and the stool still sits at the frame sill top 2.953in; sill_rail_height and sash_overlap remain unauthored pending DAKAM. A re-read of the Phius W-102033 page shows 125 mm head/jamb and 151 mm for the shared T&T-over-fixed meeting rail, not a single-unit sill, so the 125 mm sill is supported, not 151 mm. The Alucover cap sightline has no published figure (drutex.pl only gives 93 mm).",
+   "method": "window_types.py _DRUTEX_FRAME/_SASH; probe1.py stool_z vs sill_z; WebFetch phius.org/products/w-102033; WebSearch drutex.pl IGLO Energy Alucover."
+  },
+  {
+   "id": "O4-010",
+   "status": "open",
+   "evidence": "A-201..A-204 (p34-37) still carry window outlines with trim but no tags and no sill/head/size dimensions; only storey datums are dimensioned. Rows and columns agree with the model (north 2 attic + 3 second + kitchen pair; east main 3+1, second 4; west 5 + 5; south four per attic/second row).",
+   "method": "Read p34, p35, p36, p37 at 80 dpi."
+  }
+ ]
+}

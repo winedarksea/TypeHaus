@@ -1,0 +1,483 @@
+{
+ "area": "F5",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventoried 34 footings (20 FT-B + 8 FT-GF + 5 FT-SG + S1W/S4E), 6 pads, 31 columns (10 cast piers/columns with rebar sets), 35 foundation walls (8 BASEMENT_8, 2 BASEMENT_12, 8 GARAGE_ICF_6, court walls), 16 slabs, 33 footing beddings, 39 rebar sets, beams W-SG-ARCH/BRKBM. Measured from the resolved model (pickle in /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/F5) at SHA 539d9a81, baseline checks.json/takeoff.json/engineering.json, and opened every listed sheet in permit_set_full.pdf: C-101 (p7), S-001 (p8), S-001.1 (p9), S-100 (p10), A-501 (p48), A-509 (p56), A-585..A-590 (p136-141). The concrete deck swap (decision #112) removed SL-M-DECK entirely, so its thickness/rebar/cover/laps/bearing are N/A; what the swap left in my scope (the three framed x=18' walls on their old 20\" strips, the 12\" east wall, concrete totals, stale text) is checked. Web-checked: BuildBlock BB600 (store.buildblock.com). NOT examined: IRC Table R403.1(1) width row (not quoted from memory; F5-101 is hand arithmetic only), ACI 318 min-steel text beyond what footings.py quotes, ESR-3050 strap side cover versus the 4-#5 cage diagonal geometry on the 14\" piers (F6), ASCE 32 lateral extent of the soil-replacement beds, cold-weather/joint layout (prose only), IFC/print3d emitters, calc-package arithmetic for engineered retaining walls, rebar bar-bend schedules, A-591+ (outside F5 sheets).",
+ "verified_clean": [
+  "Concrete deck swap: no SL-M-DECK, DECK_EPS_INT or DECK_CAP_MIX solid/slab remains in the resolved model (solid categories: slab 16, slab_platform 1 = SL-M-TUBDK ply cap, slab_band 1 = SL-SG-FIELD); so deck slab thickness, rib bars, cover and laps no longer exist to grade; takeoff lists the two price rows as unused.",
+  "Deck swap, steel/concrete totals: takeoff wall concrete 10.67+18.11+7.90+0.08+0.09+0.99+7.06+17.11 = 62.01 cy equals rebar_backout.md's 'walls 62.01'; footing/pad/slab/column solids 61.44 cy = note's 51.48 + 9.87 cy of FRC walks/drive.",
+  "Deck swap, bearing below: FT-B-CS/CS2/CN/CN2 20\" x 8\" strips at -117.44..-109.44 under the framed 2x6 walls; bearing_wall_footing: face projections 7.25\"/7.25\" (2\" <= P <= T 8\"), every bearing point on a strip (CN 11, CN2 3, CS 9, CS2 3, CS3 4). The 20\" gap in the strip at y 135.4..155.4 is the CS3 door.",
+  "Footing/pad bearing elevations: -117.44\"/-119.44\"/-121.44\"/-84\"/-88\" = S-100 -9.79'/-9.95'/-10.12'/-7.00'/-7.33'; F1 qty 19 (15 FOOTING_20 + 4 EXPOSED 8\"), F2 qty 2, F3 qty 8, F4 4, F5 1; pad sizes P1 30x18, P2 18x18, P3 24x24 match model bboxes.",
+  "Frost: FT-B-S1..S4 on 42\"-deep NFS beds (z -151.4 = -109.44 - 42); garage stone strips bottom -84\" = 50\" below -34\" grade; checks.json: 31 footing/pad bases >= 42\" below lowest adjacent grade.",
+  "BuildBlock BB600 11\" section, 2.5\" EPS, 16\" course: stem 64.00\" = 4 courses, concrete 6.0\" (store.buildblock.com).",
+  "Garage sill: structural.sill_bearing_on_core 5 3/8\" of 7 1/4\" (74%) all four sides; 2x8 sole plate z -12.0..-10.5 on W-G-W/E/N/S.",
+  "Basement walls: pour -109.44..-13.44 = 96.00\"; W-B-E1/E2 12\" pour carry fireplace brick (decision logged), plain concrete per R404.1.2(8) 12\"/8'/7' row (foundation_unbalanced_fill pass); BASEMENT_8 #5@41\" matches the row requirement; wall run lengths 36/92/80 LF match S-100 FW2/FW3/FW6.",
+  "Rebar laps: basement #4 horizontal L-corner bars lap 30\" x2 (engine IRC_WALL_LAP_IN table, rebar_layout_basis.md s1); straight runs under stock lap 0; hooks as in round 1. structural.concrete_cover_meets_minimum PASS (39 pours).",
+  "S-100 schedules (footing, wall, slab, sill, reinforcement R1-R10) mutually consistent and no longer collide; S-001 fits its field; C-101 grade spots -3.0'..-3.3' above the -9.1' court floor, bases >= 42\" below.",
+  "A-501 (page 48) layers once each, footing 1'-8\" x 8\" with 8\"/8\"/4\" toes; A-590 garage detail shows BB600 layers and the sill flush outside the EPS face.",
+  "14\" pier solids and S-100 K9-K14 labels (14/12) agree; pad dowel/pier cover 2\" (S-001) vs round-1 2.3\" measured."
+ ],
+ "findings": [
+  {
+   "id": "F5-101",
+   "area": "F5",
+   "title": "No check grades a strip footing's width against its soil bearing: the x=18' centreline strips (20\" wide) carry 3,205 plf D+L by the house's own basis note, 1,923 psf against the sheet's 1,500 psf",
+   "elements": [
+    "FT-B-CS",
+    "FT-B-CS2",
+    "FT-B-CN",
+    "FT-B-CN2",
+    "W-B-CS",
+    "W-B-CS2",
+    "W-B-CN",
+    "W-B-CN2",
+    "FOOTING_20"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/checks/structural/bearing_wall_footing.py:1-30 (grades projection P and bearing points only)",
+    "houses/catlin/notes/main_floor_truss_basis.md:264-266 (line load table)",
+    "houses/catlin/plan/assemblies/footings.py:131 (source cites 'IRC Table R403.1', no check reads it)"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-100",
+     "S-001"
+    ],
+    "pages": [
+     10,
+     8
+    ]
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Model: FT-B-CS/CS2/CN/CN2 are 20.00\" x 8.00\" plain strips (solids z -117.44..-109.44, bbox x 206..226). main_floor_truss_basis.md s5 totals the x=18' wall at 1,225 plf D + 1,980 plf L + 630 plf S = 3,205 plf D+L (2,610 at 0.75 L+S). 3,205 plf / (20/12 ft) = 1,923 psf; adding the strip's own weight (20x8x150 pcf = 167 plf) 2,023 psf. S-001 prints SOIL BEARING 1500.0 psf; required width at 1,500 psf = 3,205/1,500 = 25.6\" before self-weight. The note's footing paragraph only says the 12\" pour 'weighed 1,200 plf' and that bearing_wall_footing passes, which grades geometry. Engineering register (engineering.json, 51 items) has no strip-footing item; the only engine width table is R403.4 for crushed stone (crushed_stone_footings.py:61).",
+    "expected": "A concrete strip under a three-storey bearing line is sized against the soil value either by IRC Table R403.1(1) (not encoded anywhere in the engine) or by a stated bearing calc; either way a number on the sheet. Hand arithmetic from the house's own loads should land at or under 1,500 psf, or the strip is wider than 20\".",
+    "method": "load_plan+resolve, pickled by /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/load.py to /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/m.pkl (exec /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/h.py to reload); sizes from model.solids (category 'footing'); loads from main_floor_truss_basis.md:255-266; grep engine for 'R403.1(1)' finds nothing (grep -rn 'R403.1(1)' packages/engine/src). Low confidence 0.45: live-load reduction (not taken in the note) and the IRC table's own assumed loads could pass the 20\" strip; I did not read Table R403.1(1) and will not quote it from memory."
+   },
+   "source": "notes/main_floor_truss_basis.md s5; S-001 design criteria (soil bearing 1500 psf); IRC R403.1.1 sends width to Table R403.1(1) (reviewer to read the published row)",
+   "proposed_fix": "Add a prescriptive footing-width read (cite the published row) or a net-bearing calc for the 4 centreline strips and the perimeter strips; print the result on S-100. If it fails, widen FT-B-CS/CS2/CN/CN2 (they carry the most) or have the EOR accept the 20\".",
+   "size_guess": "large",
+   "seam_with": [
+    "F3",
+    "S1"
+   ],
+   "dedupe_key": "FT-B-C:strip-bearing-pressure-ungraded"
+  },
+  {
+   "id": "F5-102",
+   "area": "F5",
+   "title": "S-100's reinforcement schedule has no rows for the 10 cast piers/columns or their pad dowels; no permit sheet prints the (4) #5 + #3 tie + (4) #5 dowel cages",
+   "elements": [
+    "PT-BW-W",
+    "PT-BW-E",
+    "PT-BW-GW",
+    "PT-BW-GE",
+    "PT-BW-PE",
+    "PT-BW-PNE",
+    "PT-SG-BF1",
+    "PT-SG-BF3",
+    "PT-SG-BR1",
+    "PT-SG-BR3",
+    "PD-BW-W",
+    "PD-BW-E",
+    "PD-BW-GW",
+    "PD-BW-GE",
+    "PD-BW-RE",
+    "PD-BW-RNE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit (S-100 reinforcement schedule builder; not located by file)",
+    "houses/catlin/notes/rebar_layout_basis.md (the cages are laid there)"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-100",
+     "S-001",
+     "S-101.1"
+    ],
+    "pages": [
+     10,
+     8,
+     11
+    ]
+   },
+   "confidence": 0.75,
+   "evidence": {
+    "measured": "S-100 FOUNDATION REINFORCEMENT SCHEDULE prints R1-R10 only: F4/F5 (court strips), FW2/FW3/FW6/FW9/FW10/FW11 (walls). The resolved model carries a rebar set on each Post host (e.g. PT-BW-W: 4 vertical #5, 10 #3 ties, 4 #5 dowels; same for PT-BW-E) and takeoff.json bills the bars. pdftotext of the full set (permit_set_full.pdf) finds no '#5' / '(4) #' / dowel line outside S-100 R1-R10, the S-001 cover card ('COVER 2\" at PT-BW-E, ...') and the court-column engineering register rows. The 'NOT SHOWN - MISSING MODEL INPUTS' block lists only slab_reinforcement. Pier schedule on S-101.1 (P1-P4) gives diameter and height, no steel.",
+    "expected": "A bar schedule line (or note) per cast column: vertical bars, ties and pitch, dowel embedment into the pad (ldh 7.115\" #5 is quoted in the notes), so the crew places the cage that the engineering rows grade.",
+    "method": "load_plan+resolve, pickled by /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/load.py to /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/m.pkl (exec /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/h.py to reload); [(r.host_tag, Counter((b.role, b.diameter_m/0.0254))) for r in model.rebar if r.host_kind=='Post']; then pdftotext -raw houses/catlin/out/geometry-review-2026-11-04/baseline/permit_set_full.pdf and grep -n -i 'dowel\\|(4) #\\|#5 ' ; S-100 = page 10."
+   },
+   "source": "S-100 reinforcement schedule itself (page 10); north_entry_piers.md s6/s13 give the cage",
+   "proposed_fix": "Add 'COLUMN' rows (host, size, vertical, ties, dowels, cover, lap) to the S-100 schedule, or print them on the pier schedule of S-101.1.",
+   "size_guess": "small",
+   "seam_with": [
+    "F6"
+   ],
+   "dedupe_key": "S-100:pier-cage-not-scheduled"
+  },
+  {
+   "id": "F5-103",
+   "area": "F5",
+   "title": "S-001.1 03 15 19 spec still prints 'Canopy hold-down bolts AB-058-10-SS, 5/8\" x 10\", under CN-BW-BASE-W/-NW', but those bases are cast-in CBSQ66-SDS2 strap bases with no bolt",
+   "elements": [
+    "CN-BW-BASE-W",
+    "CN-BW-BASE-NW",
+    "PT-BW-W",
+    "PT-BW-GW"
+   ],
+   "files": [
+    "houses/catlin/notes/garage_wall_detail_side.md:43-47 (Spec 03 15 19 block that the sheet prints)",
+    "houses/catlin/params/breezeway.py:562-565 (CBSQ66-SDS2, connects PT-BW-CW/PT-BW-W)"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-001.1",
+     "S-602"
+    ],
+    "pages": [
+     9,
+     24
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "S-001.1 (page 9) 'STRUCTURAL SPECIFICATIONS - 03 15 19 CONCRETE': '- Canopy hold-down bolts AB-058-10-SS, 5/8\" x 10\", under CN-BW-BASE-W/-NW. - Graded at f_uta 57 ksi ... - 980.7 lb base shear split over two bases; on one anchor, interaction 0.692 < 1.0.' The same sheet set's connector schedule (permit_set_full.txt lines 1391-1392) lists CN-BW-BASE-W/-NW as POST BASE CBSQ66-SDS2, and house CLAUDE.md says 'cast-in CBSQ66-SDS2 bases (no AB-058-10-SS, no ACI Ch. 17 row)' with the base shear graded on ONE base at 0.823. No bolt of that part number is bought.",
+    "expected": "03 15 19 states the anchorage actually specified: cast-in CBSQ66-SDS2 straps in the 14\" pier (ESR-3050), base shear on one base 0.823.",
+    "method": "pdftotext -f 9 -l 9 -raw houses/catlin/out/geometry-review-2026-11-04/baseline/permit_set_full.pdf | grep -n 'hold-down'; pdftotext -raw whole set | grep -n 'CN-BW-BASE'; grep -n 'CBSQ66' houses/catlin/params/breezeway.py."
+   },
+   "source": "houses/catlin/CLAUDE.md 'Current north entry, 2026-09-30'; notes/canopy_west_band.md",
+   "proposed_fix": "Rewrite Spec 03 15 19 in garage_wall_detail_side.md from the current CBSQ66-SDS2 basis (or derive it from the connector records).",
+   "size_guess": "small",
+   "seam_with": [
+    "F6"
+   ],
+   "dedupe_key": "S-001.1:stale-AB-058-spec"
+  },
+  {
+   "id": "F5-104",
+   "area": "F5",
+   "title": "TB-SG-W1/-E1 closure boards stop at 8\" while FT-B-S2/S3 are 10\": 2\" x 32\" of each strip face meets the court footing with no board (open TODO, re-measured)",
+   "elements": [
+    "TB-SG-W1",
+    "TB-SG-E1",
+    "FT-B-S2",
+    "FT-B-S3",
+    "FT-SG-W1",
+    "FT-SG-E1"
+   ],
+   "files": [
+    "houses/catlin/params/sunken_garden.py (TB-SG-* thermal-break boards)",
+    "plans/TODO.md:251"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.75,
+   "evidence": {
+    "measured": "TB-SG-W1 spans x 66..150, y -6..-4, z -117.44..-109.44 (8\"); FT-B-S1 (x56..118) is 8\" deep (bottom -117.44) but FT-B-S2 (x118..216) is 10\" (bottom -119.44), so x 118..150 = 32\" has 2\" of footing face below the board. Mirror: TB-SG-E1 x282..366 against FT-B-S3 (x216..314) over x 282..314 = 32\".",
+    "expected": "Board covers the full depth of the footing face it separates from the court strip (10\" where S2/S3 are 10\").",
+    "method": "load_plan+resolve, pickled by /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/load.py to /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/m.pkl (exec /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/h.py to reload); solids category 'thermal_break' bounds vs 'footing' FT-B-S* bounds (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/p8.py)."
+   },
+   "source": "TODO.md:251; foundations.py:180 (S2/S3 went to 10\" 2026-11-01)",
+   "proposed_fix": "Extend the board to 10\" over the S2/S3 reach (two-step board) or accept the 2\" exposed edge in the thermal_break note.",
+   "size_guess": "small",
+   "seam_with": [
+    "F6"
+   ],
+   "dedupe_key": "TB-SG:closure-board-8-vs-10"
+  },
+  {
+   "id": "F5-105",
+   "area": "F5",
+   "title": "Footing-bed drain-tile ring FB-B-CS-DT-1/2/3 passes 1\" into FT-B-S2/S3 concrete (open TODO, re-measured)",
+   "elements": [
+    "FB-B-CS",
+    "FT-B-S2",
+    "FT-B-S3",
+    "FB-B-S2",
+    "FB-B-S3"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/drain_tile.py:46 (drain_tile_solids: ring is not clipped at an adjacent footing face)",
+    "plans/TODO.md:258"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.85,
+   "evidence": {
+    "measured": "Solid-solid plan intersections with z overlap: FB-B-CS-DT-1 x FT-B-S2 64 in2, z overlap 1.00\"; DT-2 x S2 40 in2 and x S3 40 in2; DT-3 x S3 64 in2 (4 pairs, all 1.00\"). FT-B-S2/S3 bottom -119.44 vs the CS bedding top -117.44.",
+    "expected": "A drain-tile ring stops at, or runs below, the face of a neighbouring deeper footing; no tile inside a pour.",
+    "method": "load_plan+resolve, pickled by /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/load.py to /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/m.pkl (exec /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/h.py to reload); for d in solids if category=='drain_tile' vs footing solids with polygon intersection area>0 and z overlap>0 (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/p8.py)."
+   },
+   "source": "TODO.md:258",
+   "proposed_fix": "Clip a bedding ring at an adjacent footing's face in resolve/drain_tile.py (the TODO's own fix), or step the ring down under S2/S3.",
+   "size_guess": "small",
+   "seam_with": [
+    "M5"
+   ],
+   "dedupe_key": "FB-B-CS:tile-ring-in-footing"
+  },
+  {
+   "id": "F5-106",
+   "area": "F5",
+   "title": "PIER_CONCRETE_14 cage (4 #5) is 0.806% of gross, under ACI 318-19 10.6.1.1's 1%; the 12\" pier it replaced passed at 1.097% (open engineer hold, numbers re-measured)",
+   "elements": [
+    "PT-BW-W",
+    "PT-BW-GW",
+    "PT-BW-PE",
+    "PT-BW-PNE",
+    "PIER_CONCRETE_14"
+   ],
+   "files": [
+    "houses/catlin/plan/assemblies/footings.py:90",
+    "houses/catlin/notes/north_entry_piers.md s13",
+    "plans/TODO.md:265"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-100"
+    ],
+    "pages": [
+     10
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Pier solids are 14.0\" round (bbox 14.0 x 14.0); 4 #5 = 4 x 0.31 = 1.24 in2; Ag = pi x 7^2 = 153.9 in2; 1.24/153.9 = 0.806%. The same cage in the 12\" pier: 1.24/113.1 = 1.097%. Rebar sets confirm 4 vertical #5 + 4 dowels #5 on PT-BW-W. S-100 prints neither the cage nor the hold (see F5-102).",
+    "expected": ">= 1.0% of Ag (or the EOR's documented use of the reduced effective area, 10.3.1.2) on every cast column; 6 #5 = 1.21%.",
+    "method": "load_plan+resolve, pickled by /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/load.py to /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/m.pkl (exec /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/h.py to reload); Counter of bars per Post rebar set; arithmetic above."
+   },
+   "source": "ACI 318-19 10.6.1.1 as quoted in footings.py:90 comment; north_entry_piers.md s13",
+   "proposed_fix": "Go to (6) #5 (cheapest, ~1.21%) or get the EOR's written basis for the reduced-area reading; print the answer in the S-100 column schedule (F5-102).",
+   "size_guess": "small",
+   "seam_with": [
+    "F6"
+   ],
+   "dedupe_key": "PIER_14:min-steel-0.806pct"
+  },
+  {
+   "id": "F5-107",
+   "area": "F5",
+   "title": "A-588 and A-589 (garden-curb walls on foundation): four layer leaders end on blank paper and the footing dimension strings overprint each other",
+   "elements": [
+    "GARDEN_CURB_6",
+    "SAUNA_LINER_ON_GARDEN_CURB",
+    "W-B-S3",
+    "W-B-S2"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw (foundation detail composer)"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-588",
+     "A-589"
+    ],
+    "pages": [
+     139,
+     140
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "At 230 dpi (page 139): labels 'xps-a 2\"', 'xps-break 2\"', 'waterproofing 0.06\"', 'concrete 6\"' (the lower, curb wall) have arrows that stop in white space below the footing; '4\" 6\" 10\"' toe dimensions overprint '1'-8\" ftg'; the '4\" XPS (2 layers)' tag overprints the layer stack; '5 1/2\" stud' and '4\" CI' dimension tags float ~100 px above the detail with nothing under them; K1/K2/K5 bubbles sit over the 'FTG ... TOES ...' caption (A-585/A-586 too). Page 140 identical with foil-polyiso/liner rows.",
+    "expected": "Every leader lands on its layer; dimension strings do not overprint; tags sit on what they dimension.",
+    "method": "pdftoppm -f 139 -l 139 -r 230 -x 520 -y 800 -W 900 -H 800 houses/catlin/out/geometry-review-2026-11-04/baseline/permit_set_full.pdf (also page 140, 136)."
+   },
+   "source": "sheet render",
+   "proposed_fix": "Stack the two walls' labels apart, clip leaders to drawn layers, move K bubbles off the caption.",
+   "size_guess": "small",
+   "seam_with": [
+    "D2"
+   ],
+   "dedupe_key": "A-588:curb-detail-leaders"
+  },
+  {
+   "id": "F5-108",
+   "area": "F5",
+   "title": "A-509 roof-finish callout ('Metal Sales Image II Striated 16 in ... vented ridge') prints over the garage-wall layer labels 'sheathing' and 'spray-foam'",
+   "elements": [
+    "A-509",
+    "SL-D-NORTH-BRIDGE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw (detail callout placement)"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-509"
+    ],
+    "pages": [
+     56
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Page 56 at 200 dpi crop x650 y640: the two-line callout starts at the left wall's label column and overprints 'sheathing 1/2\"' and 'spray-foam 4\"'.",
+    "expected": "No label overprints another.",
+    "method": "pdftoppm -f 56 -l 56 -r 200 -x 650 -y 640 -W 1100 -H 500 permit_set_full.pdf"
+   },
+   "source": "sheet render",
+   "proposed_fix": "Offset or stack the roof callout away from the wall labels.",
+   "size_guess": "small",
+   "seam_with": [
+    "F6"
+   ],
+   "dedupe_key": "A-509:callout-overprint"
+  },
+  {
+   "id": "F5-109",
+   "area": "F5",
+   "title": "Stale 'SL-M-DECK bears here / stays a pour' claims remain in live comments, an assembly source string, TODO.md and oracle notes after the deck swap",
+   "elements": [
+    "W-B-E1",
+    "W-B-E2",
+    "W-B-CS2",
+    "W-B-CN",
+    "W-B-CN2",
+    "BASEMENT_12",
+    "DECK_EPS_INT"
+   ],
+   "files": [
+    "houses/catlin/plan/storeys/basement.py:3 and :101 (CN/CN2/CS2 'stay pours because they carry SL-M-DECK', contradicted at :665)",
+    "houses/catlin/plan/assemblies/foundation.py:118,135 (BASEMENT_12 source 'where SL-M-DECK bears')",
+    "houses/catlin/notes/east_breast_bearing.md:106 ('W-B-E1 is a 12\" wall carrying SL-M-DECK's 414 SF cast edge; 236 plf')",
+    "houses/catlin/notes/sauna_basement_wall_detail.md:61; houses/catlin/notes/rain_garden_sizing.md:90",
+    "plans/TODO.md:239 (still lists 'garage sill 3 5/8\" of 5 1/2\"' as open; resolved 2026-11-01, 5 3/8\" of 7 1/4\" = 74%)"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.85,
+   "evidence": {
+    "measured": "grep for SL-M-DECK in houses/catlin/plan finds over 20 live mentions, of which basement.py:101 says the three walls stay pours while basement.py:665 (and the model: W-B-CS2/CN2/CN are 2x6 INT_2X6_BRG_HALF_DFL/STAIRWELL_..._FURRED) says they were framed 2026-11-01; BASEMENT_12.source (which is what the model carries for the 12\" east wall) says SL-M-DECK bears on it. Model measured: no SL-M-DECK solid, no DECK_EPS_INT/DECK_CAP_MIX use (takeoff unused_price_rows lists both), rebar_backout totals consistent (62.01 cy walls recomputed from takeoff wall_structure).",
+    "expected": "Comments and source strings state the present load path (east wall is 12\" for the fireplace brick wythe; centreline walls framed on 20\" strips).",
+    "method": "grep -n 'SL-M-DECK' houses/catlin/plan/**/*.py houses/catlin/notes/*.md plans/TODO.md; model.solids has no tag SL-M-DECK; check structural.sill_bearing_on_core (74%) in baseline/checks.json."
+   },
+   "source": "DESIGN-LOG 'Main deck goes wood'; decision #112",
+   "proposed_fix": "Reword the comments/source strings; delete TODO line 239.",
+   "size_guess": "small",
+   "seam_with": [
+    "F3"
+   ],
+   "dedupe_key": "SL-M-DECK:stale-prose"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "F5-001",
+   "status": "closed",
+   "evidence": "Resolved 2026-11-01 (C3-E8). Garage sill is now a 2x8 PT flush outside: checks.json structural.sill_bearing_on_core W-G-W/E/N/S = '5 3/8\" of the 7 1/4\" sill bears on the core (74%)', bolts 3 3/8\"-4 13/16\" in, middle third and core; model W-G-* sole plate profile 2x8 at z -12.0..-10.5. Round 1 measured 3.625\" of 5.5\" (66%). The residual 1 7/8\" over EPS is accepted by the owner's 2/3 rule (MIN_BEARING_FRACTION, sill_bearing.py:16), not a code number; ICF-maker sign-off on sill over foam is still the adjudicator's condition. plans/TODO.md:239 is stale (see F5-109).",
+   "method": "baseline/checks.json filter check_id structural.sill_bearing_on_core; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/p6.py prints W-G-x plate profile/z; packages/engine/src/typehaus/resolve/sill_bearing.py grade()."
+  },
+  {
+   "id": "F5-002",
+   "status": "closed",
+   "evidence": "Frost wings retired (no SL-SG-FROST-* solids). FT-B-S1..S4 now bear on FB-B-S1..S4: nfs=True stone beds to z -151.4\" = 42\" below the court floor (-109.44\"); S1/S4 34\" under an 8\" footing, S2/S3 32\" under a 10\" footing (S-100 K20/K21). checks.json structural.frost_depth FT-B-S1..S4: 'reached by soil replacement ... excavated to 42\" below that same grade'. Round 1 credited wings 32\" away. Caveat unchanged: AHJ/engineer acceptance of soil replacement (S-100 note 3); bed width equals the 20\" footing width.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/p7.py (footing_beddings z0/stone_z0/nfs); checks.json structural.frost_depth; S-100 page 10 K19-K21 and notes 2-3."
+  },
+  {
+   "id": "F5-003",
+   "status": "closed",
+   "evidence": "GARAGE_ICF_6 is now named BuildBlock BB600 (foundation.py MasonrySpec unit_size, source string). Manufacturer: BB600 6\" straight block 48\" x 16\" high x 11\" wide, 2.5\" EPS each side, 6\" core (store.buildblock.com 00bb600 listing; BuildBlock CSI spec). Model: layers 2.5 + 6.0 + 2.5 = 11.0\" and stem 64.00\" = 4 x 16\" courses, so the earlier 2 5/8\"/18\" worry (Fox/Nudura) does not apply. No ESR number is cited in source= (doc only).",
+   "method": "WebSearch BuildBlock BB600 dimensions; model.walls W-GF-W layer thicknesses (/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/p5.py); wall z -76..-12 = 64\"."
+  },
+  {
+   "id": "F5-004",
+   "status": "closed",
+   "evidence": "Notes are per-assembly now (C7): A-585 (BASEMENT_12) 'Pour and steel per the S-100 schedule', A-586/A-587 (BASEMENT_8) '8\" pour, #5 at 41\" o.c.', A-590 (GARAGE_ICF_6) no 4\" XPS/#5@41 line, slab line '3-1/2\" at 4,000 psi on 2\" XPS, 10 mil poly, 4\" stone' matching SLAB_FLOOR/INTERIOR_SLAB_MIX and S-100 S1.",
+   "method": "pdftotext -raw pages 136-142 of permit_set_full.pdf; compare S-100 schedule rows."
+  },
+  {
+   "id": "F5-005",
+   "status": "closed",
+   "evidence": "S-001 now prints cover per element: 'COVER 1-1/2\" at W-GF-E, ... ; 1-1/4\" at W-B-N1 ... ; 2\" at W-B-E1, W-B-E2; PLAIN at FT-B-...' and C2 '3\" at FT-SG-*, 2\" at PT-BW-*'; S-100 R5 2\", R6 1-1/4\", R7 1-1/2\", R8-R10 3\" agree. The C1 'COVER 3.0\"' mix-default line is gone. structural.concrete_cover_meets_minimum PASS for 39 pours.",
+   "method": "pdftotext page 8 (S-001) vs page 10 (S-100); checks.json structural.concrete_cover_meets_minimum."
+  },
+  {
+   "id": "F5-006",
+   "status": "closed",
+   "evidence": "Page 8 at 80 dpi: all three note columns end above the title block (last line y~705 of 860), no clipped sentences; the ANCHORAGE list continues onto S-001.1 (page 9) under a '(CONT.)' header.",
+   "method": "pdftoppm -f 8 -l 9 -r 80 permit_set_full.pdf; Read the PNGs."
+  },
+  {
+   "id": "F5-007",
+   "status": "closed",
+   "evidence": "S-100 at 200 dpi (crops of the schedules): footing, wall, slab, sill and reinforcement schedules and the K-callout list are one-row-per-line with no wrapped elevations or overprint; the K16-K19-over-'NOT SHOWN' collision is gone ('NOT SHOWN' sits below note 19).",
+   "method": "pdftoppm -f 10 -l 10 -r 200 -x 1100 -y 150 / -y 1100 -W 1100 -H 1000; Read."
+  },
+  {
+   "id": "F5-008",
+   "status": "closed",
+   "evidence": "Footing toes re-struck (foundations.py): checks.json bearing_wall_footing FT-B-N1..N4/W1/W2 projections 4.03\"/7.97\" (outboard 7.97\" <= T 8.00\", was 8.03\"); E1/E2 2.03\"/5.97\"; S2/S3 10.00\" on a 10\" footing; check now prints '2\" <= P <= T' for each (the P <= T leg is live).",
+   "method": "baseline/checks.json structural.bearing_wall_footing messages."
+  },
+  {
+   "id": "F5-009",
+   "status": "closed",
+   "evidence": "COURT_FOOTING_12 source rewritten (footings.py:122): 7'-0\" strips, FT-SG-S 8'-4\", top at the garden floor, every one reinforced; model FT-SG-W1/E1/W2/E2 bbox 84\" wide, FT-SG-S 100\", z -121.44..-109.44; S-100 F4/F5 and R1-R4 agree.",
+   "method": "read footings.py:116-123; /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/p2.py bounds; S-100 page 10."
+  },
+  {
+   "id": "F5-010",
+   "status": "closed",
+   "evidence": "PIER_CONCRETE_14 exists (footings.py:90) and PT-BW-W/-GW/-PE/-PNE carry it (solids bbox 14.0\"); PT-BW-E/-GE stay PIER_CONCRETE_12 (12.0\"). S-100 K9-K14 print 14/12 correctly; north_entry_piers.md s13 and the clearance table (lines 74-76) carry the 14\" arithmetic. The separate min-steel issue is F5-106.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/p2.py (column assembly + bbox); grep PIER_CONCRETE_1[24] houses/catlin/params/east_posts.py; notes lines 74-76, 1531-1565."
+  },
+  {
+   "id": "F5-011",
+   "status": "closed",
+   "evidence": "Foundation details now carry the footing: caption 'FTG 1'-8\" x 8\" - TOES 2\" / 6\" - BRG EL. -9'-9 1/2\"' (A-585), 'TOES 8\" / 4\"' (A-586), 'TOES 6 7/8\" / 7 1/8\" - BRG EL. -7'-0\"' (A-590), footing block drawn in each; A-501 dimensions '8\" 8\" 4\"' and '1'-8\" ftg'. Toes agree with the model (12\" wall 2.03/5.97; garage 14\" of footing beyond the 6\" core split 6.875/7.125\"). A-588/589 mis-drawn leaders are new finding F5-107.",
+   "method": "pdftotext/Read pages 48, 136-141; checks.json bearing_wall_footing toes."
+  },
+  {
+   "id": "F5-012",
+   "status": "partial",
+   "evidence": "The 'Catlin House / SHEET / MATERIALS' watermark stack is gone (C7 D2-001) and duplicated layer rows are gone, but A-585/A-586/A-588/A-589 still overprint '4\" XPS (2 layers)' on the layer stack, put '5 1/2\" stud'/'4\" CI' tags over the detail, and place K1/K2/K5 bubbles on the footing caption; see F5-107.",
+   "method": "pdftoppm -r 220 crops of pages 136, 139, 140."
+  },
+  {
+   "id": "F5-013",
+   "status": "closed",
+   "evidence": "A-501 page 48 lists each foundation layer once (xps-b 2\", xps-a 2\", waterproofing 0.06\", concrete 8\" appear one time each).",
+   "method": "pdftotext -f 48 -l 48 -raw permit_set_full.pdf; Read the PNG."
+  },
+  {
+   "id": "F5-014",
+   "status": "closed",
+   "evidence": "Bars unchanged (W-B-N1 verticals z -108.2..-14.7 in a wall z -109.44..-13.44, no hook, no dowel) but the set now says so: S-001 'FOOTING DOWELS: none at W-B-N1.. ; verticals stop at cover over the strip, base restrained by SL-B-FLOOR, SL-SG-FLOOR. SDC A; IRC R403.1.3 asks them at SDC D0-D2 only.' That is the adjudicator's E22 recommendation. I did not re-read R403.1.3 itself.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/F5/p10.py (bar z extents per host); pdftotext page 8 line 'FOOTING DOWELS'."
+  }
+ ]
+}

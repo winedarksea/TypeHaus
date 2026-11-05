@@ -1,231 +1,296 @@
-# Geometry & dimensional-accuracy review — report (2026-10-31)
+# Geometry & dimensional-accuracy review — open items (round 2, 2026-11-05)
 
-Review of SHA `247a13e9`. The review ran in three phases:
+Current state of the review. Round 1 reviewed `247a13e9` (2026-10-31, 244 findings). Round 2
+reviewed `539d9a81` (2026-11-04). It re-probed every round-1 id, found 246 new findings and
+fixed the small ones. Fully resolved round-1 prose has been removed; the record is in
+`findings/`, `adjudicated/C1..C7.md` (round 1) and `2026-11-04/` (round 2: kit, findings,
+`adjudicated/C1..C5.md`).
 
-- **Phase 1:** 26 Sonnet reviewers produced 244 findings. Six thin areas were sent back once (S2, O3, O4, F1, I4).
-- **Phase 2:** 7 Opus adjudicators re-measured every finding, fixed the small ones and escalated the rest. Their verdicts are in `adjudicated/C1..C7.md`.
-- **Phase 3:** the coordinator integrated the work and ran the gate.
+- **Phase 1:** 27 Sonnet reviewers. S1 merged round 1's S1+S2. M1 split into M1 (ERV air side)
+  + M4 (branches and fittings), M2 into M2 (supply) + M5 (DWV). Every reviewer reconciled
+  its round-1 ids first. No re-brief was needed.
+- **Phase 2:** 5 Opus adjudicators (C1–C3, then C4–C5) confirmed each prior status by their
+  own probe, fixed the SMALL items under the round-1 rubric (`README.md`) and escalated the
+  rest.
+- **Phase 3:** coordinator integration, gate and this report.
 
-The method is in `README.md`.
+**Gate result.**
 
-| | fixed | escalated | rejected | handed off |
+| | baseline `539d9a81` | after round 2 |
+|---|---|---|
+| `haus check --only all` FAIL | 0 | **0** |
+| UNKNOWN | 208 | **205** (3 court-wall `electrical.wall_device_opening` now PASS; no new UNKNOWN by check + element) |
+| `haus print` (gated) | 83 / 176 sheets | 83 / **177** (+E-602.1), both printed through the gate |
+| `scripts/verify.sh` | — | **green**: 10,553 passed, starter 358, catlin strict, ruff, UI typecheck and tests |
+
+The first `verify.sh` run failed 3 tests: the two golden sets and the overlap ratchet. The
+ratchet had caught a real regression. C4's TOTO supply stations put the Aquia IV stop 4 3/4"
+AFF, into the 3 1/2" base (`baseboard|shutoff`, 100 cm³). It is now set at 7" AFF
+(`fixture_types_wc.py`, `mep_supply_branches.py`). The goldens (`catlin_elevations.json`,
+19 section scenes) were blessed after reading every diff, and the second run was green.
+
+| | round-1 ids | closed | partial | open | obsolete / superseded |
+|---|---|---|---|---|---|
+| confirmed by adjudicator probe | 244 | 177 | 50 | 14 | 3 |
+
+| new findings | wrong-build | drawing-error | model-only | doc | build-blocker |
+|---|---|---|---|---|---|
+| 246 | 57 | 68 | 53 | 68 | 0 |
+
+| cluster | fixed | escalated (items) | rejected | handed off |
 |---|---|---|---|---|
-| C1 stairs & guards | 5 | 4 | 4 | 4 |
-| C2 openings | 5 | 24 (12 groups) | 6 | 15 |
-| C3 structure | 13 | 23 | 4 | 28 |
-| C4 envelope | 4 | 5 | 5 | 5 |
-| C5 interiors | 7 | 12 (10 groups) | 6 | 14 |
-| C6 MEP | 8 | 17 (11 groups) | 8 | 7 |
-| C7 set & viewer | 42 + 4 partial | ~40 (11 groups) | 5 | 6 |
+| C1 stairs & openings | 9 + 3 late | 11 + 1 late | 2 | 7 |
+| C2 structure | 14 | 13 | 2 groups | 30 (21 to C5) |
+| C3 envelope & interiors | 14 + 1 late | 13 | 8 | 22 |
+| C4 MEP | 13 | 17 | 1 | 10 |
+| C5 set & viewer | 18 rows (~30 ids) | 8 groups | 4 | 3 |
 
-Handoffs mostly converged on C7; the few left open are listed at the end. No finding was a
-true build-blocker at the reviewers' measured confidence. The gate result:
+## 1. Open escalations
 
-- **`haus check`:** the FAIL list is identical to the baseline. The only FAILs are the two `code.R311_7_1_stair_width` lines on ST-S2A. UNKNOWNs went from 202 to 200, because two `advisory.trim_device_clash` findings cleared.
-- **Permit set:** both sets regenerate with the same 63 and 158 sheets, numbered as before.
-  They are written ungated to `houses/catlin/out/geometry-review-2026-10-31/after/`, beside
-  the baseline set.
-- **`scripts/verify.sh`:** the engine suite passes (10,210 passed) and so do the starter
-  checks. The catlin strict check then stops the script on the two baseline FAILs, which were
-  already red at `247a13e9`. The stages it skips were run by hand: ruff is clean, the UI
-  typecheck is clean and `npm test` exits 0.
-- **Not done:** the plan's headless screenshot of the window-bottom case. The fix is verified
-  by probe (frames 3.66"/3.25", coplanar stool/rail overlaps 39 → 1) and by the viewer mirror,
-  not by eye; `plans/TODO.md` keeps a line to confirm it in the viewer.
+Ranked by construction-set impact, then build risk. "→" is the adjudicator's
+recommendation. Evidence, options and blast radius are in the cited `2026-11-04/adjudicated/`
+entry (`C2 E1` = C2.md, escalation E1). `carried` names the round-1 item.
 
-## 1. Escalations awaiting the owner
+### Structure, code minimums and wrong-build prints
 
-Ranked by construction-set impact, then build risk. "→" is the adjudicator's recommendation.
-Full evidence, options and blast radius are in the cited `adjudicated/` file.
+1. **Centreline strip footings undersized** (C2 E1, F5-101) · new. FT-B-CS/CS2/CN/CN2 are
+   20"×8". IRC 2018 Table R403.1(1) (read on up.codes), with footnote b scaled to the 36'
+   depth, gives 29×9 (2-story + bsmt) or 32×11 (3-story + bsmt) at 1,500 psf. S-001 prints
+   1,500 psf while the engine maps GM to 2,000. A hand bearing check from the house's own
+   3,205 plf comes to about 2,023 psf. No check grades strip width.
+   → Widen the four strips (and thicken them for P ≤ T) and add a typed R403.1(1) check. M.
+2. **Duct system not specified** (C4 E1, the owner's concern, M1/M4 checklist) · carried
+   (item 17) + new. The set prints no duct spec. The model and BOM have no round-duct gauge,
+   no hangers (about 120 points), no named collar or balancing dampers, no tees, take-offs,
+   reducers or boots (M4-102), no Broan port kit (6-to-8 transition + 12" flex, M1-103) and
+   no duct schedule. 15 legs are too short for even a mitre pair (M4-101). 8 terminals sit on
+   a different section with no boot (M4-103). The checklist table is in C4.md "Duct
+   specification".
+   → One `DuctStandard` (like Trim/Box/Drywall) that derives, bills and schedules the parts. L.
+3. **ERV port wiring and the OA/EA/RET hold** (C4 E2 + E9, C3 I4-101, C2 E13) · carried
+   (item 17).
+   - DU-ERV-EA starts on Broan port 1 and RET-TRUNK on port 3: the two exhaust streams are
+     cross-wired. Whoever releases the hold must not keep these starts.
+   - The `DU-ERV-OA` riser stands in the FO-M-ERV-OA chase under D-M-MECH's doorway, where
+     the floor is a ¾" fireblock sheet. That sheet cannot be walking deck as modelled.
+   → One re-route of OA/EA/RET with a ledgered deck lid. M.
+4. **Balcony fascia guard mounts** (C1 E9 + C2 E2, S3-101/103/106/108/110, F6-101/103,
+   F3-108) · new.
+   - The 5/16"×4" bolts cannot reach a block: fascia + rim + block is 3.75".
+   - The rim is a non-stock 1.25×11.25.
+   - The drip passes through every front bracket.
+   - The posts are 49 7/8" where Ultralox stocks 48".
+   - C2 fixed the metres-vs-feet blocking bug (F6-104).
+   → One package: 2x12 KDAT rim, double blocks tight to the rim, and Ultralox's
+   SD04964 5/16×6" screws (2025 guide p.37). M.
+5. **DWV vent rules and the three unvented fixtures** (C4 E11–E13, M5-101..105/109) ·
+   carried (item 18).
+   - Nine vents leave their drain horizontally at centreline height (UPC 905.2 / MN 905.3).
+   - `mep.trap_arm_developed` counts a vertical drop as arm (UPC 905.5/1002.4).
+   - FX-M-BATH2-TUB, FX-S-SUITEBATH-LAV and FX-S-SUITEBATH-TUBSH are still refused by
+     `haus route --fixture`. The suite-lav supply lane is now open, and TUBSH needs its arm
+     re-routed (90" against 42").
+   - Two vent tees sit on cleanouts.
 
-### Blocks the permit print or misprints what a trade builds from
+   Moving the 3D walk under the CODE id adds 3 FAILs today.
+   → A plumber layout pass, then the rules. M–L.
+6. **Exterior doors on the joist-top datum** (C1 E1, O3-103 = F1-102 = F3-107) · carried
+   (TODO). D-M-ENTRY, D-M-PORCH and D-S-BALCONY keep their RO base at the joist top, ¾" under
+   the subfloor their walls stand on. The model keeps the subfloor continuous under the
+   sills, while A-513.2 draws it cut back.
+   → Confirm the subfloor is cut back, model a deck void per sill and print the datum (S).
+   The alternative is re-deriving the installations, which breaks D-S-BALCONY's catalog fit (M).
+7. **Holes through floor framing** (C2 E3/E4, C4 E6/E7, F3-101..103) · new.
+   - **Suite vent through the TJIs:** `PR-S-SUITEBATH-VENT` bores 9 TJI 230s 10.7" from the
+     support, where ESR-1153 Table A needs 18". The engine grades no I-joist hole rule.
+   - **8" ERV trunk through the floor trusses:** `DU-M-ERV-EXH-TRUNK` passes 23 owner-basis
+     2x4-web trusses with 0.25–0.44" to spare.
 
-**Status 2026-10-31 (later): items 1–7 are resolved** (each `adjudicated/` entry carries a
-"Resolved" line). `haus print` passes the gate at 74 sheets (was 63: S-001.1, S-602.1, the five
-plant-rim details, A-512.1/.2, A-513.1/.2). New checks: `integrity.header_under_plate`,
-`integrity.transition_shadowed`, `electrical.panel_handle_height`. Follow-ups are in `plans/TODO.md`.
+   → Move the vent run to x ≤ 100.7" and add the ESR-1153 rule. Get a fabricator
+   submittal for the trunk, or use a 7" / twin-6" trunk. S–M.
+8. **S-102 snow note** (C5 #3, F4-101) · new, prints wrong. `_snow_load_note` prints
+   Pf 35 psf at Ct 1.0 for the unheated garage and canopy. The house basis and the truss order
+   are 42 psf (Ct 1.2) plus drift.
+   → Read Ct per roof. S.
+9. **14" north-entry pier cage at 0.806%** (C2 E6, F5-106) · carried (engineer hold). That is
+   under ACI §10.6.1.1's 1%. → (6) #5 (1.21%), or an EOR letter. S.
+10. **Header sizing** (C2 E5, F1-104) · carried. Headers are sized by a span-only ladder, and
+    nothing grades them against IRC Table R602.7(1). L.
+11. **Interior stair guards drawn off the joist-top datum** (C1 E2, S1-105, S3-102/104) · new
+    + carried.
+    - Four surface guards sit 1.5" below the finished oak, and the interior guard type has no
+      mount spec.
+    - Correcting the datum pushes RL-A-STAIR's east post 1.0" into the roof underside.
+    - The bases need blocking (C2).
+    → Datum, mount spec and blocking together; the roof clash is an owner call. M.
 
-1. **ST-S2A guard posts stand 2.9" inside the 36" flight and on the head landing**
-   (C1-E1: S1-001, S3-001/002, S1-002). This causes both baseline FAILs and keeps `haus print`
-   shut. `code.R311_7_6_stair_head_landing` cannot see guard posts, so it reports a false PASS.
-   → Surface-mount RL-A-STAIR on the deck (Williams 42" surface kit), base flush to the well edge.
-   That clears both FAILs (36.00" / 32.55"); then teach the head-landing check to read posts.
-   Alternatives: end the guard at the newel, or widen the flight (size L).
-2. **Schedule sheets overprint** (C7-E1): S-602, S-601, S-101.x, S-100 and S-001. This is not
-   the root cause that was fixed: schedule widths are reserved in model inches but print at the
-   minimum font, about 3× wider. → Continuation sheets, which add and renumber sheets.
-3. **Plan dimension strings** (C7-E2: D1-001..004). Interior chains run to the near stud face
-   and no sheet states the reference. Every string rounds to whole inches, so the A-104 chain
-   sums to 36'-1" under a 36'-0" overall. The S-100/S-101 "overall" strings measure bearing
-   axes only, and there are no locating strings on the framing plans.
-   → Pick and state one convention (face of stud), print to 1/8", and add locating strings.
-4. **Detail sheets carry no dimensions or enlarged parts** (C7-E4): A-501..A-511, the A-512
-   head and sill, and A-507 has no tub, valve or tile. → A dimension pass on the authored
-   details, plus enlarged head/sill details.
-5. **The plant-room vapour-barrier rim detail never derives** (C5-E10, new). Transitions
-   match first-wins and `TR-CATLIN-RIM-BAND` precedes `TR-CATLIN-PLANT-RIM`, so all 5
-   `*PLANT_*` rim keys print the generic band. About 20 interior rim/stack details also inherit
-   envelope continuity data. The drawing side is fixed; the data is not. → Reorder the
-   transitions and add interior transitions without continuity. The set gains up to 5 sheets.
-6. **Headers run into the top plates**: D-G-SERVICE by 2" (C3-E1) and D-B-SUNKEN by 4⅝" on a
-   bearing wall (C3-E2). → Re-seat each header under the plates. This moves the RO or plate
-   height, which is an owner call.
-7. **Service panels sit 60–96" AFF**, so the top breaker handle is about 90" against
-   NEC 240.24(A)'s 79" (C6-E8: M3-002, plus M3-006 for raceways through the working space).
-   Nothing grades it. → Lower the panels and re-run about 10 conduit starts. Add a check.
+### Construction set (misprints and missing content)
 
-### Structural fit (needs a design or engineering decision)
+12. **Label overprints and K-bubbles with no target** (C5 #1) · carried (items 2/4 residue).
+    About 30 detail sheets and the plan room labels are affected. Detail chrome, ladder rows,
+    bubbles and captions are never dodged against each other.
+    → One `annotation_layout` obstacle set. M.
+13. **Missing structural schedule rows** (C5 #4): D-B-SUNKEN's LVL band header, pier cages
+    and dowels, ridge LSSR2.37Z/LSTA24/stiffeners, the 128 backing bands, and S-601's Material
+    column (red-oak blocking prints as 2x6). M.
+14. **Opening details per kind** (C5 #2, O4-103 rest): the B&B entry door and the garage
+    windows have no derived detail. A-513 is now cut at a window. S–M.
+15. **Plan chains** (C5 #5, D1-104/105/108): interior chains drop the x=18' bearing walls,
+    the N-S chains on S-101.x are untied, and the S-101.1 overall includes the brick veneer.
+    S–M.
+16. **Plumbing and electrical sheet content** (C5 #6): CW/HW labels, a stub-height table, an
+    enlarged furnace-room plan, E-101/E-102 at ≥ 3/16", and ERV OD/port tags. M.
+17. **Rim-band sheets** (C5 #7, F3-004/105/112): `floor_band_at` scans every floor, so the
+    garage and porch print the house TJI band. S–M.
+18. **Drawing gaps in C1 areas** (C1 E8): no stair geometry strings, no guard/handrail
+    detail, A-601 hardware sets and jamb depths, B&B window details, plant-window membrane,
+    and the A-602 product column. M.
+19. **Smaller sheet items** (C5 #8, about 20, all S): cover-index truncation, the A-501 cut on
+    W-B-CW's axis, the RIDGE EL basis, "Eave" titles on partition sheets, S-001.1 engine text,
+    the kitchen casework sheet (I1-106), bath setout (I2-005/006), the MDO screen (E2-103), and
+    E-602.1's Load/Room/Control cells, which still clip.
 
-**Status 2026-11-01: items 8–13 are resolved** (each `adjudicated/C3.md` entry, E3, E5–E8 and
-E10–E14, carries a "Resolved" line). Decisions #108 (truss heel at the outside face of
-bearing), #109 (roof plane anchored at the heel, true plumb depth), #110/#111 (walls on the
-subfloor; the cap at +¾").
+### Fit and product data
 
-8. **The garage sill bears 3⅝" of its 5½" on the ICF core**, with 1⅞" over EPS (C3-E8: F5-001).
-   This conflicts with the recorded "coplanar outside" decision.
-9. **The RF-HOUSE birdsmouth cuts 1.47" plumb into the TJI 230 bottom flange** (C3-E5: F4-001).
-   → Read Weyerhaeuser TJ-4000 / TB-805, or switch to a beveled bearing plate.
-10. **HU28-2Z (a double-2x8 seat, 3⅛") hangs a single 2x8** on BM-BW-SCSILL (C3-E11: F6-001).
-    → LUS28Z.
-11. **Frost wings are credited from 32" away** (C3-E10: F5-002). `structural.frost_depth`
-    shields on distance alone, so FT-B-S1..S4 are 8" below the court floor. Needs an engineer.
-12. **Canopy trusses bear 2¾" on 5½" glulams**, the heel lift treats the chord as plumb, and the
-    north-entry seat-beam hangers sit 1.1" below their posts with the shim pack modelled at no
-    height (C3-E6, E7, E12–E14).
-13. **The floor-to-floor stack does not close** (C3-E3: F3-001). Sole plates start inside the
-    3/4" subfloor; a real stack is 120.625" per storey against the modelled 120". This is a
-    recorded split, not a bug. → Start walls on the subfloor and cut studs to 102⅞", keeping
-    the storey datums.
+20. **Exterior door head gaps and sill seats** (C1 E3, O3-101/102/004/008, S2-002) ·
+    carried. D-M-PORCH and D-G-SERVICE have 0" head gap. The MMI sill crest is a supplier hold. S.
+21. **Interior door RO height and undercut** (C1 E5, O1-101/102/107/108) · new. ROs are
+    81.51" over the finished floor, against JELD-WEN's 82 7/16" and Masonite's 82". There is
+    no undercut, and A-601 has no column for it. Leaves are modelled 45 mm, not 1 3/8". S–M.
+22. **Hot-water header connections** (C4 E10, M2-101/102) · new. The trunk's last leg is
+    perpendicular to the inlet socket. No bend supports within 6" of the outlets
+    (Uponor submittal). S.
+23. **BD8 backdraft damper on the ERV exhaust hood** (C4 E3, M1-102) · new. Broan forbids it
+    (it freezes). Removing it reverses a recorded reason in `erv_static_budget.md` and gains
+    about 8 Pa. Owner call. S.
+24. **ERV static margin and airflow split** (C4 E4, M1-104/M4-112) · new. The 0.9 cfm R403.5
+    margin uses a smooth-elbow coefficient for stamped elbows. Eight legs' duct and register
+    cfm disagree. S–M.
+25. **EQ-M-ERV-MAN-SUP has no feed** (C4 E5, M1-111) · carried (TODO). M.
+26. **Kitchen fridge hinge** (C3 I1-101) · new, owner-visible. The fridge sits 5/16" off
+    W-M-PAN-S, while the door at 90° needs 35.82".
+    → Hinge at the pair seam (kit TTDRRVFRKIT). S.
+27. **BATH2 shower backer** (C3 I2-105) · carried (TODO). Swan allows gwb-mr, but §6 asks for
+    glass-mat under the membrane.
+    → Glass-mat on the two closed walls, about 48 sf. S.
+28. **Other interiors** (C3), each S unless noted:
+    - Hall-bath insert nailers at 81–84.5" vs a 71–76.5" flange (I2-101).
+    - TOTO tanks ¾" off the wall (I2-102).
+    - The 1/2" "gwb-x" should be Firecode C (I4-103).
+    - The sauna step abuts the shower pan (I3-108).
+    - Tile mortar and SurePly allowances (I4-004/005, carried).
+    - D-A-STUDY / D-A-POCKET onto unfinished subfloor (I4-107, carried).
+    - The Murphy door datum is ¾" low, read off the subfloor (C1 late, I3-103).
+    - The 4" rubber cove base needs a per-kind height (C1 E6, O2-101).
+29. **Envelope** (C3):
+    - The entry-screen wall end runs into the garage's corrugated layer (E2-101).
+    - MDO panel 4 edge screws skip 11.2" (E2-104).
+    - Partition/roof sheets titled "Eave" (E1-107).
+30. **Other structure** (C2 E7–E12):
+    - Backing bands vs runs and band overlaps.
+    - The backing face test and the R602.6 edge offset.
+    - Seat-beam ends 0.13" inside the CBSQ66 strap (F6-102).
+    - CBSQ66-SDS2 → CBSTQ66Z-SDS2 part number.
+    - Unsized derived IUS.
+    - Smaller items.
+31. **Other openings and stairs** (C1):
+    - ST-M2S stringers and skirts bear on the floating LVP (E4).
+    - Trim residue (E6).
+    - Window stools through the buck jambs (E7, 34 pairs).
+    - Handrail products (E10, bracket 7 is a custom 26.5" L).
+    - Owner-scope opening items (E11).
+32. **Other MEP** (C4 E8, E14–E17):
+    - Runs through backing bands.
+    - Supply open items.
+    - Electrical: sconce footprint, 26 flush boxes on studs, DVFR1W.
+    - `drain_tie_in` message.
+    - `mep_registers.py` at 693 lines.
 
-### Fit and product data that change what is built
+## 2. Fixes applied this round
 
-14. **BBD75 band**: the lower panel top sits 7.5" past its last girt with nothing to screw to,
-    and the lap check reads the trim leg (2½") rather than the true 1.5" (C4: E2-001).
-    → Lower the band girt course. An honest lap check would add a FAIL until then.
-    → **Resolved 2026-11-01:** band girt derived from the joint (226–229.5"); lap graded 1.59" vs a derived 1.50"; new
-    panel-top girt check (`cladding_panel_tops.py`).
-15. **The B&B window head trim is the PBR part** (coordinator, O5-005). Metal Sales' BBD75
-    guide (10/2025 p.16) publishes its own board-and-batten **Head Trim 58720XX** and Window
-    Closure 55539XX, but every B&B window uses PBR's 58114XX. → Swap the B&B heads to 58720XX
-    and re-check the K6 cap lap against its 2½"/1⅛" profile.
-    → **Resolved 2026-11-01:** 58720XX added to the library but **not** swapped: it is trim-first, needs ~0.38" over
-    the frame head (the buck leaves 0.27"), and its back leg rises 1.05" above K6. Owner kept 58114XX.
-16. **3" stacks in 2x4 walls**: W-M-STOS and W-S-DC2 stud-005 (C6-E5/E6, = F2-004/005). The
-    bore checks ignore pipe insulation (C6-E3, which would add 2 FAIL) and treat exterior walls
-    as non-bearing (C6-E4, which would add 3 FAIL on W-A-HALL-S).
-    → **Resolved 2026-11-01:** `haus route` found no lane into W-M-HS1 or the chase (the ERV exhaust trunk walls off
-    FS-S-WEST), so W-M-STOS is a staggered 2x6 wet wall (owner accepted; mud closet 29½"). The
-    W-S-DC2 drop moved 3" to mid-bay. Bore checks gained the lagging fact and an outdoor-facing exterior set.
-17. **Ducts**: the ERV start points aren't on the Broan B210E75RT collars (C6-E1). 39 of 156
-    round legs are shorter than the elbows at their ends need (C6-E2). Both need a re-route.
-    → **Partly resolved 2026-11-01:** Broan's port grid and rotation authored; the supply trunk
-    lands on its collar. OA/EA/RET cannot leave their collars under the plenums (21.3" of headroom)
-    and are held by the owner (TODO). Laying-length term added; short legs 43 → 28 of 163.
-18. **Trap arms** are measured as plan distance, and vents aren't connected in 3D (C6-E7).
-    → **Partly resolved 2026-11-01:** `mep.trap_arm_developed` walks the 3D arm (ADVISORY); 8 more
-    fixtures vented in 3D; 13 wait on a plumber layout pass before the switch to CODE (TODO).
-19. **PLAY-N sconces cannot cover a RACO 232 surface box** (C6-E10; confirms the TODO). The TV
-    also sits over two surface boxes (C6-E11).
-    → **Resolved 2026-11-01:** luminaire box row (RACO 192 + flat 753), `electrical.canopy_covers_box`; the TV on a
-    3½" stand-off; the fridge pair's receptacles in recessed DVFR1W boxes.
-20. **Window reveal**: the buck-lined interior reveal of an outie window (2.3–2.75") has no
-    specified finish (C2-E1). → A derived jamb-extension board. The Drutex sill rail may be
-    125 mm against the 2.953" stool rule, pending the DAKAM drawing (C2-E10).
-    → **Resolved 2026-11-01:** gypsum returns on the buck's lining to the frame, 3/8" ply fur where the stud zone steps
-    0.395"; optional `WindowType.sill_rail_height` / `sash_overlap` await DAKAM.
-21. **ST-G-SERVICE top riser**: it ends at the deck, not at the MMI threshold above it, giving
-    about 7.8–8.3" against 7.75" (C1-E2 = C2-E9). The fix needs MMI's sill height, which is
-    unpublished.
-    → **Resolved 2026-11-01:** the flight tops at the +1.5" threshold envelope (5 × 7.10"); `stair_end_risers` reads the
-    crest. MMI's sill height stays a supplier hold.
-22. **Kitchen**: the fridge columns have 1/8" behind them against Frigidaire's 1" (C5-E2). The
-    north-run 1.319" build-up under the stone is unspecified (C5-E1). The stone is 1/4" past
-    the fronts, not 1"; changing it breaks pinned fabrication tests (C5-E3).
-    → **Resolved 2026-11-01:** 1" rear / 3/16" sides, bay 66¼" (PANTRYC ½" south); 1⅝" past the frames, peninsula
-    40⅝" (owner); the 4" leg + ¾" ply sub-top + 1/16" stack on every kitchen run.
-23. **Floors**: the carpet stack is modelled at 0.75" but its published parts add to ≥ 1.0",
-    which moves the bedroom thresholds (C5-E5). No transition product exists at 58 doorways
-    (C5-E6).
-    → **Resolved 2026-11-01:** 3/8" cushion, 1.0" stack, no plywood; Z-bars at carpet doors; 13 doorway products in
-    `plan/doorway_transitions.py`. Unfinished-subfloor and D-M-MECH doorways remain (TODO).
-24. **Smaller product and data items**:
-    - Interiors: the Swanstone surround is 96" but modelled at 106" (C5-E4). One J-bead serves
-      two board thicknesses (C5-E7). The sauna base runs behind the benches (C5-E8).
-      `clear_height_m` ignores dropped ceilings (C5-E9).
-    - Doors and trim (C2-E2..E8): MDF casing is 11/16" against the modelled 3/4". Bypass ROs
-      use the swing equation. Jamb depths are unspecified for 7 doors. The mudroom base stands
-      proud of its casing. The Murphy RO datum is unconfirmed. Exterior door frames are
-      anchored to the studs.
-    - Roof (C4 E1-002/007/008/009): Metal Sales has a part-numbered vented ridge for the
-      garage. 4" round leaders are not a Metal Sales part. Ridge end caps are unbilled. The
-      garage and canopy seams are out of register.
-    - Structure and viewer (C3 E4/E9/E15–E23, C7 E3/E5–E11): see their files.
-    → **Resolved 2026-11-01:** Swanstone on its base + TK-105 cap + painted band; J-bead by board thickness; sauna
-    benches stop the base; `clear_height_m` reads dropped ceilings (exposed the sauna's R305; ceiling
-    raised 1" to 7'-0 1/16" after re-routing three runs out of its liner). Doors/trim: per-stock thickness, bypass RO branch, derived jamb depth, Murphy FF datum
-    (now a 32" custom unit), mudroom base on gypsum, sheathing-anchored frames. Roof: vented peak +
-    Profile Vent (R806 PASS 562/553), 4×3½ leaders, ridge end closures, seam register. Structure:
-    TJI 230 / IUS2.37, backing cut at studs + `datum`, BB600 named, sills drawn, P ≤ T live (S2/S3 at
-    10"), PIER_CONCRETE_14, dowel note.
-
-## 2. Fixes applied
-
-Every fix carries a cited real dimension and a probe-measured before and after; the full rows
-are in each `adjudicated/C*.md`.
+Every fix carries a cited dimension and a before → after probe in its `adjudicated/` row.
 
 | cluster | fix | effect |
 |---|---|---|
-| C2 | **O4-001** Window frame drawn at `WindowType.frame_depth`, not to the pan dam (`geometry_openings.py`; `WindowSeat.frame_depth_m` served) | Frames 5.44" → 3.66" / 3.25". Stool/rail coplanar overlaps 39 → 1. This is the TODO's glitchy window bottoms |
-| C7 | Viewer mirror of `window_seat.frame_depth_m` (`openings.ts`); floor-truss blocking drawn as boxes (U1-003) | The viewer matches the engine |
-| C2 | O4-002 Returns stop at the sheathing face | Return area 171.9 → 158.0 sf |
-| C2 | O1-001 Sole plate cut across the whole pocket cavity | Leaf bottoms no longer sit over a 1.5" plate; 9.6 LF of plate removed |
-| C2 | O2-005 No floating casing head when both legs drop; O4-007 note | — |
-| C3 | **F2-001/002** Backing advisory reads the absolute body bottom; BK-G-S-EVSE re-authored | The EVSE band moves 29.5–40.75" → 7.5–18.75" and now covers the EVSE |
-| C3 | F1-003 Plates over 20 ft bought spliced | S-601 loses its 36/28/24/22 ft sticks; 2,374 LF unchanged |
-| C3 | F3-003 Main deck seats on the mudsill above concrete | Rim moves 1/2" to the framed wall face; seat 6¾" → 4¼" |
-| C3 | F3-006 / F6-005 I-joist ends bill IUS, trusses THA422, FS-BW-FLOOR LUS28Z | Correct hanger families |
-| C3 | F2-012, F6-007/008, F5-009, F2-010, F3-011, F4-010 | Profile name, source and quantity text |
-| C4 | **E1-001** Roof-edge pieces store slope length, not plan length | Rake 52126XX 16 → 20 ea; cleats 16 → 20, 40 → 44; fascia, soffit and closure LF up |
-| C4 | E1-005, E2-007, E2-008 | Note and citation text |
-| C5 | I3-002 Sauna exhaust hatch rotation; I3-005 PAX corner height; I1-007 Broan hood size; I1-005 DW face flush; I1-008 AXSTAD articles; I3-004 sauna headroom 83 1/16" | Each corrected to the cited product sheet |
-| C6 | **M3-003** Conduit and sleeve solids at true OD (e.g. 3/4" EMT 0.75 → 0.922") | Overlap golden re-blessed |
-| C6 | I2-008 Carlyle II at TOTO's 16½ × 28 5/16 × 28¾ (flange held); I2-001 powder-room receptacle moved off the mirror wall; M3-004 attic switch/AP clear the casing; M1-005 grille face; M1-007, I2-010 | — |
-| C7 | **D2-001** Paper-space card text no longer printed in model space (`sheet_writer.py`) | Clears the pile-ups on A-512, A-515, A-554, A-570, A-586..589 and ~20 more |
-| C7 | **D2-002** `{glob}`-scoped sheet notes (`sheet_notes.py`); eave and foundation notes scoped | A-591 no longer prints the basement wall, #5@41" and veneer; slab reads 4,000 psi on 2" XPS |
-| C7 | A-301: T.O. PLATE is the real plate (main 10'-0" → 9'-0", second 20'-1" → 19'-0"); bubbles only where cut; CLG overprint | — |
-| C7 | A-592 now draws; A-105 drops false overhangs; truss length 24'-0" → 26'-8"; fractions ("3 5/8"" not "3.62"); gwb types; A-514 24 ga; ICF "2 1/2" EPS" | — |
-| C7 | A-601 pocket kit RO 74.5", 1/8" ROs; A-602 "Rough opening"; A-603 Base/Walls filled and ceiling board, not paint | — |
-| C7 | P-10x pipe sizes as fractions (1/2" no longer "0""); slope from horizontal grade (4.79 → 0.26"/ft); round ducts "4" RD"; E-602/E-603 layout; E-601 area 4,479 → 4,900 sf (service load 271.4 → 273.5 A, PASS) | — |
-| C1 | `floor_heights.md` deck datum, porch-stair x, handrail and rail citations | Text only |
-| coord. | `prices.toml` IUS allowance; TP-holder test follows the corrected Carlyle depth; pocket docstring; sauna headroom and SF-S-DUCT figures in `houses/catlin/CLAUDE.md` | — |
+| C1 | Pocket split studs seat on a cut neighbouring plate (`resolve/doorway_framing.py`) | 4 of 9 floating 1.5" → all seated |
+| C1 | Porch stair pad outline matches SL-SG-STAIRPAD (`plan/site.py`); C2 the quantity | C-101 stair area +7 sf |
+| C1 | MDF casing 11/16", pine base 23/32" descriptions; A-601 net clear to 1/16" | D-M-ENTRY reads Therma-Tru's 2'-9 5/16" |
+| C1 | Sauna door head casing 2 1/2" (`plan/millwork.py`) | casing top 84.95" → 83.95", under the 84 1/16" ceiling |
+| C1 | Stair notes at decision #112 rises; 81° service-door stop; stool height; window handing and supplier asks; 58114XX on B&B as accepted deviation | doc |
+| C2 | Flank rollover blocking metres-vs-feet (`params/sunken_garden.py:2542`) | x=103: 6 → 3 blocks, x=329: 0 → 3 |
+| C2 | Girts, straps and rims bought spliced like plates (`takeoff/framing.py`) | no stick over 20' on S-601 |
+| C2 | `mep_bores.py` 507 → 439 lines (`mep_bore_verdict.py`, `mep_bore_flat.py`, re-exported) | — |
+| C2 | A-502 cut onto a truss line (`plan/views.py`) | the truss bearing detail draws a truss |
+| C2 | Four backing bands moved to their bodies' face | BK-M-HS1-HIGH, BK-M-C5-MID… |
+| C2 | Diaphragm cites to SDPWS Table 4.2C; S-001.1 cast-in CBSQ66 note; stale deck/rim/ABU prose; catlin CLAUDE.md attic roof line | doc; ratios unchanged (about 1.8× conservative) |
+| C3 | Wind clamps on seam stations; south trio re-hosted on RF-BW-CANOPY (`plan/wind_clamps.py`) | 7.56" off seam → on seam |
+| C3 | Paint `_rooms_facing` drops a one-station sliver (`resolve/room_paint.py`) | W-A-STU-N studio face PT-3 → wall paint (only face changed) |
+| C3 | RM-A-STUBATH ceiling gwb-mr | +34 sf gwb-mr |
+| C3 | Peninsula/living end panels to the stone underside; study leaf cut 19 7/8" | gaps 13/16–15/16" → 0; 5/16" → 1/16" scribe |
+| C3 | Leader straps bill once: 58110XX ×6 (`takeoff/anchors.py`, `takeoff/cladding_trim.py`) | SS316 #13 ×6 no longer billed |
+| C3 | Roof-vent margin 873 vs 553 in²; K7 1 15/16" air; counter build-up stated once; Frigidaire 35.82"; LVP gap premise | doc |
+| C4 | Supply-plenum trunk port on the trunk; EWC 4RSD attached to the plant register | port 7.7" → 0"; damper reaches the BOM |
+| C4 | Code cites IRC M1601 → IMC 603.4 / Minn. R. 1346; vent termination (MN deletes P3103); sealing UL 181B-M / 181B-FX | doc |
+| C4 | Per-type TOTO WC supply stations (`wet_ports.py`, `fixture_types_wc.py`); suite lav legs off the vent line | Aquia/Drake/Carlyle stations from SS-02072/02049/01809 |
+| C4 | `electrical.wall_device_opening` finds foundation walls | 3 UNKNOWN → PASS |
+| C4 | ED-A-STUBATH-CAN1 onto its ceiling; RACO 192 depth 1.563"; leader strap points on the leader centreline | 2.3" gap → 0 |
+| C5 | A-301 levels and detail strings at 1/16" | MAIN T.O. PLATE 9'-0" → 9'-0 1/8"; A-505 7'-0 1/16" |
+| C5 | `bearing_stations()`: BRG LINES at the structure centre (`structural_dimensions.py`) | garage 24'-0" → 23'-5 1/4" |
+| C5 | S-603 one full-width table; E-602 split into E-602 + **E-602.1** (control schedule) | no clipped ids, no title-block overlap; **+1 sheet** |
+| C5 | Elevation roof label names the top layer | A-203/204 "CDX-PLYWOOD" → standing seam |
+| C5 | A-603 Walls lists paneling; A-402 draws rotated equipment; plumbing runs print on the storey they serve | P-103/P-104 now carry their supply |
+| C5 | A-514 notes (20"×8" stone, 5,000 psi, Str. I ply); A-515 K7; B&B opening detail cut at a window | — |
+| C5 | Viewer: seated I-joist rafters notched, thin solids at true thickness, rough-opening doorway parts drawn | `members.ts`, `structure.ts`, `openings.ts` |
+| coord. | Aquia IV stop 7" AFF clears the base (above); catlin CLAUDE.md sauna headroom 42 1/16", living run 36 3/4" | ratchet back to 0 new pairs |
 
-Goldens re-blessed after reading the diffs:
-- `catlin_elevations.json`: pocket plates, casing, hangers, hood, receptacle, PAX, WC, conduit OD.
-- 99 of 100 catlin section scenes plus the starter slice: mostly fractions, returns, A-301 labels.
-- `solids3d_overlaps.json`: conduit at true OD.
+## 3. Closed since round 1
 
-## 3. Rejected (38)
+Each line points to the round-2 Reconciled tables (`2026-11-04/adjudicated/C*.md`).
 
-| reason | count | e.g. |
+- **Round-1 REPORT items 1–16 and 19–24** are closed in the model. Residues are listed in §1
+  (items 2, 4 → §1.12; item 17 → §1.2/1.3; item 18 → §1.5).
+- **S1/S2 (C1):** ST-S2A is 36.00" / 32.55" and `stair_head_landing` reads the posts. ST-G-SERVICE
+  arrives at the +1.5" crest. S2-005 is closed (pad outline).
+- **O1–O5 (C1):** window frame depths and returns, pocket kit RO (Eclisse sheet), trim stock,
+  casing heads, K6 lap (1.000" on all 38). O1-001 and O5-005 were closed this pass.
+- **F1–F6 (C2):** all 67 headers clear their plates. The stack closes. Birdsmouth (TJ-4000 p.28),
+  canopy bearing 5.5", LUS26-2Z/LUS28Z seats and the shim packs are in. The garage sill is a
+  2x8 at 74% on the core, with stone beds for frost. All Simpson seats fit (C-C-2026).
+- **E1–E2 (C3):** seam register 16.0" on all roofs, rake counts, BBD75 band girt and lap.
+- **I1–I4 (C3):** fridge 1" rear, stone 1 5/8", peninsula 40 5/8", Swanstone 96" + TK-105,
+  sauna base at the benches and 84 1/16" ceiling, paint on every used face, LVP stacks.
+- **M1–M5 (C4):** panel handles 78" AFF, sconce boxes, TV stand-off, 82 cans clear, the Uponor
+  header body matches its submittal, pipe size labels, insulated bores. Every drain is at
+  ≥ 1/4"/ft and the vent network is connected.
+- **D1, D2, U1 (C5):** every A-101..A-104 chain closes, the A-601/602/603 rows match, the
+  plant rim details derive, the paper-space pile-ups are gone, and the viewer draws the
+  served opening parts.
+
+## 4. Rejected (round 2)
+
+14 new findings rejected.
+
+| reason | count | ids |
 |---|---|---|
-| A deliberate, recorded decision or convention | 12 | S1-004, O3-002, O4-008, E1-003, E2-009, I1-005, I3-008, D2-005, F1-004 |
-| The reviewer mis-measured or misread the engine | 11 | O5-001, S3-007, E1-004, M3-005, M3-010, F1-011 (the coordinator's approximate R602.7.5 table was wrong; the engine was right) |
-| Within tolerance or normal site practice | 7 | S3-005, O2-011, E2-002, E2-006, S2-004 |
-| Not a defect, no authoritative data, or covered elsewhere | 8 | F1-005/006, I3-006, I4-008, M3-009, M2-008, I1-004 (the sink hold) |
+| Within the published range or normal site tolerance | 4 | O2-105, E2-106, I1-103 (LG cutout 33 5/8–36), I2-106 (Swan 5 1/2") |
+| The reviewer misread the code, the engine or a figure | 4 | M5-107 (MN 4714.0905 deletes the sentence), F3-103 "TRIFORCE governs", E1-109, F2-101 (3 bands) |
+| A recorded owner choice or decision | 2 | E1-104, I3-107 |
+| Not a defect: coordination, or matches the engine | 4 | O2-107, I3-106, I4-102, U1-105 |
 
-## 4. Emitter mismatches (deferred)
+Round-1 rejections re-raised without new evidence (D2-005, D2-010, U1-004) stay rejected.
+Two round-1 rejections were overturned by new evidence: M2-008 and I2-009 (TOTO publishes the
+inlet stations) and M3-009 (Carlon's BH235A catalog row).
 
-None was recorded. The viewer-side twin (`openings.ts` duplicating `_opening_parts`) is C7-E9.
+## 5. Open handoffs
 
-## Open handoffs
-
-Each of these needs an authoring or design decision, so none is fixed:
-(2026-11-01: C-101, A-528 K2, the R302.11 note, the skirt stock and the STOS backing split are
-resolved; see adjudicated/C7.md and C6.md. O3-010 closed earlier and is removed.)
-- **C-101 "STAIR AREA 27 SF"** is an authored `ImperviousSurface` outline; re-trace it to the
-  tier 1 and porch pad footprints (S2-005).
-- **A-528 K2** is a window keynote printed on the door detail; scope it once the opening is
-  confirmed (O1-008).
-- **A fireblocking (R302.11) general note** (F2-009).
-- **The ST-M2S skirt blank** needs 10' stock (O2-010).
-- **The backing bands split around stack bays** after C6-E5 (F2-003).
+- **C1, from C5:**
+  - U1-103 engine side: the GLB omits the D-B-GYM and O-S-VANITY doorway parts that the viewer
+    now draws (emitter, deferred).
+  - D1-106: WIN-B-SAUNA has no resolved seat, so A-602 prints "UNRESOLVED" and the viewer's
+    one stool/frame overlap remains.
+- **Owner:** the TODO corrections from C4 (BATH2 tub vent blockers, "12 types / 29 lights")
+  are applied in `plans/TODO.md`. E2-105 is left for you: the "W-BW-SCREEN metal cassette
+  engineering" TODO line tracks a design the MDO screen replaced.
+- **Supplier holds** are unchanged except where listed in §1: MMI sill crest, DAKAM/Aliplast
+  sill rail and sash lap, Metal Sales vented gable peak, Broan port spacing, the Murphy datum,
+  and the fabricator truss hole chart.

@@ -1,0 +1,244 @@
+{
+ "area": "U1",
+ "model": "houses/catlin",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Read ui/src/three/builders/{openings,doorway,openingPieces,millwork,structure,walls,wallFrame,wallSkin,wallBandShape(header),site,sceneStages,scene,alarms,lightRun,soffitPanels,stairFinish}.ts, three/{roofGeometry,roofTruss,floorTruss,members,memberBox,memberFootprint,tubeGeometry,rebar,mesh,solidBodyMesh,surfaceMesh,floorDeckGeometry,planGeometry}.ts against model.json (91 openings: 41 windows, 36 doors, 14 rough; 39 stools; 3 roofs; 11 floors; 184 walls; 37 rooms; 3,881 solids incl. 1,380 body_mesh) and the engine twins geometry_openings/geometry_millwork/geometry_walls/geometry_members/geometry_roofs/room_floor, with engine-side probes (room finished floors, opening part types). Round 1's constants-diff is superseded: the viewer no longer holds window/door/cased/bookcase constants at all. U1 prior ids: 3 closed, 1 partial. New: 6 (5 model-only/doc, 0 above model-only). The fascia-mount railings (RL-SG-*: 68 body_mesh, 31 sweep, 23 prism, 185 infill) are drawn from served meshes whose bounds equal the served solid z0/z1/outline to 0.1 mm; aluminum windows (Drutex Alucover, Max Light, Andersen) are served parts. NOT examined: rebar sets (fetched lazily by engine/rebarCache, not in model.json), plants/aggregate/archRing/plant tessellation, canvas-object model_parts and GLB placement, the numerical tubeGeometry vs sweep.py parity (pinned by tubeGeometry.test.ts, no pytest allowed), wallBandShape arch soffit sampling beyond constants, window_return/drywall_trim placement vs the frame for any window but the sauna, alarm z vs ceiling plane beyond reading the server code, any by-eye or rendered check (no browser, no npm).",
+ "verified_clean": [
+  "openings.ts: draws served opening_parts only (no TS constants); 77/77 non-rough openings have parts; 735/735 engine part solids are GPrism and served; exterior_placement boards+sections equal engine installation solids on D-M-ENTRY (54), D-M-PORCH (66), D-G-SERVICE (49), D-B-SUNKEN (19), D-S-BALCONY (47).",
+  "Window stool vs frame: 38 of 39 stools butt the served frame's rear face (Drutex 93.0 mm, Andersen 82.6 mm, Max Light 75.0 mm frames), stool top = rail top, 0 volume overlap; unit bottom = sill + 14 mm sill rise on the 37 seated windows with stools (0 on the sauna window, 4.5 mm on the two garage windows).",
+  "Door leaf/jamb bottom z in served parts = doorway.leaf_bottom_z_m / jamb_bottom_z_m within 0.1 mm on the doors that carry them.",
+  "RF-HOUSE/GARAGE/CANOPY roofs: roofPlaneZ equals roof_plane_z (all three are 4-point axis-aligned gables; RF-HOUSE area 143.48 m2 = 2 x 11.316 x 6.34); the viewer-built sheathing/membrane stack (15.08+0.76 mm house, 15.08+1.02 mm garage) puts the served roofing mesh at 15.84..41.24 mm (house) and 16.10..41.50 mm (garage, canopy) perpendicular off the deck: identical to the mesh's measured offsets.",
+  "Garage and canopy roof trusses: drawn heel (z0_m + heel_m 100.1 mm) lies on the roof plane at both bearings to 0.0 mm for all 16 trusses; apex = ridge_z on 15 of 16 (truss-012, the north drop gable truss, is 88.9 mm low by design).",
+  "Floors: createFloorDeckGeometry uses deck_z0_m and deck_plane; FS-SG-BALCONY member tops sit on that plane to 0.0 mm; floor truss chord 38.1 x 88.9 mm, depth 0.3016 m, end block 3.5 in from served fields.",
+  "Room finish planes: storeyFloorTopM + finish depth equals room_finished_floor_elevation on 36 of 37 rooms to 0.5 mm (RM-GARAGE is a sealed-concrete coating, no plane drawn by design).",
+  "memberBox.ts/members.ts vs geometry_members.py: member_box (upright orient/width/depth, level and raked 8-corner box), _ring_sweep (section_ring), _elevation_sweep and _seated_sweep use the same formulas; crossWidth == plan_cross_section_m with the same 1e-4 flat-laid tolerance. I-joist depth foreshortened by cos(theta): 0.3372 vertical -> 0.3016 perpendicular on the 38 rafters.",
+  "Wall layers: wallLayerPieces matches geometry_walls.layer_solids (sill band, header, arch spandrel, band clamp, blind-opening cut_layers served); bodyTopAt equals HeadCap.z_at; baseRefZ = plate_base_z_m ?? z0_m = ResolvedWall.base_ref_z_m; head-cap walls W-A-N1/N2/N2B/S1/S2/S3: top deviation 0.0 mm.",
+  "body_mesh solids (1,380 incl. 68 fascia-mount railing meshes, 479 connectors, 343 cladding_trim): decoded bounds equal the served z0_m/z1_m and outline to 0.1 mm; decodeMesh matches model_json_mesh.decode_mesh (delta-coded, 1e-5 quantum).",
+  "Stool top height above unit bottom is the type's frame_face_width (75.0 mm Drutex/Andersen, 35.0 mm Max Light), documented in window_and_door_procurement.md:177,201.",
+  "Sloped balcony deck (deck_plane gradient 0.0208) is applied by createFloorDeckGeometry; joists and rim tops equal the plane to 0.0 mm."
+ ],
+ "findings": [
+  {
+   "id": "U1-101",
+   "area": "U1",
+   "title": "Viewer draws the 38 RF-HOUSE I-joist rafters without their SeatCut (decision #109 birdsmouth): the lower flange runs 31.7 mm below the plate top at the heel",
+   "elements": [
+    "RF-HOUSE rafter-000..037 (shape i_joist, seat set)"
+   ],
+   "files": [
+    "ui/src/three/members.ts:237",
+    "ui/src/three/members.ts:358",
+    "ui/src/three/memberBox.ts:160",
+    "packages/engine/src/typehaus/resolve/geometry_members.py:119-124"
+   ],
+   "kind": "viewer",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "model.json roofs[RF-HOUSE].members: 38 members shape i_joist, every one with `seat` (heel on the bearing's outer face, seat_run 63.5 mm, plate_top_z 6.15315). Underside at the heel line = 6.1214 m, i.e. 31.7 mm BELOW plate top, so the engine notches each rafter (member_solid: `if member.seat is not None` runs before any shape test, so the GLB/IFC get a notched sweep). In the viewer bucket() sends `m.shape === \"i_joist\"` to buildIJoists (members.ts:237) before the raked/seated branch, and buildIJoists has no seat handling; seatedProfileVertices is reached only from buildRakedMesh (members.ts:358). Result: 3 plies with a square heel; the bottom flange and web penetrate the wall's top plate by 31.7 mm along the whole heel line, on all 38 rafters. Perpendicular depth is right (vertical 0.3372 m x cos 26.57 deg = 0.3016 m = 11 7/8 in).",
+    "expected": "The viewer draws the same notched silhouette the engine resolves (heel plumb cut, 2 1/2 in seat on the plate top), or at least no member volume under the plate top.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/U1/seat_probe.py (z0 at heel = z0_m + slope*heel_s vs seat.plate_top_z_m); read members.ts bucket() order."
+   },
+   "source": "Decision #109 (TJ-4000 p.31 R5 / APA D710A 10h: I-joist birdsmouth, flange bearing). Engine twin geometry_members._seated_sweep.",
+   "proposed_fix": "In buildIJoists, when m.seat is set clip the three plies at heelS (bottom flange and web start at the plate top inside the seat run) or route a seated i_joist through the sweep path with an I-shaped ring. Viewer-only; add a bucket test.",
+   "size_guess": "small",
+   "seam_with": [
+    "S3",
+    "E1"
+   ],
+   "dedupe_key": "U1:ijoist-rafter-ignores-seat"
+  },
+  {
+   "id": "U1-102",
+   "area": "U1",
+   "title": "buildSolid thickens every solid under 10 mm to 10 mm: a 1.6 mm sill gasket becomes a 10 mm slab whose sides coincide with the sill plate",
+   "elements": [
+    "W-B-*-SILL-GASKET (10)",
+    "TR-BW-MDO-SCREW-* (91 flashing, 9.525 mm)",
+    "TRL-W-S-W1..4 and 4 more trellis (6.35 mm)",
+    "FX-M-BATH2-TUB:...-batt (3, 6.35 mm)",
+    "VR-M-STACK-radon-JOG1/6, OUT1/6 (5.1 mm slices)"
+   ],
+   "files": [
+    "ui/src/three/builders/structure.ts:75"
+   ],
+   "kind": "viewer",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "structure.ts:75 draws every non-sweep, non-mesh solid with `Math.max(solid.z1_m, solid.z0_m + 0.01)` (only window_return is exempt). Served solids under 10 mm: 91 flashing at 9.525 mm, 10 sill_gasket at 1.588 mm, 8 trellis and 3 tub_batt at 6.35 mm, 8 vent slices at 5.104 mm. W-B-S4-SILL-GASKET: z -0.34131..-0.33973 (1.588 mm), outline area 0.4187 m2, identical to W-B-S4-SILL (sill_plate, z -0.33973..-0.30163, area 0.4187 m2). The viewer extrudes the gasket to -0.33131, so 8.4 mm of its side faces lie exactly on the plate's side faces (different materials, sill-seal vs SPF): a z-fighting band along every basement sill. The radon vent is six stacked slices per run (JOG1..JOG6, each z0 = previous z1); the top end slices (JOG6, OUT6) are drawn 4.9 mm above the pipe's true top (5.9817 -> 5.9866 m) while JOG1/OUT1 hide inside the next slice.",
+    "expected": "Draw the served z0_m..z1_m. A thin solid that is hard to see is a render-priority question (polygonOffset, which is deliberate elsewhere), not a geometry one; the 10 mm floor makes the model disagree with the GLB and the engine solids.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/U1/thin_solids.py : python over model.json solids (not sweep/body_mesh/finish_panels, category != window_return) with z1-z0 < 0.01; shapely area of gasket vs sill outline."
+   },
+   "source": "Viewer arithmetic, no product source. Sill seal thickness is the catalog's (1/16 in).",
+   "proposed_fix": "Drop the +0.01 floor (keep the z1 <= z0 guard), and give sill_gasket/flashing a polygonOffset tier in solidMaterials.ts if they flicker against the plate.",
+   "size_guess": "small",
+   "seam_with": [
+    "S1"
+   ],
+   "dedupe_key": "U1:thin-solid-10mm-floor"
+  },
+  {
+   "id": "U1-103",
+   "area": "U1",
+   "title": "Two rough openings carry doorway components (a rubber reducer and a Schluter Schiene) that no 3D path draws: buildOpening returns on rough_opening before buildDoorway",
+   "elements": [
+    "D-B-GYM (PROD-RUBBER-REDUCER, 914 mm, base z -2.7797)",
+    "O-S-VANITY (PROD-SCHLUTER-SCHIENE, 813 mm, base z 3.0861)"
+   ],
+   "files": [
+    "ui/src/three/builders/openings.ts:97",
+    "packages/engine/src/typehaus/resolve/geometry_openings.py"
+   ],
+   "kind": "viewer",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "model.json openings: both are kind rough_opening with doorway.status VERIFIED and one served component each (reducer polygon 5 pts, profile 4 pts, span = full RO width). openings.ts:97 `if (opening.kind === \"rough_opening\") return;` runs before buildDoorway, so neither strip is drawn. The engine geometry also has 0 doorway parts for them (probe over model.geometry: doorway 0 for D-B-GYM and O-S-VANITY, 1 for 12 real doors), so GLB and viewer agree, and both omit a product the model resolved. Every real door's installation boards + sections equal the engine's installation solids one for one (D-M-ENTRY 25+29=54, D-M-PORCH 25+41=66, D-G-SERVICE 25+24=49, D-B-SUNKEN 6+13=19, D-S-BALCONY 9+38=47).",
+    "expected": "The floor-transition strip at a cased/rough opening appears in 3D at its served base_z, as it does at a real door.",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/U1/parts_probe2.py (engine load: installation/doorway part counts) vs model.json openings[].doorway."
+   },
+   "source": "houses/catlin doorway products for D-B-GYM and O-S-VANITY (opening_products).",
+   "proposed_fix": "Let buildDoorway run for rough_opening records that carry doorway.components (engine-side: emit the part too, so GLB agrees).",
+   "size_guess": "small",
+   "seam_with": [
+    "O1",
+    "O2"
+   ],
+   "dedupe_key": "U1:ro-doorway-components-undrawn"
+  },
+  {
+   "id": "U1-104",
+   "area": "U1",
+   "title": "Earth sheet is one plane at site.grade_m (-0.864 m); the 16 served grade spot elevations (-0.914 to -1.016 m) are ignored",
+   "elements": [
+    "site earth sheet"
+   ],
+   "files": [
+    "ui/src/three/builders/site.ts:47-50",
+    "ui/src/three/builders/site.ts:67-90"
+   ],
+   "kind": "viewer",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "model.json site.grade_m = -0.8636; site.spot_elevations has 16 kind=grade rows at -0.9144, -0.9398 and -1.016 m (e.g. [5.486, -2.743] at -1.016: 152 mm = 6 in below the drawn plane, over the R401.3 fall ring) plus 4 structure rows. buildEarth extrudes the parcel at a constant grade-0.01..grade, so the ground the backfill_native/backfill_cap solids meet in 3D is up to 152 mm above the surveyed spots.",
+    "expected": "Context sheet follows the served spots (or a note that it is a datum-level plane), so a section through the yard in 3D reads the same fall as the site plan.",
+    "method": "inline: python over model.json site.grade_m vs min/max of site.spot_elevations(kind=grade)."
+   },
+   "source": "plans/01-decisions.md grade datum entries; memory 'Grade cannot see a terrace'.",
+   "proposed_fix": "Either build the sheet as a triangulated surface through grade spots, or label the plane 'datum' in the Views panel. Context only.",
+   "size_guess": "large",
+   "seam_with": [
+    "S1"
+   ],
+   "dedupe_key": "U1:earth-flat-vs-spots"
+  },
+  {
+   "id": "U1-105",
+   "area": "U1",
+   "title": "Latent re-derivations that match the engine today only because catlin does not exercise them",
+   "elements": [
+    "wallLayerPieces raked/band path",
+    "storeyFloorTopM",
+    "ROOM_FINISH_THICKNESS_M",
+    "opening_parts_json GPrism filter",
+    "alarms disc"
+   ],
+   "files": [
+    "ui/src/three/builders/walls.ts:210-222",
+    "ui/src/three/builders/walls.ts:319-330",
+    "ui/src/three/builders/structure.ts:230-250",
+    "packages/engine/src/typehaus/server/model_json_opening_parts.py:28",
+    "ui/src/three/builders/alarms.ts:11-12",
+    "ui/src/three/planGeometry.ts:121-148"
+   ],
+   "kind": "viewer",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.35,
+   "evidence": {
+    "measured": "Each differs from its engine twin by rule, not by number on catlin. (a) walls.ts topIsRaked = top_z0/top_z1 set; geometry_walls.layer_solids also tops out when only head_caps exist; all 6 head-cap walls (W-A-N1/N2/N2B/S1/S2/S3) are raked, and the cap equals the rake at their axis ends (0.0 mm over 11 samples each). (b) clampPiecesToBand makes a banded piece flat at the band top; the engine takes max(min(rake, band_top), band_bottom) per vertex; 0 of 475 banded layers sit on a raked wall. (c) storeyFloorTopM = max(member z1) + subfloor thickness and ROOM_FINISH_THICKNESS_M 0.02 fallback, not floor.deck_z0_m + deck_plane lift or room_finished_floor_elevation: equal for 36/37 rooms (max |diff| 0.5 mm; RM-GARAGE is a coating, no plane drawn). On the sloped FS-SG-BALCONY the single max(member z1) top is up to 61 mm above the local deck (members z1 max 3.0328 vs deck_z0 2.9718 + lift at the low end) but no room sits on that storey. (d) model_json_opening_parts keeps only GPrism solids; all 735 opening part solids on catlin are GPrism, but a GMesh/GSweep part would vanish silently. (e) alarm discs are a 127 x 38 mm drawing constant, the Alarm record serves no product size.",
+    "expected": "Either the viewer reads the served quantity (deck_z0_m/deck_plane, room finished elevation) or a test pins the twin.",
+    "method": "inline python over model.json (walls head_caps, layers z0/z1, rooms, floors) and engine load (room_finished_floor_elevation); parts_probe.py for the GPrism count."
+   },
+   "source": "Engine twins: geometry_walls.py, room_floor.py, geometry_members.py.",
+   "proposed_fix": "Serve `floor_top_z_m` per room (the engine already computes it for alarms) and draw that; assert GPrism-only in opening_parts_json.",
+   "size_guess": "small",
+   "seam_with": [
+    "S3"
+   ],
+   "dedupe_key": "U1:latent-twin-divergences"
+  },
+  {
+   "id": "U1-106",
+   "area": "U1",
+   "title": "Two viewer files break the repo's 500-line aim: builders/structure.ts is 656 lines and three/members.ts is 501",
+   "elements": [
+    "ui/src/three/builders/structure.ts",
+    "ui/src/three/members.ts"
+   ],
+   "files": [
+    "ui/src/three/builders/structure.ts:1",
+    "ui/src/three/members.ts:1",
+    "AGENTS.md:8"
+   ],
+   "kind": "viewer",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "wc -l: structure.ts 656 (its own comment at buildFramedHost already says 'this file is against AGENTS.md's 500-line limit'), members.ts 501, walls.ts 488, sceneStages.ts 312. openings.ts shrank 497 -> 157 and 3 door builders were deleted, so the viewer as a whole is smaller than at round 1.",
+    "expected": "Each file under 500 lines.",
+    "method": "wc -l ui/src/three/builders/*.ts ui/src/three/*.ts"
+   },
+   "source": "AGENTS.md:8, CLAUDE.md Non-negotiables.",
+   "proposed_fix": "Move buildRoomFloor/addFinishPlane/storeyFloorTopM out of structure.ts (about 130 lines) and the I-joist builder out of members.ts.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "U1:file-size-structure-members"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "U1-001",
+   "status": "partial",
+   "evidence": "The mirrored viewer code is gone: types.ts has no WindowSeat, openings.ts is 157 lines and draws model.json `opening_parts` rings as served. Re-probed the stool/frame join on all 39 window_stools against the served frame solids: 38 stools butt the rail's rear face with 0 overlap (e.g. WIN-M-BED-W1 frame norm -0.1524..-0.0594, stool -0.0594..0.1841, stool z1 1.0034 = rail top; Drutex 93 mm, Andersen 82.6 mm, Max Light 75 mm frames; stool top is 75.0 mm above unit bottom on 36, 35.0 mm on the 3 Max Light units). One window still overlaps: STOOL-WIN-B-SAUNA norm -0.0101..0.2540, frame -0.0400..0.0400 (80 mm axis-centred schematic frame), so 50 mm of stool lies inside the sill piece, stool z1 -1.5871 equals the rail top z1 (coplanar 178 cm2 strip) and the stool also sits inside both jambs. Cause: _exterior_face() returns None when the outermost layer is xps (geometry_openings.py:73-99) so the frame stays axis-centred with no window_seat, while interior_return_m()/stool depth (millwork.py:189) assume the unit sits on the mount plane at -0.103 (outer xps face) with a 93 mm frame (back edge -0.010). This is the same single pair the O4 ratchet already records (452.7 cm3). The TODO 'window bottoms in 3D' line: the code path is fixed for 38/39 windows; I cannot confirm by eye (no browser) and WIN-B-SAUNA would still flicker, so the line should wait for that pair.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/U1/stool_probe.py , /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/U1/sauna_probe.py WIN-B-SAUNA , /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/U1/win_all.py"
+  },
+  {
+   "id": "U1-002",
+   "status": "closed",
+   "evidence": "openings.ts 497 -> 157 lines; doorProducts.ts, casedDoors.ts, bookcaseDoor.ts deleted. All 77 non-rough openings now carry `opening_parts` (was 4 of 89 with authored_product_parts); the engine's 735 opening part solids are all GPrism and all served; installation boards + sections equal the engine's installation solids on all 5 exterior doors. Door leaf/jamb bottoms in the served parts equal doorway.leaf_bottom_z_m/jamb_bottom_z_m to 0.1 mm on the doors where both exist (D-M-ENTRY leaf 0.054 / jamb 0.0127; D-S-BALCONY 3.0994 / 3.0575; D-B-SAUNA leaf -2.7507 = 29 mm undercut), so the per-box clamps round 1 worried about no longer exist in TS. openings.test.ts pins part bounds and finishes. Residual risk only in U1-105(d).",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/U1/model.pkl (pickled model.json); python: count openings by kind with opening_parts; compare min z0 per part key with doorway.*_z_m; engine load /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/U1/parts_probe.py and /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/U1/parts_probe2.py"
+  },
+  {
+   "id": "U1-003",
+   "status": "closed",
+   "evidence": "members.ts:237-238 now sends floor_truss-shaped blocking to the rect bucket and keeps trimmers on the truss drawer: 35 blocking members (0.14..0.318 m, was 12) with shape floor_truss, plus 44 joists, 6 trimmers and 2 sister joists, all with flange 38.1 x 88.9 mm and depth 0.3016 m. Blocks draw as solid 88.9 x L x 301.6 mm boxes; no 73-degree web remains. The blocking count grew 12 -> 35 with the floor changes, all covered by the same rule.",
+   "method": "python over model.json floors[].members grouped by (shape, category) with length; read members.ts bucket()."
+  },
+  {
+   "id": "U1-004",
+   "status": "closed",
+   "evidence": "Rejection (C7) holds: stool z1 minus unit bottom is 75.0 mm on 36 stools (Drutex/Andersen) and 35.0 mm on the 3 Max Light units, i.e. the frame_face_width of each WindowType (plan/window_types.py), so the stool rides the product rail the type authors; sill_rail_height/sash_overlap remain unauthored and notes/window_and_door_procurement.md:177,201 now states 'the stools stay on the schematic 75 mm until' the dealer section arrives. The viewer draws served geometry, so there is no viewer-side constant left.",
+   "method": "python over model.json: window_stools z1_m minus min z0 of the opening's served parts; read window_and_door_procurement.md:177,201 and plan/window_types.py:25-45."
+  }
+ ]
+}

@@ -1,0 +1,337 @@
+{
+ "area": "I3",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "539d9a81",
+ "inventory_summary": "Inventoried the I3 scope from a fresh load_plan+resolve (pickle /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/model.pkl): sauna (4 platforms, recliner/mattress, base runs, door casing and jamb, exhaust hatch, step vs shower), study booth (bench, desk, leaf, footrest), attic study built-in + bridge infill + Murphy casing, study nook, M-closet and bedroom PAX stacks, HEMNES/BILLY/Tribesigns bookcases, and every non-stair, non-stool row of baseline/millwork.md graded against the model for cut size, stock and grain (sauna slats, furniture, shelf banks, casework board, cedar/locust trim, walnut front/cap/edge). 8 prior ids re-probed; 8 new findings. Sheets opened: A-101 p29, A-102 p30, A-103 p31, A-104 p32, A-401.2 p42, A-505 p52, A-506 p53, A-603 p152 (permit_set_full.pdf). haus check not re-run (baseline checks.json read: R305 pass at 7'-0 1/16in). NOT examined: window-stool, door-casing and base rows outside the sauna (O2/O4 own them), stair tread/riser/landing rows (S1), countertop rows (I1/I2), the sauna heater's product dimensions (Harvia PC110E 16x15x45in not web-checked; equipment area), the Murphy Door custom-width body/passage chart (only the RO rule web-checked), IKEA GRIMO corner 43 3/8in footprint and BILLY/PAX SKUs re-fetched (relied on round 1), SuperSlide stock lengths, BuiltInBenchSpec plywood nesting and part list (two sheets ordered; not re-nested), attic built-in dividers/backs/filler (in the carcass allowance, not on the mill schedule), basswood/cedar board-width availability, physical mock-ups (RM-M-STUDY-CLOSET 60-minute trial, sauna recliner) which are TODO items, not geometry; the W-A-GC-S bookshelf idea is a design item with no model element.",
+ "verified_clean": [
+  "FURN-B-SAUNA-UPPER/LOWER/READING/STEP: footprints 78x28, 78.19x20, 58.5x28, 14x10in, tops 42/24/24/12in AFF match sauna_types.py and notes/sauna_seating.md; slat cuts (7x3.5 + 6x1/2 gaps = 27.5 of 28; 5x3.5+4x1/2 = 19.5 of 20; step 3x3+2x1/2 = 10) and bearers at <= 15.3in o.c. (6/6/5/2) agree with the 16in rule; slats run the long way.",
+  "Sauna ceiling 84.0625in AFF clears R305.1 7'-0in (code.R305_ceiling_height pass); heater top 45in leaves 39.06in vs Harvia 32.5in; 78in room minimum met.",
+  "Sauna notes' distances: 10.5in reading deck to heater, 4in to junction box, 24.5in aisle east of step, 28in east of reading platform all reproduce from footprints.",
+  "D-B-SAUNA cedar jamb: 3/4 x 9.25in = wall W-B-CS 9.25in (0.75 liner + 0.5 + 2 + 5.5 + 0.5); legs 80.51in = rough_h 82.2618 - 0.75 - 1.0; head 24.24in; casing inner edge 0.186in back of the jamb face (reveal 3/16in); 1x10 actual width.",
+  "Locust base milling row: 23.51 + 14.81 + 2.44in = 40.76in = 3.4 LF; cedar casing row 2 x 81.45 + 31.6in = 16.2 LF.",
+  "FURN-M-STUDY-BENCH 48.875 x 20.82in, desk 29 x 16in, booth between 3/4in walnut returns (gypsum 164.25..214.75) with 1/16in scribes both ends and 1/16in off north gypsum; walnut front 14.75in = 17.5 - 2 toe - 0.75 deck; edge strip and cap rows consistent with BuiltInBenchSpec.",
+  "FT-A-STUDY-BUILTIN: 3 x 31.25in bays + 4 x 3/4in dividers + 2 5/8in filler = 99.375in; depth 9.875 + 3/4 = 10.625in fills y 105.75..116.375 to W-A-SN-REAR's study face; SB-A-STUDY 12 x 1.0 x 9.875 x 31.25in; FURN-A-STUDY-BRIDGE-FRONT 255.62..269.38in x 60in, casing east leg 252.125..255.625; matches the note's table.",
+  "SB-M-PANTRY 12 x 1.25 x 18 x 35.5in: two 35.5in bays + 3 uprights = 73.25in host width.",
+  "RM-M-CLOSET: wire L 32in + PAX 39 3/8 + 39 3/8 = 110.75in in the 111.25in clear width (1/2in off east wall); PAX frame depth 22 7/8in; bedroom PAX stacks consistent; HEMNES 35.38 x 14.63 x 77.5in matches IKEA US 35 3/8 x 14 5/8 x 77 1/2in (web, ikea.com/us/en/p/hemnes-bookcase-white-stain-90371765).",
+  "Tribesigns Frailey 23.62 x 23.62 x 78.74in matches listings (Tribesigns' own page lists 78.84in); Sugatsune EB-303/EP-BL 12 1/32in projection, 6 1/2in height, P1/P2 150/75 kgf match the study note; Murphy Door publishes RO = door size + 2in (30x80 door -> 32x82 RO) so D-A-STUDY's 32x82 RO is the standard 30x80 rule, not a custom width.",
+  "A-603 (p152): RM-B-SAUNA sealed-concrete floor, locust-trim 3.5in base, shiplap ceiling, 65 SF; matches model."
+ ],
+ "findings": [
+  {
+   "id": "I3-101",
+   "area": "I3",
+   "title": "Sauna door's 3 1/2in cedar head casing runs 0.89in up into the finished ceiling (top 84.95in AFF vs ceiling underside 84.06in)",
+   "elements": [
+    "CASING-D-B-SAUNA-R",
+    "D-B-SAUNA",
+    "CEIL-RM-B-SAUNA"
+   ],
+   "files": [
+    "houses/catlin/plan/millwork.py:122",
+    "packages/engine/src/typehaus/resolve/interior_trim_casing.py:96",
+    "houses/catlin/plan/storeys/basement.py:1134"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Resolved CASING-D-B-SAUNA-R: legs 0..81.449in AFF, head 81.449..84.949in (3.5in wide, x 209.25..210, the sauna face). CEIL-RM-B-SAUNA z0 = -25.375in = 84.0625in AFF (shiplap layer to 84.8125in), spanning to the same clear face x=210. Head top is 0.887in above the ceiling underside and 0.137in above the shiplap top (1.887in before round 1's 1in raise). Only casing in the house that overlaps its room's ceiling (sweep of all door_casings vs ceilings). Room height to the head bottom is 2.61in; the casing is 3.5in. No check grades casing vs ceiling.",
+    "expected": "A casing head that fits under the ceiling: <= 2.6in (84.0625 - 81.449), e.g. DoorTrim(D-B-SAUNA, casing_width=inch(2.5)) -> head top 83.95in, 0.11in clear; or shiplap scribed round a 3 1/2in head (not drawn).",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/p11.py: door_casings pieces z0/z1 minus finished floor -109.4375in vs ceilings z0_m; loop every casing vs its room's ceiling. Millwork row 'door casing cedar-sauna-trim 0.75 x 3.5 x 96, 3 pieces (longest 81.4in)' in baseline/millwork.md."
+   },
+   "source": "model: door_casings, ceilings; notes/sauna_seating.md (84 1/16in AFF ceiling)",
+   "proposed_fix": "Add casing_width=inch(2.5) to the D-B-SAUNA DoorTrim (legs and head); the 3 pieces stay one 8ft board; re-run haus millwork. Alternatively state a head-only width in the engine (DoorTrim has one casing_width).",
+   "size_guess": "small",
+   "seam_with": [
+    "O2",
+    "O1",
+    "I4"
+   ],
+   "dedupe_key": "D-B-SAUNA:casing-head-vs-ceiling"
+  },
+  {
+   "id": "I3-102",
+   "area": "I3",
+   "title": "SB-M-STUDY-LEAF is cut 19 5/8in long but the fold-down leaf type and room are 19 7/8in (1/4in short; gap 5/16in not the 1/16in scribe)",
+   "elements": [
+    "SB-M-STUDY-LEAF",
+    "FURN-M-STUDY-DESK-LEAF",
+    "FT-STUDY-DESK-LEAF"
+   ],
+   "files": [
+    "houses/catlin/plan/millwork.py:216-219",
+    "houses/catlin/plan/study_booth_types.py:33",
+    "houses/catlin/prices.toml:3240"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Milling schedule row: shelf, walnut-shelf-5q, 1 pc, 1.0 x 16.0 x 19.62in (ShelfBay width inch(19.625)). Model FURN-M-STUDY-DESK-LEAF footprint x 194.06..213.94 = 19.875in; desk 29.0 (165.06..194.06) + leaf 19.875 + 2 x 1/16 = 49.0in = booth width between 3/4in walnut returns (gypsum 164.25..214.75). The desk bank (29.0) matches its type; only the leaf bank is stale from the 19 5/8in leaf replaced 2026-10-19 (commit 4a67a5bf). prices.toml:3240 still says 19 5/8in.",
+    "expected": "19.875in (type footprint and notes/study_booth.md '19 7/8in leaf fills the remaining finished width with 1/16in end scribes').",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/p9.py (shelf_banks widths) vs canvas_objects footprint bbox of FURN-M-STUDY-DESK-LEAF; baseline/millwork.md 'shelf walnut-shelf-5q 1 1.0 x 16.0 x 19.62'."
+   },
+   "source": "notes/study_booth.md (leaf 19 7/8in x 16in); plan/study_booth_types.py FOLD_LEAF footprint",
+   "proposed_fix": "ShelfBay(width=inch(19.875)) in SB-M-STUDY-LEAF; fix the prices.toml comment. Re-run haus millwork (row becomes 19.88in).",
+   "size_guess": "small",
+   "seam_with": [
+    "I4"
+   ],
+   "dedupe_key": "STUDY-LEAF:cut-width"
+  },
+  {
+   "id": "I3-103",
+   "area": "I3",
+   "title": "D-A-STUDY (Murphy 32x82) casing head and legs stop 0.75in lower than the note's 78in AFF: head bottom 77.25in above the finished floor",
+   "elements": [
+    "CASING-D-A-STUDY-R",
+    "D-A-STUDY",
+    "FURN-A-STUDY-BRIDGE-FRONT"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/interior_trim_casing.py:96",
+    "packages/engine/src/typehaus/resolve/interior_trim_scope.py:106-115",
+    "houses/catlin/notes/study_bookcase_bridge.md"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Resolved casing: legs z 241.5..318.75in (77.25in), head bottom 318.75in. Note and CLAUDE.md say the head bottom is 1/2in below the 78 1/2in body top, i.e. 78.0in AFF (319.5in). head_z = wall.base_ref_z (240.0) + opening.sill_m (0.75, the oak finish) + head_rise (78.5 - 0.5 = 78.0) = 318.75, so the 0.75in oak finish is counted as sill and the product's 78.5in body is measured from the subfloor datum 240.75 while the RO is published 'from the finished floor' (RO top 323.5 = 241.5 + 82). Milling row 'door casing red-oak 3 pcs, longest 77.2in' inherits it (should be 78.0). Low confidence: depends on whether the delivered unit stands on the finished floor or the subfloor.",
+    "expected": "Head bottom 78.0in above the finished floor (z 319.5in), legs 78.0in, or the note changed to say 77 1/4in.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/p14.py, p16.py: door_casings pieces for D-A-STUDY; opening.sill_m, doorway.rough_opening_z_m (240.75); engine casing_edges(): body_height - lap."
+   },
+   "source": "notes/study_bookcase_bridge.md 'Casing and infill'; Murphy Door pages (RO = door + 2in)",
+   "proposed_fix": "In casing_edges/_casing add the floor-finish rise for a bookcase door (head_rise measured from the finished floor), or confirm the unit seat and correct the note. Seam O1 owns the unit.",
+   "size_guess": "small",
+   "seam_with": [
+    "O1",
+    "O2"
+   ],
+   "dedupe_key": "D-A-STUDY:casing-head-floor-datum"
+  },
+  {
+   "id": "I3-104",
+   "area": "I3",
+   "title": "A-505/A-506 round the 1/16in headroom dimensions up to 1/8in: 7'-0 1/8in, 3'-6 1/8in, 3'-3 1/8in against the model's 84 1/16, 42 1/16, 39 1/16in",
+   "elements": [
+    "SL-D-SAUNA",
+    "SL-D-SAUNA-READING",
+    "CEIL-RM-B-SAUNA"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-505",
+     "A-506",
+     "A-401.2"
+    ],
+    "pages": [
+     52,
+     53,
+     42
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "A-505 (p52): headroom string reads 7'-0 1/8in, bench-to-ceiling 3'-6 1/8in; A-506 (p53): heater to ceiling 3'-3 1/8in. A-401.2 (p42) plan label reads CLG 7'-0 1/16in. Model: ceiling underside 84.0625in AFF; upper bench top 42in -> 42.0625in; heater top 45in -> 39.0625in. Same value prints two ways on two sheets, and the permit R305 check prints 7'-0 1/16in.",
+    "expected": "One figure: 7'-0 1/16in / 3'-6 1/16in / 3'-3 1/16in (dimension formatter to 1/16in, or the label to 1/8in).",
+    "method": "Read permit_set_full.pdf pages 42, 52, 53; model values from p4.py/p11.py."
+   },
+   "source": "model: CEIL-RM-B-SAUNA z0_m; checks.json code.R305_ceiling_height message",
+   "proposed_fix": "Let the section dimension formatter keep 1/16in (same formatter as the plan CLG label).",
+   "size_guess": "small",
+   "seam_with": [
+    "D2"
+   ],
+   "dedupe_key": "B-SAUNA:dim-rounding"
+  },
+  {
+   "id": "I3-105",
+   "area": "I3",
+   "title": "Prose still carries the pre-raise sauna headroom: CLAUDE.md 'Upper headroom 41 1/16in', equipment_types.py '83 1/16in ... 38 1/16in', clear box '8'-10 11/16in'",
+   "elements": [
+    "CEIL-RM-B-SAUNA",
+    "EQ-T-SAUNA-HEATER"
+   ],
+   "files": [
+    "houses/catlin/CLAUDE.md:2035-2039",
+    "houses/catlin/plan/equipment_types.py:61-62"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Model: ceiling 84.0625in AFF, 42.0625in over the upper bench, 39.0625in over the 45in heater (R305 check prints 7'-0 1/16in). CLAUDE.md:2039 'Upper headroom 41 1/16in' (the same file says 84 1/16 three lines up); equipment_types.py:61 'Finished sauna ceiling is 83 1/16in AFF, leaving 38 1/16in'. CLAUDE.md:2035 says clear box '7'-3in x 8'-10 11/16in'; resolved polygon is 87.5in x 107.125in = 7'-3 1/2in x 8'-11 1/8in. notes/sauna_seating.md, sauna_basement_wall_detail.md and sauna_shower_basement_detail.md are correct.",
+    "expected": "42 1/16in / 84 1/16in / 39 1/16in.",
+    "method": "grep -rnE '83 1/16|41 1/16|38 1/16' houses/catlin (excluding out/); room clear_face bounds from p2.py."
+   },
+   "source": "model",
+   "proposed_fix": "Edit the three strings.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "B-SAUNA:stale-headroom-prose"
+  },
+  {
+   "id": "I3-106",
+   "area": "I3",
+   "title": "Locust base derives a 2 3/8in fragment on the sauna north wall between the lower platform end and the shower pan",
+   "elements": [
+    "BASE-RM-B-SAUNA-W-B-SA-N2-0",
+    "FURN-B-SAUNA-LOWER",
+    "FX-B-SAUNA-SH"
+   ],
+   "files": [
+    "houses/catlin/plan/sauna_types.py:68",
+    "houses/catlin/plan/millwork.py:96"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "After I3-001's fix the base stops at the benches (work_surface=False). Remaining RM-B-SAUNA base: W-B-CS-0 23.51in, W-B-CS-1 14.81in and W-B-SA-N2-0 2.44in (x 171.25..173.70in, y=116.375). Milling row: 'baseboard locust 3.4 LF in 1 8ft board, 3 pieces (longest 23.5in)'. The 2.44in piece sits between the lower platform's east end (171.25) and the shower footprint (173.75).",
+    "expected": "No sub-3in base pieces (a joiner would scribe the base to the pan, or omit).",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/p2.py base_runs piece lengths for RM-B-SAUNA."
+   },
+   "source": "model: base_runs",
+   "proposed_fix": "Treat runs under ~4in as breaks in resolve/interior_trim (min piece), or ignore: LF impact is 0.2ft.",
+   "size_guess": "small",
+   "seam_with": [
+    "O2"
+   ],
+   "dedupe_key": "B-SAUNA:base-fragment"
+  },
+  {
+   "id": "I3-107",
+   "area": "I3",
+   "title": "Sauna exhaust hatch REG-B-EXH2 (plate z 4.0-9.2in AFF, x 122.5..123.0) sits 0.25in from the bench envelopes; nothing authors the inset posts the note relies on",
+   "elements": [
+    "REG-B-EXH2",
+    "FURN-B-SAUNA-UPPER",
+    "FURN-B-SAUNA-READING"
+   ],
+   "files": [
+    "houses/catlin/notes/sauna_seating.md",
+    "houses/catlin/plan/sauna_types.py"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "REG-B-EXH2 footprint x 122.5..123.0, y 32.5..43.5, z 4.0..9.2in AFF (round 1's rotation fix holds). Upper bench x 123.25.., y 38.19..116.19; reading platform x 123.25.., y 10..38; both resolve as solid boxes from the floor to 42/24in, 0.25in from the hatch plate over its whole 11in length. notes/sauna_seating.md says inset posts leave the exhaust 'face, damper access and flow path open', but posts, rails and bearers are 'coordination geometry' only. Hatch free area is unpublished (TODO).",
+    "expected": "A stated post/rail inset >= the hatch's service depth, or the bench's west end stopped 6in or more clear of y 32.5..43.5 below the deck.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/p12.py footprints and body z; notes/sauna_seating.md 'Framing, service and heater installation'."
+   },
+   "source": "ProSaunas vent hatch (free area unpublished, plans/TODO.md)",
+   "proposed_fix": "Add the leg-free zone to the bench note or a ClearanceZone on the type.",
+   "size_guess": "small",
+   "seam_with": [
+    "M1"
+   ],
+   "dedupe_key": "B-SAUNA:exhaust-vs-bench"
+  },
+  {
+   "id": "I3-108",
+   "area": "I3",
+   "title": "Sauna access step (12in top) abuts the shower pan footprint with zero clearance (step north edge y=80.19 = shower south edge 80.19)",
+   "elements": [
+    "FURN-B-SAUNA-STEP",
+    "FX-B-SAUNA-SH"
+   ],
+   "files": [
+    "houses/catlin/plan/sauna_types.py:25-26"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "Step footprint x 171.25..185.25, y 70.19..80.19, top 12in AFF. FX-B-SAUNA-SH footprint x 173.75..209.75, y 80.19..116.19 (liner pan). x overlap 173.75..185.25, y gap 0.00in. Wood step against a wet curb with no drying gap or drain path; the owner may intend it (STEP_NORTH_Y_IN = 80.1875 equals the pan edge).",
+    "expected": "A gap (>= 1/2in) or a stated sealed/drained detail where a wood step meets the pan.",
+    "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/p3.py footprints."
+   },
+   "source": "model",
+   "proposed_fix": "Pull STEP_NORTH_Y_IN to 79.6875in or note the joint.",
+   "size_guess": "small",
+   "seam_with": [
+    "I2"
+   ],
+   "dedupe_key": "B-SAUNA:step-vs-shower-pan"
+  }
+ ],
+ "prior_findings": [
+  {
+   "id": "I3-001",
+   "status": "closed",
+   "evidence": "Sauna benches now work_surface=False (fixed casework). RM-B-SAUNA base_runs: only W-B-CS-0 (23.51in), W-B-CS-1 (14.81in) and W-B-SA-N2-0 (2.44in); none on the west, south or north runs behind the benches. Bench ends still 0.19in (N), 0.75in (W, S) off the clear faces with no base in between. Round 1: 0.75in base overlapped the bench 0.56in on N.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/p2.py: model.base_runs filtered room==RM-B-SAUNA; canvas_objects footprints vs room.clear_face."
+  },
+  {
+   "id": "I3-002",
+   "status": "closed",
+   "evidence": "REG-B-EXH2 resolved footprint x 122.50..123.00 by y 32.50..43.50 (0.5in plate on the liner, 11in along the wall); round 1 had 120.69..131.69 by 37.75..38.25. z 4.0..9.2in AFF.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/p11.py, p12.py: canvas_objects REG-B-EXH2 footprint bbox."
+  },
+  {
+   "id": "I3-003",
+   "status": "closed",
+   "evidence": "A-505 (p52) now dimensions bench widths 2'-4in / 1'-8in / 1'-2in, tops 1'-0 / 1'-0 / 1'-6in (12/24/42), headroom 7'-0 1/8in and 3'-6 1/8in over the upper bench; A-506 (p53) dimensions 10 1/2in to heater, 3'-3 1/8in heater to ceiling, 2'-0in deck. The 4in junction-box gap and Harvia clearance limits are not printed (stay in the note). Residual 1/8in vs 1/16in rounding filed as I3-104.",
+   "method": "Read permit_set_full.pdf pages 52, 53 (A-505, A-506); compare model values."
+  },
+  {
+   "id": "I3-004",
+   "status": "closed",
+   "evidence": "Ceiling raised 1in: CEIL-RM-B-SAUNA z0 -25.375in, finished floor -109.4375in -> 84.0625in AFF; 42.0625in over the upper bench (top z -67.4375); 39.0625in over the heater (top -64.4375). notes/sauna_seating.md:17-18,115 and the two wall-detail notes say 84 1/16 / 42 1/16 / 39 1/16 and match; ResolvedRoom.clear_height_m = 84.0625in (I4-007 fixed). Stale copies elsewhere filed as I3-105.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/p1.py, p4.py: room.clear_height_m, ceilings z0_m, canvas_objects body_z1_m."
+  },
+  {
+   "id": "I3-005",
+   "status": "closed",
+   "evidence": "FURN-S-BED1-WARD and BED2-WARD now top 214.88in, equal to FURN-S-BED1/2-PAX-SHELF (214.88in); type height 92.875in.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/p8.py: body_z1_m of FURN-S-BED*-WARD vs PAX-SHELF."
+  },
+  {
+   "id": "I3-006",
+   "status": "closed",
+   "evidence": "Rejection holds: SB-B-PLAY-BOOK-W1/W2/E1/E2 are procurement included_in_host (no bill, no milling row; none in millwork.md). Case 31.5 x 11 x 79.5in resolves as before.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/p9.py shelf_banks procurement; grep BILLY in baseline/millwork.md (none)."
+  },
+  {
+   "id": "I3-007",
+   "status": "open",
+   "evidence": "A-101 (p29) still prints 'WORKSHOBAUNAL' (WORKSHOP/SAUNA collide); A-102 (p30) prints 'LAUNDRYSTUDY' and MUD CLOSET over MUDROOM; A-103 (p31)/A-104 (p32) dimension no PAX, nook or bookcase run; A-401.2 prints no bench dimensions.",
+   "method": "Read permit_set_full.pdf pages 29-32, 42."
+  },
+  {
+   "id": "I3-008",
+   "status": "closed",
+   "evidence": "Rejection holds (dated owner choice 2026-10-21). Nook seat top 19.5in AFF (z 121.5..141.0), cushion 141..144 (3in); unloaded 22.5in, ~21in at the type note's 1 1/2in compression. Unchanged.",
+   "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/fc951bd3-20bf-434f-9b45-0a1dac7cd982/scratchpad/geometry-review/I3/I3/p11.py: body_z0/z1 of FURN-S-STUDY-NOOK-SEAT-W and -CUSHION."
+  }
+ ]
+}
