@@ -2475,6 +2475,13 @@ _BALCONY_END_POST_HOUSE_CLEARANCE_IN = 3.9375
 # 1 1/2" past the plank, so the end post's rear screws hold 4D (1 1/4") to the rim's cut end;
 # the movement gap to the cladding is then 1 3/4" (was 2 3/4").
 _BALCONY_REAR_RIM_OVERSAIL_IN = 1.5
+# The rear runs break beyond D-S-BALCONY's wrapped 3 1/2" casing: the door's own threshold
+# outriggers cross the gap there.
+_REAR_DOOR_RO_W_FT = 18.0 + 8.34375 / 12.0
+_REAR_DOOR_RO_E_FT = 23.0 + 11.65625 / 12.0
+_REAR_CASING_CLEARANCE_IN = 3.5 + 0.5
+_REAR_BREAKS_FT = ((_deck_x_w, _REAR_DOOR_RO_W_FT - _REAR_CASING_CLEARANCE_IN / 12.0),
+                   (_REAR_DOOR_RO_E_FT + _REAR_CASING_CLEARANCE_IN / 12.0, _deck_x_e))
 _BALCONY_HOUSE_GAP_IN = -SPEC.house_ext_layers_in - _y_in_n*12
 _BALCONY_END_POST_INSET = inch(_BALCONY_END_POST_HOUSE_CLEARANCE_IN
     + RAILING_EXT_ALUMINUM_FASCIA.post_width.inches/2 - _BALCONY_HOUSE_GAP_IN)
@@ -2687,13 +2694,14 @@ BALCONY_JOISTS = FloorSystem(
                    "SD04964 5/16\" x 6\" screws cross the edge joist into these two sisters")
           for _gx in _BALCONY_FRONT_POSTS_FT),
         # The rear end posts' upper screws land in the rim's 1 1/2" oversail, north of the
-        # last joist: one ply outboard of it, the whole field, flush with the rim ends. It
-        # is also what the rear base flashing caps.
-        JoistReinforcement(
-            at=pt(ft((_deck_x_w + _deck_x_e) / 2), ft(_bal_y1 + 1.0 / 12.0)), plies=2,
-            blocking=False,
+        # last joist: one ply outboard of it, flush with the rim ends, under each rear base
+        # flashing run and stopping where it does, clear of D-S-BALCONY's outriggers.
+        *(JoistReinforcement(
+            at=pt(ft((_x0 + _x1) / 2), ft(_bal_y1 + 1.0 / 12.0)), plies=2,
+            blocking=False, extent=(ft(_x0), ft(_x1)),
             source="north edge joist doubled into the rim oversail — backing for RL-SG-BALCONY's "
-                   "end-post screws and the bed for TR-SG-BASE-FLASH"),
+                   "end-post screws and the bed for TR-SG-BASE-FLASH")
+          for _x0, _x1 in _REAR_BREAKS_FT),
         *(JoistReinforcement(
             at=pt(ft(_gx), ft(_gy)), plies=1, blocking=True,
             source="screw backing behind an RL-SG-BALCONY flank fascia bracket — one of two "
@@ -3102,11 +3110,6 @@ _REAR_PLANK_TOP = (_deck_walking_surface + _balcony_beam_rise
 _REAR_UPSTAND_IN = 3.5
 _REAR_BASE_W_IN = 4.0
 _REAR_COUNTER_W_IN = _REAR_CLAD_Y_IN - _REAR_DECK_Y_IN + 0.5
-_REAR_DOOR_RO_W_FT = 18.0 + 8.34375 / 12.0
-_REAR_DOOR_RO_E_FT = 23.0 + 11.65625 / 12.0
-_REAR_CASING_CLEARANCE_IN = 3.5 + 0.5
-_REAR_BREAKS_FT = ((_deck_x_w, _REAR_DOOR_RO_W_FT - _REAR_CASING_CLEARANCE_IN / 12.0),
-                   (_REAR_DOOR_RO_E_FT + _REAR_CASING_CLEARANCE_IN / 12.0, _deck_x_e))
 
 
 def _rear_run(y_in, x0, x1):

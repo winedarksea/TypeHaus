@@ -1361,6 +1361,40 @@ cover   C                                              T
 
 Lighter and shorter both lower the couple a little; 2" stays.
 
+## 18. The 40 1/8" fascia guard (2026-11-05)
+
+`RL-SG-BALCONY` is now the stock 48" Ultralox tube uncut (`notes/balcony_fascia_mounts.md`):
+40 1/8" over the plank, where §16 took 3'-6". The flank rims also oversail the rear plank by
+1 1/2" (was 1/2"), so the E-W band is 1" longer. Column heights, P_u and δ do not move.
+
+```
+guard top   9.875' + 40.125/12                     = 13.219'
+M_g         200 x 13.219                            = 2,643.75 lb-ft, every balcony column
+guard, 1.6L 1.6 x 2,643.75                          = 4,230.0 lb-ft
+magnified   4,230.0 x 1.0268                        = 4,343.4 lb-ft / 24,667 = 0.176
+h_app       22.495' - 1.875/12                      = 22.339'
+q_h         18.572 x (22.339/22.495)^(2/7)          = 18.535 psf
+A_s         29.690 (11-04 footprint) + 13" x 1"     = 29.780 sf
+F           0.6 x 18.535 x 0.85 x 1.80 x 29.780     = 506.7 lb / 4 = 126.68 lb per column
+M_w         126.68 x 8.6979' = 1,101.9 front;  x 8.8507' = 1,121.2 rear
+```
+
+The 11-04 footprint is backed out of that day's 1,100.7: 1,100.7 / 8.6979 x 4 /
+(0.6 x 18.572 x 0.85 x 1.80) = 29.690 sf.
+
+**§17's joint (1.2D + 1.0W + L)** at the same P_u and δ:
+
+```
+                 BR1                                        BF1
+M_u              1.0213 x (1,868.7 + 2,643.75) = 4,608.5    1.0204 x (1,836.5 + 2,643.75) = 4,571.6
+C (±45°)         (55,303 + 3,702.1 x 1.900)/6.606 = 9,436   (54,859 + 3,680.1 x 1.900)/6.606 = 9,363
+T, on-axis       (55,303 + 3,702.1 x 2.6875)/7.3935 − 3,702.1 = 5,123          5,077
+φV_n             55,800 − (C − P_u) = 50,066 lb              50,117 lb
+```
+
+BR1 at the other covers: 2 1/2" C 9,847, T 5,569; 3" C 10,311, T 6,089. A shorter guard lowers
+every couple a little, and the dowel development (0.884) still governs. **2" stays.**
+
 ---
 
 ## Sources

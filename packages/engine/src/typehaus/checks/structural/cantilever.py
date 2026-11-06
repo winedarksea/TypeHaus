@@ -144,11 +144,12 @@ class _Cantilever:
     def field_extent(self) -> tuple[float, float, float, float] | None:
         """(axis_lo, axis_hi, perp_lo, perp_hi) of the resolved joist field.
 
-        The joist tips *are* the overhang: the resolver extends the outer spans by the
-        cantilever before it emits them, so the field's axis extent already includes both
-        overhangs and the bands can be measured back off it. Reading the resolved members
-        rather than re-deriving the bearing lines means a deck whose joists were clipped or
-        whose bearings moved cannot be graded against a band it no longer has.
+        The joist tips, out to the rim axis they stop half a rim short of
+        (``FloorEnds.extension``), *are* the overhang: the resolver extends the outer spans by
+        the cantilever before it emits them, so the bands can be measured back off it. Reading
+        the resolved members rather than re-deriving the bearing lines means a deck whose
+        joists were clipped or whose bearings moved cannot be graded against a band it no
+        longer has.
         """
         joists = self.members("joist")
         if not joists:
@@ -156,7 +157,9 @@ class _Cantilever:
         pairs = [_axis_perp(p, self.along_x) for m in joists for p in (m.p0, m.p1)]
         axis_values = [a for a, _ in pairs]
         perp_values = [p for _, p in pairs]
-        return min(axis_values), max(axis_values), min(perp_values), max(perp_values)
+        ext_lo, ext_hi = self.resolved.ends.extension() if self.resolved.ends else (0.0, 0.0)
+        return (min(axis_values) - ext_lo, max(axis_values) + ext_hi,
+                min(perp_values), max(perp_values))
 
 
 def _cantilevered_decks(ctx: CheckContext) -> list[_Cantilever]:

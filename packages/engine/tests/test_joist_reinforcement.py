@@ -221,10 +221,11 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     # FS-M-EAST's two LVL plies are D-B-SUNKEN's flush band header (``extent``-clipped);
     # FS-M-NE's two are the doubled 316/332 trusses under the peninsula.
     # FS-SG-BALCONY (2026-11-05): two 20" plies behind each front guard bracket and the
-    # doubled north edge joist, all fastener backing for RL-SG-BALCONY's 6" screws.
+    # doubled north edge joist (two runs, broken at D-S-BALCONY's outriggers), all fastener
+    # backing for RL-SG-BALCONY's 6" screws.
     assert sorted(tag for tag, _ in sisters) == [
         "FS-M-EAST", "FS-M-EAST", "FS-M-NE", "FS-M-NE", "FS-M-WEST", "FS-S-EAST",
-        "FS-S-EAST"] + ["FS-SG-BALCONY"] * 7
+        "FS-S-EAST"] + ["FS-SG-BALCONY"] * 8
     # Full span, tip to tip: a sister that stops short carries nothing where the load is
     # (``resolve/floors.py::_reinforcement_members``). 17.79' and not the 18'-0" bearing grid
     # — the joist it doubles starts 1 3/4" in, behind the west rim board, and since decision

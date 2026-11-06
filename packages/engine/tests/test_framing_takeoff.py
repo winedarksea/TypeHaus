@@ -36,6 +36,13 @@ def test_order_length_rounds_up_to_stock() -> None:
     assert _order_length_ft(36.0) == 36
 
 
+def test_a_full_height_stud_buys_the_precut_it_fits() -> None:
+    assert _order_length_ft(103 / 12, "2x6", precut=True) == 104.625 / 12
+    assert _order_length_ft(92 / 12, "2x6", precut=True) == 92.625 / 12
+    assert _order_length_ft(96 / 12, "2x6", precut=True) == 8  # 8' beats the 104 5/8" PET
+    assert _order_length_ft(103 / 12, "2x6") == 10
+
+
 def test_board_feet_parses_dimensional_and_builtup_profiles() -> None:
     assert _board_feet_per_ft("2x6") == 1.0            # 2*6/12
     assert _board_feet_per_ft("2-2x8") == 8.0 / 3.0    # 2 plies * 2*8/12

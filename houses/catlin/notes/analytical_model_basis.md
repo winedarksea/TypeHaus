@@ -300,3 +300,6 @@ line loads and the beam's bearings are the same; only the column self weight fel
 The record's guard lever is guard top to the resolved column base, 13.375' (balcony note §16),
 not column + 42": **200 × 13.375 = 2,675 lb-ft** at every balcony column. The solve reads
 2,589 lb-ft at both rows, so the record is long by 3.3 %, inside the 6 % and on the safe side.
+
+**2026-11-05:** the fascia guard is 40 1/8" (balcony note §18): the record reads
+**200 x 13.219 = 2,643.75 lb-ft** and the solve 2,570.5, long by 2.8 %.

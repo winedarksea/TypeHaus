@@ -216,17 +216,21 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 # ** 3/4" SHORTER ON 2026-10-31 (note §17). ** Cast one SS316 pack under the glulam soffit
 # (C3-E13): 105.125/106.958 -> 104.375/106.208", wind follows the height; the guard's lever
 # is guard top to the column BASE, which did not move.
+#
+# ** GUARD 2,675 -> 2,643.75 ON 2026-11-05 (note §18). ** The fascia guard is the stock 48"
+# tube's 40 1/8", so the lever is 13.219'; q_h follows the lower top and the rear rim
+# oversail adds 1" of E-W band (wind 1,100.7 -> 1,101.9 front, 1,120.0 -> 1,121.2 rear).
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 1100.7, "guard_lb_ft": 2675.0},
-    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 1100.7, "guard_lb_ft": 2675.0},
+    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 1101.9, "guard_lb_ft": 2643.75},
+    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 1101.9, "guard_lb_ft": 2643.75},
     # The rear row runs 2" proud for the deck's drainage crown.
     # ** THE REAR PAIR LOST 1/6" ON 2026-09-14. ** ``SPEC.rear_pillar_rise_in = 2.0`` became
     # ``SPEC.balcony_fall_in_per_ft = 0.25``: the FALL is the authored number now and the rise
     # follows the run between the bearing rows, which over 7'-4" is 1.833" rather than 2.000".
     # Both base moments are ``shear x height``, so they follow it exactly and by the same
     # 0.15%. Nothing else about the rear row moved.
-    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 1120.0, "guard_lb_ft": 2675.0},
-    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 1120.0, "guard_lb_ft": 2675.0},
+    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 1121.2, "guard_lb_ft": 2643.75},
+    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 1121.2, "guard_lb_ft": 2643.75},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
 #:
@@ -846,10 +850,10 @@ def test_the_base_moments_reproduce_the_note(tag, piers) -> None:
     assert pier.wind_base_moment_lb_ft == pytest.approx(want["wind_lb_ft"], abs=1.0)
     assert pier.guard_base_moment_lb_ft == pytest.approx(want["guard_lb_ft"], abs=1.0)
     # 200 lb x guard top to column base: the column, then the glulam, the joists the
-    # resolver drops out of the authored height, the plank, and the 3'-6" guard (note §16).
+    # resolver drops out of the authored height, the plank, and the 40 1/8" guard (note §18).
     lever_ft = want["guard_lb_ft"] / 200.0
-    assert lever_ft == pytest.approx(13.375, abs=0.01)
-    assert lever_ft > want["height_in"] / 12.0 + 3.5, "the deck build-up is lever too"
+    assert lever_ft == pytest.approx(13.219, abs=0.01)
+    assert lever_ft > want["height_in"] / 12.0 + 40.125 / 12.0, "the deck build-up is lever too"
     # The guard governs, which is the whole reason it is computed at all.
     assert pier.guard_base_moment_lb_ft > pier.wind_base_moment_lb_ft
 

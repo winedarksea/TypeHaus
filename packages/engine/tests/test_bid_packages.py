@@ -51,7 +51,11 @@ def test_every_bom_row_lands_in_exactly_one_package(packages) -> None:
     walked = [(item.section, item.qualified_key) for item in walk_bom(bom)
               if not is_mirrored(item)]
     placed = [(line.section, line.key) for p in built.values() for line in p.lines]
-    assert sorted(placed) == sorted(walked)
+    # A lumber size is one line per stock length (→ takeoff/lumber_order): one key, many sticks.
+    framing = [pair for pair in placed if pair[0] == "framing"]
+    assert set(framing) == {pair for pair in walked if pair[0] == "framing"}
+    assert sorted(set(placed) - set(framing)) == sorted(set(walked) - set(framing))
+    assert len(placed) - len(framing) == len([pair for pair in walked if pair[0] != "framing"])
     assert set(built) <= TRADES
     mirrored = [item for item in walk_bom(bom) if is_mirrored(item)]
     sections = (*SOLID_SECTIONS, "floor_finishes")
@@ -89,7 +93,9 @@ def test_the_framing_package_reads_as_a_cut_list(packages) -> None:
     framing = built["framing"]
     assert framing.groups[0].section == "framing"
     lumber = framing.groups[0].lines
-    assert any("pcs" in line.detail for line in lumber)
+    assert {line.unit for line in lumber} == {"pc", "ea"}
+    assert any("PET" in line.description for line in lumber)
+    assert all(line.application for line in lumber)
     assert all("(" in line.description for line in lumber)
     assert "S-100" in framing.sheets
 

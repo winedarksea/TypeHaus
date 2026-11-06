@@ -87,7 +87,7 @@ def test_balcony_wind_base_moment_matches_the_note(solved, tag):
 
 @pytest.mark.parametrize("tag", BALCONY)
 def test_balcony_guard_base_moment_matches_the_note(solved, tag):
-    """§3b: 200 lb x 13.375' = 2,675 lb-ft at every balcony column (addendum 2026-09-23c)."""
+    """§3b: 200 lb x 13.219' = 2,643.75 lb-ft at every balcony column (addendum 2026-11-05)."""
     _, model, result, piers = solved
     reaction = result.reactions[(_support(model, tag).node, LoadCaseKind.GUARD.value)]
     assert _moment_lb_ft(reaction) == pytest.approx(piers[tag].guard_base_moment_lb_ft,

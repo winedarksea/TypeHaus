@@ -58,6 +58,18 @@ class FloorEnds:
     shared_lo: bool
     shared_hi: bool
 
+    def extension(self) -> tuple[float, float]:
+        """(low, high) distance from the joist tips out to where a span reader ends the field.
+
+        Where the rim's axis is the deck line (a cantilever's fascia line, a beam-borne end's
+        span line) the joists stop at its inboard face, half a rim short of the line every
+        overhang and span is measured from. Elsewhere the tip is the field's end.
+        """
+        def reach(rim: float | None, deck: float, tip: float) -> float:
+            return abs(tip - rim) if rim is not None and abs(rim - deck) < _TOL_M else 0.0
+        return (reach(self.rim_lo, self.deck_lo, self.tip_lo),
+                reach(self.rim_hi, self.deck_hi, self.tip_hi))
+
 
 def structure_span(model: ResolvedModel, tag: str, across: int) -> tuple[float, float] | None:
     """The plan extent of a bearing ref's *structure*, across the joist direction.

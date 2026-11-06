@@ -120,7 +120,7 @@ entry (`C2 E1` = C2.md, escalation E1). `carried` names the round-1 item.
       mount spec.
     - Correcting the datum pushes RL-A-STAIR's east post 1.0" into the roof underside.
     - The bases need blocking (C2).
-    → Datum, mount spec and blocking together; the roof clash is an owner call. M.
+    → Datum, mount spec and blocking together; the roof clash is an owner call.
 
 ### Construction set (misprints and missing content)
 

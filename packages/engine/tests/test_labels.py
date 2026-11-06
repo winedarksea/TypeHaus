@@ -34,7 +34,7 @@ def test_the_id_is_always_kept() -> None:
                      "routing": "chase"}) == \
         'Exhaust duct, 3" semi-rigid in chase (exhaust:semi_rigid:3.0)'
     assert describe("framing", "2x6", {"types": ["stud", "king", "plate"]}) == \
-        "2x6 — stud, king stud, plate (2x6)"
+        "2x6 spf — stud, king stud, plate (2x6)"
     assert describe("hardware", "SDWS22800DB", {"description": "SDWS Timber Screw"}) == \
         "SDWS Timber Screw (SDWS22800DB)"
     assert describe("allowances", "cabinet-closet-shelving-and-rod",

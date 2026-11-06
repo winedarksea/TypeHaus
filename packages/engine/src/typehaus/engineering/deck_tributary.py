@@ -29,6 +29,13 @@ def _joists(ctx: Any, deck: Any) -> list[Any]:
     return [m for m in resolved.members if m.category == "joist"] if resolved else []
 
 
+def _extension_m(ctx: Any, deck: Any) -> tuple[float, float]:
+    """How far past the joist tips the field reaches (``FloorEnds.extension``)."""
+    resolved = next((f for f in ctx.model.floors if f.tag == deck.tag), None)
+    ends = getattr(resolved, "ends", None)
+    return ends.extension() if ends is not None else (0.0, 0.0)
+
+
 def _cantilevers_m(deck: Any) -> tuple[float, float]:
     spec = deck.joists
     base = spec.cantilever.meters if spec.cantilever is not None else 0.0
@@ -49,6 +56,7 @@ def joist_span_ft(ctx: Any, deck: Any) -> float | None:
         return None
     axis = 0 if (deck.joists.direction or "x") == "x" else 1
     start_ft, end_ft = (c / _M_PER_FT for c in _cantilevers_m(deck))
+    ext_lo, ext_hi = (e / _M_PER_FT for e in _extension_m(ctx, deck))
     ends = [sorted((m.p0[axis], m.p1[axis])) for m in joists]
     low = min(a for a, _ in ends)
     high = max(b for _, b in ends)
@@ -56,9 +64,9 @@ def joist_span_ft(ctx: Any, deck: Any) -> float | None:
     for (a, b), member in zip(ends, joists, strict=True):
         span_ft = member.length_m / _M_PER_FT
         if abs(a - low) < 1e-6:
-            span_ft -= start_ft
+            span_ft += ext_lo - start_ft
         if abs(b - high) < 1e-6:
-            span_ft -= end_ft
+            span_ft += ext_hi - end_ft
         spans.append(span_ft)
     return max(spans)
 
@@ -87,8 +95,9 @@ def beam_tributary_ft(ctx: Any, deck: Any, beam: Any) -> float | None:
     if here is None:
         return None
     start, end = _cantilevers_m(deck)
-    low = min(min(m.p0[axis], m.p1[axis]) for m in joists)
-    high = max(max(m.p0[axis], m.p1[axis]) for m in joists)
+    ext_lo, ext_hi = _extension_m(ctx, deck)
+    low = min(min(m.p0[axis], m.p1[axis]) for m in joists) - ext_lo
+    high = max(max(m.p0[axis], m.p1[axis]) for m in joists) + ext_hi
     lines = [low + start, high - end]
     for ref in deck.joists.bearing_refs or ():
         element = ctx.plan.by_tag(ref)

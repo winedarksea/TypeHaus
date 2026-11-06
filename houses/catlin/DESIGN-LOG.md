@@ -7658,7 +7658,9 @@ straight bracket, holds under 4D to the band's end. Basis and hand check:
     plies only within one `extent`.
   - North edge joist: doubled into the 1 1/2" rim oversail, which is lengthened from 1/2" so
     the end posts' rear screws hold 1 3/8" to the cut end. The movement gap to the cladding is
-    1 3/4" (was 2 3/4").
+    1 3/4" (was 2 3/4"). The doubling breaks with the rear flashing at D-S-BALCONY, clear of
+    the door's threshold outriggers. The balcony note's §18 re-works the columns for the
+    40 1/8" guard, and the span readers take the field to the rim axis (`FloorEnds.extension`).
 - **Corners** (owner): FM244390 is the maker's own corner detail. It is drawn to the product
   drawing, with the outboard walls full, the inboard walls jogging 45° to the flanges, and the
   post corner open. Its screws are graded for reaching wood, not for end distance. The flank

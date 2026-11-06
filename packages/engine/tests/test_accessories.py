@@ -501,14 +501,16 @@ def test_vent_termination_derives_from_the_wall_the_riser_rides(catlin_model) ->
     assert roof_cleared_by(catlin_model, vent).tag == "RF-HOUSE"
 
 
-def test_catlin_balcony_guard_is_a_42in_railing(catlin_model) -> None:
-    """42" is measured from the surface underfoot, not from the storey datum.
+def test_catlin_balcony_guard_stands_its_height_over_the_plank(catlin_model) -> None:
+    """The guard's height (40 1/8", the stock 48" tube) is measured from the surface
+    underfoot, not from the storey datum.
 
     The aluminum boards sit *on* the joists whose tops define the datum, so a guard based
     on the datum stands only 40.5" above the deck someone actually walks on. Each post runs
     down past the boards into its fascia bracket, to the bracket's bottom.
     """
     deck_top = _balcony_deck_top(catlin_model)
+    guard_m = catlin_params("sunken_garden").BALCONY_GUARD.height.meters
     posts = [s for s in _solids(catlin_model, "railing")
              if "RL-SG-BALCONY" in s.tag and "-POST" in s.tag]
     brackets = {s.tag.rsplit("BRACKET", 1)[1]: s for s in _solids(catlin_model, "railing")
@@ -516,7 +518,8 @@ def test_catlin_balcony_guard_is_a_42in_railing(catlin_model) -> None:
     assert posts, "railing posts expected"
     for post in posts:
         point = tuple(sum(p[i] for p in post.outline)/len(post.outline) for i in range(2))
-        assert math.isclose(post.z1_m - deck_top(point), 3.5 * FT, abs_tol=1e-8)
+        assert math.isclose(post.z1_m - deck_top(point), guard_m,
+                            abs_tol=1e-8)
         bracket = brackets[post.tag.rsplit("POST", 1)[1]]
         assert math.isclose(post.z0_m, bracket.z0_m + 0.125*0.0254, abs_tol=1e-9), (
             "post seats on the bracket insert")
@@ -623,12 +626,14 @@ def test_catlin_balcony_guard_draws_its_balusters(catlin_model) -> None:
                if s.category == "railing_infill" and s.tag.startswith("RL-SG-BALCONY-")]
     assert len(pickets) > 80, "a 38' guard at a 4\" clear gap is ~90 pickets"
     rail_half = 0.75 * 0.0254
+    guard_m = catlin_params("sunken_garden").BALCONY_GUARD.height.meters
     for picket in pickets:
         point = tuple(sum(p[i] for p in picket.outline)/len(picket.outline) for i in range(2))
         local_top = deck_top(point)
         assert math.isclose(picket.z0_m, local_top + 3*0.0254 + 2*rail_half, abs_tol=1e-9), (
             "a picket's foot sits on the walking surface, trimmed under the bottom rail")
-        assert math.isclose(picket.z1_m, local_top + 3.5 * FT - 2*rail_half, abs_tol=1e-9), (
+        assert math.isclose(picket.z1_m, local_top + guard_m - 2*rail_half,
+                            abs_tol=1e-9), (
             "...and its head stops under the top rail")
 
 
