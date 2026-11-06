@@ -84,11 +84,11 @@ def test_the_collector_profile_is_the_note_s_arithmetic(catlin_model_ro) -> None
     assert z[1] == pytest.approx(116.75, abs=0.001)   # the drop bottom, under the chord
     assert z[-1] == pytest.approx(111.0, abs=0.001)   # on the stack barrel
 
-    legs = [math.dist(path[i], path[i + 1]) for i in range(1, 7)]
-    # east, north (the loop under W-S-SN3), east, south, south, east
-    assert legs == pytest.approx([4.69, 13.844, 4.5, 20.25, 30.0, 6.0], abs=0.001)
-    slopes = [(z[i] - z[i + 1]) / (leg / 12.0) for i, leg in zip(range(1, 7), legs, strict=True)]
-    assert slopes == pytest.approx([0.256, 0.260, 0.267, 0.326, 1.240, 3.2], abs=0.001)
+    legs = [math.dist(path[i], path[i + 1]) for i in range(1, 6)]
+    # north (the loop under W-S-SN3, off the flange's own x), east, south, south, east
+    assert legs == pytest.approx([13.844, 9.19, 20.25, 30.0, 6.0], abs=0.001)
+    slopes = [(z[i] - z[i + 1]) / (leg / 12.0) for i, leg in zip(range(1, 6), legs, strict=True)]
+    assert slopes == pytest.approx([0.260, 0.261, 0.326, 1.240, 3.2], abs=0.001)
 
     developed_ft = sum(legs) / 12.0
     assert developed_ft == pytest.approx(6.607, abs=0.001)
@@ -103,7 +103,7 @@ def test_the_two_arms_arrive_above_the_collector_they_tie_into(catlin_model_ro) 
     runs = {r.tag: r for r in catlin_model_ro.pipe_runs}
     for tag, parent_at, expected in (
             ("PR-M-S-SUITE-TUB-DRAIN", 115.7 - 3.1 * (18 / 30), 113.84),
-            ("PR-M-S-SUITE-LAV-DRAIN", 115.85 - 0.2 * (5.5 / 8), 115.7125)):
+            ("PR-M-S-SUITE-LAV-DRAIN", 115.85 - 0.35 * (5.5 / 15.25), 115.724)):
         assert parent_at == pytest.approx(expected, abs=0.001)
         arrival = _in(runs[tag].z_m[-1])
         assert arrival > parent_at

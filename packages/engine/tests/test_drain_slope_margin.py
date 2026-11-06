@@ -72,12 +72,12 @@ def test_the_margin_prints_on_pass_too(catlin_plan, catlin_model_ro) -> None:
     findings = _run(catlin_plan, catlin_model_ro)
     suite = next(f for f in findings if "PR-M-S-SUITE-WC-DRAIN" in f.element_tags)
     assert suite.result is Result.PASS
-    # 0.10" over the 4.69" first east leg since the loop north for its vent (2026-11-05);
-    # 0.326"/ft over 9.19" from 2026-10-30, 0.261"/ft after the south leg moved to x=144
+    # 0.30" over the 13.844" north leg since it leaves the flange at its own x (2026-11-06);
+    # 0.256"/ft on a 4.69" east leg from 2026-11-05, 0.326"/ft over 9.19" from 2026-10-30, 0.261"/ft after the south leg moved to x=144
     # (2026-10-26), 1.185"/ft before that, 1.083"/ft before the tie dropped, 0.779"/ft before
     # the stack moved.
-    assert '0.256"/ft' in suite.message
-    assert '+0.006"/ft over' in suite.message
+    assert '0.260"/ft' in suite.message
+    assert '+0.010"/ft over' in suite.message
 
 
 def test_pr_b_bath_drain_is_the_run_bld05_was_reaching_for(
@@ -86,7 +86,7 @@ def test_pr_b_bath_drain_is_the_run_bld05_was_reaching_for(
     named. The suite WC it was contrasted with is thin too since 2026-10-26, but not zero."""
     findings = _run(catlin_plan, catlin_model_ro)
     assert _margin_of(findings, "PR-B-BATH-DRAIN") == pytest.approx(0.0, abs=1e-9)
-    assert _margin_of(findings, "PR-M-S-SUITE-WC-DRAIN") == pytest.approx(0.006, abs=1e-9)
+    assert _margin_of(findings, "PR-M-S-SUITE-WC-DRAIN") == pytest.approx(0.010, abs=1e-9)
 
 
 def test_it_never_restates_the_code_minimum(catlin_plan, catlin_model_ro) -> None:

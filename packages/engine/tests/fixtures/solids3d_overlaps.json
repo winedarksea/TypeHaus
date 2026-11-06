@@ -191,6 +191,7 @@
   "duct_return|electrical_box": [1, 0.000164],
   "duct_return|equipment": [4, 0.029438],
   "duct_return|framing": [4, 0.004402],
+  "duct_return|pipe_vent": [1, 0.000133],
   "duct_return|terminal_neck": [5, 0.002789],
   "duct_return|wall": [3, 0.020525],
   "duct_supply|duct_supply": [8, 0.026912],
