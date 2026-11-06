@@ -426,7 +426,7 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     # RL-BW-GARAGE-E on 2026-10-13 with the landing itself.
     # The flight guard stops at the newel; RL-A-FLIGHT-SKIRT closes the band under it.
     assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-FLIGHT-SKIRT", "RL-A-STAIR", "RL-BW-ENTRY",
-                    "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-S-STAIRHEAD-N",
+                    "RL-S-STAIR", "RL-S-STAIRHEAD",
                     "RL-SG-BALCONY", *_PORCH_PIECES,
                     "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S", "W-BW-SCREEN"], \
         [f.message for f in findings]
@@ -446,7 +446,7 @@ def test_the_sphere_rule_is_measured_off_the_drawn_infill_not_only_the_field(cat
     # instead, is a solid wall and has no drawn gap to quote.
     assert sorted(f.message.split()[0] for f in drawn) == [
         "RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY",
-        "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-S-STAIRHEAD-N",
+        "RL-S-STAIR", "RL-S-STAIRHEAD",
         "RL-SG-BALCONY", *_PORCH_PIECES, "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S"]
 
 
@@ -519,6 +519,6 @@ def test_the_stair_throat_is_not_an_open_side(catlin_ctx):
         catlin_ctx, lambda e: None if getattr(e, "tag", "") == "RL-S-STAIRHEAD" else e)
     fail = next(f for f in stairwell_guard(ctx)
                 if f.result is Result.FAIL and "FO-S-STAIR" in f.message)
-    # The gap starts at the railing's authored west end (13'-9 3/4" = 13.81'), east of
-    # the throat — the flight's own entry span stays exempt.
-    assert "13.8" in fail.message, fail.message
+    # The gap starts at W-S-WELL-KNEE's east face (14'-2 3/16" = 14.18'), east of the
+    # throat — the flight's own entry span stays exempt.
+    assert "14.18'" in fail.message, fail.message

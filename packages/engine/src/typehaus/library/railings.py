@@ -4,12 +4,12 @@ Guards are required by code at every open edge over 30", so "which guard product
 question every house asks. Each ``Railing`` instance authors its own run; these are the
 product definitions, with no house geometry.
 
-The three guards are one system: the Williams Architectural Products 42" Colonial
-aluminium panel, an Ultralox product listed under ICC-ES ESR-3485 (Ultralox holds the
-report; Williams and Harmony Railing are additional listees). Reissued October 2025,
-subject to renewal October 2027. Sections are the product's, not dressed-lumber nominals:
-a true 3" x 3" post (0.065" wall, 6005A-T5) and a 0.50" x 0.75" picket, drawn square at
-its 0.50" face along the run, the face R312.1.3's sphere meets.
+The three guards are one system: the Williams Architectural Products Colonial aluminium
+panel (42" outdoors, 36" indoors), an Ultralox product listed under ICC-ES ESR-3485
+(Ultralox holds the report; Williams and Harmony Railing are additional listees).
+Reissued October 2025, subject to renewal October 2027. Sections are the product's, not
+dressed-lumber nominals: a true 3" x 3" post (0.065" wall, 6005A-T5) and a 0.50" x 0.75"
+picket, drawn square at its 0.50" face along the run, the face R312.1.3's sphere meets.
 """
 
 from __future__ import annotations
@@ -58,7 +58,17 @@ WILLIAMS_ADA_HANDRAIL_BLACK = Product(
             "with 3 x #10 TEK screws and a backer. ESR-3485 §3.3/§4.1, Table 1: 72\" "
             "max between supports."),
 )
-RAILING_PRODUCTS = (WILLIAMS_COLONIAL_42_BLACK, WILLIAMS_ADA_HANDRAIL_BLACK)
+#: Model number by the 42" and stair panels' pattern, not seen in a listing: confirm at order.
+WILLIAMS_COLONIAL_36_BLACK = Product(
+    tag="PROD-WILLIAMS-CP252306B", brand="Williams Architectural Products",
+    model="CP252306B", name="36\" x 6' Colonial baluster panel, Textured Black",
+    url=_ESR_3485,
+    source=("Williams Colonial level panel, the 42\" panel's 69.43\" bay at 36\"; same "
+            "posts, rails and ESR-3485 listing. Model and SKU unverified (2026-11-05): "
+            "confirm at order."),
+)
+RAILING_PRODUCTS = (WILLIAMS_COLONIAL_42_BLACK, WILLIAMS_COLONIAL_36_BLACK,
+                    WILLIAMS_ADA_HANDRAIL_BLACK)
 
 ULTRALOX_3_INCH_FASCIA_MOUNT = FasciaMountSpec(
     straight_product="FM044300", inside_corner_product="FM144390",
@@ -108,13 +118,27 @@ RAILING_EXT_ALUMINUM_FASCIA = RailingType(
     fascia_mount=ULTRALOX_3_INCH_FASCIA_MOUNT,
 )
 
+_ULTRALOX_BP04450 = SurfaceMountSpec(
+    product="BP04450", bottom_clearance=inch(3), stair_bottom_clearance=inch(1),
+    base_width=inch(4.99),
+    display_base_thickness=inch(0.5), display_hole_spacing=inch(3.75),
+    wood_screw_diameter=inch(5/16), wood_screw_length=inch(6),
+    concrete_anchor_diameter=inch(0.25), concrete_anchor_length=inch(3),
+    display_head_width=inch(0.5), display_head_height=inch(0.22),
+    source="Ultralox BP04450: 4.99 inch cast base; ESR-3485 Table 1 / Fig.9 "
+           "wood and concrete fasteners. Thickness, hole centres and head contours "
+           "are display approximations; verify actual base before drilling.",
+)
+
 RAILING_INT_STAIR_GUARD = RailingType(
     tag="RAILING-INT-STAIR-GUARD",
     name="Interior stair guard rail",
-    product_ref=WILLIAMS_COLONIAL_42_BLACK.tag,
+    surface_mount=_ULTRALOX_BP04450,
+    product_ref=WILLIAMS_COLONIAL_36_BLACK.tag,
     post_width=inch(3), baluster_width=inch(0.5),
-    source=f"Williams Colonial 42\" black; ESR-3485 §2.0/§5.1 list it for interior use. "
-           f"Posts on the 42\" surface kit (Menards 1717824) or {_FASCIA_BRACKET}. {_SPACING}.",
+    source=f"Williams Colonial 36\" black (R312.1.2's 36\" indoors); ESR-3485 §2.0/§5.1 "
+           f"list it for interior use. Posts on the 36\" surface kit (BP04450 base; 4 GRK "
+           f"RSS 5/16\" x 6\" into SG >= 0.50 blocking) or {_FASCIA_BRACKET}. {_SPACING}.",
     fascia_bracket_height=inch(5),
     fascia_bracket_width=inch(5.64),
     fascia_bracket_projection=inch(3.29),
@@ -123,17 +147,7 @@ RAILING_INT_STAIR_GUARD = RailingType(
 
 RAILING_EXT_ALUMINUM_SURFACE = RailingType(
     tag="RAILING-EXT-ALUMINUM-SURFACE",
-    surface_mount=SurfaceMountSpec(
-        product="BP04450", bottom_clearance=inch(3), stair_bottom_clearance=inch(1),
-        base_width=inch(4.99),
-        display_base_thickness=inch(0.5), display_hole_spacing=inch(3.75),
-        wood_screw_diameter=inch(5/16), wood_screw_length=inch(6),
-        concrete_anchor_diameter=inch(0.25), concrete_anchor_length=inch(3),
-        display_head_width=inch(0.5), display_head_height=inch(0.22),
-        source="Ultralox BP04450: 4.99 inch cast base; ESR-3485 Table 1 / Fig.9 "
-               "wood and concrete fasteners. Thickness, hole centres and head contours "
-               "are display approximations; verify actual base before drilling.",
-    ),
+    surface_mount=_ULTRALOX_BP04450,
     name="Exterior aluminum surface-mounted guard",
     product_ref=WILLIAMS_COLONIAL_42_BLACK.tag,
     post_width=inch(3), baluster_width=inch(0.5),

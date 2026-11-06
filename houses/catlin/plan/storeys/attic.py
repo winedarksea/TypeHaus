@@ -4,6 +4,7 @@
 # gable walls north/south frame ToRoof, ridge runs N-S over the center wall line,
 # 6:12, zero overhang (first-class). Roof underside above this floor: 1 1/2" + x/2.
 from ..doorway_transitions import D_A_HALVES_OAK_REDUCER
+from typehaus.model.surface_mount import SurfacePostMount
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -893,7 +894,7 @@ FLOOR = [
 ]
 
 # The attic deck's edge along the well's south side, y=5'-9 5/8" — the flight's own south
-# face: 42" metal fascia guard from the stair head east to x=28'-11", where the 6:12 rake
+# face: 36" metal guard from the stair head east to x=28'-11", where the 6:12 rake
 # leaves no room for it and W-A-GC-S closes the rest (derivation on that wall). The well's east
 # edge has no walking surface to guard. West of the 25'-5 1/8" newel this rail also guards the
 # flight below it (see RL-A-FLIGHT-GUARD).
@@ -902,13 +903,27 @@ STAIR_GUARD = Railing(
         pt(ft(28, 11), inch(67.125)),
         pt(inch(256.375), inch(67.125)),
     ),
-    kind=RailingKind.METAL_SURFACE_MOUNT, height=ft(3.5),
-    base_elevation=ft(20), post_spacing=inch(60), post_size="3x3", rail_count=2,
-    # On the 42" surface kit (Menards 1717824), its 4.99" base's north edge on the trimmer
-    # pack's well face (y=5'-9 5/8"): posts stand on the deck, clear of the flight and its
-    # head landing (R311.7.1, R311.7.6). 4 GRK RSS 5/16" x 6" per base into SG >= 0.50
-    # (ESR-3485 wood row): block under each base, the pack's own plies are not that.
+    # 36" (R312.1.2) off the finished oak, 3/4" oak on 3/4" subfloor over the 20'-0" joist
+    # tops. At 42" the east post's top ran 1" into the roof; at 36" it clears by ~5".
+    kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
+    base_elevation=ft(20, 1.5), post_spacing=inch(60), post_size="3x3", rail_count=2,
+    # On the 36" surface kit, its 4.99" base's north edge on the trimmer pack's well face
+    # (y=5'-9 5/8"): posts stand on the deck, clear of the flight and its head landing
+    # (R311.7.1, R311.7.6). 4 GRK RSS 5/16" x 6" per base into SG >= 0.50 (ESR-3485 wood
+    # row): the north pair bite the pack's LVL, the south pair a 2x12 block nailed to its
+    # south face under each base.
     mount="surface", assembly="RAILING_DARK_METAL",
+    surface_post_mounts=(
+        SurfacePostMount(elevation=ft(20, 1.5), substrate="wood",
+                         backing_size=(inch(7.25), inch(1.5), inch(11.25)),
+                         backing_offset=(inch(0), inch(-1.75)), finish_thickness=inch(1.5)),
+        SurfacePostMount(elevation=ft(20, 1.5), substrate="wood",
+                         backing_size=(inch(7.25), inch(1.5), inch(11.25)),
+                         backing_offset=(inch(0), inch(-1.75)), finish_thickness=inch(1.5)),
+        SurfacePostMount(elevation=ft(20, 1.5), substrate="wood",
+                         backing_size=(inch(7.25), inch(1.5), inch(11.25)),
+                         backing_offset=(inch(0), inch(-1.75)), finish_thickness=inch(1.5)),
+    ),
     # R312.1.3: 4" clear between balusters — the largest opening the sphere rule admits.
     infill="balusters", baluster_spacing=inch(4),
 )

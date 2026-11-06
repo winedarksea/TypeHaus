@@ -7675,3 +7675,24 @@ straight bracket, holds under 4D to the band's end. Basis and hand check:
     36" panels save ≈$200–400.
   - Through-bolts with relieved fascia.
 - **Kept:** the aluminium dry-deck. Its price research is noted in `prices.toml`.
+
+## Interior guards at 36"; a knee wall on ST-M2S's partition (2026-11-05, geometry review C1 E2)
+
+- **Height:** the owner chose 36" panels indoors (R312.1.2), the same Williams Colonial
+  system, now on `RAILING-INT-STAIR-GUARD` with the BP04450 surface base. The 36" level
+  panel's model number (CP252306B) is inferred from the 42" and stair panels and is
+  confirmed at order. RL-A-FLIGHT-GUARD was already 36".
+- **Datum:** RL-S-STAIR, RL-S-STAIRHEAD and RL-A-STAIR stood on the joist tops, 1 1/2" under
+  the oak. Their `base_elevation` is the oak now, and the two fascia guards' brackets hang
+  2" under it (1/2" under the rim). At 42" RL-A-STAIR's east post would have run 1" into the
+  roof; at 36" it clears by about 5".
+- **Blocking:** each RL-A-STAIR base sets its north screws in the trimmer pack's LVL and its
+  south pair in a 2x12 block nailed to the pack's south face.
+- **Knee wall:** the owner chose `W-S-WELL-KNEE`, a framed 2x4 wall on the generated well
+  partition's top plate, 36" over the oak, from the well head to nosing 5. It replaces the
+  metal leg RL-S-STAIRHEAD-N (uid FR1DYXJJH7 spent). The cap (`SL-S-KNEE-CAP`) is a 5/4
+  oak tread ripped to 5 1/4", 3/8" over each face. RL-S-STAIRHEAD's end post stands on the
+  cap's edge, 1 7/8" off the gypsum. The platform rule lifts W-M-WELL's body to meet the knee
+  wall; its gypsum still stops at the plate. Guard run 26.1 -> 21.5 LF; the framer installs it.
+- **Kept metal:** the hall's east and head edges (fascia on BM-S-HALL and the header) and the
+  attic study edge. A wall there costs floor and light over the stair for no saving.

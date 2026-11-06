@@ -2503,9 +2503,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   fascia, drip, gutter and `BALCONY_FRONT_AXIS_Y_FT` together.
 - Fallback: New Castle Steel HDG 6x6x3/16" post w/ welded base plate
   (~$458/10'), still needs a fabricated saddle with no shop drawing made.
-- Every guard (porch, balcony, interior stairs): Williams Architectural Products 42"
-  Colonial black (CP262406B), ICC-ES ESR-3485 (Ultralox; Menards; Eagan MN); alternate
-  Fortress Al13 Home. Library types carry the real sections: 3" posts, 0.5" pickets.
+- Every guard (porch, balcony, interior stairs): Williams Architectural Products Colonial
+  black, ICC-ES ESR-3485 (Ultralox; Menards; Eagan MN); alternate Fortress Al13 Home. 42"
+  outdoors (CP262406B); **36" indoors** (R312.1.2; model CP252306B unconfirmed), measured
+  off the finished oak (+1 1/2" over the joists). Library types carry the real sections: 3"
+  posts, 0.5" pickets. RL-A-STAIR's bases screw to the trimmer pack's LVL and a 2x12 block
+  on its south face. ST-M2S's partition side is `W-S-WELL-KNEE`, a 36" framed knee wall
+  with a ripped oak-tread cap (`SL-S-KNEE-CAP`), not a guard.
 - The porch guard is surface-mounted (`RAILING-EXT-ALUMINUM-SURFACE`,
   `params/porch_guards.py`): **the cast columns BR1/BF1/BR3/BF3 are its posts** (owner
   2026-11-04), so it is one `RL-SG-PORCH-*` per span, ending on a column face by

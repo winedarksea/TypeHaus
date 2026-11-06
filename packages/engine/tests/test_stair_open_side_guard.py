@@ -10,6 +10,7 @@ four of the house's stairs.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from types import SimpleNamespace
 
 import pytest
@@ -41,8 +42,8 @@ def test_every_catlin_flight_is_walled_guarded_or_inside_its_own_well(ctx):
     ST-B2M and ST-M2S are switchbacks in a shaft: their outer sides are wall, and their inner
     sides face each other across the well partition. ST-B2M's is closed by W-M-WELL standing
     on its partition; ST-M2S's partition stops flush with the arrival deck, so its top four
-    nosings are guarded by RL-S-STAIRHEAD-N on its top. ST-G-SERVICE is five risers and never
-    gets 30" up. ST-S2A has a genuinely open side, and it carries RL-A-FLIGHT-GUARD.
+    nosings are walled by W-S-WELL-KNEE, a 36" knee wall on its top. ST-G-SERVICE is five
+    risers and never gets 30" up. ST-S2A has a genuinely open side, and it carries RL-A-FLIGHT-GUARD.
 
     ST-SG-PORCH (2026-09-03) joins ST-G-SERVICE in the third category and for the same
     arithmetic: five risers off a pad, top tread 27.152" up, under the 30" trigger. Its two
@@ -56,10 +57,9 @@ def test_every_catlin_flight_is_walled_guarded_or_inside_its_own_well(ctx):
                              "ST-BW-ENTRY"}
     assert {f.result for f in findings} == {Result.PASS}, [f.message for f in findings]
     assert "RL-A-FLIGHT-GUARD" in by_stair["ST-S2A"].message
-    assert "RL-S-STAIRHEAD-N" in by_stair["ST-M2S"].message
-    # The others pass without crediting a guard — nothing stands on their sides.
+    # The others pass without crediting a guard — nothing but wall stands on their sides.
     assert not [tag for tag, f in by_stair.items()
-                if tag not in ("ST-S2A", "ST-M2S") and "guarded by" in f.message]
+                if tag != "ST-S2A" and "guarded by" in f.message]
 
 
 def test_the_defect_this_rule_was_written_for(ctx):
@@ -149,12 +149,15 @@ def test_a_house_with_no_stairs_is_unknown_never_a_silent_pass(ctx):
 
 # --- the switchback's inner side, across the well partition ------------------------------
 
-_HEAD = "RL-S-STAIRHEAD-N"
+_KNEE = "W-S-WELL-KNEE"
 
 
-def _head_only(e):
-    """The well as it stood before the partition leg: RL-S-STAIRHEAD across the head alone."""
-    return None if getattr(e, "tag", None) == _HEAD else e
+def _knee(ctx, edit):
+    """``ctx`` with the knee wall on ST-M2S's partition mapped — ``None`` drops it."""
+    walls = [w for w in (edit(w) if w.tag == _KNEE else w for w in ctx.model.walls)
+             if w is not None]
+    model = SimpleNamespace(stairs=ctx.model.stairs, floors=ctx.model.floors, walls=walls)
+    return SimpleNamespace(plan=ctx.plan, model=model, preferences=None)
 
 
 def test_the_inner_side_over_a_flush_partition_is_an_open_side(ctx):
@@ -164,22 +167,19 @@ def test_the_inner_side_over_a_flush_partition_is_an_open_side(ctx):
     that can see it — and it passed until 2026-09-25 by calling the lane "its own well".
     Three of the four sit under W-M-WELL's 108" top: across a partition, a wall that merely
     brackets a nosing does not close the side; it has to stand 34" over it."""
-    finding = _by_stair(stair_open_side_guard(_with(ctx, _head_only)))["ST-M2S"]
+    finding = _by_stair(stair_open_side_guard(_knee(ctx, lambda w: None)))["ST-M2S"]
     assert finding.result is Result.FAIL
     assert "4 nosing end(s)" in finding.message
     assert "98\" fall" in finding.message
 
 
-def test_a_short_guard_on_the_partition_fails_on_height(ctx):
-    """The leg stands on the partition top, which closes the band under it; what it owes is
-    34" over the nosing line, and at 20" it is short over the top nosing alone."""
-    findings = stair_open_side_guard(_with(
-        ctx, lambda e: (e.model_copy(update={"height": inch(20)})
-                        if getattr(e, "tag", None) == _HEAD else e)))
-    finding = _by_stair(findings)["ST-M2S"]
+def test_a_short_knee_wall_on_the_partition_leaves_the_side_open(ctx):
+    """The knee wall and the partition are one solid, and it closes the side only at 34" over
+    the nosing: cut to 20" it falls short over the top nosings."""
+    finding = _by_stair(stair_open_side_guard(_knee(
+        ctx, lambda w: replace(w, z1_m=w.z0_m + inch(20).meters))))["ST-M2S"]
     assert finding.result is Result.FAIL
-    assert finding.code_ref == "R312.1.2"
-    assert _HEAD in finding.message
+    assert "open side" in finding.message
 
 
 def test_a_wall_standing_on_the_partition_continues_it(ctx):

@@ -6926,6 +6926,66 @@
 8,
 "031f278c2ea6"
 ],
+"geometry/6G7CJV5WTK/layer:gwb-a": [
+3.0861,
+4.0005,
+2,
+"d847da82ede2"
+],
+"geometry/6G7CJV5WTK/layer:gwb-b": [
+3.0861,
+4.0005,
+2,
+"d847da82ede2"
+],
+"geometry/6G7CJV5WTK/layer:stud": [
+3.0861,
+4.0005,
+2,
+"d847da82ede2"
+],
+"geometry/6G7CJV5WTK::framing/member:plate-bottom": [
+3.0861,
+3.1242,
+8,
+"70acd940f993"
+],
+"geometry/6G7CJV5WTK::framing/member:plate-top-0": [
+3.9624,
+4.0005,
+8,
+"8b3987913b11"
+],
+"geometry/6G7CJV5WTK::framing/member:plate-top-1": [
+3.9243,
+3.9624,
+8,
+"99cf58d51aaa"
+],
+"geometry/6G7CJV5WTK::framing/member:stud-000": [
+3.1242,
+3.9243,
+8,
+"144d73e3292a"
+],
+"geometry/6G7CJV5WTK::framing/member:stud-001": [
+3.1242,
+3.9243,
+8,
+"144d73e3292a"
+],
+"geometry/6G7CJV5WTK::framing/member:stud-002": [
+3.1242,
+3.9243,
+8,
+"144d73e3292a"
+],
+"geometry/6G7CJV5WTK::framing/member:stud-003": [
+3.1242,
+3.9243,
+8,
+"144d73e3292a"
+],
 "geometry/6KE3VP3HY1-FB0/body": [
 0.0,
 0.01905,
@@ -14522,143 +14582,197 @@
 2,
 "fba4986479ce"
 ],
+"geometry/CARL01AAAA-anchors1/body": [
+5.9944,
+6.152388,
+144,
+"93127472697e"
+],
+"geometry/CARL01AAAA-anchors2/body": [
+5.9944,
+6.152388,
+144,
+"93127472697e"
+],
+"geometry/CARL01AAAA-anchors3/body": [
+5.9944,
+6.152388,
+144,
+"93127472697e"
+],
+"geometry/CARL01AAAA-backing1/body": [
+5.81025,
+6.096,
+8,
+"df9f82978e0f"
+],
+"geometry/CARL01AAAA-backing2/body": [
+5.81025,
+6.096,
+8,
+"df9f82978e0f"
+],
+"geometry/CARL01AAAA-backing3/body": [
+5.81025,
+6.096,
+8,
+"df9f82978e0f"
+],
+"geometry/CARL01AAAA-base1/body": [
+6.1341,
+6.1468,
+556,
+"538cc5373d26"
+],
+"geometry/CARL01AAAA-base2/body": [
+6.1341,
+6.1468,
+556,
+"538cc5373d26"
+],
+"geometry/CARL01AAAA-base3/body": [
+6.1341,
+6.1468,
+556,
+"538cc5373d26"
+],
 "geometry/CARL01AAAA-i000/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i001/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i002/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i003/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i004/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i005/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i006/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i007/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i008/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i009/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i010/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i011/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i012/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i013/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i014/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i015/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i016/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-i017/body": [
-6.11505,
-7.14375,
+6.2484,
+7.0104,
 2,
-"da9887fae0ed"
+"9e747fb1ab94"
 ],
 "geometry/CARL01AAAA-p00/body": [
-6.096,
-7.1628,
+6.1341,
+7.0485,
 2,
-"05279313fa9a"
+"c5cda33b0fbf"
 ],
 "geometry/CARL01AAAA-p01/body": [
-6.096,
-7.1628,
+6.1341,
+7.0485,
 2,
-"05279313fa9a"
+"c5cda33b0fbf"
 ],
 "geometry/CARL01AAAA-p02/body": [
-6.096,
-7.1628,
+6.1341,
+7.0485,
 2,
-"05279313fa9a"
+"c5cda33b0fbf"
 ],
 "geometry/CARL01AAAA-r00/body": [
-7.14375,
-7.18185,
+7.0104,
+7.0485,
 8,
-"f9699516ac0e"
+"4bfb81ce99d0"
 ],
 "geometry/CARL01AAAA-r01/body": [
-6.07695,
-6.11505,
+6.2103,
+6.2484,
 8,
-"d89fd0a9efa5"
+"40acae7d50d1"
 ],
 "geometry/CARL02AAAA-b01/body": [
 4.3153953,
@@ -25154,6 +25268,12 @@
 24,
 "fadfe851bf34"
 ],
+"geometry/CM-284ed734e778/body": [
+3.032125,
+3.140075,
+56,
+"fa73a082d0a3"
+],
 "geometry/CM-29eb41d253ac/body": [
 -0.2869692,
 -0.0885317,
@@ -25327,6 +25447,12 @@
 3.101975,
 56,
 "ba5194e2061f"
+],
+"geometry/CM-38e4f2ef14a0/body": [
+3.032125,
+3.140075,
+56,
+"fa73a082d0a3"
 ],
 "geometry/CM-39d70b17902a/body": [
 8.7112895,
@@ -26467,6 +26593,12 @@
 6.0947808,
 68,
 "99f9817ef9ba"
+],
+"geometry/CM-9a46534e739e/body": [
+3.032125,
+3.140075,
+56,
+"fa73a082d0a3"
 ],
 "geometry/CM-9a6a19950493/body": [
 6.0975875,
@@ -30055,6 +30187,12 @@
 1.25095,
 24,
 "bc2ad3cd41b0"
+],
+"geometry/CMJRX0C2X2/body": [
+4.0005,
+4.0259,
+2,
+"e853c390035a"
 ],
 "geometry/CMLC01AAAA/body": [
 1.5113,
@@ -46202,167 +46340,179 @@
 2,
 "677719b363e6"
 ],
-"geometry/CSRL01AAAA-i000/body": [
-3.06705,
-4.09575,
+"geometry/CSRL01AAAA-f00/body": [
+2.9083,
+3.0353,
 2,
-"26eddd48ede9"
+"034c89a1e5b3"
+],
+"geometry/CSRL01AAAA-f01/body": [
+2.9083,
+3.0353,
+2,
+"034c89a1e5b3"
+],
+"geometry/CSRL01AAAA-i000/body": [
+3.10515,
+3.98145,
+2,
+"2477a4bc07a2"
 ],
 "geometry/CSRL01AAAA-i001/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL01AAAA-i002/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL01AAAA-i003/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL01AAAA-i004/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL01AAAA-i005/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL01AAAA-i006/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL01AAAA-i007/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL01AAAA-i008/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL01AAAA-i009/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL01AAAA-i010/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL01AAAA-p00/body": [
-3.048,
-4.1148,
+2.9083,
+4.0005,
 2,
-"4ff91cd869e2"
+"42bc02c179f4"
 ],
 "geometry/CSRL01AAAA-p01/body": [
-3.048,
-4.1148,
+2.9083,
+4.0005,
 2,
-"4ff91cd869e2"
+"42bc02c179f4"
 ],
 "geometry/CSRL01AAAA-r00/body": [
-4.09575,
-4.13385,
+3.98145,
+4.01955,
 8,
-"105637432f7a"
+"e1c9d43edc71"
 ],
 "geometry/CSRL01AAAA-r01/body": [
-3.02895,
 3.06705,
+3.10515,
 8,
-"9d53b7f717a0"
+"fc5205b7278b"
+],
+"geometry/CSRL02AAAA-f01/body": [
+2.9083,
+3.0353,
+2,
+"034c89a1e5b3"
 ],
 "geometry/CSRL02AAAA-i000/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL02AAAA-i001/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL02AAAA-i002/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL02AAAA-i003/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL02AAAA-i004/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL02AAAA-i005/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL02AAAA-i006/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL02AAAA-i007/body": [
-3.06705,
-4.09575,
+3.10515,
+3.98145,
 2,
-"26eddd48ede9"
-],
-"geometry/CSRL02AAAA-i008/body": [
-3.06705,
-4.09575,
-2,
-"26eddd48ede9"
+"2477a4bc07a2"
 ],
 "geometry/CSRL02AAAA-p01/body": [
-3.048,
-4.1148,
+2.9083,
+4.0005,
 2,
-"4ff91cd869e2"
+"42bc02c179f4"
 ],
 "geometry/CSRL02AAAA-r00/body": [
-4.09575,
-4.13385,
+3.98145,
+4.01955,
 8,
-"105637432f7a"
+"e1c9d43edc71"
 ],
 "geometry/CSRL02AAAA-r01/body": [
-3.02895,
 3.06705,
+3.10515,
 8,
-"9d53b7f717a0"
+"fc5205b7278b"
 ],
 "geometry/CSRL03AAAA-b01/body": [
 1.7440144,
@@ -47362,9 +47512,9 @@
 ],
 "geometry/CST702AAAA::framing/member:skirt-upper-left": [
 1.557719,
-3.0861,
-10,
-"fa276d05fdd1"
+3.254187,
+8,
+"98e6dd7985fc"
 ],
 "geometry/CST702AAAA::framing/member:skirt-upper-right": [
 1.556075,
@@ -61778,84 +61928,6 @@
 2,
 "b39291c2d319"
 ],
-"geometry/FR1DYXJJH7-i000/body": [
-3.06705,
-4.09575,
-2,
-"26eddd48ede9"
-],
-"geometry/FR1DYXJJH7-i001/body": [
-3.06705,
-4.09575,
-2,
-"26eddd48ede9"
-],
-"geometry/FR1DYXJJH7-i002/body": [
-3.06705,
-4.09575,
-2,
-"26eddd48ede9"
-],
-"geometry/FR1DYXJJH7-i003/body": [
-3.06705,
-4.09575,
-2,
-"26eddd48ede9"
-],
-"geometry/FR1DYXJJH7-i004/body": [
-3.06705,
-4.09575,
-2,
-"26eddd48ede9"
-],
-"geometry/FR1DYXJJH7-i005/body": [
-3.06705,
-4.09575,
-2,
-"26eddd48ede9"
-],
-"geometry/FR1DYXJJH7-i006/body": [
-3.06705,
-4.09575,
-2,
-"26eddd48ede9"
-],
-"geometry/FR1DYXJJH7-i007/body": [
-3.06705,
-4.09575,
-2,
-"26eddd48ede9"
-],
-"geometry/FR1DYXJJH7-i008/body": [
-3.06705,
-4.09575,
-2,
-"26eddd48ede9"
-],
-"geometry/FR1DYXJJH7-i009/body": [
-3.06705,
-4.09575,
-2,
-"26eddd48ede9"
-],
-"geometry/FR1DYXJJH7-p00/body": [
-3.048,
-4.1148,
-2,
-"4ff91cd869e2"
-],
-"geometry/FR1DYXJJH7-r00/body": [
-4.09575,
-4.13385,
-8,
-"105637432f7a"
-],
-"geometry/FR1DYXJJH7-r01/body": [
-3.02895,
-3.06705,
-8,
-"9d53b7f717a0"
-],
 "geometry/FRPRJE57YS/body": [
 -0.2794,
 -0.1651,
@@ -75525,7 +75597,7 @@
 "layout_lines/LL-W-M-TUBDK-W/base_z_m": 0.0,
 "layout_lines/LL-W-M-TUBDK-W/top_z_m": 0.48895,
 "layout_lines/LL-W-M-WELL/base_z_m": 0.0,
-"layout_lines/LL-W-M-WELL/top_z_m": 2.71715,
+"layout_lines/LL-W-M-WELL/top_z_m": 3.9624,
 "layout_lines/LL-W-RG-BLOCK/base_z_m": -1.2192,
 "layout_lines/LL-W-RG-BLOCK/top_z_m": 0.0,
 "layout_lines/LL-W-RG-EAST-BALCONY/base_z_m": -1.2192,
@@ -76995,6 +77067,48 @@
 5.756275,
 2,
 "b8783d6bf1df"
+],
+"member/6G7CJV5WTK/plate-bottom": [
+3.0861,
+3.1242,
+2,
+"1a51f6c4d013"
+],
+"member/6G7CJV5WTK/plate-top-0": [
+3.9624,
+4.0005,
+2,
+"e5718c889577"
+],
+"member/6G7CJV5WTK/plate-top-1": [
+3.9243,
+3.9624,
+2,
+"731acb23b5d3"
+],
+"member/6G7CJV5WTK/stud-000": [
+3.1242,
+3.9243,
+2,
+"64ade99912ef"
+],
+"member/6G7CJV5WTK/stud-001": [
+3.1242,
+3.9243,
+2,
+"64ade99912ef"
+],
+"member/6G7CJV5WTK/stud-002": [
+3.1242,
+3.9243,
+2,
+"64ade99912ef"
+],
+"member/6G7CJV5WTK/stud-003": [
+3.1242,
+3.9243,
+2,
+"64ade99912ef"
 ],
 "member/78VGE6A81J/plate-bottom": [
 6.11505,
@@ -98640,9 +98754,9 @@
 ],
 "member/CST702AAAA/skirt-upper-left": [
 1.557719,
-3.0861,
+3.254187,
 2,
-"f9ae6cd4cf0a"
+"808ac003e02e"
 ],
 "member/CST702AAAA/skirt-upper-right": [
 1.556075,
@@ -116588,6 +116702,12 @@
 "solids/CN~LTP4~W-S-W4~178/z1_m": 3.101975,
 "solids/CN~LTP4~W-S-W4~179/z0_m": 2.994025,
 "solids/CN~LTP4~W-S-W4~179/z1_m": 3.101975,
+"solids/CN~LTP4~W-S-WELL-KNEE~180/z0_m": 3.032125,
+"solids/CN~LTP4~W-S-WELL-KNEE~180/z1_m": 3.140075,
+"solids/CN~LTP4~W-S-WELL-KNEE~181/z0_m": 3.032125,
+"solids/CN~LTP4~W-S-WELL-KNEE~181/z1_m": 3.140075,
+"solids/CN~LTP4~W-S-WELL-KNEE~182/z0_m": 3.032125,
+"solids/CN~LTP4~W-S-WELL-KNEE~182/z1_m": 3.140075,
 "solids/CN~LUS210-3Z~BM-SG-LDGE~01/z0_m": -0.2869692,
 "solids/CN~LUS210-3Z~BM-SG-LDGE~01/z1_m": -0.0790067,
 "solids/CN~LUS210-3Z~BM-SG-LDGE~02/z0_m": -0.2869692,
@@ -120244,52 +120364,70 @@
 "solids/RL-A-HANDRAIL-RETURN1/z1_m": 4.21513,
 "solids/RL-A-HANDRAIL-RETURN2/z0_m": 7.02437,
 "solids/RL-A-HANDRAIL-RETURN2/z1_m": 7.07263,
-"solids/RL-A-STAIR-BAL1/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL1/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL10/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL10/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL11/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL11/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL12/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL12/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL13/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL13/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL14/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL14/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL15/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL15/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL16/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL16/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL17/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL17/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL18/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL18/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL2/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL2/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL3/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL3/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL4/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL4/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL5/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL5/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL6/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL6/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL7/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL7/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL8/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL8/z1_m": 7.14375,
-"solids/RL-A-STAIR-BAL9/z0_m": 6.11505,
-"solids/RL-A-STAIR-BAL9/z1_m": 7.14375,
-"solids/RL-A-STAIR-POST1/z0_m": 6.096,
-"solids/RL-A-STAIR-POST1/z1_m": 7.1628,
-"solids/RL-A-STAIR-POST2/z0_m": 6.096,
-"solids/RL-A-STAIR-POST2/z1_m": 7.1628,
-"solids/RL-A-STAIR-POST3/z0_m": 6.096,
-"solids/RL-A-STAIR-POST3/z1_m": 7.1628,
-"solids/RL-A-STAIR-RAIL1/z0_m": 7.14375,
-"solids/RL-A-STAIR-RAIL1/z1_m": 7.18185,
-"solids/RL-A-STAIR-RAIL2/z0_m": 6.07695,
-"solids/RL-A-STAIR-RAIL2/z1_m": 6.11505,
+"solids/RL-A-STAIR-ANCHORS1/z0_m": 5.9944,
+"solids/RL-A-STAIR-ANCHORS1/z1_m": 6.152388,
+"solids/RL-A-STAIR-ANCHORS2/z0_m": 5.9944,
+"solids/RL-A-STAIR-ANCHORS2/z1_m": 6.152388,
+"solids/RL-A-STAIR-ANCHORS3/z0_m": 5.9944,
+"solids/RL-A-STAIR-ANCHORS3/z1_m": 6.152388,
+"solids/RL-A-STAIR-BACKING1/z0_m": 5.81025,
+"solids/RL-A-STAIR-BACKING1/z1_m": 6.096,
+"solids/RL-A-STAIR-BACKING2/z0_m": 5.81025,
+"solids/RL-A-STAIR-BACKING2/z1_m": 6.096,
+"solids/RL-A-STAIR-BACKING3/z0_m": 5.81025,
+"solids/RL-A-STAIR-BACKING3/z1_m": 6.096,
+"solids/RL-A-STAIR-BAL1/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL1/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL10/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL10/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL11/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL11/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL12/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL12/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL13/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL13/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL14/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL14/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL15/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL15/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL16/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL16/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL17/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL17/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL18/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL18/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL2/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL2/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL3/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL3/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL4/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL4/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL5/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL5/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL6/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL6/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL7/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL7/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL8/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL8/z1_m": 7.0104,
+"solids/RL-A-STAIR-BAL9/z0_m": 6.2484,
+"solids/RL-A-STAIR-BAL9/z1_m": 7.0104,
+"solids/RL-A-STAIR-BASE1/z0_m": 6.1341,
+"solids/RL-A-STAIR-BASE1/z1_m": 6.1468,
+"solids/RL-A-STAIR-BASE2/z0_m": 6.1341,
+"solids/RL-A-STAIR-BASE2/z1_m": 6.1468,
+"solids/RL-A-STAIR-BASE3/z0_m": 6.1341,
+"solids/RL-A-STAIR-BASE3/z1_m": 6.1468,
+"solids/RL-A-STAIR-POST1/z0_m": 6.1341,
+"solids/RL-A-STAIR-POST1/z1_m": 7.0485,
+"solids/RL-A-STAIR-POST2/z0_m": 6.1341,
+"solids/RL-A-STAIR-POST2/z1_m": 7.0485,
+"solids/RL-A-STAIR-POST3/z0_m": 6.1341,
+"solids/RL-A-STAIR-POST3/z1_m": 7.0485,
+"solids/RL-A-STAIR-RAIL1/z0_m": 7.0104,
+"solids/RL-A-STAIR-RAIL1/z1_m": 7.0485,
+"solids/RL-A-STAIR-RAIL2/z0_m": 6.2103,
+"solids/RL-A-STAIR-RAIL2/z1_m": 6.2484,
 "solids/RL-BW-ENTRY-BAL1/z0_m": -0.6123164,
 "solids/RL-BW-ENTRY-BAL1/z1_m": 0.2639836,
 "solids/RL-BW-ENTRY-BAL10/z0_m": -0.2483203,
@@ -120390,86 +120528,64 @@
 "solids/RL-S-HANDRAIL-W-RETURN1/z1_m": 2.7049834,
 "solids/RL-S-HANDRAIL-W-RETURN2/z0_m": 3.8185862,
 "solids/RL-S-HANDRAIL-W-RETURN2/z1_m": 3.8668462,
-"solids/RL-S-STAIR-BAL1/z0_m": 3.06705,
-"solids/RL-S-STAIR-BAL1/z1_m": 4.09575,
-"solids/RL-S-STAIR-BAL10/z0_m": 3.06705,
-"solids/RL-S-STAIR-BAL10/z1_m": 4.09575,
-"solids/RL-S-STAIR-BAL11/z0_m": 3.06705,
-"solids/RL-S-STAIR-BAL11/z1_m": 4.09575,
-"solids/RL-S-STAIR-BAL2/z0_m": 3.06705,
-"solids/RL-S-STAIR-BAL2/z1_m": 4.09575,
-"solids/RL-S-STAIR-BAL3/z0_m": 3.06705,
-"solids/RL-S-STAIR-BAL3/z1_m": 4.09575,
-"solids/RL-S-STAIR-BAL4/z0_m": 3.06705,
-"solids/RL-S-STAIR-BAL4/z1_m": 4.09575,
-"solids/RL-S-STAIR-BAL5/z0_m": 3.06705,
-"solids/RL-S-STAIR-BAL5/z1_m": 4.09575,
-"solids/RL-S-STAIR-BAL6/z0_m": 3.06705,
-"solids/RL-S-STAIR-BAL6/z1_m": 4.09575,
-"solids/RL-S-STAIR-BAL7/z0_m": 3.06705,
-"solids/RL-S-STAIR-BAL7/z1_m": 4.09575,
-"solids/RL-S-STAIR-BAL8/z0_m": 3.06705,
-"solids/RL-S-STAIR-BAL8/z1_m": 4.09575,
-"solids/RL-S-STAIR-BAL9/z0_m": 3.06705,
-"solids/RL-S-STAIR-BAL9/z1_m": 4.09575,
-"solids/RL-S-STAIR-POST1/z0_m": 3.048,
-"solids/RL-S-STAIR-POST1/z1_m": 4.1148,
-"solids/RL-S-STAIR-POST2/z0_m": 3.048,
-"solids/RL-S-STAIR-POST2/z1_m": 4.1148,
-"solids/RL-S-STAIR-RAIL1/z0_m": 4.09575,
-"solids/RL-S-STAIR-RAIL1/z1_m": 4.13385,
-"solids/RL-S-STAIR-RAIL2/z0_m": 3.02895,
-"solids/RL-S-STAIR-RAIL2/z1_m": 3.06705,
-"solids/RL-S-STAIRHEAD-BAL1/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-BAL1/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-BAL2/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-BAL2/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-BAL3/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-BAL3/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-BAL4/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-BAL4/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-BAL5/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-BAL5/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-BAL6/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-BAL6/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-BAL7/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-BAL7/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-BAL8/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-BAL8/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-BAL9/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-BAL9/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-N-BAL1/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-N-BAL1/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-N-BAL10/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-N-BAL10/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-N-BAL2/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-N-BAL2/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-N-BAL3/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-N-BAL3/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-N-BAL4/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-N-BAL4/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-N-BAL5/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-N-BAL5/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-N-BAL6/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-N-BAL6/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-N-BAL7/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-N-BAL7/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-N-BAL8/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-N-BAL8/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-N-BAL9/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-N-BAL9/z1_m": 4.09575,
-"solids/RL-S-STAIRHEAD-N-POST1/z0_m": 3.048,
-"solids/RL-S-STAIRHEAD-N-POST1/z1_m": 4.1148,
-"solids/RL-S-STAIRHEAD-N-RAIL1/z0_m": 4.09575,
-"solids/RL-S-STAIRHEAD-N-RAIL1/z1_m": 4.13385,
-"solids/RL-S-STAIRHEAD-N-RAIL2/z0_m": 3.02895,
-"solids/RL-S-STAIRHEAD-N-RAIL2/z1_m": 3.06705,
-"solids/RL-S-STAIRHEAD-POST2/z0_m": 3.048,
-"solids/RL-S-STAIRHEAD-POST2/z1_m": 4.1148,
-"solids/RL-S-STAIRHEAD-RAIL1/z0_m": 4.09575,
-"solids/RL-S-STAIRHEAD-RAIL1/z1_m": 4.13385,
-"solids/RL-S-STAIRHEAD-RAIL2/z0_m": 3.02895,
-"solids/RL-S-STAIRHEAD-RAIL2/z1_m": 3.06705,
+"solids/RL-S-STAIR-BAL1/z0_m": 3.10515,
+"solids/RL-S-STAIR-BAL1/z1_m": 3.98145,
+"solids/RL-S-STAIR-BAL10/z0_m": 3.10515,
+"solids/RL-S-STAIR-BAL10/z1_m": 3.98145,
+"solids/RL-S-STAIR-BAL11/z0_m": 3.10515,
+"solids/RL-S-STAIR-BAL11/z1_m": 3.98145,
+"solids/RL-S-STAIR-BAL2/z0_m": 3.10515,
+"solids/RL-S-STAIR-BAL2/z1_m": 3.98145,
+"solids/RL-S-STAIR-BAL3/z0_m": 3.10515,
+"solids/RL-S-STAIR-BAL3/z1_m": 3.98145,
+"solids/RL-S-STAIR-BAL4/z0_m": 3.10515,
+"solids/RL-S-STAIR-BAL4/z1_m": 3.98145,
+"solids/RL-S-STAIR-BAL5/z0_m": 3.10515,
+"solids/RL-S-STAIR-BAL5/z1_m": 3.98145,
+"solids/RL-S-STAIR-BAL6/z0_m": 3.10515,
+"solids/RL-S-STAIR-BAL6/z1_m": 3.98145,
+"solids/RL-S-STAIR-BAL7/z0_m": 3.10515,
+"solids/RL-S-STAIR-BAL7/z1_m": 3.98145,
+"solids/RL-S-STAIR-BAL8/z0_m": 3.10515,
+"solids/RL-S-STAIR-BAL8/z1_m": 3.98145,
+"solids/RL-S-STAIR-BAL9/z0_m": 3.10515,
+"solids/RL-S-STAIR-BAL9/z1_m": 3.98145,
+"solids/RL-S-STAIR-FASCIA-BRACKET1/z0_m": 2.9083,
+"solids/RL-S-STAIR-FASCIA-BRACKET1/z1_m": 3.0353,
+"solids/RL-S-STAIR-FASCIA-BRACKET2/z0_m": 2.9083,
+"solids/RL-S-STAIR-FASCIA-BRACKET2/z1_m": 3.0353,
+"solids/RL-S-STAIR-POST1/z0_m": 2.9083,
+"solids/RL-S-STAIR-POST1/z1_m": 4.0005,
+"solids/RL-S-STAIR-POST2/z0_m": 2.9083,
+"solids/RL-S-STAIR-POST2/z1_m": 4.0005,
+"solids/RL-S-STAIR-RAIL1/z0_m": 3.98145,
+"solids/RL-S-STAIR-RAIL1/z1_m": 4.01955,
+"solids/RL-S-STAIR-RAIL2/z0_m": 3.06705,
+"solids/RL-S-STAIR-RAIL2/z1_m": 3.10515,
+"solids/RL-S-STAIRHEAD-BAL1/z0_m": 3.10515,
+"solids/RL-S-STAIRHEAD-BAL1/z1_m": 3.98145,
+"solids/RL-S-STAIRHEAD-BAL2/z0_m": 3.10515,
+"solids/RL-S-STAIRHEAD-BAL2/z1_m": 3.98145,
+"solids/RL-S-STAIRHEAD-BAL3/z0_m": 3.10515,
+"solids/RL-S-STAIRHEAD-BAL3/z1_m": 3.98145,
+"solids/RL-S-STAIRHEAD-BAL4/z0_m": 3.10515,
+"solids/RL-S-STAIRHEAD-BAL4/z1_m": 3.98145,
+"solids/RL-S-STAIRHEAD-BAL5/z0_m": 3.10515,
+"solids/RL-S-STAIRHEAD-BAL5/z1_m": 3.98145,
+"solids/RL-S-STAIRHEAD-BAL6/z0_m": 3.10515,
+"solids/RL-S-STAIRHEAD-BAL6/z1_m": 3.98145,
+"solids/RL-S-STAIRHEAD-BAL7/z0_m": 3.10515,
+"solids/RL-S-STAIRHEAD-BAL7/z1_m": 3.98145,
+"solids/RL-S-STAIRHEAD-BAL8/z0_m": 3.10515,
+"solids/RL-S-STAIRHEAD-BAL8/z1_m": 3.98145,
+"solids/RL-S-STAIRHEAD-FASCIA-BRACKET2/z0_m": 2.9083,
+"solids/RL-S-STAIRHEAD-FASCIA-BRACKET2/z1_m": 3.0353,
+"solids/RL-S-STAIRHEAD-POST2/z0_m": 2.9083,
+"solids/RL-S-STAIRHEAD-POST2/z1_m": 4.0005,
+"solids/RL-S-STAIRHEAD-RAIL1/z0_m": 3.98145,
+"solids/RL-S-STAIRHEAD-RAIL1/z1_m": 4.01955,
+"solids/RL-S-STAIRHEAD-RAIL2/z0_m": 3.06705,
+"solids/RL-S-STAIRHEAD-RAIL2/z1_m": 3.10515,
 "solids/RL-SG-BALCONY-BAL1/z0_m": 3.1814985,
 "solids/RL-SG-BALCONY-BAL1/z1_m": 4.0482735,
 "solids/RL-SG-BALCONY-BAL10/z0_m": 3.1611057,
@@ -121126,6 +121242,8 @@
 "solids/SL-M-TUBDK/z1_m": 0.56515,
 "solids/SL-M-TUBDK:deck-top/z0_m": 0.56515,
 "solids/SL-M-TUBDK:deck-top/z1_m": 0.57785,
+"solids/SL-S-KNEE-CAP/z0_m": 4.0005,
+"solids/SL-S-KNEE-CAP/z1_m": 4.0259,
 "solids/SL-SG-FIELD/z0_m": -3.2369125,
 "solids/SL-SG-FIELD/z1_m": -2.7797125,
 "solids/SL-SG-FLOOR/z0_m": -2.8686125,
@@ -123589,7 +123707,7 @@
 "walls/W-M-W4/z1_m": 3.048,
 "walls/W-M-WELL/plate_top_z_m": 2.727325,
 "walls/W-M-WELL/z0_m": 0.02605,
-"walls/W-M-WELL/z1_m": 2.7432,
+"walls/W-M-WELL/z1_m": 3.0861,
 "walls/W-RG-BLOCK/z0_m": -1.2192,
 "walls/W-RG-BLOCK/z1_m": 0.0,
 "walls/W-RG-EAST-BALCONY/z0_m": -1.2192,
@@ -123783,6 +123901,8 @@
 "walls/W-S-W4/plate_top_z_m": 5.794375,
 "walls/W-S-W4/z0_m": 3.048,
 "walls/W-S-W4/z1_m": 6.11505,
+"walls/W-S-WELL-KNEE/z0_m": 3.0861,
+"walls/W-S-WELL-KNEE/z1_m": 4.0005,
 "walls/W-SG-BRKBM/z0_m": -3.0527625,
 "walls/W-SG-BRKBM/z1_m": -2.6019125,
 "walls/W-SG-E1/z0_m": -2.7797125,

@@ -389,3 +389,13 @@ TUBDECK_INT_PLY_CAP = Assembly(
     ),
     source="Kohler Installation and Care Guide 1196030-2 - drop-in deck surround; flat 2x4 blocking at 16 in. o.c. under 3/4 in. exterior-grade plywood, Corian solid-surface top flush with the rim on max 1/8 in. spacers",
 )
+
+# Not wet, but the house's other cap: W-S-WELL-KNEE's oak top (SL-S-KNEE-CAP).
+KNEE_WALL_OAK_CAP = Assembly(
+    tag="KNEE_WALL_OAK_CAP",
+    layers=(
+        Layer(name="cap", material_ref="oak-tread", thickness=inch(1),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="a stock 5/4 red oak stair tread ripped to 5 1/4 in., glued and screwed to the knee wall's double top plate",
+)

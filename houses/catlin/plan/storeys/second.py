@@ -46,6 +46,7 @@ from typehaus import (
     Post,
     Room,
     RoughOpening,
+    Slab,
     Soffit,
     SoffitOpening,
     Stair,
@@ -140,6 +141,11 @@ NODES = [
     Node(uid="CSN035AAAA", tag="N-S-CH1", position=pt(ft(2, 9), ft(33, 0.875))),
     Node(uid="CSN036AAAA", tag="N-S-CH2", position=pt(ft(2, 9), ft(36))),
     Node(uid="CSN037AAAA", tag="N-S-CH3", position=pt(ft(0), ft(33, 0.875))),
+    # W-S-WELL-KNEE on ST-M2S's well partition, 167 15/16" its centre (STAIRS).
+    Node(uid="ZSW0B25N8C", tag="N-S-KNEE-S", position=pt(inch(167.9375), ft(26, 0.375)),
+         open_end=True),
+    Node(uid="DXS13T771Y", tag="N-S-KNEE-N", position=pt(inch(167.9375), ft(30, 2.375)),
+         open_end=True),
 ]
 
 # North/south walls below carry the board & batten `layer_materials=` override — see the
@@ -512,6 +518,15 @@ WALLS = [
     Wall(uid="CSW152AAAA", tag="W-S-CH-S", start_node="N-S-CH1", end_node="N-S-CH3",
          assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), top=ft(9)),
+    # The well partition carried 36" over the oak as a knee wall (2026-11-05, was the metal
+    # RL-S-STAIRHEAD-N). ST-M2S's generated partition tops out flush with the deck, so the
+    # upper flight's top four nosings stand 7 1/2"-30" under it over a 60"-98" fall into
+    # the lower lane (R312.1.1). Framed on that top plate at the oak (+121.5"), from the
+    # well head to nosing 5, the first the partition stands 34" over. 1/2" gwb each face
+    # matches the partition's 4 1/2"; SL-S-KNEE-CAP is its oak cap.
+    Wall(uid="6G7CJV5WTK", tag="W-S-WELL-KNEE", start_node="N-S-KNEE-S", end_node="N-S-KNEE-N",
+         assembly="INT_2X4_PARTITION_HALF", structural_role=StructuralRole.NONBEARING,
+         base_elevation=inch(121.5), top=inch(36), interior_room="RM-S-HALL"),
 ]
 
 # Openings are placed on the gaps measured in the source wall polygon. `from_node` offsets
@@ -1394,8 +1409,9 @@ BEAMS = [
               connects=("BM-S-HALL", "FS-ATTIC")),
 ]
 
-# Guards on the two open sides of the stair well: attic RL-A-STAIR product, 42" height,
-# fascia mounted to the well rim (BM-S-HALL on the east side). They leave exactly one
+# Guards on the two open sides of the stair well: attic RL-A-STAIR product, 36" (R312.1.2)
+# over the oak (3/4" on 3/4" subfloor, +121.5"), fascia mounted to the well rim (BM-S-HALL
+# on the east side), bracket tops 1/2" under the 10'-0" rim. They leave exactly one
 # gap — the flight's own throat, where the upper flight arrives southbound on the well's
 # west half. Both moved north and swapped hands on 2026-07-28 with the well itself.
 # Drawn to FO-S-STAIR's own coordinates, not the retired wall centrelines. Each fascia leg
@@ -1408,43 +1424,27 @@ STAIR_GUARDS = [
             pt(ft(17, 8.75), ft(30, 10)),
             pt(ft(17, 8.75), inch(313.893)),
         ),
-        kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
-        base_elevation=ft(10), post_spacing=inch(60), post_size="3x3", rail_count=2,
+        kind=RailingKind.METAL_FASCIA_MOUNT, height=inch(36),
+        base_elevation=ft(10, 1.5), post_spacing=inch(60), post_size="3x3", rail_count=2,
         # Brackets on BM-S-HALL's wrapped well face (the path; run south so outboard is west).
-        mount="fascia", fascia_face_offset=inch(0), assembly="RAILING_DARK_METAL",
+        mount="fascia", fascia_face_offset=inch(0), fascia_bracket_drop=inch(2),
+        assembly="RAILING_DARK_METAL",
         # R312.1.3: vertical balusters between the 60" posts, 4" clear gap — the largest
         # opening the 4"-sphere rule admits.
         infill="balusters", baluster_spacing=inch(4),
     ),
     # Across the well head, on the header's well face (run west so outboard is north), from
-    # RL-S-STAIR's corner post to x=13'-10", where the partition leg takes over.
+    # RL-S-STAIR's corner post west to W-S-WELL-KNEE: the end post's face on its cap's edge,
+    # 1 7/8" off the gypsum (under R312.1.3's 4" sphere).
     Railing(
         uid="CSRL02AAAA", tag="RL-S-STAIRHEAD", type_ref="RAILING-INT-STAIR-GUARD", path=(
             pt(inch(211.232), ft(26, 0.375)),
-            pt(ft(13, 10), ft(26, 0.375)),
+            pt(inch(172.0625), ft(26, 0.375)),
         ),
-        kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
-        base_elevation=ft(10), post_spacing=inch(60), post_size="3x3", rail_count=2,
-        mount="fascia", fascia_face_offset=inch(0), start_post_ref="RL-S-STAIR",
-        assembly="RAILING_DARK_METAL",
-        infill="balusters", baluster_spacing=inch(4),
-    ),
-    # Since 2026-09-25, north along the well partition's top. That top is flush with the
-    # deck, so the upper flight's top four nosings stand 7 1/2"-30" under it over a 60"-98"
-    # fall into the lower lane (R312.1.1). The leg ends at nosing 5, the first the partition
-    # stands 34" over. Level at 42", like every guard round this well. x=13'-10" puts the
-    # 3" Williams post's face flush with the partition's stair face at 13'-11 1/2": centred
-    # on it (14'-0") the head edge opens west of the corner (code.R312_1_guard). Surface kit
-    # on the wall top (its 4.99" base overhangs the ~4 1/2" top ~1/2"); its south end is
-    # RL-S-STAIRHEAD's west post, in the well clear of ST-M2S's head landing.
-    Railing(
-        uid="FR1DYXJJH7", tag="RL-S-STAIRHEAD-N", type_ref="RAILING-INT-STAIR-GUARD", path=(
-            pt(ft(13, 10), ft(30, 2.375)),
-            pt(ft(13, 10), inch(313.893)),
-        ),
-        kind=RailingKind.METAL_SURFACE_MOUNT, height=ft(3.5),
-        base_elevation=ft(10), post_spacing=inch(60), post_size="3x3", rail_count=2,
-        mount="surface", end_post_ref="RL-S-STAIRHEAD", assembly="RAILING_DARK_METAL",
+        kind=RailingKind.METAL_FASCIA_MOUNT, height=inch(36),
+        base_elevation=ft(10, 1.5), post_spacing=inch(60), post_size="3x3", rail_count=2,
+        mount="fascia", fascia_face_offset=inch(0), fascia_bracket_drop=inch(2),
+        start_post_ref="RL-S-STAIR", assembly="RAILING_DARK_METAL",
         infill="balusters", baluster_spacing=inch(4),
     ),
 ]
@@ -1541,6 +1541,15 @@ STAIRS = [
           riser_thickness=inch(0.75)),
 ]
 
+# W-S-WELL-KNEE's cap: a 5/4 red oak tread ripped to 5 1/4", 3/8" proud of each gypsum face,
+# glued and screwed down into the top plate.
+CAPS = [
+    Slab(uid="CMJRX0C2X2", tag="SL-S-KNEE-CAP", kind="platform",
+         outline=(pt(inch(165.3125), ft(26, 0.375)), pt(inch(170.5625), ft(26, 0.375)),
+                  pt(inch(170.5625), ft(30, 2.375)), pt(inch(165.3125), ft(30, 2.375))),
+         thickness=inch(1), assembly="KNEE_WALL_OAK_CAP", top_elevation=inch(158.5)),
+]
+
 PANELING = [
     # White painted headboard band over intact 1/2" gypsum on the staggered sound wall.
     # Restrict to the two north runs; room-only scope would panel all eight suite walls.
@@ -1560,4 +1569,4 @@ PANELING = [
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SOFFITS,
             *FLOOR_OPENINGS, *BEAMS, *STAIR_GUARDS, *STAIR_HANDRAILS, *FLOOR, *POSTS,
-            *STAIRS, *PANELING]
+            *STAIRS, *CAPS, *PANELING]

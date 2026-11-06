@@ -77,6 +77,7 @@ from .interior_wet import (
     PLANT_INT_2X6_BRG_HUMID,
     TUBDECK_INT_2X3,
     TUBDECK_INT_PLY_CAP,
+    KNEE_WALL_OAK_CAP,
 )
 from .members import (
     BEAM_WHITE_PAINT,
@@ -323,4 +324,5 @@ ASSEMBLIES = [
     STAIRWELL_PARTITION_4H,
     TUBDECK_INT_2X3,
     TUBDECK_INT_PLY_CAP,
+    KNEE_WALL_OAK_CAP,
 ]
