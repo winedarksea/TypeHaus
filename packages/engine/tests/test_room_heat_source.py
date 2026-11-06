@@ -120,6 +120,9 @@ def test_bath1_carries_its_room_and_bath2_does_not(catlin_model_ro) -> None:
     day (the bath 1 rework and the tub deck narrowing). The two were not isolated one by
     one; BATH2's delivered output is unchanged at 399.
 
+    **102 -> 101 Btu/h short on 2026-11-05** (a754a0c7f, fireplace brick 2" east): the load fell
+    501.02 -> 500.92 against 399.5 delivered; the rounded 399 / 501 are unchanged.
+
     **582 -> 580 with the 2026-10-25 board-and-batten work**, which moved the N/S cladding
     face 1/2" in (BBD75 is 3/4" against PBR's 1-1/4"). Verdict unchanged.
 
@@ -141,7 +144,7 @@ def test_bath1_carries_its_room_and_bath2_does_not(catlin_model_ro) -> None:
 
     bath2 = rows["RM-M-BATH2"]
     assert "delivers 399 Btu/h against a 501 Btu/h design load" in bath2.message
-    assert "102 Btu/h (20%) short" in bath2.message
+    assert "101 Btu/h (20%) short" in bath2.message
 
 
 def test_the_shortfall_is_unknown_because_a_room_scoped_load_is_approximate(

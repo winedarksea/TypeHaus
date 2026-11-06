@@ -58,7 +58,8 @@ def test_garden_checks_read_as_the_note_says(catlin_model_ro) -> None:
     setbacks = infiltration_setback(ctx)
     assert any(f.result is Result.PASS and "RG-W-BASIN is 10.5 ft" in f.message
                for f in setbacks)
-    assert any(f.result is Result.PASS and "RG-E-BASIN is 10.4 ft" in f.message
+    # 10.4 -> 10.5: the east basement pour went 12" -> 10" on 2026-11-05 (rain_garden_sizing.md).
+    assert any(f.result is Result.PASS and "RG-E-BASIN is 10.5 ft" in f.message
                for f in setbacks)
     assert sum(f.result is Result.UNKNOWN for f in setbacks) == 4   # garage, lot line x2
     assert {f.result for f in leader_extension_fall(ctx)} == {Result.PASS}

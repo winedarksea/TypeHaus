@@ -82,12 +82,12 @@ ponding gone in 48 h, which needs at least 12 / 48 = **0.25 in/hr** (0.19 at the
 | W | house basement W-B-N4 | rim south edge y=47' to the wall face | 10.5 | PASS (≥ 10) |
 | W | garage stem W-GF-N | rim east edge x=−1' to the stem face | 6.5 | UNKNOWN |
 | W | west lot line x=−7' | x=−6' | 1.0 | UNKNOWN |
-| E | house basement W-B-E2 | rim SW corner (37', 47') to the wall face | 10.4 | PASS (≥ 10) |
+| E | house basement W-B-E2 | rim SW corner (37', 47') to the wall face | 10.5 | PASS (≥ 10) |
 | E | garage stem W-GF-E | rim west edge x=37' to the stem face | 6.5 | UNKNOWN |
 | E | east lot line x=43' | x=42' | 1.0 | UNKNOWN |
 
-The east basement reads 0.1' closer than the west because W-B-E1/E2 are the house's two
-12" pours (they bear `SL-M-DECK`); every other segment is 8".
+The east basement read 0.1' closer than the west while W-B-E1/E2 were 12" pours; they are
+10" since 2026-11-05 (`notes/east_breast_bearing.md`), so both read 10.5.
 
 ## 6. Leader extensions (4" solid PVC, SDR 35)
 

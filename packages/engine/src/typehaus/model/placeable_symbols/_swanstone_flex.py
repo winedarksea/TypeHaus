@@ -130,7 +130,7 @@ def swanstone_flex(width: float, depth: float, height: float):
     clip, grip = dimensions.clip_size, dimensions.north_glass_thickness + 0.5
     for y in (west + 3 * clip, east - 3 * clip):
         solid(post, y, deck, glass_z0 + clip, grip, clip, "chrome")
-    for y in (post_back, half_depth):
+    for y in (post_back, half_depth - clip / 2):  # the wall clip stays inside the pan's back edge
         for z in (glass_z0 + 12, glass_z1 - 12):
             solid(post, y, z, z + clip, grip, clip, "chrome")
     # Retain visible showering trim as the generic symbol did. These are product-family

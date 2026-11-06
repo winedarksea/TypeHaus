@@ -331,5 +331,6 @@ def test_cover_panel_cuts_nest_onto_whole_sheets(catlin_model_ro):
                      items[f"PROD-IKEA-FORBATTRA-MATTE-25-{size}"]["packs"])
               for size in (30, 80, 90)}
     assert sheets == {30: (4, 2), 80: (5, 4), 90: (1, 1)}
-    assert ('2: FURN-M-LIV-E-END-N 24 x 34 9/16" + FURN-M-KIT-PEN-END 24 x 34"'
+    # End panels are 35 1/2 and 34 3/4 since the 2026-11-05 geometry review.
+    assert ('2: FURN-M-LIV-E-END-N 24 x 35 1/2" + FURN-M-KIT-PEN-END 24 x 34 3/4"'
             in items["PROD-IKEA-FORBATTRA-MATTE-25-80"]["cuts"])

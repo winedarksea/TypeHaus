@@ -62,7 +62,9 @@ _CATLIN = {
     # STAIR gain 6.6 sf (+53 ft3, +0.13% of the house), so HP1's ventilation share falls
     # 3,479.5 -> 3,475.0 Btu/h; every UA component is unchanged.
     # 14,638 before the attic WC chase (2026-11-02) took 1.3 sf off RM-A-STUBATH's volume.
-    "EQ-M-HP1-OD": (14_635, 14_000, 5.0, 0.96, -9.4, _ADVISED),
+    # 14,635 / -9.4 °F before the fireplace brick moved 2" east and W-B-E1's pour narrowed
+    # 12" -> 10" (a754a0c7f, 2026-11-05): -3.8 Btu/h; Manual S cap 11,708 -> 11,705.
+    "EQ-M-HP1-OD": (14_632, 14_000, 5.0, 0.96, -9.5, _ADVISED),
     # The living-east rework replaces two 27x48 windows with one 63x48 unit, adding 3 sf
     # of glass to System 2's main-storey zone (2026-10-16). 13,855 / 0.64 / 23.6 °F, and
     # HP3 910 / 3.08, before the 2026-10-21 bath 1 rework moved the powder room's walls.
@@ -82,7 +84,8 @@ _CATLIN = {
     # BATH1-W .15 -> .20, (2 x .02 + .05) x 2.33 sf x 85 F = +17.8 Btu/h.
     # 14,292 / 0.62 / 25.6 °F before W-B-BRICK's backup lost its 2" EPS (c81337c8,
     # 2026-11-04): +0.369 UA x 85 F = +31 Btu/h (the note's addendum of that date).
-    "EQ-M-HP2-OD": (14_323, 8_800, 5.0, 0.61, 25.8, not _ADVISED),
+    # 14,323 before the same fireplace/W-B-E1 move (a754a0c7f, 2026-11-05): +13.7 Btu/h.
+    "EQ-M-HP2-OD": (14_337, 8_800, 5.0, 0.61, 25.8, not _ADVISED),
     # D-M-ENTRY's Therma-Tru unit replaces its 36x80 void (2026-10-29): 905 -> 921.
     # 921 / 3.04 before RM-M-MUD-CLOSET went 13.84 -> 12.96 sf (2x6 STOS wall, 2026-11-01).
     # 919 before #112 (2026-11-01): the same ventilation-share dilution, 918.59 -> 918.46.
@@ -178,12 +181,12 @@ def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
 
 
 def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> None:
-    """0.80 as a ratio is a number nobody can act on; ``11,708 Btu/h against this zone's
-    14,635`` is one an equipment selector can shop against."""
+    """0.80 as a ratio is a number nobody can act on; ``11,705 Btu/h against this zone's
+    14,632`` is one an equipment selector can shop against."""
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message
-    assert "11,708 Btu/h" in finding.message  # 0.80 x the unrounded design load
+    assert "11,705 Btu/h" in finding.message  # 0.80 x the unrounded design load
 
 
 # --- §3. the crossover ------------------------------------------------------------------------

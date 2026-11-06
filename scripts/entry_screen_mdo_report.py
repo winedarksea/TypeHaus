@@ -13,6 +13,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "houses/catlin"))
+# The loader leaves the last-loaded house's `plan` cached; it may not be catlin's.
+for _name in [m for m in sys.modules if m.split(".", 1)[0] in ("plan", "params")]:
+    del sys.modules[_name]
 from plan import entry_screen_finish_spec as spec  # noqa: E402
 from plan.entry_screen_finish_checks import (  # noqa: E402
     concentrated_sill_delta,

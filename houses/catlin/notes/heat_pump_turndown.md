@@ -446,3 +446,13 @@ Crossover, the 17/47 °F bracket: load(17) = 9,830 + 0.369 × 53 = 9,850, load(4
 0.369 × 23 = 5,656, so 8,800 − 9,850 = −1,050 and 8,200 − 5,656 = +2,544, and
 T = 17 + 30 × 1,050 / 3,594 = 17 + 8.8 = **25.8 °F** (was 25.6). HP1 and HP3 are unchanged;
 HP2 still passes the cap and no verdict moves.
+
+## Addendum 2026-11-05 — fireplace brick 2" east, W-B-E1 pour 12" -> 10" (a754a0c7f)
+
+The brick panel's axis moved x = 35'-1 11/16" -> 35'-3 11/16" and the pour under it narrowed,
+which shifts envelope and room volumes slightly: HP1 14,635 -> **14,632** (ΔUA about −0.04,
+ΔQ −3.8 Btu/h at 85 °F), HP2 14,323 -> **14,337** (ΔQ +13.7 Btu/h), HP3 unchanged at 918.
+Factors hold (HP1 14,000 / 14,632 = **0.96**, HP2 8,800 / 14,337 = **0.61**); Manual S caps
+0.80 × 14,632 = **11,705** (HP1), 0.80 × 14,337 = **11,470** (HP2); HP1's crossover
+−9.4 -> **−9.5 °F**, HP2's stays **25.8 °F**. Magnitudes are the engine's own, not a fresh
+hand pass: the change is geometric and small. No verdict moves.

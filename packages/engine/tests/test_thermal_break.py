@@ -55,6 +55,9 @@ _ALL = (*_FOOT, *_STEM, _BEAM)
 # 2026-11-05 (free body §11p): FT-B-S1..S4 are 25" x 15". D +18,918 lb (footings +22,058,
 # slab -3,141 for the wider cut-outs): 286,605; the far wall's soil is 7" deeper, 7.536'.
 # FS (71,651.3 + 32,375.0) / 27,315.75 = 3.8083; the near line is a 25" x 13" plain beam.
+# 2026-11-05 (free body §11q): W-B-E1/E2 went 12" -> 10" (BASEMENT_10). Walls -6,833.3 (2 x
+# 410 in² of core x 96" at 150 pcf), slab +120 (E footing 1.03" further east): D 280,067.
+# FS (70,016.7 + 32,375.0) / 27,315.75 = 3.7485; basis 8 102,391.7 / 43,656.2 = 2.3454.
 # 2026-11-04 (veneer note §6k, free body §11o): W-SG-BRKBM's board and TB-SG-W1/E1 moved onto
 # one plane flush on the house strips, -4..-6", and the footing boards went 2.5" -> 2".
 #   * court run off that plane: 328.0 − 5.0 = 323.0" (the stems stay at 322.565");
@@ -67,7 +70,7 @@ _PATH = {
     "house slab-edge bearing": (22_155.0, 151_200.0, 0.1465),
     "house slab-edge sustained load": (22_155.0, 50_394.96, 0.4396),
     "house slab strut compression": (14.6528, 2_040.0, 0.00718),
-    "house global sliding": (1.5, 3.8083, 0.3939),
+    "house global sliding": (1.5, 3.7485, 0.4002),
     "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
     "court sliding under break thrust": (0.0, 71_474.1, 0.0),
 }
@@ -109,7 +112,7 @@ _PATH_8 = {
     "house slab-edge bearing": (42_099.5, 151_200.0, 0.27844),
     "house slab-edge sustained load": (42_099.5, 50_394.96, 0.83539),
     "house slab strut compression": (27.8436, 2_040.0, 0.013649),
-    "house global sliding": (1.5, 2.3829, 0.6295),
+    "house global sliding": (1.5, 2.3454, 0.6395),
     "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
     # Net thrust less the retained soil is NEGATIVE, so the row is a force, not an FS.
     "court sliding under break thrust": (0.0, 71_474.1, 0.0),
@@ -381,11 +384,12 @@ def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
     assert "grade unstated" in state.citation
     assert _state(record, "house slab-edge sustained load") is None  # no sheet, no rule
     # §11m.1: the unstated break's E is ESTIMATED 35 x 15 = 525, a bed 7x softer, and the near
-    # line goes OVER even capped — both struts bear (1,598 / 1,641 lb) and still do not save
+    # line goes OVER even capped — both struts bear (1,596 / 1,618 lb) and still do not save
     # it. Since the 25" x 15" strips (free body §11p) it is the bearing that is over, not the
-    # flexure.
-    for name, (demand, ratio) in {"house near-line plan flexure": (239_445.9, 0.83355),
-                                  "house slab-edge peak bearing": (20.0631, 1.33754)}.items():
+    # flexure. 2026-11-05 (§11q): the east strut's station moved 422.5" -> 423.0" with the
+    # E footing; independent FE reads 238,954.5 / 20.068 psi.
+    for name, (demand, ratio) in {"house near-line plan flexure": (238_953.9, 0.83183),
+                                  "house slab-edge peak bearing": (20.0679, 1.33786)}.items():
         assert _state(record, name).demand == pytest.approx(demand, rel=5e-4), name
         assert _state(record, name).ratio == pytest.approx(ratio, abs=6e-4), name
     assert "ESTIMATED" in _state(record, "house near-line plan flexure").citation

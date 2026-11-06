@@ -92,9 +92,9 @@ def test_starter_earns_not_applicable(starter_dir) -> None:
 
 
 @pytest.mark.parametrize("tag, said", [
-    # 25" strips since 2026-11-05: each grew 5" inboard, outboard face held.
+    # 25" strips since 2026-11-05: each grew 5" inboard; the N/S/W outboard face held.
     ("FT-B-N1", '9.03" / 7.97"'),   # 8.03" outboard until the 1/16" trim (C3-E18)
-    ("FT-B-E1", '7.03" / 5.97"'),
+    ("FT-B-E1", '8.03" / 6.97"'),   # 7.03" / 5.97" on the 12" pour, until W-B-E1 went 10"
     ("FT-B-S2", '15.00" / 4.00"'),  # the 6" curb's 15" toe on a 15" strip
 ])
 def test_the_trimmed_strips_hold_r403_1_1_projection(catlin_findings, tag, said) -> None:

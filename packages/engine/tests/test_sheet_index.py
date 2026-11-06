@@ -129,9 +129,12 @@ def test_the_permit_set_fits_what_a_plan_checker_will_read(catlin_sheet_index):
     83 -> 85 the same day, two ledger continuations: A-601 continues on A-601.1 (C7-E3's
     hand, jamb, sill and net-clear columns, hardware sets no longer overprint) and S-602 on
     S-602.2 (the pass's new connector and transition rows). ARCH D needs neither.
+
+    85 -> 89 on 2026-11-05, owner decision: M-601, the duct and air terminal schedules of the
+    DuctStandard (#114), 216 rows paged to M-601..M-601.3 on ledger. ARCH D needs one sheet.
     """
     permit = catlin_sheet_index(sets="permit")
-    assert len(permit) <= 85, [s.number for s in permit]
+    assert len(permit) <= 89, [s.number for s in permit]
     numbers = {s.number for s in permit}
     # What DSI's new-construction checklist asks for.
     assert {"G-001", "C-101", "S-001", "S-100", "S-101.1", "A-101", "A-201",

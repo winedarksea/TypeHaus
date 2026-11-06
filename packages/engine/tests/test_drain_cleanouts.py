@@ -134,7 +134,7 @@ def test_catlin_sewer_cleanout_is_inside_by_the_north_exit(catlin_model_ro):
 
 def test_catlin_cleanouts_have_plan_schedule_and_three_solids(catlin_model_ro):
     model = catlin_model_ro
-    assert len(model.drain_cleanouts) == 13  # + CO-B-USINK, the utility sink (5ed9a29c)
+    assert len(model.drain_cleanouts) == 16  # 13 + BATH-TURN, SAUNA-TURN, M-SH2-HEAD
     wc2_cleanouts = {item.tag: item for item in model.drain_cleanouts
                      if item.pipe_ref == "PR-B-WC2-DRAIN"}
     assert set(wc2_cleanouts) == {"CO-B-WC2-HEAD"}
@@ -146,8 +146,9 @@ def test_catlin_cleanouts_have_plan_schedule_and_three_solids(catlin_model_ro):
     schedule = {row["tag"] for row in plumbing_takeoff(model)["takeoff"]["cleanouts"]}
     for cleanout in model.drain_cleanouts:
         assert cleanout.tag in schedule
+        # By uid: tag CO-B-BATH is a prefix of CO-B-BATH-TURN.
         components = [s for s in model.solids
-                      if s.tag == cleanout.tag or s.tag.startswith(cleanout.tag + "-")]
+                      if s.uid == cleanout.uid or s.uid.startswith(cleanout.uid + "-")]
         assert {s.category for s in components} == {
             "cleanout_fitting", "cleanout_extension", "cleanout_cap"}
         assert len(components) == (5 if cleanout.direction == "two_way" else 3)

@@ -2687,6 +2687,31 @@ The stiffer beam takes more moment and spreads the bed. The governing row,
 peak sustained load, eases from 0.680 to 0.676. The unstated-grade fallback is still OVER, now
 on bearing rather than flexure.
 
+### 11q. Addendum 2026-11-05 — W-B-E1/E2 are a 10" pour
+
+`BASEMENT_10` replaces the 12" east wall (`east_breast_bearing.md` amendment). Outer face still
+x = 432"; the inside face moves 420" → 422". Boards, ΣA, T (27,315.75 lb) and the line load
+are unchanged. Two inputs move, both from the east wall.
+
+**D.** E1/E2 core is a trapezoid, 216" outside and 204" (was) / 206" (now) inside, x 12" / 10":
+2,520 → 2,110 in² each, so −820 in² x 96" x 150 / 1728 = **−6,833.3 lb**. The strip is centred
+on the wall band, so it moves 1.03" east and the slab, cast to its inside face, gains
+1.03" x 386" x 3.5" x 150 / 1728 = **+120.7 lb**. §11p's 286,605 reads 286,781 on today's 12"
+model (+176 lb of other drift, inside the tests' tolerance); D = 286,781 − 6,833 + 121 =
+**280,067 lb**. The at-rest term is unchanged (1,703.9 plf x 19' = 32,375).
+
+| row | §11p | now |
+|---|---|---|
+| global sliding FS, capped | 3.8083 | (0.25 x 280,067 + 32,375.0) / 27,315.75 = **3.7485** (d/c 0.4002) |
+| global sliding FS, basis 8 | 2.3829 | 102,391.7 / 43,656.2 = **2.3454** (d/c 0.6395) |
+
+**The near line.** The E footing is the strut at the line's east end; its station is the middle
+of its overlap with the line, (413.97 + 432) / 2 = **422.98"** (was (412.94 + 432) / 2 = 422.47").
+Strut k = 4.0305e6 x 250 / 394 = 2.5576e6 lb/in, unchanged. Stiff-bed rows do not see it
+(0.01% at the cap). Unstated slab grade, capped: the dense FE solve of §11p on the engine's
+loads, bed and struts reads M **238,954.5** lb·in (engine 238,953.9; 0.832 of 287,262),
+struts 1,596 / 1,618 lb, peak 20.068 psi (1.338 of 15).
+
 ## 12. The court narrowed to 17'-0" clear (2026-09-22)
 
 The side walls came 1'-0" in each so both decks span wall to wall (DESIGN-LOG.md, "Sunken

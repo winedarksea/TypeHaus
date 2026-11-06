@@ -62,8 +62,8 @@ it fits.
   `kitchen_stock_cabinet_details.md`) spend 6 each. 16 + 1/8 + 6 + 1/8 + 6 = 28 1/4, under
   30. **2 panels**, not 4.
 - **25x80 (five pieces).** The study nook cover (24 5/8 x 80) is a whole panel. The living
-  end panel (24 x 34 9/16) and the peninsula end panel (24 x 34) share one:
-  34 9/16 + 1/8 + 34 = 68 11/16, under 80. The peninsula seating face is authored as two
+  end panel (24 x 35 1/2) and the peninsula end panel (24 x 34 3/4) share one:
+  35 1/2 + 1/8 + 34 3/4 = 70 3/8, under 80 (heights corrected 2026-11-05). The peninsula seating face is authored as two
   whole panels. **4 panels**, not 5.
 - **25x90.** The hall-bath closet cover, **1 panel**.
 - **Total: 7 panels, not 10.**

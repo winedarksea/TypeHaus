@@ -46,7 +46,9 @@ def test_no_new_erv_duct_vent_or_radon_riser_interpenetrations(catlin_ctx) -> No
 #: routes through by design (FS-S-WEST, storeys/second.py). The engine answers UNKNOWN
 #: because whether a 1 1/2" vent may share a web is a fabricator's chart it does not hold.
 #: Anything else standing in a web, or on a member, still fails this test.
-_WEB_PASSING_VENTS = {"PR-M-BATH1-LAV-VENT", "PR-M-BATH2-SH-VENT", "PR-M-LSINK-VENT"}
+#: PR-M-BATH2-TUB-VENT (e5128ca7d) is the same case as its sibling SH-VENT: 1.90" in a web bay.
+_WEB_PASSING_VENTS = {"PR-M-BATH1-LAV-VENT", "PR-M-BATH2-SH-VENT", "PR-M-BATH2-TUB-VENT",
+                      "PR-M-LSINK-VENT"}
 
 
 def test_every_erv_duct_and_vent_riser_stands_in_a_drawn_hole(catlin_ctx) -> None:
