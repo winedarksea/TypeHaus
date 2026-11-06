@@ -318,5 +318,10 @@ def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop,
                                                   layer.function.value)
                             or "batt",
                             layer="A-WALL-PATT", uid=roof.uid, material=layer.material_ref))
-            drawn.append(DrawnBand(layer.name, (d1 - d0) / M_PER_IN, pts))
+            name, depth = layer.name, (d1 - d0) / M_PER_IN
+            framing = getattr(layer, "framing", None)
+            if not fill and getattr(framing, "roof_frame", None) == "truss":
+                # A truss's depth varies along it; the layer's is a placeholder (F4-006).
+                name, depth = f"{name} ({framing.chord_member or framing.member} chords)", 0.0
+            drawn.append(DrawnBand(name, depth, pts))
     return drawn

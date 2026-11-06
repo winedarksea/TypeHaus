@@ -8,6 +8,11 @@ from __future__ import annotations
 
 import textwrap
 
+from typehaus.emit.draw.schedules.paged_tables import (
+    PagedTable,
+    continuation_number,
+    draw_page,
+)
 from typehaus.emit.draw.schedules.tables import _add_table, _number
 from typehaus.emit.draw.sheet_writer import PORTRAIT_LEDGER, schedule_sheet, section
 from typehaus.resolve.model import ResolvedModel
@@ -144,34 +149,20 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str,
     only draw as dashed lines. Then the runs, with each supply sized against the tape it
     actually drives (→ takeoff/lighting.py — nothing here is hand-summed).
 
-    Two pages (D1-103, M3-101): on one, the ~250-row control schedule crushed the rest
-    into clipped cells and pushed the load table onto the title block. ``page`` 1 is it.
+    Paged (D1-103, M3-101): on one, the ~250-row control schedule crushed the rest
+    into clipped cells and pushed the load table onto the title block. ``page`` 1 and on
+    are it (:func:`control_tables`).
     """
-    from typehaus.takeoff import (
-        connected_lighting_va,
-        light_run_takeoff,
-        lighting_controls,
-        luminaire_schedule,
-    )
+    from typehaus.takeoff import connected_lighting_va, light_run_takeoff, luminaire_schedule
+
     with schedule_sheet(pdf, model, number, name,
                         size=PORTRAIT_LEDGER, heading_xy=(0.04, 0.97)) as fig:
-        if page == 1:
-            controls = lighting_controls(model)
-            section(fig, 0.04, 0.945, "LIGHTING CONTROL SCHEDULE")
-            control_rows = [
-                (row["tag"], row["mark"] or "—", row["room"] or "—",
-                 row["circuit"] or (f"via {row['psu']}" if row["psu"] else "—"),
-                 ", ".join(row["switches"]) or ("switch on fixture" if row["integral_switch"]
-                                                else "—"),
-                 ", ".join(sorted(set(row["controls"]))) or "—",
-                 "3-way+" if row["ways"] > 1 else "",
-                 "CROSS-CIRCUIT" if row["cross_circuit"] else "")
-                for row in controls
-            ]
-            _add_table(fig, control_rows,
-                       ("Load", "Mark", "Room", "Circuit", "Switched by", "Control", "Ways",
-                        "Note"),
-                       bbox=(0.03, 0.13, 0.94, 0.80), truncate=(4,))
+        if page >= 1:
+            # Paged at fixed lettering (``paged_tables``): split into two runs on one page
+            # the Load/Room/Control cells clipped (REPORT §1 item 19).
+            base = number.rsplit(".", 1)[0]
+            draw_page(fig, control_tables(model), tuple(fig.get_size_inches()), page - 1,
+                      continuation_number(base, page + 1))
             return
         schedule = luminaire_schedule(model)
         section(fig, 0.04, 0.945, "LUMINAIRE SCHEDULE")
@@ -227,6 +218,24 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str,
         _add_table(fig, load_rows, ("Circuit", "Fixtures", "Connected VA"),
                    bbox=(0.03, 0.15, 0.52, 0.12))
         fig.text(0.57, 0.26, str(load["basis"]), fontsize=6, family="sans-serif", wrap=True)
+
+
+def control_tables(model: ResolvedModel) -> list[PagedTable]:
+    """The lighting control schedule: the switch legs the plans draw as dashed lines."""
+    from typehaus.takeoff import lighting_controls
+
+    rows = tuple(
+        (row["tag"], row["mark"] or "—", row["room"] or "—",
+         row["circuit"] or (f"via {row['psu']}" if row["psu"] else "—"),
+         ", ".join(row["switches"]) or ("switch on fixture" if row["integral_switch"]
+                                        else "—"),
+         ", ".join(sorted(set(row["controls"]))) or "—",
+         "3-way+" if row["ways"] > 1 else "",
+         "CROSS-CIRCUIT" if row["cross_circuit"] else "")
+        for row in lighting_controls(model))
+    return [PagedTable("LIGHTING CONTROL SCHEDULE",
+                       ("Load", "Mark", "Room", "Circuit", "Switched by", "Control", "Ways",
+                        "Note"), rows)]
 
 
 _COLOR_MODE = {"tunable": "TW", "rgb": "RGB", "rgbw": "RGBW", "rgbcct": "RGBCCT"}

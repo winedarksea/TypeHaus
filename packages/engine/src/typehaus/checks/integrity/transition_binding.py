@@ -11,8 +11,15 @@ from typehaus.checks._authoring import advisory_fail, failed, passed
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.patterns import first_match, matches
+from typehaus.resolve.detail_keys import detail_keys
 
 CHECK_ID = "integrity.transition_shadowed"
+
+
+def _detail_keys(ctx: CheckContext) -> set[str]:
+    """Every key a detail derives under: the condition keys plus an opening key's split
+    kind (``opening_perimeter:door:EXT_2X6_BOARD_BATTEN``), which a Transition may bind."""
+    return {key for _cond, key, _kind in detail_keys(ctx.model)}
 
 
 @check(Tier.INTEGRITY, "integrity.condition_coverage")
@@ -40,7 +47,7 @@ def condition_star_override(ctx: CheckContext) -> list[Finding]:
     got followed through, so it warns rather than degrading in silence.
     """
     out: list[Finding] = []
-    derived = {cond.key for cond in ctx.model.conditions}
+    derived = _detail_keys(ctx)
     for tr in ctx.plan.library.transitions:
         for field in ("starred_conditions", "unstarred_conditions"):
             for key in getattr(tr, field, ()):
@@ -73,7 +80,7 @@ def transition_shadowed(ctx: CheckContext) -> list[Finding]:
     continuity never apply (warning). Unstarred and matching nothing, it is a binding held
     for a condition this house does not have: harmless, so silent."""
     transitions = tuple(ctx.plan.library.transitions)
-    keys = sorted({cond.key for cond in ctx.model.conditions})
+    keys = sorted(_detail_keys(ctx))
     winner = {key: first_match(transitions, key) for key in keys}
     out: list[Finding] = []
     for tr in transitions:

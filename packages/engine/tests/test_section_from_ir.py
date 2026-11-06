@@ -217,9 +217,14 @@ def test_a_stud_the_cut_passes_through_is_drawn(catlin_model):
 
     ``member_box`` is the one member solid every emitter shares, so the plane meets the
     stick's real width. Cut on the y=18' plane the deck-bearing detail used until it moved to
-    the y=16' truss line (decision #112), where it passes between studs.
+    the y=16' truss line (decision #112), where it passes between studs, and A-501 until it
+    moved off W-B-CW's axis to y=17' (D2-103).
     """
-    scene = build_section(catlin_model, _slice(catlin_model, "SL-D-FNDN"))
+    from typehaus import ft, pt
+
+    view = _slice(catlin_model, "SL-D-FNDN").model_copy(
+        update={"cut_origin": pt(ft(0), ft(18))})
+    scene = build_section(catlin_model, view)
     studs = {tag for tag in _tags(scene, "S-FRAM") if tag.startswith("stud-")}
     assert studs, "the foundation detail passes through no stud at all"
 

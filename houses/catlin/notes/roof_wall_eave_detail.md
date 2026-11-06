@@ -28,7 +28,7 @@ source:
 
 ### Keyed
 - {wall_roof:EXT_2X6|*} [K1] Low-end birdsmouth: heel at plate outer face, 2-1/2" seat, 1-1/4" cut. 7/8" beveled stiffeners both sides. H2.5A each rafter.
-- [K2] Foam first lift 1-1/2" min; lap ridge beam and hanger flanges in one pass.
+- {wall_roof:INT_2X6_BRG*|*} [K2] Foam first lift 1-1/2" min; lap ridge beam and hanger flanges in one pass.
 - {wall_roof:EXT_2X6|*} [K3] 2x6 eave block on edge on the plate, every bay. ccSPF over it.
 - {wall_roof:EXT_2X6|*} [K4] Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.
 - {wall_roof:EXT_2X6|*} [K5] Membrane to deck edge; gutter flange, then eave leg, on it. Bearing 2.04".

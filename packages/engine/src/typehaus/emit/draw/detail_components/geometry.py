@@ -329,16 +329,36 @@ def slab_at_junction(model, crop, direction, station, face_u_m):
 _BAND_STRADDLE_TOLERANCE_M = 0.05
 
 
-def floor_band_at(model, junction_z_m):
-    """``(z0_m, z1_m)`` of the framed floor band the junction plane passes through, or None.
+def _floor_in_cut(floor, plane: CutPlane, u_lo: float, u_hi: float) -> bool:
+    """Whether any member of ``floor`` (joist, rim, blocking, trimmer) is cut inside the
+    crop's u-window: the floor is in this drawing, not merely at this height elsewhere."""
+    from typehaus.resolve.framing.footprint import member_footprint
+
+    for member in floor.members:
+        ring, _lo, _hi = member_footprint(member)
+        if any(min(a, b) <= u_hi and max(a, b) >= u_lo
+               for a, b in ring_intervals(ring, plane)):
+            return True
+    return False
+
+
+def floor_band_at(model, junction_z_m, direction: str, station: float, crop):
+    """``(z0_m, z1_m, floor)`` of the framed floor band at this junction, or None.
 
     The rim band's depth is the joist depth — a property of the floor structure, not of either
     wall — so it is read off the members rather than assumed. The junction plane may be the
     band's top (platform framing: the subfloor is the plane the wall above starts from) or its
     bottom (the joists bear on the plate below), so the test is straddling, not equality.
+    Only a floor with a member cut inside the crop counts (F3-105/F3-112): the garage stem
+    sits at the house deck's height but bears no floor, and a cut down a joist bay has no
+    band to name.
     """
+    (cu0, _), (cu1, _) = crop
+    u_lo, u_hi = min(cu0, cu1), max(cu0, cu1)
+    plane = CutPlane(axis=direction, station_m=station)
     band = None
     for floor in model.floors:
+        best = None
         for member in floor.members:
             if member.category not in ("joist", "rim"):
                 continue
@@ -346,8 +366,12 @@ def floor_band_at(model, junction_z_m):
             if not (low - _BAND_STRADDLE_TOLERANCE_M <= junction_z_m
                     <= high + _BAND_STRADDLE_TOLERANCE_M):
                 continue
-            if band is None or (high - low) > (band[1] - band[0]):
-                band = (low, high)
+            if best is None or (high - low) > (best[1] - best[0]):
+                best = (low, high)
+        if best is None or (band is not None and best[1] - best[0] <= band[1] - band[0]):
+            continue
+        if _floor_in_cut(floor, plane, u_lo, u_hi):
+            band = (best[0], best[1], floor)
     return band
 
 

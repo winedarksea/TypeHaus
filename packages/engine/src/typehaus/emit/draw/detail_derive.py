@@ -16,6 +16,7 @@ from typehaus.model.enums import SliceKind
 from typehaus.model.patterns import first_match
 from typehaus.model.views import Slice
 from typehaus.quantities import m, pt
+from typehaus.resolve.detail_keys import detail_keys
 from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals, slice_solid
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel
@@ -32,10 +33,14 @@ class DerivedDetail:
     direction: str
     station: float
     part: str | None = None  # "head" | "sill" on an enlarged child (``enlarged_details``)
+    opening_kind: str | None = None  # "window" | "door" where one key holds both
 
 
-def _matched_transition(model: ResolvedModel, cond: BoundaryCondition):
-    return first_match(model.plan.library.transitions, cond.key)
+def _matched_transition(model: ResolvedModel, cond: BoundaryCondition, key: str | None = None):
+    """The binding of a detail key, falling back to its condition's own key: a qualified
+    opening key (``opening_kind_key``) takes its assembly's transition unless one names it."""
+    transitions = model.plan.library.transitions
+    return (key and first_match(transitions, key)) or first_match(transitions, cond.key)
 
 
 def _host_wall(model: ResolvedModel, cond: BoundaryCondition):
@@ -57,24 +62,6 @@ def _condition_opening(model: ResolvedModel, cond: BoundaryCondition):
     return condition_opening(model, cond)
 
 
-def _typical_first(model: ResolvedModel) -> list[BoundaryCondition]:
-    """Conditions with each opening key's TYPICAL kind first: a key's sheet is cut at its
-    first condition, and A-513 drew D-M-ENTRY under the window head/pan notes of a wall with
-    17 windows (O5-103). Windows lead only where they outnumber the rest; stable otherwise."""
-    kinds: dict[str, list[bool]] = {}
-    is_window: dict[int, bool] = {}
-    for index, cond in enumerate(model.conditions):
-        if cond.kind.value != "opening_perimeter":
-            continue
-        opening = _condition_opening(model, cond)
-        is_window[index] = opening is not None and opening.kind == "window"
-        kinds.setdefault(cond.key, []).append(is_window[index])
-    lead = {key for key, flags in kinds.items() if 2 * sum(flags) > len(flags)}
-    order = sorted(range(len(model.conditions)), key=lambda i: not (
-        model.conditions[i].key in lead and is_window.get(i, False)))
-    return [model.conditions[i] for i in order]
-
-
 def derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
     """One derived DETAIL slice per distinct bound condition key (skip authored-claimed keys).
 
@@ -88,14 +75,14 @@ def derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
     }
     out: list[DerivedDetail] = []
     seen: set[str] = set()
-    for cond in _typical_first(model):
-        if cond.key in seen or cond.key in claimed:
+    for cond, key, opening_kind in detail_keys(model):
+        if key in seen or key in claimed:
             continue
-        tr = _matched_transition(model, cond)
+        tr = _matched_transition(model, cond, key)
         if tr is None:
             continue  # unbound conditions are the coverage check's concern, not a detail
         if getattr(tr, "suppress", False):
-            seen.add(cond.key)
+            seen.add(key)
             continue  # bound-but-suppressed: covered for integrity, no sheet derives
         wall = _host_wall(model, cond)
         if wall is None:
@@ -104,11 +91,11 @@ def derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
             if cond.kind.value == "roof_ridge":
                 derived = _build_ridge_derived(model, cond, tr)
                 if derived is not None:
-                    seen.add(cond.key)
+                    seen.add(key)
                     out.append(derived)
             continue
-        seen.add(cond.key)
-        derived = _build_derived(model, cond, tr, wall)
+        seen.add(key)
+        derived = _build_derived(model, cond, tr, wall, key, opening_kind)
         if derived is not None:
             out.append(derived)
     out.sort(key=lambda d: d.key)
@@ -338,7 +325,8 @@ def _clear_fraction(model, cond, wall) -> float:
     return min(candidates, key=lambda a: abs(a - mid), default=target) / length
 
 
-def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
+def _build_derived(model, cond, tr, wall, key: str,
+                   opening_kind: str | None = None) -> DerivedDetail | None:
     (x0, y0), (x1, y1) = wall.axis
     opening = (_condition_opening(model, cond)
                if cond.kind.value == "opening_perimeter" else None)
@@ -382,15 +370,15 @@ def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
         outboard = max(outboard, reach_hi - u_hi + _TRIM_MARGIN_M)
         inboard = max(inboard, u_lo - reach_lo + _TRIM_MARGIN_M)
     view = Slice(
-        uid="", tag=f"D-{_key_slug(cond.key)}", kind=SliceKind.DETAIL,
-        title=(tr.title or tr.tag if tr is not None else cond.key),
+        uid="", tag=f"D-{_key_slug(key)}", kind=SliceKind.DETAIL,
+        title=(tr.title or tr.tag if tr is not None else key),
         cut_origin=pt(m(station if direction == "y" else center_u),
                       m(center_u if direction == "y" else station)),
         cut_direction=direction,
         crop=(pt(m(u_lo - inboard), m(z0)), pt(m(u_hi + outboard), m(z1))),
     )
-    return DerivedDetail(key=cond.key, condition=cond, transition=tr, view=view,
-                         direction=direction, station=station)
+    return DerivedDetail(key=key, condition=cond, transition=tr, view=view,
+                         direction=direction, station=station, opening_kind=opening_kind)
 
 
 def _build_ridge_derived(model, cond, tr) -> DerivedDetail | None:

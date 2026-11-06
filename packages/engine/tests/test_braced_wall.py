@@ -280,7 +280,7 @@ def test_the_basement_south_line_prints_the_other_reading(catlin_model_ro):
 
 def test_the_sheet_draws_the_panels_and_the_rows_it_read(catlin_model_ro):
     scene = build_braced_wall_plan(catlin_model_ro, "main")
-    printed = " ".join(n.content for n in scene.nodes if isinstance(n, Text))
+    printed = " ".join([*(n.content for n in scene.nodes if isinstance(n, Text)), *scene.notes])
     assert "REQ" in printed and "PROV" in printed
     assert "Table R602.10.3(1)" in printed
     assert "CN-M-BWHD-NE-E" in printed

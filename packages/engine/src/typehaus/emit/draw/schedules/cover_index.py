@@ -7,6 +7,7 @@ is built (the continuation sheets G-001.1, G-001.2 … are index entries themsel
 
 from __future__ import annotations
 
+import textwrap
 from dataclasses import dataclass
 
 from typehaus.emit.draw.typography import wrap_columns_for
@@ -50,6 +51,9 @@ class IndexPage:
     columns: int
     size_pt: float
     pitch: float
+    #: Width of the number field and of the title beside it, characters.
+    field: int = 9
+    room: int = 80
 
 
 def fit(text: str, room: int) -> str:
@@ -57,6 +61,13 @@ def fit(text: str, room: int) -> str:
     if room <= 1 or len(text) <= room:
         return text
     return text[:room - 1].rstrip() + "…"
+
+
+def title_lines(title: str, room: int) -> list[str]:
+    """``title`` wrapped to ``room``: a series' distinguishing tag is at its end (D1-107)."""
+    if room <= 1:
+        return [title]
+    return textwrap.wrap(title, room, break_on_hyphens=False) or [""]
 
 
 def grouped(index: list[Entry]) -> list[Entry]:
@@ -85,28 +96,62 @@ def expand_numbers(rows: list[Entry]) -> list[str]:
     return out
 
 
-def index_shape(entries: int, *, rows: int, columns: int) -> tuple[int, int]:
-    """(rows per column, columns) for ``entries`` lines in a ``rows`` x ``columns`` grid.
+def place(entries: list[Entry], room: int, per_column: int,
+          columns: int) -> list[tuple[int, int, list[str]]]:
+    """(column, row, lines) for the leading ``entries`` the grid holds, column-major.
 
-    Cap a column at :data:`INDEX_MAX_ROWS`, then **balance**: three columns needed prints
-    33/33/32, not 48/48/2, which would look truncated. The grid is a hard bound: callers
-    paginate what it cannot hold.
+    A wrapped title keeps its lines in one column; the first entry that does not fit
+    ends the list.
     """
-    if entries <= 0:
-        return (1, 1)
-    per_column = min(rows, INDEX_MAX_ROWS)
-    needed = -(-entries // per_column)  # ceil
-    columns = max(1, min(needed, columns))
-    return (min(rows, -(-entries // columns)), columns)
+    out: list[tuple[int, int, list[str]]] = []
+    column = row = 0
+    for _, title in entries:
+        lines = title_lines(title, room)[:per_column]
+        if row + len(lines) > per_column:
+            column, row = column + 1, 0
+        if column >= columns:
+            break
+        out.append((column, row, lines))
+        row += len(lines)
+    return out
 
 
-def _grid(count: int, rows: int, width_in: float, size_pt: float, pitch: float,
-          entries: list[Entry]) -> IndexPage:
-    """``entries`` (at most the capacity) in a grid of ``rows`` x the columns ``width_in`` holds."""
-    per_column, columns = index_shape(
-        count, rows=max(1, rows),
-        columns=max(1, int(width_in / (INDEX_COLUMN_IN * size_pt / INDEX_PT))))
-    return IndexPage(tuple(entries), per_column, columns, size_pt, pitch)
+def _field(entries: list[Entry]) -> int:
+    return max([9, *(len(number) for number, _ in entries)])
+
+
+def _room(width_in: float, columns: int, size_pt: float, field: int) -> int:
+    """Title characters in one of ``columns`` columns across ``width_in``."""
+    pitch_in = min(INDEX_COLUMN_MAX_IN, width_in / columns)
+    return wrap_columns_for(pitch_in - INDEX_GUTTER_IN, size_pt) - (field + 1)
+
+
+def _max_columns(width_in: float, size_pt: float) -> int:
+    return max(1, int(width_in / (INDEX_COLUMN_IN * size_pt / INDEX_PT)))
+
+
+def _page(entries: list[Entry], rows: int, width_in: float, size_pt: float,
+          pitch: float) -> IndexPage:
+    """The leading ``entries`` one page of ``rows`` holds.
+
+    When the page holds them all: the fewest columns that do (the least wrapping) under
+    :data:`INDEX_MAX_ROWS` if it can, each as short as still holds them, so three columns
+    print 33/33/32 rather than 48/48/2. Otherwise the column count that holds the most.
+    """
+    rows, field = max(1, rows), _field(entries)
+    widths = [(c, _room(width_in, c, size_pt, field))
+              for c in range(1, _max_columns(width_in, size_pt) + 1)]
+    for cap in dict.fromkeys((min(rows, INDEX_MAX_ROWS), rows)):
+        for columns, room in widths:
+            if len(place(entries, room, cap, columns)) < len(entries):
+                continue
+            lines = sum(len(title_lines(t, room)[:cap]) for _, t in entries)
+            per = next(r for r in range(max(1, -(-lines // columns)), cap + 1)
+                       if len(place(entries, room, r, columns)) == len(entries))
+            return IndexPage(tuple(entries), per, columns, size_pt, pitch, field, room)
+    held, columns, room = max((len(place(entries, room, rows, c)), -c, room)
+                              for c, room in widths)
+    return IndexPage(tuple(entries[:held]), rows, -columns, size_pt, pitch, field, room)
 
 
 def paginate(index: list[Entry], *, first_height_in: float, later_height_in: float,
@@ -115,7 +160,7 @@ def paginate(index: list[Entry], *, first_height_in: float, later_height_in: flo
 
     One page when any of three steps holds it all: a row per sheet, parts on their parent's
     row, then a point smaller on a tighter pitch. Past that the tight, grouped index flows
-    onto continuation pages, each filled before the next.
+    onto continuation pages, each filled before the next. Titles wrap, never clip.
     """
     entries, size_pt, pitch = list(index), INDEX_PT, INDEX_PITCH_IN
     for step in ("rows", "grouped", "tight"):
@@ -123,32 +168,31 @@ def paginate(index: list[Entry], *, first_height_in: float, later_height_in: flo
             entries = grouped(index)
         elif step == "tight":
             size_pt, pitch = INDEX_TIGHT_PT, INDEX_TIGHT_PITCH_IN
-        page = _grid(len(entries), int(first_height_in / pitch), width_in, size_pt, pitch,
-                     entries)
-        if page.per_column * page.columns >= len(entries):
+        page = _page(entries, int(first_height_in / pitch), width_in, size_pt, pitch)
+        if len(page.entries) == len(entries):
             return [page]
     pages: list[IndexPage] = []
     rest = entries
     while rest:
         rows = int((first_height_in if not pages else later_height_in) / pitch)
-        columns = max(1, int(width_in / (INDEX_COLUMN_IN * size_pt / INDEX_PT)))
-        capacity = max(1, rows) * columns
-        take, rest = rest[:capacity], rest[capacity:]
-        pages.append(_grid(len(take), rows, width_in, size_pt, pitch, take))
+        page = _page(rest, rows, width_in, size_pt, pitch)
+        if not page.entries:
+            raise RuntimeError("sheet index: an entry fits no page")
+        pages.append(page)
+        rest = rest[len(page.entries):]
     return pages
 
 
 def draw_index(fig, page: IndexPage, *, x0: float, x1: float, top: float) -> None:
     """Letter ``page`` with its first row at paper-inch height ``top``."""
     width, height = fig.get_size_inches()
-    # Spend the leftover width on the columns, and fit each title to its column or it runs
-    # through the next column's number.
+    # Spend the leftover width on the columns; a title wraps under itself in its column.
     pitch_in = min(INDEX_COLUMN_MAX_IN, (x1 - x0) / page.columns)
-    field = max([9, *(len(number) for number, _ in page.entries)])
-    room = wrap_columns_for(pitch_in - INDEX_GUTTER_IN, page.size_pt) - (field + 1)
-    for row, (number, name) in enumerate(page.entries):
-        column, line = divmod(row, page.per_column)
-        fig.text((x0 + 0.1 + column * pitch_in) / width,
-                 (top - line * page.pitch) / height,
-                 f"{number:{field}} {fit(name, room)}",
-                 fontsize=page.size_pt, family="monospace")
+    entries = list(page.entries)
+    for (number, _), (column, row, lines) in zip(
+            entries, place(entries, page.room, page.per_column, page.columns), strict=True):
+        for k, line in enumerate(lines):
+            fig.text((x0 + 0.1 + column * pitch_in) / width,
+                     (top - (row + k) * page.pitch) / height,
+                     f"{number if k == 0 else '':{page.field}} {line}",
+                     fontsize=page.size_pt, family="monospace")

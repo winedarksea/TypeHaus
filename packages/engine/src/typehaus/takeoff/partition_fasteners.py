@@ -80,8 +80,7 @@ def partition_deflection_screw_rows(model: ResolvedModel,
     # has to be carried — silently billing nothing is the failure — so every SDPW row says
     # which partition tops got none and why. The standalone row is the degenerate case
     # where NOTHING was billed and there is no basis to ride on.
-    note = ("" if not refusals else
-            " NOT BILLED at " + "; ".join(sorted(refusals)) + ".")
+    note = _refusal_note(refusals) if refusals else ""
     rows = [hardware_row(
         group["item"], scope=group["scope"], count=int(group["count"]),
         part_number=group["part_number"], size=f"{group['length_in']:g} in",
@@ -98,24 +97,30 @@ def partition_deflection_screw_rows(model: ResolvedModel,
 
 
 def _basis(group: dict, rules: PartitionDeflectionRules) -> str:
-    """The rule that produced the count — and, for the blocked bays, what is NOT billed."""
+    """The rule that produced the count, in the words a framer works to (F2-106: S-001.1
+    prints it, so no module path or check id)."""
     length = (f"{group['gap_in']:.3g} in gap + {group['plate_in']:.3g} in top plate + "
-              f"{rules.minimum_embedment_in:g} in embedment = {group['required_in']:.2f} in "
-              "required")
+              f"{rules.minimum_embedment_in:g} in embedment = {group['required_in']:.2f} in")
     walls = f"{len(group['walls'])} partition(s)"
     if group["scope"] == PERPENDICULAR:
-        rule = (f"{rules.screws_per_crossing} screw per resolved crossing of the framing "
-                f"above, across {walls}")
+        rule = f"{rules.screws_per_crossing} per crossing of the framing above, {walls}"
     elif group["scope"] == UNDER_MEMBER:
-        rule = (f"{rules.along_member_pitch_in:g} in o.c. along {walls} running under a "
-                "parallel member, fencepost at both ends")
+        rule = (f"{rules.along_member_pitch_in:g} in o.c. along {walls} under a parallel "
+                "member, one at each end")
     else:
-        rule = (f"one blocked bay per {group['spacing_in']:g} in framing module along "
-                f"{walls} running BETWEEN parallel members, fencepost at both ends. The "
-                "blocking itself is framed by ``resolve/floor_blocking.py`` over a FLOOR "
-                "and is billed with the deck's own members; over a ROOF it is not carried")
-    return (f"{rule}. {length}, at the {group['condition']} this wall frames — the "
-            "condition the part's own published row is for. The SPACING this schedule "
-            "implies is graded against Simpson's own maximum-spacing table by "
-            "`structural.partition_deflection_spacing`; nothing here grades a demand, "
-            "because this engine carries no interior-partition out-of-plane load to grade")
+        rule = (f"one blocked bay per {group['spacing_in']:g} in module along {walls} "
+                "between parallel members, one at each end; the blocking is framed with "
+                "the floor over a FLOOR, and over a ROOF it is not carried")
+    return (f"{rule}. Length {length}, at the {group['condition']}. Spacing within "
+            "Simpson's published maximum.")
+
+
+def _refusal_note(refusals: list[str]) -> str:
+    """``TAG: reason`` refusals, grouped by the reason's first clause."""
+    by_reason: dict[str, list[str]] = {}
+    for refusal in sorted(refusals):
+        tag, _, reason = refusal.partition(": ")
+        short = reason.split(", so ")[0].split(". ")[0]
+        by_reason.setdefault(short, []).append(tag)
+    return " NOT BILLED: " + "; ".join(f"{', '.join(tags)} ({reason})"
+                                         for reason, tags in by_reason.items()) + "."

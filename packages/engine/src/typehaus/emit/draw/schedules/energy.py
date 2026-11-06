@@ -15,10 +15,12 @@ posted at a panel is a statement somebody is answerable for.
 
 from __future__ import annotations
 
+import textwrap
 from typing import TYPE_CHECKING
 
 from typehaus.emit.draw.schedules.tables import _add_table
 from typehaus.emit.draw.sheet_writer import schedule_sheet, section
+from typehaus.emit.draw.typography import wrap_columns_for
 from typehaus.resolve.model import ResolvedModel
 
 if TYPE_CHECKING:  # pragma: no cover — annotations only
@@ -75,7 +77,7 @@ def _write_energy_sheet(pdf, model: ResolvedModel, number: str, name: str,
         section(fig, 0.46, 0.455, "ENVELOPE AIR LEAKAGE — N1102.4.1.2")
         leakage = air_leakage_summary(prefs)
         _add_table(fig, _air_leakage_rows(leakage),
-                   ("", ""), bbox=(0.46, 0.28, 0.50, 0.15))
+                   ("Item", "Value"), bbox=(0.46, 0.28, 0.50, 0.15))
         fig.text(0.04, 0.24, _AIR_LEAKAGE_NOTE, fontsize=7.5, family="monospace", va="top")
 
 
@@ -120,7 +122,7 @@ def _write_ventilation_sheet(pdf, model: ResolvedModel, number: str, name: str,
     vent = whole_house_summary(model, model.plan)
     with schedule_sheet(pdf, model, number, name) as fig:
         section(fig, 0.04, 0.925, "WHOLE-HOUSE VENTILATION — MN 1322 R403.5")
-        _add_table(fig, _whole_house_rows(vent), ("", "", ""),
+        _add_table(fig, _whole_house_rows(vent), ("Item", "Value", "Basis"),
                    bbox=(0.04, 0.745, 0.60, 0.16))
 
         section(fig, 0.68, 0.925, "LOCAL EXHAUST — R303.3 / M1507.3")
@@ -160,18 +162,19 @@ def _write_ventilation_sheet(pdf, model: ResolvedModel, number: str, name: str,
                           + (f" · SHR {shr:.2f}" if shr is not None else "")))
         load_rows.append(("TOTAL COOLING (with latent)", "", f"{load.cooling_tons:.1f} tons"))
         _add_table(fig, load_rows, ("Component", "Area (ft2)", "UA / total"),
-                   bbox=(0.04, 0.13, 0.42, 0.30))
+                   bbox=(0.04, 0.165, 0.42, 0.265))
         # Caveats and unknowns are printed apart on purpose: an unknown is an INPUT this
         # model does not have, and a caveat is a TERM the method knowingly does not carry.
         # A reader who cannot tell them apart cannot tell a gap they could close from one
-        # they cannot.
-        fig.text(0.04, 0.115,
-                 "NOT A MANUAL J — a transparent block-load estimate only."
-                 + (" Unknown inputs: " + ", ".join(load.unknown_inputs)
-                    if load.unknown_inputs else "")
-                 + (" Terms not carried: " + " ".join(load.cooling_caveats)
-                    if load.cooling_caveats else ""),
-                 fontsize=7, family="sans-serif", wrap=True)
+        # they cannot. Wrapped to the table's width, clear of the certificate beside it.
+        note = ("NOT A MANUAL J — a transparent block-load estimate only."
+                + (" Unknown inputs: " + ", ".join(load.unknown_inputs)
+                   if load.unknown_inputs else "")
+                + (" Terms not carried: " + " ".join(load.cooling_caveats)
+                   if load.cooling_caveats else ""))
+        fig.text(0.04, 0.155, textwrap.fill(note, wrap_columns_for(
+                     0.42 * fig.get_size_inches()[0], 6.5)),
+                 fontsize=6.5, family="monospace", va="top")
 
         _draw_certificate(fig, model, prefs, vent, air_leakage_summary(prefs))
 

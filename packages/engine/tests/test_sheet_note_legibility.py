@@ -27,8 +27,9 @@ def test_catlin_passes_on_every_bound_note(catlin_model_ro):
     assert findings
     bad = [f for f in findings if f.result is not Result.PASS]
     assert not bad, [f.message for f in bad]
-    # Ten files: bound transition notes plus the rake and new MDO tie-relief note.
-    assert len(findings) == 10
+    # Twelve files: bound transition notes plus the rake and new MDO tie-relief note; the
+    # B&B door and garage window halves of their opening keys took a file each (O4-103).
+    assert len(findings) == 12
 
 
 def test_a_note_file_nothing_binds_is_out_of_subject(catlin_model_ro):

@@ -203,7 +203,9 @@ def roof_layer_ladder(roof, bands, crop, z_at, ladder_labels,
         point = _point_on_band(band_outlines, probe_in)
         if point is None:
             continue
-        text = fit_to_room(f'{name} {inches_fraction(thickness[name])}', room, scale)
+        depth = thickness[name]  # 0: no single depth to print (a truss)
+        text = fit_to_room(f'{name} {inches_fraction(depth)}' if depth > 0 else name,
+                           room, scale)
         entries.append(LabelSpec(text=text, target=point, key=(roof.uid, name)))
     if not entries:
         return
@@ -250,3 +252,35 @@ def emit_ladders(b, ladder_labels, scale: float | None = None) -> None:
         b.add(node)
         if scale is None:
             b.add_annotation_request(LadderRequest(f"layer-rung:{index}", node))
+
+
+def finished_floor_tier(model, plane, levels, crop=None):
+    """Each storey's FLOOR datum gains the finished floors of the rooms this cut crosses
+    (F3-106): the datum is the top of joists or slab, and trades set from the finish."""
+    from dataclasses import replace
+
+    from typehaus.emit.draw.elevation_annotate import feet_inches_signed
+    from typehaus.resolve.geometry_slice import ring_intervals
+    from typehaus.resolve.room_floor import room_finished_floor_elevation
+
+    floors = {f"{primary.tag.upper()} FLOOR": primary.tag for primary, _ in model.plan.levels()}
+    finishes: dict[str, dict[str, float]] = {}
+    for room in model.rooms:
+        spans = ring_intervals(tuple(room.clear_face), plane)
+        z = room_finished_floor_elevation(model, room) if spans else None
+        if crop is not None and z is not None:  # a floor the cropped cut draws
+            (u0, z0), (u1, z1) = crop
+            spans = [s for s in spans if s[1] > min(u0, u1) and s[0] < max(u0, u1)]
+            z = z if spans and min(z0, z1) <= z <= max(z0, z1) else None
+        if z is not None:
+            finishes.setdefault(room.storey, {})[feet_inches_signed(z)] = z
+    out = []
+    for level in levels:
+        datum = feet_inches_signed(level.z_m)
+        found = {text: z for label in level.labels if label in floors
+                 for text, z in finishes.get(floors[label], {}).items() if text != datum}
+        if found:
+            texts = sorted(found, key=found.get)[:3]
+            level = replace(level, notes=level.notes + ("FIN. FLR " + " / ".join(texts),))
+        out.append(level)
+    return out

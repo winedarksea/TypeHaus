@@ -4,7 +4,7 @@ A-601 and A-602 carry the energy columns a plan reviewer looks for first: every 
 read off the *type*, and a type that states nothing prints ``—``. An assumed U-factor or a
 defaulted SHGC on a schedule is a compliance claim nobody made.
 
-Lengths print through ``feet_inches_8th`` (jamb and frame to 1/16"), and the tables flow at
+Lengths print through ``feet_inches_8th`` (RO, jamb and frame to 1/16"), and the tables flow at
 one legible size across continuation sheets (``paged_tables``) rather than shrinking to fit.
 """
 
@@ -113,11 +113,11 @@ def _door_row(model, opening, spec, marks, hardware) -> tuple[str, ...]:
     sizing = opening.sizing
     u_text, shgc, vt, operation, tempered = energy_columns(spec, True)
     if sizing is None:
-        nominal, unit, rough = "—", "—", size_pair(opening.width_m, opening.height_m)
+        nominal, unit, rough = "—", "—", size_pair(opening.width_m, opening.height_m, 16)
     else:
         nominal = size_pair(sizing.nominal_w_m, sizing.nominal_h_m)
         unit = size_pair(*(sizing.installed_unit or (None, None)))
-        rough = size_pair(sizing.rough_w_m, sizing.rough_h_m)
+        rough = size_pair(sizing.rough_w_m, sizing.rough_h_m, 16)  # the catalog's 1/16"
     # 1/16": a published clear (Therma-Tru 33-5/16") must not round up at 1/8".
     clear = (size_pair(sizing.clear_w_m, sizing.clear_h_m, 16)
              if sizing is not None and sizing.clear_w_m is not None else "—")
@@ -131,7 +131,8 @@ def _window_row(opening, spec, marks) -> tuple[str, ...]:
     u_text, shgc, vt, operation, tempered = energy_columns(spec, False)
     is_ro = opening.kind == "rough_opening"
     return (marks.get(opening.tag, "—"), opening.tag, "Rough opening" if is_ro else "Window",
-            opening.type_ref or "RO", operation, size_pair(opening.width_m, opening.height_m),
+            opening.type_ref or "RO", operation,
+            size_pair(opening.width_m, opening.height_m, 16),
             _frame_size_text(window_frame_dimensions(opening), is_ro), _fi(opening.sill_m),
             _window_clear_text(opening, spec), u_text, shgc, vt, tempered)
 

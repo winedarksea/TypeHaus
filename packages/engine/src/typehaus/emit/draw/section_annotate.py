@@ -55,6 +55,7 @@ from typehaus.emit.draw.scene import (
     SceneBuilder,
     Text,
 )
+from typehaus.emit.draw.section_labels import finished_floor_tier
 from typehaus.emit.draw.typography import (
     CHAR_ASPECT,
     TAG_PT,
@@ -139,7 +140,7 @@ def annotate_building_section(scene: Scene, model: ResolvedModel, plane: CutPlan
     ground_u1, caption = _emit_grade(b, model, plane, bounds, spans)
     # The ground line is part of the *drawing*; the datum column starts clear of it, not of
     # the building. Without this the column stood in the middle of the hatched earth.
-    _emit_level_column(b, model, max(bounds[2], ground_u1))
+    _emit_level_column(b, model, max(bounds[2], ground_u1), plane, crop)
     _emit_room_names(b, model, plane, crop)
     # The callout column keeps to the building's own edge — the ground line runs on past it
     # — but the "GRADE" caption sits in that band, so it is an obstacle to dodge, not a
@@ -337,7 +338,8 @@ def _clip_profile(points: list[tuple[float, float]], u_lo: float,
             (u_hi, interpolate_profile(points, u_hi))]
 
 
-def _emit_level_column(b: SceneBuilder, model: ResolvedModel, edge_u: float) -> None:
+def _emit_level_column(b: SceneBuilder, model: ResolvedModel, edge_u: float,
+                       plane: CutPlane, crop=None) -> None:
     """The level datum ladder off the drawing's right edge — the sheet's missing half.
 
     Every storey floor and top-of-plate, grade and the ridge, coincident lines merged, each
@@ -345,7 +347,7 @@ def _emit_level_column(b: SceneBuilder, model: ResolvedModel, edge_u: float) -> 
     substance to the elevations' ladder because it is the same ladder: only the column
     positions and the lettering size are the section's own.
     """
-    levels = merged_levels(model)
+    levels = finished_floor_tier(model, plane, merged_levels(model), crop)
     if not levels:
         return
     gap = _COLUMN_GAP_IN * M_PER_IN

@@ -249,6 +249,21 @@ def test_garage_foundation_draws_slab_thermal_break(catlin_model):
     assert not any(getattr(n, "node", None) == "symbol" for n in scene.nodes)
 
 
+@pytest.mark.parametrize("key, band", [
+    ("storey_stack:rim:EXT_2X6", True),
+    # The garage stem sits at the house deck's height but carries no floor (F3-105).
+    ("storey_stack:rim:GARAGE_ICF_6|GARAGE_WALL_2X6", False),
+    # Cut down a joist bay: no member at the cut, so no band to name (F3-112).
+    ("storey_stack:rim:INT_2X6_BRG_MUDROOM_UPPER_GWB|INT_2X6_BRG_PLUMBING_HALF", False),
+])
+def test_rim_band_names_only_a_floor_in_the_cut(catlin_model, key, band):
+    derived = next(d for d in derive_detail_slices(catlin_model) if d.key == key)
+    scene, _ = build_detail(catlin_model, derived)
+    texts = [str(getattr(n, "content", "")) for n in scene.nodes]
+    assert any("FLOOR BAND" in t for t in texts) is band
+    assert ("detail-component:rim-air-barrier" in _tags(scene)) is (band and "EXT" in key)
+
+
 def test_birdsmouth_rafter_reads_as_a_notched_member(catlin_model):
     """The eave rafter is a notched member seated on the plate — six points, not five.
 

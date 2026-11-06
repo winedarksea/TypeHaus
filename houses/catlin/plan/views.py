@@ -52,13 +52,14 @@ _SERVICE_RISERS = _risers(tuple("ST-G-SERVICE:riser:" + str(i) for i in range(6)
                           inch(578), inch(586), 3)
 
 DETAIL_SLICES = [
-    # West basement wall + footing + slab edge (cut at y=18', the mid-height bearing
-    # tie-in) — crop isolates the west perimeter, away from the sunken garden.
+    # West basement wall + footing + slab edge, cut at y=17'-0" through W-B-W2: clear of
+    # W-B-CW's axis (y=18', which drew that partition lengthwise as a solid block) and
+    # between the y=16'/17'-4" joist and stud lines.
     Slice(uid="CVD901AAAA", tag="SL-D-FNDN", kind=SliceKind.DETAIL, title="Foundation detail",
-         cut_origin=pt(ft(0), ft(18)), cut_direction="x",
+         cut_origin=pt(ft(0), ft(17)), cut_direction="x",
          dimensions=(
              _z("storey:basement", "storey:main", inch(30), "{} fl. to fl."),
-             _z("W-B-W1:bottom", "W-B-W1:top", inch(14), "{} fdn wall")),
+             _z("W-B-W2:bottom", "W-B-W2:top", inch(14), "{} fdn wall")),
          crop=(pt(ft(-2), ft(-12)), pt(ft(3), ft(1))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(2))),
     # FS-M-NE's open-web trusses seated on W-B-E1 (decision #112): the 3" seat, the PT
@@ -70,7 +71,7 @@ DETAIL_SLICES = [
          cut_origin=pt(ft(0), ft(15, 8)), cut_direction="x",
          dimensions=(
              _z("FS-M-NE:bottom", "FS-M-NE:top", inch(408), "{} truss"),) + _chain(
-             "u", ("W-B-E1:left", "W-B-E1:right"), inch(-20), ("{} fdn wall",)),
+             "u", ("W-B-E1:left", "W-B-E1:right"), inch(-20), ("{} fdn wall + CI",)),
          crop=(pt(ft(33), ft(-2)), pt(ft(38, 6), ft(1, 6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(2))),
     # Typical exterior wall section — south wall, full height (cut x=10', through
@@ -92,14 +93,15 @@ DETAIL_SLICES = [
              ("{} bsmt", "{} main", "{} second", "{} to plate")),
          crop=(pt(ft(-2), ft(-10)), pt(ft(6), ft(30)))),
     # Ridge beam connection — cut perpendicular to the N-S ridge (direction="x" at
-    # y=18') so the section shows the ridge's peak, cropped past the beam band at
-    # 31'-32' (ridge_z_m = 9.7652 m = 32.04'). The beam's soffit is at 30.87', well inside
-    # the 26'-33' crop.
+    # y=18') so the section shows the ridge's peak; the 26'-33' crop holds the beam band
+    # (soffit 28'-9 5/32", peak 30'-3 13/16"). The dimension runs from W-A-C2M's top (the
+    # beam soffit) to the roof's own cut top, the finished surface at the peak: A-301's
+    # RIDGE EL., not its T.O. RAFTER.
     Slice(uid="CVD904AAAA", tag="SL-D-RIDGE", kind=SliceKind.DETAIL,
          title="Ridge beam connection",
          cut_origin=pt(ft(0), ft(18)), cut_direction="x",
          dimensions=(
-             _z("W-A-C2M:top", "RF-HOUSE:top", inch(232), "{} plate to ridge"),),
+             _z("W-A-C2M:top", "RF-HOUSE:top", inch(232), "{} plate to fin. ridge"),),
          crop=(pt(ft(10), ft(26)), pt(ft(26), ft(33)))),
     # Sauna room section — transverse cut across the sauna at y=6'. The room rotated onto
     # the garden wall on 2026-09-05 and is now 12'-2" east-west (x 5'-3 13/16"..17'-5 3/4"),

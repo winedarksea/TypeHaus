@@ -14,6 +14,16 @@ from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.geometry_slice import CutPlane, slice_solid
 
 
+def _tape(length_m: float) -> str:
+    """Inches to the 1/16" a tape reads, rounded DOWN: a minimum never overstates (D2-112)."""
+    sixteenths = math.floor(length_m / M_PER_IN * 16 + 1e-6)
+    whole, fraction = divmod(sixteenths, 16)
+    if not fraction:
+        return f'{whole}"'
+    common = math.gcd(fraction, 16)
+    return f'{whole} {fraction // common}/{16 // common}"'
+
+
 def emit_winder_framing(builder, stair, transform=lambda p: tuple(v / M_PER_IN for v in p),
                         tier=None):
     """Actual panel seams and fitted framing outlines, with selectable box tiers."""
@@ -77,14 +87,13 @@ def build_winder_detail(model, stair_tag):
         p0, p1 = local(a), local(c)
         b.add(ArchDimension(kind="aligned", ends=(NamedPoint(xy=p0), NamedPoint(xy=p1)),
                             p0=p0, p1=p1, offset=3,
-                            text=f'W{index + 1} '
-                                 f'{measured.walkline_depths_m[index] / M_PER_IN:.3f}"'))
+                            text=f'W{index + 1} {_tape(measured.walkline_depths_m[index])}'))
     b.add(Text(anchor=(0, extent + 6), content=f"{stair.tag} — FINISHED OAK / 12-INCH WALKLINE",
                height=2))
     b.add(Text(anchor=(0, -8), content="W1–W3: " + ", ".join(
-        f'{v / M_PER_IN:.3f}"' for v in measured.walkline_depths_m), height=1.5))
+        _tape(v) for v in measured.walkline_depths_m), height=1.5))
     b.add(Text(anchor=(0, -12), content="MINIMUM CLEAR DEPTH: " + ", ".join(
-        f'{v / M_PER_IN:.3f}"' for v in measured.narrow_depths_m), height=1.5))
+        _tape(v) for v in measured.narrow_depths_m), height=1.5))
     for tier in range(stair.winder_count):
         offset = (pitch if tier == 0 else (tier - 1) * pitch,
                   0 if tier == 0 else -pitch - 12)

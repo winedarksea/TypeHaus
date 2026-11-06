@@ -235,7 +235,7 @@ def test_the_blocking_row_says_where_the_blocking_IS_framed(sdpw_rows) -> None:
     """
     row = next(r for r in sdpw_rows
                if r["scope"] == "partition top plate, blocking between parallel members")
-    assert "floor_blocking" in row["basis"]
+    assert "framed with the floor" in row["basis"]
     assert "over a ROOF it is not carried" in row["basis"]
 
 

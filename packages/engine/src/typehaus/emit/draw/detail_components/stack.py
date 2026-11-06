@@ -73,7 +73,7 @@ def rim_band_air_seal(model, walls, crop, direction, station) -> list[IRNode]:
     is_outboard_high = outboard_is_high(upper, direction, station)
     if is_outboard_high is None:
         return []
-    band = floor_band_at(model, upper.z0_m)
+    band = floor_band_at(model, upper.z0_m, direction, station, crop)
     if band is None:
         return []
     band_z0, band_z1 = band[0] / M_PER_IN, band[1] / M_PER_IN

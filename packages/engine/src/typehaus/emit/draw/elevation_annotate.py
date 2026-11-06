@@ -48,6 +48,7 @@ from typehaus.emit.draw.scene import (
 from typehaus.emit.draw.typography import TEXT_PT, feet_inches_8th, model_in_per_pt
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
+from typehaus.server.building_height_summary import finished_roof_elevations
 
 #: The symmetric band a **section** captures spot elevations in, either side of the cut
 #: line. A cut has soil on both sides of it, so 10' each way is the right reach there.
@@ -223,6 +224,8 @@ class Level:
 
     z_m: float
     labels: tuple[str, ...]
+    #: Sub-captions printed under the elevation (the ridge's "T.O. RAFTER", a FIN. FLR tier).
+    notes: tuple[str, ...] = ()
 
 
 def emit_sheet_annotations(b: SceneBuilder, model: ResolvedModel,
@@ -300,7 +303,7 @@ def emit_level_markers(b: SceneBuilder, levels: list[Level],
 
 def merged_levels(model: ResolvedModel) -> list[Level]:
     """Grade, each storey's floor and top-of-plate, and the ridge — coincident lines merged."""
-    named: list[tuple[str, float]] = [("GRADE", grade_datum(model))]
+    named: list[tuple[str, float, tuple[str, ...]]] = [("GRADE", grade_datum(model), ())]
     # One caption per LEVEL, not per storey. A storey is a datum within one building, so four
     # of catlin's stand on the basement's: naming each produced the caption "BASEMENT FLOOR /
     # G-FOUNDATION FLOOR / COURT-LOW FLOOR / YARD-LOW FLOOR", which says four times over what
@@ -310,7 +313,7 @@ def merged_levels(model: ResolvedModel) -> list[Level]:
     # but one a section CUT THROUGH THAT BUILDING should caption (court walls topped at grade
     # printed "BASEMENT T.O. PLATE 0'-1"").
     for primary, _here in model.plan.levels():
-        named.append((f"{primary.tag.upper()} FLOOR", primary.elevation.meters))
+        named.append((f"{primary.tag.upper()} FLOOR", primary.elevation.meters, ()))
         own = [wall for wall in model.walls if wall.storey == primary.tag]
         platform = [w.plate_top_z_m for w in own if w.plate_top_z_m is not None]
         # Under a pitched roof no wall is platform-framed; the eave plate is then the LOWEST
@@ -318,20 +321,25 @@ def merged_levels(model: ResolvedModel) -> list[Level]:
         flat = [w.z1_m for w in own if w.top_z0_m is None and w.top_z1_m is None]
         plate = max(platform) if platform else (min(flat) if flat else None)
         if plate is not None:
-            named.append((f"{primary.tag.upper()} T.O. PLATE", plate))
+            named.append((f"{primary.tag.upper()} T.O. PLATE", plate, ()))
     if model.roofs:
-        named.append(("RIDGE", max(roof.ridge_z_m for roof in model.roofs)))
+        # The finished roof surface at the peak (F4-104), the rafter-top plane under it.
+        peaks = [(finished_roof_elevations(model, roof)[1], roof.ridge_z_m)
+                 for roof in model.roofs]
+        surface, rafter = max(peaks)
+        named.append(("RIDGE", surface, (f"T.O. RAFTER {feet_inches_signed(rafter)}",)))
 
     out: list[Level] = []
-    for label, z in sorted(named, key=lambda item: item[1]):
+    for label, z, notes in sorted(named, key=lambda item: item[1]):
         # Merge only what prints as one elevation. Two datums an inch apart *are* two datums,
         # and folding them under one "EL." would state a number that is wrong for one of
         # them; the dodge below is what keeps their labels off each other.
         if out and feet_inches_signed(z) == feet_inches_signed(out[-1].z_m):
             previous = out.pop()
-            out.append(Level(z_m=previous.z_m, labels=previous.labels + (label,)))
+            out.append(Level(z_m=previous.z_m, labels=previous.labels + (label,),
+                             notes=previous.notes + notes))
             continue
-        out.append(Level(z_m=z, labels=(label,)))
+        out.append(Level(z_m=z, labels=(label,), notes=notes))
     return out
 
 
@@ -339,8 +347,8 @@ def level_text(level: Level, *, stacked: bool = False) -> str:
     """The datum caption; ``stacked`` puts each name and the elevation on its own line."""
     elevation = f"EL. {feet_inches_signed(level.z_m)}"
     if stacked:
-        return "\n".join((*level.labels, elevation))
-    return " / ".join(level.labels) + f"  {elevation}"
+        return "\n".join((*level.labels, elevation, *level.notes))
+    return "\n".join((" / ".join(level.labels) + f"  {elevation}", *level.notes))
 
 
 def label_at(u: float, z: float, text: str, height_pt: float,

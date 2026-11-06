@@ -17,12 +17,14 @@ actually known: a chain carrying a light-frame wall on the building's exterior e
 
 from __future__ import annotations
 
+from os.path import commonprefix
+
 from typehaus.checks.structural.bracing_eval import LineEvaluation, evaluate_line
 from typehaus.checks.structural.sill_bearing import sill_anchor_notes
 from typehaus.emit.draw._shared import emit_ghost_walls, to_in
 from typehaus.emit.draw.annotation_requests import add_line_label
 from typehaus.emit.draw.lineweights import CUT, CUT_HEAVY
-from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Text
+from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder
 from typehaus.emit.draw.structural_dimensions import (
     Tier,
     emit_structural_tiers,
@@ -75,7 +77,7 @@ def build_braced_wall_plan(model, storey: str) -> Scene:
     emit_ghost_walls(b, model, storey)
     lines = braced_wall_lines(model, storey)
     panels, unplaced = resolved_braced_wall_panels(model, storey, lines)
-    notes: list[str] = []
+    evaluations: list[LineEvaluation] = []
     for line in lines:
         b.add(Polyline(points=(to_in(line.p0), to_in(line.p1)),
                        layer=BWL_LAYER, lineweight=CUT, tag=line.tag))
@@ -89,9 +91,10 @@ def build_braced_wall_plan(model, storey: str) -> Scene:
         if line.kind != KIND_BRACED:
             continue
         evaluation = evaluate_line(model, line, lines, panels)
-        notes.append(_req_prov(evaluation))
+        evaluations.append(evaluation)
         for grade in evaluation.panels:
             _draw_panel(b, line, grade)
+    notes = _req_prov_notes(evaluations)
     notes.extend(sill_anchor_notes(model, storey))
     for panel in unplaced:
         notes.append(f"{panel.tag}: {panel.reason} (wall_ref {panel.wall_ref})")
@@ -99,15 +102,21 @@ def build_braced_wall_plan(model, storey: str) -> Scene:
     line_xs, line_ys = line_stations((line.p0, line.p1) for line in lines)
     tiers = [Tier("BWL C/C", tuple(line_xs), tuple(line_ys)),
              overall_tier("O/A FACE WALL", walls)]
-    # Framed by ``compose_sheet`` from its scene bounds, which a dimension does not enter:
-    # the notes go below the tiers, so their extent is what frames the tiers.
-    reach = emit_structural_tiers(b, tiers, _TIER_SCALE)
-    x, y = (0.0, -48.0) if reach is None else (min(0.0, reach[0]), min(-48.0, reach[1] - 12.0))
-    for note in (*notes, _CONDITIONS):
-        b.add(Text(anchor=(x, y), content=note, height_pt=DIM_TEXT_PT, layer=BWL_LAYER,
-                   align="left"))
-        y -= 12.0
-    return b.build()
+    emit_structural_tiers(b, tiers, _TIER_SCALE)
+    # The notes print in the sheet's wrapped notes panel (F1-007: as model text they ran
+    # off the border). The tiers stand outside the bounds a frame fits, so it reserves them.
+    scene = b.build().model_copy(update={"notes": (*notes, _CONDITIONS)})
+    return _framed(scene)
+
+
+def _framed(scene: Scene) -> Scene:
+    """``scene`` with a frame on the set's paper that leaves room for its tiers."""
+    from typehaus.emit.draw.dimension_rows import dimension_reserve
+    from typehaus.emit.draw.sheet_writer import current_paper, frame_for_scene
+
+    frame = frame_for_scene(scene, current_paper(),
+                            reserve=lambda scale: dimension_reserve(scene, scale))
+    return scene if frame is None else scene.model_copy(update={"frame": frame})
 
 
 def _draw_panel(b: SceneBuilder, line: BracedWallLine, grade) -> None:
@@ -135,15 +144,33 @@ def _draw_panel(b: SceneBuilder, line: BracedWallLine, grade) -> None:
                    priority=50, preferred_side=1)
 
 
-def _req_prov(evaluation: LineEvaluation) -> str:
-    """The block an MNSPECT braced-wall inspection asks for, with the rows read."""
-    required = evaluation.required_ft
-    if required is None:
-        return f"{evaluation.line.tag}: REQ NOT DETERMINED — {'; '.join(evaluation.gaps)}"
-    rows = " | ".join(factor.row for factor in evaluation.factors)
-    base = evaluation.base.row if evaluation.base else ""
-    return (f"{evaluation.line.tag}: REQ {required:.2f}' / PROV {evaluation.provided_ft:.2f}'"
-            f" — {base} | {rows}")
+def _req_prov_notes(evaluations: list[LineEvaluation]) -> list[str]:
+    """The block an MNSPECT braced-wall inspection asks for, with the rows read.
+
+    A row every graded line read (and the leading words of the base row they share) prints
+    once; the lines that read the same remaining rows then share one note, each with its
+    own REQ / PROV.
+    """
+    graded = [e for e in evaluations if e.required_ft is not None]
+    bases = {id(e): e.base.row.split(", ") if e.base else [] for e in graded}
+    common = len(commonprefix(list(bases.values()))) if graded else 0
+    shared = [f.row for f in graded[0].factors
+              if all(f.row in {g.row for g in e.factors} for e in graded)] if graded else []
+    head = ", ".join(next(iter(bases.values()), [])[:common])
+    notes = ([f"EVERY LINE READS: {' | '.join(r for r in (head, *shared) if r)}"]
+             if head or shared else [])
+    groups: dict[str, list[str]] = {}
+    for e in evaluations:
+        if e.required_ft is None:
+            notes.append(f"{e.line.tag}: REQ NOT DETERMINED — {'; '.join(e.gaps)}")
+            continue
+        own = [", ".join(bases[id(e)][common:]),
+               *(f.row for f in e.factors if f.row not in shared)]
+        groups.setdefault(" | ".join(r for r in own if r), []).append(
+            f"{e.line.tag}: REQ {e.required_ft:.2f}' / PROV {e.provided_ft:.2f}'")
+    notes.extend((f"{rows} — " if rows else "") + "; ".join(results)
+                 for rows, results in groups.items())
+    return notes
 
 
 #: The R602.10.8 conditions a PASS on this sheet rests on and this model does not carry.

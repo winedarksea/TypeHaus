@@ -88,17 +88,18 @@ def footing_strings(model, wall, crop, direction: str, station: float,
                  height_pt=6.5, layer="A-ANNO-DIMS")]
 
 
-def band_strings(model, lower, junction_z_m: float, crop) -> list[IRNode]:
+def band_strings(model, lower, junction_z_m: float, crop, direction: str,
+                 station: float) -> list[IRNode]:
     """The floor band at a rim, joists plus subfloor (F3-004), as a note under the drawing.
 
     A vertical string here lands on the layer ladder or the continuity column, whichever
-    side it takes; the note beside the caption overprints neither."""
-    band = floor_band_at(model, junction_z_m)
+    side it takes; the note beside the caption overprints neither. The subfloor is the band's
+    own floor's sheet: the porch's 15/16" deck and the house's 3/4" share a datum."""
+    band = floor_band_at(model, junction_z_m, direction, station, crop)
     if band is None or lower is None:
         return []
-    z0, z1 = band
-    deck = next((f for f in model.floors
-                 if f.deck_z0_m is not None and abs(f.deck_z0_m - z1) < 0.01), None)
+    z0, z1, floor = band
+    deck = floor if floor.deck_outline and abs(floor.deck_z0_m - z1) < 0.01 else None
     top = deck.deck_z1_m if deck is not None else z1
     text = f"FLOOR BAND {dim_text((top - z0) / M_PER_IN)}: {dim_text((z1 - z0) / M_PER_IN)} JOIST"
     if deck is not None:
@@ -131,7 +132,7 @@ def dimension_strings(model, derived, crop, direction, station,
     if derived.condition.kind.value == "storey_stack" and "rim" in derived.key.split(":"):
         lower = min(walls, key=lambda w: w.z0_m) if walls else None
         if lower is not None:
-            nodes += band_strings(model, lower, lower.z1_m, crop)
+            nodes += band_strings(model, lower, lower.z1_m, crop, direction, station)
     footing_wall = concrete if concrete is not None else framed
     nodes += footing_strings(model, footing_wall, crop, direction, station,
                              note=derived.condition.kind.value == "wall_foundation")

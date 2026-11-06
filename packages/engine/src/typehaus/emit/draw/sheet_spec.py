@@ -107,6 +107,9 @@ def _derived_detail_title(derived: DerivedDetail, model: ResolvedModel | None = 
     pattern = getattr(derived.transition, "condition_pattern", "") or ""
     if derived.transition is not None and not pattern.startswith(kind):
         title = f"{title} ({_KIND_WORDS.get(kind, kind.replace('_', ' '))})"
+    # One opening key split by kind (O4-103): say which half, unless its binding already does.
+    if derived.opening_kind and f":{derived.opening_kind}:" not in pattern:
+        pair = f"{pair} · {derived.opening_kind}" if pair else derived.opening_kind
     return f"{title} · {pair}" if pair else title
 
 

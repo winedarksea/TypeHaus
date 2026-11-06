@@ -117,12 +117,12 @@ def test_per_condition_overrides_curate_the_permit_sheet_set(catlin_model_ro,
                                                              catlin_sheet_index):
     """The interior rim/foundation keys are unstarred while their siblings stay primary."""
     rows = {r["key"]: r for r in detail_index(catlin_model_ro)}
-    # TR-CATLIN-EAVE is the live case since the 2026-09-08 star reduction: `star=False`
-    # with two `starred_conditions` named. The house eave and the garage eave are two
-    # different drawings; an interior partition dying into the roof deck is not an eave at
-    # all and is drawn on the framing plan.
-    interior = "wall_roof:INT_2X4_PARTITION_HALF|ROOF"
-    exterior = "wall_roof:EXT_2X6|ROOF"
+    # TR-CATLIN-FOUNDATION is the live case: `star=False` with named `starred_conditions`.
+    # The perimeter basement wall under the framed wall is in the permit set; the garden
+    # curb upstand in the sunken court is not an envelope crossing anybody inspects.
+    # (TR-CATLIN-EAVE was until E1-107 split the interior partitions off it.)
+    interior = "wall_foundation:EXT_2X6_BOARD_BATTEN|GARDEN_CURB_6"
+    exterior = "wall_foundation:BASEMENT_10|EXT_2X6"
     # Same transition, same pattern-wide star, opposite effective answers.
     assert rows[interior]["transition"] == rows[exterior]["transition"]
     assert rows[interior]["transition_star"] is rows[exterior]["transition_star"] is False
@@ -132,7 +132,7 @@ def test_per_condition_overrides_curate_the_permit_sheet_set(catlin_model_ro,
     derived = derive_detail_slices(catlin_model_ro)
     starred = {d.key for d in derived if d.transition.stars(d.key)}
     assert exterior in starred and interior not in starred
-    # Every eave condition carries the same pattern-wide star, yet only some are in the
+    # Every condition on it carries the same pattern-wide star, yet only some are in the
     # permit set — which is the whole point: one binding, individually curated details.
     eaves = [d for d in derived if d.transition.tag == rows[interior]["transition"]]
     assert not any(d.transition.star for d in eaves)

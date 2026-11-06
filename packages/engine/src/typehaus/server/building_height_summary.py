@@ -36,7 +36,7 @@ def build_building_height_summary(model: ResolvedModel) -> dict[str, object]:
 def _roof_height_row(
     model: ResolvedModel, roof: ResolvedRoof, site_grade_m: float
 ) -> dict[str, float | str]:
-    finished_eave_m, finished_peak_m = _finished_roof_elevations(model, roof)
+    finished_eave_m, finished_peak_m = finished_roof_elevations(model, roof)
     return {
         "roof_tag": roof.tag,
         "midpoint_above_grade_m": round(
@@ -46,7 +46,7 @@ def _roof_height_row(
     }
 
 
-def _finished_roof_elevations(model: ResolvedModel, roof: ResolvedRoof) -> tuple[float, float]:
+def finished_roof_elevations(model: ResolvedModel, roof: ResolvedRoof) -> tuple[float, float]:
     """Return exterior finished eave and high-point elevations in meters.
 
     The resolved roof plane ends at the rafter top.  Every layer following the final

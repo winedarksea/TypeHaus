@@ -74,6 +74,12 @@ TRANSITIONS = (
                    Continuity(control="thermal", from_face="spray-foam-ext",
                               to_face="spray-foam-ext"),
                ), star=True),
+    # An interior partition under the roof is no eave (E1-107): no gutter, no water chain and
+    # no envelope claim, so no overlay and no continuity. Ahead of TR-CATLIN-EAVE, which is
+    # first-match; its INT_* sheet notes come from the same file.
+    Transition(uid="YX6CQ2WE4W", tag="TR-CATLIN-PARTITION-ROOF", title="Partition to roof",
+               condition_pattern="wall_roof:INT_*",
+               notes="notes/roof_wall_eave_detail.md"),
     # Eave water is two claims, not the foam's: field membrane -> strip-in over the eave
     # and gutter flanges -> eave leg under the Image II pan (GCP IWSDET-102 option 2, TL-15),
     # and the wall head, covered by gutter flange + eave leg. Air and thermal stay the foam's.
@@ -191,6 +197,13 @@ TRANSITIONS = (
                condition_pattern="opening_perimeter:EXT_*",
                notes="notes/outie_window_truss_detail.md", overlay="outie-window-truss",
                continuity=AIR_WATER_THERMAL, star=True),
+    # The doors on those walls (D-M-ENTRY, D-M-PORCH, D-S-BALCONY): an opening key holding
+    # both kinds derives a detail per kind, and the door half binds here for a door's notes
+    # (drip cap, not the window's K6 cap; a pan out past the cladding).
+    Transition(uid="VGVA9E8AKT", tag="TR-CATLIN-EXT-DOOR-OPENING", title="Exterior door opening",
+               condition_pattern="opening_perimeter:door:EXT_*",
+               notes="notes/exterior_door_opening_detail.md", overlay="outie-window-truss",
+               continuity=AIR_WATER_THERMAL, star=True),
     Transition(uid="CATR006AAAA", tag="TR-CATLIN-CONCRETE-OPENING", title="Concrete opening",
                condition_pattern="opening_perimeter:FOUNDATION_WALL_*_INT",
                notes="notes/sauna_basement_wall_detail.md", overlay="concrete-opening"),
@@ -245,6 +258,20 @@ TRANSITIONS = (
     Transition(uid="CATR009AAAA", tag="TR-CATLIN-GARAGE-OPENING", title="Garage opening",
                condition_pattern="opening_perimeter:GARAGE_WALL_2X6",
                notes="notes/garage_wall_detail_side.md", overlay="garage-opening",
+               continuity=(Continuity(control="air", from_face="stud-cavity",
+                                      to_face="stud-cavity"),
+                           Continuity(control="water", from_face="stud-cavity",
+                                      to_face="stud-cavity"),
+                           Continuity(control="vapor", from_face="stud-cavity",
+                                      to_face="stud-cavity"),
+                           Continuity(control="thermal", from_face="stud-cavity",
+                                      to_face="stud-cavity")),
+               star=True),
+    # WIN-G-N1/WIN-G-S1, the window half of the garage key (the doors keep the sheet above):
+    # its own notes, since the garage file's are the stem, slab and overhead door.
+    Transition(uid="XXQ85X2X0J", tag="TR-CATLIN-GARAGE-WINDOW", title="Garage window",
+               condition_pattern="opening_perimeter:window:GARAGE_WALL_2X6",
+               notes="notes/garage_window_detail.md", overlay="garage-opening",
                continuity=(Continuity(control="air", from_face="stud-cavity",
                                       to_face="stud-cavity"),
                            Continuity(control="water", from_face="stud-cavity",

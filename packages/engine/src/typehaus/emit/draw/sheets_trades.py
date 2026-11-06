@@ -8,6 +8,7 @@ from typehaus.emit.draw.drainageplan import build_drainage_plan, has_drainage_co
 from typehaus.emit.draw.electricalplan import build_electrical_plan, has_electrical_content
 from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
 from typehaus.emit.draw.lightingplan import build_lighting_plan, has_lighting_content
+from typehaus.emit.draw.paper import paper_for
 from typehaus.emit.draw.plan_enlarged import enlarged_groups, enlarged_plan_sheet, enlarged_title
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
 from typehaus.emit.draw.schedules import (
@@ -16,6 +17,7 @@ from typehaus.emit.draw.schedules import (
     _write_luminaire_schedule,
     _write_panel_schedule,
 )
+from typehaus.emit.draw.schedules.electrical import control_tables
 from typehaus.emit.draw.schedules.mechanical import (
     has_mechanical_schedule,
     mechanical_tables,
@@ -104,7 +106,9 @@ def trade_sheets(model: ResolvedModel, level_tags: list[str],
 
     if lighting_storeys:
         sheets.extend(_paged("E-602", "Luminaire schedule / lighting controls",
-                             _write_luminaire_schedule, 2, portrait=True, sets=FULL_ONLY))
+                             _write_luminaire_schedule,
+                             1 + page_count(control_tables(model), paper_for(paper, True)),
+                             portrait=True, sets=FULL_ONLY))
 
     if _has_data_content(model):
         sheets.append(SheetSpec("E-603", "Data / low-voltage schedule",

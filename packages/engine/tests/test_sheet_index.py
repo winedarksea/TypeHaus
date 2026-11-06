@@ -132,9 +132,14 @@ def test_the_permit_set_fits_what_a_plan_checker_will_read(catlin_sheet_index):
 
     85 -> 89 on 2026-11-05, owner decision: M-601, the duct and air terminal schedules of the
     DuctStandard (#114), 216 rows paged to M-601..M-601.3 on ledger. ARCH D needs one sheet.
+
+    89 -> 93 on 2026-11-06, four sheets (REPORT item 14, O4-103/O5-103): an opening key that
+    holds windows and doors derives a detail per kind. The B&B entry door gets its own
+    detail with its enlarged head and sill (A-514, .1, .2) and the garage windows one
+    (A-516); before, the doors were drawn under window notes or not at all.
     """
     permit = catlin_sheet_index(sets="permit")
-    assert len(permit) <= 89, [s.number for s in permit]
+    assert len(permit) <= 93, [s.number for s in permit]
     numbers = {s.number for s in permit}
     # What DSI's new-construction checklist asks for.
     assert {"G-001", "C-101", "S-001", "S-100", "S-101.1", "A-101", "A-201",
