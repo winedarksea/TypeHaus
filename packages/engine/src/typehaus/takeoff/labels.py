@@ -10,6 +10,7 @@ appended, never substituted, so the CSV still joins back to ``prices.toml``.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from fractions import Fraction
@@ -159,8 +160,6 @@ _FUNCTION_WORDS = ("insulation", "membrane", "sheathing", "cladding", "finish", 
 def _profile_label(profile: str) -> str:
     """``0.416667x4.14235 panel`` -> ``7/16" x 4 1/8" formed panel``; ``deck 11x1.5`` ->
     ``11" x 1 1/2" board``; lumber sizes pass through."""
-    import re
-
     m = re.fullmatch(r"(\d[\d.]*)x(\d[\d.]*) panel", profile)
     if m:
         return f"{_fraction_in(m.group(1))} x {_fraction_in(m.group(2))} formed panel"
@@ -186,6 +185,40 @@ def _fraction_in(value: object) -> str:
     if part:
         text = f"{text} {part}".strip()
     return f'{text}"'
+
+
+#: What an unqualified sawn member is cut from: the engine's own fallback
+#: (``resolve/assembly_material.solid_material_ref``). A yard cannot quote a bare "2x6".
+DEFAULT_LUMBER = "spf"
+#: The E grade the design values an EWP is checked against were published for: LVL by
+#: ``library/member_grades`` (Microllam 2.0E), 1 3/4" LSL by the TimberStrand 1.55E stringer
+#: table. A thickness nothing reads (an LSL stud) stays ungraded, never guessed.
+_EWP_GRADE: dict[tuple[str, float | None], str] = {("LVL", None): "2.0E", ("LSL", 1.75): "1.55E"}
+_PLIES = re.compile(r"(?:(\d+)-)?(.+)")
+_SAWN = re.compile(r"\d+x\d+")
+_EWP = re.compile(r"(\d[\d.]*)x(\d[\d.]*) (LVL|LSL|rim)")
+_JOIST = re.compile(r"(\d[\d.]*) (TJI \d+|floor truss)")
+
+
+def lumber_label(profile: str, material: object, labels: LabelIndex) -> str:
+    """``2x6 SPF No. 2 & Btr framing lumber``, ``2-ply 1 3/4" x 11 7/8" LVL 2.0E``.
+
+    A ``2x12:kdat`` stock profile names its own material; a bare sawn size is
+    :data:`DEFAULT_LUMBER`."""
+    stock, _, qualifier = profile.partition(":")
+    plies, size = _PLIES.fullmatch(stock).groups()  # type: ignore[union-attr]
+    material = material or qualifier or (DEFAULT_LUMBER if _SAWN.fullmatch(size) else None)
+    if m := _EWP.fullmatch(size):
+        width, depth, kind = m.groups()
+        grade = _EWP_GRADE.get((kind, float(width)), _EWP_GRADE.get((kind, None), ""))
+        size = (f"{_fraction_in(width)} x {_fraction_in(depth)} "
+                f"{'rim board' if kind == 'rim' else kind} {grade}").strip()
+    elif m := _JOIST.fullmatch(size):
+        size = f"{_fraction_in(m.group(1))} {m.group(2)}"
+    else:
+        size = _profile_label(size)
+    size = f"{plies}-ply {size}" if plies else size
+    return f"{size} {labels.material(material)}" if material else size
 
 
 def role_label(category: str) -> str:
@@ -254,8 +287,7 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         return str(g("name") or labels.types.get(bare) or "") or None
     if section == "framing":
         roles = ", ".join(role_label(str(t)) for t in (g("types") or ()))
-        size = _profile_label(bare)
-        stock = f"{size} {labels.material(g('material'))}".strip() if g("material") else size
+        stock = lumber_label(str(g("profile") or bare), g("material"), labels)
         return f"{stock} — {roles}" if roles else None
     if section == "sheet_goods":
         thickness = _fraction_in(g("thickness_in")) if g("thickness_in") else ""

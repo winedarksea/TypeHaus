@@ -16,6 +16,7 @@ from typehaus.resolve.soffits import SOFFIT_LINING_THICKNESS
 from typehaus.resolve.strap_braces import STRAP_CATEGORY
 from typehaus.resolve.sweep import sweep_length_m
 from typehaus.takeoff.fabrication import FABRICATED_SHAPES
+from typehaus.takeoff.labels import _fraction_in
 from typehaus.takeoff.sheet_rips import rip_stock
 from typehaus.takeoff.steel import steel_member_tags
 
@@ -27,6 +28,15 @@ _FT3_PER_CUBIC_YARD = 27.0
 # Stock lengths a dimensional-lumber order is placed in; a member is charged to the shortest
 # stock it can be cut from, and anything past the longest stock rounds up to the next 2 ft.
 _STOCK_LENGTHS_FT = (8, 10, 12, 14, 16, 20)
+#: Precision-end-trimmed (PET) studs: the yard's pre-cut stock for the 8', 9' and 10' wall
+#: (one bottom plate, two top). A full-height stud that fits one is bought as it, not cut
+#: from the next whole-foot stick — a 9' wall's stud cut from a 10' leaves 15" of offcut.
+_PRECUT_STUD_FT = tuple(inches / 12.0 for inches in (92.625, 104.625, 116.625))
+#: Full-height members only; jacks and cripples are cut to their opening.
+_PRECUT_CATEGORIES = ("stud", "king", "corner")
+_PRECUT_PROFILES = ("2x4", "2x6")
+#: Plain framing lumber and LSL studs come pre-cut; treated or appearance stock does not.
+_PRECUT_MATERIALS = ("", "spf", "lsl")
 # Trimmable floor-truss stock: 18' and 20', each trimmable up to 6" from each end (12"
 # total), so an 18' truss covers 17'-0"-18'-0" and a 20' covers 19'-0"-20'-0".
 _TRUSS_STOCK_FT = (18, 20)
@@ -36,8 +46,11 @@ _TRUSS_TRIM_ALLOWANCE_FT = 1.0
 _PROFILE_RE = re.compile(r"^(?:(\d+)-)?(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)")
 
 
-def _order_length_ft(length_ft: float, profile: str | None = None) -> int:
+def _order_length_ft(length_ft: float, profile: str | None = None,
+                     precut: bool = False) -> float:
     """Round a cut length up to the stock length it would be purchased in.
+
+    ``precut`` puts the PET stud lengths on the ladder ahead of the next whole foot.
 
     A FABRICATED member is not milled dimensional lumber and never rides the stock ladder.
     A ``floor_truss`` charges to the 18'/20' trimmable ladder only within each stock's trim
@@ -53,10 +66,24 @@ def _order_length_ft(length_ft: float, profile: str | None = None) -> int:
                 if stock - _TRUSS_TRIM_ALLOWANCE_FT - 1e-6 <= length_ft <= stock + 1e-6:
                     return stock
         return int(math.ceil(length_ft - 1e-9))
-    for stock in _STOCK_LENGTHS_FT:
+    ladder = sorted((*_STOCK_LENGTHS_FT, *_PRECUT_STUD_FT)) if precut else _STOCK_LENGTHS_FT
+    for stock in ladder:
         if length_ft <= stock + 1e-6:
             return stock
     return int(math.ceil(length_ft / 2.0)) * 2
+
+
+def stock_label(length_ft: float) -> str:
+    """``16'``, or ``104 5/8" PET`` for a pre-cut stud."""
+    if length_ft in _PRECUT_STUD_FT:
+        return f"{_fraction_in(length_ft * 12.0)} PET"
+    return f"{length_ft:g}'"
+
+
+def _lf(total: float) -> float:
+    """Ordered lineal feet: whole feet stay an int, so a PET-free row reads as it always did."""
+    total = round(total, 1)
+    return int(total) if total == int(total) else total
 
 
 #: A cut this short — half the shortest stock or less — is nested: several of them come out
@@ -115,7 +142,8 @@ def _splice_into_stock(length_ft: int,
 
 def _bucket_cut_lengths(lengths: list[float], profile: str | None,
                         spliceable: bool = False,
-                        max_piece_ft: int = _MAX_SPLICE_PIECE_FT) -> Counter:
+                        max_piece_ft: int = _MAX_SPLICE_PIECE_FT,
+                        precut: bool = False) -> Counter:
     """The stock sticks one ``(profile, category, material)`` group is actually bought in.
 
     Long pieces bucket one-for-one. Short ones are packed first-fit-
@@ -140,7 +168,7 @@ def _bucket_cut_lengths(lengths: list[float], profile: str | None,
         else:
             own_stick.append(cut_ft)
     for cut_ft in own_stick:
-        whole = _order_length_ft(cut_ft, profile)
+        whole = _order_length_ft(cut_ft, profile, precut)
         if spliceable and cut_ft > max_piece_ft + 1e-6:
             pieces = _splice_into_stock(int(math.ceil(cut_ft - 1e-9)), max_piece_ft)
             # Splicing wins ties and loses when it costs wood. A 36' run is three 12s either
@@ -236,9 +264,11 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     for (profile, category, material), lengths in sorted(cuts.items()):
         cap = _MAX_PLATE_PIECE_FT if category in _JOINED_ON_SUPPORT else _MAX_SPLICE_PIECE_FT
+        precut = (category in _PRECUT_CATEGORIES and profile in _PRECUT_PROFILES
+                  and material in _PRECUT_MATERIALS)
         buckets = _bucket_cut_lengths(lengths, profile, splice[(profile, category, material)],
-                                      cap)
-        order_ft_total = sum(length_ft * count for length_ft, count in buckets.items())
+                                      cap, precut)
+        order_ft_total = _lf(sum(length_ft * count for length_ft, count in buckets.items()))
         bf_per_ft = _board_feet_per_ft(profile)
         rows.append({
             "profile": profile,
@@ -256,7 +286,7 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             "pieces": len(lengths),
             "cut_length_ft": round(sum(lengths), 1),
             "order_length_ft": order_ft_total,
-            "stock": [{"length_ft": length_ft, "count": count}
+            "stock": [{"length_ft": length_ft, "count": count, "label": stock_label(length_ft)}
                       for length_ft, count in sorted(buckets.items())],
             "board_feet": round(bf_per_ft * order_ft_total, 1) if bf_per_ft else None,
         })
@@ -271,8 +301,12 @@ def framing_bom_by_size(model: ResolvedModel) -> list[dict[str, object]]:
     ``None`` and lands in the single row it always did. The price join reads it as a
     qualifier (``cli/prices.QUALIFIED_KEY_FIELD``), so a house that says nothing about
     material still prices ``2x4`` at one rate and nothing changes for it.
+
+    ``stock`` merges the member types' sticks by length, each naming the ``types`` cut from
+    it: the yard order and its application note (→ ``takeoff/lumber_order``).
     """
     by_size: dict[tuple[str, str], dict[str, object]] = {}
+    sticks: dict[tuple[str, str], dict[float, dict[str, object]]] = defaultdict(dict)
     for row in framing_takeoff(model):
         profile = str(row["profile"])
         material = row["material"]
@@ -285,15 +319,22 @@ def framing_bom_by_size(model: ResolvedModel) -> list[dict[str, object]]:
         size["pieces"] = int(size["pieces"]) + int(row["pieces"])
         size["cut_length_ft"] = round(
             float(size["cut_length_ft"]) + float(row["cut_length_ft"]), 1)
-        size["order_length_ft"] = int(size["order_length_ft"]) + int(row["order_length_ft"])
+        size["order_length_ft"] = _lf(float(size["order_length_ft"])
+                                      + float(row["order_length_ft"]))
         if row["board_feet"] is not None:
             size["board_feet"] = round(float(size["board_feet"]) + float(row["board_feet"]), 1)
         types = size["types"]
         assert isinstance(types, list)
         types.append(row["category"])
-    for size in by_size.values():
+        for bucket in row["stock"]:
+            stick = sticks[key].setdefault(bucket["length_ft"],
+                                           {**bucket, "count": 0, "types": []})
+            stick["count"] = int(stick["count"]) + int(bucket["count"])
+            stick["types"].append(row["category"])
+    for key, size in by_size.items():
         if not size["board_feet"]:
             size["board_feet"] = None
+        size["stock"] = [sticks[key][length] for length in sorted(sticks[key])]
     return [by_size[key] for key in sorted(by_size)]
 
 

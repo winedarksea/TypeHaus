@@ -10,7 +10,7 @@ and asks for it.
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 from typehaus.emit.trade_rules import material_trade
@@ -25,7 +25,8 @@ from typehaus.resolve.solid_categories import categories_where, is_pour_category
 from typehaus.takeoff.bid_recipes import Recipe, recipe_for, shape_for
 from typehaus.takeoff.bom_walk import BomRow, walk_bom
 from typehaus.takeoff.cost_codes import cost_code
-from typehaus.takeoff.labels import EMPTY_LABELS, LabelIndex, describe
+from typehaus.takeoff.labels import EMPTY_LABELS, LabelIndex, describe, lumber_label
+from typehaus.takeoff.lumber_order import stock_lines
 from typehaus.takeoff.solid_sections import SOLID_SECTIONS
 
 BUILDING = "building"
@@ -113,11 +114,14 @@ class BidLine:
     element_tags: tuple[str, ...]
     unit_price: tuple[float, float] | None = None
     total: tuple[float, float] | None = None
+    #: What the line frames, for a yard's delivery ticket ("plate", "header (2-ply)").
+    application: str = ""
 
     def as_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {
             "section": self.section, "key": self.key, "description": self.description,
             "quantity": self.quantity, "unit": self.unit, "detail": self.detail,
+            "application": self.application,
             "storeys": list(self.storeys), "element_tags": list(self.element_tags)}
         if self.unit_price is not None and self.total is not None:
             out["unit_price"] = {"low": self.unit_price[0], "high": self.unit_price[1]}
@@ -223,6 +227,28 @@ def _line(item: BomRow, trade: str, storey_of: Mapping[str, str], labels: LabelI
         unit_price=unit_price, total=total)
 
 
+def _yard_lines(line: BidLine, item: BomRow, labels: LabelIndex) -> tuple[BidLine, ...]:
+    """A lumber size as its sticks (→ takeoff/lumber_order); a price splits by ordered LF."""
+    sticks = stock_lines(item.row)
+    if not sticks:
+        return (line,)
+    total_lf = sum(stick.ordered_lf for stick in sticks) or 1.0
+    lines = []
+    for stick in sticks:
+        share = stick.ordered_lf / total_lf
+        total = (None if line.total is None else
+                 (round(line.total[0] * share, 2), round(line.total[1] * share, 2)))
+        lines.append(replace(
+            line,
+            description=(f"{lumber_label(stick.profile, item.row.get('material'), labels)}, "
+                         f"{stick.stock} ({line.key})"),
+            quantity=stick.pieces, unit="ea" if line.unit == "ea" else "pc",
+            detail=f"{stick.ordered_lf:g} LF", application=stick.application, total=total,
+            unit_price=(None if total is None else
+                        (round(total[0] / stick.pieces, 2), round(total[1] / stick.pieces, 2)))))
+    return tuple(lines)
+
+
 def _allowance_lines(trade: str, estimate: Mapping[str, Any] | None, priced: bool
                      ) -> tuple[BidLine, ...]:
     rows = (estimate or {}).get("sections", {}).get("allowances", {}).get("rows", [])
@@ -269,7 +295,8 @@ def build_bid_packages(model: Any, bom: Mapping[str, Any], *,
             continue
         trade = cost_code(item.section, item.key, material=item.material, row=item.row).trade
         line = _line(item, trade, storey_of, labels, prices, priced, equals_labels)
-        by_trade.setdefault(trade, {}).setdefault(item.section, []).append(line)
+        lines = _yard_lines(line, item, labels) if item.section == "framing" else (line,)
+        by_trade.setdefault(trade, {}).setdefault(item.section, []).extend(lines)
     if estimate is not None:
         for row in estimate.get("sections", {}).get("allowances", {}).get("rows", []):
             by_trade.setdefault(str(row.get("trade") or "general"), {})

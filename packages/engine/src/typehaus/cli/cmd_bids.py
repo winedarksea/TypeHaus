@@ -19,7 +19,7 @@ from typehaus.findings import Severity
 
 #: The CSV column set. Unpriced by default; ``--priced`` appends the four price columns.
 BID_COLUMNS = ("trade", "group", "section", "key", "description", "quantity", "unit",
-               "storeys", "element_tags")
+               "application", "storeys", "element_tags")
 PRICE_COLUMNS = ("unit_price_low", "unit_price_high", "total_low", "total_high")
 
 
@@ -65,6 +65,7 @@ def _flat_rows(package: Any, priced: bool) -> list[dict[str, Any]]:
             row = {"trade": package.trade, "group": group.heading, "section": line.section,
                    "key": line.key, "description": line.description,
                    "quantity": line.quantity, "unit": line.unit,
+                   "application": line.application,
                    "storeys": ", ".join(line.storeys),
                    "element_tags": ", ".join(line.element_tags)}
             if priced:
@@ -93,10 +94,14 @@ def _markdown(package: Any, loaded: Any, priced: bool) -> str:
     ]
     price_cols = ["unit low", "unit high", "total low", "total high"] if priced else []
     for group in package.groups:
+        # The application column only where a line carries one: the lumber, for the ticket.
+        noted = any(line.application for line in group.lines)
         blocks.append(heading(group.heading, 2))
         blocks.append(table(
-            ["item", "quantity", "unit", "detail", "storeys", *price_cols],
-            [[line.description, line.quantity, line.unit, line.detail, ", ".join(line.storeys),
+            ["item", "quantity", "unit", *(["application"] if noted else []), "detail",
+             "storeys", *price_cols],
+            [[line.description, line.quantity, line.unit,
+              *([line.application] if noted else []), line.detail, ", ".join(line.storeys),
               *((line.unit_price[0], line.unit_price[1], line.total[0], line.total[1])
                 if priced and line.unit_price and line.total else
                 (("", "", "", "") if priced else ()))]

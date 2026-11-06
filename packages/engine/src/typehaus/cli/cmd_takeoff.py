@@ -208,7 +208,7 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
         return payload
     console.print("[bold]Framing bill of materials[/bold]  (size · type: pieces / lineal ft)")
     for row in framing_bom:
-        buckets = ", ".join(f"{b['count']}×{b['length_ft']}'" for b in row["stock"])
+        buckets = ", ".join(f"{b['count']}×{b['label']}" for b in row["stock"])
         bf = f" · {row['board_feet']} bf" if row["board_feet"] else ""
         # Two "2x6 plate" rows are two purchases when one is DF-L: say which.
         category = (f"{row['category']} {row['material']}" if row.get("material")

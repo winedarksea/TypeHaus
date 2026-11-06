@@ -26,10 +26,10 @@ def framing_bom_tables(model: ResolvedModel) -> list[PagedTable]:
                   f"{row['board_feet']:,.0f}" if row["board_feet"] else "—")
                  for row in by_size]
     size_rows.append(("TOTAL", f"{sum(int(r['pieces']) for r in by_size):,}",
-                      f"{sum(int(r['order_length_ft']) for r in by_size):,}", ""))
+                      f"{round(sum(float(r['order_length_ft']) for r in by_size)):,}", ""))
     bom_rows = [
         (row["profile"], row["category"], f"{row['pieces']:,}", f"{row['cut_length_ft']:,.0f}",
-         ", ".join(f"{b['count']}×{b['length_ft']}'" for b in row["stock"]))
+         ", ".join(f"{b['count']}×{b['label']}" for b in row["stock"]))
         for row in framing_takeoff(model)
     ]
     return [

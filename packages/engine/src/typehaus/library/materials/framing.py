@@ -8,7 +8,7 @@ from typehaus.model import Material
 MATERIALS: tuple[Material, ...] = (
     Material(
         tag="spf",
-        name="SPF framing lumber",
+        name="SPF No. 2 & Btr framing lumber",
         r_per_inch=1.25,
         density=460.0,
         perm_rating=2.9,
@@ -64,7 +64,7 @@ MATERIALS: tuple[Material, ...] = (
     # into an interior wall by a takeoff that only knows "lumber".
     Material(
         tag="kdat",
-        name="KDAT southern yellow pine (treated exterior framing)",
+        name="KDAT southern yellow pine No. 2 (treated exterior framing)",
         r_per_inch=0.95,
         density=600.0,
         perm_rating=2.9,
@@ -85,7 +85,7 @@ MATERIALS: tuple[Material, ...] = (
     # load and its anchors, so KDAT buys nothing there. Same species and SG as ``kdat``.
     Material(
         tag="pt-syp",
-        name="Pressure-treated southern yellow pine (sill plate)",
+        name="Pressure-treated southern yellow pine No. 2 (sill plate)",
         r_per_inch=0.95,
         density=600.0,
         perm_rating=2.9,
