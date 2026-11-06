@@ -324,7 +324,9 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # 1165 since the band moved to +19'-0" (2026-10-31): its course now runs unbroken past
     # the north window heads it used to stop at. 1157 on 2026-11-01: 8 rake-cut attic course
     # ends land on a stud that already has a block (`land_free_ends`).
-    assert row["count"] == 1157 and furring[0]["count"] == 198
+    # 1160 on 2026-11-06 (decision #116): WIN-M-LIV-E1, -BED-W1/-W2 and -BATH2 take R602.7's
+    # NJ 3, and the wider packs take one more jamb station on W-M-E1, -W3 and -W4 each.
+    assert row["count"] == 1160 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

@@ -11,8 +11,9 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry_millwork import window_stool_prism
 
 INCH = 0.0254
-# E2's two packs and the dining window's two, one jack and one king each.
-JAMB_MEMBERS_NORTH_OF_BRICK = 8
+# North of AO-M-FIRE-NICHE's north king: E2's two packs, a king and R602.7's three jacks each
+# (two center-bearing floors, decision #116), and the dining window's two, a jack and a king.
+JAMB_MEMBERS_NORTH_OF_NICHE = 12
 PACK_TO_PANTRY_IN = 20.875
 # tag: (centre, width, type, blind, blind type)
 EAST_WINDOWS = {
@@ -41,10 +42,10 @@ def test_matching_windows_leave_independent_jamb_packs_and_clear_the_pantry(catl
 
     jamb_members = sorted(
         (member for member in wall.members if member.category in {"king", "jack"}
-         and 110.75 * INCH < member.p0[1] < 260 * INCH),
+         and 108.0 * INCH < member.p0[1] < 260 * INCH),
         key=lambda member: member.p0[1],
     )
-    assert len(jamb_members) == JAMB_MEMBERS_NORTH_OF_BRICK
+    assert len(jamb_members) == JAMB_MEMBERS_NORTH_OF_NICHE
     for south, north in zip(jamb_members, jamb_members[1:], strict=False):
         required_separation = (cross_section(south.profile).width_m
                                + cross_section(north.profile).width_m) / 2
@@ -55,9 +56,14 @@ def test_matching_windows_leave_independent_jamb_packs_and_clear_the_pantry(catl
     assert pantry_south == pytest.approx(271.375 * INCH)
     north_pack_end = jamb_members[-1].p0[1] + cross_section(jamb_members[-1].profile).width_m / 2
     assert pantry_south - north_pack_end == pytest.approx(PACK_TO_PANTRY_IN * INCH)
-    brick_north = max(point[1] for point in model.wall("W-M-FIRE-JAMB-N").axis)
+    # E2's three-jack pack stands behind the brick's north end now, 1/4" clear of the
+    # niche's north king: two packs, not one shared one.
+    niche_king = next(member for member in wall.members if member.category == "king"
+                      and member.child_key.endswith("-r0")
+                      and 100 * INCH < member.p0[1] < 108.0 * INCH)
+    niche_end = niche_king.p0[1] + cross_section(niche_king.profile).width_m / 2
     south_pack_start = jamb_members[0].p0[1] - cross_section(jamb_members[0].profile).width_m / 2
-    assert south_pack_start - brick_north == pytest.approx(0.5 * INCH)
+    assert south_pack_start - niche_end == pytest.approx(0.25 * INCH)
     for window_tag, (_, _, _, blind_tag, blind_type) in EAST_WINDOWS.items():
         blind = objects[blind_tag]
         opening = openings[window_tag]

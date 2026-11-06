@@ -234,11 +234,13 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     assert {b.wall_tag for b in by_tag["WP-M-STUDY-FELT"]} == {"W-M-CLN2", "W-M-HS4"}
     for band in by_tag["WP-M-STUDY-FELT"]:
         assert band.z0_m == pytest.approx(36 * _IN, abs=1e-6)
-        # 107 3/8", not the storey's 108": ``resolve/paneling.py`` clamps a band to the
-        # wall's TOP PLATE, and an interior partition's plate now stops 3/4" under the
-        # joist soffit over it (``resolve/partition_top.py``). The felt stops where the
-        # drywall beside it stops, which is the point of clamping to the plate at all.
-        assert band.z1_m == pytest.approx(107.375 * _IN, abs=1e-6)
+        # ``resolve/paneling.py`` clamps a band to the wall's TOP PLATE, so the felt stops
+        # where the drywall beside it stops. W-M-CLN2 is a partition, whose plate stops 3/4"
+        # under the joist soffit (``resolve/partition_top.py``): 107 3/8". W-M-HS4 is BEARING
+        # since decision #116 (W-S-SN3 over it carries FO-A-HALL's edge), so it is no
+        # partition and stands to the storey's 108".
+        top_in = 108.0 if band.wall_tag == "W-M-HS4" else 107.375
+        assert band.z1_m == pytest.approx(top_in * _IN, abs=1e-6)
         assert not band.replaces_wall_finish
         # PET felt states no board stock, so it takes the 1/2" default — which is the panel.
         assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6)
