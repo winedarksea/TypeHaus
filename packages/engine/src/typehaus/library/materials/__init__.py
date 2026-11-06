@@ -18,6 +18,7 @@ from typehaus.library.materials import concrete_masonry as _concrete_masonry
 from typehaus.library.materials import drywall_accessories as _drywall_accessories
 from typehaus.library.materials import finishes as _finishes
 from typehaus.library.materials import framing as _framing
+from typehaus.library.materials import gypsum as _gypsum
 from typehaus.library.materials import hardwoods as _hardwoods
 from typehaus.library.materials import insulation as _insulation
 from typehaus.library.materials import membranes as _membranes
@@ -34,6 +35,7 @@ _ALL = (
     + _insulation.MATERIALS
     + _membranes.MATERIALS
     + _cladding.MATERIALS
+    + _gypsum.MATERIALS
     + _finishes.MATERIALS
     + _drywall_accessories.MATERIALS
     + _concrete_masonry.MATERIALS

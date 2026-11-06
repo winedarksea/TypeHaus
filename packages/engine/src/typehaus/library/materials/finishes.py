@@ -1,4 +1,4 @@
-"""Interior linings, coatings and floor finishes."""
+"""Interior linings, coatings and floor finishes. Gypsum boards are in ``gypsum.py``."""
 
 from __future__ import annotations
 
@@ -6,80 +6,6 @@ from typehaus.library.materials._common import _UAF
 from typehaus.model import Material
 
 MATERIALS: tuple[Material, ...] = (
-    Material(
-        tag="gwb",
-        name="Standard-weight gypsum board",
-        r_per_inch=0.9,
-        perm_rating=18.8,
-        gypsum_type="regular",
-        gypsum_facer="paper",
-        hatch="gypsum",
-        color="#efeae2",
-        source=f"{_UAF}: 'Gypsum wall board, plain' 50 perm at 0.375\" = 18.8 perm-in "
-        '(≈30 perm at 5/8", consistent with USG\'s 34.2 perm at 1/2"). Standard weight '
-        '(~1.6-1.8 lb/SF at 1/2"), not lightweight board (e.g. Sheetrock UltraLight): STC '
-        "follows mass, and the cited STC presets were tested with full-weight board",
-    ),
-    # Type X differs from regular board in its glass-fibre core, not in any property this
-    # engine calculates with — same R per inch, same permeance. It exists as a separate
-    # material precisely so an assembly can *say* which board it uses, which is the whole
-    # question R302.6 asks about a garage ceiling with habitable space over it.
-    Material(
-        tag="gwb-x",
-        name="Type X gypsum board",
-        r_per_inch=0.9,
-        perm_rating=18.8,
-        gypsum_type="type-x",
-        gypsum_facer="paper",
-        hatch="gypsum",
-        color="#efeae2",
-        source="thermal and vapour properties as 'gwb' above; the Type X core changes "
-        "fire performance, not conductivity or permeance",
-    ),
-    # Upgrade boards. Thickness lives on the Layer; these differ from 'gwb' in core or
-    # facer treatment only, not in any thermal or vapour property this engine computes.
-    Material(
-        tag="gwb-c",
-        name="Type C gypsum board",
-        r_per_inch=0.9,
-        perm_rating=18.8,
-        gypsum_type="type-c",
-        gypsum_facer="paper",
-        hatch="gypsum",
-        color="#f2dcdc",
-        source="thermal and vapour properties as 'gwb'; ASTM C1396 Type C (e.g. USG "
-        "Firecode C, Gold Bond Fire-Shield C) — denser fibre-and-vermiculite core",
-    ),
-    Material(
-        tag="gwb-ar",
-        name="Abuse-resistant gypsum board",
-        r_per_inch=0.9,
-        perm_rating=18.8,
-        gypsum_type="regular",
-        gypsum_facer="paper",
-        gypsum_upgrades=("abuse-resistant",),
-        hatch="gypsum",
-        color="#d3dbe3",
-        source="thermal and vapour properties as 'gwb'; paper-faced ASTM C1629 abuse "
-        "resistance (e.g. USG Sheetrock AR, Gold Bond Hi-Abuse XP). An upgrade, not a code "
-        "requirement: 1/2\" is a supply-yard item. Where it is not readily stocked at a "
-        "reasonable price, standard-weight regular ('gwb') or Type C ('gwb-c') of the same "
-        "thickness may be substituted",
-    ),
-    Material(
-        tag="gwb-mr",
-        name="Mold-resistant gypsum board",
-        r_per_inch=0.9,
-        perm_rating=18.8,
-        gypsum_type="regular",
-        gypsum_facer="paper",
-        gypsum_upgrades=("mold-resistant",),
-        hatch="gypsum",
-        color="#e0d6ec",
-        source="thermal and vapour properties as 'gwb'; paper-faced, ASTM D3273 score 10 "
-        "(e.g. Gold Bond XP, USG Sheetrock Mold Tough, GP ToughRock Mold-Guard at 1.7 lb/SF "
-        "1/2\"). Still paper: not a wet-area backer",
-    ),
     # A hat channel is a spaced 25 ga. section, not a continuous metal skin: vapour crosses
     # the still-air space between channels, so the layer is rated as that air space.
     Material(

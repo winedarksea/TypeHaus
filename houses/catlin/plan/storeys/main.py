@@ -708,9 +708,10 @@ WALLS = [
     # segments are ONE wall on the drawing and one 5 1/2" staggered cavity on the job, split
     # only because W-M-CLN tees in at N-M-D2. Its current 6.52" thickness puts the west
     # face at x=94.74"; FX-M-BATH2-SH's pan east edge remains at x=94.615", leaving 1/8".
+    # Bath face gwb-glass-mat: the shower backer, whole face (#27; notes/bath2_shower.md §6).
     Wall(uid="CMW127AAAA", tag="W-M-BA2E2", start_node="N-M-D2",
          end_node="N-M-D3", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-glass-mat"),), top=ft(9)),
     # W-M-LS and W-M-CLN2 (below) are RM-M-STUDY-CLOSET's west and south walls, and the study is
     # now a built-in call booth (FURN-M-STUDY-BENCH / -DESK). STAGGERED, originally
     # STAGGERED_DOUBLE_GWB at STC 52, not INT_2X4_RC_DOUBLE_GWB, which reaches STC 54 in
@@ -838,9 +839,10 @@ WALLS = [
     # naturally on its axis. The bathroom face stays at y=13'-2 3/8", where the shower,
     # vanity, floor-heat stat and switch are fitted. PR-M-BATH2-* still has its 3 1/2"
     # cavity for the 3/4" PEX riser, and D-M-BATH2 remains hosted here.
+    # Bath face gwb-glass-mat, as W-M-BA2E2 (#27).
     Wall(uid="CMW131AAAA", tag="W-M-BDN1", start_node="N-M-W3",
          end_node="N-M-D3", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), interior_room="RM-M-BED", top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-glass-mat"),), interior_room="RM-M-BED", top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CMW132AAAA", tag="W-M-BDN2", start_node="N-M-D3",
          end_node="N-M-C1", assembly="INT_2X4_PARTITION_HALF", top=ft(9),
@@ -2239,12 +2241,14 @@ PANELING = [
     # 1/4" glue-up panel (plan/products_showering.py), not the 1/2" default.
     # Above it: a TK-105 strip caps the top edge (-CAP), then the backer board, painted, to
     # the ceiling at +107 1/2" (1 3/8"; the room paints it, an F reveal stops it on the cap).
-    # That board is the wet-rated glass-mat backer behind the panel (notes/bath2_shower.md
-    # §6); the wall layer still says gwb-mr.
+    # That board is the glass-mat backer behind the panel (notes/bath2_shower.md §6):
+    # both walls' bath face is `gwb-glass-mat` (DensShield 1/2", #27), floor to ceiling and
+    # the whole face, since a lining swap is per wall, not per span. Skim and prime it to
+    # paint (DensShield guide DS010).
     #
-    # Known limitation: `replaces_wall_finish` only nets out in `wood_surfaces`, so
-    # `envelope_layers` still bills about 50 SF of latex paint behind the panel and cap.
-    # The gypsum genuinely stays and is genuinely bought; only the paint on it is wrong.
+    # Known limitation: `replaces_wall_finish` nets the paint AND the board behind the panel
+    # and cap out of `envelope_layers` (`takeoff/envelope.replaced_finish_m2`), so ~50 SF of
+    # the glass-mat backer, which genuinely stays and is bought, is not billed (#27, open).
     WallPaneling(uid="AWV1DA0P86", tag="WP-M-BATH2-SURR", room="RM-M-BATH2",
                  material_ref="solid-surface-panel", offset=inch(6.25), height=inch(96),
                  replaces_wall_finish=True, thickness=inch(0.25),

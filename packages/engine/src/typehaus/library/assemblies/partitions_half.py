@@ -8,7 +8,9 @@ the same build with 1/2" board; elsewhere it is None and the source says why.
 
 The source of every number here is NRC IRC-IR-761, Halliwell, Nightingale, Warnock & Birta,
 "Gypsum Board Walls: Transmission Loss Data" (1998), doi:10.4224/20331556 — "13 mm" in its
-codes is 12.7 mm (1/2") board. It has no Type C rows. Its single-row wood-stud tests are all
+codes is 12.7 mm (1/2") board. Its 13 mm Type X (8.7-10.0 kg/m2, Table 4 p.17) is the board
+the US sells as 1/2" Type C: USG Firecode C 1/2" complies with ASTM C1396 as Type X at 2.0
+lb/SF = 9.8 kg/m2 (``_FIRECODE_C``). Its single-row wood-stud tests are all
 insulated: 13 mm board + 90 mm batt, no channel, is STC 33-34 (TL-93-166, TL-93-188), so a
 batt alone does not buy a 1/2" wall anywhere near STC 45.
 """
@@ -33,6 +35,8 @@ from typehaus.model import (
 )
 
 _IR761 = "NRC IRC-IR-761 (1998), https://doi.org/10.4224/20331556"
+_FIRECODE_C = ("USG Sheetrock Firecode C submittal WB2965-USA-ENG rev. 11-19, pp.1-2: 1/2 in. "
+               "complies with ASTM C1396 as Type X, 2.0 lb/SF (9.8 kg/m2) nominal")
 _HALF = inch(0.5)
 
 
@@ -80,25 +84,28 @@ INT_2X4_RC_HALF = Assembly(
 )
 
 # Latex is a finish over the cited acoustic build; STC describes the tested gypsum/stud core.
-# Type X, not regular board, because Type X is what NRC tested at the target: the same build
-# in regular 13 mm board is STC 42-43 (p.269 TL-93-434, p.268 TL-93-228).
+# Type C (C1396 Type X at 1/2", I4-103), not regular board: NRC's 13 mm Type X is what reaches
+# the target, and the same build in regular 13 mm board is STC 42-43 (p.269 TL-93-434, p.268
+# TL-93-228). No US maker sells a 1/2" board labelled Type X; Firecode C is that board.
 INT_2X4_STAGGERED_X_HALF = Assembly(
     tag="INT_2X4_STAGGERED_X_HALF",
     layers=(
         PAINT_FINISH_A,
-        _gwb("gwb-a", "gwb-x"),
+        _gwb("gwb-a", "gwb-c"),
         Layer(name="staggered-studs", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x4", spacing=inch(16), plate_member="2x6",
                                   layout=PartitionLayout.STAGGERED),
               cavity=CavityFill(material_ref="fiberglass", thickness=inch(3.5))),
-        _gwb("gwb-b", "gwb-x"),
+        _gwb("gwb-b", "gwb-c"),
         PAINT_FINISH_B,
     ),
     stc=45,
     source=(f"{_IR761} p.266, G13_SWS140(406)_GFB90_G13, test TL-93-208: one layer 13 mm "
             "Type X gypsum each side, staggered wood studs on 140 mm plates 406 o.c., 90 mm "
-            "glass fibre - STC 45 (the lower of two runs; p.267 TL-93-247 is 47)"),
+            "glass fibre - STC 45 (the lower of two runs; p.267 TL-93-247 is 47). The tested "
+            "board weighed 9.9/10.1 kg/m2 against 1/2 in. Type C's 9.8 nominal: "
+            f"{_FIRECODE_C}"),
 )
 
 # Type C + batt was the reviewers' sound wall. Nothing publishes it at 1/2" on wood; the

@@ -46,6 +46,10 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 - Set heat-rated light strips on the new framing rails at 16 inches AFF; keep drivers and transformers out of the hot zone.
 - Retain ERV supply above the heater and low west exhaust. Keep the bench frame clear of the grille and plastic pipe behind insulation.
 
+### Spec 09 28 16
+- BATH2 shower walls: 1/2" glass-mat backer, ASTM C1178 (DensShield), floor to ceiling, grey face out, over the base flange.
+- Backer corners in flexible sealant, joints mesh-taped; prime under the Swanstone adhesive. No liquid membrane.
+
 # Notes
 
 - Detail intent: schematic section showing sauna interior finishes, slab, and foundation bearing. Confirm all dimensions with the project plan set.
