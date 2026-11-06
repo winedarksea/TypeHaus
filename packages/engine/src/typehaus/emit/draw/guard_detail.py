@@ -200,9 +200,9 @@ def _handrail_panel(b: SceneBuilder, model, key, railings, ox: float) -> None:
              f"SUPPORTS {_in(pitch)} MAX C/C"
              + (f" (TYPE MAX {_in(product.bracket_spacing_max.meters)})"
                 if product and product.bracket_spacing_max else ""),
-             "ENDS: " + " / ".join(sorted({str(getattr(t, "value", t)).replace("_", " ")
-                                           for t in (rep.start_termination,
-                                                     rep.end_termination) if t})) or "—",
+             "ENDS: " + (" / ".join(sorted({str(getattr(t, "value", t)).replace("_", " ")
+                                            for t in (rep.start_termination,
+                                                      rep.end_termination) if t})) or "—"),
              *_hardware(model, key[0], railings)[:3]]
     _notes(b, ox - 10, -12, lines)
 

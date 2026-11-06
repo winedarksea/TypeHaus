@@ -16,12 +16,14 @@ from typehaus.resolve.model import ResolvedModel
 _M_TO_FT = 1.0 / 0.3048
 
 #: Use classes read off the band's authored ``purpose`` words, first match wins. A reading
-#: aid only: generic carpentry words, never a product or house tag; the rest is OTHER.
+#: aid only: ``WallBacking`` has no structured use field, so this is generic carpentry words,
+#: never a product or house tag; the rest is OTHER. An accessory names the panel it sits under
+#: ("TP ... below ... access panel"), so accessories match first.
 _USES = (
     ("GRAB BAR", r"grab bar"),
     ("HANDRAIL", r"handrail"),
-    ("ACCESS PANEL", r"access panel"),
     ("TOWEL / TP / HOOK", r"towel|\btp\b|robe|\bpegs?\b|hook"),
+    ("ACCESS PANEL", r"access panel"),
     ("MIRROR / LIGHT / BOX", r"mirror|sconce|\bbox\b|backplate"),
     ("PLUMBING FIXTURE", r"sink|basin|\blav|hydrant|flange|\btub\b|shower"),
     ("SHELF / ROD", r"shel(f|ves)|\brod\b|clips?\b|\brack\b"),

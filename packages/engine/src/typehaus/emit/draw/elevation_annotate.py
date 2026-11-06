@@ -48,7 +48,7 @@ from typehaus.emit.draw.scene import (
 from typehaus.emit.draw.typography import TEXT_PT, feet_inches_8th, model_in_per_pt
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
-from typehaus.server.building_height_summary import finished_roof_elevations
+from typehaus.resolve.roof_finished import finished_roof_elevations
 
 #: The symmetric band a **section** captures spot elevations in, either side of the cut
 #: line. A cut has soil on both sides of it, so 10' each way is the right reach there.
