@@ -144,6 +144,8 @@ goldens commit). Gated `haus print`: 83 → **95** permit sheets. Only the resid
       step or abbreviations).
     - I2-107: on A-401.6 the STUBATH label still crosses the WC.
     - D2-109 (`section_callouts`) and F1-106 (framing-plan labels) were not touched.
+    - Found in review: E-101's northwest device-tag cluster overprints; on A-514 the K5
+      leader crosses the K2 bubble; on A-531 the continuity tags overlap the detail head.
 13. **Structural schedule rows** · closed (C5 #4). S-101.1 adds H4 (D-B-SUNKEN LVL) and
     sister/strongback rows. S-100 adds cast column/pier reinforcement. S-602.2 adds 76 I-joist
     bearing stiffeners; LSSR/LSTA24 were already on S-602. S-601 adds a Material column and
