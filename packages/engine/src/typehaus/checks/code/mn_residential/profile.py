@@ -56,7 +56,8 @@ MN_2020 = JurisdictionProfile(
         "Energy: the N1102.1.2 prescriptive envelope and the N1102.4.1.2 air-leakage "
         "target. "
         "Attic: R807.1 access and R806.2 ventilation net free area. "
-        "Structural: frost depth, the IRC span tables, R703.8.4 anchored-veneer tie reach "
+        "Structural: frost depth, the IRC span tables (wall headers by R602.7(1)/(2) at a "
+        "load derived from the plan's bearing references), R703.8.4 anchored-veneer tie reach "
         "and airspace (Table R703.8.4(1) by the adopted edition), and manufacturers' "
         "published span "
         "tables where an element authors the row it was read at — no engineered analysis, "
@@ -560,6 +561,15 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Headers over wide openings (published table)",
                        ("structural.header_prescriptive",),
                        ("IRC R602.7", "manufacturer's published header table")),
+        # NON-BLOCKING until the house triages its UNKNOWNs: every header up to 8' read off
+        # 2018 R602.7(1)/(2) at its derived load (decision #116). An interior wall carrying
+        # roof, a point load in a span or a bearing wall with nothing derivable on it has no
+        # row and stays UNKNOWN until a header-guide row, a move or an engineered item.
+        PermitItemSpec("Headers up to 8' (IRC R602.7 tables) and wall roles",
+                       ("structural.header_span", "structural.wall_role_load",
+                        "structural.flat_2x4_nonbearing_header"),
+                       ("IRC R602.7", "IRC R602.7.4", "IRC Table R602.7(1)",
+                        "IRC Table R602.7(2)"), blocking=False),
         # A deck hung off a wall: the ledger, its anchors and the wall face. On concrete the
         # anchor spacing is the anchor maker's, so the verdict there is UNKNOWN until read.
         PermitItemSpec("Deck ledgers and their attachment",

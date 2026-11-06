@@ -46,6 +46,7 @@ from typehaus.resolve.framing.frame_end_supports import (
     complete_frame_end_supports,
     resolve_frame_end_supports,
 )
+from typehaus.resolve.framing.header_choice import choose_headers
 from typehaus.resolve.framing.openings import (
     WallOpening,
     frame_end_supported,
@@ -773,6 +774,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                           if op.is_door and op.type_ref in door_types else None),
             header_in_band=band_floors.get(op.tag),
         ))
+    # The header decides the jack count, which every jamb-pack reading below needs.
+    choose_headers(plan, model, by_host)
     # Before the corner topology is read: a jamb pack reaching into an L takes it.
     jamb_packs_take_corners(plan, model, by_host)
     keepouts = pocket_keepouts(plan, model)

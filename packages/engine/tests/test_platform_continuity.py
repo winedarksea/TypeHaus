@@ -132,7 +132,7 @@ def test_walls_stand_on_the_subfloor_and_bearing_studs_close_the_stack(catlin_mo
         assert wall.base_ref_z_m / inch(1).meters == pytest.approx(datum), tag
         assert wall.plate_top_z_m / inch(1).meters == pytest.approx(datum + 108.125), tag
         assert 102.875 in studs_in(tag), tag
-    assert 102.125 in studs_in("W-M-HS3")  # partition: 3/4" under the soffit
+    assert 102.125 in studs_in("W-M-BAE")  # partition: 3/4" under the soffit
     assert catlin_model.wall("W-A-E1").plate_seat_z_m is None
 
     # An exterior door seats too; only its skin stays cut to the datum.

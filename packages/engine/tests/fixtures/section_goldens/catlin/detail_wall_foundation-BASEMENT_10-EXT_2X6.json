@@ -1767,6 +1767,62 @@
       "node": "polyline",
       "points": [
         [
+          426.0,
+          2.25
+        ],
+        [
+          431.50000000000006,
+          2.25
+        ],
+        [
+          431.50000000000006,
+          21.995570866141733
+        ],
+        [
+          426.0,
+          21.995570866141733
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW103AAAA",
+      "tag": "king-1-r0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          426.0,
+          2.25
+        ],
+        [
+          431.50000000000006,
+          2.25
+        ],
+        [
+          431.50000000000006,
+          21.995570866141733
+        ],
+        [
+          426.0,
+          21.995570866141733
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "lsl"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           436.5,
           -11.1875
         ],

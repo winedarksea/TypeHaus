@@ -17,15 +17,14 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import TYPE_CHECKING, Any
 
-from typehaus.quantities import m as _m
 from typehaus.resolve.framing.corners import neighbour_band_insets
 from typehaus.resolve.framing.openings import (
     WallOpening,
     frame_end_supported,
     needs_jamb_pack,
+    pack_counts,
     pocket_extent,
 )
-from typehaus.resolve.framing.tables import jamb_pack_counts, opening_framing_pattern
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
@@ -44,9 +43,7 @@ def jamb_pack_extent(opening: WallOpening, thickness_m: float,
     """
     if not needs_jamb_pack(opening, spacing_m, thickness_m, phase_m):
         return None
-    kings, jacks = jamb_pack_counts(_m(opening.width_m),
-                                    opening_framing_pattern(opening.operation),
-                                    getattr(opening, "jamb_framing", None))
+    kings, jacks = pack_counts(opening)
     _mouth, closed = pocket_extent(opening)
     pocket_sign = 0 if not closed else (1 if opening.pocket_sign > 0 else -1)
     faces = []

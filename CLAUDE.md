@@ -82,6 +82,12 @@ a release or for exhaustive local verification.
   reducers, collar dampers, boots, port kits and hangers into `ResolvedModel.duct_parts` /
   `duct_supports`; elbows stay `mep_fittings` records keyed off the standard's angles (rect W×D).
   Billed in `[duct_parts]`/`[duct_supports]`/`[duct_sealing]`, printed on M-601.
+- **A wall header is chosen from its host's role and derived load** (decision #116):
+  `resolve/header_loads.py` walks `bearing_refs` and the walls above; a BEARING host takes the
+  smallest IRC 2018 R602.7(1)/(2) row (`resolve/framing/header_tables.py`, note f's 0.70 where
+  cripples bear) at or above `HeaderStandard.min_bearing_header`, with its NJ; a NONBEARING one
+  up to 8' takes the R602.7.4 flat 2x within 24" of the plates. No row → the old ladder as a
+  placeholder, `structural.header_span` UNKNOWN; `structural.wall_role_load` grades the roles.
 - **A pour slab stops at what it is cast against; a rim band has one wall** (decision #107):
   `resolve/slab_clip.py` cuts flush footings and through-walls out of the slab; read the slab
   as a floor through `floor_plan`. A wall dropping to a foundation owns its band outright.

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 from typehaus.model.door_hardware import JambFraming
 from typehaus.model.enums import DoorOperation
+from typehaus.model.framing_standards import built_up_size
 from typehaus.quantities import Length, ft, inch
 
 # Nominal → actual dressed lumber dimensions (thickness, depth) in inches.
@@ -35,7 +36,8 @@ def member_actual(nominal: str) -> tuple[float, float]:
 
 
 def king_jack_counts(opening_width: Length) -> tuple[int, int]:
-    """King + jack (trimmer) studs per side, from opening width (simplified table)."""
+    """King + jack (trimmer) studs per side, from opening width: kings per R602.7.5; the
+    jacks are the placeholder for a header no R602.7 row sized."""
     w_ft = opening_width.feet
     if w_ft <= 4.0:
         return (1, 1)
@@ -47,7 +49,8 @@ def king_jack_counts(opening_width: Length) -> tuple[int, int]:
 
 
 def header_size(opening_width: Length, bearing: bool = True) -> str:
-    """Header size over an opening (simplified prescriptive lookup, R602.7)."""
+    """The span-only ladder: the placeholder for a header no R602.7 row sizes
+    (``framing/header_choice.py``), and floor-opening headers."""
     w_ft = opening_width.feet
     if not bearing:
         return "2-2x6"
@@ -107,6 +110,9 @@ def header_profile_from_spec(spec: str) -> str | None:
     flat = flat_header_member(spec)
     if flat is not None:
         return flat
+    built_up = built_up_size(spec)
+    if built_up is not None:
+        return built_up  # '2-2x8': a sawn header on edge, the spelling the ladder emits
     match = _RE_HEADER_SPEC.match(spec)
     if match is None:
         return None
@@ -253,15 +259,19 @@ _DEFAULT_OPENING_PATTERN = OpeningFramingPattern()
 
 def jamb_pack_counts(opening_width: Length,
                      pattern: OpeningFramingPattern,
-                     jamb_framing: JambFraming | None = None) -> tuple[int, int]:
+                     jamb_framing: JambFraming | None = None,
+                     table_jacks: int | None = None) -> tuple[int, int]:
     """King + jack studs per side for an opening framed under ``pattern``.
 
-    Patterns without a ``span_per_jack`` fall back to the prescriptive width table; those
-    with one size the trimmer pack from the actual span and match kings to jacks, since a
-    jack that is not backed by a king has nothing to transfer its load into.
+    An authored ``JambFraming`` wins, then the R602.7 row's NJ (``table_jacks``; the kings
+    stay R602.7.5's). Patterns without a ``span_per_jack`` fall back to the width table;
+    those with one size the trimmer pack from the actual span and match kings to jacks,
+    since a jack that is not backed by a king has nothing to transfer its load into.
     """
     if jamb_framing is not None:
         return jamb_framing.kings, jamb_framing.jacks
+    if table_jacks is not None:
+        return king_jack_counts(opening_width)[0], table_jacks
     if pattern.span_per_jack is None:
         return king_jack_counts(opening_width)
     jacks = max(1, math.ceil(opening_width.meters / pattern.span_per_jack.meters))

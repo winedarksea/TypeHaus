@@ -34,6 +34,8 @@ of severity.
 
 from __future__ import annotations
 
+import re
+
 from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
@@ -46,6 +48,8 @@ from typehaus.findings import Finding
 _STUD = "mep.run_through_stud"
 _PLATE = "mep.run_through_plate"
 _HEADER = "mep.run_through_header"
+#: A header laid flat is one 2x (``flat 2xN nonbearing``); an on-edge header is ``N-2xM``.
+_FLAT_PROFILE = re.compile(r"^2x\d+$")
 
 #: Categories that are a stud for R602.6's purposes. A king, a jack and a cripple are all
 #: studs; the section does not distinguish them and neither does the drill.
@@ -294,26 +298,19 @@ def _hole_charts(ctx: CheckContext) -> dict[str, object]:
 def flat_nonbearing_openings(ctx: CheckContext) -> frozenset[str]:
     """Openings headed by an R602.7.4 flat nailer in a wall authored NONBEARING.
 
-    Both halves, the ``structural.flat_2x4_nonbearing_header`` preconditions: a flat spec
-    in a wall nobody has called nonbearing is a FAIL there, and stays a header here.
+    Both halves, the ``structural.flat_2x4_nonbearing_header`` preconditions: a flat header
+    in a wall nobody has called nonbearing is a FAIL there, and stays a header here. Read
+    off the resolved member, so a derived flat head counts as much as an authored one.
     """
-    from typehaus.model import Door
     from typehaus.model.enums import StructuralRole
-    from typehaus.resolve.framing.tables import flat_header_member
 
     plan = ctx.model.plan
-    types = {door_type.tag: door_type for door_type in plan.library.door_types}
-    out = set()
-    for element in plan.all_elements():
-        if not isinstance(element, Door):
-            continue
-        door_type = types.get(element.type_ref)
-        spec = element.header_spec or getattr(door_type, "header_spec", None)
-        host = plan.by_tag(element.host)
-        if (flat_header_member(spec) is not None
-                and getattr(host, "structural_role", None) is StructuralRole.NONBEARING):
-            out.add(element.tag)
-    return frozenset(out)
+    return frozenset(
+        member.opening_tag for wall in ctx.model.walls
+        if getattr(plan.by_tag(wall.tag), "structural_role", None) is StructuralRole.NONBEARING
+        for member in wall.members
+        if member.category == "header" and member.opening_tag
+        and _FLAT_PROFILE.match(member.profile))
 
 
 def _bearing_inset_m(ctx: CheckContext, cut) -> float | None:

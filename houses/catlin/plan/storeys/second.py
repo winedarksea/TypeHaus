@@ -302,7 +302,8 @@ WALLS = [
     # same place is a worse answer than one extra cut stud, so the UNKNOWN stands and says so.
     Wall(uid="CSW120AAAA", tag="W-S-SS1", start_node="N-S-C1", end_node="N-S-B1",
          assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9),
+         structural_role=StructuralRole.NONBEARING),
     # ** W-S-SS2 IS INT_2X4_RC, AND THE CHANNEL IS ON THE NORTH FACE. **
     # RM-S-BED1 (sleeping) on the north, RM-S-STUDY2 (office) on the south — the one
     # bedroom-facing partition left on the plain preset when INT_2X4_PARTITION lost its
@@ -343,15 +344,18 @@ WALLS = [
     Wall(uid="CSW122AAAA", tag="W-S-BW1", start_node="N-S-B1", end_node="N-S-B2",
          assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), interior_room="RM-S-HALL", top=ft(9),
-         alignment=face("stud-ext", offset=inch(-1.75))),
+         alignment=face("stud-ext", offset=inch(-1.75)),
+         structural_role=StructuralRole.NONBEARING),
     Wall(uid="CSW123AAAA", tag="W-S-BW2", start_node="N-S-B2", end_node="N-S-B3",
          assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), interior_room="RM-S-HALL", top=ft(9),
-         alignment=face("stud-ext", offset=inch(-1.75))),
+         alignment=face("stud-ext", offset=inch(-1.75)),
+         structural_role=StructuralRole.NONBEARING),
     Wall(uid="CSW124AAAA", tag="W-S-BW3", start_node="N-S-B3", end_node="N-S-B4",
          assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), interior_room="RM-S-HALL", top=ft(9),
-         alignment=face("stud-ext", offset=inch(-1.75))),
+         alignment=face("stud-ext", offset=inch(-1.75)),
+         structural_role=StructuralRole.NONBEARING),
     # W-S-BW4 stays a plain half-board partition like W-S-BW3. Their matching thicknesses
     # keep SF-S-HP1's east boundary rectangular at y=30'-10"; adding channel here would
     # create a 1/2" step in the soffit's footprint.
@@ -388,7 +392,8 @@ WALLS = [
          assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
          layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     Wall(uid="CSW143AAAA", tag="W-S-CLN", start_node="N-S-D2", end_node="N-S-C2",
-         assembly="INT_2X4_PARTITION_HALF", top=ft(9)),
+         assembly="INT_2X4_PARTITION_HALF", top=ft(9),
+         structural_role=StructuralRole.NONBEARING),
     # South wall — plain 2x4. Nothing actually backs onto this wall: the lav that used to
     # point its `wall_ref` here for the depth allowance stands against W-S-SN3 instead
     # (10.5" north of its centreline, `plan/fixtures.py`'s `FX-S-SUITEBATH-LAV`), so
@@ -396,7 +401,8 @@ WALLS = [
     Wall(uid="CSW144AAAA", tag="W-S-SBS", start_node="N-S-D3", end_node="N-S-C2B",
          assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), interior_room="RM-S-SUITEBATH", top=ft(9),
-         alignment=face("stud-ext", offset=inch(-1.75))),
+         alignment=face("stud-ext", offset=inch(-1.75)),
+         structural_role=StructuralRole.NONBEARING),
     # The suite's north wall: RM-S-SUITE (sleeping) on one face, the vanity alcove and suite
     # bath on the other. Both runs use the 6.5" staggered-stud assembly with 3.5" fiberglass
     # and 1/2" gypsum each face. W-S-SN1 retains Type X on both faces (the tested STC 45
@@ -451,7 +457,8 @@ WALLS = [
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9), stacks_on="W-M-HS3"),
     Wall(uid="CSW148AAAA", tag="W-S-VE", start_node="N-S-V1", end_node="N-S-V2",
          assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
+         structural_role=StructuralRole.NONBEARING),
     Wall(uid="CSW132AAAA", tag="W-S-BD-N", start_node="N-S-W1", end_node="N-S-V2",
          assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
@@ -626,7 +633,8 @@ OPENINGS = [
     # cannot be a fixed, gasketed, thermally broken unit. WIN-S-PLANT4 takes its station.
     # The study still reaches the balcony through D-S-BALCONY, which is what the source drew.
     Door(uid="CSD211AAAA", tag="D-S-BALCONY", host="W-S-S2", type_ref="DT-EXT-FRENCH60-CATALOG",
-         position=from_node("N-S-S1", inch(8.34375)), flip_swing=True),
+         position=from_node("N-S-S1", inch(8.34375)), flip_swing=True,
+         header_spec="2-2x8"),  # as D-M-PORCH (decision #116)
     # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap).
     # WIN-S-STUDY3 moved off its source position (y 3'-10") to y=5'-4" for an
     # exact 9'-0" rhythm on one sill line — within-storey rhythm wins over between-storey

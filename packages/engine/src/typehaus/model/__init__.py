@@ -103,6 +103,7 @@ from typehaus.model.floors import (
     SoffitOpening,
     Strongback,
 )
+from typehaus.model.framing_standards import HeaderStandard
 from typehaus.model.furniture_cut import FurnitureCut
 from typehaus.model.landscape import (
     AccentRule,
@@ -422,6 +423,7 @@ __all__ = [
     "Countertop", "MillworkStandard", "RoomTrim", "StairLandingMillwork", "ShelfBank", "ShelfBay",
     "DoorTrim", "StairSkirt", "TrimStandard", "TrimStock", "WindowStool",
     "DrywallStandard", "ShadowGapProfile", "TerminationBead", "PaintSpec", "PaintStandard",
+    "HeaderStandard",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
     "WallLiningException",

@@ -113,8 +113,10 @@ entry (`C2 E1` = C2.md, escalation E1). `carried` names the round-1 item.
 9. **14" north-entry pier cage at 0.806%** (C2 E6, F5-106) · **fixed 2026-11-05**: (6) #5
    (1.21% of gross) on PT-BW-W/-GW/-PE/-PNE, dowels lapped beside the verticals
    (`ENTRY_PIER_CAGE_14`, `notes/north_entry_piers.md` §13b). The 12" rounds keep (4) #5.
-10. **Header sizing** (C2 E5, F1-104) · carried. Headers are sized by a span-only ladder, and
-    nothing grades them against IRC Table R602.7(1). L.
+10. **Header sizing** (C2 E5, F1-104) · **fixed 2026-11-06** (decision #116): headers are
+    read off 2018 R602.7(1)/(2) at a load derived from the bearing refs (`structural.header_span`,
+    `structural.wall_role_load`); nonbearing heads up to 8' are flat. 12 header UNKNOWNs left for triage
+    (`plans/TODO.md`).
 11. **Interior stair guards drawn off the joist-top datum** (C1 E2, S1-105, S3-102/104) · new
     + carried.
     - Four surface guards sit 1.5" below the finished oak, and the interior guard type has no

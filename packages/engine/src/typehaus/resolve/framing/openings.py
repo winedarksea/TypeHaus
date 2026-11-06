@@ -17,7 +17,7 @@ from typehaus.model.door_hardware import JambFraming
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
 from typehaus.quantities import m as _m
-from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.header_choice import HeaderChoice, ladder_header
 from typehaus.resolve.framing.short_members import MIN_STUD_LINE_M
 from typehaus.resolve.framing.stud_module import OpeningStudModule, opening_stud_module
 from typehaus.resolve.framing.tables import (
@@ -25,10 +25,6 @@ from typehaus.resolve.framing.tables import (
     POCKET_SPLIT_STUD_MEMBER,
     POCKET_SPLIT_STUD_MEMBER_2X6,
     POCKET_SPLIT_STUD_SPACING,
-    flat_header_member,
-    header_depth,
-    header_profile_from_spec,
-    header_size,
     jamb_pack_counts,
     member_actual,
     opening_framing_pattern,
@@ -140,6 +136,17 @@ class WallOpening:
     jamb_framing: JambFraming | None = None
     #: ``Door.header_in_band``: the floor band is the header, so the wall frames none.
     header_in_band: str | None = None
+    #: The header ``frame_model`` chose (``framing/header_choice.py``); ``None`` (a bare
+    #: fixture) frames the authored spec or the span ladder.
+    header: HeaderChoice | None = None
+
+
+def pack_counts(opening: WallOpening) -> tuple[int, int]:
+    """(kings, jacks) per side: authored ``JambFraming``, the header's NJ, else the table."""
+    header = getattr(opening, "header", None)
+    return jamb_pack_counts(_m(opening.width_m), opening_framing_pattern(opening.operation),
+                            getattr(opening, "jamb_framing", None),
+                            header.jacks if header is not None else None)
 
 
 def frame_end_supported(opening: WallOpening, sign: int) -> bool:
@@ -199,9 +206,7 @@ def opening_exclusions(openings: list[WallOpening], stud_thickness_m: float,
     for opening in openings:
         if not needs_jamb_pack(opening, spacing_m, stud_thickness_m, phase_m):
             continue
-        kings, jacks = jamb_pack_counts(_m(opening.width_m),
-                                        opening_framing_pattern(opening.operation),
-                                        getattr(opening, "jamb_framing", None))
+        kings, jacks = pack_counts(opening)
         reach = (kings + jacks + 0.5) * stud_thickness_m + 0.005
         low = opening.center_m - opening.width_m / 2 - reach
         high = opening.center_m + opening.width_m / 2 + reach
@@ -244,9 +249,7 @@ def jamb_pack_stations(openings: list[WallOpening], stud_thickness_m: float,
     for opening in openings:
         if not needs_jamb_pack(opening, spacing_m, stud_thickness_m, phase_m):
             continue
-        pattern = opening_framing_pattern(opening.operation)
-        kings, jacks = jamb_pack_counts(
-            _m(opening.width_m), pattern, getattr(opening, "jamb_framing", None))
+        kings, jacks = pack_counts(opening)
         _mouth, closed = pocket_extent(opening)
         pocket_sign = 0 if not closed else (1 if opening.pocket_sign > 0 else -1)
         half = opening.width_m / 2
@@ -348,7 +351,7 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     pattern = opening_framing_pattern(opening.operation)
     thickness = member_actual(member)[0] * M_PER_IN  # stud face dimension along the wall
     jamb_framing = getattr(opening, "jamb_framing", None)
-    kings, jacks = jamb_pack_counts(_m(opening.width_m), pattern, jamb_framing)
+    kings, jacks = pack_counts(opening)
     center, half = opening.center_m, opening.width_m / 2
     # ``z0`` is where a vertical member BEARS — the top of the bottom plate, a plate above
     # the frame base. It is not the datum a sill is measured from: ``base_ref_z_m`` is, and
@@ -435,21 +438,8 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
         _frame_rough_sill(out, rw, direction, wall_start, opening, opening_index, member,
                           z0, sill_datum, cripples_at)
         return out
-    # An authored engineered header (e.g. '2-ply 14" LVL') replaces the table-sized
-    # member: the profile carries the ply count/width/depth structurally, and the depth
-    # comes from the profile itself. An unparseable spec falls back to the table rather
-    # than silently sizing a header off a typo.
-    engineered = (header_profile_from_spec(opening.header_spec)
-                  if opening.header_spec is not None else None)
-    flat = flat_header_member(opening.header_spec) is not None
-    if engineered is not None:
-        size = engineered
-        section = cross_section(engineered)
-        # R602.7.4's nailer is laid FLAT: its z extent is the 1 1/2" face, not the depth.
-        depth = section.width_m if flat else section.depth_m
-    else:
-        size = header_size(_m(opening.width_m), bearing=pattern.header_is_structural)
-        depth = header_depth(size, _m(opening.width_m)).meters
+    header = getattr(opening, "header", None) or ladder_header(opening)
+    size, depth, flat = header.profile, header.depth_m, header.flat
     out.append(FramedMember(rw.uid, f"header-{opening_index}", "header", size,
                             header_left, header_right, header_bottom,
                             header_bottom + depth, header_span,

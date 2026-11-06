@@ -22,7 +22,8 @@ is a table lookup; the judgement is the substitution in §3.
 | Term | Working | Value |
 |---|---|---|
 | Rough opening | authored width of `D-G-OVERHEAD` | **16'-0"** |
-| Host wall | `W-G-N`, the garage's north wall | gable end |
+| Host wall | `W-G-N`, the garage's north wall, NONBEARING | gable end |
+| What it carries | `RF-GARAGE` bears on `W-G-E`/`W-G-W` only; over the door stand the gable-end truss and the wall's own skin | no roof, no floor |
 | Header authored | `Door.header_spec` | **2-ply 14" LVL** |
 | Jacks each end | framed by the solver | **3** |
 | Ground snow | `Site.ground_snow_load_psf` | 50 psf |
@@ -40,18 +41,21 @@ p.9, **"Headers Supporting Roof"**, snow-load column at **115%** duration:
 A 3-1/2" x 14" Microllam is two 1-3/4" plies, which is the 2-ply 14" LVL the model authors.
 The opening is 16'-0" against the row's 16'-3", so the read is inside the row and not on it.
 
-## 3. The substitution, and why it is conservative
+## 3. The substitution: an envelope, not the load
 
-**The row is for a BEARING EAVE wall. `W-G-N` is a GABLE END.** A header in an eave wall
-picks up half the roof span; a header in a gable end picks up the rake, which is a fraction
-of it. Reading the eave row for a gable-end opening over-states the load, and that is the
-direction a substitution has to err in. It is recorded on the element's `condition` rather
-than quietly relied on, because a conservative read is still a read of a row that assumes
-something else.
+**The row is for a BEARING EAVE wall. `W-G-N` is a GABLE END, and it carries no roof.**
+`RF-GARAGE` names `W-G-E` and `W-G-W` as its bearing lines; the north wall stands under the
+gable-end truss, which bears on it continuously and sheds only its own weight and the rake's
+strip of sheathing into it. `structural.wall_role_load` finds nothing derivable on `W-G-N`
+(2026-11-06), which is why it is authored NONBEARING. Read that way the opening needs nothing
+past R602.7.4 — but a 16' opening is past that rule's 8', and an overhead door hangs its track
+and operator off the head, so the LVL stays (owner, 2026-11-05).
 
-Two smaller ones in the same direction: this site's **Ps is 35 psf** and the row is read at
-its **40 psf** column; and **three jacks** are framed each end against the row's **two
-trimmers**.
+The "Headers Supporting Roof" row is therefore a **conservative envelope**: it sizes the beam
+for half a 24'-wide roof it does not carry. Two smaller margins in the same direction: this
+site's **Ps is 35 psf** and the row is read at its **40 psf** column; and **three jacks** are
+framed each end against the row's **two trimmers**. The read is recorded on the element's
+`condition`, because an envelope is still a read of a row that assumes something else.
 
 ## 4. What is NOT graded here
 

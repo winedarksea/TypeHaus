@@ -90,7 +90,7 @@ def test_a_partition_in_a_bay_is_blocked_over(catlin_model_ro) -> None:
               for member in floor.members
               if member.child_key.startswith(PARTITION_BLOCK_PREFIX)}
     assert blocks, "catlin has partitions standing in a joist bay"
-    assert any(key.startswith(f"{PARTITION_BLOCK_PREFIX}W-M-HS4-") for key in blocks)
+    assert any(key.startswith(f"{PARTITION_BLOCK_PREFIX}W-M-STOS2-") for key in blocks)
 
 
 def test_the_blocking_is_not_read_back_as_the_structure_above(catlin_model_ro) -> None:

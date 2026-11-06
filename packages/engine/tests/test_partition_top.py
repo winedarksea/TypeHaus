@@ -82,12 +82,13 @@ def test_the_attic_plate_is_a_foot_below_the_deck_it_used_to_reach(catlin_model_
 def test_a_storey_line_partition_moves_its_plate_and_not_its_body(catlin_model_ro) -> None:
     """**The two-tops contract, as a test, so nobody re-collapses it.**
 
-    ``W-M-HS3`` is lifted through the main floor's joist band to the second-storey datum.
+    ``W-M-BAE`` is lifted through the main floor's joist band to the second-storey datum.
     Its plate stops 3/4" under the 11-7/8" I-joist soffit; its body still runs the full
     storey line, because that is what closes the band and what the stair enclosure and the
     wet walls are measured against.
     """
-    wall = catlin_model_ro.wall("W-M-HS3")
+    # W-M-HS3 until 2026-11-06, when FO-A-HALL's edge over it made it BEARING (#116).
+    wall = catlin_model_ro.wall("W-M-BAE")
     assert wall.plate_top_z_m / _IN == pytest.approx(107.375, abs=1e-6)
     assert wall.z1_m / _IN == pytest.approx(120.0, abs=1e-6)
 
@@ -140,8 +141,8 @@ def test_a_wall_something_bears_on_is_not_a_partition(catlin_model_ro, tag: str)
 
 
 def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) -> None:
-    """62 partitions, including the four new study return/rear segments and W-M-WELL (the
-    main stair's well partition, 2026-09-23).
+    """60 partitions, including the four new study return/rear segments and W-M-WELL (the
+    main stair's well partition, 2026-09-23); W-M-HS3/-HS4 left as BEARING (#116).
 
     Not a tautology: the pass MOVES the plate it selects on, so a full-height tolerance
     measured only upward would drop ``W-B-CE`` — whose plate lands 1-11/16" below its
@@ -153,7 +154,7 @@ def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) ->
     refs = bearing_ref_tags(catlin_model_ro.plan)
     tags = [w.tag for w in catlin_model_ro.walls
             if takes_a_deflection_gap(catlin_model_ro, w, refs)]
-    assert len(tags) == 62
+    assert len(tags) == 60
     assert "W-B-CE" in tags
     assert "W-M-WELL" in tags
 
@@ -195,10 +196,11 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     # 105 -> 106 (decision #112): W-B-CE, refused under SL-M-DECK, is under FS-M-NE's trusses
     # and bills the one rim its axis crosses at x=36' (a crossing outranks the parallel truss).
     # 106 -> 107 (2026-11-02): at 16" o.c. W-B-CE also crosses one FS-M-NE truss.
+    # 71 -> 63 blocked bays (2026-11-06): W-M-HS3/-HS4 are BEARING (#116), no gapped top.
     assert counts == {
         "partition top plate, perpendicular framing above": 107,
         "partition top plate, under a parallel member": 12,
-        "partition top plate, blocking between parallel members": 71,
+        "partition top plate, blocking between parallel members": 63,
     }
 
 

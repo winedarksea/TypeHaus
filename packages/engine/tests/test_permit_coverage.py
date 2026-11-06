@@ -151,7 +151,10 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 #
 # RAISED 25 -> 26 on 2026-11-02: "Foundation wall top restraint" (Minn. R. 1309.0404) was
 # on no line; staged while W-B-N2's restraint at the stair well waits on an EOR detail.
-MAX_NON_BLOCKING_ITEMS = {"mn-2020": 26}
+#
+# RAISED 26 -> 27 on 2026-11-06: "Headers up to 8' (IRC R602.7 tables) and wall roles"
+# (decision #116); staged while catlin triages 13 header UNKNOWNs (plans/TODO.md).
+MAX_NON_BLOCKING_ITEMS = {"mn-2020": 27}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*

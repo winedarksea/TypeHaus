@@ -745,7 +745,8 @@ WALLS = [
     # solid-core pair, gasketed). Staggered studs: it is the long wall between the playroom and the gym,
     # and it also runs under the concrete band, so it wants the sound break.
     Wall(uid="CBW115AAAA", tag="W-B-CE", start_node="N-B-C",
-         end_node="N-B-E1", assembly="INT_2X6_STAGGERED_PLUMBING_HALF", top=ft(8)),
+         end_node="N-B-E1", assembly="INT_2X6_STAGGERED_PLUMBING_HALF", top=ft(8),
+         structural_role=StructuralRole.NONBEARING),
     # Stair shaft's west wall — 2x6 bearing studs on x=10', full north-row depth
     # (reference: "Stairway 7' x 16' 6 1/2""). Framed, not poured: it
     # holds back no earth (`unbalanced_fill` was ft(0) the whole time it was concrete), and
@@ -890,7 +891,8 @@ WALLS = [
     # top=ft(8) is the bearing seat like every other partition in this basement.
     Wall(uid="CQRJZCM0R1", tag="W-B-HALL-W", start_node="N-B-BA-SE",
          end_node="N-B-HALL-S", assembly="INT_2X6_PLUMBING_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(8)),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(8),
+         structural_role=StructuralRole.NONBEARING),
     # ** RETYPED AND RE-NODED 2026-09-05, AND IT IS DRY NOW. ** This was the stair-foot
     # bathroom's only framed wall and it carried the whole room's plumbing. What is left
     # here is the bathroom's north end: a plain 2x4 partition running

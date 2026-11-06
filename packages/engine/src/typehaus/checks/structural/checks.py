@@ -10,7 +10,7 @@ from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.engineering import item_id
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.enums import LayerFunction, StructuralRole
+from typehaus.model.enums import LayerFunction
 from typehaus.model.structure import Footing, FoundationWall
 from typehaus.resolve.solid_categories import in_slab_family
 
@@ -50,89 +50,6 @@ _FLOOR_LIVE_LOAD_PSF = 40.0
 # Widest span ``resolve.framing.tables.header_size`` still answers prescriptively (R602.7);
 # anything longer is an engineered beam in that table and here.
 _PRESCRIPTIVE_HEADER_SPAN_FT = 8.0
-
-
-def _spans_station(axis, member, station_m: float) -> bool:
-    """Whether a horizontal ``member`` runs over ``station_m`` along ``axis``."""
-    (ax, ay), (bx, by) = axis
-    run = ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5 or 1.0
-    ends = [((p[0] - ax) * (bx - ax) + (p[1] - ay) * (by - ay)) / run
-            for p in (member.p0, member.p1)]
-    return min(ends) <= station_m <= max(ends)
-
-
-@check(Tier.STRUCTURAL, "structural.flat_2x4_nonbearing_header")
-def flat_2x4_nonbearing_header(ctx: CheckContext) -> list[Finding]:
-    """Validate the deliberately narrow R602.7.4 flat-nailer exception.
-
-    A flat 2x4 is not a small bearing header.  It is permitted only for a nonbearing
-    partition, a modest opening, and where the plate is near enough to nail the wall
-    above the opening together.
-
-    R602.7.4 reads "a single flat 2-inch by 4-inch member". A ``flat 2xN`` spec (a flat 2x8
-    in a 2x8 wall, so both faces have a nailer) is this engine's reading of that rule, not
-    its text: a wider flat member of the same thickness is conservative, not code-named.
-    """
-    if ctx.plan is None:
-        return []
-    from typehaus.resolve.framing.tables import flat_header_member
-
-    out: list[Finding] = []
-    authored_by_tag = {element.tag: element for element in ctx.plan.all_elements()}
-    types = {item.tag: item for item in ctx.plan.library.door_types}
-    for opening in ctx.model.openings:
-        if not opening.is_door:
-            continue
-        authored = authored_by_tag.get(opening.tag)
-        spec = getattr(authored, "header_spec", None)
-        if spec is None:
-            spec = getattr(types.get(opening.type_ref), "header_spec", None)
-        if flat_header_member(spec) is None:
-            continue
-        host = authored_by_tag.get(opening.host_wall)
-        wall = ctx.model.wall(opening.host_wall)
-        violations: list[str] = []
-        if (getattr(host, "structural_role", StructuralRole.UNKNOWN)
-                is not StructuralRole.NONBEARING):
-            violations.append("host wall is not explicitly NONBEARING")
-        if opening.width_m > 8.0 * 0.3048 + 1e-9:
-            violations.append(f"RO is {opening.width_m / 0.0254:.1f}\" wide (> 96\")")
-        if wall is not None:
-            plate_top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
-            # The plate *underside* the header nails against: the framed top plates where
-            # they resolve (a nonbearing wall may take one, R602.5), else the standard two
-            # 1-1/2 in courses under the wall's top. Only the plates over this opening: a
-            # stepped wall's lowest plate elsewhere is not what this header nails to.
-            centre = opening.center_along_m
-            top_plates = [member.z0_m for member in wall.members
-                          if member.category == "plate"
-                          and member.child_key.startswith("plate-top")
-                          and _spans_station(wall.axis, member, centre)]
-            plate_underside = (min(top_plates) if top_plates
-                               else plate_top - 3.0 * 0.0254)
-            # The resolved nailer's own top: it is laid flat, 1 1/2" and not its depth.
-            header_top = next(
-                (member.z1_m for member in wall.members
-                 if member.category == "header" and member.opening_tag == opening.tag),
-                wall.base_ref_z_m + opening.sill_m + opening.height_m + 1.5 * 0.0254)
-            gap = plate_underside - header_top
-            if gap < -1e-9 or gap > 24.0 * 0.0254 + 1e-9:
-                violations.append(
-                    f"header-to-plate nailing surface is {gap / 0.0254:.1f}\" "
-                    "(must be 0–24\")"
-                )
-        if violations:
-            out.append(_advisory(
-                "structural.flat_2x4_nonbearing_header",
-                f"opening {opening.tag} cannot use a flat 2x4 nonbearing header: "
-                + "; ".join(violations), (opening.tag,), Result.FAIL,
-                code="IRC R602.7.4",
-                fix_hint="use a table-sized header or explicitly correct the nonbearing "
-                         "wall, RO, and plate clearance",
-            ))
-    return out
-
-
 
 
 @check(Tier.STRUCTURAL, "structural.header_prescriptive")

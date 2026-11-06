@@ -474,7 +474,8 @@ WALLS = [
     Wall(uid="CMW106AAAA", tag="W-M-N2", start_node="N-M-N1", end_node="N-M-N2",
          layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="EXT_2X6_BOARD_BATTEN", alignment=face("sheathing-ext"), top=ft(9),
-         structural_role=StructuralRole.NONBEARING),
+         # ST-M2S's landing is ledgered to it (structural.wall_role_load).
+         structural_role=StructuralRole.BEARING),
     # Split at N-M-MECH3, where RM-M-MECH's east wall tees into the north wall
     # (2026-07-28, MEP shaft closet). W-M-N3B carries the actual NW building corner —
     # its four-stud pack now comes from the assembly's own ``corner_style``, not a
@@ -636,11 +637,14 @@ WALLS = [
          alignment=face("staggered-studs-ext", offset=inch(-1.75)), top=ft(9)),
     Wall(uid="CMW120AAAA", tag="W-M-STOS2", start_node="N-M-BA1",
          end_node="N-M-STRJ", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9),
+         # BM-S-BATH-E lands on the N-S-BA1 corner over N-M-STRJ: W-M-STRW's (#116).
+         structural_role=StructuralRole.NONBEARING),
     # --- powder bath west of hallway -------------------------------------------
     Wall(uid="CMW121AAAA", tag="W-M-BAE", start_node="N-M-BA1",
          end_node="N-M-BA2", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
+         structural_role=StructuralRole.NONBEARING),
     # --- hallway south wall band ------------------------------------------------
     # W-M-HS1 is a wet wall since 2026-08-29, not the 2x4 partition it was: the RM-M-BATH2
     # drop-in bath pass moved FX-M-BATH2-WC off the middle of the floor and backed it onto
@@ -684,11 +688,13 @@ WALLS = [
     Wall(uid="CMW124AAAA", tag="W-M-HS3", start_node="N-M-D1",
          end_node="N-M-E3", assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
-         alignment=face("center", offset=inch(1))),
+         alignment=face("center", offset=inch(1)),
+         structural_role=StructuralRole.BEARING),
     Wall(uid="CMW125AAAA", tag="W-M-HS4", start_node="N-M-E3",
          end_node="N-M-C2", assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9),
-         alignment=face("center", offset=inch(1))),
+         alignment=face("center", offset=inch(1)),
+         structural_role=StructuralRole.BEARING),  # FO-A-HALL lands on W-S-SN3 above
     # --- bath2 / laundry / study / closet block ---------------------------------
     Wall(uid="CMW126AAAA", tag="W-M-BA2E", start_node="N-M-D1",
          end_node="N-M-D2", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
@@ -834,14 +840,17 @@ WALLS = [
     # cavity for the 3/4" PEX riser, and D-M-BATH2 remains hosted here.
     Wall(uid="CMW131AAAA", tag="W-M-BDN1", start_node="N-M-W3",
          end_node="N-M-D3", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), interior_room="RM-M-BED", top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), interior_room="RM-M-BED", top=ft(9),
+         structural_role=StructuralRole.NONBEARING),
     Wall(uid="CMW132AAAA", tag="W-M-BDN2", start_node="N-M-D3",
-         end_node="N-M-C1", assembly="INT_2X4_PARTITION_HALF", top=ft(9)),
+         end_node="N-M-C1", assembly="INT_2X4_PARTITION_HALF", top=ft(9),
+         structural_role=StructuralRole.NONBEARING),
     # --- RM-M-MECH: framed MEP shaft closet, NW corner -------------
     # Lay out west to east so the shifted D-M-MECH interrupts only one module stud.
     Wall(uid="CMW137AAAA", tag="W-M-MECH-S", start_node="N-M-MECH1",
          end_node="N-M-MECH2", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
+         structural_role=StructuralRole.NONBEARING),
     Wall(uid="CMW138AAAA", tag="W-M-MECH-E", start_node="N-M-MECH2",
          end_node="N-M-MECH3", assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9)),
@@ -853,7 +862,8 @@ WALLS = [
     # Lay out from the east end so the shifted bypass cuts only three module studs.
     Wall(uid="KKVYSAJKZF", tag="W-M-MUDC-N", start_node="N-M-MUDC2", end_node="N-M-MUDC1",
          assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
+         structural_role=StructuralRole.NONBEARING),
     Wall(uid="21GE85HJDT", tag="W-M-MUDC-E", start_node="N-M-MUDC2", end_node="N-M-BA1",
          assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
@@ -1096,6 +1106,8 @@ OPENINGS = [
     # above (owner, 2026-10-29: the mirrored facade beats the stud module, suppressed).
     Door(uid="CMD202AAAA", tag="D-M-PORCH", host="W-M-S2", type_ref="DT-EXT-FRENCH60",
          position=from_node("N-M-S1", inch(8.34375)), flip_swing=True,
+         # 63" glazed pair: a 2-2x8 on edge, not the derived flat nailer (owner, #116).
+         header_spec="2-2x8",
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
              exterior_wrap_material_ref="metal-dark-exterior",
              sill_design=ExteriorDoorSillDesign(
