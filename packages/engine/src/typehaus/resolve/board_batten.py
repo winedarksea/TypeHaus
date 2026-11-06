@@ -79,8 +79,11 @@ def _opening_cut(wall, opening, project):
         )
     )[0]
     half = opening.width_m / 2
-    bottom = wall.base_ref_z_m + opening.sill_m
-    top = bottom + opening.height_m
+    top = wall.base_ref_z_m + opening.sill_m + opening.height_m
+    # A cladding is a skin: under a seated exterior door it stops at the datum, as in
+    # ``geometry_walls.layer_solids``.
+    skin_sill = getattr(opening, "skin_sill_m", None)
+    bottom = wall.base_ref_z_m + (opening.sill_m if skin_sill is None else skin_sill)
     rise = opening.arch_rise_m
     ring = [(center - half, bottom), (center + half, bottom)]
     if rise > CLIP_TOLERANCE_M:

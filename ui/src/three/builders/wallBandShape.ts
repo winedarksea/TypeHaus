@@ -50,6 +50,7 @@ function withoutRepeats(points: readonly Point[]): Point[] {
 
 function bandCuts(
   band: WallBand, wall: Wall, openings: readonly Opening[], soffits: ArchSoffitCylinder[],
+  skin: boolean,
 ): BandCut[] {
   const { minAlong, maxAlong, bandBottom, bandTop } = band;
   const clampY = (elevation: number) => Math.min(bandTop, Math.max(bandBottom, elevation));
@@ -64,7 +65,9 @@ function bandCuts(
     // negative, and disagree with the wall solids (resolve/geometry_walls.py, and
     // wallLayerPieces, which both measure from the threshold).
     const threshold = baseRefZ(wall) + opening.sill_m;
-    const bottom = clampY(threshold);
+    // A skin under a seated exterior door is cut from the datum (`skin_sill_m`).
+    const bottom = clampY(skin && opening.skin_sill_m != null
+      ? baseRefZ(wall) + opening.skin_sill_m : threshold);
     // An opening that misses this band entirely cuts nothing from it: the plinth course
     // under a door's threshold is solid brick, and so is the field above its arch.
     if (end - start <= EPS || bottom >= bandTop - EPS ||
@@ -157,10 +160,10 @@ function segmentShape(
  * does to the wall.
  */
 export function wallBandShapes(
-  band: WallBand, wall: Wall, openings: readonly Opening[],
+  band: WallBand, wall: Wall, openings: readonly Opening[], skin = false,
 ): { shapes: THREE.Shape[]; soffits: ArchSoffitCylinder[] } {
   const soffits: ArchSoffitCylinder[] = [];
-  const cuts = bandCuts(band, wall, openings, soffits);
+  const cuts = bandCuts(band, wall, openings, soffits, skin);
   const parting = cuts.filter((c) => c.touchesBottom && c.touchesTop)
     .sort((a, b) => a.start - b.start);
   const shapes: THREE.Shape[] = [];

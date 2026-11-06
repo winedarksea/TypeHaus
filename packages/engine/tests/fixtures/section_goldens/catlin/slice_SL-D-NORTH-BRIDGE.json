@@ -2302,11 +2302,11 @@
         ],
         [
           431.50000000000006,
-          0.7499999999999999
+          0.0
         ],
         [
           426.00000000000006,
-          0.7499999999999999
+          0.0
         ]
       ],
       "pattern": "batt",
@@ -2343,27 +2343,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "fiberglass"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          425.50000000000006,
-          0.0
-        ],
-        [
-          425.50000000000006,
-          0.7499999999999999
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW107AAAA",
-      "tag": "W-M-N3/paint",
-      "material": "paint-wall"
     },
     {
       "space": "model",

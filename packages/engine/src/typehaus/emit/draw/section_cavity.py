@@ -70,14 +70,18 @@ def emit_wall_cavity(b, model, wall, plane: CutPlane, crop, is_detail, min_draw,
             # around an opening has to happen here or the batt draws across the window.
             cutting = [op for op in openings if cuts_layer(wall, layer.name, op)]
             for (z0, z1, void) in opening_splits(wall, cutting, plane.axis,
-                                                  plane.station_m, rz0, rz1):
+                                                  plane.station_m, rz0, rz1, skin=True):
                 if void:
                     continue
                 b.extend(rect_nodes(ru0, ru1, z0, z1, aia, pattern, wall.uid, tag,
                                     outline=False, material=layer.material_ref))
 
-def opening_splits(wall, openings, direction, station, z0, z1):
-    """Split a wall's z-band where the cut passes through an opening."""
+def opening_splits(wall, openings, direction, station, z0, z1, skin=False):
+    """Split a wall's z-band where the cut passes through an opening.
+
+    ``skin``: a non-structure layer, cut from the datum under a seated exterior door
+    (``skin_sill_m``, as ``geometry_walls.layer_solids`` does).
+    """
     (sx, sy), (ex, ey) = wall.axis
     length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5
     if length < 1e-9:
@@ -97,8 +101,9 @@ def opening_splits(wall, openings, direction, station, z0, z1):
     if not cut_openings:
         return [(z0, z1, False)]
     op = cut_openings[0]
-    sill_z = wall.base_ref_z_m + op.sill_m
-    head_z = sill_z + op.height_m
+    head_z = wall.base_ref_z_m + op.sill_m + op.height_m
+    skin_sill = getattr(op, "skin_sill_m", None) if skin else None
+    sill_z = wall.base_ref_z_m + (op.sill_m if skin_sill is None else skin_sill)
     if sill_z > z0:
         bands.append((z0, min(sill_z, z1), False))
     v0, v1 = max(sill_z, z0), min(head_z, z1)
@@ -118,7 +123,7 @@ def emit_wall_coatings(b, model, wall, plane: CutPlane, crop, wall_top) -> None:
         z0, z1 = layer.band(wall)
         for (u0, _u1) in ring_intervals(layer.polygon, plane):
             for (s0, s1, void) in opening_splits(wall, openings, plane.axis, plane.station_m,
-                                                 z0, min(z1, wall_top)):
+                                                 z0, min(z1, wall_top), skin=True):
                 rect = None if void else clip_rect(u0 - 1e-9, u0 + 1e-9, s0, s1, crop)
                 if rect is None:
                     continue

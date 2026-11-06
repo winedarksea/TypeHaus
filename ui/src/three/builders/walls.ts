@@ -174,12 +174,14 @@ export function buildWall(
     // so the clamp has no live subject and the rule stays because `Layer.slot` does.
     // A blind recess cuts only the layers the engine says its depth reaches.
     const layerOpenings = openings.filter((op) => !op.cut_layers || op.cut_layers.includes(ly.name));
-    const smoothArchGeometry = ly.surface_mesh ? null : createSmoothArchedWallLayerGeometry(w, ly.polygon, layerOpenings, center, ly);
+    const skin = ly.function !== "structure";
+    const smoothArchGeometry = ly.surface_mesh ? null
+      : createSmoothArchedWallLayerGeometry(w, ly.polygon, layerOpenings, center, ly, skin);
     const geometries: (THREE.BufferGeometry | null)[] = ly.surface_mesh
       ? [createSurfaceMeshGeometry(ly.surface_mesh, center)]
       : smoothArchGeometry
       ? [smoothArchGeometry]
-      : clampPiecesToBand(wallLayerPieces(w, ly.polygon, layerOpenings, ly.function !== "structure"), ly).map((piece) => piece.topIsRaked
+      : clampPiecesToBand(wallLayerPieces(w, ly.polygon, layerOpenings, skin), ly).map((piece) => piece.topIsRaked
         ? createRakedPlanPrismGeometry(piece.polygon, piece.z0_m,
           (point) => bodyTopAt(w, point[0], point[1]), center)
         : createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center));
@@ -335,7 +337,7 @@ function applySmoothArchSoffitNormals(
 // junction-mitered wall layers whose non-rectangular plan footprint cannot be swept safely.
 export function createSmoothArchedWallLayerGeometry(
   wall: Wall, polygon: readonly [number, number][], openings: Opening[], center: PlanCenter,
-  band?: { z0_m?: number | null; z1_m?: number | null },
+  band?: { z0_m?: number | null; z1_m?: number | null }, skin = false,
 ): THREE.BufferGeometry | null {
   if (!openings.some((opening) => (opening.arch_rise_m ?? 0) > 1e-9) ||
       wall.top_z0_m != null || wall.top_z1_m != null) return null;
@@ -353,7 +355,7 @@ export function createSmoothArchedWallLayerGeometry(
   // see builders/wallBandShape.ts. A clamped hole edge would be swept as a strip lying on the
   // band boundary, right across the opening.
   const { shapes, soffits } = wallBandShapes(
-    { minAlong, maxAlong, bandBottom, bandTop }, wall, openings);
+    { minAlong, maxAlong, bandBottom, bandTop }, wall, openings, skin);
   if (shapes.length === 0) return null;
   const geometry = new THREE.ExtrudeGeometry(shapes, {
     depth: maxAcross - minAcross, bevelEnabled: false, curveSegments: 1,
