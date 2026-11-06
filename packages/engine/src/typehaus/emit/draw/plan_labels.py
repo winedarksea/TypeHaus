@@ -28,7 +28,7 @@ from __future__ import annotations
 
 from math import gcd
 
-from shapely.geometry import Polygon
+from shapely.geometry import Point, Polygon
 from shapely.geometry import box as shapely_box
 
 from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE
@@ -240,14 +240,29 @@ def _overlaps(box: tuple[float, float, float, float],
 #: *into* the room beside the block, not above it, so ``CLOSET``'s three lines cleared
 #: ``D14`` at no vertical offset the room had room for.
 _DODGE_STEPS = sorted(
-    ((dx, dy) for dx in (0, 1, -1, 2, -2) for dy in (0, 1, -1, 2, -2, 3, -3)),
+    ((dx, dy) for dx in (0, 1, -1, 2, -2) for dy in range(-6, 7)),
     key=lambda d: (abs(d[0]) + abs(d[1]), abs(d[0])))
+
+
+def _two_lines(text: str) -> list[str]:
+    """``text`` broken once, at the word gap that leaves the shorter longest line."""
+    words = text.split()
+    if len(words) < 2:
+        return [text]
+    cuts = [(" ".join(words[:i]), " ".join(words[i:])) for i in range(1, len(words))]
+    return list(min(cuts, key=lambda c: max(len(c[0]), len(c[1]))))
+
+
+#: The spill search: half-width steps across, half-line steps up and down.
+_SPILL_STEPS = sorted(
+    ((dx, dy) for dx in (0, 0.5, -0.5, 1, -1) for dy in range(-6, 7)),
+    key=lambda d: (abs(d[0]) + abs(d[1]) / 2, abs(d[0])))
 
 
 def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: Ring,
                  avoid: list[tuple[float, float, float, float]],
                  prefer: list[tuple[float, float, float, float]] = (),
-                 scale: float = PLAN_RESERVATION_SCALE,
+                 scale: float = PLAN_RESERVATION_SCALE, spill: bool = False,
                  ) -> tuple[tuple[float, float], list[tuple[str, float]]]:
     """Where the block goes and which of its lines survive: inside the room, clear of ``avoid``.
 
@@ -290,8 +305,38 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
                 extents = _block_box(anchor, trial, scale)
                 if poly.contains(shapely_box(*extents)) and not _overlaps(extents, obstacles):
                     return anchor, trial
-    # Nowhere clear: the name alone, so the overprint is one line, not the whole stack.
-    return _clamped_anchor(at, lines[:1], ring, scale), lines[:1]
+    if not spill:  # a void's note keeps the old last resort; ``spill`` is a room's name
+        return _clamped_anchor(at, lines[:1], ring, scale), lines[:1]
+    # A name wider than its room (``MUD CLOSET`` at 3/32") wraps a word to a line, then
+    # drops to ``TAG_PT`` (3/32" caps, the NCS minimum), and only then spills past the
+    # partition (anchored in the room). Never through another label (D1-109).
+    name = lines[:1]
+    text, size = name[0]
+    small = min(size, TAG_PT)
+    two = _two_lines(text)
+    trials = [name, [(w, size) for w in two], [(text, small)], [(w, small) for w in two]]
+    for contained in (True, False):
+        for trial in dict.fromkeys(tuple(t) for t in trials):
+            step_x = _block_half_width(trial, scale)
+            for dx, dy in _SPILL_STEPS:
+                anchor = (at[0] + dx * step_x, at[1] + dy * step_y)
+                box = _block_box(anchor, trial, scale)
+                inside = (poly.contains(shapely_box(*box)) if contained
+                          else poly.contains(Point(anchor)))
+                if inside and not _overlaps(box, avoid):
+                    return anchor, list(trial)
+    # Nowhere clear: the name where it overprints the fewest labels, still in its room.
+    best = min(((sum(_overlaps(box, [o]) for o in avoid),
+                 round(shapely_box(*box).difference(poly).area, 2), rank, anchor, trial)
+                for rank, trial in enumerate(dict.fromkeys(tuple(t) for t in trials))
+                for dx, dy in _SPILL_STEPS
+                for anchor in [(at[0] + dx * _block_half_width(trial, scale),
+                                at[1] + dy * step_y)]
+                for box in [_block_box(anchor, trial, scale)]
+                if poly.contains(Point(anchor))), default=None)
+    if best is None:
+        return _clamped_anchor(at, name, ring, scale), name
+    return best[3], list(best[4])
 
 
 def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
@@ -313,9 +358,12 @@ def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
     def _record(at: tuple[float, float], lines: list[tuple[str, float]]) -> None:
         boxes.append(_block_box(at, lines, scale))
 
-    for room in model.rooms:
-        if room.storey != storey or len(room.clear_face) < 3:
-            continue
+    # Smallest room first: a closet has one place its name fits, the living room has many,
+    # and every block placed is an obstacle for the next (D1-109, I3-007).
+    rooms = sorted((r for r in model.rooms
+                    if r.storey == storey and len(r.clear_face) >= 3),
+                   key=lambda r: (r.area_m2, r.tag))
+    for room in rooms:
         cx, cy = _inside_point(room.clear_face)
         # The clear-height note is a floor-to-ceiling dimension a reader measures with a
         # tape from the finished floor, so it takes the finished plane — the same datum
@@ -338,7 +386,8 @@ def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
         if len(noted) == 1:
             lines.append((noted[0][0], TAG_PT))
         lines = _fitted_lines(lines, room.clear_face, scale)
-        (cx, cy), lines = _place_block((cx, cy), lines, room.clear_face, avoid, prefer, scale)
+        (cx, cy), lines = _place_block((cx, cy), lines, room.clear_face, [*avoid, *boxes],
+                                       prefer, scale, spill=True)
         pitch = block_pitch_m(scale)
         for index, (content, height_pt) in enumerate(lines):
             b.add(Text(anchor=_in((cx, cy - index * pitch)),

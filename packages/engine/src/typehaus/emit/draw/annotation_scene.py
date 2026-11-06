@@ -58,7 +58,16 @@ def _obstacles(scene: Scene, request_uids: set[str], frame: Frame,
 
 def resolve_scene_annotations(scene: Scene, frame: Frame) -> Scene:
     """Resolve requests once at the chosen sheet scale and replace their seed text nodes."""
+    from typehaus.emit.draw.annotation_layout_detail import DetailLayoutRequest, layout_detail
+
     scene = resolve_ladders(scene, _model_viewport(frame), frame.scale)
+    scene = _resolve_points(scene, frame)
+    if any(isinstance(item, DetailLayoutRequest) for item in scene.annotation_requests):
+        scene = layout_detail(scene, frame)
+    return scene
+
+
+def _resolve_points(scene: Scene, frame: Frame) -> Scene:
     requests = tuple(item for item in scene.annotation_requests
                      if isinstance(item, AnnotationRequest))
     if not requests:

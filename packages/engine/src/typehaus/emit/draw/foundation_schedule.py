@@ -13,12 +13,17 @@ from __future__ import annotations
 import math
 from collections import Counter
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from typehaus.emit.draw.foundation_notes import (
     _under_slab_note,
     foundation_general_notes,
     foundation_sheet_findings,
+)
+from typehaus.emit.draw.foundation_reinforcement import (
+    _cover_text,
+    column_reinforcement_schedule,
+    reinforcement_schedule,
 )
 from typehaus.emit.draw.schedule_block import ScheduleTable
 from typehaus.emit.draw.structural_common import (
@@ -40,16 +45,14 @@ from typehaus.resolve.model import ResolvedModel, ResolvedSolid, ResolvedWall
 from typehaus.resolve.room_lookup import axis_ring
 from typehaus.resolve.solid_categories import is_pour_slab
 
-if TYPE_CHECKING:
-    from typehaus.model.assembly import ConcreteSpec
-    from typehaus.model.rebar import ReinforcementSpec
-
-# The notes half moved to ``foundation_notes`` and is re-exported here: S-100's builder and
-# two test modules import it from this module, and the split is an internal one.
+# The notes half moved to ``foundation_notes`` and the steel to ``foundation_reinforcement``;
+# both are re-exported here, because S-100's builder and the tests import them from here.
 __all__ = [
     "FoundationMarks",
+    "_cover_text",
     "bearing_solids",
     "build_foundation_schedules",
+    "column_reinforcement_schedule",
     "footing_steps",
     "foundation_general_notes",
     "foundation_marks",
@@ -179,12 +182,12 @@ def _wall_key(wall: ResolvedWall) -> tuple:
 
 def build_foundation_schedules(model: ResolvedModel) -> list[ScheduleTable]:
     """The keyed S-100 schedules: footings/pads, foundation walls, slabs on grade,
-    sill anchorage, reinforcement. An empty table is dropped rather than printed as a
-    heading over nothing."""
+    sill anchorage, reinforcement, the cast columns' cages. An empty table is dropped rather
+    than printed as a heading over nothing."""
     marks = foundation_marks(model)
     tables = [_bearing_schedule(model, marks), _wall_schedule(model, marks),
               _slab_schedule(model, marks), anchorage_schedule(model),
-              reinforcement_schedule(model)]
+              reinforcement_schedule(model), column_reinforcement_schedule(model)]
     return [table for table in tables if table.rows]
 
 
@@ -436,87 +439,3 @@ def _mudsill_anchor_schedule_rows(model: ResolvedModel) -> list[tuple[str, ...]]
             f"{feet_inches(rules.mudsill_anchor_pitch_ft / M_TO_FT)} O.C.",
             str(count), walls))
     return rows
-
-
-def reinforcement_schedule(model: ResolvedModel) -> ScheduleTable:
-    """The steel in the foundation pours, one row per bar role.
-
-    Reads ``ReinforcementSpec`` off the elements S-100 draws and prints nothing where a
-    pour carries none: ACI 318-19 §14.1.4 permits plain concrete in a footing, so an absent
-    spec is legal, not a hole to fill with a plausible mat. ELEMENT keys back through the
-    sheet's own marks (FW1, F2, S3), which the reader can find on the drawing.
-    """
-    from typehaus.resolve.concrete import concrete_spec_of
-
-    marks = foundation_marks(model)
-    mark_of = {**marks.wall, **marks.footing, **marks.pad, **marks.slab}
-    grouped: dict[tuple[str, str, str], list[tuple[str, str]]] = {}
-    specs: dict[tuple[str, str, str], ReinforcementSpec] = {}
-    for element in _reinforced_elements(model):
-        spec = element.reinforcement
-        key = (element.element_kind, spec.model_dump_json()
-               if hasattr(spec, "model_dump_json") else repr(spec),
-               _cover_text(spec, concrete_spec_of(model.plan, getattr(element, "assembly",
-                                                                     None))))
-        grouped.setdefault(key, []).append(
-            (mark_of.get(element.tag, element.tag), element.tag))
-        specs[key] = spec
-    rows: list[tuple[str, ...]] = []
-    for index, (key, members) in enumerate(sorted(grouped.items(),
-                                                  key=lambda item: item[0][0]), start=1):
-        spec = specs[key]
-        element_kind, _identity, cover = key
-        keys = _abbreviate(", ".join(sorted({mark for mark, _tag in members})), 20)
-        lap = spec.lap_class or "—"
-        # One row per group, the roles in one cell: rows are this sheet's height and its scale
-        # (tests/test_schedule_columns.py), and a group reads as one schedule line anyway.
-        rows.append((f"R{index}", f"{keys} ({len(members)})",
-                     " + ".join(_bar_text(bar) for bar in spec.bars), cover, lap))
-    return ScheduleTable(
-        title="FOUNDATION REINFORCEMENT SCHEDULE",
-        columns=("MARK", "ELEMENT", "STEEL", "COVER", "LAP"),
-        rows=tuple(rows),
-    )
-
-
-_ROLE_ABBREV = {"vertical": "V", "horizontal": "H", "top-x": "TX", "top-y": "TY",
-                "bottom-x": "BX", "bottom-y": "BY", "ties": "TIES", "stirrups": "STIR",
-                "dowels": "DWL", "rib": "RIB"}
-
-
-def _bar_text(bar) -> str:
-    """``V #5 @ 41"``, ``H (3) #4``, ``DWL #6`` — role, count or spacing, layers, zone."""
-    quantity = (f' @ {bar.spacing.inches:g}"' if bar.spacing is not None
-                else f" ({bar.count})" if bar.count is not None else "")
-    text = f"{_ROLE_ABBREV.get(bar.role, bar.role.upper())} #{bar.bar}{quantity}"
-    if bar.layers > 1:
-        text += f" x{bar.layers}"
-    if bar.zone is not None:
-        text += f" {bar.zone.feet:g}' EA END"
-    return text
-
-
-def _reinforced_elements(model: ResolvedModel) -> list[Any]:
-    """Foundation-scope pours carrying an authored ``ReinforcementSpec``, in tag order.
-    The four kinds this sheet draws as foundation, plus a cast ``Beam`` (a grade beam); a cast
-    pier is a ``Post`` with a cage of its own, scheduled with the column it is."""
-    kinds = {"FoundationWall", "Footing", "Pad", "Slab", "Beam"}
-    # A slab only where the sheet marks it (on grade): a suspended deck's steel is not a
-    # foundation schedule's, and its rows cost this sheet its scale.
-    on_grade = {slab.tag for slab in slabs_on_grade(model)}
-    return sorted((element for element in model.plan.all_elements()
-                   if element.element_kind in kinds
-                   and (element.element_kind != "Slab" or element.tag in on_grade)
-                   and getattr(element, "reinforcement", None) is not None),
-                  key=lambda element: element.tag)
-
-
-def _cover_text(spec: ReinforcementSpec, concrete: ConcreteSpec | None) -> str:
-    """The element's own cover, else the mix's, else the truth. The element outranks the
-    mix by design: a stem cast against earth buys cover the plant ticket knows nothing
-    about."""
-    if spec.cover is not None:
-        return inches_text(spec.cover.inches)
-    if concrete is not None and concrete.cover is not None:
-        return f"{inches_text(concrete.cover.inches)} (MIX)"
-    return "NOT STATED"

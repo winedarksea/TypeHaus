@@ -1,11 +1,14 @@
 """The P/M/E trade sheets of ``build_sheet_index`` (split out of ``sheets.py``)."""
 from __future__ import annotations
 
+from functools import partial
+
 from typehaus.emit.draw.datum import at_level
 from typehaus.emit.draw.drainageplan import build_drainage_plan, has_drainage_content
 from typehaus.emit.draw.electricalplan import build_electrical_plan, has_electrical_content
 from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
 from typehaus.emit.draw.lightingplan import build_lighting_plan, has_lighting_content
+from typehaus.emit.draw.plan_enlarged import enlarged_groups, enlarged_plan_sheet, enlarged_title
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
 from typehaus.emit.draw.schedules import (
     _has_data_content,
@@ -19,14 +22,20 @@ from typehaus.emit.draw.schedules.mechanical import (
     write_mechanical_schedule,
 )
 from typehaus.emit.draw.schedules.paged_tables import page_count
+from typehaus.emit.draw.schedules.plumbing import (
+    has_plumbing_schedule,
+    plumbing_tables,
+    write_plumbing_schedule,
+)
 from typehaus.emit.draw.sheet_sets import FULL_ONLY
 from typehaus.emit.draw.sheet_spec import SheetSpec, _paged
+from typehaus.emit.draw.trade_frame import trade_plan_sheet
 from typehaus.resolve.model import ResolvedModel
 
 
 def trade_sheets(model: ResolvedModel, level_tags: list[str],
                  at: dict[str, ResolvedModel], paper: tuple[float, float]) -> list[SheetSpec]:
-    """P-1xx/P-2xx, M-1xx/M-601, E-1xx/E-2xx and E-60x, in set order."""
+    """P-1xx/P-2xx/P-401/P-601, M-1xx/M-601, E-1xx/E-2xx and E-60x, in set order."""
     sheets: list[SheetSpec] = []
     plumbing_storeys = [tag for tag in level_tags if has_plumbing_content(at[tag], tag)]
     for index, storey_tag in enumerate(plumbing_storeys, start=1):
@@ -34,9 +43,8 @@ def trade_sheets(model: ResolvedModel, level_tags: list[str],
         # the floor plans and lists no separate P drawings; 1-2 family plumbing is exempt
         # from MN 4714 plan review. `[print] permit_add = ["P-1"]` restores them.
         sheets.append(SheetSpec(f"P-{100 + index}", f"Plumbing plan — {storey_tag}",
-                                scene=at_level(build_plumbing_plan, storey_tag),
+                                scene=trade_plan_sheet(build_plumbing_plan, storey_tag),
                                 sets=FULL_ONLY))
-
     # P-2xx: the drainage plans, one per storey with stormwater content — the same
     # second-series-per-trade convention the lighting sheets use against E-10x. Gutters,
     # leaders, tile, trenches and pits are a different installer (and inspection) from the
@@ -47,11 +55,25 @@ def trade_sheets(model: ResolvedModel, level_tags: list[str],
         sheets.append(SheetSpec(f"P-{200 + index}", f"Drainage plan — {storey_tag}",
                                 scene=at_level(build_drainage_plan, storey_tag),
                                 north_arrow=True, sets=FULL_ONLY))
+    # P-401: the mechanical rooms' plumbing at 1/2" (M2-106): the HW header and its lanes
+    # overprint at the P-101 scale. A-402 is the same crop of the HVAC plan.
+    groups = enlarged_groups(model, frozenset({"mechanical"}), paper) if plumbing_storeys else []
+    for index, group in enumerate(groups, start=1):
+        sheets.append(SheetSpec("P-401" if len(groups) == 1 else f"P-401.{index}",
+                                enlarged_title("plumbing", group), north_arrow=True,
+                                scene=partial(enlarged_plan_sheet, group=group,
+                                              build=build_plumbing_plan),
+                                sets=FULL_ONLY))
+    if has_plumbing_schedule(model):
+        # Stub heights off the fixture ports, and the lagged runs' insulation (M2-105).
+        sheets.extend(_paged("P-601", "Plumbing rough-in and pipe insulation schedules",
+                             write_plumbing_schedule,
+                             page_count(plumbing_tables(model), paper), sets=FULL_ONLY))
 
     hvac_storeys = [tag for tag in level_tags if has_hvac_content(at[tag], tag)]
     for index, storey_tag in enumerate(hvac_storeys, start=1):
         sheets.append(SheetSpec(f"M-{100 + index}", f"HVAC plan — {storey_tag}",
-                                scene=at_level(build_hvac_plan, storey_tag)))
+                                scene=trade_plan_sheet(build_hvac_plan, storey_tag)))
     if has_mechanical_schedule(model):
         # Duct construction + duct/terminal schedules (#114), paged like S-602.
         sheets.extend(_paged("M-601", "Duct and air terminal schedules",
@@ -63,7 +85,7 @@ def trade_sheets(model: ResolvedModel, level_tags: list[str],
         # Full only, same reason as P-1xx: electrical is permitted by the State Board of
         # Electricity, not by DSI, and the checklist names no E drawings.
         sheets.append(SheetSpec(f"E-{100 + index}", f"Electrical plan — {storey_tag}",
-                                scene=at_level(build_electrical_plan, storey_tag),
+                                scene=trade_plan_sheet(build_electrical_plan, storey_tag),
                                 sets=FULL_ONLY))
 
     # E-2xx: the lighting plans, one per storey that has luminaires. A separate series

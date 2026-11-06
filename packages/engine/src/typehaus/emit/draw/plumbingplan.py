@@ -14,14 +14,19 @@ from shapely.geometry import Polygon
 
 from typehaus.emit.draw._shared import emit_fixtures, emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
-from typehaus.emit.draw.lineweights import PROFILE
-from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Symbol, Text
+from typehaus.emit.draw.annotation_requests import add_line_label, add_point_label
+from typehaus.emit.draw.lineweights import LIGHT, PROFILE
+from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol
+from typehaus.emit.draw.typography import MIN_PT
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.ceiling_over import ceiling_decks_over
+from typehaus.resolve.mep_envelopes import insulation_thickness_m
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.overlay import union_all
 
 _DRAIN_VENT = {"drain", "vent"}
+#: Run, cleanout and sleeve lettering: a basement wet wall carries dozens within feet.
+_LABEL_PT = MIN_PT
 
 
 #: How far a candidate storey may sit *below* this storey's own ceiling plane and still be
@@ -141,10 +146,33 @@ def run_storeys(model: ResolvedModel) -> dict[str, str]:
     return out
 
 
+#: Pressure lines by their drawing abbreviation (M2-105: the enum text printed).
+_SYSTEM_TEXT = {"water_cold": "CW", "water_hot": "HW", "sump_discharge": "SUMP DISCHARGE"}
+
+
+def run_label(run) -> str:
+    """``3/4" HW PEX, 1/2" INSUL.`` / ``3" DRAIN PVC @ 0.25"/FT``, all off the run.
+
+    Slope is a DWV statement (supply printed ``@ 0.00"/FT``); lagging is the thickness the
+    run's ``insulation`` spec states (``mep_envelopes``), its full text on the P-601 table.
+    """
+    system = _SYSTEM_TEXT.get(run.system, run.system.replace("_", " ").upper())
+    text = " ".join(part for part in (_nominal(run.diameter_m / M_PER_IN), system,
+                                      (run.material or "").upper()) if part)
+    grade = _governing_grade(run) if run.system in _DRAIN_VENT else None
+    if grade is not None:
+        text += f' @ {grade:.2f}"/FT'
+    if run.insulation:
+        thickness = insulation_thickness_m(run.insulation)
+        text += f", {_nominal(thickness / M_PER_IN)} INSUL." if thickness else ", INSUL."
+    return text
+
+
 def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
     b = SceneBuilder(name=f"plumbing-{storey}", units="in")
     emit_ghost_walls(b, model, storey)
     emit_fixtures(b, model, storey, frozenset({"plumbing", "appliance"}))
+    _emit_water_equipment(b, model, storey)
 
     drawn_on = run_storeys(model)
     for run in model.pipe_runs:
@@ -155,31 +183,51 @@ def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
         linetype = "DASHED" if run.system in _DRAIN_VENT else "CONTINUOUS"
         b.add(Polyline(points=tuple(_in(p) for p in run.path), layer=layer,
                        lineweight=PROFILE, linetype=linetype, uid=run.uid, tag=run.tag))
-        mid = run.path[len(run.path) // 2]
-        diameter_in = run.diameter_m / M_PER_IN
-        label = "SUMP DISCHARGE" if run.system == "sump_discharge" else run.system.upper()
-        # A pump's pressure line rises out of its pit: it carries no slope label.
-        # Slope is a DWV statement; supply printed "@ 0.00\"/FT" (M2-105).
-        grade = _governing_grade(run) if run.system in _DRAIN_VENT else None
-        size = _nominal(diameter_in)
-        text = f'{size} {label} @ {grade:.2f}"/FT' if grade is not None else f"{size} {label}"
-        b.add(Leader(anchor=NamedPoint(xy=_in(mid), name=run.tag), at=_in(mid),
-                     to=_in((mid[0], mid[1] + 1.0)), text=text, layer=layer))
+        # Placed at frame time, along the run's longest plan leg (M2-106: fixed 1 m leaders
+        # stacked at the furnace-room header).
+        legs = [(math.dist(a, c), a, c) for a, c in zip(run.path, run.path[1:], strict=False)]
+        length, start, end = max(legs, default=(0.0, run.path[0], run.path[0]))
+        if length > 1e-6:
+            add_line_label(b, key=f"pipe-{run.uid}", text=run_label(run), start=_in(start),
+                           end=_in(end), layer=layer, height_pt=_LABEL_PT, priority=50)
+        else:  # a riser: no plan leg to letter along
+            add_point_label(b, key=f"pipe-{run.uid}", text=run_label(run), target=_in(start),
+                            layer=layer, height_pt=_LABEL_PT, priority=50)
 
     for cleanout in model.drain_cleanouts:
         if cleanout.storey != storey:
             continue
         b.add(Symbol(name="cleanout", insert=_in(cleanout.cap_position),
                      layer="P-SANR-PIPE", scale=cleanout.diameter_m / M_PER_IN))
-        b.add(Leader(anchor=NamedPoint(xy=_in(cleanout.cap_position), name=cleanout.tag),
-                     at=_in(cleanout.cap_position),
-                     to=_in((cleanout.cap_position[0], cleanout.cap_position[1] + 0.6)),
-                     text=f"{cleanout.tag} {cleanout.direction.replace('_', '-').upper()} CO",
-                     layer="P-SANR-PIPE"))
+        add_point_label(b, key=f"cleanout-{cleanout.uid}",
+                        text=f"{cleanout.tag} {cleanout.direction.replace('_', '-').upper()} CO",
+                        target=_in(cleanout.cap_position), layer="P-SANR-PIPE",
+                        height_pt=_LABEL_PT, priority=40, leader=False)
 
     for sleeve in _sleeves_for(model, storey):
         b.add(Symbol(name="sleeve", insert=_in(sleeve.center), layer="P-SANR-PIPE",
                      scale=sleeve.sleeve_d_m / M_PER_IN))
-        b.add(Text(anchor=_in((sleeve.center[0], sleeve.center[1] + 0.3)), content=sleeve.tag,
-                   height=2.0, layer="A-ANNO-TEXT", align="center"))
+        add_point_label(b, key=f"sleeve-{sleeve.uid}", text=sleeve.tag,
+                        target=_in(sleeve.center), layer="A-ANNO-TEXT", height_pt=_LABEL_PT,
+                        priority=30, preferred_direction=(0.0, 1.0), leader=False)
     return b.build()
+
+
+def _emit_water_equipment(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
+    """Equipment with a water or drain port (the heater, the HW header), outlined and tagged:
+    the lanes on P-401 otherwise start from nothing drawn (M2-106)."""
+    services = {"water_hot", "water_cold", "drain"}
+    types = {entry.tag: entry for entry in model.plan.library.equipment_types}
+    placed = {obj.tag: obj for obj in model.canvas_objects}
+    for element in model.plan.storey_elements(storey):
+        machine = types.get(getattr(element, "type_ref", None) or "")
+        obj = placed.get(element.tag)
+        if (element.element_kind != "Equipment" or machine is None or obj is None
+                or len(obj.footprint) < 3
+                or not services & {port.service.value for port in machine.ports}):
+            continue
+        b.add(Polyline(points=tuple(_in(p) for p in obj.footprint), layer="P-DOMW-PIPE",
+                       closed=True, lineweight=LIGHT, uid=element.uid, tag=element.tag))
+        add_point_label(b, key=f"equipment-{element.uid}", text=element.tag,
+                        target=_in(obj.position), layer="P-DOMW-PIPE", height_pt=_LABEL_PT,
+                        priority=60, leader=False)

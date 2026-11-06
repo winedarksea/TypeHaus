@@ -13,6 +13,11 @@ from __future__ import annotations
 
 from functools import partial
 
+from typehaus.emit.draw.annotation_layout_detail import (
+    DetailLayoutRequest,
+    as_captions,
+    layout_detail,
+)
 from typehaus.emit.draw.detail_anchors import resolve_anchor
 from typehaus.emit.draw.detail_annotations import (  # noqa: F401 — re-exported
     ANNOTATION_TEXT_PT,
@@ -28,6 +33,7 @@ from typehaus.emit.draw.detail_annotations import (  # noqa: F401 — re-exporte
     _notes_path,
     _seed_nodes,
     _sheet_note_set,
+    drawn_keys,
 )
 from typehaus.emit.draw.detail_derive import (
     DerivedDetail,
@@ -109,6 +115,8 @@ def build_detail(model: ResolvedModel, derived: DerivedDetail) -> tuple[Scene, l
     nodes, findings = _annotation_nodes(model, derived, scene)
     if nodes:
         scene = scene.model_copy(update={"nodes": scene.nodes + tuple(nodes)})
+    # Dims, stray leaders, caption and bubbles dodge as one set at the card's scale.
+    scene = layout_detail(scene, scene.frame)
 
     # Legend / title block sit *around* the drawing — each placed on a clear side of
     # the current scene bounds so nothing overprints the cut or its callouts.
@@ -116,7 +124,7 @@ def build_detail(model: ResolvedModel, derived: DerivedDetail) -> tuple[Scene, l
     if chrome:
         scene = scene.model_copy(update={"nodes": scene.nodes + tuple(chrome)})
 
-    notes = _notes_lines(model, derived)
+    notes = _notes_lines(model, derived, drawn_keys(scene))
     if notes:
         scene = scene.model_copy(update={"notes": tuple(notes)})
     return scene, findings
@@ -189,7 +197,10 @@ def build_authored_detail_scene(model: ResolvedModel, view: Slice) -> Scene:
     dims = authored_dimension_nodes(model, view, scene)
     if dims:
         scene = scene.model_copy(update={"nodes": scene.nodes + tuple(dims)})
-    return scene
+    if frame is not None:
+        return layout_detail(scene, frame)
+    return scene.model_copy(update={"annotation_requests": (
+        *scene.annotation_requests, DetailLayoutRequest())})
 
 
 def _authored_frame(view: Slice):
@@ -240,8 +251,8 @@ def _dimension_nodes(model: ResolvedModel, derived: DerivedDetail) -> list:
     crop = derived.view.crop
     if crop is None:
         return []
-    return dimension_strings(model, derived, (crop[0].xy_m, crop[1].xy_m),
-                             derived.direction, derived.station, derived.part)
+    return as_captions(dimension_strings(model, derived, (crop[0].xy_m, crop[1].xy_m),
+                                         derived.direction, derived.station, derived.part))
 
 
 def _chrome(model: ResolvedModel, derived: DerivedDetail, scene: Scene) -> list:

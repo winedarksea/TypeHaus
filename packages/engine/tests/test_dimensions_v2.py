@@ -172,6 +172,25 @@ def test_printed_strings_sum_exactly_and_partitions_show_both_faces(catlin_floor
                        for n, f in faces), (storey, axis, near, far)
 
 
+def test_interior_chain_keeps_every_bearing_wall(catlin_floorplan, catlin_model):
+    """D1-104: crowding leaves partitions off, never a bearing wall (the x=18' line)."""
+    from typehaus.emit.draw.plan_dimensions import _face_stations, bearing_wall_tags
+
+    walls = [w for w in catlin_model.walls if w.storey == "main"]
+    chain = [d for d in _dims(catlin_floorplan("main"))
+             if INTERIOR_OFFSET - 1e-6 <= abs(d.offset) <= INTERIOR_OFFSET + TIER_BAND
+             and abs(d.p1[0] - d.p0[0]) >= abs(d.p1[1] - d.p0[1])]
+    stations = [x for d in chain for x in (d.p0[0], d.p1[0])]
+    lo, hi = min(stations), max(stations)
+    pinned = [(n / M_PER_IN, f / M_PER_IN)
+              for n, f in _face_stations(walls, 0, bearing_wall_tags(catlin_model))]
+    inner = [(n, f) for n, f in pinned if n > lo + 6.0 and f < hi - 6.0]
+    assert inner
+    for near, far in inner:
+        assert any(abs(near - s) <= 1 / 16 for s in stations), near
+        assert any(abs(far - s) <= 1 / 16 for s in stations), far
+
+
 def test_every_facade_chain_is_contiguous_sorted_and_sums_to_overall(
         catlin_model, main_scene):
     bbox = _axis_bbox_in(catlin_model, "main")

@@ -169,3 +169,19 @@ def test_walls_below_are_drawn_once_not_once_per_deck(catlin_model_ro):
                   weight_override=CUT, members=False)
         once = len([n for n in builder.build().nodes if isinstance(n, Polyline)])
         assert count == once, f"{tag} is drawn {count} times over, not {once}"
+
+
+def test_locating_ties_to_an_overall_that_leaves_the_veneer_out(catlin_model_ro):
+    """D1-105/D1-108: S-101.1's N-S LOCATING runs through both overall faces, and the
+    overall is the basement's face, not W-B-BRICK's (it read 36'-9 5/8")."""
+    from typehaus.emit.draw.scene import ArchDimension
+
+    dims = [n for n in build_framing_plan(catlin_model_ro, "main").nodes
+            if isinstance(n, ArchDimension) and abs(n.p1[1] - n.p0[1]) > abs(n.p1[0] - n.p0[0])]
+    overall = [n for n in dims if n.ends[0].name.startswith("O/A")]
+    assert len(overall) == 1
+    lo, hi = sorted((overall[0].p0[1], overall[0].p1[1]))
+    assert hi - lo == pytest.approx(432.0, abs=1e-6)
+    stations = {round(v, 4) for n in dims if n.ends[0].name.startswith("LOC")
+                for v in (n.p0[1], n.p1[1])}
+    assert {round(lo, 4), round(hi, 4)} <= stations

@@ -12,7 +12,7 @@ import pytest
 from typehaus.checks.code.mn_residential.profile import get_profile
 from typehaus.checks.mep.drain_cleanouts import drain_cleanouts, required_cleanout_locations
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan
-from typehaus.emit.draw.scene import Leader, Symbol
+from typehaus.emit.draw.scene import Symbol, Text
 from typehaus.quantities import ft
 from typehaus.resolve.model import ResolvedDrainCleanout, ResolvedPipeRun
 from typehaus.takeoff.plumbing import plumbing_takeoff
@@ -163,7 +163,7 @@ def test_catlin_cleanouts_have_plan_schedule_and_three_solids(catlin_model_ro):
                    and n.insert == pytest.approx(tuple(v / 0.0254
                                                         for v in cleanout.cap_position))
                    for n in scene.nodes)
-        assert any(isinstance(n, Leader) and cleanout.tag in n.text for n in scene.nodes)
+        assert any(isinstance(n, Text) and cleanout.tag in n.content for n in scene.nodes)
 
 
 def test_minnesota_permit_checklist_includes_cleanouts():

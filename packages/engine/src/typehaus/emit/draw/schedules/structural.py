@@ -16,28 +16,51 @@ from typehaus.resolve.model import ResolvedModel
 
 
 def framing_bom_tables(model: ResolvedModel) -> list[PagedTable]:
-    """S-601's two tables: a rollup by lumber size, then the full grouped-by-size-and-type
-    cut list with per-stock-length buckets (→ takeoff.framing_takeoff — one row per
-    resolved member, nothing dropped)."""
+    """S-601's tables: rollups by size (sawn lumber, then the stock with no board feet:
+    engineered, panel and trim), the grouped-by-size-type-and-material cut list with its
+    per-stock-length buckets (→ takeoff.framing_takeoff — one row per resolved member,
+    nothing dropped), then the wall backing grouped by use.
+
+    MATERIAL is the takeoff's own key: a red-oak 2x6 and an SPF 2x6 are two purchases. "—"
+    is a member whose material the model leaves to its assembly (S-001: species and grade
+    are not modelled).
+    """
+    from typehaus.emit.draw.schedules.backing_schedule import backing_table
     from typehaus.takeoff import framing_bom_by_size, framing_takeoff
 
     by_size = framing_bom_by_size(model)
-    size_rows = [(row["profile"], f"{row['pieces']:,}", f"{row['order_length_ft']:,}",
-                  f"{row['board_feet']:,.0f}" if row["board_feet"] else "—")
-                 for row in by_size]
-    size_rows.append(("TOTAL", f"{sum(int(r['pieces']) for r in by_size):,}",
-                      f"{round(sum(float(r['order_length_ft']) for r in by_size)):,}", ""))
+    lumber = [row for row in by_size if row["board_feet"]]
+    other = [row for row in by_size if not row["board_feet"]]
     bom_rows = [
-        (row["profile"], row["category"], f"{row['pieces']:,}", f"{row['cut_length_ft']:,.0f}",
+        (row["profile"], row["category"], row["material"] or "—", f"{row['pieces']:,}",
+         f"{row['cut_length_ft']:,.0f}",
          ", ".join(f"{b['count']}×{b['label']}" for b in row["stock"]))
         for row in framing_takeoff(model)
     ]
     return [
-        PagedTable("SUMMARY BY LUMBER SIZE", ("Size", "Pieces", "Ordered LF", "Board ft"),
-                   tuple(size_rows)),
-        PagedTable("CUT LIST — BY SIZE AND MEMBER TYPE",
-                   ("Size", "Type", "Pieces", "Cut LF", "Stock lengths"), tuple(bom_rows)),
+        PagedTable("SUMMARY BY LUMBER SIZE",
+                   ("Size", "Material", "Pieces", "Ordered LF", "Board ft"),
+                   _size_rows(lumber, board_feet=True)),
+        PagedTable("SUMMARY — ENGINEERED, PANEL AND TRIM STOCK",
+                   ("Size", "Material", "Pieces", "Ordered LF"),
+                   _size_rows(other, board_feet=False)),
+        PagedTable("CUT LIST — BY SIZE, MEMBER TYPE AND MATERIAL",
+                   ("Size", "Type", "Material", "Pieces", "Cut LF", "Stock lengths"),
+                   tuple(bom_rows)),
+        backing_table(model),
     ]
+
+
+def _size_rows(rows: list[dict], *, board_feet: bool) -> tuple[tuple[str, ...], ...]:
+    out = [(row["profile"], row["material"] or "—", f"{row['pieces']:,}",
+            f"{row['order_length_ft']:,}",
+            *((f"{row['board_feet']:,.0f}",) if board_feet else ()))
+           for row in rows]
+    out.append(("TOTAL", "", f"{sum(int(r['pieces']) for r in rows):,}",
+                f"{round(sum(float(r['order_length_ft']) for r in rows)):,}",
+                *((f"{round(sum(float(r['board_feet']) for r in rows)):,}",)
+                  if board_feet else ())))
+    return tuple(out)
 
 
 def hardware_tables(model: ResolvedModel) -> list[PagedTable]:
@@ -62,9 +85,32 @@ def hardware_tables(model: ResolvedModel) -> list[PagedTable]:
     return [
         PagedTable("CONNECTION HARDWARE",
                    ("#", "Scope", "Part", "Size", "Qty", "Unit", "Manufacturer"), hardware_rows),
+        stiffener_table(model),
         PagedTable("STRUCTURAL SOLIDS — BY CATEGORY",
                    ("Category", "Assembly", "Count", "Plan sf", "Cu yd"), solid_rows),
     ]
+
+
+def stiffener_table(model: ResolvedModel) -> PagedTable:
+    """I-joist bearing stiffener pairs, by roof, end and rafter: the pieces a hung ridge's
+    hanger and an eave birdsmouth require (``resolve/framing/roof_stiffeners.py``). They bill
+    as sheet goods, so neither the cut list nor the hardware table above names them."""
+    from collections import Counter
+
+    counts: Counter = Counter()
+    for roof in model.roofs:
+        rafters = {m.child_key: m.profile for m in roof.members}
+        for member in roof.members:
+            if member.category != "bearing_stiffener":
+                continue
+            end, _, kind = (member.connection or ":").partition(":")
+            rafter = member.child_key.removesuffix(f"-{end}-stiffener")
+            counts[(roof.tag, end.upper(), rafters.get(rafter, "—"),
+                    member.profile.removesuffix(" panel"), member.material or "—",
+                    kind.removesuffix("-web-stiffener").replace("-", " "))] += 1
+    rows = tuple((*key, f"{count:,}") for key, count in sorted(counts.items()))
+    return PagedTable("I-JOIST BEARING STIFFENERS (PAIRS)",
+                      ("Roof", "End", "Rafter", "Pair", "Material", "Cut", "Qty"), rows)
 
 
 def _write_paged(pdf, model: ResolvedModel, number: str, name: str,

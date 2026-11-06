@@ -6,7 +6,10 @@ Three tiers, inner to outer, on the south (E-W chains) and west (N-S chains):
   and post centres, beam lines, floor-opening edges and the openings in bearing walls.
 * **BEARING LINES C/C** — the bearing members' centrelines alone (studs, ICF core, beam).
 * **OVERALL** — face of foundation (S-100) or face of sheathing / stud (S-101..S-103), the
-  same extent the A-1xx sheets state.
+  same extent the A-1xx sheets state. A masonry veneer is not the building's face (D1-108).
+
+LOCATING closes on the overall's faces (D1-105): it is seeded with them and keeps them and
+every bearing line through any merge, so each station sets out from a face the sheet prints.
 
 All of them stand clear of everything already drawn (leaders and their notes included,
 at the size they will print), so a string never lands on a callout. Every station is read
@@ -17,7 +20,7 @@ printed 1/8" strings sum to the overall.
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from typehaus.emit.draw._shared import _dimension_label, to_in, wall_face_bounds
 from typehaus.emit.draw.dimension_rows import (
@@ -32,6 +35,7 @@ from typehaus.emit.draw.typography import CHAR_ASPECT, MIN_PT, TEXT_PT, model_in
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry import opening_center
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.veneer_ties import is_masonry_wythe
 
 #: Station merge gaps tried, finest first, until a chain letters without sliding a string.
 #: Under 1" so a 7/8" step between two roof edges (garage vs canopy) keeps both stations.
@@ -125,8 +129,9 @@ def wall_opening_stations(model: ResolvedModel, wall: ResolvedWall,
 
 
 def overall_tier(label: str, walls: Sequence[ResolvedWall]) -> Tier | None:
-    """The face-to-face overall of ``walls`` (structure/sheathing faces)."""
-    bounds = wall_face_bounds(list(walls))
+    """The face-to-face overall of ``walls`` (structure/sheathing faces), veneers left out."""
+    bounds = wall_face_bounds([wall for wall in walls if not is_masonry_wythe(wall)]
+                              or list(walls))
     if bounds is None:
         return None
     minx, maxx, miny, maxy = bounds
@@ -149,13 +154,13 @@ def emit_structural_tiers(b: SceneBuilder, tiers: Sequence[Tier | None],
     per_paper_in = model_in_per_pt(scale) * 72.0
     west, south = box[0], box[1]
     reach = [TIER_FIRST_IN, TIER_FIRST_IN]  # paper inches off the box, (south, west)
-    present = [tier for tier in tiers if tier is not None]
-    for index, tier in enumerate(present):
+    present = _tied([tier for tier in tiers if tier is not None], scale)
+    for index, (tier, pinned) in enumerate(present):
         for axis, edge in ((0, south), (1, west)):
-            if _repeats(tier, present[index + 1:], axis):
+            if _repeats(tier, [later for later, _pins in present[index + 1:]], axis):
                 continue  # the next tier says the same thing (a ridge on a bearing line)
             distance = reach[axis] * per_paper_in
-            rows = _emit_chain(b, tier, axis, edge, -distance, scale)
+            rows = _emit_chain(b, tier, axis, edge, -distance, scale, pinned[axis])
             if rows and axis == 0:
                 _emit_legend(b, tier.label,
                              (west - legend_pad_pt * model_in_per_pt(scale), south - distance),
@@ -167,45 +172,71 @@ def emit_structural_tiers(b: SceneBuilder, tiers: Sequence[Tier | None],
     return west - reach[1] * per_paper_in, south - reach[0] * per_paper_in
 
 
+def _tied(tiers: list[Tier], scale: float) -> list[tuple[Tier, tuple[tuple[float, ...], ...]]]:
+    """Each tier with its pinned ``(xs, ys)``: LOCATING takes the overall's faces (the last
+    tier) as stations and pins them and every line BRG LINES prints against any merge."""
+    overall = tiers[-1] if len(tiers) > 1 else None
+    bearing = next((tier for tier in tiers if tier.label == BEARING), Tier(BEARING))
+    printed = [(_laid_out(stations, -1.0, scale) or ((),))[0]
+               for stations in (bearing.xs, bearing.ys)]
+    out = []
+    for tier in tiers:
+        if tier.label != LOCATING or overall is None:
+            out.append((tier, ((), ())))
+            continue
+        out.append((replace(tier, xs=(*tier.xs, *overall.xs), ys=(*tier.ys, *overall.ys)),
+                    ((*overall.xs, *printed[0]), (*overall.ys, *printed[1]))))
+    return out
+
+
 def _repeats(tier: Tier, later: Sequence[Tier], axis: int) -> bool:
     floor = _MERGE_GAPS_IN[0]
     mine = _chain(tier.xs if axis == 0 else tier.ys, floor)
     return any(_chain(other.xs if axis == 0 else other.ys, floor) == mine for other in later)
 
 
-def _chain(stations: Iterable[float], gap_in: float) -> list[float]:
+def _chain(stations: Iterable[float], gap_in: float,
+           pinned: Iterable[float] = ()) -> list[float]:
     ordered = sorted(stations)
     if len(ordered) < 2:
         return ordered
     gap = gap_in * M_PER_IN
-    kept = [ordered[0]]
-    for station in ordered[1:-1]:
-        if station - kept[-1] >= gap and ordered[-1] - station >= gap:
+    floor = _MERGE_GAPS_IN[0] * M_PER_IN
+    kept = [ordered[0], ordered[-1]]
+    for station in sorted(pinned):
+        if ordered[0] <= station <= ordered[-1] and all(abs(station - k) >= floor
+                                                        for k in kept):
             kept.append(station)
-    kept.append(ordered[-1])
-    return snap_chain(kept)
+    for station in ordered[1:-1]:
+        if all(abs(station - k) >= gap for k in kept):
+            kept.append(station)
+    return snap_chain(sorted(kept))
 
 
-def _laid_out(stations: Sequence[float], offset: float, scale: float):
-    """The finest merge of ``stations`` whose strings all sit on a stagger row."""
-    first = None
+def _laid_out(stations: Sequence[float], offset: float, scale: float,
+              pinned: Sequence[float] = ()):
+    """The finest merge of ``stations`` whose strings all sit on a stagger row; failing
+    that, the one that slides the fewest strings (pins can keep every merge crowded)."""
+    best = None
     for gap_in in _MERGE_GAPS_IN:
-        chain = _chain(stations, gap_in)
+        chain = _chain(stations, gap_in, pinned)
         if len(chain) < 2 or chain[-1] - chain[0] < gap_in * M_PER_IN:
-            return first
+            break
         spans = [(chain[i + 1] - chain[i]) / M_PER_IN for i in range(len(chain) - 1)]
         offsets = dimension_offsets(spans, [_dimension_label(s) for s in spans], offset,
                                     scale)
-        first = first or (chain, offsets)
-        if not any(shift for _offset, shift in offsets):
-            return chain, offsets
-    return first
+        slides = sum(1 for _offset, shift in offsets if shift)
+        if best is None or slides < best[0]:
+            best = (slides, chain, offsets)
+        if not slides:
+            break
+    return None if best is None else best[1:]
 
 
 def _emit_chain(b: SceneBuilder, tier: Tier, axis: int, edge_in: float, offset: float,
-                scale: float) -> int:
+                scale: float, pinned: Sequence[float] = ()) -> int:
     """Draw one chain; return the stagger rows it used (0: nothing to draw)."""
-    laid = _laid_out(tier.xs if axis == 0 else tier.ys, offset, scale)
+    laid = _laid_out(tier.xs if axis == 0 else tier.ys, offset, scale, pinned)
     if laid is None:
         return 0
     chain, offsets = laid

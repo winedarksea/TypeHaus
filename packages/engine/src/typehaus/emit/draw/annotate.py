@@ -75,6 +75,8 @@ class LabelSpec:
     text: str
     target: tuple[float, float] | None = None
     key: object = None
+    #: ``(z_lo, z_hi)`` the target's band is drawn over; a flat rung's tip stays inside it.
+    span: tuple[float, float] | None = None
 
 
 @dataclass(frozen=True)

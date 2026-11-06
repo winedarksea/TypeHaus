@@ -8,7 +8,9 @@ from __future__ import annotations
 
 from typehaus.emit.draw._shared import emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.annotation_requests import add_point_label
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
+from typehaus.emit.draw.typography import MIN_PT
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.placeables import placed_xy
@@ -21,6 +23,8 @@ _DEVICE_LAYER = {
     # branch circuits and a low-voltage tech pulling CAT6 want to switch each other off.
     "data_outlet": "E-COMM-DEVC",
 }
+#: Device and raceway tags: the floor size the old 1.5" model text was raised to.
+_TAG_PT = MIN_PT
 _LEGEND = (
     ("receptacle", "DUPLEX RECEPTACLE"), ("gfci", "GFCI RECEPTACLE"),
     ("receptacle_240", "240V RECEPTACLE"), ("switch", "SWITCH"), ("light", "LIGHT"),
@@ -45,12 +49,17 @@ def build_electrical_plan(model: ResolvedModel, storey: str) -> Scene:
         layer = _DEVICE_LAYER.get(element.kind.value, "E-POWR-DEVC")
         x, y = placed_xy(model, element)
         b.add(Symbol(name=element.kind.value, insert=_in((x, y)), layer=layer))
-        b.add(Text(anchor=_in((x + 0.1, y + 0.1)),
-                   content=element.tag.removeprefix("ED-"), height=1.5, layer="A-ANNO-TEXT"))
+        # Placed at frame time: fixed offsets stacked tag over tag at the panel wall and
+        # the kitchen (M3-102).
+        add_point_label(b, key=f"device-{element.uid}", text=element.tag.removeprefix("ED-"),
+                        target=_in((x, y)), layer="A-ANNO-TEXT", height_pt=_TAG_PT,
+                        priority=40, leader=False)
         if element.mount is not None and element.mount.kind.value == "floor":
             circuit = element.circuit or "UNASSIGNED"
-            b.add(Text(anchor=_in((x + 0.1, y - 0.15)),
-                       content=f"FLOOR BOX / {circuit}", height=1.5, layer="A-ANNO-TEXT"))
+            add_point_label(b, key=f"floor-box-{element.uid}",
+                            text=f"FLOOR BOX / {circuit}", target=_in((x, y)),
+                            layer="A-ANNO-TEXT", height_pt=_TAG_PT, priority=35,
+                            preferred_direction=(1.0, -1.0), leader=False)
 
     # Conduit trunks: dashed homerun polylines on their own raceway layer. The label sits
     # at the polyline's middle vertex — every trunk shares the panel as its first point,
@@ -72,8 +81,8 @@ def build_electrical_plan(model: ResolvedModel, storey: str) -> Scene:
         label = f"{run.tag.removeprefix('CD-')} {size}"
         if run.service is None:
             label = f"{label} SPARE"
-        b.add(Text(anchor=_in((mid[0] + 0.1, mid[1] + 0.25)), content=label,
-                   height=1.5, layer="A-ANNO-TEXT"))
+        add_point_label(b, key=f"conduit-{run.uid}", text=label, target=_in(mid),
+                        layer="A-ANNO-TEXT", height_pt=_TAG_PT, priority=20, leader=False)
 
     _emit_legend(b, model, storey)
     return b.build()
@@ -84,9 +93,11 @@ def _emit_legend(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
               if element.element_kind == "ElectricalDevice"}
     if not present:
         return
-    xs = [wall.axis[0][0] for wall in model.walls if wall.storey == storey]
-    ys = [wall.axis[0][1] for wall in model.walls if wall.storey == storey]
-    origin = (max(xs, default=0.0) + 2.0, min(ys, default=0.0))
+    # Beside the devices, top-aligned: hung below the level's lowest wall it reached into
+    # the sunken court and set E-101's scale (M3-102).
+    points = [placed_xy(model, element) for element in model.plan.storey_elements(storey)
+              if element.element_kind == "ElectricalDevice"]
+    origin = (max(x for x, _y in points) + 2.0, max(y for _x, y in points))
     b.add(Text(anchor=_in(origin), content="LEGEND", height=3.5, layer="A-ANNO-TEXT"))
     for row, (kind, label) in enumerate(k for k in _LEGEND if k[0] in present):
         y = origin[1] - (row + 1) * 0.6

@@ -115,7 +115,7 @@ def build_floorplan(model: ResolvedModel, storey: str, *,
     # the first line, 3/8" between), with room for the stagger rows (``dimension_rows``).
     facade, interior, overall = tier_offsets(dimension_scale)
     emit_facade_dimension_strings(b, model, walls, offset=facade, scale=dimension_scale)
-    emit_interior_dimension_chains(b, walls, offset=interior, scale=dimension_scale)
+    emit_interior_dimension_chains(b, walls, offset=interior, scale=dimension_scale, model=model)
     emit_bbox_dimension_chain(b, walls, offset=-overall, reference="face")
     return b.build()
 

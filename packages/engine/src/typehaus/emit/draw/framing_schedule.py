@@ -34,6 +34,8 @@ MEMBER_CATEGORY_TITLES = (
     ("header", "FH", "FLOOR OPENING HEADER"),
     ("rim", "R", "RIM BOARD"),
     ("blocking", "BL", "BLOCKING"),
+    ("sister_joist", "SJ", "SISTER JOIST"),
+    ("strongback", "SB", "STRONGBACK"),
 )
 
 
@@ -48,8 +50,11 @@ class FramedLevel:
     role_bearing_walls: tuple[ResolvedWall, ...] = ()
     beams: tuple = ()   # (authored Beam, span_m)
     posts: tuple = ()   # authored Post
-    headers: tuple = ()  # (ResolvedWall, FramedMember, opening tag or "")
+    #: (ResolvedWall, FramedMember, opening tag or ""). A ``Door.header_in_band`` header is
+    #: one entry too: its first ply, renamed to the ply count, over the door.
+    headers: tuple = ()
     connectors: tuple = ()  # authored Connector
+    band_plies: frozenset = frozenset()  # floor child keys scheduled as a band header
     marks: dict = field(default_factory=dict)  # element/child tag -> mark
 
 
@@ -70,13 +75,15 @@ def framed_level(model: ResolvedModel, floor_tag: str) -> FramedLevel | None:
                        and wall not in declared)
     beams = _load_path_beams(model, system)
     posts = _load_path_posts(model, beams)
-    headers = _wall_headers(model, (*declared, *role_walls))
+    band_headers, band_plies = _band_headers(model, floor)
+    headers = (*_wall_headers(model, (*declared, *role_walls)), *band_headers)
     connectors = tuple(element for element in model.plan.all_elements()
                        if element.element_kind == "Connector"
                        and _connects_any(element, declared, beams, posts))
     level = FramedLevel(floor=floor, system=system, bearing_storey=bearing_storey,
                         declared_bearing_walls=declared, role_bearing_walls=role_walls,
-                        beams=beams, posts=posts, headers=headers, connectors=connectors)
+                        beams=beams, posts=posts, headers=headers, connectors=connectors,
+                        band_plies=band_plies)
     return replace(level, marks=_assign_marks(level))
 
 
@@ -111,7 +118,7 @@ def assign_storey_marks(levels: list[FramedLevel]) -> dict:
     counters: dict[str, int] = {}
     for level in levels:
         for category, prefix, _title in MEMBER_CATEGORY_TITLES:
-            if not any(member.category == category for member in level.floor.members):
+            if not scheduled_members(level, category):
                 continue
             counters[category] = counters.get(category, 0) + 1
             marks[f"{level.floor.tag}/category:{category}"] = f"{prefix}{counters[category]}"
@@ -179,6 +186,30 @@ def _wall_headers(model: ResolvedModel, walls: tuple) -> tuple:
     return tuple(out)
 
 
+def _band_headers(model: ResolvedModel, floor: ResolvedFloor) -> tuple[tuple, frozenset]:
+    """The flush headers this deck's band carries (``resolve/band_headers``), one entry each,
+    and the child keys of every ply they use.
+
+    The plies are the floor's own ``sister_joist`` members; the entry is the first one with
+    its profile spelled as the built-up beam (``2-1.75x11.875 LVL``), so the header schedule
+    and the plan key read it as one header, the way a wall's ``2-2x10`` reads.
+    """
+    from typehaus.resolve.band_headers import band_header, band_header_doors
+
+    out, plies = [], set()
+    for door in band_header_doors(model.plan):
+        if door.header_in_band != floor.tag:
+            continue
+        found = band_header(model, door.tag)
+        wall = model.wall(found.wall) if not isinstance(found, str) else None
+        if wall is None:
+            continue  # integrity.header_in_band reports it
+        ply = found.plies[0]
+        out.append((wall, replace(ply, profile=f"{len(found.plies)}-{ply.profile}"), door.tag))
+        plies.update(member.child_key for member in found.plies)
+    return tuple(out), frozenset(plies)
+
+
 def _opening_for_header(model: ResolvedModel, wall: ResolvedWall, member) -> str:
     """Name the opening a header spans by matching midpoints along the wall axis."""
     midpoint = ((member.p0[0] + member.p1[0]) / 2.0, (member.p0[1] + member.p1[1]) / 2.0)
@@ -208,7 +239,7 @@ def _assign_marks(level: FramedLevel) -> dict:
     """
     marks: dict = {}
     for category, prefix, _title in MEMBER_CATEGORY_TITLES:
-        if any(member.category == category for member in level.floor.members):
+        if scheduled_members(level, category):
             marks[f"category:{category}"] = f"{prefix}1"
             marks[f"{level.floor.tag}/category:{category}"] = f"{prefix}1"
     for index, (beam, _span) in enumerate(level.beams, start=1):
@@ -221,6 +252,13 @@ def _assign_marks(level: FramedLevel) -> dict:
         mark = header_keys.setdefault(key, f"H{len(header_keys) + 1}")
         marks[f"{wall.tag}/{member.child_key}"] = mark
     return marks
+
+
+def scheduled_members(level: FramedLevel, category: str) -> list:
+    """The deck's members of ``category`` its member schedule counts: a band header's plies
+    are scheduled once, as the header."""
+    return [member for member in level.floor.members if member.category == category
+            and member.child_key not in level.band_plies]
 
 
 def joist_spacing_in(system: FloorSystem) -> float:
@@ -260,7 +298,7 @@ def _storey_member_schedule(levels: tuple[FramedLevel, ...]) -> ScheduleTable:
     for level in levels:
         spacing = f'{joist_spacing_in(level.system):.0f}" O.C.'
         for category, _prefix, title in MEMBER_CATEGORY_TITLES:
-            members = [m for m in level.floor.members if m.category == category]
+            members = scheduled_members(level, category)
             if not members:
                 continue
             rows.append((
@@ -309,11 +347,15 @@ def _storey_header_schedule(levels: tuple[FramedLevel, ...]) -> ScheduleTable:
             if key in seen:
                 continue
             seen.add(key)
-            grouped.setdefault(level.marks[key], []).append((wall, member, opening))
+            # A band header is named with the deck whose band it is, not a wall framing it.
+            label = opening or wall.tag
+            if member.category == "sister_joist":
+                label = f"{label} IN {level.floor.tag} BAND"
+            grouped.setdefault(level.marks[key], []).append((member, label))
     rows: list[tuple[str, ...]] = []
     for mark, items in sorted(grouped.items(), key=lambda item: int(item[0][1:])):
-        _wall, member, _opening = items[0]
-        over = ", ".join(sorted({opening or wall.tag for wall, _m, opening in items}))
+        member = items[0][0]
+        over = ", ".join(sorted({label for _member, label in items}))
         rows.append((mark, member.profile, feet_inches(member.length_m), str(len(items)),
                      _abbreviate(over)))
     return ScheduleTable(title="HEADER SCHEDULE — BEARING WALLS BELOW",

@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
-from typehaus.emit.draw.scene import Leader, Polyline, Symbol
+from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content, run_label
+from typehaus.emit.draw.scene import Polyline, Symbol, Text
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
 
@@ -61,10 +61,15 @@ def test_main_plan_shows_sleeves_in_true_position_and_fixtures(catlin_model):
     assert "PR-M-WC-VENT" in _pipe_tags(scene)
 
 
-def test_drain_run_has_slope_leader(catlin_model):
+def test_run_labels_carry_slope_material_and_lagging(catlin_model):
+    """DWV prints its slope; supply prints CW/HW, material and lagging, never a slope (M2-105)."""
     scene = build_plumbing_plan(catlin_model, "basement")
-    leaders = [n for n in scene.nodes if isinstance(n, Leader)]
-    assert any("DRAIN" in leader.text and "/FT" in leader.text for leader in leaders)
+    labels = [n.content for n in scene.nodes if isinstance(n, Text)]
+    assert any("DRAIN PVC @" in label and "/FT" in label for label in labels)
+    supply = [label for label in labels if " HW " in label or " CW " in label]
+    assert supply and not any("/FT" in label or "WATER_" in label for label in supply)
+    lagged = next(run for run in catlin_model.pipe_runs if run.tag == "PR-B-HW-TRUNK")
+    assert run_label(lagged) == '1" HW COPPER, 1" INSUL.'
 
 
 def test_plumbing_plan_dxf_round_trips(catlin_model, tmp_path: Path):

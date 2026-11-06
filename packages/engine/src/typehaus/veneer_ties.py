@@ -94,12 +94,16 @@ class WytheReach:
     unbacked_in: float
 
 
-def is_anchored_wythe(model: Any, wall: Any) -> bool:
+def is_masonry_wythe(wall: Any) -> bool:
+    """A masonry structure layer on its own air space: a veneer, not the building's wall."""
     structure = [ly for ly in wall.layers if ly.function == "structure" and ly.polygon]
-    authored = model.plan.by_tag(wall.tag)
     return (bool(structure) and any(m in structure[0].material_ref for m in _MASONRY)
-            and any(ly.function == "airgap" and ly.thickness_m > 0 for ly in wall.layers)
-            and getattr(authored, "lateral_support", None) is None)
+            and any(ly.function == "airgap" and ly.thickness_m > 0 for ly in wall.layers))
+
+
+def is_anchored_wythe(model: Any, wall: Any) -> bool:
+    authored = model.plan.by_tag(wall.tag)
+    return is_masonry_wythe(wall) and getattr(authored, "lateral_support", None) is None
 
 
 def anchored_wythes(model: Any) -> list[Any]:

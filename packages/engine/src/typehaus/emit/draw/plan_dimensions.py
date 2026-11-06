@@ -19,7 +19,8 @@ chain says where the rooms are cut. Both are emitted, both outside the building 
 exterior tiers, because a chain struck *through* the plan would cross every room's label
 block and every fixture on the way.
 
-**Crowding is answered by staggering, then by leaving whole partitions off.**
+**Crowding is answered by staggering, then by leaving whole partitions off** — never a
+bearing wall (D1-104): ``bearing_wall_tags`` walls are pinned on every chain.
 ``dimension_rows.dimension_offsets`` steps a segment too short to hold its own string onto
 an outer row; a chain whose strings would still slide off it (or past
 ``MAX_INTERIOR_SEGMENTS``) is re-struck at a coarser clear gap, so it is as fine as the
@@ -29,6 +30,8 @@ snapped (``dimension_rows.snap_chain``) so the printed 1/8" strings sum to the o
 """
 
 from __future__ import annotations
+
+from collections.abc import Collection
 
 from typehaus.emit.draw._shared import (
     DIMENSION_FACE_FUNCTIONS,
@@ -41,8 +44,10 @@ from typehaus.emit.draw._shared import (
 )
 from typehaus.emit.draw.dimension_rows import dimension_offsets, snap_chain
 from typehaus.emit.draw.scene import ArchDimension, NamedPoint, SceneBuilder
+from typehaus.model.enums import StructuralRole
+from typehaus.model.floors import FloorSystem
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.model import ResolvedWall
+from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 #: Clear space between two partitions (or a partition and the envelope) below which the
 #: later partition is left off the chain. A partition always keeps BOTH stud faces, so its
@@ -67,7 +72,19 @@ _PARALLEL_TOLERANCE = 0.05
 Faces = tuple[float, float]
 
 
-def _face_stations(walls: list[ResolvedWall], axis: int) -> list[Faces]:
+def bearing_wall_tags(model: ResolvedModel) -> frozenset[str]:
+    """Walls a deck declares it bears on (``joists.bearing_refs``) or authored BEARING —
+    the same two readings S-101 draws heavy (``framingplan._emit_walls_below``)."""
+    declared = {tag for element in model.plan.all_elements()
+                if isinstance(element, FloorSystem) for tag in element.joists.bearing_refs}
+    authored = {wall.tag for wall in model.walls
+                if getattr(model.plan.by_tag(wall.tag), "structural_role", None)
+                is StructuralRole.BEARING}
+    return frozenset(declared | authored)
+
+
+def _face_stations(walls: list[ResolvedWall], axis: int,
+                   only: Collection[str] | None = None) -> list[Faces]:
     """``(near, far)`` stud faces, metres along ``axis``, of every wall across that axis.
 
     A wall running *along* the measuring axis has no face to measure to on it — its two
@@ -77,6 +94,8 @@ def _face_stations(walls: list[ResolvedWall], axis: int) -> list[Faces]:
     """
     pairs: list[Faces] = []
     for wall in walls:
+        if only is not None and wall.tag not in only:
+            continue
         (sx, sy), (ex, ey) = wall.axis
         delta = (abs(ex - sx), abs(ey - sy))
         if delta[axis] > delta[1 - axis] * (1.0 + _PARALLEL_TOLERANCE):
@@ -90,32 +109,51 @@ def _face_stations(walls: list[ResolvedWall], axis: int) -> list[Faces]:
     return pairs
 
 
-def _chains(pairs: list[Faces], lo: float, hi: float) -> list[list[float]]:
-    """Candidate station lists, finest clear gap first: both faces of each kept partition."""
+def _merged(pairs: list[Faces]) -> list[Faces]:
+    """Overlapping pairs as one: a bearing line built of collinear runs is one partition."""
+    out: list[Faces] = []
+    for near, far in sorted(pairs):
+        if out and near <= out[-1][1]:
+            out[-1] = (out[-1][0], max(out[-1][1], far))
+        else:
+            out.append((near, far))
+    return out
+
+
+def _chains(pairs: list[Faces], lo: float, hi: float,
+            pinned: list[Faces] = ()) -> list[list[float]]:
+    """Candidate station lists, finest clear gap first: both faces of each kept partition.
+
+    ``pinned`` partitions (bearing walls) are on every candidate; the rest join where they
+    clear every station already kept by the gap.
+    """
+    envelope = MIN_INTERIOR_STATION_GAP_IN * M_PER_IN
+    fixed = [face for near, far in _merged(list(pinned))
+             if near >= lo + envelope and far <= hi - envelope for face in (near, far)]
     ordered = sorted(pairs)
     out: list[list[float]] = []
     for gap_in in (MIN_INTERIOR_STATION_GAP_IN, *_COARSER_STATION_GAPS_IN):
         gap = gap_in * M_PER_IN
-        kept = [lo]
+        kept = [lo, hi, *fixed]
         for near, far in ordered:
             if near < lo + gap or far > hi - gap:
                 continue  # the envelope wall itself, or a partition hard against it
-            if near - kept[-1] < gap:
-                continue  # the same partition again (collinear), or too close to the last
+            if any(near - gap < station < far + gap for station in kept):
+                continue  # the same partition again (collinear), or too close to one kept
             kept.extend((near, far))
-        kept.append(hi)
-        out.append(snap_chain(kept))
+        out.append(snap_chain(sorted(kept)))
     return out
 
 
-def _laid_out(pairs: list[Faces], lo: float, hi: float, offset: float, scale: float):
+def _laid_out(pairs: list[Faces], lo: float, hi: float, offset: float, scale: float,
+              pinned: list[Faces] = ()):
     """``(stations, offsets)`` of the finest chain whose strings all sit on a stagger row.
 
     Failing that, the one (within ``MAX_INTERIOR_SEGMENTS``) that slides the fewest strings
     off their segments. So a chain is as fine as its sheet's scale can letter.
     """
     laid = []
-    for stations in _chains(pairs, lo, hi):
+    for stations in _chains(pairs, lo, hi, pinned):
         spans = [(stations[i + 1] - stations[i]) / M_PER_IN
                  for i in range(len(stations) - 1)]
         offsets = dimension_offsets(spans, [_label(span) for span in spans], offset, scale)
@@ -129,8 +167,11 @@ def _laid_out(pairs: list[Faces], lo: float, hi: float, offset: float, scale: fl
 
 def emit_interior_dimension_chains(b: SceneBuilder, walls: list[ResolvedWall],
                                    offset: float = 44.0,
-                                   scale: float = PLAN_RESERVATION_SCALE) -> None:
+                                   scale: float = PLAN_RESERVATION_SCALE,
+                                   model: ResolvedModel | None = None) -> None:
     """Two face-to-face partition chains, stacked outside the per-facade strings.
+
+    ``model``'s bearing walls (``bearing_wall_tags``) are kept on every chain, however crowded.
 
     ``offset`` is the distance outside the sheathing face at which the primary tier sits;
     a staggered segment steps further out from there. The caller stacks the overall bbox
@@ -146,9 +187,10 @@ def emit_interior_dimension_chains(b: SceneBuilder, walls: list[ResolvedWall],
         (0, minx, maxx, miny, -1.0),   # east-west, drawn below the south face
         (1, miny, maxy, minx, -1.0),   # north-south, drawn left of the west face
     )
+    bearing = bearing_wall_tags(model) if model is not None else frozenset()
     for axis, lo, hi, coordinate, sign in chains:
         stations, offsets = _laid_out(_face_stations(walls, axis), lo, hi, sign * offset,
-                                      scale)
+                                      scale, _face_stations(walls, axis, bearing))
         if len(stations) <= 2:
             continue  # nothing inside the envelope to say — the overall chain covers it
         for index, (span_offset, text_along) in enumerate(offsets):

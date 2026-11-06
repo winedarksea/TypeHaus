@@ -50,6 +50,8 @@ class AnnotationRequest:
     layer: str = "A-ANNO-TEXT"
     uid: str | None = None
     avoid_obstacles: bool = True
+    #: ``(width, height)`` points for a block that is not lettering (a key bubble).
+    extent_pt: tuple[float, float] | None = None
 
 
 @dataclass(frozen=True)
@@ -93,10 +95,11 @@ class LayoutResult:
 
 
 def annotation_polygon(candidate: Candidate, text: str, height_pt: float,
-                       scale: float | None) -> Polygon:
+                       scale: float | None,
+                       extent_pt: tuple[float, float] | None = None) -> Polygon:
     """Rotation-aware model-space polygon occupied by one rendered text block."""
     per_pt = model_in_per_pt(scale)
-    width_pt, height_block_pt = text_extent(text, height_pt)
+    width_pt, height_block_pt = extent_pt or text_extent(text, height_pt)
     width, height = width_pt * per_pt, height_block_pt * per_pt
     if candidate.align == "right":
         x0 = -width
@@ -217,7 +220,8 @@ def resolve_annotations(requests: tuple[AnnotationRequest, ...] | list[Annotatio
                 candidate = Candidate(candidate.at,
                                       "right" if candidate.at[0] < request.target[0] else "left",
                                       leader=True)
-            polygon = annotation_polygon(candidate, request.text, request.height_pt, scale)
+            polygon = annotation_polygon(candidate, request.text, request.height_pt, scale,
+                                         request.extent_pt)
             label_conflicts = tuple(item.request.key for item in placed
                                     if polygon.intersects(Polygon(item.polygon)))
             leader = (LineString((request.target, candidate.at))

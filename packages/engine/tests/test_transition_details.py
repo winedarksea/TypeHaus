@@ -104,13 +104,11 @@ def test_detail_has_legend_dims_and_notes(catlin_model):
     assert not any(t.startswith("NOTES") for t in texts), \
         "notes must not be Text nodes — they would couple the drawing scale to prose length"
     assert catlin_model.plan.project.name in texts, "title block carries the project name"
-    dims = [n for n in scene.nodes if isinstance(n, ArchDimension)]
-    assert dims, "derived dimension strings expected from resolved layer thicknesses"
-    # The exterior-insulation string. Its LABEL depends on the stack: a board stack is
-    # continuous insulation and says CI, while a truss wall's outrigger band is packed with
-    # foam between members at 16" o.c. and says "ext. insul." instead — 4" of it, but not
-    # continuous by the code's own definition (chrome.py::_continuous_insulation).
-    assert any('CI' in (n.text or '') or 'insul' in (n.text or '') for n in dims)
+    # The footing is stated (strings in frame, else the FTG note), and no string restates a
+    # layer the ladder already names: the floating CI / stud / XPS tags are gone (C5 #1).
+    dims = [n.text or "" for n in scene.nodes if isinstance(n, ArchDimension)]
+    assert any("ftg" in t for t in dims) or any(t.startswith("FTG ") for t in texts)
+    assert not any(word in t for t in dims for word in ("CI", "stud", "XPS", "insul"))
 
 
 def test_derive_scaffolds_bound_conditions_only(catlin_model):

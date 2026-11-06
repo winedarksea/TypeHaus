@@ -56,9 +56,39 @@ def _sheet_note_set(model: ResolvedModel, derived: DerivedDetail):
                              source=path.name).for_condition(derived.key)
 
 
-def _notes_lines(model: ResolvedModel, derived: DerivedDetail) -> list[str]:
-    """Logical note lines for ``Scene.notes`` — outside the drawing's coordinate space."""
-    return _sheet_note_set(model, derived).sheet_lines()
+def drawn_keys(scene: Scene) -> set[str]:
+    """Keys the drawing shows: a bubble, or a callout that opens with its key (an eave)."""
+    import re
+
+    from typehaus.emit.draw.keyed_notes import KEY_LAYER
+
+    keys = {n.content for n in scene.nodes if isinstance(n, Text) and n.layer == KEY_LAYER}
+    keys |= {m.group(0) for n in scene.nodes if isinstance(n, Leader)
+             if (m := re.match(r"K\d+\b", n.text or ""))}
+    return keys
+
+
+def _notes_lines(model: ResolvedModel, derived: DerivedDetail,
+                 bubbled: set[str] | None = None) -> list[str]:
+    """Logical note lines for ``Scene.notes`` — outside the drawing's coordinate space.
+
+    With ``bubbled`` (the keys drawn on this cut), a keyed note with no bubble prints as a
+    general bullet: a K number with nothing to find is worse than no number (D2-106).
+    """
+    notes = _sheet_note_set(model, derived)
+    if bubbled is not None and notes.keyed:
+        import re
+        from dataclasses import replace
+
+        # A key another note cites ("per K4-K6") keeps its number: the citation finds it.
+        cited = {f"K{i}" for n in (*notes.general, *notes.keyed)
+                 for a, b in re.findall(r"\bK(\d+)(?:-K(\d+))?", n.text)
+                 for i in range(int(a), int(b or a) + 1)}
+        shown = bubbled | cited
+        lost = tuple(replace(n, key="") for n in notes.keyed if n.key not in shown)
+        notes = replace(notes, general=notes.general + lost,
+                        keyed=tuple(n for n in notes.keyed if n.key in shown))
+    return notes.sheet_lines()
 
 
 def _load_markdown_notes(path) -> list[str]:
@@ -386,7 +416,10 @@ def _seed_nodes(model: ResolvedModel, derived: DerivedDetail,
                                 to=label.spec.target, text=label.spec.text,
                                 height_pt=label.height_pt, uid=None))
     if getattr(tr, "overlay", None):
+        from typehaus.emit.draw.annotation_layout_detail import CAPTION_UID
+
         nodes.append(Text(anchor=(cu0 / M_PER_IN, cz0 / M_PER_IN - 4.0),
                           content=f"{tr.tag}  ·  {tr.overlay}",
-                          height_pt=ANNOTATION_TEXT_PT, layer="A-ANNO-TEXT", uid=None))
+                          height_pt=ANNOTATION_TEXT_PT, layer="A-ANNO-TEXT",
+                          uid=f"{CAPTION_UID}caption"))
     return nodes

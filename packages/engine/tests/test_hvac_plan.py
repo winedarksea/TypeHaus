@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
-from typehaus.emit.draw.scene import Polyline, Symbol
+from typehaus.emit.draw.hvacplan import build_hvac_plan, duct_storeys, has_hvac_content
+from typehaus.emit.draw.scene import Polyline, Symbol, Text
 from typehaus.quantities import M_PER_IN
 
 
@@ -34,9 +34,12 @@ def test_hvac_plan_symbol_census(catlin_model):
 
 
 def test_hvac_plan_marks_every_crossing_and_explains_fire_blocking_once(catlin_model):
-    scene = build_hvac_plan(catlin_model, "second")
+    # The main ceiling's ducts lie in the second floor's trusses: they print on main (M1-108).
+    scene = build_hvac_plan(catlin_model, "main")
+    drawn_on = duct_storeys(catlin_model)
     crossed_ducts = [duct for duct in catlin_model.ducts
-                     if duct.storey == "second" and duct.crossings]
+                     if drawn_on.get(duct.uid, duct.storey) == "main" and duct.crossings]
+    assert crossed_ducts
     assert sum("fire blocking" in note for note in scene.notes) == 1
     assert "every marked crossing" in scene.notes[0]
     for duct in crossed_ducts:
@@ -60,3 +63,12 @@ def test_hvac_plan_dxf_round_trips(catlin_model, tmp_path: Path):
     assert doc.units == 1
     names = {layer.dxf.name for layer in doc.layers}
     assert {"M-HVAC-SDFF", "M-HVAC-RDFF"} <= names
+
+
+def test_erv_legs_print_where_they_meet_the_erv(catlin_model):
+    """OA/EA are filed on main and lie in the basement ceiling (M1-108); the wrapped OD and
+    the ERV's own port tags print with them (M1-002, M1-009)."""
+    texts = {n.content for n in build_hvac_plan(catlin_model, "basement").nodes
+             if isinstance(n, Text)}
+    assert '8" RD OUTDOOR AIR, 2" WRAP = 12" OD' in texts
+    assert {'SUPPLY 6" RD', 'RETURN 6" RD', 'OUTDOOR 6" RD', 'EXHAUST 6" RD'} <= texts

@@ -70,7 +70,8 @@ def test_s100_has_a_keyed_foundation_schedule(catlin_model):
     titles = [table.title for table in build_foundation_schedules(catlin_model)]
     assert titles == ["FOOTING / PAD SCHEDULE", "FOUNDATION WALL SCHEDULE",
                       "SLAB-ON-GRADE SCHEDULE", "SILL ANCHORAGE SCHEDULE",
-                      "FOUNDATION REINFORCEMENT SCHEDULE"]
+                      "FOUNDATION REINFORCEMENT SCHEDULE",
+                      "CAST COLUMN / PIER REINFORCEMENT"]
     text = _joined(build_foundation_plan(catlin_model))
     # every mark the schedule defines is keyed onto the plan
     for mark in {*marks.footing.values(), *marks.pad.values(), *marks.wall.values(),
@@ -258,7 +259,7 @@ def test_s100_reinforcement_schedule_renders_a_plain_pour_honestly(catlin_model,
     """A house may pour its foundation plain (ACI 318-19 §14.1.4) and this house may yet
     decide to — notes/rebar_backout.md is that argument. The sheet must then print no
     reinforcement schedule at all rather than an empty heading or an invented mat."""
-    import typehaus.emit.draw.foundation_schedule as schedule
+    import typehaus.emit.draw.foundation_reinforcement as schedule
 
     monkeypatch.setattr(schedule, "_reinforced_elements", lambda model: [])
     assert reinforcement_schedule(catlin_model).rows == ()

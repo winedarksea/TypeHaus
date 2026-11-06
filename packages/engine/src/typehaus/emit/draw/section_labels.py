@@ -76,9 +76,12 @@ def wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels,
     if not fresh:
         return
     align = "right"
+    span = None
     if crop is not None:
         (cu0, cz0), (cu1, cz1) = crop
         z_top = min(wall_top, max(cz0, cz1))
+        z_lo = max(getattr(wall, "z0_m", min(cz0, cz1)), min(cz0, cz1))
+        span = (z_lo / M_PER_IN, z_top / M_PER_IN) if z_top > z_lo else None
         left_in, right_in = min(cu0, cu1) / M_PER_IN, max(cu0, cu1) / M_PER_IN
         mids = [mid_u for (_lab, mid_u) in fresh.values()]
         text_u = left_in - 1.0
@@ -91,7 +94,7 @@ def wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels,
     room = None if view_u is None else (
         text_u - view_u[0] if align == "right" else view_u[1] - text_u)
     entries = [LabelSpec(text=fit_to_room(label, room, scale), target=(mid_u, 0.0),
-                         key=(assembly, name))
+                         key=(assembly, name), span=span)
                for name, (label, mid_u) in
                sorted(fresh.items(), key=lambda item: item[1][1], reverse=align == "left")]
     ladder_labels.extend(place_column(entries, x=text_u, z_top=z_top / M_PER_IN - 1.0,
@@ -236,6 +239,10 @@ def emit_ladders(b, ladder_labels, scale: float | None = None) -> None:
         # A wall's layers separate in *u* and run the full height of the cut, so a flat rung
         # at the label's own elevation already lands inside the band; ``target_z`` is 0 to
         # say so. A roof's separate in *z*, and nothing but the band's own elevation will do.
+        span = placed.spec.span
+        if not target_z and span is not None:  # a rung pushed past its wall angles back on
+            inset = min(1.0, (span[1] - span[0]) / 4.0)
+            rung_z = min(max(rung_z, span[0] + inset), span[1] - inset)
         tip = (mid_u, target_z if target_z else rung_z)
         node = Leader(anchor=NamedPoint(xy=tip), at=placed.at, to=tip,
                       text=placed.spec.text, height_pt=placed.height_pt,
