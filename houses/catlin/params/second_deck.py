@@ -92,17 +92,23 @@ TRIFORCE_OJ418S_FLOOR_SPAN = PublishedSpan(
     condition="glue-nailed 23/32\" floor panels; 1 1/2\" minimum end bearing; uniform load only; OJ418S as the basis of design (any fabricator's 11 7/8\" truss to the same row); the 25 psf dead-load column; point loads (the peninsula) are outside the row and answered by the doubled truss; L/720 live is on the order for a stiffer floor",
 )
 
-# TRIFORCE's published web opening: one 7 1/4" round (not the J12 chart). Nothing else is
-# published for it here (no chase, R2, TrimEnd or panel pitch), so the Warren pocket pitch is
-# an assumed working figure until the shop drawing arrives; the page is to be confirmed.
+# TRIFORCE's published web opening (p.19, read 2026-11-06): 7 1/4" round, 5 3/4" square or
+# 3 x 13 through the diagonal webs of an 11 7/8" joist. p.4 draws 2x2 diagonals "24" o.c. typ."
+# and ONE 34 1/8" OSB end panel (trimmable to 24", either end; one <= 1 1/2" hole in it, else
+# TRIFORCE Analyzer). Where the panel and the end posts land is not modelled, so the pockets'
+# stations stay assumed (``panel_pitch_assumed``): mep.open_web_panel reads UNKNOWN on them.
 TRIFORCE_OJ_WEB_OPENINGS = PublishedWebOpenings(
-    source="TRIFORCE (Open Joist) U.S. Specifier Guide, 2023-05-11, web openings",
-    table="11-7/8\" OJ418S: 7 1/4\" round web opening",
+    source="TRIFORCE (Open Joist) U.S. Specifier Guide, U.S. Edition 2023-05-11 "
+           "(BAR0145UA_20230511_V3), p.19 \"Mechanical Clearances\"; p.4 web layout",
+    table="Maximum Size of Pipes, Ducts and Cable Trays Through Diagonal Web Members, "
+          "11 7/8\": round D 7 1/4\"",
     member=_TRUSS,
     round_diameter=inch(7.25),
     panel_pitch=inch(24), panel_pitch_assumed=True,
-    condition="the 7 1/4\" round only; page and opening stations to be confirmed against the "
-              "shop drawing; any larger or rectangular opening is TRIFORCE's to approve",
+    condition="the round column only (5 3/4\" square and 3\" x 13\" rectangle not modelled); "
+              "the 34 1/8\" OSB end panel (one hole <= 1 1/2\") and its end are not placed, "
+              "so a pocket within ~35\" of either end may be OSB; the 24\" o.c. diagonals are "
+              "p.4's typical spacing, the stations the shop drawing's",
 )
 
 # How the x=18' plate is split. ``W-M-C2`` is a 2x6: 5 1/2" of seat, both decks landing on

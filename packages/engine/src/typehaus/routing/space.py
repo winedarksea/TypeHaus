@@ -86,12 +86,8 @@ MAX_CANDIDATE_LINES = 400
 #: owner-answer MEP waves (984 -> 1,072 hard prisms: condensate runs, the service lateral).
 #: Builds in 19.6 s, searches in 2.6 s, peaks at 886 MB (`--timing`, measured).
 #:
-#: **500,000 on 2026-11-01, same reason.** DU-B-ERV-R-SAUNA-SUP measured 475,794 after the
-#: ERV/sauna supply moves (392,334 on 2026-10-29).
-#:
-#: **600,000 on 2026-11-06, same reason.** PR-A-HW-STUBATH measured 556,932 after ~20 runs
-#: moved into TrimJoist pockets and onto ESR-1153 lanes (decision #117). Graph builds in
-#: 18.2 s and peaks at 1.19 GB (`--timing`, `/usr/bin/time -l`, measured).
+#: **500,000 on 2026-11-01** (DU-B-ERV-R-SAUNA-SUP, 475,794); **600,000 on 2026-11-06**
+#: (PR-A-HW-STUBATH, 557,118 after the decision #117 re-lanes; 1.19 GB peak). Same reason.
 MAX_LATTICE_NODES = 600_000
 
 #: Default margin round the terminals' bounding box, in feet. Eight is about the width of

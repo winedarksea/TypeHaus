@@ -57,12 +57,14 @@ VENT_BRANCHES_MAIN = [
             path=(pt(inch(75), inch(300)), pt(inch(103.5), inch(300)),
                   pt(inch(103.5), inch(268.9)), pt(inch(98.5), inch(268.9)),
                   pt(inch(98.5), inch(268.9)),
-                  # 2026-11-06: on to BATH1-VENT's x=40" leg along the 352"-368" bay (it joined the
-                  # old diagonal here); it bores no joist, and x=98.5" stays 20.2" off the hanger.
-                  pt(inch(98.5), inch(354.9)), pt(inch(40), inch(354.9))),
+                  # 2026-11-06: jog to x=97.8" in the riser's bay: 18.14" off W-S-BA-E1B's plate
+                  # face (117.25"), 5.41" clear of the suite vent's hole (framing_bore_limits §11);
+                  # then on to BATH1-VENT's x=40" leg along the 352"-368" bay.
+                  pt(inch(97.8), inch(268.9)),
+                  pt(inch(97.8), inch(354.9)), pt(inch(40), inch(354.9))),
             diameter=inch(2),
             elevations=(inch(115.9), inch(116), inch(116.05), inch(116.1), inch(231),
-                        inch(231.1), inch(232.64)),
+                        inch(231.01), inch(231.1), inch(232.64)),
             # Laundry sink wet-vents from its existing laundry stack. The powder
             # basin has its own branch joining this riser above the flood rims.
             # x=8'-2 1/2" leg runs over W-M-BA2E and PR-B-LSINK-DRAIN arrives against that
@@ -220,8 +222,8 @@ VENT_BRANCHES_SECOND = [
             # trimmers; up there and west onto x=9'-0" at +19'-8", north of DU-S-ERV-HP-FEED.
             path=(pt(inch(197.615), inch(266.25)), pt(inch(113), inch(266.25)),
                   # 2026-11-06: the north leg is x=90" (was 108"): ESR-1153 Table A wants the 2.15"
-                  # hole 18" off the x=120" hanger and 5.25" clear of PR-M-WC-VENT's 2.62" hole
-                  # at 98.5" (6.1" here). The west leg passes 4" over that vent's riser head.
+                  # hole 18" off the 117.25" plate face and 5.25" clear of PR-M-WC-VENT's 2.62"
+                  # hole at 97.8" (5.41" here). The west leg passes 4" over that vent's riser head.
                   pt(inch(113), inch(268)), pt(inch(113), inch(268)),
                   pt(inch(90), inch(268)), pt(inch(90), inch(412.9))),
             diameter=inch(1.5),

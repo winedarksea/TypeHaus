@@ -100,9 +100,20 @@ fails on outline.
 
 ## 4. FS-M-NE (TRIFORCE OJ, 215" = 17'-11")
 
-Only a 7 1/4" round is published for it. There is no chase, TrimEnd or stock step in the row, so
-the member is its own length, panel points are the same assumed 24" pitch, laid symmetric about
-mid-span (a bottom node at 107.5, so a pocket on the bottom chord is centred 107.5 +/- 12), and
-the remainder falls in the two end diagonals. The strongbacks (`params/main_deck.py`) sit in the
-two bottom-chord pockets either side of mid-span: x = 215.25 + 107.5 +/- 12 = 310.75 and 334.75
-(A nudged to 309.5 to clear `CD-B-PLAY-SPARE`). Nothing here is TRIFORCE's drawing.
+Published (U.S. Specifier Guide 2023-05-11, read 2026-11-06): p.19 "Mechanical Clearances",
+11 7/8": a 7 1/4" round, 5 3/4" square or 3" x 13" through the diagonal webs; p.4: 2x2
+diagonals at "24" o.c. typ.", 14 3/16" at the end post, and ONE 34 1/8" OSB end panel,
+trimmable up to 24", at either end (p.19: one round hole <= 1 1/2" in it, else Analyzer). The row
+carries the round only and places no OSB panel, so the member is its own length, panel points
+are 24" laid symmetric about mid-span (a bottom node at 107.5, so a pocket on the bottom chord is
+centred 107.5 +/- 12), and the remainder falls in the two end diagonals. The strongbacks
+(`params/main_deck.py`) sit in the two bottom-chord pockets either side of mid-span:
+x = 215.25 + 107.5 +/- 12 = 310.75 and 334.75 (A nudged to 309.5 to clear `CD-B-PLAY-SPARE`).
+The STATIONS are not TRIFORCE's drawing, so `mep.open_web_panel` reads this deck UNKNOWN.
+
+## 5. What an assumed pitch may claim
+
+Every pocket's station follows the pitch. Where `panel_pitch_assumed` is set, a deck whose runs
+each hold their own pocket is UNKNOWN in `mep.open_web_panel`, never a PASS; a FAIL (a run on a
+web, two runs in a pocket, a run over D's published size) still fails, since the router is
+steered off the assumed webs and the size limits are published.

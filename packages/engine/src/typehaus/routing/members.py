@@ -85,7 +85,7 @@ class Penetrations:
                 self.walls.setdefault((built.axis, key), []).append(built)
         library = getattr(getattr(model, "plan", None), "library", None)
         for floor in model.floors:
-            built = _floor(floor, library)
+            built = _floor(floor, library, model)
             if built is not None:
                 self.floors.append(built)
 
@@ -310,8 +310,13 @@ def _wall(wall: Any, bearing: bool) -> _Wall | None:
     return out
 
 
-def _floor(floor: Any, library: Any = None) -> _Floor | None:
-    from typehaus.resolve.mep_crossings import is_member_line, member_window, support_faces
+def _floor(floor: Any, library: Any = None, model: Any = None) -> _Floor | None:
+    from typehaus.resolve.mep_crossings import (
+        floor_supports,
+        is_member_line,
+        member_window,
+        support_faces,
+    )
     from typehaus.resolve.mep_hole_chart import joist_hole_chart
 
     window = member_window(floor)
@@ -339,8 +344,9 @@ def _floor(floor: Any, library: Any = None) -> _Floor | None:
     out.profile = joists[0][5] if joists else ""  # type: ignore[attr-defined]
     out.chart = (joist_hole_chart(library, out.profile)  # type: ignore[attr-defined]
                  if window.kind == "i_joist" and library is not None else None)
-    out.faces = ([support_faces(floor, j[6]) for j in joists]  # type: ignore[attr-defined]
-                 if out.chart is not None else [])
+    supports = floor_supports(model, floor) if out.chart is not None and model else ()
+    out.faces = ([support_faces(floor, j[6], supports)  # type: ignore[attr-defined]
+                  for j in joists] if out.chart is not None else [])
     return out
 
 

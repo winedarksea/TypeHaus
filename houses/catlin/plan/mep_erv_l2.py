@@ -74,10 +74,11 @@ EQUIPMENT_ERV_MAIN = [
 # open-web floor truss as a CONTINUOUS SLOT and thirteen 4" ducts crossing every truss
 # inside a 41" band all passed. The block that stood here said as much in prose — "SEVEN
 # PAIRS OVERLAP", "two 4" ducts on 2" centres OVERLAP BY 2"" — and then noted that nothing
-# graded it. `JoistSpec.web_panel_pitch` and `mep.open_web_panel` grade it now.
+# graded it. `JoistSpec.web_openings` (TrimJoist J12) and `mep.open_web_panel` grade it now.
 #
-# THE COUNT, with the confirmed panel datum in params/second_deck.py (24" pitch, 13"
-# clear once the 2x4 web is counted, 12" offset). A lane running SOUTH sits at one x, so it crosses every truss in the
+# STALE SINCE 2026-11-06 (decision #117): the count below is on the retired 24/13/12 owner
+# layout; J12 has 5" D pockets and an R1 chase, and the re-count waits on the owner's ERV pick
+# (plans/TODO.md). A lane running SOUTH sits at one x, so it crosses every truss in the
 # SAME opening, and three openings reach this closet:
 #
 #     opening      x band        usable 4" lanes     why

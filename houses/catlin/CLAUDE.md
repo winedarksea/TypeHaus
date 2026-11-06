@@ -1565,7 +1565,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Holes through floor members are graded (decision #117).** Every TJI 230 crossing reads ESR-1153
   Table A (`plan/framing_charts.py`): drilled hole = OD + 1/4", edge to support face >= 6"/12"/18"/24"
   by size, 2 x the larger hole clear between holes. The attic vents are one lane set (suite x=7'-6",
-  WC 8'-2 1/2", BATH1 on x=3'-4"); move one and re-grade all three (`notes/framing_bore_limits.md` §11).
+  WC 8'-1.8", BATH1 on x=3'-4"; a cut end's face is its plate or beam edge, 117.25"); move one and re-grade all three (`notes/framing_bore_limits.md` §11).
 - **ERV: Broan B210E75RT, home-run distribution in STANDARD PARTS** (`plan/mep_erv_l1.py`).
   Redesigned 2026-09-12 (BLD-08): the topology did not change, what it is built from did.
   - **No proprietary tube anywhere.** The 160 mm/75 mm radial manifold and its semi-rigid

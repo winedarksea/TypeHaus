@@ -404,10 +404,9 @@ EAST_FLOOR = FloorSystem(
 # wants is no bounce, which is the strongbacks and the doubled peninsula truss, not 60 psf.
 # Same 11 7/8" depth as every other field, so nothing above or below this deck moved.
 #
-# The webs are TRIFORCE's, NOT FS-S-WEST's TrimJoist J12 drawing: the one published opening is
-# a 7 1/4" round (``TRIFORCE_OJ_WEB_OPENINGS``), on a Warren pitch assumed until the shop
-# drawing arrives. ``mep.open_web_panel`` reads it. The kitchen drain, the ERV radials and
-# the data conduits cross through the pockets, one run to a pocket.
+# The webs are TRIFORCE's (``TRIFORCE_OJ_WEB_OPENINGS``: p.19's 7 1/4" round), not J12's; the
+# pocket stations are assumed until the shop drawing, so ``mep.open_web_panel`` is UNKNOWN.
+# The kitchen drain, ERV radials and data conduits cross in the pockets, one run to each.
 #
 # ** THE x=18' PLATE IS SPLIT 3 1/2" / 2" ** exactly as on the second floor: ``W-B-CS2``/
 # ``-CN2``/``-CN`` are 2x6 framed walls whose double top plate is the seat, the trusses take

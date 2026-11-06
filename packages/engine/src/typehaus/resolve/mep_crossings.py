@@ -209,26 +209,48 @@ def leg_crossings(floor: ResolvedFloor,
     return out
 
 
-#: Two collinear joists ending this close together are one line split over a bearing.
-_SPLIT_GAP_M = inch(1).meters
+#: A joist end this close to a floor header's face hangs on it.
+_HUNG_GAP_M = inch(0.25).meters
+#: Fallback seat where a support cannot be found (a 2x4 plate's 3 1/2").
+_FALLBACK_SEAT_M = inch(3.5).meters
 
 
-def support_faces(floor: ResolvedFloor,
-                  member: FramedMember) -> tuple[float | None, float | None]:
+def floor_supports(model, floor: ResolvedFloor) -> tuple:
+    """Plan outlines a ``floor``'s joists can end on: flush or dropped BEAM solids and the
+    STRUCTURE layer of walls standing under the deck. Each is ``(outline, z0, z1)``."""
+    joists = [m for m in floor.members if m.category == "joist" and m.z0_m is not None]
+    if not joists:
+        return ()
+    z0, z1 = min(m.z0_m for m in joists), max(m.z1_m for m in joists)
+    tol = inch(1).meters
+    out = [tuple(s.outline) for s in model.solids
+           if s.category == "beam" and s.z1_m >= z0 - tol and s.z0_m <= z1]
+    for wall in model.walls:
+        for layer in wall.layers:
+            top = layer.z1_m if layer.z1_m is not None else wall.z1_m
+            if (layer.function == "structure" and layer.polygon and top is not None
+                    and z0 - tol <= top <= z1 + tol):
+                out.append(tuple(layer.polygon))
+    return tuple(out)
+
+
+def support_faces(floor: ResolvedFloor, member: FramedMember,
+                  supports: tuple = ()) -> tuple[float | None, float | None]:
     """The inside faces of ``member``'s two supports, along its span (plan coordinate).
 
-    An end at the deck's outer tip sits on a plate: its face is the tip less the seat. An end
-    abutting a collinear joist is a line SPLIT over an interior bearing: each piece is a
-    simple span, so it is still an end support, and its face is taken the deck's larger end
-    seat in (conservative; the shared plate's split is not carried). Any other end is hung
-    (a header or beam), so its face is the member end. ``None``: a cantilevered tip, which
+    Every end is an END support (each piece of a line split over a bearing is a simple span),
+    so Table A reads all of them. An end at the deck's outer tip sits on a plate: its face is
+    the tip less the seat. An end at a floor HEADER's face hangs there (face = end). Any other
+    end is cut at its support's AXIS (``resolve/floors.py``), so the face is the far edge of
+    the beam or wall structure in ``supports`` (``floor_supports``) under it; where none is
+    found, the deck's larger end seat in (conservative). ``None``: a cantilevered tip, which
     Table A does not grade. ``notes/framing_bore_limits.md`` §11.
     """
-    along_x = floor.direction == "x"
-    k = 0 if along_x else 1
+    k = 0 if floor.direction == "x" else 1
     lo, hi = sorted((member.p0[k], member.p1[k]))
     line = member.p0[1 - k]
     ends = floor.ends
+    seats = [v for v in ((ends.seat_lo, ends.seat_hi) if ends else ()) if v is not None]
 
     def face(end: float, sign: float) -> float | None:
         if ends is not None:
@@ -236,17 +258,44 @@ def support_faces(floor: ResolvedFloor,
                 if abs(end - tip) < 1e-3:
                     return None if seat is None else end + sign * seat
         for other in floor.members:
-            if other is member or other.category != "joist":
+            if other.category != "header":
                 continue
-            if abs(other.p0[1 - k] - line) > 1e-3 or abs(other.p1[1 - k] - line) > 1e-3:
-                continue
-            if min(abs(other.p0[k] - end), abs(other.p1[k] - end)) < _SPLIT_GAP_M:
-                seats = [v for v in ((ends.seat_lo, ends.seat_hi) if ends else ())
-                         if v is not None]
-                return end + sign * (max(seats) if seats else inch(3.5).meters)
-        return end
+            span = sorted((other.p0[1 - k], other.p1[1 - k]))
+            if (span[0] - 1e-3 <= line <= span[1] + 1e-3
+                    and abs(abs(other.p0[k] - end) - _half_width(other)) < _HUNG_GAP_M):
+                return end
+        outside = end - sign * 1e-4
+        for outline in supports:
+            reach = _interval_at(outline, k, line, outside)
+            if reach is not None:
+                return reach[1] if sign > 0 else reach[0]
+        return end + sign * (max(seats) if seats else _FALLBACK_SEAT_M)
 
     return face(lo, 1.0), face(hi, -1.0)
+
+
+def _half_width(member: FramedMember) -> float:
+    from typehaus.resolve.framing.profiles import cross_section
+
+    section = cross_section(member.profile)
+    return section.width_m / 2.0 if section is not None else 0.0
+
+
+def _interval_at(outline, k: int, line: float, at: float) -> tuple[float, float] | None:
+    """The run of ``outline`` along axis ``k`` on the line ``line`` that contains ``at``."""
+    cuts = []
+    n = len(outline)
+    for i in range(n):
+        a, b = outline[i], outline[(i + 1) % n]
+        if (a[1 - k] - line) * (b[1 - k] - line) > 0 or a[1 - k] == b[1 - k]:
+            continue
+        t = (line - a[1 - k]) / (b[1 - k] - a[1 - k])
+        cuts.append(a[k] + t * (b[k] - a[k]))
+    cuts.sort()
+    for i in range(0, len(cuts) - 1, 2):
+        if cuts[i] - 1e-9 <= at <= cuts[i + 1] + 1e-9:
+            return cuts[i], cuts[i + 1]
+    return None
 
 
 # --- open-web PANEL layout ----------------------------------------------------------------

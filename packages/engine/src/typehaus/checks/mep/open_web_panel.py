@@ -12,8 +12,8 @@ an ``OpenWebShape`` (``resolve/open_web.py``) derived from the deck's published
 * A TrimEnd takes nothing; that and the size/outline limits are ``run_member_crossing``'s.
 
 **Unauthored is UNKNOWN naming the floor, never a pass.** A truss's layout is the maker's
-shop drawing; ``JoistSpec.web_openings`` is where a house quotes what is published, and the
-pitch it could not quote is flagged on the row and printed on every PASS.
+shop drawing; ``JoistSpec.web_openings`` is where a house quotes what is published. A pitch
+it could not quote (``panel_pitch_assumed``) places every pocket, so that deck is UNKNOWN too.
 
 **Width along the MEMBER, not diameter.** A 4" duct crossing a truss square occupies 4" of
 its length; the same duct crossing at 45 degrees occupies 5.66", because a cylinder cut
@@ -66,10 +66,6 @@ def open_web_panel(ctx: CheckContext) -> list[Finding]:
                 (floor.tag,)))
             continue
         out.extend(_graded(floor, runs, sections))
-
-    if not any(f.result.value in ("fail", "pass") for f in out):
-        out.append(_pass(_CID, f"{len(decks)} open-web deck(s) and none of them quotes "
-                               "published web openings to grade against", ()))
     return out
 
 
@@ -157,14 +153,16 @@ def _graded(floor, runs, sections) -> list[Finding]:
     if not out:
         openings = len({key for key in filled})
         shape = next(iter(members.values())).web
-        note = ("; the panel pitch is assumed until the shop layout arrives"
-                if row.panel_pitch_assumed else "")
-        out.append(_pass(
-            _CID,
-            f"{floor.tag}: {len(runs)} run(s) land in {openings} web opening(s) and none is "
-            f"over-subscribed ({shape.pitch_m / M_PER_IN:.3g}\" panels, one run per D "
-            f"pocket){note}",
-            (floor.tag,)))
+        crossing = len({tag for occupants in filled.values() for tag in occupants})
+        said = (f"{floor.tag}: {crossing} run(s) land in {openings} web opening(s) and none "
+                f"is over-subscribed ({shape.pitch_m / M_PER_IN:.3g}\" panels, one run per D "
+                "pocket)")
+        # Where the pockets stand rests on the pitch: unpublished, it is no PASS.
+        out.append(_unknown(
+            _CID, f"{said}, but the panel pitch is assumed, not published, so where each "
+                  f"pocket stands is this house's working figure [{row.source}]",
+            (floor.tag,), fix="replace the assumed pitch with the maker's shop layout")
+                   if row.panel_pitch_assumed else _pass(_CID, said, (floor.tag,)))
     return out
 
 

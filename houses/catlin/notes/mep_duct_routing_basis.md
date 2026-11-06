@@ -60,7 +60,7 @@ thirteen 4" ducts crossing every truss inside a 41" band passed `mep.run_member_
 without a word. A real truss has webs at panel points. A duct lands in an opening or it lands
 on a web, and nothing bores, notches or moves a web.
 
-**The datum is the owner's since 2026-10-26** — the fabricator builds to it. `params/second_deck.py`
+**Superseded 2026-11-06 (decision #117):** FS-S-WEST is TrimJoist J12 and its published openings (`notes/open_web_truss_geometry.md`) replace this layout; the arithmetic below is history. **The datum was the owner's from 2026-10-26** — the fabricator builds to it. `params/second_deck.py`
 authors the layout and says in its own `#:` how each number was arrived at (2x4 webs take the
 opening to **13"**; the hand-work below was done at the earlier 15");
 `mep.open_web_panel` reports UNKNOWN naming the floor for any deck that states none. What is

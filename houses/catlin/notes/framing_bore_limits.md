@@ -577,20 +577,27 @@ Table B (intermediate/cantilever) is not transcribed; a cantilevered tip grades 
 row, 24").
 
 **Support faces** (`mep_crossings.support_faces`): a deck tip seated on a plate is tip +/- seat
-(FS-ATTIC 2.25 + 3.75 = **6.0"**; FS-M-WEST 6.0" and 216 - 2.75 = **213.25"**); a hung end is
-the member end (FS-ATTIC joists 017-025 on `BM-S-HALL`: **120.0"**); a line split over the
-x=18' bearing takes the deck's larger end seat in (FS-ATTIC: 216 - 3.75 = 212.25").
+(FS-ATTIC 2.25 + 3.75 = **6.0"**; FS-M-WEST 6.0" and 216 - 2.75 = **213.25"**); an end at a
+floor header's face hangs there (FO-A-STAIR, FO-M-ERV-OA). Every other end is cut on its
+support's AXIS (`resolve/floors.py`), so its face is the far edge of the plate or flush beam
+under it: FS-ATTIC joists 017-019 end at x=120 on `BM-S-BATH-E` (120 - 2.625 = **117.375"**),
+020-025 on `W-S-BA-E1B`/`-BA-E`'s 2x6 plate (120 - 2.75 = **117.25"**); east of `FO-A-HALL`
+they start on `BM-S-HALL` (216 + 2.625 = 218.625"); a line split over the x=18' wall bears on
+half its plate (216 -/+ 2.75). Where no support is found, the deck's larger seat is taken in.
+(Until the review of 2026-11-06 the x=120 ends were read as hung at 120.0, 2.75" generous.)
 
 Edge = |station - face| - hole/2. Worked, as found and as moved:
 
-1. **`PR-S-SUITEBATH-VENT`** (1 1/2", hole 2.15, 3" row 18"): at x=108, 120 - 108 - 1.075 =
-   **10.93" < 18 FAIL** on nine joists. Moved to x=90: 120 - 90 - 1.075 = 28.9" PASS; clear to
-   `PR-M-WC-VENT` at 98.5 (hole 2.625): 8.5 - 1.075 - 1.3125 = **6.11" >= 2 x 2.625 = 5.25**.
-   x=100.7 (the review's fix) would have stood 2.2 - 1.075 - 1.3125 = -0.19" off WC-VENT: the
-   two holes overlap, so the three attic vents had to be laid out together.
-2. **`PR-S-BATH1-VENT`** (2", hole 2.625): its diagonal met joist 023 at x=112.1: 120 - 112.1 -
-   1.3125 = **6.6" < 18 FAIL**, and on 022 at x=94.7 it stood 98.5 - 94.7 - 2.625 = **1.2"**
-   from WC-VENT against 5.25. Now square, on x=40: 40 - 6 - 1.3125 = **32.7" PASS**.
+1. **`PR-S-SUITEBATH-VENT`** (1 1/2", hole 2.15, 3" row 18"): at x=108, 117.25 - 108 - 1.075 =
+   **8.18" < 18 FAIL** on nine joists. Moved to x=90: 117.25 - 90 - 1.075 = 26.2" PASS.
+   `PR-M-WC-VENT` (2", hole 2.625) at 98.5 stood 117.25 - 98.5 - 1.3125 = **17.44" < 18**, so
+   its attic leg jogs to x=97.8: **18.14" PASS**, and 7.8 - 1.075 - 1.3125 = **5.41" >= 2 x
+   2.625 = 5.25** clear of the suite vent. The window is 97.64..97.94; the two vents cannot
+   move apart without moving the suite vent's stack connection. x=100.7 (the review's fix)
+   would have overlapped WC-VENT's hole, so the three attic vents are laid out together.
+2. **`PR-S-BATH1-VENT`** (2", hole 2.625): its diagonal met joist 023 at x=112.1: 117.25 -
+   112.1 - 1.3125 = **3.8" < 18 FAIL**, and on 022 at x=94.7 it stood 98.5 - 94.7 - 2.625 =
+   **1.2"** from WC-VENT against 5.25. Now square, on x=40: 40 - 6 - 1.3125 = **32.7" PASS**.
 3. **`PR-B-CW-TRUNK`** (1 1/4", hole 1.625, 2" row 12"): at x=209 on FS-M-WEST joist 012,
    213.25 - 209 - 0.8125 = **3.44" FAIL**; at x=200, 213.25 - 200 - 0.8125 = **12.44" PASS**.
 4. **`PR-B-HW-SAUNA` / `PR-B-CW-SAUNA`** (1/2", hole 0.875, field 6"): at 207/208, 5.81" and

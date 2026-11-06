@@ -71,7 +71,7 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
     of any of them meets a member line — rather than assumed. With no floors at all there is
     nothing to have a window, and that is an honest UNKNOWN.
     """
-    from typehaus.resolve.mep_crossings import leg_crossings, web_grade
+    from typehaus.resolve.mep_crossings import floor_supports, leg_crossings, web_grade
 
     floors = list(ctx.model.floors)
     if not floors:
@@ -87,6 +87,8 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
         window = member_window(floor, chart=chart)
         if window is None:
             continue
+        supports = (floor_supports(ctx.model, floor)
+                    if chart is not None and window.kind == "i_joist" else ())
         # An open-web deck that quotes the maker's openings narrows the window ALONG the
         # member as well as across it: a run lands in an opening it fits, or it lands on a
         # web. Unquoted, no member carries a shape and the reading is unchanged —
@@ -144,7 +146,8 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
             out.append(_finding(kind, tag, floor.tag, radius, window, tightest))
             if on_web is not None:
                 out.append(_web_finding(kind, tag, floor.tag, on_web))
-            bore = (_ijoist_finding(floor, chart, tag, radius, crossings, by_member)
+            bore = (_ijoist_finding(floor, chart, tag, radius, crossings, by_member,
+                                    supports)
                     if chart is not None and window.kind == "i_joist" else
                     _bore_finding(ctx, floor, window, tag, radius, crossings, by_member))
             if bore is not None:
@@ -275,7 +278,7 @@ def _ijoist_chart(ctx, floor):
 
 
 def _ijoist_finding(floor, chart, tag: str, radius_m: float, crossings: list,
-                    by_member: dict) -> Finding | None:
+                    by_member: dict, supports: tuple = ()) -> Finding | None:
     """Every hole this run drills in an I-joist, against the maker's published ladder.
 
     One finding per (run, floor): the first hole out of zone or too close to a neighbour
@@ -293,7 +296,7 @@ def _ijoist_finding(floor, chart, tag: str, radius_m: float, crossings: list,
         member = members.get(crossing.member_key)
         if member is None or member.category != "joist":
             continue
-        lo, hi = support_faces(floor, member)
+        lo, hi = support_faces(floor, member, supports)
         s = crossing.station_m
         centre = (None if lo is None or hi is None
                   else min(s - lo, hi - s) / M_PER_IN)
