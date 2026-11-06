@@ -52,7 +52,7 @@ def ceiling_coating_areas(model: ResolvedModel) -> dict[tuple[str, str], float]:
         for layer in ceiling.layers:
             if layer.material_ref not in coatings:
                 break
-            areas[("ceiling", layer.material_ref)] += _ceiling_area_m2(model, ceiling)
+            areas[("ceiling", layer.material_ref)] += ceiling_area_m2(model, ceiling)
     for floor in model.floors:
         for _tag, area, coating in floor.linings:
             if coating is not None:
@@ -96,7 +96,7 @@ def _slope(model: ResolvedModel, roof: ResolvedRoof | None) -> float:
     return math.sqrt(1.0 + (source.pitch.rise / source.pitch.run) ** 2)
 
 
-def _ceiling_area_m2(model: ResolvedModel, ceiling) -> float:
+def ceiling_area_m2(model: ResolvedModel, ceiling) -> float:
     """The ceiling's face: its plan outline, sloped where it follows a rafter roof."""
     area = abs(Polygon(ceiling.outline).area)
     room = model.plan.by_tag(ceiling.room_ref)

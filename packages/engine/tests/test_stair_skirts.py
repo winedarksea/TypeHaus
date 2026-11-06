@@ -30,7 +30,7 @@ def test_four_skirts_with_the_note_s_reveal_toe_and_blanks(stair) -> None:
                            "skirt-upper-left", "skirt-upper-right"}
     assert {k: round(m.cut_length_m / IN, 3) for k, m in skirts.items()} == {
         "skirt-lower-left": 95.795, "skirt-lower-right": 98.631,
-        "skirt-upper-left": 92.115, "skirt-upper-right": 103.450}
+        "skirt-upper-left": 96.096, "skirt-upper-right": 103.450}
     floor = stair.base_elevation_m
     # §3 at R = 7.52965" (since #112): 13.5825" over the floor at the first riser face;
     # level foot to +0.664".

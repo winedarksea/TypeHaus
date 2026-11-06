@@ -8,6 +8,8 @@ the board's labour rate, so they have no field here.
 
 from __future__ import annotations
 
+from pydantic import Field
+
 from typehaus.model.base import Element, HausModel
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, ft
@@ -63,6 +65,9 @@ class DrywallStandard(Element):
     window_corner_radius: Length | None = None
     led_profile: ShadowGapProfile | None = None
     stock_length: Length = ft(10)
+    # GA-214 level of finish (0-5) the board is taped to; None is unstated and the drywall
+    # bid summary says so rather than assuming Level 4.
+    finish_level: int | None = Field(default=None, ge=0, le=5)
 
     def termination_for(self, board_thickness_m: float | None) -> str:
         """The J-bead for a board ``board_thickness_m`` thick (within 1 mm)."""

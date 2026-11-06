@@ -529,13 +529,13 @@ def test_catlin_stair_guard_still_resolves_flat(catlin_model) -> None:
     """A guard with no ``serves_stair`` extrudes at one elevation, exactly as before the
     raking branch existed: posts ride the authored base, rails sit at fixed levels.
     Regression pin for the ``serves_stair`` fork in ``_resolve_railing``. 36" over the oak
-    (+1 1/2") since 2026-11-05; the posts run down into their 5" brackets, 2" under it."""
+    (+1 1/2") since 2026-11-05."""
     posts = [s for s in catlin_model.solids if s.tag.startswith("RL-S-STAIR-POST")]
     rails = [s for s in catlin_model.solids if s.tag.startswith("RL-S-STAIR-RAIL")]
     assert posts and rails
     base = 10 * FT + 1.5 * 0.0254
     top = base + 36 * 0.0254
-    assert all(math.isclose(p.z0_m, base - 7 * 0.0254, abs_tol=1e-9) for p in posts)
+    assert all(math.isclose(p.z0_m, base, abs_tol=1e-9) for p in posts)
     assert all(math.isclose(p.z1_m, top, abs_tol=1e-9) for p in posts)
     rail_half = 0.75 * 0.0254
     centres = {round(r.z0_m + rail_half, 4) for r in rails}

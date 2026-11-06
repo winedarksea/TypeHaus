@@ -11,6 +11,7 @@ haus bids houses/catlin --trade framing         # the package, printed
 haus bids houses/catlin --trade framing --md out/bids/framing.md --csv out/bids/framing.csv
 haus bids houses/catlin --all [--out out/bids]  # <trade>.md + <trade>.csv + README.md + MANIFEST.json
 haus bids houses/catlin --priced ...            # carries the estimate's prices; exit 2 without prices.toml
+haus bids houses/catlin --trade openings --summary   # the trade's summary schedule, printed
 ```
 
 ## The Markdown package
@@ -50,6 +51,29 @@ total_high`. `key` is the qualified estimate key (`slab:DECK_EPS_INT`), which is
 `prices.toml` prices and `costs.toml` files against; the stock-length lines of one lumber size
 repeat it, and a priced total splits across them by ordered LF (unit price is per piece).
 `application` is what the line frames, for the delivery ticket; blank outside lumber.
+
+## Summaries
+
+Many subs price from a schedule, not a material list. For those trades `--all` also writes
+`<trade>-summary.md` and one `<trade>-<table>.csv` per table, each with its own columns
+(`takeoff/bid_summaries.SUMMARIES`; builders in `takeoff/summary_*.py`). The package stays
+the detail behind it. Every number is a takeoff the model already makes, regrouped:
+
+| trade | tables |
+|---|---|
+| openings | windows & exterior doors (mark, location, unit and RO, hand, wall, jamb, R308.4 safety glazing, R310 egress, U/SHGC, product, spec URL); interior doors (2/8 x 6/8 size, core, function, jamb, HW set); hardware sets |
+| millwork | interior doors; trim pack (LF, sticks at the `TrimStandard` stock length, corners); hardware sets |
+| roofing | per roof: pitch, sloped SF, squares, eave/rake/ridge LF (3D, seams between roofs left out); hip/valley 0 by vocabulary |
+| siding | cladding SF and squares per material and elevation (plan north); the package's trim lines |
+| drywall | board SF and sheets by storey, surface, type and thickness; ceiling-height bands; `DrywallStandard.finish_level` or "not stated" |
+| flooring, tile | room finish schedule (net SF, the model's waste, underlayment, base); tile adds wall tile |
+| plumbing | fixtures by class (`plumbing_tables.FIXTURE_CLASS_BY_SYMBOL`) and equipment; every fixture with room, product, spec URL |
+| electrical | devices by kind and storey; luminaires by form; dedicated and 240 V circuits; panels |
+
+Safety glazing and egress come from the checks' own derivation
+(`glazing.safety_glazing_clauses`, `egress.egress_window_rooms`), passed in by the CLI so
+`takeoff` never imports `checks`. Wall splits read `envelope.wall_layer_areas`, the yields
+`envelope_layer_takeoff` sums, so they add back to the package (`tests/test_bid_summaries.py`).
 
 ## Invariants (pinned by `tests/test_bid_packages.py`)
 

@@ -127,7 +127,8 @@ class _Deck:
         low = min(a for a, _ in ends)
         high = max(b for _, b in ends)
         start_ft, end_ft = self.cantilevers_ft
-        extension = self.resolved.ends.extension() if self.resolved.ends else (0.0, 0.0)
+        floor_ends = getattr(self.resolved, "ends", None)
+        extension = floor_ends.extension() if floor_ends is not None else (0.0, 0.0)
         ext_lo, ext_hi = (e / _M_PER_FT for e in extension)
         spans = []
         for (a, b), member in zip(ends, joists, strict=True):

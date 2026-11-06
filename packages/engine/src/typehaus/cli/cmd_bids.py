@@ -23,8 +23,8 @@ BID_COLUMNS = ("trade", "group", "section", "key", "description", "quantity", "u
 PRICE_COLUMNS = ("unit_price_low", "unit_price_high", "total_low", "total_high")
 
 
-def _load(directory: Path, priced: bool) -> tuple[Any, Any, dict[str, Any], Any]:
-    """``(loaded, model, packages, labels)`` — exits 1 on a load/resolve error, 2 when
+def _load(directory: Path, priced: bool) -> tuple[Any, Any, dict[str, Any], Any, Any]:
+    """``(loaded, model, packages, labels, bom)`` — exits 1 on a load/resolve error, 2 when
     ``--priced`` is asked of a house with no prices."""
     from typehaus.cli.prices import estimate_costs, load_prices
     from typehaus.emit.draw.sheets import build_sheet_index
@@ -55,7 +55,55 @@ def _load(directory: Path, priced: bool) -> tuple[Any, Any, dict[str, Any], Any]
     sheets = tuple(spec.number for spec in build_sheet_index(model, house_dir=directory))
     packages = build_bid_packages(model, bom, estimate=estimate, priced=priced, labels=labels,
                                   sheet_numbers=sheets)
-    return loaded, model, packages, labels
+    return loaded, model, packages, labels, bom
+
+
+def _summaries(directory: Path, model: Any, bom: Any, packages: dict[str, Any],
+               trades: tuple[str, ...] | None = None) -> dict[str, Any]:
+    """The per-trade summaries. Safety glazing and egress are the R308.4 / R310 checks'
+    own derivation, handed in so ``takeoff`` never imports ``checks``."""
+    from typehaus.checks.code.mn_residential.egress import egress_window_rooms
+    from typehaus.checks.code.mn_residential.glazing import safety_glazing_clauses
+    from typehaus.checks.run import build_context_from_model
+    from typehaus.takeoff.bid_summaries import SummaryInputs, build_summaries
+
+    ctx = build_context_from_model(model, [], directory)
+    return build_summaries(SummaryInputs(model, bom, safety_glazing_clauses(ctx),
+                                         egress_window_rooms(ctx), packages), trades)
+
+
+def _summary_markdown(summary: Any, loaded: Any) -> str:
+    from typehaus import engine_version
+    from typehaus.emit.md_writer import bullets, callout, document, heading, kv_block, table
+    from typehaus.emit.trades import TRADE_LABELS
+
+    blocks = [
+        heading(f"{summary.title} — {loaded.plan.project.name}"),
+        kv_block([("House", loaded.plan.project.name),
+                  ("Trade", TRADE_LABELS.get(summary.trade, summary.trade)),
+                  ("Engine", engine_version()), ("Model hash", loaded.content_hash)]),
+        summary.intro,
+        callout(f"The summary to price from. The detailed material list is {summary.trade}.md "
+                "for a sub who wants it; quantities are net of waste."),
+    ]
+    for item in summary.tables:
+        blocks += [heading(item.title, 2), table(item.columns, item.rows)]
+        if item.notes:
+            blocks.append(bullets(item.notes))
+    return document(*blocks)
+
+
+def _write_summary(summary: Any, loaded: Any, md: Path, csv_stem: Path) -> list[Path]:
+    """``md`` and one ``<stem>-<table>.csv`` per table: each table has its own columns."""
+    from typehaus.emit.csv_writer import write_csv
+
+    md.parent.mkdir(parents=True, exist_ok=True)
+    md.write_text(_summary_markdown(summary, loaded), encoding="utf-8")
+    paths = [md]
+    for item in summary.tables:
+        paths.append(write_csv(csv_stem.with_name(f"{csv_stem.name}-{item.slug}.csv"),
+                               item.columns, item.as_dicts()))
+    return paths
 
 
 def _flat_rows(package: Any, priced: bool) -> list[dict[str, Any]]:
@@ -122,15 +170,19 @@ def _markdown(package: Any, loaded: Any, priced: bool) -> str:
     return document(*blocks)
 
 
-def _readme(packages: dict[str, Any], loaded: Any) -> str:
+def _readme(packages: dict[str, Any], loaded: Any, summaries: dict[str, Any]) -> str:
     from typehaus.emit.md_writer import document, heading, table
 
     return document(
         heading(f"Bid packages — {loaded.plan.project.name}"),
-        "One request for quote per trade, unpriced, from the model's bill of materials.",
-        table(["trade", "package", "lines", "storeys", "files"],
+        "One request for quote per trade, unpriced, from the model's bill of materials. "
+        "Where a trade prices from a schedule, `<trade>-summary.md` is that schedule and "
+        "the package is the detail behind it.",
+        table(["trade", "package", "lines", "storeys", "files", "summary"],
               [[p.label, p.recipe.title, len(p.lines), ", ".join(p.storeys),
-                f"{trade}.md, {trade}.csv"] for trade, p in packages.items()]))
+                f"{trade}.md, {trade}.csv",
+                f"{trade}-summary.md" if trade in summaries else "—"]
+               for trade, p in packages.items()]))
 
 
 @app.command()
@@ -144,6 +196,8 @@ def bids(
     out: Path = typer.Option(Path("out/bids"), "--out", help="Directory for --all."),
     priced: bool = typer.Option(False, "--priced",
                                 help="Carry the estimate's prices. Needs prices.toml."),
+    summary: bool = typer.Option(False, "--summary",
+                                 help="With --trade: the trade's summary schedule instead."),
 ) -> None:
     """Report the per-trade bid packages: what each sub is asked to quote, unpriced."""
     import json
@@ -152,7 +206,7 @@ def bids(
     from typehaus.emit.trades import TRADES
 
     directory = _resolve_house(house)
-    loaded, _model, packages, _labels = _load(directory, priced)
+    loaded, model, packages, _labels, bom = _load(directory, priced)
     columns = (*BID_COLUMNS, *(PRICE_COLUMNS if priced else ()))
 
     if all_trades:
@@ -160,11 +214,15 @@ def bids(
 
         out.mkdir(parents=True, exist_ok=True)
         files: list[str] = []
+        summaries = _summaries(directory, model, bom, packages)
         for name, package in packages.items():
             (out / f"{name}.md").write_text(_markdown(package, loaded, priced), encoding="utf-8")
             write_csv(out / f"{name}.csv", columns, _flat_rows(package, priced))
             files += [f"{name}.md", f"{name}.csv"]
-        (out / "README.md").write_text(_readme(packages, loaded), encoding="utf-8")
+        for name, item in summaries.items():
+            files += [path.name for path in _write_summary(
+                item, loaded, out / f"{name}-summary.md", out / name)]
+        (out / "README.md").write_text(_readme(packages, loaded, summaries), encoding="utf-8")
         files.append("README.md")
         write_manifest(out, files)
         console.print(f"wrote {len(packages)} package(s) to {out}", soft_wrap=True)
@@ -174,6 +232,19 @@ def bids(
         if trade not in TRADES:
             console.print(f"[red]unknown trade {trade!r}; one of {sorted(TRADES)}[/red]")
             raise typer.Exit(2)
+        if summary:
+            found = _summaries(directory, model, bom, packages, (trade,)).get(trade)
+            if found is None:
+                console.print(f"[yellow]{trade!r} has no summary; its package is the "
+                              "schedule[/yellow]")
+                raise typer.Exit(0)
+            if md is None and csv is None:
+                console.print(_summary_markdown(found, loaded), soft_wrap=True, markup=False)
+            else:
+                paths = _write_summary(found, loaded, md or Path(f"out/bids/{trade}-summary.md"),
+                                       (csv or Path(f"out/bids/{trade}.csv")).with_suffix(""))
+                console.print(f"wrote {', '.join(str(p) for p in paths)}", soft_wrap=True)
+            return
         package = packages.get(trade)
         if package is None:
             console.print(f"[yellow]no BOM row files under {trade!r} in this house[/yellow]")

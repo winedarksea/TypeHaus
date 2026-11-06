@@ -35,7 +35,7 @@ _DOORWAY_WRAP = 46
 _OUTSIDE_RANK = {"garage": 1, "unconditioned": 1, "hallway": 2, "stair": 2}
 
 
-#: G-003's key to the A-601/A-602 columns, kept beside ``_hand`` so the two cannot drift.
+#: G-003's key to the A-601/A-602 columns, kept beside ``door_hand`` so the two cannot drift.
 HAND_LEGEND = (
     ("Hand: viewed from",
      "the secure (outside) side, ANSI/DHI A115.1G: outdoors, else a garage or unconditioned "
@@ -64,7 +64,7 @@ def opening_tables(model: ResolvedModel, kinds: str = "all") -> list[PagedTable]
     doors = {item.tag: item for item in model.plan.library.door_types}
     windows = {item.tag: item for item in model.plan.library.window_types}
     hardware = hardware_set_marks(model)
-    ordered = sorted(model.openings, key=lambda o: (_mark_key(marks.get(o.tag)), o.tag))
+    ordered = sorted(model.openings, key=lambda o: (mark_key(marks.get(o.tag)), o.tag))
     tables: list[PagedTable] = []
     if kinds in ("all", "door"):
         rows = [_door_row(model, o, doors.get(o.type_ref or ""), marks, hardware)
@@ -91,7 +91,7 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
                   continuation_number(base, page + 1))
 
 
-def _mark_key(mark: str | None) -> tuple:
+def mark_key(mark: str | None) -> tuple:
     """``D2`` < ``D10`` < ``D13a``; unmarked openings last."""
     if not mark:
         return ("~", 0, "")
@@ -103,7 +103,7 @@ def _fi(length_m: float | None, denominator: int = 8) -> str:
     return "—" if length_m is None else feet_inches_8th(length_m / M_PER_IN, denominator)
 
 
-def _pair(width_m: float | None, height_m: float | None, denominator: int = 8) -> str:
+def size_pair(width_m: float | None, height_m: float | None, denominator: int = 8) -> str:
     if width_m is None or height_m is None:
         return _fi(width_m, denominator) if width_m is not None else "—"
     return f"{_fi(width_m, denominator)} × {_fi(height_m, denominator)}"
@@ -111,32 +111,32 @@ def _pair(width_m: float | None, height_m: float | None, denominator: int = 8) -
 
 def _door_row(model, opening, spec, marks, hardware) -> tuple[str, ...]:
     sizing = opening.sizing
-    u_text, shgc, vt, operation, tempered = _energy_columns(spec, True)
+    u_text, shgc, vt, operation, tempered = energy_columns(spec, True)
     if sizing is None:
-        nominal, unit, rough = "—", "—", _pair(opening.width_m, opening.height_m)
+        nominal, unit, rough = "—", "—", size_pair(opening.width_m, opening.height_m)
     else:
-        nominal = _pair(sizing.nominal_w_m, sizing.nominal_h_m)
-        unit = _pair(*(sizing.installed_unit or (None, None)))
-        rough = _pair(sizing.rough_w_m, sizing.rough_h_m)
+        nominal = size_pair(sizing.nominal_w_m, sizing.nominal_h_m)
+        unit = size_pair(*(sizing.installed_unit or (None, None)))
+        rough = size_pair(sizing.rough_w_m, sizing.rough_h_m)
     # 1/16": a published clear (Therma-Tru 33-5/16") must not round up at 1/8".
-    clear = (_pair(sizing.clear_w_m, sizing.clear_h_m, 16)
+    clear = (size_pair(sizing.clear_w_m, sizing.clear_h_m, 16)
              if sizing is not None and sizing.clear_w_m is not None else "—")
     return (marks.get(opening.tag, "—"), opening.tag, opening.type_ref or "RO", operation,
-            _hand(model, opening, spec), nominal, unit, rough, _jamb_text(sizing),
+            door_hand(model, opening, spec), nominal, unit, rough, jamb_text(sizing),
             _fi(opening.sill_m), clear, u_text, shgc, vt, tempered,
             hardware.get(opening.type_ref, "—"), _doorway_text(opening))
 
 
 def _window_row(opening, spec, marks) -> tuple[str, ...]:
-    u_text, shgc, vt, operation, tempered = _energy_columns(spec, False)
+    u_text, shgc, vt, operation, tempered = energy_columns(spec, False)
     is_ro = opening.kind == "rough_opening"
     return (marks.get(opening.tag, "—"), opening.tag, "Rough opening" if is_ro else "Window",
-            opening.type_ref or "RO", operation, _pair(opening.width_m, opening.height_m),
+            opening.type_ref or "RO", operation, size_pair(opening.width_m, opening.height_m),
             _frame_size_text(window_frame_dimensions(opening), is_ro), _fi(opening.sill_m),
             _window_clear_text(opening, spec), u_text, shgc, vt, tempered)
 
 
-def _hand(model: ResolvedModel, opening, spec) -> str:
+def door_hand(model: ResolvedModel, opening, spec) -> str:
     """ANSI/DHI A115.1G hand, seen from the secure ("outside") side; ``—`` if it does not swing.
 
     The outside is outdoors, else a garage or unconditioned space, else circulation, else the
@@ -145,29 +145,20 @@ def _hand(model: ResolvedModel, opening, spec) -> str:
     named ``PAIR`` because no active leaf is modelled. Unflipped, the leaf hangs on the
     END-node jamb and swings toward the wall's left normal (``ResolvedOpening``).
     """
-    from typehaus.resolve.geometry import wall_frame
-    from typehaus.resolve.geometry_door_products import finish_faces
-    from typehaus.resolve.room_lookup import room_owning
+    from typehaus.resolve.room_lookup import opening_rooms
 
     operation = getattr(spec, "operation", DoorOperation.SWING)
-    wall = model.wall(opening.host_wall)
-    if operation not in (DoorOperation.SWING, DoorOperation.DOUBLE_SWING) or wall is None:
+    if operation not in (DoorOperation.SWING, DoorOperation.DOUBLE_SWING) \
+            or model.wall(opening.host_wall) is None:
         return "—"
-    origin, tangent, normal, _ = wall_frame(wall)
-    faces = finish_faces(wall) or (-wall.thickness_m / 2, wall.thickness_m / 2)
     swing_left = not opening.flip_swing
 
-    def rank(side: int) -> tuple:
-        face = faces[1] if side > 0 else faces[0]
-        reach = face + side * 0.15
-        point = tuple(origin[i] + tangent[i] * opening.center_along_m + normal[i] * reach
-                      for i in (0, 1))
-        room = room_owning(model, wall.storey, point)
+    def rank(room) -> tuple:
         if room is None:
             return (0, 0.0, 0)
         return (_OUTSIDE_RANK.get(room.occupancy, 3), -room.area_m2, 0)
 
-    left, right = rank(1), rank(-1)
+    left, right = (rank(room) for room in opening_rooms(model, opening))
     # A tie: stand where the leaf swings away (the hinges are not seen from there).
     viewer_left = left < right or (left == right and not swing_left)
     reverse = viewer_left == swing_left
@@ -177,7 +168,7 @@ def _hand(model: ResolvedModel, opening, spec) -> str:
     return ("RH" if hinge_right else "LH") + ("R" if reverse else "")
 
 
-def _jamb_text(sizing) -> str:
+def jamb_text(sizing) -> str:
     """The jamb as hung: stock set as-is, ripped from a stock, extended, or a milled flat."""
     if sizing is None or sizing.jamb_depth_m is None:
         return "—"
@@ -205,7 +196,7 @@ def _window_clear_text(opening, spec) -> str:
             sizes.append(frame[index] - deduction.meters)
         else:
             return "—"
-    return _pair(*sizes)
+    return size_pair(*sizes)
 
 
 def _eighths(length_m: float) -> str:
@@ -217,10 +208,10 @@ def _frame_size_text(frame: tuple[float, float, float] | None, is_ro: bool = Fal
     if frame is None:
         return "—" if is_ro else "UNRESOLVED"  # a rough opening has no frame by definition
     width, height, _sill = frame
-    return _pair(width, height, 16)
+    return size_pair(width, height, 16)
 
 
-def _energy_columns(spec, is_door: bool) -> tuple[str, ...]:
+def energy_columns(spec, is_door: bool) -> tuple[str, ...]:
     """The columns a plan reviewer opens A-601/A-602 for, and never a default.
 
     U-factor is what N1102.1.2 grades a fenestration unit on, and this set carried the

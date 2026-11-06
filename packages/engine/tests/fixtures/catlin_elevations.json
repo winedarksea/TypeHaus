@@ -46340,18 +46340,6 @@
 2,
 "677719b363e6"
 ],
-"geometry/CSRL01AAAA-f00/body": [
-2.9083,
-3.0353,
-2,
-"034c89a1e5b3"
-],
-"geometry/CSRL01AAAA-f01/body": [
-2.9083,
-3.0353,
-2,
-"034c89a1e5b3"
-],
 "geometry/CSRL01AAAA-i000/body": [
 3.10515,
 3.98145,
@@ -46419,16 +46407,16 @@
 "2477a4bc07a2"
 ],
 "geometry/CSRL01AAAA-p00/body": [
-2.9083,
+3.0861,
 4.0005,
 2,
-"42bc02c179f4"
+"d847da82ede2"
 ],
 "geometry/CSRL01AAAA-p01/body": [
-2.9083,
+3.0861,
 4.0005,
 2,
-"42bc02c179f4"
+"d847da82ede2"
 ],
 "geometry/CSRL01AAAA-r00/body": [
 3.98145,
@@ -46441,12 +46429,6 @@
 3.10515,
 8,
 "fc5205b7278b"
-],
-"geometry/CSRL02AAAA-f01/body": [
-2.9083,
-3.0353,
-2,
-"034c89a1e5b3"
 ],
 "geometry/CSRL02AAAA-i000/body": [
 3.10515,
@@ -46497,10 +46479,10 @@
 "2477a4bc07a2"
 ],
 "geometry/CSRL02AAAA-p01/body": [
-2.9083,
+3.0861,
 4.0005,
 2,
-"42bc02c179f4"
+"d847da82ede2"
 ],
 "geometry/CSRL02AAAA-r00/body": [
 3.98145,
@@ -120550,13 +120532,9 @@
 "solids/RL-S-STAIR-BAL8/z1_m": 3.98145,
 "solids/RL-S-STAIR-BAL9/z0_m": 3.10515,
 "solids/RL-S-STAIR-BAL9/z1_m": 3.98145,
-"solids/RL-S-STAIR-FASCIA-BRACKET1/z0_m": 2.9083,
-"solids/RL-S-STAIR-FASCIA-BRACKET1/z1_m": 3.0353,
-"solids/RL-S-STAIR-FASCIA-BRACKET2/z0_m": 2.9083,
-"solids/RL-S-STAIR-FASCIA-BRACKET2/z1_m": 3.0353,
-"solids/RL-S-STAIR-POST1/z0_m": 2.9083,
+"solids/RL-S-STAIR-POST1/z0_m": 3.0861,
 "solids/RL-S-STAIR-POST1/z1_m": 4.0005,
-"solids/RL-S-STAIR-POST2/z0_m": 2.9083,
+"solids/RL-S-STAIR-POST2/z0_m": 3.0861,
 "solids/RL-S-STAIR-POST2/z1_m": 4.0005,
 "solids/RL-S-STAIR-RAIL1/z0_m": 3.98145,
 "solids/RL-S-STAIR-RAIL1/z1_m": 4.01955,
@@ -120578,9 +120556,7 @@
 "solids/RL-S-STAIRHEAD-BAL7/z1_m": 3.98145,
 "solids/RL-S-STAIRHEAD-BAL8/z0_m": 3.10515,
 "solids/RL-S-STAIRHEAD-BAL8/z1_m": 3.98145,
-"solids/RL-S-STAIRHEAD-FASCIA-BRACKET2/z0_m": 2.9083,
-"solids/RL-S-STAIRHEAD-FASCIA-BRACKET2/z1_m": 3.0353,
-"solids/RL-S-STAIRHEAD-POST2/z0_m": 2.9083,
+"solids/RL-S-STAIRHEAD-POST2/z0_m": 3.0861,
 "solids/RL-S-STAIRHEAD-POST2/z1_m": 4.0005,
 "solids/RL-S-STAIRHEAD-RAIL1/z0_m": 3.98145,
 "solids/RL-S-STAIRHEAD-RAIL1/z1_m": 4.01955,

@@ -39,3 +39,25 @@ def axis_polygon(room: ResolvedRoom) -> Polygon:
 def axis_ring(room) -> list:
     """``room``'s axis cell ring, falling back to the clear face (hand-built stand-ins)."""
     return getattr(room, "axis_face", None) or room.clear_face
+
+
+def opening_rooms(model: ResolvedModel, opening,
+                  reach_m: float = 0.15) -> tuple[ResolvedRoom | None, ResolvedRoom | None]:
+    """The rooms ``reach_m`` off each finish face of an opening's wall, at its centre:
+    ``(left-normal side, right-normal side)``. ``None`` is outdoors or no room."""
+    from typehaus.resolve.geometry import wall_frame
+    from typehaus.resolve.geometry_door_products import finish_faces
+
+    wall = model.wall(opening.host_wall)
+    if wall is None:
+        return None, None
+    origin, tangent, normal, _ = wall_frame(wall)
+    faces = finish_faces(wall) or (-wall.thickness_m / 2, wall.thickness_m / 2)
+
+    def probe(side: int) -> ResolvedRoom | None:
+        reach = (faces[1] if side > 0 else faces[0]) + side * reach_m
+        return room_owning(model, wall.storey, tuple(
+            origin[i] + tangent[i] * opening.center_along_m + normal[i] * reach
+            for i in (0, 1)))
+
+    return probe(1), probe(-1)

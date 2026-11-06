@@ -186,20 +186,15 @@ def _blind_deduction_m2(model: ResolvedModel, wall: ResolvedWall,
                and cuts_layer(wall, layer.name, opening))
 
 
-def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    """Net square feet per (scope, layer function, material, thickness).
+def wall_layer_areas(model: ResolvedModel):
+    """``(wall, layer, (scope, function, material, thickness_m), net m2)`` per billable layer.
 
-    Wall areas are net of their openings, the same deduction ``sheet_goods_takeoff`` makes,
-    so a wall that is mostly glass does not order a wall's worth of drywall. Scopes are
-    ``wall`` / ``foundation wall``, the roof's two planes (``roof`` the sloped deck,
-    ``roof ceiling`` the plane under it), and the horizontal solids — ``slab``, ``footing``,
-    ``pad`` — net of their openings.
+    The walls' share of ``envelope_layer_takeoff`` before it sums them, so a split of that
+    total (by storey for the board hanger, by elevation for the siding sub) reads the same
+    numbers rather than a second derivation.
     """
-    areas: dict[tuple[str, str, str, float], float] = defaultdict(float)
     net_areas = wall_net_areas_m2(model)
     replaced = replaced_finish_m2(model)
-    coatings = coating_tags(model.plan.library)
-
     for wall in model.walls:
         net = net_areas[wall.tag]
         scope = "foundation wall" if wall.is_foundation else "wall"
@@ -213,16 +208,31 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             if getattr(layer, "is_cavity", False):
                 covered -= sum(fill.area_m2 for fill in model.jamb_fills
                                if fill.host_wall == wall.tag and fill.replaced_layer == layer.name)
-                areas[(scope, "insulation (cavity)", layer.material_ref,
-                       layer.thickness_m)] += covered
+                yield wall, layer, (scope, "insulation (cavity)", layer.material_ref,
+                                    layer.thickness_m), covered
                 continue
             try:
                 function = LayerFunction(layer.function)
             except ValueError:
                 continue
             if function in _BILLABLE:
-                areas[(scope, function.value, layer.material_ref,
-                       layer.thickness_m)] += covered
+                yield (wall, layer, (scope, function.value, layer.material_ref,
+                                     layer.thickness_m), covered)
+
+
+def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    """Net square feet per (scope, layer function, material, thickness).
+
+    Wall areas are net of their openings, the same deduction ``sheet_goods_takeoff`` makes,
+    so a wall that is mostly glass does not order a wall's worth of drywall. Scopes are
+    ``wall`` / ``foundation wall``, the roof's two planes (``roof`` the sloped deck,
+    ``roof ceiling`` the plane under it), and the horizontal solids — ``slab``, ``footing``,
+    ``pad`` — net of their openings.
+    """
+    areas: dict[tuple[str, str, str, float], float] = defaultdict(float)
+    coatings = coating_tags(model.plan.library)
+    for _wall, _layer, key, area in wall_layer_areas(model):
+        areas[key] += area
 
     for roof in model.roofs:
         assembly = model.plan.library.resolve_assembly(roof.assembly)

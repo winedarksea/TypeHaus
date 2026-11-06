@@ -1411,7 +1411,7 @@ BEAMS = [
 
 # Guards on the two open sides of the stair well: attic RL-A-STAIR product, 36" (R312.1.2)
 # over the oak (3/4" on 3/4" subfloor, +121.5"), fascia mounted to the well rim (BM-S-HALL
-# on the east side), bracket tops 1/2" under the 10'-0" rim. They leave exactly one
+# on the east side). They leave exactly one
 # gap — the flight's own throat, where the upper flight arrives southbound on the well's
 # west half. Both moved north and swapped hands on 2026-07-28 with the well itself.
 # Drawn to FO-S-STAIR's own coordinates, not the retired wall centrelines. Each fascia leg
@@ -1427,8 +1427,7 @@ STAIR_GUARDS = [
         kind=RailingKind.METAL_FASCIA_MOUNT, height=inch(36),
         base_elevation=ft(10, 1.5), post_spacing=inch(60), post_size="3x3", rail_count=2,
         # Brackets on BM-S-HALL's wrapped well face (the path; run south so outboard is west).
-        mount="fascia", fascia_face_offset=inch(0), fascia_bracket_drop=inch(2),
-        assembly="RAILING_DARK_METAL",
+        mount="fascia", fascia_face_offset=inch(0), assembly="RAILING_DARK_METAL",
         # R312.1.3: vertical balusters between the 60" posts, 4" clear gap — the largest
         # opening the 4"-sphere rule admits.
         infill="balusters", baluster_spacing=inch(4),
@@ -1443,8 +1442,8 @@ STAIR_GUARDS = [
         ),
         kind=RailingKind.METAL_FASCIA_MOUNT, height=inch(36),
         base_elevation=ft(10, 1.5), post_spacing=inch(60), post_size="3x3", rail_count=2,
-        mount="fascia", fascia_face_offset=inch(0), fascia_bracket_drop=inch(2),
-        start_post_ref="RL-S-STAIR", assembly="RAILING_DARK_METAL",
+        mount="fascia", fascia_face_offset=inch(0), start_post_ref="RL-S-STAIR",
+        assembly="RAILING_DARK_METAL",
         infill="balusters", baluster_spacing=inch(4),
     ),
 ]

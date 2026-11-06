@@ -7683,9 +7683,8 @@ straight bracket, holds under 4D to the band's end. Basis and hand check:
   panel's model number (CP252306B) is inferred from the 42" and stair panels and is
   confirmed at order. RL-A-FLIGHT-GUARD was already 36".
 - **Datum:** RL-S-STAIR, RL-S-STAIRHEAD and RL-A-STAIR stood on the joist tops, 1 1/2" under
-  the oak. Their `base_elevation` is the oak now, and the two fascia guards' brackets hang
-  2" under it (1/2" under the rim). At 42" RL-A-STAIR's east post would have run 1" into the
-  roof; at 36" it clears by about 5".
+  the oak. Their `base_elevation` is the oak now. At 42" RL-A-STAIR's east post would have
+  run 1" into the roof; at 36" it clears by about 5".
 - **Blocking:** each RL-A-STAIR base sets its north screws in the trimmer pack's LVL and its
   south pair in a 2x12 block nailed to the pack's south face.
 - **Knee wall:** the owner chose `W-S-WELL-KNEE`, a framed 2x4 wall on the generated well

@@ -119,7 +119,7 @@ a release or for exhaustive local verification.
 .venv/bin/haus millwork houses/catlin --md out/milling.md --csv out/milling.csv
 .venv/bin/haus countertops houses/catlin                      # slab-yard package: DXF per piece, PDF, piece list
 .venv/bin/haus print3d houses/catlin --timing             # A1-ready 3MF: storeys on a plate + furniture (docs/print3d.md)
-.venv/bin/haus bids houses/catlin --all --out out/bids       # unpriced per-trade RFQs (docs/bid-package-format.md)
+.venv/bin/haus bids houses/catlin --all --out out/bids       # unpriced per-trade RFQs + summary schedules (docs/bid-package-format.md)
 .venv/bin/haus order houses/catlin --brand IKEA --md out/ikea.md   # one retailer's shopping list, in packs (docs/order-list-format.md)
 .venv/bin/haus costs import out/estimate.csv --house houses/catlin   # actuals back in
 scripts/verify.sh                        # standard tests, house checks, ruff, UI typecheck/tests

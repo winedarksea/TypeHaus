@@ -42,6 +42,24 @@ DFU_BY_SYMBOL: dict[str, float] = {
     "floor-drain": 2.0,
 }
 
+#: What a plumber counts a fixture as when pricing per setting: one class per symbol in
+#: ``DFU_BY_SYMBOL`` / ``WSFU_BY_SYMBOL`` (a test holds the three in step).
+FIXTURE_CLASS_BY_SYMBOL: dict[str, str] = {
+    "toilet": "water closet", "toilet-wall-hung": "water closet (wall-hung, carrier)",
+    **dict.fromkeys(("lavatory", "lavatory-wall-hung", "drawer-vanity", "drawer-vanity-indy",
+                     "sektion-vanity-indy", "door-drawer-vanity", "sektion-vanity", "vanity",
+                     "solid-surface-vanity"), "lavatory"),
+    "sunnersta-sink": "bar sink",
+    **dict.fromkeys(("tub", "kohler-underscore-6036", "kohler-underscore-6032"), "bathtub"),
+    "tub-shower": "tub/shower",
+    "shower": "shower", "shower-neo-angle": "shower",
+    "kitchen-sink": "kitchen sink", "kitchen-sink-undermount-single": "kitchen sink",
+    "washer": "clothes washer", "washer-dryer-stacked": "clothes washer",
+    "dishwasher": "dishwasher", "laundry-sink": "laundry sink",
+    "floor-drain": "floor drain", "hydrant": "hose bibb / wall hydrant",
+    "roman-tub-filler": "tub filler (trim on its bath)",
+}
+
 # MN Plumbing Code 710.1 (UPC 710.1): no water closet discharges to a drain smaller than
 # 3". Table 703.2 alone does not say so — a 3 DFU closet sits comfortably inside the 2"
 # row's 6 DFU — and sizing a closet branch from capacity alone is the classic table-only

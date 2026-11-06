@@ -56,9 +56,9 @@ def test_catlin_paint_total(catlin_model_ro) -> None:
 
 def test_a_roof_ceiling_no_room_claims_takes_the_standard_ceiling(catlin_model_ro) -> None:
     """The attic stair hall (FO-A-HALL) has no Room: RF-HOUSE's default coat takes PT-2."""
-    from typehaus.takeoff.coating_areas import _ceiling_area_m2, ceiling_coating_areas
+    from typehaus.takeoff.coating_areas import ceiling_area_m2, ceiling_coating_areas
 
-    rooms = sum(_ceiling_area_m2(catlin_model_ro, c) for c in catlin_model_ro.ceilings
+    rooms = sum(ceiling_area_m2(catlin_model_ro, c) for c in catlin_model_ro.ceilings
                 if c.layers and c.layers[0].material_ref == "paint-ceiling")
     unroomed = ceiling_coating_areas(catlin_model_ro)[("ceiling", "paint-ceiling")] - rooms
     assert 9.0 < unroomed < 11.0  # m², ~109 SF of sloped hall ceiling

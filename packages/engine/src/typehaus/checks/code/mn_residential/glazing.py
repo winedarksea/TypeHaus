@@ -51,9 +51,49 @@ def safety_glazing(ctx: CheckContext) -> list[Finding]:
     there. A unit in no hazardous location gets no finding at all — a house does not need a
     line per window saying an ordinary bedroom window may be ordinary glass.
     """
+    cid = "code.R308_4_safety_glazing"
+    out: list[Finding] = []
+    for opening, spec, reasons in _glazed_openings(ctx):
+        if reasons is None:
+            out.append(_unknown(cid, f"{opening.tag} resolves no window type, host wall and "
+                                "storey, so its hazardous-location status cannot be decided",
+                                (opening.tag,), "R308.4"))
+        elif opening.is_door:
+            if spec.tempered:
+                out.append(_pass(cid, f"glazed door {opening.tag} is safety glazed", "R308.4.1"))
+            else:
+                out.append(_fail(cid, f"glazed door {opening.tag} ({spec.tag}) is not "
+                                 "safety glazed; R308.4.1 requires it of all glazing in doors",
+                                 (opening.tag,), "R308.4.1"))
+        elif reasons:
+            clause = reasons[0][0]
+            why = "; ".join(text for _clause, text in reasons)
+            if spec.tempered:
+                out.append(_pass(cid, f"{opening.tag} is safety glazed — {why}", clause))
+            else:
+                out.append(_fail(cid, f"{opening.tag} ({spec.tag}) sits in a hazardous "
+                                 f"location ({why}) with ordinary glazing; R308.4 requires "
+                                 "tempered or laminated glass", (opening.tag,), clause))
+    if not out:
+        return [_pass(cid, "no glazing sits in an R308.4 hazardous location", "R308.4")]
+    return out
+
+
+def safety_glazing_clauses(ctx: CheckContext) -> dict[str, str]:
+    """Opening tag -> the first R308.4 clause that puts its glazing in a hazardous location:
+    what must be ordered tempered or laminated, whatever the type says (the bid schedules)."""
+    return {opening.tag: reasons[0][0] for opening, _spec, reasons in _glazed_openings(ctx)
+            if reasons}
+
+
+def _glazed_openings(ctx: CheckContext):
+    """``(opening, type, reasons)`` for every glazed door, then every typed window.
+
+    ``reasons`` lists each ``(clause, why)`` that makes the location hazardous — empty for an
+    ordinary window, ``None`` where the window resolves no type, wall or storey.
+    """
     from shapely.geometry import LineString, Point, Polygon
 
-    cid = "code.R308_4_safety_glazing"
     window_types = {t.tag: t for t in ctx.plan.library.window_types}
     door_types = {t.tag: t for t in ctx.plan.library.door_types}
     storeys = {s.tag: s for s in ctx.plan.storeys}
@@ -62,21 +102,11 @@ def safety_glazing(ctx: CheckContext) -> list[Finding]:
         if len(room.clear_face) >= 3:
             rooms.setdefault(room.storey, []).append((room, Polygon(room.clear_face)))
 
-    out: list[Finding] = []
-
     # R308.4.1 — glazing in a door. No location test: every glazed door leaf, always.
     for opening in ctx.model.openings:
-        if not opening.is_door:
-            continue
-        door_type = door_types.get(opening.type_ref)
-        if door_type is None or not door_type.glazed:
-            continue
-        if door_type.tempered:
-            out.append(_pass(cid, f"glazed door {opening.tag} is safety glazed", "R308.4.1"))
-        else:
-            out.append(_fail(cid, f"glazed door {opening.tag} ({door_type.tag}) is not "
-                             "safety glazed; R308.4.1 requires it of all glazing in doors",
-                             (opening.tag,), "R308.4.1"))
+        door_type = door_types.get(opening.type_ref) if opening.is_door else None
+        if door_type is not None and door_type.glazed:
+            yield opening, door_type, [("R308.4.1", "glazing in a door")]
 
     # Everything else is a window in a location. Group the doors per wall once so the
     # 24"-arc test is a scan rather than a cross product.
@@ -93,26 +123,11 @@ def safety_glazing(ctx: CheckContext) -> list[Finding]:
         wall = ctx.model.wall(opening.host_wall)
         storey = storeys.get(wall.storey) if wall else None
         if window_type is None or wall is None or storey is None:
-            out.append(_unknown(cid, f"{opening.tag} resolves no window type, host wall and "
-                                "storey, so its hazardous-location status cannot be decided",
-                                (opening.tag,), "R308.4"))
+            yield opening, window_type, None
             continue
-        reasons = _hazard_reasons(ctx, opening, wall, storey, window_type,
-                                  doors_by_wall.get(opening.host_wall, ()),
-                                  rooms.get(wall.storey, ()), stair_lines, Point)
-        if not reasons:
-            continue
-        clause = reasons[0][0]
-        why = "; ".join(text for _clause, text in reasons)
-        if window_type.tempered:
-            out.append(_pass(cid, f"{opening.tag} is safety glazed — {why}", clause))
-        else:
-            out.append(_fail(cid, f"{opening.tag} ({window_type.tag}) sits in a hazardous "
-                             f"location ({why}) with ordinary glazing; R308.4 requires "
-                             "tempered or laminated glass", (opening.tag,), clause))
-    if not out:
-        return [_pass(cid, "no glazing sits in an R308.4 hazardous location", "R308.4")]
-    return out
+        yield opening, window_type, _hazard_reasons(
+            ctx, opening, wall, storey, window_type, doors_by_wall.get(opening.host_wall, ()),
+            rooms.get(wall.storey, ()), stair_lines, Point)
 
 
 def _stair_lines(ctx: CheckContext, line_type):

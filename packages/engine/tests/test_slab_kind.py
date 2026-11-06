@@ -20,8 +20,9 @@ def _slabs(plan, model):
 
 def test_catlin_authored_kind_equals_derived(catlin_plan, catlin_model_ro):
     pairs = list(_slabs(catlin_plan, catlin_model_ro))
-    # SL-SG-FROST-W/E/N retired 2026-10-31 (C3-E10), SL-M-DECK 2026-11-01 (#112).
-    assert len(pairs) == 18
+    # SL-SG-FROST-W/E/N retired 2026-10-31 (C3-E10), SL-M-DECK 2026-11-01 (#112);
+    # SL-S-KNEE-CAP added 2026-11-05.
+    assert len(pairs) == 19
     for solid, slab in pairs:
         assert slab.kind is not None, slab.tag
         assert derive_slab_kind(catlin_model_ro, slab, solid.storey, solid.z0_m) == slab.kind, \

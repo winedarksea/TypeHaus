@@ -28,3 +28,4 @@ def test_all_is_byte_deterministic(tmp_path: Path) -> None:
     assert not mismatch and not errors, (mismatch, errors)
     manifest = json.loads((tmp_path / "a" / "MANIFEST.json").read_text())
     assert "framing.md" in manifest["files"] and "README.md" in manifest["files"]
+    assert {"openings-summary.md", "openings-windows-exterior-doors.csv"} <= set(manifest["files"])

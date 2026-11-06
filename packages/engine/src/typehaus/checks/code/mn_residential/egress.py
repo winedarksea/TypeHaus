@@ -93,6 +93,21 @@ def _meets_r310_2_1(opening, *, grade_floor: bool, window_type=None) -> bool:
             and sill_m <= _MAX_EGRESS_SILL.meters)
 
 
+def egress_window_rooms(ctx: CheckContext) -> dict[str, str]:
+    """Window tag -> the sleeping room it is a compliant R310 escape opening for: every
+    exterior window of that room meeting R310.2.1, as ``egress_windows`` selects them."""
+    out: dict[str, str] = {}
+    sleeping = {occupancy.value for occupancy in SLEEPING_OCCUPANCIES}
+    for room in ctx.model.rooms:
+        if room.occupancy not in sleeping:
+            continue
+        for opening in _room_windows(ctx, room, Point, Polygon, exterior_only=True):
+            if _meets_r310_2_1(opening, grade_floor=False,
+                               window_type=_window_type(ctx, opening)):
+                out.setdefault(opening.tag, room.tag)
+    return out
+
+
 @check(Tier.CODE, "code.R310_egress")
 def egress_windows(ctx: CheckContext) -> list[Finding]:
     """Every sleeping room needs a compliant emergency escape opening (R310)."""

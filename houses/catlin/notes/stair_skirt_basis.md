@@ -11,6 +11,12 @@ skirt top over the floor at the first riser 13.5825", toe 13.3904", blanks 95.79
 92.115 / 103.450" (lower-left was 95.821) and the STRW landing piece 28.266". The worked
 numbers below are the 2026-10-30 basis; the tests pin the new values.
 
+**2026-11-05 amendment (W-S-WELL-KNEE).** A 36" knee wall now continues the partition face
+above the second floor from the stairhead to y 362 3/8", so §3's "Head" rule no longer clips
+skirt-upper-left flush with the floor: like the STRW board it runs its full profile to the
+head. The model's blank is 96.096" (was 92.115). That value is the resolver's, not yet
+reworked by hand here.
+
 ## 1. Decisions (owner)
 
 - ST-M2S only: the oak U-stair with a level landing. ST-S2A's winders are out of scope.
