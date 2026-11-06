@@ -110,3 +110,21 @@ def test_use_rows_luminaire_and_recessed(catlin_model_ro):
     fridge = _box(catlin_model_ro, "ED-M-LIVING-KRF1")
     assert (fridge.mounting, fridge.box_product) == ("flush", "PROD-ARLINGTON-DVFR1W")
     assert _box(catlin_model_ro, "ED-B-GYM-RC5").box_product == "PROD-RACO-232"
+    # M3-107: a flat 2x4 behind each IN BOX, butting the bay's studs (16" o.c. 2x6 wall).
+    wall = catlin_model_ro.wall(fridge.wall_tag)
+    block = next(m for m in wall.members if m.child_key == fridge.block_key)
+    assert (block.category, block.profile) == ("blocking", "2x4")
+    assert block.length_m == pytest.approx(14.5 * M_PER_IN)
+    back = [(x - fridge.face_point[0]) * fridge.normal[0] + (y - fridge.face_point[1])
+            * fridge.normal[1] for x, y in (block.p0, block.p1)]
+    assert back == pytest.approx([-(3.875 + 0.75) * M_PER_IN] * 2)
+
+
+def test_box_on_stud_names_the_clearing_move(catlin_model_ro):
+    """M3-106: a box over a stud reports the station move; one beside it clears."""
+    from typehaus.checks.advisory.box_studs import stud_clash
+
+    on = stud_clash(catlin_model_ro, _box(catlin_model_ro, "ED-S-NCLOSET-SW"))
+    assert on.members == ("king-0-r0",) and on.shift_m is not None
+    assert stud_clash(catlin_model_ro, _box(catlin_model_ro, "ED-M-LAUNDRY-DR1")).members == ()
+    assert stud_clash(catlin_model_ro, _box(catlin_model_ro, "ED-B-GYM-RC5")) is None

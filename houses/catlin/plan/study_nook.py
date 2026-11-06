@@ -65,7 +65,7 @@ STUDY_NOOK = [
                      controlled_by=("ED-S-STUDY2-NOOK-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SS2", face="right", distance_from_start=inch(31.5),
+                         wall_ref="W-S-SS2", face="right", distance_from_start=inch(30.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="17T7VZK2WG", tag="ED-S-STUDY2-NOOK-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",

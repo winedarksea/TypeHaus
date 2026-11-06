@@ -130,28 +130,28 @@ LIVING_LIGHTING = [
                      controlled_by=("ED-M-LIVING-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # The lounge station, a 4-gang on W-M-C1's east face: COVE (a plain hard-off left on), then
-    # D315S relays ACCENT, ED-M-LIVING-SW (plan/mep_electrical.py, at 12'-0") and DAY. No
+    # D315S relays ACCENT, ED-M-LIVING-SW (plan/mep_electrical.py, at 11'-10 1/8") and DAY. No
     # dimmers: the cans run full or off, and the coves dim at their controllers.
     ElectricalDevice(uid="DS30ANGPH9", tag="ED-M-LIVING-SW-COVE", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C1", face="right", distance_from_start=inch(136),
+                         wall_ref="W-M-C1", face="right", distance_from_start=inch(134.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QT8E5TH823", tag="ED-M-LIVING-SW-ACCENT", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C1", face="right", distance_from_start=inch(140),
+                         wall_ref="W-M-C1", face="right", distance_from_start=inch(138.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTM001DAAA", tag="ED-M-LIVING-SW-DAY", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C1", face="right", distance_from_start=inch(148),
+                         wall_ref="W-M-C1", face="right", distance_from_start=inch(146.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # The dining fixture, centred on FURN-M-DINING at y=18'. A 3'-6" assembly off a 9' ceiling puts
@@ -169,7 +169,7 @@ LIVING_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C2", face="right", distance_from_start=inch(36),
+                         wall_ref="W-M-C2", face="right", distance_from_start=inch(34.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # The kitchen end of the same room. The cans left the backup tier on 2026-11-02 for

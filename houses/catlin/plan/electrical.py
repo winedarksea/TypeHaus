@@ -331,7 +331,7 @@ BASEMENT_DEVICES = [
                      circuit="CKT-RC-BSMT", room="RM-B-BATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-STR2", face="left", distance_from_start=inch(30.375),
+                         wall_ref="W-B-STR2", face="left", distance_from_start=inch(31.25),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
@@ -447,7 +447,7 @@ MAIN_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-CLN", face="left", distance_from_start=inch(16),
+                         wall_ref="W-M-CLN", face="left", distance_from_start=inch(14.125),
                          normal_gap=inch(-4), rotation_offset=deg(180)))),
     # CKT-LAUNDRY (circuits.py slot 36, 20A) was scheduled but the outlet never drawn — this
     # is it: washer half of the stack, 8" east of the dryer box, same 43" band. NEC 210.52(F),
@@ -459,7 +459,7 @@ MAIN_DEVICES = [
                                  recessed_into_host_surface=True), room="RM-M-LAUNDRY",
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-CLN", face="left",
-                         distance_from_start=inch(33.125), normal_gap=inch(-2.46875),
+                         distance_from_start=inch(33.875), normal_gap=inch(-2.46875),
                          rotation_offset=deg(180)))),
     # Freezer beside the fridge (KRF1 at (18'-4 3/8", 31'-4 5/8")) on the centre wall's east
     # face; fridge + freezer share the backup kitchen circuit (PoE Wi-Fi is on CKT-HA).
@@ -973,7 +973,7 @@ SECOND_DEVICES = [
                      circuit="CKT-RC-SECOND", room="RM-S-SUITEBATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SN3", face="right", distance_from_start=inch(32.5),
+                         wall_ref="W-S-SN3", face="right", distance_from_start=inch(30.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** ONE OUTLET SERVES BOTH BOWLS IN THE ALCOVE, AND THAT IS DELIBERATE. ** 210.52(D)
     # asks for one within 36" of EACH sink, not one per sink. At x=5'-4 1/2", east of
@@ -1654,7 +1654,7 @@ BASEMENT_DATA_DEVICES = [
 
 MAIN_DATA_DEVICES_STUDY = [
     # RM-M-STUDY-CLOSET's east wall is nearly all door, so the south wall is where anything goes —
-    # beside ED-M-STUDY-RC1, the pairing a desk actually wants. 1'-0" west of it, at 32" AFF
+    # beside ED-M-STUDY-RC1, the pairing a desk actually wants. 1'-1 3/4" west of it, at 32" AFF
     # — 2 1/2" over FURN-M-STUDY-DESK's top (16" deep, top at 29 1/2"), in the last course of
     # WP-M-STUDY-WAINSCOT, at hand height beside the laptop. A plate cut into a wainscot is
     # ordinary joinery.
@@ -1663,7 +1663,7 @@ MAIN_DATA_DEVICES_STUDY = [
                      room="RM-M-STUDY-CLOSET",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(32)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-CLN2", face="left", distance_from_start=inch(31),
+                         wall_ref="W-M-CLN2", face="left", distance_from_start=inch(29.25),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
@@ -1851,14 +1851,14 @@ NEC_FILL_BASEMENT = [
     # doorways, so each of the three stretches needs its own — south of the sauna door,
     # between the two, and north of D-B-GYM. RC8 sits on W-B-CS3 SOUTH of that door. The
     # stretch north of it is W-B-CS2, now a framed bearing wall, so
-    # RC3 on W-B-CE covers it: 25" off the corner, not 31", since D-B-GYM became a passage
+    # RC3 on W-B-CE covers it: 25 7/8" off the corner, not 31", since D-B-GYM became a passage
     # (2026-11-01) and RC8 stopped reaching across the void.
     ElectricalDevice(uid="NEC001AAAA", tag="ED-B-GYM-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CS", face="left", distance_from_start=inch(104),
+                         wall_ref="W-B-CS", face="left", distance_from_start=inch(102.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC002AAAA", tag="ED-B-GYM-RC2", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
@@ -1885,14 +1885,14 @@ NEC_FILL_BASEMENT = [
                      circuit="CKT-RC-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CE", face="right", distance_from_start=inch(25),
+                         wall_ref="W-B-CE", face="right", distance_from_start=inch(25.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC004AAAA", tag="ED-B-GYM-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CE", face="right", distance_from_start=inch(183.5),
+                         wall_ref="W-B-CE", face="right", distance_from_start=inch(182.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC005AAAA", tag="ED-B-GYM-RC5", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
@@ -1996,7 +1996,7 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C2", face="right", distance_from_start=inch(34.5),
+                         wall_ref="W-M-C2", face="right", distance_from_start=inch(34.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** THE EAST WALL'S RECEPTACLES (2026-10-20). ** South of the slat partition (y 154 1/4")
     # is open wall space, split by the fireplace brick (65 1/4"..110 3/4"); RC13 (22") and RC3
@@ -2081,7 +2081,7 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C3", face="right", distance_from_start=inch(45),
+                         wall_ref="W-M-C3", face="right", distance_from_start=inch(45.375),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # The hall band: merging RM-M-HALL into this room via BM-M-HALL lost its 210.52(A)
     # hallway exemption, and the band had zero receptacles. Positions are the four gaps
@@ -2217,7 +2217,7 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-STOS", face="left", distance_from_start=inch(54.625),
+                         wall_ref="W-M-STOS", face="left", distance_from_start=inch(54.125),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
     # The pier south of D-M-BATH1 clears its casing and framing; the former 6 13/32"
     # station was inside the doorway. Retain GFCI protection near the bath lavatory.
@@ -2234,13 +2234,13 @@ NEC_FILL_MAIN = [
     # Fills the >6' gap electrical.receptacle_spacing opened on the hall band between RC7/
     # STUDY-RC3 and the door into RM-M-STOS: N-M-W2/N-M-C2 sit 6" north of where the BATH2
     # wall move put them, stretching this door-to-door wall space past the 6' rule.
-    # Positioned centred in that space (the door itself brackets the run at 13'-9" east).
+    # Near the centre of that space, beside a stud (M3-106); the door brackets it at 13'-9" E.
     ElectricalDevice(uid="NEC070AAAA", tag="ED-M-LIVING-RC12", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-20",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-HS4", face="left", distance_from_start=inch(32.25),
+                         wall_ref="W-M-HS4", face="left", distance_from_start=inch(33.875),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
     # ** THIS ONE STAYS AT 8'-6 1/4", AND IT WAS TRIED THE OTHER WAY. ** It is behind
     # FURN-M-BED's headboard (the king now runs x 6'-9 7/8"..13'-5 7/8") and unreachable,
@@ -2276,7 +2276,7 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C1", face="left", distance_from_start=inch(129),
+                         wall_ref="W-M-C1", face="left", distance_from_start=inch(129.875),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC015AAAA", tag="ED-M-BED-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-SURGE",
@@ -2290,7 +2290,7 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-S1", face="left", distance_from_start=inch(112.75),
+                         wall_ref="W-M-S1", face="left", distance_from_start=inch(113.875),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
     ElectricalDevice(uid="NEC017AAAA", tag="ED-M-BED-RC6", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
@@ -2341,7 +2341,8 @@ NEC_FILL_MAIN = [
     # x = 13'-9 1/2" is W-M-LS's resolved study face plus half this type's 1" depth — W-M-LS
     # moved +1" east 2026-09-09 (funding part of the BATH2 jog realignment), and this offset
     # moved the same 1" to stay on the wall's new face;
-    # y = 19'-4" centres it on FURN-M-STUDY-DESK, whose top is 29 1/2" — so 32" puts the box
+    # y = 19'-2 1/8", beside a stud (M3-106) near FURN-M-STUDY-DESK's centre; its top is
+    # 29 1/2" — so 32" puts the box
     # 2 1/2" clear of the desk exactly as ED-M-STUDY-RC1 does, and the two outlets a seated
     # person reaches are at one height on two walls. It is 4'-0" south of REG-M-SUP4's riser
     # bay (y=20'-8"), so the box and the 3" duct in that cavity never meet.
@@ -2350,7 +2351,7 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(32)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-LS", face="right", distance_from_start=inch(16),
+                         wall_ref="W-M-LS", face="right", distance_from_start=inch(14.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC065AAAA", tag="ED-M-STUDY-RC3", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-20",
@@ -2437,7 +2438,7 @@ NEC_FILL_SECOND = [
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-C1", face="right", distance_from_start=inch(9.5),
+                         wall_ref="W-S-C1", face="right", distance_from_start=inch(10.4375),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC027AAAA", tag="ED-S-STUDY2-RC2", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
@@ -2615,7 +2616,7 @@ NEC_FILL_SECOND = [
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-DC2", face="left", distance_from_start=inch(55.375),
+                         wall_ref="W-S-DC2", face="left", distance_from_start=inch(54.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RC8: W-S-SN3 is INT_2X6_STAGGERED_PLUMBING (plan/storeys/second.py — the suite bath's
     # lav and WC actually back onto it), and this room's boundary opens a >6' gap on the

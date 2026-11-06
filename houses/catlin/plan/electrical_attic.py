@@ -32,7 +32,7 @@ NEC_FILL_ATTIC = [
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-C2B", face="right", distance_from_start=inch(20.875),
+                         wall_ref="W-A-C2B", face="right", distance_from_start=inch(21.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC050AAAA", tag="ED-A-EAST-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-15",
@@ -71,7 +71,7 @@ NEC_FILL_ATTIC = [
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-S3", face="left", distance_from_start=inch(70.5),
+                         wall_ref="W-A-S3", face="left", distance_from_start=inch(70.125),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
     ElectricalDevice(uid="NEC060AAAA", tag="ED-A-STUDY-RC5", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-15",
@@ -97,7 +97,7 @@ NEC_FILL_ATTIC = [
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-S1", face="left", distance_from_start=inch(96),
+                         wall_ref="W-A-S1", face="left", distance_from_start=inch(94.125),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
     ElectricalDevice(uid="8H8X3VKAC2", tag="ED-A-STUDIO-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-15",
@@ -129,7 +129,7 @@ NEC_FILL_ATTIC = [
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-C2", face="left", distance_from_start=inch(36),
+                         wall_ref="W-A-C2", face="left", distance_from_start=inch(34.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RC6 serves the bath's south wall; RC7 retains its existing GFCI protection
     # after moving onto the north partition. Neither change alters the circuit.

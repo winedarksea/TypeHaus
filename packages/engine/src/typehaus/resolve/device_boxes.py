@@ -18,11 +18,14 @@ Wall-hosted receptacles, switches and wall lights take one; data outlets, enclos
 panels, disconnects, meters and junction boxes do not unless their type says
 ``device_box=True``. The box is a solid (``electrical_box``) and, where surface, part of
 the device's footprint, so collision and ``integrity.wall_mount_on_face`` read both.
+A row with a ``block_profile`` also derives a flat block behind each box, butting the bay's
+studs (``box-block-<tag>``, billed as framing); ``advisory.box_on_stud`` reports one that
+does not fit.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 from shapely.geometry import MultiPoint
@@ -30,7 +33,9 @@ from shapely.geometry.polygon import orient
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.electrical import BoxRow, BoxStandard
-from typehaus.resolve.model import ResolvedModel, ResolvedSolid
+from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.geometry_members import member_box
+from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedSolid
 from typehaus.resolve.wall_hosting import Band, face_frame
 
 _BOXED_KINDS = frozenset({"receptacle", "gfci", "receptacle_240", "switch", "light"})
@@ -83,6 +88,8 @@ class ResolvedDeviceBox:
     device_footprint: tuple[tuple[float, float], ...] = ()
     #: ``<device uid>-box``: a stable key for the record (its solid carries the same uid).
     uid: str = ""
+    #: The derived block's child key on ``wall_tag``, or None (no row block, or none fits).
+    block_key: str | None = None
 
 
 _CACHE: dict[int, tuple[Any, BoxStandard | None, frozenset[str]]] = {}
@@ -240,6 +247,9 @@ def place_box(model: ResolvedModel, item: Any, plan: BoxPlan, storey: str, room:
                          (-width / 2, far))]
     middle = (body[0] + body[1]) / 2
     z0, z1 = middle - height / 2, middle + height / 2
+    block_key = (_derive_block(model, wall, item.tag, plan.row.block_profile, point, tangent,
+                               normal, width, depth, middle)
+                 if plan.row.block_profile and plan.mounting != "surface" else None)
     model.device_boxes.append(ResolvedDeviceBox(
         device_tag=item.tag, device_uid=item.uid, storey=storey, room=room,
         device_kind=item.kind.value, circuit=getattr(item, "circuit", None),
@@ -248,7 +258,7 @@ def place_box(model: ResolvedModel, item: Any, plan: BoxPlan, storey: str, room:
         width_m=width, height_m=height, depth_m=depth, projection_m=plan.projection_m,
         cavity_m=plan.cavity_m, wall_tag=wall.tag, host_layer=plan.host_layer,
         footprint=tuple(ring), z0_m=z0, z1_m=z1, face_point=point, normal=normal,
-        device_footprint=tuple(device_footprint), uid=f"{item.uid}-box"))
+        device_footprint=tuple(device_footprint), uid=f"{item.uid}-box", block_key=block_key))
     model.solids.append(ResolvedSolid(
         uid=f"{item.uid}-box", tag=f"{item.tag}-BOX", storey=storey, category="electrical_box",
         outline=list(ring), z0_m=z0, z1_m=z1, product=plan.row.box_product_ref,
@@ -257,3 +267,41 @@ def place_box(model: ResolvedModel, item: Any, plan: BoxPlan, storey: str, room:
         return device_footprint
     hull = orient(MultiPoint([*device_footprint, *ring]).convex_hull, 1.0)
     return [tuple(p) for p in list(hull.exterior.coords)[:-1]]
+
+
+def _derive_block(model: ResolvedModel, wall: Any, tag: str, profile: str,
+                  point: tuple[float, float], tangent: tuple[float, float],
+                  normal: tuple[float, float], width: float, depth: float,
+                  middle: float) -> str | None:
+    """A flat block behind the box, stud face to stud face; its child key, or None."""
+    section = cross_section(profile)
+    thick, face = section.width_m, section.depth_m
+    z0, z1 = middle - face / 2, middle + face / 2
+    back = -depth - thick  # the block's far face, into the wall from the finish face
+    left = right = None
+    for member in wall.members:
+        if member.p0 != member.p1 or member.z0_m > z0 or member.z1_m < z1:
+            continue
+        solid = member_box(member)
+        if solid is None:
+            continue
+        ring = [(x - point[0], y - point[1]) for x, y, _z in solid.corners_bottom]
+        along = [x * tangent[0] + y * tangent[1] for x, y in ring]
+        into = [x * normal[0] + y * normal[1] for x, y in ring]
+        if min(into) > back + 1e-6 or max(into) < -depth:
+            continue  # too shallow to hold the block, or the other face's stud
+        if max(along) <= -width / 2 + 1e-6 and (left is None or max(along) > left):
+            left = max(along)
+        elif min(along) >= width / 2 - 1e-6 and (right is None or min(along) < right):
+            right = min(along)
+    if left is None or right is None:
+        return None
+    offset = -depth - thick / 2
+    ends = [(point[0] + tangent[0] * s + normal[0] * offset,
+             point[1] + tangent[1] * s + normal[1] * offset) for s in (left, right)]
+    key = f"box-block-{tag}"
+    block = FramedMember(wall.uid, key, "blocking", profile, ends[0], ends[1], z0, z1,
+                         right - left)
+    index = next(i for i, w in enumerate(model.walls) if w is wall)
+    model.walls[index] = replace(wall, members=(*wall.members, block))
+    return key

@@ -161,6 +161,8 @@ class BoxRow(HausModel):
     one (314.16(A)(1)); ``cover_rise`` is how far a surface cover stands proud of the box.
     ``use`` names a special-purpose row (``"luminaire"`` for every light, or the
     ``box_use`` a device type asks for, e.g. ``"recessed"``); None is the general row.
+    ``block_profile`` derives a flat block of that lumber behind each such box, between the
+    bay's studs, for a box that screws to wood wherever it lands (geometry review M3-107).
     """
 
     mounting: BoxMounting
@@ -174,6 +176,7 @@ class BoxRow(HausModel):
     box_volume_in3: float | None = None
     cover_volume_in3: float = 0.0
     cover_rise: Length = inch(0)
+    block_profile: str | None = None
 
     @property
     def volume_in3(self) -> float | None:

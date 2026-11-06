@@ -152,7 +152,7 @@ MAIN_DEVICES = [
                      type_ref="ED-T-LEV-MATTER", circuit="CKT-LT-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C1", face="right", distance_from_start=inch(144),
+                         wall_ref="W-M-C1", face="right", distance_from_start=inch(142.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED002K1AA", tag="ED-M-BED-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(4), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM", circuit="CKT-LT-MAIN",
@@ -187,7 +187,7 @@ MAIN_DEVICES = [
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C3", face="left", distance_from_start=inch(44.5),
+                         wall_ref="W-M-C3", face="left", distance_from_start=inch(45.375),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # --- kitchen outlets (RM-M-LIVING is open plan, so these keep the LIVING suffix) ---
     # Circuits still deferred (decision 1): symbols and mounting heights, not a panel
@@ -199,7 +199,7 @@ MAIN_DEVICES = [
                      type_ref="ED-T-LEV-620-FLUSH", circuit="CKT-KETTLE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-N1", face="left", distance_from_start=inch(126),
+                         wall_ref="W-M-N1", face="left", distance_from_start=inch(125.25),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="N9317V3K8Y", tag="ED-M-LIVING-KGF1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-KITCH-SA1",
@@ -211,7 +211,7 @@ MAIN_DEVICES = [
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-KITCH-SA1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-N1", face="left", distance_from_start=inch(48),
+                         wall_ref="W-M-N1", face="left", distance_from_start=inch(46.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="EJYZJRDFG0", tag="ED-M-LIVING-KGF3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-KITCH-SA2",
@@ -323,26 +323,26 @@ SECOND_DEVICES = [
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SS1", face="right", distance_from_start=inch(12),
+                         wall_ref="W-S-SS1", face="right", distance_from_start=inch(13.75),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED006K1AA", tag="ED-S-BED1-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(26, 4), ft(14)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-BED1", controlled_by=("ED-S-BED1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # On the north wall since 2026-10-02: the latch jamb is now the PAX side panel. x 24'-8",
+    # On the north wall since 2026-10-02: the latch jamb is now the PAX side panel. x 24'-8 7/8",
     # east of the open leaf (its ring ends at 24'-5"), west of the desk.
     ElectricalDevice(uid="CED006K2AA", tag="ED-S-BED1-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD1", face="right", distance_from_start=inch(33),
+                         wall_ref="W-S-BD1", face="right", distance_from_start=inch(33.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # The reading leg: a second gang 4" over from ED-S-BED1-SW.
     ElectricalDevice(uid="3RQFN92MPQ", tag="ED-S-BED1-SW-READ", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD1", face="right", distance_from_start=inch(37),
+                         wall_ref="W-S-BD1", face="right", distance_from_start=inch(37.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # y follows W-S-BD1's south face: the wall is INT_2X4_RC (plan/storeys/second.py) with
     # the resilient channel on the BED1 side. The box's back sits ON the face and the box is
@@ -351,7 +351,7 @@ SECOND_DEVICES = [
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD1", face="right", distance_from_start=inch(48),
+                         wall_ref="W-S-BD1", face="right", distance_from_start=inch(46.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED007K1AA", tag="ED-S-BED2-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(26, 6), ft(22)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
@@ -362,21 +362,21 @@ SECOND_DEVICES = [
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD2", face="right", distance_from_start=inch(33),
+                         wall_ref="W-S-BD2", face="right", distance_from_start=inch(33.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # The reading leg: a second gang 4" over from ED-S-BED2-SW.
     ElectricalDevice(uid="5DG7KH9CA2", tag="ED-S-BED2-SW-READ", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD2", face="right", distance_from_start=inch(37),
+                         wall_ref="W-S-BD2", face="right", distance_from_start=inch(37.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Same 1/2" as ED-S-BED1-RC1, on W-S-BD2's south face, for the same reason.
     ElectricalDevice(uid="CED007K3AA", tag="ED-S-BED2-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD2", face="right", distance_from_start=inch(47),
+                         wall_ref="W-S-BD2", face="right", distance_from_start=inch(46.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED008K1AA", tag="ED-S-BED3-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(31, 3.5), ft(30)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
@@ -466,7 +466,7 @@ SECOND_DEVICES = [
                      type_ref="ED-T-LEV-SW3", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SN3", face="left", distance_from_start=inch(22.5),
+                         wall_ref="W-S-SN3", face="left", distance_from_start=inch(22.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** IT MOVED, AND IT HAD TO. ** (20'-0", 33'-0") is inside EQ-S-HP1-AH's footprint
     # since the 2026-09-04 HP1 move, and having no authored elevation it resolved against a

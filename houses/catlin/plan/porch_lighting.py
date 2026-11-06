@@ -19,7 +19,7 @@ PORCH_LIGHTING = [
                      type_ref="ED-T-LEV-MATTER",
                      circuit="CKT-LT-MAIN", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-S2", face="left", distance_from_start=inch(78),
+                         wall_ref="W-M-S2", face="left", distance_from_start=inch(78.8125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The first balcony bay is beyond the porch deck and enclosure. The weatherproof
     # box fixes into the modeled blocking from below, leaving the waterproof plank intact.
@@ -34,7 +34,7 @@ PORCH_LIGHTING = [
                      type_ref="ED-T-LEV-MATTER",
                      circuit="CKT-LT-MAIN", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-S2", face="left", distance_from_start=inch(82),
+                         wall_ref="W-M-S2", face="left", distance_from_start=inch(82.8125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # East circulation/landing sconce, between D-M-PORCH and WIN-M-LIV-S2. Together with
     # the west fan light it lights the porch even when the garden flood is switched off.

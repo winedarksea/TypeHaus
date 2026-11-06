@@ -106,7 +106,7 @@ MAIN_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # The other end of the 3-way, on W-M-C1's bedroom face beside D-M-BED2. Since
     # 2026-10-05 that door hinges SOUTH at y=6'-9" and latches NORTH at y=9'-5", so the
-    # switches moved to the north jamb: y=9'-11" leaves 4" from the box edge to the jamb,
+    # switches moved to the north jamb: y=9'-11 3/8" leaves 4 3/8" from the box edge to the jamb,
     # outside the leaf. W-M-C1's bedroom paint plane is x=212.115".
     #
     # CKT-LT-MAIN, the same circuit as every can it switches. Both ends are plain
@@ -116,7 +116,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C1", face="left", distance_from_start=inch(119),
+                         wall_ref="W-M-C1", face="left", distance_from_start=inch(119.375),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Two swing-arm sconces replaced the headboard bar and its switch (2026-10-31), one
     # each side of FURN-M-BED, ~44" off its centre (outside the mattress), on
@@ -173,7 +173,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C1", face="left", distance_from_start=inch(123),
+                         wall_ref="W-M-C1", face="left", distance_from_start=inch(123.375),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-STUDY-CLOSET has no exterior wall, so the notes' "sconce to the side of the window"

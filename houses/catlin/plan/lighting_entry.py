@@ -186,7 +186,7 @@ ENTRY_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-HS4", face="left", distance_from_start=inch(50),
+                         wall_ref="W-M-HS4", face="left", distance_from_start=inch(49.75),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # The stair head. The can stood under FO-S-STAIR's open well with no ceiling to recess

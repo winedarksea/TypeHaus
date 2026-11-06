@@ -261,7 +261,7 @@ ATTIC_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO", controlled_by=("ED-A-STUDIO-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-C2", face="left", distance_from_start=inch(36),
+                         wall_ref="W-A-C2", face="left", distance_from_start=inch(34.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** THE BAR PENDANT IS GONE AND A WALL TASK BAR IS IN ITS PLACE (2026-09-10). ** The
     # pendant was authored with `drop=inch(4)` and NO `elevation`, and that is the whole bug:

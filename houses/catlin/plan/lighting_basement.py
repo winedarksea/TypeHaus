@@ -385,7 +385,7 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BSMT", room="RM-B-PLAY-N",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CN2", face="right", distance_from_start=inch(24),
+                         wall_ref="W-B-CN2", face="right", distance_from_start=inch(22.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-B-STAIR: the railing light the notes ask for. A 24V tape at 34" on the stair's
@@ -491,6 +491,6 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BSMT", room="RM-B-BATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-BA-E", face="right", distance_from_start=inch(16),
+                         wall_ref="W-B-BA-E", face="right", distance_from_start=inch(14.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]

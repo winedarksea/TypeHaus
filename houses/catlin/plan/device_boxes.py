@@ -12,6 +12,8 @@
 #     RACO 753, so a 4 1/2" square sconce backplate covers it (geometry review C6-E10, owner
 #     2026-11-01). The box sides stay in view: field-paint them to the wall.
 #   * recessed — the fridge and freezer receptacles: an Arlington IN BOX, plug inside the wall.
+#     Its new-work screws want wood (Q-3), and both boxes sit mid-bay, so each gets a flat
+#     2x4 block behind it, stud to stud, derived from the row (geometry review M3-107).
 # Covers and rings are not credited a volume: none of these is marked with one.
 
 from typehaus import BoxRow, BoxStandard, Product, inch
@@ -51,8 +53,9 @@ RACO_192 = Product(tag="PROD-RACO-192", brand="RACO", model="192",
 RACO_753 = Product(tag="PROD-RACO-753", brand="RACO", model="753",
                    name="4 in. square cover, flat, 1/2 in. centre KO (luminaire)",
                    url="https://hubbellcdn.com/specsheet/RACO-753-SPEC-EN.pdf", source=_SOURCE)
-# Arlington catalog page Q-3, read 2026-11-01: 21.0 in3, trim 4.200 x 6.698", 3.875" deep,
-# new work (screws to the stud), duplex plate included; "plugs don't extend past the wall".
+# Arlington catalog page Q-3 (PDF of 2025-05-01), re-read 2026-11-06: DVFR1W, UPC 14330,
+# 21.0 in3, 4.200 x 6.698 x 3.875"; "New Work: Screws provided for fast and easy mounting
+# to stud"; duplex plate included; "plugs don't extend past the wall".
 ARLINGTON_DVFR1W = Product(tag="PROD-ARLINGTON-DVFR1W", brand="Arlington", model="DVFR1W",
                            name="IN BOX recessed 1-gang box, trim and duplex plate, 21 cu. in.",
                            url="https://www.aifittings.com/media/catalog-pages/Q-3.pdf",
@@ -87,7 +90,8 @@ BOX_STANDARD = [
                    cover_rise=inch(0.0625)),
             BoxRow(mounting="flush", gangs=1, use="recessed",
                    box_product_ref="PROD-ARLINGTON-DVFR1W",
-                   box_size=(inch(4.2), inch(6.698), inch(3.875)), box_volume_in3=21.0),
+                   box_size=(inch(4.2), inch(6.698), inch(3.875)), box_volume_in3=21.0,
+                   block_profile="2x4"),
         ),
     ),
 ]
