@@ -108,6 +108,20 @@ def test_every_ventilation_terminal_states_a_design_cfm(catlin_plan) -> None:
     assert not missing, missing
 
 
+def test_every_erv_radial_carries_exactly_its_registers_flow(catlin_plan) -> None:
+    """Both read ``plan/erv_balance.py``; eight legs disagreed before it (C4 E4)."""
+    ducts = {e.tag: e for e in catlin_plan.all_elements() if e.element_kind == "DuctRun"
+             and e.tag.startswith(("DU-B-ERV-R-", "DU-M-ERV-R-", "DU-A-ERV-R-"))}
+    served: dict[str, float] = {}
+    for e in catlin_plan.all_elements():
+        if e.element_kind == "Register" and e.duct_ref in ducts:
+            served[e.duct_ref] = served.get(e.duct_ref, 0.0) + e.design_cfm
+    assert {t: d.design_cfm for t, d in ducts.items()} == served
+    supply = sum(served[t] for t, d in ducts.items() if d.system is DuctSystem.SUPPLY)
+    assert supply + catlin_plan.by_tag("DU-S-ERV-HP-FEED").design_cfm == 210
+    assert sum(served.values()) - supply == 210
+
+
 # --- the risers and the outdoor side -------------------------------------------------------
 
 #: The shaft's CLEAR extent, measured off the resolved wall layers rather than off a room

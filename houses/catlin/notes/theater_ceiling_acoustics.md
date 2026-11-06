@@ -59,7 +59,7 @@ the install spec.
   since 2026-11-02 (`plan/electrical_branches.py`).
 - **`REG-B-SUP2` supply boot is sealed to the board** (flexible collar, acrylic caulk) and is
   not tied rigidly through the channel or to a chord. It sits mid-bay at y=20'-6" on the
-  cavity duct (`plan/mep_registers.py`), so no chord is in its way.
+  cavity duct (`plan/mep_registers_basement.py`), so no chord is in its way.
 
 ## Not modelled
 The rule adds no ceiling solid or height: `haus check` finished-ceiling and R305 numbers are

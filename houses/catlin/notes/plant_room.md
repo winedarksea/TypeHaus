@@ -21,7 +21,7 @@ source:
   - plan/storeys/main.py
   - plan/transitions.py
   - plan/mep_hvac.py
-  - plan/mep_registers.py
+  - plan/mep_registers_second.py
   - plan/lighting_types.py
   - plan/mep_electrical.py
   - plan/electrical.py

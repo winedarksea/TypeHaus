@@ -11,7 +11,7 @@
 # so the crossing at x=18' still resolves. Bay centers are `8" + n*16"` from the joist-line
 # math in resolve/floors.py; bay 15 (y=20'-8") and bay 17 (y=23'-4") are both clear of the
 # stair FloorOpening (x:11'-18', y:25'-36') and both cross the central bearing wall at
-# x=18'. The terminals on these trunks are in plan/mep_registers.py.
+# x=18'. The terminals on these trunks are in plan/mep_registers_*.py.
 
 from typehaus import (
     ClearancePolicy,
@@ -37,7 +37,7 @@ from typehaus.model import m
 # The air terminals' TYPES moved to plan/air_terminal_types.py on 2026-10-31 (one white
 # family at submittal sizes: 100 mm disc valves on the ERV, aluminium grilles on System 1),
 # with the plant-room extract and the study sidewall that lived here. Instances stay in
-# plan/mep_registers.py. Spec and sources: notes/air_distribution_products.md.
+# plan/mep_registers_*.py. Spec and sources: notes/air_distribution_products.md.
 
 
 

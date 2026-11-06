@@ -637,7 +637,7 @@ SECOND_PLACEABLES = [
     # WT-3048-HP/-HP-T pair — same 30" of glass, better U) so each gets daylight plus the
     # tube.
     # Chairs face south from y 4'-0"..7'-0", 1'-3" clear of the plants' north edge. The room's
-    # supply is a ceiling grille (REG-S-HP-PLANT at 6'-8", 3'-4", plan/mep_registers.py), so
+    # supply is a ceiling grille (REG-S-HP-PLANT at 6'-8", 3'-4", plan/mep_registers_second.py), so
     # nothing on the floor needs keeping clear between the chairs. Chair x is
     # clear of D-S-PLANT's 2'-6" swing (y=1'-5"..3'-11", reaching to x=15'-6").
     Furniture(uid="PLT701AAAA", tag="FURN-S-PLANT-POT1", type_ref="FURN-PLANT-18",
@@ -829,7 +829,7 @@ ATTIC_PLACEABLES = [
     #
     # `rotation=deg(-90)` turns its door to open into the room off the unit's west end; the
     # footprint is square, so only the plan symbol and that door swing read it. Leaving
-    # W-A-C2's west face is what unburied REG-A-HP-WEST (plan/mep_registers.py), the floor
+    # W-A-C2's west face is what unburied REG-A-HP-WEST (plan/mep_registers_attic.py), the floor
     # boot that answers R303.1 Exception 1 for this room and had a fridge standing on it.
     Appliance(uid="7B10E5QBCF", tag="APPL-A-STUDIO-FRIDGE", type_ref="APPL-BAR-FRIDGE-CUBE-19",
               room="RM-A-STUDIO", position=pt(inch(130.4375), inch(194.625)),

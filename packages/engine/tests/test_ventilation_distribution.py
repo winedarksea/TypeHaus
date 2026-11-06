@@ -92,7 +92,7 @@ def test_unconditioned_room_needs_no_supply():
 # mini-HRV") and RM-S-STUDY2 ("takes air from the hall it opens onto") — and this test
 # pinned that pair for six weeks. Both were drawn on 2026-08-16: REG-S-HP-PLANT and
 # REG-S-HP-STUDY2, ceiling boots off DU-S-HP-SOUTH, System 1's FS-ATTIC joist-bay branch
-# (houses/catlin/plan/mep_registers.py, mep_hvac.py). The set is empty now and stays named
+# (houses/catlin/plan/mep_registers_second.py, mep_hvac.py). The set is empty now and stays named
 # rather than the assertion being loosened to "mostly pass", so ANY room falling out of
 # coverage fails this test.
 _EXPECTED_UNSERVED: set[str] = set()

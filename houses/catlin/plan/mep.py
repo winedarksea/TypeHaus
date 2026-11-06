@@ -19,7 +19,8 @@ The 2,515-line original was split by system (AGENTS.md §1.1 keeps files under 5
 - ``plan/mep_erv_risers.py``     — the three chase risers and the two outdoor legs
 - ``plan/mep_erv_types.py``      — the ERV catalog: the Broan, the two manifold sizes, the
   mixing box, the exterior hood, the over-bench capture hood
-- ``plan/mep_registers.py``      — the air terminals themselves, storey by storey
+- ``plan/mep_registers_<storey>.py`` — the air terminals themselves, one file per storey
+- ``plan/erv_balance.py``       — the ERV's 210/210 split, one constant per terminal
 - ``plan/mep_electrical.py``     — panel, per-storey devices, exterior boxes and clamps
 
 The system modules are ``# haus: editable``; this file is not, and must not become so —
@@ -47,7 +48,10 @@ from plan import (
                   mep_erv_types,
                   mep_hvac,
                   mep_hvac_branches,
-                  mep_registers,
+                  mep_registers_attic,
+                  mep_registers_basement,
+                  mep_registers_main,
+                  mep_registers_second,
                   mep_sleeves,
                   mep_supply,
                   mep_supply_devices,
@@ -98,7 +102,7 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  # penetration note in mep_erv_outdoor.py.
                  *mep_erv_outdoor.PENETRATIONS_ERV_MAIN,
                  *mep_erv_risers.DUCTS_ERV_RISERS,
-                 *mep_registers.REGISTERS_MAIN]
+                 *mep_registers_main.REGISTERS_MAIN]
 
 # ** THE GARAGE'S MEP AT THE MAIN DATUM, NOT THE HOUSE'S (2026-09-13). ** These two rode in
 # ``MAIN_ELEMENTS`` because that was the only storey at 0'-0" and a storey key was carrying
@@ -136,7 +140,7 @@ BASEMENT_ELEMENTS = [*mep_drainage.DRAINS,
                      *mep_hvac.DUCTS_BASEMENT,
                      *mep_erv_l1.EQUIPMENT_ERV_BASEMENT,
                      *mep_erv_l1.DUCTS_ERV_BASEMENT,
-                     *mep_registers.REGISTERS_BASEMENT]
+                     *mep_registers_basement.REGISTERS_BASEMENT]
 SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    *mep_erv_l3.EQUIPMENT_ERV_SECOND,
                    # The stale-air DISCHARGE hood, 13 ft over the intake.
@@ -148,9 +152,9 @@ SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    *mep_erv_l2.DUCTS_ERV_LEVEL2,
                    *mep_hvac.DUCTS_HVAC_SECOND,
                    *mep_hvac_branches.DUCTS_HVAC_BRANCHES_SECOND,
-                   *mep_registers.REGISTERS,
-                   *mep_registers.REGISTERS_SECOND,
-                   *mep_registers.REGISTERS_HVAC_SECOND,
+                   *mep_registers_second.REGISTERS,
+                   *mep_registers_second.REGISTERS_SECOND,
+                   *mep_registers_second.REGISTERS_HVAC_SECOND,
                    *mep_venting.VENT_BRANCHES_SECOND,
                    *mep_electrical.SECOND_DEVICES,
                    *mep_supply.HYDRANT_BRANCH_SECOND,
@@ -172,5 +176,5 @@ ATTIC_ELEMENTS = [*mep_venting.VENT_BRANCHES_ATTIC,
                   *mep_electrical.ATTIC_DEVICES,
                   *mep_hvac.DUCTS_ATTIC,
                   *mep_hvac.DUCTS_HVAC_ATTIC,
-                  *mep_registers.REGISTERS_ATTIC,
-                  *mep_registers.REGISTERS_HVAC_ATTIC]
+                  *mep_registers_attic.REGISTERS_ATTIC,
+                  *mep_registers_attic.REGISTERS_HVAC_ATTIC]

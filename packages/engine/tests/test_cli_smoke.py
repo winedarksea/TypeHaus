@@ -65,7 +65,7 @@ def test_check_reports_loader_findings_on_a_successful_import(tmp_path: Path) ->
     copy_house(catlin, dst)
     # An MEP module that actually authors movable elements (Registers). plan/mep.py is now
     # only the aggregator lists and carries no editable header to strip.
-    mep = dst / "plan" / "mep_registers.py"
+    mep = dst / "plan" / "mep_registers_main.py"
     mep.write_text(mep.read_text().replace("# haus: editable\n", "", 1))
 
     # Loader errors are never filtered by --only, so the default output must carry it.

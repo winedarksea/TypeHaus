@@ -349,4 +349,4 @@ manufacturer's 10x10x1 size is nominal: verify the final grille holder accepts t
 - Johns Manville GoBoard tile backer board (polyiso, waterproof core; ICC-ES ESR-4812). Read
   2026-10-22. https://www.jm.com/en/building-insulation/commercial/tile-backer-board
 - `houses/catlin/out/model.json`: `rooms` (RM-M-BATH2 clear height), and
-  `plan/mep_registers.py`, `plan/mep_erv_l2.py`, `plan/fixture_types_wc.py`.
+  `plan/mep_registers_main.py`, `plan/mep_erv_l2.py`, `plan/fixture_types_wc.py`.

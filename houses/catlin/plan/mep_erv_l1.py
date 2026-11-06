@@ -113,6 +113,18 @@ from typehaus import (
     inch,
     pt,
 )
+
+from .erv_balance import (
+    DU_B_ERV_R_BATH,
+    DU_B_ERV_R_BENCH,
+    DU_B_ERV_R_GYM,
+    DU_B_ERV_R_PLAY,
+    DU_B_ERV_R_SAUNA_EXH,
+    DU_B_ERV_R_SAUNA_SUP,
+    DU_B_ERV_RET_TRUNK,
+    DU_B_ERV_SUP_TRUNK,
+)
+
 # The catalog — the Broan, the two manifold sizes, the mixing box, the hoods and the bench
 # hood — lives in plan/mep_erv_types.py. It is NOT re-exported from here: the editable
 # dialect forbids `from plan import ...` (that is why plan/mep.py exists and is not
@@ -209,14 +221,14 @@ DUCTS_ERV_BASEMENT = [
             path=(pt(inch(88.65625), inch(364.625)), pt(inch(88.65625), inch(364.625))),
             elevations=(inch(75.6), ft(7, 2)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=210),
+            design_cfm=DU_B_ERV_SUP_TRUNK),
     # (2026-10-17) Off the case's north-east top, under the collars. Nothing west of x=6'-0".
     DuctRun(uid="6BTCWW2S1V", tag="DU-B-ERV-RET-TRUNK", system=DuctSystem.RETURN,
             path=(pt(inch(85.25), ft(29, 2)), pt(ft(7, 4.5), ft(29, 2)),
                   pt(ft(7, 4.5), ft(28, 5)), pt(ft(7, 4.5), ft(28, 5))),
             elevations=(inch(75.6), inch(75.6), inch(75.6), ft(7, 2)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=210),
+            design_cfm=DU_B_ERV_RET_TRUNK),
     # ** NEITHER RADIAL CROSSES ST-B2M ANY MORE (2026-09-22). ** Both used to ride the
     # y=29'-6"/30'-6" belt east over the stair, 1" (GYM) and 15 5/8" (PLAY) into the 6'-8"
     # headroom over the upper flight's nosings — `code.R311_7_2_stair_headroom` counts runs
@@ -256,7 +268,8 @@ DUCTS_ERV_BASEMENT = [
                   pt(ft(17), ft(13, 4)), pt(ft(17), ft(13, 4)), pt(ft(19), ft(13, 4))),
             elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(89),
                         inch(88.5), inch(84), inch(90.125), inch(90.125)),
-            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=10),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
+            design_cfm=DU_B_ERV_R_GYM),
     # THE PLAY RADIAL GOES THROUGH SF-B-BATH. From the plenum's east end it drops to -25 7/16"
     # on x=9'-6" (east of the sauna vent, under everything), rises to 91 1/4" at
     # y=19'-7 1/4" and crosses W-B-STR2 in its 19'-4"..20'-8" bay under the top plate
@@ -281,7 +294,7 @@ DUCTS_ERV_BASEMENT = [
             elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(91.25), inch(90.75),
                         inch(90.75), inch(90.75), inch(90.75), inch(101.25), inch(101.25)),
             diameter=inch(4), routing=DuctRouting.SOFFIT, soffit_ref="SF-B-BATH",
-            material="galvanized", design_cfm=30),
+            material="galvanized", design_cfm=DU_B_ERV_R_PLAY),
     # The sauna supply crosses W-B-CW at x=1'-7", in its 1'-4 3/4"..2'-7 1/4" stud bay and
     # west of D-B-FURN's header. It travels south on that lane, then turns east along the
     # clear southern band to REG-B-SUP3.
@@ -310,7 +323,8 @@ DUCTS_ERV_BASEMENT = [
                   pt(inch(199.75), inch(20.5))),
             elevations=(inch(90.6), inch(88.5), inch(88.5), inch(92.6), inch(92.6), inch(86.5),
                         inch(86.5), inch(86.5), inch(92.5), inch(92.5), ft(7)),
-            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
+            design_cfm=DU_B_ERV_R_SAUNA_SUP),
     # The bench hood's pull. It drops out of the ceiling chase to the hood face at 5'-6",
     # which is the vertical leg that makes it a capture hood rather than a ceiling diffuser.
     # It steps south to y=27'-0" before turning west so that its own drop and the plenum's
@@ -322,7 +336,8 @@ DUCTS_ERV_BASEMENT = [
             path=(pt(ft(6, 6), ft(28, 1)), pt(ft(6, 6), inch(331.5)), pt(ft(6, 6), ft(27)),
                   pt(ft(2), ft(27)), pt(ft(2), ft(8, 6)), pt(ft(2), ft(8, 6))),
             elevations=(ft(7, 6), ft(7, 6), inch(82.5), inch(82.5), inch(82.5), ft(6, 2)),
-            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=6),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
+            design_cfm=DU_B_ERV_R_BENCH),
     # The basement bath's extract leaves the plenum's EAST end straight off its collar (6",
     # one elbow's take-off; it dropped 1 1/4" there until 2026-11-01), then south on x=8'-6"
     # and east on y=24'-0" to a sidewall grille in W-B-STR3B (REG-B-EXH1). At -19 7/16" it
@@ -336,7 +351,8 @@ DUCTS_ERV_BASEMENT = [
             path=(pt(ft(8), ft(28, 5)), pt(ft(8, 6), ft(28, 5)),
                   pt(ft(8, 6), ft(24)), pt(inch(119.875), ft(24))),
             elevations=(ft(7, 6), ft(7, 6), ft(7, 6), ft(7, 6)),
-            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
+            design_cfm=DU_B_ERV_R_BATH),
     # It leaves its collar 6" south and steps down on a 30° ramp (2026-11-01; a 2" stub and
     # a 7 3/4" drop were shorter than their elbows' take-offs).
     # The low pickup is 4" off the floor on W-B-SA-W. The route uses W-B-CW's x=1'-7" bay
@@ -353,5 +369,6 @@ DUCTS_ERV_BASEMENT = [
                   pt(inch(122), inch(40))),
             elevations=(ft(7, 6), ft(7, 6), inch(82.25), inch(82.25), inch(82.25), inch(82.25),
                         inch(4), inch(4)),
-            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
+            design_cfm=DU_B_ERV_R_SAUNA_EXH),
 ]

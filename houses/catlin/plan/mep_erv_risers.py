@@ -14,6 +14,15 @@ from typehaus import (
     inch,
     pt,
 )
+
+from .erv_balance import (
+    DU_ERV_EA,
+    DU_ERV_OA,
+    DU_ERV_RISER_EXH,
+    DU_ERV_RISER_SUP,
+    DU_M_ERV_EXH_FEED,
+)
+
 # ====================================== RISERS =======================================
 #
 # Three round risers up the radon/plumbing chase at (1', 35'-1.3"), the house's one continuous
@@ -176,7 +185,7 @@ DUCTS_ERV_RISERS = [
             # 150 cfm: the 210 at its foot less the basement plenum's 60. Its highest flow
             # anywhere (notes/erv_static_budget.md §10.6).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=150),
+            design_cfm=DU_ERV_RISER_SUP),
     DuctRun(uid="GFTW5CBARX", tag="DU-ERV-RISER-EXH", system=DuctSystem.EXHAUST,
             # ** IT LEAVES THE PLENUM'S WEST END, NOT ITS CENTRE. ** The leg keeps the
             # box's own y=34'-6" centre line, and the station it starts from is what moved:
@@ -220,7 +229,7 @@ DUCTS_ERV_RISERS = [
             # 164 cfm below the level-2 tap (attic 50 + level-2 114), 50 above it: the
             # basement's 46 never enters it (notes/erv_static_budget.md §10.6).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=164),
+            design_cfm=DU_ERV_RISER_EXH),
     # The outdoor side, which did not exist at all before this pass. Both legs carry
     # outdoor-temperature air through conditioned space, so both are insulated AND vapour
     # sealed — an uninsulated intake duct sweats all winter and rains on whatever is under
@@ -307,7 +316,8 @@ DUCTS_ERV_RISERS = [
             # 0.0315, which took the governing side back to EXTRACT — so §7 is now spent and
             # the lever it named no longer exists.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
-            insulation='2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed', design_cfm=210),
+            insulation='2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed',
+            design_cfm=DU_ERV_OA),
     DuctRun(uid="BYAVBJKRS6", tag="DU-ERV-EA", system=DuctSystem.EXHAUST,
             # Manifold first, hood last — the direction the air goes, and the direction
             # `erv_outdoor_terminals` reads an EXHAUST run.
@@ -370,7 +380,8 @@ DUCTS_ERV_RISERS = [
             # shaft was sized for THIS diameter months before it was bought.
             # `AO-S-ERV-EA` grows 7" -> 9" to match.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
-            insulation='2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed', design_cfm=210),
+            insulation='2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed',
+            design_cfm=DU_ERV_EA),
     # ================== THE TWO LEVEL-2 MANIFOLD FEEDS (2026-09-20) ==================
     #
     # ** THE TWO MAIN-STOREY PLENUMS HAD NO DRAWN FEED AT ALL, AND THAT WAS A HOLE IN THE
@@ -470,7 +481,7 @@ DUCTS_ERV_RISERS = [
                   pt(ft(2, 11), inch(406.8)), pt(inch(29.4), inch(406.8))),
             elevations=(inch(101.25), inch(93.5), inch(93.5), inch(93.5)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=114),
+            design_cfm=DU_M_ERV_EXH_FEED),
     # ===== THE SUPPLY FEED IS NOT DRAWN, AND MOVING THE RADON PIPE DOES NOT OPEN IT =====
     #
     # Re-measured 2026-10-29 off the resolved envelopes (the older 3 7/8" / 7/8" gates named a

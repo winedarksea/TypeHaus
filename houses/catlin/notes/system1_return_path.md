@@ -12,7 +12,7 @@ cfm of room air. Every other System 1 terminal is a supply. So the supply air de
 room behind a closed door has to get back to that hall through the door.
 
 The ERV does not help. Its second-storey bedroom pickups (`REG-S-RET-BED1/2/3`) run at
-**2 cfm each** — they are stale-air tokens on a 210 cfm balanced machine, not a return path.
+**5 cfm each** (`plan/erv_balance.py`) — they are stale-air tokens on a 210 cfm balanced machine, not a return path.
 
 ## The arithmetic
 
@@ -69,7 +69,7 @@ passed. Per-door detail: `notes/interior_door_schedule.md`.
 |---|---|---|---|---|
 | `D-S-BATH1` | kerf seal + sweep, no undercut | `REG-S-EXH1` 20 cfm in | `REG-S-XFER-VANITY` → lined bay → `REG-S-XFER-BATH1`, 6x6 each (~24 in^2) | 10.8 in^2 |
 | `D-M-BED2` | kerf seal + automatic bottom | `REG-M-SUP3` 15 cfm out | under `D-M-BATH2` (32" x 3/4" = 24 in^2) to `REG-M-EXH2`; **keep that undercut** | 8.1 in^2 |
-| `D-B-SHOP` | weatherstrip + sweep, no undercut | `REG-B-RET1` 12 cfm in | under `D-B-FURN` (36" x 3/4" = 27 in^2) from the furnace room; **keep that undercut** | 6.5 in^2 |
+| `D-B-SHOP` | weatherstrip + sweep, no undercut | `REG-B-RET1` 6 cfm in | under `D-B-FURN` (36" x 3/4" = 27 in^2) from the furnace room; **keep that undercut** | 3.2 in^2 |
 | `D-B-SAUNA` | insulated sauna door | none | supply and exhaust balanced 20/20 (`notes/erv_static_budget.md` §10.8) | - |
 
 `D-B-PLAY` takes gaskets and an astragal but keeps its 3/4" undercut for its 30 cfm supply
@@ -101,7 +101,7 @@ duty cycle, so the table stands.
 
 ## What the model cannot hold
 
-**`Opening` carries no `undercut` field.** This table lives here, in `plan/mep_registers.py`,
+**`Opening` carries no `undercut` field.** This table lives here, in `plan/mep_registers_second.py`,
 and nowhere the builder reads: the A-601 opening schedule prints Mark / Tag / Kind / Type /
 Nominal footprint and has no column for it. **A door with no undercut on its schedule gets
 cut at 3/4".** Closing that means adding the field to `Opening` and a column to

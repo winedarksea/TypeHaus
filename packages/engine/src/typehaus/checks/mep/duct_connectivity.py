@@ -36,7 +36,7 @@ than from a naming convention:
   and only within
   ``BOOT_REACH_M``. That is the boot: the flex tail and collar between the end of the hard
   duct and the grille in the ceiling. This house authors them up to 34" off a run end
-  (``plan/mep_registers.py``), so they are the design, not a defect, and a check that called
+  (``plan/mep_registers_*.py``), so they are the design, not a defect, and a check that called
   them orphans would be reporting the drawing rather than the building.
 
 * **its own take-off**, when the end is the cap past the last boot on a served trunk. A trunk

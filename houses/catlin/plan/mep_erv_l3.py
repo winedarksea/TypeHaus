@@ -17,6 +17,15 @@ from typehaus import (
     inch,
     pt,
 )
+
+from .erv_balance import (
+    DU_A_ERV_R_ATTIC,
+    DU_A_ERV_R_BATH1,
+    DU_A_ERV_R_BED3,
+    DU_A_ERV_R_STUBATH,
+    DU_S_ERV_HP_FEED,
+)
+
 # LEVEL 3 — sitting ON the FS-ATTIC deck beside the chase head at (1', 35'-1.3"), fully
 # accessible in RM-A-POCKET.
 #
@@ -43,7 +52,7 @@ EQUIPMENT_ERV_ATTIC = [
 # outdoor air — half the house's fresh air — untempered.
 #
 # ** IT LOOKS LIKE A FITTING ONCE THE RETURN IS A PROPER PLENUM, AND A WYE WOULD NOT DO. **
-# `plan/mep_registers.py` states the ERV enters the return "not a hard-coupled duct … so
+# `plan/mep_registers_second.py` states the ERV enters the return "not a hard-coupled duct … so
 # either machine can run alone", and this box is where that damper lives:
 #   * AIR HANDLER RUNNING, ERV OFF — the return chamber is at negative pressure. With no
 #     damper the blower pulls backwards through the 6" feed, through the attic sub-manifold
@@ -218,7 +227,7 @@ DUCTS_ERV_ATTIC = [
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
                         _ATTIC_BAY_HIGH_Z, _ATTIC_BAY_HIGH_Z, inch(36)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=20),
+            design_cfm=DU_A_ERV_R_STUBATH),
     DuctRun(uid="DYNQDC9ZMJ", tag="DU-A-ERV-R-ATTIC", system=DuctSystem.EXHAUST,
             path=(pt(ft(4, 10.5), ft(34, 2)), pt(ft(4, 10.5), ft(32, 8)),
                   pt(ft(2, 4.5), ft(32, 8)), pt(ft(2, 4.5), ft(20, 8)),
@@ -226,7 +235,7 @@ DUCTS_ERV_ATTIC = [
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
                         inch(-2), inch(-2)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=5),
+            design_cfm=DU_A_ERV_R_ATTIC),
     # ** BED3 RIDES THE 18'-0" BAY, AND IT IS THE ONLY ONE OF THE FOUR THAT IS FREE. **
     # DU-S-ERV-HP-FEED is already in the 22'-0" bay at y=21'-11 1/2", 1/8" off
     # FO-A-HALL's trimmer ply at 22'-2 5/8" (its own note says so), leaving 2 3/4" south of
@@ -262,13 +271,13 @@ DUCTS_ERV_ATTIC = [
                         inch(-9.1), inch(-9.1),
                         _ATTIC_DECK_Z, _ATTIC_DECK_Z),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=5),
+            design_cfm=DU_A_ERV_R_BED3),
     DuctRun(uid="4YT114ADP3", tag="DU-A-ERV-R-BATH1", system=DuctSystem.EXHAUST,
             path=(pt(ft(5, 7.5), ft(34, 2)), pt(ft(5, 7.5), ft(32, 8)),
                   pt(ft(5, 7.5), ft(32, 8)), pt(ft(5), ft(32, 8))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_BAY_Z, _ATTIC_BAY_Z),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=20),
+            design_cfm=DU_A_ERV_R_BATH1),
 ]
 
 # THE MIXING-BOX FEED — the one place fresh air enters the heat-pump loop.
@@ -347,5 +356,5 @@ DUCTS_ERV_MIX_FEED = [
             # occupant of the box, in the east lane with 1" to the cavity face. Nothing else
             # of this run is in the box at all — the 12'-2" tail that used to be is gone.
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=100),
+            design_cfm=DU_S_ERV_HP_FEED),
 ]
