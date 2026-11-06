@@ -13,44 +13,27 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from typehaus.emit.draw.bracedwallplan import (
-    build_braced_wall_plan,
-    has_braced_wall_content,
-)
 from typehaus.emit.draw.cover_sheets import add_cover, cover_inputs
-from typehaus.emit.draw.datum import at_level, model_at_level
+from typehaus.emit.draw.datum import model_at_level
 from typehaus.emit.draw.detail_enlarged import enlarged_details
 from typehaus.emit.draw.details import build_authored_detail_scene, derive_detail_slices
-from typehaus.emit.draw.drainageplan import build_drainage_plan, has_drainage_content
-from typehaus.emit.draw.electricalplan import build_electrical_plan, has_electrical_content
 from typehaus.emit.draw.elevation import elevation_sheets
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.floorplan_sheet import floorplan_sheet
-from typehaus.emit.draw.foundationplan import build_foundation_plan, has_foundation_content
-from typehaus.emit.draw.framingplan import build_framing_plan
-from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
-from typehaus.emit.draw.lightingplan import build_lighting_plan, has_lighting_content
+from typehaus.emit.draw.hvacplan import build_hvac_plan
 from typehaus.emit.draw.pdf_writer import _close
 from typehaus.emit.draw.plan_enlarged import (
     enlarged_groups,
     enlarged_plan_sheet,
     enlarged_title,
 )
-from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
-from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
 from typehaus.emit.draw.roofplan_sheet import roof_plan_sheet
 from typehaus.emit.draw.schedule_plan_sheet import schedule_plan_sheet
-from typehaus.emit.draw.schedules import (
-    _has_data_content,
-    _write_data_schedule,
+from typehaus.emit.draw.schedules import (  # noqa: F401 — _write_hardware_schedule re-exported
     _write_energy_sheet,
-    _write_engineering_register,
-    _write_framing_bom,
     _write_general_notes,
     _write_hardware_schedule,
-    _write_luminaire_schedule,
     _write_opening_schedule,
-    _write_panel_schedule,
     _write_room_finish_schedule,
     _write_specifications,
     _write_symbols_legend,
@@ -58,15 +41,9 @@ from typehaus.emit.draw.schedules import (
     write_compare_sheet,
 )
 from typehaus.emit.draw.schedules.architectural import specification_sections
-from typehaus.emit.draw.schedules.mechanical import (
-    has_mechanical_schedule,
-    mechanical_tables,
-    write_mechanical_schedule,
-)
 from typehaus.emit.draw.schedules.openings import opening_tables
 from typehaus.emit.draw.schedules.paged_tables import page_count
 from typehaus.emit.draw.schedules.paint import has_paint_schedule, write_paint_schedule
-from typehaus.emit.draw.schedules.structural import framing_bom_tables, hardware_tables
 from typehaus.emit.draw.schedules.structural_notes import (
     _write_structural_notes,
     structural_notes_pages,
@@ -97,10 +74,11 @@ from typehaus.emit.draw.sheet_writer import (
     set_paper,
     set_seal_block,
 )
+from typehaus.emit.draw.sheets_structural import structural_sheets
+from typehaus.emit.draw.sheets_trades import trade_sheets
 from typehaus.emit.draw.siteplan import build_site_plan
 from typehaus.emit.draw.title_block import seal_block_for
 from typehaus.resolve.model import ResolvedModel
-from typehaus.takeoff import hardware_takeoff
 
 # The schedule writers live in ``schedules/`` but are re-exported here: this module is
 # still the one name the rest of the engine (and the tests) import a permit sheet from.
@@ -197,78 +175,8 @@ def build_sheet_index(model: ResolvedModel,
     level_tags = [primary.tag for primary, _ in levels]
     at = {tag: model_at_level(model, tag) for tag in level_tags}
 
-    if has_foundation_content(model):
-        sheets.append(SheetSpec("S-100", "Foundation plan",
-                                scene=schedule_plan_sheet(build_foundation_plan,
-                                                          profile=profile),
-                                north_arrow=True))
-
-    # S-101.n — ONE SHEET PER STOREY, not one per ``ResolvedFloor``. Catlin's main floor is
-    # six framed bays, which used to be six sheets of one floor; a reviewer holding six
-    # sheets of one floor cannot see the floor, and no sheet in that pile could show a beam
-    # two bays share. ``framed_levels`` assigns the marks storey-wide, which is what makes
-    # the merge honest rather than a collage.
-    framed_storeys = [tag for tag in level_tags
-                      if any(floor.storey == tag for floor in at[tag].floors)]
-    for index, storey_tag in enumerate(framed_storeys, start=1):
-        number = "S-101" if len(framed_storeys) == 1 else f"S-101.{index}"
-        sheets.append(SheetSpec(number, f"Framing plan — {storey_tag}",
-                                scene=schedule_plan_sheet(build_framing_plan, storey_tag),
-                                north_arrow=True, keywords={"storey": storey_tag}))
-
-    # Roof framing keeps its own S-102 series: a roof is a framed level too, but numbering
-    # it S-101.n would make the floor-sheet count depend on how many roofs a house has.
-    # S-102 is emitted BEFORE S-103 — the loops used to run the other way round, so the set
-    # printed every braced-wall sheet and then the roof sheets behind them, out of number
-    # order for anyone flipping through the pile.
-    roofs = sorted(model.roofs, key=lambda r: (_storey_elevation(model, r.storey), r.tag))
-    for index, roof in enumerate(roofs, start=1):
-        number = "S-102" if len(roofs) == 1 else f"S-102.{index}"
-        sheets.append(SheetSpec(number, f"Roof framing plan — {roof.tag}",
-                                scene=schedule_plan_sheet(build_roof_framing_plan,
-                                                          roof_tag=roof.tag),
-                                north_arrow=True))
-
-    # S-103.n — the braced wall plan, one per storey that has a braced wall line. MNSPECT
-    # requires it per floor and runs a discrete braced-wall inspection against it. It stays
-    # its own sheet rather than folding into S-101: braced-wall content exists on the
-    # basement and the garage where no framed deck does, and S-101 is now the densest sheet
-    # in the set.
-    braced_storeys = [tag for tag in level_tags
-                      if has_braced_wall_content(at[tag], tag)]
-    for index, storey_tag in enumerate(braced_storeys, start=1):
-        number = "S-103" if len(braced_storeys) == 1 else f"S-103.{index}"
-        sheets.append(SheetSpec(number, f"Braced wall plan — {storey_tag}",
-                                scene=at_level(build_braced_wall_plan, storey_tag),
-                                north_arrow=True, keywords={"storey": storey_tag}))
-
-    from typehaus.emit.draw.winder_detail import build_winder_detail
-
-    for index, stair in enumerate((s for s in model.stairs if s.winder_turn is not None), 1):
-        sheets.append(SheetSpec(f"S-501.{index}", f"{stair.tag} winder geometry and framing",
-                                scene=partial(build_winder_detail, stair_tag=stair.tag)))
-
-    if model.all_members():
-        # Full only: a bill of materials is a builder's document, not a plan check's.
-        # S-602 stays in the permit set (the framing inspection is run against it) and so
-        # does S-603 (it says which items rest on a seal).
-        sheets.extend(_paged("S-601", "Framing schedule / bill of materials",
-                             _write_framing_bom,
-                             page_count(framing_bom_tables(model), paper), sets=FULL_ONLY))
-
-    # One PageFn emits one page, or the cover's index would drift from the set; a schedule
-    # that outgrows its sheet continues on S-602.1, S-602.2 … (``_paged``).
-    if hardware_takeoff(model):
-        sheets.extend(_paged("S-602", "Connection hardware schedule", _write_hardware_schedule,
-                             page_count(hardware_tables(model), paper)))
-
-    # S-603 only where the house actually has engineering in it. A set answered entirely by
-    # prescriptive tables gets no page saying so — an empty register reads as an omission,
-    # and the cover already states the checklist verdict for that case.
-    if _has_engineered_items(model, house_dir, report):
-        sheets.append(SheetSpec("S-603", "Engineering register",
-                                page=partial(_write_engineering_register,
-                                             house_dir=house_dir)))
+    sheets.extend(structural_sheets(model, level_tags, at, paper, house_dir, report,
+                                    profile=profile))
 
     if specification_sections(model):
         sheets.append(SheetSpec("A-002", "Architectural specifications",
@@ -363,65 +271,7 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec("A-604", "Paint schedule", page=write_paint_schedule,
                                 sets=FULL_ONLY))
 
-    plumbing_storeys = [tag for tag in level_tags if has_plumbing_content(at[tag], tag)]
-    for index, storey_tag in enumerate(plumbing_storeys, start=1):
-        # Full only. The Saint Paul DSI new-construction checklist asks for fixtures on
-        # the floor plans and lists no separate P drawings; 1-2 family plumbing is exempt
-        # from MN 4714 plan review. `[print] permit_add = ["P-1"]` restores them.
-        sheets.append(SheetSpec(f"P-{100 + index}", f"Plumbing plan — {storey_tag}",
-                                scene=at_level(build_plumbing_plan, storey_tag),
-                                sets=FULL_ONLY))
-
-    # P-2xx: the drainage plans, one per storey with stormwater content — the same
-    # second-series-per-trade convention the lighting sheets use against E-10x. Gutters,
-    # leaders, tile, trenches and pits are a different installer (and inspection) from the
-    # sanitary/domestic rough-in on P-10x, and merging them buries the buried work.
-    drainage_storeys = [tag for tag in level_tags if has_drainage_content(at[tag], tag)]
-    for index, storey_tag in enumerate(drainage_storeys, start=1):
-        # Full only: the grading and discharge story a reviewer wants belongs on C-101.
-        sheets.append(SheetSpec(f"P-{200 + index}", f"Drainage plan — {storey_tag}",
-                                scene=at_level(build_drainage_plan, storey_tag),
-                                north_arrow=True, sets=FULL_ONLY))
-
-    hvac_storeys = [tag for tag in level_tags if has_hvac_content(at[tag], tag)]
-    for index, storey_tag in enumerate(hvac_storeys, start=1):
-        sheets.append(SheetSpec(f"M-{100 + index}", f"HVAC plan — {storey_tag}",
-                                scene=at_level(build_hvac_plan, storey_tag)))
-    if has_mechanical_schedule(model):
-        # Duct construction + duct/terminal schedules (#114), paged like S-602.
-        sheets.extend(_paged("M-601", "Duct and air terminal schedules",
-                             write_mechanical_schedule,
-                             page_count(mechanical_tables(model), paper)))
-
-    electrical_storeys = [tag for tag in level_tags if has_electrical_content(at[tag], tag)]
-    for index, storey_tag in enumerate(electrical_storeys, start=1):
-        # Full only, same reason as P-1xx: electrical is permitted by the State Board of
-        # Electricity, not by DSI, and the checklist names no E drawings.
-        sheets.append(SheetSpec(f"E-{100 + index}", f"Electrical plan — {storey_tag}",
-                                scene=at_level(build_electrical_plan, storey_tag),
-                                sets=FULL_ONLY))
-
-    # E-2xx: the lighting plans, one per storey that has luminaires. A separate series
-    # from the E-10x power sheets on purpose — an electrician wiring devices and a reader
-    # checking what hangs over the dining table want two different drawings, and merging
-    # them produces a sheet too dense to be either.
-    lighting_storeys = [tag for tag in level_tags if has_lighting_content(at[tag], tag)]
-    for index, storey_tag in enumerate(lighting_storeys, start=1):
-        sheets.append(SheetSpec(f"E-{200 + index}", f"Lighting plan — {storey_tag}",
-                                scene=at_level(build_lighting_plan, storey_tag),
-                                sets=FULL_ONLY))
-
-    if model.plan.library.circuits:
-        sheets.append(SheetSpec("E-601", "Panel schedule / service load",
-                                page=_write_panel_schedule))
-
-    if lighting_storeys:
-        sheets.extend(_paged("E-602", "Luminaire schedule / lighting controls",
-                             _write_luminaire_schedule, 2, portrait=True, sets=FULL_ONLY))
-
-    if _has_data_content(model):
-        sheets.append(SheetSpec("E-603", "Data / low-voltage schedule",
-                                page=_write_data_schedule, sets=FULL_ONLY))
+    sheets.extend(trade_sheets(model, level_tags, at, paper))
 
     chosen = resolve_set_name(sets, details)
     kept = [sheet for sheet in sheets if in_set(sheet, chosen, preferences)]
