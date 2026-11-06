@@ -467,6 +467,9 @@ class ResolvedOpening:
     is_door: bool
     framing_required: bool = True
     swing_clearance: Ring = ()
+    # Where the non-structure layers' cut starts under a seated exterior door (the datum,
+    # ``plate_seat.door_skin_sill_m``). ``None`` means ``sill_m``.
+    skin_sill_m: float | None = None
     framing_bumper: Ring = ()
     # Arched head: semicircular/segmental rise above the rectangular jamb height. 0 = square
     # head. The opening's total height_m already includes this rise (straight run = height -

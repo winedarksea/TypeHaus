@@ -41,7 +41,7 @@ from typehaus.resolve.opening_fireblock import resolve_fireblocks
 from typehaus.resolve.paneling import resolve_paneling
 from typehaus.resolve.partition_top import apply_partition_tops
 from typehaus.resolve.placeables import resolve_placeables
-from typehaus.resolve.plate_seat import apply_plate_seats, door_sill_m
+from typehaus.resolve.plate_seat import apply_plate_seats, door_sill_m, door_skin_sill_m
 from typehaus.resolve.platform import (
     extend_walls_to_foundation,
     extend_walls_to_platform,
@@ -427,7 +427,8 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
             kind = {"Door": "door", "Window": "window",
                     "RoughOpening": "rough_opening"}[el.element_kind]
             axis_len = length(sub(rw.axis[1], rw.axis[0]))
-            sill = door_sill_m(plan, el, rw, _opening_sill(el))
+            datum_sill = _opening_sill(el)
+            sill = door_sill_m(el, rw, datum_sill)
             sizing = size_door(plan, el, rw, standard, finishes, sill,
                                partial(_opening_center, plan, el, rw, axis_len))
             if sizing is not None:
@@ -446,6 +447,7 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                 ResolvedOpening(
                     uid=el.uid, tag=el.tag, host_wall=el.host, type_ref=type_ref,
                     width_m=width, height_m=height, sill_m=sill,
+                    skin_sill_m=door_skin_sill_m(plan, el, datum_sill, sill),
                     center_along_m=center, kind=kind, is_door=is_door,
                     framing_required=getattr(el, "framing_required", True),
                     swing_clearance=swing_clearance, framing_bumper=framing_bumper,

@@ -9,9 +9,11 @@ never typed.
 Only the FRAMING moves. ``ResolvedWall.plate_seat_z_m`` is the frame base
 (:attr:`ResolvedWall.frame_base_z_m`); the sill/band datum (``base_ref_z_m``) and the body
 stay on the storey datum, so windows, backing bands and the skin do not move. A floor-level
-interior door is the exception, because its rough opening is framed up from the subfloor:
-its ``sill_m`` becomes the seat (:func:`door_sill_m`), and since its RO height is derived
-from the finished floor (``door_floor_finish``) its head stays where it was.
+door is the exception, because its rough opening is framed up from the subfloor: its
+``sill_m`` becomes the seat (:func:`door_sill_m`). An interior door's RO height is derived
+from the finished floor (``door_floor_finish``), so its head stays where it was; an exterior
+door's head rides up with it, and the skin under it stays cut to the datum
+(``ResolvedOpening.skin_sill_m``).
 
 :func:`deck_top_under` mirrors ``partition_top.deck_underside_over``: plan only (decks,
 storey elevations, subfloor thicknesses), so it runs before openings resolve.
@@ -167,17 +169,27 @@ def apply_plate_seats(model: ResolvedModel) -> None:
         model.walls[index] = seated
 
 
-def door_sill_m(plan: Any, element: Any, wall: ResolvedWall, sill_m: float) -> float:
-    """A floor-level interior door's rough opening starts at the subfloor, not the joist top.
+def door_sill_m(element: Any, wall: ResolvedWall, sill_m: float) -> float:
+    """A floor-level door's rough opening starts at the subfloor, not the joist top.
 
     ``sill_m`` is measured from the sill datum; a door authored at 0 on a seated wall is
     framed up from the plate's underside, so its sill is the seat. Raised and dropped sills
-    are the author's and stay. So does an EXTERIOR door's: its sill pan, threshold and
-    landing are coordinated by the door's installation (R311.3), off the datum.
+    are the author's and stay. An exterior door seats too: its sill pan bears on the
+    subfloor, the standard detail (decision #110).
     """
     if element.element_kind != "Door" or abs(sill_m) > 1e-9:
         return sill_m
-    door_type = next((t for t in plan.library.door_types if t.tag == element.type_ref), None)
-    if door_type is None or door_type.exterior:
-        return sill_m
     return wall.frame_base_z_m - wall.base_ref_z_m
+
+
+def door_skin_sill_m(plan: Any, element: Any, datum_sill_m: float, sill_m: float) -> float | None:
+    """Where the skin under a seated EXTERIOR door stops: the datum, not the seat.
+
+    The structure layer keeps the 3/4" band (the rim and the subfloor edge the pan bears on);
+    foam, girt, cladding and board stop at the datum so the pan's drop and the approach lap
+    over that band. ``None`` (the opening's own ``sill_m``) for everything else.
+    """
+    if abs(sill_m - datum_sill_m) <= 1e-9:
+        return None
+    door_type = next((t for t in plan.library.door_types if t.tag == element.type_ref), None)
+    return datum_sill_m if door_type is not None and door_type.exterior else None

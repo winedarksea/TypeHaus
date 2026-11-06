@@ -179,7 +179,7 @@ export function buildWall(
       ? [createSurfaceMeshGeometry(ly.surface_mesh, center)]
       : smoothArchGeometry
       ? [smoothArchGeometry]
-      : clampPiecesToBand(wallLayerPieces(w, ly.polygon, layerOpenings), ly).map((piece) => piece.topIsRaked
+      : clampPiecesToBand(wallLayerPieces(w, ly.polygon, layerOpenings, ly.function !== "structure"), ly).map((piece) => piece.topIsRaked
         ? createRakedPlanPrismGeometry(piece.polygon, piece.z0_m,
           (point) => bodyTopAt(w, point[0], point[1]), center)
         : createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center));
@@ -385,7 +385,11 @@ export function clampPiecesToBand(
 
 // Split an arbitrary junction-solved layer polygon at opening jamb stations. Clipping the
 // actual ring (instead of rebuilding its local bounds) preserves mitered and butted ends.
-export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][], openings: Opening[]): WallLayerPiece[] {
+// `skin`: a non-structure layer, cut from the datum under a seated exterior door
+// (`skin_sill_m`, resolve/geometry_walls.py's `layer_solids`).
+export function wallLayerPieces(
+  wall: Wall, polygon: readonly [number, number][], openings: Opening[], skin = false,
+): WallLayerPiece[] {
   const [[x0, y0], [x1, y1]] = wall.axis;
   const length = Math.hypot(x1 - x0, y1 - y0);
   if (length < 1e-9 || polygon.length < 3) return [];
@@ -446,8 +450,9 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
     }
     const openingBottom = baseRefZ(wall) + active.sill_m;
     const openingTop = openingBottom + active.height_m;
-    if (openingBottom > wall.z0_m + 1e-9)
-      pieces.push({ polygon: strip, z0_m: wall.z0_m, z1_m: openingBottom, topIsRaked: false });
+    const cutBottom = baseRefZ(wall) + (skin ? active.skin_sill_m ?? active.sill_m : active.sill_m);
+    if (cutBottom > wall.z0_m + 1e-9)
+      pieces.push({ polygon: strip, z0_m: wall.z0_m, z1_m: cutBottom, topIsRaked: false });
     const archRise = active.arch_rise_m ?? 0;
     if (archRise > 1e-9) {
       const springline = openingBottom + Math.max(0, active.height_m - archRise);

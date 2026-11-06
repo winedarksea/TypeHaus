@@ -92,12 +92,12 @@ entry (`C2 E1` = C2.md, escalation E1). `carried` names the round-1 item.
    - The 3D walk is `mep.trap_arm_length` (CODE) since then, and the plan-`hypot` check is
      deleted; it counts a drop before the vent as an S-trap.
    - Open: `PR-M-BATH2-WC-VENT` offsets under the bowl's rim (framing; TODO).
-6. **Exterior doors on the joist-top datum** (C1 E1, O3-103 = F1-102 = F3-107) · carried
-   (TODO). D-M-ENTRY, D-M-PORCH and D-S-BALCONY keep their RO base at the joist top, ¾" under
-   the subfloor their walls stand on. The model keeps the subfloor continuous under the
-   sills, while A-513.2 draws it cut back.
-   → Confirm the subfloor is cut back, model a deck void per sill and print the datum (S).
-   The alternative is re-deriving the installations, which breaks D-S-BALCONY's catalog fit (M).
+6. **Exterior doors on the joist-top datum** (C1 E1, O3-103 = F1-102 = F3-107) · **closed
+   2026-11-06** (owner: the standard way). All three ROs start on the subfloor (head +3/4",
+   83 5/8" over the datum) and the skin under each sill stays cut to the datum, which also
+   cleared D-S-BALCONY's three W-M-S2 coordination UNKNOWNs. ENTRY/PORCH seat the schematic
+   sill 3/8" over the subfloor (the sloped pan's rise). Open residue: ENTRY's crest stands
+   1.60" over the mudroom LVP against R311.3.1's 1.5" (TODO; not yet graded).
 7. **Holes through floor framing** (C2 E3/E4, C4 E6/E7, F3-101..103) · new.
    - **Suite vent through the TJIs:** `PR-S-SUITEBATH-VENT` bores 9 TJI 230s 10.7" from the
      support, where ESR-1153 Table A needs 18". The engine grades no I-joist hole rule.

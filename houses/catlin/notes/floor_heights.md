@@ -73,7 +73,7 @@ or movement joint may be required even where the modeled height difference is ze
 | `D-M-BATH2` | bedroom carpet +1.7500 | heated porcelain +1.5000 | 0.2500 | Carpet tucked into a Z-bar flush with the tile |
 | `ST-M2S` lower and upper head | main LVP +1.0255906 | second oak +1.5000 (+121.5000 absolute) | stair rise | 16 equal risers at 7.5296 in ((121.5 - 1.0255906)/16); level turn +61.2627953 absolute |
 | `ST-S2A` lower head | second oak +1.5000 (+121.5000 absolute) | oak stair | 0 at head | Retain existing authored 121.5-in start |
-| `D-M-ENTRY` exterior | mudroom LVP +1.0255906 | breezeway deck 0.0000 | 1.0255906 down | Flashed weather sill, **not** an interior reducer |
+| `D-M-ENTRY` exterior | mudroom LVP +1.0255906 | breezeway deck 0.0000 | 1.0255906 down | Flashed weather sill, **not** an interior reducer. Since 2026-11-06 the RO starts on the subfloor (+0.7500) and the schematic sill seats 3/8" on the sloped pan (+1.1250): crest +2.6250, 1.5994 over the LVP (R311.3.1 allows 1.5000, open in `plans/TODO.md`) and 2.6250 over the deck |
 
 Use a restrained, shallow solid-surface reducer at the 0.3800-in plant change, sloping
 down toward the vinyl over roughly 4 1/2 in of run. The wet-side sheet must turn up

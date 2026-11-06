@@ -42,8 +42,8 @@ estimate and the table agree at this size. A French pair loses it per leaf (5/0:
 
 Clear height without a published figure is installed: RO head less the 1" jamb allowance and
 the head stop's 13 mm (0.512") projection, less the higher of the threshold top and the floor
-build-up. The threshold sits on its seat (`ExteriorDoorSillDesign.seat_height`, 0.5" default)
-and stands `threshold_height` (1.5" here) over it, so 2.0" over the RO base; the floor is
-0.947" (3/4" subfloor plus 5 mm LVP over the joist-top base). At D-M-ENTRY's 82.875" RO:
-82.875 − 1 − 0.512 − 2.0 = 79.363". The published 79.25" is lower and governs; the estimate
-lands 0.11" above it.
+build-up. The threshold sits on its seat (`ExteriorDoorSillDesign.seat_height`, 3/8" here, the
+sloped pan's rise) and stands `threshold_height` (1.5") over it, so 1.875" over the RO base,
+which is the subfloor top since 2026-11-06 (decision #110); the floor is the 7 mm LVP, 0.276".
+At D-M-ENTRY's 82.875" RO: 82.875 − 1 − 0.512 − 1.875 = 79.488". The published 79.25" is
+lower and governs; the estimate lands 0.24" above it.

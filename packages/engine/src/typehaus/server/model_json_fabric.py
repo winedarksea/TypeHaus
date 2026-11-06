@@ -175,6 +175,7 @@ def wall_graph_json(
              "provenance": _provenance(provenance, o.tag),
              "type_ref": o.type_ref,
              "width_m": o.width_m, "height_m": o.height_m, "sill_m": o.sill_m,
+             "skin_sill_m": o.skin_sill_m,
              "center_along_m": o.center_along_m, "arch_rise_m": o.arch_rise_m,
              "cut_layers": _cut_layers(model, o),
              "opening_parts": opening_parts_json(model, o),

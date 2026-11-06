@@ -135,6 +135,21 @@ def test_walls_stand_on_the_subfloor_and_bearing_studs_close_the_stack(catlin_mo
     assert 102.125 in studs_in("W-M-HS3")  # partition: 3/4" under the soffit
     assert catlin_model.wall("W-A-E1").plate_seat_z_m is None
 
+    # An exterior door seats too; only its skin stays cut to the datum.
+    from typehaus.resolve.geometry_walls import layer_solids
+
+    entry = next(o for o in catlin_model.openings if o.tag == "D-M-ENTRY")
+    wall = catlin_model.wall(entry.host_wall)
+    assert wall.base_ref_z_m + entry.sill_m == pytest.approx(wall.frame_base_z_m)
+
+    def sill_tops(function):
+        layer = next(ly for ly in wall.layers if ly.function == function)
+        return {round(s.z1_m, 6) for s in layer_solids(wall, layer.polygon, [entry],
+                                                       layer_name=layer.name)
+                if s.z1_m < wall.frame_base_z_m + 1e-6}
+    assert round(wall.frame_base_z_m, 6) in sill_tops("structure")
+    assert sill_tops("cladding") == {round(wall.base_ref_z_m, 6)}
+
 
 def test_catlin_exterior_loops_are_authored_counter_clockwise(catlin_model):
     """The mirror fix is load-bearing: catlin's storeys need the flip."""

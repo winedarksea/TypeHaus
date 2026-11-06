@@ -419,6 +419,8 @@ export interface Opening {
   width_m: number;
   height_m: number;
   sill_m: number;
+  /** Where non-structure layers' cut starts under a seated exterior door; null = sill_m. */
+  skin_sill_m?: number | null;
   center_along_m: number;
   // A nonzero rise turns the rectangular head into a semicircular arch soffit.
   arch_rise_m: number;

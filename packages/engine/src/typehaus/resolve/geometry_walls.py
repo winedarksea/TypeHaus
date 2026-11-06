@@ -165,6 +165,12 @@ def _edge_extent(edges, wall: ResolvedWall) -> tuple[float, float]:
     return (start, end) if end > start else (0.0, axis_length or 1.0)
 
 
+def _is_skin_layer(wall: ResolvedWall, layer_name: str | None) -> bool:
+    """A named non-structure layer: the one a seated exterior door cuts from the datum."""
+    named = next((layer for layer in wall.layers if layer.name == layer_name), None)
+    return named is not None and named.function != "structure"
+
+
 def cuts_layer(wall: ResolvedWall, layer_name: str | None, opening) -> bool:
     """Whether ``opening`` cuts the named layer of ``wall``.
 
@@ -254,6 +260,7 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
 
     solids: list[GSolid] = []
     pier_index = 0
+    skin = _is_skin_layer(wall, layer_name)
     for op, o0, o1 in valid_ops:
         while pier_index < len(piers) and piers[pier_index][1] <= o0 + 1e-6:
             solids.append(_prism(_slice(edges, *piers[pier_index]), z0, z1, top_at))
@@ -263,7 +270,9 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
         # layer's band, which is what makes a band that misses an opening entirely simply
         # not cut for it.
         raw_bottom = wall.base_ref_z_m + op.sill_m
-        bottom = min(max(raw_bottom, z0), z1)
+        skin_sill = getattr(op, "skin_sill_m", None) if skin else None
+        cut_from = wall.base_ref_z_m + (op.sill_m if skin_sill is None else skin_sill)
+        bottom = min(max(cut_from, z0), z1)
         head = min(max(raw_bottom + op.height_m, z0), z1)
         if bottom > z0 + 1e-6:  # sill band — always flat, below the rake
             solids.append(GPrism(ring=tuple(_slice(edges, o0, o1)), z0_m=z0, z1_m=bottom))

@@ -63,7 +63,9 @@ def test_both_breezeway_doors_open_onto_the_deck_at_the_same_level(catlin_model)
     for tag in (ENTRY_DOOR, SERVICE_DOOR):
         opening = next(o for o in catlin_model.openings if o.tag == tag)
         wall = next(w for w in catlin_model.walls if w.tag == opening.host_wall)
-        levels[tag] = storey_z[wall.storey] + opening.sill_m
+        # The entry's RO is seated on the subfloor (#110); its pan drops to the datum.
+        datum_sill = opening.sill_m if opening.skin_sill_m is None else opening.skin_sill_m
+        levels[tag] = storey_z[wall.storey] + datum_sill
     assert levels[ENTRY_DOOR] == pytest.approx(levels[SERVICE_DOOR], abs=0.5 * INCH), levels
 
 
