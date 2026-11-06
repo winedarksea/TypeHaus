@@ -39,10 +39,14 @@ def test_finished_boards_and_both_stairs_meet_both_sills(catlin_model_ro):
         assert stair.arrival_elevation_m == pytest.approx(inch(arrival_in).meters)
         assert stair.riser_count == 5
         assert stair.riser_height_m == pytest.approx(inch(rise_in).meters / 5)
-    for tag in ("D-M-ENTRY", "D-G-SERVICE"):
+    # D-M-ENTRY's RO seats on the subfloor (decision #110); the skin under it stays on the datum.
+    for tag, ro_in in (("D-M-ENTRY", 0.75), ("D-G-SERVICE", 0)):
         door = next(o for o in model.openings if o.tag == tag)
         wall = next(w for w in model.walls if w.tag == door.host_wall)
-        assert model.plan.storey(wall.storey).elevation.meters + door.sill_m == pytest.approx(0)
+        base = model.plan.storey(wall.storey).elevation.meters
+        skin = door.skin_sill_m if door.skin_sill_m is not None else door.sill_m
+        assert base + skin == pytest.approx(0)
+        assert base + door.sill_m == pytest.approx(inch(ro_in).meters)
 
 
 def test_both_full_door_landing_patches_fit_the_shared_deck(catlin_plan):
