@@ -1393,6 +1393,120 @@
       "node": "polyline",
       "points": [
         [
+          -2.3385826771653546,
+          199.133
+        ],
+        [
+          7.79,
+          199.133
+        ],
+        [
+          7.79,
+          199.60500000000002
+        ],
+        [
+          -2.3385826771653546,
+          199.60500000000002
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSX306AAAA-RETURN-0-head",
+      "tag": "WIN-S-PLANT1-return-0-head"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -2.3385826771653546,
+          199.133
+        ],
+        [
+          7.79,
+          199.133
+        ],
+        [
+          7.79,
+          199.60500000000002
+        ],
+        [
+          -2.3385826771653546,
+          199.60500000000002
+        ]
+      ],
+      "pattern": "solid-surface-fabricated",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "solid-surface-fabricated",
+      "fill": "#f4f5f4"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          7.318,
+          199.60500000000002
+        ],
+        [
+          7.79,
+          199.60500000000002
+        ],
+        [
+          7.79,
+          200.0
+        ],
+        [
+          7.318,
+          200.0
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSX306AAAA-RETURN-0-lap-head",
+      "tag": "WIN-S-PLANT1-return-0-lap-head"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          7.318,
+          199.60500000000002
+        ],
+        [
+          7.79,
+          199.60500000000002
+        ],
+        [
+          7.79,
+          200.0
+        ],
+        [
+          7.318,
+          200.0
+        ]
+      ],
+      "pattern": "solid-surface-fabricated",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "solid-surface-fabricated",
+      "fill": "#f4f5f4"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           0.5,
           200.0
         ],
@@ -1995,6 +2109,62 @@
         [
           -6.000000000000001,
           152.37500000000003
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "struct-1-plywood"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          0.0,
+          199.625
+        ],
+        [
+          7.318,
+          199.625
+        ],
+        [
+          7.318,
+          200.0
+        ],
+        [
+          0.0,
+          200.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW101AAAA",
+      "tag": "buck-fur-head-WIN-S-PLANT1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.0,
+          199.625
+        ],
+        [
+          7.318,
+          199.625
+        ],
+        [
+          7.318,
+          200.0
+        ],
+        [
+          0.0,
+          200.0
         ]
       ],
       "pattern": "osb",
@@ -2680,7 +2850,7 @@
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "4'-0\" R.O.",
-      "text_along": 0.0,
+      "text_along": -11.78,
       "uid": null
     },
     {
@@ -2717,8 +2887,24 @@
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "3'-10 13/16\" frame",
-      "text_along": 0.0,
+      "text_along": -21.203999999999997,
       "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        -16.59251968503937,
+        124.28346456692915
+      ],
+      "content": "EXTERIOR HEAD AND SILL AS A-513.1 (HEAD), A-513.2 (SILL)",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-DIMS",
+      "align": "left",
+      "uid": "layout-caption:2"
     },
     {
       "space": "model",
@@ -2784,75 +2970,75 @@
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
       "align": "left",
-      "uid": null
+      "uid": "layout-caption:caption"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          25.367999999999995,
-          180.0
+          23.631957182238757,
+          186.47899999999998
         ],
         [
-          24.919650446491474,
-          182.25400541663038
+          23.183607628730236,
+          188.73300541663036
         ],
         [
-          23.642858941188763,
-          184.16485894118875
+          21.90681612342752,
+          190.64385894118874
         ],
         [
-          21.732005416630376,
-          185.44165044649148
+          19.995962598869134,
+          191.92065044649146
         ],
         [
-          19.477999999999998,
-          185.89
+          17.741957182238757,
+          192.36899999999997
         ],
         [
-          17.22399458336962,
-          185.44165044649148
+          15.48795176560838,
+          191.92065044649146
         ],
         [
-          15.313141058811233,
-          184.16485894118875
+          13.577098241049992,
+          190.64385894118874
         ],
         [
-          14.03634955350852,
-          182.25400541663038
+          12.300306735747279,
+          188.73300541663036
         ],
         [
-          13.588,
-          180.0
+          11.851957182238758,
+          186.47899999999998
         ],
         [
-          14.036349553508519,
-          177.74599458336962
+          12.300306735747277,
+          184.2249945833696
         ],
         [
-          15.313141058811233,
-          175.83514105881125
+          13.577098241049992,
+          182.31414105881123
         ],
         [
-          17.223994583369617,
-          174.55834955350852
+          15.487951765608376,
+          181.0373495535085
         ],
         [
-          19.477999999999998,
-          174.11
+          17.741957182238757,
+          180.589
         ],
         [
-          21.73200541663038,
-          174.55834955350852
+          19.995962598869138,
+          181.0373495535085
         ],
         [
-          23.642858941188763,
-          175.83514105881125
+          21.906816123427518,
+          182.31414105881123
         ],
         [
-          24.919650446491474,
-          177.74599458336962
+          23.183607628730233,
+          184.2249945833696
         ]
       ],
       "layer": "A-ANNO-KEYN",
@@ -2866,8 +3052,8 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        19.477999999999998,
-        180.0
+        17.741957182238757,
+        186.47899999999998
       ],
       "content": "K2",
       "height": 3.0,
@@ -2890,8 +3076,8 @@
         "name": ""
       },
       "at": [
-        19.477999999999998,
-        180.0
+        17.741957182238757,
+        186.47899999999998
       ],
       "to": [
         6.52,
@@ -2908,68 +3094,68 @@
       "node": "polyline",
       "points": [
         [
-          25.762999999999998,
-          167.63100000000003
-        ],
-        [
-          25.314650446491477,
-          169.8850054166304
-        ],
-        [
-          24.037858941188762,
-          171.79585894118878
-        ],
-        [
-          22.127005416630375,
-          173.0726504464915
-        ],
-        [
-          19.872999999999998,
+          24.026957182238753,
           173.52100000000002
         ],
         [
-          17.61899458336962,
-          173.0726504464915
+          23.578607628730232,
+          175.7750054166304
         ],
         [
-          15.708141058811233,
-          171.79585894118878
+          22.30181612342752,
+          177.68585894118877
         ],
         [
-          14.43134955350852,
-          169.8850054166304
+          20.390962598869134,
+          178.9626504464915
         ],
         [
-          13.982999999999999,
+          18.136957182238756,
+          179.411
+        ],
+        [
+          15.882951765608379,
+          178.9626504464915
+        ],
+        [
+          13.972098241049991,
+          177.68585894118877
+        ],
+        [
+          12.695306735747279,
+          175.7750054166304
+        ],
+        [
+          12.246957182238758,
+          173.52100000000002
+        ],
+        [
+          12.695306735747277,
+          171.26699458336964
+        ],
+        [
+          13.972098241049991,
+          169.35614105881126
+        ],
+        [
+          15.882951765608375,
+          168.07934955350854
+        ],
+        [
+          18.136957182238756,
           167.63100000000003
         ],
         [
-          14.431349553508518,
-          165.37699458336965
+          20.390962598869137,
+          168.07934955350854
         ],
         [
-          15.708141058811233,
-          163.46614105881127
+          22.30181612342752,
+          169.35614105881126
         ],
         [
-          17.618994583369616,
-          162.18934955350855
-        ],
-        [
-          19.872999999999998,
-          161.74100000000004
-        ],
-        [
-          22.12700541663038,
-          162.18934955350855
-        ],
-        [
-          24.03785894118876,
-          163.46614105881127
-        ],
-        [
-          25.314650446491473,
-          165.37699458336965
+          23.578607628730232,
+          171.26699458336964
         ]
       ],
       "layer": "A-ANNO-KEYN",
@@ -2983,8 +3169,8 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        19.872999999999998,
-        167.63100000000003
+        18.136957182238756,
+        173.52100000000002
       ],
       "content": "K4",
       "height": 3.0,
@@ -3007,8 +3193,8 @@
         "name": ""
       },
       "at": [
-        19.872999999999998,
-        167.63100000000003
+        18.136957182238756,
+        173.52100000000002
       ],
       "to": [
         6.915,
@@ -3828,7 +4014,7 @@
   ],
   "notes": [
     "NOTES:",
-    "• Room design condition: 75 F at 70% RH. Dew point 64.4 F.",
+    "• Room at 75 F / 70% RH; dew point 64.4 F.",
     "• Liner, inside out: 1/2\" PVC panel, 3/4\" furring, membrane. Walls and ceiling.",
     "• The membrane is the air and vapour barrier. Continuous on all six sides.",
     "• Floor: SurePly + seamless sheet; 4\" rubber base, silicone toe. No drain.",
@@ -3836,15 +4022,16 @@
     "• No suspended ceiling. No roofing membrane under the vinyl.",
     "• Ventilation: 25 cfm in, 25 cfm out, both dampered. Extract high, far end.",
     "• Damp location throughout; wet location wherever misted or hosed.",
+    "• Liner trim laps the rubber base, sealed; weep kept open (K4).",
+    "• Sloped pan over the stool, flashed to the membrane; drains to the room.",
+    "• 12 mm Corian frame glued to the stool; membrane returned behind it.",
+    "• Wet-location listed luminaires, gasketed, corrosion-resistant housings.",
+    "• Receptacles WR-listed and GFCI, in non-metallic gasketed boxes with in-use covers.",
+    "• Grow tubes listed to UL 8800 per NEC Article 410 Part XVI.",
     "",
     "KEYED NOTES:",
-    "K1  Liner trim laps the rubber base, sealed; weep kept open (K4).",
     "K2  Membrane continuous wall to ceiling; seal each penetration.",
-    "K3  Sloped, drained sill pan over the stool, flashed into the membrane; drains to the room, never into framing.",
-    "K4  Keep the 3/4\" furring gap open behind the panel; it is the drying path.",
-    "K5  Wet-location listed luminaires, gasketed, corrosion-resistant housings.",
-    "K6  Receptacles WR-listed and GFCI, in non-metallic gasketed boxes with in-use covers.",
-    "K7  Grow tubes listed to UL 8800 per NEC Article 410 Part XVI."
+    "K4  Keep the 3/4\" furring gap open behind the panel; it is the drying path."
   ],
   "frame": {
     "paper": [

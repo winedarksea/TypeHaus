@@ -2389,117 +2389,6 @@
     },
     {
       "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            -3.999999999999999,
-            -7.437499999999998
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            0.0,
-            -7.437499999999998
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        -3.999999999999999,
-        -7.437499999999998
-      ],
-      "p1": [
-        0.0,
-        -7.437499999999998
-      ],
-      "offset": 4.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "4\" CI",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            0.4999999999999996,
-            0.5625000000000018
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            5.999999999999999,
-            0.5625000000000018
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        0.4999999999999996,
-        0.5625000000000018
-      ],
-      "p1": [
-        5.999999999999999,
-        0.5625000000000018
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "5 1/2\" stud",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            -4.06,
-            -24.264271653543304
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            -0.05999999999999991,
-            -24.264271653543304
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        -4.06,
-        -24.264271653543304
-      ],
-      "p1": [
-        -0.05999999999999991,
-        -24.264271653543304
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "4\" XPS (2 layers)",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "text",
       "anchor": [
         -13.90251968503937,
@@ -2512,7 +2401,7 @@
       "style": "ARCH",
       "layer": "A-ANNO-DIMS",
       "align": "left",
-      "uid": null
+      "uid": "layout-caption:0"
     },
     {
       "space": "model",
@@ -2603,7 +2492,7 @@
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
       "align": "left",
-      "uid": null
+      "uid": "layout-caption:caption"
     },
     {
       "space": "paper",
@@ -2644,7 +2533,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-552",
+      "content": "SHEET A-554",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

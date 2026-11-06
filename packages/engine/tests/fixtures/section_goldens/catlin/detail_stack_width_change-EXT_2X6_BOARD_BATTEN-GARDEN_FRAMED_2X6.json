@@ -2314,7 +2314,7 @@
         "kind": "point",
         "xy": [
           6.25,
-          -34.069111111111106
+          -32.12253937007874
         ],
         "name": ""
       },
@@ -2324,7 +2324,7 @@
       ],
       "to": [
         6.25,
-        -34.069111111111106
+        -32.12253937007874
       ],
       "text": "gwb 1/2\"",
       "height": 1.6,
@@ -2559,80 +2559,6 @@
     },
     {
       "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            -4.06,
-            -19.437499999999996
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            -0.05999999999999991,
-            -19.437499999999996
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        -4.06,
-        -19.437499999999996
-      ],
-      "p1": [
-        -0.05999999999999991,
-        -19.437499999999996
-      ],
-      "offset": 4.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "4\" CI",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            0.4999999999999996,
-            -27.437499999999996
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            5.999999999999999,
-            -27.437499999999996
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        0.4999999999999996,
-        -27.437499999999996
-      ],
-      "p1": [
-        5.999999999999999,
-        -27.437499999999996
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "5 1/2\" stud",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2720,7 +2646,7 @@
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
       "align": "left",
-      "uid": null
+      "uid": "layout-caption:caption"
     },
     {
       "space": "paper",
@@ -2761,7 +2687,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-535",
+      "content": "SHEET A-537",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

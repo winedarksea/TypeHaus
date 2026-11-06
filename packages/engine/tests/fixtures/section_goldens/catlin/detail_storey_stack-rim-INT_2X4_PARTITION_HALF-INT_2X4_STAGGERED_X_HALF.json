@@ -2010,43 +2010,6 @@
     },
     {
       "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            214.25000000000003,
-            -14.0
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            217.75000000000006,
-            -14.0
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        214.25000000000003,
-        -14.0
-      ],
-      "p1": [
-        217.75000000000006,
-        -14.0
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "3 1/2\" stud",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "text",
       "anchor": [
         203.90748031496065,
@@ -2059,7 +2022,7 @@
       "style": "ARCH",
       "layer": "A-ANNO-DIMS",
       "align": "left",
-      "uid": null
+      "uid": "layout-caption:0"
     },
     {
       "space": "paper",
@@ -2100,7 +2063,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-566",
+      "content": "SHEET A-568",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

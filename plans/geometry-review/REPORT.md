@@ -132,29 +132,90 @@ entry (`C2 E1` = C2.md, escalation E1). `carried` names the round-1 item.
 
 ### Construction set (misprints and missing content)
 
-12. **Label overprints and K-bubbles with no target** (C5 #1) · carried (items 2/4 residue).
-    About 30 detail sheets and the plan room labels are affected. Detail chrome, ladder rows,
-    bubbles and captions are never dodged against each other.
-    → One `annotation_layout` obstacle set. M.
-13. **Missing structural schedule rows** (C5 #4): D-B-SUNKEN's LVL band header, pier cages
-    and dowels, ridge LSSR2.37Z/LSTA24/stiffeners, the 128 backing bands, and S-601's Material
-    column (red-oak blocking prints as 2x6). M.
-14. **Opening details per kind** (C5 #2, O4-103 rest): the B&B entry door and the garage
-    windows have no derived detail. A-513 is now cut at a window. S–M.
-15. **Plan chains** (C5 #5, D1-104/105/108): interior chains drop the x=18' bearing walls,
-    the N-S chains on S-101.x are untied, and the S-101.1 overall includes the brick veneer.
-    S–M.
-16. **Plumbing and electrical sheet content** (C5 #6): CW/HW labels, a stub-height table, an
-    enlarged furnace-room plan, E-101/E-102 at ≥ 3/16", and ERV OD/port tags. M.
-17. **Rim-band sheets** (C5 #7, F3-004/105/112): `floor_band_at` scans every floor, so the
-    garage and porch print the house TJI band. S–M.
-18. **Drawing gaps in C1 areas** (C1 E8): no stair geometry strings, no guard/handrail
-    detail, A-601 hardware sets and jamb depths, B&B window details, plant-window membrane,
-    and the A-602 product column. M.
-19. **Smaller sheet items** (C5 #8, about 20, all S): cover-index truncation, the A-501 cut on
-    W-B-CW's axis, the RIDGE EL basis, "Eave" titles on partition sheets, S-001.1 engine text,
-    the kitchen casework sheet (I1-106), bath setout (I2-005/006), the MDO screen (E2-103), and
-    E-602.1's Load/Room/Control cells, which still clip.
+Items 12–19 were closed on 2026-11-06 (commits 667dfdbe7, e64444332, 0dfba2680 and the
+goldens commit). Gated `haus print`: 83 → **95** permit sheets. Only the residue is listed.
+
+12. **Overprints** · closed (C5 #1). Detail dims, leaders, caption and K-bubbles go through one
+    obstacle set (`annotation_layout_detail.py`), and captions dodge the linework. Floating
+    CI/stud tags that repeat the ladder are gone, and an unbubbled K-note prints as a bullet.
+    Across the A-5xx sheets, label/label overlaps went 16 → 0 and label/caption 11 → 0. Room
+    labels dodge each other. Residue:
+    - D1-109: MUD CLOSET, MECH/CHASE and BATH1/W4 still overprint at 3/32" (owner: a scale
+      step or abbreviations).
+    - I2-107: on A-401.6 the STUBATH label still crosses the WC.
+    - D2-109 (`section_callouts`) and F1-106 (framing-plan labels) were not touched.
+13. **Structural schedule rows** · closed (C5 #4). S-101.1 adds H4 (D-B-SUNKEN LVL) and
+    sister/strongback rows. S-100 adds cast column/pier reinforcement. S-602.2 adds 76 I-joist
+    bearing stiffeners; LSSR/LSTA24 were already on S-602. S-601 adds a Material column and
+    the backing bands grouped by stock, material and use (128 bands, 426 LF). Residue:
+    - the LSSR2.37Z part name is a `library/hardware/simpson_hangers.py` change;
+    - the backing "use" classes are keyword reads of the purpose text (owner to confirm);
+    - D1-110's note listing what the takeoff leaves out.
+14. **Opening details per kind** · closed (C5 #2; O4-103, O5-103, O3-104). A key that holds
+    windows and doors derives one detail per kind (`resolve/detail_keys.py`). D-M-ENTRY is
+    A-531 (+.1/.2): it sits on the subfloor and has its own notes. The garage window section
+    is A-532. A-533 onward are renumbered +2. Residue: K1/K3 point at a layer's face rather
+    than the part. The A-531 head ladder lists the canopy roof layers above the door.
+15. **Plan chains** · closed (D1-104/105/108). Bearing walls stay on every interior chain.
+    The S-101.x LOCATING chains tie to the overall's faces. Veneer leaves the overall: S-101.1
+    N-S went 36'-9 5/8" → 36'-0". Brick is a STRUCTURE layer, so the "no STRUCTURE layer"
+    rule would not have dropped it. Residue: the west N-S chains have no tier names (needs a
+    rotated-label reserve in the frame fit).
+16. **MEP sheet content** · closed (C5 #6):
+    - labels read system/material/insulation;
+    - new P-401 (enlarged furnace-room plumbing) and P-601 (77 stub heights), both full set;
+    - E-101/E-102 at 3/16";
+    - ERV ports and wrapped-duct OD tagged; ducts print on the storey where they meet the ERV.
+
+    Residue: P-101/P-102 wet-wall labels sit in side columns; E-102 has 10 of ~160 tags
+    touching.
+17. **Rim bands** · closed (F3-105, F3-112). `floor_band_at` counts a floor only where one of
+    its members is cut. The garage and five bay cuts no longer print the house TJI. The porch
+    sheets were right (FS-M TJIs bear there). Residue: the bay-cut rim conditions draw no
+    floor at all (A-570 pairs a basement wall with an attic wall). Move the stations onto a
+    joist line, or drop the conditions.
+18. **C1 E8 drawing gaps** · closed:
+    - A-605: stair and guard schedule, with headroom from the check's probes;
+    - A-606: typical guard and handrail sections;
+    - S-602: guard hardware;
+    - A-601: Function, KD/flat jamb, RO sill above the storey datum, clear footnotes;
+    - A-602: Product, Frame depth and Hinge (`Window.hinge`), plus a separate no-unit RO
+      table; A-603 base by kind;
+    - window/door marks and an RO height key on A-201..A-204;
+    - A-520 draws a door;
+    - the plant details reference their exterior head/sill sheets;
+    - A-515 crest strings and a casing cut on cased doors;
+    - O4-105: a 12 mm Corian Glacier White frame on WIN-S-PLANT1–4 (`WindowStool.return_*`),
+      cut and billed with the countertops. O4-104 (1/4" rounding) was already fixed.
+
+    Residue:
+    - C1 E2: `RAILING-INT-STAIR-GUARD` has no fascia mount spec (6 posts print "NOT
+      MODELLED"), and RL-BW-ENTRY / RL-A-FLIGHT-SKIRT have no type;
+    - the surface-mount screw has no product row;
+    - the plant membrane return is unbilled;
+    - A-527 reads the B&B plant key's notes;
+    - the KD 6 7/8" throat is not in the catalog.
+19. **Smaller sheet items** · closed:
+    - cover index wraps (no truncation, and the ledger permit index adds G-001.1);
+    - G-004/G-005 headers; RO at 1/16";
+    - S-103 notes in a wrapped panel; S-501.1 in 1/16" rounded down;
+    - E-602.1 paged with whole cells (+E-602.2 on ledger);
+    - A-501 cut at y=17'; RIDGE EL at the finished peak with T.O. RAFTER under it;
+    - A-301 FIN. FLR tier; A-502/A-504 strings named; truss label without a depth;
+    - a partition-to-roof transition (no eave caption; K2 scoped);
+    - plain-language S-001.1 fastener basis;
+    - A-607 casework and countertop schedule (full set); bath setout on A-401.x;
+    - A-301.3 typical east wall section; A-503 retitled; A-508 prints the MDO screen notes;
+    - HVAC equipment labelled by type.
+
+    Residue:
+    - A-301/A-204 level labels clip at the notes panel on ledger;
+    - E1-107 ridge-cover/Z-closure callouts;
+    - the MDO layer is not drawn on A-508, and its RO prints 2 3/4";
+    - the portrait title block's county overprints CRS;
+    - D2-112's rotated W1 text;
+    - **the A-5xx block is full at A-599**, so the next derived detail would number A-600
+      (owner call: renumber, or a second detail series).
 
 ### Fit and product data
 

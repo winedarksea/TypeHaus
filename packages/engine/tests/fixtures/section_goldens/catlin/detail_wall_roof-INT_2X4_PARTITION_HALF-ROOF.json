@@ -990,59 +990,6 @@
       "uid": null
     },
     {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            118.25000000000001,
-            292.00000000000006
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            121.75,
-            292.00000000000006
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        118.25000000000001,
-        292.00000000000006
-      ],
-      "p1": [
-        121.75,
-        292.00000000000006
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "3 1/2\" stud",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        105.93897637795277,
-        266.47244094488195
-      ],
-      "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
       "space": "paper",
       "node": "text",
       "anchor": [
@@ -1065,7 +1012,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
+      "content": "TR-CATLIN-PARTITION-ROOF",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,
@@ -1081,7 +1028,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-594",
+      "content": "SHEET A-596",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -1711,10 +1658,7 @@
     "• Bay: 5\" ccSPF on deck, R-30C batt. Foam is the air and vapour barrier.",
     "• Deck: 19/32\" CDX, 40/20, oversailing the rafter ends to the girt face.",
     "• Butyl membrane 240 F, full field + eave strip-in. 24 ga Image II, nail flange.",
-    "• Partition stops 3/4\" under rafters; SDPW19600 screw per crossing.",
-    "",
-    "KEYED NOTES:",
-    "K2  Foam first lift 1-1/2\" min; lap ridge beam and hanger flanges in one pass."
+    "• Partition stops 3/4\" under rafters; SDPW19600 screw per crossing."
   ],
   "frame": {
     "paper": [

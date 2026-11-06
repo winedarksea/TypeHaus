@@ -2937,7 +2937,7 @@
         "kind": "point",
         "xy": [
           6.5200000000000005,
-          218.84999999999977
+          220.0964566929134
         ],
         "name": ""
       },
@@ -2947,7 +2947,7 @@
       ],
       "to": [
         6.5200000000000005,
-        218.84999999999977
+        220.0964566929134
       ],
       "text": "humid-membrane 0.04\"",
       "height": 1.6,
@@ -2962,7 +2962,7 @@
         "kind": "point",
         "xy": [
           6.915,
-          216.18611111111085
+          220.0964566929134
         ],
         "name": ""
       },
@@ -2972,7 +2972,7 @@
       ],
       "to": [
         6.915,
-        216.18611111111085
+        220.0964566929134
       ],
       "text": "liner-furring 3/4\"",
       "height": 1.6,
@@ -2987,7 +2987,7 @@
         "kind": "point",
         "xy": [
           7.54,
-          213.52222222222193
+          220.0964566929134
         ],
         "name": ""
       },
@@ -2997,7 +2997,7 @@
       ],
       "to": [
         7.54,
-        213.52222222222193
+        220.0964566929134
       ],
       "text": "pvc-panel 1/2\"",
       "height": 1.6,
@@ -3012,7 +3012,7 @@
         "kind": "point",
         "xy": [
           3.25,
-          240.16111111111113
+          241.125
         ],
         "name": ""
       },
@@ -3022,7 +3022,7 @@
       ],
       "to": [
         3.25,
-        240.16111111111113
+        241.125
       ],
       "text": "plate 5 1/2\"",
       "height": 1.6,
@@ -3182,84 +3182,10 @@
     },
     {
       "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            -4.000000000000001,
-            234.75
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            0.0,
-            234.75
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        -4.000000000000001,
-        234.75
-      ],
-      "p1": [
-        0.0,
-        234.75
-      ],
-      "offset": 4.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "4\" CI",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            0.4999999999999996,
-            226.75
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            5.999999999999999,
-            226.75
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        0.4999999999999996,
-        226.75
-      ],
-      "p1": [
-        5.999999999999999,
-        226.75
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "5 1/2\" stud",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "text",
       "anchor": [
         -17.09251968503937,
-        209.0964566929134
+        206.42979002624674
       ],
       "content": "FLOOR BAND 1'-0 5/8\": 11 7/8\" JOIST + 3/4\" SUBFLOOR",
       "height": 3.0,
@@ -3268,7 +3194,7 @@
       "style": "ARCH",
       "layer": "A-ANNO-DIMS",
       "align": "left",
-      "uid": null
+      "uid": "layout-caption:0"
     },
     {
       "space": "model",
@@ -3325,7 +3251,7 @@
       "node": "text",
       "anchor": [
         -17.09251968503937,
-        215.0964566929134
+        209.76312335958005
       ],
       "content": "TR-CATLIN-PLANT-RIM  ·  rim-band-air-seal",
       "height": 3.0,
@@ -3334,7 +3260,7 @@
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
       "align": "left",
-      "uid": null
+      "uid": "layout-caption:caption"
     },
     {
       "space": "model",
@@ -3458,68 +3384,68 @@
       "node": "polyline",
       "points": [
         [
-          19.48033333333333,
-          223.84258267716538
+          17.517,
+          220.52656618637394
         ],
         [
-          19.181433630994317,
-          225.34525295491898
+          17.218100297660985,
+          222.02923646412754
         ],
         [
-          18.330239294125843,
-          226.61915530462457
+          16.36690596079251,
+          223.30313881383313
         ],
         [
-          17.056336944420252,
-          227.47034964149304
+          15.09300361108692,
+          224.1543331507016
         ],
         [
-          15.553666666666665,
-          227.76924934383206
+          13.590333333333334,
+          224.45323285304062
         ],
         [
-          14.05099638891308,
-          227.47034964149304
+          12.087663055579748,
+          224.1543331507016
         ],
         [
-          12.777094039207489,
-          226.61915530462457
+          10.813760705874158,
+          223.30313881383313
         ],
         [
-          11.925899702339013,
-          225.34525295491898
+          9.962566369005682,
+          222.02923646412754
         ],
         [
-          11.626999999999999,
-          223.84258267716538
+          9.663666666666668,
+          220.52656618637394
         ],
         [
-          11.925899702339013,
-          222.3399123994118
+          9.962566369005682,
+          219.02389590862035
         ],
         [
-          12.777094039207487,
-          221.0660100497062
+          10.813760705874156,
+          217.74999355891475
         ],
         [
-          14.050996388913077,
-          220.21481571283772
+          12.087663055579746,
+          216.89879922204628
         ],
         [
-          15.553666666666665,
-          219.9159160104987
+          13.590333333333334,
+          216.59989951970726
         ],
         [
-          17.056336944420252,
-          220.21481571283772
+          15.093003611086921,
+          216.89879922204628
         ],
         [
-          18.33023929412584,
-          221.0660100497062
+          16.366905960792508,
+          217.74999355891475
         ],
         [
-          19.181433630994317,
-          222.3399123994118
+          17.218100297660985,
+          219.02389590862035
         ]
       ],
       "layer": "A-ANNO-KEYN",
@@ -3533,8 +3459,8 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        15.553666666666665,
-        223.84258267716538
+        13.590333333333334,
+        220.52656618637394
       ],
       "content": "K4",
       "height": 3.0,
@@ -3557,8 +3483,8 @@
         "name": ""
       },
       "at": [
-        15.553666666666665,
-        223.84258267716538
+        13.590333333333334,
+        220.52656618637394
       ],
       "to": [
         6.915,
@@ -3609,7 +3535,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-584",
+      "content": "SHEET A-586",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -4378,7 +4304,7 @@
   ],
   "notes": [
     "NOTES:",
-    "• Room design condition: 75 F at 70% RH. Dew point 64.4 F.",
+    "• Room at 75 F / 70% RH; dew point 64.4 F.",
     "• Liner, inside out: 1/2\" PVC panel, 3/4\" furring, membrane. Walls and ceiling.",
     "• The membrane is the air and vapour barrier. Continuous on all six sides.",
     "• Floor: SurePly + seamless sheet; 4\" rubber base, silicone toe. No drain.",
@@ -4386,12 +4312,12 @@
     "• No suspended ceiling. No roofing membrane under the vinyl.",
     "• Ventilation: 25 cfm in, 25 cfm out, both dampered. Extract high, far end.",
     "• Damp location throughout; wet location wherever misted or hosed.",
+    "• Liner trim laps the rubber base, sealed; weep kept open (K4).",
+    "• Rim bay: 3\" ccSPF in both floor bands; lap the membrane onto it.",
     "",
     "KEYED NOTES:",
-    "K1  Liner trim laps the rubber base, sealed; weep kept open (K4).",
     "K2  Membrane continuous wall to ceiling; seal each penetration.",
-    "K4  Keep the 3/4\" furring gap open behind the panel; it is the drying path.",
-    "K8  Rim bay: 3\" ccSPF in both floor bands; lap the membrane onto it."
+    "K4  Keep the 3/4\" furring gap open behind the panel; it is the drying path."
   ],
   "frame": {
     "paper": [

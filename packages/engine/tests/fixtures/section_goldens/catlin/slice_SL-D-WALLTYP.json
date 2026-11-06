@@ -4647,6 +4647,120 @@
       "node": "polyline",
       "points": [
         [
+          -2.3385826771653546,
+          199.133
+        ],
+        [
+          7.79,
+          199.133
+        ],
+        [
+          7.79,
+          199.60500000000002
+        ],
+        [
+          -2.3385826771653546,
+          199.60500000000002
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSX307AAAA-RETURN-0-head",
+      "tag": "WIN-S-PLANT2-return-0-head"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -2.3385826771653546,
+          199.133
+        ],
+        [
+          7.79,
+          199.133
+        ],
+        [
+          7.79,
+          199.60500000000002
+        ],
+        [
+          -2.3385826771653546,
+          199.60500000000002
+        ]
+      ],
+      "pattern": "solid-surface-fabricated",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "solid-surface-fabricated",
+      "fill": "#f4f5f4"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          7.318,
+          199.60500000000002
+        ],
+        [
+          7.79,
+          199.60500000000002
+        ],
+        [
+          7.79,
+          200.0
+        ],
+        [
+          7.318,
+          200.0
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSX307AAAA-RETURN-0-lap-head",
+      "tag": "WIN-S-PLANT2-return-0-lap-head"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          7.318,
+          199.60500000000002
+        ],
+        [
+          7.79,
+          199.60500000000002
+        ],
+        [
+          7.79,
+          200.0
+        ],
+        [
+          7.318,
+          200.0
+        ]
+      ],
+      "pattern": "solid-surface-fabricated",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "solid-surface-fabricated",
+      "fill": "#f4f5f4"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -5.999999999999999,
           228.0
         ],
@@ -12558,6 +12672,62 @@
       "node": "polyline",
       "points": [
         [
+          0.0,
+          199.625
+        ],
+        [
+          7.318,
+          199.625
+        ],
+        [
+          7.318,
+          200.0
+        ],
+        [
+          0.0,
+          200.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW101AAAA",
+      "tag": "buck-fur-head-WIN-S-PLANT2"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.0,
+          199.625
+        ],
+        [
+          7.318,
+          199.625
+        ],
+        [
+          7.318,
+          200.0
+        ],
+        [
+          0.0,
+          200.0
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "struct-1-plywood"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           0.5,
           240.75
         ],
@@ -13655,7 +13825,7 @@
         "kind": "point",
         "xy": [
           -1.06,
-          -109.78750000000002
+          -108.4375
         ],
         "name": ""
       },
@@ -13665,7 +13835,7 @@
       ],
       "to": [
         -1.06,
-        -109.78750000000002
+        -108.4375
       ],
       "text": "xps-a 2\"",
       "height": 1.6,
@@ -13680,7 +13850,7 @@
         "kind": "point",
         "xy": [
           -0.03,
-          -115.26750000000004
+          -108.4375
         ],
         "name": ""
       },
@@ -13690,7 +13860,7 @@
       ],
       "to": [
         -0.03,
-        -115.26750000000004
+        -108.4375
       ],
       "text": "waterproofing 0.06\"",
       "height": 1.6,
@@ -13705,7 +13875,7 @@
         "kind": "point",
         "xy": [
           3.0000000000000004,
-          -118.00750000000005
+          -108.4375
         ],
         "name": ""
       },
@@ -13715,7 +13885,7 @@
       ],
       "to": [
         3.0000000000000004,
-        -118.00750000000005
+        -108.4375
       ],
       "text": "concrete 6\"",
       "height": 1.6,
@@ -13730,7 +13900,7 @@
         "kind": "point",
         "xy": [
           7.000000000000001,
-          -120.74750000000006
+          -108.4375
         ],
         "name": ""
       },
@@ -13740,7 +13910,7 @@
       ],
       "to": [
         7.000000000000001,
-        -120.74750000000006
+        -108.4375
       ],
       "text": "foil-polyiso 2\"",
       "height": 1.6,
@@ -13755,7 +13925,7 @@
         "kind": "point",
         "xy": [
           8.25,
-          -123.48750000000007
+          -108.4375
         ],
         "name": ""
       },
@@ -13765,7 +13935,7 @@
       ],
       "to": [
         8.25,
-        -123.48750000000007
+        -108.4375
       ],
       "text": "liner-furring 1/2\"",
       "height": 1.6,
@@ -13780,7 +13950,7 @@
         "kind": "point",
         "xy": [
           8.875,
-          -126.22750000000008
+          -108.4375
         ],
         "name": ""
       },
@@ -13790,7 +13960,7 @@
       ],
       "to": [
         8.875,
-        -126.22750000000008
+        -108.4375
       ],
       "text": "shiplap-liner 3/4\"",
       "height": 1.6,

@@ -1783,80 +1783,6 @@
     },
     {
       "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            519.25,
-            1.9999999999999947
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            524.7500000000001,
-            1.9999999999999947
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        519.25,
-        1.9999999999999947
-      ],
-      "p1": [
-        524.7500000000001,
-        1.9999999999999947
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "5 1/2\" stud",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            518.625,
-            -21.842519685039377
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            521.125,
-            -21.842519685039377
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        518.625,
-        -21.842519685039377
-      ],
-      "p1": [
-        521.125,
-        -21.842519685039377
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "2 1/2\" EPS",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "text",
       "anchor": [
         508.4824803149607,
@@ -1869,7 +1795,7 @@
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
       "align": "left",
-      "uid": null
+      "uid": "layout-caption:caption"
     },
     {
       "space": "paper",
@@ -1910,7 +1836,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-539",
+      "content": "SHEET A-541",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

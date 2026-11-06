@@ -752,59 +752,6 @@
       "uid": null
     },
     {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            166.18749999999997,
-            107.50000000000001
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            169.6875,
-            107.50000000000001
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        166.18749999999997,
-        107.50000000000001
-      ],
-      "p1": [
-        169.6875,
-        107.50000000000001
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "3 1/2\" stud",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        155.84498031496062,
-        89.8464566929134
-      ],
-      "content": "FLOOR BAND 1'-0 5/8\": 11 7/8\" JOIST + 3/4\" SUBFLOOR",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-DIMS",
-      "align": "left",
-      "uid": null
-    },
-    {
       "space": "paper",
       "node": "text",
       "anchor": [
@@ -843,7 +790,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-571",
+      "content": "SHEET A-573",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

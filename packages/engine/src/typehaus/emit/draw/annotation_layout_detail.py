@@ -219,6 +219,12 @@ def layout_detail(scene: Scene, frame: Frame) -> Scene:
         fixed_boxes.append(placed.box)
         fixed_lines.append((placed.candidate.at, node.to))
 
+    # Heavy linework: a soft obstacle, so a caption or bubble prefers air to the drawing.
+    ink = [SegmentObstacle(a, b, hard=False) for n in model
+           if isinstance(n, Polyline) and n.lineweight >= 0.35 and id(n) not in bubble_ink
+           for a, b in zip(n.points, (*n.points[1:], n.points[0]) if n.closed
+                           else n.points[1:], strict=False)]
+
     # 3. The caption and notes under the drawing step down clear, top one first.
     requests = []
     for index, node in enumerate(sorted(captions, key=lambda n: -n.anchor[1])):
@@ -229,7 +235,7 @@ def layout_detail(scene: Scene, frame: Frame) -> Scene:
         requests.append(AnnotationRequest(node.uid, node.content, node.anchor, tuple(cands),
                                           height_pt=node.height_pt or 7.0,
                                           priority=10 - index))
-    for placed in run(requests).values() if requests else ():
+    for placed in run(requests, soft=ink).values() if requests else ():
         node = next(n for n in captions if n.uid == placed.request.key)
         replace[id(node)] = [node.model_copy(update={"anchor": placed.candidate.at})]
         fixed_boxes.append(placed.box)
@@ -238,10 +244,6 @@ def layout_detail(scene: Scene, frame: Frame) -> Scene:
     #    can be, never with a leader across a label or an earlier bubble.
     radius = bubble_radius_in(scale)
     side_pt = 2.0 * radius / per_pt + 2.0  # the outline and some air
-    ink = [SegmentObstacle(a, b, hard=False) for n in model
-           if isinstance(n, Polyline) and n.lineweight >= 0.35 and id(n) not in bubble_ink
-           for a, b in zip(n.points, (*n.points[1:], n.points[0]) if n.closed
-                           else n.points[1:], strict=False)]
     for key, (text, leader, outline) in sorted(bubbles.items()):
         target = leader.to
         cands = [Candidate(text.anchor, "center")]

@@ -2927,7 +2927,7 @@
         "kind": "point",
         "xy": [
           428.75,
-          240.16111111111113
+          241.125
         ],
         "name": ""
       },
@@ -2937,7 +2937,7 @@
       ],
       "to": [
         428.75,
-        240.16111111111113
+        241.125
       ],
       "text": "plate 5 1/2\"",
       "height": 1.6,
@@ -3502,80 +3502,6 @@
     },
     {
       "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            432.00000000000006,
-            224.75
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            436.00000000000006,
-            224.75
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        432.00000000000006,
-        224.75
-      ],
-      "p1": [
-        436.00000000000006,
-        224.75
-      ],
-      "offset": 4.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "4\" CI",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            426.00000000000006,
-            232.75
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            431.50000000000006,
-            232.75
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        426.00000000000006,
-        232.75
-      ],
-      "p1": [
-        431.50000000000006,
-        232.75
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "5 1/2\" stud",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -3654,7 +3580,7 @@
       "node": "text",
       "anchor": [
         413.68897637795277,
-        207.2224409448819
+        199.2224409448819
       ],
       "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
       "height": 3.0,
@@ -3663,7 +3589,7 @@
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
       "align": "left",
-      "uid": null
+      "uid": "layout-caption:caption"
     },
     {
       "space": "paper",
@@ -3704,7 +3630,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-592",
+      "content": "SHEET A-594",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -4624,17 +4550,14 @@
     "• Deck: 19/32\" CDX, 40/20, oversailing the rafter ends to the girt face.",
     "• Butyl membrane 240 F, full field + eave strip-in. 24 ga Image II, nail flange.",
     "• Wall: 2x6, 1/2\" ply, 4\" ccSPF, 1/2\" gap, KDAT girts, 1-1/4\" PBR. No WRB.",
-    "",
-    "KEYED NOTES:",
-    "K1  Low-end birdsmouth: heel at plate outer face, 2-1/2\" seat, 1-1/4\" cut. 7/8\" beveled stiffeners both sides. H2.5A each rafter.",
-    "K2  Foam first lift 1-1/2\" min; lap ridge beam and hanger flanges in one pass.",
-    "K3  2x6 eave block on edge on the plate, every bay. ccSPF over it.",
-    "K4  Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.",
-    "K5  Membrane to deck edge; gutter flange, then eave leg, on it. Bearing 2.04\".",
-    "K6  Strip-in membrane over both flanges, 4\" past the hem. Pan rides over it.",
-    "K7  PBR 5x4 gutter, level, back behind eave face, flange under eave leg.",
-    "K8  Eave face over the gutter back, hemmed into the trough; pan hemmed round the lip.",
-    "K9  2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Hanger below the eave face; bracket pending."
+    "• Low-end birdsmouth: heel at plate outer face, 2-1/2\" seat, 1-1/4\" cut. 7/8\" beveled stiffeners both sides. H2.5A each rafter.",
+    "• 2x6 eave block on edge on the plate, every bay. ccSPF over it.",
+    "• Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.",
+    "• Membrane to deck edge; gutter flange, then eave leg, on it. Bearing 2.04\".",
+    "• Strip-in membrane over both flanges, 4\" past the hem. Pan rides over it.",
+    "• PBR 5x4 gutter, level, back behind eave face, flange under eave leg.",
+    "• Eave face over the gutter back, hemmed into the trough; pan hemmed round the lip.",
+    "• 2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Hanger below the eave face; bracket pending."
   ],
   "frame": {
     "paper": [
