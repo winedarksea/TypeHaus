@@ -119,6 +119,19 @@ def test_derive_scaffolds_bound_conditions_only(catlin_model):
     assert keys == sorted(set(keys))
 
 
+def test_an_opening_detail_draws_a_unit_before_a_bare_passage(catlin_model):
+    """O1-104: A-520 drew the leafless D-B-GYM and printed 6'-8" for 6'-9 3/4" doors."""
+    from typehaus.emit.draw.detail_components.geometry import condition_opening
+
+    detail = next(d for d in derive_detail_slices(catlin_model)
+                  if d.key == "opening_perimeter:INT_2X6_BRG_HALF")
+    assert condition_opening(catlin_model, detail.condition).kind == "door"
+    scene, _ = build_detail(catlin_model, detail)
+    notes = [n.content for n in scene.nodes if isinstance(n, Text)]
+    assert any(t.startswith("R.O. HEIGHTS IN THIS ASSEMBLY 6'-9 13/16\" – 6'-10 1/4\"")
+               for t in notes), notes
+
+
 def test_eave_has_per_layer_roof_bands_and_no_wedge(catlin_model):
     scene, findings = build_detail(catlin_model, _eave(catlin_model))
     assert not findings

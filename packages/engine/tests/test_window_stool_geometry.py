@@ -133,7 +133,7 @@ def test_stools_export_as_ifc_moldings(catlin_model_ro, catlin_ifc_path):
 def test_a_stone_stool_notch_seats_on_the_bullnose_return(catlin_model_ro):
     # WIN-M-KITCH's quartz notches wrap the 1/2" return at the bead's 3/4" (not quartz's
     # 3/8"), and the jamb board runs past the stool to its underside. The plant room's
-    # Corian stools have no gypsum return: RO notch, the material's 1/2".
+    # Corian stools wrap their own 12 mm frame on the buck, glued square: the material's 1/2".
     inch = 0.0254
     stools = {stool.tag: stool for stool in catlin_model_ro.window_stools}
     kitchen = stools["STOOL-WIN-M-KITCH"]
@@ -141,7 +141,8 @@ def test_a_stone_stool_notch_seats_on_the_bullnose_return(catlin_model_ro):
     assert kitchen.notch_inset_m == pytest.approx((0.5 + 0.375 + 0.020) * inch)
     assert kitchen.corner_radii_m[3] == kitchen.corner_radii_m[6] == pytest.approx(0.75 * inch)
     plant = stools["STOOL-WIN-S-PLANT1"]
-    assert plant.notch_inset_m == 0.0 and plant.corner_radii_m[3] == pytest.approx(0.5 * inch)
+    assert plant.notch_inset_m == pytest.approx((0.472 + 0.375 + 0.020) * inch)
+    assert plant.corner_radii_m[3] == pytest.approx(0.5 * inch)
     walls = {wall.tag: wall for wall in catlin_model_ro.walls}
     opening = next(o for o in catlin_model_ro.openings if o.tag == "WIN-M-KITCH")
     prism = window_stool_prism(walls[kitchen.wall_tag], opening, kitchen)

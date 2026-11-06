@@ -156,8 +156,21 @@ def _emit_registers(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                      layer=layer))
 
 
+def equipment_label(element, types: dict) -> str:
+    """By type, not by enum (M2-103): the type name's first clause, ``HOT-WATER HEADER``.
+
+    A plenum keeps its tag (M1-009: six "fabricated supply plenum"s say nothing either).
+    """
+    if element.kind.value == "duct_manifold":
+        return element.tag
+    product = types.get(element.type_ref or "")
+    name = getattr(product, "name", "") or ""
+    return (name.split(",")[0].strip() or element.kind.value.replace("_", " ")).upper()
+
+
 def _emit_equipment(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
     canvas = {obj.uid: obj for obj in model.canvas_objects}
+    types = {entry.tag: entry for entry in model.plan.library.equipment_types}
     for element in model.plan.storey_elements(storey):
         if element.element_kind != "Equipment":
             continue
@@ -172,10 +185,7 @@ def _emit_equipment(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                        closed=True, lineweight=PROFILE, uid=element.uid, tag=element.tag))
         # Placed at frame time with the duct labels: at the mech room the plenums, ERV
         # and water heater stand inches apart (C7-E8, M1-009).
-        # A plenum prints its tag: "DUCT MANIFOLD" six times says nothing (M1-009).
-        text = (element.tag if element.kind.value == "duct_manifold"
-                else element.kind.value.replace("_", " ").upper())
-        add_point_label(b, key=f"equipment-{element.uid}", text=text,
+        add_point_label(b, key=f"equipment-{element.uid}", text=equipment_label(element, types),
                         target=_in((x, y)), layer="M-HVAC-EQPM", height_pt=TEXT_PT,
                         priority=60, leader=True, avoid_obstacles=False)
 

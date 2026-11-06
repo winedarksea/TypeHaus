@@ -149,6 +149,12 @@ def _resolve_stools(plan: PlanModel, model: ResolvedModel,
                 "integrity.window_stool_ref",
                 f"stool {el.tag} names no material {el.material_ref!r}", el.tag))
             continue
+        if el.return_material_ref is not None and el.return_material_ref not in materials:
+            findings.append(element_error(
+                "integrity.window_stool_ref",
+                f"stool {el.tag} names no return material {el.return_material_ref!r}",
+                el.tag))
+            continue
         authored[el.window_ref] = el
 
     in_scope = _stool_scope(model, standard)

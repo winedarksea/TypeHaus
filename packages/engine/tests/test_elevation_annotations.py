@@ -265,4 +265,21 @@ def test_the_four_elevations_share_one_scale(catlin_model):
         assert min(spans) * scene.frame.scale / 12.0 >= MIN_RUNG_PAPER_IN
 
 
+def test_opening_tags_are_the_plan_marks_and_clear_each_other(catlin_model):
+    """O4-010: an elevation bubble reads the A-601/A-602 row its plan twin does, and the
+    heights a mark does not key are in the key under the drawing."""
+    from typehaus.emit.draw.plan_marks import MARK_LAYER, opening_type_marks
+
+    scene = build_elevation(catlin_model, "south")
+    tags = [n for n in scene.nodes if isinstance(n, Text) and n.layer == MARK_LAYER]
+    marks = opening_type_marks(catlin_model)
+    assert {marks["WIN-M-BED-S1"], marks["D-M-PORCH"]} <= {t.content for t in tags}
+    centres = [t.anchor for t in tags]
+    gaps = [((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5
+            for i, a in enumerate(centres) for b in centres[i + 1:]]
+    assert min(gaps) >= 2 * ANNO_HEIGHT_IN  # two bubbles never share a spot
+    texts = {n.content for n in scene.nodes if isinstance(n, Text)}
+    assert {"OPENING R.O. HEIGHTS ABOVE STOREY DATUM", "RO SILL", "RO HEAD"} <= texts
+
+
 pytestmark = pytest.mark.slow

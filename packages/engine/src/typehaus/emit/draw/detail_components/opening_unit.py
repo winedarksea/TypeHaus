@@ -30,15 +30,19 @@ def unit_profiles(model, opening, direction: str, station: float) -> list[tuple]
     if model.geometry is None:
         return []
     plane = CutPlane(axis=direction, station_m=station)
-    owners = [opening.uid, *(s.uid for s in model.window_stools if s.window_ref == opening.tag)]
+    # The door's own casing is cut at its head too (O2-109): jamb, reveal and casing read
+    # together, as the TrimStandard derives them.
+    owners = [(opening.uid, None),
+              *((s.uid, None) for s in model.window_stools if s.window_ref == opening.tag),
+              *((c.uid, "casing") for c in model.door_casings if c.opening_uid == opening.uid)]
     out = []
-    for uid in owners:
+    for uid, label in owners:
         element = model.geometry.by_uid(uid)
         for part in element.parts if element is not None else ():
             if part.key.startswith("hardware"):
                 continue
             for profile in slice_part(part, plane):
-                out.append((part.key, part.material_key,
+                out.append((label or part.key, part.material_key,
                             [(u / M_PER_IN, z / M_PER_IN) for u, z in profile.outline]))
     return out
 
@@ -78,17 +82,83 @@ def _bounds(profiles, keys) -> tuple[float, float, float, float] | None:
             max(u for u, _z in pts), max(z for _u, z in pts))
 
 
-def _ro_range_note(model, opening, host, at) -> list[IRNode]:
-    """O1-006: one detail stands for every opening in this assembly; say when they differ."""
-    heights = sorted({round(o.height_m / M_PER_IN * 8) / 8 for o in model.openings
-                      if o.kind == opening.kind and (w := model.wall(o.host_wall)) is not None
-                      and w.assembly == host.assembly})
+def _key_peers(model, derived, opening) -> list:
+    """The openings this detail stands for: those keyed on it, of the drawn one's class (a
+    passage riding a door key is on A-602's rough-opening table, not A-601)."""
+    from typehaus.resolve.detail_keys import detail_keys
+
+    tags = {tag for cond, key, _kind in detail_keys(model)
+            if key == derived.key and cond.kind.value == "opening_perimeter"
+            for tag in cond.element_tags}
+    return [o for o in model.openings if o.tag in tags and o.is_door == opening.is_door
+            and (o.kind == "window") == (opening.kind == "window")]
+
+
+def _ro_range_note(model, derived, opening) -> list[str]:
+    """O1-006: one detail stands for every opening keyed on it; say when they differ."""
+    heights = sorted({round(o.height_m / M_PER_IN * 16) / 16
+                      for o in _key_peers(model, derived, opening)})
     if len(heights) < 2:
         return []
     schedule = "A-601" if opening.is_door else "A-602"
-    return [Text(anchor=at, content=f"R.O. HEIGHTS IN THIS ASSEMBLY {dim_text(heights[0])}"
-                 f" – {dim_text(heights[-1])}: SEE {schedule}", height_pt=6.5,
-                 layer="A-ANNO-DIMS")]
+    return [f"R.O. HEIGHTS IN THIS ASSEMBLY {dim_text(heights[0])}"
+            f" – {dim_text(heights[-1])}: SEE {schedule}"]
+
+
+def _casing_note(model, opening) -> list[str]:
+    """The cut casing's stock and reveal, off its derived record and the TrimStandard."""
+    casing = next((c for c in model.door_casings if c.opening_uid == opening.uid), None)
+    standard = next(iter(model.plan.elements_of_kind("TrimStandard")), None)
+    if casing is None or standard is None:
+        return []
+    return [f"CASING {dim_text(casing.thickness_m / M_PER_IN)} x "
+            f"{dim_text(casing.casing_width_m / M_PER_IN)} {casing.material_ref}, "
+            f"{dim_text(standard.reveal.meters / M_PER_IN)} REVEAL TO JAMB"]
+
+
+def _outboard_leg(model, assembly: str) -> tuple:
+    """(material, thickness) of an assembly's layers from its outermost stud outward."""
+    found = model.plan.library.assembly(assembly)
+    layers = list(getattr(found, "layers", ()))
+    cores = [i for i, layer in enumerate(layers) if layer.function.value == "structure"]
+    if not cores:
+        return ()
+    return tuple((layer.material_ref, round(layer.thickness.meters, 5))
+                 for layer in layers[cores[-1]:])
+
+
+def _exterior_reference(model, derived, host, opening) -> list[str]:
+    """O5-104: a liner recipe (the plant room's) draws only the inside; its outboard leg is
+    a standard wall's, so name that wall's enlarged head and sill, numbered from the set."""
+    from typehaus.emit.draw.callouts import detail_sheet_numbers
+    from typehaus.emit.draw.detail_components.geometry import condition_walls
+    from typehaus.emit.draw.detail_enlarged import enlarged_details
+    from typehaus.emit.draw.details import derive_detail_slices
+
+    leg = _outboard_leg(model, host.assembly)
+    if not leg or enlarged_details_apply(derived):
+        return []
+    for other in derive_detail_slices(model):
+        drawn = condition_opening(model, other.condition)
+        walls = condition_walls(model, other.condition)
+        if (drawn is None or not walls or drawn.kind != opening.kind
+                or not enlarged_details_apply(other)
+                or _outboard_leg(model, walls[0].assembly) != leg):
+            continue
+        sheet = detail_sheet_numbers(model).get(other.key)
+        parts = [f"{sheet}.{i} ({child.part.upper()})"
+                 for i, child in enumerate(enlarged_details(model, other), start=1)]
+        if sheet is not None and parts:
+            return [f"EXTERIOR HEAD AND SILL AS {', '.join(parts)}"]
+    return []
+
+
+def _under_notes(lines: list[str], crop) -> list[IRNode]:
+    """Notes under the drawing, beside its caption, one per line."""
+    (cu0, cz0), (cu1, cz1) = crop
+    u, z = min(cu0, cu1) / M_PER_IN, min(cz0, cz1) / M_PER_IN - 10.0
+    return [Text(anchor=(u, z - 4.0 * index), content=line, height_pt=6.5,
+                 layer="A-ANNO-DIMS") for index, line in enumerate(lines)]
 
 
 def opening_strings(model, derived, host, crop, direction: str, station: float,
@@ -110,20 +180,23 @@ def opening_strings(model, derived, host, crop, direction: str, station: float,
     frame = _bounds(profiles, {"frame"})
     sign = 1.0 if high is not False else -1.0  # outboard
     nodes: list[IRNode] = []
+    notes: list[str] = []
     if part is None:
         nodes.append(dim((out_u, sill), (out_u, head), 0.0,
                          f"{dim_text(head - sill)} R.O."))
-        (cu0, cz0), (cu1, cz1) = crop
-        nodes += _ro_range_note(model, opening, host,
-                                (min(cu0, cu1) / M_PER_IN, min(cz0, cz1) / M_PER_IN - 10.0))
+        notes += [*_ro_range_note(model, derived, opening), *_casing_note(model, opening),
+                  *_exterior_reference(model, derived, host, opening)]
     if frame is not None and (opening.kind == "window" or part == "head"):
         nodes += _window_strings(opening, host, frame, profiles, part, out_u, sign, sill,
                                  head, direction, station)
     # A door with an enlarged sill takes its threshold there, where 1" is legible.
     enlarged = part is None and enlarged_details_apply(derived)
     if opening.is_door and (part == "sill" or (part is None and not enlarged)):
-        nodes += _threshold_strings(opening, profiles, in_u, out_u)
-    return nodes
+        strings, said = _threshold_strings(opening, profiles, in_u, out_u,
+                                           compact=part is None)
+        nodes += strings
+        notes += said
+    return nodes + _under_notes(notes, crop)
 
 
 #: How far a short string's label slides off it, model inches (3" = 1'-0"): into the open
@@ -186,20 +259,34 @@ def enlarged_details_apply(derived) -> bool:
     return getattr(derived.transition, "overlay", None) in ENLARGED_OVERLAYS
 
 
-def _threshold_strings(opening, profiles, in_u: float, out_u: float) -> list[IRNode]:
-    """O3-010: threshold top above the landing and above the finished floor inside."""
+def _threshold_strings(opening, profiles, in_u: float, out_u: float,
+                       compact: bool = False) -> tuple[list[IRNode], list[str]]:
+    """O3-010: threshold top above the landing and above the finished floor inside, and
+    (``compact``) the note naming them."""
     tops = [z for key, _m, points in profiles if "threshold" in key for _u, z in points]
     doorway = opening.doorway
+    placement = getattr(doorway, "exterior_placement", None)
+    crest = getattr(placement, "threshold_crest_z_m", None)
+    if not tops and crest is not None:  # a catalog sill (Endura): its nominal crest
+        tops = [crest / M_PER_IN]
     if not tops or doorway is None or not doorway.adjacent_floors:
-        return []
+        return [], []
     top = max(tops)
     floors = sorted(doorway.adjacent_floors,
                     key=lambda f: f.deck_top_m + f.finish_in * M_PER_IN)
     nodes: list[IRNode] = []
-    for floor, u in ((floors[0], out_u), (floors[-1], in_u)):
+    said: list[str] = []
+    # Whole-opening: a column past the R.O. string, which it would overlap at the sill.
+    step = (7.0 if out_u < in_u else -7.0) if compact else 0.0
+    for floor, u in ((floors[0], out_u - step), (floors[-1], in_u)):
         finished = floor.deck_top_m / M_PER_IN + floor.finish_in
         if top - finished > 1.0 / 16.0:
             where = "landing" if floor is floors[0] else "fin. floor"
-            nodes.append(dim((u, finished), (u, top), 0.0,
-                             f"{dim_text(top - finished)} thr. above {where}", along=5.0))
-    return nodes
+            text = dim_text(top - finished)
+            said.append(f"{text} ABOVE {where.upper()}")
+            # At the whole-opening scale a 7" string holds only its number; the note says
+            # what it measures (O3-108). An enlarged sill has room for the words.
+            nodes.append(dim((u, finished), (u, top), 0.0, text, along=3.0) if compact else
+                         dim((u, finished), (u, top), 0.0, f"{text} thr. above {where}",
+                             along=5.0))
+    return nodes, (["THRESHOLD CREST " + ", ".join(said)] if compact and said else [])

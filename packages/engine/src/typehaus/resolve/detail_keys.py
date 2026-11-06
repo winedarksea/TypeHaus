@@ -62,6 +62,9 @@ def detail_keys(model: ResolvedModel) -> list[tuple[BoundaryCondition, str, str 
             return cond, opening_kind_key(cond.key, kind), kind
         return cond, cond.key, kind
 
-    order = sorted(range(len(model.conditions)), key=lambda i: not (
-        classes.get(i) == "window" and typical.get(model.conditions[i].key) == "window"))
+    # The first condition of a key is the opening its detail draws: a typical window first,
+    # then any unit before a bare rough opening (A-520 drew a leafless passage, O1-104).
+    order = sorted(range(len(model.conditions)), key=lambda i: (not (
+        classes.get(i) == "window" and typical.get(model.conditions[i].key) == "window"),
+        model.conditions[i].kind.value == "opening_perimeter" and classes.get(i) is None))
     return [key_of(i, model.conditions[i]) for i in order]

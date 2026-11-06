@@ -182,6 +182,9 @@ class Window(Element):
     header_spec: str | None = None
     # The published header-table row that sizes ``header_spec``; see ``Door.published_span``.
     published_span: PublishedSpan | None = None
+    # The jamb an operable sash hinges on, by its host wall's node. Ordering data only
+    # (A-602 Hinge); None is not stated and prints "—", never a default handing.
+    hinge: Literal["start", "end"] | None = None
 
 
 @register_element

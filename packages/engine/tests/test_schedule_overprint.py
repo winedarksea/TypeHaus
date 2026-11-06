@@ -74,6 +74,13 @@ def test_schedules_print_without_overprint(catlin_model_ro):
         for page in range(page_count(hardware_tables(catlin_model_ro), LEDGER)):
             _write_hardware_schedule(capture, catlin_model_ro, continuation_number("S-602", page),
                                      "Connection hardware schedule", page=page)
+        from typehaus.emit.draw.schedules.stairs import (
+            stair_schedule_tables,
+            write_stair_schedule,
+        )
+        for page in range(page_count(stair_schedule_tables(catlin_model_ro), LEDGER)):
+            write_stair_schedule(capture, catlin_model_ro, continuation_number("A-605", page),
+                                 "Stair and guard schedule", page=page)
         for page in range(structural_notes_pages(catlin_model_ro, LEDGER, profile=profile)):
             _write_structural_notes(capture, catlin_model_ro, continuation_number("S-001", page),
                                     "General structural notes", profile=profile, page=page)

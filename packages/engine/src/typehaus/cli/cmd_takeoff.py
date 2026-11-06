@@ -318,6 +318,8 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
         for item in payload["countertops"]:
             stools = item.get("stools") or []
             extra = f" + stools {', '.join(stools)}" if stools else ""
+            if item.get("returns"):
+                extra += f" + returns {', '.join(item['returns'])}"
             console.print(f"  {item['net_area_sqft']:>7} sf   {item['material']:<16} "
                           f"{item['length_ft']} LF · {', '.join(item['tops'])}{extra}")
     if payload["interior_trim"]:

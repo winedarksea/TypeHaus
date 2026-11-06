@@ -2,7 +2,8 @@
 
 Scope is ``takeoff/countertops.py``'s: every ``Countertop`` plus the stools cut from a
 countertop material — less a custom-milled material, which goes to the mill
-(``haus millwork``), not a slab yard. Each piece is laid out in its own inches: the longest
+(``haus millwork``), not a slab yard — and the pieces of a stool's fabricated picture frame
+(``countertop_returns``). Each piece is laid out in its own inches: the longest
 finished edge along +x at the bottom, origin at the bounding-box minimum, counter-clockwise.
 Gross area stays square-cornered (a yard quotes the rectangle).
 """
@@ -15,11 +16,17 @@ from dataclasses import dataclass, field
 from shapely.geometry import Point, Polygon
 from shapely.ops import nearest_points
 
-from typehaus.resolve.countertop_edges import EDGE_FINISHED, STOOL_EDGE_KINDS
+from typehaus.resolve.countertop_edges import (
+    EDGE_FINISHED,
+    EDGE_SEAM,
+    EDGE_WALL,
+    STOOL_EDGE_KINDS,
+)
 from typehaus.resolve.fillet import corner_fillets, filleted_ring, signed_area
 from typehaus.resolve.geometry_millwork import window_stool_ring
 from typehaus.resolve.model import ResolvedCountertop, ResolvedModel, ResolvedWindowStool
-from typehaus.takeoff.countertops import countertop_stools
+from typehaus.resolve.model_window_returns import ResolvedWindowReturn
+from typehaus.takeoff.countertops import countertop_returns, countertop_stools
 
 _M_TO_IN = 39.37007874
 _SQIN_TO_SQFT = 1.0 / 144.0
@@ -29,6 +36,9 @@ PROFILE_WORDS = {
     "built-up eased": "built-up (laminated) front edge, eased",
 }
 TEMPLATE_HOLD = "Field template after cabinets are set; dimensions here are design intent."
+RETURN_HOLD = ("Field-measure the reveal after the membrane is returned onto the buck; glue "
+               "the jambs to the stool and the head over them, back edge to the delivered "
+               "window's interior frame face.")
 WEB_HOLD = "Verify the fabricator's minimum web; the narrowest webs are dimensioned, not graded."
 
 PointIn = tuple[float, float]
@@ -76,7 +86,7 @@ class PieceWeb:
 class FabricatedPiece:
     tag: str
     uid: str
-    kind: str  # "top" | "stool"
+    kind: str  # "top" | "stool" | "return"
     material_ref: str
     material_name: str
     product: str
@@ -125,7 +135,7 @@ class FabricatedPiece:
 
 def fabricated_pieces(model: ResolvedModel, material: str | None = None
                       ) -> list[FabricatedPiece]:
-    """Every fabricated piece, tops then stools, each sorted by tag."""
+    """Every fabricated piece, tops then stools then returns, each sorted by tag."""
     materials = {item.tag: item for item in model.plan.library.materials}
 
     def wanted(ref: str) -> bool:
@@ -141,6 +151,9 @@ def fabricated_pieces(model: ResolvedModel, material: str | None = None
             piece = _stool_piece(model, stool, materials)
             if piece is not None:
                 pieces.append(piece)
+    for reveal, ref, thickness in sorted(countertop_returns(model), key=lambda r: r[0].tag):
+        if wanted(ref):
+            pieces.extend(_return_pieces(model, reveal, ref, thickness, materials))
     return pieces
 
 
@@ -205,15 +218,45 @@ def _stool_piece(model: ResolvedModel, stool: ResolvedWindowStool, materials
         outline=ring, edge_kinds=kinds, radii_in=radii, length_in=0.0, depth_in=0.0,
         area_sqft=round(stool.length_m * stool.depth_m * 10.7639104, 2),
         holds=[TEMPLATE_HOLD, "Horns stop at the finished wall face; set the back edge to "
-               "the delivered window's interior frame face.", *_notch_holds(stool)])
+               "the delivered window's interior frame face.", *_notch_holds(model, stool)])
     return _finish(piece)
 
 
-def _notch_holds(stool: ResolvedWindowStool) -> list[str]:
+def _notch_holds(model: ResolvedModel, stool: ResolvedWindowStool) -> list[str]:
     if stool.notch_inset_m <= 0.0:
         return []
+    if any(r.fabricated and r.window_ref == stool.window_ref for r in model.window_returns):
+        return ["Shoulder notches take the frame's jambs, glued square: template with them."]
     return ["Shoulder notches wrap the finished drywall return, their inside radius matching "
             "its bullnose bead: template after the returns are beaded."]
+
+
+def _return_pieces(model: ResolvedModel, reveal: ResolvedWindowReturn, ref: str,
+                   thickness_m: float, materials) -> list[FabricatedPiece]:
+    """A picture frame's head and jambs, front edge finished; each is a plain rectangle."""
+    stool = next((s for s in model.window_stools if s.window_ref == reveal.window_ref), None)
+    material = materials.get(ref)
+    product = _products(model).get(getattr(material, "product_ref", None) or "", "")
+    pieces = []
+    for part in reveal.pieces:
+        length, depth = part.length_m * _M_TO_IN, part.depth_m * _M_TO_IN
+        holds = [RETURN_HOLD]
+        if part.strip_width_m > 0.0:
+            holds.append(f"Front edge built up with a {inches_text(thickness_m * _M_TO_IN)} x "
+                         f"{inches_text(part.strip_width_m * _M_TO_IN)} x "
+                         f"{part.strip_length_m * _M_TO_IN:.3f}\" strip over the buck lining.")
+        area_m2 = part.length_m * part.depth_m + part.strip_length_m * part.strip_width_m
+        pieces.append(_finish(FabricatedPiece(
+            tag=f"{reveal.tag}-{part.edge}", uid=f"{reveal.uid}-{part.edge.upper()}",
+            kind="return", material_ref=ref, material_name=getattr(material, "name", ref),
+            product=product, thickness_in=thickness_m * _M_TO_IN,
+            profile=stool.profile if stool is not None else "eased",
+            location=f"{reveal.storey}: window {reveal.window_ref} reveal in {reveal.wall_tag}",
+            outline=((0.0, 0.0), (length, 0.0), (length, depth), (0.0, depth)),
+            edge_kinds=(EDGE_FINISHED, EDGE_SEAM, EDGE_WALL, EDGE_SEAM), radii_in=(0.0,) * 4,
+            length_in=0.0, depth_in=0.0, area_sqft=round(area_m2 * 10.7639104, 2),
+            holds=holds)))
+    return pieces
 
 
 def _finish(piece: FabricatedPiece) -> FabricatedPiece:

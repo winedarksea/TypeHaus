@@ -237,6 +237,8 @@ def window_returns(ctx: TrimContext) -> None:
     openings = {opening.tag: opening for opening in model.openings}
     walls = {wall.tag: wall for wall in model.walls}
     for reveal in sorted(model.window_returns, key=lambda r: r.uid):
+        if reveal.fabricated:
+            continue  # a glued solid-surface frame takes no bead
         room = _window_room(model, openings.get(reveal.window_ref), walls.get(reveal.wall_tag))
         tag = room.tag if room is not None else None
         for kind, material in (("window_corner", corner), ("window_frame", frame)):

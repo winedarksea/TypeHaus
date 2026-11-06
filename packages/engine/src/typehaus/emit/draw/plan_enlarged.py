@@ -79,11 +79,13 @@ def enlarged_groups(model: ResolvedModel, occupancies: frozenset[str],
 
 
 def enlarged_plan_scene(model: ResolvedModel, group: RoomGroup,
-                        paper: tuple[float, float], build: Build | None = None) -> Scene:
+                        paper: tuple[float, float], build: Build | None = None,
+                        setout: bool = False) -> Scene:
     """The level plan cropped to ``group`` and framed at ``ENLARGED_PLAN_SCALE``.
 
     ``build(level_model, level)`` is the plan being enlarged: the floor plan by default,
     the HVAC plan for a mechanical room (its equipment and ducts are what overprint).
+    ``setout`` adds the fixture setout strings (``plan_setout``, I2-005/006): a bath.
     """
     from typehaus.emit.draw.sheet_writer import viewport_box
 
@@ -95,6 +97,10 @@ def enlarged_plan_scene(model: ResolvedModel, group: RoomGroup,
     crop = (u0 - _MARGIN_IN, z0 - _MARGIN_IN, u1 + _MARGIN_IN, z1 + _MARGIN_IN)
     nodes = tuple(_rescale_bubble(node, PLAN_RESERVATION_SCALE / scale)
                   for node in scene.nodes if _inside(node, crop))
+    if setout:
+        from typehaus.emit.draw.plan_setout import setout_nodes
+
+        nodes += tuple(setout_nodes(level, group.rooms))
     kept_uids = {getattr(node, "uid", None) for node in nodes}
     requests = tuple(req for req in scene.annotation_requests
                      if getattr(req, "uid", None) in kept_uids
@@ -107,11 +113,11 @@ def enlarged_plan_scene(model: ResolvedModel, group: RoomGroup,
 
 
 def enlarged_plan_sheet(model: ResolvedModel, group: RoomGroup,
-                        build: Build | None = None) -> Scene:
+                        build: Build | None = None, setout: bool = False) -> Scene:
     """The A-4xx ``SceneFn``: :func:`enlarged_plan_scene` on the set's paper."""
     from typehaus.emit.draw.sheet_writer import current_paper
 
-    return enlarged_plan_scene(model, group, current_paper(), build)
+    return enlarged_plan_scene(model, group, current_paper(), build, setout)
 
 
 def enlarged_title(kind: str, group: RoomGroup) -> str:

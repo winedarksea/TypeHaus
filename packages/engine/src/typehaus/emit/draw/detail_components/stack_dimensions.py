@@ -1,7 +1,7 @@
 """Detail dimension strings read off the resolved stack (C7-E4).
 
 Every string measures resolved geometry — layer intervals, footing and floor members, the
-opening's seat — so an assembly change re-labels the drawing. Strings print at 1/8": a
+opening's seat — so an assembly change re-labels the drawing. Strings print at 1/16": a
 detail is where the fraction is the point.
 """
 
@@ -31,7 +31,7 @@ def dim_text(inches: float) -> str:
 
 def dim(p0, p1, offset: float, text: str | None = None,
         along: float = 0.0) -> ArchDimension:
-    """A linear string between two measured points; ``text`` defaults to the 1/8" length.
+    """A linear string between two measured points; ``text`` defaults to the 1/16" length.
 
     ``along`` slides the label off a string too short to hold it (the writer leaders it)."""
     length = ((p1[0] - p0[0]) ** 2 + (p1[1] - p0[1]) ** 2) ** 0.5

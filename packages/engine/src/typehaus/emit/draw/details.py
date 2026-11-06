@@ -197,10 +197,32 @@ def build_authored_detail_scene(model: ResolvedModel, view: Slice) -> Scene:
     dims = authored_dimension_nodes(model, view, scene)
     if dims:
         scene = scene.model_copy(update={"nodes": scene.nodes + tuple(dims)})
+    notes = _claimed_notes(model, view)
+    if notes:
+        scene = scene.model_copy(update={"notes": notes})
     if frame is not None:
         return layout_detail(scene, frame)
     return scene.model_copy(update={"annotation_requests": (
         *scene.annotation_requests, DetailLayoutRequest())})
+
+
+def _claimed_notes(model: ResolvedModel, view: Slice) -> tuple[str, ...]:
+    """An authored detail claiming a condition prints that condition's sheet notes (E2-103):
+    a suppressed transition that defers to the authored cut must not lose its notes."""
+    from pathlib import Path
+
+    from typehaus.emit.draw.sheet_notes import parse_sheet_notes
+    from typehaus.model.patterns import first_match
+
+    key = getattr(view, "condition_key", None)
+    transition = first_match(model.plan.library.transitions, key) if key else None
+    rel, root = getattr(transition, "notes", None), getattr(model.plan, "source_root", None)
+    path = Path(root) / rel if rel and root else None
+    if path is None or not path.exists():
+        return ()
+    lines = parse_sheet_notes(path.read_text(encoding="utf-8"),
+                              source=path.name).for_condition(key).sheet_lines()
+    return tuple(lines[1:] if lines[:1] == ["NOTES:"] else lines)  # the panel heads itself
 
 
 def _authored_frame(view: Slice):

@@ -1,5 +1,8 @@
 """Three-sided gypsum reveals fitted to the resolved window product and stool.
 
+A stool that authors a picture frame (``WindowStool.return_material_ref``) gets that one
+board instead, whatever the wall's finish: no beads, and its pieces go to the slab yard.
+
 On a buck-lined (outie) opening the board runs on the buck's face all the way to the frame.
 The buck stands ``lining`` inside the framed jamb, so the stud-zone jamb and head are furred
 out by a 3/8" plywood rip to that plane, and the field board laps the step.
@@ -22,7 +25,11 @@ from typehaus.resolve.model import (
     ResolvedWall,
     ResolvedWindowStool,
 )
-from typehaus.resolve.model_window_returns import ResolvedWindowReturn, WindowReturnLayer
+from typehaus.resolve.model_window_returns import (
+    ResolvedWindowReturn,
+    ReturnPiece,
+    WindowReturnLayer,
+)
 
 _GEOMETRY_TOLERANCE_M = 1e-9
 _FUR_PREFIX = "buck-fur-"
@@ -45,6 +52,20 @@ def _finish_stack(model: ResolvedModel, wall: ResolvedWall) -> FinishStack:
     return layers if has_gypsum else []
 
 
+def _authored_return(model: ResolvedModel, wall: ResolvedWall,
+                     stool: ResolvedWindowStool | None) -> FinishStack:
+    """The stool's fabricated picture frame as a one-board stack, keyed off the stool."""
+    authored = model.plan.by_tag(stool.tag) if stool is not None else None
+    ref = getattr(authored, "return_material_ref", None)
+    layers = wall.body_layers()
+    if stool is None or ref is None or not layers:
+        return []
+    thickness = getattr(authored, "return_thickness", None)
+    board = replace(layers[0], name="picture-frame", material_ref=ref,
+                    thickness_m=thickness.meters if thickness is not None else stool.thickness_m)
+    return [(board, False)]
+
+
 def resolve_window_returns(model: ResolvedModel) -> list[Finding]:
     """Emit fitted solids and immutable quantity records; safe to rerun after an edit."""
     model.window_returns.clear()
@@ -65,17 +86,20 @@ def resolve_window_returns(model: ResolvedModel) -> list[Finding]:
         wall = walls.get(opening.host_wall)
         if wall is None:
             continue
-        stack = _finish_stack(model, wall)
+        stool = stools.get(opening.tag)
+        frame = _authored_return(model, wall, stool)
+        stack = frame or _finish_stack(model, wall)
         if not stack:
             continue
         lining = buck_lining_m(model, wall)
-        stool = stools.get(opening.tag)
         if stool is not None and stool.corner_radii_m:
+            # A glued frame meets the stool square; a gypsum one wears its bead's radius.
             stool = stool_wrapping_return(
                 stool, sum(layer.thickness_m for layer, _ in stack) + lining,
-                _bead_radius_m(model))
+                0.0 if frame else _bead_radius_m(model))
         try:
-            record, solids, fur = _fit_return(wall, opening, stool, stack, lining)
+            record, solids, fur = _fit_return(wall, opening, stool, stack, lining,
+                                              fabricated=bool(frame))
         except ValueError as error:
             findings.append(Finding(
                 severity=Severity.WARN, result=Result.UNKNOWN,
@@ -122,6 +146,7 @@ def _bead_radius_m(model: ResolvedModel) -> float:
 
 def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
                 stool: ResolvedWindowStool | None, stack: FinishStack, lining: float = 0.0,
+                fabricated: bool = False,
                 ) -> tuple[ResolvedWindowReturn, list[ResolvedSolid], list[FramedMember]]:
     if opening.arch_rise_m > _GEOMETRY_TOLERANCE_M:
         raise ValueError("arched window heads are not supported")
@@ -193,7 +218,7 @@ def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
     def ring(x0, x1, near, far):
         return [point(x0, near), point(x1, near), point(x1, far), point(x0, far)]
 
-    solids, quantities = [], []
+    solids, quantities, frame_pieces = [], [], []
     remaining = total
     coating_depth = 0.0
     half = opening.width_m / 2
@@ -222,6 +247,14 @@ def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
             ))
             board_depth += layer.thickness_m
             lap_area = lining * (2 * (top - bottom) + opening.width_m)
+        if fabricated and not coating:
+            strip = lining > _GEOMETRY_TOLERANCE_M
+            jamb = ReturnPiece("jamb", head_bottom - bottom, depth,
+                               top - bottom if strip else 0.0, lining if strip else 0.0)
+            frame_pieces = [replace(jamb, edge="jamb-left"), replace(jamb, edge="jamb-right"),
+                            ReturnPiece("head", inner_right - inner_left, depth,
+                                        opening.width_m if strip else 0.0,
+                                        lining if strip else 0.0)]
         if coating and backing > 0:
             # Wrap the room-facing cut ends too: a reveal-only film would leave a white
             # gypsum border around an accent wall. Deeper layers start behind these caps.
@@ -259,7 +292,9 @@ def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
         uid=f"{opening.uid}-RETURN", tag=f"{opening.tag}-return",
         window_ref=opening.tag, wall_tag=wall.tag, storey=wall.storey,
         layers=tuple(quantities), exposed_area_m2=exposed_area,
-        bead_length_m=2 * (top - total - bottom) + opening.width_m - 2 * inset,
+        bead_length_m=(0.0 if fabricated
+                       else 2 * (top - total - bottom) + opening.width_m - 2 * inset),
+        fabricated=fabricated, pieces=tuple(frame_pieces),
     ), solids, fur
 
 

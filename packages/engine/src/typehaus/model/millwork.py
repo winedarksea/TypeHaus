@@ -79,6 +79,11 @@ class WindowStool(Element):
     profile: str = "eased"
     # Radius on the two exposed front (horn) corners; None = square (``haus countertops``).
     corner_radius: Length | None = None
+    # A fabricated picture frame: head and jambs of this material glued to the stool, in
+    # place of the wall's gypsum return (``resolve/window_returns.py``). Thickness defaults
+    # to the stool's.
+    return_material_ref: str | None = None
+    return_thickness: Length | None = None
 
 
 class ShelfBay(HausModel):

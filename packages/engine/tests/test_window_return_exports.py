@@ -21,43 +21,64 @@ def return_bom(catlin_model_ro):
 
 def test_catlin_returns_inherit_finishes_and_skip_other_liners(catlin_model_ro):
     model = catlin_model_ro
-    assert len(model.window_returns) == 36
-    assert len({r.uid for r in model.window_returns}) == 36
+    assert len(model.window_returns) == 40
+    assert len({r.uid for r in model.window_returns}) == 40
     walls = {w.tag: w for w in model.walls}
     for reveal in model.window_returns:
+        if reveal.fabricated:
+            continue
         layers = walls[reveal.wall_tag].layers
-        assert tuple(l.material_ref for l in reveal.layers) == tuple(
-            l.material_ref for l in layers[:2])
+        assert tuple(layer.material_ref for layer in reveal.layers) == tuple(
+            layer.material_ref for layer in layers[:2])
         assert reveal.layers[1].thickness_m == pytest.approx(layers[1].thickness_m)
     assert sum(r.layers[0].material_ref == 'latex-paint-accent'
                for r in model.window_returns) == 1
     excluded = {o.tag for o in model.openings if o.kind == 'window'} - {
         r.window_ref for r in model.window_returns}
-    assert len(excluded) == 5
+    assert len(excluded) == 1
     assert {walls[o.host_wall].assembly for o in model.openings if o.tag in excluded} == {
-        'SAUNA_LINER_ON_GARDEN_FRAMED', 'PLANT_EXT_2X6_HUMID',
-        'PLANT_EXT_2X6_HUMID_BOARD_BATTEN'}
+        'SAUNA_LINER_ON_GARDEN_FRAMED'}
     stool_windows = {s.window_ref for s in model.window_stools}
     assert len([r for r in model.window_returns if r.window_ref not in stool_windows]) == 2
+
+
+def test_plant_windows_take_the_stools_corian_frame(catlin_model_ro):
+    """O4-105: the liner has no gypsum, so the stool's authored picture frame is the return."""
+    from typehaus.takeoff.countertops import countertop_takeoff
+
+    model = catlin_model_ro
+    framed = [r for r in model.window_returns if r.fabricated]
+    assert sorted(r.window_ref for r in framed) == [f'WIN-S-PLANT{i}' for i in range(1, 5)]
+    for reveal in framed:
+        assert [layer.material_ref for layer in reveal.layers] == ['solid-surface-fabricated']
+        assert reveal.bead_length_m == 0.0
+        assert [p.edge for p in reveal.pieces] == ['jamb-left', 'jamb-right', 'head']
+    row = next(r for r in countertop_takeoff(model)
+               if r['material'] == 'solid-surface-fabricated')
+    assert row['returns'] == sorted(r.tag for r in framed)
 
 
 def test_returns_reach_viewer_and_glb_with_material_and_trade(catlin_model_ro):
     model = catlin_model_ro
     solids = {s.uid: s for s in model.solids if s.category == 'window_return'}
-    # 36 returns x jambs + head, plus 3 laps on each of the 34 bucked; paint has no solid.
-    assert len(solids) == 210
+    # 40 returns x jambs + head, plus 3 laps on each of the 38 bucked; paint has no solid.
+    assert len(solids) == 234
     payload = model_to_dict(model)
     rows = [row for row in payload['solids'] if row['category'] == 'window_return']
     assert {row['uid'] for row in rows} == set(solids)
-    assert all(row['trades'] == ['drywall'] and row['host_ref'] for row in rows)
+    # A solid-surface frame is the fabricator's; every gypsum piece the drywaller's.
+    assert all(row['host_ref'] and row['trades'] == (
+        ['countertops'] if row['material'] == 'solid-surface-fabricated' else ['drywall'])
+        for row in rows)
     gltf, _ = emit_gltf_dict(model)
     nodes = [n for n in gltf['nodes'] if n['extras'].get('uid') in solids]
     assert len(nodes) == len(solids)
     materials = {m.tag: m for m in model.plan.library.materials}
     from typehaus.emit.gltf.palette import _authored_material_color
     for node in nodes:
-        assert node['extras']['trade'] == 'drywall'
         solid = solids[node['extras']['uid']]
+        assert node['extras']['trade'] == (
+            'countertops' if solid.material == 'solid-surface-fabricated' else 'drywall')
         mesh = gltf['meshes'][node['mesh']]
         material = gltf['materials'][mesh['primitives'][0]['material']]
         assert material['pbrMetallicRoughness']['baseColorFactor'] == pytest.approx(
@@ -77,7 +98,7 @@ def test_returns_export_as_ifc_coverings(catlin_model_ro, catlin_ifc_path):
                 if ifcopenshell.util.element.get_psets(p).get(PSET_SOURCE, {}).get(
                     'category') == 'window_return'}
     solids = [s for s in model.solids if s.category == 'window_return']
-    assert len(products) == len(solids) == 210
+    assert len(products) == len(solids) == 234
     for solid in solids:
         product = products[solid.tag]
         assert product.PredefinedType == 'CLADDING'
@@ -99,8 +120,8 @@ def test_bom_estimate_csv_and_drywall_bid_bill_each_item_once(catlin_model_ro, r
     assert {r['material'] for r in rows} == {
         'gwb', 'gwb-ar', 'gwb-mr', 'paint-wall', 'paint-wet', 'latex-paint-accent'}
     assert all(not r['also_in_sheet_goods'] for r in rows)
-    board_area = sum(l.area_m2 for r in model.window_returns for l in r.layers
-                     if not l.coating)
+    board_area = sum(layer.area_m2 for r in model.window_returns if not r.fabricated
+                     for layer in r.layers if not layer.coating)
     # The gypsum family: the plain board plus the AR and MR returns, each rounded to 0.1 SF.
     gypsum = sum(r['net_area_sqft'] for r in rows if r['material'].startswith('gwb'))
     assert gypsum == pytest.approx(board_area / 0.09290304, abs=0.2)

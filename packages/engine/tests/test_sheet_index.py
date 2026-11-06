@@ -137,9 +137,14 @@ def test_the_permit_set_fits_what_a_plan_checker_will_read(catlin_sheet_index):
     holds windows and doors derives a detail per kind. The B&B entry door gets its own
     detail with its enlarged head and sill (A-514, .1, .2) and the garage windows one
     (A-516); before, the doors were drawn under window notes or not at all.
+
+    94 -> 97 on 2026-11-06 (REPORT item 18, S1-103/S3-107): A-605, the stair and guard
+    schedule (rise, going, nosing, width, landings, headroom, guard heights), and A-606, a
+    typical bay per guard type with its mount; R311.7 and R312 had no number on the set. The
+    two push the cover's sheet index onto G-001.1.
     """
     permit = catlin_sheet_index(sets="permit")
-    assert len(permit) <= 93, [s.number for s in permit]
+    assert len(permit) <= 97, [s.number for s in permit]
     numbers = {s.number for s in permit}
     # What DSI's new-construction checklist asks for.
     assert {"G-001", "C-101", "S-001", "S-100", "S-101.1", "A-101", "A-201",

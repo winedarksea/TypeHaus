@@ -5,7 +5,7 @@ from dataclasses import replace
 import pytest
 
 from typehaus.checks.code.mn_residential.egress import _meets_r310_2_1
-from typehaus.emit.draw.schedules.openings import _frame_size_text
+from typehaus.emit.draw.schedules.window_schedule import _frame_size_text
 from typehaus.model.types import WindowType
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import wall_frame
@@ -90,8 +90,10 @@ def test_ifc_window_sizes_follow_frames_and_keep_voids_at_rough_openings(
 def test_schedule_labels_both_sizes_and_identifies_the_manual_detail(catlin_model_ro):
     from typehaus.emit.draw.schedules.openings import opening_tables
 
-    (table,) = opening_tables(catlin_model_ro, "window")
+    table, rough = opening_tables(catlin_model_ro, "window")
     assert table.columns[5:7] == ("RO", "Modeled frame")
+    assert not {row[1] for row in table.rows} & {row[0] for row in rough.rows}
+    assert "D-B-GYM" in {row[0] for row in rough.rows}  # a doorless passage has no unit
     assert all(len(row) == len(table.columns) for row in table.rows)
     by_tag = {row[1]: row for row in table.rows}
     assert by_tag["WIN-S-BED1"][5:7] == ("2'-3 1/2\" × 4'-0\"", "2'-2 1/8\" × 3'-10 1/2\"")

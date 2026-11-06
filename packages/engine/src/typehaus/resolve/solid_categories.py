@@ -32,7 +32,8 @@ class SolidCategory:
     #: The product is billed in a dedicated BOM section; bid packages drop the solid's volume.
     billed_elsewhere: bool = False
     #: ``"cast"`` (a concrete material makes it a pour), ``"laid"`` (a non-concrete material
-    #: says it is not one) or ``"layer"`` (the material's own trade, a slab base course).
+    #: says it is not one), ``"layer"`` (the material's own trade, a slab base course) or
+    #: ``"finish"`` (the material's trade when it names one, else ``trade``).
     material_refile: str | None = None
     #: A pour, for ``checks/structural/concrete_interference.py``.
     is_pour: bool = False

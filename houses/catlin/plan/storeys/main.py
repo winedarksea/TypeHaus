@@ -1415,9 +1415,10 @@ OPENINGS = [
            sill_height=ft(3, 6)),
     # Relocated to the NE corner 2026-07-30 with the range/sink wall swap. Kept as a small
     # corner window rather than dropped: centre x=34'-0" is a bay centre off N-M-NE, clear
-    # of WIN-M-KITCH by 20 1/2" and of the corner face by 10 3/8".
+    # of WIN-M-KITCH by 20 1/2" and of the corner face by 10 3/8". Hinged west, and
+    # WIN-M-KIT-E south: two sashes hinged toward the corner meet (window procurement §6).
     Window(uid="82WVR597PA", tag="WIN-M-KITCH-N", host="W-M-N1", type_ref="WT-1424-TT",
-           position=from_node("N-M-NE", ft(1, 5)), sill_height=ft(3, 6)),
+           position=from_node("N-M-NE", ft(1, 5)), sill_height=ft(3, 6), hinge="end"),
     # The kitchen's second small window, around the corner from
     # WIN-M-KITCH-N on the east wall, over FURN-M-KIT-N4's counter. Centre y=34'-0": 408"
     # off N-M-SE, 408 mod 16 = 8, so it is a BAY CENTRE on W-M-E1's own grid — a 14" RO
@@ -1441,7 +1442,7 @@ OPENINGS = [
     # (2026-08-24, see its note above), and on the merged wall's own grid — which starts at
     # N-M-SE — 33'-4" is a STUD LINE. The bay centres moved 8", not the window.
     Window(uid="G0Y75W9ZS1", tag="WIN-M-KIT-E", host="W-M-E1", type_ref="WT-1424-TT",
-           position=from_node("N-M-SE", ft(33, 5)), sill_height=ft(3, 6)),
+           position=from_node("N-M-SE", ft(33, 5)), sill_height=ft(3, 6), hinge="start"),
     # --- the firebox pocket, behind the W-M-FIRE-* breast ---------------------------------
     # ** A BLIND RECESS, NOT A HOLE (2026-09-20). ** `depth=inch(6)` is the whole point: the
     # appliance sits in a pocket cut back into W-M-E1 behind the brick, and the sheathing,

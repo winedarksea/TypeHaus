@@ -39,6 +39,12 @@ from typehaus.emit.draw.elevation_project import (
     split_at_grade,
     view_for,
 )
+from typehaus.emit.draw.elevation_tags import (
+    OpeningMarks,
+    emit_height_key,
+    emit_opening_tags,
+    opening_marks,
+)
 from typehaus.emit.draw.paper import ARCH_SCALES
 from typehaus.emit.draw.scene import IRNode, Polyline, Scene, SceneBuilder, Text
 from typehaus.quantities import M_PER_IN
@@ -97,6 +103,9 @@ class ProjectedElevation:
     extent: tuple[float, float]
     margin_u: float
     label_z: float
+    #: The marked openings seen face-on (O4-010), and the z under everything drawn.
+    marks: OpeningMarks = OpeningMarks()
+    bottom_z: float = 0.0
 
 
 def project_elevation(model: ResolvedModel, facing: str) -> ProjectedElevation:
@@ -114,9 +123,12 @@ def project_elevation(model: ResolvedModel, facing: str) -> ProjectedElevation:
     extent = _facade_extent(pieces, facade_depth)
     # The column starts past everything drawn and past the ground line's run-on.
     margin_u = max(_margin_u(pieces), extent[1] + _EXTEND_M)
+    bottom_z = min((piece.geometry.bounds[1] for piece in pieces), default=grade_z)
     return ProjectedElevation(view=view, nodes=b.build().nodes, facade=tuple(facade),
                               facade_depth=facade_depth, extent=extent,
-                              margin_u=margin_u, label_z=_label_z(pieces))
+                              margin_u=margin_u, label_z=_label_z(pieces),
+                              marks=opening_marks(model, pieces, view),
+                              bottom_z=min(bottom_z, grade_z))
 
 
 def annotate_elevation(model: ResolvedModel, drawn: ProjectedElevation,
@@ -128,6 +140,10 @@ def annotate_elevation(model: ResolvedModel, drawn: ProjectedElevation,
     lo_u, hi_u = drawn.extent
     emit_grade_profile(b, model, view, drawn.facade_depth, lo_u, hi_u, scale)
     emit_sheet_annotations(b, model, list(drawn.facade), drawn.margin_u, scale)
+    emit_opening_tags(b, drawn.marks, scale, ANNO_PT, grade_datum(model))
+    # Under the drawing and the GRADE caption: the key needs no column of its own.
+    emit_height_key(b, drawn.marks.targets, lo_u - _EXTEND_M,
+                    drawn.bottom_z - 3.0 * anno_in(scale) * M_PER_IN, scale, ANNO_PT)
     b.add(Text(anchor=(lo_u / M_PER_IN, drawn.label_z),
                content=f"{view.facing.upper()} ELEVATION",
                height=anno_in(scale) * 1.5, height_pt=ANNO_PT * 1.5, align="left"))

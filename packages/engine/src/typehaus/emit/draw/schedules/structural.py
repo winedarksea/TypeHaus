@@ -85,10 +85,23 @@ def hardware_tables(model: ResolvedModel) -> list[PagedTable]:
     return [
         PagedTable("CONNECTION HARDWARE",
                    ("#", "Scope", "Part", "Size", "Qty", "Unit", "Manufacturer"), hardware_rows),
+        railing_hardware_table(model),
         stiffener_table(model),
         PagedTable("STRUCTURAL SOLIDS — BY CATEGORY",
                    ("Category", "Assembly", "Count", "Plan sf", "Cu yd"), solid_rows),
     ]
+
+
+def railing_hardware_table(model: ResolvedModel) -> PagedTable:
+    """Guard and handrail mounts and their fasteners (S3-107), off the drawn parts; the
+    detail is A-606."""
+    from typehaus.takeoff.railing_hardware import railing_hardware_rows
+
+    rows = tuple((row["type"].removeprefix("RAILING-"), row["part"], row["product"],
+                  row["size"], f"{row['count']:,}", f"{len(row['railings'])}")
+                 for row in railing_hardware_rows(model))
+    return PagedTable("GUARD AND HANDRAIL HARDWARE (RAILINGS PER TYPE: A-606)",
+                      ("Railing type", "Part", "Product", "Size", "Qty", "Railings"), rows)
 
 
 def stiffener_table(model: ResolvedModel) -> PagedTable:

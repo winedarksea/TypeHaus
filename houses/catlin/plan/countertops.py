@@ -149,23 +149,33 @@ ATTIC_COUNTERTOPS = [
 # Corian is set with a slight fall to the room, no sealant bead at the back — the impervious
 # stool is the pan's discharge surface, not a dam. Kerf a drip under the built-up front and
 # leave Corian's expansion gap at the jamb returns.
+#
+# PICTURE FRAME (owner, 2026-11-05): the deep reveal is lined in the same 12 mm Corian, head
+# and both jambs glued to the stool, each front edge built up by a strip over the buck. The
+# humid membrane is returned onto the buck behind it (TR-CATLIN-PLANT-OPENING) and the pan
+# still laps over the stool. The liner has no gypsum to return, so `return_material_ref` is
+# what gives these four windows a reveal finish at all; it bills with the stools.
 PLANT_STOOLS = [
     WindowStool(uid="XP74RX3EKK", tag="STOOL-WIN-S-PLANT1", window_ref="WIN-S-PLANT1",
                 material_ref="solid-surface-fabricated", thickness=inch(0.472),
                 overhang=inch(0.75), horn=inch(1), profile="built-up eased",
-                corner_radius=inch(0.5)),
+                corner_radius=inch(0.5), return_material_ref="solid-surface-fabricated",
+                return_thickness=inch(0.472)),
     WindowStool(uid="TCHNPGC1RT", tag="STOOL-WIN-S-PLANT2", window_ref="WIN-S-PLANT2",
                 material_ref="solid-surface-fabricated", thickness=inch(0.472),
                 overhang=inch(0.75), horn=inch(1), profile="built-up eased",
-                corner_radius=inch(0.5)),
+                corner_radius=inch(0.5), return_material_ref="solid-surface-fabricated",
+                return_thickness=inch(0.472)),
     WindowStool(uid="W86GNRQ4ZW", tag="STOOL-WIN-S-PLANT3", window_ref="WIN-S-PLANT3",
                 material_ref="solid-surface-fabricated", thickness=inch(0.472),
                 overhang=inch(0.75), horn=inch(1), profile="built-up eased",
-                corner_radius=inch(0.5)),
+                corner_radius=inch(0.5), return_material_ref="solid-surface-fabricated",
+                return_thickness=inch(0.472)),
     WindowStool(uid="YRS03M2AJW", tag="STOOL-WIN-S-PLANT4", window_ref="WIN-S-PLANT4",
                 material_ref="solid-surface-fabricated", thickness=inch(0.472),
                 overhang=inch(0.75), horn=inch(1), profile="built-up eased",
-                corner_radius=inch(0.5)),
+                corner_radius=inch(0.5), return_material_ref="solid-surface-fabricated",
+                return_thickness=inch(0.472)),
 ]
 
 # The sink and corner pair share the countertop's 3 cm quartz and eased edge for one

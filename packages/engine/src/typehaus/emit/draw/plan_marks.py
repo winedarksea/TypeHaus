@@ -65,7 +65,8 @@ def opening_type_marks(model: ResolvedModel) -> dict[str, str]:
 
 
 def _variant(opening) -> tuple:
-    """(RO, frame) in sixteenths: what makes two openings of one type different rows."""
+    """(RO, frame, jamb) in sixteenths: what makes two openings of one type different rows.
+    An extended jamb is a different order line from the same stock set as-is."""
     def sixteenths(*lengths_m: float | None) -> tuple[int | None, ...]:
         return tuple(None if v is None else round(v / M_PER_IN * 16) for v in lengths_m)
 
@@ -75,8 +76,8 @@ def _variant(opening) -> tuple:
         return sixteenths(opening.width_m, opening.height_m,
                           *(frame[:2] if frame is not None else (None, None)))
     unit = sizing.installed_unit or (None, None)
-    return (*sixteenths(sizing.rough_w_m, sizing.rough_h_m, *unit, sizing.jamb_stock_m),
-            sizing.jamb_material_ref or "")
+    return (*sixteenths(sizing.rough_w_m, sizing.rough_h_m, *unit, sizing.jamb_stock_m,
+                        sizing.jamb_extension_m or None), sizing.jamb_material_ref or "")
 
 
 def preferred_normal(center: tuple[float, float], normal: tuple[float, float],

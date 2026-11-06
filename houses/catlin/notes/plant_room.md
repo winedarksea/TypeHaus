@@ -34,7 +34,7 @@ source:
 ## Sheet notes
 
 ### General
-- Room design condition: 75 F at 70% RH. Dew point 64.4 F.
+- Room at 75 F / 70% RH; dew point 64.4 F.
 - Liner, inside out: 1/2" PVC panel, 3/4" furring, membrane. Walls and ceiling.
 - The membrane is the air and vapour barrier. Continuous on all six sides.
 - Floor: SurePly + seamless sheet; 4" rubber base, silicone toe. No drain.
@@ -46,8 +46,9 @@ source:
 ### Keyed
 - [K1] Liner trim laps the rubber base, sealed; weep kept open (K4).
 - [K2 @ host#layer:humid-membrane:out] Membrane continuous wall to ceiling; seal each penetration.
-- {opening_perimeter:*} [K3] Sloped, drained sill pan over the stool, flashed into the membrane; drains to the room, never into framing.
+- {opening_perimeter:*} [K3] Sloped pan over the stool, flashed to the membrane; drains to the room.
 - [K4 @ host#layer:liner-furring:out] Keep the 3/4" furring gap open behind the panel; it is the drying path.
+- {opening_perimeter:PLANT_EXT_*} [K9] 12 mm Corian frame glued to the stool; membrane returned behind it.
 - {!storey_stack:*} [K5] Wet-location listed luminaires, gasketed, corrosion-resistant housings.
 - {!storey_stack:*} [K6] Receptacles WR-listed and GFCI, in non-metallic gasketed boxes with in-use covers.
 - {!storey_stack:*} [K7] Grow tubes listed to UL 8800 per NEC Article 410 Part XVI.
@@ -393,6 +394,13 @@ over TPO/EPDM. The sheet plus the sealed base toe is the waterproofing.
   built-up eased front, the same lot as RM-M-BATH2. They sit at south/west glass in full
   sun, quartz resin yellows under UV, and quartz warranties exclude UV. The pan laps over
   the stool's back edge, so the impervious Corian discharges it.
+- **The reveals are a Corian picture frame** (owner, 2026-11-05; K9). The liner has no gypsum
+  to return, so until then the 10 1/8" reveals had no finish at all. Head and both jambs are
+  the stools' 12 mm Glacier White, glued to the stool (its shoulder notches take the jambs)
+  and the head over the jambs, each front edge built up by a strip over the 3/8" buck lining.
+  The membrane is returned onto the buck behind the frame. Authored as
+  `WindowStool.return_material_ref` on `PLANT_STOOLS`; the pieces are in `haus countertops`
+  and bill with the stools, about 35 SF for the four windows.
 - **Keep the glass-wash airflow.** `REG-S-HP-PLANT`'s throw washes the south glass, and that
   function survives the damper retype below.
 - **`D-S-DECK-W` IS DELETED (2026-09-03), and `WIN-S-PLANT4` stands on its centre.** A 60"
@@ -405,7 +413,8 @@ over TPO/EPDM. The sheet plus the sealed base toe is the waterproofing.
   `PLANT2`'s 5'-4" beat, still columning over `WIN-M-BED-S2` below. The balcony is reached
   from the study through `D-S-BALCONY`, the only balcony door the source ever drew.
 - Every opening returns the membrane into the jamb — `TR-CATLIN-PLANT-OPENING`, cloned from
-  `TR-CATLIN-SAUNA-OPENING`. Butting the panel at the jamb is not sealing it.
+  `TR-CATLIN-SAUNA-OPENING`. Butting the panel at the jamb is not sealing it. At a window the
+  return runs onto the buck under the Corian frame; the panel butts the frame's front strip.
 
 ### Penetrations and the rim joists
 

@@ -41,6 +41,11 @@ from typehaus.emit.draw.schedules import (  # noqa: F401 — _write_hardware_sch
     write_compare_sheet,
 )
 from typehaus.emit.draw.schedules.architectural import specification_sections
+from typehaus.emit.draw.schedules.casework import (
+    casework_tables,
+    has_casework_schedule,
+    write_casework_schedule,
+)
 from typehaus.emit.draw.schedules.openings import opening_tables
 from typehaus.emit.draw.schedules.paged_tables import page_count
 from typehaus.emit.draw.schedules.paint import has_paint_schedule, write_paint_schedule
@@ -225,7 +230,7 @@ def build_sheet_index(model: ResolvedModel,
             sheets.append(SheetSpec(number if len(groups) == 1 else f"{number}.{index}",
                                     enlarged_title(kind, group), north_arrow=True,
                                     scene=partial(enlarged_plan_sheet, group=group,
-                                                  build=build)))
+                                                  build=build, setout=kind == "bath")))
 
     # A junction cut at 1-1/2" = 1'-0" is a DETAIL and belongs in the 5 series.
     authored_details = [item for item in model.plan.elements_of_kind("Slice")
@@ -270,6 +275,24 @@ def build_sheet_index(model: ResolvedModel,
     if has_paint_schedule(model):
         sheets.append(SheetSpec("A-604", "Paint schedule", page=write_paint_schedule,
                                 sets=FULL_ONLY))
+    # Stair geometry and guards (S1-103, S3-107): R311.7 / R312 review reads both.
+    from typehaus.emit.draw.guard_detail import build_guard_detail, has_guard_detail
+    from typehaus.emit.draw.schedules.stairs import (
+        has_stair_schedule,
+        stair_schedule_tables,
+        write_stair_schedule,
+    )
+    if has_stair_schedule(model):
+        sheets.extend(_paged("A-605", "Stair and guard schedule", write_stair_schedule,
+                             page_count(stair_schedule_tables(model), paper)))
+    if has_guard_detail(model):
+        sheets.append(SheetSpec("A-606", "Guard and handrail details",
+                                scene=build_guard_detail))
+    # A-607 (I1-106): the casework and countertop build-up, off ``haus countertops``' records.
+    if has_casework_schedule(model):
+        sheets.extend(_paged("A-607", "Casework and countertop schedule",
+                             write_casework_schedule,
+                             page_count(casework_tables(model), paper), sets=FULL_ONLY))
 
     sheets.extend(trade_sheets(model, level_tags, at, paper))
 

@@ -1,4 +1,7 @@
-"""Installed return finish area, never solid volume; the beads bill in ``drywall_trims``."""
+"""Installed return finish area, never solid volume; the beads bill in ``drywall_trims``.
+
+A fabricated frame cut from a countertop material bills there instead (``countertop_returns``).
+"""
 
 from collections import defaultdict
 
@@ -8,8 +11,13 @@ _M2_TO_FT2 = 10.7639104167
 
 
 def window_return_finish_rows(model: ResolvedModel) -> list[dict[str, object]]:
+    from typehaus.takeoff.countertops import countertop_returns
+
+    billed = {reveal.uid for reveal, _ref, _t in countertop_returns(model)}
     areas: dict[tuple[str, float], float] = defaultdict(float)
     for reveal in model.window_returns:
+        if reveal.uid in billed:
+            continue
         for layer in reveal.layers:
             areas[(layer.material_ref, layer.thickness_m)] += layer.area_m2
     return [{"scope": "window return", "function": "finish", "material": material,

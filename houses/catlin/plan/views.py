@@ -85,7 +85,7 @@ DETAIL_SLICES = [
     # is to show that stack. -2'-0" holds the brick (-13 5/8"), the beam (-8"..-22") and the
     # isolation board between the beam and FT-B-S2/S3, with room to spare.
     Slice(uid="CVD903AAAA", tag="SL-D-WALLTYP", kind=SliceKind.DETAIL,
-         title="Typical exterior wall section",
+         title="Typical exterior wall section, south (board and batten)",
          cut_origin=pt(ft(10), ft(0)), cut_direction="y",
          dimensions=_chain(
              "z", ("storey:basement", "storey:main", "storey:second", "storey:attic",
@@ -161,8 +161,10 @@ DETAIL_SLICES = [
     # ** IF `params/north_entry_frame.py`'s FRAME_Y0_FT/FRAME_Y1_FT OR THE COLUMN LINE
     # MOVES, MOVE THIS TOO ** — nothing links them and no check grades a crop against the
     # thing it is meant to show.
+    # Claims the screen's tie-relief condition, so the MDO note's sheet notes print here.
     Slice(uid="BWD901AAAA", tag="SL-D-NORTH-ENTRY", kind=SliceKind.DETAIL,
          title="North entry: gable, bridge landing and east tiers",
+         condition_key="opening_perimeter:ENTRY_SCREEN_WALL",
          cut_origin=pt(ft(0), ft(DETAIL_CUT_Y_FT)), cut_direction="x",
          dimensions=_TIER_RISERS + _TIER_GOINGS,
          crop=(pt(ft(4), ft(-4)), pt(ft(32), ft(16))),
@@ -267,4 +269,13 @@ DETAIL_SLICES = [
          crop=(pt(inch(_EAVE_FACE_E_IN - 7), inch(EAVE_DECK_IN - 9)),
                pt(inch(_EAVE_FACE_E_IN + 9.5), inch(EAVE_DECK_IN + 5))),
          scale="3\"=1'"),
+    # E2-005: the PBR counterpart to A-503 (the E/W walls, 1 1/4" panel), as a SECTION
+    # (A-301.x): the A-5xx block is full, A-501..A-599, and one more detail lands on A-600.
+    # Cut y=24'-8": clear of every E-wall opening on all storeys and of W-B-E1/E2's and
+    # W-S-E3/E4's joints (216", 320"), 4" south of FS-M-NE's y=300" truss line. The crop
+    # stops at 20'-6", over W-A-E2's plate and under the eave SL-D-EAVE draws at 3" = 1'-0".
+    Slice(uid="SMHDYBEW0A", tag="SL-S-WALLTYP-E", kind=SliceKind.SECTION,
+         title="Typical exterior wall section, east (PBR)",
+         cut_origin=pt(ft(0), ft(24, 8)), cut_direction="x",
+         crop=(pt(ft(30), ft(-10)), pt(ft(38), ft(20, 6)))),
 ]

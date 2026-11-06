@@ -104,6 +104,6 @@ def _authored(model, view, scene, spec: SliceDimension):
     if abs(p1[0] - p0[0]) + abs(p1[1] - p0[1]) < 1e-6:
         return None
     text = spec.text
-    if text is not None and "{}" in text:  # "{} band": the measured 1/8" string, labelled
+    if text is not None and "{}" in text:  # "{} band": the measured 1/16" string, labelled
         text = text.replace("{}", dim_text(abs(p1[0] - p0[0]) + abs(p1[1] - p0[1])))
     return dim(p0, p1, 0.0, text)

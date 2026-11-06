@@ -198,6 +198,8 @@ _CAST_BY_MATERIAL = categories_where(material_refile="cast")
 _LAID_BY_MATERIAL = categories_where(material_refile="laid")
 #: A slab's base course: the layer material's own trade.
 _LAYER_BY_MATERIAL = categories_where(material_refile="layer")
+#: A fitted finish: a material that names a trade (solid surface) takes it.
+_FINISH_BY_MATERIAL = categories_where(material_refile="finish")
 
 
 def solid_trades(category: str | None, material: str | None = None) -> tuple[str, ...]:
@@ -210,6 +212,9 @@ def solid_trades(category: str | None, material: str | None = None) -> tuple[str
         return ("concrete",)
     if key in _LAYER_BY_MATERIAL:  # the layer's own trade, as takeoff/envelope.py bills it
         return (material_trade(mat) or "concrete",)
+    finish = material_trade(mat) if key in _FINISH_BY_MATERIAL else None
+    if finish:
+        return (finish,)
     if key in _LAID_BY_MATERIAL and mat and mat != "concrete":
         laid = material_trade(mat) or "framing"
         # FPSF wing foam is laid on the bearing soil in the foundation sequence, by the

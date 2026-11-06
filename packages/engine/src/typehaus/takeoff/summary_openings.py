@@ -42,7 +42,7 @@ def exterior_schedule(inputs: SummaryInputs) -> SummaryTable:
         sizing = opening.sizing
         if opening.is_door:
             unit = sizing.installed_unit if sizing is not None else None
-            hand, jamb = door_hand(model, opening, spec), _inches(jamb_text(sizing))
+            hand, jamb = door_hand(model, opening, spec), _inches(jamb_text(sizing, spec))
         else:
             frame = window_frame_dimensions(opening)
             unit = frame[:2] if frame is not None else None
@@ -89,7 +89,7 @@ def interior_door_schedule(inputs: SummaryInputs) -> SummaryTable:
             _location(model, opening, names), _door_size(spec.width.inches, spec.height.inches),
             spec.operation.value.replace("_", " "), door_hand(model, opening, spec),
             spec.core or "—", (spec.function or "—").replace("_", " "),
-            _inches(jamb_text(opening.sizing)),
+            _inches(jamb_text(opening.sizing, spec)),
             f"required ({inputs.glazing[opening.tag]})" if opening.tag in inputs.glazing
             else "—", f"{fire} min" if fire else "—",
             "yes" if spec.self_closing else "—", sets.get(spec.tag, "—"),

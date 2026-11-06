@@ -22,13 +22,10 @@ from typehaus.emit.draw.typography import feet_inches_8th
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
-from typehaus.resolve.model_window_seat import window_frame_dimensions
 
 _DOOR_COLUMNS = ("Mark", "Tag", "Type", "Operation", "Hand", "Nominal", "Unit", "RO", "Jamb",
-                 "RO sill", "Net clear", "U-factor", "SHGC", "VT", "Tempered", "HW set",
-                 "Doorway")
-_WINDOW_COLUMNS = ("Mark", "Tag", "Kind", "Type", "Operation", "RO", "Modeled frame",
-                   "RO sill", "Net clear", "U-factor", "SHGC", "VT", "Tempered")
+                 "RO sill", "Net clear", "U-factor", "SHGC", "VT", "Tempered", "Function",
+                 "HW set", "Doorway")
 _DOORWAY_WRAP = 46
 #: Secure-side rank (A115.1G "outside"): outdoors, then a garage or unconditioned space,
 #: then circulation. Lower is outside; a tie goes to the larger room.
@@ -44,9 +41,13 @@ HAND_LEGEND = (
     ("LHR / RHR", "hinges on the viewer's left / right; the door swings toward the viewer"),
     ("PAIR / PAIR R", "a pair swinging away from / toward the viewer; active leaf per HW set"),
     ("—", "does not swing: pocket, bypass, bifold, overhead"),
-    ("RO sill", "rough-opening bottom above the storey datum (top of joists or slab)"),
-    ("Jamb", "stock set as-is, ripped from a stock depth, extended, or a milled flat jamb"),
-    ("Net clear", "door: clear passage; window: the maker's published net clear opening"),
+    ("RO sill", "rough-opening bottom above its storey datum (listed in the A-601 notes); "
+     "a door RO on a framed floor stands on the subfloor"),
+    ("Jamb", "stock set as-is, ripped from a stock depth, extended, a milled flat jamb, or a "
+     "KD frame to the wall; — comes with the unit or kit"),
+    ("Net clear", "door: clear passage, * an estimate (A-601 notes); window: the maker's "
+     "published net clear opening"),
+    ("Hinge", "window: the jamb an operable sash hinges on, plan north"),
 )
 
 
@@ -59,6 +60,7 @@ def opening_tables(model: ResolvedModel, kinds: str = "all") -> list[PagedTable]
     """
     from typehaus.emit.draw.plan_marks import opening_type_marks
     from typehaus.emit.draw.schedules.door_hardware import hardware_set_marks, hardware_tables
+    from typehaus.emit.draw.schedules.window_schedule import window_tables
 
     marks = opening_type_marks(model)
     doors = {item.tag: item for item in model.plan.library.door_types}
@@ -67,18 +69,58 @@ def opening_tables(model: ResolvedModel, kinds: str = "all") -> list[PagedTable]
     ordered = sorted(model.openings, key=lambda o: (mark_key(marks.get(o.tag)), o.tag))
     tables: list[PagedTable] = []
     if kinds in ("all", "door"):
-        rows = [_door_row(model, o, doors.get(o.type_ref or ""), marks, hardware)
-                for o in ordered if o.is_door]
+        door_rows = [(o, doors.get(o.type_ref or "")) for o in ordered if o.is_door]
+        estimates = _clear_estimates(o for o, _spec in door_rows)
+        rows = [_door_row(model, o, spec, marks, hardware, estimates)
+                for o, spec in door_rows]
         tables.append(PagedTable(
             "DOOR SCHEDULE — HAND PER ANSI/DHI A115.1G FROM THE SECURE SIDE (G-003)",
             _DOOR_COLUMNS, wrap_cells(rows, {len(_DOOR_COLUMNS) - 1: _DOORWAY_WRAP})))
+        tables.append(PagedTable("DOOR SCHEDULE NOTES", ("Note",),
+                                 wrap_cells(_door_notes(model, [o for o, _s in door_rows],
+                                                        estimates), {0: 110})))
         tables.extend(hardware_tables(model))
     if kinds in ("all", "window"):
-        rows = [_window_row(o, windows.get(o.type_ref or ""), marks)
-                for o in ordered if not o.is_door]
-        tables.append(PagedTable("WINDOW AND ROUGH OPENING SCHEDULE", _WINDOW_COLUMNS,
-                                 tuple(rows)))
+        tables.extend(window_tables(model, ordered, windows, marks))
     return tables
+
+
+def ro_sill_m(model: ResolvedModel, opening) -> float | None:
+    """The RO bottom above its storey's datum. ``sill_m`` is off the host's base, which a
+    curb or stem wall lifts off the datum (D-B-SUNKEN on W-B-S3-FR)."""
+    wall = model.wall(opening.host_wall)
+    storey = model.plan.storey(getattr(wall, "storey", "") or "")
+    if wall is None or storey is None:
+        return opening.sill_m
+    return wall.base_ref_z_m + opening.sill_m - storey.elevation.meters
+
+
+def _clear_estimates(openings) -> dict[str, str]:
+    """``basis -> marker`` for each estimated net-clear basis; the commonest gets ``*``."""
+    from collections import Counter
+
+    counts: Counter[str] = Counter()
+    for opening in openings:
+        sizing = opening.sizing
+        basis = sizing.basis_of("clear_w") if sizing and sizing.clear_w_m is not None else ""
+        if basis and not basis.startswith(("published", "authored")):
+            counts[basis] += 1
+    return {basis: "*" * index for index, (basis, _n) in enumerate(counts.most_common(), 1)}
+
+
+def _door_notes(model, openings, estimates: dict[str, str]) -> list[tuple[str]]:
+    walls = (model.wall(o.host_wall) for o in openings)
+    storeys = sorted({s for s in (model.plan.storey(getattr(w, "storey", "") or "")
+                                  for w in walls) if s is not None},
+                     key=lambda s: s.elevation.meters)
+    datums = ", ".join(f"{s.tag} {_fi(s.elevation.meters, 16)}" for s in storeys)
+    notes = [(f"RO sill: the rough-opening bottom above its storey datum ({datums}). A door "
+              "RO on a framed floor stands on the subfloor, so it reads the sheet's "
+              "thickness.",),
+             ("Function: what the leaf's lockset is bought as (DoorType.function); HW set: a "
+              "type with its own hardware set below.",)]
+    notes += [(f"{marker} Net clear width {basis}.",) for basis, marker in estimates.items()]
+    return notes
 
 
 def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
@@ -109,7 +151,7 @@ def size_pair(width_m: float | None, height_m: float | None, denominator: int = 
     return f"{_fi(width_m, denominator)} × {_fi(height_m, denominator)}"
 
 
-def _door_row(model, opening, spec, marks, hardware) -> tuple[str, ...]:
+def _door_row(model, opening, spec, marks, hardware, estimates) -> tuple[str, ...]:
     sizing = opening.sizing
     u_text, shgc, vt, operation, tempered = energy_columns(spec, True)
     if sizing is None:
@@ -119,22 +161,17 @@ def _door_row(model, opening, spec, marks, hardware) -> tuple[str, ...]:
         unit = size_pair(*(sizing.installed_unit or (None, None)))
         rough = size_pair(sizing.rough_w_m, sizing.rough_h_m, 16)  # the catalog's 1/16"
     # 1/16": a published clear (Therma-Tru 33-5/16") must not round up at 1/8".
-    clear = (size_pair(sizing.clear_w_m, sizing.clear_h_m, 16)
-             if sizing is not None and sizing.clear_w_m is not None else "—")
+    clear = "—"
+    if sizing is not None and sizing.clear_w_m is not None:
+        marker = estimates.get(sizing.basis_of("clear_w"), "")
+        clear = size_pair(sizing.clear_w_m, sizing.clear_h_m, 16) + (f" {marker}" if marker
+                                                                      else "")
+    function = getattr(spec, "function", None)
     return (marks.get(opening.tag, "—"), opening.tag, opening.type_ref or "RO", operation,
-            door_hand(model, opening, spec), nominal, unit, rough, jamb_text(sizing),
-            _fi(opening.sill_m), clear, u_text, shgc, vt, tempered,
+            door_hand(model, opening, spec), nominal, unit, rough, jamb_text(sizing, spec),
+            _fi(ro_sill_m(model, opening)), clear, u_text, shgc, vt, tempered,
+            function.replace("_", " ") if function else "—",
             hardware.get(opening.type_ref, "—"), _doorway_text(opening))
-
-
-def _window_row(opening, spec, marks) -> tuple[str, ...]:
-    u_text, shgc, vt, operation, tempered = energy_columns(spec, False)
-    is_ro = opening.kind == "rough_opening"
-    return (marks.get(opening.tag, "—"), opening.tag, "Rough opening" if is_ro else "Window",
-            opening.type_ref or "RO", operation,
-            size_pair(opening.width_m, opening.height_m, 16),
-            _frame_size_text(window_frame_dimensions(opening), is_ro), _fi(opening.sill_m),
-            _window_clear_text(opening, spec), u_text, shgc, vt, tempered)
 
 
 def door_hand(model: ResolvedModel, opening, spec) -> str:
@@ -169,10 +206,19 @@ def door_hand(model: ResolvedModel, opening, spec) -> str:
     return ("RH" if hinge_right else "LH") + ("R" if reverse else "")
 
 
-def jamb_text(sizing) -> str:
-    """The jamb as hung: stock set as-is, ripped from a stock, extended, or a milled flat."""
-    if sizing is None or sizing.jamb_depth_m is None:
+def jamb_text(sizing, spec=None) -> str:
+    """The jamb as hung: stock set as-is, ripped from a stock, extended, or a milled flat.
+    With the type: a KD frame's throat and a trimless type's site-built flat jamb, both to
+    the wall's finish-to-finish depth."""
+    if sizing is None:
         return "—"
+    wall = getattr(sizing, "wall_depth_m", None)
+    if sizing.jamb_depth_m is None:
+        if wall is None or spec is None:
+            return "—"
+        if spec.factory_frame:
+            return f"KD frame to {_fi(wall, 16)} wall"
+        return f"{_fi(wall, 16)} flat, site-built" if spec.trimless else "—"
     depth = _fi(sizing.jamb_depth_m, 16)
     if sizing.jamb_material_ref:
         return f"{depth} flat, {sizing.jamb_material_ref}"
@@ -184,32 +230,9 @@ def jamb_text(sizing) -> str:
     return f"{stock} stock"
 
 
-def _window_clear_text(opening, spec) -> str:
-    """The maker's published net clear opening (R310.2.1), never a nominal estimate."""
-    frame = window_frame_dimensions(opening)
-    sizes = []
-    for index, axis in enumerate(("width", "height")):
-        exact = getattr(spec, f"net_clear_{axis}", None)
-        deduction = getattr(spec, f"net_clear_{axis}_deduction", None)
-        if exact is not None:
-            sizes.append(exact.meters)
-        elif deduction is not None and frame is not None:
-            sizes.append(frame[index] - deduction.meters)
-        else:
-            return "—"
-    return size_pair(*sizes)
-
-
 def _eighths(length_m: float) -> str:
     """Inches to the nearest 1/8": a 27 1/2" RO must not print as 28"."""
     return f"{round(length_m / M_PER_IN * 8) / 8:g}"
-
-
-def _frame_size_text(frame: tuple[float, float, float] | None, is_ro: bool = False) -> str:
-    if frame is None:
-        return "—" if is_ro else "UNRESOLVED"  # a rough opening has no frame by definition
-    width, height, _sill = frame
-    return size_pair(width, height, 16)
 
 
 def energy_columns(spec, is_door: bool) -> tuple[str, ...]:
@@ -293,8 +316,12 @@ def _finish(room, field: str) -> str:
 
 
 def _base_finish(model, room) -> str:
-    """Base material and height from the room's derived ``base_runs``, or ``—``."""
-    names = sorted({f'{run.material_ref} {_eighths(run.height_m)}"'
+    """Base stock and height from the room's derived ``base_runs``, or ``—``. A base the
+    floor trade sets (resilient, tile, flash cove) is named by its kind, not the floor."""
+    from typehaus.takeoff.interior_trim import _KIND
+
+    names = sorted({f'{run.material_ref if run.kind == "trim" else _KIND.get(run.kind, run.kind)}'
+                    f' {_eighths(run.height_m)}"'
                     for run in model.base_runs if run.room in (room.tag, room.uid)})
     return " / ".join(names) if names else "—"
 

@@ -94,6 +94,8 @@ class DoorSizing:
     jamb_stock_m: float | None = None
     # A full-depth flat jamb milled from this stock (``DoorTrim.jamb_material_ref``).
     jamb_material_ref: str | None = None
+    # The host's finish-to-finish depth, kept where no stock jamb is (a KD frame's throat).
+    wall_depth_m: float | None = None
 
     @property
     def jamb_rip_m(self) -> float:
@@ -272,7 +274,7 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
         jamb_allowance_m=a,
         leaf_gap_m=g, floor_finish_m=floor_finish_m, held=held is not None, fits=fits,
         basis=tuple(basis.items()), jamb_depth_m=jamb_depth, jamb_stock_m=jamb_stock,
-        jamb_material_ref=flat)
+        jamb_material_ref=flat, wall_depth_m=wall_depth_m)
 
 
 def _jamb(door, door_type, trim_standard, wall_depth_m) -> tuple[float | None, float | None]:

@@ -339,7 +339,9 @@ TRANSITIONS = (
     # Starred: this is the detail the room lives or dies by, and the one a glazier and a
     # framer have to read together. It also carries the drained sill pan under every unit —
     # sloped, flashed into the wall membrane, draining to the room and never into framing —
-    # which no other opening detail in this house needs.
+    # which no other opening detail in this house needs. At a window the return runs onto the
+    # buck behind a 12 mm Corian picture frame glued to the stool (owner, 2026-11-05):
+    # `return_material_ref` on PLANT_STOOLS (plan/countertops.py) models and bills it.
     Transition(uid="CATR016AAAA", tag="TR-CATLIN-PLANT-OPENING", title="Plant room opening",
                condition_pattern="opening_perimeter:PLANT_*",
                notes="notes/plant_room.md", overlay="humid-liner-opening",
