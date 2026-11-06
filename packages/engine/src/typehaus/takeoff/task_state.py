@@ -22,6 +22,7 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
+from typehaus.takeoff.crews import Crew, crew_lines, load_crews
 from typehaus.takeoff.visit_state import (
     VisitsState,
     load_visits,
@@ -133,6 +134,9 @@ class TasksState:
     #: missing document is an attention item and never a block — great subs without digital
     #: paperwork have to stay bookable.
     contractors: Mapping[str, Contractor] = field(default_factory=dict)
+    #: ``[crews.<key>]``: which trades one sub bids together, and which the owner does
+    #: (``takeoff/crews.py``, decision #115).
+    crews: Mapping[str, Crew] = field(default_factory=dict)
 
     def status_of(self, slug: str) -> str:
         entry = self.entries.get(slug)
@@ -169,11 +173,12 @@ def load_tasks(house_dir: Path) -> TasksState:
     if not path.exists():
         return TasksState()
     data = tomllib.loads(path.read_text())
-    unknown = set(data) - {"entries", "visits", "milestones", "calendar", "contractors"}
+    unknown = set(data) - {"entries", "visits", "milestones", "calendar", "contractors",
+                           "crews"}
     if unknown:
         raise ValueError(f"{path}: unknown top-level key(s) {sorted(unknown)}; expected "
                          "[entries.<slug>], [visits.<slug>], [calendar], "
-                         "[contractors.<key>] and milestones = [...]")
+                         "[contractors.<key>], [crews.<key>] and milestones = [...]")
     raw_entries = data.get("entries") or {}
     if not isinstance(raw_entries, dict):
         raise ValueError(f"{path}: 'entries' must be a table of work-item slugs")
@@ -182,7 +187,8 @@ def load_tasks(house_dir: Path) -> TasksState:
                       visits=load_visits(data.get("visits") or {}, path),
                       milestones=_milestones(data.get("milestones"), path),
                       calendar=_calendar(data.get("calendar"), path),
-                      contractors=_contractors(data.get("contractors"), path))
+                      contractors=_contractors(data.get("contractors"), path),
+                      crews=load_crews(data.get("crews"), path))
 
 
 def _calendar(raw: Any, path: Path) -> Calendar:
@@ -288,6 +294,7 @@ def write_tasks(house_dir: Path, state: TasksState) -> Path:
             else:
                 lines.append(f"{name} = {toml_string(value)}")
         lines.append("")
+    lines.extend(crew_lines(state.crews))
     if state.milestones:
         lines.append("milestones = [")
         for name, label in state.milestones:

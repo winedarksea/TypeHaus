@@ -32,6 +32,7 @@ _BY_TRADE: dict[str, tuple[str, ...]] = {
     "framing": ("braced_walls", "rough_openings", "post_bases"),
     "openings": ("rough_openings", "window_order"),
     "roofing": ("roof_penetrations",),
+    "spray_foam": ("roof_penetrations",),
     "insulation": ("roof_penetrations",),
     "siding": ("roof_penetrations",),
     "plumbing": ("sleeves", "wall_sleeves_plumbing", "radon"),

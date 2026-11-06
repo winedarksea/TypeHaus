@@ -116,9 +116,10 @@ def test_routed_pipe_runs_are_plumbing(catlin_model) -> None:
 
 
 def test_the_whole_stormwater_run_is_one_trade(catlin_model) -> None:
-    """The whole stormwater run — gutter, leader, sump pit — is one trade, one toggle."""
-    for category in ("gutter", "downspout", "sump"):
-        assert solid_trade(category) == "drainage"
+    """The whole stormwater run — gutter, leader, sump pit — is one IFC system, though the
+    gutter and leader are their own bid (decision #115)."""
+    assert solid_trade("sump") == "drainage"
+    assert solid_trade("gutter") == solid_trade("downspout") == "gutters"
     assert {"gutter", "downspout", "sump",
             "drain_tile", "french_drain", "drywell",
             "rain_garden_media", "rain_garden_stone", "leader_extension",

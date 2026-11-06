@@ -33,7 +33,7 @@
 > - **Concrete:** GARAGE_ICF_6 is BuildBlock BB600. Mudsill and gasket are drawn
 >   (`resolve/sill_solids.py`), billed on the return. The 8 band-centred house strips sit 1/16"
 >   inboard so 2" <= P <= T holds (live in `bearing_wall_footing`); every FT-B-* is 25" (IRC Table
->   R403.1(1), `structural.footing_size`, 2026-11-05): 25x10, 25x15 under S1..S4 (tops held). PT-BW-W/-GW/-PE/-PNE are `PIER_CONCRETE_14` (`east_posts.pier_assembly`).
+>   R403.1(1), `structural.footing_size`, 2026-11-05): 25x10, 25x15 under S1..S4 (tops held). PT-BW-W/-GW/-PE/-PNE are `PIER_CONCRETE_14` (`east_posts.pier_assembly`) on a (6) #5 cage (`PIER_CAGES`, 1.21%).
 > - **W-M-STOS is a staggered 2x6 wet wall** carrying the hall-bath 3" stack at y=26'-8" (powder
 >   face held, mud closet 29 1/2"); `haus route` found no lane into HS1 or the chase.
 >   `mep.trap_arm_length` (CODE) is the 3D trap-arm walk; `mep.vent_connection` (ADVISORY) grades each tee; BATH2-WC is the one open vent.

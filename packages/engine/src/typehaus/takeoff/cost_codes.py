@@ -18,18 +18,13 @@ edge trim's kind) before any key pattern or section default is consulted.
 from __future__ import annotations
 
 import fnmatch
-import re
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from typehaus.emit.trade_rules import (
-    layer_trade,
-    material_trade,
-    member_types_trade,
-    solid_trades,
-)
+from typehaus.emit.trade_rules import solid_trades
 from typehaus.emit.trades import TRADES
+from typehaus.takeoff.cost_facts import fact_trade
 from typehaus.takeoff.solid_sections import SOLID_SECTIONS
 
 
@@ -57,16 +52,22 @@ TRADE_CODES: dict[str, CostCode] = {
     "framing": CostCode("2000", "06 11 00", "framing"),
     "stairs": CostCode("2700", "06 43 00", "stairs"),
     "roofing": CostCode("2500", "07 41 00", "roofing"),
+    "gutters": CostCode("2600", "07 71 00", "gutters"),
     "siding": CostCode("2100", "07 46 00", "siding"),
+    "spray_foam": CostCode("2100", "07 21 19", "spray_foam"),
     "insulation": CostCode("2100", "07 21 00", "insulation"),
     "drywall": CostCode("4300", "09 29 00", "drywall"),
     "paint": CostCode("4400", "09 91 00", "paint"),
     "openings": CostCode("2400", "08 00 00", "openings"),
     "tile": CostCode("4000", "09 30 00", "tile"),
     "flooring": CostCode("4000", "09 60 00", "flooring"),
-    "millwork": CostCode("4100", "06 20 00", "millwork"),
+    "resilient": CostCode("4000", "09 65 00", "resilient"),
+    "carpentry": CostCode("4100", "06 20 00", "carpentry"),
+    "millwork": CostCode("4100", "06 22 00", "millwork"),
+    "countertops": CostCode("4100", "12 36 00", "countertops"),
     "plumbing": CostCode("3100", "22 00 00", "plumbing"),
     "electrical": CostCode("3300", "26 00 00", "electrical"),
+    "low_voltage": CostCode("3300", "27 00 00", "low_voltage"),
     "mechanical": CostCode("3200", "23 00 00", "mechanical"),
     "furniture": CostCode("4200", "12 50 00", "furniture"),
 }
@@ -95,11 +96,14 @@ _SECTION_TRADE_CODES: dict[tuple[str, str], CostCode] = {
     ("install_parts", "plumbing"): CostCode("3100", "22 05 00", "plumbing"),
     ("construction_returns", "insulation"): CostCode("2100", "07 21 00", "insulation"),
     ("construction_returns", "drywall"): CostCode("4300", "09 22 00", "drywall"),
-    ("framing", "drainage"): CostCode("2600", "07 71 00", "drainage"),
+    ("framing", "gutters"): CostCode("2600", "07 71 00", "gutters"),
     ("framing", "stairs"): CostCode("2700", "06 43 00", "stairs"),
     ("floor_finishes", "tile"): CostCode("4000", "09 30 13", "tile"),
-    ("placeables", "millwork"): CostCode("4100", "12 30 00", "millwork"),
-    ("furnishings", "millwork"): CostCode("4100", "12 30 00", "millwork"),
+    ("floor_finishes", "concrete"): CostCode("1300", "03 35 00", "concrete"),
+    ("floor_finishes", "resilient"): CostCode("4000", "09 65 00", "resilient"),
+    ("placeables", "carpentry"): CostCode("4100", "12 30 00", "carpentry"),
+    ("furnishings", "carpentry"): CostCode("4100", "12 30 00", "carpentry"),
+    ("placeables", "low_voltage"): CostCode("3300", "27 10 00", "low_voltage"),
     ("placeables", "plumbing"): CostCode("3100", "22 40 00", "plumbing"),
     ("furnishings", "plumbing"): CostCode("3100", "22 40 00", "plumbing"),
     ("placeables", "electrical"): CostCode("3300", "26 27 26", "electrical"),
@@ -115,7 +119,7 @@ def _trade_code(section: str, trade: str) -> CostCode:
     return _SECTION_TRADE_CODES.get((section, trade)) or TRADE_CODES[trade]
 
 
-_POCKET_FRAME_CODE = CostCode("2400", "08 71 00", "openings")
+_POCKET_FRAME_CODE = CostCode("2000", "08 71 00", "framing")
 
 #: Per-key refinements, matched with :func:`fnmatch.fnmatchcase` against the BOM key and
 #: tried after the fact rules and before the section default. First match wins. Kept short:
@@ -125,16 +129,17 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("concrete", "footing*", CostCode("1200", "03 30 00", "concrete")),
     ("concrete", "pier*", CostCode("1200", "03 30 00", "concrete")),
     # Gutters and leaders are 07 71 00 Roof Specialties, not 33 46 00 subdrainage.
-    ("site", "gutter", CostCode("2600", "07 71 00", "drainage")),
-    ("site", "downspout", CostCode("2600", "07 71 00", "drainage")),
-    ("framing", "gutter*", CostCode("2600", "07 71 00", "drainage")),
+    ("site", "gutter", CostCode("2600", "07 71 00", "gutters")),
+    ("site", "downspout", CostCode("2600", "07 71 00", "gutters")),
+    ("framing", "gutter*", CostCode("2600", "07 71 00", "gutters")),
     # The Larsen/Swinburne corner box closes a wall cavity on the cladding plane.
     ("framing", "* corner panel", CostCode("2100", "07 46 00", "siding")),
     # I-joist web stiffeners: a plywood rip the framer nails with the roof.
     ("framing", "* stiffener panel", CostCode("2000", "06 17 00", "framing")),
     ("sheet_goods", "zip-r*", CostCode("2100", "07 21 00", "insulation")),
-    # A pocket door's frame kit is Door Hardware (08 71 00), the carpenter's package. Matched
-    # by role in ``_fact_code`` too, since a kit with a part number bills under that key.
+    # A pocket door's frame kit is Door Hardware (08 71 00), set in the rough framing before
+    # the board closes it in. Matched by role in ``_fact_code`` too, since a kit with a part
+    # number bills under that key.
     ("hardware", "pocket-frame-*", _POCKET_FRAME_CODE),
     # A cast-in anchor bolt is set by the sub who pours the wall (03 15 00).
     ("hardware", "ab-*", CostCode("1000", "03 15 00", "concrete")),
@@ -149,7 +154,8 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("pipe_fittings", "*", CostCode("3100", "22 13 00", "plumbing")),
     # A base the floor trade makes from the floor itself goes with that trade's arrival.
     ("interior_trim", "tile-base", CostCode("4000", "09 30 00", "tile")),
-    ("interior_trim", "flash-cove", CostCode("4000", "09 65 00", "flooring")),
+    ("interior_trim", "flash-cove", CostCode("4000", "09 65 00", "resilient")),
+    ("interior_trim", "resilient-base", CostCode("4000", "09 65 13", "resilient")),
     # Allowances. ** THE KEY PREFIX IS THE TRADE DECLARATION. ** Leading segments, never
     # substrings: "waterproofing" contains "roof" and "egress-window-wells" contains "well".
     # A key that reaches none of these files under general conditions — readable, but it is
@@ -174,18 +180,23 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("allowances", "plumbing-*", CostCode("3100", "22 00 00", "plumbing")),
     ("allowances", "hvac-*", CostCode("3200", "23 00 00", "mechanical")),
     ("allowances", "paint-*", CostCode("4400", "09 90 00", "paint")),
-    ("allowances", "cabinet-*", CostCode("4100", "12 30 00", "millwork")),
+    ("allowances", "cabinet-*", CostCode("4100", "12 30 00", "carpentry")),
     # Seasonal porch enclosure panels: window treatments, hung on the track that bills
     # through [placeables] as furniture. One article, one package.
     ("allowances", "porch-enclosure-*", CostCode("4200", "12 20 00", "furniture")),
+    ("allowances", "finish-carpet-*", CostCode("4000", "09 68 00", "resilient")),
     ("allowances", "finish-floor-*", CostCode("4000", "09 60 00", "flooring")),
     ("allowances", "finish-transitions-*", CostCode("4000", "09 60 00", "flooring")),
-    ("allowances", "finish-door-*", CostCode("2400", "08 71 00", "openings")),
+    # Interior door hardware: the carpenter hangs the door. An exterior set goes with the unit.
+    ("allowances", "finish-door-*", CostCode("2400", "08 71 00", "carpentry")),
+    ("allowances", "exterior-door-*", CostCode("2400", "08 71 00", "openings")),
+    ("allowances", "window-*", CostCode("2400", "08 50 00", "openings")),
     ("allowances", "finish-garage-door-*", CostCode("2400", "08 36 00", "openings")),
     ("allowances", "finish-tile-*", CostCode("4000", "09 30 00", "tile")),
     ("allowances", "finish-wall-tile-*", CostCode("4000", "09 30 00", "tile")),
-    ("allowances", "finish-countertops*", CostCode("4100", "12 36 00", "millwork")),
-    ("allowances", "finish-*", CostCode("4100", "06 20 00", "millwork")),
+    ("allowances", "finish-countertops*", CostCode("4100", "12 36 00", "countertops")),
+    ("allowances", "finish-millwork-*", CostCode("4100", "06 22 00", "millwork")),
+    ("allowances", "finish-*", CostCode("4100", "06 20 00", "carpentry")),
 )
 
 #: The default code for every section in ``cli.prices.ESTIMATE_PLANS``.
@@ -201,16 +212,16 @@ SECTION_CODES: dict[str, CostCode] = {
     # setter lays the membrane, the electrician the cable and the stat (adjudicated
     # audit:2026-09-12#floor_heat:electric, Schluter DITRA-HEAT handbook).
     "floor_heat": CostCode("3300", "23 83 13", "electrical"),
-    "placeables": CostCode("4100", "12 30 00", "millwork"),
+    "placeables": CostCode("4100", "12 30 00", "carpentry"),
     "floor_finishes": CostCode("4000", "09 60 00", "flooring"),
     "envelope_layers": CostCode("2100", "07 46 00", "siding"),
-    "wood_surfaces": CostCode("4100", "06 20 00", "millwork"),
-    "shelving": CostCode("4100", "06 41 00", "millwork"),
+    "wood_surfaces": CostCode("4100", "06 20 00", "carpentry"),
+    "shelving": CostCode("4100", "06 41 00", "carpentry"),
     # 12 36 00 Countertops: fabricated off site and set by the yard that cut it.
-    "countertops": CostCode("4100", "12 36 00", "millwork"),
+    "countertops": CostCode("4100", "12 36 00", "countertops"),
     # 06 20 00 Finish Carpentry: base and casing. A tile base and a flash cove are the floor
     # trade's work but file here with the trim they replace (→ takeoff/interior_trim.py).
-    "interior_trim": CostCode("4100", "06 20 00", "millwork"),
+    "interior_trim": CostCode("4100", "06 20 00", "carpentry"),
     # 06 43 00 Wood Stairs and Railings: the stair installer sets the treads.
     "stair_treads": CostCode("2700", "06 43 00", "stairs"),
     "openings": CostCode("2400", "08 00 00", "openings"),
@@ -263,9 +274,9 @@ SECTION_CODES: dict[str, CostCode] = {
     "steel_members": CostCode("2000", "05 12 00", "framing"),
     "railings": CostCode("2700", "05 52 00", "stairs"),
     "drainage": CostCode("2600", "07 71 00", "drainage"),
-    # Cove/LED channel, tape, caps and connectors. 26 51 00 Interior Lighting, and an
-    # electrician's buy even where a joiner routs the fascia it sits in.
-    "light_run_materials": CostCode("3300", "26 51 00", "electrical"),
+    # Cove/LED channel, tape, caps and connectors: the Class 2 side of a driver the
+    # electrician wires, so low voltage even where a joiner routs the fascia it sits in.
+    "light_run_materials": CostCode("3300", "26 51 00", "low_voltage"),
     "furnishings": CostCode("4200", "12 50 00", "furniture"),
     # Pre-framing returns default to rough carpentry (the sill plate); the fact rules
     # re-file the foam, masonry and channel rows.
@@ -288,16 +299,18 @@ _SOLID_TRADE_CODES: dict[str, CostCode] = {
     "siding": CostCode("2100", "07 62 00", "siding"),          # fascia, corners, screens
     "openings": CostCode("2400", "08 80 00", "openings"),      # glazing and its trim
     "drainage": CostCode("2600", "33 46 00", "drainage"),      # tile, drywell, sump
+    "gutters": CostCode("2600", "07 71 00", "gutters"),        # gutter and leader solids
     "plumbing": CostCode("3100", "22 10 00", "plumbing"),      # routed pipe, sleeves, valves
     "electrical": CostCode("3300", "26 05 33", "electrical"),  # raceways
     "mechanical": CostCode("3200", "23 31 00", "mechanical"),  # vent runs
     "stairs": CostCode("2700", "05 52 00", "stairs"),          # guards and handrails
     "drywall": CostCode("4300", "09 29 00", "drywall"),        # dropped soffits, ceilings
-    "insulation": CostCode("2100", "07 21 00", "insulation"),  # an XPS frost wing
+    "insulation": CostCode("2100", "07 21 00", "insulation"),  # rigid board on framing
     "landscaping": CostCode("1100", "32 90 00", "landscaping"),  # the putting green
     "masonry": CostCode("1200", "07 92 00", "masonry"),        # a wythe's sealant joints
     "earth": CostCode("1000", "31 20 00", "earth"),            # terrace fill, slab base
-    "millwork": CostCode("4100", "12 36 00", "millwork"),      # a slab's Corian top
+    "countertops": CostCode("4100", "12 36 00", "countertops"),  # a slab's Corian top
+    "carpentry": CostCode("4100", "06 20 00", "carpentry"),    # a slab's finish layer
 }
 
 
@@ -311,138 +324,18 @@ def _solid_code(key: str, material: str | None) -> CostCode | None:
     return _SOLID_TRADE_CODES.get(trade) or TRADE_CODES[trade]
 
 
-# --- fact rules ---------------------------------------------------------------------------
-
-_WET_SERVICES = frozenset({"water_hot", "water_cold", "drain", "gas"})
-_ELECTRICAL_EQUIPMENT = frozenset({"battery", "inverter", "sauna_heater", "space_heater"})
-#: A placeable in the ``furniture`` domain is casework (millwork) unless its type says it
-#: is bought loose — a ``FURN-*`` tag, or a name that is a sofa, a bed, a rod, a track
-#: (audit:2026-09-12: 34 loose pieces landed on the cabinet sub).
-_LOOSE_FURNITURE_WORDS = ("sofa", "sectional", "chair", "stool", "bed", "table", "lounge",
-                          "curtain", "track", "workbench", "rack", "plant",
-                          "media unit", "wardrobe", "kitchenette", "ikea")
-_SIDING_EDGE_TRIM = frozenset({"fascia", "soffit", "eave_soffit", "corner_trim",
-                               "wall_corner", "wrb_counterflashing", "bug_screen",
-                               "beam_cap"})
-_ROOFING_HARDWARE_ROLES = frozenset({
-    "snow_retention", "standing_seam_clamp", "nail_strip_seam_clamp",
-    "through_panel_pipe_strap", "concealed_roofing_panel_screw"})
-#: Fasteners the SIDING crew brings. ``girt_standoff_screw`` is deliberately NOT here and
-#: falls to the framing default: the girt wall's whole screw pass happens on the flat wall
-#: before tilt-up, by the framer, and the girts and blocks it clamps already bill as framing
-#: (``notes/catlin_truss_engineering.md`` §8). It rode with siding until 2026-09-12 only
-#: because it shared ``exterior_insulation_screw``'s role, which put the screw in a
-#: different package from the wood it holds.
-_SIDING_HARDWARE_ROLES = frozenset({"exposed_fastener_panel_screw",
-                                    "sidelap_stitch_screw", "concealed_siding_panel_screw",
-                                    "exterior_insulation_screw"})
-_CAST_HARDWARE_ROLES = frozenset({"post_base_anchor", "mudsill_anchor",
-                                  "embedded_strap_holdown"})
-
-
-def _placeable_trade(row: Mapping[str, Any]) -> str | None:
-    domain = str(row.get("domain") or "")
-    name = str(row.get("name") or "").lower()
-    if domain in ("plumbing", "electrical"):
-        return domain
-    if domain == "appliance":
-        # A disposer lands on the tailpiece and the trap: the plumber sets it
-        # (audit:2026-09-12#placeables:APPL-DISPOSAL, adjudicated).
-        return "plumbing" if "dispos" in name else "furniture"
-    if domain == "furniture":
-        if "access panel" in name:
-            return "drywall"           # set and finished with the board (adjudicated)
-        if row.get("roles"):
-            return "millwork"          # a cabinet's bought part: hinge, front, rail, leg
-        words = set(re.findall(r"[a-z]+(?: unit)?", name))
-        loose = str(row.get("type") or "").startswith("FURN-") or any(
-            word in words or (" " in word and word in name) for word in _LOOSE_FURNITURE_WORDS)
-        return "furniture" if loose else "millwork"
-    if domain == "mechanical":
-        services = {str(s) for s in (row.get("services") or ())}
-        if services & _WET_SERVICES:
-            return "plumbing"          # the water heater
-        if "heat kit" in name:
-            return "mechanical"        # audit:2026-09-12#placeables:EQ-T-GREE-FLEXX-HEATKIT-46KW
-        if str(row.get("equipment_kind") or "") in _ELECTRICAL_EQUIPMENT:
-            return "electrical"        # inverter, battery, resistance heaters
-        return "mechanical"
-    return None
+# --- fact rules (→ takeoff/cost_facts.py) ----------------------------------------------
 
 
 def _fact_code(section: str, row: Mapping[str, Any]) -> CostCode | None:
-    """A trade read from the row's own facts, or ``None`` to fall through."""
-    trade: str | None = None
+    """A code read from the row's own facts, or ``None`` to fall through."""
     if section == "hardware" and row.get("scope") == "door hardware (authored)":
-        return CostCode("2400", "08 71 00", "openings")
+        # The door's own installer: exterior with the unit, interior with the carpenter.
+        return CostCode("2400", "08 71 00", "openings" if row.get("exterior") else "carpentry")
     if section == "hardware" and row.get("role") == "pocket_door_frame_kit":
         return _POCKET_FRAME_CODE
-    if section in ("placeables", "furnishings"):
-        trade = _placeable_trade(row)
-    elif section == "envelope_layers":
-        trade = layer_trade(str(row.get("function") or ""), str(row.get("scope") or ""),
-                            str(row.get("material") or "") or None)
-    elif section in ("wall_structure", "sheet_goods"):
-        trade = material_trade(str(row.get("material") or "") or None)
-    elif section == "framing":
-        types = row.get("types") or ()
-        trade = member_types_trade(types) if types else None
-    elif section == "hardware":
-        role = str(row.get("role") or "")
-        if role == "pv_seam_clamp":
-            trade = "electrical"
-        elif role in _ROOFING_HARDWARE_ROLES:
-            trade = "roofing"
-        elif role in _SIDING_HARDWARE_ROLES:
-            trade = "siding"
-        elif role in _CAST_HARDWARE_ROLES:
-            trade = "concrete"
-        elif role == "equipment_pad_anchor":
-            trade = "mechanical"
-    elif section == "cladding_trim":
-        trade = "roofing" if row.get("kind") == "roof" else "siding"
-    elif section == "edge_trim":
-        category = str(row.get("category") or "")
-        if category in _SIDING_EDGE_TRIM:
-            trade = "siding"
-        elif category == "movement_joint":
-            trade = "masonry"          # the mason seals the wythe's own end joints
-        elif category:
-            trade = "roofing"
-    elif section == "install_parts":
-        carrier = str(row.get("carrier") or "")
-        trade = {"appliance": "electrical", "pipe_accessory": "plumbing"}.get(carrier)
-        if "pairing kit" in str(row.get("part") or "").lower():
-            trade = "furniture"        # ships with the appliance (audit:2026-09-12)
-    elif section == "construction_returns":
-        category = str(row.get("category") or "")
-        by_material = material_trade(str(row.get("material") or "") or None)
-        if by_material == "landscaping":
-            trade = "landscaping"      # SRW block (audit:2026-09-12#masonry-corner-return)
-        elif "masonry" in category:
-            trade = "masonry"
-        elif "foam" in category:
-            trade = "insulation"
-        elif category.startswith("resilient-channel"):
-            trade = "drywall"
-        else:
-            trade = by_material if by_material in ("insulation", "drywall", "masonry") else None
-    elif section == "floor_finishes" and str(row.get("finish") or "").startswith("tile"):
-        trade = "tile"
-    elif section == "openings" and row.get("type") in (None, "", "None"):
-        # A rough opening with no product is the framer's buck (audit:2026-09-12).
-        trade = "framing"
-    elif section == "wood_surfaces":
-        by_material = material_trade(str(row.get("material") or "") or None)
-        if str(row.get("kind") or "") == "floor":
-            trade = "flooring"         # audit:2026-09-12#wood_surfaces:oak
-        elif by_material == "tile":
-            trade = "tile"             # audit:2026-09-12#wood_surfaces:tile
-    elif section == "railings" and str(row.get("style") or "") == "masonry":
-        trade = "masonry"              # audit:2026-09-12#railings:(masonry guard wall)
-    if trade is None:
-        return None
-    return _trade_code(section, trade)
+    trade = fact_trade(section, row)
+    return _trade_code(section, trade) if trade is not None else None
 
 
 def cost_code(section: str, key: str, overrides: dict[str, str] | None = None,

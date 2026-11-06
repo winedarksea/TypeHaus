@@ -102,6 +102,7 @@ def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """
     door_types = {item.tag: item for item in model.plan.library.door_types}
     window_types = {item.tag: item for item in model.plan.library.window_types}
+    milled = {item.tag for item in model.plan.library.materials if item.requires_custom_milling}
 
     groups: dict[tuple[str, str, float, float, str, str, bool], dict[str, object]] = {}
     for opening in model.openings:
@@ -149,6 +150,10 @@ def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             "operation": operation,
             # DoorType.function, so an [allowances] driver can count by it; None when unstated.
             "function": getattr(product, "function", None) if kind == "door" else None,
+            # Who hangs it (cost_facts): an exterior unit with the windows, an interior leaf
+            # with the carpenter, a shop-made one from the mill.
+            "exterior": kind != "door" or bool(getattr(product, "exterior", False)),
+            "custom_milled": getattr(product, "leaf_material_ref", None) in milled,
             "qualifier": qualifier,
             "width_in": width_in,
             "height_in": height_in,

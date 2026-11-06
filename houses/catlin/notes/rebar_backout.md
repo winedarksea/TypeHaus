@@ -818,3 +818,11 @@ addendum above is moot (no cap). `DECK_CAP_MIX` and the BuildDeck schedule are t
 Every FT-B-* strip 20" x 8" -> 25" x 10", 15" under FT-B-S1..S4 (geometry review C2 E1;
 `structural.footing_size`). Plain strips, no steel added: concrete 113.49 -> **118.25 cy**
 (§2), steel 5,091.6 lb, **43.1 lb/cy**.
+
+## Addendum 2026-11-05b — the 14" north-entry piers at (6) #5
+
+`PT-BW-W`/`-GW`/`-PE`/`-PNE` go (4) #5 → (6) #5 for ACI 318-19 §10.6.1.1's 1% on the gross
+area (`north_entry_piers.md` §13b, F5-106), and each takes six dowels: column #5 **80 → 96
+pieces, 470.3 → 558.8 lb**. Total **5,179.7 lb / 829 pieces** over the same 118.25 cy,
+**43.8 lb/cy**. Round-column dowels now lap beside their verticals on the bar circle, which
+moves no length.

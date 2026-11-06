@@ -548,7 +548,7 @@ def test_envelope_bills_more_than_the_sheathing(bom):
     assert not any(row["also_in_sheet_goods"] for row in sheathing
                    if in_slab_family(row["scope"]))
     assert not any(row["also_in_sheet_goods"] for row in bom["envelope_layers"]
-                   if row["function"] != "sheathing")
+                   if row["function"] != "sheathing" and row["scope"] != "ceiling")
 
 
 def test_a_roof_ceiling_bills_off_the_bearing_plane_not_the_deck(catlin_model, bom):
@@ -584,8 +584,9 @@ def test_a_roof_ceiling_bills_off_the_bearing_plane_not_the_deck(catlin_model, b
     assert house_ceiling > 0.0
     assert house_ceiling < house.surface_area_m2
 
-    # A ceiling is never billed as sheet goods: that scope belongs to FloorSystem decks.
-    assert not any(row["also_in_sheet_goods"] for row in rows)
+    # Only cavity fill is left on this plane: the board under it is a ceiling and bills
+    # between the walls (test_ceiling_board_bills_between_the_walls_once).
+    assert {row["function"] for row in rows} == {"insulation (cavity)"}
 
 
 def test_stair_finish_bills_treads_risers_and_landings(catlin_model, bom):
@@ -604,106 +605,36 @@ def test_stair_finish_bills_treads_risers_and_landings(catlin_model, bom):
     assert int(rows["ST-S2A"]["landing_decks"]) == 0
 
 
-def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_model):
-    """``FloorSystem.ceiling_below`` was read by nothing — a whole storey of ceiling drywall
-    absent from the order. The second floor authors 5/8" gypsum under its deck (that deck's
-    underside *is* the main storey's ceiling), and it has to bill over exactly the surface
-    its own subfloor covers: the same gross rectangle, less any stair opening.
+def test_ceiling_board_bills_between_the_walls_once(catlin_model, bom):
+    """Ceiling board bills off the rooms' ceilings plus faces no Room claims, never a deck's
+    or roof's gross outline: that ran the board over every wall top (~630 SF on catlin), and
+    the room liners billed twice. A liner's sheet row mirrors its priced SF row."""
+    from typehaus.takeoff.ceiling_areas import ceiling_area_m2, unroomed_ceilings
 
-    **Every deck in the house that has occupied space under it authors one**, and they
-    group into a single ``ceiling`` row because they are the same board at the same
-    thickness — so the deck-by-deck arithmetic is checked against each deck's *share* of
-    that row, not against the whole of it. `FS-S-WEST`/`FS-S-EAST` are the main storey's
-    ceiling, `FS-M-WEST`/`MECH`/`STAIR`/`EAST`/`NE` are the
-    basement's, and `FS-ATTIC` is the second storey's — the last one to be authored, and
-    while it was not, every bedroom below resolved open to the I-joists.
+    def board(ceilings) -> float:
+        return sum(area for layers, area in ceilings
+                   if any(layer.material_ref == "gwb" for layer in layers)) * 10.7639
 
-    Three rooms carve themselves back out of the blanket: ``RM-B-SAUNA``'s ``ceiling_lining``
-    override subtracts its clear face from ``FS-M-WEST``'s share and ``RM-S-PLANT``'s from
-    ``FS-ATTIC``'s, each billing under its own liner materials instead — the room-override
-    rows checked separately below. ``RM-B-ESS``'s two-layer Type X lid is the third.
-    """
-    from typehaus.resolve.geometry import polygon_area
-    from typehaus.takeoff.framing import sheet_goods_takeoff
+    rooms = board((c.layers, ceiling_area_m2(catlin_model, c)) for c in catlin_model.ceilings)
+    halls = board((p.layers, p.area_m2) for p in unroomed_ceilings(catlin_model))
+    assert 100 < halls < 120  # FO-A-HALL's sloped attic ceiling, ~109 SF
+    ceiling = {(row["scope"], row["material"]): row for row in bom["sheet_goods"]
+               if row["scope"].startswith("ceiling")}
+    assert float(ceiling[("ceiling", "gwb")]["net_area_sqft"]) == pytest.approx(
+        rooms + halls, abs=0.5)
+    assert not any(row["material"] == "gwb" for row in bom["envelope_layers"]
+                   if "ceiling" in row["scope"])
 
-    rows = sheet_goods_takeoff(catlin_model)
-    ceiling = {(row["material"], row["thickness_in"]): row for row in rows
-              if row["scope"] == "ceiling"}
-    # The gypsum family: plain 5/8" ceilings plus the moisture- and abuse-resistant ones
-    # the baths and mudroom now carry (gwb-mr / gwb-ar), summed into one blanket row here.
-    gwb_rows = [row for (material, thickness), row in ceiling.items()
-                if material.startswith("gwb") and thickness == 0.625]
-    gwb = {"net_area_sqft": str(sum(float(row["net_area_sqft"]) for row in gwb_rows))}
-
-    def _gross_sqft(tag: str) -> float:
-        floor = next(item for item in catlin_model.floors if item.tag == tag)
-        points = [point for member in floor.members for point in (member.p0, member.p1)]
-        return ((max(p[0] for p in points) - min(p[0] for p in points))
-                * (max(p[1] for p in points) - min(p[1] for p in points))) * 10.7639
-
-    def _opening_sqft(tag: str) -> float:
-        opening = next(element for element in catlin_model.plan.all_elements()
-                       if getattr(element, "tag", None) == tag)
-        return abs(polygon_area([p.xy_m for p in opening.outline])) * 10.7639
-
-    def _room_sqft(tag: str) -> float:
-        room = next(item for item in catlin_model.rooms if item.tag == tag)
-        return room.area_m2 * 10.7639
-
-    def _net_sqft(tag: str) -> float:
-        """The deck less every hole it declares — stair wells, chases and riser holes."""
-        system = catlin_model.plan.by_tag(tag)
-        return _gross_sqft(tag) - sum(_opening_sqft(hole) for hole in system.openings)
-
-    west_second_net = _net_sqft("FS-S-WEST")
-    east_second_net = _net_sqft("FS-S-EAST")
-    assert float(gwb["net_area_sqft"]) > west_second_net + east_second_net
-
-    # The main storey's wood bays are four systems, not two: the west half split at the
-    # bathroom node line so the mechanical-room and stair bays could bear on the x=10' line.
-    # FO-M-STAIR moved to FS-M-STAIR with the hole it cuts.
-    # FS-M-MECH gained FO-M-ERV-OA and FO-M-ERV-EA on 2026-09-15 — the ERV risers' own
-    # holes, the first this deck has ever declared. FO-M-ERV-OA grew west over both chase
-    # risers on 2026-09-23: 4.2 SF between them now, and the board stops at each exactly as
-    # the deck does.
-    # FO-M-ERV-EA folded into FO-M-ERV-OA on 2026-09-23; `_net_sqft` reads whatever holes
-    # each deck declares, so a new riser hole cannot leave this arithmetic stale.
-    # FS-M-NE replaced the cast SL-M-DECK band on 2026-11-01 (decision #112). The two
-    # room-level liner overrides carve their clear faces back out of the decks they hang
-    # under (the sauna out of FS-M-WEST, the plant room out of FS-ATTIC).
-    others = (_net_sqft("FS-M-WEST") + _net_sqft("FS-M-MECH") + _net_sqft("FS-M-STAIR")
-              + _net_sqft("FS-M-EAST") + _net_sqft("FS-M-NE"))
-    # FS-ATTIC has TWO holes in it. FO-A-HALL (103 SF) opens the deck over the ST-M2S well
-    # so the stair hall runs to the roof — and because this deck's underside IS the second
-    # storey's ceiling, the board stops at the void exactly as the deck does.
-    # `takeoff/framing.py` bills `gross - openings`; the GEOMETRY has to agree with it
-    # (`resolve/ceilings.py`) — the geometric half is test_ceilings.py, this line is the
-    # arithmetic half.
-    # ...less FO-A-RADON-STACK, which `deck_void_face` does not see from below: the gypsum
-    # is cut only where you can see up into a hole, and nothing below that one is ceilinged.
-    attic_net = _net_sqft("FS-ATTIC") + _opening_sqft("FO-A-RADON-STACK")
-    sauna_net = _room_sqft("RM-B-SAUNA")
-    plant_net = _room_sqft("RM-S-PLANT")
-    # RM-B-ESS carves its face out of the blanket too, and lines it with TWO 5/8" Type X
-    # layers — gypsum of the same thickness, so it nets +1 face inside this family.
-    ess_net = _room_sqft("RM-B-ESS")
-    total = (west_second_net + east_second_net + others + attic_net
-             - sauna_net - plant_net + ess_net)
-    assert float(gwb["net_area_sqft"]) == pytest.approx(total, abs=0.5)
-    assert float(ceiling[("gwb-x", 0.625)]["net_area_sqft"]) == pytest.approx(
-        2 * ess_net, abs=0.5)
-
-    # Several decks of several: the house's subfloor area is larger than this one ceiling.
-    subfloor_area = sum(float(row["net_area_sqft"]) for row in rows
-                        if row["scope"] == "subfloor")
-    assert 0 < float(gwb["net_area_sqft"]) < subfloor_area
-
-    # The sauna's own ceiling — T&G over foil-polyiso, over furring — bills under its own
-    # materials at its clear-face area, not under the blanket gwb row it carved itself out
-    # of.
-    sauna_tg = ceiling[("catlin-sauna-ceiling-shiplap", 0.75)]
-    assert float(sauna_tg["net_area_sqft"]) == pytest.approx(sauna_net, abs=0.5)
-
+    liners = {row["material"]: row for row in bom["envelope_layers"]
+              if row["scope"] == "ceiling" and row["also_in_sheet_goods"]}
+    for (scope, material), row in ceiling.items():
+        if scope == "ceiling lining":
+            assert row["also_in_envelope_layers"]
+            assert row["net_area_sqft"] == pytest.approx(liners[material]["net_area_sqft"])
+    # RM-B-ESS lines its lid with TWO 5/8" Type X layers.
+    ess = next(room for room in catlin_model.rooms if room.tag == "RM-B-ESS")
+    assert float(ceiling[("ceiling lining", "gwb-x")]["net_area_sqft"]) == pytest.approx(
+        2 * ess.area_m2 * 10.7639, abs=0.5)
 
 def test_conductors_bill_beside_the_raceway_they_pull_through(bom):
     """`conduit_takeoff` bills the pipe and none of the wire, so an estimate built on it

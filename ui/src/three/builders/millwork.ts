@@ -101,7 +101,7 @@ function buildTrimPieces(parent: THREE.Group, uid: string, materialRef: string,
 /** The trade a base run sets: a board, a tile base, a flash or rubber cove (geometry_millwork.py). */
 export function baseRunTrade(run: BaseRun): Trade {
   if (run.kind === "tile") return "tile";
-  return run.kind === "integral_cove" || run.kind === "resilient_base" ? "flooring" : "millwork";
+  return run.kind === "integral_cove" || run.kind === "resilient_base" ? "resilient" : "carpentry";
 }
 
 /** A derived base run on the room's finish face: a board, a tile base or a cove. It selects as its room. */

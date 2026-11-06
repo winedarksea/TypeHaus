@@ -39,9 +39,9 @@ def _trim(name: str, trade: str, ifc: str | None = _COVER, elevation: str | None
 
 
 def _drain(name: str, ifc: str, predefined: str, object_type: str | None = None,
-           elevation: str | None = None) -> C:
+           elevation: str | None = None, trade: str = "drainage") -> C:
     """Stormwater: IFC groups exactly these into ``IfcDistributionSystem/STORMWATER``."""
-    return C(name, trade="drainage", ifc_class=ifc, ifc_predefined=predefined,
+    return C(name, trade=trade, ifc_class=ifc, ifc_predefined=predefined,
              ifc_object_type=object_type, elevation_family=elevation,
              finish_group="accessory", billed_elsewhere=True)
 
@@ -121,8 +121,8 @@ ROWS: tuple[C, ...] = (
     _trim("screen_slat", "siding", ifc=_FOOTING, elevation=None, finish=None),
     _trim("movement_joint", "masonry"),  # a brick wythe's sealant end joint
     # Stormwater, gutter to daylight.
-    _drain("gutter", _PIPE, "GUTTER", elevation="trim"),
-    _drain("downspout", _PIPE, "RIGIDSEGMENT", elevation="trim"),
+    _drain("gutter", _PIPE, "GUTTER", elevation="trim", trade="gutters"),
+    _drain("downspout", _PIPE, "RIGIDSEGMENT", elevation="trim", trade="gutters"),
     _drain("sump", _CHAMBER, "SUMP"),
     _drain("drain_tile", _PIPE, "FLEXIBLESEGMENT"),
     _drain("french_drain", _CHAMBER, "TRENCH"),
@@ -187,7 +187,7 @@ ROWS: tuple[C, ...] = (
       for kind in ("deck", "platform", "band")),
     # A slab's own FINISH layer on its top (resolve/slab_layers.py): drawn apart from the
     # structure beneath it, so it carries what stands on the slab and what collides with it.
-    C("slab_finish", trade="millwork", ifc_class=_COVER, finish_group="element",
+    C("slab_finish", trade="carpentry", ifc_class=_COVER, finish_group="element",
       supports_on_top=True, collision=_HARD),
     C("footing", trade="concrete", ifc_class=_FOOTING, elevation_family="body",
       finish_group="element", material_refile="laid", is_pour=True, supports_on_top=True,

@@ -37,11 +37,11 @@ export type Trade =
   | "general" | "earth" | "drainage" | "landscaping"
   | "concrete" | "masonry"
   | "framing" | "stairs"
-  | "roofing"
-  | "siding" | "insulation" | "drywall" | "paint"
+  | "roofing" | "gutters"
+  | "siding" | "spray_foam" | "insulation" | "drywall" | "paint"
   | "openings"
-  | "tile" | "flooring" | "millwork"
-  | "plumbing" | "electrical" | "mechanical"
+  | "tile" | "flooring" | "resilient" | "carpentry" | "millwork" | "countertops"
+  | "plumbing" | "electrical" | "low_voltage" | "mechanical"
   | "furniture";
 export const ALL_TRADES: Trade[] = vocabulary.trades as Trade[];
 

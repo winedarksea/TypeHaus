@@ -50,8 +50,8 @@ export interface TradeSurfaces {
 export const TRADE_SURFACES: Record<Trade, TradeSurfaces> = {
   general: { plan: false, model: false },
   earth: { plan: false, model: true },
-  // Most of the stormwater run is gutters overhead and buried tile below; the sump pit is
-  // cast at the storey's own elevation and gets a plan glyph (PlanMarkers.tsx::SumpOutlines).
+  // Most of the stormwater run is buried tile; the sump pit is cast at the storey's own
+  // elevation and gets a plan glyph (PlanMarkers.tsx::SumpOutlines).
   drainage: { plan: true, model: true },
   landscaping: { plan: false, model: true },
   concrete: { plan: true, model: true },
@@ -59,16 +59,22 @@ export const TRADE_SURFACES: Record<Trade, TradeSurfaces> = {
   framing: { plan: true, model: true },
   stairs: { plan: true, model: true },
   roofing: { plan: false, model: true },
+  gutters: { plan: false, model: true },
   siding: { plan: true, model: true },
+  spray_foam: { plan: true, model: true },
   insulation: { plan: true, model: true },
   drywall: { plan: true, model: true },
   paint: { plan: true, model: true },
   openings: { plan: true, model: true },
   tile: { plan: false, model: true },
   flooring: { plan: false, model: true },
+  resilient: { plan: false, model: true },
+  carpentry: { plan: true, model: true },
   millwork: { plan: true, model: true },
+  countertops: { plan: true, model: true },
   plumbing: { plan: true, model: true },
   electrical: { plan: true, model: true },
+  low_voltage: { plan: true, model: true },
   mechanical: { plan: true, model: true },
   furniture: { plan: true, model: true },
 };

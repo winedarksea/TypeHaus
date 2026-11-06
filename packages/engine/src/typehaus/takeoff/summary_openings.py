@@ -20,7 +20,8 @@ _INTERIOR = ("Mark", "Tag", "Storey", "Location", "Size", "Operation", "Hand", "
 
 
 def openings_summary(inputs: SummaryInputs) -> list[SummaryTable]:
-    return [exterior_schedule(inputs), interior_door_schedule(inputs), hardware_sets(inputs)]
+    # Interior doors are the finish carpenter's (``summary_finishes.carpentry_summary``).
+    return [exterior_schedule(inputs), hardware_sets(inputs)]
 
 
 def exterior_schedule(inputs: SummaryInputs) -> SummaryTable:

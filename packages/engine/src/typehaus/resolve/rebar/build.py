@@ -21,7 +21,7 @@ from typehaus.resolve.assembly_material import is_cast_beam
 from typehaus.resolve.concrete import concrete_spec_for
 from typehaus.resolve.rebar import detailing as det
 from typehaus.resolve.rebar.beams import BEAM_ROLES, frame_of_ring, lay_beam
-from typehaus.resolve.rebar.cages import lay_column, lay_dowels
+from typehaus.resolve.rebar.cages import is_round, lay_column, lay_dowels
 from typehaus.resolve.rebar.junctions import lay_junction_bars
 from typehaus.resolve.rebar.mats import lay_mat
 from typehaus.resolve.rebar.records import ResolvedRebarSet
@@ -103,7 +103,7 @@ def resolve_rebar(model) -> list[ResolvedRebarSet]:
         sink, cover = _sink(plan, element, spec)
         if solid.category == "column":
             feet = lay_column(sink, spec, solid, cover)
-            _post_dowels(model, sink, spec, element, feet)
+            _post_dowels(model, sink, spec, element, feet, round_=is_round(solid.outline))
         elif solid.category == "beam":
             lay_beam(sink, spec.bars, frame_of_ring(solid.outline, solid.z0_m, solid.z1_m), cover)
         else:
@@ -398,7 +398,7 @@ def _contains(outline, x: float, y: float) -> bool:
     return bool(xs) and min(xs) <= x <= max(xs) and min(ys) <= y <= max(ys)
 
 
-def _post_dowels(model, sink: Sink, spec, element, feet) -> None:
+def _post_dowels(model, sink: Sink, spec, element, feet, *, round_: bool = False) -> None:
     entries = [e for e in spec.bars if e.role == "dowels"]
     vert = next((e for e in spec.bars if e.role == "vertical"), None)
     base_tag = getattr(element, "supported_by", None)
@@ -432,7 +432,11 @@ def _post_dowels(model, sink: Sink, spec, element, feet) -> None:
         pts = []
         for x, y, _ in feet:
             r = math.hypot(x - centre[0], y - centre[1]) or 1.0
-            pts.append((x - (x - centre[0]) / r * shift, y - (y - centre[1]) / r * shift))
+            ux, uy = (x - centre[0]) / r, (y - centre[1]) / r
+            # Round: beside its vertical ON the bar circle, so the hooks keep the verticals'
+            # spacing (ψr, §25.4.3.2). Rectangular: inboard, inside the tie's corner.
+            dx, dy = (-uy, ux) if round_ else (-ux, -uy)
+            pts.append((x + dx * shift, y + dy * shift))
         galv = sink.galvanized(entry)
         _, bend, ext = det.hook_geometry_in(entry.bar, "std90", galvanized=galv)
         leg = (bend / 2 + BARS[entry.bar].diameter_in + ext) * _IN

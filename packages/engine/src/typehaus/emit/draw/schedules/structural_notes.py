@@ -1,14 +1,9 @@
 """S-001 — general structural notes, derived and unconditional.
 
-The sheet a plan checker and a framer both open first, and the set had none: what it used
-to have was S-002, gated on "any specification section exists", which on catlin printed a
-single bullet. Everything here is read out of the resolved model, the jurisdiction profile
-or the wind basis the calculations themselves used — nothing is a constant typed twice.
-
-Decision #32 governs the whole sheet: a value the model does not carry prints
-``not stated``, never a plausible default. MNSPECT's rule that no note may say "per code"
-in lieu of a dimension is the same rule from the other side, and it is why every block
-below either prints a number or admits it has none.
+The sheet a plan checker and a framer both open first. Everything here is read out of the
+resolved model, the jurisdiction profile or the calcs' own wind basis — no constant typed
+twice. Decision #32: a value the model does not carry prints ``not stated``, never a
+plausible default (MNSPECT's "no 'per code' in lieu of a dimension" from the other side).
 """
 
 from __future__ import annotations
@@ -20,7 +15,11 @@ from typing import TYPE_CHECKING, Any
 from typehaus.checks.soil import site_soil_bearing_psf
 from typehaus.emit.draw.schedules.blocks import draw_note_page, paginate_note_blocks
 from typehaus.emit.draw.sheet_writer import schedule_sheet
-from typehaus.emit.draw.structural_common import truss_heel_note
+from typehaus.emit.draw.structural_common import (
+    flat_roof_snow_psf,
+    roof_snow_thermal_factor,
+    truss_heel_note,
+)
 from typehaus.resolve.concrete import concrete_spec_of
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff import hardware_takeoff
@@ -71,21 +70,25 @@ def _assemblies_in_use(model: ResolvedModel) -> list[str]:
     return sorted(tags)
 
 
-def _snow_case_rows(site: object, preferences: Preferences | None) -> list[str]:
+def _snow_case_rows(model: ResolvedModel, site: object,
+                    preferences: Preferences | None) -> list[str]:
     """Flat-roof, drift and unbalanced, as far as this model honestly knows them.
 
-    ``p_f`` is DERIVED (0.7 C_e C_t I_s p_g at C_e = I_s = 1.0 and C_t = 1.0, a heated
-    building) because that arithmetic is a one-liner nobody disagrees with. The drift is
-    AUTHORED, because the engine computes no part of it, and it prints the note that derives
-    it rather than a bare number. Unbalanced and sliding print as not computed, which is the
-    truth — a blank row would read as "zero".
+    ``p_f`` is DERIVED per distinct roof C_t (heated 1.0, unheated 1.2), each row naming its
+    roofs. The drift is AUTHORED, because the engine computes no part of it, and it prints the
+    note that derives it. Unbalanced and sliding print as not computed — a blank would read
+    as "zero".
     """
     ground = getattr(site, "ground_snow_load_psf", None)
     rows: list[str] = []
-    if ground:
-        rows.append(_row("FLAT-ROOF SNOW (P_F)",
-                         f"{0.7 * float(ground):.0f} psf "
-                         f"(0.7 C_e C_t I_s P_G, C_e = C_t = I_s = 1.0)"))
+    by_ct: dict[float, list[str]] = {}
+    for roof in model.roofs if ground else ():
+        by_ct.setdefault(roof_snow_thermal_factor(model, roof), []).append(roof.tag)
+    for i, (c_t, tags) in enumerate(sorted(by_ct.items())):
+        basis = "AT" if i else "(0.7 C_e C_t I_s P_G, C_e = I_s = 1.0),"
+        rows.append(_row("" if i else "FLAT-ROOF SNOW (P_F)",
+                         f"{flat_roof_snow_psf(float(ground), c_t):.0f} psf {basis} "
+                         f"C_t = {c_t:.1f}: {_tags(sorted(tags))}"))
     structural = getattr(preferences, "structural", None)
     drift = getattr(structural, "roof_beam_snow_psf", None)
     if drift:
@@ -107,12 +110,8 @@ def design_criteria_block(model: ResolvedModel,
                           preferences: Preferences | None = None) -> list[str]:
     """IRC Table R301.2(1) / IBC 1603.1 climatic and geographic design criteria.
 
-    ** GROUND SNOW ALONE IS NOT WHAT A TRUSS FABRICATOR NEEDS. ** This block printed p_g and
-    stopped, and a fabricator reading "50 psf ground snow" prices ordinary trusses. On this
-    house the governing roof case is a Sec 7.7 roof-step drift off the north gable that
-    roughly doubles the balanced load over the entry canopy and reaches 3.8 ft into the
-    garage roof besides. The flat-roof, drift and unbalanced rows below exist so the number
-    reaches the sheet the bid is taken from.
+    Ground snow alone is not what a truss fabricator needs: the flat-roof, drift and
+    unbalanced rows put the governing number on the sheet the bid is taken from.
     """
     site = getattr(getattr(model.plan, "project", None), "site", None)
     basis = wind_basis(site) if site is not None else None
@@ -121,10 +120,8 @@ def design_criteria_block(model: ResolvedModel,
         _row("MODEL CODE", _value(getattr(profile, "irc_base", None))),
         _row("GROUND SNOW LOAD", _value(getattr(site, "ground_snow_load_psf", None), " psf")),
     ]
-    lines.extend(_snow_case_rows(site, preferences))
-    # V_ult through ``wind_basis`` rather than off the site directly: a speed with no
-    # exposure produces no pressure, and the calcs read it through the same gate. A sheet
-    # that printed the half-authored speed would print a number no calculation used.
+    lines.extend(_snow_case_rows(model, site, preferences))
+    # Through ``wind_basis``, the calcs' gate: a speed with no exposure is no pressure.
     if basis is not None:
         lines.append(_row("DESIGN WIND (V_ult)", f"{basis.speed_mph:.0f} mph, "
                                                  f"EXPOSURE {basis.exposure}, "
@@ -149,14 +146,11 @@ def design_criteria_block(model: ResolvedModel,
     lines.append(_row("DECK / BALCONY LOAD",
                       f"{DECK_LIVE_LOAD_PSF:.0f} psf LIVE + {DECK_DEAD_LOAD_PSF:.0f} psf "
                       "DEAD (IRC R507.1 / TABLE R301.5)"))
-    # The honest gap. Habitable-room, sleeping-room, stair and attic live loads are IRC
-    # Table R301.5 rows this model carries nowhere, and printing the table from memory
-    # would be exactly the "per code" note MNSPECT rejects.
+    # R301.5 room/stair/attic live loads are carried nowhere; a table from memory is the
+    # "per code" note MNSPECT rejects.
     lines.append(_row("OTHER R301.5 LOADS", NOT_STATED + " — not carried by this model"))
-    # SEISMIC left this sentence on 2026-09-15. It is a JURISDICTION fact (IRC Table
-    # R301.2.2.1, assigned from the site's mapped spectral response), so it prints from the
-    # profile like the frost depth and the soil bearing above it — and prints NOT STATED,
-    # honestly, on a profile that declares none rather than defaulting to the mildest row.
+    # A JURISDICTION fact (IRC Table R301.2.2.1), from the profile like the frost depth;
+    # NOT STATED when it declares none, never the mildest row.
     lines.append(_row("SEISMIC DESIGN CATEGORY",
                       _value(getattr(profile, "seismic_design_category", None))))
     lines.append("WEATHERING, TERMITE, ICE BARRIER, FLOOD, AIR-FREEZING INDEX AND")

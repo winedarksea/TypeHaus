@@ -8,7 +8,8 @@ rectangular ties and verticals shared out around the tie's inside corners. Ties 
 
 A dowel (decision D6) is an L: a standard 90° foot resting ON the base pour's bottom mat, up
 through the base, and a full lap above the underside of the verticals it laps — beside each
-vertical, one contact diameter inboard. The base is the pad, footing or wall a post is
+vertical, one contact diameter along the bar circle on a round column (the hooks keep the
+verticals' spacing), inboard on a rectangular one. The base is the pad, footing or wall a post is
 ``supported_by``. No base, no dowel; ``integrity.reinforcement_layout`` reports the role
 that placed nothing.
 """

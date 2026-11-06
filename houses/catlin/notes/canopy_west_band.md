@@ -370,11 +370,11 @@ straps' outer faces stand 2.75 + 0.135 = 2.885" off the axis, 1.5" either side o
 14" round                                                   cover 7 − 3.252 = 3.75"   OK
 ```
 
-The same 8" cage fits a 14" at 3" of cover; turn it so its four #5s sit on the diagonals, where a
-bar at (2.34", 2.34") clears the strap zone (|y| ≤ 1.5") by 0.53". The west piers' seat beams gain
-an inch of bearing (3 1/4" → 4 1/4"). `deck_post` then reads ACI 318-19 §10.6.1.1's 1% floor on
-§10.3.1.2's reduced effective area — half the 153.9 in2 gross, 0.770 in2 against (4) #5's 1.24 —
-because each column is at a strength ratio under 0.04 and far larger than its load needs.
+The west piers' seat beams gain an inch of bearing (3 1/4" → 4 1/4"). **Since 2026-11-05 the
+14" cage is (6) #5 at 2" cover** (`north_entry_piers.md` §13b): 1.86 in2 against ACI 318-19
+§10.6.1.1's 1.539 on the gross area, its bars on a 4.3125" circle clearing the strap corners by
+0.75" at any rotation. Until then it was the 12" rounds' 8" (4) #5 cage at 3" cover, turned onto
+the diagonals, and met the 1% floor only on §10.3.1.2's half area (an engineer hold).
 
 ## 6. The open front: chord, couple, drift
 

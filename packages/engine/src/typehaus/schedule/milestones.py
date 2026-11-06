@@ -27,11 +27,12 @@ from typehaus.schedule.model import Milestone
 MILESTONE_SPECS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     ("preconstruction", "Preconstruction", ("general",)),
     ("foundation", "Foundation", ("earth", "concrete", "drainage")),
-    ("weathertight", "Weathertight", ("framing", "masonry", "roofing", "openings", "siding")),
-    ("rough_ins", "Rough-ins", ("plumbing", "electrical", "mechanical")),
-    ("insulated", "Insulated and closed up", ("insulation",)),
-    ("final", "Finishes", ("drywall", "paint", "millwork", "tile", "flooring", "stairs",
-                           "furniture")),
+    ("weathertight", "Weathertight", ("framing", "masonry", "roofing", "openings", "siding",
+                                      "gutters")),
+    ("rough_ins", "Rough-ins", ("plumbing", "electrical", "low_voltage", "mechanical")),
+    ("insulated", "Insulated and closed up", ("spray_foam", "insulation")),
+    ("final", "Finishes", ("drywall", "paint", "millwork", "carpentry", "countertops", "tile",
+                           "flooring", "resilient", "stairs", "furniture")),
     ("complete", "Complete", ("landscaping",)),
 )
 

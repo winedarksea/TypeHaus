@@ -470,6 +470,38 @@ ENTRY_MOMENT_CAGE = ReinforcementSpec(
     lap_class="B",
     source="ENTRY_PIER_CAGE plus its base dowels; notes/north_entry_piers.md §6",
 )
+
+#: ** (6) #5 IN THE 14" ROUND (2026-11-05, F5-106). ** (4) #5 is 0.806% of the 14" gross,
+#: under ACI 318-19 §10.6.1.1's 1% (1.539 in2); six give 1.86 in2, 1.21%, with no reliance on
+#: §10.3.1.2's reduced area. A 10" cage at the same 2" cover: verticals 4.31" c-c. Each dowel
+#: laps BESIDE its vertical on the bar circle, not inside it, so the hooks keep 4.31" >= 6 db
+#: (inside, 3.69" would take psi_r to 1.6). notes/north_entry_piers.md §13b.
+ENTRY_PIER_CAGE_14 = ReinforcementSpec(
+    bars=(
+        BarSpec(role="vertical", bar=5, count=6),
+        BarSpec(role="ties", bar=3, spacing=inch(10.0)),
+    ),
+    cover=inch(2.0),
+    lap_class="B",
+    source='10" cage, (6) #5 + #3 rings @ 10", the 14" rounds; notes/north_entry_piers.md §13b — ACI 318-19 §10.6.1.1 1% on the gross area',
+)
+ENTRY_MOMENT_CAGE_14 = ReinforcementSpec(
+    bars=(
+        BarSpec(role="vertical", bar=5, count=6),
+        BarSpec(role="ties", bar=3, spacing=inch(10.0)),
+        BarSpec(role="dowels", bar=5,
+                note="one per vertical, lapped beside it on the bar circle, hooked into the pad"),
+    ),
+    cover=inch(2.0),
+    lap_class="B",
+    source="ENTRY_PIER_CAGE_14 plus its base dowels; notes/north_entry_piers.md §13b",
+)
+
+#: Pier size -> (plain cage, moment cage, drawing text). Both spellings, always.
+PIER_CAGES = {
+    "12 round": (ENTRY_PIER_CAGE, ENTRY_MOMENT_CAGE, '(4) #5 vertical, #3 ties @ 10" o.c.'),
+    "14 round": (ENTRY_PIER_CAGE_14, ENTRY_MOMENT_CAGE_14, '(6) #5 vertical, #3 ties @ 10" o.c.'),
+}
 #: ** THE WEST PAIR JOINED ON 2026-09-20, AND THEY HAD BEEN MISSING ALL ALONG. ** This set
 #: covered `FS-BW-FLOOR`'s EAST fixed column and the two canopy columns, and `PT-BW-W` /
 #: `PT-BW-GW` — the deck's west line — were left on the plain cage with 8"/10" pads. That was
@@ -557,9 +589,13 @@ _HEAD_CONNECTORS = {"PT-BW-W": CBSQ66_HEAD, "PT-BW-GW": CBSQ66_HEAD,
 
 #: ** 14" UNDER A CAST-IN CBSQ (2026-09-30). ** ESR-3050 Table 1 fn. 4 wants 3" of side cover
 #: to the embedded straps, and on a 12" round their corners get 2 3/4" (3.25" off the axis).
-#: 14" gives 3 3/4", keeps the same 8" cage at 3" of cover, and gives the seat beam 4 1/4" of
-#: bearing on the pier instead of 3 1/4" (notes/canopy_west_band.md §5).
+#: 14" gives 3 3/4" and gives the seat beam 4 1/4" of bearing on the pier instead of 3 1/4"
+#: (notes/canopy_west_band.md §5). Its cage is (6) #5 (`ENTRY_PIER_CAGE_14`).
 _PIER_SIZE = {"PT-BW-W": "14 round", "PT-BW-GW": "14 round"}
+
+
+def _cage(tag):
+    return PIER_CAGES[_PIER_SIZE.get(tag, "12 round")]
 
 FOOTINGS = []
 #: The house-side pads run 18" north-south rather than the 24" their square drew, because
@@ -598,8 +634,9 @@ for _uid, _tag, _x, _height in (
         # of 16db = 10.0", 48dt = 18.0", h = 12.0". The column is at d/c ~0.023 and NONE of
         # that is why these bars are here -- the 1% floor is a creep/shrinkage/accidental-
         # moment rule, indifferent to load. Galvanized, house-wide (EXPOSED_MIX, A767).
-        vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
-        reinforcement=ENTRY_MOMENT_CAGE if _tag in _MOMENT_PIERS else ENTRY_PIER_CAGE,
+        # The 14" rounds take (6) #5 (`PIER_CAGES`).
+        vertical_reinforcement=_cage(_tag)[2],
+        reinforcement=_cage(_tag)[1 if _tag in _MOMENT_PIERS else 0],
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
     FOOTINGS.append(Pad(
         uid=f"BWF{_uid[4:8]}AA", tag=f"PD-BW-{_tag.split('-')[-1]}",
@@ -676,8 +713,8 @@ for _uid, _tag, _x, _pad_in, _top in (
         head_connector=_HEAD_CONNECTORS[_tag],
         height=ft(_top - GARAGE_FOOTING_TOP_FT),
         assembly=pier_assembly(_PIER_SIZE.get(_tag, "12 round")),
-        vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
-        reinforcement=ENTRY_MOMENT_CAGE if _tag in _MOMENT_PIERS else ENTRY_PIER_CAGE,
+        vertical_reinforcement=_cage(_tag)[2],
+        reinforcement=_cage(_tag)[1 if _tag in _MOMENT_PIERS else 0],
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
     # ** THESE THREE LAP THE GARAGE STRIP FOOTING, AND THE LAP IS A DISPLACEMENT. ** They are
     # cast at -7'-0" on `FT-GF-S1`/`-S3`'s own plane, in the same excavation and at the same
@@ -736,7 +773,7 @@ _EAST_POSTS, _EAST_PIERS, _EAST_PADS = east_supports(
     EAST_POST_SYSTEM, x_ft=ROOF_COLUMN_EAST_X_FT,
     stations={"RE": ("BWPT03AAAA", PIER_LINE_Y_FT), "RNE": ("BWPT04AAAA", GARAGE_SEAT_Y_FT)},
     header_soffit_ft=HEADER_SOFFIT_FT, pack_ft=STANDOFF_PACK_IN / 12,
-    moment_cage=ENTRY_MOMENT_CAGE,
+    cages=PIER_CAGES,
     house_pad=("BWF03AAAA",
                lambda y: _pad_outline(ROOF_COLUMN_EAST_X_FT, y, _PAD_WIDE_IN, _PAD_DEPTH_IN),
                FOOTING_TOP_FT, MOMENT_PAD_DEPTH_FT),

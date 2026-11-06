@@ -25,12 +25,13 @@ TRADE_GROUPS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     ("site", "Site", ("general", "earth", "drainage", "landscaping")),
     ("concrete_masonry", "Concrete & masonry", ("concrete", "masonry")),
     ("structure", "Framing", ("framing", "stairs")),
-    ("roof", "Roof", ("roofing",)),
-    ("walls", "Walls", ("siding", "insulation", "drywall", "paint")),
+    ("roof", "Roof", ("roofing", "gutters")),
+    ("walls", "Walls", ("siding", "spray_foam", "insulation", "drywall", "paint")),
     ("openings", "Openings", ("openings",)),
-    ("finishes", "Finishes", ("tile", "flooring", "millwork")),
+    ("finishes", "Finishes", ("tile", "flooring", "resilient", "carpentry", "millwork",
+                              "countertops")),
     ("plumbing", "Plumbing", ("plumbing",)),
-    ("electrical", "Electrical", ("electrical",)),
+    ("electrical", "Electrical", ("electrical", "low_voltage")),
     ("mechanical", "Mechanical", ("mechanical",)),
     ("furniture", "Furniture", ("furniture",)),
 )
@@ -40,27 +41,34 @@ TRADE_GROUP: dict[str, str] = {
     trade: group_id for group_id, _label, trades in TRADE_GROUPS for trade in trades}
 
 #: What a chip or an estimate heading prints. Scope notes are in ``plans/`` (the trade
-#: audit), not here.
+#: audit), not here. A trade is the smallest scope some house bids alone (decision #115);
+#: which trades one sub takes together, or the owner does, is the house's ``[crews]``.
 TRADE_LABELS: dict[str, str] = {
     "general": "General conditions",   # permits, insurance, dumpsters, scaffolding
     "earth": "Earthwork",              # excavation, backfill, grading, aggregate base
-    "drainage": "Drainage",            # tile, drywell, sump, gutters, footing bedding
+    "drainage": "Drainage",            # tile, drywell, sump, leaders, footing bedding
     "landscaping": "Landscaping",      # sod, rootzone, geotextile, SRW block, final grade
     "concrete": "Concrete",            # everything cast, reinforcement, cast-in anchors
     "masonry": "Masonry",              # brick veneer, fireplace wythe, CMU
     "framing": "Framing",              # sticks, sheathing, structural hardware, laid decks
     "stairs": "Stairs & guards",       # stringers, treads, newels, guards, handrails
     "roofing": "Roofing",              # standing seam, underlayment, drip, snow retention
+    "gutters": "Gutters",              # gutters, downspouts, their formed trim
     "siding": "Siding & trim",         # cladding, WRB, furring, corners, fascia, eave soffit
-    "insulation": "Insulation",        # foam, batts, blown, rim foam, air sealing
+    "spray_foam": "Spray foam",        # closed/open-cell SPF, rim foam
+    "insulation": "Insulation",        # batts, blown, rigid board on framing, air sealing
     "drywall": "Drywall",              # gwb, resilient channel, dropped soffits, ceilings
     "paint": "Paint",                  # latex, accent, foundation coating
-    "openings": "Windows & doors",     # windows, doors, glazing, door hardware
+    "openings": "Windows & doors",     # windows, exterior doors, glazing, their hardware
     "tile": "Tile",                    # floor/wall tile, uncoupling membrane, backer
-    "flooring": "Flooring",            # carpet, LVP, oak, rubber, sheet vinyl, sealed slab
-    "millwork": "Millwork & casework", # casework, built-ins, tops, paneling, interior trim
+    "flooring": "Wood & LVP flooring", # oak, LVP, plank floors
+    "resilient": "Carpet & resilient", # carpet and pad, sheet vinyl, rubber
+    "carpentry": "Finish carpentry",   # interior doors, trim, casework, built-ins, paneling
+    "millwork": "Custom millwork",     # shop-milled hardwood: trim, wood tops, custom doors
+    "countertops": "Countertops",      # stone, quartz, solid surface: templated and set
     "plumbing": "Plumbing",            # pipe, fittings, sleeves, fixtures, water heater
     "electrical": "Electrical",        # devices, conduit, conductors, PV, inverter, battery
+    "low_voltage": "Low voltage",      # data, PoE devices, Class 2 controls, LED tape
     "mechanical": "Mechanical",        # ducts, registers, ERV, heat pumps, floor heat
     "furniture": "Furniture & appliances",  # loose furniture, appliances, window treatments
 }
@@ -81,8 +89,10 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
 
 
 #: Stormwater, derived from the table so the two can never disagree (``emit/ifc/mep.py``).
+#: The gutter is the run's head, whoever hangs it.
 DRAINAGE_CATEGORIES = frozenset(
-    category for category, trade in SOLID_CATEGORY_TRADE.items() if trade == "drainage")
+    category for category, trade in SOLID_CATEGORY_TRADE.items()
+    if trade in ("drainage", "gutters"))
 
 #: In-line supply devices, derived from the enum. The IFC emitter skips these in its generic
 #: solid loop; ``_emit_pipe_accessories`` owns them.
@@ -111,8 +121,9 @@ def solid_trade(category: str | None) -> str:
 #: Every trade, in the order work happens. Ties break toward the trade harder to redo.
 CONSTRUCTION_SEQUENCE: tuple[str, ...] = (
     "general", "earth", "concrete", "drainage", "framing", "masonry", "roofing",
-    "openings", "siding", "plumbing", "electrical", "mechanical", "insulation", "drywall",
-    "paint", "millwork", "tile", "flooring", "stairs", "furniture", "landscaping",
+    "openings", "siding", "gutters", "plumbing", "electrical", "low_voltage", "mechanical",
+    "spray_foam", "insulation", "drywall", "paint", "millwork", "carpentry", "countertops",
+    "tile", "flooring", "resilient", "stairs", "furniture", "landscaping",
 )
 
 #: What must be substantially complete before a trade starts. A map rather than the linear
@@ -128,18 +139,26 @@ TRADE_PREDECESSORS: dict[str, tuple[str, ...]] = {
     "roofing": ("framing",),
     "openings": ("framing",),
     "siding": ("roofing", "openings"),
+    "gutters": ("siding",),            # hung on the fascia the siding crew closes
     "plumbing": ("framing", "roofing"),
     "electrical": ("framing", "roofing"),
+    "low_voltage": ("framing", "roofing"),
     "mechanical": ("framing", "roofing"),
-    "insulation": ("plumbing", "electrical", "mechanical"),
-    "drywall": ("insulation",),
+    "spray_foam": ("plumbing", "electrical", "low_voltage", "mechanical"),
+    # Flash-and-batt: the batts go in over the cured foam.
+    "insulation": ("plumbing", "electrical", "low_voltage", "mechanical", "spray_foam"),
+    "drywall": ("spray_foam", "insulation"),
     "paint": ("drywall",),
     "millwork": ("paint",),
+    "carpentry": ("paint", "millwork"),
+    "countertops": ("carpentry",),     # templated off the set cabinets
     "tile": ("drywall",),
     "flooring": ("paint",),
+    "resilient": ("paint",),
     "stairs": ("drywall",),
-    "furniture": ("paint", "flooring", "millwork", "plumbing", "electrical", "mechanical"),
-    "landscaping": ("drainage", "siding"),
+    "furniture": ("paint", "flooring", "resilient", "carpentry", "countertops", "plumbing",
+                  "electrical", "low_voltage", "mechanical"),
+    "landscaping": ("drainage", "siding", "gutters"),
 }
 
 

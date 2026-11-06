@@ -99,7 +99,7 @@ def drywall_summary(inputs: SummaryInputs) -> list[SummaryTable]:
         sheets_for,
         wall_layer,
     )
-    from typehaus.takeoff.coating_areas import ceiling_area_m2
+    from typehaus.takeoff.ceiling_areas import ceiling_area_m2, ceiling_pieces
 
     model = inputs.model
     plan = model.plan
@@ -114,12 +114,13 @@ def drywall_summary(inputs: SummaryInputs) -> list[SummaryTable]:
             board[(wall.storey, "walls", material, thickness, length)] += area
     ceiling_areas: dict[str, float] = defaultdict(float)
     for ceiling in model.ceilings:
-        area = ceiling_area_m2(model, ceiling)
-        ceiling_areas[ceiling.room_ref] += area
-        for layer in ceiling.layers:
+        ceiling_areas[ceiling.room_ref] += ceiling_area_m2(model, ceiling)
+    # The BOM's own walk, so a hall no Room claims is board here too.
+    for piece in ceiling_pieces(model):
+        for layer in piece.layers:
             if layer.material_ref in gypsum:
-                board[(ceiling.storey, "ceilings", layer.material_ref, layer.thickness.meters,
-                       order_sheet_length_in(layer_sheet_length_in(layer)))] += area
+                board[(piece.storey, "ceilings", layer.material_ref, layer.thickness.meters,
+                       order_sheet_length_in(layer_sheet_length_in(layer)))] += piece.area_m2
     rows = []
     for (storey, surface, material, thickness, length), area in sorted(
             board.items(), key=lambda kv: (order.get(kv[0][0], 99), *kv[0][1:])):

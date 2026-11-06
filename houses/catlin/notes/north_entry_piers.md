@@ -1541,23 +1541,27 @@ the pier tops (−34" to −16.19") the pier faces the foundation's XPS and coat
 the main wall's cladding (36'-6 3/4") starts above the pier tops, at −13 7/16". 14": 6.94" clear
 to the foam, 11" to concrete. 12": 7.94" / 12".
 
-**13b. Section and cage, 14" round**
+**13b. Section and cage, 14" round — (6) #5 since 2026-11-05**
 
 | term | working | value |
 |---|---|---|
 | gross area | π (14/2)² | 153.94 in² |
-| §10.6.1.1 floor on A_g | 0.01 x 153.94 | 1.539 in² — (4) #5's 1.24 is **short** |
-| ρ on A_g | 1.24 / 153.94 | 0.806% |
-| §10.3.1.2 least effective area | A_g / 2 | 76.97 in² |
-| §10.6.1.1 floor on it | 0.01 x 76.97 | 0.770 in² ≤ 1.24 |
-| φP_n,max on A_eff | 0.65 x 0.80 x [0.85 x 5,000 x (76.97 − 1.24) + 60,000 x 1.24] | 206,050 lb vs 7,457 (`PT-BW-W`) |
+| §10.6.1.1 floor on A_g | 0.01 x 153.94 | 1.539 in² |
+| provided | (6) #5 = 6 (0.31) | 1.86 in² → ρ = 1.208% |
+| bar circle | 7 − 2 cover − 0.375 tie − 0.3125 | r = 4.3125" |
+| vertical c-c / clear | 2 r sin 30° | 4.31" / 3.69" ≥ 1.5" (§25.2.3) |
+| dowel c-c, lapped beside each vertical | same circle | 4.31" ≥ 6 d_b = 3.75" → ψ_r 1.0 (§25.4.3.2) |
 | tie spacing | least of 16 d_b = 10.0", 48 d_t = 18.0", h = 14" | 10" |
 
-**ENGINEER HOLD.** The (4) #5 cage meets ACI 318-19 §10.6.1.1 only on §10.3.1.2's reduced
-effective area (a column larger than its load needs may base its minimum steel on an area not
-less than half the gross). `deck_post` takes exactly that basis (77.0 in² / 0.770 in², ρ 0.806%
-on gross). The alternative is six #5 (1.86 in²) on the gross 1.539. The engineer of record
-confirms the §10.3.1.2 basis for `PT-BW-W`/`-GW`/`-PE`/`-PNE`, or the cage goes to (6) #5.
+The (4) #5 cage this carried was 1.24 / 153.94 = 0.806%, under the gross floor, and met it only
+on §10.3.1.2's half area (0.770 in² on 76.97 in²) — an engineer hold (C3-E21, F5-106). Six bars
+take the gross floor outright, so `deck_post` no longer claims §10.3.1.2 on these four. The cage
+is 10" at the 12" rounds' 2" cover, not the 8" cage at 3": six dowels lapped inside six
+verticals at 2" stand 3.69" apart, and at 3" cover 2.69", both under 6 d_b, which would take
+ψ_r to 1.6 and ℓ_dh to 11.38" against the pad's 9". **Lap each dowel beside its vertical, on the
+bar circle.** The CBSQ strap corners are 3.252" off the axis (`canopy_west_band.md` §5e), so a
+bar on the 4.3125" circle clears them by 4.3125 − 3.252 − 0.3125 = 0.75" at any rotation. The
+12" rounds keep (4) #5 (§6, 1.096%).
 
 **13c. Slenderness, 14".** r = 0.25 x 14 = 3.50", I_g = π 14⁴ / 64 = 1,885.7 in⁴, E_c = 57,000
 √5,000 = 4.031e6 psi, EI = 0.4 E_c I_g / 1.6 = 1.900e9 lb-in²:
@@ -1569,8 +1573,8 @@ confirms the §10.3.1.2 basis for `PT-BW-W`/`-GW`/`-PE`/`-PNE`, or the cage goes
 
 The 12" `PT-BW-E` at the same 91.25" reads 30.4 (§6's 92" row predates §12a's 3/4"). `PT-BW-PE`
 / `-PNE` are fixed-base sway columns (k 2.1), graded in bending with `canopy_garage_diaphragm.md`
-§5a; only their cage (13b) is this note's. `deck_post` agrees on all four: ρ 0.806% on gross,
-0.770 in² on §10.3.1.2's half area, `PT-BW-W`/`-GW` k l_u/r 26.1 / 17.1.
+§5a; only their cage (13b) is this note's. `deck_post` agrees on all four: 1.539 in² on the
+gross area against (6) #5's 1.86, `PT-BW-W`/`-GW` k l_u/r 26.1 / 17.1.
 
 
 ## Addendum 2026-11-02 — direct-mounted white MDO

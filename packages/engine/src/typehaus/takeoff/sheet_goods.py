@@ -8,16 +8,8 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from shapely.geometry import Polygon
-
 from typehaus.model.enums import LayerFunction
-from typehaus.model.floors import FloorOpening, FloorSystem, Slab
-from typehaus.model.spatial import Room
-from typehaus.resolve.ceiling_over import (
-    ceiling_regions,
-    deck_structure_underside_m,
-    deck_void_face,
-)
+from typehaus.model.floors import FloorSystem
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
@@ -29,15 +21,17 @@ from typehaus.resolve.sheet_stock import (
     sheets_for,
     wall_sheathing,
 )
+from typehaus.takeoff.ceiling_areas import ceiling_pieces
 from typehaus.takeoff.ceiling_framing import ceiling_lining_members
 from typehaus.takeoff.sheet_rips import rip_sheet_rows, rip_stock
 
 _M2_TO_FT2 = 10.7639104167
 _M_TO_FT = 3.280839895013123
 
-#: Hung-sheathing scopes ``takeoff/envelope.py`` also bills by the SF (its ``wall`` / ``roof``
-#: SHEATHING rows). The estimate prices the SF side and skips these (``cli/prices.py``).
-_ALSO_IN_ENVELOPE = frozenset({"exterior wall", "roof"})
+#: Scopes ``takeoff/envelope.py`` also bills by the SF: hung sheathing (its ``wall`` / ``roof``
+#: SHEATHING rows) and a room's own ceiling liner. The estimate prices the SF side and skips
+#: these (``cli/prices.py``).
+_ALSO_IN_ENVELOPE = frozenset({"exterior wall", "roof", "ceiling lining"})
 
 
 def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -115,21 +109,6 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             sheet = abs(polygon_area(list(floor.deck_outline))) if floor.deck_outline else framed
             areas[("subfloor", system.subfloor.material_ref,
                    system.subfloor.thickness.meters, None)] += sheet - openings
-            # ``FloorSystem.ceiling_below`` is the same kind of sheet on the underside of
-            # the same deck — and it is nailed to the JOISTS, so it keeps the framed extent
-            # whatever the sheet above does.
-            #
-            # It does NOT take the same opening deduction, though. The subfloor above is
-            # genuinely cut around everything that passes through the deck; the ceiling below
-            # is only cut where you can see up into it. A chase full of brick takes plywood
-            # out and leaves the gypsum whole, so the ceiling asks `deck_void_face` — the one
-            # place that rule lives — instead of re-summing every opening.
-            under = deck_structure_underside_m(storey, system)
-            voids = deck_void_face(model.plan, storey.tag, system, model.walls, under)
-            ceiling = framed - (0.0 if voids is None else voids.area)
-            for layer in _sheets(model, system.ceiling_below):
-                areas[("ceiling", layer.material_ref, layer.thickness.meters,
-                       layer_sheet_length_in(layer))] += ceiling
 
     # A lined well: the same board run down the joist band on every edge.
     for floor in model.floors:
@@ -143,46 +122,14 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         for material, thickness, area in block.layers:
             areas[("fireblock", material, thickness, None)] += area
 
-    # A structural Slab's own ceiling_below (a room sitting under a cast deck) bills the
-    # same way, net of its floor openings — meaningless, and left unauthored, on a
-    # slab-on-grade with no occupied space below it.
-    for storey in model.plan.storeys:
-        for slab in model.plan.storey_elements(storey.tag):
-            if (not isinstance(slab, Slab) or not slab.ceiling_below
-                    or slab.datum != "structure"):
-                continue
-            net = max(0.0, abs(polygon_area([point.xy_m for point in slab.outline])) - sum(
-                abs(polygon_area([point.xy_m for point in opening.outline]))
-                for opening in model.plan.storey_elements(storey.tag)
-                if isinstance(opening, FloorOpening) and opening.tag in slab.openings))
-            for layer in _sheets(model, slab.ceiling_below):
-                areas[("ceiling", layer.material_ref, layer.thickness.meters,
-                       layer_sheet_length_in(layer))] += net
-
-    # A room's own ``ceiling_lining`` override replaces the covering deck's generic
-    # billing over just its own clear face — the same clip-and-rebill ``FinishZone``/
-    # ``WallPaneling.replaces_wall_finish`` apply to a base billing they only partly cover.
-    for room in model.rooms:
-        plan_room = model.plan.by_tag(room.tag)
-        if not isinstance(plan_room, Room) or not plan_room.ceiling_lining:
-            continue
-        face = Polygon(room.clear_face)
-        # Per REGION, not per deck: a room straddling two decks takes only its own share
-        # out of each one's blanket billing, or the second subtraction credits back area
-        # that deck never billed (catlin's RM-B-GYM is 234 SF of FS-M-EAST and 90 of
-        # SL-M-DECK, not 324 of each).
-        # The lining bills what it carved, not ``room.area_m2``: a strip of the room over a
-        # deck hole (catlin's RM-S-BATH1 over FO-A-ERV-BATH1) or past every deck has no
-        # ceiling to line, and billing it added area the blanket never gave up.
-        regions = ceiling_regions(model.plan, room.storey, face, model.walls)
-        for region in regions:
-            for layer in _sheets(model, region.deck.ceiling_below):
-                areas[("ceiling", layer.material_ref, layer.thickness.meters,
-                       layer_sheet_length_in(layer))] -= region.face.area
-        carved = sum(region.face.area for region in regions)
-        for layer in _sheets(model, plan_room.ceiling_lining):
-            areas[("ceiling", layer.material_ref, layer.thickness.meters,
-                   layer_sheet_length_in(layer))] += carved
+    # Every ceiling — deck, slab, roof and room liner alike — off the one walk that nets each
+    # to the faces between the walls (``takeoff/ceiling_areas``). A room's own liner is its
+    # own scope: the envelope bills it by the SF, and these sheets are only its order.
+    for piece in ceiling_pieces(model):
+        scope = "ceiling lining" if piece.lining else "ceiling"
+        for layer in _sheets(model, piece.layers):
+            areas[(scope, layer.material_ref, layer.thickness.meters,
+                   layer_sheet_length_in(layer))] += piece.area_m2
 
     rows = [
         {"scope": scope, "material": material, "thickness_in": round(thickness / 0.0254, 3),

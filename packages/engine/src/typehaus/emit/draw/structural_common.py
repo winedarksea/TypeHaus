@@ -10,6 +10,8 @@ from __future__ import annotations
 from typehaus.emit.draw.typography import feet_inches_8th
 from typehaus.model.assembly import FramingSpec
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.envelope_geometry import envelope_geometry
+from typehaus.resolve.model import ResolvedModel, ResolvedRoof
 
 M_TO_FT = 3.280839895013123
 IN_PER_FT = 12.0
@@ -110,3 +112,23 @@ def truss_heel_note(spec: FramingSpec) -> str | None:
     if spec.heel_height is None:
         return "STANDARD HEEL"
     return f"HEEL {inches(spec.heel_height.meters)} AT OUTSIDE FACE OF BEARING"
+
+
+#: ASCE 7-16 Table 7.3-2 thermal factor: a roof over heated space, and an unheated or
+#: open-air one (a garage, a canopy).
+SNOW_CT_HEATED = 1.0
+SNOW_CT_UNHEATED = 1.2
+
+
+def roof_snow_thermal_factor(model: ResolvedModel, roof: ResolvedRoof) -> float:
+    """C_t off the derived thermal boundary, never an authored flag.
+
+    A cold vented attic over heated space (Table 7.3-2's 1.1) is not distinguished.
+    """
+    heated, _ = envelope_geometry(model).is_envelope_roof(roof)
+    return SNOW_CT_HEATED if heated else SNOW_CT_UNHEATED
+
+
+def flat_roof_snow_psf(ground_psf: float, c_t: float) -> float:
+    """p_f = 0.7 C_e C_t I_s p_g (ASCE 7 eq. 7.3-1) at C_e = I_s = 1.0."""
+    return 0.7 * c_t * ground_psf

@@ -417,10 +417,10 @@ export function runSolidMaterialTests() {
   assert(solidTrade(solid("vent")) === "mechanical", "A vent riser is mechanical");
   assert(solidTrade(solid("fascia")) === "siding", "Fascia is the siding contractor's trim");
   assert(solidTrade(solid("flashing")) === "roofing", "Drip flashing rides the roofing toggle");
-  // The stormwater run is one toggle end to end — gutter and pit both route through the same
-  // trade, so one checkbox shows the whole drainage path.
-  assert(solidTrade(solid("gutter")) === "drainage", "A gutter is the head of the storm run");
-  assert(solidTrade(solid("downspout")) === "drainage", "A leader follows its gutter");
+  // The gutter is its own bid since decision #115, hung by whoever closes the fascia; it
+  // toggles with the roof, the buried run below it with drainage.
+  assert(solidTrade(solid("gutter")) === "gutters", "A gutter is the gutter crew's");
+  assert(solidTrade(solid("downspout")) === "gutters", "A leader follows its gutter");
   assert(solidTrade(solid("sump")) === "drainage", "The pit is the tail of the same run");
   assert(solidTrade(solid("glazing")) === "openings", "Glazing reads as fenestration");
   assert(solidTrade(solid("soffit")) === "drywall",

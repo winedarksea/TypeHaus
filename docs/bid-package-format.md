@@ -1,15 +1,19 @@
 # Bid package format
 
-`haus bids houses/<name>` — one request for quote per trade, from the same bill of materials
-the estimate prices, **unpriced by default** (decision #71). A bid package is a *view*: every
+`haus bids houses/<name>` — one request for quote per **crew**, from the same bill of
+materials the estimate prices, **unpriced by default** (decision #71). A crew is the trades one
+sub takes together, authored in `tasks.toml` `[crews]`; a trade no crew names is its own crew,
+and a `self_performed` crew's file is the owner's materials list (decision #115,
+`docs/site-state-format.md`). A bid package is a *view*: every
 BOM row lands in exactly one package (`takeoff/bom_walk.walk_bom` walks each table once,
 `takeoff/cost_codes.cost_code` files it by fact), and nothing here adds to the estimate.
 
 ```
-haus bids houses/catlin                         # one line per trade
-haus bids houses/catlin --trade framing         # the package, printed
+haus bids houses/catlin                         # one line per trade, grouped by crew
+haus bids houses/catlin --crew envelope         # one crew's package: a part per trade
+haus bids houses/catlin --trade framing         # one trade's package, printed
 haus bids houses/catlin --trade framing --md out/bids/framing.md --csv out/bids/framing.csv
-haus bids houses/catlin --all [--out out/bids]  # <trade>.md + <trade>.csv + README.md + MANIFEST.json
+haus bids houses/catlin --all [--out out/bids]  # <crew>.md + <crew>.csv + README.md + MANIFEST.json
 haus bids houses/catlin --priced ...            # carries the estimate's prices; exit 2 without prices.toml
 haus bids houses/catlin --trade openings --summary   # the trade's summary schedule, printed
 ```
@@ -61,12 +65,12 @@ the detail behind it. Every number is a takeoff the model already makes, regroup
 
 | trade | tables |
 |---|---|
-| openings | windows & exterior doors (mark, location, unit and RO, hand, wall, jamb, R308.4 safety glazing, R310 egress, U/SHGC, product, spec URL); interior doors (2/8 x 6/8 size, core, function, jamb, HW set); hardware sets |
-| millwork | interior doors; trim pack (LF, sticks at the `TrimStandard` stock length, corners); hardware sets |
+| openings | windows & exterior doors (mark, location, unit and RO, hand, wall, jamb, R308.4 safety glazing, R310 egress, U/SHGC, product, spec URL); hardware sets |
+| carpentry | interior doors; trim pack (LF, sticks at the `TrimStandard` stock length, corners); hardware sets |
 | roofing | per roof: pitch, sloped SF, squares, eave/rake/ridge LF (3D, seams between roofs left out); hip/valley 0 by vocabulary |
 | siding | cladding SF and squares per material and elevation (plan north); the package's trim lines |
 | drywall | board SF and sheets by storey, surface, type and thickness; ceiling-height bands; `DrywallStandard.finish_level` or "not stated" |
-| flooring, tile | room finish schedule (net SF, the model's waste, underlayment, base); tile adds wall tile |
+| flooring, resilient, tile | room finish schedule (net SF, the model's waste, underlayment, base); tile adds wall tile |
 | plumbing | fixtures by class (`plumbing_tables.FIXTURE_CLASS_BY_SYMBOL`) and equipment; every fixture with room, product, spec URL |
 | electrical | devices by kind and storey; luminaires by form; dedicated and 240 V circuits; panels |
 

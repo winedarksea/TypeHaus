@@ -165,16 +165,16 @@ export function sceneStages(options: PopulateSceneOptions): SceneStage[] {
         build(trades, band.storey, () => buildPaneling(container(trades), band, center, mode, palette,
           materials, registry.picks, registry.byUid));
       }),
-      ...each(model.window_stools, (stool) => build(["millwork"], stool.storey, () => buildWindowStool(
+      ...each(model.window_stools, (stool) => build(["carpentry"], stool.storey, () => buildWindowStool(
         tradeGroups.millwork, stool, center, mode, palette, materials, registry.picks, registry.byUid))),
       ...each(model.base_runs, (run) => {
         const trade = baseRunTrade(run);
         build([trade], run.storey, () => buildBaseRun(tradeGroups[trade], run, center, mode, palette,
           materials, registry.picks, registry.byUid));
       }),
-      ...each(model.door_casings, (casing) => build(["millwork"], casing.storey, () => buildDoorCasing(
+      ...each(model.door_casings, (casing) => build(["carpentry"], casing.storey, () => buildDoorCasing(
         tradeGroups.millwork, casing, center, mode, palette, materials, registry.picks, registry.byUid))),
-      ...each(model.countertops, (top) => build(["millwork"], top.storey, () => buildCountertop(
+      ...each(model.countertops, (top) => build(["countertops"], top.storey, () => buildCountertop(
         tradeGroups.millwork, top, center, mode, palette, materials, registry.picks, registry.byUid))),
       ...each(model.soffits, (soffit) => build(family("soffit_framing"), soffit.storey,
         () => buildSoffitFraming(tradeGroups.framing, soffit, center, mode, palette, registry.picks,

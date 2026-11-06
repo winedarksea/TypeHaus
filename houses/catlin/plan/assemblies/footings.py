@@ -83,10 +83,10 @@ PIER_CONCRETE_12 = Assembly(
 
 # ** THE 14" ROUND, UNDER A CAST-IN CBSQ66-SDS2 (C3-E21). ** PT-BW-W/-GW and, under the
 # `kdat` east posts, PT-BW-PE/-PNE: ESR-3050's 3" side cover to the embedded straps needs the
-# extra inch (notes/canopy_west_band.md §5e). Same mix, cage and seat detail as
-# PIER_CONCRETE_12; only the section differs, so it is its own tag and its own BOM row.
-# The (4) #5 cage is 0.81% of the 14" gross area and meets ACI 318-19 §10.6.1.1's 1% on
-# §10.3.1.2's reduced effective area — an ENGINEER HOLD (notes/north_entry_piers.md §6).
+# extra inch (notes/canopy_west_band.md §5e). Same mix and seat detail as PIER_CONCRETE_12;
+# the section and cage differ, so it is its own tag and its own BOM row.
+# Its cage is (6) #5, 1.21% of the 14" gross (ACI 318-19 §10.6.1.1; notes/north_entry_piers.md
+# §13b). The (4) #5 it shared with PIER_CONCRETE_12 was 0.81%, until 2026-11-05.
 PIER_CONCRETE_14 = Assembly(
     tag="PIER_CONCRETE_14",
     layers=(
@@ -94,7 +94,7 @@ PIER_CONCRETE_14 = Assembly(
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     interfaces=(CONCRETE_BEARING,),
-    source="catlin-house 14-inch round north-entry piers under a cast-in CBSQ66-SDS2 base (ESR-3050 Table 1 fn. 4, 3-inch strap side cover): PT-BW-W/GW, and PT-BW-PE/PNE under the kdat east posts. EXPOSED_MIX 5,000 psi F3+C2 with galvanized bar, the same 8-inch (4) #5 cage as PIER_CONCRETE_12; its 1% minimum is read on the ACI 318-19 §10.3.1.2 reduced effective area (engineer hold, notes/north_entry_piers.md §6). Washed, drained top; no grout island."
+    source="catlin-house 14-inch round north-entry piers under a cast-in CBSQ66-SDS2 base (ESR-3050 Table 1 fn. 4, 3-inch strap side cover): PT-BW-W/GW, and PT-BW-PE/PNE under the kdat east posts. EXPOSED_MIX 5,000 psi F3+C2 with galvanized bar, a 10-inch (6) #5 cage at 2-inch cover, 1.21% of the gross area against ACI 318-19 §10.6.1.1's 1% (notes/north_entry_piers.md §13b). Washed, drained top; no grout island."
 )
 
 # ** ONE TYPE FOR ALL FIVE COURT STRIPS SINCE 2026-09-10, AND THE MERGE FIXED A DEFECT. **

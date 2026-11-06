@@ -108,7 +108,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
     InspectionSpec(
         id="slab", label="Slab — vapour retarder, insulation and in-floor tube",
         authority="building", after=("underground_plumbing", "radon_rough"),
-        gates=("flooring",),
+        gates=("flooring", "resilient"),
         check_ids=("integrity.slab_thickness", "code.energy_prescriptive"),
         on_site=("vapour retarder lapped and sealed", "under-slab insulation placed",
                  "in-floor tube pressurised and marked"),
@@ -175,7 +175,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         id="framing", label="Framing — after all three rough-ins",
         authority="building",
         after=("rough_plumbing", "rough_mechanical", "rough_electrical"),
-        gates=("insulation",),
+        gates=("spray_foam", "insulation"),
         check_ids=("structural.ijoist_span", "structural.rafter_span",
                    "structural.header_prescriptive", "structural.ridge_beam_depth",
                    "structural.stair_stringer",

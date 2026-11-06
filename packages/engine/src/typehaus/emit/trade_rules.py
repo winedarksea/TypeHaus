@@ -35,7 +35,7 @@ MATERIAL_TRADE_PATTERNS: tuple[tuple[str, str], ...] = (
     # pattern below to the section fallback. Mirrors `foundation-coating*` above; note the
     # glob has to precede `*brick*` and `retaining-block*`, since the wash goes on both.
     ("silicate-wash*", "paint"),
-    ("*spray-foam*", "insulation"),
+    ("*spray-foam*", "spray_foam"),
     ("*fiberglass*", "insulation"),
     ("blown-*", "insulation"),
     ("mineral-wool*", "insulation"),
@@ -43,7 +43,7 @@ MATERIAL_TRADE_PATTERNS: tuple[tuple[str, str], ...] = (
     ("xps*", "insulation"),
     ("eps*", "insulation"),
     ("icf-eps*", "insulation"),
-    ("humid-room-membrane", "insulation"),   # interior vapour control, hung with the foam
+    ("humid-room-membrane", "insulation"),   # interior vapour control, hung with the batts
     ("*sod", "landscaping"),
     ("rootzone*", "landscaping"),
     ("usga-*", "landscaping"),
@@ -67,14 +67,13 @@ MATERIAL_TRADE_PATTERNS: tuple[tuple[str, str], ...] = (
     ("board-batten*", "siding"),
     ("corrugated-panel*", "siding"),
     ("pbr-panel*", "siding"),
-    # A deck plank is the finished walking surface, not the deck's structure: it is laid
-    # last, over a frame the carpenter already signed off, and it is the row an owner prices
-    # against LVP and oak. The joists and the rim under it stay framing, where they belong.
-    ("composite-deck*", "flooring"),
-    ("trex-enhance-basics", "flooring"),
-    ("aluminum-deck*", "flooring"),
+    # A deck plank is laid by the crew that framed the deck, not a floor installer
+    # (decision #115): it went to flooring while flooring was one bid.
+    ("composite-deck*", "framing"),
+    ("trex-enhance-basics", "framing"),
+    ("aluminum-deck*", "framing"),
     ("plywood-subfloor*", "framing"),
-    ("cabinet-plywood", "millwork"),        # audit:2026-09-12#envelope_layers:cabinet-plywood
+    ("cabinet-plywood", "carpentry"),       # audit:2026-09-12#envelope_layers:cabinet-plywood
     ("*plywood*", "framing"),
     # An equipment stand's extrusion is set by the HVAC installer with the unit on it
     # (audit:2026-09-12#concrete:column:EQUIP_STAND_ALUM).
@@ -82,10 +81,11 @@ MATERIAL_TRADE_PATTERNS: tuple[tuple[str, str], ...] = (
     ("spf", "framing"), ("kdat", "framing"), ("pt-syp", "framing"),
     ("lvl", "framing"), ("glulam*", "framing"),
     ("*-timber", "framing"), ("douglas*", "framing"),
-    ("sauna-shiplap", "millwork"),
-    ("pvc-panel", "millwork"),
-    ("*-tg", "millwork"),
-    ("pet-felt*", "millwork"),
+    ("sauna-shiplap", "carpentry"),
+    ("pvc-panel", "carpentry"),
+    ("*-tg", "carpentry"),
+    ("pet-felt*", "carpentry"),
+    ("solid-surface*", "countertops"),      # templated and set by the fabricator
     ("marble-look*", "tile"),               # audit:2026-09-12#wood_surfaces:marble-look-panel
 )
 
@@ -131,6 +131,8 @@ def layer_trade(function: str | None, scope: str | None = None,
                 material: str | None = None) -> str:
     """The trade an assembly layer belongs to. Material first, then function × scope."""
     from_material = material_trade(material)
+    if from_material == "insulation" and (scope or "").strip().lower() in _POUR_SCOPES:
+        return "concrete"            # under-slab and foundation board: set with the forms
     if from_material is not None:
         return from_material
     key = (function or "").strip().lower()
@@ -148,7 +150,7 @@ def layer_trade(function: str | None, scope: str | None = None,
             return "insulation"      # ceiling vapour retarder goes up with the blown fill
         return "siding"              # WRB / air barrier on a wall
     if key in ("finish", "lining"):
-        return "millwork" if material else "drywall"
+        return "carpentry" if material else "drywall"
     if key == "structure":
         return "framing"
     return LAYER_FUNCTION_TRADE.get(key, FALLBACK_TRADE)
@@ -220,7 +222,7 @@ def solid_trades(category: str | None, material: str | None = None) -> tuple[str
 # --- placeables and members -----------------------------------------------------------
 
 #: Canvas-object domain -> viewer trade. Casework is domain ``furniture`` and the BOM files
-#: it under millwork (``cost_codes``); the viewer keeps it with the furniture until a
+#: it under carpentry (``cost_facts``); the viewer keeps it with the furniture until a
 #: ``FurnitureType.built_in`` flag exists. Accepted divergence, flagged in the plan.
 CANVAS_DOMAIN_TRADE: dict[str, str] = {
     "plumbing": "plumbing",
@@ -242,8 +244,8 @@ MEMBER_CATEGORY_TRADE: dict[str, str] = {
     **{category: "stairs" for category in STAIR_MEMBER_CATEGORIES},
     "stair_subdeck": "framing",
     # A bought trim board, with the base and casing.
-    "stair_skirt": "millwork",
-    "gutter": "drainage",
+    "stair_skirt": "carpentry",
+    "gutter": "gutters",
     "rebar": "concrete",
     **{k: _TRADE[k] for k in ("insulation", "airgap", "furring", "cladding")},
     "air_gap": _TRADE["airgap"],
@@ -274,17 +276,39 @@ RECORD_FAMILY_TRADES: dict[str, tuple[str, ...]] = {
     "soffit_framing": ("framing",),
     "brace": ("framing",),
     "solar_panel": ("electrical",),
-    "light_run": ("electrical",),
-    "paneling": ("millwork",),
-    "baseboard": ("millwork",),
-    "door_casing": ("millwork",),
+    "light_run": ("low_voltage",),
+    "paneling": ("carpentry",),
+    "baseboard": ("carpentry",),
+    "door_casing": ("carpentry",),
     "opening": ("openings",),
     "wall_lumber": ("framing",),
 }
 
 
+# --- floor finishes ---------------------------------------------------------------------
+
+#: A floor material's authored hatch -> who lays it. The hatch is what the material IS on a
+#: drawing (decision #57), and on a floor that is the installer: tile is set, carpet and
+#: sheet goods are a resilient crew's, plank (wood, LVP) the floor installer's.
+FLOOR_HATCH_TRADE: dict[str, str] = {
+    "masonry": "tile",
+    "batt": "resilient",
+    "membrane": "resilient",
+    "lumber": "flooring",
+}
+
+
+def floor_trade(hatch: str | None, coating: bool = False) -> str | None:
+    """The trade of a floor finish (or a layer under one) from its floor's hatch. A coating
+    is sealer on the slab, the finisher's; ``None`` when nothing is authored."""
+    if coating:
+        return "concrete"
+    return FLOOR_HATCH_TRADE.get((hatch or "").strip().lower())
+
+
 def _validate() -> None:
     named = {t for _p, t in MATERIAL_TRADE_PATTERNS} | set(LAYER_FUNCTION_TRADE.values())
+    named |= set(FLOOR_HATCH_TRADE.values())
     named |= set(CANVAS_DOMAIN_TRADE.values()) | set(MEMBER_CATEGORY_TRADE.values())
     named |= {t for ts in RECORD_FAMILY_TRADES.values() for t in ts}
     unknown = sorted(named - TRADES)

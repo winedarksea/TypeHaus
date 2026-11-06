@@ -593,7 +593,7 @@
 "6x6" = { material = { low = 5, high = 8.5 }, labour = { low = 2.5, high = 5 } }  # 8 LF
 # ** 2026-11-01: ST-B2M's carpet was billed NOWHERE after 2026-09-28 ** — its substrate resolves
 # `deck 11x1` / `deck 43.375x1`, which had no rows, and the carpet is not a member. Both now
-# price below as plain substrate; the carpet is [allowances] finish-floor-stair-carpet-steps/-landings.
+# price below as plain substrate; the carpet is [allowances] finish-carpet-stair-steps/-landings.
 # ** SUPERSEDED 2026-09-28 for the oak: ** the oak treads now bill in [stair_treads] by the
 # piece, and ST-B2M resolves `deck 11x1`, so `deck 11x1.5` below now prices ONLY the two
 # exterior PT flights' 32 LF — at a blend that reads high for PT. History kept below.
@@ -688,10 +688,11 @@
 # NextDeck, under-deck drainage. A Duradek-type membrane was ~$2-4k cheaper but 15-20 yr.
 # Row value unchanged; the aluminium dry-deck is kept (owner).
 "aluminum-deck" = { material = { low = 704, high = 1254 }, labour = { low = 273, high = 473 } }  # 6 sheets = 182.0 SF
-# Ceiling gypsum (FS-S-WEST/FS-S-EAST's `ceiling_below`, since 2026-08-21's truss/I-joist
-# split — FS-SECOND before that), by the sheet. Distinct from the
-# `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
-"gwb" = { material = { low = 17, high = 26 }, labour = { low = 48, high = 85 } }  # 64 sheets — +25 with the basement ceiling (2026-08-21)
+# Ceiling gypsum, by the sheet: every deck's `ceiling_below` and every roof's
+# `default_lining`, netted to the faces between the walls (`takeoff/ceiling_areas`, 2026-11-05;
+# it was billed over every wall top, and the roof ceilings at the wall rate below). Distinct
+# from the `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
+"gwb" = { material = { low = 17, high = 26 }, labour = { low = 48, high = 85 } }  # 140 sheets ceiling + 2 opening lining (2026-11-05)
 "plywood-subfloor" = { material = { low = 42, high = 62 }, labour = { low = 18, high = 32 } }  # 100 sheets — FS-ATTIC's 40 came back off the sanded row below when RM-A-STUDIO took sheet vinyl (2026-09-09)
 # FS-ATTIC only (2026-08-27). Same 23/32 T&G panel as the row above in every structural
 # sense, but ordered sanded-face and plugged because the two unfinished lofts walk on it
@@ -4230,7 +4231,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # (UltraLight) board. 5/8": the old band, unchanged.
 # Labour is the same hang + tape + Level 4 for both.
 "gwb:0.5" = { material = { low = 0.35, high = 0.55 }, labour = { low = 1.1, high = 1.9 } }  # 6141.2 SF
-"gwb:0.625" = { material = { low = 0.45, high = 0.75 }, labour = { low = 1.1, high = 1.9 } }  # 3343.8 SF
+"gwb:0.625" = { material = { low = 0.45, high = 0.75 }, labour = { low = 1.1, high = 1.9 } }  # 1317.2 SF (walls only since 2026-11-05)
 # Upgrade boards, all 1/2" (plan Phase 5). Retail: Purple XP (gwb-mr) $21-23/sheet at two
 # third-party listings (Cooper's True Value $22.99, K&K $21.26) = $0.66-0.72/SF. Paper-faced AR
 # (gwb-ar): Sheetrock AR Type C sheet $39.98-42.19 at Canadian retail (BMR, Kent) = ~$1.25-1.32/SF
@@ -5674,7 +5675,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "oak-floor-custom:landing" = { material = { low = 0, high = 0 }, labour = { low = 76, high = 200 } }  # 2 ea — ST-M2S
 # Closed risers (2026-09-28, notes/stair_riser_basis.md). Oak: owner-milled 4/4, so labour
 # only, about half a tread's (a square-edged board, no nosing). Ply: a 3/4" rip under
-# ST-B2M's glued carpet, which [allowances] finish-floor-stair-carpet-* prices.
+# ST-B2M's glued carpet, which [allowances] finish-carpet-stair-* prices.
 "oak-riser:riser" = { material = { low = 0, high = 0 }, labour = { low = 20, high = 45 } }  # 32 ea — ST-M2S 16, ST-S2A 16
 "plywood-subfloor:riser" = { material = { low = 3, high = 6 }, labour = { low = 10, high = 20 } }  # 15 ea — ST-B2M
 
@@ -8283,12 +8284,12 @@ finish-canopy-east-pvc-column-wrap = { material = { low = 200, high = 450 }, lab
 # The row is NOT dropped from `stair_finish` — ST-G-SERVICE still buys treads, risers and
 # stringers and still appears in the schedule; only this nosing scope excludes it.
 # 2026-10-29: $7-21 -> $4.5-12: the oak treads are owner-milled 5/4 BULLNOSE (nosing is the tread) and the carpeted ST-B2M wraps in
-# its carpet (finish-floor-stair-carpet-steps below), so no nosing is bought here. What remains is ~25 floor-to-floor transitions/saddles at $30-75 each over the 136.5 LF.
+# its carpet (finish-carpet-stair-steps below), so no nosing is bought here. What remains is ~25 floor-to-floor transitions/saddles at $30-75 each over the 136.5 LF.
 # ST-B2M's Refine carpet, glued (2026-11-01; notes/basement_carpet.md). ESTIMATES, not a quote:
 # ~5.5 SF a step (tread, riser, nosing wrap) at $1.5-2.5/SF material plus $25-45 a step to cut,
 # glue and tuck; the landings at $1.5-2.5/SF + $2-3.5/SF glue-down labour.
-finish-floor-stair-carpet-steps = { low = 33, high = 60, unit = "ea", driver = "stair_finish.risers[stair=ST-B2M]" }
-finish-floor-stair-carpet-landings = { low = 3.5, high = 6, unit = "SF", driver = "stair_finish.landing_area_sqft[stair=ST-B2M]" }
+finish-carpet-stair-steps = { low = 33, high = 60, unit = "ea", driver = "stair_finish.risers[stair=ST-B2M]" }
+finish-carpet-stair-landings = { low = 3.5, high = 6, unit = "SF", driver = "stair_finish.landing_area_sqft[stair=ST-B2M]" }
 finish-transitions-and-stair-nosings = { low = 4.5, high = 12, unit = "LF", driver = "stair_finish.tread_lf[conditioned=True,has_nosing=True]" }
 # `finish-garage-door-opener` is DELETED (2026-10-30): the opener is APPL-G-GDO, priced as
 # APPL-LIFTMASTER-87504-267 in [placeables].

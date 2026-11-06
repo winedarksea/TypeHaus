@@ -145,21 +145,30 @@ export const ROLE_PRESETS: Record<string, RolePreset> = {
   // Site reads the pour, not the cage inside it (and never pays for the lazy bar fetch), and
   // the finished grade, not the open dig.
   Site: { groups: ["site", "concrete_masonry"], exclude: ["concrete:rebar", "earth:excavation"] },
-  // The rainscreen cavity: insulation, framing and siding's facets (flashing, insect screens)
+  // The rainscreen cavity: the foam, framing and siding's facets (flashing, insect screens)
   // without the cladding panels or the vent-gap prism, both of which are bare `siding`.
-  Rainscreen: { trades: ["insulation", "framing", "siding"], exclude: ["siding"] },
+  Rainscreen: { trades: ["spray_foam", "insulation", "framing", "siding"], exclude: ["siding"] },
 };
 
 // The 13-name vocabulary a saved view may have been captured with, and the assembly-layer
 // groups that sat beside it. Each old name maps to the trades it covered; a legacy layer group
 // hidden in the recipe hides the trade that band now belongs to.
 const LEGACY_TRADES: Record<string, Trade[]> = {
-  walls: ["siding", "insulation", "drywall", "paint"],
-  floors: ["flooring"],
-  roof: ["roofing"],
+  walls: ["siding", "spray_foam", "insulation", "drywall", "paint"],
+  floors: ["flooring", "resilient"],
+  roof: ["roofing", "gutters"],
+};
+// Trades split out of a saved name by decision #115: a recipe that predates the split and
+// says nothing of the new trade means what the old name covered.
+const SPLIT_TRADES: Record<string, Trade[]> = {
+  insulation: ["spray_foam"],
+  electrical: ["low_voltage"],
+  drainage: ["gutters"],
+  flooring: ["resilient"],
+  millwork: ["carpentry", "countertops"],
 };
 const LEGACY_LAYER_GROUPS: Record<string, Trade[]> = {
-  insulation: ["insulation"],
+  insulation: ["insulation", "spray_foam"],
   cladding: ["siding"],
   furring: ["siding"],
   airgap: ["siding"],
@@ -188,6 +197,10 @@ export function migrateSavedVisibility(
       : (LEGACY_TRADES[name] ?? []).flatMap((trade) =>
         on === false ? visibilityKeysOf(trade) : [trade]);
     for (const key of targets) out[key] = on !== false;
+    for (const trade of SPLIT_TRADES[name] ?? []) {
+      if (named.has(trade)) continue;
+      for (const key of on === false ? visibilityKeysOf(trade) : [trade]) out[key] = on !== false;
+    }
   }
   for (const [name, on] of Object.entries(layerGroups ?? {})) {
     if (on !== false) continue;

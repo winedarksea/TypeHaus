@@ -37,8 +37,9 @@ def test_every_typed_opening_is_on_one_schedule(catlin_model, summaries) -> None
     windows = {t.tag for t in catlin_model.plan.library.window_types}
     typed = {o.tag for o in catlin_model.openings
              if (doors.get(o.type_ref) if o.is_door else o.type_ref in windows)}
-    listed = [row[1] for slug in ("windows-exterior-doors", "interior-doors")
-              for row in _table(summaries, "openings", slug).rows]
+    listed = [row[1] for trade, slug in (("openings", "windows-exterior-doors"),
+                                         ("carpentry", "interior-doors"))
+              for row in _table(summaries, trade, slug).rows]
     assert sorted(listed) == sorted(typed)
 
 

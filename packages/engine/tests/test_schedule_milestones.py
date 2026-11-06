@@ -22,10 +22,10 @@ def test_the_slices_partition_the_trade_order_contiguously() -> None:
 
 
 def test_insulated_owns_the_insulation_trade() -> None:
-    """Closing up is its own milestone, and since 2026-09-12 the trade that fills the
-    cavities is its own bid; the milestone owns exactly that one."""
+    """Closing up is its own milestone, and the trades that fill the cavities — the spray
+    foam and the batts, separate bids since decision #115 — are all it owns."""
     by_id = {spec[0]: spec[2] for spec in MILESTONE_SPECS}
-    assert by_id["insulated"] == ("insulation",)
+    assert by_id["insulated"] == ("spray_foam", "insulation")
     assert by_id["preconstruction"] == ("general",)
     assert by_id["complete"] == ("landscaping",)
 

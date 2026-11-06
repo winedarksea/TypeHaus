@@ -110,8 +110,9 @@ entry (`C2 E1` = C2.md, escalation E1). `carried` names the round-1 item.
    Pf 35 psf at Ct 1.0 for the unheated garage and canopy. The house basis and the truss order
    are 42 psf (Ct 1.2) plus drift.
    → Read Ct per roof. S.
-9. **14" north-entry pier cage at 0.806%** (C2 E6, F5-106) · carried (engineer hold). That is
-   under ACI §10.6.1.1's 1%. → (6) #5 (1.21%), or an EOR letter. S.
+9. **14" north-entry pier cage at 0.806%** (C2 E6, F5-106) · **fixed 2026-11-05**: (6) #5
+   (1.21% of gross) on PT-BW-W/-GW/-PE/-PNE, dowels lapped beside the verticals
+   (`ENTRY_PIER_CAGE_14`, `notes/north_entry_piers.md` §13b). The 12" rounds keep (4) #5.
 10. **Header sizing** (C2 E5, F1-104) · carried. Headers are sized by a span-only ladder, and
     nothing grades them against IRC Table R602.7(1). L.
 11. **Interior stair guards drawn off the joist-top datum** (C1 E2, S1-105, S3-102/104) · new

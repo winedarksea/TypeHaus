@@ -117,7 +117,9 @@ def test_catlin_hardware_scope_takeoff_and_finish(catlin_model_ro):
     hardware_rows = authored_hardware_rows(model)
     from typehaus.takeoff.cost_codes import cost_code
 
-    assert all(cost_code("hardware", row["part_number"], row=row).trade == "openings"
+    # An exterior set goes with the unit; D-B-SHOP's is the finish carpenter's (#115).
+    assert all(cost_code("hardware", row["part_number"], row=row).trade
+               == ("openings" if row["exterior"] else "carpentry")
                for row in hardware_rows)
     count = lambda ref: sum(row["count"] for row in hardware_rows if row["hardware_tag"] == ref)
     assert count("PROD-SCHLAGE-BE889WB") == 1

@@ -1,6 +1,6 @@
 """The room finish schedule, the wall tile, and the trim pack.
 
-Flooring and tile read one room finish schedule: net area per room and finish (each sub
+Flooring, resilient and tile read one room finish schedule: net area per room and finish (each sub
 adds its own waste; the model's own waste fraction is stated beside it), what goes under
 it, and the base. The trim pack packs base and casing into the house's ``TrimStandard``
 stock length through ``stock_packing.boards_for``, the packer the stair skirt already uses.
@@ -18,7 +18,7 @@ from typehaus.takeoff.bid_summaries import SummaryInputs, SummaryTable, ft, sqft
 _NOT_TRIM = ("exterior door approach", "exterior door casing", "base joint")
 
 
-def millwork_summary(inputs: SummaryInputs) -> list[SummaryTable]:
+def carpentry_summary(inputs: SummaryInputs) -> list[SummaryTable]:
     from typehaus.takeoff.summary_openings import hardware_sets, interior_door_schedule
 
     return [interior_door_schedule(inputs), trim_pack(inputs), hardware_sets(inputs)]

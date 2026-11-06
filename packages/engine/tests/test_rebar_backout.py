@@ -33,7 +33,7 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: note's §1 table still lists them and needs re-working.
 _SCHEDULE = {
     ("column", "#3", "hdg-a767"): (91, 118.5),
-    ("column", "#5", "hdg-a767"): (80, 470.3),
+    ("column", "#5", "hdg-a767"): (96, 558.8),
     ("footing", "#4", "hdg-a767"): (48, 234.9),
     ("footing", "#5", "hdg-a767"): (179, 1465.9),
     ("foundation wall", "#3", "hdg-a767"): (12, 16.2),
@@ -93,8 +93,10 @@ _SCHEDULE = {
 # three 12" pours reframed with it (W-B-CN/CN2/CS2) carried no ReinforcementSpec.
 # −265.9 lb, −25 pieces on 2026-11-02 (note addendum): the court stems #5 @ 7" -> 10" (owner;
 # free body §6 addendum) — W-SG-S 32 -> 23 verticals, W2/E2 eight fewer each.
-_TOTAL_LB = 5091.2
-_TOTAL_PIECES = 813
+# +88.5 lb, +16 pieces on 2026-11-05 (F5-106, note addendum): the four 14" north-entry piers
+# (4) #5 -> (6) #5, two more verticals and two more dowels each.
+_TOTAL_LB = 5179.7
+_TOTAL_PIECES = 829
 
 @pytest.fixture(scope="module")
 def rows(catlin_model):
@@ -233,4 +235,5 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # 47.2 on 2026-11-01 (#112): the deck and three 12" pours out, 5,357.1 lb / 113.49 cy.
     # 44.9 on 2026-11-02: the court stems at #5 @ 10" (−265.9 lb), 5,091.2 lb / 113.49 cy.
     # 43.1 on 2026-11-05: plain concrete in, no steel — the wider house strips, 118.25 cy.
-    assert total_lb / total_cy == pytest.approx(43.06, rel=0.02)
+    # 43.8 the same day: the 14" north-entry piers at (6) #5, +88.5 lb (F5-106).
+    assert total_lb / total_cy == pytest.approx(43.80, rel=0.02)

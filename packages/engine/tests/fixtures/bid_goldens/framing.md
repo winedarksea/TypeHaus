@@ -3,10 +3,10 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 0315cc2d33970b6a  
-**Lines:** 248
+**Model hash:** 82c6c7fcabf54c50  
+**Lines:** 252
 
-Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
+Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
 > **Note**
 >
@@ -68,7 +68,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3:spf) | 11 | pc | girt strapping | 88 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 82 | pc | corner stud, king stud, stud | 632.9 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 137 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud | 1096 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 141 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud | 1128 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 243 | pc | corner stud, king stud, stud | 2118.7 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
@@ -112,7 +112,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Aspen shiplap sauna ceiling liner (4/4), site-milled, 3/4" ceiling (catlin-sauna-ceiling-shiplap:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 65.1 SF net | building |
+| Aluminum deck board (Wahoo AridDek, Granite), 1 1/2" subfloor (aluminum-deck:subfloor) | 188.5 | SF | 6 sheets 4x8 over 188.5 SF net; 6.0 sheets in the takeoff | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3062.5 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 27.0 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 662.4 SF net | building |
@@ -125,6 +125,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 43.7 SF net | building |
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 15 | sheets 4x8 | 15 sheets 4x8 over 381.1 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
+| Trex Enhance Basics composite decking, Tide Pool (square edge), 15/16" subfloor (trex-enhance-basics:subfloor) | 6 | sheets 4x8 | 6 sheets 4x8 over 168.8 SF net | building |
 
 ## Connectors and fasteners, by part
 
@@ -150,6 +151,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | CBSQ66-SDS2 cast-in column base (6x6) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga | 2 | ea |  | building |
 | DTT2Z screw hold-down / tension tie | 2 | ea |  | building |
+| Pocket door frame, galvanized steel cassette, 2x4 wall (to 220 lb) (EKC3680) | 2 | ea |  | building |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT) | 1 | ea |  | building |
 | Screw-pin anchor shackle, 1/2 in, galvanized, 2 t (no swivel: a bed must not spin) (G-209-1/2) | 4 | ea |  | basement |
 | H10ASS stainless hurricane tie | 20 | ea |  | building |
@@ -183,7 +185,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 19 | ea |  | building |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 6 | ea |  | building |
 | LTP4 lateral tie plate, gable-end truss to top plate | 2 | ea |  | building |
-| LTP4 lateral tie plate | 178 | ea |  | building |
+| LTP4 lateral tie plate | 181 | ea |  | building |
 | LTP4 lateral tie plate | 7 | ea |  | building |
 | LTP4Z lateral tie plate (ZMAX) | 7 | ea |  | building |
 | LUS face-mount joist hanger | 9 | ea |  | building |
@@ -196,6 +198,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS28Z face-mount hanger, 2x8 (ZMAX) | 2 | ea |  | building |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | 2 | ea |  | building |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | 43 | ea |  | basement |
+| Pocket door frame, galvanized steel cassette, 2x6 wall (to 220 lb) (POCKET-FRAME-ECLISSE-2X6) | 1 | ea |  | building |
 | PROD-CARPET-ZBAR — carpet tucked flush with the hard floor; 1/4 in. field rise | 4 | ea |  | main, second |
 | PROD-CARPET-ZBAR — carpet tucked flush with the stall-mat edge | 1 | ea |  | basement |
 | PROD-CATLIN-OAK-REDUCER — 3/4 in. oak reducer, 2 in. bevel to the vinyl | 1 | ea |  | attic |
@@ -237,6 +240,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — ELM_TIMBER (column:ELM_TIMBER) | 56.4 | bf | 2 placed, 0.5 SF plan; 0.17 cy in the takeoff | second |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 19.2 | bf | 3 placed, 0.3 SF plan; 0.06 cy in the takeoff | main |
+| Slab platform — KNEE_WALL_OAK_CAP (slab_platform:KNEE_WALL_OAK_CAP) | 1.8 | SF | 1 placed, 1.8 SF plan; 0.01 cy in the takeoff | second |
 | Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | 4.3 | SF | 1 placed, 4.3 SF plan; 0.03 cy in the takeoff | main |
 
 ## Timber
@@ -420,7 +424,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x6:kdat) | — |
 | 6x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (6x6:kdat) | — |
 | hanger, 8' (hanger) | — |
-| Aspen shiplap sauna ceiling liner (4/4), site-milled, 3/4" ceiling (catlin-sauna-ceiling-shiplap:ceiling) | — |
+| Aluminum deck board (Wahoo AridDek, Granite), 1 1/2" subfloor (aluminum-deck:subfloor) | — |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | — |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
@@ -433,6 +437,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | — |
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | — |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | — |
+| Trex Enhance Basics composite decking, Tide Pool (square edge), 15/16" subfloor (trex-enhance-basics:subfloor) | — |
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail) | — |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | — |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | — |
@@ -453,6 +458,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | CBSQ66-SDS2 cast-in column base (6x6) | — |
 | CS16 coiled strap, 16 ga | — |
 | DTT2Z screw hold-down / tension tie | — |
+| Pocket door frame, galvanized steel cassette, 2x4 wall (to 220 lb) (EKC3680) | — |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT) | — |
 | Screw-pin anchor shackle, 1/2 in, galvanized, 2 t (no swivel: a bed must not spin) (G-209-1/2) | HA-SG-DAYBED-NE, HA-SG-DAYBED-NW, HA-SG-DAYBED-SE, HA-SG-DAYBED-SW |
 | H10ASS stainless hurricane tie | — |
@@ -499,6 +505,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS28Z face-mount hanger, 2x8 (ZMAX) | — |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | — |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | SL-B-FLOOR |
+| Pocket door frame, galvanized steel cassette, 2x6 wall (to 220 lb) (POCKET-FRAME-ECLISSE-2X6) | — |
 | PROD-CARPET-ZBAR — carpet tucked flush with the hard floor; 1/4 in. field rise | D-M-BATH2, D-S-BED1, D-S-BED2, D-S-BED3 |
 | PROD-CARPET-ZBAR — carpet tucked flush with the stall-mat edge | D-B-PLAY |
 | PROD-CATLIN-OAK-REDUCER — 3/4 in. oak reducer, 2 in. bevel to the vinyl | D-A-HALVES |
@@ -535,6 +542,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2 |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | PT-M-HP1-L1, PT-M-HP1-L2, PT-M-HP1-L3, PT-M-HP1-L4, PT-M-HP3-L1, PT-M-HP3-L2, PT-M-HP3-L3, PT-M-HP3-L4, PT-SG-HPB1, PT-SG-HPB2, PT-SG-HPB3, PT-SG-HPB4 |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRLAND-SE, P-M-STRWELL-S, P-M-STRWELL-SS |
+| Slab platform — KNEE_WALL_OAK_CAP (slab_platform:KNEE_WALL_OAK_CAP) | SL-S-KNEE-CAP |
 | Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | SL-M-TUBDK |
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | BM-BW-RE, BM-BW-RW, BM-SG-BLE, BM-SG-BLW |
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | BM-BW-FE, BM-BW-GARAGE-SEAT, BM-BW-HOUSE-SEAT, BM-BW-SCSILL, BM-SG-LDGE, BM-SG-LDGW |

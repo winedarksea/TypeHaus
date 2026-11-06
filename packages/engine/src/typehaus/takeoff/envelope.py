@@ -15,9 +15,10 @@ side carries the price: the rows here carry ``also_in_sheet_goods``, the hung ``
 
 A roof contributes rows on **two** planes and they are not interchangeable. Scope ``roof``
 is the deck: sloped, and run out to the fascia, which is how roofing and underlayment are
-bought. Scope ``roof ceiling`` is the plane under it — the assembly's ``default_lining``
-and any layer's ``CavityFill`` — which stops at the bearing wall and, on a truss, lies flat.
-Billing the second off the first is a 30% overstatement on catlin's garage alone.
+bought. Scope ``roof ceiling`` is the plane under it — any layer's ``CavityFill`` — which
+stops at the bearing wall and, on a truss, lies flat. Billing the second off the first is a
+30% overstatement on catlin's garage alone. The ``default_lining`` board under it is a
+ceiling and bills between the walls, in ``sheet_goods`` (``takeoff/ceiling_areas``).
 """
 
 from __future__ import annotations
@@ -29,8 +30,6 @@ from shapely.geometry import Polygon
 
 from typehaus.model.enums import LayerFunction, TrimKind
 from typehaus.model.layer_functions import LAYER_FUNCTIONS
-from typehaus.model.spatial import Room
-from typehaus.resolve.ceiling_over import ceiling_decks_over, room_roof_over
 from typehaus.resolve.coatings import coating_tags
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.geometry_walls import cuts_layer
@@ -39,6 +38,7 @@ from typehaus.resolve.rainscreen_closures import BUG_SCREEN_MATERIAL
 from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
 from typehaus.resolve.sheathing_corner import layer_run_m
 from typehaus.resolve.solid_categories import in_slab_family
+from typehaus.takeoff.ceiling_areas import ceiling_pieces
 from typehaus.takeoff.coating_areas import ceiling_coating_areas, covered_paneling_m2
 
 _M2_TO_FT2 = 10.7639104
@@ -240,8 +240,8 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             continue
         # Two planes, two areas. ``surface_area_m2`` is the sloped deck out to the fascia,
         # which is what the roofing, the deck and the underlayment are bought by. The
-        # ceiling and its insulation stop at the bearing wall and, on a truss, lie flat —
-        # that is ``roof_ceiling_area_m2``. None only when the roof resolves no bearing
+        # cavity insulation stops at the bearing wall and, on a truss, lies flat — that is
+        # ``roof_ceiling_area_m2``. None only when the roof resolves no bearing
         # line, which ``resolve_roof`` already rejects as an integrity ERROR, so a roof
         # that reaches this loop has one.
         ceiling_m2 = roof_ceiling_area_m2(model, roof)
@@ -274,46 +274,23 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 depth = roof_layer.cavity_thickness(fill)
                 areas[("roof ceiling", "insulation (cavity)", fill.material_ref,
                        depth.meters)] += ceiling_m2
-        # ``default_lining`` is the ceiling: the gypsum under the chords, and whatever
-        # finish is authored over it. Walls have picked their lining up since
-        # ``resolve_wall`` began stacking ``default_lining + layers`` (resolve/topology.py);
-        # roofs never went through that path, so a roof's lining was thermally modelled,
-        # drawn in section, graded by the Glaser walk — and ordered by nobody.
-        if ceiling_m2 is not None:
-            # A room with no deck above it and its own ``ceiling_lining`` (a sauna T&G
-            # ceiling under the attic roof) bills under its own materials in
-            # ``sheet_goods``/its own takeoff row instead — not here too, or the roof's
-            # blanket lining double-bills the same square footage.
-            overridden_m2 = sum(
-                room.area_m2 for room in model.rooms
-                if room.storey == roof.storey
-                and isinstance(plan_room := model.plan.by_tag(room.tag), Room)
-                and plan_room.ceiling_lining
-                and not ceiling_decks_over(model.plan, room.storey, Polygon(room.clear_face))
-                and (over_roof := room_roof_over(model.plan, room.storey, plan_room))
-                is not None and over_roof.tag == roof.tag
-            )
-            net_ceiling_m2 = max(0.0, ceiling_m2 - overridden_m2)
-            for lining_layer in assembly.default_lining:
-                # A coat is the room's: billed once off ``model.ceilings`` (coating_areas).
-                if (lining_layer.function in _BILLABLE
-                        and lining_layer.material_ref not in coatings):
-                    areas[("roof ceiling", lining_layer.function.value,
-                           lining_layer.material_ref,
-                           lining_layer.thickness.meters)] += net_ceiling_m2
+        # Its ``default_lining`` is a ceiling: billed between the walls, off
+        # ``takeoff/ceiling_areas``, not over every wall top on this gross plane.
 
-    # A room's explicit ceiling replaces the deck or roof lining over its clear face.
-    # Sheet goods has its own ceiling override walk, but finish and membrane layers also
-    # need an area row: the sauna's basswood and the plant room's PVC/membrane are bought
-    # by the square foot, not as sheets.
-    for room in model.rooms:
-        plan_room = model.plan.by_tag(room.tag)
-        if not isinstance(plan_room, Room):
+    # A room's own ceiling liner, by the SF: the sauna's aspen and the plant room's PVC and
+    # membrane are bought that way. The same walk orders its sheets (``ceiling lining`` in
+    # ``sheet_goods``), so those rows say so.
+    mirrored: set[tuple[str, str, str, float]] = set()
+    for piece in ceiling_pieces(model):
+        if not piece.lining:
             continue
-        for lining_layer in plan_room.ceiling_lining:
+        for lining_layer in piece.layers:
             if lining_layer.function in _BILLABLE and lining_layer.material_ref not in coatings:
-                areas[("ceiling", lining_layer.function.value, lining_layer.material_ref,
-                       lining_layer.thickness.meters)] += room.area_m2
+                key = ("ceiling", lining_layer.function.value, lining_layer.material_ref,
+                       lining_layer.thickness.meters)
+                areas[key] += piece.area_m2
+                if lining_layer.framing is None:
+                    mirrored.add(key)
 
     # A slab, footing or pad is a ``ResolvedSolid``: ``structural_solids_takeoff`` bills its
     # gross volume as concrete, but every *other* layer of its assembly — below-slab XPS, an
@@ -375,7 +352,8 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
          # has never walked a slab, so a slab's base course is billed here and nowhere else,
          # and flagging it as an overlap would point a reader at a row that does not exist.
          "also_in_sheet_goods": (function == LayerFunction.SHEATHING.value
-                                 and not in_slab_family(scope))}
+                                 and not in_slab_family(scope)
+                                 or (scope, function, material, thickness) in mirrored)}
         for (scope, function, material, thickness), area in sorted(areas.items())
     ]
     rows += [{"scope": scope, "function": LayerFunction.FINISH.value, "material": material,

@@ -119,7 +119,7 @@ a release or for exhaustive local verification.
 .venv/bin/haus millwork houses/catlin --md out/milling.md --csv out/milling.csv
 .venv/bin/haus countertops houses/catlin                      # slab-yard package: DXF per piece, PDF, piece list
 .venv/bin/haus print3d houses/catlin --timing             # A1-ready 3MF: storeys on a plate + furniture (docs/print3d.md)
-.venv/bin/haus bids houses/catlin --all --out out/bids       # unpriced per-trade RFQs + summary schedules (docs/bid-package-format.md)
+.venv/bin/haus bids houses/catlin --all --out out/bids       # unpriced per-crew RFQs + summary schedules (docs/bid-package-format.md)
 .venv/bin/haus order houses/catlin --brand IKEA --md out/ikea.md   # one retailer's shopping list, in packs (docs/order-list-format.md)
 .venv/bin/haus costs import out/estimate.csv --house houses/catlin   # actuals back in
 scripts/verify.sh                        # standard tests, house checks, ruff, UI typecheck/tests
@@ -224,6 +224,10 @@ actually paid), `tasks.toml` (work-package status). The engine ships no price da
 - `cli/price_file.py` owns the file format; `cli/prices.py` owns the join to the BOM.
 - `takeoff/cost_model.py` is the `net -> waste -> ordered -> contingency -> markup -> tax`
   ladder. A `merged` (installed, split unknown) subtotal is never divided.
+- **A trade is the smallest scope some house bids alone; a crew is the house's grouping**
+  (decision #115): `[crews]` in `tasks.toml` joins trades for one sub or marks them
+  `self_performed`, and `haus bids` writes one package per crew. Trades file by fact in
+  `takeoff/cost_facts.py`; never add a trade to fit one house — add a crew.
 - `takeoff/tasks.py` derives work packages at (trade x storey), ordered by
   `emit/trades.CONSTRUCTION_SEQUENCE`. Task ids are stable GlobalIds, so re-exporting
   updates rather than duplicates. No durations, crew sizes or dates — the model cannot know

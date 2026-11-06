@@ -143,7 +143,7 @@
     "drip_edge": "roofing",
     "fascia": "siding",
     "furring": "siding",
-    "gutter": "drainage",
+    "gutter": "gutters",
     "insulation": "insulation",
     "landing": "stairs",
     "landing_framing": "stairs",
@@ -154,7 +154,7 @@
     "riser": "stairs",
     "roof_panel_hem": "roofing",
     "soffit": "siding",
-    "stair_skirt": "millwork",
+    "stair_skirt": "carpentry",
     "stair_subdeck": "framing",
     "stringer": "stairs",
     "tread": "stairs",
@@ -335,13 +335,13 @@
   },
   "recordFamilyTrades": {
     "baseboard": [
-      "millwork"
+      "carpentry"
     ],
     "brace": [
       "framing"
     ],
     "door_casing": [
-      "millwork"
+      "carpentry"
     ],
     "earth": [
       "earth"
@@ -354,13 +354,13 @@
       "earth"
     ],
     "light_run": [
-      "electrical"
+      "low_voltage"
     ],
     "opening": [
       "openings"
     ],
     "paneling": [
-      "millwork"
+      "carpentry"
     ],
     "room_floor": [
       "flooring"
@@ -614,7 +614,7 @@
       "concrete"
     ],
     "downspout": [
-      "drainage"
+      "gutters"
     ],
     "drain_column": [
       "drainage",
@@ -684,7 +684,7 @@
       "openings"
     ],
     "gutter": [
-      "drainage"
+      "gutters"
     ],
     "insulation": [
       "insulation"
@@ -801,7 +801,7 @@
       "concrete"
     ],
     "slab_finish": [
-      "millwork"
+      "carpentry"
     ],
     "slab_platform": [
       "concrete"
@@ -873,7 +873,7 @@
     "connector_embedded": "framing",
     "connector_hanger": "framing",
     "dowel": "concrete",
-    "downspout": "drainage",
+    "downspout": "gutters",
     "drain_column": "drainage",
     "drain_tile": "drainage",
     "drywell": "drainage",
@@ -896,7 +896,7 @@
     "french_drain": "drainage",
     "glazing": "openings",
     "glazing_trim": "openings",
-    "gutter": "drainage",
+    "gutter": "gutters",
     "insulation": "insulation",
     "insulation_wrap": "mechanical",
     "leader_extension": "drainage",
@@ -935,7 +935,7 @@
     "slab": "concrete",
     "slab_band": "concrete",
     "slab_deck": "concrete",
-    "slab_finish": "millwork",
+    "slab_finish": "carpentry",
     "slab_platform": "concrete",
     "snow_guard": "roofing",
     "soffit": "drywall",
@@ -984,7 +984,8 @@
       "id": "roof",
       "label": "Roof",
       "trades": [
-        "roofing"
+        "roofing",
+        "gutters"
       ]
     },
     {
@@ -992,6 +993,7 @@
       "label": "Walls",
       "trades": [
         "siding",
+        "spray_foam",
         "insulation",
         "drywall",
         "paint"
@@ -1010,7 +1012,10 @@
       "trades": [
         "tile",
         "flooring",
-        "millwork"
+        "resilient",
+        "carpentry",
+        "millwork",
+        "countertops"
       ]
     },
     {
@@ -1024,7 +1029,8 @@
       "id": "electrical",
       "label": "Electrical",
       "trades": [
-        "electrical"
+        "electrical",
+        "low_voltage"
       ]
     },
     {
@@ -1043,25 +1049,31 @@
     }
   ],
   "tradeLabels": {
+    "carpentry": "Finish carpentry",
     "concrete": "Concrete",
+    "countertops": "Countertops",
     "drainage": "Drainage",
     "drywall": "Drywall",
     "earth": "Earthwork",
     "electrical": "Electrical",
-    "flooring": "Flooring",
+    "flooring": "Wood & LVP flooring",
     "framing": "Framing",
     "furniture": "Furniture & appliances",
     "general": "General conditions",
+    "gutters": "Gutters",
     "insulation": "Insulation",
     "landscaping": "Landscaping",
+    "low_voltage": "Low voltage",
     "masonry": "Masonry",
     "mechanical": "Mechanical",
-    "millwork": "Millwork & casework",
+    "millwork": "Custom millwork",
     "openings": "Windows & doors",
     "paint": "Paint",
     "plumbing": "Plumbing",
+    "resilient": "Carpet & resilient",
     "roofing": "Roofing",
     "siding": "Siding & trim",
+    "spray_foam": "Spray foam",
     "stairs": "Stairs & guards",
     "tile": "Tile"
   },
@@ -1075,15 +1087,21 @@
     "roofing",
     "openings",
     "siding",
+    "gutters",
     "plumbing",
     "electrical",
+    "low_voltage",
     "mechanical",
+    "spray_foam",
     "insulation",
     "drywall",
     "paint",
     "millwork",
+    "carpentry",
+    "countertops",
     "tile",
     "flooring",
+    "resilient",
     "stairs",
     "furniture",
     "landscaping"

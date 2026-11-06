@@ -70,6 +70,18 @@ def test_the_criteria_block_prints_the_wind_basis_the_calcs_used(catlin_model_ro
     assert "42.0 in" in text, "the profile's frost depth"
 
 
+def test_flat_roof_snow_reads_ct_per_roof(catlin_model_ro, profile):
+    """The unheated garage and open canopy are 42 psf at C_t 1.2, the house 35 at 1.0."""
+    from typehaus.emit.draw.roofframingplan import roof_framing_notes
+
+    text = "\n".join(design_criteria_block(catlin_model_ro, profile))
+    assert "35 psf" in text and "C_t = 1.0: RF-HOUSE" in text
+    assert "42 psf AT C_t = 1.2: RF-BW-CANOPY, RF-GARAGE" in text
+    roofs = {roof.tag: roof for roof in catlin_model_ro.roofs}
+    garage = " ".join(roof_framing_notes(catlin_model_ro, roofs["RF-GARAGE"]))
+    assert "Pf = 42 PSF" in garage and "Ct = 1.2" in garage
+
+
 def test_a_silent_model_prints_not_stated_and_never_a_default(catlin_model, profile):
     """Decision #32. A missing value is a missing value, not zero and not a guess."""
     # ``Site``/``Project``/``PlanModel`` are pydantic (``model_copy``); ``ResolvedModel``

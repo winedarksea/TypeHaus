@@ -8,6 +8,25 @@
 # have to be in the ground before the second one arrives. Dates and assignees are
 # deliberately absent until somebody is actually booked.
 
+# ** WHO BIDS WHAT (decision #115, 2026-11-05). ** A trade is the smallest scope some house
+# bids alone; a crew is this house's grouping, and `haus bids` writes one package per crew.
+# A trade not named here is its own sub. Owner work is a materials list, not an RFQ: on
+# another house the same trades may well go to a contractor, which is the reason they stay
+# trades. The windows are supply only (`openings`): the framer sets them.
+[crews.envelope]
+label = "Roofing, siding and gutters"
+trades = ["roofing", "siding", "gutters"]
+
+[crews.carpentry]
+label = "Finish carpentry, stairs and guards"
+trades = ["carpentry", "stairs"]
+
+[crews.owner]
+label = "Owner — batts, blown fill, low voltage and smart home"
+trades = ["insulation", "low_voltage"]
+self_performed = true
+note = "The electrician sets every box, raceway and LED driver; the owner pulls the cable, terminates and mounts the devices."
+
 # One sub, one mobilisation, three stops — which is exactly what checkpoints are for. The
 # footing inspection sits BETWEEN the first and the second, and before checkpoints existed
 # the only way to say so was to invent two visits for one arrival.
@@ -82,7 +101,7 @@ label = "Waterproofing, free-draining stone and backfill"
 # Since 2026-10-28 the column, its fabric, the native lifts and the cap are modelled
 # (plan/earthwork.py EX-HOUSE) and bill as [excavation] rows, which file under the EARTH
 # package (task/earth/building); the "stone" checkpoint below is that crew's work here.
-rows = ["envelope_layers:waterproofing"]
+rows = ["envelope_layers:waterproofing", "envelope_layers:xps:2.0"]
 depends_on = ["task/concrete/basement/walls"]
 checkpoints = [
   { id = "membrane", label = "Cold joint treated, primer flashed off, sheet rolled and corners reinforced" },
@@ -108,7 +127,7 @@ label = "Slabs on grade — basement, garage, court floor"
 rows = ["concrete:slab",
         "concrete:column:PIER_CONCRETE_12", "concrete:column:SUNKEN_GARDEN_COLUMN_12",
         "allowances:radon-passive-pipe-and-stack",
-        "allowances:concrete-cold-weather-protection"]
+        "allowances:concrete-cold-weather-protection", "envelope_layers:xps:1.0"]
 element_tags = ["SL-B-*", "SL-G-*", "SL-SG-FLOOR", "PT-SG-*", "PT-BW-*"]
 # Not the trade order: the sleeves, the radon collection point and the in-floor tube are all
 # plumbing work, and every one of them is under the slab. This is the dependency a
@@ -220,14 +239,14 @@ checkpoints = [
   { id = "walls", label = "Walls and ceilings — primer and two coats" },
   # The PT-4 enamel (BM Advance / SW Emerald Urethane) cures slowly: 5-7 days before doors
   # are rehung or shelves loaded (notes/paint_selection.md).
-  { id = "trim", label = "Trim and doors — fill, caulk and finish coats on the set base and casing", after = ["task/millwork/building/trim"], cure_days = 7 },
+  { id = "trim", label = "Trim and doors — fill, caulk and finish coats on the set base and casing", after = ["task/carpentry/building/trim"], cure_days = 7 },
 ]
 
 [visits."task/paint/building/foundation-coating"]
 label = "Foundation coating — the above-grade XPS band, all four sides"
 rows = ["envelope_layers:foundation-coating-acrylic-tinted"]
 element_tags = ["W-B-N*", "W-B-E*", "W-B-W*", "W-B-S*"]
-depends_on = ["task/insulation/building/foam-and-girts", "insp/foundation_backfill"]
+depends_on = ["task/spray_foam/building/foam-and-girts", "insp/foundation_backfill"]
 constraints = [
   { label = "the band runs from 6\" BELOW grade to the wall top — no foam edge left at the soil line" },
   { label = "mesh over the WHOLE face, then skim, wait two hours, texture — it is not a one-pass parge" },
@@ -267,14 +286,14 @@ constraints = [
   { label = "wall TOPS and SL-SG-FLOOR stay uncoated — a walked mineral coating wears and is a slip question" },
 ]
 
-# The insulation trade's first arrival, and the one with the hold that cannot be checked
+# The spray-foam trade's first arrival, and the one with the hold that cannot be checked
 # afterwards. There is no WRB on this house: the continuous exterior foam IS the weather
 # plane, the girts are screwed through it, and once the foam is on nobody can see a missed
 # screw again. The same hold appears as an `[[extra]]` inspection with `authority = "owner"`
-# in inspections.toml, which is what makes it gate the whole insulation trade rather than
+# in inspections.toml, which is what makes it gate the whole spray-foam trade rather than
 # only this one visit. Siding follows it by the `depends_on` below, not by the trade order:
 # exterior foam before cladding is this house's sequence, not every house's.
-[visits."task/insulation/building/foam-and-girts"]
+[visits."task/spray_foam/building/foam-and-girts"]
 label = "Continuous exterior foam, girts and the weather plane"
 depends_on = ["task/framing/building", "insp/framing", "insp/girt_screws"]
 constraints = [
@@ -562,42 +581,54 @@ constraints = [
 # --- BASE AND CASING: after the hard floors, before the carpet (2026-10-10) --------------------
 # The base is set ON the finished floor, so there is no shoe moulding to hide a gap — which
 # only works if the oak, LVP and tile are down first. Carpet tucks under a base,
-# so it goes in after it. Both packages are split in full so no row falls to no visit.
+# so it goes in after it. Each package is split in full so no row falls to no visit.
+# ** RE-SPLIT BY CREW 2026-11-05 (decision #115). ** Wood/LVP, tile, carpet and resilient,
+# finish carpentry and the mill's hardwood are separate packages now: the tile and its DITRA
+# are `task/tile/building`, the sealed slab is the concrete finisher's, the deck boards the
+# framer's, the quartz `task/countertops/building`, and the shop-milled casings and wood tops
+# `task/millwork/building` (supply; the carpenter hangs them).
 [visits."task/flooring/building/hard"]
-label = "Hard floors — red oak, LVP, tile setting, coatings and rubber"
+label = "Hard floors — red oak and LVP"
 rows = ["allowances:finish-floor-prep-and-self-levelling",
         "allowances:finish-transitions-and-stair-nosings",
-        "floor_finishes:catlin-ditra-heat", "floor_finishes:catlin-ditra-xl",
-        "floor_finishes:catlin-plant-sureply", "floor_finishes:catlin-plant-vinyl-raised",
-        "floor_finishes:lvp",
-        "floor_finishes:oak-floor-custom", "floor_finishes:catlin-rubber-stall-mat",
-        "floor_finishes:sealed-concrete",
-        "sheet_goods:aluminum-deck", "sheet_goods:trex-enhance-basics"]
+        "floor_finishes:lvp", "floor_finishes:oak-floor-custom"]
 
-[visits."task/flooring/building/carpet"]
+[visits."task/resilient/building/sheet"]
+label = "Sheet vinyl over SurePly with its flash cove and base, and the gym's rubber mats"
+
+[visits."task/resilient/building/carpet"]
 label = "Carpet — BED, BED1-3, the main closet and PLAY-N tucked under the base; ST-B2M glued"
 rows = ["floor_finishes:catlin-theater-carpet", "floor_finishes:catlin-carpet-raised",
-        "floor_finishes:catlin-bedroom-carpet-pad", "allowances:finish-floor-stair-carpet-steps",
-        "allowances:finish-floor-stair-carpet-landings"]
-depends_on = ["task/millwork/building/trim"]
+        "floor_finishes:catlin-bedroom-carpet-pad", "allowances:finish-carpet-stair-steps",
+        "allowances:finish-carpet-stair-landings"]
+depends_on = ["task/carpentry/building/trim"]
 
 # The rows are keyed by STOCK: switching TRIM-STANDARD's material renames them here.
-[visits."task/millwork/building/trim"]
-# The sauna's locust base falls to task/millwork/basement; its cedar casing is billed here.
+[visits."task/carpentry/building/trim"]
+# The sauna's locust base and the cherry, oak and cedar casings are the mill's
+# (task/millwork/*), as is the sauna's aspen and basswood liner: hung here, billed there.
 label = "Painted pine base, MDF and PVC casing, hardwood accents — butt-jointed S4S, on the finished floor"
 rows = ["interior_trim:pine-fj-base", "interior_trim:mdf-casing:door casing",
-        "interior_trim:pvc-trim", "interior_trim:pvc-trim:door casing",
-        "interior_trim:cherry-trim:door casing", "interior_trim:oak-trim:door casing",
-        "interior_trim:cedar-sauna-trim:door casing"]
-depends_on = ["task/flooring/building/hard"]
+        "interior_trim:pvc-trim", "interior_trim:pvc-trim:door casing"]
+depends_on = ["task/flooring/building/hard", "task/tile/building", "task/millwork/building"]
 constraints = [
   { label = "hard floors down and protected in every trimmed room" },
   { label = "pine and MDF primed, back-primed and acclimatised; painted with the walls (task/paint/building/interior#trim)" },
   { label = "cherry and oak accent casings oiled or sealed, all faces, before they go up; the sauna's cedar left bare", owner = "owner" },
 ]
 
-[visits."task/millwork/building/casework"]
-label = "Casework, tops, stools, shelving and liners"
+[visits."task/carpentry/building/doors"]
+label = "Interior doors hung, with their hardware sets"
+rows = ["openings:DT-INT-SWING30", "openings:DT-INT-SWING32-PRIV",
+        "allowances:finish-door-hardware", "allowances:finish-door-hardware-closet",
+        "allowances:finish-door-hardware-pair", "allowances:finish-door-hardware-passage",
+        "allowances:finish-door-hardware-pocket-passage",
+        "allowances:finish-door-hardware-pocket-privacy",
+        "allowances:finish-door-hardware-privacy"]
+depends_on = ["task/paint/building/interior"]
+
+[visits."task/carpentry/building/casework"]
+label = "Casework, stools, shelving and liners"
 rows = ["allowances:cabinet-closet-shelving-and-rod",
         "allowances:cabinet-hung-frame-underside-and-fixing",
         "allowances:cabinet-peninsula-bar-subtop",
@@ -605,17 +636,13 @@ rows = ["allowances:cabinet-closet-shelving-and-rod",
         "allowances:cabinet-study-booth-cushions",
         "allowances:finish-canopy-east-pvc-column-wrap",
         "allowances:finish-window-stools-and-aprons",
-        "countertops:ash-counter-6q", "countertops:quartz-counter",
-        "countertops:walnut-counter",
-        "envelope_layers:catlin-sauna-ceiling-shiplap",
-        "envelope_layers:catlin-sauna-shiplap",
         "envelope_layers:pvc-panel"]
 
 # --- ST-M2S SKIRTS: before the stair, not with the trim (2026-10-30) ---------------------------
 # The skirts go up first and the stringers, treads and risers butt them, so the stair waits on
-# them. The skirt row is split out of the second storey's millwork; the rest of that package is
+# them. The skirt row is split out of the second storey's carpentry; the rest of that package is
 # the rowless fit-out visit, which takes whatever the skirts do not name.
-[visits."task/millwork/second/stair-skirts"]
+[visits."task/carpentry/second/stair-skirts"]
 label = "ST-M2S skirt boards — poplar 1x12, scribed to the walls before the stair goes in"
 rows = ["interior_trim:poplar-skirt-paint"]
 depends_on = ["task/drywall/building", "task/drywall/second"]
@@ -623,10 +650,10 @@ constraints = [
   { label = "boards primed and back-primed; finish coats with the trim (task/paint/building/interior#trim)" },
 ]
 
-[visits."task/millwork/second/fit-out"]
+[visits."task/carpentry/second/fit-out"]
 label = "Second-floor fit-out — shelving, mirrors, bath accessories, IKEA fronts and shades"
 
 [visits."task/stairs/building/flights"]
 label = "Stairs — stringers, oak treads and risers, landings and rails"
 depends_on = ["task/drywall/building", "task/drywall/second",
-              "task/millwork/second/stair-skirts"]
+              "task/carpentry/second/stair-skirts"]

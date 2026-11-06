@@ -149,6 +149,24 @@ milestones = [{ id = "preconstruction", label = "Preconstruction" }, ...]
 A missing contractor document is an **attention** item on the visit and on the arrival
 brief. It never blocks: great subs without digital paperwork have to stay bookable.
 
+### `[crews]` — who bids what (decision #115)
+
+```toml
+[crews.envelope]
+label = "Roofing, siding and gutters"     # optional; default joins the trade labels
+trades = ["roofing", "siding", "gutters"]
+
+[crews.owner]
+trades = ["insulation", "low_voltage"]
+self_performed = true                     # a materials list, not an RFQ
+note = "The electrician sets every box and raceway."
+```
+
+A trade (`emit/trades.py`) is the smallest scope some house bids alone; a crew is this
+house's grouping. A trade no crew names is its own crew. A trade in two crews, an unknown
+trade, or a crew keyed by a trade it does not hold is a load error. `haus bids` writes one
+package per crew (`takeoff/crews.py`); work packages stay (trade x storey).
+
 `haus schedule <house> --propose <package>` prints a split the engine derived from the BOM
 row families and tag families, with proposed predecessors and the trade's default
 constraint labels. It writes nothing. Paste what you accept.

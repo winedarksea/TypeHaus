@@ -44,8 +44,8 @@ The guide doesn't name ClassicBac, and the product's own spec lists direct glue 
 ## Budget (`prices.toml`, allowances only)
 
 - Theater: $2–3.25/SF material, $1–2.25/SF stretch-in labour, plus the cushion row.
-- Stair: `finish-floor-stair-carpet-steps` at $33–60 per riser (15), and
-  `finish-floor-stair-carpet-landings` at $3.5–6/SF (30 SF).
+- Stair: `finish-carpet-stair-steps` at $33–60 per riser (15), and
+  `finish-carpet-stair-landings` at $3.5–6/SF (30 SF).
 - Substrate: `deck 11x1` and `deck 43.375x1` in `[framing]`.
 
 Before 2026-11-01 the stair carpet was billed nowhere: its substrate rows had no price, and

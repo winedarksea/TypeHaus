@@ -59,8 +59,8 @@ export function runVisibilityTests() {
   assert(memberTrades({ category: "soffit" }).join() === "siding",
     "An eave soffit panel is the siding contractor's, not a stick of framing");
   assert(memberTrades({ category: "fascia" }).join() === "siding", "So is the fascia");
-  assert(memberTrades({ category: "gutter" }).join() === "drainage",
-    "A gutter is the head of the stormwater run");
+  assert(memberTrades({ category: "gutter" }).join() === "gutters",
+    "A gutter is the gutter crew's (decision #115)");
   assert(memberTrades({ category: "ridge_cap" }).join() === "roofing:flashing",
     "A ridge cap takes the roofing flashing facet");
   assert(memberTrades({ category: "stringer" }).join() === "stairs",
@@ -109,7 +109,7 @@ export function runVisibilityTests() {
 
   assert(expandRolePreset({ groups: ["walls"], trades: ["framing"] }).join() ===
     "framing,framing:structure,framing:furring,framing:sheathing,framing:connector," +
-    "framing:connector-embedded,siding,siding:flashing,siding:screen,insulation,drywall,paint",
+    "framing:connector-embedded,siding,siding:flashing,siding:screen,spray_foam,insulation,drywall,paint",
     "A preset expands its groups and trades, in order, framing to its facets");
 
   // Saved recipes from the 13-name vocabulary still apply.

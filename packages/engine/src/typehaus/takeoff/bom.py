@@ -7,6 +7,8 @@ are produced together so a caller cannot render half a BOM.
 
 from __future__ import annotations
 
+from typing import Any
+
 from typehaus.hardware.config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
     HardwareTakeoffConfig,
@@ -121,7 +123,7 @@ def bill_of_materials(
     collections so anything the IR learns to resolve cannot quietly go unbilled.
     """
     solar = solar_takeoff(model)
-    return {
+    return _with_trade_facts(model, {
         "framing": framing_takeoff(model),
         "framing_by_size": framing_bom_by_size(model),
         # What a made-to-order member is BUILT to, as opposed to what it is bought as: the
@@ -288,4 +290,26 @@ def bill_of_materials(
         "data_devices": data_device_schedule(model),
         "data_raceways": data_raceway_takeoff(model),
         "poe_budget": poe_budget(model),
-    }
+    })
+
+
+#: Sections whose rows name a ``material`` a mill may have to make (``custom_milled``).
+_MILLED_SECTIONS = ("interior_trim", "countertops", "wood_surfaces", "envelope_layers",
+                    "sheet_goods")
+
+
+def _with_trade_facts(model: ResolvedModel, bom: dict[str, Any]) -> dict[str, Any]:
+    """Stamp the material facts ``cost_facts`` files a row by, which the row builders do not
+    carry: ``custom_milled`` (the stock is milled to order, so the mill supplies it) and a
+    floor finish's ``floor_hatch`` — its own, or for a layer under it, its floor's."""
+    materials = {item.tag: item for item in model.plan.library.materials}
+    for section in _MILLED_SECTIONS:
+        for row in bom.get(section) or ():
+            material = materials.get(str(row.get("material") or row.get("key") or ""))
+            if material is not None and material.requires_custom_milling:
+                row["custom_milled"] = True
+    for row in bom.get("floor_finishes") or ():
+        floor = materials.get(str(row.get("under") or row.get("finish") or ""))
+        if floor is not None and floor.hatch:
+            row["floor_hatch"] = floor.hatch
+    return bom

@@ -93,7 +93,7 @@ def test_bedroom_estimate_and_installation_visit_include_every_selected_layer(
         assert not any(row["key"] == key for row in estimate["unpriced"])
         assigned = [slug for slug, visit in visits.items()
                     if f"floor_finishes:{key}" in visit.rows]
-        assert assigned == ["task/flooring/building/carpet"]
+        assert assigned == ["task/resilient/building/carpet"]
     cushion_row = next(row for row in rows if row["key"] == _BEDROOM_CUSHION)
     assert cushion_row["product"] == "Future Foam 150553488-32"
     assert cushion_row["labour"] == {"low": 0, "high": 0}

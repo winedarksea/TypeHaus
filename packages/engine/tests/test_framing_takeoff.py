@@ -408,8 +408,8 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "excavations": ("excavation",),
     # The paneling records (sauna liner, wainscot, tile splash) roll up by species/material.
     "panelings": ("wood_surfaces",),
-    # The resolved layer stack per room; billed off the deck/roof/room fields it was
-    # derived from (``sheet_goods``'s "ceiling" scope), not off this record directly.
+    # The resolved layer stack per room: ``sheet_goods``'s "ceiling" scopes bill off it
+    # (``takeoff/ceiling_areas``).
     "ceilings": ("sheet_goods",),
     # Derived interior millwork — the stools and the shelf banks — scheduled as a cut list
     # in rough stock. Unpriced by design (see ``UNPRICED_VIEWS``), but not unread: this is

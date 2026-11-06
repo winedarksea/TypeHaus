@@ -179,13 +179,11 @@ def test_a_laid_deck_in_a_slab_row_needs_its_material_to_say_so() -> None:
     composite plank on 2x8 joists alike, so this is the only case the trade table cannot
     settle on its own — and silence is not evidence, so a row with no assembly stays a
     pour."""
-    # A deck plank is the finished walking surface (flooring, 2026-09-13): laid last, over a
-    # frame the carpenter already signed off, and priced against LVP and oak. The joists and
-    # the rim under it are still the framer's.
+    # A deck plank is laid by the crew that framed the deck (decision #115).
     assert cost_code("concrete", "slab:PORCH_DECK_COMPOSITE",
-                     material="composite-deck").trade == "flooring"
+                     material="composite-deck").trade == "framing"
     assert cost_code("concrete", "slab:BALCONY_DECK_ALUMINUM",
-                     material="aluminum-deck").trade == "flooring"
+                     material="aluminum-deck").trade == "framing"
     # And a slab that is neither a pour nor a deck files where its material says.
     # FPSF wing foam is the foundation contractor's (adjudicated 2026-09-12).
     assert cost_code("concrete", "slab:FROST_WING_XPS_1IN", material="xps").trade == "concrete"
@@ -301,9 +299,13 @@ def test_every_catlin_pour_reaches_the_concrete_sub(catlin_model, catlin_areas) 
 
 @pytest.mark.parametrize("row,trade", [
     ({"domain": "electrical"}, "electrical"),
+    ({"domain": "electrical", "services": ["power_120"]}, "electrical"),
+    ({"domain": "electrical", "services": ["data", "power_120"]}, "low_voltage"),
+    ({"domain": "electrical", "services": []}, "low_voltage"),     # a Class 2 controller
     ({"domain": "plumbing"}, "plumbing"),
     ({"domain": "appliance"}, "furniture"),
-    ({"domain": "furniture", "type": "CASE-PENINSULA-120", "name": "Peninsula run"}, "millwork"),
+    ({"domain": "furniture", "type": "CASE-PENINSULA-120", "name": "Peninsula run"},
+     "carpentry"),
     ({"domain": "furniture", "type": "FURN-BED-KING", "name": "King bed"}, "furniture"),
     ({"domain": "furniture", "type": "FT-CURTAIN-ROD-48", "name": "Curtain rod, 48\""}, "furniture"),
     ({"domain": "mechanical", "services": ["power_240"], "equipment_kind": "space_heater",
@@ -324,7 +326,7 @@ def test_a_placeable_files_by_its_domain_and_services(row, trade) -> None:
 @pytest.mark.parametrize("row,trade", [
     ({"scope": "wall", "function": "finish", "material": "gwb"}, "drywall"),
     ({"scope": "wall", "function": "finish", "material": "latex-paint"}, "paint"),
-    ({"scope": "wall", "function": "finish", "material": "sauna-shiplap"}, "millwork"),
+    ({"scope": "wall", "function": "finish", "material": "sauna-shiplap"}, "carpentry"),
     ({"scope": "wall", "function": "cladding", "material": "board-batten-24"}, "siding"),
     ({"scope": "roof", "function": "cladding", "material": "standing-seam"}, "roofing"),
     ({"scope": "roof", "function": "sheathing", "material": "struct-1-plywood"}, "framing"),

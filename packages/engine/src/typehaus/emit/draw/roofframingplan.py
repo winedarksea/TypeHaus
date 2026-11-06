@@ -24,8 +24,11 @@ from typehaus.emit.draw.schedule_block import (
 )
 from typehaus.emit.draw.structural_common import (
     IN_PER_FT,
+    SNOW_CT_HEATED,
     feet_inches,
+    flat_roof_snow_psf,
     outline_bbox,
+    roof_snow_thermal_factor,
     truss_heel_note,
     wall_center,
 )
@@ -275,7 +278,7 @@ def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof) -> list[str]:
     if roof.bearing_z_m is not None:
         notes.append(f"ROOF SEATS ON PLATES AT {roof.bearing_z_m:.2f} m; "
                      f"DECK AREA {roof.surface_area_m2:,.0f} m2.")
-    snow = _snow_load_note(model)
+    snow = _snow_load_note(model, roof)
     if snow:
         notes.append(snow)
     wind = _wind_load_note(model)
@@ -287,34 +290,32 @@ def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof) -> list[str]:
     return notes
 
 
-# Flat-roof snow load p_f = 0.7 * Ce * Ct * Is * p_g (ASCE 7 eq. 7.3-1). The sheet states
-# the load case at the fully-exposed, heated, Risk Category II defaults — Ce = Ct = Is = 1.0
-# — which is what makes p_f a printable number rather than a design decision. Drift and
-# unbalanced load remain the engineer's, and the note says so alongside.
+# Flat-roof snow load p_f (ASCE 7 eq. 7.3-1) at the fully-exposed, Risk Category II defaults
+# Ce = Is = 1.0, with this roof's own Ct: one sheet per roof, so an unheated garage or open
+# canopy prints its 1.2 rather than the house's 1.0. Drift and unbalanced load remain the
+# engineer's, and the note says so alongside.
 #
 # Sliding snow is the one case that is no longer wholly unscreened: `structural.sliding_snow`
 # now reports whether a pitched roof discharges onto a lower roof or a glazed surface and
 # whether retention was authored for it. That is an *exposure* screen, not an impact load —
 # the sheet's disclaimer below still stands for the load itself.
-_SNOW_FLAT_ROOF_FACTOR = 0.7
-
-
-def _snow_load_note(model: ResolvedModel) -> str | None:
-    """The ground/flat-roof snow load case, when the site carries one."""
+def _snow_load_note(model: ResolvedModel, roof: ResolvedRoof) -> str | None:
+    """The ground/flat-roof snow load case for this roof, when the site carries one."""
     ground = model.plan.project.site.ground_snow_load_psf
     if ground is None:
         return None
-    flat = _SNOW_FLAT_ROOF_FACTOR * ground
-    return (f"GROUND SNOW LOAD Pg = {ground:.0f} PSF; FLAT-ROOF Pf = {flat:.0f} PSF AT "
-            f"Ce = Ct = Is = 1.0. DRIFT, SLIDING AND UNBALANCED LOAD CASES ARE NOT "
-            f"COMPUTED HERE.")
+    c_t = roof_snow_thermal_factor(model, roof)
+    heat = "HEATED" if c_t == SNOW_CT_HEATED else "UNHEATED"
+    return (f"GROUND SNOW LOAD Pg = {ground:.0f} PSF; FLAT-ROOF Pf = "
+            f"{flat_roof_snow_psf(ground, c_t):.0f} PSF AT Ce = Is = 1.0, Ct = {c_t:.1f} "
+            f"({heat}). DRIFT, SLIDING AND UNBALANCED LOAD CASES ARE NOT COMPUTED HERE.")
 
 
 def _wind_load_note(model: ResolvedModel) -> str | None:
     """The design wind basis, when the site carries one — the *speed*, not a pressure.
 
-    The snow note above prints a load (p_f), because p_f = 0.7 p_g is one multiplication the
-    sheet can honestly make at stated defaults. Wind has no equivalent one-liner: getting from
+    The snow note above prints a load (p_f), because p_f = 0.7 C_t p_g is one multiplication
+    the sheet can honestly make at stated defaults. Wind has no equivalent one-liner: getting from
     V_ult to a roof pressure needs a K_z at the mean roof height, an enclosure classification,
     and the zone map of Fig. 30.3-2 — three decisions, not a factor. So this note states the
     basis and says plainly that the pressures are not on this sheet, which is what a reviewer

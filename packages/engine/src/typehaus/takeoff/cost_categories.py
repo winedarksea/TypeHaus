@@ -119,13 +119,15 @@ def _placeable_category(trade: str, row: Mapping[str, Any], facts: CategoryFacts
                 or "data" in (row.get("services") or ()):
             return "low_voltage"
         return "equipment" if kind else "devices"
+    if trade == "low_voltage":
+        return "lighting" if str(row.get("type")) in facts.luminaire_types else "devices"
     if trade == "plumbing":
         return "equipment" if kind else "fixtures"
     if trade == "mechanical":
         return "terminals" if kind is None or kind in _TERMINAL_EQUIPMENT else "equipment"
     if row.get("domain") == "appliance":
         return "appliances"
-    if trade == "millwork":
+    if trade == "carpentry":
         return "cabinetry"
     return None
 

@@ -15,16 +15,18 @@ def authored_hardware_rows(model):
     for opening in model.openings:
         spec = types.get(opening.type_ref) if opening.is_door else None
         for item in spec.hardware if spec else ():
-            key = (item.product_ref, item.role, item.installation)
+            # Exterior and interior sets are different installers (cost_facts), so one
+            # product on both is two rows.
+            key = (item.product_ref, item.role, item.installation, bool(spec.exterior))
             entry = grouped.setdefault(key, [0, []])
             entry[0] += item.quantity
             entry[1].append(opening.tag)
     rows = []
-    for (ref, role, instruction), (count, tags) in sorted(grouped.items()):
+    for (ref, role, instruction, exterior), (count, tags) in sorted(grouped.items()):
         product = products.get(ref)
         row = hardware_row(None, scope="door hardware (authored)", count=count,
                            basis=instruction, tags=tags)
-        row.update(hardware_tag=ref, role=role,
+        row.update(hardware_tag=ref, role=role, exterior=exterior,
                    description=product.name if product else ref,
                    manufacturer=product.brand if product else None,
                    part_number=ref,

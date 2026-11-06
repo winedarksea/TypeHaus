@@ -432,7 +432,7 @@ def test_an_allowance_key_prefix_picks_its_trade() -> None:
     assert cost_code("allowances", "site-excavation-backfill-grading").trade == "earth"
     assert cost_code("allowances", "hvac-refrigerant-line-sets").trade == "mechanical"
     assert cost_code("allowances", "electrical-pv-array-modules").trade == "electrical"
-    assert cost_code("allowances", "finish-door-hardware").trade == "openings"
+    assert cost_code("allowances", "finish-door-hardware").trade == "carpentry"
     # The two the substring version got wrong.
     assert cost_code("allowances", "foundation-damp-or-waterproofing").trade == "concrete"
     assert cost_code("allowances", "radon-roughin-and-egress-window-wells").trade == "concrete"

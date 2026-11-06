@@ -58,10 +58,10 @@ SUMMARIES: dict[str, tuple[str, str, str]] = {
                  "One row per opening, the marks on the plans: location, size, rough "
                  "opening, hand, jamb, and where code requires safety glazing or egress.",
                  "summary_openings:openings_summary"),
-    "millwork": ("Interior door schedule and trim pack",
-                 "Interior doors one row per opening, then base, casing and jambs packed "
-                 "into the house's stock lengths.",
-                 "summary_finishes:millwork_summary"),
+    "carpentry": ("Interior door schedule and trim pack",
+                  "Interior doors one row per opening, then base, casing and jambs packed "
+                  "into the house's stock lengths.",
+                  "summary_finishes:carpentry_summary"),
     "roofing": ("Roof geometry",
                 "Area in squares, pitch, and the eave, rake, ridge, hip and valley lengths.",
                 "summary_envelope:roofing_summary"),
@@ -74,6 +74,9 @@ SUMMARIES: dict[str, tuple[str, str, str]] = {
     "flooring": ("Room finish schedule",
                  "Net floor area per room by finish (add your own waste), its underlayment, "
                  "and the base.", "summary_finishes:flooring_summary"),
+    "resilient": ("Room finish schedule",
+                  "Net floor area per room by finish (add your own waste), its underlayment, "
+                  "and the base.", "summary_finishes:flooring_summary"),
     "tile": ("Tile schedule", "Floor and wall tile per room, net, and the membrane under it.",
              "summary_finishes:tile_summary"),
     "plumbing": ("Fixture count",
