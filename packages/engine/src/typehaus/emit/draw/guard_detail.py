@@ -11,6 +11,7 @@ from __future__ import annotations
 import math
 from collections import defaultdict
 
+from typehaus.emit.draw.lineweights import CUT, LIGHT, PROFILE
 from typehaus.emit.draw.scene import ArchDimension, NamedPoint, Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.draw.schedules.stairs import _rail_faces
 from typehaus.quantities import M_PER_IN
@@ -49,7 +50,7 @@ class _Row:
         return self._builder.add(node)
 
 
-def _box(b: SceneBuilder, x0, y0, x1, y1, layer=_RAIL, weight=0.25, dashed=False, tag=None):
+def _box(b: SceneBuilder, x0, y0, x1, y1, layer=_RAIL, weight=LIGHT, dashed=False, tag=None):
     b.add(Polyline(points=((x0, y0), (x1, y0), (x1, y1), (x0, y1)), closed=True, layer=layer,
                    lineweight=weight, linetype="DASHED" if dashed else "CONTINUOUS", tag=tag))
 
@@ -118,9 +119,9 @@ def _guard_panel(b: SceneBuilder, model, key, railings, posts, ox: float) -> Non
     post = posts[rep.tag][0]
     post_bottom = rail_h - (post.z1_m - post.z0_m) / M_PER_IN
     b.add(Polyline(points=((ox - 12, 0), (ox + pitch + 12, 0)), layer=_STRUCT,
-                   lineweight=0.5))
+                   lineweight=CUT))
     for x in (ox, ox + pitch):
-        _box(b, x - pw / 2, post_bottom, x + pw / 2, rail_h, weight=0.35)
+        _box(b, x - pw / 2, post_bottom, x + pw / 2, rail_h, weight=PROFILE)
     for rise in rises:
         _box(b, ox + pw / 2, rise - rs / 2, ox + pitch - pw / 2, rise + rs / 2)
     y0 = rises[-1] + rs / 2 if len(rises) > 1 else (clearance.inches if clearance else 0) + rs / 2
@@ -132,12 +133,12 @@ def _guard_panel(b: SceneBuilder, model, key, railings, posts, ox: float) -> Non
         gap = (clear - count * width) / (count + 1)
         for index in range(count):
             x = ox + pw / 2 + gap * (index + 1) + width * index
-            _box(b, x, y0, x + width, y1, weight=0.18)
+            _box(b, x, y0, x + width, y1, weight=LIGHT)
         if count:  # the gap left of the middle picket
             g0 = ox + pw / 2 + (gap + width) * (count // 2)
             _dim(b, (g0, y0 + 6), (g0 + gap, y0 + 6), 0, inch_text(round(gap * 16) / 16))
     elif rep.infill in ("panel", "mesh"):
-        _box(b, ox + pw / 2, y0, ox + pitch - pw / 2, y1, weight=0.18, dashed=True)
+        _box(b, ox + pw / 2, y0, ox + pitch - pw / 2, y1, weight=LIGHT, dashed=True)
     _dim(b, (ox - pw / 2, 0), (ox - pw / 2, top), -8, inch_text(round(top * 16) / 16))
     if bottom is not None and bottom > 0.05:
         _dim(b, (ox + pitch + pw / 2, 0), (ox + pitch + pw / 2, bottom), 12,
@@ -147,13 +148,13 @@ def _guard_panel(b: SceneBuilder, model, key, railings, posts, ox: float) -> Non
         t = surface.display_base_thickness.inches
         for x in (ox, ox + pitch):
             _box(b, x - surface.base_width.inches / 2, 0, x + surface.base_width.inches / 2,
-                 t, weight=0.35)
+                 t, weight=PROFILE)
             for side in (-1, 1):
                 sx = x + side * surface.display_hole_spacing.inches / 2
                 length = (surface.wood_screw_length if rep.surface_post_mounts[0].substrate
                           == "wood" else surface.concrete_anchor_length).inches
                 b.add(Polyline(points=((sx, t), (sx, t - length)), layer=_RAIL,
-                               lineweight=0.18, linetype="DASHED"))
+                               lineweight=LIGHT, linetype="DASHED"))
     elif fascia is not None:
         drop = rep.fascia_bracket_drop.inches if rep.fascia_bracket_drop else 0.0
         _box(b, ox - 12, -drop - fascia.overall_height.inches - 3, ox + pitch + 12, 0,
@@ -161,7 +162,7 @@ def _guard_panel(b: SceneBuilder, model, key, railings, posts, ox: float) -> Non
         for x in (ox, ox + pitch):
             w = fascia.flange_width.inches
             _box(b, x - w / 2, -drop - fascia.overall_height.inches, x + w / 2, -drop,
-                 weight=0.35)
+                 weight=PROFILE)
         _dim(b, (ox - pw / 2, 0), (ox - pw / 2, -drop), -8, inch_text(drop))
     else:
         _text(b, ox - 6, post_bottom - 4, "POST MOUNT NOT MODELLED")
@@ -188,10 +189,10 @@ def _handrail_panel(b: SceneBuilder, model, key, railings, ox: float) -> None:
     top, _bottom, rail_h = (v / M_PER_IN if v is not None else None
                             for v in _rail_faces(model, rep))
     radius = parts.rail_section_m / M_PER_IN / 2
-    b.add(Polyline(points=((ox - 10, 0), (ox + 14, 0)), layer=_STRUCT, lineweight=0.5))
+    b.add(Polyline(points=((ox - 10, 0), (ox + 14, 0)), layer=_STRUCT, lineweight=CUT))
     circle = tuple((ox + radius * math.cos(a / 16 * math.pi),
                     top - radius + radius * math.sin(a / 16 * math.pi)) for a in range(32))
-    b.add(Polyline(points=circle, closed=True, layer=_RAIL, lineweight=0.35))
+    b.add(Polyline(points=circle, closed=True, layer=_RAIL, lineweight=PROFILE))
     _dim(b, (ox, 0), (ox, top), -6, inch_text(round(top * 16) / 16))
     pitch = max(_pitch(model, r) for r in railings)
     lines = [f"{key[0].removeprefix('RAILING-')} / {rep.mount.upper()}",
