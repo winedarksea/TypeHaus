@@ -160,6 +160,9 @@ MILLWORK = [
         # 2026-10-29), which also drops the head that ran into ST-B2M's stringer. D-B-ESS's
         # steel KD frame wraps the wall itself.
         uncased_doors=("D-B-CLOSET", "D-B-ESS"),
+        # D-M-BATH2's bath face is a drywall return: its west jamb is flush on the vanity
+        # (owner, fit pass 2026-11-06). The bedroom face keeps its casing.
+        uncased_faces=(("D-M-BATH2", "RM-M-BATH2"),),
     ),
 ]
 

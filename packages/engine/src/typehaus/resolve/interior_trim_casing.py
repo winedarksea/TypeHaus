@@ -7,7 +7,8 @@ In the host wall's frame, ``d`` measured out from the opening's centre line:
     head bottom = rough-opening head - jamb_allowance + reveal
 
 A bookcase door is cased on its shelf face only, lapping the face frame by the product's
-``casing_lap`` (``interior_trim_scope.casing_edges``).
+``casing_lap`` (``interior_trim_scope.casing_edges``); its body and head stand on the room's
+finished floor.
 
 The legs run from the room's finished floor to the head; the head sits on them, flush with
 their outer edges. A leg that runs into an adjacent wall, fixed casework or a neighbouring
@@ -78,7 +79,7 @@ def _casing(plan, model, scope: TrimScope, wall: ResolvedWall, opening, side: in
     s = scope.standard
     inner, head_rise = casing_edges(opening, scope.door_types.get(opening.type_ref or ""), s)
     room = room_owning(model, wall.storey, at(0.0, face + side * _ROOM_PROBE_M))
-    if room is None or room.tag not in scope.rooms:
+    if room is None or room.tag not in scope.rooms or s.is_uncased(opening.tag, room.tag):
         return None
     material = s.casing_material_for(room.tag, opening.tag)
     t, width = s.thickness_for(material).meters, s.casing_width_for(room.tag, opening.tag).meters
@@ -93,8 +94,10 @@ def _casing(plan, model, scope: TrimScope, wall: ResolvedWall, opening, side: in
         n0, n1 = face, face + side * t
         return (at(d0, n0), at(d1, n0), at(d1, n1), at(d0, n1))
 
-    head_z = wall.base_ref_z_m + opening.sill_m + head_rise
     sill_z = wall.base_ref_z_m + opening.sill_m
+    # A bookcase door stands on the finished floor, so its head is measured off it.
+    bookcase = getattr(scope.door_types.get(opening.type_ref or ""), "bookcase_door", None)
+    head_z = (max(sill_z, floor_z) if bookcase is not None else sill_z) + head_rise
     raised = opening.sill_m > _RAISED_SILL_M or sill_z - floor_z > _RAISED_SILL_M
     # A hatch's frame closes with a sill piece mirroring the head; the legs stand on it.
     sill_z0 = sill_z + s.jamb_allowance.meters - s.reveal.meters - width
@@ -151,14 +154,21 @@ def _casing(plan, model, scope: TrimScope, wall: ResolvedWall, opening, side: in
 
 def _obstacles(plan, model: ResolvedModel, scope: TrimScope, host: ResolvedWall):
     """``(tag, plan polygon, z0, z1)`` a leg may run into on the host's storey: every other
-    wall's body and the fixed things trim stops at (``TrimScope.fixed_footprints``)."""
+    wall's body, the paneling standing proud of it, and the fixed things trim stops at
+    (``TrimScope.fixed_footprints``)."""
+    from shapely.geometry import Polygon
+
     key = ("casing walls", host.storey)
     if key not in scope._cache:
-        scope._cache[key] = [(wall.tag, scope.body(wall), wall.z0_m, wall.z1_m)
+        scope._cache[key] = [(wall.tag, wall.tag, scope.body(wall), wall.z0_m, wall.z1_m)
                              for wall in model.walls
                              if wall.storey == host.storey and wall.layers
                              and not scope.body(wall).is_empty]
-    return ([entry for entry in scope._cache[key] if entry[0] != host.tag]
+        scope._cache[key] += [(band.tag, band.wall_tag, Polygon(ring), z0, z1)
+                              for band in model.panelings if band.storey == host.storey
+                              for ring, z0, z1 in band.pieces if len(ring) >= 3]
+    return ([(tag, polygon, z0, z1) for tag, wall, polygon, z0, z1 in scope._cache[key]
+             if wall != host.tag]
             + list(scope.fixed_footprints(plan, model, host.storey)))
 
 

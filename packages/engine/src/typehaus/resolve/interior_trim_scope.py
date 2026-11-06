@@ -83,7 +83,7 @@ class TrimScope:
         if opening.kind != "door":
             return None
         door_type = self.door_types.get(opening.type_ref or "")
-        if not cased(door_type) or opening.tag in self.standard.uncased_doors:
+        if not cased(door_type) or self.standard.is_uncased(opening.tag, room):
             return None
         inner, _head = casing_edges(opening, door_type, self.standard)
         return inner + self.standard.casing_width_for(room, opening.tag).meters
@@ -107,7 +107,8 @@ def casing_edges(opening, door_type, standard: TrimStandard) -> tuple[float, flo
     """``(inner edge from the opening centre, head bottom above the sill)`` of its casing.
 
     A site-hung door's casing stands ``jamb_allowance - reveal`` inside the rough opening. A
-    bookcase door's laps its face frame by the product's ``casing_lap`` instead.
+    bookcase door's laps its face frame by the product's ``casing_lap`` instead, and its head
+    rise is above the finished floor the unit stands on.
     """
     product = getattr(door_type, "bookcase_door", None)
     if product is not None:
@@ -165,14 +166,15 @@ def trim_scope(plan: PlanModel, model: ResolvedModel) -> tuple[TrimScope | None,
         f"trim standard {standard.tag} cases door {door!r}, which is not an opening",
         standard.tag)
         for door in (*(d for accent in standard.door_trims for d in accent.doors),
-                     *standard.uncased_doors)
+                     *standard.uncased_doors, *(d for d, _room in standard.uncased_faces))
         if door not in opening_tags]
     findings += [element_error(
         "integrity.trim_standard",
-        f"trim standard {standard.tag} cases a face in {accent.room!r}, which is not a room",
+        f"trim standard {standard.tag} cases a face in {room!r}, which is not a room",
         standard.tag)
-        for accent in standard.door_trims
-        if accent.room is not None and accent.room not in room_tags]
+        for room in (*(accent.room for accent in standard.door_trims),
+                     *(room for _door, room in standard.uncased_faces))
+        if room is not None and room not in room_tags]
     excluded = set(standard.excluded_rooms)
     rooms = {room.tag: room for room in model.rooms
              if room.conditioned and room.floor_finish and room.tag not in excluded
@@ -187,6 +189,12 @@ def base_kind(scope: TrimScope, room: ResolvedRoom) -> str:
     material = scope.materials.get(room.floor_finish or "")
     detail = getattr(material, "base_detail", None)
     return detail or "trim"
+
+
+def base_height(scope: TrimScope, room: ResolvedRoom) -> float:
+    """The base's height in this room: the floor's ``Material.base_height``, else the board's."""
+    material = scope.materials.get(room.floor_finish or "")
+    return (getattr(material, "base_height", None) or scope.standard.base_height).meters
 
 
 def face_function(wall: ResolvedWall, point: tuple[float, float],

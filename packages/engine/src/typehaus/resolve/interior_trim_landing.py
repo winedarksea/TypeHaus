@@ -21,7 +21,7 @@ from typehaus.resolve.interior_trim_base import (
     finish_arcs,
     stair_skirt_footprints,
 )
-from typehaus.resolve.interior_trim_scope import TrimScope, base_kind
+from typehaus.resolve.interior_trim_scope import TrimScope, base_height, base_kind
 from typehaus.resolve.model import ResolvedModel, ResolvedStair
 from typehaus.resolve.model_trim import ResolvedBaseRun
 from typehaus.resolve.overlay import union_all
@@ -99,7 +99,7 @@ def _landing_runs(model: ResolvedModel, scope: TrimScope, stair: ResolvedStair, 
 
     landing = replace(room, clear_face=tuple(ring))
     perimeter = rp.perimeter_length(ring)
-    height = scope.standard.base_height.meters
+    height = base_height(scope, room)
     arcs = bounding_wall_arcs(model, landing, ring, scope.body)
     finish, bare, owned = finish_arcs(ring, perimeter, arcs, floor_z, height)
     breaks = [(a, b, "bare face") for a, b in bare]

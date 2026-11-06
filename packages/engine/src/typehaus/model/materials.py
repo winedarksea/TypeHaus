@@ -9,6 +9,7 @@ from typehaus.model.cladding_trim import TrimCondition
 from typehaus.model.paint import PaintSpec
 from typehaus.model.published_cladding import PublishedCladdingLoad
 from typehaus.model.registry import register_constructor
+from typehaus.quantities import Length
 
 
 class Material(HausModel):
@@ -289,6 +290,9 @@ class Material(HausModel):
     # means "trim". Authored on the floor, not on the room or an engine table, because the
     # base is a fact about the floor (decision #57).
     base_detail: Literal["trim", "tile", "integral_cove", "resilient_base", "none"] | None = None
+    # The base's own height where it is a bought profile (a 4" rubber cove), from the
+    # product's sheet; ``None`` takes ``TrimStandard.base_height``.
+    base_height: Length | None = None
     # The sealant along the base's toe where it meets this floor (the floor's perimeter
     # movement joint), billed by the LF of base. Authored on the floor (decision #57).
     base_joint_ref: str | None = None

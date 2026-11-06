@@ -24,7 +24,13 @@ outside corner the incoming one runs past by the outgoing one's depth.
 from __future__ import annotations
 
 from typehaus.resolve import room_perimeter as rp
-from typehaus.resolve.interior_trim_scope import TrimScope, base_kind, face_function, is_finish
+from typehaus.resolve.interior_trim_scope import (
+    TrimScope,
+    base_height,
+    base_kind,
+    face_function,
+    is_finish,
+)
 from typehaus.resolve.model import ResolvedModel, ResolvedRoom
 from typehaus.resolve.model_trim import ResolvedBaseRun, TrimPiece
 from typehaus.resolve.room_corners import (
@@ -72,7 +78,7 @@ def _room_runs(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
     ring = corners_only(list(orient(Polygon(room.clear_face), 1.0).exterior.coords)[:-1])
     perimeter = rp.perimeter_length(ring)
     floor_z, _structural = scope.floors(model, room)
-    height = scope.standard.base_height.meters
+    height = base_height(scope, room)
     arcs = bounding_wall_arcs(model, room, ring, scope.body)
     finish, bare, owned = finish_arcs(ring, perimeter, arcs, floor_z, height)
 
@@ -85,7 +91,7 @@ def _room_runs(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
     for a, b in rp.floor_opening_intervals(plan, ring, room.storey, _WELL_LEDGE_M):
         breaks.append((a, b, "floor opening"))
     sides = [LineString([ring[i], ring[(i + 1) % len(ring)]]) for i in range(len(ring))]
-    for tag, polygon in _obstacles(plan, model, scope, room, floor_z):
+    for tag, polygon in _obstacles(plan, model, scope, room, floor_z, height):
         breaks.extend((a, b, tag) for a, b in _butting(sides, polygon, _AGAINST_M))
     # A casing leg set off one face by a board-thickness change still stops the base there.
     for tag, polygon in _casing_footprints(model, room, floor_z, height):
@@ -158,13 +164,13 @@ def _one_door(model, ring, room, scope: TrimScope, opening) -> list[tuple[float,
 
 
 def _obstacles(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
-               floor_z: float):
+               floor_z: float, height: float):
     """``(tag, footprint)`` for each floor-standing thing a base stops at, in this room."""
     from shapely.geometry import Polygon
 
     from typehaus.resolve.room_lookup import owns
 
-    top = floor_z + scope.standard.base_height.meters
+    top = floor_z + height
     for tag, footprint, z0, _z1 in scope.fixed_footprints(plan, model, room.storey):
         if z0 >= top:
             continue  # a floating vanity, an upper: the base runs under it

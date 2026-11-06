@@ -4,9 +4,9 @@
 ``interior_trim`` rows whose stock is ``wood_surface="painted"``; oiled hardwood and a base the
 floor trade makes stay out. Stair skirts and paneling are left out because their own rates
 already include priming and painting. ``door_leaf_paint_rows`` bills ``standard.doors`` by the
-face area of every interior leaf and frame (both faces), in ``envelope_layers`` beside the
-exterior doors' ``field_finish``. A door type with a ``field_finish`` or a factory-finished
-leaf is never billed again here.
+face area of every interior leaf and frame (both faces) plus the stock jamb's inner faces, in
+``envelope_layers`` beside the exterior doors' ``field_finish``. A door type with a
+``field_finish`` or a factory-finished leaf is never billed again here.
 """
 
 from __future__ import annotations
@@ -57,9 +57,25 @@ def door_leaf_paint_rows(model: ResolvedModel) -> list[dict[str, object]]:
         if (spec is None or spec.exterior or spec.field_finish is not None
                 or spec.leaf_material_ref is not None or spec.bookcase_door is not None):
             continue
-        area += 2.0 * door_face_area_m2(model, opening)
+        area += 2.0 * door_face_area_m2(model, opening) + _jamb_face_area_m2(model, opening)
     if area <= 0.0:
         return []
     return [dict(scope="door leaf paint", function="finish", material=standard.doors,
                  thickness_in=0.0, net_area_sqft=round(area / _SQFT, 1),
                  also_in_sheet_goods=False)]
+
+
+def _jamb_face_area_m2(model: ResolvedModel, opening) -> float:
+    """The inner faces of a stock jamb (legs to the finished floor, and head), which the
+    wall-plane projection sees only as an edge. A hardwood flat jamb is not painted."""
+    sizing = getattr(opening, "sizing", None)
+    if sizing is None or not sizing.jamb_depth_m:
+        return 0.0
+    if sizing.jamb_material_ref is not None:
+        material = next((m for m in model.plan.library.materials
+                         if m.tag == sizing.jamb_material_ref), None)
+        if material is None or material.wood_surface != "painted":
+            return 0.0
+    width = sizing.rough_w_m - 2.0 * sizing.jamb_allowance_m
+    height = sizing.rough_h_m - sizing.jamb_allowance_m - sizing.floor_finish_m
+    return sizing.jamb_depth_m * max(width + 2.0 * height, 0.0)

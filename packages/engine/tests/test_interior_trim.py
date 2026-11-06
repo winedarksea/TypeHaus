@@ -428,7 +428,11 @@ def test_catlin_expected_clips(catlin_model_ro) -> None:
     # TrimStandard.uncased_doors: the under-stair utility door takes none.
     assert not [c for c in catlin_model_ro.door_casings if c.opening_ref == "D-B-CLOSET"]
     assert clips[("D-S-BED2", "RM-S-BED2")] == {("FURN-S-BED2-PAX-SHELF", False)}
-    assert ("FX-M-BATH2-SINK", True) in clips[("D-M-BATH2", "RM-M-BATH2")]
+    # TrimStandard.uncased_faces: D-M-BATH2's bath face is a drywall return (O2-108).
+    assert [c.room for c in catlin_model_ro.door_casings
+            if c.opening_ref == "D-M-BATH2"] == ["RM-M-BED"]
+    # A leg scribes to the paneling standing proud of the next wall, not its gypsum (O2-103).
+    assert {k for k, _ in clips[("D-M-ENTRY", "RM-M-MUDROOM")]} == {"WP-M-MUDROOM-SHIPLAP"}
 
 
 def test_catlin_base_stops_at_the_bare_faces(catlin_model_ro) -> None:

@@ -76,9 +76,12 @@ def test_house_oak_casing_laps_the_face_frame_on_the_study_face_only(catlin_mode
     for x0, y0, x1, y1 in legs.values():
         assert (y0, y1) == pytest.approx((STUDY_FACE_Y_IN - 0.75, STUDY_FACE_Y_IN))
         assert x1 - x0 == pytest.approx(3.5)
-    body_top = (catlin_model_ro.wall("W-A-SN").base_ref_z_m + door.sill_m
-                + door_type.bookcase_door.body_height.meters)
+    # The unit stands on the study's oak, not the subfloor: a 78" leg (I3-103).
+    floor = door.doorway.adjacent_floors[0].surface_m
+    body_top = floor + door_type.bookcase_door.body_height.meters
+    assert min(s.z0_m for s in sides.solids) == pytest.approx(floor)
     assert pieces["head"].z0_m == pytest.approx(body_top - lap * M_PER_IN)
+    assert pieces["leg_left"].length_m / M_PER_IN == pytest.approx(78.0)
 
 
 def test_one_infill_closes_the_east_leg_to_the_filler_in_the_casing_plane(catlin_model_ro):

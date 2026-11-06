@@ -216,10 +216,15 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                                               (flush, back), z0 + sill))
         return tuple(parts) + ((hardware,) if hardware is not None else ())
     if opening.kind == "door" and bookcase_door is not None:
-        mount = 0.0 if faces is None else (
-            faces[0] if bookcase_door.mounting_face == "negative_normal" else faces[1])
-        return bookcase_door_parts(box, bookcase_door, width, available_height, z0 + sill,
-                                   mount)
+        side = 0 if bookcase_door.mounting_face == "negative_normal" else 1
+        mount = 0.0 if faces is None else faces[side]
+        # The unit stands on its shelf-face room's finished floor (Murphy's RO is off it).
+        floor = z0 + sill
+        floors = getattr(opening.doorway, "adjacent_floors", None)
+        if floors and floors[side] is not None and floors[side].surface_m is not None:
+            floor = max(floor, floors[side].surface_m)
+        return bookcase_door_parts(box, bookcase_door, width,
+                                   available_height - (floor - z0 - sill), floor, mount)
     if not is_trimless:
         parts.append(GPart(key="frame", material_key=frame_key, solids=(
             box(frame_width, available_height, frame_depth,

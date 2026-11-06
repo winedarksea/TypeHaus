@@ -352,11 +352,14 @@ OPENINGS = [
              exterior_wrap_material_ref="metal-dark-exterior",
              # MMI publishes no sill section: this is a coordination envelope (frame depth, a
              # 1" composite sill, inside R311.3.2's 1-1/2" outswing allowance) that closes the
-             # pan's ends behind the returns.
+             # pan's ends behind the returns. Interim until MMI's sill drawing: the unit sits
+             # on the pan alone (1/4" asked; the plate's fall makes it 0.28"), leaving 0.22"
+             # under the 81 1/2" RO head for shims.
              sill_design=ExteriorDoorSillDesign(
                  source_url="https://hdsupplysolutions.com/p/doors-00-145-10/mmi-door-6-panel-32-x-80-rh-out-on-6-9-16-primed-composite-frame-p219385",
                  source_drawing="MMI Z0364688R listing: 6-9/16 inch composite frame, fixed sill; schematic envelope, no published section",
-                 threshold_depth=inch(6.5625), threshold_height=inch(1.0), cap_depth=inch(1.5)))),
+                 threshold_depth=inch(6.5625), threshold_height=inch(1.0), cap_depth=inch(1.5),
+                 seat_height=inch(0.25)))),
     # This 8' wall (vs. the house's 10') is why the 27" family is 36" tall: a 60" height at
     # this 42" sill would push the header above the top plate.
     #
@@ -746,8 +749,8 @@ ALARMS = [
 
 # --- service-door stair (ST-G-SERVICE) --------------------------------------------------
 #
-# Five risers from the garage slab at -2'-10" up to D-G-SERVICE's threshold crest at +1 1/2"
-# (its schematic sill envelope; MMI publishes no section), 5 x 7.1" on 11" treads at 3'-0"
+# Five risers from the garage slab at -2'-10" up to D-G-SERVICE's threshold crest at +1.28"
+# (its schematic sill envelope; MMI publishes no section), 5 x 7.06" on 11" treads at 3'-0"
 # wide. Five concrete `Slab`s were the flight once (SL-G-STEP-0..4 in params/foundations.py).
 # Cut the risers from the INSTALLED threshold. ** NO TOP LANDING SINCE 2026-10-13. ** The door
 # swings out, so R311.7.6's exception applies (code.R311_7_6_door_at_stair_head grades it) and
@@ -794,7 +797,8 @@ ALARMS = [
 STAIRS = [
     Stair(uid="X99TD38ZS3", tag="ST-G-SERVICE",
           from_storey="garage", to_storey="garage",
-          base_elevation=ft(-2, -10), top_elevation=inch(1.5),
+          # D-G-SERVICE's interim crest: 1" sill on its 0.2835" seat (pan + plate fall).
+          base_elevation=ft(-2, -10), top_elevation=inch(1.2835),
           width=ft(3), start=pt(ft(6, 11.625), ft(47, 6.125)),
           run_direction="y", run_reversed=True,
           tread_depth=inch(11), nosing_depth=inch(0),

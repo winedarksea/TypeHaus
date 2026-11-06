@@ -351,6 +351,9 @@ def interior_trim_spec(model: ResolvedModel) -> list[str]:
                      + (f", {length.feet:g}' stock." if length else "."))
     if std.uncased_doors:
         lines.append(f"• Uncased (jamb and drywall): {_listed(std.uncased_doors)}.")
+    if std.uncased_faces:
+        faces = [f"{door} ({room} face)" for door, room in std.uncased_faces]
+        lines.append(f"• Drywall return, uncased: {_listed(faces)}.")
     if std.excluded_rooms:
         lines.append(f"• No base or casing: {_listed(std.excluded_rooms)}.")
     return lines

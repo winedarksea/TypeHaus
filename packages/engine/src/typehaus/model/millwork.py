@@ -368,6 +368,8 @@ class TrimStandard(Element):
     excluded_rooms: tuple[str, ...] = ()
     # Doors that take no applied casing on either face (a utility door: jamb and drywall).
     uncased_doors: tuple[str, ...] = ()
+    # ``(door, room)``: the one face looking into ``room`` is uncased (a drywall return).
+    uncased_faces: tuple[tuple[str, str], ...] = ()
     base_material_ref: str | None = None
     room_trims: tuple[RoomTrim, ...] = ()
     door_trims: tuple[DoorTrim, ...] = ()
@@ -420,6 +422,10 @@ class TrimStandard(Element):
         if accent is not None and accent.casing_width is not None:
             return accent.casing_width
         return self.casing_width
+
+    def is_uncased(self, door: str, room: str | None = None) -> bool:
+        """Whether ``door`` takes no casing (on its face in ``room``, when given)."""
+        return door in self.uncased_doors or (door, room) in self.uncased_faces
 
     def jamb_material_for(self, door: str | None) -> str | None:
         """The flat-jamb stock ``door`` is hung on, if a ``DoorTrim`` names one."""

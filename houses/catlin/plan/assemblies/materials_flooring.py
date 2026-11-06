@@ -5,7 +5,7 @@ the slab). The tile mortar beds are design allowances; verify the installed plan
 with the selected tile and setter.
 """
 
-from typehaus import Material
+from typehaus import Material, inch
 
 # The tile baths' base is the painted PVC board (owner 2026-10-29), not a cut-tile base.
 _TOE = ("Floor tile stops 1/4 inch off the wall; the PVC base sits on the tile over the gap, "
@@ -13,11 +13,17 @@ _TOE = ("Floor tile stops 1/4 inch off the wall; the PVC base sits on the tile o
 _LARGE_FORMAT = ("Large format: substrate flat to 1/8 inch in 10 ft (ANSI A108.02), "
                  "large-and-heavy-tile mortar, lippage control. ")
 
+# Johnsonite Traditional rubber wall base DC-XX (coved), 4" x 0.125": Tarkett "Johnsonite
+# Resilient Wall Base, Traditional Wall Base" product specification 070517, p.1 §1.3.2
+# (thecornerguardstore.com/content/submittals/tk/DS_20170705_EN_TRADITIONAL_WALL_BASE.pdf).
+_RUBBER_COVE_4 = inch(4)
+
 MATERIALS_FLOORING = [
     Material(tag="catlin-plant-vinyl-raised", name="Plant-room sheet vinyl over SurePly",
              hatch="membrane", color="#e2e1e0", finish="tile-gatsby-grid",
              finish_thickness_in=0.370, floor_waste_fraction=0.12,
              floor_companion_refs=("catlin-plant-sureply",), base_detail="resilient_base",
+             base_height=_RUBBER_COVE_4,
              base_joint_ref="catlin-base-toe-silicone",
              source='Tarkett First Class FiberFloor, Windsor Gatsby 87061, 12 ft (no seam), '
                     'fully adhered over one nominal 1/4" SurePly; the combined height is '
@@ -27,6 +33,7 @@ MATERIALS_FLOORING = [
     Material(tag="catlin-vinyl-gatsby", name="Tarkett First Class Windsor Gatsby sheet vinyl",
              hatch="membrane", color="#e2e1e0", finish="tile-gatsby-grid",
              finish_thickness_in=0.120, base_detail="resilient_base",
+             base_height=_RUBBER_COVE_4,
              base_joint_ref="catlin-base-toe-silicone",
              source='RM-A-STUDIO, RM-A-STUBATH, RM-B-BATH, owner 2026-11-03: Tarkett First Class '
                     'FiberFloor, Windsor Gatsby 87061, 12 ft, glue-down on the subfloor. 4" '

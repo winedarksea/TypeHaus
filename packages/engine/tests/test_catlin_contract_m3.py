@@ -1752,21 +1752,22 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     assert abs(deck_top - threshold) <= inch(1.5).meters
     assert threshold - slab.z1_m == pytest.approx(inch(34.0).meters)
 
-    # Five 7.1" risers inside close that 2'-10" plus the 1 1/2" threshold crest (2026-11-01): four pressure-treated treads and the head
-    # riser up to the threshold itself.
+    # Five 7.06" risers inside close that 2'-10" plus the interim 1.28" threshold crest (pan
+    # seat): four pressure-treated treads and the head riser up to the threshold itself.
     assert not [f for f in catlin_model.floors if f.tag == "FS-BW-GARAGE"]
     assert not [s.tag for s in catlin_model.solids if s.tag.startswith("SL-G-STEP-")], \
         "the pour is gone, and so is the deck that replaced it"
 
     stair = next(s for s in catlin_model.stairs if s.tag == "ST-G-SERVICE")
     assert stair.riser_count == 5
-    assert stair.riser_height_m == pytest.approx(inch(35.5 / 5).meters)
+    assert stair.riser_height_m == pytest.approx(inch(35.2835 / 5).meters)
     assert stair.base_elevation_m == pytest.approx(slab.z1_m)
-    assert stair.arrival_elevation_m == pytest.approx(threshold + inch(1.5).meters)
+    assert stair.arrival_elevation_m == pytest.approx(threshold + inch(1.2835).meters)
     treads = sorted((m for m in stair.members if m.category == "tread"), key=lambda m: m.z1_m)
     assert len(treads) == 4
-    assert treads[0].z1_m - slab.z1_m == pytest.approx(inch(35.5 / 5).meters)
-    assert treads[-1].z1_m == pytest.approx(threshold + inch(1.5).meters - inch(35.5 / 5).meters)
+    assert treads[0].z1_m - slab.z1_m == pytest.approx(inch(35.2835 / 5).meters)
+    assert treads[-1].z1_m == pytest.approx(
+        threshold + inch(1.2835).meters - inch(35.2835 / 5).meters)
     # Pressure-treated, distinct from the generic lumber elsewhere in the house.
     assert {m.material for m in stair.members if m.category == "tread"} == {"trex-enhance-basics"}
     assert {m.material for m in stair.members if m.category != "tread"} == {"kdat"}
