@@ -87,13 +87,16 @@ def test_catlin_oracle_conditions(catlin_plan, catlin_model_ro):
     index = LoadIndex.of(catlin_plan, catlin_model_ro)
     e1 = _condition(index, catlin_model_ro, "WIN-M-LIV-E1")
     assert e1.exterior and e1.roofs == ("RF-HOUSE",)
-    assert e1.floors == (("FS-S-EAST", "center"),)
+    # FS-ATTIC names W-S-E2, and its joists land on the whole x=36' line, W-S-E1 included.
+    assert e1.floors == (("FS-S-EAST", "center"), ("FS-ATTIC", "center"))
     assert e1.building_width_m == pytest.approx(36 * 0.3048)
     bed1 = _condition(index, catlin_model_ro, "WIN-S-BED1")
     assert bed1.floors == (("FS-ATTIC", "center"),) and bed1.roofs == ("RF-HOUSE",)
     sauna = _condition(index, catlin_model_ro, "D-B-SAUNA")
-    assert not sauna.exterior and sauna.roofs == ("RF-HOUSE",) and len(sauna.floors) == 2
+    assert not sauna.exterior and sauna.roofs == ("RF-HOUSE",) and len(sauna.floors) == 3
     assert _condition(index, catlin_model_ro, "D-M-LAUN").point_loads == ("FO-A-HALL",)
+    # The stair wells' trimmers land beside D-B-CLOSET's span, not across their holes.
+    assert _condition(index, catlin_model_ro, "D-B-CLOSET").point_loads == ()
 
 
 class _Unauthored:

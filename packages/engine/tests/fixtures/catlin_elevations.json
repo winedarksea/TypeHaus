@@ -4244,7 +4244,19 @@
 8,
 "ba5545a26410"
 ],
+"geometry/1H4KR79N9M::framing/member:jack-0-l1": [
+-2.7416125,
+-0.9125125,
+8,
+"ba5545a26410"
+],
 "geometry/1H4KR79N9M::framing/member:jack-0-r0": [
+-2.7416125,
+-0.9125125,
+8,
+"ba5545a26410"
+],
+"geometry/1H4KR79N9M::framing/member:jack-0-r1": [
 -2.7416125,
 -0.9125125,
 8,
@@ -4287,12 +4299,6 @@
 "3b0cbbb86f77"
 ],
 "geometry/1H4KR79N9M::framing/member:stud-000": [
--2.7416125,
--0.4175125,
-8,
-"1f09581df6ba"
-],
-"geometry/1H4KR79N9M::framing/member:stud-001": [
 -2.7416125,
 -0.4175125,
 8,
@@ -33212,12 +33218,6 @@
 8,
 "0edec6c6a9c0"
 ],
-"geometry/CMW103AAAA::framing/member:backing-0-018": [
-0.8001,
-0.98425,
-8,
-"0edec6c6a9c0"
-],
 "geometry/CMW103AAAA::framing/member:backing-1-000": [
 1.3716,
 1.55575,
@@ -33243,12 +33243,6 @@
 "654891f0dccb"
 ],
 "geometry/CMW103AAAA::framing/member:backing-2-002": [
-1.6256,
-1.80975,
-8,
-"654891f0dccb"
-],
-"geometry/CMW103AAAA::framing/member:backing-2-003": [
 1.6256,
 1.80975,
 8,
@@ -33908,6 +33902,12 @@
 8,
 "a670b3c43692"
 ],
+"geometry/CMW103AAAA::framing/member:block-2-005-15": [
+2.4384,
+2.5273,
+8,
+"a670b3c43692"
+],
 "geometry/CMW103AAAA::framing/member:block-2-006-00": [
 2.9591,
 3.048,
@@ -34395,10 +34395,10 @@
 "6be4faac9cfd"
 ],
 "geometry/CMW103AAAA::framing/member:cripple-head-0-01": [
-2.2740938,
+2.3248938,
 2.670175,
 8,
-"b7e88b56f51d"
+"3a244343b6f0"
 ],
 "geometry/CMW103AAAA::framing/member:cripple-head-1-01": [
 2.3248938,
@@ -34480,9 +34480,9 @@
 ],
 "geometry/CMW103AAAA::framing/member:header-0": [
 2.0899438,
-2.2740938,
+2.3248938,
 8,
-"a6672b89cb97"
+"1bcfa3e51dd2"
 ],
 "geometry/CMW103AAAA::framing/member:header-1": [
 2.0899438,
@@ -34514,6 +34514,12 @@
 8,
 "09bd94dcc24e"
 ],
+"geometry/CMW103AAAA::framing/member:jack-0-l2": [
+0.05715,
+2.0899438,
+8,
+"09bd94dcc24e"
+],
 "geometry/CMW103AAAA::framing/member:jack-0-r0": [
 0.05715,
 2.0899438,
@@ -34521,6 +34527,12 @@
 "09bd94dcc24e"
 ],
 "geometry/CMW103AAAA::framing/member:jack-0-r1": [
+0.05715,
+2.0899438,
+8,
+"09bd94dcc24e"
+],
+"geometry/CMW103AAAA::framing/member:jack-0-r2": [
 0.05715,
 2.0899438,
 8,
@@ -37520,6 +37532,12 @@
 8,
 "a670b3c43692"
 ],
+"geometry/CMW110AAAA::framing/member:block-2-005-04": [
+2.4384,
+2.5273,
+8,
+"a670b3c43692"
+],
 "geometry/CMW110AAAA::framing/member:block-2-006-00": [
 2.9591,
 3.048,
@@ -37623,10 +37641,10 @@
 "83776075e588"
 ],
 "geometry/CMW110AAAA::framing/member:cripple-head-0-01": [
-2.01295,
+2.06375,
 2.670175,
 8,
-"726f4ddac1fb"
+"61835693b7ad"
 ],
 "geometry/CMW110AAAA::framing/member:cripple-sill-0-01": [
 0.05715,
@@ -37636,9 +37654,9 @@
 ],
 "geometry/CMW110AAAA::framing/member:header-0": [
 1.8288,
-2.01295,
+2.06375,
 8,
-"282617debdca"
+"69761992c94d"
 ],
 "geometry/CMW110AAAA::framing/member:jack-0-l0": [
 0.05715,
@@ -37652,6 +37670,12 @@
 8,
 "af76de66d4e4"
 ],
+"geometry/CMW110AAAA::framing/member:jack-0-l2": [
+0.05715,
+1.8288,
+8,
+"af76de66d4e4"
+],
 "geometry/CMW110AAAA::framing/member:jack-0-r0": [
 0.05715,
 1.8288,
@@ -37659,6 +37683,12 @@
 "af76de66d4e4"
 ],
 "geometry/CMW110AAAA::framing/member:jack-0-r1": [
+0.05715,
+1.8288,
+8,
+"af76de66d4e4"
+],
+"geometry/CMW110AAAA::framing/member:jack-0-r2": [
 0.05715,
 1.8288,
 8,
@@ -38066,6 +38096,12 @@
 8,
 "a670b3c43692"
 ],
+"geometry/CMW111AAAA::framing/member:block-2-005-05": [
+2.4384,
+2.5273,
+8,
+"a670b3c43692"
+],
 "geometry/CMW111AAAA::framing/member:block-2-006-00": [
 2.9591,
 3.048,
@@ -38265,16 +38301,16 @@
 "83776075e588"
 ],
 "geometry/CMW111AAAA::framing/member:cripple-head-0-01": [
-2.01295,
+2.06375,
 2.670175,
 8,
-"726f4ddac1fb"
+"61835693b7ad"
 ],
 "geometry/CMW111AAAA::framing/member:cripple-head-1-01": [
-2.01295,
+2.06375,
 2.670175,
 8,
-"726f4ddac1fb"
+"61835693b7ad"
 ],
 "geometry/CMW111AAAA::framing/member:cripple-sill-0-01": [
 0.05715,
@@ -38290,15 +38326,15 @@
 ],
 "geometry/CMW111AAAA::framing/member:header-0": [
 1.8288,
-2.01295,
+2.06375,
 8,
-"282617debdca"
+"69761992c94d"
 ],
 "geometry/CMW111AAAA::framing/member:header-1": [
 1.8288,
-2.01295,
+2.06375,
 8,
-"282617debdca"
+"69761992c94d"
 ],
 "geometry/CMW111AAAA::framing/member:jack-0-l0": [
 0.05715,
@@ -38307,6 +38343,12 @@
 "af76de66d4e4"
 ],
 "geometry/CMW111AAAA::framing/member:jack-0-l1": [
+0.05715,
+1.8288,
+8,
+"af76de66d4e4"
+],
+"geometry/CMW111AAAA::framing/member:jack-0-l2": [
 0.05715,
 1.8288,
 8,
@@ -38324,6 +38366,12 @@
 8,
 "af76de66d4e4"
 ],
+"geometry/CMW111AAAA::framing/member:jack-0-r2": [
+0.05715,
+1.8288,
+8,
+"af76de66d4e4"
+],
 "geometry/CMW111AAAA::framing/member:jack-1-l0": [
 0.05715,
 1.8288,
@@ -38336,6 +38384,12 @@
 8,
 "af76de66d4e4"
 ],
+"geometry/CMW111AAAA::framing/member:jack-1-l2": [
+0.05715,
+1.8288,
+8,
+"af76de66d4e4"
+],
 "geometry/CMW111AAAA::framing/member:jack-1-r0": [
 0.05715,
 1.8288,
@@ -38343,6 +38397,12 @@
 "af76de66d4e4"
 ],
 "geometry/CMW111AAAA::framing/member:jack-1-r1": [
+0.05715,
+1.8288,
+8,
+"af76de66d4e4"
+],
+"geometry/CMW111AAAA::framing/member:jack-1-r2": [
 0.05715,
 1.8288,
 8,
@@ -75766,7 +75826,19 @@
 2,
 "48df97f61545"
 ],
+"member/1H4KR79N9M/jack-0-l1": [
+-2.7416125,
+-0.9125125,
+2,
+"48df97f61545"
+],
 "member/1H4KR79N9M/jack-0-r0": [
+-2.7416125,
+-0.9125125,
+2,
+"48df97f61545"
+],
+"member/1H4KR79N9M/jack-0-r1": [
 -2.7416125,
 -0.9125125,
 2,
@@ -75809,12 +75881,6 @@
 "477bcc2507a6"
 ],
 "member/1H4KR79N9M/stud-000": [
--2.7416125,
--0.4175125,
-2,
-"f09603dc0119"
-],
-"member/1H4KR79N9M/stud-001": [
 -2.7416125,
 -0.4175125,
 2,
@@ -89152,12 +89218,6 @@
 2,
 "0c50e3443c7b"
 ],
-"member/CMW103AAAA/backing-0-018": [
-0.8001,
-0.98425,
-2,
-"0c50e3443c7b"
-],
 "member/CMW103AAAA/backing-1-000": [
 1.3716,
 1.55575,
@@ -89183,12 +89243,6 @@
 "425a339899d8"
 ],
 "member/CMW103AAAA/backing-2-002": [
-1.6256,
-1.80975,
-2,
-"425a339899d8"
-],
-"member/CMW103AAAA/backing-2-003": [
 1.6256,
 1.80975,
 2,
@@ -89848,6 +89902,12 @@
 2,
 "bb27eba390a0"
 ],
+"member/CMW103AAAA/block-2-005-15": [
+2.4384,
+2.5273,
+2,
+"bb27eba390a0"
+],
 "member/CMW103AAAA/block-2-006-00": [
 2.9591,
 3.048,
@@ -90335,10 +90395,10 @@
 "a57cf2e964c3"
 ],
 "member/CMW103AAAA/cripple-head-0-01": [
-2.2740938,
+2.3248938,
 2.670175,
 2,
-"c06cbf7d1446"
+"e01e76542478"
 ],
 "member/CMW103AAAA/cripple-head-1-01": [
 2.3248938,
@@ -90420,9 +90480,9 @@
 ],
 "member/CMW103AAAA/header-0": [
 2.0899438,
-2.2740938,
+2.3248938,
 2,
-"cd795881ab9f"
+"651832dbe620"
 ],
 "member/CMW103AAAA/header-1": [
 2.0899438,
@@ -90454,6 +90514,12 @@
 2,
 "3f4783b2f810"
 ],
+"member/CMW103AAAA/jack-0-l2": [
+0.05715,
+2.0899438,
+2,
+"3f4783b2f810"
+],
 "member/CMW103AAAA/jack-0-r0": [
 0.05715,
 2.0899438,
@@ -90461,6 +90527,12 @@
 "3f4783b2f810"
 ],
 "member/CMW103AAAA/jack-0-r1": [
+0.05715,
+2.0899438,
+2,
+"3f4783b2f810"
+],
+"member/CMW103AAAA/jack-0-r2": [
 0.05715,
 2.0899438,
 2,
@@ -92992,6 +93064,12 @@
 2,
 "bb27eba390a0"
 ],
+"member/CMW110AAAA/block-2-005-04": [
+2.4384,
+2.5273,
+2,
+"bb27eba390a0"
+],
 "member/CMW110AAAA/block-2-006-00": [
 2.9591,
 3.048,
@@ -93095,10 +93173,10 @@
 "893c379beab9"
 ],
 "member/CMW110AAAA/cripple-head-0-01": [
-2.01295,
+2.06375,
 2.670175,
 2,
-"83b742f8400f"
+"51d648acd741"
 ],
 "member/CMW110AAAA/cripple-sill-0-01": [
 0.05715,
@@ -93108,9 +93186,9 @@
 ],
 "member/CMW110AAAA/header-0": [
 1.8288,
-2.01295,
+2.06375,
 2,
-"2d2cc7f56751"
+"e1bf8ab01f89"
 ],
 "member/CMW110AAAA/jack-0-l0": [
 0.05715,
@@ -93124,6 +93202,12 @@
 2,
 "9c88d90841c7"
 ],
+"member/CMW110AAAA/jack-0-l2": [
+0.05715,
+1.8288,
+2,
+"9c88d90841c7"
+],
 "member/CMW110AAAA/jack-0-r0": [
 0.05715,
 1.8288,
@@ -93131,6 +93215,12 @@
 "9c88d90841c7"
 ],
 "member/CMW110AAAA/jack-0-r1": [
+0.05715,
+1.8288,
+2,
+"9c88d90841c7"
+],
+"member/CMW110AAAA/jack-0-r2": [
 0.05715,
 1.8288,
 2,
@@ -93442,6 +93532,12 @@
 2,
 "bb27eba390a0"
 ],
+"member/CMW111AAAA/block-2-005-05": [
+2.4384,
+2.5273,
+2,
+"bb27eba390a0"
+],
 "member/CMW111AAAA/block-2-006-00": [
 2.9591,
 3.048,
@@ -93641,16 +93737,16 @@
 "893c379beab9"
 ],
 "member/CMW111AAAA/cripple-head-0-01": [
-2.01295,
+2.06375,
 2.670175,
 2,
-"83b742f8400f"
+"51d648acd741"
 ],
 "member/CMW111AAAA/cripple-head-1-01": [
-2.01295,
+2.06375,
 2.670175,
 2,
-"83b742f8400f"
+"51d648acd741"
 ],
 "member/CMW111AAAA/cripple-sill-0-01": [
 0.05715,
@@ -93666,15 +93762,15 @@
 ],
 "member/CMW111AAAA/header-0": [
 1.8288,
-2.01295,
+2.06375,
 2,
-"2d2cc7f56751"
+"e1bf8ab01f89"
 ],
 "member/CMW111AAAA/header-1": [
 1.8288,
-2.01295,
+2.06375,
 2,
-"2d2cc7f56751"
+"e1bf8ab01f89"
 ],
 "member/CMW111AAAA/jack-0-l0": [
 0.05715,
@@ -93683,6 +93779,12 @@
 "9c88d90841c7"
 ],
 "member/CMW111AAAA/jack-0-l1": [
+0.05715,
+1.8288,
+2,
+"9c88d90841c7"
+],
+"member/CMW111AAAA/jack-0-l2": [
 0.05715,
 1.8288,
 2,
@@ -93700,6 +93802,12 @@
 2,
 "9c88d90841c7"
 ],
+"member/CMW111AAAA/jack-0-r2": [
+0.05715,
+1.8288,
+2,
+"9c88d90841c7"
+],
 "member/CMW111AAAA/jack-1-l0": [
 0.05715,
 1.8288,
@@ -93712,6 +93820,12 @@
 2,
 "9c88d90841c7"
 ],
+"member/CMW111AAAA/jack-1-l2": [
+0.05715,
+1.8288,
+2,
+"9c88d90841c7"
+],
 "member/CMW111AAAA/jack-1-r0": [
 0.05715,
 1.8288,
@@ -93719,6 +93833,12 @@
 "9c88d90841c7"
 ],
 "member/CMW111AAAA/jack-1-r1": [
+0.05715,
+1.8288,
+2,
+"9c88d90841c7"
+],
+"member/CMW111AAAA/jack-1-r2": [
 0.05715,
 1.8288,
 2,

@@ -21,6 +21,14 @@ printed table, 2026-11-06. `tests/test_header_spans.py` pins these numbers.
   and keeps its printed span — which is why the house's 2-2x8 minimum can need more than the
   code minimum does.
 - **Clear span:** between the trimmers, i.e. the RO (a pocket's 2W + 1").
+- **A floor's bearing ref is a LINE** (2026-11-06 review): the floor framing cuts its joists at
+  the named wall's line coordinate across the whole deck, so a floor loads every wall of that
+  storey on the line, named or not. `FS-ATTIC` names only `W-S-E2` on the east line, and its
+  joists still land on `W-S-E1` and `W-S-E3` (checked against the resolved joist ends,
+  x = 429.8").
+- **A floor opening is not a load across its hole:** on a wall across its floor's joists it
+  bears only where its trimmers land, at its outline's corners. A stair still counts along
+  its whole width.
 - **`HeaderStandard.min_bearing_header = "2-2x8"`** removes the 2-2x4 and 2-2x6 candidates.
 
 ## 1. WIN-M-LIV-E1 — `W-M-E1`, exterior, BEARING
@@ -29,15 +37,15 @@ printed table, 2026-11-06. `tests/test_header_spans.py` pins these numbers.
   the double plate). A 2-2x8 leaves 105.125 − 82.281 − 7.25 = 15.59" → head cripples → note f.
 - Load: `FS-S-EAST` names `W-M-E1` directly; its bearing refs also name `W-M-C2` (interior) and
   `BM-M-HALL`, so it is a **center-bearing** floor. Above the span, `W-S-E1` stands on the line
-  and `W-A-E1` above it carries `RF-HOUSE`. `FS-ATTIC` does not name `W-S-E1` (the attic stair
-  well `FO-A-STAIR` is beside it), so the attic floor does not reach this span.
-- Row: **"Roof, ceiling and one center-bearing floor"**, 50 psf, 36': 2-2x8 = 3'-9" = 45",
-  NJ 2. Unbraced: 45 × 0.70 = **31.5"** ≥ 27.5" → PASS, margin 4.0" (27.5 / 31.5 = 0.87).
-- Framed: 2-2x8, **2 jacks** each end (1 before this change). The code minimum would be a
-  2-2x6 (3'-0" = 36", NJ 2, not derated); the house standard lifts it.
-- Its neighbour WIN-M-LIV-E2 sits under `W-S-E2`, which `FS-ATTIC` does name: two
-  center-bearing floors, 2-2x8 3'-3" × 0.70 = 27.3" < 27.5" (short by 0.2"), so the solver takes
-  **2-2x10**, 3'-10" × 0.70 = 32.2", **NJ 3**.
+  and `W-A-E1` above it carries `RF-HOUSE`. `FS-ATTIC` (center-bearing on `W-S-C1`) lands on
+  `W-S-E1` at y 0..67" — the line rule above; `FO-A-STAIR`'s trimmers stand at y 66.3..69.6",
+  past the span's 61.75" — so this is **two center-bearing floors**.
+- Row: **"Roof, ceiling and two center-bearing floors"**, 50 psf, 36': 2-2x8 = 3'-3" = 39" ×
+  0.70 = 27.3" < 27.5" (short by 0.2"), so the solver takes **2-2x10**: 3'-10" = 46" × 0.70 =
+  **32.2"** ≥ 27.5" → PASS (27.5 / 32.2 = 0.85), **NJ 3**. A 2-2x10 still leaves 105.125 −
+  82.281 − 9.25 = 13.6" of cripples, so note f stands.
+- WIN-M-LIV-E2 (under `W-S-E2`) reads the same: 2-2x10, NJ 3. So do the west main windows
+  `WIN-M-BED-W1`/`-W2` and `WIN-M-BATH2` (`FS-S-WEST` and `FS-ATTIC` on the x = 0 line).
 
 ## 2. WIN-S-BED1 — `W-S-E2`, exterior, BEARING
 
@@ -50,10 +58,11 @@ printed table, 2026-11-06. `tests/test_header_spans.py` pins these numbers.
 ## 3. D-B-SAUNA — `W-B-CS`, interior, BEARING → no row (UNKNOWN)
 
 - RO 26.24". Load: `FS-M-WEST` and `FS-M-EAST` both name `W-B-CS` — two half-decks, **one**
-  floor level (center-bearing). Above: `W-M-C1` → `W-S-C1` (named by `FS-ATTIC`, a second
-  floor) → `W-A-C1`, which carries `RB-HOUSE`, `RF-HOUSE`'s ridge beam. So the span carries the
-  roof, two floors and is interior.
-- R602.7(2) has rows for one and two floors only, no roof row; R602.7(1) is for exterior walls.
+  floor level (center-bearing). Above: `W-M-C1` (on the x = 18' line `FS-S-WEST`/`-EAST` bear
+  on, the second floor) → `W-S-C1` (named by `FS-ATTIC`, a third) → `W-A-C1`, which carries
+  `RB-HOUSE`, `RF-HOUSE`'s ridge beam. So the span carries the roof and three floors, and is
+  interior.
+- R602.7 stops at two floors, R602.7(2) has no roof row, and R602.7(1) is for exterior walls.
   **No row.** The span-ladder 2-2x8 is drawn as a placeholder and `structural.header_span` is
   UNKNOWN until a manufacturer's header-guide row (`header_spec` + `published_span`), a door
   move or an engineered item answers it. The same holds for every door in the x = 18' centre
@@ -72,8 +81,7 @@ printed table, 2026-11-06. `tests/test_header_spans.py` pins these numbers.
 
 ## Cross-checks of the table read (not catlin openings)
 
-- R602.7(1) "Roof and ceiling", 50 psf, 36': 2-2x8 = 4'-2" NJ 2 (`WIN-M-BED-W1`, `WIN-S-BED2`:
-  45 → 50 × 0.70 = 35.0").
+- R602.7(1) "Roof and ceiling", 50 psf, 36': 2-2x8 = 4'-2" NJ 2 (50 × 0.70 = 35.0").
 - R602.7(1) "Roof, ceiling and two center-bearing floors", 50 psf, 36': 2-2x8 = 3'-3" NJ 2.
 - R602.7(2) "One floor only", 36': 2-2x8 = 4'-5" NJ 2; "Two floors", 36': 2-2x8 = 3'-1" NJ 2.
 - 2015 R602.7(1), 50 psf, 36', one center-bearing floor: 2-2x8 = 4'-1"; 2018: 3'-9".

@@ -115,7 +115,7 @@ entry (`C2 E1` = C2.md, escalation E1). `carried` names the round-1 item.
    (`ENTRY_PIER_CAGE_14`, `notes/north_entry_piers.md` §13b). The 12" rounds keep (4) #5.
 10. **Header sizing** (C2 E5, F1-104) · **fixed 2026-11-06** (decision #116): headers are
     read off 2018 R602.7(1)/(2) at a load derived from the bearing refs (`structural.header_span`,
-    `structural.wall_role_load`); nonbearing heads up to 8' are flat. 12 header UNKNOWNs left for triage
+    `structural.wall_role_load`); nonbearing heads up to 8' are flat. 11 header UNKNOWNs left for triage
     (`plans/TODO.md`).
 11. **Interior stair guards drawn off the joist-top datum** (C1 E2, S1-105, S3-102/104) · new
     + carried.

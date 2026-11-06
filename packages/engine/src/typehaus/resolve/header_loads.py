@@ -4,10 +4,15 @@
 exists at framing time — the resolved wall axes, the resolved roofs and stairs, and the
 plan's ``bearing_refs`` — and the checks call the same walk on the finished model.
 
-* A ``Roof`` or ``FloorSystem`` naming a wall or beam is a uniform load on it.
+* A ``Roof`` or ``FloorSystem`` naming a wall or beam is a uniform load on it, and on every
+  wall of that storey on the named wall's LINE: the framing reads a bearing ref as a line
+  coordinate, so its joists land on the whole line (``floors._resolve_floor``).
 * A ``Beam`` running along the wall's line is uniform and carries what bears on it (the
   roof whose ridge it is included); a beam ending on the wall, a ``FloorOpening`` and a
-  ``Stair`` are point loads, counted where their bearing falls inside the span.
+  ``Stair`` are point loads, counted where their bearing falls inside the span. An
+  opening on a wall across its floor's joists bears only at its outline's corners (the
+  trimmer ends), never across its hole; along one parallel to them, or a stair, anywhere
+  along its extent.
 * Then the walls above: on the next storey up of the same building that carries a wall on
   this line, every wall whose collinear run covers the span, recursively. Read off the
   line, not one stack edge, so an upper wall spanning two lower segments is found.
@@ -63,6 +68,8 @@ class _Load:
     floors: tuple[str, ...] = ()
     #: Plan points whose projection on the wall is the load's extent; empty = the whole wall.
     footprint: tuple[tuple[float, float], ...] = ()
+    #: A floor opening's joist direction: on a wall across it, it bears at its vertices.
+    joists: str | None = None
 
 
 @dataclass
@@ -93,6 +100,9 @@ class LoadIndex:
         resolved_roofs = {roof.tag: roof for roof in model.roofs}
         stairs = {stair.tag: stair for stair in model.stairs}
         beam_loads: dict[str, list[_Load]] = {}
+        joists = {tag: el.joists.direction for el in plan.all_elements()
+                  if isinstance(el, FloorSystem) and el.joists is not None
+                  for tag in el.openings}
         for el in plan.all_elements():
             if isinstance(el, Roof):
                 roof = resolved_roofs.get(el.tag)
@@ -109,12 +119,12 @@ class LoadIndex:
                     ref in self.beams or (ref in self.walls and ref not in self.outdoor)
                     for ref in refs) else "clear")
                 self.widths[el.tag] = self._floor_width(el)
-                self._add(refs, _Load(el.tag, False, floors=(el.tag,),
-                                      footprint=tuple(p.xy_m for p in el.outline)),
-                          beam_loads)
+                self._add(self._on_the_lines(refs), _Load(
+                    el.tag, False, floors=(el.tag,),
+                    footprint=tuple(p.xy_m for p in el.outline)), beam_loads)
             elif isinstance(el, FloorOpening):
                 self._add(el.bearing_refs, _Load(el.tag, True, footprint=tuple(
-                    p.xy_m for p in el.outline)), beam_loads)
+                    p.xy_m for p in el.outline), joists=joists.get(el.tag)), beam_loads)
             elif isinstance(el, Stair):
                 stair = stairs.get(el.tag)
                 self._add(el.bearing_refs, _Load(el.tag, True, footprint=tuple(
@@ -132,6 +142,20 @@ class LoadIndex:
                 if wall is not None and not along:
                     load.footprint = (min(ends, key=lambda p: _line_distance(wall.axis, p)),)
                 self.on.setdefault(ref, []).append(load)
+
+    def _on_the_lines(self, refs) -> tuple[str, ...]:
+        """``refs`` plus every wall on a named wall's line, in that wall's storey."""
+        out = dict.fromkeys(refs)
+        for ref in refs:
+            named = self.walls.get(ref)
+            if named is None:
+                continue
+            for wall in self.walls.values():
+                if (wall.storey == named.storey and wall.tag not in out
+                        and all(_line_distance(named.axis, p) <= _AXIS_TOL_M
+                                for p in wall.axis)):
+                    out[wall.tag] = None
+        return tuple(out)
 
     def _add(self, refs, load: _Load, beam_loads: dict[str, list[_Load]]) -> None:
         for ref in refs:
@@ -206,7 +230,7 @@ class LoadIndex:
         return []
 
     def condition(self, wall, lo_m: float, hi_m: float) -> HeaderCondition:
-        roofs, floors, points, via = self._walk(wall, lo_m, hi_m, set())
+        roofs, floors, points, via = self._walk(wall, lo_m, hi_m, set(), wall)
         widths = [w for tag in (*roofs, *floors) if (w := self.widths.get(tag)) is not None]
         # A floor is a LEVEL: two half-decks framing to one centre bearing are one floor.
         levels: dict[str, list[str]] = {}
@@ -220,7 +244,7 @@ class LoadIndex:
             point_loads=tuple(points), building_width_m=max(widths) if widths else None,
             via=tuple(via))
 
-    def _walk(self, wall, lo: float, hi: float, seen: set[str]):
+    def _walk(self, wall, lo: float, hi: float, seen: set[str], root):
         roofs: dict[str, None] = {}
         floors: dict[str, None] = {}
         points: dict[str, None] = {}
@@ -229,8 +253,13 @@ class LoadIndex:
         for load in self.on.get(wall.tag, ()):
             a, b = _extent(wall.axis, load.footprint, lo, hi)
             if load.point:
-                if (a <= hi + 1e-6 and b >= lo - 1e-6
-                        and not self._on_a_bearing_corner(wall, a, b)):
+                if load.footprint and _across(wall.axis, load.joists):
+                    hits = [s for p in load.footprint
+                            if lo - 1e-6 <= (s := _station(wall.axis, p)) <= hi + 1e-6]
+                else:
+                    hits = [max(a, lo), min(b, hi)] if a <= hi + 1e-6 and b >= lo - 1e-6 else []
+                if hits and not self._on_a_bearing_corner(
+                        root, [_point(wall.axis, s) for s in hits]):
                     points[load.source] = None
                 continue
             if min(b, hi) - max(a, lo) > _OVERLAP_M:
@@ -241,20 +270,23 @@ class LoadIndex:
             if run_hi - run_lo <= _OVERLAP_M or upper.tag in seen:
                 continue
             ends = sorted(_station(upper.axis, _point(wall.axis, s)) for s in (run_lo, run_hi))
-            sub = self._walk(upper, ends[0], ends[1], seen)
+            sub = self._walk(upper, ends[0], ends[1], seen, root)
             for target, found in zip((roofs, floors, points, via), sub, strict=True):
                 target.update(dict.fromkeys(found))
             via[upper.tag] = None
         return roofs, floors, points, via
 
-
-    def _on_a_bearing_corner(self, wall, a: float, b: float) -> bool:
-        """A point landing on the wall's end where a BEARING wall meets it is that wall's:
-        the corner post carries it, not the run behind it (BM-S-BATH-E at N-S-BA1)."""
+    def _on_a_bearing_corner(self, wall, points) -> bool:
+        """Points landing on the end of ``wall`` (the wall being graded, not one above it)
+        where a BEARING wall of its storey meets it are that wall's: the corner post
+        carries them, not the run behind it (BM-S-BATH-E at N-S-BA1). A corner above the
+        middle of ``wall`` still lands on ``wall``."""
         from typehaus.model.enums import StructuralRole
 
         length = math.dist(*wall.axis)
-        end = (0.0 if b <= _END_M else length if a >= length - _END_M else None)
+        stations = [_station(wall.axis, p) for p in points]
+        end = (0.0 if max(stations) <= _END_M
+               else length if min(stations) >= length - _END_M else None)
         if end is None:
             return False
         corner = _point(wall.axis, end)
@@ -284,6 +316,15 @@ def _line_distance(axis, point) -> float:
     (x0, y0), (x1, y1) = axis
     run = math.dist(axis[0], axis[1]) or 1.0
     return abs((point[0] - x0) * (y1 - y0) - (point[1] - y0) * (x1 - x0)) / run
+
+
+def _across(axis, direction: str | None) -> bool:
+    """Whether a wall runs across joists laid in ``direction`` ("x" or "y")."""
+    if direction not in ("x", "y"):
+        return False
+    (x0, y0), (x1, y1) = axis
+    run = math.dist(axis[0], axis[1]) or 1.0
+    return abs((x1 - x0 if direction == "x" else y1 - y0) / run) < 0.1
 
 
 def _extent(axis, footprint, lo: float, hi: float) -> tuple[float, float]:

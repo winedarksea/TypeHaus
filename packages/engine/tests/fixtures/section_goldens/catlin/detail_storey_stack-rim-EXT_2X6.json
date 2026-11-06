@@ -1175,6 +1175,62 @@
       "node": "polyline",
       "points": [
         [
+          426.0,
+          98.34645669291339
+        ],
+        [
+          431.50000000000006,
+          98.34645669291339
+        ],
+        [
+          431.50000000000006,
+          105.125
+        ],
+        [
+          426.0,
+          105.125
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW103AAAA",
+      "tag": "king-0-l0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          426.0,
+          98.34645669291339
+        ],
+        [
+          431.50000000000006,
+          98.34645669291339
+        ],
+        [
+          431.50000000000006,
+          105.125
+        ],
+        [
+          426.0,
+          105.125
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "lsl"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           436.5,
           98.34645669291339
         ],
@@ -1273,6 +1329,62 @@
         [
           436.5,
           120.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          432.0,
+          98.34645669291339
+        ],
+        [
+          436.5,
+          98.34645669291339
+        ],
+        [
+          436.5,
+          99.5
+        ],
+        [
+          432.0,
+          99.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW103AAAA",
+      "tag": "block-2-005-01"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          432.0,
+          98.34645669291339
+        ],
+        [
+          436.5,
+          98.34645669291339
+        ],
+        [
+          436.5,
+          99.5
+        ],
+        [
+          432.0,
+          99.5
         ]
       ],
       "pattern": "lumber",

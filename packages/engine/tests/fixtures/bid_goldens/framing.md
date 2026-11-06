@@ -46,11 +46,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1 3/4" x 14" LVL 2.0E, 20' (2-1.75x14 LVL) | 2 | pc | header (2-ply) | 40 LF | building |
 | 1 3/4" x 16" LVL 2.0E, 12' (2-1.75x16 LVL) | 6 | pc | ridge beam (2-ply) | 72 LF | building |
 | 1 3/4" x 9 1/2" LVL 2.0E, 8' (2-1.75x9.5 LVL) | 2 | pc | header (2-ply) | 16 LF | building |
-| 2x10 SPF No. 2 & Btr framing lumber, 8' (2-2x10) | 2 | pc | header (2-ply) | 16 LF | building |
+| 2x10 SPF No. 2 & Btr framing lumber, 8' (2-2x10) | 6 | pc | header (2-ply) | 48 LF | building |
 | 2x12 SPF No. 2 & Btr framing lumber, 8' (2-2x12) | 2 | pc | header (2-ply) | 16 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6) | 4 | pc | header (2-ply) | 32 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6:spf) | 6 | pc | blocking (2-ply) | 48 LF | building |
-| 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8) | 24 | pc | header (2-ply) | 192 LF | building |
+| 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8) | 20 | pc | header (2-ply) | 160 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8:spf) | 4 | pc | blocking (2-ply) | 32 LF | building |
 | 24 gable roof truss, 24' (24 gable roof truss) | 2 | ea | roof truss | 48 LF | building |
 | 24 roof truss, 24' (24 roof truss) | 14 | ea | roof truss | 336 LF | building |
@@ -80,8 +80,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 16' (2x4:kdat) | 12 | pc | girt strapping | 192 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 23 | pc | girt strapping | 460 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 111 | pc | corner stud, king stud, stud | 856.8 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 361 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2888 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 363 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2904 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 204 | pc | corner stud, king stud, stud | 1778.6 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 116 5/8" PET (2x6) | 6 | pc | king stud, stud | 58.3 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 49 | pc | plate, raked top plate, strongback | 490 LF | building |
@@ -96,7 +96,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x6:kdat) | 7 | pc | cripple stud, plate, sill, girt strapping | 56 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x6:kdat) | 6 | pc | plate, girt strapping | 60 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x6:kdat) | 1 | pc | girt strapping | 14 LF | building |
-| 2x6 Laminated strand lumber, 8' (2x6:lsl) | 59 | pc | cripple stud, door blocking, jack stud | 472 LF | building |
+| 2x6 Laminated strand lumber, 8' (2x6:lsl) | 67 | pc | cripple stud, door blocking, jack stud | 536 LF | building |
 | 2x6 Laminated strand lumber, 104 5/8" PET (2x6:lsl) | 135 | pc | corner stud, king stud, stud | 1177 LF | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2", 8' (2x6:oak-8q) | 4 | pc | blocking | 32 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | 10 | pc | blocking | 80 LF | building |
@@ -135,7 +135,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail) | 84 | ea |  | building |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | 972 | ea |  | building |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 40 | ea |  | building |
-| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 956 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 958 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | 72 | ea |  | building |
 | HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5) | 248 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 452 | ea |  | building |
@@ -230,7 +230,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | THA422 top-flange floor truss hanger | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 1 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,157 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,160 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 72 | ea |  | building |
 
 ## Other structural solids
