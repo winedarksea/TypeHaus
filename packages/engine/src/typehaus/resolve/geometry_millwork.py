@@ -5,6 +5,7 @@ The viewer payload, the GLB and the IFC all read these; none re-derives a board.
 
 from __future__ import annotations
 
+from typehaus.resolve.countertop_edges import stool_ring_radii
 from typehaus.resolve.fillet import filleted_ring
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.geometry_ir import GPrism
@@ -17,9 +18,11 @@ def window_stool_ring(wall: ResolvedWall, opening,
                       stool: ResolvedWindowStool) -> tuple[tuple[float, float], ...] | None:
     """The stool's notched plan ring, square-cornered, in a fixed vertex order.
 
-    front-left, front-right, horn-back right, shoulder right, back right, back left,
-    shoulder left, horn-back left — so ``countertop_edges.STOOL_EDGE_KINDS`` names each
-    edge. The horns occupy only the room-side lip. Extending them through the reveal
+    front-left, front-right, horn-back right, shoulder right, [step out right, step in
+    right,] back right, back left, [step in left, step out left,] shoulder left, horn-back
+    left — ``countertop_edges.stool_edge_kinds`` names each edge. The bracketed step sits at
+    the buck's near face, where a truss wall's lined RO narrows past the sheathing (C1 E7).
+    The horns occupy only the room-side lip. Extending them through the reveal
     would put oak inside the jamb wall and create overlapping IFC solids. Layer polygons
     establish the wall's interior side, so reversing its axis does not reverse the stool.
     """
@@ -55,12 +58,54 @@ def window_stool_ring(wall: ResolvedWall, opening,
                 origin[1] + tangent[1] * along + normal[1] * offset)
 
     horn = stool.horn_m
+    step = _buck_step(wall, opening, origin, tangent, lambda xy: offsets([xy])[0],
+                      exterior_sign)
+    if step is not None and (step[1] < notch - 1e-6
+                             and shoulder * exterior_sign + 1e-6 < step[0] * exterior_sign
+                             < back * exterior_sign - 1e-6):
+        shell, inner = step
+        return (
+            point(-half_width - horn, front), point(half_width + horn, front),
+            point(half_width + horn, shoulder), point(notch, shoulder),
+            point(notch, shell), point(inner, shell), point(inner, back),
+            point(-inner, back), point(-inner, shell), point(-notch, shell),
+            point(-notch, shoulder), point(-half_width - horn, shoulder),
+        )
     return (
         point(-half_width - horn, front), point(half_width + horn, front),
         point(half_width + horn, shoulder), point(notch, shoulder),
         point(notch, back), point(-notch, back),
         point(-notch, shoulder), point(-half_width - horn, shoulder),
     )
+
+
+def _buck_step(wall: ResolvedWall, opening, origin, tangent, offset, exterior_sign: float,
+               ) -> tuple[float, float] | None:
+    """``(near-face offset, half-width)`` of the buck lining this opening's RO, or None.
+
+    Read off the wall's ``buck-jamb-`` members; the half-width is inside the membrane too.
+    """
+    from typehaus.resolve.flashing_config import FLASHING
+    from typehaus.resolve.framing.footprint import member_footprint
+    from typehaus.resolve.framing.truss_common import BUCK_CATEGORY
+
+    half, z_sill = opening.width_m / 2.0, wall.base_ref_z_m + opening.sill_m
+    near, inner = [], []
+    for member in wall.members:
+        if (member.category != BUCK_CATEGORY or not member.child_key.startswith("buck-jamb-")
+                or member.z0_m > z_sill + 0.05 or member.z1_m < z_sill):
+            continue
+        ring = member_footprint(member)[0]
+        along = [abs((x - origin[0]) * tangent[0] + (y - origin[1]) * tangent[1])
+                 for x, y in ring]
+        if max(along) > half + 1e-4 or min(along) < half - 0.05:
+            continue  # another opening's jamb
+        near.append(min(exterior_sign * offset(xy) for xy in ring) * exterior_sign)
+        inner.append(min(along))
+    if not near:
+        return None
+    return (min(near, key=lambda value: value * exterior_sign),
+            min(inner) - FLASHING.perimeter_membrane_m)
 
 
 def window_stool_prism(wall: ResolvedWall, opening,
@@ -72,8 +117,9 @@ def window_stool_prism(wall: ResolvedWall, opening,
     ring = window_stool_ring(wall, opening, stool)
     if ring is None:
         return None
-    if len(stool.corner_radii_m) == len(ring):
-        ring = filleted_ring(ring, stool.corner_radii_m)
+    radii = stool_ring_radii(stool.corner_radii_m, len(ring))
+    if radii:
+        ring = filleted_ring(ring, radii)
     # Read the product's actual lower rail; a raked wall can clip its height, and a copied
     # frame-width formula here would eventually drift from the opening it must meet.
     frame = next((part for part in opening_parts(wall, opening, None)

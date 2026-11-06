@@ -134,8 +134,7 @@ def resolve_window_seats(model: ResolvedModel, cfg: FlashingConfig = FLASHING) -
                         if t.tag == opening.type_ref), None) if frame is not None else None
         metal_window = frame is not None and is_profiled_metal_wall(
             model, walls[opening.host_wall])
-        seat = (window_seat(opening, frame, cfg, product, outlet_at_mount=metal_window)
-                if frame else None)
+        seat = window_seat(opening, frame, cfg, product) if frame else None
         if seat is not None and metal_window:
             sign = frame.outward[0] * -frame.along[1] + frame.outward[1] * frame.along[0]
             depth = getattr(product, "frame_depth", None)
@@ -397,14 +396,13 @@ def _pan_outlet(opening: ResolvedOpening, frame: OpeningFlashingFrame,
         from typehaus.resolve.exterior_door_sill import sill_outlet_depth
 
         return sill_outlet_depth(frame.clad, placement.specification)
-    metal_window = opening.window_seat and opening.window_seat.outer_m is not None
-    return frame.mount if (frame.outie and not opening.is_door) or metal_window \
-        else _drip_face(opening, frame, cfg)
+    # A metal-wall window on an innie wall (the garage) runs past the panel too (C1 E11).
+    return frame.mount if frame.outie and not opening.is_door else _drip_face(opening, frame, cfg)
 
 
 def window_seat(opening: ResolvedOpening, frame: OpeningFlashingFrame,
-                cfg: FlashingConfig = FLASHING, product: WindowType | None = None, *,
-                outlet_at_mount: bool = False) -> WindowSeat:
+                cfg: FlashingConfig = FLASHING, product: WindowType | None = None,
+                ) -> WindowSeat:
     """The unit inside its flashed RO: shimmed off the jambs and head, on the pan's high
     point at the back dam (a level unit bears there on a sloped pan), outboard of the dam.
 
@@ -412,7 +410,7 @@ def window_seat(opening: ResolvedOpening, frame: OpeningFlashingFrame,
     the jambs; the head takes the rest of the vertical slack.
     """
     dam = frame.back + cfg.back_dam_strip_m
-    outlet = frame.mount if outlet_at_mount else _pan_outlet(opening, frame, cfg)
+    outlet = _pan_outlet(opening, frame, cfg)
     fall = (outlet - dam) * cfg.drainage_slope
     lining = frame.buck + cfg.perimeter_membrane_m
     sill_rise = frame.buck + fall + cfg.sill_membrane_m

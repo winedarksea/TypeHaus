@@ -21,6 +21,8 @@ from typehaus.resolve.countertop_edges import (
     EDGE_SEAM,
     EDGE_WALL,
     STOOL_EDGE_KINDS,
+    stool_edge_kinds,
+    stool_ring_radii,
 )
 from typehaus.resolve.fillet import corner_fillets, filleted_ring, signed_area
 from typehaus.resolve.geometry_millwork import window_stool_ring
@@ -206,8 +208,9 @@ def _stool_piece(model: ResolvedModel, stool: ResolvedWindowStool, materials
     ring_m = window_stool_ring(wall, opening, stool) if wall and opening else None
     if ring_m is None or stool.depth_m is None:
         return None
-    radii_m = stool.corner_radii_m or (0.0,) * len(ring_m)
-    to_local, ring, kinds, radii = _local_frame(ring_m, STOOL_EDGE_KINDS, radii_m)
+    radii_m = stool_ring_radii(stool.corner_radii_m, len(ring_m)) or (0.0,) * len(ring_m)
+    to_local, ring, kinds, radii = _local_frame(ring_m, stool_edge_kinds(len(ring_m)),
+                                                radii_m)
     material = materials.get(stool.material_ref)
     piece = FabricatedPiece(
         tag=stool.tag, uid=stool.uid, kind="stool", material_ref=stool.material_ref,
@@ -218,7 +221,9 @@ def _stool_piece(model: ResolvedModel, stool: ResolvedWindowStool, materials
         outline=ring, edge_kinds=kinds, radii_in=radii, length_in=0.0, depth_in=0.0,
         area_sqft=round(stool.length_m * stool.depth_m * 10.7639104, 2),
         holds=[TEMPLATE_HOLD, "Horns stop at the finished wall face; set the back edge to "
-               "the delivered window's interior frame face.", *_notch_holds(model, stool)])
+               "the delivered window's interior frame face.", *_notch_holds(model, stool),
+               *(["The back tongue steps in at the sheathing face to clear the lined buck."]
+                 if len(ring_m) == len(STOOL_EDGE_KINDS) else [])])
     return _finish(piece)
 
 

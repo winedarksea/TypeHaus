@@ -258,8 +258,12 @@ def _moved(point: tuple[float, float], cross: int, at: float, to: float):
 
 def skirt_members(stair: Stair, plan: SkirtPlan | None, members: tuple[FramedMember, ...],
                   riser: float, going: float, nosing: float, finish_m: float,
-                  arrival_z: float) -> tuple[FramedMember, ...]:
-    """One raked board per skirted flight side, profiled off the treads' nosing line."""
+                  arrival_z: float, floor: tuple[float, float] | None = None,
+                  ) -> tuple[FramedMember, ...]:
+    """One raked board per skirted flight side, profiled off the treads' nosing line.
+
+    ``floor`` is (finished base, sheet): a foot springing off a floating finish drops to the sheet.
+    """
     if plan is None:
         return ()
     by_key = {m.child_key: m for m in members}
@@ -276,6 +280,8 @@ def skirt_members(stair: Stair, plan: SkirtPlan | None, members: tuple[FramedMem
         bottom = _line(s_nose, z_nose - drop, slope)
         rise = plan.board_width_m * secant
         spring_z = z_nose - riser
+        foot_z = (floor[1] if floor is not None and abs(spring_z - floor[0]) < 1e-6
+                  else spring_z)
         toe = s_nose + (spring_z + plan.base_height_m - z_nose + drop - rise) / slope
         lane = [m for m in members if m.category in ("tread", "riser")
                 and _in_lane(m, edge.cross_axis, *edge.lane)]
@@ -292,7 +298,8 @@ def skirt_members(stair: Stair, plan: SkirtPlan | None, members: tuple[FramedMem
         ceiling = bottom(s1) + rise + 1.0
         board = intersection(
             Polygon(((s0, bottom(s0)), (s1, bottom(s1)), (s1, bottom(s1) + rise),
-                     (s0, bottom(s0) + rise))), box(s0, spring_z, s1, ceiling))
+                     (s0, bottom(s0) + rise))),
+            box(s0, foot_z, s1, ceiling))
         if abs(last.z1_m + finish_m + riser - arrival_z) < 1e-4:
             # No ear above the arrival floor where no wall continues the face up there.
             for lo, hi in _gaps((s0, s1), edge.above_arrival):

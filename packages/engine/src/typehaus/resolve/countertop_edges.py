@@ -46,12 +46,30 @@ _NOISE_SPAN_M = _IN_M / 4.0
 _ABUTMENT_RISE_M = 6.0 * _IN_M
 _ABUTTING_KINDS = frozenset({"Furniture", "Fixture", "Appliance", "Equipment"})
 
-#: ``window_stool_ring``'s fixed order: front, horn end, horn back, jamb side, back, jamb
-#: side, horn back, horn end.
-STOOL_EDGE_KINDS = (EDGE_FINISHED, EDGE_FINISHED, EDGE_WALL, EDGE_WALL, EDGE_WALL,
-                    EDGE_WALL, EDGE_WALL, EDGE_FINISHED)
-#: ``window_stool_ring``'s two shoulder-notch vertices.
-_NOTCH_VERTICES = (3, 6)
+#: ``window_stool_ring``'s stepped order: front, horn end, horn back, jamb side, buck step,
+#: buck side, back, buck side, buck step, jamb side, horn back, horn end. An unstepped ring
+#: drops the four buck edges (``stool_edge_kinds``).
+STOOL_EDGE_KINDS = (EDGE_FINISHED, EDGE_FINISHED, *(EDGE_WALL,) * 9, EDGE_FINISHED)
+#: The stepped ring's two shoulder-notch vertices, and its two inside corners at the buck.
+_NOTCH_VERTICES = (3, 10)
+_STEP_VERTICES = (5, 8)
+#: Stepped-ring vertices an unstepped (8-vertex) ring does not have.
+_STEP_ONLY = (4, 5, 8, 9)
+
+
+def stool_edge_kinds(count: int) -> tuple[str, ...]:
+    """Edge kinds for a ``window_stool_ring`` of ``count`` vertices (8 flat, 12 stepped)."""
+    return STOOL_EDGE_KINDS if count == len(STOOL_EDGE_KINDS) else (
+        EDGE_FINISHED, EDGE_FINISHED, *(EDGE_WALL,) * (count - 3), EDGE_FINISHED)
+
+
+def stool_ring_radii(radii: tuple[float, ...], count: int) -> tuple[float, ...]:
+    """The stool's stepped-order radii for a ring of ``count`` vertices; () when square."""
+    if len(radii) == count:
+        return radii
+    if len(radii) == len(STOOL_EDGE_KINDS) and count == 8:
+        return tuple(r for index, r in enumerate(radii) if index not in _STEP_ONLY)
+    return ()
 
 
 def inside_radius_m(plan: PlanModel, material_ref: str) -> float:
@@ -63,14 +81,19 @@ def inside_radius_m(plan: PlanModel, material_ref: str) -> float:
 
 
 def stool_corner_radii(front_m: float, inside_m: float) -> tuple[float, ...]:
-    """One radius per ``window_stool_ring`` vertex: front corners, then the shoulder notches.
+    """One radius per stepped ``window_stool_ring`` vertex: front corners, shoulder notches
+    and the inside corners at the buck (``stool_ring_radii`` fits a flat ring).
 
     Square (empty) unless the stool authors a front radius: a milled wood stool keeps its
     shop's own notch, and only a fabricated stool is drawn by ``haus countertops``.
     """
     if front_m <= 0.0:
         return ()
-    return (front_m, front_m, 0.0, inside_m, 0.0, 0.0, inside_m, 0.0)
+    radii = [0.0] * len(STOOL_EDGE_KINDS)
+    radii[0] = radii[1] = front_m
+    for index in (*_NOTCH_VERTICES, *_STEP_VERTICES):
+        radii[index] = inside_m
+    return tuple(radii)
 
 
 def stool_wrapping_return(stool: ResolvedWindowStool, finish_m: float,

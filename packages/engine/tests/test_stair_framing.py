@@ -160,8 +160,12 @@ def test_stringers_are_raked_and_never_drop_below_the_subfloor(catlin_model):
     like a stair somebody forgot rather than one somebody poured. So the cast branch asserts
     the treads — which is also what every code rule that grades this flight measures.
     """
+    from typehaus.resolve.stairs.winder_support import floating_support
+
     for stair in catlin_model.stairs:
-        subfloor = _subfloor(catlin_model, stair)
+        # Off a floating finish the carriage bears on the sheet beneath it (C1 E4).
+        subfloor = floating_support(catlin_model, catlin_model.plan.by_tag(stair.tag),
+                                    _subfloor(catlin_model, stair), stair.members)
         stringers = [m for m in stair.members if m.category == "stringer"]
         carriage = catlin_model.plan.by_tag(stair.tag).carriage
         if carriage == "cast":
@@ -510,11 +514,11 @@ def test_skirted_wall_stringers_stand_on_a_spacer_below_the_skirt(catlin_model, 
         assert abs(stringer.p0[0] - stud_face) == pytest.approx(inch(2.25).meters)
         assert spacer.category == "blocking" and spacer.profile == "2x4"
     lower = members["spacer-W-M-C5-stringer-lower-2"]
-    # From where the stringer's bottom edge leaves the floor to its head (the start moved
-    # 0.011" with the 7 mm plank's 7.5296" riser, #112).
-    assert (lower.p0[1], lower.p1[1]) == pytest.approx((inch(318.644).meters,
+    # From where the stringer's bottom edge leaves the subfloor under the floating plank to
+    # its head (C1 E4: 0.366" earlier and 0.2756" lower than off the plank).
+    assert (lower.p0[1], lower.p1[1]) == pytest.approx((inch(318.278).meters,
                                                          inch(382.375).meters), abs=1e-5)
-    assert lower.z0_m == pytest.approx(main_stair.base_elevation_m)
+    assert lower.z0_m == pytest.approx(inch(0.75).meters)
     skirt = members["skirt-lower-right"]
     s0 = skirt.p0[1]
     bottom = [(s, z) for s, z in skirt.elevation_profile if s > 1e-9]

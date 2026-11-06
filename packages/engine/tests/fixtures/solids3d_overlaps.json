@@ -280,7 +280,6 @@
   "framing|thermal_break": [2, 0.002128],
   "framing|tub_insulation_return": [2, 0.000513],
   "framing|wall": [245, 4.471862],
-  "framing|window_stool": [34, 0.001007],
   "gutter|gutter": [8, 8.6e-05],
   "insulation_wrap|wall": [4, 0.006397],
   "leader_extension|leader_extension": [4, 0.001573],
