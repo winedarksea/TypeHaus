@@ -28,6 +28,9 @@ def test_catlin_is_clean(catlin_plan, catlin_model_ro) -> None:
     assert not fails, [f.message for f in fails]
     # incl. two kitchen waste connections, PR-B-WH-COND and PR-B-USINK-DRAIN
     assert len(findings) == 36
+    # E16: a branch entering a stack prints its 3D station, not 120" over the stack's foot.
+    wc = next(f for f in findings if "PR-M-S-BATH1-WC-DRAIN" in f.element_tags)
+    assert "on its centreline" in wc.message, wc.message
 
 
 def test_terminal_runs_are_not_graded_as_rejected_junctions(catlin_model_ro) -> None:

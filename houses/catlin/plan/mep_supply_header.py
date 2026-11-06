@@ -77,10 +77,22 @@ EQUIPMENT_TYPES_HEADER = (
 # Hung under the basement ceiling in RM-B-FURNACE on the old trunk's x=7'-6" lane, inlet
 # north at (7'-6", 25'-6"), body centre 88" (the trunk's height there). Copper and 13 ft of
 # developed trunk from the tap, so every PEX branch clears UPC 604.13's 18".
+# Every branch turns onto its 83 1/2" lane 2.65" under its tip; no lane sits 6" lower under
+# the ceiling drains, so each bend takes a bend support (Uponor LF2831050-family submittal
+# rev. B 2017: "Any bend within 6 inches of the ProPEX connection ... requires ... Bend
+# Support (A5110500 ...)"; A5110500 is the 1/2" metal one, submittal rev. A 2008, R 2.00").
 EQUIPMENT_HEADER = [
     Equipment(uid="GVKJA0755W", tag="EQ-B-HW-HEADER", kind=EquipmentKind.WATER_MANIFOLD,
               position=pt(inch(90), inch(298.6625)), rotation=deg(90),
               footprint=(inch(14.675), inch(1.5)), room="RM-B-FURNACE",
               type_ref="EQ-T-HW-HEADER-8",
-              mount=Mount(kind=MountKind.CEILING, elevation=inch(86.149))),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(86.149)),
+              install_parts=("Uponor A5110500 1/2in metal bend support",
+                             "Uponor A5110500 1/2in metal bend support",
+                             "Uponor A5110500 1/2in metal bend support",
+                             "Uponor A5110500 1/2in metal bend support",
+                             "Uponor A5110500 1/2in metal bend support",
+                             "Uponor A5110500 1/2in metal bend support",
+                             "Uponor A5110500 1/2in metal bend support",
+                             "Uponor A5110500 1/2in metal bend support")),
 ]

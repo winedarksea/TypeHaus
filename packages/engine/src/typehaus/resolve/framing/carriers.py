@@ -59,10 +59,10 @@ CARRIER_FRAME_HEIGHT_M = 1.120
 _FLANKING_ALLOWANCE_M = 1.5 * M_PER_IN
 
 # A carrier's china sits ON the finish face, so the back of the body should land within a
-# whisker of the wall's outermost layer. The slack absorbs an authored position rounded to
-# a sixteenth and a fixture set with a scribe gap; it is deliberately under an inch, so a
-# bowl standing free in the room matches no wall at all rather than the nearest one.
-_FACE_TOLERANCE_M = 0.75 * M_PER_IN
+# whisker of the wall's outermost layer. The slack absorbs a scribe gap and a floor bowl's
+# published tank gap (TOTO: 3/4"-13/16"); it stops at an inch, so a bowl standing free in
+# the room matches no wall at all rather than the nearest one.
+_FACE_TOLERANCE_M = 1.0 * M_PER_IN
 
 # cos of the angle between the wall axis and the way the bowl faces. A carrier's wall is
 # square to its fixture; this tolerance is for floating-point, not for skew.

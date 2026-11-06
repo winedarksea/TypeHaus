@@ -255,16 +255,19 @@ SUPPLY = [
     # branches leave its down-facing outlets for lanes at 83 1/2" (under the ceiling drains,
     # where this trunk used to run): x=7'-2 1/2" (FILLER), 7'-7 1/2" (BATH2), 7'-9" (SAUNA),
     # 7'-11" (KITCH), 8'-0 1/2" (BATH2-SH), 8'-3" (BATH); BATH1 and WASH rise beside it.
-    # PR-B-HW-SBATH and PR-B-HW-SUITE stay 3/4" and tee off the y=25'-6" leg ahead of it.
+    # PR-B-HW-SBATH and PR-B-HW-SUITE stay 3/4" and tee off the y=25'-6" leg ahead of it,
+    # which then loops 4" north to drop into the +y-facing inlet on its axis (C4 E10).
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
             path=(pt(inch(99.9), inch(338.9)), pt(inch(94), inch(338.9)),
                   pt(inch(94), inch(338.9)), pt(inch(83), inch(338.9)),
                   pt(inch(83), inch(338.9)),
                   pt(inch(83), inch(310)), pt(ft(5, 4), inch(310)),
-                  pt(ft(5, 4), ft(25, 6)), pt(ft(7, 6), ft(25, 6))),
+                  pt(ft(5, 4), ft(25, 6)), pt(inch(85), ft(25, 6)), pt(inch(85), ft(25, 6)),
+                  pt(inch(85), inch(310)), pt(inch(90), inch(310)), pt(inch(90), ft(25, 6))),
             diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(inch(42.375), inch(42.375), ft(5, 9.5), ft(5, 9.5), inch(83.4375),
-                        inch(83.4375), inch(83.4375), inch(83.4375), ft(7, 4)),
+                        inch(83.4375), inch(83.4375), inch(83.4375), inch(83.4375), ft(7, 4),
+                        ft(7, 4), ft(7, 4), ft(7, 4)),
             serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-FILLER", "FX-M-BATH2-SINK", "FX-M-LAUNDRY",
                     "FX-M-LAUNDRY-SINK",
@@ -341,10 +344,10 @@ SUPPLY = [
     # Basin hot rises in the shared wet wall; the insulated ceiling run stays below it.
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
             # Rises EAST of the header (2026-11-04): at x=88" it stood 1.63" off the
-            # trunk's centre, inside its 1" lagging.
+            # trunk's centre, inside its 1" lagging. 3 1/2" between bends (C4 E10).
             path=(pt(inch(90), inch(304.374)), pt(inch(90), inch(304.374)),
-                  pt(inch(91.5), inch(304.374)), pt(inch(91.5), inch(304.374)),
-                  pt(inch(91.5), inch(309.75)), pt(inch(50.5), inch(309.75)),
+                  pt(inch(93.5), inch(304.374)), pt(inch(93.5), inch(304.374)),
+                  pt(inch(93.5), inch(309.75)), pt(inch(50.5), inch(309.75)),
                   pt(inch(50.5), inch(266.25)), pt(inch(50.5), inch(266.25)),
                   pt(inch(50.5), inch(271.375)),),
             diameter=inch(0.5), material="pex",
@@ -374,13 +377,14 @@ SUPPLY = [
             wall_refs=(None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH2-WC", "FX-M-BATH2-SINK")),
     PipeRun(uid="CBPW36AAAA", tag="PR-B-HW-BATH2", system=PipeSystem.WATER_HOT,
+            # Straight south under the header off out-8: one bend, not two 1 1/2" apart.
             path=(pt(inch(90), inch(293.874)), pt(inch(90), inch(293.874)),
-                  pt(inch(91.5), inch(293.874)), pt(inch(91.5), inch(206)),
-                  pt(inch(91.5), inch(206)), pt(inch(91.5), inch(186)),
+                  pt(inch(90), inch(206)),
+                  pt(inch(90), inch(206)), pt(inch(90), inch(186)),
                   pt(inch(9), inch(186)), pt(inch(9), inch(201.6)),
                   pt(inch(9), inch(201.6)),),
                         diameter=inch(0.5), material="pex",
-            elevations=(inch(86.149), inch(83.5), inch(83.5), inch(83.5), inch(97.4375),
+            elevations=(inch(86.149), inch(83.5), inch(83.5), inch(97.4375),
                   inch(97.4375), inch(97.4375), inch(97.4375), inch(145.4375),),
                         serves=("FX-M-BATH2-SINK",)),
     # The laundry pair riser splits at the deck top (ft(9) basement-relative = 0'-0"
@@ -448,7 +452,7 @@ SUPPLY = [
             # Sink terminal nudged 3.5" west to x=12'-2" (was 12'-5.5"): that point sat 0.5"
             # off PR-M-S-SUITE-DRAIN's stack at x=12'-6", and the drop runs through it.
             path=(pt(inch(90), inch(302.874)), pt(inch(90), inch(302.874)),
-                  pt(inch(91.5), inch(302.874)), pt(inch(91.5), inch(302.874)),
+                  pt(inch(93.5), inch(302.874)), pt(inch(93.5), inch(302.874)),
                   pt(inch(98), inch(249.25)), pt(inch(98), inch(249.25)),
                   pt(inch(98), inch(249.25)), pt(inch(98), inch(217)),
                   pt(inch(102.5), inch(217)), pt(inch(146), inch(217)),
@@ -544,7 +548,7 @@ SUPPLY = [
                   pt(ft(6, 4), ft(26, 7.5)), pt(ft(6, 4), ft(26, 7.5)),
                   pt(ft(6, 4), ft(26, 7.5)), pt(inch(76), inch(319.5)),),
             diameter=inch(0.75), material="copper", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
-            elevations=(inch(83.876), ft(7, 4), ft(7, 4), ft(8, 1.4375), ft(9, 1.4375),
+            elevations=(inch(83.4375), ft(7, 4), ft(7, 4), ft(8, 1.4375), ft(9, 1.4375),
                         ft(18, 3.4375), ft(18, 3.4375), ft(19, 1.4375), ft(21, 7.4375),
                         inch(321.4375),),
             wall_refs=(None, None, None, None, "W-M-STOS", None, None, "W-S-BD-N1B",
@@ -615,7 +619,7 @@ SUPPLY = [
             # steps to 9'-7" for DU-M-ERV-R-KITCH. North of truss 017 it jogs 5" west to
             # x=16'-0" (2026-11-05), clear of the tub's trap and under its arm, and climbs to
             # 9'-10" only under W-S-SN3 before turning west over the cold.
-            path=(pt(inch(80), inch(306)), pt(inch(80), inch(306)), pt(inch(80), ft(17)),
+            path=(pt(inch(80), inch(306)), pt(inch(80), ft(17)),
                   pt(inch(101), ft(17)), pt(inch(101), ft(17)),
                   pt(ft(16, 5), ft(17)), pt(ft(16, 5), ft(18)),
                   pt(ft(16, 5), ft(18)),
@@ -628,13 +632,13 @@ SUPPLY = [
                   pt(ft(14, 3.6), ft(22, 4)), pt(ft(14, 3.6), ft(22, 4)),
                   pt(ft(14, 3.6), ft(22, 4))),
             diameter=inch(0.75), material="pex", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
-            elevations=(inch(86.245), inch(83.5), inch(83.5), inch(83.5), ft(8, 1.4375),
+            elevations=(inch(83.4375), inch(83.5), inch(83.5), ft(8, 1.4375),
                         ft(8, 1.4375), ft(8, 1.4375),
                         ft(9, 1.4375),
                         ft(18, 1.3125), ft(18, 8.125), ft(18, 8.125), ft(18, 8.125),
                         ft(18, 7.4375), ft(18, 8.4375), ft(18, 8.4375), ft(18, 10.9375),
                         ft(18, 11.4375), ft(19, 1.4375), ft(21, 7.4375)),
-            wall_refs=(None, None, None, None, None, None, None, "W-M-CLN2", None, None, None, None, None,
+            wall_refs=(None, None, None, None, None, None, "W-M-CLN2", None, None, None, None, None,
                        None, None, None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH", "FX-A-STUBATH-LAV",
                     "FX-A-STUBATH-SH", "FX-A-STUDIO-BAR-SINK")),

@@ -106,7 +106,8 @@ TOTO_CARLYLE_II = FixtureType(
     product_ref="PROD-TOTO-CST614CEFGAT40",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(water_closet_required_clearance(inch(28.3125)),),
-    ports=floor_wc_ports(28.3125, 6.0, 8.0),  # SS-01809
+    # SS-01809 v.01 p.2: tank 3/4" [18 mm] off the finished wall, flange at 12".
+    ports=floor_wc_ports(28.3125, 6.0, 8.0, 0.75),
     source='TOTO Carlyle II CST614CEFGAT40#01, owner selection 2026-09-06. 28 5/16" D x '
            '16 1/2" W x 28 3/4" H (TOTO SS-01809, same bowl/tank as MS614124CEF(R)G; '
            'Ferguson CST614CEFGAT40 listing, 2026-10-31), 12" rough-in, 1.28 gpf '
@@ -130,8 +131,9 @@ TOTO_AQUIA_IV = FixtureType(
     product_ref="PROD-TOTO-CST446CEMGN",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(water_closet_required_clearance(inch(27.5625)),),
-    # SS-02072 suggests 4 3/4" AFF ("as req'd"); 7" clears the 3 1/2" base.
-    ports=floor_wc_ports(27.5625, 5.875, 7.0),
+    # SS-02072 v.02 p.2: tank 3/4" [20 mm] off the finished wall, flange at 12"; it suggests
+    # the stop at 4 3/4" AFF ("as req'd"), and 7" clears the 3 1/2" base.
+    ports=floor_wc_ports(27.5625, 5.875, 7.0, 0.75),
     source='TOTO Aquia IV CST446CEMGN#01, owner selection 2026-09-06. TOTO USA spec sheet '
            'read 2026-09-06: 27 9/16" D x 15 1/2" W x 29 1/8" H, rim 14 15/16", 12" '
            'rough-in, 1.28/0.9 gpf dual flush, CEFIONTECT, skirted trapway. ** THAT RIM '
@@ -153,7 +155,8 @@ TOTO_DRAKE = FixtureType(
     product_ref="PROD-TOTO-CST776CEFG",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(water_closet_required_clearance(inch(28.375)),),
-    ports=floor_wc_ports(28.375, 4.3125, 7.5),  # SS-02049
+    # SS-02049 v.04 p.2: tank 13/16" [20 mm] off the finished wall, flange at 12".
+    ports=floor_wc_ports(28.375, 4.3125, 7.5, 0.8125),
     source='TOTO Drake CST776CEFG#01, owner selection 2026-09-06. Published dimensions read '
            '2026-09-06: 28 3/8" D x 17 3/16" W x 30 1/8" H, rim 16 1/8" (universal height), '
            '12" rough-in, 2 1/8" trapway, 1.28 gpf Tornado Flush, CEFIONTECT. Seat is the '
@@ -348,9 +351,10 @@ SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
 # Slide bar in one, wall elbow and hook in the other — same valve either way.
 #
 # ** SURROUND: INTEGRAL, SO NO `WallPaneling`. ** Both are flanged inserts whose walls come
-# with the unit (one-piece, or the 3-piece kit a second floor takes), and the FX-TUBSHOWER-60
-# price basis already buys and hangs them. The type's 7'-0" height is that surround's head;
-# the flanges nail to the two framed walls plus each alcove's millwork return
+# with the unit, and the FX-TUBSHOWER-60
+# price basis already buys and hangs them. The insert is a 4-piece Sterling Ensemble Medley
+# 71370116: 73" finished, flange top 74 1/4" (2026-11-06). The flanges nail to the two
+# framed walls plus each alcove's millwork return
 # (FT-BATH1-SHELF-2030, FT-SUITEBATH-SHELF-1130). A panel over it would bill the walls twice.
 # Of the five showers: BATH2 and STUBATH carry a modelled panel (WP-M-BATH2-SURR,
 # WP-A-STUBATH-SURR), the sauna a tile splash (WP-B-SAUNA-SPLASH), these two are integral.
@@ -358,12 +362,19 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
     "excludes_floor_finish": True,
     "tag": "FX-TUBSHOWER-60-DIVERTED",
     "name": 'Alcove tub-shower, 60", complete trim with diverter and handshower',
+    "height": inch(73),  # 71370116 finished height; the flange tops at 74 1/4"
     "product_ref": "PROD-DELTA-T14459-SS",
     # Plumbing end at local -x on both placements.
     "ports": (floor_drain_port(-26.5, 0, size_in=1.5, note="Waste-and-overflow 3 1/2\" in from "
-                               "the plumbing end; the insert has no published drain drawing"),
+                               "the plumbing end. 1214192-4-A p.2 puts the drain cutout 8 1/4\" "
+                               "off the end studs: confirm on the delivered bath"),
               *valve_ports((-30, 0, 30), (-1, 0), "30\" over the tub base")),
-    "source": 'RM-S-BATH1 and RM-S-SUITEBATH, owner selection 2026-09-06. Delta MultiChoice '
+    "source": 'RM-S-BATH1 and RM-S-SUITEBATH, owner selection 2026-09-06. INSERT: Sterling '
+              'Ensemble 30" bath and Medley wall surround with backer boards, left drain, '
+              '71370116-0, Sterling spec sheet '
+              '1214192-4-A p.1-2: 60 x 30 1/8 x 73 in. finished, 60 1/4 x 31 1/4 x 74 1/4 in. '
+              'rough-in including the flange, 16 in. to the threshold, 4-piece modular. '
+              'Delta MultiChoice '
               'R10000-UNBX rough (ASSE 1016) under a Delta T14459-SS COMPLETE trim — valve '
               'trim, H2Okinetic showerhead and tub spout in one box, which removes the '
               'spout-matching problem — plus a diverter rough and a second riser for the '

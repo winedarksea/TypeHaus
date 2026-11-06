@@ -57,12 +57,12 @@ BASEMENT_FIXTURES = (
     # Trap arms: lav ~2'-1", WC ~5'-9", both inside Table 1002.2's 3'-6"/6'-0" limits.
     #
     # WC at the NORTH end, backing W-B-BA-N, floor-mounted (a wall-hung carrier wants 6 1/2"
-    # of furring this room has nowhere to spend). Bowl x 11'-2"..12'-10", y 22'-11 5/8"..
-    # 25'-3 5/8"; UPC 402.5's 24" front envelope then reaches y=20'-11 5/8" and its 15"
-    # side clearances land 10'-9"..13'-3", inside the room both ways — 5 5/8" of slack at the
-    # west face and 4 5/16" at the east, down from 5 5/8" when the east wall moved.
+    # of furring this room has nowhere to spend). Bowl x 11'-2"..12'-10", y 22'-10 5/8"..
+    # 25'-3" (tank 13/16" off the wall, SS-02049); the 24" front envelope then reaches
+    # y=20'-10 5/8" and its 15" side clearances land 10'-9"..13'-3", inside the room both
+    # ways — 5 5/8" of slack at the west face and 4 5/16" at the east.
     Fixture(uid="CBQ801AAAA", tag="FX-B-BATH-WC", type_ref="FX-TOTO-DRAKE",
-            room="RM-B-BATH", position=pt(ft(12), inch(289.625)),
+            room="RM-B-BATH", position=pt(ft(12), inch(288.8125)),
             wall_ref="W-B-STR2"),
     # Relocated from the mechanical room's utility sink, so the IFC GlobalId follows the
     # fixture rather than being retired with the tag.
@@ -109,15 +109,15 @@ MAIN_FIXTURES = (
     # W-M-W3's face, east of 3'-5.24" it runs into the tub deck's west face at x=4'-8.24".
     # 2'-6" sits in that 1'-7 5/8" band, 11 1/4" clear of the deck (7" before the 2026-10-21
     # deck narrowing).
-    # y=250.58375" is the bowl centre with its tank on the wall face (264.74" less the type's
-    # 14 5/32" half-depth); flange and stop unchanged by the 28 5/16" retype (2026-10-31). The
-    # 21" front clearance clears FX-M-BATH2-SINK's south end by about 2 15/16" (1 1/4" with the
+    # y=249.83375" is the bowl centre with its tank 3/4" off the wall face (SS-01809): 264.74"
+    # less 3/4" and the 14 5/32" half-depth; flange and stop unchanged (2026-11-06). The
+    # 21" front clearance clears FX-M-BATH2-SINK's south end by about 2 3/16" (1 1/4" with the
     # old 30" bowl) — the room's tightest dimension; re-check it if that sink moves north.
     #
     # No `drain_position`: the convention (under the bowl) is correct, and PR-B-WC2-DRAIN
     # follows the bowl to its new flange rather than the reverse.
     Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOTO-CARLYLE-II", room="RM-M-BATH2",
-            position=pt(ft(2, 6), inch(250.58375)), rotation=deg(0), wall_ref="W-M-HS1"),
+            position=pt(ft(2, 6), inch(249.83375)), rotation=deg(0), wall_ref="W-M-HS1"),
     # BATH2 has separate bathing fixtures: the 36" shower at the south end of the east
     # plumbing wall, the drop-in bath north of it. Intentionally separate instances/types
     # rather than a tub-shower combination, so the permit schedule and future owner
@@ -245,8 +245,8 @@ MAIN_FIXTURES = (
 # footprints are pairwise disjoint with 9"+ clearance between any two.
 #
 # ALCOVE CHECK. FX-TUBSHOWER-60 is a 60"x30" flanged insert, which is exactly the standard
-# alcove footprint (the type's 7'-0" height is the modelled surround envelope, matching
-# FX-SHOWER-36 — not a product dimension). A flanged insert nails to studs on THREE sides.
+# alcove footprint (a Sterling 71370116, 73" high, plan/fixture_types_wc.py). A flanged
+# insert nails to studs on THREE sides.
 # Measured at real finish faces, FX-S-BATH1-SH has two: the chase wall at x 2'-11 1/4"
 # against the tub's west end at 2'-11 3/4" (0.49" of scribe), and the north wall at
 # y 35'-5 1/2" against its north edge at 35'-4 1/2" (1.00"); the flange stands 1"/1 1/2" off
@@ -258,10 +258,10 @@ SECOND_FIXTURES = (
     # Centred under WIN-S-BATH-W at y=376" (2026-10-02), 12 1/2" north of the former bay.
     # The 3.5" drain envelope clears FS-S-WEST's 369.75"..382.25" bay faces by 4 1/2";
     # the tub is 18 1/2" from the WC centreline, against UPC 402.5's 15" minimum.
-    # Tank back on W-S-W1's 6 1/2" finish face since 2026-10-31 (owner): the flange is at the
-    # 12" rough-in, x=18 1/2", not 13 3/4". Drain, keepout and floor-fed stop follow.
+    # Flange at the 12" rough-in off W-S-W1's 6 1/2" finish face, x=18 1/2" (owner 2026-10-31);
+    # the tank stands 3/4" off that face (SS-02072, 2026-11-06). Drain and stop stay put.
     Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOTO-AQUIA-IV", room="RM-S-BATH1",
-            position=pt(inch(20.28125), inch(376)), rotation=deg(90), wall_ref="W-S-W1"),
+            position=pt(inch(21.03125), inch(376)), rotation=deg(90), wall_ref="W-S-W1"),
     # ÄNGSJÖN 36 with the 37 in. ORRSJÖN top: y=356..393, half-inch side overhang.
     # Backs the east finish face; retains 1.5 in. to the tub return and the east-hinged entry.
     Fixture(uid="CSQ802AAAA", tag="FX-S-BATH1-LAV", type_ref="FX-ANGSJON-36",
@@ -288,9 +288,8 @@ SECOND_FIXTURES = (
     # rotation=0) while a VERTICAL one needs rotation=90 (FX-S-BATH1-WC on W-S-W1,
     # FX-A-STUBATH-WC on W-A-STU-W). W-S-SN3 is horizontal — this WC physically backs it.
     #
-    # It is FLUSH to that wall: back = centre + 14" (the bowl's own 28" projection), so
-    # y=250.625" puts the tank against SN3's 264.625" gwb face. Nothing grades a WC against
-    # a wall face — `test_..._vanities` covers only vanities.
+    # Tank 3/4" off that wall (SS-02072, 2026-11-06): y=249.875" holds the flange and stop
+    # where the flush tank put them. Nothing grades a WC against a wall face.
     #
     # **W-S-DC2 still MUST stay a full-depth wet wall**, though not for anything in THIS
     # room: `PR-S-SUITEBATH-VENT` takes off on SN3 now and its riser is entirely north of
@@ -299,7 +298,7 @@ SECOND_FIXTURES = (
     # into W-A-STU-W. Retyping DC2 to a 2x4 assembly (e.g. for resilient channel) would
     # leave those with nowhere to run.
     Fixture(uid="CSQ804AAAA", tag="FX-S-SUITEBATH-WC", type_ref="FX-TOTO-AQUIA-IV",
-            room="RM-S-SUITEBATH", position=pt(inch(134.81), inch(250.625)),
+            room="RM-S-SUITEBATH", position=pt(inch(134.81), inch(249.875)),
             wall_ref="W-S-SN3"),
     # Chulton 30: maker top measures 30 15/16 x 22 7/16 in.; north face retained.
     # Maker white-model image specifies a single faucet hole; Genta LX 6702 fits.
@@ -471,7 +470,7 @@ GARAGE_FIXTURES = (
 ATTIC_FIXTURES = (
     # Floor-mount, not FX-TOILET-WH: a wall-hung carrier costs a 6" chase this room need not buy.
     Fixture(uid="WCM0PV9H71", tag="FX-A-STUBATH-WC", type_ref="FX-TOTO-DRAKE", room="RM-A-STUBATH",
-            position=pt(ft(11, 4.375), ft(19, 4)), rotation=deg(90),
+            position=pt(ft(11, 5.1875), ft(19, 4)), rotation=deg(90),  # tank 13/16" off
             wall_ref="W-A-STU-W"),
     # SEKTION 24 / AXSTAD with an 18 in. deep Corian bonded-bowl top.
     # The north-wall port and local revent replace the old 49 in. undrawn trap arm.

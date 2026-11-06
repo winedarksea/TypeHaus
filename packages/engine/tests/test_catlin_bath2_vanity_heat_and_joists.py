@@ -142,10 +142,10 @@ def test_the_vanity_fits_the_west_wall_without_entering_the_toilets_clearance():
     wc = Polygon(_canvas(model, "FX-M-BATH2-WC").footprint)
     envelope_starts = min(p[1] for p in wc.exterior.coords) / M_PER_IN - 24.0
     assert vy1 < envelope_starts, "the cabinet stands in the water closet's code envelope"
-    # ...and the slack is a real margin now rather than a rounding error: 6 3/16" at 48"
-    # with the 28 5/16" Carlyle II (4 1/4" when it was carried at 30"), where the 54"
+    # ...and the slack is a real margin now rather than a rounding error: 5 7/16" at 48"
+    # with the 28 5/16" Carlyle II and its tank 3/4" off the wall (SS-01809), where the 54"
     # cabinet left 0.24".
-    assert 5.5 < envelope_starts - vy1 < 7.0
+    assert 5.0 < envelope_starts - vy1 < 6.0
 
 
 def test_the_vanity_backs_onto_the_wall_face_and_the_room_reports_that_face():

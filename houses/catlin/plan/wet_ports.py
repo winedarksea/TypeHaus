@@ -13,21 +13,23 @@ WC_ROUGH_IN_IN = 12.0
 VALVE_HALF_SPACING_IN = 2.0
 
 
-def floor_wc_ports(depth_in: float, supply_left_in: float,
-                   supply_aff_in: float) -> tuple[ServicePort, ...]:
-    """Flange and supply stop for a floor bowl whose tank back stands at the finished wall.
+def floor_wc_ports(depth_in: float, supply_left_in: float, supply_aff_in: float,
+                   wall_gap_in: float) -> tuple[ServicePort, ...]:
+    """Flange and supply stop for a floor bowl whose tank back stands ``wall_gap_in`` off the
+    finished wall, the gap the TOTO sheet draws: the flange stays at the 12" rough-in and the
+    stop on the wall face, both ``wall_gap_in`` behind the china.
 
     The stop station is the TOTO sheet's suggested one ("Supply as Req'd"), per type.
     """
-    back_in = depth_in / 2
+    wall_in = depth_in / 2 + wall_gap_in
     return (
         ServicePort(tag="WC-DRAIN", service=Service.DRAIN,
-                    position=(inch(0), inch(back_in - WC_ROUGH_IN_IN), inch(0)),
+                    position=(inch(0), inch(wall_in - WC_ROUGH_IN_IN), inch(0)),
                     connection_size=inch(3), direction=(0, 0, -1), certainty=PortCertainty.EXACT,
                     notes='Closet flange at the finished floor, the 12" published rough-in off '
-                          "the wall the tank back stands at."),
+                          f'the finished wall; the tank back stands {wall_gap_in}" off it.'),
         ServicePort(tag="WC-WATER_COLD", service=Service.WATER_COLD,
-                    position=(inch(-supply_left_in), inch(back_in), inch(supply_aff_in)),
+                    position=(inch(-supply_left_in), inch(wall_in), inch(supply_aff_in)),
                     connection_size=inch(0.5), direction=(0, 1, 0),
                     notes=f'Angle stop {supply_left_in}" left of centre, {supply_aff_in}" AFF: '
                           "the TOTO spec sheet's suggested supply station, not a rough-in "

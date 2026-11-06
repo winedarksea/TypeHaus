@@ -371,6 +371,8 @@ class Equipment(Element):
     # ``mep.duct_soffit_occupancy`` counts its case against the box's clear width alongside
     # every duct sharing it.
     soffit_ref: str | None = None
+    # Loose installation parts billed with it, as ``PipeAccessory.install_parts``.
+    install_parts: tuple[str, ...] = ()
 
     @model_validator(mode="after")
     def _placed_or_hosted(self):

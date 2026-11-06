@@ -48,6 +48,10 @@ class TieIn:
     drop_m: float | None
     #: The arrival point, in the plan frame.
     station: tuple[float, float] | None
+    #: The arrival above the parent's centreline at its 3D-nearest station, risers included:
+    #: what a person reads. ``drop_m`` measures the deepest leg under ``station`` (the load
+    #: rollup's question), which on a stack is its foot, yards below a branch entering it.
+    offset_m: float | None = None
 
 
 def drain_tie_in_records(pipe_runs) -> list[TieIn]:
@@ -73,6 +77,7 @@ def drain_tie_in_records(pipe_runs) -> list[TieIn]:
     from typehaus.resolve.mep_queries import pipe_invert_at
 
     drains = [r for r in pipe_runs if r.system == "drain"]
+    by_tag = {r.tag: r for r in drains}
     out: list[TieIn] = []
     for child in drains:
         if child.z_m is None or not child.path:
@@ -103,13 +108,33 @@ def drain_tie_in_records(pipe_runs) -> list[TieIn]:
             if best is None or invert > best[0]:
                 best = (invert, parent.tag)
         if best is not None:
-            out.append(TieIn(child.tag, best[1], True, end_invert - best[0], end_point))
+            out.append(TieIn(child.tag, best[1], True, end_invert - best[0], end_point,
+                             _nearest_offset(by_tag[best[1]], end_point, end_invert)))
         elif highest is not None:
             out.append(TieIn(child.tag, highest[1], False, end_invert - highest[0],
-                             end_point))
+                             end_point,
+                             _nearest_offset(by_tag[highest[1]], end_point, end_invert)))
         else:
             out.append(TieIn(child.tag, None, False, None, end_point))
     return out
+
+
+def _nearest_offset(parent, point: tuple[float, float], z: float) -> float:
+    """``z`` less the parent's centreline at its station nearest (point, z) in 3D."""
+    best: tuple[float, float] | None = None
+    for i in range(len(parent.path) - 1):
+        a = (*parent.path[i], parent.z_m[i])
+        b = (*parent.path[i + 1], parent.z_m[i + 1])
+        d = [b[k] - a[k] for k in range(3)]
+        dd = sum(v * v for v in d)
+        t = 0.0 if dd <= 0 else max(0.0, min(1.0, sum(
+            (p - a[k]) * d[k] for k, p in enumerate((*point, z))) / dd))
+        q = [a[k] + t * d[k] for k in range(3)]
+        dist_sq = sum((p - q[k]) ** 2 for k, p in enumerate((*point, z)))
+        if best is None or dist_sq < best[0]:
+            best = (dist_sq, z - q[2])
+    assert best is not None
+    return best[1]
 
 
 def drain_tie_ins(pipe_runs) -> dict[str, str]:

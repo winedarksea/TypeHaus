@@ -176,15 +176,15 @@ SECOND_WET_BACKING = [
                 profile=_HIGH_PROFILE, material_ref="spf",
                 purpose="FURN-S-SUITEBATH-MIRROR top hang (74 in.)"),
     # FX-S-BATH1-SH's flange stands 1 1/2" off W-S-N3's studs and 1" off the chase's (C6 E9),
-    # so its top flange nails to furred nailers, not to air. Top at subfloor + 84", the
-    # insert's modelled head: confirm the flange line on the delivered unit. The N3 nailer
+    # so its top flange nails to furred nailers, not to air. Top at subfloor + 74 3/4", over
+    # the Sterling 71370116's flange top at 74 1/4" (1214192-4-A p.2). The N3 nailer
     # spans the studs at 24"..72" along the wall; W-S-N3 has no stud in its last 12".
     WallBacking(uid="HQKEW8EHR7", tag="BK-S-N3-TUB-NAILER", wall_ref="W-S-N3", face="left",
-                start=inch(23.25), length=inch(49.5), elevation=inch(81.25), height=inch(3.5),
+                start=inch(23.25), length=inch(49.5), elevation=inch(72), height=inch(3.5),
                 profile="2x4", material_ref="spf", furred=True,
                 purpose="FX-S-BATH1-SH top flange, furred 1 1/2 in. to the insert back"),
     WallBacking(uid="HFF2YZC7BB", tag="BK-S-CH-W-TUB-NAILER", wall_ref="W-S-CH-W", face="right",
-                start=inch(0), length=inch(27.625), elevation=inch(81.25), height=inch(3.5),
+                start=inch(0), length=inch(27.625), elevation=inch(72), height=inch(3.5),
                 profile="1.0x3.5", material_ref="spf", furred=True,
                 purpose="FX-S-BATH1-SH end flange, furred 1 in. to the insert end"),
 ]

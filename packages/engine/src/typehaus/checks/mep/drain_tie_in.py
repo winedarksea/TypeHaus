@@ -104,17 +104,20 @@ def drain_tie_in(ctx: CheckContext) -> list[Finding]:
                 (tie.child, tie.parent), Result.FAIL, code=_CODE,
                 fix="raise the branch's last invert so it enters in the collector's upper "
                     "half, which is where a side entry belongs"))
-        elif drop_in < -_ARRIVAL_EPSILON_IN:
-            # Inside a thirty-second either way. Printing "-0.000" above" reads as a defect
-            # and is not one: it is the interpolation's last bit, and saying so is more
-            # useful than a signed zero.
-            out.append(_pass(
-                _CID, f"{where} on its centreline (within 1/32\") — a level side entry",
-                (tie.child, tie.parent), code=_CODE))
         else:
-            out.append(_pass(
-                _CID, f"{where} {drop_in:+.3f}\" above its centreline — an upper-half side "
-                      "entry", (tie.child, tie.parent), code=_CODE))
+            # The verdict is graded on ``drop_m``; the printed figure is the 3D-nearest
+            # station's, or a branch entering a stack reads as 100" over its foot (E16).
+            offset_in = (tie.offset_m if tie.offset_m is not None else tie.drop_m) / M_PER_IN
+            if abs(offset_in) <= -_ARRIVAL_EPSILON_IN:
+                # Inside a thirty-second either way: the interpolation's last bit, not a
+                # signed zero worth printing.
+                out.append(_pass(
+                    _CID, f"{where} on its centreline (within 1/32\") — a level side entry",
+                    (tie.child, tie.parent), code=_CODE))
+            else:
+                out.append(_pass(
+                    _CID, f"{where} {offset_in:+.3f}\" above its centreline — an upper-half "
+                          "side entry", (tie.child, tie.parent), code=_CODE))
     return out
 
 

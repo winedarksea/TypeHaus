@@ -58,8 +58,9 @@ def test_every_toilet_has_one_selected_holder_at_26_aff(catlin_plan, catlin_mode
 def test_mounting_positions_are_referenced_to_actual_supports(catlin_model_ro):
     objects = {obj.tag: obj for obj in catlin_model_ro.canvas_objects}
     # BATH2's Carlyle II is TOTO's published 28 5/16" deep (geometry review 2026-10-31,
-    # I2-008), not the 30" envelope, so its bowl front sits 9 11/16" off the holder's block.
-    for room, y, gap in zip(ROOMS[:3], (267.4375, 300.5, 226.74), (8, 8, 9.6875),
+    # I2-008), not the 30" envelope; the TOTO tanks stand 3/4" (Drake 13/16") off the wall
+    # since 2026-11-06, so the floor bowls' fronts come that much closer to the holders.
+    for room, y, gap in zip(ROOMS[:3], (267.4375, 300.5, 226.74), (7.1875, 8, 8.9375),
                             strict=True):
         holder = next(obj for obj in _holders(catlin_model_ro) if obj.room == room)
         toilet = next(obj for obj in objects.values()

@@ -89,8 +89,8 @@ def test_the_delivered_figure_is_capped_by_both_area_and_wattage() -> None:
     assert min(17.52 * _DELIVERED_BTUH_PER_FT2, 203 * _W_TO_BTUH) == pytest.approx(399, abs=1)
     assert pytest.approx(693, abs=1) == 203 * _W_TO_BTUH, \
         "the cable draws more than it delivers"
-    # FH-S-BATH1: 27.03 ft2 (the WC keepout followed the bowl, 2026-10-31), DHEHK12027.
-    assert min(27.03 * _DELIVERED_BTUH_PER_FT2, 338 * _W_TO_BTUH) == pytest.approx(616, abs=1)
+    # FH-S-BATH1: 26.93 ft2 (the WC keepout follows the bowl, 2026-11-06), DHEHK12027.
+    assert min(26.93 * _DELIVERED_BTUH_PER_FT2, 338 * _W_TO_BTUH) == pytest.approx(614, abs=1)
 
 
 def test_covering_bath2s_load_would_need_area_the_room_does_not_have() -> None:
@@ -139,8 +139,8 @@ def test_bath1_carries_its_room_and_bath2_does_not(catlin_model_ro) -> None:
     """
     rows = _by_room(catlin_model_ro)
     assert rows["RM-S-BATH1"].result is Result.PASS
-    # 611 -> 616 on 2026-10-31: the WC went to the wall and its keepout followed.
-    assert "delivers 616 Btu/h against a 580 Btu/h design load" in rows["RM-S-BATH1"].message
+    # 616 -> 614 on 2026-11-06: the WC's tank came 3/4" off the wall; its keepout followed.
+    assert "delivers 614 Btu/h against a 580 Btu/h design load" in rows["RM-S-BATH1"].message
 
     bath2 = rows["RM-M-BATH2"]
     assert "delivers 399 Btu/h against a 501 Btu/h design load" in bath2.message
@@ -207,7 +207,7 @@ def test_halving_the_delivered_output_widens_the_shortfall(catlin_plan) -> None:
     plan = _retype_zone(catlin_plan, "FH-S-BATH1", delivered_btuh_per_ft2=11.4)
     rows = _by_room(plan, plan=True)
     assert rows["RM-S-BATH1"].result is Result.UNKNOWN
-    assert "308 Btu/h" in rows["RM-S-BATH1"].message  # area inside the painted faces
+    assert "307 Btu/h" in rows["RM-S-BATH1"].message  # area inside the painted faces
 
 
 def test_a_zone_that_delivers_nothing_at_all_is_the_fail_branch(catlin_plan) -> None:

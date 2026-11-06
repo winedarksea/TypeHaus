@@ -27,6 +27,7 @@ known, and it lands in the section that already exists for exactly this shape of
 
 from __future__ import annotations
 
+from typehaus.model.mep import Equipment
 from typehaus.model.spatial import Appliance
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
@@ -61,15 +62,16 @@ def plumbing_specialties_takeoff(model: ResolvedModel) -> list[dict[str, object]
 def _install_part_carriers(model: ResolvedModel) -> list:
     """Everything in the model that carries an ``install_parts`` kit.
 
-    Two spellings, one order. Accessories come off the resolved run; appliances come off
-    the plan, because an ``Appliance``'s kit is a property of the authored installation and
-    survives whether or not the product resolves to anything with a service connection.
+    Two spellings, one order. Accessories come off the resolved run; appliances and
+    equipment come off the plan, because their kit is a property of the authored
+    installation and survives whether or not the product resolves to anything with a
+    service connection.
     """
     return [*model.pipe_accessories,
             *(element
               for storey in model.plan.storeys
               for element in model.plan.storey_elements(storey.tag)
-              if isinstance(element, Appliance))]
+              if isinstance(element, (Appliance, Equipment)) and element.install_parts)]
 
 
 def install_parts_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
