@@ -60,7 +60,13 @@ def test_the_web_verdict_is_a_SECOND_finding_and_not_a_changed_one(
     # webs for truss bays (2026-10-08). Nine since the owner confirmed 2x4 webs and the
     # opening went 15" -> 13" (2026-10-26): three ERV radials and a data conduit are back.
     # None the same day: the web-clearance reroute closed the campaign (preferences.toml).
-    assert not web, [f.message for f in web]
+    # TrimJoist J12 (decision #117): the level-2 ERV and the suite WC drain's south leg are
+    # open on an owner decision and suppressed in catlin's preferences, nothing else.
+    open_campaign = {"DU-M-ERV-EXH-TRUNK", "DU-M-ERV-R-STUDY", "DU-M-ERV-R-LIVING",
+                     "DU-M-ERV-R-BED", "DU-M-ERV-R-BED2", "DU-M-ERV-R-LAUNDRY",
+                     "PR-M-S-SUITE-WC-DRAIN"}
+    stray = [f.message for f in web if f.element_tags[0] not in open_campaign]
+    assert not stray, stray
     for finding in web:
         assert finding.result is Result.FAIL
         tag = finding.element_tags[0]
@@ -90,7 +96,8 @@ def test_per_crossing_beats_the_envelope_on_the_bld05_run(
     findings = _findings(catlin_plan, catlin_model_ro)
     finding = _for(findings, "PR-M-S-SUITE-WC-DRAIN", "FS-S-WEST")
     assert finding.result is Result.PASS
-    assert _crown_in(finding.message) == pytest.approx(0.178, abs=0.001)
+    # 0.178" until its north leg moved into J12 pocket D9 (2026-11-06, decision #117).
+    assert _crown_in(finding.message) == pytest.approx(0.078, abs=0.001)
     assert "joist-0-016-0" in finding.message
 
 
@@ -182,13 +189,13 @@ def test_every_level_two_duct_rests_on_a_chord_and_none_is_inside_one(
 
 
 def test_an_i_joist_pass_is_qualified(catlin_plan, catlin_model_ro) -> None:
-    """Clearing both flanges is necessary and not sufficient — the hole's diameter and its
-    zone along the span come off a chart this engine does not hold, and the finding says so
-    rather than implying the question is closed."""
+    """Clearing both flanges is necessary and not sufficient: with the maker's ladder held
+    (decision #117) the window names it, and every hole is graded on a cited row."""
     findings = _findings(catlin_plan, catlin_model_ro)
-    i_joist = [f for f in findings if "fabricator's chart" in f.message]
-    assert i_joist
-    assert all("flange" in f.message for f in i_joist)
+    window = [f for f in findings if "graded on ICC-ES ESR-1153" in f.message]
+    assert window and all("flange" in f.message for f in window)
+    holes = [f for f in findings if " bores FS-" in f.message]
+    assert holes and all("Table A" in f.message for f in holes)
 
 
 def test_no_floors_is_unknown_and_no_crossings_is_not_applicable(

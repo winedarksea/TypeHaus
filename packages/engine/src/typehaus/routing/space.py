@@ -88,7 +88,11 @@ MAX_CANDIDATE_LINES = 400
 #:
 #: **500,000 on 2026-11-01, same reason.** DU-B-ERV-R-SAUNA-SUP measured 475,794 after the
 #: ERV/sauna supply moves (392,334 on 2026-10-29).
-MAX_LATTICE_NODES = 500_000
+#:
+#: **600,000 on 2026-11-06, same reason.** PR-A-HW-STUBATH measured 556,932 after ~20 runs
+#: moved into TrimJoist pockets and onto ESR-1153 lanes (decision #117). Graph builds in
+#: 18.2 s and peaks at 1.19 GB (`--timing`, `/usr/bin/time -l`, measured).
+MAX_LATTICE_NODES = 600_000
 
 #: Default margin round the terminals' bounding box, in feet. Eight is about the width of
 #: a room: enough for a route to step out of the direct line and back, and small enough

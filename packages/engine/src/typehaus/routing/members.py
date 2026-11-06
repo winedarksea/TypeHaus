@@ -12,8 +12,9 @@ search cannot propose a hole a check refuses:
 * across a wall, an edge that lands on a stud would cut it in two and is refused;
 * a riser crosses plates; over half a plate's width it needs R602.6.1's tie and pays twice;
 * across a floor, each joist line is a bore: solid-sawn by R502.8.1 (D/3, 2" edges), an
-  I-joist inside its flange-clear window at the fabricator's chart price, an open-web truss
-  free inside its chord window (that is what it is for).
+  I-joist inside its flange-clear window — graded on the library's hole ladder where one is
+  held (outside its zone refused), else at the unpublished price — an open-web truss free
+  inside its chord window (that is what it is for).
 
 Members are kept as SORTED STATIONS per line, so an edge's crossings are a bisect.
 ``notes/framing_bore_limits.md`` §"The router" works one wall and one joist by hand.
@@ -82,8 +83,9 @@ class Penetrations:
             for key in range(int((built.perp[0] - grow) / _BUCKET_M),
                              int((built.perp[1] + grow) / _BUCKET_M) + 1):
                 self.walls.setdefault((built.axis, key), []).append(built)
+        library = getattr(getattr(model, "plan", None), "library", None)
         for floor in model.floors:
-            built = _floor(floor)
+            built = _floor(floor, library)
             if built is not None:
                 self.floors.append(built)
 
@@ -152,7 +154,8 @@ class Penetrations:
         for floor in self.floors:
             if floor.across != axis:
                 continue
-            count = _floor_crossings(floor, station, lo, hi, z, band)
+            crossed = _floor_crossings(floor, station, lo, hi, z, band)
+            count = len(crossed)
             if not count:
                 continue
             if band is None and not (floor.window[0] + r <= z <= floor.window[1] - r):
@@ -160,6 +163,10 @@ class Penetrations:
             kind = _FLOOR_KIND[floor.kind]
             if kind == "joist" and not _solid_bore_ok(floor, 2 * r):
                 return None
+            if kind == "unpublished" and getattr(floor, "chart", None) is not None:
+                if not _ijoist_bores_ok(floor, crossed, station, 2 * r):
+                    return None  # outside the maker's hole zone (ESR-1153 Table A)
+                kind = "engineered"
             if kind:
                 out[kind] = out.get(kind, 0) + count
         return out
@@ -303,8 +310,9 @@ def _wall(wall: Any, bearing: bool) -> _Wall | None:
     return out
 
 
-def _floor(floor: Any) -> _Floor | None:
-    from typehaus.resolve.mep_crossings import is_member_line, member_window
+def _floor(floor: Any, library: Any = None) -> _Floor | None:
+    from typehaus.resolve.mep_crossings import is_member_line, member_window, support_faces
+    from typehaus.resolve.mep_hole_chart import joist_hole_chart
 
     window = member_window(floor)
     if window is None:
@@ -321,20 +329,24 @@ def _floor(floor: Any) -> _Floor | None:
         extent = sorted((member.p0[0], member.p1[0]) if along_x
                         else (member.p0[1], member.p1[1]))
         top = getattr(member, "z1_m", None) or floor.deck_z0_m
-        joists.append((p0, extent[0], extent[1], member.z0_m, top, member.profile))
-    joists.sort()
+        joists.append((p0, extent[0], extent[1], member.z0_m, top, member.profile, member))
+    joists.sort(key=lambda j: j[:5])
     out = _Floor(tag=floor.tag, across="y" if along_x else "x", kind=window.kind,
                  window=(window.z0_m, window.z1_m))
     out.joists = [j[:5] for j in joists]
     out.half_widths = [_half_width(j[5]) for j in joists]  # type: ignore[attr-defined]
     out.stations = [j[0] for j in joists]
     out.profile = joists[0][5] if joists else ""  # type: ignore[attr-defined]
+    out.chart = (joist_hole_chart(library, out.profile)  # type: ignore[attr-defined]
+                 if window.kind == "i_joist" and library is not None else None)
+    out.faces = ([support_faces(floor, j[6]) for j in joists]  # type: ignore[attr-defined]
+                 if out.chart is not None else [])
     return out
 
 
 def _floor_crossings(floor: _Floor, along: float, lo: float, hi: float, z: float,
-                     band: tuple[float, float] | None) -> int:
-    count = 0
+                     band: tuple[float, float] | None) -> list[int]:
+    crossed: list[int] = []
     for i in range(bisect_right(floor.stations, lo), bisect_left(floor.stations, hi)):
         _at, start, end, z0, z1 = floor.joists[i]
         if not start - 1e-6 <= along <= end + 1e-6:
@@ -343,8 +355,26 @@ def _floor_crossings(floor: _Floor, along: float, lo: float, hi: float, z: float
             continue
         if band is not None and (band[1] < z0 or band[0] > z1):
             continue
-        count += 1
-    return count
+        crossed.append(i)
+    return crossed
+
+
+def _ijoist_bores_ok(floor: _Floor, crossed: list[int], along: float,
+                     diameter_m: float) -> bool:
+    """Every hole at ``along`` inside the I-joist chart's zone: the check's own verdict."""
+    from typehaus.resolve.mep_bores import joist_bore
+
+    chart = getattr(floor, "chart", None)
+    for i in crossed:
+        lo, hi = floor.faces[i]  # type: ignore[attr-defined]
+        if lo is None or hi is None:
+            return False
+        centre_in = min(along - lo, hi - along) / M_PER_IN
+        verdict = joist_bore(getattr(floor, "profile", ""), diameter_m / M_PER_IN,
+                             chart=chart, edge_to_support_in=centre_in)
+        if verdict.ok is not True:
+            return False
+    return True
 
 
 def _solid_bore_ok(floor: _Floor, diameter_m: float) -> bool:

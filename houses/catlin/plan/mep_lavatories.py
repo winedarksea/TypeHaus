@@ -85,7 +85,8 @@ MAIN_LAV_CONNECTIONS = [
                   accessible=True, room="RM-M-BATH2", model='1/2 in. quarter-turn fixture angle stop',
                   serves=("FX-M-BATH2-SINK",)),
     PipeRun(uid="GFRR5SN23K", tag="PR-M-BATH2-LAV-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(12), inch(268)), pt(inch(4), inch(268)), pt(inch(4), inch(185.25)), pt(inch(6.51), inch(185.25)),),
+            # Off PR-B-CW-BATH2's riser, x=1'-1" since ESR-1153 moved it off 1'-0".
+            path=(pt(inch(13), inch(268)), pt(inch(4), inch(268)), pt(inch(4), inch(185.25)), pt(inch(6.51), inch(185.25)),),
             elevations=(inch(36.0), inch(24.0), inch(24.0), inch(25.5),),
             diameter=inch(0.5), material="pex",
             serves=("FX-M-BATH2-SINK",)),

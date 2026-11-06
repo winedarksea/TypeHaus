@@ -13,8 +13,9 @@ bounce, not 60 psf: the 12" o.c. / 60 psf order had no published row.
 - Field x 18'-36', y 13'-36'. **19 open-web floor trusses**, 11 7/8" deep, 2x4 chords flat
   (3 1/2" wide, 1 1/2" thick), at 16" o.c. from the y=13' seam: y = 156, 172, ... 396 (16
   lines), then 408, 420, 432 (`line_overrides` 412 -> 408, 428 -> 420, so the three bays at
-  W-B-N1 stay 12" and a 0.5" slit at 428-432 is avoided). Warren webs at 24" pitch, 13" clear,
-  12" offset (`FS-S-WEST`'s drawing).
+  W-B-N1 stay 12" and a 0.5" slit at 428-432 is avoided). Webs: TRIFORCE publishes one 7 1/4" round
+  opening (`TRIFORCE_OJ_WEB_OPENINGS`); the 24" Warren pitch, symmetric about mid-span, is assumed
+  until the shop drawing (`notes/open_web_truss_geometry.md` §4).
 - Count: (396 - 156)/16 + 1 = 16, plus 3 = **19**, plus two sisters: 332 at 328.5" and 316 at 319.5" (section 3a).
 - Truss ends x = 215 1/4" .. 430 1/4": **17'-11"**, the same blank as `FS-S-WEST`.
   - West: 3 1/2" onto the x=18' 2x6 double top plate (studs 213 1/4"..218 3/4"); the TJIs
@@ -128,11 +129,12 @@ recommends them for "superior floor systems"; a strongback "can be cut between t
 ducts or pipes". The owner's bounce goal, so two:
 - 2x6 on edge (5 1/2" tall, 1 1/2" thick) on the chord tops: z = -11 7/8" + 1 1/2" = -10 3/8"
   to -4 7/8". Top chord underside at -1 1/2": 3 3/8" clear above.
-- **A** at x = 317.75" (317"-318.5") in the 26' web opening, hard against the 27' web, beside
-  `CD-B-PLAY-SPARE` at 311.2". **B** at x = 330.25" (329.5"-331") in the 28' opening, 1.5" clear of
-  `CD-B-DATA-MEDIA` at 333". Webs sit on odd feet, 13" openings on even feet, so each piece fits an
-  opening and never crosses a web. Both are within about 6" of mid-span (the 208" span's middle is
-  x = 321").
+- **A** at x = 309.5" and **B** at x = 334.75", each in its own bottom-chord web pocket: with a bottom
+  node at mid-span (x = 322.75") the pockets are centred 12" either side (310.75", 334.75"); a pocket
+  is ~8" wide at the 2x6's height, so two pieces cannot share one. A is nudged 1 1/4" west to clear
+  `CD-B-PLAY-SPARE` at 311.2"; B stands 0.5" clear of `CD-B-DATA-MEDIA` at 333". They moved from
+  317.75"/330.25" (the old 13" openings) and are now 12" from mid-span, not 6": an assumed pitch
+  decides that, TRIFORCE's drawing may not.
 - **Four cut bays**, where an x-running lane crosses at the strongback's height: 172-188
   (`PR-B-CW-TRUNK`, y 180 after its move from 186), 188-204 (`PR-B-HW-KITCH`, 196), 284-300
   (`CD-B-DATA-MEDIA`'s x-leg at y 296.5, z -9.21" to -8.29": a bore would sit ~1.2" off the

@@ -244,17 +244,17 @@ def floor_bearing_grid(ctx: CheckContext) -> list[Finding]:
 # are cut at. This asks how much of it each end actually sits on, against what the member
 # needs. IRC R502.6 wants 1 1/2" on wood for a sawn joist; the other two numbers are the
 # fabricator's, not the code's — an I-joist bears on its web and its maker asks 1 3/4", an
-# open-web truss lands on its bottom chord over a block and BCSI/SBCA ask 3". Grading all
-# three at 1 1/2" passed catlin's x=18' line, where a centreline split gave a truss and an
-# I-joist 2 3/4" each. It is now split 3 1/2" / 2" (``params/second_deck.py``).
+# open-web truss asks 1 3/4" (TrimJoist J12; TRIFORCE 1 1/2"). Its published reaction rises
+# with the seat (3,000 / 3,500 / 4,000 lb at 1 3/4 / 3 1/2 / 5 1/2"), so the x=18' line,
+# where a centreline split gave each deck 2 3/4", is split 3 1/2" / 2" (``params/second_deck.py``).
 #
 # ``roof_truss`` is here for completeness of the shape set rather than because this rule
-# reaches one today: BCSI-B2 asks a roof truss for 1 1/2" on wood at these spans — less than
-# a floor truss's 3", because it lands on its heel over the full plate width — which is also
-# the sawn default, so a roof truss can never be graded by a number it does not already own.
+# reaches one today: BCSI-B2 asks a roof truss for 1 1/2" on wood at these spans, which is
+# also the sawn default, so a roof truss can never be graded by a number it does not already
+# own.
 # The rule walks ``model.floors``, so a roof truss reaches it only if a FloorSystem is ever
 # authored on one.
-_MIN_SEAT_IN = {"floor_truss": 3.0, "roof_truss": 1.5, "i_joist": 1.75}
+_MIN_SEAT_IN = {"floor_truss": 1.75, "roof_truss": 1.5, "i_joist": 1.75}
 #: How each shape is spelled in the PASS message — the shape names are code, not prose.
 _SEAT_SHAPE_LABEL = {"floor_truss": "floor truss", "roof_truss": "roof truss",
                      "i_joist": "I-joist"}

@@ -32,7 +32,8 @@ BASEMENT_SUPPLY_BRANCHES = [
     # x 1'-2 5/8"..2'-10 3/8"), which the frame fills, so it is floor-fed: off PR-B-CW-BATH2's
     # x=1'-0" leg, east in FS-M-MECH's bay and up through the floor clear of the base.
     PipeRun(uid="DP63F1BTDQ", tag="PR-B-BATH2-WC-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(12), inch(263.6)), pt(inch(24), inch(263.6)), pt(inch(24), inch(263.6)),),
+            # Tees on PR-B-CW-BATH2's x=1'-1" riser line (ESR-1153 moved it off 1'-0").
+            path=(pt(inch(13), inch(263.6)), pt(inch(24), inch(263.6)), pt(inch(24), inch(263.6)),),
             elevations=(inch(100.6375), inch(100.6375), inch(118.9375),),
             diameter=inch(0.5), material="pex", serves=("FX-M-BATH2-WC",)),
     # FX-M-BATH2-SH's valve in W-M-BA2E2. Cold off the trunk at x=7'-0", 2" over the band to

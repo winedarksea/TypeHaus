@@ -161,31 +161,30 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
                                  z0_m=min(g.z0_m for g in pair) - inflate,
                                  z1_m=max(g.z1_m for g in pair) + inflate))
 
-    # Open-web truss WEBS, where the deck states its fabricator's panel layout. An
-    # open-web member hands a service its 8 7/8" chord-to-chord space and nothing narrowed
-    # it ALONG the span, so the router read a floor truss as a continuous chase and would
-    # lane a duct straight through a web. These are ``fixed`` — a web is not bored, notched
-    # or moved by anybody — so a search threads the openings by construction rather than
-    # being told off by a check afterwards.
+    # Open-web truss WEBS, where the deck quotes the maker's openings: each truss's
+    # ``OpenWebShape`` (``resolve/open_web.py``) gives the solid bands (TrimEnds, chase posts,
+    # diagonals at mid-depth). An open-web member hands a service its 8 7/8" chord-to-chord
+    # space and nothing narrowed it ALONG the span, so the router read a floor truss as a
+    # continuous chase and would lane a duct straight through a web. These are ``fixed``, so
+    # a search threads the openings by construction rather than being told off by a check.
     #
-    # Unauthored is silence here too: no layout, no prisms, and the reading is exactly what
-    # it was. ``mep.open_web_panel`` is the one that says the layout is missing.
-    from typehaus.resolve.mep_crossings import member_window, web_panels
+    # Unquoted is silence here too: no shape, no prisms. ``mep.open_web_panel`` says so.
+    from typehaus.resolve.mep_crossings import member_window
+    from typehaus.resolve.open_web import station_of
 
     for floor in model.floors:
-        panels = web_panels(floor)
-        window = member_window(floor) if panels is not None else None
-        if panels is None or window is None or window.kind != "open_web":
+        window = member_window(floor) if floor.web_openings is not None else None
+        if window is None or window.kind != "open_web":
             continue
         along_x = floor.direction == "x"
         for member in floor.members:
-            if member.category != "joist" or member.z0_m is None:
+            if member.web is None or member.z0_m is None:
                 continue
-            low, high = sorted((member.p0[0], member.p1[0]) if along_x
-                               else (member.p0[1], member.p1[1]))
             breadth = _member_breadth(member)
             across = member.p0[1] if along_x else member.p0[0]
-            for start, end in panels.web_bands(low, high):
+            for run0, run1 in member.web.solid_bands():
+                start, end = sorted((station_of(member, run0, along_x),
+                                     station_of(member, run1, along_x)))
                 corners = ([(start, across - breadth), (end, across - breadth),
                             (end, across + breadth), (start, across + breadth)]
                            if along_x else

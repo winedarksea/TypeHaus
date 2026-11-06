@@ -440,13 +440,17 @@ SECOND_BRANCH_DRAINS = [
             # nonbearing W-M-STOS below it (no stud bored), leaves 5 3/4" north, clear of those
             # plates, at 8'-7" under the deck, runs east in the mud closet's ceiling at 0.25"/ft
             # and drops onto the stack.
+            # The south leg crosses the clipped trusses at x=15.3" (TrimJoist pocket D1) and
+            # jogs back to the drop's hole (20.278") in the bay; it falls 0.25"/ft throughout.
             path=(pt(inch(18.5), inch(376)), pt(inch(20.278), inch(372.32)),
-                  pt(inch(20.278), inch(344)), pt(inch(20.278), inch(320.5)),
+                  pt(inch(20.278), inch(344)), pt(inch(15.3), inch(344)),
+                  pt(inch(15.3), inch(320.5)), pt(inch(20.278), inch(320.5)),
                   pt(inch(20.278), inch(320.5)), pt(inch(20.278), inch(326.25)),
                   pt(ft(5), inch(326.25)), pt(ft(5), inch(326.25)), pt(ft(5), ft(26, 8))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(10, 0.75), inch(116.75), inch(116), inch(115.5), inch(103.3),
-                        inch(103.1), inch(102.27), inch(98.97), inch(98.83)),
+            elevations=(ft(10, 0.75), inch(116.75), inch(116), inch(115.89), inch(115.38),
+                        inch(115.27), inch(103.3), inch(103.1), inch(102.27), inch(98.97),
+                        inch(98.83)),
             serves=("FX-S-BATH1-WC",)),
     # The tub-shower's 1 1/2" waste: 3 3/4" down to the weir (117", 3" under the deck), an 11"
     # arm west at 1/4"/ft under W-S-CH-W's plate to a sanitary tee in the chase's south band
@@ -469,14 +473,14 @@ SECOND_BRANCH_DRAINS = [
     # The 36" vanity keeps its 1 1/2" drop at y=372", in the 369.75"..382.25" truss
     # bay. The basin moved to y=374.5"; a 2.5" connection within the sink base reaches
     # this existing drop and PR-S-BATH1-VENT's takeoff without moving either floor hole.
-    # West in the drop's bay to x=6'-3", then south through the 65 1/2"..78 1/2" opening
-    # in the 4" left between DU-M-ERV-R-BED and CD-M-DATA-KITCH (x=5' is a web). A 45 deg
-    # pair puts it under BED's upper tier at x=6'-1 1/2", clear of PR-B-HW-SBATH's riser, and
-    # it turns west UNDER both radials in the 26'-2" bay, south of the two supply risers.
+    # West in the drop's bay to x=7'-2 3/4", then south through TrimJoist pocket D6 of the
+    # clipped trusses, and west in the 26'-2" bay south of the two supply risers.
     PipeRun(uid="E9TA1G01B8", tag="PR-M-S-BATH1-LAV-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(116.745), inch(374.5)), pt(inch(120), inch(374.5)), pt(inch(120), inch(372)), pt(inch(120), inch(372)), pt(inch(75), inch(372)), pt(inch(75), inch(340)), pt(inch(73.5), inch(338.5)), pt(inch(73.5), inch(314)), pt(inch(60), inch(314)), pt(inch(60), inch(320)),),
+            # TrimJoist's web pockets (2026-11-06): the south leg crosses the clipped trusses at
+            # x=86.75", the centre of D pocket D6, not 75" (the pocket's edge); falls evenly.
+            path=(pt(inch(116.745), inch(374.5)), pt(inch(120), inch(374.5)), pt(inch(120), inch(372)), pt(inch(120), inch(372)), pt(inch(86.75), inch(372)), pt(inch(86.75), inch(314)), pt(inch(60), inch(314)), pt(inch(60), inch(320)),),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(141.5), inch(141.43), inch(141.375), inch(117.75), inch(116.8), inch(113.65), inch(113.55), inch(113.0), inch(112.7), inch(112.55),),
+            elevations=(inch(141.5), inch(141.43), inch(141.375), inch(117.75), inch(116.4), inch(113.25), inch(112.68), inch(112.55),),
             # No `wall_ref`: only the first vertex is in W-S-BA-E1B, and the drop leaves
             # the wall's own z band the moment it passes the deck at 10'-0". `wall_ref`
             # claims EVERY segment is in that wall, which this run cannot honestly say.
@@ -506,12 +510,15 @@ SECOND_BRANCH_DRAINS = [
     # two legs share the opening 1" apart. PR-A-STUBATH-DRAIN lands at y=19'-7"; the tub and
     # lav branch at y=19'-0", both downstream of the closet.
     PipeRun(uid="885X4850FE", tag="PR-M-S-SUITE-WC-DRAIN", system=PipeSystem.DRAIN,
+            # TrimJoist pockets (2026-11-06): the north leg leaves the flange at its own x (D9).
+            # OPEN: the south leg (x=12'-0") still lands in D10 above the 115.2" a 3.5" pipe may
+            # cross at, and cannot drop (DU-M-ERV-R-STUDY's bay leg at y=20'-6" is 10" south).
             path=(pt(inch(134.81), inch(252.406)), pt(inch(134.81), inch(252.406)),
-                  pt(inch(139.5), inch(252.406)), pt(inch(139.5), inch(266.25)),
+                  pt(inch(134.81), inch(266.25)),
                   pt(ft(12), inch(266.25)), pt(ft(12), inch(246)), pt(ft(12), ft(18)),
                   pt(ft(12, 6), ft(18))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(10, 0.75), inch(116.75), inch(116.65), inch(116.35), inch(116.25),
+            elevations=(ft(10, 0.75), inch(116.75), inch(116.45), inch(116.25),
                         inch(115.7), inch(112.6), ft(9, 3)),
             serves=("FX-S-SUITEBATH-WC",)),
     # The 30" vanity: a 3 1/4" arm into W-S-SN3 at 20 3/4" AFF to PR-S-SUITEBATH-LAV-VENT's
@@ -526,16 +533,16 @@ SECOND_BRANCH_DRAINS = [
     # The tub-shower, from the waste-and-overflow at (197.615", 261.125"): the trap hangs
     # under the deck (weir 117"), its arm turns north 2 3/8" to PR-S-SUITEBATH-TUB-VENT's
     # tee, then west on y=22'-0" over CD-M-DATA-KITCH (0.29") and under PR-A-HW-STUBATH
-    # (0.2"), takes the lav at x=13'-9 1/2", south at x=13'-7" (the 161 1/2"..174 1/2"
-    # opening, over DU-M-ERV-R-LAUNDRY and -STUDY) and west on y=19'-0" to the collector.
+    # (0.2"), takes the lav at x=13'-9 1/2", south at x=12'-11 3/4" (pocket D11, 2026-11-06)
+    # and west on y=19'-0" to the collector.
     PipeRun(uid="WVNA8G8ZHX", tag="PR-M-S-SUITE-TUB-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(197.615), inch(261.125)), pt(inch(197.615), inch(261.125)),
                   pt(inch(197.615), inch(264)), pt(inch(189), inch(264)),
-                  pt(inch(171), inch(264)), pt(inch(163), inch(264)),
-                  pt(inch(163), ft(19)), pt(ft(12), ft(19))),
+                  pt(inch(171), inch(264)), pt(inch(155.75), inch(264)),
+                  pt(inch(155.75), ft(19)), pt(ft(12), ft(19))),
             diameter=inch(1.5), material="pvc",
             elevations=(ft(10, 0.75), inch(117.45), inch(117.38), inch(117.2), inch(115.85),
-                        inch(115.65), inch(114.9), inch(114.45)),
+                        inch(115.5), inch(114.75), inch(114.45)),
             serves=("FX-S-SUITEBATH-TUBSH",)),
 ]
 

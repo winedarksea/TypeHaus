@@ -78,14 +78,15 @@ VENT_TEES = [
     # RM-S-BATH1's lavatory: a sanitary tee at the top of its drop, 3 1/4" (>= 2 x 1 1/2") from
     # the drain point where the arm turns south in W-S-BA-E1B. It rises plumb at x=120" past the
     # lav's rim+6" (172"), clear of the 212" hot, then steps 1 3/4" west (the hot crosses
-    # y=374.5" at x=120" and 212") and onto PR-S-BATH1-VENT's start. At y=374.5", midway between
+    # y=374.5" at x=120" and 212") and onto PR-S-BATH1-VENT's end. At y=374.5", midway between
     # the two angle stops (y 371.5" / 377.5"); at y=31'-1" it ran through PA-S-BATH1-LAV-CW.
     PipeRun(uid="4HVPN3BWQG", tag="PR-S-BATH1-LAV-VENT", system=PipeSystem.VENT,
             path=(pt(inch(120), inch(374.5)), pt(inch(120), inch(374.5)),
                   pt(inch(118.25), inch(374.5)), pt(inch(118.25), inch(374.5)),
+                  # 2026-11-06: lands on the stack's bay run, which now ends here, 2.3" higher.
                   pt(inch(116.4), inch(372))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(141.43), inch(173.0), inch(176.0), inch(230.9), inch(231.0)),
+            elevations=(inch(141.43), inch(173.0), inch(176.0), inch(233.1), inch(233.2)),
             serves=("FX-S-BATH1-LAV",)),
     # RM-S-BATH1's WC: plumb from the sanitary tee that ends its arm in W-S-BD-N's cavity
     # (20.28", 320.5", 115.5"; arm 56"). A 45 deg+ leg moves it 3/4" north off the drop, clear
@@ -101,10 +102,11 @@ VENT_TEES = [
     # 402.8", 116.7"), up the chase's south band (clear of EXH riser, CD-M-DATA-PORCH,
     # W-S-CH-W's studs) past the rim+6" (211"), east onto PR-S-BATH1-VENT at 231".
     PipeRun(uid="S57D33HC70", tag="PR-S-BATH1-SH-VENT", system=PipeSystem.VENT,
+            # 2026-11-06: on to the stack's corner at (40", 372"); the x=40" leg ends there.
             path=(pt(inch(30.3), inch(402.8)), pt(inch(30.3), inch(402.8)),
-                  pt(inch(40), inch(402.8))),
+                  pt(inch(40), inch(402.8)), pt(inch(40), inch(372))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(116.7), inch(231.0), inch(233.7)),
+            elevations=(inch(116.7), inch(231.0), inch(232.85), inch(233.2)),
             serves=("FX-S-BATH1-SH",)),
     # RM-M-BATH1's wall-hung WC: the DuoFit carrier's own vent outlet, straight up W-M-HS1
     # from the fitting to PR-M-BATH2-LAV-VENT's horizontal at 7'-5 1/8" (6"+ over every rim
@@ -132,10 +134,11 @@ VENT_TEES = [
     # face backings to 115.4", over DU-M-ERV-R-SUITEBATH's y=16'-4" leg, then north onto
     # PR-M-BATH2-TUB-VENT's riser. Arm 24".
     PipeRun(uid="F7XXC9XDK5", tag="PR-M-BATH2-SH-VENT", system=PipeSystem.VENT,
+            # 2026-11-06: east 5 1/2" in the bay and north across the 192" truss in the R1 chase.
             path=(pt(inch(98), inch(180.5)), pt(inch(98), inch(180.5)),
-                  pt(inch(98), inch(204))),
+                  pt(inch(103.5), inch(180.5)), pt(inch(103.5), inch(204))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(-3.5), inch(115.4), inch(115.5)),
+            elevations=(inch(-3.5), inch(115.4), inch(115.45), inch(115.5)),
             serves=("FX-M-BATH2-SH",)),
     # RM-M-BATH2's tub: a sanitary tee at the top of PR-B-TUB2-DRAIN's drop, under W-M-BA2E2
     # at (8'-2", 17'-0") in the 16'-1 1/4"..17'-2 3/4" bay, which has no partition block (the
@@ -154,7 +157,7 @@ VENT_TEES = [
     PipeRun(uid="BQEVC68G5T", tag="PR-M-LSINK-VENT", system=PipeSystem.VENT,
             path=(pt(inch(144), ft(18, 10.625)), pt(inch(156), inch(217.5)),
                   pt(inch(156), inch(217.5)), pt(inch(156), inch(216)),
-                  pt(inch(98.5), inch(216))),
+                  pt(inch(103.5), inch(216))),
             diameter=inch(1.5), material="pvc",
             elevations=(inch(0), inch(15.5), inch(115.85), inch(115.9), inch(116)),
             serves=("FX-M-LAUNDRY-SINK",)),

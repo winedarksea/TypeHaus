@@ -1,30 +1,26 @@
 """``mep.open_web_panel`` — how many runs one web opening will actually take.
 
-``mep.run_member_crossing`` asks how TALL the slot is. Nothing asked where along the member
-there is a slot at all, and on an open-web deck that is the binding question: the engine
-reads a floor truss as a continuous 8 7/8" chase, so **thirteen 4" ducts crossing every
-truss inside a 41" band all pass**. A real truss has webs at panel points, and a duct lands
-in an opening or it lands on a web.
+``mep.run_member_crossing`` asks whether a run clears the chords and lands in an opening at
+all. This asks the second question of the openings themselves: each open-web truss carries
+an ``OpenWebShape`` (``resolve/open_web.py``) derived from the deck's published
+``JoistSpec.web_openings``, and a run is graded against the opening it lands in.
 
-**Unauthored is UNKNOWN naming the floor, never a pass.** A truss's panel layout is a shop
-drawing and this engine has no business inventing a pitch; ``JoistSpec.web_panel_pitch``,
-``web_opening_width`` and ``web_panel_offset`` are where a house states the fabricator's,
-and ``mep.run_member_crossing`` keeps grading the z window either way.
+* **A D opening takes ONE run** (the maker's round hole, or its R2 rectangle). Two runs
+  through one web pocket is the defect, however small each is.
+* **The R1 chase takes runs side by side** in one tier up to its published width, and tiers
+  stack up to its published height.
+* A TrimEnd takes nothing; that and the size/outline limits are ``run_member_crossing``'s.
 
-**A TIER, not a sum** — the same rule ``resolve/mep_packing`` makes about a bay's clear
-width, and for the same reason. Two runs that share an elevation have to fit side by side
-in one opening; two that stack do not compete at all, and summing them made a 15" opening
-full of two 4" ducts that never meet. Runs are clustered by overlapping surface z band and
-each cluster is measured on its own.
+**Unauthored is UNKNOWN naming the floor, never a pass.** A truss's layout is the maker's
+shop drawing; ``JoistSpec.web_openings`` is where a house quotes what is published, and the
+pitch it could not quote is flagged on the row and printed on every PASS.
 
 **Width along the MEMBER, not diameter.** A 4" duct crossing a truss square occupies 4" of
-its length; the same duct crossing at 45° occupies 5.66", because a cylinder cut obliquely
-is an ellipse. An opening filled by the diameters is not full and an opening filled by the
-ellipses is.
+its length; the same duct crossing at 45 degrees occupies 5.66", because a cylinder cut
+obliquely is an ellipse.
 
-``Tier.STRUCTURAL``, no ``PermitItemSpec``: no IRC section publishes a truss's panel layout
-— it is the fabricator's geometry, the same footing ``member_window``'s open-web reading
-already stands on.
+``Tier.STRUCTURAL``, no ``PermitItemSpec``: no IRC section publishes a truss's openings; it
+is the maker's chart, the same footing ``member_window``'s open-web reading stands on.
 """
 
 from __future__ import annotations
@@ -46,7 +42,7 @@ _CID = "mep.open_web_panel"
 @check(Tier.STRUCTURAL, _CID)
 def open_web_panel(ctx: CheckContext) -> list[Finding]:
     """Every web opening of every open-web deck, against what crosses it."""
-    from typehaus.resolve.mep_crossings import member_window, web_panels
+    from typehaus.resolve.mep_crossings import member_window
     from typehaus.resolve.mep_envelopes import run_polylines, run_sections
 
     decks = [floor for floor in ctx.model.floors
@@ -59,90 +55,115 @@ def open_web_panel(ctx: CheckContext) -> list[Finding]:
     runs = list(run_polylines(ctx.model))
     out: list[Finding] = []
     for floor in decks:
-        panels = web_panels(floor)
-        if panels is None:
+        if floor.web_openings is None or not any(m.web is not None for m in floor.members):
             out.append(_unknown(
-                _CID, f"{floor.tag} is framed in open-web members and states no panel "
-                      "layout, so the model reads this truss as a CONTINUOUS slot: every "
-                      "crossing of it passes on the chord-to-chord window alone, however "
-                      "many of them there are and wherever along the span they land. "
-                      "Author the fabricator's web_panel_pitch, web_opening_width and "
-                      "web_panel_offset on its JoistSpec",
+                _CID, f"{floor.tag} is framed in open-web members and quotes no published "
+                      "web openings, so the model reads this truss as a CONTINUOUS slot: "
+                      "every crossing of it passes on the chord-to-chord window alone, "
+                      "however many of them there are and wherever along the span they "
+                      "land. Author the maker's PublishedWebOpenings on its "
+                      "JoistSpec.web_openings",
                 (floor.tag,)))
             continue
-        out.extend(_graded(floor, panels, runs, sections))
+        out.extend(_graded(floor, runs, sections))
 
     if not any(f.result.value in ("fail", "pass") for f in out):
-        out.append(_pass(_CID, f"{len(decks)} open-web deck(s) and none of them states a "
-                               "panel layout to grade against", ()))
+        out.append(_pass(_CID, f"{len(decks)} open-web deck(s) and none of them quotes "
+                               "published web openings to grade against", ()))
     return out
 
 
-def _graded(floor, panels, runs, sections) -> list[Finding]:
-    """One deck whose layout is authored: cluster its crossings per opening, per tier."""
+def _graded(floor, runs, sections) -> list[Finding]:
+    """One deck with published openings: who shares which opening of which truss."""
     from typehaus.resolve.mep_crossings import leg_crossings
     from typehaus.resolve.mep_envelopes import insulation_thickness_m
+    from typehaus.resolve.open_web import RunSize, grade_crossing, run_of
 
     along_x = floor.direction == "x"
-    # (member key, opening index) -> [(tag, width along the member, z low, z high)]
-    filled: dict[tuple[str, int], list[tuple[str, float, float, float]]] = {}
+    members = {m.child_key: m for m in floor.members if m.web is not None}
+    # (member key, opening key) -> {run tag: (width along member, z low, z high)}
+    filled: dict[tuple[str, str], dict[str, tuple[float, float, float]]] = {}
     for _kind, tag, path, z in runs:
         if len(path) < 2 or len(z) != len(path):
             continue
         half_w, half_d, insulation = sections.get(tag, (0.0, 0.0, None))
         lagging = insulation_thickness_m(insulation) or 0.0
-        width = 2 * (half_w + lagging)
-        depth = half_d + lagging
+        width, depth = 2 * (half_w + lagging), half_d + lagging
+        round_ = abs(half_w - half_d) < 1e-9
         for leg in range(len(path) - 1):
             a, b = path[leg], path[leg + 1]
             oblique = _obliquity(a, b, along_x)
             if oblique is None:
                 continue
             for crossing in leg_crossings(floor, a, b, z[leg], z[leg + 1]):
-                key = (crossing.member_key, panels.index_at(crossing.station_m))
-                filled.setdefault(key, []).append(
-                    (tag, width * oblique, crossing.z_m - depth, crossing.z_m + depth))
+                member = members.get(crossing.member_key)
+                if member is None:
+                    continue
+                run = run_of(member, crossing.station_m, along_x)
+                grade = grade_crossing(member.web, run, crossing.z_m - member.z0_m,
+                                       RunSize(width * oblique, 2 * depth, round_))
+                if grade.opening is None or grade.opening.kind == "trim_end":
+                    continue  # run_member_crossing names the web or TrimEnd hit
+                filled.setdefault((crossing.member_key, grade.opening.key), {})[tag] = (
+                    width * oblique, crossing.z_m - depth, crossing.z_m + depth)
 
-    # **One finding per OPENING INDEX, not per member.** Every truss on a deck shares one
-    # panel layout, so a lane that over-fills opening 3 over-fills opening 3 of every truss
-    # it crosses — thirteen findings saying one thing. The members are counted in the
-    # message instead, which is also the number a campaign wants: it is how many trusses
-    # have to be re-thought if the lane does not move.
-    over: dict[int, tuple[float, set[str], list]] = {}
-    for (member_key, index), occupants in sorted(filled.items()):
-        for tier in _tiers(occupants):
-            used = sum(width for _tag, width, _low, _high in tier)
-            if used <= panels.opening_m + 1e-9:
-                continue
-            worst_used, members, worst_tier = over.get(index, (0.0, set(), []))
-            members.add(member_key)
-            over[index] = ((used, members, tier) if used > worst_used
-                           else (worst_used, members, worst_tier))
+    # **One finding per set of runs and opening kind, not per truss.** Trusses repeat one
+    # layout, so a lane that over-fills a pocket over-fills it on every truss it crosses;
+    # the members are counted in the message, which is how many trusses need re-thinking.
+    over: dict[tuple[str, tuple[str, ...]], list[tuple[str, str, float, float]]] = {}
+    row = floor.web_openings
+    for (member_key, opening_key), occupants in sorted(filled.items()):
+        opening = next(o for o in members[member_key].web.openings if o.key == opening_key)
+        entries = [(tag, w, low, high) for tag, (w, low, high) in occupants.items()]
+        if opening.kind == "D":
+            if len(entries) > 1:
+                names = tuple(sorted(tag for tag, *_ in entries))
+                over.setdefault(("D", names), []).append(
+                    (member_key, opening_key, 0.0, opening.round_m))
+            continue
+        tiers = _tiers(entries)
+        width_cap, height_cap = opening.rect_m
+        worst = max((sum(w for _t, w, _l, _h in tier) for tier in tiers), default=0.0)
+        stacked = sum(max(h - lo for _t, _w, lo, h in tier) for tier in tiers)
+        if worst > width_cap + 1e-9 or stacked > height_cap + 1e-9:
+            names = tuple(sorted(tag for tag, *_ in entries))
+            over.setdefault((opening.kind, names), []).append(
+                (member_key, opening_key, max(worst, 0.0), max(stacked, 0.0)))
 
     out: list[Finding] = []
-    for index, (used, members, tier) in sorted(over.items()):
-        low = panels.offset_m + index * panels.pitch_m + panels.web_width_m / 2.0
-        high = low + panels.opening_m
-        names = sorted(tag for tag, _w, _l, _h in tier)
+    for (kind, names), hits in sorted(over.items()):
+        member_key, opening_key, used, extra = hits[0]
+        shape = members[member_key].web
+        opening = next(o for o in shape.openings if o.key == opening_key)
+        where = feet_inches((opening.run0_m + opening.run1_m) / 2.0)
+        if kind == "D":
+            detail = (f"{len(names)} runs share one web pocket (a {extra / M_PER_IN:.3g}\" "
+                      "round, or R2 where the row has it) and a pocket takes one")
+        else:
+            detail = (f"{len(names)} runs want {used / M_PER_IN:.2f}\" across by "
+                      f"{extra / M_PER_IN:.2f}\" of height in the "
+                      f"{opening.rect_m[0] / M_PER_IN:g}\" x {opening.rect_m[1] / M_PER_IN:g}\" "
+                      "chase")
         out.append(_fail(
             _CID,
-            f"{floor.tag}'s web opening between {feet_inches(low)} and {feet_inches(high)} "
-            f"is over-subscribed on {len(members)} of its members: {len(tier)} runs share "
-            f"one elevation there and want {used / M_PER_IN:.2f}\" of its "
-            f"{panels.opening_m / M_PER_IN:.2f}\" clear width — {', '.join(names)}. No "
-            "arrangement fixes this; one of them has to take another opening, another tier, "
-            "or another lane",
+            f"{floor.tag}'s {kind} opening {opening_key} (about {where} from the truss "
+            f"start, first on {member_key}, {len(hits)} of its members) is over-subscribed: "
+            f"{detail} — {', '.join(names)}. No arrangement fixes this; one of them has to "
+            "take another opening or another lane",
             (floor.tag, *names),
-            fix="move one run to the next panel opening, drop it to the other tier of the "
-                "web window, or take it along a bay instead of across the members"))
+            fix="move one run to its own web pocket, into the chase, or take it along a bay "
+                "instead of across the members"))
 
     if not out:
-        openings = len({index for _member, index in filled})
+        openings = len({key for key in filled})
+        shape = next(iter(members.values())).web
+        note = ("; the panel pitch is assumed until the shop layout arrives"
+                if row.panel_pitch_assumed else "")
         out.append(_pass(
             _CID,
-            f"{floor.tag}: {len(runs)} run(s) cross {openings} web opening(s) at "
-            f"{panels.pitch_m / M_PER_IN:.3g}\" panel pitch and no opening is over-subscribed "
-            f"at any one elevation ({panels.opening_m / M_PER_IN:.3g}\" clear between webs)",
+            f"{floor.tag}: {len(runs)} run(s) land in {openings} web opening(s) and none is "
+            f"over-subscribed ({shape.pitch_m / M_PER_IN:.3g}\" panels, one run per D "
+            f"pocket){note}",
             (floor.tag,)))
     return out
 

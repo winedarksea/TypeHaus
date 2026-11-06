@@ -238,6 +238,7 @@ def test_the_worst_graded_run_leaves_a_documented_margin(catlin_model):
     cold at 20" (it was 2'-6"). Since the 1" trunk split off ``CD-M-DATA-KITCH`` (2026-10-30)
     the 3/4" continuation, whose straight line starts at the pull box, leads at 2.49: 0.01
     under the 2.50 line, so the next change to it must shorten it. The stub is next (2.47).
+    2026-11-06: its J12 pocket jog (decision #117) took it to 2.50, ON the line.
     """
     from typehaus.takeoff.runs import run_schedule
 
@@ -247,4 +248,4 @@ def test_the_worst_graded_run_leaves_a_documented_margin(catlin_model):
               and terminals.get(r["tag"], 0) < 3]
     worst = max(graded, key=lambda r: r["ratio"])
     assert worst["tag"] == "CD-M-DATA-KITCH"
-    assert worst["ratio"] == pytest.approx(2.49, abs=0.005)
+    assert worst["ratio"] == pytest.approx(2.50, abs=0.005)

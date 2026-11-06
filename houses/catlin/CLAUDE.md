@@ -794,8 +794,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   y 0'-12'-9") are 11 7/8" TJI 230 at 16" o.c. (TJ-4000 p.7 via `FloorSystem.published_span`,
   IUS2.37/11.88 hangers). `FS-M-NE` (x 18'-36', y 13'-36', where `SL-M-DECK` was) is 11 7/8"
   open-web floor trusses at **16" o.c. on TRIFORCE's published OJ418S row** (40 psf live / 25 dead,
-  L/480, 18'-0"; `TRIFORCE_OJ418S_FLOOR_SPAN`, L/720 live on the order), on `FS-S-WEST`'s web drawing
-  (24"/13"/12"). 19 trusses (y 156..396 on 16", then 408/420/432, so the N1 bays stay 12"); the 316 and 332
+  L/480, 18'-0"; `TRIFORCE_OJ418S_FLOOR_SPAN`, L/720 live on the order), with TRIFORCE's one published web
+  opening (a 7 1/4" round, `TRIFORCE_OJ_WEB_OPENINGS`; the Warren pitch is assumed). 19 trusses (y 156..396 on 16", then 408/420/432, so the N1 bays stay 12"); the 316 and 332
   lines are doubled under the peninsula boxes (each pack end takes two A35Z, one an outer face), and two 2x6 `Strongback`s (x 317.75"/330.25", TRIFORCE pp. 20-22)
   are cut at stations 180/196/292/414 where lanes cross (`notes/main_floor_truss_basis.md` §3). Constants live in
   `params/main_deck.py`; `integrity.floor_bearing_grid` and `floor_end_bearing` hold the grid.
@@ -858,14 +858,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   webs (8 7/8" clear opening, `resolve/framing/profiles.py::open_web_opening_m`) rather than
   boring/soffiting/chasing. Both fields stay 11 7/8" deliberately, so the split needs no
   movement joint or finish break.
-  - Trimmable stock is 18'/20', up to 6" trim per end. Bearing grid is 18'-0" but the truss
-    is 17'-11" (`resolve/floor_ends.py`), clear span 17'-3¼"; an 18' blank trimmed 1" covers
-    it (`takeoff/framing.py::_order_length_ft`). The shared x=18' plate splits 3½" to the
+  - **FS-S-WEST is TrimJoist J12** (`J12_WEB_OPENINGS`, `J12_FLOOR_SPAN` in `params/second_deck.py`):
+    stock 4'-24' in 2' steps with a 12" OSB TrimEnd each end, 1 3/4" minimum bearing, D = 5" round,
+    R1 8x16 in an 18" chase at the STOCK centreline, R2 4x9. Panel pitch is NOT published: 24"
+    Warren is assumed (`panel_pitch_assumed`) until TrimJoist's shop layout, and
+    `resolve/open_web.py` derives each truss's `OpenWebShape` (TrimEnds, chase, pockets;
+    `notes/open_web_truss_geometry.md`). The 15 psf dead column needs TrimJoist's confirmation where
+    tile sits on this half. Bearing grid is 18'-0" but the truss is 17'-11" (`resolve/floor_ends.py`),
+    clear span 17'-3¼"; 216" stock trimmed 1" covers it. The shared x=18' plate splits 3½" to the
     truss / 2" to the I-joist (`params/second_deck.py`, also holds the shared depth constant
-    `params/main_deck.py` imports) — don't centreline-split it, it shorts the truss's seat
-    (`integrity.floor_end_bearing` grades this). `FO-S-STAIR` clips five joist lines in the
-    west half to 10'-1" (behind its 5/8" gypsum lining), outside the trimmable range,
-    fabricated to length; a sixth is headed off again at `FO-S-ERV-CHASE`.
+    `params/main_deck.py` imports); both clear the 1 3/4" minimum, and the truss's published reaction
+    rises with its seat (`integrity.floor_end_bearing` grades this). `FO-S-STAIR` clips five joist
+    lines in the west half to 10'-0 3/4" (behind its 5/8" gypsum lining): 12' stock trimmed 11 5/8" an
+    end, inside the 12" limit; a sixth is headed off again at `FO-S-ERV-CHASE`.
   - Truss price row in `prices.toml` is a placeholder pending a fabricator quote; the
     borrowed I-joist span-table row (`checks/structural/checks.py::_IJOIST_SPAN_FT`) is
     advisory only at 18'-0" — the fabricator's table governs.
@@ -1557,6 +1562,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 ### Ventilation, ducts and soffits
 
+- **Holes through floor members are graded (decision #117).** Every TJI 230 crossing reads ESR-1153
+  Table A (`plan/framing_charts.py`): drilled hole = OD + 1/4", edge to support face >= 6"/12"/18"/24"
+  by size, 2 x the larger hole clear between holes. The attic vents are one lane set (suite x=7'-6",
+  WC 8'-2 1/2", BATH1 on x=3'-4"); move one and re-grade all three (`notes/framing_bore_limits.md` §11).
 - **ERV: Broan B210E75RT, home-run distribution in STANDARD PARTS** (`plan/mep_erv_l1.py`).
   Redesigned 2026-09-12 (BLD-08): the topology did not change, what it is built from did.
   - **No proprietary tube anywhere.** The 160 mm/75 mm radial manifold and its semi-rigid

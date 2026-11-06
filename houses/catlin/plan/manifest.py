@@ -51,7 +51,7 @@ from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, 
                   opening_products, paint, products, products_paint, smart_home, smart_home_types,
                   sauna, sauna_types, site, study_bridge, titanium_types, transitions, views,
                   wall_top_ties, wind_clamps, window_stools, window_types)
-from plan import french_door_installations
+from plan import framing_charts, french_door_installations
 from plan.storeys import attic, attic_studio, basement, garage, main, second
 
 format_version = 1
@@ -136,6 +136,8 @@ _library = Library(
                     *equipment_types.STALL_FAN_REGISTER_TYPES,
                     *air_terminal_types.AIR_REGISTER_TYPES),
     duct_product_types=ALL_DUCT_PRODUCT_TYPES,
+    # ESR-1153's TJI 230 hole ladder; graded on every TJI deck (decision #117).
+    joist_hole_charts=framing_charts.JOIST_HOLE_CHARTS,
     equipment_types=(*ALL_VENTILATION_EQUIPMENT_TYPES, *mep.EQUIPMENT_TYPES,
                      *equipment_types.EQUIPMENT_TYPES, *air_terminal_types.AIR_HOOD_TYPES),
     electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *panel_types.PANEL_TYPES,

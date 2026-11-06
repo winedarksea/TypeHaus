@@ -52,11 +52,17 @@ VENT_BRANCHES_MAIN = [
     # tier east on y=25'-0" to W-M-BA2E's line, south to 22'-4 7/8", up W-S-SN2's cavity, then
     # north in FS-ATTIC's band onto PR-S-BATH1-VENT's first leg, rising all the way.
     PipeRun(uid="CMP906AAAA", tag="PR-M-WC-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(75), inch(300)), pt(inch(98.5), inch(300)),
-                  pt(inch(98.5), inch(268.9)), pt(inch(98.5), inch(268.9)),
-                  pt(inch(98.5), inch(354.9))),
+            # 2026-11-06: crosses the full trusses in their R1 chase (x=8'-7 1/2") west of
+            # DU-M-ERV-EXH-TRUNK, then jogs back to the riser foot at 98.5" in the bay.
+            path=(pt(inch(75), inch(300)), pt(inch(103.5), inch(300)),
+                  pt(inch(103.5), inch(268.9)), pt(inch(98.5), inch(268.9)),
+                  pt(inch(98.5), inch(268.9)),
+                  # 2026-11-06: on to BATH1-VENT's x=40" leg along the 352"-368" bay (it joined the
+                  # old diagonal here); it bores no joist, and x=98.5" stays 20.2" off the hanger.
+                  pt(inch(98.5), inch(354.9)), pt(inch(40), inch(354.9))),
             diameter=inch(2),
-            elevations=(inch(115.9), inch(116), inch(116.05), inch(231), inch(231.1)),
+            elevations=(inch(115.9), inch(116), inch(116.05), inch(116.1), inch(231),
+                        inch(231.1), inch(232.64)),
             # Laundry sink wet-vents from its existing laundry stack. The powder
             # basin has its own branch joining this riser above the flood rims.
             # x=8'-2 1/2" leg runs over W-M-BA2E and PR-B-LSINK-DRAIN arrives against that
@@ -75,8 +81,10 @@ VENT_BRANCHES_MAIN = [
     # 16'-8" bay, takes the tub riser at (8'-2", 17'-0"), turns north on W-M-BA2E's line over
     # the laundry riser at y=18'-0", and ends on WC-VENT's riser foot.
     PipeRun(uid="YTKPDYS5YV", tag="PR-M-BATH2-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(79), inch(204)), pt(inch(98.5), inch(204)),
-                  pt(inch(98.5), inch(266.5))),
+            # 2026-11-06: the north leg crosses in the R1 chase (x=103.5"), the tees on the
+            # y=204" and y=216" legs unmoved.
+            path=(pt(inch(79), inch(204)), pt(inch(103.5), inch(204)),
+                  pt(inch(103.5), inch(266.5))),
             diameter=inch(2), start_elevation=inch(115.9), end_elevation=inch(116),
             serves=("FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-LAUNDRY-SINK")),
     # Kitchen sink. The takeoff is on W-M-N1 at x=32'-8", clear of WIN-M-KITCH's RO
@@ -87,9 +95,11 @@ VENT_BRANCHES_MAIN = [
     # held low (1/32"/ft) under PR-B-CW-SUITE, south in the 15'-4 1/2" opening, west at
     # 17'-8 3/4" over DU-M-ERV-R-SUITEBATH, and up at x=8'-2 1/2".
     PipeRun(uid="ZTQRPPRATP", tag="PR-M-KITCH-VENT", system=PipeSystem.VENT,
+            # 2026-11-06: south through TrimJoist pocket D14 at x=15'-10 1/2" (was 15'-7 5/16");
+            # D13 and D15 are the suite cold's and hot's. West onto the header's R1 leg (8'-7 1/2").
             path=(pt(ft(32, 8), ft(35, 9)), pt(ft(32, 8), ft(19, 4)),
-                  pt(ft(15, 7.3125), ft(19, 4)), pt(ft(15, 7.3125), ft(17, 8.75)),
-                  pt(inch(98.5), ft(17, 8.75)), pt(inch(98.5), ft(17, 8.75))),
+                  pt(inch(190.5), ft(19, 4)), pt(inch(190.5), ft(17, 8.75)),
+                  pt(inch(103.5), ft(17, 8.75)), pt(inch(103.5), ft(17, 8.75))),
             diameter=inch(1.5),
             elevations=(ft(9, 3), ft(9, 4), inch(112.5), inch(114.45), inch(115.9), inch(116)),
             serves=("FX-M-KITCH-SINK",)),
@@ -102,10 +112,15 @@ VENT_BRANCHES_SECOND = [
             # ** IT TIES INTO THE STACK'S JOG SINCE 2026-09-23, NOT THE CHASE. ** North on
             # x=3'-4" in FS-ATTIC's joist band to the vent riser's 19'-6" jog, east of the
             # chase hole — a run that spanned FO-A-ERV-CHASE had nothing to strap to.
-            path=(pt(ft(9, 8.4), ft(31)), pt(ft(5), ft(26, 8)), pt(ft(3, 4), ft(26, 8)),
-                  pt(ft(3, 4), inch(412.9))),
+            # 2026-11-06: the old (116.4", 372") -> (60", 320") diagonal bored joists 020-023 at x=112,
+            # 94.7, 77.4 and 64.3 (ESR-1153 Table A: 18" off the hanger, 5.25" clear of the water
+            # and vent holes). It now starts at the vanity tee, crosses joists 020-023 only at
+            # x=40", and runs east along the 368"-384" bay to PR-A-STUBATH-VENT, where it ended
+            # before (the shower tee lands on its corner; the lav and WC vents on bay and leg).
+            path=(pt(ft(5), ft(26, 8)), pt(ft(3, 4), ft(26, 8)),
+                  pt(ft(3, 4), inch(372)), pt(inch(116.4), inch(372))),
             diameter=inch(2),
-            elevations=(ft(9, 3), ft(9, 3.3), ft(9, 3.5), ft(9, 6)),
+            elevations=(inch(111.3), inch(111.5), inch(113.2), inch(113.2)),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     # The suite bath's own vent. THE TAKEOFF IS ON W-S-SN3, THE NORTH WALL: all three of
@@ -204,8 +219,11 @@ VENT_BRANCHES_SECOND = [
             # rising west from the tub riser to x=9'-5" in W-S-SN2, west of FO-A-HALL's
             # trimmers; up there and west onto x=9'-0" at +19'-8", north of DU-S-ERV-HP-FEED.
             path=(pt(inch(197.615), inch(266.25)), pt(inch(113), inch(266.25)),
+                  # 2026-11-06: the north leg is x=90" (was 108"): ESR-1153 Table A wants the 2.15"
+                  # hole 18" off the x=120" hanger and 5.25" clear of PR-M-WC-VENT's 2.62" hole
+                  # at 98.5" (6.1" here). The west leg passes 4" over that vent's riser head.
                   pt(inch(113), inch(268)), pt(inch(113), inch(268)),
-                  pt(ft(9), inch(268)), pt(ft(9), inch(412.9))),
+                  pt(inch(90), inch(268)), pt(inch(90), inch(412.9))),
             diameter=inch(1.5),
             elevations=(inch(93.8), inch(96.2), inch(98.0), inch(114.0), inch(116.3),
                         inch(116.7)),

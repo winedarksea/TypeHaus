@@ -29,24 +29,25 @@ instead of restating it, since the concrete band's depth derivation matches what
 module's members share.
 
 **Known cost of the west/trusses choice.** ``FO-S-STAIR`` (x 10'-3⅜"..17'-8⅝",
-y 26'-0⅜"..35'-5⅜") lands in the west half. Eight joist lines clip to 10'-1⅝" there and
-become short fabricated trusses rather than trimmed 18' stock — outside the trimmable
-range, so they are fabricated to length instead. The opening's parallel edges (running
+y 26'-0⅜"..35'-5⅜") lands in the west half. Five joist lines clip to about 10'-0¾" there
+and are cut from 12' stock, 11.65" off each end, inside TrimJoist's 12" limit
+(``OpenWebShape``). The opening's parallel edges (running
 with the joist direction) resolve to doubled truss members — the correct real detail, a
 girder-truss pair; its perpendicular edges already resolve to multi-ply LVL headers via
 ``opening_header_profile``.
 
-**Stock, and what the truss is built to.** Trimmable stock is 18' and 20', trimmable up to
-6" from each end. The west field's *bearing grid* is 18'-0"; the truss is **17'-11"** —
+**Stock, and what the truss is built to.** TrimJoist J12 stock runs 4'-24' in 2' increments,
+each end trimmable up to 12" (an OSB TrimEnd). The west field's *bearing grid* is 18'-0";
+the truss is **17'-11"** —
 ``resolve/floor_ends.py`` cuts it to where it stops, behind the 1 1/4" rim at the west
 framing face and 3 1/2" onto the x=18' plate. Clear span 17'-3 1/4". An 18' blank trimmed
-1" still covers it (``takeoff/framing.py::_order_length_ft``), but 17'-11" is the number on
+1" in all still covers it (``takeoff/framing.py::_order_length_ft``), but 17'-11" is the number on
 the fabricator's order, which ``haus takeoff``'s fabrication schedule states.
 """
 
 from typehaus.geometry import rect
 from typehaus import (DeckLayer, FloorSystem, JoistSpec, JoistReinforcement, Layer,
-                      LayerFunction, PublishedSpan, ft, inch, pt)
+                      LayerFunction, PublishedSpan, PublishedWebOpenings, ft, inch, pt)
 
 # Both members share one depth, deliberately — see the module docstring. ``main_deck.py``
 # imports ``_DEPTH``/``_SUBFLOOR`` from here rather than restating them, so the concrete
@@ -91,11 +92,24 @@ TRIFORCE_OJ418S_FLOOR_SPAN = PublishedSpan(
     condition="glue-nailed 23/32\" floor panels; 1 1/2\" minimum end bearing; uniform load only; OJ418S as the basis of design (any fabricator's 11 7/8\" truss to the same row); the 25 psf dead-load column; point loads (the peninsula) are outside the row and answered by the doubled truss; L/720 live is on the order for a stiffer floor",
 )
 
+# TRIFORCE's published web opening: one 7 1/4" round (not the J12 chart). Nothing else is
+# published for it here (no chase, R2, TrimEnd or panel pitch), so the Warren pocket pitch is
+# an assumed working figure until the shop drawing arrives; the page is to be confirmed.
+TRIFORCE_OJ_WEB_OPENINGS = PublishedWebOpenings(
+    source="TRIFORCE (Open Joist) U.S. Specifier Guide, 2023-05-11, web openings",
+    table="11-7/8\" OJ418S: 7 1/4\" round web opening",
+    member=_TRUSS,
+    round_diameter=inch(7.25),
+    panel_pitch=inch(24), panel_pitch_assumed=True,
+    condition="the 7 1/4\" round only; page and opening stations to be confirmed against the "
+              "shop drawing; any larger or rectangular opening is TRIFORCE's to approve",
+)
+
 # How the x=18' plate is split. ``W-M-C2`` is a 2x6: 5 1/2" of seat, both decks landing on
-# it from opposite sides. A centreline split gives each 2 3/4", which shorts the truss — an
-# open-web truss wants 3" minimum, an I-joist 1 3/4". So the meeting line moves 3/4" east:
-# 3 1/2" truss, 2" I-joist, both clear of their minimum with the plate exactly spent. The
-# two must sum to 5 1/2" or the halves do not meet, which is why they are stated together;
+# it from opposite sides. Both products ask 1 3/4" minimum, but J12's published reaction
+# rises with the seat (3,000 / 3,500 / 4,000 lb at 1 3/4 / 3 1/2 / 5 1/2"), so the truss takes
+# the larger share: 3 1/2" truss, 2" I-joist, both clear of their minimum with the plate
+# exactly spent. The two must sum to 5 1/2" or the halves do not meet, which is why they are stated together;
 # ``integrity.floor_end_bearing`` grades the result.
 _TRUSS_BEARING = inch(3.5)
 _JOIST_BEARING = inch(2.0)
@@ -113,23 +127,47 @@ _ZERO = ft(0)
 _rect = rect
 
 
-# ** THE WEB PANEL LAYOUT IS THE DESIGN BASIS (owner, 2026-10-26). **
-#
-# A truss has webs at panel points, so a run lands in an opening or on a web; the chord-to-
-# chord window alone reads as a continuous slot. Owner confirmed this Warren layout with 2x4
-# webs (laid flat, 1 1/2" in elevation) — the fabricator builds to it:
-#
-#   * 24" PANEL PITCH — an ordinary Warren layout for a parallel-chord floor truss.
-#   * 13" CLEAR OPENING — a 45-degree diagonal advances 8 7/8" across the clear depth, plus
-#     its own 1 1/2" x sqrt(2) = 2 1/8" along the chord: 24 - 8 7/8 - 2 1/8 = 13.0". This
-#     was 15" while the web was read as zero thickness.
-#   * 12" OFFSET — half a panel, so the first opening straddles the bearing.
-#
-# A submittal that differs replaces all three. Delete them and `mep.open_web_panel` says
-# the layout is missing, by name.
-_WEB_PANEL_PITCH = inch(24)
-_WEB_OPENING = inch(13)
-_WEB_PANEL_OFFSET = inch(12)
+# ** FS-S-WEST IS TRIMJOIST J12 (11 7/8"). ** The published openings are authored as data
+# (``PublishedWebOpenings``) and ``resolve/open_web.py`` places them on every truss:
+#   * D = 5" round through a web pocket (the 2018 guide said 6").
+#   * R1 = 8 x 16 rectangle, only at the centreline of the STOCK length, inside a framed
+#     18" duct chase. R2 = 4 x 9, "s" openings for small pipe and wire.
+#   * a 12" OSB TrimEnd at each end of the stock (trimmed in place); stock 4'-24' by 2'.
+# NOT published: the panel pitch (it is on TrimJoist's shop layout). 24" Warren panels are
+# this house's working figure and ``panel_pitch_assumed`` says so; the stock remainder is
+# absorbed in the end diagonal and the trim split evenly (``OpenWebShape.assumptions``).
+# Replace the pitch with the shop layout when it arrives.
+J12_WEB_OPENINGS = PublishedWebOpenings(
+    source="TrimJoist Load & Opening Charts (trimjoist.com, 2026); DrJ report 2205-03; "
+           "Technical Guide Rev 4",
+    table="11 7/8\" J12 web openings: D round, R1 and R2 rectangles; TrimEnd and stock",
+    member=_TRUSS,
+    round_diameter=inch(5),
+    r1_width=inch(16), r1_height=inch(8), r1_at_stock_centreline=True,
+    chase_width=inch(18),
+    r2_width=inch(9), r2_height=inch(4),
+    trim_end=inch(12), stock_increment=ft(2), stock_min=ft(4), stock_max=ft(24),
+    panel_pitch=inch(24), panel_pitch_assumed=True,
+    condition="a chase moves no more than 12\" off the stock centre, even custom; chords "
+              "3 1/2\" #1 SYP, webs SYP metal-plated (ANSI/TPI 1-2022); no R2 or D opening "
+              "in the shaded panels beside R1; shaded 's' openings are for small pipe and wire",
+)
+
+# What J12 publishes for the floor: 16" o.c., 40 psf live, L/480 23'-2" (L/600 21'-6").
+J12_FLOOR_SPAN = PublishedSpan(
+    source="TrimJoist Load & Opening Charts (trimjoist.com, 2026); DrJ report 2205-03; "
+           "Technical Guide Rev 4",
+    table="11 7/8\" J12 at 16\" o.c., 40 psf live / 15 psf dead, L/480: 23'-2\" (L/600: 21'-6\")",
+    member=_TRUSS,
+    span=ft(23, 2),
+    load_psf=40.0,
+    spacing=_OC,
+    edition="Technical Guide Rev 4",
+    condition="L/480 deflection; clear span only, simple span, uniform load; 1 3/4\" minimum "
+              "bearing; no concentrated loads without consulting TrimJoist; max reaction 3,000 / 3,500 / 4,000 lb at 1 3/4 / 3 1/2 / "
+              "5 1/2\" of bearing; the 15 psf DEAD column needs TrimJoist's confirmation "
+              "wherever tile sits on this half (a tile bed runs above 15 psf)",
+)
 
 # ** TWO TRUSS LINES MOVED OFF THE 16" MODULE. **
 # (laid station, new station) in y (owner, 2026-09-23). The fabricator's layout replaces
@@ -145,13 +183,12 @@ WEST_FLOOR = FloorSystem(
     uid="1JXQ975X9E", tag="FS-S-WEST",
     joists=JoistSpec(member=_TRUSS, spacing=_OC, direction="x",
                      bearing_refs=("W-M-W2", "W-M-C2", "BM-M-HALL"),
-                     web_panel_pitch=_WEB_PANEL_PITCH,
-                     web_opening_width=_WEB_OPENING,
-                     web_panel_offset=_WEB_PANEL_OFFSET,
+                     web_openings=J12_WEB_OPENINGS,
                      line_overrides=_LINE_MOVES,
                      end_bearing=(("W-M-C2", _TRUSS_BEARING),)),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=_CEILING_GWB,
+    published_span=J12_FLOOR_SPAN,
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _HOUSE),
     openings=("FO-S-STAIR", "FO-S-ERV-CHASE", "FO-S-ERV-LAUNDRY", "FO-S-BATH1-WC-DRAIN",
               "FO-S-ERV-SUITEBATH"),

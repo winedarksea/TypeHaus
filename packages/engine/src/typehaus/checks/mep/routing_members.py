@@ -35,6 +35,8 @@ regardless of severity, so the weight is the same where it matters.
 
 from __future__ import annotations
 
+import math
+
 from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
@@ -62,13 +64,14 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
     readings live and where the sentence each finding quotes is written. **An I-joist PASS is
     qualified** and says so: clearing both flanges is necessary and not sufficient, because
     the hole's diameter and its allowable zone along the span come off the fabricator's
-    chart and this engine does not hold one.
+    chart. Where the library holds that chart (``JoistHoleChart``) each hole is graded on it
+    by ``_ijoist_finding``.
 
     ``not_applicable()`` is earned — there are resolved floors and routed runs, and no leg
     of any of them meets a member line — rather than assumed. With no floors at all there is
     nothing to have a window, and that is an honest UNKNOWN.
     """
-    from typehaus.resolve.mep_crossings import leg_crossings, web_panels
+    from typehaus.resolve.mep_crossings import leg_crossings, web_grade
 
     floors = list(ctx.model.floors)
     if not floors:
@@ -80,20 +83,22 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     graded = 0
     for floor in floors:
-        window = member_window(floor)
+        chart = _ijoist_chart(ctx, floor)
+        window = member_window(floor, chart=chart)
         if window is None:
             continue
-        # An open-web deck that states its fabricator's panel layout narrows the window
-        # ALONG the member as well as across it: a run lands in an opening or it lands on a
-        # web. Unauthored, this is None and the reading is unchanged — ``mep.open_web_panel``
-        # is the one that says the layout is missing, once, naming the floor.
-        panels = web_panels(floor) if window.kind == "open_web" else None
+        # An open-web deck that quotes the maker's openings narrows the window ALONG the
+        # member as well as across it: a run lands in an opening it fits, or it lands on a
+        # web. Unquoted, no member carries a shape and the reading is unchanged —
+        # ``mep.open_web_panel`` is the one that says so, once, naming the floor.
+        webbed = {m.child_key: m for m in floor.members if m.web is not None}
         # Every crossing on this floor first, keyed by member, because R502.8.1's spacing
         # rule is a question about the OTHER holes in the same joist and no per-run pass can
         # see them. Two 2" drains 1 1/2" apart each fit the window and each clear D/3; the
         # pair is what the section forbids.
         by_member: dict[str, list[tuple[str, float, float]]] = {}
         per_run: dict[str, list] = {}
+        oblique: dict[tuple[str, str, float], float] = {}
         for _kind, tag, path, z in runs:
             if len(path) < 2 or len(z) != len(path):
                 continue
@@ -102,6 +107,8 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
                 for crossing in leg_crossings(floor, path[index], path[index + 1],
                                               z[index], z[index + 1]):
                     per_run.setdefault(tag, []).append(crossing)
+                    oblique[(tag, crossing.member_key, crossing.station_m)] = _stretch(
+                        path[index], path[index + 1], floor.direction == "x")
                     by_member.setdefault(crossing.member_key, []).append(
                         (tag, crossing.station_m, radius))
 
@@ -111,7 +118,7 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
                 continue
             radius = radii.get(tag, 0.0)
             tightest: tuple[float, float, float, str, float] | None = None
-            on_web: tuple[float, str, float] | None = None
+            on_web: tuple[float, str, float, str] | None = None
             for crossing in crossings:
                 crown_gap = window.z1_m - (crossing.z_m + radius)
                 invert_gap = (crossing.z_m - radius) - window.z0_m
@@ -119,19 +126,27 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
                 if tightest is None or worst < tightest[0]:
                     tightest = (worst, crown_gap, invert_gap,
                                 crossing.member_key, crossing.station_m)
-                if panels is not None and not panels.clear_at(crossing.station_m, radius):
-                    low, high = panels.opening_at(crossing.station_m)
-                    bite = max(low + radius - crossing.station_m,
-                               crossing.station_m - (high - radius))
-                    if on_web is None or bite > on_web[0]:
-                        on_web = (bite, crossing.member_key, crossing.station_m)
+                member = webbed.get(crossing.member_key)
+                grade = (web_grade(
+                    floor, member, crossing.station_m, crossing.z_m,
+                    2 * radius * oblique[(tag, crossing.member_key, crossing.station_m)],
+                    2 * radius, True) if member is not None else None)
+                if grade is not None and not grade.ok:
+                    # The first miss is named; later ones add only the count.
+                    count = on_web[0] + 1 if on_web is not None else 1.0
+                    if on_web is None:
+                        on_web = (count, crossing.member_key, crossing.station_m, grade.why)
+                    else:
+                        on_web = (count, *on_web[1:])
             if tightest is None:
                 continue
             graded += 1
             out.append(_finding(kind, tag, floor.tag, radius, window, tightest))
             if on_web is not None:
-                out.append(_web_finding(kind, tag, floor.tag, radius, panels, on_web))
-            bore = _bore_finding(ctx, floor, window, tag, radius, crossings, by_member)
+                out.append(_web_finding(kind, tag, floor.tag, on_web))
+            bore = (_ijoist_finding(floor, chart, tag, radius, crossings, by_member)
+                    if chart is not None and window.kind == "i_joist" else
+                    _bore_finding(ctx, floor, window, tag, radius, crossings, by_member))
             if bore is not None:
                 out.append(bore)
 
@@ -174,28 +189,31 @@ def _finding(kind: str, tag: str, floor_tag: str, radius_m: float,
         (tag, floor_tag))
 
 
-def _web_finding(kind: str, tag: str, floor_tag: str, radius_m: float, panels,
-                 on_web: tuple[float, str, float]) -> Finding:
-    """A crossing that lands on a WEB rather than in an opening.
+def _stretch(a, b, along_x: bool) -> float:
+    """``1 / sin`` of the angle a leg makes with the member lines: a round run crossing
+    obliquely occupies that much more of the member's length."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    across = abs(dy) if along_x else abs(dx)
+    return math.hypot(dx, dy) / across if across > 1e-9 else 1.0
 
-    The other half of an open-web reading, and the half the engine could not make until the
-    panel layout was authorable: ``open_web_opening_m`` says how tall the slot is, and
-    nothing said where along the member there is a slot at all. Thirteen 4" ducts crossing
-    every truss inside a 41" band passed on the z window alone.
+
+def _web_finding(kind: str, tag: str, floor_tag: str,
+                 on_web: tuple[float, str, float, str]) -> Finding:
+    """A crossing that does not fit the opening it lands in (or lands in none).
+
+    The other half of an open-web reading: ``open_web_opening_m`` says how tall the slot is,
+    and each truss's ``OpenWebShape`` says where along it there is an opening and what that
+    opening takes (D a round, R1 the chase rectangle, a TrimEnd nothing).
     """
-    bite, member_key, station_m = on_web
-    low, high = panels.opening_at(station_m)
+    count, member_key, station_m, why = on_web
+    more = f" (and {int(count) - 1} more crossing(s))" if count > 1 else ""
     return _fail(
         _CID,
         f"{kind} {tag} crosses {floor_tag} at {member_key}, {feet_inches(station_m)} along "
-        f"it — and that is ON A WEB, not in an opening: it wants "
-        f"{bite / M_PER_IN:.2f}\" of the web either side of the "
-        f"{panels.opening_m / M_PER_IN:.3g}\" clear run between "
-        f"{feet_inches(low)} and {feet_inches(high)}. A truss web is not bored or notched "
-        "by anyone, ever",
+        f"it{more}: not in an opening it fits, ON A WEB — {why}. A truss web is not bored or "
+        "notched by anyone, ever",
         (tag, floor_tag),
-        fix="move the leg along the member until its whole outside is inside one opening — "
-            f"the panel pitch is {panels.pitch_m / M_PER_IN:.3g}\" — or take it along a bay "
+        fix="move the leg along the member into an opening it fits, or take it along a bay "
             "instead of across the members")
 
 
@@ -244,3 +262,65 @@ def _bore_finding(ctx, floor, window: CrossingWindow, tag: str, radius_m: float,
         fix="take the leg along a bay instead of across the members, or split the run "
             "into two smaller ones if its load allows. Never a notch, and never a "
             "reinforcement this engine added on its own")
+
+
+def _ijoist_chart(ctx, floor):
+    """The library's hole ladder for this floor's I-joist, or ``None``."""
+    from typehaus.resolve.mep_hole_chart import joist_hole_chart
+
+    joist = next((m for m in floor.members if m.category == "joist"), None)
+    library = getattr(getattr(ctx, "plan", None), "library", None)
+    return None if joist is None or library is None else joist_hole_chart(library,
+                                                                           joist.profile)
+
+
+def _ijoist_finding(floor, chart, tag: str, radius_m: float, crossings: list,
+                    by_member: dict) -> Finding | None:
+    """Every hole this run drills in an I-joist, against the maker's published ladder.
+
+    One finding per (run, floor): the first hole out of zone or too close to a neighbour
+    FAILs naming the joist and station; otherwise the tightest PASS cites its row. The rule
+    is ``resolve/mep_hole_chart.ijoist_hole_verdict``, which the router reads too.
+    """
+    from typehaus.resolve.mep_bores import joist_bore
+    from typehaus.resolve.mep_crossings import support_faces
+    from typehaus.resolve.mep_hole_chart import DRILLED_HOLE_CLEARANCE_IN
+
+    members = {m.child_key: m for m in floor.members}
+    half = DRILLED_HOLE_CLEARANCE_IN * M_PER_IN / 2.0
+    graded: list[tuple[int, float, object, str, float]] = []
+    for crossing in crossings:
+        member = members.get(crossing.member_key)
+        if member is None or member.category != "joist":
+            continue
+        lo, hi = support_faces(floor, member)
+        s = crossing.station_m
+        centre = (None if lo is None or hi is None
+                  else min(s - lo, hi - s) / M_PER_IN)
+        nearest = nearest_d = None
+        for other_tag, station_m, other_r in by_member.get(crossing.member_key, ()):
+            if other_tag == tag and abs(station_m - s) < 1e-9:
+                continue
+            clear = (abs(station_m - s) - radius_m - other_r - 2 * half) / M_PER_IN
+            if nearest is None or clear < nearest:
+                nearest, nearest_d = clear, 2 * (other_r + half) / M_PER_IN
+        verdict = joist_bore(member.profile, 2 * radius_m / M_PER_IN, chart=chart,
+                             edge_to_support_in=centre, nearest_cut_in=nearest,
+                             nearest_diameter_in=nearest_d)
+        rank = {False: 0, None: 1, True: 2}[verdict.ok]
+        graded.append((rank, centre if centre is not None else 0.0, verdict,
+                       crossing.member_key, s))
+    if not graded:
+        return None
+    graded.sort(key=lambda g: (g[0], g[1]))
+    rank, _c, verdict, key, station = graded[0]
+    more = sum(1 for g in graded if g[0] == rank) - 1
+    where = (f"{tag} bores {floor.tag} at {key}, {feet_inches(station)} along it"
+             + (f" (and {more} more like it)" if more and rank != 2 else "")
+             + (f", {len(graded)} hole(s) in all" if rank == 2 else ""))
+    if rank == 2:
+        return _pass(_CID, f"{where}: {verdict.basis}", (tag, floor.tag))
+    if rank == 1:
+        return _unknown(_CID, f"{where}: {verdict.basis}", (tag, floor.tag))
+    return _fail(_CID, f"{where}: {verdict.basis}", (tag, floor.tag),
+                 fix=verdict.remedy or "move the crossing into the chart's zone")

@@ -62,8 +62,8 @@ class CrossingWindow:
         return self.z1_m - self.z0_m
 
 
-def member_window(floor: ResolvedFloor,
-                  member: FramedMember | None = None) -> CrossingWindow | None:
+def member_window(floor: ResolvedFloor, member: FramedMember | None = None, *,
+                  chart=None) -> CrossingWindow | None:
     """The crossing window for this floor, or ``None`` when its section publishes none.
 
     The band is measured inside the floor's own structural depth — ``min z0`` to ``max z1``
@@ -74,6 +74,9 @@ def member_window(floor: ResolvedFloor,
     ``member`` names the section to read; without it the floor's first **joist** is taken.
     That default matters: ``members[0]`` is whichever member the resolver emitted first,
     which is a rim board on most floors, and a rim board is never an open web.
+
+    ``chart`` is the I-joist's ``JoistHoleChart`` where the library holds one; it only
+    changes the sentence an I-joist window quotes.
     """
     from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
 
@@ -103,9 +106,11 @@ def member_window(floor: ResolvedFloor,
         return CrossingWindow(
             low + section.flange_thickness_m, high - section.flange_thickness_m,
             kind="i_joist",
-            basis=(f"clear of both {flange_in:.3g}\" flanges of a {member.profile}; the "
-                   "hole's diameter and its allowable zone along the span still come off "
-                   "the fabricator's chart, which this engine does not hold"))
+            basis=(f"clear of both {flange_in:.3g}\" flanges of a {member.profile}; "
+                   + (f"the hole's size and zone are graded on {chart.source}"
+                      if chart is not None else
+                      "the hole's diameter and its allowable zone along the span still come "
+                      "off the fabricator's chart, which this engine does not hold")))
 
     if section.shape == "rect":
         clear = SOLID_SAWN_EDGE_CLEARANCE_M
@@ -204,86 +209,61 @@ def leg_crossings(floor: ResolvedFloor,
     return out
 
 
-# --- open-web PANEL layout (2026-09-19) -----------------------------------------------
-#
-# ``member_window`` above answers "how tall is the slot"; this answers "and where along the
-# member is there a slot at all". The two are a pair, and the engine has been asking only
-# the first: an open-web truss reads as a CONTINUOUS 8 7/8" chase, so thirteen 4" ducts
-# crossing every truss inside a 41" band all pass. Real trusses have webs at panel points.
-#
-# Unauthored is silence, not a pass: a fabricator's panel layout is a shop drawing, and
-# ``mep.open_web_panel`` reports UNKNOWN naming the floor rather than inventing a pitch.
+#: Two collinear joists ending this close together are one line split over a bearing.
+_SPLIT_GAP_M = inch(1).meters
 
 
-@dataclass(frozen=True)
-class WebPanels:
-    """One open-web deck's panel layout, in the member's own direction of travel.
+def support_faces(floor: ResolvedFloor,
+                  member: FramedMember) -> tuple[float | None, float | None]:
+    """The inside faces of ``member``'s two supports, along its span (plan coordinate).
 
-    ``pitch_m`` is centre to centre of the panel points, ``opening_m`` the CLEAR run
-    between two webs measured at the chord, and ``offset_m`` the station of the first
-    panel point. The web band either side of a panel point is therefore
-    ``pitch - opening`` wide, which is the solid the run has to miss.
+    An end at the deck's outer tip sits on a plate: its face is the tip less the seat. An end
+    abutting a collinear joist is a line SPLIT over an interior bearing: each piece is a
+    simple span, so it is still an end support, and its face is taken the deck's larger end
+    seat in (conservative; the shared plate's split is not carried). Any other end is hung
+    (a header or beam), so its face is the member end. ``None``: a cantilevered tip, which
+    Table A does not grade. ``notes/framing_bore_limits.md`` §11.
     """
+    along_x = floor.direction == "x"
+    k = 0 if along_x else 1
+    lo, hi = sorted((member.p0[k], member.p1[k]))
+    line = member.p0[1 - k]
+    ends = floor.ends
 
-    pitch_m: float
-    opening_m: float
-    offset_m: float
+    def face(end: float, sign: float) -> float | None:
+        if ends is not None:
+            for tip, seat in ((ends.tip_lo, ends.seat_lo), (ends.tip_hi, ends.seat_hi)):
+                if abs(end - tip) < 1e-3:
+                    return None if seat is None else end + sign * seat
+        for other in floor.members:
+            if other is member or other.category != "joist":
+                continue
+            if abs(other.p0[1 - k] - line) > 1e-3 or abs(other.p1[1 - k] - line) > 1e-3:
+                continue
+            if min(abs(other.p0[k] - end), abs(other.p1[k] - end)) < _SPLIT_GAP_M:
+                seats = [v for v in ((ends.seat_lo, ends.seat_hi) if ends else ())
+                         if v is not None]
+                return end + sign * (max(seats) if seats else inch(3.5).meters)
+        return end
 
-    @property
-    def web_width_m(self) -> float:
-        return max(0.0, self.pitch_m - self.opening_m)
-
-    def index_at(self, station_m: float) -> int:
-        """Which opening this station falls in — openings numbered from the offset."""
-        import math
-
-        return int(math.floor((station_m - self.offset_m) / self.pitch_m))
-
-    def opening_at(self, station_m: float) -> tuple[float, float]:
-        """The clear run ``(low, high)`` of the opening containing ``station_m``.
-
-        Every station is *in* an opening in this sense; whether it is CLEAR of the webs is
-        :meth:`clear_at`. Returning the span unconditionally is what lets a check say "this
-        opening holds three runs" about the one the crossing landed in.
-        """
-        index = self.index_at(station_m)
-        low = self.offset_m + index * self.pitch_m + self.web_width_m / 2.0
-        return low, low + self.opening_m
-
-    def clear_at(self, station_m: float, radius_m: float = 0.0) -> bool:
-        """Whether a run of this radius at this station misses both webs."""
-        low, high = self.opening_at(station_m)
-        return low + radius_m <= station_m <= high - radius_m
-
-    def web_bands(self, low_m: float, high_m: float) -> list[tuple[float, float]]:
-        """The solid web runs between ``low_m`` and ``high_m``, as ``(start, end)``.
-
-        The complement of the openings. ``routing/obstacles`` turns each into a ``fixed``
-        hard prism so a router threads the openings by construction rather than by being
-        told off afterwards.
-        """
-        width = self.web_width_m
-        if width <= 0.0 or self.pitch_m <= 0.0:
-            return []
-        out: list[tuple[float, float]] = []
-        index = self.index_at(low_m)
-        while True:
-            centre = self.offset_m + index * self.pitch_m
-            start, end = centre - width / 2.0, centre + width / 2.0
-            if start > high_m:
-                break
-            if end >= low_m:
-                out.append((max(start, low_m), min(end, high_m)))
-            index += 1
-        return out
+    return face(lo, 1.0), face(hi, -1.0)
 
 
-def web_panels(floor: ResolvedFloor) -> WebPanels | None:
-    """This deck's authored panel layout, or ``None`` where it states none."""
-    stated = getattr(floor, "web_panels", None)
-    if not stated:
+# --- open-web PANEL layout ----------------------------------------------------------------
+#
+# ``member_window`` answers "how tall is the slot"; where along a truss there is a slot at all
+# is each truss's ``FramedMember.web`` (``resolve/open_web.OpenWebShape``): the maker's
+# published openings placed on that member. Ask it with :func:`web_grade`.
+
+
+def web_grade(floor: ResolvedFloor, member: FramedMember, station_m: float, z_m: float,
+              along_m: float, height_m: float, round_: bool):
+    """A run centred at plan ``station_m`` and elevation ``z_m`` against the opening it lands
+    in on ``member``'s truss: an ``open_web.CrossingGrade``, or ``None`` where the member
+    carries no web layout (not an open-web truss, or its deck quotes no published openings)."""
+    from typehaus.resolve.open_web import RunSize, grade_crossing, run_of
+
+    if member.web is None:
         return None
-    pitch, opening, offset = stated
-    if pitch <= 0.0 or opening <= 0.0 or opening > pitch:
-        return None
-    return WebPanels(pitch_m=pitch, opening_m=opening, offset_m=offset)
+    return grade_crossing(member.web, run_of(member, station_m, floor.direction == "x"),
+                          z_m - member.z0_m, RunSize(along_m, height_m, round_))

@@ -109,16 +109,32 @@ def _engineered(section: Any, profile: str, what: str) -> BoreVerdict | None:
 
 
 def joist_bore(profile: str, diameter_in: float, *, edge_clear_in: float | None = None,
-               nearest_cut_in: float | None = None) -> BoreVerdict:
+               nearest_cut_in: float | None = None, chart: Any = None,
+               edge_to_support_in: float | None = None,
+               nearest_diameter_in: float | None = None) -> BoreVerdict:
     """IRC R502.8.1 on a bored hole in a solid-sawn joist.
 
     Three separate limits and the report names which one bit. A check that collapsed them
     into one boolean would say "illegal" about a 1" hole that is merely too close to its
     neighbour, which is a different thing to fix.
+
+    ``chart`` is an I-joist's ``JoistHoleChart`` and is read ABOVE the engineered refusal,
+    as ``header_bore`` reads its ``PublishedHole``: ``diameter_in`` is the run's outside,
+    the drilled hole is 1/4" over it, ``edge_to_support_in`` runs from the hole's CENTRE to
+    the support face (``None``: not an end support), ``nearest_cut_in`` is clear distance.
     """
     from typehaus.resolve.framing.profiles import cross_section
 
     section = cross_section(profile)
+    if chart is not None and section is not None:
+        from typehaus.resolve.mep_hole_chart import DRILLED_HOLE_CLEARANCE_IN, ijoist_hole_verdict
+
+        hole = diameter_in + DRILLED_HOLE_CLEARANCE_IN
+        edge = None if edge_to_support_in is None else edge_to_support_in - hole / 2.0
+        return ijoist_hole_verdict(chart, profile, hole, edge_in=edge,
+                                   nearest_clear_in=nearest_cut_in,
+                                   nearest_diameter_in=nearest_diameter_in,
+                                   depth_in=section.depth_m / M_PER_IN)
     engineered = _engineered(section, profile, "bore")
     if engineered is not None:
         return engineered

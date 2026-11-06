@@ -389,15 +389,19 @@ def test_a_route_that_is_already_AT_its_goal_is_a_finding_and_not_a_paste(
     """Start PR-S-BATH1-VENT ON the vent riser it ties to and the shortest route is no route
     at all. (Catlin's own origin sat 0.9" off a sibling until vents tied to the riser, not
     a sibling, on 2026-09-24.) A one-point polyline printed as dialect is a 1-tuple that
-    will not even parse — so it is reported, never proposed."""
+    will not even parse — so it is reported, never proposed. Since ESR-1153 re-laid the run
+    onto PR-A-STUBATH-VENT (2026-11-06) the copy puts back its old stack-bound path."""
     from _helpers import copy_house
 
     house = copy_house(_CATLIN, tmp_path / "catlin")
     venting = house / "plan" / "mep_venting.py"
     text = venting.read_text()
-    assert text.count("pt(ft(9, 8.4), ft(31))") == 1
-    venting.write_text(text.replace("pt(ft(9, 8.4), ft(31))",
-                                    "pt(ft(8, 5.1875), ft(34, 3.3125))"))
+    now = ("path=(pt(ft(5), ft(26, 8)), pt(ft(3, 4), ft(26, 8)),\n"
+           "                  pt(ft(3, 4), inch(372)), pt(inch(116.4), inch(372))),")
+    old = ("path=(pt(ft(8, 5.1875), ft(34, 3.3125)), pt(ft(5), ft(26, 8)), "
+           "pt(ft(3, 4), ft(26, 8)), pt(ft(3, 4), inch(412.9))),")
+    assert text.count(now) == 1
+    venting.write_text(text.replace(now, old))
     result = runner.invoke(app, ["route", str(house), "--run", "PR-S-BATH1-VENT"])
     assert "already stands on what it is being routed to" in result.output
     assert "PR-S-BATH1-VENT-PROPOSED" not in result.output

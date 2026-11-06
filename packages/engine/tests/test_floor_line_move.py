@@ -28,6 +28,7 @@ from typehaus.model import (
     Node,
     PlanModel,
     Project,
+    PublishedWebOpenings,
     Site,
     Storey,
     Strongback,
@@ -111,20 +112,33 @@ def test_a_move_out_of_the_field_is_refused():
 
 
 def test_a_strongback_threads_one_web_opening_and_skips_its_cut_bay():
-    def truss(at):  # webs on 12" + 24k; the opening around 24" is 17.5"..30.5"
-        return _model(strongbacks=[Strongback(at=at, omit_bays=(inch(40),))],
-                      member="11.875 floor truss", web_panel_pitch=inch(24),
-                      web_opening_width=inch(13), web_panel_offset=inch(12))
+    row = PublishedWebOpenings(
+        source="test", table="test", member="11.875 floor truss",
+        round_diameter=inch(5), panel_pitch=inch(24))
 
-    model, findings = truss(inch(29.75))
+    def truss(at=None):
+        sb = [Strongback(at=at, omit_bays=(inch(40),))] if at is not None else []
+        return _model(strongbacks=sb, member="11.875 floor truss", web_openings=row)
+
+    # Panel points every 24" either side of mid-span, a bottom node at mid-span: a pocket on
+    # the bottom chord (apex up) is centred 12" off mid-span, the node itself is a web.
+    base, _ = truss()
+    joist = next(m for m in _joists(base) if m.category == "joist")
+    pocket = next(o for o in joist.web.openings
+                  if o.kind == "D" and min(z for _u, z in o.ring) < inch(1.6).meters)
+    mid = joist.length_m / 2
+    start = joist.p0[1]
+    at_pocket = start + (pocket.run0_m + pocket.run1_m) / 2
+
+    model, findings = truss(at_pocket)
     assert not [f for f in findings if f.check_id == "integrity.floor_strongback"]
     pieces = [m for m in model.floors[0].members if m.category == "strongback"]
-    assert sorted(tuple(round(v / inch(1).meters, 3) for v in (m.p0[1], m.p0[0], m.p1[0]))
-                  for m in pieces) == [(29.75, 0.0, 32.0), (29.75, 48.0, 192.0)]
+    assert sorted(tuple(round(v / inch(1).meters, 3) for v in (m.p0[0], m.p1[0]))
+                  for m in pieces) == [(0.0, 32.0), (48.0, 192.0)]
     ctx = SimpleNamespace(model=model, plan=model.plan, preferences=SimpleNamespace(
         framing=SimpleNamespace(interference_tolerance_in=0.25)))
     assert not [f for f in member_interference(ctx) if "strongback" in f.message]
 
-    model, findings = truss(inch(36))  # on a web
+    model, findings = truss(start + mid)  # on the mid-span node
     assert [f for f in findings if f.check_id == "integrity.floor_strongback"]
     assert not [m for m in model.floors[0].members if m.category == "strongback"]

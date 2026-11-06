@@ -9,6 +9,7 @@ from pydantic import model_validator
 from typehaus.model.assembly import Layer
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import FloorOpeningPurpose, RadiantSystem
+from typehaus.model.published_web import PublishedWebOpenings
 from typehaus.model.rebar import ReinforcementSpec
 from typehaus.model.refs import Embed, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
@@ -68,36 +69,23 @@ class JoistSpec(HausModel):
     # in either direction is worse than a field. The section is the engine's to carry; the
     # reason is the house's to state.
     rim_member: str | None = None
-    # --- open-web panel layout (2026-09-19) --------------------------------------------
-    # **What a truss's webs actually do to the slot the engine reads.**
-    # ``profiles.open_web_opening_m`` gives an open-web member an 8 7/8" chord-to-chord
-    # window and nothing narrows it along the span, so the engine reads the truss as a
-    # CONTINUOUS SLOT: thirteen ducts crossing every truss inside a 41" band pass
-    # ``mep.run_member_crossing`` without a complaint. Real trusses have webs at panel
-    # points, and a duct lands in an opening or it lands on a web.
-    #
-    # Three numbers say the layout, all optional and all from the fabricator's drawing:
-    # the centre-to-centre PITCH of the panel points, the CLEAR opening between webs
-    # measured at the chord, and the OFFSET from the member's start to the first panel
-    # point. State all three or none — two of them describe nothing.
-    #
-    # Unauthored is not a defect and must not read as one: a truss layout is a shop
-    # drawing, and ``mep.open_web_panel`` reports UNKNOWN naming the floor rather than
-    # inventing a pitch. What IS a defect is a house that authors them and then over-fills
-    # an opening.
-    web_panel_pitch: Length | None = None
-    web_opening_width: Length | None = None
-    web_panel_offset: Length | None = None
+    # The maker's published web openings, trim and stock for an open-web floor-truss deck
+    # (``PublishedWebOpenings``). ``resolve/open_web.py`` derives one ``OpenWebShape`` per
+    # truss from it, and ``mep.open_web_panel`` grades each crossing against the opening it
+    # lands in. Unauthored is UNKNOWN naming the floor, never a pass: a truss's layout is a
+    # shop drawing, and the engine invents none.
+    web_openings: PublishedWebOpenings | None = None
     # End bearing this deck's members take on a *shared* bearing line, as (ref, length)
     # pairs. A line two decks land on from opposite sides is one plate split between them,
-    # and the split is a design decision, not a derivation: an open-web floor truss wants
-    # 3" of seat where an I-joist wants 1 3/4", so a centreline split (2 3/4" each on a 2x6
-    # plate) shorts the truss and over-serves the joist. Authoring the number here moves
-    # this deck's joist ends off the ref's *near* structure face by exactly that much —
-    # the face its joists approach — so the two decks' authored bearings have to add up to
-    # the plate or the pair does not meet. Only a shared line reads this: an unshared end
-    # bearing already runs its joists to the framing face behind the rim (resolve/floors.py
-    # ``_end_coords``), and an interior line the deck spans over is not an end at all.
+    # and the split is a design decision, not a derivation: both products need 1 3/4"
+    # minimum, but a truss's published reaction rises with its seat (J12: 3,000 / 3,500 /
+    # 4,000 lb at 1 3/4 / 3 1/2 / 5 1/2"), so it takes the larger share of a 2x6 plate.
+    # Authoring the number here moves this deck's joist ends off the ref's *near* structure
+    # face by exactly that much — the face its joists approach — so the two decks' authored
+    # bearings have to add up to the plate or the pair does not meet. Only a shared line
+    # reads this: an unshared end bearing already runs its joists to the framing face behind
+    # the rim (resolve/floors.py ``_end_coords``), and an interior line the deck spans over
+    # is not an end at all.
     end_bearing: tuple[tuple[str, Length], ...] = ()
     # The catalog model tying each joist end seated on a CONCRETE wall's sill (Minn. R.
     # 1309.0404: joists connected to the sill "with an approved connector ... with listed

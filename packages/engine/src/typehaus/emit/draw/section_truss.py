@@ -99,19 +99,22 @@ def _bar(a, b, thickness, overrun=0.0) -> list[tuple[float, float]]:
 
 
 def emit_truss_cut(b, member, section, plane, crop, uid, tag, pattern, material,
-                   is_cut: bool) -> bool:
+                   is_cut: bool, sticks=None) -> bool:
     """Draw ``member`` as its sticks; ``False`` hands an oblique truss back to the envelope.
 
     Along its span (the cut runs down the truss), every stick is drawn in elevation, tails
     included — but only when the envelope itself is cut (``is_cut``). Across it, each stick
-    the station crosses is a cut face one truss thick.
+    the station crosses is a cut face one truss thick. ``sticks`` replaces the roof truss's
+    own (``section_floor_truss`` passes a floor truss's).
     """
+    if sticks is None:
+        sticks = truss_sticks(member, section)
     along = [member.p1[i] - member.p0[i] for i in (0, 1)]
     if abs(along[plane.perp_index]) < 1e-9:
         if not is_cut:
             return True
         start, sign = member.p0[plane.u_index], math.copysign(1.0, along[plane.u_index])
-        for stick in truss_sticks(member, section):
+        for stick in sticks:
             _emit_polygon(b, [(start + sign * s, z) for (s, z) in stick], crop, uid, tag,
                           pattern, material)
         return True
@@ -120,7 +123,7 @@ def emit_truss_cut(b, member, section, plane, crop, uid, tag, pattern, material,
     station = (plane.station_m - member.p0[plane.perp_index]) * math.copysign(
         1.0, along[plane.perp_index])
     centre, width = member.p0[plane.u_index], section.width_m
-    for stick in truss_sticks(member, section):
+    for stick in sticks:
         band = _z_at(stick, station)
         if band is None:
             continue

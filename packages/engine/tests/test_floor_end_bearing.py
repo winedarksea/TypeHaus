@@ -5,7 +5,8 @@ and until ``resolve/floor_ends.py`` existed the model could not state either num
 fabricator needs. The trusses were drawn 18'-0" long — the *bearing grid*, not the member —
 running out to x=0'-0", which is the outside of the sheathing, half an inch past the plate
 they sit on. At the other end they were cut on the centreline of the 2x6 they share with the
-east half's I-joists: 2 3/4" of seat each, where an open-web truss wants 3".
+east half's I-joists: 2 3/4" of seat each (both clear the 1 3/4" minimum; the truss's
+published reaction rises with the seat, so the split went 3 1/2" / 2").
 """
 
 from __future__ import annotations
@@ -51,8 +52,8 @@ def test_the_two_halves_of_the_second_floor_meet_on_the_plate_they_share(catlin)
     """3 1/2" of seat to the truss, 2" to the I-joist, and the 5 1/2" plate exactly spent.
 
     Both numbers are authored (``params/second_deck.py``) precisely because the split is a
-    decision: a centreline split gives 2 3/4" each, which is under the truss fabricator's
-    3" and over what the I-joist needs.
+    decision: a centreline split gives 2 3/4" each, which clears both 1 3/4" minimums but
+    leaves the truss's published reaction (3,500 lb at 3 1/2") on the table.
     """
     west, east = _floor(catlin, "FS-S-WEST"), _floor(catlin, "FS-S-EAST")
     assert west.ends.tip_hi == pytest.approx(east.ends.tip_lo)
@@ -95,7 +96,7 @@ def test_the_fabrication_schedule_states_span_and_bearing(catlin):
 
 
 def test_end_bearing_is_graded_against_what_the_member_needs(tmp_path):
-    """A truss on 2 3/4" passes the 1 1/2" code floor and fails its own 3" requirement."""
+    """A truss on 1 1/2" passes the sawn 1 1/2" code floor and fails its own 1 3/4" minimum."""
     from typehaus.checks import run
     from typehaus.findings import Result
     from typehaus.source import load_plan
@@ -103,13 +104,13 @@ def test_end_bearing_is_graded_against_what_the_member_needs(tmp_path):
     house = copy_house(CATLIN, tmp_path / "catlin")
     deck = Path(house) / "params" / "second_deck.py"
     deck.write_text(deck.read_text().replace("_TRUSS_BEARING = inch(3.5)",
-                                             "_TRUSS_BEARING = inch(2.75)"))
+                                             "_TRUSS_BEARING = inch(1.5)"))
     report = run(load_plan(Path(house)).plan, Path(house))
     findings = [f for f in report.findings
                 if f.check_id == "integrity.floor_end_bearing"]
     # FS-M-NE's trusses share the constant (params/main_deck.py), so both floors fail.
     assert [f.result for f in findings] == [Result.FAIL, Result.FAIL]
-    assert all("2.75\"" in f.message for f in findings)
+    assert all("1.5\"" in f.message for f in findings)
     assert {tag for f in findings for tag in f.element_tags} == {"FS-S-WEST", "FS-M-NE"}
 
 pytestmark = pytest.mark.slow

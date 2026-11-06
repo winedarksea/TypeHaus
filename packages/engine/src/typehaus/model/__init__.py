@@ -105,6 +105,7 @@ from typehaus.model.floors import (
 )
 from typehaus.model.framing_standards import HeaderStandard
 from typehaus.model.furniture_cut import FurnitureCut
+from typehaus.model.joist_holes import JoistHoleChart
 from typehaus.model.landscape import (
     AccentRule,
     GridLayout,
@@ -167,6 +168,7 @@ from typehaus.model.plan import Library, PlanModel
 from typehaus.model.product import Product
 from typehaus.model.project import Building, Project, Site, Storey
 from typehaus.model.published_cladding import PublishedCladdingLoad
+from typehaus.model.published_web import PublishedWebOpenings
 from typehaus.model.rebar import BarSpec, HookConfinement, ReinforcementSpec, RibLayout
 from typehaus.model.refs import (
     Arch,
@@ -352,6 +354,7 @@ for _name, _obj in (
     ("PublishedSpan", PublishedSpan), ("PublishedCapacity", PublishedCapacity),
     ("PublishedReaction", PublishedReaction), ("PublishedCladdingLoad", PublishedCladdingLoad),
     ("PublishedHole", PublishedHole), ("SheathingNailing", SheathingNailing),
+    ("PublishedWebOpenings", PublishedWebOpenings), ("JoistHoleChart", JoistHoleChart),
     ("SegmentalWallSpec", SegmentalWallSpec), ("SrwDrainageZone", SrwDrainageZone),
     ("EndRestraint", EndRestraint),
     ("ShearPanelSpec", ShearPanelSpec), ("DiaphragmSpec", DiaphragmSpec),
@@ -432,7 +435,8 @@ __all__ = [
     "FaceRef", "face", "LayerMaterial", "ToRoof", "FollowRoof", "Arch", "LayerSpan",
     "OpeningFrameEndSupports", "OpeningPosition", "OpeningSize",
     "PublishedSpan", "PublishedCapacity", "PublishedReaction",
-    "PublishedCladdingLoad", "PublishedHole", "SheathingNailing",
+    "PublishedCladdingLoad", "PublishedHole", "PublishedWebOpenings", "JoistHoleChart",
+    "SheathingNailing",
     "ShearPanelSpec", "DiaphragmSpec", "DiaphragmDelivery", "ReceivingLine", "HeadConnector",
     "CollectorBlocking", "JointNailing", "PanelEdgeBlocking",
     "InServiceMoisture",

@@ -234,6 +234,18 @@ function checkMemberVerticalExtents() {
     p0: [13, 27], p1: [18.46, 27], z0_m: datum - bandDepth, z1_m: datum,
     width_m: 0.0889, depth_m: bandDepth, flange_width_m: 0.0889,
     flange_thickness_m: chordT, web_thickness_m: chordT, orient: null,
+    // The engine's derived layout (OpenWebShape): two TrimEnd blocks and a zig-zag.
+    web: {
+      stock_m: 5.4864, trim_lo_m: 0, trim_hi_m: 0, chase_run_m: null,
+      sticks: [
+        ["trim_end", 0, chordT, 0.3, bandDepth - chordT],
+        ["trim_end", 5.16, chordT, 5.46, bandDepth - chordT],
+        ["diagonal", 0.3, chordT, 0.9, bandDepth - chordT],
+        ["diagonal", 0.9, bandDepth - chordT, 1.5, chordT],
+        ["diagonal", 1.5, chordT, 2.1, bandDepth - chordT],
+        ["diagonal", 2.1, bandDepth - chordT, 2.7, chordT],
+      ],
+    },
   })], center, "schematic", PALETTE, "TESTOWNER");
   // Two meshes: the chord pair, and every web (end blocks + diagonals) in one more.
   const trussMeshes = truss.children as THREE.InstancedMesh[];

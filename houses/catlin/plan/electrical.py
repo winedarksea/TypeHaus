@@ -1340,7 +1340,7 @@ CONDUIT_TRUNKS = [
     # double top plate). East of the wall it rides FS-M-NE's truss bay y=23'-4" (between the
     # 284" and 268" lines, 16" o.c., clear of both chords and FS-M-STAIR's joists) at -3 1/2", the top of the web window: over
     # PR-B-CW-TRUNK (x=29'-9.6") and PR-B-HW-KITCH, which it must cross to reach the kitchen.
-    # It turns north at x=28'-2 1/2" (the 13" web opening beside CD-B-DATA-MEDIA's) through
+    # It turns north at x=28'-10 1/2" (web pocket D10, clear of PR-B-CW-TRUNK in D11) through
     # each truss to y=29'-6", east in that bay, and rises through the deck 4 3/4" south of
     # KGF3 (y=29'-1 1/4"), in the open bay between the 29' and 30' trusses. Nothing hangs in
     # RM-B-PLAY-N's volume. 0.75" EMT, 314 degrees between pull points: ramp 46, north 90,
@@ -1351,7 +1351,7 @@ CONDUIT_TRUNKS = [
                      pt(ft(9, 6.625), ft(19, 11)), pt(ft(13, 3.5), ft(19, 11)),
                      pt(ft(13, 3.5), ft(18, 11.75)), pt(ft(16, 5.5), ft(18, 11.75)),
                      pt(ft(16, 5.5), inch(280)), pt(inch(209), inch(280)),
-                     pt(inch(338.5), inch(280)), pt(inch(338.5), ft(29, 6)),
+                     pt(inch(346.5), inch(280)), pt(inch(346.5), ft(29, 6)),
                      pt(ft(34, 11), ft(29, 6)), pt(ft(34, 11), ft(29, 6))),
                start_elevation=inch(-31.4375), end_elevation=ft(3, 6),
                elevations=(inch(-31.4375), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
@@ -1509,15 +1509,22 @@ MAIN_DATA_TRUNKS = [
                # well, up over the extract legs at x=14'-6 1/2" to the 21'-1.3" bay (BM-M-HALL
                # fills x=18' from 22'-4" to 25'-10"), east over the suite's pipes and north at
                # x=19'-0" in FS-S-EAST's I-joist webs. Every tier step is under half the deck.
+               # 2026-11-06: the north leg crosses the 256/272" trusses at x=16'-0" (pocket
+               # D14, which the suite lines (D13, D15) no longer share).
                path=(pt(ft(6), inch(411.5)), pt(inch(78), inch(411.5)), pt(inch(78), inch(280)),
-                     pt(inch(189), inch(280)), pt(inch(189), inch(280)),
-                     pt(inch(189), inch(253.3)), pt(ft(19), inch(253.3)),
+                     pt(inch(192), inch(280)), pt(inch(192), inch(280)),
+                     pt(inch(192), inch(253.3)), pt(inch(192), inch(253.3)),
+                     pt(ft(19), inch(253.3)),
                      pt(ft(19), ft(29)), pt(ft(19), ft(29))),
                start_elevation=inch(110.5), end_elevation=ft(9, 2.25),
+               # 114.6" over DU-M-ERV-R-KITCH on the way south, then 116.2" over the suite hot's
+               # 1/2" sleeve (PR-B-HW-SUITE, x=16'-9 3/4") along y=21'-1.3".
                elevations=(inch(110.5), inch(110.5), inch(110.5), inch(110.5),
-                           inch(115.5), inch(115.5), inch(115.5), inch(115.5), ft(9, 2.25)),
-               # Pull box at 3 (14'-6 1/2", 23'-4", behind a ceiling access cover).
-               pull_points=(3,),
+                           inch(114.6), inch(114.6), inch(116.2), inch(116.2), inch(115.5),
+                           ft(9, 2.25)),
+               # Pull box at 4 (16'-0", 23'-4", the top of the tier step, behind a ceiling
+               # access cover): 270 deg before it and 360 after since the J12 re-lay.
+               pull_points=(4,),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-KITCH-AP"),
     # PORCH goes SOUTH first and turns east at y=1'-0", well below the void, then out under
     # the balcony deck to the porch soffit — still sharing SP-SG-PORCH-ELEC with the ceiling
@@ -1547,21 +1554,25 @@ MAIN_DATA_TRUNKS = [
                # Out of the chase along its south trimmer and south in the 1'-4 1/2" truss
                # opening on the upper tier, over PR-M-S-BATH1-TUB-DRAIN and DU-M-ERV-R-BATH1, to
                # the 1'-0" bay south of DU-M-ERV-EXH-TRUNK's end (2026-09-24).
-               path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(401.4)),
-                     pt(inch(29.5), inch(401.4)), pt(inch(29.5), ft(1)),
+               # 2026-11-06 (TrimJoist pockets): south on x=2'-7 1/2" through the clipped trusses and
+               # x=2'-5 1/2" below them (pocket D2, T; the 296" boot REG-S-EXH4 stands at 30"), across the
+               # y=0 truss on one diagonal leg, through pocket D14 at ~16'-1" (x=17'-6" is the
+               # TrimEnd), so the tail turns less than the old square one did.
+               path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(401)),
+                     pt(inch(31.5), inch(401)), pt(inch(31.5), inch(317)), pt(inch(29.5), inch(317)),
                      pt(inch(29.5), ft(1)),
-                     pt(ft(17, 6), ft(1)), pt(ft(17, 6), inch(-2)), pt(ft(17, 6), inch(-6)),
+                     pt(inch(159), ft(1)), pt(ft(17, 6), inch(-6)),
                      pt(ft(17, 6), inch(-6)), pt(ft(17, 6), ft(-4.833)),
                      pt(ft(17, 6), ft(-4.833))),
                start_elevation=inch(118), end_elevation=ft(8, 8),
-               elevations=(inch(118), inch(118), inch(118), inch(118), ft(9, 3.75),
-                           ft(9, 3.75), ft(9, 3.75), ft(9, 3.75), ft(8, 10.25), ft(8, 10.25),
-                           ft(8, 8)),
-               # Pull box at 4 (2'-5 1/2", 1'-0"), the foot of the drop to the south bay, behind
-               # a ceiling access cover: re-laid round the extract trunk 2026-09-24, the head's
-               # jog and tier drop put 630 deg before the old box under FS-SG-BALCONY. Re-index it
-               # if the head is re-laid again.
-               pull_points=(4,),
+               # The tier drop is spread along the y=1'-0" bay leg rather than taken plumb.
+               elevations=(inch(118), inch(118), inch(118), inch(118), inch(118), inch(118),
+                           ft(9, 3.75), ft(9, 3.75), ft(8, 10.25),
+                           ft(8, 10.25), ft(8, 8)),
+               # Pull box at 5 (2'-5 1/2", 1'-0"), the foot of the drop to the south bay, behind
+               # a ceiling access cover (360 deg before it since the J12 jogs, 2026-11-06). Re-index
+               # it if the head is re-laid again.
+               pull_points=(5,),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-PORCH-AP"),
 ]
 

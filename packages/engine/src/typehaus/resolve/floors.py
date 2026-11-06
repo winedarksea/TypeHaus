@@ -27,6 +27,7 @@ from typehaus.resolve.floor_strongbacks import strongback_members
 from typehaus.resolve.floor_tilt import joist_lift, twisted
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
+from typehaus.resolve.open_web import attach_open_web_shapes
 from typehaus.resolve.opening_lining import lining_solids
 from typehaus.resolve.room_paint import lining_coating
 from typehaus.resolve.suspension_anchors import anchor_targets, lay_anchor_lines, unframed
@@ -212,6 +213,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
     members.extend(opening_members(system, opening_boxes, along_x, z0, z1, depth,
                                    (perp0, perp1)))
     members[:] = clip_blocks_at_trimmers(members, along_x)
+    attach_open_web_shapes(members, spec.web_openings)
 
     # Rim (band) boards cap the joist ends — perpendicular to the joists, not a duplicate
     # of the parallel edge joists above. When the outer spans cantilever, the band rides
@@ -319,14 +321,8 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
         for f in opening_boxes
         if getattr(f.opening, "penetration_for", ()))
 
-    panels = None
-    if (spec.web_panel_pitch is not None and spec.web_opening_width is not None
-            and spec.web_panel_offset is not None):
-        panels = (spec.web_panel_pitch.meters, spec.web_opening_width.meters,
-                  spec.web_panel_offset.meters)
-
     return ResolvedFloor(
-        uid=system.uid, tag=system.tag, storey=storey.tag, web_panels=panels,
+        uid=system.uid, tag=system.tag, storey=storey.tag, web_openings=spec.web_openings,
         direction=spec.direction, members=tuple(members), chases=chases,
         penetrations=penetrations, linings=tuple(linings),
         deck_outline=deck_outline, deck_voids=deck_voids,

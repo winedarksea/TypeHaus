@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** b076220680714001  
-**Lines:** 253
+**Model hash:** 71f8a115cbe919b1  
+**Lines:** 252
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -30,12 +30,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 11 7/8" TJI 230, 8' (11.875 TJI 230) | 22 | pc | blocking, joist | 176 LF | building |
 | 11 7/8" TJI 230, 10' (11.875 TJI 230) | 20 | pc | joist | 200 LF | building |
 | 11 7/8" TJI 230, 20' (11.875 TJI 230) | 144 | pc | joist, rafter, sister joist | 2880 LF | building |
-| 11 7/8" floor truss, 1' (11.875 floor truss) | 14 | ea | blocking | 14 LF | building |
-| 11 7/8" floor truss, 2' (11.875 floor truss) | 21 | ea | blocking | 42 LF | building |
+| 11 7/8" floor truss, 1' (11.875 floor truss) | 13 | ea | blocking | 13 LF | building |
+| 11 7/8" floor truss, 2' (11.875 floor truss) | 22 | ea | blocking | 44 LF | building |
 | 11 7/8" floor truss, 8' (11.875 floor truss) | 1 | ea | joist | 8 LF | building |
-| 11 7/8" floor truss, 9' (11.875 floor truss) | 1 | ea | trimmer | 9 LF | building |
-| 11 7/8" floor truss, 10' (11.875 floor truss) | 3 | ea | trimmer | 30 LF | building |
-| 11 7/8" floor truss, 11' (11.875 floor truss) | 5 | ea | joist | 55 LF | building |
+| 11 7/8" floor truss, 10' (11.875 floor truss) | 4 | ea | trimmer | 40 LF | building |
+| 11 7/8" floor truss, 12' (11.875 floor truss) | 5 | ea | joist | 60 LF | building |
 | 11 7/8" floor truss, 18' (11.875 floor truss) | 42 | ea | joist, sister joist, trimmer | 756 LF | building |
 | 1x4 SPF No. 2 & Btr framing lumber, 8' (1x4:spf) | 22 | pc | girt strapping | 176 LF | building |
 | 1x4 SPF No. 2 & Btr framing lumber, 10' (1x4:spf) | 28 | pc | ceiling furring, girt strapping | 280 LF | building |
@@ -351,9 +350,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 11 7/8" floor truss, 1' (11.875 floor truss) | — |
 | 11 7/8" floor truss, 2' (11.875 floor truss) | — |
 | 11 7/8" floor truss, 8' (11.875 floor truss) | — |
-| 11 7/8" floor truss, 9' (11.875 floor truss) | — |
 | 11 7/8" floor truss, 10' (11.875 floor truss) | — |
-| 11 7/8" floor truss, 11' (11.875 floor truss) | — |
+| 11 7/8" floor truss, 12' (11.875 floor truss) | — |
 | 11 7/8" floor truss, 18' (11.875 floor truss) | — |
 | 1x4 SPF No. 2 & Btr framing lumber, 8' (1x4:spf) | — |
 | 1x4 SPF No. 2 & Btr framing lumber, 10' (1x4:spf) | — |

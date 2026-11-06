@@ -26,6 +26,7 @@ from typehaus.resolve.rebar.records import ResolvedRebarSet
 
 if TYPE_CHECKING:
     from typehaus.model.placeables import Mount
+    from typehaus.model.published_web import PublishedWebOpenings
     from typehaus.resolve.clear_zones import ResolvedClearZone
     from typehaus.resolve.doorway import (
         DoorwayAssembly,  # the IR imports this module, so the reference stays type-only
@@ -34,6 +35,7 @@ if TYPE_CHECKING:
     from typehaus.resolve.floor_tilt import DeckPlane
     from typehaus.resolve.geometry_ir import GeometryModel, GMesh, GPrism
     from typehaus.resolve.jamb_fill import ResolvedJambFill
+    from typehaus.resolve.open_web import OpenWebShape
     from typehaus.resolve.stairs.winder_geometry import WinderLayout
 
 # A polygon ring: list of (x, y) in meters. Layer polygons are simple rings.
@@ -283,6 +285,9 @@ class FramedMember:
     # The truss inside the envelope, on a ``roof_truss`` member and nothing else. Read by the
     # viewer, which draws chords/webs the model does not resolve; ``None`` everywhere else.
     truss: TrussShape | None = None
+    # The web layout of an open-web floor truss (stock, TrimEnds, chase, Warren pockets),
+    # derived from ``JoistSpec.web_openings`` (``resolve/open_web.py``); ``None`` elsewhere.
+    web: OpenWebShape | None = None
     # The authored opening this member was framed around — a header naming its door, so a
     # consumer can reach the opening's own ``published_hole`` chart. ``child_key`` stays
     # ``header-0``: it is a per-wall index and every section golden is keyed on it, which is
@@ -888,11 +893,11 @@ class ResolvedFloor:
     #: coating as the rooms resolve it (``room_paint.lining_coating``); its solids are in
     #: ``model.solids`` as ``opening_lining`` (``resolve/opening_lining.py``).
     linings: tuple[tuple[str, float, str | None], ...] = ()
-    #: ``(pitch, clear opening, offset)`` in metres for an open-web deck whose ``JoistSpec``
-    #: states its panel layout; ``None`` where it does not. Carried rather than re-read off
-    #: the plan because ``checks``, ``resolve/mep_crossings`` and ``routing/obstacles`` all
-    #: need it and only one of the three may reach a ``PlanModel``.
-    web_panels: tuple[float, float, float] | None = None
+    #: The deck's ``PublishedWebOpenings`` where its ``JoistSpec`` states one; ``None`` where
+    #: it does not. Carried rather than re-read off the plan because ``checks`` and
+    #: ``routing/obstacles`` need it and may not reach a ``PlanModel``. Each truss's own
+    #: layout is ``FramedMember.web``.
+    web_openings: PublishedWebOpenings | None = None
 
     def deck_lift_at(self, x: float, y: float) -> float:
         return 0.0 if self.deck_plane is None else self.deck_plane.lift(x, y)

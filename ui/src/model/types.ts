@@ -119,6 +119,20 @@ export interface MemberTruss {
   gable: boolean;
 }
 
+// An open-web floor truss's derived web layout (engine: resolve/open_web.py OpenWebShape),
+// served so the viewer draws what the checks grade. Each stick is
+// `[kind, run0, z0, run1, z1]`, runs in metres from p0 and heights above z0_m: `trim_end` and
+// `vertical` are boxes [run0,run1] x [z0,z1]; `diagonal` is a centreline between chord faces.
+export type MemberWebStick = [kind: "trim_end" | "vertical" | "diagonal", run0: number,
+  z0: number, run1: number, z1: number];
+export interface MemberWeb {
+  stock_m: number;
+  trim_lo_m: number;
+  trim_hi_m: number;
+  chase_run_m: number | null;
+  sticks: MemberWebStick[];
+}
+
 export interface MemberSeat {
   plate_top_z_m: number;
   heel: Vec2;
@@ -170,6 +184,8 @@ export interface Member {
   cut_length_m?: number | null;
   // The truss inside a fabricated roof truss's envelope; null on every other member.
   truss?: MemberTruss | null;
+  // The web layout of an open-web floor truss; null where the deck quotes no published openings.
+  web?: MemberWeb | null;
   shape: MemberShape;
   width_m: number;
   depth_m: number;

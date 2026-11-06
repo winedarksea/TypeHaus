@@ -851,20 +851,20 @@
           108.125
         ],
         [
-          325.75000000000006,
+          325.75,
           108.125
         ],
         [
-          325.75000000000006,
-          120.0
+          325.75,
+          109.625
         ],
         [
           322.25,
-          120.0
+          109.625
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.18,
+      "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "1JXQ975X9E",
@@ -879,11 +879,67 @@
           108.125
         ],
         [
-          325.75000000000006,
+          325.75,
           108.125
         ],
         [
-          325.75000000000006,
+          325.75,
+          109.625
+        ],
+        [
+          322.25,
+          109.625
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "1JXQ975X9E",
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          322.25,
+          118.5
+        ],
+        [
+          325.75,
+          118.5
+        ],
+        [
+          325.75,
+          120.0
+        ],
+        [
+          322.25,
+          120.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "joist-0-020-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          322.25,
+          118.5
+        ],
+        [
+          325.75,
+          118.5
+        ],
+        [
+          325.75,
           120.0
         ],
         [
@@ -895,8 +951,8 @@
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
+      "uid": "1JXQ975X9E",
+      "material": "spf"
     },
     {
       "space": "model",
@@ -904,39 +960,55 @@
       "points": [
         [
           322.25,
-          109.625
+          111.37315614554488
         ],
         [
-          325.75000000000006,
-          109.625
+          325.75,
+          111.37315614554488
+        ],
+        [
+          325.75,
+          113.23882302112182
+        ],
+        [
+          322.25,
+          113.23882302112182
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.13,
+      "lineweight": 0.35,
       "linetype": "CONTINUOUS",
-      "closed": false,
+      "closed": true,
       "uid": "1JXQ975X9E",
-      "tag": "joist-0-020-0/flange"
+      "tag": "joist-0-020-0"
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
+      "node": "hatch",
+      "boundary": [
         [
           322.25,
-          118.5
+          111.37315614554488
         ],
         [
-          325.75000000000006,
-          118.5
+          325.75,
+          111.37315614554488
+        ],
+        [
+          325.75,
+          113.23882302112182
+        ],
+        [
+          322.25,
+          113.23882302112182
         ]
       ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
       "uid": "1JXQ975X9E",
-      "tag": "joist-0-020-0/flange"
+      "material": "spf"
     },
     {
       "space": "model",
@@ -952,15 +1024,15 @@
         ],
         [
           311.75,
-          120.0
+          109.625
         ],
         [
           308.25,
-          120.0
+          109.625
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.18,
+      "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "1JXQ975X9E",
@@ -980,6 +1052,62 @@
         ],
         [
           311.75,
+          109.625
+        ],
+        [
+          308.25,
+          109.625
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "1JXQ975X9E",
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          308.25,
+          118.5
+        ],
+        [
+          311.75,
+          118.5
+        ],
+        [
+          311.75,
+          120.0
+        ],
+        [
+          308.25,
+          120.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "trimmer-FO-S-STAIR-0-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          308.25,
+          118.5
+        ],
+        [
+          311.75,
+          118.5
+        ],
+        [
+          311.75,
           120.0
         ],
         [
@@ -991,8 +1119,8 @@
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
+      "uid": "1JXQ975X9E",
+      "material": "spf"
     },
     {
       "space": "model",
@@ -1000,39 +1128,55 @@
       "points": [
         [
           308.25,
-          109.625
+          110.72602072887823
         ],
         [
           311.75,
-          109.625
+          110.72602072887823
+        ],
+        [
+          311.75,
+          112.59168760445515
+        ],
+        [
+          308.25,
+          112.59168760445515
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.13,
+      "lineweight": 0.35,
       "linetype": "CONTINUOUS",
-      "closed": false,
+      "closed": true,
       "uid": "1JXQ975X9E",
-      "tag": "trimmer-FO-S-STAIR-0-0/flange"
+      "tag": "trimmer-FO-S-STAIR-0-0"
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
+      "node": "hatch",
+      "boundary": [
         [
           308.25,
-          118.5
+          110.72602072887823
         ],
         [
           311.75,
-          118.5
+          110.72602072887823
+        ],
+        [
+          311.75,
+          112.59168760445515
+        ],
+        [
+          308.25,
+          112.59168760445515
         ]
       ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
       "uid": "1JXQ975X9E",
-      "tag": "trimmer-FO-S-STAIR-0-0/flange"
+      "material": "spf"
     },
     {
       "space": "model",
@@ -1048,15 +1192,15 @@
         ],
         [
           308.25,
-          120.0
+          109.625
         ],
         [
           307.4074803149606,
-          120.0
+          109.625
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.18,
+      "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "1JXQ975X9E",
@@ -1076,6 +1220,62 @@
         ],
         [
           308.25,
+          109.625
+        ],
+        [
+          307.4074803149606,
+          109.625
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "1JXQ975X9E",
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          307.4074803149606,
+          118.5
+        ],
+        [
+          308.25,
+          118.5
+        ],
+        [
+          308.25,
+          120.0
+        ],
+        [
+          307.4074803149606,
+          120.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "trimmer-FO-S-STAIR-0-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          307.4074803149606,
+          118.5
+        ],
+        [
+          308.25,
+          118.5
+        ],
+        [
+          308.25,
           120.0
         ],
         [
@@ -1087,8 +1287,8 @@
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
+      "uid": "1JXQ975X9E",
+      "material": "spf"
     },
     {
       "space": "model",
@@ -1096,39 +1296,55 @@
       "points": [
         [
           307.4074803149606,
-          109.625
+          110.72602072887823
         ],
         [
           308.25,
-          109.625
+          110.72602072887823
+        ],
+        [
+          308.25,
+          112.59168760445515
+        ],
+        [
+          307.4074803149606,
+          112.59168760445515
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.13,
+      "lineweight": 0.35,
       "linetype": "CONTINUOUS",
-      "closed": false,
+      "closed": true,
       "uid": "1JXQ975X9E",
-      "tag": "trimmer-FO-S-STAIR-0-1/flange"
+      "tag": "trimmer-FO-S-STAIR-0-1"
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
+      "node": "hatch",
+      "boundary": [
         [
           307.4074803149606,
-          118.5
+          110.72602072887823
         ],
         [
           308.25,
-          118.5
+          110.72602072887823
+        ],
+        [
+          308.25,
+          112.59168760445515
+        ],
+        [
+          307.4074803149606,
+          112.59168760445515
         ]
       ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
       "uid": "1JXQ975X9E",
-      "tag": "trimmer-FO-S-STAIR-0-1/flange"
+      "material": "spf"
     },
     {
       "space": "model",

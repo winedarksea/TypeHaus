@@ -72,7 +72,7 @@ SUPPLY_DEVICES_BASEMENT = [
                   # ceiling under it is the hall's finished plane, and the annual test wants
                   # an access panel in it at this station. Nothing in the model can say that
                   # — there is no access-panel element — so it is said here.
-                  position=pt(ft(17, 4), ft(16)), room="RM-B-STAIR", accessible=True,
+                  position=pt(inch(206.5), inch(180)), room="RM-B-STAIR", accessible=True,
                   model='1/2" dual-check backflow preventer, testable',
                   serves=("FX-B-SAUNA-SH",)),
     # P2903.5. The washer slams two solenoids shut, so it needs an arrestor on each supply —
@@ -164,7 +164,7 @@ SUPPLY_STOPS = [
     # here and what lets the accessory take the riser head's invert rather than a second,
     # drift-prone copy of it.
     PipeAccessory(uid="3VR28WJF1E", tag="PA-M-BATH2-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-BATH2", position=pt(ft(1), ft(22, 4)),
+                  pipe_ref="PR-B-CW-BATH2", position=pt(ft(1, 1), ft(22, 4)),
                   accessible=True, room="RM-M-BATH2",
                   model='3/4" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",

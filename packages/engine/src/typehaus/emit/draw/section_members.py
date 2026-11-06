@@ -94,23 +94,27 @@ def emit_framing_cuts(b, model, hosts, plane, crop, representative_roles=(),
 
 
 def _trusses_by_uid(host) -> dict:
-    """The host's roof trusses that carry a ``TrussShape``, keyed as their IR part is."""
+    """The host's trusses that carry a shape (a roof truss's ``TrussShape``, an open-web
+    floor truss's ``OpenWebShape``), keyed as their IR part is."""
     from typehaus.resolve.framing.roof_gable import ROOF_TRUSS_CATEGORY
     from typehaus.resolve.geometry_members import member_uid
 
     return {member_uid(member): member for member in getattr(host, "members", ())
-            if member.category == ROOF_TRUSS_CATEGORY and member.truss is not None}
+            if (member.category == ROOF_TRUSS_CATEGORY and member.truss is not None)
+            or member.web is not None}
 
 
 def _emit_truss(b, member, part, plane, crop, uid, library, is_cut) -> bool:
     """A truss as its chords and webs, not its envelope box (``section_truss``)."""
+    from typehaus.emit.draw.section_floor_truss import emit_floor_truss_cut
     from typehaus.emit.draw.section_truss import emit_truss_cut
     from typehaus.resolve.framing.profiles import cross_section
 
     catalog = part.catalog
     material = catalog.material_ref
     pattern = (library_hatch(library, material) or "metal") if material else "lumber"
-    return emit_truss_cut(b, member, cross_section(member.profile), plane, crop, uid,
+    emit = emit_floor_truss_cut if member.web is not None else emit_truss_cut
+    return emit(b, member, cross_section(member.profile), plane, crop, uid,
                           catalog.name, pattern, material, is_cut)
 
 

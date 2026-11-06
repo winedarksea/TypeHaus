@@ -54,8 +54,8 @@ from typehaus import (
 from params.flooring import LVP_THICKNESS_IN
 from params.second_deck import _DEPTH as _JOIST_DEPTH
 from params.second_deck import (_JOIST, _JOIST_BEARING, _SUBFLOOR, _TRUSS, _TRUSS_BEARING,
-                                _WEB_OPENING, _WEB_PANEL_OFFSET, _WEB_PANEL_PITCH,
-                                TJI_230_FLOOR_SPAN, TRIFORCE_OJ418S_FLOOR_SPAN)
+                                TJI_230_FLOOR_SPAN, TRIFORCE_OJ418S_FLOOR_SPAN,
+                                TRIFORCE_OJ_WEB_OPENINGS)
 
 _JOIST_OC = inch(16)
 
@@ -404,13 +404,14 @@ EAST_FLOOR = FloorSystem(
 # wants is no bounce, which is the strongbacks and the doubled peninsula truss, not 60 psf.
 # Same 11 7/8" depth as every other field, so nothing above or below this deck moved.
 #
-# The webs are ``FS-S-WEST``'s Warren layout (24" pitch, 13" clear, 12" offset): the
-# fabricator builds both decks to one drawing, and ``mep.open_web_panel`` reads it. The
-# kitchen drain, the ERV radials and the data conduits cross through the webs.
+# The webs are TRIFORCE's, NOT FS-S-WEST's TrimJoist J12 drawing: the one published opening is
+# a 7 1/4" round (``TRIFORCE_OJ_WEB_OPENINGS``), on a Warren pitch assumed until the shop
+# drawing arrives. ``mep.open_web_panel`` reads it. The kitchen drain, the ERV radials and
+# the data conduits cross through the pockets, one run to a pocket.
 #
 # ** THE x=18' PLATE IS SPLIT 3 1/2" / 2" ** exactly as on the second floor: ``W-B-CS2``/
 # ``-CN2``/``-CN`` are 2x6 framed walls whose double top plate is the seat, the trusses take
-# 3 1/2" (open-web minimum 3") and the TJIs west of it 2" (minimum 1 3/4").
+# 3 1/2" (TRIFORCE minimum 1 1/2") and the TJIs west of it 2" (minimum 1 3/4").
 # ``integrity.floor_end_bearing`` grades the pair.
 #
 # ** LINES. ** 16" from the seam, 156".."396"; the two north lines move (412 -> 408,
@@ -438,17 +439,19 @@ _PENINSULA_BACK_TRUSS = JoistReinforcement(
            "them, ~616 lb on the 316\" line by hand; double it (notes/main_floor_truss_basis.md "
            "§3a)")
 # ** STRONGBACKS (TRIFORCE pp. 20-22, Detail 5 Option #1). ** Two 2x6 on edge on the bottom
-# chords, each hard against a face of the 27' web: A in the 26' opening, B in the 28' one,
-# both within 6" of mid-span. Cut in a bay where a run crosses at their height ("can be cut
-# between two joists for ducts or pipes").
+# chords, each in its own web pocket (a pocket narrows to ~8" at the 2x6's height, so they
+# cannot share one): the two pockets flanking the mid-span web, 12" either side of mid-span
+# (x 322.75"; A nudged to 309.5" to clear CD-B-PLAY-SPARE at 311.25"), on the working Warren
+# pitch (``TRIFORCE_OJ_WEB_OPENINGS``, assumed). Cut in a bay where a run crosses at their
+# height ("can be cut between two joists for ducts or pipes").
 _STRONGBACK_SOURCE = ("TRIFORCE Specifier Guide pp. 20-22, Detail 5 Option #1: 2x6 on edge, "
                       "attached to the diagonal web and chord, for a stiffer floor")
 # Cut bays: the CW trunk, PR-B-HW-KITCH, CD-B-DATA-MEDIA (a bore would sit ~1.2" off the
 # bottom edge, short of R502.8.1's 2") and the kitchen drain.
 _STRONGBACK_OMIT = (inch(180), inch(196), inch(292), inch(414))
 _STRONGBACKS = (
-    Strongback(at=inch(317.75), omit_bays=_STRONGBACK_OMIT, source=_STRONGBACK_SOURCE),
-    Strongback(at=inch(330.25), omit_bays=_STRONGBACK_OMIT, source=_STRONGBACK_SOURCE),
+    Strongback(at=inch(309.5), omit_bays=_STRONGBACK_OMIT, source=_STRONGBACK_SOURCE),
+    Strongback(at=inch(334.75), omit_bays=_STRONGBACK_OMIT, source=_STRONGBACK_SOURCE),
 )
 
 # ** ANCHORAGE TO THE CONCRETE (Minn. R. 1309.0404, notes/main_floor_truss_basis.md §4). **
@@ -476,9 +479,7 @@ NE_FLOOR = FloorSystem(
                      # bay south of 13'-10" lands on W-B-CS3, which FS-M-EAST also names.
                      bearing_refs=("W-B-CS3", "W-B-CS2", "W-B-CN2", "W-B-CN", "W-B-E1",
                                    "W-B-E2"),
-                     web_panel_pitch=_WEB_PANEL_PITCH,
-                     web_opening_width=_WEB_OPENING,
-                     web_panel_offset=_WEB_PANEL_OFFSET,
+                     web_openings=TRIFORCE_OJ_WEB_OPENINGS,
                      end_bearing=(("W-B-CS3", _TRUSS_BEARING), ("W-B-CS2", _TRUSS_BEARING),
                                   ("W-B-CN2", _TRUSS_BEARING), ("W-B-CN", _TRUSS_BEARING)),
                      line_overrides=_TRUSS_LINE_MOVES,

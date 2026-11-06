@@ -56,10 +56,11 @@ MAIN_ELEMENTS = [
     # then north and east in FS-S-WEST's last truss bay, down W-M-STRW's cavity, and north
     # through the corner into W-M-N2's first bay at the doorbell.
     ConduitRun(uid="REEA36N7AS", tag="CD-M-DATA-DOORBELL", trade_size=inch(0.75), service=Service.DATA,
+               # 2026-11-06: lifted to 111" so it crosses the 413.75" truss inside its R1 chase.
                path=(pt(ft(6), inch(411.5)), pt(ft(6), ft(35, 1.5)), pt(ft(10), ft(35, 1.5)),
                      pt(ft(10), ft(35, 1.5)), pt(ft(10), ft(35, 9)), pt(ft(10, 3.5), ft(35, 9))),
                start_elevation=inch(110.5), end_elevation=ft(3, 9),
-               elevations=(inch(110.5), inch(110.5), inch(110.5), ft(3, 9), ft(3, 9), ft(3, 9)),
+               elevations=(inch(110.5), inch(111), inch(111), ft(3, 9), ft(3, 9), ft(3, 9)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-DOORBELL"),
     # Under the balcony joists in the bay south of the screen's front track, so the IR does
     # not flare off the mesh. Base = soffit (105.75") less the 4 15/16" body.

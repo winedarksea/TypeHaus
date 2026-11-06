@@ -37,10 +37,10 @@ _PRECUT_CATEGORIES = ("stud", "king", "corner")
 _PRECUT_PROFILES = ("2x4", "2x6")
 #: Plain framing lumber and LSL studs come pre-cut; treated or appearance stock does not.
 _PRECUT_MATERIALS = ("", "spf", "lsl")
-# Trimmable floor-truss stock: 18' and 20', each trimmable up to 6" from each end (12"
-# total), so an 18' truss covers 17'-0"-18'-0" and a 20' covers 19'-0"-20'-0".
-_TRUSS_STOCK_FT = (18, 20)
-_TRUSS_TRIM_ALLOWANCE_FT = 1.0
+# Floor-truss stock comes in 2' increments (TrimJoist J12: 4'-24'), each end trimmable up
+# to 12" of its OSB TrimEnd; ``resolve/open_web.py`` derives the same stock per truss.
+_TRUSS_STOCK_INCREMENT_FT = 2
+_TRUSS_STOCK_MIN_FT = 4
 # ``[plies-]TxW`` — a leading built-up ply count is optional; a trailing name (LVL, rim,
 # I-joist) is ignored. Board-foot rollup is only reported when this matches.
 _PROFILE_RE = re.compile(r"^(?:(\d+)-)?(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)")
@@ -53,18 +53,17 @@ def _order_length_ft(length_ft: float, profile: str | None = None,
     ``precut`` puts the PET stud lengths on the ladder ahead of the next whole foot.
 
     A FABRICATED member is not milled dimensional lumber and never rides the stock ladder.
-    A ``floor_truss`` charges to the 18'/20' trimmable ladder only within each stock's trim
-    window; a length outside both windows (or a member clipped short by an opening) is
-    fabricated to its own length and buckets at its own whole-foot ceiling rather than the
-    next stock size up. A ``roof_truss`` has no trimmable stock at all — it is designed and
+    A ``floor_truss`` is bought in 2' stock and trimmed up to 12" at each end, so any
+    length orders at its next 2' increment (a 17'-11" truss is 18' stock, a stair-clipped
+    10'-0.7" one is 12'). A ``roof_truss`` has no trimmable stock at all — it is designed and
     plated to one span — so it always buckets at its own length.
     """
     shape = None if profile is None else cross_section(profile).shape
     if shape in FABRICATED_SHAPES:
         if shape == "floor_truss":
-            for stock in _TRUSS_STOCK_FT:
-                if stock - _TRUSS_TRIM_ALLOWANCE_FT - 1e-6 <= length_ft <= stock + 1e-6:
-                    return stock
+            inc = _TRUSS_STOCK_INCREMENT_FT
+            if length_ft >= _TRUSS_STOCK_MIN_FT:  # a shorter piece is blocking, not truss stock
+                return int(math.ceil(length_ft / inc - 1e-9)) * inc
         return int(math.ceil(length_ft - 1e-9))
     ladder = sorted((*_STOCK_LENGTHS_FT, *_PRECUT_STUD_FT)) if precut else _STOCK_LENGTHS_FT
     for stock in ladder:

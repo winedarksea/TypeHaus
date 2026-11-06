@@ -98,14 +98,19 @@ entry (`C2 E1` = C2.md, escalation E1). `carried` names the round-1 item.
    cleared D-S-BALCONY's three W-M-S2 coordination UNKNOWNs. ENTRY/PORCH seat the schematic
    sill 3/8" over the subfloor (the sloped pan's rise). Open residue: ENTRY's crest stands
    1.60" over the mudroom LVP against R311.3.1's 1.5" (TODO; not yet graded).
-7. **Holes through floor framing** (C2 E3/E4, C4 E6/E7, F3-101..103) · new.
-   - **Suite vent through the TJIs:** `PR-S-SUITEBATH-VENT` bores 9 TJI 230s 10.7" from the
-     support, where ESR-1153 Table A needs 18". The engine grades no I-joist hole rule.
-   - **8" ERV trunk through the floor trusses:** `DU-M-ERV-EXH-TRUNK` passes 23 owner-basis
-     2x4-web trusses with 0.25–0.44" to spare.
-
-   → Move the vent run to x ≤ 100.7" and add the ESR-1153 rule. Get a fabricator
-   submittal for the trunk, or use a 7" / twin-6" trunk. S–M.
+7. **Holes through floor framing** (C2 E3/E4, C4 E6/E7, F3-101..103) · **I-joists closed
+   2026-11-06** (decision #117); ERV level 2 open on an owner call.
+   - **TJI holes are graded:** ESR-1153 Table A's TJI 230 ladder (`plan/framing_charts.py`)
+     grades every TJI crossing in `mep.run_member_crossing` and the router. The fix was a lane
+     set, not one move: x=100.7" would have overlapped `PR-M-WC-VENT`'s hole. Suite vent
+     108 -> 90, `PR-S-BATH1-VENT` squared onto x=40, and fn 1 spacing also moved the trunk,
+     sauna and four basement cold lanes (`notes/framing_bore_limits.md` §11).
+   - **FS-S-WEST is TrimJoist J12** (`PublishedWebOpenings`, a derived `OpenWebShape` per truss,
+     `notes/open_web_truss_geometry.md`); ~19 runs moved into its pockets. Open: the 8" trunk fits
+     no published opening, and the owner's R1-corridor re-route does not fit the north trusses'
+     staggered chases (14.75" common). The trunk, five radials, D4, `PR-M-S-SUITE-WC-DRAIN`'s
+     south leg and two interference pairs are suppressed as the open-campaign score pending the owner
+     (`plans/TODO.md`).
 8. **S-102 snow note** (C5 #3, F4-101) · new, prints wrong. `_snow_load_note` prints
    Pf 35 psf at Ct 1.0 for the unheated garage and canopy. The house basis and the truss order
    are 42 psf (Ct 1.2) plus drift.

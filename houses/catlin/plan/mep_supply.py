@@ -216,7 +216,10 @@ SUPPLY = [
                   pt(ft(9, 6), ft(34, 10)), pt(ft(9, 6), ft(34, 10)),
                   pt(ft(4, 9), ft(34, 10)), pt(ft(4, 9), ft(34, 10)),
                   pt(ft(4, 9), inch(386.5)), pt(ft(4, 9), inch(386.5)), pt(ft(4, 9), ft(16)),
-                  pt(ft(8), ft(16)), pt(ft(17, 5), ft(16)), pt(ft(17, 5), inch(180)),
+                  # ESR-1153 Table A: the 1.62" hole on joist 012 sits >= 12" off the x=213.25 face, so
+                  # the y=16'-0" run turns south at x=200" onto the old y=15'-0" line (square, so the
+                  # sauna cold tees on it).
+                  pt(ft(8), ft(16)), pt(inch(200), ft(16)), pt(inch(200), inch(180)),
                   pt(ft(29, 9.6), inch(180)),
                   pt(ft(29, 9.6), inch(424.2)), pt(ft(29, 9.6), inch(424.2)),
                   pt(ft(29, 9.6), inch(421.5)), pt(ft(29, 9.6), inch(421.5))),
@@ -321,16 +324,19 @@ SUPPLY = [
             # census below spends forty lines choosing. Where it does cross the 4" trunk's
             # lane, at (6'-0", 20'-3"), the trunk has fallen to -1'-8.6" and the clear
             # between the two pipes' surfaces is 9.1" — the old 3.1" plus the band's 6".
-            path=(pt(ft(4, 9), ft(16)), pt(ft(7, 4.8), ft(16, 9.6)),
-                  pt(ft(7, 4.8), ft(19, 2.4)), pt(ft(5), ft(21)),
+            # ESR-1153 Table A spacing: the joist-013 hole sat 0.6" from PR-B-TUB2-DRAIN's, so the
+            # lane is x=6'-10" (not 7'-4.8"), and it crosses joists 016-MECH000 at x=62" (not 60"),
+            # 3.6" clear of PR-B-CW-TRUNK's x=57" hole, jogging back to the riser past the last one.
+            path=(pt(ft(4, 9), ft(16)), pt(ft(6, 10), ft(16, 9.6)),
+                  pt(ft(6, 10), ft(19, 2.4)), pt(inch(62), ft(21)), pt(inch(62), inch(263)),
                   pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4)),
                   pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4))),
             diameter=inch(0.75), material="pex",
             # The 12.7" (main) vertex is PR-M-BATH1-WC-CW's tee, at the carrier inlet's height.
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
-                        ft(8, 4.6375), ft(9, 1.4375), inch(122.1375), inch(133.4375),
-                        ft(12, 7.4375)),
-            wall_refs=(None, None, None, None, None, "W-M-HS1", "W-M-HS1", "W-M-HS1"),
+                        ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), inch(122.1375),
+                        inch(133.4375), ft(12, 7.4375)),
+            wall_refs=(None, None, None, None, None, None, "W-M-HS1", "W-M-HS1", "W-M-HS1"),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
     # Basin hot rises in the shared wet wall; the insulated ceiling run stays below it.
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
@@ -358,9 +364,10 @@ SUPPLY = [
     # drop occupies x=2'-2 3/8" in this same cavity (the bay the old x=2'-3" lane would have
     # risen into), and FX-M-BATH2-SINK is the fixture nearest this end of the wall.
     PipeRun(uid="CBPW35AAAA", tag="PR-B-CW-BATH2", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(4, 9), ft(16)), pt(ft(1), ft(16)),
-                  pt(ft(1), ft(22, 4)), pt(ft(1), ft(22, 4)),
-                  pt(ft(1), ft(22, 4))),
+            # ESR-1153 Table A: x=1'-1" puts the 1.12" hole 6.4" off the x=6" face (6" wanted).
+            path=(pt(ft(4, 9), ft(16)), pt(ft(1, 1), ft(16)),
+                  pt(ft(1, 1), ft(22, 4)), pt(ft(1, 1), ft(22, 4)),
+                  pt(ft(1, 1), ft(22, 4))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
                         ft(9, 1.4375), ft(12, 1.4375)),
@@ -489,7 +496,10 @@ SUPPLY = [
                   pt(inch(95), inch(206)), pt(inch(95), inch(186)),
                   pt(inch(162), inch(186)), pt(inch(162), inch(197)),
                   pt(inch(162), inch(197)), pt(inch(210), inch(197)),
-                  pt(inch(363.6), inch(197)), pt(inch(363.6), inch(424.2)),
+                  # Crosses the trusses in D12 (x=370.6), not D11, which PR-B-CW-TRUNK
+                  # fills (one run per pocket); back to the sink riser in the last bay.
+                  pt(inch(370.6), inch(197)), pt(inch(370.6), inch(424.2)),
+                  pt(inch(363.6), inch(424.2)),
                   pt(inch(363.6), inch(424.2)), pt(inch(363.6), inch(421.5)),
                   pt(inch(363.6), inch(421.5)),),
             diameter=inch(0.5), material="pex",
@@ -497,8 +507,8 @@ SUPPLY = [
             # at y=17'-2" and the authored route east and north; PR-M-DW-HW tees on its riser.
             elevations=(inch(86.149), inch(83.5), inch(83.5), inch(83.5), inch(97.4375),
                   inch(97.4375), inch(97.4375), inch(97.4375), inch(103.2),
-                  inch(103.2), inch(103.2), inch(103.2), inch(118.5), inch(118.5),
-                  inch(129.4375),),
+                  inch(103.2), inch(103.2), inch(103.2), inch(103.2), inch(118.5),
+                  inch(118.5), inch(129.4375),),
             serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
     # Second-storey groups: risers climb two storeys to the hall bath, split at both deck
     # top (ft(9) basement-rel = 0'-0" project) and second floor (ft(19) = 10'-0" project),
@@ -572,8 +582,13 @@ SUPPLY = [
     # (15'-4 1/2"..16'-7 1/2") to y=22'-4", and west under W-S-SN3 to its old riser. The
     # wall leg is split at the wall's base and top so it names only the wall it is in.
     PipeRun(uid="CBPW42AAAA", tag="PR-B-CW-SUITE", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(8), ft(16)), pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(18)),
-                  pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(22, 4)),
+            # 2026-11-06: crosses the trusses at x=15'-3" (TrimJoist pocket D13, clear of ED-M-STUDY-LT's
+            # housing), jogging west in the 208..224 bay; one run per pocket.
+            # ESR-1153 Table A: tees at x=9'-2" (was 8'-0") so the joist-013 hole falls at x=162.7",
+            # 10.3" clear of PR-M-S-SUITE-DRAIN's 3.75" hole (7.5" wanted).
+            path=(pt(inch(110), ft(16)), pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(18)),
+                  pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(18)), pt(inch(183), ft(18)),
+                  pt(inch(183), ft(22, 4)),
                   pt(ft(13, 7.2), ft(22, 4)), pt(ft(13, 7.2), ft(22, 4)),
                   pt(ft(13, 7.2), ft(22, 4)), pt(ft(13, 7.2), ft(22, 4)),
                   pt(ft(13, 7.2), ft(22, 4))),
@@ -581,10 +596,10 @@ SUPPLY = [
             # +5/16" on 2026-09-16 (7.1875 -> 7.5): the 4" ERV ducts' crowns are at 9'-5 5/8",
             # and KITCH/BED2 now cross this jog at y=21'-10"/22'-2". 5/16" left under the tub drain.
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), ft(18, 1.3125),
-                        ft(18, 7.5), ft(18, 7.5), ft(18, 7.5), ft(19, 1.4375),
+                        ft(18, 7.5), ft(18, 7.5), ft(18, 7.5), ft(18, 7.5), ft(19, 1.4375),
                         inch(238.9375), inch(253.4375), ft(21, 7.4375)),
-            wall_refs=(None, None, "W-M-CLN2", None, None, None, None, "W-S-SN3", "W-S-SN3",
-                       "W-S-SN3"),
+            wall_refs=(None, None, "W-M-CLN2", None, None, None, None, None, "W-S-SN3",
+                       "W-S-SN3", "W-S-SN3"),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
     PipeRun(uid="CBPW43AAAA", tag="PR-B-HW-SUITE", system=PipeSystem.WATER_HOT,
@@ -604,16 +619,19 @@ SUPPLY = [
                   pt(inch(101), ft(17)), pt(inch(101), ft(17)),
                   pt(ft(16, 5), ft(17)), pt(ft(16, 5), ft(18)),
                   pt(ft(16, 5), ft(18)),
-                  pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(20, 9)),
-                  pt(ft(16, 5), ft(20, 11.625)), pt(ft(16, 5), ft(21, 6.75)),
-                  pt(ft(16), ft(21, 6.75)), pt(ft(16), inch(265.5)), pt(ft(16), ft(22, 4)),
+                  # (2026-11-06) It jogs east to x=16'-9 3/4" in the bay at y=18'-0" and crosses the
+                  # trusses in TrimJoist pocket D15 (D14 is DATA-KITCH's, D13 the cold's).
+                  pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(18)), pt(inch(201.75), ft(18)),
+                  pt(inch(201.75), ft(20, 9)), pt(inch(201.75), ft(20, 11.625)),
+                  pt(inch(201.75), ft(21, 6.75)), pt(inch(201.75), inch(265.5)),
+                  pt(inch(201.75), ft(22, 4)),
                   pt(ft(14, 3.6), ft(22, 4)), pt(ft(14, 3.6), ft(22, 4)),
                   pt(ft(14, 3.6), ft(22, 4))),
             diameter=inch(0.75), material="pex", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
             elevations=(inch(86.245), inch(83.5), inch(83.5), inch(83.5), ft(8, 1.4375),
                         ft(8, 1.4375), ft(8, 1.4375),
                         ft(9, 1.4375),
-                        ft(18, 1.3125), ft(18, 8.125), ft(18, 8.125), ft(18, 7.4375),
+                        ft(18, 1.3125), ft(18, 8.125), ft(18, 8.125), ft(18, 8.125),
                         ft(18, 7.4375), ft(18, 8.4375), ft(18, 8.4375), ft(18, 10.9375),
                         ft(18, 11.4375), ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, None, None, None, None, None, "W-M-CLN2", None, None, None, None, None,
@@ -692,7 +710,9 @@ SUPPLY = [
     # The hot's lane is the west one, so its jog to the north inlet crosses the cold's leg:
     # it steps down 1" at the corner and passes under it.
     PipeRun(uid="CBPW46AAAA", tag="PR-B-CW-SAUNA", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(17, 4), ft(16)), pt(ft(17, 4), ft(6, 2)),
+            # ESR-1153 Table A: x=206.5" (was 208") puts the 0.88" hole 6.3" off the x=213.25 face;
+            # it tees on the trunk's y=15'-0" leg (was y=16'-0").
+            path=(pt(inch(206.5), inch(180)), pt(inch(206.5), ft(6, 2)),
                   pt(ft(18), ft(6, 2)), pt(ft(18), ft(6, 2))),
             diameter=inch(0.5), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(4, 3.4375)),
@@ -701,8 +721,10 @@ SUPPLY = [
             path=(pt(inch(90), inch(295.374)), pt(inch(90), inch(295.374)),
                   pt(inch(93), inch(295.374)), pt(inch(93), inch(206)),
                   pt(inch(93), inch(206)), pt(inch(93), inch(186)),
-                  pt(inch(93), inch(186)), pt(inch(207), inch(186)),
-                  pt(inch(207), inch(78)), pt(inch(207), inch(78)),
+                  # ESR-1153 Table A: x=198" (was 207"), 15" off the x=213.25 face and 8.5" clear of the
+                  # cold; stopping short of x=200" keeps it off the trunk's turn.
+                  pt(inch(93), inch(186)), pt(inch(198), inch(186)),
+                  pt(inch(198), inch(78)), pt(inch(198), inch(78)),
                   pt(inch(216), inch(78)), pt(inch(216), inch(78)),),
                         diameter=inch(0.5), material="pex",
             elevations=(inch(86.149), inch(83.5), inch(83.5), inch(83.5), inch(97.4375),
@@ -757,8 +779,9 @@ HYDRANT_BRANCH_MAIN = [
             # ** THE SOUTH LEG IS ON THE UPPER TIER AT x=6'-3" SINCE 2026-09-24. ** On x=6'-0"
             # at +9'-3" it crossed DU-M-ERV-R-LIVING, -BED and -PLANT on their lower-tier bay
             # legs; 3" east it clears DU-M-ERV-R-BED's upper-tier lane and rides over all three.
-            path=(pt(ft(6), ft(13)), pt(ft(6, 3), ft(13)), pt(ft(6, 3), ft(13)),
-                  pt(ft(6, 3), ft(0, 9)), pt(ft(6, 3), ft(0, 9)), pt(ft(12, 8), ft(0, 9))),
+            # 2026-11-06: the south leg crosses at x=7'-2 3/4" (TrimJoist pocket D6), not 6'-3".
+            path=(pt(ft(6), ft(13)), pt(inch(86.75), ft(13)), pt(inch(86.75), ft(13)),
+                  pt(inch(86.75), ft(0, 9)), pt(inch(86.75), ft(0, 9)), pt(ft(12, 8), ft(0, 9))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(9, 3), ft(9, 3), inch(117.5), inch(117.5), ft(9, 3), ft(9, 3)),
             serves=("FX-M-PORCH-HYD", "FX-S-BALCONY-HYD")),
@@ -993,7 +1016,8 @@ STUDIO_SUPPLY = [
             # Squared off (2026-10-26): the diagonal crossed the 256" truss on a web. West in
             # its own 256..272 bay, south on x=10'-0" (the 113 1/2"..126 1/2" opening, west of
             # PR-M-S-SUITE-WC-DRAIN's east leg), then west in the 240..256 bay to the riser.
-            path=(pt(ft(13, 7.2), ft(22, 4)), pt(ft(10), ft(22, 4)), pt(ft(10), ft(20, 6)),
+            # 2026-11-06: the south leg is at x=10'-2" (TrimJoist pocket D8), not 10'-0" at its edge.
+            path=(pt(ft(13, 7.2), ft(22, 4)), pt(ft(10, 2), ft(22, 4)), pt(ft(10, 2), ft(20, 6)),
                   pt(ft(9, 5.5), ft(20, 6)), pt(ft(9, 5.5), ft(20, 6)),
                   pt(ft(9, 5.5), ft(20, 6))),
             diameter=inch(0.75), material="pex",
@@ -1014,12 +1038,18 @@ STUDIO_SUPPLY = [
             # PR-M-S-SUITE-LAV-DRAIN (3 1/4") and DU-M-ERV-R-LAUNDRY (4 1/4") through the
             # 13'-4 1/2"..14'-7 1/2" web opening (bare crown 118.46" against 118.5"), then west
             # on y=20'-3", inside the 20'-0"..21'-4" truss bay, to the riser.
+            # 2026-11-06: it crosses the 256" truss in TrimJoist pocket D12, which a 0.88" line
+            # fits only at 115.4" or lower: a plumb drop onto the crossing (clear of the cold's
+            # y=22'-4" run) and a plumb rise to the old 118.25" in the 240..256 bay.
             path=(pt(ft(14, 3.6), ft(22, 4)), pt(ft(14, 0.75), ft(22, 4)),
-                  pt(ft(14, 0.75), ft(20, 3)), pt(ft(9, 7.5), ft(20, 3)),
+                  pt(ft(14, 0.75), inch(260)), pt(ft(14, 0.75), inch(260)),
+                  pt(ft(14, 0.75), inch(252.7)),
+                  pt(ft(14, 0.75), inch(252.7)), pt(ft(14, 0.75), ft(20, 3)),
+                  pt(ft(9, 7.5), ft(20, 3)),
                   pt(ft(9, 7.5), ft(20, 10)), pt(ft(9, 7.5), ft(20, 10))),
             diameter=inch(0.75), material="pex",
             insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
-            elevations=(ft(9, 9.8), ft(9, 9.8), ft(9, 10.25), ft(9, 10.75), ft(9, 10.75),
-                        ft(22, 6)),
+            elevations=(ft(9, 9.8), ft(9, 9.8), ft(9, 9.8), ft(9, 7.4), ft(9, 7.4),
+                        ft(9, 10.25), ft(9, 10.25), ft(9, 10.75), ft(9, 10.75), ft(22, 6)),
             serves=("FX-A-STUBATH-LAV", "FX-A-STUBATH-SH", "FX-A-STUDIO-BAR-SINK")),
 ]

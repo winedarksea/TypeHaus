@@ -86,6 +86,14 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         "truss": ({"heel_m": m.truss.heel_m, "tail_lo_m": m.truss.tail_lo_m,
                    "tail_hi_m": m.truss.tail_hi_m, "gable": m.truss.gable}
                   if m.truss is not None else None),
+        # An open-web floor truss's derived web layout (``resolve/open_web.OpenWebShape``):
+        # OSB TrimEnd blocks, chase posts and Warren diagonals as run-from-p0 / height-above-
+        # bottom sticks, which the viewer draws instead of any convention of its own.
+        "web": ({"stock_m": m.web.stock_m, "trim_lo_m": m.web.trim_lo_m,
+                 "trim_hi_m": m.web.trim_hi_m, "chase_run_m": m.web.chase_run_m,
+                 "sticks": [[stick.kind, stick.run0_m, stick.z0_m, stick.run1_m, stick.z1_m]
+                            for stick in m.web.sticks]}
+                if m.web is not None else None),
         "shape": section.shape, "width_m": section.width_m, "depth_m": section.depth_m,
         "flange_width_m": section.flange_width_m,
         "flange_thickness_m": section.flange_thickness_m,

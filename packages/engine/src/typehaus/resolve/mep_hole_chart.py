@@ -60,7 +60,8 @@ def chart_verdict(chart: Any, profile: str, depth_in: float, cut_in: float,
                   diameter_in: float, notch: bool, *,
                   from_bearing_in: float | None, span_in: float | None,
                   edge_clear_in: float | None, nearest_cut_in: float | None,
-                  nearest_diameter_in: float | None = None) -> BoreVerdict:
+                  nearest_diameter_in: float | None = None,
+                  noun: str = "header", remedy: str | None = None) -> BoreVerdict:
     """Grade one hole against an authored ``PublishedHole`` row. Four outcomes, no fifth.
 
     A chart is a SHAPE as much as a number: a legal-diameter hole three inches off a bearing
@@ -68,13 +69,13 @@ def chart_verdict(chart: Any, profile: str, depth_in: float, cut_in: float,
     """
     row = f"{chart.source} — {chart.table}"
     tail = f" [{row}]" + (f" Conditions: {chart.condition}" if chart.condition else "")
-    remedy = ("route the run clear of the header, or have the header's designer state an "
-              "allowable this chart does not publish")
+    remedy = remedy or ("route the run clear of the header, or have the header's designer "
+                        "state an allowable this chart does not publish")
 
     if notch and chart.round_holes_only:
         return BoreVerdict(
             False, "notch", cut_in, None,
-            f'the run clips this header for {cut_in:.2f}" of its {diameter_in:.2f}" outside '
+            f'the run clips this {noun} for {cut_in:.2f}" of its {diameter_in:.2f}" outside '
             "— that is a NOTCH off a face, and the chart permits ROUND HOLES ONLY, so no row "
             f"of it reaches this cut{tail}", remedy=remedy)
 
@@ -82,7 +83,7 @@ def chart_verdict(chart: Any, profile: str, depth_in: float, cut_in: float,
     if cut_in > limit_in + 1e-6:
         return BoreVerdict(
             False, "bore", cut_in, limit_in,
-            f'{cut_in:.2f}" through a {profile} header is over the {limit_in:.2f}" the chart '
+            f'{cut_in:.2f}" through a {profile} {noun} is over the {limit_in:.2f}" the chart '
             f'publishes for a {depth_in:.2f}" member, by {cut_in - limit_in:.2f}"{tail}',
             remedy=remedy)
 
@@ -135,7 +136,7 @@ def chart_verdict(chart: Any, profile: str, depth_in: float, cut_in: float,
         if nearest_cut_in is not None and nearest_cut_in < need - 1e-6:
             return BoreVerdict(
                 False, "bore", cut_in, limit_in,
-                f'the nearest other hole in this header is {nearest_cut_in:.2f}" away and '
+                f'the nearest other hole in this {noun} is {nearest_cut_in:.2f}" away and '
                 f'the chart wants {need:.2f}"{tail}', remedy=remedy)
         if nearest_cut_in is not None:
             zone.append(f'{nearest_cut_in:.2f}" from the next hole against {need:.2f}"')
@@ -143,7 +144,7 @@ def chart_verdict(chart: Any, profile: str, depth_in: float, cut_in: float,
     where = "; ".join(zone) or "no zone stated by the chart"
     return BoreVerdict(
         True, "bore", cut_in, limit_in,
-        f'{cut_in:.2f}" through a {profile} header ({depth_in:.2f}" deep) is inside the '
+        f'{cut_in:.2f}" through a {profile} {noun} ({depth_in:.2f}" deep) is inside the '
         f'{limit_in:.2f}" this chart publishes, and inside its hole zone — {where}{tail}')
 
 
@@ -155,3 +156,66 @@ def _chart_unanswered(what: str, row: str) -> BoreVerdict:
         f"so the row cannot be said to cover it [{row}]",
         remedy="give the check the header's span and bearings, or quote a row that does not "
                "state that guard")
+
+
+# --- I-joist ladders (decision #117) ---------------------------------------------------
+
+#: A drilled hole is the run's outside plus 1/4": a pipe is not threaded through a hole its
+#: own size. Applied in the chart path only; ``notes/framing_bore_limits.md`` §11.
+DRILLED_HOLE_CLEARANCE_IN = 0.25
+
+
+def joist_hole_chart(library: Any, profile: str) -> Any:
+    """The ``JoistHoleChart`` the library holds for this member, or ``None``."""
+    key = _normalise_member(profile)
+    return next((chart for chart in getattr(library, "joist_hole_charts", ()) or ()
+                 if _normalise_member(chart.member) == key), None)
+
+
+def ijoist_hole_verdict(chart: Any, profile: str, hole_in: float, *,
+                        edge_in: float | None, nearest_clear_in: float | None = None,
+                        nearest_diameter_in: float | None = None,
+                        depth_in: float = 0.0) -> BoreVerdict:
+    """Grade one drilled hole against an I-joist ladder: pick the row, then grade its zone.
+
+    ``hole_in`` is the drilled diameter, ``edge_in`` the hole's nearest edge to the inside
+    face of its END support (``None``: the support is not one Table A covers).
+    ``nearest_clear_in`` is edge to edge to the next hole in the same joist.
+    """
+    from typehaus.model.refs_holes import PublishedHole
+
+    if _normalise_member(chart.member) != _normalise_member(profile):
+        return BoreVerdict(None, "bore", hole_in, None,
+                           f"the I-joist hole chart was read for {chart.member!r} and this "
+                           f"joist resolves as {profile!r}, so it grades nothing here")
+    row = next((r for r in chart.rows if r.max_diameter.meters / M_PER_IN >= hole_in - 1e-6),
+               None)
+    if (chart.field_hole_max is not None
+            and hole_in <= chart.field_hole_max.meters / M_PER_IN + 1e-6):
+        row = PublishedHole(source=chart.source, member=chart.member,
+                            table=f"{chart.table}: field hole up to "
+                                  f'{chart.field_hole_max.meters / M_PER_IN:g}"',
+                            max_diameter=chart.field_hole_max,
+                            zone_from_bearing=chart.field_hole_zone)
+    if row is None:
+        top = chart.rows[-1].max_diameter.meters / M_PER_IN
+        return BoreVerdict(
+            False, "bore", hole_in, top,
+            f'a {hole_in:.2f}" hole in a {profile} is over the largest hole the chart '
+            f'publishes, {top:g}" [{chart.source} — {chart.table}]',
+            remedy="take the run along a bay, or under the joists in a soffit")
+    if edge_in is None:
+        return BoreVerdict(
+            None, "bore", hole_in, row.max_diameter.meters / M_PER_IN,
+            f"this joist cantilevers past a support, which Table B governs, and only "
+            f"Table A (end supports) is transcribed [{chart.source} — {chart.table}]",
+            remedy="transcribe Table B, or keep the run out of a cantilevered joist")
+    row = row.model_copy(update={"min_spacing_diameters": chart.min_spacing_diameters,
+                                 "condition": chart.condition})
+    # The chart measures from the hole's EDGE; ``chart_verdict`` reads that as the distance.
+    return chart_verdict(row, profile, depth_in, hole_in, hole_in, False,
+                         from_bearing_in=edge_in, span_in=None, edge_clear_in=None,
+                         nearest_cut_in=nearest_clear_in,
+                         nearest_diameter_in=nearest_diameter_in, noun="I-joist",
+                         remedy="move the crossing further from the support, or clear of "
+                                "the next hole in the same joist")

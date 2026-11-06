@@ -119,7 +119,7 @@ def anchor_targets(model) -> dict[str, list[AnchorTarget]]:
 
 
 def _unframeable(host: FloorSystem) -> str:
-    if host.joists.web_panel_pitch is not None:
+    if host.joists.web_openings is not None:
         return (f"{host.tag} is open-web floor trusses: an added line is a truss order, "
                 "not a field change")
     return ""

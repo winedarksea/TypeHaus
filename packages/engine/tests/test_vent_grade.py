@@ -78,28 +78,30 @@ def test_kitchen_vent_profile_is_the_note_section_1(catlin_model_ro) -> None:
 
 
 def test_the_kitchen_vents_flattest_leg_is_the_advisory(catlin_model_ro) -> None:
-    """0.500" over 17.0573 ft = 0.029"/ft — under a quarter of the house's 1/8"/ft, and
+    """0.500" over 16.79 ft = 0.030"/ft (17.06 ft until its J12 pocket move, 2026-11-06) —
+    under a quarter of the house's 1/8"/ft, and
     still a PASS, because 905.1 states a direction and no figure."""
     finding = _for(_margin(catlin_model_ro), "PR-M-KITCH-VENT")
     assert finding.result is Result.PASS
     assert finding.message.startswith("ADVISORY — ")
-    assert '0.029"/ft at its flattest (segment 1, 17.06 ft of plan)' in finding.message
+    assert '0.030"/ft at its flattest (segment 1, 16.79 ft of plan)' in finding.message
 
 
 def test_bath2_vent_is_the_interpolated_branch_and_both_branches_agree(
         catlin_model_ro) -> None:
-    """Note §2. Two authored inverts over 82" of developed plan = 0.015"/ft — and the same
+    """Note §2. Two authored inverts over 87" of developed plan = 0.014"/ft (82" and 0.015
+    until the R1-chase crossing, 2026-11-06) — and the same
     run read through the start/end branch has to produce the identical number."""
     index = _vent_index(catlin_model_ro, "PR-M-BATH2-VENT")
     run = catlin_model_ro.pipe_runs[index]
-    assert run.length_m * 3.280839895 == pytest.approx(82.0 / 12.0, abs=2e-3)
+    assert run.length_m * 3.280839895 == pytest.approx(87.0 / 12.0, abs=2e-3)
     resolved = _for(_margin(catlin_model_ro), "PR-M-BATH2-VENT")
-    assert '0.015"/ft' in resolved.message
+    assert '0.014"/ft' in resolved.message
 
     blind = copy.copy(run)
     object.__setattr__(blind, "z_m", None)
     legacy = _for(_margin(_with_run(catlin_model_ro, index, blind)), "PR-M-BATH2-VENT")
-    assert '0.015"/ft' in legacy.message
+    assert '0.014"/ft' in legacy.message
     assert _for(_grade(_with_run(catlin_model_ro, index, blind)),
                 "PR-M-BATH2-VENT").result is Result.PASS
 

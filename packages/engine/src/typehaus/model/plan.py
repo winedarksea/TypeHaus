@@ -9,6 +9,7 @@ from pydantic import Field
 from typehaus.model.assembly import Assembly, ConstructionRule
 from typehaus.model.base import Element, HausModel
 from typehaus.model.electrical import Circuit, LoadManagement
+from typehaus.model.joist_holes import JoistHoleChart
 from typehaus.model.landscape import PlantType
 from typehaus.model.materials import Material
 from typehaus.model.product import Product
@@ -49,6 +50,8 @@ class Library(HausModel):
     # ``DuctRun`` states and ``prices.toml``'s ``[ducts]`` already qualifies on. Nothing
     # in the takeoff needs it; the static budget does.
     duct_product_types: tuple[DuctProductType, ...] = ()
+    # I-joist ALLOWABLE HOLES ladders, keyed by member profile (``model/joist_holes.py``).
+    joist_hole_charts: tuple[JoistHoleChart, ...] = ()
     electrical_device_types: tuple[LuminaireType | ElectricalDeviceType, ...] = ()
     circuits: tuple[Circuit, ...] = ()
     load_managements: tuple[LoadManagement, ...] = ()

@@ -554,3 +554,54 @@ line crosses in y from y = 8" to 40" at z = 4 5/8".
   R502.8.1's band, 2" + 1.1875" = 3.1875" .. 9.25 - 3.1875 = 6.0625" above the joist bottom.
 * Cost: 32" of travel + 2 x `bore_joist_in` 36" = **104"**.
 * At z = 7" the hole leaves 1.0625" to the top edge and the edge is refused.
+
+## 11. The I-joist ladder: ESR-1153 Table A, read (2026-11-06, decision #117)
+
+`plan/framing_charts.py` transcribes the 11 7/8" TJI 230 round-hole row of ESR-1153 Fig. 2
+Table A ("minimum distance from inside face of END support to nearest EDGE of hole"), with
+TJ-4000 (July 2019 p.8, the edition read; the house cites July 2025 for spans) for the 5"
+and 7" columns, which ESR-1153 omits. The two agree on every shared column:
+
+| round hole up to | 1 1/2" (field) | 2" | 3" | 4" | 5" | 6 1/2" | 7" | 8 7/8" |
+|---|---|---|---|---|---|---|---|---|
+| support face to hole edge | 6" | 1'-0" | 1'-6" | 2'-0" | 2'-6" | 3'-0" | 3'-6" | 6'-6" |
+
+Footnote 1: clear distance between holes >= 2 x the largest hole. TJ-4000: a 1 1/2" hole may
+go anywhere outside the 6" hatched zone at each support, 3" edge to edge from a larger hole
+(always inside fn 1's 2 x D). No span-adjustment factor is published, so none is modelled.
+Table B (intermediate/cantilever) is not transcribed; a cantilevered tip grades UNKNOWN.
+
+**The drilled hole is OD + 1/4"** (`DRILLED_HOLE_CLEARANCE_IN`): 1/2" PEX 0.625 -> 0.875,
+3/4" PEX 0.875 -> 1.125, 1" 1.125 -> 1.375 (field holes); 1 1/4" 1.375 -> 1.625 (2" row);
+1 1/2" PVC 1.900 -> 2.15 and 2" PVC 2.375 -> 2.625 (3" row, 18"); 3" PVC 3.500 -> 3.75 (4"
+row, 24").
+
+**Support faces** (`mep_crossings.support_faces`): a deck tip seated on a plate is tip +/- seat
+(FS-ATTIC 2.25 + 3.75 = **6.0"**; FS-M-WEST 6.0" and 216 - 2.75 = **213.25"**); a hung end is
+the member end (FS-ATTIC joists 017-025 on `BM-S-HALL`: **120.0"**); a line split over the
+x=18' bearing takes the deck's larger end seat in (FS-ATTIC: 216 - 3.75 = 212.25").
+
+Edge = |station - face| - hole/2. Worked, as found and as moved:
+
+1. **`PR-S-SUITEBATH-VENT`** (1 1/2", hole 2.15, 3" row 18"): at x=108, 120 - 108 - 1.075 =
+   **10.93" < 18 FAIL** on nine joists. Moved to x=90: 120 - 90 - 1.075 = 28.9" PASS; clear to
+   `PR-M-WC-VENT` at 98.5 (hole 2.625): 8.5 - 1.075 - 1.3125 = **6.11" >= 2 x 2.625 = 5.25**.
+   x=100.7 (the review's fix) would have stood 2.2 - 1.075 - 1.3125 = -0.19" off WC-VENT: the
+   two holes overlap, so the three attic vents had to be laid out together.
+2. **`PR-S-BATH1-VENT`** (2", hole 2.625): its diagonal met joist 023 at x=112.1: 120 - 112.1 -
+   1.3125 = **6.6" < 18 FAIL**, and on 022 at x=94.7 it stood 98.5 - 94.7 - 2.625 = **1.2"**
+   from WC-VENT against 5.25. Now square, on x=40: 40 - 6 - 1.3125 = **32.7" PASS**.
+3. **`PR-B-CW-TRUNK`** (1 1/4", hole 1.625, 2" row 12"): at x=209 on FS-M-WEST joist 012,
+   213.25 - 209 - 0.8125 = **3.44" FAIL**; at x=200, 213.25 - 200 - 0.8125 = **12.44" PASS**.
+4. **`PR-B-HW-SAUNA` / `PR-B-CW-SAUNA`** (1/2", hole 0.875, field 6"): at 207/208, 5.81" and
+   4.81" against 6, and 1 - 0.875 = **0.125"** apart against 1.75. Moved to 198 / 206.5:
+   14.8" and 213.25 - 206.5 - 0.4375 = **6.31" PASS**, 7.62" apart.
+5. **`PR-B-CW-BATH2`** (3/4", hole 1.125, field 6"): x=12, 12 - 6 - 0.5625 = **5.44" FAIL**;
+   x=13, **6.44" PASS**.
+
+**What the review's probe missed is fn 1.** Graded by the check, the spacing rule also took
+`PR-B-CW-BATH1` (1.6" off the trunk's 1.625 hole against 3.25; moved to 62), `PR-B-TUB2-DRAIN`
+/ `CW-BATH1` on joist 013 (0.6" against 4.3) and `PR-B-CW-SUITE` (5.56" off the 3.75" suite
+drain hole against 7.5; tee moved to 110). Every TJI crossing in the house now PASSes and cites
+its row; the router refuses a lattice edge outside the zone and prices one inside it as
+`bore_engineered_in`, not `bore_unpublished_in`.
