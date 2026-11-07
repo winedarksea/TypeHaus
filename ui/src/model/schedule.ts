@@ -80,12 +80,13 @@ export function nextVisit(payload: SchedulePayload | null): Visit | null {
   return blocked.find((visit) => visit.milestone === current) ?? blocked[0] ?? null;
 }
 
-/** Sheets to bring to a visit: the handoff items' manifest numbers, deduplicated. */
+/** Sheets to bring to a visit: the handoff items' manifest numbers, deduplicated. Numeric
+ * collation puts a detail series member A-540.10 after A-540.9 (engine `sheet_sort_key`). */
 export function visitSheets(visit: Visit): string[] {
   const sheets = visit.handoff
     .map((item) => item.sheet_ref)
     .filter((sheet): sheet is string => Boolean(sheet));
-  return Array.from(new Set(sheets)).sort();
+  return Array.from(new Set(sheets)).sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
 }
 
 /** Handoff items still unticked — what the walk is actually for. */

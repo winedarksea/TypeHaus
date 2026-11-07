@@ -51,8 +51,16 @@ def in_set(sheet: _Numbered, name: str, preferences: Preferences | None) -> bool
     options = preferences.print_options if preferences is not None else None
     drop = options.permit_drop if options is not None else ()
     add = options.permit_add if options is not None else ()
-    if any(sheet.number.startswith(prefix) for prefix in drop):
+    if any(_prefix_matches(sheet.number, prefix) for prefix in drop):
         return False
-    if any(sheet.number.startswith(prefix) for prefix in add):
+    if any(_prefix_matches(sheet.number, prefix) for prefix in add):
         return True
     return name in sheet.sets
+
+
+def _prefix_matches(number: str, prefix: str) -> bool:
+    """``E-1`` catches E-101; a decimal member ``A-560.1`` catches A-560.1.1, not A-560.10."""
+    if not number.startswith(prefix):
+        return False
+    after = number[len(prefix):len(prefix) + 1]
+    return not ("." in prefix and prefix[-1].isdigit() and after.isdigit())

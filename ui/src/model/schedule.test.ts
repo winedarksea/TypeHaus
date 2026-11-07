@@ -90,6 +90,9 @@ export function runScheduleTests(): void {
 
   const framing = PAYLOAD.visits[2];
   assert(visitSheets(framing).join() === "A-602,S-201", "sheets deduplicated and sorted");
+  const series = { ...framing, handoff: ["A-540.10", "A-540.2"].map((sheet_ref) => ({
+    ...framing.handoff[0], sheet_ref })) };
+  assert(visitSheets(series).join() === "A-540.2,A-540.10", "detail series sort numerically");
   assert(visitSheets(PAYLOAD.visits[1]).length === 0, "no handoff, no sheets");
   assert(openHandoff(framing).map((i) => i.id).join() === "b,c", "ticked items drop out");
 

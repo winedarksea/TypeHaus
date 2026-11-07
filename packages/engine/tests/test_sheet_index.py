@@ -177,3 +177,16 @@ def test_a_house_can_put_a_dropped_series_back_in_one_line(catlin_model_ro,
     assert "E-101" not in {s.number
                            for s in build_sheet_index(catlin_model_ro, both, sets="permit",
                                                       report=catlin_model_report)}
+
+
+def test_a_decimal_series_prefix_names_one_member():
+    """``permit_drop = ["A-560.1"]`` drops that detail and its enlargements, never A-560.10."""
+    from types import SimpleNamespace
+
+    from typehaus.checks.registry import Preferences, PrintPreferences
+    from typehaus.emit.draw.sheet_sets import BOTH_SETS, in_set
+
+    prefs = Preferences(print_options=PrintPreferences(permit_drop=("A-560.1", "E-1")))
+    kept = {n for n in ("A-560.1", "A-560.1.2", "A-560.10", "A-560.2", "E-101", "A-501")
+            if in_set(SimpleNamespace(number=n, sets=BOTH_SETS), "permit", prefs)}
+    assert kept == {"A-560.10", "A-560.2", "A-501"}
