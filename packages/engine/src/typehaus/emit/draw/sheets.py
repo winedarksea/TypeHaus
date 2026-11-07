@@ -13,10 +13,12 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from typehaus.emit.draw.callouts import detail_sheets
 from typehaus.emit.draw.cover_sheets import add_cover, cover_inputs
 from typehaus.emit.draw.datum import model_at_level
+from typehaus.emit.draw.detail_derive import DerivedDetail
 from typehaus.emit.draw.detail_enlarged import enlarged_details
-from typehaus.emit.draw.details import build_authored_detail_scene, derive_detail_slices
+from typehaus.emit.draw.details import build_authored_detail_scene
 from typehaus.emit.draw.elevation import elevation_sheets
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.floorplan_sheet import floorplan_sheet
@@ -232,33 +234,28 @@ def build_sheet_index(model: ResolvedModel,
                                     scene=partial(enlarged_plan_sheet, group=group,
                                                   build=build, setout=kind == "bath")))
 
-    # A junction cut at 1-1/2" = 1'-0" is a DETAIL and belongs in the 5 series.
-    authored_details = [item for item in model.plan.elements_of_kind("Slice")
-                        if item.kind.value == "detail"]
-    next_detail = 501
-    for detail in authored_details:
-        sheets.append(SheetSpec(f"A-{next_detail}", detail.title or detail.tag,
-                                scene=partial(build_authored_detail_scene, view=detail)))
-        next_detail += 1
-
-    # Derived transition details — one per distinct bound condition key, sorted by key,
-    # continuing the A-4xx block after any authored details (→ 11b transition details).
-    for derived in derive_detail_slices(model):
-        tr = derived.transition
-        starred = bool(tr.stars(derived.key)) if tr is not None else False
-        # NUMBERED BEFORE FILTERED. ``FIRST_DETAIL_SHEET`` numbers every derived detail,
-        # so a detail's number is the same in the permit set and the full set — a callout
-        # on A-101 pointing at A-517 must not move because a sheet ahead of it dropped.
-        sheets.append(SheetSpec(f"A-{next_detail}", _derived_detail_title(derived, model),
-                                scene=partial(_derived_detail_scene, derived=derived),
-                                sets=BOTH_SETS if starred else FULL_ONLY))
-        # Enlarged head/sill (C7-E4): A-512.1/.2 beside their parent, same sets.
-        for index, child in enumerate(enlarged_details(model, derived), start=1):
-            sheets.append(SheetSpec(f"A-{next_detail}.{index}",
-                                    f"{_derived_detail_title(derived, model)} · {child.part}",
+    # A junction cut at 1-1/2" = 1'-0" is a DETAIL and belongs in the 5 series: authored
+    # slices on whole numbers, each derived condition kind its own decimal series
+    # (→ callouts.detail_sheets, which the callouts read too).
+    for number, item in detail_sheets(model):
+        if not isinstance(item, DerivedDetail):
+            sheets.append(SheetSpec(number, item.title or item.tag,
+                                    scene=partial(build_authored_detail_scene, view=item)))
+            continue
+        tr = item.transition
+        starred = bool(tr.stars(item.key)) if tr is not None else False
+        # NUMBERED BEFORE FILTERED, so a detail's number is the same in the permit set and
+        # the full set: a callout must not move because a sheet ahead of it dropped.
+        title = _derived_detail_title(item, model)
+        sets_for = BOTH_SETS if starred else FULL_ONLY
+        sheets.append(SheetSpec(number, title,
+                                scene=partial(_derived_detail_scene, derived=item),
+                                sets=sets_for))
+        # Enlarged head/sill (C7-E4): A-560.1.1/.2 beside their parent, same sets.
+        for index, child in enumerate(enlarged_details(model, item), start=1):
+            sheets.append(SheetSpec(f"{number}.{index}", f"{title} · {child.part}",
                                     scene=partial(_derived_detail_scene, derived=child),
-                                    sets=BOTH_SETS if starred else FULL_ONLY))
-        next_detail += 1
+                                    sets=sets_for))
 
     # A-601 used to be doors, windows AND fixtures on one sheet. They are three schedules
     # with three readers — a door supplier, a glazing supplier, and whoever is setting

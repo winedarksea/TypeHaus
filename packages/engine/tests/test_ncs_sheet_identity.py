@@ -14,8 +14,8 @@ import re
 
 #: Every sheet number in a conforming set. ``A-301.1`` is the authored-section variant and
 #: is deliberately admitted — a decimal suffix is how NCS numbers a sheet inserted into an
-#: existing sequence.
-_NUMBER = re.compile(r"^[A-Z]{1,2}-[0-9]{3}(\.[0-9]+)?$")
+#: existing sequence. A derived detail series nests one more (``A-560.1.1``, its head).
+_NUMBER = re.compile(r"^[A-Z]{1,2}-[0-9]{3}(\.[0-9]+){0,2}$")
 
 #: Which type digit each series is allowed to use, and what the digit means.
 _TYPE_MEANING = {

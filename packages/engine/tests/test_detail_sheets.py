@@ -23,19 +23,16 @@ from typehaus.source import load_plan
 
 def test_catlin_emits_authored_then_derived_detail_sheets(catlin_sheet_index):
     sheets = catlin_sheet_index()
-    # Enlarged head/sill sub-sheets (A-512.1) ride their parent and are not numbered.
-    detail_numbers = [s.number for s in sheets
-                      if s.number.startswith("A-5") and "." not in s.number]
-    # The four authored details keep A-501..A-504, in order, ahead of derived details.
-    assert detail_numbers[:4] == ["A-501", "A-502", "A-503", "A-504"]
+    authored = [s.number for s in sheets if s.number.startswith("A-5") and "." not in s.number]
+    # The authored details keep whole numbers from A-501, contiguous, in authoring order.
+    assert authored[:4] == ["A-501", "A-502", "A-503", "A-504"]
+    assert authored == [f"A-{n}" for n in range(501, 501 + len(authored))]
     titles = {s.number: s.title for s in sheets}
     assert titles["A-501"] == "Foundation detail"
     assert titles["A-502"] == "Floor truss bearing detail"
-    # Derived transition details continue the A-5xx block (catlin binds many conditions).
-    assert len(detail_numbers) > 4
-    # numbering is contiguous
-    nums = [int(n.split("-")[1]) for n in detail_numbers]
-    assert nums == list(range(501, 501 + len(nums)))
+    # Derived details follow as one decimal series per condition kind (A-540.1 ...).
+    derived = [s.number for s in sheets if s.number.startswith("A-5") and "." in s.number]
+    assert "A-540.1" in derived and "A-570.1" in derived
 
 
 def test_deckbrg_scene_seats_the_truss_on_the_pour(catlin_model_ro, catlin_sheet_index):

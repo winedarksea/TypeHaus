@@ -113,12 +113,14 @@ def _index(inputs: RecordInputs) -> str:
 
 
 def _sheet_span(sheets: tuple[str, ...]) -> str:
-    """``A-509`` / ``A-522, A-523`` / ``A-510..A-578 (7 sheets)``.
+    """``A-509`` / ``A-522, A-523`` / ``A-540.3..A-540.12 (7 sheets)``.
 
     Same rule G-002's index uses: a note bound to a whole assembly pattern reaches a dozen
     sheets, and printing all twelve numbers is a wall of text where a range says it.
     """
-    ordered = sorted(set(sheets))
+    from typehaus.emit.draw.callouts import sheet_sort_key
+
+    ordered = sorted(set(sheets), key=sheet_sort_key)
     if len(ordered) > 3:
         return f"{ordered[0]}..{ordered[-1]} ({len(ordered)} sheets)"
     return ", ".join(ordered)

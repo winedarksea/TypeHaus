@@ -22,7 +22,7 @@ def _detail_callouts(model: ResolvedModel, scene: Scene, plane: CutPlane,
     is perpendicular and crosses it, else a wall of the same condition (storey + assembly
     pair) standing on one line of the cut. Anything else points at nothing (D2-003).
     """
-    from typehaus.emit.draw.callouts import callout_nodes, detail_sheet_numbers
+    from typehaus.emit.draw.callouts import callout_label, callout_nodes, detail_sheet_numbers
     from typehaus.emit.draw.details import derive_detail_slices
 
     sheets = detail_sheet_numbers(model)
@@ -47,8 +47,8 @@ def _detail_callouts(model: ResolvedModel, scene: Scene, plane: CutPlane,
                     and cz0 / M_PER_IN <= anchor[1] <= cz1 / M_PER_IN):
                 continue
         placed.append(anchor)
-        number = "1"  # each detail sheet carries one drawing (not the sheet's last digit)
-        out.extend(callout_nodes(anchor, number, sheet, scene.frame.scale
+        number, series = callout_label(sheet)
+        out.extend(callout_nodes(anchor, number, series, scene.frame.scale
                                  if scene.frame is not None else None))
     return out
 

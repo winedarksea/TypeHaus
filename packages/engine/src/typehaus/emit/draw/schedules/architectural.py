@@ -173,7 +173,7 @@ def _sheet_note_index(model: ResolvedModel) -> list[str]:
     knows there is guidance about the eave can find which sheet carries it. One line per
     notes file, so it is bounded by the six files rather than by their 637 lines.
     """
-    from typehaus.emit.draw.callouts import detail_sheet_numbers
+    from typehaus.emit.draw.callouts import detail_sheet_numbers, sheet_sort_key
     from typehaus.emit.draw.details import derive_detail_slices
 
     sheets = detail_sheet_numbers(model)
@@ -186,7 +186,7 @@ def _sheet_note_index(model: ResolvedModel) -> list[str]:
         where.setdefault(Path(rel).stem.replace("_", " ").upper(), []).append(sheet)
     out: list[str] = []
     for title, numbers in sorted(where.items()):
-        ordered = sorted(set(numbers))
+        ordered = sorted(set(numbers), key=sheet_sort_key)
         # A note bound to a whole assembly pattern reaches a dozen sheets; printing all
         # twelve numbers is a wall of text where a range says the same thing.
         shown = (f"{ordered[0]}..{ordered[-1]} ({len(ordered)} sheets)"
@@ -410,7 +410,8 @@ SYMBOLS = (
      "door / window mark, one per type, RO and frame; keyed to A-601 / A-602 (plan_marks.py)"),
     ("K1 in a circle", "keyed note, listed in the notes band on that sheet (keyed_notes.py)"),
     ("Split circle, 1 over A-501",
-     "detail callout: detail 1, drawn on sheet A-501 (callouts.py)"),
+     "detail callout: detail 1, drawn on sheet A-501; a derived detail, n over A-5x0, is "
+     "sheet A-5x0.n, one series per condition (callouts.py)"),
     ("Medium red line on S-103.1", "braced wall line (bracedwallplan.py)"),
     ("Heavy red line offset beside it",
      "braced wall panel, tagged with its width and R602.10.4 method; drawn light where it "

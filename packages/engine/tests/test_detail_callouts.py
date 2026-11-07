@@ -11,8 +11,10 @@ from __future__ import annotations
 
 from typehaus.emit.draw.callouts import (
     CALLOUT_LAYER,
+    DERIVED_SERIES,
     FIRST_DETAIL_SHEET,
     detail_sheet_numbers,
+    sheet_sort_key,
 )
 from typehaus.emit.draw.scene import Polyline, Text
 from typehaus.emit.draw.section import build_center_section
@@ -27,15 +29,27 @@ def test_the_two_numberings_agree(catlin_model_ro, catlin_sheet_index):
     callout naming a sheet the set does not emit is worse than no callout.
     """
     derived = detail_sheet_numbers(catlin_model_ro)
-    # An enlarged head/sill (A-512.1) is a sub-sheet of its detail, never a callout target.
     index = [s.number for s in catlin_sheet_index(sets="full")
-             if s.number.startswith(f"A-{FIRST_DETAIL_SHEET // 100}") and "." not in s.number]
-    assert sorted(derived.values()) == sorted(index)
+             if s.number.startswith(f"A-{FIRST_DETAIL_SHEET // 100}")]
+    # An enlarged head/sill (A-560.1.1) is a sub-sheet of its detail, never a callout target.
+    details = [n for n in index if "." not in n or n.rsplit(".", 1)[0] not in set(index)]
+    assert sorted(derived.values(), key=sheet_sort_key) == details
+
+
+def test_details_number_by_family_with_headroom(catlin_model_ro):
+    """Every condition kind has its own series, so the block cannot fill again (it did at
+    A-599 when every detail took a whole number)."""
+    from typehaus.model.enums import ConditionKind
+
+    assert set(DERIVED_SERIES) == set(ConditionKind)
+    numbers = list(detail_sheet_numbers(catlin_model_ro).values())
+    assert all(n.startswith("A-5") for n in numbers)
+    assert numbers == sorted(numbers, key=sheet_sort_key)
 
 
 def test_a_detail_keeps_its_number_in_both_sets(catlin_sheet_index):
-    """``FIRST_DETAIL_SHEET`` numbers EVERY derived detail, so the permit set drops sheets
-    without renumbering the ones it keeps. A callout pointing at A-560 must not move
+    """Every detail is numbered before the set filter, so the permit set drops sheets
+    without renumbering the ones it keeps. A callout pointing at A-540.4 must not move
     because an unstarred sheet ahead of it was filtered out."""
     full = {s.number: s.title for s in catlin_sheet_index(sets="full")}
     for sheet in catlin_sheet_index(sets="permit"):
@@ -45,12 +59,14 @@ def test_a_detail_keeps_its_number_in_both_sets(catlin_sheet_index):
 def test_the_section_calls_out_the_details_it_passes_through(catlin_model_ro,
                                                             catlin_sheet_index):
     scene = build_center_section(catlin_model_ro)
-    sheets = {n.content for n in scene.nodes
-              if isinstance(n, Text) and n.layer == CALLOUT_LAYER
-              and n.content.startswith("A-")}
-    assert sheets, "the building section references no detail at all"
+    texts = [n.content for n in scene.nodes
+             if isinstance(n, Text) and n.layer == CALLOUT_LAYER]
+    pairs = list(zip(texts[::2], texts[1::2]))  # (number, sheet) per bubble
+    assert pairs, "the building section references no detail at all"
     emitted = {s.number for s in catlin_sheet_index()}
-    assert sheets <= emitted, f"callouts point at sheets that do not exist: {sheets - emitted}"
+    # "1 over A-501" is sheet A-501; "4 over A-540" is series member A-540.4.
+    dangling = [p for p in pairs if len({p[1], f"{p[1]}.{p[0]}"} & emitted) != 1]
+    assert not dangling, f"callouts point at sheets that do not exist: {dangling}"
 
 
 def test_a_callout_is_a_polyline_and_never_a_symbol(catlin_model_ro):
@@ -72,6 +88,9 @@ def test_callouts_do_not_overprint_each_other(catlin_model_ro):
     centres = [n.anchor for n in scene.nodes
                if isinstance(n, Text) and n.layer == CALLOUT_LAYER
                and n.content.startswith("A-")]
+    # A series member reads "4 over A-540" for A-540.4, so the bubble stays five wide.
+    assert all(len(n.content) <= 5 for n in scene.nodes
+               if isinstance(n, Text) and n.layer == CALLOUT_LAYER)
     for i, a in enumerate(centres):
         for b in centres[i + 1:]:
             assert abs(a[0] - b[0]) >= _CALLOUT_MIN_GAP_IN - 1e-6 \

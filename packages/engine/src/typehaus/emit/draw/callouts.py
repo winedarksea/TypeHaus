@@ -18,10 +18,9 @@ Both are ``Polyline`` + ``Text``, for the reason ``keyed_notes`` documents at le
 writers dispatch ``Symbol`` off a closed vocabulary and an unlisted name renders as a
 window glass bar.
 
-**The numbering cannot come from ``build_sheet_index``**, which is downstream of every
+**The numbering lives here, not in ``build_sheet_index``**, which is downstream of every
 scene — a plan is built before the index that would tell it which sheet its details landed
-on. So this module derives the same mapping from the same input, ``derive_detail_slices``
-in authored order, and a test asserts the two agree. One ordering, computed twice, checked.
+on. Both read :func:`detail_sheets`, and a test asserts they agree.
 """
 
 from __future__ import annotations
@@ -32,12 +31,26 @@ from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE
 from typehaus.emit.draw.lineweights import REFERENCE
 from typehaus.emit.draw.scene import Polyline, Text
 from typehaus.emit.draw.typography import CHAR_ASPECT, ROOM_NAME_PT, TAG_PT, model_in_per_pt
+from typehaus.model.enums import ConditionKind
 
 CALLOUT_LAYER = "A-ANNO-REFR"
 
-#: First derived-detail sheet number. Must agree with ``sheets.build_sheet_index``, and
-#: ``test_ncs_sheet_identity`` is what holds them together.
+#: Authored detail ``Slice``s take whole numbers from here, in authoring order.
 FIRST_DETAIL_SHEET = 501
+
+#: Each derived condition kind is one decimal series on its own base (A-540.1, A-540.2 …),
+#: members in key order: a family grows without renumbering another, and the block no
+#: longer fills (it did at A-599 when every detail took a whole number). Bottom up.
+DERIVED_SERIES = {
+    ConditionKind.WALL_FOUNDATION: 530,
+    ConditionKind.WALL_SLAB: 535,
+    ConditionKind.STOREY_STACK: 540,
+    ConditionKind.STACK_WIDTH_CHANGE: 545,
+    ConditionKind.ASSEMBLY_CHANGE: 550,
+    ConditionKind.OPENING_PERIMETER: 560,
+    ConditionKind.WALL_ROOF: 570,
+    ConditionKind.ROOF_RIDGE: 575,
+}
 
 _SEGMENTS = 20
 
@@ -47,27 +60,55 @@ def bubble_radius_in(scale: float | None = None) -> float:
     return 2.6 * TAG_PT * CHAR_ASPECT * model_in_per_pt(scale or PLAN_RESERVATION_SCALE)
 
 
-def detail_sheet_numbers(model) -> dict[str, str]:
-    """``detail key -> sheet number``, in the order ``build_sheet_index`` will emit them.
+def callout_label(sheet: str) -> tuple[str, str]:
+    """``(number, sheet)`` for a callout's two halves: NCS's detail-over-sheet.
 
-    Authored detail ``Slice``s first, then derived transition details sorted by key —
-    which is exactly what the index does, because both walk
-    ``model.plan.elements_of_kind("Slice")`` and ``derive_detail_slices(model)`` in turn.
-    Deriving it here rather than importing it is what breaks the cycle: ``sheets`` imports
-    every scene builder, so a scene builder cannot import ``sheets``.
+    A series member ``A-540.4`` reads ``4`` over ``A-540`` — detail 4 of that series, and
+    a bubble five characters wide; a whole-number sheet carries one drawing, ``1``.
+    """
+    head, _, member = sheet.partition(".")
+    return (member, head) if member else ("1", sheet)
+
+
+def detail_sheets(model) -> list[tuple[str, object]]:
+    """``(sheet number, authored Slice | DerivedDetail)`` in sheet-number order.
+
+    Authored details first on whole numbers, then each ``DERIVED_SERIES`` family on its
+    base. Numbered before any set filter, so a detail keeps its number in every set.
     """
     from typehaus.emit.draw.details import derive_detail_slices
 
-    numbers: dict[str, str] = {}
-    next_sheet = FIRST_DETAIL_SHEET
-    for item in model.plan.elements_of_kind("Slice"):
-        if item.kind.value == "detail":
-            numbers[item.tag] = f"A-{next_sheet}"
-            next_sheet += 1
-    for derived in derive_detail_slices(model):
-        numbers[derived.key] = f"A-{next_sheet}"
-        next_sheet += 1
-    return numbers
+    authored = [item for item in model.plan.elements_of_kind("Slice")
+                if item.kind.value == "detail"]
+    last = FIRST_DETAIL_SHEET + len(authored) - 1
+    if authored and last >= min(DERIVED_SERIES.values()):
+        raise ValueError(f"{len(authored)} authored details overrun A-{last}, the first "
+                         "derived series; move DERIVED_SERIES up")
+    out: list[tuple[str, object]] = [(f"A-{FIRST_DETAIL_SHEET + i}", item)
+                                     for i, item in enumerate(authored)]
+    families: dict[ConditionKind, list] = {}
+    for derived in derive_detail_slices(model):  # sorted by key
+        families.setdefault(derived.condition.kind, []).append(derived)
+    for kind, base in sorted(DERIVED_SERIES.items(), key=lambda row: row[1]):
+        out += [(f"A-{base}.{i}", derived)
+                for i, derived in enumerate(families.pop(kind, ()), start=1)]
+    if families:
+        raise ValueError(f"no DERIVED_SERIES row for {sorted(k.value for k in families)}")
+    return out
+
+
+def detail_sheet_numbers(model) -> dict[str, str]:
+    """``detail key -> sheet number``: an authored Slice's tag, a derived detail's key."""
+    from typehaus.emit.draw.detail_derive import DerivedDetail
+
+    return {item.key if isinstance(item, DerivedDetail) else item.tag: number
+            for number, item in detail_sheets(model)}
+
+
+def sheet_sort_key(number: str) -> tuple:
+    """``A-540.10`` after ``A-540.9``: series, then each decimal part as an integer."""
+    letter, _, rest = number.partition("-")
+    return (letter, *(int(part) for part in rest.split(".") if part.isdigit()))
 
 
 def callout_nodes(at: tuple[float, float], number: str, sheet: str,

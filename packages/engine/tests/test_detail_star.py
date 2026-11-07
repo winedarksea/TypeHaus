@@ -20,7 +20,8 @@ from typehaus.source.coordinator import ProjectCoordinator
 from typehaus.source.ops import PatchOp
 from _helpers import CATLIN as CATLIN_DIR, copy_house
 
-_DETAIL_NUMBER = re.compile(r"A-5\d\d$")
+#: A detail sheet — A-501 or a series member A-540.4 — never an enlarged child A-560.1.1.
+_DETAIL_NUMBER = re.compile(r"A-5\d\d(\.\d+)?$")
 
 
 def test_star_reaches_the_detail_index(catlin_model_ro):

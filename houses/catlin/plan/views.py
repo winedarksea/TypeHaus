@@ -1,4 +1,4 @@
-"""Catlin authored detail slices — A-401+.
+"""Catlin authored detail slices — A-501+.
 
 Cut stations/crops below were verified against the resolved model (joist lines, wall
 segment boundaries, ridge elevation).
@@ -270,7 +270,7 @@ DETAIL_SLICES = [
                pt(inch(_EAVE_FACE_E_IN + 9.5), inch(EAVE_DECK_IN + 5))),
          scale="3\"=1'"),
     # E2-005: the PBR counterpart to A-503 (the E/W walls, 1 1/4" panel), as a SECTION
-    # (A-301.x): the A-5xx block is full, A-501..A-599, and one more detail lands on A-600.
+    # (A-301.x), cut when the A-5xx block was full; authored details now have A-501..A-529.
     # Cut y=24'-8": clear of every E-wall opening on all storeys and of W-B-E1/E2's and
     # W-S-E3/E4's joints (216", 320"), 4" south of FS-M-NE's y=300" truss line. The crop
     # stops at 20'-6", over W-A-E2's plate and under the eave SL-D-EAVE draws at 3" = 1'-0".
