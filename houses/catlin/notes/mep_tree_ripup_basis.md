@@ -129,6 +129,14 @@ the tree equals the pre-rip-up tree, B stays unserved, `lifts_kept = 0`, `lifts_
   (96.3, 269) at **-12.0**. So the tie sits in a pocket, x between 68.5 + 2.01 = **70.5** (CW-WH) and
   84 - 1.89 = **82.1** (CW-BATH), open to the north across CW-WH's y = 330 leg and to the east in the
   y 262.5..276.2 bay.
+* **Read late (2026-11-07 re-check), not in the first pass:** `PR-B-CW-TRUNK` (1 1/4" Cu, OD 1.375, z = -8.8):
+  x = 357.6 N-S y 180..424.2 (5.6" east of the sink, not crossed by a west lane), **y = 418 E-W x 57..114**
+  (crossed by any north-lane descent at x < 114), x = 57 N-S y 192..386.5. The 18' bearing line has **TJI
+  blocking panels full depth at x = 214.1, y 262.5..276.2** (the whole STAIR bay) and truss blocking at
+  x = 217, y 253.8..266.2 (flanges are hard prisms, the web between is open: pass at z in [-9.675, -2.2]).
+  FS-M-NE trusses are at y = 252, 268, 284, 300, 316/332 (doubled), ... **268 stands inside the STAIR bay
+  (262.5..276.2), so a lane at y = 269 is on a truss line; use y = 272.5** (section 4.2). The three EMT
+  conduits are 3/4" (OD 0.922, exclusion half 1.911).
 * Exclusion half-height for a 1 1/2" drain (OD 1.9) over a pipe of OD `D`: `0.95 + 0.5 + D/2`.
   CW-WH (1.125): **2.0125**, so z-exclusion (-8.8125, -4.7875). CW-BATH (0.875): 1.8875, (-10.69, -6.91).
   HW-WASH or HW-KITCH at -12 (PEX 0.625): 1.7625, (-13.76, **-10.24**).
@@ -159,8 +167,8 @@ leg's fall up to 1/16" (§13, up to 0.0875" on three legs; this lane has more), 
 **lifting CW-WH alone still refuses** (0.067" against an allowance that is >= 0 and up to ~0.3"). Not
 decidable by hand to better than "knife-edge".
 
-*The south bay lane* (down to y ~ 269 at x >= 216, then west in the 262.5..276.2 bay, no joist crossing),
-`s = 136 + 147.99 + (216 - x)`:
+*The south bay lane* (down to y = 272.5 at x = 230, then west in the STAIR bay 262.5..276.2 and the
+truss bay 268..284, no joist crossing; `s = 122 + 144.5 + (230 - x)`):
 
 * CW-BATH at x = 84, `s` = 416.0", fall 8.666": below it needs `z <= -10.69`, so `z_s <= -2.024`; the bay
   floor needs `z_s >= -10.925 + 8.875 = -2.05`.
@@ -169,11 +177,35 @@ decidable by hand to better than "knife-edge".
 `-1.828` against `-2.024`: **closed by 0.197".** Lift CW-BATH: band `[-1.828, -0.95]` = **0.878"**, open.
 Lift HW-WASH only: `[-2.05, -2.024]` = 0.026", no. **CW-WH is not on this lane at all.**
 
-**Expected outcome:** lifting **PR-B-CW-WH alone does not open KITCH-SINK**; lifting **PR-B-CW-BATH** does
-(south lane, 0.878"). HW-KITCH is not near the sink's drain (x = 363.6/370.6, east of it): irrelevant.
-*Not read:* the conduit lattice in FS-M-NE (CD-B-KITCHEN y=280 at -3.5; DATA-MEDIA y=296.5 and PLAY-SPARE
-y=306 at -8.75) that both lanes cross at x >= 216; a 1-D pass exists (z about -5.4..-6.0 against exclusions
-(-5.53, -1.47) and (-10.78, -6.72)) but is itself ~0.4" wide.
+**Expected outcome:** lifting **PR-B-CW-WH alone does not open KITCH-SINK**; lifting **PR-B-CW-BATH** should
+(south lane, 0.878") but E1 reports it does not: see the re-check below, still open. HW-KITCH is not near the sink's drain (x = 363.6/370.6, east of it): irrelevant.
+**Re-check, coordinator's question (E1 lifted HW-KITCH, CW-WH and CW-BATH and still refuses).** I found no
+obstacle that closes the south lane in 1-D, and the conduits are not it. Lane, constant 1/4"/ft (`z_s = -1.50`),
+snap excess 0.125" (four legs, each fall rounded up to 1/16", only raising upstream points):
+
+| vertex | x | y | z (in) | s (in) |
+|---|---|---|---|---|
+| V0 sink drain | 352 | 417 | -1.50 | 0 |
+| V1 | 230 | 417 | -4.04 | 122 |
+| V2 | 230 | 272.5 | -7.05 | 266.5 |
+| V3 | 72 | 272.5 | -10.34 | 424.5 |
+| V4 tie (plumb drop to -16.0 follows) | 72 | 271 | -10.375 | 426 |
+
+Clearances on it: DATA-MEDIA (y 296.5, z -8.75) crossed at z -6.552, **0.287" above** its exclusion top; PLAY-SPARE
+(y 306) -6.354, 0.485" above; KITCHEN (y 280, -3.5) -6.896, 1.485" below; trusses y = 408..284 at x = 230 at z -4.2..-6.8
+(window -9.425..-2.45); TJI blocking web at x = 214.1 z -7.38; HW-WASH (96.05, 272.5, -12) crossed at -9.843,
+**0.395" above** -10.2375; end -10.375 is 0.55" over the bay floor. Plan clears: y = 272.5 is 1.8" off the
+y = 268 truss chord (3.5" wide), 3.5" inside the STAIR bay's flange; the 12" bay at y = 417 (trusses 408/420)
+holds a 1.9" pipe with the sink's own 0.3". CW-BATH (x = 84, z -8.8) must be lifted (else z = -10.09 sits inside
+its exclusion), and it is.
+What I did **not** model and E1 should read off its own objection when it forces `--via 230,417 230,272.5 72,272.5`:
+(a) the nine truss crossings at x = 230 need an opening station each (panel pitch 24" is assumed in the model,
+D 7.25" round), and the doubled lines y = 316/332 need two; try x = 230 +- 24k; (b) the bore through the TJI
+blocking web at x = 214.1 (the resolver frames a 2x6 box for it, `run_through_blocking`, but the router may
+refuse the cut); (c) `fitting_room` at the tie (a 5.6" plumb drop from -10.4 to -16.0 beside the 4" head);
+(d) the 1.5" jog V3-V4 (shift the last leg to y = 271 if it is refused). Whichever it names is the omission.
+
+*Conduits:* now read (3/4" EMT) and clear on the lane above.
 
 *Re-lay of a lifted CW-WH* (L5), north lane, `z_s = -1.0165` at x_c = 70.51: drain `z_d = -1.0165 - 7.677 =
 -8.693`; the supply's y = 330 leg needs `z >= -8.693 + 0.95 + 0.5 + 0.5625 =` **-6.681** (authored -6.8, raise
@@ -196,12 +228,21 @@ contain (candidates: the bearing-line gap and blocking at y = 259.06..261.38, wh
 must both be bored; `members` bore rules). E1 should read its own `--counterfactual`, not this note, for
 BATH2-SH. HW-KITCH needs no re-lay (it hangs under the joists and was never in the band).
 
+**BATH2-SH lays, BATH2-TUB then refuses ("one lane, two fixtures").** Geometry is not the cause: the corridor
+holds two 1 1/2" lines side by side (centre range x 70.5..80.1, 9.6" wide; two centres need 1.9 + 0.5 = 2.4"). The
+cause is the single tie point and the size rule: both branches must end plumb at (72, 271), and the tub cannot tie
+onto the shower branch because 2 + 2 = 4 DFU needs 2" (Table 703.2: 1 1/2" carries 3), so `admits` refuses, as in
+section 2's T2 onto T1. The same 1/4"/ft drain at 2" (OD 2.375) still clears the fence (x 70.75..79.9; above the
+CW-BATH1 diagonal needs z >= -6.675). **Suggested rule P8:** a tie refused only for size may upsize the carrying
+branch one size (re-lay it, P4 keep-or-rollback) when its lane clears at the larger OD; here the shower re-lays
+at 2" and the tub ties on at about (76, 215), arm 2.5".
+
 ### 4.4 Numbers a test may assert
 
 Root (72, 271, -16.0). KITCH-SINK: 425.99" / 35.50 ft / fall 8.875"; north-lane band 0.067"; CW-WH short
 0.119"; south-lane CW-BATH+HW-WASH short 0.197", lifted 0.878". CW-WH re-lay z >= -6.681. BATH2-SH: 96.62"
 / fall 2.013" / free band 4.7". §2a: 72" / cost 72 / lifts `[(T2,[T1])]`. §2b: 96" / cost 96 / trials `[A2, A1]`.
-Row `tree:main+lift` (CW-WH + HW-KITCH) is predicted **not** to propose KITCH-SINK; adding CW-BATH should.
+Row `tree:main+lift` (CW-WH + HW-KITCH) does **not** propose KITCH-SINK (confirmed by E1); with CW-BATH too the hand model still says the south lane (section 4.2 table) is open, E1's router says not: unresolved, and the forced lane's objection is the missing fact.
 
 ---
 

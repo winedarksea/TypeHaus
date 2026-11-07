@@ -5,6 +5,8 @@ accepted network. See docs/routing.md for reports and acceptance."""
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -48,22 +50,31 @@ def _port_leads(model: Any, tags: frozenset[str], *, inflate_m: float) -> dict[s
     return out
 
 
-def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
-                       storey: str | None, locked: frozenset[str], margin_ft: float,
-                       band: tuple[float, float] | None, avoid: frozenset[str],
-                       cost: Any, slope: float | None, alternatives: int,
-                       rip_up_budget: int, out_dir: Path | None,
-                       as_json: bool, explain: bool, evaluate: bool = False,
-                       orders: int = 1, summary: bool = False,
-                       only: frozenset[str] | None = None) -> int:
-    """Lay every target in scope. Returns the process exit code.
+@dataclass
+class CampaignRun:
+    """One campaign's outcome, unprinted: the best-ranked result and how it was reached."""
 
-    Exit 1 when anything was refused — a campaign that could not serve a terminal is a
-    result somebody has to look at, and an exit code is how a script finds out.
-    """
+    result: Any  #: routing.campaign.CampaignResult of the best order
+    ranked: list  #: every order tried, best first
+    targets: list  #: the campaign's targets in the scoped order (trade-bearing only)
+    diagnostics: dict[str, Any]  #: the best order's per-target (problems, notices, refusals)
+    diagnostics_by_strategy: dict[str, Any]
+    unassigned: list[str]  #: scoped runs with no trade
+
+
+def campaign_result(model: Any, *, trades: list[str] | None, storey: str | None,
+                    locked: frozenset[str], margin_ft: float,
+                    band: tuple[float, float] | None, avoid: frozenset[str], cost: Any,
+                    slope: float | None, alternatives: int, rip_up_budget: int,
+                    details: bool = False, orders: int = 1,
+                    only: frozenset[str] | None = None,
+                    announce: Callable[[list, list[str]], None] | None = None
+                    ) -> CampaignRun:
+    """Lay every target in scope and return the result without printing anything.
+
+    ``announce(targets, unassigned)`` is called once, before the searches, so a caller can
+    say what it is about to do. ``details`` collects per-proposal explanations."""
     from typehaus.cli.cmd_route import _propose
-    from typehaus.cli.route_eval import _storey_for, as_dict, evaluate_network, render_reports
-    from typehaus.cli.route_report import emit_report, proposal_rows
     from typehaus.routing.campaign import (
         ORDER_STRATEGIES,
         Outcome,
@@ -79,11 +90,8 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
         targets = [t for t in targets if t.tag in only]
     unassigned = [t.tag for t in targets if not t.trade]
     targets = [t for t in targets if t.trade]
-    if not targets and not as_json:
-        console.print("[yellow]no target in scope — check --storey and --trades[/yellow]")
-
-    if not as_json and targets:
-        console.print(f"[bold]{len(targets)} target(s)[/bold] in campaign order")
+    if announce is not None:
+        announce(targets, unassigned)
 
     leads = _port_leads(model, only, inflate_m=CLEARANCE_M) if only is not None else {}
     diagnostics: dict[str, tuple[list[str], list[str], list]] = {}
@@ -93,7 +101,7 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
         laid = {prism.tag for prism in occupancy}
         proposals, problems, notices, refusals = _propose(
             model, [target.tag], mode="run", slope=slope, margin_ft=margin_ft, band=band,
-            avoid=avoid, via=[], explain=explain or as_json or out_dir is not None,
+            avoid=avoid, via=[], explain=details,
             cost=cost, alternatives=alternatives,
             # Every other branch's straight lead off its outlet is reserved: outlets 1 1/2"
             # apart leave no room to cross a neighbour's lead and still let it out.
@@ -123,14 +131,6 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
         diagnostics_by_strategy[name] = diagnostics
     ranked = rank(results)
     result = ranked[0]
-    if len(ranked) > 1 and not as_json:
-        console.print("[bold]orders tried, best first[/bold] — fewest refusals outranks "
-                      "cheapest, always: those are not two points on one scale")
-        for candidate in ranked:
-            console.print(f"  {candidate.settings['order_strategy']:>14}: "
-                          f"{len(candidate.accepted)} laid, {len(candidate.refused)} "
-                          f"refused, {sum(p.cost for p in candidate.accepted):.0f}\" "
-                          "equivalent")
     result.settings.update({
         "storey": storey, "trades": trades, "margin_ft": margin_ft,
         "locked": sorted(locked), "alternatives": alternatives,
@@ -141,6 +141,47 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
             (tag, "no trade for this run's system — a campaign's order is its whole "
                   "content, so an unassigned run is named rather than placed in it")
             for tag in unassigned)
+    return CampaignRun(result, ranked, targets,
+                       diagnostics_by_strategy[result.settings["order_strategy"]],
+                       diagnostics_by_strategy, unassigned)
+
+
+def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
+                       storey: str | None, locked: frozenset[str], margin_ft: float,
+                       band: tuple[float, float] | None, avoid: frozenset[str],
+                       cost: Any, slope: float | None, alternatives: int,
+                       rip_up_budget: int, out_dir: Path | None,
+                       as_json: bool, explain: bool, evaluate: bool = False,
+                       orders: int = 1, summary: bool = False,
+                       only: frozenset[str] | None = None) -> int:
+    """Lay every target in scope. Returns the process exit code.
+
+    Exit 1 when anything was refused — a campaign that could not serve a terminal is a
+    result somebody has to look at, and an exit code is how a script finds out.
+    """
+    from typehaus.cli.route_eval import _storey_for, as_dict, evaluate_network, render_reports
+    from typehaus.cli.route_report import emit_report, proposal_rows
+
+    def announce(targets: list, _unassigned: list[str]) -> None:
+        if not targets and not as_json:
+            console.print("[yellow]no target in scope — check --storey and --trades[/yellow]")
+        if not as_json and targets:
+            console.print(f"[bold]{len(targets)} target(s)[/bold] in campaign order")
+
+    run = campaign_result(
+        model, trades=trades, storey=storey, locked=locked, margin_ft=margin_ft, band=band,
+        avoid=avoid, cost=cost, slope=slope, alternatives=alternatives,
+        rip_up_budget=rip_up_budget, details=explain or as_json or out_dir is not None,
+        orders=orders, only=only, announce=announce)
+    result, ranked = run.result, run.ranked
+    if len(ranked) > 1 and not as_json:
+        console.print("[bold]orders tried, best first[/bold] — fewest refusals outranks "
+                      "cheapest, always: those are not two points on one scale")
+        for candidate in ranked:
+            console.print(f"  {candidate.settings['order_strategy']:>14}: "
+                          f"{len(candidate.accepted)} laid, {len(candidate.refused)} "
+                          f"refused, {sum(p.cost for p in candidate.accepted):.0f}\" "
+                          "equivalent")
 
     evaluations = []
     if evaluate or as_json:
@@ -159,7 +200,7 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
         report["accepted"] = proposal_rows(
             model, [(proposal, _storey_for(model, proposal)) for proposal in result.accepted])
         report["evaluations"] = [as_dict(item) for item in evaluations]
-        diagnostics = diagnostics_by_strategy[result.settings["order_strategy"]]
+        diagnostics = run.diagnostics
         report["problems"] = [line for problems, _, _ in diagnostics.values()
                               for line in problems]
         report["notices"] = [line for _, notices, _ in diagnostics.values()

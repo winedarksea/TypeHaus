@@ -72,12 +72,22 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
     # -- E0 --
     # -- /E0 --
     # -- E1 --
+    "tree_ripup": (Oracle(note="mep_tree_ripup_basis.md", section="§1, §2",
+                          test="tests/test_routing_tree_ripup.py"),),
     # -- /E1 --
     # -- E2 --
+    "group_order": (Oracle(note="mep_group_wet_vent_basis.md", section="§3, §4, §5",
+                           test="tests/test_routing_group.py"),),
     # -- /E2 --
     # -- E3 --
+    "duct_fittings": (Oracle(note="mep_duct_routing_basis.md", section="§7, §8",
+                             test="tests/test_routing_duct_fittings.py"),),
+    "duct_search": (Oracle(note="mep_duct_routing_basis.md", section="§7.2",
+                           test="tests/test_routing_duct_fittings.py"),),
     # -- /E3 --
     # -- E4 --
+    "supply_tree": (Oracle(note="mep_supply_trunk_basis.md", section="§2, §4, §5",
+                           test="tests/test_routing_supply_tree.py"),),
     # -- /E4 --
     # -- E5 --
     # -- /E5 --

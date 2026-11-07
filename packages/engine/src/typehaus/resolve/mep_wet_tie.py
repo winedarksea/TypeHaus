@@ -45,16 +45,17 @@ def grade_hypothetical_tie(model, data: WetVentData, fixture: str, arm: list[Poi
                            ) -> tuple[WetTie | None, list[str]]:
     """``(tie, wet vents rejected)`` for ``arm`` (trap to join, 3D) graded as if authored;
     the tie is None unless a legal vent ends the arm within ``limit_in``."""
-    if fixture not in data.fx or len(arm) < 2:
+    row = data.fx.get(fixture) or _unlaid_row(model, fixture)
+    if row is None or len(arm) < 2:
         return None, []
     run = f"{fixture}-PROPOSED"
-    drains = {**{t: p for t, p in data.drains.items() if t != data.fx[fixture][0]},
+    drains = {**{t: p for t, p in data.drains.items() if t != data.fx.get(fixture, ("",))[0]},
               run: list(arm)}
     radii = {**data.radii, run: arm_radius_m}
     joined = drain_parent(arm[-1], run, drains, radii)
     if joined is None:
         return None, []
-    fx = {**data.fx, fixture: (run, *data.fx[fixture][1:])}
+    fx = {**data.fx, fixture: (run, *row[1:])}
     arm_m, what, _gap, notes = developed_arm(run, drains, radii, data.all_vent_ends, (fx, fixture))
     upsize: dict[str, float] = {}
     if arm_m is None:
@@ -78,6 +79,17 @@ def grade_hypothetical_tie(model, data: WetVentData, fixture: str, arm: list[Poi
                   upsize=tuple(sorted(upsize.items())),
                   name_on_vent=_vents_leaned_on(model, fixture, what, joined[0], drains,
                                                 radii)), []
+
+
+def _unlaid_row(model, fixture: str) -> tuple | None:
+    """A fixture with no drain yet (a group's next step): its ``fx`` row but the leaf."""
+    from typehaus.resolve.fixture_units import fixture_units
+
+    row = next((u for u in fixture_units(model.plan) if u.tag == fixture and u.dfu), None)
+    storey = next((s.tag for s in model.plan.storeys
+                   if any(getattr(e, "tag", None) == fixture
+                          for e in model.plan.storey_elements(s.tag))), None)
+    return None if row is None or storey is None else ("", row.dfu, row.symbol, storey)
 
 
 def _vents_leaned_on(model, fixture: str, what: str, parent: str,

@@ -227,6 +227,13 @@ at 4 / 6 / 8" (`plan/ducts.py` `DuctElbowRow` rows, source `notes/air_distributi
 E3's A* state (straight since the last turn) refuses a turn whose predecessor's take-off plus its
 own exceeds the straight carried; test the numbers above with C2F injected, not the house default.
 
+**Implemented (E3, 2026-11-07):** `routing/duct_fittings.py` (take-off, elbow choice, kit lead) and
+`routing/duct_search.py` (the fitted A*: a label carries `slack` = straight since the last turn
+less that turn's take-off, capped at one take-off; a lattice turn is always 90 degrees, so one T
+per run). Every lattice turn on a 4" run therefore needs 12.0" behind it at the 1.5 D stand-in, and
+the last straight into a run end 6.0". `tests/test_routing_duct_fittings.py` asserts §7.1-§7.2
+with R injected, §7.3's 1.096, and §7.5's 12.579.
+
 ### 7.3 Worked route A: `DU-M-ERV-R-BED2`, 4", clean (0 gaps)
 
 Authored (`mep_erv_l2.py`, resolved z, inches): P0 (45.75, 168, 111.625) -> P1 (192, 168, 111.625)
@@ -326,6 +333,11 @@ At an 8" leg (outdoor/exhaust, ports approximate until H1): lead = L(GV0772, unr
 first turn at 8" (12.000 stamped 1.5 D; 8.000 at 1.0 D; 7.000 adjustable) = L + 24.000 / 20.000 /
 19.000. **Test assertions:** flex 12.000, supply lead 21.000 and 18.000, the transition length
 reported as unread (not 0 silently), and `DU-B-ERV-SUP-TRUNK` short by 1.599".
+
+**Implemented (E3):** `cli/route_ports.py` lays the kit lead (`duct_fittings.kit_lead`) in place
+of the OD + 2" stub at a kitted port, the search leaves its tip along the lead with no slack, and a
+run whose far end stands on the lead is refused with the shortfall (DU-B-ERV-SUP-TRUNK: the model
+reads 10.400" from port to far end, so 1.600"; this section's 10.401 rounds the endpoints first).
 
 **Open.** Broan's manual also says insulated ducts "must have the same diameter as the ports to
 ensure proper drainage", which contradicts its 8" advice (`air_distribution_products.md`): the

@@ -29,6 +29,7 @@ from typehaus.routing.graph import Graph
 from typehaus.routing.gravity import HeadBudget
 from typehaus.routing.search import Route, shortest_route
 from typehaus.routing.space import RoutingSpace
+from typehaus.routing.tree_ripup import Layer, Trial, rip_up
 
 
 @dataclass(frozen=True)
@@ -56,6 +57,8 @@ class Tree:
     #: The order terminals were routed in, and why — printed by ``--explain``, because the
     #: order is the one thing about this algorithm somebody will want to argue with.
     order: list[tuple[str, float]] = field(default_factory=list)
+    #: Every rip-up trial, kept or rolled back (``tree_ripup``). ``routes`` keeps lay order.
+    trials: list[Trial] = field(default_factory=list)
 
     @property
     def nodes(self) -> set[int]:
@@ -64,6 +67,11 @@ class Tree:
     @property
     def cost(self) -> float:
         return sum(route.cost for route in self.routes.values())
+
+    @property
+    def lifts(self) -> list[tuple[str, list[str]]]:
+        """``(terminal, [lifted, ...])`` for each kept rip-up, in the order kept."""
+        return [(t.terminal, list(t.lifted)) for t in self.trials if t.kept]
 
 
 def order_terminals(terminals: list[Terminal]) -> list[Terminal]:
@@ -83,7 +91,7 @@ def order_terminals(terminals: list[Terminal]) -> list[Terminal]:
 
 def build_tree(graph: Graph, space: RoutingSpace, root: int,
                terminals: list[Terminal], *, root_nodes: set[int] | None = None,
-               search: Any = None) -> Tree:
+               search: Any = None, ripup: Layer | None = None) -> Tree:
     """Route every terminal to the root, deepest first, joining the tree as it grows.
 
     ``search`` is the search function, defaulting to the plain A*. A gravity tree passes
@@ -96,9 +104,14 @@ def build_tree(graph: Graph, space: RoutingSpace, root: int,
     barrel rather than the head alone. Defaulting to ``{root}`` is the degenerate case and
     is what a supply trunk wants; a drain almost never does. See
     :func:`~typehaus.routing.search.shortest_route` on why goals are a set.
+
+    ``ripup`` turns on rip-up (``tree_ripup``): a terminal refused in plan may lift the
+    sibling branches its refusal names, kept only when everything lays again.
     """
     tree = Tree(root=root)
-    reachable = set(root_nodes or {root})
+    roots = set(root_nodes or {root})
+    reachable = set(roots)
+    by_tag = {t.tag: t for t in terminals}
 
     for terminal in order_terminals(terminals):
         slack = terminal.budget.slack_in if terminal.budget is not None else float("inf")
@@ -107,6 +120,10 @@ def build_tree(graph: Graph, space: RoutingSpace, root: int,
             tree.unserved[terminal.tag] = terminal.budget.shortfall_in()
             continue
         route = (search or shortest_route)(graph, space, terminal.node, reachable)
+        if route is None and ripup is not None and rip_up(
+                tree, terminal, by_tag, ripup, search or shortest_route, graph, space, roots):
+            reachable = roots.union(*(r.nodes for r in tree.routes.values()))
+            continue
         if route is None:
             # No route in PLAN, which is a different failure from no head and is reported
             # as such: a shortfall of infinity is not a number, so it is stated as one.
@@ -130,6 +147,8 @@ def explain(tree: Tree) -> list[str]:
     for tag, slack in tree.order:
         margin = "no gravity" if slack == float("inf") else f'{slack:+.3f}" slack'
         lines.append(f"    {tag:28s} {margin}")
+    for trial in tree.trials:
+        lines.append(f"  rip-up: {trial.sentence()}")
     for tag, shortfall in sorted(tree.unserved.items()):
         if shortfall == float("inf"):
             lines.append(f"  UNSERVED {tag}: no route in plan — every lane to the tree is "

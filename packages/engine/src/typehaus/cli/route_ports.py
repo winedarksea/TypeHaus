@@ -4,6 +4,10 @@
 starts there with a sideways leg is one no fitting makes, so the terminal moves to the end of
 a short straight stub along that axis, the search runs from the stub's end, and the stub is
 put back on the found path. Approximate ports and runs ending on a line (a tee) are left alone.
+
+A duct port whose equipment type has a ``PortKit`` gets the kit's lead instead of the stub:
+transition (where the duct is not the port's size) plus flex, laid straight
+(``routing/duct_fittings.kit_lead``, duct basis §8).
 """
 
 from __future__ import annotations
@@ -83,6 +87,7 @@ def with_port_leads(model: Any, ends: Endpoints | None) -> Endpoints | None:
     if not ports:
         return ends
     stub = stub_length_m(ends.radius_m)
+    kits = _kit_reader(model, ends)
     changes: dict[str, Any] = {}
     notes: list[str] = []
     for side in ("origin", "root"):
@@ -99,13 +104,41 @@ def with_port_leads(model: Any, ends: Endpoints | None) -> Endpoints | None:
                          "leave it any way the search finds")
             continue
         axis, sign = found
-        tip = tuple(c + sign * stub if i == axis else c for i, c in enumerate(point))
+        length = stub
+        lead = kits(port) if kits is not None else None
+        if lead is not None:
+            length = lead.length_m
+            notes.append(f'{label}: the port kit\'s {lead.inches:.3f}" lead is laid straight '
+                         "before the first rigid fitting"
+                         + "".join(f"; {gap}" for gap in lead.unread))
+        tip = tuple(c + sign * length if i == axis else c for i, c in enumerate(point))
         changes[side] = tip
         changes[f"{side}_lead"] = PortLead(label, point, tip, f"{'+' if sign > 0 else '-'}"
                                                               f"{'xyz'[axis]}")
     if notes:
         changes["advice"] = (*ends.advice, *notes)
     return replace(ends, **changes) if changes else ends
+
+
+def _kit_reader(model: Any, ends: Endpoints):
+    """``port -> KitLead | None`` off the house's ``DuctStandard``; None for a non-duct."""
+    if ends.kind != "duct" or not hasattr(model, "canvas_objects"):
+        return None
+    from typehaus.resolve.duct_standard import duct_standard
+    from typehaus.routing.duct_fittings import kit_lead
+
+    standard, _ = duct_standard(getattr(model, "plan", None))
+    if standard is None:
+        return None
+    types = {o.tag: o.type_ref for o in model.canvas_objects}
+    size = ends.diameter_m or max(ends.width_m, ends.depth_m)
+
+    def read(port: Any):
+        kit = standard.port_kit(types.get(port.equipment_tag), port.port_tag)
+        differs = port.section_m is None or abs(port.section_m[0] - size) > 1e-6
+        return kit_lead(kit, needs_transition=differs)
+
+    return read
 
 
 def terminal_refusal(space: Any, ends: Endpoints,
@@ -116,7 +149,28 @@ def terminal_refusal(space: Any, ends: Endpoints,
                                     for p in (ends.origin, ends.root)):
         return ("neither of its ends stands inside the --level band, so restricting the "
                 "search to that storey asks for a route that cannot reach where it is told")
-    return _lead_blocked(space, ends)
+    return _lead_overshoot(ends) or _lead_blocked(space, ends)
+
+
+def _lead_overshoot(ends: Endpoints) -> str | None:
+    """The refusal when the run's other end stands on its lead, short of the tip: the run
+    cannot hold the straight its port needs (duct basis §8)."""
+    for lead, other in ((ends.origin_lead, ends.root), (ends.root_lead, ends.origin)):
+        if lead is None:
+            continue
+        along = [t - p for t, p in zip(lead.tip, lead.port, strict=True)]
+        span = sum(a * a for a in along) ** 0.5
+        if span == 0.0:
+            continue
+        rel = [o - p for o, p in zip(other, lead.port, strict=True)]
+        reach = sum(a * r for a, r in zip(along, rel, strict=True)) / span
+        off = (sum(r * r for r in rel) - reach * reach) ** 0.5
+        if 0.0 <= reach < span - 1e-9 and off <= ends.radius_m:
+            return (f'{lead.label} is an exact port facing {lead.direction}; the '
+                    f'{lead.inches:.3f}" straight lead it needs before the first fitting is '
+                    f'longer than the {reach / M_PER_IN:.3f}" to the run\'s other end, short '
+                    f'by {(span - reach) / M_PER_IN:.3f}". Move the machine or the far end')
+    return None
 
 
 def _lead_blocked(space: Any, ends: Endpoints) -> str | None:

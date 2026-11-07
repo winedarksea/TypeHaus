@@ -8,7 +8,9 @@ so the router and the check cannot disagree.
 
 A vent tee is a serving VENT run's endpoint on a drain segment in 3D (within
 ``TEE_TOL_M``). The walk starts at the fixture's most upstream serving drain, follows it
-downstream into each parent where it ends, and stops at the first tee or legal wet vent.
+downstream into each parent where it ends, and stops at the first tee or legal wet vent —
+including one whose dry vent connects upstream of where the arm enters (908.2.1: the wet vent
+runs from that connection downstream), which ends the arm at its own entry.
 
 Wet-vent data in: ``fx`` maps fixture tag -> ``(leaf drain run, DFU, plan symbol, storey)``;
 ``parents`` maps a run to ``(parent run, segment index, t)`` where its end stands.
@@ -69,8 +71,11 @@ def _size_in(radius_m: float) -> float:
 def grade_wet_vent(child: str, parent: str, join: Order, drains: dict[str, list],
                    radii: dict[str, float], parents: dict[str, tuple],
                    fx: dict[str, Fx], arm_fx: str) -> tuple[bool, str]:
-    """``(legal, why)`` for ``child`` wet-venting ``arm_fx`` where it joins ``parent``."""
-    vertical = _is_vertical(drains[child])
+    """``(legal, why)`` for ``child`` wet-venting ``arm_fx`` where it joins ``parent``.
+
+    The child is a 908.1 vertical wet vent only where it carries another fixture's waste: a
+    dry-vented lavatory's own drop to the branch is its fixture drain, which 908.2.1 lets
+    connect any way "provided with a dry vent" (``mep_group_wet_vent_basis.md`` §5)."""
     via_child: dict[str, Order] = {}
     via_parent: dict[str, Order] = {}
     for tag, (leaf, *_rest) in fx.items():
@@ -79,6 +84,7 @@ def grade_wet_vent(child: str, parent: str, join: Order, drains: dict[str, list]
             via_child[tag] = ent[child]
         elif parent in ent:
             via_parent[tag] = ent[parent]
+    vertical = len(via_child) > 1 and _is_vertical(drains[child])
     members = {**via_child, **({} if vertical else via_parent)}
     dfu = sum(fx[t][1] for t in members)
     d_child, d_parent = _size_in(radii[child]), _size_in(radii[parent])
@@ -113,23 +119,61 @@ def grade_wet_vent(child: str, parent: str, join: Order, drains: dict[str, list]
         if min(d_child, d_parent) < need - 1e-6:
             bad.append(f"Ø{min(d_child, d_parent):g}\" under the {need:g}\" it needs for "
                        f"{dfu:g} DFU, whole length (PB0225)")
-        off = sorted(t for t in members if fx[t][2] not in BATHROOM_GROUP_SYMBOLS)
-        if off:
-            bad.append(f"{off[0]} is not a bathroom-group fixture")
-        if len({fx[t][3] for t in members}) > 1:
-            bad.append("fixtures on more than one floor")
         upstream = [t for t in members if t not in via_child and via_parent[t] < join]
-        if len(upstream) > 1:
-            bad.append(f"{len(upstream)} wet-vented drains ({', '.join(sorted(upstream))}) "
-                       "discharge upstream of the dry-vent connection (max 1)")
         at = {**dict.fromkeys(via_child, join), **via_parent}
-        at = {t: o for t, o in at.items() if t in members}
-        first = [t for t in at if fx[t][2].startswith("toilet")
-                 and any(o > at[t] for o in at.values())]
-        if first:
-            bad.append(f"{first[0]} discharges before other connections; 908.2.4 puts a "
-                       "water closet downstream of all")
+        bad += _group_rules(members, {t: o for t, o in at.items() if t in members},
+                            upstream, fx)
     return (not bad), (f"{sec}: " + ("; ".join(bad) if bad else f"ok for {dfu:g} DFU"))
+
+
+def _group_rules(members, at: dict[str, Order], upstream: list[str], fx) -> list[str]:
+    """908.2.1's group-only, one-floor, one-upstream rules and 908.2.1.4's WC last."""
+    bad = []
+    off = sorted(t for t in members if fx[t][2] not in BATHROOM_GROUP_SYMBOLS)
+    if off:
+        bad.append(f"{off[0]} is not a bathroom-group fixture")
+    if len({fx[t][3] for t in members}) > 1:
+        bad.append("fixtures on more than one floor")
+    if len(upstream) > 1:
+        bad.append(f"{len(upstream)} wet-vented drains ({', '.join(sorted(upstream))}) "
+                   "discharge upstream of the dry-vent connection (max 1)")
+    first = [t for t in at if fx[t][2].startswith("toilet")
+             and any(o > at[t] for o in at.values())]
+    if first:
+        bad.append(f"{first[0]} discharges before other connections; 908.2.4 puts a "
+                   "water closet downstream of all")
+    return bad
+
+
+def grade_wet_run(host: str, tee: Order, entry: Order, drains: dict[str, list],
+                  radii: dict[str, float], parents: dict[str, tuple], fx: dict[str, Fx],
+                  arm_fx: str) -> tuple[bool, str]:
+    """``(legal, why)`` for ``arm_fx`` entering ``host`` at ``entry``, downstream of a dry
+    vent's connection on ``host`` itself at ``tee``: 908.2.1's wet vent runs "from the
+    connection of the dry vent along the direction of the flow"; a fixture whose leaf is
+    ``host`` is the dry-vented one, never an upstream wet arm."""
+    members = {t: ent[host] for t, (leaf, *_r) in fx.items()
+               if host in (ent := _entries(leaf, parents))}
+    dfu = sum(fx[t][1] for t in members)
+    need = next(m for lim, m in WET_VENT_HORIZONTAL_MIN_IN if dfu <= lim + 1e-9)
+    size = _size_in(radii[host])
+    bad: list[str] = []
+    if arm_fx not in members:
+        bad.append(f"{arm_fx} does not discharge into it")
+    pts = drains[host]
+    if 0 <= entry[0] < len(pts) - 1 and _is_vertical(pts[entry[0]:entry[0] + 2]):
+        bad.append(f"{arm_fx} joins a vertical section; 908.2.1 connects it horizontally")
+    if size < need - 1e-6:
+        bad.append(f"Ø{size:g}\" under the {need:g}\" it needs for {dfu:g} DFU, whole "
+                   "length (PB0225)")
+    upstream = [t for t, o in members.items() if fx[t][0] != host and _before(o, tee)]
+    bad += _group_rules(members, members, upstream, fx)
+    sec = f"908.2 horizontal from its dry vent, {dfu:g} DFU, Ø{size:g}\""
+    return (not bad), (f"{sec}: " + ("; ".join(bad) if bad else f"ok for {dfu:g} DFU"))
+
+
+def _before(a: Order, b: Order) -> bool:
+    return a[0] < b[0] or (a[0] == b[0] and a[1] < b[1] - 1e-6)
 
 
 #: A floor-outlet fixture's port this close over its storey datum is at the floor, and its
@@ -258,6 +302,11 @@ def developed_arm(start_run: str, drains: dict[str, list[Point3]], radii: dict[s
     while run not in visited:
         visited.add(run)
         pts, reach = drains[run], radii[run] + TEE_TOL_M
+        if came is not None and wet:
+            what = _entered_wet_vent(run, (index, t0), came, vent_ends, joins, drains, radii,
+                                     parents, wet, notes)
+            if what is not None:
+                return walked, what, 0.0, notes
         for i in range(index, len(pts) - 1):
             a, b = pts[i], pts[i + 1]
             start = t0 if i == index else 0.0
@@ -284,6 +333,31 @@ def developed_arm(start_run: str, drains: dict[str, list[Point3]], radii: dict[s
                    for a, b in zip(pts, pts[1:], strict=False))
                for v in vent_ends), default=math.inf)
     return None, "", gap, notes
+
+
+def _entered_wet_vent(run: str, entry: Order, came: str, vent_ends: list[Point3],
+                      joins: dict, drains: dict[str, list[Point3]], radii: dict[str, float],
+                      parents: dict[str, tuple], wet: tuple[dict, str],
+                      notes: list[str]) -> str | None:
+    """908.2.1: an arm entering ``run`` downstream of a dry vent's connection to it — a vent
+    end on ``run``, or a dry-vented child joining it — is vented at its own entry if that
+    wet vent is legal (``mep_group_wet_vent_basis.md`` §2 F1). Nearest connection first."""
+    pts, reach = drains[run], radii[run] + TEE_TOL_M
+    found: list[tuple[Order, str | None]] = []
+    for v in vent_ends:
+        at = next(((i, t) for i in range(len(pts) - 1)
+                   for d, t in [_project(v, pts[i], pts[i + 1])] if d <= reach), None)
+        if at is not None and _before(at, entry):
+            found.append((at, None))
+    found += [(parents[child][1:], child) for child, _end in joins.get(run, ())
+              if child != came and _before(parents[child][1:], entry)]
+    for at, child in sorted(found, key=lambda f: f[0], reverse=True):
+        ok, why = (grade_wet_vent(child, run, at, drains, radii, parents, *wet) if child
+                   else grade_wet_run(run, at, entry, drains, radii, parents, *wet))
+        if ok:
+            return f"{child or run}, wet-vented downstream of its dry vent ({why})"
+        notes.append(f"{child or run} rejected as a wet vent ({why})")
+    return None
 
 
 def walk_to(start_run: str, drains: dict[str, list[Point3]], radii: dict[str, float],

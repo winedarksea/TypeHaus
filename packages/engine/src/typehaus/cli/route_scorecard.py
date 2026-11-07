@@ -11,38 +11,19 @@ from __future__ import annotations
 
 import time
 from collections import Counter
-from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+
+from typehaus.cli.route_scorecard_modes import Found, propose_target
+from typehaus.cli.route_scorecard_targets import TARGETS, ScoreTarget
+
+__all__ = ["TARGETS", "ScoreTarget", "run_scorecard", "write_scorecard", "regressions",
+           "markdown"]
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
     from typehaus.routing.cost import RouteCost
     from typehaus.routing.proposal import RouteProposal
-
-
-@dataclass(frozen=True)
-class ScoreTarget:
-    name: str
-    mode: str  # "tree" | "fixture" | "run"
-    tag: str
-    level: str | None = None
-
-
-#: The fixed list: a drain tree per storey, the three fixtures with no 3D vent (TODO C6-E7),
-#: the hand-drawn kitchen drain, and three supply runs.
-TARGETS: tuple[ScoreTarget, ...] = (
-    ScoreTarget("tree:basement", "tree", "PR-B-BATH-DRAIN"),
-    ScoreTarget("tree:main", "tree", "PR-B-MAIN-DRAIN", level="main"),
-    ScoreTarget("tree:second", "tree", "PR-M-S-SUITE-DRAIN"),
-    ScoreTarget("fixture:BATH2-TUB", "fixture", "FX-M-BATH2-TUB"),
-    ScoreTarget("fixture:SUITEBATH-LAV", "fixture", "FX-S-SUITEBATH-LAV"),
-    ScoreTarget("fixture:SUITEBATH-TUBSH", "fixture", "FX-S-SUITEBATH-TUBSH"),
-    ScoreTarget("run:KITCH-DRAIN", "run", "PR-B-KITCH-DRAIN"),
-    ScoreTarget("run:SUITE-LAV-CW", "run", "PR-S-SUITE-LAV-CW"),
-    ScoreTarget("run:BATH2-LAV-HW", "run", "PR-M-BATH2-LAV-HW"),
-    ScoreTarget("run:CW-SUITE", "run", "PR-B-CW-SUITE"),
-)
 
 #: ``--evaluate`` check ids each metric reads, by what they grade.
 BORE_CHECKS = frozenset({
@@ -53,6 +34,15 @@ TRAP_ARM_CHECKS = frozenset({"mep.trap_arm_length"})
 VENT_CHECKS = frozenset({"mep.vent_reachability", "mep.vent_grade",
                          "mep.vent_termination_height"})
 CLEANOUT_CHECKS = frozenset({"mep.drain_cleanouts"})
+FITTING_PATTERN_CHECKS = frozenset({"mep.fitting_pattern"})
+#: What grades a duct's ROUTE, not its sizing or parts: the bay or soffit it rides, the truss
+#: panel it crosses, its hangers and penetrations, whether it lands, and the ERV static
+#: budget its length and elbows spend.
+DUCT_CHECKS = frozenset({
+    "mep.duct_joist_bay", "mep.duct_joist_bay_occupancy", "mep.duct_soffit_occupancy",
+    "mep.open_web_panel", "mep.duct_supports", "mep.duct_penetration_fit",
+    "mep.duct_connectivity", "mep.erv_static_budget"})
+
 
 #: Per-metric slack before a rise counts as a regression. Everything absent is an integer
 #: count compared exactly. Search time is a wall clock and wanders with the machine.
@@ -70,19 +60,19 @@ def run_scorecard(directory: Path, model: ResolvedModel, cost: RouteCost,
     """Search, measure and grade every target; ``{"targets": {...}, "totals": {...}}``."""
     from typehaus.cli.route_eval import baseline_findings, evaluate_network
 
-    found: dict[str, tuple[list[RouteProposal], int, float]] = {}
+    found: dict[str, tuple[Found, float]] = {}
     for target in targets:
         start = time.perf_counter()
-        proposals, expected = _propose_target(model, target, cost)
-        found[target.name] = (proposals, expected, time.perf_counter() - start)
+        found[target.name] = (propose_target(directory, model, target, cost),
+                              time.perf_counter() - start)
 
     baseline = baseline_findings(model, directory)
     out: dict[str, dict[str, Any]] = {}
     for target in targets:
-        proposals, expected, seconds = found[target.name]
-        evaluation = (evaluate_network(directory, model, proposals, baseline=baseline)
-                      if proposals else None)
-        out[target.name] = _metrics(model, proposals, expected, seconds, evaluation, cost)
+        result, seconds = found[target.name]
+        evaluation = (evaluate_network(directory, model, result.proposals, baseline=baseline)
+                      if result.proposals else None)
+        out[target.name] = _metrics(model, result, seconds, evaluation, cost)
     totals: dict[str, Any] = {}
     for metrics in out.values():
         for key, value in metrics.items():
@@ -95,42 +85,13 @@ def run_scorecard(directory: Path, model: ResolvedModel, cost: RouteCost,
     return {"targets": out, "totals": totals}
 
 
-def _propose_target(model: ResolvedModel, target: ScoreTarget, cost: RouteCost
-                    ) -> tuple[list[RouteProposal], int]:
-    """``(proposals, terminals expected)`` — a tree expects one branch per fixture served."""
-    from typehaus.cli.cmd_route import _propose
-    from typehaus.cli.cmd_route_tree import _propose_tree
-
-    if target.mode == "tree":
-        made, _problems, _notices, _refusals = _propose_tree(
-            model, target.tag, slope=None, margin_ft=8.0, level=target.level,
-            avoid=frozenset(), via=[], explain=False, cost=cost)
-        return [p for p, _s in made], _tree_terminals(model, target)
-    made, _problems, _notices, _refusals = _propose(
-        model, [target.tag], mode=target.mode, slope=None, margin_ft=8.0, band=None,
-        avoid=frozenset(), via=[], explain=False, cost=cost)
-    return [p for p, _s in made], 1
-
-
-def _tree_terminals(model: ResolvedModel, target: ScoreTarget) -> int:
-    from typehaus.cli.route_support import _storey_of
-    from typehaus.model.spatial import Fixture
-
-    main = next((r for r in model.pipe_runs if r.tag == target.tag), None)
-    if main is None:
-        return 1
-    fixtures = [t for t in main.serves if isinstance(model.plan.by_tag(t), Fixture)]
-    if target.level is not None:
-        fixtures = [t for t in fixtures if _storey_of(model, t) == target.level]
-    return max(1, len(fixtures))
-
-
-def _metrics(model: ResolvedModel, proposals: list[RouteProposal], expected: int,
-             seconds: float, evaluation: Any, cost: RouteCost) -> dict[str, Any]:
+def _metrics(model: ResolvedModel, found: Found, seconds: float, evaluation: Any,
+             cost: RouteCost) -> dict[str, Any]:
     from typehaus.resolve.mep_fitting_direction import forbidden_turns
     from typehaus.resolve.mep_fittings import SERVICE_BY_SYSTEM
     from typehaus.routing.rack import rack_shared
 
+    proposals, expected = found.proposals, found.expected
     fittings: Counter[str] = Counter()
     forbidden = 0
     for proposal in proposals:
@@ -154,6 +115,9 @@ def _metrics(model: ResolvedModel, proposals: list[RouteProposal], expected: int
         "illegal_bores": count(BORE_CHECKS, ("fail",)),
         "trap_arm_gaps": count(TRAP_ARM_CHECKS),
         "vent_gaps": count(VENT_CHECKS),
+        "fitting_pattern_gaps": count(FITTING_PATTERN_CHECKS),
+        "duct_gaps": count(DUCT_CHECKS),
+        "campaign_lifts": found.lifts,
         "cleanouts_required": count(CLEANOUT_CHECKS),
         "cleanouts_placed": sum(len(getattr(p, "cleanouts", ())) for p in proposals),
         "exterior_wall_ft": round(sum(_exterior_ft(model, p) for p in proposals), 2),

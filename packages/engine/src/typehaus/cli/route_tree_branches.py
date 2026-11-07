@@ -4,12 +4,13 @@ A later branch ties onto an earlier one, so the earlier one carries more than th
 it was sized for, and every branch downstream of the tie does too. ``admits`` refuses a tie
 that would need a larger pipe than the one laid (UPC Table 703.2, ``branch_diameter_m``),
 and ``prisms`` makes every laid branch an obstacle for the ones searched after it, so two
-branches of one tree no longer pass through each other (drain basis §13).
+branches of one tree no longer pass through each other (drain basis §13). ``remove``
+lifts a branch for rip-up (``routing/tree_ripup``, tree rip-up note §1 P3).
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 
@@ -42,6 +43,37 @@ class Branches:
             self.lines[index].served.add(tag)
             index = self.lines[index].down
         return len(self.lines) - 1
+
+    def index_of(self, tag: str) -> int | None:
+        return next((i for i, b in enumerate(self.lines) if i and b.tag == tag), None)
+
+    def remove(self, line: int) -> list[str]:
+        """Lift ``line`` and every branch tied onto it, transitively; their tags in lay order.
+
+        The survivors are re-indexed and their loads recomputed, so a fixture that rode on a
+        lifted line no longer loads the lines below it."""
+        doomed = {line}
+        for index in range(line + 1, len(self.lines)):  # a tie is always laid after its line
+            if self.lines[index].down in doomed:
+                doomed.add(index)
+        keep = [i for i in range(len(self.lines)) if i not in doomed]
+        renumber = {old: new for new, old in enumerate(keep)}
+        lines = [self.lines[i] for i in keep]
+        for branch in lines:
+            branch.down = None if branch.down is None else renumber[branch.down]
+            branch.served = set() if branch.down is None else {branch.tag}
+        for branch in lines[1:]:
+            index: int | None = branch.down
+            while index is not None:
+                lines[index].served.add(branch.tag)
+                index = lines[index].down
+        removed = [self.lines[i].tag for i in sorted(doomed)]
+        self.lines = lines
+        return removed
+
+    def copy(self) -> Branches:
+        """Deep enough for a rollback: ``remove`` rewrites ``down`` and ``served`` in place."""
+        return Branches(self.main, [replace(b, served=set(b.served)) for b in self.lines])
 
     def admits(self, model: Any, line: int, tag: str) -> bool:
         """Can ``tag`` tie onto ``line`` without any pipe downstream needing upsizing?"""

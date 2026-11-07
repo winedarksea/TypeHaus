@@ -1,9 +1,10 @@
 """Duct. Two things differ from pipe, and both come from the section rather than the trade.
 
 **The radius is half the LARGER plan dimension.** A rectangular duct turning a corner
-sweeps its own diagonal, and this package has no fitting model to say otherwise, so the
-inflation is the conservative one. A round duct is the degenerate case and comes out right
-by the same rule.
+sweeps its own diagonal, and no throat radius is read to say otherwise (``duct_fittings``
+prices that elbow as fabricated, take-off unknown), so the inflation is the conservative
+one. A round duct is the degenerate case and comes out right by the same rule. What a turn
+costs in straight duct is ``duct_fittings``' and ``duct_search``'s, not this module's.
 
 **A crossing is admissible only within ``open_web_opening_m``** — the round hole a truss's
 own web geometry permits — and that is *smaller* than the chord-to-chord gap a pipe may
