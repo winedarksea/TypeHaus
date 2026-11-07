@@ -3564,6 +3564,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "FX-SHOWER-36-THERMO-COMBO" = { material = { low = 1970, high = 4120 }, labour = { low = 560, high = 1300 } }  # 1 ea
 # +$65-100/ea for the 52535-SS head over the boxed one (2026-10-12; street $64-73).
 # 2026-10-29: high was $700 above FX-TUBSHOWER-60's; the trim delta is Delta T14459-SS $270-310 + R10000 $53-65 + head $65-100 + handshower ~$60-150 = ~$450-625.
+# 2026-11-06: the insert is Sterling Ensemble Medley 71370116 ($1,164.53, shopkohlernj.com, read 2026-11-06), inside the band.
 "FX-TUBSHOWER-60-DIVERTED" = { material = { low = 900, high = 2200 }, labour = { low = 450, high = 1050 } }  # 2 ea
 "FX-TUB-60" = { material = { low = 400, high = 1600 }, labour = { low = 330, high = 800 } }  # 1 ea
 # THE CHOSEN BATH — Kohler K-1130-W1-0 Underscore 60x32 with the Bask heated surface, RM-M-BATH2
@@ -4242,7 +4243,10 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # standard-weight regular or Type C substitutes (owner, 2026-10-23), at the gwb:0.5 row's band.
 "gwb-ar" = { material = { low = 0.60, high = 1.00 }, labour = { low = 1.3, high = 2.2 } }  # 1491.7 SF
 "gwb-mr" = { material = { low = 0.65, high = 0.85 }, labour = { low = 1.1, high = 1.9 } }  # 1793.0 SF
-"gwb-c" = { material = { low = 0.45, high = 0.70 }, labour = { low = 1.1, high = 1.9 } }  # 0 SF until a solid acoustic wall takes it
+"gwb-c" = { material = { low = 0.45, high = 0.70 }, labour = { low = 1.1, high = 1.9 } }  # 306.5 SF: INT_2X4_STAGGERED_X_HALF's 1/2" board is Firecode C since 2026-11-06
+# 2026-11-06 fit pass (#27): GP DensShield Tile Backer 1/2" on BATH2's two closed shower walls.
+# Home Depot 855000 / Lowe's 1000721272 pages returned 403, so no price was read: UNPRICED.
+# "gwb-glass-mat" = { material = { low = ?, high = ? }, labour = { low = 1.1, high = 1.9 } }  # 48.4 SF billed (~99 SF real)
 # 2026-08-18, the plant room's liner (notes/plant_room.md). Both are $/SF of NET wall area,
 # material only, at the thickness the assembly uses.
 #   humid-room-membrane — a fully-adhered sheet air/vapour barrier, the class of product
@@ -6541,6 +6545,9 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # https://www.homedepot.com/p/203396197 (2026-10-24); reducer/consumables add $5-15.
 # The graph keys this upright tee tee-2x1.5in, zeroed in [pipe_fittings]. Rigid elbows bill
 # there too; the arm cleanout bills as cleanout_one_way in [plumbing_specialties].
+# 2026-11-06 fit pass (#22): Uponor A5110500 1/2" metal bend support, 8 at the hot-water header
+# (submittal rev. A 2008). Consolidated Supply product 5050, ~$3.57 each (read 2026-11-06); high allows small-order supply.
+"Uponor A5110500 1/2in metal bend support" = { low = 3.57, high = 6 }  # 8 ea
 # 2026-08-24: the twin pairing kit for the Frigidaire column pair (plan/placeables.py, on
 # APPL-M-FRIDGE). It is a row here rather than folded into either appliance price because it
 # is ONE kit for TWO cabinets — carried on an appliance row it would read as a per-unit

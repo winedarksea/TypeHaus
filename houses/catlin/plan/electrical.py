@@ -741,7 +741,7 @@ MAIN_EQUIPMENT = [
                   normal_gap=inch(0.5625), rotation_offset=deg(-180)))),
     # --- System 3's head: stair well NW corner, on the north wall (W-M-N2), surface-mounted
     # since an 8" unit won't fit the 5 1/2" insulated cavity. The mudroom is served instead
-    # by REG-M-XFER-MUD, a passive louver in the same wall (plan/mep_registers.py).
+    # by REG-M-XFER-MUD, a passive louver in the same wall (plan/mep_registers_main.py).
     # Position: y=35'-1 3/8" (8" body, back on W-M-N2's face); x=11'-10 1/2" (33" case runs
     # 10'-6"..13'-3", tight into the corner, square over the stair lane, 2 5/8" clear of
     # W-M-STRW); rotation 0 (back north, blowing south down the well — contrast 180 on the

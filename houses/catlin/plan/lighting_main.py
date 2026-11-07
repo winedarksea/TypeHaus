@@ -150,7 +150,7 @@ MAIN_LIGHTING = [
     # CAN3/CAN4 at y=8'-8") are deliberately NOT centred on it: the fan is the thing a person
     # looks up at. The 26" sweep clears the nearest can centre (CAN5 at (9'-4", 3'-4")) by
     # ~12" and every wall by 6'-0"+. REG-M-SUP3 moved 2'-0"
-    # west for this (plan/mep_registers.py) — it sat on the room seed, 6" away, which is a
+    # west for this (plan/mep_registers_main.py) — it sat on the room seed, 6" away, which is a
     # canopy-on-register overlap nothing in the engine would have reported.
     #
     # ** CONSTANT HOT, AND THE SWITCH IS A PLAIN ED-T-LEV-SW1, NOT A DIMMER. ** Mark N's
@@ -204,7 +204,7 @@ MAIN_LIGHTING = [
     # which already holds this fitting and a switch. The room's stale-air pickup is LOW, on
     # the south wall's east end: the east wall below this sconce is D-M-STUDY's rough
     # opening down to 21'-0 11/16" and FURN-M-STUDY-BENCH from there to the corner. See
-    # plan/mep_registers.py for both.
+    # plan/mep_registers_main.py for both.
     #
     # ** KEEP AT LEAST ONE OF THIS AND ED-M-STUDY-LT. ** RM-M-STUDY-CLOSET is windowless and
     # passes `code.R303_1_light_and_ventilation` only on Exception 1's electric-light

@@ -35,13 +35,13 @@ only if it is more than 30" above the floor or grade below.
 | ST-B2M | 110.38435/15 = 7.3590" | 1" + 1/4" (glued carpet, 2026-11-01) | **6.11"** | 110.38 − 1.25 = 109.13" | 11 |
 | ST-M2S | 120.55315/16 = 7.5346" | 1" | **6.53"** | 120.55 − 1 = 119.55" | 12 |
 | ST-S2A | 120/16 = 7.5" | 1" | **6.50"** | 120 − 1 = 119.0" | 12 |
-| ST-G-SERVICE | 35.5/5 = 7.1" | 0.94" | **6.16"** | 35.5 − 0.94 = 34.56" | 1 |
+| ST-G-SERVICE | 35.2835/5 = 7.0567" | 0.94" | **6.12"** | 35.28 − 0.94 = 34.34" | 1 |
 | ST-SG-PORCH | 33.94/5 = 6.788" | 0.94" | **5.85"** | 33.94 − 0.94 = 33.0" | 1 |
 
 The last column counts steps whose opening top is over 30". For ST-M2S that is step k (from
 1) with k × 7.5346 − 1 > 30, which gives k ≥ 5, so 12 of the 16. For the two exterior
-flights it is only the top step (34.56" and 33.0", respectively). ST-G-SERVICE has risen
-to D-G-SERVICE's +1 1/2" threshold crest since 2026-11-01: k × 7.1 − 0.94 > 30 gives
+flights it is only the top step (34.34" and 33.0", respectively). ST-G-SERVICE rises to
+D-G-SERVICE's threshold crest, +1.2835" since 2026-11-06 (unit seated on the pan, fit pass A1): k × 7.0567 − 0.94 > 30 gives
 k ≥ 5. Every opening is over 4", so every flight FAILs open.
 
 ## 4. Closed
@@ -55,7 +55,7 @@ framing it faces instead.
 | ST-M2S | oak-riser, 4/4 S4S, owner-milled | 16 | 3/4 × 6.53 × 42 3/8" |
 | ST-S2A | oak-riser | 14 + 2 | 3/4 × 6.50 × 36", two fan risers × 38.42" (√(24² + 30²)) |
 | ST-B2M | plywood-subfloor, under carpet | 14 + 1 | 3/4 × 6.11 × 41 1/16", and the split-landing step × 50 7/8" |
-| ST-G-SERVICE / ST-SG-PORCH | kdat | 5 + 5 | 3/4 × 6.16 / 5.85 × 36" |
+| ST-G-SERVICE / ST-SG-PORCH | kdat | 5 + 5 | 3/4 × 6.12 / 5.85 × 36" |
 
 Board height = R − the board and any separate covering above (the riser's top is the
 substrate's underside). 6.53" off
