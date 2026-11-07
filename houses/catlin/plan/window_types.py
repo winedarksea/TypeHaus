@@ -39,15 +39,14 @@ _DRUTEX_INWARD_SASH_BOTTOM = mm(38)
 # Fixed-section face width includes glazing details, not a measured stool-bearing rail.
 # Keep the previous stool basis explicit so the face correction does not move counters.
 _DRUTEX_FIXED_STOOL_RAIL = mm(75)
-_DRUTEX_FACES = ("Alucover sections: frame 70001, 74 mm exterior face; sash 70013 adds "
-                 "50 mm. Inward sash bottom 38 mm above bare PVC frame bottom. "
+_DRUTEX_FACES = ("Alucover frame 70001, 74 mm exterior face. "
                  "Sill adaptor not included in modeled envelope; DAKAM to confirm. "
                  "Sources: notes/window_profile_measurements.md.")
 # Not published to us for the basic unit; the preset's 3 1/4" stays until the dealer's
 # section is in hand.
 _ANDERSEN_DEPTH = inch(3.25)
 # Andersen's architectural sections B/2, A/2, C/2: the frame allowance includes its sash
-# gap. Interior sill-stop height is separate (2025-26 product details, p. 1).
+# gap. Interior sill-ledge height is separate (2025-26 product details, p. 1).
 _ANDERSEN_JAMB_FACE, _ANDERSEN_SASH_FACE = inch(9 / 16), inch(1 + 5 / 8)
 _ANDERSEN_HEAD_FACE, _ANDERSEN_SILL_FACE = inch(3 / 4), inch(13 / 16)
 _ANDERSEN_INTERIOR_SILL_RAIL = inch(1 + 1 / 8)
@@ -78,6 +77,9 @@ _ANDERSEN_STEP, _ANDERSEN_ALLOWANCE = inch(0.125), inch(0.5)
 
 def _drutex(tag, width, height, operation, row, product, *, tempered=False,
             u=0.16, shgc=0.33, vt=0.47) -> WindowType:
+    profile_detail = ("Fixed in frame; interior stool rail remains provisionally 75 mm."
+                      if operation == "fixed" else
+                      "Sash 70013 adds 50 mm face; inward bottom 38 mm above bare PVC frame.")
     return WindowType(
         tag=tag, width=width, height=height, operation=operation, tempered=tempered,
         u_factor=u_us(u), shgc=shgc, vt=vt, frame_depth=_DRUTEX_DEPTH,
@@ -86,7 +88,7 @@ def _drutex(tag, width, height, operation, row, product, *, tempered=False,
         inward_sash_bottom_height=_DRUTEX_INWARD_SASH_BOTTOM if operation != "fixed" else None,
         sill_rail_height=_DRUTEX_FIXED_STOOL_RAIL if operation == "fixed" else None,
         frame_material_ref="drutex-alucover-cap",
-        product_ref=product.tag, source=f"{row} {_DRUTEX_FACES} {_SIZE}")
+        product_ref=product.tag, source=f"{row} {_DRUTEX_FACES} {profile_detail} {_SIZE}")
 
 
 def _maxlight(tag, width, height, *, tempered=False) -> WindowType:
