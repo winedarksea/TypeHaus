@@ -35,7 +35,7 @@ _WORKED = {
     # half-bay strip: the landing's deck share fell 17.03 -> 9.93 ft2 (W/E), 9.60 (GW/GE).
     # Seat beams from the column's east face, 2026-09-23 (addendum 2026-09-23c): 3.3542' long.
     # Carriers 4.5" shorter at the landing header, 2026-09-24 (addendum 2026-09-24).
-    # W/GW 14" round since 2026-09-30 (the CBSQ's 3" side cover, canopy_west_band.md §5e).
+    # W/GW 14" round since 2026-09-30 (the CBSTQ's 3" side cover, canopy_west_band.md §5e).
     # The garage landing went 2026-10-13 (addendum 2026-10-13): 3.91 ft2 off each; GW's soft
     # end is a hair inside 0.75 Pc. The 0.06 inch raised bearing (2026-10-15 addendum)
     # makes L=60.56 inch and the soft-end magnifier 48.8372, still arithmetic only.
@@ -43,8 +43,9 @@ _WORKED = {
     # These retired landing rows remain arithmetic only; GW is still near singular.
     "PT-BW-W": (1.0781, 1.3210, Status.INCOMPLETE),
     "PT-BW-E": (1.0212, 1.0632, Status.OK),
-    # The screen stops on the garage cladding (2026-11-06): chord -1.18 lb, GW 35.25 -> 35.00.
-    "PT-BW-GW": (1.3277, 35.00, Status.OVER),
+    # The screen stops on the garage cladding (2026-11-06): chord -1.18 lb, GW 35.25 -> 35.00;
+    # the seat beam stops off the base strap the same day: P_u -4.40 lb, 35.00 -> 34.24.
+    "PT-BW-GW": (1.3277, 34.24, Status.OVER),
     # GE's P_u fell 1,107.8 -> 1,074.7 lb when the landing came in 3 3/8" (2026-10-31).
     "PT-BW-GE": (1.0502, 1.2254, Status.INCOMPLETE),
     # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->

@@ -183,7 +183,7 @@ M = 332.81 x 16.4479 + 493.9 = 5,967.9 lb-ft      base V 332.81 + (167.16 − 93
 | variant | above the pier | pier | pad plane | end fixity |
 |---|---|---|---|---|
 | `steel` | HSS 4x4x1/4 A500 Gr C, 74.125" | 12" round to +0'-2" | house −9'-9 7/16" / garage −7'-0" | pinned-pinned |
-| `kdat` (current) | 6x6 KDAT, ACE6Z head, cast-in CBSQ66-SDS2, PVC wrap | **14"** round (the CBSQ's cover) | the same pads | pinned-pinned |
+| `kdat` (current) | 6x6 KDAT, ACE6Z head, cast-in CBSTQ66Z-SDS2, PVC wrap | **14"** round (the CBSTQ's cover) | the same pads | pinned-pinned |
 | `cast` | 12" round, full height, one pour | none | −10'-2" (both, as 2026-09-20) | fixed base |
 
 ## 2. The demand the canopy delivers (oracles `roof_lateral.py`)
@@ -448,9 +448,9 @@ current KDAT   v = 673.269 / 20.2917 = 33.180 plf   T = 33.180 x 8.333 = 276.50 
 
 Read over the chords (`PT-BW-CW`/`-CNW`, 5.4375' out to out) rather than the wall's 6.573' run,
 the 6" edge nailing is OVER (1.05); the panel is nailed at 4" edges (265 plf) and reads
-**0.721** kdat (steel 1,025.4 / 5.4375 = 188.6, 0.712). The hold-down is a cast-in CBSQ66-SDS2
+**0.721** kdat (steel 1,025.4 / 5.4375 = 188.6, 0.712). The hold-down is a cast-in CBSTQ66Z-SDS2
 graded over the FULL frame height, 2,227.6 / 3,060 = **0.728** kdat (steel 2,205.2, 0.721), and
-its anchorage is the CBSQ's own cracked row, so the ABU66SS / AB-058-10-SS / ACI Ch. 17 rows
+its anchorage is the CBSTQ's own cracked row, so the ABU66SS / AB-058-10-SS / ACI Ch. 17 rows
 are gone. All of it: `canopy_west_band.md` §4.
 
 ### 4d. The canopy deck along the screen line — the closest row on the page
@@ -549,7 +549,7 @@ at 29 lb it is not a row, and it is named so the gap is never grouted to "fix" i
 
 The east pair are 6x6 Southern Pine No. 2 KDAT under the glulam header: an `ACE6Z` end cap on
 `PT-BW-RE` and on `PT-BW-RNE`, `A35Z` angles for the across-beam direction, and cast-in
-`CBSQ66-SDS2` bases in 14" piers (2026-09-30; the heads, bases and their lateral rows are
+`CBSTQ66Z-SDS2` bases in 14" piers (2026-09-30; the heads, bases and their lateral rows are
 `canopy_west_band.md` §5). The PVC column wrap is a finish, never a brace. The 2018 NDS
 Supplement Table 4D's **wet-service Southern Pine timber row** gives F_c 525 psi, F_b 850 psi
 and E_min 440,000 psi. The post is 5.5" square and 74.125" long (6.1771').
@@ -571,7 +571,7 @@ IRC R507.4        6.177' < 14' 6x6 limit (cross-check; the roof's drift snow nee
 at wood moisture content ≤ 19%. Install KDAT dry and verify that limit before closing the wrap.
 The PVC must be a nonstructural, screw-fastened four-sided jacket with an accessible panel,
 open at the bottom above the pier wash and vented at the top below the cap; its top sheds water
-outward. Keep the CBSQ's 1" standoff visible and draining. If the wrap cannot dry or permit
+outward. Keep the CBSTQ's 1" standoff visible and draining. If the wrap cannot dry or permit
 inspection, the connectors' published ratings are not earned.
 
 ## 6. The pier under a pinned post (oracles the pinned path into `column_base`)
@@ -598,7 +598,7 @@ strip beside it bears, so the 1'-4 9/16" undermining step is gone; `PD-BW-RNE` s
 garage plane, so the 3'-2" drop under the stone strip is gone; and `RE`'s lateral capacity no
 longer rests on the basement overdig's backfill at all — 2.4' of it is needed against 6.1'.
 Both piers keep the moment cage and 12" pad of every other entry pier (14" round in `kdat`,
-for the CBSQ's cover), so the switch to `cast` needs no new pad form. Axial is `deck_post`'s tied-column row at d/c ~0.01.
+for the CBSTQ's cover), so the switch to `cast` needs no new pad form. Axial is `deck_post`'s tied-column row at d/c ~0.01.
 
 ## 7. The cast variant — columns share E-W by rigidity with `W-G-S`
 

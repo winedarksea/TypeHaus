@@ -14,7 +14,7 @@ The downloads were inspected locally; proprietary CAD assets are not committed.
 | --- | --- | --- |
 | ABU44 / ABU44Z / ABU44SS | W 3-9/16, L 3, H 5-1/2; standoff pan 16 ga, U strap 12 ga | [C-C-2026 pp. 76–77](https://ssttoolbox.widen.net/view/pdf/7ftb0cfhtp/C-C-2026-p076-077.pdf?t.download=true) |
 | ABU66 / ABU66Z / ABU66SS | W 5-1/2, L 5, H 6-1/16; pan 12 ga, strap 10 ga | Same ABU drawing/table |
-| CBSQ66-SDS2 / HDG | W1/W2 5-1/2, straps 3 wide, H 8-3/4, embedment D 6-7/8; pan 12 ga, straps 10 ga | [C-C-2026 p. 85](https://ssttoolbox.widen.net/view/pdf/frun6iv5rf/C-C-2026-p084-085.pdf?t.download=true), showing the similar CBSTQ replacement and matching dimensions; existing CBSQ66 designation/dimensions retained |
+| CBSTQ66Z-SDS2 / HDG | W1/W2 5-1/2, straps 3 wide, H 8-3/4, embedment D 6-7/8; pan 12 ga, straps 10 ga | [C-C-2026 p. 85](https://ssttoolbox.widen.net/view/pdf/frun6iv5rf/C-C-2026-p084-085.pdf?t.download=true); the retired CBSQ66 had the same dimensions |
 | PC6Z | W 5-1/2, leaf L 7, beam height 3, post tab 2-5/8 wide × 1-5/8 high; 16 ga | [C-C-2026 p. 97](https://ssttoolbox.widen.net/view/pdf/fmsf4lvvdw/C-C-2026-p097.pdf?t.download=true) |
 | CCQ46SDS2.5 / HDG / SS | Beam opening W1 3-5/8, post opening W2 5-1/2, L 11, saddle H 7, post leaves 8-1/2 × 2-1/2; 7 ga | [C-C-2026 pp. 98–99](https://ssttoolbox.widen.net/view/pdf/u4l1un3ze4/C-C-2026-p098-099.pdf?t.download=true) |
 | AC6Z | Pair of 18 ga leaves, L 8-1/2, nominal post W 5-1/2, beam leaf height 3, post leaf height 2-1/2, returns 1-1/2 | [C-C-2026 pp. 94–95](https://ssttoolbox.widen.net/view/pdf/k5m48v2eo8/C-C-2026-p094-095.pdf?t.download=true) |
@@ -29,7 +29,7 @@ return `None`, letting the dispatcher handle its existing marker behavior.
 ## Local datums and orientation
 
 - Bases: concrete top is z=0, and the wood seat is z=1 inch. The ABU has a U strap with
-  a thin bottom and a hollow raised pan. The CBSQ has narrow leaves extending into concrete,
+  a thin bottom and a hollow raised pan. The CBSTQ has narrow leaves extending into concrete,
   joined by their embedded bottom return, plus the raised pan.
 - Caps: beam soffit is z=0. PC/CCQ bearing steel is below this plane; post leaves extend
   downward and beam leaves upward. CCQ's post leaves are perpendicular to its beam side

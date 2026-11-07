@@ -1,7 +1,8 @@
-"""The canopy's rated post heads and bases: AC/ACE caps, the A35 angle, the CBSQ base.
+"""The canopy's rated post heads and bases: AC/ACE caps, the A35 angle, the CBSTQ base.
 
 Split from ``simpson_post_bases.py`` (470 lines). Every number was read from the ICC-ES PDF
-itself on 2026-09-30; the CBSQ's lateral row is the one exception, and it says so.
+itself on 2026-09-30 (the CBSTQ on 2026-11-06); its lateral row is the one exception, and it
+says so.
 
 **Wet service.** ESR-2604 §3.2.2 and ESR-3050 §4.1 both tie the tabulated values to wood at
 or below 19% moisture content, reduced by NDS ``C_M`` otherwise. Catlin's KDAT posts stand on
@@ -101,37 +102,39 @@ A35Z_FRAMING_ANGLE = StructuralHardware(
     ),
 )
 
-#: CBSQ66-SDS2, cast in. The uplift is measured THROUGH the concrete (cracked and uncracked
+#: CBSTQ66Z-SDS2, cast in (C2 E10, 2026-11-06: Simpson retired the CBSQ66 for it; same steel,
+#: same drawn body). The uplift is measured THROUGH the concrete (cracked and uncracked
 #: columns, 2,500 psi), so no separate anchor is bought and no ACI Ch. 17 row stands in for it.
-CBSQ66_COLUMN_BASE = StructuralHardware(
-    tag="simpson-cbsq66-sds2-column-base",
-    name="CBSQ66-SDS2 cast-in column base (6x6)",
+CBSTQ66Z_COLUMN_BASE = StructuralHardware(
+    tag="simpson-cbstq66z-sds2-column-base",
+    name="CBSTQ66Z-SDS2 cast-in column base (6x6)",
     role=ROLE_POST_BASE,
     manufacturer=_SIMPSON,
-    model="CBSQ66-SDS2",
+    model="CBSTQ66Z-SDS2",
     exposure=EXPOSURE_TREATED,
     fits_nominal=("6x6",),
-    source="Simpson Strong-Tie CBSQ column base (strongtie.com/cbsq) — 12 ga base, 10 ga x 3 "
-           "in straps, W1/W2 5-1/2 in, D 6-7/8 in embedment, 1 in standoff, cast into the pour",
+    source="Simpson Strong-Tie C-C-2026 (2026-2027) p. 85, CBSTQ66Z-SDS2 — 12 ga base, 10 ga x "
+           "3 in straps, W1/W2 5-1/2 in, D 6-7/8 in embedment, H 8-3/4 in, 1 in standoff, "
+           "ZMAX, cast into the pour",
     bearing_standoff_in=1.0 + 0.1046,
     anchorage_in_rating=True,
     allowable=AllowableLoads(
         uplift_lb=3060.0,
         lateral_f1_lb=485.0,
         lateral_f2_lb=1270.0,
-        download_lb=14420.0,
+        download_lb=19335.0,
         load_duration_factor=1.6,
         species=None,
         fasteners="14 - SDS 1/4 in x 2 in into the post; the straps cast into >= 2,500 psi "
                   "concrete with >= 3 in side cover (fn. 4)",
-        citation=("ICC-ES ESR-3050 (Simpson Strong-Tie embedded column bases), Table 1, "
-                  "Wind and SDC A & B, read 2026-09-30: CBSQ66-SDS2 uplift 4,375 lbf "
-                  "uncracked / 3,060 cracked (the CRACKED value is recorded), download "
-                  "14,420 lbf at C_D 1.0; minimum side cover 3 in (fn. 4); fn. 5, the base "
-                  "does not prevent rotation. The report publishes NO lateral: F1 485 / F2 "
-                  "1,270 lbf are Simpson C-C-2024's CBSQ table, the manufacturer's own "
-                  "catalog, and the directions do not combine with uplift except by a "
-                  "linear unity sum"),
+        citation=("ICC-ES ESR-3050 (Simpson Strong-Tie embedded column bases), reissued "
+                  "August 2026, Table 2 (p. 9), Wind and SDC A & B, read 2026-11-06: "
+                  "CBSTQ66Z-SDS2 uplift 4,375 lbf uncracked / 3,060 cracked (the CRACKED "
+                  "value is recorded), download 19,335 lbf at C_D 1.0; minimum side cover "
+                  "3 in (fn. 4); fn. 5, the base does not prevent rotation. The report "
+                  "publishes NO lateral: F1 485 / F2 1,270 lbf are Simpson C-C-2026 p. 85 "
+                  "fn. 5 (all CBSTQ models), the manufacturer's own catalog, and the "
+                  "directions do not combine with uplift except by a linear unity sum"),
     ),
 )
 

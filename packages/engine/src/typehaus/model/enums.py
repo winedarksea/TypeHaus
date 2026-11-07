@@ -529,7 +529,7 @@ class ConnectorKind(Enum):
     JOIST_HANGER = "joist_hanger"          # e.g. Simpson LUS/HUS face-mount hanger
     HURRICANE_TIE = "hurricane_tie"        # e.g. Simpson H2.5A rafter/joist-to-plate tie
     KNEEBRACE = "kneebrace"                # e.g. Simpson APVKB angled knee brace
-    POST_BASE = "post_base"                # standoff post base (e.g. Simpson ABU/CBSQ)
+    POST_BASE = "post_base"                # standoff post base (e.g. Simpson ABU/CBSTQ)
     HOLD_DOWN = "hold_down"                # beam-to-post uplift strap (e.g. Simpson KBS/LSTA)
     # The cap a beam lands ON at the top of a post. Its own kind, not HOLD_DOWN: a strap
     # ties a beam down to a post it runs past, a cap seats a beam that stops there. They

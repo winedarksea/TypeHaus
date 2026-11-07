@@ -44,7 +44,7 @@ def _crossings_in(mesh: GMesh, axis: int, fixed_coordinates_in: tuple[float, flo
 @pytest.mark.parametrize(("part", "dimensions_in"), (
     ("ABU44", (3.0, 3.5625 + 2 * 0.1046, 5.5)),
     ("ABU66SS", (5.0, 5.5 + 2 * 0.1345, 6.0625)),
-    ("CBSQ66-SDS2", (5.5, 5.5 + 2 * 0.1345, 15.625)),
+    ("CBSTQ66Z-SDS2", (5.5, 5.5 + 2 * 0.1345, 15.625)),
     ("PC6Z", (7.0, 5.5 + 2 * 0.0598, 3.0 + 1.625 + 0.0598)),
     ("CCQ46SDS2.5", (11.0, 3.625 + 2 * 0.1793, 15.5)),
     ("AC6Z", (8.5, 5.5 + 2 * 0.0478, 5.5)),
@@ -77,8 +77,8 @@ def test_abu_has_open_u_channel_and_one_inch_raised_seat(
     assert _bounds_in(mesh)[0][2] == 0.0
 
 
-def test_cbsq_keeps_cast_in_u_strap_and_open_post_clearance() -> None:
-    mesh = _mesh("CBSQ66-SDS2HDG")
+def test_cbstq_keeps_cast_in_u_strap_and_open_post_clearance() -> None:
+    mesh = _mesh("CBSTQ66-SDS2HDG")
     lower, upper = _bounds_in(mesh)
     assert lower[2] == -6.875
     assert upper[2] == 8.75
@@ -133,7 +133,7 @@ def test_angles_leave_the_inside_quadrant_empty(part: str) -> None:
 
 @pytest.mark.parametrize(("plain", "coated"), (
     ("ABU44", "ABU44Z"), ("ABU66", "ABU66SS"),
-    ("CBSQ66-SDS2", "CBSQ66-SDS2HDG"),
+    ("CBSTQ66Z-SDS2", "CBSTQ66-SDS2HDG"),
     ("CCQ46SDS2.5", "CCQ46SDS2.5HDG"), ("HL35", "HL35PC"),
 ))
 def test_coatings_do_not_change_shape(plain: str, coated: str) -> None:

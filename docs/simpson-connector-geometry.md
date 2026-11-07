@@ -15,7 +15,7 @@ Dimensions come from Simpson's
 Family tables, installation datums and the remaining contour approximations are recorded in:
 
 - [Hangers](simpson-hanger-geometry.md): LUS, HU/HUC/HUCQ, HHUS, IUS, LSSR, LSC and THA.
-- [Bases, caps and heavy angles](simpson-base-cap-geometry.md): ABU, CBSQ, PC, CCQ,
+- [Bases, caps and heavy angles](simpson-base-cap-geometry.md): ABU, CBSTQ, PC, CCQ,
   AC/ACE, L50 and HL.
 - [Ties and straps](simpson-tie-geometry.md): hurricane ties, mudsill anchors, embedded
   holdowns, tension ties, straps, stud ties and lighter angles.

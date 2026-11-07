@@ -60,7 +60,7 @@ PIER_CONCRETE_12 = Assembly(
     # stainless shim pack holding the KDAT soffit 1/2"-1" clear so the joint drains and dries
     # (AITC/WoodWorks), and a cast-in HETA20Z pair beside it as the TIE. **The shim
     # pack IS the bearing and the tie is never it** — two parts, two jobs, as
-    # params/breezeway.py already states. PT-BW-W and PT-BW-GW take a 6x6's CBSQ66-SDS2 base on
+    # params/breezeway.py already states. PT-BW-W and PT-BW-GW take a 6x6's CBSTQ66Z-SDS2 base on
     # the same circle as their seat beam; that base is a wood COLUMN on concrete and
     # IRC R317.1.4 really does reach it, which is the one place in this set that citation fits.
     #
@@ -81,7 +81,7 @@ PIER_CONCRETE_12 = Assembly(
     source="catlin-house 12-inch round north-entry piers and columns, EXPOSED_MIX 5,000 psi F3+C2 with galvanized bar. The four seat-beam piers PT-BW-W/E/GW/GE receive a washed top, drained SS316-SHIM-35 bearing pack and HETA20Z tie pair. Under the pinned east variants, PT-BW-PE/PNE instead carry post bases above washed, drained pier tops; under the cast variant PT-BW-RE/RNE continue full height and receive the shim-and-tie joint. The variant is selected in params/east_posts.py."
 )
 
-# ** THE 14" ROUND, UNDER A CAST-IN CBSQ66-SDS2 (C3-E21). ** PT-BW-W/-GW and, under the
+# ** THE 14" ROUND, UNDER A CAST-IN CBSTQ66Z-SDS2 (C3-E21). ** PT-BW-W/-GW and, under the
 # `kdat` east posts, PT-BW-PE/-PNE: ESR-3050's 3" side cover to the embedded straps needs the
 # extra inch (notes/canopy_west_band.md §5e). Same mix and seat detail as PIER_CONCRETE_12;
 # the section and cage differ, so it is its own tag and its own BOM row.
@@ -94,7 +94,7 @@ PIER_CONCRETE_14 = Assembly(
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     interfaces=(CONCRETE_BEARING,),
-    source="catlin-house 14-inch round north-entry piers under a cast-in CBSQ66-SDS2 base (ESR-3050 Table 1 fn. 4, 3-inch strap side cover): PT-BW-W/GW, and PT-BW-PE/PNE under the kdat east posts. EXPOSED_MIX 5,000 psi F3+C2 with galvanized bar, a 10-inch (6) #5 cage at 2-inch cover, 1.21% of the gross area against ACI 318-19 §10.6.1.1's 1% (notes/north_entry_piers.md §13b). Washed, drained top; no grout island."
+    source="catlin-house 14-inch round north-entry piers under a cast-in CBSTQ66Z-SDS2 base (ESR-3050 Table 2 fn. 4, 3-inch strap side cover): PT-BW-W/GW, and PT-BW-PE/PNE under the kdat east posts. EXPOSED_MIX 5,000 psi F3+C2 with galvanized bar, a 10-inch (6) #5 cage at 2-inch cover, 1.21% of the gross area against ACI 318-19 §10.6.1.1's 1% (notes/north_entry_piers.md §13b). Washed, drained top; no grout island."
 )
 
 # ** ONE TYPE FOR ALL FIVE COURT STRIPS SINCE 2026-09-10, AND THE MERGE FIXED A DEFECT. **

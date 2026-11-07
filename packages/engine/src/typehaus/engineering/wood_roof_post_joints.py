@@ -8,7 +8,7 @@ row of the part the plan AUTHORS at that joint:
   the beam only), linear with the cap's uplift where the post carries both;
 * **head, across the beam** — the A35 angles on the post's free faces up to the beam soffit
   (ESR-3096 Table 5), each at the lower of F1/F2;
-* **base** — the cast-in CBSQ's uplift with its lateral in each direction, F2 along
+* **base** — the cast-in CBSTQ's uplift with its lateral in each direction, F2 along
   ``Connector.axis`` and F1 across it, summed linearly (Simpson's own unity rule);
 * **the plate end** — for a post a panel is framed into, the A35 carrying the panel's top-plate
   reaction into the post side face.

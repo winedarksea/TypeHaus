@@ -18,7 +18,7 @@ ZINC_FINISHES = frozenset({"zmax", "hdg", "g90", "mech_galv"})
 class ConnectorFastening:
     """One connector's fasteners: ``(count, fastener model, into)`` per term.
 
-    ``fasteners`` is empty where the screws ship in the connector's own box (CBSQ-SDS2,
+    ``fasteners`` is empty where the screws ship in the connector's own box (CBSTQ-SDS2,
     DTT2Z) or the joint is bolted to the member at the site; ``citation`` says which.
     """
 

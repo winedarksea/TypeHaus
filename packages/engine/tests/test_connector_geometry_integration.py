@@ -13,7 +13,7 @@ from typehaus.resolve.connector_geometry.fasteners import fastener_mesh
 from typehaus.resolve.connector_geometry.placement import ConnectorPlacementIndex
 
 SIMPSON_PREFIXES = ("LUS", "IUS", "LSSR", "LSC", "THA", "HU", "HHUS", "H2.5", "H10",
-                    "ABU", "CBSQ", "CCQ", "PC", "AC", "ACE", "HL", "L50", "STHD",
+                    "ABU", "CBSTQ", "CCQ", "PC", "AC", "ACE", "HL", "L50", "STHD",
                     "HETA", "MASA", "DTT", "LSTA", "MSTA", "MSTC", "LTP", "A35", "LS30", "KBS",
                     "THD")
 

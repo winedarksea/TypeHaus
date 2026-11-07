@@ -21,7 +21,7 @@ with HDG through-bolts and a butyl isolation layer at the head; a welded base pl
 cast-in HDG anchors and levelling nuts over an open, drained gap at the foot — the house's
 standoff rule, no grout pad. Stainless and galvanized never share a joint.
 **kdat** (owner 2026-09-29): a 6x6 KDAT post as `PT-BW-CW`, on the same pier, an
-`ACE6Z` end cap where the glulam ends flush on it (2026-10-28) and a cast-in `CBSQ66-SDS2`
+`ACE6Z` end cap where the glulam ends flush on it (2026-10-28) and a cast-in `CBSTQ66Z-SDS2`
 base, with a
 removable, drained PVC column wrap. The wrap is
 nonstructural and is kept clear of both the cap and standoff base.
@@ -31,7 +31,7 @@ fixed at the base, shim pack + cast-in `HETA20Z` pair at the head.
 
 from typehaus import Connector, ConnectorKind, Pad, Post, ft, pt
 
-from params.column_heads import CBSQ66_HEAD, HETA20Z_PAIR_HEAD
+from params.column_heads import CBSTQ66Z_HEAD, HETA20Z_PAIR_HEAD
 
 #: The pier top under a pinned east post: 3'-0" over `Site.grade` (−2'-10"), i.e. +0'-2".
 PIER_TOP_FT = 2 / 12
@@ -60,7 +60,7 @@ _EAST_VARIANTS = {
     ),
     "kdat": dict(
         post_size="6x6", post_assembly="POST_KDAT_WRAPPED_PVC",
-        # 14": the CBSQ's 3" side cover (params/north_entry_frame.py::_PIER_SIZE).
+        # 14": the CBSTQ's 3" side cover (params/north_entry_frame.py::_PIER_SIZE).
         pier_size="14 round",
         piers={"RE": ("34ET0SKQAZ", "PT-BW-PE"), "RNE": ("1NKNZQCQTQ", "PT-BW-PNE")},
         moment_piers=frozenset(),
@@ -68,15 +68,15 @@ _EAST_VARIANTS = {
         # the joints' own and survive every re-type.
         head=("POST_CAP", {"RE": "ACE6Z", "RNE": "ACE6Z"},
               {"RE": ("X0QPPRBG1X", "CN-BW-CAP-E"), "RNE": ("11X4C8QHB6", "CN-BW-CAP-NE")}),
-        base=("POST_BASE", "CBSQ66-SDS2",
+        base=("POST_BASE", "CBSTQ66Z-SDS2",
               {"RE": ("5WR0KMFPJJ", "CN-BW-BASE-E"), "RNE": ("T1V9W4G4TW", "CN-BW-BASE-NE")}),
-        pier_head=CBSQ66_HEAD,
-        prices=("ACE6Z", "A35Z", "CBSQ66-SDS2"),
+        pier_head=CBSTQ66Z_HEAD,
+        prices=("ACE6Z", "A35Z", "CBSTQ66Z-SDS2"),
         roof_note=("EAST header lands on PT-BW-RE and PT-BW-RNE, 6x6 KDAT posts PINNED both "
                    "ends: ACE6Z end caps at RE and RNE, the header ending flush on both, MAX "
                    "nailing, HDG 16d, "
                    "with A35Z angles on the free post faces up to the glulam soffit for the "
-                   "across-beam direction; CBSQ66-SDS2 bases CAST INTO 14in piers PT-BW-PE / "
+                   "across-beam direction; CBSTQ66Z-SDS2 bases CAST INTO 14in piers PT-BW-PE / "
                    "-PNE, tops 3ft 0in above grade, straps >= 3in from the pier edge. Each "
                    "east post has a NONSTRUCTURAL removable PVC column wrap: leave its bottom "
                    "OPEN above the pier wash so the 1in standoff and post end drain and can be "
@@ -195,11 +195,11 @@ def east_head_parts(system, *, x_ft, stations, header_soffit_ft, cast_parts):
             post = f"PT-BW-{key}"
             below = spec["piers"][key][1]
             size = sizes[key] if isinstance(sizes, dict) else sizes
-            # A CBSQ is oriented: its F2 row along the line the screen resists (N-S, y).
+            # A CBSTQ is oriented: its F2 row along the line the screen resists (N-S, y).
             out.append(Connector(
                 uid=uid, tag=tag, kind=_KINDS[kind],
                 position=pt(ft(x_ft), ft(stations[key])), elevation=ft(elevation), size=size,
-                axis="y" if size == "CBSQ66-SDS2" else None,
+                axis="y" if size == "CBSTQ66Z-SDS2" else None,
                 connects=(("BM-BW-RE", post) if kind == "POST_CAP" else (post, below))))
     return out
 

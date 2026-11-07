@@ -41,8 +41,8 @@ source:
 - Install ICF forms conforming to ASTM E2634, per the manufacturer's instructions.
 
 ### Spec 03 15 19
-- Canopy bases CN-BW-BASE-W/-NW: cast-in CBSQ66-SDS2 (ESR-3050), no anchor bolt.
-- Set the straps in the 14" piers with 3" side cover (ESR-3050 Table 1 fn. 4).
+- Canopy bases CN-BW-BASE-W/-NW: cast-in CBSTQ66Z-SDS2 (ESR-3050), no anchor bolt.
+- Set the straps in the 14" piers with 3" side cover (ESR-3050 Table 2 fn. 4).
 - Uplift 2,217 lb vs 3,060 cracked (0.725); base shear on ONE base 1,034 vs 1,270 lb (0.815).
 - Arithmetic: notes/canopy_west_band.md §4b-§4c.
 

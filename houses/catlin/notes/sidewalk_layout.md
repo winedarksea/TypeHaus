@@ -56,7 +56,7 @@ C replaced the drained paver landing. Under the canopy it is the passage's full 
 both claddings (y 36.854..42.896, the flight's own width), from `SL-BW-TIER1`'s east face at
 x = 15.583 plus the 1/2" joint. The canopy's east columns `PT-BW-RE` (y 37.0..38.0) and
 `PT-BW-RNE` stand on 14" round piers on x = 30.0 (`PT-BW-PE` / `-PNE`, 14" since 2026-09-30
-for the cast-in CBSQ's 3" side cover), and force the neck: 1/2" off each.
+for the cast-in CBSTQ's 3" side cover), and force the neck: 1/2" off each.
 
 - canopy: x 15.625..29.375 × y 36.854..42.896 = 13.750 × 6.042 = **83.07**, less
   the HP1 pad footprint x 24.938..28.646 × y 36.854..39.333 =

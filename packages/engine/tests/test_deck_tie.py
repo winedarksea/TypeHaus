@@ -49,8 +49,9 @@ def test_the_loads_reproduce_section_10b(catlin_ctx):
     assert _input(record, "x:FS-BW-FLOOR deck wind") == pytest.approx(67.3549, abs=0.01)
     assert _input(record, "x:W-BW-SCREEN face") == pytest.approx(405.065, abs=0.01)
     assert _input(record, "x:W-BW-SCREEN-SKIRT face") == pytest.approx(111.736, abs=0.01)
-    # §10k (2026-10-31): the landing is 3.3021' wide and the seat beams 3.0729' long.
-    assert _input(record, "y:FS-BW-FLOOR deck wind") == pytest.approx(90.594, abs=0.01)
+    # §10k (2026-10-31): the landing is 3.3021' wide; the seat beams 3.0355' long since they
+    # stop off the base strap (2026-11-06, north_entry_piers.md addendum).
+    assert _input(record, "y:FS-BW-FLOOR deck wind") == pytest.approx(89.906, abs=0.01)
     assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(1034.49, abs=0.1)
     canopy = catlin_ctx.engineering["lateral_system/RF-BW-CANOPY"]
     delivered = next(q.value for q in canopy.inputs if q.name == "delivered_shear_y")

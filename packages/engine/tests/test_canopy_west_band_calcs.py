@@ -81,9 +81,9 @@ def test_the_slat_band_reproduces_section_3a_and_3b(record) -> None:
 
 
 def test_the_old_anchor_rows_are_gone_with_the_bolt(record) -> None:
-    """§4b: the CBSQ's cracked row is measured through the concrete; no ACI Ch. 17 row."""
+    """§4b: the CBSTQ's cracked row is measured through the concrete; no ACI Ch. 17 row."""
     assert not any("anchor tension" in s.name for s in record.limit_states)
-    assert any("CBSQ66-SDS2 is cast in" in note for note in record.notes)
+    assert any("CBSTQ66Z-SDS2 is cast in" in note for note in record.notes)
 
 
 def test_the_drift_limit_is_not_applicable_on_evidence(record) -> None:
@@ -138,17 +138,17 @@ _POSTS = {
     "PT-BW-CW": {"ACE6Z head, uplift + lateral along the beam": 0.549,
                  "A35Z head, across the beam": 0.163,
                  "A35Z panel top plate into the post": 0.175,
-                 "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.276,
-                 "CBSQ66-SDS2 base, uplift + lateral along the beam": 0.281,
+                 "CBSTQ66Z-SDS2 base, uplift + lateral across the beam": 0.276,
+                 "CBSTQ66Z-SDS2 base, uplift + lateral along the beam": 0.281,
                  "NDS combined axial and bending": 0.536},
     "PT-BW-CNW": {"ACE6Z head, uplift + lateral along the beam": 0.549,
                   "A35Z head, across the beam": 0.163,
                   "NDS combined axial and bending": 0.536},
     "PT-BW-RE": {"ACE6Z head, uplift + lateral along the beam": 0.232,
-                 "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.188,
+                 "CBSTQ66Z-SDS2 base, uplift + lateral across the beam": 0.188,
                  "NDS combined axial and bending": 0.225},
     "PT-BW-RNE": {"ACE6Z head, uplift + lateral along the beam": 0.232,
-                  "CBSQ66-SDS2 base, uplift + lateral along the beam": 0.158},
+                  "CBSTQ66Z-SDS2 base, uplift + lateral along the beam": 0.158},
 }
 
 

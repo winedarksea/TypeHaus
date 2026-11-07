@@ -133,7 +133,7 @@ BALCONY_DECK_ALUMINUM = Assembly(
 # POST_WHITE_PAINT's body.
 # ** THE SAME SHEET, CARRIED DOWN OVER THE DECK FRAMING (owner, 2026-09-11). **
 # `W-BW-SCREEN` bottoms at -0'-1" on BM-BW-SCSILL, and below it sit that 2x8 KDAT sill/rim,
-# the two seat beams, and the cast-in CBSQ66-SDS2 bases under PT-BW-CW/-CNW, all the way to the
+# the two seat beams, and the cast-in CBSTQ66Z-SDS2 bases under PT-BW-CW/-CNW, all the way to the
 # pier tops at -1'-3 1/2". An earlier pass left that band deliberately bare. This closes it:
 # the same `corrugated-panel-24` run down 13 1/2" more, stopping 1" above the cast tops so the
 # flutes stay open at the bottom, water leaves, and the column bases dry. A 13 1/2" drop off a

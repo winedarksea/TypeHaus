@@ -40,9 +40,13 @@ from typehaus import (
 )
 
 from typehaus.library import TREX_ENHANCE_BASICS_DECK_LAYER
+from typehaus.resolve.connector_geometry.bases_caps import (
+    COLUMN_BASE_DIMENSIONS,
+    STEEL_GAUGE_THICKNESS_IN,
+)
 
 from params.cladding import HOUSE_NS_OUTBOARD_IN
-from params.column_heads import CBSQ66_HEAD, HETA20Z_PAIR_HEAD, STANDOFF_PACK_IN
+from params.column_heads import CBSTQ66Z_HEAD, HETA20Z_PAIR_HEAD, STANDOFF_PACK_IN
 from params.east_posts import east_supports, full_height_columns, moment_piers, pier_assembly
 from plan.storeys.garage import (
     GARAGE_X_EAST, GARAGE_X_WEST, GARAGE_Y_SOUTH, SERVICE_DOOR_OFFSET, SERVICE_DOOR_WIDTH,
@@ -102,6 +106,16 @@ PIER_LINE_Y_FT = 37.5
 # BM-BW-SCSILL's ends are set off the column CENTRES by this, because a 6x6 is wider
 # than the 3" seat beam it shares a centreline with -- see that beam for the arithmetic.
 COLUMN_HALF_FT = 2.75 / 12
+# ** THE SEAT BEAMS STOP 1/8" OFF THE BASE STRAP'S SCREW HEADS (C2 E9, 2026-11-06). ** With
+# `axis="y"` the CBSTQ's strap leaves sit on the column's E/W faces, so a beam cut to the face
+# ran into the 10 ga strap and its SDS heads; Simpson's gap to abutting material, fastener
+# heads included, is <= 1/8" (C-C-2026 p. 22 note m). Strap 0.1345 + head 0.190 (ESR-2236,
+# Jan 2026, Fig. 1: 0.172-0.190, the max) + 1/8" = 0.4495". Rotating the base instead puts F1
+# along the screen (2.14, canopy_west_band.md §4c); moving the columns 3 1/8" north is the
+# least that clears a 3" beam off a 3" strap, and the beam then overhangs the 5 1/2" face.
+SDS_HEAD_IN = 0.190
+SEAT_END_GAP_IN = STEEL_GAUGE_THICKNESS_IN[COLUMN_BASE_DIMENSIONS.strap_gauge] + SDS_HEAD_IN + 0.125
+SEAT_START_X_FT = LANDING_WEST_FT + COLUMN_HALF_FT + SEAT_END_GAP_IN / 12
 PIER_BOTTOM_FT = -(9 + 9.4375 / 12)   # the house footing underside, -9'-9 7/16"
 # 10", not 12". The garage hydrant line runs at -8'-10"; a 12" pad tops out at -8'-9 7/16"
 # and swallows it, and a water line cast through a spread footing is a sleeve detail nobody
@@ -123,7 +137,7 @@ SEAT_TOP_FT = DECK_JOIST_TOP_FT - JOIST_DEPTH_IN / 12      # -8.19"
 BEARING_TOP_FT = SEAT_TOP_FT - JOIST_DEPTH_IN / 12         # -15.44", the seat-beam SOFFIT
 # ** THE PIERS ARE CAST ONE PACK BELOW THE SOFFITS (C3-E13, 2026-10-31). ** Until then the pier
 # tops were the soffits, so the SS316 pack between them had no height. Cast 3/4" low, it is a
-# solid: -16.19", 17.81" above grade. The CBSQ bases under PT-BW-CW/-CNW drop with it.
+# solid: -16.19", 17.81" above grade. The CBSTQ bases under PT-BW-CW/-CNW drop with it.
 PIER_TOP_FT = BEARING_TOP_FT - STANDOFF_PACK_IN / 12       # -16.19"
 
 # The headers top out at the GARAGE PLATE, +7'-4" (W-G-E/W-G-W z1). That is what makes
@@ -285,12 +299,12 @@ def beam(number, tag, x0, y0, x1, y1, bearings, top=DECK_JOIST_TOP_FT, size="2-2
 # statement about load path, not about where the wood stops.
 # ** BOTH SEAT BEAMS START AT THE COLUMN'S EAST FACE (2026-09-23). ** Authored from the
 # column line, their west 2 3/4" sat in the post base's standoff under PT-BW-CW/-CNW (then an
-# ABU66SS, now a CBSQ66-SDS2 at 1.105")
-# (`structural.post_base_interference`). At the face the beam still has 3 1/4" on the 12"
-# pier (R507.5.2: 3"), the way BM-BW-SCSILL already stops.
-beam(1, "BM-BW-HOUSE-SEAT", LANDING_WEST_FT + COLUMN_HALF_FT, HOUSE_SEAT_Y_FT,
+# ABU66SS, now a CBSTQ66Z-SDS2 at 1.105")
+# (`structural.post_base_interference`). Since 2026-11-06 they stop SEAT_END_GAP_IN past it,
+# off the strap (C2 E9): 3.64" left on the 14" pier at the beam's faces (R507.5.2: 3").
+beam(1, "BM-BW-HOUSE-SEAT", SEAT_START_X_FT, HOUSE_SEAT_Y_FT,
      LANDING_EAST_FT, HOUSE_SEAT_Y_FT, ("PT-BW-W", "PT-BW-E"), SEAT_TOP_FT)
-beam(2, "BM-BW-GARAGE-SEAT", LANDING_WEST_FT + COLUMN_HALF_FT, GARAGE_SEAT_Y_FT,
+beam(2, "BM-BW-GARAGE-SEAT", SEAT_START_X_FT, GARAGE_SEAT_Y_FT,
      LANDING_EAST_FT, GARAGE_SEAT_Y_FT, ("PT-BW-GW", "PT-BW-GE"), SEAT_TOP_FT)
 # The east edge beam, seat to seat with the joist field. Uid number stays 5 -- 3 (BM-BW-FW),
 # 4 (BM-BW-FC) and 11 (BM-BW-LAND-HDR) are retired and not reused.
@@ -582,12 +596,12 @@ def _pad_outline(x_ft, y_ft, side_in, along_in=None):
 
 
 #: What ties each head to its beam (`params/column_heads.py`). The west pair carry a 6x6
-#: canopy column on a cast-in CBSQ66-SDS2 and hang the seat beam off it; the rest take the
+#: canopy column on a cast-in CBSTQ66Z-SDS2 and hang the seat beam off it; the rest take the
 #: HETA20Z pair.
-_HEAD_CONNECTORS = {"PT-BW-W": CBSQ66_HEAD, "PT-BW-GW": CBSQ66_HEAD,
+_HEAD_CONNECTORS = {"PT-BW-W": CBSTQ66Z_HEAD, "PT-BW-GW": CBSTQ66Z_HEAD,
                     "PT-BW-E": HETA20Z_PAIR_HEAD, "PT-BW-GE": HETA20Z_PAIR_HEAD}
 
-#: ** 14" UNDER A CAST-IN CBSQ (2026-09-30). ** ESR-3050 Table 1 fn. 4 wants 3" of side cover
+#: ** 14" UNDER A CAST-IN CBSTQ (2026-09-30). ** ESR-3050 Table 2 fn. 4 wants 3" of side cover
 #: to the embedded straps, and on a 12" round their corners get 2 3/4" (3.25" off the axis).
 #: 14" gives 3 3/4" and gives the seat beam 4 1/4" of bearing on the pier instead of 3 1/4"
 #: (notes/canopy_west_band.md §5). Its cage is (6) #5 (`ENTRY_PIER_CAGE_14`).
@@ -756,7 +770,7 @@ for _uid, _tag, _x, _pad_in, _top in (
                             if _tag in _MOMENT_PIERS else GARAGE_PIER_BOTTOM_FT)))
 
 # The two west roof columns. Pier top -16.19" to header soffit +6'-4 1/8" = 7'-8.315".
-# k*lu/d under 17, nowhere near NDS Sec 3.7.1.4's limit of 50. A cast-in CBSQ66-SDS2 base
+# k*lu/d under 17, nowhere near NDS Sec 3.7.1.4's limit of 50. A cast-in CBSTQ66Z-SDS2 base
 # (no separate bolt) and an ACE6Z end cap at the header, all live rows in prices.toml;
 # `engineering/wood_roof_post` grades both posts, `lateral_system` their chord role.
 #
@@ -784,7 +798,7 @@ ROOF_COLUMNS = [
     # Both stand ON the screen panel's line, interior to its run, so the panel's plates and
     # studs are cut around them and the 2x4 infill butts the column faces (``Post
     # .within_wall``). The field is geometric only: these two still stand on their own
-    # authored cast-in CBSQ66-SDS2 bases over cast piers (no separate bolt).
+    # authored cast-in CBSTQ66Z-SDS2 bases over cast piers (no separate bolt).
     Post(uid=_uid, tag=_tag, position=pt(ft(_x), ft(_y)),
          size="6x6", height=ft(COLUMN_HEIGHT_FT), assembly="POST_KDAT", supported_by=_pier,
          within_wall="W-BW-SCREEN")

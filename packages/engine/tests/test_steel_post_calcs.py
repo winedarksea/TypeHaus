@@ -85,7 +85,7 @@ def test_active_kdat_east_posts_are_wood_not_steel(catlin_ctx) -> None:
         assert record.status is Status.OK, record.summary
         assert {state.name for state in record.limit_states} >= {
             "NDS wet-service axial", f"{head} head uplift",
-            "CBSQ66-SDS2 base, uplift + lateral along the beam"}
+            "CBSTQ66Z-SDS2 base, uplift + lateral along the beam"}
 
 
 def test_an_unpublished_section_is_incomplete_not_guessed(catlin_steel_ctx) -> None:

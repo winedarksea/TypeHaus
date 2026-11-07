@@ -84,7 +84,7 @@ from typehaus.library.hardware.simpson_caps_bases import (
     A35Z_FRAMING_ANGLE,
     AC6Z_POST_CAP,
     ACE6Z_POST_CAP,
-    CBSQ66_COLUMN_BASE,
+    CBSTQ66Z_COLUMN_BASE,
 )
 from typehaus.library.hardware.simpson_hangers import (
     HHUS410_SCL_FACE_MOUNT_HANGER,
@@ -248,7 +248,7 @@ CAPACITY_ONLY_RECORDS: tuple = (
     AC6Z_POST_CAP,
     ACE6Z_POST_CAP,
     A35Z_FRAMING_ANGLE,
-    CBSQ66_COLUMN_BASE,
+    CBSTQ66Z_COLUMN_BASE,
     HSS_SADDLE_HDG,
     HSS_BASE_PLATE_HDG,
     STHD14RJ_STRAP_HOLDOWN,

@@ -367,7 +367,7 @@ class StructuralHardware:
     #: ``None`` means unmeasured, exactly as ``bearing_standoff_in``.
     seat_thickness_in: float | None = None
     #: The part is CAST IN and its published uplift is measured through the concrete (a
-    #: CBSQ's cracked/uncracked columns), so it buys no separate anchor bolt and no ACI
+    #: CBSTQ's cracked/uncracked columns), so it buys no separate anchor bolt and no ACI
     #: Ch. 17 row stands in for its anchorage. ``False`` for a stirrup on a bolt (the ABU).
     anchorage_in_rating: bool = False
     #: Shipping weight, lb, where a load path counts the part's own weight. ``None``: unread.

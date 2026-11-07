@@ -26,7 +26,7 @@ KIND = "wood_roof_post"
 BASIS_VERSION = "4"
 BASIS = ("AWC NDS 2018 Supplement Table 4D, Southern Pine No. 2 timbers, wet-service row; "
          "NDS §3.7 column stability and §3.9 combined stress; ICC-ES ESR-2604 Table 3 "
-         "(AC/ACE); ICC-ES ESR-3096 Table 5 (A35); ICC-ES ESR-3050 Table 1 (CBSQ)")
+         "(AC/ACE); ICC-ES ESR-3096 Table 5 (A35); ICC-ES ESR-3050 Table 2 (CBSTQ)")
 oracled_by(KIND, Oracle(note="canopy_garage_diaphragm.md", section="§5a",
                         test="tests/test_wood_roof_post_calcs.py"),
            Oracle(note="canopy_west_band.md", section="§5",

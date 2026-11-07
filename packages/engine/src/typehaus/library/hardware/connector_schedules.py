@@ -66,8 +66,8 @@ CONNECTOR_FASTENERS: dict[str, ConnectorFastening] = {
     # Plain ABU44 is ZMAX: the catalog lists only ABU44Z (C-C-2026 p.76).
     "ABU44": ConnectorFastening("zmax", ((12, HDG_16D, "post"),),
                                 f"{_CC} pp.76-77, ABU44Z: (12) 0.162 x 3-1/2 into the post"),
-    "CBSQ66-SDS2": ConnectorFastening(
-        "hdg", (), f"{_CC} p.84: the -SDS2 model ships with its (14) SDS 1/4 x 2 screws"),
+    "CBSTQ66Z-SDS2": ConnectorFastening(
+        "zmax", (), f"{_CC} p.84: the -SDS2 model ships with its (14) SDS 1/4 x 2 screws"),
     "DTT2Z": ConnectorFastening(
         "zmax", (), f"{_CC} p.60: \"Fasteners and crescent washer are included\" (8 SDS25112)"),
     # Bolted: the bolt length is the member's, so it is a site purchase, not a count here.

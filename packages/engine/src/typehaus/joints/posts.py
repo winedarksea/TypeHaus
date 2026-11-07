@@ -164,7 +164,7 @@ def post_base_anchor_joints(model: ResolvedModel, rules: UpliftTieRules) -> list
             continue
         # A base the plan declares bearing-only has no bolt to buy: download crosses the
         # plate into the pour, and the joint gives up the uplift and lateral the bolt buys.
-        # A cast-in base (CBSQ) is the other case: its anchorage is inside its own rating.
+        # A cast-in base (CBSTQ) is the other case: its anchorage is inside its own rating.
         if post.tag in unanchored:
             continue
         found.append((storey, post))

@@ -1469,7 +1469,7 @@ house-wide `column_heads.STANDOFF_PACK_IN`:
 | `PT-BW-CW`/`-CNW` post, pier top to the +76.125" soffit | 91.565" | 92.315" |
 | pack at `-E`/`-GE` | 0" | 0.75" |
 | pack at `-W`/`-GW`, under the LUS26-2Z's 18 ga seat (0.048") | 0" | 0.75 − 0.048 = 0.702" |
-| CBSQ66-SDS2 seat, `PT-BW-CW` bottom (+1.1046" standoff) | −14.335" | −15.085" |
+| CBSTQ66Z-SDS2 seat, `PT-BW-CW` bottom (+1.1046" standoff) | −14.335" | −15.085" |
 
 Pads, bottoms and every pad top hold, so `column_base` embedment and the hydrant clearances
 do not move. The shafts lose 3/4" of self weight: 14" round, π x 7² x 0.75 / 1,728 x 150 =
@@ -1510,7 +1510,7 @@ LUS28 (C-C-2026 p. 114, 2x8 row, DF/SP): floor (100) 1,100 x C_D 0.9 (dead-domin
       = 693 lb      300.5 / 693 = 0.434
 ```
 
-Backing: the sill's soffit is −8.19", 6.90" over the post's end, and the CBSQ's two straps are
+Backing: the sill's soffit is −8.19", 6.90" over the post's end, and the CBSTQ's two straps are
 on the post's east and west faces, so the north and south faces it hangs on are clear.
 
 **12d. Straps (E14).** No HETA12 or HETA16 is listed in ZMAX or stainless (strongtie.com/heta
@@ -1531,7 +1531,7 @@ figures); column shear (332.81 + 167.16 − 93.06)/0.6 = 678.2 lb (engine 679.2)
 ## 13. 2026-11-01 — the 14" rounds are their own section (C3-E21)
 
 `PT-BW-W`/`-GW` (and, under the `kdat` east posts, `PT-BW-PE`/`-PNE`) are **14"** rounds for the
-CBSQ66-SDS2's 3" strap cover (`canopy_west_band.md` §5e), and carried `PIER_CONCRETE_12`, whose
+CBSTQ66Z-SDS2's 3" strap cover (`canopy_west_band.md` §5e), and carried `PIER_CONCRETE_12`, whose
 12" this note's §6 cage and slenderness rows assumed. They take `PIER_CONCRETE_14` now
 (`east_posts.pier_assembly`); `PT-BW-E`/`-GE` stay 12". Worked here from the section alone.
 
@@ -1559,7 +1559,7 @@ take the gross floor outright, so `deck_post` no longer claims §10.3.1.2 on the
 is 10" at the 12" rounds' 2" cover, not the 8" cage at 3": six dowels lapped inside six
 verticals at 2" stand 3.69" apart, and at 3" cover 2.69", both under 6 d_b, which would take
 ψ_r to 1.6 and ℓ_dh to 11.38" against the pad's 9". **Lap each dowel beside its vertical, on the
-bar circle.** The CBSQ strap corners are 3.252" off the axis (`canopy_west_band.md` §5e), so a
+bar circle.** The CBSTQ strap corners are 3.252" off the axis (`canopy_west_band.md` §5e), so a
 bar on the 4.3125" circle clears them by 4.3125 − 3.252 − 0.3125 = 0.75" at any rotation. The
 12" rounds keep (4) #5 (§6, 1.096%).
 
@@ -1644,3 +1644,36 @@ W:  616.0/1,480 + 292.1/740 = 0.4162 + 0.3947 = 0.811      FE: 292.08/892.5 + 61
 
 N-S (0.776) and guard (0.672) do not read the north end and hold. **Verdict: every row passes;
 E-W wind at W governs at 0.811** (was 0.815).
+
+## Addendum 2026-11-06 — the seat beams stop off the base strap (C2 E9)
+
+`BM-BW-HOUSE-SEAT`/`-GARAGE-SEAT` start 0.4495" east of the west columns' face, 1/8" past the
+CBSTQ66Z-SDS2 strap's SDS heads (`canopy_west_band.md` 2026-11-06 amendment). Each beam is
+115 − 78.5745 = 36.4255" = **3.0355'** long (was 3.0729'); the hanger stays on the post face.
+
+**§10k, N-S.** The seat faces shrink with the beams:
+
+```
+deck  (0.6825 x 3.3021 + 2 x 0.6042 x 3.0355) x 15.183 = (2.2537 + 3.6681) x 15.183 = 89.91 lb
+N-S   ΣFy 1,124.40   M = −1,810.36 + 89.91 (−0.09895) = −1,819.25 lb-ft
+      W:  562.20 + 1,819.25 x 0.322148 = 562.20 + 586.07 = 1,148.27 lb / 1,480 = 0.776 (0.7759)
+      FE: −23.87 lb, 0.013
+```
+
+E-W (0.811, governing) and the guard row do not read the beam length.
+
+**§6 piers.** Each seat beam gives half its length to each pier: W and E lose 3.281/2 x 0.03746 =
+0.0615 ft², GW and GE 3.094/2 x 0.03746 = 0.0580 ft², at 1.2 x 10 + 1.6 x 40 = 76 psf factored:
+W 7,311.0 → **7,306.3**, E 1,458.1 → 1,453.5, GW 6,785.0 → **6,780.6**, GE 1,065.9 → 1,061.5 lb.
+Axial d/c stays 0.019 / 0.005 / 0.017 / 0.004. The retired GW spring example's 1/δ rises by
+4.40/(0.75 x 9,270) = 0.000633 to **0.029205**, δ about **34.24**: still OVER, arithmetic only.
+
+**§12b hangers.** Over the 3.0355' beam:
+
+```
+house   (50 x 3.281 + 5.658) x 3.0355 / 2 + 168.2 x 0.1875/3.0355 = 257.57 + 10.39 = 268.0 lb
+        268.0 / 721 = 0.372 (was 0.376)
+garage  160.358 x 1.51773 + 10.39 = 253.8 lb
+```
+
+The beam sits 1.55" on the LUS26-2Z's 2" seat. Its flange and backing are on the post face, as before.

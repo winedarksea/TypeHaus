@@ -49,7 +49,7 @@ judgement and the row nearest its limit after the deck.
 | header | 5-1/2" x 11-7/8" glulam, top +7'-4" | soffit **+6.34375'** |
 | panel | base −1" (−0.0833'), `top` 4'-1" | top **+4.0000'**, h 4.0833' |
 | band | 6.34375 − 4.0000 | **2.34375'** (2'-4 1/8") |
-| chord bases (CBSQ, west) | `BEARING_TOP_FT` | −1.2917' |
+| chord bases (CBSTQ, west) | `BEARING_TOP_FT` | −1.2917' |
 | west post | 6.34375 + 1.2917 | 7.6354' |
 | east post (`kdat`) | 6.34375 − 0.1667 | 6.1771' |
 
@@ -273,7 +273,7 @@ the whole frame, header top to the chord bases:
 H = 7.3333 − (−1.2917) = 8.625'
 T = 1,038.35 x 8.625 / 4.9792 = 1,798.6 lb
   + the column's net roof uplift, 40 ft2 x (16.7232 − 0.6 x 10) = 428.9 lb
-  = 2,227.6 lb vs CBSQ66-SDS2 cracked 3,060 (ESR-3050 Table 1)       0.728
+  = 2,227.6 lb vs CBSTQ66Z-SDS2 cracked 3,060 (ESR-3050 Table 2)       0.728
 ```
 
 The 2026-10-25 face-membrane removal does not change this demand: no screen-wall dead
@@ -298,7 +298,7 @@ It is the COMPRESSION chord, so no uplift combines with it.
 south post: ACE6Z at `PT-BW-RE`, AC6Z at `-RNE` (ESR-2604 §3.1.3; ACE6 MAX 1,950 / 1,760, AC6 MAX
 2,815 / 2,075 lb, lateral PARALLEL to the beam only, fn. 6). Across the beam, an A35Z on each post
 face with the soffit over it (ESR-3096 Table 5, F1 695 / F2 845, the lower taken): one at each south
-post, two at each north post (the west-tail extension retains this rated schedule). Bases: CBSQ66-SDS2, F2 along y. The plan's "2,920 / 2,125" for the
+post, two at each north post (the west-tail extension retains this rated schedule). Bases: CBSTQ66Z-SDS2, F2 along y. The plan's "2,920 / 2,125" for the
 AC6 was not in the report; ESR-2604 Table 3 prints 2,815 / 2,075.
 
 **5b. Demands.** Own drag, 16.7232 psf on 5.5", half at each end:
@@ -348,8 +348,8 @@ carry 635.295 lb uplift and the bases 428.928 lb. Each west post therefore reads
 | AC6Z uplift + along | 635.295/2815 + 397.454/2075 | **0.417** |
 | A35Z head across, CW / CNW | 113.341/695 / half that | 0.163 / 0.082 |
 | A35Z panel plate | 121.382/695 | 0.175 |
-| CBSQ base uplift + across | 428.928/3060 + 66.527/485 | 0.277 |
-| CBSQ base uplift + along | 428.928/3060 + 180.207/1270 | **0.282** |
+| CBSTQ base uplift + across | 428.928/3060 + 66.527/485 | 0.277 |
+| CBSTQ base uplift + along | 428.928/3060 + 180.207/1270 | **0.282** |
 
 NDS column: axial 3,408.04 lb / 30.25 = 112.66 psi; l/d = 91.565/5.5 = 16.6482;
 FcE = 0.822 × 440,000 / 16.6482² = 1304.93 psi; Fc′ = 530.917 psi.
@@ -362,7 +362,7 @@ the parts at MC ≤ 19%. The posts are KDAT on 1" drained standoffs under the ro
 prints the condition, exactly as the CCQ it replaced did. The column is graded on Table 4D's wet
 row.
 
-**5e. The piers are 14" round under a CBSQ.** ESR-3050 Table 1 fn. 4 wants 3" of side cover. The
+**5e. The piers are 14" round under a CBSTQ.** ESR-3050 Table 2 fn. 4 wants 3" of side cover. The
 straps' outer faces stand 2.75 + 0.135 = 2.885" off the axis, 1.5" either side of centre:
 
 ```
@@ -507,7 +507,7 @@ Decision #108 (geometry review C3-E6/E7). Supersedes the numbers above where the
 **§1 geometry.** Each header centres on the garage wall's 2x6 plate it extends: sheathing
 plane + 5/8" CDX + half the 5 1/2" plate = 6.0000 + (0.625 + 2.75)/12 = **6.28125'** (x
 6'-3 3/8") and 30.0000 − 0.28125 = **29.71875'**. The glulam faces are the plate faces,
-x 72.625–78.125" and 353.875–359.375". Posts, CBSQ bases, piers, pads, the screen (rigidly,
+x 72.625–78.125" and 353.875–359.375". Posts, CBSTQ bases, piers, pads, the screen (rigidly,
 every layer +3 3/8"), the band, `BM-BW-SCSILL`, the seat-beam west ends and the hangers moved
 with them. y is unchanged, so the chords, panel, band and heights of §1 all stand.
 
@@ -601,7 +601,7 @@ fabricator's own chord check (SPF Fc-perp 425 psi, dry, under the roof) reads 30
 ### 2026-10-31 amendment (2) — piers cast one pack low; hangers and straps (C3-E11..E14)
 
 **The base.** `PT-BW-W`/`-GW` are cast 3/4" under the seat soffit so the SS316 pack is a solid
-(`north_entry_frame.PIER_TOP_FT`): pier top, CBSQ seat and the chord's base go −15.44" →
+(`north_entry_frame.PIER_TOP_FT`): pier top, CBSTQ seat and the chord's base go −15.44" →
 **−16.19"**. Header soffit +76.125" holds, so each west post grows 3/4": L = (76.125 + 16.19)/12 =
 **7.692917'** (was 7.630417'). b = L − a is unchanged, because the band and the soffit did not move.
 
@@ -620,9 +620,9 @@ chord H = (88 + 16.19)/12 = 8.6825'; hold-down 1,034.49 x 8.6825/4.9792 + 426.44
 
 | row | 10-31 | now | capacity | d/c |
 |---|---:|---:|---:|---:|
-| chord hold-down (CBSQ66-SDS2 cracked) | 2,217.4 | 2,230.3 lb | 3,060 | 0.729 |
+| chord hold-down (CBSTQ66Z-SDS2 cracked) | 2,217.4 | 2,230.3 lb | 3,060 | 0.729 |
 | CW/CNW ACE6Z, 632.04/1,950 + head along/1,760 | 0.549 | 632.04/1,950 + 397.44/1,760 | 1.0 | **0.550** |
-| CBSQ base uplift + along, 426.44/3,060 + base along/1,270 | 0.281 | 0.1394 + 0.1406 | 1.0 | 0.280 |
+| CBSTQ base uplift + along, 426.44/3,060 + base along/1,270 | 0.281 | 0.1394 + 0.1406 | 1.0 | 0.280 |
 | post combined axial + bending | 0.535 | 0.538 | 1.0 | 0.538 |
 
 The engine reads 2,230.35 lb, 0.5499 and 0.538. The diaphragm (0.907) still governs.
@@ -630,7 +630,7 @@ The engine reads 2,230.35 lb, 0.5499 and 0.538. The diaphragm (0.907) still gove
 **Hangers (E11/E12).** The seat beams go HU28-2Z → **LUS26-2Z** (W 3 1/8" on a 3" beam) and
 `BM-BW-SCSILL` HU28-2Z → **LUS28Z** (W 1 9/16" on a 1 1/2" sill), C-C-2026 p. 114. The HU28-2Z's
 1 1/4" flanges made it 3.125 + 2(0.075 + 1.25) = 5.775" wide on a 5.5" post face; the LUS26-2Z is
-3.125 + 2(0.048 + 1.0) = 5.221" and clears the 3" CBSQ strap on the same face by
+3.125 + 2(0.048 + 1.0) = 5.221" and clears the 3" CBSTQ strap on the same face by
 (3.125/2 + 0.048) − 1.5 = 0.110" a side. Demand against allowable: `north_entry_piers.md` §12.
 
 **Straps (E14).** The seat-beam HETA20Z pairs at E/GE stay HETA20Z, trimmed at the beam top
@@ -647,7 +647,7 @@ the `kdat` variant.
   Table 4B 2"-4" thick, 5"-6" wide row (Fc 1,400 × 0.8, E_min 510,000 × 0.9), l/d 7.5257,
   buckling 32,318 lb (0.023). Push 519.175 lb at +4.666667′; top screws 183.556/663.614
   (0.277), sill 0.200; header couple 735.498 lb-ft (147.7 lb a head); no brace on the
-  centre post or sill. Chord rows at that push: AC6Z 0.435, CBSQ along 0.253, column 0.488.
+  centre post or sill. Chord rows at that push: AC6Z 0.435, CBSTQ along 0.253, column 0.488.
   It was replaced on looks: the diagonal stops short of both corners. A true corner with a
   3½″ face would need an acute inside fold no catalog row covers.
 * **The fourteen-slat chevron — superseded 2026-10-25, retained backup.** 2x4 at 2¼″ clear,
@@ -697,7 +697,7 @@ the `kdat` variant.
   outside it, and the demand is 191.
 * **A heavier panel alone** closes §4a and not §2: the band is still unbridged.
 * **TWB12.** A let-in brace for kerfed studs, and the band has none; no tension row fits here.
-* **A 12" pier under the CBSQ** — §5e, 1/4" short of the side cover.
+* **A 12" pier under the CBSTQ** — §5e, 1/4" short of the side cover.
 
 ## 9. What is NOT graded here
 
@@ -713,8 +713,11 @@ the `kdat` variant.
   (SP No. 2 2x4 and 4x6) and Table 4D (SP No. 2 timbers, wet row: the 6x6 brace); NDS §3.7,
   §3.10.3, §12.4.1. Simpson C-C-2026 pp.324–325 (KBS1Z open knee, 1,010/720 lb SPF/HF).
 - ICC-ES ESR-2105 Table 4 (CS16, §8), Table 3 (LSTA24); ICC-ES ESR-2604 §3.1.3 and Table 3 (AC/ACE);
-  ICC-ES ESR-3096 Table 5 (A35); ICC-ES ESR-3050 Table 1, §4.1, fn. 4 (CBSQ); all read 2026-09-30.
-- Simpson Strong-Tie C-C-2024, CBSQ lateral F1 485 / F2 1,270; C-C-2019 p. 280 (LTP4).
+  ICC-ES ESR-3096 Table 5 (A35); all read 2026-09-30. ICC-ES ESR-3050 (reissued August 2026)
+  Table 2 p. 9, §4.1, fn. 4 (CBSTQ66Z-SDS2), read 2026-11-06 (Table 1, the CBSQ66, until then).
+- Simpson Strong-Tie C-C-2026 p. 85 (CBSTQ66Z-SDS2; fn. 5 lateral F1 485 / F2 1,270, C-C-2024's
+  CBSQ row until 2026-11-06), p. 22 note m (1/8" hanger gap); ICC-ES ESR-2236 (January 2026)
+  Fig. 1 (SDS head 0.172-0.190"); C-C-2019 p. 280 (LTP4).
 - AWC NDS 2018 Supplement Tables 4D and 5A; NDS Tables 4.3.8, 5.3.1, §3.9, §3.10, §5.3.6.
 - ACI 318-19 §10.3.1.2, §10.6.1.1. ASCE 7-16 §11.7.
 
@@ -732,3 +735,33 @@ For §5b's plate reaction, use panel height **4.078333 ft** (4.083333 - 0.005), 
 At that revision, head uplift stayed **635.295 lb** and band push **389.381 lb**; the same rated hardware
 and capacities pass. The tests use these actual-stock values; the earlier worked text
 retains the nominal 1-inch board geometry for its dated derivation.
+
+## 2026-11-06 amendment — CBSTQ66Z-SDS2 (C2 E10); the seat-beam ends (C2 E9)
+
+**The part.** Simpson retired the CBSQ66-SDS2; C-C-2026 p. 85 lists the 6x6 as CBSTQ66Z-SDS2
+(ZMAX). Its row is the CBSQ66's: 12 ga base, 10 ga x 3" straps, W1/W2 5 1/2", D 6 7/8", H 8 3/4",
+(14) SDS 1/4 x 2; ESR-3050 Table 2, Wind and SDC A&B, uplift 4,375 uncracked / **3,060** cracked;
+C-C-2026 p. 85 fn. 5, F1 485 / F2 1,270, 3" side cover. Download 14,420 → **19,335** lb; no record
+grades it. Every graded number above is unchanged: hold-down 2,230.3/3,060 = 0.729, base shear
+1,034.49/1,270 = **0.815** (§4c's 0.818 at 1,038.35), base uplift + along 0.280.
+
+**The seat beams.** With `axis="y"` the strap leaves sit on the column's E/W faces, and
+`BM-BW-HOUSE-SEAT`/`-GARAGE-SEAT` started on the east face (x 78.125"), 0.1345" inside the strap
+and its SDS heads. Simpson's gap to abutting material, fastener heads included, is ≤ 1/8"
+(C-C-2026 p. 22 note m). The beam now starts past the heads by that 1/8":
+
+```
+gap  = 0.1345 (10 ga strap) + 0.190 (SDS head, ESR-2236 Fig. 1 max) + 0.125 = 0.4495"
+start x = 78.125 + 0.4495 = 78.5745"                 (heads at 0.172 min: 0.143" gap)
+pier bearing at the beam faces, 14" round on x 75.375": 75.375 + sqrt(7² − 1.5²) − 78.5745
+        = 82.2124 − 78.5745 = 3.638" ≥ 3" (R507.5.2); 3.80" on the centreline
+LUS26-2Z seat B 2" (C-C-2026 p. 114), on the post face: 2 − 0.4495 = 1.55" of beam on it
+pack 3 1/2" from the beam end, x 78.5745–82.0745: corner radius
+        sqrt((82.0745 − 75.375)² + 1.75²) = 6.925" < 7"; clear of the strap face (78.2595)
+```
+
+**The option not taken.** Moving `PT-BW-CW`/`-CNW` north clears a 3" beam off a 3" strap centred
+on a 5 1/2" face only at 1.5 + 1.5 + 0.125 = 3.125", which leaves 2.75 − 1.5 − 3.125 = −1.875":
+the beam overhangs the post face and the LUS26-2Z (5.221" flange to flange) no longer lands. The
+columns, piers, header, screen, band and pads would all move with it. Rotating the base is §4c's
+2.14.

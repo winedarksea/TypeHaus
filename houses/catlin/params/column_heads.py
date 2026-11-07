@@ -32,15 +32,16 @@ HETA20Z_PAIR_HEAD = HeadConnector(
                      "(Lateral Parallel / Allowable) + (Lateral Perpendicular / Allowable) "
                      "< 1.0, for more than one direction on a single connection")
 
-#: PT-BW-W / -GW: the head is the CBSQ66-SDS2 base under PT-BW-CW / -CNW (ABU66SS until
-#: 2026-09-30), and the seat beam hangs off that 6x6 on an LUS26-2Z (`params/breezeway.py`).
-CBSQ66_HEAD = HeadConnector(
-    tie="CBSQ66-SDS2", tie_count=1, uplift_lb=3060.0, lateral_lb=485.0,
+#: PT-BW-W / -GW: the head is the CBSTQ66Z-SDS2 base under PT-BW-CW / -CNW (C2 E10: Simpson
+#: retired the CBSQ66 for it), and the seat beam hangs off that 6x6 on an LUS26-2Z
+#: (`params/breezeway.py`).
+CBSTQ66Z_HEAD = HeadConnector(
+    tie="CBSTQ66Z-SDS2", tie_count=1, uplift_lb=3060.0, lateral_lb=485.0,
     load_duration_factor=1.6,
-    bearing="CBSQ66-SDS2", bearing_width_in=5.5, bearing_length_in=5.5,
-    source="ICC-ES ESR-3050 Table 1, CBSQ66-SDS2, Wind and SDC A & B, CRACKED uplift 3,060 lb "
-           "at C_D 1.6 (4,375 uncracked); lateral F1 485 / F2 1,270 lb from Simpson C-C-2024, "
-           "the lower quoted — the report publishes none",
-    interaction_rule="Simpson C-C-2024 general notes: a connector loaded in more than one "
-                     "direction is checked as the sum of each design load over its allowable, "
-                     "<= 1.0")
+    bearing="CBSTQ66Z-SDS2", bearing_width_in=5.5, bearing_length_in=5.5,
+    source="ICC-ES ESR-3050 (Aug 2026) Table 2, CBSTQ66Z-SDS2, Wind and SDC A & B, CRACKED "
+           "uplift 3,060 lb at C_D 1.6 (4,375 uncracked); lateral F1 485 / F2 1,270 lb from "
+           "Simpson C-C-2026 p. 85 fn. 5, the lower quoted — the report publishes none",
+    interaction_rule="Simpson C-C-2026 p. 23 note e / p. 289 Option 1: a connector loaded in "
+                     "more than one direction is checked as the sum of each design load over "
+                     "its allowable, < 1.0")

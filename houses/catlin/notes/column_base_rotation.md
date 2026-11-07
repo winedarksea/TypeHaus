@@ -417,7 +417,7 @@ Worked, `PT-BW-W`: `D = 9.412 × 10 + 400 + 902.6 + 56.5 + 98.3 = 1,551.5`, `L =
 
 ## Addendum 2026-09-30 — `PT-BW-W` / `-GW` at 14" round
 
-The west landing piers went 12" → 14" round for the cast-in CBSQ66-SDS2's 3" side cover
+The west landing piers went 12" → 14" round for the cast-in CBSTQ66Z-SDS2's 3" side cover
 (`canopy_west_band.md` §5e). Three terms move: the shaft self weight (× 196/144), I_g
 (`π × 14⁴ / 64 = 1,885.7` in⁴, 0.4 E_c I_g = 3.0402e9), and the pole's k_θ, which is §3a's
 solve with b = 14/12'. The wall line load is 97.7 lb (`north_entry_piers.md` §2). L unchanged.

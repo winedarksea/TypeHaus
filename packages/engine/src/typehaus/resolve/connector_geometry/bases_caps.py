@@ -48,7 +48,7 @@ class ColumnBaseDimensions:
     strap_gauge: int = 10
 
 
-# CBSQ66-SDS2: C-C-2024 p. 79; matching drawing/dimensions in C-C-2026 p. 85.
+# CBSTQ66Z-SDS2: C-C-2026 p. 85 (W1/W2 5-1/2, 10 ga x 3 straps, H 8-3/4, D 6-7/8).
 COLUMN_BASE_DIMENSIONS = ColumnBaseDimensions(5.5, 5.5, 3.0, 8.75, 6.875)
 
 
@@ -292,7 +292,7 @@ def base_cap_mesh(
             break
     if normalized in ADJUSTABLE_BASE_DIMENSIONS:
         return _adjustable_base_mesh(ADJUSTABLE_BASE_DIMENSIONS[normalized])
-    if normalized in {"CBSQ66", "CBSQ66SDS2"}:
+    if normalized in {"CBSTQ66", "CBSTQ66SDS2", "CBSTQ66ZSDS2"}:
         return _column_base_mesh()
     if normalized in COLUMN_CAP_DIMENSIONS:
         return _column_cap_mesh(COLUMN_CAP_DIMENSIONS[normalized])

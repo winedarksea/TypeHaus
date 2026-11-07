@@ -41,7 +41,7 @@ RULES = CONFIG.uplift
 # The canopy's two WEST columns, authored as ABU66SS on 2026-09-10 so the order names the
 # stainless part the house actually buys rather than the galvanized one the section-based
 # derivation reaches for. Since 2026-09-30 all four canopy posts (kdat) are on authored
-# CBSQ66-SDS2 cast-in bases. The two interior landing posts on ABU44 (CN-BW-IBASE-C/-E,
+# CBSTQ66Z-SDS2 cast-in bases. The two interior landing posts on ABU44 (CN-BW-IBASE-C/-E,
 # 2026-09-11) retired with the landing on 2026-10-13; their `anchored=False` case is kept by
 # ``test_a_bearing_only_base_on_a_slab_is_not_bought_a_bolt``.
 #: The two balcony centre pillars joined this set on 2026-09-14, when they came off the porch
@@ -49,7 +49,7 @@ RULES = CONFIG.uplift
 #: They were covered by an authored TENSION_TIE until then, and the kind moved with the joint
 #: rather than with the part: ``model/enums.py`` reads TENSION_TIE as "a post on FRAMING" and
 #: POST_BASE as "a stirrup on CONCRETE", so a pillar that now stands on a pour takes a base.
-#: The canopy's four 6x6 KDAT posts stand on authored CBSQ66-SDS2 cast-in bases (2026-09-30,
+#: The canopy's four 6x6 KDAT posts stand on authored CBSTQ66Z-SDS2 cast-in bases (2026-09-30,
 #: EAST_POST_SYSTEM = "kdat").
 AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW", "PT-BW-RE", "PT-BW-RNE"}
 
@@ -353,7 +353,7 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
     """Simpson ship the ABU without the 5/8" bolt its published capacity is taken through.
 
     Two of catlin's bases land on concrete AND take a bolt — the stairwell 4x4s on the
-    basement slab. The canopy's CBSQ66-SDS2 bases are cast in and take none. The sunken garden has
+    basement slab. The canopy's CBSTQ66Z-SDS2 bases are cast in and take none. The sunken garden has
     none left: its four balcony corners are cast columns, and its two wood centre pillars
     retired with the centre support line (2026-09). The two bearing-only ABU44s under the
     interior landing retired with it on 2026-10-13; that case has its own test now.
@@ -389,7 +389,7 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
     #
     # 5 -> 4 on 2026-09-24: P-M-STRWELL-N retired once the landings reached the north wall.
     #
-    # 4 -> 2 on 2026-09-30: the canopy's bases became CBSQ66-SDS2, CAST IN — the part is its
+    # 4 -> 2 on 2026-09-30: the canopy's bases became CBSTQ66Z-SDS2, CAST IN — the part is its
     # own anchorage, so no bolt is bought under it (``joints/authored.cast_in_post_tags``).
     assert row["count"] == 2
     # The population is the union of DERIVED and AUTHORED bases, stated as that sum rather
@@ -435,7 +435,7 @@ def test_a_base_on_a_pour_is_bought_its_cast_in_bolt_and_a_bare_pier_is_not(
     flat property of the PART: it would bill a cast-in bolt wherever the part appears,
     including into decking. The balcony centre pillars proved it from both sides (on the porch
     deck, no bolt; on the cast columns, one each) until they retired in 2026-09. The canopy's
-    posts are a fourth side since 2026-09-30: their CBSQ66-SDS2 bases are cast in, so the
+    posts are a fourth side since 2026-09-30: their CBSTQ66Z-SDS2 bases are cast in, so the
     part IS the anchorage and no bolt is bought. The stairwell posts are the positive witness.
 
     The four sonotube piers are the same trap from the other side. ``CN-BW-BASE-*`` names
@@ -452,7 +452,7 @@ def test_a_base_on_a_pour_is_bought_its_cast_in_bolt_and_a_bare_pier_is_not(
     for tag in ("P-M-STRWELL-S", "P-M-STRWELL-SS"):
         assert tag in basis, f"{tag} stands on the slab and its base is anchored"
     for cast_in in ("PT-BW-CW", "PT-BW-CNW", "PT-BW-RE", "PT-BW-RNE"):
-        assert cast_in not in basis, f"{cast_in}'s CBSQ is cast in; it takes no bolt"
+        assert cast_in not in basis, f"{cast_in}'s CBSTQ is cast in; it takes no bolt"
     for pier in ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4"):
         assert pier not in basis, f"{pier} is a cast pier, not a based post"
 

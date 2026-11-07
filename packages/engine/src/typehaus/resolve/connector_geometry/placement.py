@@ -33,7 +33,7 @@ from typehaus.resolve.model import (
 )
 
 HANGER_PREFIXES = ("LUS", "LSSR", "LSC", "IUS", "HHUS", "THA", "HUC", "HU")
-BASE_PREFIXES = ("ABU", "CBSQ")
+BASE_PREFIXES = ("ABU", "CBSTQ")
 CAP_PREFIXES = ("PC", "CCQ", "AC", "ACE")
 BEAM_CATEGORIES = frozenset({"beam", "ridge_beam", "header", "trimmer", "rim", "joist"})
 FACE_PLATE_PARTS = frozenset({"LTP4", "LTP4Z"})
@@ -171,6 +171,13 @@ def _authored_hanger_frame(index: ConnectorPlacementIndex, element: Element | No
     run = math.dist(near, far)
     outward = ((far[0] - near[0]) / run, (far[1] - near[1]) / run)
     across = (outward[1], -outward[0])
+    # A beam stopped short of its carrier (off a base strap's heads) still hangs from the face.
+    carrier = next((index.solids[tag] for tag in cast(Connector, element).connects
+                    if tag in index.solids and index.solids[tag] is not beam), None)
+    if carrier is not None and len(carrier.outline) >= 3:
+        gap = Point(near).distance(Polygon(carrier.outline))
+        if 0.0 < gap <= 0.5 * M_PER_IN:
+            near = (near[0] - outward[0] * gap, near[1] - outward[1] * gap)
     return near, beam.z0_m, outward, _width(beam.outline, across), beam.z1_m - beam.z0_m
 
 
