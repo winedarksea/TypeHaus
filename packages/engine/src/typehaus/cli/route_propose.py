@@ -5,7 +5,9 @@ reach it through there too."""
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import re
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
 
 from typehaus.cli.cmd_route_tree import _line_nodes
 from typehaus.cli.route_duct_search import search_for as _search_for
@@ -14,6 +16,7 @@ from typehaus.cli.route_ports import terminal_refusal
 from typehaus.cli.route_proposal import one_proposal as _one_proposal
 from typehaus.cli.route_roots import hold_upstream
 from typehaus.cli.route_support import _endpoints, _nearest, _root_nodes
+from typehaus.routing.diagnostics import Refusal
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
@@ -23,6 +26,45 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 #: Letters an alternative is tagged with. Past 26 the caller has asked a different question
 #: from "show me a few ways to do this", and `--alternatives` refuses rather than wrapping.
 _LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+_SENTENCE = re.compile(r"(?<=[a-z)'\"])\. (?=[A-Z])")
+_TAG = re.compile(r"\b[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+\b")
+
+
+@dataclass
+class EndpointRefusal(Refusal):
+    """A target whose terminals could not be derived: no lattice was built, so the search
+    fields are empty and the record carries the cause, the element it names and the fix."""
+
+    cause: str = ""
+    element: str = ""
+    fix: str = ""
+
+    def render(self) -> str:
+        return f"{self.target}: {self.cause}" + (f". {self.fix}" if self.fix else "")
+
+    def payload(self) -> dict:
+        return {**super().payload(), "cause": self.cause, "element": self.element,
+                "fix": self.fix}
+
+
+def endpoint_refusal(model: Any, target: str, lines: list[str]) -> EndpointRefusal:
+    """The refusal for an ``_endpoints`` miss, read off the line it appended.
+
+    Those lines read ``<target>: <cause>. <fix>``; the element is the last tag the cause
+    names besides the target (the missing riser, the pump), else the target itself."""
+    text = (lines[0].removeprefix(f"{target}: ") if lines
+            else "its terminals are not derivable")
+    cause, fix = ([*_SENTENCE.split(text, maxsplit=1), ""])[:2]
+    cause = cause.rstrip(".")
+    element = next((t for t in reversed(_TAG.findall(cause)) if t != target), target)
+    service = next((str(r.system) for group in ("pipe_runs", "ducts", "conduits")
+                    for r in getattr(model, group, ()) if r.tag == target and
+                    hasattr(r, "system")), "")
+    return EndpointRefusal(
+        target=target, service=service, end="origin", reachable_nodes=0, total_nodes=0,
+        attempts=("no search: the terminals are not derivable",),
+        cause=cause, element=element, fix=fix.strip())
 
 
 def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
@@ -39,7 +81,6 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
     (``routing/rack.py``); ``lifted`` authored runs a campaign re-lays, never obstacles.
     Every target refusal is reported; it never becomes an approximate route."""
     from typehaus.routing.alternatives import alternative_routes
-    from typehaus.routing.diagnostics import Refusal
     from typehaus.routing.graph import build_graph
     from typehaus.routing.space import RoutingSpaceTooLarge, build_space
     from typehaus.routing.timing import Timer
@@ -50,11 +91,18 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
     refusals: list[Refusal] = []
 
     for target in targets:
-        ends = _endpoints(model, target, mode, problems)
+        why: list[str] = []
+        ends = _endpoints(model, target, mode, why)
         if ends is not None and hold:
-            ends = hold_upstream(model, ends, target, hold, problems)
+            ends = hold_upstream(model, ends, target, hold, why)
         if ends is None:
+            # A miss that reports a cause is a refusal, not just a line.
+            missed = endpoint_refusal(model, target, why)
+            refusals.append(missed)
+            problems.append(missed.render())
+            problems.extend(why[1:])
             continue
+        problems.extend(why)
         if ends.fixture is not None and mode == "fixture":
             from typehaus.cli.route_fixture_vent import already_vented
 

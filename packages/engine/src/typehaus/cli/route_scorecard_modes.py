@@ -60,7 +60,7 @@ class Found:
     #: returns more proposals than terminals (vent, arm, re-laid supply runs).
     refused: int
     #: Lifts: a campaign row's own rip-up lifts as the campaign reports them; a ``lift`` row's
-    #: are the lifts REQUESTED (E1's entry point reports no count of its own).
+    #: are the runs the entry point lifted (its ``outcome``).
     lifts: int = 0
     notes: list[str] = field(default_factory=list)  #: why a row came back empty
     relaid: int = 0  #: ``lift`` rows: lifted authored runs re-laid as proposals
@@ -129,7 +129,8 @@ def _base(tag: str) -> str:
 
 def _covered(model: ResolvedModel, target: ScoreTarget, proposals: list[Any]) -> int:
     """Terminals of ``target`` that no proposal reaches: a drain proposal serving the
-    fixture, or (supply trees) a proposal for the end's own run."""
+    fixture, or (supply trees) a proposal for the end's own run or one that ``replaces`` it
+    (a trunk takes over its farthest end and any end that stands on another new run)."""
     terminals = _terminals(model, target)
     if target.mode in ("fixture", "run"):
         return 0 if proposals else 1
@@ -137,6 +138,7 @@ def _covered(model: ResolvedModel, target: ScoreTarget, proposals: list[Any]) ->
     for proposal in proposals:
         if target.mode == "trunk" or _is_supply(model, target):
             laid.add(_base(proposal.tag))
+            laid.update(getattr(proposal, "replaces", ()))
         elif proposal.system == "drain" and _base(proposal.tag) not in target.lift:
             laid.update(proposal.serves)
     return len(terminals - laid)
@@ -171,11 +173,13 @@ def _tree(directory, model, target, cost) -> Found:
 def _lift(directory, model, target, cost) -> Found:
     from typehaus.cli.route_tree_lift import propose_tree_lifted
 
+    outcome: dict[str, Any] = {}
     made, problems, _n, _r = propose_tree_lifted(
-        model, target.tag, target.lift, _opts(directory, model, target, cost))
-    found = _pairs(model, target, made, problems, lifts=len(target.lift))
-    found.relaid = len({_base(p.tag) for p in found.proposals} & set(target.lift))
-    found.relay_refused = len(target.lift) - found.relaid
+        model, target.tag, target.lift, _opts(directory, model, target, cost), outcome)
+    found = _pairs(model, target, made, problems, lifts=len(outcome.get("lifted", ())))
+    found.relaid = len(outcome.get("relaid", ()))
+    found.relay_refused = len(outcome.get("refused", ())) + (
+        len(target.lift) - len(outcome.get("lifted", ())))
     return found
 
 

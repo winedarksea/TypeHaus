@@ -55,24 +55,43 @@ TOLERANCE: dict[str, tuple[float, float]] = {  # metric -> (factor, absolute)
 HIGHER_IS_BETTER = frozenset({"proposals", "cleanouts_placed", "rack_shared", "relaid"})
 
 
+#: ``run_scorecard``'s per-card state, set before the fork so workers inherit it copy-on-write.
+_CARD: dict[str, Any] = {}
+
+#: Rows start longest first (a pool's tail is its slowest row): whole-network searches, then
+#: campaigns and groups, then the rest.
+_WEIGHT = {"tree": 0, "trunk": 0, "lift": 0, "house": 1, "manifold": 1, "group": 1}
+
+
 def run_scorecard(directory: Path, model: ResolvedModel, cost: RouteCost,
-                  targets: tuple[ScoreTarget, ...] = TARGETS) -> dict[str, Any]:
-    """Search, measure and grade every target; ``{"targets": {...}, "totals": {...}}``."""
-    from typehaus.cli.route_eval import baseline_findings, evaluate_network
+                  targets: tuple[ScoreTarget, ...] = TARGETS,
+                  jobs: int | None = None) -> dict[str, Any]:
+    """Search, measure and grade every target; ``{"targets": {...}, "totals": {...}}``.
 
-    found: dict[str, tuple[Found, float]] = {}
-    for target in targets:
-        start = time.perf_counter()
-        found[target.name] = (propose_target(directory, model, target, cost),
-                              time.perf_counter() - start)
+    Rows are independent, so each runs search and evaluation in a forked worker (``jobs``, else
+    ``$HAUS_SCORECARD_JOBS``, else half the cores up to 4; 1 runs in-process). Metrics are the
+    same either way; ``search_s`` is a wall clock and reads a little higher under load."""
+    import multiprocessing
+    import os
 
-    baseline = baseline_findings(model, directory)
-    out: dict[str, dict[str, Any]] = {}
-    for target in targets:
-        result, seconds = found[target.name]
-        evaluation = (evaluate_network(directory, model, result.proposals, baseline=baseline)
-                      if result.proposals else None)
-        out[target.name] = _metrics(model, result, seconds, evaluation, cost)
+    from typehaus.cli.route_eval import baseline_findings
+
+    jobs = jobs or int(os.environ.get("HAUS_SCORECARD_JOBS", 0)) or min(
+        4, max(1, (os.cpu_count() or 2) // 2))
+    _CARD.update(directory=directory, model=model, cost=cost,
+                 baseline=baseline_findings(model, directory),
+                 targets={t.name: t for t in targets})
+    order = sorted(targets, key=lambda t: _WEIGHT.get(t.mode, 2))
+    try:
+        if jobs == 1 or len(targets) == 1 or not hasattr(os, "fork"):
+            rows = [_row(t.name) for t in order]
+        else:
+            with multiprocessing.get_context("fork").Pool(min(jobs, len(targets))) as pool:
+                rows = list(pool.imap_unordered(_row, [t.name for t in order]))
+    finally:
+        _CARD.clear()
+    by_name = dict(rows)
+    out = {t.name: by_name[t.name] for t in targets}
     totals: dict[str, Any] = {}
     for metrics in out.values():
         for key, value in metrics.items():
@@ -85,7 +104,22 @@ def run_scorecard(directory: Path, model: ResolvedModel, cost: RouteCost,
     return {"targets": out, "totals": totals}
 
 
-def _metrics(model: ResolvedModel, found: Found, seconds: float, evaluation: Any,
+def _row(name: str) -> tuple[str, dict[str, Any]]:
+    """One target: search it, grade the whole result as a network, and measure it."""
+    from typehaus.cli.route_eval import evaluate_network
+
+    card = _CARD
+    start = time.perf_counter()
+    found = propose_target(card["directory"], card["model"], card["targets"][name],
+                           card["cost"])
+    seconds = time.perf_counter() - start
+    graded = (evaluate_network(card["directory"], card["model"], found.proposals,
+                               baseline=card["baseline"]).introduced
+              if found.proposals else [])
+    return name, _metrics(card["model"], found, seconds, graded, card["cost"])
+
+
+def _metrics(model: ResolvedModel, found: Found, seconds: float, introduced: list[Any],
              cost: RouteCost) -> dict[str, Any]:
     from typehaus.resolve.mep_fitting_direction import forbidden_turns
     from typehaus.resolve.mep_fittings import SERVICE_BY_SYSTEM
@@ -100,7 +134,6 @@ def _metrics(model: ResolvedModel, found: Found, seconds: float, evaluation: Any
         service = SERVICE_BY_SYSTEM.get(proposal.system, proposal.system)
         forbidden += len(forbidden_turns(service, proposal.points,
                                          getattr(proposal, "patterns", None)))
-    introduced = list(evaluation.introduced) if evaluation is not None else []
 
     def count(ids: frozenset[str], results: tuple[str, ...] = ("fail", "unknown")) -> int:
         return sum(1 for f in introduced if f.check_id in ids and f.result.value in results)

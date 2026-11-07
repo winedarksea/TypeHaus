@@ -1,8 +1,8 @@
 """The autorouter scorecard against its checked-in baseline (``haus route --scorecard``).
 
 Opt-in (``--autorouter``): it runs every scorecard search on catlin and grades each with
-``--evaluate`` (~5 min). Re-bless with ``--autorouter --bless`` and say in the commit which
-numbers moved and why.
+``--evaluate``, one forked worker per row (~7 min on 4; ``HAUS_SCORECARD_JOBS`` sets it).
+Re-bless with ``--autorouter --bless`` and say in the commit which numbers moved and why.
 """
 
 from __future__ import annotations

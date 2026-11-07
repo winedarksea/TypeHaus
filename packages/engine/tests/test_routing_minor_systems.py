@@ -35,6 +35,8 @@ def test_condensate_grade_is_the_engines_own_drain_grade() -> None:
     """Pinned so the cited constant cannot drift from what ``mep.drain_slope`` grades."""
     assert minimum_slope(inch(0.75).meters) == CONDENSATE_SLOPE_IN_PER_FT
     assert minimum_slope(inch(0.75).meters, sanitary=False) == CONDENSATE_SLOPE_IN_PER_FT
+    # Note §5: PR-M-COND-HEADS develops 8.000 ft and owes 2.000" of fall at that grade.
+    assert 8.0 * minimum_slope(inch(0.75).meters, sanitary=False) == pytest.approx(2.0)
 
 
 def test_no_cleanouts_on_a_run_that_is_not_sanitary() -> None:
@@ -71,3 +73,20 @@ def test_the_sump_line_is_held_through_the_cast_sleeve_it_is_authored_through(
     run = next(r for r in catlin_model_ro.pipe_runs if r.tag == "PR-B-SUMP-DISCH")
     vertex, tag, _ = sleeve_hold(catlin_model_ro, run)
     assert (vertex, tag) == (2, "SP-B-N4-SUMP")  # the tail starts past the wall
+
+
+def test_an_endpoint_miss_becomes_a_structured_refusal(catlin_model_ro, monkeypatch) -> None:
+    from typehaus.cli import route_propose
+    from typehaus.routing.cost import RouteCost
+
+    stray = SimpleNamespace(tag="PR-NOBODY", z_m=[0.0])
+    monkeypatch.setattr(route_propose, "_endpoints", lambda model, target, mode, problems:
+                        sump_endpoints(model, stray, problems))
+    proposals, problems, _notices, refusals = route_propose._propose(
+        catlin_model_ro, ["PR-NOBODY"], mode="run", slope=None, margin_ft=8, band=None,
+        avoid=frozenset(), via=[], explain=False, cost=RouteCost())
+    (refused,) = refusals
+    assert not proposals and problems == [refused.render()]
+    payload = refused.payload()
+    assert payload["element"] == "PR-NOBODY" and "discharge_line_ref" in payload["fix"]
+    assert "no sump pump names it" in payload["cause"] and payload["blockers"] == []
