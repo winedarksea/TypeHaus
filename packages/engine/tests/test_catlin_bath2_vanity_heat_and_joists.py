@@ -362,7 +362,7 @@ def test_the_keepout_check_reads_the_rotated_footprint():
 
 def _blocks_by_station(floor):
     """Blocking grouped by its axis (x) station — the bath's is at 74.56", the
-    WashTower's at 115.83". Every invariant below is per-station: two entries at the
+    WashTower's at 150". Every invariant below is per-station: two entries at the
     same joist line but different stations SHARE that line's bays legitimately."""
     out: dict[float, list] = {}
     for member in floor.members:
@@ -420,10 +420,10 @@ def test_the_blocks_tile_the_bays_and_do_not_overlap_the_sister():
 
 
 def test_the_washtower_is_blocked_at_its_own_station_and_gets_no_second_sister():
-    """FX-M-LAUNDRY stands at (115.83", 236.64"), whose nearest joist line is the same
+    """FX-M-LAUNDRY stands at (143.25", 236.64"), whose nearest joist line is the same
     y=240" the bath sisters — and a sister runs the WHOLE joist, so the doubled line is
     already under the machine. What it lacked was blocking at its own station: the bath's
-    four blocks all sit at x=74.56", 40" west. This is a vibration entry (a ~20 Hz spin
+    four blocks all sit at x=74.56", 69" west. This is a vibration entry (a ~20 Hz spin
     cycle at midspan), not a strength one, so ``plies=1`` asks for no ply and tops up
     nothing — it rides the bath entry's finished cluster, which is also why it has to stay
     LAST in ``_WEST_FLOOR_REINFORCEMENT``: ahead of the y=240" bath entry it would cut its

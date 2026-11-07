@@ -206,9 +206,9 @@ def test_the_whole_garage_stands_on_its_floor_not_on_the_stem_top(catlin_model):
     # tread, 27.2" over the slab this datum measures from (80" over the interior landing,
     # 2026-09-11 to 2026-10-13). 76" over the floor is 48.8" over the tread. The contract
     # under test is unchanged: whatever is authored resolves that far above the FLOOR, never
-    # the stem top.
+    # the stem top. EQ-G-HEATER is authored at 8' since the DR-238 infrared unit (762d64646).
     for tag, above_floor_ft in (("ED-G-RC-240", 4.0), ("ED-G-EV-1450", 4.0),
-                                ("EQ-G-HEATER", 6.0), ("ED-G-SW", 76 / 12),
+                                ("EQ-G-HEATER", 8.0), ("ED-G-SW", 76 / 12),
                                 ("ED-G-LT1", 8.0)):
         assert (by_tag[tag].z_m - grade) * _M_TO_FT == pytest.approx(
             above_floor_ft, abs=1e-6), tag

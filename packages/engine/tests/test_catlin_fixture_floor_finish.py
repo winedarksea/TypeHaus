@@ -36,8 +36,9 @@ def test_installed_base_has_no_covering_and_correct_bearing_plane(catlin_model_r
     assert placed.z_m / 0.0254 == pytest.approx(elevation_in)
     coating = room_tag == "RM-B-SAUNA"
     if coating:
-        # The sealed slab stops at D-B-SAUNA's rubber mat reducer (doorway_transitions.py).
-        assert room.field_area_m2 == pytest.approx(66.16711 / 10.7639104, abs=1e-6)
+        # The sealed slab stops at D-B-SAUNA's rubber mat reducer (doorway_transitions.py),
+        # under the leaf: its stated 1 3/4" slab replaced the 45 mm schematic (b90360591).
+        assert room.field_area_m2 == pytest.approx(66.16893 / 10.7639104, abs=1e-6)
     else:
         assert field.intersection(exclusion).area < 1e-10
         assert field.intersection(Polygon(placed.footprint)).area < 1e-10
@@ -67,7 +68,8 @@ def test_takeoff_and_membranes_bill_only_retained_floor(catlin_model_ro):
     rows = floor_finish_rows(catlin_model_ro)
     for finish, net, order in (("catlin-tile-opera-blue", 39.5, 48),
                                 ("catlin-tile-carrara", 60.1, 70),  # FO-S-BATH1-WC-DRAIN left the floor, 2026-11-05
-                                ("catlin-tile-kaleo-brick", 34.2, 40)):
+                                # D-S-SUITEBATH's 1 3/8" leaf moved the break 0.2" (b90360591)
+                                ("catlin-tile-kaleo-brick", 34.1, 40)):
         row = next(row for row in rows if row["finish"] == finish)
         assert row["net_area_sqft"] == net
         assert row["order_area_sqft"] == order
@@ -76,7 +78,8 @@ def test_takeoff_and_membranes_bill_only_retained_floor(catlin_model_ro):
         assert all(row["net_area_sqft"] == net and row["order_area_sqft"] == order
                    for row in companions)
     attic = next(room for room in catlin_model_ro.rooms if room.tag == "RM-A-STUBATH")
-    assert attic.field_area_m2 * 10.7639104 == pytest.approx(27.1, abs=0.05)  # less the WC chase
+    # Less the WC chase; its door's stated leaf thickness moved the break (b90360591).
+    assert attic.field_area_m2 * 10.7639104 == pytest.approx(27.16, abs=0.05)
 
 
 def test_existing_heat_zones_still_fit_and_uncut_rooms_remain_identical(catlin_model_ro):
