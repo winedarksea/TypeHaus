@@ -113,6 +113,8 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "high-gloss-white": (0.96, 0.96, 0.95, 1.0),
     "solid-surface-white": (244 / 255, 245 / 255, 244 / 255, 1.0),
     "appliance-steel": (0.76, 0.78, 0.80, 1.0),
+    "proterra-jacket": (0.47, 0.48, 0.46, 1.0),
+    "proterra-badge": (0.65, 0.015, 0.025, 1.0),
     # Recessed joins in painted furniture. The shade is light enough to read as a real
     # contact shadow at a narrow seam, without turning white drawer gaps into dark graphic
     # lines when a model is viewed at room scale.

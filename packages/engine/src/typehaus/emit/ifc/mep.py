@@ -468,9 +468,18 @@ def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dic
     z0 = resolved.z_m if resolved is not None else storey.elevation.meters
     element = ll.create_entity(f, ifc_class, name=equipment.tag)
     element.GlobalId = derive_guid(project_uuid, equipment.uid)
-    ll.assign_representation(f, element, ll.add_prism_from_profile(
-        f, body, outline, height, z0,
-    ))
+    symbol = getattr(getattr(product_type, "model_representation", None), "symbol", None)
+    if symbol:
+        from typehaus.emit.ifc.placeable_parts import parts_representation
+        from typehaus.model.placeable_symbols import model_parts
+
+        parts = model_parts(symbol, product_type.footprint[0].meters,
+                            product_type.footprint[1].meters, height)
+        representation = parts_representation(
+            f, body, parts, (x, y), float(_rotation_metadata(equipment, resolved)), z0)
+    else:
+        representation = ll.add_prism_from_profile(f, body, outline, height, z0)
+    ll.assign_representation(f, element, representation)
     ll.ensure_pset(f, element, PSET_SOURCE, {
         "uid": equipment.uid, "tag": equipment.tag,
         "rotation_degrees": _rotation_metadata(equipment, resolved)})

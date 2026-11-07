@@ -104,6 +104,11 @@ def test_parts_stay_inside_the_declared_box_and_name_a_real_colour(
     if symbol == "swanstone-flex-3636":
         # The separately supported return/post sits on the adjacent tub deck.
         side_projection = width * 1.5 / 36
+    if symbol == "rheem-proterra-plugin-80":
+        # Catalog W/D is the tank diameter; the authored footprint adds the HydroBoost
+        # riser. Side fittings (including T&P) project beyond that nominal cylinder.
+        side_projection = width * 3.5 / 24.25
+        projection = depth * 3.5 / 24.25
     for part in parts:
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
         assert part["color"] in PART_COLORS

@@ -20,6 +20,7 @@ from typehaus.model.placeable_symbols._frame import (
     prism,
     rect,
 )
+from typehaus.model.placeable_symbols._rheem_proterra import rheem_proterra_plugin_80
 from typehaus.model.placeable_symbols._tea_kettle import tea_kettle
 
 __all__ = ["APPLIANCE_SYMBOLS"]
@@ -333,6 +334,7 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     # inventing a glyph that differs only in the label beside it.
     "erv": air_handler(),
     "water-heater": tank(),
+    "rheem-proterra-plugin-80": rheem_proterra_plugin_80,
     "sauna-heater": sauna_heater(),
     "panel": panel_board(),
     "meter": meter_socket(),
