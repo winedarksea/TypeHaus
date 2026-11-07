@@ -827,6 +827,38 @@ change, FO header at 58.5" and PR-B-CW-TRUNK / PR-B-KITCH-DRAIN crossing it (bot
 `run_through_floor_member` UNKNOWN) come with it. EA drain-back is the same dependency: its low
 point is the riser foot because OA's riser crosses its y=418.5" leg 0.7 in above.
 
+### 10.12 The 270 degree layout does not close (2026-11-07, W3-ERV phase 2)
+
+Kit gate: closed by W3-FLEX (`notes/flex_lead_bend_basis.md`): at 270 the OA/EA lead's wrap top
+stands 7.7 in under the joist underside (case at 52.3"; ports 73.9"). What does not close is
+the routing, and it does not depend on the kit. Ports at 270 (case centre (80.44", 354")):
+supply (87.06", 345.78") SE, return (85.31", 359.16") NE, **outdoor (77.19", 357.41") NW,
+exhaust (77.19", 347.66") SW**. The rotated door faces the lane (x 40..68"), which is clear.
+
+The risers stand in the opposite order. OA rises at (40", 409"), 12" wrapped (x 34..46",
+y 403..415"); EA's foot is (24.6", 418.5"); DU-ERV-RISER-EXH (26.9", 406.8") is full height
+(x 23.9..29.9"). So OA starts NORTH of EA and ends SOUTH-EAST of it, and one must cross the
+other:
+
+* West of OA's riser there is 4" (x 30..34") between OA's wrap and the EXH riser: nothing passes.
+* East of it EA must travel north on x >= 52" (the only way to reach y=418.5" and cross OA's
+  corner at y 412.5..415", as today, EA 12.7" under OA's turn). OA's port is east of that line
+  and its riser west, so OA crosses EA's north leg at y 357..409". Everything south of y=412"
+  and x 40..68" is the dry-fire lane (nothing under 72" AFF).
+* The crossing window is 72" to the ceiling at 96.94" = 24.94" for two 12" wraps (24"): 0.94"
+  of total slack, 0.47" per side, which no wrap or hanger can hold.
+* The one alternative is EA west of the lane through the 36" panel working spaces, across every
+  west-going radial (BENCH x=24", SAUNA-SUP/-EXH x=19").
+* It closes only if OA's and EA's risers swap sides (EA east of OA), which moves EA's upper end
+  on level 2 and its hood: **held** (commit 9a5804f14). Rotation 90 puts the door on the tank
+  (2") and 180 on W-B-ESS-S (1").
+
+Static if it did close: each bent 8" lead is +0.0593 in. over a stock elbow (C 2.85 against
+0.22, VP 0.0226 in. at 210 cfm, `flex_bend_loss_c` now authored on the kits). OA is on the supply
+column (0.430 -> 0.489 in., 201.5 cfm off the curve, short of R403.5's 203.0) and EA on the
+extract (0.400 -> 0.459). Both sides leave the 0.4" rating, so the 10" hood or an 8" supply
+trunk would have to pay for it.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

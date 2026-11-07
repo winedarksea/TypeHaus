@@ -184,14 +184,18 @@ DUCT_STANDARD = [
                            product_ref="PROD-DUCT-STRAP", width=inch(1),
                            source=_FLEX),
         ),
+        # flex_bend_loss_c: LBNL (Abushakra, Walker, Sherman 2002) Table 4, non-metallic flex 90 degree
+        # bend, 6" 1.18 / 8" 2.85 (notes/flex_lead_bend_basis.md section 3); charged only where a
+        # lead bends.
         port_kits=(
             PortKit(type_ref="EQ-T-BROAN-B210E75RT", ports=("outdoor", "exhaust"),
                     transition_product_ref="PROD-DUCT-INCREASER-6-8",
                     transition_loss_c=0.22, flex_product_ref="PROD-DUCT-FLEX-R8",
-                    flex_length=inch(12),
+                    flex_length=inch(12), flex_bend_loss_c=2.85,
                     source=_KIT),
             PortKit(type_ref="EQ-T-BROAN-B210E75RT", ports=("supply", "return"),
                     flex_product_ref="PROD-DUCT-FLEX-R8", flex_length=inch(12),
+                    flex_bend_loss_c=1.18,
                     source="Broan B210E75RT manual pp. 10-11"),
             PortKit(type_ref="EQ-T-GREE-FLEXX-ULTRA-24-AH",
                     flex_product_ref="PROD-DUCT-CONNECTOR", flex_length=inch(3),
