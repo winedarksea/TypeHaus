@@ -367,9 +367,11 @@ DUCTS_ERV_BASEMENT = [
     # inside that stud bay. W-B-SA-W uses SAUNA_2X6 so the 4" section fits with 3/4" each
     # side; its hot-side liner face stays fixed.
     DuctRun(uid="1Y457X9DMH", tag="DU-B-ERV-R-SAUNA-EXH", system=DuctSystem.EXHAUST,
+            # (2026-11-07) The drop stands at x=116" (was 116 9/16"): the last stub to the
+            # register is 6", the take-off of the 90 above it (was 5 7/16").
             path=(pt(ft(5, 3), ft(28, 1)), pt(ft(5, 3), ft(27, 7)), pt(inch(49.5625), ft(27, 7)),
                   pt(ft(1, 7), ft(27, 7)), pt(ft(1, 7), inch(40)),
-                  pt(inch(116.5625), inch(40)), pt(inch(116.5625), inch(40)),
+                  pt(inch(116), inch(40)), pt(inch(116), inch(40)),
                   pt(inch(122), inch(40))),
             elevations=(ft(7, 6), ft(7, 6), inch(82.25), inch(82.25), inch(82.25), inch(82.25),
                         inch(4), inch(4)),

@@ -229,11 +229,17 @@ DUCTS_ERV_ATTIC = [
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_A_ERV_R_STUBATH),
     DuctRun(uid="DYNQDC9ZMJ", tag="DU-A-ERV-R-ATTIC", system=DuctSystem.EXHAUST,
+            # (2026-11-07) Stock turns only: the 6" vertical drop at the foot of the lane was
+            # shorter than its two 90s' take-offs (12"). The lane turns west on the deck and
+            # goes into the bay on a 54.7 degree ramp (the stamped 45's 10 degree snap): 9 1/8" of
+            # straight over the 90 and ramp take-off (6" + 3.1"), 4 1/4" of ramp, 3 1/8" to the
+            # terminal over its 3.1", 16 1/2" in all west of the lane.
             path=(pt(ft(4, 10.5), ft(34, 2)), pt(ft(4, 10.5), ft(32, 8)),
                   pt(ft(2, 4.5), ft(32, 8)), pt(ft(2, 4.5), ft(20, 8)),
-                  pt(ft(2, 4.5), ft(20, 8)), pt(ft(1), ft(20, 8))),
+                  pt(inch(19.375), ft(20, 8)), pt(inch(15.125), ft(20, 8)),
+                  pt(ft(1), ft(20, 8))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
-                        inch(-2), inch(-2)),
+                        _ATTIC_DECK_Z, inch(-2), inch(-2)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_A_ERV_R_ATTIC),
     # ** BED3 RIDES THE 18'-0" BAY, AND IT IS THE ONLY ONE OF THE FOUR THAT IS FREE. **

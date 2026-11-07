@@ -476,8 +476,9 @@ VENT_BRANCHES_BASEMENT = [
                   pt(ft(9), inch(229.5))),
             diameter=inch(1.5), material="pvc",
             # Follow the sauna vent's raised y=19'-0" station, preserving drainage
-            # back to the fixtures and keeping the riser below W-B-STR2's top plate.
-            elevations=(ft(1, 3.4375), inch(91.551), inch(93.7678)),
+            # back to the fixtures and keeping the riser below W-B-STR2's top plate. The riser
+            # tops at 93.6428" so its turn is a stock 90 (was 79.5).
+            elevations=(ft(1, 3.4375), inch(93.6428), inch(93.7678)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
     # ** THE SHOWER'S TEE IS UNDER THE SLAB (C6-E7, 2026-11-02). ** The riser used to start on
     # the slab 22.6" off the drain, so it vented nothing. It now leaves the pan drop's
