@@ -1119,10 +1119,10 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
                 handed_wall_basis[tag] = "; ".join(
                     filter(None, (handed_wall_basis.get(tag), arrived)))
 
-    from typehaus.engineering.roof_lateral import current_winds
+    from typehaus.engineering.roof_lateral import roof_winds
 
-    # `_base_moments` above ran the roof pass, which filled the winds.
-    pinned_on = {p.below: p.tag for wind in current_winds().values()
+    # This ctx's own winds, not the module global: any other ctx's roof pass overwrites it.
+    pinned_on = {p.below: p.tag for wind in roof_winds(ctx).values()
                  for p in wind.pinned if p.below}
     out: list[_Pier] = []
     for post in ctx.plan.all_elements():
