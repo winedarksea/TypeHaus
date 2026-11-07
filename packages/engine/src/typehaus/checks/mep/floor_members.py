@@ -21,6 +21,7 @@ framed around a crossing are ``mep.run_through_blocking``'s, and both are skippe
 
 from __future__ import annotations
 
+import math
 import re
 
 from typehaus.checks._authoring import failed as _fail
@@ -47,6 +48,13 @@ _CID = "mep.run_through_floor_member"
 #: The 2x6 box ``resolve/floor_blocking`` frames AROUND a crossing run; its fit is
 #: ``blocking_conflicts``, graded by ``mep.run_through_blocking``.
 _BOX_PART = re.compile(r"-(rail-top|rail-bottom|cheek-lo|cheek-hi)$")
+_HEADER_KEY = re.compile(r"^header-(.+)-\d+$")
+
+
+def _opening_tag(member) -> str:
+    """The floor opening a ``header-<TAG>-<n>`` member frames, else ``""``."""
+    found = _HEADER_KEY.match(member.child_key)
+    return found.group(1) if found else ""
 
 
 def solid_members(floor) -> list:
@@ -74,11 +82,41 @@ def _plan_width(footprint, normal) -> float:
     return high - low
 
 
-def _bore(member, diameter_in: float):
+def _opening_charts(ctx: CheckContext) -> dict[str, object]:
+    """``{floor-opening tag: PublishedHole}`` for every opening whose header the house quoted."""
+    from typehaus.model import FloorOpening
+
+    plan = getattr(ctx.model, "plan", None)
+    return {el.tag: el.published_hole for el in (plan.all_elements() if plan else ())
+            if isinstance(el, FloorOpening) and el.published_hole is not None}
+
+
+def _chart_station(member, leg) -> dict:
+    """Where a bore meets its header: along the span, in the depth, and its diameter.
+
+    The station is the leg's own crossing of the member axis; ``from_bearing_in`` is its
+    distance to the nearer end of the header (the clear span the chart's thirds are of),
+    ``edge_clear_in`` the wood left to the nearer face over the run's full envelope.
+    """
+    from shapely.geometry import LineString
+
+    point = leg.axis().intersection(LineString([member.p0, member.p1]))
+    if point.is_empty or point.geom_type != "Point":
+        return {}
+    ratio = (math.dist(leg.a, (point.x, point.y)) / leg.plan_m) if leg.plan_m > 1e-9 else 0.0
+    z = leg.za + (leg.zb - leg.za) * ratio
+    span = math.dist(member.p0, member.p1)
+    along = math.dist(member.p0, (point.x, point.y))
+    clear = min(member.z1_m - (z + leg.half_z_m), (z - leg.half_z_m) - member.z0_m)
+    return {"from_bearing_in": min(along, span - along) / M_PER_IN,
+            "span_in": span / M_PER_IN, "edge_clear_in": clear / M_PER_IN}
+
+
+def _bore(member, diameter_in: float, chart=None, station: dict | None = None):
     from typehaus.resolve.mep_bores import header_bore, joist_bore
 
     if member.category == "header":
-        return header_bore(member.profile, diameter_in)
+        return header_bore(member.profile, diameter_in, chart=chart, **(station or {}))
     return joist_bore(member.profile, diameter_in)
 
 
@@ -92,6 +130,7 @@ def run_through_floor_member(ctx: CheckContext) -> list[Finding]:
     if not floors:
         return [_na(_CID, "no resolved floor carries a solid (non-I-joist) member")]
     all_legs = legs(ctx.model)
+    charts = _opening_charts(ctx)
     out: list[Finding] = []
     for floor, solids in floors:
         index = STRtree([footprint for _m, footprint, _z0, _z1 in solids])
@@ -113,14 +152,14 @@ def run_through_floor_member(ctx: CheckContext) -> list[Finding]:
                 depth = bite(leg, footprint, normal)
                 if depth > TOLERANCE_M:
                     hits.setdefault(leg.tag, []).append((how, member, leg, depth))
-        out.extend(_grade(tag, floor, found) for tag, found in hits.items())
+        out.extend(_grade(tag, floor, found, charts) for tag, found in hits.items())
         if not hits:
             out.append(_pass(_CID, f"{floor.tag}: no run's envelope meets any of its "
                                    f"{len(solids)} solid member(s)", (floor.tag,)))
     return out
 
 
-def _grade(tag: str, floor, found: list[tuple]) -> Finding:
+def _grade(tag: str, floor, found: list[tuple], charts: dict) -> Finding:
     occupied = [hit for hit in found if hit[0] != "bore"]
     if occupied:
         how, member, leg, depth = max(occupied, key=lambda hit: hit[3])
@@ -138,7 +177,8 @@ def _grade(tag: str, floor, found: list[tuple]) -> Finding:
             fix=("move the run clear of the member's faces, or re-frame the member (and any "
                  "opening it trims) around the run; a vertical hole through a floor member is "
                  "never on a chart"))
-    verdicts = [(member, leg, _bore(member, 2 * leg.radius_m / M_PER_IN))
+    verdicts = [(member, leg, _bore(member, 2 * leg.radius_m / M_PER_IN,
+                                    charts.get(_opening_tag(member)), _chart_station(member, leg)))
                 for _how, member, leg, _d in found]
     bad = [v for v in verdicts if v[2].ok is False]
     unsure = [v for v in verdicts if v[2].ok is None]

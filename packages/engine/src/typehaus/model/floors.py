@@ -11,7 +11,7 @@ from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import FloorOpeningPurpose, RadiantSystem
 from typehaus.model.published_web import PublishedWebOpenings
 from typehaus.model.rebar import ReinforcementSpec
-from typehaus.model.refs import Embed, PublishedSpan
+from typehaus.model.refs import Embed, PublishedHole, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D
 
@@ -170,6 +170,10 @@ class FloorOpening(Element):
     fireblock: tuple[Layer, ...] = ()
     #: Material sealing each penetration's annulus through the fireblock.
     fireblock_sealant: str | None = None
+    #: The maker's ALLOWABLE HOLES row for this opening's header (e.g. Boise VERSA-LAM). Absent,
+    #: a run bored through an LVL header is UNKNOWN (``mep.run_through_floor_member``); present,
+    #: it is graded against the row, as ``RoughOpening.published_hole`` is for a wall header.
+    published_hole: PublishedHole | None = None
 
 
 class FloorOpeningEdgeInterval(HausModel):

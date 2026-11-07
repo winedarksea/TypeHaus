@@ -612,3 +612,55 @@ Edge = |station - face| - hole/2. Worked, as found and as moved:
 drain hole against 7.5; tee moved to 110). Every TJI crossing in the house now PASSes and cites
 its row; the router refuses a lattice edge outside the zone and prices one inside it as
 `bore_engineered_in`, not `bore_unpublished_in`.
+
+## 12. A header hole chart for a FLOOR header, and the two tub drains it shuts out (2026-11-07)
+
+**The chart.** Boise Cascade EWP, *BCI Joist and Versa-Lam LVL Specifier Guide: U.S. East*,
+MTP-E7000 Rev. 07/26, p.26 "Versa-Lam LVL Allowable Holes" (read from the PDF). Round holes
+only, anywhere in the shaded box of the figure: the middle third of the depth by the middle
+third of the span, each hole drawn fully inside it. Max diameter by beam depth: 5 1/2"-<7 1/4"
+3/4"; 7 1/4"-<9 1/4" 1"; **9 1/4"-<18" 2"**; 18"-<24" 3"; 24" 4". Spacing 2 x the larger hole,
+no stacked holes, at most 3 per 4 ft. **"Valid only for beams supporting uniform load"**; for
+concentrated loads or larger holes, BC Calc or Boise EWP Engineering. Applies to all Versa-Lam
+(the guide's profiles: 1.8E 2650 and 2.1E 3100). The engine carries it as
+`VERSA_LAM_HEADER_HOLES` (`plan/framing_charts.py`), read through `FloorOpening.published_hole`
+by `mep.run_through_floor_member`.
+
+**`FO-S-ERV-CHASE`'s header** `header-FO-S-ERV-CHASE-1`: 2-1.75x11.875 LVL, x = 34.8", y
+400.0"..425.4" (span 25.4"), z 108.125"..120.0". It carries one truss end,
+`joist-0-026-1` at y = 413.75", 1.05" off midspan: a concentrated load, so the table's own
+condition is not met whatever the geometry says.
+
+Zone: span third = 25.4/3 = **8.47"**, so a hole centre lies in y 408.47..416.93. Depth third =
+11.875/3 = **3.958"**, so a 1.9" outside needs 3.958 + 0.95 = 4.908" below the top: axis
+**z <= 120.0 - 4.908 = 115.09"** (and >= 108.125 + 4.908 = 113.03"). Diameter 1.9" <= 2" ok.
+
+1. **The authored `PR-M-S-BATH1-TUB-DRAIN` arm** (39.25, 409.5) -> (30.3, 402.8) crosses x =
+   34.8 at t = (39.25-34.8)/8.95 = 0.497, y = 409.5 - 0.497 x 6.7 = 406.17": 6.17" from the
+   header's south end against 8.47" (the check prints 6.13", the footprint's edge). **FAIL** (end
+   third), and at z ~116.7 its top edge is 120.0 - 117.65 = 2.35" under the top, not 3.958".
+2. **Any arm that reaches the chase vent is out of reach of both limits at once.** MN 905.5 /
+   `mep.trap_arm_length`: the tee may be no more than one diameter + 1/16" under the weir,
+   117.0 - 1.5625 = **115.44"** (weir = 120.75 - 3.75); the arm falls toward it, so the axis at
+   the header is >= 115.44. The chart wants <= 115.09. **0.35" short**, whatever the plan
+   path. Tried: straight arm y = 410 (mid third, 10" off the south end), tee at 115.0:
+   `trap_arm_length` FAIL "falls 2.00" before the vent", header FAIL "3.39" of clear wood
+   against 3.96"" (z = 115.66 at x = 34.8).
+3. So the chase header cannot be bored for a tub drain, and with the tub's drain 8 1/4" off the
+   end (x = 43.9) the arm cannot avoid it either: the vent riser must stand in the chase void.
+   The honest remedies are a vent riser east of x = 36.5" (a furred tub-end wall carrying the
+   riser and the drop over the bay), or Boise EWP Engineering's BC Calc approval of a
+   non-table hole. Attaching the chart today turns the UNKNOWN into the FAIL above, so it is
+   not attached.
+
+**The suite bath.** `joist-0-016-0` is the truss at y = 256.00" (254.25..257.75"). Bays: 241.75..254.25
+and 257.75..270.25 (the pipe's 1.9" wants 0.95" each side: drain y <= 253.3" or >= 258.7").
+W-S-SN3's face is y = 264.625", so the drain must be **<= 5.9" or >= 11.3" off the end**. The
+Sterling 71370116 (1214192-4-A p.2: 8 1/4" off the end studs, 14 5/8" off the back studs) puts it
+at 264.625 - 8.125 = 256.5": inside the truss, a riser through it
+(`mep.run_through_floor_member` FAIL "stands through ... joist-0-016-0" at 198.12", 256.50").
+Alcove drains read: Sterling 71370116 8 1/4"; Kohler K-837 Bellwether (spec p.3) 8 1/2" from the
+tub end, 14 1/2" off the back; American Standard Princeton 2390/2393 (790043-400 Rev. Q 2/18
+p.1) 8" (203 mm), cutout centred 14 1/4"; Kohler K-1121-L Underscore (spec 5-29-2021)
+**12 5/8"**, 15" off the back: 264.625 - 12.625 = 252.0", clear by 1.3". The standard is
+8 to 8 1/2"; the Underscore is the one that clears this truss.

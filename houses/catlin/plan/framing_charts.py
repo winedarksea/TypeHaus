@@ -40,3 +40,21 @@ TJI_230_HOLES = JoistHoleChart(
 )
 
 JOIST_HOLE_CHARTS = (TJI_230_HOLES,)
+
+
+# Boise VERSA-LAM LVL, the 2-ply 1 3/4" x 11 7/8" header FO-S-ERV-CHASE carries (decision #118).
+# Read from the PDF 2026-11-07; the zone is the figure's shaded box, each hole fully inside it.
+# NOT attached to FO-S-ERV-CHASE: the BATH1 tub drain is outside it (notes/framing_bore_limits.md
+# §12), so attaching turns that UNKNOWN into a FAIL. Attach `published_hole=` once the arm clears.
+VERSA_LAM_HEADER_HOLES = PublishedHole(
+    source=("Boise Cascade EWP, BCI Joist and Versa-Lam LVL Specifier Guide: U.S. East, "
+            'MTP-E7000 Rev. 07/26, p.26 "Versa-Lam LVL Allowable Holes"'),
+    table=('Allowable Round Holes, beam depth 9 1/4" to less than 18": max. hole diameter 2"; '
+           "shaded area = middle 1/3 of depth by middle 1/3 of span"),
+    member="2-1.75x11.875 LVL", max_diameter=inch(2),
+    zone_fraction=1 / 3, depth_fraction=1 / 3, min_spacing_diameters=2.0,
+    condition=("VERSA-LAM 2.1E 3100; table valid only for beams supporting uniform load "
+               "(concentrated loads or larger holes: BC Calc or Boise EWP Engineering); round "
+               "holes only; at most 3 holes in any 4 ft; holes not stacked; plumbing or wiring "
+               "only"),
+    load_basis="uniform load only")

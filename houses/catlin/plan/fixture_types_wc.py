@@ -364,7 +364,11 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
     "name": 'Alcove tub-shower, 60", complete trim with diverter and handshower',
     "height": inch(73),  # 71370116 finished height; the flange tops at 74 1/4"
     "product_ref": "PROD-DELTA-T14459-SS",
-    # Plumbing end at local -x on both placements.
+    # Plumbing end at local -x on both placements. 3 1/2" is a placeholder, NOT the product: the
+    # sheet's drain is 8 1/4" off the end studs, 14 5/8" off the back (the industry standard,
+    # 8 to 8 1/2": Kohler K-837 8 1/2", Princeton 8"). At 8 1/4" the suite's drain lands on the
+    # y=256" truss and BATH1's arm cannot reach the chase vent without boring the LVL header
+    # (Boise's chart forbids it). Both are open owner calls: notes/framing_bore_limits.md §12.
     "ports": (floor_drain_port(-26.5, 0, size_in=1.5, note="Waste-and-overflow 3 1/2\" in from "
                                "the plumbing end. 1214192-4-A p.2 puts the drain cutout 8 1/4\" "
                                "off the end studs: confirm on the delivered bath"),
