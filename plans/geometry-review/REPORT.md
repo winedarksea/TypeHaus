@@ -221,59 +221,79 @@ goldens commit). Gated `haus print`: 83 → **95** permit sheets. Only the resid
 
 ### Fit and product data
 
-20. **Exterior door head gaps and sill seats** (C1 E3, O3-101/102/004/008, S2-002) ·
-    carried. D-M-PORCH and D-G-SERVICE have 0" head gap. The MMI sill crest is a supplier hold. S.
-21. **Interior door RO height and undercut** (C1 E5, O1-101/102/107/108) · new. ROs are
-    81.51" over the finished floor, against JELD-WEN's 82 7/16" and Masonite's 82". There is
-    no undercut, and A-601 has no column for it. Leaves are modelled 45 mm, not 1 3/8". S–M.
-22. **Hot-water header connections** (C4 E10, M2-101/102) · new. The trunk's last leg is
-    perpendicular to the inlet socket. No bend supports within 6" of the outlets
-    (Uponor submittal). S.
-23. **BD8 backdraft damper on the ERV exhaust hood** (C4 E3, M1-102) · new. Broan forbids it
-    (it freezes). Removing it reverses a recorded reason in `erv_static_budget.md` and gains
-    about 8 Pa. Owner call. S.
-24. **ERV static margin and airflow split** (C4 E4, M1-104/M4-112) · new. The 0.9 cfm R403.5
-    margin uses a smooth-elbow coefficient for stamped elbows. Eight legs' duct and register
-    cfm disagree. S–M.
-25. **EQ-M-ERV-MAN-SUP has no feed** (C4 E5, M1-111) · carried (TODO). M.
-26. **Kitchen fridge hinge** (C3 I1-101) · new, owner-visible. The fridge sits 5/16" off
-    W-M-PAN-S, while the door at 90° needs 35.82".
-    → Hinge at the pair seam (kit TTDRRVFRKIT). S.
-27. **BATH2 shower backer** (C3 I2-105) · carried (TODO). Swan allows gwb-mr, but §6 asks for
-    glass-mat under the membrane.
-    → Glass-mat on the two closed walls, about 48 sf. S.
-28. **Other interiors** (C3), each S unless noted:
-    - Hall-bath insert nailers at 81–84.5" vs a 71–76.5" flange (I2-101).
-    - TOTO tanks ¾" off the wall (I2-102).
-    - The 1/2" "gwb-x" should be Firecode C (I4-103).
-    - The sauna step abuts the shower pan (I3-108).
-    - Tile mortar and SurePly allowances (I4-004/005, carried).
-    - D-A-STUDY / D-A-POCKET onto unfinished subfloor (I4-107, carried).
-    - The Murphy door datum is ¾" low, read off the subfloor (C1 late, I3-103).
-    - The 4" rubber cove base needs a per-kind height (C1 E6, O2-101).
-29. **Envelope** (C3):
-    - The entry-screen wall end runs into the garage's corrugated layer (E2-101).
-    - MDO panel 4 edge screws skip 11.2" (E2-104).
-    - Partition/roof sheets titled "Eave" (E1-107).
-30. **Other structure** (C2 E7–E12):
-    - Backing bands vs runs and band overlaps.
-    - The backing face test and the R602.6 edge offset.
-    - Seat-beam ends 0.13" inside the CBSQ66 strap (F6-102).
-    - CBSQ66-SDS2 → CBSTQ66Z-SDS2 part number.
-    - Unsized derived IUS.
-    - Smaller items.
+Fit pass 2026-11-06 (`54a948960`..`6afa8cd1b`, plan "Fit & product-data pass"): each sub-item
+re-probed on the tree after the subfloor door seat, #116 and #117. **Closed** lines name the
+commit; what stays open is listed under its item.
+
+20. **Exterior door head gaps and sill seats** (C1 E3) · **closed**. D-M-PORCH was already at a
+    1/2" head gap after `ad946621f`. D-G-SERVICE is seated on the pan (crest +1.2835"), head gap
+    0 → 0.216"; ST-G-SERVICE risers 7.10 → 7.06" (`14971a21a`). Open: the MMI sill crest
+    (supplier hold) and the RO raise.
+21. **Interior door RO height and undercut** (C1 E5) · **open, owner deferred** (skipped this
+    pass). ROs 81.51" over the finished floor vs 82–82 7/16"; no undercut; 45 mm leaves.
+22. **Hot-water header connections** (C4 E10) · **closed** (`c8b8033d8`). The trunk drops into
+    the +y inlet; first legs 1.5 → 3.5"; no lane gives 6" under the outlets, so 8 × Uponor
+    A5110500 bend supports bill (submittal rev. A 2008). Open: Uponor's LF2821050 A reads
+    14.95" against the 14.675" the repo carries.
+23. **BD8 backdraft damper** · closed earlier (`318c2be89`).
+24. **ERV airflow split** (C4 E4) · **closed** (`54a948960`). `plan/erv_balance.py` holds one
+    constant per terminal at the duct split; registers and ducts read it, 23 radials equal
+    their registers, 210/210; 204.5 cfm vs 203.0 unchanged. Open with #25: the flex/transition
+    terms (the E2 rotate/swap). Owner look: `mep_hvac.py` ~350 argues the plant room is held
+    negative at 25 cfm extract; it is 5 cfm now against REG-S-HP-PLANT's 75.
+25. **EQ-M-ERV-MAN-SUP has no feed** (C4 E5) · open (out of scope, the held ERV re-route).
+26. **Kitchen fridge hinge** (C3 I1-101) · **closed** (`1e290bf40`). `Appliance.door_hinge`;
+    the fridge hinges at the pair seam on Frigidaire TTDRRVFRKIT (Tall Twin Resource Guide
+    rev 2/4/2021 p.23); the open leaf clears W-M-PAN-S. Owner: only one door opens at a time;
+    confirm TTDRRVFRKIT vs retail TTDRRVFRKIT2 at order.
+27. **BATH2 shower backer** (C3 I2-105) · **closed, with a deviation** (`f92d8fa2e`). GP
+    DensShield 1/2" (`gwb-glass-mat`, Tech Guide 622598 12/20) on both closed shower walls
+    by `layer_materials`, whole faces (~99 SF, not 48: a partition with no `default_lining`
+    takes no `WallLiningException`). Open: `takeoff/envelope.replaced_finish_m2` deducts the
+    board behind the panel, so 48.4 SF bills of ~99; no readable retail price.
+28. **Other interiors** (C3):
+    - I2-101 · closed (`c8b8033d8`): FX-TUBSHOWER-60-DIVERTED is Sterling Ensemble Medley
+      71370116 (sheet 1214192-4-A); nailers 81.25 → 72". Open: the sheet's drain 8 1/4" off
+      the end studs vs the model's 3 1/2".
+    - I2-102 · closed (`c8b8033d8`): TOTO tanks 3/4" off (Drake 13/16"), flanges held.
+      SUITE sits 1.09" off because its flange was already 12.34" out.
+    - I4-103 · closed (`f92d8fa2e`): gwb-c (Firecode C, USG WB2965 rev. 11-19); STC 45 kept.
+    - I3-108 · closed (`1e290bf40`): sauna step 79.6875".
+    - I4-107 · closed (`1e290bf40`): `bare` finish; oak nosing at D-A-STUDY, rubber edge at
+      D-A-POCKET; `doorway_assembly` UNKNOWN → PASS on both.
+    - Murphy datum (I3-103) · closed (`14971a21a`): body and casing off the finished floor,
+      legs 78.0". The supplier quote stays a hold.
+    - 4" rubber cove (O2-101) · closed (`14971a21a`): `Material.base_height` 4" (Johnsonite
+      spec 070517 p.1 §1.3.2).
+    - I4-004/005 mortar/SurePly · open (needs measured thickness).
+29. **Envelope** (C3) · **closed**: E2-101 screen ends at the garage cladding (517.75), E2-104
+    relief screws ≤ 5.59" (`d0db940c8`); E1-107 already landed (`e64444332`).
+30. **Other structure** (C2 E7–E12) · **closed** (`30a044eda`, `f523fcfcc`): band overlaps
+    4 → 0; backing face test, BK-M-HS1-MID-S, wall Equipment and BEARING walls read (four new
+    equipment bands, HP2-BED/-LIVING, HP3-STAIR, garage heater: owner may veto); seat beams
+    start 0.4495" off the post (pier bearing 3.64", base shear 0.815); CBSTQ66Z-SDS2 (C-C-2026
+    p.85); derived IUS sized IUS2.37/11.88 (p.159); LSSR2.37Z (p.178); F3-111 already gone.
+    Open: whether note m's "abutting material" is the strap (EOR/Simpson); the garage heater
+    band height is unsourced.
 31. **Other openings and stairs** (C1):
-    - ST-M2S stringers and skirts bear on the floating LVP (E4).
-    - Trim residue (E6).
-    - Window stools through the buck jambs (E7, 34 pairs).
-    - Handrail products (E10, bracket 7 is a custom 26.5" L).
-    - Owner-scope opening items (E11).
-32. **Other MEP** (C4 E8, E14–E17):
-    - Runs through backing bands.
-    - Supply open items.
-    - Electrical: sconce footprint, 26 flush boxes on studs, DVFR1W.
-    - `drain_tie_in` message.
-    - `mep_registers.py` at 693 lines.
+    - E4 · closed (`f7ebbb822`): ST-M2S stringers and skirts bear on the 3/4" sheet.
+    - E6 · closed except O2-110 (Eclisse detail): O2-103 casing now sees paneling, which drops
+      CASING-D-M-ENTRY-L's right leg (1.44" < 1.5"); owner: scribe it, stop the shiplap, or
+      leave it. O2-106 PT-4 +153 SF jamb faces; O2-108 BATH2 bath face uncased.
+    - E7 · closed (`f7ebbb822`): 30 stools stepped 0.395" at the buck; `framing|window_stool`
+      0; 9 wrapped stone stools unchanged.
+    - E10 · **open, owner**: no stock 3" arm reaches blocking at 48" raked spacing for bracket
+      7 (best 50.3"); options (a) ~54" spacing, (b) bring W-A-SN's face out to y ≈ 108.6, (c) a
+      fabricated standoff. No titanium fitting rows: no published load found.
+    - E11 · O5-102/105 closed (`f7ebbb822`); O4-105 is another workstream.
+32. **Other MEP** (C4):
+    - E8 runs vs backing, E14 supply items · open (out of scope).
+    - E15 · M3-104 already landed; M3-106 closed (`7de1aaebb`, `advisory.box_on_stud`, 47 → 8
+      on studs; the 8 need > 2.6" or move with a neighbour: BATH1-SW/-RC1/-MIRROR,
+      BATH2-SW-EVE, BED3-SW-READ, NCLOSET-SW, VANITY-SCONCE-E/-RC1); M3-107 closed (derived
+      2x4 block per DVFR1W, Arlington Q-3 2025-05-01).
+    - E16 · closed (`c8b8033d8`): `drain_tie_in` prints the 3D nearest-station offset.
+    - E17 · closed (`54a948960`): registers split per storey, byte-neutral.
 
 ## 2. Fixes applied this round
 
@@ -361,5 +381,5 @@ inlet stations) and M3-009 (Carlon's BH235A catalog row).
   are applied in `plans/TODO.md`. E2-105 is left for you: the "W-BW-SCREEN metal cassette
   engineering" TODO line tracks a design the MDO screen replaced.
 - **Supplier holds** are unchanged except where listed in §1: MMI sill crest, DAKAM/Aliplast
-  sill rail and sash lap, Metal Sales vented gable peak, Broan port spacing, the Murphy datum,
+  sill rail and sash lap, Metal Sales vented gable peak, Broan port spacing, the Murphy quote,
   and the fabricator truss hole chart.
