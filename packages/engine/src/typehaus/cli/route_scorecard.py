@@ -52,7 +52,7 @@ TOLERANCE: dict[str, tuple[float, float]] = {  # metric -> (factor, absolute)
 }
 
 #: Metrics where MORE is better.
-HIGHER_IS_BETTER = frozenset({"proposals", "cleanouts_placed", "rack_shared"})
+HIGHER_IS_BETTER = frozenset({"proposals", "cleanouts_placed", "rack_shared", "relaid"})
 
 
 def run_scorecard(directory: Path, model: ResolvedModel, cost: RouteCost,
@@ -91,7 +91,7 @@ def _metrics(model: ResolvedModel, found: Found, seconds: float, evaluation: Any
     from typehaus.resolve.mep_fittings import SERVICE_BY_SYSTEM
     from typehaus.routing.rack import rack_shared
 
-    proposals, expected = found.proposals, found.expected
+    proposals = found.proposals
     fittings: Counter[str] = Counter()
     forbidden = 0
     for proposal in proposals:
@@ -107,8 +107,11 @@ def _metrics(model: ResolvedModel, found: Found, seconds: float, evaluation: Any
 
     return {
         "proposals": len(proposals),
-        "refusals": max(0, expected - len({p.tag for p in proposals})),
-        "developed_ft": round(sum(p.developed_ft() for p in proposals), 2),
+        "refusals": found.refused,
+        "relaid": found.relaid,
+        "relay_refused": found.relay_refused,
+        "developed_ft": round(sum(p.developed_ft() for p in proposals
+                                  if found.ft_tag in (None, p.tag)), 2),
         "fittings": dict(sorted(fittings.items())),
         "forbidden_fittings": forbidden,
         "bores": dict(sorted(_bores(model, proposals).items())),

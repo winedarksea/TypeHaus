@@ -39,9 +39,12 @@ routing exit codes.
 
 | Selector / option | Question |
 | --- | --- |
-| `--run TAG` | Same authored terminals, a better route |
+| `--run TAG` | Same authored terminals, a better route; a duct uses the fitted search (take-off C2F·tan(θ/2), a 12" flex `PortKit` lead) |
 | `--fixture TAG` | A drain branch from the fixture to its nearest main |
 | `--tree MAIN` | All fixtures served by this drain main, coordinated together |
+| `--tree MAIN --lift TAG...` | Tree rip-up: the named authored runs are lifted and re-laid after the tree, each laid or refused with a reason |
+| `--group ROOM` | A bathroom group in UPC 908.2 order: dry arm and its vent, 3" wet vent, water closet last |
+| `--tree COLD-MAIN [--topology trunk\|tree]` | A cold supply main as a z-gated trunk plus farthest-first branches; `trunk` tees only onto the trunk or the branch's own group, `tree` (default) onto any branch laid before it. Cold only; hot is refused |
 | `--unconnected` | Branches for fixtures reported by `mep.fixture_drain_reach` |
 | `--house --trades drain --storey basement` | Coordinate a scoped campaign with shared occupancy |
 | `--manifold EQ-TAG` | Every supply branch leaving that manifold's outlet ports, as one campaign |
@@ -83,6 +86,13 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | Couplings per stock length are disclosed, not counted (no stock length on record) | `trades/pipe.coupling_disclosure` | — |
 | A falling run's arrival holds the 1/16" snap's head; a band that cannot reach any tie by plan distance is dropped | `gravity.grid_allowance`, `gravity.head_floor_fn` | drain basis §13 |
 | A falling run crosses rims and joists, never rides them, and never a blocking flange; foundation walls, exterior insulated cavities (at their own height) and the outside of the decks are hard; a tie is pardoned only its own run; the drop into a tie is tested | `gravity_band.rail_prisms`, `obstacles`, `gravity_band.terminal_pardons` | drain basis §13 |
+| A trunk's level legs stay inside the floor system's z gate; a riser only in a 24" hole at each end | `routing/supply_tree`, `cli/cmd_route_supply_tree` | `mep_supply_trunk_basis.md` §5 |
+| A branch tees only onto a run that can carry its WSFU, up the whole host chain | `cli/route_supply_group` | `mep_supply_trunk_basis.md` §2 |
+| A buried outdoor run is left as authored | `cli/cmd_route_supply_tree` | `mep_supply_trunk_basis.md` §3 |
+| Tree rip-up: most recent branch first, at most two trials per refused terminal, exact rollback of a failed trial | `routing/tree_ripup` | `mep_tree_ripup_basis.md` §1 |
+| A bathroom group lays in role order (dry drain and vent, wet arms in flow order, the closet last), each step re-resolved | `routing/group_order`, `cli/cmd_route_group` | `mep_group_wet_vent_basis.md` §3 to §5 |
+| Two duct turns may not sit closer than their take-offs; a turn beside a run end owes only its own | `routing/duct_fittings`, `routing/duct_search` | duct basis §7 |
+| A port kit's flex is a straight lead that never bends; the search starts at its far end | `routing/duct_fittings`, `cli/route_ports` | duct basis §8 |
 | A tree tie is ON its collector (1/8"); the step into it may cross the collector, never ride or leave it; a branch ties into a plumb drop's side at its own height; a refusal is reported per fixture | `cmd_route_tree.TIE_TOLERANCE_M`, `gravity_band.band_obstacles`, `route_tree_branches.Branches` | drain basis §13 |
 
 **A fixture's arm and vent.** `--fixture` on a drain fixture searches the arm and its vent
@@ -102,14 +112,16 @@ lattice too, and `--summary` drops each row's station. **Cleanouts** a proposed 
 on it, each with access (wall, floor or ceiling), cap point and concealment; a concealed
 one pays `cleanout_concealed_in`.
 
-**Limitations.** A 908.2-ordered bathroom-group campaign (`--group`) does not exist: a wet
-vent is offered only onto a drain already authored; seeds keep the two cheapest take-offs
-(`keep=2`); a vertical barrel's stack pitch is left to the check; a tie's fitting
-is named but not priced; `--topology trunk` is not implemented (catlin's cold side is a
-trunk with nothing to replace, and `--tree` is drain-only); rack lanes exist only inside
-`--house` and `--manifold` campaigns. `--tree` prints each
-branch graded alone, so a branch meets the authored drain another branch replaces; the
-scorecard grades the tree as one network.
+**Limitations.** `--fixture` offers a wet vent only onto a drain already authored (`--group`
+lays the whole group); seeds keep the two cheapest take-offs (`keep=2`); a vertical barrel's
+stack pitch is left to the check; a tie's fitting is named but not priced; rack lanes exist
+only inside `--house` and `--manifold` campaigns. `--tree` prints each branch graded alone, so
+a branch meets the authored drain another branch replaces; the scorecard grades the tree as
+one network. Neither catlin bathroom group lays on today's geometry (the supply lanes stop
+it). On `tree:main`, BATH2-TUB and BATH2-SH share one lane, so one still refuses; `--lift`
+lays BATH2-TUB but KITCH-SINK stays 1/16" short. The stamped Linx elbow has no published centre-to-face (the 1.5 D gored
+radius stands in), and the flex bend radius and the GV0772 transition length are unread
+(counted 0, and said so).
 
 ## Interpret and accept
 
@@ -158,13 +170,17 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 
 | Responsibility | Modules under `packages/engine/src/typehaus/` | Tests |
 | --- | --- | --- |
-| CLI, reports, artifacts | `cli/cmd_route*`, `cli/route_report` | `test_route_reporting`, `test_cmd_route` |
-| Terminals and tie-ins | `cli/route_support`, `cli/route_roots`, `resolve/mep_ports` | `test_cmd_route`, `test_route_metadata` |
+| CLI, reports, artifacts | `cli/cmd_route`, `cli/route_propose` (one proposal pass), `cli/route_options` (parsed options, `not_built`), `cli/route_report` | `test_route_reporting`, `test_cmd_route` |
+| Terminals and tie-ins | `cli/route_support`, `cli/route_endpoints_duct` (duct and raceway ends), `cli/route_roots`, `resolve/mep_ports` | `test_cmd_route`, `test_route_metadata` |
+| Drain tree, rip-up, lift | `cli/cmd_route_tree`, `cli/route_tree_group`, `cli/route_tree_branches`, `cli/route_tree_lift`, `routing/tree_ripup` | `test_routing_tree_ripup`, `test_cmd_route` |
+| Bathroom group (908.2) | `cli/cmd_route_group`, `routing/group_order` | `test_routing_group` |
+| Supply trunk and tree | `cli/cmd_route_supply_tree`, `cli/route_supply_group`, `routing/supply_tree` | `test_routing_supply_tree` |
+| Fitted duct search | `cli/route_duct_search` (the one entry), `routing/duct_search`, `routing/duct_fittings`, `cli/route_ports` | `test_routing_duct_fittings` |
 | Space and graph | `routing/space`, `routing/obstacles`, `routing/graph` | `test_routing_graph`, `test_routing_perf_guard` |
 | Search and gravity | `routing/search`, `routing/gravity*`, `routing/tree` | `test_routing_oracle`, `test_gravity_search`, `test_routing_vent` |
 | Plumber's rules | `routing/members`, `fitting_room`, `compaction`, `trap_vent`, `rack` | `test_routing_members`, `test_routing_compaction`, `test_routing_trap_vent`, `test_routing_supply` |
 | Fixture vent, cleanouts | `cli/route_fixture_vent`, `cli/route_cleanouts`, `resolve/cleanout_rules` | `test_drain_cleanouts` |
-| Scorecard | `cli/route_scorecard` | `test_route_scorecard` (`-m autorouter`) |
+| Scorecard | `cli/route_scorecard`, `route_scorecard_targets` (rows), `route_scorecard_modes` (how each mode is proposed) | `test_route_scorecard` (`-m autorouter`) |
 | Campaign policy | `routing/campaign` | `test_routing_campaign`, `test_routing_campaign_cli` |
 | Candidate grading | `cli/route_eval` | `test_route_eval` |
 | Shared geometry | `resolve/mep_envelopes`, `resolve/mep_bores`, `resolve/mep_fittings` | Corresponding MEP tests |
@@ -172,7 +188,8 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 Routing imports model/resolve/quantities, never checks. Only CLI adapters coordinate the
 router with its grader; `test_package_leaves` enforces the dependency boundary. Independent
 numerical notes remain in `houses/catlin/notes/mep_drain_routing_basis.md`,
-`mep_duct_routing_basis.md`, and `vent_grade_basis.md`; `routing/oracle.py` maps them to
+`mep_duct_routing_basis.md`, `vent_grade_basis.md`, `mep_tree_ripup_basis.md`,
+`mep_group_wet_vent_basis.md` and `mep_supply_trunk_basis.md`; `routing/oracle.py` maps them to
 modules and tests. Keep equations, tolerances, and local algorithm invariants beside code.
 
 `test_routing_campaign_cli` runs a real campaign and is opt-in: after editing

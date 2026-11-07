@@ -41,6 +41,7 @@ TARGETS: tuple[ScoreTarget, ...] = (
     ScoreTarget("duct:ERV-R-LIVING", "run", "DU-M-ERV-R-LIVING"),
     ScoreTarget("duct:HP-BED2", "run", "DU-S-HP-BED2"),
     ScoreTarget("duct:HP-SUP-TRUNK", "run", "DU-S-HP-SUP"),
+    ScoreTarget("duct:ERV-RET-TRUNK", "run", "DU-B-ERV-RET-TRUNK"),
     ScoreTarget("vent:M-BATH2", "run", "PR-M-BATH2-VENT"),
     ScoreTarget("vent:M-KITCH", "run", "PR-M-KITCH-VENT"),
     ScoreTarget("condensate:HEADS", "run", "PR-M-COND-HEADS"),
@@ -52,9 +53,9 @@ TARGETS: tuple[ScoreTarget, ...] = (
     ScoreTarget("manifold:HW-HEADER", "manifold", "EQ-B-HW-HEADER"),
     ScoreTarget("house:basement-duct", "house", "basement-duct", storey="basement",
                 trades=("duct",)),
-    # E1 / E2 / E4 rows: specs from their briefs, reconciled at I1.
+    # E1 / E2 / E4 rows. ``trunk:CW`` reads developed_ft off the trunk proposal alone.
     ScoreTarget("tree:main+lift", "lift", "PR-B-MAIN-DRAIN", level="main",
-                lift=("PR-B-HW-KITCH", "PR-B-CW-WH")),
+                lift=("PR-B-HW-KITCH", "PR-B-CW-WH", "PR-B-CW-BATH")),
     ScoreTarget("group:BATH2", "group", "RM-M-BATH2"),
     ScoreTarget("group:SUITEBATH", "group", "RM-S-SUITEBATH"),
     ScoreTarget("tree:CW-TRUNK", "tree", "PR-B-CW-TRUNK"),

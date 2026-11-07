@@ -7,7 +7,7 @@ completes and the row starts measuring the day the stub is filled."""
 from __future__ import annotations
 
 import contextlib
-import io
+import signal
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -24,23 +24,63 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 
 _SLOPE_UNSET = None
 _MARGIN_FT = 8.0
+#: Wall-clock bound on one row's search. A search that runs past it is a refusal row, so no
+#: target can hang the card (a duct search once ran 16 CPU minutes).
+ROW_BUDGET_S = 300
+
+
+class RowTimeout(Exception):
+    """A row's search ran past ``ROW_BUDGET_S``."""
+
+
+@contextlib.contextmanager
+def _row_budget(seconds: int):
+    """SIGALRM bound (main thread, POSIX); a no-op elsewhere."""
+    def fire(_sig, _frame):
+        raise RowTimeout
+
+    try:
+        previous = signal.signal(signal.SIGALRM, fire)
+    except (ValueError, AttributeError):  # not the main thread / no SIGALRM
+        yield
+        return
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, previous)
 
 
 @dataclass
 class Found:
     proposals: list[RouteProposal]
-    expected: int  #: terminals the target should have served
-    lifts: int = 0  #: lifts a campaign/rip-up row reports
+    #: Terminals no proposal covers, counted from what each entry point returned (a drain
+    #: proposal's ``serves``), never as terminals minus proposals: a group or lifted tree
+    #: returns more proposals than terminals (vent, arm, re-laid supply runs).
+    refused: int
+    #: Lifts: a campaign row's own rip-up lifts as the campaign reports them; a ``lift`` row's
+    #: are the lifts REQUESTED (E1's entry point reports no count of its own).
+    lifts: int = 0
     notes: list[str] = field(default_factory=list)  #: why a row came back empty
+    relaid: int = 0  #: ``lift`` rows: lifted authored runs re-laid as proposals
+    relay_refused: int = 0  #: ``lift`` rows: lifted runs the entry point could not re-lay
+    #: When set, ``developed_ft`` counts only the proposal with this tag (``trunk:CW``
+    #: compares the trunk alone with its authored length, not trunk plus branches).
+    ft_tag: str | None = None
 
 
 def propose_target(directory: Path, model: ResolvedModel, target: ScoreTarget,
                    cost: RouteCost) -> Found:
     """Search ``target`` the way ``haus route`` would; a stub's exit 2 is a refusal row."""
     try:
-        return _MODES[target.mode](directory, model, target, cost)
+        with _row_budget(ROW_BUDGET_S):
+            return _MODES[target.mode](directory, model, target, cost)
     except typer.Exit as stop:
-        return Found([], max(1, _expected(model, target)), notes=[f"exit {stop.exit_code}"])
+        return Found([], len(_terminals(model, target)), notes=[f"exit {stop.exit_code}"])
+    except RowTimeout:
+        return Found([], len(_terminals(model, target)),
+                     notes=[f"timed out after {ROW_BUDGET_S} s"])
 
 
 def _opts(directory: Path, model: ResolvedModel, target: ScoreTarget, cost: RouteCost
@@ -55,31 +95,63 @@ def _opts(directory: Path, model: ResolvedModel, target: ScoreTarget, cost: Rout
         alternatives=1, timing=None)
 
 
-def _expected(model: ResolvedModel, target: ScoreTarget) -> int:
-    """Terminals expected: a tree/group one per fixture served, a campaign one per target."""
-    if target.mode in ("tree", "lift", "trunk"):
-        return _tree_terminals(model, target)
+def _terminals(model: ResolvedModel, target: ScoreTarget) -> set[str]:
+    """Tags a target must serve: a drain tree's or group's drained fixtures, a supply tree's
+    ends (E4's network, trunk included), otherwise the target itself."""
     if target.mode == "group":
         return _group_terminals(model, target.tag)
-    return 1
+    if target.mode in ("tree", "lift", "trunk"):
+        return _tree_terminals(model, target)
+    return {target.tag}
 
 
-def _tree_terminals(model: ResolvedModel, target: ScoreTarget) -> int:
+def _tree_terminals(model: ResolvedModel, target: ScoreTarget) -> set[str]:
+    from typehaus.cli.cmd_route_supply_tree import _network, is_supply_main
+
+    if is_supply_main(model, target.tag):
+        net = _network(model, target.tag, [])
+        return set(net.ends) if net is not None and net.ends else {target.tag}
     from typehaus.cli.route_support import _storey_of
     from typehaus.model.spatial import Fixture
 
     main = next((r for r in model.pipe_runs if r.tag == target.tag), None)
     if main is None:
-        return 1
-    fixtures = [t for t in main.serves if isinstance(model.plan.by_tag(t), Fixture)]
+        return {target.tag}
+    fixtures = {t for t in main.serves if isinstance(model.plan.by_tag(t), Fixture)}
     if target.level is not None:
-        fixtures = [t for t in fixtures if _storey_of(model, t) == target.level]
-    return max(1, len(fixtures))
+        fixtures = {t for t in fixtures if _storey_of(model, t) == target.level}
+    return fixtures or {target.tag}
 
 
-def _pairs(made: list[tuple[Any, str]], expected: int, notes: list[str], lifts: int = 0
-           ) -> Found:
-    return Found([p for p, _s in made], expected, lifts, notes)
+def _base(tag: str) -> str:
+    return tag.removesuffix("-PROPOSED")
+
+
+def _covered(model: ResolvedModel, target: ScoreTarget, proposals: list[Any]) -> int:
+    """Terminals of ``target`` that no proposal reaches: a drain proposal serving the
+    fixture, or (supply trees) a proposal for the end's own run."""
+    terminals = _terminals(model, target)
+    if target.mode in ("fixture", "run"):
+        return 0 if proposals else 1
+    laid: set[str] = set()
+    for proposal in proposals:
+        if target.mode == "trunk" or _is_supply(model, target):
+            laid.add(_base(proposal.tag))
+        elif proposal.system == "drain" and _base(proposal.tag) not in target.lift:
+            laid.update(proposal.serves)
+    return len(terminals - laid)
+
+
+def _is_supply(model: ResolvedModel, target: ScoreTarget) -> bool:
+    from typehaus.cli.cmd_route_supply_tree import is_supply_main
+
+    return target.mode in ("tree", "trunk") and is_supply_main(model, target.tag)
+
+
+def _pairs(model: ResolvedModel, target: ScoreTarget, made: list[tuple[Any, str]],
+           notes: list[str], lifts: int = 0) -> Found:
+    proposals = [p for p, _s in made]
+    return Found(proposals, _covered(model, target, proposals), lifts, notes)
 
 
 def _tree(directory, model, target, cost) -> Found:
@@ -93,7 +165,7 @@ def _tree(directory, model, target, cost) -> Found:
         made, problems, _n, _r = _propose_tree(
             model, target.tag, slope=None, margin_ft=_MARGIN_FT, level=target.level,
             avoid=frozenset(), via=[], explain=False, cost=cost)
-    return _pairs(made, _tree_terminals(model, target), problems)
+    return _pairs(model, target, made, problems)
 
 
 def _lift(directory, model, target, cost) -> Found:
@@ -101,8 +173,10 @@ def _lift(directory, model, target, cost) -> Found:
 
     made, problems, _n, _r = propose_tree_lifted(
         model, target.tag, target.lift, _opts(directory, model, target, cost))
-    # The lifts asked for; E1's entry point reports no count of its own.
-    return _pairs(made, _tree_terminals(model, target), problems, lifts=len(target.lift))
+    found = _pairs(model, target, made, problems, lifts=len(target.lift))
+    found.relaid = len({_base(p.tag) for p in found.proposals} & set(target.lift))
+    found.relay_refused = len(target.lift) - found.relaid
+    return found
 
 
 def _trunk(directory, model, target, cost) -> Found:
@@ -110,7 +184,9 @@ def _trunk(directory, model, target, cost) -> Found:
 
     made, problems, _n, _r = propose_supply_tree(
         model, target.tag, "trunk", _opts(directory, model, target, cost))
-    return _pairs(made, _tree_terminals(model, target), problems)
+    found = _pairs(model, target, made, problems)
+    found.ft_tag = f"{target.tag}-PROPOSED"
+    return found
 
 
 def _single(directory, model, target, cost) -> Found:
@@ -120,47 +196,25 @@ def _single(directory, model, target, cost) -> Found:
     made, problems, _n, _r = _propose(
         model, [target.tag], mode=target.mode, slope=None, margin_ft=_MARGIN_FT, band=None,
         avoid=frozenset(), via=[], explain=False, cost=cost)
-    return _pairs(made, 1, problems)
+    return _pairs(model, target, made, problems)
 
 
 def _group(directory, model, target, cost) -> Found:
-    """``route_group`` owns its reporting and returns an exit code, so the proposals are
-    taken off the ``report_proposals`` call it makes, with its console output discarded.
-    Expected: one per fixture in the room."""
-    import typehaus.cli.cmd_route_group as module
-    import typehaus.cli.route_report as report
+    from typehaus.cli.cmd_route_group import group_proposals
 
-    opts = _opts(directory, model, target, cost)
-    if hasattr(module, "group_proposals"):  # preferred seam: the 4-tuple, no capture
-        made, problems, _n, _r = module.group_proposals(model, target.tag, opts)
-        return _pairs(made, _group_terminals(model, target.tag), problems)
-    caught: list[tuple[list, list[str]]] = []
-
-    def capture(_model, _directory, proposals, *, problems, **_kw):
-        caught.append((list(proposals), list(problems)))
-
-    holders = [h for h in (module, report) if hasattr(h, "report_proposals")]
-    saved = [h.report_proposals for h in holders]
-    for holder in holders:
-        holder.report_proposals = capture
-    try:
-        with contextlib.redirect_stdout(io.StringIO()):
-            module.route_group(model, target.tag, opts)
-    finally:
-        for holder, original in zip(holders, saved, strict=True):
-            holder.report_proposals = original
-    made, problems = (caught[-1] if caught else ([], []))
-    return _pairs(made, _group_terminals(model, target.tag), problems)
+    made, problems, _n, _r = group_proposals(model, target.tag,
+                                             _opts(directory, model, target, cost))
+    return _pairs(model, target, made, problems)
 
 
-def _group_terminals(model: ResolvedModel, room: str) -> int:
+def _group_terminals(model: ResolvedModel, room: str) -> set[str]:
     """Drained fixtures filed in ``room`` (a filler has no drain point)."""
     from typehaus.model.spatial import Fixture
     from typehaus.resolve.mep import _expected_drain_point  # type: ignore[attr-defined]
 
-    return max(1, sum(1 for e in model.plan.all_elements()
-                      if isinstance(e, Fixture) and e.room == room
-                      and _expected_drain_point(model, e.tag) is not None))
+    return {e.tag for e in model.plan.all_elements()
+            if isinstance(e, Fixture) and e.room == room
+            and _expected_drain_point(model, e.tag) is not None} or {room}
 
 
 def _campaign(directory, model, target, cost) -> Found:
@@ -177,7 +231,8 @@ def _campaign(directory, model, target, cost) -> Found:
         avoid=frozenset(), cost=cost, slope=None, alternatives=1, rip_up_budget=4,
         only=only)
     notes = [f"{tag}: {reason}" for tag, reason in run.result.refused]
-    return Found(list(run.result.accepted), len(run.targets), len(run.result.lifts), notes)
+    return Found(list(run.result.accepted), len(run.result.refused),
+                 len(run.result.lifts), notes)
 
 
 _MODES = {
