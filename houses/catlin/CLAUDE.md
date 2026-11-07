@@ -838,7 +838,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - `RM-M-MUDROOM` + its closets (`RM-M-MECH`, `RM-M-MUD-CLOSET`) share the hall LVP
     plane at +1.02559". Their doors open into the mudroom, and the bypass guide at
     `D-M-MUDC` needs one level field. The exterior `D-M-ENTRY` has a separate flashed
-    weather sill; see `notes/floor_heights.md`.
+    weather sill on a pan sloped across the RO only (`pan_across_ro`), crest 1.47" over the
+    LVP (R311.3.1); see `notes/floor_heights.md`. `RM-M-MUD-CLOSET` prints as `MUD CL.`
+    (`Room.short_label`, used only where the full name finds no clear spot).
   - **`W-M-STRW`'s mudroom face is open bays to 7'-0"** (2026-10-14): three flat
     `oak-8q` red-oak courses (bench support 15"-16 1/2", a 6' shelf, the 7' cap under the
     gypsum) and `FURN-M-STRW-BENCH`, a notched red-oak 2x10 seated on the support course, 3 3/4"
@@ -1917,10 +1919,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     - **The riser cannot cut through `FS-ATTIC`'s joists** (they run in x); near x=19'-6"
       every hole lands inside `W-S-C1`'s no-hole zone, and no duct small enough to dodge it
       still moves 250 cfm.
-    - **The return path is door undercuts, and `Opening` cannot hold one** — there is no
-      undercut column in the A-601 schedule, so an unspecified door defaults to 3/4". Required:
-      `D-S-BED1/2/3` 1 1/2", `D-S-SUITE`/`D-A-STUDY` 1 3/4", `D-A-HALVES` 1 1/4"; `D-S-PLANT`
-      deliberately none (interlocked damper). Full arithmetic: `notes/system1_return_path.md`.
+    - **The return path is door undercuts, held to 1/2"-3/4" (owner, 2026-11-06, #21):**
+      interior doors are stock prehungs cut on site; `DoorType.undercut` /
+      `TRIM-STANDARD.door_undercut` (1/2" default, 3/4" on the relief doors) feed the leaf,
+      A-601's Undercut column and `advisory.door_undercut`. The old 1 1/4"-1 3/4" undercuts are
+      withdrawn. At 3/4" the bedrooms, suite, studio, plant and east loft miss 3 Pa
+      (`mep.door_transfer_air` ADVISORY; grilles or jump ducts are open in `plans/TODO.md`).
+      `D-S-PLANT` stays 1/2" (interlocked damper). Arithmetic: `notes/system1_return_path.md`.
       Sealed doors (2026-11-03): `D-S-BATH1` (makes up through `REG-S-XFER-BATH1`/`-VANITY`),
       `D-B-SHOP` (through `D-B-FURN`, which must keep its undercut), `D-M-BED2` (RM-M-BED
       exhausts through `D-M-BATH2`, which must keep its undercut) and `D-B-SAUNA` (balanced
@@ -2411,7 +2416,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     east (inside `_axis_match`'s 1/2" tolerance). **Do not recess the EPS to hold the face
     still** — that re-opens the old rain shelf.
 
-- **A-594 is `TR-CATLIN-GARAGE-EAVE`** (overlay `overhang-eave`, `notes/garage_eave_detail.md`),
+- **A-570.3 is `TR-CATLIN-GARAGE-EAVE`** (derived details number in one decimal series per
+  condition kind since 2026-11-06, `emit/draw/callouts.py`) (overlay `overhang-eave`, `notes/garage_eave_detail.md`),
   listed BEFORE `TR-CATLIN-EAVE` because transition matching is first-match. The sheet only
   names the derived fascia, soffit, drip edge and K-gutter the cut draws — no schematic metal.
 
