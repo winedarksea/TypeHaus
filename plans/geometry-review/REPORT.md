@@ -143,9 +143,9 @@ goldens commit). Gated `haus print`: 83 → **95** permit sheets. Only the resid
     CI/stud tags that repeat the ladder are gone, and an unbubbled K-note prints as a bullet.
     Across the A-5xx sheets, label/label overlaps went 16 → 0 and label/caption 11 → 0. Room
     labels dodge each other. Residue:
-    - D1-109: MUD CLOSET abbreviates through `Room.short_label` (`081f0f68e`), and BATH1 is
-      clear at 1/4". MECH/CHASE is open: no abbreviation fits, so the chase caption or D16a
-      has to move.
+    - D1-109 · closed: MUD CLOSET abbreviates through `Room.short_label` (`081f0f68e`), and BATH1
+      is clear at 1/4". A void caption keeps the room it sits in a slot for its name, so MECH
+      stacks over CHASE, clear of D16a (`cff89ae74`).
     - I2-107: on A-401.6 the STUBATH label still crosses the WC.
     - D2-109 (`section_callouts`) and F1-106 (framing-plan labels) were not touched.
     - Found in review: E-101's northwest device-tag cluster overprints; on A-514 the K5
