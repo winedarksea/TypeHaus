@@ -96,10 +96,13 @@ entry (`C2 E1` = C2.md, escalation E1). `carried` names the round-1 item.
    2026-11-06** (owner: the standard way). All three ROs start on the subfloor (head +3/4",
    83 5/8" over the datum) and the skin under each sill stays cut to the datum, which also
    cleared D-S-BALCONY's three W-M-S2 coordination UNKNOWNs. ENTRY/PORCH seat the schematic
-   sill 3/8" over the subfloor (the sloped pan's rise). Open residue: ENTRY's crest stands
-   1.60" over the mudroom LVP against R311.3.1's 1.5" (TODO; not yet graded).
+   sill 3/8" over the subfloor (the sloped pan's rise). ENTRY's crest stood 1.60" over the
+   mudroom LVP. It is **closed** (`367a7f7e0`, owner): a 1/4" seat on a pan sloped across the RO
+   only (`pan_across_ro`), crest 1.47". `code.R311_3_exterior_landing` now grades the interior
+   side of every exterior door: egress 1.5", others 7.75".
 7. **Holes through floor framing** (C2 E3/E4, C4 E6/E7, F3-101..103) · **I-joists closed
-   2026-11-06** (decision #117); ERV level 2 open on an owner call.
+   2026-11-06** (decision #117). ERV level 2 is still open: the owner picked a 3" STUDY, which
+   closes the pressure budget but not the R1 corridor route (TODO).
    - **TJI holes are graded:** ESR-1153 Table A's TJI 230 ladder (`plan/framing_charts.py`)
      grades every TJI crossing in `mep.run_member_crossing` and the router. The fix was a lane
      set, not one move: x=100.7" would have overlapped `PR-M-WC-VENT`'s hole. Suite vent
@@ -140,8 +143,9 @@ goldens commit). Gated `haus print`: 83 → **95** permit sheets. Only the resid
     CI/stud tags that repeat the ladder are gone, and an unbubbled K-note prints as a bullet.
     Across the A-5xx sheets, label/label overlaps went 16 → 0 and label/caption 11 → 0. Room
     labels dodge each other. Residue:
-    - D1-109: MUD CLOSET, MECH/CHASE and BATH1/W4 still overprint at 3/32" (owner: a scale
-      step or abbreviations).
+    - D1-109: MUD CLOSET abbreviates through `Room.short_label` (`081f0f68e`), and BATH1 is
+      clear at 1/4". MECH/CHASE is open: no abbreviation fits, so the chase caption or D16a
+      has to move.
     - I2-107: on A-401.6 the STUBATH label still crosses the WC.
     - D2-109 (`section_callouts`) and F1-106 (framing-plan labels) were not touched.
     - Found in review: E-101's northwest device-tag cluster overprints; on A-514 the K5
@@ -216,8 +220,9 @@ goldens commit). Gated `haus print`: 83 → **95** permit sheets. Only the resid
     - the MDO layer is not drawn on A-508, and its RO prints 2 3/4";
     - the portrait title block's county overprints CRS;
     - D2-112's rotated W1 text;
-    - **the A-5xx block is full at A-599**, so the next derived detail would number A-600
-      (owner call: renumber, or a second detail series).
+    - the A-5xx block was full at A-599 · **closed** (`0ac806e50`): derived details now
+      number in one decimal series per condition kind (A-530.n … A-575.n), and authored
+      details keep A-501+.
 
 ### Fit and product data
 
@@ -229,8 +234,15 @@ commit; what stays open is listed under its item.
     1/2" head gap after `ad946621f`. D-G-SERVICE is seated on the pan (crest +1.2835"), head gap
     0 → 0.216"; ST-G-SERVICE risers 7.10 → 7.06" (`14971a21a`). Open: the MMI sill crest
     (supplier hold) and the RO raise.
-21. **Interior door RO height and undercut** (C1 E5) · **open, owner deferred** (skipped this
-    pass). ROs 81.51" over the finished floor vs 82–82 7/16"; no undercut; 45 mm leaves.
+21. **Interior door RO height and undercut** (C1 E5) · **closed** (`b90360591`). The ROs stay
+    81.51" over the finished floor (owner: stock prehungs cut down on site). Leaves are stock 80"
+    slabs cut to hang at `DoorType.undercut` / `TRIM-STANDARD.door_undercut`: 1/2" default, 3/4"
+    on the relief doors, held to 1/2"–3/4". The cut is 0.11" at 1/2" and 0.36" at 3/4". Slabs are
+    1 3/8" (1 3/4" for steel, sauna and trimless). A-601 prints the undercut and
+    `advisory.door_undercut` grades it. The 1 1/4"–1 3/4" undercuts in the return-path notes are
+    withdrawn. Open: the System 1 return path no longer closes at 3/4" (`mep.door_transfer_air`
+    ADVISORY: bedrooms and suite 9.7 Pa, studio 3.8, plant 19.0, east loft 4.8; RM-M-BED is
+    unrelieved). Transfer grilles or jump ducts are an owner decision (TODO).
 22. **Hot-water header connections** (C4 E10) · **closed** (`c8b8033d8`). The trunk drops into
     the +y inlet; first legs 1.5 → 3.5"; no lane gives 6" under the outlets, so 8 × Uponor
     A5110500 bend supports bill (submittal rev. A 2008). Open: Uponor's LF2821050 A reads
@@ -274,21 +286,26 @@ commit; what stays open is listed under its item.
     equipment bands, HP2-BED/-LIVING, HP3-STAIR, garage heater: owner may veto); seat beams
     start 0.4495" off the post (pier bearing 3.64", base shear 0.815); CBSTQ66Z-SDS2 (C-C-2026
     p.85); derived IUS sized IUS2.37/11.88 (p.159); LSSR2.37Z (p.178); F3-111 already gone.
-    Open: note m is a 1/8" MAXIMUM beam-end-to-carrier gap, so the 0.4495" end gap off the
-    post leaves the LUS26-2Z unrated (Simpson's gap tables stop at 3/8"); the beam bears on
-    its pack, and the hanger is an EOR/Simpson item (TODO). The garage heater band height is
-    unsourced. Review: the LSSR2.37Z header nail bills the 1-1/2" row the ridge needs, not
+    Note m is a 1/8" MAXIMUM beam-end-to-carrier gap. A longer beam cannot meet it, because the
+    3" strap is as wide as the beam. Owner, 2026-11-06 (`ebb5fab2d`): the LUS26-2Z hangs on an
+    11/32" filler notched round the strap, with a 0.1055" end gap. Simpson publishes no filler
+    installation, so their confirmation is open and non-gating. The garage heater band was
+    re-sourced in cbd051813 (DR-238, 97.25–102.75" AFF). Review: the LSSR2.37Z header nail bills the 1-1/2" row the ridge needs, not
     TJ-4000's 10d x 3".
 31. **Other openings and stairs** (C1):
     - E4 · closed (`f7ebbb822`): ST-M2S stringers and skirts bear on the 3/4" sheet.
-    - E6 · closed except O2-110 (Eclisse detail): O2-103 casing now sees paneling, which drops
-      CASING-D-M-ENTRY-L's right leg (1.44" < 1.5"); owner: scribe it, stop the shiplap, or
-      leave it. O2-106 PT-4 +153 SF jamb faces; O2-108 BATH2 bath face uncased.
+    - E6 · closed except O2-110 (Eclisse detail). O2-103: WP-M-MUDROOM-SHIPLAP stops 11/16"
+      short of W-M-N3 on W-M-MECH-E (owner, `bf7dafa08`). CASING-D-M-ENTRY-L's right leg is now
+      scribed to 2.19" against W-M-MECH-E's board instead of left off. A full 3 1/2" leg is not
+      reachable: the corner wall stands 2.19" from the leg. O2-106 PT-4 +153 SF jamb faces;
+      O2-108 BATH2 bath face uncased.
     - E7 · closed (`f7ebbb822`): 30 stools stepped 0.395" at the buck; `framing|window_stool`
       0; 9 wrapped stone stools unchanged.
-    - E10 · **open, owner**: no stock 3" arm reaches blocking at 48" raked spacing for bracket
-      7 (best 50.3"); options (a) ~54" spacing, (b) bring W-A-SN's face out to y ≈ 108.6, (c) a
-      fabricated standoff. No titanium fitting rows: no published load found.
+    - E10 · **closed** (`60c010107`), option (a). Stock EZA200 brackets stand at x = 423, 375, 343,
+      310 and 267". Each arm lands on wood: studs 010, 007 and 005, the FS-ATTIC trimmer, and the
+      W-A-SN corner stud. The widest developed span is 53.7" against 54" (EZ Handrail manual p.8:
+      "every 4' to 6'"). Brackets 4 and 5 were also off their studs before. Open: the titanium
+      fittings (no published load found); the EZA200's projection and load rating are unpublished.
     - E11 · O5-102/105 closed (`f7ebbb822`); O4-105 is another workstream.
 32. **Other MEP** (C4):
     - E8 runs vs backing, E14 supply items · open (out of scope).
