@@ -251,7 +251,7 @@ DUCTS_ERV_BASEMENT = [
     # the stair face furred to x=17'-6", so the lane could move east, but 4" of air to the
     # furring is the clearance the hall already has and nothing wants the lane.
     #
-    # ** IT RISES 6 1/8" AT x=17'-0" AND CROSSES `W-B-CS3` OVER `D-B-GYM`'s HEADER. ** The
+    # ** IT RISES TO 90 1/8" AT x=17'-0" AND CROSSES `W-B-CS3` OVER `D-B-GYM`'s HEADER. ** The
     # header tops out at -22.19" and the double top plate starts at -16.44"; centred at
     # -19 5/16" the duct passes between the cripples at y=12'-4 3/16" and 13'-7 7/16" with
     # 7/8" to header and plate, and cuts nothing. At y=13'-4" since 2026-10-31: REG-B-SUP1's
@@ -261,13 +261,17 @@ DUCTS_ERV_BASEMENT = [
     # `W-B-CS2` (y >= 13'-10"), so it crosses no wall on the x=18' line, and it runs on
     # exposed in the gym (`RM-B-GYM.exposed_services`) to the register.
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
+            # (2026-11-07) Stock turns only: the rise to 89" is a 30 degree ramp from
+            # y=217.41" (was 18.2 degrees), and the hall leg holds 88 1/2" to a 30 degree pair
+            # at y=172" onto 90 1/8" (was a 5 degree fall to 84" and a 6 1/8" vertical).
             path=(pt(ft(6, 10), ft(30, 2)), pt(ft(6, 10), ft(29, 8)),
                   pt(inch(92.375), ft(29, 8)), pt(ft(9), ft(29, 8)),
-                  pt(ft(9), ft(18, 8)), pt(ft(9), ft(17, 4.75)),
+                  pt(ft(9), inch(217.41)), pt(ft(9), ft(17, 4.75)),
                   pt(ft(17), ft(17, 4.75)),
-                  pt(ft(17), ft(13, 4)), pt(ft(17), ft(13, 4)), pt(ft(19), ft(13, 4))),
+                  pt(ft(17), inch(172)), pt(ft(17), inch(169.185)),
+                  pt(ft(17), ft(13, 4)), pt(ft(19), ft(13, 4))),
             elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(89),
-                        inch(88.5), inch(84), inch(90.125), inch(90.125)),
+                        inch(88.5), inch(88.5), inch(90.125), inch(90.125), inch(90.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_GYM),
     # THE PLAY RADIAL GOES THROUGH SF-B-BATH. From the plenum's east end it drops to -25 7/16"
