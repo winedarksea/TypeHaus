@@ -18,6 +18,7 @@ from typing import Any
 from typehaus.model.ducts import DuctStandard, duct_size_text
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.duct_branches import duct_ends, section
+from typehaus.resolve.flex_bend import run_bend
 from typehaus.resolve.mep_ports import placed_ports, port_at
 from typehaus.resolve.mep_soffit import (
     DUCT_JOINT_TOLERANCE_M,
@@ -143,13 +144,13 @@ def termination_parts(model: Any, standard: DuctStandard,
         elif end.landing in ("port", "equipment"):
             port_tag = end.port.port_tag if end.port is not None else None
             out.extend(_kit(standard, types.get(end.other), port_tag,
-                            ports.get((end.other, port_tag)), base))
+                            ports.get((end.other, port_tag)), base, (duct, end.index)))
     out.extend(_boots(model, standard))
     return out
 
 
 def _kit(standard: DuctStandard, type_ref: str | None, port_tag: str | None,
-         port: Any, base: dict[str, Any]) -> list[ResolvedDuctPart]:
+         port: Any, base: dict[str, Any], end: tuple[Any, int]) -> list[ResolvedDuctPart]:
     kit = standard.port_kit(type_ref, port_tag)
     if kit is None:
         return []
@@ -163,10 +164,17 @@ def _kit(standard: DuctStandard, type_ref: str | None, port_tag: str | None,
             length_m=kit.transition_length.meters if kit.transition_length else None,
             **base))
     if kit.flex_product_ref:
+        length = kit.flex_length.meters if kit.flex_length else None
+        bent: dict[str, Any] = {}
+        trans = (out[0].length_m or 0.0) if out else 0.0  # an unread transition counts 0
+        hit = run_bend(end[0], end[1], kit, standard, transition_m=trans)
+        if hit is not None:  # the lead turns: cut the flex to the bend, not the nominal
+            length = hit[0].flex_m
+            bent = {"bend_deg": hit[0].angle_deg, "bend_vertex": hit[1],
+                    "bend_out_m": hit[0].out_m}
         out.append(ResolvedDuctPart(
             kind="connector" if kit.connector else "flex", port=port_tag,
-            product_ref=kit.flex_product_ref,
-            length_m=kit.flex_length.meters if kit.flex_length else None, **base))
+            product_ref=kit.flex_product_ref, length_m=length, **bent, **base))
     return out
 
 

@@ -147,3 +147,9 @@ NOT_A_CALCULATION = frozenset({
 
 def oracles_for(module: str) -> tuple[Oracle, ...]:
     return ORACLES.get(module, ())
+
+
+# -- W3-FLEX --
+ORACLES["duct_fittings"] += (Oracle(note="flex_lead_bend_basis.md", section="§1-§4",
+                                    test="tests/test_flex_lead_bend.py"),)
+# -- /W3-FLEX --

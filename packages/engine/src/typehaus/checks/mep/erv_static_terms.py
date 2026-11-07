@@ -215,6 +215,8 @@ def trunk_terms(ctx: CheckContext, duct, plenums: dict[str, object],
                 continue
             loss = leg_drop_in_wg(cfm, row.bore_diameter.meters, row.roughness_m,
                                   part.length_m) * PA_PER_IN_WG
+            if part.bend_deg is not None:
+                loss += _flex_bend_loss(ctx, duct, part, standard, cfm, gaps) * PA_PER_IN_WG
         else:
             kit = standard.port_kit(_type_of(ctx, part.other), part.port) if standard else None
             port_m = min(duct.diameter_m or 0.0, _diameter_in(part.branch) or 0.0) or None
@@ -224,6 +226,25 @@ def trunk_terms(ctx: CheckContext, duct, plenums: dict[str, object],
             loss = kit.transition_loss_c * velocity_pressure_in_wg(cfm, port_m) * PA_PER_IN_WG
         terms.append((label, loss))
     return terms, gaps
+
+
+def _flex_bend_loss(ctx: CheckContext, duct, part, standard, cfm: float,
+                    gaps: list[str]) -> float:
+    """in. w.g. of a kit flex's bend: the kit's measured C on the flex's velocity pressure, or
+    (none authored) the stock elbow's C x K at the same angle, with the gap said."""
+    from typehaus.resolve.duct_standard import elbow_for_turn
+
+    kit = standard.port_kit(_type_of(ctx, part.other), part.port) if standard else None
+    c = kit.flex_bend_loss_c if kit is not None else None
+    if c is None:
+        hit = elbow_for_turn(standard, duct.diameter_m, part.bend_deg) if standard else None
+        if hit is None or hit[0].loss_c is None:
+            gaps.append(f"{duct.tag}: the flex bend at {part.other}.{part.port} has no loss C")
+            return 0.0
+        c = hit[0].loss_c * interpolate(ELBOW_ANGLE_FACTOR, min(part.bend_deg, 90.0))
+        gaps.append(f"{duct.tag}: the flex bend at {part.other}.{part.port} is charged as the "
+                    f"stock elbow (C x K = {c:.2f}); a measured flex-bend C would be higher")
+    return c * velocity_pressure_in_wg(cfm, duct.diameter_m)
 
 
 def _type_of(ctx: CheckContext, tag: str | None) -> str | None:

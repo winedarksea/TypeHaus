@@ -41,8 +41,8 @@ def _port_leads(model: Any, tags: frozenset[str], *, inflate_m: float) -> dict[s
             if lead is None:
                 continue
             half = ends.radius_m
-            envelope = run_envelope("pipe", f"{tag}-LEAD", [lead.port[:2], lead.tip[:2]],
-                                    [lead.port[2], lead.tip[2]], (half, half, None),
+            envelope = run_envelope("pipe", f"{tag}-LEAD", [p[:2] for p in lead.points()],
+                                    [p[2] for p in lead.points()], (half, half, None),
                                     inflate_m=inflate_m)
             out.setdefault(tag, []).extend(
                 HardPrism(tag=envelope.tag, kind="run", footprint=prism.footprint,

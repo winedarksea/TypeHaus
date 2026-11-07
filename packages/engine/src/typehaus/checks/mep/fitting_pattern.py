@@ -40,6 +40,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.duct_standard import elbow_for_turn
+from typehaus.resolve.flex_bend import flexed_vertices
 from typehaus.resolve.mep_fittings import FAMILY_DUCT, RECTANGULAR_DUCT_GAP
 
 _CID = "mep.fitting_pattern"
@@ -91,6 +92,12 @@ def fitting_pattern(ctx: CheckContext) -> list[Finding]:
                 f"{run_tag}` proposes a lane and `--evaluate` grades it"))
 
     out.extend(_laying_length(ctx, records))
+    flexed = flexed_vertices(ctx.model)
+    if flexed:
+        out.append(_pass(
+            _CID, f"{len(flexed)} kit flex lead(s) turn on their own arc (ADC s.4.2, centreline "
+                  "radius >= one duct diameter) in place of a stock elbow",
+            tuple(sorted({tag for tag, _ in flexed}))))
 
     graded = len(records) - sum(len(group) for group in ungraded.values())
     if graded:
@@ -136,6 +143,7 @@ def _laying_length(ctx: CheckContext, records: list) -> list[Finding]:
     from typehaus.resolve.duct_standard import duct_standard
     from typehaus.resolve.sweep import clean_path
 
+    flexed = flexed_vertices(ctx.model)
     standard, _ = duct_standard(getattr(ctx, "plan", None))
     elbows = {"standard": standard} if standard is not None else {}
     turns: dict[str, dict[int, object]] = defaultdict(dict)
@@ -149,12 +157,18 @@ def _laying_length(ctx: CheckContext, records: list) -> list[Finding]:
         if not at or z is None or len(z) != len(run.path):
             continue
         path = clean_path([(x, y, zz) for (x, y), zz in zip(run.path, z, strict=True)])
-        stops = sorted({0, len(path) - 1, *at})
+        # A kit flex's bend takes no stock take-off: its leg to the port was seated by
+        # ``run_bend``, and rigid duct starts ``bend_out_m`` past its corner.
+        flex = {i: p.bend_out_m / M_PER_IN for (tag, i), p in flexed.items() if tag == run.tag}
+        stops = sorted({0, len(path) - 1, *at, *flex})
         short: list[str] = []
         impossible: list[str] = []
         for a, b in zip(stops, stops[1:], strict=False):
+            if (a in flex and b not in at) or (b in flex and a not in at):
+                continue
             length = sum(math.dist(path[i], path[i + 1]) for i in range(a, b)) / M_PER_IN
             need = sum(_takeoff_in(at[i], elbows) for i in (a, b) if i in at)
+            need += sum(flex[i] for i in (a, b) if i in flex)
             floor = sum(_floor_in(at[i]) for i in (a, b) if i in at)
             text = f"{length:.1f}\" between vertex {a} and {b}"
             if length + 1.0 / 16.0 < floor:

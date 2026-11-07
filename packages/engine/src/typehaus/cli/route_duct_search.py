@@ -63,6 +63,7 @@ def _heading(lead: Any, arriving: bool = False) -> str:
     port."""
     if lead is None:
         return ""
-    sign = lead.direction[0]
-    return ({"+": "-", "-": "+"}[sign] if arriving else sign) + lead.direction[-1]
+    heading = lead.exit_heading
+    sign = heading[0]
+    return ({"+": "-", "-": "+"}[sign] if arriving else sign) + heading[-1]
 

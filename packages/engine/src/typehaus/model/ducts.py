@@ -14,7 +14,7 @@ from typing import Literal
 
 from typehaus.model.base import Element, HausModel
 from typehaus.model.registry import register_constructor, register_element
-from typehaus.quantities import M_PER_IN, Length, ft
+from typehaus.quantities import M_PER_IN, Length, ft, inch
 
 #: Kinds a ``DuctPartRow`` (and a derived ``ResolvedDuctPart``) may be.
 #: ``takeoff``: a branch off the side of a larger main; ``tee``: off an equal one;
@@ -109,6 +109,13 @@ class PortKit(HausModel):
     flex_length: Length | None = None
     #: The flexible part is an air handler's vibration connector, not a flex duct.
     connector: bool = False
+    #: A flex lead that turns (``resolve/flex_bend.py``): centreline radius in duct diameters
+    #: (ADC 4th ed. s.4.2, not less than 1), the straight flex before the arc (s.4.8: "a few
+    #: inches" off a metal collar, a stated allowance), and the bend's measured loss C on the
+    #: flex's own velocity pressure. None: charged as the standard's stock elbow, and said so.
+    bend_radius_diameters: float = 1.0
+    bend_start: Length = inch(2)
+    flex_bend_loss_c: float | None = None
     source: str | None = None
 
 

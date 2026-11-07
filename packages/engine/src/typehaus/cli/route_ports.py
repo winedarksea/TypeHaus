@@ -6,8 +6,9 @@ a short straight stub along that axis, the search runs from the stub's end, and 
 put back on the found path. Approximate ports and runs ending on a line (a tee) are left alone.
 
 A duct port whose equipment type has a ``PortKit`` gets the kit's lead instead of the stub:
-transition (where the duct is not the port's size) plus flex, laid straight
-(``routing/duct_fittings.kit_lead``, duct basis §8).
+transition (where the duct is not the port's size) plus flex (``routing/duct_fittings.kit_lead``,
+duct basis §8), laid straight, or turned once at the ADC centreline radius toward the run's
+other end where the straight lead would not fit before it (``flex_lead_bend_basis.md``).
 """
 
 from __future__ import annotations
@@ -43,10 +44,21 @@ class PortLead:
     port: Point3
     tip: Point3
     direction: str  # "+x" ... "-z"
+    #: A flex lead that turns: its corner vertex, and the heading off the tip after the turn.
+    corner: Point3 | None = None
+    heading: str = ""
 
     @property
     def inches(self) -> float:
         return sum((a - b) ** 2 for a, b in zip(self.tip, self.port, strict=True)) ** 0.5 / M_PER_IN
+
+    @property
+    def exit_heading(self) -> str:
+        return self.heading or self.direction
+
+    def points(self) -> list[Point3]:
+        """The lead as a polyline: port, corner (if it turns), tip."""
+        return [self.port, *([self.corner] if self.corner else []), self.tip]
 
 
 def stub_length_m(radius_m: float) -> float:
@@ -105,7 +117,16 @@ def with_port_leads(model: Any, ends: Endpoints | None) -> Endpoints | None:
             continue
         axis, sign = found
         length = stub
-        lead = kits(port) if kits is not None else None
+        other: Point3 = ends.root if side == "origin" else ends.origin
+        lead = kits(port, other) if kits is not None else None
+        turn = _turn_side(axis, point, other) if lead is not None and lead.bend else None
+        if lead is not None and lead.bend and turn is None:
+            lead = kits(port, None)  # no horizontal to turn toward: stays straight
+        if lead is not None and lead.bend:
+            changes[side], changes[f"{side}_lead"], note = _bent_lead(
+                label, point, (axis, sign), turn, lead)
+            notes.append(note)
+            continue
         if lead is not None:
             length = max(stub, lead.length_m)  # an unread kit is no shorter than the stub
             notes.append(f'{label}: the port kit\'s {length / M_PER_IN:.3f}" lead is laid straight '
@@ -120,23 +141,59 @@ def with_port_leads(model: Any, ends: Endpoints | None) -> Endpoints | None:
     return replace(ends, **changes) if changes else ends
 
 
+def _turn_side(axis: int, port: Point3, other: Point3) -> tuple[int, int] | None:
+    """``(axis, sign)`` a bent lead turns toward: the way ``other`` lies, across the port's axis."""
+    rel = [o - p for o, p in zip(other, port, strict=True)]
+    side = max((i for i in range(3) if i != axis), key=lambda i: abs(rel[i]))
+    return (side, 1 if rel[side] > 0 else -1) if abs(rel[side]) > 1e-6 else None
+
+
+def _bent_lead(label: str, point: Point3, along: tuple[int, int], turn: tuple[int, int] | None,
+               lead: Any) -> tuple[Point3, PortLead, str]:
+    """``(tip, lead, note)`` of a flex lead that turns once: out along the port's axis to the
+    corner, then ``out_m`` toward ``turn``."""
+    (axis, sign), (side, side_sign), bend = along, turn, lead.bend  # type: ignore[misc]
+    corner = tuple(c + sign * lead.corner_m if i == axis else c for i, c in enumerate(point))
+    tip = tuple(c + side_sign * bend.out_m if i == side else c for i, c in enumerate(corner))
+    sign_text = {1: "+", -1: "-"}
+    note = (f'{label}: the port kit\'s flex turns {bend.angle_deg:.0f} deg at R '
+            f'{bend.radius_m / M_PER_IN:.2f}" (ADC 4.2: centreline radius >= one duct diameter), '
+            f'{bend.flex_m / M_PER_IN:.2f}" of flex as cut; the first rigid fitting is '
+            f'{bend.out_m / M_PER_IN:.2f}" past its corner'
+            + "".join(f"; {gap}" for gap in lead.unread))
+    return tip, PortLead(
+        label, point, tip, f"{sign_text[sign]}{'xyz'[axis]}", corner,
+        f"{sign_text[side_sign]}{'xyz'[side]}"), note
+
+
 def _kit_reader(model: Any, ends: Endpoints):
-    """``port -> KitLead | None`` off the house's ``DuctStandard``; None for a non-duct."""
+    """``(port, other end) -> KitLead | None`` off the house's ``DuctStandard``; None for a
+    non-duct. The lead turns where the straight one (flex, then a stock elbow's take-off)
+    would not fit before ``other``."""
     if ends.kind != "duct" or not hasattr(model, "canvas_objects"):
         return None
     from typehaus.resolve.duct_standard import duct_standard
-    from typehaus.routing.duct_fittings import kit_lead
+    from typehaus.routing.duct_fittings import elbow, kit_lead
 
     standard, _ = duct_standard(getattr(model, "plan", None))
     if standard is None:
         return None
     types = {o.tag: o.type_ref for o in model.canvas_objects}
     size = ends.diameter_m or max(ends.width_m, ends.depth_m)
+    stock = elbow(standard, 90.0, diameter_m=ends.diameter_m or None).takeoff_m(90.0)
 
-    def read(port: Any):
+    def read(port: Any, other: Point3 | None = None):
         kit = standard.port_kit(types.get(port.equipment_tag), port.port_tag)
         differs = port.section_m is None or abs(port.section_m[0] - size) > 1e-6
-        return kit_lead(kit, needs_transition=differs)
+        lead = kit_lead(kit, needs_transition=differs)
+        found = _axis(port.direction) if port.direction is not None else None
+        if lead is None or other is None or found is None or not ends.diameter_m:
+            return lead
+        reach = found[1] * (other[found[0]] - (port.x_m, port.y_m, port.z_m)[found[0]])
+        if reach >= lead.length_m + stock:
+            return lead  # the straight lead fits
+        return kit_lead(kit, needs_transition=differs, diameter_m=ends.diameter_m,
+                        bend_deg=90.0)
 
     return read
 
@@ -156,7 +213,7 @@ def _lead_overshoot(ends: Endpoints) -> str | None:
     """The refusal when the run's other end stands on its lead, short of the tip: the run
     cannot hold the straight its port needs (duct basis §8)."""
     for lead, other in ((ends.origin_lead, ends.root), (ends.root_lead, ends.origin)):
-        if lead is None:
+        if lead is None or lead.corner is not None:
             continue
         along = [t - p for t, p in zip(lead.tip, lead.port, strict=True)]
         span = sum(a * a for a in along) ** 0.5
@@ -179,13 +236,13 @@ def _lead_blocked(space: Any, ends: Endpoints) -> str | None:
         if lead is None:
             continue
         own = space.blocked_all(lead.port[:2], lead.port[2])
-        hit = (set(space.blocked_all(lead.tip[:2], lead.tip[2])) - own
-               or space.edge_blocked(lead.port[:2], lead.tip[:2], lead.port[2],
-                                     lead.tip[2], ignore=own))
+        hit: Any = set(space.blocked_all(lead.tip[:2], lead.tip[2])) - own
+        for a, b in zip(lead.points(), lead.points()[1:], strict=False):
+            hit = hit or space.edge_blocked(a[:2], b[:2], a[2], b[2], ignore=own)
         if hit:
             what = hit if isinstance(hit, str) else ", ".join(sorted(hit))
             return (f"{lead.label} is an exact port facing {lead.direction}; the "
-                    f'{lead.inches:.2f}" straight lead it needs before the first '
+                    f'{lead.inches:.2f}" lead it needs before the first '
                     f"turn runs into {what}. Move the obstruction or the machine, or mark "
                     "the port approximate")
     return None
@@ -202,12 +259,16 @@ def attach_leads(points: list[Point3], ends: Endpoints) -> tuple[list[Point3], l
         if lead is None or len(points) < 2:
             continue
         ordered = points if side == "origin" else points[::-1]
-        straight = _collinear(lead.port, ordered[0], ordered[1])
-        ordered = [lead.port, *(ordered[1:] if straight else ordered)]
-        bends += 0 if straight else 1
+        elbow = lead.corner or lead.port  # the vertex the tip's continuation is judged from
+        straight = _collinear(elbow, ordered[0], ordered[1])
+        ordered = [*lead.points()[:-1], *(ordered[1:] if straight else ordered)]
+        bends += (0 if straight else 1) + (lead.corner is not None)
         points = ordered if side == "origin" else ordered[::-1]
         notes.append(f'port lead: leaves {lead.label} {lead.direction} for '
-                     f'{lead.inches:.2f}" before turning (exact port direction)')
+                     f'{lead.inches:.2f}" before turning (exact port direction)'
+                     if lead.corner is None else
+                     f'port lead: leaves {lead.label} {lead.direction}, the flex turns to '
+                     f'{lead.exit_heading} at its corner')
     return points, notes, bends
 
 

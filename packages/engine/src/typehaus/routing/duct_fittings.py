@@ -12,12 +12,13 @@ rectangular turn always is: no throat radius is read for one, so its take-off is
 (0 here) and it is priced as a last resort instead.
 
 **Lead.** A ``PortKit`` (Broan: 6-to-8 transition where the duct is not the port's size,
-then 12" of flex) stands between a port and the first rigid fitting. The flex is a straight
-lead that never bends — no minimum bend radius is on file — so the search starts at its
-far end. An unread transition length counts 0 and says so.
+then 12" of flex) stands between a port and the first rigid fitting. The flex is laid
+straight, so the search starts at its far end, or turns once at the ADC centreline radius
+(``resolve/flex_bend``) where the straight lead would not fit. An unread transition length
+counts 0 and says so.
 
-``houses/catlin/notes/mep_duct_routing_basis.md`` §7 (take-off) and §8 (lead) are the
-oracle.
+``houses/catlin/notes/mep_duct_routing_basis.md`` §7 (take-off) and §8 (lead), and
+``flex_lead_bend_basis.md`` (the bend), are the oracle.
 """
 
 from __future__ import annotations
@@ -28,6 +29,7 @@ from typing import Any
 
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.duct_standard import elbow_for_turn
+from typehaus.resolve.flex_bend import FlexBend, flex_bend
 from typehaus.resolve.mep_fittings import KIND_ELBOW, SERVICE_DUCT, fitting_for
 
 #: A shop-made elbow's price on top of a stock one's, inches of equivalent travel: a stated
@@ -91,19 +93,33 @@ def elbow(standard: Any, angle_deg: float, *, diameter_m: float | None = None) -
 
 @dataclass(frozen=True)
 class KitLead:
-    """The straight a port kit puts between a port face and the first rigid fitting."""
+    """The straight a port kit puts between a port face and the first rigid fitting; with
+    ``bend`` it turns once inside the flex (``resolve/flex_bend``)."""
 
     length_m: float
     #: What the length leaves out because nothing on file reads it.
     unread: tuple[str, ...] = ()
+    bend: FlexBend | None = None
+    #: The transition ahead of the flex, which stays straight.
+    transition_m: float = 0.0
 
     @property
     def inches(self) -> float:
         return self.length_m / M_PER_IN
 
+    @property
+    def corner_m(self) -> float:
+        """Port face to the flex's corner vertex, along the port's axis (a bent lead)."""
+        return self.bend.corner_m(self.transition_m) if self.bend else self.length_m
 
-def kit_lead(kit: Any, *, needs_transition: bool) -> KitLead | None:
-    """Transition (where the duct is not the port's size) + flex, or None without a kit."""
+
+def kit_lead(kit: Any, *, needs_transition: bool, diameter_m: float | None = None,
+             bend_deg: float | None = None) -> KitLead | None:
+    """Transition (where the duct is not the port's size) + flex, or None without a kit.
+
+    ``bend_deg`` lays the flex as straight + one arc at the kit's centreline radius; the
+    lead's length is then the flex as cut, which is the kit's nominal unless the arc
+    alone is longer (an 8" 90 is 12.57" of flex)."""
     if kit is None:
         return None
     length, unread = 0.0, []
@@ -112,11 +128,16 @@ def kit_lead(kit: Any, *, needs_transition: bool) -> KitLead | None:
             unread.append(f"{kit.transition_product_ref}'s length is unread, counted 0")
         else:
             length += kit.transition_length.meters
+    trans = length
     if kit.flex_length is not None:
         length += kit.flex_length.meters
     elif kit.flex_product_ref:
         unread.append(f"{kit.flex_product_ref}'s length is unread, counted 0")
-    return KitLead(length, tuple(unread))
+    bend = (flex_bend(kit, diameter_m, bend_deg, transition_m=trans)
+            if bend_deg and diameter_m else None)
+    if bend is not None:
+        length = trans + bend.flex_m
+    return KitLead(length, tuple(unread), bend, trans)
 
 
 def lead_shortfall_m(points: list[tuple[float, float, float]], lead_m: float) -> float:

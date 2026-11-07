@@ -17,13 +17,12 @@ all, and the router's proposal printed a polyline whose corners nobody had price
 * :attr:`FittingRecord.spec` is the catalog's answer — the ASTM/ASME pattern that makes this
   turn, or ``None`` with :attr:`FittingRecord.gap` saying why not.
 
-They disagree on catlin today and the disagreement is the point: ``elbow-22.5-1in`` is a
-priced row for a part ASME B16.22 does not make. Merging the two would have buried that.
+They disagree on catlin: ``elbow-22.5-1in`` is a priced row for a part ASME B16.22 does not
+make. Merging the two would have buried that.
 
 **A bendable service is not a fitting service.** Copper and PEX turn by being bent, to a
-radius the *product* bounds; DWV and rigid duct turn by being fitted. A turn off a stock
-angle therefore means something different in each, so :attr:`FittingRecord.bendable` carries
-which one it is and the grading reads it.
+radius the *product* bounds; DWV and rigid duct turn by being fitted, so
+:attr:`FittingRecord.bendable` carries which one it is and the grading reads it.
 
 Stdlib only, like the rest of ``resolve/``.
 """
@@ -53,6 +52,7 @@ from typehaus.hardware.fittings import (
 )
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.duct_standard import duct_elbow_key, duct_standard
+from typehaus.resolve.flex_bend import flexed_vertices
 from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
 from typehaus.resolve.sweep import clean_path, sweep_turns
 
@@ -363,26 +363,26 @@ def fitting_records(model: ResolvedModel) -> list[FittingRecord]:
     inference, the same rollup ``mep.pipe_sizing`` uses, which yields *both* diameters so the
     branch is sized correctly rather than at the larger of the two.
 
-    **Supply tees are not derived.** There is no equivalent parent inference for a
-    pressurised system — a water branch has no invert to arrive above, so nothing
-    distinguishes a tee from two runs crossing — and a guess recorded as a fitting is worse
-    than an absence.
+    **Supply tees are not derived.** A pressurised branch has no invert to arrive above, so
+    nothing distinguishes a tee from two runs crossing, and a guess recorded as a fitting is
+    worse than an absence.
     """
     from typehaus.model.ducts import duct_size_text
     from typehaus.resolve.mep_queries import drain_tie_ins
 
     standard = duct_standard(getattr(model, "plan", None))[0]
+    flexed = flexed_vertices(model)  # a kit flex's own bend is no stock elbow
     out: list[FittingRecord] = []
     for run in model.pipe_runs:
         out.extend(_turn_records(run, FAMILY_PIPE, size_m=run.diameter_m))
     for duct in model.ducts:
         rectangular = duct.diameter_m is None
-        # The same size the duct take-off has always keyed its rows on: the diameter where
-        # there is one, the larger plan dimension where there is not.
+        # The size the duct take-off keys its rows on: the diameter, else the larger plan side.
         size = duct.diameter_m if not rectangular else max(duct.width_m, duct.depth_m)
-        out.extend(_turn_records(duct, FAMILY_DUCT, size_m=size, rectangular=rectangular,
-                                 duct_standard=standard, order_size=duct_size_text(
-                                     duct.diameter_m, duct.width_m, duct.depth_m)))
+        out.extend(r for r in _turn_records(
+            duct, FAMILY_DUCT, size_m=size, rectangular=rectangular, duct_standard=standard,
+            order_size=duct_size_text(duct.diameter_m, duct.width_m, duct.depth_m))
+            if (duct.tag, r.index) not in flexed)
 
     by_tag = {run.tag: run for run in model.pipe_runs}
     for child_tag, parent_tag in sorted(drain_tie_ins(model.pipe_runs).items()):

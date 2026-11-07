@@ -40,6 +40,12 @@ class ResolvedDuctPart:
     width_m: float | None = None
     height_m: float | None = None
     gap: str | None = None
+    #: A kit flex that turns (``resolve/flex_bend.py``): the bend's angle and the cleaned-path
+    #: vertex it stands at, which ``fitting_records`` then leaves out; ``bend_out_m`` is
+    #: the corner to the rigid duct's start along the leg after it.
+    bend_deg: float | None = None
+    bend_vertex: int | None = None
+    bend_out_m: float | None = None
 
     @property
     def billed(self) -> bool:
