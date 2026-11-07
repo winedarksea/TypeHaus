@@ -2,13 +2,13 @@
 // tile-map worker (→ tileMaps.worker.ts), which renders the 1024² maps off the main thread.
 import { writeHeightNormals } from "./heightNormals";
 import { latticeHash, tiledFbm } from "./valueNoise";
-import { ONYX_PRINTS, onyxFace, type OnyxPrintKey } from "./onyxPixels";
+import type { TilePhotoKey } from "./tilePhotoCatalog";
 import { sampleGatsbyPrint } from "./gatsbyPrint";
 
 const INCH = 0.0254;
 export const TILE_RENDER_SETTINGS = {
   pixels: 1024, groutDepthM: 0.0006, bevelM: 0.0007, groutRoughness: 0.85,
-  anisotropy: 4,
+  anisotropy: 4, photoAnisotropy: 8,
 } as const;
 
 export interface TileStyle {
@@ -29,8 +29,8 @@ export interface TileStyle {
   readonly inlay?: "gatsby";
   /** Tiles per repeat, [cols, rows]; default [2, 2]. */
   readonly repeat?: readonly [number, number];
-  /** A fixed full-colour print (onyx kernel) instead of the tinted procedural face. */
-  readonly print?: OnyxPrintKey;
+  /** Bundled product photography; joints remain metric, independent of the image. */
+  readonly photo?: TilePhotoKey;
 }
 
 export const TILE_STYLES: Readonly<Record<string, TileStyle>> = {
@@ -55,14 +55,15 @@ export const TILE_STYLES: Readonly<Record<string, TileStyle>> = {
     color: [244, 244, 242], grout: [244, 244, 242], roughness: 0.35, variation: "none",
     jointRoughness: 0.45,
   },
-  // Onyx-look polished porcelain, 24x48 with 8 faces per repeat; grout is platinum.
+  // Photographed onyx-look polished porcelain; grout is platinum.
   "tile-onyx-opera-blue-grid": {
-    pattern: "grid", sizeM: [24 * INCH, 48 * INCH], jointM: INCH / 16, repeat: [4, 2],
-    color: [197, 198, 204], grout: [200, 201, 200], roughness: 0.16, print: "opera-blue",
+    pattern: "grid", sizeM: [24 * INCH, 48 * INCH], jointM: INCH / 16, repeat: [3, 2],
+    color: [197, 198, 204], grout: [200, 201, 200], roughness: 0.16, variation: "none", photo: "opera-blue",
   },
-  "tile-onyx-agua-linda-grid": {
-    pattern: "grid", sizeM: [24 * INCH, 48 * INCH], jointM: INCH / 16, repeat: [4, 2],
-    color: [199, 213, 226], grout: [200, 201, 200], roughness: 0.16, print: "agua-linda",
+  "tile-onyx-jume-blue-grid": {
+    pattern: "grid", sizeM: [23.62 * INCH, 47.24 * INCH], jointM: INCH / 16, repeat: [2, 2],
+    color: [120, 148, 169], grout: [200, 201, 200], roughness: 0.16,
+    variation: "none", photo: "jume-onyx-blue",
   },
 };
 
@@ -111,19 +112,12 @@ export function sampleTile(style: TileStyle, u: number, v: number): TileSample {
         + style.roughness * tileFraction,
     };
   }
-  if (style.print) {
-    // Face by cell; coarse (60 px/m) so headless sampling stays cheap.
-    const face = (wrap(row, rows) * cols + wrap(col, cols)) % ONYX_PRINTS[style.print].faces;
-    const half = style.jointM / 2;
-    const s = onyxFace(style.print, face, Math.min(style.sizeM[0], Math.max(0, localX - half)),
-      Math.min(style.sizeM[1], Math.max(0, localY - half)), 60);
-    const face3 = [s.r, s.g, s.b];
-    return {
-      color: style.grout.map((g, i) => g * (1 - tileFraction) + face3[i] * tileFraction),
-      heightM: tileFraction * (style.jointDepthM ?? TILE_RENDER_SETTINGS.groutDepthM),
-      roughness: TILE_RENDER_SETTINGS.groutRoughness * (1 - tileFraction) + style.roughness * tileFraction,
-    };
-  }
+  if (style.photo) return {
+    color: style.grout.map((channel, i) => channel * (1 - tileFraction) + style.color[i] * tileFraction),
+    heightM: tileFraction * TILE_RENDER_SETTINGS.groutDepthM,
+    roughness: TILE_RENDER_SETTINGS.groutRoughness * (1 - tileFraction)
+      + style.roughness * tileFraction,
+  };
   const cloud = tiledFbm(u, v, noiseOctaves);
   const primary = Math.pow(1 - Math.abs(Math.sin(26 * localX + 17 * localY + 4 * cloud + id * 8)), 38);
   const secondary = Math.pow(1 - Math.abs(Math.sin(43 * localX - 31 * localY + 5 * cloud + id * 13)), 65);
@@ -163,6 +157,9 @@ export function renderTilePixels(style: TileStyle): TilePixels {
       images[0][offset + c] = Math.max(0, Math.min(255, Math.round(sample.color[c])));
       images[2][offset + c] = Math.round(sample.roughness * 255);
     }
+    // Physical materials read clearcoat from R and roughness from G; grout has no glaze.
+    if (style.photo) images[2][offset] = Math.round(
+      sample.heightM / TILE_RENDER_SETTINGS.groutDepthM * 255);
     heights[y * size + x] = sample.heightM;
     for (const image of images) image[offset + 3] = 255;
   }

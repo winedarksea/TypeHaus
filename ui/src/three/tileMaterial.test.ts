@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { ONYX_PRINTS, hexRgb, renderOnyxFacePixels } from "./onyxPixels";
+import { tilePhotoRecipe } from "./tilePhotoCatalog";
 import { TILE_STYLES, TILE_RENDER_SETTINGS, tileStyleOrNull, tileRepeatSizeM,
   sampleTile, applyTileUv, buildTileMaps, createTileMaterial, disposeTileTextures } from "./tileMaterial";
 
@@ -82,30 +82,28 @@ export function runTileMaterialTests() {
   assert(a.heightM === 0 && b.heightM > 0, "Running bond staggers vertical joints by half a tile");
   assert(w > 0, "Repeat is positive");
   const IN = 0.0254;
-  for (const [key, print] of [["tile-onyx-opera-blue-grid", "opera-blue"], ["tile-onyx-agua-linda-grid", "agua-linda"]] as const) {
-    const onyx = TILE_STYLES[key];
-    const [ow, oh] = tileRepeatSizeM(onyx);
-    assert(close(ow, 4 * (24 + 1 / 16) * IN) && close(oh, 2 * (48 + 1 / 16) * IN), `${key}: true-scale repeat`);
-    assert(onyx.print === print && onyx.jointM === IN / 16, `${key}: names its print`);
-    const job = { print, face: 0, pitchM: [(24 + 1 / 16) * IN, (48 + 1 / 16) * IN] as const, jointM: IN / 16,
-      grout: onyx.grout, width: 64, height: 128 };
-    const a = renderOnyxFacePixels(job), b = renderOnyxFacePixels(job);
-    assert(a.color.every((c, i) => c === b.color[i]) && a.orm.every((c, i) => c === b.orm[i]),
-      `${key}: pixels are deterministic`);
-    const other = renderOnyxFacePixels({ ...job, face: 1 });
-    let diff = 0, count = 0;
-    for (let i = 0; i < a.color.length; i += 4) for (let c = 0; c < 3; c++) { diff += Math.abs(a.color[i + c] - other.color[i + c]); count++; }
-    assert(diff / count > 8, `${key}: faces differ`);
-    const mean = hexRgb(ONYX_PRINTS[print].faceMean);
-    for (let face = 0; face < ONYX_PRINTS[print].faces; face++) {
-      const p = face === 0 ? a : renderOnyxFacePixels({ ...job, face });
-      const m = [0, 0, 0];
-      for (let i = 0; i < p.color.length; i += 4) for (let c = 0; c < 3; c++) m[c] += p.color[i + c] / (p.color.length / 4);
-      assert(m.every((v, c) => Math.abs(v - mean[c]) < 12), `${key}: face ${face} mean is near the authored colour`);
-    }
-  }
-  const distance = (print: "opera-blue" | "agua-linda") => hexRgb(ONYX_PRINTS[print].faceMean);
-  const [m1, m2] = [distance("opera-blue"), distance("agua-linda")];
+  const jume = TILE_STYLES["tile-onyx-jume-blue-grid"];
+  assert(jume.photo === "jume-onyx-blue", "Jume uses bundled product photography");
+  assert(close(jume.sizeM[0], 23.62 * IN) && close(jume.sizeM[1], 47.24 * IN)
+    && close(jume.jointM, IN / 16), "Jume uses actual face dimensions and 1/16-inch joints");
+  const [jw, jh] = tileRepeatSizeM(jume);
+  assert(close(jw, 2 * (23.62 + 1 / 16) * IN) && close(jh, 2 * (47.24 + 1 / 16) * IN),
+    "Photo atlas keeps tile scale through its 2x2 repeat");
+  assert(sampleTile(jume, 0.2, 0.2).heightM === sampleTile(jume, 0.3, 0.3).heightM,
+    "Printed veining adds no physical relief");
+  const opera = TILE_STYLES["tile-onyx-opera-blue-grid"];
+  assert(opera.photo === "opera-blue", "Opera Blue uses photographed onyx layers");
+  const [ow, oh] = tileRepeatSizeM(opera);
+  assert(close(ow, 3 * (24 + 1 / 16) * IN) && close(oh, 2 * (48 + 1 / 16) * IN),
+    "Opera's six-cell photo atlas preserves the 24x48 tile and narrow grout scale");
+  const recipe = tilePhotoRecipe(opera.photo);
+  assert(recipe.photographedFaces === 3 && recipe.faces.length === 6,
+    "Opera uses three photographed faces and their rotations");
+  assert(recipe.faces.every(face => face.crop[2] > 0 && face.crop[3] > 0),
+    "Every source face has a valid crop");
+  assert(sampleTile(opera, 0.2, 0.2).heightM === sampleTile(opera, 0.3, 0.3).heightM,
+    "The onyx print's visual depth stays beneath a smooth polished face");
+  const [m1, m2] = [opera.color, jume.color];
   assert(Math.hypot(m1[0] - m2[0], m1[1] - m2[1], m1[2] - m2[2]) > 10, "The two prints are different blues");
   // Geometry tests run without a DOM; browser review exercises actual cached canvas maps.
   assert(buildTileMaps(carrara) === null, "Headless sampling requires no DOM or external assets");

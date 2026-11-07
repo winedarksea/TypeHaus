@@ -26,7 +26,7 @@ _CATLIN_FINISHES = {"oak-floor-custom", "lvp", "catlin-theater-carpet", "sealed-
                     "catlin-rubber-stall-mat", "catlin-plant-vinyl-raised",
                     "catlin-vinyl-gatsby", "catlin-carpet-raised",
                     "catlin-tile-opera-blue", "catlin-tile-kaleo-brick",
-                    "catlin-tile-agua-linda", "catlin-tile-carrara"}
+                    "catlin-tile-jume-onyx-blue", "catlin-tile-carrara"}
 # One printed sheet under two tags (the plant room's carries a SurePly companion): they
 # share a colour by design, so the distinct-colour checks count the pair once.
 _SAME_SHEET = {"catlin-plant-vinyl-raised"}
@@ -110,7 +110,13 @@ def test_second_storey_finishes_match_the_doorway_assemblies(catlin_model):
             if finish == "catlin-carpet-raised"} == {
         "RM-S-BED1", "RM-S-BED2", "RM-S-BED3"}
     assert finishes["RM-S-SUITEBATH"] == "catlin-tile-kaleo-brick"
-    assert finishes["RM-S-VANITY"] == "catlin-tile-agua-linda"
+    assert finishes["RM-S-VANITY"] == "catlin-tile-jume-onyx-blue"
+    vanity_tile = _material(catlin_model, finishes["RM-S-VANITY"])
+    assert vanity_tile.finish == "tile-onyx-jume-blue-grid"
+    vanity_product = next(product for product in _library(catlin_model).products
+                          if product.tag == vanity_tile.product_ref)
+    assert vanity_product.brand == "Ivy Hill Tile"
+    assert vanity_product.model == "EXT3RD107036"
     assert finishes["RM-S-BATH1"] == "catlin-tile-carrara"
     assert finishes["RM-S-PLANT"] == "catlin-plant-vinyl-raised"
     assert "RM-S-LANDING" not in finishes
@@ -302,7 +308,7 @@ def test_the_billed_finishes_are_one_lvp_field(catlin_model):
         "catlin-tile-opera-blue": ("RM-M-BATH2", "catlin-ditra-heat"),
         "catlin-tile-carrara": ("RM-S-BATH1", "catlin-ditra-heat"),
         "catlin-tile-kaleo-brick": ("RM-S-SUITEBATH", "catlin-ditra-xl"),
-        "catlin-tile-agua-linda": ("RM-S-VANITY", "tile-uncoupling-membrane"),
+        "catlin-tile-jume-onyx-blue": ("RM-S-VANITY", "tile-uncoupling-membrane"),
     }
     # Two heated finishes share a membrane tag: key companion rows by parent as well.
     companion_rows = {(row["under"], row["finish"]): row
@@ -392,7 +398,7 @@ def test_bathroom_tile_product_contracts(catlin_plan):
          "catlin-ditra-heat"),
         ("catlin-tile-kaleo-brick", "PROD-IVY-KALEO-BRICK", "tile-kaleo-running-bond",
          "catlin-ditra-xl"),
-        ("catlin-tile-agua-linda", "PROD-MSI-AGUA-LINDA", "tile-onyx-agua-linda-grid",
+        ("catlin-tile-jume-onyx-blue", "PROD-IVY-JUME-ONYX-BLUE", "tile-onyx-jume-blue-grid",
          "tile-uncoupling-membrane"),
         ("catlin-tile-carrara", "PROD-FLORIDA-CARRARA-MATTE", "tile-carrara-grid",
          "catlin-ditra-heat"),

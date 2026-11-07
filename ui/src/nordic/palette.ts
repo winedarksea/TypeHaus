@@ -77,7 +77,7 @@ const FLOOR_RECIPE_SURFACE: Record<string, FloorSurface> = {
   "tile-carrara-grid": FLOOR_FINISH_SURFACE.tile,
   // Polished onyx porcelain: one soft glaze lobe, not a mirror.
   "tile-onyx-opera-blue-grid": { roughness: 0.16, metalness: 0 },
-  "tile-onyx-agua-linda-grid": { roughness: 0.16, metalness: 0 },
+  "tile-onyx-jume-blue-grid": { roughness: 0.16, metalness: 0 },
 };
 
 /**

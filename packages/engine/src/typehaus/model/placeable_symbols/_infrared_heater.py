@@ -1,8 +1,8 @@
 """A single-element radiant bar aimed 45 degrees down, with wall swivel brackets.
 
-W-1512 dimensional basis: 33in length, 8-3/16in face, 3in case thickness. The
-33x14x8in installed envelope includes a conservative 6in behind the tilted body.
-Bracket positions are a design layout; drilling follows the delivered brackets.
+DR-238 dimensional basis: 34.6in length, 7.69in face, 3.33in case thickness. The
+34.6x14x8in installed envelope allows 6in behind the tilted body. Bracket mounting
+holes follow the manufacturer's 10.8in inner spacing and 1.1in hole pairs.
 """
 
 import math
@@ -10,12 +10,12 @@ import math
 from typehaus.model.placeable_symbols._frame import box, line, rect
 from typehaus.model.placeable_symbols._mesh import mesh_part, outward
 
-ENVELOPE_IN = (33.0, 14.0, 8.0)
-FACE_WIDTH_IN = 8.1875
-CASE_THICKNESS_IN = 3.0
+ENVELOPE_IN = (34.6, 14.0, 8.0)
+FACE_WIDTH_IN = 7.69
+CASE_THICKNESS_IN = 3.33
 REAR_CLEARANCE_IN = 6.0
 TILT_DEGREES = 45.0
-BRACKET_STATIONS_IN = (-13.5, 13.5)
+BRACKET_STATIONS_IN = (-5.95, 5.95)
 GUARD_STATIONS_IN = (-12.0, -6.0, 0.0, 6.0, 12.0)
 SHEET_THICKNESS_IN = 0.08
 RIM_WIDTH_IN = 0.4
@@ -44,17 +44,19 @@ def infrared_heater(width, depth, height):
         return mesh_part(corners, outward(corners, triangles), color)
 
     parts = [tilted_box(0, 0, CASE_THICKNESS_IN / 2 - SHEET_THICKNESS_IN / 2,
-                        ENVELOPE_IN[0], FACE_WIDTH_IN, SHEET_THICKNESS_IN, "appliance-steel")]
+                        ENVELOPE_IN[0], FACE_WIDTH_IN, SHEET_THICKNESS_IN, "metal-black")]
     # Open reflector tray: the tube and guard sit in front of its recessed back.
     parts.append(tilted_box(0, 0, 0.8, 32.2, 7.3, SHEET_THICKNESS_IN, "metal"))
     for transverse in (-FACE_WIDTH_IN / 2 + RIM_WIDTH_IN / 2,
                        FACE_WIDTH_IN / 2 - RIM_WIDTH_IN / 2):
         parts.append(tilted_box(0, transverse, 0, ENVELOPE_IN[0], RIM_WIDTH_IN,
-                                CASE_THICKNESS_IN, "appliance-steel"))
+                                CASE_THICKNESS_IN, "metal-black"))
     for x in (-ENVELOPE_IN[0] / 2 + RIM_WIDTH_IN / 2,
               ENVELOPE_IN[0] / 2 - RIM_WIDTH_IN / 2):
         parts.append(tilted_box(x, 0, 0, RIM_WIDTH_IN, FACE_WIDTH_IN,
-                                CASE_THICKNESS_IN, "appliance-steel"))
+                                CASE_THICKNESS_IN, "metal-black"))
+    parts.append(tilted_box(15.8, 0, -1.6, 1.6, 2.0, 0.08, "metal-black"))
+    parts.append(tilted_box(15.8, 0.3, -1.65, 0.8, 0.45, 0.03, "screen"))
     parts.append(tilted_box(0, 0, -0.6, 30, 0.3, 0.3, "brass"))
     for transverse in (-2.5, 2.5):
         parts.append(tilted_box(0, transverse, -1.4, 31.8, 0.07, 0.07, "metal-black"))

@@ -943,7 +943,7 @@ MAIN_EQUIPMENT = [
 # --- Second storey: the NW bathroom's floor-heat control -------------------------------
 SECOND_DEVICES = [
     # FH-S-BATH1's thermostat, inside the room on its south wall (W-S-BD-N1B, interior
-    # face y=26'-4 11/16"), 9" west of D-S-BATH1's opening (x 7'-3"..9'-9"). Same
+    # face y=26'-4 11/16"), 6" west of D-S-BATH1's opening (x 6'-10"..9'-6"). Same
     # reach-as-the-door-shuts position as ED-M-BATH2-FH-STAT, and clear of the fixture
     # cluster, which all sits north of y=29'-9".
     ElectricalDevice(uid="CEE025AAAA", tag="ED-S-BATH1-FH-STAT", kind=DeviceKind.SWITCH,
@@ -951,7 +951,7 @@ SECOND_DEVICES = [
                      circuit="CKT-FH-BATH1", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD-N1B", face="left", distance_from_start=inch(7.5),
+                         wall_ref="W-S-BD-N1B", face="left", distance_from_start=inch(5.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** RM-S-SUITEBATH AND RM-S-VANITY EACH GET THIS RECEPTACLE FOR NEC 210.52(D). ** Both
     # were authored when nothing in the engine encoded E3901.6, so the note here used to
@@ -1112,17 +1112,23 @@ GARAGE_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(228),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
+    # Dedicated outlet beside and below the DR-238; the factory cord stays behind the bar.
+    ElectricalDevice(uid="DR238RC001", tag="ED-G-HEATER-RC", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-GAR-HEAT", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(90)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-W", face="left", distance_from_start=inch(156),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
 GARAGE_EQUIPMENT = [
     # West wall, centred over the bench. The radiant bar aims 45deg down into the work
     # area. Installed envelope starts 96in AFF and tops at 104in; ceiling is 122in AFF.
-    # BK-G-W-HEATER spans all three stud bays behind its two brackets (100in AFF).
-    # Hard-wired, not cord-and-plug: NEC 210.8(A)(2) GFCI applies to garage *receptacles*
-    # only, so CKT-GAR-HEAT carries none — a plug-in unit would need CKT-RC-GARAGE instead.
+    # BK-G-W-HEATER fills one stud bay behind the DR-238 brackets (100in AFF).
+    # Cord-and-plug on dedicated GFCI CKT-GAR-HEAT; retain its factory cord and plug.
     # FX-G-HYDRANT left this corner for the SW stair foot on 2026-09-16.
     Equipment(uid="CEE023AAAA", tag="EQ-G-HEATER", kind=EquipmentKind.SPACE_HEATER,
-              footprint=(inch(33), inch(14)),
+              footprint=(inch(34.6), inch(14)),
               room="RM-GARAGE", type_ref="EQ-T-GARAGE-HEATER", circuit="CKT-GAR-HEAT",
               mount=Mount(kind=MountKind.WALL, elevation=ft(8)),
               location=Location(attachment=WallAttachment(

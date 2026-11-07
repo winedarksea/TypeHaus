@@ -262,6 +262,11 @@ not instruction: when it disagrees with this file or the model, it is the one th
   dialect forbids. Split out of `electrical.py` (2,412 lines) 2026-09-18; the split moved
   `_content_hash` and nothing else in `model.json`. `electrical.py` is ~2,090 lines and
   still four times the 500-line guideline — recorded, not fixed.
+- **Garage radiant heater** (`EQ-G-HEATER`): owner-selected $110 DR-238, 1500 W / 120 V,
+  black carbon bar, 34.6x14x8in installed envelope, bottom 96in AFF. Factory cord plugs
+  into `ED-G-HEATER-RC` on dedicated GFCI `CKT-GAR-HEAT`. `BK-G-W-HEATER` is one 22.5in
+  SPF 2x6, 97.25..102.75in AFF, behind the four manual-dimensioned mounting holes.
+  `advisory.wall_fixing_support` grades each hole. See `notes/garage_infrared_heater.md`.
 - `plan/circuits.py` — the panel schedule (NOT editable: Circuits are schedule data, not
   geometry). Devices point at circuits via `circuit=`; `electrical.circuit_refs` reconciles.
   **BOTH MAIN-FLOOR WATER CLOSETS ARE BIDET TOILETS, AND THE ELECTRICAL FOR THEM IS TWO

@@ -37,6 +37,20 @@ try {
     await new Promise(resolve => setTimeout(resolve, 300));
     const checks = await evaluate(session, "return window.tileReviewChecks");
     if (checks.failures.length) throw new Error(checks.failures.join("\n"));
+    if (view === "rooms" || view === "detail") {
+      const previews = [
+        ["RM-S-VANITY", "vanity"], ["RM-M-BATH2", "opera-blue"],
+        ["tile-onyx-opera-blue-grid · top", "opera-blue-swatch"],
+        ["tile-onyx-opera-blue-grid · grazing", "opera-blue-grazing"],
+      ];
+      for (const [caption, name] of previews) {
+        const png = await evaluate(session, `return [...document.querySelectorAll('figure')]
+          .find(figure => figure.querySelector('figcaption').textContent.startsWith(${JSON.stringify(caption)}))
+          .querySelector('canvas').toDataURL('image/png').split(',')[1]`);
+        const suffix = view === "detail" ? "-detail" : "";
+        await writeFile(resolve(output, `${name}${suffix}.png`), Buffer.from(png, "base64"));
+      }
+    }
     await writeFile(resolve(output, `${view}.png`), await captureScreenshot(session));
     await writeFile(resolve(output, `${view}.json`), JSON.stringify(checks, null, 2));
     console.log(`Tile review passed: ${view}`);

@@ -33,8 +33,8 @@ from typehaus.model.placeable_symbols._frame import (
     part_hex,
     with_material_refs,
 )
-from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
 from typehaus.model.placeable_symbols._infrared_heater import infrared_heater
+from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_frame
 from typehaus.model.placeable_symbols._swanstone_flex import swanstone_flex
 from typehaus.model.placeable_symbols.appliances import APPLIANCE_SYMBOLS

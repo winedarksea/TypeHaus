@@ -5,14 +5,16 @@ import * as THREE from "three";
 import { textureTimer } from "./buildTimings";
 import { renderTilePixels, TILE_RENDER_SETTINGS, type TilePixels, type TileStyle } from "./tilePixels";
 import TileWorker from "./tileMaps.worker?worker";
+import { buildTilePhotoCanvas } from "./tilePhotos";
 
 export interface TileMaps { color: THREE.Texture; normal: THREE.Texture; roughness: THREE.Texture }
-interface Pending { readonly id: number; readonly style: TileStyle }
+interface Pending { readonly id: number; readonly style: TileStyle; readonly maps: TileMaps }
 const cache = new Map<TileStyle, TileMaps>();
 const queue: Pending[] = [];
 const fallback: Pending[] = [];
 const listeners = new Set<() => void>();
-let settleWaiters: (() => void)[] = [];
+let settleWaiters: { resolve: () => void; reject: (error: Error) => void }[] = [];
+const failures: Error[] = [];
 let nextId = 0, inFlight = 0, fallbackScheduled = false;
 let pool: { worker: Worker; busy: Pending | null }[] | null = null;
 
@@ -25,17 +27,17 @@ function filled(r: number, g: number, b: number) {
   return canvas;
 }
 
-function texture(canvas: HTMLCanvasElement, color: boolean) {
+function texture(canvas: HTMLCanvasElement, color: boolean,
+  anisotropy: number = TILE_RENDER_SETTINGS.anisotropy) {
   const map = new THREE.CanvasTexture(canvas);
   map.wrapS = map.wrapT = THREE.RepeatWrapping;
   map.colorSpace = color ? THREE.SRGBColorSpace : THREE.NoColorSpace;
-  map.anisotropy = TILE_RENDER_SETTINGS.anisotropy;
+  map.anisotropy = anisotropy;
   return map;
 }
 
-/** Placeholder maps at once, the raster queued; null headless or for a printed style. */
+/** Placeholder maps at once, the raster queued; null headless. */
 export function buildTileMaps(style: TileStyle): TileMaps | null {
-  if (style.print) return null; // printed styles use buildOnyxMaps
   const cached = cache.get(style);
   if (cached) return cached;
   if (typeof document === "undefined") return null;
@@ -43,9 +45,12 @@ export function buildTileMaps(style: TileStyle): TileMaps | null {
   const canvases = [filled(...style.color), filled(128, 128, 255), filled(rough, rough, rough)];
   if (canvases.some(c => !c)) throw new Error("2D canvas unavailable for tile maps");
   const [color, normal, roughness] = canvases as HTMLCanvasElement[];
-  const maps = { color: texture(color, true), normal: texture(normal, false), roughness: texture(roughness, false) };
+  const maps = {
+    color: texture(color, true, style.photo ? TILE_RENDER_SETTINGS.photoAnisotropy : TILE_RENDER_SETTINGS.anisotropy),
+    normal: texture(normal, false), roughness: texture(roughness, false),
+  };
   cache.set(style, maps);
-  queue.push({ id: nextId++, style });
+  queue.push({ id: nextId++, style, maps });
   inFlight++;
   pump();
   return maps;
@@ -94,7 +99,9 @@ function pump() {
       const next = fallback.shift()!;
       let pixels: TilePixels | null = null;
       const timed = textureTimer("tile");
-      try { if (cache.has(next.style)) pixels = renderTilePixels(next.style); } catch { /* stays flat */ }
+      try {
+        if (cache.get(next.style) === next.maps) pixels = renderTilePixels(next.style);
+      } catch { /* stays flat */ }
       timed();
       finish(next, pixels);
       pump();
@@ -102,27 +109,42 @@ function pump() {
   }
 }
 
-function finish(done: Pending, pixels: TilePixels | null) {
-  inFlight--;
-  const maps = cache.get(done.style);
-  // A reply for a style disposed since it was queued is dropped.
-  if (pixels && maps) {
-    const images = [pixels.color, pixels.normal, pixels.roughness];
-    [maps.color, maps.normal, maps.roughness].forEach((map, i) => {
-      const canvas = document.createElement("canvas");
-      canvas.width = canvas.height = pixels.size;
-      canvas.getContext("2d")!.putImageData(new ImageData(images[i], pixels.size, pixels.size), 0, 0);
-      // The placeholder's GPU storage is immutable at 4×4; a fresh upload needs it freed.
-      map.dispose();
-      map.image = canvas;
-      map.needsUpdate = true;
-    });
-    for (const listener of listeners) listener();
-  }
-  if (inFlight === 0) {
-    const waiters = settleWaiters;
-    settleWaiters = [];
-    for (const resolve of waiters) resolve();
+async function finish(done: Pending, pixels: TilePixels | null) {
+  const maps = done.maps;
+  try {
+    if (pixels && cache.get(done.style) === maps) {
+      const photo = done.style.photo ? await buildTilePhotoCanvas(done.style) : null;
+      // Decoding may outlive a dispose/rebuild; that reply belongs to the old textures.
+      if (cache.get(done.style) !== maps) return;
+      const images = [pixels.color, pixels.normal, pixels.roughness];
+      [maps.color, maps.normal, maps.roughness].forEach((map, i) => {
+        const canvas = i === 0 && photo ? photo : document.createElement("canvas");
+        if (canvas !== photo) {
+          canvas.width = canvas.height = pixels.size;
+          canvas.getContext("2d")!.putImageData(new ImageData(images[i], pixels.size, pixels.size), 0, 0);
+        }
+        // The placeholder's GPU storage is immutable at 4×4; a fresh upload needs it freed.
+        map.dispose();
+        map.image = canvas;
+        map.needsUpdate = true;
+      });
+      for (const listener of listeners) listener();
+    }
+  } catch (error) {
+    if (cache.get(done.style) !== maps) return;
+    const failure = new Error(`Tile maps failed (${done.style.photo ?? "procedural"}): ${error}`);
+    failures.push(failure);
+    console.error(failure);
+  } finally {
+    inFlight--;
+    if (inFlight === 0) {
+      const waiters = settleWaiters;
+      settleWaiters = [];
+      for (const waiter of waiters) {
+        if (failures.length) waiter.reject(new AggregateError(failures, "Tile maps failed"));
+        else waiter.resolve();
+      }
+    }
   }
 }
 
@@ -134,11 +156,13 @@ export function onTileMapsReady(listener: () => void): () => void {
 
 /** Resolves once every queued style has its raster. */
 export function tileMapsSettled(): Promise<void> {
+  if (failures.length) return Promise.reject(new AggregateError(failures, "Tile maps failed"));
   if (inFlight === 0) return Promise.resolve();
-  return new Promise(resolve => settleWaiters.push(resolve));
+  return new Promise((resolve, reject) => settleWaiters.push({ resolve, reject }));
 }
 
 export function disposeTileMaps(): void {
   for (const maps of cache.values()) Object.values(maps).forEach(map => map.dispose());
   cache.clear();
+  failures.length = 0;
 }

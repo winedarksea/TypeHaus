@@ -5,7 +5,7 @@ import { buildRoomFloor } from "../three/builders/structure";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { TILE_STYLES, applyTileUv, buildTileMaps, createTileMaterial, disposeTileTextures,
   tileRepeatSizeM } from "../three/tileMaterial";
-import { onyxMapsSettled } from "../three/onyxMaps";
+import { tilePhotoRecipe, TILE_PHOTO_FACE_PIXELS } from "../three/tilePhotoCatalog";
 import { tileMapsSettled } from "../three/tileMaps";
 
 const model: Model = await (await fetch("/__tile-review-house")).json();
@@ -21,15 +21,17 @@ if (gatsby) {
 const records: unknown[] = [];
 // Exercise the real canvas cache and disposal lifecycle in a browser.
 for (const style of Object.values(TILE_STYLES)) {
-  if (style.print) continue; // onyx has its own lazy pipeline, reviewed below
   const maps = buildTileMaps(style);
   if (!maps || maps !== buildTileMaps(style)) failures.push("Tile maps were not cached");
 }
 let disposed = 0;
 const old = buildTileMaps(TILE_STYLES["tile-carrara-grid"])!;
+const oldPhoto = buildTileMaps(TILE_STYLES["tile-onyx-jume-blue-grid"])!;
 for (const map of Object.values(old)) map.addEventListener("dispose", () => { disposed++; });
+for (const map of Object.values(oldPhoto)) map.addEventListener("dispose", () => { disposed++; });
 disposeTileTextures();
-if (disposed !== 3 || old === buildTileMaps(TILE_STYLES["tile-carrara-grid"])) {
+if (disposed !== 6 || old === buildTileMaps(TILE_STYLES["tile-carrara-grid"])
+  || oldPhoto === buildTileMaps(TILE_STYLES["tile-onyx-jume-blue-grid"])) {
   failures.push("Texture disposal failed to release and rebuild maps");
 }
 const probe = new THREE.WebGLRenderer();
@@ -46,16 +48,43 @@ function render(scene: THREE.Scene, camera: THREE.Camera, caption: string) {
   figure.append(cap, renderer.domElement); document.querySelector("main")!.append(figure);
 }
 // Product prints: a synthetic 2x2-repeat floor, top-down and at a grazing angle.
-await onyxMapsSettled();
 for (const key of Object.keys(TILE_STYLES).filter(k => gatsby
-  ? TILE_STYLES[k].inlay === "gatsby" : TILE_STYLES[k].print)) {
+  ? TILE_STYLES[k].inlay === "gatsby" : TILE_STYLES[k].photo)) {
   const style = TILE_STYLES[key];
   const [w, h] = tileRepeatSizeM(style);
   const plane = new THREE.PlaneGeometry(w * 2, h * 2).rotateX(-Math.PI / 2).translate(w, 0, h);
   applyTileUv(plane, [w, h], style);
   const material = createTileMaterial("nordic", style, "#ffffff");
   await tileMapsSettled(); // the raster lands off-thread (→ tileMaps.ts)
-  if (style.print && !(material instanceof THREE.MeshPhysicalMaterial)) failures.push(`${key}: not a physical material`);
+  if (style.photo && !(material instanceof THREE.MeshPhysicalMaterial)) failures.push(`${key}: not a physical material`);
+  if (style.photo) {
+    const canvas = material.map!.image as HTMLCanvasElement;
+    const pixels = canvas.getContext("2d")!.getImageData(0, 0, canvas.width, canvas.height).data;
+    let white = 0, blue = 0;
+    for (let i = 0; i < pixels.length; i += 4) {
+      if (pixels[i] > 240 && pixels[i + 1] > 240 && pixels[i + 2] > 240) white++;
+      if (pixels[i + 2] - pixels[i] > 20) blue++;
+    }
+    const [cols, rows] = style.repeat ?? [2, 2];
+    if (canvas.width !== cols * TILE_PHOTO_FACE_PIXELS[0]
+      || canvas.height !== rows * TILE_PHOTO_FACE_PIXELS[1]) failures.push(`${key}: missing full-resolution atlas`);
+    const minimumBlueFraction = style.photo === "opera-blue" ? 0.12 : 0.8;
+    if (white / (pixels.length / 4) > 0.01 || blue / (pixels.length / 4) < minimumBlueFraction) {
+      failures.push(`${key}: photo borders or blue face missing`);
+    }
+    // Inside a tile, print veining must change colour without adding surface relief.
+    const normal = material.normalMap!.image as HTMLCanvasElement;
+    const n = normal.getContext("2d")!.getImageData(128, 128, 1, 1).data;
+    if (n[0] !== 128 || n[1] !== 128 || n[2] !== 255) failures.push(`${key}: printed stone is not flat`);
+    const surface = (material.roughnessMap!.image as HTMLCanvasElement).getContext("2d")!;
+    const grout = surface.getImageData(0, 0, 1, 1).data;
+    const glaze = surface.getImageData(128, 128, 1, 1).data;
+    if (grout[0] !== 0 || glaze[0] !== 255 || grout[1] <= glaze[1]) {
+      failures.push(`${key}: glaze mask or roughness does not distinguish grout`);
+    }
+    records.push({ finish: key, atlas: [canvas.width, canvas.height], photographedFaces: tilePhotoRecipe(style.photo).photographedFaces,
+      whiteFraction: white / (pixels.length / 4), blueFraction: blue / (pixels.length / 4) });
+  }
   if (style.inlay === "gatsby") {
     const canvas = material.map!.image as HTMLCanvasElement;
     const pixels = canvas.getContext("2d")!.getImageData(0, 0, canvas.width, canvas.height).data;
@@ -68,7 +97,6 @@ for (const key of Object.keys(TILE_STYLES).filter(k => gatsby
     if (dark / count < 0.06 || gold / count < 0.01) failures.push(`${key}: missing black or gold in canvas map`);
     records.push({ finish: key, blackFraction: dark / count, goldFraction: gold / count });
   }
-  await onyxMapsSettled();
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xe7e4de);
   scene.add(new THREE.HemisphereLight(0xffffff, 0xb6afa3, 2), new THREE.Mesh(plane, material));
@@ -106,19 +134,13 @@ for (const tag of gatsby ? ["RM-S-PLANT", "RM-A-STUDIO", "RM-A-STUBATH", "RM-B-B
   const camera = new THREE.OrthographicCamera(-span * 1.6 / 2, span * 1.6 / 2,
     span / 2, -span / 2, 0.01, 50);
   camera.position.copy(center).add(new THREE.Vector3(0, 8, 2)); camera.lookAt(center);
-  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-  renderer.setSize(760, 475); renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1;
-  renderer.render(scene, camera);
+  render(scene, camera, `${tag} · ${material.name}`);
   const mesh = floor.children[0] as THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>;
   // A stale snapshot may still name a retired finish; only declared recipes owe maps.
   if (TILE_STYLES[material.finish ?? ""] && (!mesh?.material.map || !mesh.material.normalMap || !mesh.material.roughnessMap)) {
     failures.push(`${tag}: missing product surface maps`);
   }
   if (!mesh.geometry.getAttribute("uv") || picks.length === 0) failures.push(`${tag}: missing UVs/picking`);
-  const figure = document.createElement("figure"), caption = document.createElement("figcaption");
-  caption.textContent = `${tag} · ${material.name}`;
-  figure.append(caption, renderer.domElement); document.querySelector("main")!.append(figure);
   records.push({ tag, finish: room.floor_finish, widthM: size.x, depthM: size.z,
     meshCount: floor.children.length, textured: !!mesh.material.map });
 }

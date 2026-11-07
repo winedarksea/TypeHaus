@@ -272,8 +272,7 @@ def heating_capacity(ctx: CheckContext) -> list[Finding]:
     temperature it is heat the outdoor unit does not have to make, and pretending otherwise
     reports a shortfall the house does not have. It never opens a zone of its own (nothing is
     sized around a fireplace), and it is keyed by room, so it can never be credited twice. The
-    garage unit heater still counts for nothing — it carries no rating and the garage is
-    unconditioned.
+    garage radiant heater contributes to no dwelling zone because the garage is unconditioned.
 
     Nothing here is a Manual J: it reuses ``estimate_block_load`` with a room filter (whose
     room attribution is approximate — see its docstring), and missing inputs stay UNKNOWN,

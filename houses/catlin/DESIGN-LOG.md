@@ -1,3 +1,19 @@
+## Garage infrared heater and bracket blocking (2026-11-06)
+
+- Owner selected the **$110 Dr Infrared Heater DR-238** (Home Depot 303985873).
+  Replace the generic 14x9x15in box with its black carbon radiant bar: 1500 W / 120 V,
+  34.6x7.69x3.33in body, reflector, guard and 45-degree brackets in a 34.6x14x8in
+  installed envelope. The garage remains unconditioned; local output is 5,118 Btu/h.
+- Bottom rises from 72 to 96in AFF; 18in remains to the ceiling, clearing the current
+  manual's 94.5in floor and 15.8in ceiling limits. One 22.5in SPF 2x6 block at
+  97.25..102.75in AFF backs all four mounting holes (10.8in inner gap, 1.1in pairs).
+  Equipment now uses the discrete fixing support check; removing this block fails
+  all four fixings. Final drilling follows the supplied bracket template.
+- Retain the factory cord and plug. Add `ED-G-HEATER-RC` beside the bar on dedicated
+  20 A `CKT-GAR-HEAT`, now GFCI protected. Equipment material is $110, mounting labour
+  $40–100; outlet and branch circuit bill separately. Basis and layout are documented
+  in `notes/garage_infrared_heater.md`.
+
 ## Wall sheathing: 15/32" 4/5-ply CDX, not Structural I or OSB (2026-11-04)
 
 - **Owner.** Every house exterior wall (`EXT_2X6`, `EXT_2X6_SWINBURNE`, `PLANT_EXT_2X6_HUMID`,
@@ -7695,3 +7711,41 @@ straight bracket, holds under 4D to the band's end. Basis and hand check:
   wall; its gypsum still stops at the plate. Guard run 26.1 -> 21.5 LF; the framer installs it.
 - **Kept metal:** the hall's east and head edges (fascia on BM-S-HALL and the header) and the
   attic study edge. A wall there costs floor and light over the stair for no saving.
+
+
+## Vanity floor: Jume Onyx Blue (2026-11-06, owner)
+
+RM-S-VANITY replaces MSI Agua Linda with Ivy Hill Tile Jume Onyx Blue,
+EXT3RD107036 / Home Depot 318355007. Actual faces are 23.62 x 47.24 inches,
+polished rectified porcelain, two pieces / 15.49 SF per case; platinum epoxy
+at 1/16-inch grid joints. The listing advertises 16 print faces; no independent
+claim about print resolution is verified. DCOF remains <0.42, in the sinks-only
+room. Thickness fields conflict at 10/10.5 mm: allow 10.5 mm until measured,
+with 1/8-inch membrane and ~0.212-inch combined mortar to preserve the 3/4-inch
+finished height and doorway plane.
+
+The owner's tile-only allowance is $8/SF; Home Depot currently displays $9.19/SF
+($142.29/case). The 19.8-SF net / 24-SF order takeoff needs two whole cases:
+$247.84 at budget or $284.58 at the displayed case price, before freight/tax.
+The installed material rate includes setting supplies and epoxy, $9.50–12/SF;
+large-format labour and the separate membrane scope stay as before.
+
+The browser viewer now uses bundled product photographs at 512 x 1024 pixels
+per tile, true face dimensions, narrow metric joints, recessed grout normals
+and a polished glaze mask. Three photographed faces plus one rotated repeat
+represent the available imagery; they do not purport to reproduce all 16 faces.
+See `notes/bathroom_tile_budget.md` and `ui/src/assets/tiles/jume-onyx-blue.md`.
+
+
+## Opera Blue: preserve the photographed onyx depth (2026-11-06, owner)
+
+The owner supplied installed and face photographs showing cloudy blue layers,
+irregular cream bands and fine crystalline veining missing from the procedural
+Opera Blue rendering. RM-M-BATH2 keeps Selene Opera Blue EXT3RD101601, its floor
+assembly, budget and 1/16-inch platinum joints. The browser finish now samples
+matching product photography, using three actual faces plus their 180-degree
+rotations in a six-cell repeat. The source images preserve the visual depth;
+the glaze remains smooth polished porcelain, with recessed grout and a separate
+roughness/glaze mask. The images are bundled for offline rendering. The obsolete
+procedural onyx pipeline is removed now that both onyx selections use photography.
+See `ui/src/assets/tiles/opera-blue.md` for sources and the represented face range.

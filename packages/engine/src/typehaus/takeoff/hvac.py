@@ -299,7 +299,7 @@ def _rated(unit: HvacUnit) -> bool:
     however it is rated: nothing sizes a house around a fireplace, and letting a rated one
     open a zone of its own would double-count it against the zone it actually sits inside.
     It still counts *toward* that zone through :func:`supplemental_heat_by_room`. The garage
-    unit heater carries no rating at all and the garage is unconditioned besides. Indoor heads
+    radiant heater contributes to no dwelling zone because the garage is unconditioned. Indoor heads
     never claim a zone either, even when their type states a nominal capacity: the outdoor
     unit is what has to make the heat at the design temperature.
     """

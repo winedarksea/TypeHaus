@@ -18,14 +18,16 @@ FLOOR_TILE_PRODUCTS = (
             source='Owner selection 2026-10-22. 10.76 SF/case; half-offset running bond; '
                    'warm cream, slightly yellow epoxy grout. Listing did not expose thickness; '
                    '5/16 inch is a design allowance, verify supplied tile before setting beds.'),
-    Product(tag="PROD-MSI-AGUA-LINDA", brand="MSI", model="NHDAGULIN2448PC",
-            name='Agua Linda 24 x 48-inch polished blue onyx-look porcelain',
-            url="https://www.homedepot.com/p/330291351",
-            source='Owner selection 2026-10-29 for RM-S-VANITY. Rectified, polished, '
-                   '10.16 mm, 16 SF/case; platinum epoxy grout at a 1/16-inch joint. '
-                   'Listing gives wet DCOF <0.42 and recommends dry areas; the owner '
-                   'accepts it 2026-10-29 because the room has sinks only, no bathing, '
-                   'and rarely gets wet.'),
+    Product(tag="PROD-IVY-JUME-ONYX-BLUE", brand="Ivy Hill Tile", model="EXT3RD107036",
+            name='Jume Onyx Blue 23.62 x 47.24-inch polished onyx-look porcelain',
+            url="https://www.homedepot.com/p/318355007",
+            source='Owner selection 2026-11-06 for RM-S-VANITY, replacing MSI Agua Linda. '
+                   'Rectified, polished, 16 print faces; 2 tiles / 15.49 SF per case. '
+                   'Home Depot lists 10.5 mm in highlights and 10 mm in dimensions; '
+                   'use 10.5 mm provisionally and verify delivered thickness. Platinum '
+                   'epoxy grout at a 1/16-inch joint. Published DCOF <0.42; sinks-only '
+                   'room, no bathing. Owner tile-only budget $8/SF; listing read '
+                   '2026-11-06 shows $9.19/SF ($142.29/case), before freight/tax.'),
     Product(tag="PROD-FLORIDA-CARRARA-MATTE", brand="Florida Tile",
             model="CHDEAJ0212X24",
             name='Carrara matte rectified 12 x 24-inch porcelain',

@@ -323,7 +323,7 @@ SECOND_BACKING = [
                 height=inch(7.25), profile="2x8", material_ref="spf",
                 purpose="SEKTION high-cabinet suspension rail, bathroom face"),
     WallBacking(uid="KDV747MSCM", tag="BK-S-BD-N1B-SEKTION", wall_ref="W-S-BD-N1B", face="left",
-                start=inch(0), length=inch(11.25), elevation=inch(90),
+                start=inch(0), length=inch(9.25), elevation=inch(90),
                 height=inch(7.25), profile="2x8", material_ref="spf",
                 purpose="SEKTION rail continuation to the bathroom-door king"),
     WallBacking(uid="PKRGE2ZNBP", tag="BK-S-PS2-SHELF", wall_ref="W-S-PS2",
@@ -393,13 +393,13 @@ GARAGE_BACKING = [
                 start=ft(14, 0.75), length=inch(22.5),
                 elevation=inch(19.5), height=inch(11.25), profile="2x12",
                 material_ref="spf", purpose="EVSE wall mount (APPL-G-EVSE)"),
-    # Radiant heater brackets at stations 166.5/193.5in, 99/101in AFF. Fill all three
-    # bays stud-006..009; the garage slab is 22in below the wall's sill datum.
-    # Fit each 2x12 flush to the inside stud face and fasten both ends to the studs.
+    # DR-238's four holes at stations 173.5/174.6/185.4/186.5in, 100in AFF.
+    # Fill the stud-007..008 bay; slab is 22in below this wall's sill datum.
+    # Fit the 2x6 flush to the inside stud face and fasten both ends to the studs.
     WallBacking(uid="KTVH44DV78", tag="BK-G-W-HEATER", wall_ref="W-G-W", face="left",
-                start=inch(144.75), length=inch(70.5),
-                elevation=inch(72), height=inch(11.25), profile="2x12",
-                material_ref="spf", purpose="EQ-G-HEATER radiant bar swivel brackets, 99/101in AFF"),
+                start=inch(168.75), length=inch(22.5),
+                elevation=inch(75.25), height=inch(5.5), profile="2x6",
+                material_ref="spf", purpose="EQ-G-HEATER DR-238 swivel brackets, 100in AFF"),
 ]
 
 ATTIC_BACKING = [

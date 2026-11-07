@@ -3021,7 +3021,10 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # this row from being sole-sourced again. The circuit itself is
 # priced in [conductors]/[conduit].
 "EQ-T-FIREPLACE-EL" = { material = { low = 360, high = 460 }, labour = { low = 250, high = 600 } }  # 1 ea — ClassicFlame 28II042FGL infrared
-"EQ-T-GARAGE-HEATER" = { material = { low = 80, high = 250 }, labour = { low = 120, high = 300 } }  # 1 ea
+# Owner-selected DR-238 at $110, Home Depot 303985873 (2026-11-06). Supplied brackets,
+# factory cord and remote; its dedicated GFCI branch and receptacle bill separately.
+# https://www.homedepot.com/p/303985873
+"EQ-T-GARAGE-HEATER" = { material = { low = 110, high = 110 }, labour = { low = 40, high = 100 } }  # 1 ea
 # The seven Gree rows: dealer-direct, no published component prices. Scaled off the one
 # figure that is public (Vireo+ 2-head system, $2,499+) with outdoor units carrying ~70% of
 # a system and heads the rest. Softest numbers in this file — get a dealer quote.
@@ -3746,7 +3749,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "tile-uncoupling-membrane" = { material = { low = 1.5, high = 2.5 }, labour = { low = 0, high = 0.5 } }
 # Product-specific estimates, 2026-10-22 (onyx rows 2026-10-29), $/SF: tile + setting
 # supplies + epoxy grout. Tile-only anchors: Ivy Hill Selene Opera Blue $123/15.49-SF case
-# (~$7.94/SF), MSI Agua Linda ~$46.22/16-SF case (~$2.89/SF), Kaleo $7.99, Florida Tile
+# (~$7.94/SF), Jume Onyx Blue owner allowance $8/SF (2026-11-06; HD currently $9.19),
+# Kaleo $7.99, Florida Tile
 # Carrara $2.38. Freight/tax not included.
 # Installed labour includes epoxy application/cleanup. No separate grout row is billed.
 # 24x48 labour is large-format setting (flatness prep, LHT mortar, lippage clips), against
@@ -3754,7 +3758,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # stays in its existing scope.
 "catlin-tile-opera-blue" = { material = { low = 9.5, high = 12 }, labour = { low = 10, high = 18 } }
 "catlin-tile-kaleo-brick" = { material = { low = 9, high = 12 }, labour = { low = 9, high = 16 } }
-"catlin-tile-agua-linda" = { material = { low = 4, high = 6.5 }, labour = { low = 10, high = 18 } }  # membrane bills on tile-uncoupling-membrane
+"catlin-tile-jume-onyx-blue" = { material = { low = 9.5, high = 12 }, labour = { low = 10, high = 18 } }  # membrane bills on tile-uncoupling-membrane
 "catlin-tile-carrara" = { material = { low = 3.5, high = 6 }, labour = { low = 8, high = 15 } }
 "catlin-ditra-xl" = { material = { low = 2.5, high = 4.5 }, labour = { low = 0, high = 0.75 } }
 "catlin-ditra-heat" = { material = { low = 5, high = 7 }, labour = { low = 0, high = 0.75 } }

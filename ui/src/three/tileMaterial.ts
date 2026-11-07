@@ -1,7 +1,6 @@
 /** Product-sized bathroom finishes. Joint widths are visual allowances unless noted. */
 import * as THREE from "three";
 import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
-import { buildOnyxMaps, disposeOnyxTextures } from "./onyxMaps";
 import { buildTileMaps, disposeTileMaps } from "./tileMaps";
 import { tileRepeatSizeM, type TileStyle } from "./tilePixels";
 
@@ -12,14 +11,12 @@ export { buildTileMaps, onTileMapsReady, tileMapsSettled } from "./tileMaps";
 
 export function createTileMaterial(mode: "nordic" | "schematic", style: TileStyle,
   schematicColor: THREE.ColorRepresentation): THREE.MeshStandardMaterial {
-  if (style.print && mode === "nordic") {
-    const onyx = buildOnyxMaps(style);
-    if (onyx) return new THREE.MeshPhysicalMaterial({
-      color: 0xffffff, metalness: 0, roughness: 1, map: onyx.color, normalMap: onyx.normal,
-      roughnessMap: onyx.orm, clearcoatMap: onyx.orm, clearcoat: 0.25, clearcoatRoughness: 0.12, ior: 1.5,
-    });
-  }
   const maps = mode === "nordic" ? buildTileMaps(style) : null;
+  if (maps && style.photo) return new THREE.MeshPhysicalMaterial({
+    color: 0xffffff, metalness: 0, roughness: 1,
+    map: maps.color, normalMap: maps.normal, roughnessMap: maps.roughness,
+    clearcoatMap: maps.roughness, clearcoat: 0.25, clearcoatRoughness: 0.12, ior: 1.5,
+  });
   return new THREE.MeshStandardMaterial({
     color: maps ? 0xffffff : schematicColor, metalness: 0,
     roughness: mode === "schematic" ? 1 : maps ? 1 : style.roughness,
@@ -42,5 +39,4 @@ export function applyTileUv(geometry: THREE.BufferGeometry, center: PlanCenter, 
 
 export function disposeTileTextures(): void {
   disposeTileMaps();
-  disposeOnyxTextures();
 }

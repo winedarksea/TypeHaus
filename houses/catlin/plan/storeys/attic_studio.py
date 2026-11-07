@@ -79,18 +79,14 @@ SECOND_ELEMENTS = [
     # and its assemblies verbatim. (The ATTIC tees below DO need real splits; a junction solver is a
     # different consumer from a room polygonizer.)
     Node(uid="547NS6BXQJ", tag="N-S-BA-S", position=pt(ft(10), ft(22, 4))),
-    # bearing_refs names only the NORTH end (W-S-BD-N1B, W-S-BA-E1B — the x=10' bearing line's
-    # own two segments). The SOUTH end sits at N-S-BA-S, on W-S-SN3's run, but does not bear on
-    # it: this beam's own tiny reaction (~600 lb, and RM-A-POCKET above is STORAGE, not a
-    # habitable live load) is the ordinary case of a header hung by joist hanger into the
-    # doubled trimmer that already closes FO-A-HALL's south edge (see the FloorOpening below —
-    # that trimmer runs the whole 8' from x=10' to x=18' regardless of what this beam does), so
-    # it rides that joist to wherever IT bears rather than pushing a new point load down through
-    # W-S-SN3. W-S-SN3 was BEARING from 2026-08-29 to 2026-08-30 on the opposite read of this;
-    # see that wall's own comment in plan/storeys/second.py.
+    # bearing_refs names only the NORTH end: W-S-BA-E1B's end at N-S-BA1 (W-S-BD-N1B, which
+    # meets it there, is NONBEARING since 2026-11-06). The SOUTH end (~600 lb) hangs in the
+    # doubled trimmer closing FO-A-HALL's south edge; that trimmer bears on W-S-SN3 at x=10',
+    # so the reaction does reach D-M-LAUN's header below (notes/header_spans_r602_7.md §4a),
+    # though the engine does not yet route a hung load through a trimmer's bearing.
     Beam(uid="P77WQJ1MFM", tag="BM-S-BATH-E", start_node="N-S-BA-S", end_node="N-S-BA1",
          size="3-1.75x11.875 LVL",
-         bearing_refs=("W-S-BD-N1B", "W-S-BA-E1B"),
+         bearing_refs=("W-S-BA-E1B",),
          assembly="BEAM_LVL", top_elevation=ft(20)),
     # IUS2.37/11.88 at every hung end of FS-ATTIC in this beam: a level I-joist face-mount
     # for the TJI 230's 2-5/16" flange (not the roof's sloped LSSR). One spec, count derived.

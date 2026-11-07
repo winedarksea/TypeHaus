@@ -41,7 +41,6 @@ import { bootMark } from "../engine/bootMarks";
 import { Loading3D } from "./Loading3D";
 import { fitSunToBox } from "../three/sunFit";
 import { onWoodMapsReady } from "../three/woodMaps";
-import { onOnyxMapsReady } from "../three/onyxMaps";
 import { onTapestryMapReady } from "../three/tapestryMaterial";
 import { onTileMapsReady } from "../three/tileMaps";
 import { applyEarthOpacity, applyEarthTone, PartGeometries } from "../three/builders/site";
@@ -481,7 +480,6 @@ function createScene(
   };
   // Wood figure lands after the first frame (→ woodMaps.ts). Albedo only: shadows stand.
   const stopWoodMaps = onWoodMapsReady(requestRender);
-  const stopOnyxMaps = onOnyxMapsReady(requestRender);
   const stopTapestryMap = onTapestryMapReady(requestRender);
   const stopTileMaps = onTileMapsReady(requestRender);
 
@@ -988,7 +986,6 @@ function createScene(
       publishBuilding(false);
       cancelAnimationFrame(raf);
       stopWoodMaps();
-      stopOnyxMaps();
       stopTapestryMap();
       stopTileMaps();
       stopTween();

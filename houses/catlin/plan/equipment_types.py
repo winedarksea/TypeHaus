@@ -392,28 +392,30 @@ EQUIPMENT_TYPES = (
                                      position=(ft(0), ft(0), ft(0))),
                          ServicePort(tag="discharge", service=Service.SUPPLY_AIR,
                                      position=(ft(0), ft(0), ft(0))))),
-    # The envelope includes the swivel brackets and a conservative 6in behind the tilted
-    # body. Bracket stations are the design layout, not a factory drilling template.
-    EquipmentType(tag="EQ-T-GARAGE-HEATER", name="Infratech W-1512 infrared radiant heater, 1500 W, 120 V",
-                  footprint=(inch(33), inch(14)), height=inch(8),
+    # DR-238 v250108 manual pp3-6: body and the four wall-bracket mounting holes.
+    # The envelope includes an allowance of 6in behind the tilted body.
+    EquipmentType(tag="EQ-T-GARAGE-HEATER", name="Dr Infrared Heater DR-238 carbon radiant heater, 1500 W, 120 V",
+                  footprint=(inch(34.6), inch(14)), height=inch(8),
                   plan_symbol="infrared-heater",
-                  wall_fixing_points=((inch(-13.5), inch(3)), (inch(-13.5), inch(5)),
-                                      (inch(13.5), inch(3)), (inch(13.5), inch(5))),
+                  wall_fixing_points=((inch(-6.5), inch(4)), (inch(-5.4), inch(4)),
+                                      (inch(5.4), inch(4)), (inch(6.5), inch(4))),
                   resistance_heating_btuh=5118,
                   supplemental_heat=True,
-                  source="Infratech W-1512 SS (21-1040), dimensional basis: 1500 W / 120 V / "
-                         "12.5 A; 33in long, 8-3/16in reflector face, 3in housing thickness. "
-                         "Modelled 45 degrees down in a 33 x 14 x 8in installed envelope, "
-                         "including brackets and at least 6in behind the body. Four design "
-                         "fixings at +/-13.5in and 3/5in above the envelope base; verify the "
-                         "supplied swivel-bracket hole pattern before drilling. Hardwire on "
-                         "CKT-GAR-HEAT; local bench comfort only, garage stays unconditioned. "
-                         "Installation manual pp2-4: 8ft minimum floor clearance used for "
-                         "UL/CUL units, 12in to ceiling for wall mounting, 18in from adjacent "
-                         "walls/ends and 36in in front; keep flammables out of the work area. "
-                         "https://www.infratech.com/manual/reference-manual/ ; "
-                         "https://www.infratech.com/wp-content/uploads/"
-                         "infratech_W-series_instructions_2021_fnl-1.pdf",
+                  source="Dr Infrared Heater DR-238, owner-selected 2026-11-06 at $110. "
+                         "1500 W / 120 V / 12.5 A, carbon element, black aluminium housing, "
+                         "remote, 900/1200/1500 W settings. Current manufacturer manual "
+                         "v250108: body 34.6 x 7.69 x 3.33in, modelled 45 degrees down "
+                         "in a 34.6 x 14 x 8in installed envelope with 6in rear allowance. "
+                         "Bracket inner hole spacing 10.8in plus 1.1in outward on each side; "
+                         "four holes at +/-5.4/6.5in and 100in AFF. Use supplied brackets, "
+                         "confirm delivered template. Cord-and-plug ONLY into ED-G-HEATER-RC "
+                         "on dedicated GFCI CKT-GAR-HEAT; no extension cord. "
+                         "Manual minimums: bottom 94.5in AFF, ceiling 15.8in, adjacent "
+                         "walls 19.7in, people/combustibles 39.4in in front. "
+                         "Local bench comfort only; garage stays unconditioned. "
+                         "https://drheaterusa.com/products/dr-238 ; "
+                         "https://cdn.shopify.com/s/files/1/0496/6601/files/"
+                         "DR-238_User_Manual_v250108.pdf",
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
     # Retained library option; the BATH2 installation was removed 2026-11-02.

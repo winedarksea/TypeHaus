@@ -150,4 +150,4 @@ def wall_fixing_support(ctx: CheckContext) -> list[Finding]:
                                     f"the {obj.attachment_face} face of {wall.tag}",
                                     tags, Result.FAIL))
     return out or [not_applicable("advisory.wall_fixing_support",
-                                  "no wall-mounted furnishings or equipment declare fixing centres")]
+                                  "no wall-mounted furniture or equipment declares fixing centres")]

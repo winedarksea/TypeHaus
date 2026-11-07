@@ -462,13 +462,13 @@ WALLS = [
     Wall(uid="CSW132AAAA", tag="W-S-BD-N", start_node="N-S-W1", end_node="N-S-V2",
          assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
-    # Retyped and declared BEARING on 2026-08-29 with the two x=10' segments below: it
-    # carries BM-S-BATH-E's north end at N-S-BA1. Same swap, same reason, same price —
-    # the library's INT_2X6_BRG_PLUMBING_HALF has the whole argument.
+    # NONBEARING (owner, 2026-11-06): BM-S-BATH-E's north end bears on W-S-BA-E1B's end
+    # at N-S-BA1, not on this wall, so D-S-BATH1 takes the R602.7.4 flat header. Continuous
+    # 2x6 studs stay for the lav bores (INT_2X6_BRG_PLUMBING_HALF).
     Wall(uid="CSW149AAAA", tag="W-S-BD-N1B", start_node="N-S-V2", end_node="N-S-BA1",
          assembly="INT_2X6_BRG_PLUMBING_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
-         structural_role=StructuralRole.BEARING, stacks_on="W-M-STOS2"),
+         structural_role=StructuralRole.NONBEARING, stacks_on="W-M-STOS2"),
     # W-S-BD-N2 (the stair's south wall on y=25', with the 6'-0" O-S-STAIRTOP through it)
     # came out on 2026-07-28 with the centre line: a wall pierced by a 6' hole between two
     # halves of what is now one room was doing nothing but hiding the stair. The well head
@@ -606,14 +606,15 @@ OPENINGS = [
     RoughOpening(uid="CSD215AAAA", tag="O-S-VANITY", host="W-S-VE",
                  position=from_node("N-S-V1", inch(8)), width=ft(2, 8),
                  height=ft(6, 8), doorway=TILE_EDGE_FLUSH),                                       # y 24'-0 5/8"
-    # Keep the 13.5" offset from N-S-V2: moving the opening east puts its king stud
-    # into N-S-BA1's corner pack. The 49.5" wall cannot fit this 30" leaf on the
-    # 16" framing module while clearing both corner packs, so the off-module advisory stays.
+    # 11.5" off N-S-V2 since W-S-BD-N1B went NONBEARING (2026-11-06): its deflection-gapped
+    # top no longer takes N-S-BA1's L, which W-S-BA-E1B keeps under BM-S-BATH-E's bearing,
+    # so the east king must butt that wall's corner stud (2" west of the old 13.5"). The
+    # 49.5" wall cannot hold this leaf on the 16" module, so the off-module advisory stays.
     # Owner, 2026-10-21: hinge on the east jamb (x=114") so the open leaf stays beside
     # the east wall instead of dividing the entry. The 36" vanity begins 8.5" beyond
     # the 90-degree leaf tip. Keep a stop to protect the adjacent switch and cabinet.
     Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30-PRIV-SOLID",
-         position=from_node("N-S-V2", ft(1, 1.5)), flip_hinge=False, doorway=TILE_EDGE_FLUSH),     # x 8'-3"
+         position=from_node("N-S-V2", inch(11.5)), flip_hinge=False, doorway=TILE_EDGE_FLUSH),  # x 8'-1"
     # Derived RO since 2026-10-29 (owner): a flat 2x4 head keeps it under the wall top and
     # SF-S-HP1, and the door slid 2 1/4" west, clear of ED-S-NCLOSET-SW.
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
@@ -1029,8 +1030,8 @@ ROOMS = [
          exposed_services="owner accepts exposed duct in the primary suite: the supply branch runs on the face of the ceiling rather than inside it"),
     Room(uid="CSR407AAAA", tag="RM-S-CLOSET", seed=pt(ft(14), ft(10, 8)),
          occupancy=Occupancy.STORAGE, floor_finish="oak-floor-custom"),
-    # The nonheated suite bath uses DITRA-XL; the small glass vanity mosaic uses
-    # continuous cement backer. Both assemblies target the adjacent 3/4-inch oak plane.
+    # The nonheated suite bath uses DITRA-XL; Jume vanity porcelain uses the thinner
+    # 1/8-inch membrane. Both assemblies target the adjacent 3/4-inch oak plane.
     Room(uid="CSR412AAAA", tag="RM-S-SUITEBATH", seed=pt(ft(14), ft(19)),
          occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-kaleo-brick",
          ceiling_lining=(
@@ -1038,7 +1039,7 @@ ROOMS = [
                    function=LayerFunction.FINISH),
          )),
     Room(uid="CSR413AAAA", tag="RM-S-VANITY", seed=pt(ft(3), ft(24, 4)),
-         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-agua-linda",
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-jume-onyx-blue",
          wall_lining_exceptions=(
              WallLiningException(
                  uid="S8D686HMRF", tag="LX-S-VANITY-W2", wall_ref="W-S-W2",

@@ -58,7 +58,8 @@ MATERIALS_FLOORING = [
                     'tucks the carpet into a Z-bar flush with the hard floor '
                     '(plan/doorway_transitions.py). Measure the backing on the sample: '
                     'the Z-bar answer holds to 0.10 inch; notes/bedroom_carpet.md.'),
-    Material(tag="catlin-theater-carpet", name="Emphatic II 30 Nightlife theater carpet (provisional)",
+    Material(tag="catlin-theater-carpet",
+             name="Emphatic II 30 Nightlife theater carpet (provisional)",
              hatch="batt", color="#1f1a21", finish="carpet-pile",
              finish_thickness_in=0.735,
              floor_companion_refs=("catlin-bedroom-carpet-pad",),
@@ -79,10 +80,11 @@ MATERIALS_FLOORING = [
              hatch="batt", color="#c8b7a0",
              product_ref="PROD-FUTURE-FOAM-150553488-32",
              source='Companion to catlin-carpet-raised and catlin-theater-carpet; '
-                    'meets Shaw stretch-in commercial minimum (8 lb, 3/8 in max); installation is included '
-                    'once in carpet labor. 3/8 inch, not the 7/16 inch first selected, so '
-                    'the carpet stands 1/4 inch over the oak (owner 2026-11-01). Confirm '
-                    'carpet manufacturer acceptance and warranty; notes/bedroom_carpet.md.'),
+                    'meets Shaw stretch-in commercial minimum (8 lb, 3/8 in max); installation '
+                    'is included once in carpet labor. 3/8 inch, not the 7/16 inch first '
+                    'selected, so the carpet stands 1/4 inch over the oak (owner 2026-11-01). '
+                    'Confirm carpet manufacturer acceptance and warranty; '
+                    'notes/bedroom_carpet.md.'),
     Material(tag="catlin-tile-opera-blue",
              name="Selene Opera Blue 24x48 polished, platinum epoxy grout",
              hatch="masonry", color="#c5c6cc", finish="tile-onyx-opera-blue-grid",
@@ -102,18 +104,18 @@ MATERIALS_FLOORING = [
                     'running bond, warm cream slightly yellow epoxy grout. 5/16-inch '
                     'DITRA-XL + provisional 5/16-inch tile + 1/8-inch combined mortar '
                     '= 3/4 inch. Confirm tile thickness and beds before installation. ' + _TOE),
-    Material(tag="catlin-tile-agua-linda",
-             name="Agua Linda 24x48 polished, platinum epoxy grout",
-             hatch="masonry", color="#c0d1e2", finish="tile-onyx-agua-linda-grid",
+    Material(tag="catlin-tile-jume-onyx-blue",
+             name="Jume Onyx Blue 23.62x47.24 polished, platinum epoxy grout",
+             hatch="masonry", color="#7894a9", finish="tile-onyx-jume-blue-grid",
              finish_thickness_in=0.75, floor_waste_fraction=0.20,
              base_joint_ref="catlin-base-toe-silicone",
              floor_companion_refs=("tile-uncoupling-membrane",),
-             product_ref="PROD-MSI-AGUA-LINDA",
-             source='RM-S-VANITY: 24 x 48-inch polished blue onyx-look porcelain, 1/16-inch '
+             product_ref="PROD-IVY-JUME-ONYX-BLUE",
+             source='RM-S-VANITY: Jume Onyx Blue 23.62 x 47.24-inch polished porcelain, 1/16-inch '
                     'rectified joints, platinum epoxy grout. 1/8-inch uncoupling membrane + '
-                    '0.40-inch tile + ~0.225-inch combined mortar = 3/4 inch (DITRA-XL '
-                    'would leave under 1/16 inch of mortar). Listing DCOF <0.42, dry '
-                    'areas; accepted for a sinks-only room. ' + _LARGE_FORMAT + _TOE),
+                    '10.5 mm (~0.413-inch) tile + ~0.212-inch combined mortar = 3/4 inch. '
+                    'Listing conflicts at 10/10.5 mm; verify thickness and beds. DCOF <0.42; '
+                    'selected for the sinks-only room, no bathing. ' + _LARGE_FORMAT + _TOE),
     Material(tag="catlin-tile-carrara", name="Budget Carrara matte 12x24, white epoxy grout",
              hatch="masonry", color="#e9edf0", finish="tile-carrara-grid",
              finish_thickness_in=0.75, floor_waste_fraction=0.15,
