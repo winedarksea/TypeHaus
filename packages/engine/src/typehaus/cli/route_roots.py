@@ -346,6 +346,7 @@ def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None)
     grade = slope if slope is not None else minimum_slope(ends.diameter_m)
 
     def search(a_graph, a_space, start, goals):
+        tied = len(goals)
         goals = _spaced_goals(model, a_graph, goals, ends, report)
         nipple, heel = fitting_terms(a_space.cost, "drain", ends.diameter_m,
                                      ends.echo.get("material"), ends.radius_m)
@@ -364,6 +365,10 @@ def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None)
             goals = goals | set(wet)
             arm["required_m"] = {**problem.required_m,
                                  **{n: tie.join[2] for n, tie in wet.items()}}
+        if not goals:  # every tie spaced out: a refusal naming the inlet, not a search
+            report.notes.append(f"{ends.fixture or ends.system}: all {tied} tie(s) were "
+                                "spaced out, so no goal is left to route to")
+            return None
         if arm:
             problem = replace(problem, **arm)
         found = sloped_route(a_graph, a_space, start, goals, problem,

@@ -30,8 +30,8 @@ def _duct_model(insulation='2" R-8 wrap, vapour-sealed'):
 
 
 def _endpoints(monkeypatch, model, problems):
-    monkeypatch.setattr("typehaus.cli.route_support._duct_size_advice", lambda *_: ())
-    monkeypatch.setattr("typehaus.cli.route_support._port_terminal",
+    monkeypatch.setattr("typehaus.cli.route_endpoints_duct._duct_size_advice", lambda *_: ())
+    monkeypatch.setattr("typehaus.cli.route_endpoints_duct._port_terminal",
                         lambda _model, duct, index: (*duct.path[index], duct.z_m[index]))
     return _duct_endpoints(model, model.ducts[0], problems)
 

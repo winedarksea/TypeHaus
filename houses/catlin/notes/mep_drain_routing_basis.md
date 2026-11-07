@@ -597,6 +597,16 @@ bay is not refused by the bay's faces.
 
 `tests/test_routing_compaction.py` reproduces the jog and the pitch, and the fitting's room.
 
+**Crowded: no tie left.** The stations above are an interval of 2 x 8.125" = **16.25"** about
+each inlet, so a stack whose every goal sits inside one such interval (or several overlapping
+ones) loses them all: a 3" main with inlets at stations 60" and 70" removes 51.875" .. 78.125",
+and a lattice that offers ties only at 54", 60", 66" and 72" is left with none. The goal set
+is empty, there is nothing to search, and the answer is a refusal, not a route:
+`search_for` returns None with the note "<fixture>: all N tie(s) were spaced out, so no goal
+is left to route to" beside the one naming the crowded main and the 8.125" pitch. The fix is
+the owner's (move the fixture, or take another stack), never a relaxed pitch.
+`tests/test_route_empty_goals.py` pins the refusal.
+
 ---
 
 ## 11. Supply: a PEX bend, an exterior cavity, a panel's space (2026-11-03)

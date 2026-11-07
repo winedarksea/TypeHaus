@@ -112,6 +112,8 @@ def shortest_route(graph: Graph, space: RoutingSpace, start: int,
         node = graph.nodes[start]
         return Route(nodes=[start], points=[(node.x, node.y, node.z)], cost=0.0)
 
+    if not goals:  # nothing to reach: the heuristic is a min over goals
+        return None
     heuristic = _heuristic(graph, space, goals)
     # The heap entry carries ``g`` as its LAST element, after the unique ``counter``, so it
     # takes no part in the ordering and the tie-break stays exactly ``(f, node id, axis)``

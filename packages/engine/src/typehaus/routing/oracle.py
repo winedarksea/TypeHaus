@@ -69,6 +69,18 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
                            test="tests/test_routing_oracle.py"),),
     "corridor_lanes": (Oracle(note="mep_duct_routing_basis.md", section="§3",
                               test="tests/test_corridor_lanes.py"),),
+    # -- E0 --
+    # -- /E0 --
+    # -- E1 --
+    # -- /E1 --
+    # -- E2 --
+    # -- /E2 --
+    # -- E3 --
+    # -- /E3 --
+    # -- E4 --
+    # -- /E4 --
+    # -- E5 --
+    # -- /E5 --
 }
 
 #: Modules that compute nothing and so oracle nothing, named so their absence is a
@@ -100,6 +112,18 @@ NOT_A_CALCULATION = frozenset({
     "diagnostics", "counterfactual", "campaign", "space_view",
     "graph_batch",  # vectorised queries for graph: same answers, oracled through it
     "trades/__init__", "trades/pipe", "trades/conduit",
+    # -- E0 --
+    # -- /E0 --
+    # -- E1 --
+    # -- /E1 --
+    # -- E2 --
+    # -- /E2 --
+    # -- E3 --
+    # -- /E3 --
+    # -- E4 --
+    # -- /E4 --
+    # -- E5 --
+    # -- /E5 --
 })
 
 

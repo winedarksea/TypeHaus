@@ -177,6 +177,8 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
         return Route(nodes=[start], points=[(node.x, node.y, node.z)], cost=0.0)
 
     report = refusal if refusal is not None else GravityRefusal()
+    if not goals:  # nothing to reach: the heuristic is a min over goals
+        return None
     heuristic = _heuristic(graph, space, goals)
     head_floor = head_floor_fn(graph, goals, problem.required_m, problem.grade_in_per_ft)
     # Labels have stable ids, not frontier slots: pruning shifts slots.

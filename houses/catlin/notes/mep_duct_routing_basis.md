@@ -169,3 +169,164 @@ definition, and the same reading §3a gives the two FS-S-WEST tiers.
   its design cfm.
 * **No claim about two ducts in one bay.** The model cannot place two lanes; §3 says so and
   the router says so.
+
+---
+
+## 7. Laying length: what a turn costs in straight duct (wave 0, 2026-11-07)
+
+Worked by hand from the `DuctStandard` rows in `plan/ducts.py` and the geometry authored in
+`plan/mep_erv_l2.py`, before E3 codes `routing/duct_fittings.py`. Inches throughout. Read once
+more in `plan/ducts.py`, `resolve/duct_standard.elbow_for_turn` and `checks/mep/fitting_pattern.py`
+(whose `_takeoff_in` / `_floor_in` this section re-derives rather than copies).
+
+**The rule.** A turn of angle theta takes `R tan(theta/2)` of straight from each leg, with R the
+elbow's centre-to-face at 90 degrees (`DuctElbowRow.center_to_face`; at 90 degrees tan 45 = 1, so
+R = C2F). A straight between two turns has to be at least the sum of their take-offs; a straight
+between a turn and a run end (collar, port, tee, terminal) owes only the turn's own. Short of the
+sum is UNKNOWN; short of the **floor** (the same sum at R = D/2, the tightest throat made) is FAIL
+(`mep.fitting_pattern`, 1/16" tolerance). `elbow_for_turn` picks the row: a stamped elbow within
+10 degrees of 45/90 first, else the adjustable 90 set down (angles to 100 degrees), else none.
+
+**What is read and what is not.** The stamped Linx E90/E45 rows carry **no `center_to_face`**
+(`plan/ducts.py`: "The stamped laying length is unpublished: 1.5 D stands in"). The only
+published laying length is the C.L. Ward adjustable's dimension A, read as C2F: **4.75 / 6 / 7"**
+at 4 / 6 / 8" (`plan/ducts.py` `DuctElbowRow` rows, source `notes/air_distribution_products.md`
+"DuctStandard"). So the table has three columns and E3's test must carry C2F as a parameter:
+
+* **stamped, 1.5 D stand-in** (R = 6 / 9 / 12): what `mep.fitting_pattern` uses today
+  (`library/fittings.py` gored radius). Unpublished; conservative.
+* **stamped, 1.0 D** (R = 4 / 6 / 8): the r/D the Linx loss C 0.22 was taken at (Fitting 3-1).
+  Also unpublished. The two stand-ins disagree by 50% and the note cannot settle it.
+* **adjustable, A read as C2F** (4.75 / 6 / 7): published.
+
+### 7.1 Take-off per turn (inches)
+
+| D | stamped 90, R=1.5D | stamped 45, R=1.5D | stamped 90 / 45, R=1.0D | adjustable 90 / 60 / 45 / 30 | floor 90 / 45 |
+|---|---|---|---|---|---|
+| 4" | 6.000 | 2.485 | 4.000 / 1.657 | 4.750 / 2.742 / 1.968 / 1.273 | 2.000 / 0.828 |
+| 6" | 9.000 | 3.728 | 6.000 / 2.485 | 6.000 / 3.464 / 2.485 / 1.608 | 3.000 / 1.243 |
+| 8" | 12.000 | 4.971 | 8.000 / 3.314 | 7.000 / 4.041 / 2.899 / 1.876 | 4.000 / 1.657 |
+
+(tan 22.5 = 0.41421, tan 30 = 0.57735, tan 15 = 0.26795; 4" stamped 45 at 1.5 D is 6 x 0.41421 =
+2.485.) Catlin uses round 4" (every radial), 6" (trunks, risers, HP-FEED, the HP bedroom feeds) and
+8" (OA, EA, the level-2 extract trunk).
+
+### 7.2 Minimum straight between two consecutive turns (sum of take-offs)
+
+| D | basis | 90 + 90 | 90 + 45 | 45 + 45 | floor 90+90 / 90+45 / 45+45 |
+|---|---|---|---|---|---|
+| 4" | stamped 1.5 D | 12.000 | 8.485 | 4.971 | 4.000 / 2.828 / 1.657 |
+| 4" | stamped 1.0 D | 8.000 | 5.657 | 3.314 | |
+| 4" | adjustable | 9.500 | 6.718 | 3.935 | |
+| 6" | stamped 1.5 D | 18.000 | 12.728 | 7.456 | 6.000 / 4.243 / 2.485 |
+| 6" | stamped 1.0 D = adjustable | 12.000 | 8.485 | 4.971 | |
+| 8" | stamped 1.5 D | 24.000 | 16.971 | 9.941 | 8.000 / 5.657 / 3.314 |
+| 8" | stamped 1.0 D | 16.000 | 11.314 | 6.627 | |
+| 8" | adjustable | 14.000 | 9.899 | 5.799 | |
+
+E3's A* state (straight since the last turn) refuses a turn whose predecessor's take-off plus its
+own exceeds the straight carried; test the numbers above with C2F injected, not the house default.
+
+### 7.3 Worked route A: `DU-M-ERV-R-BED2`, 4", clean (0 gaps)
+
+Authored (`mep_erv_l2.py`, resolved z, inches): P0 (45.75, 168, 111.625) -> P1 (192, 168, 111.625)
+-> P2 (192, 178, 116.5) -> P3 (192, 210, 116.5) -> P4 (192, 220, 111.625) -> P5 (337, 220, 111.625).
+The two tiers are FS-S-WEST's 111 5/8" and 116 1/2" (§3a).
+
+| vertex | in-leg | out-leg | turn | stock | take-off (1.5 D / adj) |
+|---|---|---|---|---|---|
+| 1 | (146.25, 0, 0) | (0, 10, 4.875) | 90.00 | stamped 90 | 6.000 / n.a. |
+| 2 | (0, 10, 4.875) | (0, 32, 0) | atan(4.875/10) = 25.99 | adjustable, set down | 4.75 tan 12.995 = 1.096 |
+| 3 | (0, 32, 0) | (0, 10, -4.875) | 25.99 | adjustable | 1.096 |
+| 4 | (0, 10, -4.875) | (117, 0, 0) | 90.00 | stamped 90 | 6.000 |
+
+(25.99 is outside the 45 +- 10 snap and inside the 90 set-down's range, so the jog's two 26-degree
+turns are Ward adjustable 90s; 6.000 is the stand-in at the stamped 90.) Straights:
+
+    P0-P1   146.250 vs 6.000                      ok (a run end owes nothing)
+    P1-P2    11.125 vs 6.000 + 1.096 = 7.096      ok   (sqrt(10^2 + 4.875^2) = 11.1245)
+    P2-P3    32.000 vs 1.096 + 1.096 = 2.192      ok
+    P3-P4    11.125 vs 1.096 + 6.000 = 7.096      ok
+    P4-P5   117.000 vs 6.000                      ok
+
+**Expected `fitting_pattern_gaps` = 0** at every basis in §7.1 (the tightest, 1.5 D, leaves 4.03").
+This is the baseline too: no `mep.fitting_pattern` finding names this run
+(`scratchpad/baseline/check_nosuppress.txt`).
+
+### 7.4 Worked route B: `DU-M-ERV-R-LIVING`, 4", one short straight
+
+Authored: P0 (57, 404, 101.25) -> P1 (57, 404, 111.625) -> P2 (67.5, 404, 111.625) -> P3
+(67.5, 356.219, 111.625) -> P4 (67.5, 347.781, 116.5) -> P5 (67.5, 162, 116.5) -> P6 (67.5, 152,
+111.625) -> P7 (324, 152, 111.625). Turns: v1 90 (up to east), v2 90 (east to south), v3 and v4
+atan(4.875/8.438) = 30.02 (adjustable, 1.273), v5 25.99 (adjustable, 1.096), v6 90.
+
+    P1-P2    10.500 vs v1 + v2 = 6.000 + 6.000 = 12.000   SHORT 1.500   (1.5 D)
+                       4.75 + 4.75 = 9.500  ok, 1.000 spare              (adjustable)
+                       4.000 + 4.000 = 8.000 ok, 2.500 spare             (1.0 D)
+    P2-P3    47.781 vs 6.000 + 1.273 = 7.273     ok
+    P3-P4     9.745 vs 1.273 + 1.273 = 2.546     ok   (sqrt(8.438^2 + 4.875^2))
+    P4-P5   185.781 vs 1.273 + 1.096 = 2.369     ok
+    P5-P6    11.125 vs 1.096 + 6.000 = 7.096     ok
+    floor P1-P2 = 2.000 + 2.000 = 4.000 <= 10.5, so UNKNOWN, never FAIL.
+
+**Expected gaps = 1 at the 1.5 D stand-in (as authored today: baseline reads "10.5" between vertex
+1 and 2 against 12.0""), 0 at 1.0 D and at the adjustable's A.** `DU-M-ERV-R-BED` is the same
+shape (10.5" vs 12.0", baseline). The fix a router would find is the jog lane at x >= 69.0 (12.0"
+off the collar riser), not a different fitting. Reading Linx's published centre-to-face closes
+the question for every run in the house; until then the 1.5 D result is the conservative one.
+
+### 7.5 A pattern gap that is not a laying-length gap: `DU-B-ERV-R-GYM`
+
+Baseline: vertex 4 (18.2) and vertex 7 (95.3) "no catalogued pattern", and **no** straight
+reported. Hand reading disagrees on both counts, because two snaps are in play: `library/fittings`
+matches a stock duct elbow within **5** degrees of 30/45/90, while `elbow_for_turn` (what is
+bought) snaps within **10** of the stamped 90/45 and takes the adjustable below that. 95.27 is a
+bought stamped 90 and 18.2 an adjustable set down, yet the catalog calls both "no pattern", and
+`_takeoff_in` then returns 0 for the 95.3 (stamped row has no C2F, spec is None), hiding a real
+short straight: P7 (204, 160, -25.438) -> P8 (204, 160, -19.313) is 6.125 vertical against the 95.27
+turn's 6 tan 47.64 = 6.579 plus P8's 90 turn 6.000 = **12.579**. Floor 2.193 + 2.000 = 4.193 <= 6.125,
+so UNKNOWN. **Request to E3: one snap (the DuctStandard's 10), so the catalog and the bill cannot
+disagree.** Expected for GYM then: 0 pattern gaps, 1 short straight (6.1" vs 12.6") at 1.5 D.
+
+Rectangular runs are out of scope: `DU-S-HP-RET` (2 turns), `DU-S-HP-SOUTH` (2), `DU-S-HP-SOUTH-RISE`
+(1) stay "fabricated, no throat radius" (5 turns, 3 runs, unchanged). No rectangular throat radius is
+read in this repo, so a fabricated elbow is last-resort and priced only; nothing here sets its R.
+
+## 8. Flex and the PortKit lead (wave 0, 2026-11-07)
+
+**Read.** Broan B210E75RT manual pp. 10-11, as quoted in `notes/air_distribution_products.md`
+"Port kits": "If using 8-in. ducts, install 6-in. to 8-in. transitions on the ports ... If rigid
+ducting is used, install a 12-in. section of flexible duct between the transition and the rigid
+ducting." Kit rows in `plan/ducts.py`: outdoor and exhaust = GV0772 6-to-8 increaser +
+`flex_length` 12"; supply and return = 12" flex only (the ducts are 6", the ports are 6").
+**Not on file:** the increaser's length (Imperial prints SKUs and gauges, no dimensions;
+`PortKit.transition_length` is None), and **any flex minimum bend radius**.
+`PROD-DUCT-FLEX-R8` (JP Lamborn MHP-45R8) carries a UL class and an R value only, and
+`DUCT-T-FLEX-6.bend_equivalent_length` (84") is a pressure-loss length, not a radius. Flex support
+is 5 ft (`DuctSupportRow`, SMACNA S3.35). So E3 models the flex as a **straight lead that never
+bends**; if a radius is later read, it is a new `PortKit` field, not a default.
+
+**The lead.** Distance from the port face to the first rigid turn's vertex
+= transition length (unread, count 0 and print the gap) + 12.000 flex + take-off of the first turn.
+
+Worked at the **supply port** (EXACT, 6", `EQ-B-ERV` at (80.44, 358), port local (8.21875, 6.625),
+direction +z; resolved port (88.656, 364.625, -33.838)):
+
+    kit lead (flex only)          12.000
+    first turn, stamped 6" 90     + 9.000  (1.5 D)    = 21.000 to the vertex
+                                  + 6.000  (adjustable A, or 1.0 D) = 18.000
+    existing `route_ports` stub   6.0 + 2.0 allowance = 8.000  (shorter than the flex alone)
+
+`route_ports.stub_length_m` (OD + 2") is therefore not a PortKit lead; E3 replaces it for ports
+whose type has a kit and keeps it elsewhere. **The authored `DU-B-ERV-SUP-TRUNK` is 10.401" long**
+(z -33.838 to -23.437, no turns): 1.599" short of the 12" flex before any fitting, so the lead
+check will report it. That is H1's geometry (the ERV re-layout), not a router fault.
+
+At an 8" leg (outdoor/exhaust, ports approximate until H1): lead = L(GV0772, unread) + 12.000 +
+first turn at 8" (12.000 stamped 1.5 D; 8.000 at 1.0 D; 7.000 adjustable) = L + 24.000 / 20.000 /
+19.000. **Test assertions:** flex 12.000, supply lead 21.000 and 18.000, the transition length
+reported as unread (not 0 silently), and `DU-B-ERV-SUP-TRUNK` short by 1.599".
+
+**Open.** Broan's manual also says insulated ducts "must have the same diameter as the ports to
+ensure proper drainage", which contradicts its 8" advice (`air_distribution_products.md`): the
+lead model is the same either way, only the transition drops out.
