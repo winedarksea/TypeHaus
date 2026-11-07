@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 49455582751ee084  
+**Model hash:** 2fdae48feaad0795  
 **Lines:** 253
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -132,8 +132,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail) | 84 | ea |  | building |
-| HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | 1,428 | ea |  | building |
-| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 572 | ea |  | building |
+| HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | 1,960 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 40 | ea |  | building |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 958 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | 72 | ea |  | building |
 | HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5) | 248 | ea |  | building |

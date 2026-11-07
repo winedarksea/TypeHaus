@@ -42,11 +42,11 @@ LSSR_SLOPED_HANGER = StructuralHardware(
                 "carried member is an 11-7/8\" TJI 230, not sawn lumber, and that is why "
                 "the download below is TJ-4000's and not the catalog's: on an I-joist the "
                 "governing number is the JOIST BEARING capacity, not the hanger's steel",
-        fasteners="(14) 10d 0.148\" x 3\" into the header and (12) 10d 0.148\" x 1-1/2\" "
-                  "into the joist — TJ-4000 p. 15, the TJI schedule. **The catalog's own "
-                  "sloped-only rows are nailed differently** and are read at 2-1/2\": "
-                  "(14) 0.148 x 1-1/2 = 1,175 lbf, (14) 0.148 x 2-1/2 = 1,565, (14) SD#9 x "
-                  "1-1/2 = 1,870 (C-C-2026 p. 178, DF/SP, roof/snow). Web stiffeners are "
+        fasteners="(14) 0.148\" x 1-1/2\" into the header (C-C-2026 p. 178 sloped-only, "
+                  "DF/SP, roof/snow: 1,175 lbf, over the 1,090 joist cap; the 2-1/2\" row is "
+                  "1,565 and TJ-4000 p. 15 prints 10d x 3\", which cross an opposing "
+                  "hanger's in a 3-1/2\" ridge) and (12) 10d 0.148\" x 1-1/2\" into the "
+                  "joist (TJ-4000 p. 15). Web stiffeners are "
                   "REQUIRED with this hanger — 4\" wide, (4) 0.148\" nails each side — and "
                   "beveled rather than square wherever the joist slope exceeds 1/4:12",
         citation="Weyerhaeuser TJ-4000 Specifier's Guide, Jul 2025, p. 15 \"Variable Slope "

@@ -174,17 +174,19 @@ def test_envelope_layers_nets_the_splash(catlin_model, bom):
 
 def test_a_replacing_band_nets_only_the_finish_on_its_own_face(catlin_model):
     """The splash takes the shiplap off the sauna face and leaves the liner's furring and
-    foil, and the gym face's gypsum, alone; a bath surround takes its face's gypsum."""
+    foil, and the gym face's gypsum, alone; a bath surround takes its face's gypsum, except a
+    glass-mat backer, which it is glued to (BATH2, #27)."""
     replaced = replaced_finish_m2(catlin_model)
     assert {layer for wall, layer in replaced if wall in ("W-B-CS", "W-B-SA-N2")} == {
         "shiplap-liner"}
     splash = sum(area for (wall, _), area in replaced.items()
                  if wall in ("W-B-CS", "W-B-SA-N2")) * _M2_TO_FT2
     assert splash == pytest.approx(45.0, abs=0.05)
-    surrounds = {p.wall_tag for p in catlin_model.panelings
-                 if p.tag in ("WP-M-BATH2-SURR", "WP-A-STUBATH-SURR")}
-    assert {w for w, layer in replaced if layer.startswith("gwb") and w in surrounds} == (
-        surrounds)
+    stubath = {p.wall_tag for p in catlin_model.panelings if p.tag == "WP-A-STUBATH-SURR"}
+    bath2 = {p.wall_tag for p in catlin_model.panelings if p.tag == "WP-M-BATH2-SURR"}
+    assert {w for w, layer in replaced if layer.startswith("gwb") and w in stubath | bath2} == (
+        stubath)
+    assert bath2 and all(any(w == wall for w, _ in replaced) for wall in bath2), "paint nets"
 
 
 def test_sauna_ceiling_is_priced_and_on_the_mill_order(catlin_model, bom):

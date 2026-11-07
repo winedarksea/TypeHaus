@@ -41,7 +41,7 @@
     }
   ],
   "net_panel_area_sqft": 19.22873263888889,
-  "previous_net_panel_area_sqft": 21.282552083333332,
+  "previous_net_panel_area_sqft": 21.259765625,
   "supports": [
     {
       "tag": "TR-BW-MDO-NAILER-1",
@@ -393,11 +393,11 @@
     "acceptance": "incomplete: total sill stress, local plate distribution and hanger effects under concentrated loading require verification"
   },
   "before": {
-    "wall_dead_load_plf": 34.36311198479668,
-    "wall_and_upper_band_plf": 52.453830362779804,
+    "wall_dead_load_plf": 34.35493813012659,
+    "wall_and_upper_band_plf": 52.445656508109714,
     "wall_reaction_lb": {
-      "PT-BW-CW": 153.2885734505053,
-      "PT-BW-CNW": 153.2885734505053
+      "PT-BW-CW": 153.26183813418857,
+      "PT-BW-CNW": 153.26183813418857
     },
     "structural_records": [
       {
@@ -413,17 +413,17 @@
       {
         "key": "deck_post/PT-BW-E",
         "status": "ok",
-        "ratio": 0.005100299944142312
+        "ratio": 0.005083963095564834
       },
       {
         "key": "deck_post/PT-BW-GE",
         "status": "ok",
-        "ratio": 0.0037282507911851124
+        "ratio": 0.0037128474768120634
       },
       {
         "key": "deck_post/PT-BW-GW",
         "status": "ok",
-        "ratio": 0.017174640546226302
+        "ratio": 0.01716338578270085
       },
       {
         "key": "deck_post/PT-BW-PE",
@@ -438,7 +438,7 @@
       {
         "key": "deck_post/PT-BW-W",
         "status": "ok",
-        "ratio": 0.018509248180110453
+        "ratio": 0.018497316243137628
       },
       {
         "key": "deck_tie/FS-BW-FLOOR",
@@ -508,17 +508,17 @@
       {
         "key": "deck_post/PT-BW-E",
         "status": "ok",
-        "ratio": 0.005100299944142312
+        "ratio": 0.005083963095564834
       },
       {
         "key": "deck_post/PT-BW-GE",
         "status": "ok",
-        "ratio": 0.0037282507911851124
+        "ratio": 0.0037128474768120634
       },
       {
         "key": "deck_post/PT-BW-GW",
         "status": "ok",
-        "ratio": 0.01721536998026406
+        "ratio": 0.017204196618382375
       },
       {
         "key": "deck_post/PT-BW-PE",
@@ -533,7 +533,7 @@
       {
         "key": "deck_post/PT-BW-W",
         "status": "ok",
-        "ratio": 0.018549977614148214
+        "ratio": 0.01853812707881915
       },
       {
         "key": "deck_tie/FS-BW-FLOOR",
@@ -583,8 +583,8 @@
     ]
   },
   "wall_reaction_delta_lb": {
-    "PT-BW-CW": 13.377055450579917,
-    "PT-BW-CNW": 13.377055450579917
+    "PT-BW-CW": 13.403790766896662,
+    "PT-BW-CNW": 13.403790766896662
   },
   "door_sweep": {
     "stop_degrees": 81.0,

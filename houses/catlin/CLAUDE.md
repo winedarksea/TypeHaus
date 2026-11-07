@@ -399,7 +399,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `W-BW-SCREEN` (`ShearPanelSpec.chord_refs`). All four: `ACE6Z` end caps on the glulam,
   `A35Z` across the beam, cast-in `CBSTQ66Z-SDS2` bases (no `AB-058-10-SS`, no ACI Ch. 17 row) in
   14" piers; `axis="y"` puts their straps on the E/W faces, so the seat beams start
-  `SEAT_END_GAP_IN` (0.4495") off the west columns' faces, 1/8" past the SDS heads (C2 E9). `wood_roof_post` grades all four both ways; `lateral_system/RF-BW-CANOPY` grades the
+  `SEAT_END_GAP_IN` (0.4495") off the west columns' faces, 1/8" past the SDS heads (C2 E9); that end gap exceeds the LUS26-2Z's 1/8" (C-C-2026 note m), so the beam bears on its pack and the hanger is an EOR item. `wood_roof_post` grades all four both ways; `lateral_system/RF-BW-CANOPY` grades the
   band braces, the plates' end bearing, the eave collector (6 `LTP4`), the chord hold-down over
   the FULL height (deck to base, 0.729) and the base shear on ONE base (0.815), plus the open
   front's chord force and couple and the drift N/A earned from SDC A. **The panel is read over

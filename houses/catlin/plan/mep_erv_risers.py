@@ -292,32 +292,25 @@ DUCTS_ERV_RISERS = [
             # PR-M-S-BATH1-TUB-DRAIN looks like it is in this lane and is not: it drops at
             # (3'-3 1/4", 34'-1 1/2") but between +10'-0 3/4" and +9'-7 15/16", in the SECOND
             # storey's floor zone. It never reaches the main deck or this riser's +5'-0".
-            # y=34'-1" since 2026-09-23: with its 2" wrap the 33'-11" station stood 1/4"
-            # inside W-M-MECH-S's face.
+            # y=34'-1" since 2026-09-23: wrapped, 33'-11" stood 1/4" inside W-M-MECH-S.
             # (2026-10-31) Over the panels' NEC 110.26(A) working space (78" AFF): south of
             # y=31'-1" the wrap's underside is 78 1/2" AFF (centre -24 15/16"), down x=3'-4"
             # under DU-B-ERV-R-SAUNA-SUP and east on y=29'-3" beside EQ-B-ERV-MAN-EXH (moved
             # 1" south for it) to its port. It holds -21" north of 31'-1" to clear DU-ERV-EA's
             # west leg. Length and elbow count are unchanged.
-            # (2026-11-05) The 3.9" step down at y=31'-1" (two 90s on an 8" duct want 8") is a pair
-            # of 30 degree bends, 7 7/8" long, from y=31'-8" to y=31'-1".
+            # (2026-11-05) The 3.9" step at y=31'-1" is two 30 degree bends, y=31'-8" to 31'-1".
             path=(pt(ft(3, 4), ft(36, 8)), pt(ft(3, 4), ft(34, 1)),
                   pt(ft(3, 4), ft(34, 1)), pt(ft(3, 4), ft(31, 8)),
                   pt(ft(3, 4), inch(373.2)), pt(ft(3, 4), ft(29, 3)),
                   pt(ft(6, 2), ft(29, 3)), pt(ft(6, 2), ft(29, 3))),
             elevations=(inch(60), inch(60), inch(-21), inch(-21),
                         inch(-24.9375), inch(-24.9375), inch(-24.9375), inch(-33.8375)),
-            # ** 8", AND THE MOVE IS WHAT PAID FOR IT. ** notes/erv_static_budget.md §7 had
-            # priced this upsize for weeks as the one remaining lever on what was then the
-            # governing supply column, and it was blocked not by money but by the chase: at
-            # the old x=2'-3 5/8" station an 8" envelope overran the shaft's east face by an
-            # inch and no re-ordering of four risers avoided it. Out here the lane between
-            # the chase conduits and PR-B-KITCH-DRAIN is 1'-10". The term fell 0.1318 ->
-            # 0.0315, which took the governing side back to EXTRACT — so §7 is now spent and
-            # the lever it named no longer exists.
+            # ** 8", AND THE MOVE IS WHAT PAID FOR IT. ** notes/erv_static_budget.md §7's
+            # upsize was blocked by the chase (at the old x=2'-3 5/8" an 8" envelope overran
+            # the shaft's east face). Out here the lane is 1'-10"; the term fell 0.1318 ->
+            # 0.0315 and handed the governing side back to EXTRACT, so §7 is spent.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
-            insulation='2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed',
-            design_cfm=DU_ERV_OA),
+            insulation='2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed', design_cfm=DU_ERV_OA),
     DuctRun(uid="BYAVBJKRS6", tag="DU-ERV-EA", system=DuctSystem.EXHAUST,
             # Manifold first, hood last — the direction the air goes, and the direction
             # `erv_outdoor_terminals` reads an EXHAUST run.
@@ -380,8 +373,7 @@ DUCTS_ERV_RISERS = [
             # shaft was sized for THIS diameter months before it was bought.
             # `AO-S-ERV-EA` grows 7" -> 9" to match.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
-            insulation='2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed',
-            design_cfm=DU_ERV_EA),
+            insulation='2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed', design_cfm=DU_ERV_EA),
     # ================== THE TWO LEVEL-2 MANIFOLD FEEDS (2026-09-20) ==================
     #
     # ** THE TWO MAIN-STOREY PLENUMS HAD NO DRAWN FEED AT ALL, AND THAT WAS A HOLE IN THE

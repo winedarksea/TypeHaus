@@ -2246,9 +2246,8 @@ PANELING = [
     # the whole face, since a lining swap is per wall, not per span. Skim and prime it to
     # paint (DensShield guide DS010).
     #
-    # Known limitation: `replaces_wall_finish` nets the paint AND the board behind the panel
-    # and cap out of `envelope_layers` (`takeoff/envelope.replaced_finish_m2`), so ~50 SF of
-    # the glass-mat backer, which genuinely stays and is bought, is not billed (#27, open).
+    # `replaces_wall_finish` nets only the paint behind the panel: a glass-mat board is the
+    # backer it is glued to, so the whole face bills (`takeoff/envelope.replaced_finish_m2`).
     WallPaneling(uid="AWV1DA0P86", tag="WP-M-BATH2-SURR", room="RM-M-BATH2",
                  material_ref="solid-surface-panel", offset=inch(6.25), height=inch(96),
                  replaces_wall_finish=True, thickness=inch(0.25),

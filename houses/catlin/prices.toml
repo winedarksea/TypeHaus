@@ -4248,7 +4248,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "gwb-c" = { material = { low = 0.45, high = 0.70 }, labour = { low = 1.1, high = 1.9 } }  # 306.5 SF: INT_2X4_STAGGERED_X_HALF's 1/2" board is Firecode C since 2026-11-06
 # 2026-11-06 fit pass (#27): GP DensShield Tile Backer 1/2" on BATH2's two closed shower walls.
 # Home Depot 855000 / Lowe's 1000721272 pages returned 403, so no price was read: UNPRICED.
-# "gwb-glass-mat" = { material = { low = ?, high = ? }, labour = { low = 1.1, high = 1.9 } }  # 48.4 SF billed (~99 SF real)
+# "gwb-glass-mat" = { material = { low = ?, high = ? }, labour = { low = 1.1, high = 1.9 } }  # both faces whole, the board behind the panel included (review 2026-11-06)
 # 2026-08-18, the plant room's liner (notes/plant_room.md). Both are $/SF of NET wall area,
 # material only, at the thickness the assembly uses.
 #   humid-room-membrane — a fully-adhered sheet air/vapour barrier, the class of product
@@ -6552,8 +6552,9 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "Uponor A5110500 1/2in metal bend support" = { low = 3.57, high = 6 }  # 8 ea
 # 2026-11-06 fit pass (#26): the fridge column hinges at the pair seam on Frigidaire's Pro door reversal kit
 # (Tall Twin Resource Guide rev 2/4/2021 p.23). Search snippets only: Electronic Express $459.99 (out of stock),
-# BrandSmart TTDRRVFRKIT2 $499 special order. Confirm the two are one part at order.
-"Frigidaire TTDRRVFRKIT Pro door reversal kit, refrigerator to left hinge (door, hinges, covers, stopper)" = { low = 460, high = 500 }  # 1 ea
+# BrandSmart TTDRRVFRKIT2 $499 special order; Slyman Bros TTDRRVFRKIT2 $579.99 (search snippet,
+# review 2026-11-06). Confirm the two are one part at order.
+"Frigidaire TTDRRVFRKIT Pro door reversal kit, refrigerator to left hinge (door, hinges, covers, stopper)" = { low = 460, high = 580 }  # 1 ea
 # 2026-08-24: the twin pairing kit for the Frigidaire column pair (plan/placeables.py, on
 # APPL-M-FRIDGE). It is a row here rather than folded into either appliance price because it
 # is ONE kit for TWO cabinets — carried on an appliance row it would read as a per-unit

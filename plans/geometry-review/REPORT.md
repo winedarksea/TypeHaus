@@ -249,8 +249,9 @@ commit; what stays open is listed under its item.
 27. **BATH2 shower backer** (C3 I2-105) · **closed, with a deviation** (`f92d8fa2e`). GP
     DensShield 1/2" (`gwb-glass-mat`, Tech Guide 622598 12/20) on both closed shower walls
     by `layer_materials`, whole faces (~99 SF, not 48: a partition with no `default_lining`
-    takes no `WallLiningException`). Open: `takeoff/envelope.replaced_finish_m2` deducts the
-    board behind the panel, so 48.4 SF bills of ~99; no readable retail price.
+    takes no `WallLiningException`). Review: `takeoff/envelope.replaced_finish_m2` no longer
+    deducts a glass-mat backer behind a band, so the whole ~99 SF bills. Open: no readable
+    retail price.
 28. **Other interiors** (C3):
     - I2-101 · closed (`c8b8033d8`): FX-TUBSHOWER-60-DIVERTED is Sterling Ensemble Medley
       71370116 (sheet 1214192-4-A); nailers 81.25 → 72". Open: the sheet's drain 8 1/4" off
@@ -273,8 +274,11 @@ commit; what stays open is listed under its item.
     equipment bands, HP2-BED/-LIVING, HP3-STAIR, garage heater: owner may veto); seat beams
     start 0.4495" off the post (pier bearing 3.64", base shear 0.815); CBSTQ66Z-SDS2 (C-C-2026
     p.85); derived IUS sized IUS2.37/11.88 (p.159); LSSR2.37Z (p.178); F3-111 already gone.
-    Open: whether note m's "abutting material" is the strap (EOR/Simpson); the garage heater
-    band height is unsourced.
+    Open: note m is a 1/8" MAXIMUM beam-end-to-carrier gap, so the 0.4495" end gap off the
+    post leaves the LUS26-2Z unrated (Simpson's gap tables stop at 3/8"); the beam bears on
+    its pack, and the hanger is an EOR/Simpson item (TODO). The garage heater band height is
+    unsourced. Review: the LSSR2.37Z header nail bills the 1-1/2" row the ridge needs, not
+    TJ-4000's 10d x 3".
 31. **Other openings and stairs** (C1):
     - E4 · closed (`f7ebbb822`): ST-M2S stringers and skirts bear on the 3/4" sheet.
     - E6 · closed except O2-110 (Eclisse detail): O2-103 casing now sees paneling, which drops

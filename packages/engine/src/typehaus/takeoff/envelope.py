@@ -156,7 +156,9 @@ def replaced_finish_m2(model: ResolvedModel) -> dict[tuple[str, str], float]:
     The band replaces the FINISH layers on its own face: the contiguous FINISH run from the
     end of the stack its outline lies against (shiplap alone over a sauna liner's furring;
     paint and gypsum on a bath wall). The far face and the layers behind are still built.
-    A band with no outline could not be placed on a face and nets nothing.
+    A glass-mat (ASTM C1178) board is a backer, what a glue-up band is set on, so the run
+    stops at it and it is bought. A band with no outline could not be placed on a face and
+    nets nothing.
     """
     walls = {wall.tag: wall for wall in model.walls}
     replaced: dict[tuple[str, str], float] = defaultdict(float)
@@ -172,7 +174,9 @@ def replaced_finish_m2(model: ResolvedModel) -> dict[tuple[str, str], float]:
                 < Polygon(layers[0].polygon).distance(outline)):
             layers.reverse()
         for layer in layers:
-            if layer.function != LayerFunction.FINISH.value:
+            material = model.plan.library.material(layer.material_ref)
+            if (layer.function != LayerFunction.FINISH.value
+                    or getattr(material, "gypsum_facer", None) == "glass-mat"):
                 break
             replaced[(wall.tag, layer.name)] += band.area_m2
     return replaced

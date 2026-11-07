@@ -1677,3 +1677,6 @@ garage  160.358 x 1.51773 + 10.39 = 253.8 lb
 ```
 
 The beam sits 1.55" on the LUS26-2Z's 2" seat. Its flange and backing are on the post face, as before.
+Its end stands 0.4495" off that face, past C-C-2026 p. 22 note m's 1/8" maximum and the 3/8"
+Simpson's gap tables reach, so 0.372 is arithmetic, not a rated reading; the beam bears on
+the pack (`canopy_west_band.md` 2026-11-06 amendment, an EOR/Simpson item).

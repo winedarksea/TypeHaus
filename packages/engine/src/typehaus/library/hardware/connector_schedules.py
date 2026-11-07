@@ -43,8 +43,10 @@ CONNECTOR_FASTENERS: dict[str, ConnectorFastening] = {
     "LSCZ": ConnectorFastening(
         "zmax", ((8, HDG_0148_15, "rim"), (8, HDG_0148_15, "stringer wide face"),
                  (1, HDG_0148_15, "stringer narrow face")), f"{_CC} p.321; " + _RECORD),
+    # 1-1/2" header nails: opposing hangers share the 3-1/2" ridge (ridge_beam_detail.md).
     "LSSR2.37Z": ConnectorFastening(
-        "zmax", ((14, HDG_10D, "header"), (12, HDG_0148_15, "joist")), _RECORD),
+        "zmax", ((14, HDG_0148_15, "header"), (12, HDG_0148_15, "joist")),
+        f"{_CC} p.178 sloped-only (14) 0.148x1-1/2 header row; " + _RECORD),
     "HU28-2Z": ConnectorFastening(
         "zmax", ((14, HDG_16D, "header"), (6, HDG_10D, "joist")),
         f"{_CC} p.114, HU28-2 Max installation"),

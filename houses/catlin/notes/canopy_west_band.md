@@ -716,7 +716,7 @@ the `kdat` variant.
   ICC-ES ESR-3096 Table 5 (A35); all read 2026-09-30. ICC-ES ESR-3050 (reissued August 2026)
   Table 2 p. 9, §4.1, fn. 4 (CBSTQ66Z-SDS2), read 2026-11-06 (Table 1, the CBSQ66, until then).
 - Simpson Strong-Tie C-C-2026 p. 85 (CBSTQ66Z-SDS2; fn. 5 lateral F1 485 / F2 1,270, C-C-2024's
-  CBSQ row until 2026-11-06), p. 22 note m (1/8" hanger gap); ICC-ES ESR-2236 (January 2026)
+  CBSQ row until 2026-11-06), p. 22 note m (1/8" maximum hanger end gap); ICC-ES ESR-2236 (January 2026)
   Fig. 1 (SDS head 0.172-0.190"); C-C-2019 p. 280 (LTP4).
 - AWC NDS 2018 Supplement Tables 4D and 5A; NDS Tables 4.3.8, 5.3.1, §3.9, §3.10, §5.3.6.
 - ACI 318-19 §10.3.1.2, §10.6.1.1. ASCE 7-16 §11.7.
@@ -747,8 +747,8 @@ grades it. Every graded number above is unchanged: hold-down 2,230.3/3,060 = 0.7
 
 **The seat beams.** With `axis="y"` the strap leaves sit on the column's E/W faces, and
 `BM-BW-HOUSE-SEAT`/`-GARAGE-SEAT` started on the east face (x 78.125"), 0.1345" inside the strap
-and its SDS heads. Simpson's gap to abutting material, fastener heads included, is ≤ 1/8"
-(C-C-2026 p. 22 note m). The beam now starts past the heads by that 1/8":
+and its SDS heads. The beam now starts 1/8" past the heads (fit-up clearance, not a catalog
+figure):
 
 ```
 gap  = 0.1345 (10 ga strap) + 0.190 (SDS head, ESR-2236 Fig. 1 max) + 0.125 = 0.4495"
@@ -759,6 +759,14 @@ LUS26-2Z seat B 2" (C-C-2026 p. 114), on the post face: 2 − 0.4495 = 1.55" of 
 pack 3 1/2" from the beam end, x 78.5745–82.0745: corner radius
         sqrt((82.0745 − 75.375)² + 1.75²) = 6.925" < 7"; clear of the strap face (78.2595)
 ```
+
+**The hanger gap is open (review, 2026-11-06).** C-C-2026 p. 22 note m is a MAXIMUM, 1/8"
+between the carried member's end and the carrying member, the gap ASTM D7147 / AC13 test at;
+Simpson's gap tables stop at 3/8". Measured off the post face the LUS26-2Z carries, the end
+gap is 0.4495", so `north_entry_piers.md` §12b's 0.372 is not a rated reading. Gravity does
+not need it: the beam bears on the 3 1/2" SS316 pack on the pier (≥ 3", R507.5.2). Whether
+the hanger stays as a tie at that gap, takes a filler notched round the strap, or goes, is an
+EOR/Simpson question (`plans/TODO.md`).
 
 **The option not taken.** Moving `PT-BW-CW`/`-CNW` north clears a 3" beam off a 3" strap centred
 on a 5 1/2" face only at 1.5 + 1.5 + 0.125 = 3.125", which leaves 2.75 − 1.5 − 3.125 = −1.875":

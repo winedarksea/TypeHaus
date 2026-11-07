@@ -116,8 +116,9 @@ HARDWARE_AND_PAINT_RESERVE_LB = (
 
 
 def panel_net_area_in2(runs):
+    # The open-ended relief runs to the north panel's own end, so it scales with `runs`.
     return sum(b - a for a, b in runs) * (FINISH_TOP_IN - FINISH_BOTTOM_IN) - (
-        PANEL_RUNS_IN[-1][1] - TIE_RELIEF_START_IN
+        runs[-1][1] - TIE_RELIEF_START_IN
     ) * (TIE_RELIEF_TOP_IN - TIE_RELIEF_BOTTOM_IN)
 
 
