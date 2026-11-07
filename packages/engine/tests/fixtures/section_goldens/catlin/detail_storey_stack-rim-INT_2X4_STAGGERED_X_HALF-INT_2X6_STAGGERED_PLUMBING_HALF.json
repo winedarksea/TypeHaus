@@ -296,8 +296,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-x",
-      "fill": "#efeae2"
+      "material": "gwb-c",
+      "fill": "#f2dcdc"
     },
     {
       "space": "model",
@@ -409,8 +409,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-x",
-      "fill": "#efeae2"
+      "material": "gwb-c",
+      "fill": "#f2dcdc"
     },
     {
       "space": "model",
@@ -1250,7 +1250,7 @@
         265.0,
         139.83687664041994
       ],
-      "text": "gwb-x 1/2\"",
+      "text": "gwb-c 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1300,7 +1300,7 @@
         271.0,
         136.04520997375326
       ],
-      "text": "gwb-x 1/2\"",
+      "text": "gwb-c 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1718,8 +1718,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb-x",
-      "fill": "#efeae2"
+      "material": "gwb-c",
+      "fill": "#f2dcdc"
     },
     {
       "space": "paper",
@@ -1756,7 +1756,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "gwb-x  1/2\"",
+      "content": "gwb-c  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

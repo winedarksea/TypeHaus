@@ -380,8 +380,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-x",
-      "fill": "#efeae2"
+      "material": "gwb-c",
+      "fill": "#f2dcdc"
     },
     {
       "space": "model",
@@ -1952,7 +1952,7 @@
         213.0,
         19.836876640419952
       ],
-      "text": "gwb-x 1/2\"",
+      "text": "gwb-c 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2565,8 +2565,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb-x",
-      "fill": "#efeae2"
+      "material": "gwb-c",
+      "fill": "#f2dcdc"
     },
     {
       "space": "paper",
@@ -2603,7 +2603,7 @@
         2.85,
         1.228
       ],
-      "content": "gwb-x  1/2\"",
+      "content": "gwb-c  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
