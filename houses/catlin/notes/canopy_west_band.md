@@ -801,7 +801,7 @@ header nails (16d HDG, 3 1/2", 0.162")  into the post 3.5 − 0.048 − 0.344 = 
 ```
 
 The hanger stays a tie and locator; gravity bears on the 3 1/2" SS316 pack (≥ 3", R507.5.2), and
-`north_entry_piers.md` §12b's 271.0 lb against 721 lb (0.372) is now read inside note m. The
+`north_entry_piers.md` §12b's 268.0 lb against 721 lb (0.372) is now read inside note m. The
 hanger's catalog row does not cover a filler between flange and carrier. Simpson publishes no
 filler installation for the LUS, so the row is used here on the strength of the full nail
 penetration. One line to Simpson closes it, and it does not gate gravity.
