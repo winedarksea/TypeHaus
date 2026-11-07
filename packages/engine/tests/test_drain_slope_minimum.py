@@ -94,7 +94,7 @@ def test_drain_slope_emits_a_code_ref(catlin_plan) -> None:
     assert findings
     for finding in findings:
         assert finding.code_ref, finding.message
-        assert "4714" in finding.code_ref
+        assert "4714" in finding.code_ref or "1346.0050" in finding.code_ref  # condensate: IMC
 
 
 def _resolved(plan):

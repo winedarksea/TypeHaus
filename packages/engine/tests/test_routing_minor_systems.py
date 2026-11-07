@@ -12,9 +12,16 @@ import pytest
 
 from typehaus.cli.route_cleanouts import place_cleanouts
 from typehaus.cli.route_roots import _landing, sleeve_hold, sump_endpoints
-from typehaus.quantities import inch
+from typehaus.quantities import M_PER_IN, inch
 from typehaus.routing.campaign import order_targets
-from typehaus.routing.gravity import CONDENSATE_SLOPE_IN_PER_FT, minimum_slope
+from typehaus.routing.gravity import (
+    CONDENSATE_LADDER,
+    CONDENSATE_SLOPE_FLOOR_IN_PER_FT,
+    CONDENSATE_SLOPE_IN_PER_FT,
+    graded_route,
+    minimum_slope,
+    shallow_penalty,
+)
 
 
 def _in(*values: float) -> list[float]:
@@ -31,12 +38,47 @@ def test_a_condensate_run_lands_where_it_was_authored_not_at_the_chains_end() ->
     assert z == pytest.approx(inch(-20.406).meters, abs=inch(0.001).meters)
 
 
-def test_condensate_grade_is_the_engines_own_drain_grade() -> None:
-    """Pinned so the cited constant cannot drift from what ``mep.drain_slope`` grades."""
-    assert minimum_slope(inch(0.75).meters) == CONDENSATE_SLOPE_IN_PER_FT
-    assert minimum_slope(inch(0.75).meters, sanitary=False) == CONDENSATE_SLOPE_IN_PER_FT
-    # Note §5: PR-M-COND-HEADS develops 8.000 ft and owes 2.000" of fall at that grade.
-    assert 8.0 * minimum_slope(inch(0.75).meters, sanitary=False) == pytest.approx(2.0)
+def test_condensate_is_a_quarter_inch_target_over_an_eighth_inch_code_floor() -> None:
+    """Note §5: 8.000 ft owes 2.000" at 1/4, 1.500" at 3/16, 1.000" at 1/8 (IMC 307.2.1)."""
+    assert minimum_slope(inch(0.75).meters) == CONDENSATE_SLOPE_IN_PER_FT == 0.25
+    assert minimum_slope(inch(0.75).meters, sanitary=False) == 0.25
+    assert CONDENSATE_SLOPE_FLOOR_IN_PER_FT == 0.125
+    assert [8.0 * g for g in CONDENSATE_LADDER] == pytest.approx([2.0, 1.5, 1.0])
+    # Two bends (48") per 1/16"/ft below the target; none at it.
+    assert [shallow_penalty(g) for g in CONDENSATE_LADDER] == pytest.approx([0.0, 48.0, 96.0])
+
+
+def _lane_world(*, s_extra: float = 0.0, required_in: float = 114.0):
+    """§8's two lanes (cheap L under a truss web, dear S), S optionally dearer still."""
+    from test_gravity_search import _truss, _world
+
+    from typehaus.routing.gravity_search import GravityProblem, sloped_route
+
+    graph, space = _world()
+    for key in ((1, 2), (2, 1)):
+        graph.weights[key] += s_extra
+    problem = GravityProblem(ceiling_m=116.5 * M_PER_IN, grade_in_per_ft=0.25, diameter_m=0.0,
+                             required_m={3: required_in * M_PER_IN})
+    return graded_route(lambda p: sloped_route(graph, space, 0, {3}, p, constraints=_truss),
+                        problem, CONDENSATE_LADDER)
+
+
+def test_the_router_stays_at_a_quarter_when_a_shallower_grade_saves_little() -> None:
+    # 3/16 frees the cheap lane (84 vs 96) but 12 in saved < the 48 in penalty.
+    found = _lane_world()
+    assert found.grade_in_per_ft == 0.25 and found.nodes == [0, 1, 2, 3]
+
+
+def test_the_router_goes_shallower_only_when_it_clearly_pays() -> None:
+    found = _lane_world(s_extra=100.0)  # S now 196: 84 + 48 at 3/16 wins, 1/8 would be 180
+    assert found.grade_in_per_ft == 0.1875 and found.nodes == [0, 4, 5, 6, 7, 3]
+    assert "saved" in found.grade_note
+
+
+def test_the_router_takes_the_floor_when_the_target_refuses() -> None:
+    # Tie at 115.5": S (6 ft) owes 1.50 / 1.125 / 0.75 in of fall from 116.5; only 1/8 fits.
+    found = _lane_world(required_in=115.5)
+    assert found.grade_in_per_ft == 0.125 and "target is refused" in found.grade_note
 
 
 def test_no_cleanouts_on_a_run_that_is_not_sanitary() -> None:
@@ -90,3 +132,29 @@ def test_an_endpoint_miss_becomes_a_structured_refusal(catlin_model_ro, monkeypa
     payload = refused.payload()
     assert payload["element"] == "PR-NOBODY" and "discharge_line_ref" in payload["fix"]
     assert "no sump pump names it" in payload["cause"] and payload["blockers"] == []
+
+
+def _condensate(*, grade: float, sanitary: bool = False):
+    run = SimpleNamespace(tag="PR-T-COND", system="drain", sanitary=sanitary,
+                          diameter_m=inch(0.75).meters, length_m=1.0,
+                          path=[(0.0, 0.0), (8 * 0.3048, 0.0)],
+                          z_m=[0.0, -8 * grade * M_PER_IN])
+    return SimpleNamespace(model=SimpleNamespace(pipe_runs=[run]))
+
+
+def test_condensate_below_an_eighth_fails_and_below_a_quarter_advises() -> None:
+    """IMC 2018 307.2.1 is the FAIL line; 1/4" is the house target, so a PASS with a prefix."""
+    from typehaus.checks.mep.plumbing_dwv import drain_slope
+    from typehaus.findings import Result
+
+    (fail,) = drain_slope(_condensate(grade=0.10))
+    assert fail.result is Result.FAIL and "307.2.1" in fail.message
+    (shallow,) = drain_slope(_condensate(grade=0.1875))
+    assert shallow.result is Result.PASS and shallow.message.startswith("ADVISORY")
+    (floor,) = drain_slope(_condensate(grade=0.125))
+    assert floor.result is Result.PASS
+    (target,) = drain_slope(_condensate(grade=0.25))
+    assert target.result is Result.PASS and not target.message.startswith("ADVISORY")
+    # A sanitary drain at 3/16 is still UPC 708.0's FAIL.
+    (sanitary,) = drain_slope(_condensate(grade=0.1875, sanitary=True))
+    assert sanitary.result is Result.FAIL and "708.0" in sanitary.message

@@ -23,9 +23,12 @@ from typehaus.engineering.item import Oracle
 ORACLES: dict[str, tuple[Oracle, ...]] = {
     "gravity": (Oracle(note="mep_drain_routing_basis.md", section="§2",
                        test="tests/test_routing_oracle.py"),
-                # Condensate grade is a cited basis: PR-M-COND-HEADS 8.000 ft x 1/4 = 2.000".
-                Oracle(note="mep_condensate_routing_basis.md", section="§4, §5",
+                # -- W3-SLOPE --
+                # Condensate: 1/4 target, IMC 307.2.1 floor 1/8; PR-M-COND-HEADS 8.000 ft owes
+                # 2.000 / 1.500 / 1.000" at 1/4 / 3/16 / 1/8, and the penalty picks (§5.1).
+                Oracle(note="mep_condensate_routing_basis.md", section="§4, §5, §5.1, §8",
                        test="tests/test_routing_minor_systems.py"),
+                # -- /W3-SLOPE --
                 Oracle(note="mep_drain_routing_basis.md", section="§14",
                        test="tests/test_routing_trap_vent.py"),),
     "corridors": (Oracle(note="mep_drain_routing_basis.md", section="§3",

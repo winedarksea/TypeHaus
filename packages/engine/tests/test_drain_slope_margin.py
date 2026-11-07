@@ -50,7 +50,9 @@ def test_the_engine_default_is_a_sixteenth(catlin_plan, catlin_model_ro) -> None
     # PR-A-STUBATH-DRAIN joined 2026-11-01: its drop moved mid-bay to y=19'-7" (W-S-DC2's
     # stud-005) and its flattest leg is 0.311"/ft, +0.061 over the minimum. The 905 vent pass
     # (2026-11-05) added BATH2's tub and shower arms and the suite WC's loop at ~1/4"/ft.
-    assert len(fails) == 23
+    # 2026-11-07: condensate (sanitary=False) left this check for mep.drain_slope's IMC
+    # 307.2.1 floor + 1/4 ADVISORY, taking PR-B-COND and PR-M-COND-HEADS off the list.
+    assert len(fails) == 21
     assert all(f.severity is Severity.WARN for f in fails), "ADVISORY, not a permit blocker"
 
 

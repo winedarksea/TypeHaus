@@ -26,6 +26,10 @@ from typehaus.model.enums import Service
 from typehaus.model.mep import VentRun
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.mep_slope import (
+    CONDENSATE_CITATION,
+    CONDENSATE_CODE,
+    CONDENSATE_FLOOR_IN_PER_FT,
+    CONDENSATE_PREFERRED_IN_PER_FT,
     minimum_drain_slope_in_per_ft,
     reduced_slope_approval_is_valid,
 )
@@ -46,6 +50,41 @@ _UPC_CODE = "MN Plumbing Code (ch. 4714) 708.0"
 _TERMINATION_TOLERANCE_M = 0.0254  # 1"
 
 
+def _condensate_slope(run) -> Finding:
+    """IMC 2018 307.2.1: FAIL below 1/8"/ft; PASS with an ADVISORY prefix below the 1/4 target."""
+    cid, floor, target = "mep.drain_slope", CONDENSATE_FLOOR_IN_PER_FT, \
+        CONDENSATE_PREFERRED_IN_PER_FT
+    tags = (run.tag,)
+    if run.z_m is not None and len(run.z_m) == len(run.path):
+        grades = []
+        for i in range(len(run.path) - 1):
+            a, b = run.path[i], run.path[i + 1]
+            plan_ft = (((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5) * _M_TO_FT
+            if plan_ft > VERTICAL_PLAN_FT:
+                grades.append(((run.z_m[i] - run.z_m[i + 1]) / M_PER_IN / plan_ft, i))
+        if not grades:
+            return _pass(cid, f"condensate run {run.tag} is all vertical drop — no horizontal "
+                              "segment to hold slope", tags, code=CONDENSATE_CODE)
+        flat, seg = min(grades)
+        where = f"segment {seg} at its flattest"
+    elif run.z_start_m is not None and run.z_end_m is not None and run.length_m > 1e-9:
+        flat = (run.z_start_m - run.z_end_m) / M_PER_IN / (run.length_m * _M_TO_FT)
+        where = "overall"
+    else:
+        return _unknown(cid, f"condensate run {run.tag} has no authored inverts to check",
+                        tags, code=CONDENSATE_CODE)
+    if flat < floor - 1e-9:
+        return _fail(cid, f"condensate run {run.tag} {where} slopes {flat:.3f}\"/ft, below "
+                          f"the {floor}\"/ft minimum — {CONDENSATE_CITATION}", tags,
+                     code=CONDENSATE_CODE)
+    held = f"condensate run {run.tag} {where} slopes {flat:.3f}\"/ft, >= {floor}\"/ft"
+    if flat < target - 1e-9:
+        return _pass(cid, f"ADVISORY — {held} (code), under the {target}\"/ft this house "
+                          f"prefers: a preference, not a code line — {CONDENSATE_CITATION}",
+                     tags, code=CONDENSATE_CODE)
+    return _pass(cid, f"{held} — {CONDENSATE_CITATION}", tags, code=CONDENSATE_CODE)
+
+
 @check(Tier.CODE, "mep.drain_slope")
 def drain_slope(ctx: CheckContext) -> list[Finding]:
     """Per-segment where the run carries a routed 3D path; whole-run for legacy inverts.
@@ -58,10 +97,17 @@ def drain_slope(ctx: CheckContext) -> list[Finding]:
     size. ``resolve/mep_slope.minimum_drain_slope_in_per_ft`` is the one owner of that rule
     and of the sentence to cite for it, so this check and ``routing/gravity`` cannot reach
     different answers about whether a route is feasible.
+
+    **Condensate (``sanitary=False``) is IMC 2018 307.2.1's, not UPC 708.0's:** 1/8"/ft is the
+    FAIL line, and a PASS between 1/8 and 1/4 carries an ADVISORY prefix, because 1/4 is the
+    house target and a preference is not code.
     """
     out: list[Finding] = []
     for run in ctx.model.pipe_runs:
         if run.system != "drain":
+            continue
+        if not run.sanitary:
+            out.append(_condensate_slope(run))
             continue
         approval = getattr(run, "reduced_slope_approval", None)
         if not reduced_slope_approval_is_valid(run.diameter_m, approval):

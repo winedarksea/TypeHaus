@@ -1,7 +1,7 @@
 # One condensate line, by hand — `PR-M-COND-HEADS`
 
 **House:** catlin. **Run:** `PR-M-COND-HEADS`, the two main-storey heat-pump heads' collected
-3/4" air-gap line. **Oracle for:** the condensate slope term in `routing/gravity.py` (or
+3/4" air-gap line. **Oracle for:** the condensate grade ladder in `routing/gravity.py` (`graded_route`), `mep.drain_slope`'s condensate branch (or
 `trades/pipe.py`) and the `sanitary=False` path in `cli/route_cleanouts.py` / `cli/route_roots.py`
 (E5). **Written:** 2026-11-07, wave 0, before the code. Companions: `mep_drain_routing_basis.md`
 §2 (the head budget) and §8 (a drain searched where it falls); this note does not repeat them.
@@ -62,37 +62,75 @@ over the floor** at (162, 98.188, -100.438), the air gap over `FX-B-SAUNA-FD` (s
 
 ## 4. The pipe, and the slope required
 
-**Size.** 3/4" nominal, 1.050" OD (IPS series, `pipe_sections.IPS_OD_IN`; PVC is not tube). The
-code minimum diameter for a condensate drain is **unread**: no mechanical-code text (IMC 2018
-307.2.2, adopted as Minn. R. ch. 1346, or IRC M1411.3.1) is on file in this repo; the only mention
-is `equipment_types.py`'s "IRC M1411.3 / IMC 307.2.3" for the emergency pan, which says nothing
-about slope. Rheem's installation sheet is read second-hand in `notes/water_service.md` §2:
-"Rheem: pitch >= 1/8"/ft, 3/4" minimum, never into the heater's own pan, trap only if it meets a
-sewer (it ends at an air gap)."
+**Code, as read (2026-11-07).** Minn. R. 1346.0050 (revisor.mn.gov/rules/1346.0050/, read): "Chapters 2
+to 15 of the 2018 edition of the International Mechanical Code ... are incorporated by reference ...
+as amended in this chapter." Minn. R. 1346.0307 (revisor.mn.gov/rules/1346.0307/, read) is the whole
+state amendment to IMC section 307: "IMC section 307.3 is deleted in its entirety", so 307.2 stands.
+The IMC text itself: codes.iccsafe.org returned HTTP 403, so it was read at **up.codes**
+(`up.codes/viewer/minnesota/imc-2018/chapter/3/general-regulations`, a secondary transcription served
+through a summarising fetch, so the wording below is its paraphrase, not a quotation):
 
-**Slope.** What the engine grades today is **1/4" per foot, at every size, on every `system ==
-drain` run, sanitary or not**: `resolve/mep_slope.py`, "UPC 708.0 is 1/4" per foot at every size",
-read by `routing/gravity.minimum_slope(diameter_m)` (no argument for a condensate line),
-`mep.drain_slope` and `mep.drain_slope_margin`. A condensate-specific minimum (IMC 307.2.2's, if it
-is what governs) is **not on file**: do not encode 1/8" from this note or from memory. Until the
-code is read E5 should add the parameter with the engine's present 0.25 as the default and keep
-0.125 behind a cited source; the target's outcome does not depend on it (§5).
+* **307.2.1 Condensate disposal**: condensate piping "shall maintain a minimum horizontal slope in the
+  direction of discharge" of not less than **1/8 unit vertical in 12 horizontal (1 percent)**.
+* **307.2.2 Drain pipe materials and sizes**: not less than **3/4" internal diameter**, not decreasing
+  from the drain-pan connection to the point of disposal; Table 307.2.2 sizes by capacity (up to 20 tons:
+  3/4"). The table carries no slope.
+
+The repo's earlier "IMC 307.2.2" cite for the slope was the wrong section: 307.2.1 is the slope,
+307.2.2 the size. (`equipment_types.py`'s "IRC M1411.3 / IMC 307.2.3" for the emergency pan is not
+re-read here.) Owner decision (2026-11-07): **1/4"/ft is a target, 1/8" the floor.**
+
+**Size.** 3/4" nominal is 3/4" ID only if the pipe is; 3/4" sch 40 PVC is 0.824" ID (1.050" OD, IPS
+series, `pipe_sections.IPS_OD_IN`; PVC is not tube), so it clears 307.2.2.
+
+**Slope.** For a `sanitary=False` drain the engine now applies **IMC 307.2.1**, not UPC 708.0, in
+three places that read one owner, `resolve/mep_slope.py` (`CONDENSATE_FLOOR_IN_PER_FT` 0.125,
+`CONDENSATE_PREFERRED_IN_PER_FT` 0.25):
+
+* `mep.drain_slope`: flattest segment below 1/8 FAILs (307.2.1); from 1/8 up to 1/4 it PASSes with an
+  "ADVISORY — house prefers 1/4" prefix (a house preference is not code); at or over 1/4 a plain PASS.
+  A sanitary drain is unchanged (UPC 708.0, 1/4).
+* `routing/gravity.graded_route`: lays at 1/4 and takes 3/16 or 1/8 only when cheaper (§5.1).
+* `mep.drain_slope_margin` skips `sanitary=False` runs; `mep.drain_slope`'s advisory owns them.
+
+(`sanitary=False` also covers the T&P relief line `PR-B-WH-TPR`, which IMC 307 does not govern; it
+passes either way at 1.48"/ft, and who grades a relief discharge's fall is an open owner question.)
 
 ## 5. Fall available vs required
 
     developed plan run                      96.000 in = 8.000 ft
-    required at 1/4 in/ft (engine today)    8.000 x 0.250 = 2.000 in
-    required at 1/8 in/ft (Rheem, unread code)   8.000 x 0.125 = 1.000 in
+    required at 1/4 in/ft (target)          8.000 x 0.250 = 2.000 in
+    required at 3/16 in/ft                  8.000 x 0.1875 = 1.500 in
+    required at 1/8 in/ft (code floor)      8.000 x 0.125 = 1.000 in
     authored fall on leg 2                  2.400 in   (0.300 in/ft)
     margin                                  +0.400 in over 1/4 (0.050 in/ft); +1.400 over 1/8
 
 The whole head is 30.000 - (-20.406) = **50.406 in**; the 48.006" vertical takes all but the
 2.400" the horizontal leg spends, so slope is not the binding constraint: 2.000 / 50.406 = **4.0%**
-of the head. At the router's minimum (it proposes at `minimum_slope`, never steeper,
-`gravity.py`) the vertical lands at -20.406 + 2.000 = **-18.406** (0.400" lower than authored) and
-the proposal's leg 2 holds exactly 0.250 in/ft. That passes `mep.drain_slope` but reads as a
-thin pass on `mep.drain_slope_margin`, whose threshold is a house preference
-(`min_drain_slope_margin_in_per_ft`), as `PR-B-COND` at 0.26 does.
+of the head. At the target (it proposes at the grade it chose, never steeper, `gravity.py`) the
+vertical lands at -20.406 + 2.000 = **-18.406** (0.400" lower than authored) and leg 2 holds exactly
+0.250 in/ft: a plain PASS on `mep.drain_slope`. The authored 0.300 is also a plain PASS; a leg at
+0.1875 would be the ADVISORY PASS, one at 0.10 a FAIL (8 x 0.10 = 0.800" < 1.000").
+
+### 5.1 When the shallower grade wins
+
+The search is run at each grade of (1/4, 3/16, 1/8) and a route scores `cost + P x (0.25 - grade)`,
+`P = 768` in of equivalent travel per in/ft (`CONDENSATE_SHALLOW_PENALTY`): 48 in at 3/16 and 96 in
+at 1/8, the price of two and four 24" bends. Hand-worked on the drain oracle's two lanes
+(`mep_drain_routing_basis.md` §8: cheap lane L 84 in, 10 ft, under a truss web whose window floor is
+115.50"; dear lane S 96 in, 6 ft; ceiling 116.50", tie 114.00"):
+
+| grade | L: fall over its 5 ft at the web | clears 115.50"? | winner and score |
+|---|---|---|---|
+| 1/4 | 1.250" -> 115.25" | no | S, 96 + 0 = **96** |
+| 3/16 | 0.9375" -> 115.5625" | yes | L, 84 + 48 = 132 (loses to 96) |
+| 1/8 | 0.625" -> 115.875" | yes | L, 84 + 96 = 180 |
+
+So with S as authored the target holds: shallower saves 12 in, under the 48 in it costs. Make S dearer
+by 100 in (196): 3/16 gives L at 84 + 48 = **132** against S's 196, and 1/8 gives 180, so **3/16 wins**
+(a saving of 112 in against a 48 in penalty). Raise the tie to 115.50": S needs 1.50 / 1.125 / 0.75" of
+fall from 116.50" and arrives at 115.00 / 115.375 / 115.75", so only **1/8** fits, and it is taken
+because the target refuses. `tests/test_routing_minor_systems.py` pins all three cases.
 
 ## 6. Expected outcome
 
@@ -137,8 +175,10 @@ gets an "upper terminal" requirement at `sanitary=True` and none at `sanitary=Fa
 
 ## 8. Not done
 
-* No code text for a condensate drain's minimum size or slope has been read; the 1/8" figure is
-  Rheem's, second-hand. Reading IMC 2018 §307.2.2 (via Minn. R. 1346) closes both.
+* The IMC text came from up.codes (a secondary transcription, paraphrased by the fetch), not the ICC
+  site (HTTP 403); the 1/8 and 3/4" figures agree with the owner's reading and with Rheem's sheet
+  (`water_service.md` §2). A printed copy of 307.2.1/307.2.2 should replace it before a permit set.
+* 307.2.2's 3/4" ID is met by 3/4" sch 40 PVC; the "no decrease from the pan" rule is not graded.
 * The two heads' hoses to the pickup are undrawn; their fall to the pickup (18" and 30" of plan)
   is ungraded.
 * No freeze or heat-trace grading (`PipeRun.freeze_protection`): the line is inside the heated

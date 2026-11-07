@@ -404,7 +404,7 @@ def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None)
     runs use plain A*; vent/radon searches use rising=True and may never lose elevation."""
     from typehaus.cli.route_fixture_vent import arm_problem
     from typehaus.routing.fitting_room import fitting_terms
-    from typehaus.routing.gravity import minimum_slope
+    from typehaus.routing.gravity import CONDENSATE_LADDER, graded_route, minimum_slope
     from typehaus.routing.gravity_band import (
         band_obstacles,
         member_constraints,
@@ -427,6 +427,8 @@ def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None)
     constraints = member_constraints(model, graph, band)
     grade = slope if slope is not None else minimum_slope(
         ends.diameter_m, sanitary=bool(ends.echo.get("sanitary", True)))
+    ladder = CONDENSATE_LADDER if slope is None and not ends.echo.get("sanitary", True) \
+        else None
 
     def search(a_graph, a_space, start, goals):
         tied = len(goals)
@@ -454,8 +456,10 @@ def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None)
             return None
         if arm:
             problem = replace(problem, **arm)
-        found = sloped_route(a_graph, a_space, start, goals, problem,
-                             constraints=constraints, refusal=report, obstacles=obstacles)
+        found = graded_route(
+            lambda p: sloped_route(a_graph, a_space, start, goals, p, constraints=constraints,
+                                   refusal=report, obstacles=obstacles),
+            problem, ladder)
         if found is not None and found.takeoff is not None:
             found.vent, found.wet = vent, wet.get(found.takeoff)
         return found

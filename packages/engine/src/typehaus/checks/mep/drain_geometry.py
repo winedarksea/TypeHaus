@@ -299,6 +299,8 @@ def drain_slope_margin(ctx: CheckContext) -> list[Finding]:
                          "margin over")]
     out: list[Finding] = []
     for run in drains:
+        if not run.sanitary:
+            continue  # condensate: mep.drain_slope's IMC 307.2.1 floor and 1/4 ADVISORY
         if run.z_m is None or len(run.z_m) != len(run.path):
             continue
         flattest: tuple[float, int] | None = None

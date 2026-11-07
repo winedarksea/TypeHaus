@@ -25,22 +25,78 @@ from dataclasses import dataclass
 from typing import Any
 
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.mep_slope import (
+    CONDENSATE_FLOOR_IN_PER_FT,
+    CONDENSATE_PREFERRED_IN_PER_FT,
+)
 
-#: Condensate (``sanitary=False``) takes the drain grade: ``mep.drain_slope`` grades every
-#: ``system == "drain"`` run at it, sanitary or not. No IMC 307.2.2 / IRC M1411.3.1 text is on
-#: file, and Rheem's 1/8"/ft is second-hand (``notes/water_service.md`` §2), so it is NOT
-#: encoded: reading the code is what would change this row (condensate basis §4, §8).
-CONDENSATE_SLOPE_IN_PER_FT = 0.25
+# Condensate (``sanitary=False``) has a code floor and a house target, not one grade. IMC
+# 2018 307.2.1 (Minn. R. 1346.0050) floors it at 1/8"/ft; the house lays at 1/4 and goes
+# shallower only when that pays (basis note ``mep_condensate_routing_basis.md`` §4, §5, §8).
+CONDENSATE_SLOPE_IN_PER_FT = CONDENSATE_PREFERRED_IN_PER_FT
+CONDENSATE_SLOPE_FLOOR_IN_PER_FT = CONDENSATE_FLOOR_IN_PER_FT
+#: Grades tried, steepest first: 1/4, 3/16, 1/8.
+CONDENSATE_LADDER = (CONDENSATE_PREFERRED_IN_PER_FT, 0.1875, CONDENSATE_FLOOR_IN_PER_FT)
+#: Cost, in inches of equivalent travel (``routing/cost.py``'s unit), per in/ft of grade below
+#: 1/4: 768 = 48" per 1/16"/ft, the price of two bends (``bend_in`` 24), so a shallower grade
+#: must save over 4 ft of run or two fittings per step to win.
+CONDENSATE_SHALLOW_PENALTY = 768.0
 CONDENSATE_SLOPE_BASIS = (
-    f'condensate falls at {CONDENSATE_SLOPE_IN_PER_FT:g}"/ft, the grade mep.drain_slope '
-    "applies to every drain run; no condensate-specific code text is on file "
-    "(mep_condensate_routing_basis.md §4)")
+    f'condensate is laid at {CONDENSATE_SLOPE_IN_PER_FT:g}"/ft and goes as shallow as '
+    f'{CONDENSATE_SLOPE_FLOOR_IN_PER_FT:g}"/ft (IMC 2018 307.2.1, Minn. R. 1346.0050) only '
+    "where that clearly shortens the route (mep_condensate_routing_basis.md §4, §5)")
+
+
+def shallow_penalty(grade_in_per_ft: float) -> float:
+    """What a grade below the 1/4"/ft target costs a condensate route, in inches of travel."""
+    return CONDENSATE_SHALLOW_PENALTY * max(0.0, CONDENSATE_SLOPE_IN_PER_FT - grade_in_per_ft)
+
+
+def graded_route(search: Callable[[Any], Any], problem: Any,
+                 ladder: Sequence[float] | None = None) -> Any:
+    """Lay at the first grade of ``ladder``; take a shallower one only if it costs less.
+
+    ``search(problem)`` is one ``sloped_route``. Each route is scored ``cost + shallow_penalty``;
+    ties keep the steeper grade, and a grade whose search refuses is skipped. The winner
+    carries ``grade_in_per_ft`` and a ``grade_note`` saying why. A ``ladder`` of None or one
+    grade is the plain search.
+    """
+    from dataclasses import replace
+
+    if not ladder or len(ladder) == 1:
+        return search(problem)
+    best: tuple[float, float, Any] | None = None
+    first: float | None = None
+    for grade in ladder:
+        found = search(replace(problem, grade_in_per_ft=grade))
+        if found is None:
+            continue
+        if first is None and grade == ladder[0]:
+            first = found.cost
+        score = found.cost + shallow_penalty(grade)
+        if best is None or score < best[0] - 1e-9:
+            best = (score, grade, found)
+    if best is None:
+        return None
+    _score, grade, found = best
+    found.grade_in_per_ft = grade
+    if grade >= ladder[0] - 1e-9:
+        found.grade_note = f'laid at the {grade:g}"/ft target'
+    elif first is None:
+        found.grade_note = f'laid at {grade:g}"/ft: the {ladder[0]:g}"/ft target is refused'
+    else:
+        found.grade_note = (
+            f'laid at {grade:g}"/ft: '
+            f'{first - found.cost:.0f} in of route saved against a '
+            f'{shallow_penalty(grade):.0f} in penalty')
+    return found
 
 
 def minimum_slope(diameter_m: float, *, sanitary: bool = True) -> float:
     """The grade this diameter must hold, in inches per foot of developed plan run.
 
-    ``sanitary=False`` (condensate, indirect waste) takes :data:`CONDENSATE_SLOPE_IN_PER_FT`.
+    ``sanitary=False`` (condensate, indirect waste) takes the 1/4" target; :func:`graded_route`
+    may go down to :data:`CONDENSATE_SLOPE_FLOOR_IN_PER_FT`.
 
     **One owner, in ``resolve/mep_slope.py``**, which both this module and ``checks/`` may
     import and which neither may reach through the other. The pair of numbers used to be

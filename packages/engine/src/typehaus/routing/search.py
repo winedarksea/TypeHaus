@@ -75,6 +75,9 @@ class Route:
     wet: Any = None
     #: The vent side of a fixture's pair (``cli/route_fixture_vent.VentContext``), or None.
     vent: Any = None
+    #: The grade a condensate route was laid at, and why (``gravity.graded_route``), or unset.
+    grade_in_per_ft: float | None = None
+    grade_note: str = ""
 
     def polyline(self) -> list[tuple[float, float, float]]:
         """The path with collinear interior vertices removed — what a proposal prints.

@@ -43,7 +43,10 @@ def one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
         return None
     notes: list[str] = lead_notes
     if ends.falls:
-        grade = slope if slope is not None else minimum_slope(ends.diameter_m)
+        grade = slope if slope is not None else (
+            getattr(found, "grade_in_per_ft", None) or minimum_slope(ends.diameter_m))
+        if getattr(found, "grade_note", ""):
+            notes.append(f"condensate {found.grade_note}")
 
         def fall(plan: list) -> tuple[list, str] | None:
             developed_ft = sum(((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5

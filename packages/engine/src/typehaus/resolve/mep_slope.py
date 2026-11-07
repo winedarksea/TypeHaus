@@ -202,3 +202,19 @@ def reduced_slope_approval_is_valid(diameter_m: float, approval: str | None) -> 
     not reach that pipe, so no building official could have approved what the run claims.
     """
     return not approval or diameter_m >= REDUCED_SLOPE_MIN_DIAMETER_M - 1e-9
+
+
+# ---------------------------------------------------------------------------
+# Condensate: a code floor and a house target (not UPC 708.0, which is the sanitary rule).
+# ---------------------------------------------------------------------------
+# Minn. R. 1346.0050 adopts IMC 2018 chapters 2-15; 1346.0307 deletes only 307.3. IMC 307.2.1
+# gives condensate piping a horizontal slope of not less than 1/8 unit in 12 (1%); 307.2.2
+# sets 3/4" ID minimum, not decreasing from the pan (basis note ``mep_condensate_routing_basis``).
+
+#: The code floor for condensate (``sanitary=False`` drains), in/ft.
+CONDENSATE_FLOOR_IN_PER_FT = 0.125
+#: The house target: lay at this, go shallower only when it clearly pays off.
+CONDENSATE_PREFERRED_IN_PER_FT = 0.25
+CONDENSATE_CODE = "MN Mechanical Code (Minn. R. 1346.0050, IMC 2018) 307.2.1"
+CONDENSATE_CITATION = (f"{CONDENSATE_CODE} — horizontal slope not less than 1/8\" per foot "
+                       "(1%)")
