@@ -10,7 +10,7 @@ from itertools import pairwise
 from typing import TYPE_CHECKING
 
 from typehaus.model.base import HausModel
-from typehaus.model.doorway import DoorwayProductSpec, DoorwayTreatment
+from typehaus.model.doorway import BARE_FINISH, DoorwayProductSpec, DoorwayTreatment
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.geometry_door_products import finish_faces
 from typehaus.resolve.room_floor import SLAB_MATCH_TOLERANCE_M
@@ -236,7 +236,7 @@ def resolve_doorway(model, wall, opening, door_type=None, treatment=None):
                 continue
             if not known:
                 continue
-            pair = (floors[0].finish_ref, floors[1].finish_ref)
+            pair = tuple(f.finish_ref or BARE_FINISH for f in floors)
             difference = floors[1].surface_m - floors[0].surface_m
             if abs(difference) > DOORWAY.height_tolerance_m:
                 if spec.higher_floor_side is None:

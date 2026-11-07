@@ -114,6 +114,14 @@ def test_stock_cold_uppers_preserve_hinge_clearance_and_appliance_joint(
     assert rail_screw_elevation < backing.elevation.meters + backing.height.meters
 
 
+def test_refrigerator_rehinged_at_the_pair_seam_swings_clear_of_the_partition(kitchen_objects):
+    # Factory right hinge + TTDRRVFRKIT: the 90 deg zone mirrors to the seam (south) side.
+    swing = [ring for ring in kitchen_objects["APPL-M-FRIDGE"].recommended_clearances
+             if Polygon(ring).bounds[1] / INCH < 361.5625 - 3.0]
+    assert len(swing) == 1
+    assert Polygon(swing[0]).bounds[3] / INCH < 394.75  # W-M-PAN-S face
+
+
 def test_sink_centres_on_fixed_window_and_drain_components_move_together(catlin_model_ro):
     objects = {item.tag: item for item in catlin_model_ro.canvas_objects}
     sink = objects["FX-M-KITCH-SINK"]

@@ -121,9 +121,10 @@ check fails if the floors move.
 | `D-B-SAUNA` | stall mat down 3/4 in to the sealed slab | bevelled rubber reducer |
 | `D-B-BATH` | sheet vinyl down 0.12 in to the slab | rubber reducer for 1/8-in sheet |
 | `D-A-HALVES` | oak down 0.63 in to vinyl | site-milled 3/4-in oak reducer |
+| `D-A-STUDY` | oak down 0.75 in to bare subfloor | site-milled oak nosing |
+| `D-A-POCKET` | sheet vinyl down 0.12 in to bare subfloor | rubber reducer for 1/8-in sheet, sealed |
 
-Still open: `D-A-STUDY` and `D-A-POCKET` open onto unfinished subfloor (no finish to pair
-with), and `D-M-MECH`'s mechanical-room floor has no finish over part of the doorway. `D-M-STUDY` has plank on both sides
+A bare deck pairs as `BARE_FINISH` ("bare", `model/doorway.py`). Still open: `D-M-MECH`'s mechanical-room floor has no finish over part of the doorway. `D-M-STUDY` has plank on both sides
 now: no reducer.
 
 ## Exterior entry section, schematic

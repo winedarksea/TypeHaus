@@ -38,7 +38,11 @@ def _door(model):
     door_type = next(t for t in model.plan.library.door_types if t.tag == door.type_ref)
     parts = opening_parts(model.wall(door.host_wall), door, door_type.operation,
                           bookcase_door=door_type.bookcase_door)
-    return door, door_type, parts
+    # The oak nosing (a swept doorway section, inside the wall) is not the cabinet.
+    keys = {part.key for part in parts}
+    assert keys - {"doorway:transition:reducer"} == {
+        "bookcase_sides", "bookcase_caps", "bookcase_shelves", "bookcase_back"}
+    return door, door_type, [part for part in parts if not part.key.startswith("doorway:")]
 
 
 def _bounds_in(geometry):
@@ -47,8 +51,6 @@ def _bounds_in(geometry):
 
 def test_cabinet_sits_in_the_rough_opening_flush_with_the_study_face(catlin_model_ro):
     door, door_type, parts = _door(catlin_model_ro)
-    assert {part.key for part in parts} == {"bookcase_sides", "bookcase_caps",
-                                            "bookcase_shelves", "bookcase_back"}
     cabinet = unary_union([Polygon(solid.ring) for part in parts for solid in part.solids])
     x0, y0, x1, y1 = _bounds_in(cabinet)
     # Face frame on the study finish (nothing over FO-A-STAIR), back 3 3/4" past the loft

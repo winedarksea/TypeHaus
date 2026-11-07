@@ -146,6 +146,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                     Severity.WARN))
             zones = _resolved_clearance_zones(
                 product_type, center, rotation, plan.project.active_code_profile,
+                mirrored=_rehinged(product_type, item),
             )
             resolved_objects.append(ResolvedCanvasObject(
                 uid=item.uid, tag=item.tag, storey=storey.tag, domain=domain,
@@ -389,19 +390,26 @@ def _is_required(zone: object) -> bool:
     return zone.policy.value == "required"
 
 
+def _rehinged(product_type: object | None, item: object) -> bool:
+    """An appliance hung on the other side from its type's factory hinge (a reversal kit)."""
+    side, factory = getattr(item, "door_hinge", None), getattr(product_type, "door_hinge", None)
+    return side is not None and factory is not None and side != factory
+
+
 def _resolved_clearance_zones(product_type: object | None, center: tuple[float, float],
-                              rotation: float,
-                              active_code_profile: str | None) -> list[tuple[object, Ring]]:
+                              rotation: float, active_code_profile: str | None,
+                              *, mirrored: bool = False) -> list[tuple[object, Ring]]:
     """Each clearance zone that applies to the active code profile, with its project ring.
 
     The zone object is kept alongside its geometry so callers can read ``policy`` and
-    ``occupant_types`` without re-walking the product type.
+    ``occupant_types`` without re-walking the product type. ``mirrored`` flips local x.
     """
     if product_type is None:
         return []
+    flip = -1.0 if mirrored else 1.0
     return [
-        (zone, _transformed_polygon([point.xy_m for point in zone.footprint.points],
-                                    center, rotation))
+        (zone, _transformed_polygon([(flip * point.xy_m[0], point.xy_m[1])
+                                     for point in zone.footprint.points], center, rotation))
         for zone in getattr(product_type, "clearances", ())
         if zone.code_profile is None or zone.code_profile == active_code_profile
     ]

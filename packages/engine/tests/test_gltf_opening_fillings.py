@@ -245,7 +245,7 @@ def test_murphy_door_is_an_open_shelf_cabinet_in_the_finished_gltf(catlin_model_
     parts = {part.key: part for part in opening_parts(
         wall, opening, door_type.operation, bookcase_door=spec)}
     assert set(parts) == {"bookcase_sides", "bookcase_caps", "bookcase_shelves",
-                          "bookcase_back"}
+                          "bookcase_back", "doorway:transition:reducer"}  # the oak nosing
     assert len(parts["bookcase_shelves"].solids) == 4
     assert len(parts["bookcase_sides"].solids) == 2
     assert len(parts["bookcase_caps"].solids) == 2
@@ -254,7 +254,7 @@ def test_murphy_door_is_an_open_shelf_cabinet_in_the_finished_gltf(catlin_model_
                for solid in parts["bookcase_shelves"].solids)
     gltf, blob = emit_gltf_dict(catlin_model_ro)
     solids = _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid))
-    assert len(solids) == sum(len(part.solids) for part in parts.values()) == 9
+    assert len(solids) == sum(len(part.solids) for part in parts.values()) == 10
     assert len([solid for solid in solids if solid.has_thickness(spec.body_depth.meters)]) == 2
 
 

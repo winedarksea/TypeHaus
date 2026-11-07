@@ -47,7 +47,13 @@ MAIN_KITCHEN_CASEWORK = [
               # it is one kit for the pair, and billing it twice would be wrong. It is what
               # makes two cabinets legal to stand against each other: the shared side walls
               # would otherwise sweat.
-              install_parts=("Frigidaire TWINSPAIRKIT twin pairing kit (anti-condensation heater, power supply, cord, clips)",)),
+              # HINGED AT THE PAIR SEAM (owner, I1-101): the factory right hinge opened the
+              # leaf 3.19" past the north side into W-M-PAN-S. TTDRRVFRKIT is Frigidaire's
+              # kit for a left-hinged refrigerator door (Resource Guide p. 23). The open door
+              # then stands in front of the freezer's handle edge: one door at a time.
+              door_hinge="left",
+              install_parts=("Frigidaire TWINSPAIRKIT twin pairing kit (anti-condensation heater, power supply, cord, clips)",
+                             "Frigidaire TTDRRVFRKIT Pro door reversal kit, refrigerator to left hinge (door, hinges, covers, stopper)")),
     Appliance(uid="ZH6G4SNPWT", tag="APPL-M-FREEZER", type_ref="APPL-FRIG-PRO-ALLFREEZER",
               room="RM-M-LIVING",
               position=pt(ft(19, 5.75), ft(28, 9)), rotation=deg(90)),

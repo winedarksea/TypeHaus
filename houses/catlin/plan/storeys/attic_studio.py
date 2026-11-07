@@ -55,6 +55,8 @@ from typehaus import (
     pt,
 )
 
+from ..doorway_transitions import D_A_POCKET_VINYL_EDGE
+
 # ============================== SECOND STOREY =========================================
 # THE HALL-STUB BEAM. Between y=22'-4" and y=26'-4" the x=10'-0" line has no wall under it, and it
 # can never have one: that 4'-0" gap is the mouth of the hall stub you stand in to open D-S-BATH1
@@ -351,7 +353,8 @@ OPENINGS = [
     # wants 30" x 22", a light and a receptacle (ED-A-POCKET-LT1, -RC1). `code.R807_1_attic_access`
     # is storey-level and met by ST-S2A, so the leaf size is buildability, not code.
     Door(uid="Y3R3YMXFVJ", tag="D-A-POCKET", host="W-A-STU-N", type_ref="DT-INT-ACCESS24",
-         position=from_node("N-A-PK-W", ft(6, 11.5)), header_spec="flat 2x4 nonbearing"),
+         position=from_node("N-A-PK-W", ft(6, 11.5)), header_spec="flat 2x4 nonbearing",
+         doorway=D_A_POCKET_VINYL_EDGE),
     # Into the bath off the studio. The SUNNERSTA kitchenette moved onto W-A-BATH-S at its
     # west end (plan/placeables.py) and blocks the door's old outward arc, so the door slides
     # east — the owner's own proposal — to make room. Hinge stays on the east jamb

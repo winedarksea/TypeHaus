@@ -10,7 +10,7 @@ The catalog is `plan/sauna_types.py`, and editable placements are `plan/sauna.py
 | Upper lying bench | 78 × 28 | 42 | 123¼–151¼; 38 3/16–116 3/16 |
 | Lower foot platform | 78 3/16 × 20 | 24 | 151¼–171¼; 38–116 3/16 |
 | South reading platform | 58½ × 28 | 24 | 123¼–181¾; 10–38 |
-| Access step | 14 × 10 | 12 | 171¼–185¼; 70 3/16–80 3/16 |
+| Access step | 14 × 10 | 12 | 171¼–185¼; 69 11/16–79 11/16 (1/2" off the shower pan) |
 | Recliner and bent pad envelope | 57½ × 26 | Platform mounted | 123¾–181¼; 11–37 |
 
 Keep the upper **78 × 28** surface uninterrupted: a backrest cannot project into the

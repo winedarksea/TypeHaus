@@ -3,6 +3,8 @@ Furniture (→ 10, → 11)."""
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import field_validator, model_validator
 
 from typehaus.model.assembly import Layer
@@ -445,6 +447,8 @@ class Appliance(Element):
     wall_ref: str | None = None
     drain_position: Point2D | None = None
     install_parts: tuple[str, ...] = ()  # loose kit billed with this installation
+    # Door hinge side as installed, seen from the front; None keeps the type's factory side.
+    door_hinge: Literal["left", "right"] | None = None
 
     @model_validator(mode="after")
     def _placed_or_hosted(self):

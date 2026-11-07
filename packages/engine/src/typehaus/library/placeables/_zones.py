@@ -11,6 +11,8 @@ Zones are authored in the same local frame as the symbol: origin at the footprin
 
 from __future__ import annotations
 
+import math
+
 from typehaus.model import ClearancePolicy, ClearanceZone, Footprint2D, Length, m, pt
 
 PLANNING_SOURCE = "planning standard"
@@ -102,3 +104,24 @@ def swing_zone(width: Length, depth: Length, reach: Length, purpose: str) -> Cle
     half_depth = depth.meters / 2 + reach.meters
     return _zone(((-half_width, -half_depth), (half_width, -half_depth),
                   (half_width, half_depth), (-half_width, half_depth)), purpose)
+
+
+def door_swing_zone(cabinet_width: Length, depth: Length, open_width: Length, reach: Length,
+                    hinge: str, purpose: str, *, source: str = PLANNING_SOURCE,
+                    segments: int = 8) -> ClearanceZone:
+    """A hinged door's 90° swing: the quarter disc ``reach`` off the hinge corner, plus the
+    strip the open leaf and handle stand in past the hinge-side cabinet side.
+
+    ``open_width`` is the maker's "cabinet + door open at 90°" across the cabinet, so the
+    strip is ``open_width - cabinet_width`` wide. ``hinge`` is seen from the front (``-y``):
+    ``"right"`` is ``+x``.
+    """
+    sign = 1 if hinge == "right" else -1
+    c, f, r = cabinet_width.meters / 2, -depth.meters / 2, reach.meters
+    outer = c + open_width.meters - cabinet_width.meters
+    arc = [(c - r * math.sin(a), f - r * math.cos(a))
+           for a in (math.pi / 2 * i / segments for i in range(segments + 1))]
+    points = [(outer, f), (outer, f - r), *arc]
+    if sign < 0:
+        points = [(-x, y) for x, y in reversed(points)]
+    return _zone(points, purpose, source)

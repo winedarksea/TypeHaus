@@ -16,6 +16,7 @@ the bar, the 0.62" carpet is tucked flush with the 3/4" hard floor, and the fiel
 from __future__ import annotations
 
 from typehaus import DoorwayProductSpec, DoorwaySectionPart, DoorwayTreatment, Product
+from typehaus.model.doorway import BARE_FINISH
 
 _IN = 0.0254
 _FLOOR_NOTE = "houses/catlin/notes/floor_heights.md"
@@ -154,3 +155,18 @@ D_A_HALVES_OAK_REDUCER = DoorwayTreatment(transition=_bevel(
     "end, glued and pinned to the subfloor; vinyl stops at its low edge, sealed",
     "oak-floor-custom", sign=-1, rise_in=0.63, run_in=2.0, depth_in=0.12, land_in=0.75,
     min_in=0.5, max_in=0.75, pairs=(("oak-floor-custom", "catlin-vinyl-gatsby"),)))
+
+# End of floor onto an unfinished attic deck (review I4-107); BARE_FINISH names the deck.
+# Study oak 0.75" over the east loft's bare subfloor: a square oak nosing on the deck,
+# rabbeted over the oak's end, nose eased 3/4". Oak on -normal.
+D_A_STUDY_OAK_NOSING = DoorwayTreatment(transition=_bevel(
+    OAK_REDUCER, "3/4 in. oak nosing, eased 3/4 in. nose to the deck", "Rabbeted over the "
+    "oak's end, glued and pinned to the subfloor; the unfinished side stays bare",
+    "oak-floor-custom", sign=-1, rise_in=0.75, run_in=0.75, depth_in=0.0, land_in=1.0,
+    min_in=0.65, max_in=0.75, pairs=(("oak-floor-custom", BARE_FINISH),)))
+
+# Studio sheet vinyl 0.12" over the pocket's bare subfloor (vinyl on -normal).
+D_A_POCKET_VINYL_EDGE = DoorwayTreatment(transition=_bevel(
+    RUBBER_REDUCER, "rubber reducer for 1/8 in. sheet vinyl", "Glued to the subfloor; vinyl "
+    "tucks under its high lip, sealed", "rubber", sign=-1, rise_in=0.12, run_in=1.0,
+    depth_in=0.0, land_in=0.5, max_in=0.125, pairs=(("catlin-vinyl-gatsby", BARE_FINISH),)))

@@ -15,6 +15,9 @@ from typehaus.model.base import HausModel
 from typehaus.model.exterior_door import ExteriorDoorInstallation
 from typehaus.model.registry import register_constructor
 
+# Names an unfinished deck (``FloorSurface.finish_ref is None``) in ``compatible_finish_pairs``.
+BARE_FINISH = "bare"
+
 
 class DoorwaySectionPart(HausModel):
     name: str = Field(min_length=1)

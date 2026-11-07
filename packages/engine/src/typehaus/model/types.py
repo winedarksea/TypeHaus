@@ -621,6 +621,9 @@ class ApplianceType(FurnitureType):
     # A permanently installed cooking appliance (range, cooktop, wall oven): IRC R314.3.3
     # keeps a smoke alarm 6-20 ft off it. Declared, like the two above, not read off a name.
     cooking: bool = False
+    # Factory door hinge side, seen from the front. Its swing zone is authored for it; an
+    # `Appliance.door_hinge` on the other side mirrors the type's zones.
+    door_hinge: Literal["left", "right"] | None = None
 
 
 class AirHandlingProductFacts(HausModel):

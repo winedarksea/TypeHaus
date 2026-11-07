@@ -35,6 +35,7 @@ those two are Broan and InSinkErator (owner 2026-10-22).
 
 from __future__ import annotations
 
+from typehaus.library.placeables._zones import door_swing_zone
 from typehaus.model import ApplianceType, PortCertainty, Service, ServicePort, ft, inch, mm
 
 from library.placeables import front_zone
@@ -231,8 +232,18 @@ _FRIGIDAIRE_SOURCE = (
     'side-by-side pair takes two. Recommended paired cutout 66 1/4" wide. Depth with '
     'handle and depth without door are NOT published; the Tall Twin Resource Guide (rev '
     '2/4/2021) gives 35.82" wide with the door open 90 degrees (130 max) and warns to allow '
-    'for it beside a wall. Doors reverse only with kit TTDRRVFRKIT.'
+    'for it beside a wall. Factory handing: refrigerator hinged right, freezer left; '
+    'reversal kits TTDRRVFRKIT (ref to left hinge) / TTDRRVFFKIT (frz to right hinge), '
+    'Tall Twin Resource Guide p. 23, Trim Kits and Accessories (rev 1/15/2021).'
 )
+
+# The 90 deg swing (Resource Guide p. 12, Installation Next To Wall): the open leaf and
+# handle stand 35.82 - 32.63 = 3.19" past the hinge-side cabinet side, 31 1/4" out
+# (58 1/4" open depth less 27"). The handing is the type's factory side.
+def _column_swing(hinge, purpose):
+    return door_swing_zone(inch(32.63), inch(27), inch(35.82), inch(31.25), hinge, purpose,
+                           source="Frigidaire Tall Twin Resource Guide rev 2/4/2021 p. 12")
+
 
 # The `install_parts` is not an accessory, it is a condition of standing the two cabinets
 # against each other: TWINSPAIRKIT carries an anti-condensation heater for the shared side
@@ -255,7 +266,9 @@ FRIGIDAIRE_ALL_REFRIGERATOR = ApplianceType(
                        position=(ft(0), ft(0), ft(2))),),
     # 36" holds the 31 1/4" the leaf projects past the cabinet plus somewhere to stand while
     # it is open — the same band the allowance carried, and unchanged by the retype.
-    clearances=(front_zone(inch(32.875), inch(27), ft(3), "refrigerator door swing"),),
+    clearances=(front_zone(inch(32.875), inch(27), ft(3), "refrigerator door swing"),
+                _column_swing("right", "refrigerator door at 90 deg")),
+    door_hinge="right",
     source=_FRIGIDAIRE_SOURCE + " This unit has a water dispenser and filter and NO ice "
                                 "maker; it is installed with no water connected.",
 )
@@ -268,7 +281,9 @@ FRIGIDAIRE_ALL_FREEZER = ApplianceType(
     needs=frozenset({Service.POWER_120}),
     ports=(ServicePort(tag="power", service=Service.POWER_120,
                        position=(ft(0), ft(0), ft(2))),),
-    clearances=(front_zone(inch(32.875), inch(27), ft(3), "freezer door swing"),),
+    clearances=(front_zone(inch(32.875), inch(27), ft(3), "freezer door swing"),
+                _column_swing("left", "freezer door at 90 deg")),
+    door_hinge="left",
     source=_FRIGIDAIRE_SOURCE + ' This unit has a factory dual-bin automatic ice maker '
                                 '(1/4" line, 30-100 psi) which is switched OFF and left '
                                 'unconnected; there is no manual ice tray option.',

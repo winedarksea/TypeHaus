@@ -3,7 +3,7 @@
 # Flat 2x6 rafter plates east/west (eave sides) — no knee walls —
 # gable walls north/south frame ToRoof, ridge runs N-S over the center wall line,
 # 6:12, zero overhang (first-class). Roof underside above this floor: 1 1/2" + x/2.
-from ..doorway_transitions import D_A_HALVES_OAK_REDUCER
+from ..doorway_transitions import D_A_HALVES_OAK_REDUCER, D_A_STUDY_OAK_NOSING
 from typehaus.model.surface_mount import SurfacePostMount
 from typehaus import (
     Alarm,
@@ -342,7 +342,8 @@ OPENINGS = [
     # the header ends under W-A-SN's raked plate (the 38" RO's east jack ran into it). The
     # product record carries body, casing, passage and clearance dimensions separately.
     Door(uid="CAD203AAAA", tag="D-A-STUDY", host="W-A-SN", type_ref="DT-INT-BOOKCASE30",
-         position=from_node("N-A-C2", inch(6.25)), flip_hinge=True),
+         position=from_node("N-A-C2", inch(6.25)), flip_hinge=True,
+         doorway=D_A_STUDY_OAK_NOSING),
     # South gable, FOUR openings west→east: S2, JUL-W, JUL-E, S3 — mirror-symmetric about
     # the ridge (CLAUDE.md's "gables read symmetric" rule).
     #
