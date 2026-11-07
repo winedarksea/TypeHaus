@@ -400,24 +400,19 @@ def test_a_wall_header_in_its_own_raked_plate_is_a_clash():
 
 
 def test_a_jamb_pack_at_a_corner_takes_it_and_shares_the_pack(catlin_ctx):
-    """D-S-BATH1's jack reached past W-S-BA-E1B's near face at N-S-BA1, so W-S-BD-N1B owns
-    the corner: jack, king, corner stud and end stud on its line, the neighbour's end stud
-    butting them (five), and ``structural.jamb_corner_pack`` passes it. A corner stud a pack
-    would overlap is not framed."""
-    from typehaus.checks.structural.jamb_corner_pack import jamb_corner_pack
+    """A corner stud a jamb pack would overlap is not framed. At N-S-BA1 the corner stays
+    W-S-BA-E1B's since W-S-BD-N1B went NONBEARING (owner, 2026-11-06): a deflection-gapped
+    partition never takes a full-height wall's L (it carries BM-S-BATH-E there), so
+    D-S-BATH1 moved 2" west and its east king butts that wall's corner stud, clear of it."""
     from typehaus.resolve.framing.corner_jamb_packs import drop_corner_studs_in_packs
     from typehaus.resolve.framing.corners import CornerStud
 
     model = catlin_ctx.model
     junction = next(j for j in model.junctions if j.node_tag == "N-S-BA1")
-    assert junction.framing_owner == "W-S-BD-N1B"
-    owner = model.wall("W-S-BD-N1B")
-    near = sorted(m.category for m in owner.members
-                  if m.p0 == m.p1 and m.p0[0] > inch(115).meters
-                  and m.category in ("jack", "king", "corner", "stud"))
-    assert near == ["corner", "jack", "king", "stud"]
-    verdicts = [f for f in jamb_corner_pack(catlin_ctx) if "D-S-BATH1" in f.element_tags]
-    assert [f.result.value for f in verdicts] == ["pass"], [f.message for f in verdicts]
+    assert junction.framing_owner == "W-S-BA-E1B"
+    pack_east = max(m.p0[0] for m in model.wall("W-S-BD-N1B").members
+                    if m.category in ("jack", "king"))
+    assert pack_east + inch(0.75).meters <= inch(117.25).meters + 1e-6
 
     studs = (CornerStud(1.0, 0.04), CornerStud(1.1, 0.04))
     assert drop_corner_studs_in_packs(studs, [(0.9, 1.02)]) == (studs[1],)

@@ -782,11 +782,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 - Bearing lines: west wall, center N-S wall (x=18'), east wall; 18' spans E-W, on every
   storey and in both materials.
-- **Second storey has a fourth bearing line, x=10'-0".** `W-S-BA-E`, `W-S-BA-E1B`,
-  `W-S-BD-N1B` carry `FO-A-HALL`'s attic joist cut ends: `structural_role=BEARING` and
+- **Second storey has a fourth bearing line, x=10'-0".** `W-S-BA-E`, `W-S-BA-E1B` carry
+  `FO-A-HALL`'s attic joist cut ends: `structural_role=BEARING` and
   `INT_2X6_BRG_PLUMBING_HALF` (continuous studs, not staggered — `structural.wet_wall_bearing`
   FAILs a staggered BEARING wall). Thickness unchanged (6.52"): no face/area moved,
-  `FX-S-BATH1-LAV.wall_ref` untouched.
+  `FX-S-BATH1-LAV.wall_ref` untouched. `W-S-BD-N1B` (y=26'-6") is NONBEARING since
+  2026-11-06 (owner): `D-S-BATH1` takes the R602.7.4 flat head and sits 11 1/2" off N-S-V2,
+  its east king butting W-S-BA-E1B's corner, which keeps the L under `BM-S-BATH-E`.
   - `stacks_on` is MANDATORY: `W-M-STRW` has two collinear upper candidates (`W-S-BA-E`,
     `W-S-BA-E1B`) and `integrity.stack_ambiguous` is a hard ERROR without one. Only
     `W-S-BA-E1B` names `W-M-STRW` — do not also point `W-S-BA-E` at it, only one upper wall

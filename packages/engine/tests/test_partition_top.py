@@ -141,8 +141,9 @@ def test_a_wall_something_bears_on_is_not_a_partition(catlin_model_ro, tag: str)
 
 
 def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) -> None:
-    """60 partitions, including the four new study return/rear segments and W-M-WELL (the
-    main stair's well partition, 2026-09-23); W-M-HS3/-HS4 left as BEARING (#116).
+    """61 partitions, including the four new study return/rear segments and W-M-WELL (the
+    main stair's well partition, 2026-09-23); W-M-HS3/-HS4 left as BEARING (#116);
+    W-S-BD-N1B joined as NONBEARING (owner, 2026-11-06).
 
     Not a tautology: the pass MOVES the plate it selects on, so a full-height tolerance
     measured only upward would drop ``W-B-CE`` — whose plate lands 1-11/16" below its
@@ -154,7 +155,7 @@ def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) ->
     refs = bearing_ref_tags(catlin_model_ro.plan)
     tags = [w.tag for w in catlin_model_ro.walls
             if takes_a_deflection_gap(catlin_model_ro, w, refs)]
-    assert len(tags) == 60
+    assert len(tags) == 61
     assert "W-B-CE" in tags
     assert "W-M-WELL" in tags
 
@@ -197,10 +198,11 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     # and bills the one rim its axis crosses at x=36' (a crossing outranks the parallel truss).
     # 106 -> 107 (2026-11-02): at 16" o.c. W-B-CE also crosses one FS-M-NE truss.
     # 71 -> 63 blocked bays (2026-11-06): W-M-HS3/-HS4 are BEARING (#116), no gapped top.
+    # 63 -> 67: W-S-BD-N1B is NONBEARING (owner, 2026-11-06) and parallel to FS-ATTIC.
     assert counts == {
         "partition top plate, perpendicular framing above": 107,
         "partition top plate, under a parallel member": 12,
-        "partition top plate, blocking between parallel members": 63,
+        "partition top plate, blocking between parallel members": 67,
     }
 
 
