@@ -120,7 +120,7 @@ def test_four_runs_clear_the_house_grade(catlin_model_ro) -> None:
         "PR-S-SUITEBATH-WC-VENT", "PR-S-SUITEBATH-LAV-VENT", "PR-S-SUITEBATH-TUB-VENT",
         "PR-S-BATH1-WC-VENT", "PR-S-BATH1-SH-VENT",
         "PR-A-STUBATH-SH-TEE"}
-    assert '2.217"/ft' in _for(findings, "PR-B-BATH-VENT").message
+    assert '1.518"/ft' in _for(findings, "PR-B-BATH-VENT").message
     assert '0.097"/ft' in _for(findings, "PR-A-STUBATH-VENT").message
     assert _for(findings, "PR-A-BAR-VENT").message.startswith("ADVISORY — ")
     assert all(f.result is Result.PASS for f in findings), "advisory never FAILs"

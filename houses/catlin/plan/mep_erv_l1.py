@@ -238,8 +238,8 @@ DUCTS_ERV_BASEMENT = [
     # GYM and PLAY now leave the ceiling layer on 30° ramps, not 6" drops between two 90s.
     # THE GYM RADIAL GOES THROUGH THE WORKSHOP. South on x=9'-0", directly under
     # PR-B-SAUNA-VENT, the bath vent, and the HW-BATH and LSINK legs it crosses; it stays at
-    # 84" past the bath extract and laundry sink drain, then rises to 88 1/2" from
-    # y=18'-8" to 17'-4 3/4". Through W-B-CW3 in its 8'-1"..9'-5" stud bay, over the 2x8
+    # 84" past the bath extract and laundry sink drain, then rises on a 30° ramp to 89"
+    # from y=18'-1 3/8" to 17'-4 3/4". Through W-B-CW3 in its 8'-1"..9'-5" stud bay, over the 2x8
     # backing (top 6'-7 1/4"); east on y=17'-4 3/4", 2 1/4" clear of PR-M-S-SUITE-DRAIN's
     # riser, through W-B-HALL-W's 16'-8"..18'-0" bay; then the hall's x=17'-0" lane south
     # of the stair to y=13'-0" as before. The east leg falls 89" -> 88 1/2" (2026-10-29, was level
@@ -364,8 +364,8 @@ DUCTS_ERV_BASEMENT = [
     # then turns east at y=3'-4". Both sauna radials share the lane at separate tiers: this
     # one at 82 1/4", 1/4" under the supply's underside. At y=3'-4" it enters the centre of W-B-SA-W's 5 1/2" cavity and drops
     # between the studs to 4" AFF. The 2" shift to the register's y=3'-2" station stays
-    # inside that stud bay. W-B-SA-W uses SAUNA_2X6 so the 4" section fits with 3/4" each
-    # side; its hot-side liner face stays fixed.
+    # inside that stud bay. W-B-SA-W uses SAUNA_2X6 so the 4" section fits, 1/4" off
+    # the west stud face and 1 1/4" off the east; its hot-side liner face stays fixed.
     DuctRun(uid="1Y457X9DMH", tag="DU-B-ERV-R-SAUNA-EXH", system=DuctSystem.EXHAUST,
             # (2026-11-07) The drop stands at x=116" (was 116 9/16"): the last stub to the
             # register is 6", the take-off of the 90 above it (was 5 7/16").
