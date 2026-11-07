@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 2fdae48feaad0795  
+**Model hash:** 63e4dc7ecffa24cf  
 **Lines:** 253
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -49,7 +49,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 SPF No. 2 & Btr framing lumber, 8' (2-2x12) | 2 | pc | header (2-ply) | 16 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6) | 4 | pc | header (2-ply) | 32 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6:spf) | 6 | pc | blocking (2-ply) | 48 LF | building |
-| 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8) | 20 | pc | header (2-ply) | 160 LF | building |
+| 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8) | 18 | pc | header (2-ply) | 144 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8:spf) | 4 | pc | blocking (2-ply) | 32 LF | building |
 | 24 gable roof truss, 24' (24 gable roof truss) | 2 | ea | roof truss | 48 LF | building |
 | 24 roof truss, 24' (24 roof truss) | 14 | ea | roof truss | 336 LF | building |
@@ -62,7 +62,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x12:kdat) | 1 | pc | sister joist | 12 LF | building |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x12:kdat) | 20 | pc | joist | 400 LF | building |
 | 2x12 White-painted PT lumber, 10' (2x12:kdat:post-paint-white) | 2 | pc | rim board | 20 LF | building |
-| 2x12 SPF No. 2 & Btr framing lumber, 8' (2x12:spf) | 3 | pc | blocking | 24 LF | building |
+| 2x12 SPF No. 2 & Btr framing lumber, 8' (2x12:spf) | 2 | pc | blocking | 16 LF | building |
 | 2x2 SPF No. 2 & Btr framing lumber, 8' (2x2) | 30 | pc | blocking, plate, stud | 240 LF | building |
 | 2x2 SPF No. 2 & Btr framing lumber, 10' (2x2) | 2 | pc | plate | 20 LF | building |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
@@ -80,8 +80,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 23 | pc | girt strapping | 460 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 363 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2904 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 204 | pc | corner stud, king stud, stud | 1778.6 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 361 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2888 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 203 | pc | corner stud, king stud, stud | 1769.9 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 116 5/8" PET (2x6) | 6 | pc | king stud, stud | 58.3 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 49 | pc | plate, raked top plate, strongback | 490 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 12' (2x6) | 5 | pc | plate | 60 LF | building |
@@ -214,7 +214,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN) | 72 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | 4 | ea |  | basement |
 | Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112) | 1,368 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 63 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 67 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 107 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 12 | ea |  | building |
 | slat brace plate screw (SDWS22400DB) | 16 | ea |  | main |
