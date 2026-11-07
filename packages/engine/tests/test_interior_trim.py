@@ -431,8 +431,9 @@ def test_catlin_expected_clips(catlin_model_ro) -> None:
     # TrimStandard.uncased_faces: D-M-BATH2's bath face is a drywall return (O2-108).
     assert [c.room for c in catlin_model_ro.door_casings
             if c.opening_ref == "D-M-BATH2"] == ["RM-M-BED"]
-    # A leg scribes to the paneling standing proud of the next wall, not its gypsum (O2-103).
-    assert {k for k, _ in clips[("D-M-ENTRY", "RM-M-MUDROOM")]} == {"WP-M-MUDROOM-SHIPLAP"}
+    # The shiplap stops short of W-M-N3 (owner, 2026-11-06), so the leg scribes to the next
+    # wall's board and stays on (O2-103).
+    assert clips[("D-M-ENTRY", "RM-M-MUDROOM")] == {("W-M-MECH-E", False)}
 
 
 def test_catlin_base_stops_at_the_bare_faces(catlin_model_ro) -> None:
