@@ -43,6 +43,7 @@ from typing import Literal
 from pydantic import model_validator
 
 from typehaus.model.base import Element, HausModel
+from typehaus.model.door_undercut import DoorUndercut
 from typehaus.model.enums import ShelfProcurement
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length
@@ -384,6 +385,8 @@ class TrimStandard(Element):
     # Stock interior jamb depths (4 9/16", 6 9/16"): a door's derived jamb depth is ripped
     # from the next one up, or extended from the deepest. () derives no jamb.
     jamb_stock_depths: tuple[Length, ...] = ()
+    # The leaf's hung undercut and its allowed range; ``DoorType.undercut`` beats ``hung``.
+    door_undercut: DoorUndercut | None = None
 
     def _room_trim(self, room: str) -> RoomTrim | None:
         return next((o for o in self.room_trims if room in o.rooms), None)

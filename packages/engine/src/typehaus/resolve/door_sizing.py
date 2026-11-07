@@ -6,10 +6,13 @@ unless the opening holds its current framing (decision 6). One equation both der
 and checks that a leaf fits one:
 
     rough_w = leaf_w + 2(a + g)            (+ g at a pair's meeting stiles)
-    rough_h = finish + undercut + leaf_h + g + a      (from the opening's base)
+    rough_h = finish + f + leaf_h + g + a      (from the opening's base)
 
 ``finish`` is the build-up from the opening's base to the finished floor: the subfloor sheet
-and covering on a joisted storey (``resolve/door_floor_finish``).
+and covering on a joisted storey (``resolve/door_floor_finish``). ``f`` is the RO's floor
+allowance, NOT the undercut: an interior door is a stock prehung cut down on site, so the
+slab is cut to hang at its undercut (``door_undercut_m``) in whatever RO it is framed into,
+and ``leaf_cut_m`` records the cut (an 80" slab in the 81.51" RO at 1/2" loses 0.11").
 
 A bypass or bifold set is sold by its finished opening, which its track sets: the RO is that
 plus the jamb allowance each side and at the head, with no leaf gap or undercut. A published
@@ -46,7 +49,11 @@ class CasedDoorDefaults:
     leaf_thickness_m: float = 0.045
     stop_projection_m: float = 0.013
     stop_depth_m: float = 0.0095
-    undercut_m: float = 0.010
+    # The factory prehung undercut, where neither the type nor the TrimStandard states one.
+    undercut_m: float = 0.5 * _IN
+    # RO derivation only: leaf + this + gap + jamb is the derived RO over the finished
+    # floor (81.51" for an 80" leaf), which the house frames. It does not hang the leaf.
+    rough_floor_allowance_m: float = 0.010
     pocket_slot_gap_m: float = 0.003
     track_height_m: float = 0.020
     track_depth_m: float = 0.025
@@ -96,6 +103,10 @@ class DoorSizing:
     jamb_material_ref: str | None = None
     # The host's finish-to-finish depth, kept where no stock jamb is (a KD frame's throat).
     wall_depth_m: float | None = None
+    # The gap the leaf hangs at over the higher finished floor, and what comes off the stock
+    # slab's bottom on site to get it in this RO (0 where it fits uncut).
+    undercut_m: float = 0.0
+    leaf_cut_m: float = 0.0
 
     @property
     def jamb_rip_m(self) -> float:
@@ -133,6 +144,28 @@ class DoorSizing:
 
 def _inches(value_m: float) -> str:
     return f'{value_m / _IN:g}"'
+
+
+def door_undercut_m(door_type, trim_standard=None) -> float:
+    """The leaf's hung undercut: the type's, else the house's ``DoorUndercut``, else default."""
+    if getattr(door_type, "undercut", None) is not None:
+        return door_type.undercut.meters
+    house = getattr(trim_standard, "door_undercut", None)
+    return house.hung.meters if house is not None else CASED_DOOR_DEFAULTS.undercut_m
+
+
+def leaf_thickness_m(door_type) -> float:
+    """The slab's thickness as the type states it, else the schematic default."""
+    stated = getattr(door_type, "leaf_thickness", None)
+    return stated.meters if stated is not None else CASED_DOOR_DEFAULTS.leaf_thickness_m
+
+
+def _site_cut(door_type) -> bool:
+    """A stock interior slab hung in a wood jamb, which the carpenter cuts to fit."""
+    return (not door_type.exterior and not door_type.factory_frame
+            and door_type.bookcase_door is None
+            and door_type.operation in (DoorOperation.SWING, DoorOperation.DOUBLE_SWING,
+                                        DoorOperation.POCKET))
 
 
 def _clear_width(door, door_type, leaf_w: float) -> tuple[float | None, str]:
@@ -197,11 +230,14 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
     operation = door_type.operation
     pair = operation == DoorOperation.DOUBLE_SWING
     track = operation in (DoorOperation.SLIDE, DoorOperation.BIFOLD)
+    undercut = 0.0 if track else door_undercut_m(door_type, trim_standard)
     if track:
         side, head = 2 * a, floor_finish_m + d.track_head_m + a
+        hang = head
     else:
         side = 2 * (a + g) + (g if pair else 0.0)
-        head = floor_finish_m + d.undercut_m + g + a
+        head = floor_finish_m + d.rough_floor_allowance_m + g + a
+        hang = floor_finish_m + undercut + g + a
     nominal_w, nominal_h = door_type.width.meters, door_type.height.meters
     catalog = door_type.catalog_dimensions
     unit_w = catalog.unit_width.meters if catalog else None
@@ -246,14 +282,23 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
         else:
             rough_w = passage
             leaf_w = passage - side
-        leaf_h = rough_h - head
+        leaf_h = rough_h - hang
         basis["rough"] = "held"
         basis["leaf"] = "inferred from the held RO"
+
+    cut = 0.0
+    if held is None and _site_cut(door_type):
+        # What fits between the hung undercut and the head jamb; a pocket's track hangs too.
+        fits_h = rough_h - hang - (d.track_height_m if pocket else 0.0)
+        if fits_h < leaf_h - _FIT_TOLERANCE_M:
+            cut, leaf_h = leaf_h - fits_h, fits_h
+            basis["leaf"] = (f"stock slab cut {cut / _IN:.2f}\" on site to its "
+                             f"{_inches(undercut)} undercut")
 
     fits = True
     if held is None and published is not None:
         need_w = (unit_w if unit_w is not None else leaf_w) + 2 * PREHUNG_SHIM_M
-        need_h = (unit_h if unit_h is not None else leaf_h) + PREHUNG_SHIM_M
+        need_h = (unit_h if unit_h is not None else nominal_h) + PREHUNG_SHIM_M
         fits = (need_w <= rough_w + _FIT_TOLERANCE_M and need_h <= rough_h + _FIT_TOLERANCE_M)
 
     clear_w, basis["clear_w"] = _clear_width(door, door_type, leaf_w)
@@ -274,7 +319,8 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
         jamb_allowance_m=a,
         leaf_gap_m=g, floor_finish_m=floor_finish_m, held=held is not None, fits=fits,
         basis=tuple(basis.items()), jamb_depth_m=jamb_depth, jamb_stock_m=jamb_stock,
-        jamb_material_ref=flat, wall_depth_m=wall_depth_m)
+        jamb_material_ref=flat, wall_depth_m=wall_depth_m, undercut_m=undercut,
+        leaf_cut_m=cut)
 
 
 def _jamb(door, door_type, trim_standard, wall_depth_m) -> tuple[float | None, float | None]:

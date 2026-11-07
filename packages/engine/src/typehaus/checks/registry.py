@@ -157,6 +157,11 @@ class MepPreferences:
     #: ``member_window.basis`` answers and this number does not.
     max_undrawn_deck_hole_in: float = 2.0
 
+    # --- mep.door_transfer_air (checks/mep/door_transfer_air.py) ---
+    #: The pressure a closed door may hold across its relief path: ACCA Manual D's 3 Pa
+    #: (0.012 in. w.c.), the figure ENERGY STAR and Building America enforce. Not code.
+    door_transfer_max_pa: float = 3.0
+
     # --- [mep.routing] (typehaus/routing/cost.py) ---
     #: The raw ``[mep.routing]`` table, carried as a **dict** and not as a ``RouteCost``.
     #: These are the router's weights, and ``checks`` may not import ``routing`` — the leaf

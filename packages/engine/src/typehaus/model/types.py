@@ -165,6 +165,13 @@ class DoorType(HausModel):
     # depth picks the kit within it. None is the commodity ladder (Johnson / Cavity Sliders).
     # A family may publish its own rough opening, so it moves the framing as well as the BOM.
     pocket_frame: str | None = None
+    # The gap the leaf is hung at over the higher finished floor (a stock prehung's slab is
+    # cut on site to it). None takes ``TrimStandard.door_undercut``, else the engine default.
+    undercut: Length | None = None
+    # The slab as sold: 1 3/8" commodity prehung, 1 3/4" steel or solid. None is schematic.
+    leaf_thickness: Length | None = None
+    # A sweep, automatic bottom or gasket closes the undercut: no air passes under the leaf.
+    bottom_seal: bool = False
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None

@@ -24,8 +24,8 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 _DOOR_COLUMNS = ("Mark", "Tag", "Type", "Operation", "Hand", "Nominal", "Unit", "RO", "Jamb",
-                 "RO sill", "Net clear", "U-factor", "SHGC", "VT", "Tempered", "Function",
-                 "HW set", "Doorway")
+                 "RO sill", "Undercut", "Net clear", "U-factor", "SHGC", "VT", "Tempered",
+                 "Function", "HW set", "Doorway")
 _DOORWAY_WRAP = 46
 #: Secure-side rank (A115.1G "outside"): outdoors, then a garage or unconditioned space,
 #: then circulation. Lower is outside; a tie goes to the larger room.
@@ -45,6 +45,8 @@ HAND_LEGEND = (
      "a door RO on a framed floor stands on the subfloor"),
     ("Jamb", "stock set as-is, ripped from a stock depth, extended, a milled flat jamb, or a "
      "KD frame to the wall; — comes with the unit or kit"),
+    ("Undercut", "leaf bottom over the higher finished floor; cut: what comes off the stock "
+     "slab on site; sealed: a sweep or automatic bottom closes it"),
     ("Net clear", "door: clear passage, * an estimate (A-601 notes); window: the maker's "
      "published net clear opening"),
     ("Hinge", "window: the jamb an operable sash hinges on, plan north"),
@@ -118,7 +120,10 @@ def _door_notes(model, openings, estimates: dict[str, str]) -> list[tuple[str]]:
               "RO on a framed floor stands on the subfloor, so it reads the sheet's "
               "thickness.",),
              ("Function: what the leaf's lockset is bought as (DoorType.function); HW set: a "
-              "type with its own hardware set below.",)]
+              "type with its own hardware set below.",),
+             ("Undercut: the leaf's bottom over the higher finished floor at the doorway. A "
+              "stock prehung is set in the RO as framed and cut down on site: jamb legs "
+              "trimmed and the slab cut by the listed amount.",)]
     notes += [(f"{marker} Net clear width {basis}.",) for basis, marker in estimates.items()]
     return notes
 
@@ -169,9 +174,22 @@ def _door_row(model, opening, spec, marks, hardware, estimates) -> tuple[str, ..
     function = getattr(spec, "function", None)
     return (marks.get(opening.tag, "—"), opening.tag, opening.type_ref or "RO", operation,
             door_hand(model, opening, spec), nominal, unit, rough, jamb_text(sizing, spec),
-            _fi(ro_sill_m(model, opening)), clear, u_text, shgc, vt, tempered,
+            _fi(ro_sill_m(model, opening)), undercut_text(sizing, spec), clear, u_text, shgc,
+            vt, tempered,
             function.replace("_", " ") if function else "—",
             hardware.get(opening.type_ref, "—"), _doorway_text(opening))
+
+
+def undercut_text(sizing, spec) -> str:
+    """``3/4" cut 3/8"``: the hung undercut and the site cut; ``—`` for an unhung leaf."""
+    if sizing is None or sizing.undercut_m <= 0 or getattr(spec, "exterior", False):
+        return "—"
+    from typehaus.emit.draw.structural_common import inches
+
+    text = inches(sizing.undercut_m)
+    if sizing.leaf_cut_m > 1e-4:
+        text += f" cut {inches(sizing.leaf_cut_m)}"
+    return text + (" sealed" if getattr(spec, "bottom_seal", False) else "")
 
 
 def door_hand(model: ResolvedModel, opening, spec) -> str:

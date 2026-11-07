@@ -12,17 +12,13 @@
 #
 # REG-S-HP-RET is the only return, it is in RM-S-HALL, every other System 1 terminal below is
 # a supply, and the ERV's bedroom pickups are stale-air tokens, not a return path. So a
-# room's air gets back to the machine UNDER ITS DOOR — and at a conventional 3/4" undercut it
-# does not: 80 cfm through a 30" leaf's 22.5 in2 is 11 Pa against the 3 Pa ACCA/ASHRAE
-# ceiling, and RM-A-STUDY's 100 cfm is 17 Pa. Six doors therefore carry a LARGER undercut than
-# a carpenter would cut unasked — 1 1/2" on D-S-BED1/2/3, 1 3/4" on D-S-SUITE and D-A-STUDY,
-# 1 1/4" on D-A-HALVES. D-S-PLANT deliberately does not: its room's pressure is a design
-# output held by an interlocked damper, and an undercut is a leak in the one place it matters.
-#
-# ** `Opening` HAS NO `undercut` FIELD, SO NONE OF THIS IS IN THE MODEL. ** The A-601 schedule
-# has no column for it, so a door with no undercut on it gets cut at 3/4" and six rooms do not
-# get their air. Arithmetic, exclusions, acoustic and carpet costs, and what closing the gap
-# would take: notes/system1_return_path.md.
+# room's air gets back to the machine UNDER ITS DOOR. Since 2026-11-06 an undercut stays in
+# 1/2"-3/4" (owner: stock prehungs cut on site), so the relief doors hang at 3/4" and still
+# fall short: a bedroom's 75 cfm net through 22.5 in2 is 9.7 Pa against Manual D's 3 Pa.
+# mep.door_transfer_air grades it; the 1 1/4"-1 3/4" undercuts once named here are withdrawn
+# and the fix (transfer grilles, jump ducts or a return) is open. D-S-PLANT keeps 1/2": its
+# room's pressure is a design output held by an interlocked damper.
+# Arithmetic and history: notes/system1_return_path.md.
 
 from typehaus import (
     DuctSystem,

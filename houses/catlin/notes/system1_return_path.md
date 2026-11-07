@@ -1,8 +1,10 @@
 # System 1's return path, and the door undercuts that are the whole of it
 
-**Design and decision note — 2026-09-04.** No calculation is pinned to this file and no test
-reproduces it. It records why six doors in this house carry an undercut larger than a
-carpenter would cut on his own, and what happens if they do not.
+**Design and decision note — 2026-09-04; re-graded 2026-11-06.** `mep.door_transfer_air`
+now computes this table from the model (`checks/mep/door_transfer_air.py`, pinned in
+`tests/test_door_undercut.py`). The 2026-09-04 answer, six doors cut 1 1/4"-1 3/4", is
+**withdrawn**: interior doors are stock prehungs cut down on site, and an undercut stays in
+1/2"-3/4" (owner, 2026-11-06; `TRIM-STANDARD.door_undercut`). See "Re-graded at 3/4"" below.
 
 ## The condition
 
@@ -28,16 +30,41 @@ The criterion is **3 Pa (0.012 in. w.g.)** across a closed bedroom door, which i
 Manual D's figure, ASHRAE's, and the one ENERGY STAR and Building America both enforce.
 Rearranged, the free area a room needs is `A = Q / 1.853`.
 
-## What each door has to be
+## What each door would have to be (2026-09-04, withdrawn)
 
 | Room | System 1 supply | Door | Leaf | A at 3 Pa | Undercut | dP as cut |
 |---|---|---|---|---|---|---|
-| `RM-S-BED1` | 80 cfm | `D-S-BED1` | 30" | 43.2 in^2 | **1 1/2"** | 2.76 Pa |
-| `RM-S-BED2` | 80 cfm | `D-S-BED2` | 30" | 43.2 in^2 | **1 1/2"** | 2.76 Pa |
-| `RM-S-BED3` | 80 cfm | `D-S-BED3` | 30" | 43.2 in^2 | **1 1/2"** | 2.76 Pa |
-| `RM-S-SUITE` | 100 cfm | `D-S-SUITE` | 32" | 54.0 in^2 | **1 3/4"** | 2.79 Pa |
-| `RM-A-STUDY` | 100 cfm | `D-A-STUDY` | 30" | 54.0 in^2 | **1 3/4"** | 2.92 Pa |
-| `RM-A-STUDIO` | 75 cfm | `D-A-HALVES` | 32" | 40.5 in^2 | **1 1/4"** | 2.98 Pa |
+| `RM-S-BED1` | 80 cfm | `D-S-BED1` | 30" | 43.2 in^2 | 1 1/2" | 2.76 Pa |
+| `RM-S-BED2` | 80 cfm | `D-S-BED2` | 30" | 43.2 in^2 | 1 1/2" | 2.76 Pa |
+| `RM-S-BED3` | 80 cfm | `D-S-BED3` | 30" | 43.2 in^2 | 1 1/2" | 2.76 Pa |
+| `RM-S-SUITE` | 100 cfm | `D-S-SUITE` | 32" | 54.0 in^2 | 1 3/4" | 2.79 Pa |
+| `RM-A-STUDY` | 100 cfm | `D-A-STUDY` | 30" | 54.0 in^2 | 1 3/4" | 2.92 Pa |
+| `RM-A-STUDIO` | 75 cfm | `D-A-HALVES` | 32" | 40.5 in^2 | 1 1/4" | 2.98 Pa |
+
+## Re-graded at 3/4" (2026-11-06)
+
+Every relief door (the privacy types, `D-B-FURN`, `D-B-PLAY`) now hangs at 3/4", the top of
+the range; every other leaf at the factory 1/2". The check nets each zone's terminals (the
+ERV's 5 cfm bedroom pickups come off the supply), folds a dead-end bath or closet into the
+room it opens from, and treats the zone a stair reaches as the house:
+
+| Zone | Net | Door | Free area | dP | Needs at 3 Pa |
+|---|---|---|---|---|---|
+| `RM-S-BED1/2/3` | 75 cfm out | 30" x 3/4" | 22.5 in^2 | **9.7 Pa** | 40 in^2 |
+| `RM-S-SUITE` (+ suite bath, closet) | 80 cfm out | `D-S-SUITE` 32" x 3/4" | 24.0 in^2 | **9.7 Pa** | 43 in^2 |
+| `RM-A-STUDIO` (+ studio bath, ERV closet) | 50 cfm out | `D-A-HALVES` 32" x 3/4" | 24.0 in^2 | **3.8 Pa** | 27 in^2 |
+| `RM-S-PLANT` | 70 cfm out | `D-S-PLANT` 30" x 1/2" | 15.0 in^2 | **19.0 Pa** (8.5 at 3/4") | 38 in^2 |
+| `RM-A-EAST-UNFIN` | 35 cfm out | `D-A-STUDY` 30" x 1/2" | 15.0 in^2 | **4.8 Pa** (2.1 at 3/4") | 19 in^2 |
+| `RM-A-STUDY` | 100 cfm | open to the stair well | - | pass | - |
+
+`RM-A-STUDY` is at the attic stair head, so its own air leaves down the well; the old table
+sent it through the bookcase door. `RM-A-EAST-UNFIN` is graded through `D-A-STUDY` because
+the model holds no opening between it and the well; if it is open to the void, that row goes.
+
+**No undercut inside the owner's range carries this air.** The bedrooms and the suite need
+about 1.8x the free area 3/4" gives. Closing it is an owner decision: a transfer grille
+pair or a jump duct per room (each about 20 in^2 net free area more), or a ducted return in
+the room. Until then the six rows above stand as `mep.door_transfer_air` ADVISORYs.
 
 **What it was.** A conventional 3/4" undercut on a 30" leaf is 22.5 in^2. At 80 cfm that is
 
@@ -72,6 +99,11 @@ passed. Per-door detail: `notes/interior_door_schedule.md`.
 | `D-B-SHOP` | weatherstrip + sweep, no undercut | `REG-B-RET1` 6 cfm in | under `D-B-FURN` (36" x 3/4" = 27 in^2) from the furnace room; **keep that undercut** | 3.2 in^2 |
 | `D-B-SAUNA` | insulated sauna door | none | supply and exhaust balanced 20/20 (`notes/erv_static_budget.md` §10.8) | - |
 
+**Re-graded 2026-11-06:** `RM-M-BED` supplies 15 cfm and its bath draws 20, so the pair nets
+5 cfm *in*, and with `D-M-BED2` sealed and the closet a dead end nothing feeds it
+(`mep.door_transfer_air` ADVISORY: 3 in^2 needed). `RM-S-BATH1`'s grille pair is UNKNOWN to
+the check: `RegisterType` states no free area.
+
 `D-B-PLAY` takes gaskets and an astragal but keeps its 3/4" undercut for its 30 cfm supply
 (16.2 in^2 needed, 45 in^2 under a 60" pair); `D-M-BATH1` keeps 3/4" for its 20 cfm exhaust.
 The bath pair is 6x6 because the bath face of `W-S-BD-N`'s west bay is clear only between the
@@ -80,7 +112,7 @@ SEKTION rail backing (top 97 1/4") and the top plate (104 3/8"), 7 1/4" wide.
 ## The two honest costs
 
 1. **Sound.** `W-S-BW1/2/3` are `INT_2X4_RC` — resilient channel, chosen for acoustic
-   isolation. A 1 1/2" undercut is a straight acoustic leak under the door and gives back a
+   isolation. An undercut is a straight acoustic leak under the door and gives back a
    real part of what the channel buys. A transfer grille or a jump duct would be worse still
    (a jump duct in an `FS-ATTIC` bay is the only option that keeps the wall intact), so the
    undercut is the cheapest point on that curve, not a free one. Light and privacy go the
@@ -88,8 +120,8 @@ SEKTION rail backing (top 97 1/4") and the top plate (104 3/8"), 7 1/4" wide.
 2. **Carpet.** `RM-S-BED1/2/3` and `RM-S-SUITE` are carpeted, and an undercut is specified to
    the *finished* floor. Pile throttles the gap, so the effective free area is below the
    geometric figure — perhaps 20-25% below. The table above is the geometric minimum. If the
-   balance report shows more than 3 Pa at a closed door, the next step is 2" or a jump duct,
-   not a larger grille.
+   balance report shows more than 3 Pa at a closed door, the next step is a jump duct or a transfer
+   grille: 2" is outside the owner's range.
 
 ## The duty-cycle mitigation, stated honestly
 
@@ -99,11 +131,9 @@ peak. That is a real mitigation and it is why this is a comfort and delivery pro
 than an envelope one — but a design is sized for the condition that occurs, not for its
 duty cycle, so the table stands.
 
-## What the model cannot hold
+## What the model holds now
 
-**`Opening` carries no `undercut` field.** This table lives here, in `plan/mep_registers_second.py`,
-and nowhere the builder reads: the A-601 opening schedule prints Mark / Tag / Kind / Type /
-Nominal footprint and has no column for it. **A door with no undercut on its schedule gets
-cut at 3/4".** Closing that means adding the field to `Opening` and a column to
-`emit/draw/schedules/architectural.py::_write_opening_schedule`; until then this note is the
-only record and it has to be carried onto the door schedule by hand.
+`DoorType.undercut` (else `TrimStandard.door_undercut.hung`) hangs the leaf; resolve derives
+the site cut off the stock slab (`DoorSizing.leaf_cut_m`); A-601 prints both in its
+Undercut column; `advisory.door_undercut` grades every leaf against 1/2"-3/4"; and
+`mep.door_transfer_air` grades the table above.

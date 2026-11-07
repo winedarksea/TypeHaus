@@ -24,7 +24,9 @@ if TYPE_CHECKING:
 class DoorwayConfig:
     floor_probe_m: float = 0.015
     height_tolerance_m: float = 0.001
-    leaf_undercut_m: float = 0.010
+    # An exterior leaf's schematic clearance where no sill product publishes its bottom;
+    # an interior leaf hangs at its undercut (``door_sizing.door_undercut_m``).
+    exterior_leaf_clearance_m: float = 0.010
     leaf_thickness_m: float = 0.045
 
 
@@ -283,7 +285,7 @@ def resolve_doorway(model, wall, opening, door_type=None, treatment=None):
     known_surfaces = [f.surface_m for f in floors if f is not None and f.surface_m is not None]
     if known or installation and known_surfaces:
         jamb = max(base, min(known_surfaces))
-        leaf = max(base, *known_surfaces) + DOORWAY.leaf_undercut_m
+        leaf = max(base, *known_surfaces) + _leaf_clearance(model, opening, door_type)
         for component in components:
             if component.specification.role != "bottom_seal":
                 leaf = max(leaf, component.top_z_m + component.specification.leaf_clearance_m)
@@ -307,6 +309,18 @@ def resolve_doorway(model, wall, opening, door_type=None, treatment=None):
     return DoorwayAssembly(base, tuple(floors), mode, joint, tuple(components),
                            tuple(unknown), tuple(conflicts), leaf,
                            tuple(s for s in selected if s is not None), jamb)
+
+
+def _leaf_clearance(model, opening, door_type) -> float:
+    """The leaf's gap over the higher floor: an interior leaf's undercut."""
+    if door_type is None or door_type.exterior:
+        return DOORWAY.exterior_leaf_clearance_m
+    if opening.cased_product is not None:
+        return opening.cased_product.undercut_m
+    from typehaus.resolve.door_product_spec import house_trim_standard
+    from typehaus.resolve.door_sizing import door_undercut_m
+
+    return door_undercut_m(door_type, house_trim_standard(model.plan))
 
 
 def resolve_doorways(model):

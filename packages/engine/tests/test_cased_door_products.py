@@ -12,6 +12,7 @@ from typehaus.emit.gltf.palette import _color
 from typehaus.model import DoorType, Material
 from typehaus.quantities import m
 from typehaus.resolve.door_product_spec import resolve_cased_door, resolve_door_products
+from typehaus.resolve.door_sizing import CASED_DOOR_DEFAULTS
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.model import ResolvedLayer, ResolvedOpening, ResolvedWall
 from typehaus.server.model_json_fabric import wall_graph_json
@@ -59,7 +60,7 @@ def test_swing_has_real_jamb_and_stop_with_finished_floor_clearance(product_fixt
     assert spec.casing_reveal_m == 0.005
     assert len(parts["jamb_liner"].solids) == len(parts["stop"].solids) == 3
     leaf = parts["leaf"].solids[0]
-    assert leaf.z0_m == pytest.approx(0.045)
+    assert leaf.z0_m == pytest.approx(0.035 + CASED_DOOR_DEFAULTS.undercut_m)
     assert leaf.z1_m == pytest.approx(2.032 - 0.028 - 0.003)
     assert max(x for x, _ in leaf.ring) - min(x for x, _ in leaf.ring) == pytest.approx(
         opening.width_m - 2 * (0.028 + spec.leaf_gap_m))
@@ -220,6 +221,7 @@ def test_python_viewer_shared_fixture_pins_every_part(product_fixture):
         o = replace(opening, flip_swing=source["flip_swing"], flip_hinge=source["flip_hinge"],
                     pocket_run_m=source["pocket_run_m"], pocket_sign=source["pocket_sign"])
         dt = DoorType.model_validate({**product.model_dump(), "operation": fixture["operation"]})
+        dt = dt.model_copy(update={"undercut": m(0.010)})  # the shared fixture's 10 mm
         spec = resolve_cased_door(w, o, dt, finished_floors=(0.02, 0.035))
         assert json.loads(json.dumps(asdict(spec))) == source["cased_product"]
         parts = opening_parts(w, replace(o, cased_product=spec), dt.operation)

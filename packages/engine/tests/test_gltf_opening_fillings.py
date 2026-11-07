@@ -549,9 +549,11 @@ def test_the_laundry_pocket_ships_one_leaf_on_a_head_track(catlin_model):
 
     gltf, blob = emit_gltf_dict(catlin_model)
     solids = _solids_of_node(gltf, blob, _opening_node(gltf, pocket.uid))
-    leaves = [solid for solid in solids if solid.has_thickness(_DOOR_LEAF_THICKNESS_M)]
-    assert len(solids) == 7  # receiving jamb, split mouth/head, leaf, metal head track
     assert pocket.cased_product is not None
+    # The type's own 1 3/8" slab, not the schematic leaf.
+    leaves = [solid for solid in solids
+              if solid.has_thickness(pocket.cased_product.leaf_thickness_m)]
+    assert len(solids) == 7  # receiving jamb, split mouth/head, leaf, metal head track
     assert min(s.center[1] - s.height_m / 2 for s in leaves) == pytest.approx(
         pocket.cased_product.leaf_bottom_z_m, abs=_DIMENSION_TOLERANCE_M)
     assert len(leaves) == 1, "a closed pocket door is a single coplanar leaf"

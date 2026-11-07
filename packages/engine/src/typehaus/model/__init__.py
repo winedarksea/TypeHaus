@@ -35,6 +35,7 @@ from typehaus.model.diaphragm_attachment import (
     PanelEdgeBlocking,
 )
 from typehaus.model.door_hardware import DoorHardwareItem, JambFraming
+from typehaus.model.door_undercut import DoorUndercut
 from typehaus.model.doorway import DoorwayProductSpec, DoorwaySectionPart, DoorwayTreatment
 from typehaus.model.drain_column import DrainColumn
 from typehaus.model.drywall import DrywallStandard, ShadowGapProfile, TerminationBead
@@ -424,7 +425,7 @@ __all__ = [
     "BoardAndBatten", "PanelingSpan", "WallPaneling", "WallBacking", "BracedWallPanel",
     "SuspensionAnchor", "HangingSeatType",
     "Countertop", "MillworkStandard", "RoomTrim", "StairLandingMillwork", "ShelfBank", "ShelfBay",
-    "DoorTrim", "StairSkirt", "TrimStandard", "TrimStock", "WindowStool",
+    "DoorTrim", "DoorUndercut", "StairSkirt", "TrimStandard", "TrimStock", "WindowStool",
     "DrywallStandard", "ShadowGapProfile", "TerminationBead", "PaintSpec", "PaintStandard",
     "HeaderStandard",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",

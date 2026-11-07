@@ -21,6 +21,7 @@
 from typehaus import ft, inch
 from typehaus.model import (
     DoorTrim,
+    DoorUndercut,
     MillworkStandard,
     RoomTrim,
     ShelfBank,
@@ -143,6 +144,11 @@ MILLWORK = [
         ),
         # Stock prehung jambs: a non-stock wall's jamb is ripped down or extended.
         jamb_stock_depths=(inch(4.5625), inch(6.5625)),
+        # Interior doors are stock prehungs cut down on site to the 81.51" RO (owner,
+        # 2026-11-06): the slab hangs 1/2" over the higher finished floor, a relief door 3/4"
+        # (plan/interior_door_types.py), never outside 1/2"-3/4".
+        door_undercut=DoorUndercut(hung=inch(0.5), minimum=inch(0.5), maximum=inch(0.75),
+                                   source="Owner 2026-11-06: stock prehung, cut on site."),
         base_height=inch(3.5),
         casing_width=inch(3.5),
         reveal=inch(0.1875),

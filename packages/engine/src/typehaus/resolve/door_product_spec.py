@@ -9,7 +9,7 @@ from dataclasses import replace
 
 from typehaus.model.enums import DoorOperation
 from typehaus.model.millwork import TrimStandard
-from typehaus.resolve.door_sizing import CASED_DOOR_DEFAULTS
+from typehaus.resolve.door_sizing import CASED_DOOR_DEFAULTS, door_undercut_m, leaf_thickness_m
 from typehaus.resolve.geometry import opening_center, pocket_centerline_offset, wall_frame
 from typehaus.resolve.geometry_door_products import finish_faces, handing
 from typehaus.resolve.geometry_walls import is_raked, wall_top_at
@@ -51,12 +51,13 @@ def resolve_cased_door(wall, opening, door_type, *, standard=None,
     offset = pocket_centerline_offset(wall) if pocket else 0.0
     faces = (faces[0] - offset, faces[1] - offset)
     _, swing = handing(opening)
+    thickness = leaf_thickness_m(door_type)
+    undercut = door_undercut_m(door_type, standard)
     # Swing leaf closes near the pull face; pocket leaf stays on the structural cavity.
     leaf_normal = 0.0 if pocket else (
-        faces[1] - defaults.leaf_thickness_m / 2 if swing > 0
-        else faces[0] + defaults.leaf_thickness_m / 2)
+        faces[1] - thickness / 2 if swing > 0 else faces[0] + thickness / 2)
     head = base + height
-    bottom = max(base, *floors) + defaults.undercut_m
+    bottom = max(base, *floors) + undercut
     top = head - allowance - defaults.leaf_gap_m - (defaults.track_height_m if pocket else 0)
     sizing = opening.sizing
     if sizing is not None and not sizing.held:
@@ -69,10 +70,10 @@ def resolve_cased_door(wall, opening, door_type, *, standard=None,
         base_z_m=max(base, min(floors)),
         head_z_m=head, finished_floor_z_m=floors, finish_faces_m=faces,
         jamb_allowance_m=allowance, jamb_thickness_m=jamb, casing_reveal_m=reveal,
-        leaf_gap_m=defaults.leaf_gap_m, leaf_thickness_m=defaults.leaf_thickness_m,
+        leaf_gap_m=defaults.leaf_gap_m, leaf_thickness_m=thickness,
         leaf_bottom_z_m=bottom, leaf_top_z_m=top, leaf_normal_m=leaf_normal,
         stop_projection_m=defaults.stop_projection_m, stop_depth_m=defaults.stop_depth_m,
-        undercut_m=defaults.undercut_m, pocket_slot_gap_m=defaults.pocket_slot_gap_m,
+        undercut_m=undercut, pocket_slot_gap_m=defaults.pocket_slot_gap_m,
         track_height_m=defaults.track_height_m, track_depth_m=defaults.track_depth_m,
         pocket_sign=opening.pocket_sign or 1,
         leaf_width_m=opening.sizing.leaf_w_m if opening.sizing is not None else None,
@@ -80,12 +81,18 @@ def resolve_cased_door(wall, opening, door_type, *, standard=None,
         leaf_material_ref=opening.effective_leaf_material_ref)
 
 
+def house_trim_standard(plan) -> TrimStandard | None:
+    """The plan's one ``TrimStandard`` (a second is an integrity error), else None."""
+    elements = plan.all_elements() if hasattr(plan, "all_elements") else ()
+    standards = [item for item in elements if isinstance(item, TrimStandard)]
+    return standards[0] if len(standards) == 1 else None
+
+
 def resolve_door_products(model) -> None:
     """Resolve after rooms/floor finishes, once for IR, model JSON and both exports."""
     types = {item.tag: item for item in model.plan.library.door_types}
     window_types = {item.tag: item for item in model.plan.library.window_types}
-    standards = [item for item in model.plan.all_elements() if isinstance(item, TrimStandard)]
-    standard = standards[0] if len(standards) == 1 else None
+    standard = house_trim_standard(model.plan)
     walls = {wall.tag: wall for wall in model.walls}
     resolved = []
     floor_cache = {}
