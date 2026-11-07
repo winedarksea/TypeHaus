@@ -56,14 +56,19 @@ def _service(model: ResolvedModel, box: Any) -> str:
     return "power_240" if circuit is not None and circuit.poles == 2 else "power_120"
 
 
-def _ceiling_plane(model: ResolvedModel, box: Any) -> float | None:
+def _ceiling_plane(model: ResolvedModel, box: Any, xy: tuple[float, float],
+                   faces: list) -> float | None:
+    """The room's finished ceiling over the drop; the storey default only where none covers it."""
+    from typehaus.resolve.ceilings import finished_ceiling_at
     from typehaus.resolve.room_floor import room_floor_elevation
 
     room = next((r for r in model.rooms if r.tag == box.room), None)
     storey = next((s for s in model.plan.storeys if s.tag == box.storey), None)
     if room is None or storey is None:
         return None
-    plane = room_floor_elevation(model, room) + storey.default_ceiling_height.meters
+    plane = finished_ceiling_at(faces, box.storey, box.room, xy)
+    if plane is None:
+        plane = room_floor_elevation(model, room) + storey.default_ceiling_height.meters
     return plane if plane > box.z1_m else None
 
 
@@ -105,6 +110,9 @@ def derive_sleeve_drops(model: ResolvedModel) -> None:
     size = standard.surface_drop.meters
     half_od = raceway_outside_diameter_m(size, "emt") / 2.0
     overhead = OverheadIndex(model, finishes=True)
+    from typehaus.resolve.ceilings import ceiling_faces
+
+    faces = ceiling_faces(model)
     from typehaus.resolve.mep_envelopes import (
         insulation_thickness_m,
         run_polylines,
@@ -125,7 +133,7 @@ def derive_sleeve_drops(model: ResolvedModel) -> None:
         if above is None:
             continue  # nothing overhead to feed from: no drop is derived
         # Under an open well the NM still comes off this storey's ceiling plane.
-        ceiling = min(above.z_m, _ceiling_plane(model, box) or above.z_m)
+        ceiling = min(above.z_m, _ceiling_plane(model, box, (x, y), faces) or above.z_m)
         top, under = _under_runs(runs, x, y, box.z1_m, ceiling, half_od)
         add_derived_run(model, uid=f"{box.device_uid}-drop", tag=f"{box.device_tag}-DROP",
                         storey=box.storey, points=[(x, y, box.z1_m), (x, y, top)],

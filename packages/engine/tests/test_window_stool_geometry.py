@@ -50,6 +50,13 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
             assert math.dist(ring[4], ring[5]) == pytest.approx((0.375 + 0.020) * 0.0254)
         # A fabricated stool's corners are rounded; a milled one stays square.
         assert len(prism.ring) == (len(ring) if not stool.corner_radii_m else 8 + 4 * 6)
+        # The stool's back meets the seated frame's interior face (WIN-B-SAUNA was 4 mm off).
+        origin, _t, normal, _run = wall_frame(wall)
+        across = [(x - origin[0]) * normal[0] + (y - origin[1]) * normal[1]
+                  for solid in frame.solids for x, y in solid.ring]
+        back = [(x - origin[0]) * normal[0] + (y - origin[1]) * normal[1] for x, y in ring]
+        assert min(abs(max(back) - min(across)), abs(min(back) - max(across))) \
+            == pytest.approx(0.0, abs=1e-9), stool.tag
 
     stool = stools[0]
     opening = openings[stool.window_ref]

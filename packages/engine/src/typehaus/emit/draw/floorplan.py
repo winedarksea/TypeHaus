@@ -28,6 +28,7 @@ from typehaus.emit.draw.door_symbols import (
     DOOR_SWING,
     DOOR_SWING_DOUBLE,
     door_symbol_params,
+    passage_symbol,
     symbol_is_centre_anchored,
     symbol_name_for_operation,
 )
@@ -177,6 +178,8 @@ def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str],
         if op.is_door:
             _emit_door_symbol(b, model, op, (cx, cy), (ex - sx, ey - sy), length, angle,
                               wall.thickness_m / M_PER_IN)
+        elif op.is_passage:  # leafless: jambs, never a glazing bar
+            b.add(passage_symbol(op, _in((cx, cy)), angle, wall.thickness_m / M_PER_IN))
         else:
             b.add(Symbol(
                 name="window-mark", insert=_in((cx, cy)), rotation=angle,

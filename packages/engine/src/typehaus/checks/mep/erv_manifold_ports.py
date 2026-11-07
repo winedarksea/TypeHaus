@@ -8,10 +8,10 @@ and the prose goes on saying ten while the model says twelve, and nothing anywhe
 
 The census is earned rather than counted off a naming convention. A branch is a run whose
 end lands *inside the plenum's case* — the same ``duct_connectivity.equipment_at_end`` test
-that decides a duct is plumbed into a machine anywhere else in the engine — and whose
-diameter matches the plenum's own ``port_diameter``. The second half is what keeps the trunk
-out of the count: a 6" riser landing in the same box is the inlet collar, not a branch, and a
-census that counted it would report every plenum one over.
+that decides a duct is plumbed into a machine anywhere else in the engine — and on one of its
+branch ports rather than its trunk collar (:func:`lands_on_branch_port`). That is what keeps
+the trunk out of the count: a 6" riser landing in the same box is the inlet collar, not a
+branch, and a census that counted it would report every plenum one over.
 
 **A COUNT and a LAYOUT are two different verdicts, and the check gives whichever the type
 earned.** A shared catalog plenum (``library/hvac.py``) states how many collars it has and
@@ -35,7 +35,7 @@ from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import EquipmentKind
-from typehaus.resolve.mep_ports import placed_collars
+from typehaus.resolve.mep_ports import PlacedPort, placed_ports
 
 _M_PER_IN = 0.0254
 
@@ -72,6 +72,7 @@ def erv_manifold_ports(ctx: CheckContext) -> list[Finding]:
                  "stating duct_ports, so no port census is expressible", ())]
 
     out: list[Finding] = []
+    air_ports = plenum_air_ports(ctx.model)
     for obj in sorted(plenums, key=lambda item: item.tag):
         product = types.get(obj.type_ref or "")
         ports = getattr(product, "duct_ports", None)
@@ -90,6 +91,7 @@ def erv_manifold_ports(ctx: CheckContext) -> list[Finding]:
 
         branches: list[str] = []
         trunks: list[str] = []
+        ports_here = air_ports.get(obj.tag, ())
         for duct in ctx.model.ducts:
             if not duct.path or duct.diameter_m is None:
                 continue
@@ -98,14 +100,14 @@ def erv_manifold_ports(ctx: CheckContext) -> list[Finding]:
                      if duct.z_m and len(duct.z_m) == len(duct.path) else None)
                 if equipment_at_end(ctx, z, duct.path[index]) != obj.tag:
                     continue
-                if abs(port_diameter.meters - duct.diameter_m) <= 1e-6:
+                if lands_on_branch_port(product, ports_here, duct, (duct.path[index], z)):
                     branches.append(duct.tag)
                 else:
                     trunks.append(duct.tag)
                 break
 
         size = f"{port_diameter.meters / _M_PER_IN:.0f}\""
-        collars = placed_collars(ctx.model, obj.tag)
+        collars = [port for port in ports_here if port.collar]
         if collars:
             out.extend(_graded_by_collar(cid, obj, collars, branches, ctx, size))
             continue
@@ -126,6 +128,40 @@ def erv_manifold_ports(ctx: CheckContext) -> list[Finding]:
                      + (f"; trunk collar {', '.join(sorted(trunks))}" if trunks else ""),
                 (obj.tag,)))
     return out
+
+
+def plenum_air_ports(model) -> dict[str, list[PlacedPort]]:
+    """``{equipment tag: its placed air ports}``, read once per check."""
+    out: dict[str, list[PlacedPort]] = {}
+    for port in placed_ports(model):
+        if port.duct_system is not None:
+            out.setdefault(port.equipment_tag, []).append(port)
+    return out
+
+
+def lands_on_branch_port(product, ports, duct, end) -> bool:
+    """Does this run, ending at ``end`` in this plenum, land on a BRANCH port?
+
+    By role, not by an equal diameter: a 3" radial reduced onto a 4" collar is a branch.
+
+    * larger than ``port_diameter``: the trunk collar, which no branch port can take;
+    * equal, or smaller and within :data:`COLLAR_REACH_M` of a collar: a branch;
+    * otherwise smaller: the trunk only on positive evidence — the type dimensions its
+      collars, and the run's system is a non-collar port's and no collar's
+      (``EQ-T-ERV-PLENUM-M-EXH``: a RETURN riser feed into a box whose one collar is
+      EXHAUST). Service decides because trunk and riser stations are approximate. Anything
+      else is a branch, so a reduced radial drawn off its collar FAILs the census by name.
+    """
+    port = getattr(product, "port_diameter", None)
+    if port is None or duct.diameter_m > port.meters + 1e-6:
+        return False
+    collars = [p for p in ports if p.collar]
+    if (abs(duct.diameter_m - port.meters) <= 1e-6 or not collars
+            or _reach(end, collars) <= COLLAR_REACH_M):
+        return True
+    trunk_systems = {p.duct_system for p in ports if not p.collar}
+    return not (duct.system in trunk_systems
+                and duct.system not in {p.duct_system for p in collars})
 
 
 def _graded_by_collar(cid, obj, collars, branches, ctx, size) -> list[Finding]:

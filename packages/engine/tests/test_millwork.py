@@ -131,16 +131,18 @@ def test_quartz_stools_bill_with_the_stone_not_the_mill(catlin_model_ro):
 
 
 def test_a_stools_depth_is_derived_from_its_host_wall_not_authored(stools):
-    """depth = (interior finish face -> mount plane) - frame_depth + overhang, per stool.
+    """depth = (interior finish face -> mount plane) + proud - frame_depth + overhang.
 
-    Deliberately re-derived here from the record's own two terms rather than compared to a
+    Deliberately re-derived here from the record's own terms rather than compared to a
     constant: a test that pinned one number would pass just as happily against an authored
-    depth, which is the exact bug this design exists to prevent.
+    depth, which is the exact bug this design exists to prevent. ``proud_m`` is nonzero
+    only where the product is deeper than its mount plane to the back dam (WIN-B-SAUNA).
     """
     for stool in stools:
         assert stool.return_m is not None and stool.frame_depth_m is not None
-        expected = stool.return_m - stool.frame_depth_m + stool.overhang_m
+        expected = stool.return_m + stool.proud_m - stool.frame_depth_m + stool.overhang_m
         assert stool.depth_m == pytest.approx(expected, abs=1e-9)
+    assert [s.window_ref for s in stools if s.proud_m > 0] == ["WIN-B-SAUNA"]
 
 
 def test_host_assembly_variants_preserve_their_window_mount_returns(catlin_model_ro):

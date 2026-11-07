@@ -14,7 +14,7 @@ def test_every_metal_window_frame_stops_at_the_mount_plane(catlin_model_ro):
     model, checked = catlin_model_ro, 0
     for opening in model.openings:
         seat = opening.window_seat
-        if opening.kind != "window" or seat is None or seat.outer_m is None:
+        if opening.kind != "window" or seat is None or not seat.metal_trim:
             continue
         wall = model.wall(opening.host_wall)
         frame = opening_flashing_frame(model, wall)

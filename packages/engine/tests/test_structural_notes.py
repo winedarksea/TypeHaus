@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import pytest
+from _helpers import CATLIN
 
 from typehaus.checks.code.mn_residential.profile import get_profile
 from typehaus.emit.draw.schedules.structural_notes import (
@@ -80,6 +81,14 @@ def test_flat_roof_snow_reads_ct_per_roof(catlin_model_ro, profile):
     roofs = {roof.tag: roof for roof in catlin_model_ro.roofs}
     garage = " ".join(roof_framing_notes(catlin_model_ro, roofs["RF-GARAGE"]))
     assert "Pf = 42 PSF" in garage and "Ct = 1.2" in garage
+    # The drift reaches S-102 the way truss_reactions reads it (C5 #3).
+    from typehaus.checks.run import load_preferences
+    from typehaus.emit.draw.structural_common import roof_snow_drift
+
+    prefs = load_preferences(CATLIN)
+    garage = " ".join(roof_framing_notes(catlin_model_ro, roofs["RF-GARAGE"], prefs))
+    assert "RF-GARAGE TRUSS-000, TRUSS-001 (2 OF 13) ARE DRIFT TRUSSES" in garage
+    assert roof_snow_drift(catlin_model_ro, roofs["RF-HOUSE"], prefs) is None
 
 
 def test_a_silent_model_prints_not_stated_and_never_a_default(catlin_model, profile):

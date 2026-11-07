@@ -34,7 +34,9 @@ def test_the_searches_refuse_an_empty_goal_set() -> None:
     assert shortest_route(graph, space, 0, set()) is None
     problem = GravityProblem(ceiling_m=1.0, grade_in_per_ft=0.25, diameter_m=0.0,
                              required_m={})
-    assert sloped_route(graph, space, 0, set(), problem, refusal=GravityRefusal()) is None
+    report = GravityRefusal()
+    assert sloped_route(graph, space, 0, set(), problem, refusal=report) is None
+    assert report.sentence() == "no route falls: no goal left to route to"
 
 
 def test_a_fully_spaced_out_stack_exits_1_with_a_refusal_naming_the_fixture(
@@ -48,3 +50,4 @@ def test_a_fully_spaced_out_stack_exits_1_with_a_refusal_naming_the_fixture(
     assert not isinstance(result.exception, ValueError)
     out = " ".join(result.output.split())
     assert "FX-A-STUBATH-WC: all " in out and "spaced out" in out
+    assert "refused before any search" in out and "lattice nodes are reachable" not in out

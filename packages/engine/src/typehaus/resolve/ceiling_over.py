@@ -139,22 +139,47 @@ def deck_structure_underside_m(storey: Any, deck: Any) -> float | None:
     return top - section.depth_m
 
 
-def ceiling_underside_m(storey: Any, deck: Any, library: Any) -> float | None:
+#: The stock a ``floor:ceiling_channel`` rule hangs a ceiling on — the partitions' RC-1
+#: member and ``[framing]`` price key. Its depth is the profile's, never a literal here.
+RC_PROFILE = "25 ga. resilient channel"
+
+
+def rc_depth_m() -> float:
+    """RC-1's standoff: laid flat, the profile's ``width_m`` is the depth through the band."""
+    return cross_section(RC_PROFILE).width_m
+
+
+def ceiling_channel_depth_m(library: Any, deck: Any, room_tag: str | None) -> float:
+    """How far a ``floor:ceiling_channel`` rule drops ``deck``'s ceiling over ``room_tag``.
+
+    Mirrors the decks ``resolve/construction_ceiling.py`` bills — a membraned FloorSystem,
+    under a rule scoped to this room, or under an unscoped rule where the deck authors an
+    outline — though the two can part on unusual stacks (a scoped room whose first deck up
+    is a Slab or bare). One channel, however many rules name it.
+    """
+    if not (isinstance(deck, FloorSystem) and deck.ceiling_below):
+        return 0.0
+    hit = any(rule.applies_to == "floor:ceiling_channel"
+              and (rule.scope_ref == room_tag if rule.scope_ref is not None
+                   else bool(deck.outline))
+              for rule in getattr(library, "construction_rules", ()))
+    return rc_depth_m() if hit else 0.0
+
+
+def ceiling_underside_m(storey: Any, deck: Any, library: Any,
+                        room_tag: str | None) -> float | None:
     """Absolute elevation of the underside of ``deck``'s OWN ceiling, or None if derivable.
 
     A FloorSystem's storey datum is the TOP of its structure, so the room below sees the
     joist soffit less whatever membrane hangs on it. A Slab hangs its own thickness below
-    the datum (or below ``top_elevation`` where it authors one).
-
-    The resilient-channel standoff is deliberately NOT subtracted: a channel is a
-    ``ConstructionRule`` return, not an element, and a check that reads it here would be
-    grading a quantity rather than the model. It is 1/2", well inside the margin any room
-    this applies to carries.
+    the datum (or below ``top_elevation`` where it authors one). Over ``room_tag``, a
+    resilient channel hung on the soffit drops the membrane by its depth.
     """
     underside = deck_structure_underside_m(storey, deck)
     if underside is None:
         return None
-    return underside - sum(layer_depth_m(library, layer) for layer in deck.ceiling_below)
+    return (underside - ceiling_channel_depth_m(library, deck, room_tag)
+            - sum(layer_depth_m(library, layer) for layer in deck.ceiling_below))
 
 
 def room_roof_over(plan: PlanModel, storey_tag: str, room: Any) -> Roof | None:

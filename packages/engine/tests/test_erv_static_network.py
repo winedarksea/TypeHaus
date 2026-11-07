@@ -19,7 +19,11 @@ from typehaus import (
     m,
     pt,
 )
+from typehaus.checks.mep.erv_manifold_ports import erv_manifold_ports
 from typehaus.checks.mep.erv_static import _network, erv_static_budget, radial_landings
+from typehaus.findings import Result
+from typehaus.model.enums import Service
+from typehaus.model.placeables import PortCertainty, ServicePort
 from typehaus.resolve.duct_sizing import leg_drop_in_wg
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedDuct, ResolvedModel
 
@@ -121,3 +125,29 @@ def test_return_and_exhaust_share_the_extract_network_without_pulling_in_supply(
     ctx.model.ducts.append(extra)
     network = _network(ctx, "ERV", radial_landings(ctx))
     assert {duct.tag for duct in network} == {duct.tag for duct in ctx.model.ducts[:-1]}
+
+
+@pytest.mark.parametrize(("system", "offset_in", "landed", "verdict"), [
+    ("supply", 0.0, True, Result.PASS),    # reduced onto its collar: a radial
+    ("supply", 3.0, True, Result.FAIL),    # drawn off it: still a branch, stranded by name
+    ("return", 3.0, False, Result.PASS),   # the trunk port's system and no collar's: trunk
+])
+def test_a_reduced_run_is_classified_by_the_port_it_lands_on(ctx, system, offset_in,
+                                                             landed, verdict):
+    collar = ServicePort(tag="collar", service=Service.SUPPLY_AIR,
+                         position=(m(0), m(0), m(0)), connection_size=inch(4),
+                         certainty=PortCertainty.EXACT)
+    trunk = ServicePort(tag="trunk", service=Service.RETURN_AIR, position=(m(0), m(0.1), m(0)))
+    lib = ctx.plan.library
+    plenum = lib.equipment_types[1].model_copy(update={"duct_ports": 1, "ports": (collar, trunk)})
+    plan = ctx.plan.model_copy(update={"library": lib.model_copy(
+        update={"equipment_types": (lib.equipment_types[0], plenum)})})
+    y = offset_in * 0.0254
+    reduced = replace(_duct("RADIAL-3", (22, y), (23, y), diameter=4, system=system),
+                      diameter_m=3 * 0.0254)
+    ducts = [*ctx.model.ducts[:-1], reduced]
+    reduced_ctx = check_context(model=replace(ctx.model, plan=plan, ducts=ducts))
+    assert ("RADIAL-3" in radial_landings(reduced_ctx)) is landed
+    census = next(f for f in erv_manifold_ports(reduced_ctx) if "PLENUM" in f.message)
+    assert census.result is verdict
+    assert ("RADIAL-3" in census.message) is (verdict is Result.FAIL)

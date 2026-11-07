@@ -6,7 +6,7 @@ import pytest
 
 from typehaus.checks.mep.routing_beams import _leg_overlap
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.floor_blocking import _box, _clip
+from typehaus.resolve.blocking_parts import clip, pass_through_box
 from typehaus.resolve.model import ResolvedFloor
 
 _IN = M_PER_IN
@@ -69,6 +69,42 @@ def test_the_rerouted_erv_returns_cross_in_a_box(catlin_model_ro) -> None:
     assert not _floor(catlin_model_ro, "FS-S-EAST").blocking_conflicts
 
 
+def test_a_wall_over_a_wall_along_the_joists_reads_its_ladder(catlin_model_ro) -> None:
+    from types import SimpleNamespace
+
+    from typehaus.checks.structural.stacked_ladder import stacked_line_ladder
+    from typehaus.findings import Result
+
+    lines = {line.lowers: line for line in catlin_model_ro.stacked_ladders}
+    # W-S-SN3 over W-M-HS3/HS4 along FS-S-WEST's trusses: recorded, nothing laid or billed.
+    west = lines[("W-M-HS3", "W-M-HS4")]
+    assert west.open_web and not west.stations
+    assert not any(m.child_key.startswith("ladder-block")
+                   for m in _floor(catlin_model_ro, "FS-S-WEST").members)
+    # FO-A-HALL's trimmer stands on W-S-SN3's plate, station by station.
+    assert {s.status for s in lines[("W-S-SN3",)].stations} == {"carried"}
+    findings = stacked_line_ladder(SimpleNamespace(plan=catlin_model_ro.plan,
+                                                   model=catlin_model_ro))
+    by_floor = {f.element_tags[0]: f.result for f in findings}
+    assert by_floor["FS-S-WEST"] is Result.UNKNOWN and by_floor["FS-ATTIC"] is Result.PASS
+
+
+def test_a_box_bears_only_where_a_cheek_stands_on_the_plate() -> None:
+    from typehaus.resolve.stacked_ladder import seated
+
+    plate = (9.5 * _IN, 13.0 * _IN)  # a 2x4 plate in the bay's north side
+    block, _why = seated(_FLOOR, "k", "2x10", True, 0.0, _GAP, plate, _Z0, _Z1, [])
+    assert block and len(block) == 1
+    # A pipe lying along the plate pushes both cheeks off it: no load path, so no station.
+    along = _crossing("PR", 9.0, 13.0, 3.0, 5.0)
+    assert seated(_FLOOR, "k", "2x10", True, 0.0, _GAP, plate, _Z0, _Z1, [along])[0] is None
+    # A pipe in the south of the bay leaves the hi cheek on the plate.
+    south = _crossing("PR", 2.0, 4.0, 3.0, 5.0)
+    box, _why = seated(_FLOOR, "k", "2x10", True, 0.0, _GAP, (4.5 * _IN, 8.0 * _IN), _Z0,
+                       _Z1, [south])
+    assert box and any(m.child_key.endswith("-cheek-hi") for m in box)
+
+
 _FLOOR = ResolvedFloor(uid="F", tag="FS-T", storey="s", direction="x", members=())
 _Z0, _Z1 = 0.0, 11.875 * _IN
 _GAP = (0.0, 13.5 * _IN)
@@ -79,7 +115,7 @@ def _crossing(tag, p_lo_in, p_hi_in, z_lo_in, z_hi_in):
 
 
 def test_a_fitting_run_gets_rails_and_cheeks() -> None:
-    box, conflicts = _box(_FLOOR, "k", True, 0.0, _GAP, _Z0, _Z1,
+    box, conflicts = pass_through_box(_FLOOR, "k", True, 0.0, _GAP, _Z0, _Z1,
                           [_crossing("DU", 4.0, 8.0, 2.0, 6.0)])
     assert not conflicts
     assert {m.child_key for m in box} == {"k-rail-top", "k-rail-bottom", "k-cheek-lo",
@@ -88,7 +124,7 @@ def test_a_fitting_run_gets_rails_and_cheeks() -> None:
 
 
 def test_a_run_on_the_plate_drops_the_bottom_rail() -> None:
-    box, conflicts = _box(_FLOOR, "k", True, 0.0, _GAP, _Z0, _Z1,
+    box, conflicts = pass_through_box(_FLOOR, "k", True, 0.0, _GAP, _Z0, _Z1,
                           [_crossing("DU", 4.0, 10.0, 0.0, 6.0)])
     assert not conflicts
     assert "k-rail-bottom" not in {m.child_key for m in box}
@@ -99,13 +135,13 @@ def test_a_run_on_the_plate_drops_the_bottom_rail() -> None:
     _crossing("DU", -0.5, 4.0, 2.0, 6.0),    # into the joist face
 ])
 def test_a_misfit_is_a_conflict(crossing) -> None:
-    _box_members, conflicts = _box(_FLOOR, "k", True, 0.0, _GAP, _Z0, _Z1, [crossing])
+    _box_members, conflicts = pass_through_box(_FLOOR, "k", True, 0.0, _GAP, _Z0, _Z1, [crossing])
     assert [c.run_tag for c in conflicts] == ["DU"]
 
 
 def test_clip_keeps_the_longest_piece_clear_of_a_beam() -> None:
-    assert _clip((0.0, 10.0), [(6.0, 20.0)]) == (0.0, 6.0)
-    assert _clip((0.0, 0.01), []) is None
+    assert clip((0.0, 10.0), [(6.0, 20.0)]) == (0.0, 6.0)
+    assert clip((0.0, 0.01), []) is None
 
 
 def test_a_duct_along_its_bay_through_a_flush_beam_overlaps_it() -> None:

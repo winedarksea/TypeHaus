@@ -20,7 +20,10 @@ plan's ``bearing_refs`` — and the checks call the same walk on the finished mo
   to the trimmer's bearing, BM-S-BATH-E on W-S-SN3).
 * Then the walls above: on the next storey up of the same building that carries a wall on
   this line, every wall whose collinear run covers the span, recursively. Read off the
-  line, not one stack edge, so an upper wall spanning two lower segments is found.
+  line, not one stack edge, so an upper wall spanning two lower segments is found. Role-
+  blind, so ``wall_role_load`` still catches a mis-authored role. Where the floor's joists
+  run along the line, the condition says whether ``stacked_ladder.py`` laid the ladder it
+  assumes (on a finished model; at framing time the record does not exist yet).
 """
 
 from __future__ import annotations
@@ -33,6 +36,7 @@ from typehaus.model.spatial import Roof, Stair
 from typehaus.model.structure import Beam
 from typehaus.resolve.layout_lines import collinear_overlap
 from typehaus.resolve.mep_bore_scope import outdoor_wall_tags
+from typehaus.resolve.stacked_ladder import ladder_note, walls_over
 
 _AXIS_TOL_M = 0.5 * 0.0254  # stacking's raw-axis tolerance
 _OVERLAP_M = 0.0254  # a run shorter than this touches, it does not carry
@@ -52,6 +56,9 @@ class HeaderCondition:
     building_width_m: float | None = None
     #: The walls above the load came down through.
     via: tuple[str, ...] = ()
+    #: "on the ladder | assumes a ladder in <floor> under <upper wall>": a floor whose
+    #: joists run along the line, crossed on a ladder of blocks.
+    ladders: tuple[str, ...] = ()
 
     @property
     def carries(self) -> bool:
@@ -63,7 +70,8 @@ class HeaderCondition:
         if self.point_loads:
             parts.append(f"point loads {', '.join(self.point_loads)}")
         text = "; ".join(parts) or "nothing"
-        return text + (f", via {', '.join(self.via)}" if self.via else "")
+        text += f", via {', '.join(self.via)}" if self.via else ""
+        return text + (f" ({'; '.join(self.ladders)})" if self.ladders else "")
 
 
 @dataclass
@@ -277,21 +285,10 @@ class LoadIndex:
     # --- walk ------------------------------------------------------------------------
     def walls_above(self, wall) -> list[tuple[object, tuple[float, float]]]:
         """(upper wall, run on ``wall``) on the next storey up that carries this line."""
-        plan = self.plan
-        building = plan.building_of(wall.storey)
-        here = plan.storey(wall.storey).elevation.meters
-        above = sorted((s for s in plan.storeys_of(building) if s.elevation.meters > here),
-                       key=lambda s: s.elevation.meters)
-        for storey in above:
-            runs = [(upper, run) for upper in self.walls.values() if upper.storey == storey.tag
-                    and (run := collinear_overlap(wall.axis, upper.axis, _AXIS_TOL_M))
-                    and run[1] - run[0] > _OVERLAP_M]
-            if runs:
-                return runs
-        return []
+        return walls_over(self.plan, self.walls.values(), wall)
 
     def condition(self, wall, lo_m: float, hi_m: float) -> HeaderCondition:
-        roofs, floors, points, via = self._walk(wall, lo_m, hi_m, set(), wall)
+        roofs, floors, points, via, ladders = self._walk(wall, lo_m, hi_m, set(), wall)
         widths = [w for tag in (*roofs, *floors) if (w := self.widths.get(tag)) is not None]
         # A floor is a LEVEL: two half-decks framing to one centre bearing are one floor.
         levels: dict[str, list[str]] = {}
@@ -303,13 +300,14 @@ class LoadIndex:
                 self.floor_kind.get(tag) == "center" for tag in tags) else "clear")
                 for tags in levels.values()),
             point_loads=tuple(points), building_width_m=max(widths) if widths else None,
-            via=tuple(via))
+            via=tuple(via), ladders=tuple(ladders))
 
     def _walk(self, wall, lo: float, hi: float, seen: set[str], root):
         roofs: dict[str, None] = {}
         floors: dict[str, None] = {}
         points: dict[str, None] = {}
         via: dict[str, None] = {}
+        ladders: dict[str, None] = {}
         seen.add(wall.tag)
         for load in self.on.get(wall.tag, ()):
             a, b = _extent(wall.axis, load.footprint, lo, hi)
@@ -342,10 +340,14 @@ class LoadIndex:
                 continue
             ends = sorted(_station(upper.axis, _point(wall.axis, s)) for s in (run_lo, run_hi))
             sub = self._walk(upper, ends[0], ends[1], seen, root)
-            for target, found in zip((roofs, floors, points, via), sub, strict=True):
+            for target, found in zip((roofs, floors, points, via, ladders), sub, strict=True):
                 target.update(dict.fromkeys(found))
             via[upper.tag] = None
-        return roofs, floors, points, via
+            note = ladder_note(self.model, wall, upper, _point(wall.axis, run_lo),
+                               _point(wall.axis, run_hi))
+            if note is not None:
+                ladders[note] = None
+        return roofs, floors, points, via, ladders
 
     def _on_a_bearing_corner(self, wall, points) -> bool:
         """Points landing on the end of ``wall`` (the wall being graded, not one above it)

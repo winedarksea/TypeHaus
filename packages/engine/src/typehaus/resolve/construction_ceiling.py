@@ -17,9 +17,13 @@ from shapely.geometry import Point, Polygon
 from typehaus.model.assembly import ConstructionRule
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.plan import PlanModel
-from typehaus.resolve.ceiling_over import decks_covering, finish_layer
+from typehaus.resolve.ceiling_over import (
+    deck_structure_underside_m,
+    decks_covering,
+    finish_layer,
+    rc_depth_m,
+)
 from typehaus.resolve.construction_geometry import _EPS
-from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedConstructionReturn, ResolvedModel
 
 # Private, deliberately: a scoped rule has to measure the *same* room polygon the rooms
@@ -34,8 +38,8 @@ from typehaus.resolve.wall_faces import clear_cell, storey_wall_mass
 # Resilient channel: light-gauge hat channel screwed across the joist soffit with the
 # ceiling membrane hung on *it* instead of on the framing. The small stand-off it holds is
 # the whole product — it is what breaks the structure-borne path from the deck into the
-# room below — and it is also this return's z extent.
-_RC_STANDOFF_M = 0.0127  # 1/2", the depth of a standard RC-1 hat
+# room below — and it is also this return's z extent. The ceilings stage hangs the board off
+# the same depth (``ceiling_over.ceiling_channel_depth_m``).
 # 16" o.c., the spacing the joist solver itself falls back to when a deck authors none.
 _RC_DEFAULT_SPACING_M = 0.4064
 # The channel is not a layer of any authored assembly (that is exactly why it needs a
@@ -154,9 +158,12 @@ def _find_ceiling_channel(model: ResolvedModel, rule: ConstructionRule) \
     for storey, system, field, tags in fields:
         for hole in _deck_holes(plan, storey.tag, system):
             field = field.difference(hole)
-        # The channel hangs off the joist soffit, one joist depth below the storey datum —
-        # the same datum the deck's own PT sill plate is measured from.
-        z1 = storey.elevation.meters - cross_section(system.joists.member).depth_m
+        # The channel hangs off the joist soffit — the plane the ceilings stage measures
+        # the board's drop from.
+        z1 = deck_structure_underside_m(storey, system)
+        if z1 is None:
+            continue
+        standoff = rc_depth_m()
         returning = finish_layer(system.ceiling_below)
         pieces = [piece for piece in getattr(field, "geoms", (field,))
                   if piece.geom_type == "Polygon" and piece.area > _EPS]
@@ -173,10 +180,10 @@ def _find_ceiling_channel(model: ResolvedModel, rule: ConstructionRule) \
                 # well does) is a hole, and the record has no ring for holes — so the
                 # opening comes off the quantity below, not off this outline.
                 outline=[(x, y) for x, y in piece.exterior.coords[:-1]],
-                z0_m=z1 - _RC_STANDOFF_M, z1_m=z1,
+                z0_m=z1 - standoff, z1_m=z1,
                 # A field, not a strip: there is no plan width to report, so the thickness
                 # is the channel's own depth — the same span as the z extent above it.
-                thickness_m=_RC_STANDOFF_M, length_m=piece.area / spacing,  # net of holes
+                thickness_m=standoff, length_m=piece.area / spacing,  # net of holes
                 lap_m=spacing,  # the authored dimension is a spacing here, not a lap
                 thermal_continuity=False,
                 returning_layer=returning.material_ref if returning is not None else None,

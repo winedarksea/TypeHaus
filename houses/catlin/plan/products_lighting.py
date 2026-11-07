@@ -76,6 +76,7 @@ FLYACHILLES_DJ3616_2L = Product(
 MODERN_FORMS_BANTAM = Product(
     tag="PROD-MODERNFORMS-WS-38109", brand="Modern Forms", model="WS-38109-30-BK",
     name="Bantam LED wall sconce, 3000K, black",
+    url="https://modernforms.com/product/bantam/",
     source="Modern Forms specification, read 2026-09-06. 393 lm, CRI 90, and ** ADA "
            "compliant at <=4\" projection, which genuinely matters on a stair ** -- a 6\" "
            "sconce there is both a shoulder hazard and a code problem. These three are not "

@@ -25,15 +25,17 @@ _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
 
 _STRETCH_BODY = dict(
     footprint=(inch(8), inch(4)), height=inch(8), plan_symbol="sconce-swing-arm",
+    canopy_diameter=inch(4.375),
     lamp="LED integrated, toggle on the canopy", watts=5.0, lumens=287.0,
     cct_k=3000, cri=90, dimmable=True, damp_rated=True, load_va=5.0, ports=_POWER_120,
     product_ref="PROD-WAC-BL-23210-BK", replaceable_lamp=False)
 _STRETCH = LuminaireType(
     tag="ED-T-LT-SCONCE-SPOT", name="Swing-arm LED reading light, black",
     form=LuminaireForm.SCONCE, type_mark="J", **_STRETCH_BODY,
-    source="WAC Sprig BL-23210-BK (spec sheet), drawn folded. Retyped from the Stretch "
-           "BL-1660-BK 2026-10-29 (plain, cheaper; no touch dimmer). Leave the canopy "
-           "toggle ON so the wall switch rules; CONFIRM it is hardwired (junction box).")
+    source="WAC Sprig BL-23210-BK (spec sheet), drawn folded; canopy 4 3/8 in. dia. (spec "
+           "sheet p.1, read 2026-11-07). Retyped from the Stretch BL-1660-BK 2026-10-29 "
+           "(plain, cheaper; no touch dimmer). Leave the canopy toggle ON so the wall switch "
+           "rules; hardwired to a junction box (installation sheet p.2).")
 
 DECORATIVE_LUMINAIRE_TYPES = (
     # --- H/J/K: sconces ---------------------------------------------------------------
@@ -58,7 +60,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
     LuminaireType(tag="ED-T-LT-SPOT-SW", name="Swing-arm LED reading light, switch on fixture",
                   form=LuminaireForm.SCONCE, type_mark="J1", **_STRETCH_BODY,
                   integral_switch=True,
-                  source="WAC Sprig BL-23210-BK, switched at its canopy toggle (a true on/off)."),
+                  source="WAC Sprig BL-23210-BK, switched at its canopy toggle (a true on/off); "
+                         "canopy 4 3/8 in. dia. (spec sheet p.1, read 2026-11-07)."),
     LuminaireType(tag="ED-T-LT-SAUNA-VT", replaceable_lamp=False,
                   name="Sauna fibre-optic lighting, 8 ferrules on a remote projector",
                   form=LuminaireForm.SCONCE, type_mark="V",
@@ -91,7 +94,9 @@ DECORATIVE_LUMINAIRE_TYPES = (
                          "projection. ** NOT A STYLING DUPLICATE OF MARK J: ** the "
                          "projection limit above is a specification, this is a real and "
                          "different product, and J's head stands 9\" tall — which is the "
-                         "hazard this row exists to avoid."),
+                         "hazard this row exists to avoid. Ships its own JB-0501 slim box "
+                         "(installation sheet p.2); canopy left unset until the engine can "
+                         "derive a fixture-supplied box."),
 
     # Z: a plain black candle sconce (Livex 4451-04, 2026-10-28), replacing the gothic iron
     # one the owner found too ornate. Storage room only (RM-A-EAST-UNFIN): no R303.1 floor.
@@ -106,7 +111,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   load_va=3.3, ports=_POWER_120, product_ref="PROD-LIVEX-4451-04",
                   source="Livex 4451-04 (retailer pages): plainer than the gothic iron it "
                          "replaces (owner, 2026-10-28). CONFIRM the E12 socket and the UL/ETL "
-                         "mark."),
+                         "mark. No manufacturer backplate dimension published; canopy unset."),
 
     LuminaireType(tag="ED-T-LT-CHANDELIER",
                   replaceable_lamp=False, name="20-globe cascade over the stairwell",
@@ -329,6 +334,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   lamp_base="E26", name="Vertical fluted-glass sconce, 1 x E26, black",
                   form=LuminaireForm.SCONCE, type_mark="P6",
                   footprint=(inch(5), inch(4.75)), height=inch(14.25), plan_symbol="sconce",
+                  canopy_diameter=inch(5),
                   lamp="1 x E26 A19 LED filament, 3000K, CRI 95, R9 80+, replaceable",
                   watts=5.0, lumens=None, cct_k=3000, cri=95, dimmable=True, damp_rated=True,
                   load_va=5.0, ports=_POWER_120, product_ref="PROD-HINKLEY-50910BK",
@@ -337,5 +343,6 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   source="Hinkley Soren 50910BK, one Waveform ModernVintage A19 (450 lm, "
                          "95 CRI) under its 6 W cap: 1,350 source lm for the three, a third "
                          "of the 2 x E26 allowance. Delivered lm unpublished. Centre at 64 in. "
-                         "AFF; damp label CONFIRM."),
+                         "AFF; back plate 5 in. dia. (spec sheet, read 2026-11-07); damp "
+                         "label CONFIRM."),
 )

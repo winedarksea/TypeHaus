@@ -56,7 +56,7 @@ def test_schedule_frame_dimensions_match_the_rendered_frame(catlin_model_ro):
             == pytest.approx(height), opening.tag
         assert min(s.z0_m for s in frame.solids) == pytest.approx(wall.base_ref_z_m + sill)
         assert width < opening.width_m and height < opening.height_m
-    assert unresolved == ["WIN-B-SAUNA"]
+    assert unresolved == []
 
 
 def test_ifc_window_sizes_follow_frames_and_keep_voids_at_rough_openings(
@@ -98,7 +98,10 @@ def test_schedule_labels_both_sizes_and_identifies_the_manual_detail(catlin_mode
     by_tag = {row[1]: row for row in table.rows}
     assert by_tag["WIN-S-BED1"][5:7] == ("2'-3 1/2\" × 4'-0\"", "2'-2 1/8\" × 3'-10 1/2\"")
     assert by_tag["WIN-S-PLANT3"][5:7] == ("2'-3 1/2\" × 4'-6\"", "2'-2 3/16\" × 4'-4 13/16\"")
-    assert by_tag["WIN-B-SAUNA"][6] == "UNRESOLVED"
+    # Bucked through the foam behind its brick reveal (resolve/veneer_window_frame.py).
+    assert by_tag["WIN-B-SAUNA"][6] == "1'-0 11/16\" × 1'-10 7/8\""
+    # Its 93 mm unit is deeper than the 4.06" foam buck less the dam: it stands proud.
+    assert by_tag["WIN-B-SAUNA"][7] == "0'-3 11/16\" (3/16\" proud, confirm)"
 
 
 def test_orderable_size_rounds_down_and_never_past_the_envelope():
@@ -170,7 +173,7 @@ def test_profiled_metal_windows_have_four_terminated_sides(catlin_model_ro):
 
     windows = [opening for opening in catlin_model_ro.openings
                if opening.kind == "window" and opening.window_seat
-               and opening.window_seat.outer_m is not None]
+               and opening.window_seat.metal_trim]
     assert len(windows) == 40
     for opening in windows:
         pieces = [solid for solid in catlin_model_ro.solids

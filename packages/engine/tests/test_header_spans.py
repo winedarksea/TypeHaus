@@ -99,6 +99,8 @@ def test_catlin_oracle_conditions(catlin_plan, catlin_model_ro):
     # hung in it at x=10'-0" — on D-M-LAUN's strike pack since 2026-11-07, not in its span.
     laundry = _condition(index, catlin_model_ro, "D-M-LAUN")
     assert laundry.floors == (("FS-ATTIC", "center"),) and laundry.point_loads == ()
+    # FS-S-WEST's trusses run along the line, and a truss deck gets no blocks (TODO item 4).
+    assert "assumes a ladder in FS-S-WEST under W-S-SN3" in laundry.ladders
     hall = catlin_model_ro.wall("W-M-HS3")
     whole = index.condition(hall, 0.0, math.dist(*hall.axis))
     assert whole.point_loads == ("BM-S-BATH-E",)

@@ -75,6 +75,6 @@ def test_catalog_window_head_clears_membrane_at_mount_plane(panel_model):
     wall = panel_model.walls[0]
     resolve_opening_flashing(panel_model)
     panel_model.openings[0] = replace(panel_model.openings[0],
-        window_seat=WindowSeat(.01, .01, .01, 0, outer_m=.1))
+        window_seat=WindowSeat(.01, .01, .01, 0, outer_m=.1, mount="metal_trim"))
     assert panel_support_clearance_m(panel_model, wall, wall.layers[-1]) == pytest.approx(
         FLASHING.sheet_m + FLASHING.perimeter_membrane_m + SHEET_24_GA_M)

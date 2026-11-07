@@ -196,11 +196,19 @@ class Refusal:
     established: bool = False
     #: A fixture arm's candidate take-offs, each with ``line()`` and ``payload()``.
     takeoffs: list = field(default_factory=list)
+    #: Why no search ran (every goal filtered out): no lane, blocker or shortage applies.
+    before_search: str = ""
 
     def movable(self) -> list[Blocker]:
         return [b for b in self.blockers if b.mobility is Mobility.MOVABLE]
 
     def render(self) -> str:
+        if self.before_search:
+            parts = [f"{self.target} ({self.service}): no route, refused before any search: "
+                     f"{self.before_search}."]
+            if self.takeoffs:
+                parts.append("Take-offs: " + "; ".join(t.line() for t in self.takeoffs) + ".")
+            return " ".join(parts)
         head = (f"{self.target} ({self.service}): no route. "
                 f"{self.reachable_nodes:,} of {self.total_nodes:,} lattice nodes are "
                 f"reachable from the origin, and the lanes off the {self.end} are blocked")
@@ -231,21 +239,27 @@ class Refusal:
             "shortages": list(self.shortages), "attempts": list(self.attempts),
             "established": self.established,
             **({"takeoffs": [t.payload() for t in self.takeoffs]} if self.takeoffs else {}),
+            **({"before_search": self.before_search} if self.before_search else {}),
         }
 
 
 def refusal(space: RoutingSpace, graph: Graph, start: int, goals: set[int],
             *, target: str = "", service: str = "", shortages: tuple[str, ...] = (),
             attempts: tuple[str, ...] = (), extra_blockers: tuple[Blocker, ...] = (),
-            takeoffs: tuple = ()) -> Refusal:
+            takeoffs: tuple = (), before_search: str = "") -> Refusal:
     """Build the record for a search that returned nothing.
 
     Which end to probe is decided by reachability, not by guessing: a terminal that can
     reach almost nothing is walled in, and one that can reach most of the lattice has a
     problem at the far end instead. ``extra_blockers`` are what another lattice met — a
-    fixture vent's riser — so ``--counterfactual`` may lift them too.
+    fixture vent's riser — so ``--counterfactual`` may lift them too. ``before_search``
+    is the cause when no search ran; nothing is probed then, so nothing is liftable.
     """
     seen = reachable(graph, start)
+    if before_search:
+        return Refusal(target=target, service=service, end="root",
+                       reachable_nodes=len(seen), total_nodes=len(graph.nodes),
+                       takeoffs=list(takeoffs), before_search=before_search)
     walled = len(seen) < max(8, len(graph.nodes) // 100)
     end, node = ("origin", start) if walled or not goals else ("root", min(goals))
     found = blockers(space, graph, node)

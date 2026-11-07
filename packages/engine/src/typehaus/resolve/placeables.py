@@ -57,6 +57,9 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # The two floor planes walk every wall, slab and deck, so the pair is memoised per room
     # tag — a hundred placeables in the same room ask the same question.
     floor_by_room: dict[str, tuple[float, float]] = {}
+    from typehaus.resolve.ceilings import ceiling_faces, finished_ceiling_at
+
+    faces = ceiling_faces(model)
     for storey in plan.storeys:
         # One shape per room, not one per (room, placeable): a per-placeable rebuild costs
         # ~1,700 GEOS polygon builds per resolve. The bounds ride along so the common
@@ -92,9 +95,14 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             # Resolved before the elevation, not after, because the elevation depends on it.
             floor, structural_floor = _floor_elevation(
                 model, storey, explicit_room or resolved_room, floor_by_room)
+            mount = getattr(item, "mount", None)
+            ceiling = (finished_ceiling_at(faces, storey.tag, explicit_room or resolved_room,
+                                           center)
+                       if mount is not None and mount.kind.value == "ceiling"
+                       and mount.elevation is None else None)
             mount_elevation = resolved_mount_elevation(
                 storey, item, floor_m=floor, structural_floor_m=structural_floor,
-                soffit_underside_m=_soffit_underside(model, item))
+                soffit_underside_m=_soffit_underside(model, item), ceiling_m=ceiling)
             enclosure = getattr(item, "tub_enclosure", None)
             if (getattr(product_type, "excludes_floor_finish", False)
                     and enclosure is None and item.mount.elevation is None):
@@ -279,7 +287,8 @@ def _soffit_underside(model: ResolvedModel, item: object) -> float | None:
 def resolved_mount_elevation(storey: object, item: object,
                              floor_m: float | None = None,
                              soffit_underside_m: float | None = None,
-                             structural_floor_m: float | None = None) -> float:
+                             structural_floor_m: float | None = None,
+                             ceiling_m: float | None = None) -> float:
     """The one project-frame Z for a placeable — glTF, the UI, and IFC all read this.
 
     ``Mount`` is the single authoritative height contract: an explicit ``elevation`` is a
@@ -301,7 +310,8 @@ def resolved_mount_elevation(storey: object, item: object,
     installed in a dropped ``Soffit`` box hangs off its clear underside, not the storey
     ceiling plane, the same fix ``resolve/ceiling_over.py`` makes for room height.
     ``resolve_placeables`` passes it whenever the item names a modeled ``Soffit`` through
-    ``soffit_ref``.
+    ``soffit_ref``. Otherwise it passes ``ceiling_m``, the resolved finished ceiling over the
+    item (``ceilings.finished_ceiling_at``); the storey default is the last fallback.
     """
     mount = getattr(item, "mount", None)
     floor = storey.elevation.meters if floor_m is None else floor_m
@@ -312,8 +322,9 @@ def resolved_mount_elevation(storey: object, item: object,
         return floor + mount.elevation.meters
     if mount.kind.value == "ceiling":
         drop = mount.drop.meters if mount.drop is not None else 0.0
-        plane = (structural + storey.default_ceiling_height.meters
-                 if soffit_underside_m is None else soffit_underside_m)
+        plane = (soffit_underside_m if soffit_underside_m is not None
+                 else ceiling_m if ceiling_m is not None
+                 else structural + storey.default_ceiling_height.meters)
         return plane - drop
     return floor
 

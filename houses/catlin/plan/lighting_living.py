@@ -25,8 +25,8 @@ from typehaus.model import Location, WallAttachment
 LIVING_LIGHTING = [
     # RM-M-LIVING's shadow-gap coves: one run down each side in the 5/8" reveal where the
     # ceiling board stops short of the wall it washes (DRYWALL-STANDARD's Z bead, #103; the
-    # resolver centres each on its reveal), at the 9' ceiling plane — the tape on the bead,
-    # fixed to the board rather than to the framing.
+    # resolver centres each on its reveal), at the board face — 8'-11", the 9' plane less
+    # CR-LIVING-CEIL-RC's channel — the tape on the bead, fixed to the board, not the framing.
     # ** E4 RGB+CCT SINCE 2026-10-31, SPLIT AT THE SLAT PARTITION (y=13'-0"). ** The W/E tags
     # keep the lounge halves, LR-M-DINING-W/E take the dining halves: one controller per
     # zone, so the two ends scene apart. 12 mm tape in the 15.9 mm reveal leaves ~2 mm a side.
@@ -34,22 +34,22 @@ LIVING_LIGHTING = [
              path=(pt(ft(18, 3.5625), ft(1)), pt(ft(18, 3.5625), ft(13))),
              room="RM-M-LIVING", psu_ref="ED-M-LIVING-LT-PSU",
              controlled_by=("ED-M-LIVING-SW-COVE",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 11))),
     LightRun(uid="QRM0002AAA", tag="LR-M-LIVING-E", type_ref="ED-T-LT-STRIP24-RGBCCT",
              path=(pt(ft(35, 5.1875), ft(1)), pt(ft(35, 5.1875), ft(13))),
              room="RM-M-LIVING", psu_ref="ED-M-LIVING-LT-PSU-E",
              controlled_by=("ED-M-LIVING-SW-COVE",), emission_side="right",
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 11))),
     LightRun(uid="BJTQTK477J", tag="LR-M-DINING-W", type_ref="ED-T-LT-STRIP24-RGBCCT",
              path=(pt(ft(18, 3.5625), ft(13)), pt(ft(18, 3.5625), ft(21, 6))),
              room="RM-M-LIVING", psu_ref="ED-M-DINING-LT-PSU",
              controlled_by=("ED-M-LIVING-SW-COVE",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 11))),
     LightRun(uid="H7WQ6SD52G", tag="LR-M-DINING-E", type_ref="ED-T-LT-STRIP24-RGBCCT",
              path=(pt(ft(35, 5.1875), ft(13)), pt(ft(35, 5.1875), ft(21, 6))),
              room="RM-M-LIVING", psu_ref="ED-M-DINING-LT-PSU-E",
              controlled_by=("ED-M-LIVING-SW-COVE",), emission_side="right",
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 11))),
     # ** ONE CLASS 2 DRIVER PER COVE HALF (owner, 2026-10-31). ** The tape carries no
     # listing, so the listed part is the supply, and each segment gets a <=100 VA Class 2
     # HLG-100H-24A (non-dimming) with its own GL-C-001P beside it, which dims and mixes; HA

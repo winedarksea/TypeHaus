@@ -11,7 +11,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from typehaus.checks.structural.truss_reactions import drift_trusses, truss_reactions
+from typehaus.checks.structural.truss_reactions import truss_reactions
+from typehaus.engineering.snow_drift import drift_reach
 from typehaus.findings import Result
 from typehaus.model import PublishedCapacity, PublishedReaction
 
@@ -84,9 +85,9 @@ def test_the_canopy_drift_reaches_the_garages_two_southern_trusses(ctx) -> None:
     """notes/north_entry_piers.md §3a: 9.8 ft from the canopy's south edge is 3.80 ft into
     RF-GARAGE, over truss-000 (y 43.281) and truss-001 (45.219); truss-002 (47.219) is out."""
     garage = next(r for r in ctx.model.roofs if r.tag == "RF-GARAGE")
-    inside, why = drift_trusses(ctx, garage)
-    assert inside == {"truss-000", "truss-001"}
-    assert "RF-BW-CANOPY" in why and "3.80 ft" in why
+    reach = drift_reach(ctx.model, ctx.preferences, ctx.engineering, garage)
+    assert reach.trusses == {"truss-000", "truss-001"} and reach.source == "RF-BW-CANOPY"
+    assert "RF-BW-CANOPY" in reach.why and "3.80 ft" in reach.why
 
 
 @pytest.mark.parametrize("member, result", [
@@ -107,11 +108,9 @@ def test_with_no_drift_width_the_neighbour_is_held_whole(ctx) -> None:
 
     prefs = replace(ctx.preferences, structural=replace(ctx.preferences.structural,
                                                          roof_beam_drift_width_ft=None))
-    bare = SimpleNamespace(plan=ctx.plan, model=ctx.model, preferences=prefs,
-                           engineering=ctx.engineering)
     garage = next(r for r in ctx.model.roofs if r.tag == "RF-GARAGE")
-    inside, why = drift_trusses(bare, garage)
-    assert len(inside) == 13 and "roof_beam_drift_width_ft" in why
+    reach = drift_reach(ctx.model, prefs, ctx.engineering, garage)
+    assert len(reach.trusses) == 13 and "roof_beam_drift_width_ft" in reach.why
 
 
 def test_a_garage_drift_truss_quoted_with_the_drift_passes(ctx) -> None:

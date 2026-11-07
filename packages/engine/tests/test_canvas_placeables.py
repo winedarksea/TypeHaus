@@ -360,7 +360,6 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     plan = load_plan(house).plan
     model, _ = resolve(plan)
     storey_elevation = {storey.tag: storey.elevation.meters for storey in plan.storeys}
-    ceiling = {storey.tag: storey.default_ceiling_height.meters for storey in plan.storeys}
     by_tag = {item.tag: item for item in model.canvas_objects}
 
     def above_floor(tag: str) -> float:
@@ -392,19 +391,19 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     for tag in pantry_channels:
         assert above_floor(tag) == pytest.approx(pantry_floor + ft(1).meters)
 
-    # A hanging fixture hangs off the room's ceiling plane, struck from its structural floor
-    # (``resolve/room_floor.py``). Since #112 every main-storey room is over joists, so that
-    # is the datum; deriving it rather than writing 0 keeps this honest if a slab returns.
     living = next(room for room in model.rooms if room.tag == "RM-M-LIVING")
-    living_floor = room_floor_elevation(model, living) - storey_elevation["main"]
 
-    # A recessed can hangs off the ceiling plane; its housing goes up into the bay.
-    # RM-M-BED is over joists, so its floor IS the datum and there is no offset to add.
-    assert above_floor("ED-M-BED-CAN2") == pytest.approx(ceiling["main"])
-    # A hanging fixture sits its whole assembly below the ceiling — measured from the
-    # living room's own floor, and so from its own ceiling plane.
+    def board(room_tag: str) -> float:
+        return (min(c.z0_m for c in model.ceilings if c.room_ref == room_tag)
+                - storey_elevation["main"])
+
+    # A recessed can sits on its room's resolved board face (``ceilings.finished_ceiling_at``),
+    # not the storey default: RM-M-BED's 5/8" board under the joists.
+    assert above_floor("ED-M-BED-CAN2") == pytest.approx(board("RM-M-BED"))
+    # A hanging fixture sits its whole assembly below that face — RM-M-LIVING's, which hangs
+    # a further 1/2" on CR-LIVING-CEIL-RC's channel.
     assert above_floor("ED-M-DINING-PEND") == pytest.approx(
-        living_floor + ceiling["main"] - ft(3, 6).meters)
+        board("RM-M-LIVING") - ft(3, 6).meters)
     # A stated elevation wins: the attic ceiling is a 6:12 rake, not the storey default.
     # 6'-9 11/16" is the finished gypsum at this can's x=13'-9" (the roof stack's 13.98" under
     # the deck line) — the plane it is recessed into.

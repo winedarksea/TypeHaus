@@ -172,6 +172,7 @@ def wall_graph_json(
         ],
         "openings": [
             {"uid": o.uid, "tag": o.tag, "host": o.host_wall, "kind": o.kind, "is_door": o.is_door,
+             "is_passage": o.is_passage,
              "provenance": _provenance(provenance, o.tag),
              "type_ref": o.type_ref,
              "width_m": o.width_m, "height_m": o.height_m, "sill_m": o.sill_m,

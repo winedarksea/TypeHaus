@@ -61,7 +61,6 @@ the install spec.
   not tied rigidly through the channel or to a chord. It sits mid-bay at y=20'-6" on the
   cavity duct (`plan/mep_registers_basement.py`), so no chord is in its way.
 
-## Not modelled
-The rule adds no ceiling solid or height: `haus check` finished-ceiling and R305 numbers are
-unchanged by it. The real ceiling is about 1/2" lower than the model reads (open in
-`plans/TODO.md`).
+## Modelled depth
+The resolver hangs the board the RC-1 profile's 1/2" below the truss soffit
+(`ceiling_over.ceiling_channel_depth_m`); R305 reads 7'-11 11/16" (2026-11-07).

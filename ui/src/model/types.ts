@@ -430,6 +430,8 @@ export interface Opening {
   // editor consumers while RoughOpening support reaches every presentation surface.
   kind: "door" | "window" | "rough_opening";
   is_door: boolean;
+  /** A door, or a leafless floor-level through hole people walk through. */
+  is_passage?: boolean;
   provenance: Provenance | null;
   type_ref: string | null;
   width_m: number;

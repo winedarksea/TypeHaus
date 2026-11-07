@@ -1014,6 +1014,25 @@ def test_r304_1_fails_a_sixty_square_foot_office():
     assert "60 sf" in findings[0].message
 
 
+@pytest.mark.parametrize(("ring_ft", "result"), [
+    # 90 sf passes R304.1, but a ribbon holds no 7' square
+    (((0, 0), (3, 0), (3, 30), (0, 30)), Result.FAIL),
+    (((0, 0), (7, 0), (7, 10), (0, 10)), Result.PASS),
+    # the oblique edge is the longest; the 8' x 9' body is still graded square to its walls
+    (((0, 0), (8, 0), (8, 9), (0, 9), (-2, -4), (0, -4)), Result.PASS),
+])
+def test_r304_2_grades_the_seven_foot_dimension(ring_ft, result):
+    from shapely.geometry import Polygon
+
+    from typehaus.checks.code.mn_residential.room_dimension import habitable_min_dimension
+
+    ctx, _room = _sloped_ctx(room_wide_ft=7.0, room_deep_ft=10.0, eave_ft=9.0,
+                             ridge_ft=9.0, occupancy=Occupancy.OFFICE)
+    ring = tuple((ft(x).meters, ft(y).meters) for x, y in ring_ft)
+    ctx.model.rooms[0].clear_face, ctx.model.rooms[0].area_m2 = ring, Polygon(ring).area
+    assert _results(habitable_min_dimension(ctx)) == [result]
+
+
 def test_r305_does_not_reach_a_storage_room():
     """R305.1's subject is habitable space, hallways, bathrooms, toilet rooms and laundry
     rooms. An eave storage pocket is none of them, and grading one is a category error — the

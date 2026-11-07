@@ -26,9 +26,10 @@ from typehaus.model.enums import Occupancy
 from typehaus.quantities import inch, m
 from typehaus.resolve.overlay import difference, union_all
 from typehaus.resolve.roof_geometry import (
+    MIN_COUNTABLE_HEAD_M,
     roof_headroom_region,
     roof_height_at,
-    room_head_limited_area_m2,
+    roof_structure_plumb_depth_m,
 )
 
 _CID = "code.R304_1_floor_area"
@@ -59,13 +60,33 @@ def walkable_face(ctx: CheckContext, resolved_room: Any, storey_tag: str) -> Pol
     return difference(face, union_all(voids)) if voids else face
 
 
+def countable_floor(ctx: CheckContext, resolved_room: Any, storey: Any) -> Any:
+    """R304.3's floor: walkable, less what a roof rakes below 5'-0" of head.
+
+    The cut is ``room_head_limited_area_m2``'s (storey datum, plumb structure depth), skipped
+    where that area says no roof rakes the room. R304.1 and R304.2 both grade this polygon.
+    """
+    floor = walkable_face(ctx, resolved_room, storey.tag)
+    limited = getattr(resolved_room, "head_limited_area_m2", None)
+    if limited is None or limited >= resolved_room.area_m2 - 1e-9:
+        return floor
+    for roof in ctx.model.roofs:
+        cover = Polygon(roof.footprint) if roof.footprint else None
+        if cover is None or not floor.intersects(cover):
+            continue
+        region = roof_headroom_region(roof, storey.elevation.meters, MIN_COUNTABLE_HEAD_M
+                                      + roof_structure_plumb_depth_m(ctx.model, roof))
+        floor = difference(floor, cover if region.is_empty else difference(cover, region))
+    return floor
+
+
 # --- R304.1 ---------------------------------------------------------------------------------
 
 @check(Tier.CODE, _CID)
 def habitable_floor_area(ctx: CheckContext) -> list[Finding]:
     """R304.1: a habitable room has at least 70 sf of floor; R304.3: only floor at 5'-0" counts.
 
-    Kitchens are R304.1's own exception. R304.2's 7'-0" minimum dimension is not graded.
+    Kitchens are R304.1's own exception. R304.2's 7'-0" dimension is ``room_dimension``.
     """
     out: list[Finding] = []
     resolved = {room.tag: room for room in ctx.model.rooms}
@@ -75,18 +96,12 @@ def habitable_floor_area(ctx: CheckContext) -> list[Finding]:
             continue
         resolved_room = resolved.get(room.tag)
         storey = _room_storey(ctx, room.tag)
-        countable = getattr(resolved_room, "head_limited_area_m2", None)
-        if resolved_room is None or storey is None or countable is None:
+        if resolved_room is None or storey is None \
+                or getattr(resolved_room, "head_limited_area_m2", None) is None:
             out.append(_unknown(_CID, "room does not resolve a countable floor area",
                                 (room.tag,), "R304.1"))
             continue
-        face = Polygon(resolved_room.clear_face)
-        for void in floor_voids(ctx, storey.tag):
-            piece = face.intersection(void)
-            for part in getattr(piece, "geoms", (piece,)):
-                if isinstance(part, Polygon) and part.area > 1e-9:
-                    countable -= room_head_limited_area_m2(
-                        ctx.model, list(part.exterior.coords)[:-1], storey.elevation.meters)
+        countable = countable_floor(ctx, resolved_room, storey).area
         detail = (f"{room.tag} has {countable * SF_PER_M2:.0f} sf of floor at or above "
                   f"5'-0\" (room is {resolved_room.area_m2 * SF_PER_M2:.0f} sf)")
         if countable + 1e-9 < _MIN_HABITABLE_AREA_M2:

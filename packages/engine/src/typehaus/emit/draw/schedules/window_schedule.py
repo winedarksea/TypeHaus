@@ -48,9 +48,22 @@ def _window_row(model, opening, spec, marks, sill_m) -> tuple[str, ...]:
             product_label(product) if product is not None else "—", operation,
             size_pair(opening.width_m, opening.height_m, 16),
             _frame_size_text(window_frame_dimensions(opening)),
-            _fi(depth.meters, 16) if depth is not None else "—",
+            _depth_text(opening, depth),
             _hinge_text(model, opening, spec), _fi(sill_m),
             _window_clear_text(opening, spec), u_text, shgc, vt, tempered)
+
+
+def _depth_text(opening, depth) -> str:
+    """The frame depth, and how far the seat leaves the unit proud of its mount plane."""
+    from typehaus.emit.draw.detail_components.stack_dimensions import dim_text
+    from typehaus.emit.draw.schedules.openings import _fi
+    from typehaus.quantities import M_PER_IN
+
+    if depth is None:
+        return "—"
+    proud = getattr(opening.window_seat, "proud_m", 0.0)
+    note = f" ({dim_text(proud / M_PER_IN)} proud, confirm)" if proud > 1e-4 else ""
+    return _fi(depth.meters, 16) + note
 
 
 def _rough_row(model, opening, sill_m) -> tuple[str, ...]:

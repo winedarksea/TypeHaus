@@ -163,6 +163,25 @@ export function pocketDoorStrokes(
   ];
 }
 
+/**
+ * A leafless walk-through opening (`Opening.is_passage` without `is_door`): its two jambs
+ * across the wall depth and nothing else, mirroring the engine's `DOOR_PASSAGE`.
+ */
+export function passageStrokes(
+  center: Vec2,
+  angleRadians: number,
+  widthPx: number,
+  jambHalfLengthPx: number,
+): DoorSymbolStroke[] {
+  const at = (along: number, across: number) =>
+    doorSymbolPoint(center, angleRadians, 1, along, across);
+  const half = widthPx / 2;
+  return [-1, 1].map((side) => ({
+    points: [at(side * half, -jambHalfLengthPx), at(side * half, jambHalfLengthPx)],
+    dashed: false,
+  }));
+}
+
 export interface DoorGlyphInput {
   operation: DoorOperation | undefined;
   /** Opening centre, in screen pixels. */

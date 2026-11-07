@@ -8,6 +8,7 @@ import {
   doorStrokeGlyph,
   hostWallThicknessM,
   overheadDoorStrokes,
+  passageStrokes,
   pocketDoorStrokes,
   slidingDoorStrokes,
   windowStrokeGlyph,
@@ -70,6 +71,7 @@ export function runDoorSymbolTests() {
 
   checkBypassLeavesOverlapWithinTheOpening(width);
   checkPocketPanelRecedesIntoTheWall(width);
+  checkPassageDrawsItsJambsOnly(width);
   checkStrokeGlyphDispatch();
   checkHostWallThickness();
 }
@@ -136,6 +138,17 @@ function checkPocketPanelRecedesIntoTheWall(width: number) {
   if (Math.abs(stop.points[0][0] - pocketEnd) > TOLERANCE
     || Math.abs(distance(stop.points[0], stop.points[1]) - 2 * stopHalf) > TOLERANCE) {
     throw new Error("The pocket stop must close the far end of the cavity, across the wall");
+  }
+}
+
+/** A leafless passage draws two solid jambs across the wall at the opening edges. */
+function checkPassageDrawsItsJambsOnly(width: number) {
+  const strokes = passageStrokes(CENTER, 0, width, 3);
+  const xs = strokes.map((stroke) => stroke.points[0][0]).sort((a, b) => a - b);
+  if (strokes.length !== 2 || strokes.some((stroke) => stroke.dashed)
+    || Math.abs(xs[1] - xs[0] - width) > TOLERANCE
+    || strokes.some((stroke) => Math.abs(distance(stroke.points[0], stroke.points[1]) - 6) > TOLERANCE)) {
+    throw new Error("A passage draws one solid jamb across the wall at each opening edge");
   }
 }
 

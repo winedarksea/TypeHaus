@@ -28,7 +28,9 @@ from typehaus.emit.draw.structural_common import (
     feet_inches,
     flat_roof_snow_psf,
     outline_bbox,
+    roof_snow_drift,
     roof_snow_thermal_factor,
+    snow_drift_text,
     truss_heel_note,
     wall_center,
 )
@@ -85,7 +87,8 @@ _BLOCKING_TITLES = {
 
 def build_roof_framing_plan(model: ResolvedModel, roof_tag: str,
                             metrics: BlockMetrics | None = None,
-                            dimension_scale: float = PLAN_RESERVATION_SCALE) -> Scene:
+                            dimension_scale: float = PLAN_RESERVATION_SCALE,
+                            preferences: object = None) -> Scene:
     """Build the S-102 IR scene for the ``ResolvedRoof`` with tag ``roof_tag``."""
     b = SceneBuilder(name=f"roof-framing-{roof_tag}", units="in")
     roof = next((item for item in model.roofs if item.tag == roof_tag), None)
@@ -105,7 +108,7 @@ def build_roof_framing_plan(model: ResolvedModel, roof_tag: str,
     metrics = metrics or metrics_for(plan_points)
     _emit_ridge_callout(b, roof)
     emit_structural_tiers(b, _roof_tiers(model, roof), dimension_scale)
-    _emit_schedule_column(b, model, roof, plan_points, metrics)
+    _emit_schedule_column(b, model, roof, plan_points, metrics, preferences)
     return b.build()
 
 
@@ -264,7 +267,8 @@ def build_ridge_hardware_schedule(model: ResolvedModel,
         columns=("PART", "ITEM", "QTY"), rows=tuple(rows))
 
 
-def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof) -> list[str]:
+def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof,
+                       preferences: object = None) -> list[str]:
     notes = []
     pitch = roof_pitch_note(roof)
     if pitch:
@@ -278,9 +282,13 @@ def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof) -> list[str]:
     if roof.bearing_z_m is not None:
         notes.append(f"ROOF SEATS ON PLATES AT {roof.bearing_z_m:.2f} m; "
                      f"DECK AREA {roof.surface_area_m2:,.0f} m2.")
-    snow = _snow_load_note(model, roof)
+    drift = roof_snow_drift(model, roof, preferences)
+    snow = _snow_load_note(model, roof, drifted=drift is not None)
     if snow:
         notes.append(snow)
+    drift_note = snow_drift_text(roof, drift, preferences)
+    if drift_note:
+        notes.append(drift_note)
     wind = _wind_load_note(model)
     if wind:
         notes.append(wind)
@@ -292,23 +300,26 @@ def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof) -> list[str]:
 
 # Flat-roof snow load p_f (ASCE 7 eq. 7.3-1) at the fully-exposed, Risk Category II defaults
 # Ce = Is = 1.0, with this roof's own Ct: one sheet per roof, so an unheated garage or open
-# canopy prints its 1.2 rather than the house's 1.0. Drift and unbalanced load remain the
-# engineer's, and the note says so alongside.
+# canopy prints its 1.2 rather than the house's 1.0. A drift the house authors follows it
+# (``snow_drift_text``); unbalanced load remains the engineer's, and the note says so.
 #
 # Sliding snow is the one case that is no longer wholly unscreened: `structural.sliding_snow`
 # now reports whether a pitched roof discharges onto a lower roof or a glazed surface and
 # whether retention was authored for it. That is an *exposure* screen, not an impact load —
 # the sheet's disclaimer below still stands for the load itself.
-def _snow_load_note(model: ResolvedModel, roof: ResolvedRoof) -> str | None:
+def _snow_load_note(model: ResolvedModel, roof: ResolvedRoof,
+                    drifted: bool = False) -> str | None:
     """The ground/flat-roof snow load case for this roof, when the site carries one."""
     ground = model.plan.project.site.ground_snow_load_psf
     if ground is None:
         return None
     c_t = roof_snow_thermal_factor(model, roof)
     heat = "HEATED" if c_t == SNOW_CT_HEATED else "UNHEATED"
+    cases = ("DRIFT IS AUTHORED, NOT COMPUTED (NEXT NOTE); SLIDING AND UNBALANCED" if drifted
+             else "DRIFT, SLIDING AND UNBALANCED")
     return (f"GROUND SNOW LOAD Pg = {ground:.0f} PSF; FLAT-ROOF Pf = "
             f"{flat_roof_snow_psf(ground, c_t):.0f} PSF AT Ce = Is = 1.0, Ct = {c_t:.1f} "
-            f"({heat}). DRIFT, SLIDING AND UNBALANCED LOAD CASES ARE NOT COMPUTED HERE.")
+            f"({heat}). {cases} LOAD CASES ARE NOT COMPUTED HERE.")
 
 
 def _wind_load_note(model: ResolvedModel) -> str | None:
@@ -406,12 +417,13 @@ def _has_uplift_connector(model: ResolvedModel, roof: ResolvedRoof) -> bool:
 
 def _emit_schedule_column(b: SceneBuilder, model: ResolvedModel, roof: ResolvedRoof,
                           plan_points: list[tuple[float, float]],
-                          metrics: BlockMetrics) -> None:
+                          metrics: BlockMetrics, preferences: object = None) -> None:
+    notes = tuple(roof_framing_notes(model, roof, preferences))
     missing = tuple(f"{finding.check_id}: {finding.message}"
                     for finding in roof_framing_findings(model, roof))
     ridge = build_ridge_hardware_schedule(model, roof)
     emit_block_columns(b, (build_roof_framing_schedule(model, roof),
                            *((ridge,) if ridge is not None else ()),
-                           NoteBlock("ROOF FRAMING NOTES", tuple(roof_framing_notes(model, roof))),
+                           NoteBlock("ROOF FRAMING NOTES", notes),
                            NoteBlock("NOT SHOWN — MISSING MODEL INPUTS", missing)),
                        plan_points, metrics)

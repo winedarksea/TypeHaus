@@ -23,7 +23,7 @@ from typehaus.resolve.geometry_openings import (
     _exterior_face,
 )
 from typehaus.resolve.model import ResolvedModel, ResolvedOpening, ResolvedWall
-from typehaus.resolve.model_window_seat import WindowSeat, orderable_size
+from typehaus.resolve.model_window_seat import WindowSeat, mount_seat, orderable_size
 from typehaus.resolve.rainscreen_closures import rainscreen_band
 from typehaus.resolve.sheet_geometry import combine_sheets, extruded_quad, sheet_between
 
@@ -65,6 +65,19 @@ class OpeningFlashingFrame:
                              (*[sign * v * thickness for v in self.along], 0.0))
 
 
+def frame_axes(wall: ResolvedWall, sign: float):
+    """``(origin, along, outward, extent)``: a frame's axes off the wall axis, ``sign`` outward."""
+    (x0, y0), (x1, y1) = wall.axis
+    span = math.hypot(x1 - x0, y1 - y0)
+    along = ((x1 - x0) / span, (y1 - y0) / span)
+    outward = (-along[1] * sign, along[0] * sign)
+
+    def extent(layer) -> tuple[float, ...]:
+        return tuple((x - x0) * outward[0] + (y - y0) * outward[1] for x, y in layer.polygon)
+
+    return (x0, y0), along, outward, extent
+
+
 def opening_flashing_frame(model: ResolvedModel, wall: ResolvedWall, opening=None) \
         -> OpeningFlashingFrame | None:
     from typehaus.resolve.exterior_door_boundary import (
@@ -78,15 +91,7 @@ def opening_flashing_frame(model: ResolvedModel, wall: ResolvedWall, opening=Non
         return None  # The doorway resolver reports the invalid explicit reference.
     if exterior is None:
         return None
-    (x0, y0), (x1, y1) = wall.axis
-    span = math.hypot(x1 - x0, y1 - y0)
-    along = ((x1 - x0) / span, (y1 - y0) / span)
-    outward = (-along[1] * exterior[1], along[0] * exterior[1])
-
-    def extent(layer):
-        return tuple((x - x0) * outward[0] + (y - y0) * outward[1]
-                     for x, y in layer.polygon)
-
+    (x0, y0), along, outward, extent = frame_axes(wall, exterior[1])
     bodies = [layer for layer in wall.depth_layers() if layer.polygon]
     sheaths = [layer for layer in bodies if layer.function == "sheathing"]
     structures = [layer for layer in bodies if layer.function == "structure"]
@@ -124,22 +129,25 @@ def opening_flashing_frame(model: ResolvedModel, wall: ResolvedWall, opening=Non
 def resolve_window_seats(model: ResolvedModel, cfg: FlashingConfig = FLASHING) -> None:
     """Seat every flashed window before anything reads its product frame (returns, stool)."""
     from typehaus.resolve.cladding_trim.openings import is_profiled_metal_wall
+    from typehaus.resolve.veneer_window_frame import veneer_backed_frame
 
     walls = {wall.tag: wall for wall in model.walls}
     seated = []
     for opening in model.openings:
-        frame = opening_flashing_frame(model, walls[opening.host_wall]) \
-            if opening.kind == "window" else None
+        wall = walls[opening.host_wall]
+        frame = opening_flashing_frame(model, wall) if opening.kind == "window" else None
+        mount = "metal_trim" if frame is not None and is_profiled_metal_wall(model, wall) \
+            else None
+        if frame is None and opening.kind == "window":
+            # A hand-flashed unit bucked through foam behind a separate veneer's reveal.
+            frame = veneer_backed_frame(model, wall, opening)
+            mount = "veneer" if frame is not None else None
         product = next((t for t in model.plan.library.window_types
                         if t.tag == opening.type_ref), None) if frame is not None else None
-        metal_window = frame is not None and is_profiled_metal_wall(
-            model, walls[opening.host_wall])
         seat = window_seat(opening, frame, cfg, product) if frame else None
-        if seat is not None and metal_window:
-            sign = frame.outward[0] * -frame.along[1] + frame.outward[1] * frame.along[0]
+        if seat is not None and mount is not None:
             depth = getattr(product, "frame_depth", None)
-            seat = replace(seat, outer_m=sign * frame.mount,
-                           frame_depth_m=depth.meters if depth is not None else None)
+            seat = mount_seat(seat, frame, depth.meters if depth is not None else None, mount)
         seated.append(opening if frame is None else replace(opening, window_seat=seat))
     model.openings = seated
 
@@ -171,7 +179,7 @@ def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHIN
         meshes = opening_flashing_meshes(wall, opening, frame, cfg,
                                          pan=not is_overhead(model, opening), metal=metal,
                                          model=model)
-        if opening.window_seat and opening.window_seat.outer_m is not None:
+        if opening.window_seat and opening.window_seat.metal_trim:
             from typehaus.resolve.cladding_trim.openings import window_trim_solids
             from typehaus.resolve.opening_head_cap import head_cap_solids
 
@@ -344,7 +352,7 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
         if courses:
             membrane.append(frame.leg(start, span, (frame.mount, head),
                                       (frame.mount, head_seat), thickness))
-    elif opening.window_seat and opening.window_seat.outer_m is not None:
+    elif opening.window_seat and opening.window_seat.metal_trim:
         # No cavity (the garage): the catalog head's back leg is tied to the water plane.
         from typehaus.resolve.metal_skin_profiles import INCH_M
 

@@ -103,8 +103,10 @@ so nothing in the floor stood between `W-S-SN3`'s plate and this wall's top plat
 the 120" datum), at (120", 268 1/2"), clear of both chords (257 3/4" / 270 1/4"), 3" onto this
 wall's plate, centred on the king/jack seam. 570 / (3.5 x 3.5) = 47 psi on its end grain.
 The UNIFORM part has no such path yet: no blocking stands between the trusses over this wall,
-so until there is a ladder the ~240 plf reaches truss 272 through the subfloor rather than
-this header (open in `plans/TODO.md`; the header row is conservative either way).
+so the ~240 plf reaches truss 272 through the subfloor rather than this header. The engine
+records the line (`resolve/stacked_ladder.py`) and lays no solid block between open-web
+trusses; `structural.stacked_line_ladder` stays UNKNOWN until TrimJoist's layout carries it
+(open in `plans/TODO.md`; the header row is conservative either way).
 
 Pack in bearing on the bottom plate: (570 + header end 745) / (2 x 1.5 x 3.5) = 125 psi
 against SPF Fc⊥ 425 psi — 0.29.

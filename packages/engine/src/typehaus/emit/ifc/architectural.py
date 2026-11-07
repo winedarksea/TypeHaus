@@ -20,8 +20,6 @@ import json
 from dataclasses import replace
 from typing import Any
 
-from shapely.geometry import Polygon
-
 from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.emit.ifc.structural import _emit_framed_member
@@ -37,7 +35,7 @@ from typehaus.resolve.geometry_walls import layer_solids
 from typehaus.resolve.layer_bands import at_body_band, wall_body_band
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.model_window_seat import window_frame_dimensions
-from typehaus.resolve.overlay import intersection, union_all
+from typehaus.resolve.opening_void import void_profile, void_span
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.room_paint import paint_standard, unroomed_coat
 from typehaus.resolve.topology import _added_thicknesses
@@ -336,39 +334,12 @@ def _opening_segment(rw: ResolvedWall, opening: Any) -> tuple[tuple[float, float
 
 
 def _opening_profile(rw: ResolvedWall, opening: Any) -> list[tuple[float, float]]:
-    """Intersect the real host footprint with the opening's jamb station strip."""
-    (sx, sy), (ex, ey) = rw.axis
-    wall_length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5 or 1.0
-    direction = ((ex - sx) / wall_length, (ey - sy) / wall_length)
-    normal = (-direction[1], direction[0])
-    start = opening.center_along_m - opening.width_m / 2
-    end = opening.center_along_m + opening.width_m / 2
-    transverse_extent = max(rw.thickness_m * 4.0, 1.0)
+    """The voided layers' footprint at the opening's station (``resolve/opening_void``).
 
-    def point(along: float, across: float) -> tuple[float, float]:
-        return (
-            sx + direction[0] * along + normal[0] * across,
-            sy + direction[1] * along + normal[1] * across,
-        )
-
-    station_strip = Polygon([
-        point(start, -transverse_extent), point(end, -transverse_extent),
-        point(end, transverse_extent), point(start, transverse_extent),
-    ])
-    # On the overlay grid: a lapped sheathing band is snapped to it, so a bare union
-    # leaves a 1-ulp seam against its neighbour and max() below keeps only one half.
-    # Bodies, not depth: depth keeps a slot's first region only, so a later one drops out.
-    host_footprint = union_all(
-        Polygon(layer.polygon) for layer in rw.body_layers()
-        if len(layer.polygon) >= 3
-    )
-    clipped = intersection(host_footprint, station_strip)
-    polygons = [clipped] if isinstance(clipped, Polygon) else [
-        item for item in getattr(clipped, "geoms", ()) if isinstance(item, Polygon)
-    ]
-    if polygons:
-        polygon = max(polygons, key=lambda item: item.area)
-        return [(float(x), float(y)) for x, y in list(polygon.exterior.coords)[:-1]]
+    A blind rough opening voids only the layers its ``depth_from`` depth reaches."""
+    profile = void_profile(rw, opening)
+    if profile:
+        return profile
     a, b, thickness = _opening_segment(rw, opening)
     return rect_between(a, b, -thickness / 2, thickness / 2)
 
@@ -430,11 +401,12 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
         (sx, sy), (ex, ey) = rw.axis
         wall_length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5 or 1.0
         direction = ((ex - sx) / wall_length, (ey - sy) / wall_length)
-        center = (sx + direction[0] * opening.center_along_m,
-                  sy + direction[1] * opening.center_along_m)
+        offset, depth = void_span(rw, opening)  # the voided band, not the axis
+        center = (sx + direction[0] * opening.center_along_m - direction[1] * offset,
+                  sy + direction[1] * opening.center_along_m + direction[0] * offset)
         representation = ll.add_arched_opening_prism(
             f, body, center_m=center, wall_direction=direction,
-            wall_thickness_m=rw.thickness_m or 0.15, width_m=opening.width_m,
+            wall_thickness_m=depth, width_m=opening.width_m,
             height_m=opening.height_m, arch_rise_m=opening.arch_rise_m, z0_m=z0,
         )
     else:

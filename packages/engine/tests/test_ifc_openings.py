@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-
 from typehaus.diff import build_report
 from typehaus.diff.ifc_adapter import baseline_elems, external_elems
 from typehaus.emit.ifc import emit_ifc
@@ -99,6 +98,34 @@ def test_rough_opening_emits_only_the_wall_void(catlin_model, tmp_path):
     filled = [opening for opening in model.openings if opening.kind != "rough_opening"]
     assert len(f.by_type("IfcWindow")) + len(f.by_type("IfcDoor")) == len(filled)
     assert len(f.by_type("IfcRelFillsElement")) == len(filled)
+
+
+def test_blind_rough_opening_voids_only_its_depth(catlin_model):
+    # The elevation cuts only the layers ``depth_from`` reaches (geometry_walls.cuts_layer);
+    # the IFC void and the diff adapter's band must stop there too, on the right face.
+    from typehaus.resolve.geometry import wall_frame
+    from typehaus.resolve.opening_void import void_band
+
+    inch = 0.0254
+    for tag, depth_in in (("AO-M-FIRE-NICHE", 6.0), ("AO-M-PORCH-HYD", 12.75),
+                          ("WIN-M-DINING-E", 13.75)):
+        opening = next(item for item in catlin_model.openings if item.tag == tag)
+        wall = catlin_model.wall(opening.host_wall)
+        lo, hi = void_band(wall, opening)
+        assert hi - lo == pytest.approx(depth_in * inch, abs=1e-4), tag
+        origin, _tangent, (nx, ny), _length = wall_frame(wall)
+
+        def offset(layer, origin=origin, nx=nx, ny=ny):
+            ring = layer.polygon
+            return sum((p[0] - origin[0]) * nx + (p[1] - origin[1]) * ny
+                       for p in ring) / len(ring)
+
+        faces = {"interior": offset(wall.depth_layers()[0]),
+                 "exterior": offset(wall.depth_layers()[-1])}
+        near = faces[opening.depth_from]
+        far = faces["exterior" if opening.depth_from == "interior" else "interior"]
+        assert lo - 1e-6 <= near <= hi + 1e-6, tag  # opens on its own face
+        assert (lo - 1e-6 <= far <= hi + 1e-6) == (opening.depth_m is None), tag
 
 
 def test_arched_voids_use_vertical_curved_profiles(catlin_model, catlin_ifc):

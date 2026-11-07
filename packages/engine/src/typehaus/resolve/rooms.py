@@ -217,13 +217,13 @@ def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     for index, storey, clear in pending:
         room = model.rooms[index]
         head, soffit_m2 = _clear_head(plan, model, storey, clear,
-                                      room_finished_floor_elevation(model, room))
+                                      room_finished_floor_elevation(model, room), room.tag)
         model.rooms[index] = replace(room, clear_height_m=head, soffit_area_m2=soffit_m2)
     return findings
 
 
 def _clear_head(plan: PlanModel, model, storey, clear: Polygon,
-                datum: float) -> tuple[float | None, float]:
+                datum: float, room_tag: str) -> tuple[float | None, float]:
     """``(clear height above the room's FINISHED floor, soffited area)`` for a room face.
 
     **The soffit is the point.** ``ceiling_over._is_ceiling_deck`` admits a ``FloorSystem``
@@ -250,7 +250,7 @@ def _clear_head(plan: PlanModel, model, storey, clear: Polygon,
     from typehaus.resolve.ceiling_over import ceiling_decks_over, ceiling_underside_m
 
     undersides = [value for value in
-                  (ceiling_underside_m(deck_storey, deck, plan.library)
+                  (ceiling_underside_m(deck_storey, deck, plan.library, room_tag)
                    for deck_storey, deck in ceiling_decks_over(plan, storey.tag, clear))
                   if value is not None]
     soffit_m2 = 0.0

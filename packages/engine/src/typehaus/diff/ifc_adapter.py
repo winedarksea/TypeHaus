@@ -32,6 +32,7 @@ from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.layer_bands import at_body_band, wall_body_band
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.model_window_seat import window_frame_dimensions
+from typehaus.resolve.opening_void import void_span
 
 
 def _guid(project_uuid: uuid.UUID, uid: str) -> str:
@@ -331,18 +332,15 @@ def _placeable_symbol_bounds(
 def _opening_frame_bounds(wall: ResolvedWall, opening: object) -> list[tuple[float, float]]:
     origin, (ux, uy), (nx, ny), _length = wall_frame(wall)
     center = opening_center(wall, opening) or origin
-    # Bare rough openings are emitted as a full wall-depth void; installed doors/windows
+    # Bare rough openings are emitted as a wall-depth void; installed doors/windows
     # are emitted as their intentionally thin filling frame.
     half_width = opening.width_m / 2
-    half_depth = (wall.thickness_m / 2) if opening.kind == "rough_opening" else 0.025
-    lo, hi = -half_depth, half_depth
-    if opening.kind == "rough_opening" and getattr(opening, "arch_rise_m", 0.0) <= 1e-6:
-        # A rectangular void is the host's layer band (emit/ifc/architectural._opening_profile),
-        # which a face-aligned wall does not centre on its node line; an arched one is still
-        # swept symmetric about the axis there.
-        offsets = [(p[0] - origin[0]) * nx + (p[1] - origin[1]) * ny
-                   for layer in wall.body_layers() for p in layer.polygon]
-        lo, hi = (min(offsets), max(offsets)) if offsets else (lo, hi)
+    lo, hi = -0.025, 0.025
+    if opening.kind == "rough_opening":
+        # The void spans its voided layers' band (resolve/opening_void), which a face-aligned
+        # wall does not centre on its node line and a blind one stops short of.
+        offset, depth = void_span(wall, opening)
+        lo, hi = offset - depth / 2, offset + depth / 2
     return [(center[0] + x * ux + y * nx, center[1] + x * uy + y * ny)
             for x, y in ((-half_width, lo), (half_width, lo), (half_width, hi), (-half_width, hi))]
 

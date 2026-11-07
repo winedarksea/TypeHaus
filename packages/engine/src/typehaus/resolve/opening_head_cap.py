@@ -43,7 +43,7 @@ def head_cap(model, wall, opening, frame, cfg: FlashingConfig = FLASHING) -> Hea
     from typehaus.resolve.rainscreen_closures import opening_head_spans
 
     seat = opening.window_seat
-    if seat is None or seat.outer_m is None:
+    if seat is None or not seat.metal_trim:
         return None
     span = next(((s0, s1, z) for o, s0, s1, z in opening_head_spans(model, wall)
                  if o.uid == opening.uid), None)

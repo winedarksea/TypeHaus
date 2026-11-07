@@ -13,7 +13,8 @@ lift or a girt depth moved.
 The derivation, per window::
 
     return  = interior finish face -> window mount plane   (the host wall's own layers)
-    depth   = return - frame_depth + overhang
+    proud   = the seated unit past that plane (0 unless deeper than plane to back dam)
+    depth   = return + proud - frame_depth + overhang
 
 The mount plane is the outer face of the outermost layer that is neither cladding nor
 finish — on the reference house's exterior walls that is the outer girt, "which is also
@@ -49,6 +50,7 @@ from typehaus.resolve.model import (
     ResolvedWall,
     ResolvedWindowStool,
 )
+from typehaus.resolve.model_window_seat import mount_layer_index
 from typehaus.resolve.room_walls import bounding_walls
 
 
@@ -178,6 +180,8 @@ def _resolve_stools(plan: PlanModel, model: ResolvedModel,
                        if window_type is not None and window_type.frame_depth is not None
                        else None)
         interior_return = interior_return_m(wall)
+        # A unit standing proud of its mount plane takes the stool out with it.
+        proud = opening.window_seat.proud_m if opening.window_seat is not None else 0.0
         authored_depth = stool.depth.meters if stool and stool.depth is not None else None
         if authored_depth is not None:
             depth: float | None = authored_depth
@@ -192,7 +196,7 @@ def _resolve_stools(plan: PlanModel, model: ResolvedModel,
                 element_tags=(opening.tag,), result=Result.UNKNOWN,
                 fix_hint="author WindowType.frame_depth, or WindowStool.depth"))
         else:
-            depth = interior_return - frame_depth + overhang
+            depth = interior_return + proud - frame_depth + overhang
 
         model.window_stools.append(ResolvedWindowStool(
             uid=stool.uid if stool else f"{opening.uid}-stool",
@@ -210,6 +214,7 @@ def _resolve_stools(plan: PlanModel, model: ResolvedModel,
             profile=profile,
             return_m=interior_return,
             frame_depth_m=frame_depth,
+            proud_m=proud,
             derived=derived,
             sill_rail_m=_meters(window_type, "sill_rail_height"),
             sash_overlap_m=_meters(window_type, "sash_overlap") or 0.0,
@@ -269,10 +274,7 @@ def interior_return_m(wall: ResolvedWall) -> float | None:
     ``None`` when the wall resolves no such layer — a wall of nothing but finish.
     """
     layers = wall.depth_layers()
-    plane_index = None
-    for index, layer in enumerate(layers):
-        if layer.function not in (LayerFunction.CLADDING.value, LayerFunction.FINISH.value):
-            plane_index = index
+    plane_index = mount_layer_index(layers)
     if plane_index is None:
         return None
     return sum(layer.thickness_m for layer in layers[: plane_index + 1])

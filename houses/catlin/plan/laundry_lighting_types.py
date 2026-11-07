@@ -8,7 +8,8 @@ from typehaus.model import TrackHeadSpec
 from typehaus.quantities import inch
 
 RAIL_CENTER_IN = (128.4, 258.0)
-CEILING_IN = 108.0
+# The rail sits on the laundry's resolved board face: 5/8" gypsum under the 108 1/8" soffit.
+CEILING_IN = 107.5
 # Machine east, sink west since the door moved 11 1/2" east (2026-11-07).
 MACHINE_ADAPTER_X_IN = 143.25
 SINK_ADAPTER_X_IN = 113.55

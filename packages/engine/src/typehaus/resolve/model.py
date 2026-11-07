@@ -1096,6 +1096,8 @@ class ResolvedWindowStool:
     # is authored per window.
     return_m: float | None
     frame_depth_m: float | None
+    # The third term: how far the unit stands proud of that plane (``WindowSeat.proud_m``).
+    proud_m: float = 0.0
     # True when derived from the house's ``MillworkStandard`` rather than authored as its
     # own ``WindowStool``. An authored stool always wins for its window.
     derived: bool = True
@@ -1680,6 +1682,8 @@ class ResolvedModel:
     roofs: list[ResolvedRoof] = field(default_factory=list)
     stairs: list[ResolvedStair] = field(default_factory=list)
     floors: list[ResolvedFloor] = field(default_factory=list)
+    # A wall over a wall along a floor's joists, station by station (→ resolve/stacked_ladder.py).
+    stacked_ladders: list[Any] = field(default_factory=list)
     fireblocks: list[ResolvedFireblock] = field(default_factory=list)
     floor_opening_pocket_closures: list[ResolvedFloorOpeningPocketClosure] = field(
         default_factory=list

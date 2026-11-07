@@ -195,17 +195,18 @@ def _manifolds(ctx: CheckContext) -> dict[str, object]:
 def radial_landings(ctx: CheckContext) -> dict[str, str]:
     """``{run tag: manifold tag}`` for every run that lands in a fabricated plenum.
 
-    A run is a *radial* when one of its ends is inside a ``DUCT_MANIFOLD``'s case and its
-    diameter matches that plenum's ``port_diameter``. A larger run landing in the same box
-    is the trunk collar, not a branch — which is what keeps a 6" riser out of the port
-    census in :mod:`typehaus.checks.mep.erv_manifold_ports`.
+    A run is a *radial* when one of its ends is inside a ``DUCT_MANIFOLD``'s case and on
+    one of its branch ports rather than its trunk collar — by ROLE, the census's own
+    ``lands_on_branch_port``, so a 3" radial reduced onto a 4" collar is a radial, not a
+    trunk summed into the whole side.
 
     "Lands in" is ``duct_connectivity.equipment_at_end``, the one definition of it in the
     engine, rather than a second footprint test that could drift from the first.
     """
     from typehaus.checks.mep.duct_connectivity import equipment_at_end
+    from typehaus.checks.mep.erv_manifold_ports import lands_on_branch_port, plenum_air_ports
 
-    plenums = _manifolds(ctx)
+    plenums, ports = _manifolds(ctx), plenum_air_ports(ctx.model)
     out: dict[str, str] = {}
     for duct in ctx.model.ducts:
         if not duct.path or duct.diameter_m is None:
@@ -213,10 +214,8 @@ def radial_landings(ctx: CheckContext) -> dict[str, str]:
         for index in (0, -1):
             z = duct.z_m[index] if duct.z_m and len(duct.z_m) == len(duct.path) else None
             host = equipment_at_end(ctx, z, duct.path[index])
-            if host is None or host not in plenums:
-                continue
-            port = getattr(plenums[host], "port_diameter", None)
-            if port is not None and abs(port.meters - duct.diameter_m) <= 1e-6:
+            if host in plenums and lands_on_branch_port(
+                    plenums[host], ports.get(host, ()), duct, (duct.path[index], z)):
                 out[duct.tag] = host
                 break
     return _through_trunks(ctx, plenums, out)
@@ -261,7 +260,7 @@ def _through_trunks(ctx: CheckContext, plenums: dict, landings: dict[str, str]
     """
     from typehaus.resolve.mep_soffit import ducts_are_joined
 
-    del plenums  # every landing already matched its plenum's port diameter to get here
+    del plenums  # every landing is already on one of its plenum's branch ports
     sizes = {duct.tag: duct.diameter_m for duct in ctx.model.ducts
              if duct.diameter_m is not None}
     out = dict(landings)

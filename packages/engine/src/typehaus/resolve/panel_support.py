@@ -27,7 +27,7 @@ def panel_support_clearance_m(
             continue
         support = min((x - frame.origin[0]) * frame.outward[0]
                       + (y - frame.origin[1]) * frame.outward[1] for x, y in layer.polygon)
-        metal_trim = opening.window_seat and opening.window_seat.outer_m is not None
+        metal_trim = opening.window_seat and opening.window_seat.metal_trim
         head_plane = frame.mount if metal_trim else frame.water
         # The panel surface must stand clear of the outer membrane surface, including
         # the panel sheet itself, so it does not intersect the head strip-in.

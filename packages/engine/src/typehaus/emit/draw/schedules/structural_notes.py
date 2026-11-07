@@ -17,7 +17,9 @@ from typehaus.emit.draw.schedules.blocks import draw_note_page, paginate_note_bl
 from typehaus.emit.draw.sheet_writer import schedule_sheet
 from typehaus.emit.draw.structural_common import (
     flat_roof_snow_psf,
+    roof_snow_drift,
     roof_snow_thermal_factor,
+    snow_drift_text,
     truss_heel_note,
 )
 from typehaus.resolve.concrete import concrete_spec_of
@@ -75,9 +77,9 @@ def _snow_case_rows(model: ResolvedModel, site: object,
     """Flat-roof, drift and unbalanced, as far as this model honestly knows them.
 
     ``p_f`` is DERIVED per distinct roof C_t (heated 1.0, unheated 1.2), each row naming its
-    roofs. The drift is AUTHORED, because the engine computes no part of it, and it prints the
-    note that derives it. Unbalanced and sliding print as not computed — a blank would read
-    as "zero".
+    roofs. The drift is AUTHORED (the engine computes no part of it), one row per roof it
+    reaches, read the way ``structural.truss_reactions`` grades the truss rows. Unbalanced
+    and sliding print as not computed — a blank would read as "zero".
     """
     ground = getattr(site, "ground_snow_load_psf", None)
     rows: list[str] = []
@@ -89,17 +91,11 @@ def _snow_case_rows(model: ResolvedModel, site: object,
         rows.append(_row("" if i else "FLAT-ROOF SNOW (P_F)",
                          f"{flat_roof_snow_psf(float(ground), c_t):.0f} psf {basis} "
                          f"C_t = {c_t:.1f}: {_tags(sorted(tags))}"))
-    structural = getattr(preferences, "structural", None)
-    drift = getattr(structural, "roof_beam_snow_psf", None)
-    if drift:
-        rows.append(_row("DRIFT / STEP SNOW",
-                         f"{float(drift):.1f} psf DESIGN AT THE NORTH ENTRY CANOPY "
-                         f"(ASCE 7 SEC 7.7 ROOF-STEP DRIFT OFF THE HOUSE GABLE) — "
-                         f"SEE NOTES/NORTH_ENTRY_PIERS.MD SEC 3"))
-        rows.append(_row("", "THE DRIFT TRIANGLE REACHES 3'-10\" INTO THE GARAGE ROOF: "
-                             "ITS TWO SOUTHERNMOST TRUSSES ARE DRIFT TRUSSES"))
-    else:
-        rows.append(_row("DRIFT / STEP SNOW", NOT_STATED))
+    drift = [text for roof in sorted(model.roofs, key=lambda r: r.tag)
+             if (text := snow_drift_text(roof, roof_snow_drift(model, roof, preferences),
+                                         preferences))]
+    for i, text in enumerate(drift or [NOT_STATED]):
+        rows.append(_row("" if i else "DRIFT / STEP SNOW", text))
     rows.append(_row("UNBALANCED / SLIDING SNOW",
                      "NOT COMPUTED BY THIS MODEL — DESIGNER OF RECORD"))
     return rows

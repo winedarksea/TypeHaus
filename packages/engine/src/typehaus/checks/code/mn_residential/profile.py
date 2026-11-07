@@ -163,7 +163,8 @@ MN_2020 = JurisdictionProfile(
     inspections=MN_INSPECTIONS,
     permit_items=(
         PermitItemSpec("Ceiling height / habitable attic",
-                       ("code.R305_ceiling_height", "code.R304_1_floor_area"),
+                       ("code.R305_ceiling_height", "code.R304_1_floor_area",
+                        "code.R304_2_min_dimension"),
                        ("IRC R305", "IRC R304")),
         # R310.1 is two requirements, and only the room-level one was encoded: a basement
         # with habitable space needs its own escape opening whether or not anyone sleeps in
@@ -569,7 +570,8 @@ MN_2020 = JurisdictionProfile(
         # row and stays UNKNOWN until a header-guide row, a move or an engineered item.
         PermitItemSpec("Headers up to 8' (IRC R602.7 tables) and wall roles",
                        ("structural.header_span", "structural.wall_role_load",
-                        "structural.flat_2x4_nonbearing_header"),
+                        "structural.flat_2x4_nonbearing_header",
+                        "structural.stacked_line_ladder"),
                        ("IRC R602.7", "IRC R602.7.4", "IRC Table R602.7(1)",
                         "IRC Table R602.7(2)"), blocking=False),
         # A deck hung off a wall: the ledger, its anchors and the wall face. On concrete the

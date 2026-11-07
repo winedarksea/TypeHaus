@@ -135,6 +135,7 @@ WAC_ROLAND = Product(
 WAC_STRETCH = Product(
     tag="PROD-WAC-BL-23210-BK", brand="WAC Lighting", model="BL-23210-BK",
     name="Sprig LED swing-arm wall light, black",
+    url="https://waclighting.com/storage/waclighting-images/inst_sheet/BL-23210_INSSHT.pdf",
     source=_READ + "WAC spec sheet (Jan 2022): 5 W, 287 delivered lm, 3000 K, CRI 90, 120 VAC, "
            "ELV/TRIAC 100-10%, damp, canopy on/off toggle, USB port under the canopy, 10 in. "
            "arm (modelled folded, 8 x 4 in.). CONFIRM it is hardwired (junction box); the "

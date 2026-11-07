@@ -125,8 +125,11 @@ def test_rectangular_feed_below_attic_deck_is_not_attic_headroom_obstruction(cat
     findings = run_in_finished_volume(check_context(model=model))
     assert not [f for f in findings if f.result is Result.FAIL and DUCT in f.element_tags]
     duct = next(d for d in model.ducts if d.tag == DUCT)
-    # A real intrusion above the deck must still fail, even though width exceeds depth.
-    changed = replace(duct, z_m=tuple(z + inch(2).meters for z in duct.z_m))
+    # A real intrusion above the deck must still fail, even though width exceeds depth:
+    # lift the 6"-deep duct until its top is 1" past the FS-ATTIC deck top.
+    deck_top = max(m.z1_m for f in model.floors if f.tag == "FS-ATTIC" for m in f.members)
+    lift = deck_top - (max(duct.z_m) + inch(3).meters) + inch(1).meters
+    changed = replace(duct, z_m=tuple(z + lift for z in duct.z_m))
     model.ducts = [changed if d.tag == DUCT else d for d in model.ducts]
     findings = run_in_finished_volume(check_context(model=model))
     assert [f for f in findings if f.result is Result.FAIL and DUCT in f.element_tags]

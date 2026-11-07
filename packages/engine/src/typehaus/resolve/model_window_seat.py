@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING
+
+from typehaus.model.enums import LayerFunction
 
 if TYPE_CHECKING:
     from typehaus.quantities import Length
@@ -27,10 +29,47 @@ class WindowSeat:
     head_drop_m: float
     #: The unit's interior face as a signed wall-normal offset: the back dam's front face.
     inner_m: float
-    #: The signed mount plane when a profiled metal trim kit terminates the reveal.
+    #: The signed plane the unit's outer face stands on: the mount plane, or proud of it.
     outer_m: float | None = None
     #: The product's ``WindowType.frame_depth`` back from ``outer_m``; None draws to the dam.
     frame_depth_m: float | None = None
+    #: What terminates the reveal outside the unit: ``"metal_trim"`` (a profiled metal kit's
+    #: jamb, sill and head) or ``"veneer"`` (a separate wythe's reveal, hand-flashed).
+    mount: str | None = None
+    #: How far the unit stands proud of the mount plane because the plane sits closer to the
+    #: back dam than the product is deep. A misfit for the supplier to confirm, not a choice.
+    proud_m: float = 0.0
+
+    @property
+    def metal_trim(self) -> bool:
+        return self.mount == "metal_trim"
+
+
+_SKIN = (LayerFunction.CLADDING.value, LayerFunction.FINISH.value)
+
+
+def mount_layer_index(layers) -> int | None:
+    """The outermost layer that is neither cladding nor finish: the window mount plane.
+
+    The last thing a flange can bear on before the skin goes over it, so the stool's return
+    (``millwork.interior_return_m``) and a veneer-backed seat read one plane.
+    """
+    index = None
+    for position, layer in enumerate(layers):
+        if layer.function not in _SKIN:
+            index = position
+    return index
+
+
+def mount_seat(seat: WindowSeat, frame, depth_m: float | None, mount: str) -> WindowSeat:
+    """The unit's outer face on ``frame.mount``, its interior face never in the back dam.
+
+    A product deeper than mount plane to dam stands proud by the shortfall, at its true depth.
+    """
+    sign = frame.outward[0] * -frame.along[1] + frame.outward[1] * frame.along[0]
+    proud = 0.0 if depth_m is None else max(0.0, sign * seat.inner_m + depth_m - frame.mount)
+    return replace(seat, outer_m=sign * (frame.mount + proud), frame_depth_m=depth_m,
+                   mount=mount, proud_m=proud)
 
 
 def orderable_size(available_m: float, step: Length | None) -> float:

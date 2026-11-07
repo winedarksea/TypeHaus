@@ -7,11 +7,16 @@ architectural plan family and the structural sheet family independent.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from typehaus.emit.draw.typography import feet_inches_8th
 from typehaus.model.assembly import FramingSpec
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.envelope_geometry import envelope_geometry
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof
+
+if TYPE_CHECKING:
+    from typehaus.engineering.snow_drift import DriftReach
 
 M_TO_FT = 3.280839895013123
 IN_PER_FT = 12.0
@@ -132,3 +137,54 @@ def roof_snow_thermal_factor(model: ResolvedModel, roof: ResolvedRoof) -> float:
 def flat_roof_snow_psf(ground_psf: float, c_t: float) -> float:
     """p_f = 0.7 C_e C_t I_s p_g (ASCE 7 eq. 7.3-1) at C_e = I_s = 1.0."""
     return 0.7 * c_t * ground_psf
+
+
+def roof_snow_drift(model: ResolvedModel, roof: ResolvedRoof,
+                    preferences: object) -> DriftReach | None:
+    """The authored drift on ``roof`` as ``structural.truss_reactions`` grades it, or ``None``."""
+    from typehaus.engineering.registry import EngineeringContext
+    from typehaus.engineering.roof_beam import compute
+    from typehaus.engineering.snow_drift import drift_reach
+
+    if not drifted_design_snow_psf(preferences):
+        return None
+    ctx = EngineeringContext(plan=model.plan, model=model, preferences=preferences)
+    records = {record.item_id: record for record in compute(ctx)}
+    return drift_reach(model, preferences, records, roof)
+
+
+def drifted_design_snow_psf(preferences: object) -> float | None:
+    """The house's authored design snow for a roof-carrying beam (``roof_beam_snow_psf``)."""
+    psf = getattr(getattr(preferences, "structural", None), "roof_beam_snow_psf", None)
+    return float(psf) if psf else None
+
+
+def drift_width_ft(preferences: object) -> float | None:
+    """How far the authored drift runs from the drifted roof's far edge, ft."""
+    width = getattr(getattr(preferences, "structural", None), "roof_beam_drift_width_ft", None)
+    return float(width) if width else None
+
+
+def snow_drift_text(roof: ResolvedRoof, drift: DriftReach | None,
+                    preferences: object) -> str | None:
+    """One sentence for S-001 and S-102: ``roof_snow_drift`` and the trusses it reaches.
+
+    Claims only what is authored: the design snow is the house's number, not a derivation.
+    """
+    if drift is None:
+        return None
+    psf = drifted_design_snow_psf(preferences)
+    snow = f"AUTHORED DESIGN SNOW {psf:.1f} PSF (PREFERENCES [STRUCTURAL] ROOF_BEAM_SNOW_PSF)"
+    total = sum(1 for m in roof.members if m.category == "roof_truss")
+    if drift.whole:
+        trusses = f"; ALL {total} TRUSSES ARE DRIFT TRUSSES" if total else ""
+        return f"{snow} ON {roof.tag}{trusses}."
+    keys = ", ".join(key.upper() for key in sorted(drift.trusses))
+    lead = (f"{roof.tag} {keys} ({len(drift.trusses)} OF {total}) ARE DRIFT TRUSSES"
+            if drift.trusses else f"{roof.tag} CARRIES IT")
+    width = drift_width_ft(preferences)
+    reach = (f"RUNS {width:g} FT FROM ITS FAR EDGE INTO {roof.tag} (ROOF_BEAM_DRIFT_WIDTH_FT)"
+             if width is not None else f"IS HELD OVER ALL OF {roof.tag} (NO DRIFT WIDTH STATED)")
+    return (f"{lead}: THE DRIFT ON {drift.source} (AUTHORED DESIGN SNOW {psf:.1f} PSF, "
+            f"PREFERENCES [STRUCTURAL] ROOF_BEAM_SNOW_PSF) {reach}. QUOTE THEM WITH THE "
+            f"SURCHARGE NAMED, NOT ON GROUND SNOW ALONE.")

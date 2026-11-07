@@ -31,9 +31,11 @@ DOOR_OVERHEAD = "door-overhead"
 DOOR_BIFOLD = "door-bifold"
 DOOR_SLIDING = "door-sliding"
 DOOR_POCKET = "door-pocket"
+#: A leafless walk-through opening (``ResolvedOpening.is_passage``): its two jambs only.
+DOOR_PASSAGE = "door-passage"
 
 DOOR_SYMBOL_NAMES = frozenset({DOOR_SWING, DOOR_SWING_DOUBLE, DOOR_OVERHEAD, DOOR_BIFOLD,
-                               DOOR_SLIDING, DOOR_POCKET})
+                               DOOR_SLIDING, DOOR_POCKET, DOOR_PASSAGE})
 
 # A sectional door parks its panels on horizontal track running back into the garage by
 # roughly the door height. Drawing that band tells the reader the swept volume is ceiling
@@ -75,7 +77,7 @@ _SYMBOL_BY_OPERATION = {
 # pocket panel spans the whole opening and only its travel is handed, so it anchors at the
 # centre like the other non-hinged glyphs.
 _CENTRE_ANCHORED = frozenset({DOOR_SWING_DOUBLE, DOOR_OVERHEAD, DOOR_BIFOLD, DOOR_SLIDING,
-                              DOOR_POCKET})
+                              DOOR_POCKET, DOOR_PASSAGE})
 
 
 @dataclass(frozen=True)
@@ -104,6 +106,17 @@ class DoorSymbolGeometry:
 
 def symbol_name_for_operation(operation: DoorOperation) -> str:
     return _SYMBOL_BY_OPERATION.get(operation, DOOR_SWING)
+
+
+def passage_symbol(opening, insert: Pt, rotation_deg: float,
+                   host_wall_thickness_in: float) -> Symbol:
+    """The plan glyph of a leafless walk-through opening, centred on its axis station."""
+    width_in = opening.width_m / M_PER_IN
+    return Symbol(name=DOOR_PASSAGE, insert=insert, rotation=rotation_deg, scale=width_in,
+                  layer="A-DOOR", uid=opening.uid,
+                  params=door_symbol_params(DOOR_PASSAGE, width_in, opening.height_m / M_PER_IN,
+                                            1.0, hinge_jamb_sign=1.0,
+                                            host_wall_thickness_in=host_wall_thickness_in))
 
 
 def symbol_is_centre_anchored(name: str) -> bool:
@@ -159,6 +172,8 @@ def door_symbol_params(name: str, width_in: float, height_in: float, swing_sign:
         # The stop spans the wall it hides in, which is what makes it read as the stud
         # closing the cavity rather than as a stray tick.
         params["pocket_stop_half_length_in"] = host_wall_thickness_in / 2.0
+    elif name == DOOR_PASSAGE:
+        params["jamb_half_length_in"] = host_wall_thickness_in / 2.0
     return params
 
 
@@ -204,6 +219,11 @@ def door_symbol_geometry(node: Symbol) -> DoorSymbolGeometry:
         return _pocket(frame, width_in, float(node.params["park_jamb_sign"]),
                        float(node.params["pocket_run_in"]),
                        float(node.params["pocket_stop_half_length_in"]))
+    if node.name == DOOR_PASSAGE:
+        half, depth = width_in / 2.0, float(node.params["jamb_half_length_in"])
+        return DoorSymbolGeometry(strokes=tuple(
+            SymbolStroke(points=(frame.at(side * half, -depth), frame.at(side * half, depth)))
+            for side in (-1.0, 1.0)))
     raise KeyError(f"not a door symbol: {node.name}")
 
 

@@ -38,7 +38,7 @@ REGISTERS_MAIN = [
     Register(uid="CMRV01AAAA", tag="REG-M-SUP1", kind=DuctSystem.SUPPLY, room="RM-M-LIVING",
             position=pt(ft(27), ft(12, 8)), duct_ref="DU-M-ERV-R-LIVING",
             type_ref="REG-T-ERV-VALVE-SUP", design_cfm=REG_M_SUP1,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+            mount=Mount(kind=MountKind.CEILING)),
     # No second living-room outlet: one ERV outlet is right for an open-plan room at the
     # whole-house rate; a pair would be sized as if this were a heating trunk.
     # ** MOVED 2'-0" WEST, 2026-09-20, TO CLEAR ED-M-BED-FAN. ** This sat at (9'-0", 6'-0"),
@@ -52,7 +52,7 @@ REGISTERS_MAIN = [
     Register(uid="CMRV03AAAA", tag="REG-M-SUP3", kind=DuctSystem.SUPPLY, room="RM-M-BED",
             position=pt(ft(7), ft(6)), duct_ref="DU-M-ERV-R-BED",
             type_ref="REG-T-ERV-VALVE-SUP", design_cfm=REG_M_SUP3,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+            mount=Mount(kind=MountKind.CEILING)),
     # ================== RM-M-STUDY-CLOSET: THE CALL BOOTH'S TWO TERMINALS ==================
     #
     # THE ROOM HAS AN EXTRACT, AND THAT IS WHAT PUTS THE SUPPLY BACK IN THE CEILING. A lone
@@ -73,7 +73,7 @@ REGISTERS_MAIN = [
     #
     # -- the supply, back in the ceiling ---------------------------------------------
     #
-    # (17'-2", 20'-8") at 9'-0". ED-M-STUDY-SPOT is at (17'-6 5/8", 21'-9 1/2"), so this is
+    # (17'-2", 20'-8") on the ceiling. ED-M-STUDY-SPOT is at (17'-6 5/8", 21'-9 1/2"), so this is
     # 4 5/8" west and 13 1/2" south of directly above the sconce, three feet over it.
     # FS-S-WEST's bays centre on 8" + n*16", so 20'-8" is a bay; the sconce's 21'-9 1/2"
     # is 5 1/2" past the joist at 21'-4". Reaching its line would jog across that joist
@@ -85,7 +85,7 @@ REGISTERS_MAIN = [
     Register(uid="CMRV04AAAA", tag="REG-M-SUP4", kind=DuctSystem.SUPPLY, room="RM-M-STUDY-CLOSET",
             position=pt(ft(17, 2), ft(20, 8)), duct_ref="DU-M-ERV-R-STUDY",
             type_ref="REG-T-ERV-VALVE-SUP", design_cfm=REG_M_SUP4,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+            mount=Mount(kind=MountKind.CEILING)),
     # -- the extract, low, and NOT on the east wall -----------------------------------
     #
     # ** THE OWNER ASKED FOR THE EAST WALL AND THE EAST WALL DOES NOT EXIST. ** Measured off
@@ -157,7 +157,7 @@ REGISTERS_MAIN = [
     Register(uid="CMRV05AAAA", tag="REG-M-EXH1", kind=DuctSystem.EXHAUST, room="RM-M-BATH1",
             position=pt(ft(1, 2), ft(24, 8)), duct_ref="DU-M-ERV-R-BATH1",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_M_EXH1,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+            mount=Mount(kind=MountKind.CEILING)),
     # BATH2's moved 2026-10-12 from (4'-0", 18'-0") by the tub to the 15'-4" bay, ~8" west of
     # the shower's front glass (x 4'-10 5/8"). That glass stops at 90" under a 106" ceiling,
     # so steam spilling over its open top is caught here at the source. Kept OUTSIDE the
@@ -166,7 +166,7 @@ REGISTERS_MAIN = [
     Register(uid="CMRV06AAAA", tag="REG-M-EXH2", kind=DuctSystem.EXHAUST, room="RM-M-BATH2",
             position=pt(ft(4, 4), ft(15, 4)), duct_ref="DU-M-ERV-R-BATH2",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_M_EXH2,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+            mount=Mount(kind=MountKind.CEILING)),
     # THE OWNER ASKED FOR THIS ONE TO GO, AND IT COULD NOT. RM-M-LAUNDRY is a 4'-3" x 4'-3"
     # closet with a CONDENSING dryer (APPL-LG-WASHTOWER, so M1502 does not reach it and
     # there is no lint-laden air to pull), and the hall it opens onto is extracted six feet
@@ -181,11 +181,11 @@ REGISTERS_MAIN = [
     Register(uid="CMRV07AAAA", tag="REG-M-RET3", kind=DuctSystem.RETURN, room="RM-M-LAUNDRY",
             position=pt(ft(10, 6), ft(20, 10)), duct_ref="DU-M-ERV-R-LAUNDRY",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_M_RET3,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+            mount=Mount(kind=MountKind.CEILING)),
     Register(uid="CMRV08AAAA", tag="REG-M-RET5", kind=DuctSystem.RETURN, room="RM-M-LIVING",
             position=pt(ft(20, 10.7), ft(21, 9.75)), duct_ref="DU-M-ERV-R-KITCH",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_M_RET5,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+            mount=Mount(kind=MountKind.CEILING)),
     # RM-M-MUDROOM is stale-pickup only, no fresh-air outlet (reversed 2026-07-29 from an
     # earlier fresh-air-intake call). A mudroom is the room that smells; pressurising it pushes
     # that everywhere else. Extracting makes it the main storey's low-pressure end, so boundary
@@ -194,7 +194,7 @@ REGISTERS_MAIN = [
     Register(uid="CMRV09AAAA", tag="REG-M-RET-MUD", kind=DuctSystem.RETURN, room="RM-M-MUDROOM",
             position=pt(ft(4, 4), ft(31, 4)), duct_ref="DU-M-ERV-R-MUD",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_M_RET_MUD,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+            mount=Mount(kind=MountKind.CEILING)),
     # The one passive opening in the house (plans/TODO.md): a louver in W-M-STRW that lets
     # the mudroom share the stair's air. No duct/damper/fan — `duct_ref` is None (the first
     # register with none) and `kind` is TRANSFER, so ventilation checks neither credit a

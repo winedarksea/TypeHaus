@@ -18,9 +18,9 @@ from typing import Any
 
 from shapely.geometry import LineString, Polygon
 
-from typehaus.findings import Finding, element_error
+from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.drywall import DrywallStandard, ShadowGapProfile
-from typehaus.resolve.ceiling_over import split_holes
+from typehaus.resolve.ceiling_over import rc_depth_m, split_holes
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.interior_trim_scope import face_is_gypsum
 from typehaus.resolve.model import ResolvedLightRun, ResolvedModel, ResolvedSolid
@@ -30,6 +30,8 @@ from typehaus.resolve.trim_bands import shadow_gap_parts
 _CID = "integrity.light_run_host"
 # A run "in" a board: its height within the board, to this.
 _BOARD_TOL_M = 0.0016
+# An unhosted ceiling run this near a board face is a missed host, not a surface run.
+_NEAR_M = 0.15
 # A face is parallel to a leg within this sine, and reaches it if it overlaps this much.
 _PARALLEL = 1e-3
 _MIN_OVERLAP = 0.5
@@ -53,6 +55,7 @@ def host_shadow_gap_runs(model: ResolvedModel, standard: DrywallStandard | None)
             continue  # a raked run is never set into a flat board
         host = _host(model, run, materials, bodies)
         if host is None:
+            findings.extend(_missed_host(model, run))
             continue
         host_ref, face_z, candidates = host
         path = _reveal_path(run, profile, candidates, face_z, materials)
@@ -83,20 +86,53 @@ def _host(model: ResolvedModel, run: ResolvedLightRun, materials: dict, bodies: 
         ring = list(soffit.outline)
         edges = [((ring[i], ring[(i + 1) % len(ring)]), None) for i in range(len(ring))]
         return soffit.tag, soffit.z0_m, edges + _room_edges(model, room, bodies)
-    for ceiling in model.ceilings:
-        if (ceiling.z0_m is None or ceiling.z1_m is None or ceiling.storey != run.storey
-                or len(ceiling.outline) < 3
-                or not _in_board(run.z_m, ceiling.z0_m, ceiling.z1_m - ceiling.z0_m)
-                or not Polygon(ceiling.outline).buffer(1e-6).covers(path_line)):
-            continue
-        board = next((layer for layer in ceiling.layers
-                      if not getattr(materials.get(layer.material_ref), "coating", False)), None)
-        if board is None or getattr(materials.get(board.material_ref), "gypsum_type",
-                                    None) is None:
-            return None
-        owner = next((r for r in model.rooms if r.tag == ceiling.room_ref), room)
-        return ceiling.uid, ceiling.z0_m, _room_edges(model, owner, bodies)
-    return None
+    # Any height from the board face up to the structure it hangs from (a channel's depth
+    # over its back) selects the board; the nearest wins where two cover the path.
+    hang = rc_depth_m()
+    covering = [c for c in _flat_ceilings(model, run.storey, path_line)
+                if _in_board(run.z_m, c.z0_m, c.z1_m - c.z0_m + hang)]
+    if not covering:
+        return None
+    ceiling = min(covering, key=lambda c: abs(run.z_m - c.z0_m))
+    board = next((layer for layer in ceiling.layers
+                  if not getattr(materials.get(layer.material_ref), "coating", False)), None)
+    if board is None or getattr(materials.get(board.material_ref), "gypsum_type", None) is None:
+        return None
+    owner = next((r for r in model.rooms if r.tag == ceiling.room_ref), room)
+    return ceiling.uid, ceiling.z0_m, _room_edges(model, owner, bodies)
+
+
+def _flat_ceilings(model: ResolvedModel, storey: str, path_line) -> list:
+    return [c for c in model.ceilings
+            if c.z0_m is not None and c.z1_m is not None and c.storey == storey
+            and len(c.outline) >= 3 and Polygon(c.outline).buffer(1e-6).covers(path_line)]
+
+
+def _missed_host(model: ResolvedModel, run: ResolvedLightRun) -> list[Finding]:
+    """A ceiling-mount run left on the surface while a board sits just off its height."""
+    element = model.plan.by_tag(run.tag)
+    mount = getattr(element, "mount", None)
+    if run.soffit_ref is None and (mount is None or mount.kind.value != "ceiling"):
+        return []
+    # (face, board band) — a run inside its band was refused for its board, not its height.
+    if run.soffit_ref is not None:
+        soffit = next((s for s in model.soffits if s.tag == run.soffit_ref), None)
+        boards = ([] if soffit is None
+                  else [(soffit.z0_m, SOFFIT_LINING_THICKNESS.meters)])
+    else:
+        boards = [(c.z0_m, c.z1_m - c.z0_m + rc_depth_m())
+                  for c in _flat_ceilings(model, run.storey, LineString(run.path))]
+    near = [z for z, band in boards
+            if abs(run.z_m - z) <= _NEAR_M and not _in_board(run.z_m, z, band)]
+    if not near:
+        return []
+    face = min(near, key=lambda z: abs(run.z_m - z))
+    return [Finding(
+        severity=Severity.WARN, check_id=_CID, result=Result.UNKNOWN,
+        element_tags=(run.tag,),
+        message=f"run {run.tag} is {(run.z_m - face) / _IN:+.2f}\" off the board face over "
+                "it and outside the board, so it stays a surface run, not a shadow gap",
+        fix_hint="set the run's mount elevation to the board face")]
 
 
 def _in_board(z: float, face: float, thickness: float) -> bool:

@@ -83,19 +83,16 @@ def test_a_stated_mount_height_is_measured_from_the_finished_floor(catlin_model)
 def test_a_ceiling_mount_does_not_ride_the_floor_covering_up(catlin_model):
     """The joists do not move when the carpet gets thicker — the clear height shrinks.
 
-    RM-S-BED2 carries 1" of carpet on a 3/8" rebond cushion. A recessed can
-    hangs off the storey
-    ceiling plane, which is built on the STRUCTURAL floor; measuring it from the finished
+    RM-S-BED2 carries 1" of carpet on a 3/8" rebond cushion. A recessed can sits on the
+    room's resolved board face, hung from the structure above; measuring it from the finished
     floor instead would push every ceiling fitting on the storey up into the bay above.
     """
-    bed = _room(catlin_model, "RM-S-BED2")
     assert _build_up_in(catlin_model, "RM-S-BED2") == pytest.approx(
         _SUBFLOOR_IN + 1.0, abs=1e-4)
-    storey = catlin_model.plan.storey("second")
     can = next(item for item in catlin_model.canvas_objects
                if item.tag == "ED-S-BED2-CAN2")
-    assert can.z_m == pytest.approx(room_floor_elevation(catlin_model, bed)
-                                    + storey.default_ceiling_height.meters)
+    board = min(c.z0_m for c in catlin_model.ceilings if c.room_ref == "RM-S-BED2")
+    assert can.z_m == pytest.approx(board)
 
 
 # ------------------------------------------------- 3. the honest gap, said out loud

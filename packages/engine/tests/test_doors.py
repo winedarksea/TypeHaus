@@ -21,6 +21,7 @@ from typehaus.emit.draw.door_symbols import (
     BYPASS_TRACK_SPACING_IN,
     DOOR_BIFOLD,
     DOOR_OVERHEAD,
+    DOOR_PASSAGE,
     DOOR_POCKET,
     DOOR_SLIDING,
     DOOR_SWING,
@@ -378,6 +379,16 @@ def test_catlin_interior_bifolds_emit_the_bifold_symbol(catlin_floorplan):
     names = {node.name for node in catlin_floorplan("second").nodes
              if isinstance(node, Symbol)}
     assert DOOR_BIFOLD in names
+
+
+def test_catlin_leafless_passages_draw_jambs_not_glazing(catlin_floorplan, catlin_model):
+    """D-S-STUDY2 and O-S-VANITY are bare floor-level RoughOpenings people walk through."""
+    symbols = {node.uid: node for node in catlin_floorplan("second").nodes
+               if isinstance(node, Symbol)}
+    for tag in ("D-S-STUDY2", "O-S-VANITY"):
+        opening = next(op for op in catlin_model.openings if op.tag == tag)
+        assert symbols[opening.uid].name == DOOR_PASSAGE, tag
+        assert len(door_symbol_geometry(symbols[opening.uid]).strokes) == 2
 
 
 def test_catlin_laundry_door_emits_the_pocket_symbol(catlin_floorplan, catlin_model):

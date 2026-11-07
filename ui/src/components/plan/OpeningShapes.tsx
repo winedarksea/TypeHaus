@@ -7,7 +7,7 @@
 import { useStore } from "../../state/store";
 import { memo, useRef, useState } from "react";
 import type { DoorOperation, Model, Opening, Stair, Vec2, Wall, WindowOperation } from "../../model/types";
-import { doorStrokeGlyph, doorSymbolPoint, hostWallThicknessM, windowStrokeGlyph } from "../../model/doorSymbols";
+import { doorStrokeGlyph, doorSymbolPoint, hostWallThicknessM, passageStrokes, windowStrokeGlyph } from "../../model/doorSymbols";
 import { openingHostWall, pointAlong } from "../../model/geometry";
 import { swingDoorDimensions, swingDoorGeometry } from "../../model/swingDoorSymbols";
 import { memberFootprint } from "../../model/memberFootprint";
@@ -103,9 +103,12 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
     [-halfPx, -hitHalfDepth], [halfPx, -hitHalfDepth],
     [halfPx, hitHalfDepth], [-halfPx, hitHalfDepth],
   ].map(([along, normal]) => doorSymbolPoint([cx, cy], ang, 1, along, normal)) : [];
+  // A leafless walk-through hole: its jambs, never a window's sill line or sash.
+  const passageGlyph = !o.is_door && o.is_passage
+    ? passageStrokes([cx, cy], ang, o.width_m * scale, hitHalfDepth) : null;
   // Empty for a fixed (picture) unit and for an unknown operation: a sash tick is drawn
   // only when the catalog actually says the window opens.
-  const sashGlyph = o.is_door ? [] : windowStrokeGlyph({
+  const sashGlyph = o.is_door || passageGlyph ? [] : windowStrokeGlyph({
     operation: operation as WindowOperation | undefined,
     center: [cx, cy], angleRadians: ang, operatingSign: swingSign,
     parkJambSign: hingeDirection, widthM: o.width_m, pixelsPerMeter: scale,
@@ -160,9 +163,9 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
       {!swingGlyph && <>
         <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
           stroke={selected ? NORDIC_ACCENT : "var(--canvas-white)"} strokeWidth={selected ? 6 : 5} />
-        <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
+        {!passageGlyph && <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
           stroke={o.is_door ? "var(--canvas-wood)" : NORDIC_ACCENT} strokeWidth={2}
-          strokeDasharray={o.is_door ? undefined : "3 2"} />
+          strokeDasharray={o.is_door ? undefined : "3 2"} />}
       </>}
       {o.is_door ? (strokeGlyph ? <>
         {/* The non-swinging operations — overhead, bifold, slider, pocket — are pure
@@ -182,7 +185,10 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
             d={`M ${arc.closedTip.join(" ")} A ${arc.radius} ${arc.radius} 0 0 ${arc.sweepFlag} ${arc.openTip.join(" ")}`}
             fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
         ))}
-      </>) : <>
+      </>) : passageGlyph ? passageGlyph.map((stroke, index) => (
+        <polyline key={index} points={stroke.points.map((point) => point.join(",")).join(" ")}
+          fill="none" stroke={selected ? NORDIC_ACCENT : "var(--canvas-wood)"} strokeWidth={1.5} />
+      )) : <>
         <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
           stroke={NORDIC_ACCENT} strokeWidth={3} />
         <line x1={cx - Math.sin(ang) * windowTick} y1={cy + Math.cos(ang) * windowTick}

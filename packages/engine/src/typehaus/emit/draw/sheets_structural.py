@@ -36,13 +36,14 @@ from typehaus.takeoff import hardware_takeoff
 
 if TYPE_CHECKING:
     from typehaus.checks.jurisdiction import JurisdictionProfile
-    from typehaus.checks.registry import CheckReport
+    from typehaus.checks.registry import CheckReport, Preferences
 
 
 def structural_sheets(model: ResolvedModel, level_tags: list[str],
                       at: dict[str, ResolvedModel], paper: tuple[float, float],
                       house_dir: Path | None, report: CheckReport | None, *,
-                      profile: JurisdictionProfile | None) -> list[SheetSpec]:
+                      profile: JurisdictionProfile | None,
+                      preferences: Preferences | None = None) -> list[SheetSpec]:
     """S-100 foundation through S-603 engineering register, in set order."""
     sheets: list[SheetSpec] = []
     if has_foundation_content(model):
@@ -74,7 +75,8 @@ def structural_sheets(model: ResolvedModel, level_tags: list[str],
         number = "S-102" if len(roofs) == 1 else f"S-102.{index}"
         sheets.append(SheetSpec(number, f"Roof framing plan — {roof.tag}",
                                 scene=schedule_plan_sheet(build_roof_framing_plan,
-                                                          roof_tag=roof.tag),
+                                                          roof_tag=roof.tag,
+                                                          preferences=preferences),
                                 north_arrow=True))
 
     # S-103.n — the braced wall plan, one per storey that has a braced wall line. MNSPECT

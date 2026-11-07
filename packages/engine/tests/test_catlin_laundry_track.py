@@ -27,7 +27,10 @@ def test_rail_is_flush_and_supply_is_accessible_on_the_laundry_wall(catlin_model
     track, supply = objects["ED-M-LAUNDRY-TRACK"], objects["ED-M-LAUNDRY-PSU"]
     assert track.uid == "QTM000SAAA"
     assert track.position == pytest.approx((128.4 * INCH, 258 * INCH))
-    assert track.body_z1_m == pytest.approx(108 * INCH)
+    # Flush on the laundry's resolved board face, 107 1/2".
+    board = min(c.z0_m for c in catlin_model_ro.ceilings if c.room_ref == "RM-M-LAUNDRY")
+    assert board == pytest.approx(107.5 * INCH)
+    assert track.body_z1_m == pytest.approx(board)
     assert supply.body_z0_m == pytest.approx(84 * INCH)
     assert supply.position[1] == pytest.approx(257 * INCH)
     assert supply.attachment_wall == "W-M-BA2E" and supply.attachment_face == "left"

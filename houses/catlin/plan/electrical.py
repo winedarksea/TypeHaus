@@ -1003,8 +1003,8 @@ SECOND_EQUIPMENT = [
     # blower is fed at the unit, unlike a multi's heads.
     #
     # `soffit_ref` is load-bearing: WITHOUT it a CEILING mount with no stated elevation
-    # hangs off `storey.default_ceiling_height` (resolve/placeables.py), which puts this
-    # unit at 9'-0", above the box it lives in.
+    # hangs off the room's finished ceiling (resolve/placeables.py), which puts this unit
+    # above the box it lives in.
     #
     # ** rotation=deg(90), NOT a hand-swapped `footprint`. ** The type states (43.5, 21.25);
     # `_transformed_polygon` rotates the catalogued case, so the 43 1/2" runs ALONG the box
@@ -1615,7 +1615,7 @@ MAIN_DATA_DEVICES = [
     ElectricalDevice(uid="CND002AAAA", tag="ED-M-KITCH-AP", kind=DeviceKind.DATA_OUTLET,
                      position=pt(ft(19), ft(29)), type_ref="ED-T-AP-CEILING",
                      room="RM-M-LIVING",
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+                     mount=Mount(kind=MountKind.CEILING)),
     # No `room=`, deliberately — the same reason ED-M-PORCH-FAN carries none, so the wet/
     # exterior classifiers place it geometrically instead of believing a label. 1' west of
     # the fan, in the same soffit bay and through the same deck penetration.

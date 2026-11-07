@@ -183,7 +183,7 @@ def build_sheet_index(model: ResolvedModel,
     at = {tag: model_at_level(model, tag) for tag in level_tags}
 
     sheets.extend(structural_sheets(model, level_tags, at, paper, house_dir, report,
-                                    profile=profile))
+                                    profile=profile, preferences=preferences))
 
     if specification_sections(model):
         sheets.append(SheetSpec("A-002", "Architectural specifications",

@@ -35,6 +35,11 @@ def refuse(space: Any, graph: Any, start: int, goals: set[int], *, target: str, 
     shortages = ((report.sentence(),) if report is not None
                  and (report.tightest is not None or report.notes) else ())
     takeoffs = report.takeoffs if report is not None else []
+    # Every goal filtered out (a gravity report that never searched): the notes are the cause.
+    unsearched = report is not None and not getattr(report, "searched", True) and report.notes
+    if unsearched:
+        return refusal(space, graph, start, goals, target=target, service=str(ends.system),
+                       takeoffs=tuple(takeoffs), before_search="; ".join(report.notes))
     return refusal(space, graph, start, goals, target=target, service=str(ends.system),
                    shortages=shortages, attempts=attempts, takeoffs=tuple(takeoffs),
                    extra_blockers=tuple(t.blocker for t in takeoffs if t.blocker is not None))

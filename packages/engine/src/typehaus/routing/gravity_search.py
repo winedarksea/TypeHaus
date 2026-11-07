@@ -153,6 +153,8 @@ class GravityRefusal:
     #: somewhere else in the search (the tightest anywhere stands only when it met none).
     tightest: tuple[str, float] | None = None
     notes: list[str] = field(default_factory=list)
+    #: False until a search had goals to run on: an unsearched refusal is its notes alone.
+    searched: bool = False
     #: A fixture arm's candidate take-offs (``cli/route_takeoff_table.TakeoffRow``).
     takeoffs: list = field(default_factory=list)
     front: tuple[str, float] | None = field(default=None, repr=False)  # at the furthest
@@ -164,12 +166,15 @@ class GravityRefusal:
             self.tightest = self.front
 
     def sentence(self) -> str:
+        notes = "; ".join(self.notes)
+        if not self.reached and self.tightest is None and notes:
+            return f"no route falls: {notes}"  # refused before any search: the notes say why
         head = (f"no route falls: {self.reached:,} label(s) expanded, the furthest reaching "
                 f"{self.furthest_ft:.2f} ft of developed run")
         if self.tightest is not None:
             what, short = self.tightest
             head += f'; the tightest refusal was {what}, short {short:.3f}"'
-        return head + (". " + " ".join(self.notes) if self.notes else "")
+        return head + (". " + notes if notes else "")
 
 
 def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
@@ -188,7 +193,10 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
 
     report = refusal if refusal is not None else GravityRefusal()
     if not goals:  # nothing to reach: the heuristic is a min over goals
+        if "no goal left to route to" not in report.notes:
+            report.notes.append("no goal left to route to")
         return None
+    report.searched = True
     heuristic = _heuristic(graph, space, goals)
     head_floor = head_floor_fn(graph, goals, problem.required_m, problem.grade_in_per_ft)
     # Labels have stable ids, not frontier slots: pruning shifts slots.

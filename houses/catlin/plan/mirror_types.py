@@ -113,6 +113,7 @@ def _karlie(model, count, finish, type_tag, mark, *, daylight=False):
         tag=type_tag, name=product.name + (", 5000 K" if daylight else ", 3000 K"),
         form=LuminaireForm.MIRROR_LIGHT, type_mark=mark,
         footprint=(inch(13.25 if count == 2 else 22.5), inch(6)), height=inch(7.5),
+        canopy=(inch(7.25), inch(4.5)),
         plan_symbol=f"socketed-vanity-{count}-{'chrome' if finish == 'chrome' else 'nickel'}",
         lamp=f"{count} x E26 A19 {bulb}, replaceable",
         watts=count * 9, load_va=count * 9, lumens=None,
@@ -124,7 +125,9 @@ def _karlie(model, count, finish, type_tag, mark, *, daylight=False):
         ports=(ServicePort(tag="power", service=Service.POWER_120,
                            position=(inch(0), inch(3), inch(5.5))),),
         source=product.source + f" Total bulb source output {count * 800} lm; "
-               + ("published bulb R9 82." if daylight else "bulb R9 90+ (CONFIRM on its sheet)."),
+               + ("published bulb R9 82." if daylight else "bulb R9 90+ (CONFIRM on its sheet).")
+               + " Back plate 7.25 W x 4.5 H (Hinkley 54622BK/54623BK spec sheets, the same "
+               "body as this finish's dimension drawing, read 2026-11-07).",
     )
     return product, luminaire
 
@@ -144,7 +147,8 @@ _HALO_TYPE = LuminaireType(
     dimmable=True, integral_switch=True, damp_rated=True,
     ports=(ServicePort(tag="power", service=Service.POWER_120,
                        position=(inch(0), inch(0.875), inch(22))),),
-    product_ref=_FLEURCO_PRODUCT.tag, source=_FLEURCO_PRODUCT.source,
+    # Cord-and-plug: ED-M-BATH2-MIRROR-PLUG's receptacle box serves it.
+    device_box=False, product_ref=_FLEURCO_PRODUCT.tag, source=_FLEURCO_PRODUCT.source,
 )
 
 # Under the attic rake a 4-in. octagon box attaches directly to the east stud. Offset

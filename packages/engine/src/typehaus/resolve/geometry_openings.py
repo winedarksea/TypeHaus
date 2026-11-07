@@ -9,6 +9,7 @@ The live viewer extrudes these parts as served (``server/model_json_opening_part
 
 from __future__ import annotations
 
+import math
 from dataclasses import replace
 
 from typehaus.model.enums import DoorOperation
@@ -169,16 +170,19 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     # edges (white foam) showing in the reveal between casing and frame. Extending it makes
     # the whole reveal charcoal, the way sided walls trim out around a window in practice.
     exterior = _exterior_face(wall)
-    frame_key = _WINDOW_TRIM_KEY if exterior is not None else _FRAME_KEY
+    mounted = seat is not None and seat.outer_m is not None
+    frame_key = _WINDOW_TRIM_KEY if exterior is not None or mounted else _FRAME_KEY
     solid_leaf_key = _WINDOW_TRIM_KEY if exterior is not None else _DOOR_LEAF_KEY
     frame_depth, frame_offset = depth, 0.0
-    if exterior is not None:
-        plane, sign = exterior
-        outer_edge = (seat.outer_m if seat is not None and seat.outer_m is not None
-                      else plane + sign * _WINDOW_TRIM_PROUD_DEPTH_M)
+    if exterior is not None or mounted:
+        # A unit mounted behind a separate veneer has no cladding plane, only its seat.
+        sign = exterior[1] if exterior is not None else math.copysign(
+            1.0, seat.outer_m - seat.inner_m)
+        outer_edge = (seat.outer_m if mounted
+                      else exterior[0] + sign * _WINDOW_TRIM_PROUD_DEPTH_M)
         inner_edge = -sign * (depth / 2.0)
-        if seat is not None and seat.outer_m is not None and seat.frame_depth_m:
-            # The product's own depth off the mount plane (the stool and returns meet it).
+        if mounted and seat.frame_depth_m:
+            # The product's own depth off its outer face (the stool and returns meet it).
             inner_edge = outer_edge - sign * seat.frame_depth_m
         if seat is not None:
             # Outboard of the back dam: the unit never stands in the pan's upturn.

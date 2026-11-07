@@ -358,11 +358,13 @@ AMBIENT_LUMINAIRE_TYPES = (
                   replaceable_lamp=False, name='24" linear LED wall light, brushed black',
                   form=LuminaireForm.WALL_LAMP, type_mark="G",
                   footprint=(inch(24), inch(2)), height=inch(4), plan_symbol="linear-light",
+                  canopy=(inch(6.5), inch(4.3125)),
                   lamp="LED integrated, ELV", watts=22.0, lumens=1140.0, cct_k=3000, cri=90,
                   dimmable=True, damp_rated=True, load_va=22.0, ports=_POWER_120,
                   product_ref="PROD-WAC-WS-6724-30-BK",
                   source="WAC dweLED LINE WS-6724-30-BK (spec sheet), 3000 K with the house "
-                         "standard: 2700 K makes white oak read orange."),
+                         "standard: 2700 K makes white oak read orange. Back plate 6 1/2 W x "
+                         "4 5/16 H (installation sheet p.2, read 2026-11-07)."),
 
     # --- T: RM-M-PANTRY's jamb channels (2026-10-30) ------------------------------------
     # Four, one per inside face of the shelf uprights, 1" behind the shelf front, aimed into

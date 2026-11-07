@@ -120,7 +120,7 @@ REGISTERS_HVAC_SECOND = [
     Register(uid="CXDCYN7YQ2", tag="REG-S-HP-PLANT", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
              position=pt(ft(14, 8), ft(3, 3)), duct_ref="DU-S-HP-SOUTH",
              type_ref="REG-T-HP-CEIL-DAMPERED", design_cfm=75,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+             mount=Mount(kind=MountKind.CEILING)),
     # The plant room's extract. RM-S-PLANT was supply-only, so its own ventilation pushed
     # 70%-RH air into every crack in the envelope it is now lined to protect; slightly
     # negative is the only pressure a continuously humid room may be held at, which takes an
@@ -250,7 +250,7 @@ REGISTERS = [
     Register(uid="CMR904AAAA", tag="REG-S-RET-BED3", kind=DuctSystem.RETURN, room="RM-S-BED3",
             position=pt(ft(29), ft(31, 4)), duct_ref="DU-A-ERV-R-BED3",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_S_RET_BED3,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+            mount=Mount(kind=MountKind.CEILING)),
     # No REG-S-RET2 (the suite's own extract) — the owner's call, and defensible on the
     # model too: no check fires for its absence (BEDROOM is not in
     # checks/mep/hvac.py's _STALE_OCCUPANCIES), and RM-S-SUITEBATH's REG-S-EXH3 carries the
@@ -275,7 +275,7 @@ REGISTERS_SECOND = [
     Register(uid="CSRV05AAAA", tag="REG-S-EXH1", kind=DuctSystem.EXHAUST, room="RM-S-BATH1",
             position=pt(ft(5), ft(32, 8)), duct_ref="DU-A-ERV-R-BATH1",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_S_EXH1,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9)), rotation=deg(90)),
+            mount=Mount(kind=MountKind.CEILING), rotation=deg(90)),
     # D-S-BATH1 is sealed (2026-11-03), so REG-S-EXH1's 20 cfm makes up through an offset
     # pair in W-S-BD-N's west bay (x 8"..15 1/4"), lined, insulation out: high on the bath
     # face above the SEKTION rail backing, lower on the vanity face over the mirror arches.

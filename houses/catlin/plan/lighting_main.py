@@ -314,13 +314,13 @@ MAIN_LIGHTING = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Class 2 surface feed: plumb up from the accessible supply, then one straight ceiling
     # leg to the west end canopy (no 1/2" jogs, 2026-11-07: the canopy came 2.3" west).
-    # Its upper surface stays below 108"; no ceiling bay is disturbed.
+    # Its upper surface stays under the 107 1/2" board face; no ceiling bay is disturbed.
     ConduitRun(uid="QRM02YAAAA", tag="CR-M-LAUNDRY-24V",
                from_ref="ED-M-LAUNDRY-PSU", to_ref="ED-M-LAUNDRY-TRACK",
                service=Service.POWER_24, trade_size=inch(0.5),
                path=(pt(inch(104.815), inch(257)), pt(inch(104.815), inch(257)),
                      pt(inch(110.4), inch(258))),
-               elevations=(inch(90.37), inch(107.5), inch(107.5))),
+               elevations=(inch(90.37), inch(107.125), inch(107.125))),
     # ED-M-LAUNDRY-SW moved off W-M-BA2E (2026-11-07): with the door 11 1/2" east that face
     # was 20" behind the strike wall. It is inside the strike jamb now, between stud-001
     # and the king.

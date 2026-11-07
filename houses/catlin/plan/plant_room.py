@@ -3,8 +3,8 @@
 # Mount elevations are AFF; backing elevations are above the second-storey datum.
 # Shelf tops are illustrative; use the delivered IKEA 720 mm template for bracket holes.
 # Pots rest on trays at floor-relative heights; wall attachments keep their centres aligned.
-# The hanging assemblies include their cords: 46-inch body + 1.165-inch ceiling offset
-# gives drop=47.165 inches, so the eye plate meets the finished PVC ceiling, not its datum.
+# The hanging assemblies include their cords: drop=46 inches, the body, so the eye plate
+# meets the finished PVC ceiling (a no-elevation ceiling mount hangs off the resolved board).
 
 from typehaus import Furniture, Location, Mount, MountKind, WallAttachment, WallBacking
 from typehaus.model import deg, inch, pt
@@ -109,11 +109,11 @@ PLANT_ROOM_PLACEABLES = [
     Furniture(uid="PLNHANG0NW", tag="FURN-S-PLANT-HANG-NW",
               type_ref="FT-PLANT-ROOM-HANGING-VINE-12", room="RM-S-PLANT",
               position=pt(inch(25.79), inch(96)),
-              mount=Mount(kind=MountKind.CEILING, drop=inch(47.165))),
+              mount=Mount(kind=MountKind.CEILING, drop=inch(46))),
     Furniture(uid="PLNHANG0NE", tag="FURN-S-PLANT-HANG-NE",
               type_ref="FT-PLANT-ROOM-HANGING-VINE-12", room="RM-S-PLANT",
               position=pt(inch(193.96), inch(96)),
-              mount=Mount(kind=MountKind.CEILING, drop=inch(47.165))),
+              mount=Mount(kind=MountKind.CEILING, drop=inch(46))),
 ]
 
 # Four 14.5-inch clear stud bays; both ends of every block butt a stud face.

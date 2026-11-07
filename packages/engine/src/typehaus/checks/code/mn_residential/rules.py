@@ -220,7 +220,7 @@ def _deck_only_clear_height(ctx: CheckContext, storey: Any, resolved: Any) -> fl
 
     face = Polygon([tuple(point) for point in resolved.clear_face])
     undersides = [value for value in
-                  (ceiling_underside_m(deck_storey, deck, ctx.plan.library)
+                  (ceiling_underside_m(deck_storey, deck, ctx.plan.library, resolved.tag)
                    for deck_storey, deck in ceiling_decks_over(ctx.plan, storey.tag, face))
                   if value is not None]
     if not undersides:
@@ -257,10 +257,8 @@ def _follow_roof_ceiling_finding(ctx: CheckContext, room, minimum: Length) -> Fi
 
     * **Exception 2's usability clause** over each fixture ("capable of being used for its
       intended purpose") — a judgement, not a number.
-    * **R304.2's 7'-0" minimum horizontal dimension** over that required area.
-      Only areas are graded — a room could satisfy the area test with a 3'-wide ribbon
-      and pass. That is a ``code.R304_2_*`` check with a geometry return, not a clause
-      bolted onto this one. Do not read a pass here as a pass on R304.2.
+    * **R304.2's 7'-0" minimum horizontal dimension** over that required area: only areas
+      are graded here. ``code.R304_2_min_dimension`` (``room_dimension``) grades it.
 
     Heights are to the finished ceiling: ``roof_underside_depth_m`` (structure plus this
     room's lining, plumbed) is added to each threshold, since ``roof_headroom_region``
