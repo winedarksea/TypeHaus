@@ -169,12 +169,12 @@ claimed.
 Flange: factory nailing fin on all window lines (Max Light: quoted +15%, to confirm).
 Colour: black exterior, white interior.
 
-**Visible faces, modelled (`WindowType.frame_face_width` / `sash_face_width`, 2026-11-02).**
-Drutex: 75 mm frame, 50 mm sash on the operable units (Phius W-102033, IGLO Energy Classic:
-fixed lite 75 mm, operable lite 125 mm). Max Light: 35 + 35 mm. Andersen 400: **not
-authored** — the 2025-26 custom-size sheet gives unobstructed glass = unit − 4.40" wide and
-− 4.95" tall (2.20" frame + sash a jamb), but no frame/sash split; the dealer's head/jamb/sill
-section or the owner settles it, and the stools stay on the schematic 75 mm until then.
+**Visible faces, modelled (2026-11-07, [section sources](window_profile_measurements.md)).**
+Drutex Alucover: **74 mm frame + 50 mm sash** on operable units, 74 mm on fixed units
+(70001 / 70013 dealer sections, replacing the 75/125 mm Phius basis). Max Light: 35 + 35 mm.
+Andersen 400: **1⅝" sash; exposed frame 9/16" jamb, 3/4" head, 13/16" sill**, from its
+architectural CAD. The three frame faces are separately authored; the interior stool rail
+is independently 1⅛". Confirm the selected triple-pane section before manufacture.
 
 ### 2.5 Landed price
 
@@ -198,14 +198,14 @@ than ±20% without it.
 2. Max Light minimum tilt-turn sash at the **12.71" modeled outie frame** (the Drutex
    tilt-only it replaced had the same open item). Confirm every modeled frame size with
    the supplier.
-3. Stool height (§6). **The frame half is confirmed**: Drutex's frame face is 75 mm = 2.95"
-   (Phius W-102033, IGLO Energy Classic, fixed-section frame height), which is the 2.953" the
-   stools already assume, so no fixed unit moves. Two terms are unpublished: the 5-chamber
-   PVC sill adaptor Drutex ships under the frame as standard (Alucover data; IGLO Energy
-   brochure, "5-Kammer-Fensterbankleiste"), which RAISES the rail, and the inward sash's
-   overlap past the frame, which the turn sweep needs the stool to clear. Ask for both
-   on the section drawing; re-strike `plan/window_stools.py` and the main.py east-wall note
-   to rail = 75 mm + adaptor, less the overlap on the tilt-turns.
+3. Stool height (§6). [Public Alucover sections](window_profile_measurements.md#1-drutex-iglo-energy-alucover--dakam)
+   now dimension the inward sash bottom 38 mm above the bare PVC frame bottom, and
+   adaptors 54123/54113 at 30 mm (50114 at 50 mm). A retained 30 mm adaptor puts the sash
+   bottom 68 mm above its bottom, before clearance. The model uses a **bare-frame unit**,
+   so `inward_sash_bottom_height=38 mm` now limits operable stool tops; no adaptor is added.
+   DAKAM still confirms the ordered adaptor, unit-height datum and stool-bearing rail;
+   include a retained adaptor in the unit envelope before raising the rail. Fixed stools
+   retain the explicit provisional 75 mm rail, independently of the 74 mm exterior face.
 4. Andersen 400 triple-pane availability through a Twin Cities dealer; basic-unit frame depth.
 5. Therma-Tru pair NFRC/NAFS label under its product approval with the specified Endura
    components; laminated triple CPD row and SHGC (0.12 is only the provisional basis row);
@@ -357,14 +357,14 @@ trim kit is ordered**.
 
 ## 6. Interior coordination
 
-- **Stool vs inward sweep.** Stools sit on the frame's lower rail at sill + 2.953"
-  (`plan/storeys/main.py`, the 2026-10-02 east-wall note). That is a US-casement rail. An
-  inward sash overlaps the frame on the room side, and its bottom edge can sweep below the
-  rail top. **Replace 2.953" with the chosen product's rail height, minus the sash overlap**,
-  and drop the stools to clear it. This holds for all three suppliers, not only Alucover: the
-  Max Light units' stools sit on the drawn 35 mm frame sill (sash 84 mm deep against a 75 mm
-  frame) and the Andersen units' on the schematic 75 mm face; ask Aliplast/Debesto and the
-  Andersen dealer for the sill rail height and sash overlap too. Where a stool is flush with the counter (`WIN-M-LIV-E1`/
+- **Stool vs inward sweep (2026-11-07).** Alucover operable stools now sit at the measured
+  **38 mm above the bare frame bottom**, a 37 mm drop from the previous 75 mm basis.
+  Fixed Alucover stools retain the provisional 75 mm rail, preserving the dining counter
+  plane. Andersen stools now use the published **1⅛" interior sill-ledge height**, independent
+  of the exterior face. The Max Light units remain on the drawn 35 mm sill (sash 84 mm deep
+  against a 75 mm frame); ask Aliplast/Debesto for their inward clearance. DAKAM confirms
+  the retained adaptor and rail datum; all elevations start at the resolved seated unit,
+  not the RO. Where a stool is coordinated with the counter (`WIN-M-LIV-E1`/
   `E2`, and `WIN-M-KITCH` over the counter), turn mode needs a clear counter. Tilt is the
   daily mode there. The Max Light kitchen pair (`WIN-M-KITCH-N`, `WIN-M-KIT-E`, sill 42" over
   the counter and backsplash) turns its sash over the counter too: keep the sill clear of

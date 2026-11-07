@@ -1387,11 +1387,13 @@ OPENINGS = [
     # ** 2026-10-02: E1, E2 AND WIN-M-EAST-MID ROSE 2'-8" -> 2'-10", HEADS 6'-8" -> 6'-10". **
     # The east wall became one SEKTION line under a 36" live-edge slab (plan/living_east_run.py),
     # and the owner wanted each STOOL TOP ON THE COUNTER TOP. The stool sits on the frame's
-    # lower rail, which is the sill + 2.953", and the slab top is 36 15/16" above the storey
+    # lower rail, historically sill + 2.953", and the slab top is 36 15/16" above the storey
     # datum (the finished floor is 15/16" up), so 34" lands the rail 1/64" proud. The
     # cherry stools meet the ash slab's back edge in one plane. The plan estimated
     # ~36" and a 4" lift; the model said 34". The second storey's row heads at 7'-0", 2" over.
     # Nothing grades stool-to-slab; re-measure if the leg, slab or window type changes.
+    # 2026-11-07: Alucover TT stools now follow the measured 38 mm inward sash bottom,
+    # 37 mm below the old rail. Dining's fixed stool retains 75 mm and meets the slab.
     # 2026-10-16: E1 and E2 moved one 16" module south with the fireplace, to 4'-0" and
     # 10'-8", still mirrored about the brick's y=88" with each RO 3 3/4" off it. The trio
     # (ROs 2'-10 1/2"..11'-9 1/2") now sits on the LVP. E1 no longer columns with WIN-S-STUDY3.

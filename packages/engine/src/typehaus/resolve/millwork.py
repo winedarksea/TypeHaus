@@ -213,6 +213,7 @@ def _resolve_stools(plan: PlanModel, model: ResolvedModel,
             derived=derived,
             sill_rail_m=_meters(window_type, "sill_rail_height"),
             sash_overlap_m=_meters(window_type, "sash_overlap") or 0.0,
+            inward_sash_bottom_m=_meters(window_type, "inward_sash_bottom_height"),
             corner_radii_m=stool_corner_radii(
                 stool.corner_radius.meters if stool and stool.corner_radius else 0.0,
                 inside_radius_m(plan, material_ref)),

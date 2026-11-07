@@ -141,12 +141,6 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     frame_width = min(face_width,
                       width / _OPENING_FRAME_SPAN_DIVISOR,
                       available_height / _OPENING_FRAME_SPAN_DIVISOR)
-    # An operable sash rings the glass inside the frame; the same quarter-span cap applies.
-    sash_width = 0.0
-    if opening.kind == "window" and getattr(opening, "sash_face_width_m", 0.0) > 0.0:
-        sash_width = min(opening.sash_face_width_m,
-                         (width - 2.0 * frame_width) / _OPENING_FRAME_SPAN_DIVISOR,
-                         (available_height - 2.0 * frame_width) / _OPENING_FRAME_SPAN_DIVISOR)
     # A sized door's jamb fills the RO out to its leaf (resolve/door_sizing), so the leaves
     # below are the leaf, not the void less a schematic frame. An overhead door is its RO.
     sizing = getattr(opening, "sizing", None) if opening.kind == "door" else None
@@ -154,6 +148,19 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
             and operation not in (DoorOperation.OVERHEAD, DoorOperation.POCKET)
             and sizing.leaf_w_m < width):
         frame_width = (width - sizing.leaf_w_m) / 2.0
+    head_width = sill_width = frame_width
+    if opening.kind == "window":
+        head_width = min(getattr(opening, "frame_head_face_width_m", None) or frame_width,
+                         available_height / _OPENING_FRAME_SPAN_DIVISOR)
+        sill_width = min(getattr(opening, "frame_sill_face_width_m", None) or frame_width,
+                         available_height / _OPENING_FRAME_SPAN_DIVISOR)
+    # The sash's vertical span follows the separate head and sill, including its centre.
+    sash_width = 0.0
+    if opening.kind == "window" and getattr(opening, "sash_face_width_m", 0.0) > 0.0:
+        sash_width = min(opening.sash_face_width_m,
+                         (width - 2.0 * frame_width) / _OPENING_FRAME_SPAN_DIVISOR,
+                         (available_height - head_width - sill_width)
+                         / _OPENING_FRAME_SPAN_DIVISOR)
     depth = _OPENING_FRAME_DEPTH_M
     # An opening in a clad wall is an exterior product: its frame, mullion and stile boxes
     # take the charcoal exterior tone rather than interior wood, doors and windows alike.
@@ -231,29 +238,31 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                 -width / 2.0 + frame_width / 2.0, mid_elev, frame_offset),
             box(frame_width, available_height, frame_depth,
                 width / 2.0 - frame_width / 2.0, mid_elev, frame_offset),
-            box(width, frame_width, frame_depth, 0.0,
-                z0 + sill + available_height - frame_width / 2.0, frame_offset),
+            box(width, head_width, frame_depth, 0.0,
+                z0 + sill + available_height - head_width / 2.0, frame_offset),
             # The sill piece stays last: ``window_stool_prism`` seats the stool on it.
-            *((box(width, frame_width, frame_depth, 0.0,
-                   z0 + sill + frame_width / 2.0, frame_offset),)
+            *((box(width, sill_width, frame_depth, 0.0,
+                   z0 + sill + sill_width / 2.0, frame_offset),)
               if opening.kind == "window" else ()),
         )))
     if sash_width > 0.0:
-        sash_w, sash_h = width - 2.0 * frame_width, available_height - 2.0 * frame_width
+        sash_w, sash_h = width - 2.0 * frame_width, available_height - head_width - sill_width
+        sash_mid_elev = z0 + sill + sill_width + sash_h / 2.0
         parts.append(GPart(key="sash", material_key=frame_key, solids=(
             box(sash_width, sash_h, frame_depth, -sash_w / 2.0 + sash_width / 2.0,
-                mid_elev, frame_offset),
+                sash_mid_elev, frame_offset),
             box(sash_width, sash_h, frame_depth, sash_w / 2.0 - sash_width / 2.0,
-                mid_elev, frame_offset),
+                sash_mid_elev, frame_offset),
             box(sash_w, sash_width, frame_depth, 0.0,
-                z0 + sill + frame_width + sash_h - sash_width / 2.0, frame_offset),
+                z0 + sill + sill_width + sash_h - sash_width / 2.0, frame_offset),
             box(sash_w, sash_width, frame_depth, 0.0,
-                z0 + sill + frame_width + sash_width / 2.0, frame_offset),
+                z0 + sill + sill_width + sash_width / 2.0, frame_offset),
         )))
     inset = frame_width + sash_width  # frame face to glass edge
-    panel_height = max(_OPENING_MIN_PANEL_DIMENSION_M, available_height - 2.0 * inset)
+    panel_height = max(_OPENING_MIN_PANEL_DIMENSION_M,
+                       available_height - head_width - sill_width - 2.0 * sash_width)
     lever_list: list[GPrism] = []
-    panel_elev = z0 + sill + inset + panel_height / 2.0
+    panel_elev = z0 + sill + sill_width + sash_width + panel_height / 2.0
     clear_width = width - 2.0 * inset  # between the two jamb (or sash) faces
     if opening.kind == "door" and operation is DoorOperation.DOUBLE_SWING:
         # Two leaves meeting at a centre mullion, matching the 2D French-door symbol.

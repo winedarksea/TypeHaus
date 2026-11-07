@@ -31,7 +31,12 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
         assert prism.z1_m - prism.z0_m == pytest.approx(stool.thickness_m)
         frame = next(part for part in opening_parts(wall, opening, None)
                      if part.key == "frame")
-        assert prism.z1_m == pytest.approx(frame.solids[-1].z1_m)
+        rail = frame.solids[-1]
+        expected_top = (rail.z1_m if stool.sill_rail_m is None
+                        else rail.z0_m + stool.sill_rail_m) - stool.sash_overlap_m
+        if stool.inward_sash_bottom_m is not None:
+            expected_top = min(expected_top, rail.z0_m + stool.inward_sash_bottom_m)
+        assert prism.z1_m == pytest.approx(expected_top)
         ring = window_stool_ring(wall, opening, stool)
         assert len(ring) in (8, 12), "the horns stop at the interior wall face"
         # A stone stool's notches wrap the finished return, inset from the RO; a stool past

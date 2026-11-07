@@ -22,26 +22,39 @@ change the rating, and the 16 CFR 1201 mark is an order item.
 
 from __future__ import annotations
 
-from typehaus import WindowType, u_us
-from typehaus.quantities import ft, inch
-
 from plan.opening_products import (
-    ALIPLAST_MAXLIGHT_TT, ANDERSEN_400_CASEMENT, DRUTEX_ALUCOVER_FIX, DRUTEX_ALUCOVER_TT,
+    ALIPLAST_MAXLIGHT_TT,
+    ANDERSEN_400_CASEMENT,
+    DRUTEX_ALUCOVER_FIX,
+    DRUTEX_ALUCOVER_TT,
 )
+from typehaus import WindowType, u_us
+from typehaus.quantities import ft, inch, mm
 
-_DRUTEX_DEPTH = inch(93 / 25.4)  # 93 mm installation depth, Drutex's Alucover data
-# sill_rail_height / sash_overlap stay unauthored until DAKAM's Alucover section shows the
-# sill adaptor and the inward sash lap (procurement §2.3): the stool keeps the 75 mm face.
+_DRUTEX_DEPTH = mm(93)
+# Fensterblick's Alucover 70001 / 70013 section (2026-11-07). The unit envelope remains
+# the bare frame; the unselected 30/50 mm adaptor must not silently raise its stool.
+_DRUTEX_FRAME, _DRUTEX_SASH = mm(74), mm(50)
+_DRUTEX_INWARD_SASH_BOTTOM = mm(38)
+# Fixed-section face width includes glazing details, not a measured stool-bearing rail.
+# Keep the previous stool basis explicit so the face correction does not move counters.
+_DRUTEX_FIXED_STOOL_RAIL = mm(75)
+_DRUTEX_FACES = ("Alucover sections: frame 70001, 74 mm exterior face; sash 70013 adds "
+                 "50 mm. Inward sash bottom 38 mm above bare PVC frame bottom. "
+                 "Sill adaptor not included in modeled envelope; DAKAM to confirm. "
+                 "Sources: notes/window_profile_measurements.md.")
 # Not published to us for the basic unit; the preset's 3 1/4" stays until the dealer's
 # section is in hand.
 _ANDERSEN_DEPTH = inch(3.25)
-# Visible faces. Phius W-102033 (IGLO Energy Classic tilt-turn over fixed, read 2026-11-02)
-# lists the fixed lite's frame at 75 mm and the operable lite's at 125 mm, so the sash is
-# 50 mm. Alucover rides the same uPVC profile; the cap's own sightline is a dealer item.
-_DRUTEX_FRAME, _DRUTEX_SASH = inch(75 / 25.4), inch(50 / 25.4)
-_DRUTEX_FACES = "Faces: Phius W-102033, frame 75 mm, operable lite 125 mm (sash 50 mm)."
-# Andersen 400 publishes unobstructed glass = unit - 4.40" wide, - 4.95" tall (2025-26
-# custom sizes), i.e. 2.20" frame + sash a jamb, but not the split; faces await the owner.
+# Andersen's architectural sections B/2, A/2, C/2: the frame allowance includes its sash
+# gap. Interior sill-stop height is separate (2025-26 product details, p. 1).
+_ANDERSEN_JAMB_FACE, _ANDERSEN_SASH_FACE = inch(9 / 16), inch(1 + 5 / 8)
+_ANDERSEN_HEAD_FACE, _ANDERSEN_SILL_FACE = inch(3 / 4), inch(13 / 16)
+_ANDERSEN_INTERIOR_SILL_RAIL = inch(1 + 1 / 8)
+_ANDERSEN_FACES = ("Architectural sections: exposed frame 9/16 in jamb, 3/4 in head, "
+                   "13/16 in sill; sash face 1-5/8 in. Interior sill ledge 1-1/8 in. "
+                   "Architectural geometry basis, selected triple-pane confirmation pending. "
+                   "Sources: notes/window_profile_measurements.md.")
 _MAXLIGHT_DEPTH = inch(75 / 25.4)  # frame ML010 depth; sash 84 mm
 _MAXLIGHT_FACE = inch(35 / 25.4)   # 35 mm frame, 35 mm sash (Aliplast Max Light Modern)
 
@@ -70,6 +83,8 @@ def _drutex(tag, width, height, operation, row, product, *, tempered=False,
         u_factor=u_us(u), shgc=shgc, vt=vt, frame_depth=_DRUTEX_DEPTH,
         frame_face_width=_DRUTEX_FRAME,
         sash_face_width=_DRUTEX_SASH if operation != "fixed" else inch(0),
+        inward_sash_bottom_height=_DRUTEX_INWARD_SASH_BOTTOM if operation != "fixed" else None,
+        sill_rail_height=_DRUTEX_FIXED_STOOL_RAIL if operation == "fixed" else None,
         frame_material_ref="drutex-alucover-cap",
         product_ref=product.tag, source=f"{row} {_DRUTEX_FACES} {_SIZE}")
 
@@ -103,10 +118,13 @@ def _egress(tag, width, height, height_deduction, *, tempered=False) -> WindowTy
     return WindowType(
         tag=tag, width=width, height=height, operation="casement", tempered=tempered,
         u_factor=u_us(0.20), shgc=0.40, vt=0.51, frame_depth=_ANDERSEN_DEPTH,
+        frame_face_width=_ANDERSEN_JAMB_FACE, sash_face_width=_ANDERSEN_SASH_FACE,
+        frame_head_face_width=_ANDERSEN_HEAD_FACE, frame_sill_face_width=_ANDERSEN_SILL_FACE,
+        sill_rail_height=_ANDERSEN_INTERIOR_SILL_RAIL,
         net_clear_width_deduction=inch(5.81), net_clear_height_deduction=height_deduction,
         frame_size_increment=_ANDERSEN_STEP, minimum_rough_opening_allowance=_ANDERSEN_ALLOWANCE,
         frame_material_ref="andersen-400-exterior",
-        product_ref=ANDERSEN_400_CASEMENT.tag, source=f"{_AND} {_SIZE}")
+        product_ref=ANDERSEN_400_CASEMENT.tag, source=f"{_AND} {_ANDERSEN_FACES} {_SIZE}")
 
 
 # Clear height = unit - 4.43" for a 28 3/8"-31 1/2" wide, 40 13/16"-48" tall unit, else

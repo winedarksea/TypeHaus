@@ -516,6 +516,8 @@ class ResolvedOpening:
     # ``WindowType.frame_face_width`` / ``sash_face_width``; None / 0 is the schematic frame.
     frame_face_width_m: float | None = None
     sash_face_width_m: float = 0.0
+    frame_head_face_width_m: float | None = None
+    frame_sill_face_width_m: float | None = None
     effective_frame_material_ref: str | None = None
     effective_leaf_material_ref: str | None = None
     # A typed door's leaf, unit, RO and clear passage (``resolve/door_sizing``).
@@ -1106,6 +1108,7 @@ class ResolvedWindowStool:
     # ``WindowType.sill_rail_height`` / ``sash_overlap``: None/0 seat on the drawn rail.
     sill_rail_m: float | None = None
     sash_overlap_m: float = 0.0
+    inward_sash_bottom_m: float | None = None
 
 
 @dataclass(frozen=True)

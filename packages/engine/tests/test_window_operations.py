@@ -141,20 +141,16 @@ def test_catlin_egress_windows_are_casements_and_the_rest_tilt_turn(catlin_plan)
     assert not any(op is WindowOperation.AWNING for op in operations.values())
 
 
-# Andersen 400 publishes only the combined frame + sash sightline (unit - 4.40"), not the
-# split; its faces await the owner (notes/window_and_door_procurement.md §2.6).
-_FACES_PENDING = {"PROD-ANDERSEN-400-CASEMENT"}
-
-
 def test_every_catlin_product_window_authors_its_frame_face(catlin_plan):
     window_types = {wt.tag: wt for wt in catlin_plan.library.window_types}
     in_use = {e.type_ref for e in catlin_plan.all_elements() if isinstance(e, Window)}
     for tag in sorted(in_use):
         window_type = window_types[tag]
-        if window_type.product_ref is None or window_type.product_ref in _FACES_PENDING:
+        if window_type.product_ref is None:
             continue
         assert window_type.frame_face_width is not None, tag
-        assert 25 <= window_type.frame_face_width.meters * 1000 <= 150, tag
+        # Andersen's exposed jamb allowance is 9/16"; the full extrusion is wider.
+        assert 10 <= window_type.frame_face_width.meters * 1000 <= 150, tag
         sash = window_type.sash_face_width
         assert sash is not None and 0 <= sash.meters * 1000 <= 150, tag
         if window_type.operation is WindowOperation.FIXED:

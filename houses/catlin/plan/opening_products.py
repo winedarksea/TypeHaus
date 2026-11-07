@@ -15,7 +15,11 @@ from typehaus.model import Product
 _DRUTEX_URL = "https://drutex.com/en-us/products/iglo-energy-alu-cover.html"
 _DRUTEX = ("Drutex S.A., Bytow PL. IGLO Energy Alucover: 7-chamber uPVC, 93 mm, aluminium "
            "cap outside (RAL 9005 matt), white PVC inside, MACO Multi-Matic. US dealer: DAKAM, "
-           "Franklin Park IL. Nail fin plus jamb straps per FL41837's tested anchorage.")
+           "Franklin Park IL. Nail fin plus jamb straps per FL41837's tested anchorage. "
+           "Alucover frame 70001 (74 mm exterior face), operable sash 70013 (+50 mm face, "
+           "38 mm room-side bottom above bare PVC frame). Adaptor options 54123/54113 "
+           "extend 30 mm, 50114 extends 50 mm; supplied adaptor pending, outside model envelope. "
+           "Section sources: notes/window_profile_measurements.md.")
 
 DRUTEX_ALUCOVER_TT = Product(
     tag="PROD-DRUTEX-ALUCOVER-TT", brand="Drutex", model="IGLO Energy Alucover",
@@ -42,7 +46,9 @@ ANDERSEN_400_CASEMENT = Product(
     source="Andersen Corp., Bayport MN. Wood with Perma-Shield vinyl cladding, custom sizes "
            "in 1/8\" steps, factory installation flange. NFRC line AND-N-1. Clear opening "
            "per Andersen's 2025-26 opening specifications (notes/window_and_door_procurement.md "
-           "§7).")
+           "§7). Architectural face basis: sash 1-5/8 in, exposed frame 9/16 in jamb, "
+           "3/4 in head, 13/16 in sill; interior sill ledge 1-1/8 in. Confirm for the selected "
+           "triple-pane unit; notes/window_profile_measurements.md.")
 THERMATRU_SMOOTHSTAR_FULLLITE = Product(
     tag="PROD-THERMATRU-SMOOTHSTAR-FULLLITE", brand="Therma-Tru",
     model="Smooth-Star full-lite", name="Smooth-Star full-lite inswing French pair, composite frame",

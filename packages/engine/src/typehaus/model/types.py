@@ -239,11 +239,18 @@ class WindowType(HausModel):
     # the frame's sill piece, and an inward sash must not lift it into the sweep.
     frame_face_width: Length | None = None
     sash_face_width: Length | None = None
+    # Exterior head/sill sightlines may differ from the jamb. None uses frame_face_width;
+    # interior stool-bearing rail height remains a separate dimension below.
+    frame_head_face_width: Length | None = None
+    frame_sill_face_width: Length | None = None
     # The lower rail's top above the frame bottom (sill adaptor included), and how far an
     # inward sash laps below it. The stool sits at rail - overlap; None keeps the drawn
     # frame face and no lap.
     sill_rail_height: Length | None = None
     sash_overlap: Length | None = None
+    # Direct room-side sash-bottom measurement above the same unit bottom. It limits the
+    # stool top without inventing a rail/overlap split from an exterior sightline.
+    inward_sash_bottom_height: Length | None = None
     # The maker's published NET clear opening (R310.2.1), sash open in normal operation.
     # Selected products need exact openings or deductions below to receive R310 credit.
     net_clear_width: Length | None = None
@@ -273,11 +280,16 @@ class WindowType(HausModel):
             if deduction is not None and (not math.isfinite(deduction.meters)
                                           or deduction.meters < 0):
                 raise ValueError(f"{self.tag}: net clear {axis} deduction must be nonnegative")
-        frame, sash = self.frame_face_width, self.sash_face_width
-        if frame is not None and not (math.isfinite(frame.meters) and frame.meters > 0):
-            raise ValueError(f"{self.tag}: frame face width must be positive")
+        for field in ("frame_face_width", "frame_head_face_width", "frame_sill_face_width"):
+            face = getattr(self, field)
+            if face is not None and not (math.isfinite(face.meters) and face.meters > 0):
+                raise ValueError(f"{self.tag}: {field} must be positive")
+        sash = self.sash_face_width
         if sash is not None and not (math.isfinite(sash.meters) and sash.meters >= 0):
             raise ValueError(f"{self.tag}: sash face width must be nonnegative")
+        bottom = self.inward_sash_bottom_height
+        if bottom is not None and not (math.isfinite(bottom.meters) and bottom.meters >= 0):
+            raise ValueError(f"{self.tag}: inward sash bottom height must be nonnegative")
         step, allowance = self.frame_size_increment, self.minimum_rough_opening_allowance
         if step is not None and not (math.isfinite(step.meters) and step.meters > 0):
             raise ValueError(f"{self.tag}: frame size increment must be positive")
