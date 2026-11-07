@@ -34,14 +34,14 @@
     },
     {
       "start": 73.375,
-      "end": 79.25,
-      "width": 5.875,
+      "end": 78.375,
+      "width": 5.0,
       "height": 45.5,
       "quantity": 1
     }
   ],
-  "net_panel_area_sqft": 19.482421875,
-  "previous_net_panel_area_sqft": 21.259765625,
+  "net_panel_area_sqft": 19.22873263888889,
+  "previous_net_panel_area_sqft": 21.282552083333332,
   "supports": [
     {
       "tag": "TR-BW-MDO-NAILER-1",
@@ -393,11 +393,11 @@
     "acceptance": "incomplete: total sill stress, local plate distribution and hanger effects under concentrated loading require verification"
   },
   "before": {
-    "wall_dead_load_plf": 34.23804469246205,
-    "wall_and_upper_band_plf": 52.32876307044517,
+    "wall_dead_load_plf": 34.36311198479668,
+    "wall_and_upper_band_plf": 52.453830362779804,
     "wall_reaction_lb": {
-      "PT-BW-CW": 154.12776122790675,
-      "PT-BW-CNW": 154.12776122790675
+      "PT-BW-CW": 153.2885734505053,
+      "PT-BW-CNW": 153.2885734505053
     },
     "structural_records": [
       {
@@ -423,7 +423,7 @@
       {
         "key": "deck_post/PT-BW-GW",
         "status": "ok",
-        "ratio": 0.017997982375852352
+        "ratio": 0.017174640546226302
       },
       {
         "key": "deck_post/PT-BW-PE",
@@ -438,12 +438,12 @@
       {
         "key": "deck_post/PT-BW-W",
         "status": "ok",
-        "ratio": 0.019396362249696337
+        "ratio": 0.018509248180110453
       },
       {
         "key": "deck_tie/FS-BW-FLOOR",
         "status": "ok",
-        "ratio": 0.8147438480196877
+        "ratio": 0.8108973183288983
       },
       {
         "key": "lateral_system/RF-BW-CANOPY",
@@ -488,11 +488,11 @@
     ]
   },
   "after": {
-    "wall_dead_load_plf": 38.38554986662084,
-    "wall_and_upper_band_plf": 56.476268244603965,
+    "wall_dead_load_plf": 38.45291237733067,
+    "wall_and_upper_band_plf": 56.54363075531379,
     "wall_reaction_lb": {
-      "PT-BW-CW": 167.844770527859,
-      "PT-BW-CNW": 167.844770527859
+      "PT-BW-CW": 166.66562890108523,
+      "PT-BW-CNW": 166.66562890108523
     },
     "structural_records": [
       {
@@ -518,7 +518,7 @@
       {
         "key": "deck_post/PT-BW-GW",
         "status": "ok",
-        "ratio": 0.018041742529801976
+        "ratio": 0.01721536998026406
       },
       {
         "key": "deck_post/PT-BW-PE",
@@ -533,12 +533,12 @@
       {
         "key": "deck_post/PT-BW-W",
         "status": "ok",
-        "ratio": 0.019440122403645965
+        "ratio": 0.018549977614148214
       },
       {
         "key": "deck_tie/FS-BW-FLOOR",
         "status": "ok",
-        "ratio": 0.8147438480196877
+        "ratio": 0.8108973183288983
       },
       {
         "key": "lateral_system/RF-BW-CANOPY",
@@ -583,8 +583,8 @@
     ]
   },
   "wall_reaction_delta_lb": {
-    "PT-BW-CW": 13.717009299952252,
-    "PT-BW-CNW": 13.717009299952252
+    "PT-BW-CW": 13.377055450579917,
+    "PT-BW-CNW": 13.377055450579917
   },
   "door_sweep": {
     "stop_degrees": 81.0,

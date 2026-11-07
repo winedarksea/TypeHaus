@@ -89,6 +89,8 @@ def _panel_collector(ctx: Any, roof: Any, case: FrameCase, wall_tag: str,
     lo, hi = sorted((ends[0][index], ends[1][index]))
     roof_values = [p[index] / _M_PER_FT for p in roof.footprint]
     overlap = max(0.0, min(hi, max(roof_values)) - max(lo, min(roof_values)))
+    overlap += _skin_gaps_ft(ctx, wall_tag, ends[0][1 - index], index, (lo, hi),
+                             (min(roof_values), max(roof_values)))
     if case.depth_ft - overlap < _PLAN_TOLERANCE_FT:
         overlap = case.depth_ft
     drag_length = max(0.0, case.depth_ft - overlap)
@@ -102,6 +104,31 @@ def _panel_collector(ctx: Any, roof: Any, case: FrameCase, wall_tag: str,
         f"{unit_shear * drag_length:,.0f} lb in PLAN; the band between the panel's top and "
         f"the collector, if any, is graded on its own rows",
         is_detailing=True))
+
+
+def _skin_gaps_ft(ctx: Any, wall_tag: str, across_ft: float, index: int,
+                  panel: tuple[float, float], deck: tuple[float, float]) -> float:
+    """Deck edge past a panel end that another wall's own layers fill, in plan (E2-101).
+
+    A panel stopped on a wall's cladding face (W-BW-SCREEN on W-G-S) cannot reach a deck edge
+    drawn to that wall's outer face; the strip between is the other wall, not a drag length.
+    """
+    from shapely.geometry import LineString, Polygon
+
+    from typehaus.resolve.overlay import union_all
+
+    filled = 0.0
+    for a, b in ((deck[0], panel[0]), (panel[1], deck[1])):
+        if b - a <= _PLAN_TOLERANCE_FT:
+            continue
+        gap = LineString([(v * _M_PER_FT, across_ft * _M_PER_FT)[::1 if index == 0 else -1]
+                          for v in (a, b)])
+        skins = [ring for wall in ctx.model.walls if wall.tag != wall_tag
+                 for layer in wall.layers if layer.polygon and len(layer.polygon) >= 3
+                 for ring in [Polygon(layer.polygon)] if ring.intersects(gap)]
+        if skins and union_all(skins).buffer(1e-6).covers(gap):
+            filled += b - a
+    return filled
 
 
 def _head_collector(ctx: Any, case: FrameCase, torsion: Torsion | None, column_tag: str,

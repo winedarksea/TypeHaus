@@ -4,6 +4,7 @@ from plan.entry_screen_finish_spec import (
     PLY_SCREW_HEAD_DIAMETER_IN,
     PLY_SCREW_HEAD_PROJECTION_IN,
     PLY_SCREWS,
+    SCREEN_LENGTH_IN,
     SUPPORTS,
     TIE_RELIEF_BOTTOM_IN,
     TIE_RELIEF_START_IN,
@@ -13,11 +14,14 @@ from plan.entry_screen_finish_spec import (
 from params.north_entry_frame import (
     DECK_JOIST_TOP_FT,
     DECK_SHEET_SOUTH_Y_FT,
+    GARAGE_CLADDING_Y_FT,
     LANDING_WEST_FT,
 )
 from typehaus import Flashing, RoughOpening, TrimKind, from_node, ft, inch, pt
 
 STUD_EAST_IN = LANDING_WEST_FT * 12 + 1.75
+# The panel schedule is in inches off N-BW-SCREEN-S; hold it to the wall it cuts.
+assert abs((GARAGE_CLADDING_Y_FT - DECK_SHEET_SOUTH_Y_FT) * 12 - SCREEN_LENGTH_IN) < 1e-6
 # Trim solids coordinate supplemental timber in the existing stud cavity. Their mass
 # is already included in the MDO material's effective areal density.
 FINISH_ELEMENTS = [
@@ -62,7 +66,7 @@ FINISH_ELEMENTS.append(
         tag="AO-BW-MDO-TIE-RELIEF",
         host="W-BW-SCREEN",
         position=from_node("N-BW-SCREEN-S", inch(TIE_RELIEF_START_IN)),
-        width=inch(79.375 - TIE_RELIEF_START_IN),
+        width=inch(SCREEN_LENGTH_IN - TIE_RELIEF_START_IN),
         height=inch(TIE_RELIEF_TOP_IN - TIE_RELIEF_BOTTOM_IN),
         sill_height=inch(TIE_RELIEF_BOTTOM_IN - DECK_JOIST_TOP_FT * 12),
         depth=inch(0.750),
@@ -80,14 +84,13 @@ for panel, (start, end) in enumerate(PANEL_RUNS_IN, 1):
     for column, station in enumerate(rows):
         edge = column < 2
         count = 9 if edge else 5
-        for row in range(count):
-            z = 2.375 + row * (47.125 - 2.375) / (count - 1)
-            if (
-                panel == 4
-                and station > TIE_RELIEF_START_IN
-                and TIE_RELIEF_BOTTOM_IN - 0.1875 < z < TIE_RELIEF_TOP_IN + 0.1875
-            ):
-                continue
+        heights = [(row, 2.375 + row * (47.125 - 2.375) / (count - 1)) for row in range(count)]
+        if panel == 4 and station > TIE_RELIEF_START_IN:
+            # A row in the relief moves to its edges, 3/8in off, so no edge run skips 6in (E2-104).
+            heights = [(row, z) for row, z in heights
+                       if not TIE_RELIEF_BOTTOM_IN - 0.5625 < z < TIE_RELIEF_TOP_IN + 0.5625]
+            heights += [(9, TIE_RELIEF_BOTTOM_IN - 0.375), (10, TIE_RELIEF_TOP_IN + 0.375)]
+        for row, z in heights:
             FINISH_ELEMENTS.append(
                 Flashing(
                     uid=f"BWMDS{panel}{column}{row}",

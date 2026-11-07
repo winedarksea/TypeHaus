@@ -34,12 +34,15 @@ alone does not approve the added detail. See `entry_screen_mdo_calculations.json
 | 1 | 0.125–7.875 | 7.750 | 45.5 |
 | 2 | 13.625–37.750 | 24.125 | 45.5 |
 | 3 | 43.500–67.625 | 24.125 | 45.5 |
-| 4 | 73.375–79.250 | 5.875 | 45.5 |
+| 4 | 73.375–78.375 | 5.000 | 45.5 |
 
 Panels run +2 to +47.5. Leave 1/8 inch beside the centre timber; keep joints open.
-The top plates support panel tops. The north panel retains the open-ended 2.625 x
-3.750-inch tie-access relief, stations 76.625–79.250, +22.125 to +25.875. Keep tool
-access and straight-out panel removal possible. Net MDO area is 19.4824 sf (was 21.2598).
+The top plates support panel tops. The north panel retains the open-ended 1.750 x
+3.750-inch tie-access relief, stations 76.625–78.375, +22.125 to +25.875. Keep tool
+access and straight-out panel removal possible. Net MDO area is 19.2287 sf (was 21.2598).
+The wall stops at W-G-S's cladding face, station 78.500 (E2-101, 2026-11-06); it ran
+7/8 inch into the garage corrugated. Panel 4's north edge screws flank the relief 3/8 inch
+off its top and bottom, so no edge run skips more than 6 inches (E2-104).
 
 Removable No. 8 x 2-1/2-inch 304 stainless pan-head white-head screws: maximum 6 inches
 at vertical edges, 12 inches at intermediate studs; minimum 3/8-inch panel edge distance.

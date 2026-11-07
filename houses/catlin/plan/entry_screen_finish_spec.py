@@ -12,7 +12,10 @@ FINISH_BOTTOM_IN = 2.0
 FINISH_TOP_IN = 47.5
 PREVIOUS_PANEL_RUNS_IN = ((0.125, 7.875), (13.625, 40.5625),
                           (40.6875, 67.625), (73.375, 79.25))
-PANEL_RUNS_IN = ((0.125, 7.875), (13.625, 37.750), (43.500, 67.625), (73.375, 79.250))
+# Wall length: south node to W-G-S's cladding face (E2-101); was 79.375 to its node line.
+SCREEN_LENGTH_IN = 78.500
+PANEL_RUNS_IN = ((0.125, 7.875), (13.625, 37.750), (43.500, 67.625),
+                 (73.375, SCREEN_LENGTH_IN - 0.125))
 TIE_RELIEF_START_IN = 76.625
 TIE_RELIEF_BOTTOM_IN = 22.125
 TIE_RELIEF_TOP_IN = 25.875

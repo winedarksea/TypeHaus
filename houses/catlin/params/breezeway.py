@@ -255,7 +255,8 @@ NOTES = [
 # ** NO VERTICAL SLATS OVER THE PANEL SINCE 2026-10-04. ** The band between its top plate and
 # BM-BW-RW is SB-BW-BAND, 45° slats that ARE the brace (params/entry_band_brace.py).
 SCREEN_START_Y_FT = DECK_SHEET_SOUTH_Y_FT
-SCREEN_END_Y_FT = GARAGE_Y_SOUTH.feet
+# Ends on W-G-S's corrugated face, not its node line (E2-101).
+SCREEN_END_Y_FT = GARAGE_CLADDING_Y_FT
 SCREEN_PANEL_NODES = [
     Node(uid="BWNS01AAAA", tag="N-BW-SCREEN-S",
          position=pt(ft(LANDING_WEST_FT), ft(SCREEN_START_Y_FT)), open_end=True),

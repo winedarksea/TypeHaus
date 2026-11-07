@@ -22,7 +22,7 @@ def test_mdos_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
         xs = [x / INCH for x, _y in layers[name].polygon]
         assert (min(xs), max(xs)) == pytest.approx(expected)
     expected_runs = ((0.125, 7.875), (13.625, 37.750),
-                     (43.500, 67.625), (73.375, 79.25))
+                     (43.500, 67.625), (73.375, 78.375))
     for index, expected in enumerate(expected_runs, 1):
         layer = layers[f"mdo-in-{index}"]
         xs = [x / INCH for x, _ in layer.polygon]
@@ -35,7 +35,7 @@ def test_mdos_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
     # must not silently put new supports or clips through existing timber.
     stud_stations = sorted((member.p0[1] - wall.axis[0][1]) / INCH
                            for member in wall.members if member.category == "stud")
-    assert stud_stations == pytest.approx([0.75, 16, 32, 48, 64, 78.625])
+    assert stud_stations == pytest.approx([0.75, 16, 32, 48, 64, 77.75])
 
 
 
@@ -46,13 +46,13 @@ def test_mdo_area_and_weight_use_the_same_bounded_regions(catlin_model_ro):
     net = wall_net_areas_m2(catlin_model_ro)[wall.tag]
     layers = [layer for layer in wall.layers if layer.name.startswith("mdo-in-")]
     area = sum(wall_layer_net_area_m2(catlin_model_ro, wall, layer, net) for layer in layers)
-    assert area * 10.7639104 == pytest.approx(19.482421875, abs=0.001)
+    assert area * 10.7639104 == pytest.approx(19.228733, abs=0.001)
     rows = [row for row in envelope_layer_takeoff(catlin_model_ro)
             if row["material"] == "entry-screen-white-mdo"]
     assert len(rows) == 1
     assert rows[0]["net_area_sqft"] == pytest.approx(area * 10.7639104, abs=0.05)
     weight = dead_load_plf(SimpleNamespace(plan=catlin_model_ro.plan), wall, wall.z1_m - wall.z0_m)
-    assert weight == pytest.approx(38.38555, abs=0.02)
+    assert weight == pytest.approx(38.45291, abs=0.02)
 
 
 def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):

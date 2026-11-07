@@ -1602,3 +1602,45 @@ Using its existing soft-end critical load of about 9.27 kip, the reciprocal magn
 falls from 1/32.5351 by 16.46/(0.75 x 9270), giving delta about 35.25. It remains OVER;
 this retired arithmetic gives no roof-support role to the lower timber. Local member,
 connection and concentrated plate/sill checks remain blocked in entry_screen_mdo.md.
+
+
+## Addendum 2026-11-06 — the screen stops on the garage cladding (E2-101)
+
+`W-BW-SCREEN` ran to `W-G-S`'s node line, 7/8" into the garage corrugated (y 517.75–518.625).
+It now ends on the cladding face: the run is 79.375 → **78.5"** (6.6146' → 6.5417'). MDO
+panel 4 is 73.375–78.375 and the tie relief 76.625–78.5 (`entry_screen_mdo.md`). The two
+tie joints sit on y 43.1458' already and do not move.
+
+**Line load (§2, 2026-11-02 addendum).** `dead_load_plf` charges the MDO at its areal
+density over its panels' spans. The accessory mass (supports + reserve, 58.786 lb) is
+unchanged but now spread over 19.2287 sf of net panel (was 19.4824), so the areal density
+is 2.34105 + 58.786/19.2287 = **5.39822** psf (was 5.35841). The panels span
+61.000" of 78.5" (was 61.875" of 79.375"):
+
+```
+MDO   5.39822 x 45.5/12 x 61.000/78.5 = 15.9053 plf   (was 5.35841 x ... x 61.875/79.375 = 15.8379)
+wall  38.3855 + 0.0674 = 38.4529 plf;  with SB-BW-BAND 18.0907: 56.5436 plf (was 56.4763)
+run   56.5436 x 4.52083' (the sill) + 38.4529 x (78.5 - 54.25)/12 = 255.625 + 77.707 = 333.331 lb
+      166.67 lb to each west chord (was 167.84, -1.18)
+```
+
+The retired GW spring example loses 1.2 x 1.179 = 1.415 lb factored: 1/δ rises from
+1/35.25 by 1.415/(0.75 x 9270) = 0.000204, to **0.028572**, δ about **35.00**. Still OVER and
+still arithmetic only.
+
+### 10l. The deck tie's E-W faces
+
+The screen and skirt faces scale with the run (§10j's method), and their centroid moves
+7/16" north with the run's mid-point, 39.9115' → 39.8750':
+
+```
+screen 409.5798 x 78.5/79.375 = 405.0647 lb        skirt 112.9818 x 78.5/79.375 = 111.7363 lb
+deck   67.3549 at the sheet centroid, lever 43.1458 - 39.8542 = 3.2917' (unchanged)
+ΣFx = 584.156, X = 292.08 each
+M   = 67.3549 x 3.2917 + 516.801 x (43.1458 - 39.8750 = 3.2708) = 221.71 + 1,690.37 = 1,912.1 lb-ft
+Y   = 1,912.1 x 1.55208 / 4.81791 = 616.0 lb
+W:  616.0/1,480 + 292.1/740 = 0.4162 + 0.3947 = 0.811      FE: 292.08/892.5 + 616.0/1,785 = 0.672
+```
+
+N-S (0.776) and guard (0.672) do not read the north end and hold. **Verdict: every row passes;
+E-W wind at W governs at 0.811** (was 0.815).

@@ -68,6 +68,11 @@ the eave clips; the band is braced by CS16 X-straps and the panel is read over i
 of it is `canopy_west_band.md` §2-§4; `engineering/lateral_band.py` makes an unbridged band
 INCOMPLETE rather than zero.
 
+2026-11-06 (E2-101): the panel stops on `W-G-S`'s cladding face, 7/8" short of the deck
+edge drawn to that wall's outer face. The strip between is the garage wall, not a drag
+length: `lateral_collectors._skin_gaps_ft` counts a gap another wall's own layers fill, so
+the west line row stays 1.00.
+
 ## 8d. The east collector — the connection, not the member
 
 The east line is `BM-BW-RE`, a 3-ply 2x12 spanning 4.979' between the two cast columns and
