@@ -113,8 +113,9 @@ def _containing_floor(model: ResolvedModel, storey_tag: str, direction: str,
 
 
 def _bay_occupancy(model: ResolvedModel, duct: DuctRun, storey_tag: str,
-                   path: list[tuple[float, float]], floor, width_m: float, depth_m: float
-                   ) -> tuple[tuple[str, ...], tuple[tuple[float, float], ...], bool]:
+                   path: list[tuple[float, float]], floor, width_m: float, depth_m: float,
+                   z: list[float]) -> tuple[tuple[str, ...], tuple[tuple[float, float], ...],
+                                            bool]:
     conflicts: list[str] = []
     crossings: list[tuple[float, float]] = []
     depth_ok = True
@@ -123,7 +124,7 @@ def _bay_occupancy(model: ResolvedModel, duct: DuctRun, storey_tag: str,
     # Each segment validates against whichever sibling FloorSystem (same storey, same joist
     # direction) contains its midpoint, so a duct spanning a split deck resolves against
     # both halves instead of reporting UNKNOWN past the named floor_ref's edge.
-    for a, b in zip(path, path[1:], strict=False):
+    for k, (a, b) in enumerate(zip(path, path[1:], strict=False)):
         midpoint = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
         seg_floor = _containing_floor(model, storey_tag, floor.direction, midpoint, floor)
         system = model.plan.by_tag(seg_floor.tag)
@@ -134,6 +135,7 @@ def _bay_occupancy(model: ResolvedModel, duct: DuctRun, storey_tag: str,
                      else _DEFAULT_SPACING_M)
         seg_conflicts, seg_crossings, seg_depth_ok = duct_bay_occupancy(
             [a, b], width_m, depth_m, duct.routing, seg_floor, bearing_walls, spacing_m,
+            z_m=(z[k], z[k + 1]),
         )
         conflicts.extend(seg_conflicts)
         crossings.extend(seg_crossings)
@@ -188,14 +190,15 @@ def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
     width_m, depth_m, diameter_m = section
     floor = (next((f for f in model.floors if f.tag == duct.floor_ref), None)
              if duct.floor_ref else None)
-    # The floor_ref names the floor; its siblings are on ITS storey, not the duct's.
-    conflicts, crossings, depth_ok = _bay_occupancy(
-        model, duct, floor.storey if floor is not None else storey.tag, path, floor,
-        width_m, depth_m)
     z, z_findings = _duct_vertex_z(model, duct, path, storey, floor, depth_m)
     findings.extend(z_findings)
     if not z:
         return findings
+    # The floor_ref names the floor; its siblings are on ITS storey, not the duct's. Graded
+    # where each leg actually is: one hanging below the floor occupies no bay.
+    conflicts, crossings, depth_ok = _bay_occupancy(
+        model, duct, floor.storey if floor is not None else storey.tag, path, floor,
+        width_m, depth_m, z)
     if duct.end_terminal_ref is not None:
         from typehaus.resolve.terminal_necks import terminal_inlet
 

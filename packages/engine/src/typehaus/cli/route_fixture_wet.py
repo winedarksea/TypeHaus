@@ -69,7 +69,8 @@ def wet_goals(model: Any, ends: Any, graph: Any, reach: dict, grade: float,
 
     A join is offered only where the arm meets the drain at or above its centreline and
     within one arm diameter of it: lower is uphill, a bigger fall before the vent an S-trap.
-    """
+    A water closet traps in its bowl, so it may drop to the drain (908.2.1.3 "except for
+    water closets"; ``mep_group_wet_vent_basis.md`` §4.3 adds the drop to its arm)."""
     from typehaus.cli.cmd_route_tree import TIE_TOLERANCE_M, _line_nodes
     from typehaus.resolve.mep_trap_arm import run_points, wet_vent_data
     from typehaus.resolve.mep_wet_tie import grade_hypothetical_tie
@@ -79,6 +80,9 @@ def wet_goals(model: Any, ends: Any, graph: Any, reach: dict, grade: float,
         return {}
     data = wet_vent_data(model)
     runs = {r.tag: r for r in model.pipe_runs}
+    types = {t.tag: t.plan_symbol for t in model.plan.library.fixture_types}
+    closet = (types.get(getattr(model.plan.by_tag(ends.fixture), "type_ref", None))
+              or "").startswith("toilet")
     out: dict[int, Any] = {}
     for tag in ends.wet_candidates:
         pts = run_points(runs[tag])
@@ -89,11 +93,14 @@ def wet_goals(model: Any, ends: Any, graph: Any, reach: dict, grade: float,
         for n in nodes[:_PER_DRAIN]:
             node, z_arm = graph.nodes[n], arm_invert_m(reach[n], ends.weir, grade)
             z_drain = _centreline_z(pts, (node.x, node.y))
-            if z_drain is None or not z_arm - ends.diameter_m - 1e-6 <= z_drain <= z_arm + 1e-6:
+            if (z_drain is None or z_drain > z_arm + 1e-6
+                    or (not closet and z_drain < z_arm - ends.diameter_m - 1e-6)):
                 continue
             arm = [(graph.nodes[i].x, graph.nodes[i].y, 0.0) for i in reach[n].nodes]
             arm = [(x, y, ends.weir - grade * _plan_ft(arm[:k + 1]) * 0.0254)
                    for k, (x, y, _z) in enumerate(arm)]
+            if ends.origin[2] > arm[0][2] + 1e-6:  # a closet flange's drop is arm too
+                arm.insert(0, tuple(ends.origin))
             if z_drain < z_arm - 1e-6:
                 arm.append((node.x, node.y, z_drain))
             tie, notes = grade_hypothetical_tie(model, data, ends.fixture, arm, ends.radius_m,

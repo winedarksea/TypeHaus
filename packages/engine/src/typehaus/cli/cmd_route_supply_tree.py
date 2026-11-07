@@ -9,7 +9,7 @@ them, each a lattice of its own. ``trunk``: a branch tees onto the trunk or its 
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field, fields, replace
+from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any
 
 from typehaus.cli.route_options import RouteOptions
@@ -22,8 +22,6 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 _SUPPLY = ("water_cold", "water_hot")
 #: A branch looks this far (plan) beyond its group's fixtures for something to tee onto.
 _REACH_M = 25.0 * 0.3048
-#: A tee is ON a laid line: 3/16" in plan, 1/4" in z (the proposals are snapped to 1/16").
-_ON_M, _ON_Z_M = 0.005, 0.0064
 _TRUNK_TRIES = 3  # farthest-first candidates for the trunk's far end before giving up
 
 
@@ -144,21 +142,22 @@ def propose_supply_tree(model: ResolvedModel, tree: str, topology: str | None,
 
 def _lay(model: ResolvedModel, tree: str, topology: str, opts: RouteOptions, net: _Net,
          clock: Any, problems: list[str], notices: list[str], refusals: list[Any]):
-    from typehaus.routing.supply_tree import farthest_first, group_of, plan_key
+    from typehaus.routing.supply_tree import developed_key, farthest_first, group_of, plan_key
 
     ends = net.ends
-    keys = {t: plan_key(net.root, ends[t].origin) for t in ends}
-    order = farthest_first(keys)
+    # The trunk's far end is the farthest in PLAN (no route exists yet to develop a length on);
+    # everything after is ordered by developed length by way of the laid trunk (the note's §4).
+    order = farthest_first({t: plan_key(net.root, ends[t].origin) for t in ends})
     laid = _lay_trunk(model, tree, opts, net, order, clock, problems, notices, refusals)
     if laid is None:
         return [], problems, notices, refusals
     trunk_tag, trunk_prop, far = laid
     routes: list[Laid] = [Laid(trunk_tag, trunk_prop, net.own.get(far, ()), "", far)]
+    keys = {t: developed_key(trunk_prop.points, ends[t].origin) for t in ends}
     groups: dict[str, list[str]] = {}
-    for tag in order:
-        if tag != far and tag in ends:
+    for tag in farthest_first(keys):
+        if tag != far:
             groups.setdefault(group_of(net.parent, tree, tag), []).append(tag)
-    # Groups farthest first by their farthest member; ``order`` already ranks the members.
     for group in sorted(groups, key=lambda g: (-keys[groups[g][0]], g)):
         lay_group(model, tree, topology, opts, net, group, groups[group], routes, clock,
                   problems, notices, refusals)
@@ -241,8 +240,8 @@ def _lay_trunk(model, tree, opts, net, order, clock, problems, notices, refusals
 
 def _finish(model: ResolvedModel, net: _Net, routes: list[Laid], notices: list[str]
             ) -> list[tuple[Any, str]]:
-    """Each route's ``serves`` (own fixtures plus every route teed on it), its size from that
-    load (the table ``mep.pipe_sizing`` grades), and what it replaces."""
+    """Each route's ``serves`` (own fixtures plus every route teed on it) and what it
+    replaces. A run is sized up to its load only within the clearance it was searched at."""
     from typehaus.routing.supply_tree import downstream_serves, tee_onto
     from typehaus.takeoff.plumbing_calc import (
         branch_load,
@@ -250,10 +249,10 @@ def _finish(model: ResolvedModel, net: _Net, routes: list[Laid], notices: list[s
         required_supply_size_in,
     )
 
+    units = {row.tag: row for row in fixture_units(model.plan)}
     tee: dict[str, str | None] = {r.proposal.tag: r.host for r in routes}
     serves = downstream_serves({r.proposal.tag: r.own for r in routes}, tee,
                                tuple(net.trunk.serves))
-    units = {row.tag: row for row in fixture_units(model.plan)}
     named = {r.tag for r in routes if r is not routes[0]}
     gone = {net.trunk.tag, *(t for t in net.below if t not in named and t not in net.keep)}
     for tag in net.keep:  # its authored tee must still land on the new trunk
@@ -262,22 +261,23 @@ def _finish(model: ResolvedModel, net: _Net, routes: list[Laid], notices: list[s
                     (*run.path[0], run.z_m[0])) is None:
             notices.append(f"{tag}: left as authored, but its tee no longer lies on the new "
                            "trunk — re-route it with --run")
-    has_field = "replaces" in {f.name for f in fields(routes[0].proposal)}
     out = []
     for r in routes:
         p, first = r.proposal, r is routes[0]
         mine = tuple(net.trunk.serves) if first else serves[p.tag]
+        note = "trunk" if first else f"tees onto {tee.get(p.tag) or 'nothing laid'}"
         load, _unresolved = branch_load(mine, units, "water_cold")
         need = required_supply_size_in(load) if load is not None else None
         size = max(p.diameter_m, need * 0.0254) if need is not None else p.diameter_m
-        note = "trunk" if first else f"tees onto {tee.get(p.tag) or 'nothing laid'}"
-        if size > p.diameter_m + 1e-9:
+        if size > p.diameter_m + 1e-9:  # within its lattice's clearance: ``Laid.limit_m``
             note += (f"; sized {need}\" for {load:g} WSFU (the table mep.pipe_sizing grades), "
                      f"not the {p.diameter_m / 0.0254:.3g}\" authored")
+            if size > max(r.limit_m, p.diameter_m) + 1e-9:
+                notices.append(f"{p.tag}: needs {need}\" but was searched at "
+                               f"{max(r.limit_m, p.diameter_m) / 0.0254:.3g}\"")
         made = replace(p, serves=mine, diameter_m=size, notes=[*p.notes, note])
-        if has_field:
-            made = replace(made, replaces=tuple(sorted(
-                gone if first else ({r.tag} if r.tag in net.runs else set()))))
+        made = replace(made, replaces=tuple(sorted(
+            gone if first else ({r.tag} if r.tag in net.runs else set()))))
         if first:
             seated = sorted(a.tag for a in model.pipe_accessories
                             if a.pipe_ref in {*gone, *named})

@@ -31,6 +31,12 @@ TRADE_ORDER: tuple[tuple[str, str], ...] = (
 
 _TRADE_INDEX = {trade: index for index, (trade, _why) in enumerate(TRADE_ORDER)}
 
+#: Systems the catalog's service map does not name, filed by what they ARE: a radon pipe
+#: rises to the same stack a vent does (``trades.pipe.RISING_SYSTEMS``), and a pumped sump
+#: line is a pressure line like supply (no grade, goal fixed). Gas has no row and no catlin
+#: run; it stays unassigned, and the campaign names it in ``skipped`` rather than guess.
+_TRADE_BY_SYSTEM = {"radon": "vent", "sump_discharge": "supply"}
+
 #: How many times a campaign may lift an accepted proposal to make room for a refused one.
 #: A count rather than a time, so the same campaign takes the same decisions on any machine.
 DEFAULT_RIP_UP_BUDGET = 4
@@ -105,7 +111,8 @@ def order_targets(model: ResolvedModel, *, trades: Sequence[str] | None = None,
 
     for run in model.pipe_runs:
         service = SERVICE_BY_SYSTEM.get(run.system, "")
-        trade = {"drain": "drain", "vent": "vent", "supply": "supply"}.get(service, "")
+        trade = ({"drain": "drain", "vent": "vent", "supply": "supply"}.get(service)
+                 or _TRADE_BY_SYSTEM.get(str(getattr(run.system, "value", run.system)), ""))
         depth = min(run.z_m) if run.z_m else None
         out.append(CampaignTarget(tag=run.tag, trade=trade, kind="pipe", storey=run.storey,
                                   size_m=run.diameter_m, depth_m=depth,

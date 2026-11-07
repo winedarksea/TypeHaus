@@ -18,8 +18,9 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 
 #: A branch looks this far (plan) beyond its group's fixtures for something to tee onto.
 REACH_M = 25.0 * 0.3048
-#: A tee is ON a laid line: 3/16" in plan, 1/4" in z (the proposals are snapped to 1/16").
-_ON_M, _ON_Z_M = 0.005, 0.0064
+#: First try: a lattice this far round the group costs about half; a group that fails there
+#: (nothing to tee onto, no route) is tried again at ``REACH_M``.
+NEAR_M = 10.0 * 0.3048
 
 
 @dataclass
@@ -32,6 +33,7 @@ class Laid:
     group: str
     terminal: str
     host: str | None = None  #: proposal tag of the run it tees onto
+    limit_m: float = 0.0  #: the widest it may be sized to: the lattice it was found in
 
 
 def resized(ends: Any, run: Any, diameter_m: float) -> Any:
@@ -53,8 +55,7 @@ def gates(model: ResolvedModel, radius_m: float) -> dict[str, Any]:
     for storey in sorted({f.storey for f in model.floors}):
         floors = [f for f in model.floors if f.storey == storey]
         windows = [(w.z0_m, w.z1_m) for w in map(member_window, floors) if w is not None]
-        lows = [m.z0_m for f in floors for m in f.members if m.z0_m is not None]
-        gate = gate_for(windows, min(lows), radius_m) if lows else None
+        gate = gate_for(windows, radius_m)
         if gate is not None:
             out[storey] = gate
     return out
@@ -84,7 +85,9 @@ def space_for(model: ResolvedModel, opts: RouteOptions, net: _Net, ends: Any, se
 
 
 class _Loads:
-    """WSFU on the laid tree: what each run feeds, and whether it can take one more."""
+    """WSFU on the laid tree: what each run feeds, and whether it can take one more. A run may
+    grow to the size its lattice was cut at (``Laid.limit_m``) — it was searched with that
+    clearance, so ``_finish`` can size it up without a second search."""
 
     def __init__(self, model: ResolvedModel, routes: list[Laid]) -> None:
         from typehaus.takeoff.plumbing_calc import fixture_units
@@ -109,7 +112,8 @@ class _Loads:
         by_tag = {r.proposal.tag: r for r in self.routes}
         seen = 0
         while route is not None and seen <= len(self.routes):
-            cap = capacity_wsfu(route.proposal.diameter_m, SUPPLY_BRANCH_CAPACITY_WSFU)
+            cap = capacity_wsfu(max(route.proposal.diameter_m, route.limit_m),
+                                SUPPLY_BRANCH_CAPACITY_WSFU)
             if self.load(route) + extra > cap + 1e-9:
                 return False
             route, seen = by_tag.get(route.host or ""), seen + 1
@@ -125,23 +129,33 @@ def lay_group(model: ResolvedModel, tree: str, topology: str, opts: RouteOptions
 
     label = f"group {group or 'END'}"
     modes = ("tree", "trunk") if topology == "tree" else ("trunk",)
+    attempts = [(mode, reach) for mode in modes for reach in (NEAR_M, REACH_M)]
     loads = _Loads(model, routes)
-    for mode in modes:
+    todo = list(members)
+    for i, (mode, reach) in enumerate(attempts):
+        last = i == len(attempts) - 1
         try:
-            built = _build(model, tree, mode, opts, net, group, members, routes, clock, loads)
+            built = _build(model, tree, mode, reach, opts, net, group, todo, routes, clock,
+                           loads)
         except RoutingSpaceTooLarge as exc:
-            if mode == modes[-1]:
-                problems.extend(f"{tag}: {label}: {exc}" for tag in members)
+            if last:
+                problems.extend(f"{tag}: {label}: {exc}" for tag in todo)
                 return
-            notices.append(f"{label}: too large with every laid branch as a tee ({exc}); "
-                           "tees limited to the trunk and its own group")
+            if reach == REACH_M:
+                notices.append(f"{label}: too large with every laid branch as a tee ({exc}); "
+                               "tees limited to the trunk and its own group")
             continue
-        _search(model, tree, opts, net, group, members, routes, clock, loads, built,
-                problems, notices, refusals)
-        return
+        found_problems: list[str] = []
+        found_refusals: list[Any] = []
+        todo = _search(model, tree, opts, net, group, todo, routes, clock, loads, built,
+                       found_problems, notices, found_refusals)
+        if not todo or last:
+            problems.extend(found_problems)
+            refusals.extend(found_refusals)
+            return
 
 
-def _build(model, tree, mode, opts, net, group, members, routes, clock, loads):
+def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock, loads):
     """The group's ends, admission rule, space and lattice."""
     import numpy as np
 
@@ -154,6 +168,12 @@ def _build(model, tree, mode, opts, net, group, members, routes, clock, loads):
     if tree in ends:  # the trunk's own end is the kitchen sink: a branch size, not 1 1/4"
         other = [e.diameter_m for t, e in net.ends.items() if t != tree and net.own.get(t)]
         ends[tree] = resized(ends[tree], net.trunk, max(other, default=ends[tree].diameter_m))
+    from typehaus.takeoff.plumbing_calc import required_supply_size_in
+
+    for t in ends:  # a run is searched at the size its own load needs, never resized after
+        need = required_supply_size_in(loads.wsfu(net.own.get(t, ())))
+        if need is not None and need * 0.0254 > ends[t].diameter_m + 1e-9:
+            ends[t] = resized(ends[t], net.runs[t], need * 0.0254)
     small = min(e.diameter_m for e in ends.values())
     # The lattice is cut at the size its carriers will be: the authored top branch's, if wider.
     top = net.runs.get(group)
@@ -161,7 +181,7 @@ def _build(model, tree, mode, opts, net, group, members, routes, clock, loads):
     widest = max(ends, key=lambda t: ends[t].diameter_m)
     template = resized(ends[widest], net.runs[widest], big)
     xs, ys = [e.origin[0] for e in ends.values()], [e.origin[1] for e in ends.values()]
-    reach = (min(xs) - REACH_M, min(ys) - REACH_M, max(xs) + REACH_M, max(ys) + REACH_M)
+    reach = (min(xs) - reach_m, min(ys) - reach_m, max(xs) + reach_m, max(ys) + reach_m)
 
     def listed(r: Laid) -> bool:  # on the tee list: the trunk, its own group, or all (tree)
         return r is routes[0] or mode == "tree" or r.group == group
@@ -176,45 +196,47 @@ def _build(model, tree, mode, opts, net, group, members, routes, clock, loads):
     walls = [prism for r in routes if not listed(r)
              for prism in proposal_prisms(r.proposal, inflate_m=CLEARANCE_M)]
     flight = list(gates(model, template.radius_m).values())
-    # A riser may stand at each fixture end, the trunk's two ends, and the far end of any branch
-    # a later one may tee onto (its tee end sits on its host, which is in a gate).
-    holes = [e.origin[:2] for e in ends.values()] + [
-        p[:2] for r in routes if listed(r)
-        for p in ((r.proposal.points[0], r.proposal.points[-1]) if r is routes[0]
-                  else (r.proposal.points[-1],))]
+    # A riser may stand at the trunk's two ends (a bay either side), and at each fixture end and
+    # the far end of any branch a later one may tee onto (a foot either side).
+    holes = [p[:2] for p in (routes[0].proposal.points[0], routes[0].proposal.points[-1])]
+    tight = [e.origin[:2] for e in ends.values()] + [
+        r.proposal.points[-1][:2] for r in routes[1:] if listed(r)]
     space, graph = space_for(
         model, opts, net, template, seeds, clock, label, band=opts.band,
-        extra=lambda sp: [*walls, *(gate_prisms(sp.bbox, flight, holes) if flight else [])])
+        extra=lambda sp: [*walls, *(gate_prisms(sp.bbox, flight, holes, tight) if flight else [])])
     xyz = np.array([(n.x, n.y, n.z) for n in graph.nodes]).reshape(-1, 3)
     space.reuse = True
-    return ends, listed, space, graph, xyz
+    return ends, listed, space, graph, xyz, template.diameter_m
 
 
 def _search(model, tree, opts, net, group, members, routes, clock, loads, built, problems,
-            notices, refusals) -> None:
+            notices, refusals) -> list[str]:
+    """Lay ``members``; the tags that found no route (their reasons are in ``problems``)."""
     from typehaus.cli.route_diagnose import refuse
     from typehaus.cli.route_proposal import one_proposal
     from typehaus.cli.route_support import _nearest
     from typehaus.routing.search import shortest_route
     from typehaus.routing.supply_tree import nodes_on
 
-    ends, listed, space, graph, xyz = built
+    ends, listed, space, graph, xyz, limit = built
     label = f"group {group or 'END'}"
     if graph.blocked_terminals:
         notices.append(f"{label}: a terminal stands inside "
                        f"{', '.join(graph.blocked_terminals)} — routed anyway; the tie "
                        "itself is a detail somebody has to draw")
+    failed: list[str] = []
     for tag in members:
         ends_t, weight = ends[tag], loads.wsfu(net.own.get(tag, ()))
         goals: set[int] = set()
         for r in routes:
             if (listed(r) and r.proposal.diameter_m + 1e-9 >= ends_t.diameter_m
                     and loads.fits(r, weight)):
-                goals |= nodes_on(xyz, r.proposal.points, tol_m=_ON_M, z_tol_m=_ON_Z_M)
+                goals |= nodes_on(xyz, r.proposal.points)
         start = _nearest(graph, ends_t.origin)
         if start is None or not goals:
             problems.append(f"{tag}: {label}: no lattice node at its end, or no laid run "
                             "within reach that can carry it")
+            failed.append(tag)
             continue
         if start in goals:  # its end already stands on the tree: served, no run of its own
             on = _host(routes, loads, ends_t.origin, weight)
@@ -230,6 +252,7 @@ def _search(model, tree, opts, net, group, members, routes, clock, loads, built,
                              alternatives=1, margin_ft=opts.margin_ft, band=opts.band)
             refusals.append(refused)
             problems.append(refused.render())
+            failed.append(tag)
             continue
         clock.route(found)
         scratch: list[str] = []
@@ -240,7 +263,8 @@ def _search(model, tree, opts, net, group, members, routes, clock, loads, built,
         if made is not None:
             host = _host(routes, loads, made.points[0], weight)
             routes.append(Laid(tag, made, net.own.get(tag, ()), group, tag,
-                               host=host.proposal.tag if host else None))
+                               host=host.proposal.tag if host else None, limit_m=limit))
+    return failed
 
 
 def _host(routes: list[Laid], loads: _Loads, point: tuple[float, ...], weight: float

@@ -97,6 +97,8 @@ from typehaus.cli.route_roots import (  # noqa: E402
     _supply_children,
     _supply_trunk,
     _vent_siblings,
+    sleeve_hold,
+    sump_endpoints,
 )
 
 __all__ = ["_discharge", "_nearest_main", "_vent_siblings"]
@@ -284,6 +286,33 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
             tie_is_the_goal=True, after_paste=after,
             echo=_run_metadata(model, run.tag, ("material", "finish", "insulation",
                                                 "sanitary", "freeze_protection")))
+    if run.system == "sump_discharge":
+        # A pumped line is pressure: no grade; the pit outlet is fixed and the wye lands
+        # on the receiver's riser at the authored elevation (``sump_endpoints``).
+        sump = sump_endpoints(model, run, problems)
+        if sump is None:
+            return None
+        root, riser = sump
+        # Through its cast sleeve, never under the footings at pit level (UPC 314.1).
+        hold = sleeve_hold(model, run)
+        start = hold[0] if hold else 0
+        note = (f"{run.tag}: held through {hold[1]} to vertex {start}; the tail is searched"
+                if hold else f"{run.tag}: no cast sleeve is on its authored line, so the "
+                "search is free to cross the foundation anywhere")
+        return Endpoints(
+            origin=(run.path[start][0], run.path[start][1], run.z_m[start]),
+            held=tuple((p[0], p[1], z) for p, z in zip(run.path[:start], run.z_m,
+                                                         strict=False)),
+            root=root, kind="pipe",
+            radius_m=pipe_trade.radius_m(run.diameter_m, run.material, run.insulation),
+            diameter_m=run.diameter_m,
+            bend_radius_m=pipe_trade.bend_radius_m(run.diameter_m, str(run.system),
+                                                   run.material),
+            serves=run.serves, storey=run.storey, system=run.system, falls=False,
+            touch=frozenset({run.tag}),
+            advice=(f"{run.tag}: roots on {riser}, the receiver's derived riser", note),
+            echo=_run_metadata(model, run.tag, ("material", "finish", "insulation",
+                                                "sanitary", "freeze_protection")))
     found = _discharge(model, run, problems if falls else [])
     if found is None and falls:
         return None
@@ -308,8 +337,15 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
         serves=run.serves, storey=run.storey, system=run.system,
         falls=falls, touch=frozenset({run.tag, *chain}),
         root_paths=() if falls else tuple(p for p in paths if p),
+        advice=(_slope_basis(run),) if falls and getattr(run, "sanitary", True) is False else (),
         echo=_run_metadata(model, run.tag, ("material", "finish", "insulation",
                                             "sanitary", "freeze_protection")))
+
+
+def _slope_basis(run: Any) -> str:
+    from typehaus.routing.gravity import CONDENSATE_SLOPE_BASIS
+
+    return f"{run.tag}: {CONDENSATE_SLOPE_BASIS}"
 
 
 def _storey_of(model: ResolvedModel, tag: str) -> str:

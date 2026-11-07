@@ -120,10 +120,13 @@ def build_tree(graph: Graph, space: RoutingSpace, root: int,
             tree.unserved[terminal.tag] = terminal.budget.shortfall_in()
             continue
         route = (search or shortest_route)(graph, space, terminal.node, reachable)
-        if route is None and ripup is not None and rip_up(
-                tree, terminal, by_tag, ripup, search or shortest_route, graph, space, roots):
-            reachable = roots.union(*(r.nodes for r in tree.routes.values()))
-            continue
+        if route is None and ripup is not None:
+            if rip_up(tree, terminal, by_tag, ripup, search or shortest_route, graph, space,
+                      roots):
+                reachable = roots.union(*(r.nodes for r in tree.routes.values()))
+                continue
+            if ripup.capped(terminal.tag):  # a probe's refusal is no answer: ask in full
+                route = (search or shortest_route)(graph, space, terminal.node, reachable)
         if route is None:
             # No route in PLAN, which is a different failure from no head and is reported
             # as such: a shortfall of infinity is not a number, so it is stated as one.

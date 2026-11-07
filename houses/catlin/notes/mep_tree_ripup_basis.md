@@ -36,6 +36,25 @@ A terminal T refuses (RSPH, deepest first, §5). Its refusal names the laid bran
   can walk the whole label budget, ~70 s on catlin).
 * **P7 Determinism.** Same inputs, same tree; every tie breaks on tag.
 
+* **P8 Size-only refusals upsize before they lift** (added after E1 built it; I proposed the idea in 4.3,
+  E1 settled the details). A tie refused only because the carrying branch is too small (`admits`: Table 703.2,
+  e.g. 2 + 2 = 4 DFU on a 1 1/2" that carries 3) is tried first by upsizing the carrier one size and re-laying it.
+  - **P8a (re-search, not re-lay).** The upsized branch is searched afresh within 2 ft of its old lane: a bigger
+    OD moves every clearance. Hand arithmetic for BATH2-SH: a TJI blocking row stands at x = 74.56 (panels
+    y 193.2..206.8, 209.2..222.8, 225.2..238.8, 243.5..254.8, z full depth, flange width 2.312, so faces at
+    73.40 and 75.72), a rail the run "never rides" (§13). A centre must stay `1.156 + 0.5 + r` from it: 1 1/2"
+    (r 0.95) x >= **77.17**, 2" (r 1.1875) x >= **77.40**; the east limit is CW-BATH1 at 82, `0.4375 + 0.5 + r`:
+    **80.11** / **79.875**. The shower stands at x = 76.62, so it is 0.55" / 0.78" inside the clearance and must
+    jog east into a 2.94" / 2.48" window. The "2.5" window of 9.6" corridor" I gave in 4.3 forgot this row.
+  - **P8b (cascade, later branches too).** Every branch laid **after** the upsized one is lifted and re-laid in
+    order, as in P3. The radius grows 0.2375" (OD 1.900 -> 2.375), so any later neighbour laid with less than
+    that slack is displaced (E1: LAUNDRY blocked the 2" shower by 0.139", i.e. it cleared the 1 1/2" by 0.099").
+    I would have lifted only the named blockers; re-laying all later ones is simpler, deterministic and correct,
+    at the cost of searches. **Accepted.**
+  - **Order and cap.** P8 trials run **before** P1 lifts and count inside the two-trial cap of P5: a size
+    refusal has a known cause and one re-lay, a P1 lift only a guess. Termination: sizes only grow along
+    1 1/4, 1 1/2, 2, 3, 4", at most four steps per branch, and a rolled-back P8 trial restores P4's exact state.
+
 Reported per tree: `lifts_tried`, `lifts_kept`, and for each kept lift `(T, [lifted...])` in order.
 
 ---
@@ -98,7 +117,10 @@ the tree equals the pre-rip-up tree, B stays unserved, `lifts_kept = 0`, `lifts_
   tree replaces already do). `--lift` takes authored runs of any system; catlin's two are supply.
 * **L2.** After the tree, each lifted run is re-proposed as a run (`--run` semantics: its authored first and
   last terminals, port stubs honoured) against occupancy = every tree proposal + all authored geometry
-  except lifted runs not yet re-laid. Order: larger OD first, then tag (the campaign order, §12).
+  except lifted runs not yet re-laid **and the authored drains the tree's own proposals replace** (those serving
+  a fixture the tree proposed; a refused fixture's authored drain stays an obstacle, it is still the pipe serving
+  it). Amended after E1: without the exclusion a proposal sits next to its own old pipe, a phantom clash, and
+  the tree search already treats them the same way (`touch` = the target plus `replaced`). Order: larger OD first, then tag (the campaign order, §12).
 * **L3.** One-way: a lifted run never rips up a drain proposal; the tree is final before any re-lay.
 * **L4.** Each lifted run ends **LAID** (new path, length, how far it moved from the authored one) or
   **REFUSED** with the blocking proposal tags. The tree stands either way; a refused lift is reported as
@@ -179,31 +201,36 @@ Lift HW-WASH only: `[-2.05, -2.024]` = 0.026", no. **CW-WH is not on this lane a
 
 **Expected outcome:** lifting **PR-B-CW-WH alone does not open KITCH-SINK**; lifting **PR-B-CW-BATH** should
 (south lane, 0.878") but E1 reports it does not: see the re-check below, still open. HW-KITCH is not near the sink's drain (x = 363.6/370.6, east of it): irrelevant.
-**Re-check, coordinator's question (E1 lifted HW-KITCH, CW-WH and CW-BATH and still refuses).** I found no
-obstacle that closes the south lane in 1-D, and the conduits are not it. Lane, constant 1/4"/ft (`z_s = -1.50`),
-snap excess 0.125" (four legs, each fall rounded up to 1/16", only raising upstream points):
+**Re-check (E1 lifted HW-KITCH, CW-WH and CW-BATH and still refuses), and what E1 found.** My 1-D pass found no
+closing obstacle, and the conduits are not it. **E1 found what I missed: the start.** The sink's drain point
+(352, 416.99) sits in the 12" bay of trusses y = 408 and 420. The y = 420 chord is 3.5" wide (face at 418.25); the
+pipe's edge is `416.99 + 0.95 = 417.94`, a gap of **0.31" against the 0.5" rule, 0.19" inside it**. I had written
+"holds a 1.9" pipe with the sink's own 0.3"" and passed it; the rule is 0.5". The chord clearance binds wherever
+the pipe is in the chord's z band (crown above -1.5 - 0.5), so the start can only leave the point near the
+ceiling: E1 reads the start band as **[-0.047, 0]**, and the snap's round-up uses it. Hand check of the
+consequence: a centre in the bay is at most `418.25 - 0.5 - 0.95 =` **416.80**, so a drain point 0.19" south,
+(352, 416.8), clears it (E1: **0.7" band** from there). With the start held at z = -0.02 my south-lane margins
+(x_d = 222, 130" of s to the descent) are DATA-MEDIA 1.6" above, PLAY-SPARE 1.8" above, **KITCHEN (y = 280, z -3.5,
+exclusion bottom -5.411) crossed at `-0.02 - 267/48 = -5.58`, 0.17" below** (the thin one, and it is a
+below-pass), HW-WASH 1.9" over its -10.24, end -8.9 over the bay floor: positive, but the KITCHEN margin is
+under the snap's worst 0.125" plus a 1/16" station error. **The north-lane figures stand** (its band came
+from the window floor and the deck, not the start). E1's other findings, accepted: **x = 230 hits a web at
+truss y = 408; x = 222 and x = 238 pass** (stations 16" apart, so my "24" pitch" was wrong for these webs), and
+**the 1.5" final jog is under the 2.19" minimum between fittings** (1 1/2" hub OD, `fitting_room`): the last leg
+must be >= 2.19", so run at y = 273.2 (inside the 271.2..274.77 overlap) and drop at y = 271.
+
+Corrected lane to force (constant 1/4"/ft, start z held at -0.02, drain point moved to y = 416.8):
 
 | vertex | x | y | z (in) | s (in) |
 |---|---|---|---|---|
-| V0 sink drain | 352 | 417 | -1.50 | 0 |
-| V1 | 230 | 417 | -4.04 | 122 |
-| V2 | 230 | 272.5 | -7.05 | 266.5 |
-| V3 | 72 | 272.5 | -10.34 | 424.5 |
-| V4 tie (plumb drop to -16.0 follows) | 72 | 271 | -10.375 | 426 |
+| V0 sink drain | 352 | 416.8 | -0.02 | 0 |
+| V1 | 222 | 416.8 | -2.73 | 130 |
+| V2 | 222 | 273.2 | -5.72 | 273.6 |
+| V3 | 72 | 273.2 | -8.84 | 423.6 |
+| V4 tie (plumb drop to -16.0 follows) | 72 | 271 | -8.89 | 425.8 |
 
-Clearances on it: DATA-MEDIA (y 296.5, z -8.75) crossed at z -6.552, **0.287" above** its exclusion top; PLAY-SPARE
-(y 306) -6.354, 0.485" above; KITCHEN (y 280, -3.5) -6.896, 1.485" below; trusses y = 408..284 at x = 230 at z -4.2..-6.8
-(window -9.425..-2.45); TJI blocking web at x = 214.1 z -7.38; HW-WASH (96.05, 272.5, -12) crossed at -9.843,
-**0.395" above** -10.2375; end -10.375 is 0.55" over the bay floor. Plan clears: y = 272.5 is 1.8" off the
-y = 268 truss chord (3.5" wide), 3.5" inside the STAIR bay's flange; the 12" bay at y = 417 (trusses 408/420)
-holds a 1.9" pipe with the sink's own 0.3". CW-BATH (x = 84, z -8.8) must be lifted (else z = -10.09 sits inside
-its exclusion), and it is.
-What I did **not** model and E1 should read off its own objection when it forces `--via 230,417 230,272.5 72,272.5`:
-(a) the nine truss crossings at x = 230 need an opening station each (panel pitch 24" is assumed in the model,
-D 7.25" round), and the doubled lines y = 316/332 need two; try x = 230 +- 24k; (b) the bore through the TJI
-blocking web at x = 214.1 (the resolver frames a 2x6 box for it, `run_through_blocking`, but the router may
-refuse the cut); (c) `fitting_room` at the tie (a 5.6" plumb drop from -10.4 to -16.0 beside the 4" head);
-(d) the 1.5" jog V3-V4 (shift the last leg to y = 271 if it is refused). Whichever it names is the omission.
+Still unmodelled by me: the bore through the TJI blocking web at x = 214.1 (s = 281.5, z = -5.88, inside the
+web window), `fitting_room` at the tie (a 7.1" plumb drop beside the 4" head), and the doubled trusses y = 316/332.
 
 *Conduits:* now read (3/4" EMT) and clear on the lane above.
 
@@ -228,14 +255,13 @@ contain (candidates: the bearing-line gap and blocking at y = 259.06..261.38, wh
 must both be bored; `members` bore rules). E1 should read its own `--counterfactual`, not this note, for
 BATH2-SH. HW-KITCH needs no re-lay (it hangs under the joists and was never in the band).
 
-**BATH2-SH lays, BATH2-TUB then refuses ("one lane, two fixtures").** Geometry is not the cause: the corridor
-holds two 1 1/2" lines side by side (centre range x 70.5..80.1, 9.6" wide; two centres need 1.9 + 0.5 = 2.4"). The
-cause is the single tie point and the size rule: both branches must end plumb at (72, 271), and the tub cannot tie
-onto the shower branch because 2 + 2 = 4 DFU needs 2" (Table 703.2: 1 1/2" carries 3), so `admits` refuses, as in
-section 2's T2 onto T1. The same 1/4"/ft drain at 2" (OD 2.375) still clears the fence (x 70.75..79.9; above the
-CW-BATH1 diagonal needs z >= -6.675). **Suggested rule P8:** a tie refused only for size may upsize the carrying
-branch one size (re-lay it, P4 keep-or-rollback) when its lane clears at the larger OD; here the shower re-lays
-at 2" and the tub ties on at about (76, 215), arm 2.5".
+**BATH2-SH lays, BATH2-TUB then refuses ("one lane, two fixtures").** Between y = 193 and 255 the TJI blocking
+row at x = 74.56 (P8a) leaves a 1 1/2" run centres in x 77.17..80.11, **2.94" wide**; two 1 1/2" lines need 2.4"
+between centres, so plan alone leaves 0.54". The cause is the single tie point plus the size rule: both
+branches must end plumb at (72, 271), and the tub cannot tie onto the shower branch because 2 + 2 = 4 DFU needs
+2" (Table 703.2: 1 1/2" carries 3), so `admits` refuses, as in section 2's T2 onto T1. The remedy is P8 (section 1):
+upsize the shower branch to 2" (window 77.40..79.875 = 2.48", above the CW-BATH1 diagonal z >= -6.675), re-search
+it within 2 ft, re-lay later branches, then the tub ties on at about (77, 215).
 
 ### 4.4 Numbers a test may assert
 

@@ -90,6 +90,13 @@ class RouteProposal:
     cleanouts: tuple[ProposedCleanout, ...] = ()
     #: A fixture arm ending on a 908.2 wet vent (``cli/route_fixture_wet``): what it joins.
     wet_vent: dict | None = None
+    #: Authored run tags this proposal stands in for. When set, ``route_eval._replaced_tags``
+    #: replaces exactly these (plus nothing by ``serves``): a trunk serving what its service
+    #: lateral serves must not delete the lateral, and a tree stands in for runs no tag names.
+    replaces: tuple[str, ...] = ()
+    #: The house's ``DuctStandard`` (decision #114), so a duct's corners name the elbow that
+    #: is bought (``resolve/duct_standard.duct_elbow_key``) and not a pipe angle list.
+    duct_standard: Any = field(default=None, repr=False, compare=False)
 
     def snapped(self) -> RouteProposal:
         """The same proposal on the 1/16" grid, with collinear vertices already collapsed.
@@ -104,14 +111,8 @@ class RouteProposal:
             if points and points[-1] == candidate:
                 continue
             points.append(candidate)
-        return RouteProposal(
-            tag=self.tag, kind=self.kind, points=points, diameter_m=self.diameter_m,
-            serves=self.serves, system=self.system, cost=self.cost, bends=self.bends,
-            terms=dict(self.terms), notes=list(self.notes), width_m=self.width_m,
-            depth_m=self.depth_m, routing=self.routing, floor_ref=self.floor_ref,
-            soffit_ref=self.soffit_ref, echo=dict(self.echo), after=self.after,
-            pull_points=self.pull_points, pull_assignment=self.pull_assignment,
-            cleanouts=self.cleanouts)
+        return replace(self, points=points, terms=dict(self.terms), notes=list(self.notes),
+                       echo=dict(self.echo))
 
     def with_pull_points(self, boxes: tuple[tuple[float, float, float], ...]) -> RouteProposal:
         """A raceway keeping its authored boxes and gaining what 360 degrees needs.
@@ -241,8 +242,14 @@ class RouteProposal:
         size = max(self.width_m, self.depth_m) if rectangular else self.diameter_m
         if size <= 0.0:
             return []
+        duct: dict[str, Any] = {}
+        if family == FAMILY_DUCT and self.duct_standard is not None:
+            from typehaus.model.ducts import duct_size_text
+
+            duct = {"duct_standard": self.duct_standard, "order_size": duct_size_text(
+                self.diameter_m or None, self.width_m, self.depth_m)}
         return polyline_fittings(self.tag, family, self.system, self.points, size,
-                                 rectangular=rectangular)
+                                 rectangular=rectangular, **duct)
 
     def fitting_lines(self) -> list[str]:
         """What ``--explain`` and the proposal banner print about the parts.

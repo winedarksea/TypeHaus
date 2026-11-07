@@ -12,6 +12,7 @@ import pytest
 
 from typehaus.model.ducts import DuctElbowRow, PortKit
 from typehaus.quantities import M_PER_IN, inch
+from typehaus.resolve.mep_fittings import KIND_ELBOW, SERVICE_DUCT
 from typehaus.routing.cost import RouteCost
 from typehaus.routing.duct_fittings import (
     elbow,
@@ -73,6 +74,7 @@ def test_the_elbow_bought_decides_the_radius():
     need = (gym.takeoff_m(95.27) + ninety.takeoff_m(90.0)) / M_PER_IN
     assert need == pytest.approx(12.579, abs=5e-4) and need > 6.125
     assert elbow(_STANDARD, 90.0).fabricated  # rectangular: no throat radius is read
+    assert elbow(None, 90.0, diameter_m=d).basis == "stand-in"  # no standard is no shop
 
 
 def test_the_supply_port_lead_is_the_note_s_8():
@@ -168,3 +170,36 @@ def test_a_jog_too_short_for_two_90s_is_laid_as_an_offset():
     assert route.bends == 2 and route.offsets == 1
     assert fitted_route(graph, space, 0, {5},
                         DuctFittingProblem(takeoff_m=6.0 * M_PER_IN)) is None
+
+
+def test_a_far_end_plumb_on_the_lead_is_refused_with_its_shortfall():
+    """DU-B-ERV-SUP-TRUNK's shape: the far end on the lead's own axis (where the squared
+    offset can round below zero), 10.401" up a 12" lead."""
+    from typehaus.cli.route_ports import PortLead, _lead_overshoot
+    from typehaus.cli.route_support import Endpoints
+
+    port = (2.25186875, 9.261474999999999, -0.8594725000000003)
+    far = (port[0], port[1], port[2] + 10.401 * M_PER_IN)
+    tip = (port[0], port[1], port[2] + 12.0 * M_PER_IN)
+    ends = Endpoints(origin=tip, root=far, radius_m=0.0762, kind="duct", system="supply",
+                     storey="basement", origin_lead=PortLead("EQ.supply", port, tip, "+z"))
+    assert 'short by 1.599"' in _lead_overshoot(ends)
+
+
+def test_the_catalog_snaps_a_duct_elbow_where_the_standard_buys_one():
+    """§7.5: one snap, so GYM's 95.3-degree turn is graded as the stamped 90 it is bought as."""
+    from typehaus.resolve.duct_standard import ELBOW_SNAP_DEG
+    from typehaus.resolve.mep_fittings import fitting_for
+
+    spec = fitting_for(SERVICE_DUCT, KIND_ELBOW, 95.27, 4.0)
+    assert spec is not None and spec.angle_deg == 90.0 and spec.snap_deg == ELBOW_SNAP_DEG
+
+
+def test_a_search_out_of_budget_refuses_and_says_which_budget():
+    from typehaus.routing.duct_search import DuctRefusal
+
+    graph, space = _grid([0.0, 20.0, 40.0], [0.0, 3.0, 15.0])
+    report = DuctRefusal()
+    assert fitted_route(graph, space, 0, {5}, DuctFittingProblem(
+        takeoff_m=6.0 * M_PER_IN, max_labels=2), refusal=report) is None
+    assert report.stopped == "labels" and "a budget, not a proof" in report.sentence()

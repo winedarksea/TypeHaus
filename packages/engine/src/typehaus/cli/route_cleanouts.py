@@ -24,7 +24,12 @@ _EXTENSION_M = 2 * M_PER_IN
 
 def place_cleanouts(model: Any, space: Any, proposal: Any
                     ) -> tuple[tuple[Any, ...], float, list[str]]:
-    """``(cleanouts, cost in, notes)`` for one proposed drain."""
+    """``(cleanouts, cost in, notes)`` for one proposed drain.
+
+    A ``sanitary=False`` run (condensate, indirect waste) is outside UPC 707.4: none."""
+    sanitary = bool(proposal.echo.get("sanitary", True))
+    if not sanitary:
+        return (), 0.0, []
     from typehaus.resolve.cleanout_rules import (
         _LOCATION_TOLERANCE_M,
         _TERMINAL_TOLERANCE_M,
@@ -34,7 +39,7 @@ def place_cleanouts(model: Any, space: Any, proposal: Any
 
     pts = proposal.points
     run = SimpleNamespace(tag=proposal.tag, path=[p[:2] for p in pts], z_m=[p[2] for p in pts],
-                          serves=proposal.serves, sanitary=True, system="drain",
+                          serves=proposal.serves, sanitary=sanitary, system="drain",
                           diameter_m=proposal.diameter_m)
     building = next((r for r in model.pipe_runs if r.system == "drain"
                      and r.tag.endswith("MAIN-DRAIN")), None)

@@ -41,6 +41,25 @@ def test_duct_centered_on_a_joist_line_fails(second_floor):
     assert conflicts
 
 
+def test_a_straddle_is_graded_in_the_member_band_and_not_below_it(second_floor):
+    """A leg hanging in the room below rides no bay (run_in_finished_volume grades it);
+    the same leg inside the joists' band still straddles the line."""
+    from typehaus.model.enums import DuctRouting
+    from typehaus.resolve.mep import duct_bay_occupancy
+
+    placed = [m for m in second_floor.members if m.z0_m is not None]
+    inside = (min(m.z0_m for m in placed) + max(m.z1_m for m in placed)) / 2.0
+    below = min(m.z0_m for m in placed) - 0.2
+
+    def straddles(z: float) -> bool:
+        return bool(duct_bay_occupancy(
+            [(6.0, 0.4064), (9.0, 0.4064)], width_m=0.3048, depth_m=0.2032,
+            routing=DuctRouting.JOIST_BAY, floor=second_floor, bearing_walls=[],
+            spacing_m=0.4064, z_m=(z, z))[0])
+
+    assert straddles(inside) and not straddles(below)
+
+
 def test_sixteen_inch_wide_duct_fails_clear_bay_width(second_floor):
     from typehaus.model.enums import DuctRouting
     from typehaus.resolve.mep import duct_bay_occupancy

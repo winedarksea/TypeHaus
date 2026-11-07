@@ -232,9 +232,9 @@ def _duct_elbows() -> list[FittingSpec]:
         tag=f"FIT-DUCT-{int(angle)}-{size:g}",
         name=f"{angle:g} degree gored elbow, {size:g}\" round",
         service=SERVICE_DUCT, kind=KIND_ELBOW, nominal_in=size, angle_deg=angle,
-        # A gored elbow is fabricated to the angle asked for; the snap is the drawing
-        # tolerance rather than what a socket absorbs.
-        snap_deg=5.0,
+        # The DuctStandard's own snap (``resolve.duct_standard.ELBOW_SNAP_DEG``): the elbow a
+        # turn is graded as is the one it is bought as (decision #114, duct basis §7.5).
+        snap_deg=10.0,
         bend_radius_in=1.5 * size,
         source=_DUCT_SOURCE,
         data_note="centre-to-face depends on the gore count the fabricator uses")

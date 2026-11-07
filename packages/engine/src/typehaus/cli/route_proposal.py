@@ -106,9 +106,18 @@ def one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
         serves=ends.serves, system=ends.system, cost=found.cost, bends=found.bends + lead_bends,
         terms=dict(found.terms) if explain else {}, notes=notes, routing=routing,
         floor_ref=floor_ref, soffit_ref=soffit_ref, echo=dict(ends.echo),
-        after=after, wet_vent=wet_vent).snapped()
+        after=after, wet_vent=wet_vent, duct_standard=_duct_standard(model, ends)).snapped()
     # After snapping: the indices must be the pasted run's own.
     return proposal.with_pull_points(ends.pull_boxes) if ends.kind == "conduit" else proposal
+
+
+def _duct_standard(model: Any, ends: Endpoints) -> Any:
+    """The house's ``DuctStandard`` for a duct proposal's fittings, else None."""
+    if ends.kind != "duct":
+        return None
+    from typehaus.resolve.duct_standard import duct_standard
+
+    return duct_standard(getattr(model, "plan", None))[0]
 
 
 def _compacted(model: Any, space: Any, points: list) -> tuple[list, str] | None:

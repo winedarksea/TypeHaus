@@ -26,9 +26,21 @@ from typing import Any
 
 from typehaus.quantities import M_PER_IN
 
+#: Condensate (``sanitary=False``) takes the drain grade: ``mep.drain_slope`` grades every
+#: ``system == "drain"`` run at it, sanitary or not. No IMC 307.2.2 / IRC M1411.3.1 text is on
+#: file, and Rheem's 1/8"/ft is second-hand (``notes/water_service.md`` §2), so it is NOT
+#: encoded: reading the code is what would change this row (condensate basis §4, §8).
+CONDENSATE_SLOPE_IN_PER_FT = 0.25
+CONDENSATE_SLOPE_BASIS = (
+    f'condensate falls at {CONDENSATE_SLOPE_IN_PER_FT:g}"/ft, the grade mep.drain_slope '
+    "applies to every drain run; no condensate-specific code text is on file "
+    "(mep_condensate_routing_basis.md §4)")
 
-def minimum_slope(diameter_m: float) -> float:
+
+def minimum_slope(diameter_m: float, *, sanitary: bool = True) -> float:
     """The grade this diameter must hold, in inches per foot of developed plan run.
+
+    ``sanitary=False`` (condensate, indirect waste) takes :data:`CONDENSATE_SLOPE_IN_PER_FT`.
 
     **One owner, in ``resolve/mep_slope.py``**, which both this module and ``checks/`` may
     import and which neither may reach through the other. The pair of numbers used to be
@@ -41,6 +53,8 @@ def minimum_slope(diameter_m: float) -> float:
     """
     from typehaus.resolve.mep_slope import minimum_drain_slope_in_per_ft
 
+    if not sanitary:
+        return CONDENSATE_SLOPE_IN_PER_FT
     return minimum_drain_slope_in_per_ft(diameter_m)[0]
 
 

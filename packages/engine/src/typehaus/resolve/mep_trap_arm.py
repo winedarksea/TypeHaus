@@ -73,9 +73,9 @@ def grade_wet_vent(child: str, parent: str, join: Order, drains: dict[str, list]
                    fx: dict[str, Fx], arm_fx: str) -> tuple[bool, str]:
     """``(legal, why)`` for ``child`` wet-venting ``arm_fx`` where it joins ``parent``.
 
-    The child is a 908.1 vertical wet vent only where it carries another fixture's waste: a
-    dry-vented lavatory's own drop to the branch is its fixture drain, which 908.2.1 lets
-    connect any way "provided with a dry vent" (``mep_group_wet_vent_basis.md`` §5)."""
+    A child rising more than it runs is graded as a 908.1 vertical wet vent, even a
+    dry-vented lavatory's own drop: whether 908.2 admits that (§5 option X) is an
+    owner/AHJ question, not read into the code here."""
     via_child: dict[str, Order] = {}
     via_parent: dict[str, Order] = {}
     for tag, (leaf, *_rest) in fx.items():
@@ -84,7 +84,7 @@ def grade_wet_vent(child: str, parent: str, join: Order, drains: dict[str, list]
             via_child[tag] = ent[child]
         elif parent in ent:
             via_parent[tag] = ent[parent]
-    vertical = len(via_child) > 1 and _is_vertical(drains[child])
+    vertical = _is_vertical(drains[child])
     members = {**via_child, **({} if vertical else via_parent)}
     dfu = sum(fx[t][1] for t in members)
     d_child, d_parent = _size_in(radii[child]), _size_in(radii[parent])
@@ -161,15 +161,28 @@ def grade_wet_run(host: str, tee: Order, entry: Order, drains: dict[str, list],
     if arm_fx not in members:
         bad.append(f"{arm_fx} does not discharge into it")
     pts = drains[host]
-    if 0 <= entry[0] < len(pts) - 1 and _is_vertical(pts[entry[0]:entry[0] + 2]):
+    i, t = entry
+    # A join on a corner meets both legs there; it is vertical only if both are.
+    legs = [k for k in (i - (t < 1e-6), i, i + (t > 1 - 1e-6)) if 0 <= k < len(pts) - 1]
+    if legs and all(_is_vertical(pts[k:k + 2]) for k in legs):
         bad.append(f"{arm_fx} joins a vertical section; 908.2.1 connects it horizontally")
     if size < need - 1e-6:
         bad.append(f"Ø{size:g}\" under the {need:g}\" it needs for {dfu:g} DFU, whole "
                    "length (PB0225)")
+    stretch = [*pts[tee[0] + 1:entry[0] + 1]]
+    if _is_vertical([_at(pts, tee), *stretch, _at(pts, entry)]):
+        bad.append("its run from the dry vent to the arm rises more than it runs, a 908.1 "
+                   "vertical wet vent this horizontal grade does not cover")
     upstream = [t for t, o in members.items() if fx[t][0] != host and _before(o, tee)]
     bad += _group_rules(members, members, upstream, fx)
     sec = f"908.2 horizontal from its dry vent, {dfu:g} DFU, Ø{size:g}\""
     return (not bad), (f"{sec}: " + ("; ".join(bad) if bad else f"ok for {dfu:g} DFU"))
+
+
+def _at(pts: list, at: Order) -> tuple:
+    i, t = max(at[0], 0), at[1]
+    a, b = pts[i], pts[min(i + 1, len(pts) - 1)]
+    return tuple(a[k] + t * (b[k] - a[k]) for k in range(3))
 
 
 def _before(a: Order, b: Order) -> bool:

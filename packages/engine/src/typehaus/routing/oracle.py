@@ -74,6 +74,8 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
     # -- E1 --
     "tree_ripup": (Oracle(note="mep_tree_ripup_basis.md", section="§1, §2",
                           test="tests/test_routing_tree_ripup.py"),),
+    "gravity_grid": (Oracle(note="mep_drain_routing_basis.md", section="§13",
+                            test="tests/test_gravity_search.py"),),
     # -- /E1 --
     # -- E2 --
     "group_order": (Oracle(note="mep_group_wet_vent_basis.md", section="§3, §4, §5",

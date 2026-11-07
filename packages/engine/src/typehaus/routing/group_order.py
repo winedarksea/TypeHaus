@@ -8,11 +8,10 @@ the water closet last (908.2.1.4). Roles come from the code text as quoted in
   weir, so a wall-trapped lavatory cannot be wet-vented off a floor-level vent. It keeps its
   own dry vent and ties conventionally (908.2.1.5), unless it is the dry-vented fixture.
 * 908.2.1: only one wet-vented drain may discharge upstream of the dry-vent connection.
-* 908.2.1.1: a vented lavatory may serve as the wet vent. One is chosen as the dry-vented
-  fixture only where it stands mid-chain — exactly one floor-level fixture upstream of it,
-  which its wet vent then serves too (note §5 option X). Otherwise the most upstream
-  floor-level fixture is dry-vented, so its drain passes the others on its way to the tie
-  (§4 option S): a sequential router lays the dry drain before it knows where the arms join.
+* The most upstream floor-level fixture is dry-vented, so its drain passes the others on its
+  way to the tie (§4 option S, §5 option Y): a sequential router lays the dry drain before it
+  knows where the arms join. A lavatory dry-venting a tub upstream of it (§5 option X) is
+  not chosen: the check grades its drop as a 908.1 vertical, an owner/AHJ question.
 * 908.2.1.2: the wet vent is 2" for 4 DFU or less, 3" for 5 or more, its whole length — and
   never under 3" where a water closet discharges to it (710.1).
 * A member the caller could not lay wet is held to its own vent (``own``); any free fixture
@@ -81,7 +80,7 @@ def group_order(members: list[Member], own: frozenset[str] = frozenset()
     if not free:
         return "no fixture but a water closet free to carry the dry vent"
     # The fallback: any free fixture may carry the dry vent (908.2.1.1), the WC then wet.
-    dry = _lav_mid_chain(free, floor) or (floor[0] if floor else free[0])
+    dry = floor[0] if floor else free[0]
     eligible = [m for m in floor if m is not dry]
     up = [m for m in eligible if m.flow_m > dry.flow_m]
     # 908.2.1: one upstream at most — the nearest one keeps the wet vent, the rest their own.
@@ -94,18 +93,10 @@ def group_order(members: list[Member], own: frozenset[str] = frozenset()
                *(MINIMUM_DRAIN_IN_BY_SYMBOL.get(m.symbol, 0.0) for m in laid))  # 710.1
     why = (f"{dry.tag} is dry-vented "
            + ("(the most upstream floor-level fixture)" if dry in floor
-              else "(a lavatory mid-chain, 908.2.1.1)" if eligible
-              else "(the only free fixture; 908.2.1.1)")
+              else "(no floor-level fixture free; 908.2.1.1)")
            + (f"; {', '.join(held)} keep their own vent" if held else "")
            + f"; {dfu:g} DFU on the wet vent, Ø{size:g}\" its whole length (908.2.1.2)")
     return GroupOrder(dry=dry.tag, wet=wet, last=wcs, own_vent=held,
                       upstream=tuple(m.tag for m in keep_up), dfu=dfu, wet_vent_in=size,
                       why=why)
 
-
-def _lav_mid_chain(free: list[Member], floor: list[Member]) -> Member | None:
-    """A wall-trapped fixture with exactly one floor-level fixture upstream of it."""
-    for m in free:
-        if not m.floor_level and len([o for o in floor if o.flow_m > m.flow_m]) == 1:
-            return m
-    return None

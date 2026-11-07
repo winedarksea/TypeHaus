@@ -1,12 +1,11 @@
 """A cold main and its branches as one tree: the pure parts (``cli/cmd_route_supply_tree``).
 
-A trunk is the route to the farthest fixture, laid first inside a **z gate** — horizontal travel
-only where the floor system hangs it: from a fixed drop under the joists up to the top of the
-members' common window. A level run above the gate is a pipe flying through the living space,
-which a lattice with a plane at the sink-stop height will gladly price as cheap. Each end of the
-trunk gets a hole in the gate (a riser lane), and every other branch is free, farthest first,
-teeing onto the trunk. ``mep_supply_trunk_basis.md`` §4 (order) and §5 (the gate) are worked by
-hand; the tee stations are its §2.
+A trunk is the route to the farthest fixture, laid first inside a **z gate**: level travel only
+inside the floor members' common crossing window (the note's §5 gate). A level run above it is a
+pipe flying through the living space, which a lattice with a plane at the sink-stop height will
+price as cheap. Each end of the trunk gets a hole in the gate (a riser lane), and every other
+branch is laid farthest first, teeing onto the trunk. ``mep_supply_trunk_basis.md`` §4 (order),
+§5 (the gate) and §2 (tee stations) are worked by hand.
 """
 
 from __future__ import annotations
@@ -20,12 +19,10 @@ from typehaus.quantities import M_PER_IN
 
 #: The gate opens this far round each end of the trunk, for the riser: a stud bay either side.
 HOLE_M = 24.0 * M_PER_IN
-#: How far under the members the gate reaches. A pipe hung a foot under the joists is still the
-#: ceiling's; one at the slab is not, which is why the gate has a floor at all.
-UNDER_M = 12.0 * M_PER_IN
-#: The plane offered under the members: the authored trunk's "old band" is ~3" below them.
-UNDER_PLANE_M = 4.0 * M_PER_IN
-_TOL_M = 0.0032  # a tee is ON a laid line: the 1/8" ``cmd_route_tree`` allows, no more
+#: A branch's fixture end: its riser stands in the wall at the fixture, not across the room.
+TIGHT_M = 12.0 * M_PER_IN
+#: ONE tolerance for "on a laid line", in 3-D: 1/4", past the 1/16" snap of every coordinate.
+ON_M = 0.0064
 
 
 @dataclass(frozen=True)
@@ -37,24 +34,22 @@ class Gate:
     planes: tuple[float, ...]
 
 
-def gate_for(windows: Sequence[tuple[float, float]], member_low_m: float,
-             radius_m: float) -> Gate | None:
-    """The gate over floor members whose crossing windows are ``windows`` (z0, z1).
-
-    Top: the tightest window top, less the pipe's radius. Bottom: ``UNDER_M`` under the members.
-    ``None`` when the common window is narrower than the pipe, or there is none."""
+def gate_for(windows: Sequence[tuple[float, float]], radius_m: float) -> Gate | None:
+    """The z gate over floor members whose crossing windows are ``windows`` (z0, z1): the
+    note's §5 band, each end of the common window brought in by the pipe's radius. ``None``
+    when the common window is narrower than the pipe, or there is none."""
     if not windows:
         return None
     low, high = max(w[0] for w in windows), min(w[1] for w in windows)
     if high - low < 2.0 * radius_m:
         return None
-    top = high - radius_m
-    return Gate(lo_m=member_low_m - UNDER_M + radius_m, hi_m=top,
-                planes=(member_low_m - UNDER_PLANE_M, (low + radius_m + top) / 2.0))
+    return Gate(lo_m=low + radius_m, hi_m=high - radius_m,
+                planes=(((low + radius_m) + (high - radius_m)) / 2.0,))
 
 
 def gate_prisms(bbox: tuple[float, float, float, float], gates: Gate | Sequence[Gate],
-                holes: Iterable[tuple[float, float]]) -> list[Any]:
+                holes: Iterable[tuple[float, float]],
+                tight: Iterable[tuple[float, float]] = ()) -> list[Any]:
     """Hard prisms over everything outside the gate(s), holed where a riser may stand.
 
     Several gates (one per floor system) leave every height between them blocked too: a
@@ -69,7 +64,11 @@ def gate_prisms(bbox: tuple[float, float, float, float], gates: Gate | Sequence[
             bands[-1][1] = max(bands[-1][1], gate.hi_m)
         else:
             bands.append([gate.lo_m, gate.hi_m])
-    footprint = box(*bbox).difference(MultiPoint(list(holes)).buffer(HOLE_M))
+    opening = [shape for pts, size in ((list(holes), HOLE_M), (list(tight), TIGHT_M)) if pts
+               for shape in (MultiPoint(pts).buffer(size, cap_style="square"),)]
+    footprint = box(*bbox)
+    for shape in opening:
+        footprint = footprint.difference(shape)
     edges = [-1.0e3, *[z for band in bands for z in band], 1.0e3]
     return [HardPrism(tag="SUPPLY-GATE", kind="avoid", footprint=footprint,
                       z0_m=lo + (1e-4 if i else 0.0), z1_m=hi - (1e-4 if i < len(bands) else 0.0))
@@ -77,9 +76,28 @@ def gate_prisms(bbox: tuple[float, float, float, float], gates: Gate | Sequence[
 
 
 def plan_key(root: tuple[float, ...], point: tuple[float, ...]) -> float:
-    """Manhattan plan distance from the root: the a-priori farthest-first key. The developed
-    length is only known once a route exists, and ordering is what that would be for."""
+    """Manhattan plan distance from the root: the key that picks the trunk's far end, before
+    any route exists to develop a length on."""
     return abs(point[0] - root[0]) + abs(point[1] - root[1])
+
+
+def developed_key(trunk: Sequence[tuple[float, ...]], point: tuple[float, ...]) -> float:
+    """Developed length from the source to ``point`` by way of the trunk: along the trunk to
+    the best leaving point, then Manhattan in 3-D (a pipe runs square). The note's §4 key,
+    with the branch's own developed length estimated rather than known. The trunk is sampled
+    at 1" on each leg; the minimum over its length is the tee a router would pick."""
+    best = math.inf
+    run = 0.0
+    for a, b in zip(trunk, trunk[1:], strict=False):
+        length = math.dist(a, b)
+        steps = max(1, int(length / M_PER_IN))
+        for i in range(steps + 1):
+            t = i / steps
+            p = tuple(q + t * (r - q) for q, r in zip(a, b, strict=True))
+            best = min(best, run + t * length + sum(abs(u - v) for u, v in zip(p, point,
+                                                                              strict=True)))
+        run += length
+    return best
 
 
 def farthest_first(keys: dict[str, float]) -> list[str]:
@@ -123,7 +141,7 @@ def developed_m(points: Sequence[tuple[float, ...]]) -> float:
 
 
 def station_m(points: Sequence[tuple[float, ...]], point: tuple[float, ...],
-              tol_m: float = _TOL_M) -> float | None:
+              tol_m: float = ON_M) -> float | None:
     """Developed distance along ``points`` to ``point``, or None when it is not on the line."""
     run = 0.0
     for a, b in zip(points, points[1:], strict=False):
@@ -150,7 +168,7 @@ def tee_onto(laid: dict[str, Sequence[tuple[float, ...]]], point: tuple[float, .
                 (p - q) * (r - q) for p, q, r in zip(point, a, b, strict=True))
                 / (length * length)))
             gap = math.dist(tuple(q + t * (r - q) for q, r in zip(a, b, strict=True)), point)
-            if gap <= _TOL_M and (best is None or gap < best[0] - 1e-9):
+            if gap <= ON_M and (best is None or gap < best[0] - 1e-9):
                 best = (gap, tag)
     return None if best is None else best[1]
 
@@ -221,27 +239,20 @@ def _crop(a: Sequence[float], b: Sequence[float], bbox: tuple[float, float, floa
     return at[0], at[1]  # type: ignore[return-value]
 
 
-def nodes_on(xyz: Any, points: Sequence[tuple[float, ...]], *, tol_m: float,
-             z_tol_m: float) -> set[int]:
-    """Indices of the lattice nodes (rows of ``xyz``) ON a 3-D polyline: within ``tol_m`` in
-    plan, and at its elevation there. A riser holds every z between its ends."""
+def nodes_on(xyz: Any, points: Sequence[tuple[float, ...]], *, tol_m: float = ON_M
+             ) -> set[int]:
+    """Indices of the lattice nodes (rows of ``xyz``) within ``tol_m`` (3-D) of a polyline —
+    the tolerance ``station_m`` and ``tee_onto`` use, so a goal and its host agree."""
     import numpy as np
 
     out: set[int] = set()
-    segments = list(zip(points, points[1:], strict=False)) or [(points[0], points[0])]
-    for a, b in segments:
-        dx, dy = b[0] - a[0], b[1] - a[1]
-        span = dx * dx + dy * dy
-        if span <= 1e-12:
-            near = ((xyz[:, 0] - a[0]) ** 2 + (xyz[:, 1] - a[1]) ** 2 <= tol_m ** 2) & (
-                xyz[:, 2] >= min(a[2], b[2]) - z_tol_m) & (
-                xyz[:, 2] <= max(a[2], b[2]) + z_tol_m)
-        else:
-            t = np.clip(((xyz[:, 0] - a[0]) * dx + (xyz[:, 1] - a[1]) * dy) / span, 0.0, 1.0)
-            gap = (a[0] + t * dx - xyz[:, 0]) ** 2 + (a[1] + t * dy - xyz[:, 1]) ** 2
-            near = (gap <= tol_m ** 2) & (np.abs(a[2] + t * (b[2] - a[2]) - xyz[:, 2])
-                                          <= z_tol_m)
-        out.update(int(i) for i in np.nonzero(near)[0])
+    for a, b in list(zip(points, points[1:], strict=False)) or [(points[0], points[0])]:
+        d = np.array([b[i] - a[i] for i in range(3)])
+        span = float(d @ d)
+        rel = xyz - np.array(a[:3])
+        t = np.zeros(len(xyz)) if span <= 1e-18 else np.clip(rel @ d / span, 0.0, 1.0)
+        gap = np.linalg.norm(rel - t[:, None] * d, axis=1)
+        out.update(int(i) for i in np.nonzero(gap <= tol_m)[0])
     return out
 
 

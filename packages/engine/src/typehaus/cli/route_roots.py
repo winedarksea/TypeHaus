@@ -164,6 +164,11 @@ def _discharge(model: ResolvedModel, run: Any, problems: list[str]
         problems.append(f"{run.tag}: its discharge {parent} carries no resolved "
                         "elevations, so there is no invert to tie into")
         return None
+    if getattr(run, "sanitary", True) is False:
+        # Indirect waste lands where it was authored to, not at the chain's lowest vertex:
+        # PR-M-COND-HEADS' parent ends in an air gap 78" lower, a second line to build.
+        point = _landing(run, other, z)
+        return (point, chain, tuple((p[0], p[1]) for p in other.path))
     index = min(range(len(other.path)), key=lambda i: z[i])
     # The min-z vertex is the root a FALLING run needs: a drain arrives at an invert, and
     # that is one elevation at one point. It is also all a vent used to get, which is why a
@@ -171,6 +176,83 @@ def _discharge(model: ResolvedModel, run: Any, problems: list[str]
     # line comes back beside it and the caller picks by ``falls``.
     return ((other.path[index][0], other.path[index][1], z[index]), chain,
             tuple((p[0], p[1]) for p in other.path))
+
+
+def _landing(run: Any, parent: Any, z: Any) -> tuple[float, float, float]:
+    """The point on ``parent``'s polyline nearest ``run``'s last vertex, at its invert there.
+
+    Invert is linear in plan length between the parent's vertices, the reading
+    ``resolve/mep_slope`` gives an authored grade (condensate basis §3)."""
+    from typehaus.resolve.mep_soffit import plan_distance_to_segment
+
+    end = (run.path[-1][0], run.path[-1][1])
+    best = None
+    for i in range(len(parent.path) - 1):
+        a, b = parent.path[i], parent.path[i + 1]
+        distance, t = plan_distance_to_segment(end, a, b)
+        if best is None or distance < best[0]:
+            best = (distance, (a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1]),
+                               z[i] + t * (z[i + 1] - z[i])))
+    return best[1] if best is not None else (end[0], end[1], z[0])
+
+
+def sump_endpoints(model: ResolvedModel, run: Any, problems: list[str]
+                   ) -> tuple[tuple[float, float, float], str] | None:
+    """``(tie point, the riser's tag)`` for a pump's discharge line.
+
+    The pump names its line (``SumpPump.discharge_line_ref``) and what it empties into
+    (``discharge``); a leader's buried extension has a derived riser,
+    ``<discharge>-EXT-RISER`` (``resolve/drainage``). The tie is the riser's plan centre at the
+    line's own authored end elevation, clamped onto the column (a pressure wye has no grade to
+    solve). Else None with the cause, the element and the fix: a line to "daylight" or a
+    drywell has no column to root on."""
+    sump = next((e for e in model.plan.all_elements()
+                 if getattr(getattr(e, "pump", None), "discharge_line_ref", None) == run.tag),
+                None)
+    if sump is None:
+        problems.append(f"{run.tag}: no sump pump names it as its discharge_line_ref, so "
+                        "its destination is not derivable. Set SumpPump.discharge_line_ref "
+                        f"to {run.tag} on the pit it serves")
+        return None
+    receiver = sump.pump.discharge
+    riser = next((s for s in model.solids if s.tag == f"{receiver}-EXT-RISER"), None)
+    if riser is None:
+        problems.append(
+            f"{run.tag}: its pump {sump.tag} discharges to {receiver!r}, which has no "
+            f"modelled vertical ({receiver}-EXT-RISER) to tie onto, so no root is derivable. "
+            "Give the receiver a buried extension (Downspout.extension) or route with --via")
+        return None
+    xs = [p[0] for p in riser.outline]
+    ys = [p[1] for p in riser.outline]
+    x, y = sum(xs) / len(xs), sum(ys) / len(ys)
+    z = min(max(run.z_m[-1], riser.z0_m), riser.z1_m)
+    return (x, y, z), str(riser.tag)
+
+
+def sleeve_hold(model: ResolvedModel, run: Any
+                ) -> tuple[int, str, float] | None:
+    """``(vertex the tail starts at, sleeve tag, plan distance m)`` for the cast sleeve ``run``
+    is authored through, or None.
+
+    Found by geometry: a horizontal sleeve whose centre lies within its own bore of a leg of
+    the authored polyline, at that leg's elevation (a vertical leg has no plan extent and
+    passes none). The legs up to and through it are held, as ``hold_upstream`` holds legs: a
+    lattice via only seeds nodes and cannot force a crossing. The tail starts at the first
+    vertex past the sleeve, which must stand outside the wall that hosts it."""
+    from typehaus.resolve.mep_soffit import plan_distance_to_segment
+
+    best = None
+    for sleeve in model.sleeves:
+        if sleeve.axis != "horizontal" or sleeve.center_z_m is None:
+            continue
+        for i in range(len(run.path) - 1):
+            distance, t = plan_distance_to_segment(sleeve.center, run.path[i], run.path[i + 1])
+            z = run.z_m[i] + t * (run.z_m[i + 1] - run.z_m[i])
+            if (distance <= sleeve.sleeve_d_m / 2.0 and run.path[i] != run.path[i + 1]
+                    and abs(z - sleeve.center_z_m) <= sleeve.sleeve_d_m
+                    and (best is None or distance < best[2])):
+                best = (i + 1, sleeve.tag, distance)
+    return best
 
 
 def _nearest_main(model: ResolvedModel, point: tuple[float, float], floor_m: float,
@@ -343,7 +425,8 @@ def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None)
     # ``member_constraints`` — and a second-floor branch is refused against a basement joist.
     band = (min(ends.weir, ends.root[2]), max(ends.origin[2], ends.root[2]))
     constraints = member_constraints(model, graph, band)
-    grade = slope if slope is not None else minimum_slope(ends.diameter_m)
+    grade = slope if slope is not None else minimum_slope(
+        ends.diameter_m, sanitary=bool(ends.echo.get("sanitary", True)))
 
     def search(a_graph, a_space, start, goals):
         tied = len(goals)

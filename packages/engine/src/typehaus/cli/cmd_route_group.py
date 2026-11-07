@@ -29,6 +29,8 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 
 #: ``mep.fixture_drain_reach``'s band round the storey datum, where a group may tie in.
 _BAND_BELOW_M, _BAND_ABOVE_M = 24 * M_PER_IN, 6 * M_PER_IN
+_SPREAD_M = 8 * M_PER_IN
+_SUBFLOOR_M = 0.75 * M_PER_IN
 
 
 def route_group(model: ResolvedModel, group: str, opts: RouteOptions) -> int:
@@ -73,8 +75,9 @@ def group_proposals(model: ResolvedModel, group: str, opts: RouteOptions
     """``(proposal/storey pairs, problems, notices, refusals)`` — ``_propose``'s shape.
 
     A wet arm that cannot be laid (no 908.2 join in reach, or a wet vent its weir holds too
-    high to find a lane) is held to its own vent and the group laid again without it, at
-    most twice; each such retreat is a notice, never silent."""
+    high to find a lane), or a dry fixture whose own arm and vent find no route, is held to
+    its own vent and the group laid again without it, at most twice; each such retreat is a
+    notice, never silent."""
     from typehaus.routing.group_order import group_order
 
     problems: list[str] = []
@@ -82,22 +85,24 @@ def group_proposals(model: ResolvedModel, group: str, opts: RouteOptions
     plan = None if room is None else _group_plan(model, room, problems)
     if plan is None:
         return [], problems or [f"{group}: names no room"], [], []
-    members, storey, ties, tie_run = plan
+    members, storey, tie_run, band = plan
     own: frozenset[str] = frozenset()
     notices: list[str] = []
-    for _attempt in range(3):
+    for attempt in range(3):
         order = group_order(members, own)
         if isinstance(order, str):
             return [], [*problems, f"{room}: no 908.2 group — {order}"], notices, []
+        ties = _ties(model, set(order.laying), tie_run, band)
         laid, tried, refusals, blame = _lay(model, room, order, storey, ties, tie_run, opts)
-        if not blame or set(blame) <= own:
+        if not blame or set(blame) <= own or attempt == 2:
             break
         notices.append(f"{room}: {', '.join(blame)} held to its own vent and the group laid "
                        f"again — {tried[-1] if tried else 'no wet join'}")
         own |= set(blame)
     notices.append(f"{room}: {order.why}; laid {' -> '.join(order.laying)}, tied to {tie_run}")
-    if laid:
-        laid = _guard_tie(model, laid, tie_run, notices)
+    # The runs lifted are exactly what the group stands in for: never the tie run by serves.
+    lifted = tuple(sorted(_lifted(model, set(order.laying))))
+    laid = [replace(p, replaces=lifted) for p in laid]
     notices += [f"{t}: keeps its own vent and authored tie (908.2.1.3, 908.2.1.5)"
                 for t in order.own_vent]
     return [(p, storey) for p in laid], [*problems, *tried], notices, refusals
@@ -124,7 +129,9 @@ def _lay(model: ResolvedModel, room: str, order: GroupOrder, storey: str, ties: 
         if found is None:
             problems.append(f"{room}: {fixture} could not be laid, so the group stops "
                             f"there ({' -> '.join(order.laying[step:])} unlaid)")
-            return laid, problems, refusals, (fixture,) if fixture in order.wet else ()
+            # A wet arm, or the dry fixture itself, is held to its own vent; never the WC.
+            held = fixture in order.wet or (step == 0 and fixture not in order.last)
+            return laid, problems, refusals, (fixture,) if held else ()
         if step == 0:
             laid = list(found)
         else:
@@ -179,7 +186,8 @@ def _dry(work: ResolvedModel, found: tuple, at: tuple, touch: frozenset[str], ro
 
 
 def _group_plan(model: ResolvedModel, room: str, problems: list[str]) -> tuple | None:
-    """``(members, storey, tie point, tie run)`` measured off the authored model."""
+    """``(members, storey, tie run, band)`` measured off the authored model; flow is read
+    to the tie run's highest clear point in the band, which no role assignment moves."""
     from typehaus.model.enums import Service
     from typehaus.resolve.fixture_units import fixture_units
     from typehaus.resolve.mep_sleeves import _expected_drain_point, expected_port_point
@@ -209,11 +217,8 @@ def _group_plan(model: ResolvedModel, room: str, problems: list[str]) -> tuple |
                         "there is no tie to lay the group to")
         return None
     tie_run = parents.most_common(1)[0][0]
-    authored = sorted((drains[t][-1] for t in own
-                       if (p := drain_parent(drains[t][-1], t, drains, radii)) and p[0] == tie_run),
-                      key=lambda p: -p[2])
-    ties = _tie_stations(model, authored, drains[tie_run],
-                       (datum - _BAND_BELOW_M, datum + _BAND_ABOVE_M), frozenset(own))
+    band = (datum - _BAND_BELOW_M, datum + _BAND_ABOVE_M)
+    ties = _tie_stations(model, [], drains[tie_run], band, frozenset(own))
     if not ties:
         problems.append(f"{room}: {tie_run} has no station within 2 ft below and 6 in above "
                         f"the {storey.tag} datum (mep.fixture_drain_reach's band) clear of "
@@ -226,21 +231,36 @@ def _group_plan(model: ResolvedModel, room: str, problems: list[str]) -> tuple |
             tag=tag, symbol=units[tag].symbol, dfu=units[tag].dfu,
             floor_level=under_floor_weir_m(model, tag, datum, port) is not None,
             flow_m=abs(point[0] - ties[0][0]) + abs(point[1] - ties[0][1])))
-    return members, str(storey.tag), ties, tie_run
+    return members, str(storey.tag), tie_run, band
+
+
+def _ties(model: ResolvedModel, relaid: set[str], tie_run: str, band: tuple) -> list[tuple]:
+    """The tie stations for the members re-laid: their own authored ties first."""
+    from typehaus.resolve.mep_trap_arm import drain_parent, run_points
+
+    drains = {r.tag: pts for r in model.pipe_runs
+              if r.system == "drain" and (pts := run_points(r)) is not None}
+    radii = {r.tag: r.diameter_m / 2.0 for r in model.pipe_runs if r.tag in drains}
+    own = {t for t in _lifted(model, relaid) if t in drains}
+    authored = sorted((drains[t][-1] for t in own
+                       if (p := drain_parent(drains[t][-1], t, drains, radii)) and p[0] == tie_run),
+                      key=lambda p: -p[2])
+    return _tie_stations(model, authored, drains[tie_run], band, frozenset(own))
 
 
 def _tie_stations(model: ResolvedModel, authored: list, pts: list, band: tuple[float, float],
                   lifted: frozenset[str]) -> list[tuple]:
-    """Where the group may tie in, best first: its authored ties, highest first, then the
-    tie run's highest point (sampled every 1/4"), each inside ``band`` and a 3" wye's pitch
-    clear of every inlet left on it (``route_roots._spaced_goals``' test). At most three."""
+    """Where the group may tie in, best first: its authored ties, highest first (where the
+    plan already ties it, band or no band), then the tie run's highest point inside
+    ``band`` (sampled every 1/4", spread 8" apart), each a 3" wye's pitch clear of every inlet
+    left on it (``route_roots._spaced_goals``' test). At most three, tried in turn."""
     from typehaus.resolve.mep_inlet_spacing import level_inlets, main_inlet_pitch_m
 
     pitch = main_inlet_pitch_m(3 * M_PER_IN) or 0.0
     inlets = level_inlets(model.pipe_runs, lifted)
 
-    def clear(p: tuple) -> bool:
-        return band[0] <= p[2] <= band[1] and all(
+    def clear(p: tuple, banded: bool = True) -> bool:
+        return (not banded or band[0] <= p[2] <= band[1]) and all(
             abs(z - p[2]) >= pitch or abs(x - p[0]) + abs(y - p[1]) >= pitch
             for x, y, z, _t in inlets)
 
@@ -248,8 +268,12 @@ def _tie_stations(model: ResolvedModel, authored: list, pts: list, band: tuple[f
                for a, b in zip(pts, pts[1:], strict=False)
                for n in [max(1, int(math.dist(a, b) / (0.25 * M_PER_IN)))]
                for k in range(n + 1)]
-    top = next((p for p in sorted(sampled, key=lambda p: -p[2]) if clear(p)), None)
-    return [p for p in authored if clear(p)][:2] + ([top] if top is not None else [])
+    # Spread at least a joist bay's half apart: a station hard by a member takes no drop.
+    spread: list[tuple] = []
+    for p in sorted(sampled, key=lambda p: -p[2]):
+        if clear(p) and all(math.dist(p[:2], q[:2]) >= _SPREAD_M for q in spread):
+            spread.append(p)
+    return ([p for p in authored if clear(p, False)] + spread)[:3]
 
 
 def _lifted(model: ResolvedModel, fixtures: set[str]) -> set[str]:
@@ -281,9 +305,11 @@ def _without(model: ResolvedModel, tags: set[str]) -> Any:
 
 
 def _with(work: ResolvedModel, laid: list[RouteProposal]) -> Any:
+    """The working plan with ``laid`` in it, cleanouts left off: the next step routes round
+    pipe, and a placed cleanout's access is graded on the final proposals, not here."""
     from typehaus.cli.route_eval import candidate_plan_for_all
 
-    return candidate_plan_for_all(work, laid)
+    return candidate_plan_for_all(work, [replace(p, cleanouts=()) for p in laid])
 
 
 def _resolved(plan: Any, problems: list[str]) -> ResolvedModel | None:
@@ -329,9 +355,24 @@ def _step(model: ResolvedModel, fixture: str, tie: tuple, touch: frozenset[str],
     ends = _endpoints(model, fixture, "fixture", problems)
     if ends is None:
         return None
-    ends = replace(ends, root=tuple(tie), touch=ends.touch | touch,
-                   wet_candidates=() if wet is None else (wet,))
+    # Not ``ends.touch``: that pardons the main ``_nearest_main`` picked, which is not the tie.
+    own = {r.tag for r in model.pipe_runs if r.system == "drain" and fixture in r.serves}
+    onto = () if wet is None else (wet,)
+    ends = replace(ends, root=tuple(tie), touch=frozenset({*own, *touch, *onto}),
+                   wet_candidates=onto, weir_m=_closet_weir(model, fixture, ends))
     return _search(model, ends, fixture, ends.wet_candidates, opts, problems, refusals)
+
+
+def _closet_weir(model: ResolvedModel, fixture: str, ends: Any) -> float | None:
+    """Where a water closet's arm starts its grade: under the subfloor, its flange drop
+    plumb above (the closet traps in its bowl, ``route_fall`` prepends the drop). Without
+    it the arm is held at the flange, over the deck, and reaches no wet vent at all."""
+    types = {t.tag: t.plan_symbol for t in model.plan.library.fixture_types}
+    if not (types.get(getattr(model.plan.by_tag(fixture), "type_ref", None))
+            or "").startswith("toilet"):
+        return ends.weir_m
+    datum = next(s.elevation.meters for s in model.plan.storeys if s.tag == ends.storey)
+    return min(ends.origin[2], datum - _SUBFLOOR_M - (ends.cavity_radius_m or ends.radius_m))
 
 
 def _search(model: ResolvedModel, ends: Any, target: str, wet: tuple[str, ...],
@@ -381,7 +422,7 @@ def _search(model: ResolvedModel, ends: Any, target: str, wet: tuple[str, ...],
         refusals.append(refused)
         problems.append(refused.render())
         return None
-    made = one_proposal(model, ends, _Reversals(found), target, "", opts.slope,
+    made = one_proposal(model, ends, found, target, "", opts.slope,
                         opts.details, problems, space=space)
     if made is None:
         return None
@@ -389,32 +430,6 @@ def _search(model: ResolvedModel, ends: Any, target: str, wet: tuple[str, ...],
     vent = (vent_proposal(found, made, ends, target, "")
             if getattr(found, "vent", None) is not None else None)
     return made, vent
-
-
-class _Reversals:
-    """A found route whose polyline keeps a vertex where the run turns back on its axis.
-
-    ``search.Route.polyline`` collapses by axis, so a lavatory's arm out to its wall tee
-    and back under the floor loses the tee and ``route_fall`` refuses the take-off (filed
-    with the routing/search.py owner; drop this once ``polyline`` keeps reversals)."""
-
-    def __init__(self, route: Any) -> None:
-        self._route = route
-
-    def __getattr__(self, name: str) -> Any:
-        return getattr(self._route, name)
-
-    def polyline(self) -> list[tuple[float, float, float]]:
-        pts = list(self._route.points)
-        out = pts[:1]
-        for a, b, c in zip(pts, pts[1:], pts[2:], strict=False):
-            ab, bc = [b[i] - a[i] for i in range(3)], [c[i] - b[i] for i in range(3)]
-            cross = math.dist((0, 0, 0), (ab[1] * bc[2] - ab[2] * bc[1],
-                                          ab[2] * bc[0] - ab[0] * bc[2],
-                                          ab[0] * bc[1] - ab[1] * bc[0]))
-            if cross > 1e-12 or sum(ab[i] * bc[i] for i in range(3)) < 0:
-                out.append(b)
-        return [*out, pts[-1]] if len(pts) > 1 else out
 
 
 def _cut_arm(drain: RouteProposal, tee: tuple) -> RouteProposal:
@@ -438,18 +453,3 @@ def _seg_dist(p: tuple, a: tuple, b: tuple) -> float:
 
 def _seg_index(p: tuple, pts: list) -> int:
     return min(range(len(pts) - 1), key=lambda i: _seg_dist(p, pts[i], pts[i + 1]))
-
-
-def _guard_tie(model: ResolvedModel, laid: list[RouteProposal], tie_run: str,
-               notices: list[str]) -> list[RouteProposal]:
-    """``route_eval._replaced_tags`` drops any run whose ``serves`` a proposal covers; where
-    that is the tie run itself (a stack serving only this group), the wet vent leaves the
-    last WC off its ``serves`` so the stack stays, and the reader is told."""
-    branch = laid[1]
-    serves = next((r.serves for r in model.pipe_runs if r.tag == tie_run), ())
-    if not serves or not set(serves) <= set(branch.serves):
-        return laid
-    notices.append(f"{branch.tag} omits {branch.serves[-1]} from serves: naming all of "
-                   f"{', '.join(serves)} would have the evaluation replace {tie_run}, the "
-                   "run it ties into (route_eval._replaced_tags)")
-    return [laid[0], replace(branch, serves=branch.serves[:-1]), *laid[2:]]

@@ -139,15 +139,8 @@ def _arm_on_grid(points: list[Point3], grade: float) -> list[Point3]:
 
 
 def _on_grid(points: list[Point3], grade: float) -> list[Point3]:
-    """Snap to 1/16", building z from the arrival up with each leg's fall rounded UP."""
-    from typehaus.quantities import M_PER_IN
-    from typehaus.routing.proposal import SNAP_IN, snap
+    """Snap to 1/16", building z from the arrival up with each leg's fall rounded UP: the
+    search's rule too (``routing/gravity_grid``)."""
+    from typehaus.routing.gravity_grid import on_grid
 
-    step = SNAP_IN * M_PER_IN
-    plan = [(snap(x), snap(y)) for x, y, _z in points]
-    z = [snap(p[2]) for p in points]
-    for i in range(len(points) - 2, -1, -1):
-        run_ft = math.dist(plan[i], plan[i + 1]) / 0.3048
-        fall = math.ceil(grade * run_ft * M_PER_IN / step - 1e-6) * step if run_ft else 0.0
-        z[i] = max(z[i], z[i + 1] + fall)
-    return [(x, y, zz) for (x, y), zz in zip(plan, z, strict=True)]
+    return on_grid(points, grade)

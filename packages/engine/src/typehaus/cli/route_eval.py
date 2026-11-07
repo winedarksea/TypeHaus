@@ -209,6 +209,8 @@ def candidate_plan_for_all(model: ResolvedModel,
     a storey's whole list, so the proposals are grouped and applied once per storey — applying
     them one at a time would have each call overwrite the last.
     """
+    from typehaus.model.mep import PipeAccessory
+
     by_storey: dict[str, list[Any]] = {}
     replaced: set[str] = set()
     for proposal in proposals:
@@ -221,11 +223,22 @@ def candidate_plan_for_all(model: ResolvedModel,
     # storey below it (PR-M-S-SUITE-LAV-DRAIN), and leaving it graded the proposal against
     # its own ghost.
     plan = model.plan
+    proposed = {p.tag for p in proposals}
     for storey in model.plan.storeys:
         current = plan.storey_elements(storey.tag)
-        # A replaced run's own cleanouts go with it.
-        keep = [e for e in current if getattr(e, "tag", None) not in replaced
-                and getattr(e, "pipe_ref", None) not in replaced]
+        # A replaced run's own cleanouts go with it. A valve, stop or shutoff on it follows it
+        # to the proposal named for it (pasting that under the old tag does the same) and goes
+        # only where no proposal is: it has no pipe left to sit on.
+        keep = []
+        for e in current:
+            ref = getattr(e, "pipe_ref", None)
+            if getattr(e, "tag", None) in replaced:
+                continue
+            if ref in replaced:
+                if not isinstance(e, PipeAccessory) or f"{ref}-PROPOSED" not in proposed:
+                    continue
+                e = e.model_copy(update={"pipe_ref": f"{ref}-PROPOSED"})
+            keep.append(e)
         added = by_storey.get(storey.tag, [])
         if added or len(keep) != len(current):
             plan = plan.with_elements(storey.tag, (*keep, *added))
@@ -295,13 +308,19 @@ def _replaced_tags(model: ResolvedModel, proposal: RouteProposal) -> set[str]:
     """What this proposal stands in for: the run of its own name, and any serving its
     fixtures. Leaving the old run in place would grade the proposal against its own ghost —
     two pipes in one lane, and a ``run_interference`` FAIL that is an artefact of the
-    evaluation rather than of the route."""
+    evaluation rather than of the route.
+
+    ``proposal.replaces``, when set, is the whole answer. Otherwise a run the proposal ties
+    INTO (an ancestor of what it replaces, with an end of the proposal on it) is never
+    replaced, however much of its ``serves`` the proposal covers."""
+    runs = {r.tag for r in (*model.pipe_runs, *model.ducts, *model.conduits)}
+    if getattr(proposal, "replaces", ()):
+        return set(proposal.replaces) & runs
     base = proposal.tag.split("-PROPOSED")[0]
     # **Runs only.** The base of a fixture branch's tag is the FIXTURE, not a run, and
     # dropping it from the candidate storey deletes the very thing the branch drains —
     # every check that reads the fixture then reports UNKNOWN and the evaluation blames
     # the proposal for it.
-    runs = {r.tag for r in (*model.pipe_runs, *model.ducts, *model.conduits)}
     out = {base} & runs
     descendants = _descendants(model, base, proposal.system)
     for run in model.pipe_runs:
@@ -317,24 +336,70 @@ def _replaced_tags(model: ResolvedModel, proposal: RouteProposal) -> set[str]:
         # into serves the same fixture and stays.
         if proposal.serves and run.serves and set(run.serves) <= set(proposal.serves):
             out.add(run.tag)
+    return out - _tied_into(model, proposal, out)
+
+
+def _tied_into(model: ResolvedModel, proposal: RouteProposal, replaced: set[str]) -> set[str]:
+    """Replaced-looking runs that are really the ones the proposal ties into: an ancestor
+    (by tie-in) of another replaced run, with an end of the proposal standing on it."""
+    parents = _tie_parents(model, proposal.system)
+    ancestors = {up for tag in replaced for up in _chain(parents, tag)} & replaced
+    if not ancestors or not proposal.points:
+        return set()
+    ends = (proposal.points[0], proposal.points[-1])
+    out = set()
+    for run in model.pipe_runs:
+        if run.tag not in ancestors or not run.z_m or len(run.z_m) != len(run.path):
+            continue
+        line = [(x, y, z) for (x, y), z in zip(run.path, run.z_m, strict=False)]
+        if any(_gap(end, line) <= 0.05 for end in ends):
+            out.add(run.tag)
     return out
 
 
-def _descendants(model: ResolvedModel, base: str, system: str) -> set[str]:
-    """Runs that tie in (transitively) to ``base``. A trunk serves its branches' fixtures,
-    but a branch hung off the trunk is downstream of the proposal, not replaced by it."""
+def _chain(parents: dict[str, str], tag: str) -> list[str]:
+    out: list[str] = []
+    while tag in parents and parents[tag] not in out:
+        tag = parents[tag]
+        out.append(tag)
+    return out
+
+
+def _gap(point: tuple, line: list[tuple]) -> float:
+    """3-D distance from ``point`` to a polyline (a single vertex counts)."""
+    import math
+
+    best = float("inf")
+    for a, b in zip(line, line[1:], strict=False) if len(line) > 1 else [(line[0], line[0])]:
+        d = [b[i] - a[i] for i in range(3)]
+        span = sum(v * v for v in d)
+        t = 0.0 if span <= 0 else max(0.0, min(1.0, sum(
+            (point[i] - a[i]) * d[i] for i in range(3)) / span))
+        best = min(best, math.dist(point, [a[i] + t * d[i] for i in range(3)]))
+    return best
+
+
+def _tie_parents(model: ResolvedModel, system: str) -> dict[str, str]:
+    """Child run -> the run it ties into, for the systems that derive one."""
     from typehaus.resolve.mep_ports import placed_ports
     from typehaus.resolve.mep_queries import drain_tie_ins
     from typehaus.resolve.mep_tie_ins import supply_tie_in_records
 
     runs = [r for r in model.pipe_runs if r.system == system]
-    if not any(r.tag == base for r in runs):
-        return set()
     if system == "drain":
-        parents = drain_tie_ins(runs)
-    else:
-        parents = {rec.child: rec.parent
-                   for rec in supply_tie_in_records(runs, placed_ports(model)) if rec.parent}
+        return {c: p for c, p in drain_tie_ins(runs).items() if p}
+    if system in ("water_cold", "water_hot"):
+        return {rec.child: rec.parent
+                for rec in supply_tie_in_records(runs, placed_ports(model)) if rec.parent}
+    return {}
+
+
+def _descendants(model: ResolvedModel, base: str, system: str) -> set[str]:
+    """Runs that tie in (transitively) to ``base``. A trunk serves its branches' fixtures,
+    but a branch hung off the trunk is downstream of the proposal, not replaced by it."""
+    if not any(r.tag == base and r.system == system for r in model.pipe_runs):
+        return set()
+    parents = _tie_parents(model, system)
     out: set[str] = set()
     grew = True
     while grew:

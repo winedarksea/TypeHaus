@@ -63,6 +63,7 @@ from typehaus.routing.fitting_room import heel_clear
 from typehaus.routing.graph import Graph
 from typehaus.routing.gravity import drop_blocker, grid_allowance, head_floor_fn, tie_reach
 from typehaus.routing.gravity_band import Constraints, Obstacles, subtract
+from typehaus.routing.gravity_grid import grid_start
 from typehaus.routing.search import Route, price_route, turn_price
 from typehaus.routing.space import RoutingSpace
 
@@ -147,11 +148,20 @@ class GravityRefusal:
     reached: int = 0
     #: The deepest a label got, in developed feet, before every continuation was refused.
     furthest_ft: float = 0.0
-    #: ``(what, shortfall in inches)`` for the tightest refusal seen.
+    #: ``(what, shortfall in inches)``: on a refusal, the tightest refusal met by the
+    #: furthest-reaching label — the obstacle that stopped the best attempt, not a near miss
+    #: somewhere else in the search (the tightest anywhere stands only when it met none).
     tightest: tuple[str, float] | None = None
     notes: list[str] = field(default_factory=list)
     #: A fixture arm's candidate take-offs (``cli/route_takeoff_table.TakeoffRow``).
     takeoffs: list = field(default_factory=list)
+    front: tuple[str, float] | None = field(default=None, repr=False)  # at the furthest
+    expanding_front: bool = field(default=False, repr=False)
+
+    def settle(self) -> None:
+        """A refusal names what stopped the furthest-reaching label, where it has one."""
+        if self.front is not None:
+            self.tightest = self.front
 
     def sentence(self) -> str:
         head = (f"no route falls: {self.reached:,} label(s) expanded, the furthest reaching "
@@ -252,7 +262,11 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
         if expanded > problem.max_labels:
             report.notes.append(f"the search stopped after {problem.max_labels:,} labels "
                                 "with no legal arrival: a budget, not a proof")
+            report.settle()
             return None
+        if developed > report.furthest_ft + 1e-9:
+            report.front = None  # a new furthest label: what stops it is the news
+        report.expanding_front = developed >= report.furthest_ft - 1e-9
         report.furthest_ft = max(report.furthest_ft, developed)
 
         required = problem.required_m.get(index)
@@ -261,10 +275,13 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
             floor_m = required + problem.fall_over(developed) + label.drop_m
             if floor_m <= label.hi_m + _TOL_M:
                 found = _rebuild(graph, space, came, node_of, lid, seeds, label.takeoff)
-                # The 1/16" snap rounds each leg's fall UP (``route_fall._on_grid``).
-                snapped = floor_m + grid_allowance(found, problem.grade_in_per_ft,
-                                                    required)
                 start_m = max(floor_m, label.lo_m)  # over an obstacle: its band's floor
+                # The 1/16" snap rounds each leg's fall UP, from the start the proposal
+                # will hang it from (``gravity_grid``, one rule with ``route_fall``). An
+                # arm or a drop keeps the tie-floor allowance: their profile is not one line.
+                snapped = (grid_start(found.polyline(), start_m, problem.grade_in_per_ft)
+                           if label.takeoff < 0 and label.drop_m <= 0.0 else
+                           floor_m + grid_allowance(found, problem.grade_in_per_ft, required))
                 blocker = drop_blocker(obstacles, index, start_m - floor_m + required,
                                        required)
                 if snapped <= label.hi_m + _TOL_M and blocker is None:
@@ -314,6 +331,7 @@ def sloped_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
                 push(other, axis,
                      _Label(cost + step + turn, developed + plan_ft, low, high, next_drop,
                             since, label.takeoff), lid)
+    report.settle()
     return None
 
 
@@ -409,9 +427,10 @@ def _clear_of(obstacles: Obstacles | None, problem: GravityProblem, a: int, b: i
                  for piece in subtract(low_high, forbidden, _TOL_M)]
         if not split:
             low, high = min(b[0] for b in bands), max(b[1] for b in bands)
+            # Under or over, whichever is nearer; a leftover thinner than ``_TOL_M`` is no
+            # lane, so it is short by the rest of a sixteenth's sixteenth, never "0.000".
             _note(report, f"{tag} across the fall band",
-                  min(max(0.0, low - forbidden[0]), max(0.0, forbidden[1] - high))
-                  / M_PER_IN)
+                  (min(low - forbidden[0], forbidden[1] - high) + _TOL_M) / M_PER_IN)
             return []
         bands = split
     return bands
@@ -420,6 +439,8 @@ def _clear_of(obstacles: Obstacles | None, problem: GravityProblem, a: int, b: i
 def _note(report: GravityRefusal, what: str, shortfall_in: float) -> None:
     if report.tightest is None or shortfall_in < report.tightest[1]:
         report.tightest = (what, shortfall_in)
+    if report.expanding_front and (report.front is None or shortfall_in < report.front[1]):
+        report.front = (what, shortfall_in)
 
 
 def _heuristic(graph: Graph, space: RoutingSpace,

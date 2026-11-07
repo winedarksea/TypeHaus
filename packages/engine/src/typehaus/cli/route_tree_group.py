@@ -1,7 +1,7 @@
 """One size group of a drain tree: RSPH over the branches of one diameter, with rip-up.
 
 Split out of ``cmd_route_tree`` (which keeps ``_propose_tree``, ``_line_nodes`` and
-``TIE_TOLERANCE_M``). ``_Ledger`` is the group's laid state as ``routing/tree_ripup`` sees
+``TIE_TOLERANCE_M``). ``Ledger`` is the group's laid state as ``routing/tree_ripup`` sees
 it: lift a branch, roll a trial back exactly (``mep_tree_ripup_basis.md`` §1)."""
 
 from __future__ import annotations
@@ -11,102 +11,22 @@ from typing import TYPE_CHECKING, Any
 from typehaus.cli.cmd_route_tree import TIE_TOLERANCE_M, _line_nodes
 from typehaus.cli.route_fall import _fall
 from typehaus.cli.route_support import _nearest
+from typehaus.cli.route_tree_ledger import _PROPOSED, Ledger
+from typehaus.cli.route_tree_upsize import on_lattice, widen
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
     from typehaus.routing.proposal import RouteProposal
 
-_PROPOSED = "-PROPOSED"
-
-#: Labels each search inside a rip-up trial may spend (note §1 P5 caps their number, this
-#: their cost). A terminal's own search keeps the full budget, so its refusal is the one it
-#: always was; a trial that stops here is a trial that failed, and is rolled back. On catlin
-#: a successful 1 1/2" branch took 13 to 604k labels, a refusal walks 1.5M (~50-130 s).
+#: Labels a search may spend while a rip-up trial could still answer it: every search in a
+#: trial, and a terminal's first once a sibling lies (P5 caps the trials, this their cost).
+#: A probe that finds a route finds the full search's route (A* only stops sooner); one
+#: that stops here is no answer, and if no trial is kept the terminal is searched again to
+#: the full budget, so a refusal is never cheaper than before. On catlin a 1 1/2" branch
+#: takes 13 to 604k labels and a refusal walks 1.5M (~55 s).
 PROBE_LABELS = 200_000
-#: Re-searches under a weir lowered one 1/16" step each, when a lane misses the grid.
-_SNAP_RETRIES = 2
-_SNAP_M = 0.0625 * 0.0254
-
-
-class _Ledger:
-    """What the group's searches have laid: lines, tie owners, inverts and arrivals.
-
-    Each lay is recorded (its nodes, whether it ends in a plumb drop, the inverts it added)
-    so a lift can be undone line by line and a trial rolled back whole."""
-
-    def __init__(self, branches: Any, owners: dict[int, int], inverts: dict[int, float],
-                 reports: dict[str, Any]) -> None:
-        self.branches = branches
-        self.base_owners = dict(owners)  # the group's start: the main and wider lines
-        self.owners = owners
-        self.inverts = inverts
-        self.arrivals: dict[str, float] = {}
-        self.reports = reports
-        #: Per search, the laid lines it found full or standing in its ties (§1 P1).
-        self.refused_ties: dict[str, set[str]] = {}
-        self.laid: dict[str, tuple[list[int], bool, tuple[int, ...]]] = {}
-        self.trial = False  # between a lift and its settle: every search is the trial's
-        #: A search that found a lane its profile cannot hold on the 1/16" grid: the reason.
-        self.unsnapped: dict[str, str] = {}
-
-    def settle(self) -> None:
-        self.trial = False
-
-    def lay(self, tag: str, size: float, points: list, nodes: list[int], over: bool,
-            added: set[int]) -> None:
-        line = self.branches.add(tag, size, points, self.owners.get(nodes[-1], 0))
-        self.laid[tag] = (list(nodes), over, tuple(added))
-        self._own(line, nodes, over)
-
-    def _own(self, line: int, nodes: list[int], over: bool) -> None:
-        for index in nodes:
-            self.owners.setdefault(index, line)
-        if over:  # its plumb drop now stands on the tie: a later branch enters it there
-            self.owners[nodes[-1]] = line
-
-    def blockers(self, tag: str) -> list[str]:
-        """The laid lines ``tag``'s refusal names: its tightest blocker when that is one of
-        this tree's proposals; failing any blocker, the lines it found full or in its ties."""
-        report = self.reports.get(tag)
-        if tag in self.unsnapped:  # the grid refused it, not a sibling
-            return []
-        if report is not None and report.tightest is not None:
-            what = report.tightest[0].split(" ")[0]
-            return [what[:-len(_PROPOSED)]] if what.endswith(_PROPOSED) else []
-        return sorted(self.refused_ties.get(tag, ()))
-
-    def snapshot(self) -> Any:
-        return (self.branches.copy(), dict(self.owners), dict(self.inverts),
-                dict(self.arrivals), dict(self.reports), dict(self.laid),
-                dict(self.unsnapped))
-
-    def restore(self, state: Any) -> None:
-        branches, owners, inverts, arrivals, reports, laid, unsnapped = state
-        self.branches.lines = branches.lines
-        for mine, saved in ((self.owners, owners), (self.inverts, inverts),
-                            (self.arrivals, arrivals), (self.reports, reports),
-                            (self.laid, laid), (self.unsnapped, unsnapped)):
-            mine.clear()
-            mine.update(saved)
-
-    def lift(self, tag: str) -> list[str]:
-        self.trial = True
-        index = self.branches.index_of(tag)
-        if index is None:
-            return []
-        lifted = self.branches.remove(index)
-        for gone in lifted:
-            _nodes, _over, added = self.laid.pop(gone, ([], False, ()))
-            for node in added:
-                self.inverts.pop(node, None)
-            self.arrivals.pop(gone, None)
-        self.owners.clear()
-        self.owners.update(self.base_owners)
-        for laid_tag, (nodes, over, _added) in self.laid.items():  # lay order survives
-            line = self.branches.index_of(laid_tag)
-            if line is not None:
-                self._own(line, nodes, over)
-        return lifted
+#: P8 re-proves a lane in a world this far round it: the lane, its neighbours, its tie.
+_LANE_MARGIN_FT = 2.0
 
 
 def _route_group(model: ResolvedModel, target: str, group: list[str], *,
@@ -116,7 +36,7 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
                  branches: Any, via: list[tuple[float, float]], slope: float | None,
                  margin_ft: float,
                  level: str | None, avoid: frozenset[str], touch: frozenset[str],
-                 explain: bool, cost: Any, clock: Any
+                 explain: bool, cost: Any, clock: Any, stats: dict | None = None
                  ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str]]:
     """One RSPH tree over the branches of a single size. Appends what it routes to
     ``accepted``, so the next (narrower) group can tie onto it."""
@@ -208,7 +128,7 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
         model, graph, (min(inverts.values()), max(floors.values())))
     reports: dict[str, GravityRefusal] = {}  # per terminal: a shared one reads as each's
     tag_at = {t.node: t.tag for t in terminals}
-    ledger = _Ledger(branches, branches.owners(graph), inverts, reports)
+    ledger = Ledger(branches, branches.owners(graph), inverts, reports)
     owners = ledger.owners  # cleared and refilled in place by a lift, never rebound
     base_banded = list(space.banded)
 
@@ -220,6 +140,7 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
         refused = ledger.refused_ties[tag] = set()
         full = {n for n in targets if n in owners and not branches.admits(model, owners[n], tag)}
         refused |= {branches.lines[owners[n]].tag for n in full}
+        ledger.too_small[tag] = {branches.lines[owners[n]].tag for n in full}
         targets = set(targets) - full
         if not targets:
             report.notes.append("every branch in reach is full at its size")
@@ -248,33 +169,33 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
             report.notes.append("every tie in reach is inside something")
             return None
         targets = {n for n in targets if n in live or n not in inverts}
-        cap = PROBE_LABELS if ledger.trial else None  # a retry is a probe too
-        # A lane the search accepts can still miss the 1/16" grid by a step (its snap
-        # allowance and ``route_fall._on_grid`` disagree on a knife edge), so a refused one
-        # is searched again under a weir one step lower: a smaller feasible set, never a
-        # looser one, and the knife-edge lane drops out of it.
-        for lowered in range(_SNAP_RETRIES + 1):
-            problem = GravityProblem(ceiling_m=ceiling - lowered * _SNAP_M,
-                                     grade_in_per_ft=grade,
-                                     diameter_m=2.0 * pipe_trade.radius_m(size),
-                                     required_m={n: required[n] for n in live},
-                                     nipple_m=nipple, heel_m=heel,
-                                     **({} if cap is None and not lowered
-                                        else {"max_labels": PROBE_LABELS}))
-            found = sloped_route(a_graph, a_space, start, targets, problem,
-                                 constraints=constraints, refusal=report,
-                                 obstacles=obstacles, heels=heels)
-            if found is None or found.nodes[-1] not in inverts or place(tag, found, problem):
-                return found
+        cap = ledger.cap(tag, PROBE_LABELS)
+        problem = GravityProblem(ceiling_m=ceiling, grade_in_per_ft=grade,
+                                 diameter_m=2.0 * pipe_trade.radius_m(size),
+                                 required_m={n: required[n] for n in live},
+                                 nipple_m=nipple, heel_m=heel,
+                                 **({} if cap is None else {"max_labels": cap}))
+        found = sloped_route(a_graph, a_space, start, targets, problem,
+                             constraints=constraints, refusal=report, obstacles=obstacles,
+                             heels=heels)
+        ledger.searched(tag, cap, report, found is not None)
+        if (found is None or found.nodes[-1] not in inverts
+                or place(tag, found, problem) is not None):
+            return found
         return None
 
-    def place(tag, found, problem) -> bool:
-        """Lay ``found`` in the tree, or refuse it when its profile misses the grid."""
+    def place(tag, found, problem, size=size, on=None, arrival=None):
+        """Lay ``found`` in the tree and return the route laid, or None when its profile
+        misses the grid. ``on`` is the lattice ``found`` was searched in when it is not the
+        group's (P8, a branch re-laid one size up to the tie it had, at ``arrival``)."""
+        on = on or graph
         # Its own inverts, now: the next branch may tie onto this one (§13).
         lengths = developed_lengths(found.points)
-        arrival = inverts[found.nodes[-1]]
-        end = graph.nodes[found.nodes[-1]]
-        top = branches.drop_top(owners.get(found.nodes[-1], 0), (end.x, end.y))
+        top = None
+        if arrival is None:
+            arrival = inverts[found.nodes[-1]]
+            end = graph.nodes[found.nodes[-1]]
+            top = branches.drop_top(owners.get(found.nodes[-1], 0), (end.x, end.y))
         if top is not None and found.start_m is not None:
             # Into the side of that plumb drop at its own height: no drop of its own.
             arrival = min(top, max(arrival, found.start_m - problem.fall_over(lengths[-1])))
@@ -284,31 +205,68 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
         if _fall(legs, (legs[0][0], legs[0][1], floors[tag]),
                  HeadBudget(ceiling_m=floors[tag], required_m=arrival,
                             developed_ft=lengths[-1], diameter_m=size),
-                 grade, tag, said, start_m=found.start_m) is None:
+                 problem.grade_in_per_ft, tag, said, start_m=found.start_m) is None:
             ledger.unsnapped[tag] = said[0] if said else f"{tag}: off the 1/16\" grid"
-            return False
+            return None
         ledger.unsnapped.pop(tag, None)
-        if top is not None and found.start_m is not None:
+        if on is not graph or (top is not None and found.start_m is not None):
             ledger.arrivals[tag] = arrival
         # An "over" route runs at its start and drops plumb into the tie at the end.
         over = (found.start_m is not None
                 and found.start_m > arrival + problem.fall_over(lengths[-1]) + 1e-6)
+        heights = [found.start_m - problem.fall_over(length)
+                   if over and index != found.nodes[-1]
+                   else arrival + problem.fall_over(lengths[-1] - length)
+                   for index, length in zip(found.nodes, lengths, strict=False)]
         before = set(inverts)
-        for index, length in zip(found.nodes, lengths, strict=False):
-            inverts.setdefault(index, found.start_m - problem.fall_over(length)
-                               if over and index != found.nodes[-1]
-                               else arrival + problem.fall_over(lengths[-1] - length))
-        laid = [(graph.nodes[n].x, graph.nodes[n].y, inverts[n]) for n in found.nodes]
+        if on is graph:
+            for index, z in zip(found.nodes, heights, strict=False):
+                inverts.setdefault(index, z)
+            heights = [inverts[n] for n in found.nodes]
+        laid = [(on.nodes[n].x, on.nodes[n].y, z)
+                for n, z in zip(found.nodes, heights, strict=False)]
         laid[-1] = (*laid[-1][:2], arrival)
         if over:  # its plumb drop is a leg of its own
             laid.insert(-1, (*laid[-1][:2], found.start_m - problem.fall_over(lengths[-1])))
-        ledger.lay(tag, size, laid, found.nodes, over, set(inverts) - before)
-        return True
+        if on is not graph:  # this group's nodes on the line stand for it (route_tree_upsize)
+            found = on_lattice(graph, found, laid, TIE_TOLERANCE_M)
+            line = ([p[:2] for p in laid], [p[2] for p in laid])
+            for index in found.nodes:
+                node = graph.nodes[index]
+                inverts.setdefault(index, _invert_of([line], (node.x, node.y)))
+        ledger.lay(tag, size, laid, found, over, set(inverts) - before)
+        return found
+
+    def world(wide: float, lane: list):
+        """(space, graph) at ``wide`` round one lane's vertices (P8): a small world, since
+        only that lane is searched in it."""
+        ends = list(lane)
+        try:
+            wider = build_space(model, radius_m=pipe_trade.radius_m(wide), terminals=ends,
+                                margin_ft=min(margin_ft, _LANE_MARGIN_FT), avoid=avoid,
+                                cost=cost, touch=touch,
+                                cavity_radius_m=pipe_trade.cavity_radius_m(wide, "drain"))
+            prepare_falling(wider, (root_z, max(floors[tag] for tag in group)), model)
+            return wider, build_graph(wider, ends, [root_z])
+        except RoutingSpaceTooLarge:
+            return None
+
+    def grade_of(wide: float) -> float:
+        return slope if slope is not None else minimum_slope(wide)
+
+    ledger.place = lambda tag, found, wide, on, arrival: place(tag, found, GravityProblem(
+        ceiling_m=max(floors.values()), grade_in_per_ft=grade_of(wide),
+        diameter_m=2.0 * pipe_trade.radius_m(wide), required_m={}), wide, on, arrival)
+    ledger.widen = lambda pts, wide, arrival, tie: widen(
+        model, branches, pts, wide, arrival, tie, target=target,
+        ceiling=max(floors.values()), root_z=root_z, world=world, max_labels=PROBE_LABELS)
 
     with clock.stage(f"search {size / 0.0254:.3g}in"):
         built = build_tree(graph, space, min(goals), terminals, root_nodes=goals,
                            search=search, ripup=ledger)
     notices = [f"{label}: {line}" for line in explain_tree(built)] if explain else []
+    if stats is not None:
+        stats.setdefault("trials", []).extend(built.trials)
     if not explain:  # every lift is reported, kept or rolled back (§1)
         notices = [f"{label}: rip-up: {t.sentence()}" for t in built.trials]
     for tag, shortfall in sorted(built.unserved.items()):
@@ -339,11 +297,12 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
                             "known, so its head cannot be graded — route that branch "
                             "first with --fixture")
             continue
+        own = ledger.size_of.get(tag, size)  # P8 may have re-laid it one size up
         budget = HeadBudget(ceiling_m=floors[tag], required_m=arrival,
-                            developed_ft=lengths[-1], diameter_m=size)
-        profile = profile_for(budget, grade_in_per_ft=grade)
+                            developed_ft=lengths[-1], diameter_m=own)
+        profile = profile_for(budget, grade_in_per_ft=grade_of(own))
         origin = (legs[0][0], legs[0][1], floors[tag])
-        fallen = _fall(legs, origin, budget, grade, tag, problems,
+        fallen = _fall(legs, origin, budget, grade_of(own), tag, problems,
                        start_m=route_found.start_m)
         if fallen is None:
             continue
@@ -352,7 +311,7 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
             for index, length in zip(route_found.nodes, lengths, strict=False):
                 inverts.setdefault(index, profile.invert_at(length))
         proposal = RouteProposal(
-            tag=f"{tag}{_PROPOSED}", kind="pipe", points=list(fell), diameter_m=size,
+            tag=f"{tag}{_PROPOSED}", kind="pipe", points=list(fell), diameter_m=own,
             serves=(tag,), system="drain", cost=route_found.cost,
             bends=route_found.bends,
             terms=dict(route_found.terms) if explain else {}, notes=[note]).snapped()

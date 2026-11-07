@@ -198,6 +198,46 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
                                      z0_m=window.z0_m - inflate,
                                      z1_m=window.z1_m + inflate))
 
+    # Open-web CHORDS, along each whole truss. The web prisms above leave the chord bands
+    # open, so a run travelling along a truss could ride "over" the webs inside its top
+    # chord (catlin's kitchen sink drain did, at -0.05"). A run crosses a truss through its
+    # web window only: across, the band is grown by the radius alone, so it is exactly
+    # ``member_window``'s and the crossing check's; along it, or rising beside it, by
+    # radius and clearance, like every other neighbour. ``kind="flange"``: a chord, like a
+    # flange, nominates no lattice lines (the web prisms do), or the lattice passes its cap.
+    from typehaus.resolve.mep_crossings import is_member_line
+
+    for floor in model.floors:
+        window = member_window(floor)
+        if window is None or window.kind != "open_web":
+            continue
+        along = "x" if floor.direction == "x" else "y"
+        across = "y" if along == "x" else "x"
+        for member in floor.members:
+            if (member.z0_m is None or member.category != "joist"
+                    or not is_member_line(member)):
+                continue
+            half = _member_breadth(member)
+            (ax, ay), (bx, by) = member.p0, member.p1
+            body = _polygon([(min(ax, bx) - half * (along == "y"),
+                              min(ay, by) - half * (along == "x")),
+                             (max(ax, bx) + half * (along == "y"),
+                              min(ay, by) - half * (along == "x")),
+                             (max(ax, bx) + half * (along == "y"),
+                              max(ay, by) + half * (along == "x")),
+                             (min(ax, bx) - half * (along == "y"),
+                              max(ay, by) + half * (along == "x"))])
+            if body is None:
+                continue
+            top = getattr(member, "z1_m", None) or floor.deck_z0_m
+            footprint = body.buffer(inflate)
+            for grow, axes in ((radius_m, frozenset({across})),
+                               (inflate, frozenset({along, "z"}))):
+                for z0, z1 in ((window.z1_m, top), (member.z0_m, window.z0_m)):
+                    out.append(HardPrism(tag=f"{floor.tag} chord", kind="flange",
+                                         footprint=footprint, z0_m=z0 - grow,
+                                         z1_m=z1 + grow, applies=axes))
+
     # I-joist BLOCKING flanges. A leg across a joist is graded by ``routing/members``; one
     # across the blocking between joists (it runs the other way) was not, and the maker
     # forbids any cut in a flange (``mep.run_in_joist_flange``). The web between is open.

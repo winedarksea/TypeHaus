@@ -107,8 +107,8 @@ def with_port_leads(model: Any, ends: Endpoints | None) -> Endpoints | None:
         length = stub
         lead = kits(port) if kits is not None else None
         if lead is not None:
-            length = lead.length_m
-            notes.append(f'{label}: the port kit\'s {lead.inches:.3f}" lead is laid straight '
+            length = max(stub, lead.length_m)  # an unread kit is no shorter than the stub
+            notes.append(f'{label}: the port kit\'s {length / M_PER_IN:.3f}" lead is laid straight '
                          "before the first rigid fitting"
                          + "".join(f"; {gap}" for gap in lead.unread))
         tip = tuple(c + sign * length if i == axis else c for i, c in enumerate(point))
@@ -164,7 +164,7 @@ def _lead_overshoot(ends: Endpoints) -> str | None:
             continue
         rel = [o - p for o, p in zip(other, lead.port, strict=True)]
         reach = sum(a * r for a, r in zip(along, rel, strict=True)) / span
-        off = (sum(r * r for r in rel) - reach * reach) ** 0.5
+        off = max(0.0, sum(r * r for r in rel) - reach * reach) ** 0.5  # plumb: may dip < 0
         if 0.0 <= reach < span - 1e-9 and off <= ends.radius_m:
             return (f'{lead.label} is an exact port facing {lead.direction}; the '
                     f'{lead.inches:.3f}" straight lead it needs before the first fitting is '

@@ -91,12 +91,28 @@ def alternative_routes(search: Search, graph: Graph, space: RoutingSpace, start:
         found = search(weighted, space, start, goals)
         if found is None:
             break
-        priced = price_route(graph, space, found.nodes)
+        priced = _repriced(found, price_route(graph, space, found.nodes))
         if any(_shared_fraction(graph, priced, other) >= max_shared
                for other in accepted):
             continue
         accepted.append(priced)
     return accepted
+
+
+def _repriced(found: Route, priced: Route) -> Route:
+    """``found`` at the real graph's price. Where its geometry is not its lattice nodes' (a
+    duct's offset leg, ``duct_search.FittedRoute``) the found route is kept and only its
+    price replaced, with the premiums the search added on top of the lattice's."""
+    if found.points == priced.points:
+        return priced
+    premium = {key: found.terms[key] for key in _PREMIUMS if found.terms.get(key)}
+    return replace(found, cost=priced.cost + sum(premium.values()),
+                   terms={**priced.terms, **premium}, bends=priced.bends,
+                   corridor_tags=priced.corridor_tags)
+
+
+#: Prices ``duct_search`` adds on top of the lattice's: a fabricated elbow, a duct's bore.
+_PREMIUMS = ("fabricated_elbow_in", "duct_bore_in")
 
 
 def _penalise(graph: Graph, penalties: dict[tuple[int, int], float], route: Route,

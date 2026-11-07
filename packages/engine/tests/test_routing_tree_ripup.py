@@ -27,6 +27,8 @@ class _Toy:
         self.named: dict[str, set[str]] = {}
         self.refuse_relay: str | None = None  # this tag refuses once anything is lifted
         self._relaying = False
+        self.small: dict[str, set[str]] = {}
+        self.upsizes = False  # P8 off unless a test turns it on
 
     def owner(self, node: int) -> str | None:
         return next((tag for tag, (nodes, _t) in self.lines.items() if node in nodes), None)
@@ -44,6 +46,7 @@ class _Toy:
             return None
         size, named = self.sizes[tag], self.named.setdefault(tag, set())
         named.clear()
+        self.small[tag] = set()
         heap = [(0.0, "", start, None, (start,))]
         seen: set[tuple[int, object]] = set()
         while heap:
@@ -58,6 +61,7 @@ class _Toy:
                     pts = [(*XY[n], 0.0) for n in path]
                     return Route(nodes=list(path), points=pts, cost=cost)
                 named.add(line)
+                self.small.setdefault(tag, set()).add(line)
                 continue  # occupied: never passed through
             for a, b in EDGES:
                 if node not in (a, b):
@@ -73,14 +77,31 @@ class _Toy:
     def settle(self) -> None:
         pass
 
+    def capped(self, tag: str) -> bool:
+        return False
+
+    def undersized(self, tag: str) -> list[str]:
+        return sorted(self.small.get(tag, ())) if self.upsizes else []
+
+    def upsize(self, tag: str):
+        start = next(n for n, t in self.starts.items() if t == tag)
+        later = [t for t in self.lines if list(self.lines).index(t) > list(self.lines).index(tag)]
+        self.lift(tag)
+        for other in later:
+            self.lines.pop(other, None)
+        self.sizes[tag] += 0.5  # the toy's one size up
+        reach = {ROOT} | {n for nodes, _t in self.lines.values() for n in nodes}
+        route = self.search(None, None, start, reach)
+        return None if route is None else (route, later)
+
     def blockers(self, tag: str) -> list[str]:
         return sorted(self.named.get(tag, ()))
 
     def snapshot(self):
-        return dict(self.lines)
+        return dict(self.lines), dict(self.sizes)
 
     def restore(self, state) -> None:
-        self.lines = dict(state)
+        self.lines, self.sizes = dict(state[0]), dict(state[1])
 
     def lift(self, tag: str) -> list[str]:
         doomed = {tag}
@@ -142,3 +163,13 @@ def test_branches_remove_cascades_down_the_chain():
     assert [x.tag for x in branches.lines] == ["MAIN", "C"]
     assert branches.lines[1].down == 0 and branches.lines[0].served == {"C"}
     assert c == 3
+
+
+def test_upsize_lets_a_bigger_terminal_tie_on_p8():
+    # A (1 1/2") lays n4-n1-n0; B (2") cannot tie onto it, so A goes up one size in place.
+    toy = _Toy({"A": 1.5, "B": 2.0}, {4: "A", 2: "B"})
+    toy.upsizes = True
+    tree = _tree(toy, {"A": 4, "B": 2})
+    assert tree.unserved == {} and list(tree.routes) == ["A", "B"]
+    assert tree.cost == 54.0 + 24.0 and toy.sizes["A"] == 2.0
+    assert [(t.candidate, t.upsized, t.kept) for t in tree.trials] == [("A", True, True)]

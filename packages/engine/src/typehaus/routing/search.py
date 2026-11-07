@@ -81,14 +81,17 @@ class Route:
 
         A lattice path visits every candidate line it crosses; a pipe does not have a
         fitting at each of them. Collapsing runs of one axis into a single leg is the
-        difference between a proposal a plumber reads and a list of coordinates.
+        difference between a proposal a plumber reads and a list of coordinates. A vertex
+        where the run turns back along its axis stays: a lav arm out to its wall tee and
+        back under the floor is two legs, and its take-off is that vertex.
         """
         if len(self.points) < 3:
             return list(self.points)
         out = [self.points[0]]
         for previous, current, following in zip(self.points, self.points[1:],
                                                 self.points[2:], strict=False):
-            if _axis_of(previous, current) != _axis_of(current, following):
+            if (_axis_of(previous, current) != _axis_of(current, following)
+                    or _reverses(previous, current, following)):
                 out.append(current)
         out.append(self.points[-1])
         return out
@@ -290,6 +293,11 @@ def price_route(graph: Graph, space: RoutingSpace, nodes: list[int],
         terms["bend_in"] = bend_total
     return Route(nodes=list(nodes), points=points, cost=total, terms=terms,
                  bends=bends, corridor_tags=tuple(corridors))
+
+
+def _reverses(a: tuple[float, float, float], b: tuple[float, float, float],
+              c: tuple[float, float, float]) -> bool:
+    return sum((b[i] - a[i]) * (c[i] - b[i]) for i in range(3)) < 0
 
 
 def _axis_of(a: tuple[float, float, float], b: tuple[float, float, float]) -> str:

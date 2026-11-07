@@ -455,7 +455,7 @@ def build_space(model: ResolvedModel, *, radius_m: float,
                         rails=floor_rails(model, (minx, miny, maxx, maxy)),
                         cavity_radius_m=cavity_radius_m,
                         members=Penetrations(model, (minx, miny, maxx, maxy), radius_m,
-                                             cavity_radius_m=cavity_radius_m))
+                                             cavity_radius_m=cavity_radius_m, touch=touch))
 
 
 def floor_rails(model: ResolvedModel, bbox: tuple[float, float, float, float]) -> list:

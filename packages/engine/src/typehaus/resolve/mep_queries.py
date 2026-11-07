@@ -323,8 +323,14 @@ def clear_bay_width_m(floor: ResolvedFloor) -> float | None:
 
 def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m: float,
                        routing: DuctRouting, floor, bearing_walls: list,
-                       spacing_m: float) -> tuple[list[str], list[tuple[float, float]], bool]:
+                       spacing_m: float, z_m: tuple[float, float] | None = None,
+                       ) -> tuple[list[str], list[tuple[float, float]], bool]:
     """Validate a duct path against one floor's joist bays and bearing lines.
+
+    ``z_m`` (absolute centreline z at each end) grades the path only where its outline
+    enters the floor's member band: a leg hanging in the room below rides no bay and
+    crosses no joist, and is ``mep.run_in_finished_volume``'s to grade, not this one's.
+    None grades the path as if it were in the band (the old, plan-only reading).
 
     Returns ``(conflicts, crossings, depth_ok)``. Conflicts are structural FAILs (a
     parallel segment straddling a joist line, too wide for the clear bay, or a
@@ -334,6 +340,8 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
     """
     along_x = floor.direction == "x"
     edges = bay_edge_members(floor)
+    if z_m is not None and not _in_member_band(edges or floor.members, z_m, depth_m):
+        return [], [], True
     joist_lines = joist_line_stations(floor)
     member_depth = max((m.z1_m - m.z0_m for m in floor.members), default=depth_m)
     depth_ok = depth_m <= member_depth + 1e-9
@@ -412,6 +420,18 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
                 perp_at = pa + t * (pb - pa)
                 crossings.append((wc, perp_at) if along_x else (perp_at, wc))
     return conflicts, crossings, depth_ok
+
+
+def _in_member_band(members: list, z_m: tuple[float, float], depth_m: float) -> bool:
+    """Whether a segment's outline (centreline z +- half its depth) overlaps the band the
+    members occupy by more than 1/16". Members with no z leave it in (no blind spot)."""
+    placed = [m for m in members if m.z0_m is not None and m.z1_m is not None]
+    if not placed:
+        return True
+    low = min(m.z0_m for m in placed)
+    high = max(m.z1_m for m in placed)
+    bottom, top = min(z_m) - depth_m / 2.0, max(z_m) + depth_m / 2.0
+    return min(top, high) - max(bottom, low) > 0.0015875
 
 
 def schematic_conduits(model: ResolvedModel) -> tuple[str, ...]:

@@ -23,12 +23,14 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
                   margin_ft: float, level: str | None, avoid: frozenset[str],
                   via: list[tuple[float, float]], explain: bool, cost: Any = None,
-                  timing: list[str] | None = None, lift: frozenset[str] = frozenset()
+                  timing: list[str] | None = None, lift: frozenset[str] = frozenset(),
+                  stats: dict | None = None
                   ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str],
                              list[Any]]:
     """Return (proposal/storey pairs, problems, notices, structured refusals).
 
     ``lift``: authored runs that are no obstacle to the tree (``--lift``, rip-up note §3 L1).
+    ``stats`` collects every rip-up trial under ``"trials"`` (``routing/tree_ripup.Trial``).
 
     The whole main is the goal line, so branches may join at different stations. This is one
     coordinated tree; independent fixture searches cannot share the resulting branches."""
@@ -149,7 +151,7 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
             slope=slope,
             margin_ft=margin_ft, level=level, avoid=avoid,
             touch=frozenset({target, *replaced, *lift}), explain=explain, cost=cost,
-            clock=clock)
+            clock=clock, stats=stats)
         proposals.extend(made)
         problems.extend(group_problems)
         notices.extend(group_notices)
