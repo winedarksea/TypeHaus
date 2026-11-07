@@ -451,6 +451,12 @@ def test_laundry_goods_fit_the_alcove_and_clear_each_other(catlin_model):
     sink_front = max(y for _, y in objects["FX-M-LAUNDRY-SINK"].footprint)
     doorway_inside_face = max(y for _, y in room.exterior.coords)
     assert (doorway_inside_face - sink_front) / 0.0254 >= 24
+    # The tub is reached through the opening's west end and along the strip in front of the
+    # tower (owner-accepted reduced access, 2026-11-07): pin it so it cannot shrink further.
+    tub_xs = [x for x, _ in objects["FX-M-LAUNDRY-SINK"].footprint]
+    assert (min(tower_xs) - max(opening_left, min(tub_xs))) / 0.0254 >= 8
+    tower_front = max(y for _, y in objects["FX-M-LAUNDRY"].footprint)
+    assert (doorway_inside_face - tower_front) / 0.0254 >= 12
     # The rack is the one pair that *does* overlap in plan, and must, since it hangs over the
     # tub. It is a shelf rather than a collision only because it starts above the tub's box.
     tub_height = next(t.height.meters for t in catlin_model.plan.library.fixture_types

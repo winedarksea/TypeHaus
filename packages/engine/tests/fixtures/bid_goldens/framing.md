@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 63e4dc7ecffa24cf  
-**Lines:** 253
+**Model hash:** 3b80ab293c2a93a5  
+**Lines:** 254
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -44,9 +44,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1 3/4" x 11 7/8" LVL 2.0E, 8' (2-1.75x11.875 LVL) | 4 | pc | header (2-ply) | 32 LF | building |
 | 1 3/4" x 14" LVL 2.0E, 20' (2-1.75x14 LVL) | 2 | pc | header (2-ply) | 40 LF | building |
 | 1 3/4" x 16" LVL 2.0E, 12' (2-1.75x16 LVL) | 6 | pc | ridge beam (2-ply) | 72 LF | building |
+| 1 3/4" x 7 1/4" LVL 2.0E, 8' (2-1.75x7.25 LVL) | 2 | pc | header (2-ply) | 16 LF | building |
 | 1 3/4" x 9 1/2" LVL 2.0E, 8' (2-1.75x9.5 LVL) | 2 | pc | header (2-ply) | 16 LF | building |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2-2x10) | 6 | pc | header (2-ply) | 48 LF | building |
-| 2x12 SPF No. 2 & Btr framing lumber, 8' (2-2x12) | 2 | pc | header (2-ply) | 16 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6) | 4 | pc | header (2-ply) | 32 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6:spf) | 6 | pc | blocking (2-ply) | 48 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8) | 18 | pc | header (2-ply) | 144 LF | building |
@@ -238,6 +238,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | Beam — EQUIP_STAND_ALUM (beam:EQUIP_STAND_ALUM) | 2 | ea | 2 placed, 0.4 SF plan | main |
+| Column (column) | 1.2 | bf | 1 placed, 0.1 SF plan | second |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | 56.4 | bf | 2 placed, 0.5 SF plan; 0.17 cy in the takeoff | second |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 19.2 | bf | 3 placed, 0.3 SF plan; 0.06 cy in the takeoff | main |
@@ -362,9 +363,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1 3/4" x 11 7/8" LVL 2.0E, 8' (2-1.75x11.875 LVL) | — |
 | 1 3/4" x 14" LVL 2.0E, 20' (2-1.75x14 LVL) | — |
 | 1 3/4" x 16" LVL 2.0E, 12' (2-1.75x16 LVL) | — |
+| 1 3/4" x 7 1/4" LVL 2.0E, 8' (2-1.75x7.25 LVL) | — |
 | 1 3/4" x 9 1/2" LVL 2.0E, 8' (2-1.75x9.5 LVL) | — |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2-2x10) | — |
-| 2x12 SPF No. 2 & Btr framing lumber, 8' (2-2x12) | — |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6) | — |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6:spf) | — |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8) | — |
@@ -541,6 +542,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | Beam — EQUIP_STAND_ALUM (beam:EQUIP_STAND_ALUM) | BM-M-HP3-R1, BM-M-HP3-R2 |
+| Column (column) | P-S-SN3-SQUASH |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2 |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | PT-M-HP1-L1, PT-M-HP1-L2, PT-M-HP1-L3, PT-M-HP1-L4, PT-M-HP3-L1, PT-M-HP3-L2, PT-M-HP3-L3, PT-M-HP3-L4, PT-SG-HPB1, PT-SG-HPB2, PT-SG-HPB3, PT-SG-HPB4 |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRLAND-SE, P-M-STRWELL-S, P-M-STRWELL-SS |

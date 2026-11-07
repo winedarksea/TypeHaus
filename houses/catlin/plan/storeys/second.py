@@ -1515,6 +1515,13 @@ POSTS = [
     Post(uid="CSK904AAAA", tag="P-S-TUDOR2", position=pt(inch(3.625), ft(17, 5.5625)),
          size="6.25x6.25", height=ft(8, 8.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
+    # Squash block under BM-S-BATH-E's hung south end (2026-11-07). FO-A-HALL's trimmer
+    # bears on W-S-SN3 at x=10', but FS-S-WEST's trusses run parallel to that line (y=256/
+    # 272), so nothing in the floor carried the ~570 lb point down to D-M-LAUN's strike king
+    # and jack (x 118 1/2..121 1/2"). 4x4 between the trusses, W-M-HS3's top plate (108 1/8")
+    # to the datum; notes/header_spans_r602_7.md §4b.
+    Post(uid="4S54Y1T16Y", tag="P-S-SN3-SQUASH", position=pt(inch(120), inch(268.5)), size="4x4",
+         height=inch(11.875)),
 ]
 
 STAIRS = [

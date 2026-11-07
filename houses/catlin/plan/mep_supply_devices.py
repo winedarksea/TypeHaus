@@ -77,15 +77,17 @@ SUPPLY_DEVICES_BASEMENT = [
                   serves=("FX-B-SAUNA-SH",)),
     # P2903.5. The washer slams two solenoids shut, so it needs an arrestor on each supply —
     # cold alone would leave the hot line to hammer. Both sit at the machine's own riser,
-    # within the manufacturer's 6' of the quick-closing valve.
+    # within the manufacturer's 6' of the quick-closing valve. In the box at each riser's top
+    # (40"/42" AFF; the elevation is the basement run's): with none they resolved into the
+    # joist bay, where PR-B-WASH-DRAIN's drop has stood since 2026-11-07.
     PipeAccessory(uid="F3ZC6TWL9N", tag="PA-M-WASH-WHA-CW",
                   kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-B-CW-WASH",
-                  position=pt(ft(8), ft(20, 7.2)), room="RM-M-LAUNDRY",
+                  position=pt(inch(100), inch(245.25)), elevation=ft(12, 5.4375), room="RM-M-LAUNDRY",
                   model="Sioux Chief MiniRester 660-G class, size A",
                   serves=("FX-M-LAUNDRY",)),
     PipeAccessory(uid="K7XB2VDR5H", tag="PA-M-WASH-WHA-HW",
                   kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-B-HW-WASH",
-                  position=pt(ft(8, 2), ft(20, 9.25)), room="RM-M-LAUNDRY",
+                  position=pt(ft(8, 2), ft(20, 9.25)), elevation=ft(12, 7.4375), room="RM-M-LAUNDRY",
                   model="Sioux Chief MiniRester 660-G class, size A",
                   serves=("FX-M-LAUNDRY",)),
     # The dishwasher's fill solenoid is the other quick-closing valve in the house. It takes
@@ -233,12 +235,12 @@ SUPPLY_STOPS = [
     # machine box is where the arrestors already are, and a washer box with stops in it is
     # the ordinary product.
     PipeAccessory(uid="VCF71D18GJ", tag="PA-M-WASH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-WASH", position=pt(ft(8), ft(20, 7.2)),
+                  pipe_ref="PR-B-CW-WASH", position=pt(inch(100), inch(245.25)), elevation=ft(12, 5.4375),
                   accessible=True, room="RM-M-LAUNDRY",
                   model='3/4" quarter-turn ball valve, in the recessed washer box',
                   serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeAccessory(uid="D0DS71PB2J", tag="PA-M-WASH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-WASH", position=pt(ft(8, 2), ft(20, 9.25)),
+                  pipe_ref="PR-B-HW-WASH", position=pt(ft(8, 2), ft(20, 9.25)), elevation=ft(12, 7.4375),
                   accessible=True, room="RM-M-LAUNDRY",
                   model='3/4" quarter-turn ball valve, in the recessed washer box',
                   serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),

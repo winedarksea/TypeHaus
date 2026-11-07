@@ -21,6 +21,7 @@ from typehaus.checks.structural import (
     foundation,  # noqa: F401 - registers checks
     guards,  # noqa: F401 - registers checks
     hanger_seat_fit,  # noqa: F401 - registers checks
+    header_prescriptive,  # noqa: F401 - registers checks
     header_spans,  # noqa: F401 - registers checks
     interference,  # noqa: F401 - registers checks
     jamb_corner_pack,  # noqa: F401 - registers checks

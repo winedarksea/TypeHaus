@@ -99,8 +99,11 @@ def test_both_optical_axes_reach_tasks_with_rack_stowed_or_deployed(catlin_model
                 (tower.body_z0_m + tower.body_z1_m) / 2),
                (113.55 * INCH, 240 * INCH, sink.body_z0_m + 34 * INCH))
     rack_bounds = Polygon(rack.footprint).bounds
-    rack_body = (box(rack_bounds[0] - 16 * INCH, rack_bounds[1],
-                     rack_bounds[2], rack_bounds[3]) if deployed else Polygon(rack.footprint))
+    # Deployed, the rack folds 16" out east over the tub (it hangs at the tub's west end
+    # since 2026-11-07); its stowed body is on W-M-BA2E's side.
+    rack_body = (box(rack_bounds[0], rack_bounds[1],
+                     rack_bounds[2] + 16 * INCH, rack_bounds[3]) if deployed
+                 else Polygon(rack.footprint))
     for head, target in zip(spec.heads, targets, strict=True):
         local = head_lens(spec, head)
         xy = place_local([local[:2]], item.position, item.rotation_degrees)[0]

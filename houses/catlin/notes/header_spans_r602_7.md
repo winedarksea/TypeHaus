@@ -97,6 +97,15 @@ bearing on the jack. **The hanger's x = 120" is the king/jack seam: the pack is 
 it** (and inside the 3-ply beam's 117 3/8..122 5/8" bearing above). P goes down the pack to
 the floor; the header's clear span is 121 1/2..196", **L = 74.5" = 6.21'**, uniform only.
 
+**Through the floor.** `FS-S-WEST`'s trusses run in x at y = 256"/272", parallel to this line,
+so nothing in the floor stood between `W-S-SN3`'s plate and this wall's top plate at x = 120".
+`P-S-SN3-SQUASH` (2026-11-07 review) is that path: a 4x4 block, 11 7/8" (top plate 108 1/8" to
+the 120" datum), at (120", 268 1/2"), clear of both chords (257 3/4" / 270 1/4"), 3" onto this
+wall's plate, centred on the king/jack seam. 570 / (3.5 x 3.5) = 47 psi on its end grain.
+The UNIFORM part has no such path yet: no blocking stands between the trusses over this wall,
+so until there is a ladder the ~240 plf reaches truss 272 through the subfloor rather than
+this header (open in `plans/TODO.md`; the header row is conservative either way).
+
 Pack in bearing on the bottom plate: (570 + header end 745) / (2 x 1.5 x 3.5) = 125 psi
 against SPF Fc⊥ 425 psi — 0.29.
 
@@ -112,7 +121,12 @@ outside the span (`tests/test_header_spans.py`).
   "3½" VERSA-LAM 1.7 2650 Header Look Up Tables"** (read from the PDF 2026-11-07): Door and
   Window Headers, **Floor - 1 Story, 40 PSF Live, 12 PSF Dead, Flush Joists**. The 6'-8" row
   reads 7" at 24'-0", 28'-0" and 32'-0"; 6'-2" is 0.5" short of 74.5". **Authored at 32'-0"**,
-  the widest column, since the house is 36' wide and the answer does not change. Not bolded,
+  the widest column. **The house is 36' wide and p.4 publishes no 36' column**, so this is the
+  32' row plus a load comparison (§4d), not a literal cell: at 36' the row's own load would be
+  52 x 18 + 60 = 996 plf, still 4x this header's 240. The literal 36' read is p.9 "Floor
+  Beams", 40+12 psf, 36'-0" structure width, 8'-0" clear span: **3½" x 9½"** (not red, so 2
+  trimmer studs, 3" bearing) — a 2-ply 9 1/2" LVL on a doubled jack each end. Owner item
+  (`plans/TODO.md`), the `WIN-M-DINING-E` precedent reads the 32' column the same way. Not bolded,
   so single trimmers. Page notes: L/360 live, L/240 total (or 5/16" total for 7" and smaller);
   interior wall 60 plf; "Tables based upon uniform loading applications shown in tables only";
   "Double 1¾" VERSA-LAM 1.7 2650 may be substituted". There is no 1 3/4" ply at 7", so the

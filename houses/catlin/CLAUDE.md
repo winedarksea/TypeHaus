@@ -1968,7 +1968,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `D-M-LAUN`'s 3'-0" pocket leaf parks there, crossing
   node `N-M-E3`. Enforced by `mep.pocket_occupancy`.
   - **Moved 11 1/2" east (owner, 2026-11-07)** so the strike king and jack (x 118 1/2..121 1/2")
-    stand under `BM-S-BATH-E`'s hung south end: the 2-ply 7 1/4" LVL header carries uniform load
+    stand under `BM-S-BATH-E`'s hung south end (down through `P-S-SN3-SQUASH`, a 4x4 block
+    between `FS-S-WEST`'s parallel trusses): the 2-ply 7 1/4" LVL header carries uniform load
     only and reads Boise's Floor - 1 Story row (`notes/header_spans_r602_7.md` §4). The tower
     stands under the opening, the tub west of it; the washer box and standpipe are on
     `W-M-BA2E` at y=20'-7", the switch inside the strike jamb.

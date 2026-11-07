@@ -11,11 +11,23 @@ import uuid
 import pytest
 
 from typehaus.checks.registry import CheckContext, Preferences
-from typehaus.checks.structural.checks import header_within_prescriptive
+from typehaus.checks.structural.header_prescriptive import header_within_prescriptive
 from typehaus.findings import Authority, Result
 from typehaus.model import (
-    Assembly, Building, Library, Material, Node, PlanModel, Project, Site, Storey, Wall,
-    degF, ft, inch, pt,
+    Assembly,
+    Building,
+    Library,
+    Material,
+    Node,
+    PlanModel,
+    Project,
+    Site,
+    Storey,
+    Wall,
+    degF,
+    ft,
+    inch,
+    pt,
 )
 from typehaus.model.assembly import FramingSpec, Layer
 from typehaus.model.elements import Window

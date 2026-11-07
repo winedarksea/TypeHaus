@@ -14,8 +14,20 @@ from types import SimpleNamespace
 import pytest
 
 from typehaus.model import (
-    Assembly, Building, Library, Material, Node, PlanModel, Project, Site, Storey, Wall,
-    degF, ft, inch, pt,
+    Assembly,
+    Building,
+    Library,
+    Material,
+    Node,
+    PlanModel,
+    Project,
+    Site,
+    Storey,
+    Wall,
+    degF,
+    ft,
+    inch,
+    pt,
 )
 from typehaus.model.assembly import FramingSpec, Layer
 from typehaus.model.elements import Door
@@ -297,7 +309,7 @@ class _PlanWithDoor:
 
 def _header_finding(catlin_model, **update):
     from typehaus.checks.registry import CheckContext, Preferences
-    from typehaus.checks.structural.checks import header_within_prescriptive
+    from typehaus.checks.structural.header_prescriptive import header_within_prescriptive
 
     plan = catlin_model.plan
     door = plan.by_tag("D-G-OVERHEAD")
@@ -348,8 +360,8 @@ def test_a_row_for_a_different_beam_stops_describing_the_opening(catlin_model) -
 
 
 def test_an_opening_wider_than_its_row_fails(catlin_model) -> None:
-    from typehaus.quantities import ft
     from typehaus.findings import Result
+    from typehaus.quantities import ft
 
     finding = _header_finding(catlin_model, span=ft(12))
     assert finding.result is Result.FAIL

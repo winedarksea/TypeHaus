@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from typehaus.checks.structural.header_spans import wall_role_load
+from typehaus.checks.structural.header_spans import published_read, wall_role_load
 from typehaus.findings import Result
 from typehaus.model.enums import StructuralRole
 from typehaus.model.framing_standards import HeaderStandard
@@ -102,6 +102,10 @@ def test_catlin_oracle_conditions(catlin_plan, catlin_model_ro):
     hall = catlin_model_ro.wall("W-M-HS3")
     whole = index.condition(hall, 0.0, math.dist(*hall.axis))
     assert whole.point_loads == ("BM-S-BATH-E",)
+    # A published row is read on the whole clear span, pocket cavity included (note §4b).
+    door = next(o for o in catlin_model_ro.openings if o.tag == "D-M-LAUN")
+    ctx = SimpleNamespace(plan=catlin_plan, model=catlin_model_ro)
+    assert published_read(ctx, door, index) == (pytest.approx(74.5 / 12), ())
     # The stair wells' trimmers land beside D-B-CLOSET's span, not across their holes.
     assert _condition(index, catlin_model_ro, "D-B-CLOSET").point_loads == ()
 

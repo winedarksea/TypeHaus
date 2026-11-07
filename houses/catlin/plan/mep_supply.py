@@ -396,7 +396,7 @@ SUPPLY = [
     # WASHER BOX at (8'-0", 36") on to the basin beside it (west of the tower since
     # 2026-11-07; the washer's 60" hoses reach back to the box):
     #
-    #   riser top 36"  ->  south inside W-M-BA2E  ->  east inside W-M-CLN  ->  drop to 20"
+    #   riser top 40"/42"  ->  south inside W-M-BA2E  ->  east inside W-M-CLN  ->  drop to 20"
     #
     # 20" is the stop height inside the tub's own cabinet (FX-LAUNDRY-SINK-24 is a 34" rim
     # in a cased base, 43" over the faucet), NOT the 36" the washer box stands at — a stub
@@ -405,14 +405,16 @@ SUPPLY = [
     # standing north of a sink whose back is on the south wall.
     #
     # FOUR THINGS KEEP THE PAIR APART AND OFF THE CORNER, AND EVERY ONE IS LOAD-BEARING:
-    #   * the cold drops 36" -> 32" at its own riser head and travels the whole way at 32",
-    #     10" under the hot's 42". Both share the y=18'-1" lane, so a shared elevation would
+    #   * the cold tops out at 40" at its own riser head and travels the whole way at 40",
+    #     2" under the hot's 42". Both share the y=18'-1" lane, so a shared elevation would
     #     be one pipe inside the other; stacked is how the pair is actually run in a cavity.
-    #   * the hot rides 42", over the cold riser's 36" head and the standpipe's 36" top, on
+    #     (32" until 2026-11-07: the standpipe now stands beside this riser, and its 36" top
+    #     buried the cold stop and arrestor.)
+    #   * the hot rides 42", over the cold riser's 40" head and the standpipe's 36" top, on
     #     W-M-BA2E's axis (see PR-B-HW-WASH).
     #   * the cold stops 4 1/2" short of the hot (x=9'-1 1/2" against 9'-6", the tub's
     #     port stations, hot on the LEFT of someone facing the faucet). So the hot's drop at
-    #     9'-6" comes down past 32" east of where the cold's leg ends, and misses it.
+    #     9'-6" comes down past 40" east of where the cold's leg ends, and misses it.
     #   * THE CORNER SEGMENT NAMES NO WALL, DELIBERATELY. W-M-BA2E ends at y=18'-0" and
     #     W-M-CLN starts at x=8'-5 3/8": the two only TOUCH, so no point is inside both and a
     #     leg claiming either one leaves its structure footprint — `mep.wet_wall_occupancy` is
@@ -439,7 +441,7 @@ SUPPLY = [
             path=(pt(ft(8, 4), ft(16)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(inch(109.5), ft(18, 1)), pt(inch(109.5), ft(18, 1)),),
             diameter=inch(0.75), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375),
-                        ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375),
+                        ft(12, 5.4375), ft(12, 5.4375), ft(12, 5.4375), ft(12, 5.4375),
                         ft(10, 9.4375)),
             wall_refs=(None, None, "W-M-BA2E", "W-M-BA2E", None,
                        "W-M-CLN", "W-M-CLN"),

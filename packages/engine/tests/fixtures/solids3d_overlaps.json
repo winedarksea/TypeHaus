@@ -274,6 +274,7 @@
   "framing|thermal_break": [2, 0.002128],
   "framing|tub_insulation_return": [2, 0.000513],
   "framing|wall": [245, 4.473484],
+  "framing|water_hammer_arrestor": [2, 0.000197],
   "gutter|gutter": [8, 8.6e-05],
   "insulation_wrap|wall": [4, 0.006397],
   "leader_extension|leader_extension": [4, 0.001573],
@@ -332,6 +333,7 @@
   "pipe_water_cold|tub_insulation_return": [1, 4e-06],
   "pipe_water_cold|vacuum_breaker": [1, 6e-06],
   "pipe_water_cold|wall": [51, 0.011417],
+  "pipe_water_cold|water_hammer_arrestor": [1, 3.4e-05],
   "pipe_water_hot|pipe_water_hot": [7, 1.9e-05],
   "pipe_water_hot|shutoff": [25, 0.000313],
   "pipe_water_hot|wall": [37, 0.006431],
@@ -348,7 +350,7 @@
   "roof|snow_guard": [2, 0.000574],
   "shutoff|shutoff": [2, 0.000331],
   "shutoff|vacuum_breaker": [1, 0.001573],
-  "shutoff|wall": [34, 0.025006],
+  "shutoff|wall": [36, 0.027857],
   "shutoff|water_hammer_arrestor": [4, 0.003504],
   "sill_gasket|sill_gasket": [4, 0.000124],
   "sill_gasket|wall": [24, 0.008847],
@@ -367,6 +369,7 @@
   "vent|vent": [24, 0.000563],
   "vent|wall": [12, 0.003035],
   "wall|wall": [52, 1.124704],
+  "wall|water_hammer_arrestor": [2, 0.002851],
   "water_hammer_arrestor|water_hammer_arrestor": [1, 0.000179],
   "window_return|window_stool": [6, 1.4e-05]
 }
