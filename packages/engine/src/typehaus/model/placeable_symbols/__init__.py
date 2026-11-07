@@ -34,6 +34,7 @@ from typehaus.model.placeable_symbols._frame import (
     with_material_refs,
 )
 from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
+from typehaus.model.placeable_symbols._infrared_heater import infrared_heater
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_frame
 from typehaus.model.placeable_symbols._swanstone_flex import swanstone_flex
 from typehaus.model.placeable_symbols.appliances import APPLIANCE_SYMBOLS
@@ -53,6 +54,7 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                  **LIGHTING_SYMBOLS, **KITCHEN_SEKTION_SYMBOLS,
                                  **RECEPTACLE_SYMBOLS,
                                  "swanstone-flex-3636": swanstone_flex,
+                                 "infrared-heater": infrared_heater,
                                  "sunnersta-frame": sunnersta_frame}
 
 # The frozen vocabulary. A catalog entry may only name a symbol listed here; the contract test
@@ -97,6 +99,7 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS
     "microwave", "countertop-microwave", "hood", "tea-kettle", "espresso-machine",
     "furnace", "erv", "heat-pump-outdoor", "water-heater", "sauna-heater", "panel", "register",
     "rheem-proterra-plugin-80",
+    "infrared-heater",
     "disconnect", "meter", "junction-box",
     # plumbing fixtures. "hydrant" is the odd one out: it is a standpipe, not a vessel, so
     # its glyph is the riser's own diameter with a handle bar and an outlet nipple rather

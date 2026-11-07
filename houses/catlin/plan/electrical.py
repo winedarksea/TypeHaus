@@ -1115,15 +1115,16 @@ GARAGE_DEVICES = [
 ]
 
 GARAGE_EQUIPMENT = [
-    # West wall beside the stair, centred over the bench (2026-10-30). Mounted 6'-0" on an 8'
-    # wall, 15" case tops at 7'-3", blows down over a bench.
+    # West wall, centred over the bench. The radiant bar aims 45deg down into the work
+    # area. Installed envelope starts 96in AFF and tops at 104in; ceiling is 122in AFF.
+    # BK-G-W-HEATER spans all three stud bays behind its two brackets (100in AFF).
     # Hard-wired, not cord-and-plug: NEC 210.8(A)(2) GFCI applies to garage *receptacles*
     # only, so CKT-GAR-HEAT carries none — a plug-in unit would need CKT-RC-GARAGE instead.
     # FX-G-HYDRANT left this corner for the SW stair foot on 2026-09-16.
     Equipment(uid="CEE023AAAA", tag="EQ-G-HEATER", kind=EquipmentKind.SPACE_HEATER,
-              footprint=(inch(14), inch(9)),
+              footprint=(inch(33), inch(14)),
               room="RM-GARAGE", type_ref="EQ-T-GARAGE-HEATER", circuit="CKT-GAR-HEAT",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(8)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-G-W", face="left", distance_from_start=inch(180),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),

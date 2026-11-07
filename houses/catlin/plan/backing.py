@@ -393,11 +393,13 @@ GARAGE_BACKING = [
                 start=ft(14, 0.75), length=inch(22.5),
                 elevation=inch(19.5), height=inch(11.25), profile="2x12",
                 material_ref="spf", purpose="EVSE wall mount (APPL-G-EVSE)"),
-    # The unit heater's wall bracket, the stud-007..stud-008 bay.
+    # Radiant heater brackets at stations 166.5/193.5in, 99/101in AFF. Fill all three
+    # bays stud-006..009; the garage slab is 22in below the wall's sill datum.
+    # Fit each 2x12 flush to the inside stud face and fasten both ends to the studs.
     WallBacking(uid="KTVH44DV78", tag="BK-G-W-HEATER", wall_ref="W-G-W", face="left",
-                start=inch(168.75), length=inch(22.5),
-                elevation=inch(50), height=inch(11.25), profile="2x12",
-                material_ref="spf", purpose="EQ-G-HEATER wall bracket"),
+                start=inch(144.75), length=inch(70.5),
+                elevation=inch(72), height=inch(11.25), profile="2x12",
+                material_ref="spf", purpose="EQ-G-HEATER radiant bar swivel brackets, 99/101in AFF"),
 ]
 
 ATTIC_BACKING = [

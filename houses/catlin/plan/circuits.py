@@ -292,7 +292,7 @@ CIRCUITS = (
                         "appliance can be set in the pocket without a rewire"),
     Circuit(uid="CKT035AAAA", tag="CKT-GAR-HEAT", slot=37, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1500,
-            description="Garage infrared heater lamp, 1.5 kW (EQ-G-HEATER)"),
+            description="Garage Infratech W-1512 radiant heater, hardwired 1500 W / 120 V (EQ-G-HEATER)"),
 
     # --- the backup microgrid (notes/backup_power.md) ---------------------------------
     # Every circuit below is homed to ED-B-BACKUP-PANEL, the 12-space subpanel on the

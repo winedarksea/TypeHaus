@@ -111,13 +111,15 @@ def fixing_support(wall: ResolvedWall, face: str, fixing_xy: tuple[float, float]
 
 @check(Tier.ADVISORY, "advisory.wall_fixing_support")
 def wall_fixing_support(ctx: CheckContext) -> list[Finding]:
-    types = {item.tag: item for item in ctx.plan.library.furniture_types
-             if item.wall_fixing_points}
+    types = {(kind, item.tag): item
+             for kind, catalog in (("Furniture", ctx.plan.library.furniture_types),
+                                   ("Equipment", ctx.plan.library.equipment_types))
+             for item in catalog if item.wall_fixing_points}
     walls = {wall.tag: wall for wall in ctx.model.walls}
     out = []
     for obj in ctx.model.canvas_objects:
-        product = types.get(obj.type_ref or "")
-        if (product is None or obj.kind != "Furniture" or obj.host_fixture_ref is not None
+        product = types.get((obj.kind, obj.type_ref or ""))
+        if (product is None or obj.host_fixture_ref is not None
                 or obj.mount is None or obj.mount.kind is not MountKind.WALL):
             continue
         wall = walls.get(obj.attachment_wall or "")
@@ -148,4 +150,4 @@ def wall_fixing_support(ctx: CheckContext) -> list[Finding]:
                                     f"the {obj.attachment_face} face of {wall.tag}",
                                     tags, Result.FAIL))
     return out or [not_applicable("advisory.wall_fixing_support",
-                                  "no wall-mounted furnishings declare mounting-post centres")]
+                                  "no wall-mounted furnishings or equipment declare fixing centres")]

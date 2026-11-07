@@ -392,11 +392,28 @@ EQUIPMENT_TYPES = (
                                      position=(ft(0), ft(0), ft(0))),
                          ServicePort(tag="discharge", service=Service.SUPPLY_AIR,
                                      position=(ft(0), ft(0), ft(0))))),
-    # Garage infrared heater lamp — same 1,500 W / 120V / 20A arithmetic as the fireplace.
-    # It is hard-wired equipment rather than a fan-forced unit; RM-GARAGE stays
-    # `conditioned=False` and therefore out of the 3 VA/ft2 general-lighting area.
-    EquipmentType(tag="EQ-T-GARAGE-HEATER", name="Garage infrared heater lamp, 1.5 kW, 120V",
-                  footprint=(inch(14), inch(9)), height=inch(15),
+    # The envelope includes the swivel brackets and a conservative 6in behind the tilted
+    # body. Bracket stations are the design layout, not a factory drilling template.
+    EquipmentType(tag="EQ-T-GARAGE-HEATER", name="Infratech W-1512 infrared radiant heater, 1500 W, 120 V",
+                  footprint=(inch(33), inch(14)), height=inch(8),
+                  plan_symbol="infrared-heater",
+                  wall_fixing_points=((inch(-13.5), inch(3)), (inch(-13.5), inch(5)),
+                                      (inch(13.5), inch(3)), (inch(13.5), inch(5))),
+                  resistance_heating_btuh=5118,
+                  supplemental_heat=True,
+                  source="Infratech W-1512 SS (21-1040), dimensional basis: 1500 W / 120 V / "
+                         "12.5 A; 33in long, 8-3/16in reflector face, 3in housing thickness. "
+                         "Modelled 45 degrees down in a 33 x 14 x 8in installed envelope, "
+                         "including brackets and at least 6in behind the body. Four design "
+                         "fixings at +/-13.5in and 3/5in above the envelope base; verify the "
+                         "supplied swivel-bracket hole pattern before drilling. Hardwire on "
+                         "CKT-GAR-HEAT; local bench comfort only, garage stays unconditioned. "
+                         "Installation manual pp2-4: 8ft minimum floor clearance used for "
+                         "UL/CUL units, 12in to ceiling for wall mounting, 18in from adjacent "
+                         "walls/ends and 36in in front; keep flammables out of the work area. "
+                         "https://www.infratech.com/manual/reference-manual/ ; "
+                         "https://www.infratech.com/wp-content/uploads/"
+                         "infratech_W-series_instructions_2021_fnl-1.pdf",
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
     # Retained library option; the BATH2 installation was removed 2026-11-02.
