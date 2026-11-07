@@ -73,11 +73,79 @@ printed table, 2026-11-06. `tests/test_header_spans.py` pins these numbers.
 - `W-M-HS3` was UNKNOWN. Above it, `W-S-SN3` is named in `FO-A-HALL`'s bearing refs, and
   `FO-A-HALL`'s outline (x 120..216") projects onto the door's span, so the wall is BEARING
   (authored so) and the hall opening is a **point load inside the span** → no row.
-- The span is the pocket's full framed extent: RO 36" + cavity 38.5" = **74.5"**.
+- The span is the pocket's full framed extent: RO 36" + cavity 38.5" = **74.5"**
+  (x 110..184.5"; the resolved header is 77.5", x 108.5..186, on one jack each end).
 - Even read as a uniform one-floor load at 36' it has no 2-ply answer: R602.7(2) "One floor
   only" 2-2x12 = 6'-3" = 75" braced, but it carries head cripples, so 75 × 0.70 = 52.5"; a
-  3-ply does not fit a 2x4 wall. The ladder's 2-2x12 is drawn as a placeholder; **owner
-  decision open** (an LVL header-guide row, or a swing door).
+  3-ply does not fit a 2x4 wall. The ladder's 2-2x12 is drawn as a placeholder.
+
+### 4a. What actually bears on it (2026-11-06, owner asked for an LVL guide row)
+
+Read off the resolved model, not the walk's labels. Neither floor frames onto this line:
+`FS-S-WEST`'s trusses (y = 256", 272") and `FS-ATTIC`'s joists both run in x, parallel to it.
+
+- **The `FO-A-HALL` trimmer is a LINE load, not a point.** Its 2-ply 1 3/4 x 11 7/8 LVL pair
+  (centres y = 267.75"/269.5", x 120..216") sits on `W-S-SN3`'s plate (both at 228 1/8"),
+  i.e. continuously over x 120..184.5" of the span. The walk calls it a point only because
+  every `FloorOpening` load is.
+- **The real point is `BM-S-BATH-E`'s south end**, hung on that trimmer's west end at
+  x = 120" (`attic_studio.py`). The trimmer's own bearing there is `W-S-SN3`, so the
+  reaction comes straight down `W-S-SN3` onto this header **10" inside its clear span**
+  (west jack face at x = 110"). The beam's comment says it "rides that joist to wherever IT
+  bears" — it does, and where the joist bears is this wall.
+  - `BM-S-BATH-E`: 51.5" span (y 268..319.5"), `FS-ATTIC` joist ends cut at x = 120"
+    (bearing x ≈ 2..120", ~4.9' tributary), R301.5 habitable attic 30 psf + 12 psf dead,
+    `W-A-BA-E` ~5' × 8.4 psf = 42 plf, 3 plies × 6.0 = 18 plf:
+    w = 42 × 4.9 + 42 + 18 = 266 plf × 4.29' = 1,141 lb → **P ≈ 570 lb** (680 lb at 40 psf).
+- **Uniform**, per foot of span: trimmer strip (30+12) × 0.67' = 28; `W-A-HALL-S` on the
+  trimmer, ≤ 7.7' × 8.4 psf = 65; `W-S-SN3` 9.0' × 10 psf = 90; the `FS-S-WEST` subfloor
+  strip (40+12) × 0.67' = 35; cripples and board over the header ~10; a 2-ply 9 1/2" LVL
+  9.6 → **w ≈ 240 plf** (taken over the full 74.5").
+  (ASCE 7-16 Table C3.1-1a: 2x4 studs 4 psf, 1/2" gypsum 2.2 psf a face.)
+
+### 4b. The published rows, and why none closes it
+
+- **Uniform part — a row exists.** Boise Cascade EWP, *VERSA-LAM 1.7 2650 Eastern Header
+  Guide*, VL 1.7 2650 06/2009 r 07/21/11, p.4, "3½" VERSA-LAM 1.7 2650 Header Look Up
+  Tables", **Door and Window Headers, Floor - 1 Story, Floor Load: 40 PSF Live, 12 PSF Dead,
+  Flush Joists, Structure Width 24'-0", Clear Span 6'-8" → 7"** (6'-2" is 0.5" short of
+  74.5"). The row's floor term alone is 52 × 12' = 624 plf (an interior bearing takes half
+  the width whatever its position) against ~240 plf here, 39%. A 2-ply 1 3/4 x 9 1/2"
+  substitute ("Double 1¾" VERSA-LAM 1.7 2650 may be substituted") is the `WIN-M-DINING-E`
+  member.
+- **The point is outside every row read.** The same page: "Tables based upon uniform
+  loading applications shown in tables only". p.3 (holes, note 8): "For beams supporting
+  concentrated loads ... contact Boise Cascade EWP Engineering." Weyerhaeuser *TJ-9000*
+  (May 2015) is the same: p.12 "Table is based on: – Uniform loads", p.16 "Uniform loads
+  (beam weight considered)", p.5 "For applications not covered in this brochure, contact
+  your Weyerhaeuser representative". LP's LVL guides tabulate uniform loads only as well.
+  No maker found publishes a header row for a concentrated load in the span.
+- So **no `published_span` is authored**, and `structural.header_span` stays UNKNOWN.
+  Quoting the uniform row over a point it excludes would be a PASS off a row that does not
+  describe this header.
+
+### 4c. Hand check — engineering, NOT a table read
+
+Clear span L = 74.5", P = 570 lb at a = 10", b = 64.5"; w = 240 plf:
+
+    M  <= w L^2/8 + P a b / L = 240 x 6.21^2 / 8 + 570 x 10 x 64.5 / 74.5 / 12
+       =  1,156 + 411 = 1,567 lb-ft
+    V  =  240 x 6.21 / 2 + 570 x 64.5 / 74.5 = 745 + 494 = 1,239 lb   (west end)
+
+against the 6'-8" row's own load (624 plf over 80"): 3,467 lb-ft and 2,080 lb, so 45% and
+60%. Deflection: 5wL^4/384 + P a (L^2 - a^2)^1.5 / (9√3 L) (a the short side)
+= (8.0 + 2.0)E6 / EI against the row's 27.7E6 / EI, 36%. Against the 2-ply 1 3/4 x 9 1/2"
+VERSA-LAM itself (p.3: 2 x 5,966 lb-ft, 2 x 3,159 lb allowable) that is 13% and 20%. The
+member is not in doubt; the *read* is. Closing it takes one of:
+
+1. **An engineered item** — the maker's sizing software (BC Calc / ForteWEB) or a PE, with
+   this load set (`header/D-M-LAUN`, ENGINEERED authority).
+2. **Move the door ~12" east** so the west jamb pack (x ≈ 119..122") stands under the
+   hanger at x = 120". The point then lands on the jack and the uniform row above closes it
+   prescriptively. The sink centre (x = 145.6") stays inside a 122..158" opening, but the
+   east jamb would meet `W-M-LS` (axis x = 161") at the doorway — an owner layout call.
+3. **A swing door does not help by itself**: a 36" leaf's ~38" RO from x = 110" still has
+   the hanger 10" inside it.
 
 ## Cross-checks of the table read (not catlin openings)
 
