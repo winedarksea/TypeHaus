@@ -1161,7 +1161,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # it — the derived rule uses the cheaper, stronger KBS1Z strap (see houses/catlin/
 # notes/uplift_load_path.md) — so this row prices the authored one-offs only.
 "PC6Z" = { low = 14, high = 26 }  # 0 ea
-"LSSR" = { low = 12, high = 22 }  # 38 ea — the ridge
+# 2026-11-06: catalog LSSR -> LSSR2.37Z (C-C-2026 p.178, TJI 230). Search snippets: singles ~$18-28, 25-pack $425.68 (dkhardware, $17/ea).
+"LSSR2.37Z" = { low = 17, high = 28 }  # 38 ea — the ridge
 # LSCZ $2.99 each, fastenersplus.com (read 2026-09-24); the band carries the house's usual
 # contractor-carton low and a ZMAX/short-stock high.
 "LSCZ" = { low = 2.5, high = 5 }  # 3 ea — resolver-emitted at an interior winder landing rim. ST-G-SERVICE's 2 went with BM-BW-LAND-HDR, 2026-10-13: its stringers now seat on the garage stem
@@ -1174,23 +1175,23 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # Level I-joist hangers authored on the three flush LVLs (BM-M-HALL, BM-S-HALL, BM-S-BATH-E).
 # ESTIMATE, unconfirmed: single-piece retail band for an IUS2.37/11.88 (TJI 230 since
 # 2026-11-01, C3-E4; was IUS2.56/11.88), carton at the low end.
-"IUS2.37/11.88" = { low = 4, high = 9 }  # 13 ea
+"IUS2.37/11.88" = { low = 4, high = 9 }  # 17 ea since 2026-11-06 (FO-A-STAIR / FO-M-ERV-OA header ends now sized; 25-pack $124 snippet, mrosupreme)
 # Floor truss hanger, BM-M-HALL x FS-S-WEST (3 hung ends). ESTIMATE, unconfirmed: a THA-series
 # top-flange hanger is a similar single-piece retail band to the IUS above.
 "THA422" = { low = 4, high = 9 }  # 3 ea
 # Derived I-joist ends bill the bare series (the engine does not guess the flange size;
 # geometry review 2026-10-31, F3-006). ESTIMATE, unconfirmed: the IUS2.37/11.88 band above.
-"IUS" = { low = 4, high = 9 }
+"IUS" = { low = 4, high = 9 }  # 0 ea since 2026-11-06: derived ends size from the header's series and depth
 # Floor-opening LVL header ends into their trimmer packs. ESTIMATE, unconfirmed: single-piece
 # retail band for a 12-ga HHUS face-mount.
 "HHUS410" = { low = 14, high = 24 }  # 10 ea
 # Doorway transitions (plan/doorway_transitions.py, 2026-11-01). ESTIMATES, unconfirmed:
 # retail bands per piece cut to one doorway.
 "PROD-CARPET-ZBAR" = { low = 8, high = 20 }  # 5 ea — BED1/2/3, M-BATH2, B-PLAY (mat edge)
-"PROD-CATLIN-OAK-REDUCER" = { low = 25, high = 70 }  # 2 ea — 5/4 saddle D-M-BED2, 3/4 reducer D-A-HALVES (owner-stock oak at the low end)
+"PROD-CATLIN-OAK-REDUCER" = { low = 25, high = 70 }  # 3 ea — 5/4 saddle D-M-BED2, 3/4 reducer D-A-HALVES, nosing D-A-STUDY (owner-stock oak at the low end)
 "PROD-SCHLUTER-SCHIENE" = { low = 15, high = 35 }  # 2 ea — S-SUITEBATH, S-BATH1
 "PROD-CATLIN-SOLID-SURFACE-REDUCER" = { low = 40, high = 120 }  # 1 ea — S-PLANT, fabricator offcut
-"PROD-RUBBER-REDUCER" = { low = 10, high = 30 }  # 3 ea — B-PLAY, B-SAUNA, B-BATH
+"PROD-RUBBER-REDUCER" = { low = 10, high = 30 }  # 4 ea — B-PLAY, B-SAUNA, B-BATH, A-POCKET (1/8" vinyl edge)
 # ZMAX (G185) LUS where the carrier is preservative-treated (IRC R317.3.1): the breezeway's
 # treated beams, and the balcony centre glulam. Sized by the engine off the joist; ~25% over G90.
 "LUS28Z" = { low = 2.5, high = 7.5 }  # 2 ea authored — CN-BW-HGR-SCS-S/-N, BM-BW-SCSILL off the canopy columns (2026-10-31) — plus whatever the engine derives off a 2x8 into treated stock
@@ -6549,6 +6550,10 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # 2026-11-06 fit pass (#22): Uponor A5110500 1/2" metal bend support, 8 at the hot-water header
 # (submittal rev. A 2008). Consolidated Supply product 5050, ~$3.57 each (read 2026-11-06); high allows small-order supply.
 "Uponor A5110500 1/2in metal bend support" = { low = 3.57, high = 6 }  # 8 ea
+# 2026-11-06 fit pass (#26): the fridge column hinges at the pair seam on Frigidaire's Pro door reversal kit
+# (Tall Twin Resource Guide rev 2/4/2021 p.23). Search snippets only: Electronic Express $459.99 (out of stock),
+# BrandSmart TTDRRVFRKIT2 $499 special order. Confirm the two are one part at order.
+"Frigidaire TTDRRVFRKIT Pro door reversal kit, refrigerator to left hinge (door, hinges, covers, stopper)" = { low = 460, high = 500 }  # 1 ea
 # 2026-08-24: the twin pairing kit for the Frigidaire column pair (plan/placeables.py, on
 # APPL-M-FRIDGE). It is a row here rather than folded into either appliance price because it
 # is ONE kit for TWO cabinets — carried on an appliance row it would read as a per-unit
