@@ -362,9 +362,11 @@ BASEMENT_EQUIPMENT = [
               # the nearest receptor is FX-B-SAUNA-FD nine feet up the basement's other end,
               # and a spigot at slab level has nowhere to fall to.
               #
-              # ELEVATION 4'-6", BECAUSE THE PORTS ARE ON TOP. All four air ports on this
-              # machine are 6" round on its TOP face (EQ-T-BROAN-B210E75RT,
-              # plan/mep_erv_types.py). At 4'-6" the case top is at 6'-3 5/8", giving the two
+              # ELEVATION 52.3" (was 4'-6" until 2026-11-07: the direct condensate line left
+              # 1.7" to spend, which is what the supply trunk's 12" flex lead was short;
+              # notes/erv_static_budget.md §10.11 has the 5" the condensate fall allows). ALL FOUR
+              # air ports are 6" round on its TOP face (EQ-T-BROAN-B210E75RT,
+              # plan/mep_erv_types.py). At 4'-6" the case top was at 6'-3 5/8", giving the two
               # outdoor legs (plan/mep_erv_risers.py) and the two manifold trunks
               # (plan/mep_erv_l1.py) a 6'-10 7/16"
               # crossing band: 1 5/8" under the 7'-6" radial layer, 6 13/16" over this case,
@@ -378,7 +380,7 @@ BASEMENT_EQUIPMENT = [
               # 3" clear on the electrical-box side. The north edge is only 1 1/8" from
               # W-B-ESS-S, so orient both service zones toward the open room, not that wall.
               # Quarterly filter/core service uses a portable ladder; do not box the unit in.
-              mount=Mount(kind=MountKind.CEILING, elevation=ft(4, 6)),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(52.3)),
               pan_drain_ref="PR-B-ERV-COND",
               # Its fresh air reaches the second storey through EQ-S-ERV-MIX and this AH's
               # ducts, so the ERV's furnace/air-handler interlock contacts (Broan

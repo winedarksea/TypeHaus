@@ -216,10 +216,11 @@ DUCTS_ERV_BASEMENT = [
     #
     # (2026-10-17) The ERV sits at x=6'-8 5/8", so both trunks leave its top inside the case.
     # The supply rises straight off Broan's port 2 into EQ-B-ERV-MAN-SUP's underside
-    # (2026-11-01; it stood 4 5/8" off the collar).
+    # (2026-11-01; it stood 4 5/8" off the collar). The case sits 1.7" lower since 2026-11-07, so
+    # the port is at 73.9" and the trunk is 12.1" long: Broan's 12" flex lead fits.
     DuctRun(uid="225MZ1YDWB", tag="DU-B-ERV-SUP-TRUNK", system=DuctSystem.SUPPLY,
             path=(pt(inch(88.65625), inch(364.625)), pt(inch(88.65625), inch(364.625))),
-            elevations=(inch(75.6), ft(7, 2)),
+            elevations=(inch(73.9), ft(7, 2)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_SUP_TRUNK),
     # (2026-10-17) Off the case's north-east top, under the collars. Nothing west of x=6'-0".

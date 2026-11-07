@@ -610,41 +610,35 @@ LAUNDRY_MAIN = [
 # against -15 F outdoor air. `pan_drain_ref` on EQ-B-ERV names this run.
 #
 # ** GRAVITY TO A RECEPTOR, NOT THE SUMP (owner, 2026-10-17). ** No pump: the pan
-# (52 1/2" AFF, under the case bottom at 54") is the highest the line can ever be, so it
-# cannot hang up at the joists (the owner's other option, 2026-10-29) and must stay out of
-# the room at walking height instead.
-#
-# ** BEHIND THE TANK AND THROUGH THE UNDER-STAIR STORAGE (owner, 2026-10-29). ** North under
-# the case to y 30'-7 3/8", east through the tank's 4 1/2" north gap and
-# W-B-STR3 into the storage, across its low north end (stringers 58" over it), south 3 1/2"
-# off W-B-WELL, then west INSIDE W-B-BA-N (bores at 152", 136", 124") and through the
-# W-B-STR3 line at N-B-BA-NW, under its 49 1/2" ladder block (pipe top 47 1/2"), to the
-# mech face. Nothing crosses open floor, the swing (x 96.8"..120", y >= 317") or
-# D-B-CLOSET's doorway inside the storage.
-# ** IT ENDS OVER FX-B-UTIL-SINK NOW (2026-10-30), not the bath lavatory. ** South on the
-# x=115.5" leg along W-B-STR2's face to y=19'-10", then 5 1/2" west to end 44 1/4" up over
-# the basin: a 10" air gap over the 34" rim, above the faucet's 43" box. The W-B-STR2 bore
-# and the bath crossing are gone. Every leg >= 0.35"/ft; PR-B-WH-COND still tees in behind
-# the tank at x=94".
+# (50.8" AFF, 1 1/2" under the case bottom at 52.3") is the highest the line can ever be.
+# ** EXPOSED THROUGH THE MECH ROOM, DIRECT TO THE SINK (owner, 2026-11-07). ** A mechanical room
+# may show a 3/4" pipe, so the 2026-10-29 detour behind the tank, through the under-stair storage
+# and inside W-B-BA-N is gone (275" of run, 5.7" of fall at 1/4"). East under the case to the
+# gap between its east face and the tank (x 91.5", 0.9" off the tank's tangent), south along it
+# to y=311" (5" clear of D-B-CLOSET's swing, y >= 316"), east on y=311" to the W-B-STR3B face,
+# then the old exposed leg south to the sink: 155" of plan, 12.9 ft. Every leg 0.33-0.52"/ft
+# (slope is not the binding term; 1/4" over 155" is 3.2" of the 6.55" head, notes/
+# erv_static_budget.md §10.11). It ends where it did: a 10" air gap over the 34" rim, above the
+# faucet's 43" box. The sink's own trap seals it, so the line takes none (Rheem: no trap to a
+# non-sewer receptor). Nothing crosses the dry-fire lane (x 40..68") or the door swing.
 ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(80.6), inch(352)), pt(inch(80.6), inch(367.375)),
-                  pt(inch(160.5), inch(367.375)), pt(inch(160.5), inch(306)),
-                  pt(inch(115.5), inch(306)), pt(inch(115.5), inch(238)),
-                  pt(inch(110), inch(238))),
+            path=(pt(inch(80.6), inch(352)), pt(inch(91.5), inch(352)),
+                  pt(inch(91.5), inch(311)), pt(inch(115.5), inch(311)),
+                  pt(inch(115.5), inch(238)), pt(inch(110), inch(238))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(52.5), inch(52), inch(49.75), inch(48), inch(46.75), inch(44.5),
+            elevations=(inch(50.8), inch(50.5), inch(48.72), inch(47.67), inch(44.49),
                         inch(44.25),)),
-    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C), 1.2" off the
-    # ERV case's east face: a street elbow turns it down to 52 1/2", then it runs north past
-    # the round tank's NW corner onto PR-B-ERV-COND behind the tank (Rheem: no trap to a
-    # non-sewer receptor, pitch >= 1/8"/ft, never into the tank's own pan). The tee is read
-    # off that leg's fall (52" -> 49 3/4" over x 80.6" -> 160.5"), so it moves if that does.
+    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C), 1.2" off the ERV
+    # case's east face: a street elbow turns it down to 51", it steps 2 1/2" west into the
+    # gap under the case's east edge (the tank's circle is 0.9" east of that line), and falls
+    # south onto PR-B-ERV-COND at (91.5", 352"). Pitch >= 1/8"/ft (Rheem), never into the
+    # tank's own pan. The tee is read off the ERV line's fall there (50.5").
     PipeRun(uid="V5TVMM2BN9", tag="PR-B-WH-COND", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(inch(94), inch(360.5)), pt(inch(94), inch(360.5)),
-                  pt(inch(94), inch(367.375))),
+                  pt(inch(91.5), inch(360.5)), pt(inch(91.5), inch(352))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(59), inch(52.5), inch(51.623))),
+            elevations=(inch(59), inch(51.1), inch(51.0), inch(50.5))),
 ]
 
 # ** THE COLLECTOR MOVED ONTO THE SERVICE BAND, AND THE HEAD CAME UP 2 5/8" (2026-09-09). **

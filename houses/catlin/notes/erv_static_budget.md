@@ -787,6 +787,46 @@ The governing side is supply again. Off the fan curve between 0.4" (206) and 0.5
 0.430": 206 - (0.030 / 0.1) x 5 = **204.5 cfm**, which is what the check reads. Against R403.5's
 **203.0**: **+1.5 cfm** (was +0.9). Commissioning (§8) still closes it.
 
+### 10.11 Direct condensate, and how far the ERV can drop (2026-11-07)
+
+Owner: the pan drains to the utility sink, so the line may run exposed through the mechanical
+room. `PR-B-ERV-COND` now leaves the pan (80.6", 352") east under the case to x=91.5", south to
+y=311", east to the W-B-STR3B face, south to the sink and 5.5" west over the basin. Plan legs:
+
+    10.9 + 41 + 24 + 73 + 5.5 = 154.4 in = 12.87 ft      (was 275.15 in = 22.93 ft)
+
+Fall to the unchanged outlet (44.25" AFF, 10" air gap over the 34" rim) from a pan at P:
+
+    available = P - 44.25;   required = 12.87 ft x s        s = 1/4: 3.22 in   3/16: 2.41   1/8: 1.61
+
+At the old pan (52.5", case bottom 54"): 8.25 in available, so the ERV may drop
+8.25 - 3.22 = **5.0 in** at 1/4"/ft, **5.8 in** at 3/16", **6.6 in** at 1/8" (IMC 2018 307.2.1's
+floor; the engine still grades 1/4" until the slope rule lands). Before: 8.25 - 22.93 x 0.25 = 2.5
+in, which is the "~3.8 in" of the TODO less the branch's own slack. The legs hold 0.33-0.52"/ft
+(`mep.drain_slope` passes at 0.25).
+
+**Spent now: 1.7 in.** The case hangs at 52.3" (pan 50.8"; 6.55 in head), which makes the 6" supply
+trunk 12.1 in long (port 73.9" to the plenum at 86"): Broan's 12 in flex lead fits, where 10.4 in
+left it 1.6 in short. `PR-B-WH-COND` steps 2.5" west and falls onto the ERV line at (91.5", 352",
+50.5"), under the case edge (pipe top 51.5" < 52.3"). Other limits on the drop, none binding by
+5 in: the T&P valve port at 46" (case bottom 49" at 5 in), headroom under the case, and the
+lane (x 40..68", unaffected). The number the rotation pass takes: **5.0 in at 1/4"/ft (6.6 at
+1/8")** of drop from the 54" case, so up to 3.3 in more than now.
+
+Static: SUP-TRUNK is 1.7 in longer, which adds 0.00046 in. (Darcy, 6", 210 cfm: 0.0032 in./ft x 0.142 ft) and moves the
+delivered flow 204.50 -> 204.48 cfm (50 cfm/in. off the curve), so the check reads 204; R403.5's
+203.0 is still cleared.
+
+**MAN-SUP feed, tried and not closed (no change in the house).** Up through FO-M-ERV-OA's east
+end (opening to x=58.5", feed up x=52", y=408" from a tee on RISER-SUP's x=65" leg under the
+joists). The vertical has room (3" east of OA's wrap, 1.4" west of PR-B-CW-TRUNK), but the way
+there crosses DU-ERV-EA's x=58.5" north leg (wrap AFF 72-85.7") under CD-B-GARAGE's conduit at x=60"
+(AFF 91.8"): 5.1 in for a 6 in duct, and EA cannot rise (OA's wrap bottom leaves its y=418.5" leg
+0.7 in) or fall (the lane). It closes once the rotation re-routes EA (no x=58.5" leg); the opening
+change, FO header at 58.5" and PR-B-CW-TRUNK / PR-B-KITCH-DRAIN crossing it (both
+`run_through_floor_member` UNKNOWN) come with it. EA drain-back is the same dependency: its low
+point is the riser foot because OA's riser crosses its y=418.5" leg 0.7 in above.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of
