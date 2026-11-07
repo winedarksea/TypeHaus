@@ -92,16 +92,16 @@ def build_floorplan(model: ResolvedModel, storey: str, *,
     opening_segments = emit_floor_opening_rings(b, model, storey)
     stair_boxes = emit_stairs(b, model, storey, opening_segments)
     _emit_railings(b, model, storey)
-    void_boxes = emit_floor_opening_notes(b, model, storey, avoid=stair_boxes + slab_boxes,
-                                          scale=dimension_scale)
+    alarm_boxes = _alarm_glyph_boxes(model, storey)
+    void_boxes = emit_floor_opening_notes(b, model, storey, stair_boxes + slab_boxes,
+                                          dimension_scale, mark_boxes + alarm_boxes)
     # Order is the whole argument here. A mark bubble is pinned to its opening and an alarm
     # glyph to its device — neither can move — so the room block, which is the one thing on
     # the plan free to sit anywhere inside its own room, is placed last among the three and
     # told where the other two already are. Its caption then goes back the other way: the
     # block is fixed by the time the alarm's SD/CO label picks a side.
     room_boxes = emit_room_blocks(b, model, storey,
-                                  avoid=mark_boxes + void_boxes
-                                  + _alarm_glyph_boxes(model, storey),
+                                  avoid=mark_boxes + void_boxes + alarm_boxes,
                                   prefer=_placeable_boxes(model, storey),
                                   scale=dimension_scale)
     # Floor heat is MECHANICAL and now lives in ``_shared.emit_floor_heat`` for the HVAC

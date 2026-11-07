@@ -23,6 +23,7 @@ it perforates, and it is the deck it is a hole in that has something to say abou
 from __future__ import annotations
 
 from shapely.geometry import Polygon
+from shapely.geometry import box as shapely_box
 
 from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE
 from typehaus.emit.draw._shared import to_in as _in
@@ -33,11 +34,14 @@ from typehaus.emit.draw.plan_labels import (
     _block_half_width,
     _fitted_lines,
     _inside_point,
+    _overlaps,
     _place_block,
+    _short_label,
     block_pitch_m,
+    room_display_name,
 )
 from typehaus.emit.draw.scene import Polyline, SceneBuilder, Text
-from typehaus.emit.draw.typography import TAG_PT
+from typehaus.emit.draw.typography import ROOM_NAME_PT, TAG_PT
 from typehaus.model.enums import FloorOpeningPurpose
 from typehaus.resolve.assembly_material import is_flatwork
 from typehaus.resolve.model import ResolvedModel
@@ -178,15 +182,45 @@ def _repeats(model: ResolvedModel, storey: str, scale: float):
                 yield None, caption, [opening]
 
 
+def _name_fits(model: ResolvedModel, room, obstacles: list[Box], scale: float) -> bool:
+    """Can ``room``'s name still land, full size and inside it, clear of ``obstacles``?"""
+    ring = room.clear_face
+    name = [(room_display_name(room.tag), ROOM_NAME_PT)]
+    anchor, lines = _place_block(_inside_point(ring), name, ring, obstacles, scale=scale,
+                                 spill=True, short=_short_label(model, room.tag))
+    box = _block_box(anchor, lines, scale)
+    return (lines[0][1] == ROOM_NAME_PT and Polygon(ring).contains(shapely_box(*box))
+            and not _overlaps(box, obstacles))
+
+
+def _keeps_room_names(model: ResolvedModel, storey: str, ring: list[Pt],
+                      room_avoid: list[Box], scale: float):
+    """``accept(box)``: the caption leaves every room it lies in a slot for its name.
+
+    The room block is placed after the void captions and dodges them, so a caption centred
+    in a hole that fills most of a closet left the name nowhere to go (``CHASE`` in MECH on
+    A-102). A room whose name has no slot even without the caption is not held against it.
+    """
+    hole = Polygon(ring)
+    rooms = [r for r in model.rooms if r.storey == storey and len(r.clear_face) >= 3
+             and Polygon(r.clear_face).intersection(hole).area > 0.0
+             and _name_fits(model, r, room_avoid, scale)]
+    return lambda box: all(_name_fits(model, r, [*room_avoid, box], scale) for r in rooms)
+
+
 def emit_floor_opening_notes(b: SceneBuilder, model: ResolvedModel, storey: str,
                              avoid: list[Box] = (),
-                             scale: float = PLAN_RESERVATION_SCALE) -> list[Box]:
+                             scale: float = PLAN_RESERVATION_SCALE,
+                             room_avoid: list[Box] = ()) -> list[Box]:
     """Caption every opening on this deck, clear of ``avoid``. Returns the boxes used.
 
     Placement reuses ``plan_labels``' block machinery verbatim: it already takes an
     arbitrary ``Ring`` rather than a room, and a caption in a 3'-0" band of well that also
     carries a winder fan and ``UP 16 R`` is exactly the collision it was written for.
     Repeated openings share one ``TYP.`` caption placed on their deck, clear of every void.
+    ``room_avoid`` is what the room blocks will dodge (marks, alarm glyphs). A lone caption
+    steps round it where it can (``prefer``: never at the cost of a clear spot), and off its
+    first clear spot only when that spot leaves a room's name nowhere to go.
     """
     boxes: list[Box] = []
     for deck, caption, members in _repeats(model, storey, scale):
@@ -194,8 +228,18 @@ def emit_floor_opening_notes(b: SceneBuilder, model: ResolvedModel, storey: str,
         ring = [point.xy_m for point in opening.outline]
         if deck is None:
             lines = _fitted_lines([(caption, TAG_PT)], ring, scale)
-            anchor, lines = _place_block(_inside_point(ring), lines, ring,
-                                         avoid=[*avoid, *boxes], scale=scale)
+            obstacles = [*avoid, *boxes]
+            anchor, placed = _place_block(_inside_point(ring), lines, ring, avoid=obstacles,
+                                          prefer=room_avoid, scale=scale)
+            accept = _keeps_room_names(model, storey, ring, [*room_avoid, *boxes], scale)
+            if not accept(_block_box(anchor, placed, scale)):
+                moved, kept = _place_block(_inside_point(ring), lines, ring, avoid=obstacles,
+                                           prefer=room_avoid, scale=scale, accept=accept)
+                box = _block_box(moved, kept, scale)
+                if (Polygon(ring).contains(shapely_box(*box)) and not _overlaps(box, obstacles)
+                        and accept(box)):
+                    anchor, placed = moved, kept
+            lines = placed
             uid = opening.uid
         else:
             ring = [point.xy_m for point in deck.outline]

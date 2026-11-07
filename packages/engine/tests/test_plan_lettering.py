@@ -98,3 +98,29 @@ def test_a_tight_room_takes_its_short_label_before_a_smaller_size():
     # A room the full name fits never abbreviates.
     assert _place_block(at, block, ring, [], scale=0.25, spill=True,
                         short="MUD CL.")[1] == block
+
+
+def test_a_void_caption_leaves_its_room_a_slot_for_the_name(catlin_model_ro):
+    """A-102 at 1/4": FO-M-ERV-OA fills two thirds of MECH (63" x 23") and D16a stands in the
+    rest. Centred, ``CHASE`` left the name nowhere; it now drops so ``MECH`` stacks above."""
+    from typehaus.emit.draw.floorplan import _emit_openings
+    from typehaus.emit.draw.floorplan_sheet import framed_floorplan
+    from typehaus.emit.draw.paper import ARCH_D
+    from typehaus.emit.draw.plan_labels import _block_box, _overlaps
+    from typehaus.emit.draw.scene import SceneBuilder
+
+    scene = framed_floorplan(catlin_model_ro, "main", ARCH_D)
+    scale = scene.frame.scale
+    level = model_at_level(catlin_model_ro, "main")
+    walls = {w.tag for w in level.walls if w.storey == "main"}
+    marks = _emit_openings(SceneBuilder(name="m", units="in"), level, walls, "main")
+
+    def box(content, layer):
+        node = next(n for n in _texts(scene, layer) if n.content == content
+                    and n.anchor[0] < 70 and 400 < n.anchor[1] < 430)
+        return _block_box(tuple(v * M_PER_IN for v in node.anchor),
+                          [(content, node.height_pt)], scale)
+
+    name, chase = box("MECH", ROOM_LAYER), box("CHASE", "A-ANNO-TEXT")
+    assert not _overlaps(name, [chase, *marks])
+    assert not _overlaps(chase, marks)

@@ -263,7 +263,7 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
                  avoid: list[tuple[float, float, float, float]],
                  prefer: list[tuple[float, float, float, float]] = (),
                  scale: float = PLAN_RESERVATION_SCALE, spill: bool = False,
-                 short: str | None = None,
+                 short: str | None = None, accept=None,
                  ) -> tuple[tuple[float, float], list[tuple[str, float]]]:
     """Where the block goes and which of its lines survive: inside the room, clear of ``avoid``.
 
@@ -298,6 +298,9 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
     **``short`` is the room's authored abbreviation** (``Room.short_label``), tried only once
     the full name has no clear spot, and before any drop in size: one lettering size across
     the set, abbreviated in tight rooms (owner, D1-109).
+
+    **``accept(box)``** vetoes a contained, clear trial (a void caption keeping its room's
+    name a slot: ``plan_voids``).
     """
     poly = Polygon(ring)
     step_y = block_pitch_m(scale) / 2.0
@@ -308,7 +311,8 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
                 anchor = _clamped_anchor((at[0] + dx * step_x, at[1] + dy * step_y),
                                          trial, ring, scale)
                 extents = _block_box(anchor, trial, scale)
-                if poly.contains(shapely_box(*extents)) and not _overlaps(extents, obstacles):
+                if (poly.contains(shapely_box(*extents)) and not _overlaps(extents, obstacles)
+                        and (accept is None or accept(extents))):
                     return anchor, trial
     if not spill:  # a void's note keeps the old last resort; ``spill`` is a room's name
         return _clamped_anchor(at, lines[:1], ring, scale), lines[:1]
