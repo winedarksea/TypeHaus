@@ -392,15 +392,15 @@ SUPPLY = [
     # above, each leg naming its own host so `mep.wet_wall_occupancy` doesn't read a single
     # riser as escaping the wall it's actually inside.
     #
-    # Both runs claim `serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")`, reaching past the
-    # WASHER BOX at (8'-0", 36") on to the basin beside it (west of the tower since
-    # 2026-11-07; the washer's 60" hoses reach back to the box):
+    # Both runs claim `serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")`: they end at the basin
+    # (west of the tower since 2026-11-07), and the tower's own branches
+    # (PR-M-WASH-CW/-HW, below) tee off their terminal corners:
     #
     #   riser top 40"/42"  ->  south inside W-M-BA2E  ->  east inside W-M-CLN  ->  drop to 20"
     #
     # 20" is the stop height inside the tub's own cabinet (FX-LAUNDRY-SINK-24 is a 34" rim
-    # in a cased base, 43" over the faucet), NOT the 36" the washer box stands at — a stub
-    # above the rim would come out of the wall in front of the basin. Cold lands 4" west of
+    # in a cased base, 43" over the faucet), NOT the 35"-37 1/2" the washer box stands at — a
+    # stub above the rim would come out of the wall in front of the basin. Cold lands 4" west of
     # the bowl centre, hot 4" east: hot on the LEFT of someone facing the faucet, who is
     # standing north of a sink whose back is on the south wall.
     #
@@ -408,10 +408,9 @@ SUPPLY = [
     #   * the cold tops out at 40" at its own riser head and travels the whole way at 40",
     #     2" under the hot's 42". Both share the y=18'-1" lane, so a shared elevation would
     #     be one pipe inside the other; stacked is how the pair is actually run in a cavity.
-    #     (32" until 2026-11-07: the standpipe now stands beside this riser, and its 36" top
-    #     buried the cold stop and arrestor.)
-    #   * the hot rides 42", over the cold riser's 40" head and the standpipe's 36" top, on
-    #     W-M-BA2E's axis (see PR-B-HW-WASH).
+    #     (32" until 2026-11-07.)
+    #   * the hot rides 42", over the cold riser's 40" head, on W-M-BA2E's axis (see
+    #     PR-B-HW-WASH).
     #   * the cold stops 4 1/2" short of the hot (x=9'-1 1/2" against 9'-6", the tub's
     #     port stations, hot on the LEFT of someone facing the faucet). So the hot's drop at
     #     9'-6" comes down past 40" east of where the cold's leg ends, and misses it.
@@ -428,16 +427,11 @@ SUPPLY = [
     # and `mep.wet_wall_occupancy` grades it `long_horizontal`; through the staggered pair it
     # threads between two offset stud rows and bores nothing but that one corner post.
     PipeRun(uid="CBPW37AAAA", tag="PR-B-CW-WASH", system=PipeSystem.WATER_COLD,
-            # ** 2" EAST OF THE WALL'S AXIS, NOT ON IT (P3, 2026-09-19). ** The laundry
-            # standpipe stands at (8'-2", 20'-0") and PR-B-WASH-DRAIN's riser under it, and
-            # this run went straight through both — below the deck on its way north, and
-            # again at +2'-8" on its way back south inside W-M-BA2E. The wall is 6 3/4"
-            # (2x6), so a 3/4" PEX 2" off the axis is still 3/10" clear of the stud face
-            # with 1 5/8" to the standpipe, which is what the two need between them. The
-            # riser stays in the same bay; only the station inside it moved.
-            # The riser tops out at the run's own +2'-8" and turns north; the washer valve at
-            # +3'-0" is a tee off it, which a supply run does not draw. Overshooting to 3'-0"
-            # and dropping back drew that tee as a 180-degree reversal.
+            # ** 2" EAST OF THE WALL'S AXIS, NOT ON IT (P3, 2026-09-19). ** It kept clear of the
+            # washer standpipe and its riser (retired 2026-11-07, the washer drains to the tub)
+            # and still clears the hot riser on the axis: the wall is 6 3/4" (2x6), so a
+            # 3/4" PEX 2" off the axis is 3/10" clear of the stud face.
+            # The riser tops out at the run's own 40" and turns south inside the wall.
             path=(pt(ft(8, 4), ft(16)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(inch(109.5), ft(18, 1)), pt(inch(109.5), ft(18, 1)),),
             diameter=inch(0.75), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375),
@@ -447,11 +441,10 @@ SUPPLY = [
                        "W-M-CLN", "W-M-CLN"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW38AAAA", tag="PR-B-HW-WASH", system=PipeSystem.WATER_HOT,
-            # ** ON W-M-BA2E's AXIS AND 6" OVER THE STANDPIPE (2026-09-23). ** At x=8'-0" the
-            # jacket stood 0.69" proud of the stud plane; on the axis (x=8'-2") it would run
-            # through PR-M-WASH-STANDPIPE, which tops out at 3'-0", so the leg rides 3'-6"
-            # (12'-7 7/16" basement-rel). The riser is at y=20'-9 1/4", the bay south of
-            # joist-0-016 — at 21'-2.4" the jacket took its flanges.
+            # ** ON W-M-BA2E's AXIS (2026-09-23). ** At x=8'-0" the jacket stood 0.69" proud of
+            # the stud plane. It rides 42" (12'-7 7/16" basement-rel), 2" over the cold, and the
+            # riser is at y=20'-9 1/4", the bay south of joist-0-016 — at 21'-2.4" the jacket
+            # took its flanges.
             # Sink terminal at x=9'-6" since the tub moved west (2026-11-07), well clear of
             # PR-M-S-SUITE-DRAIN's stack at x=12'-6".
             path=(pt(inch(90), inch(302.874)), pt(inch(90), inch(302.874)),
@@ -468,6 +461,33 @@ SUPPLY = [
             wall_refs=(None, None, None, None, None, "W-M-BA2E", "W-M-BA2E", None,
                        "W-M-CLN", "W-M-CLN"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
+    # ** THE WASHER BOX IS BEHIND THE TOWER, ON W-M-CLN (owner, 2026-11-07). ** It stood on
+    # W-M-BA2E at y=20'-7", 4' of hose from the machine's rear inlets and against BATH2's tub
+    # wall; its valves are 5" behind the rear inlets, 8" apart about x=141.5" (hot 137.5", cold
+    # 145.5"; the WashTower's inlet stations are scaled, not dimensioned), on a branch that tees off the tub pair's terminal corner and
+    # runs east in the same staggered cavity, in the y=215" lane: 1" clear of PR-M-LSINK-VENT's
+    # riser at (124", 217.5"), 1 3/4" short of PR-M-S-SUITE-DRAIN's 3" barrel at x=12'-6", and 5.7" under the receptacle boxes ED-M-LAUNDRY-RC1/DR1
+    # (43" AFF, recessed 2.5"-4"). Cold rides 35", hot 37 1/2" and ends first, so the cold
+    # passes under it; the last 3" turn out to the box face. LG sells the hoses separately
+    # (5' pair, appliance_types.py), so each reaches with 4' to spare.
+    PipeRun(uid="B879Z3S3VC", tag="PR-M-WASH-CW", system=PipeSystem.WATER_COLD,
+            path=(pt(inch(109.5), inch(217)), pt(inch(109.5), inch(215)),
+                  pt(inch(109.5), inch(215)), pt(inch(145.5), inch(215)),
+                  pt(inch(145.5), inch(218)),),
+            diameter=inch(0.75), material="pex",
+            elevations=(inch(149.4375), inch(149.4375), inch(144.4375), inch(144.4375),
+                        inch(144.4375),),
+            wall_refs=("W-M-CLN", "W-M-CLN", "W-M-CLN", "W-M-CLN"),
+            serves=("FX-M-LAUNDRY",)),
+    PipeRun(uid="W4T0H24P8K", tag="PR-M-WASH-HW", system=PipeSystem.WATER_HOT,
+            path=(pt(inch(114), inch(217)), pt(inch(114), inch(215)),
+                  pt(inch(114), inch(215)), pt(inch(137.5), inch(215)),
+                  pt(inch(137.5), inch(218)),),
+            diameter=inch(0.5), material="pex",
+            elevations=(inch(151.4375), inch(151.4375), inch(146.9375), inch(146.9375),
+                        inch(146.9375),),
+            wall_refs=("W-M-CLN", "W-M-CLN", "W-M-CLN", "W-M-CLN"),
+            serves=("FX-M-LAUNDRY",)),
     # ** IT STEPS NORTH AND UP TO CROSS RM-B-STAIR (2026-09-09; the heights re-derived
     # 2026-09-19). ** The original argument was a finished-volume one and it is worth
     # keeping as the record of why this jog EXISTS: the y=15'-6" hot lane rode at

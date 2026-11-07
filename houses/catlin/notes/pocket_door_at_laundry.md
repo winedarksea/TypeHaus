@@ -16,9 +16,16 @@ which takes that casing leg.
 The tower stands 1" off `W-M-LS`, wholly inside the opening, and is operated from the hall.
 The tub moved west of it, 1/4" off `W-M-BA2E`, with 25" of standing room in front, reached
 through the doorway's west half; its drain, supplies, vent and cleanout moved with it. The
-washer box and standpipe are on `W-M-BA2E` at y=20'-7", just north of the tub, and the
-washer's hoses reach back to them. The switch is inside the strike jamb on `W-M-HS3`.
-(`PR-M-DRYER-COND` is retired: the dryer drains into the washer standpipe.)
+washer box is recessed in `W-M-CLN` behind the tower (valves 5" behind the rear inlets,
+`PR-M-WASH-CW`/`-HW`), and the washer drains over the tub's rim into the tub's trap
+(`PR-B-LSINK-DRAIN`); the old standpipe and box on `W-M-BA2E` are gone, so nothing of the
+washer is on BATH2's wall (owner, 2026-11-07). LG's installation guide (WKHC252H*A p.20-23)
+allows "a standpipe or laundry tub", hose end 24"-96" over the base and <= 41" on the
+dryer-condensate connector; the tub's rim is 34". Minn. R. 4714.1001 lets a laundry tub
+receive an adjacent clothes washer; the AHJ confirms it against 4714.0804. The guide also asks
+4" behind the machine and 1" at the sides; the tower sits against `W-M-CLN`, so the inlets
+want 90-degree hoses (open). The switch is inside the strike jamb on `W-M-HS3`.
+(`PR-M-DRYER-COND` is retired: the dryer drains with the washer.)
 
 The cavity runs 38 1/2" east of the opening, to x=16'-4" (the Eclisse RO). Its end stays short of `N-M-C2`, where bearing
 `W-M-C3` and `BM-M-HALL` begin. `W-M-LS` meets the continuous top and bottom plates;

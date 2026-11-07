@@ -221,23 +221,21 @@ DRAINS = [
             diameter=inch(2), material="pvc",
             elevations=(ft(9, 1.4375), inch(94.5375), inch(83.2375)),
             serves=("FX-M-BATH2-SINK",)),
-    PipeRun(uid="CBPD06AAAA", tag="PR-B-WASH-DRAIN", system=PipeSystem.DRAIN,
-            # The drop is at 20'-7" (19'-4" until 2026-11-07, when the tub took the wall
-            # beside it): between joist-0-015's sister (20'-2 1/2") and joist-0-016 (21'-4"),
-            # and between W-M-BA2E's staggered studs at 20'-4"/21'-0", with the washer valves.
-            # The arm keeps its old tie-in on the collector; its head drops 1 1/8" further so
-            # it passes under CD-B-PLAY-SPARE's y=20'-3 1/2" dip.
-            path=(pt(ft(8, 2), ft(20, 7)), pt(ft(8, 2), ft(20, 7)),
-                  pt(ft(6), ft(19, 9.375))),
-            diameter=inch(2), material="pvc",
-            elevations=(ft(9, 1.4375), ft(7, 8.9375), ft(7, 5.8375)),
-            serves=("FX-M-LAUNDRY",)),
-    # The laundry tub: down its own cast sleeve, then 3'-4" west along the
-    # ceiling to PR-B-MAIN-DRAIN's x=6' collector — same two-move shape as PR-B-SINK2-DRAIN/
-    # PR-B-WASH-DRAIN, forced by the 9" concrete deck. This is the tub's trap arm too, sized
-    # 2" (not 1 1/2") since the vent (PR-M-BATH2-VENT's leg at x=8'-2 1/2") sits 3'-9" away
-    # and Table 1002.2 allows 60" on 2" vs. 42" on 1 1/2". Its raised arrival is just
-    # above the collector centreline; the sauna vent rises early to clear this new grade.
+    # The laundry tub, AND THE WASHER TOWER'S WASTE. The tub drops through the deck, then
+    # runs 3'-4" west under it to PR-B-MAIN-DRAIN's x=6' collector (the same two-move shape
+    # as PR-B-SINK2-DRAIN). Its 2" arm is a trap arm too (Table 1002.2 allows 60" on 2" vs.
+    # 42" on 1 1/2") with the vent 3'-9" away.
+    # ** THE WASHER DISCHARGES INTO THIS TUB (owner, 2026-11-07). ** The old standpipe and its
+    # drop stood on W-M-BA2E, 4' of hose from the machine and against BATH2's tub wall; both
+    # are gone. LG's guide p.20-21 (WKHC252H*A) connects the drain hose "to either a
+    # standpipe or laundry tub", hung over the tub side on the elbow bracket, hose end 24"-96"
+    # over the washer's base and no more than 41" for the short hose on the dryer-condensate
+    # connector; the tub's 34" rim meets all three. Minn. R. 4714.1001 (UPC 1001.2): each
+    # washer and each laundry tub has its own trap, "except that a laundry tub shall be
+    # permitted to also receive the waste from a clothes washer set adjacent thereto" — the
+    # tower stands 4" east of the tub. The washer's 3 DFU and the tub's 2 ride this arm. The
+    # AHJ is to confirm 4714.0804's general bar on a domestic fixture as an indirect-waste
+    # receptor does not override that sentence (plans/TODO.md).
     PipeRun(uid="ZK49S63X8X", tag="PR-B-LSINK-DRAIN", system=PipeSystem.DRAIN,
             # 18'-10 5/8", clear of joist-0-014's flange at 18'-9 1/4"; at 18'-9" it took 1.44".
             # The drop moved from x=12'-0" with the tub (2026-11-07); it lands on the old
@@ -246,7 +244,7 @@ DRAINS = [
                   pt(ft(6), ft(18, 10.625))),
             diameter=inch(2), material="pvc",
             elevations=(ft(9, 1.4375), inch(91.25), inch(87.75)),
-            serves=("FX-M-LAUNDRY-SINK",)),
+            serves=("FX-M-LAUNDRY-SINK", "FX-M-LAUNDRY")),
     # --- the two basement slab-fixture branches ---------------------------------------
     #
     # Every fixture on these two runs stands *on* the basement floor, too low to reach the
@@ -572,29 +570,6 @@ CONDENSATE_MAIN = [
             # 0.3"/ft over the 8'-0" north leg, landing on PR-B-COND's interpolated
             # -1'-8.41" invert at x=17'-6" (raised 0.45" with its 0.26"/ft grade, 2026-11-01).
             elevations=(ft(2, 6), inch(-18.0055), inch(-20.4055))),
-]
-
-# --- RM-M-LAUNDRY: one air gap ---------------------------------------------------------
-#
-# A 2" standpipe in W-M-BA2E's stud bay at y=20'-7", beside the washer valves and north of
-# the tub (2026-11-07), top at 36" (inside the 18"-42" band, above the
-# machine's tub so it can't back-siphon). The discharge hose drops into it rather than
-# sealing to it — that open annulus is the air gap. Below the deck the trap/branch are
-# already PR-B-WASH-DRAIN; this is the missing leg above it.
-#
-# ** THE DRYER'S CONDENSATE SHARES IT (owner, 2026-10-29). ** The ventless heat-pump dryer's
-# drain hose joins the washer's discharge with LG's drain-hose connector (supplied with the
-# WashTower) and both drop into this standpipe, so the room needs no duct and no second line.
-# PR-M-DRYER-COND (rigid PVC over the laundry tub) is retired. LG's height rule for the hose
-# end, 24"-47" above the washer's base, is met by the standpipe's 36" top.
-#
-# It declares no `serves`: a standpipe's fixture units count on the branch below it.
-LAUNDRY_MAIN = [
-    PipeRun(uid="P8A9ADNE6N", tag="PR-M-WASH-STANDPIPE", system=PipeSystem.DRAIN,
-            path=(pt(ft(8, 2), ft(20, 7)), pt(ft(8, 2), ft(20, 7))),
-            diameter=inch(2), material="pvc",
-            elevations=(ft(3), ft(0)),
-            wall_refs=("W-M-BA2E",)),
 ]
 
 # Terminates over FX-B-SAUNA-FD, owner's call — a condensate air gap wants a trapped

@@ -189,15 +189,20 @@ MAIN_FIXTURES = (
     # 180) and front north. Since the door moved 11 1/2" east (2026-11-07) the tower stands
     # 1" off W-M-LS, wholly inside the opening and used from the hall; the tub moved west of
     # it, 20" of it behind the door's strike wall, reached by stepping into its 25" of
-    # standing room. The washer hose runs to the outlet box on W-M-BA2E north of the tub.
+    # standing room.
     #
-    # `wall_ref` W-M-BA2E is the *service* wall (carries the washer standpipe/supply box),
-    # not the back wall — both wastes drop through SL-M-DECK to the basement, so there is
-    # no wall stack in this room at all.
+    # ** THE WASHER BOX IS BEHIND THE TOWER AND THE WASHER DRAINS INTO THE TUB (owner,
+    # 2026-11-07). ** Its supplies come from a recessed box in W-M-CLN, 5" behind the rear
+    # inlets (PR-M-WASH-CW/-HW, mep_supply.py); its drain hose hangs over the tub's rim, so
+    # the tub's trap and arm carry both (PR-B-LSINK-DRAIN; Minn. R. 4714.1001 lets a laundry
+    # tub receive an adjacent washer). Nothing of the washer reaches W-M-BA2E or BATH2 now.
+    # (Swapping tower and tub was rejected: the tower must stay in the opening, used from the
+    # hall.) `wall_ref` W-M-BA2E is the wall the tub's supply risers climb, not the back wall;
+    # the wastes drop through the floor to the basement, so there is no wall stack here.
     #
     # Stacked pair (uid/tag kept so mep.py's `serves=("FX-M-LAUNDRY",)` refs still resolve).
     # Heat-pump dryer is ventless; its condensate hose joins the washer's (LG drain-hose
-    # connector) into PR-M-WASH-STANDPIPE. It is the LG WashTower (plan/appliance_types.py), 27"x32 3/4"x74 3/8",
+    # connector) over the tub. It is the LG WashTower (plan/appliance_types.py), 27"x32 3/4"x74 3/8",
     # leaving 12 5/8" of clear floor to the door plane.
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-LG-WASHTOWER",
               room="RM-M-LAUNDRY", position=pt(m(3.63855), m(6.01059)), rotation=deg(180),

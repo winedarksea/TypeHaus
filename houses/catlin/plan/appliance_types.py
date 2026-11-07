@@ -91,13 +91,16 @@ LG_WASHTOWER = ApplianceType(
                        position=(inch(-5), inch(16.375), inch(34)), connection_size=inch(0.75),
                        direction=(0, 1, 0), hose_length=ft(5),
                        notes="Rear inlet; station scaled, not dimensioned"),
-           # The washer's discharge and the dryer's condensate both leave at the standpipe
-           # band: LG's drain-hose connector joins the dryer hose to the washer's and both
-           # drop into PR-M-WASH-STANDPIPE (plan/mep_drainage.py).
+           # The washer's discharge and the dryer's condensate leave together: LG's drain-hose
+           # connector joins the dryer hose to the washer's, and the short hose hangs over the
+           # side of the laundry tub (FX-M-LAUNDRY-SINK, owner 2026-11-07) on the elbow bracket.
+           # LG installation guide WKHC252H*A p.20-23: "either a standpipe or laundry tub"; hose
+           # end 24"-96" over the base (best <= 66"); short hose end <= 41" over the floor.
            ServicePort(tag="drain", service=Service.DRAIN,
                        position=(inch(10), inch(16.375), inch(30)), connection_size=inch(1),
                        direction=(0, 1, 0),
-                       notes="Hose end 24-96 in. over the base (LG); hose length unpublished")),
+                       notes="Hose end 24-96 in. over the base, <= 41 in. on the connector (LG p.21-23); "
+                             "hose length unpublished")),
     # LG's door-open depth is 57 1/2" overall, so the leaf itself projects 24 3/4" past the
     # 32 3/4" body. 30" is that leaf plus the few inches a person needs to stand in it, and
     # it stays RECOMMENDED (front_zone's only policy) so a laundry *closet* — where the band

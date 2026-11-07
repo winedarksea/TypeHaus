@@ -70,9 +70,8 @@ VENT_BRANCHES_MAIN = [
             # x=8'-2 1/2" leg runs over W-M-BA2E and PR-B-LSINK-DRAIN arrives against that
             # wall, so the tub wet-vents off the laundry stack with no new pipe. The
             # trap arm is the 45" that branch runs below the deck, inside Table 1002.2's 60"
-            # for 2". The washer itself needs no entry — an Appliance declares no
-            # Service.VENT — but its standpipe (PR-M-WASH-STANDPIPE) is the physical riser
-            # this tee sits beside.
+            # for 2". The washer needs no entry: it drains over the tub's rim into the tub's
+            # own trap and vent (plan/mep_drainage.py, PR-B-LSINK-DRAIN).
             # FX-M-BATH2-WC is NOT on this run: it backs onto W-M-HS1, and W-S-SN1 stacks
             # directly over that wall on the storey above, so the vent goes up in-wall for
             # two storeys instead of jogging into this chase. `mep.vent_reachability` says

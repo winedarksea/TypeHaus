@@ -464,6 +464,27 @@ def test_laundry_goods_fit_the_alcove_and_clear_each_other(catlin_model):
     assert objects["FURN-M-LAUNDRY-RACK"].z_m >= objects["FX-M-LAUNDRY-SINK"].z_m + tub_height
 
 
+def test_washer_is_served_from_behind_the_tower_and_drains_into_the_tub(catlin_model):
+    """Owner 2026-11-07: nothing of the washer reaches W-M-BA2E or BATH2. Its valves are
+    behind the inlets on W-M-CLN (hose reach 60"), and its waste is the tub's, over the rim."""
+    washer = next(a for a in catlin_model.plan.all_elements()
+                  if getattr(a, "tag", None) == "FX-M-LAUNDRY")
+    wx, wy = washer.position.xy_m
+    for tag in ("PR-M-WASH-CW", "PR-M-WASH-HW"):
+        run = next(r for r in catlin_model.pipe_runs if r.tag == tag)
+        ex, ey = run.path[-1]
+        assert "FX-M-LAUNDRY" in run.serves
+        assert abs(ex - wx) <= 12 * 0.0254 and abs(ey - wy) <= 24 * 0.0254, tag
+    tags = {r.tag for r in catlin_model.pipe_runs}
+    assert not {"PR-M-WASH-STANDPIPE", "PR-B-WASH-DRAIN"} & tags
+    tub_drain = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-LSINK-DRAIN")
+    assert {"FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK"} <= set(tub_drain.serves)
+    # The branches stay in W-M-CLN's cavity east of the tub pair's terminals (x 109.5").
+    for tag in ("PR-M-WASH-CW", "PR-M-WASH-HW"):
+        run = next(r for r in catlin_model.pipe_runs if r.tag == tag)
+        assert min(x for x, _ in run.path) >= 109 * 0.0254, tag
+
+
 def test_laundry_tub_drain_clears_the_centre_cross_wall(catlin_model):
     """FX-M-LAUNDRY-SINK's body straddles y=18', where W-B-CW2's 12" of cast concrete runs
     from the basement up to the deck. Its waste therefore drops at the front of the basin,

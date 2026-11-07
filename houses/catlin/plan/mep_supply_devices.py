@@ -76,18 +76,17 @@ SUPPLY_DEVICES_BASEMENT = [
                   model='1/2" dual-check backflow preventer, testable',
                   serves=("FX-B-SAUNA-SH",)),
     # P2903.5. The washer slams two solenoids shut, so it needs an arrestor on each supply —
-    # cold alone would leave the hot line to hammer. Both sit at the machine's own riser,
-    # within the manufacturer's 6' of the quick-closing valve. In the box at each riser's top
-    # (40"/42" AFF; the elevation is the basement run's): with none they resolved into the
-    # joist bay, where PR-B-WASH-DRAIN's drop has stood since 2026-11-07.
+    # cold alone would leave the hot line to hammer. Both sit in the washer box behind the
+    # tower on W-M-CLN, on the machine's own branches (PR-M-WASH-CW/-HW, plan/mep_supply.py)
+    # and 3" back from the valves, a few inches from the quick-closing valve it protects.
     PipeAccessory(uid="F3ZC6TWL9N", tag="PA-M-WASH-WHA-CW",
-                  kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-B-CW-WASH",
-                  position=pt(inch(100), inch(245.25)), elevation=ft(12, 5.4375), room="RM-M-LAUNDRY",
+                  kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-M-WASH-CW",
+                  position=pt(inch(142.5), inch(215)), elevation=inch(144.4375), room="RM-M-LAUNDRY",
                   model="Sioux Chief MiniRester 660-G class, size A",
                   serves=("FX-M-LAUNDRY",)),
     PipeAccessory(uid="K7XB2VDR5H", tag="PA-M-WASH-WHA-HW",
-                  kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-B-HW-WASH",
-                  position=pt(ft(8, 2), ft(20, 9.25)), elevation=ft(12, 7.4375), room="RM-M-LAUNDRY",
+                  kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-M-WASH-HW",
+                  position=pt(inch(134.5), inch(215)), elevation=inch(146.9375), room="RM-M-LAUNDRY",
                   model="Sioux Chief MiniRester 660-G class, size A",
                   serves=("FX-M-LAUNDRY",)),
     # The dishwasher's fill solenoid is the other quick-closing valve in the house. It takes
@@ -231,19 +230,29 @@ SUPPLY_STOPS = [
                   model='3/4" quarter-turn ball valve, in the sink base cabinet',
                   install_parts=("Kitchen hot PEX tee, dishwasher branch and 3/8-inch compression fixture stop",),
                   serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
-    # The laundry. These land on the same two vertices as PA-M-WASH-WHA-CW/HW above — the
-    # machine box is where the arrestors already are, and a washer box with stops in it is
-    # the ordinary product.
+    # The laundry. The washer's stops are the recessed washer box's own, at the branch ends
+    # behind the inlets (x 145.5" cold, 137.5" hot); the tub's are in its cabinet at the
+    # main's terminals, 22" up, under the 34" rim.
     PipeAccessory(uid="VCF71D18GJ", tag="PA-M-WASH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-WASH", position=pt(inch(100), inch(245.25)), elevation=ft(12, 5.4375),
-                  accessible=True, room="RM-M-LAUNDRY",
+                  pipe_ref="PR-M-WASH-CW", position=pt(inch(145.5), inch(218)),
+                  elevation=inch(144.4375), accessible=True, room="RM-M-LAUNDRY",
                   model='3/4" quarter-turn ball valve, in the recessed washer box',
-                  serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
+                  serves=("FX-M-LAUNDRY",)),
     PipeAccessory(uid="D0DS71PB2J", tag="PA-M-WASH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-WASH", position=pt(ft(8, 2), ft(20, 9.25)), elevation=ft(12, 7.4375),
-                  accessible=True, room="RM-M-LAUNDRY",
+                  pipe_ref="PR-M-WASH-HW", position=pt(inch(137.5), inch(218)),
+                  elevation=inch(146.9375), accessible=True, room="RM-M-LAUNDRY",
                   model='3/4" quarter-turn ball valve, in the recessed washer box',
-                  serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
+                  serves=("FX-M-LAUNDRY",)),
+    PipeAccessory(uid="CTBS80A7G5", tag="PA-M-LSINK-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-CW-WASH", position=pt(inch(109.5), inch(217)),
+                  elevation=inch(131.4375), accessible=True, room="RM-M-LAUNDRY",
+                  model='1/2" quarter-turn fixture stop, in the tub cabinet',
+                  serves=("FX-M-LAUNDRY-SINK",)),
+    PipeAccessory(uid="XQ9VH9VHT0", tag="PA-M-LSINK-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-HW-WASH", position=pt(inch(114), inch(217)),
+                  elevation=inch(131.4375), accessible=True, room="RM-M-LAUNDRY",
+                  model='1/2" quarter-turn fixture stop, in the tub cabinet',
+                  serves=("FX-M-LAUNDRY-SINK",)),
     # The water heater's cold inlet — the one stop in this list that IS at its branch's own
     # end rather than at a fixture, and the one the house most obviously lacked. P2903.9.2
     # wants a valve on the cold supply to a water heater; without it, changing an anode rod
