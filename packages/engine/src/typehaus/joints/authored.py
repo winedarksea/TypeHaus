@@ -134,8 +134,8 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
         item = hardware_for_role(ROLE_STAIR_STRINGER_CONNECTOR)
         return ROLE_STAIR_STRINGER_CONNECTOR, item, item.model
     if connection.sloped:
-        item = hardware_for_role(ROLE_SLOPED_JOIST_HANGER)
-        return ROLE_SLOPED_JOIST_HANGER, item, item.model
+        item, part = _sized_in_role(ROLE_SLOPED_JOIST_HANGER, connection.member_profile, "LSSR")
+        return ROLE_SLOPED_JOIST_HANGER, item, part
     exposure = EXPOSURE_TREATED if connection.carrier_treated else EXPOSURE_DRY
     # A multi-ply LVL (a floor-opening header) takes the part catalogued for its profile.
     scl = next((item for item in structural_hardware_catalog()
@@ -144,17 +144,32 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
                 and item.exposure in (None, exposure)), None)
     if scl is not None:
         return ROLE_SCL_FACE_MOUNT_HANGER, scl, scl.model
-    # An I-joist or open-web truss end takes its own family, never the sawn-lumber LUS
-    # (no size guessed: the series' flange is not the model's to invent).
+    # An I-joist or open-web truss end takes its own family, never the sawn-lumber LUS: the
+    # row catalogued for its series and depth, else the bare family (no flange invented).
     shape = cross_section(connection.member_profile.split(":")[0]).shape
-    family = {"i_joist": ROLE_IJOIST_FACE_MOUNT_HANGER,
-              "floor_truss": ROLE_FLOOR_TRUSS_HANGER}.get(shape)
-    if family is not None:
-        item = hardware_for_role(family)
-        return family, item, item.model
+    if shape == "i_joist":
+        item, part = _sized_in_role(ROLE_IJOIST_FACE_MOUNT_HANGER, connection.member_profile)
+        return ROLE_IJOIST_FACE_MOUNT_HANGER, item, part
+    if shape == "floor_truss":
+        item = hardware_for_role(ROLE_FLOOR_TRUSS_HANGER)
+        return ROLE_FLOOR_TRUSS_HANGER, item, item.model
     item = hardware_for_role(ROLE_FACE_MOUNT_JOIST_HANGER, exposure=exposure)
     return (ROLE_FACE_MOUNT_JOIST_HANGER, item,
             sized_hanger_model(item, connection.member_profile))
+
+
+def _sized_in_role(role: str, profile: str, family: str | None = None):
+    """``(item, part)``: the ``role`` row whose ``fits_nominal`` names this member (series
+    and depth), else the role's unsized record under its family name — never a guess."""
+    from typehaus.hardware.catalog import structural_hardware_catalog
+
+    nominal = profile.split(":")[0].strip()
+    items = [item for item in structural_hardware_catalog() if item.role == role]
+    sized = next((item for item in items if nominal in item.fits_nominal), None)
+    if sized is not None:
+        return sized, sized.model
+    generic = next((item for item in items if not item.fits_nominal), items[0])
+    return generic, family or generic.model
 
 
 def authored_hanger_item(authored: str, profile: str):

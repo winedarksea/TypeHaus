@@ -113,8 +113,9 @@ MAIN_BACKING = [
     WallBacking(uid="ZCGDP5VDX9", tag="BK-M-N1-KIT-TOP", wall_ref="W-M-N1",
                 elevation=inch(99.5), height=inch(5.5), profile="2x6",
                 material_ref="spf", purpose="stock kitchen upper top brackets; diagonal corner north leg"),
+    # Starts at the pantry's north stud face: BK-M-E1-PANTRY-TOP backs the stacker tops.
     WallBacking(uid="N4B7RPNY55", tag="BK-M-E1-KIT-TOP", wall_ref="W-M-E1",
-                start=inch(272.75), length=inch(159.25),
+                start=inch(319.25), length=inch(112.75),
                 elevation=inch(99.5), height=inch(5.5), profile="2x6",
                 material_ref="spf", purpose="stock garage frame top restraint"),
     WallBacking(uid="PT15STOCK1", tag="BK-M-E1-PANTRY-TOP", wall_ref="W-M-E1",
@@ -287,6 +288,20 @@ MAIN_BACKING = [
     WallBacking(uid="NCB5N0AFKN", tag="BK-M-STRW-HOOK-HIGH", wall_ref="W-M-STRW", face="left",
                 elevation=inch(61), height=inch(3.5), profile="0.75x3.5",
                 material_ref="poplar-trim-paint", purpose="coat hook rail, high (60 in. AFF)"),
+    # The wall heads' mounting plates, a 2x8 at the head's bottom across its width, stud
+    # face to stud face. BED and LIVING sit over window headers, so their bays are king to king.
+    WallBacking(uid="0B5895WEGX", tag="BK-M-S1-HP2-BED", wall_ref="W-M-S1", face="left",
+                start=inch(159.5), length=inch(47.75),
+                elevation=inch(91), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="EQ-M-HP2-BED mounting plate"),
+    WallBacking(uid="JQE71GJE4E", tag="BK-M-S2-HP2-LIVING", wall_ref="W-M-S2", face="left",
+                start=inch(5.34375), length=inch(34.25),
+                elevation=inch(91), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="EQ-M-HP2-LIVING mounting plate"),
+    # HP3's east end screws to D-M-ENTRY's jamb blocks in the last bay.
+    WallBacking(uid="YVDSY5S60P", tag="BK-M-N2-HP3-STAIR", wall_ref="W-M-N2", face="left",
+                start=inch(40.75), length=inch(46.5), elevation=inch(36), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="EQ-M-HP3-STAIR mounting plate"),
 ]
 
 SECOND_BACKING = [
@@ -378,6 +393,11 @@ GARAGE_BACKING = [
                 start=ft(14, 0.75), length=inch(22.5),
                 elevation=inch(19.5), height=inch(11.25), profile="2x12",
                 material_ref="spf", purpose="EVSE wall mount (APPL-G-EVSE)"),
+    # The unit heater's wall bracket, the stud-007..stud-008 bay.
+    WallBacking(uid="KTVH44DV78", tag="BK-G-W-HEATER", wall_ref="W-G-W", face="left",
+                start=inch(168.75), length=inch(22.5),
+                elevation=inch(50), height=inch(11.25), profile="2x12",
+                material_ref="spf", purpose="EQ-G-HEATER wall bracket"),
 ]
 
 ATTIC_BACKING = [

@@ -73,8 +73,9 @@ def test_hanger_seats_use_carried_member_ends_and_face_into_them(catlin_model_ro
 
 def test_opposite_ridge_hangers_have_separate_bodies(catlin_model_ro):
     joints = [joint for joint in derived_joints(catlin_model_ro, DEFAULT_HARDWARE_TAKEOFF_CONFIG)
-              if joint.part == "LSSR"]
-    bodies = {solid.uid for solid in _simpson_solids(catlin_model_ro) if solid.product == "LSSR"}
+              if joint.part == "LSSR2.37Z"]
+    bodies = {solid.uid for solid in _simpson_solids(catlin_model_ro)
+              if solid.product == "LSSR2.37Z"}
     assert len(joints) == len({joint.key for joint in joints}) == len(bodies)
     assert len(joints) > 30
 

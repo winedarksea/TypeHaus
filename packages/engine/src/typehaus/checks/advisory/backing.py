@@ -32,8 +32,8 @@ from collections.abc import Iterator
 
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, advisory, failed, not_applicable, passed
-from typehaus.model.enums import DeviceKind
-from typehaus.model.mep import ElectricalDevice
+from typehaus.model.enums import DeviceKind, EquipmentKind
+from typehaus.model.mep import ElectricalDevice, Equipment
 from typehaus.model.placeables import Mount, MountKind
 from typehaus.model.spatial import Appliance, Fixture, Furniture
 from typehaus.quantities import M_PER_IN
@@ -54,11 +54,16 @@ _REACH_M = 1.0 * M_PER_IN
 
 #: The placed-body families that can hang on a wall. Each carries ``type_ref``,
 #: ``position`` and ``rotation``; ``Element`` itself declares none of them.
-WallMountedBody = Furniture | Fixture | Appliance | ElectricalDevice
+WallMountedBody = Furniture | Fixture | Appliance | ElectricalDevice | Equipment
 
 #: The electrical devices heavy enough to want backing: a box screws to a stud, an
 #: enclosure hangs off the wall face.
 _BACKED_DEVICE_KINDS = frozenset({DeviceKind.PANEL, DeviceKind.METER, DeviceKind.DISCONNECT})
+
+#: Equipment that rides on its own ducts or pipes (a plenum, hood, mixing box, inline fan),
+#: not on a wall bracket.
+_UNBACKED_EQUIPMENT_KINDS = frozenset({EquipmentKind.DUCT_MANIFOLD, EquipmentKind.MIXING_BOX,
+                                       EquipmentKind.WATER_MANIFOLD, EquipmentKind.FAN})
 
 
 def _bodies_and_types(
@@ -70,6 +75,7 @@ def _bodies_and_types(
         (Appliance, {item.tag: item for item in ctx.plan.library.appliance_types}),
         (ElectricalDevice, {item.tag: item
                             for item in ctx.plan.library.electrical_device_types}),
+        (Equipment, {item.tag: item for item in ctx.plan.library.equipment_types}),
     )
     for storey_tag in ctx.plan.elements:
         for element in ctx.plan.storey_elements(storey_tag):
@@ -78,6 +84,8 @@ def _bodies_and_types(
                     continue
                 if (isinstance(element, ElectricalDevice)
                         and element.kind not in _BACKED_DEVICE_KINDS):
+                    continue
+                if isinstance(element, Equipment) and element.kind in _UNBACKED_EQUIPMENT_KINDS:
                     continue
                 body_type = types.get(element.type_ref)
                 if body_type is None:
@@ -200,7 +208,9 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
                 "grades each post against emitted studs and backing", tags))
             continue
         low = _band_datum_low(ctx, body, wall, mount)
+        face = _body_face(ctx, body, wall)
         covering = [b for b in bands.get(wall.tag, ())
+                    if "both" in (face, b.face) or b.face == face
                     if _band_spans(ctx, wall, b, low) and _covers_station(b, station, wall)]
         if not covering and _blocking_course_behind(wall, low, station):
             out.append(passed(
@@ -222,6 +232,29 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
                 fix=f"author a WallBacking on {wall.tag} spanning "
                     f"{low / M_PER_IN:.0f}\" above its sill datum"))
     return out
+
+
+def _body_face(ctx: CheckContext, body: WallMountedBody, wall: ResolvedWall) -> str:
+    """The face of ``wall`` the body hangs on: "left", "right", or "both" for a body set
+    through the wall (a frost-free hydrant), which a band on either face can seat.
+
+    A band let in on the other face of a staggered or double wall is not behind it.
+    """
+    (x0, y0), (x1, y1) = wall.axis
+
+    def across(x: float, y: float) -> float:
+        return (y - y0) * (x1 - x0) - (x - x0) * (y1 - y0)
+
+    placed = next((obj for obj in ctx.model.canvas_objects if obj.uid == body.uid), None)
+    if placed is not None and placed.footprint:
+        sides = [across(*point) for point in placed.footprint]
+        reach = _REACH_M * ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+        if min(sides) < -reach and max(sides) > reach:
+            return "both"
+    attachment = getattr(getattr(body, "location", None), "attachment", None)
+    if attachment is not None:
+        return attachment.face
+    return "left" if across(*body.position.xy_m) > 0 else "right"
 
 
 def _band_spans(ctx: CheckContext, wall: ResolvedWall, band: BackingBand,

@@ -22,8 +22,8 @@ from typehaus.checks.registry import CheckContext, shared
 
 
 def bearing_wall_tags(ctx: CheckContext) -> frozenset[str]:
-    """Every wall some floor's joists bear on, plus every foundation wall
-    (``resolve/mep_bore_scope``, which the router reads too)."""
+    """Every wall some floor's joists bear on or authored BEARING, plus every foundation
+    wall (``resolve/mep_bore_scope``, which the router reads too)."""
     from typehaus.resolve.mep_bore_scope import bearing_wall_tags as read
 
     return read(ctx.model)

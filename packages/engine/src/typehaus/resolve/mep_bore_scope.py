@@ -1,9 +1,10 @@
 """Which walls IRC R602.6 grades as bearing or exterior — read by the bore checks and the
 router alike (``checks/mep/routing_bore_scope``, ``routing/members``).
 
-Bearing is the model's own statement (``JoistSpec.bearing_refs``) plus every foundation
-wall. Exterior is "faces outdoors" — a weather skin outboard, or earth — not "has a room on
-one side", which reads an attic partition beside a stair void as exterior.
+Bearing is the model's own statement (``JoistSpec.bearing_refs``, or a wall authored
+``StructuralRole.BEARING``) plus every foundation wall. Exterior is "faces outdoors" — a
+weather skin outboard, or earth — not "has a room on one side", which reads an attic
+partition beside a stair void as exterior.
 """
 
 from __future__ import annotations
@@ -15,8 +16,12 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 
 
 def bearing_wall_tags(model: ResolvedModel) -> frozenset[str]:
-    """Every wall some floor's joists actually bear on, plus every foundation wall."""
-    tags = {wall.tag for wall in model.walls if wall.is_foundation}
+    """Every wall some floor's joists bear on or authored BEARING, plus every foundation wall."""
+    from typehaus.model.enums import StructuralRole
+
+    tags = {wall.tag for wall in model.walls if wall.is_foundation
+            or getattr(model.plan.by_tag(wall.tag), "structural_role", None)
+            is StructuralRole.BEARING}
     for floor in model.floors:
         system = model.plan.by_tag(floor.tag)
         tags.update(getattr(getattr(system, "joists", None), "bearing_refs", ()) or ())

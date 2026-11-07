@@ -23,13 +23,15 @@ from typehaus.library.hardware._common import _SIMPSON
 
 LSSR_SLOPED_HANGER = StructuralHardware(
     tag="simpson-lssr-adjustable-slope-hanger",
-    name="LSSR field-adjustable slope/skew hanger",
+    name="LSSR2.37Z field-adjustable slope/skew hanger",
     role=ROLE_SLOPED_JOIST_HANGER,
     manufacturer=_SIMPSON,
-    model="LSSR",
+    model="LSSR2.37Z",
+    fits_nominal=("11.875 TJI 230",),
     source="Simpson Strong-Tie LSSR adjustable slope/skew joist and rafter hanger "
            "(strongtie.com/lssr) — the hanger published for a raked member framing into "
-           "the face of a ridge beam",
+           "the face of a ridge beam; LSSR2.37Z is the 2-5/16\" joist row, W 2-3/8\", 18 ga "
+           "ZMAX (C-C-2026 p. 178)",
     allowable=AllowableLoads(
         uplift_lb=510.0,
         download_lb=1090.0,
@@ -140,9 +142,7 @@ LUSZ_FACE_MOUNT_HANGER = StructuralHardware(
            "Simpson's own treated-wood guidance; same stamping and allowables",
 )
 
-#: Level I-joist face-mount. Size reads flange/depth: IUS2.37/11.88 takes the 2-5/16" (TJI
-#: 230/360) flange at 11-7/8", IUS2.56 a 2-1/2" to 2-9/16" one. Not sloped —
-#: the roof's raked rafters take the LSSR. No allowable: no table row has been read yet.
+#: Level I-joist face-mount, the family a series with no sized row below bills as.
 IUS_FACE_MOUNT_HANGER = StructuralHardware(
     tag="simpson-ius-ijoist-face-mount-hanger",
     name="IUS face-mount I-joist hanger",
@@ -154,9 +154,28 @@ IUS_FACE_MOUNT_HANGER = StructuralHardware(
            "IUS2.37/11.88 is published for a 2-5/16\" (TJI 230/360) joist flange",
 )
 
-#: A 2-ply 1 3/4" x 11 7/8" LVL floor-opening header into its LVL trimmer pack. Identity only,
-#: like HU28-2Z below: which row of Simpson's SCL face-mount table, and its allowables, have
-#: not been transcribed — confirm the HHUS410 row for a 3-1/2" x 11-7/8" member before ordering.
+#: The sized IUS row for an 11-7/8" TJI 230 (2-5/16" flange), derived or authored.
+IUS237_TJI230_HANGER = StructuralHardware(
+    tag="simpson-ius2-37-11-88-ijoist-hanger",
+    name="IUS2.37/11.88 face-mount I-joist hanger",
+    role=ROLE_IJOIST_FACE_MOUNT_HANGER,
+    manufacturer=_SIMPSON,
+    model="IUS2.37/11.88",
+    fits_nominal=("11.875 TJI 230",),
+    source="Simpson Strong-Tie IUS face-mount I-joist hanger (strongtie.com/ius), 18 ga, "
+           "W 2-7/16\" H 11-7/8\" B 2\", for a 2-5/16\" x 11-7/8\" I-joist",
+    allowable=AllowableLoads(
+        uplift_lb=70.0, download_lb=1185.0, load_duration_factor=1.0,
+        species="DF/SP header column: the headers are LVL, SG 0.50 (ER-280 §3.2.2)",
+        fasteners="(10) 0.148\" x 3\" into the header face; none into the joist",
+        citation="Simpson Strong-Tie C-C-2026 p. 159, Face-Mount Hangers — I-Joists, row "
+                 "2 5/16 x 11 7/8, IUS2.37/11.88: uplift (160) 70, DF/SP floor (100) 1,185, "
+                 "snow 1,345, roof 1,455; SPF/HF 1,020/1,160/1,250. p. 164 note 6: "
+                 "downloads are at a 750 psi joist-bearing capacity"),
+)
+
+#: A 2-ply 1 3/4" x 11 7/8" LVL opening header into its trimmer pack. Identity only, like
+#: HU28-2Z: confirm the SCL table's HHUS410 row for 3-1/2" x 11-7/8" before ordering.
 HHUS410_SCL_FACE_MOUNT_HANGER = StructuralHardware(
     tag="simpson-hhus410-scl-face-mount-hanger",
     name="HHUS410 face-mount hanger, 2-ply 1-3/4\" LVL",
@@ -170,10 +189,8 @@ HHUS410_SCL_FACE_MOUNT_HANGER = StructuralHardware(
            "YET TRANSCRIBED: read the SCL face-mount table's row before sizing this joint",
 )
 
-#: Level open-web floor truss face-mount. THA422: a 4" wide top-flange hanger seat for a
-#: flat 2x4 ("4x2") bottom chord, which is exactly FS-S-WEST's chord (3.5"w x 1.5"t) — not
-#: the narrower IUS family, which is cut for an I-joist's thin flange. No allowable: no
-#: table row has been read yet.
+#: Level open-web floor truss: THA422's 4" seat takes FS-S-WEST's flat 2x4 chord (3.5" x
+#: 1.5"), which the IUS, cut for an I-joist flange, does not. No table row read yet.
 THA_FLOOR_TRUSS_HANGER = StructuralHardware(
     tag="simpson-tha422-floor-truss-hanger",
     name="THA422 top-flange floor truss hanger",
