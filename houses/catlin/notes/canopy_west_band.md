@@ -773,3 +773,45 @@ on a 5 1/2" face only at 1.5 + 1.5 + 0.125 = 3.125", which leaves 2.75 − 1.5 �
 the beam overhangs the post face and the LUS26-2Z (5.221" flange to flange) no longer lands. The
 columns, piers, header, screen, band and pads would all move with it. Rotating the base is §4c's
 2.14.
+
+## 2026-11-06 amendment (b) — the seat-beam hanger on a filler (owner)
+
+**Lengthening the beam does not work.** The CBSTQ's strap is 3" wide and centred on the 5 1/2"
+face; the seat beam is 3" wide on the same centreline. The strap and its SDS heads therefore stand
+behind the whole beam end, from the base to above the beam soffit, so no beam length brings the end
+inside 0.1345 + 0.190 = 0.3245" of the post face. Cutting the end round the strap and heads would
+be a full-width rebate, which is the same as the beam we have. The 1/8" of note m cannot be reached
+by the beam.
+
+**Chosen: a filler notched round the strap.** It is two strips, one each side of the strap, cut from
+3/8" nominal treated plywood (11/32", 0.344"), each 1 1/4" wide and as tall as the hanger flange.
+That is the post face less the strap, (5.5 − 3)/2. The LUS26-2Z is nailed over them, so its mounting
+plane moves out to the filler face. Nothing else moves: the beam, the strap, the pack and the post
+stay where they are.
+
+```
+filler face          0.344" off the post face; SDS heads 0.172-0.190 + strap 0.1345
+                     = 0.3065-0.3245"  -> 0.020-0.037" proud of the heads
+end gap to hanger    0.4495 − 0.344 = 0.1055" <= 1/8" (C-C-2026 p. 22 note m)       met
+beam on the seat     2 − 0.1055 = 1.8945" of the LUS26-2Z's 2" seat (B)  (was 1.55")
+flanges on filler    flange 1" at 1.5625 + 0.048 = 1.6105" to 2.6105" off centre; strip
+                     1.5"-2.75": 0.1105" clear of the strap edge, 0.1395" inside the post edge
+header nails (16d HDG, 3 1/2", 0.162")  into the post 3.5 − 0.048 − 0.344 = 3.108"
+                     >= 10D = 1.62" (NDS 12.3.1 full-penetration lateral design value)
+```
+
+The hanger stays a tie and locator; gravity bears on the 3 1/2" SS316 pack (≥ 3", R507.5.2), and
+`north_entry_piers.md` §12b's 271.0 lb against 721 lb (0.372) is now read inside note m. The
+hanger's catalog row does not cover a filler between flange and carrier. Simpson publishes no
+filler installation for the LUS, so the row is used here on the strength of the full nail
+penetration. One line to Simpson closes it, and it does not gate gravity.
+
+**The shim.** The pack is cast one 18 ga seat (0.048") under the soffit, so that the hanger seat
+bears on it. Beyond the seat it carries the beam on an 18 ga SS316 shim strip, now 3.5 − 1.8945 =
+1.61" long (it was 1.95").
+
+**Why not a cast-in HETA20Z pair, as at E/GE.** It would close the tie on a published row
+(FL11473 Table 3) and drop the hanger. But it is a new embedment 1.83" off the 14" pier's edge at
+the beam faces, against the CBSTQ cast-in body, and it reopens the owner's 2026-09-16 call: no tie
+on the west piers. It is kept as the fallback if Simpson declines the filler.
+

@@ -109,10 +109,11 @@ COLUMN_HALF_FT = 2.75 / 12
 # ** THE SEAT BEAMS STOP 1/8" OFF THE BASE STRAP'S SCREW HEADS (C2 E9, 2026-11-06). ** With
 # `axis="y"` the CBSTQ's strap leaves sit on the column's E/W faces, so a beam cut to the face
 # ran into the 10 ga strap and its SDS heads. Strap 0.1345 + head 0.190 (ESR-2236, Jan 2026,
-# Fig. 1: 0.172-0.190, the max) + 1/8" fit-up = 0.4495". ** THAT IS 0.45" OFF THE POST FACE THE
-# LUS26-2Z HANGS ON, past Simpson's 1/8" hanger-gap limit (C-C-2026 p. 22 note m) and past
-# the 3/8" its gap tables reach: the hanger's rating is not claimed, the beam bears on the
-# pack (3 1/2" on the pier), and the gap is an EOR/Simpson item (plans/TODO.md). **
+# Fig. 1: 0.172-0.190, the max) + 1/8" fit-up = 0.4495". ** THE LUS26-2Z HANGS ON AN 11/32"
+# FILLER NOTCHED ROUND THE STRAP (owner, 2026-11-06), so the end gap to the hanger is 0.1055",
+# inside Simpson's 1/8" (C-C-2026 p. 22 note m). A longer beam cannot get there: the 3" strap
+# is as wide as the 3" beam, so its heads stand behind the whole end (canopy_west_band.md
+# 2026-11-06 amendment (b)). Gravity bears on the pack (3 1/2" on the pier). **
 # Rotating the base instead puts F1 along the screen (2.14, canopy_west_band.md §4c); moving
 # the columns 3 1/8" north is the least that clears a 3" beam off a 3" strap, and the beam
 # then overhangs the 5 1/2" face.

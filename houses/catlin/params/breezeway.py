@@ -410,7 +410,9 @@ GARAGE_STOREY_ELEMENTS.extend([*SCREEN_SKIRT_NODES, SCREEN_SKIRT])
 # ** THE PACK IS A SOLID NOW (C3-E13, 2026-10-31). ** The piers are cast STANDOFF_PACK_IN under
 # the soffit (`PIER_TOP_FT`), so the pack fills the gap and its marker is drawn pier top to
 # pack top (`elevation` is its centre). At W/GW the beam end sits in the LUS26-2Z, so the pack
-# there stops one 18 ga seat under the soffit: the hanger seat bears on the pack, not on air.
+# there stops one 18 ga seat under the soffit: the hanger seat bears on the pack, not on air,
+# and an 18 ga SS316 shim strip fills the 1.61" of pack beyond the seat (the hanger stands on
+# an 11/32" filler round the strap since 2026-11-06, so 1.89" of the beam is on its seat).
 _HANGER_SEAT_FT = SHEET_THICKNESS_IN[LUS_DIMENSIONS["LUS26-2"].gauge] / 12
 SEAT_BEARINGS = []
 for _i, (_t, _x, _y, _beam) in enumerate((
@@ -483,7 +485,10 @@ COLUMN_CAPS = [
 # and no other. The same beam left too long against a column it never named is still reported.
 #
 # ** THE SEAT-BEAM HANGER BOTTOMS REST ON THE PACK ** (`_HANGER_SEAT_FT` above), so gravity
-# reaches the pier in bearing and the hanger's work is uplift and location.
+# reaches the pier in bearing and the hanger's work is uplift and location. At CW/CNW it is
+# nailed over two 11/32" treated-plywood strips either side of the CBSTQ strap (owner,
+# 2026-11-06): end gap 0.1055" against note m's 1/8"; the filler is a field item, unmodelled
+# like the flange (notes/canopy_west_band.md 2026-11-06 amendment (b)).
 SEAT_BEAM_HANGERS = [
     Connector(uid="BWSH01AAAA", tag="CN-BW-HGR-CW", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(LANDING_WEST_FT), ft(HOUSE_SEAT_Y_FT)),

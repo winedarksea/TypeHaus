@@ -1680,3 +1680,11 @@ The beam sits 1.55" on the LUS26-2Z's 2" seat. Its flange and backing are on the
 Its end stands 0.4495" off that face, past C-C-2026 p. 22 note m's 1/8" maximum and the 3/8"
 Simpson's gap tables reach, so 0.372 is arithmetic, not a rated reading; the beam bears on
 the pack (`canopy_west_band.md` 2026-11-06 amendment, an EOR/Simpson item).
+
+**Filler (owner, 2026-11-06; `canopy_west_band.md` amendment (b)).** The hanger is now nailed over
+11/32" treated plywood strips, one each side of the strap. The end gap to the hanger is
+0.4495 − 0.344 = **0.1055"**, within note m, and the beam sits **1.8945"** on the seat. The 16d
+header nails keep 3.108" in the post. The demand is unchanged, 268.0 / 721 = **0.372**, and it is
+now read inside the gap the row was tested at. The row does not publish a filler installation:
+Simpson's confirmation is the remaining line, and gravity bears on the pack either way. Backing
+is unchanged, because the flange moves out, not up.
