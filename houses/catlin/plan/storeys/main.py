@@ -1104,7 +1104,10 @@ OPENINGS = [
                  source_url="https://outdoorsandsecurity.widen.net/content/6ybzlyty7g/original/2026-Arch-Comp-BOOK---COMP-7-Sills.pdf",
                  source_drawing="2026 Comp 7.3: 7-3/4 inch inswing; schematic design envelope",
                  threshold_depth=inch(7.75), threshold_height=inch(1.5), cap_depth=inch(1.5),
-                 seat_height=inch(0.375), approach_minimum_height=inch(0.625)))),
+                 # Owner 2026-11-06: 1/4" seat on a pan sloped across the RO only, so the
+                 # crest stands 1.47" over the mudroom LVP (R311.3.1 egress, <= 1.5").
+                 seat_height=inch(0.25), pan_across_ro=True,
+                 approach_minimum_height=inch(0.625)))),
     # Stands directly under D-S-BALCONY, so the south face reads as one column of French
     # pairs. Its published 63 5/16" RO is re-centred at 8 11/32" off N-M-S1, like the pair
     # above (owner, 2026-10-29: the mirrored facade beats the stud module, suppressed).

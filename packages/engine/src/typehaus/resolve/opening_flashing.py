@@ -368,11 +368,13 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
     if pan:
         placement = opening.doorway.exterior_placement if opening.doorway else None
         design = placement.specification.sill_design if placement else None
+        from typehaus.resolve.exterior_door_sill import door_pan_ro_face
+
         result += _sill_pan(frame, _pan_outlet(opening, frame, cfg), lo + buck,
                             hi - lo - 2 * buck, sill + buck, cfg,
                             end_dam_stop=frame.clad if design else None,
                             outlet_lip=design.drainage_clearance.meters if design else 0.0,
-                            drip=drip)
+                            drip=drip, ro_face=door_pan_ro_face(placement))
     return result
 
 
@@ -432,14 +434,23 @@ def window_seat(opening: ResolvedOpening, frame: OpeningFlashingFrame,
 
 def _sill_pan(frame: OpeningFlashingFrame, outlet: float, lo: float, width: float,
               seat: float, cfg: FlashingConfig, *, end_dam_stop: float | None = None,
-              outlet_lip: float = 0.0, drip=None) -> list[tuple[str, str, str, GMesh]]:
+              outlet_lip: float = 0.0, drip=None,
+              ro_face: float | None = None) -> list[tuple[str, str, str, GMesh]]:
     """A sloped pan on a tapered shim, its back dam turned up a rigid strip.
 
     A window's outie pan discharges at the mount plane, behind the cladding; a door's, and
     every pan on a conventional wall, runs past the cladding to a drip. ``drip`` is an
     outie window's ``(bottom z, extra legs)``: the down leg coats the sill course to its bottom.
+    ``ro_face`` (a ``pan_across_ro`` door) stops the slope there; the pan runs level beyond.
     """
+    from typehaus.resolve.door_sill_pan import sill_pan_across_ro
+    from typehaus.resolve.exterior_door_sill import pan_rise_profile
+
     dam = frame.back + cfg.back_dam_strip_m
+    profile = pan_rise_profile(dam, outlet, ro_face, cfg.drainage_slope)
+    if len(profile) == 3:
+        return sill_pan_across_ro(frame, outlet, lo, width, seat, cfg, profile,
+                                  end_dam_stop, outlet_lip, drip)
     fall = (outlet - dam) * cfg.drainage_slope
     # The shim stands on what is there: the buck's front edge, or the sheathing face.
     support = min(outlet, frame.mount)

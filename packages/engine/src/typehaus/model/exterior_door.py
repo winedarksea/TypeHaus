@@ -154,6 +154,10 @@ class ExteriorDoorSillDesign(HausModel):
     threshold_nose_height: Length = inch(0.5)
     leaf_clearance: Length = inch(0.125)
     seat_height: Length = inch(0.5)
+    #: True: the pan falls at the flashing slope across the RO only (back dam to the
+    #: frame's outer face) and runs level from there to its outlet, so the threshold
+    #: seats lower than on a pan sloped all the way out (R311.3.1's 1.5" interior rise).
+    pan_across_ro: bool = False
     approach_plate_thickness: Length = inch(0.25)
     nosing_thickness: Length = inch(0.0625)
     pan_projection: Length = inch(0.125)

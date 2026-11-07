@@ -286,18 +286,17 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
             out.append(_unknown(cid, f"{opening.tag}: {threshold_basis}; cannot grade "
                                 "the landing from the rough sill", (opening.tag,), code))
             continue
-        assembly = getattr(opening, "doorway", None)
-        placement = assembly.exterior_placement if assembly else None
-        if placement and placement.specification.catalog_installation:
-            index = 1 if placement.outward_sign < 0 else 0
-            interior = assembly.adjacent_floors[index]
-            if interior is None or interior.surface_m is None:
-                out.append(_unknown(cid, f"{opening.tag}: interior finished floor is missing",
-                                    (opening.tag,), code))
-            elif threshold - interior.surface_m > _MAX_NONREQUIRED_STEP_DOWN.meters + 1e-6:
-                out.append(_fail(cid, f"{opening.tag}: installed threshold is "
-                                 f'{(threshold-interior.surface_m)/.0254:.2f}" above the interior '
-                                 "floor; exceeds 7.75 inches", (opening.tag,), code))
+        from typehaus.checks.code.mn_residential.egress_interior_step import (
+            interior_step_verdict,
+        )
+
+        inside, inside_text = interior_step_verdict(ctx, opening, threshold,
+                                                    opening.tag in egress_tags)
+        if inside == "fail":
+            out.append(_fail(cid, f"{opening.tag}: {inside_text}", (opening.tag,), code))
+        elif inside == "unknown":
+            out.append(_unknown(cid, f"{opening.tag}: {inside_text}; the interior side "
+                                "of R311.3 is ungraded", (opening.tag,), code))
         # A tilted deck is read where the foot lands: its own edge nearest the door.
         (ax, ay), (bx, by) = list(patch.exterior.coords)[:2]
         at_door = Point((ax + bx) / 2.0, (ay + by) / 2.0)
@@ -322,7 +321,8 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
         name, top = max(covered, key=lambda item: item[1])
         swings = _swings_over(opening, patch)
         ok, why = landing_step_verdict(threshold - top, opening.tag in egress_tags, swings)
-        text = f"{opening.tag} lands on {name}, {why}"
+        text = f"{opening.tag} lands on {name}, {why}" + (
+            f"; inside, {inside_text}" if inside == "pass" else "")
         out.append(_pass(cid, text, code) if ok else _fail(cid, text, (opening.tag,), code))
     return out
 

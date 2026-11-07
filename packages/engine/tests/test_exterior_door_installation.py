@@ -242,6 +242,7 @@ def test_sill_design_conceals_pan_without_claiming_factory_approval(catlin_model
     from shapely.geometry import LineString
     from shapely.ops import unary_union
 
+    from typehaus.resolve.exterior_door_sill import door_pan_ro_face, pan_rise_profile
     from typehaus.resolve.flashing_config import FLASHING
     from typehaus.resolve.opening_flashing import _pan_outlet
 
@@ -261,9 +262,11 @@ def test_sill_design_conceals_pan_without_claiming_factory_approval(catlin_model
     polygons = {s.name: Polygon([(sign * n, z) for n, z in s.polygon_m])
                 for s in placement.sections}
     assert all(p.is_valid and p.area > 0 for p in polygons.values())
-    pan_top = LineString(((sign * placement.frame_inner_m,
-        base + (outlet - sign * placement.frame_inner_m) * FLASHING.drainage_slope),
-        (outlet, base)))
+    # D-M-ENTRY's pan slopes across its RO only (``pan_across_ro``), D-M-PORCH's to the outlet.
+    profile = pan_rise_profile(sign * placement.frame_inner_m, outlet,
+                               door_pan_ro_face(placement), FLASHING.drainage_slope)
+    assert len(profile) == (3 if tag == "D-M-ENTRY" else 2)
+    pan_top = LineString([(depth, base + rise) for depth, rise in profile])
     for name, polygon in polygons.items():
         if "nosing" not in name:
             assert polygon.intersection(pan_top).length == 0

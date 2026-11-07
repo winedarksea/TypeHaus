@@ -22,6 +22,37 @@ def sill_outlet_depth(clad, installation):
     return outlet
 
 
+def pan_rise_profile(dam, outlet, ro_face=None, slope=FLASHING.drainage_slope):
+    """``(depth, rise)`` breakpoints of a sill pan's top above its seat, dam to outlet.
+
+    Sloped to the outlet by default; with ``ro_face`` (``pan_across_ro``) sloped only to
+    the RO's outer face and level beyond it.
+    """
+    if ro_face is None or not dam < ro_face < outlet:
+        return ((dam, (outlet - dam) * slope), (outlet, 0.0))
+    return ((dam, (ro_face - dam) * slope), (ro_face, 0.0), (outlet, 0.0))
+
+
+def pan_rise_at(profile, depth):
+    """The pan's rise at ``depth`` on a ``pan_rise_profile``; flat past either end."""
+    (d0, r0), *rest = profile
+    if depth <= d0:
+        return r0
+    for d1, r1 in rest:
+        if depth <= d1:
+            return r0 + (r1 - r0) * (depth - d0) / (d1 - d0)
+        d0, r0 = d1, r1
+    return r0
+
+
+def door_pan_ro_face(placement):
+    """The RO's outer face a ``pan_across_ro`` pan stops sloping at, else None."""
+    design = placement.specification.sill_design if placement else None
+    if design is None or not design.pan_across_ro:
+        return None
+    return placement.outward_sign * placement.frame_outer_m
+
+
 def add_sill_design(assembly, opening, clad):
     placement = assembly.exterior_placement
     installation = placement.specification
@@ -107,8 +138,13 @@ def add_sill_design(assembly, opening, clad):
     intervals = max(1, ceil((width - strip_width) / design.bearing_strip_spacing.meters))
     positions = [-(width - strip_width) / 2 + i * (width - strip_width) / intervals
                  for i in range(intervals + 1)]
+    ro_face = door_pan_ro_face(placement)
+    profile = pan_rise_profile(inner, outlet, ro_face)
+
     def pan_top(depth):
-        return base + (outlet - depth) * FLASHING.drainage_slope + FLASHING.sill_membrane_m
+        rise = ((outlet - depth) * FLASHING.drainage_slope if ro_face is None
+                else pan_rise_at(profile, depth))
+        return base + rise + FLASHING.sill_membrane_m
     strip_bottom_start = pan_top(start)
     strip_bottom_end = pan_top(outlet)
     isolation = installation.wrap_isolation_thickness.meters
