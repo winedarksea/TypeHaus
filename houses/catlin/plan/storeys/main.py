@@ -2173,10 +2173,17 @@ PANELING = [
     # and their door walls (W-M-MECH-S, W-M-MUDC-N). The PVC base runs on the gypsum and the
     # band starts on its top (owner, 2026-11-01): 1.0255906" LVP floor + 3 1/2" base. On the
     # door walls the band stops at the casing's outer edge. Wraps WIN-M-MUD; the sconce at
-    # 6'-8" is above it.
+    # 6'-8" is above it. Spans are each wall's whole run (clipped to the room face) except
+    # W-M-MECH-E, which stops 11/16" short of W-M-N3's face (owner, 2026-11-06) so
+    # CASING-D-M-ENTRY-L's right leg runs past it to W-M-MECH-E's board (scribed ~2.19").
     WallPaneling(uid="G21WZA605X", tag="WP-M-MUDROOM-SHIPLAP", room="RM-M-MUDROOM",
                  material_ref="oak-shiplap-painted", offset=inch(4.5255906), height=inch(67.4744094),
-                 walls=("W-M-W1", "W-M-MECH-E", "W-M-MUDC-E", "W-M-MECH-S", "W-M-MUDC-N")),
+                 walls=("W-M-W1", "W-M-MECH-E", "W-M-MUDC-E", "W-M-MECH-S", "W-M-MUDC-N"),
+                 spans=(PanelingSpan(wall_ref="W-M-W1", start=inch(0), length=inch(44.5)),
+                        PanelingSpan(wall_ref="W-M-MECH-E", start=inch(0), length=inch(24.8125)),
+                        PanelingSpan(wall_ref="W-M-MUDC-E", start=inch(0), length=inch(36)),
+                        PanelingSpan(wall_ref="W-M-MECH-S", start=inch(0), length=inch(72)),
+                        PanelingSpan(wall_ref="W-M-MUDC-N", start=inch(0), length=inch(72)),)),
     # The call booth's acoustic felt, sitting on top of the wainscot: band
     # 3'-0" to 9'-0", south and north walls only.
     #
