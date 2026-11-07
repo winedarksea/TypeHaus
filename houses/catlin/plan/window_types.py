@@ -32,15 +32,17 @@ from typehaus import WindowType, u_us
 from typehaus.quantities import ft, inch, mm
 
 _DRUTEX_DEPTH = mm(93)
-# Fensterblick's Alucover 70001 / 70013 section (2026-11-07). The unit envelope remains
-# the bare frame; the unselected 30/50 mm adaptor must not silently raise its stool.
+# Fensterblick's Alucover 70001 / 70013 section (2026-11-07). An operable unit's envelope
+# includes the 30 mm sill adaptor (54123): on the bare frame its stool, under the 38 mm
+# inward sash, pierced the sill pan's 1 1/2" back dam (notes/window_profile_measurements.md §1).
 _DRUTEX_FRAME, _DRUTEX_SASH = mm(74), mm(50)
-_DRUTEX_INWARD_SASH_BOTTOM = mm(38)
+_DRUTEX_SILL_ADAPTOR = mm(30)
+_DRUTEX_INWARD_SASH_BOTTOM = mm(38 + 30)
 # Fixed-section face width includes glazing details, not a measured stool-bearing rail.
 # Keep the previous stool basis explicit so the face correction does not move counters.
 _DRUTEX_FIXED_STOOL_RAIL = mm(75)
 _DRUTEX_FACES = ("Alucover frame 70001, 74 mm exterior face. "
-                 "Sill adaptor not included in modeled envelope; DAKAM to confirm. "
+                 "Operable units include a 30 mm sill adaptor (54123); DAKAM to confirm. "
                  "Sources: notes/window_profile_measurements.md.")
 # Not published to us for the basic unit; the preset's 3 1/4" stays until the dealer's
 # section is in hand.
@@ -79,11 +81,13 @@ def _drutex(tag, width, height, operation, row, product, *, tempered=False,
             u=0.16, shgc=0.33, vt=0.47) -> WindowType:
     profile_detail = ("Fixed in frame; interior stool rail remains provisionally 75 mm."
                       if operation == "fixed" else
-                      "Sash 70013 adds 50 mm face; inward bottom 38 mm above bare PVC frame.")
+                      "Sash 70013 adds 50 mm face; inward bottom 68 mm above the adaptor.")
     return WindowType(
         tag=tag, width=width, height=height, operation=operation, tempered=tempered,
         u_factor=u_us(u), shgc=shgc, vt=vt, frame_depth=_DRUTEX_DEPTH,
         frame_face_width=_DRUTEX_FRAME,
+        frame_sill_face_width=_DRUTEX_FRAME + _DRUTEX_SILL_ADAPTOR if operation != "fixed"
+        else None,
         sash_face_width=_DRUTEX_SASH if operation != "fixed" else inch(0),
         inward_sash_bottom_height=_DRUTEX_INWARD_SASH_BOTTOM if operation != "fixed" else None,
         sill_rail_height=_DRUTEX_FIXED_STOOL_RAIL if operation == "fixed" else None,

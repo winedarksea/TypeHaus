@@ -59,7 +59,7 @@ def test_andersen_sections_keep_distinct_jamb_head_and_sill_sightlines(catlin_mo
     assert count == 9
 
 
-def test_alucover_faces_and_stool_use_the_bare_frame_sash_bottom(catlin_model_ro):
+def test_alucover_faces_and_stool_use_the_adaptor_sash_bottom(catlin_model_ro):
     model = catlin_model_ro
     types = {kind.tag: kind for kind in model.plan.library.window_types}
     stools = {stool.window_ref: stool for stool in model.window_stools}
@@ -73,11 +73,13 @@ def test_alucover_faces_and_stool_use_the_bare_frame_sash_bottom(catlin_model_ro
         count += 1
         assert kind.frame_face_width.meters == pytest.approx(.074)
         assert kind.sash_face_width.meters == pytest.approx(.050)
+        assert kind.frame_sill_face_width.meters == pytest.approx(.074 + .030)  # 54123
         wall = model.wall(opening.host_wall)
         _, _, sill = window_frame_dimensions(opening)
         stool = stools[opening.tag]
         prism = window_stool_prism(wall, opening, stool)
-        assert prism.z1_m == pytest.approx(wall.base_ref_z_m + sill + .038)
+        # 38 mm above the bare PVC frame + the 30 mm adaptor, clear of the pan's back dam
+        assert prism.z1_m == pytest.approx(wall.base_ref_z_m + sill + .068)
         # A supplier's direct sash-bottom measurement can lower the stool but never lift
         # it off its rail when another product has a sash above that rail.
         raised_limit = replace(stool, inward_sash_bottom_m=.2)

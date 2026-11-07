@@ -48,8 +48,13 @@ of DAKAM's supplied assembly.
 the retained adaptor number and height, whether the quoted unit height includes it,
 and a dimensioned operable sill section showing the stool-bearing rail and lowest inward
 sash edge from the same installed bottom datum. Specify the required running clearance.
-The current unit envelope represents the bare frame: **38 mm**, not 68 mm, is used for
-the operable stool limit. The direct measurement avoids inventing an interior rail / lap
+**2026-11-07, adaptor modelled on operable units.** On the bare frame the operable stool
+(top at 38 mm, 1.18" thick) sat 1.1" into the sill pan's 1 1/2" back dam
+(`FlashingConfig.back_dam_m`; 56 stool/pan solid overlaps). A PVC unit on a backdammed pan
+needs the adaptor, and DAKAM's brochure lists an under-sill trim as standard, so operable
+types now carry the 30 mm 54123 adaptor in the unit envelope: **68 mm** stool limit
+(`inward_sash_bottom_height`) and a 104 mm sill sightline. The stool then clears the
+dam by about 0.05". The ordered adaptor and its height are still DAKAM's to confirm. The direct measurement avoids inventing an interior rail / lap
 split from an exterior face. Fixed units retain an explicit **75 mm provisional stool
 rail** so the exterior face correction does not disturb the dining counter alignment;
 the 73 mm fixed glazing detail is not evidence of a stool-bearing rail. Once selected,
