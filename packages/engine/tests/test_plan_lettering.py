@@ -78,3 +78,23 @@ def test_a_concrete_wall_opening_is_dimensioned_to_its_edges():
     assert [round(s, 6) for s in stations] == [0.0, round(3.0 - half, 6),
                                                round(3.0 + half, 6), 6.0]
     assert _facade_stations([framed], _Model(framed), 0, 1, 0.0, 0.0, 6.0) == [0.0, 3.0, 6.0]
+
+
+def test_a_tight_room_takes_its_short_label_before_a_smaller_size():
+    """MUD CLOSET at 1/4": a 63" x 29" closet, its door bubble over the middle (D1-109)."""
+    from typehaus.emit.draw.plan_labels import _block_box, _overlaps, _place_block
+
+    i = M_PER_IN
+    ring = [(6.5 * i, 323.8 * i), (69.8 * i, 323.8 * i), (69.8 * i, 353.2 * i),
+            (6.5 * i, 353.2 * i)]
+    bubble = [(25.3 * i, 328.0 * i, 56.7 * i, 359.4 * i)]
+    at, block = (38.1 * i, 338.5 * i), [("MUD CLOSET", ROOM_NAME_PT)]
+    _, plain = _place_block(at, block, ring, bubble, scale=0.25, spill=True)
+    anchor, short = _place_block(at, block, ring, bubble, scale=0.25, spill=True,
+                                 short="MUD CL.")
+    assert plain[0][0] == "MUD CLOSET"
+    assert short == [("MUD", ROOM_NAME_PT), ("CL.", ROOM_NAME_PT)]
+    assert not _overlaps(_block_box(anchor, short, 0.25), bubble)
+    # A room the full name fits never abbreviates.
+    assert _place_block(at, block, ring, [], scale=0.25, spill=True,
+                        short="MUD CL.")[1] == block

@@ -1638,7 +1638,7 @@ ROOMS = [
     # The boot closet follows the mudroom LVP. Its bypass bottom guide
     # is mounted on one flat plane at D-M-MUDC.
     Room(uid="G01HFSH967", tag="RM-M-MUD-CLOSET", seed=pt(ft(3), ft(28)),
-         occupancy=Occupancy.STORAGE, floor_finish="lvp"),
+         occupancy=Occupancy.STORAGE, floor_finish="lvp", short_label="MUD CL."),
     # The kitchen's framed reach-in pantry, replacing FURN-M-KIT-PANTRY-E,
     # -TALL-N and -TALL-S. STORAGE for the same closed-enum reason as RM-M-MECH and
     # RM-M-MUD-CLOSET above; 14.6 SF clear, 5'-10 1/4" x 2'-6".

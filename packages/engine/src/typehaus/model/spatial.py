@@ -98,6 +98,17 @@ class Room(Element):
     # tropical case — cannot state only one of them and be analysed honestly. None means
     # the house's ``Preferences.interior_setpoint_f``.
     design_temperature_f: float | None = None
+    # The plan's abbreviation (``MUD CL.``), printed only where the full name from the tag
+    # finds no clear spot in the room (``emit/draw/plan_labels``). Schedules, IFC and the UI
+    # keep the full name. None = never abbreviate.
+    short_label: str | None = None
+
+    @field_validator("short_label")
+    @classmethod
+    def _short_label_not_blank(cls, value: str | None) -> str | None:
+        if value is not None and not value.strip():
+            raise ValueError("Room.short_label is blank: omit it instead")
+        return None if value is None else value.strip()
 
     @field_validator("exposed_services", "closed_to_services")
     @classmethod

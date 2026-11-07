@@ -26,7 +26,7 @@ that is not the ceiling.
 
 from __future__ import annotations
 
-from math import gcd
+from math import gcd, hypot
 
 from shapely.geometry import Point, Polygon
 from shapely.geometry import box as shapely_box
@@ -263,6 +263,7 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
                  avoid: list[tuple[float, float, float, float]],
                  prefer: list[tuple[float, float, float, float]] = (),
                  scale: float = PLAN_RESERVATION_SCALE, spill: bool = False,
+                 short: str | None = None,
                  ) -> tuple[tuple[float, float], list[tuple[str, float]]]:
     """Where the block goes and which of its lines survive: inside the room, clear of ``avoid``.
 
@@ -293,6 +294,10 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
     label reads perfectly well across it; a heavy mark bubble it does not. So each trial
     tries the full obstacle set first and falls back to ``avoid`` alone at the SAME line
     count, and only then shortens. Preference never causes shedding.
+
+    **``short`` is the room's authored abbreviation** (``Room.short_label``), tried only once
+    the full name has no clear spot, and before any drop in size: one lettering size across
+    the set, abbreviated in tight rooms (owner, D1-109).
     """
     poly = Polygon(ring)
     step_y = block_pitch_m(scale) / 2.0
@@ -307,19 +312,24 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
                     return anchor, trial
     if not spill:  # a void's note keeps the old last resort; ``spill`` is a room's name
         return _clamped_anchor(at, lines[:1], ring, scale), lines[:1]
-    # A name wider than its room (``MUD CLOSET`` at 3/32") wraps a word to a line, then
-    # drops to ``TAG_PT`` (3/32" caps, the NCS minimum), and only then spills past the
-    # partition (anchored in the room). Never through another label (D1-109).
+    # A name wider than its room wraps a word to a line, then takes its authored
+    # abbreviation, then drops to ``TAG_PT`` (3/32" caps, the NCS minimum), and only then
+    # spills past the partition (anchored in the room). Never through another label (D1-109).
     name = lines[:1]
     text, size = name[0]
     small = min(size, TAG_PT)
     two = _two_lines(text)
-    trials = [name, [(w, size) for w in two], [(text, small)], [(w, small) for w in two]]
+    trials = [name, [(w, size) for w in two]]
+    if short:
+        trials += [[(short, size)], [(w, size) for w in _two_lines(short)]]
+    trials += [[(text, small)], [(w, small) for w in two]]
     for contained in (True, False):
         for trial in dict.fromkeys(tuple(t) for t in trials):
             step_x = _block_half_width(trial, scale)
-            for dx, dy in _SPILL_STEPS:
-                anchor = (at[0] + dx * step_x, at[1] + dy * step_y)
+            anchors = [(at[0] + dx * step_x, at[1] + dy * step_y) for dx, dy in _SPILL_STEPS]
+            if contained and trial[0][1] == size:  # snapping keeps the size; never shrinks
+                anchors += _snapped_anchors(at, trial, poly, avoid, scale)
+            for anchor in anchors:
                 box = _block_box(anchor, trial, scale)
                 inside = (poly.contains(shapely_box(*box)) if contained
                           else poly.contains(Point(anchor)))
@@ -337,6 +347,31 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
     if best is None:
         return _clamped_anchor(at, name, ring, scale), name
     return best[3], list(best[4])
+
+
+def _snapped_anchors(at: tuple[float, float], lines: list[tuple[str, float]], poly: Polygon,
+                     avoid: list[tuple[float, float, float, float]],
+                     scale: float = PLAN_RESERVATION_SCALE) -> list[tuple[float, float]]:
+    """Anchors putting the block hard against a room edge or an obstacle, nearest ``at`` first.
+
+    The spill grid steps in half-block widths from the room's inside point, so a slot beside a
+    door bubble one grid step too far off (``MUD CL.`` west of ``D9``) is never tried.
+    """
+    half_w, pitch = _block_half_width(lines, scale), block_pitch_m(scale)
+    top, bottom = pitch / 2.0 + 1e-4, (len(lines) - 1) * pitch + pitch / 2.0 + 1e-4
+    minx, miny, maxx, maxy = poly.bounds
+    near = [o for o in avoid if o[0] < maxx and o[2] > minx and o[1] < maxy and o[3] > miny]
+    xs = [minx + half_w + 1e-4, maxx - half_w - 1e-4,
+          *(o[0] - half_w - 1e-4 for o in near), *(o[2] + half_w + 1e-4 for o in near)]
+    ys = [maxy - top, miny + bottom, *(o[1] - top for o in near), *(o[3] + bottom for o in near)]
+    return sorted(((x, y) for x in xs for y in ys),
+                  key=lambda p: hypot(p[0] - at[0], p[1] - at[1]))
+
+
+def _short_label(model: ResolvedModel, tag: str) -> str | None:
+    """The authored ``Room.short_label``, read off the plan like the room's paint."""
+    plan = getattr(model, "plan", None)
+    return getattr(plan.by_tag(tag) if plan is not None else None, "short_label", None)
 
 
 def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
@@ -387,7 +422,8 @@ def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
             lines.append((noted[0][0], TAG_PT))
         lines = _fitted_lines(lines, room.clear_face, scale)
         (cx, cy), lines = _place_block((cx, cy), lines, room.clear_face, [*avoid, *boxes],
-                                       prefer, scale, spill=True)
+                                       prefer, scale, spill=True,
+                                       short=_short_label(model, room.tag))
         pitch = block_pitch_m(scale)
         for index, (content, height_pt) in enumerate(lines):
             b.add(Text(anchor=_in((cx, cy - index * pitch)),
