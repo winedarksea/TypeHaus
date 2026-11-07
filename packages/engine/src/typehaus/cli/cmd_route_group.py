@@ -88,12 +88,17 @@ def group_proposals(model: ResolvedModel, group: str, opts: RouteOptions
     members, storey, tie_run, band = plan
     own: frozenset[str] = frozenset()
     notices: list[str] = []
+    passes: list[str] = []  # every pass's problems, tagged, the last early return included
+    seen: list = []
     for attempt in range(3):
         order = group_order(members, own)
         if isinstance(order, str):
-            return [], [*problems, f"{room}: no 908.2 group — {order}"], notices, []
+            return [], [*problems, *passes, f"{room}: no 908.2 group — {order}"], notices, seen
         ties = _ties(model, set(order.laying), tie_run, band)
         laid, tried, refusals, blame = _lay(model, room, order, storey, ties, tie_run, opts)
+        label = _pass_label(attempt, order.dry, own)
+        passes += [f"[{label}] {line}" for line in tried]
+        seen += [replace(r, attempts=(f"group {label}", *r.attempts)) for r in refusals]
         if not blame or set(blame) <= own or attempt == 2:
             break
         notices.append(f"{room}: {', '.join(blame)} held to its own vent and the group laid "
@@ -105,7 +110,14 @@ def group_proposals(model: ResolvedModel, group: str, opts: RouteOptions
     laid = [replace(p, replaces=lifted) for p in laid]
     notices += [f"{t}: keeps its own vent and authored tie (908.2.1.3, 908.2.1.5)"
                 for t in order.own_vent]
-    return [(p, storey) for p in laid], [*problems, *tried], notices, refusals
+    return [(p, storey) for p in laid], [*problems, *passes], notices, seen
+
+
+def _pass_label(attempt: int, dry: str, held: frozenset[str]) -> str:
+    """``pass 2: SH dry, TUB held`` — fixture tags by their last word."""
+    held_words = sorted(t.rsplit("-", 1)[-1] for t in held)
+    return (f"pass {attempt + 1}: {dry.rsplit('-', 1)[-1]} dry"
+            + (f", {', '.join(held_words)} held" if held else ""))
 
 
 def _lay(model: ResolvedModel, room: str, order: GroupOrder, storey: str, ties: list,
