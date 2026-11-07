@@ -983,10 +983,17 @@ STAIR_HANDRAIL = Railing(
         pt(inch(423), inch(46)),
         pt(inch(423), inch(84)),
         pt(inch(423), inch(103.25)),
+        # One vertex per bracket, each on wood: W-S-SS2 studs at 375"/343", the FS-ATTIC
+        # trimmer pack at 310" (rail under the 240" wall top), and the W-A-SN corner stud at
+        # 267" (W-A-SN-WR). x 268"..308" has no wall at rail height. Spans 50/40/41/54".
+        pt(inch(375), inch(103.25)),
+        pt(inch(343), inch(103.25)),
+        pt(inch(310), inch(103.25)),
+        pt(inch(267), inch(103.25)),
         pt(inch(257.125), inch(103.25)),  # the top riser's face; the header is 3/4" west
     ),
     kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
-    base_elevation=ft(20), post_spacing=inch(38.5), post_size="2x2", rail_count=1,
+    base_elevation=ft(20), post_spacing=inch(48), post_size="2x2", rail_count=1,
     mount="wall", assembly="RAILING_DARK_METAL",
     role="handrail", serves_stair="ST-S2A", top_height=inch(36),
     graspable_profile="1.9in round — Type I",
@@ -995,11 +1002,8 @@ STAIR_HANDRAIL = Railing(
     # D-A-STUDY narrowed (2026-11-01) its east casing ends at x=255 5/8", so the 70 mm
     # flange at x=263" is 6" clear of it, over stud-000.
     end_return_target=pt(inch(263), inch(105.625)),
-    # 38 1/2" plan keeps every raked span under the bracket's 48" and leaves the 38" leg by
-    # WIN-S-STUDY3 whole. Bracket 7 is above the lower wall but below the recessed attic
-    # partition: one fabricated matte black standoff to W-S-SS2's top plate. No layout
-    # avoids it (x 313"..260" has no wall at rail height).
-    bracket_drop_overrides=((7, inch(26.5)),),
+    # 48" plan leaves every leg one bay. All brackets are the stock EZA200 (owner 2026-11-06:
+    # ~54" spacing instead of a fabricated standoff at the old bracket 7).
 )
 
 STAIRS = [

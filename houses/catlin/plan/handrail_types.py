@@ -17,7 +17,9 @@ EZ_HANDRAIL_8_BLACK_KIT = Product(
     url="https://homedepot.com/p/EZ-Handrail-8-ft-Textured-Black-Aluminum-Round-Straight-Handrail-Kit-EZA8KIT-HB/205903439",
     source="Home Depot listing, $158, read 2026-10-24. Manual: 1.9 in. OD aluminum rail; wall "
            "bracket EZA200 on 2-1/4 in. Tapcon and 1 in. stainless pan-head fasteners into a "
-           "solid stud. The manual spaces brackets 'every 4' to 6''; the house uses 4' (48 in.). "
+           "solid stud. The manual spaces brackets 'every 4' to 6'' (EZ Round Handrail manual, "
+           "Madden Mfg., p.8 step 15, images.homedepot-static.com/catalog/pdfImages/09/"
+           "09daeb7d-0204-4503-b348-8a0d887be0ec.pdf, read 2026-11-06); the house uses 54 in. "
            "No load rating is published, and the kit's bracket count is not verified. No "
            "wall-to-rail standoff is published either: the paths set the rail centre ~2 1/2 in. "
            "off the finish (1.55-1.61 in. clear, R311.7.8.2 wants 1 1/2); confirm on a bracket.",
@@ -28,10 +30,11 @@ RAILING_INT_ALUM_HANDRAIL = RailingType(
     name="Matte black aluminum 1.9 in. round wall handrail",
     rail_diameter=inch(1.9),
     stock_length=ft(8),
-    bracket_spacing_max=inch(48),
+    bracket_spacing_max=inch(54),
     product_ref=EZ_HANDRAIL_8_BLACK_KIT.tag,
     source="The rail's colour stays the RAILING_DARK_METAL assembly's. Spacing is the house's "
-           "4' setting within the manual's 4'-6' range, not a published load rating.",
+           "54 in. setting (owner 2026-11-06) within the manual's 4'-6' range, not a published "
+           "load rating.",
 )
 
 RAILING_TYPES = (RAILING_INT_ALUM_HANDRAIL,)

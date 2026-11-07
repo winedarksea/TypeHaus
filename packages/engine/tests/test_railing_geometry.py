@@ -365,25 +365,30 @@ def test_attic_handrail_lower_supports_have_bearing_backing(catlin_model_ro):
         assert reach >= hi - 1e-6, suffix
 
 
-def test_attic_recess_bracket_reaches_the_lower_walls_double_top_plate(catlin_model_ro):
-    from shapely.geometry import Point, Polygon
+def test_every_attic_handrail_bracket_is_a_stock_arm_screwed_into_wood(catlin_model_ro):
+    """RL-A-HANDRAIL: no fabricated standoff (owner 2026-11-06, ~54" spacing instead). Each
+    arm's fixing, 3/4" behind its finish face (through the gypsum), lands in framing."""
+    from shapely.geometry import LineString, Point, Polygon
 
-    from typehaus.resolve.geometry_members import member_box
+    from typehaus.resolve.framing.footprint import member_footprint
 
     model = catlin_model_ro
-    bracket = _solids(model, 'RL-A-HANDRAIL', 'BRACKET7')[0]
-    assert bracket.sweep is not None
-    anchor, elbow, rail_end = bracket.sweep.path
-    assert anchor[0] == pytest.approx(inch(290.3).meters, abs=inch(0.1).meters)
-    assert anchor[1] == pytest.approx(inch(105.75).meters, abs=inch(0.1).meters)
-    assert rail_end[2] - anchor[2] == pytest.approx(inch(26.5).meters, abs=inch(0.1).meters)
-    assert elbow[:2] == pytest.approx(rail_end[:2])
-    wall = next(w for w in model.walls if w.tag == 'W-S-SS2')
-    plates = [m for m in wall.members if m.category == 'plate' and 'top' in m.child_key]
-    assert min(m.z0_m for m in plates) < anchor[2] - inch(0.5).meters
-    assert max(m.z1_m for m in plates) > anchor[2] + inch(0.5).meters
-    wood_faces = [Polygon([(x, y) for x, y, _z in member_box(m).corners_top]) for m in plates]
-    # The anchor passes through the wall's 5/8" stair-side gypsum into the plate pack.
-    assert all(any(poly.buffer(1e-6).covers(Point(anchor[0] + offset,
-                                                  anchor[1] + inch(0.625).meters))
-                   for poly in wood_faces) for offset in (-inch(0.5).meters, inch(0.5).meters))
+    rail = next(e for e in model.plan.all_elements() if e.tag == 'RL-A-HANDRAIL')
+    line = LineString([p.xy_m for p in rail.path])
+    wood = [(Polygon(o), b, t) for o, b, t in map(member_footprint, model.all_members())
+            if len(o) >= 3]
+    brackets = _solids(model, 'RL-A-HANDRAIL', 'BRACKET')
+    assert len(brackets) == 6
+    for bracket in brackets:
+        assert bracket.sweep is None and bracket.z1_m - bracket.z0_m < inch(4).meters
+        ring = bracket.outline  # rect_between(face, station): 4 corners
+        ends = sorted(((ring[k], ring[(k + 1) % 4]) for k in range(4)),
+                      key=lambda e: math.dist(*e))[:2]  # the two 1" ends
+        station, face = sorted((((a[0] + b[0]) / 2, (a[1] + b[1]) / 2) for a, b in ends),
+                               key=lambda m: line.distance(Point(m)))
+        n = math.dist(face, station)
+        probe = Point(face[0] + (face[0] - station[0]) / n * inch(0.75).meters,
+                      face[1] + (face[1] - station[1]) / n * inch(0.75).meters)
+        z = bracket.z0_m + inch(0.5).meters
+        assert any(poly.buffer(1e-6).covers(probe) and b <= z <= t for poly, b, t in wood), \
+            bracket.tag
