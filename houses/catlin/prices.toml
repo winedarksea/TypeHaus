@@ -852,11 +852,12 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # which stands the derived rule down and puts the real part number on both. The ABU66 row
 # stays at the galvanized rate, at 0 ea, as the revert.
 "ABU66" = { low = 40, high = 70 }  # 0 ea — the DERIVED galvanized row, stood down by CN-BW-BASE-*. Kept priced (the glazed-green-brick convention) so deleting an authored base does not silently drop the part
-"ABU66SS" = { low = 150, high = 230 }  # 0 ea since 2026-09-30 — the canopy's four bases are cast-in CBSQ66-SDS2 (below). Kept priced as the documented revert (the `glazed-green-brick` convention)
+"ABU66SS" = { low = 150, high = 230 }  # 0 ea since 2026-09-30 — the canopy's four bases are cast-in CBSTQ66Z-SDS2 (below). Kept priced as the documented revert (the `glazed-green-brick` convention)
 # ** THE CANOPY'S FOUR BASES, CAST IN (2026-09-30). ** A CBSQ's uplift is measured THROUGH the
 # concrete (ESR-3050 Table 1, 3,060 lb cracked), so it buys no separate anchor bolt. Retail
 # range read 2026-09-30, UNCONFIRMED — the owner's number replaces it.
-"CBSQ66-SDS2" = { low = 45, high = 80 }  # 4 ea — CN-BW-BASE-W / -NW / -E / -NE (the east pair only under EAST_POST_SYSTEM = "kdat")
+# 2026-11-06: CBSQ66-SDS2 renamed to the ZMAX CBSTQ66Z-SDS2 (C-C-2026 p.85). Search snippets only (pages 403): Benefast $65.47, ToolUp $73.58, Home Depot $75.39, Family Hardware $82.99.
+"CBSTQ66Z-SDS2" = { low = 65, high = 85 }  # 4 ea — CN-BW-BASE-W / -NW / -E / -NE (the east pair only under EAST_POST_SYSTEM = "kdat")
 # What replaced two of those, at PT-SG-BR2 and PT-SG-BF2: a base TIE built from stock
 # sheet-metal parts — one 12" strap on the flush west face of each pillar, plus an L angle
 # on every face that has joist pack beside it (BR2 north and south, BF2 north alone).
