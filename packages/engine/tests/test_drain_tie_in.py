@@ -26,8 +26,9 @@ def test_catlin_is_clean(catlin_plan, catlin_model_ro) -> None:
     findings = drain_tie_in(check_context(plan=catlin_plan, model=catlin_model_ro))
     fails = [f for f in findings if f.result is Result.FAIL]
     assert not fails, [f.message for f in fails]
-    # incl. two kitchen waste connections, PR-B-WH-COND and PR-B-USINK-DRAIN
-    assert len(findings) == 36
+    # incl. two kitchen waste connections, PR-B-WH-COND and PR-B-USINK-DRAIN; the washer's
+    # standpipe and drop went when it began draining into the laundry tub (2026-11-07)
+    assert len(findings) == 34
     # E16: a branch entering a stack prints its 3D station, not 120" over the stack's foot.
     wc = next(f for f in findings if "PR-M-S-BATH1-WC-DRAIN" in f.element_tags)
     assert "on its centreline" in wc.message, wc.message

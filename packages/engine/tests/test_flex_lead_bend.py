@@ -64,13 +64,12 @@ def test_the_bend_is_charged_c_on_the_flex_s_velocity_pressure(catlin_plan):
     part = SimpleNamespace(other="EQ-B-ERV", port="outdoor", bend_deg=90.0)
     vp = velocity_pressure_in_wg(210.0, _in(8))
     gaps: list[str] = []
-    assert _flex_bend_loss(ctx, duct, part, standard, 210.0, gaps) == pytest.approx(0.22 * vp)
+    bare = standard.model_copy(update={"port_kits": tuple(
+        k.model_copy(update={"flex_bend_loss_c": None}) for k in standard.port_kits)})
+    assert _flex_bend_loss(ctx, duct, part, bare, 210.0, gaps) == pytest.approx(0.22 * vp)
     assert "stock elbow" in gaps[0]
-    kits = tuple(k.model_copy(update={"flex_bend_loss_c": 2.85})
-                 if k.ports == ("outdoor", "exhaust") else k for k in standard.port_kits)
     gaps = []
-    measured = _flex_bend_loss(ctx, duct, part, standard.model_copy(update={"port_kits": kits}),
-                               210.0, gaps)
+    measured = _flex_bend_loss(ctx, duct, part, standard, 210.0, gaps)  # catlin authors 2.85
     assert measured == pytest.approx(2.85 * vp) and not gaps
     assert measured == pytest.approx(0.0643, abs=5e-5)  # 16.0 Pa: the note's table
 
