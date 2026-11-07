@@ -11,8 +11,13 @@ plan's ``bearing_refs`` — and the checks call the same walk on the finished mo
   roof whose ridge it is included); a beam ending on the wall, a ``FloorOpening`` and a
   ``Stair`` are point loads, counted where their bearing falls inside the span. An
   opening on a wall across its floor's joists bears only at its outline's corners (the
-  trimmer ends), never across its hole; along one parallel to them, or a stair, anywhere
-  along its extent.
+  trimmer ends), never across its hole; a stair, or an opening whose joists are unknown,
+  anywhere along its extent.
+* A wall parallel to an opening's joists is under its TRIMMER: a uniform strip of that
+  floor along the opening's extent, plus a point at each corner where something hangs in
+  the trimmer — a header (the corner's cross edge names no bearer), or a named beam whose
+  end there rests on none of its own ``bearing_refs`` (a hung beam rides the trimmer down
+  to the trimmer's bearing, BM-S-BATH-E on W-S-SN3).
 * Then the walls above: on the next storey up of the same building that carries a wall on
   this line, every wall whose collinear run covers the span, recursively. Read off the
   line, not one stack edge, so an upper wall spanning two lower segments is found.
@@ -32,6 +37,7 @@ from typehaus.resolve.mep_bore_scope import outdoor_wall_tags
 _AXIS_TOL_M = 0.5 * 0.0254  # stacking's raw-axis tolerance
 _OVERLAP_M = 0.0254  # a run shorter than this touches, it does not carry
 _END_M = 1.5 * 0.0254  # a point within a stud of a wall's end stands in its corner
+_HUNG_M = 6 * 0.0254  # a beam end this near an opening corner hangs in that corner's trimmer
 
 
 @dataclass(frozen=True)
@@ -70,6 +76,10 @@ class _Load:
     footprint: tuple[tuple[float, float], ...] = ()
     #: A floor opening's joist direction: on a wall across it, it bears at its vertices.
     joists: str | None = None
+    #: A floor opening's own floor: the strip its trimmer lays on a parallel wall.
+    floor: str | None = None
+    #: (source, plan point) of what hangs in a trimmer: headers and hung beam ends.
+    hung: tuple[tuple[str, tuple[float, float]], ...] = ()
 
 
 @dataclass
@@ -100,7 +110,7 @@ class LoadIndex:
         resolved_roofs = {roof.tag: roof for roof in model.roofs}
         stairs = {stair.tag: stair for stair in model.stairs}
         beam_loads: dict[str, list[_Load]] = {}
-        joists = {tag: el.joists.direction for el in plan.all_elements()
+        owners = {tag: el for el in plan.all_elements()
                   if isinstance(el, FloorSystem) and el.joists is not None
                   for tag in el.openings}
         for el in plan.all_elements():
@@ -123,8 +133,13 @@ class LoadIndex:
                     el.tag, False, floors=(el.tag,),
                     footprint=tuple(p.xy_m for p in el.outline)), beam_loads)
             elif isinstance(el, FloorOpening):
-                self._add(el.bearing_refs, _Load(el.tag, True, footprint=tuple(
-                    p.xy_m for p in el.outline), joists=joists.get(el.tag)), beam_loads)
+                owner = owners.get(el.tag)
+                footprint = tuple(p.xy_m for p in el.outline)
+                direction = owner.joists.direction if owner else None
+                self._add(el.bearing_refs, _Load(
+                    el.tag, True, footprint=footprint, joists=direction,
+                    floor=owner.tag if owner else None,
+                    hung=self._hung_in_trimmers(el, footprint, direction)), beam_loads)
             elif isinstance(el, Stair):
                 stair = stairs.get(el.tag)
                 self._add(el.bearing_refs, _Load(el.tag, True, footprint=tuple(
@@ -142,6 +157,52 @@ class LoadIndex:
                 if wall is not None and not along:
                     load.footprint = (min(ends, key=lambda p: _line_distance(wall.axis, p)),)
                 self.on.setdefault(ref, []).append(load)
+
+    def _hung_in_trimmers(self, opening, footprint, direction):
+        """What hangs in the opening's trimmers, corner by corner (see the module doc)."""
+        if direction not in ("x", "y") or len(footprint) < 3:
+            return ()
+        hung: list[tuple[str, tuple[float, float]]] = []
+        for i, corner in enumerate(footprint):
+            cross = next((edge for edge in ((footprint[i - 1], corner),
+                                            (corner, footprint[(i + 1) % len(footprint)]))
+                          if _across(edge, direction)), None)
+            if cross is None:
+                continue
+            bearers = [ref for ref in opening.bearing_refs
+                       if (axis := self._axis_of(ref)) is not None
+                       and collinear_overlap(cross, axis, _AXIS_TOL_M) is not None
+                       and _covers(axis, corner)]
+            if not bearers:
+                hung.append((opening.tag, corner))
+                continue
+            for ref in bearers:
+                end = self._unsupported_end_near(ref, corner)
+                if end is not None:
+                    hung.append((ref, end))
+        return tuple(hung)
+
+    def _axis_of(self, ref: str):
+        wall = self.walls.get(ref)
+        if wall is not None:
+            return wall.axis
+        beam = self.beams.get(ref)
+        ends = (self.nodes.get(beam.start_node), self.nodes.get(beam.end_node)) if beam else ()
+        return ends if ends and None not in ends else None
+
+    def _unsupported_end_near(self, ref: str, corner):
+        """A beam's end within ``_HUNG_M`` of ``corner`` that none of its refs carries."""
+        beam = self.beams.get(ref)
+        ends = self._axis_of(ref) if beam is not None else None
+        if not ends:
+            return None
+        end = min(ends, key=lambda p: math.dist(p, corner))
+        if math.dist(end, corner) > _HUNG_M:
+            return None
+        carried = any((axis := self._axis_of(bearer)) is not None
+                      and _line_distance(axis, end) <= _AXIS_TOL_M and _covers(axis, end)
+                      for bearer in beam.bearing_refs)
+        return None if carried else end
 
     def _on_the_lines(self, refs) -> tuple[str, ...]:
         """``refs`` plus every wall on a named wall's line, in that wall's storey."""
@@ -252,6 +313,16 @@ class LoadIndex:
         seen.add(wall.tag)
         for load in self.on.get(wall.tag, ()):
             a, b = _extent(wall.axis, load.footprint, lo, hi)
+            if load.point and load.joists in ("x", "y") and not _across(wall.axis, load.joists):
+                # Under the trimmer: its floor strip, and what hangs in it at this wall.
+                if load.floor and min(b, hi) - max(a, lo) > _OVERLAP_M:
+                    floors[load.floor] = None
+                for source, p in load.hung:
+                    s = _station(wall.axis, p)
+                    if (_line_distance(wall.axis, p) <= _HUNG_M and lo - 1e-6 <= s <= hi + 1e-6
+                            and not self._on_a_bearing_corner(root, [_point(wall.axis, s)])):
+                        points[source] = None
+                continue
             if load.point:
                 if load.footprint and _across(wall.axis, load.joists):
                     hits = [s for p in load.footprint
@@ -316,6 +387,11 @@ def _line_distance(axis, point) -> float:
     (x0, y0), (x1, y1) = axis
     run = math.dist(axis[0], axis[1]) or 1.0
     return abs((point[0] - x0) * (y1 - y0) - (point[1] - y0) * (x1 - x0)) / run
+
+
+def _covers(axis, point) -> bool:
+    """Whether ``point``'s station falls within ``axis``'s run, give or take the tolerance."""
+    return -_AXIS_TOL_M <= _station(axis, point) <= math.dist(*axis) + _AXIS_TOL_M
 
 
 def _across(axis, direction: str | None) -> bool:

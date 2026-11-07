@@ -151,12 +151,12 @@ VENT_TEES = [
             serves=("FX-M-BATH2-TUB",)),
     # RM-M-LAUNDRY's sink: a sanitary tee at the TOP of its drop, where the waste crosses the
     # floor (the trap is the cabinet's). The vent leaves at 46 degrees into W-M-CLN's bay
-    # between stud-007 and stud-008, enters the wall 12 1/2" up, rises plumb at (13'-0",
-    # 18'-1 1/2") and jogs onto y=18'-0" at the ceiling, clear of the CLN partition blocks'
-    # cheeks, onto PR-M-BATH2-VENT. Arm 0"; 15" over CO-B-LSINK's fitting.
+    # between stud-003 and stud-004 (east of the supply drops since the tub moved west,
+    # 2026-11-07), enters the wall 12 1/2" up, rises plumb at (10'-4", 18'-1 1/2") and jogs
+    # onto y=18'-0" at the ceiling onto PR-M-BATH2-VENT. Arm 0".
     PipeRun(uid="BQEVC68G5T", tag="PR-M-LSINK-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(144), ft(18, 10.625)), pt(inch(156), inch(217.5)),
-                  pt(inch(156), inch(217.5)), pt(inch(156), inch(216)),
+            path=(pt(inch(112), ft(18, 10.625)), pt(inch(124), inch(217.5)),
+                  pt(inch(124), inch(217.5)), pt(inch(124), inch(216)),
                   pt(inch(103.5), inch(216))),
             diameter=inch(1.5), material="pvc",
             elevations=(inch(0), inch(15.5), inch(115.85), inch(115.9), inch(116)),

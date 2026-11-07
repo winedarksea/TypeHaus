@@ -1,7 +1,8 @@
 # Laundry task track
 
 `ED-M-LAUNDRY-TRACK` replaces the obstructed can while preserving UID `QTM000SAAA`.
-The white rail runs east–west at (130.7", 258"), flush below the 108" ceiling.
+The white rail runs east–west at (128.4", 258"), flush below the 108" ceiling (re-centred
+between the heads 2026-11-07, when the tower and tub swapped ends).
 Two 45° heads share channel 1 and `ED-M-LAUNDRY-SW`; `ED-M-LAUNDRY-PSU` owns
 the 120V connection to `CKT-LT-MAIN`. The heads carry 22W at 24V, without a second
 branch load. The supply is modeled at its 40VA rating, consistent with the house's
@@ -25,7 +26,7 @@ Class 2 surface raceway `CR-M-LAUNDRY-24V` rises above the enclosure and runs be
 the ceiling to the west feed. Keep the enclosure ventilated and its cover removable.
 The installation leaves the existing ceiling ducts, framing and pocket-door cavity intact.
 
-Adapters sit at x=115.83" (machines) and x=145.55" (sink). Both heads aim south;
+Adapters sit at x=143.25" (machines) and x=113.55" (sink). Both heads aim south;
 the Python catalog derives tilt from the modeled pivot/lens and the task target.
 The machine target is the center of its north/front face. The sink target is the front
 interior at y=240", 34" above the finished floor. Tests check both optical axes against

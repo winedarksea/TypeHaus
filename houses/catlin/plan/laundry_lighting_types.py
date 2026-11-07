@@ -7,10 +7,11 @@ from typehaus.library.track_lighting import (
 from typehaus.model import TrackHeadSpec
 from typehaus.quantities import inch
 
-RAIL_CENTER_IN = (130.7, 258.0)
+RAIL_CENTER_IN = (128.4, 258.0)
 CEILING_IN = 108.0
-MACHINE_ADAPTER_X_IN = 115.83
-SINK_ADAPTER_X_IN = 145.55
+# Machine east, sink west since the door moved 11 1/2" east (2026-11-07).
+MACHINE_ADAPTER_X_IN = 143.25
+SINK_ADAPTER_X_IN = 113.55
 # The appliance's north/front face and the basin's front interior. Fixture bodies are
 # floor-relative, so their task elevations follow the same finished walking surface.
 TASK_TARGETS_IN = (

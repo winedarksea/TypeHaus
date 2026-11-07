@@ -381,6 +381,8 @@
 # WIN-M-DINING-E's header (2026-10-16), read off Boise's header table: scaled from the
 # 11 7/8" row by depth.
 "2-1.75x9.5 LVL" = { material = { low = 12, high = 22 }, labour = { low = 7, high = 16 } }
+# D-M-LAUN's header (2026-11-07), Boise's Floor - 1 Story row: scaled from 9 1/2" by depth.
+"2-1.75x7.25 LVL" = { material = { low = 9, high = 17 }, labour = { low = 6, high = 13 } }
 # 56 LF over TWO pieces since 2026-08-28: one 16.7' opening header, plus RB-HOUSE, which
 # moved onto this row when the ridge went 3-ply 11 7/8" -> 2-ply 14" (see attic.py). The
 # ridge is 36 LF of it and is bought as THREE 12s rather than one over-length stick — it

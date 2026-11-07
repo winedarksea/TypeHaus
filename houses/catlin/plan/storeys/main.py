@@ -1211,13 +1211,23 @@ OPENINGS = [
     # corner. Nothing over the pocket takes a fastener longer than 1"
     # (`tables.POCKET_MAX_FASTENER`) or it reaches the leaf.
     #
-    # The 36" leaf starts at x=9'-2" and slides east across N-M-E3 into W-M-HS4.
-    # Its closed end remains well clear of N-M-C2, where bearing W-M-C3 corners in.
-    # Shifted east to keep the sink's centre line within the opening after moving the tub
-    # against the east drywall. The tower still has a 34 3/8" diagonal path past the tub;
-    # the tub has 25" of clear depth to the doorway and remains usable from the hall.
+    # ** 11 1/2" EAST SINCE 2026-11-07 (owner), SO ITS STRIKE PACK STANDS UNDER A HANGER. **
+    # BM-S-BATH-E's south end (~570 lb) hangs in FO-A-HALL's trimmer at x=10'-0", and that
+    # trimmer bears on W-S-SN3 over this wall. RO x=10'-1 1/2"..13'-1 1/2": king and jack
+    # (x 118 1/2..121 1/2") centre on the hanger, so the header carries uniform load only and
+    # reads Boise's header guide (notes/header_spans_r602_7.md §4). The cavity runs to
+    # x=16'-4" (Eclisse RO 196"), still clear of N-M-C2. The east jamb meets W-M-LS's
+    # laundry face, which takes that casing leg (`advisory.casing_clipped`), and the tower
+    # moved east under the opening with the tub west of it (plan/fixtures.py).
     Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-POCKET-INT-36",
-         position=from_node("N-M-D1", inch(12))),
+         position=from_node("N-M-D1", inch(23.5)), header_spec='2-ply 7.25" LVL',
+         published_span=PublishedSpan(
+             source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.4, 3-1/2\" VERSA-LAM 1.7 2650 Header Look Up Tables",
+             table="Door and window headers, Floor - 1 Story, floor load 40 psf live + 12 psf dead, flush joists, 32'-0\" structure width, 6'-8\" clear span: 7\" (not bolded, single trimmers); double 1-3/4\" substituted per the table note, at the next 1-3/4\" depth, 7-1/4\"",
+             member='2-ply 7.25" LVL',
+             span=ft(6, 8),
+             load_psf=52.0,
+             condition="the row is a full floor framing flush into the header over a 32' width (52 psf x 16' = 832 plf plus 60 plf of interior wall); this header carries FO-A-HALL's trimmer strip of FS-ATTIC, W-A-HALL-S on it, W-S-SN3 and FS-S-WEST's subfloor strip, ~240 plf, because neither floor frames onto this line; BM-S-BATH-E's hung reaction lands on the strike king and jack, not in the span; clear span 74 1/2\" (36\" RO + 38 1/2\" cavity) against the row's 80\"; deflection L/360 live, L/240 total; dry use; uniform load only; see notes/header_spans_r602_7.md §4")),
     # Offset 6 11/16" off N-M-E4, not the 1'-2 11/16" it was: N-M-E4 moved north 8" with the
     # closet line, and this offset moved the same 8" so the door itself did not
     # move. 6 11/16" clears the corner stud pack (the D-M-MECH margin); the wall is only

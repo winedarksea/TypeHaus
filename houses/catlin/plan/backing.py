@@ -171,7 +171,7 @@ MAIN_BACKING = [
     # BK-M-E1-ROD, DQYV0CA18A BK-M-C1-ROD, 016TC9913X BK-M-W4-ROD, 7T3GDF98A5 BK-M-S1-ROD,
     # ETQ6V0Y07Z BK-M-S1-ROD-S2). The ceiling tracks fasten to joists.
     WallBacking(uid="VBFFYKBZJW", tag="BK-M-CLN-RACK", wall_ref="W-M-CLN",
-                start=inch(48.75), length=inch(6.5),
+                start=inch(4.75), length=inch(10.5),
                 elevation=inch(46), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="laundry drying rack (48 in.)"),
     # RM-M-CLOSET (plan/closet.py). The PAX wall rails are 2x8s at 86"; the rail sits at

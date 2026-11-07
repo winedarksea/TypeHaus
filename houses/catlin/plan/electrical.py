@@ -431,7 +431,9 @@ BASEMENT_EQUIPMENT = [
 
 # --- Main storey: dryer, freezer, heat-pump condensers/heads + disconnects ------------
 MAIN_DEVICES = [
-    # Laundry pair, in the south partition (W-M-CLN) directly behind the tower: FX-M-LAUNDRY
+    # Laundry pair, in the south partition (W-M-CLN) directly behind the tower (x 11'-1 1/2"
+    # and 11'-9 1/2", in the bay between the north-row studs, since the tower moved east
+    # 2026-11-07): FX-M-LAUNDRY
     # is 40" deep x 80" tall, so a surface box there is unreachable and covered by the
     # machine; recessed lets it sit flat with the plug behind it. 43" AFF splits the
     # difference between washer and dryer tops. Both boxes here are
@@ -447,7 +449,7 @@ MAIN_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-CLN", face="left", distance_from_start=inch(14.125),
+                         wall_ref="W-M-CLN", face="left", distance_from_start=inch(35.5),
                          normal_gap=inch(-4), rotation_offset=deg(180)))),
     # CKT-LAUNDRY (circuits.py slot 36, 20A) was scheduled but the outlet never drawn — this
     # is it: washer half of the stack, 8" east of the dryer box, same 43" band. NEC 210.52(F),
@@ -459,7 +461,7 @@ MAIN_DEVICES = [
                                  recessed_into_host_surface=True), room="RM-M-LAUNDRY",
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-CLN", face="left",
-                         distance_from_start=inch(33.875), normal_gap=inch(-2.46875),
+                         distance_from_start=inch(43.5), normal_gap=inch(-2.46875),
                          rotation_offset=deg(180)))),
     # Freezer beside the fridge (KRF1 at (18'-4 3/8", 31'-4 5/8")) on the centre wall's east
     # face; fridge + freezer share the backup kitchen circuit (PoE Wi-Fi is on CKT-HA).
@@ -2241,13 +2243,15 @@ NEC_FILL_MAIN = [
     # Fills the >6' gap electrical.receptacle_spacing opened on the hall band between RC7/
     # STUDY-RC3 and the door into RM-M-STOS: N-M-W2/N-M-C2 sit 6" north of where the BATH2
     # wall move put them, stretching this door-to-door wall space past the 6' rule.
-    # Near the centre of that space, beside a stud (M3-106); the door brackets it at 13'-9" E.
+    # East of D-M-LAUN's pocket frame (x=17'-2 1/2", 2026-11-07): the pocket moved 11 1/2"
+    # east over the old station and `mep.pocket_occupancy` refuses a box in it. Its box
+    # stands 2 1/2" east of ED-M-STUDY-RC3's on the other face, west of stud-000.
     ElectricalDevice(uid="NEC070AAAA", tag="ED-M-LIVING-RC12", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-20",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-HS4", face="left", distance_from_start=inch(33.875),
+                         wall_ref="W-M-HS4", face="left", distance_from_start=inch(45.5),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
     # ** THIS ONE STAYS AT 8'-6 1/4", AND IT WAS TRIED THE OTHER WAY. ** It is behind
     # FURN-M-BED's headboard (the king now runs x 6'-9 7/8"..13'-5 7/8") and unreachable,

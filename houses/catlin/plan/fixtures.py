@@ -186,9 +186,10 @@ MAIN_FIXTURES = (
     # --- RM-M-LAUNDRY -------------------------------------------------------------------
     # 56 1/4"x47 1/4" clear alcove behind D-M-LAUN's 36" pocket door — a
     # closet, not a room you stand in: both appliances back onto the south wall (rotation
-    # 180) and front north through the opening. The 27" tower and 24" tub are wider than
-    # the opening together, but their centre lines both fall inside it. The tub has 25"
-    # clear in front to the doorway; the tower is used while standing in the hall.
+    # 180) and front north. Since the door moved 11 1/2" east (2026-11-07) the tower stands
+    # 1" off W-M-LS, wholly inside the opening and used from the hall; the tub moved west of
+    # it, 20" of it behind the door's strike wall, reached by stepping into its 25" of
+    # standing room. The washer hose runs to the outlet box on W-M-BA2E north of the tub.
     #
     # `wall_ref` W-M-BA2E is the *service* wall (carries the washer standpipe/supply box),
     # not the back wall — both wastes drop through SL-M-DECK to the basement, so there is
@@ -199,9 +200,9 @@ MAIN_FIXTURES = (
     # connector) into PR-M-WASH-STANDPIPE. It is the LG WashTower (plan/appliance_types.py), 27"x32 3/4"x74 3/8",
     # leaving 12 5/8" of clear floor to the door plane.
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-LG-WASHTOWER",
-              room="RM-M-LAUNDRY", position=pt(m(2.9421), m(6.01059)), rotation=deg(180),
+              room="RM-M-LAUNDRY", position=pt(m(3.63855), m(6.01059)), rotation=deg(180),
               wall_ref="W-M-BA2E"),
-    # Utility tub, 4 1/4" east of the stack. Its faucet's hose adapter is not used here
+    # Utility tub, 4 1/4" west of the stack, 1/4" off W-M-BA2E. Its faucet's hose adapter is not used here
     # (owner, 2026-10-24), so no vacuum breaker or hose-bibb tee is carried.
     #
     # `drain_position` at y=18'-10 5/8" — clear of W-B-CW2 (12" concrete on the y=18' axis)
@@ -210,17 +211,17 @@ MAIN_FIXTURES = (
     #
     # SL-M-DECK (9" concrete) means every main-storey fixture drops straight down its own
     # sleeve rather than running a trap arm sideways — same as PR-B-SINK2/WASH-DRAIN. The
-    # tub wet-vents off the laundry stack: a 45" 2" branch (MN Plumbing Table 1002.2 caps
+    # tub wet-vents off the laundry stack: a 40" 2" branch (MN Plumbing Table 1002.2 caps
     # 1 1/2" at 42") ties into PR-M-BATH2-VENT's x=8'-2 1/2" leg, no new pipe. y = 5.86920 m
     # (was 5.82791) is the basin backed onto W-M-CLN, INT_2X4_STAGGERED_GWB's face;
     # `wall_ref`-relative, so it tracks the wall without a coordinate edit here.
     # ** `wall_ref` STILL SAYS W-M-BA2E AND THAT IS NOT THE WALL IT TOUCHES: **
-    # W-M-BA2E is 3'-0" west and is where PR-B-CW-WASH/PR-B-HW-WASH rise; the basin's back
+    # W-M-BA2E is beside it and is where PR-B-CW-WASH/PR-B-HW-WASH rise; the basin's back
     # is on W-M-CLN. Left as authored because `wall_ref` is what the supply pair names as
     # its riser wall and repointing it would move the risers, not the sink.
     Fixture(uid="J7VY2GZ062", tag="FX-M-LAUNDRY-SINK", type_ref="FX-LAUNDRY-SINK-24", room="RM-M-LAUNDRY",
-            position=pt(m(3.69703), m(5.86920)), rotation=deg(180), wall_ref="W-M-BA2E",
-            drain_position=pt(ft(12, 0), ft(18, 10.625))),
+            position=pt(m(2.884231), m(5.86920)), rotation=deg(180), wall_ref="W-M-BA2E",
+            drain_position=pt(ft(9, 4), ft(18, 10.625))),
     # Window-centred x=352", 5/8" east within the fixed 36" base. The 32x19 flange
     # sits forward of a 3" rear faucet zone in the 32x22 installation envelope.
     # Rim meets the underside of 3 cm quartz: 36 - 1.181 - 10 = 24.819" bowl base.

@@ -144,12 +144,12 @@ VENT_BRANCHES_SECOND = [
     # not for this run's. See plan/fixtures.py.
     #
     # THE HEADER IS 1 5/8" OFF THE WALL RATHER THAN ON ITS AXIS: y=22'-4" itself is the axis
-    # W-M-HS3/W-M-HS4 share ONE STOREY DOWN, and x 12'-1"..15'-2" of that line is D-M-LAUN's
+    # W-M-HS3/W-M-HS4 share ONE STOREY DOWN, and x 13'-1"..16'-4" of that line is D-M-LAUN's
     # pocket. The vent is a floor above the leaf, so the now-height-aware pocket check
     # sees no conflict. Keeping this offset still takes the tub-shower's arm to 39".
     #
     # It turns north on the x=9'-7 1/2" line rather than joining the hall bath's run at x=1',
-    # and at x=9'-7 1/2" that north leg is well clear of the pocket's x 12'-1"..15'-2" band.
+    # and at x=9'-7 1/2" that north leg is well clear of the pocket's x 13'-1"..16'-4" band.
     #
     # ** IT IS NOT BECAUSE "THE TWO BRANCHES MAY NEVER SHARE A LEG". ** That argument stood
     # here and it was wrong: two branch vents on a common vent is ordinary IRC P3104 work,

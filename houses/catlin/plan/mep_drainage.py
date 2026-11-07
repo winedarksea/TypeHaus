@@ -222,15 +222,17 @@ DRAINS = [
             elevations=(ft(9, 1.4375), inch(94.5375), inch(83.2375)),
             serves=("FX-M-BATH2-SINK",)),
     PipeRun(uid="CBPD06AAAA", tag="PR-B-WASH-DRAIN", system=PipeSystem.DRAIN,
-            # The drop is at 19'-4", mid-bay both ways: y=20'-0" is joist-0-015's line (and
-            # its sister at 20'-2 1/2"), and W-M-BA2E's staggered studs at 19'-8"/20'-4" leave
-            # no bay over the joist's clear side. The arm keeps its old tie-in on the collector.
-            path=(pt(ft(8, 2), ft(19, 4)), pt(ft(8, 2), ft(19, 4)),
+            # The drop is at 20'-7" (19'-4" until 2026-11-07, when the tub took the wall
+            # beside it): between joist-0-015's sister (20'-2 1/2") and joist-0-016 (21'-4"),
+            # and between W-M-BA2E's staggered studs at 20'-4"/21'-0", with the washer valves.
+            # The arm keeps its old tie-in on the collector; its head drops 1 1/8" further so
+            # it passes under CD-B-PLAY-SPARE's y=20'-3 1/2" dip.
+            path=(pt(ft(8, 2), ft(20, 7)), pt(ft(8, 2), ft(20, 7)),
                   pt(ft(6), ft(19, 9.375))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 5.8375)),
+            elevations=(ft(9, 1.4375), ft(7, 8.9375), ft(7, 5.8375)),
             serves=("FX-M-LAUNDRY",)),
-    # The laundry tub: down its own cast sleeve, then 5'-9" west along the
+    # The laundry tub: down its own cast sleeve, then 3'-4" west along the
     # ceiling to PR-B-MAIN-DRAIN's x=6' collector — same two-move shape as PR-B-SINK2-DRAIN/
     # PR-B-WASH-DRAIN, forced by the 9" concrete deck. This is the tub's trap arm too, sized
     # 2" (not 1 1/2") since the vent (PR-M-BATH2-VENT's leg at x=8'-2 1/2") sits 3'-9" away
@@ -238,10 +240,12 @@ DRAINS = [
     # above the collector centreline; the sauna vent rises early to clear this new grade.
     PipeRun(uid="ZK49S63X8X", tag="PR-B-LSINK-DRAIN", system=PipeSystem.DRAIN,
             # 18'-10 5/8", clear of joist-0-014's flange at 18'-9 1/4"; at 18'-9" it took 1.44".
-            path=(pt(ft(12, 0), ft(18, 10.625)), pt(ft(12, 0), ft(18, 10.625)),
+            # The drop moved from x=12'-0" with the tub (2026-11-07); it lands on the old
+            # line's grade at x=9'-4", so everything west of it is where it was.
+            path=(pt(ft(9, 4), ft(18, 10.625)), pt(ft(9, 4), ft(18, 10.625)),
                   pt(ft(6), ft(18, 10.625))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 1.4375), ft(7, 10.0375), inch(87.75)),
+            elevations=(ft(9, 1.4375), inch(91.25), inch(87.75)),
             serves=("FX-M-LAUNDRY-SINK",)),
     # --- the two basement slab-fixture branches ---------------------------------------
     #
@@ -572,7 +576,8 @@ CONDENSATE_MAIN = [
 
 # --- RM-M-LAUNDRY: one air gap ---------------------------------------------------------
 #
-# A 2" standpipe in W-M-BA2E's stud bay, top at 36" (inside the 18"-42" band, above the
+# A 2" standpipe in W-M-BA2E's stud bay at y=20'-7", beside the washer valves and north of
+# the tub (2026-11-07), top at 36" (inside the 18"-42" band, above the
 # machine's tub so it can't back-siphon). The discharge hose drops into it rather than
 # sealing to it — that open annulus is the air gap. Below the deck the trap/branch are
 # already PR-B-WASH-DRAIN; this is the missing leg above it.
@@ -586,7 +591,7 @@ CONDENSATE_MAIN = [
 # It declares no `serves`: a standpipe's fixture units count on the branch below it.
 LAUNDRY_MAIN = [
     PipeRun(uid="P8A9ADNE6N", tag="PR-M-WASH-STANDPIPE", system=PipeSystem.DRAIN,
-            path=(pt(ft(8, 2), ft(19, 4)), pt(ft(8, 2), ft(19, 4))),
+            path=(pt(ft(8, 2), ft(20, 7)), pt(ft(8, 2), ft(20, 7))),
             diameter=inch(2), material="pvc",
             elevations=(ft(3), ft(0)),
             wall_refs=("W-M-BA2E",)),

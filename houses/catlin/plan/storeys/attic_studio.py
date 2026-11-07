@@ -82,8 +82,8 @@ SECOND_ELEMENTS = [
     # bearing_refs names only the NORTH end: W-S-BA-E1B's end at N-S-BA1 (W-S-BD-N1B, which
     # meets it there, is NONBEARING since 2026-11-06). The SOUTH end (~600 lb) hangs in the
     # doubled trimmer closing FO-A-HALL's south edge; that trimmer bears on W-S-SN3 at x=10',
-    # so the reaction does reach D-M-LAUN's header below (notes/header_spans_r602_7.md §4a),
-    # though the engine does not yet route a hung load through a trimmer's bearing.
+    # so the reaction comes down W-M-HS3 onto D-M-LAUN's strike pack (notes/header_spans_r602_7.md
+    # §4); `resolve/header_loads.py` routes a hung beam end through its trimmer's bearing.
     Beam(uid="P77WQJ1MFM", tag="BM-S-BATH-E", start_node="N-S-BA-S", end_node="N-S-BA1",
          size="3-1.75x11.875 LVL",
          bearing_refs=("W-S-BA-E1B",),

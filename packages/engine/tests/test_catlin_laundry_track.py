@@ -26,7 +26,7 @@ def test_rail_is_flush_and_supply_is_accessible_on_the_laundry_wall(catlin_model
     objects = _objects(catlin_model_ro)
     track, supply = objects["ED-M-LAUNDRY-TRACK"], objects["ED-M-LAUNDRY-PSU"]
     assert track.uid == "QTM000SAAA"
-    assert track.position == pytest.approx((130.7 * INCH, 258 * INCH))
+    assert track.position == pytest.approx((128.4 * INCH, 258 * INCH))
     assert track.body_z1_m == pytest.approx(108 * INCH)
     assert supply.body_z0_m == pytest.approx(84 * INCH)
     assert supply.position[1] == pytest.approx(257 * INCH)
@@ -37,7 +37,7 @@ def test_rail_is_flush_and_supply_is_accessible_on_the_laundry_wall(catlin_model
     assert min(y for _, y in supply.footprint) > 249 * INCH
     feed = next(c for c in catlin_model_ro.conduits if c.tag == "CR-M-LAUNDRY-24V")
     assert feed.storey == "main" and feed.service == "power_24"
-    assert feed.path[-1] == pytest.approx((112.7 * INCH, 258 * INCH))
+    assert feed.path[-1] == pytest.approx((110.4 * INCH, 258 * INCH))
     row = next(r for r in lighting_controls(catlin_model_ro) if r["tag"] == track.tag)
     assert row["circuit"] == "CKT-LT-MAIN" and row["switches"] == ["ED-M-LAUNDRY-SW"]
     psu = next(r for r in light_run_takeoff(catlin_model_ro)["supplies"] if r["psu"] == supply.tag)
@@ -95,9 +95,9 @@ def test_both_optical_axes_reach_tasks_with_rack_stowed_or_deployed(catlin_model
     assert spec.channel == 1
     tower, sink, rack = (objects[t] for t in
                          ("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK", "FURN-M-LAUNDRY-RACK"))
-    targets = ((115.83 * INCH, max(y for _, y in tower.footprint),
+    targets = ((143.25 * INCH, max(y for _, y in tower.footprint),
                 (tower.body_z0_m + tower.body_z1_m) / 2),
-               (145.55 * INCH, 240 * INCH, sink.body_z0_m + 34 * INCH))
+               (113.55 * INCH, 240 * INCH, sink.body_z0_m + 34 * INCH))
     rack_bounds = Polygon(rack.footprint).bounds
     rack_body = (box(rack_bounds[0] - 16 * INCH, rack_bounds[1],
                      rack_bounds[2], rack_bounds[3]) if deployed else Polygon(rack.footprint))

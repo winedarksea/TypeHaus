@@ -1963,10 +1963,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   layer), A2/A3 95-CRI in RM-M-LIVING and RM-M-BED, A4 95-CRI 25 deg kitchen task, B wet. Mark C (Juno wafer) only where 6" cannot fit. Every can sits in a
   clear joist bay off the furniture, graded by `electrical.ceiling_can_framing`.
 - **`W-M-HS4` is a pocket wall and nothing may ever go in it again** — no outlet, switch,
-  pipe, register, blocking, or towel bar between 12'-2" and 15'-4 1/2" on the y=22'-4" datum
+  pipe, register, blocking, or towel bar between 13'-1 1/2" and 16'-4" on the y=22'-4" datum
   (the built cavity is 1" north of it; no stud to fasten to, no depth to recess into).
   `D-M-LAUN`'s 3'-0" pocket leaf parks there, crossing
   node `N-M-E3`. Enforced by `mep.pocket_occupancy`.
+  - **Moved 11 1/2" east (owner, 2026-11-07)** so the strike king and jack (x 118 1/2..121 1/2")
+    stand under `BM-S-BATH-E`'s hung south end: the 2-ply 7 1/4" LVL header carries uniform load
+    only and reads Boise's Floor - 1 Story row (`notes/header_spans_r602_7.md` §4). The tower
+    stands under the opening, the tub west of it; the washer box and standpipe are on
+    `W-M-BA2E` at y=20'-7", the switch inside the strike jamb.
   - **A split stud that ever reaches the top plate destroys the `W-M-LS` plate tie** — a
     pocket occupies floor to 6'-8" only, so the tie's plates run continuous over/under it and
     only its vertical edge floats.

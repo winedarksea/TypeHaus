@@ -29,7 +29,7 @@ From ECLISSE Single 2x4-2x6, technical sheet 11/2022 (eclisse.us, Support → Si
 
 The RO is 1 1/2" wider than the commodity 2W + 1" (73"), so each pocket runs **38 1/2"** past
 the opening, not 37". The engine reads the table off the kit record
-(`StructuralHardware.rough_opening_in_by_length_in`). `D-M-LAUN` closes at x=15'-4 1/2" and
+(`StructuralHardware.rough_opening_in_by_length_in`). `D-M-LAUN` closes at x=16'-4" (moved 11 1/2" east 2026-11-07) and
 `D-B-BATH` at y=16'-5 9/16". Both still fit their collinear runs, and `mep.pocket_occupancy`
 guards the longer bands. The 1" fastener limit is unchanged (`POCKET_MAX_FASTENER`).
 

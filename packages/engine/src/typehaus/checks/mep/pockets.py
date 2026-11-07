@@ -65,6 +65,16 @@ def _pocket_bands(ctx: CheckContext):
                    (wall.z0_m, top))
 
 
+def _onto_pocket_line(wall, xy):
+    """``xy`` moved square onto ``wall``'s pocket centre line, keeping its station."""
+    (sx, sy), (ex, ey) = wall.axis
+    ux, uy = unit(sub((ex, ey), (sx, sy)))
+    nx, ny = normal((ux, uy))
+    station = (xy[0] - sx) * ux + (xy[1] - sy) * uy
+    offset = pocket_centerline_offset(wall)
+    return (sx + ux * station + nx * offset, sy + uy * station + ny * offset)
+
+
 @check(Tier.CODE, _CID)
 def pocket_occupancy(ctx: CheckContext) -> list[Finding]:
     """A pocket's cavity must hold no pipe, duct, wall-mounted device, or register.
@@ -131,7 +141,14 @@ def pocket_occupancy(ctx: CheckContext) -> list[Finding]:
             if mount_kind != "wall":
                 continue
             xy = placed_xy(ctx.model, element)
-            if xy is None or not Point(xy).within(band):
+            if xy is None:
+                continue
+            # A device hosted on the pocket wall sits on its finished face, outside the
+            # structure band, but its box recesses into the cavity: test its station there.
+            attachment = getattr(getattr(element, "location", None), "attachment", None)
+            if getattr(attachment, "wall_ref", None) == wall_tag:
+                xy = _onto_pocket_line(pocket_wall, xy)
+            if not Point(xy).within(band):
                 continue
             hits.append((element.tag, "recessed device" if getattr(
                 mount, "recessed_into_host_surface", False) else "wall-mounted device"))

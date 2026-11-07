@@ -38,9 +38,9 @@ BASEMENT_CLEANOUTS = [
                   access="wall", wall_ref="W-B-STR",
                   clear_width=inch(24), clear_depth=inch(24)),
     DrainCleanout(uid="COB0000005", tag="CO-B-LSINK", pipe_ref="PR-B-LSINK-DRAIN",
-                  position=pt(ft(12, 0), ft(18, 10.625)), fitting_elevation=inch(94.04),
-                  cap_position=pt(ft(12, 0), ft(18, 2)), cap_elevation=inch(98.04),
-                  access="wall", wall_ref="W-B-CW2",
+                  position=pt(ft(9, 4), ft(18, 10.625)), fitting_elevation=inch(91.25),
+                  cap_position=pt(ft(9, 4), ft(18, 2)), cap_elevation=inch(95.25),
+                  access="wall", wall_ref="W-B-CW3",
                   clear_width=inch(18), clear_depth=inch(18)),
     # FX-B-UTIL-SINK's line is a sink line (707.4): a cleanout tee on the trap arm at the
     # W-B-STR2 face, reached through the tub's cabinet.

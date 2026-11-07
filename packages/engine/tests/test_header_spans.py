@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from types import SimpleNamespace
 
 import pytest
@@ -94,7 +95,13 @@ def test_catlin_oracle_conditions(catlin_plan, catlin_model_ro):
     assert bed1.floors == (("FS-ATTIC", "center"),) and bed1.roofs == ("RF-HOUSE",)
     sauna = _condition(index, catlin_model_ro, "D-B-SAUNA")
     assert not sauna.exterior and sauna.roofs == ("RF-HOUSE",) and len(sauna.floors) == 3
-    assert _condition(index, catlin_model_ro, "D-M-LAUN").point_loads == ("FO-A-HALL",)
+    # FO-A-HALL's trimmer lies on W-S-SN3 over W-M-HS3: a strip of FS-ATTIC, plus BM-S-BATH-E
+    # hung in it at x=10'-0" — on D-M-LAUN's strike pack since 2026-11-07, not in its span.
+    laundry = _condition(index, catlin_model_ro, "D-M-LAUN")
+    assert laundry.floors == (("FS-ATTIC", "center"),) and laundry.point_loads == ()
+    hall = catlin_model_ro.wall("W-M-HS3")
+    whole = index.condition(hall, 0.0, math.dist(*hall.axis))
+    assert whole.point_loads == ("BM-S-BATH-E",)
     # The stair wells' trimmers land beside D-B-CLOSET's span, not across their holes.
     assert _condition(index, catlin_model_ro, "D-B-CLOSET").point_loads == ()
 

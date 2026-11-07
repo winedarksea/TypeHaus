@@ -389,10 +389,8 @@ suppress = [
   # its footings, flashing stations and the water-service sleeve.
   "structural.door_framing_module:D-G-OVERHEAD",
 
-  # Owner confirmed 2026-10-01 that D-M-LAUN stays at its authored position. That station
-  # leaves one extra interrupted stud on W-M-HS3; the nearest module station would move the
-  # opening, so keep the advisory visible in the raw report but accept it by tag.
-  "structural.door_framing_module:D-M-LAUN",
+  # D-M-LAUN's 2026-10-01 module suppression is retired: the 2026-11-07 move (strike pack
+  # under BM-S-BATH-E's hanger) left nothing for structural.door_framing_module to report.
   # Owner 2026-10-26: retain the sunken-garden/study centerlines with nominal 60x80 catalog
   # pairs. Their wider ROs interrupt one additional stud; headers/jamb packs still grade.
   "structural.door_framing_module:D-B-SUNKEN",

@@ -416,7 +416,7 @@ def test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other(catlin_model
 
 
 def test_laundry_goods_fit_the_alcove_and_clear_each_other(catlin_model):
-    """The 36" opening still gives hall access to both the washer and utility tub."""
+    """The tower stands in the 36" opening; the tub beside it is reached through it."""
     from shapely.geometry import Polygon
 
     room = Polygon(next(r for r in catlin_model.rooms if r.tag == "RM-M-LAUNDRY").clear_face)
@@ -444,8 +444,10 @@ def test_laundry_goods_fit_the_alcove_and_clear_each_other(catlin_model):
     host = next(w for w in catlin_model.walls if w.tag == opening.host_wall)
     opening_left = host.axis[0][0] + opening.center_along_m - opening.width_m / 2
     opening_right = opening_left + opening.width_m
-    for tag in ("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK"):
-        assert opening_left < objects[tag].position[0] < opening_right, tag
+    # The tower is used from the hall, so it stands wholly in the opening; the tub is west of
+    # it, behind the strike wall, since the door moved east (2026-11-07).
+    tower_xs = [x for x, _ in objects["FX-M-LAUNDRY"].footprint]
+    assert opening_left <= min(tower_xs) and max(tower_xs) <= opening_right
     sink_front = max(y for _, y in objects["FX-M-LAUNDRY-SINK"].footprint)
     doorway_inside_face = max(y for _, y in room.exterior.coords)
     assert (doorway_inside_face - sink_front) / 0.0254 >= 24

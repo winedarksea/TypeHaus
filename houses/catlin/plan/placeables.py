@@ -285,13 +285,13 @@ MAIN_PLACEABLES = [
     # Instance restates the type's Mount because the resolver reads the instance one (same
     # as FX-M-KITCH-SINK's 27", plan/fixtures.py).
     #
-    # x and y track the laundry faces of W-M-LS and W-M-CLN (storeys/main.py). Shifted 5 1/2"
-    # west along W-M-CLN on 2026-10-01 to clear the W-M-LS corner; it still overlaps the tub
-    # in plan as a shelf should. The laundry door stays at its authored station.
+    # y tracks W-M-CLN's laundry face. The rack is a 5" fin off the wall that folds out
+    # east: since the tub moved west of the tower (2026-11-07) it stands at the tub's west
+    # end, 1 3/4" off W-M-BA2E, and deploys over the tub, clear of the tower.
     Furniture(uid="XJSV712BWZ", tag="FURN-M-LAUNDRY-RACK", type_ref="FURN-WALL-RACK-24", room="RM-M-LAUNDRY",
               mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-CLN", face="left", distance_from_start=inch(53.53125),
+                  wall_ref="W-M-CLN", face="left", distance_from_start=inch(7.5),
                   normal_gap=inch(0), rotation_offset=deg(90)))),
 
     # Fitted to current RM-M-STUDY-CLOSET gypsum/wainscot faces. See notes/study_booth.md.

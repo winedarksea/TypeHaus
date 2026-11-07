@@ -301,7 +301,7 @@ MAIN_LIGHTING = [
     # The rail is north of the tall machine body: both task axes remain clear of it.
     # Surface mounting leaves the existing ceiling ducts and framing intact.
     ElectricalDevice(uid="QTM000SAAA", tag="ED-M-LAUNDRY-TRACK", kind=DeviceKind.LIGHT,
-                     position=pt(inch(130.7), inch(258)), type_ref="ED-T-LT-TRACK-LAUNDRY",
+                     position=pt(inch(128.4), inch(258)), type_ref="ED-T-LT-TRACK-LAUNDRY",
                      psu_ref="ED-M-LAUNDRY-PSU", room="RM-M-LAUNDRY",
                      controlled_by=("ED-M-LAUNDRY-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=LAUNDRY_TRACK_DROP)),
@@ -318,19 +318,16 @@ MAIN_LIGHTING = [
                from_ref="ED-M-LAUNDRY-PSU", to_ref="ED-M-LAUNDRY-TRACK",
                service=Service.POWER_24, trade_size=inch(0.5),
                path=(pt(inch(104.815), inch(257)), pt(inch(104.815), inch(257.5)),
-                     pt(inch(112.7), inch(257.5)), pt(inch(112.7), inch(258))),
+                     pt(inch(110.4), inch(257.5)), pt(inch(110.4), inch(258))),
                elevations=(inch(90.37), inch(107.5), inch(107.5), inch(107.5))),
-    # ** BOTH THESE SWITCHES FOLLOW W-M-BA2E's FACE, AND IT MOVED (2026-09-09). ** The bath2
-    # east line went 2" east and the W-M-BA2E2 jog came off, so ONE finished face at
-    # x=101 3/8" now serves both — 99 3/8" and 106 3/4" before. A wall device's footprint is
-    # CENTRED on its position, so a 2"-deep switch sits at 102 3/8", half its body off the
-    # face. Left where they were, one buried 2 13/16" into the studs and the other floated
-    # 5 3/8" into the room, and `haus check` graded neither.
+    # ED-M-LAUNDRY-SW moved off W-M-BA2E (2026-11-07): with the door 11 1/2" east that face
+    # was 20" behind the strike wall. It is inside the strike jamb now, between stud-001
+    # and the king.
     ElectricalDevice(uid="QTM000TAAA", tag="ED-M-LAUNDRY-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BA2E", face="left", distance_from_start=inch(14),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         wall_ref="W-M-HS3", face="right", distance_from_start=inch(18),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 ]

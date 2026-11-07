@@ -291,6 +291,9 @@ class _PlanWithDoor:
     def by_tag(self, tag):
         return self._door if tag == "D-G-OVERHEAD" else self._plan.by_tag(tag)
 
+    def __getattr__(self, name):  # the load walk for the narrow published reads
+        return getattr(self._plan, name)
+
 
 def _header_finding(catlin_model, **update):
     from typehaus.checks.registry import CheckContext, Preferences

@@ -68,13 +68,18 @@ def header_within_prescriptive(ctx: CheckContext) -> list[Finding]:
 
     Within 8' R602.7 answers, so an opening there is graded only when it opts out of the
     table by authoring BOTH an LVL ``header_spec`` and the ``published_span`` that sizes it.
-    Authoring one without the other leaves the opening to R602.7, as before.
+    Authoring one without the other leaves the opening to R602.7, as before. That read is
+    graded on the header's whole clear span (a pocket's cavity included), and refused while
+    ``resolve/header_loads.py`` finds a point load inside it: header guides are uniform only.
     """
+    from typehaus.checks.structural.header_spans import published_read
     from typehaus.checks.structural.published import graded_against_published
     from typehaus.quantities import m
     from typehaus.resolve.framing.tables import flat_header_member, header_profile_from_spec
+    from typehaus.resolve.header_loads import LoadIndex
 
     out: list[Finding] = []
+    index = None
     for op in ctx.model.openings:
         if op.width_m <= m(8.0 * 0.3048).meters:
             source = ctx.plan.by_tag(op.tag) if ctx.plan is not None else None
@@ -83,10 +88,21 @@ def header_within_prescriptive(ctx: CheckContext) -> list[Finding]:
             if (spec is None or published is None or flat_header_member(spec) is not None
                     or header_profile_from_spec(spec) is None):
                 continue
+            index = index or LoadIndex.of(ctx.plan, ctx.model)
+            span_ft, points = published_read(ctx, op, index)
+            if points:
+                out.append(_advisory(
+                    "structural.header_prescriptive",
+                    f"opening {op.tag}, headed with {spec}: the published row is uniform "
+                    f"load only and point load(s) {', '.join(points)} bear inside its "
+                    f"{span_ft:.2f}' span", (op.tag,), Result.UNKNOWN, code=published.source,
+                    fix_hint="move the opening so the point lands on its jamb pack, or "
+                             "carry the header as an engineered item"))
+                continue
             out.append(graded_against_published(
                 "structural.header_prescriptive",
                 f"opening {op.tag}, headed with {spec}",
-                (op.tag,), op.width_m / 0.3048, published, spec,
+                (op.tag,), span_ft, published, spec,
                 demand_psf=_wide_header_demand_psf(ctx),
                 fix="re-read the manufacturer's header-table row at the model's own "
                     "condition, or drop header_spec and let R602.7 size the header"))
