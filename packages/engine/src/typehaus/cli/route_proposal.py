@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from typehaus.cli.route_fall import _fall
-from typehaus.cli.route_ports import attach_leads
+from typehaus.cli.route_ports import attach_priced
 from typehaus.cli.route_support import Endpoints
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -21,7 +21,8 @@ def one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
     from typehaus.routing.proposal import RouteProposal, bay_note, concealment
     from typehaus.routing.trades import conduit as conduit_trade
 
-    points, lead_notes, lead_bends = attach_leads(found.polyline(), ends)
+    points, lead_notes, lead_bends, lead_terms = attach_priced(
+        found.polyline(), ends, space.cost if space is not None else None)
     if ends.tie_is_the_goal:
         # The search ran riser -> trunk because the fixture end is the fixed one; the run is
         # authored trunk -> riser, and every reader downstream (the dialect, `serves`, the
@@ -113,8 +114,9 @@ def one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
     proposal = RouteProposal(
         tag=f"{target}-PROPOSED{suffix}", kind=ends.kind, points=line(points),
         diameter_m=ends.diameter_m, width_m=ends.width_m, depth_m=ends.depth_m,
-        serves=ends.serves, system=ends.system, cost=found.cost, bends=found.bends + lead_bends,
-        terms=dict(found.terms) if explain else {}, notes=notes, routing=routing,
+        serves=ends.serves, system=ends.system, bends=found.bends + lead_bends,
+        cost=found.cost + sum(lead_terms.values()),
+        terms={**found.terms, **lead_terms} if explain else {}, notes=notes, routing=routing,
         floor_ref=floor_ref, soffit_ref=soffit_ref, echo=dict(ends.echo),
         after=after, wet_vent=wet_vent, duct_standard=_duct_standard(model, ends)).snapped()
     # After snapping: the indices must be the pasted run's own.

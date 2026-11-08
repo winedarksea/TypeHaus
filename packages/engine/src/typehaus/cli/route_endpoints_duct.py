@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from typehaus.cli.route_metadata import run_metadata as _run_metadata
+from typehaus.cli.route_miss import miss
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.cli.route_support import Endpoints
@@ -26,13 +27,13 @@ def _duct_endpoints(model: ResolvedModel, duct: Any,
     from typehaus.routing.trades import duct as duct_trade
 
     if len(duct.path) < 2 or len(duct.z_m) != len(duct.path):
-        problems.append(f"{duct.tag}: fewer than two vertices or no resolved elevations, "
-                        "so it has no two ends to route between")
+        miss(problems, duct.tag, "fewer than two vertices or no resolved elevations, "
+             "so it has no two ends to route between")
         return None
     lagging = insulation_thickness_m(duct.insulation)
     if lagging is None:
-        problems.append(f"{duct.tag}: insulation states no thickness, so its routing "
-                        "envelope cannot be established")
+        miss(problems, duct.tag, "insulation states no thickness, so its routing "
+             "envelope cannot be established")
         return None
     joined = {other.tag for other in model.ducts
               if other.tag != duct.tag and ducts_are_joined(model, duct.tag, other.tag)
@@ -66,8 +67,8 @@ def _conduit_endpoints(model: ResolvedModel, raceway: Any,
 
     profile = conduit_vertical_profile(raceway)
     if profile is None or len(raceway.path) < 2:
-        problems.append(f"{raceway.tag}: no reconstructable vertical profile, so it has "
-                        "no elevation to route at. Author start/end elevations on it")
+        miss(problems, raceway.tag, "no reconstructable vertical profile, so it has "
+             "no elevation to route at", fix="Author start/end elevations on it")
         return None
     path, z = profile
     echo = {key: getattr(raceway, key) for key in ("from_ref", "to_ref", "circuits")

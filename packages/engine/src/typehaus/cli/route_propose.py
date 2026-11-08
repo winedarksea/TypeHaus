@@ -5,13 +5,13 @@ reach it through there too."""
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from typehaus.cli.cmd_route_tree import _line_nodes
 from typehaus.cli.route_duct_search import search_for as _search_for
 from typehaus.cli.route_fixture_wet import wet_terminals
+from typehaus.cli.route_miss import Miss, MissLog
 from typehaus.cli.route_ports import terminal_refusal
 from typehaus.cli.route_proposal import one_proposal as _one_proposal
 from typehaus.cli.route_roots import hold_upstream, reroot_supply
@@ -27,9 +27,6 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 #: from "show me a few ways to do this", and `--alternatives` refuses rather than wrapping.
 _LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-_SENTENCE = re.compile(r"(?<=[a-z)'\"])\. (?=[A-Z])")
-_TAG = re.compile(r"\b[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+\b")
-
 
 @dataclass
 class EndpointRefusal(Refusal):
@@ -39,32 +36,28 @@ class EndpointRefusal(Refusal):
     cause: str = ""
     element: str = ""
     fix: str = ""
+    #: A fixture end standing in a door or duct: ``TerminalBlock.payload()`` (kinds, wall, shift).
+    terminal: dict | None = None
 
     def render(self) -> str:
         return f"{self.target}: {self.cause}" + (f". {self.fix}" if self.fix else "")
 
     def payload(self) -> dict:
         return {**super().payload(), "cause": self.cause, "element": self.element,
-                "fix": self.fix}
+                "fix": self.fix, **({"terminal": self.terminal} if self.terminal else {})}
 
 
-def endpoint_refusal(model: Any, target: str, lines: list[str]) -> EndpointRefusal:
-    """The refusal for an ``_endpoints`` miss, read off the line it appended.
-
-    Those lines read ``<target>: <cause>. <fix>``; the element is the last tag the cause
-    names besides the target (the missing riser, the pump), else the target itself."""
-    text = (lines[0].removeprefix(f"{target}: ") if lines
-            else "its terminals are not derivable")
-    cause, fix = ([*_SENTENCE.split(text, maxsplit=1), ""])[:2]
-    cause = cause.rstrip(".")
-    element = next((t for t in reversed(_TAG.findall(cause)) if t != target), target)
+def endpoint_refusal(model: Any, target: str, log: MissLog) -> EndpointRefusal:
+    """The refusal for an ``_endpoints`` miss, from the structured miss the finder logged
+    (the first one: later lines are context). A finder that logged none gets a generic one."""
+    first = log.first or Miss(target, "its terminals are not derivable")
     service = next((str(r.system) for group in ("pipe_runs", "ducts", "conduits")
                     for r in getattr(model, group, ()) if r.tag == target and
                     hasattr(r, "system")), "")
     return EndpointRefusal(
         target=target, service=service, end="origin", reachable_nodes=0, total_nodes=0,
         attempts=("no search: the terminals are not derivable",),
-        cause=cause, element=element, fix=fix.strip())
+        cause=first.cause, element=first.element or target, fix=first.fix)
 
 
 def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
@@ -93,7 +86,7 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
     refusals: list[Refusal] = []
 
     for target in targets:
-        why: list[str] = []
+        why = MissLog()
         ends = _endpoints(model, target, mode, why)
         if ends is not None and root_lines:
             ends = reroot_supply(model, ends, target, root_lines)

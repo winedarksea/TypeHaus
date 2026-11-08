@@ -9,6 +9,7 @@ from dataclasses import replace
 from functools import partial
 from typing import TYPE_CHECKING, Any
 
+from typehaus.cli.route_miss import miss
 from typehaus.cli.route_supply_roots import (  # supply roots, split out; re-exported
     _supply_children,
     _supply_refusal,
@@ -97,10 +98,9 @@ def _vent_siblings(model: ResolvedModel, run: Any, problems: list[str]
         paths.extend((a, b) for a, b in zip(points, points[1:], strict=False)
                      if min(a[2], b[2]) <= high and max(a[2], b[2]) >= low)
     if not siblings:
-        problems.append(
-            f"{run.tag}: nothing downstream of it is derivable and no other {run.system} "
-            "run lands where it does, so there is nowhere to tie into. Name a --via, or "
-            "route the parent first")
+        miss(problems, run.tag, "nothing downstream of it is derivable and no other "
+             f"{run.system} run lands where it does, so there is nowhere to tie into",
+             fix="Name a --via, or route the parent first")
         return None
     return root, siblings, tuple(paths)
 
@@ -160,8 +160,8 @@ def _discharge(model: ResolvedModel, run: Any, problems: list[str]
     ties = drain_tie_ins([r for r in model.pipe_runs if r.system == run.system])
     parent = ties.get(run.tag)
     if parent is None:
-        problems.append(f"{run.tag}: nothing downstream of it is derivable, so there is "
-                        "no root to route to. Name a --via, or route the parent first")
+        miss(problems, run.tag, "nothing downstream of it is derivable, so there is "
+             "no root to route to", fix="Name a --via, or route the parent first")
         return None
     chain: list[str] = []
     cursor: str | None = parent
@@ -171,8 +171,8 @@ def _discharge(model: ResolvedModel, run: Any, problems: list[str]
     other = next(r for r in model.pipe_runs if r.tag == parent)
     z = other.z_m or ()
     if len(z) != len(other.path):
-        problems.append(f"{run.tag}: its discharge {parent} carries no resolved "
-                        "elevations, so there is no invert to tie into")
+        miss(problems, run.tag, f"its discharge {parent} carries no resolved "
+             "elevations, so there is no invert to tie into", parent)
         return None
     if getattr(run, "sanitary", True) is False:
         # Indirect waste lands where it was authored to, not at the chain's lowest vertex:
@@ -220,17 +220,17 @@ def sump_endpoints(model: ResolvedModel, run: Any, problems: list[str]
                  if getattr(getattr(e, "pump", None), "discharge_line_ref", None) == run.tag),
                 None)
     if sump is None:
-        problems.append(f"{run.tag}: no sump pump names it as its discharge_line_ref, so "
-                        "its destination is not derivable. Set SumpPump.discharge_line_ref "
-                        f"to {run.tag} on the pit it serves")
+        miss(problems, run.tag, "no sump pump names it as its discharge_line_ref, so "
+             "its destination is not derivable", fix="Set SumpPump.discharge_line_ref "
+             f"to {run.tag} on the pit it serves")
         return None
     receiver = sump.pump.discharge
     riser = next((s for s in model.solids if s.tag == f"{receiver}-EXT-RISER"), None)
     if riser is None:
-        problems.append(
-            f"{run.tag}: its pump {sump.tag} discharges to {receiver!r}, which has no "
-            f"modelled vertical ({receiver}-EXT-RISER) to tie onto, so no root is derivable. "
-            "Give the receiver a buried extension (Downspout.extension) or route with --via")
+        miss(problems, run.tag, f"its pump {sump.tag} discharges to {receiver!r}, which has "
+             f"no modelled vertical ({receiver}-EXT-RISER) to tie onto, so no root is "
+             f"derivable", f"{receiver}-EXT-RISER",
+             "Give the receiver a buried extension (Downspout.extension) or route with --via")
         return None
     xs = [p[0] for p in riser.outline]
     ys = [p[1] for p in riser.outline]
@@ -292,8 +292,8 @@ def _nearest_main(model: ResolvedModel, point: tuple[float, float], floor_m: flo
             if best is None or distance < best[0]:
                 best = (distance, (x, y, z), run.tag)
     if best is None:
-        problems.append(f"{target}: no drain run passes on this fixture's own floor, so "
-                        "there is nothing to route it to")
+        miss(problems, target, "no drain run passes on this fixture's own floor, so "
+             "there is nothing to route it to")
         return None
     return (best[1], best[2])
 
@@ -311,12 +311,12 @@ def hold_upstream(model: ResolvedModel, ends: Any, target: str, count: int,
     """
     run = next((r for r in model.pipe_runs if r.tag == target), None)
     if run is None:
-        problems.append(f"{target}: --hold-upstream holds an authored pipe run's legs, and "
-                        "this is not one")
+        miss(problems, target, "--hold-upstream holds an authored pipe run's legs, and "
+             "this is not one")
         return None
     if not 0 < count < len(run.path) - 1:
-        problems.append(f"{target}: --hold-upstream {count} leaves nothing to route; it "
-                        f"has {len(run.path)} vertices")
+        miss(problems, target, f"--hold-upstream {count} leaves nothing to route; it "
+             f"has {len(run.path)} vertices")
         return None
     points = [(p[0], p[1], z) for p, z in zip(run.path, run.z_m, strict=False)]
     if ends.tie_is_the_goal:

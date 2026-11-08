@@ -134,6 +134,19 @@ def test_an_endpoint_miss_becomes_a_structured_refusal(catlin_model_ro, monkeypa
     assert "no sump pump names it" in payload["cause"] and payload["blockers"] == []
 
 
+def test_a_supply_miss_names_the_run_standing_there_as_its_element(catlin_model_ro) -> None:
+    from typehaus.cli.route_miss import MissLog
+    from typehaus.cli.route_roots import _supply_trunk
+
+    run = next(r for r in catlin_model_ro.pipe_runs if r.tag == "PR-M-CW-PLANT-STUB")
+    log = MissLog()
+    assert _supply_trunk(catlin_model_ro, run, log) is None
+    miss = log.first
+    assert miss is not None and miss.element and miss.element != run.tag
+    assert miss.cause.endswith("above it") and miss.fix.startswith("The riser")
+    assert log == [miss.render()]
+
+
 def _condensate(*, grade: float, sanitary: bool = False):
     run = SimpleNamespace(tag="PR-T-COND", system="drain", sanitary=sanitary,
                           diameter_m=inch(0.75).meters, length_m=1.0,

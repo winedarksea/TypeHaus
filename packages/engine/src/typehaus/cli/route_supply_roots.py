@@ -9,6 +9,8 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import TYPE_CHECKING, Any
 
+from typehaus.cli.route_miss import Miss, log, miss
+
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
 
@@ -30,12 +32,12 @@ def _supply_trunk(model: ResolvedModel, run: Any, problems: list[str]
                      if f"{p.equipment_tag}.{p.port_tag}" == record.port), None)
         if port is not None:
             return port.point, [], ()
-        problems.append(f"{run.tag}: it leaves {record.port}, an equipment port that could "
-                        "not be placed, so there is no point to root it on. Route it with "
-                        "--via")
+        miss(problems, run.tag, f"it leaves {record.port}, an equipment port that could "
+             "not be placed, so there is no point to root it on", record.port,
+             "Route it with --via")
         return None
     if record is None or record.parent is None:
-        problems.append(_supply_refusal(run, record))
+        log(problems, _supply_refusal(run, record))
         return None
     chain: list[str] = []
     cursor: str | None = record.parent
@@ -45,8 +47,8 @@ def _supply_trunk(model: ResolvedModel, run: Any, problems: list[str]
     parent = next(r for r in model.pipe_runs if r.tag == record.parent)
     z = parent.z_m or ()
     if len(z) != len(parent.path):
-        problems.append(f"{run.tag}: its feeder {record.parent} carries no resolved "
-                        "elevations, so there is no line to tee onto")
+        miss(problems, run.tag, f"its feeder {record.parent} carries no resolved "
+             "elevations, so there is no line to tee onto", record.parent)
         return None
     line = tuple((p[0], p[1], zz) for p, zz in zip(parent.path, z, strict=False))
     # The root POINT is the derived tee itself — the station the record names — so a
@@ -82,27 +84,30 @@ def _supply_children(model: ResolvedModel, run: Any) -> tuple[str, ...]:
     return tuple(c for c, rec in supply_records(model)[1].items() if rec.parent == run.tag)
 
 
-def _supply_refusal(run: Any, record: Any) -> str:
-    """The sentence a parentless supply run gets, naming which cause applies.
+def _supply_refusal(run: Any, record: Any) -> Miss:
+    """The miss a parentless supply run gets, naming which cause applies.
 
     Three different facts about the model want three different sentences. One about a vent
     chase — which is what every supply run got until 2026-09-19 — is false about all three.
     """
-    head = f"{run.tag}: "
+    tag = run.tag
     if record is None:
-        return (head + "it carries no resolved elevations, so there is no tee to derive")
+        return Miss(tag, "it carries no resolved elevations, so there is no tee to derive")
     inches = None if record.z_gap_m is None else record.z_gap_m * 39.3700787
     if record.reason == "cross_system":
-        return (head + f"the run standing at its first vertex is {record.nearest}, which is "
-                f"a {'different' if record.nearest else 'cross-system'} system. Its source "
-                "is a machine rather than a pipe — a water heater, a softener, a mixing "
-                "valve — and this derivation names runs. Route it with --via, or route the "
-                "run it leaves")
+        return Miss(
+            tag, f"the run standing at its first vertex is {record.nearest}, which is "
+            f"a {'different' if record.nearest else 'cross-system'} system", record.nearest or "",
+            "Its source is a machine rather than a pipe — a water heater, a softener, a mixing "
+            "valve — and this derivation names runs. Route it with --via, or route the "
+            "run it leaves")
     if record.reason == "elevation":
-        return (head + f"{record.nearest} passes under its first vertex but {abs(inches):.1f}\" "
-                f"{'above' if inches > 0 else 'below'} it. The riser that would feed this "
-                "run is not modelled, which is a gap in the plan and not a lane the search "
-                "can find")
-    return (head + "no run of any system passes under its first vertex, so the thing that "
-            "feeds it is not a run in this model — a service lateral, or a riser nobody "
-            "drew. Author it, or name a --via")
+        return Miss(
+            tag, f"{record.nearest} passes under its first vertex but {abs(inches):.1f}\" "
+            f"{'above' if inches > 0 else 'below'} it", record.nearest or "",
+            "The riser that would feed this run is not modelled, which is a gap in the plan "
+            "and not a lane the search can find")
+    return Miss(
+        tag, "no run of any system passes under its first vertex, so the thing that "
+        "feeds it is not a run in this model — a service lateral, or a riser nobody drew",
+        "", "Author it, or name a --via")
