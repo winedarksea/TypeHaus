@@ -1,7 +1,8 @@
 # TODO
-Reminder: all items should design around clean export to Revit/Sketchup/IFC (follow industry standards where practical), and also be coded in accessible, "vibe code friendly" library configs. Revit/SketchUp import-readiness research, fixes, and open items: `plans/revit-sketchup-readiness.md`.
+Reminder: all items should design around clean export to Revit/Sketchup/IFC (follow industry standards where practical), and also be coded in accessible, "vibe code friendly" library configs.
 
 Sourcing quotes, construction todo doesn't belong in this document, this is just softwared and house design todo. Quotes, supplier confirmations, dry-fits, site measurements and commissioning go in `houses/catlin/notes/construction_holds.md`.
+
 We generally want exact products specified (or standard/commodity sizes) so we can verify everything works together correctly.
 Our general goals are decent longevity and quality at a reasonable price, avoiding premium items unless clearly a major improvement for our needs.
 Note that many of the pinned decisions in the code base here aren't as fixed as they sometimes claim, the "fixed" decisions were usually fixed in a narrower context, and can be changed for sufficiently good reasons.
@@ -227,13 +228,6 @@ the future.
   - [ ] Smaller open items, by cluster file: C1 E11 (O1-102 relief doors), O2-110 pocket head (Eclisse detail); C2 E12 rest; C3 I4-004/005; C4 E5 (EQ-M-ERV-MAN-SUP unfed) and the ERV flex/transition terms, E8, E14. SCONCE-CANDLE (Livex 4451-04, no published backplate) and SCONCE-STAIR (see `BoxRow` shape) state no `LuminaireType.canopy`; `place_box` centres a wall-light box on the body's mid-height, not its canopy; the WAC LINE's in-box transformer is not in `electrical.box_fill`; no check grades a run through a room's `ceiling_lining`.
   - [ ] TB-SG-W1/E1 closure boards 8" vs FT-B-S2/S3 at 10" (F5-104); FB-B-CS drain-tile ring 1" into FT-B-S2/S3 (F5-105); 14" north-entry pier cage 0.806% (engineer hold, C2 E6).
 - **Andersen's 1⅛" stool rail cannot coexist with the 1 1/2" pan back dam** (`resolve/flashing_config.back_dam_m`, [window profiles](../houses/catlin/notes/window_profile_measurements.md)): the nine egress casements' stools pass through the dam (18 solid overlaps, ~139 in³, blessed 2026-11-07 so the ratchet can track the rest). Read Andersen's installation guide for its back-dam / sill-pan detail, then lower the dam for those openings, shim the unit, or raise the stool clear of the crank operator.
-- Product/cost review design items (2026-11-04, `plans/catlin-product-cost-review/REPORT.md`):
-  - 07-002 Porch: curtain track, carriers and panel system.
-  - 15-001 Sauna: tile-on-shiplap substrate and membrane detail.
-  - 01-001 DSI: does Saint Paul's 6" concrete / 4" aggregate driveway guidance apply to the modeled 4/8 section?
-  - 04-001 S-5!: ColorGard calculator layout (both-end clamps, spacing, rows), then replace the 2-unit row.
-  - 08-002 HVAC: suite-bath fabricated boot vs the ten-terminal allowance.
-  - Tax: site is Saint Paul (9.875%) if confirmed; prices.toml keeps Hennepin 8.525% by owner call 2026-11-04.
 - Generally our goal is to have every piece of the house linked to a named product (or a standard or commodity size, like a 2x4) so we can confirm every piece fits together correctly.
 - Improve the wainscot of the mudrooms (the wainscot should be tall—typically 54" to 66" high (or roughly two-thirds of the wall height), mid-to-dark tone (e.g., muddy green, slate blue, warm mushroom, or charcoal), Satin or Semi-Gloss finish using a high-end urethane alkyd enamel (like Sherwin-Williams Emerald Urethane or Benjamin Moore Scuff-X) (Scuff-X is held for this item; the house paint systems are decision #113, houses/catlin/notes/paint_selection.md), 1x6 or 1x8 Cellular PVC board for the bottom baseboard, smooth 1/4" MDF panel backers (if walls are textured) with 1x3 Primed Poplar (for impact resistance) or Primed MDF (for lowest cost) for the vertical battens (or shiplap))
 - Oksana wants an elm slab sofa table
@@ -250,7 +244,6 @@ the future.
   - [ ] PR-B-BATH-VENT finds no route at margins 4/6/8 (since `MAX_LATTICE_NODES` 650k it builds): its root lanes are blocked by PR-B-BATH-DRAIN, and the counterfactual says re-routing the drain alone opens none. Its far terminal reports standing inside 18 elements from FT-B-W1 to FS-ATTIC, which looks like a full-height pardon at the stack tie.
   - [ ] Fitting gaps left by hand after 2026-11-07: DU-B-ERV-R-PLAY (a 30 deg ramp breaks SF-B-BATH's soffit), DU-B-ERV-R-SAUNA-SUP, DU-A-ERV-R-STUBATH, DU-S-ERV-HP-FEED, DU-B-ERV-RET-TRUNK (port side, with the ERV hold); the router's duct proposals redraw them exposed.
 - Air-distribution products (specified 2026-10-31, [note](../houses/catlin/notes/air_distribution_products.md)); still open:
-  - Owner: trimless for RM-M-LIVING / RM-M-BED / the stair hall (note §12), and whether "the heat pump over the stairway" includes the 28x12 return.
   - Owner: the 1.1 cfm residual under 205, or the 10" hoods (needs RenewAire FA10 test data and a plate fit check) — `notes/erv_static_budget.md` §10.4, §10.6.
   - Owner/AHJ: which floor area MN 1322 R403.5 means. The engine grades finish-face room area (195 cfm required); centreline gave 205, exterior dimensions give 214, past the 210 cfm machine — `notes/erv_static_budget.md` §10.6.
   - Engine, deferred: an insulation-vs-R403.2.1 check; per-segment duct insulation; M1506.3's 3 ft exception and the operable-opening distance; checking an insulation spec's thickness against its R-value; grading a damper actuator inside a duct.
@@ -263,7 +256,6 @@ the future.
 - Pg 288 of the book has a roof eave detail where the roof and drip flashing alone extend out about an inch (no metal or sheathing).
 - D-B-SUNKEN has some weird top flashing that isn't needed here it seems (the threshold now reaches over the foam gap: the foam-bed tread, 2026-11-04).
 - D-B-SUNKEN has an STHD14 connector sprouting up in the middle.
-- Might be worth writing up ICF in cost options as an alternative exterior wall setup (for the house) something like the Quadlock 'plus' form which with 4.25" of EPS on each side delivers R-38.
 - Fixture connections (stations applied 2026-11-07, `houses/catlin/plan/wet_ports.py`). Still open:
   - BATH2/BATH1 R10000 supplies stub straight in at the finished face. BATH2's hot riser is elbowed
     6 3/4" north (riser y 185, not the cold's 1 1/2"); at hub + 1 1/2" it FAILs `run_interference`
@@ -329,6 +321,6 @@ Firstly design a house (with permit checks, building science review, floorplan e
 Secondly gather bids, organize the timeline (inspection gates, etc), then track completed progress.
 Thirdly use the house design as a reference (ie for agents understanding live data on home assistant in context), potentially with feedback loop of updating the design or later running a remodel
 
-- [ ] Confirm Image II eave rib-end treatment: installation guide pp. 20–22 calls for sealant or field-closed rib ends; current hot-roof design keeps rib ends open without a vent closure.
+- [ ] Implement Image II eave rib-end sealing: use manufacturer-specified tube sealant, with no eave vent closure; verify sealed-hem/secondary drainage, product compatibility, actual rib-end quantities, drawings and garage ventilation. Detailed plan: [image-ii-eave-rib-end-treatment.md](image-ii-eave-rib-end-treatment.md) (2026-11-08; April 2026 guide pp. 26–33).
 
 - [ ] Complete W-BW-SCREEN metal cassette engineering, support/trim details, complete loads and fabrication estimate; rerun structural and 81° door checks including all hardware. See houses/catlin/notes/entry_screen_metal_cassettes.md.
