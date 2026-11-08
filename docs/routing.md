@@ -52,7 +52,7 @@ routing exit codes.
 | `--orders N` | Try up to three campaign conflict orders; fewest refusals ranks first |
 | `--locked TAG` / `--rip-up N` | Preserve an authored run / bound campaign rip-up |
 | `--level STOREY` | Restrict the search's elevation band; distinct from target `--storey` |
-| `--hold-upstream N` | Preserve the first N authored legs of a `--run` |
+| `--hold-upstream N` | Keep N authored legs at the search origin: the first N of a drain or vent `--run`, the last N (fixture end) of a supply |
 | `--counterfactual` | Diagnose whether lifting one movable blocker opens a route |
 | `--fixture TAG --sweep 8` | Try drain-point stations within eight inches along its wall |
 | `--space TAG --out DIR` | Classify routing space and save one SVG per elevation |
@@ -88,6 +88,9 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | A falling run crosses rims and joists, never rides them, and never a blocking flange; foundation walls, exterior insulated cavities (at their own height) and the outside of the decks are hard; a tie is pardoned only its own run; the drop into a tie is tested | `gravity_band.rail_prisms`, `obstacles`, `gravity_band.terminal_pardons` | drain basis §13 |
 | A trunk's level legs stay inside the floor system's z gate; a riser only in a 24" hole at each end | `routing/supply_tree`, `cli/cmd_route_supply_tree` | `mep_supply_trunk_basis.md` §5 |
 | A branch tees only onto a run that can carry its WSFU, up the whole host chain | `cli/route_supply_group` | `mep_supply_trunk_basis.md` §2 |
+| A pipe riser stands in wall cover or a soffit, never a finished flat-ceiling room's open air, except at the route's own ends in the room they stand in; a supply branch with no such lane is laid last with cover off and noted | `resolve/riser_cover`, `routing/members.cuts` | `mep.run_in_finished_volume` |
+| A fixture end inside a door swing or a duct moves to the nearest legal point on its own wall, or (its riser column crossing one) is refused with a typed `TerminalBlock`; a swing or duct is pardoned at the terminal's own level only | `routing/terminal_block`, `graph.build_graph` | — |
+| `--lift` keeps a supply's tees: only branches derived to tee on it count, their legs are held as authored, and a lifted branch tees onto its feeder's re-laid line | `cli/route_tree_lift`, `cli/route_supply_roots` | `mep_tree_ripup_basis.md` §3 L6-L9 |
 | A buried outdoor run is left as authored | `cli/cmd_route_supply_tree` | `mep_supply_trunk_basis.md` §3 |
 | Tree rip-up: most recent branch first, at most two trials per refused terminal, exact rollback of a failed trial | `routing/tree_ripup` | `mep_tree_ripup_basis.md` §1 |
 | A bathroom group lays in role order (dry drain and vent, wet arms in flow order, the closet last), each step re-resolved | `routing/group_order`, `cli/cmd_route_group` | `mep_group_wet_vent_basis.md` §3 to §5 |
@@ -203,14 +206,20 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 
 ## Limitations
 
-- `--lift` cannot re-lay a supply that has tees: it refuses ("loses N") rather than orphan them.
+- `--lift` still refuses a supply whose unlifted branch tees on its first leg ("loses N"), and
+  grades each re-laid line on its own, against the authored runs.
 - Vent-free 908.2 bathroom groups are not proposed; whether 908.2 admits a dry-vented lavatory's
   drop is an AHJ question.
-- The duct catalog has no adjustable set-down, so an off-angle turn like `DU-B-ERV-R-GYM`'s 18.2
-  degrees stays an ungraded fitting.
-- The `PR-B-BATH-VENT` lattice exceeds `MAX_LATTICE_NODES` (600,000).
-- The supply trunk's remaining evaluation fails are router and model gaps: open-air risers,
-  spacing from existing bores, and a terminal inside a duct.
+- An off-catalog round duct turn (outside the 30/45/90 +/-10 deg windows) is made by the house's
+  adjustable `DuctElbowRow`, graded as the bought 90 with loss C x K read from the row's authored
+  `angle_k`. A turn no adjustable row at that size can make (a reversal, or no row) stays ungraded.
+- `PR-B-BATH-VENT` builds under `MAX_LATTICE_NODES` (650,000) but finds no route: its root
+  lanes are blocked by PR-B-BATH-DRAIN, and a narrower `--margin` changes nothing.
+- The riser-cover rule covers flat-ceiling rooms only; sloped (FollowRoof) rooms, mechanical
+  rooms and rooms with `exposed_services` are not zones. `SUPPLY-GATE` holes confine supply
+  risers regardless of cover (the lattice never reads a prism's `applies`).
+- The supply trunk's remaining evaluation fails: the attic bath's riser columns (house move),
+  RM-M-LAUNDRY's open-air risers (no chase), spacing from existing bores and FS-M-NE blocking.
 - A full scorecard run takes about 7 minutes: rows run in forked workers (`HAUS_SCORECARD_JOBS`,
   default min(4, cores/2)) and the longest row (`tree:main`, about 107 s) sets the floor.
 
@@ -220,9 +229,9 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 | --- | --- | --- |
 | CLI, reports, artifacts | `cli/cmd_route`, `cli/route_propose` (one proposal pass), `cli/route_options` (parsed options, `not_built`), `cli/route_report` | `test_route_reporting`, `test_cmd_route` |
 | Terminals and tie-ins | `cli/route_support`, `cli/route_endpoints_duct` (duct and raceway ends), `cli/route_roots`, `resolve/mep_ports` | `test_cmd_route`, `test_route_metadata` |
-| Drain tree, rip-up, lift | `cli/cmd_route_tree`, `cli/route_tree_group`, `cli/route_tree_branches`, `cli/route_tree_lift`, `cli/route_tree_upsize`, `cli/route_tree_ledger`, `routing/tree_ripup` | `test_routing_tree_ripup`, `test_cmd_route` |
+| Drain tree, rip-up, lift | `cli/cmd_route_tree`, `cli/route_tree_group`, `cli/route_tree_branches`, `cli/route_tree_lift`, `cli/route_supply_roots`, `cli/route_tree_upsize`, `cli/route_tree_ledger`, `routing/tree_ripup` | `test_routing_tree_ripup`, `test_cmd_route` |
 | Bathroom group (908.2) | `cli/cmd_route_group`, `routing/group_order` | `test_routing_group` |
-| Supply trunk and tree | `cli/cmd_route_supply_tree`, `cli/route_supply_group`, `routing/supply_tree` | `test_routing_supply_tree` |
+| Supply trunk and tree | `cli/cmd_route_supply_tree`, `cli/route_supply_group`, `routing/supply_tree`, `resolve/riser_cover`, `routing/terminal_block` | `test_routing_supply_tree`, `test_routing_riser_terminal` |
 | Fitted duct search | `cli/route_duct_search` (the one entry), `routing/duct_search`, `routing/duct_fittings`, `cli/route_ports` | `test_routing_duct_fittings` |
 | Space and graph | `routing/space`, `routing/obstacles`, `routing/graph` | `test_routing_graph`, `test_routing_perf_guard` |
 | Search and gravity | `routing/search`, `routing/gravity*` (incl. `gravity_grid`), `routing/tree` | `test_routing_oracle`, `test_gravity_search`, `test_routing_vent`, `test_routing_hole_spacing` |
