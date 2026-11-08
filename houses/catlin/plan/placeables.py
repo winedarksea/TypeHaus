@@ -755,7 +755,7 @@ SECOND_PLACEABLES = [
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     # BED1 stays in the southern part of its bay; its west-side wardrobe and north-side desk
     # leave the bed's modeled access zones open.
-    Furniture(uid="3R2F3FARR7", tag="FURN-S-PLANT-POT2-COPY", type_ref="FURN-PLANT-18", position=pt(m(3.87087), m(0.600137)), room="RM-S-PLANT"),
+    Furniture(uid="3R2F3FARR7", tag="FURN-S-PLANT-POT2-COPY", type_ref="FURN-PLANT-18", position=pt(m(3.7592), m(0.600137)), room="RM-S-PLANT"),
 ]
 # The attic study uses the same compact work-and-meeting program as the second-storey
 # study, but the stair opening occupies the north side of the room.
