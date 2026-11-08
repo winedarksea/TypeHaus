@@ -859,6 +859,97 @@ column (0.430 -> 0.489 in., 201.5 cfm off the curve, short of R403.5's 203.0) an
 extract (0.400 -> 0.459). Both sides leave the 0.4" rating, so the 10" hood or an 8" supply
 trunk would have to pay for it.
 
+### 10.13 Three alternatives to the OA/EA swap, measured (2026-11-07, study G)
+
+Question: does the 270 degree layout route **without** moving the EA riser and hood (the swap of
+§10.12), if OA wears a thinner wrap, the dry-fire lane relaxes, or the EXH riser moves? Method:
+`cross.py`-style scan of the real resolved model (every run, wall layer, the rotated case, the lane
+floor), plus three sandbox branches of the house (not merged; `haus check` per branch). Static
+numbers are pre-S (adjustable turns graded as today); each is a delta on this study's own baseline.
+
+**Baseline, same worktree.** Current 0 degree model: supply 0.4301 in., extract 0.3996, 204.5 cfm.
+Adding the two bent 8" leads (+0.0593 each, §10.12): **supply 0.4894, extract 0.4589, 201.5 cfm**
+against 203.0 (1.5 cfm short; a miss of 2 or less is UNKNOWN). MAN-SUP gates: EXH crown to EA wrap
+**2.70"** (2.92" to the EA riser's round wrap); SUP to EXH 5.50"; south of EXH 1.18" to
+CD-B-DATA-CHASE (1.30" TUB-DRAIN, 1.55" W-M-MECH-S finish); north of EA 1.00" to W-M-N3B finish.
+Feed over EA's x = 58.5" leg (route R1, §10.11): CD-B-GARAGE's bottom AFF 91.0 less EA's top 84.0
+(north of y = 381") = **7.0"** (5.3" over EA's first leg, wrap top 85.7).
+
+**The 24.94" window of §10.12 assumed an empty ceiling. It is not empty.** Over the crossing the
+rectangle both wraps share meets these, bottom AFF: CD-B-GARAGE x 58.7-60.3 (91.0, N-S, y 333-424),
+CD-B-DATA-MEDIA y 359.5-360.5 and CD-B-KITCHEN y 347.5-348.5 (92.7, E-W; they leave an **11.0"**
+band, too narrow for a 12" wrap), PR-B-SAUNA-VENT x 50.3-52.7 (93.9). The OA row also cannot sit at
+the port's y = 357.4": DU-B-ERV-R-SAUNA-SUP (y 360.5-364.5, AFF 86.5-92.6) stands in its wrap, so
+the row is y <= 354.5". The largest free gap at any station for two 12" wraps, lane at 72": **20.73"**
+(x_e = 52, AFF 72.0-92.7), 3.3" short of 24". Delete those three conduits from the model and the
+scan returns exactly 24.94" at x_e 59-62 with the EA north leg unblocked: the §10.12 figure is the
+no-conduit case.
+
+| | baseline | a: OA 1" wrap | b: lane notch | c: EXH riser |
+|---|---|---|---|---|
+| Routes without the swap | no | **no alone**; yes on paper with CD-B-GARAGE moved (a+) | **yes at the crossing** (sandbox); port-end items open | no |
+| Crossing gap vs stack | 20.73 vs 24 | 23.54 vs 22 (x_e 41-44), 23.04 (x_e 67-74); a+: 24.94 vs 22, x_e 59-74 | 91.0 - 66 = 25.08 vs 24 at x_e 57-62 | not in the crossing |
+| Slack per side | -1.64 | 0.77 / 0.52; a+: **1.47** | **0.54** | n/a |
+| Static supply / extract (with leads) | 0.4894 / 0.4589 | 0.4894 / 0.4589 (wrap is not in the friction) | 0.4924 / 0.4539 (OA +0.003, EA -0.005: 7 and 8 elbows against 6 and 9) | 0.4894 / 0.4604 (EXH-FEED +0.0015) |
+| Delivered cfm vs 203.0 | 201.5 | 201.5 | 201.4 | 201.5 |
+| MAN-SUP R1 gap (EA top to conduit) | 7.0" | 7.0"; a+ conduit gone, 12.9" to the joists | 7.0" (notch ends y 380); 9.3" if EA stays low the full lane | 7.0" |
+| MAN-SUP chase gates | 2.70 / 5.50 / 1.18 / 1.00 | unchanged; EA also 1": 3.70-3.92 / 5.50 / 1.18 / 2.00 | unchanged | 6.00 only at 3.3" south (9 FAILs); the clean limit 1.18" gives 3.88 |
+| EA drain-back (M1-114) | no | no | no from a notch (sag under OA's corner, lane floor hump); yes if the 66-70" height runs the whole N-leg | no |
+| OA chase lid | engine has no ledger element | same | same | same |
+
+**a. Thinner OA wrap.** Armacell **AP Armaflex sheet, 1"** (K-Flex Insul-Sheet equal; the product
+already in `air_distribution_products.md` §9), R-4.2 on the datasheet figure used in §10.5; **OD 10"**
+on the 8" duct, 2" less than today's two layers. R-3.3 is the code floor. Condensation: surface
+70 - 85 x 0.68 / (4.2 + 0.68) = 58.2 F against a 50.5 F dew point at 70 F / 50% RH (holds to ~66%
+RH; R-8.4 gives 63.6 F). Heat cost: UA 0.285 -> 0.471 Btu/h.F.ft; OA leg 438 -> 724 Btu/h, so
+**+285 Btu/h at design**, 65% recovery falling ~1.5 points (EA also 1": +316 more, ~3.1 points in all;
+tens of dollars a year). It fits the 11" conduit band (0.5" a side). Sandbox (`g-a`, EA x_e = 69,
+OA ramping to AFF 90.9): three FAILs at the crossing, as the scan predicted: CD-B-GARAGE vs OA's
+ramp 2.99", CD-B-DATA-MEDIA vs OA 2.87", EA vs OA 3.56" (OA must climb from under the conduit's 91.0
+to above EA's top in the 2.7" between the conduit and EA's wrap). The only stations that fit 22"
+are x_e 41-44, on OA's own x = 40" leg (and over KITCH-DRAIN), and x_e 67-74, which meet
+W-B-ESS-W/-S at y >= 368.6" and the case top (73.9"). **Moving CD-B-GARAGE's run off x 53-68 over
+y 341-361** (one 1-1/4" EMT, or into a joist bay) makes 24.94" free: 22" in it leaves **1.47" a
+side** at x_e 59-62, N-leg unblocked, and removes R1's binding member (7.0" -> 12.9"). Moving the
+two E-W conduits instead buys nothing (23.54", no station).
+
+**b. Relaxed lane.** The clear height needed over the crossing is the real ceiling less 24" less 2s:
+under CD-B-GARAGE (91.0): **67.0" for zero slack, 66.0" for 0.5" a side, 65.0" for 1.0"**, against
+72" today; with that conduit moved (92.7): 68.7 / 67.7 / 66.7; with all three moved (96.94):
+72.94 / 71.9 / 70.9 (0.06" of relief makes the note's 0.47" a side exactly 0.5"). Sandbox (`g-b`):
+case at y = 354, 270 degrees, lane split into a 72" lane and a **66" notch, x 40.5-68", y 341.5-380"**
+(38" long: EA's wrap reaches 341.7" and its rise to 78" takes to 373"); OA row y = 354.5 at AFF
+78.5-90.5, EA north leg x = 59.5" at AFF 66.1-78.1 through the crossing, then up to 72-84. Result:
+no FAIL at the crossing, in the lane or against SAUNA-SUP, CD-B-GARAGE or the ESS walls. Four FAILs
+remain, all at the ports and common to every 270 layout: the supply trunk (not re-landed),
+R-GYM through OA's drop (2.7"), RET-TRUNK through EA's lead (0.6"), and OA/EA 2.25" apart in plan
+at 9.75" port spacing against 12" wraps (the leads must splay). Owner trade: 5'-6" over a 12" x
+38" strip, 6" under the 6' minimum of 2026-10-17; the whole N-leg (y 347-412) at 66-70" is what
+drain-back needs.
+
+**c. Moved EXH riser.** It is not in the crossing, so it cannot change whether 270 routes; its
+only job is the MAN-SUP gate. The y stack (EXH 6 + gap 2.70 + EA 12 + 1.55 + 1.00 to the walls) is
+23.25" against 6 + 6 + 12 = 24" for a 6" duct between them: short by 0.75" even with both pushed
+to their walls. Moving it 3.3" south (`g-c-exh`) gives 6.00" and **nine FAILs**: through-floor
+member trimmer-FO-M-ERV-OA (1.0" in), I-joist flange, `run_through_stud` on W-M-MECH-S (EXH 1.25",
+EXH-FEED 0.84"), and `run_interference` with CD-M-DATA-PORCH, PR-B-SAUNA-VENT, PR-M-S-BATH1-TUB-DRAIN,
+PR-S-BATH1-SH-VENT and PR-S-BATH1-WC-CW. The 4" window west of OA's wrap (x 29.9-34) would need EXH
+8" west; SUP's riser is 5.5" away, so at most 9.6" against 12".
+
+**Ranking for the owner (no riser swap, no hood move in any of them).**
+
+1. **a+: 1" OA wrap and CD-B-GARAGE off the crossing.** The lane stays at 72". Slack 1.47" a side,
+   clears R1, +285 Btu/h. Open: no end-to-end route was drawn; the port-end items are shared with b.
+2. **b: 66" notch.** The only variant drawn clean at the crossing, and no conduit moves, but it
+   spends the owner's headroom and still leaves drain-back open.
+3. **c: EXH riser.** Reject.
+
+Pair: a with a 68" notch (0.5" a side under the conduit) halves each cost. Not tried: moving the
+EA riser is held, and `haus route --run DU-ERV-OA` with its root moved to the 270 port reports "1 of
+3,650 nodes reachable from the origin, blocked by AO-M-ERV-OA" though the opening names the run in
+`penetration_for` (an exact OA port instead says the 14" lead meets CD-B-DATA-MEDIA and R-GYM);
+the router could not be used, so a and a+ are screened, not routed.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of
