@@ -143,3 +143,21 @@ def test_catlin_is_pinned_so_a_campaign_can_see_itself(catlin_ctx) -> None:
     assert len(on_member) == 0
     assert len(undrawn) == 0
     assert len(fails) == len(on_member) + len(undrawn)
+
+
+def test_a_sloped_leg_cuts_a_long_hole_and_a_drawn_opening_clears_it(catlin_ctx) -> None:
+    """A 45 degree 4" leg through a 3/4" sheet cuts D/sin + t/tan = 6.5" along the leg by 4".
+    DU-A-ERV-R-ATTIC's ramp off FS-ATTIC's deck FAILed as undrawn until FO-A-ERV-ATTIC."""
+    import math
+    from types import SimpleNamespace
+
+    from typehaus.checks.mep.riser_through_deck import _sloped_footprint
+
+    inch = 0.0254
+    deck = SimpleNamespace(deck_bottom_at=lambda x, y: 0.0, deck_top_at=lambda x, y: 0.75 * inch)
+    d = 4 * inch
+    hole = _sloped_footprint(deck, (-1.0, 0.0), (1.0, 0.0), -1.0, 1.0, d)  # 45 degrees
+    assert hole.area == pytest.approx(d * (d * math.sqrt(2) + 0.75 * inch))
+    assert _sloped_footprint(deck, (0.0, 0.0), (1.0, 0.0), inch, 2 * inch, d) is None
+    assert not [f for f in riser_through_deck(catlin_ctx) if f.result is Result.FAIL
+                and "DU-A-ERV-R-ATTIC" in f.element_tags]
