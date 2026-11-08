@@ -283,8 +283,13 @@ def _finish(model: ResolvedModel, net: _Net, routes: list[Laid], notices: list[s
                             if a.pipe_ref in {*gone, *named})
             made = replace(made, after=(
                 *made.after, "AFTER PASTING delete the authored cold runs this tree stands "
-                "in for: " + ", ".join(sorted(gone)),
-                f"and re-seat the {len(seated)} accessories on them (stops, shutoffs, "
-                "arrestors) on the new runs: " + ", ".join(seated)))
+                "in for: " + ", ".join(sorted(gone)), "and " + reseat_line(seated)))
         out.append((made, str(net.runs[r.tag if r.tag in net.runs else net.trunk.tag].storey)))
     return out
+
+
+def reseat_line(seated: list[str]) -> str:
+    """The after-paste line for in-line accessories whose host run is replaced (also
+    ``route_tree_lift``)."""
+    return (f"re-seat the {len(seated)} accessories on them (stops, shutoffs, arrestors) "
+            "on the new runs: " + ", ".join(seated))

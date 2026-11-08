@@ -173,3 +173,20 @@ def test_upsize_lets_a_bigger_terminal_tie_on_p8():
     assert tree.unserved == {} and list(tree.routes) == ["A", "B"]
     assert tree.cost == 54.0 + 24.0 and toy.sizes["A"] == 2.0
     assert [(t.candidate, t.upsized, t.kept) for t in tree.trials] == [("A", True, True)]
+
+
+def test_supply_lift_keeps_only_its_derived_tees_l6_l7(catlin_model):
+    # Note §3 L6/L7: CW-WH shares its first vertex with three CW-TRUNK branches but only
+    # CW-BATH tees on it; DW-HW's tee on HW-KITCH's riser holds HW-KITCH's last 3 legs.
+    from types import SimpleNamespace
+
+    from typehaus.cli.route_roots import supply_records
+    from typehaus.cli.route_tree_lift import _orphans, _tail_hold
+
+    runs = {r.tag: r for r in catlin_model.pipe_runs}
+    parents = {c: r.parent for c, r in supply_records(catlin_model)[1].items() if r.parent}
+    wh = runs["PR-B-CW-WH"]
+    away = SimpleNamespace(points=[(x + 10.0, y, z) for (x, y), z
+                                   in zip(wh.path, wh.z_m, strict=True)])
+    assert _orphans(catlin_model, wh, away, {}, parents) == ["PR-B-CW-BATH"]
+    assert _tail_hold(runs["PR-B-HW-KITCH"], [runs["PR-M-DW-HW"]]) == 3

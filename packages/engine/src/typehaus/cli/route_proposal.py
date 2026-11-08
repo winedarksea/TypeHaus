@@ -28,6 +28,13 @@ def one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
         # tie-in derivation itself) reads path[0] as the tee. No gravity profile is
         # involved, so this really is the one line it looks like.
         points = list(reversed(points))
+
+    def line(searched: list) -> list:
+        """Held legs join at the search origin: a drain's or vent's head, a supply's
+        fixture tail (``hold_upstream``), which the reversal has just put last."""
+        return ([*searched, *ends.held] if ends.tie_is_the_goal
+                else [*ends.held, *searched])
+
     # **A route of one point is not a run.** It means the origin was already standing on the
     # goal — which is a true and useful FINDING, and on catlin it is exactly the one the
     # vent merge is about: PR-S-BATH1-VENT's origin sits 0.9" from PR-S-SUITEBATH-VENT's
@@ -85,7 +92,7 @@ def one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
     if ends.kind == "pipe":
         from typehaus.routing.trades.pipe import coupling_disclosure
 
-        couplings = coupling_disclosure([*ends.held, *points], ends.echo.get("material"))
+        couplings = coupling_disclosure(line(points),ends.echo.get("material"))
         if couplings:
             notes.append(couplings)
     if ends.kind == "conduit":
@@ -104,7 +111,7 @@ def one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
                     "upsize": [list(u) for u in found.wet.upsize],
                     "name_on_vent": list(found.wet.name_on_vent)}
     proposal = RouteProposal(
-        tag=f"{target}-PROPOSED{suffix}", kind=ends.kind, points=[*ends.held, *points],
+        tag=f"{target}-PROPOSED{suffix}", kind=ends.kind, points=line(points),
         diameter_m=ends.diameter_m, width_m=ends.width_m, depth_m=ends.depth_m,
         serves=ends.serves, system=ends.system, cost=found.cost, bends=found.bends + lead_bends,
         terms=dict(found.terms) if explain else {}, notes=notes, routing=routing,

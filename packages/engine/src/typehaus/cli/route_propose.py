@@ -14,7 +14,7 @@ from typehaus.cli.route_duct_search import search_for as _search_for
 from typehaus.cli.route_fixture_wet import wet_terminals
 from typehaus.cli.route_ports import terminal_refusal
 from typehaus.cli.route_proposal import one_proposal as _one_proposal
-from typehaus.cli.route_roots import hold_upstream
+from typehaus.cli.route_roots import hold_upstream, reroot_supply
 from typehaus.cli.route_support import _endpoints, _nearest, _root_nodes
 from typehaus.routing.diagnostics import Refusal
 
@@ -72,13 +72,15 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
              avoid: frozenset[str], via: list[tuple[float, float]], explain: bool,
              cost: RouteCost, alternatives: int = 1, timing: list[str] | None = None,
              counterfactual: bool = False, extra_prisms: list | None = None,
-             hold: int = 0, racks: list | None = None, lifted: frozenset[str] = frozenset()
+             hold: int = 0, racks: list | None = None, lifted: frozenset[str] = frozenset(),
+             root_lines: dict | None = None
              ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str], list]:
     """Return (proposal/storey pairs, problems, notices, structured refusals).
 
     ``extra_prisms`` are already-inflated campaign occupancy, appended without further
     inflation; ``racks`` the laid proposals whose level legs offer rack lanes
-    (``routing/rack.py``); ``lifted`` authored runs a campaign re-lays, never obstacles.
+    (``routing/rack.py``); ``lifted`` authored runs a campaign re-lays, never obstacles;
+    ``root_lines`` a re-laid feeder's new line by tag, which a supply tees onto instead.
     Every target refusal is reported; it never becomes an approximate route."""
     from typehaus.routing.alternatives import alternative_routes
     from typehaus.routing.graph import build_graph
@@ -93,6 +95,8 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
     for target in targets:
         why: list[str] = []
         ends = _endpoints(model, target, mode, why)
+        if ends is not None and root_lines:
+            ends = reroot_supply(model, ends, target, root_lines)
         if ends is not None and hold:
             ends = hold_upstream(model, ends, target, hold, why)
         if ends is None:
