@@ -988,15 +988,18 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     bores nothing. The two VENTS run that axis end to end at 3'-5"..3'-9" above the attic
     floor, so the grille (`REG-A-STUBATH-EXH`) sits at 3'-0" and the riser stops under them
     (2026-09-26). Raising it again re-opens the crossing.
-  - `DU-M-ERV-R-PLANT` (was `-A-`): LEVEL-2 manifold, south through `FS-S-WEST`'s open-web
-    trusses at x=2'-10", east along y=4'-8", up inside `W-S-C1` to a high sidewall grille
+  - `DU-M-ERV-R-PLANT` (was `-A-`): the level-2 extract trunk's last takeoff, east along
+    y=7'-4" off its end, up inside `W-S-C1` to a high sidewall grille
     at 8'-6" (humid air stratifies). `W-S-C1` is `PLANT_INT_2X6_BRG_HUMID` (5 1/2" cavity
     for riser + vapour-tight boot) — `W-S-PS1` is plain 2x4, not sized for this. It is the
     longer, pressure-critical run at 55'-8", affordable because the ERV's rating point is
     0.4" w.g. — HVI certifies the B210E75RT at 206 cfm net supply at 0.4" (HVI ID
     2004940). (→ log4.md, 0.2" misconception)
-  - `EQ-M-ERV-MAN-EXH` is full, 10 of 10; the x=2'-10" lane crosses only one sibling
-    radial vs eight at the manifold's east end.
+  - **Level-2 extract is a FLAT trunk in J12's D pockets** (owner 2026-11-07, routed 2026-11-08):
+    an 8x4 at x=27" (the one x where every truss's 9x4 R2 lines up) off a 6x4 neck from
+    `EQ-M-ERV-MAN-EXH`'s top collar; ten 4" takeoffs on shop-made side taps, each in its own bay.
+    The three supply radials hold their own pocket lanes on the upper tier (LIVING 42 1/4",
+    BED 83 3/4", STUDY 106 7/8"); one run per D pocket (`mep.open_web_panel`). Pressure: §10.14.
   - `AL-A-COMBO` is in `RM-A-STUDY`, `AL-A-STUDIO` in the studio — reversed is a hard
     FAIL: `code.R315_co_every_sleeping_area` fails if every CO alarm on a storey is inside
     a bedroom.

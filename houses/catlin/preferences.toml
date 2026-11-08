@@ -291,9 +291,8 @@ permit_drop = ["A-502", "A-507"]
 #
 # `suppress` takes a bare `check.id` (silence the rule everywhere) or `check.id:ELEMENT-TAG`
 # (silence it on ONE element). An entry names a measured, documented open item.
-# `mep.run_interference`'s 11-pair campaign closed on 2026-10-08. Only its two ERV level-2
-# element entries below remain, and `test_catlin_erv_clearance.py` holds every other pair at
-# zero. Its `_ON_HOLD` set names the same two pairs and fails once either stops clashing.
+# `mep.run_interference` carries no suppression: `test_catlin_erv_clearance.py` holds every
+# pair at zero (the ERV level-2 re-route closed the last two on 2026-11-08).
 [checks]
 suppress = [
   # The west tapestry is clipped to FURN-B-PLAY-TAPESTRY-W-ROD, not fastened at its bottom.
@@ -310,30 +309,6 @@ suppress = [
   # rejects cavity/placement problems directly; independent member/bore checks
   # remain active. See kitchen_sink_installation.md §3/5.
   "mep.wet_wall_occupancy:PR-M-KITCH-LOCAL-VENT",
-  # OPEN OWNER DECISION, NOT A PASS: ERV level 2 on TrimJoist J12 (decision #117, plans/TODO.md).
-  # All ten are FAILs that commit d5ce9c2b6 created by grading J12's published openings; none
-  # was red before. The 8" trunk fits no published opening and the R1-corridor re-route does
-  # not fit the north trusses' staggered chases (14.75" common) beside the radials. Owner picks:
-  # STUDY a 3" duct, a flat rectangular trunk, or other stock/trim on the clipped trusses.
-  # Held by it: the trunk and five radials crossing on webs; D4 (BED with CD-M-DATA-KITCH);
-  # PR-M-S-SUITE-WC-DRAIN's south leg (a DRAIN: it must cross the 256" truss at <= 115.2" in D10
-  # and cannot drop, STUDY's bay leg runs 10" south of it, and the apex-down pockets either side
-  # are its own north leg and the suite tub drain); PR-M-KITCH-VENT through BED2 and
-  # PR-A-HW-STUBATH through LAUNDRY, both pipes moved by d5ce9c2b6 into ducts that wait on the
-  # re-route. Delete these lines with the re-route.
-  "mep.run_member_crossing:DU-M-ERV-EXH-TRUNK",
-  "mep.run_member_crossing:DU-M-ERV-R-STUDY",
-  "mep.run_member_crossing:DU-M-ERV-R-LIVING",
-  "mep.run_member_crossing:DU-M-ERV-R-BED",
-  "mep.run_member_crossing:DU-M-ERV-R-BED2",
-  "mep.run_member_crossing:DU-M-ERV-R-LAUNDRY",
-  "mep.run_member_crossing:PR-M-S-SUITE-WC-DRAIN",
-  "mep.open_web_panel:DU-M-ERV-R-BED",
-  "mep.run_interference:DU-M-ERV-R-BED2",
-  "mep.run_interference:DU-M-ERV-R-LAUNDRY",
-  # 2026-11-08: PR-M-S-BATH1-TUB-DRAIN's arm now runs east of FO-S-ERV-CHASE's header, across
-  # the 8" trunk's lane. The flat trunk on the lower tier clears it; delete with the rest.
-  "mep.run_interference:PR-M-S-BATH1-TUB-DRAIN",
   # W-S-PS1 (plant room | suite) is the humid liner on a mineral-wool 2x4: no published
   # test covers it, so it is UNKNOWN by construction. Accepted 2026-10-23 (DESIGN-LOG,
   # "Wall board policy"); a cited rating would need a tested liner wall.

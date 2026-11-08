@@ -1,8 +1,8 @@
-"""Catlin's MEP clearance ratchet (updated 2026-10-08).
+"""Catlin's MEP clearance ratchet (updated 2026-11-08).
 
-``mep.run_interference``'s 11-pair campaign closed on 2026-10-08, and the first test below
-holds every pair at zero except the two in ``_ON_HOLD``. The tests call the checks directly,
-so a ``preferences.toml`` suppression cannot hide an ERV duct, vent or radon-riser clash.
+``mep.run_interference``'s campaign closed with the ERV level-2 re-route on 2026-11-08, and
+the first test below holds every pair at zero. The tests call the checks directly, so a
+``preferences.toml`` suppression cannot hide an ERV duct, vent or radon-riser clash.
 """
 
 from __future__ import annotations
@@ -19,12 +19,6 @@ pytestmark = pytest.mark.slow
 
 _WATCHED = re.compile(r"^DU-.*ERV|-VENT$|^VR-")
 
-#: Held with plans/TODO.md "Holes through floor framing, ERV level 2" (owner, 2026-11-07):
-#: both pipes wait on the trunk re-route. Delete with that item.
-_ON_HOLD = {frozenset({"DU-M-ERV-R-BED2", "PR-M-KITCH-VENT"}),
-            frozenset({"DU-M-ERV-R-LAUNDRY", "PR-A-HW-STUBATH"}),
-            frozenset({"DU-M-ERV-EXH-TRUNK", "PR-M-S-BATH1-TUB-DRAIN"})}
-
 #: No other watched run interpenetrations are accepted on catlin.
 _KNOWN: set[frozenset[str]] = set()
 
@@ -35,14 +29,8 @@ def _failing_pairs(ctx) -> set[frozenset[str]]:
 
 def test_no_run_interpenetrates_another_anywhere(catlin_ctx) -> None:
     """Every pair, every trade. A new clash is a re-route, never a preferences entry."""
-    pairs = _failing_pairs(catlin_ctx) - _ON_HOLD
+    pairs = _failing_pairs(catlin_ctx)
     assert not pairs, sorted(sorted(pair) for pair in pairs)
-
-
-def test_held_pairs_still_clash(catlin_ctx) -> None:
-    """A hold that stops clashing is closed: delete it here and in preferences.toml."""
-    cleared = _ON_HOLD - _failing_pairs(catlin_ctx)
-    assert not cleared, sorted(sorted(pair) for pair in cleared)
 
 
 def _watched(finding) -> bool:
@@ -51,7 +39,7 @@ def _watched(finding) -> bool:
 
 def test_no_new_erv_duct_vent_or_radon_riser_interpenetrations(catlin_ctx) -> None:
     pairs = {frozenset(f.element_tags) for f in run_interference(catlin_ctx)
-             if f.result is Result.FAIL and _watched(f)} - _ON_HOLD
+             if f.result is Result.FAIL and _watched(f)}
     assert pairs <= _KNOWN, sorted(sorted(pair) for pair in pairs - _KNOWN)
 
 
