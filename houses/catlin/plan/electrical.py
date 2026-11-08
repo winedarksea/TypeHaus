@@ -91,14 +91,14 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment, m
 
 DEVICE_TYPES = (
-    # `service_amps` is the service size as data: it's what 220.82 demand is compared
+    # `service_amps` is the service size as data: it's what 120.82 demand is compared
     # against. Distinct from a panel's `bus_amps` (what NEC 705.12 measures a backfeed
     # against) and from a panel's own `service_amps` (that panel's main breaker).
     #
-    # ** CLASS 320, decided 2026-09-12 (DESIGN-LOG.md "Electrical service"). ** The 220.82
-    # demand is 267 A with no load management at all, and every software credit that used
-    # to fit it inside 200 A needed a listing the hardware does not carry (2026 NEC 130.2 /
-    # 625.42(A): a PCS listed to UL 3141). A Class 320 heavy-duty lever-bypass meter-main
+    # ** CLASS 320, decided 2026-09-12 (DESIGN-LOG.md "Electrical service"). ** The 120.82
+    # demand is 250.4 A (2026-11-07) with no load management, and every software credit
+    # that used to fit it inside 200 A needed a listing the hardware does not carry (2026
+    # NEC 130.2 / 625.42(A): a PCS listed to UL 3141). A Class 320 heavy-duty lever-bypass meter-main
     # is the Xcel MN residential socket above 200 A — there is no 225 A or 400 A service
     # class; the trade says "400 A" because 320 / 0.8 = 400. Two 200 A mains live in this
     # enclosure outdoors, which is also how the house meets 2026 NEC 230.70(A).
@@ -108,7 +108,7 @@ DEVICE_TYPES = (
     # fifth under the placeholder it replaced.
     # The EVSE is hardwired (owner, 2026-10-30): ED-T-EVSE-JB is the surface box its 6-3 / #6
     # feeder lands in, behind the Grizzl-E. load_va is the unmanaged 40 A continuous draw. No
-    # charger here is a power control system, so nothing earns a 220.82 credit (2026 NEC
+    # charger here is a power control system, so nothing earns a 120.82 credit (2026 NEC
     # 625.42(A) -> Article 130 Part II wants UL 3141).
     ElectricalDeviceType(tag="ED-T-EVSE-JB", name="EVSE hardwire junction box, 240 V",
                           load_va=9600, plan_symbol="junction-box",
@@ -265,7 +265,7 @@ BASEMENT_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-W1", face="left", distance_from_start=inch(96),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # Sump pump (backup; ~1000W start). Alarmed GFCI at the device (NEC 2023 210.8(A)(5)):
+    # Sump pump (backup; ~1000W start). Alarmed GFCI at the device (2026 NEC 210.8(A)(6)):
     # a trip must be heard. The breaker is not GFCI (2026-10-27).
     # x=1'-2", west of DU-ERV-EA's wall leg (owner, 2026-10-29): at x=4'-6" its NM sleeve
     # stopped 2'-4" short under the duct; here it runs to the ceiling, and the cord is a
@@ -322,13 +322,12 @@ BASEMENT_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RM-B-BATH's NEC 210.52(D) receptacle: GFCI within 3'-0" of the basin's edge (1'-9"
     # here), on W-B-STR2's bath face at x=10'-3 1/4" — beside the vanity across the room's
-    # short dimension, with no wall between plate and basin. Rides CKT-RC-BSMT rather than
-    # its own 20A circuit (the panel-slot trade recorded in plans/TODO.md's panel_spaces
-    # item). The breaker is the GFCI, so the night light is the plain guide-light duplex
-    # (2026-11-03), not a second GFCI.
-    ElectricalDevice(uid="CEE040AAAA", tag="ED-B-BATH-RC1", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-GUIDE",
-                     circuit="CKT-RC-BSMT", room="RM-B-BATH",
+    # short dimension, with no wall between plate and basin. On CKT-BATH-RC since 2026-11-07
+    # (210.11(C)(3): bathroom receptacles only), whose breaker is not GFCI, so it is the GFCI
+    # guide-light device the other bath vanities use rather than the plain guide duplex.
+    ElectricalDevice(uid="CEE040AAAA", tag="ED-B-BATH-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
+                     type_ref="ED-T-LEV-GFCI-GUIDE",
+                     circuit="CKT-BATH-RC", room="RM-B-BATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-STR2", face="left", distance_from_start=inch(31.25),
@@ -958,7 +957,7 @@ SECOND_DEVICES = [
                          wall_ref="W-S-BD-N1B", face="left", distance_from_start=inch(5.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** RM-S-SUITEBATH AND RM-S-VANITY EACH GET THIS RECEPTACLE FOR NEC 210.52(D). ** Both
-    # were authored when nothing in the engine encoded E3901.6, so the note here used to
+    # were authored when nothing in the engine encoded 210.52(D), so the note here used to
     # say the gap was one "the engine cannot see". ** THAT IS NO LONGER TRUE (checked
     # 2026-09-06): ** checks/mep/electrical_receptacles.py implements the rule and
     # code.E3901_6_bathroom_receptacle now PASSES both bowls of RM-S-VANITY off
@@ -974,7 +973,7 @@ SECOND_DEVICES = [
     # bodies that stand in the zone, not things hung above it.
     ElectricalDevice(uid="ZQBJ03VGYD", tag="ED-S-SUITEBATH-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-GUIDE",
-                     circuit="CKT-RC-SECOND", room="RM-S-SUITEBATH",
+                     circuit="CKT-BATH-RC", room="RM-S-SUITEBATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SN3", face="right", distance_from_start=inch(30.125),
@@ -989,7 +988,7 @@ SECOND_DEVICES = [
     # there is 3" and a plate needs 4").
     ElectricalDevice(uid="J9JPM7DWDS", tag="ED-S-VANITY-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-GUIDE",
-                     circuit="CKT-RC-SECOND", room="RM-S-VANITY",
+                     circuit="CKT-BATH-RC", room="RM-S-VANITY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BD-N", face="right", distance_from_start=inch(65.5),
@@ -1985,7 +1984,7 @@ NEC_FILL_BASEMENT = [
     # clear of both doors: D-B-SHOP's north jamb is at 13'-10 9/16" and D-B-GYM is opposite,
     # on the other side. `rotation=deg(90)` turns the plate east into the hall. Elevation
     # 16", the house's standard. CKT-RC-BSMT is already `gfci=True, afci=True`
-    # (plan/circuits.py), which is what E3902.11 wants of an unfinished-basement outlet.
+    # (plan/circuits.py), which is what 210.8(A)(6) wants of any basement outlet.
     ElectricalDevice(uid="KYE6QTF5VS", tag="ED-B-HALL-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-GUIDE",
                      circuit="CKT-RC-BSMT", room="RM-B-STAIR",
@@ -2070,7 +2069,7 @@ NEC_FILL_MAIN = [
     # RM-M-PANTRY's reach-in outlet and the pantry MICROWAVE trial outlet (east bay, at
     # x~258", inside the 36" door mouth, 2" east of the centre gable). NEC 210.52(B)(1) puts
     # a pantry receptacle on a small-appliance branch circuit; SA2 (2026-10-25) so the
-    # microwave never shares with the coffee machine on SA1. NOT GFCI: E3902
+    # microwave never shares with the coffee machine on SA1. NOT GFCI: 210.8(A)
     # keys on room occupancy (STORAGE is not in the map) and on the 6' sink reach, and
     # FX-M-KITCH-SINK is 8'-1" away.
     #
@@ -2098,10 +2097,9 @@ NEC_FILL_MAIN = [
     # hallway exemption, and the band had zero receptacles. Positions are the four gaps
     # `electrical.receptacle_spacing` measured on the merged clear face.
     #
-    # Eight outlets on the storey receptacle circuits are GFCI *devices*, not breakers
-    # (code.E3902_gfci_locations): each sits within E3902.10's 6' sink reach while its
-    # circuit (CKT-RC-MAIN/CKT-RC-SECOND) spans a whole storey non-GFCI, so one splashed
-    # bathroom outlet can't take the floor down with it.
+    # Storey-circuit outlets inside 210.8(A)(9)'s 6' sink reach are GFCI *devices*, not
+    # breakers (code.E3902_gfci_locations): CKT-RC-MAIN/CKT-RC-SECOND span a whole storey
+    # non-GFCI, so one splashed outlet can't take the floor down with it.
     #
     # This one is the hall's receptacle; ED-M-BATH2-RC1 below is RM-M-BATH2's vanity
     # outlet. x=6'-10" is on W-M-HS2 (6'-0"..8'-0"), whose NORTH face is hall. y=22'-8 3/8"
@@ -2113,8 +2111,8 @@ NEC_FILL_MAIN = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-HS2", face="left", distance_from_start=inch(10),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
-    # RM-M-BATH2's vanity outlet, and the room's only usable one. NEC 210.52(D) / IRC
-    # E3901.6 want a receptacle within 36" of the outside edge of EACH BASIN. ** THE ENGINE
+    # RM-M-BATH2's vanity outlet, and the room's only usable one. NEC 210.52(D) wants a
+    # receptacle within 36" of the outside edge of EACH BASIN. ** THE ENGINE
     # NOW HAS THAT RULE ** — code.E3901_6_bathroom_receptacle, in
     # checks/mep/electrical_receptacles.py — and every lavatory in this house passes it,
     # including the two that were written up in plans/TODO.md as outside the 36" and have
@@ -2132,15 +2130,14 @@ NEC_FILL_MAIN = [
     # satisfied — but it is sealed inside SL-M-TUBDK's deck box behind FURN-M-BATH2-TUBDK-AP,
     # serving the bath's Bask heater, and nobody plugs a razor into it.
     #
-    # GFCI at the DEVICE, not the breaker, which is the exception this house makes in exactly
-    # this location: CKT-RC-MAIN spans the whole storey, and this is a bathroom outlet under
-    # E3902.1 outright. The same reasoning as the other seven storey-circuit GFCI devices in
-    # the note above — one splashed bathroom outlet must not take the floor down with it.
-    # Contrast ED-M-BATH2-TUB-RC, which is breaker-protected because it is sealed inside the
-    # deck box and could never be reset.
+    # GFCI at the DEVICE, not the breaker: a bathroom outlet under 210.8(A)(1) outright, on
+    # CKT-BATH-RC (2026-11-07, 210.11(C)(3)), which serves seven bathrooms — one splashed outlet
+    # must not take the other six down, and the reset belongs in the room. Contrast
+    # ED-M-BATH2-TUB-RC, which is breaker-protected because it is sealed inside the deck box
+    # and could never be reset.
     ElectricalDevice(uid="N7TTYA9RV6", tag="ED-M-BATH2-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-GUIDE",
-                     circuit="CKT-RC-MAIN", room="RM-M-BATH2",
+                     circuit="CKT-BATH-RC", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-W3", face="left", distance_from_start=inch(56),
@@ -2156,7 +2153,7 @@ NEC_FILL_MAIN = [
     # Not the south wall: FURN-M-BATH1-MIRROR covers it from 43" to 75" (2026-10-31).
     ElectricalDevice(uid="4KMFZPRJPX", tag="ED-M-BATH1-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-GUIDE",
-                     circuit="CKT-RC-MAIN", room="RM-M-BATH1",
+                     circuit="CKT-BATH-RC", room="RM-M-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(40)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BAE", face="right", distance_from_start=inch(41.125),
@@ -2222,7 +2219,7 @@ NEC_FILL_MAIN = [
     # y is on W-M-STOS's north face. It's inside RM-M-MUD-CLOSET, kept on purpose: NEC
     # 410.16 restricts closet luminaires, not receptacles, and RM-M-MUDROOM is
     # Occupancy.STORAGE so `electrical.receptacle_spacing` never walks it anyway. Stays GFCI
-    # for its E3902.10 sink-reach location (RM-M-BATH1's lav, through W-M-STOS).
+    # for its 210.8(A)(9) sink-reach location (RM-M-BATH1's lav, through W-M-STOS).
     ElectricalDevice(uid="NEC067AAAA", tag="ED-M-LIVING-RC9", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-20",
                      circuit="CKT-RC-MAIN",
@@ -2312,7 +2309,7 @@ NEC_FILL_MAIN = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-W4", face="left", distance_from_start=inch(146),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # GFCI since 2026-10-29: D-M-BATH2's wider RO brings the bath sink within 6' (E3902.10).
+    # GFCI since 2026-10-29: D-M-BATH2's wider RO brings the bath sink within 6' (210.8(A)(9)).
     ElectricalDevice(uid="NEC018AAAA", tag="ED-M-BED-RC7", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-20",
                      circuit="CKT-RC-MAIN",
@@ -2321,7 +2318,7 @@ NEC_FILL_MAIN = [
                          wall_ref="W-M-W4", face="left", distance_from_start=inch(36.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RC1 and RC3 are on the study's south/north walls (east wall nearly all door), 5'-2"/
-    # 5'-10" from FX-M-LAUNDRY-SINK — inside E3902.10's 6', so both are GFCI at the device.
+    # 5'-10" from FX-M-LAUNDRY-SINK — inside 210.8(A)(9)'s 6', so both are GFCI at the device.
     # 32" is 2 1/2" over FURN-M-STUDY-DESK's top, still well under NEC 210.52(A)'s 5'-6".
     # Paired with ED-M-STUDY-DATA1 at the same height 1'-0" west.
     #
@@ -2381,7 +2378,7 @@ NEC_FILL_MAIN = [
 # (`_NEAR_WALL_M`) off simply stops counting toward the room and nothing reports it.
 NEC_FILL_SECOND = [
     # RM-S-PLANT's five outlets are all ED-T-RECEPTACLE-WR-GFCI: WR-listed
-    # bodies, GFCI at the device, in-use covers, non-metallic gasketed boxes. NEC 2023 makes
+    # bodies, GFCI at the device, in-use covers, non-metallic gasketed boxes. The NEC makes
     # the room a damp location throughout and a wet one wherever it is misted or hosed, and
     # everything that plugs in here — pumps, heat mats, the humidifier — stays plugged in,
     # which is what makes an in-use cover the right one rather than a flip lid.

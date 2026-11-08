@@ -3,8 +3,10 @@
 110.26(A): in front of the panel, 36" deep (Condition 1, 120/240 V), max(30", panel
 width) wide and floor to max(6'-6", panel top) high, clear of everything. The panel need
 not be centred in that width, so the window slides along the face in 1" steps; any clear
-position passes. Door swings are not graded: 110.26 does not forbid a door over the
+position passes. Door swings are not graded: the 2023 110.26 did not forbid a door over the
 working space at a dwelling panel, only the 110.26(C) egress rules for large equipment.
+TODO: get the NFPA 70-2026 110.26(A) door text before grading door swings — 2026 is
+reported to treat an equipment door as an obstruction whatever its swing.
 
 110.26(E)(1): ``resolve/panel_space.dedicated_spaces`` (the router's hard prism too). A pipe
 or duct in it fails; conduit is the installation and is allowed.
@@ -19,6 +21,7 @@ from shapely.geometry import Polygon
 from typehaus.checks.integrity.clear_zones import obstruction_prisms, potential_run_footprints
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, by_result
+from typehaus.model.nec import NEC, cite
 from typehaus.resolve.mep_envelopes import Prism, envelopes
 from typehaus.resolve.overlay import union_all
 from typehaus.resolve.panel_space import dedicated_spaces, floor_and_top, panels
@@ -73,7 +76,7 @@ def _windows(body):
 @check(Tier.CODE, _WORK)
 def panel_working_space(ctx: CheckContext) -> list[Finding]:
     """NEC 110.26(A): a clear 36"-deep, 30"-wide, 6'-6"-high space in front of each panel."""
-    code = "NEC 110.26(A)"
+    code = cite(NEC.WORKING_SPACE)
     panels = _panels(ctx)
     if not panels:
         return [by_result(_WORK, Result.NOT_APPLICABLE, "no panel in the plan", (), code)]
@@ -129,7 +132,7 @@ def panel_working_space(ctx: CheckContext) -> list[Finding]:
 @check(Tier.CODE, _DEDICATED)
 def panel_dedicated_space(ctx: CheckContext) -> list[Finding]:
     """NEC 110.26(E)(1): no pipe or duct over a panel's footprint, up to 6 ft above it."""
-    code = "NEC 110.26(E)(1)"
+    code = cite(NEC.DEDICATED_SPACE)
     panels = _panels(ctx)
     if not panels:
         return [by_result(_DEDICATED, Result.NOT_APPLICABLE, "no panel in the plan", (), code)]

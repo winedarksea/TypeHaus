@@ -370,17 +370,24 @@ def test_the_three_lighting_checks_pass_on_the_catlin_house(catlin_model):
     fixture nobody can switch, one not listed for a bathroom, or a 24V run whose driver
     cannot carry it.
     """
+    from _helpers import CATLIN
+
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Tier
+    from typehaus.checks.run import load_preferences
 
+    # Graded unsuppressed, then only the house's own [checks] suppress keys are excused
+    # (e.g. the owner-accepted MITTLED supply), so nothing else can hide behind them.
+    suppressed = load_preferences(CATLIN).suppressed
     ids = ("electrical.lighting_controls", "electrical.wet_location",
            "electrical.light_run_psu")
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only=ids)
     for check_id in ids:
         findings = [f for f in report.findings if f.check_id == check_id]
         assert findings, check_id
-        assert all(f.result.value == "pass" for f in findings), \
-            [f.message for f in findings if f.result.value != "pass"]
+        bad = [f for f in findings if f.result.value != "pass"
+               and not any(f"{check_id}:{tag}" in suppressed for tag in f.element_tags)]
+        assert not bad, [f.message for f in bad]
 
 
 def test_a_fixture_with_no_switch_is_reported(catlin_model):

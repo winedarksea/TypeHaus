@@ -17,6 +17,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.electrical import luminaire_types
 from typehaus.model.enums import Occupancy
+from typehaus.model.nec import NEC
 from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_ring
 from typehaus.takeoff.lighting_supplies import (
@@ -100,8 +101,9 @@ def lighting_controls(ctx: CheckContext) -> list[Finding]:
         if crossed:
             out.append(_warn_fail(
                 cid, "luminaire " + element.tag + " on " + circuit + " is switched by "
-                     + ", ".join(crossed) + " on another circuit — NEC 210.7 wants a "
-                     "simultaneous disconnect where two circuits share a box",
+                     + ", ".join(crossed) + " on another circuit — NEC "
+                     + NEC.MULTIWIRE_DISCONNECT + " wants a simultaneous disconnect where "
+                     "two circuits share a box",
                 (element.tag,) + tuple(crossed)))
     if not out:
         out.append(_pass(cid, str(controlled) + " luminaires resolve every switch they name"))

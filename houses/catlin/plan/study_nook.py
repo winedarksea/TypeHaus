@@ -4,7 +4,8 @@
 # (19 1/2" top), 1/2" end. x=264"..355"; W-S-SS2 starts at x=263".
 # The east foot cubby is low under the winder stringers (~11 1/2" over the cushion), by
 # the owner's choice: feet need less than a head, and the shelf stays a stock SEKTION.
-# The partition clears D-S-STUDY2's casing (x~261.6"). ED-S-STUDY2-RC3 rose above the top.
+# The partition clears D-S-STUDY2's east jamb (x~258.6"; a drywall wrap with corner bead, no
+# casing). ED-S-STUDY2-RC3 rose above the top.
 # Cushion: one 3" HR-foam piece on the seat top, 1/2" behind the lift-up fronts.
 # Reading light: a mark-K sconce (<=4" projection) over the west seat, the head end, where the
 # stringers are highest; its plain switch is by the shelves, reachable seated or lying.

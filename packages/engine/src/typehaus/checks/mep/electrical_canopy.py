@@ -14,9 +14,10 @@ import math
 
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, failed, not_applicable, passed, unknown
+from typehaus.model.nec import NEC, cite
 from typehaus.quantities import M_PER_IN
 
-_CID, _CODE = "electrical.canopy_covers_box", "NEC 314.25"
+_CID, _CODE = "electrical.canopy_covers_box", cite(NEC.BOX_COVER)
 
 
 def _in(value_m: float) -> str:

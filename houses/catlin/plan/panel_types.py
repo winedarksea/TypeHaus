@@ -1,4 +1,4 @@
-"""Catlin's two service panels, as copies of the library's panel rows under the house's own tags.
+"""Catlin's two feeder panels, as copies of the library's panel rows under the house's own tags.
 
 NOT ``# haus: editable``: the editable dialect has no ``model_copy``, and a panel type is
 catalog data, not geometry. The backup subpanel stays in plan/mep_electrical.py.
@@ -21,7 +21,7 @@ PANEL_TYPES = (
     panel_type("ED-T-PANEL-225A", tag="ED-T-PANEL",
                name="225A bus, 200A main (feeder 1 of the 320A service)"),
     # Feeder 2 of the Class 320 service: the wellness and EV loads, which are what made the
-    # 220.82 total need a service upgrade in the first place. 20 spaces for the 5 two-pole
+    # 120.82 total need a service upgrade in the first place. 20 spaces for the 5 two-pole
     # circuits in use, including the workshop. ``bus_amps=200`` equals the main:
     # nothing backfeeds this bus, and a 225A bus here would buy headroom nobody needs.
     panel_type("ED-T-PANEL-200A", tag="ED-T-PANEL-2",

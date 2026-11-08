@@ -5,8 +5,11 @@ branch, a collar or a boot is at every leg end), then as many between as keep ea
 inside the row's spacing. A leg shorter than a foot rides on its neighbours. Risers are
 carried by the wall or chase they climb and take none here. Each hanger names the framing
 it hangs from: a horizontal member over (or, in a joist bay, beside) the duct within
-``HANGER_REACH_M``. A hanger with nothing there is kept, with its ``gap``, for
-``mep.duct_supports`` to grade.
+``HANGER_REACH_M``. With nothing overhead the standard's fallback rows are tried: a
+``saddle`` (a strap band to the deck, house practice; SMACNA draws no bottom support) where
+the duct bears on a deck, then a ``bracket`` to a parallel wall within SMACNA Fig. 4-8's 2".
+A slab is never a saddle host: a duct on concrete stays UNKNOWN, on purpose. A hanger with
+no host is kept, with its ``gap``, for ``mep.duct_supports`` to grade.
 """
 
 from __future__ import annotations
@@ -14,7 +17,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from typehaus.model.ducts import DuctStandard
+from typehaus.model.ducts import DuctStandard, DuctSupportRow
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.duct_branches import section
 from typehaus.resolve.model_ducts import Point3, ResolvedDuctSupport
@@ -30,6 +33,13 @@ HANGER_PLAN_REACH_M = 16 * M_PER_IN
 HANGER_REACH_M = 48 * M_PER_IN
 #: A leg shorter than this is carried by the fittings at its ends.
 MIN_HUNG_LEG_M = 12 * M_PER_IN
+#: A saddle's duct bears on its deck: invert at most this over the deck top.
+SADDLE_BEARING_M = 0.25 * M_PER_IN
+#: A bracket's wall face at most this off the duct's side (SMACNA Fig. 4-8: "against wall or
+#: maximum of 2 in. away"), parallel within ``BRACKET_SKEW_DEG``.
+FALLBACK_REACH_M = 2 * M_PER_IN
+BRACKET_SKEW_DEG = 10.0
+_SLOP_M = 1e-4
 
 
 def derive_supports(model: Any, standard: DuctStandard) -> list[ResolvedDuctSupport]:
@@ -44,22 +54,42 @@ def derive_supports(model: Any, standard: DuctStandard) -> list[ResolvedDuctSupp
         row = standard.support_for(kind, size_m)
         if row is None:
             continue
+        fallbacks = [(r, kind_) for kind_ in ("saddle", "bracket")
+                     if (r := standard.support_for(kind, size_m, kind_)) is not None]
         near = standard.support_near_fitting.meters
         path = clean_path([(x, y, z) for (x, y), z in zip(duct.path, duct.z_m, strict=True)])
         for a, b in zip(path, path[1:], strict=False):
             for point in stations(a, b, near, row.spacing.meters):
-                top = point[2] + duct.depth_m / 2.0
-                member, drop = index.over(point[:2], top)
-                out.append(ResolvedDuctSupport(
-                    run_tag=duct.tag, storey=duct.storey, size=section(duct), point=point,
-                    hanger=row.hanger, spacing_m=row.spacing.meters,
-                    product_ref=row.product_ref, hangs_from=member, drop_m=drop,
-                    width_m=row.width.meters if row.width else None,
-                    thickness_m=row.thickness.meters if row.thickness else None,
-                    gap=None if member else (
-                        f"no framing within {HANGER_REACH_M / M_PER_IN:.0f}\" above or "
-                        f"{HANGER_PLAN_REACH_M / M_PER_IN:.0f}\" beside the duct")))
+                used = row
+                member, drop = index.over(point[:2], point[2] + duct.depth_m / 2.0)
+                for fallback, kind_ in fallbacks:
+                    if member is not None:
+                        break
+                    foot = duct.width_m / 2.0 + (fallback.thickness.meters
+                                                 if fallback.thickness else 0.0)
+                    member, drop = (index.deck_under(point, a, b, duct.depth_m / 2.0, foot)
+                                    if kind_ == "saddle"
+                                    else index.wall_beside(point, a, b, duct.width_m / 2.0))
+                    used = fallback if member is not None else row
+                out.append(_record(duct, point, used, member, drop,
+                                   [k for _, k in fallbacks]))
     return out
+
+
+def _record(duct: Any, point: Point3, row: DuctSupportRow, member: str | None, drop: float,
+            fallbacks: list[str]) -> ResolvedDuctSupport:
+    reach = (f"no framing within {HANGER_REACH_M / M_PER_IN:.0f}\" above or "
+             f"{HANGER_PLAN_REACH_M / M_PER_IN:.0f}\" beside the duct")
+    near = f"{FALLBACK_REACH_M / M_PER_IN:.0f}\""
+    reach += "".join({"saddle": ", no deck it bears on under both saddle feet",
+                      "bracket": f", no parallel wall within {near} of its side"}[k]
+                     for k in fallbacks)
+    return ResolvedDuctSupport(
+        run_tag=duct.tag, storey=duct.storey, size=section(duct), point=point,
+        hanger=row.hanger, spacing_m=row.spacing.meters, product_ref=row.product_ref,
+        hangs_from=member, drop_m=drop, width_m=row.width.meters if row.width else None,
+        thickness_m=row.thickness.meters if row.thickness else None,
+        gap=None if member else reach)
 
 
 def stations(a: Point3, b: Point3, near_m: float, spacing_m: float) -> list[Point3]:
@@ -96,6 +126,7 @@ class _MemberIndex:
         self.tags = {host.uid: host.tag for coll in (model.walls, model.floors, model.roofs,
                                                        model.soffits, model.stairs)
                      for host in coll}
+        self.model = model
 
     def over(self, at: tuple[float, float], top_z: float) -> tuple[str | None, float]:
         """(member key, drop from its underside to the duct top), nearest above first."""
@@ -114,3 +145,52 @@ class _MemberIndex:
             return None, 0.0
         member = best[2]
         return f"{self.tags.get(member.parent_uid, member.parent_uid)}:{member.child_key}", best[0]
+
+    def deck_under(self, point: Point3, a: Point3, b: Point3, half_depth: float,
+                   foot: float) -> tuple[str | None, float]:
+        """(``FLOOR:deck``, invert-to-deck gap) for a floor deck the duct bears on, with both
+        band feet (``foot`` either side of the duct, across leg a-b) on it. Slabs are never
+        hosts."""
+        from shapely.geometry import Point, Polygon
+
+        run = math.dist(a[:2], b[:2]) or 1.0
+        nx, ny = (a[1] - b[1]) / run, (b[0] - a[0]) / run
+        feet = [Point(point[0] + s * foot * nx, point[1] + s * foot * ny) for s in (-1.0, 1.0)]
+        invert = point[2] - half_depth
+        best: tuple[float, str] | None = None
+        for floor in self.model.floors:
+            if len(floor.deck_outline) < 3:
+                continue
+            deck, voids = Polygon(floor.deck_outline), [Polygon(v) for v in floor.deck_voids
+                                                        if len(v) > 2]
+            if not all(deck.covers(f) and not any(v.contains(f) for v in voids) for f in feet):
+                continue
+            gap = invert - max(floor.deck_top_at(f.x, f.y) for f in feet)
+            if -0.003 <= gap <= SADDLE_BEARING_M + _SLOP_M and (best is None or gap < best[0]):
+                best = (max(gap, 0.0), f"{floor.tag}:deck")
+        return (best[1], best[0]) if best else (None, 0.0)
+
+    def wall_beside(self, point: Point3, a: Point3, b: Point3,
+                    half_width: float) -> tuple[str | None, float]:
+        """(``WALL:face``, side gap) for a wall parallel to leg a-b within the reach."""
+        from shapely.geometry import Point
+
+        from typehaus.resolve.soffits import wall_footprint
+
+        leg = math.atan2(b[1] - a[1], b[0] - a[0])
+        best: tuple[float, str] | None = None
+        for wall in self.model.walls:
+            if not wall.z0_m <= point[2] <= wall.z1_m:
+                continue
+            (x0, y0), (x1, y1) = wall.axis
+            skew = abs(math.degrees(math.atan2(y1 - y0, x1 - x0) - leg)) % 180.0
+            if min(skew, 180.0 - skew) > BRACKET_SKEW_DEG:
+                continue
+            length2 = (x1 - x0) ** 2 + (y1 - y0) ** 2
+            along = ((point[0] - x0) * (x1 - x0) + (point[1] - y0) * (y1 - y0)) / (length2 or 1.0)
+            if not 0.0 <= along <= 1.0:  # the station must face the wall, not run past its end
+                continue
+            gap = wall_footprint(wall).distance(Point(point[:2])) - half_width
+            if -0.003 <= gap <= FALLBACK_REACH_M and (best is None or gap < best[0]):
+                best = (max(gap, 0.0), f"{wall.tag}:face")
+        return (best[1], best[0]) if best else (None, 0.0)

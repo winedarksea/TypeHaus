@@ -112,8 +112,8 @@ The MSMK-9636-1 panels are **¼"** (`thickness` on the band, 2026-10-30; it drew
 default before). The room face did not move, so the pan fit, the opening and the reveal
 bead LF are unchanged. On site the panel stands about ¼" proud of the painted board past its
 free edges, where the F reveal stops it; set the R10000 plaster guard to the actual panel
-face at rough-in, about ¼" nearer the backer than a ½" panel, and confirm that depth against
-Delta's rough-in sheet.
+face at rough-in, about ¼" nearer the backer than a ½" panel. Delta's depth is finished
+wall to stringer **2¾" ±¼"** (M&I 50353 Rev L p.2 step 1B, read 2026-11-07).
 **Owner confirmed 2026-10-23:** move `W-M-TUBDK-S` and the unchanged 36" pan ⅛" south
 to close the south jamb gap introduced by the thinner wall board. The pan now runs
 y=158.25"–194.25", flush with the south surround. The deck edge, west apron and east-wall

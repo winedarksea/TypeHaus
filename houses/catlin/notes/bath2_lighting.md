@@ -80,8 +80,8 @@ engine, and neither is graded.
 3. **P4: Fleurco MHAP4236 Halo Plus**, 42 × 36, 116 W total, published ETL certification,
    own touch dimmer and defogger. Unswitched plug supply on the existing GFCI-protected
    bathroom branch; no wall dimmer or hardwire conversion. See `mirror_selections.md`.
-   **CRI is unconfirmed** (unpublished): it stays as the one integrated mirror light if Fleurco
-   confirms CRI 90 or higher; below that, swap to a front-lit 42 × 36 with a published CRI of 93 or more.
+   CRI is unpublished; it stays as the one integrated mirror light, since CRI is a preference,
+   not a gate (owner, 2026-11-07).
 4. **E3 tape.** The Armacost COB family in 2700 K, silicone-coated for a damp room.
 
 ## Sources

@@ -285,14 +285,15 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   lamp_base="G13", name="4' LED-ready 2-lamp T8 strip, 5000K 95-CRI tubes",
                   form=LuminaireForm.LINEAR_TUBE, type_mark="Q1",
                   footprint=(ft(4), inch(3)), height=inch(2.5), plan_symbol="linear-light",
-                  lamp="2 x 4 ft T8 LED, Type B, G13, 5000K, 95 CRI, replaceable", watts=36.0,
+                  lamp="2 x 4 ft T8 LED, Type A+B, G13, 5000K, 95 CRI, replaceable", watts=36.0,
                   lumens=3600.0, cct_k=5000, cri=95, load_va=36.0, ports=_POWER_120,
                   product_ref="PROD-HALCO-90511",
                   parts=(ProductPart(role="lamp", product_ref="PROD-WAVEFORM-T8-95-50K",
                                      quantity=2),),
                   source="Halco 90511 LED-ready strip (non-shunted, Type B double-ended) with "
-                         "two Waveform Absolute 95-CRI 5000 K tubes, ~1,800 lm each. Any 90+ "
-                         "CRI 5000 K Type B double-ended tube is an equal (the room can be cheap)."),
+                         "two Waveform CENTRIC DAYLIGHT T8 4024.50 tubes (Type A+B, double-ended "
+                         "direct wire OK; 1,800 lm, 18 W, 95 CRI, sheet Rev 2.01). Any 5000 K "
+                         "Type B double-ended tube is an equal (the room can be cheap)."),
     # Q2 (2026-10-31): a keyless lampholder, the cheapest replaceable light there is, for
     # storage and equipment spaces NEC 210.70(C) wants lit.
     LuminaireType(tag="ED-T-LT-KEYLESS",
@@ -343,6 +344,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   source="Hinkley Soren 50910BK, one Waveform ModernVintage A19 (450 lm, "
                          "95 CRI) under its 6 W cap: 1,350 source lm for the three, a third "
                          "of the 2 x E26 allowance. Delivered lm unpublished. Centre at 64 in. "
-                         "AFF; back plate 5 in. dia. (spec sheet, read 2026-11-07); damp "
-                         "label CONFIRM."),
+                         "AFF; back plate 5 in. dia., Damp Rated (spec sheet, read "
+                         "2026-11-07). The sheet asks for T-style lamps: test-fit one A19 "
+                         "before ordering three; ask Hinkley whether that is fit or look."),
 )

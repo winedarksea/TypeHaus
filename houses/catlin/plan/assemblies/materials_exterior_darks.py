@@ -4,7 +4,9 @@ Swap the facade there, not here. Tags name the PRODUCT, never the colour, so a s
 join key (prices.toml, tests, goldens). Not ``# haus: editable``: it computes from the palette.
 """
 
-from plan.exterior_palette import ANDERSEN, AZEK, CLOPAY, METAL, UNA_CLAD_MATTE_BLACK, WINDOW
+from plan.exterior_palette import (
+    ANDERSEN, AZEK, CLOPAY, METAL, POWDER_RAL, UNA_CLAD_MATTE_BLACK, WINDOW,
+)
 from typehaus import Material
 
 _M = METAL.label
@@ -45,41 +47,48 @@ MATERIALS_EXTERIOR_DARKS = [
              color=UNA_CLAD_MATTE_BLACK.hex,
              source=f"garage ICF stem exterior band (all four walls, 0.050\") + stem-top Z-flashing (0.040\"); Una-Clad Kynar 500/Hylar 5000 pre-finished aluminium sheet, ASTM B209 3105-H14, 48\" x 120\", {UNA_CLAD_MATTE_BLACK.colour} (stocked at 0.040\" and 0.050\"), {UNA_CLAD_MATTE_BLACK.solar}; manufactured Anoka MN (Elevate TIS 2016, 2026-08-11); 2T/3T minimum bend radius, open hems; #9 316 stainless gasketed screws; sealant/EPDM where the Galvalume corrugated panel oversails the Z; never in contact with concrete or fresh mortar"),
     # The canopy's steel east posts when EAST_POST_SYSTEM = "steel": ASTM A500 Gr C HSS,
-    # galvanized after fabrication (A123) then powder-coated, a "duplex" system.
+    # galvanized after fabrication (A123) then powder-coated, a "duplex" system. Coaters work
+    # to RAL, so it takes METAL's nearest RAL.
     Material(tag="steel-hss-duplex", name="HSS, hot-dip galvanized + powder-coated (duplex)",
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
-             color=METAL.hex,
-             source=f"PT-BW-RE/-RNE steel variant — ASTM A500 Gr C, ASTM A123 then powder coat matched to {_M} (notes/canopy_garage_diaphragm.md §5)"),
+             color=POWDER_RAL.hex,
+             source=f"PT-BW-RE/-RNE steel variant — ASTM A500 Gr C, ASTM A123 then powder coat RAL {POWDER_RAL.colour}, the RAL nearest {_M} (notes/canopy_garage_diaphragm.md §5; notes/exterior_darks.md)"),
     # The basement's exposed-XPS band (`_PROTECTION_PANEL`). The library's
     # `foundation-coating-acrylic` is the same product in stock grey; Tuff II has no stock
-    # dark (Concrete Grey, White, Tanner, Linens, Cairn, Taupe, Sand), so this is a custom
-    # tint to the metal above it. A dark skin over XPS runs hot (XPS softens near 165 F):
-    # confirm the maker's minimum LRV over foam before ordering.
+    # dark (stock Concrete Grey, White; special order Tanner, Linens, Foundation Grey, Cairn,
+    # Wheaton; "custom color matched at an additional cost", Styro TDS), so this is a custom
+    # tint to the metal above it. A dark skin over XPS runs hot (XPS softens near 165 F) and
+    # no TDS states a darkness limit: confirm it with Styro before ordering (open).
     Material(tag="foundation-coating-acrylic-tinted",
              name=f"Trowel-applied acrylic foundation coating over mesh (1/8\"), tinted to {METAL.colour}",
              r_per_inch=0.0, density=1400.0, vapor_permeance_perms=5.0, coating=True,
              hatch="concrete", color=METAL.hex,
-             source=f"basement exposed-XPS band, 6\" below grade to wall top; acrylic foundation coating over mesh (Tuff II class), custom-tinted to {_M} (the trim above it); confirm the custom match and the maker's minimum LRV over foam before ordering"),
+             source=f"basement exposed-XPS band, 6\" below grade to wall top; acrylic foundation coating over mesh (Tuff II class), custom-tinted to {_M} (the trim above it); Styro Tuff II TDS publishes no darkness limit over XPS: confirm the custom match and the limit with Styro before ordering (open, 2026-11-07)"),
     # Site paint on the exterior door faces and frames: no product named, so matched to METAL.
     Material(tag="door-paint-exterior", name=f"Exterior door field paint, matched to {_M}",
              coating=True, color=METAL.hex, finish="paint",
-             source="Site-applied coating approved for fiberglass/composite frame; factory colour quote alternate."),
+             source=f"Site-applied coating approved for fiberglass/composite frame, matched to a physical {_M} chip; factory colour quote alternate."),
+    # The French doors' composite frame (`french_door_installations.py`), field-painted with
+    # the door paint above, so it takes the same colour.
+    Material(tag="composite-door-frame", name="Therma-Tru composite exterior frame and trim",
+             color=METAL.hex,
+             source=f"2026 Comp 6.4/6.46; composite profiles, no exposed wood. Exterior face site-painted with door-paint-exterior, matched to {_M} (notes/exterior_darks.md)."),
     # Window frames, by product (`WindowType.frame_material_ref`).
     Material(tag="drutex-alucover-cap", name=f"Drutex Alucover aluminium cap, RAL {WINDOW.colour} matt",
              hatch="metal", color=WINDOW.hex,
-             source=f"Drutex IGLO Energy Alucover exterior cap, RAL {WINDOW.colour} matt powder coat (plan/opening_products.py). Colour is RAL's own sRGB (ral-farben.de colour list, read 2026-10-30)."),
+             source=f"Drutex IGLO Energy Alucover exterior cap, RAL {WINDOW.colour} matt powder coat (plan/opening_products.py); the configurator offers the full RAL palette for the cap (drutex.com/en-us/products/iglo-energy-alu-cover.html, read 2026-11-07). Colour is RAL's own sRGB (ral-farben.de colour list, read 2026-11-07)."),
     Material(tag="aliplast-maxlight-powder", name=f"Aliplast Max Light powder coat, RAL {WINDOW.colour} matt",
              hatch="metal", color=WINDOW.hex,
-             source=f"Aliplast Max Light Modern frame and sash, RAL {WINDOW.colour} matt powder coat, matched to the Drutex caps (plan/opening_products.py). Colour is RAL's own sRGB."),
+             source=f"Aliplast Max Light Modern frame and sash, RAL {WINDOW.colour} matt powder coat, matched to the Drutex caps (plan/opening_products.py); Aliplast powder-coats any RAL to Qualicoat (professionals.aliplast.com/en/colour-palette, read 2026-11-07). Colour is RAL's own sRGB."),
     Material(tag="andersen-400-exterior", name=f"{ANDERSEN.label} exterior (Perma-Shield vinyl)",
              color=ANDERSEN.hex,
              source=f"Andersen 400 casement, {ANDERSEN.colour} exterior. Colour sampled from Andersen's swatch (andersenwindows.com, read 2026-10-30). The 400 Series offers no grey."),
     # The overhead door's leaf (`DT-EXT-OVERHEAD192.leaf_material_ref`).
     Material(tag="clopay-classic-steel", name=f"{CLOPAY.label} factory paint",
              hatch="metal", color=CLOPAY.hex,
-             source="Clopay Classic Steel GDU293, Charcoal. Colour sampled from Clopay's paint-color-charcoal chip (clopaydoor.com, read 2026-10-30). Black is R-6.5 only (GDU266)."),
+             source="Clopay Classic Steel GDU293, Charcoal. Colour sampled from Clopay's paint-color-charcoal chip (clopaydoor.com, read 2026-10-30). The black family wants Black, but clopaydoor.com/classic lists it only as premium, \"available on select models\" (Home Depot GDU266 is R-6.5): ask the dealer for Black at R-12.9 (open, 2026-11-07)."),
     # The French doors' returns and casing.
     Material(tag="captivate-sheet", name=f"{AZEK.label} 3/4 inch sheet trim",
              color=AZEK.hex, product_ref="PROD-AZEK-CAPTIVATE-SHEET",
-             source=f"AZEK 2026 product guide AS03448096, 3/4 x 48 x 96 smooth sheet; Captivate {AZEK.colour} factory finish. Field-rip returns/casing; two sheets for both doors. Colour sampled from AZEK's 2025 Captivate swatch (read 2026-10-30); a physical sample governs."),
+             source=f"AZEK 2026 product guide AS03448096, 3/4 x 48 x 96 smooth sheet; Captivate {AZEK.colour} factory finish. Field-rip returns/casing; two sheets for both doors. Colour sampled from AZEK's Captivate swatch (azekexteriors.com/products/trim-moulding/prefinished/, read 2026-11-07); a physical sample governs."),
 ]

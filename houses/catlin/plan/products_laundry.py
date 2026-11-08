@@ -16,7 +16,9 @@ GLACIER_BAY_QL033Y = Product(
     source="Home Depot listing, internet #206057007, read 2026-10-24 (search summary; the page "
            "returned 403 to automated reads, spec sheet not retrieved). 24 x 21 x 34 in., "
            "stainless basin, white cabinet. Rim is the cabinet top at 34 in.; the declared 43 in. "
-           "box includes the gooseneck. Basin capacity, drain size and warranty unverified.",
+           "box includes the gooseneck. Basin capacity, drain size and warranty unverified. "
+           "Use & Care manual pp.5, 9 (manualslib copy, read 2026-11-07): supply lines are not "
+           "included and no rough-in is given; measure on delivery, then mark the ports EXACT.",
 )
 GLACIER_BAY_QL033Y_FAUCET = Product(
     tag="PROD-GLACIER-BAY-QL033Y-FAUCET", brand="Glacier Bay", model="QL033Y bundled faucet",

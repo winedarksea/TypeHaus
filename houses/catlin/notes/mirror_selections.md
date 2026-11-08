@@ -47,8 +47,9 @@ Manufacturer sources, read 2026-10-22:
 ## Replaceable lighting
 
 Every separate light takes replaceable E26 lamps; no fixture has a driver to fail. The
-3000 K lamp in every Karlie is the **Waveform CentricHOME A19 3000K** (800 lm, 95 CRI, R9 90+,
-`PROD-WAVEFORM-CENTRICHOME-A19-30K`), which replaced the Sunlite 80793-SU (CRI 94, R9 69) on
+3000 K lamp in every Karlie is the **Waveform CentricHOME A19 3000K** (800 lm, 10 W, 95 CRI,
+R9 80+ rated and 91 typical, accepted 2026-11-07; damp, not for totally enclosed fittings, NOT
+dimmable; sheet PN 4005C.30 Rev 2.0, `PROD-WAVEFORM-CENTRICHOME-A19-30K`), which replaced the Sunlite 80793-SU (CRI 94, R9 69) on
 2026-10-31; it bills as its own lamp line. Bath2's 5000 K day bar keeps the Sunlite 80795-SU.
 
 Hinkley Karlie bars have etched opal glass and **open shades facing down**: the 54622
@@ -81,8 +82,10 @@ inches); the old Karlie band `BK-S-BD-N-MIRROR-LIGHT` is gone.
 extension, a 5 in. round backplate, clear fluted glass, one E26 with a **6 W cap**. The mirrors
 went black with it (K-30638-BLL, same 20 × 32 × 1 3/8). The lamp is the Waveform ModernVintage
 A19 filament (5 W, 450 lm, 95 CRI, R9 80+): 1,350 source lm for the three against the old
-2 × E26 allowance's 4,800, a deliberate trade for the look. Confirm before rough-in: the UL
-damp label (dealers disagree) and the box offset (2 1/2 in. top to outlet).
+2 × E26 allowance's 4,800, a deliberate trade for the look. Hinkley's sheet (read 2026-11-07)
+confirms Damp Rated and 2 1/2 in. top to outlet, and says "T-style bulbs required": keep the
+A19 (owner, 2026-11-07), test-fit one before ordering three, and ask Hinkley whether T-style
+is about fit or only the look.
 
 **Suite (2026-10-31).** The three-light bar sits on the existing 22 1/2-inch
 `BK-S-SN3-MIRROR-LIGHT`. Flanking sconces would stand in the tub's spray zone.
@@ -91,7 +94,9 @@ damp label (dealers disagree) and the box offset (2 1/2 in. top to outlet).
   [54623BN](https://www.hinkley.com/54623bn.html); BN is brushed nickel, CM is chrome.
 - [Sunlite 80795-SU](https://sunlite.com/ecomutils/downloadproductfileexternal?id=2066):
   fixed 5000 K, 9 W, 800 source lumens, CRI 95, R9 82; bath2 uses its plain daytime toggle.
-- Waveform CentricHOME A19: confirm R9 ≥ 90 and the damp/enclosed rating on its sheet before ordering.
+- [Waveform CentricHOME A19](https://store.waveformlighting.com/cdn/shop/files/CENTRIC_HOME_A19_10W_LED_Bulb_-_E26_Specification_Sheet.pdf):
+  10 W, R9 80+ rated (91 typical), damp, not for totally enclosed fittings (the Karlie shades
+  are open), not dimmable (the Karlies are on plain switches).
 
 The schedule leaves **delivered fixture lumens unknown**. The listed lumens are lamp source
 output, not what comes through the opal glass.
@@ -101,9 +106,9 @@ output, not what comes through the opal glass.
 The selected mirror is **Halo Plus MHAP4236**, 42 × 36, centred on the vanity. The owner
 accepted the glowing glass border as well as the wall halo. The manufacturer publishes 120 V
 plug installation, **116 W total including defogger**, up to 2243 lumens and a five-year limited
-warranty. **CRI is UNCONFIRMED.** Neither the spec sheet nor the manual publishes it (searched
-2026-10-31). The mirror stays as the house's one integrated mirror light; ask Fleurco, and if
-the answer is below 90, swap to a front-lit 42 × 36 with a published CRI of 93 or more. Field-replaceable
+warranty. CRI is unpublished on the spec sheet and manual (re-read 2026-11-07). The mirror
+stays as the house's one integrated mirror light: CRI is a preference, not a gate (owner,
+2026-11-07). Field-replaceable
 LEDs and drivers are not documented either.
 
 Use its **own touch dimmer**, normally at 2700 K, with 4500/6500 K available to the user.
@@ -114,12 +119,12 @@ continues to control the warm shower can and three low-voltage runs.
 `ED-M-BATH2-MIRROR-PLUG` is an unswitched recessed grounded duplex behind the glass on
 the mirror's y=173 3/8-inch centreline, 64 inches AFF, within the manufacturer's central
 recommended outlet zone. Recess the plug behind the wall plane and route the cord
-clear of direct contact with the heater pad, as the manual requires. It shares the existing protected 20 A bathroom-receptacle branch,
-`CKT-BATH-ATTIC`, whose description now includes bath2. This avoids another panel space and
-an inaccessible GFCI reset behind the mirror. Reset/test is at the GFCI breaker; general
-main-storey receptacles stay on their original non-GFCI-breaker branch. The mirror's 116 VA
-is counted once, on the same branch as its plug; the circuit's explicit `load_va=116`
-overrides device-load summation. Leave access to lift the mirror off its
+clear of direct contact with the heater pad, as the manual requires. It is on `CKT-BATH-RC`,
+the house's one 20 A bathroom vanity-receptacle circuit (NEC 210.11(C)(3); 2026-11-07, which retired
+`CKT-BATH-ATTIC`), and rides the load side of the vanity GFCI `ED-M-BATH2-RC1` (`gfci_ref`),
+so there is no inaccessible GFCI behind the mirror: reset/test is at `ED-M-BATH2-RC1`, in the
+room. The mirror's 116 VA is counted once, on the same branch as its plug; the circuit's
+explicit `load_va=116` overrides device-load summation. Leave access to lift the mirror off its
 mounting screws and keep the spare cord clear of the heater.
 
 [Fleurco specification](https://fleurco.com/media/website_furnishing.specification/GENERALSPECS_HALOPLUS-MHAP_07_2023.pdf)

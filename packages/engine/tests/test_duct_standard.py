@@ -87,3 +87,12 @@ def test_catlin_branch_census(catlin_model_ro):
     takeoffs = [p for p in catlin_model_ro.duct_parts if p.kind == "takeoff"]
     assert sum(p.run_tag == "DU-M-ERV-EXH-TRUNK" for p in takeoffs) == 9
     assert sum(p.run_tag.startswith("DU-S-HP-") for p in takeoffs) == 6
+
+
+def test_a_saddle_row_is_only_a_fallback():
+    """Owner, 2026-11-07: the hung row by default; a saddle only where nothing is overhead."""
+    std = _standard(supports=(
+        DuctSupportRow(max_size=inch(10), spacing=ft(12), hanger="saddle"),
+        DuctSupportRow(max_size=inch(10), spacing=ft(12)),))
+    assert std.support_for("round", 4 * M_PER_IN).hanger == "strap"
+    assert std.support_for("round", 4 * M_PER_IN, "saddle").hanger == "saddle"

@@ -246,7 +246,7 @@ def bill_of_materials(
         "duct_sealing": duct_sealing_takeoff(model),
         "sleeves": sleeve_takeoff(model),
         # The electrical program (→ takeoff/electrical.py): devices by type, the panel
-        # schedule + NEC 220.82-style service load, raceway LF, the PV array's installed
+        # schedule + NEC 120.82 service load, raceway LF, the PV array's installed
         # wattage, and the backup subsystem's derived DIN component list.
         "electrical_devices": electrical_device_takeoff(model),
         "panel_schedule": panel_schedule(model),
@@ -275,7 +275,7 @@ def bill_of_materials(
         },
         # The lighting program (→ takeoff/lighting.py): the E-602 schedule by mark, the
         # switch legs, the LED runs with their supplies sized against them, and the real
-        # connected load beside the 3 VA/ft2 allowance the service calculation uses.
+        # connected load beside the 2 VA/ft2 allowance the service calculation uses.
         "luminaire_schedule": luminaire_schedule(model),
         "lighting_controls": lighting_controls(model),
         "light_runs": light_run_takeoff(model),

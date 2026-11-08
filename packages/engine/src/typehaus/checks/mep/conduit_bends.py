@@ -1,7 +1,8 @@
 """``mep.conduit_bend_total`` — bend degrees between pull points, against NEC's 360°.
 
 Every raceway article (358.26 EMT, 352.26 PVC, 344.26 RMC, 342.26 IMC, 362.26 ENT) caps
-the bends between pull points at the equivalent of four quarter bends. The measurement is
+the bends between pull points at the equivalent of four quarter bends, and 2026 300.24 holds
+any combination of raceways in one run to the same 360°. The measurement is
 ``resolve/conduit_pulls.py``; this module only grades it.
 
 **ADVISORY, PASS-with-a-prefix**, the way ``mep.vent_grade_margin`` reports a thin grade
@@ -17,18 +18,22 @@ from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
+from typehaus.model.nec import NEC, cite
 from typehaus.resolve.conduit_pulls import MAX_BEND_DEG_BETWEEN_PULLS, PullSection, pull_sections
 
 _CID = "mep.conduit_bend_total"
 # Each material's own article; every one of them says 360°.
-_ARTICLE = {"emt": "NEC 358.26 (EMT)", "ent": "NEC 362.26 (ENT)", "pvc": "NEC 352.26 (PVC)"}
-_CODE = "NEC 358.26 / 362.26 / 352.26"
+_ARTICLE = {"emt": f"NEC {NEC.EMT_BENDS} (EMT)", "ent": f"NEC {NEC.ENT_BENDS} (ENT)",
+            "pvc": f"NEC {NEC.PVC_BENDS} (PVC)"}
+_CODE = cite(NEC.EMT_BENDS, NEC.ENT_BENDS, NEC.PVC_BENDS)
 _ADVISORY = "ADVISORY — "
 
 
 def _code(section: PullSection, materials: dict[str, str]) -> str:
     cited = dict.fromkeys(_ARTICLE.get(materials.get(tag, "emt"), _CODE)
                           for tag in section.run_tags)
+    if len(cited) > 1:
+        cited[f"NEC {NEC.RACEWAY_BENDS_MIXED} (mixed raceways)"] = None
     return "; ".join(cited)
 
 

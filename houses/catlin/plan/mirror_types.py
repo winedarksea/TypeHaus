@@ -72,9 +72,8 @@ _FLEURCO_PRODUCT = Product(
     source=_READ_DATE + "42 W x 36 H x 1.75 D in. Factory plug installation, 120 V, "
            "116 W TOTAL including defogger (spec dated 2023-08-01), maximum published output "
            "2243 lm (not a 2700 K photometric measurement). The 24 x 36 MHAP2436 was 70 W and "
-           "1711 lm. CRI UNCONFIRMED: unpublished on the spec sheet and manual (searched "
-           "2026-10-31). Kept as the house's one integrated mirror light; ask Fleurco, and if "
-           "below 90 swap to a front-lit 42 x 36 with published CRI >= 93. ETL/CEC certified. "
+           "1711 lm. CRI unpublished on the spec sheet and manual (re-read 2026-11-07); kept, "
+           "since CRI is a preference, not a gate (owner, 2026-11-07). ETL/CEC certified. "
            "Own touch ON/OFF and brightness, 2700/4500/6500 K selection, work at 2700 K. "
            "Light and defogger share the power button; no separate defogger wall leg. "
            "Supply full, unswitched line voltage; no wall dimmer. Five-year limited warranty. "
@@ -83,7 +82,8 @@ _FLEURCO_PRODUCT = Product(
            + _FLEURCO_MANUAL,
 )
 # The 3000 K lamp is the makeup-grade Waveform CentricHOME A19 (plan/products_lighting_selected.py,
-# 95 CRI, R9 90+), billed as a lamp part; it replaced the Sunlite 80793-SU (CRI 94, R9 69).
+# 95 CRI, R9 80+ rated / 91 typical, 10 W, not dimmable), billed as a lamp part; it replaced the
+# Sunlite 80793-SU (CRI 94, R9 69).
 _LAMP_3000 = "PROD-WAVEFORM-CENTRICHOME-A19-30K"
 _BULB_5000 = Product(
     tag="PROD-SUNLITE-80795-SU", brand="Sunlite", model="80795-SU",
@@ -116,16 +116,17 @@ def _karlie(model, count, finish, type_tag, mark, *, daylight=False):
         canopy=(inch(7.25), inch(4.5)),
         plan_symbol=f"socketed-vanity-{count}-{'chrome' if finish == 'chrome' else 'nickel'}",
         lamp=f"{count} x E26 A19 {bulb}, replaceable",
-        watts=count * 9, load_va=count * 9, lumens=None,
-        cct_k=5000 if daylight else 3000, cri=95,
-        dimmable=not daylight, damp_rated=True, product_ref=product.tag,
+        watts=count * (9 if daylight else 10), load_va=count * (9 if daylight else 10),
+        lumens=None, cct_k=5000 if daylight else 3000, cri=95,
+        dimmable=False, damp_rated=True, product_ref=product.tag,
         replaceable_lamp=True, lamp_base="E26",
         parts=() if daylight else (ProductPart(role="lamp", product_ref=_LAMP_3000,
                                                quantity=count),),
         ports=(ServicePort(tag="power", service=Service.POWER_120,
                            position=(inch(0), inch(3), inch(5.5))),),
         source=product.source + f" Total bulb source output {count * 800} lm; "
-               + ("published bulb R9 82." if daylight else "bulb R9 90+ (CONFIRM on its sheet).")
+               + ("published bulb R9 82." if daylight
+                  else "bulb R9 80+ rated, 91 typical; 10 W; not dimmable (its sheet).")
                + " Back plate 7.25 W x 4.5 H (Hinkley 54622BK/54623BK spec sheets, the same "
                "body as this finish's dimension drawing, read 2026-11-07).",
     )

@@ -81,13 +81,19 @@ TOTO_AP_WALL_HUNG = TOILET_WALL_HUNG.model_copy(update={
                     notes="2\" vent takeoff on the carrier waste fitting"),
         ServicePort(tag="cold", service=Service.WATER_COLD,
                     position=(inch(-8.8), inch(13.875), inch(8.75)), connection_size=inch(0.5),
-                    notes="WT173M 1/2\" NPT inlet, lower left of the frame, ~11 3/4\" AFF: "
-                          "scaled from SS-02352 p.3, not dimensioned"),
+                    notes="WT173M 1/2\" NPT inlet, lower left of the frame. z is published: "
+                          "7/8\" below D, 11 3/4\" AFF at this rim (0GU190 p.4); x and y are "
+                          "scaled, so the port stays approximate"),
     ),
     "source": 'TOTO SS-02352 v.01 p.2, read 2026-10-21: CT426CFGT40#01 AP '
               'wall-hung bowl, 14 15/16 x 21 1/4 in., 16 1/8 in. rim installation shown, '
               '1.28/0.9 gpf. CWT4263446CMFG pairs it with WT173M DuoFit, '
               'SW3446#01 S5 and THU805 connection kit. Interior carrier wall only. '
+              'Supply height: TOTO WT173M Installation & Owner\'s Manual 0GU190 p.4 '
+              '(Before Installation + Table 1), read 2026-11-07: 1/2 in. NPT supply 7/8 in. '
+              'below the D line, D = 12 5/8 in. at the 16 1/8 in. rim, so 11 3/4 in. AFF; x/y '
+              'undimensioned. https://www.totousa.com/filemanager_uploads/product_assets/'
+              'InstallationManual/0GU190_WT173M_IM.pdf. '
               'Replaces SP CT449CFGT60 (22 7/8 in. overall, SS-01776 p.2). '
               'https://www.totousa.com/filemanager_uploads/product_assets/SpecSheet/'
               'SS-02352_CWT4263446CMFG.pdf',
@@ -106,8 +112,11 @@ TOTO_CARLYLE_II = FixtureType(
     product_ref="PROD-TOTO-CST614CEFGAT40",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(water_closet_required_clearance(inch(28.3125)),),
-    # SS-01809 v.01 p.2: tank 3/4" [18 mm] off the finished wall, flange at 12".
-    ports=floor_wc_ports(28.3125, 6.0, 8.0, 0.75),
+    # SS-02299 v.01 p.2: tank 3/4" [18 mm] off the finished wall, flange at 12". Its one
+    # placement backs the DuoFit carrier wall (W-M-HS1), whose frame fills the bay, so the
+    # stop is floor-fed: PR-B-BATH2-WC-CW rises 1.14" off the wall at TOTO's 6" / 8".
+    ports=floor_wc_ports(28.3125, 6.0, 8.0, 0.75, source="TOTO SS-02299 v.01 p.2",
+                         floor_stop=(6.0, 1.14, 8.0)),
     source='TOTO Carlyle II CST614CEFGAT40#01, owner selection 2026-09-06. 28 5/16" D x '
            '16 1/2" W x 28 3/4" H (TOTO SS-01809, same bowl/tank as MS614124CEF(R)G; '
            'Ferguson CST614CEFGAT40 listing, 2026-10-31), 12" rough-in, 1.28 gpf '
@@ -115,7 +124,12 @@ TOTO_CARLYLE_II = FixtureType(
            'readiness — the concealed supply the S5 seat (PROD-TOTO-SW3446) uses — so this '
            'bowl needs a GFCI receptacle 6"-12" AFF, offset to the rear-left cord exit and '
            'clear of the tank, on a 20 A circuit that is NOT shared with the other washlet '
-           'bath: an instant-heat seat draws 1.2-1.4 kW while heating.',
+           'bath: an instant-heat seat draws 1.2-1.4 kW while heating. Stop station: TOTO '
+           'SS-02299 v.01 p.2 (MW6143446CEFG, names CST614CEFGAT40), read 2026-11-07: '
+           '*6 in. left, *8 in. AFF, "Suggested Dimension / Supply as Req\'d" — a wall '
+           'supply; this bowl is floor-fed, its stop set by the plumber clear of the china. '
+           'https://www.totousa.com/filemanager_uploads/product_assets/SpecSheet/'
+           'SS-02299_MW6143446CEFG.pdf',
 )
 
 # RM-S-BATH1 and RM-S-SUITEBATH. Skirted, so the trapway washboard is closed, but two-piece
@@ -133,14 +147,33 @@ TOTO_AQUIA_IV = FixtureType(
     clearances=(water_closet_required_clearance(inch(27.5625)),),
     # SS-02072 v.02 p.2: tank 3/4" [20 mm] off the finished wall, flange at 12"; it suggests
     # the stop at 4 3/4" AFF ("as req'd"), and 7" clears the 3 1/2" base.
-    ports=floor_wc_ports(27.5625, 5.875, 7.0, 0.75),
+    ports=floor_wc_ports(27.5625, 5.875, 7.0, 0.75,
+                         source='TOTO SS-02072 v.02 p.2 x; z kept at 7" over its suggested 4 3/4"',
+                         stop_note=' Use a 90-degree angle stop; max protrusion with the '
+                                   'shutoff 3 1/8" [80 mm] off the finished wall (same page).'),
     source='TOTO Aquia IV CST446CEMGN#01, owner selection 2026-09-06. TOTO USA spec sheet '
            'read 2026-09-06: 27 9/16" D x 15 1/2" W x 29 1/8" H, rim 14 15/16", 12" '
            'rough-in, 1.28/0.9 gpf dual flush, CEFIONTECT, skirted trapway. ** THAT RIM '
            'HEIGHT IS REGULAR, NOT COMFORT/UNIVERSAL. ** If universal height is wanted in '
            'these two rooms it is a different suffix and must be confirmed with the '
-           'supplier before ordering — it is the one open question on this fixture.',
+           'supplier before ordering — it is the one open question on this fixture. Stop '
+           'station: TOTO SS-02072 v.02 p.2, read 2026-11-07: *5 7/8 in. left, *4 3/4 in. '
+           'AFF suggested; 90-degree angle stop required; max protrusion with shutoff 3 1/8 '
+           'in. [80 mm]. https://www.totousa.com/filemanager_uploads/product_assets/SpecSheet/'
+           'SS-02072_CST446CEMGN.pdf',
 )
+# RM-S-BATH1's Aquia backs exterior W-S-W1, which nothing enters (owner 2026-10-31), so its
+# stop is floor-fed: PR-S-BATH1-WC-CW rises 1 1/4" off the wall, clear of the base, and
+# 10 1/2" left of centre, clear of the 15 1/2" china. Same product; only the stop differs.
+TOTO_AQUIA_IV_FLOOR = TOTO_AQUIA_IV.model_copy(update={
+    "tag": "FX-TOTO-AQUIA-IV-FLOOR",
+    "name": "Aquia IV skirted dual-flush water closet, floor-fed stop",
+    "ports": floor_wc_ports(27.5625, 5.875, 7.0, 0.75, source="TOTO SS-02072 v.02 p.2",
+                            floor_stop=(10.5, 1.25, 7.0),
+                            stop_note=" Use a 90-degree angle stop (same page)."),
+    "source": TOTO_AQUIA_IV.source + ' FLOOR-FED VARIANT: SS-02072\'s stop station is a wall '
+              'supply\'s; a floor-fed stop is set by the plumber clear of the china.',
+})
 
 # RM-A-STUBATH and RM-B-BATH. The workhorse: same flush and same glaze as the showpieces,
 # an exposed trapway instead of a skirt, and half the price. A skirt does not earn its keep
@@ -156,14 +189,16 @@ TOTO_DRAKE = FixtureType(
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(water_closet_required_clearance(inch(28.375)),),
     # SS-02049 v.04 p.2: tank 13/16" [20 mm] off the finished wall, flange at 12".
-    ports=floor_wc_ports(28.375, 4.3125, 7.5, 0.8125),
+    ports=floor_wc_ports(28.375, 4.3125, 7.5, 0.8125, source="TOTO SS-02049 v.04 p.2 suggested"),
     source='TOTO Drake CST776CEFG#01, owner selection 2026-09-06. Published dimensions read '
            '2026-09-06: 28 3/8" D x 17 3/16" W x 30 1/8" H, rim 16 1/8" (universal height), '
            '12" rough-in, 2 1/8" trapway, 1.28 gpf Tornado Flush, CEFIONTECT. Seat is the '
            'Kohler Cachet K-4636-0 (PROD-KOHLER-K-4636) on this and the Aquia IVs — '
            '** fit-check one against a TOTO rim before buying four **, because TOTO\'s '
            'elongated profile differs from Kohler\'s and a lip at the rear corners is '
-           'exactly the crevice quick-release exists to remove.',
+           'exactly the crevice quick-release exists to remove. Stop station: TOTO SS-02049 '
+           'v.04 p.2, read 2026-11-07: *4 5/16 in. left, *7 1/2 in. AFF suggested, "Supply '
+           'as Req\'d". https://www.totousa.com/filemanager_uploads/product_assets/SpecSheet/SS-02049_CST776CEF(R)(G).pdf',
 )
 
 # ---------------------------------------------------------------------------
@@ -270,8 +305,8 @@ SHOWER_36_COMBO = SHOWER.model_copy(update={
     # RM-B-SAUNA only (the attic took the neo-angle type): pan drain at its centre on the
     # liner's 2" build-up, valve in W-B-CS east of the pan.
     "ports": (floor_drain_port(0, 0, 2, note="Curbed liner pan, no base SKU; centre drain"),
-              *valve_ports((24.25, -22.1875, 51.4375), (1, 0),
-                           "station read off the authored W-B-CS stubs")),
+              *valve_ports((18.25, -22.1875, 51.4375), (1, 0),
+                           "W-B-CS shiplap face 1/4\" past the pan; the stubs stop at mid-stud")),
     "source": 'RM-B-SAUNA and RM-A-STUBATH, owner selection 2026-09-06. Delta MultiChoice '
               'R10000-UNBX rough (ASSE 1016), single-function trim, and a Moen Engage '
               'Magnetix 26010SRN two-in-one head — ONE outlet, so no diverter and no second '
@@ -397,6 +432,6 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
 })
 
 WC_AND_SHOWER_TYPES = (
-    TOTO_AP_WALL_HUNG, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
+    TOTO_AP_WALL_HUNG, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_AQUIA_IV_FLOOR, TOTO_DRAKE,
     SHOWER_36_THERMO_COMBO, SHOWER_36_COMBO, SHOWER_36_NEO_COMBO, TUBSHOWER_60_DIVERTED,
 )

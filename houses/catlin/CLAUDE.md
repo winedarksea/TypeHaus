@@ -106,7 +106,7 @@
 > Hall bath: plain Kohler round with socketed Karlie; suite Estero unchanged; closet plain
 > Hubba Pill. Only bath2 keeps an illuminated mirror, Fleurco **MHAP4236** (42 x 36, 116 W,
 > centred on the vanity), own touch dimmer on unswitched GFCI-protected plug power
-> (`CKT-BATH-ATTIC`). See
+> (`CKT-BATH-RC`, the one 20 A circuit for every bath receptacle since 2026-11-07). See
 > `notes/mirror_selections.md` and its dimensioned elevations; earlier Robern and
 > wall-dimmed-halo descriptions are superseded.
 
@@ -245,9 +245,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
   in `plan/products_paint.py`, the one white (`WHITE`) in `plan/interior_palette.py`, basis in
   `notes/paint_selection.md`. Author `paint-wall` only where a coat sits mid-stack.
 - `plan/ducts.py` — `# haus: editable` `DUCT-STANDARD` (decision #114) and its duct parts:
-  1/2" w.g., round 30 ga, Versa-Grip 181 + Nashua 324A, die-stamped elbows, Imperial spin
+  1/2" w.g., round 30 ga, Versa-Grip 181 (by the gallon, 30 mil) + Nashua 324A, die-stamped elbows, Imperial spin
   collars with dampers on the plenums, saddle taps, boots by (duct, neck), 1" x 22 ga straps
-  on SMACNA spacing, the Broan and air-handler port kits. A new duct size, neck or branch pair
+  on SMACNA spacing (a strap saddle to the deck where nothing above can hang one, #121), the Broan and air-handler port kits. A new duct size, neck or branch pair
   needs a row here or `mep.duct_terminations` goes UNKNOWN. Basis: `notes/air_distribution_
   products.md` "DuctStandard". The Broan's three non-supply ports are still approximate, so no
   kit derives on them until the E2 rotate-and-swap (`plans/TODO.md`).
@@ -277,7 +277,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   only). `CKT-WASHLET-BATH1`/`-BATH2` at slots 25 and 28 feed `ED-M-BATH1-WC-RC` /
   `ED-M-BATH2-WC-RC`, one outlet each, GFCI at the DEVICE (a washlet trips a Class A GFCI
   now and then and a reset in the basement for a toilet seat is the failure mode the
-  convention avoids), no AFCI (210.12 exempts bathrooms), `load_va=0`.
+  convention avoids), no AFCI (2026 210.12 lists bathroom *lighting* outlets, not receptacles), `load_va=0`.
   - **Both boxes are in ONE stud bay and there is no second candidate.** `W-M-HS1` is the
     wet wall between the two baths and carries both bowls; the resolved framing leaves
     exactly one clear 2x6 cavity beside them, x 8 1/8"..15" between `stud-000` and the
@@ -290,8 +290,8 @@ not instruction: when it disagrees with this file or the model, it is the one th
     reaches for a spare bay.
   - **`load_va=0` IS A COINCIDENCE JUDGEMENT, NOT AN OMISSION** (owner's call). Each seat is
     ~1,400 VA and only while its instantaneous heater runs — seconds per use. At the other
-    reading of 220.82 (nameplate under (B)(3)) `electrical.service_load` goes 265.8 A ->
-    270.5 A against the 320 A service and still passes, so this is not load-hiding to make a
+    reading of 120.82 (nameplate under (B)(3)) `electrical.service_load` rises ~4.7 A
+    against the 320 A service and still passes, so this is not load-hiding to make a
     check green. **Revisit it if anything with a real duty cycle joins these circuits.**
   - **THE WARM WATER IS THE ELECTRICITY.** An S5 heats from the COLD supply instantaneously.
     No WC in this house takes a hot run and none should — `needs` is `WATER_COLD` on all six
@@ -316,14 +316,16 @@ not instruction: when it disagrees with this file or the model, it is the one th
   the 24V supplies and the switch types. **Every tape segment is on a Class 2 driver
   (<= 100 VA)**: the tape is unlisted, so the supply is the certified part (owner,
   2026-10-31). Coloured/tunable runs (E4, E6, W) take one 96 W HLG-100H-24A plus one
-  `ED-T-LT-CTRL-5IN1` per segment; split a run rather than reach for a bigger driver.
+  controller per segment (`ED-T-LT-CTRL-5IN1` indoors; the garage's `ED-T-LT-CTRL-MATTER`
+  GL-C-208M in a vented NEMA 4X box, 2026-11-07); split a run rather than reach for a bigger driver.
 - **Lighting conventions (2026-10-31 review, trimmed 2026-11-03; `DESIGN-LOG.md` "Lighting
   review", "Smart-switch reduction"):** smart switching is 11 D315S relays (`ED-T-LEV-MATTER`)
   on exterior, plant, gym and the lounge's accent/downlight/day/peninsula groups; every other
   control is plain, and a controller-fed run's paddle is a hard off left on. A ZEN32 keypad
   runs the lounge scenes (coves via their controllers); scenes live in `notes/smart_home.md`.
-  Coves are RGB+CCT (E4), the second-floor hall cove tunable (E6), the garage linear RGBW (W,
-  white 3000 K). Kitchen under-cabinet is IKEA MITTLED (U1; mark U the revert). A bath's night
+  Coves are RGB+CCT (E4, SLL COB ~102 lm/ft per white channel: no 12 mm RGB+CCT tape reaches
+  250, owner accepts, 2026-11-07), the second-floor hall cove tunable (E6), the garage linear
+  RGBW (W, white 3000 K, `color_temp` pinned warmest). Kitchen under-cabinet is IKEA MITTLED (U1; mark U the revert). A bath's night
   light is its vanity receptacle's dusk guide light (`ED-T-LEV-GFCI-GUIDE` GFNL2-W, or the
   T6525-W where the breaker is the GFCI). The conditioned basement's work light is the Q1 T8
   strip on `CKT-LT-BSMT` (off backup); mark D is the revert.
@@ -1180,7 +1182,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`); Therma-Tru Smooth-Star full-lite / Endura
   for the French pairs (2026-10-25; laminated triple and pair label pending); an OPAQUE Therma-Tru Smooth-Star for
   `D-M-ENTRY` (owner: a solid, insulated front door, at most a tiny lite); MMI Z0364688R
-  six-panel insulated steel for `D-G-SERVICE` (`DT-EXT-SWING32-G`); Clopay for the overhead. Charcoal outside (Classic Steel has no R-12.9 black), white inside.
+  six-panel insulated steel for `D-G-SERVICE` (`DT-EXT-SWING32-G`); Clopay for the overhead. Charcoal outside until the dealer confirms Black at R-12.9 (open, `notes/exterior_darks.md`), white inside.
   `plan/window_types.py`/`plan/door_types.py` redefine every tag the house hangs, each with
   its NFRC CPD row, and `plan/manifest.py` drops the library preset of that tag; catalog-only
   sizes stay presets. **Edit the house file, never `library/windows.py`.** The escape types
@@ -2389,7 +2391,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     paint, and is invisible to either renderer.
   - The gable triangle above a wall comes for free: `resolve/roof_edge.py` builds the
     wall→roof closure from the host wall's own layers.
-- **The garage roof edge — fascia and ridge cap — is `metal-dark-exterior` (`#1c1f24`), the
+- **The garage roof edge — fascia and ridge cap — is `metal-dark-exterior` (`METAL` in `plan/exterior_palette.py`), the
   house's exterior dark, across seven members: six fascia pieces plus the vented ridge cap.
   The two are named through DIFFERENT fields, kept in step only by this line and one
   assertion (`test_model_json.py`).**
@@ -2401,7 +2403,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **Changing the accent colour is a two-place edit** — miss one and the cap and fascia
     drift apart, reading as a mistake.
   - Fascia substrate is formed metal over a wood nailer, not 5/4 cellular PVC — dark colour on
-    PVC forces a solar-reflective coating that caps the LRV below `#1c1f24`. **The soffit is
+    PVC forces a solar-reflective coating that caps the LRV below a true dark. **The soffit is
     white pre-finished aluminium** (Gibraltar 4PVS16-WH) so the overhang doesn't read as a
     shadow; cheaper and more durable than cellular PVC. Vinyl at ~$18/12' is the fallback.
   - The colour is authored on the house `Material` (`color`/`hatch`); both renderers read it
@@ -2429,7 +2431,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 ### Exterior colour, balcony and veneer
 
-- One exterior dark, `#1c1f24`, on every dark metal element on the envelope:
+- One exterior dark, `METAL` (`plan/exterior_palette.py`; Metal Sales Matte Black 106 `#2c2829`
+  since 2026-11-07, windows `WINDOW` = RAL 9017), on every dark metal element on the envelope:
   opening casings, roof rake/eave/ridge trim coil, eave water chain (drip edge,
   box gutter, downspouts), guards, and since 2026-09-23 the four wall corners
   (`TR-H-CORNER-*`) and the basement's coated XPS band (`foundation-coating-acrylic-tinted`).
@@ -3099,9 +3102,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   full (`ED-B-NET-PATCH`, the ERV duct crossing at 31'-4", `ED-B-BACKUP-ENCL`) and the one
   gap between them is 6 1/2" wide. **Nothing grades a device-on-device overlap or NEC 110.26
   working space**; both are held by the measurements in `plan/mep_electrical.py`. Feeder 2 carries `CKT-SPA`, `CKT-SAUNA`, `CKT-EV-1450`, `CKT-GAR-240` and nothing
-  else. `electrical.panel_feeder_load` grades each panel's own 220.82 demand against its own
-  main (155.6 A and 125.7 A of 200 A, 2026-11-02); `electrical.service_load` grades the house against the
-  meter (270.3 A of 320 A, **49.7 A of margin**, 2026-11-02). `CKT-RANGE` is 40 A / 11,900 VA (the LG
+  else. `electrical.panel_feeder_load` grades each panel's own 120.82 demand against its own
+  main (135.7 A and 120.7 A of 200 A, 2026-11-07); `electrical.service_load` grades the house against the
+  meter (250.4 A of 320 A, **69.6 A of margin**, 2026-11-07: 2026 NEC 2 VA/ft2, first 8 kVA, heat kit at 65%). `CKT-RANGE` is 40 A / 11,900 VA (the LG
   nameplate) and `CKT-KETTLE` 3,000 VA (a typical nameplate, not the breaker) — replace the
   kettle's with the purchased unit's. The ways back to 200 A are in `plans/cost-options.md`.
 - **Both panels state `service_amps=200` on their types, and must keep doing so.**
@@ -3114,8 +3117,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   load in a service calculation must be a **power control system** — 130.2 requires the
   listing (UL 3141), 120.7 sets the setpoint at <= 80% of the monitored OCPD, 625.42(A)
   points EV supply equipment at the same Part II — and the engine now refuses a credit whose
-  basis does not hold. The one basis that needs no listed device is `hvac_interlock`
-  (220.82(C)(2)/(4), a compressor against its own supplemental heat).
+  basis does not hold. The `hvac_interlock` credit is gone from the engine (owner, 2026-11-07,
+  decision #120).
 - **Backup shedding is NOT load management** and was never touched: it lives on
   `Circuit.backup_tier` plus the Shelly Pro 4PM relay and its contactors
   (`backup_component_rows`). The water heater needs no governor any more: the 120 V plug-in

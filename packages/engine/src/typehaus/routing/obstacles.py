@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
+from typehaus.model.nec import NEC, cite
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.solid_categories import is_pour_slab
 
@@ -121,7 +122,8 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
         from typehaus.resolve.panel_space import dedicated_spaces
 
         for space in filter(None, dedicated_spaces(model).values()):
-            out.append(HardPrism(tag=f"{space.panel} (NEC 110.26(E)(1))", kind="clear_zone",
+            out.append(HardPrism(tag=f"{space.panel} ({cite(NEC.DEDICATED_SPACE)})",
+                                 kind="clear_zone",
                                  footprint=Polygon(space.footprint).buffer(inflate),
                                  z0_m=space.floor_m, z1_m=space.z1_m + inflate))
 

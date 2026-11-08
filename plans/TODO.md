@@ -45,15 +45,14 @@ Note that many of the pinned decisions in the code base here aren't as fixed as 
 and a dated note. `haus check houses/catlin --no-suppress` is the score with every
 suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted at zero.)
 
-- **Lighting review confirms (2026-10-31, houses/catlin DESIGN-LOG "Lighting review").** Before
-  ordering: SuperLightingLED RGB+CCT white-channel CRI and lm/ft, and 12 mm in the 5/8" reveal;
-  the Fleurco MHAP4236's CRI (swap if under 90); the Soren 50910BK's UL damp label and box
-  offset (P6, 2026-11-02); CentricHOME R9 (the 2026-11-02 sheet says > 80, not 90+) and
-  enclosed/damp rating; Waveform tubes are Type B double-ended; GL-C-001P cold rating in the
-  garage; power-on state of the D315S relays and the six-plus controllers; the Zigbee
-  dongle; the Omvi 3i on HA's `reolink` integration (else RTSP/ONVIF); the TCL 98QM8L's VESA in its manual;
-  MITTLED's US article numbers, lengths and connector cords (the order list counts one piece
-  per run until `stock_length` is set); Mean Well HLG-100H-24A's Class 2 marking.
+- **Lighting confirms left after 2026-11-07** (`houses/catlin/notes/smart_home.md`): test-fit one
+  A19 in the Soren 50910BK (P6) before ordering the set; the Omvi 3i is not on HA's `reolink`
+  list (RTSP works, ONVIF unlisted); the garage GL-C-208M's electrical and temperature figures
+  come from a manual mirror (unconfirmed), and its Wi-Fi/Matter VLAN is unplanned; MITTLED
+  counts one piece per run until `LightRun.modules` / `stock_length` carries its SKUs. E4 coves
+  stay ~102 lm/ft per white channel (no 12 mm RGB+CCT tape reaches 250; owner accepts).
+- **Owner: move the indoor cove controllers to the Matter GL-C-208M too?** The coves are the
+  only Zigbee devices; doing it retires the second ZBT-2.
 - **Determine basement backwater protection before under-slab rough-in.** Add the next
   upstream manhole-cover elevation on the survey datum, compare it with basement fixture
   floors under UPC 710.1, and protect only affected low branches if required. The existing
@@ -230,7 +229,7 @@ the future.
 - WIN-B-SAUNA: the 93 mm Alucover fixed unit stands 0.16" proud of the garden wall's 4.06" foam buck (0.56" back dam); A-602 flags it. DAKAM/installer: confirm the proud set or a 3/8" dam strip.
 - Geometry review round 2 (2026-11-05): [report](geometry-review/REPORT.md) §1 ranks the open escalations; detail in `geometry-review/2026-11-04/adjudicated/C1..C5.md`. 0 FAIL kept. Open, by rank:
   - [ ] `D-B-SUNKEN` band header (structural project): load takedown for the stacked D-S-BALCONY/D-M-PORCH jamb packs, their bearing interfaces, LVL ply fastening, and the edge I-joist filler/backer connections (`notes/sunken_door_band_header.md` §4).
-  - [ ] DuctStandard residual reads (decision #114, `houses/catlin/plan/ducts.py`): laying lengths of the Imperial reducers/increasers/spin collars, boot heights, a 4" collar damper with a locking quadrant, a retail 1" x 22 ga strap, Versa-Grip's metal-seam coverage (130 LF/tube is the bead rate), IMC 2018 §603.10 and Table 603.4 verbatim, a 6x6x6 tee and 8-to-4 reducer SKU (shop-made today). 20 attic/chase hangers have no framing within reach (`mep.duct_supports`): detail a saddle or trapeze. Broan's manual also says insulated ducts "must have the same diameter as the ports to ensure proper drainage" against its own 6-to-8 transition advice: ask Broan.
+  - [ ] DuctStandard residue (decisions #114/#121, `houses/catlin/plan/ducts.py`): an Imperial submittal for laying lengths and boot heights (the 12.25" stacked GV0821+GV0811 reducer is a stand-in), a proofread of IMC 2018 §603.10 / Table 603.4 against the printed code, and `_ATTIC_DECK_Z` derived from the deck rather than authored (optional). STUBATH's deck-to-high-tier drop is 5.7" against two stamped 90s' 12" (`mep.fitting_pattern` UNKNOWN). Broan's manual says insulated ducts "must have the same diameter as the ports to ensure proper drainage" against its own 6-to-8 transition advice: ask Broan.
   - [ ] ERV OA/EA/RET hold (C4 E2/E9, C2 E13): EA and RET start on each other's Broan ports (cross-wired). Re-siting the EA riser does not close it (2026-11-05): OA/EA (12" wrapped) cannot cross under the joists, RET must cross to the south plenum under MAN-SUP's 10.4", and lowering the ERV is blocked by the condensate's ~3.8" of fall. The layout that closes it: rotate EQ-B-ERV to 270 deg (OA/EA leave west on separate rows), swap the basement supply/extract plenums N-S, re-route the six radials and both risers, then make all four ports EXACT so the DuctStandard's Broan kits derive (12" flex + 6-to-8 transition). Also slope or drain-back EA's leg (M1-114) and give `DU-ERV-OA` a ledgered lid in the FO-M-ERV-OA chase. Findings: `houses/catlin/notes/erv_static_budget.md` §10.9. **2026-11-07 (wave 3):** the kit gate closes (the flex lead bends at R = D, `notes/flex_lead_bend_basis.md`; leg 5.96" under FS-M-MECH's joists), and the condensate now runs exposed to the utility sink with the case 1.7" lower (up to 3.3" more available; the supply trunk's flex shortfall is closed). The rotation still does NOT close on routing (`erv_static_budget.md` §10.12): at 270 deg OA's port is north of EA's but OA's riser is south-east of EA's foot, so the two 12" wraps must cross; the only window is 72"-96.94" over the dry-fire lane, 0.47" per side. It closes if OA and EA swap riser sides, which moves EA's level-2 end and hood (held). Owner: allow the swap, or a thinner OA wrap / relaxed lane / moved EXH riser. Each bent 8" lead also costs 0.059" (supply 0.489", extract 0.459" against the 0.4" rating; supply ~201.5 cfm vs 203.0 required), so something else must give. Still blocked behind it: the MAN-SUP feed (EA's x=58.5" north leg leaves 5.1" for a 6" duct), EA drain-back, and the OA chase lid (no ledger element in the engine).
 - Get Versadeck / Last-Deck / LockDry quotes for FS-SG-BALCONY, and Ultralox's written OK for SD04964 over 1" PVC fascia (and for the FM244390 corner's fastening); the balcony backing's nail schedule back to the joists is undrawn (`houses/catlin/notes/balcony_fascia_mounts.md`).
 - Confirm the Williams 36" Colonial level panel's model/SKU (CP252306B is inferred, `library/railings.py`) and its 36" surface post kit at order.
@@ -306,12 +305,16 @@ the future.
 - D-B-SUNKEN has some weird top flashing that isn't needed here it seems (the threshold now reaches over the foam gap: the foam-bed tread, 2026-11-04).
 - D-B-SUNKEN has an STHD14 connector sprouting up in the middle.
 - Might be worth writing up ICF in cost options as an alternative exterior wall setup (for the house) something like the Quadlock 'plus' form which with 4.25" of EPS on each side delivers R-38.
-- Fixture connections (audit 2026-10-30): every fixture and appliance now declares ports and
-  `mep.fixture_port_connection` grades them (`--only all`). Still open:
-  - Datasheets that would make the APPROXIMATE stations EXACT: Delta R10000-UNBX inlet spacing
-    and height, the TOTO supply inlets, LG WashTower and LDTS5552 connection stations and hose
-    lengths, Glacier Bay QL033Y, Kohler Chulton, SUNNERSTA, Moen 4794 stub depth. The washer's
-    real valves are mid-run tees, which the endpoint grade cannot see.
+- Fixture connections (stations applied 2026-11-07, `houses/catlin/plan/wet_ports.py`). Still open:
+  - BATH2/BATH1 R10000 supplies stub straight in at the finished face. BATH2's hot riser 1 1/2"
+    outboard would stand in PR-B-SH2-DRAIN; BATH1's cold drop doubles as the WC tee, so an
+    along-wall arrival moves the drop and tee to y >= 413" in W-S-CH-W.
+  - Sauna R10000: the W-B-CS stubs stop at mid-stud, 4 1/4" behind the hubs, which sit inside
+    the 2" foil-polyiso layer. Decide stub depth and how the supplies pass the vapour layer.
+  - Measure Glacier Bay QL033Y and SUNNERSTA on site; confirm the Chulton as one-hole.
+  - APPL-LG-DISHWASHER: a Product and price row for the 48" braided 3/8" supply its `hose_length` assumes.
+  - The floor-fed WC stops (FX-M-BATH2-WC, FX-S-BATH1-WC) are house setout, APPROXIMATE.
+  - The washer's real valves are mid-run tees, which the endpoint grade cannot see.
 - Make sure sizing and dimensions and placement are correct for junction boxes (ie for LED power supplies), with specified product.
 - Double check the calculations for accuracy of BTU heating and cooling load.
 - Rainscreen closures (2026-10-29): close the supplier questions in `houses/catlin/notes/metal_trim_kit.md` "Open with suppliers" (Metal Sales x4, the membrane maker, the screen supplier). The panel bottoms are still drawn to the seat, not on the raised strip (in `resolve/board_batten.py`), and so are the wide outside corners (`cladding_trim/mixed_corners.py`, off the same layer band): both pass through the raised trim foot and the base strip, and `integrity.rainscreen_cavity` cannot see a panel surface, so it grades the slot open regardless. At the four outside corners the base and band strips also run into the corner trim and the adjoining wall's base trim; stop them at the corner once the corners land on the trim.
@@ -319,11 +322,15 @@ the future.
 - Upgrade fasteners still uncounted (decision #105 covers panel screws, connector schedules, treated framing, roof/screen sheathing): wall sheathing and subfloor nailing, fascia/trim screws, window-install screws, and the HL angles' site-length through-bolts. Open: a Metal Sales price for 8243100.
 - Backup battery, still open (`houses/catlin/notes/backup_power.md` §11-§12): EG4's UL 9540 certificate naming 12kPV + WallMount Indoor; how the 12kPV's load port behaves on its "No Battery" setting (ask EG4); its GEN port rating; declare future storage and V2H on the Xcel application; DSI's position on a UL 9540 3rd-ed. DC ESS battery; a freeze drain-down plan; a small LFP UPS for Home Assistant, the router and the leak valve. After the 2026-11-02 trim the always-on tier passes summer's 48 h and the bridge (0.28 kWh margin) and still fails December's cycle (§6).
 - **Route the V2H spare raceway** (`backup_power.md` §10): one empty 2" Sch 80 PVC with a pull string, inverter area on `W-B-N4` to the garage, along `CD-B-GARAGE`'s corridor (north-wall ceiling lane, the `W-B-N2` sleeve, the buried gap leg). Use the `route-run` skill; check `mep.run_interference` and the sleeve. If `SP-B-N2-CD-GAR2` cannot take a second 2" raceway, upsize the sleeve, don't reroute `CD-B-GARAGE`.
-- **Engine-wide: is the AHJ on the 2026 NEC?** `plan/circuits.py` already says MN adopted it for permits filed on or after 2026-08-17 (Minn. R. 1315.0200); many checks still cite 2023 sections (230.85 is gone in 2026). Settle the citation basis; not fixed piecemeal.
-- Let's make sure all the charcoal gray and black details of the house exterior (various metal trim, window frames, foundation insulation cover) show real manufacturer colors. We are using this to determine if we should switch all to more gray or more black.
+- **2026 NEC residue (decision #120).** Confirm every `typehaus.model.nec.UNCONFIRMED` row against
+  the printed NFPA 70-2026; get 110.26(A)'s door text before grading door swings. Not graded:
+  210.12(B)(14) bathroom lighting AFCI, 210.11(C)(3), SPD coverage, 690.12(C)'s outdoor
+  initiation device, 705.11/705.20 source OCP. Revisit Class C SPGFCI for CKT-HP1-3 after the
+  NFPA Standards Council (2026-12-15/16); they are Class A breakers meanwhile.
+- **Exterior darks are black** (2026-11-07, `houses/catlin/plan/exterior_palette.py`, `notes/exterior_darks.md`). Open: Clopay Black at R-12.9 (dealer), the Tuff II tint limit, order chips, Metal Sales Rogers stock of Matte Black 106, Drutex's RAL 9017 warranty. The engine's `RAINSCREEN_BASE_Z` text still calls the base strip aluminium.
 - `haus print3d --colour-groups`: per-piece colour components bucketed from `Material.color`, matched to a sample exported from Bambu Studio before shipping.
 - Do an outlet and light switch placement review pass
-- Leafless passages (D-S-STUDY2, O-S-VANITY, D-B-GYM) take base breaks, a cut plate and floor through the reveal (`is_passage`), and the plan and canvas draw their jambs. Open: casing vs a drywall corner-bead wrap for their reveals (today neither; `study_nook.py` mentions "D-S-STUDY2's casing"). `is_passage` keys on sill 0, so seating passages like doors would silently drop them.
+- `ResolvedOpening.is_passage` keys a leafless rough opening on `sill_m == 0`: a seated passage drops out of base breaks, plate cut, floor continuity and the drywall wrap (#122) with no finding. Key it on the sill against both rooms' finished floors, or flag a leafless through opening with 0 < sill < ~6". Promote the wrap to a `ResolvedModel.passage_wraps` record so emitters can draw the returns.
 - **FS-M-NE truss order (decision #112).** 16" o.c. is a published TRIFORCE OJ418S read (p. 5, 40/25 psf L/480, 18'-0"), so this is a stock order plus confirmation. Send the supplier `houses/catlin/notes/main_floor_truss_basis.md` §2-§3: L/720 live on the order, the web layout (p.4's 24" o.c. diagonals and which end takes the 34 1/8" OSB panel; the modelled pocket stations are assumed, `notes/open_web_truss_geometry.md` §4), the doubled trusses on the 316 and 332 lines, the peninsula point loads (confirm both pairs: doubled, the hand bound is still 1.02-1.10x the row's moment) and the fridge/freezer and partition loads; also the blocking panel for the `W-B-N1` bays and the two strongbacks (cuts at y 180/196/292/414).
 - **Consider a strongback on `FS-S-WEST`** (TrimJoist J12 at 16" o.c. now reads its own published row, `J12_FLOOR_SPAN`).
 - **W-B-N2 wall-top restraint (Minn. R. 1309.0404).** `FO-M-STAIR` fills the first three joist spaces against W-B-N2 for x 10'-3"..17'-6", so no footnote f blocking can stand there and `code.MN_1309_0404_wall_top` reports UNKNOWN. 400 plf x 8' = 3,200 lb goes into the well's edge framing spanning flat between the headers: get the EOR's approved-equivalent detail (a flat strongback or a landing strut) and author it. Basis note `houses/catlin/notes/main_floor_truss_basis.md` §4.

@@ -517,7 +517,7 @@ class ConduitRun(Element):
     pull_points: tuple[int, ...] = ()
     from_ref: str | None = None  # feeding device, e.g. "ED-B-PANEL"
     to_ref: str | None = None  # served device/area, e.g. "ED-A-PV-JB"
-    # What this raceway carries. One service per run, never a set: NEC 800.133/725 forbids
+    # What this raceway carries. One service per run, never a set: NEC 722.15(A) forbids
     # comms sharing a raceway with power, so a run that could name both would be able to
     # express an illegal install. ``None`` means a capped spare with a pull string and no
     # conductors — it joins no distribution system and bills no wire, which is the honest

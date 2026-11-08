@@ -28,7 +28,7 @@ def conduit_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Lineal feet of *power* raceway by material and trade size — developed length.
 
     Data and spare trunks are billed by ``takeoff/data.py`` instead: comms may not share a
-    raceway with power (NEC 800.133/725), so the two are different orders. A derived sleeve
+    raceway with power (NEC 722.15(A)), so the two are different orders. A derived sleeve
     (a surface box's NM drop, a floor-heat lead) is the electrician's rough-in whatever it
     carries, so it bills here.
     """
@@ -128,7 +128,7 @@ def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 
     A run that names ``circuits`` bills exactly: each circuit's runs plus 5 ft of make-up
     per termination, × conductors. A power trunk that names none keeps the estimate — mean
-    raceway run + make-up × every circuit no run names. Data, spare and derived sleeves pull
+    raceway run + make-up × every served circuit no run names. Data, spare and derived sleeves pull
     no THHN.
     """
     trunks = [run for run in model.conduits if run.derived is None
@@ -141,9 +141,11 @@ def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         return rows
     # A named circuit is billed exactly above, so the estimate leaves it out.
     named_tags = {tag for run in named for tag in run.circuits}
+    # A circuit nothing names (a panel-mounted SPD) has no home run to pull.
+    served = {getattr(element, "circuit", None) for element in model.plan.all_elements()}
     by_poles: dict[int, int] = {}
     for circuit in model.plan.library.circuits:
-        if circuit.tag not in named_tags:
+        if circuit.tag not in named_tags and circuit.tag in served:
             by_poles[circuit.poles] = by_poles.get(circuit.poles, 0) + 1
     for poles in sorted(by_poles):
         per = _CONDUCTORS_PER_CIRCUIT.get(poles)

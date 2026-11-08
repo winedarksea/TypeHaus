@@ -131,3 +131,21 @@ def test_a_dropped_ceiling_lowers_the_clear_head(catlin_model_ro):
     floor = room_finished_floor_elevation(catlin_model_ro, room)
     assert room.clear_height_m == pytest.approx(ceiling - floor, abs=1e-9)
     assert room.clear_height_m / _IN == pytest.approx(84.0625, abs=0.01)
+
+
+def test_a_leafless_passage_is_wrapped_with_corner_bead_on_both_faces(catlin_model_ro):
+    # D-S-STUDY2 is a 30" x 80" RO with oak (+1 1/2") both sides: 2 x 78.5 + 30 = 187" of bead
+    # a face, no floor run. Each face bills half the 3 1/2" stud's return. The brick
+    # AO-B-BRICK-DOOR has no gypsum face and takes none.
+    from typehaus.takeoff.passage_wraps import passage_return_finish_rows
+
+    trims = catlin_model_ro.drywall_trims
+    study = [t for t in trims if "D-S-STUDY2" in t.tags]
+    assert {t.room for t in study} == {"RM-S-HALL", "RM-S-STUDY2"}
+    assert all(t.kind == "outside_corner" and t.length_m / _IN == pytest.approx(187.0, abs=1e-3)
+               for t in study)
+    for tag in ("D-B-GYM", "O-S-VANITY"):
+        assert sum(tag in t.tags for t in trims) == 2
+    assert not any("AO-B-BRICK-DOOR" in t.tags for t in trims)
+    rows = {r["material"]: r["net_area_sqft"] for r in passage_return_finish_rows(catlin_model_ro)}
+    assert rows["gwb-mr"] == pytest.approx(round((2 * 78.5 + 32.0) * 1.75 / 144, 1))

@@ -32,7 +32,7 @@ from library.lighting import luminaire_class
 from plan.closet_types import CLOSET_LUMINAIRE_TYPES, CLOSET_SUPPLY_TYPES
 from plan.laundry_lighting_types import LAUNDRY_TRACK
 from plan.lighting_types_decor import DECORATIVE_LUMINAIRE_TYPES
-from typehaus import ElectricalDeviceType, LuminaireForm, Service, ServicePort, ft, inch
+from typehaus import ElectricalDeviceType, LuminaireForm, Service, ServicePort, ft, inch, mm
 from typehaus.library.track_lighting import PUREEDGE_SUPPLY
 from typehaus.model import LuminaireType, ProductPart
 
@@ -176,16 +176,20 @@ AMBIENT_LUMINAIRE_TYPES = (
     # --- E4/E6: the 2026-10-31 review's tape variants (E5 retired 2026-11-03) --------
     # E4: the lounge and dining coves in RGB+CCT. The white channels carry the room; colour
     # is a scene. Fed by a non-dimming HLG driver through a 5-in-1 controller, which dims.
+    # Measured values since 2026-11-07: ~102 lm/ft a white channel, not the 300 once modelled.
+    # 250 lm/ft per white is unattainable at 12 mm RGB+CCT, so the owner accepted this tape.
+    # cct_k/lumens are its W (warm) channel; W/ft is all channels on.
     LuminaireType(tag="ED-T-LT-STRIP24-RGBCCT",
-                  replaceable_lamp=True, color_mode="rgbcct", cct_range_k=(2700, 6500),
+                  replaceable_lamp=True, color_mode="rgbcct", cct_range_k=(2800, 6500),
                   name="24V RGB+CCT COB LED tape in the shadow-gap reveal",
                   form=LuminaireForm.STRIP, type_mark="E4",
                   footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
-                  lamp="LED tape, 24V DC, RGB+CCT COB, 12 mm", watts_per_ft=5.0, lumens=300.0,
-                  cct_k=3000, cri=90, voltage=24, dimmable=True,
+                  lamp="LED tape, 24V DC, RGB+CCT COB, 12 mm", watts_per_ft=6.1, lumens=102.0,
+                  cct_k=2800, cri=90, voltage=24, dimmable=True,
                   product_ref="PROD-SLL-COB-RGBCCT-24V",
-                  source="SuperLightingLED DC24V RGB+CCT COB, 12 mm, white channels 2700-6500 K "
-                         "CRI 90+; GL-C-001P controller in RGBCCT mode."),
+                  source="SuperLightingLED DC24V RGB+CCT COB, 12 mm: 20 W/m (spec page); W "
+                         "2855 K Ra 92, ~102 lm/ft (test report, ~1 m sample inferred); "
+                         "GL-C-001P in RGBCCT mode."),
     # E6: the second-floor hall cove in tunable white, with a low warm night preset.
     LuminaireType(tag="ED-T-LT-STRIP24-TUNABLE",
                   replaceable_lamp=True, color_mode="tunable", cct_range_k=(2700, 6500),
@@ -253,19 +257,20 @@ AMBIENT_LUMINAIRE_TYPES = (
                   source="Diode LED VALENT X, 3000K, 95+ CRI / R9 90+, behind a light "
                          "rail/valance at the cabinet nose."),
     # U1: the owner's preferred under-cabinet light, IKEA MITTLED, fixed white on its own
-    # TRADFRI driver. ~208 lm/ft at 2700 K against U's ~400 at 3000 K: U stays as the
-    # fallback if the counter reads short (the 2026-10-31 rule: keep MITTLED unless it falls
-    # well short of ~300 lm/ft). Bought as fixed modules (24/18/15/12"); billed by the foot
-    # at the module schedule's rate (prices.toml tape:ED-T-LT-MITTLED).
+    # TRADFRI driver. US modules ~240 lm/ft at 2700 K against U's ~400 at 3000 K: U stays as
+    # the fallback if the counter reads short. Bought as fixed modules (24/18/15/12"); billed
+    # by the foot at the module schedule's rate (prices.toml tape:ED-T-LT-MITTLED).
     LuminaireType(tag="ED-T-LT-MITTLED",
                   replaceable_lamp=False, name="IKEA MITTLED LED countertop strip, dimmable",
                   form=LuminaireForm.STRIP, type_mark="U1",
                   footprint=(inch(0.75), inch(0.5)), height=inch(0.4),
-                  lamp="LED integrated strip, IKEA 24V system", watts_per_ft=2.8, lumens=208.0,
+                  lamp="LED integrated strip, IKEA 24V system", watts_per_ft=3.2, lumens=240.0,
                   cct_k=2700, cri=90, voltage=24, dimmable=True,
                   product_ref="PROD-IKEA-MITTLED",
-                  source="IKEA MITTLED: CRI > 90, 2700 K, 60 cm 410 lm / 5.5 W. TRADFRI 30 W "
-                         "driver; Dirigera (Matter bridge) or plain on/off at the receptacle."),
+                  source="IKEA US MITTLED pages, read 2026-11-07: 12 in. 904.725.14 230 lm 3.3 W, "
+                         "15 in. 104.554.34 300 lm 4.3 W, 18 in. 504.554.27 360 lm 5.0 W, 24 in. "
+                         "004.554.20 480 lm 6.0 W; 2700 K, CRI > 90. One VAGDAL 704.636.00 cord "
+                         "per group; TRADFRI 30 W 603.426.61, 'never exceed 30W'."),
 
     # --- W: the garage's exterior linear (eave soffits + the north gable) --------------
     # ** COMMODITY PARTS, STANDARD SIZE, 24V (2026-10-28). ** The WAC InvisiLED kit was
@@ -281,8 +286,10 @@ AMBIENT_LUMINAIRE_TYPES = (
     # DOWN: `advisory.dark_sky_lighting` exempts the soffit runs and grades the gable run on
     # this flag, so the flag and the detail must stay in step.
     # ** RGBW SINCE 2026-10-31 ** (owner): W = 3000 K holds the dark-sky white line; colour
-    # is for occasions. One GL-C-001P (RGBW mode) beside each driver. The single-white
-    # SK-512BB10 is the revert.
+    # is for occasions. One Matter controller (ED-T-LT-CTRL-MATTER, 2026-11-07) beside each
+    # driver. The single-white SK-512BB10 is the revert. The Govee outdoor neon rope
+    # (H61A8/H61A9) was rejected: RGBIC with no published white channel, uncuttable 10 m
+    # rolls, and no published lumens or adapter listing (us.govee.com, read 2026-11-07).
     LuminaireType(tag="ED-T-LT-LINEAR-EXT",
                   replaceable_lamp=True,
                   color_mode="rgbw", name="Exterior 24V RGBW COB tape in clear channel, IP67",
@@ -414,17 +421,32 @@ LIGHTING_DEVICE_TYPES = (
                          source="Diode LED OMNIDRIVE X, 200 W. Same family as the 60 W; see "
                                 "that entry for the no-minimum-load argument."),
     ElectricalDeviceType(tag="ED-T-LT-PSU-96-WE", name="24V LED driver, 96 W, IP65",
-                         footprint=(inch(9), inch(2.7)), height=inch(1.5),
+                         footprint=(mm(220), mm(68)), height=mm(38.8),
                          load_va=96.0, output_voltage=24, ports=_POWER_120,
                          product_ref="PROD-MEANWELL-HLG-100H-24A",
-                         source="Mean Well HLG-100H-24A: 96 W, 24 V / 4 A, IP65, UL 8750, "
-                                "228 x 68 x 38.8 mm, not dimmable."),
+                         source="Mean Well HLG-100H-24A (HLG-100H-SPEC 2026-07-24): Class 2 "
+                                "power unit, 96 W, 24 V / 4 A, IP65, UL 8750, 220 x 68 x "
+                                "38.8 mm, not dimmable."),
     # The controller is on the 24V side: no branch circuit, no load of its own worth summing.
     ElectricalDeviceType(tag="ED-T-LT-CTRL-5IN1", name="5-in-1 Zigbee LED controller, 12-54 V",
                          footprint=(inch(4.5), inch(1.8)), height=inch(0.9),
                          needs=frozenset(), product_ref="PROD-GLEDOPTO-GL-C-001P",
-                         source="Gledopto GL-C-001P, set once to RGBCCT (E4), CCT (E6) or "
-                                "RGBW (W). Beside its driver, accessible."),
+                         source="Gledopto GL-C-001P, set once to RGBCCT (E4) or CCT (E6), "
+                                "power-on 'previous'. Beside its driver, accessible, indoors."),
+    # The garage's (mark W) since 2026-11-07: Matter over Wi-Fi to HA's Matter server (local),
+    # boxed against the unconditioned garage's damp. The box is the billed part's envelope.
+    ElectricalDeviceType(tag="ED-T-LT-CTRL-MATTER",
+                         name="Matter Wi-Fi LED controller, 12-24 V, in a NEMA 4X box",
+                         footprint=(inch(6), inch(6)), height=inch(4),
+                         needs=frozenset(), product_ref="PROD-GLEDOPTO-GL-C-208M",
+                         parts=(ProductPart(role="fitting",
+                                            product_ref="PROD-NEMA4X-BOX-GENERIC"),
+                                ProductPart(role="fitting",
+                                            product_ref="PROD-ENCLOSURE-VENT-GENERIC"),),
+                         source="Gledopto GL-C-208M (Matter 1.3, CSA256C5MAT46615-24), RGB+CCT "
+                                "with the tape's W on its warm terminal (C unused, color_temp "
+                                "pinned warmest), in a gasketed PVC NEMA 4X box with an M12 "
+                                "breather vent, beside its driver."),
 )
 
 

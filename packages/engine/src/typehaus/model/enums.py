@@ -179,7 +179,7 @@ class Service(Enum):
     RETURN_AIR = "return_air"
     VENT = "vent"
     # Structured cabling (CAT6 and successors). Its own service rather than a flavour of
-    # POWER_120 because NEC 800.133/725 forbids comms and power conductors sharing a
+    # POWER_120 because NEC 722.15(A) forbids comms and power conductors sharing a
     # raceway: a run carrying this may never also carry power, and saying so in the type
     # system is what makes that unrepresentable rather than merely undrawn.
     DATA = "data"
@@ -427,7 +427,7 @@ class EquipmentKind(Enum):
     # because the product is named by the ``type_ref`` (the same rule ``DeviceKind`` uses
     # for EV receptacles), and because every ``Equipment`` kind emits as an
     # IfcBuildingElementProxy regardless. The service-load takeoff reads this kind to put
-    # the load under NEC 220.82(C) instead of the fixed-appliance bucket in (B)(3).
+    # the load under NEC 120.82(C) instead of the fixed-appliance bucket in (B)(3).
     SPACE_HEATER = "space_heater"
     # Energy-storage battery module and the hybrid inverter it pairs with. Flat kinds: the
     # product (EG4 PowerPro, EG4 12kPV) is named by the ``type_ref``, per the same rule

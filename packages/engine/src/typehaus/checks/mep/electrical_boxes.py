@@ -29,11 +29,12 @@ from typehaus.findings import (
     unknown,
 )
 from typehaus.model.electrical import METAL_BOX_VOLUME_IN3
+from typehaus.model.nec import NEC, cite
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.device_boxes import takes_box
 
 _CID = "electrical.box_fill"
-_CODE = "NEC 314.16(B)"
+_CODE = cite(NEC.BOX_FILL)
 #: Copper branch-circuit gauge by breaker rating (NEC 240.4(D), 310.16 at 60 °C).
 GAUGE_BY_BREAKER_A = {15: 14, 20: 12, 30: 10, 40: 8, 50: 6}
 _RECEPTACLES = frozenset({"receptacle", "gfci", "receptacle_240"})
@@ -56,7 +57,7 @@ def next_box_up(required_in3: float) -> str:
     fits = sorted((volume, name) for name, volume in METAL_BOX_VOLUME_IN3.items()
                   if volume >= required_in3)
     if not fits:
-        return f"no Table 314.16(A) box holds {required_in3:.1f} in³ — split the splice"
+        return f"no {NEC.BOX_VOLUME_TABLE} box holds {required_in3:.1f} in³ — split the splice"
     volume, name = fits[0]
     return f"a {name} box ({volume:g} in³) or a listed box marked ≥ {required_in3:.1f} in³"
 
@@ -73,12 +74,13 @@ def _grade(box: Any, circuits: dict[str, Any], types: dict[str, Any],
     tags = (box.device_tag,)
     if box.device_kind == "data_outlet":
         return not_applicable(_CID, f"{box.device_tag} is a data outlet: Class 2 / comms "
-                                    "cabling is outside 314.16", tags, code=_CODE)
+                                    f"cabling is outside {NEC.BOX_FILL_AND_VOLUME}", tags,
+                                    code=_CODE)
     where = f"{box.device_tag}'s {box.mounting} {box.gangs}-gang box ({box.box_product})"
     if box.cavity_m is not None and box.depth_m > box.cavity_m + 1e-4:
         return failed(_CID, f"{where} is {box.depth_m / M_PER_IN:.2f}\" deep in a "
                             f"{box.cavity_m / M_PER_IN:.2f}\" cavity", tags,
-                      code="NEC 314.20 / 314.23",
+                      code=cite(NEC.BOX_SUPPORT),
                       fix="a shallower box row in the BoxStandard, or a deeper cavity")
     circuit = circuits.get(box.circuit or "")
     if circuit is None:
@@ -128,7 +130,7 @@ def box_fill(ctx: CheckContext) -> list[Finding]:
 
 
 _REACH = "electrical.nm_sleeve_reach"
-_REACH_CODE = "NEC 334.15(B)/(C)"
+_REACH_CODE = cite(NEC.NM_PROTECTION, NEC.NM_BASEMENT)
 
 
 @check(Tier.ADVISORY, _REACH)

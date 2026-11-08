@@ -181,7 +181,7 @@ function LoadCard({ load }: { load: LightingLoad }) {
       <div className="kv">
         <span className="k">Conditioned area</span>
         <span>{Math.round(load.conditioned_area_ft2).toLocaleString()} sf</span>
-        <span className="k">NEC 220.82 allowance</span>
+        <span className="k">NEC 120.82 allowance</span>
         <span>
           {Math.round(load.allowance_va).toLocaleString()} VA
           {" "}at {load.allowance_va_per_ft2} VA/sf

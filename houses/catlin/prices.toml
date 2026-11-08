@@ -2840,7 +2840,10 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "ED-T-LT-PSU-96-WE" = { material = { low = 51, high = 63 }, labour = { low = 45, high = 95 } }  # 13 ea — the Class 2 driver for every coloured/tunable segment (8 garage/hall, 4 coves) and the pantry jambs since 2026-10-31; Mean Well HLG-100H-24A, distributor list $51-63 (researched 2026-10-28)
 # Lighting review 2026-10-31: every coloured/tunable segment is on its own Class 2
 # HLG-100H-24A (PSU-96-WE above) with a Gledopto GL-C-001P (~$25-40, retailer estimate).
-"ED-T-LT-CTRL-5IN1" = { material = { low = 25, high = 40 }, labour = { low = 20, high = 45 } }  # 12 ea
+"ED-T-LT-CTRL-5IN1" = { material = { low = 25, high = 40 }, labour = { low = 20, high = 45 } }  # 6 ea, indoor coves
+"ED-T-LT-CTRL-MATTER" = { material = { low = 25, high = 40 }, labour = { low = 20, high = 45 } }  # 6 ea, garage; Gledopto GL-C-208M, Lectronz $25.62 (https://www.lectronz.com/products/gl-c-208m-rgb-cct-matter-led-controller, read 2026-11-07); high and labour mirror CTRL-5IN1 (estimate)
+"PROD-NEMA4X-BOX-GENERIC" = { material = { low = 7, high = 39 }, labour = 0 }  # 6 ea; Carlon E987R 6x6x4, Elliott Electric $39.28 (https://static.elliottelectric.com/P/Item/TAB/E987R, read 2026-11-07); low = Home Depot E987R-3-HD 3-pack, search snippet only
+"PROD-ENCLOSURE-VENT-GENERIC" = { material = { low = 3, high = 8 }, labour = 0 }  # 6 ea; Wiska EVSP 12 (https://www.rapidonline.com/wiska-evsp-12-vent-plugs-m12-549410, read 2026-11-07); high = Remke RVP15-M12-NM at Zoro, search snippet only
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea — ED-M-BATH2-PSU, the sauna's surface-mounted ED-B-SAUNA-LT-PSU and the closet's PAX supply (the pantry went to a PSU-96-WE 2026-10-31)
 "ED-T-LT-SCONCE-EXT" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 4 ea — WAC WS-W2605-BK $186-232 (researched 2026-10-28)
 "ED-T-LT-SCONCE-SPOT" = { material = { low = 99, high = 130 }, labour = { low = 48, high = 115 } }  # 5 ea — WAC Sprig BL-23210-BK $99 dealer (2026-10-29, owner swap from Stretch); hardwiring unconfirmed
@@ -3506,7 +3509,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # dedicated 20 A circuit behind it are modelled elements now (ED-M-BATH1-WC-RC /
 # ED-M-BATH2-WC-RC on CKT-WASHLET-BATH1/BATH2) and bill through the electrical sections.
 "FX-TOTO-CARLYLE-II" = { material = { low = 700, high = 1250 }, labour = { low = 110, high = 260 } }  # 1 ea
-"FX-TOTO-AQUIA-IV" = { material = { low = 500, high = 900 }, labour = { low = 110, high = 260 } }  # 2 ea
+"FX-TOTO-AQUIA-IV" = { material = { low = 500, high = 900 }, labour = { low = 110, high = 260 } }  # 1 ea, RM-S-SUITEBATH
+"FX-TOTO-AQUIA-IV-FLOOR" = { material = { low = 500, high = 900 }, labour = { low = 110, high = 260 } }  # 1 ea, RM-S-BATH1 floor-fed stop
 # The workhorse, and the reason the four are not all Aquia IVs: all-Aquia is $2,152 against
 # $1,598 for the split, for a skirt that earns nothing in an attic guest bath used a few
 # weeks a year or a basement sauna rinse. Seat is a Kohler Cachet K-4636-0 (~$40), inside
@@ -6303,6 +6307,15 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "PROD-DUCT-BOOT-12X6X6" = { low = 8, high = 16 }         # 3 ea — 12 x 6 x 6 end boot
 "PROD-DUCT-FLEX-R8" = { low = 8, high = 20 }             # 1 ea — R-8 flex kit piece (about 1 ft)
 "PROD-DUCT-CONNECTOR" = { low = 25, high = 60 }          # 2 ea — Duro Dyne MFN flexible connector
+# Stock since 2026-11-07 (were shop-made). Retail listings read 2026-11-07 off search results; each
+# page refused a direct fetch (403), so treat them as indicative:
+#   GV0893 tee: zoro.com/imperial-mfg-assembled-tee-galv-30ga-6in-gv0893/i/G107043242 $20.45 ea;
+#   busybeaver.com/p/gauge-inch-straight-galvanized-tee-for-venting-applications-063467137030 $28.25.
+#   GV0821 8-6: dkhardware.com ...-gv0821-...-product-7332592.html $14.31; zoro.com ...-gv0821/i/G215784136 $15.79.
+#   GV0811 6-4: zoro.com/imperial-mfg-duct-reducer-6in-4in-30ga-gv0811/i/G207043227 $17.95;
+#   busybeaver.com/p/inch-to-inch-duct-reducer-gauge-galvanized-steel-063467110965 $18.65.
+"PROD-DUCT-TEE-6-6" = { low = 20, high = 29 }            # 1 ea — Imperial GV0893 6x6x6 full-flow tee
+"PROD-DUCT-REDUCER-8-4" = { low = 32, high = 35 }        # 1 set — Imperial GV0821 8-6 + GV0811 6-4, stacked
 # Shop fabrication, estimate (material only; the make-up time is the sheet-metal visit):
 "boot-10x18-28x12" = { low = 40, high = 80 }             # 1 ea — shop fabrication, estimate
 "boot-10x6-12x6" = { low = 25, high = 60 }               # 1 ea — shop fabrication, estimate
@@ -6310,21 +6323,28 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "boot-18x8-12x6" = { low = 30, high = 70 }               # 1 ea — shop fabrication, estimate
 "boot-6in-8x6" = { low = 25, high = 60 }                 # 1 ea — shop fabrication, estimate
 "reducer-18x8-10x6" = { low = 30, high = 70 }            # 1 ea — shop fabrication, estimate
-"reducer-8in-4in" = { low = 25, high = 55 }              # 1 ea — shop fabrication, estimate
 "takeoff-18x8-10x8" = { low = 30, high = 70 }            # 1 ea — shop fabrication, estimate
-"tee-6in-6in" = { low = 25, high = 55 }                  # 1 ea — shop fabrication, estimate
 
 [duct_supports]
 # NEW 2026-11-05 (#114). ESTIMATES 2026-11-05, no retailer price read (retail pages refused the
 # fetch); material only, the labour is inside [ducts]' installed $/LF. $ per hanger, keyed on
 # the product tag: a 1 in. x 22 ga galvanized strap cut to its drop, with its screws.
-"PROD-DUCT-STRAP" = { low = 0.50, high = 1.50 }          # 139 ea
+# 2026-11-07 cross-check (search listings, not fetched): DiversiTech 710-005, 1 in. x 100 ft
+# 22 ga, $48.59 (elliottelectric.com/P/Item/DVV/710005) to $76.67 (walmart.com) a roll, so
+# $0.49-0.77/ft; a strap or deck saddle takes ~1-2 ft. Range kept.
+"PROD-DUCT-STRAP" = { low = 0.50, high = 1.50 }          # 136 ea (118 hung + 18 deck saddles)
+# 1-1/2 in. flex duct strap (JP Lamborn): ESTIMATE, no retail product read. 0 ea today (no flex
+# DuctRun; the port leads ride on their kit joints).
+"PROD-DUCT-STRAP-FLEX" = { low = 1.00, high = 2.50 }     # 0 ea
 
 [duct_sealing]
 # NEW 2026-11-05 (#114). ESTIMATES 2026-11-05, no retailer price read (retail pages refused the
 # fetch); material only, the labour is inside [ducts]' installed $/LF. The allowance
 # hvac-duct-insulation-mastic-and-test dropped its mastic material to match (2026-11-05).
-"PROD-DUCT-MASTIC" = { low = 8, high = 14 }              # 7 ea — Hardcast Versa-Grip 181, 11 oz cartridge (transverse joints, 130 LF each)
+# Mastic per GALLON since 2026-11-07 (304138, white 1 gal pail; sold 4 to a case):
+# coldaircentral.com/products/carlisle-versa-grip-181-premium-grade-duct-sealant-304138, $30.61
+# (fetched 2026-11-07); $33.69 on the same page in a search snapshot the same day.
+"PROD-DUCT-MASTIC" = { low = 30, high = 36 }             # 4 gal — Hardcast Versa-Grip 181 (transverse joints, ~213 LF/gal at 30 mil)
 "PROD-DUCT-TAPE" = { low = 25, high = 45 }               # 5 ea — Nashua 324A foil tape, 60 yd roll (longitudinal seams)
 
 [sleeves]

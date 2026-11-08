@@ -265,8 +265,10 @@ SECOND_FIXTURES = (
     # The 3.5" drain envelope clears FS-S-WEST's 369.75"..382.25" bay faces by 4 1/2";
     # the tub is 18 1/2" from the WC centreline, against UPC 402.5's 15" minimum.
     # Flange at the 12" rough-in off W-S-W1's 6 1/2" finish face, x=18 1/2" (owner 2026-10-31);
-    # the tank stands 3/4" off that face (SS-02072, 2026-11-06). Drain and stop stay put.
-    Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOTO-AQUIA-IV", room="RM-S-BATH1",
+    # the tank stands 3/4" off that face (SS-02072, 2026-11-06). Drain and stop stay put;
+    # nothing enters W-S-W1, so the stop is floor-fed (the -FLOOR variant, 2026-11-07).
+    Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOTO-AQUIA-IV-FLOOR",
+            room="RM-S-BATH1",
             position=pt(inch(21.03125), inch(376)), rotation=deg(90), wall_ref="W-S-W1"),
     # ÄNGSJÖN 36 with the 37 in. ORRSJÖN top: y=356..393, half-inch side overhang.
     # Backs the east finish face; retains 1.5 in. to the tub return and the east-hinged entry.

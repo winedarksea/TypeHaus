@@ -45,7 +45,7 @@ within the 45 ft maximum. Garage corners are approximately 8 ft 4 in high.
 Re-struck 2026-10-29 (owner-approved). The base of the cavity was neither drained nor vented:
 the trim's back leg stood 1/16 in off the screen with its foot flush on the Z pan, so it
 dammed the pan edge; the starter girt and its blocks started on the seat, KDAT on the
-aluminium Z (AWC DCA6), the blocks through the Z and the girt inside the screen, and it could
+Z (AWC DCA6), the blocks through the Z and the girt inside the screen, and it could
 not be built (girts go on before tilt-up, the Z after the foam). Metal Sales draws PBR's base
 as a closed termination for open framing (pp. 69-70) and BBD75's as open and drained with
 **no closure** (pp. 22, 28); this note used to read the latter as "C-Closure".
@@ -53,7 +53,8 @@ as a closed termination for open framing (pp. 69-70) and BBD75's as open and dra
 On a house wall, bottom to top, S = the bearing seat at −1'-1 7/16":
 
 1. **K2 Z-flashing (`RAINSCREEN_BASE_Z`), the drip owner** ([basement
-   detail](basement_to_framed_wall_detail.md)). 0.040 in aluminium: a 2 in upstand on the foam
+   detail](basement_to_framed_wall_detail.md)). 24 ga Metal Sales PVDF Galvalume flat
+   (`metal-flat-sheet`, since 2026-10-30; [exterior_darks.md](exterior_darks.md)): a 2 in upstand on the foam
    face, stripped in to the foam 2 in each way; a pan across the full 2 in cavity falling 1/4
    in/ft; a 3/4 in drip over the coated XPS band's head, hemmed. Unchanged.
 2. **Base screen**, a perforated aluminium **inverted U, 2 x 2 in**, on the pan, captive between
@@ -65,7 +66,7 @@ On a house wall, bottom to top, S = the bearing seat at −1'-1 7/16":
    1 in on a **1/16 in EPDM strip** (S+1 in to the U top at S+2.04 in), so no steel touches
    aluminium. There is no EPDM on the drip leg.
 4. **Starter girt and blocks raised to S+2-1/4 in ... S+5-3/4 in**, clear of the Z upstand and
-   the U top (S+2.04 in). No KDAT touches aluminium.
+   the U top (S+2.04 in). No KDAT touches the Z or the screen.
 5. **Panel end on a flat perforated aluminium strip** on the trim foot, cut 1/32 in short of
    each leg so its edges touch no steel (at a head or the band, no KDAT girt either). The panel
    end bears on the strip directly, painted aluminium against Galvalume, with **no EPDM pads**
@@ -252,7 +253,7 @@ What the model derives and bills, with the counts the tests pin
 | Condition | Resolved as | Count |
 |---|---|---|
 | Wall base | kit base (`PBR_BASE` / `BBD_BASE` / `CORRUGATED_BASE`) under every wall stack whose panel bottom is free, one run per wall segment and per span between floor-level openings | 11 / 10 / 12 sticks |
-| House K2 base | 0.040 in aluminium Z, 120 in stock with 2 in laps, continuous under each base screen; EPDM at the steel trim | 14 runs / 21 sticks; 148 LF isolation |
+| House K2 base | 24 ga Galvalume PVDF Z, 120 in stock with 2 in laps, continuous under each base screen; EPDM at the steel trim | 14 runs / 21 sticks; 148 LF isolation |
 | Wall tops | PBR inside closure 6460800; BBD75 Universal Closure 6411499; corrugated Sill to Soffit at garage eaves; corrugated outside closure at garage panel tops | 74.25 / 83.01 / 48.29 / 99.04 LF |
 | Outside corners | Wide corner (PBR↔BBD75), corrugated corner | 8 / 4 |
 | BBD75 band | Transition Trim at +19'-0", one run per N/S wall segment, Linen White | 10 |
@@ -295,7 +296,7 @@ Still open, printed as UNKNOWN by the checks: the corrugated Sill to Soffit brea
 
 The K2 section has a 2 in upstand, a pan spanning the resolved cavity at a 1/4 in per foot
 outward fall, a 3/4 in drip and a 1/4 in hem. The pan underside starts at the bearing seat;
-the screen sits on its upper face. The steel base is held off the aluminium by 1/16 in EPDM.
+the screen sits on its upper face. The steel base is held off the aluminium screen by 1/16 in EPDM.
 At W-M-W4 the cavity runs from 4 to 6 in outboard of sheathing; the coated foundation face
 is 4.185 in outboard, leaving about 1.815 in from the drip to that face. The 162 in Z run
 uses 120 and 44 in cuts with a 2 in lap. The screen order now includes its corner mitres.

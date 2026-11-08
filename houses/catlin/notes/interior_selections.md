@@ -65,7 +65,7 @@ These matter more than the product names, because each was passing every check.
    283–494 cf, and the "rated 9 kW to 600 cf" the model asserted matches no published table.
    10.5 kW cascades into `CKT-SAUNA` (50 A → 60 A, 9000 → 10500 VA) and into the two sauna
    notes' sheet lines, whose "240 V, 50 A, 10.5 kW max" was never arithmetic that closed:
-   NEC 424.3(B) makes this a continuous load at 125%, so 43.75 × 1.25 = **54.7 A**.
+   2026 NEC 424.5 makes this a continuous load at 125%, so 43.75 × 1.25 = **54.7 A**.
 2. **`RM-M-BATH2`'s 54" vanity was legal only against a code Minnesota deletes.** Its sizing
    measured to the start of the water closet's **21" IRC P2705.1** front clearance and
    reported 3¼" of slack. Minn. R. 1309.0010 subp. 3.D deletes IRC chapters 25–33; the

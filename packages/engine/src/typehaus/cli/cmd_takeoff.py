@@ -21,6 +21,7 @@ from typehaus.cli.takeoff_report import (
     _unpriced_note,
 )
 from typehaus.findings import Severity
+from typehaus.model.nec import NEC
 from typehaus.resolve.strap_braces import STRAP_CATEGORY
 
 
@@ -413,8 +414,8 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
         load = payload["lighting_load"]
         console.print(f"[bold]Connected lighting load[/bold]  "
                       f"{load['total_connected_va']:,.0f} VA against the "
-                      f"{load['allowance_va']:,.0f} VA NEC 220.82 allowance for "
-                      f"{load['conditioned_area_ft2']:,.0f} ft2")
+                      f"{load['allowance_va']:,.0f} VA NEC {NEC.OPTIONAL_GENERAL_LOADS} "
+                      f"allowance for {load['conditioned_area_ft2']:,.0f} ft2")
     if prices is not None:
         estimate = payload["cost_estimate"]
         console.print(f"[bold]Cost estimate[/bold]  (from {prices.path.name}; "

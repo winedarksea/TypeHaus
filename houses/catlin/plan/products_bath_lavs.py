@@ -58,9 +58,11 @@ CHULTON_30 = Product(
     url="https://www.kohler.com/en/products/vanities/shop-vanities/chulton-30-bathroom-vanity-cabinet-with-sink-and-quartz-top-rec39579-asb",
     source="Kohler white-model dimensioned image, read 2026-10-24, "
            "notes/assets/kohler-chulton-30-dimensions.jpg: 30 15/16 x 22 7/16 in., "
-           "39 5/16 in. overall including backsplash; explicitly ONE faucet hole, so 6702 fits. "
-           "Retailer grouped listing says 8 in. widespread; maker image for ASB-0 controls. "
-           "Rim height and rough-ins remain APPROXIMATE pending installation drawing.",
+           "39 5/16 in. overall including backsplash; ONE faucet hole, so 6702 fits. "
+           "Kohler spec sheet K-REC39579-ASB US-CA p.1-3, read 2026-11-07: top 35 5/16 in. "
+           "AFF under the 4 in. backsplash; rough-in area 27 in. wide, 7 3/16-32 1/4 in. AFF. "
+           "p.1/p.3 one hole but p.2 says 3 holes on 8 in.: confirm one-hole top on delivery. "
+           "https://techcomm.kohler.com/techcomm/pdf/K-REC39579-ASB_spec_US-CA_Kohler_en.pdf",
 )
 SEKTION_30 = Product(
     tag="PROD-IKEA-SEKTION-WALL-30-AXSTAD", brand="IKEA", model="SEKTION 30x15x30 AXSTAD",
@@ -86,7 +88,9 @@ SUNNERSTA_SINK = Product(
     tag="PROD-IKEA-SUNNERSTA-SINK", brand="IKEA", model="SUNNERSTA integral sink",
     name="SUNNERSTA kitchenette's included stainless sink (included in kitchenette price)",
     source="Owner selection 2026-10-24: existing SUNNERSTA sink; bowl station unverified, "
-           "ports APPROXIMATE. This identity carries no separate sink charge.",
+           "ports APPROXIMATE. IKEA AA-1851897-11 and the US page (art. 40313363) publish no "
+           "bowl, drain or worktop station (read 2026-11-07): measure the owner's existing "
+           "unit, then mark EXACT. This identity carries no separate sink charge.",
 )
 BATH_LAV_PRODUCTS = (MOEN_6702, MOEN_6702BN,
                      KRAUS_INDY, ANGSJON_36, ORRSJON_37, RANNILEN, CHULTON_30,

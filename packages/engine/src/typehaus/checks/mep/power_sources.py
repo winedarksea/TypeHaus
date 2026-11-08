@@ -1,6 +1,6 @@
 """CODE-tier rules for the power sources on the service — NEC 705 and NEC 690.
 
-Kept apart from ``electrical_code.py`` (E3902 GFCI) for the same reason that module was
+Kept apart from ``electrical_code.py`` (210.8 GFCI) for the same reason that module was
 split out of ``electrical.py``: these are not questions about the branch-circuit layout,
 they are questions about back-feeding a busbar and about de-energizing a roof. They fail
 differently and they are read by different people.
@@ -23,6 +23,7 @@ from __future__ import annotations
 from typehaus.checks._authoring import by_result, not_applicable
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
+from typehaus.model.nec import NEC, cite
 
 # NEC 705.12(B)(3)(2), the "120% rule": bus rating x 1.2 >= main OCPD + Σ source breakers.
 _BUS_ALLOWANCE = 1.2
@@ -56,7 +57,7 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
     source circuit occupies so a reviewer can see it, but it does not claim to know which
     physical end of a busbar a slot number lands on.
     """
-    cid, code = "code.NEC_705_12_interconnection", "NEC 705.12(B)(3)(2)"
+    cid, code = "code.NEC_705_12_interconnection", cite(NEC.INTERCONNECTION_120PCT)
     sources = [c for c in ctx.plan.library.circuits if c.source]
     if not sources:
         # N/A, not silence: the circuit schedule was read and declares no source circuit,
@@ -65,7 +66,7 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
         # answer as "nobody looked" — and kept the line out of the gate for it.
         return [not_applicable(cid, "no circuit in the schedule is a power source, so this "
                                     "house has no interconnected PV or generator for "
-                                    "705.12 to size", (), code)]
+                                    f"{NEC.INTERCONNECTION} to size", (), code)]
 
     types = {t.tag: t for t in ctx.plan.library.electrical_device_types}
     panels = {element.tag: element for element in ctx.plan.all_elements()
@@ -99,7 +100,8 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
             out.append(by_result(
                 cid, Result.UNKNOWN,
                 f"panel {panel_ref} has a {bus_amps}A bus but neither its type nor the "
-                "service states a main breaker, so the main term of 705.12 is unknown",
+                f"service states a main breaker, so the main term of {NEC.INTERCONNECTION} "
+                "is unknown",
                 tags, code))
             continue
         allowance = bus_amps * _BUS_ALLOWANCE
@@ -145,11 +147,11 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
     module reached before any device on its string is in no group at all and reports as
     uncontrolled.
     """
-    cid, code = "code.NEC_690_12_rapid_shutdown", "NEC 690.12(B)(2)"
+    cid, code = "code.NEC_690_12_rapid_shutdown", cite(NEC.RAPID_SHUTDOWN_ARRAY)
     panels = list(ctx.model.solar_panels)
     if not panels:
         return [not_applicable(cid, "no PV module is modeled, so there is no array for "
-                                    "690.12 rapid shutdown to govern", (), code)]
+                                    f"{NEC.RAPID_SHUTDOWN} rapid shutdown to govern", (), code)]
 
     by_string: dict[str, list] = {}
     for panel in panels:

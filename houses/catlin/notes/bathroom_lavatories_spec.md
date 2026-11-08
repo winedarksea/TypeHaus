@@ -19,7 +19,7 @@ bowls, two drains and two lavatory loads. The attic's separate Corian top is 24 
 | `FX-M-BATH1-LAV` | Duravit 07054500002 | 17.75 × 13.375 | 34 | B21010001U10, chrome | 707BN-1 | `BK-M-HS1-BASIN` |
 | `FX-M-BATH2-SINK` | IKEA SEKTION 36x15x30 wall, 2 AXSTAD matte white doors + solid-surface undermount lavatory, 16 3/8 x 13 x 5 | 48 × 18 | 36 | Genta LX 6702, chrome | 707BN-1 | `BK-M-W3-VANITY-*` |
 | `FX-S-BATH1-LAV` | IKEA ÄNGSJÖN 36 + ORRSJÖN 37 | 37 × 21.75 | 36 | Genta LX 6702, chrome | RÄNNILEN 1-bowl | `BK-S-BA-E1B-VANITY-*` |
-| `FX-S-SUITEBATH-LAV` | Kohler Chulton K-REC39579-ASB-0 | 30.9375 × 22.4375 | 36 design; approximate | Genta LX 6702, chrome | 707BN-1 | `floor-standing` |
+| `FX-S-SUITEBATH-LAV` | Kohler Chulton K-REC39579-ASB-0 | 30.9375 × 22.4375 | 35 5/16 (top) | Genta LX 6702, chrome | 707BN-1 | `floor-standing` |
 | `FX-S-VANITY-LAV1` | IKEA SEKTION 30x15x30 AXSTAD + solid-surface undermount lavatory, 16 3/8 x 13 x 5 | 30 × 18 | 36 | Genta LX 6702, chrome | 707BN-1 | `BK-S-BD-N-VANITY-*` |
 | `FX-S-VANITY-LAV2` | IKEA SEKTION 30x15x30 AXSTAD + solid-surface undermount lavatory, 16 3/8 x 13 x 5 | 30 × 18 | 36 | Genta LX 6702, chrome | 707BN-1 | `BK-S-BD-N-VANITY-*` |
 | `FX-A-STUBATH-LAV` | IKEA SEKTION 24x15x30 AXSTAD + solid-surface undermount lavatory, 16 3/8 x 13 x 5 | 24 × 18 | 36 | Indy KBF-1401SFS, stainless | 707BN-1 | `BK-A-HALL-S-VANITY-*` |
@@ -30,12 +30,15 @@ five Genta LX 6702 faucets to 6702BN, including the two occurrences of the SEKTI
 The three utility Indy KBF-1401SFS faucets remain stainless; B.2 remains chrome. The declared
 `brushed-nickel` variant demonstrates the switch. Invalid values raise `KeyError` at import.
 
-**Chulton drilling gate:** the manufacturer's dimensioned image for **REC39579-ASB-0** says
-single-hole and gives **30 15/16 × 22 7/16 in.**, with **39 5/16 in. overall height including
-backsplash**. The retailer's grouped listing says 8 in. widespread. The white model's own
-manufacturer image controls this selection, so **6702 fits**. Confirm the ordered SKU
-against that image; the maker's installation drawing and drain/supply stations remain
-unavailable, and the model deliberately marks all three ports APPROXIMATE.
+**Chulton drilling gate:** Kohler's spec sheet K-REC39579-ASB (US-CA, 10-09-2026; read
+2026-11-07, [PDF](https://techcomm.kohler.com/techcomm/pdf/K-REC39579-ASB_spec_US-CA_Kohler_en.pdf)) gives a top of **31 × 22 7/16 in.** and
+**39 5/16 in. overall including the 4 in. backsplash**, so the top surface (the flood rim)
+is at **35 5/16 in. AFF**. p.1 says "single pre-drilled hole" and the p.3 drawing shows one
+hole, but the p.2 table says "Number of Deck Holes: 3, Center(s) 8"". Kohler's own sheet
+contradicts itself: **confirm one-hole top on delivery**, which is what 6702 needs.
+p.3 draws no stub stations; it draws a **General Rough-In Area 27 in. wide, 7 3/16 to
+32 1/4 in. AFF** on the back wall. The house's 20/24 in. stubs (±3 in.) lie inside it, so
+the three ports are EXACT house setout like the other lavatories (owner 2026-11-07).
 
 ## Connection stations
 
@@ -63,7 +66,7 @@ from those meshes.
 | `FX-M-BATH1-LAV` | (53.500, 268.000; 20.000) | (50.500, 271.385; 24.000) | (60.000, 271.385; 24.000) | EXACT setout |
 | `FX-M-BATH2-SINK` | (6.510, 182.250; 20.000) | (6.510, 179.250; 24.000) | (6.510, 185.250; 24.000) | EXACT setout |
 | `FX-S-BATH1-LAV` | (116.745, 374.500; 20.000) | (116.745, 377.500; 24.000) | (116.745, 371.500; 24.000) | EXACT setout |
-| `FX-S-SUITEBATH-LAV` | (165.500, 264.755; 20.000) | (162.500, 264.755; 24.000) | (168.500, 264.755; 24.000) | APPROXIMATE |
+| `FX-S-SUITEBATH-LAV` | (165.500, 264.755; 20.000) | (162.500, 264.755; 24.000) | (168.500, 264.755; 24.000) | EXACT setout |
 | `FX-S-VANITY-LAV1` | (22.375, 316.245; 20.000) | (19.375, 316.245; 24.000) | (25.375, 316.245; 24.000) | EXACT setout |
 | `FX-S-VANITY-LAV2` | (52.375, 316.245; 20.000) | (49.375, 316.245; 24.000) | (55.375, 316.245; 24.000) | EXACT setout |
 | `FX-A-STUBATH-LAV` | (164.625, 265.625; 20.000) | (161.625, 265.625; 24.000) | (167.625, 265.625; 24.000) | EXACT setout |
@@ -130,9 +133,12 @@ Read 2026-10-24:
 - [Kraus Indy specification](assets/kraus-kbf-1401-spec.pdf) and
   [installation](assets/kraus-kbf-1401-install.pdf): 6¼ in. overall height, 5⅛ in. reach,
   4⅝ in. spout height, 23⅝ in. hoses and 3/8 in. compression; drain selected separately.
-- [Kohler white Chulton dimensional image](assets/kohler-chulton-30-dimensions.jpg).
-  Manufacturer rough-in PDF not obtained; ports remain approximate. SUNNERSTA's bowl
-  position likewise remains approximate until measured.
+- [Kohler white Chulton dimensional image](assets/kohler-chulton-30-dimensions.jpg) and
+  [spec sheet K-REC39579-ASB](https://techcomm.kohler.com/techcomm/pdf/K-REC39579-ASB_spec_US-CA_Kohler_en.pdf) p.1-3: rough-in area above; drain
+  9 3/16 in. and faucet hole 3 3/16 in. off the top's back edge, on the centreline.
+- SUNNERSTA: IKEA AA-1851897-11 and the US product page (art. 40313363) publish no bowl,
+  drain or worktop station (read 2026-11-07). **Measure the owner's existing unit, then mark
+  the ports EXACT**; until then they stay APPROXIMATE.
 - [Dearborn cleanout trap catalog](https://www.oatey.com/products/P_041193054678/dearborn-114-in-brass-tubular-ptrap-with-cleanout).
   No manufacturer dimensional PDF obtained for 707BN-1; cut-to-fit wall connection is a
   house setout rather than a fixed factory dimension.

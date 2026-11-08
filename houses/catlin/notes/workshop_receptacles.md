@@ -13,13 +13,16 @@ steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
 
 - **Rating matches the circuit.** 15 A breakers: `CKT-RC-ATTIC`, `CKT-HA` (basement utility
   outlet), `CKT-BATH2-TUB` and `CKT-LT-*` (e.g. the closet strip outlet on `CKT-LT-MAIN`).
-  `CKT-RC-MAIN`/`-SECOND` stay 20 A because they carry bath lav receptacles (NEC 210.11(C)(3)).
+  `CKT-RC-MAIN`/`-SECOND` are 20 A storey circuits. Every bathroom vanity receptacle is on
+  `CKT-BATH-RC`, the 20 A circuit NEC 210.11(C)(3) requires, which serves nothing else (the tub
+  and washlet outlets keep their own dedicated circuits).
   Kitchen, other basement, laundry, bath and garage circuits are 20 A.
 - **Ordinary duplex:** Lever Edge `E5825-W` (20 A); `E5325-W` (15 A) on the 15 A circuits above.
 - **GFCI at the breaker by default**, with plain Lever Edge devices. Device GFCI `GFTR2-W`
   (`GFTR1-W` at 15 A) only where more practical: sink-reach outlets on a non-GFCI circuit
-  (e.g. `ED-M-BED-RC8`) and the two washlet outlets (`plan/circuits.py` convention).
-  - `ED-B-SUMP-RC`: audible-alarm GFCI `GFTA2-W` (NEC 2023 210.8(A)(5)); breaker not GFCI.
+  (e.g. `ED-M-BED-RC8`), the seven bath vanity outlets on `CKT-BATH-RC` (`GFNL2-W` guide-light
+  GFCI, so a trip resets in the room) and the two washlet outlets (`plan/circuits.py` convention).
+  - `ED-B-SUMP-RC`: audible-alarm GFCI `GFTA2-W` (2026 NEC 210.8(A)(6); (D)(6) accepts GFCI at the outlet); breaker not GFCI.
   - `ED-S-PLANT-RC1`..`RC5`: weather-resistant GFCI `GFWT2-W` under in-use covers.
 - **60 W USB-C PD** `T5836-W`: `ED-M-LIVING-RC13` and `-RC3` only. Deep boxes.
 - **Surge duplex** `T5380-W` (20 A TR; replaces the discontinued `T7380-W`): `ED-B-PLAY-N-RC1` behind
@@ -134,7 +137,7 @@ box on the 1" CD-B-WORKSHOP trunk. The kettle's `ED-T-LEV-620-FLUSH` is flush in
 - **Exterior:** clear `5980-UCL` extra-duty in-use cover, which closes over a plugged-in cord
   through its cord ports. `ED-M-FRONT-RC1` (north face of `W-M-N2`, x 16'-6", on the entry
   bridge) and `ED-M-REAR-RC1` (south face of `W-M-S2`, x 24'-7"), 18" AFF, WR GFCI `GFWT2-W` on
-  `CKT-RC-MAIN` (NEC 210.8(A)(3), 210.52(E)).
+  `CKT-RC-MAIN` (NEC 210.8(A)(4), 210.52(E)).
 
 ## Product links
 

@@ -53,8 +53,8 @@ LIVING_LIGHTING = [
     # ** ONE CLASS 2 DRIVER PER COVE HALF (owner, 2026-10-31). ** The tape carries no
     # listing, so the listed part is the supply, and each segment gets a <=100 VA Class 2
     # HLG-100H-24A (non-dimming) with its own GL-C-001P beside it, which dims and mixes; HA
-    # groups each zone's pair. Lounge halves 12' x 5 W/ft = 60 W, x1.25 = 75 W; dining
-    # 8.5' = 42.5 W, x1.25 = 53 W; all on 96 W. At the old OMNIDRIVE's spot by the kitchen
+    # groups each zone's pair. All channels on (20 W/m, 2026-11-07): lounge halves 12' x 6.1
+    # W/ft = 73 W, x1.25 = 92 W; dining 8.5' = 52 W, x1.25 = 65 W; all on 96 W. At the old OMNIDRIVE's spot by the kitchen
     # soffit's service hatch; the cove paddle (a hard-off, left on) cuts all four drivers' 120 V.
     ElectricalDevice(uid="QTM0001AAA", tag="ED-M-LIVING-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(19), ft(22, 6)), type_ref="ED-T-LT-PSU-96-WE",
@@ -283,9 +283,10 @@ LIVING_LIGHTING = [
     # Ceiling cans alone over a counter you stand in front of light your own shadow onto
     # the work surface. Tape follows the real undersides: west W36, east W30, diagonal
     # corner and W12, at the cabinet's front edge.
-    # ** IKEA MITTLED (U1) SINCE 2026-10-31, AND IT STAYS. ** ~208 lm/ft is ~30% under the
-    # ~300 lm/ft rule, but the A/A4 cans over every counter run carry the rest and the owner
-    # prefers it; 2700 K against the cans' 3000 K is one step. Mark U is the revert.
+    # ** IKEA MITTLED (U1) SINCE 2026-10-31, AND IT STAYS. ** The US modules give ~235 lm/ft
+    # on these runs, under the ~300 lm/ft rule, but the A/A4 cans over every counter run carry
+    # the rest and the owner prefers it; 2700 K against the cans' 3000 K is one step. Mark U
+    # is the revert.
     LightRun(uid="63DMV159RN", tag="LR-M-KIT-N-WE1", type_ref="ED-T-LT-MITTLED",
              path=(pt(inch(297.375), ft(34, 3.375)), pt(inch(333.375), ft(34, 3.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
@@ -308,7 +309,8 @@ LIVING_LIGHTING = [
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(73))),
-    # 93.56" at 2.8 W/ft = 21.8 W; x1.25 = 27.3 W on one TRADFRI 30 W, the closet's idiom
+    # Six US modules (24+12, 18+12, 15, 12) draw 25.2 W, 84% of one TRADFRI 30 W: over the
+    # house's 80% rule, under IKEA's 30 W cap, accepted (owner, 2026-11-07). The closet's idiom
     # (plan/closet.py): on the shelf inside FURN-M-KIT-WE5, corded into -UC-RC beside it, which
     # ED-M-KITCH-SW-UC switches. The TRADFRI's 30 VA lands on CKT-LT-BACKUP; the outlet has none.
     ElectricalDevice(uid="7VSVT7B8ZS", tag="ED-M-KITCH-LT-PSU", kind=DeviceKind.JUNCTION_BOX,

@@ -33,6 +33,7 @@ from shapely.geometry.polygon import orient
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.electrical import BoxRow, BoxStandard
+from typehaus.model.nec import NEC
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry_members import member_box
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedSolid
@@ -136,7 +137,8 @@ def standard_findings(plan: Any) -> list[Finding]:
         if row.volume_in3 is None:
             out.append(_error(standard.tag, (
                 f"box standard {standard.tag}'s {row.mounting} {row.gangs}-gang row has no "
-                f"volume: name a Table 314.16(A) designation or author the marked volume")))
+                f"volume: name a {NEC.BOX_VOLUME_TABLE} designation or author the marked "
+                "volume")))
     return out
 
 

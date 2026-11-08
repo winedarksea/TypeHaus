@@ -23,9 +23,9 @@ living-room power, covered by the existing circuit's 1,500 VA allowance. Circuit
 assignments, panel schedule, takeoff, electrical plan and IFC export include the outlet.
 Individual branch-circuit cable routing is not modeled.
 
-The floor-box listing check covers E3905.7 / NEC 314.27(B); the existing AFCI and GFCI
+The floor-box listing check covers 2026 NEC 314.27(C); the existing AFCI and GFCI
 rules evaluate this device's circuit and location. This sitting-area outlet is beyond the
-18-inch wall reach under E3901.2.3 / NEC 210.52(A)(3), so it supplements wall outlets.
+18-inch wall reach under NEC 210.52(A)(3), so it supplements wall outlets.
 
 Second choice: a [Leviton TR pop-up floor box](https://leviton.com/products/residential/pop-up-floor-box-receptacles).
 Leviton lists vinyl among its flooring applications and describes a 1/4-inch closed-cover

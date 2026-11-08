@@ -205,7 +205,7 @@ def _storey_is_below_grade(ctx: CheckContext, storey) -> bool | None:
 
     ``None`` — not ``False`` — when the site states no grade datum. The caller must report
     UNKNOWN in that case: "we do not know where grade is" is not "this storey is above it",
-    and R310.1 and E3902 both change answer on the distinction.
+    and R310.1 and NEC 210.8(A) both change answer on the distinction.
     """
     grade = ctx.plan.project.site.grade
     if grade is None:

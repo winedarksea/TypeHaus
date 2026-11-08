@@ -39,8 +39,9 @@ REOLINK_OMVI_3I = Product(
            "table, read 2026-11-02: 202 x 151 x 125 mm, 1.3 kg, 802.3at PoE+ (a 30 W port), "
            "20 W max, IR 30 m, IP66, -10..55 C; 180 x 65 deg panorama over a 55 deg tele lens, "
            "350 deg pan; wall, ceiling or corner bracket included. microSD to 512 GB, RTSP. "
-           "Not on the core reolink integration's tested list: CONFIRM, else RTSP/ONVIF "
-           "locally." + _NOTE)
+           "Not in the core reolink integration's tested, certified or incompatible "
+           "lists (home-assistant.io/integrations/reolink, read 2026-11-07): RTSP to HA "
+           "locally is the path; Reolink's page lists RTSP/RTMP/HTTP(S), not ONVIF." + _NOTE)
 REOLINK_DUO3 = Product(
     tag="PROD-REOLINK-DUO-3-POE", brand="Reolink", model="Duo 3 PoE",
     name="Dual-lens 180 deg PoE camera",

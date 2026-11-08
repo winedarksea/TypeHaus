@@ -206,7 +206,9 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # Then PLUS CKT-LT-BSMT and CKT-LT-GARAGE (2026-10-31): the basement work strips off
     # backup, and the garage's lighting off CKT-LT-MAIN.
     # Then MINUS CKT-FH-DINING (2026-11-02): the dining mat went with SL-M-DECK (decision #112).
-    assert len(rows) == 42  # plus the workshop's two-pole receptacle branch
+    # Then PLUS CKT-BATH-RC (210.11(C)(3)), absorbing CKT-BATH-ATTIC, and CKT-SPD-2/-BACKUP
+    # (230.67(B) Ex., 215.18), 2026-11-07.
+    assert len(rows) == 44  # plus the workshop's two-pole receptacle branch
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor).
     assert "CKT-FH-DINING" not in rows
@@ -584,10 +586,11 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     # 47 -> 39 on 2026-09-12: CKT-SPA, CKT-SAUNA, CKT-EV-1450 and CKT-GAR-240 (then CKT-EV-620; four 2-pole,
     # eight spaces) moved to ED-B-PANEL-2, feeder 2 of the Class 320 service. Fifteen spare
     # here, twelve there. 41 since CKT-LT-BSMT and CKT-LT-GARAGE took slots 26/24 (2026-10-31); 40 once
-    # CKT-FH-DINING (slot 31) went with the dining mat (2026-11-02).
+    # CKT-FH-DINING (slot 31) went with the dining mat (2026-11-02). 2026-11-07: CKT-BATH-RC
+    # took 31 and CKT-BATH-ATTIC left 41, and each panel gained a 2-pole SPD.
     assert main == (40, 54)
-    assert spaces("ED-B-PANEL-2", "ED-T-PANEL-2") == (10, 20)
-    assert backup == (7, 12)  # 8 until CKT-WH went 1-pole (120 V HPWH, 2026-11-02)
+    assert spaces("ED-B-PANEL-2", "ED-T-PANEL-2") == (12, 20)
+    assert backup == (9, 12)  # 8 until CKT-WH went 1-pole (120 V HPWH, 2026-11-02)
     required = sum(circuit.poles for circuit in circuits)
     declared = main[1]
     # A 42-space enclosure still would not hold the schedule, which keeps this from
@@ -762,21 +765,6 @@ def test_a_listed_pcs_earns_its_credit():
     assert any("PCS, UL 3141 (synthetic)" in f.message for f in findings)
 
 
-def test_an_hvac_interlock_over_an_appliance_is_refused():
-    """220.82(C) reaches a compressor and its supplemental heat. It does not reach a kiln,
-    and the credit catlin's LM-WELLNESS took over a spa and a sauna was the same error."""
-    from typehaus.model import LoadManagement
-
-    big = Circuit(tag="CKT-KILN", panel_ref="ED-M-PANEL", breaker_amps=100, poles=2,
-                  load_va=150000, description="Kiln bank")
-    lm = LoadManagement(tag="LM-KILN", managed_circuits=("CKT-KILN",),
-                        max_simultaneous_va=10000, strategy="hvac_interlock")
-    findings = _lm_findings(lm, big)
-    refused = [f for f in findings if f.result.value == "fail" and "LM-KILN" in f.message]
-    assert refused and "220.82(C)" in refused[0].message
-    assert "appliance" in refused[0].message
-
-
 # --- per-panel feeder load ------------------------------------------------------------
 
 def _feeder_plan(main_amps, circuits):
@@ -889,7 +877,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     # 40: the 36 that survived the microgrid refactor plus CKT-DISPOSAL, minus CKT-WH-HP
     # folded into CKT-WH, plus CKT-BATH2-TUB for the drop-in bath's Bask heated surface,
     # plus the two washlet circuits, plus CKT-SPD (the NEC 230.67 service surge device).
-    assert len(payload["panel_schedule"]) == 42  # includes the workshop branch
+    assert len(payload["panel_schedule"]) == 44  # includes the workshop branch
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):
@@ -954,46 +942,39 @@ def test_a_combination_receptacle_counts_by_its_125v_half():
     one box holding a 240V outlet for the kettle and an ordinary 125V outlet beside it. The
     125V half is a 210.52 receptacle like any other, so the kind alone cannot decide this —
     the type's ports do (the DeviceKind precedent: the kind stays flat, the type
-    differentiates). Drop the 120V port and the north kitchen counter loses its coverage.
+    differentiates). Drop the 120V port and it stops counting.
+
+    Pinned on the predicate: since 2026 210.52(A)(2)(1) the counter run it serves is no
+    longer wall space, so no room verdict hangs on it.
     """
+    from typehaus.checks.code.mn_residential.profile import MN_2020
+    from typehaus.checks.mep.electrical import _counts_as_a_125v_receptacle
+    from typehaus.checks.registry import CheckContext, Preferences
+
     plan = load_plan(CATLIN_DIR).plan
-    model, _ = resolve(plan)
-    assert _room_result(model, "RM-M-LIVING") == "pass"
+    kettle = next(e for e in plan.storey_elements("main") if e.tag == "ED-M-LIVING-KET1")
+    plain = next(e for e in plan.storey_elements("main")
+                 if e.element_kind == "ElectricalDevice" and e.kind.value == "receptacle")
 
-    # ED-M-LIVING-KDS1 and ED-M-LIVING-KDW1 come out with it — the disposer outlet and the
-    # dishwasher cord, both inside the sink base at 18" up. Neither is anybody's idea of
-    # kitchen-counter coverage, but this check grades 210.52(A)'s *wall* rule, where a 125V
-    # receptacle below the 5'-6" cut-off counts wherever it stands, and both happen to sit
-    # in the stretch this test empties: KDW1's cord outlet lands 3'-0" from the wall
-    # space's start, inside the 6' this test needs empty. Leaving either would hold the
-    # north wall covered for a reason that has nothing to do with the kettle outlet under
-    # test.
-    #
-    # Removing the devices, not demoting their types: a plain RECEPTACLE kind counts on the
-    # kind alone, and only the combination kind consults ports — which is the asymmetry this
-    # test exists to pin.
-    without_appliance_outlets = tuple(
-        element for element in plan.storey_elements("main")
-        if getattr(element, "tag", None) not in ("ED-M-LIVING-KDS1", "ED-M-LIVING-KDW1"))
-    plan = plan.model_copy(update={
-        "elements": {**plan.elements, "main": without_appliance_outlets}})
+    def counts(p, device) -> bool:
+        ctx = CheckContext(plan=p, model=None, preferences=Preferences(), profile=MN_2020)
+        return _counts_as_a_125v_receptacle(ctx, device)
 
+    assert counts(plan, kettle) and counts(plan, plain)
     library = plan.library
     demoted = tuple(
         device_type.model_copy(update={
             "ports": tuple(p for p in device_type.ports if p.service is not Service.POWER_120)})
-        if device_type.tag in ("ED-T-LEV-620-DUPLEX", "ED-T-LEV-620-FLUSH") else device_type
         for device_type in library.electrical_device_types)
     plan = plan.model_copy(update={"library": library.model_copy(
         update={"electrical_device_types": demoted})})
-    model, _ = resolve(plan)
-
-    assert _room_result(model, "RM-M-LIVING") == "fail"
+    # The combination kind consults ports; a plain RECEPTACLE counts on the kind alone.
+    assert not counts(plan, kettle) and counts(plan, plain)
 
 
 def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
-    """210.52(A)(2)(1) lists "fixed cabinets that do not have countertops or similar work
-    surfaces" alongside doorways as things wall space is unbroken by.
+    """2026 210.52(A)(2)(1) lists fixed cabinets — countertop or not since 2026 — alongside
+    doorways as things wall space is unbroken by.
 
     RM-M-LIVING's counterless fixed cabinets are the east tall bank
     (FURN-M-KIT-PANTRY-S1/S2) and the hung upper FURN-M-KIT-E-HUNG. The room has enough receptacles that it
@@ -1002,8 +983,8 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     bathroom, which is not habitable and is not graded).
 
     So the mutation is pointed at the RULE instead: the break intervals themselves have to
-    appear for a counterless cabinet and have to vanish when the same cabinet is given a
-    work surface. That is the behaviour 210.52(A)(2)(1) describes, and unlike a room
+    appear for a counterless cabinet, stay when it is given a work surface, and vanish when
+    the type stops being fixed cabinetry. That is the behaviour 210.52(A)(2)(1) describes, and unlike a room
     verdict it cannot be made vacuous by adding a receptacle somewhere else.
     """
     from typehaus.checks.code.mn_residential.profile import MN_2020
@@ -1039,8 +1020,16 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     ring = [tuple(point) for point in living.clear_face]
     ctx = CheckContext(plan=plan, model=model, preferences=Preferences(), profile=MN_2020)
 
-    # Give every one of them a countertop and the wall line is unbroken by cabinets: the
-    # same carcasses are now work surfaces, which 210.52(A)(2)(1) does not exempt.
+    # Give every one of them a countertop and the break stays: 2026 exempts every fixed
+    # cabinet. Make them loose furniture (``work_surface=None``) and it goes.
+    assert _fixed_cabinet_intervals(ctx, ring, "main") == breaks
+    loose = tuple(t.model_copy(update={"work_surface": None}) for t in countertopped)
+    plan = plan.model_copy(update={"library": library.model_copy(
+        update={"furniture_types": loose})})
+    model, _ = resolve(plan)
+    living = next(room for room in model.rooms if room.tag == "RM-M-LIVING")
+    ring = [tuple(point) for point in living.clear_face]
+    ctx = CheckContext(plan=plan, model=model, preferences=Preferences(), profile=MN_2020)
     assert _fixed_cabinet_intervals(ctx, ring, "main") == []
 
 

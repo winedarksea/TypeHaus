@@ -379,8 +379,8 @@ def test_every_selected_lavatory_has_parts_ports_and_a_connected_exact_setout(ca
     findings = [f for f in catlin_check_report().findings
                 if f.check_id == "mep.fixture_port_connection" and f.element_tags[0] in tags]
     assert len(findings) == 27
-    assert all(f.result.value == ("unknown" if f.element_tags[0] in {
-        "FX-S-SUITEBATH-LAV", "FX-A-STUDIO-BAR-SINK"} else "pass") for f in findings)
+    assert all(f.result.value == ("unknown" if f.element_tags[0] == "FX-A-STUDIO-BAR-SINK"
+                                  else "pass") for f in findings)
 
 
 def test_fabricated_double_top_keeps_both_bowl_cutouts(catlin_model_ro):

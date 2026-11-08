@@ -200,7 +200,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "water_hammer_arrestor": (0.62, 0.64, 0.66, 1.0),  # sealed steel chamber, not a valve
     "penetration_seal": (0.95, 0.72, 0.35, 1.0),       # the foam/gasket kit, not plumbing metal
     # Raceways (→ resolve/mep.py _emit_run_solids, one category per side of the NEC
-    # 800.133/725 power-vs-comms line). Deliberately *outside* the riser-diagram hues above:
+    # 722.15(A) power-vs-comms line). Deliberately *outside* the riser-diagram hues above:
     # a raceway drawn in red or blue would read as a supply line in the one view where
     # telling them apart matters — the basement ceiling, where CD-B-KITCHEN runs the length
     # of the house alongside the hot and cold trunks. Violet and teal are what the plumbing

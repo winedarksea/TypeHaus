@@ -2,7 +2,9 @@
 
 * ``mep.duct_terminations`` — every duct end lands on a collar, a port, a case, a terminal,
   another duct or caps a served leg; every derived part has a row (M4-103/114/120, M1-103).
-* ``mep.duct_supports`` — every derived hanger hangs from something (M1-105, M4-109).
+* ``mep.duct_supports`` — every derived hanger hangs from framing, or (where nothing is
+  overhead) is strapped to the deck the duct bears on (house practice) or bracketed to a wall
+  within 2" (SMACNA Fig. 4-8) (M1-105, M4-109).
 * ``mep.duct_gauge`` — every round size has a gauge at the stated pressure class
   (M4-106/115).
 """
@@ -67,11 +69,14 @@ def duct_supports(ctx: CheckContext) -> list[Finding]:
     if standard is None:
         return _missing(_SUPPORTS)
     hung: dict[str, int] = defaultdict(int)
+    held: dict[str, int] = defaultdict(int)  # saddles and brackets
     loose: dict[str, list[str]] = defaultdict(list)
     for support in ctx.model.duct_supports:
         if support.hangs_from is None:
             x, y, z = (v / M_PER_IN / 12 for v in support.point)
             loose[support.run_tag].append(f"({x:.1f}', {y:.1f}', {z:.1f}')")
+        elif support.hanger in ("saddle", "bracket"):
+            held[support.hanger] += 1
         else:
             hung[support.run_tag] += 1
     unruled = sorted(d.tag for d in ctx.model.ducts if standard.support_for(
@@ -81,14 +86,19 @@ def duct_supports(ctx: CheckContext) -> list[Finding]:
                                f"from — {', '.join(points[:4])}"
                                f"{f' (+{len(points) - 4})' if len(points) > 4 else ''}",
                     (tag,), Result.UNKNOWN, code="IMC 603.10",
-                    fix="detail the support (a saddle on the framing below, a trapeze off "
-                        "the nearest member) or re-route")
+                    fix="author a saddle or bracket row in the DuctStandard, add framing "
+                        "in reach, or re-route")
            for tag, points in sorted(loose.items())]
     if unruled:
         out.append(unknown(_SUPPORTS, f"no support row covers {', '.join(unruled)}",
                            tuple(unruled), code="IMC 603.10"))
     out.append(passed(_SUPPORTS, f"{sum(hung.values())} hanger(s) on {len(hung)} run(s) hang "
                                  "from named framing", code="IMC 603.10"))
+    held_on = {"saddle": "bear on a deck, strapped to it (house practice; SMACNA draws no "
+                         "bottom support)",
+               "bracket": "hold to a parallel wall within 2\" (SMACNA Fig. 4-8)"}
+    out.extend(passed(_SUPPORTS, f"{n} {kind}(s) {held_on[kind]}", code="IMC 603.10")
+               for kind, n in sorted(held.items()))
     return out
 
 

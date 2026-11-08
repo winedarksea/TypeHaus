@@ -1,8 +1,9 @@
 """Bend degrees between pull points — NEC 358.26 / 352.26 / 344.26 / 342.26 / 362.26.
 
 Every raceway article says the same thing: no more than the equivalent of four quarter
-bends (360° total) between pull points. This module measures it; ``checks/mep/
-conduit_bends.py`` grades it, and it lives in ``resolve`` so a router may read it too.
+bends (360° total) between pull points, and 2026 300.24 holds a mixed run to it too. This
+module measures it; ``checks/mep/conduit_bends.py`` grades it, and it lives in ``resolve``
+so a router may read it too.
 
 **What a pull point is.** A run's two ends, and every vertex it authors in
 ``ConduitRun.pull_points``. One exception: when exactly one run ends at a 3D point and

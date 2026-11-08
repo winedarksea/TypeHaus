@@ -143,12 +143,13 @@ def test_the_water_closet_backs_a_wall_with_its_code_clearance_clear():
                    if getattr(e, "tag", "") == "FX-M-BATH2-WC")
     assert fixture.wall_ref == "W-M-HS1"
 
-    # Tank ON the wall. Measured against W-M-HS1's own room-side finish, NOT against
-    # `room.clear_face` — that polygon is inset from the wall AXIS by the lining alone
-    # (5/8"), so on a 6 3/4" staggered wall it sits 2 3/4" inside the face you can touch.
+    # Tank 3/4" off the wall, the gap TOTO SS-02299 p.2 draws (2026-11-06). Measured against
+    # W-M-HS1's own room-side finish, NOT against `room.clear_face` — that polygon is inset
+    # from the wall AXIS by the lining alone (5/8"), so on a 6 3/4" staggered wall it sits
+    # 2 3/4" inside the face you can touch.
     hs1 = next(w for w in model.walls if w.tag == "W-M-HS1")
     face = min(p[1] for p in next(x for x in hs1.layers if x.name == "paint-b").polygon)
-    assert abs(face / M_PER_IN - wc[3]) < 0.05
+    assert abs(face / M_PER_IN - wc[3] - 0.75) < 0.05
 
     west = next(w for w in model.walls if w.tag == "W-M-TUBDK-W")
     deck_face = min(p[0] for p in next(x for x in west.layers if x.name == "ply-room").polygon)

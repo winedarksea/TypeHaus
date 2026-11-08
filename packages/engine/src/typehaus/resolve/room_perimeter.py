@@ -158,27 +158,40 @@ def floor_opening_intervals(plan, ring: list, storey_tag: str,
 
 
 def fixed_cabinet_intervals(model, plan, ring: list, storey_tag: str,
-                            include: Callable[[object], bool]) -> list[tuple[float, float]]:
+                            include: Callable[[object], bool], *,
+                            run_appliances: bool = False) -> list[tuple[float, float]]:
     """Perimeter intervals occupied by floor-standing cabinets whose type ``include`` admits.
 
-    The predicate is the caller's: NEC wall space breaks only at counterless cabinets, a
-    base run at every fixed one. A carcass counts when it stands in this room (its centroid
+    The predicate is the caller's: 2026 NEC wall space breaks at every fixed cabinet, as a
+    base run does. A carcass counts when it stands in this room (its centroid
     is inside the ring), within ``NEAR_WALL_M`` of the boundary, and within
-    ``FLOOR_CONTACT_M`` of the storey floor.
+    ``FLOOR_CONTACT_M`` of the storey floor. ``run_appliances`` adds an appliance set into
+    such a run (a dishwasher or slide-in range abutting a carcass): it is part of the run.
     """
     from shapely.geometry import LineString, Point, Polygon
+
+    from typehaus.resolve.placeable_groups import RUN_GAP_TOLERANCE_M
 
     boundary = LineString(list(ring) + [ring[0]])
     room_area = Polygon(ring)
     floor_z = next((s.elevation.meters for s in plan.storeys if s.tag == storey_tag), 0.0)
     types = {t.tag: t for t in plan.library.furniture_types}
+    carcasses = [Polygon(item.footprint) for item in model.canvas_objects
+                 if run_appliances and item.storey == storey_tag
+                 and item.type_ref in types and include(types[item.type_ref])
+                 and item.z_m - floor_z <= FLOOR_CONTACT_M and len(item.footprint) >= 3]
     intervals: list[tuple[float, float]] = []
     for item in model.canvas_objects:
         if item.storey != storey_tag or item.type_ref is None:
             continue
-        item_type = types.get(item.type_ref)
-        if item_type is None or not include(item_type):
-            continue
+        if item.kind == "Appliance" and carcasses and len(item.footprint) >= 3:
+            body = Polygon(item.footprint)
+            if not any(body.distance(c) <= RUN_GAP_TOLERANCE_M for c in carcasses):
+                continue
+        else:
+            item_type = types.get(item.type_ref)
+            if item_type is None or not include(item_type):
+                continue
         # An upper cabinet is also a fixed cabinet, but it does not reach the floor line.
         if item.z_m - floor_z > FLOOR_CONTACT_M:
             continue

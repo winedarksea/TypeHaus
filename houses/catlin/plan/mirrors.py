@@ -61,14 +61,14 @@ MAIN_MIRRORS = [
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="5AE57JENYW", tag="ED-M-BATH2-MIRROR-HALO", kind=DeviceKind.LIGHT,
             type_ref="ED-T-LT-MIRROR-HALO-2700", room="RM-M-BATH2",
-            circuit="CKT-BATH-ATTIC",
+            circuit="CKT-BATH-RC",
             mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-M-W3", face="left", distance_from_start=inch(85.625),
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="783AC05790", tag="ED-M-BATH2-MIRROR-PLUG", kind=DeviceKind.RECEPTACLE,
             type_ref="ED-T-LEV-DUPLEX-20", room="RM-M-BATH2",
-            circuit="CKT-BATH-ATTIC",
+            circuit="CKT-BATH-RC", gfci_ref="ED-M-BATH2-RC1",
             mount=Mount(kind=MountKind.WALL, elevation=inch(64),
                         recessed_into_host_surface=True),
             location=Location(attachment=WallAttachment(

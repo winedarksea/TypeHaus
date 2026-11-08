@@ -84,12 +84,9 @@ MATERIALS_ISHTAR = [
     # the weather, and white under an overhang is what keeps a soffit from reading as a
     # shadow.
     #
-    # Both renderers reach this tone BY TAG (`_FINISH_BASE` in emit/gltf/palette.py,
-    # `FINISH_BASE` in ui/src/nordic/palette.ts, kept in step by hand), not by a declared
-    # `finish`: a fascia and a ridge cap are framed MEMBERS, and `memberColor` is handed the
-    # palette and no catalog, so a material's authored `color` never reaches them. Those rows
-    # stay while this material does. Not named "*seam*" — renderers key the ribbed
-    # standing-seam finish off that substring and this is flat formed trim.
+    # Both renderers read its authored `color`, members included (decision #57; no tag rows
+    # in either palette). Not named "*seam*" — renderers key the ribbed standing-seam finish
+    # off that substring and this is flat formed trim.
     #
     # A metallic PVDF is a two-coat mica/pearl system, so it reads differently by viewing
     # angle in a way a flat albedo cannot express — this hex is the mid-tone of that range.

@@ -126,9 +126,10 @@ EQUIPMENT_ERV_SECOND = [
 # within a foot of the joists' west bearing, which is the one place the chart does not — and
 # that is before ~16 bored webs and a manufacturer sign-off.
 #
-# +4" is a 4" duct lying on the attic deck at 240". Both are attic-relative, and negative
-# because the attic datum is the top of FS-ATTIC's joists.
-_ATTIC_DECK_Z = inch(4)
+# +2 3/4" is a 4" duct lying on the attic deck: the 3/4" ply's top (240 3/4") plus the
+# radius (2026-11-07; +4" floated it 1 1/4" off the deck, and a deck saddle wants it bearing).
+# Both are attic-relative, and negative because the attic datum is the top of FS-ATTIC's joists.
+_ATTIC_DECK_Z = inch(2.75)
 #: ** -8 1/2", RE-DERIVED 2026-09-20; IT WAS -9 7/8", WHICH IS LEVEL 2'S OLD ERROR COPIED. **
 #: A 4" duct's centreline resting on FS-ATTIC's bottom FLANGE. The band, attic-relative:
 #: 240" top of joists (datum, 3/4" ply deck over it) / -1 3/8" top flange / -10 1/2" top of
@@ -147,9 +148,8 @@ _ATTIC_DECK_Z = inch(4)
 #: (bottom + one flange), which is what a bore is graded against — so a bay leg on this
 #: line and a leg that crosses a joist read the same number.
 _ATTIC_BAY_Z = inch(-8.5)
-# -3" is a 4" duct in the TOP of a bay, stacked over a run already lying on the bottom
-# chord: 235"..239" against DU-S-ERV-HP-FEED's 228 1/8"..234 1/8", 7/8" between them and 1"
-# under the deck. `mep_packing` grades a bay's width as a TIER, so two runs at different
+# -3" is a 4" duct in the TOP of a bay, stacked over a run hung low in it: 235"..239"
+# against DU-S-ERV-HP-FEED's 228 1/2"..234 1/2", 1/2" between them and 1" under the deck. `mep_packing` grades a bay's width as a TIER, so two runs at different
 # elevations do not share it — which is the only reason the 22'-0" bay can take a second duct
 # at all (its free strip south of the 6" feed is 3 1/4", and a 4" duct does not go in 3 1/4").
 _ATTIC_BAY_HIGH_Z = inch(-3)
@@ -157,7 +157,7 @@ _ATTIC_BAY_HIGH_Z = inch(-3)
 DUCTS_ERV_ATTIC = [
     # ** THE WEST CHASE CARRIES ONE DUCT, AND THAT IS THE ROOF TALKING. ** At x=1'-0" the
     # 6:12 underside is `1 1/2" + x/2` = 7 1/2" over the deck, and a 4" duct on
-    # _ATTIC_DECK_Z spans 2"..6" of it. There is no second tier at that station and there
+    # _ATTIC_DECK_Z spans 3/4"..4 3/4" of it (2"..6" when this was written). There is no second tier at that station and there
     # never was — so the four radials, DU-S-ERV-HP-FEED and the first 41" of
     # DU-ERV-RISER-EXH were all drawn on the one line, five and six deep, and
     # `mep.run_interference` reported fourteen duct-against-duct pairs for it.
@@ -271,17 +271,21 @@ DUCTS_ERV_ATTIC = [
                   pt(ft(3), ft(32, 3)), pt(ft(3), ft(18)),
                   pt(ft(3), ft(18)), pt(ft(21), ft(18)),
                   pt(ft(21), ft(18)), pt(ft(29), ft(31, 4))),
-            # The bay leg rides 0.6" under _ATTIC_BAY_Z to pass beneath PR-A-BAR-DRAIN's
-            # x=9'-7 1/2" leg (2026-09-24); 3/4" still clear of the ceiling below.
+            # The bay leg rides 0.8" under _ATTIC_BAY_Z to pass beneath PR-A-BAR-DRAIN's
+            # x=9'-7 1/2" leg (2026-09-24), and since the deck legs came down to bear
+            # (2026-11-07) to keep 12" of drop between the stamped 90s; 9/16" clear of the
+            # ceiling below.
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
-                        inch(-9.1), inch(-9.1),
+                        inch(-9.3), inch(-9.3),
                         _ATTIC_DECK_Z, _ATTIC_DECK_Z),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_A_ERV_R_BED3),
     DuctRun(uid="4YT114ADP3", tag="DU-A-ERV-R-BATH1", system=DuctSystem.EXHAUST,
             path=(pt(ft(5, 7.5), ft(34, 2)), pt(ft(5, 7.5), ft(32, 8)),
                   pt(ft(5, 7.5), ft(32, 8)), pt(ft(5), ft(32, 8))),
-            elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_BAY_Z, _ATTIC_BAY_Z),
+            # -9.3", not _ATTIC_BAY_Z: 12" of drop between the two stamped 90s off the
+            # bearing deck leg (2026-11-07); 9/16" clear of the ceiling.
+            elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, inch(-9.3), inch(-9.3)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_A_ERV_R_BATH1),
 ]
@@ -317,7 +321,7 @@ DUCTS_ERV_ATTIC = [
 DUCTS_ERV_MIX_FEED = [
     DuctRun(uid="CSDV02AAAA", tag="DU-S-ERV-HP-FEED", system=DuctSystem.SUPPLY,
             # ** ITS FIRST 7" IS IN THE BAY. ** It comes off the riser head on the deck at
-            # x=0'-5", under 4" of roof. It picks the riser up on FS-ATTIC's bottom chord
+            # x=0'-5", under 4" of roof. It picks the riser up low in the FS-ATTIC bay
             # instead and stands up at x=1'-0", where the underside is 7 1/2" and a bare 6"
             # duct on the deck clears by 1/2". The 7" east is ALONG a bay — FS-ATTIC's
             # I-joists span x — so nothing is bored; the north-south leg that follows stays
@@ -332,8 +336,10 @@ DUCTS_ERV_MIX_FEED = [
             # legs get graded" constraint is gone with it — but the drop still has to land
             # IN the plenum, so moving the plenum in y means moving this vertex with it.
             #
-            # -8 7/8" is a 6" duct on FS-ATTIC's bottom chord; +4" is the same duct lying on
-            # the attic deck; -24 7/8" is 6" above SF-S-HP1's cavity floor, unchanged by the
+            # -8 1/2" is a 6" duct strapped low in an FS-ATTIC bay, invert 228 1/2", 3/8"
+            # off the ceiling board (2026-11-07; -8 7/8" laid it ON the board at 228 1/8":
+            # an I-joist bay has no chord under a duct, only gypsum); +4" is the same duct
+            # lying on the attic deck; -24 7/8" is 6" above SF-S-HP1's cavity floor, unchanged by the
             # move because the 21" drop keeps that floor at 209 1/8" absolute.
             # 21'-11 1/2", not the 22'-0" bay centre, since 2026-09-16: centred, the 6" duct
             # stood 3/8" into FO-A-HALL's outboard trimmer ply (face at 22'-2 5/8") for the
@@ -347,8 +353,8 @@ DUCTS_ERV_MIX_FEED = [
                   pt(inch(15.4), ft(21, 10.625)), pt(ft(21), ft(21, 10.625)),
                   pt(ft(21), ft(21, 10.625)), pt(ft(21), ft(28, 9)),
                   pt(ft(21), ft(28, 9))),
-            elevations=(inch(-8.875), inch(4), inch(4),
-                        inch(-8.875), inch(-8.875),
+            elevations=(inch(-8.5), inch(4), inch(4),
+                        inch(-8.5), inch(-8.5),
                         inch(4), inch(4), inch(-24.875)),
             # ** IT NAMES NO SOFFIT, AND THAT IS THE 2026-09-04 CHANGE THAT COSTS SOMETHING. **
             # It used to name SF-S-HP1. `duct_occupants` clips a run's extent ALONG the box

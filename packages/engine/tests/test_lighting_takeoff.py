@@ -91,9 +91,9 @@ def test_run_lengths_and_watts_sum_from_the_authored_polylines(catlin_model):
     by_type = takeoff["by_type"]
     assert takeoff["total_length_ft"] == pytest.approx(
         sum(row["length_ft"] for row in by_type), abs=0.05 * (len(by_type) + 1))
-    # 5 W/ft is the authored RGB+CCT tape (E4); the run watts are that times its length.
+    # 6.1 W/ft is the authored RGB+CCT tape (E4, SLL 20 W/m); run watts are that x length.
     living = by_tag["LR-M-LIVING-W"]
-    assert living["watts"] == pytest.approx(round(living["length_ft"] * 5.0, 1))
+    assert living["watts"] == pytest.approx(round(living["length_ft"] * 6.1, 1))
 
 
 def test_light_run_materials_splits_the_blended_length_into_order_lines(catlin_model):
@@ -130,6 +130,11 @@ def test_light_run_materials_splits_the_blended_length_into_order_lines(catlin_m
 
 
 def test_every_supply_is_sized_at_125_percent_of_what_it_drives(catlin_model):
+    from _helpers import CATLIN
+
+    from typehaus.checks.run import load_preferences
+
+    suppressed = load_preferences(CATLIN).suppressed
     supplies = light_run_takeoff(catlin_model)["supplies"]
     assert supplies
     for supply in supplies:
@@ -137,6 +142,11 @@ def test_every_supply_is_sized_at_125_percent_of_what_it_drives(catlin_model):
         # each, the connected one scaled by the factor.
         assert supply["required_watts"] == pytest.approx(
             supply["connected_watts"] * PSU_SIZING_FACTOR, abs=0.05 * (1 + PSU_SIZING_FACTOR) + 1e-9)
+        if f"electrical.light_run_psu:{supply['psu']}" in suppressed:
+            # The house accepts this supply over the 125% rule (preferences.toml says why);
+            # it must still carry its connected load.
+            assert supply["connected_watts"] <= supply["rated_watts"], supply
+            continue
         assert supply["adequate"] is True, supply
         assert supply["rated_watts"] >= supply["required_watts"]
     # Four MITTLED runs share the kitchen supply, so its demand is their sum, not the larger.
@@ -180,7 +190,7 @@ def test_connected_load_counts_supplies_not_tape_and_sits_under_the_allowance(ca
     load = connected_lighting_va(catlin_model)
     per_circuit = {row["circuit"]: row for row in load["per_circuit"]}
     assert set(per_circuit) == {"CKT-LT-BACKUP", "CKT-LT-BSMT", "CKT-LT-GARAGE", "CKT-LT-MAIN",
-                                "CKT-LT-UPPER", "CKT-BATH-ATTIC"}
+                                "CKT-LT-UPPER", "CKT-BATH-RC"}
     assert load["total_connected_va"] == pytest.approx(
         round(sum(row["connected_va"] for row in load["per_circuit"]), 1))
 

@@ -229,10 +229,18 @@ AXILO_LEVELER = Product(
 
 # --- Lighting (2026-10-31) --------------------------------------------------------------
 # Kitchen under-cabinet strip, mark U1, on the TRADFRI driver the closet already uses.
+# ONE record, sku blank: a LightRun reaches its product through its type, so it cannot name
+# a module, and a 36" run is two (24 + 12). The order list therefore cannot pick modules;
+# the schedule below (prices.toml tape:ED-T-LT-MITTLED) is the buy.
 MITTLED = _ikea("PROD-IKEA-MITTLED", "", "MITTLED",
                 "MITTLED LED kitchen countertop lighting strip, dimmable, white",
-                "IKEA listings (EU/CA), read 2026-10-31: CRI > 90, 2700 K; 60 cm 410 lm / "
-                "5.5 W (~208 lm/ft). US article and lengths unread.")
+                "IKEA US pages, read 2026-11-07: 12 in. 904.725.14 (230 lm, 3.3 W), 15 in. "
+                "104.554.34 (300 lm, 4.3 W), 18 in. 504.554.27 (360 lm, 5.0 W), 24 in. "
+                "004.554.20 (480 lm, 6.0 W); 2700 K, CRI > 90; strip only in each box. "
+                "Kitchen buy: 24 + 12 (LR-M-KIT-N-WE1), 18 + 12 (-WE2), 15 (-WE3), 12 "
+                "(LR-M-KIT-E-WN1); one VAGDAL 704.636.00 per group.").model_copy(update={
+    "url": "https://www.ikea.com/us/en/p/"
+           "mittled-led-kitchen-cntrtp-lighting-strip-dimmable-white-00455420/"})
 
 IKEA_PRODUCTS = (
     IKEA_SEKTION, IKEA_VOXTORP_WHITE, IKEA_MAXIMERA, IKEA_AXSTAD_WHITE,

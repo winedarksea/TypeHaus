@@ -36,7 +36,8 @@ def duct_part_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 
 
 def duct_support_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    """One row per (product, hanger, size): count and the runs it hangs."""
+    """One row per (product, hanger, size): count and the runs it hangs. A saddle or bracket
+    is its own row; ``drop_ft`` is then its stand-off from the deck or wall."""
     rows: dict[tuple[str, str, str], dict[str, object]] = {}
     for support in model.duct_supports:
         key = (support.product_ref or "", support.hanger, support.size)
@@ -84,7 +85,8 @@ def seam_lengths_m(model: ResolvedModel) -> tuple[float, float]:
 def duct_sealing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Tape on the longitudinal seams, mastic on every transverse joint and fitting.
 
-    ``count`` is containers or rolls, None where the standard reads no coverage.
+    ``count`` is sealant containers (the standard's ``sealant_unit``) or tape rolls, None
+    where the standard reads no coverage.
     """
     from typehaus.resolve.duct_standard import duct_standard
 
@@ -97,7 +99,7 @@ def duct_sealing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         lf = transverse / _FT
         cover = standard.sealant_coverage_lf
         rows.append({"product": standard.sealant_product_ref, "use": "transverse joints",
-                     "seam_ft": round(lf, 1), "unit": "container",
+                     "seam_ft": round(lf, 1), "unit": standard.sealant_unit,
                      "count": math.ceil(lf / cover) if cover else None})
     if standard.tape_product_ref:
         lf = longitudinal / _FT

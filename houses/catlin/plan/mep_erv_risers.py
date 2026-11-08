@@ -49,8 +49,8 @@ from .erv_balance import (
 # stack), mid-bay in both upper decks; the cut joist is FO-M-ERV-OA's (plan/storeys/main.py).
 #
 # Three full-height risers on 9" centres fill the 24" exactly on one line, which is why
-# a fourth could never join that row: HP-FEED is a 12 7/8" STANDPIPE between FS-ATTIC's
-# bottom chord and the deck, not a riser, so it overlaps SUP in plan only across the 3/4" of
+# a fourth could never join that row: HP-FEED is a short STANDPIPE from FS-ATTIC's
+# joist bay up to the deck, not a riser, so it overlaps SUP in plan only across the 3/4" of
 # z where the two are joined. That is a joint and not a clash, and it is the whole reason
 # four ducts fit where four risers could not.
 #
@@ -122,9 +122,9 @@ DUCTS_ERV_RISERS = [
     # centreline of a 6" duct lying on the attic deck, and it is right for the three risers
     # that surface east of x=11 1/2" — but this column is at x=0'-5", where the 6:12 underside
     # is 4" above that deck. A 6" duct cannot come up there; it would be 1.4" proud of the
-    # rafters, which `integrity.element_above_roof` catches. So the riser tops out on
-    # FS-ATTIC's bottom chord instead (231 7/8" = the deck less 8 7/8", the same datum
-    # DU-S-ERV-HP-FEED uses) and its feed jogs the 7" east in the bay before standing up — the
+    # rafters, which `integrity.element_above_roof` catches. So the riser tops out low in the
+    # FS-ATTIC bay instead (231 7/8", 3/8" over DU-S-ERV-HP-FEED's start) and its feed jogs
+    # the 7" east in the bay before standing up — the
     # same move VR-M-STACK makes, in the same shaft, at the same rake.
     #
     # Moving the column east instead is not available: the chase's measured clear is 24" (see

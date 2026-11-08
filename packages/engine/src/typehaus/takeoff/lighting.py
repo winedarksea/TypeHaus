@@ -5,8 +5,8 @@ row is hand-summed and no wattage is invented — a fixture whose type states no
 reports ``None``, because a schedule that fills a blank with a plausible number is worse
 than one that admits the gap.
 
-The load section exists to answer a question NEC 220.82 deliberately does not. The service
-calculation takes lighting as a 3 VA/ft2 area allowance and never looks at a fixture, which
+The load section exists to answer a question NEC 120.82 deliberately does not. The service
+calculation takes lighting as a 2 VA/ft2 area allowance and never looks at a fixture, which
 is code-correct and tells a designer nothing about whether an all-LED house is anywhere
 near that allowance. So the connected total is reported *beside* the allowance rather than
 replacing it (→ takeoff/electrical.service_load_summary, which is unchanged).
@@ -19,6 +19,7 @@ from typing import TypedDict, TypeGuard
 from typehaus.model.base import Element
 from typehaus.model.electrical import luminaire_types
 from typehaus.model.mep import ElectricalDevice
+from typehaus.model.nec import NEC
 from typehaus.model.placeables import Mount
 from typehaus.model.types import ElectricalDeviceType, LuminaireType
 from typehaus.resolve.model import ResolvedLightRun, ResolvedModel
@@ -34,7 +35,7 @@ _M2_TO_FT2 = 10.7639104167
 
 
 def nec_floor_area_ft2(model: ResolvedModel) -> float:
-    """NEC 220.12/220.82 floor area: outside dimensions, the one CFA the set prints (G-001),
+    """NEC 120.5(C) floor area: outside dimensions, the one CFA the set prints (G-001),
     not the sum of room clear areas (D1-010). Falls back to rooms when no envelope resolves."""
     from typehaus.resolve.conditioned_area import conditioned_floor_area
 
@@ -45,7 +46,7 @@ def nec_floor_area_ft2(model: ResolvedModel) -> float:
 
 # Mirrors ``takeoff/electrical.GENERAL_LIGHTING_VA_PER_FT2``. Restated rather than imported
 # so this module can be read on its own; the parity is pinned by the takeoff test.
-GENERAL_LIGHTING_VA_PER_FT2 = 3.0
+GENERAL_LIGHTING_VA_PER_FT2 = 2.0  # 2026 NEC 120.82(B) / 120.41
 
 class _RunTypeTotals(TypedDict):
     type: str
@@ -364,7 +365,7 @@ def light_run_materials(model: ResolvedModel) -> list[dict[str, object]]:
 
 
 def connected_lighting_va(model: ResolvedModel) -> dict[str, object]:
-    """The real connected lighting load per circuit, against the 220.82 area allowance.
+    """The real connected lighting load per circuit, against the 120.82 area allowance.
 
     A 24V run contributes nothing directly: its load is its supply's, and the supply is a
     device on a branch circuit like any other. Counting both would double the tape. A
@@ -415,6 +416,7 @@ def connected_lighting_va(model: ResolvedModel) -> dict[str, object]:
         "conditioned_area_ft2": round(conditioned_ft2, 0),
         "allowance_va_per_ft2": GENERAL_LIGHTING_VA_PER_FT2,
         "allowance_va": round(GENERAL_LIGHTING_VA_PER_FT2 * conditioned_ft2, 0),
-        "basis": ("NEC 220.82 takes general lighting as an area allowance and never reads a "
-                  "fixture; this is what is actually connected, shown beside it."),
+        "basis": (f"{NEC.EDITION} {NEC.OPTIONAL_GENERAL_LOADS} takes general lighting as an "
+                  "area allowance and never reads a fixture; this is what is actually "
+                  "connected, shown beside it."),
     }

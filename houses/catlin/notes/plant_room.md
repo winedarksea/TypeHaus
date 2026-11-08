@@ -494,7 +494,7 @@ moisture transfer 0.7 @ 20 CFM, ASRE 73 %) — accepting that it closes its supp
 
 ## Electrical
 
-Per NEC 2023, this is a **damp location** throughout and a **wet location** anywhere it is
+Per the NEC, this is a **damp location** throughout and a **wet location** anywhere it is
 misted or hosed.
 
 - **Damp is enough for the lights (owner, 2026-10-28)**: they are never misted. The

@@ -3,7 +3,8 @@
 The house's ``DrywallStandard`` names one bead per edge kind; this stage finds the edges:
 
 * ``outside_corner`` — each reflex vertex of a room ring with gypsum on both faces, finished
-  floor to ceiling less any tile band over it; and a gypsum soffit's free bottom edges;
+  floor to ceiling less any tile band over it; a gypsum soffit's free bottom edges; and a
+  leafless passage's wrap, both jambs and the head on each face (``drywall_passage_wraps``);
 * ``termination`` (J-bead, picked by the board's thickness) — where a gypsum arc meets a
   bare face along a ring (floor to ceiling), and along a banded gypsum layer whose edge
   stops over a bare face;
@@ -96,6 +97,7 @@ class TrimContext:
 
 def resolve_drywall_trims(plan, model: ResolvedModel) -> list[Finding]:
     from typehaus.resolve import drywall_trim_edges as edges
+    from typehaus.resolve.drywall_passage_wraps import passage_beads
 
     standard, findings = drywall_standard(plan)
     findings.extend(host_shadow_gap_runs(model, standard))
@@ -109,6 +111,7 @@ def resolve_drywall_trims(plan, model: ResolvedModel) -> list[Finding]:
         edges.soffit_corners(ctx)
         edges.tile_reveals(ctx)
         edges.door_beads(ctx)
+        passage_beads(ctx)
     model.drywall_trims = ctx.records
     return findings
 

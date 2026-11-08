@@ -255,6 +255,11 @@ def _support_mesh(model: ResolvedModel, hanger: ResolvedDuctSupport) -> GMesh | 
     u = ((-half_w - t, top), (-half_w - t, -half_d - t), (half_w + t, -half_d - t),
          (half_w + t, top), (half_w, top), (half_w, -half_d), (-half_w, -half_d),
          (-half_w, top))
+    if hanger.hanger == "saddle":  # the band over the duct, its feet on the deck below
+        foot = half_d + hanger.drop_m
+        u = tuple((a, -foot if z == top else -z) for a, z in reversed(u))
+    elif hanger.hanger == "bracket":  # the band cradling the duct; its wall anchor not drawn
+        u = tuple((a, half_d if z == top else z) for a, z in u)
     plate = plate_mesh(tuple((a / M_PER_IN, 0.0, z / M_PER_IN) for a, z in u),
                        (0.0, width / M_PER_IN, 0.0))
     shifted = transform_mesh(plate, origin_m=_add(hanger.point, run, -width / 2.0),

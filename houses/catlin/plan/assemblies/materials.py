@@ -25,8 +25,6 @@ MATERIALS = [
              color="#eeeeee", source="SureSill stock HeadFlash/sloped sill pan; catalog coordination envelopes."),
     Material(tag="silicone-transition", name="Proglaze ETA standard silicone transition",
              color="#bbbbbb", source="Tremco ETA System 1 standard 6 inch extrusion and molded corners; project application unconfirmed."),
-    Material(tag="composite-door-frame", name="Therma-Tru composite exterior frame and trim",
-             color="#41464a", source="2026 Comp 6.4/6.46; composite profiles, finish per Therma-Tru. No exposed wood."),
     Material(tag="impermeable-door-flashing", name="Impermeable door pan/apron membrane",
              color="#444444", source="opening_flashing_spec.md hybrid; exact PVC-pan bond remains unconfirmed."),
     Material(tag="pvc-door-water-sheet", name="PVC sheet membrane under D-B-SUNKEN's tread",

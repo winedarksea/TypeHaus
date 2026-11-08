@@ -94,13 +94,14 @@ LG_WASHTOWER = ApplianceType(
            # The washer's discharge and the dryer's condensate leave together: LG's drain-hose
            # connector joins the dryer hose to the washer's, and the short hose hangs over the
            # side of the laundry tub (FX-M-LAUNDRY-SINK, owner 2026-11-07) on the elbow bracket.
-           # LG installation guide WKHC252H*A p.20-23: "either a standpipe or laundry tub"; hose
-           # end 24"-96" over the base (best <= 66"); short hose end <= 41" over the floor.
+           # LG installation manual MFL71983225 pp.17-19: washer hose end 24"-96" over the
+           # washer base (best <= 66"), dryer hose end <= 38" over it. p.18's "<= 41 in."
+           # (105 cm) is the short hose's REACH to a sink-tailpiece spigot, not a height.
            ServicePort(tag="drain", service=Service.DRAIN,
                        position=(inch(10), inch(16.375), inch(30)), connection_size=inch(1),
                        direction=(0, 1, 0),
-                       notes="Hose end 24-96 in. over the base, <= 41 in. on the connector (LG p.21-23); "
-                             "hose length unpublished")),
+                       notes="Washer hose end 24-96 in. over the base, best <= 66; dryer hose "
+                             "end <= 38 (LG MFL71983225 pp.17-18); hose length unpublished")),
     # LG's door-open depth is 57 1/2" overall, so the leaf itself projects 24 3/4" past the
     # 32 3/4" body. 30" is that leaf plus the few inches a person needs to stand in it, and
     # it stays RECOMMENDED (front_zone's only policy) so a laundry *closet* — where the band
@@ -114,7 +115,10 @@ LG_WASHTOWER = ApplianceType(
             "240V/830W (or 208V/820W), 15A circuit per LG's US spec sheet; separate "
             "4-wire cord. Condensate drain outlet "
             "behind the stacking bracket, no duct. Supply 20-120 psi both inlets. 1\" side "
-            "clearance. 353 lb."),
+            "clearance. 353 lb. Drain heights: LG installation manual MFL71983225 (Canadian "
+            "edition, retailer-hosted copy, read 2026-11-07) pp.17-19, https://www."
+            "canadianappliance.ca/pdf/lg/washer/WKHC252HBA_user-manual-installation-"
+            "instructions---en.pdf"),
 )
 
 # --- cooking ---------------------------------------------------------------------------
@@ -155,8 +159,8 @@ LG_INDUCTION_RANGE = ApplianceType(
 # PA-M-DW-WHA-HW exists on the kitchen hot branch (plan/mep_supply_devices.py), and
 # ``mep.water_hammer_arrestor`` reads this flag, not the product name.
 #
-# Hot water only, like the allowance it replaces — LG's install manual takes a hot supply at
-# 20-120 psi and there is no cold connection to make. So the arrestor count stays one.
+# Hot water only, like the allowance it replaces — LG's builder spec sheet takes a hot supply at
+# 20-80 psi and there is no cold connection to make. So the arrestor count stays one.
 LG_DISHWASHER = ApplianceType(
     tag="APPL-LG-DISHWASHER", name="LG LDTS5552S 24\" QuadWash dishwasher",
     product_ref="PROD-LG-LDTS5552S",
@@ -165,13 +169,17 @@ LG_DISHWASHER = ApplianceType(
     needs=frozenset({Service.WATER_HOT, Service.DRAIN, Service.POWER_120}),
     quick_closing=True,  # solenoid fill valve — P2903.5
     ports=(ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
-           # Both leave through the rear-left channel; LG's diagram labels are not legible as
-           # dimensions, so the stations are approximate. The drain's receptor is the disposer's
-           # knockout (APPL-ISE-BADGER5 dw-inlet), not a house pipe.
+           # The fill valve is at the LEFT FRONT (owner's manual p.19); the house's 3/8" line
+           # runs back along the floor 6 1/2-7 3/4" in from the opening's left side (p.17) to
+           # the PR-M-DW-HW stub at the rear, so the port grades by that line's reach. y and z
+           # are unpublished: behind the kick plate, inside LG's 4 1/2" routing zone. The
+           # drain's receptor is the disposer's knockout (APPL-ISE-BADGER5 dw-inlet).
            ServicePort(tag="supply", service=Service.WATER_HOT,
-                       position=(inch(-7.2), inch(10), inch(4.5)), connection_size=inch(0.375),
-                       direction=(0, 1, 0),
-                       notes="90-degree 3/8 in. compression fill, left side channel, rear low"),
+                       position=(inch(-4.875), inch(-9.3125), inch(2.25)),
+                       connection_size=inch(0.375), direction=(0, 1, 0), hose_length=inch(48),
+                       notes="Factory 90-degree 3/8 in. compression elbow on the left-front inlet "
+                             "valve; x is the centre of LG's floor lane, y/z an allowance. The "
+                             "48 in. braided 3/8 in. compression line is the house's purchase."),
            ServicePort(tag="drain", service=Service.DRAIN,
                        position=(inch(-3), inch(12), inch(4.5)), connection_size=inch(0.625),
                        direction=(0, 1, 0),
@@ -183,7 +191,12 @@ LG_DISHWASHER = ApplianceType(
             "and owner's manual read 2026-08-24: 23 3/4\" W x 24 5/8\" D x 33 5/8\" H "
             "(603 x 625 x 854 mm), 15 place settings, 46 dBA. 120V 60Hz on a dedicated 15A "
             "or 20A circuit (CKT-DISHWASHER is 20A 1-pole, plan/circuits.py slot 34). Hot "
-            "supply 20-120 psi; standard drain with air gap."),
+            "supply 20-80 psi (LG Builder Spec Sheet 10/22 p.2, read 2026-11-07, https://"
+            "media.us.lg.com/m/456cce9d7becfb82/original/LDTS5552_-LG-Builder-Spec-Sheet.pdf); "
+            "inlet valve left front, house line along the floor 6 1/2-7 3/4 in. from the "
+            "opening's left (owner's manual pp.17, 19, https://media.us.lg.com/m/"
+            "5e9908fbc325246c/original/LDTS5552_-Owners-Manual.pdf); standard drain with "
+            "air gap."),
 )
 
 # --- cold storage ----------------------------------------------------------------------

@@ -247,7 +247,7 @@ def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str)
 
 
 #: A raceway's solid category. Two of them, because the one distinction that matters when you
-#: look at a raceway is which side of NEC 800.133/725 it is on: comms may never share a run
+#: look at a raceway is which side of NEC 722.15(A) it is on: comms may never share a run
 #: with power, so "power or data" is the whole question, and the voltage is a property to read
 #: off the run (``ResolvedConduitRun.service``) rather than a thing to tell apart by colour.
 #: A capped spare rides with power — it is in the electrician's rough-in, and the only things

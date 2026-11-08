@@ -6,6 +6,7 @@ from typehaus.checks._authoring import by_result
 from typehaus.checks.mep.framing_envelope import member_footprint
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
+from typehaus.model.nec import NEC, cite
 
 
 def _floor_receptacles(ctx: CheckContext) -> list:
@@ -20,7 +21,7 @@ def _floor_receptacles(ctx: CheckContext) -> list:
 @check(Tier.CODE, "code.E3905_7_floor_boxes")
 def listed_floor_boxes(ctx: CheckContext) -> list[Finding]:
     """A receptacle's listing does not substitute for a box listed for floor use."""
-    cid, code = "code.E3905_7_floor_boxes", "E3905.7 / NEC 314.27(B)"
+    cid, code = "code.E3905_7_floor_boxes", cite(NEC.FLOOR_BOX)
     devices = _floor_receptacles(ctx)
     if not devices:
         return [by_result(cid, Result.NOT_APPLICABLE, "no floor receptacles", (), code)]

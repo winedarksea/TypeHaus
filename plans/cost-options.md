@@ -160,13 +160,17 @@ at 0 FAIL, read off `electrical.service_load`). The owner has kept Class 320, th
 both EV circuits for now; this is the route back if that changes. **Dropping the spa and the
 6-20 EV outlet is not enough on its own.**
 
+**Stale since 2026-11-07:** the 2026 120.82 constants and the heat-kit 65% put the
+service at 250.4 A, and the interlock row below is retired (decision #120). Re-derive this
+ladder before acting on it.
+
 | step | demand |
 |---|---|
 | today (after the 2026-09-22 range/kettle nameplate fixes) | 265.8 A |
 | − `CKT-EV-620` (EV counted at 100%) | −16.0 A |
 | − `CKT-SPA` (11.5 kVA × 40%; keep `CD-B-SPA` conduit as a pre-wire) | −19.2 A |
 | = the owner's cuts | 230.7 A: **not enough** |
-| + HP1 aux-heat `hvac_interlock` (220.82(C), no listed device; the lockout is already set) | −19.2 A → 211.5 A |
+| ~~+ HP1 aux-heat `hvac_interlock`~~ retired 2026-11-07 (decision #120) | — |
 | + `CKT-EV-1450` 50 → 30 A (24 A / 5.8 kW charging) | −16.0 A → **195.5 A** ✓ |
 | alt: `CKT-EV-1450` → 40 A, plus a 120 V kettle (drop `CKT-KETTLE`) | → 198.5 A ✓ (1.5 A margin) |
 | alt: a listed UL 3141 PCS on the EV instead of downsizing it | ~$2.1–3.5k of hardware |

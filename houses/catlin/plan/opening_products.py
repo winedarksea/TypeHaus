@@ -10,11 +10,13 @@ NOT ``# haus: editable``: a catalog of definitions.
 
 from __future__ import annotations
 
+from plan.exterior_palette import WINDOW
 from typehaus.model import Product
 
 _DRUTEX_URL = "https://drutex.com/en-us/products/iglo-energy-alu-cover.html"
 _DRUTEX = ("Drutex S.A., Bytow PL. IGLO Energy Alucover: 7-chamber uPVC, 93 mm, aluminium "
-           "cap outside (RAL 9005 matt), white PVC inside, MACO Multi-Matic. US dealer: DAKAM, "
+           f"cap outside (RAL {WINDOW.colour} matt, plan/exterior_palette.py), white PVC "
+           "inside, MACO Multi-Matic. US dealer: DAKAM, "
            "Franklin Park IL. Nail fin plus jamb straps per FL41837's tested anchorage. "
            "Alucover frame 70001 (74 mm exterior face), operable sash 70013 (+50 mm face, "
            "38 mm room-side bottom above bare PVC frame). Adaptor options 54123/54113 "
@@ -88,8 +90,9 @@ CLOPAY_CLASSIC_STEEL = Product(
     url="https://www.homedepot.com/p/Clopay-Classic-Steel-Long-Panel-16-ft-x-7-ft-Insulated-"
         "12-9-R-Value-Charcoal-Garage-Door-without-windows-GDU293/333516344",
     source="Insulated steel, R-12.9 (DASMA TDS-163 section value). GDU293 is Home Depot's 16x7 "
-           "Charcoal no-window listing. Black is offered only at R-6.5 (GDU266) in this line, "
-           "so Charcoal is the dark exterior. Wind rating for Exp B (q_h 19.3 psf) to confirm "
+           "Charcoal no-window listing. Charcoal until the dealer confirms Black at R-12.9: "
+           "clopaydoor.com/classic lists Black as premium, \"available on select models\" "
+           "(Home Depot's Black, GDU266, is R-6.5); open 2026-11-07. Wind rating for Exp B (q_h 19.3 psf) to confirm "
            "with the dealer.")
 
 

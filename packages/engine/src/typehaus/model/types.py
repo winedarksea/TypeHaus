@@ -424,11 +424,10 @@ class FurnitureType(HausModel):
     footprint: tuple[Length, Length]  # (width, depth)
     height: Length
     storage: bool = False
-    # NEC 210.52(A)(2)(1) breaks wall space at "fixed cabinets that do not have countertops
-    # or similar work surfaces", so a run of tall pantry is not somewhere a receptacle is
-    # required and a run of base cabinet is. ``None`` means the question does not arise: the
-    # type is not fixed cabinetry standing on the floor, and a bookcase you can pull away
-    # from the wall breaks nothing whatever its top is made of.
+    # Fixed cabinetry answers this; ``None`` means the type is not fixed cabinetry standing
+    # on the floor, and a bookcase you can pull away from the wall breaks nothing. 2026 NEC
+    # 210.52(A)(2)(1) breaks wall space at every fixed cabinet, True or False here (before
+    # 2026, only False); True puts the top under 210.52(C) and marks an island.
     work_surface: bool | None = None
     clearance: tuple[Length, Length, Length, Length] | None = None  # front/back/L/R
     # How deep the CARCASS is, where that is less than the footprint depth. An island or a
@@ -611,7 +610,7 @@ class FixtureType(HausModel):
     # it. Declared rather than inferred, same reason as ``integral_vacuum_breaker``:
     # nothing in a bowl's footprint says whether there is a frame behind it.
     carrier_bay_width: Length | None = None
-    # Does this fixture present a LAVATORY BASIN — the thing NEC 210.52(D) / IRC E3901.6
+    # Does this fixture present a LAVATORY BASIN — the thing NEC 210.52(D)
     # measures its 36" from, and the thing 210.52(C) deliberately does not reach. True on a
     # lavatory or a vanity that holds one, False on a water closet, a tub or a shower.
     # Declared rather than inferred, same reason as ``integral_vacuum_breaker``: the check
@@ -1003,7 +1002,7 @@ class RegisterType(FurnitureType, AirHandlingProductFacts):
 
 class ElectricalDeviceType(FurnitureType):
     needs: frozenset[Service] = frozenset({Service.POWER_120})
-    # E3905.7 / NEC 314.27(B): floor receptacles need a box listed for floor use.
+    # NEC 314.27 (floor boxes; (B) before 2026): floor receptacles need a box listed for it.
     # A general receptacle listing alone does not establish that application.
     floor_box_listing: str | None = None
     # NEMA configuration (e.g. "5-20R", "14-50R") — typed data the panel schedule reads,

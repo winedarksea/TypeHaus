@@ -16,6 +16,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.electrical import luminaire_types
 from typehaus.model.enums import Occupancy
+from typehaus.model.nec import NEC, mark
 from typehaus.resolve import room_perimeter
 from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring, owns
@@ -34,7 +35,7 @@ def _warn_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
 def room_lighting(ctx: CheckContext) -> list[Finding]:
     """Every habitable room needs >= 1 light + >= 1 switch (symbols-only, decision 1).
 
-    NEC 210.70(A)(3)/(C) adds utility, laundry and mechanical rooms, and a storage room with
+    NEC 210.70(A)(3) adds utility, laundry and mechanical rooms, and a storage room with
     equipment in it: a light, switched in the room, by a switch it names, or at the fixture.
     """
     cid = "electrical.room_lighting"
@@ -67,14 +68,14 @@ def room_lighting(ctx: CheckContext) -> list[Finding]:
             missing = ", ".join(kind for kind, present in (("light", lights),
                                                            ("switch", switches))
                                 if not present)
-            label = "habitable room" if habitable else (room.occupancy.value
-                                                        + " room (NEC 210.70(A)(3))")
+            label = "habitable room" if habitable else (
+                f"{room.occupancy.value} room (NEC {NEC.STORAGE_EQUIPMENT_LIGHTING})")
             out.append(_warn_fail(cid, f"{label} {room.tag} is missing: {missing}",
                                   (room.tag,)))
     return out
 
 
-# NEC 210.70(A)(3)/(C): spaces that hold equipment needing service; storage only with some.
+# NEC 210.70(A)(3): spaces that hold equipment needing service; storage only with some.
 _EQUIPMENT_SPACES = {Occupancy.UTILITY, Occupancy.LAUNDRY, Occupancy.MECHANICAL}
 
 
@@ -122,7 +123,7 @@ _RECEPTACLE_KINDS = {"receptacle", "gfci"}  # the 125V 15/20A devices 210.52 cou
 # differentiates.)
 _COMBINATION_RECEPTACLE_KIND = "receptacle_240"
 _NEAR_WALL_M = room_perimeter.NEAR_WALL_M  # how close a device must sit to serve the wall
-_FLOOR_RECEPTACLE_WALL_REACH_M = 18 * 0.0254  # E3901.2.3 / NEC 210.52(A)(3)
+_FLOOR_RECEPTACLE_WALL_REACH_M = 18 * 0.0254  # NEC 210.52(A)(3)
 _RECEPTACLE_DISTANCE_TOLERANCE_M = 1e-9  # Include exact limits after polygon projection.
 # How much floor may survive between a floor opening and the wall face behind it and still
 # count as standing room. 12" of ledge along a stair well is not somewhere you plug a lamp in.
@@ -169,16 +170,15 @@ def _floor_opening_intervals(ctx: CheckContext, ring: list,
 
 def _fixed_cabinet_intervals(ctx: CheckContext, ring: list,
                              storey_tag: str) -> list[tuple[float, float]]:
-    """Perimeter intervals occupied by fixed cabinets that have no work surface.
+    """Perimeter intervals occupied by fixed cabinets, with or without a work surface.
 
-    210.52(A)(2)(1) names them alongside doorways and fireplaces as the things wall space is
-    unbroken by: a run of floor-to-ceiling pantry has no floor line in front of it and
-    nowhere to put a lamp. A base run is the opposite case — its countertop is exactly what
-    the receptacle is for — which is why the type says which it is
-    (``FurnitureType.work_surface``) rather than the check guessing from height.
+    2026 210.52(A)(2)(1) breaks wall space at every fixed cabinet (before, only counterless
+    ones); a countertop is 210.52(C)'s. Fixed cabinetry answers ``work_surface`` at all
+    (``None`` is a bookcase); an appliance set into the run (dishwasher, range) is part of it.
     """
     return room_perimeter.fixed_cabinet_intervals(
-        ctx.model, ctx.plan, ring, storey_tag, lambda t: t.work_surface is False)
+        ctx.model, ctx.plan, ring, storey_tag, lambda t: t.work_surface is not None,
+        run_appliances=True)
 
 
 @check(Tier.ADVISORY, "electrical.receptacle_spacing")
@@ -187,7 +187,7 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
 
     Geometry-based, unlike ``room_lighting``'s tag matching: the room's resolved
     ``clear_face`` ring is unrolled into an arc-length coordinate (so corners measure
-    correctly), doorways, floor openings and counterless fixed cabinets break it into wall
+    correctly), doorways, floor openings and fixed cabinets break it into wall
     spaces, spaces under 2' are exempt, and every remaining point must be within 6' of a
     receptacle projected onto the boundary. Roof-to-floor plate boundaries are evaluated
     both as wall space and as breaks, with their interpretation explicitly UNKNOWN.
@@ -245,9 +245,10 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
         elif not gaps:
             out.append(_pass(cid, f"room {room.tag} meets the 6' receptacle rule",
                              (room.tag,)))
-    out.append(_unknown(cid, "kitchen counter rule (210.52(C)) not evaluated — counter "
-                             "casework is not resolved geometry; counter receptacles are "
-                             "authored at 42\" in plan/mep.py"))
+    out.append(_unknown(cid, f"kitchen counter rule ({NEC.COUNTERTOP}, incl. "
+                             f"{NEC.BELOW_COUNTERTOP}'s 24\" below the counter) not evaluated "
+                             "— counter casework is not resolved geometry; counter "
+                             "receptacles are authored at 42\" in plan/mep.py"))
     return out
 
 
@@ -262,11 +263,13 @@ _ISLAND_RECEPTACLE_MARGIN_M = 12 * 0.0254
 def island_receptacle(ctx: CheckContext) -> list[Finding]:
     """Every freestanding work-surface island has a receptacle at its footprint.
 
-    2023 NEC 210.52(C)(2) stopped *requiring* an island or peninsular countertop
-    receptacle, but where none is installed it requires provisions for adding one, and
+    NEC 210.52(C)(2) stopped *requiring* an island or peninsular countertop receptacle in
+    2023, but where none is installed it requires provisions for adding one, and
     210.52(C)(3) confines any receptacle that serves the countertop to on/above/in the
     counter surface. An island with nothing at all — no receptacle, no provision — is the
     thing worth flagging: the appliance ends up on an extension cord across the aisle.
+    2026 210.52(C)(4) forbids a receptacle less than 24" below the countertop, so an end-
+    panel device that high is refused, not counted.
 
     Population: ``FurnitureType.work_surface is True`` (the same type attribute
     ``_fixed_cabinet_intervals`` reads for the opposite purpose), sitting on the floor,
@@ -297,6 +300,8 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
             and _counts_as_a_125v_receptacle(ctx, element)]
 
     floor_z = {s.tag: s.elevation.meters for s in ctx.plan.storeys}
+    # Absolute body tops: a carcass's is the counter, a device's is its box.
+    tops = {obj.tag: obj.body_z1_m for obj in ctx.model.canvas_objects}
     out: list[Finding] = []
     islands = 0
     work_surfaces = 0
@@ -319,16 +324,26 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
             islands += 1
             label = " + ".join(tags)
             reach = run.buffer(_ISLAND_RECEPTACLE_MARGIN_M)
-            if any(reach.contains(Point(placed_xy(ctx.model, device)))
-                   for device in receptacles_by_storey.get(storey, [])):
+            near = [device for device in receptacles_by_storey.get(storey, [])
+                    if reach.contains(Point(placed_xy(ctx.model, device)))]
+            top = max((tops.get(tag) or 0.0 for tag in tags), default=0.0)
+            face = run.buffer(_ON_CARCASS_M)  # (C)(4) bans a box on the island, not near it
+            banned = [d.tag for d in near if _below_counter_band(tops.get(d.tag), top)
+                      and face.contains(Point(placed_xy(ctx.model, d)))]
+            if banned:
+                out.append(_warn_fail(
+                    cid, f"island {label}: {', '.join(banned)} sits less than 24\" below "
+                         f"the countertop, which NEC {NEC.BELOW_COUNTERTOP} forbids",
+                    (*tags, *banned)))
+            if [d for d in near if d.tag not in banned]:
                 out.append(_pass(cid, f"island {label} has a receptacle at its footprint",
                                  tags))
-            else:
+            elif not banned:
                 out.append(_warn_fail(
                     cid, f"island {label} has no receptacle within its footprint — "
-                         f"NEC 210.52(C)(2) wants one (or provisions for one), and "
-                         f"210.52(C)(3) wants any that serves the countertop on/above/in "
-                         f"the counter surface", tags))
+                         f"NEC {mark(NEC.ISLAND_PROVISION)} wants one (or provisions for one), and "
+                         f"{mark(NEC.COUNTERTOP_RECEPTACLE_LOCATION)} wants any that serves the "
+                         f"countertop on/above/in the counter surface", tags))
     if not islands:
         if work_surfaces:
             # Positive absence, not a missing input: the house's work-surface casework was
@@ -336,12 +351,23 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
             # here, so there is no 210.52(C)(2) island receptacle to want.
             return [_na(cid, f"{work_surfaces} work-surface unit(s) modeled and every one "
                              f"stands against a room boundary — this house has no "
-                             f"freestanding island for 210.52(C)(2) to govern")]
+                             f"freestanding island for {mark(NEC.ISLAND_PROVISION)} to govern")]
         # No work surfaces at all is a *gap*: a dwelling has counters, so their absence
         # means the casework is unmodeled rather than absent from the design.
         return [_unknown(cid, "no work-surface casework is modeled at all, so whether this "
                               "house has an island cannot be answered")]
     return out
+
+
+_BELOW_COUNTER_M = 24 * 0.0254  # NEC 210.52(C)(4)
+_ON_CARCASS_M = 2 * 0.0254  # a box on an end panel projects about this far
+
+
+def _below_counter_band(device_top: float | None, counter_top: float) -> bool:
+    """A box whose top is under the counter by less than 24"."""
+    if device_top is None or counter_top <= 0.0:
+        return False
+    return counter_top - _BELOW_COUNTER_M < device_top < counter_top
 
 
 def _work_surface_runs(items: list[tuple[str, object]]) -> list[tuple[tuple[str, ...], object]]:

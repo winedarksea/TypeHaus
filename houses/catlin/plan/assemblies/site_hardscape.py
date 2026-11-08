@@ -173,7 +173,7 @@ RAILING_DARK_METAL = Assembly(
         Layer(name="rail-metal", material_ref="metal-dark-exterior", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE),
     ),
-    source="catlin-house guards — near-black painted metal, the house's one exterior dark",
+    source="catlin-house guards — metal-dark-exterior, the house's one exterior dark in plan/exterior_palette.py METAL: Metal Sales 24 ga PVDF Matte Black (106) since 2026-11-07",
 )
 
 # Garage slab-on-grade. It carries 1" of below-slab XPS — the owner wants the garage floor

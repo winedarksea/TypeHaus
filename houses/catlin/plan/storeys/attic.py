@@ -657,7 +657,7 @@ ROOFS = [
          # The barge-board answer for a roof that cannot have a barge board.
          # With zero overhang the formed corner trim is the only piece standing at the rake,
          # and it was ordered in the panels' own white — so the gable read as a knife edge.
-         # Ordered in the casings' charcoal instead, its 4" leg draws a 4-1/2" dark band
+         # Ordered in the house's exterior dark instead, its 4" leg draws a 4-1/2" dark band
          # down both rakes, round both eaves and along the ridge: one outline, no new
          # geometry, no custom fabrication, just a second coil colour.
          edge_trim_material="metal-dark-exterior",

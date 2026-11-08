@@ -163,7 +163,7 @@ hose bib. **Confirm the adapter's thread (3/4" GHT assumed) on the delivered car
 the faucet's 43" box. The W-B-STR2 bore and the bath-lavatory termination are gone;
 `PR-B-WH-COND` still tees in behind the tank. The TPR stays piped to the floor.
 
-No receptacle stands within 6' of the sink, so E3902's sink rule adds nothing here.
+No receptacle stands within 6' of the sink, so NEC 210.8(A)(9)'s sink rule adds nothing here.
 
 ## 5. The tiers (2026-11-02)
 

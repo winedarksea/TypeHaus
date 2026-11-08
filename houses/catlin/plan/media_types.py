@@ -19,8 +19,10 @@ TCL_98QM8L = Product(
     name='98" QM8L SQD Mini-LED 4K Google TV (2026)',
     url="https://www.pcrichard.com/tcl-98-class-qm8l-qled-mini-led-4k-uhd-smart-google-tv/98QM8L.html",
     source="Owner, 2026-11-02. PC Richard and displayinput.com, read 2026-11-02: 85.3 x 48.7 x "
-           "2.1 in. without stand, 121.3-126.8 lb. VESA 600 x 500 (M8) per the 98QM8K "
-           "sibling: CONFIRM in the QM8L manual before ordering the mount.",
+           "2.1 in. without stand, 121.3-126.8 lb. VESA 600 x 500, M8x16, 121.3 lb without "
+           "stand (TCL QM8L spec sheet, "
+           "https://static.pcrichard.com/docs/98QM8L_Specifications-Sheet_01.pdf, read "
+           "2026-11-07).",
 )
 MONOPRICE_12994 = Product(
     tag="PROD-MONOPRICE-12994", brand="Monoprice", model="12994",

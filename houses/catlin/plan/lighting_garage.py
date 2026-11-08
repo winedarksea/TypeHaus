@@ -242,7 +242,7 @@ GARAGE_LIGHTING = [
     # building is never lit because nobody wants to leave the sconces on. They are two
     # LAYERS, not two halves of one thing — ED-G-EXT-LT-E/-W are a "somebody is at the door"
     # light aimed at the apron, and these three runs are an ambient wash that wants to come
-    # on at dusk and go off by itself. HA schedules it through the runs' Zigbee controllers;
+    # on at dusk and go off by itself. HA schedules it through the runs' Matter controllers;
     # this paddle (plain since 2026-11-03) is a hard-off left on. Unattended is the whole
     # point: a run left on until somebody notices is the dark-sky failure mode.
     #
@@ -252,7 +252,10 @@ GARAGE_LIGHTING = [
     # Mark W is 24V RGBW (4.5 W/ft). ** CLASS 2 (owner, 2026-10-31): ** the tape is unlisted,
     # so every segment is on a <=100 VA Class 2 supply, the certified part: an HLG-100 (96 W)
     # per half run, 12' x 4.5 x 1.25 = 68 W (gable halves 72 W). Each driver is INDOORS at
-    # 96" on the wall nearest its half, with a GL-C-001P (RGBW mode) 12" along the wall.
+    # 96" on the wall nearest its half, with its controller 12" along the wall. ** MATTER
+    # SINCE 2026-11-07 ** (owner: moisture is the concern, Matter preferred): a GL-C-208M in a
+    # vented NEMA 4X box (ED-T-LT-CTRL-MATTER), the tape's W on its warm terminal: HA pins
+    # color_temp at the warmest kelvin for the dusk white (notes/smart_home.md).
     ElectricalDevice(uid="7RB4FGXA5Q", tag="ED-G-EAVE-W-PSU", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-LT-PSU-96-WE",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
@@ -261,7 +264,7 @@ GARAGE_LIGHTING = [
                          wall_ref="W-G-W", face="left", distance_from_start=inch(200),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="5TFZDH6TEV", tag="ED-G-EAVE-W-CTRL", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-GARAGE",
+                     type_ref="ED-T-LT-CTRL-MATTER", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-W", face="left", distance_from_start=inch(188),
@@ -274,7 +277,7 @@ GARAGE_LIGHTING = [
                          wall_ref="W-G-W", face="left", distance_from_start=inch(72),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="BN45YA6PCY", tag="ED-G-EAVE-W2-CTRL", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-GARAGE",
+                     type_ref="ED-T-LT-CTRL-MATTER", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-W", face="left", distance_from_start=inch(60),
@@ -287,7 +290,7 @@ GARAGE_LIGHTING = [
                          wall_ref="W-G-E", face="left", distance_from_start=inch(100),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="2P06FQVMBP", tag="ED-G-EAVE-E-CTRL", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-GARAGE",
+                     type_ref="ED-T-LT-CTRL-MATTER", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-E", face="left", distance_from_start=inch(88),
@@ -300,7 +303,7 @@ GARAGE_LIGHTING = [
                          wall_ref="W-G-E", face="left", distance_from_start=inch(216),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="F5NJA2SN4G", tag="ED-G-EAVE-E2-CTRL", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-GARAGE",
+                     type_ref="ED-T-LT-CTRL-MATTER", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-E", face="left", distance_from_start=inch(228),
@@ -313,7 +316,7 @@ GARAGE_LIGHTING = [
                          wall_ref="W-G-N", face="left", distance_from_start=inch(30),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="77SGFSDD3D", tag="ED-G-GABLE-N-CTRL", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-GARAGE",
+                     type_ref="ED-T-LT-CTRL-MATTER", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-N", face="left", distance_from_start=inch(18),
@@ -326,7 +329,7 @@ GARAGE_LIGHTING = [
                          wall_ref="W-G-N", face="left", distance_from_start=inch(262),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="B5X6YRRPHS", tag="ED-G-GABLE-N2-CTRL", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-GARAGE",
+                     type_ref="ED-T-LT-CTRL-MATTER", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-N", face="left", distance_from_start=inch(276),

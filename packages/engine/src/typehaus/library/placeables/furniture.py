@@ -327,7 +327,7 @@ TWO_PERSON_DINING_TABLE = FurnitureType(
 CHESS_TABLE_315 = FurnitureType(
     tag="FURN-CHESS-TABLE-315", name="Chessboard side table with piece-storage drawer",
     footprint=(inch(31.5), inch(27.75)), height=inch(27.5),
-    plan_symbol="chess-table", storage=True, work_surface=True,
+    plan_symbol="chess-table", storage=True,
     source=("Owner-specified: 31 1/2 x 27 3/4 in. top, 2 1/4 in. thick, "
             "27 1/2 in. overall height; side table with one drawer for chess pieces "
             "and an 8 x 8 chessboard pattern on top. Board size and joinery are illustrative."),
@@ -360,7 +360,7 @@ WRITING_DESK_42 = FurnitureType(
 HEMNES_DESK_61 = FurnitureType(
     tag="FURN-DESK-HEMNES-61", name='HEMNES-style wood desk, 61", drawers on both sides',
     footprint=(inch(61), inch(25.625)), height=inch(29.125),
-    plan_symbol="drawer-desk", storage=True, work_surface=True,
+    plan_symbol="drawer-desk", storage=True,
     source=("IKEA HEMNES 205.350.44, white stain/light brown; solid-pine top and frame, "
             "61 x 25 5/8 x 29 1/8 in.; owner-requested variant with two drawers on each "
             "side. Simplified planning model. "
@@ -371,7 +371,7 @@ HEMNES_DESK_61 = FurnitureType(
 MITTZON_SIT_STAND_DESK_47 = FurnitureType(
     tag="FURN-DESK-MITTZON-47", name='IKEA MITTZON electric sit–stand desk, walnut/black',
     footprint=(inch(47.25), inch(23.625)), height=inch(29.5),
-    plan_symbol="sit-stand-desk", work_surface=True,
+    plan_symbol="sit-stand-desk",
     source=("IKEA MITTZON 995.268.81; walnut-veneer top, black electric underframe; "
             "47 1/4 x 23 5/8 in.; adjustable height 24 3/8–49 5/8 in. "
             "Planning model shown at a seated height of 29 1/2 in. "

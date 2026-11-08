@@ -15,6 +15,7 @@ from typehaus.emit.draw.schedules.paged_tables import (
 )
 from typehaus.emit.draw.schedules.tables import _add_table, _number
 from typehaus.emit.draw.sheet_writer import PORTRAIT_LEDGER, schedule_sheet, section
+from typehaus.model.nec import NEC, cite
 from typehaus.resolve.model import ResolvedModel
 
 #: Schedule pages lay out above figure fraction 0.11, the title strip's top on every paper
@@ -32,7 +33,7 @@ def _hours_label(hours: float | None) -> str:
 
 
 def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:
-    """The panel schedule + NEC 220.82-style load summary + backup component list, all
+    """The panel schedule + NEC 120.82 load summary + backup component list, all
     derived from Library.circuits (→ takeoff.electrical — nothing here is hand-summed)."""
 
     from typehaus.takeoff import (
@@ -40,6 +41,11 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
         backup_runtime_summary,
         panel_schedule,
         service_load_summary,
+    )
+    from typehaus.takeoff.electrical import (
+        FIRST_8KVA,
+        GENERAL_LIGHTING_VA_PER_FT2,
+        REMAINDER_DEMAND_FACTOR,
     )
     with schedule_sheet(pdf, model, number, name) as fig:
         schedule = panel_schedule(model)
@@ -50,7 +56,7 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
         schedule_rows = [
             (row["circuit"], row["description"], f"{row['breaker_amps']}A/{row['poles']}p",
              f"{row['volts']}V", row["nema"] or "—", row["panel"],
-             ("GFCI " if row["gfci"] else "")
+             (("SPGFCI-C " if row.get("gfci_class") == "C" else "GFCI ") if row["gfci"] else "")
              + ("AFCI " if row["afci"] else "")
              + _TIER_LABEL.get(str(row["backup_tier"]), "")
              + ("SOURCE" if row["source"] else "") or "—",
@@ -66,10 +72,13 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
         section(fig, _LEFT_X, _LOWER_TOP, "SERVICE LOAD — " + str(load["method"]).upper())
         load_rows = [
             ("Conditioned floor area", f"{load['floor_area_ft2']:,.0f} ft2"),
-            ("General lighting + small appliance/laundry",
-             f"{load['general_lighting_va']:,.0f} VA"),
+            (f"General lighting ({GENERAL_LIGHTING_VA_PER_FT2:g} VA/ft2) + small "
+             "appliance/laundry", f"{load['general_lighting_va']:,.0f} VA"),
             ("Fixed appliances", f"{load['fixed_appliance_va']:,.0f} VA"),
-            ("Heating/cooling at 100%", f"{load['hvac_va']:,.0f} VA"),
+            (f"{NEC.OPTIONAL_GENERAL_LOADS} demand on the two above",
+             f"first {FIRST_8KVA:,.0f} VA at 100%, rest at {REMAINDER_DEMAND_FACTOR:.0%}"),
+            ("Heating/cooling (heat pump 100%, its heat kit 65%)",
+             f"{load['hvac_va']:,.0f} VA"),
             ("EV charging (continuous)", f"{load['ev_va']:,.0f} VA"),
             ("DEMAND", f"{load['demand_va']:,.0f} VA = {load['demand_amps']:.1f} A"),
             ("Service / panel rating", f"{load['service_amps']}A service, "
@@ -212,7 +221,8 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str,
         load_rows = [(row["circuit"], str(row["fixtures"]), f"{row['connected_va']:,.0f}")
                      for row in load["per_circuit"]]
         load_rows.append(("TOTAL CONNECTED", "", f"{load['total_connected_va']:,.0f} VA"))
-        load_rows.append(("NEC 220.82 allowance", f"{load['conditioned_area_ft2']:,.0f} ft2",
+        load_rows.append((f"NEC {NEC.OPTIONAL_GENERAL_LOADS} allowance",
+                          f"{load['conditioned_area_ft2']:,.0f} ft2",
                           f"{load['allowance_va']:,.0f} VA at "
                           f"{load['allowance_va_per_ft2']:.0f} VA/ft2"))
         _add_table(fig, load_rows, ("Circuit", "Fixtures", "Connected VA"),
@@ -297,7 +307,7 @@ def _write_data_schedule(pdf, model: ResolvedModel, number: str, name: str) -> N
 
     The raceway table is here rather than folded into the power conduit schedule because
     comms and power are pulled by different trades on different days and may not share a
-    raceway (NEC 800.133/725) — one combined lineal-foot number is not an order either of
+    raceway (NEC 722.15(A)) — one combined lineal-foot number is not an order either of
     them can buy against. The spare appears with them: the reader who wants to know what can
     still be pulled is this one (→ takeoff/data.py — nothing here is hand-summed).
     """
@@ -342,13 +352,13 @@ def _write_data_schedule(pdf, model: ResolvedModel, number: str, name: str) -> N
                  wrap=True)
         fig.text(0.03, 0.21,
                  "PoE devices carry no branch circuit — their load lands on the switch, not the "
-                 "panel schedule.\nComms conductors share no raceway with power (NEC 800.133, "
-                 "725); shared penetrations are permitted.",
+                 "panel schedule.\nComms conductors share no raceway with power ("
+                 f"{cite(NEC.LIMITED_ENERGY_SEPARATION)}); shared penetrations are permitted.",
                  fontsize=7, family="sans-serif")
 
 
 def _panel_feeder_rows(model) -> list[dict[str, object]]:
-    """Per-panel 220.82 feeder demand — the same estimate `electrical.panel_feeder_load`
+    """Per-panel 120.82 feeder demand — the same estimate `electrical.panel_feeder_load`
     grades, so the sheet and the finding cannot disagree."""
     from typehaus.takeoff import service_load_summary
 

@@ -158,7 +158,8 @@ DOOR_TYPES = (
         operation="overhead", function="overhead", product_ref=CLOPAY_CLASSIC_STEEL.tag,
         doorway=CLOPAY_BOTTOM, leaf_material_ref="clopay-classic-steel",
         source="Clopay Classic Steel long panel, R-12.9, Charcoal (was Modern Steel R-18.4 "
-               "Black, 2026-10-29). Unconditioned garage: no NFRC rating is needed or claimed."),
+               "Black, 2026-10-29); Black on this model is an open dealer question "
+               "(\"available on select models\"). Unconditioned garage: no NFRC rating is needed or claimed."),
 )
 
 # D-B-ESS (owner 2026-10-30): a cheap steel leaf, NOT a rated fire door. The Type X box

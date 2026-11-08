@@ -173,7 +173,7 @@ SECOND_LIGHTING = [
     ElectricalDevice(uid="QTS000MAAA", tag="ED-S-BATH1-RC-MIRROR",
                      kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-GUIDE",
-                     circuit="CKT-RC-SECOND", room="RM-S-BATH1",
+                     circuit="CKT-BATH-RC", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(46),

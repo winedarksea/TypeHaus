@@ -81,14 +81,22 @@ class DuctPartRow(HausModel):
     source: str | None = None
 
 
+#: Hanger kinds that bear from below or beside, used only where nothing overhead is in reach:
+#: ``saddle`` a strap band over the duct screwed to the deck it bears on (house practice:
+#: SMACNA has no bottom-support figure); ``bracket`` a band to a parallel wall within 2"
+#: (SMACNA Fig. 4-8).
+FALLBACK_HANGERS = frozenset({"saddle", "bracket"})
+
+
 class DuctSupportRow(HausModel):
     """Hanger spacing and kind for duct up to ``max_size``: the diameter, or a rectangular
-    duct's half-perimeter (SMACNA Table 4-1)."""
+    duct's half-perimeter (SMACNA Table 4-1). A ``FALLBACK_HANGERS`` row is read only at a
+    station with no framing overhead."""
 
     section: Literal["round", "rectangular", "flex"] = "round"
     max_size: Length
     spacing: Length
-    hanger: Literal["strap", "rod_trapeze", "saddle"] = "strap"
+    hanger: Literal["strap", "rod_trapeze", "saddle", "bracket"] = "strap"
     product_ref: str | None = None
     #: The strap or rod as published: width x thickness, or rod diameter in ``width``.
     width: Length | None = None
@@ -127,8 +135,10 @@ class DuctStandard(Element):
     seal_class: str
     sealant_product_ref: str | None = None
     tape_product_ref: str | None = None
-    #: LF of seam one sealant container covers, and the tape's roll length.
+    #: LF of seam one sealant container covers, the container it is billed in, and the
+    #: tape's roll length.
     sealant_coverage_lf: float | None = None
+    sealant_unit: str = "container"
     tape_roll_length: Length | None = None
     #: Seam LF per joint of round duct: one girth joint per ``joint_length`` plus the
     #: longitudinal seam; the straight stock length a run is joined from.
@@ -162,8 +172,11 @@ class DuctStandard(Element):
                 return hit
         return None
 
-    def support_for(self, section: str, size_m: float) -> DuctSupportRow | None:
-        rows = sorted((r for r in self.supports if r.section == section),
+    def support_for(self, section: str, size_m: float,
+                    hanger: str | None = None) -> DuctSupportRow | None:
+        """The row of kind ``hanger`` covering the size; by default the hung (overhead) row."""
+        rows = sorted((r for r in self.supports if r.section == section and (
+            r.hanger == hanger if hanger else r.hanger not in FALLBACK_HANGERS)),
                       key=lambda r: r.max_size.meters)
         return next((r for r in rows if size_m <= r.max_size.meters + 1e-6), None)
 

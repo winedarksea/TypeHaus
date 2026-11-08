@@ -1,4 +1,4 @@
-"""Service and feeder load checks — NEC 220.82 against what the gear is rated for.
+"""Service and feeder load checks — 2026 NEC 120.82 against what the gear is rated for.
 
 Split out of ``checks/mep/electrical.py`` (which is a symbols-and-spacing module and was
 already past the file-size guidance): these two read the same
@@ -14,6 +14,7 @@ from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
+from typehaus.model.nec import NEC, cite, mark
 
 
 # WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR
@@ -26,21 +27,19 @@ def _warn_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
 # the strategy word.
 def _basis(credit: dict) -> str:
     strategy = str(credit["strategy"])
-    if strategy == "hvac_interlock":
-        return "220.82(C) interlock"
     if strategy == "noncoincident":
-        return "220.60 noncoincident, AHJ judgement"
+        return f"{mark(NEC.NONCOINCIDENT)} noncoincident, AHJ judgement"
     return f"PCS, {credit['listing'] or 'listed'}"
 
 
 @check(Tier.ADVISORY, "electrical.service_load")
 def service_load(ctx: CheckContext) -> list[Finding]:
-    """The 220.82 demand estimate vs. the authored service, with load management credited.
+    """The 120.82 demand estimate vs. the authored service, with load management credited.
 
     A ``LoadManagement`` caps what its managed circuits can draw together, so the group's
-    connected excess over ``max_simultaneous_va`` comes off the demand — *in the 220.82
-    term the load was counted in*. It comes off only where the basis holds: a 220.82(C)
-    HVAC interlock, a 220.60 noncoincident pair with a stated source, or a PCS listed
+    connected excess over ``max_simultaneous_va`` comes off the demand — *in the 120.82
+    term the load was counted in*. It comes off only where the basis holds: a 120.6
+    noncoincident pair with a stated source, or a PCS listed
     under 2026 NEC Article 130 Part II. A group that earns none of those is a FAIL naming
     what it is missing, and its excess stays in the demand.
     """
@@ -89,8 +88,9 @@ def service_load(ctx: CheckContext) -> list[Finding]:
     else:
         out.append(_warn_fail(
             cid, f"estimated demand {managed_amps:.1f}A exceeds the {service_amps:.0f}A "
-                 f"service{where} — options: a listed PCS (2026 NEC 120.7/130), a 220.82(C) "
-                 f"HVAC interlock, or a service upgrade", ()))
+                 f"service{where} — options: a listed PCS ({NEC.EDITION} {NEC.PCS_SETPOINT}/"
+                 f"{NEC.PCS}), a {mark(NEC.NONCOINCIDENT)} noncoincident pair, or a service "
+                 "upgrade", ()))
     return out
 
 
@@ -100,11 +100,11 @@ def panel_feeder_load(ctx: CheckContext) -> list[Finding]:
 
     With the load split across two mains, the per-panel feeder is the binding constraint
     and the service total no longer proves anything about either half. This runs the same
-    220.82 term structure over one panel's circuits and compares it to that panel's
+    120.82 term structure over one panel's circuits and compares it to that panel's
     ``service_amps`` (which on a PANEL type means the main breaker, not the service size).
 
     **An estimate, and conservative.** A feeder to a subpanel is properly a Part III
-    calculation; applying 220.82(B)'s first-10-kVA-at-100% step to each panel separately
+    calculation; applying 120.82(B)'s first-8-kVA-at-100% step to each panel separately
     over-counts, because the step is a whole-dwelling one. The general-lighting allowance
     goes only to the panel(s) hosting ``general`` circuits — it is not split by area,
     which the model has no basis to do.
@@ -124,7 +124,7 @@ def panel_feeder_load(ctx: CheckContext) -> list[Finding]:
                          "service_amps", None) is not None]
     if not graded:
         # Earned N/A: the panel schedule was read and no panel type states a main OCPD, so
-        # there is no feeder rating in this model for 220.82 to be compared against.
+        # there is no feeder rating in this model for 120.82 to be compared against.
         return [_na(cid, "no panel type in this house states a main OCPD "
                          "(``service_amps``), so no feeder has a rating to grade against")]
 
@@ -136,13 +136,13 @@ def panel_feeder_load(ctx: CheckContext) -> list[Finding]:
         amps = float(summary["demand_va"]) / 240.0  # type: ignore[arg-type]
         if amps > main:
             out.append(_warn_fail(
-                cid, f"panel {panel_ref}: {amps:.1f}A of 220.82 feeder demand over "
-                     f"{len(tags)} circuits exceeds its {main:.0f}A main — move load to "
-                     "another feeder or raise the main (estimate: a subpanel feeder is "
-                     "properly NEC 220 Part III)", (panel_ref,)))
+                cid, f"panel {panel_ref}: {amps:.1f}A of {NEC.OPTIONAL_DWELLING} feeder "
+                     f"demand over {len(tags)} circuits exceeds its {main:.0f}A main — move "
+                     "load to another feeder or raise the main (estimate: a subpanel feeder "
+                     f"is properly {cite(NEC.FEEDER_SERVICE_STANDARD)})", (panel_ref,)))
         else:
             out.append(_pass(
-                cid, f"panel {panel_ref}: {amps:.1f}A of 220.82 feeder demand over "
-                     f"{len(tags)} circuits fits its {main:.0f}A main (estimate)",
+                cid, f"panel {panel_ref}: {amps:.1f}A of {NEC.OPTIONAL_DWELLING} feeder "
+                     f"demand over {len(tags)} circuits fits its {main:.0f}A main (estimate)",
                 (panel_ref,)))
     return out

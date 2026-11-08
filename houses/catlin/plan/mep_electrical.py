@@ -52,10 +52,10 @@ ELECTRICAL_DEVICE_TYPES = (
     # NEMA 3R weatherproof exterior junction box with a gasketed blank cover plate.
     # Kitchen outlets. ED-T-RECEPTACLE above stays a plain 120V duplex — its port list is
     # pinned by a contract test — so the counter devices name their own types instead.
-    # The plant room's outlets. NEC 2023 makes RM-S-PLANT a damp location
+    # The plant room's outlets. The NEC makes RM-S-PLANT a damp location
     # throughout and a wet one anywhere it is misted or hosed, which changes three things at
     # once about an ordinary duplex: WR listing (the receptacle body itself), a GFCI device
-    # (E3902/210.8 — and at the device, not the breaker, per the circuit convention in
+    # (210.8(A) — and at the device, not the breaker, per the circuit convention in
     # plan/circuits.py), and an in-use "bubble" cover rather than a flip lid, because pumps,
     # heat mats and humidifiers stay plugged in permanently and a flip lid is only weather-
     # tight with nothing in it. Non-metallic gasketed box: bare steel and standard EMT rust
@@ -236,7 +236,7 @@ MAIN_DEVICES = [
     # is the MICROWAVE trial outlet; KMX1 (SA1) is the stand mixer's. 42" sits behind a
     # 12-13" tall unit and within a 30-36" cord. KGF4 keeps its uid, a shipped IFC GlobalId.
     #
-    # GFCI: ~10'-7" from FX-M-KITCH-SINK, outside E3902.10's 6' reach, but a countertop
+    # GFCI: ~10'-7" from FX-M-KITCH-SINK, outside 210.8(A)(9)'s 6' reach, but a countertop
     # appliance a step from a sink is where an inspector wants the device.
     #
     # NEC 210.52(C)(3) confines a receptacle serving the counter to on/above/in the surface:

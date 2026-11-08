@@ -75,8 +75,8 @@ SEKTION_30 = sektion_vanity(30, "PROD-IKEA-SEKTION-WALL-30-AXSTAD")
 SEKTION_24_SS = sektion_vanity(24, "PROD-IKEA-SEKTION-WALL-24-AXSTAD", utility=True)
 CHULTON_30 = FixtureType(
     tag="FX-CHULTON-30", name='Kohler Chulton 30, white quartz and undermount basin',
-    footprint=(inch(30.9375), inch(22.4375)), height=inch(36 + 8.4375),
-    flood_rim_height=inch(36),
+    footprint=(inch(30.9375), inch(22.4375)), height=inch(35.3125 + 8.4375),
+    flood_rim_height=inch(35.3125),  # top surface: 39 5/16 overall less the 4 in. backsplash
     plan_symbol="drawer-vanity", basin=True, needs=NEEDS,
     product_ref="PROD-KOHLER-REC39579",
     model_representation=ModelRepresentation(symbol="door-drawer-vanity", material_refs=THEME_MATERIAL_REFS),
@@ -85,11 +85,14 @@ CHULTON_30 = FixtureType(
         pt(inch(-15), inch(-10.78125)), pt(inch(15), inch(-10.78125)),
         pt(inch(15), inch(11.21875)), pt(inch(-15), inch(11.21875)),
     )),
-    ports=lav_ports(22.4375, certainty=PortCertainty.APPROXIMATE),
+    ports=lav_ports(22.4375),
     clearances=(front_zone(inch(30.9375), inch(22.4375), inch(21), "lavatory front clearance"),),
-    source="Kohler ASB-0 dimensioned image, read 2026-10-24, notes/assets: "
-           "30 15/16 x 22 7/16 in.; 39 5/16 in. including backsplash, one faucet hole. "
-           "6702 fits. Rim and rough-ins remain approximate until installation drawing.",
+    source="Kohler spec sheet K-REC39579-ASB US-CA (10-09-2026) p.3, read 2026-11-07: "
+           "top 31 x 22 7/16, 39 5/16 in. overall with the 4 in. backsplash (top 35 5/16 "
+           "AFF); General Rough-In Area 27 in. wide, 7 3/16 to 32 1/4 in. AFF, so the house "
+           "20/24 in. stubs are exact setout inside it. p.1 and p.3 show one faucet hole, but "
+           "p.2 lists 3 holes on 8 in.: confirm one-hole top on delivery (6702 fits one). "
+           "https://techcomm.kohler.com/techcomm/pdf/K-REC39579-ASB_spec_US-CA_Kohler_en.pdf",
 )
 SUNNERSTA_BAR_SINK = FixtureType(
     tag="FX-SUNNERSTA-BAR-SINK", name="SUNNERSTA integral bar sink, Indy stainless",
@@ -100,8 +103,9 @@ SUNNERSTA_BAR_SINK = FixtureType(
     parts=(UTILITY_FAUCET_PART, TUBULAR_TRAP),
     model_representation=ModelRepresentation(symbol="sunnersta-sink", material_refs=UTILITY_MATERIAL_REFS),
     ports=lav_ports(14, base_in=16, certainty=PortCertainty.APPROXIMATE),
-    source="Existing SUNNERSTA sink, owner 2026-10-24; exact bowl station unpublished. "
-           "Plumbing stations approximate; included sink bills with the kitchenette.",
+    source="Existing SUNNERSTA sink, owner 2026-10-24; exact bowl station unpublished "
+           "(IKEA AA-1851897-11, read 2026-11-07). Plumbing stations approximate: measure the "
+           "owner's existing unit, then mark EXACT. Included sink bills with the kitchenette.",
 )
 # Same tag as the library's LAUNDRY_SINK, which the manifest drops. Not a lavatory: basin=False,
 # so 210.52(D) stays off it and 210.52(F) governs. Footprint and declared height are the
@@ -114,8 +118,10 @@ LAUNDRY_TUB = FixtureType(
     parts=(ProductPart(role="faucet", product_ref="PROD-GLACIER-BAY-QL033Y-FAUCET"),),
     source="Owner selection 2026-10-24: Glacier Bay QL033Y, Home Depot #206057007 (spec sheet "
            "not retrieved). Bundled flex-neck faucet with sprayer and garden-hose adapter. "
-           "No rough-in published: the ports are the house's stations (floor sleeve, W-M-CLN "
-           "stubs at 20 in.) and stay approximate.",
+           "No rough-in published (QL033Y Use & Care pp.5, 9, manualslib copy, read "
+           "2026-11-07: supply lines not included, no dimensions): the ports are the house's "
+           "stations (floor sleeve, W-M-CLN stubs at 20 in.) and stay approximate. Measure on "
+           "delivery, then mark EXACT.",
     ports=tuple(ServicePort(tag=tag, service=service, position=(inch(x), inch(y), inch(z)),
                             connection_size=inch(size), direction=direction,
                             notes="House station; the QL033Y spec sheet is not retrieved")

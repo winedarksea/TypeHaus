@@ -36,7 +36,13 @@ class Circuit(Element):
     poles: int = 1
     nema: str | None = None  # receptacle configuration where one defines the circuit
     gfci: bool = False  # GFCI protection at the breaker (not the outlet)
-    # AFCI protection at the breaker. E3902.16 requires it on the 120V branch circuits
+    # Which GFCI ``gfci`` is; read only where it is True. "A" is the 6 mA personnel class.
+    # "C" is a listed Class C SPGFCI (UL 943C, 20 mA), which 2026 NEC 210.8(F) Ex. 3 accepts
+    # only for listed HVAC equipment, and only with the equipment's disconnect marked
+    # "Warning: Class C SPGFCI Protection Provided for HVAC Unit". No schedule prints that
+    # label; the GFCI check's finding states the marking.
+    gfci_class: Literal["A", "C"] = "A"
+    # AFCI protection at the breaker. NEC 210.12 requires it on the 120V branch circuits
     # serving nearly every habitable room, and unlike GFCI there is no device-level
     # alternative in common use — the breaker is where it lives, so the flag lives here and
     # nowhere else. False means "not stated": the check reports a circuit that needs AFCI
@@ -58,7 +64,7 @@ class Circuit(Element):
     # breaker governs it — a smart appliance forced into a low-power mode while the house is
     # on battery. Only meaningful on a backup circuit, and never inferred: absent means the
     # circuit draws its connected load. This is a BACKUP fact and belongs beside
-    # ``backup_tier``; it earns nothing in a 220.82 service calculation, which is why it is
+    # ``backup_tier``; it earns nothing in a 120.82 service calculation, which is why it is
     # not a ``LoadManagement`` (an unlisted software governor is not a PCS, 2026 NEC 130.2).
     backup_va: float | None = None
     # PoE data devices (tags) whose switch ports are turned off while the house is on battery.
@@ -82,10 +88,12 @@ class Circuit(Element):
 register_constructor("Circuit", Circuit)
 
 
-# The three bases a load-management credit can rest on, and nothing else. Free text used
+# The two bases a load-management credit can rest on, and nothing else. Free text used
 # to be allowed here, which let a controller with no listing and no code section behind it
-# take a credit off the service calculation just by naming itself an "ems".
-LoadManagementStrategy = Literal["hvac_interlock", "noncoincident", "pcs"]
+# take a credit off the service calculation just by naming itself an "ems". The old
+# ``hvac_interlock`` is gone: 2026 NEC 120.82(C)(3) counts a heat-pump compressor at 100%
+# plus its supplemental heat at 65%, and carries no interlock credit.
+LoadManagementStrategy = Literal["noncoincident", "pcs"]
 
 
 @register_element
@@ -97,14 +105,10 @@ class LoadManagement(Element):
     service. ``electrical.service_load`` credits that excess only where ``strategy`` names
     a basis the credit actually earns:
 
-    - ``hvac_interlock`` — 2026 NEC 220.82(C)(2)/(4) itself credits a controller that
-      prevents a compressor and its supplemental heat from running at once. Needs no
-      listed device. Credited only over heat-pump circuits: (C) governs space-conditioning
-      loads and reaches nothing else.
-    - ``noncoincident`` — 2026 NEC 220.60: loads that cannot be energized together are
-      counted once, at the largest. Needs a ``source`` saying what makes them exclusive,
-      and is an AHJ judgement, not an arithmetic fact.
-    - ``pcs`` — a power control system under 2026 NEC Article 130 Part II (120.7 sets the
+    - ``noncoincident`` — 2026 NEC 120.6(1): feeder or service loads unlikely to be in
+      use together are counted once, at the largest. Needs a ``source`` saying what makes
+      them exclusive, and is an AHJ judgement, not an arithmetic fact.
+    - ``pcs`` — a power control system under 2026 NEC Article 130 Part II (120.7(B) sets the
       setpoint at <= 80% of the monitored OCPD; 130.2 requires the listing; 625.42(A)
       points EV supply equipment at the same Part II). Credited only with a ``listing``:
       an unlisted controller running proprietary throttling software earns nothing.
@@ -158,7 +162,7 @@ class BoxRow(HausModel):
     ``box_size`` is (width, height, depth) of the box body. A metal box names its Table
     314.16(A) ``designation``; a nonmetallic one authors its marked ``box_volume_in3``.
     ``cover_volume_in3`` is the volume a raised cover or ring adds where it is marked with
-    one (314.16(A)(1)); ``cover_rise`` is how far a surface cover stands proud of the box.
+    one (314.16(A)); ``cover_rise`` is how far a surface cover stands proud of the box.
     ``use`` names a special-purpose row (``"luminaire"`` for every light, or the
     ``box_use`` a device type asks for, e.g. ``"recessed"``); None is the general row.
     ``block_profile`` derives a flat block of that lumber behind each such box, between the

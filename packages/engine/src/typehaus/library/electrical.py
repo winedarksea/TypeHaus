@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typehaus import ElectricalDeviceType, Service, ServicePort
 from typehaus.model import ModelRepresentation
+from typehaus.model.nec import NEC, cite
 from typehaus.quantities import ft, inch
 
 _P120 = (ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),)
@@ -213,8 +214,8 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
 # nobody placed has no business in a catalog. ``service_amps`` is the panel's OWN main —
 # ``code.NEC_705_12_interconnection`` reads it before the service size, so a feeder panel
 # must state it. ``bus_amps`` is stated only where it exceeds the main (a backfed bus).
-_PANEL_SOURCE = ("UL 67 panelboard / load centre class (NEC 408); spaces and bus rating per "
-                 "the selected product's label")
+_PANEL_SOURCE = (f"UL 67 panelboard / load centre class ({cite(NEC.PANELBOARDS)}); spaces "
+                 "and bus rating per the selected product's label")
 # Square D datasheets (Schneider Electric product data sheets): HOM2040M200PC Oct 2020, QO154M200P
 # Jul 2025 (its p.4 drawing: 3.75" box). The QO cover is ordered separately; the 54-space
 # surface cover is the QOCMF54UC (1.04" deep, 40.52 x 15.52), so the modelled front is box +

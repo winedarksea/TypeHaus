@@ -116,11 +116,11 @@ NEC_FILL_ATTIC = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** RC5 STAYS A GFCI DEVICE, AND SINCE 2026-09-09 IT IS BY CHOICE RATHER THAN BY RULE. **
     # It was made GFCI because the wet bar stood on this same wall: `_sink_points` projects
-    # E3902.10's 6'-0" radius from every Service.DRAIN fixture, and the bar sink was 4'-8"
+    # 210.8(A)(9)'s 6'-0" radius from every Service.DRAIN fixture, and the bar sink was 4'-8"
     # north of this box. The bar is on W-A-BATH-S now (plan/placeables.py) and the bowl
     # measures 6'-2 1/2" from here — 2 1/2" OUTSIDE the circle. That margin is not worth
     # banking: the bowl's position within the SUNNERSTA's top is an unmeasured number
-    # (plan/fixtures.py), and 3" of it either way puts this box back inside E3902.10. Same
+    # (plan/fixtures.py), and 3" of it either way puts this box back inside 210.8(A)(9). Same
     # trade RC7 carries two blocks down — over-protection is never a violation. CKT-RC-ATTIC
     # stays `gfci=False` and the protection rides the device, which is the house rule
     # (circuits.py). RC4 at y 3'-0" is further again and stays ordinary.
@@ -137,7 +137,7 @@ NEC_FILL_ATTIC = [
     # W-A-STU-W is the bath's west wall and the studio's east wall at once, only 6 3/4" of
     # staggered partition apart — `electrical.receptacle_spacing` accepts any device within
     # 0.5 m of a room's boundary, so the bathroom receptacle used to silently answer
-    # 210.52(A) for both rooms. Moved to serve E3901.6 instead, it exposed the studio's
+    # 210.52(A) for both rooms. Moved to serve 210.52(D) instead, it exposed the studio's
     # real gap: 5'-0" of wall from the jog at (9'-7 1/2", 17'-3 3/8") north to W-A-HALL-S
     # with nothing on it.
     # x 9'-3 1/8" is one inch proud of that face (the wall's layers band x 112.115"..
@@ -158,7 +158,7 @@ NEC_FILL_ATTIC = [
     # stops 3 1/4" short of the W-A-C2 corner. 14'-0" is the bay between the kitchenette's
     # east end (13'-7 1/2") and the door's king pack (15'-0 1/2"), 2 1/4" clear of the unit.
     # `electrical.wall_device_opening` grades the RO now. It stays a GFCI device: the bowl is
-    # within E3902.10's 6'-0" through the same wall face.
+    # within 210.8(A)(9)'s 6'-0" through the same wall face.
     ElectricalDevice(uid="TBSBS6V58H", tag="ED-A-STUDIO-RC6", kind=DeviceKind.RECEPTACLE_GFCI,
                      # ** MOVED 1" OUT WITH W-A-BATH-S'S RETYPE, 2026-09-20 (H8). ** The wall went
                      # INT_2X4_PARTITION -> INT_2X6_PLUMBING so PR-A-BAR-VENT's 2" vent could bore
@@ -178,11 +178,11 @@ NEC_FILL_ATTIC = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-STU-N", face="right", distance_from_start=inch(72),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # ** THE WET BAR'S RECEPTACLE, GFCI UNDER E3902.10. ** `_sink_points` collects every fixture
+    # ** THE WET BAR'S RECEPTACLE, GFCI UNDER 210.8(A)(9). ** `_sink_points` collects every fixture
     # whose TYPE declares Service.DRAIN regardless of what the fixture is called, so the bar
     # sink projects a 6'-0" radius into the studio whether it is a bar sink or a lavatory —
     # and it is a lavatory here. CKT-RC-ATTIC is `gfci=False` deliberately (circuits.py: "the
-    # handful in an E3902 location … are GFCI devices instead"), so this follows the house rule
+    # handful in a 210.8(A) location ... are GFCI devices instead"), so this follows the house rule
     # and is a GFCI DEVICE rather than a re-typed circuit.
     # ** IT FOLLOWED THE BAR ONTO W-A-BATH-S, AND IT IS AT 4'-10" BECAUSE THE UNIT IS
     # 4'-6 3/4" TALL (2026-09-09). ** It stood on W-A-C2's west face at 3'-6", beside a 3'-0"
@@ -195,7 +195,7 @@ NEC_FILL_ATTIC = [
     # x=13'-4" is 7 1/2" east of the bowl, over the unit's east end (which stops at
     # 13'-7 1/2") and 1'-11 1/2" west of D-A-STUBATH's rough opening — the one band on this wall
     # that is neither behind the unit's rail nor inside the door. `code.E3902_gfci_locations` measures it at
-    # 0.7' against E3902.10's 6'-0". `rotation=deg(180)` faces it south into the studio, off
+    # 0.7' against 210.8(A)(9)'s 6'-0". `rotation=deg(180)` faces it south into the studio, off
     # the wall's south face at y 17'-0 5/8" — the same line RC6 stands on, and the number
     # `test_wall_mounted_devices_resolve_against_a_wall_face` settles.
     ElectricalDevice(uid="K9XVXZ9XZ3", tag="ED-A-STUDIO-BAR-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
@@ -210,8 +210,9 @@ NEC_FILL_ATTIC = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-BATH-S", face="right", distance_from_start=inch(44.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The bath's own, GFCI under E3902.1 — every 125V receptacle in a bathroom, sink or no
-    # sink — and on the new CKT-BATH-ATTIC rather than the general attic circuit.
+    # The bath's own, GFCI under 210.8(A)(1) — every 125V receptacle in a bathroom, sink or
+    # no sink — on CKT-BATH-RC, the house's one bathroom-receptacle circuit (2026-11-07;
+    # CKT-BATH-ATTIC is retired into it).
     # Its prior station failed `code.E3901_6_bathroom_receptacle` (IRC E3901.6 / NEC
     # 210.52(D): one receptacle within 36" of each lavatory basin) — right room, right
     # height, right circuit, wrong wall.
@@ -223,13 +224,14 @@ NEC_FILL_ATTIC = [
     # THERE IS NOWHERE ELSE ON THIS WALL LEFT. ** The east end of the counter is not an
     # option any more — it used to have 5.6" of wall to the shower and now it dies flat into
     # the pan's west panel. Widening the vanity past 24", or sliding it west, deletes the
-    # only station that satisfies IRC E3901.6's 36"-of-a-basin rule. The basin centres at
+    # only station that satisfies NEC 210.52(D)'s 36"-of-a-basin rule. The basin centres at
     # x 164 5/8", so this plate is 14 5/8" from it and has plenty of that margin; what it has
     # no margin in is the wall itself.
-    # The breaker is the GFCI, so the night light is the plain guide-light duplex (2026-11-03).
-    ElectricalDevice(uid="N2Z2AA6EGB", tag="ED-A-STUBATH-GFCI", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-GUIDE",
-                     circuit="CKT-BATH-ATTIC", room="RM-A-STUBATH",
+    # CKT-BATH-RC's breaker is not GFCI, so this is the GFCI guide-light device the other
+    # vanities use (reset in the room), not the plain guide duplex it was on CKT-BATH-ATTIC.
+    ElectricalDevice(uid="N2Z2AA6EGB", tag="ED-A-STUBATH-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
+                     type_ref="ED-T-LEV-GFCI-GUIDE",
+                     circuit="CKT-BATH-RC", room="RM-A-STUBATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-HALL-S", face="right", distance_from_start=inch(30),

@@ -257,7 +257,7 @@ export function CircuitsView() {
     >
       <ReaderSection
         title="Service load"
-        note="NEC 220.82 optional-method estimate against the service: general lighting from resolved conditioned floor area, appliances from the authored circuits, PV excluded as a source rather than a load."
+        note="NEC 120.82 optional-method estimate against the service: general lighting from resolved conditioned floor area, appliances from the authored circuits, PV excluded as a source rather than a load."
         count={load ? 1 : 0}
       >
         {load && <ServiceLoadCard load={load} />}

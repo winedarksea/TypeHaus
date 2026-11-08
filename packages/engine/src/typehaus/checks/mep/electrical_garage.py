@@ -1,6 +1,6 @@
 """CODE-tier electrical rule — NEC 210.52(G)(1), a receptacle in each garage vehicle bay.
 
-2023 NEC 210.52(G)(1) (Minnesota's electrical code; IRC 2021 E3901.9 is the same rule): in
+2026 NEC 210.52(G)(1), Minnesota's electrical code (Minn. R. 1315.0200): in
 each attached garage, and each detached garage with power, at least one receptacle outlet
 in each vehicle bay, not more than 5 1/2 ft above the floor.
 
@@ -19,10 +19,11 @@ from typehaus.checks.mep.electrical_code import _room_of
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy
+from typehaus.model.nec import NEC, cite
 from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
-_CID, _CODE = "code.NEC_210_52_G_garage_receptacles", "NEC 210.52(G)(1)"
+_CID, _CODE = "code.NEC_210_52_G_garage_receptacles", cite(NEC.GARAGE_RECEPTACLE)
 _SINGLE_BAY_DOOR_M = 8 * 0.3048
 _MAX_COUNTING_HEIGHT_M = 5.5 * 0.3048
 _DOOR_TO_ROOM_M = 0.5  # a door's centre sits in its host wall, just outside the clear face

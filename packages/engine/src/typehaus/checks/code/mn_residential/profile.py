@@ -11,9 +11,14 @@ is a new profile here rather than a code change across several modules.
 from __future__ import annotations
 
 from typehaus.checks.code.mn_energy import MN_ZONE_6
+from typehaus.checks.code.mn_residential.electrical_scope import (
+    ELECTRICAL_COVERAGE,
+    SOURCE_SIDE_COVERAGE,
+)
 from typehaus.checks.code.mn_residential.inspections import MN_INSPECTIONS
 from typehaus.checks.engineered_rows import permit_items as engineered_permit_items
 from typehaus.checks.jurisdiction import JurisdictionProfile, PermitItemSpec
+from typehaus.model.nec import NEC, cite
 
 MN_2020 = JurisdictionProfile(
     name="mn-2020",
@@ -26,7 +31,7 @@ MN_2020 = JurisdictionProfile(
     # profile name cannot carry both editions, which is why this is its own field rather
     # than being folded into the name — and why the name states the RESIDENTIAL edition,
     # the one the great majority of these rules come from.
-    nec_base="2026 NEC (MN adoption effective 2026-08-17)",
+    nec_base=f"{NEC.EDITION} (MN adoption effective 2026-08-17)",
     coverage_statement=(
         "Encodes a declared subset. "
         "Habitability, egress and circulation: R304.1 habitable floor area, R305 ceiling "
@@ -70,22 +75,12 @@ MN_2020 = JurisdictionProfile(
         "313.3 via Minn. R. 4714.0313 — which Minnesota reprints amended, stricter "
         "than the IRC for hubless cast iron (every other joint, every joint over 4 "
         "ft) and adding mid-story guides and 30 ft expansion to Schedule 40 PVC. "
-        "Electrical: E3902 GFCI receptacle locations, E3902.16 AFCI branch-circuit "
-        "coverage, and E3901.6 / NEC 210.52(D) the receptacle required at each lavatory "
-        "basin — with the basin taken as the whole vanity carcass, since no basin extent "
-        "is modeled, which makes that reach test permissive rather than exact. No "
-        "conductor sizing, box fill, or load calculation, none of which is claimed as a "
-        "code result. "
+        + ELECTRICAL_COVERAGE +
         "Energy storage: R327.2 UL 9540 listing and R327.3's habitable-space exclusion. "
         "R327.3 installation per the manufacturer's instructions, R327.4 inverter "
         "listing, R327.5 ventilation and R327.6 protection from impact are NOT covered. "
         "The 2021 R328 kWh caps and detection are advisories, not 2018 code. "
-        "Source-side NEC: 705.12 "
-        "busbar interconnection and 690.12 PV rapid shutdown; and 240.24(A) / 404.8(A) "
-        "the highest panel handle at 6'-7\" (the body top where no handle offset is "
-        "stated); 110.26(A) panel working space (36\" x 30\" x 6'-6\", door swings not "
-        "graded) and 110.26(E)(1) dedicated space (no pipe or duct over a panel); no other "
-        "article of the NEC is claimed. "
+        + SOURCE_SIDE_COVERAGE +
         "Wall bracing: R602.10 in full for the wind path — line spacing (R602.10.1.3), "
         "the required length per line against Tables R602.10.3(1) and (2), minimum panel "
         "length (Table R602.10.5), panel location (R602.10.2.2/.2.3), the end conditions "
@@ -308,22 +303,22 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Receptacle locations and listed floor boxes",
                        ("code.E3902_gfci_locations", "code.E3905_7_floor_boxes",
                         "code.NEC_210_52_G_garage_receptacles"),
-                       ("IRC E3902", "IRC E3905.7", "NEC 314.27(B)", "NEC 210.52(G)(1)"),
+                       (cite(NEC.GFCI), cite(NEC.FLOOR_BOX), cite(NEC.GARAGE_RECEPTACLE)),
                        blocking=False),
         # Blocking, unlike the two beside it: the staging lane exists for a rule the
         # reference house cannot answer yet, and this one it can — every basin in the plan
         # resolves, and the receptacle serving it either exists or does not.
         PermitItemSpec("Bathroom basin receptacle",
                        ("code.E3901_6_bathroom_receptacle",),
-                       ("IRC E3901.6", "NEC 210.52(D)")),
+                       (cite(NEC.BATHROOM_RECEPTACLE),)),
         PermitItemSpec("AFCI branch circuits", ("code.E3902_16_afci",),
-                       ("IRC E3902.16",), blocking=False),
+                       (cite(NEC.AFCI_DWELLING),), blocking=False),
         # Panel tops, not handles: a type with no handle offset grades its body top.
         PermitItemSpec("Panelboard handle height", ("electrical.panel_handle_height",),
-                       ("NEC 240.24(A)", "NEC 404.8(A)")),
+                       (cite(NEC.OCPD_HEIGHT), cite(NEC.SWITCH_HEIGHT))),
         PermitItemSpec("Panelboard working and dedicated space",
                        ("electrical.panel_working_space", "electrical.panel_dedicated_space"),
-                       ("NEC 110.26(A)", "NEC 110.26(E)(1)")),
+                       (cite(NEC.WORKING_SPACE), cite(NEC.DEDICATED_SPACE))),
         # The energy storage system, as the adopted 2018 IRC R327 has it. The kWh caps and
         # detection are 2021 R328 and grade as advisories (energy_storage_anticipated.py).
         PermitItemSpec("Energy storage system",
@@ -334,7 +329,7 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("PV interconnection and rapid shutdown",
                        ("code.NEC_705_12_interconnection",
                         "code.NEC_690_12_rapid_shutdown"),
-                       ("NEC 705.12(B)(3)(2)", "NEC 690.12(B)(2)")),
+                       (cite(NEC.INTERCONNECTION_120PCT), cite(NEC.RAPID_SHUTDOWN_ARRAY))),
         PermitItemSpec("Dryer exhaust", ("code.M1502_dryer_exhaust",), ("IRC M1502",),
                        blocking=False),
         # ** THE CITATION WAS IRC P2801.6 / P2804.6.1 AND MINNESOTA DELETED BOTH. ** Same

@@ -12,7 +12,8 @@
   Smooth-Star** for `D-M-ENTRY`; a commodity **Masonite** insulated steel outswing for
   `D-G-SERVICE`; a Clopay Classic Steel sectional for `D-G-OVERHEAD`.
 
-Black outside, white inside throughout. The products are in the model
+Black outside, white inside throughout ([exterior_darks.md](exterior_darks.md), 2026-11-07;
+the Clopay stays Charcoal until a dealer confirms Black at R-12.9). The products are in the model
 (`plan/opening_products.py`, `plan/window_types.py`, `plan/door_types.py`), each type
 carrying its NFRC CPD row. **Every NFRC number below was read from the CPD itself
 (search.nfrc.org), not from a brochure or a Phius page.** What is still claimed rather than
@@ -67,7 +68,7 @@ Zone 5 governs any unit within 3.6 ft of a corner. Order every unit at one ratin
   clear. The 27" family widened to the full 27½" jack-to-jack clear, which seats a 26⅛"
   unit at **20.3" clear**; still one stud broken. Calculated; supplier confirmation
   outstanding. See §7.
-- **Dark frames.** On Alucover the black is powder-coated aluminium, so no dark uPVC sees the
+- **Dark frames.** On Alucover the black (RAL 9017 matt) is powder-coated aluminium, so no dark uPVC sees the
   sun on any face (§3's preferred material). Andersen 400 is black Perma-Shield vinyl over
   wood. Smooth-Star doors are painted fiberglass.
 - **14" units (2026-10-31).** Cascadia's outswing awning starts at 20" wide and its casement
@@ -141,7 +142,8 @@ fiberglass slab with a foam core and a 1 1/4" engineered lock stile, and Twin Ci
 The 2026-10-25 owner selection is single-point Encode Plus BE499WB (Sense Pro BE889WB since
 2026-10-30, `smart_home.md`) plus Century / Latitude
 passage lever, DS2000 viewer, composite frame and strike reinforcement. Field paint is
-black exterior / white interior; factory black is a quote alternate. All four house
+black exterior (matched to a Metal Sales Matte Black (106) chip) / white interior; factory
+black is a quote alternate. All four house
 exterior swings get doubled packs, solid hardware backing, composite strike/keep shims
 and local ccSPF; see `exterior_door_hardening.md` for installation and open dealer items. Its flush NFRC row matches the Cascadia U 0.15, so heating is
 unchanged, and it drops 6.6 ft² of north A·SHGC (`solar_gain_basis.md`). A small lite is a
@@ -167,7 +169,8 @@ claimed.
 | WT-2748(-T), WT-2754, WT-3048 | 2+1+4+2 | Andersen 400 casement | — | AND-N-1-04162 | 0.20/0.40/0.51 | 3¼" (preset; confirm) |
 
 Flange: factory nailing fin on all window lines (Max Light: quoted +15%, to confirm).
-Colour: black exterior, white interior.
+Colour: black exterior (RAL 9017 Traffic black matt on Drutex and Max Light; the Andersen 400
+escape casements are Andersen Black vinyl), white interior.
 
 **Visible faces, modelled (2026-11-07, [section sources](window_profile_measurements.md)).**
 Drutex Alucover: **74 mm frame + 50 mm sash** on operable units, 74 mm on fixed units

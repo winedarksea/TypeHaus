@@ -11,6 +11,7 @@ from __future__ import annotations
 from typehaus.model import Product
 
 _READ = "Read 2026-10-28. "
+_READ7 = "Read 2026-11-07. "
 
 # --- A-C: the recessed cans (2026-10-31) ---------------------------------------------------
 # One replaceable-lamp housing family for every can; the tier is the trim and the lamp, billed
@@ -183,8 +184,10 @@ SLL_COB_IP67 = Product(
 MEANWELL_HLG_100H_24A = Product(
     tag="PROD-MEANWELL-HLG-100H-24A", brand="Mean Well", model="HLG-100H-24A",
     name="24V LED driver, 96 W, IP65",
-    source=_READ + "Distributor pages: 96 W, 24 V / 4 A, IP65, UL 8750, $51-63. One per "
-           "run, indoors; a 25.5 ft run at 3 W/ft is ~77 W, 80% of the driver.",
+    url="https://www.meanwell.com/Upload/PDF/HLG-100H/HLG-100H-SPEC.PDF",
+    source=_READ7 + "Mean Well HLG-100H-SPEC (2026-07-24) pp. 1-2: 'Class 2 power unit' "
+           "(series-wide), UL 8750 type HL, 24 V / 4 A / 96 W, A-type IP65 with Vo/Io pots, "
+           "Tcase -40..+80 C, 220 x 68 x 38.8 mm. The printed unit label was not seen.",
 )
 # --- Z: the attic's candle sconces -----------------------------------------------------------
 LIVEX_4451 = Product(
@@ -200,31 +203,74 @@ LIVEX_4451 = Product(
 # Products, not prices (#28). Every 24V family is plain 2- or 5-wire tape in a standard
 # 12 mm channel, so a same-size tape can replace it; a controller sits beside its driver.
 _REVIEW = "Lighting review 2026-10-31. "
+# E4 (2026-11-07): no standard 12 mm RGB+CCT/RGBTW tape publishes a per-channel table near
+# 250 lm/ft a white (GM LTR-S-COB-RGBTW 68/73, Diode VALENT RGBTW 100/113, American Lighting
+# SPTL-RGBTW 410 total only), so the owner accepted this one at its measured output.
 SLL_COB_RGBCCT = Product(
     tag="PROD-SLL-COB-RGBCCT-24V", brand="SuperLightingLED", model="DC24V RGB+CCT COB (p-4545)",
     name="24V RGB+CCT COB LED tape, 12 mm, 6-wire",
     url="https://www.superlightingled.com/dc24v-rgb-cct-color-changing-flexible-cob-led-strip-p-4545.html",
-    source=_REVIEW + "Retailer page: RGB plus warm and cool white COB, 24 V, 12 mm. Coves "
-           "(mark E4). CONFIRM white-channel CRI >= 90 and >= 250 lm/ft, and that 12 mm fits "
-           "the 5/8 in. reveal.",
+    source=_READ7 + "SLL spec page: 12 mm PCB, 2.2 mm tall (fits the 15.9 mm reveal), cut "
+           "41.6 mm, whites 2800-6500 K, 20 W/m, 'CRI Ra>90'; order the IP20 adhesive. SLL "
+           "spectrum test report FCOB-24V-RGBCCT (2024-08-12) pp. 4-5, "
+           "https://superlightingled.com/PDF/RGBCCT-COB-LED-Spectrum-Test-Report.pdf: W "
+           "2855 K Ra 92 R9 51, 334 lm @ 5.16 W; C 5897 K Ra 90.9, 340 lm; RGBCW 1088 lm @ "
+           "20.32 W. The sample is ~1 m by inference, so ~102 lm/ft a white channel (the "
+           "page's 1296/1342 lm/m disagree). Accepted as is (owner, 2026-11-07).",
 )
 SLL_COB_RGBW_IP67 = Product(
     tag="PROD-SLL-COB-RGBW-IP67-30", brand="SuperLightingLED", model="DC24V RGBW COB, IP67 tube, W 3000K",
     name="24V RGBW COB LED tape, IP67, 3000 K white channel",
     source=_REVIEW + "The garage linear (mark W) as RGBW with a 3000 K white channel, same "
-           "1/2 in. U-channel. CONFIRM the IP67 SKU, watts per foot and white-channel CRI.",
+           "1/2 in. U-channel. CONFIRM the IP67 SKU and watts per foot (white-channel "
+           "CRI is a preference, owner 2026-11-07).",
 )
 COB_TUNABLE_24V = Product(
     tag="PROD-SLL-COB-CCT-24V", brand="SuperLightingLED", model="DC24V tunable-white COB, 2700-6500K",
     name="24V tunable-white COB LED tape, 10 mm, 3-wire",
-    source=_REVIEW + "The second-floor hall cove (mark E6). CONFIRM CRI >= 90 at both ends.",
+    source=_REVIEW + "The second-floor hall cove (mark E6). CRI 90+ at both ends is a "
+           "preference, not a gate (owner, 2026-11-07).",
 )
 GLEDOPTO_GL_C_001P = Product(
     tag="PROD-GLEDOPTO-GL-C-001P", brand="Gledopto", model="GL-C-001P",
     name="5-in-1 Zigbee 3.0 Pro LED controller (RGB/RGBW/RGBCCT/CCT/dim), 12-54 V",
-    source=_REVIEW + "One controller type for every coloured or tunable run, set to its "
-           "mode once. Local in ZHA; needs a Zigbee dongle beside the ZBT-2 (which runs "
-           "Thread). CONFIRM per-channel current against the run.",
+    url="https://www.superlightingled.com/zigbee-5in1-led-light-controller-voiceapprf-remote-control-p-4521.html",
+    source=_REVIEW + "The indoor coves (E4, E6), set to its mode once. Local in ZHA on the "
+           "second ZBT-2 (Zigbee mode). Distributor tables (SLL; gledopto.eu), read "
+           "2026-11-07, Gledopto's own pages 404: -20..+45 C, IP20, 5 A / 270 W max total; "
+           "power-on lights by default, 'previous' settable.",
+)
+# The garage's six (mark W) since 2026-11-07: owner prefers Matter, and moisture is the
+# concern, so the controller is Matter over Wi-Fi in a gasketed box beside its driver.
+GLEDOPTO_GL_C_208M = Product(
+    tag="PROD-GLEDOPTO-GL-C-208M", brand="Gledopto", model="GL-C-208M",
+    name="Matter over Wi-Fi RGB+CCT LED controller, 5 x PWM (R, G, B, C, W), 12-24 V",
+    url="https://www.matteralpha.com/gledopto/gledopto-smart-rgbcct-strip-controller-p3017",
+    source=_READ7 + "Matter 1.3, CSA certificate CSA256C5MAT46615-24, firmware QUEC_1.0.1.0 "
+           "(2025-09-14), part GL-C-208M (Matter Alpha's mirror of the CSA DCL; the CSA page "
+           "was not reached). UNCONFIRMED (manuals.plus copy of the Gledopto manual, "
+           "https://manuals.plus/asin/B0FC6BH6M3, seen only as a search quote 2026-11-07): "
+           "12-24 VDC, 15 A a channel / 20 A total (Lectronz lists 10 A total), -20..+45 C, "
+           "108 x 45 x 18 mm, IP20. No RGBW mode: the tape's W lead goes on the warm "
+           "terminal, C unused, color_temp pinned at the warmest kelvin.",
+)
+NEMA_4X_BOX_GENERIC = Product(
+    tag="PROD-NEMA4X-BOX-GENERIC", brand="generic",
+    model="NEMA 4X non-metallic junction box, 6 x 6 x 4 in.",
+    name="Gasketed PVC NEMA 4X junction box, 6 x 6 x 4 in., with sealed cord grips",
+    url="https://static.elliottelectric.com/P/Item/TAB/E987R",
+    source=_READ7 + "Any listed non-metallic NEMA 4X box (PVC, so Wi-Fi passes) that holds "
+           "the 108 x 45 x 18 mm controller; grips in from below. E.g. Carlon E987R, 6 x 6 "
+           "x 4 in., UL listed, NEMA 6P (Elliott Electric page).",
+)
+# A sealed box breathes or condenses: one pressure-compensating vent in its bottom wall.
+ENCLOSURE_VENT_GENERIC = Product(
+    tag="PROD-ENCLOSURE-VENT-GENERIC", brand="generic", model="M12 IP68 breather vent plug",
+    name="Pressure-compensating breather vent plug, M12, IP68, polyamide",
+    url="https://www.rapidonline.com/wiska-evsp-12-vent-plugs-m12-549410",
+    source=_READ7 + "Any standard M12 IP68 enclosure vent plug, e.g. Wiska EVSP 12 "
+           "(polyamide, pressure compensation, -40..+100 C; Rapid Electronics page). In the "
+           "box's bottom wall, so the controller box neither sweats nor pumps water in.",
 )
 HALCO_LED_READY_STRIP = Product(
     tag="PROD-HALCO-90511", brand="Halco", model="90511",
@@ -233,10 +279,14 @@ HALCO_LED_READY_STRIP = Product(
            "T8 tubes, 120-277 V, no ballast. The tubes are the lamp.",
 )
 WAVEFORM_T8_95 = Product(
-    tag="PROD-WAVEFORM-T8-95-50K", brand="Waveform Lighting", model="Absolute Series T8, 5000K, 4 ft",
-    name="4 ft T8 LED tube, 95 CRI, 5000 K, ballast bypass",
-    source=_REVIEW + "CONFIRM it is Type B double-ended and ~1,800 lm. Any 90+ CRI 5000 K "
-           "Type B tube fits the strip.",
+    tag="PROD-WAVEFORM-T8-95-50K", brand="Waveform Lighting",
+    model="CENTRIC DAYLIGHT T8 4024.50 (5000K, 4 ft; 4-pack 4024.50.4P)",
+    name="4 ft T8 LED tube, 95 CRI, 5000 K, Type A+B, double-ended direct wire",
+    url="https://store.waveformlighting.com/cdn/shop/files/"
+        "CENTRIC_DAYLIGHT_Full_Spectrum_T8_LED_Tube_Light_Specification_Sheet.pdf",
+    source=_READ7 + "Waveform spec sheet Rev 2.01 (2022-04-08): 'TriplePlay' Type A+B; "
+           "direct wire single-ended non-shunted or double-ended shunted/non-shunted; 1,800 "
+           "lm, 18 W, Ra 95+, R9 90+, G13, ETL 4008503, damp, not dimmable.",
 )
 CHANNEL_45_GENERIC = Product(
     tag="PROD-CHANNEL-45-GENERIC", brand="generic", model="45-degree aluminium LED channel, 8 ft",
@@ -252,19 +302,25 @@ LEVITON_9880 = Product(
 )
 WAVEFORM_A19_95 = Product(
     tag="PROD-WAVEFORM-CENTRICHOME-A19-30K", brand="Waveform Lighting", model="CentricHOME A19 3000K",
-    name="A19 LED bulb, E26, 800 lm, 3000 K, 95 CRI, R9 90+",
-    source=_REVIEW + "Makeup-grade lamp for the vanity lights. CONFIRM 800 lm, R9 >= 90 and "
-           "the enclosed/damp rating against each fixture.",
+    name="A19 LED bulb, E26, 800 lm, 3000 K, 95 CRI, R9 80+ (typ. 91), 10 W, not dimmable",
+    url="https://store.waveformlighting.com/cdn/shop/files/"
+        "CENTRIC_HOME_A19_10W_LED_Bulb_-_E26_Specification_Sheet.pdf",
+    source=_READ7 + "Waveform spec sheet PN 4005C.30 Rev 2.0 (2021-06-14): 800 lm, 10 W, Ra "
+           "95+, R9 rated 80+ (typical 91; owner accepts, 2026-11-07); damp; NOT for totally "
+           "enclosed luminaires; NOT dimmable; UL E519490. The Karlie shades are open.",
 )
 HINKLEY_SOREN_50910BK = Product(
     tag="PROD-HINKLEY-50910BK", brand="Hinkley", model="50910BK",
     name="Soren medium sconce, black, clear fluted glass, 1 x E26",
     url="https://www.hinkley.com/50910bk.html",
-    source="Owner, 2026-11-02. Hinkley page and dealer listings, read 2026-11-02: 14.25 in. "
-           "tall x 5 in. wide, 4.75 in. extension, 5 in. round backplate, top to outlet "
-           "2.5 in.; one medium base, 6 W max LED; mounts up or down. Black or Heritage Brass "
-           "only. CONFIRM the UL damp label (dealers disagree) and the box offset from the "
-           "spec sheet before rough-in. Lamp: one Waveform ModernVintage A19.",
+    source="Owner, 2026-11-02. Hinkley spec sheet 'SOREN 50910BK' (generated 2026-05-07, "
+           "https://images.salsify.com/image/upload/s--47g1yvQy--/"
+           "c766b9dd1f24404b486bc0fcff80d6e3e7e98ae4.pdf), read 2026-11-07: Damp Rated; W 5 "
+           "in., H 14.3 in., extension 4.8 in., 5 in. round backplate, TOP TO OUTLET 2.5 in.; "
+           "1-6 W medium LED, 120 V; mounts up or down. Black or Heritage Brass only. The "
+           "sheet says 'T-style bulbs required': keep the ModernVintage A19 (owner, "
+           "2026-11-07), test-fit one before ordering three, and ask Hinkley whether "
+           "T-style is fit or look.",
 )
 WAVEFORM_MODERNVINTAGE_A19_30K = Product(
     tag="PROD-WAVEFORM-MODERNVINTAGE-A19-30K", brand="Waveform Lighting",
@@ -284,7 +340,8 @@ SELECTED_LIGHTING_PRODUCTS = (
     SCHLUTER_SNLT, BARRON_VARIUS_AG90, WAC_LINE_24, WAC_ROLAND, WAC_STRETCH, NUVO_BOWMAN_36,
     MODERN_FORMS_MYKONOS, WAC_TUBE_EXT, SLL_COB_IP67, MEANWELL_HLG_100H_24A, LIVEX_4451,
     SLL_COB_RGBCCT, SLL_COB_RGBW_IP67, COB_TUNABLE_24V,
-    GLEDOPTO_GL_C_001P, HALCO_LED_READY_STRIP, WAVEFORM_T8_95,
+    GLEDOPTO_GL_C_001P, GLEDOPTO_GL_C_208M, NEMA_4X_BOX_GENERIC, ENCLOSURE_VENT_GENERIC,
+    HALCO_LED_READY_STRIP, WAVEFORM_T8_95,
     LEVITON_9880, CHANNEL_45_GENERIC, WAVEFORM_A19_95, HINKLEY_SOREN_50910BK,
     WAVEFORM_MODERNVINTAGE_A19_30K,
 )

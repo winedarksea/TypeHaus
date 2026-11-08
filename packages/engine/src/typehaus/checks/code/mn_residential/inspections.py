@@ -24,6 +24,7 @@ one city this repo's reference house is in.
 from __future__ import annotations
 
 from typehaus.checks.jurisdiction import InspectionSpec
+from typehaus.model.nec import NEC
 
 #: Minn. R. 1300.0210 subp. 3-9, in the order the rule states them, plus the two Minnesota
 #: additions (radon rough-in under MN Rules 1303.2400, the blower-door report under MN
@@ -169,7 +170,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         on_site=("electrical permit filed with the authority named in [authorities]",
                  "boxes set and secured", "cable stapled and protected at plates"),
         milestone="rough_ins",
-        code_refs=("MN Rules 1315", "2026 NEC"),
+        code_refs=("MN Rules 1315", NEC.EDITION),
     ),
     InspectionSpec(
         id="framing", label="Framing — after all three rough-ins",
@@ -289,7 +290,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
                    "code.NEC_690_12_rapid_shutdown"),
         on_site=("panel directory complete", "devices trimmed and tested"),
         milestone="final",
-        code_refs=("MN Rules 1315", "2026 NEC"),
+        code_refs=("MN Rules 1315", NEC.EDITION),
     ),
     InspectionSpec(
         id="building_final", label="Building final — certificate of occupancy",

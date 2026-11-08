@@ -83,7 +83,8 @@ def test_bath2_uses_full_line_voltage_and_its_integral_controls(catlin_plan):
     halo_type = types[halo.type_ref]
     assert halo.controlled_by == plug.controlled_by == ()
     assert halo.circuit == plug.circuit
-    assert circuits[plug.circuit].gfci
+    # GFCI-protected from the room: the plug rides the vanity GFCI's load side (2026-11-07).
+    assert circuits[plug.circuit].gfci or elements[plug.gfci_ref].kind.value == "gfci"
     assert halo_type.integral_switch and halo_type.dimmable
     assert halo_type.watts == halo_type.load_va == 116
     assert halo_type.cri is None
@@ -184,6 +185,6 @@ def test_panel_counts_the_halo_load_once_on_its_plug_branch(catlin_model_ro):
     from typehaus.takeoff.electrical import panel_schedule
 
     row = next(row for row in panel_schedule(catlin_model_ro)
-               if row["circuit"] == "CKT-BATH-ATTIC")
+               if row["circuit"] == "CKT-BATH-RC")
     assert row["connected_va"] == 116
     assert {"ED-M-BATH2-MIRROR-HALO", "ED-M-BATH2-MIRROR-PLUG"} <= set(row["devices"])

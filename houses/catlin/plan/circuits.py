@@ -16,7 +16,7 @@ Conventions:
 - ``duty_cycle`` is the authored average-draw fraction the autonomy calc multiplies the
   connected VA by (→ takeoff/backup_calc.py). Estimates, each with its basis in a comment;
   a tiered circuit without one is reported as an unknown contributor, never as zero.
-- ``source=True`` marks a power-source interconnection — excluded from the 220.82 load
+- ``source=True`` marks a power-source interconnection — excluded from the 120.82 load
   summary and counted by the 705.12 busbar check instead.
 - ``load_va`` is authored where the devices carry no typed load (equipment, lighting
   allowances); circuits whose receptacle types carry ``load_va`` leave it None and the
@@ -27,10 +27,10 @@ Conventions:
   rule); ``code.NEC_705_12_interconnection`` grades that arithmetic.
   ED-B-PANEL is feeder 1 of the Class 320 service and ED-B-PANEL-2 is feeder 2
   (plan/mep_electrical.py). Slots 1/5/9/13/17 of ED-B-PANEL-2 carry CKT-SPA, CKT-SAUNA,
-  CKT-EV-1450, CKT-GAR-240 and CKT-WORKSHOP-240, respectively. The first four moved off
-  ED-B-PANEL on 2026-09-12 — their old slots
-  9, 13, 17 and 21 there are spares now. ED-B-BACKUP-PANEL carries 1 two-pole + 5 one-pole
-  = 7 of its 12. Counts per panel come from `electrical.panel_spaces`, not from here.
+  CKT-EV-1450, CKT-GAR-240 and CKT-WORKSHOP-240, respectively, and slot 2 its SPD. The
+  first four moved off ED-B-PANEL on 2026-09-12 — their old slots
+  9, 13, 17 and 21 there are spares now. ED-B-BACKUP-PANEL carries 2 two-pole + 5 one-pole
+  = 9 of its 12. Counts per panel come from `electrical.panel_spaces`, not from here.
   ``electrical.panel_spaces`` reconciles both against
   ``test_catlin_panel_spaces_fits_the_54_space_enclosure``. Count from the loaded plan,
   not by hand — a hand count has been wrong here before.
@@ -38,13 +38,11 @@ Conventions:
 
 from __future__ import annotations
 
-from typehaus import BackupTier, Circuit
+from plan.circuits_backup import BACKUP_CIRCUITS
+
+from typehaus import Circuit
 
 _PANEL = "ED-B-PANEL"
-# The backup subpanel on the EG4 12kPV's dedicated load output (plan/electrical.py) — a
-# separate bus that stays energized when the grid does not, which is why tiered circuits
-# live here rather than in ED-B-PANEL. Slot numbering: same convention, odd left/even right.
-_BACKUP_PANEL = "ED-B-BACKUP-PANEL"
 # Feeder 2 of the Class 320 service (plan/mep_electrical.py, ED-T-PANEL-2): a second 200 A
 # main out of the meter-main, carrying the wellness and EV loads. Same slot convention.
 _PANEL_2 = "ED-B-PANEL-2"
@@ -53,16 +51,20 @@ CIRCUITS = (
     # --- 240V dedicated loads ---------------------------------------------------------
     # LG LSIL6336FE nameplate: 11.9 kW at 240 V, 40 A minimum circuit (LG spec sheet,
     # plan/appliance_types.py). A 14-50R is permitted on a 40 A circuit (NEC Table
-    # 210.21(B)(3)). 220.82(B)(3) counts the nameplate, not the breaker.
+    # 210.21(B)(3)). 120.82(B)(3) counts the nameplate, not the breaker.
+    # 2-pole GFCI breaker (owner, 2026-11-07): 2026 NEC 210.8(D)(8) lists electric ranges,
+    # and the 14-50R is a 125-250 V kitchen receptacle under 210.8(A)(7) besides.
     Circuit(uid="CKT001AAAA", tag="CKT-RANGE", slot=1, panel_ref=_PANEL, breaker_amps=40, poles=2,
-            nema="14-50R", load_va=11900, description="Kitchen range"),
+            nema="14-50R", gfci=True, load_va=11900, description="Kitchen range"),
     # LG's WKHC252HBA spec sheet gives the dryer as 830 W at 240 V and requires a 15 A
     # circuit. Keep the 14-30R for its specified four-wire dryer cord, but protect this
     # appliance circuit at 15 A. load_va is its nameplate, not the receptacle's rating;
-    # 220.82(B)(3) counts a dryer's nameplate rating, while 220.54's 5,000 VA minimum is
+    # 120.82(B)(3) counts a dryer's nameplate rating, while 120.54's 5,000 VA minimum is
     # for the standard method.
+    # 2-pole GFCI breaker (owner, 2026-11-07): 2026 NEC 210.8(D)(11) lists clothes dryers,
+    # and the 14-30R is a 125-250 V laundry-area receptacle under 210.8(A)(12).
     Circuit(uid="CKT002AAAA", tag="CKT-DRYER", slot=5, panel_ref=_PANEL, breaker_amps=15, poles=2,
-            nema="14-30R", load_va=830, description="Dryer"),
+            nema="14-30R", gfci=True, load_va=830, description="Dryer"),
     # load_va is explicit so the schedule reads the figure the conductors are sized for.
     # CKT-EV-1450 feeds a HARDWIRED Grizzl-E (owner, 2026-10-30): no receptacle, so 210.8(A)(2)
     # and 625.54 do not apply and the charger's CCID protects; 40 A charge, 125% = 50 A plain.
@@ -87,8 +89,8 @@ CIRCUITS = (
     # is 9 kW = 37.5A, 46.9A at the 125% continuous factor, so 50A is the breaker.
     # ** 50 A / 9000 VA -> 60 A / 10500 VA, 2026-09-06, and the driver is the heater, not
     # the circuit. ** plan/electrical.py's EQ-T-SAUNA-HEATER note carries the finding: 9 kW
-    # covers 283-494 cf on every manufacturer's own table and RM-B-SAUNA is 555. NEC
-    # 424.3(B) makes fixed electric space heating a continuous load at 125%, so
+    # covers 283-494 cf on every manufacturer's own table and RM-B-SAUNA is 555. 2026 NEC
+    # 424.5 makes fixed electric space heating a continuous load at 125%, so
     # 10500 / 240 = 43.75 A x 1.25 = ** 54.7 A **, which 50 A will not carry. 60 A does.
     #
     # ** PULL #6 THHN IN CONDUIT, AND DO NOT BELIEVE THE "#8 AWG" SEVERAL RETAILERS AND AT
@@ -104,9 +106,9 @@ CIRCUITS = (
     # unit to the mains without an earth-leakage circuit breaker" — because moisture absorbed
     # into the magnesium-oxide fill of the sheathed elements causes nuisance trips. The fix
     # is a 2-4 hour DRY BURN-IN before final inspection. If the AHJ insists anyway, take a
-    # 30 mA GFPE, which catches a real fault without the nuisance trips. ** The sauna LIGHTS
-    # are a different question and DO need GFCI ** under 210.8(A)(5), which is why lights and
-    # heater are on separate circuits.
+    # 30 mA GFPE, which catches a real fault without the nuisance trips. The sauna LIGHTS are
+    # on a separate circuit (CKT-LT-BSMT); 2026 210.8(A)(6) (basements) reaches receptacles,
+    # not them, so their protection follows the luminaire listing.
     Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", slot=5, panel_ref=_PANEL_2, breaker_amps=60, poles=2,
             gfci=False, load_va=10500, description="Sauna heater (EQ-B-SAUNA-HTR), 10.5 kW"),
     # CKT-WH (was CKT-WH-240) is on the backup subpanel — see the SURPLUS tier below. Slot 25
@@ -120,10 +122,19 @@ CIRCUITS = (
     # overcurrent device is 25 A, the same pair of numbers the VIR24 carried. `load_va` is
     # MCA x 240 V (21 x 240 = 5,040), which is the conservative reading — MCA already carries
     # the 125% on the compressor, so this over-states the running load rather than under-stating
-    # it in the 220.82 summary. Nothing in checks/ compares breaker_amps to load_va; this
+    # it in the 120.82 summary. Nothing in checks/ compares breaker_amps to load_va; this
     # arithmetic is held correct by hand, and saying so is part of keeping it that way.
+    #
+    # ** 2-POLE CLASS A GFCI ON ALL THREE OUTDOOR UNITS (owner, 2026-11-07). ** 2026 NEC
+    # 210.8(F) reaches outdoor outlets to 60 A, listed HVAC included from 2026-09-01 (MN DLI
+    # NEC FAQ rev. 2026-10-05 #4). The owner chose Ex. 3's listed Class C SPGFCI first, but
+    # no Class C panel breaker at 15/25/30 A was found (Square D, Eaton, Siemens, GE,
+    # Leviton; UL KCYC page; 2026-11-07) — only Littelfuse's industrial SB6100. So Class A,
+    # no disconnect label: QO225GFI / QO230GFI (Class A 6 mA; rexelusa.com, 2026-11-07).
+    # Swap to gfci_class="C" + the ED-M-HPn-DISC label the day one is listed.
     Circuit(uid="CKT009AAAA", tag="CKT-HP1", slot=6, panel_ref=_PANEL, breaker_amps=25, poles=2,
-            load_va=5040, description="Heat pump 1 outdoor, FLEXX Ultra 24k (EQ-M-HP1-OD)"),
+            gfci=True, load_va=5040,
+            description="Heat pump 1 outdoor, FLEXX Ultra 24k (EQ-M-HP1-OD)"),
     # uids CKT036/037, not CKT031/032: those were already spent on the radiant-floor
     # circuits below. Devices name the tag, not the uid, so renumbering this pair was
     # the whole fix.
@@ -140,23 +151,23 @@ CIRCUITS = (
     # Btu/h block load, so the kit is backup for the hours the compressor is off), and
     # defrost therefore runs unheated — two to four minutes of cool discharge, the standard
     # cold-climate arrangement. It used to be authored as LM-HP1-AUX and credited 4,600 VA
-    # under 220.82(C)/220.60, which is what kept the house inside a 200 A service. With the
-    # Class 320 service (2026-09-12) it buys nothing and is just how the unit is set up.
+    # as an interlock, which is what kept the house inside a 200 A service. 2026 NEC
+    # 120.82(C)(3) has no interlock credit (compressor 100% + supplemental 65%), and the
+    # engine no longer offers one; it is just how the unit is set up.
     Circuit(uid="CKT036AAAA", tag="CKT-HP1-AH", slot=50, panel_ref=_PANEL, breaker_amps=35, poles=2,
             load_va=5300,
             description="Heat pump 1 indoor, ducted air handler + 4.6 kW heat kit (EQ-S-HP1-AH, EQ-S-HP1-STRIP)"),
     Circuit(uid="CKT037AAAA", tag="CKT-HP2", slot=49, panel_ref=_PANEL, breaker_amps=30, poles=2,
-            load_va=6000,
+            gfci=True, load_va=6000,
             description="Heat pump 2 outdoor, Multi Ultra 3-port (EQ-M-HP2-OD; feeds its 3 heads)"),
     # System 3 (below, backup microgrid) is a true-VFD compressor that soft-starts, which
     # is what makes it carryable by the battery inverter at all.
-    # GFCI at the breaker (code.E3902_gfci_locations): ED-M-LIVING-KET1 sits
-    # 3.2' from the kitchen sink. E3902.10 reaches it despite being 240V (it covers 125V
-    # through 250V receptacles at 50A or less), and a 2-pole GFCI breaker is the only
-    # place to protect a 6-20R.
+    # GFCI at the breaker (code.E3902_gfci_locations): ED-M-LIVING-KET1 sits 3.2' from the
+    # kitchen sink, and 2026 NEC 210.8(A) covers 125-250 V receptacles, 240 V ones included
+    # ((A)(7) kitchen, (A)(9) sink). A 2-pole GFCI breaker is the only place to protect a 6-20R.
     # SEVERIN WK 3422 selected 2026-10-25: published 3,000 W nameplate.
     # The old 3,840 was the breaker (20 A x 240 V), not a load. Run time (~5 min/day)
-    # earns nothing in 220.82; only a 120 V kettle on a small-appliance circuit leaves the count.
+    # earns nothing in 120.82; only a 120 V kettle on a small-appliance circuit leaves the count.
     Circuit(uid="CKT011AAAA", tag="CKT-KETTLE", slot=14, panel_ref=_PANEL, breaker_amps=20, poles=2,
             nema="6-20R", gfci=True, load_va=3000,
             description="SEVERIN WK 3422 tea maker via UK adapter (6-20R half)"),
@@ -170,7 +181,7 @@ CIRCUITS = (
     # 705.12 ceiling on this bus is 225x1.2-200=70A, so 50A leaves 20A
     # for a future second source (V2H).
     #
-    # source=True excludes it from the 220.82 load summary and includes it in the 705.12
+    # source=True excludes it from the 120.82 load summary and includes it in the 705.12
     # busbar check.
     Circuit(uid="CKT012AAAA", tag="CKT-ESS-GRID", slot=40, panel_ref=_PANEL, breaker_amps=50,
             poles=2, source=True, load_va=0,
@@ -179,35 +190,33 @@ CIRCUITS = (
     # FACTORY kit inside the air handler's cabinet, fed and staged from the unit, so it
     # rides CKT-HP1-AH above rather than a circuit of its own.
 
-    # --- service surge protection ------------------------------------------------------
-    # ** NEC 2023 230.67 requires an SPD on the service of a dwelling unit ** — Type 1 or
-    # Type 2, and 230.67(C) says it is installed at the service equipment or immediately
-    # adjacent. This is the panel-mounted Type 2 answer: a 2-pole plug-on breaker in
-    # ED-B-PANEL, not a nipple-coupled enclosure beside it, because the west wall at x=10"
-    # is already full — ED-B-BACKUP-PANEL at y=27', ED-B-PANEL at 29', ED-B-NET-PATCH at
-    # 31' and the ERV duct crossing at 31'-4" leave no clear bay. A plug-on breaker also
-    # gives the shortest possible lead length, which is what actually decides let-through
-    # voltage; every inch of conductor adds to the clamped voltage the house sees.
+    # --- surge protection: one SPD per feeder panel ----------------------------------------
+    # ** 2026 NEC 230.67 requires an SPD for a dwelling's service, and the outdoor CL320
+    # meter-main is the service disconnect (230.70(A)(1); 230.85 is gone), so every panel
+    # here is a FEEDER panel. ** Where the service supplies only feeders, the 230.67(B)
+    # Exception puts an SPD on the load side of EACH feeder, and 215.18(B) wants one in or
+    # next to each feeder-supplied panel holding branch OCPDs (NFPA 70 A2025 CMP-10 second
+    # draft; MN DLI NEC FAQ rev. 2026-10-05 #8). Three SPDs, then: ED-B-PANEL (this one),
+    # ED-B-PANEL-2 and ED-B-BACKUP-PANEL (owner, 2026-11-07; the last in circuits_backup.py).
+    # Each is a 2-pole plug-on Type 2 breaker, not a nipple-coupled enclosure: the west wall
+    # at x=10" has no clear bay, and a plug-on gives the shortest lead, which is what decides
+    # let-through voltage. Slot 10 (with 12) is high in the right column, by the main.
+    # `source=False`, `load_va=0`: neither a load nor a source, so 120.82 counts nothing and
+    # the 705.12 busbar check must NOT see a backfeed.
     #
-    # Slot 10 (with 12) was one of the nine spares. It is high in the right-hand column,
-    # near the main, which is the short-lead position.
-    #
-    # `source=False`, `load_va=0`: an SPD is neither a load nor a power source. It draws
-    # only its indicator LED, so 220.82 counts nothing and the 705.12 busbar check must
-    # NOT see it as a backfeed the way CKT-ESS-GRID is seen.
-    #
-    # NOT on the backup panel: 230.67 is about the SERVICE, so the device belongs on the
-    # service bus. The EG4's load output is protected by the inverter's own surge stage.
-    # A second SPD at ED-B-BACKUP-PANEL is a defensible upgrade and is deliberately not
-    # authored here — one device, on the bus the code names.
-    #
-    # ** NOTHING GRADES THIS. ** No check encodes 230.67 (grep `NEC 230` in checks/ — no
-    # hits), so this comment and the circuit row are the only record that the requirement
-    # was met. If the SPD is ever value-engineered out, it comes out of a code article,
-    # not out of a nice-to-have.
+    # ** NOTHING GRADES THESE. ** No check encodes 230.67 or 215.18, so these comments and
+    # the circuit rows are the only record that the requirement was met. If an SPD is ever
+    # value-engineered out, it comes out of a code article, not out of a nice-to-have.
     Circuit(tag="CKT-SPD", slot=10, panel_ref=_PANEL, breaker_amps=20, poles=2,
             load_va=0,
-            description="Type 2 surge protective device, service panel (NEC 230.67)"),
+            description="Type 2 surge protective device, feeder panel 1 "
+                        "(NEC 230.67(B) Ex., 215.18)"),
+    # Feeder 2's SPD: slot 2 is the top of ED-B-PANEL-2's empty right column, beside the
+    # main, for the short lead. A Homeline plug-on, as CKT-SPD is a QO one.
+    Circuit(tag="CKT-SPD-2", slot=2, panel_ref=_PANEL_2, breaker_amps=20, poles=2,
+            load_va=0,
+            description="Type 2 surge protective device, feeder panel 2 "
+                        "(NEC 230.67(B) Ex., 215.18)"),
 
     # --- electric space heating --------------------------------------------------------
     # Supplemental only — the three heat-pump systems do the heating work, these five
@@ -225,7 +234,7 @@ CIRCUITS = (
     # FH-M-BATH2 is 17.85 ft2 of authored zone heated by one Schluter DHEHK12016 cable —
     # 16.0 ft2, 120 V, 203 W, 1.7 A as purchased — and this is that nameplate rather than
     # `area x 12`, because heating cable is sold in fixed lengths and cannot be cut. NEC
-    # 220.51 counts fixed electric space heating at 100% of connected load, so VA = W
+    # 120.51 (was 220.51) counts fixed electric space heating at 100% of load, so VA = W
     # here. 15 A stays despite a 1.7 A load — the
     # thermostat is a 15 A device with an integral Class A GFCI and its own box, and a
     # dedicated home run is what Schluter recommends. NEC 424.44(G) is what makes the GFCI
@@ -238,7 +247,7 @@ CIRCUITS = (
     # (The dining mat and its slot-31 circuit are retired: no slab left to embed it in, decision #112.)
     Circuit(uid="CKT033AAAA", tag="CKT-FH-BATH1", slot=33, panel_ref=_PANEL, breaker_amps=15, poles=1,
             # 338 VA: the wattage is a purchased nameplate (Schluter DHEHK12027, 26.7 ft2 /
-            # 338 W / 2.8 A) rather than a stale area times 12. NEC 220.51 counts fixed
+            # 338 W / 2.8 A) rather than a stale area times 12. NEC 120.51 counts fixed
             # electric space heating at 100%, so this comes straight off the service demand.
             gfci=True, load_va=338,
             description="Radiant floor heat — NW bathroom, sole heat source "
@@ -294,98 +303,11 @@ CIRCUITS = (
             load_va=1500, gfci=True,
             description="Garage DR-238 carbon radiant heater, 1500 W / 120 V (EQ-G-HEATER), dedicated GFCI-protected ED-G-HEATER-RC; retain factory cord and plug"),
 
-    # --- the backup microgrid (notes/backup_power.md) ---------------------------------
-    # Every circuit below is homed to ED-B-BACKUP-PANEL, the 12-space subpanel on the
-    # EG4 12kPV's dedicated load output. Two tiers: ALWAYS_ON rides the whole outage
-    # (food, network, two basement cans + the kitchen tape, the alarms, the sump); SURPLUS
-    # runs on battery only on solar surplus, through a relay (or a relay-driven contactor for
-    # 2-pole/over-16A loads) that Home Assistant commands (notes/backup_power.md §5).
-    #
-    # ``duty_cycle`` on each is an ESTIMATE with its basis stated per circuit — the numbers
-    # the bridge verdict is most sensitive to; revise against real metering.
-    #
-    # CKT-BACKUP-FEED (retired): its DIN gear is downstream of the inverter's load output like
-    # everything else on this bus, so a circuit feeding it from the grid side was backwards.
-
-    # -- ALWAYS_ON --
-    # 800 VA is the *circuit allowance*, not the draw — the gap is why duty_cycle exists.
-    # The fridge averages ~60W and the upright freezer column beside it ~45W: 105W of 800VA
-    # = 0.13, still the largest always-on term and the one most worth metering.
-    Circuit(uid="CKT016AAAA", tag="CKT-FRIDGE", slot=2, panel_ref=_BACKUP_PANEL,
-            breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
-            load_va=800, duty_cycle=0.13,
-            description="Kitchen outlet 1: fridge + freezer"),
-    # 300 VA is an outlet allowance; the real load is a router (~12W), an always-on HA server
-    # (~28W), and a PoE switch feeding 3 APs, the doorbell and 2 cameras (E-603, through an
-    # 88% supply) — ~133W of 300VA = 0.44. Per-device PoE draw is scheduled on E-603
-    # (→ takeoff/data.py) since a PoE device names no circuit of its own.
-    # On battery HA turns off the doorbell's, the cameras' (owner, 2026-10-30) and two of the
-    # three APs' ports (2026-11-02): backup_shed_poe subtracts their E-603 watts / 0.88.
-    # ED-M-KITCH-AP, the central main-floor AP, stays live. ED-B-UTIL-RC1's spare half on
-    # this circuit is the outage charging point (plan/electrical.py).
-    Circuit(uid="CKT017AAAA", tag="CKT-HA", slot=4, panel_ref=_BACKUP_PANEL,
-            breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, gfci=True,
-            load_va=300, duty_cycle=0.44,
-            backup_shed_poe=("ED-M-DOORBELL", "ED-M-CAM-PORCH", "ED-BW-CAM-CANOPY",
-                             "ED-M-PORCH-AP", "ED-A-STUDIO-AP"),
-            description="Basement outlet 1: HA server + router + PoE switch; outage charging"),
-    # Since 2026-11-02 only the furnace-room cans (by the panels, the ESS closet and the sump),
-    # the ESS closet light, the kitchen under-cabinet tape and every alarm; the rest went to
-    # CKT-LT-BSMT / CKT-LT-MAIN. The alarms stay on one unswitched branch (Kidde interconnect,
-    # R314.4) that rides the outage (the ESS closet's two). load_va is None: the takeoff sums
-    # the devices (65 VA, the alarms at 0). duty_cycle 0.49 is a blend, ~32 W of 65 VA:
-    # - lights: cans 13 W + the tape's 30 VA TRADFRI (its rating, errs heavy) for ~5 h of 24
-    #   = 9.0 W; the closet light ~0.2 W;
-    # - the two interconnect relays at their 13.2 VA rating, always energised;
-    # - 13 alarms' standby, ~0.75 W each = 9.8 W. AN ESTIMATE: Kidde publishes only a 120 V /
-    #   80 mA maximum. Meter it.
-    Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=6, panel_ref=_BACKUP_PANEL,
-            breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
-            duty_cycle=0.49,
-            description="Furnace-room + kitchen task light + interconnected alarms"),
-
-    # The sump rides ALWAYS_ON since 2026-10-30: the long stormy night is exactly when it
-    # must run. One pump, SM-B-RADON's Zoeller M53 (plan/mep_drainage.py; SM-B-SOUTH retired
-    # 2026-11-02): 9.7 A running, so load_va = 9.7 x 120 = 1,164; x0.025 is a minute or two
-    # an hour in wet weather (29 W). start_va 3,500 is the M98 (1/2 hp)'s published 29.2 A, so
-    # an upsize stays covered (the M53's own is 25.9 A).
-    # Published starts run ~3x running, not 6x.
-    # GFCI at the DEVICE (2026-10-27): ED-B-SUMP-RC is an audible-alarm GFCI, so a trip is
-    # heard (NEC 2023 210.8(A)(5)); the breaker is not GFCI.
-    Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=7, panel_ref=_BACKUP_PANEL,
-            breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON,
-            load_va=1164, start_va=3500, duty_cycle=0.025,
-            description="Sump pump (SM-B-RADON)"),
-
-    # -- SURPLUS --
-    # Never counted against battery autonomy; on battery it runs only on PV surplus with the
-    # battery near full (notes/backup_power.md §5). duty_cycle feeds only the surplus-hours
-    # figure.
-    # HP3: one 9K head blowing into the open stair. load_va 1,850 is NEEP 393164's maximum
-    # input (17 F). At that maximum a cold morning is ~38 kWh/day if it were the only heat,
-    # which no battery carries; on battery it is surplus heat only. 0.4: a modulating head
-    # holding the stair runs most of the time at a fraction of maximum. start_va = load_va:
-    # an inverter compressor has no inrush. 2-pole, so a relay-driven contactor switches it
-    # (takeoff/electrical.py::RELAY_CHANNEL_AMPS); HA's own command to the unit goes first.
-    Circuit(uid="CKT010AAAA", tag="CKT-HP3", slot=1, panel_ref=_BACKUP_PANEL,
-            breaker_amps=15, poles=2, backup_tier=BackupTier.SURPLUS, load_va=1850,
-            start_va=1850, duty_cycle=0.4,
-            description="Heat pump 3 outdoor, Sapphire R32 VFD (EQ-M-HP3-OD; surplus tier)"),
-    # The element-free 120 V plug-in HPWH (EQ-B-WH, Rheem PROPH80 T0 RH120-M, owner
-    # 2026-10-31). Retagged from CKT-WH-240 (uid kept). load_va 1,440 = ENERGY STAR's 12.0 A
-    # maximum x 120 V; 15 A is Rheem's minimum breaker. A Shelly Pro 4PM channel switches it.
-    # duty 0.05: the 395 W average compressor draw for ~4.5 h a day (12 GPH recovery) =
-    # 74 W. DEDICATED, not the unit's shared-circuit feature: on the backup panel there is
-    # no second load to share with. Slot 9, 1-pole; 11 is spare.
-    Circuit(uid="CKT007AAAA", tag="CKT-WH", slot=9, panel_ref=_BACKUP_PANEL,
-            breaker_amps=15, poles=1, backup_tier=BackupTier.SURPLUS, load_va=1440,
-            duty_cycle=0.05,
-            description="Water heater, Rheem ProTerra Plug-in 80 gal HPWH, 120 V, no element "
-                        "(EQ-B-WH; surplus tier)"),
+    *BACKUP_CIRCUITS,
 
     # --- general-use 120V ------------------------------------------------------------
     # ``afci=True`` on every circuit below (2026-08-01, code.E3902_16_afci): each reaches
-    # a room on E3902.16's list as a 120V 15/20A branch circuit. The 240V loads (range,
+    # a room on NEC 210.12(B)'s list as a 120V 15/20A branch circuit. The 240V loads (range,
     # dryer, heat pumps, kettle, PV backfeed) are outside the section's scope.
     # GFCI+AFCI on one circuit is a single dual-function breaker, costing one panel space.
     Circuit(uid="CKT020AAAA", tag="CKT-KITCH-SA1", slot=30, panel_ref=_PANEL, breaker_amps=20, poles=1,
@@ -394,7 +316,7 @@ CIRCUITS = (
     Circuit(uid="CKT021AAAA", tag="CKT-KITCH-SA2", slot=32, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1500,
             description="Kitchen small-appliance 2 (counter east + pantry)"),
-    # GFCI here too: ED-M-LIVING-KDW1 is ~11" from the kitchen sink (E3902.10; was 2.7'
+    # GFCI here too: ED-M-LIVING-KDW1 is ~11" from the kitchen sink (210.8(A)(9); was 2.7'
     # before the 2026-08-26 sink/dishwasher re-composition moved both into the same base).
     Circuit(uid="CKT022AAAA", tag="CKT-DISHWASHER", slot=34, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1200,
@@ -402,14 +324,14 @@ CIRCUITS = (
     # The disposer came off CKT-DISHWASHER (2026-08-07): a shared 20A branch is legal, but
     # a 3/4 HP motor's locked-rotor inrush on top of a dishwasher's heater is a nuisance
     # trip waiting to happen. Its own circuit is the cheap fix while the wall is open.
-    # GFCI for the same E3902.10 reason (ED-M-LIVING-KDS1 sits under the sink).
+    # GFCI for the same 210.8(A)(9) reason (ED-M-LIVING-KDS1 sits under the sink).
     #
     # The 120V branch feeds the motor; the wall control is a 24V loop through a
     # contactor — see APPL-M-DISP's `install_parts` in plan/placeables.py.
     Circuit(uid="CKT038AAAA", tag="CKT-DISPOSAL", slot=39, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1000,
             description="Food waste disposer (sink base)"),
-    # E3902.9 puts the laundry-area receptacle on GFCI outright, no distance test.
+    # 210.8(A)(12) puts the laundry-area receptacle on GFCI outright, no distance test.
     Circuit(uid="CKT023AAAA", tag="CKT-LAUNDRY", slot=36, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1500,
             description="Laundry receptacle (washer)"),
@@ -438,8 +360,8 @@ CIRCUITS = (
             poles=1, afci=True, description="Basement lighting (all but the furnace room), gym fan"),
     # The two storey receptacle circuits stay non-GFCI at the breaker on purpose: each
     # reaches a whole floor, and thirty outlets behind one 5 mA trip is not buildable.
-    # The handful in an E3902 location (bath, mudroom sink, wet bar) are GFCI *devices*
-    # instead (plan/electrical.py, plan/mep.py).
+    # The handful in a 210.8(A) location (mudroom sink, wet bar) are GFCI *devices* instead
+    # (plan/electrical.py, plan/mep.py). Bathroom receptacles are on CKT-BATH-RC below.
     Circuit(uid="CKT026AAAA", tag="CKT-RC-MAIN", slot=44, panel_ref=_PANEL, breaker_amps=20, poles=1,
             afci=True, load_va=1500, description="General receptacles — main storey"),
     Circuit(uid="CKT027AAAA", tag="CKT-RC-SECOND", slot=45, panel_ref=_PANEL, breaker_amps=20, poles=1,
@@ -453,40 +375,41 @@ CIRCUITS = (
             gfci=True, load_va=1500, description="Garage general receptacles"),
     # ^ The 210.11(C)(4) garage circuit: 120 V, 20 A, "no other outlets" than the two bay
     # receptacles ED-G-RC-W/-E. The opener's outlet is on CKT-LT-MAIN behind ED-G-GDO-GFCI.
-    # ADDED 2026-08-29 with the attic guest bath. NEC 210.11(C)(3) / IRC E3901.6 wants a
-    # dedicated 20A circuit for bathroom receptacles, and ** THE ENGINE HAS NO E3901
-    # BRANCH-CIRCUIT RULE ** (it does now grade E3901.6's other half, the receptacle a basin
-    # must have, as code.E3901_6_bathroom_receptacle — 210.11(C)(3) is the part nothing
-    # encodes), so this is judgement rather than a finding — taken anyway, because it is cheap in exactly
-    # the two currencies that are scarce here. It costs one of nine spare 1-pole spaces (let
-    # `electrical.panel_spaces` reconcile the count; do not hand-count), and it adds 0 VA to the
-    # 220.82 summary because bathroom branch circuits are not in 220.82(B)(1)'s list — which
-    # mattered when the margin was 7.9 A against a 200 A service, and is simply free now
-    # that the Class 320 service leaves 54.2 A (265.8 A of 320 A).
-    # The unswitched Halo Plus plug shares this protected bathroom-receptacle branch
-    # (2026-10-22); its own touch control takes full line voltage. Reset stays at the panel.
-    # The original 0-VA general-receptacle allowance above now gains the MHAP4236's 116 W (2026-10-22).
-    # Circuit.load_va overrides device summation; do not leave it at zero or add 116 twice.
-    Circuit(tag="CKT-BATH-ATTIC", slot=41, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            gfci=True, afci=True, load_va=116,
-            description="Bathroom receptacles — attic guest bath + main bath2 mirror"),
+    # ** EVERY BATHROOM VANITY RECEPTACLE, ONE CIRCUIT (owner, 2026-11-07). ** NEC
+    # 210.11(C)(3): a 20 A circuit for bathroom receptacles feeding no other outlets
+    # (210.23(B) Ex.), which may serve several bathrooms. No check encodes it. These outlets
+    # rode the storey circuits until now, and CKT-BATH-ATTIC is retired into this (slot 41
+    # free). Eight outlets in seven bathrooms: ED-M-BATH1-RC1, ED-M-BATH2-RC1,
+    # ED-M-BATH2-MIRROR-PLUG, ED-S-BATH1-RC-MIRROR, ED-S-SUITEBATH-RC1, ED-S-VANITY-RC1,
+    # ED-B-BATH-RC1, ED-A-STUBATH-GFCI; plus ED-M-BATH2-MIRROR-HALO, the cord-and-plug
+    # MHAP4236 (modelled as a light) in that mirror plug. Not here: ED-M-BATH2-TUB-RC
+    # (CKT-BATH2-TUB) and the two washlet outlets, each on its own dedicated circuit.
+    # GFCI AT THE DEVICE (reset in the room): GFCI guide-light vanity outlets; the mirror plug
+    # behind the glass rides ED-M-BATH2-RC1's load side (gfci_ref). No AFCI: 2026 210.12(B)
+    # lists bathroom lighting outlets, not receptacles. Not on backup (backup_power.md §5).
+    # load_va 116 is the MHAP4236; receptacles are in 120.82(B)(1)'s VA/ft2 term, and
+    # load_va overrides device summation, so never add 116 twice.
+    Circuit(tag="CKT-BATH-RC", slot=31, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            load_va=116,
+            description="Bathroom vanity receptacles, every bathroom (receptacles only, "
+                        "NEC 210.11(C)(3))"),
     # FX-M-BATH2-TUB's Bask heated surface (2026-08-29). Kohler's spec sheet lists the
     # REQUIRED service as a dedicated 120 V / 15 A circuit on a Class A GFCI, and that is
-    # what this is — not a judgement call the way CKT-BATH-ATTIC above was. The bath is
+    # what this is — a manufacturer's requirement, not 210.11(C)(3). The bath is
     # cord-and-plug and factory-wired; the electrician owes it a GFCI-protected 15 A
     # grounded outlet behind the bath (ED-M-BATH2-TUB-RC), nothing more.
     #
     # ** 15 A IS THE MANUFACTURER'S NUMBER, NOT THE LOAD. ** The heater draws 0.5 A / 65 W (K-1130-W1) —
-    # less than a light bulb. `load_va` is that 65, because the 220.82 summary has to see
+    # less than a light bulb. `load_va` is that 65, because the 120.82 summary has to see
     # what the house actually draws, and sizing it at the breaker would invent 1,735 VA of
-    # demand out of a required circuit rating. `electrical.service_load` has 54.2 A of margin
-    # against the 320 A service and 65 VA is 0.3 A of it.
+    # demand out of a required circuit rating. `electrical.service_load` has 69.6 A of margin
+    # against the 320 A service (250.4 A, 2026-11-07) and 65 VA is 0.3 A of it.
     #
     # GFCI AT THE BREAKER, not a GFCI device, and here that is not just the house convention
     # (plans/TODO.md): the outlet this circuit feeds is sealed inside SL-M-TUBDK's deck box
     # behind the bath. A GFCI receptacle there could not be tested or reset without pulling
     # a panel off the knee wall, which is the exact failure mode the breaker convention
-    # exists to avoid. No AFCI: 210.12 exempts bathrooms.
+    # exists to avoid. No AFCI: 210.12 does not list bathroom receptacle outlets.
     #
     # Slot 27 is one of the ten spare 1-pole spaces; count from the loaded plan
     # (`electrical.panel_spaces`), never by hand.
@@ -502,8 +425,8 @@ CIRCUITS = (
     # WASHLET S5 seats since the fixtures were selected. ** THE ELECTRICAL FOR THEM EXISTED
     # NOWHERE. ** Each bath had exactly one receptacle, a 44" vanity outlet on CKT-RC-MAIN,
     # and two 1.4 kW seats on a general storey circuit is ~23 A on a 20 A breaker before
-    # anything else is plugged in. Nothing reported it: the engine has no E3901 branch-circuit
-    # rule (see CKT-BATH-ATTIC above) and nothing ties a Product to a device.
+    # anything else is plugged in. Nothing reported it: no check encodes 210.11(C)(3)
+    # (see CKT-BATH-RC above) and nothing ties a Product to a device.
     #
     # ** TWO CIRCUITS, NOT ONE, AND DO NOT GANG THEM LATER. ** An instantaneous seat draws
     # 1.2-1.4 kW the whole time it is heating and both baths are used at the same hour of the
@@ -518,24 +441,24 @@ CIRCUITS = (
     # actually uses (ED-M-BATH2-RC1's note): a washlet's own leakage trips a Class A GFCI
     # from time to time, and a reset in the basement for a toilet seat is the failure mode
     # the convention exists to avoid. Contrast CKT-BATH2-TUB, which IS breaker-protected
-    # because its outlet is sealed inside the tub deck. No AFCI: 210.12 exempts bathrooms.
+    # because its outlet is sealed inside the tub deck. No AFCI: 210.12 does not list bathroom
+    # receptacle outlets (2026 adds bathroom lighting outlets only).
     #
     # ** load_va IS 0, AND THE NAMEPLATE IS RECORDED HERE SO THE ZERO IS A DECISION AND NOT
     # AN OMISSION. ** Each seat is ~1,400 VA at the top of the researched 1.2-1.4 kW band,
     # but only while the instantaneous heater is running — seconds per use, a few times a
-    # day, and never a load the house sits at. Two readings of 220.82 are available and this
+    # day, and never a load the house sits at. Two readings of 120.82 are available and this
     # is the one taken (owner's call, 2026-09-06): a bathroom RECEPTACLE circuit is not in
-    # 220.82(B)(1)'s list and 220.82(B)(1)'s own 3 VA/ft2 term is deemed to cover general
-    # receptacle outlets already, which is exactly the reasoning CKT-BATH-ATTIC above is
-    # authored on. The other reading is 220.82(B)(3)'s "located on a specific circuit" limb,
+    # 120.82(B)(1)'s list and 120.82(B)(1)'s own VA/ft2 term is deemed to cover general
+    # receptacle outlets already, which is exactly the reasoning CKT-BATH-RC above is
+    # authored on. The other reading is 120.82(B)(3)'s "located on a specific circuit" limb,
     # which would take the nameplate — the same limb that put 65 VA on CKT-BATH2-TUB, though
     # that one is a fixed appliance rather than something plugged into a bathroom outlet.
     #
-    # ** WHAT THE OTHER READING COSTS, MEASURED RATHER THAN ESTIMATED: ** at load_va=1400 on
-    # both, `electrical.service_load` goes 265.8 A -> 270.5 A against the 320 A service —
-    # 2 x 1,400 VA through 220.82(B)'s 40% remainder factor, 4.7 A of a 54.2 A margin.
-    # It still PASSES. So this zero is not load-hiding to make a check go green; it is a
-    # coincidence judgement, and the revert is two numbers. ** Revisit it if anything with a
+    # ** WHAT THE OTHER READING COSTS, MEASURED: ** at load_va=1400 on both,
+    # `electrical.service_load` goes 250.4 A -> 255.1 A against 320 A (2026-11-07) — 4.7 A of
+    # a 69.6 A margin. It still PASSES: a coincidence judgement, not load-hiding, and the
+    # revert is two numbers. ** Revisit it if anything with a
     # real duty cycle ever joins these circuits ** — they are 20 A and they feed one outlet
     # each today, and that is the assumption the zero rests on.
     Circuit(tag="CKT-WASHLET-BATH1", slot=25, panel_ref=_PANEL, breaker_amps=20, poles=1,
@@ -550,20 +473,19 @@ CIRCUITS = (
 # This house authors no ``LoadManagement`` at all, and ``plan/manifest.py`` passes none.
 #
 # Until 2026-09-12 four groups (LM-EV, LM-WELLNESS, LM-WH, LM-HP1-AUX) credited 18,240 VA
-# and were the only reason the 220.82 demand fit a 200 A service. Three of them rested on
+# and were the only reason the 120.82 demand fit a 200 A service. Three of them rested on
 # software — Emporia PowerSmart throttling, an ESPHome/EcoNet automation, an Emporia
 # contactor shed — and under the 2026 NEC (MN adopted it for permits filed on or after
 # 2026-08-17) a controller that limits load in a service calculation has to be a POWER
 # CONTROL SYSTEM: 130.2 requires the listing, 120.7 sets the setpoint at <= 80% of the
 # monitored OCPD, and 625.42(A) points EV supply equipment at the same Part II. Emporia's
 # gear carries UL 61010-2-030 / 2808 / 2594 / 2231 / 991 and no UL 3141, so none of those
-# three credits was ever earnable. (The fourth, LM-HP1-AUX, was earnable — 220.82(C)(2)/(4)
-# credits an interlock between a compressor and its supplemental heat directly — but with
-# no service constraint left to satisfy it buys nothing.)
+# three credits was ever earnable. (The fourth, LM-HP1-AUX, was a 2023 compressor/supplemental
+# interlock credit; 2026 120.82(C)(3) carries none, and the engine dropped the strategy.)
 #
 # The answer was the service, not a $2-3k listed PCS: a Class 320 HDLB meter-main with two
-# 200 A mains. ** 270.3 A of unmanaged 220.82 demand against 320 A ** (2026-11-02, after the
-# 120 V HPWH and the one-pump sump circuit), no software in the calculation at all. The route
+# 200 A mains. ** 250.4 A of unmanaged 120.82 demand against 320 A ** (2026-11-07; feeders
+# ED-B-PANEL 135.7 A, ED-B-PANEL-2 120.7 A), no software in the calculation at all. The route
 # back to 200 A is measured in plans/cost-options.md. See DESIGN-LOG.md "Electrical service"
 # for the derivation, the three options priced, and why there is no 225 A service.
 #

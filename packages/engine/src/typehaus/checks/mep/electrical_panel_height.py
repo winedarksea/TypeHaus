@@ -4,7 +4,8 @@ NEC 240.24(A): overcurrent devices readily accessible, installed so the centre o
 of the operating handle, in its highest position, is not more than 2.0 m (6 ft 7 in.)
 above the floor or working platform; 404.8(A) says the same of switches, including a
 panel's main. https://www.ecmweb.com/national-electrical-code/code-basics/article/20897104/
-and https://www.ecmweb.com/national-electrical-code/article/55125351/ (2017 NEC text).
+and https://www.ecmweb.com/national-electrical-code/article/55125351/ (2017 NEC text; no
+2026 change to (A) reported — MN DLI 2026 NEC FAQ adds only a 240.24(E) exception).
 
 A panel type rarely states where its top handle sits, so the body top is graded instead:
 conservative, since every handle is below it. ``ElectricalDeviceType.top_handle_from_top``
@@ -16,8 +17,9 @@ from __future__ import annotations
 
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, by_result
+from typehaus.model.nec import NEC, cite
 
-_CID, _CODE = "electrical.panel_handle_height", "NEC 240.24(A) / 404.8(A)"
+_CID, _CODE = "electrical.panel_handle_height", cite(NEC.OCPD_HEIGHT, NEC.SWITCH_HEIGHT)
 _IN = 0.0254
 _MAX_HANDLE_M = 79 * _IN  # 2.0 m (6 ft 7 in.); the code's own inch figure governs
 

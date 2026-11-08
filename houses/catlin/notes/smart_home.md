@@ -14,8 +14,9 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
    monitor in local Modbus mode.
 2. **Radios.**
    - The HA Connect ZBT-2 runs **Thread** (Sense Pro lock, SmartWings shades). It cannot run Thread and Zigbee at once (Nabu Casa FAQ), so Zigbee
-     (wanted since 2026-10-31: the GL-C-001P controllers) runs on a second dongle, a Zigbee
-     coordinator on ZHA.
+     (wanted since 2026-10-31: the six indoor GL-C-001P cove controllers) runs on a **second
+     HA Connect ZBT-2 in Zigbee mode**, on ZHA (owner, 2026-11-07). HA "strongly recommends"
+     one device per protocol (home-assistant.io/connect/zbt-2, read 2026-11-07).
    - A Z-Wave 800 LR stick serves the ZEN32 scene keypad.
    - No vendor hubs: no MyQ, no DIRIGERA, no Reolink Home Hub, no YoLink hub.
 3. **Safety stands alone.** These work with HA down; HA observes them and may notify:
@@ -66,7 +67,7 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Entry deadbolt | `D-M-ENTRY` hardware | Schlage Sense Pro BE889WB 622 | Matter/Thread via ZBT-2 (local push); PIN codes local | none | keypad works offline; USB-C jumpstart | Century trim is bundle-only: check the 622 escutcheon against the Latitude lever |
 | French-door locks | `DT-*` French hardware | Schlage BE365 | not connected | none | keyed keypad | none |
 | Doorbell | `ED-M-DOORBELL` | Reolink D340P, PoE | core `reolink` (local push) | one Reolink app session | the chime rings locally | rated to 14 F, accepted; talk is app-only |
-| Backyard camera | `ED-M-CAM-PORCH` | Reolink Omvi 3i PoE (owner, 2026-11-02), PoE+ 20 W | core `reolink` if it lists the model, else RTSP/ONVIF (both local) | none | records to microSD | not on the integration's tested list; one 802.3at switch port |
+| Backyard camera | `ED-M-CAM-PORCH` | Reolink Omvi 3i PoE (owner, 2026-11-02), PoE+ 20 W | RTSP stream to HA (local): not in the core `reolink` integration's tested, certified or incompatible lists, and Reolink lists RTSP/RTMP/HTTP(S) but not ONVIF (both pages read 2026-11-07) | none | records to microSD | one 802.3at switch port; try core `reolink` first, keep RTSP as the fallback |
 | Canopy camera | `ED-BW-CAM-CANOPY` | Reolink Duo 3 PoE | core `reolink` | none | records to microSD | none |
 | Garage opener | `APPL-G-GDO` | LiftMaster 87504-267 (Security+ 2.0) + ratgdo32 | ESPHome (local push) | none; MyQ never set up | wall button and remotes | learn button colour (confirm yellow on arrival); head size is from reposted guides |
 | Smoke/CO/heat | `AL-*` (13) | Kidde hardwired interconnect | relay dry contacts into an isolated input in `ED-B-BACKUP-ENCL` | none | interconnect sounds every alarm | confirm part numbers on kidde.com |
@@ -77,12 +78,13 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Floor heat (3 zones) | `ED-*-FH-STAT` | Warmup 7iE | Matter over Wi-Fi (local push) | Warmup app for firmware | own schedule, own sensor | Schluter warranty letter |
 | Water heater | `EQ-B-WH` | Rheem ProTerra Plug-in, EcoNet Wi-Fi + CTA-2045 port | none needed: power is switched by `CKT-WH`'s relay | Wi-Fi module never registered | tank controls | whether `esphome-econet` reaches the plug-in; not needed for backup |
 | Inverter/battery | `EQ-B-ESS-INV` | EG4 12kPV | EG4 web monitor, local Modbus (HACS) | none | inverter runs itself | firmware support for local mode |
-| Lighting (11) | `ED-T-LEV-MATTER`: exterior (entry, garage doors, porch, flood), plant photoperiod, gym x2, lounge A/B/C and peninsula | Leviton D315S-1BW, no companions | Matter (local push), ready out of the box | none | paddles | power-on behaviour after an outage |
+| Lighting (11) | `ED-T-LEV-MATTER`: exterior (entry, garage doors, porch, flood), plant photoperiod, gym x2, lounge A/B/C and peninsula | Leviton D315S-1BW, no companions | Matter (local push), ready out of the box | none | paddles; returns to its last state after an outage (Leviton DI-000-D315S-20A-M, read 2026-11-07) | none |
 | Shades | `plan/window_coverings.py` | SmartWings, Matter/Thread | Matter via ZBT-2 | none | wand and remote | none |
 | Scene keypad | `ED-M-LIVING-KEYPAD` | Zooz ZEN32 | Z-Wave JS on the 800 LR stick (local push) | none | does nothing | set scene-only (relay unwired) |
-| Tape controllers (12) | `ED-M-LIVING-LT-CTRL`/`-E`, `ED-M-DINING-LT-CTRL`/`-E`, `ED-S-HALL-LT-CTRL`/`-CTRL2`, `ED-G-EAVE-W/-W2/-E/-E2-CTRL`, `ED-G-GABLE-N/-N2-CTRL` | Gledopto GL-C-001P | Zigbee, ZHA (local push) | none | its power-on state | set power-on to "previous" |
+| Indoor tape controllers (6) | `ED-M-LIVING-LT-CTRL`/`-E`, `ED-M-DINING-LT-CTRL`/`-E`, `ED-S-HALL-LT-CTRL`/`-CTRL2` | Gledopto GL-C-001P | Zigbee, ZHA on the second ZBT-2 (local push) | none | its power-on state (lit by default) | set power-on to "previous" |
+| Garage tape controllers (6) | `ED-G-EAVE-W/-W2/-E/-E2-CTRL`, `ED-G-GABLE-N/-N2-CTRL` | Gledopto GL-C-208M (Matter 1.3, CSA256C5MAT46615-24), each in a gasketed PVC NEMA 4X box with a breather vent plug in its bottom wall (owner, 2026-11-07: moisture, Matter preferred) | Matter over Wi-Fi, HA Matter server on the IoT VLAN (local push); color_temp pinned at the warmest kelvin (the tape's W on the warm terminal, C unused) | none | its power-on state | set power-on to "previous"; garage Wi-Fi coverage at 96" on three walls; electrical and temperature ratings unconfirmed (below) |
 | Closet and kitchen tape | `ED-M-CLOSET-LT-PSU`, `ED-M-KITCH-LT-PSU` (MITTLED) | IKEA TRADFRI 30 W, unpaired; a plain paddle is the hard off | none (no scene uses them) | none | powers on lit | bench-test power-on unpaired; DUBBELKISEL (Matter over Thread, no DIRIGERA) is the drop-in once IKEA US stocks it (FCC-filed 2026-06, no US listing 2026-09) |
-| HA host | `ED-B-UTIL-RC1` / `CKT-HA` | mini PC + ZBT-2 + Z-Wave 800 LR stick + Zigbee coordinator dongle, **owner-furnished and not in the estimate** (2026-11-04) | wired LAN | none | none | UPS: the backup-battery TODO |
+| HA host | `ED-B-UTIL-RC1` / `CKT-HA` | mini PC + ZBT-2 (Thread) + a second ZBT-2 (Zigbee) + Z-Wave 800 LR stick, **owner-furnished and not in the estimate** (2026-11-04) | wired LAN | none | none | UPS: the backup-battery TODO |
 
 Lighting, the fan and the RF-remote fixtures: `notes/workshop_receptacles.md`. Shades:
 `notes/window_coverings.md`. Water heater shedding: `notes/backup_power.md`. Plant-room water:
@@ -173,11 +175,30 @@ the cable warranty survives a non-Schluter thermostat.
 `CKT-HA` (ALWAYS_ON); a small UPS for them is the separate backup-battery TODO. On battery the
 doorbell, cameras and two APs are shed (rule 6).
 
+**Garage tape controllers (GL-C-208M, 2026-11-07).**
+- Cold: rated -20 °C (one copy of the Gledopto manual, below), against the site's -15 °F
+  (-26 °C) design. The owner accepts it: "cold is fine, moisture is the concern" (2026-11-07).
+  The HLG drivers are rated to -40 °C.
+- Moisture: each controller sits in a gasketed PVC NEMA 4X box, which condenses if it is
+  fully sealed, so the bottom wall takes one standard M12 IP68 breather vent plug
+  (pressure-compensating, e.g. Wiska EVSP 12). Bring the cord grips in from below.
+- Current: the manual copy gives 15 A per channel and 20 A total; one seller (Lectronz)
+  lists "up to 10 A total". The largest run is a gable half at about 57 W, which is 2.4 A at
+  24 V, nearly all of it on the W channel: inside either figure.
+- Sources: Matter certificate and part number from Matter Alpha's mirror of the CSA list
+  (https://www.matteralpha.com/gledopto/gledopto-smart-rgbcct-strip-controller-p3017).
+  Input 12-24 VDC, 15 A/20 A, -20..+45 °C, 108 x 45 x 18 mm and IP20 come from the
+  manuals.plus copy of the Gledopto manual (https://manuals.plus/asin/B0FC6BH6M3) as quoted
+  by a search engine on 2026-11-07. The page itself refused automated reads, so treat these
+  figures as **unconfirmed** until the printed label or the boxed manual is read.
+
 ## Lighting scenes
 
 RM-M-LIVING's lights (2026-10-31, `plan/lighting_living.py`). The engine models no scenes; this
 table is the HA configuration. Groups A/B/C and the kitchen peninsula are Leviton D315S relays
 (on/off); the coves dim and colour at their Gledopto GL-C-001P controllers (RGBCCT mode). The
+SLL RGB+CCT COB stays (owner, 2026-11-07): about 102 lm/ft per white channel as measured, and
+no 12 mm RGB+CCT tape publishes 250 lm/ft per white channel. The
 pendant, kitchen perimeter and under-cabinet are plain paddles, outside the scenes (2026-11-03).
 
 | Group | Loads | Control |
@@ -213,7 +234,8 @@ pendant, kitchen perimeter and under-cabinet are plain paddles, outside the scen
   HA light group; the scenes above set the group, so both sides always match.
 - **Night path is the warm layer**: amber at 5% only, never a white channel. The day layer is
   the 5000 K cans plus the coves' white channels at 5000 K.
-- **Check items.** Confirm each D315S's power-on behaviour after an outage.
+- **Check items.** None: each D315S returns to its last state after an outage (Leviton
+  instruction sheet DI-000-D315S-20A-M, read 2026-11-07).
 - **HA down**: every D315S paddle still switches its group; the keypad does nothing; the coves
   return at their last setting. Only the kitchen under-cabinet tape rides `CKT-LT-BACKUP`.
 
@@ -223,17 +245,16 @@ Owner, 2026-11-03: no tape, no relay, no motion sensor. Each bath's vanity recep
 a dusk-sensing LED guide light (about 1 W), the same idea as the stair's guide-light
 receptacles. Nothing battery-only, nothing for HA to run.
 
-- Device-GFCI baths take `ED-T-LEV-GFCI-GUIDE` (Leviton GFNL2-W, 20 A TR self-test):
-  `ED-M-BATH1-RC1`, `ED-M-BATH2-RC1`, `ED-S-VANITY-RC1`, `ED-S-SUITEBATH-RC1`,
-  `ED-S-BATH1-RC-MIRROR`.
-- Baths whose breaker is the GFCI take the plain guide-light duplex `ED-T-LEV-GUIDE`
-  (T6525-W), not a second GFCI: `ED-B-BATH-RC1` (`CKT-RC-BSMT`), `ED-A-STUBATH-GFCI`
-  (`CKT-BATH-ATTIC`).
+- Every vanity receptacle is a device GFCI, `ED-T-LEV-GFCI-GUIDE` (Leviton GFNL2-W, 20 A TR
+  self-test), on `CKT-BATH-RC`, whose breaker is not GFCI (2026-11-07): `ED-M-BATH1-RC1`,
+  `ED-M-BATH2-RC1`, `ED-S-VANITY-RC1`, `ED-S-SUITEBATH-RC1`, `ED-S-BATH1-RC-MIRROR`,
+  `ED-B-BATH-RC1`, `ED-A-STUBATH-GFCI`.
+- No bath vanity takes the plain guide-light duplex `ED-T-LEV-GUIDE` (T6525-W) any more.
 
 ## Other lighting automations
 
 - **Second-floor hall cove** (`LR-S-HALL-GAP`, E6 tunable): after dark HA recalls a low 2700 K night preset on both halves' controllers (`ED-S-HALL-LT-CTRL`, `-CTRL2`, one HA group). The plain 3-ways `ED-S-HALL-SW`/`-SW2` stay on as the drivers' hard off, so set both controllers' power-on state to "previous".
-- **Garage linear** (W, RGBW): HA turns the six garage controllers on at dusk and off at a curfew (owner sets the time); `ED-G-SOFFIT-SW` is a plain paddle left on as the hard off. The W channel at 3000 K is the default; a holiday colour is a scene on the same controllers.
+- **Garage linear** (W, RGBW): HA turns the six garage Matter controllers on at dusk and off at a curfew (owner sets the time); `ED-G-SOFFIT-SW` is a plain paddle left on as the hard off. The W channel at 3000 K is the default (the warm end of the GL-C-208M's colour-temperature slider, the tape's W on its W terminal); a holiday colour is a scene on the same controllers. **Pin color_temp at the warmest kelvin** in every white scene: the RGBW tape's W lead is on the 208M's warm terminal and its C terminal is unused, so any cooler setting dims the W channel and mixes nothing. The Govee outdoor neon rope (H61A8/H61A9, Matter) was weighed and rejected: RGBIC with no published white channel, so no 3000 K line, and uncuttable 10 m rolls (us.govee.com, read 2026-11-07).
 - **Entry and garage door lights**: `ED-M-ENTRY-SW` and `ED-G-EXT-SW` come on at dusk and on arrival (the entry lock, the opener), then time out.
 - **Porch and garden flood**: `ED-M-PORCH-SW` (fan-light + landing sconce) at dusk, off at the curfew; leave the fan off at its own control so a dusk "on" lights only the lamp. `ED-M-PORCH-FLOOD-SW` on arrival from the garden side and by hand, timing out.
 - **Gym**: `ED-B-GYM-SW` (cans) and `-SW2` (T8 strips) for workout routines: strips on at a routine's start, all off after the gym is idle.

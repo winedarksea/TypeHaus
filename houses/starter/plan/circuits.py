@@ -8,14 +8,16 @@ two directions.
 Conventions (the same ones ``houses/catlin/plan/circuits.py`` uses, at template scale):
 
 - ``poles=1`` is a 120V circuit; ``poles=2`` would be 240V. This house has no 240V load.
-- ``afci=True`` is arc-fault protection at the breaker. ``code.E3902_16_afci`` requires it
-  on the 120V 15/20A circuits that reach a habitable room, which here is all of them.
+- ``afci=True`` is arc-fault protection at the breaker. NEC 210.12 (check
+  ``code.E3902_16_afci``) requires it on the 120V 15/20A circuits that reach a habitable
+  room, which here is all of them.
 - ``slot`` is the physical breaker position — odd numbers run down the left column, even
   down the right. Four one-pole breakers use 4 of ED-T-PANEL's 20 spaces.
 
-NEC 220.12 asks for 3 VA/sf of general lighting and receptacle load, which over this
-house's 886 sf of habitable floor is 2,658 VA — two 15/20A circuits' worth, which is
-exactly the two authored below. Splitting receptacles per storey is what a real house
+2026 NEC 120.13 still counts branch circuits at 3 VA/sf of general lighting and receptacle
+load (the 120.41 load calculation takes 2 VA/sf), which over this house's 886 sf of
+habitable floor is 2,658 VA — two 15/20A circuits' worth, which is exactly the two
+authored below. Splitting receptacles per storey is what a real house
 would do; one circuit is the honest minimum and the panel has the spaces for the split.
 """
 
@@ -30,7 +32,7 @@ _PANEL = "ED-PANEL"
 # The panel: the library's 100A row under this house's own tag. Here, not in the editable
 # plan/electrical.py, because that dialect has no ``model_copy``.
 PANEL_TYPES = (
-    # `service_amps` is what the 220.82 demand estimate is compared against, and `spaces`
+    # `service_amps` is what the 120.82 demand estimate is compared against, and `spaces`
     # is what `electrical.panel_spaces` reconciles the circuit slots against. A 20-space
     # 100A load centre is the smallest enclosure this house could be built on, and it
     # leaves spare positions for the radon fan's future circuit and for the kitchen and

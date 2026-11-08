@@ -1,14 +1,14 @@
-"""CODE-tier electrical rule — E3901.6, the receptacle a lavatory basin must have.
+"""CODE-tier electrical rule — NEC 210.52(D), the receptacle a lavatory basin must have.
 
-Split from ``electrical_code.py`` (E3902 GFCI/AFCI) only to keep both files under the
+Split from ``electrical_code.py`` (210.8 GFCI / 210.12 AFCI) only to keep both files under the
 repo's 500-line ceiling; the four helpers imported from it are shared deliberately rather
 than duplicated, because "which room is this device in" and "would a cord pierce a wall"
 must answer identically for both rules or the two findings contradict each other.
 
-IRC 2021 E3901.6 / NEC 210.52(D): at least one receptacle outlet within 36" of the outside
+NEC 210.52(D): at least one receptacle outlet within 36" of the outside
 edge of each lavatory basin, located on a wall or partition adjacent to the basin, on the
 countertop, or on the side or face of the basin cabinet not more than 12" below the
-countertop. E3901.1 items (3) and (4) are the counting rules that make the trap citable: a
+countertop. 210.52 list items (3) and (4) are the counting rules that make the trap citable: a
 receptacle "located within cabinets or cupboards", or "more than 5 1/2 ft above the floor",
 does not count toward a required outlet.
 """
@@ -26,12 +26,13 @@ from typehaus.checks.mep.electrical_code import (
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy
+from typehaus.model.nec import NEC, cite
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 from typehaus.resolve.solid_categories import in_slab_family
 
 # 210.52(D)'s reach, measured to the OUTSIDE EDGE of the basin.
 _BASIN_REACH_M = 36 * 0.0254
-# E3901.1 item (4): a receptacle more than 5 1/2 ft above the floor is not counted as a
+# 210.52 item (4): a receptacle more than 5 1/2 ft above the floor is not counted as a
 # required outlet. A mirror-height outlet over a vanity is the pattern this guards.
 _MAX_COUNTING_HEIGHT_M = 5.5 * 0.3048
 # ``FixtureType.basin`` is the authority. These two are the FALLBACK for a type that does
@@ -51,13 +52,13 @@ _NOT_BASIN_SYMBOLS = {"toilet", "toilet-wall-hung", "bidet", "urinal", "tub", "t
 
 @check(Tier.CODE, "code.E3901_6_bathroom_receptacle")
 def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
-    """E3901.6 — each lavatory basin has a countable receptacle within 36" of its edge.
+    """NEC 210.52(D) — each lavatory basin has a countable receptacle within 36" of its edge.
 
     **Basin geometry is the whole vanity carcass, not the bowl.** The model carries no
     basin extent, so ``ResolvedCanvasObject.footprint`` — the case — is what the distance
     is measured to. The carcass is larger than the basin it holds, so a carcass-edge
     distance is a *lower* bound on the real 210.52(D) distance and this rule is permissive
-    in exactly the direction E3902's centroid bug used to be. ``FixtureType.basin`` says
+    in exactly the direction the GFCI rule's old centroid bug was. ``FixtureType.basin`` says
     only THAT there is a basin, not where its edge is; tightening this means an extent.
     Until then, a PASS here means "passes at least as easily as the code asks", never the
     reverse.
@@ -71,8 +72,8 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
     * it is in a different room — a cord does not reach through a wall (210.52(D) says
       "adjacent to", and ``_pierces_a_wall`` is the second, geometric half of that);
     * it is enclosed under a horizontal solid — a tub deck, a countertop overhang, a bench
-      — which is E3901.1 item (3), "within cabinets or cupboards";
-    * it is mounted more than 5 1/2 ft above the floor — E3901.1 item (4);
+      — which is 210.52 item (3), "within cabinets or cupboards";
+    * it is mounted more than 5 1/2 ft above the floor — 210.52 item (4);
     * it is a floor outlet, which 210.52(D) does not list among the three locations.
 
     The enclosure test is *geometric* on purpose: nobody can forget to author it, and
@@ -83,7 +84,7 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
     """
     from shapely.geometry import Point, Polygon
 
-    cid, code = "code.E3901_6_bathroom_receptacle", "E3901.6"
+    cid, code = "code.E3901_6_bathroom_receptacle", cite(NEC.BATHROOM_RECEPTACLE)
     bathrooms = {room.tag: room for room in ctx.model.rooms
                  if room.occupancy == Occupancy.BATHROOM.value}
     basins, unclassified = _basins(ctx, bathrooms)
@@ -135,8 +136,8 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
                 out.append(by_result(
                     cid, Result.UNKNOWN,
                     f"{obj.tag} is {_inches(distance)} from {basin.tag} and stands over "
-                    "neither a wall nor open floor, so 210.52(D)'s cabinet-face branch "
-                    "governs — and the basin countertop height it is measured from is not "
+                    f"neither a wall nor open floor, so {NEC.BATHROOM_RECEPTACLE}'s cabinet-face "
+                    "branch governs — and the basin countertop height it is measured from is not "
                     "modeled", (basin.tag, obj.tag), code,
                     f"state the countertop height of {basin.tag}"))
                 best = best or (distance, obj, "")
@@ -162,7 +163,7 @@ def _inches(metres: float) -> str:
 
 def _fail_message(basin: Any, rejected: list[tuple[float, str, str]]) -> str:
     head = (f"{basin.tag} has no receptacle within 36\" of its edge that counts toward "
-            "210.52(D)")
+            f"{NEC.BATHROOM_RECEPTACLE}")
     if not rejected:
         return f"{head} — no 125V receptacle is within reach at all"
     near = sorted(rejected)
@@ -305,14 +306,14 @@ def _disqualified(obj: Any, room: Any, basin_room: Any, carcass: Any,
         if z0 - floors.get(obj.storey, 0.0) > _MAX_COUNTING_HEIGHT_M:
             continue  # a ceiling or a high soffit is not a cupboard
         if poly.covers(point):
-            return "(enclosed under a solid — E3901.1 item 3)"
+            return f"(enclosed under a solid — {NEC.RECEPTACLE_OUTLETS} item 3)"
     elevation = getattr(obj.mount, "elevation", None) if obj.mount else None
     height = elevation.meters if elevation is not None else (
         obj.z_m - floors.get(obj.storey, 0.0))
     if height > _MAX_COUNTING_HEIGHT_M:
-        return '(more than 5 1/2 ft above the floor — E3901.1 item 4)'
+        return f"(more than 5 1/2 ft above the floor — {NEC.RECEPTACLE_OUTLETS} item 4)"
     if obj.mount is not None and getattr(obj.mount.kind, "value", obj.mount.kind) == "floor":
-        return "(a floor outlet — not one of 210.52(D)'s three locations)"
+        return f"(a floor outlet — not one of {NEC.BATHROOM_RECEPTACLE}'s three locations)"
     if _pierces_a_wall(point, carcass, barrier):
         return "(a cord would have to pierce a wall)"
     return None

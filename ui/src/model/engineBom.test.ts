@@ -25,7 +25,7 @@ const FIXTURE = {
     { finish: "carpet-pad", material: "Carpet pad", known: true, coating: false,
       net_area_sqft: 300, rooms: ["RM-S-BED1"], under: "carpet" },
   ],
-  service_load: { calculated_amps: 223.7, service_amps: 200, method: "NEC 220.82" },
+  service_load: { calculated_amps: 223.7, service_amps: 200, method: "NEC 120.82" },
   lighting_load: 1_840,
   placeables: [],
 };
