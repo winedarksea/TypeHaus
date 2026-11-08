@@ -44,8 +44,10 @@ class RoundGaugeRow(HausModel):
 
 
 class DuctElbowRow(HausModel):
-    """The round elbow bought at one size. An adjustable elbow is ordered at one of
-    ``angles`` and set in the field; ``center_to_face`` is its laying length at 90 degrees."""
+    """The round elbow bought at one size. An ``adjustable`` elbow is ordered at one of
+    ``angles`` and set down in the field to ANY turn up to the largest (plus the snap), so one
+    SKU makes every angle: ``center_to_face`` is its laying length at 90 degrees (scaled by
+    ``tan(theta/2)`` for a smaller turn) and ``angle_k`` the published loss factors."""
 
     diameter: Length
     product_ref: str
@@ -54,7 +56,22 @@ class DuctElbowRow(HausModel):
     center_to_face: Length | None = None
     #: Dynamic loss coefficient at 90 degrees, as the source publishes it.
     loss_c: float | None = None
+    #: ``(angle_deg, K)`` as published, C at an angle being ``loss_c`` x K (ASHRAE angle
+    #: factor); 0 deg is 0 and 90 deg is 1 unless given. Empty: not read.
+    angle_k: tuple[tuple[float, float], ...] = ()
     source: str | None = None
+
+    def k_at(self, angle_deg: float) -> float | None:
+        """K at ``angle_deg`` (to 90), linear between the published points; None if unread."""
+        if not self.angle_k:
+            return None
+        pts = {0.0: 0.0, 90.0: 1.0, **{float(a): float(k) for a, k in self.angle_k}}
+        xs = sorted(pts)
+        angle = min(max(angle_deg, 0.0), xs[-1])
+        for lo, hi in zip(xs, xs[1:], strict=False):
+            if angle <= hi:
+                return pts[lo] + (pts[hi] - pts[lo]) * (angle - lo) / (hi - lo)
+        return pts[xs[-1]]
 
 
 class DuctPartRow(HausModel):

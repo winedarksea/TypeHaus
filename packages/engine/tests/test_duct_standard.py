@@ -8,10 +8,16 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from typehaus.model.ducts import DuctPartRow, DuctStandard, DuctSupportRow, duct_size_text
+from typehaus.model.ducts import (
+    DuctElbowRow,
+    DuctPartRow,
+    DuctStandard,
+    DuctSupportRow,
+    duct_size_text,
+)
 from typehaus.quantities import M_PER_IN, ft, inch
 from typehaus.resolve.duct_branches import branch_parts
-from typehaus.resolve.duct_standard import _read, duct_elbow_key
+from typehaus.resolve.duct_standard import _read, duct_elbow_key, set_down_spec
 from typehaus.resolve.duct_supports import stations
 
 FT = 0.3048
@@ -96,3 +102,20 @@ def test_a_saddle_row_is_only_a_fallback():
         DuctSupportRow(max_size=inch(10), spacing=ft(12)),))
     assert std.support_for("round", 4 * M_PER_IN).hanger == "strap"
     assert std.support_for("round", 4 * M_PER_IN, "saddle").hanger == "saddle"
+
+
+def test_an_adjustable_elbow_makes_any_turn_and_reads_its_own_k():
+    """Set down to 15 or 70 degrees (between the catalog's 30/45/90 windows): graded as the
+    bought 90, K linear through the row's authored points. A stamped row never sets down."""
+    k = ((30.0, 0.45), (45.0, 0.60), (90.0, 1.0))
+    row = DuctElbowRow(diameter=inch(4), product_ref="E", angles=(90.0,), loss_c=0.37,
+                       angle_k=k)
+    assert [row.k_at(a) for a in (0, 15, 30, 37.5, 45, 67.5, 90, 120)] == [
+        0.0, 0.225, 0.45, 0.525, 0.60, 0.80, 1.0, 1.0]
+    assert DuctElbowRow(diameter=inch(4), product_ref="E").k_at(30) is None
+    adj, stamped = _standard(elbows=(row,)), _standard(
+        elbows=(DuctElbowRow(diameter=inch(4), product_ref="S", kind="stamped"),))
+    for angle in (15.0, 70.0):
+        spec, gap = set_down_spec(adj, inch(4).meters, angle, "gap")
+        assert spec.angle_deg == 90.0 and gap is None
+        assert set_down_spec(stamped, inch(4).meters, angle, "gap") == (None, "gap")

@@ -51,7 +51,7 @@ from typehaus.hardware.fittings import (
     tube_bend_rule,
 )
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.duct_standard import duct_elbow_key, duct_standard
+from typehaus.resolve.duct_standard import duct_elbow_key, duct_standard, set_down_spec
 from typehaus.resolve.flex_bend import flexed_vertices
 from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
 from typehaus.resolve.sweep import clean_path, sweep_turns
@@ -230,9 +230,8 @@ def _match(service: str, kind: str, angle_deg: float, nominal_in: float,
                   f"{nominal_in:g}\" — the catalogued patterns are {listed} degrees")
 
 
-#: What a rectangular duct's turn is, and why it carries no catalog row: a rectangular elbow
-#: is fabricated to the duct's own two dimensions and its throat radius, so there is no
-#: catalog of patterns to match it against — only a shop drawing.
+#: A rectangular elbow is fabricated to the duct's own section and throat radius, so it has no
+#: catalog row — only a shop drawing.
 RECTANGULAR_DUCT_GAP = ("a rectangular duct elbow is fabricated to the duct, not ordered "
                         "from a pattern catalog — its throat radius comes off a shop "
                         "drawing and nothing here can stand in for one")
@@ -316,6 +315,8 @@ def polyline_fittings(tag: str, family: str, system: str,
         else:
             spec, gap = _match(service, KIND_ELBOW, turn.angle_deg, nominal, None,
                                bendable, bonus)
+            if spec is None and family == FAMILY_DUCT:
+                spec, gap = set_down_spec(duct_standard, size_m, turn.angle_deg, gap)
             if spec is None and bendable:
                 bent, why = _bend(cleaned, turn.index, turn.angle_deg, size_m, material)
                 if bent is not None or why is not None:
