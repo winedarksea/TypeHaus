@@ -338,12 +338,40 @@ crosses a 110.26(A) working space below 78" (`plan/panel_working_space.py`) exce
 ## 10. Where V2H stands (2026-10-31; a record, not a spec)
 
 **Rough-in, owner 2026-10-31: "see how the tech develops."** One oversized empty raceway,
-inverter area to garage, with a pull string: **2" Sch 80 PVC**, `CD-B-V2H-SPARE`
-(not yet routed: `plans/TODO.md`). 2" carries a 125 A Cu or 150 A Al four-wire feeder, which
-covers an ~80 A bidirectional AC charger, an ~11-20 kW DC unit, a generator-style feed into
+inverter area to garage, with a pull string: **2" Sch 80 PVC**, `CD-B-V2H-SPARE` (inverter to
+the north wall) and `CD-B-V2H-GAP` (down, through the wall, buried, up), routed 2026-11-07.
+Sch 80 because the stub-up is exposed in the garage (NEC 352.10(F)); the OD is the same 2.375"
+as Sch 40, so the model's `pvc` row serves. 2" carries a 125 A Cu or 150 A Al four-wire
+feeder, which covers an ~80 A bidirectional AC charger, an ~11-20 kW DC unit, a generator-style feed into
 the 12kPV's GEN port, or a garage EV charger fed from the backup panel. Comms ride the
 existing 1" garage data trunk. It replaces the old list here (1 1/2" conduit, a separate
 data conduit, a reserved 2-pole space, 30 x 36" at the meter).
+
+**The route** (`haus route --alternatives 3`, A pasted: 12.8 ft, 3 bends, no new finding;
+B and C added 3 and 8 bends). The case-top stub (-3'-5 7/16") rises to -1'-11", runs east on
+y=34'-9" (2 ft south of `CD-B-GARAGE`, 5 3/8" below it) and turns north at x=16'-2 7/16",
+2 7/16" east of `CD-B-GARAGE`'s drop. `CD-B-V2H-GAP` drops to -4'-0", crosses `W-B-N2`,
+the gap and `W-GF-S2` beside `CD-B-GAP-EV`, and rises through the slab to a capped stub 2'-0"
+over it, beside `ED-G-EV-1450` where a charger would stand. The two runs carry 540 deg of
+bends, so a pull body sits at the foot of the drop (NEC 352.26: 360 deg between pulls).
+
+**The three sleeves** (`SP-B-N2-CD-GAR2`, `SP-GF-CD-GAR`, `SP-G-CD-GAR`) were 2" for the
+1 1/4" EMT (OD 1.510") alone. No check grades a conduit annulus, so by hand, with the 2" PVC
+(OD 2.375") beside it:
+
+| Sleeve | Against 3.885" (1.510" + 2.375" side by side) |
+|---|---|
+| 4", ID 4.026" | 0.14" spare: no pull play, cast to 1/4" |
+| 5", ID 5.047" | 1.16" spare, an unstocked size |
+| **6", ID 6.065"** | **2.18" spare** |
+
+The raceways sit 0.495" apart (EMT axis x=16'-0", PVC 2 7/16" east: the pair spans 191.245"
+to 195.625"), leaving 0.84" each side in a 6" sleeve centred on the pair at x=16'-1 7/16".
+At the EMT's own axis a 6" ID cannot hold the PVC (1.9425" + 1.1875" = 3.13" > 3.03" radius),
+so the sleeves moved 1 7/16" east and the EMT did not. The hole is a 6.625" circle through
+8" of pour (`W-B-N2`), 6" of ICF core (`W-GF-S2`) and the 3 1/2" slab: **the engineer / ICF
+supplier must place the extra bars round the two wall boxouts before the pour** (open). Each
+sleeve end is sealed with link seal or foam and mastic. `CD-B-GARAGE` did not move.
 
 **Standards exist; products do not.** SAE J3072, UL 1741 SC (May 2026), UL 9741 + 1741 SB and
 ISO 15118-20 are published. No shipping product is brand-agnostic, and none integrates with

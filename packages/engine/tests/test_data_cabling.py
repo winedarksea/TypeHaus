@@ -52,7 +52,8 @@ def test_power_and_data_raceways_are_billed_apart(catlin_model):
     # be pulled is that one — and is labelled rather than silently counted as data.
     spares = {row["trade_size_in"]: row["tags"] for row in data_raceway_takeoff(catlin_model)
               if row["service"] == "spare"}
-    assert spares == {0.75: ["CD-B-PLAY-SPARE"], 2.0: ["CD-B-SPARE-CHASE"]}
+    assert spares == {0.75: ["CD-B-PLAY-SPARE"],
+                      2.0: ["CD-B-SPARE-CHASE", "CD-B-V2H-GAP", "CD-B-V2H-SPARE"]}
 
 
 def test_poe_load_is_not_on_the_panel_schedule(catlin_model):
