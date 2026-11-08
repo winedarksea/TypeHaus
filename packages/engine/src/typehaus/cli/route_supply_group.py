@@ -62,9 +62,14 @@ def gates(model: ResolvedModel, radius_m: float) -> dict[str, Any]:
 
 
 def space_for(model: ResolvedModel, opts: RouteOptions, net: _Net, ends: Any, seeds: list,
-              clock: Any, name: str, *, extra: Any = None, band: Any = None
+              clock: Any, name: str, *, extra: Any = None, band: Any = None,
+              exempt: Any = None, fixture_ends: tuple = (), cover: bool = True
               ) -> tuple[Any, Any]:
-    """Space and lattice for ``ends``' pipe; ``extra(space)`` gives prisms to add first."""
+    """Space and lattice for ``ends``' pipe; ``extra(space)`` gives prisms to add first.
+
+    A riser stands only in wall cover or a soffit (``resolve/riser_cover``) except at the
+    route's own ends, ``exempt`` (default: every seed — the trunk's two ends). A
+    ``fixture_ends`` point in a door or a duct is built at the nearest legal wall point."""
     from typehaus.routing.graph import build_graph
     from typehaus.routing.space import build_space
 
@@ -75,11 +80,17 @@ def space_for(model: ResolvedModel, opts: RouteOptions, net: _Net, ends: Any, se
                             cost=opts.cost.for_run(ends.kind, ends.system), z_band=band,
                             cavity_radius_m=ends.cavity_radius_m or None)
     space.bend_radius_m = ends.bend_radius_m
+    space.blocking_runs = frozenset(d.tag for d in model.ducts)
+    if space.members is not None and cover:
+        from typehaus.resolve.riser_cover import riser_cover
+
+        space.members.riser_cover = riser_cover(
+            model, space.bbox, seeds if exempt is None else exempt)
     if extra is not None:
         space.hard.extend(extra(space))
         space._hard_index = None
     with clock.stage(f"build-graph {name}"):
-        graph = build_graph(space, seeds, None)
+        graph = build_graph(space, seeds, None, ends=fixture_ends)
     clock.lattice(graph)
     return space, graph
 
@@ -129,14 +140,16 @@ def lay_group(model: ResolvedModel, tree: str, topology: str, opts: RouteOptions
 
     label = f"group {group or 'END'}"
     modes = ("tree", "trunk") if topology == "tree" else ("trunk",)
-    attempts = [(mode, reach) for mode in modes for reach in (NEAR_M, REACH_M)]
+    attempts = [(mode, reach, True) for mode in modes for reach in (NEAR_M, REACH_M)]
+    # What no wall, soffit or chase let rise is laid last through the room's air, and said so.
+    attempts.append((modes[-1], REACH_M, False))
     loads = _Loads(model, routes)
     todo = list(members)
-    for i, (mode, reach) in enumerate(attempts):
+    for i, (mode, reach, cover) in enumerate(attempts):
         last = i == len(attempts) - 1
         try:
             built = _build(model, tree, mode, reach, opts, net, group, todo, routes, clock,
-                           loads)
+                           loads, cover)
         except RoutingSpaceTooLarge as exc:
             if last:
                 problems.extend(f"{tag}: {label}: {exc}" for tag in todo)
@@ -147,15 +160,21 @@ def lay_group(model: ResolvedModel, tree: str, topology: str, opts: RouteOptions
             continue
         found_problems: list[str] = []
         found_refusals: list[Any] = []
+        before = len(routes)
         todo = _search(model, tree, opts, net, group, todo, routes, clock, loads, built,
                        found_problems, notices, found_refusals)
+        if not cover:
+            notices.extend(f"{r.proposal.tag}: no wall, soffit or chase carries its riser, so it "
+                           "rises through a finished room's open air (mep.run_in_finished_volume)"
+                           for r in routes[before:])
         if not todo or last:
             problems.extend(found_problems)
             refusals.extend(found_refusals)
             return
 
 
-def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock, loads):
+def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock, loads,
+           cover=True):
     """The group's ends, admission rule, space and lattice."""
     import numpy as np
 
@@ -201,8 +220,12 @@ def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock,
     holes = [p[:2] for p in (routes[0].proposal.points[0], routes[0].proposal.points[-1])]
     tight = [e.origin[:2] for e in ends.values()] + [
         r.proposal.points[-1][:2] for r in routes[1:] if listed(r)]
+    stands = [routes[0].proposal.points[0], routes[0].proposal.points[-1],
+              *(e.origin for e in ends.values()),
+              *(r.proposal.points[-1] for r in routes[1:] if listed(r))]
     space, graph = space_for(
         model, opts, net, template, seeds, clock, label, band=opts.band,
+        exempt=stands, fixture_ends=tuple(e.origin for e in ends.values()), cover=cover,
         extra=lambda sp: [*walls, *(gate_prisms(sp.bbox, flight, holes, tight) if flight else [])])
     xyz = np.array([(n.x, n.y, n.z) for n in graph.nodes]).reshape(-1, 3)
     space.reuse = True
@@ -217,6 +240,7 @@ def _search(model, tree, opts, net, group, members, routes, clock, loads, built,
     from typehaus.cli.route_support import _nearest
     from typehaus.routing.search import shortest_route
     from typehaus.routing.supply_tree import nodes_on
+    from typehaus.routing.terminal_block import column_block
 
     ends, listed, space, graph, xyz, limit = built
     label = f"group {group or 'END'}"
@@ -225,14 +249,21 @@ def _search(model, tree, opts, net, group, members, routes, clock, loads, built,
                        f"{', '.join(graph.blocked_terminals)} — routed anyway; the tie "
                        "itself is a detail somebody has to draw")
     failed: list[str] = []
+    blocks = {b.point: b for b in graph.terminal_blocks}
     for tag in members:
         ends_t, weight = ends[tag], loads.wsfu(net.own.get(tag, ()))
+        block = blocks.get(tuple(ends_t.origin[:3]))
+        if block is not None and block.moved_to is None:
+            refusals.append(_blocked_end(tag, ends_t, block, graph))
+            problems.append(refusals[-1].render())
+            failed.append(tag)
+            continue
         goals: set[int] = set()
         for r in routes:
             if (listed(r) and r.proposal.diameter_m + 1e-9 >= ends_t.diameter_m
                     and loads.fits(r, weight)):
                 goals |= nodes_on(xyz, r.proposal.points)
-        start = _nearest(graph, ends_t.origin)
+        start = _nearest(graph, (*block.moved_to, ends_t.origin[2]) if block else ends_t.origin)
         if start is None or not goals:
             problems.append(f"{tag}: {label}: no lattice node at its end, or no laid run "
                             "within reach that can carry it")
@@ -248,8 +279,10 @@ def _search(model, tree, opts, net, group, members, routes, clock, loads, built,
         with clock.stage(f"search {tag}"):
             found = shortest_route(graph, space, start, goals)
         if found is None:
-            refused = refuse(space, graph, start, goals, target=tag, ends=ends_t, report=None,
-                             alternatives=1, margin_ft=opts.margin_ft, band=opts.band)
+            column = column_block(space, tuple(ends_t.origin[:3]))
+            refused = (_blocked_end(tag, ends_t, column, graph) if column is not None else
+                       refuse(space, graph, start, goals, target=tag, ends=ends_t, report=None,
+                              alternatives=1, margin_ft=opts.margin_ft, band=opts.band))
             refusals.append(refused)
             problems.append(refused.render())
             failed.append(tag)
@@ -260,11 +293,36 @@ def _search(model, tree, opts, net, group, members, routes, clock, loads, built,
         made = one_proposal(model, ends_t, found, target, suffix, opts.slope, opts.details,
                             scratch, space=space)
         problems.extend(scratch)
+        if made is not None and block is not None:
+            made = _restore_end(made, ends_t.origin, block, notices)
         if made is not None:
             host = _host(routes, loads, made.points[0], weight)
             routes.append(Laid(tag, made, net.own.get(tag, ()), group, tag,
                                host=host.proposal.tag if host else None, limit_m=limit))
     return failed
+
+
+def _blocked_end(tag: str, ends: Any, block: Any, graph: Any) -> Any:
+    """The refusal for a fixture end inside a door or a duct with no legal point on its wall."""
+    from typehaus.cli.route_propose import EndpointRefusal
+
+    return EndpointRefusal(
+        target=tag, service="water_cold", end="origin", reachable_nodes=0,
+        total_nodes=len(graph.nodes), established=True, cause=block.render(),
+        element=block.prisms[0], fix="move the fixture end (a house edit); the router will not")
+
+
+def _restore_end(made: Any, origin: tuple, block: Any, notices: list[str]) -> Any:
+    """The run's fixture end put back: the search ended at the moved point, so the authored end
+    is a short leg along the wall (``made`` runs tee to fixture)."""
+    from dataclasses import replace
+
+    x, y, _z = made.points[-1]
+    if max(abs(x - block.moved_to[0]), abs(y - block.moved_to[1])) > 0.003:
+        return made
+    notices.append(f"{made.tag}: {block.render()}")
+    return replace(made, points=[*made.points, tuple(origin[:3])], bends=made.bends + 1,
+                   notes=[*made.notes, block.render()]).snapped()
 
 
 def _host(routes: list[Laid], loads: _Loads, point: tuple[float, ...], weight: float

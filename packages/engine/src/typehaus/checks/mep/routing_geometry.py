@@ -13,8 +13,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from shapely.geometry import Polygon
-
 from typehaus.checks.registry import CheckContext
 
 M_TO_FT = 3.280839895013123
@@ -36,14 +34,9 @@ def wall_cover(ctx: CheckContext, storeys: set[str]) -> Any:
     ``mep.wet_wall_occupancy`` and ``mep.sleeve_coverage`` own that question. A check leaning
     on this exemption is saying "there is structure here", not "this is buildable here".
     """
-    from typehaus.resolve.overlay import union_all
+    from typehaus.resolve.riser_cover import wall_cover as _wall_cover
 
-    polygons = [Polygon(layer.polygon)
-                for wall in ctx.model.walls if wall.storey in storeys
-                for layer in wall.layers
-                if len(layer.polygon) >= 3]
-    valid = [poly for poly in polygons if poly.is_valid and not poly.is_empty]
-    return union_all(valid) if valid else None
+    return _wall_cover(ctx.model, storeys)
 
 
 def run_polylines(ctx: CheckContext) -> list[tuple[str, str, tuple[tuple[float, float], ...],

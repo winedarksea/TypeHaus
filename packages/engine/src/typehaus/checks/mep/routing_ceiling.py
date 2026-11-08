@@ -86,6 +86,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import EXPOSED_SERVICE_OCCUPANCIES, Occupancy
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.riser_cover import riser_row
 
 
 def _soffit_union(ctx: CheckContext, storey: str) -> Any:
@@ -100,12 +101,9 @@ def _soffit_union(ctx: CheckContext, storey: str) -> Any:
     ceiling two floors up and shortened a run's reported exposure by a foot and a quarter.
     ``wall_cover`` beside it was already keyed this way; this is the same rule.
     """
-    from typehaus.resolve.overlay import union_all
+    from typehaus.resolve.riser_cover import soffit_cover
 
-    polygons = [Polygon(soffit.outline) for soffit in ctx.model.soffits
-                if soffit.storey == storey and len(soffit.outline) >= 3]
-    valid = [poly for poly in polygons if poly.is_valid and not poly.is_empty]
-    return union_all(valid) if valid else None
+    return soffit_cover(ctx.model, storey)
 
 
 def _air_interval(za: float, zb: float, radius: float, floor: float, pa: float, pb: float,
@@ -152,18 +150,8 @@ def _segment_rows(a: tuple[float, float], za: float, zb: float, radius: float,
     measurement — a second copy of this would be two things to keep agreeing.
     """
     pa, pb = plane if isinstance(plane, tuple) else (plane, plane)
-    if riser:
-        if not outline.covers(Point(a)):
-            return []
-        if cover is not None and cover.covers(Point(a)):
-            return []
-        if soffits is not None and soffits.covers(Point(a)):
-            return []
-        low = max(min(za, zb) - radius, floor)
-        high = min(max(za, zb) + radius, pa)
-        if high - low <= tol:
-            return []
-        return [((high - low) * M_TO_FT, (pa - low) / M_PER_IN)]
+    if riser:  # shared with the router: resolve/riser_cover
+        return riser_row(a, za, zb, radius, outline, cover, soffits, floor, pa, tol)
 
     piece = outline.intersection(segment)
     if piece.is_empty or piece.length <= 0:

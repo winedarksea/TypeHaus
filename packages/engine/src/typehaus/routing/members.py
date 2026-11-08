@@ -60,10 +60,14 @@ class _Floor:
     window: tuple[float, float]
     stations: list[float] = field(default_factory=list)
     joists: list[tuple[float, float, float, float, str]] = field(default_factory=list)
+    #: Trimmers, sisters, headers of ANY profile (an LVL edge) as ``(x0, y0, x1, y1, z0, z1)``.
+    blocks: list[tuple[float, float, float, float, float, float]] = field(default_factory=list)
 
 
 class Penetrations:
     """Every wall's studs and plates and every floor's member lines inside one bbox."""
+    #: A PIPE search's open-air zones (``resolve.riser_cover``); None leaves risers unjudged.
+    riser_cover: Any = None
 
     def __init__(self, model: ResolvedModel, bbox: tuple[float, float, float, float],
                  radius_m: float, *, cavity_radius_m: float | None = None,
@@ -122,6 +126,9 @@ class Penetrations:
             for floor in self.floors:
                 if _riser_on_member(floor, a, low, high, r):
                     return None  # through a joist or chord: not a hole, the member's removal
+            if self.riser_cover is not None and self.riser_cover.exposed(a[0], a[1], low,
+                                                                         high, r):
+                return None  # in a finished room's open air: wall, soffit or nothing
             return out
         lo, hi = sorted((a[0], b[0]) if axis == "x" else (a[1], b[1]))
         station = a[1] if axis == "x" else a[0]
@@ -175,11 +182,12 @@ class Penetrations:
 
     def riser_blocker(self, x: float, y: float, low: float, high: float
                       ) -> tuple[str, float] | None:
-        """``(tag, z)`` of the first wall or floor member a riser here meets, for a refusal."""
+        """``(tag, z)`` of the first wall or floor member a riser here meets (for a refusal)."""
         hits = []
         for floor in self.floors:
-            if floor.joists and _riser_on_member(floor, (x, y, 0.0), low, high, self.radius_m):
-                hits.append((max(low, min(j[3] for j in floor.joists)), floor.tag))
+            if _riser_on_member(floor, (x, y, 0.0), low, high, self.radius_m):
+                z0s = [j[3] for j in floor.joists] + [b[4] for b in floor.blocks]
+                hits.append((max(low, min(z0s)), floor.tag))
         step = 0.5 * M_PER_IN
         z = low
         while z < high and not hits:
@@ -272,6 +280,7 @@ class Penetrations:
         return count
 
 
+_SOLID_EDGE = ("trimmer", "sister_joist", "header")
 _FLOOR_KIND = {"open_web": "", "i_joist": "unpublished", "solid_sawn": "joist"}
 
 
@@ -342,6 +351,14 @@ def _floor(floor: Any, library: Any = None, model: Any = None,
     out = _Floor(tag=floor.tag, across="y" if along_x else "x", kind=window.kind,
                  window=(window.z0_m, window.z1_m))
     out.joists = [j[:5] for j in joists]
+    for member in floor.members:
+        if member.z0_m is None or member.category not in _SOLID_EDGE or is_member_line(member):
+            continue
+        hw = _half_width(member.profile)
+        top = getattr(member, "z1_m", None) or floor.deck_z0_m
+        (ax, ay), (bx, by) = member.p0, member.p1
+        out.blocks.append((min(ax, bx) - hw, min(ay, by) - hw, max(ax, bx) + hw,
+                           max(ay, by) + hw, member.z0_m, top))
     out.half_widths = [_half_width(j[5]) for j in joists]  # type: ignore[attr-defined]
     out.stations = [j[0] for j in joists]
     out.profile = joists[0][5] if joists else ""  # type: ignore[attr-defined]
@@ -441,6 +458,10 @@ def _half_width(profile: str) -> float:
 def _riser_on_member(floor: _Floor, p: tuple[float, float, float], low: float, high: float,
                      r: float) -> bool:
     """Whether a vertical at ``p`` from ``low`` to ``high`` passes through a member line."""
+    for x0, y0, x1, y1, z0, z1 in floor.blocks:
+        if (x0 - r < p[0] < x1 + r and y0 - r < p[1] < y1 + r
+                and high > z0 + 1e-6 and low < z1 - 1e-6):
+            return True
     across = p[1] if floor.across == "y" else p[0]
     along = p[0] if floor.across == "y" else p[1]
     widths = getattr(floor, "half_widths", ())
