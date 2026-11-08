@@ -1546,26 +1546,16 @@ MAIN_DATA_TRUNKS = [
                # design), north between the extract riser and DU-ERV-EA, east over the supply
                # plenum to its pull box; from there this run goes up inside
                # W-M-MECH-E, south in the 5'-5 1/2"..6'-6 1/2" opening at x=6'-6" on the lower tier (under the
-               # BATH1 lav drain and the WC vent), east in the 23'-4" bay south of the stair
-               # well, up over the extract legs at x=14'-6 1/2" to the 21'-1.3" bay (BM-M-HALL
-               # fills x=18' from 22'-4" to 25'-10"), east over the suite's pipes and north at
-               # x=19'-0" in FS-S-EAST's I-joist webs. Every tier step is under half the deck.
-               # 2026-11-06: the north leg crosses the 256/272" trusses at x=16'-0" (pocket
-               # D14, which the suite lines (D13, D15) no longer share).
-               path=(pt(ft(6), inch(411.5)), pt(inch(78), inch(411.5)), pt(inch(78), inch(280)),
-                     pt(inch(192), inch(280)), pt(inch(192), inch(280)),
-                     pt(inch(192), inch(253.3)), pt(inch(192), inch(253.3)),
-                     pt(ft(19), inch(253.3)),
-                     pt(ft(19), ft(29)), pt(ft(19), ft(29))),
+               # BATH1 lav drain and the WC vent), on down that lane to y=22'-2", east in the
+               # 21'-5 3/4".. 22'-6 1/4" bay on the lower tier, under the suite's pipes, north of
+               # DU-M-ERV-R-KITCH, south of P-S-SN3-SQUASH and BM-M-HALL's end at x=18', and north at
+               # x=19'-0" in FS-S-EAST's I-joist webs. 2026-11-08: off the y=256" truss's
+               # pocket D14, which PR-B-CW-SUITE needs; it now crosses no truss under W-S-SN3.
+               path=(pt(ft(6), inch(411.5)), pt(inch(78), inch(411.5)), pt(inch(78), inch(266)),
+                     pt(ft(19), inch(266)), pt(ft(19), ft(29)), pt(ft(19), ft(29))),
                start_elevation=inch(110.5), end_elevation=ft(9, 2.25),
-               # 114.6" over DU-M-ERV-R-KITCH on the way south, then 116.2" over the suite hot's
-               # 1/2" sleeve (PR-B-HW-SUITE, x=16'-9 3/4") along y=21'-1.3".
-               elevations=(inch(110.5), inch(110.5), inch(110.5), inch(110.5),
-                           inch(114.6), inch(114.6), inch(116.2), inch(116.2), inch(115.5),
+               elevations=(inch(110.5), inch(110.5), inch(110.5), inch(110.5), inch(110.5),
                            ft(9, 2.25)),
-               # Pull box at 4 (16'-0", 23'-4", the top of the tier step, behind a ceiling
-               # access cover): 270 deg before it and 360 after since the J12 re-lay.
-               pull_points=(4,),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-KITCH-AP"),
     # PORCH goes SOUTH first and turns east at y=1'-0", well below the void, then out under
     # the balcony deck to the porch soffit — still sharing SP-SG-PORCH-ELEC with the ceiling

@@ -196,7 +196,7 @@ WEST_FLOOR = FloorSystem(
     ceiling_below=_CEILING_GWB,
     published_span=J12_FLOOR_SPAN,
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _HOUSE),
-    openings=("FO-S-STAIR", "FO-S-ERV-CHASE", "FO-S-ERV-LAUNDRY", "FO-S-BATH1-WC-DRAIN",
+    openings=("FO-S-STAIR", "FO-S-ERV-CHASE", "FO-S-ERV-LAUNDRY", "FO-S-BATH1-WC-DRAIN", "FO-S-BATH1-TUB-DRAIN",
               "FO-S-ERV-SUITEBATH"),
     source="catlin second floor, west half — 11 7/8\" open-web floor trusses at 16\" o.c. "
            "spanning 18'-0\" from W-M-W2 to the x=18' bearing line south of FO-S-STAIR, "

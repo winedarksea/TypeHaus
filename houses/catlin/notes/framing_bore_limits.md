@@ -664,3 +664,27 @@ tub end, 14 1/2" off the back; American Standard Princeton 2390/2393 (790043-400
 p.1) 8" (203 mm), cutout centred 14 1/4"; Kohler K-1121-L Underscore (spec 5-29-2021)
 **12 5/8"**, 15" off the back: 264.625 - 12.625 = 252.0", clear by 1.3". The standard is
 8 to 8 1/2"; the Underscore is the one that clears this truss.
+
+**Resolved 2026-11-08 (owner): a deeper plumbing end on both tubs, not a different tub.** No
+one-piece 60x30 unit read (Aquatic 260330/6030SM/TS6030, Florestone TS6030/6032, Maax TS-3060,
+Sterling 71370116) puts its drain outside 8 to 8 1/2" off the end; only Kohler's bare tubs do
+(Underscore 12 5/8", Archer 11 1/4"). The Forum Curve 60x32 (71840120, 8 1/2", 33 1/4" deep)
+fits neither room: its front stands 1/2" into BATH1's vanity top and 0.35" into the suite lav.
+So both keep the Sterling Ensemble Medley 60x30 at its real 8 1/4" (`FX-TUBSHOWER-60-DIVERTED`'s
+placeholder 3 1/2" is gone), and each plumbing end is 4 1/2" deeper:
+
+- **BATH1.** `W-S-CH-W` moved 4 1/2" east (N-S-CH1/CH2 at x=37 1/2"); its cavity is x
+  35 3/4"..39 1/4", clear of the header's east face at 36.5". The tub moved east with it (drain
+  48.5", 409.5"), the shelf narrowed to 15 1/2". The arm runs 10 1/2" west in the 400"..412.9"
+  bay to a tee at x=38" (0.25" under the weir), the vent rises in the chase wall, and the drop
+  goes through `FO-S-BATH1-TUB-DRAIN` into RM-M-MECH's ceiling. Nothing bores the header, so
+  `VERSA_LAM_HEADER_HOLES` is attached (`framing_charts.with_header_holes`) and reads N/A.
+  Flipping the tub east was studied first and refused: the drain can drop only over RM-M-MECH
+  (x < 6'), the vent would rise at the east end, and in the band the weir is 1.53" short of any
+  tie (`haus route`).
+- **SUITEBATH.** `W-S-SBF`, a 4 1/2" 2x4 wall on W-S-SN3's face, carries valve, risers and vent;
+  the tub moved 4 1/2" south (drain y=251.875", 1.4" clear of the y=256" truss) and the shelf
+  return went to 6 3/4". The arm runs west in the 241.75..254.25 bay and north through that
+  truss's pocket D13 under W-S-SBF, where the vent takes off. That truss's seven pockets D9..D15
+  were all spoken for, so `PR-B-CW-SUITE` moved from D13 to D14 and `CD-M-DATA-KITCH` left the
+  truss for the 257.75..270.25 bay at y=22'-2".

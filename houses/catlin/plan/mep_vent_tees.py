@@ -55,13 +55,14 @@ VENT_TEES = [
             diameter=inch(1.5), material="pvc",
             elevations=(inch(141.43), inch(190), inch(192.1), inch(212.9), inch(214.77)),
             serves=("FX-S-SUITEBATH-LAV",)),
-    # Tub-shower: off the arm 2 3/8" past the trap, 45 deg north through the plate onto the
-    # axis at x=16'-5 5/8" (between stud 010 and the cold riser), up to the in-wall leg's head.
+    # Tub-shower: off the arm's north leg under W-S-SBF (0.6" under the weir), plumb up that
+    # furred end's cavity at x=15'-5 1/2", then north through its board into W-S-SN3 onto
+    # PR-S-SUITEBATH-VENT's east end.
     PipeRun(uid="3N5Q44A8PA", tag="PR-S-SUITEBATH-TUB-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(197.615), inch(264)), pt(inch(197.615), inch(268)),
-                  pt(inch(197.615), inch(268)), pt(inch(197.615), inch(266.25))),
+            path=(pt(inch(185.5), inch(262.375)), pt(inch(185.5), inch(262.375)),
+                  pt(inch(185.5), inch(266.25))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(117.38), inch(122.0), inch(212.0), inch(213.8)),
+            elevations=(inch(116.33), inch(211.8), inch(213.8)),
             serves=("FX-S-SUITEBATH-TUBSH",)),
     # RM-S-VANITY: the stack vent. The double vanity's arm drops into PR-M-S-BATH1-DRAIN at
     # (5'-0", 26'-8") from a sanitary tee at the TOP of that drop (140.38", 1.12" under LAV1's
@@ -98,15 +99,14 @@ VENT_TEES = [
             diameter=inch(1.5), material="pvc",
             elevations=(inch(115.5), inch(116.4), inch(231.0), inch(231.5)),
             serves=("FX-S-BATH1-WC",)),
-    # RM-S-BATH1's tub-shower: plumb from the sanitary tee at the top of its drop (30 1/4",
-    # 402.8", 116.7"), up the chase's south band (clear of EXH riser, CD-M-DATA-PORCH,
-    # W-S-CH-W's studs) past the rim+6" (211"), east onto PR-S-BATH1-VENT at 231".
+    # RM-S-BATH1's tub-shower: plumb from the sanitary tee at the top of its drop (38",
+    # 409.5", 116.75") up W-S-CH-W's cavity past the rim+6" (211"), east onto the x=40" lane
+    # and south to PR-S-BATH1-VENT's corner at (40", 372").
     PipeRun(uid="S57D33HC70", tag="PR-S-BATH1-SH-VENT", system=PipeSystem.VENT,
-            # 2026-11-06: on to the stack's corner at (40", 372"); the x=40" leg ends there.
-            path=(pt(inch(30.3), inch(402.8)), pt(inch(30.3), inch(402.8)),
-                  pt(inch(40), inch(402.8)), pt(inch(40), inch(372))),
+            path=(pt(inch(38), inch(409.5)), pt(inch(38), inch(409.5)),
+                  pt(inch(40), inch(409.5)), pt(inch(40), inch(372))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(116.7), inch(231.0), inch(232.85), inch(233.2)),
+            elevations=(inch(116.75), inch(231.0), inch(231.1), inch(233.2)),
             serves=("FX-S-BATH1-SH",)),
     # RM-M-BATH1's wall-hung WC: the DuoFit carrier's own vent outlet, straight up W-M-HS1
     # from the fitting to PR-M-BATH2-LAV-VENT's horizontal at 7'-5 1/8" (6"+ over every rim

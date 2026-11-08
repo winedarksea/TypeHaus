@@ -435,7 +435,8 @@ PLAN = (
          *plate_ties.MAIN_PLATE_TIES, *wall_top_ties.MAIN_WALL_TOP_TIES,
          *smart_home.MAIN_ELEMENTS],
     )
-    .with_elements("second", [*french_door_installations.with_catalog_installations(second.ELEMENTS), *attic_studio.SECOND_ELEMENTS,
+    .with_elements("second", [*framing_charts.with_header_holes(
+                                    french_door_installations.with_catalog_installations(second.ELEMENTS)), *attic_studio.SECOND_ELEMENTS,
                                 *fixtures.SECOND_FIXTURES,
                                 *fixtures.BALCONY_HYDRANT,
                                 *mep.SECOND_ELEMENTS,

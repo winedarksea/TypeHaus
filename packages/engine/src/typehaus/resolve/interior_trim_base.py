@@ -169,6 +169,7 @@ def _obstacles(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
     from shapely.geometry import Polygon
 
     from typehaus.resolve.room_lookup import owns
+    from typehaus.resolve.soffits import wall_footprint
 
     top = floor_z + height
     for tag, footprint, z0, _z1 in scope.fixed_footprints(plan, model, room.storey):
@@ -180,6 +181,16 @@ def _obstacles(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
         if stair.storey == room.storey and len(stair.outline) >= 3:
             yield stair.tag, Polygon(stair.outline)
     yield from stair_skirt_footprints(model, room.storey)
+    # A freestanding wall inside the room (a furred tub end on a wet wall): the room's ring
+    # does not see it, so the base would run on inside it. Inside means most of its body is
+    # within the finish faces, which a bounding wall never is.
+    clear = Polygon(room.clear_face) if len(room.clear_face) >= 3 else None
+    for wall in model.walls:
+        if clear is None or wall.storey != room.storey or wall.z0_m >= top or wall.z1_m <= floor_z:
+            continue
+        footprint = wall_footprint(wall)
+        if not footprint.is_empty and footprint.intersection(clear).area > footprint.area / 2:
+            yield wall.tag, footprint
     # A raised platform (an enclosed tub deck, a bench) is a box the base never runs behind.
     for solid in model.solids:
         if (solid.category == "slab_platform" and solid.storey == room.storey

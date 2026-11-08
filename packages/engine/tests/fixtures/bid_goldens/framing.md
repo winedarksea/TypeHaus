@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 88fdcec909e8f0c4  
+**Model hash:** 9add51c324f0a813  
 **Lines:** 253
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -67,11 +67,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3:spf) | 11 | pc | girt strapping | 88 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 82 | pc | corner stud, king stud, stud | 632.9 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 146 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud | 1168 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 243 | pc | corner stud, king stud, stud | 2118.7 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 147 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud | 1176 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 246 | pc | corner stud, king stud, stud | 2144.8 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 212 | pc | girt strapping, truss ladder blocking | 1696 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 213 | pc | girt strapping, truss ladder blocking | 1704 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x4:kdat) | 30 | pc | girt strapping | 300 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x4:kdat) | 11 | pc | girt strapping | 132 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | 11 | pc | girt strapping | 154 LF | building |
@@ -79,7 +79,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 23 | pc | girt strapping | 460 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 361 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2888 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 360 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2880 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 203 | pc | corner stud, king stud, stud | 1769.9 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 116 5/8" PET (2x6) | 6 | pc | king stud, stud | 58.3 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 49 | pc | plate, raked top plate, strongback | 490 LF | building |
@@ -213,7 +213,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN) | 72 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | 4 | ea |  | basement |
 | Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112) | 1,368 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 67 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 69 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 107 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 12 | ea |  | building |
 | slat brace plate screw (SDWS22400DB) | 16 | ea |  | main |
@@ -561,7 +561,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | BM-BW-FE |
 | butyl-tape-beam, 5 1/2" on beam (butyl-tape-beam) | BM-BW-RE, BM-BW-RW |
 | butyl-tape-beam, 5 1/2" on brace (butyl-tape-beam) | SB-BW-BAND |
-| Fireblock sealant bead, 24 penetrations (firestop-sealant) | FO-A-ERV-CHASE, FO-M-ERV-OA, FO-S-ERV-CHASE |
+| Fireblock sealant bead, 24 penetrations (firestop-sealant) | FO-A-ERV-CHASE, FO-M-ERV-OA, FO-S-BATH1-TUB-DRAIN, FO-S-ERV-CHASE |
 | Treated sill plate, Pressure-treated southern yellow pine No. 2 (sill plate) (pt-sill-plate) | — |
 | Sill seal foam gasket, under the sill plate (sill-seal-foam) | — |
 | Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | — |

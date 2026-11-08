@@ -118,7 +118,7 @@ MAIN_SUPPLY_BRANCHES = [
             path=(pt(inch(63), inch(318.75)), pt(inch(63), inch(318.75)),
                   pt(inch(63), inch(410.25)), pt(inch(32.5), inch(410.25)),
                   pt(inch(32.5), inch(410.25)), pt(inch(32.5), inch(411.5)),
-                  pt(inch(35.743), inch(411.5)),),
+                  pt(inch(40.243), inch(411.5)),),
             elevations=(inch(214), inch(236), inch(236), inch(236), inch(150.75),
                         inch(150.75), inch(150.75),),
             diameter=inch(0.75), material="pex",
@@ -126,7 +126,7 @@ MAIN_SUPPLY_BRANCHES = [
     PipeRun(uid="JV56ZZP8TZ", tag="PR-S-BATH1-SH-HW", system=PipeSystem.WATER_HOT,
             path=(pt(inch(76), inch(319.5)), pt(inch(76), inch(319.5)),
                   pt(inch(76), inch(407.5)), pt(inch(32.5), inch(407.5)),
-                  pt(inch(32.5), inch(407.5)), pt(inch(35.743), inch(407.5)),),
+                  pt(inch(32.5), inch(407.5)), pt(inch(40.243), inch(407.5)),),
             elevations=(inch(212), inch(238), inch(238), inch(238), inch(150.75),
                         inch(150.75),),
             diameter=inch(0.5), material="pex", serves=("FX-S-BATH1-SH",)),
@@ -149,8 +149,9 @@ MAIN_SUPPLY_BRANCHES = [
                   serves=("FX-S-BATH1-WC",)),
     # RM-S-SUITEBATH, all in W-S-SN3's staggered cavity off the suite risers: the WC west on
     # the axis, the tub-shower pair east (hot on the axis, cold in the south half 6" lower,
-    # under the lav stops' drops). Each tub-shower supply rises in its R10000 inlet's plane,
-    # 1 1/2" outboard, and elbows once into the side hub; the hot tees 3 1/2" down the riser.
+    # under the lav stops' drops). The tub-shower pair crosses south into W-S-SBF, the tub's
+    # furred end (2026-11-08), rises there in its R10000 inlet's plane, 1 1/2" outboard, and
+    # elbows once into the side hub.
     PipeRun(uid="N9GFY7KNY7", tag="PR-S-SUITE-WC-CW", system=PipeSystem.WATER_COLD,
             path=(pt(inch(163.2), inch(268)), pt(inch(128.935), inch(268)),
                   pt(inch(128.935), inch(268)), pt(inch(128.935), inch(264.406)),),
@@ -162,15 +163,16 @@ MAIN_SUPPLY_BRANCHES = [
                   model=_ANGLE_STOP, serves=("FX-S-SUITEBATH-WC",)),
     PipeRun(uid="KNTMDJRJPN", tag="PR-S-SUITE-TUBSH-HW", system=PipeSystem.WATER_HOT,
             path=(pt(inch(171.6), inch(268)), pt(inch(194.115), inch(268)),
-                  pt(inch(194.115), inch(266.375)), pt(inch(194.115), inch(266.375)),
-                  pt(inch(195.615), inch(266.375)),),
+                  pt(inch(194.115), inch(261.875)), pt(inch(194.115), inch(261.875)),
+                  pt(inch(195.615), inch(261.875)),),
             elevations=(inch(146.5), inch(146.5), inch(146.5), inch(150.75), inch(150.75),),
             diameter=inch(0.5), material="pex", serves=("FX-S-SUITEBATH-TUBSH",)),
     PipeRun(uid="TRYB9RHBHH", tag="PR-S-SUITE-TUBSH-CW", system=PipeSystem.WATER_COLD,
             path=(pt(inch(163.2), inch(268)), pt(inch(163.2), inch(266.375)),
-                  pt(inch(201.115), inch(266.375)), pt(inch(201.115), inch(266.375)),
-                  pt(inch(199.615), inch(266.375)),),
-            elevations=(inch(144), inch(144), inch(144), inch(150.75), inch(150.75),),
+                  pt(inch(201.115), inch(266.375)), pt(inch(201.115), inch(261.875)),
+                  pt(inch(201.115), inch(261.875)), pt(inch(199.615), inch(261.875)),),
+            elevations=(inch(144), inch(144), inch(144), inch(144), inch(150.75),
+                        inch(150.75),),
             diameter=inch(0.5), material="pex", serves=("FX-S-SUITEBATH-TUBSH",)),
     # RM-A-STUBATH: the WC stop off the cold riser in W-A-STU-W, south in the cavity; the
     # shower pair carries on east from the lavatory branches' corners along the north wall

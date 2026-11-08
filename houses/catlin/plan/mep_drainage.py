@@ -454,22 +454,20 @@ SECOND_BRANCH_DRAINS = [
                         inch(115.27), inch(103.3), inch(103.1), inch(102.27), inch(98.97),
                         inch(98.83)),
             serves=("FX-S-BATH1-WC",)),
-    # The tub-shower's 1 1/2" waste: 3 3/4" down to the weir (117", 3" under the deck), an 11"
-    # arm west at 1/4"/ft under W-S-CH-W's plate to a sanitary tee in the chase's south band
-    # (30 1/4", 33 3/4" off the pan's drain), then straight down THROUGH FS-S-WEST (the chase
-    # opening, x 6"..33"), east 9" to the web band at x=3'-3 1/4", south 6'-1" under the deck in
-    # RM-M-MECH's open ceiling and the mud closet's, east to x=5'-0" and onto the water closet's
-    # last drop at (5'-0", 27'-1 1/2"), a side entry. The tee is the TOP of the drop, so
-    # PR-S-BATH1-SH-VENT rises plumb from it (UPC 905.2, MN 905.3) and stands 0.3" under the
-    # weir (905.5). 1 1/2" because the tub's waste-and-overflow is 1 1/2" and that is the trap
-    # size the table gives a bathtub (cf. PR-B-TUB2-DRAIN).
+    # The tub-shower's 1 1/2" waste: 3 3/4" down to the weir (117", 3" under the deck), a
+    # 10 1/2" arm west in the 400"..412.9" truss bay to a sanitary tee at x=38", inside
+    # W-S-CH-W's cavity (moved 4 1/2" east 2026-11-08 for exactly this) and 1 1/2" east of
+    # FO-S-ERV-CHASE's LVL header, which nothing bores now. Straight down through
+    # FO-S-BATH1-TUB-DRAIN into RM-M-MECH's ceiling, south under it and the mud closet's, east
+    # to x=5'-0" and onto the water closet's last drop at (5'-0", 27'-1 1/2"), a side entry.
+    # The tee is the TOP of the drop, so PR-S-BATH1-SH-VENT rises plumb from it (UPC 905.2,
+    # MN 905.3), 0.25" under the weir (905.5). 1 1/2": the bathtub trap size (cf. PR-B-TUB2-DRAIN).
     PipeRun(uid="0W45BR6619", tag="PR-M-S-BATH1-TUB-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(39.25), inch(409.5)), pt(inch(39.25), inch(409.5)),
-                  pt(inch(30.3), inch(402.8)), pt(inch(30.3), inch(402.8)),
-                  pt(inch(39.25), inch(402.8)), pt(inch(39.25), inch(330)),
-                  pt(ft(5), inch(330)), pt(ft(5), inch(325.5))),
+            path=(pt(inch(48.5), inch(409.5)), pt(inch(48.5), inch(409.5)),
+                  pt(inch(38), inch(409.5)), pt(inch(38), inch(409.5)),
+                  pt(inch(38), inch(330)), pt(ft(5), inch(330)), pt(ft(5), inch(325.5))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(10, 0.75), inch(117.0), inch(116.7), inch(103.5), inch(103.1),
+            elevations=(ft(10, 0.75), inch(117.0), inch(116.75), inch(103.4),
                         inch(101.2), inch(100.7), inch(100.5)),
             serves=("FX-S-BATH1-SH",)),
     # The 36" vanity keeps its 1 1/2" drop at y=372", in the 369.75"..382.25" truss
@@ -532,19 +530,21 @@ SECOND_BRANCH_DRAINS = [
             diameter=inch(1.5), material="pvc",
             elevations=(inch(141.5), inch(141.43), inch(116.2), inch(115.85),),
             serves=("FX-S-SUITEBATH-LAV",)),
-    # The tub-shower, from the waste-and-overflow at (197.615", 261.125"): the trap hangs
-    # under the deck (weir 117"), its arm turns north 2 3/8" to PR-S-SUITEBATH-TUB-VENT's
-    # tee, then west on y=22'-0" over CD-M-DATA-KITCH (0.29") and under PR-A-HW-STUBATH
-    # (0.2"), takes the lav at x=13'-9 1/2", south at x=12'-11 3/4" (pocket D11, 2026-11-06)
-    # and west on y=19'-0" to the collector.
+    # The tub-shower, from the waste-and-overflow at (197.615", 251.875") in the 241.75"..
+    # 254.25" truss bay (2026-11-08, `haus route` alternative B): the trap hangs under the
+    # deck (weir 116.94"), its arm runs west in the bay to x=15'-5 1/2" and north through the
+    # y=256" truss's pocket D13 (PR-B-CW-SUITE takes D14 there) under W-S-SBF, where
+    # PR-S-SUITEBATH-TUB-VENT takes off at y=262.375", then west on y=22'-0" over
+    # CD-M-DATA-KITCH and under PR-A-HW-STUBATH, takes the lav at x=13'-9 1/2", south at
+    # x=12'-11 3/4" (pocket D11) and west on y=19'-0" to the collector.
     PipeRun(uid="WVNA8G8ZHX", tag="PR-M-S-SUITE-TUB-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(197.615), inch(261.125)), pt(inch(197.615), inch(261.125)),
-                  pt(inch(197.615), inch(264)), pt(inch(189), inch(264)),
-                  pt(inch(171), inch(264)), pt(inch(155.75), inch(264)),
-                  pt(inch(155.75), ft(19)), pt(ft(12), ft(19))),
+            path=(pt(inch(197.615), inch(251.875)), pt(inch(197.615), inch(251.875)),
+                  pt(inch(197.615), inch(249.25)), pt(inch(185.5), inch(249.25)),
+                  pt(inch(185.5), inch(264)), pt(inch(171), inch(264)),
+                  pt(inch(155.75), inch(264)), pt(inch(155.75), ft(19)), pt(ft(12), ft(19))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(10, 0.75), inch(117.45), inch(117.38), inch(117.2), inch(115.85),
-                        inch(115.5), inch(114.75), inch(114.45)),
+            elevations=(ft(10, 0.75), inch(116.9375), inch(116.875), inch(116.62),
+                        inch(116.31), inch(115.85), inch(115.5), inch(114.75), inch(114.45)),
             serves=("FX-S-SUITEBATH-TUBSH",)),
 ]
 

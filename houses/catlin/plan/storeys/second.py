@@ -138,14 +138,17 @@ NODES = [
     # near-column (houses/catlin/CLAUDE.md, Facade rules). It also takes 3 1/8" out
     # of the standing room in front of the shaft. With FX-S-BATH1-WC centred under the
     # window (2026-10-02), its required clearance ends at y=391", 3 1/2" off the chase face.
-    Node(uid="CSN035AAAA", tag="N-S-CH1", position=pt(ft(2, 9), ft(33, 0.875))),
-    Node(uid="CSN036AAAA", tag="N-S-CH2", position=pt(ft(2, 9), ft(36))),
+    Node(uid="CSN035AAAA", tag="N-S-CH1", position=pt(ft(3, 1.5), ft(33, 0.875))),
+    Node(uid="CSN036AAAA", tag="N-S-CH2", position=pt(ft(3, 1.5), ft(36))),
     Node(uid="CSN037AAAA", tag="N-S-CH3", position=pt(ft(0), ft(33, 0.875))),
     # W-S-WELL-KNEE on ST-M2S's well partition, 167 15/16" its centre (STAIRS).
     Node(uid="ZSW0B25N8C", tag="N-S-KNEE-S", position=pt(inch(167.9375), ft(26, 0.375)),
          open_end=True),
     Node(uid="DXS13T771Y", tag="N-S-KNEE-N", position=pt(inch(167.9375), ft(30, 2.375)),
          open_end=True),
+    # W-S-SBF, FX-S-SUITEBATH-TUBSH's furred plumbing end (see the wall).
+    Node(uid="NDKXJJQSF8", tag="N-S-SBF-W", position=pt(inch(182.615), inch(262.375)), open_end=True),
+    Node(uid="BVFT1NKH09", tag="N-S-SBF-E", position=pt(inch(212.615), inch(262.375)), open_end=True),
 ]
 
 # North/south walls below carry the board & batten `layer_materials=` override — see the
@@ -455,6 +458,14 @@ WALLS = [
     Wall(uid="CSW147AAAA", tag="W-S-SN3", start_node="N-S-D4", end_node="N-S-C2C",
          assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9), stacks_on="W-M-HS3"),
+    # FX-S-SUITEBATH-TUBSH's plumbing end (owner, 2026-11-08): a 4 1/2" 2x4 wall on W-S-SN3's
+    # face, the tub's width, so the one-piece unit's drain (8 1/4" off the end studs) lands at
+    # y=251.875", 1.4" south of the y=256" truss. Valve, risers and vent stand in its cavity.
+    # Its own open-ended node pair: a tee into bearing W-S-C2C would re-phase that stud grid.
+    Wall(uid="SH0353BNAG", tag="W-S-SBF", start_node="N-S-SBF-W", end_node="N-S-SBF-E",
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
+         structural_role=StructuralRole.NONBEARING),
     Wall(uid="CSW148AAAA", tag="W-S-VE", start_node="N-S-V1", end_node="N-S-V2",
          assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
@@ -1358,6 +1369,19 @@ FLOOR_OPENINGS = [
                  outline=(pt(inch(17.2), inch(317.5)), pt(inch(23.4), inch(317.5)),
                           pt(inch(23.4), inch(323.5)), pt(inch(17.2), inch(323.5))),
                  penetration_for=("PR-M-S-BATH1-WC-DRAIN",)),
+    # PR-M-S-BATH1-TUB-DRAIN's drop into RM-M-MECH's ceiling, under its vent tee in W-S-CH-W.
+    # It stands over FO-M-ERV-OA, so R302.11 closes it in the deck plane like the shaft.
+    FloorOpening(uid="5DQ46B0ACM", tag="FO-S-BATH1-TUB-DRAIN", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(36.75), inch(408.25)), pt(inch(39.25), inch(408.25)),
+                          pt(inch(39.25), inch(410.75)), pt(inch(36.75), inch(410.75))),
+                 penetration_for=("PR-M-S-BATH1-TUB-DRAIN",),
+                 fireblock=(
+                     Layer(name="sheet", material_ref="plywood-subfloor",
+                           thickness=inch(0.75), function=LayerFunction.SHEATHING),
+                     Layer(name="wool", material_ref="mineral-wool", thickness=inch(3.5),
+                           function=LayerFunction.INSULATION),
+                 ),
+                 fireblock_sealant="firestop-sealant"),
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",
                  # North edge on W-M-N2's 1/2" face (35'-5 1/2" since 2026-10-23), the same as the
                  # living room's clear face, or a 1/8" sliver is left uncut under the deck.

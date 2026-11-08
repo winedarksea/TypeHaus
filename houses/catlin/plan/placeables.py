@@ -585,17 +585,17 @@ SECOND_PLACEABLES = [
     # Hall-bath linen storage: three SEKTION units in plan/bath1_storage.py. Their open
     # lower bays keep the existing toilet clear of drawers without moving its drain.
     # The tub alcove's east return, built as a shelf. FX-S-BATH1-SH is a
-    # flanged 60x30 insert and was standing in two walls, not three: the chase face at
-    # x 2'-11 3/8" west (0.36" of scribe), the north wall at y 35'-5 3/8", and its EAST end
-    # open at x 7'-11 3/4", with 1'-8 7/8" of dead floor between it and the east wall at
-    # x 9'-8 5/8". This carcass closes it. Its west panel IS that return — the carpenter
+    # flanged 60x30 insert and was standing in two walls, not three: the chase face west,
+    # the north wall at y 35'-5 3/8", and its EAST end open at x 8'-4 1/4" (4 1/2" east of
+    # its old station since 2026-11-08), with 1'-4 3/8" of floor between it and the east wall
+    # at x 9'-8 5/8". This carcass closes it. Its west panel IS that return — the carpenter
     # frames a 2x4 behind the panel and the flange nails to it — so the same article that
     # makes the tub a legitimate three-wall install is also the only storage in the room
     # you can reach from inside the tub.
     #
     # Rotation 0 puts the back at +y against the exterior wall and opens it south into the
     # room. y centre is FX-S-BATH1-SH's own and the depth is the tub's, so the two share a
-    # front line at y 32'-10 1/2" and a back line at y 35'-4 1/2"; x runs 7'-11 3/4"..
+    # front line at y 32'-10 1/2" and a back line at y 35'-4 1/2"; x runs 8'-4 1/4"..
     # 9'-7 3/4", butted to the tub, with the 7/8" of slack taken as scribe at the east wall.
     #
     # Deliberately NOT a Wall. A real return partition has to tee into W-S-N3, splitting it
@@ -607,15 +607,15 @@ SECOND_PLACEABLES = [
     # The resized vanity ends at y=392.5", 2" before this case's front. Keep the closed
     # base: the gap is a separation joint, not access to the shelves below counter level.
     # The recentered 30" mirror ends at y=389.5", leaving 5" to the case.
-    Furniture(uid="640HBGH1XS", tag="FURN-S-BATH1-SHELF", type_ref="FT-BATH1-SHELF-2030",
-              room="RM-S-BATH1", position=pt(m(2.68588), m(10.4013))),
+    Furniture(uid="640HBGH1XS", tag="FURN-S-BATH1-SHELF", type_ref="FT-BATH1-SHELF-1630",
+              room="RM-S-BATH1", position=pt(inch(107.993), m(10.4013))),
     # The suite bath's twin of it, turned to open west (2026-10-03): FX-S-SUITEBATH-TUBSH's
-    # SOUTH return, in the 11 1/4" between the tub (y=204.625") and W-S-SBS (y=193.375").
+    # SOUTH return, in the 6 3/4" between the tub (y=200.125") and W-S-SBS (y=193.375").
     # x 15'-2 5/8"..17'-8 5/8" is the tub's own 30" width; the back sits on W-S-C2C.
     # Millwork, not a wall, for the hall bath's reason: a return partition would tee into
     # bearing W-S-C2C and re-phase its stud grid. D-S-SUITEBATH's leaf parks ~36" west of it.
-    Furniture(uid="P1NESXCW7K", tag="FURN-S-SUITEBATH-RETURN", type_ref="FT-SUITEBATH-SHELF-1130",
-              room="RM-S-SUITEBATH", position=pt(inch(197.615), inch(199)), rotation=deg(-90)),
+    Furniture(uid="P1NESXCW7K", tag="FURN-S-SUITEBATH-RETURN", type_ref="FT-SUITEBATH-SHELF-0730",
+              room="RM-S-SUITEBATH", position=pt(inch(197.615), inch(196.75)), rotation=deg(-90)),
     # Robe pegs on W-S-DC2's bath face, shifted 24" south to y 16'-9"..18'-9", behind
     # the door leaf's parked position (y < ~18'-5"). Rail bottom 64", as in the closet.
     Furniture(uid="GG09CD7KYB", tag="FURN-S-SUITEBATH-PEGS", type_ref="FT-SUITEBATH-PEGS-24",
@@ -705,7 +705,7 @@ SECOND_PLACEABLES = [
     Furniture(uid="7MW8644E5H", tag="FURN-S-BATH1-CH-AP", type_ref="FT-ACCESS-PANEL-1429", room="RM-S-BATH1",
               mount=Mount(kind=MountKind.WALL, elevation=ft(3), recessed_into_host_surface=True),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-S-CH-S", face="left", distance_from_start=inch(9),
+                  wall_ref="W-S-CH-S", face="left", distance_from_start=inch(13.5),
                   normal_gap=inch(-0.5), rotation_offset=deg(-180)))),
 
     # ** THE AIR HANDLER'S SERVICE OPENING, AND THE OLD BOX HAD NOTHING LIKE IT. **

@@ -610,11 +610,15 @@ SUPPLY = [
     # wall leg is split at the wall's base and top so it names only the wall it is in.
     PipeRun(uid="CBPW42AAAA", tag="PR-B-CW-SUITE", system=PipeSystem.WATER_COLD,
             # 2026-11-06: crosses the trusses at x=15'-3" (TrimJoist pocket D13, clear of ED-M-STUDY-LT's
-            # housing), jogging west in the 208..224 bay; one run per pocket.
+            # housing), jogging west in the 208..224 bay; one run per pocket. 2026-11-08: the
+            # y=256" truss's D13 is the tub drain's, so it jogs east to D14 (x=16'-0 3/8")
+            # there; CD-M-DATA-KITCH gave that pocket up.
             # ESR-1153 Table A: tees at x=9'-2" (was 8'-0") so the joist-013 hole falls at x=162.7",
             # 10.3" clear of PR-M-S-SUITE-DRAIN's 3.75" hole (7.5" wanted).
             path=(pt(inch(110), ft(16)), pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(18)),
                   pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(18)), pt(inch(183), ft(18)),
+                  pt(inch(183), inch(250)), pt(inch(192.375), inch(250)),
+                  pt(inch(192.375), inch(262)), pt(inch(183), inch(262)),
                   pt(inch(183), ft(22, 4)),
                   pt(ft(13, 7.2), ft(22, 4)), pt(ft(13, 7.2), ft(22, 4)),
                   pt(ft(13, 7.2), ft(22, 4)), pt(ft(13, 7.2), ft(22, 4)),
@@ -623,10 +627,11 @@ SUPPLY = [
             # +5/16" on 2026-09-16 (7.1875 -> 7.5): the 4" ERV ducts' crowns are at 9'-5 5/8",
             # and KITCH/BED2 now cross this jog at y=21'-10"/22'-2". 5/16" left under the tub drain.
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), ft(18, 1.3125),
-                        ft(18, 7.5), ft(18, 7.5), ft(18, 7.5), ft(18, 7.5), ft(19, 1.4375),
+                        ft(18, 7.5), ft(18, 7.5), ft(18, 7.5), ft(18, 7.5), ft(18, 7.5),
+                        ft(18, 7.5), ft(18, 7.5), ft(18, 7.5), ft(19, 1.4375),
                         inch(238.9375), inch(253.4375), ft(21, 7.4375)),
-            wall_refs=(None, None, "W-M-CLN2", None, None, None, None, None, "W-S-SN3",
-                       "W-S-SN3", "W-S-SN3"),
+            wall_refs=(None, None, "W-M-CLN2", None, None, None, None, None, None, None,
+                       None, None, "W-S-SN3", "W-S-SN3", "W-S-SN3"),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
     PipeRun(uid="CBPW43AAAA", tag="PR-B-HW-SUITE", system=PipeSystem.WATER_HOT,

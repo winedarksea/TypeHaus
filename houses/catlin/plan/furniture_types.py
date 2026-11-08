@@ -152,15 +152,18 @@ PORCH_TRACK_102 = FurnitureType(
 # Shelves top at 36/48/60/72/84" — 11 1/4" clear each — and none
 # stands in the closed base. SB-S-BATH1 bills those five.
 #
+# 15 1/2" WIDE SINCE 2026-11-08 (was 20"): the tub moved 4 1/2" east with the chase wall,
+# whose deeper cavity carries the tub's vent clear of FO-S-ERV-CHASE's LVL header.
+#
 # No ``clearances``: per the casework rule, a built-in's back is the wall and its ends are
 # its neighbours, and the floor in front of it is the same floor you stand on to use the
 # tub.
-BATH1_SHELF_2030 = FurnitureType(
-    tag="FT-BATH1-SHELF-2030", name='Bath 1 alcove shelf, 20" x 30"',
-    footprint=(inch(20), inch(30)), height=inch(84),
+BATH1_SHELF_1630 = FurnitureType(
+    tag="FT-BATH1-SHELF-1630", name='Bath 1 alcove shelf, 15 1/2" x 30"',
+    footprint=(inch(15.5), inch(30)), height=inch(84),
     storage=True, work_surface=False,
     built_in_bookcase=BuiltInBookcaseSpec(
-        bays=(BuiltInBookcaseBay(clear_width=inch(18.5), height=inch(84),
+        bays=(BuiltInBookcaseBay(clear_width=inch(14), height=inch(84),
                                  horizontal_board_count=5, closed_base_height=inch(35.25)),),
         shelf_depth=inch(29.25), horizontal_board_thickness=inch(0.75),
         divider_thickness=inch(0.75), back_thickness=inch(0.75),
@@ -171,7 +174,7 @@ BATH1_SHELF_2030 = FurnitureType(
     wood_material_ref="locust-shelf-4q",
     # Locust only where it shows (2026-10-18): one nosing per shelf, a strip per side.
     cut_list=(FurnitureCut(part="shelf nosing", count=5, thickness=inch(0.75),
-                           width=inch(1.5), length=inch(18.5)),
+                           width=inch(1.5), length=inch(14)),
               FurnitureCut(part="face strip", count=2, thickness=inch(0.75),
                            width=inch(1.5), length=inch(84))),
     source="Site-built millwork, not a catalogue bookcase: a 3/4\" plywood carcass scribed "
@@ -187,15 +190,16 @@ BATH1_SHELF_2030 = FurnitureType(
 # RM-S-SUITEBATH's alcove return, the hall bath's shelf turned to face west (2026-10-03).
 # FX-S-SUITEBATH-TUBSH is a flanged insert with its SOUTH end open; this case's north
 # divider is that third side, over a framed 2x4 for the flange, and its back panel sits on
-# W-S-C2C. 11 1/4" wide is the leftover between the tub and W-S-SBS; 30" deep is the tub's
+# W-S-C2C. 6 3/4" wide is the leftover between the tub and W-S-SBS (11 1/4" until the tub
+# moved south onto W-S-SBF, 2026-11-08); 30" deep is the tub's
 # own width; 84" is the surround head. Open to the room, no closed base: eight nosed plywood
 # boards make seven openings of about 11".
-SUITEBATH_SHELF_1130 = FurnitureType(
-    tag="FT-SUITEBATH-SHELF-1130", name='Suite bath alcove shelf, 11 1/4" x 30"',
-    footprint=(inch(11.25), inch(30)), height=inch(84),
+SUITEBATH_SHELF_0730 = FurnitureType(
+    tag="FT-SUITEBATH-SHELF-0730", name='Suite bath alcove shelf, 6 3/4" x 30"',
+    footprint=(inch(6.75), inch(30)), height=inch(84),
     storage=True, work_surface=False,
     built_in_bookcase=BuiltInBookcaseSpec(
-        bays=(BuiltInBookcaseBay(clear_width=inch(9.75), height=inch(84),
+        bays=(BuiltInBookcaseBay(clear_width=inch(5.25), height=inch(84),
                                  horizontal_board_count=8),),
         shelf_depth=inch(29.25), horizontal_board_thickness=inch(0.75),
         divider_thickness=inch(0.75), back_thickness=inch(0.75),
@@ -205,7 +209,7 @@ SUITEBATH_SHELF_1130 = FurnitureType(
     ),
     wood_material_ref="locust-shelf-4q",
     cut_list=(FurnitureCut(part="shelf nosing", count=8, thickness=inch(0.75),
-                           width=inch(1.5), length=inch(9.75)),
+                           width=inch(1.5), length=inch(5.25)),
               FurnitureCut(part="face strip", count=2, thickness=inch(0.75),
                            width=inch(1.5), length=inch(84))),
     source="Site-built millwork: a 3/4\" plywood carcass scribed into the south end of "
@@ -526,8 +530,8 @@ FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
                    PORCH_TRACK_102,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
                    TUB_ACCESS_PANEL_1414, TUB_ACCESS_PANEL_2015,
-                   BATH1_SHELF_2030,
-                   MEDIA_SECTIONAL_U, SUITEBATH_SHELF_1130,
+                   BATH1_SHELF_1630,
+                   MEDIA_SECTIONAL_U, SUITEBATH_SHELF_0730,
                    SUITEBATH_PEGS_24, SUITEBATH_MIRROR_ESTERO,
                    PANTRY_SHELVES_70,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF, STUDY_FOOTREST,

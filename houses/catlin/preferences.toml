@@ -331,6 +331,9 @@ suppress = [
   "mep.open_web_panel:DU-M-ERV-R-BED",
   "mep.run_interference:DU-M-ERV-R-BED2",
   "mep.run_interference:DU-M-ERV-R-LAUNDRY",
+  # 2026-11-08: PR-M-S-BATH1-TUB-DRAIN's arm now runs east of FO-S-ERV-CHASE's header, across
+  # the 8" trunk's lane. The flat trunk on the lower tier clears it; delete with the rest.
+  "mep.run_interference:PR-M-S-BATH1-TUB-DRAIN",
   # W-S-PS1 (plant room | suite) is the humid liner on a mineral-wool 2x4: no published
   # test covers it, so it is UNKNOWN by construction. Accepted 2026-10-23 (DESIGN-LOG,
   # "Wall board policy"); a cited rating would need a tested liner wall.

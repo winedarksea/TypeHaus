@@ -2415,7 +2415,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 #
 # Five of the six house-local FT-* types are from the 2026-08-07 batch. Rods are the rod,
 # brackets and finials — not the fabric, which is an owner selection with no useful range.
-# The sixth, FT-BATH1-SHELF-2030 (2026-08-21), is millwork and is priced the way the
+# The sixth, FT-BATH1-SHELF-1630 (2026-08-21), is millwork and is priced the way the
 # mudroom and sauna benches are: what the built article costs in materials and shop time.
 # $ each, by catalog type tag
 # THREE APPLIANCES STOPPED BEING ALLOWANCES ON 2026-08-24. The owner named products
@@ -3124,11 +3124,11 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # install. A wire or melamine system cannot be substituted — it is not standable.
 "FT-KIT-PANTRY-SHELVES-70" = { material = { low = 40, high = 120 }, labour = { low = 400, high = 1000 } }  # 1 ea
 "PROD-MAPLE-PLY-PREFIN-34" = { material = { low = 70, high = 110 }, labour = 0 }  # 3 ea, per 18 x 84 upright (they nest on 2 sheets); unresearched
-"FT-BATH1-SHELF-2030" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
+"FT-BATH1-SHELF-1630" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
 # The suite bath's twin of it, open to the west since 2026-10-03: the same build and the same
 # two ends of the band, a little lower, as 11 1/4" x 30" is less carcass than 20" x 30" and
 # it has no closed base.
-"FT-SUITEBATH-SHELF-1130" = { material = { low = 160, high = 620 }, labour = { low = 150, high = 450 } }  # 1 ea
+"FT-SUITEBATH-SHELF-0730" = { material = { low = 160, high = 620 }, labour = { low = 150, high = 450 } }  # 1 ea
 # RM-M-BATH2's over-toilet cabinet (2026-08-31). [placeables], not [furnishings] — it is
 # screwed to W-M-HS1's studs and cannot be carried out of the room. Basis: ~2 sheets (3/4"
 # paint-grade ply carcass + 5/8" MDF for three flush doors), 6 concealed hinges, 3 push
@@ -8155,7 +8155,7 @@ paint-court-mineral-wash-columns = { material = { low = 91, high = 133 }, labour
 # any decision on this file produced. If it is ever reconsidered, the laminate number is
 # { low = 12000, high = 40000 } and it belongs in plans/cost-options.md as an UPGRADE first.
 # ** REDUCED 2026-08-30: the shelving is now MODELLED. ** Five units are placeables with their
-# own prices — FT-CLOSET-SHELFROD-60/-84/-96, FT-CLOSET-SHELF-36 and FT-BATH1-SHELF-2030,
+# own prices — FT-CLOSET-SHELFROD-60/-84/-96, FT-CLOSET-SHELF-36 and FT-BATH1-SHELF-1630,
 # $662-1,990 the set. When this lump was written none of them existed. What is left is the
 # closets and utility walls that carry no placeable: the mechanical room, the basement storage
 # and the garage, plus the standards, brackets and end caps the placeable prices treat as part

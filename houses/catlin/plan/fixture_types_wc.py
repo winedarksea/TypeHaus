@@ -391,7 +391,7 @@ SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
 # price basis already buys and hangs them. The insert is a 4-piece Sterling Ensemble Medley
 # 71370116: 73" finished, flange top 74 1/4" (2026-11-06). The flanges nail to the two
 # framed walls plus each alcove's millwork return
-# (FT-BATH1-SHELF-2030, FT-SUITEBATH-SHELF-1130). A panel over it would bill the walls twice.
+# (FT-BATH1-SHELF-1630, FT-SUITEBATH-SHELF-0730). A panel over it would bill the walls twice.
 # Of the five showers: BATH2 and STUBATH carry a modelled panel (WP-M-BATH2-SURR,
 # WP-A-STUBATH-SURR), the sauna a tile splash (WP-B-SAUNA-SPLASH), these two are integral.
 TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
@@ -400,14 +400,11 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
     "name": 'Alcove tub-shower, 60", complete trim with diverter and handshower',
     "height": inch(73),  # 71370116 finished height; the flange tops at 74 1/4"
     "product_ref": "PROD-DELTA-T14459-SS",
-    # Plumbing end at local -x on both placements. 3 1/2" is a placeholder, NOT the product: the
-    # sheet's drain is 8 1/4" off the end studs, 14 5/8" off the back (the industry standard,
-    # 8 to 8 1/2": Kohler K-837 8 1/2", Princeton 8"). At 8 1/4" the suite's drain lands on the
-    # y=256" truss and BATH1's arm cannot reach the chase vent without boring the LVL header
-    # (Boise's chart forbids it). Both are open owner calls: notes/framing_bore_limits.md §12.
-    "ports": (floor_drain_port(-26.5, 0, size_in=1.5, note="Waste-and-overflow 3 1/2\" in from "
-                               "the plumbing end. 1214192-4-A p.2 puts the drain cutout 8 1/4\" "
-                               "off the end studs: confirm on the delivered bath"),
+    # Plumbing end at local -x. The drain is the sheet's 8 1/4" off the end studs (the one-piece
+    # 60x30 standard is 8 to 8 1/2": Aquatic, Florestone, Maax). Each plumbing end is a
+    # deepened stud wall that carries the drain off the framing: notes/framing_bore_limits.md §12.
+    "ports": (floor_drain_port(-21.75, 0, size_in=1.5, note="Waste-and-overflow 8 1/4\" off the "
+                               "end studs (1214192-4-A p.2): confirm on the delivered bath"),
               *valve_ports((-30, 0, 30), (-1, 0), "30\" over the tub base")),
     "source": 'RM-S-BATH1 and RM-S-SUITEBATH, owner selection 2026-09-06. INSERT: Sterling '
               'Ensemble 30" bath and Medley wall surround with backer boards, left drain, '

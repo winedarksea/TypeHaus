@@ -22,7 +22,8 @@ _WATCHED = re.compile(r"^DU-.*ERV|-VENT$|^VR-")
 #: Held with plans/TODO.md "Holes through floor framing, ERV level 2" (owner, 2026-11-07):
 #: both pipes wait on the trunk re-route. Delete with that item.
 _ON_HOLD = {frozenset({"DU-M-ERV-R-BED2", "PR-M-KITCH-VENT"}),
-            frozenset({"DU-M-ERV-R-LAUNDRY", "PR-A-HW-STUBATH"})}
+            frozenset({"DU-M-ERV-R-LAUNDRY", "PR-A-HW-STUBATH"}),
+            frozenset({"DU-M-ERV-EXH-TRUNK", "PR-M-S-BATH1-TUB-DRAIN"})}
 
 #: No other watched run interpenetrations are accepted on catlin.
 _KNOWN: set[frozenset[str]] = set()

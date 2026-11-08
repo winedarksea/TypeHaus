@@ -44,8 +44,8 @@ JOIST_HOLE_CHARTS = (TJI_230_HOLES,)
 
 # Boise VERSA-LAM LVL, the 2-ply 1 3/4" x 11 7/8" header FO-S-ERV-CHASE carries (decision #118).
 # Read from the PDF 2026-11-07; the zone is the figure's shaded box, each hole fully inside it.
-# NOT attached to FO-S-ERV-CHASE: the BATH1 tub drain is outside it (notes/framing_bore_limits.md
-# §12), so attaching turns that UNKNOWN into a FAIL. Attach `published_hole=` once the arm clears.
+# Attached by `with_header_holes` since 2026-11-08, when the BATH1 tub drain moved east of the
+# header (notes/framing_bore_limits.md §12): nothing bores it now.
 VERSA_LAM_HEADER_HOLES = PublishedHole(
     source=("Boise Cascade EWP, BCI Joist and Versa-Lam LVL Specifier Guide: U.S. East, "
             'MTP-E7000 Rev. 07/26, p.26 "Versa-Lam LVL Allowable Holes"'),
@@ -58,3 +58,13 @@ VERSA_LAM_HEADER_HOLES = PublishedHole(
                "holes only; at most 3 holes in any 4 ft; holes not stacked; plumbing or wiring "
                "only"),
     load_basis="uniform load only")
+
+
+_HEADER_HOLES = {"FO-S-ERV-CHASE": VERSA_LAM_HEADER_HOLES}
+
+
+def with_header_holes(elements):
+    """The storey's elements with each charted opening's `published_hole` set. The editable
+    storey file cannot import this module, so the manifest attaches it."""
+    return [e.model_copy(update={"published_hole": _HEADER_HOLES[e.tag]})
+            if getattr(e, "tag", None) in _HEADER_HOLES else e for e in elements]

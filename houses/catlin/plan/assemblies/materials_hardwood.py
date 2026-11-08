@@ -100,7 +100,7 @@ MATERIALS_HARDWOOD = [
              color="#d6c9b3", finish="oak-board", species="red-oak",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Red oak, 4/4 dressed to 3/4\": the bought theatre bookcases' shelf record. A/B bleach, Bona NordicSeal, waterborne topcoat."),
-    # The tub-end cases' exposed edges (FT-BATH1-SHELF-2030, FT-SUITEBATH-SHELF-1130): shelf
+    # The tub-end cases' exposed edges (FT-BATH1-SHELF-1630, FT-SUITEBATH-SHELF-0730): shelf
     # nosings and face strips, a few bf. Fallbacks: `cherry-shelf-4q`, then bought white oak.
     Material(tag="locust-shelf-4q", name="Black locust shelving, 4/4 S4S", hatch="lumber",
              color="#b9aa68", finish="oak-board", species="locust",

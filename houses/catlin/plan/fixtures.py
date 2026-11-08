@@ -253,10 +253,10 @@ MAIN_FIXTURES = (
 # ALCOVE CHECK. FX-TUBSHOWER-60 is a 60"x30" flanged insert, which is exactly the standard
 # alcove footprint (a Sterling 71370116, 73" high, plan/fixture_types_wc.py). A flanged
 # insert nails to studs on THREE sides.
-# Measured at real finish faces, FX-S-BATH1-SH has two: the chase wall at x 2'-11 1/4"
-# against the tub's west end at 2'-11 3/4" (0.49" of scribe), and the north wall at
-# y 35'-5 1/2" against its north edge at 35'-4 1/2" (1.00"); the flange stands 1"/1 1/2" off
-# the studs (C6 escalation). Open EAST end at 7'-11 3/4", 1'-9" of dead floor to x 9'-8 3/4".
+# Measured at real finish faces, FX-S-BATH1-SH has two: the chase wall at x 3'-3 3/4"
+# against the tub's west end at 3'-4 1/4" (moved 4 1/2" east with W-S-CH-W, 2026-11-08), and
+# the north wall at y 35'-5 1/2" against its north edge at 35'-4 1/2" (1.00"); the flange stands
+# 1"/1 1/2" off the studs (C6 escalation). Open EAST end at 8'-4 1/4", 1'-4 1/2" to x 9'-8 3/4".
 # FURN-S-BATH1-SHELF (plan/placeables.py) closes it: the shelf's west panel is the return,
 # with a 2x4 framed behind it for the flange to nail to. The west side is also real: the
 # chase's south corners run the tub's full 30" (storeys/second.py, NODES).
@@ -279,14 +279,13 @@ SECOND_FIXTURES = (
     # The derived convention projects a hot-served fixture onto `wall_ref`'s axis, which for
     # this tub is W-S-BD-N at y=26'-6" — 7'-7" from the tub and in another room. A 60"
     # alcove tub's waste sits against its plumbing end wall on the long centreline: the
-    # chase wall's finish face is x=2'-11 3/8", the tub's west end 2'-11 3/4", and the
-    # w-and-o tee is 3 1/2" in from it at x=39 1/4". y=409.5" is the tub's own centreline
-    # (394.5"..424.5"). The drop lands in the 401.75"..414.25" truss bay with 6" to spare.
+    # tub's west end is x=40 1/4" and the w-and-o is the sheet's 8 1/4" in from it at x=48.5".
+    # y=409.5" is the tub's own centreline (394.5"..424.5"), in the 400"..412.9" truss bay.
     # Its back is exterior W-S-N3, ~0 perm on both sides (insert inside, closed-cell
     # outside), so nothing may ever penetrate it: a hole there dries to neither face.
     Fixture(uid="CSQ803AAAA", tag="FX-S-BATH1-SH", type_ref="FX-TUBSHOWER-60-DIVERTED", room="RM-S-BATH1",
-            position=pt(m(1.66988), m(10.4013)), wall_ref="W-S-BD-N",
-            drain_position=pt(inch(39.25), inch(409.5))),
+            position=pt(inch(70.243), m(10.4013)), wall_ref="W-S-BD-N",
+            drain_position=pt(inch(48.5), inch(409.5))),
     # The suite's own bath (source: 46.01sf). D-S-SUITEBATH's 2'-6" leaf sweeps the room's SW
     # quadrant clear, so WC sits north of the swing against the north wall, lav east of it
     # also against the north wall, shower in the NE corner.
@@ -320,9 +319,13 @@ SECOND_FIXTURES = (
     # extended south, clearing the WC zone, the south lav, and the door swing.
     #
     # ** THE OPEN END IS CLOSED (2026-09-06), THE SAME WAY THE HALL BATH'S WAS: **
-    # FURN-S-SUITEBATH-RETURN (plan/placeables.py) is an 11 1/4" x 30" x 84" open shelf in
+    # FURN-S-SUITEBATH-RETURN (plan/placeables.py) is a 6 3/4" x 30" x 84" open shelf in
     # the gap, open to the west since 2026-10-03; its north divider is the tub's south
     # return, with a 2x4 framed behind it for the flange.
+    #
+    # ** THE NORTH END IS W-S-SBF SINCE 2026-11-08 **, a 4 1/2" furred wet wall on W-S-SN3:
+    # the tub moved 4 1/2" south so its drain clears the y=256" truss (framing_bore_limits.md
+    # §12). That is what took the shelf from 11 1/4" to 6 3/4".
     #
     # ** AND THE TUB IS RE-SEATED ON ITS OWN TWO CLOSED WALLS. ** The 10.4" this note used
     # to quote went stale on 2026-08-30 when W-S-SBS was retyped to a 4 3/4"
@@ -335,14 +338,13 @@ SECOND_FIXTURES = (
     # ** NOTHING GRADED ANY OF THIS: ** no check tests a flanged fixture against the faces
     # it is flanged to, and the 0.17" over-run read as 0 FAIL.
     # ** `drain_position` IS THE WASTE-AND-OVERFLOW AT THE NORTH END. ** Rotated -90, the
-    # 60" dimension runs in y (204.625"..264.625") and the long centreline is x=197.615".
-    # The plumbing end is the north one, against W-S-SN3 — the wet wall this bath drains
-    # into and the wall PR-S-SUITEBATH-VENT takes off from at (196.5", 263"). The tee is
-    # 3 1/2" in from that face. Without this the derivation projects onto `wall_ref`
-    # W-S-C2C's axis at x=18'-0", which is inside a bearing wall's studs.
+    # 60" dimension runs in y (200.125"..260.125") and the long centreline is x=197.615".
+    # The plumbing end is the north one, against W-S-SBF. The w-and-o is the sheet's 8 1/4"
+    # in from that face, y=251.875", in the 241.75"..254.25" bay. Without this the derivation
+    # projects onto `wall_ref` W-S-C2C's axis at x=18'-0", inside a bearing wall's studs.
     Fixture(uid="CSQ809AAAA", tag="FX-S-SUITEBATH-TUBSH", type_ref="FX-TUBSHOWER-60-DIVERTED",
-            room="RM-S-SUITEBATH", position=pt(inch(197.615), inch(234.625)), rotation=deg(-90),
-            wall_ref="W-S-C2C", drain_position=pt(inch(197.615), inch(261.125))),
+            room="RM-S-SUITEBATH", position=pt(inch(197.615), inch(230.125)), rotation=deg(-90),
+            wall_ref="W-S-C2C", drain_position=pt(inch(197.615), inch(251.875))),
     # The double-vanity alcove off the landing (source: 18.23 sf, two lavatories), backed
     # onto W-S-BD-N — the same 2x6 wet wall the hall bath drains into.
     #

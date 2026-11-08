@@ -219,7 +219,7 @@ VENT_BRANCHES_SECOND = [
             # a 1 1/2" leg in the cavity's south half (1.9" bores 54% of the 2x4 south studs),
             # rising west from the tub riser to x=9'-5" in W-S-SN2, west of FO-A-HALL's
             # trimmers; up there and west onto x=9'-0" at +19'-8", north of DU-S-ERV-HP-FEED.
-            path=(pt(inch(197.615), inch(266.25)), pt(inch(113), inch(266.25)),
+            path=(pt(inch(185.5), inch(266.25)), pt(inch(113), inch(266.25)),
                   # 2026-11-06: the north leg is x=90" (was 108"): ESR-1153 Table A wants the 2.15"
                   # hole 18" off the 117.25" plate face and 5.25" clear of PR-M-WC-VENT's 2.62"
                   # hole at 97.8" (5.41" here). The west leg passes 4" over that vent's riser head.

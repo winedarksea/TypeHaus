@@ -147,7 +147,7 @@ EQUIPMENT_ERV_HOODS_SECOND = [
               room=None, type_ref="EQ-T-ERV-HOOD-8-EXH",
               mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-S-N3B", face="right", distance_from_start=inch(8.375),
+                  wall_ref="W-S-N3B", face="right", distance_from_start=inch(12.875),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 # =============================== THE TWO WALL PENETRATIONS =============================
@@ -225,7 +225,7 @@ PENETRATIONS_ERV_SECOND = [
     # why a 1" error survived a full verification run.
     # x=2'-0 5/8" since the chase was re-packed (2026-09-23): near jamb 3 7/8" from N-S-CH2.
     RoughOpening(uid="SMGEY3KGXE", tag="AO-S-ERV-EA", host="W-S-N3B",
-                 position=from_node("N-S-CH2", inch(3.875)),
+                 position=from_node("N-S-CH2", inch(8.375)),
                  width=inch(9), height=inch(9), sill_height=inch(79.5),
                  penetration_for=("DU-ERV-EA",)),
     SleevePenetration(uid="81ZSTRARVV", tag="SP-S-ERV-EA-SEAL", host_ref="W-S-N3B",

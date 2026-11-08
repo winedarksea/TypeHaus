@@ -401,7 +401,7 @@ BASEMENT_SHELVES = [
     ),
 ]
 
-# --- the tub-end alcove shelves, FT-BATH1-SHELF-2030 and FT-SUITEBATH-SHELF-1130 --------
+# --- the tub-end alcove shelves, FT-BATH1-SHELF-1630 and FT-SUITEBATH-SHELF-0730 --------
 #
 # Both carcasses are 30" deep to match the tub. 29" deep shelves in locust (boards to ~7")
 # meant 13 glue-ups, so since 2026-10-18 (owner) the shelves are bought sheet:
@@ -422,10 +422,10 @@ SECOND_SHELVES = [
         thickness=inch(0.75),
         profile="S4S",
         procurement=ShelfProcurement.PURCHASED_SEPARATELY,
-        bays=(ShelfBay(width=inch(18.5), clear_height=inch(48.75), shelf_count=5),),
+        bays=(ShelfBay(width=inch(14), clear_height=inch(48.75), shelf_count=5),),
     ),
     # The suite bath's alcove shelf, open to the west (2026-10-03): eight boards in a
-    # 9 3/4" bay, the same stock and nosing as SB-S-BATH1.
+    # 5 1/4" bay (9 3/4" until 2026-11-08), the same stock and nosing as SB-S-BATH1.
     ShelfBank(
         uid="FE3PYXZY53", tag="SB-S-SUITEBATH",
         host="FURN-S-SUITEBATH-RETURN",
@@ -433,7 +433,7 @@ SECOND_SHELVES = [
         thickness=inch(0.75),
         profile="S4S",
         procurement=ShelfProcurement.PURCHASED_SEPARATELY,
-        bays=(ShelfBay(width=inch(9.75), clear_height=inch(84), shelf_count=8),),
+        bays=(ShelfBay(width=inch(5.25), clear_height=inch(84), shelf_count=8),),
     ),
 ]
 
