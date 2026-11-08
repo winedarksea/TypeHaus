@@ -99,7 +99,8 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | Rip-up P8: a branch refused on size is re-laid one DWV size up in a world round its own lane, to the tie it had; the rest of the tree stands | `cli/route_tree_upsize`, `routing/tree_ripup` | `mep_tree_ripup_basis.md` §4.3 |
 | A falling profile is snapped to 1/16" from the arrival up, each leg's fall rounded up; the search and the proposal read one rule | `routing/gravity_grid` (`on_grid`, `grid_start`) | drain basis §13 |
 | A refusal names what stopped the furthest-reaching label (its path), not the tightest miss anywhere in the search | `GravityRefusal.front`, `settle` | drain basis §13 |
-| An I-joist hole stays "2 x the larger hole" from every authored hole in the same joist (ESR-1153 Table A fn1); a run the search may occupy is not counted | `routing/members` (`_authored_holes`), `resolve/mep_hole_chart` | `framing_bore_limits.md` §10 |
+| A floor crossing keeps clear of the holes already there, authored or laid earlier in the campaign: I-joist "2 x the larger hole" (ESR-1153 Table A fn1); an open-web crossing lands in an opening it fits, one run per D pocket | `routing/holes`, `resolve/mep_hole_chart`, `resolve/open_web` | `framing_bore_limits.md` §10-11 |
+| A level edge through a blocked bearing-line bay stays inside its 2x6 box (crown under the top rail, sides in the bay); risers pass | `routing/bearing_bays`, `resolve/floor_blocking.bearing_bays` | `mep.run_through_blocking` |
 | Open-web chords are flange prisms along each truss: a run crosses a truss through its web window, never rides inside a chord | `routing/obstacles` | drain basis §13 |
 | A turn back along its own axis (a lav arm out to its wall tee and back) stays a vertex through simplification; its take-off is that vertex (UPC 908.2) | `routing/search._reverses`, `RouteProposal.snapped` | group basis §3 to §5 |
 | 908.2 is graded strictly: a child rising more than it runs is a 908.1 vertical wet vent, a dry-vented lavatory's drop included; a closet may drop to the drain | `resolve/mep_trap_arm.grade_wet_vent`, `cli/route_fixture_wet` | group basis §4, §5 |
@@ -149,7 +150,10 @@ An exact port with a `ServicePort.direction` is also left along that axis: the s
 (`cli/route_ports.py`), and the stub is put back on the found path, so a water heater's
 upward port yields a vertical first leg. A stub that runs into anything but its own machine
 is a refusal naming the obstruction. Oblique directions, approximate ports, tee lines and
-gravity runs are not constrained.
+gravity runs are not constrained. The stub's travel and one bend where the route turns at its
+tip are priced into the proposal's cost (`port_stub_stated_in`, `port_stub_bend_in`) after the
+search, so they change a reported cost, never a route. `PortKit` leads and duct tip turns are
+not added (`duct_search` already charges the start heading).
 
 **What a proposal replaces.** `--evaluate` removes from the candidate plan the run of the
 proposal's own name and any same-system run whose `serves` it covers, so a route is never graded
@@ -161,7 +165,10 @@ an end of the proposal on it) stays, however much of its `serves` the proposal c
 
 **A target whose terminals cannot be derived** (no sump pump names its line; the receiver has
 no modelled riser; nothing downstream of a drain) is an `EndpointRefusal`: a `Refusal` with no
-lattice counts and `cause`, `element` and `fix` in its payload. It renders as the old line.
+lattice counts and `cause`, `element` and `fix` in its payload. The finders log a `Miss` through
+`cli/route_miss.miss()` and `route_propose.endpoint_refusal` takes the first one; a fixture end
+standing in a door or duct carries `TerminalBlock.payload()` as `terminal`. Nothing parses
+sentences, and the rendered line is unchanged.
 
 Blocker mobility comes from geometry kind: fixed, movable service, priced volume, or
 unknown. A failed search is not proof of impossibility: inspect `established`, the searched
@@ -218,8 +225,9 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 - The riser-cover rule covers flat-ceiling rooms only; sloped (FollowRoof) rooms, mechanical
   rooms and rooms with `exposed_services` are not zones. `SUPPLY-GATE` holes confine supply
   risers regardless of cover (the lattice never reads a prism's `applies`).
-- The supply trunk's remaining evaluation fails: the attic bath's riser columns (house move),
-  RM-M-LAUNDRY's open-air risers (no chase), spacing from existing bores and FS-M-NE blocking.
+- The supply trunk's remaining evaluation fails are the three open-air risers in RM-M-LAUNDRY,
+  which need a chase (a house edit). Laid-run holes reach supply campaigns only; drain campaigns
+  do not pass `build_space(laid=)` yet.
 - A full scorecard run takes about 7 minutes: rows run in forked workers (`HAUS_SCORECARD_JOBS`,
   default min(4, cores/2)) and the longest row (`tree:main`, about 107 s) sets the floor.
 
@@ -228,7 +236,7 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 | Responsibility | Modules under `packages/engine/src/typehaus/` | Tests |
 | --- | --- | --- |
 | CLI, reports, artifacts | `cli/cmd_route`, `cli/route_propose` (one proposal pass), `cli/route_options` (parsed options, `not_built`), `cli/route_report` | `test_route_reporting`, `test_cmd_route` |
-| Terminals and tie-ins | `cli/route_support`, `cli/route_endpoints_duct` (duct and raceway ends), `cli/route_roots`, `resolve/mep_ports` | `test_cmd_route`, `test_route_metadata` |
+| Terminals and tie-ins | `cli/route_support`, `cli/route_endpoints_duct` (duct and raceway ends), `cli/route_roots`, `cli/route_miss` (structured misses), `resolve/mep_ports` | `test_cmd_route`, `test_route_metadata` |
 | Drain tree, rip-up, lift | `cli/cmd_route_tree`, `cli/route_tree_group`, `cli/route_tree_branches`, `cli/route_tree_lift`, `cli/route_supply_roots`, `cli/route_tree_upsize`, `cli/route_tree_ledger`, `routing/tree_ripup` | `test_routing_tree_ripup`, `test_cmd_route` |
 | Bathroom group (908.2) | `cli/cmd_route_group`, `routing/group_order` | `test_routing_group` |
 | Supply trunk and tree | `cli/cmd_route_supply_tree`, `cli/route_supply_group`, `routing/supply_tree`, `resolve/riser_cover`, `routing/terminal_block` | `test_routing_supply_tree`, `test_routing_riser_terminal` |
@@ -236,7 +244,7 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 | Space and graph | `routing/space`, `routing/obstacles`, `routing/graph` | `test_routing_graph`, `test_routing_perf_guard` |
 | Search and gravity | `routing/search`, `routing/gravity*` (incl. `gravity_grid`), `routing/tree` | `test_routing_oracle`, `test_gravity_search`, `test_routing_vent`, `test_routing_hole_spacing` |
 | Minor systems | `cli/route_roots` (sump and condensate ends), `routing/campaign` (trades) | `test_routing_minor_systems` |
-| Plumber's rules | `routing/members`, `fitting_room`, `compaction`, `trap_vent`, `rack` | `test_routing_members`, `test_routing_compaction`, `test_routing_trap_vent`, `test_routing_supply` |
+| Plumber's rules | `routing/members`, `holes`, `bearing_bays`, `rails`, `fitting_room`, `compaction`, `trap_vent`, `rack` | `test_routing_members`, `test_routing_hole_spacing`, `test_routing_compaction`, `test_routing_trap_vent`, `test_routing_supply` |
 | Fixture vent, cleanouts | `cli/route_fixture_vent`, `cli/route_cleanouts`, `resolve/cleanout_rules` | `test_drain_cleanouts` |
 | Scorecard | `cli/route_scorecard`, `route_scorecard_targets` (rows), `route_scorecard_modes` (how each mode is proposed) | `test_route_scorecard` (`-m autorouter`) |
 | Campaign policy | `routing/campaign` | `test_routing_campaign`, `test_routing_campaign_cli` |
