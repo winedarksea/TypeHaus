@@ -215,6 +215,8 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 
 - `--lift` still refuses a supply whose unlifted branch tees on its first leg ("loses N"), and
   grades each re-laid line on its own, against the authored runs.
+- `--group` offers only the three highest in-band tie stations on the tie run; on a main whose
+  head lies across a floor-system seam from the room, every offered tie is on the far side.
 - Vent-free 908.2 bathroom groups are not proposed; whether 908.2 admits a dry-vented lavatory's
   drop is an AHJ question.
 - An off-catalog round duct turn (outside the 30/45/90 +/-10 deg windows) is made by the house's
