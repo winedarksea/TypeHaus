@@ -779,6 +779,17 @@ FLOOR_OPENINGS = [
                  outline=(pt(inch(21.5), inch(258)), pt(inch(26.5), inch(258)),
                           pt(inch(26.5), inch(263)), pt(inch(21.5), inch(263))),
                  penetration_for=("DU-A-ERV-R-STUBATH",)),
+    # Its riser back up into W-A-STU-W's cavity at (9'-7 1/2", 21'-8 1/2"), in the same bay.
+    FloorOpening(uid="410PHWMXXT", tag="FO-A-ERV-STUBATH-RISER", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(113), inch(258)), pt(inch(118), inch(258)),
+                          pt(inch(118), inch(263)), pt(inch(113), inch(263))),
+                 penetration_for=("DU-A-ERV-R-STUBATH",)),
+    # PR-A-STUBATH-SH-TEE's drop bores the flat top rail of W-A-C2M's bearing block (a 2 1/8"
+    # hole in a 5 1/2" face, between the cheeks); drawn so the framer sees it.
+    FloorOpening(uid="T7PZJ9Y82W", tag="FO-A-STUBATH-SH-TEE", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(213.75), inch(246.375)), pt(inch(216.25), inch(246.375)),
+                          pt(inch(216.25), inch(248.875)), pt(inch(213.75), inch(248.875))),
+                 penetration_for=("PR-A-STUBATH-SH-TEE",)),
     # ...and where BED3 and HP-FEED climb back onto the deck at x=21'-0".
     FloorOpening(uid="Y8G1FJ5SM8", tag="FO-A-ERV-BED3-E", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(249.5), inch(213.5)), pt(inch(254.5), inch(213.5)),
@@ -902,7 +913,8 @@ FLOOR = [
                           "FO-A-VENT-STACK", "FO-A-RADON-STACK", "FO-A-ERV-HPFEED",
                           "FO-A-ERV-BED3", "FO-A-ERV-BATH1", "FO-A-ERV-BED3-E",
                           "FO-A-ERV-HPFEED-E", "FO-A-ERV-MIX", "FO-A-ERV-ATTIC",
-                          "FO-A-ERV-STUBATH")),
+                          "FO-A-ERV-STUBATH", "FO-A-ERV-STUBATH-RISER",
+                          "FO-A-STUBATH-SH-TEE")),
 ]
 
 # The attic deck's edge along the well's south side, y=5'-9 5/8" — the flight's own south

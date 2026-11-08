@@ -171,7 +171,8 @@ min_drain_slope_margin_in_per_ft = 0.0
 
 # A hole clear of every member is a hole saw through the subfloor sheet; a plumber cuts
 # one for 3" pipe (3 1/2" OD) without a drawing. Owner, 2026-10-26: 4" covers every
-# drain and insulated hot riser in the house. A riser ON a member still FAILs at any size.
+# drain and insulated hot riser in the house. A riser ON a member still FAILs at any size;
+# one clear of every member and under this PASSes (2026-11-07).
 max_undrawn_deck_hole_in = 4.0
 
 # advisory.room_illuminance targets beyond the engine's per-occupancy defaults (owner,
@@ -377,6 +378,7 @@ suppress = [
   # mep.riser_through_deck: CLOSED 2026-10-26, nothing suppressed. All 17 remaining
   # risers stood clear of every member and only exceeded the 2" undrawn-hole allowance;
   # the owner raised it to 4" ([mep] above). A riser landing ON a member still reports.
+  # 2026-11-07: clear risers under 4" PASS; stubs through the whole sheet are graded too.
 
   # mep.open_web_panel + mep.run_member_crossing (FS-S-WEST webs): CLOSED 2026-10-26,
   # nothing suppressed. The trunk and radials took 13" lanes; the drains and the stubath cold

@@ -21,14 +21,17 @@ the model can be silent about it — a horizontal run at least has
 hole ``D/sin(theta) + t/tan(theta)`` long by ``D`` wide, which the same three answers and the
 same bands read. A leg that starts at the sheet's underside has no member below it to cut.
 
-**What is left is graded in three bands, and the middle one is the finding this was written
-for.** A riser landing on a joist, trimmer or rim **FAILs** naming the member and the
-station: that member is cut and nothing headed it. A riser clear of every member but wider
-than ``max_undrawn_deck_hole_in`` also **FAILs** — "framed, not drilled" — because a 4" duct
-and a 3" drain are not hole-sawed through a deck on the day, they are drawn. A riser
-narrower than that is **UNKNOWN**, quoting ``member_window.basis``: whether a 1 1/4" raceway
-may share an I-joist bay at that station is a fabricator's chart this engine does not hold,
-and a confident verdict either way would be inventing one.
+**What is left is graded in three bands.** A riser landing on a joist, trimmer or rim
+**FAILs** naming the member and the station: that member is cut and nothing headed it. A
+riser clear of every member but wider than ``max_undrawn_deck_hole_in`` also **FAILs** —
+"framed, not drilled" — because a 4" duct is not hole-sawed through a deck on the day, it is
+drawn. A riser clear of every member and narrower than that **PASSes**, printing its
+clearance: the hole cuts the subfloor sheet only, and the allowance is the house's own trade
+argument for that sheet.
+
+**A stub is graded when it crosses the whole sheet.** A vertical spanning less than
+``MIN_SPAN_FRACTION`` of the band is skipped unless it runs from below the sheet's underside
+to above its top (a tub's drop) — it still cuts the sheet, and may land on a member.
 
 **``Severity.WARN``, not ERROR, and the distinction is deliberate.** Every other reading in
 this family is of something DRAWN wrong; this one is mostly of something **not drawn yet**,
@@ -47,7 +50,6 @@ from __future__ import annotations
 from typehaus.checks._authoring import advisory as _advisory
 from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
-from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.mep._format import feet_inches
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
@@ -74,7 +76,6 @@ def riser_through_deck(ctx: CheckContext) -> list[Finding]:
     """Every vertical segment against every deck band it passes through."""
     from shapely.geometry import Point, Polygon
 
-    from typehaus.resolve.mep_crossings import member_window
     from typehaus.resolve.mep_envelopes import (
         insulation_thickness_m,
         run_polylines,
@@ -113,7 +114,9 @@ def riser_through_deck(ctx: CheckContext) -> list[Finding]:
                     if depth <= 0:
                         continue
                     overlap = min(high, band_high) - max(low, band_low)
-                    if overlap < depth * MIN_SPAN_FRACTION:
+                    through_sheet = (low <= deck.deck_bottom_at(*path[leg][:2])
+                                     and high >= band_high)
+                    if overlap < depth * MIN_SPAN_FRACTION and not through_sheet:
                         continue
                     footprint = station
                 else:
@@ -131,7 +134,7 @@ def riser_through_deck(ctx: CheckContext) -> list[Finding]:
                 below = vertical or min(z[leg], z[leg + 1]) < deck.deck_bottom_at(
                     *station.coords[0])
                 out.append(_verdict(rules, deck, tag, station, footprint, below, radius,
-                                    limit_m, member_window))
+                                    limit_m))
 
     if not out:
         out.append(_pass(_CID, f"every riser through the {len(decks)} decks in this model "
@@ -196,8 +199,8 @@ def _is_authorised(deck, tag: str, station, Polygon) -> bool:
 
 
 def _verdict(rules, deck, tag: str, station, footprint, below: bool, radius: float,
-             limit_m: float, member_window) -> Finding:
-    """One riser, one deck: on a member, too big to drill, or a fabricator's question."""
+             limit_m: float) -> Finding:
+    """One riser, one deck: on a member, too big to drill, or a hole saw through the sheet."""
     hole = station.buffer(radius) if footprint.geom_type == "Point" else footprint
     for member in deck.members if below else ():
         rect = _member_rect(member)
@@ -226,15 +229,14 @@ def _verdict(rules, deck, tag: str, station, footprint, below: bool, radius: flo
             fix=f"author a FloorOpening on {deck.tag} whose penetration_for names {tag}, or "
                 "raise [mep] max_undrawn_deck_hole_in with the trade argument beside it")
 
-    window = member_window(deck)
-    basis = window.basis if window is not None else "this deck's section publishes no window"
-    return _unknown(
+    rects = [r for m in (deck.members if below else ()) if (r := _member_rect(m)) is not None]
+    clear = (f"{min(r.distance(hole) for r in rects) / M_PER_IN:.2f}\" clear of the nearest "
+             "member" if rects else "clear of every member")
+    return _pass(
         _CID,
         f"{tag} stands through {deck.tag} at ({feet_inches(station.x)}, "
-        f"{feet_inches(station.y)}) clear of every member and is "
-        f"{2 * radius / M_PER_IN:.2f}\" across, under the "
-        f"{rules.max_undrawn_deck_hole_in:.3g}\" a trade drills. Whether it may go "
-        f"there is not this engine's to say: {basis}",
+        f"{feet_inches(station.y)}) {clear}, {2 * radius / M_PER_IN:.2f}\" across, under "
+        f"the {rules.max_undrawn_deck_hole_in:.3g}\" a trade hole-saws through the sheet",
         (tag, deck.tag))
 
 

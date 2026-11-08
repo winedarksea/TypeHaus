@@ -83,13 +83,12 @@ def test_a_riser_ON_A_JOIST_fails_naming_the_member_and_the_station(catlin_plan)
     assert "nothing headed it" in finding.message
 
 
-def test_a_riser_under_the_drill_allowance_is_UNKNOWN_and_quotes_its_basis(catlin_ctx) -> None:
-    """Whether a 7/8" line may share an I-joist bay at that station comes off the
-    fabricator's chart, which this engine does not hold. A confident verdict either way
-    would be inventing one — so the finding hands back ``member_window.basis``."""
-    finding = next(f for f in _by_result(catlin_ctx, Result.UNKNOWN)
+def test_a_riser_under_the_drill_allowance_PASSES_and_prints_its_clearance(catlin_ctx) -> None:
+    """Clear of every member and under ``max_undrawn_deck_hole_in``, the hole cuts the
+    subfloor sheet only — the allowance is the house's own trade argument for that sheet."""
+    finding = next(f for f in _by_result(catlin_ctx, Result.PASS)
                    if "PR-B-CW-BATH1" in f.element_tags)
-    assert "the fabricator's chart, which this engine does not hold" in finding.message
+    assert "clear of the nearest member" in finding.message
     assert "0.88\" across" in finding.message
 
 
@@ -100,10 +99,13 @@ def test_every_finding_is_WARN_and_none_shuts_the_permit_gate(catlin_ctx) -> Non
     assert all(f.severity is Severity.WARN for f in riser_through_deck(catlin_ctx))
 
 
-def test_a_stub_into_the_sheet_is_not_a_riser_through_the_deck() -> None:
-    """A run whose top stops an inch into the subfloor is a stub, and a stub is a different
-    question. Half the band is the line."""
+def test_a_stub_through_the_whole_sheet_is_graded(catlin_ctx) -> None:
+    """Under half the band is a stub and is skipped — unless it runs from below the sheet's
+    underside to above its top, which cuts the sheet like any riser. STUBATH's shower drop
+    is one."""
     assert MIN_SPAN_FRACTION == 0.5
+    assert any("PR-A-STUBATH-SH-DRAIN" in f.element_tags and "FS-ATTIC" in f.element_tags
+               for f in riser_through_deck(catlin_ctx))
 
 
 def test_catlin_is_pinned_so_a_campaign_can_see_itself(catlin_ctx) -> None:
@@ -136,7 +138,10 @@ def test_catlin_is_pinned_so_a_campaign_can_see_itself(catlin_ctx) -> None:
     across, under the 2" a trade drills, so their three holes left this column for UNKNOWNs.
 
     0/0 on 2026-10-26: all 17 stood clear of every member, and the owner raised
-    ``max_undrawn_deck_hole_in`` to 4" — a hole saw through the sheet, not a framed hole."""
+    ``max_undrawn_deck_hole_in`` to 4" — a hole saw through the sheet, not a framed hole.
+
+    Still 0/0 on 2026-11-07, when stubs through the whole sheet joined: STUBATH's ERV riser
+    and shower-vent tee (on W-A-C2M's bearing block) took drawn holes."""
     fails = _by_result(catlin_ctx, Result.FAIL)
     on_member = [f for f in fails if "lands on the member" in f.message]
     undrawn = [f for f in fails if "FRAMED, NOT DRILLED" in f.message]
