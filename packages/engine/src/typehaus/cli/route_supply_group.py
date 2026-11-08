@@ -309,7 +309,8 @@ def _blocked_end(tag: str, ends: Any, block: Any, graph: Any) -> Any:
     return EndpointRefusal(
         target=tag, service="water_cold", end="origin", reachable_nodes=0,
         total_nodes=len(graph.nodes), established=True, cause=block.render(),
-        element=block.prisms[0], fix="move the fixture end (a house edit); the router will not")
+        element=block.prisms[0], fix="move the fixture end (a house edit); the router will not",
+        terminal=block.payload())
 
 
 def _restore_end(made: Any, origin: tuple, block: Any, notices: list[str]) -> Any:

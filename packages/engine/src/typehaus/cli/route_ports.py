@@ -47,6 +47,8 @@ class PortLead:
     #: A flex lead that turns: its corner vertex, and the heading off the tip after the turn.
     corner: Point3 | None = None
     heading: str = ""
+    #: Read off the equipment's ``PortKit`` rather than the :data:`STUB_ALLOWANCE_IN` stub.
+    kit: bool = False
 
     @property
     def inches(self) -> float:
@@ -134,8 +136,8 @@ def with_port_leads(model: Any, ends: Endpoints | None) -> Endpoints | None:
                          + "".join(f"; {gap}" for gap in lead.unread))
         tip = tuple(c + sign * length if i == axis else c for i, c in enumerate(point))
         changes[side] = tip
-        changes[f"{side}_lead"] = PortLead(label, point, tip, f"{'+' if sign > 0 else '-'}"
-                                                              f"{'xyz'[axis]}")
+        heading = f"{'+' if sign > 0 else '-'}{'xyz'[axis]}"
+        changes[f"{side}_lead"] = PortLead(label, point, tip, heading, kit=lead is not None)
     if notes:
         changes["advice"] = (*ends.advice, *notes)
     return replace(ends, **changes) if changes else ends
@@ -163,7 +165,7 @@ def _bent_lead(label: str, point: Point3, along: tuple[int, int], turn: tuple[in
             + "".join(f"; {gap}" for gap in lead.unread))
     return tip, PortLead(
         label, point, tip, f"{sign_text[sign]}{'xyz'[axis]}", corner,
-        f"{sign_text[side_sign]}{'xyz'[side]}"), note
+        f"{sign_text[side_sign]}{'xyz'[side]}", True), note
 
 
 def _kit_reader(model: Any, ends: Endpoints):
@@ -253,7 +255,20 @@ def attach_leads(points: list[Point3], ends: Endpoints) -> tuple[list[Point3], l
 
     Returns ``(points, notes, extra bends)``; a tip the route continues straight through is
     dropped, so the stub does not leave a collinear vertex."""
+    return attach_priced(points, ends, None)[:3]
+
+
+def attach_priced(points: list[Point3], ends: Endpoints, cost: Any
+                  ) -> tuple[list[Point3], list[str], int, dict[str, float]]:
+    """:func:`attach_leads` plus the cost terms (inches of equivalent travel) of the plain
+    stubs, which the search never sees because it starts at the tip.
+
+    ``port_stub_stated_in`` is the stub's travel and ``port_stub_bend_in`` the elbow at its
+    tip where the route turns there. Both rest on :data:`STUB_ALLOWANCE_IN`, a stated 2" with
+    no datasheet behind it. Kit leads are datasheet-led and a duct's tip turn is already
+    priced by its fitting search, so neither is added; ``cost`` None adds nothing."""
     notes: list[str] = []
+    terms: dict[str, float] = {}
     bends = 0
     for side, lead in (("origin", ends.origin_lead), ("root", ends.root_lead)):
         if lead is None or len(points) < 2:
@@ -263,13 +278,18 @@ def attach_leads(points: list[Point3], ends: Endpoints) -> tuple[list[Point3], l
         straight = _collinear(elbow, ordered[0], ordered[1])
         ordered = [*lead.points()[:-1], *(ordered[1:] if straight else ordered)]
         bends += (0 if straight else 1) + (lead.corner is not None)
+        if cost is not None and not lead.kit:
+            terms["port_stub_stated_in"] = terms.get("port_stub_stated_in", 0.0) + cost.travel(
+                lead.inches / 12.0, vertical=lead.direction[-1] == "z")
+            if not straight and ends.kind != "duct":
+                terms["port_stub_bend_in"] = terms.get("port_stub_bend_in", 0.0) + cost.bend_in
         points = ordered if side == "origin" else ordered[::-1]
         notes.append(f'port lead: leaves {lead.label} {lead.direction} for '
                      f'{lead.inches:.2f}" before turning (exact port direction)'
                      if lead.corner is None else
                      f'port lead: leaves {lead.label} {lead.direction}, the flex turns to '
                      f'{lead.exit_heading} at its corner')
-    return points, notes, bends
+    return points, notes, bends, terms
 
 
 def _collinear(a: Point3, b: Point3, c: Point3) -> bool:

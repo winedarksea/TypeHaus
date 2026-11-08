@@ -14,6 +14,7 @@ import typer
 
 from typehaus.cli._shared import _print_findings, _resolve_house
 from typehaus.cli.route_metadata import run_metadata as _run_metadata
+from typehaus.cli.route_miss import miss
 from typehaus.routing.trades import pipe as pipe_trade
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -153,18 +154,16 @@ def branch_diameter_m(model: ResolvedModel, fixtures: tuple[str, ...],
     for tag in fixtures:
         row = rows.get(tag)
         if row is None or row.dfu is None:
-            problems.append(
-                f"{target}: {tag} carries no drainage fixture-unit row, so this branch "
-                "has no derivable size. Naming a size is a judgement and the proposal "
-                "will not make one up")
+            miss(problems, target, f"{tag} carries no drainage fixture-unit row, so this "
+                 "branch has no derivable size", tag, "Naming a size is a judgement and the "
+                 "proposal will not make one up")
             return None
         load += row.dfu
         floor_in = max(floor_in, MINIMUM_DRAIN_IN_BY_SYMBOL.get(row.symbol, 0.0))
     size_in = required_drain_diameter_in(load)
     if size_in is None:
-        problems.append(f"{target}: {load:.0f} DFU is past the last row of the horizontal "
-                        "branch table, so this is a stack or a building drain and not a "
-                        "branch")
+        miss(problems, target, f"{load:.0f} DFU is past the last row of the horizontal "
+             "branch table, so this is a stack or a building drain and not a branch")
         return None
     return max(size_in, floor_in) * M_PER_IN
 
@@ -208,8 +207,8 @@ def _target_endpoints(model: ResolvedModel, target: str, mode: str,
     if mode in ("fixture", "unconnected"):
         point = _expected_drain_point(model, target)
         if point is None:
-            problems.append(f"{target}: no resolvable drain point — the same wording "
-                            "mep.trap_arm_length uses, and the same cause")
+            miss(problems, target, "no resolvable drain point — the same wording "
+                 "mep.trap_arm_length uses, and the same cause")
             return None
         storey = _storey_of(model, target)
         from typehaus.model.enums import Service
@@ -246,7 +245,7 @@ def _target_endpoints(model: ResolvedModel, target: str, mode: str,
             touch=frozenset({parent, *replaced, *wet}), fixture=target,
             weir_m=under_floor_weir_m(model, target, datum_m, port), wet_candidates=wet)
 
-    problems.append(f"{target}: not a run in this model")
+    miss(problems, target, "not a run in this model")
     return None
 
 
@@ -257,7 +256,7 @@ _SUPPLY_SYSTEMS = ("water_cold", "water_hot")
 def _pipe_run_endpoints(model: ResolvedModel, run: Any,
                         problems: list[str]) -> Endpoints | None:
     if not run.z_m or len(run.z_m) != len(run.path):
-        problems.append(f"{run.tag}: no resolved elevations, so it cannot be routed")
+        miss(problems, run.tag, "no resolved elevations, so it cannot be routed")
         return None
     falls = run.system == "drain"
     if run.system in _SUPPLY_SYSTEMS:
