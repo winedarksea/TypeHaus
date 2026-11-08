@@ -313,15 +313,13 @@ def test_every_branch_clears_the_products_own_flow_limit(catlin_model_ro) -> Non
     running continuously beside a bed, not the pipe's capacity. The highest is
     ``DU-B-ERV-R-PLAY`` at 30 cfm.
 
-    **24 since D1**, and the extra is ``DU-M-ERV-EXH-TRUNK``: level 2 went trunk-and-branch
-    on 2026-09-19 and the trunk is a run like any other, 114 cfm in 8". The ten takeoffs off
-    it are still here — ``radial_landings`` follows one hop through a trunk, which it did
-    not do the day the trunk was drawn, and ten runs left this budget silently until it
-    did."""
+    The ten level-2 takeoffs are here because ``radial_landings`` follows one hop through
+    the trunk; ten runs left this budget silently until it did. The trunk itself is flat
+    sheet metal since 2026-11-08, and a rectangular row publishes no ``max_cfm`` to grade
+    it against (its friction is still in the path)."""
     rows = [f for f in _findings(catlin_model_ro) if " carries " in f.message]
-    assert len(rows) == 24
+    assert len(rows) == 23
     assert all(f.result is Result.PASS for f in rows)
-    assert any("DU-M-ERV-EXH-TRUNK carries 114 cfm" in f.message for f in rows)
     for tag in ("DU-M-ERV-R-PLANT", "DU-M-ERV-R-BATH1", "DU-M-ERV-R-KITCH"):
         assert any(f.message.startswith(f"{tag} carries ") for f in rows), tag
 

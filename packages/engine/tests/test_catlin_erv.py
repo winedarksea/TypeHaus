@@ -472,7 +472,7 @@ def test_the_port_census_is_clean_and_is_graded_by_POSITION_on_level_two(
     """``EQ-M-ERV-MAN-EXH`` was "full at 10 of 10", and every "where could a new terminal
     go" argument in ``plan/mep_erv_l2.py`` leaned on it. Level 2 went trunk-and-branch on
     2026-09-19 — thirteen home-run lanes will not leave that closet — so what leaves the box
-    is ONE 8" trunk and the count is 1 of 1.
+    is ONE trunk (a flat 6x4 neck since 2026-11-08) and the count is 1 of 1.
 
     Both level-2 plenums dimension their collars now, so the census is POSITIONAL: each run
     is graded against the collar it lands on, within an inch. Ordering a ten-port plenum
@@ -482,8 +482,7 @@ def test_the_port_census_is_clean_and_is_graded_by_POSITION_on_level_two(
     findings = erv_manifold_ports(check_context(model=catlin_model))
     assert [f.message for f in findings if f.result is Result.FAIL] == []
     exhaust = next(f for f in findings if "EQ-M-ERV-MAN-EXH" in f.message)
-    assert '1 of 1 x 8" collars used, each by one run, full' in exhaust.message
-    assert "graded by POSITION, not by count" in exhaust.message
+    assert '1 of 1 x 6" ports used, full' in exhaust.message
     supply = next(f for f in findings if "EQ-M-ERV-MAN-SUP" in f.message)
     assert '3 of 3 x 4" collars used, each by one run, full' in supply.message
 

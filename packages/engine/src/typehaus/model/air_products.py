@@ -31,7 +31,9 @@ class DuctProductType(HausModel):
     * ``rectangular`` is a **gauge band**: a run of this ``material`` matches the row with
       the smallest ``max_side`` at or above its larger side (IRC Table M1601.1.1 is written
       that way). It carries the sheet ``gauge`` and ``thickness`` the schedule prints, and
-      no friction: nothing in the engine computes a rectangular duct's pressure drop.
+      optionally the friction pair: ``roughness_m`` (ε) and ``bend_equivalent_length``.
+      ``mep.erv_static_budget`` grades a rectangular run in the ventilator's network at
+      its Huebscher equivalent diameter and this ε; a row without ε is a gap by (material, W x D).
     """
 
     tag: str
@@ -44,12 +46,13 @@ class DuctProductType(HausModel):
     #: Round: the actual inside diameter. Friction goes as roughly the fifth power of it, so
     #: the nominal size is not close enough to stand in.
     bore_diameter: Length | None = None
-    #: Round: absolute roughness ε, in metres, as the authoring note reads it off ASHRAE.
+    #: Absolute roughness ε, in metres, as the authoring note reads it off ASHRAE (rectangular:
+    #: optional, see above).
     roughness_m: float | None = None
     #: Round: the most air the product is used for at the velocity the house designs to.
     #: Advisory: ``mep.erv_static_budget`` grades each radial's ``design_cfm`` against it.
     max_cfm: float | None = None
-    #: Round: equivalent length of one 90-degree bend — authored, not derived.
+    #: Equivalent length of one 90-degree bend — authored, not derived (rectangular: optional).
     bend_equivalent_length: Length | None = None
     #: Rectangular: the largest side this gauge band covers.
     max_side: Length | None = None

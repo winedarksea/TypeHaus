@@ -132,12 +132,13 @@ MAIN_SUPPLY_BRANCHES = [
             diameter=inch(0.5), material="pex", serves=("FX-S-BATH1-SH",)),
     # The floor-fed stop: down the chase past the valve tee into FO-S-ERV-CHASE, east of the
     # ERV riser ducts, south through the trusses' 1'-5 1/2"..2'-6 1/2" web opening, west in
-    # the 29'-4"..30'-8" bay under the closet bend, and up clear of W-S-W1's base, 2 1/2"
-    # south of the bowl, to the stop at 7" AFF.
+    # the 30'-8"..32'-0" bay (the flat ERV trunk takes the bay south of it, 2026-11-08), back
+    # through the 30'-8" truss at x=7 3/4", and up clear of W-S-W1's base, 2 1/2" south of
+    # the bowl, to the stop at 7" AFF.
     PipeRun(uid="ABVF7VKHZX", tag="PR-S-BATH1-WC-CW", system=PipeSystem.WATER_COLD,
             path=(pt(inch(32.5), inch(410.25)), pt(inch(32.5), inch(410.25)),
-                  pt(inch(32.5), inch(401)), pt(inch(26), inch(401)), pt(inch(26), inch(362)),
-                  pt(inch(7.75), inch(362)), pt(inch(7.75), inch(365.5)),
+                  pt(inch(32.5), inch(401)), pt(inch(26), inch(401)), pt(inch(26), inch(372)),
+                  pt(inch(7.75), inch(372)), pt(inch(7.75), inch(365.5)),
                   pt(inch(7.75), inch(365.5)),),
             elevations=(inch(150.75), inch(113.5), inch(113.5), inch(113.5), inch(113.5),
                         inch(113.5), inch(113.5), inch(128.5),),

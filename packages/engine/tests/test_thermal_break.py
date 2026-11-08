@@ -58,6 +58,7 @@ _ALL = (*_FOOT, *_STEM, _BEAM)
 # 2026-11-05 (free body §11q): W-B-E1/E2 went 12" -> 10" (BASEMENT_10). Walls -6,833.3 (2 x
 # 410 in² of core x 96" at 150 pcf), slab +120 (E footing 1.03" further east): D 280,067.
 # FS (70,016.7 + 32,375.0) / 27,315.75 = 3.7485; basis 8 102,391.7 / 43,656.2 = 2.3454.
+# 2026-11-08: +203.6 lb of house D (the furred tub ends): 102,442.6 -> 3.7503 / 2.3466.
 # 2026-11-04 (veneer note §6k, free body §11o): W-SG-BRKBM's board and TB-SG-W1/E1 moved onto
 # one plane flush on the house strips, -4..-6", and the footing boards went 2.5" -> 2".
 #   * court run off that plane: 328.0 − 5.0 = 323.0" (the stems stay at 322.565");
@@ -70,7 +71,7 @@ _PATH = {
     "house slab-edge bearing": (22_155.0, 151_200.0, 0.1465),
     "house slab-edge sustained load": (22_155.0, 50_394.96, 0.4396),
     "house slab strut compression": (14.6528, 2_040.0, 0.00718),
-    "house global sliding": (1.5, 3.7485, 0.4002),
+    "house global sliding": (1.5, 3.7503, 0.4000),
     "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
     "court sliding under break thrust": (0.0, 71_474.1, 0.0),
 }
@@ -112,7 +113,7 @@ _PATH_8 = {
     "house slab-edge bearing": (42_099.5, 151_200.0, 0.27844),
     "house slab-edge sustained load": (42_099.5, 50_394.96, 0.83539),
     "house slab strut compression": (27.8436, 2_040.0, 0.013649),
-    "house global sliding": (1.5, 2.3454, 0.6395),
+    "house global sliding": (1.5, 2.3466, 0.6392),
     "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
     # Net thrust less the retained soil is NEGATIVE, so the row is a force, not an FS.
     "court sliding under break thrust": (0.0, 71_474.1, 0.0),

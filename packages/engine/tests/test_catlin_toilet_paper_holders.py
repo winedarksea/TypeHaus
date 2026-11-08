@@ -69,7 +69,8 @@ def test_mounting_positions_are_referenced_to_actual_supports(catlin_model_ro):
         bowl = Polygon(toilet.footprint).bounds
         distance = (y - bowl[3] / IN if room == "RM-M-BATH1" else bowl[1] / IN - y)
         assert distance == pytest.approx(gap)
-    assert objects["FURN-S-BATH1-TP"].position[0] / IN == pytest.approx(27)
+    # 4 1/2" east with the chase wall since the tub end was furred (2026-11-08).
+    assert objects["FURN-S-BATH1-TP"].position[0] / IN == pytest.approx(31.5)
     for tag, y in (("FURN-S-SUITEBATH-TP", 248.25), ("FURN-A-STUBATH-TP", 253)):
         holder = objects[tag]
         vanity = objects[holder.host_fixture_ref]
@@ -124,7 +125,7 @@ def test_panel_is_raised_and_cabinet_pads_cover_both_post_stations(catlin_plan, 
     panel = catlin_plan.by_tag("FURN-S-BATH1-CH-AP")
     assert panel.uid == "7MW8644E5H"
     assert panel.mount.elevation.inches == pytest.approx(36)
-    assert panel.location.attachment.distance_from_start.inches == pytest.approx(9)
+    assert panel.location.attachment.distance_from_start.inches == pytest.approx(13.5)
     assert catlin_plan.by_tag("BK-S-CH-S-AP").elevation.inches == pytest.approx(34)
     assert objects[panel.tag].body_z0_m > objects["FURN-S-BATH1-TP"].z_m + 8.11 * IN
     pads = [obj for obj in objects.values() if obj.type_ref == "FT-TP-CABINET-BACKING-12"]

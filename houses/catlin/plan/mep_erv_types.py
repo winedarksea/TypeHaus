@@ -184,40 +184,42 @@ EQUIPMENT_TYPES_ERV = (
                   ports=(ServicePort(tag="trunk", service=Service.SUPPLY_AIR,
                                      position=(ft(0), ft(0), inch(4))),
                          ServicePort(tag="collar-study", service=Service.SUPPLY_AIR,
-                                     position=(inch(1), inch(0), inch(4)),
+                                     position=(inch(6), inch(0.625), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT),
                          ServicePort(tag="collar-living", service=Service.SUPPLY_AIR,
-                                     position=(inch(5), inch(-4), inch(4)),
+                                     position=(inch(-9.75), inch(-2.5), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT),
                          # y +1" (2026-09-23): +4" stood the riser in FS-S-WEST's
                          # moved 34'-5 3/4" truss.
                          ServicePort(tag="collar-bed", service=Service.SUPPLY_AIR,
-                                     position=(inch(9), inch(1), inch(4)),
+                                     position=(inch(10), inch(-3.75), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT))),
     # ** THE EXTRACT BOX IS NOT A MANIFOLD ANY MORE. ** Level 2 went trunk-and-branch on
     # 2026-09-19 — thirteen home-run lanes will not leave this closet, and the arithmetic is
-    # in plan/mep_erv_l2.py's header — so what leaves this box is ONE 8" trunk, and the ten
-    # takeoffs are tee'd off it out in the floor field. Typed as a one-port box at 8" so the
+    # in plan/mep_erv_l2.py — so what leaves this box is ONE flat 6x4 neck, and the ten
+    # takeoffs come off its trunk out in the floor field. Typed as a one-port box so the
     # census reads what is built: one of one, full, with the 6" riser as the trunk collar.
     # Ordering a ten-port plenum nobody lands ten pipes on is the BOM error this prevents.
     EquipmentType(tag="EQ-T-ERV-PLENUM-M-EXH",
-                  name="Fabricated extract plenum, 6in riser inlet, 1 x 8in trunk collar",
+                  name="Fabricated extract plenum, 6in riser inlet, 6x4in trunk collar",
                   # The RISER is return air and the TRUNK is exhaust, which is not a
                   # contradiction: this box is where the two halves of the extract side meet.
                   # Eight of the ten takeoffs downstream are wet-room EXHAUST and two are
                   # dry-room RETURN, and the riser carries the sum of both to the machine.
                   footprint=(inch(34), inch(8)), height=inch(8), plan_symbol="erv",
-                  duct_ports=1, port_diameter=inch(8),
+                  duct_ports=1, port_diameter=inch(6),
                   static_loss_pa_at_cfm=((60.0, 0.5), (120.0, 1.8), (210.0, 5.5)),
-                  source="Fabricated galvanized plenum for THIS house, 34 x 8 x 8 in: a 6 in riser inlet and one 8 in trunk collar. It keeps the 34 in case the ten-collar version had, because the riser lands on it at the same station and the box is also the transition the 6 in riser needs.",
+                  source="Fabricated galvanized plenum for THIS house, 34 x 8 x 8 in: a 6 in riser inlet in the west end and one 6 x 4 in trunk collar on top. It keeps the 34 in case the ten-collar version had, because the riser lands on it at the same station and the box is also the transition the 6 in riser needs.",
+                  # The riser leaves the west end, where DU-M-ERV-EXH-FEED starts; the flat
+                  # neck rises off the top 5 3/8" east of centre, in its J12 lane (2026-11-08).
                   ports=(ServicePort(tag="riser", service=Service.RETURN_AIR,
-                                     position=(ft(0), ft(0), inch(4))),
+                                     position=(inch(-17), ft(0), inch(4))),
                          ServicePort(tag="collar-trunk", service=Service.EXHAUST_AIR,
-                                     position=(inch(-5.5), inch(0), inch(4)),
-                                     connection_size=inch(8),
+                                     position=(inch(5.375), inch(0), inch(8)),
+                                     width=inch(6), depth=inch(4),
                                      certainty=PortCertainty.EXACT))),
 
     # ** THE TWO BASEMENT PLENUMS ARE 36" LONG AND THAT IS THE WHOLE DESIGN (D3). **

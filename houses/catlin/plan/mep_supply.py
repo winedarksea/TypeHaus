@@ -814,11 +814,12 @@ HYDRANT_BRANCH_MAIN = [
             # ** THE SOUTH LEG IS ON THE UPPER TIER AT x=6'-3" SINCE 2026-09-24. ** On x=6'-0"
             # at +9'-3" it crossed DU-M-ERV-R-LIVING, -BED and -PLANT on their lower-tier bay
             # legs; 3" east it clears DU-M-ERV-R-BED's upper-tier lane and rides over all three.
-            # 2026-11-06: the south leg crosses at x=7'-2 3/4" (TrimJoist pocket D6), not 6'-3".
-            path=(pt(ft(6), ft(13)), pt(inch(86.75), ft(13)), pt(inch(86.75), ft(13)),
-                  pt(inch(86.75), ft(0, 9)), pt(inch(86.75), ft(0, 9)), pt(ft(12, 8), ft(0, 9))),
+            # 2026-11-08: x=8'-0 1/2" in pocket D7, 6" over the chord (over the ERV takeoffs):
+            # D6 is DU-M-ERV-R-BED's.
+            path=(pt(ft(6), ft(13)), pt(inch(96.5), ft(13)), pt(inch(96.5), ft(13)),
+                  pt(inch(96.5), ft(0, 9)), pt(inch(96.5), ft(0, 9)), pt(ft(12, 8), ft(0, 9))),
             diameter=inch(0.75), material="pex",
-            elevations=(ft(9, 3), ft(9, 3), inch(117.5), inch(117.5), ft(9, 3), ft(9, 3)),
+            elevations=(ft(9, 3), ft(9, 3), inch(114.125), inch(114.125), ft(9, 3), ft(9, 3)),
             serves=("FX-M-PORCH-HYD", "FX-S-BALCONY-HYD")),
     # Porch leg: south into the wall's own plane (y=3 1/4", the 2x6 cavity's centre line),
     # then straight down inside W-M-S1 to the hydrant's seat at 2'-0".
@@ -1052,13 +1053,17 @@ STUDIO_SUPPLY = [
             # its own 256..272 bay, south on x=10'-0" (the 113 1/2"..126 1/2" opening, west of
             # PR-M-S-SUITE-WC-DRAIN's east leg), then west in the 240..256 bay to the riser.
             # 2026-11-06: the south leg is at x=10'-2" (TrimJoist pocket D8), not 10'-0" at its edge.
-            path=(pt(ft(13, 7.2), ft(22, 4)), pt(ft(10, 2), ft(22, 4)), pt(ft(10, 2), ft(20, 6)),
+            # North 1 1/2" between x=10'-11" and 12'-2" round PR-M-S-SUITE-WC-DRAIN's north
+            # corner (2026-11-08), back on 22'-4" clear of P-S-SN3-SQUASH.
+            path=(pt(ft(13, 7.2), ft(22, 4)), pt(inch(146), ft(22, 4)), pt(inch(146), inch(269.5)),
+                  pt(inch(131), inch(269.5)), pt(inch(131), ft(22, 4)),
+                  pt(ft(10, 2), ft(22, 4)), pt(ft(10, 2), ft(20, 6)),
                   pt(ft(9, 5.5), ft(20, 6)), pt(ft(9, 5.5), ft(20, 6)),
                   pt(ft(9, 5.5), ft(20, 6))),
             diameter=inch(0.75), material="pex",
             # The 248.87" vertex is PR-A-STUBATH-WC-CW's tee, at the WC stop's height.
-            elevations=(ft(9, 6.0625), ft(9, 6.0625), ft(9, 6.0625), ft(9, 6.0625),
-                        inch(248.87), ft(22, 6)),
+            elevations=(ft(9, 6.0625), ft(9, 6.0625), ft(9, 6.0625), ft(9, 6.0625), ft(9, 6.0625),
+                        ft(9, 6.0625), ft(9, 6.0625), ft(9, 6.0625), inch(248.87), ft(22, 6)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),
     PipeRun(uid="TCWF4YDZTW", tag="PR-A-HW-STUBATH", system=PipeSystem.WATER_HOT,

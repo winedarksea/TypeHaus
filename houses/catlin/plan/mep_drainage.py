@@ -476,11 +476,14 @@ SECOND_BRANCH_DRAINS = [
     # West in the drop's bay to x=7'-2 3/4", then south through TrimJoist pocket D6 of the
     # clipped trusses, and west in the 26'-2" bay south of the two supply risers.
     PipeRun(uid="E9TA1G01B8", tag="PR-M-S-BATH1-LAV-DRAIN", system=PipeSystem.DRAIN,
-            # TrimJoist's web pockets (2026-11-06): the south leg crosses the clipped trusses at
-            # x=86.75", the centre of D pocket D6, not 75" (the pocket's edge); falls evenly.
-            path=(pt(inch(116.745), inch(374.5)), pt(inch(120), inch(374.5)), pt(inch(120), inch(372)), pt(inch(120), inch(372)), pt(inch(86.75), inch(372)), pt(inch(86.75), inch(314)), pt(inch(60), inch(314)), pt(inch(60), inch(320)),),
+            # 2026-11-08: drops at x=118 1/2" and runs west in the 368"..384" bay under
+            # DU-M-ERV-R-STUDY and -BED and over CD-M-DATA-KITCH, then south through R1 at x=64 3/4"
+            # beside the ERV neck, to the stack north of PR-B-CW-SBATH's riser
+            # along y=314" to the stack, under every ERV radial (the x=86 3/4" leg and the
+            # y=372" arm sat in BED's and STUDY's lanes).
+            path=(pt(inch(116.745), inch(374.5)), pt(inch(120), inch(374.5)), pt(inch(120), inch(372)), pt(inch(118.5), inch(372)), pt(inch(118.5), inch(372)), pt(inch(64.75), inch(372)), pt(inch(64.75), inch(320.5)), pt(inch(60), inch(320.5)),),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(141.5), inch(141.43), inch(141.375), inch(117.75), inch(116.4), inch(113.25), inch(112.68), inch(112.55),),
+            elevations=(inch(141.5), inch(141.43), inch(141.375), inch(141.33), inch(113.225), inch(112.09), inch(111.0), inch(110.9),),
             # No `wall_ref`: only the first vertex is in W-S-BA-E1B, and the drop leaves
             # the wall's own z band the moment it passes the deck at 10'-0". `wall_ref`
             # claims EVERY segment is in that wall, which this run cannot honestly say.
@@ -518,8 +521,8 @@ SECOND_BRANCH_DRAINS = [
                   pt(ft(12), inch(266.25)), pt(ft(12), inch(246)), pt(ft(12), ft(18)),
                   pt(ft(12, 6), ft(18))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(10, 0.75), inch(116.75), inch(116.45), inch(116.25),
-                        inch(115.7), inch(112.6), ft(9, 3)),
+            elevations=(ft(10, 0.75), inch(115.4), inch(115.1), inch(114.85),
+                        inch(114.4), inch(112.6), ft(9, 3)),
             serves=("FX-S-SUITEBATH-WC",)),
     # The 30" vanity: a 3 1/4" arm into W-S-SN3 at 20 3/4" AFF to PR-S-SUITEBATH-LAV-VENT's
     # tee (2D is 3"), down the wall between the cold riser and the hot tee, and 4" south onto
@@ -544,7 +547,7 @@ SECOND_BRANCH_DRAINS = [
                   pt(inch(155.75), inch(264)), pt(inch(155.75), ft(19)), pt(ft(12), ft(19))),
             diameter=inch(1.5), material="pvc",
             elevations=(ft(10, 0.75), inch(116.9375), inch(116.875), inch(116.62),
-                        inch(116.31), inch(115.85), inch(115.5), inch(114.75), inch(114.45)),
+                        inch(116.31), inch(115.85), inch(115.5), inch(114.75), inch(114.2)),
             serves=("FX-S-SUITEBATH-TUBSH",)),
 ]
 
@@ -860,7 +863,7 @@ STUDIO_DRAINS = [
                   pt(ft(9, 7.5), ft(19, 7)), pt(ft(12), ft(19, 7))),
             diameter=inch(3), material="pvc",
             elevations=(inch(240.87), ft(19, 4), inch(231.61), ft(19, 3.5), ft(9, 8),
-                        inch(115.0)),
+                        inch(114.5)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
     # ** THE HEAD FOLLOWED THE BOWL ONTO W-A-BATH-S AND THE RUN GOT SHORTER, 2026-09-09. **
     # The bar was three pieces on W-A-C2's west face and is now one SUNNERSTA kitchenette on

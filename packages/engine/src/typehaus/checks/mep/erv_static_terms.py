@@ -119,7 +119,11 @@ def machine_trunk_flows(ctx: CheckContext, trunks, machine_tag: str,
 
 
 def radial_capacity(ctx: CheckContext, landings: dict[str, str]) -> list[Finding]:
-    """One finding per radial: its design flow against what its product is used for."""
+    """One finding per radial: its design flow against what its product is used for.
+
+    Round products only: a rectangular row carries no ``max_cfm``, so a rectangular landing
+    is graded for friction (``erv_static._rect_drop``) and not against a flow limit.
+    """
     cid = "mep.erv_static_budget"
     out: list[Finding] = []
     for duct in sorted(ctx.model.ducts, key=lambda item: item.tag):

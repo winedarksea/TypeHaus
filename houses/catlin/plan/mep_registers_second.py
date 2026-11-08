@@ -269,7 +269,9 @@ REGISTERS_SECOND = [
                 wall_ref="W-S-DC2", face="right", distance_from_start=inch(5),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
     Register(uid="CSRV04AAAA", tag="REG-S-EXH4", kind=DuctSystem.EXHAUST, room="RM-S-VANITY",
-            position=pt(ft(3), ft(24, 8)), duct_ref="DU-M-ERV-R-VANITY",
+            # Turned 90 (2026-11-08): long axis north-south, clear of the flat trunk (x<=31")
+            # and DU-M-ERV-R-LIVING's x=40 1/2" lane.
+            position=pt(ft(3), ft(24, 8)), rotation=deg(90), duct_ref="DU-M-ERV-R-VANITY",
             type_ref="REG-T-ERV-EXH-FLOOR", design_cfm=REG_S_EXH4,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CSRV05AAAA", tag="REG-S-EXH1", kind=DuctSystem.EXHAUST, room="RM-S-BATH1",

@@ -306,7 +306,7 @@ bears on a floor deck, its invert within 1/4" of the deck top, with both band fe
 duct plus the band thickness either side) on the deck and off its voids. A slab is never a
 saddle host (left UNKNOWN on purpose). Failing that, a **bracket** to a parallel wall within 2"
 whose length the station faces (Fig. 4-8, "locate ducts against wall or maximum of 2" away").
-*Worked:* `DU-M-ERV-EXH-TRUNK` rises 12.8" (no hanger) then runs 331.6" = 27.63' level. End
+*Worked (the 8" round trunk, retired 2026-11-08 for the flat 8x4):* `DU-M-ERV-EXH-TRUNK` rises 12.8" (no hanger) then runs 331.6" = 27.63' level. End
 hangers at 2' and 25.63': 23.63' between, ceil(23.63 / 12) = 2 gaps, **3 hangers**; the model
 places 3. House (2026-11-07): 136 stations, 118 hung from framing and 18 saddles on FS-ATTIC's
 deck (the four attic radials' deck legs, two on the HP feed, one on the riser-exhaust leg; 15 at
@@ -322,7 +322,7 @@ width, 20-mil thickness" (Carlisle TDS 0124, read 2026-11-07). Billed at the 30 
 best case: 320 x 20/30 = **213 LF/gal**. The cartridge's 130 LF at a 1/8" bead is not a metal-seam rate (the B-M cartridge
 rate is "bead that completely covers joint", no LF). One girth per 5' stick, plus two per elbow
 and per billed part, each pi D or the perimeter.
-*Worked:* `DU-M-ERV-EXH-TRUNK`, 8" (girth pi x 8/12 = 2.094'), 28.7 LF: tape 28.7'; joints
+*Worked (the 8" round trunk, retired 2026-11-08 for the flat 8x4):* `DU-M-ERV-EXH-TRUNK`, 8" (girth pi x 8/12 = 2.094'), 28.7 LF: tape 28.7'; joints
 ceil(28.7/5) = 6 x 2.094 = 12.57', its 1 elbow 2 x 2.094 = 4.19', its 10 billed parts (9
 saddles, 1 reducer) 20 x 2.094 = 41.89': 58.6' of mastic seam. House (2026-11-07): 888.0' tape,
 4.93 rolls, **5**; 788.8' mastic, 788.8 / 213 = 3.70 gal, **4 gal** (one case of 4). The take-off

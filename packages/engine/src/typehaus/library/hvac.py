@@ -142,8 +142,15 @@ ALL_DUCT_PRODUCT_TYPES = (
         bend_equivalent_length=inch(78),
         source=_SOURCE,
     ),
+    # ε is the round galvanized rows' (0.0003 ft, ASHRAE Fundamentals Ch. 21 Table 1, galvanized
+    # longitudinal seam, "medium smooth"; notes/erv_static_budget.md §2). The 10in row's bend
+    # is a smooth-radius 90 at r/W 1.0, H/W 0.5: Co 0.25 (ASHRAE, "Fitting Loss Coefficients",
+    # online supplement to Principles of HVAC 9th ed., 2021, Fitting 3-5 p. 12, after Idelchik
+    # Diagram 6-1; read 2026-11-08) as L = Co x De / f on an 8x4 (De 6.09", f 0.026) = 59".
+    # The larger rows publish no bend length.
     *(DuctProductType(
         tag=f"DUCT-T-GALV-RECT-{side}", section="rectangular", material="galvanized",
+        roughness_m=0.0000914, bend_equivalent_length=inch(59) if side == 10 else None,
         name=f"Rectangular galvanized sheet-metal duct, largest side to {side}in, {gauge} ga",
         max_side=inch(side), gauge=gauge, thickness=inch(thickness),
         source=("IRC 2018 Table M1601.1.1 (= IMC 2018 Table 603.4, Minn. R. 1346), "

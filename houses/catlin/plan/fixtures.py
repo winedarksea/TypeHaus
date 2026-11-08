@@ -284,7 +284,7 @@ SECOND_FIXTURES = (
     # Its back is exterior W-S-N3, ~0 perm on both sides (insert inside, closed-cell
     # outside), so nothing may ever penetrate it: a hole there dries to neither face.
     Fixture(uid="CSQ803AAAA", tag="FX-S-BATH1-SH", type_ref="FX-TUBSHOWER-60-DIVERTED", room="RM-S-BATH1",
-            position=pt(inch(70.243), m(10.4013)), wall_ref="W-S-BD-N",
+            position=pt(inch(70.25), inch(409.5)), wall_ref="W-S-BD-N",
             drain_position=pt(inch(48.5), inch(409.5))),
     # The suite's own bath (source: 46.01sf). D-S-SUITEBATH's 2'-6" leaf sweeps the room's SW
     # quadrant clear, so WC sits north of the swing against the north wall, lav east of it

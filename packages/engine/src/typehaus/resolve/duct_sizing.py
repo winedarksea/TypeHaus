@@ -80,6 +80,24 @@ def leg_drop_in_wg(cfm: float, bore_m: float, roughness_m: float,
     return factor * (developed_m * _M_TO_FT / bore_ft) * velocity_pressure
 
 
+def equivalent_diameter_m(width_m: float, depth_m: float) -> float:
+    """Huebscher equivalent round diameter of a rectangular duct, metres.
+
+    De = 1.30 (a b)^0.625 / (a + b)^0.25 (ASHRAE Fundamentals 2017 Ch. 21, Eq. 25): the round
+    duct that makes the same friction loss at the same AIRFLOW, so it is the bore handed to
+    :func:`leg_drop_in_wg` with the rectangle's own cfm (never its velocity).
+    """
+    return 1.30 * (width_m * depth_m) ** 0.625 / (width_m + depth_m) ** 0.25
+
+
+def effective_diameter_m(run: Any) -> float | None:
+    """A run's friction diameter: round ``diameter_m``, or a rectangle's De; None if neither."""
+    if getattr(run, "diameter_m", None) is not None:
+        return run.diameter_m
+    width, depth = getattr(run, "width_m", None), getattr(run, "depth_m", None)
+    return equivalent_diameter_m(width, depth) if width and depth else None
+
+
 def friction_rate_in_wg_per_100ft(cfm: float, bore_m: float, roughness_m: float) -> float:
     """The pressure gradient this flow makes in this bore — the equal-friction criterion."""
     return leg_drop_in_wg(cfm, bore_m, roughness_m, 100.0 / _M_TO_FT)

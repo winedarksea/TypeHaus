@@ -35,6 +35,7 @@ from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import EquipmentKind
+from typehaus.resolve.duct_sizing import effective_diameter_m
 from typehaus.resolve.mep_ports import PlacedPort, placed_ports
 
 _M_PER_IN = 0.0254
@@ -93,7 +94,7 @@ def erv_manifold_ports(ctx: CheckContext) -> list[Finding]:
         trunks: list[str] = []
         ports_here = air_ports.get(obj.tag, ())
         for duct in ctx.model.ducts:
-            if not duct.path or duct.diameter_m is None:
+            if not duct.path or effective_diameter_m(duct) is None:
                 continue
             for index in (0, -1):
                 z = (duct.z_m[index]
@@ -139,6 +140,16 @@ def plenum_air_ports(model) -> dict[str, list[PlacedPort]]:
     return out
 
 
+def is_rect_collar(port) -> bool:
+    """An EXACT port with a rectangular section (W != D): a collar for a flat trunk or neck.
+
+    Round collars are ``EquipmentType.collars()`` (section == ``port_diameter``); this is the
+    rectangular counterpart, read off the placed port.
+    """
+    section = port.section_m
+    return bool(port.exact and section and abs(section[0] - section[1]) > 1e-9)
+
+
 def lands_on_branch_port(product, ports, duct, end) -> bool:
     """Does this run, ending at ``end`` in this plenum, land on a BRANCH port?
 
@@ -151,12 +162,25 @@ def lands_on_branch_port(product, ports, duct, end) -> bool:
       (``EQ-T-ERV-PLENUM-M-EXH``: a RETURN riser feed into a box whose one collar is
       EXHAUST). Service decides because trunk and riser stations are approximate. Anything
       else is a branch, so a reduced radial drawn off its collar FAILs the census by name.
+
+    **A plenum with an EXACT rectangular port** (:func:`is_rect_collar`) takes a rectangle as
+    its branch by that port alone, whatever its ``port_diameter``; a round run there is the
+    trunk when its service is a non-collar port's and no collar's.
     """
+    rect = [p for p in ports if is_rect_collar(p)]
+    if rect:
+        # A rectangular collar takes a rectangle; a round run is the trunk where its service
+        # is a non-collar port's and no collar's, else a branch.
+        if duct.diameter_m is None:
+            return True
+        return not (duct.system in {p.duct_system for p in ports if p not in rect}
+                    and duct.system not in {p.duct_system for p in rect})
     port = getattr(product, "port_diameter", None)
-    if port is None or duct.diameter_m > port.meters + 1e-6:
+    size = effective_diameter_m(duct)  # a rectangle is sized by its equivalent diameter
+    if port is None or size is None or size > port.meters + 1e-6:
         return False
     collars = [p for p in ports if p.collar]
-    if (abs(duct.diameter_m - port.meters) <= 1e-6 or not collars
+    if (abs(size - port.meters) <= 1e-6 or not collars
             or _reach(end, collars) <= COLLAR_REACH_M):
         return True
     trunk_systems = {p.duct_system for p in ports if not p.collar}

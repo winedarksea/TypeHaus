@@ -120,13 +120,14 @@ def test_hall_bath_chase_is_the_source_two_foot_shaft(catlin_plan):
     The source draws a 2'x2' hatched shaft in the hall bath's NE corner; it now stands in
     the NW corner instead, carrying the radon+plumbing riser up from RM-M-MECH below — the
     NE corner was never load-bearing for that requirement. What survives from the source is
-    the *size* of the clear shaft, not this particular corner.
+    the *size* of the clear shaft, not this particular corner — plus 4 1/2" east since the
+    BATH1 tub's plumbing end was furred into it (owner, 2026-11-08).
     """
     west = ft(0).meters + 6.625 * 0.0254                         # exterior wall inside face
     east = _node(catlin_plan, "N-S-CH1")[0] - 2.25 * 0.0254       # 2x4 partition half + gwb
     south = _node(catlin_plan, "N-S-CH1")[1] + 2.25 * 0.0254      # 2x4 partition half + gwb
     north = ft(36).meters - 6.625 * 0.0254                        # exterior wall inside face
-    assert east - west == pytest.approx(ft(2).meters, abs=3 * 0.0254)
+    assert east - west == pytest.approx(ft(2, 4.5).meters, abs=3 * 0.0254)
     assert north - south == pytest.approx(ft(2).meters, abs=3 * 0.0254)
 
 

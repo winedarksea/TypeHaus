@@ -151,3 +151,99 @@ def test_a_reduced_run_is_classified_by_the_port_it_lands_on(ctx, system, offset
     census = next(f for f in erv_manifold_ports(reduced_ctx) if "PLENUM" in f.message)
     assert census.result is verdict
     assert ("RADIAL-3" in census.message) is (verdict is Result.FAIL)
+
+
+# --- rectangular trunks: graded only when anchored on a plenum ------------------------------
+
+def _rect(tag, start, end, width_in, depth_in, system="supply", cfm=210, z=1):
+    length = ((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2) ** 0.5
+    return replace(_duct(tag, start, end, system=system, z=z), width_m=width_in * 0.0254,
+                   depth_m=depth_in * 0.0254, diameter_m=None, design_cfm=cfm, length_m=length)
+
+
+def _rect_ctx(ctx, ducts, roughness=0.0000914, extra=()):
+    """The fixture with an 8" plenum collar and a rectangular galvanized row."""
+    lib = ctx.plan.library
+    plenum = lib.equipment_types[1].model_copy(update={"port_diameter": inch(8)})
+    row = DuctProductType(tag="R-10", name="rect to 10in", material="galvanized",
+                          section="rectangular", max_side=inch(10), gauge=30,
+                          thickness=inch(0.013), roughness_m=roughness)
+    plan = ctx.plan.model_copy(update={"library": lib.model_copy(update={
+        "equipment_types": (lib.equipment_types[0], plenum, *extra),
+        "duct_product_types": (*lib.duct_product_types, row)})})
+    return check_context(model=replace(ctx.model, plan=plan, ducts=ducts))
+
+
+def test_the_equivalent_diameter_and_one_rectangular_drop_are_the_hand_values() -> None:
+    # De = 1.30 (a b)^0.625 / (a + b)^0.25: 8x4 -> 1.30 x 32^0.625 / 12^0.25 = 6.0935 in.
+    from typehaus.resolve.duct_sizing import equivalent_diameter_m
+    assert equivalent_diameter_m(8 * 0.0254, 4 * 0.0254) / 0.0254 == pytest.approx(6.0935, abs=1e-3)
+    assert equivalent_diameter_m(6 * 0.0254, 4 * 0.0254) / 0.0254 == pytest.approx(5.3281, abs=1e-3)
+    # 100 cfm, 10 ft, eps 0.0003 ft: D 0.50779 ft, V 493.8 fpm, Re 25,640, eps/D 5.908e-4,
+    # Colebrook f 0.02578, VP (V/4005)^2 0.01520 -> f (L/D) VP = 0.02578 x 19.693 x 0.01520.
+    drop = leg_drop_in_wg(100, equivalent_diameter_m(8 * 0.0254, 4 * 0.0254), 0.0000914, 3.048)
+    assert drop == pytest.approx(0.007718, abs=2e-6)
+
+
+@pytest.mark.parametrize("neck", [False, True])
+def test_a_rectangular_trunk_off_a_plenum_is_graded_with_its_round_branches(ctx, neck):
+    trunk_start = (20, 0) if neck else (22, 0)
+    ducts = [_rect("TRUNK-8X4", trunk_start, (10, 0), 8, 4),
+             _duct("BRANCH-4", (15, 0), (15, 3), diameter=4)]
+    if neck:
+        ducts.insert(0, _rect("NECK-6X4", (22, 0), (20, 0), 6, 4))
+    rect_ctx = _rect_ctx(ctx, ducts)
+    landings = radial_landings(rect_ctx)
+    assert set(landings) == {d.tag for d in ducts}
+    assert {d.tag for d in _network(rect_ctx, "ERV", landings)} == set(landings)
+
+    def de(w, d):
+        return 1.30 * (w * d) ** 0.625 / (w + d) ** 0.25 * 0.0254
+
+    expected = leg_drop_in_wg(210, de(8, 4), 0.0000914, ducts[-2].length_m)
+    expected += leg_drop_in_wg(25, 4 * 0.0254, 0.00009, 3)
+    if neck:
+        expected += leg_drop_in_wg(210, de(6, 4), 0.0000914, 2)
+    finding = next(f for f in erv_static_budget(rect_ctx) if "worst path" in f.message)
+    assert "via BRANCH-4" in finding.message
+    assert f"at {expected:.3f} in. w.g." in finding.message
+
+
+def test_a_rectangular_row_without_roughness_is_a_gap_by_its_pair(ctx):
+    rect_ctx = _rect_ctx(ctx, [_rect("TRUNK-8X4", (22, 0), (10, 0), 8, 4)], roughness=None)
+    gaps = [f for f in erv_static_budget(rect_ctx) if "no rectangular DuctProductType" in f.message]
+    assert gaps and all(f.result is Result.UNKNOWN for f in gaps)
+    assert 'galvanized, 8.0x4.0"' in gaps[0].message
+
+
+def test_a_rectangle_is_never_anchored_by_a_mixing_box_or_pulled_in_by_a_round_joint(ctx):
+    mix_type = EquipmentType(tag="MIX-T", name="mixing box", footprint=(m(0.02), m(0.4)),
+                             height=m(0.2))
+    mix = Equipment(uid="MIX", tag="MIX", kind=EquipmentKind.MIXING_BOX,
+                    footprint=(m(0.02), m(0.4)), position=pt(m(40), m(0)), type_ref="MIX-T")
+    stray = [_rect("RECT-MIX", (40, 0), (30, 0), 8, 4),          # ends in the mixing box
+             _rect("RECT-OFF-ROUND", (11, 0), (11, 2), 8, 4)]    # tees off REMOTE-8's end
+    rect_ctx = _rect_ctx(ctx, [*ctx.model.ducts, *stray], extra=(mix_type,))
+    plan = rect_ctx.plan.model_copy(update={"elements": {
+        "basement": (*rect_ctx.plan.elements["basement"], mix)}})
+    objects = [*rect_ctx.model.canvas_objects, _body("MIX", 40, "MIX-T")]
+    rect_ctx = check_context(model=replace(rect_ctx.model, plan=plan, canvas_objects=objects))
+    network = {d.tag for d in _network(rect_ctx, "ERV", radial_landings(rect_ctx))}
+    assert network == {d.tag for d in ctx.model.ducts}
+    assert not any("RECT-" in f.message for f in erv_static_budget(rect_ctx))
+
+
+def test_a_one_port_plenum_with_a_rectangular_collar_distributes_and_counts_its_neck(ctx):
+    collar = ServicePort(tag="collar", service=Service.SUPPLY_AIR, position=(m(0), m(0), m(0)),
+                         width=inch(6), depth=inch(4), certainty=PortCertainty.EXACT)
+    rect_ctx = _rect_ctx(ctx, [_rect("NECK-6X4", (22, 0), (10, 0), 6, 4),
+                               _duct("BRANCH-4", (15, 0), (15, 3), diameter=4)])
+    lib = rect_ctx.plan.library
+    plenum = lib.equipment_types[1].model_copy(update={
+        "duct_ports": 1, "port_diameter": inch(6), "ports": (collar,)})
+    plan = rect_ctx.plan.model_copy(update={"library": lib.model_copy(
+        update={"equipment_types": (lib.equipment_types[0], plenum)})})
+    rect_ctx = check_context(model=replace(rect_ctx.model, plan=plan))
+    assert set(radial_landings(rect_ctx)) == {"NECK-6X4", "BRANCH-4"}
+    census = next(f for f in erv_manifold_ports(rect_ctx) if "PLENUM" in f.message)
+    assert census.result is Result.PASS and "1 of 1" in census.message

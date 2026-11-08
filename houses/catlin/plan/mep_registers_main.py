@@ -50,7 +50,7 @@ REGISTERS_MAIN = [
     # D-M-BED2 is sealed (auto bottom), so these 15 cfm leave under D-M-BATH2 to REG-M-EXH2:
     # D-M-BATH2 keeps its 3/4" undercut (notes/interior_door_schedule.md).
     Register(uid="CMRV03AAAA", tag="REG-M-SUP3", kind=DuctSystem.SUPPLY, room="RM-M-BED",
-            position=pt(ft(7), ft(6)), duct_ref="DU-M-ERV-R-BED",
+            position=pt(inch(83.75), inch(71.25)), duct_ref="DU-M-ERV-R-BED",
             type_ref="REG-T-ERV-VALVE-SUP", design_cfm=REG_M_SUP3,
             mount=Mount(kind=MountKind.CEILING)),
     # ================== RM-M-STUDY-CLOSET: THE CALL BOOTH'S TWO TERMINALS ==================
@@ -83,7 +83,7 @@ REGISTERS_MAIN = [
     # east as a 7" grille goes: the face reaches 17'-5 1/2", 3 1/8" clear of W-M-C3's study
     # face and 3 3/4" clear of its top plate.
     Register(uid="CMRV04AAAA", tag="REG-M-SUP4", kind=DuctSystem.SUPPLY, room="RM-M-STUDY-CLOSET",
-            position=pt(ft(17, 2), ft(20, 8)), duct_ref="DU-M-ERV-R-STUDY",
+            position=pt(ft(17, 2), inch(248.6)), duct_ref="DU-M-ERV-R-STUDY",
             type_ref="REG-T-ERV-VALVE-SUP", design_cfm=REG_M_SUP4,
             mount=Mount(kind=MountKind.CEILING)),
     # -- the extract, low, and NOT on the east wall -----------------------------------
@@ -162,9 +162,10 @@ REGISTERS_MAIN = [
     # the shower's front glass (x 4'-10 5/8"). That glass stops at 90" under a 106" ceiling,
     # so steam spilling over its open top is caught here at the source. Kept OUTSIDE the
     # enclosure on purpose, at 20 cfm: the ERV has no headroom to boost
-    # (notes/bath2_shower.md). Clear of ED-M-BATH2-CAN1 at (2'-6", 16'-0").
+    # (notes/bath2_shower.md). Clear of ED-M-BATH2-CAN1 at (2'-10", 15'-0 1/2"), and 2 1/4"
+    # north of the bay centre so its branch passes the can (2026-11-08).
     Register(uid="CMRV06AAAA", tag="REG-M-EXH2", kind=DuctSystem.EXHAUST, room="RM-M-BATH2",
-            position=pt(ft(4, 4), ft(15, 4)), duct_ref="DU-M-ERV-R-BATH2",
+            position=pt(ft(4, 4), inch(186.25)), duct_ref="DU-M-ERV-R-BATH2",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_M_EXH2,
             mount=Mount(kind=MountKind.CEILING)),
     # THE OWNER ASKED FOR THIS ONE TO GO, AND IT COULD NOT. RM-M-LAUNDRY is a 4'-3" x 4'-3"
@@ -179,7 +180,7 @@ REGISTERS_MAIN = [
     # So it stays, at 5 cfm rather than a full pickup — the smallest rate that is both true
     # and passing, on its own radial at the 20'-8" bay centre that radial rides.
     Register(uid="CMRV07AAAA", tag="REG-M-RET3", kind=DuctSystem.RETURN, room="RM-M-LAUNDRY",
-            position=pt(ft(10, 6), ft(20, 10)), duct_ref="DU-M-ERV-R-LAUNDRY",
+            position=pt(ft(10, 6), inch(244)), duct_ref="DU-M-ERV-R-LAUNDRY",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_M_RET3,
             mount=Mount(kind=MountKind.CEILING)),
     Register(uid="CMRV08AAAA", tag="REG-M-RET5", kind=DuctSystem.RETURN, room="RM-M-LIVING",

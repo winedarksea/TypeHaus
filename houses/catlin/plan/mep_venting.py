@@ -54,7 +54,8 @@ VENT_BRANCHES_MAIN = [
     PipeRun(uid="CMP906AAAA", tag="PR-M-WC-VENT", system=PipeSystem.VENT,
             # 2026-11-06: crosses the full trusses in their R1 chase (x=8'-7 1/2") west of
             # DU-M-ERV-EXH-TRUNK, then jogs back to the riser foot at 98.5" in the bay.
-            path=(pt(inch(75), inch(300)), pt(inch(103.5), inch(300)),
+            # Low across DU-M-ERV-R-BED's x=83 3/4" lane, rising to the R1 chase (2026-11-08).
+            path=(pt(inch(75), inch(300)), pt(inch(98), inch(300)), pt(inch(103.5), inch(300)),
                   pt(inch(103.5), inch(268.9)), pt(inch(98.5), inch(268.9)),
                   pt(inch(98.5), inch(268.9)),
                   # 2026-11-06: jog to x=97.8" in the riser's bay: 18.14" off W-S-BA-E1B's plate
@@ -63,7 +64,7 @@ VENT_BRANCHES_MAIN = [
                   pt(inch(97.8), inch(268.9)),
                   pt(inch(97.8), inch(354.9)), pt(inch(40), inch(354.9))),
             diameter=inch(2),
-            elevations=(inch(115.9), inch(116), inch(116.05), inch(116.1), inch(231),
+            elevations=(inch(112.4), inch(112.5), inch(116), inch(116.05), inch(116.1), inch(231),
                         inch(231.01), inch(231.1), inch(232.64)),
             # Laundry sink wet-vents from its existing laundry stack. The powder
             # basin has its own branch joining this riser above the flood rims.
@@ -84,9 +85,10 @@ VENT_BRANCHES_MAIN = [
     PipeRun(uid="YTKPDYS5YV", tag="PR-M-BATH2-VENT", system=PipeSystem.VENT,
             # 2026-11-06: the north leg crosses in the R1 chase (x=103.5"), the tees on the
             # y=204" and y=216" legs unmoved.
-            path=(pt(inch(79), inch(204)), pt(inch(103.5), inch(204)),
+            # Low across DU-M-ERV-R-BED's x=83 3/4" lane, rising to the R1 chase (2026-11-08).
+            path=(pt(inch(79), inch(204)), pt(inch(98), inch(204)), pt(inch(103.5), inch(204)),
                   pt(inch(103.5), inch(266.5))),
-            diameter=inch(2), start_elevation=inch(115.9), end_elevation=inch(116),
+            diameter=inch(2), elevations=(inch(112.4), inch(112.5), inch(115.93), inch(116)),
             serves=("FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-LAUNDRY-SINK")),
     # Kitchen sink. The takeoff is on W-M-N1 at x=32'-8", clear of WIN-M-KITCH's RO
     # (28'-2 1/2".."30'-5 1/2") and WIN-M-KITCH-N's (33'-5".."34'-7"); south to y=19'-4",

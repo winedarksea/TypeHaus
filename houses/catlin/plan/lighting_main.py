@@ -241,11 +241,12 @@ MAIN_LIGHTING = [
     # Karlie task light (plan/mirrors.py). EVENING, 2700 K on ED-M-BATH2-SW-EVE:
     # the B2 shower can and the E3 tub cove off ED-M-BATH2-PSU (16.5 W on the 60 W OMNIDRIVE
     # X, which has no minimum load). NIGHT: RC1's guide light (2026-11-03). The Halo Plus uses
-    # its own touch dimmer and unswitched plug power (2026-10-22). CAN1 is the vanity can, 23" off
-    # the mirror; CAN2 is centred on the tub. The radiant-floor stat ED-M-BATH2-FH-STAT is a
+    # its own touch dimmer and unswitched plug power (2026-10-22). CAN1 is the vanity can, 27" off
+    # the mirror and south in its bay, clear of the flat ERV trunk at x=27" and DU-M-ERV-R-BATH2
+    # (2026-11-08); CAN2 is centred on the tub. The radiant-floor stat ED-M-BATH2-FH-STAT is a
     # separate control and switches none of this.
     ElectricalDevice(uid="QTM000NAAA", tag="ED-M-BATH2-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(2, 6), ft(15, 4)), type_ref="ED-T-LT-CAN4-WET-5000",
+                     position=pt(inch(34), inch(180.5)), type_ref="ED-T-LT-CAN4-WET-5000",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      controlled_by=("ED-M-BATH2-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),

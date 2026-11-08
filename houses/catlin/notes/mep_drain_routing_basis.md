@@ -69,22 +69,24 @@ its flange is at x=18 1/2", the 12" rough-in. The closet bend now also offsets 1
 back to x=20.278": on x=18 1/2" the south leg sat on `FS-S-WEST`'s 1'-5 1/2" truss web. Every
 invert and the downstream legs are unchanged.
 
-As authored since 2026-11-06 (2026-11-05 it ran 4.69" east, 13.844" north, 4.5" east before
+As authored since 2026-11-08, when the drop went 1.35" deeper so the south leg passes the 256"
+truss inside J12 pocket D10 (2026-11-05 it ran 4.69" east, 13.844" north, 4.5" east before
 the south legs; before that 9.19" east, 36.406" south, 6" east):
 
 | leg | from → to | plan length | fall | slope |
 |---|---|---|---|---|
-| flange drop | (134.81, 252.406) 120.75 → 116.75 | 0 | 4.0" | vertical |
-| north | → (134.81, 266.25) 116.45 | 266.25 − 252.406 = 13.844" | 0.30" | 0.30 × 12 / 13.844 = 0.260"/ft |
-| east | → (144, 266.25) 116.25 | 144 − 134.81 = 9.19" | 0.20" | 0.261"/ft |
-| south | → (144, 246) 115.7 | 266.25 − 246 = 20.25" | 0.55" | 0.326"/ft |
-| south | → (144, 216) 112.6 | 246 − 216 = 30" | 3.1" | 1.240"/ft |
+| flange drop | (134.81, 252.406) 120.75 → 115.4 | 0 | 5.35" | vertical |
+| north | → (134.81, 266.25) 115.1 | 266.25 − 252.406 = 13.844" | 0.30" | 0.30 × 12 / 13.844 = 0.260"/ft |
+| east | → (144, 266.25) 114.85 | 144 − 134.81 = 9.19" | 0.25" | 0.326"/ft |
+| south | → (144, 246) 114.4 | 266.25 − 246 = 20.25" | 0.45" | 0.267"/ft |
+| south | → (144, 216) 112.6 | 246 − 216 = 30" | 1.8" | 0.720"/ft |
 | east | → (150, 216) 111.0 | 150 − 144 = 6" | 1.6" | 3.2"/ft |
 
 Developed plan length 79.284" = 6.607 ft (the two east legs still sum to 9.19"); total fall
-5.75"; **mean 0.870"/ft**, and the flattest segment is the north leg's 0.260"/ft against
-ch. 4714 (UPC) 708.0's 0.25"/ft minimum, which asks 1.652" of it. The surplus is in the
-total (5.75 − 1.652 = 4.098"), not in the first leg: that 13.844" holds +0.010"/ft, which is
+below the drop 4.4" (5.75" before 2026-11-08); **mean 0.666"/ft**, and the flattest segment is
+the north leg's 0.260"/ft against ch. 4714 (UPC) 708.0's 0.25"/ft minimum, which asks 1.652"
+of it. The surplus is in the total (4.4 − 1.652 = 2.748"), not in the first leg: that 13.844"
+holds +0.010"/ft, which is
 what `mep.drain_slope_margin` reports. (2026-09-26: the tie dropped 112.0 → 111.0 so the attic branch's street
 sanitary tee can spigot into this branch's combo, 3 1/2" apart — Charlotte Pipe
 SUB-PAC-PVC-DWV, parts 501 and 403.) `mep.drain_slope` grades the flattest and reports it.
@@ -113,7 +115,7 @@ the number has been read the other way. It is measured to the stack **head** at 
 because that is the arrival a *search* must assume before it knows where on the barrel the
 tie will land. The authored run tied at **112.0** (111.0 since 2026-09-26), 3.5" lower, so what the pipe as
 drawn holds is **3.062" of surplus fall** in that world (0.779"/ft flattest then; the
-current run's surplus is §2's 4.098", spent mostly past its first legs). `mep.drain_slope_margin` is the check that reports the build number; `slack_in` is
+current run's surplus is §2's 2.748", spent mostly past its first legs). `mep.drain_slope_margin` is the check that reports the build number; `slack_in` is
 an ordering key and reports the search number. Had the stack head stayed at 115.5 with the
 collector tying there, rather than at 112 on the barrel below it, there would have been 1/16"
 in hand — which is exactly what makes 0.0622" the right *ordering* number and the wrong
@@ -131,7 +133,7 @@ Each end elevation is checked against its parent's own **centreline** at that st
 (`pipe_invert_at` interpolates the authored elevations, and an authored elevation is a
 centreline — see `model/mep.py`). An arm entering in the parent's upper half is an ordinary
 side entry; `mep.drain_tie_in` grades it. At y=228 the collector reads
-115.7 − 3.1 × (18/30) = 113.84 against the tub arm's 114.45, **0.61" above**; at x=165.5 the
+114.4 − 1.8 × (18/30) = 113.32 against the tub arm's 114.2, **0.88" above** (2026-11-08); at x=165.5 the
 tub arm (171 → 155.75, 115.85 → 115.5 since 2026-11-06, J12 pocket D11) reads
 115.85 − 0.35 × (5.5/15.25) = 115.724 against the lav's 115.85, **0.126" above**.
 Both are inside `_TIE_IN_INVERT_TOL_M` (1"), which keeps `drain_tie_ins` linking them and

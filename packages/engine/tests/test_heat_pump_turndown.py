@@ -64,7 +64,9 @@ _CATLIN = {
     # 14,638 before the attic WC chase (2026-11-02) took 1.3 sf off RM-A-STUBATH's volume.
     # 14,635 / -9.4 °F before the fireplace brick moved 2" east and W-B-E1's pour narrowed
     # 12" -> 10" (a754a0c7f, 2026-11-05): -3.8 Btu/h; Manual S cap 11,708 -> 11,705.
-    "EQ-M-HP1-OD": (14_632, 14_000, 5.0, 0.96, -9.5, _ADVISED),
+    # 14,632 before the furred tub ends (2026-11-08): the chase wall and W-S-SBF take finish-face
+    # volume out of BATH1/the suite, -9 Btu/h of ventilation share; cap 11,705 -> 11,698.
+    "EQ-M-HP1-OD": (14_623, 14_000, 5.0, 0.96, -9.5, _ADVISED),
     # The living-east rework replaces two 27x48 windows with one 63x48 unit, adding 3 sf
     # of glass to System 2's main-storey zone (2026-10-16). 13,855 / 0.64 / 23.6 °F, and
     # HP3 910 / 3.08, before the 2026-10-21 bath 1 rework moved the powder room's walls.
@@ -181,12 +183,12 @@ def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
 
 
 def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> None:
-    """0.80 as a ratio is a number nobody can act on; ``11,705 Btu/h against this zone's
+    """0.80 as a ratio is a number nobody can act on; ``11,698 Btu/h against this zone's
     14,632`` is one an equipment selector can shop against."""
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message
-    assert "11,705 Btu/h" in finding.message  # 0.80 x the unrounded design load
+    assert "11,698 Btu/h" in finding.message  # 0.80 x the unrounded design load
 
 
 # --- §3. the crossover ------------------------------------------------------------------------

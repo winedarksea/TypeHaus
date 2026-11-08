@@ -155,6 +155,18 @@ DUCT_STANDARD = [
                         source=_IMPERIAL),
             DuctPartRow(kind="collar_damper", size="8in", integral=True,
                         source="the plenum's own trunk spigot; a trunk is not balanced"),
+            DuctPartRow(kind="collar_damper", size="6in", integral=True,
+                        source="the level-2 extract plenum's own riser spigot; a riser is not balanced"),
+            # The flat level-2 extract (2026-11-08): a 4" spin collar does not fit a 4"-tall
+            # side, so each branch leaves on a 4x4 tap with a square-to-round, made with the trunk.
+            DuctPartRow(kind="takeoff", size="8x4", branch="4in", fabricated=True,
+                        source="4 x 4 in. side tap and square-to-round, shop-fabricated with the trunk"),
+            DuctPartRow(kind="takeoff", size="6x4", branch="4in", fabricated=True,
+                        source="4 x 4 in. side tap and square-to-round, shop-fabricated with the neck"),
+            DuctPartRow(kind="reducer", size="8x4", branch="6x4", fabricated=True,
+                        source="rectangular transition, shop-fabricated"),
+            DuctPartRow(kind="reducer", size="8x4", branch="4in", fabricated=True,
+                        source="end transition to the last branch, shop-fabricated"),
             DuctPartRow(kind="takeoff", size="8in", branch="4in",
                         product_ref="PROD-DUCT-SADDLE-4", source=_IMPERIAL),
             DuctPartRow(kind="takeoff", size="18x8", branch="6in",

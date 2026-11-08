@@ -2705,6 +2705,11 @@ model (+176 lb of other drift, inside the tests' tolerance); D = 286,781 − 6,8
 | global sliding FS, capped | 3.8083 | (0.25 x 280,067 + 32,375.0) / 27,315.75 = **3.7485** (d/c 0.4002) |
 | global sliding FS, basis 8 | 2.3829 | 102,391.7 / 43,656.2 = **2.3454** (d/c 0.6395) |
 
+2026-11-08: the furred tub ends (W-S-SBF, the chase wall 4 1/2" east, the floor-truss blocks)
+add 203.6 lb of house D, 280,270.6 lb: the shared numerator is 0.25 x 280,270.6 + 32,375.0 =
+102,442.6, so FS capped 102,442.6 / 27,315.75 = **3.7503** (d/c 0.4000) and basis 8
+102,442.6 / 43,656.2 = **2.3466** (d/c 0.6392). T and the at-rest term are unchanged.
+
 **The near line.** The E footing is the strut at the line's east end; its station is the middle
 of its overlap with the line, (413.97 + 432) / 2 = **422.98"** (was (412.94 + 432) / 2 = 422.47").
 Strut k = 4.0305e6 x 250 / 394 = 2.5576e6 lb/in, unchanged. Stiff-bed rows do not see it

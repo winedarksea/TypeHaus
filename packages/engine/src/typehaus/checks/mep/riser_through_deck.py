@@ -119,12 +119,14 @@ def riser_through_deck(ctx: CheckContext) -> list[Finding]:
                     if overlap < depth * MIN_SPAN_FRACTION and not through_sheet:
                         continue
                     footprint = station
+                    in_cavity = high < deck.deck_bottom_at(*path[leg][:2]) - 1e-6
                 else:
                     footprint = _sloped_footprint(deck, path[leg], path[leg + 1],
                                                   z[leg], z[leg + 1], 2 * radius)
                     if footprint is None:
                         continue
                     station = footprint.centroid
+                    in_cavity = False
                 if not Polygon(deck.deck_outline).contains(station):
                     continue
                 if _is_authorised(deck, tag, footprint, Polygon):
@@ -134,7 +136,7 @@ def riser_through_deck(ctx: CheckContext) -> list[Finding]:
                 below = vertical or min(z[leg], z[leg + 1]) < deck.deck_bottom_at(
                     *station.coords[0])
                 out.append(_verdict(rules, deck, tag, station, footprint, below, radius,
-                                    limit_m))
+                                    limit_m, in_cavity))
 
     if not out:
         out.append(_pass(_CID, f"every riser through the {len(decks)} decks in this model "
@@ -199,8 +201,11 @@ def _is_authorised(deck, tag: str, station, Polygon) -> bool:
 
 
 def _verdict(rules, deck, tag: str, station, footprint, below: bool, radius: float,
-             limit_m: float) -> Finding:
-    """One riser, one deck: on a member, too big to drill, or a hole saw through the sheet."""
+             limit_m: float, in_cavity: bool = False) -> Finding:
+    """One riser, one deck: on a member, too big to drill, or a hole saw through the sheet.
+
+    ``in_cavity``: the riser rises from below and stops under the sheet, so clear of the
+    members it cuts the ceiling, not the deck."""
     hole = station.buffer(radius) if footprint.geom_type == "Point" else footprint
     for member in deck.members if below else ():
         rect = _member_rect(member)
@@ -217,6 +222,12 @@ def _verdict(rules, deck, tag: str, station, footprint, below: bool, radius: flo
                 "(the trimmers and header then resolve with it), or move the riser into a "
                 "clear bay")
 
+    if in_cavity:
+        return _pass(
+            _CID,
+            f"{tag} rises into {deck.tag}'s framing at ({feet_inches(station.x)}, "
+            f"{feet_inches(station.y)}) clear of every member and stops under the sheet: it "
+            "cuts the ceiling below, not the deck", (tag, deck.tag))
     if 2 * radius >= limit_m:
         return _advisory(
             _CID,

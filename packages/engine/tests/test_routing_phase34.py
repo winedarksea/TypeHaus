@@ -202,8 +202,10 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
                      "EQ-M-ERV-MAN-SUP.collar-living",
                      "EQ-M-ERV-MAN-SUP.collar-study"]
     # The machine's own port 2 is Broan's drawing (2026-11-01), a spigot and not a collar.
-    assert all(p.collar for p in ports if p.exact and "ERV-MAN" in p.equipment_tag), (
-        "an exact ERV plenum port IS a branch collar")
+    # EQ-M-ERV-MAN-EXH's 6x4 trunk collar (2026-11-08) is exact and rectangular, not a branch.
+    assert all(p.collar or (p.section_m and abs(p.section_m[0] - p.section_m[1]) > 1e-6)
+               for p in ports if p.exact and "ERV-MAN" in p.equipment_tag), (
+        "an exact round ERV plenum port IS a branch collar")
     assert all("approximate" in p.describe() for p in ports if not p.exact)
     assert all("exact" in p.describe() for p in ports if p.exact)
 

@@ -48,7 +48,8 @@ def test_the_derived_drain_points_are_what_the_note_says(catlin_model_ro) -> Non
     from typehaus.resolve.mep import _expected_drain_point
 
     current_terminals = {**_TERMINALS, "FX-S-SUITEBATH-LAV": (165.5, 264.755),
-                         "FX-S-SUITEBATH-WC": (134.81, 252.406)}  # the 12" rough-in flange
+                         "FX-S-SUITEBATH-WC": (134.81, 252.406),  # the 12" rough-in flange
+                         "FX-S-SUITEBATH-TUBSH": (197.615, 251.875)}  # the furred end, 8 1/4"
     for tag, expected in current_terminals.items():
         point = _expected_drain_point(catlin_model_ro, tag)
         assert point is not None, tag
@@ -81,14 +82,14 @@ def test_the_collector_profile_is_the_note_s_arithmetic(catlin_model_ro) -> None
     path = [(_in(p[0]), _in(p[1])) for p in run.path]
 
     assert z[0] == pytest.approx(120.75, abs=0.001)   # the finished floor
-    assert z[1] == pytest.approx(116.75, abs=0.001)   # the drop bottom, under the chord
+    assert z[1] == pytest.approx(115.4, abs=0.001)    # the drop bottom, D10's height
     assert z[-1] == pytest.approx(111.0, abs=0.001)   # on the stack barrel
 
     legs = [math.dist(path[i], path[i + 1]) for i in range(1, 6)]
     # north (the loop under W-S-SN3, off the flange's own x), east, south, south, east
     assert legs == pytest.approx([13.844, 9.19, 20.25, 30.0, 6.0], abs=0.001)
     slopes = [(z[i] - z[i + 1]) / (leg / 12.0) for i, leg in zip(range(1, 6), legs, strict=True)]
-    assert slopes == pytest.approx([0.260, 0.261, 0.326, 1.240, 3.2], abs=0.001)
+    assert slopes == pytest.approx([0.260, 0.326, 0.267, 0.720, 3.2], abs=0.001)
 
     developed_ft = sum(legs) / 12.0
     assert developed_ft == pytest.approx(6.607, abs=0.001)
@@ -102,7 +103,7 @@ def test_the_two_arms_arrive_above_the_collector_they_tie_into(catlin_model_ro) 
     collector's south leg, the lav onto the tub's arm (2026-11-05)."""
     runs = {r.tag: r for r in catlin_model_ro.pipe_runs}
     for tag, parent_at, expected in (
-            ("PR-M-S-SUITE-TUB-DRAIN", 115.7 - 3.1 * (18 / 30), 113.84),
+            ("PR-M-S-SUITE-TUB-DRAIN", 114.4 - 1.8 * (18 / 30), 113.32),
             ("PR-M-S-SUITE-LAV-DRAIN", 115.85 - 0.35 * (5.5 / 15.25), 115.724)):
         assert parent_at == pytest.approx(expected, abs=0.001)
         arrival = _in(runs[tag].z_m[-1])

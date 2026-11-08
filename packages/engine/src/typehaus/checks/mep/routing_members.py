@@ -78,8 +78,12 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
         return [_unknown(_CID, "this model resolves no floors, so no run crosses a framed "
                                "member anywhere in it")]
 
+    from typehaus.resolve.mep_envelopes import run_sections
+
     runs = run_polylines(ctx)
     radii = run_radii(ctx)
+    # A rectangular duct is its width across the member and its depth in the window.
+    sections = run_sections(ctx.model)
     out: list[Finding] = []
     graded = 0
     for floor in floors:
@@ -119,11 +123,12 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
             if not crossings:
                 continue
             radius = radii.get(tag, 0.0)
+            half_w, half_d = sections.get(tag, (radius, radius, None))[:2]
             tightest: tuple[float, float, float, str, float] | None = None
             on_web: tuple[float, str, float, str] | None = None
             for crossing in crossings:
-                crown_gap = window.z1_m - (crossing.z_m + radius)
-                invert_gap = (crossing.z_m - radius) - window.z0_m
+                crown_gap = window.z1_m - (crossing.z_m + half_d)
+                invert_gap = (crossing.z_m - half_d) - window.z0_m
                 worst = min(crown_gap, invert_gap)
                 if tightest is None or worst < tightest[0]:
                     tightest = (worst, crown_gap, invert_gap,
@@ -131,8 +136,8 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
                 member = webbed.get(crossing.member_key)
                 grade = (web_grade(
                     floor, member, crossing.station_m, crossing.z_m,
-                    2 * radius * oblique[(tag, crossing.member_key, crossing.station_m)],
-                    2 * radius, True) if member is not None else None)
+                    2 * half_w * oblique[(tag, crossing.member_key, crossing.station_m)],
+                    2 * half_d, abs(half_w - half_d) < 1e-9) if member is not None else None)
                 if grade is not None and not grade.ok:
                     # The first miss is named; later ones add only the count.
                     count = on_web[0] + 1 if on_web is not None else 1.0
@@ -143,7 +148,7 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
             if tightest is None:
                 continue
             graded += 1
-            out.append(_finding(kind, tag, floor.tag, radius, window, tightest))
+            out.append(_finding(kind, tag, floor.tag, half_d, window, tightest))
             if on_web is not None:
                 out.append(_web_finding(kind, tag, floor.tag, on_web))
             bore = (_ijoist_finding(floor, chart, tag, radius, crossings, by_member,

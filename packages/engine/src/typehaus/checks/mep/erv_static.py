@@ -21,6 +21,11 @@ nominal diameter) pair names no product row is reported UNKNOWN **by that pair**
 a house-average roughness — a plausible number computed from an invented epsilon is worse
 than no number, because nobody can tell it is invented.
 
+**A rectangular run is graded only when anchored on a distributing plenum** (or chained
+end-to-end to such a run): Huebscher equivalent diameter and its gauge row's ε, turns by the
+row's ``bend_equivalent_length`` (no rectangular elbow C table exists), a missing number a gap.
+``erv_landings.network`` is the membership rule; System 1's rectangular trunks stay out of it.
+
 **The verdict is deliberately not a FAIL when the flow falls short of the design rate**, and
 the reason is scope. Whether a delivered flow is *enough* is a code question with a code
 answer — MN 1322 R403.5 in this house, graded by ``code.N1103_6_whole_house_ventilation`` —
@@ -41,7 +46,14 @@ the two places the graded figure is deliberately conservative.
 from __future__ import annotations
 
 from typehaus.checks._authoring import advisory, not_applicable, passed, unknown
-from typehaus.checks.mep.erv_network import connected_distribution
+from typehaus.checks.mep.erv_landings import (
+    direct_landings,
+    equipment_kinds,
+    landing_ancestors,
+    manifolds,
+    network,
+    radial_landings,
+)
 from typehaus.checks.mep.erv_static_terms import (
     elbow_loss_sum,
     interpolate,
@@ -80,22 +92,14 @@ _EXTRACT_SIDE = frozenset({DuctSystem.RETURN.value, DuctSystem.EXHAUST.value})
 _M_PER_IN = 0.0254
 
 # Old private names, kept for the oracle test and the network test.
+_equipment_kinds = equipment_kinds
+_manifolds = manifolds
+_network = network
+_direct = direct_landings
 _interpolate = interpolate
 _product_for = product_for
 _type_for = type_for
 _M_TO_FT = 3.280839895013123
-
-
-def _equipment_kinds(ctx: CheckContext) -> dict[str, str]:
-    """``{tag: EquipmentKind value}`` from the authored elements.
-
-    ``ResolvedCanvasObject.kind`` is the ELEMENT kind ("Equipment"), not the equipment
-    kind — the resolved object carries geometry and the authored one carries what the
-    machine is — so the two have to be joined by tag.
-    """
-    return {element.tag: element.kind.value
-            for element in ctx.plan.all_elements()
-            if element.element_kind == "Equipment"}
 
 
 class _Leg:
@@ -107,9 +111,38 @@ class _Leg:
         self.tag, self.drop_in_wg, self.gap = tag, drop_in_wg, gap
 
 
+def _rect_drop(ctx: CheckContext, duct, elbows: int) -> _Leg:
+    """A rectangular run at its Huebscher equivalent diameter and its gauge row's ε.
+
+    The row is ``duct_sizing.rectangular_row`` (material, smallest ``max_side`` covering the
+    larger side). A row with no ``roughness_m`` is a gap by the (material, W x D) pair. No
+    rectangular elbow C table exists, so turns take the row's ``bend_equivalent_length``, and
+    a turn with none authored is a gap, not a free bend.
+    """
+    width, depth = duct.width_m, duct.depth_m
+    pair = (f"{duct.material or 'no material'}, "
+            f"{(width or 0.0) / _M_PER_IN:.1f}x{(depth or 0.0) / _M_PER_IN:.1f}\"")
+    row = (duct_sizing.rectangular_row(ctx.plan.library, duct.material, width, depth)
+           if width and depth else None)
+    if row is None or row.roughness_m is None:
+        return _Leg(duct.tag, None, f"no rectangular DuctProductType with a roughness_m for "
+                                    f"({pair})")
+    if duct.design_cfm is None:
+        return _Leg(duct.tag, None, "the run states no design_cfm")
+    if elbows and row.bend_equivalent_length is None:
+        return _Leg(duct.tag, None, f"{elbows} turn(s) on a rectangular run: no rectangular "
+                    f"elbow C table exists and {row.tag} states no bend_equivalent_length")
+    bend_m = row.bend_equivalent_length.meters if row.bend_equivalent_length else 0.0
+    return _Leg(duct.tag, duct_sizing.leg_drop_in_wg(
+        duct.design_cfm, duct_sizing.equivalent_diameter_m(width, depth), row.roughness_m,
+        duct.length_m + elbows * bend_m), None)
+
+
 def _duct_drop(ctx: CheckContext, duct, elbows: int) -> _Leg:
     """Darcy-Weisbach over developed length plus the elbows' equivalent length."""
     diameter_m = getattr(duct, "diameter_m", None)
+    if diameter_m is None and duct.material is not None:
+        return _rect_drop(ctx, duct, elbows)
     product = _product_for(ctx, duct.material, diameter_m)
     if product is None:
         return _Leg(duct.tag, None,
@@ -158,174 +191,16 @@ def _elbow_counts(ctx: CheckContext) -> dict[str, int]:
             for row in run_schedule(ctx.model) if row["kind"] == "duct"}
 
 
-def _manifolds(ctx: CheckContext) -> dict[str, object]:
-    """Distribution plenums by tag — a ``DUCT_MANIFOLD`` that actually distributes.
-
-    **Two ports or more, and the exterior hoods are why.** A hood carries ``DUCT_MANIFOLD``
-    because the enum has no HOOD kind, and it states one 6" port so the port census can
-    grade it. One port does not distribute anything: counted here, the exhaust hood would
-    make ``DU-ERV-EA`` — a 6" trunk carrying the whole house's stale air — read as a radial
-    off it, and the worst path would be a trunk landing on a hood rather than the branch it
-    actually is. ``mep.erv_manifold_ports`` still grades every one of them.
-
-    **Or ONE port and a dimensioned collar** (2026-09-19). A trunk-and-branch plenum has a
-    single branch port — the trunk — and is a distribution box in every sense that matters
-    here: catlin's ``EQ-M-ERV-MAN-EXH`` feeds ten terminals through it. The port count
-    cannot tell it from a hood, and a dimensioned collar can: declaring WHERE a collar is
-    is a positive statement that this box hands air to a named branch, and no hood in the
-    catalog declares one (``library/hvac.py`` states counts and no layouts on purpose).
-    Without this the level-2 trunk-and-branch tree left the static budget silently, ten
-    runs at a time, which is the failure mode this whole module is written against.
-    """
-    out: dict[str, object] = {}
-    kinds = _equipment_kinds(ctx)
-    for obj in ctx.model.canvas_objects:
-        if kinds.get(obj.tag) != EquipmentKind.DUCT_MANIFOLD.value:
-            continue
-        product = _type_for(ctx, obj.type_ref, "equipment_types")
-        if product is None:
-            continue
-        reader = getattr(product, "collars", None)
-        dimensioned = bool(reader()) if callable(reader) else False
-        if (getattr(product, "duct_ports", None) or 0) >= 2 or dimensioned:
-            out[obj.tag] = product
-    return out
-
-
-def radial_landings(ctx: CheckContext) -> dict[str, str]:
-    """``{run tag: manifold tag}`` for every run that lands in a fabricated plenum.
-
-    A run is a *radial* when one of its ends is inside a ``DUCT_MANIFOLD``'s case and on
-    one of its branch ports rather than its trunk collar — by ROLE, the census's own
-    ``lands_on_branch_port``, so a 3" radial reduced onto a 4" collar is a radial, not a
-    trunk summed into the whole side.
-
-    "Lands in" is ``duct_connectivity.equipment_at_end``, the one definition of it in the
-    engine, rather than a second footprint test that could drift from the first.
-    """
-    from typehaus.checks.mep.duct_connectivity import equipment_at_end
-    from typehaus.checks.mep.erv_manifold_ports import lands_on_branch_port, plenum_air_ports
-
-    plenums, ports = _manifolds(ctx), plenum_air_ports(ctx.model)
-    out: dict[str, str] = {}
-    for duct in ctx.model.ducts:
-        if not duct.path or duct.diameter_m is None:
-            continue
-        for index in (0, -1):
-            z = duct.z_m[index] if duct.z_m and len(duct.z_m) == len(duct.path) else None
-            host = equipment_at_end(ctx, z, duct.path[index])
-            if host in plenums and lands_on_branch_port(
-                    plenums[host], ports.get(host, ()), duct, (duct.path[index], z)):
-                out[duct.tag] = host
-                break
-    return _through_trunks(ctx, plenums, out)
-
-
-def _direct(ctx: CheckContext, landings: dict[str, str]) -> set[str]:
-    """The landings whose own end is in the plenum: a branch off a trunk is not one."""
-    from typehaus.resolve.mep_soffit import ducts_are_joined
-
-    return {tag for tag in landings
-            if not any(other != tag and landings[other] == landings[tag]
-                       and ducts_are_joined(ctx.model, tag, other)
-                       and _diameter(ctx, other) > _diameter(ctx, tag) + 1e-9
-                       and _cfm(ctx, other) is not None
-                       for other in landings)}
-
-
-def _cfm(ctx: CheckContext, tag: str) -> float | None:
-    return next((d.design_cfm for d in ctx.model.ducts if d.tag == tag), None)
-
-
-def _diameter(ctx: CheckContext, tag: str) -> float:
-    return next((d.diameter_m or 0.0 for d in ctx.model.ducts if d.tag == tag), 0.0)
-
-
-def _through_trunks(ctx: CheckContext, plenums: dict, landings: dict[str, str]
-                    ) -> dict[str, str]:
-    """Branches that reach a plenum THROUGH a trunk, not by landing in its case.
-
-    **A plenum does not have to be a manifold.** Catlin's level 2 went trunk-and-branch on
-    2026-09-19 — thirteen home-run lanes will not leave one closet through an open-web
-    truss field — so what leaves ``EQ-M-ERV-MAN-EXH`` is one 8" trunk and the ten branches
-    are tee'd off it out in the floor. Every one of them was silently outside this check:
-    ``radial_landings`` asked whether a run ends INSIDE a plenum's case, and they end on a
-    duct. Ten runs left the static budget and nothing said so, which is the failure mode
-    this whole module is written against.
-
-    One hop is deliberate and it is enough: a branch tee'd off a branch is a topology
-    nobody has drawn here, and inventing a general graph walk for it would be grading a
-    system this house does not have. A run reached this way is graded exactly as a radial
-    is — its own flow against its own product — because that is what it is.
-    """
-    from typehaus.resolve.mep_soffit import ducts_are_joined
-
-    del plenums  # every landing is already on one of its plenum's branch ports
-    sizes = {duct.tag: duct.diameter_m for duct in ctx.model.ducts
-             if duct.diameter_m is not None}
-    out = dict(landings)
-    for duct in ctx.model.ducts:
-        if duct.tag in out or not duct.path or duct.diameter_m is None:
-            continue
-        for trunk_tag, host in sorted(landings.items()):
-            # **A branch is SMALLER than the trunk it comes off, and the test is that way
-            # round on purpose.** Without it the hop runs backwards: catlin's basement
-            # radials land in their plenum and the 6" trunk is joined to them, so the trunk
-            # would inherit the plenum and its 210 cfm would be added to the plenum's own
-            # 60 — the box would be worked at 270 cfm it never sees, and the supply column
-            # of notes/erv_static_budget.md §6 would move for a reason that is not in the
-            # building.
-            if duct.diameter_m >= sizes.get(trunk_tag, 0.0) - 1e-9:
-                continue
-            if trunk_tag != duct.tag and ducts_are_joined(ctx.model, duct.tag, trunk_tag):
-                out[duct.tag] = host
-                break
-    return out
-
-
-def _network(ctx: CheckContext, machine_tag: str, landings: dict[str, str]) -> list[object]:
-    """The runs that belong to this ventilator's own distribution, and nothing else.
-
-    Seed from radials and equipment landings, then follow compatible physical duct joints.
-    Remote pieces of a split header contribute even when neither end touches equipment.
-
-    **A run that states no ``material``, or is rectangular, is not in it.**
-    Catlin's System 1 shares the mixing box with this machine and its trunks are fabricated
-    rectangular sheet metal (a gauge row, not a friction row): pulling those five runs into
-    an ERV pressure budget would grade a system this check has no business grading. A round
-    run that DOES state a material but matches no ``DuctProductType`` stays in, reported as
-    a gap by its own pair — that is a house that forgot to author a row.
-    """
-    from typehaus.checks.mep.duct_connectivity import equipment_at_end
-
-    kinds = _equipment_kinds(ctx)
-    anchors = {machine_tag, *landings.values()}
-    anchors |= {tag for tag, kind in kinds.items()
-                if kind == EquipmentKind.MIXING_BOX.value}
-    out: list[object] = []
-    for duct in ctx.model.ducts:
-        if duct.material is None or not duct.path or duct.diameter_m is None:
-            continue
-        if duct.tag in landings:
-            out.append(duct)
-            continue
-        for index in (0, -1):
-            z = duct.z_m[index] if duct.z_m and len(duct.z_m) == len(duct.path) else None
-            if equipment_at_end(ctx, z, duct.path[index]) in anchors:
-                out.append(duct)
-                break
-    return connected_distribution(ctx.model.ducts, {duct.tag for duct in out})
-
-
 def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
                 landings: dict[str, str], plenums: dict, kinds: dict[str, str]
                 ) -> tuple[tuple[float, str, list[str]] | None, list[str]]:
     """The worse side's (static in. w.g., path, terms), and the runs that resolved no drop."""
     worst: tuple[float, str, list[str]] | None = None
     gaps: list[str] = []
-    network = _network(ctx, machine_tag, landings)
+    members = network(ctx, machine_tag, landings)
+    ancestors = landing_ancestors(ctx, landings)
     for side, name in ((_SUPPLY_SIDE, "supply"), (_EXTRACT_SIDE, "extract")):
-        runs = [duct for duct in network if duct.system in side]
+        runs = [duct for duct in members if duct.system in side]
         if not runs:
             continue
         radials = [duct for duct in runs if duct.tag in landings]
@@ -353,7 +228,7 @@ def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
         # tree counts its trunk once, never the trunk plus the branches it carries; and a
         # box whose trunk runs to the machine passes that trunk's flow, riser air included.
         plenum_cfm: dict[str, float] = {}
-        direct = _direct(ctx, landings)
+        direct = direct_landings(ctx, landings)
         for duct in radials:
             if duct.design_cfm is not None and duct.tag in direct:
                 plenum_cfm[landings[duct.tag]] = (
@@ -361,13 +236,19 @@ def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
         for host, cfm in machine_trunk_flows(ctx, trunks, machine_tag, plenums).items():
             plenum_cfm[host] = max(plenum_cfm.get(host, 0.0), cfm)
 
+        legs = {duct.tag: _duct_drop(ctx, duct, elbows.get(duct.tag, 0)) for duct in radials}
         for duct in radials:
-            leg = _duct_drop(ctx, duct, elbows.get(duct.tag, 0))
+            leg = legs[duct.tag]
             if leg.drop_in_wg is None:
                 gaps.append(f"{leg.tag}: {leg.gap}")
                 continue
             branch = leg.drop_in_wg
             detail = [f"{leg.tag} {leg.drop_in_wg:.3f}\""]
+            # The trunk (and neck) a through-branch's air also crosses rides on its path.
+            for up in ancestors.get(duct.tag, ()):
+                if up in legs and legs[up].drop_in_wg is not None:
+                    branch += legs[up].drop_in_wg
+                    detail.append(f"{up} {legs[up].drop_in_wg:.3f}\"")
             terminal = terminal_loss(ctx, duct)
             if terminal is not None:
                 branch += terminal / PA_PER_IN_WG

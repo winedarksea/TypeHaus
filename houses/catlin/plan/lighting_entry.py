@@ -30,9 +30,10 @@ ENTRY_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # room=RM-M-MECH, the shaft closet off the mudroom's north end. Its ceiling is risers,
     # trunk and the ERV chase header; the one bay a 6" housing clears is over
-    # EQ-M-ERV-MAN-EXH, so the can lights that plenum's dampers from 3" above it.
+    # EQ-M-ERV-MAN-EXH, so the can lights that plenum's dampers from 3" above it, east of the
+    # flat neck that rises off its top (2026-11-08).
     ElectricalDevice(uid="QTM000YAAA", tag="ED-M-STORAGE-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5, 1), ft(35, 0.375)), type_ref="ED-T-LT-CAN4",
+                     position=pt(inch(63.5), ft(35, 0.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MECH",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),

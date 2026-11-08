@@ -950,6 +950,40 @@ EA riser is held, and `haus route --run DU-ERV-OA` with its root moved to the 27
 `penetration_for` (an exact OA port instead says the 14" lead meets CD-B-DATA-MEDIA and R-GYM);
 the router could not be used, so a and a+ are screened, not routed.
 
+### 10.14 The flat level-2 extract trunk (2026-11-08)
+
+The 8" round `DU-M-ERV-EXH-TRUNK` fit no TrimJoist J12 opening (owner chose a flat trunk,
+2026-11-07). It is now an 8x4 galvanized trunk in the D pockets' 9x4 R2 at x=27", fed by a 6x4
+`DU-M-ERV-EXH-NECK` off the plenum's top, both carrying the whole 114 cfm. `mep.erv_static_budget`
+grades a rectangular run at its Huebscher equivalent diameter with the rectangular row's ε
+(`DUCT-T-GALV-RECT-10`, the round rows' 0.0003 ft), and adds the trunk and neck to every
+branch they carry.
+
+**Equivalent diameter**, De = 1.30 (ab)^0.625 / (a+b)^0.25 (ASHRAE Fundamentals 2017 Ch. 21 Eq. 25):
+
+| | a x b | (ab)^0.625 | (a+b)^0.25 | De |
+|---|---|---|---|---|
+| trunk | 8 x 4 | 32^0.625 = 8.724 | 12^0.25 = 1.8612 | 6.0935" |
+| neck | 6 x 4 | 24^0.625 = 7.284 | 10^0.25 = 1.7783 | 5.3281" |
+
+**Turns.** No rectangular elbow C is in the DuctStandard, so each turn is the row's equivalent
+length: a smooth-radius 90 at r/W 1.0, H/W 0.5, Co 0.25 (ASHRAE, "Fitting Loss Coefficients",
+online supplement to *Principles of HVAC* 9th ed., 2021, Fitting 3-5, p. 12, after Idelchik
+Diagram 6-1). L = Co x De / f = 0.25 x 6.09 / 0.026 = 59". Each run takes two turns (the trunk's
+30-degree drop is charged as a full 90, conservative).
+
+**Friction** at 114 cfm, ν 1.62e-4 ft²/s, Colebrook iterated by hand:
+
+| | developed (in) | + 2 x 59" | L (ft) | A (ft²) | V (fpm) | Re | f | VP (in. w.g.) | Δp = f (L/D) VP |
+|---|---|---|---|---|---|---|---|---|---|
+| trunk | 300.3 | 418.3 | 34.86 | 0.20252 | 562.9 | 29,408 | 0.0251 | 0.019755 | **0.034"** |
+| neck | 74.3 | 192.3 | 16.02 | 0.15484 | 736.3 | 33,632 | 0.0247 | 0.033796 | **0.030"** |
+
+The engine reports 0.034" and 0.030". The extract side's worst path becomes
+`DU-M-ERV-R-SUITEBATH` at **0.417"** (was 0.400" via `DU-B-ERV-R-SAUNA-EXH`, with no level-2
+trunk on any path). It stays under the supply side's 0.430" via `DU-B-ERV-R-PLAY`, so the
+machine still delivers **204.5 cfm**, against 203.0 cfm required (`code.N1103_6_whole_house_ventilation`).
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

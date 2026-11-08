@@ -80,10 +80,11 @@ def test_it_catches_a_run_drawn_across_the_stairwell(catlin_model):
     findings = [f for f in run_from_model(model, [], tier=Tier.ADVISORY,
                                           only="mep.run_over_void").findings
                 if f.check_id == "mep.run_over_void"]
-    fails = [f for f in findings if f.result is Result.FAIL]
+    # The old leg also crosses FO-S-ERV-CHASE's void for 0.63 ft since the chase widened 4 1/2"
+    # with BATH1's furred tub end (2026-11-08); the stair shaft is the 7.21 ft one.
+    fails = [f for f in findings if f.result is Result.FAIL and "7.21 ft" in f.message]
     assert len(fails) == 1, [f.message for f in fails]
     assert "CD-M-DATA-KITCH" in fails[0].element_tags
-    assert "7.21 ft" in fails[0].message
     assert "FS-S-WEST" in fails[0].message
 
 
@@ -238,7 +239,8 @@ def test_the_worst_graded_run_leaves_a_documented_margin(catlin_model):
     cold at 20" (it was 2'-6"). Since the 1" trunk split off ``CD-M-DATA-KITCH`` (2026-10-30)
     the 3/4" continuation, whose straight line starts at the pull box, leads at 2.49: 0.01
     under the 2.50 line, so the next change to it must shorten it. The stub is next (2.47).
-    2026-11-06: its J12 pocket jog (decision #117) took it to 2.50, ON the line.
+    2026-11-06: its J12 pocket jog (decision #117) took it to 2.50, ON the line. 2026-11-08:
+    its re-lane to the y=266" bay brought it to 2.28, and the coldstore stub leads again at 2.47.
     """
     from typehaus.takeoff.runs import run_schedule
 
@@ -247,5 +249,5 @@ def test_the_worst_graded_run_leaves_a_documented_margin(catlin_model):
               if r["ratio"] is not None and r["developed_ft"] >= 20
               and terminals.get(r["tag"], 0) < 3]
     worst = max(graded, key=lambda r: r["ratio"])
-    assert worst["tag"] == "CD-M-DATA-KITCH"
-    assert worst["ratio"] == pytest.approx(2.50, abs=0.005)
+    assert worst["tag"] == "PR-M-CW-COLDSTORE-STUB"
+    assert worst["ratio"] == pytest.approx(2.47, abs=0.005)

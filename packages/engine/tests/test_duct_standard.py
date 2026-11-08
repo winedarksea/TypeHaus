@@ -89,9 +89,11 @@ def test_elbow_key_reads_the_bought_angles_and_rect_sizes():
 
 
 def test_catlin_branch_census(catlin_model_ro):
-    """M4-102: nine 4" take-offs on the level-2 extract trunk and six System 1 taps."""
+    """M4-102: eight 4" take-offs on the flat level-2 extract trunk, MUD's on its neck (PLANT
+    is the trunk's end transition), and six System 1 taps."""
     takeoffs = [p for p in catlin_model_ro.duct_parts if p.kind == "takeoff"]
-    assert sum(p.run_tag == "DU-M-ERV-EXH-TRUNK" for p in takeoffs) == 9
+    assert sum(p.run_tag == "DU-M-ERV-EXH-TRUNK" for p in takeoffs) == 8
+    assert sum(p.run_tag == "DU-M-ERV-EXH-NECK" for p in takeoffs) == 1
     assert sum(p.run_tag.startswith("DU-S-HP-") for p in takeoffs) == 6
 
 

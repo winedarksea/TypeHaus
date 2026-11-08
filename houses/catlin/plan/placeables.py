@@ -608,7 +608,7 @@ SECOND_PLACEABLES = [
     # base: the gap is a separation joint, not access to the shelves below counter level.
     # The recentered 30" mirror ends at y=389.5", leaving 5" to the case.
     Furniture(uid="640HBGH1XS", tag="FURN-S-BATH1-SHELF", type_ref="FT-BATH1-SHELF-1630",
-              room="RM-S-BATH1", position=pt(inch(107.993), m(10.4013))),
+              room="RM-S-BATH1", position=pt(inch(108), inch(409.5))),
     # The suite bath's twin of it, turned to open west (2026-10-03): FX-S-SUITEBATH-TUBSH's
     # SOUTH return, in the 6 3/4" between the tub (y=200.125") and W-S-SBS (y=193.375").
     # x 15'-2 5/8"..17'-8 5/8" is the tub's own 30" width; the back sits on W-S-C2C.

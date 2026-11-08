@@ -1589,21 +1589,25 @@ MAIN_DATA_TRUNKS = [
                # x=2'-5 1/2" below them (pocket D2, T; the 296" boot REG-S-EXH4 stands at 30"), across the
                # y=0 truss on one diagonal leg, through pocket D14 at ~16'-1" (x=17'-6" is the
                # TrimEnd), so the tail turns less than the old square one did.
-               path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(401)),
-                     pt(inch(31.5), inch(401)), pt(inch(31.5), inch(317)), pt(inch(29.5), inch(317)),
-                     pt(inch(29.5), ft(1)),
+               # 2026-11-08: out of the chase through the trimmers' D0 at x=1'-3 1/2", east high in the
+               # 384"..394 3/4" bay over LIVING and the ERV neck, then south on x=5'-7" in the R1 and
+               # D4 pockets, 7" up, over the ERV takeoffs (D1-D3 are the trunk's and LIVING's).
+               path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(401)), pt(inch(15.5), inch(401)),
+                     pt(inch(15.5), inch(389.5)), pt(inch(21), inch(389.5)), pt(inch(64), inch(389.5)),
+                     pt(inch(67), inch(389.5)), pt(inch(67), ft(1)), pt(inch(100), ft(1)),
                      pt(inch(159), ft(1)), pt(ft(17, 6), inch(-6)),
                      pt(ft(17, 6), inch(-6)), pt(ft(17, 6), ft(-4.833)),
                      pt(ft(17, 6), ft(-4.833))),
                start_elevation=inch(118), end_elevation=ft(8, 8),
                # The tier drop is spread along the y=1'-0" bay leg rather than taken plumb.
-               elevations=(inch(118), inch(118), inch(118), inch(118), inch(118), inch(118),
+               elevations=(inch(118), inch(118), inch(114.125), inch(114.125), inch(119.125), inch(119.125),
+                           inch(115.125), inch(115.125), inch(118),
                            ft(9, 3.75), ft(9, 3.75), ft(8, 10.25),
                            ft(8, 10.25), ft(8, 8)),
                # Pull box at 5 (2'-5 1/2", 1'-0"), the foot of the drop to the south bay, behind
                # a ceiling access cover (360 deg before it since the J12 jogs, 2026-11-06). Re-index
                # it if the head is re-laid again.
-               pull_points=(5,),
+               pull_points=(5, 8),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-PORCH-AP"),
 ]
 

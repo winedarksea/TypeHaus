@@ -84,216 +84,160 @@ EQUIPMENT_ERV_MAIN = [
                   wall_ref="W-M-MECH-E", face="left", distance_from_start=inch(20),
                   normal_gap=inch(0.625), rotation_offset=deg(-90)))),
 ]
-# ============ LEVEL 2 — TRUNK AND BRANCH, AND THE ARITHMETIC THAT DECIDED IT ============
+# ============ LEVEL 2 — TRUNK AND BRANCH ============
 #
-# ** THIRTEEN HOME-RUN LANES WILL NOT LEAVE THIS CLOSET, AND ON 2026-09-19 THE ENGINE COULD
-# FINALLY SAY SO. ** Until that day `profiles.open_web_opening_m` gave FS-S-WEST an 8 7/8"
-# chord-to-chord window and nothing narrowed it ALONG the span, so the model read an
-# open-web floor truss as a CONTINUOUS SLOT and thirteen 4" ducts crossing every truss
-# inside a 41" band all passed. The block that stood here said as much in prose — "SEVEN
-# PAIRS OVERLAP", "two 4" ducts on 2" centres OVERLAP BY 2"" — and then noted that nothing
-# graded it. `JoistSpec.web_openings` (TrimJoist J12) and `mep.open_web_panel` grade it now.
+# **Thirteen home-run lanes will not leave this closet** through FS-S-WEST's open-web trusses,
+# so the extract side is trunk-and-branch and the supply side is not: every fresh-air outlet
+# still leaves its own damper collar (BLD-08), and the ten extracts tee off one trunk.
 #
-# STALE SINCE 2026-11-06 (decision #117): the count below is on the retired 24/13/12 owner
-# layout; J12 has 5" D pockets and an R1 chase, and the re-count waits on the owner's ERV pick
-# (plans/TODO.md). A lane running SOUTH sits at one x, so it crosses every truss in the
-# SAME opening, and three openings reach this closet:
+# **The trunk is FLAT and runs in the D pockets at x=27" (owner, 2026-11-07; re-routed
+# 2026-11-08).** TrimJoist J12 (decision #117) gives each truss 5" D pockets with a 9x4 R2 and
+# one 16x8 R1. R1 does not line up across the deck (x 54-70" north of the stair, 101-117" south
+# of it, the BATH1 stack between), but the D pockets do at x=27", from y=0 to the chase. Every
+# run that crosses a truss holds the height its pocket admits, and `mep.open_web_panel` keeps
+# one run per pocket:
 #
-#     opening      x band        usable 4" lanes     why
-#     17 1/2..30 1/2   —         0                   the three risers, the radon/vent
-#                                                    bundle and nine conduits stand in it
-#     41 1/2..54 1/2   41 3/4..54 1/4   3 per tier   two tiers in the 8 7/8" window
-#     65 1/2..78 1/2   65 1/2..69 3/8   1 per tier   the closet's east wall at 71 3/8"
-#                                                    ---
-#                                                     8
+#     x (in)   run                     height over the chord   pocket
+#     27       DU-M-ERV-EXH-TRUNK 8x4  3 7/8"                   D1/D2 R2
+#     42 1/4   DU-M-ERV-R-LIVING       8"                       D2/D3
+#     83 3/4   DU-M-ERV-R-BED          7 1/2"                   D6
+#     106 7/8  DU-M-ERV-R-STUDY        7.9"                     D8 north, R1 south
 #
-# Eight lanes, thirteen radials. Leaving EASTWARD along a bay instead is worse: nine runs
-# would want one 12 1/2" bay, which takes three per tier. **The neck is structural**, and
-# BLD-08's home-run install cannot be laid on this level.
+# The supply radials ride the upper tier, so every extract takeoff rides its own bay low and
+# crosses them underneath. The neck crosses the chase trimmers in R1 at x=57 1/2".
 #
-# ** SO THE EXTRACT SIDE GOES TO A TRUNK AND THE SUPPLY SIDE DOES NOT. ** Three will lay
-# and ten will not, and that asymmetry is the whole of the decision: every fresh-air outlet
-# in the house still leaves its own collar on its own damper, which is what BLD-08 was
-# actually arguing for. The ten extracts are tee'd off one 8" trunk with a butterfly damper
-# at each takeoff — the same balancing point, one fitting further from the box.
-#
-# ** THE TRUNK RUNS SOUTH, NOT ALONG A BAY, AND FO-S-STAIR IS WHY. ** A trunk in the 35'-4"
-# bay crosses no member at all and would have been better in every other way. The stair well
-# is x 10'-3 1/8"..17'-8 5/8", y 26'-0 3/8"..35'-5 3/8", and a trunk in that bay spans 7.18
-# ft of it with nothing to strap to; `mep.run_over_void` said so the first time it was drawn
-# that way. South means it lives in ONE opening for its whole length, and 8" of the 13"
-# leaves 4 1/2" beside it for DU-M-ERV-R-STUDY, 1/4" off each web and 1/2" between.
-#
-# Because the trunk runs south, **every takeoff is a pure bay leg**: it leaves the trunk at
-# its own bay and rides that bay to its terminal, crossing no truss at all. Two exceptions
-# turn south again near their terminal (LAUNDRY for the standpipe boot) and each does it in
-# its own opening.
-#
-# ** THE TIER RULE: A LEG THAT CROSSES THE TRUSSES RIDES THE UPPER TIER, A LEG THAT RIDES A
-# BAY THE LOWER. ** Every crossing in this cavity is then a south leg meeting a bay leg, on
-# opposite tiers BY CONSTRUCTION — no case analysis, and nothing to re-derive when a
-# terminal moves. The alternative (one tier per RUN) is not even available: the conflict
-# graph is not two-colourable, because BED2, BED1 and PLANT cross one another in a triangle.
-# The step is at the elbow where the duct turns anyway, and it is drawn as a repeated vertex
-# so it is a VERTICAL step and not a ramp spread over thirty feet — which is how it was
-# drawn for one round, and `mep.run_interference` reported eleven pairs for it.
-#
-# **FILED ON THE SECOND STOREY, NOT THE MAIN ONE, AND THAT IS NOT COSMETIC.** These ducts run
-# in FS-S-WEST's cavity, which is the second storey's floor and the main storey's ceiling.
-# `resolve/mep_ducts.py::_containing_floor` matches a segment to a sibling FloorSystem *on
-# the duct's own storey*, so a run filed on `main` with `floor_ref="FS-S-WEST"` gets graded
-# against FS-M-WEST's joist lines instead — which sit on a different 16" phase, so every
-# radial reported a straddle it did not have.
-#
-# Bay centres are 8" + n*16". **Two of them are unusable and the check is what said so:**
-# FO-S-STAIR's trimmers stand behind its lining, at y 25'-4 3/4"..25'-11 3/4" and
-# 35'-6"..35'-9 1/2", so a duct centred on the 26'-0" or 35'-4" bay reaches one.
-#
-# WHAT THE REDESIGN LEFT BEHIND, measured rather than claimed: **no duct-against-duct pair
-# on this level at all**, where thirteen radials on 2" centres had seven. Every remaining
-# interference here is a duct against a PIPE or a CONDUIT, which is the plumbing campaign's
-# and the conduit campaign's to answer, and every one of the thirteen is clear of every web,
-# every bay and the stair void.
-#: The plenums' collar station, and since 2026-09-19 it is DERIVED rather than chosen: both
-#: boxes are wall-mounted at 8'-0" and resolve to 97 1/4"..105 1/4" (the mount is off the
-#: FINISHED floor, which is 1 1/4" over the storey datum), so a collar on the case's
-#: mid-height is at 101 1/4" — second-relative -18 3/4".
-#:
-#: It was -20" while the collars were an integer count with no positions, and a run that
-#: started 1 1/4" under the hole it goes into was nobody's error because nothing could see
-#: it. `mep.erv_manifold_ports` can now: it grades each radial against the collar it lands
-#: on, within an inch.
+# **Filed on the second storey, not the main one.** These ducts run in FS-S-WEST's cavity;
+# `resolve/mep_ducts.py::_containing_floor` matches a segment to a FloorSystem on the duct's own
+# storey, so a run filed on `main` would be graded against FS-M-WEST's joists instead.
+#: The plenums' collar station: both boxes hang at 8'-0" and resolve to 97 1/4"..105 1/4", so
+#: a collar at mid-height is 101 1/4", second-relative -18 3/4" (`mep.erv_manifold_ports`).
 _PORT_Z = inch(-18.75)
-#: A 4" duct's centreline resting on FS-S-WEST's bottom chord: invert 109 5/8" (the web
-#: window's floor), centreline 111 5/8", second-relative -8 3/8". See the derivation above.
-#: **The LOWER of the two tiers the 8 7/8" web window admits**, and the one every leg that
-#: rides ALONG a bay uses.
+#: A 4" duct resting on FS-S-WEST's bottom chord (invert 109 5/8", centreline 111 5/8"): the
+#: low tier every extract takeoff rides along its bay.
 _BAY_Z = inch(-8.375)
-#: The UPPER tier: a 4" duct's crown resting on the top chord, invert 114 1/2", centreline
-#: 116 1/2". The window is 109 5/8"..118 1/2" and two 4" ducts stack in it with 7/8" to
-#: spare, which is the whole of what makes the rule below work.
-#:
-#: ** THE RULE: A LEG THAT CROSSES THE TRUSSES RIDES THE UPPER TIER, A LEG THAT RIDES A BAY
-#: THE LOWER. ** Every crossing in this cavity is therefore a south leg meeting a bay leg,
-#: and the two are on opposite tiers BY CONSTRUCTION — no case analysis, nothing to
-#: re-derive when a terminal moves. The conflict graph the alternative needs is not even
-#: two-colourable: BED2, BED1 and PLANT cross each other in a triangle.
-#:
-#: The cost is one offset per takeoff, at the elbow where it turns anyway. Since 2026-11-01
-#: the offset is a 30° ramp (26° where a vertex must stand off a truss line): a 4 7/8" step
-#: between two 90s is shorter than their take-offs (`mep.fitting_pattern`).
-_CROSS_Z = inch(-3.5)
-#: An 8" trunk centred in the same window: 110 1/16"..118 1/16", 7/16" clear of each chord.
-#: It rides a BAY, so the window is not actually what constrains it — but centring it is
-#: what lets a 4" takeoff leave it at either tier.
-_TRUNK_Z = inch(-5.9375)
+#: The flat trunk's centreline in TrimJoist J12's D pockets: an 8x4 passes their 9x4 R2 at
+#: x=27" only between 3.85" and 3.9" over the chord (`resolve/open_web.grade_crossing`).
+_TRUNK_Z = inch(-8)
+#: A 4" radial's upper-tier heights in the D pockets: 7.5" over the chord at x=83 3/4", 7.9"
+#: at 106 7/8" (over the BATH1 lav drain), 8.0" at x=42 1/4" (1/8" over the trunk's crown).
+_UP_Z = inch(-4.375)
+_STUDY_Z = inch(-3.975)
+_HI_Z = inch(-3.875)
+#: Under PR-B-HW-SUITE by STUDY's valve and PR-M-S-SUITE-WC-DRAIN on STUDY's and LAUNDRY's legs.
+_LOW_Z = inch(-9.625)
+_LAUNDRY_Z = inch(-9.875)
+#: KITCH passes under PR-M-S-SUITE-WC-DRAIN's south leg at x=12'-0".
+_KITCH_Z = inch(-9.125)
+#: The 6x4 neck's centreline where it crosses joist-0-026-1, the chase trimmers and the
+#: 32' truss: 7.9" over the chord, the one height all four pass a 6x4 at x 57 1/8"..58 5/8".
+_NECK_Z = inch(-3.975)
 
 DUCTS_ERV_LEVEL2 = [
-    # ** THE TRUNK. ** 8" galvanized, out of the extract plenum's one trunk collar, SOUTH
-    # down the x=3'-10 1/2" lane from y=35'-0" to y=7'-4".
+    # ** THE TRUNK IS FLAT AND RUNS IN THE D POCKETS AT x=27" (owner, 2026-11-07). ** The 8"
+    # round fit no published J12 opening. R1 does not line up: x 54-70" north of the stair,
+    # 101-117" south of it, and the BATH1 stack stands in the bay between. The D pockets'
+    # 9x4 R2 do line up, at x=27" from y=0 to the chase, so an 8x4 runs straight south in
+    # them. De 6.1" (Huebscher) at 114 cfm: notes/erv_static_budget.md §10.14.
     #
-    # ** IT RUNS SOUTH AND NOT ALONG A BAY, AND FO-S-STAIR IS WHY. ** A trunk in the
-    # 35'-4" bay would have been better in every other way — a bay leg crosses no member at
-    # all — but the stair well is x 10'-3 1/8"..17'-8 5/8", y 26'-0 3/8"..35'-5 3/8", and a
-    # trunk in that bay spans 7.18 ft of it with nothing to strap to. `mep.run_over_void`
-    # said so the first time it was drawn that way.
-    #
-    # South means it crosses every truss, so it lives in ONE panel opening for its whole
-    # length: x=3'-9 3/4" puts an 8" duct at 41 3/4"..49 3/4" inside the 41 1/2"..54 1/2"
-    # opening, with 4 3/4" of that opening still free beside it for DU-M-ERV-R-STUDY.
-    #
-    # One size the whole length. It is oversized at the south end (PLANT alone is 5 cfm in
-    # 8" round, about 14 fpm) and that is the cheap direction: the alternative is two
-    # reducing transitions to save a few feet of the commonest duct in the catalogue.
+    # The 6x4 NECK reaches it from the plenum: up into the 413 3/4"..427 1/8" bay, south
+    # across the chase trimmers and the 32' truss (the only lane an R2 shares with their R1),
+    # west in the 352"..368" bay, then the 6x4-to-8x4 transition and a 30-degree drop to the
+    # D-pocket height. Every takeoff leaves the trunk's side on a 4" spin collar and rides its
+    # own bay.
+    DuctRun(uid="AJKBQGRJTP", tag="DU-M-ERV-EXH-NECK", system=DuctSystem.EXHAUST,
+            path=(pt(inch(57.5), inch(420)), pt(inch(57.5), inch(420)),
+                  pt(inch(57.5), inch(360)), pt(inch(54), inch(360))),
+            elevations=(inch(-14.75), _NECK_Z, _NECK_Z, _NECK_Z),
+            width=inch(6), depth=inch(4), routing=DuctRouting.JOIST_BAY,
+            floor_ref="FS-S-WEST", material="galvanized", design_cfm=DU_M_ERV_EXH_TRUNK),
     DuctRun(uid="Y3G88SKSRG", tag="DU-M-ERV-EXH-TRUNK", system=DuctSystem.EXHAUST,
-            # The riser stands at 34'-11.6", 0.4" off the collar (3/4" west since the trunk
-            # took its 13" lane, inside `mep.erv_manifold_ports`' 1"): the bay between the
-            # 34'-5 3/4" truss and FO-S-STAIR's trimmer is 8.15" clear, and on the collar's
-            # own line the duct stood 3/8" into the trimmer.
-            path=(pt(ft(3, 9.75), inch(419.6)), pt(ft(3, 9.75), inch(419.6)),
-                  pt(ft(3, 9.75), ft(7, 4))),
-            elevations=(_PORT_Z, _TRUNK_Z, _TRUNK_Z),
-            diameter=inch(8), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="galvanized", design_cfm=DU_M_ERV_EXH_TRUNK),
+            path=(pt(inch(54), inch(360)), pt(inch(48.5), inch(360)), pt(inch(27), inch(360)),
+                  pt(inch(27), ft(7, 4))),
+            elevations=(_NECK_Z, _TRUNK_Z, _TRUNK_Z, _TRUNK_Z),
+            width=inch(8), depth=inch(4), routing=DuctRouting.JOIST_BAY,
+            floor_ref="FS-S-WEST", material="galvanized", design_cfm=DU_M_ERV_EXH_TRUNK),
 
     # --- THE THREE SUPPLY RADIALS -------------------------------------------------------
     # Home-run, and BLD-08 survives intact on this side: every fresh-air outlet still leaves
     # its own collar on its own damper. Three will lay and ten will not, and that asymmetry
     # is the whole of why the level split.
     #
-    # STUDY leaves straight south in the trunk's own opening, 6 1/2" east of it (50 1/4"..
-    # 54 1/4"). LIVING and BED jog east along the 33'-8" and 34'-1" lanes to the NEXT opening
-    # (65 1/2"..78 1/2")
-    # and go south from there — on the LOWER tier to y=28'-8", under PR-M-S-BATH1-LAV-DRAIN's
-    # 31'-0" arm, then up (2026-09-24) — two 4" lanes in it, tangent, 8" of its 13" (65 1/2"..73 1/2"). Both
-    # lanes share the one bay since the 34'-8" truss moved to 34'-5 3/4" (2026-09-23), 1" apart.
+    # Each rises off its own collar into the chase-trimmer bay and takes its own pocket lane
+    # south on the upper tier (header table). STUDY and BED pass under the neck first.
     DuctRun(uid="2ZZ3MF5VAF", tag="DU-M-ERV-R-STUDY", system=DuctSystem.SUPPLY,
-            path=(pt(ft(4, 4.25), ft(34)), pt(ft(4, 4.25), ft(34)), pt(ft(4, 4.25), ft(34)),
-                  pt(ft(4, 4.25), ft(20, 6)), pt(inch(60.6875), ft(20, 6)),
-                  pt(ft(17, 2), ft(20, 6))),
-            elevations=(_PORT_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
+            # Under the neck to x 63", up to the upper tier, south in R1's x=106 7/8" lane
+            # (the trusses' south chase, east of the vent string), over DU-M-ERV-R-LAUNDRY,
+            # then a 45 down to the low tier in its own bay, north of LAUNDRY: the suite's pipes
+            # fill the upper tier, and PR-B-HW-SUITE dips to 4.9" by the valve.
+            path=(pt(inch(58), inch(408.5)), pt(inch(58), inch(408.5)),
+                  pt(inch(63), inch(408.5)), pt(inch(70), inch(408.5)),
+                  pt(inch(106.875), inch(408.5)), pt(inch(106.875), inch(254.25)),
+                  pt(inch(106.875), inch(248.6)), pt(ft(17, 2), inch(248.6))),
+            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _STUDY_Z, _STUDY_Z, _STUDY_Z, _LOW_Z, _LOW_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_STUDY),
     DuctRun(uid="MRH0QZT6NN", tag="DU-M-ERV-R-LIVING", system=DuctSystem.SUPPLY,
-            path=(pt(ft(4, 9), ft(33, 8)), pt(ft(4, 9), ft(33, 8)),
-                  pt(ft(5, 7.5), ft(33, 8)), pt(ft(5, 7.5), inch(356.21875)),
-                  pt(ft(5, 7.5), inch(347.78125)),
-                  pt(ft(5, 7.5), inch(162)), pt(ft(5, 7.5), ft(12, 8)),
-                  pt(ft(27), ft(12, 8))),
-            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
+            # Straight south in the D pockets at x=42 1/4", over the trunk's cross leg, then
+            # east in the 12'-8" bay, ramping to the low tier under BED.
+            path=(pt(inch(42.25), inch(405.375)), pt(inch(42.25), inch(405.375)),
+                  pt(inch(42.25), ft(12, 8)), pt(inch(46), ft(12, 8)),
+                  pt(inch(53.8), ft(12, 8)), pt(ft(27), ft(12, 8))),
+            elevations=(_PORT_Z, _HI_Z, _HI_Z, _HI_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_LIVING),
     # 1/4" south of 34'-1" (2026-10-30): CD-M-DATA-KITCH-TRUNK's 1" EMT needs the 1" between
     # this duct's face and the truss at y=34'-4".
     DuctRun(uid="83MA15Q308", tag="DU-M-ERV-R-BED", system=DuctSystem.SUPPLY,
-            path=(pt(ft(5, 1), ft(34, 0.75)), pt(ft(5, 1), ft(34, 0.75)),
-                  pt(ft(5, 11.5), ft(34, 0.75)), pt(ft(5, 11.5), inch(356.21875)),
-                  pt(ft(5, 11.5), inch(347.78125)),
-                  pt(ft(5, 11.5), inch(82)), pt(ft(5, 11.5), ft(6)),
-                  pt(ft(7), ft(6))),
-            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
+            # East under the neck, up over CD-M-DATA-KITCH, south in the D pockets at
+            # x=83 3/4" on the upper tier, and down to the valve in its own bay.
+            path=(pt(inch(62), inch(404.125)), pt(inch(62), inch(404.125)),
+                  pt(inch(66), inch(404.125)), pt(inch(73), inch(404.125)),
+                  pt(inch(83.75), inch(404.125)), pt(inch(83.75), inch(78.25)),
+                  pt(inch(83.75), inch(71.25))),
+            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _UP_Z, _UP_Z, _UP_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_BED),
 
     # --- THE TEN EXTRACT TAKEOFFS -------------------------------------------------------
-    # Every one leaves the trunk at its own bay and rides that bay to its terminal, so with
-    # three exceptions below **a takeoff crosses no truss at all**. Every tag and uid is the
-    # radial's; only what feeds it changed.
+    # Every one leaves the trunk (MUD the neck) on a 4x4 side tap at its own bay and rides that
+    # bay low to its terminal; only BED2 and LAUNDRY cross a truss, each in its own D pocket.
     DuctRun(uid="K04AT15S97", tag="DU-M-ERV-R-BATH1", system=DuctSystem.EXHAUST,
-            path=(pt(ft(3, 9.75), ft(24, 6)), pt(ft(1, 2), ft(24, 6))),
+            path=(pt(inch(27), ft(24, 6)), pt(ft(1, 2), ft(24, 6))),
             elevations=(_BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_BATH1),
     DuctRun(uid="BKE5RKVE8Z", tag="DU-M-ERV-R-VANITY", system=DuctSystem.EXHAUST,
-            path=(pt(ft(3, 9.75), ft(24, 10)), pt(ft(3), ft(24, 10))),
+            path=(pt(inch(27), ft(24, 10)), pt(ft(3), ft(24, 10))),
             elevations=(_BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_VANITY),
     DuctRun(uid="0DMX0NM8XS", tag="DU-M-ERV-R-BATH2", system=DuctSystem.EXHAUST,
-            path=(pt(ft(3, 9.75), ft(15, 4)), pt(ft(4, 4), ft(15, 4))),
+            path=(pt(inch(27), inch(186.25)), pt(ft(4, 4), inch(186.25))),
             elevations=(_BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_BATH2),
     DuctRun(uid="P5H0GQ3E8N", tag="DU-M-ERV-R-MUD", system=DuctSystem.RETURN,
-            path=(pt(ft(3, 9.75), ft(31, 4)), pt(ft(4, 4), ft(31, 4))),
-            elevations=(_BAY_Z, _BAY_Z),
+            # Off the neck's west face, 5 1/2" to the valve over the hall strip.
+            path=(pt(inch(57.5), ft(31, 4)), pt(ft(4, 4), ft(31, 4))),
+            elevations=(_NECK_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_MUD),
     # BED1 and BED2 end at south-wall floor boots (2026-10-02; mep_registers_second.py), each in
     # the FS-S-EAST bay by that wall, because I-joists take no north-south run. BED1's 9'-9"
     # bay is clear the whole way. BED2's 18'-4" bay is not, west of x=16' (LAUNDRY,
     # SUITEBATH, the suite WC and STUBATH drains, KITCH-VENT), so it leaves the trunk in the
-    # 14'-0" bay BED1 vacated and crosses north on the upper tier in the 15'-5 1/2"..
-    # 16'-6 1/2" web opening — the third truss crossing among the takeoffs.
+    # 14'-0" bay BED1 vacated and crosses north at x=16'-1 3/4".
     # Both tails extend 4" east with the boots for the east PAX frames (2026-10-03).
     DuctRun(uid="HGMQ4AWG3S", tag="DU-M-ERV-R-BED2", system=DuctSystem.RETURN,
-            path=(pt(ft(3, 9.75), ft(14)), pt(ft(16), ft(14)), pt(ft(16), inch(178)),
-                  pt(ft(16), inch(210)), pt(ft(16), ft(18, 4)), pt(ft(28, 1), ft(18, 4))),
-            elevations=(_BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
+            # North on the low tier in the x=193 3/4" D pockets, between PR-M-KITCH-VENT and
+            # PR-B-HW-SUITE's riser.
+            path=(pt(inch(27), ft(14)), pt(inch(193.75), ft(14)), pt(inch(193.75), ft(18, 4)),
+                  pt(ft(28, 1), ft(18, 4))),
+            elevations=(_BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_BED2),
     DuctRun(uid="XA7NRRGJ50", tag="DU-M-ERV-R-BED1", system=DuctSystem.RETURN,
-            path=(pt(ft(3, 9.75), ft(9, 9)), pt(ft(28, 1), ft(9, 9))),
+            path=(pt(inch(27), ft(9, 9)), pt(ft(28, 1), ft(9, 9))),
             elevations=(_BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_BED1),
@@ -302,31 +246,27 @@ DUCTS_ERV_LEVEL2 = [
             # before the sink. The riser stays inside the 5 1/2" staggered cavity.
             # End at the bottom inlet of TH-ERV-SUITEBATH-BOOT-01, not at the
             # valve centre: the boot contains the final turn (notes/suitebath_extract.md).
-            path=(pt(ft(3, 9.75), inch(196)), pt(inch(115.5), inch(196)),
+            path=(pt(inch(27), inch(196)), pt(inch(115.5), inch(196)),
                   pt(inch(115.5), inch(196))),
             elevations=(_BAY_Z, _BAY_Z, inch(95.78125)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_SUITEBATH),
-    # LAUNDRY and KITCH are the two takeoffs that do cross a truss, and each crosses in its
-    # own opening on the upper tier: LAUNDRY turns south at x=14'-4 1/2" (the 161 1/2"..
-    # 174 1/2" opening) to reach the standpipe boot, KITCH runs straight.
     DuctRun(uid="ANSKB7EGDH", tag="DU-M-ERV-R-LAUNDRY", system=DuctSystem.RETURN,
-            # Back to the lower tier in the 19'-4" bay (2026-09-24): on the upper tier the
-            # south leg met PR-M-S-SUITE-TUB-DRAIN's 19'-0" arm; under it there is 1" to spare.
-            path=(pt(ft(3, 9.75), ft(20, 10)), pt(ft(10, 6), ft(20, 10)),
-                  pt(inch(164.0625), ft(20, 10)), pt(ft(14, 4.5), ft(20, 10)),
-                  pt(ft(14, 4.5), inch(242)), pt(ft(14, 4.5), inch(233.5625)),
-                  pt(ft(14, 4.5), ft(18)), pt(ft(14, 4.5), ft(18))),
-            elevations=(_BAY_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z, inch(-108)),
+            # Low tier the whole way, in the south half of its bay so DU-M-ERV-R-STUDY's 45
+            # comes down north of it; south in the x=172 3/8" D pockets to the standpipe boot.
+            path=(pt(inch(27), inch(244)), pt(ft(10, 6), inch(244)),
+                  pt(inch(152), inch(244)), pt(inch(172.375), inch(244)),
+                  pt(inch(172.375), ft(18)), pt(inch(172.375), ft(18))),
+            elevations=(_LAUNDRY_Z, _LAUNDRY_Z, _LAUNDRY_Z, _BAY_Z, _BAY_Z, inch(-108)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_LAUNDRY),
     DuctRun(uid="YEXGZK2KW2", tag="DU-M-ERV-R-KITCH", system=DuctSystem.RETURN,
-            path=(pt(ft(3, 9.75), ft(21, 9.75)), pt(ft(20, 10.7), ft(21, 9.75))),
-            elevations=(_BAY_Z, _BAY_Z),
+            path=(pt(inch(27), ft(21, 9.75)), pt(ft(20, 10.7), ft(21, 9.75))),
+            elevations=(_KITCH_Z, _KITCH_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_KITCH),
     DuctRun(uid="X05VC14PBH", tag="DU-M-ERV-R-PLANT", system=DuctSystem.EXHAUST,
-            path=(pt(ft(3, 9.75), ft(7, 4)), pt(ft(18), ft(7, 4)),
+            path=(pt(inch(27), ft(7, 4)), pt(ft(18), ft(7, 4)),
                   pt(ft(18), ft(7, 4))),
             elevations=(_BAY_Z, _BAY_Z, inch(102)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",

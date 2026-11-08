@@ -60,11 +60,8 @@ def test_the_web_verdict_is_a_SECOND_finding_and_not_a_changed_one(
     # webs for truss bays (2026-10-08). Nine since the owner confirmed 2x4 webs and the
     # opening went 15" -> 13" (2026-10-26): three ERV radials and a data conduit are back.
     # None the same day: the web-clearance reroute closed the campaign (preferences.toml).
-    # TrimJoist J12 (decision #117): the level-2 ERV and the suite WC drain's south leg are
-    # open on an owner decision and suppressed in catlin's preferences, nothing else.
-    open_campaign = {"DU-M-ERV-EXH-TRUNK", "DU-M-ERV-R-STUDY", "DU-M-ERV-R-LIVING",
-                     "DU-M-ERV-R-BED", "DU-M-ERV-R-BED2", "DU-M-ERV-R-LAUNDRY",
-                     "PR-M-S-SUITE-WC-DRAIN"}
+    # TrimJoist J12 (decision #117): none since the flat-trunk re-route (2026-11-08).
+    open_campaign: set[str] = set()
     stray = [f.message for f in web if f.element_tags[0] not in open_campaign]
     assert not stray, stray
     for finding in web:
@@ -96,8 +93,9 @@ def test_per_crossing_beats_the_envelope_on_the_bld05_run(
     findings = _findings(catlin_plan, catlin_model_ro)
     finding = _for(findings, "PR-M-S-SUITE-WC-DRAIN", "FS-S-WEST")
     assert finding.result is Result.PASS
-    # 0.178" until its north leg moved into J12 pocket D9 (2026-11-06, decision #117).
-    assert _crown_in(finding.message) == pytest.approx(0.078, abs=0.001)
+    # 0.178" until its north leg moved into J12 pocket D9 (2026-11-06, decision #117); 0.078"
+    # until the collector dropped 1.35" to pass the 256" truss inside D10 (2026-11-08).
+    assert _crown_in(finding.message) == pytest.approx(1.428, abs=0.001)
     assert "joist-0-016-0" in finding.message
 
 
@@ -143,10 +141,11 @@ def test_the_two_raceway_defects_are_fixed_and_stay_fixed(
     porch run holds that elevation through the rim before it turns down.
 
     2026-09-24: both re-laned around the ERV trunk. KITCH crosses at +9'-2 1/2" (invert
-    +0.414"); PORCH's north-south leg rides the top chord (crown +0.039")."""
+    +0.414"); PORCH's north-south leg rode the top chord (crown +0.039") until it moved to
+    x=5'-7" at 7" up, east of the flat ERV trunk (2026-11-08): invert +1.664" there."""
     findings = _findings(catlin_plan, catlin_model_ro)
     for tag, side, gap in (("CD-M-DATA-KITCH", "invert", 0.414),
-                           ("CD-M-DATA-PORCH", "crown", 0.039)):
+                           ("CD-M-DATA-PORCH", "invert", 1.664)):
         finding = _for(findings, tag, "FS-S-WEST")
         assert finding.result is Result.PASS, finding.message
         measured = float(finding.message.split(f"{side} ")[1].split('"')[0])
@@ -157,25 +156,19 @@ def test_every_level_two_duct_rests_on_a_chord_and_none_is_inside_one(
         catlin_plan, catlin_model_ro) -> None:
     """``_BAY_Z`` meant "a 4" duct sitting on FS-S-WEST's bottom chord" and was derived
     against 108 1/8", the bottom of that chord rather than its top — 1 1/2" low, on every
-    radial's south leg. Resting ON a chord is 0.000" of clearance and a PASS: the duct is
-    supported by the thing it is touching.
+    radial's south leg. Resting ON a chord is 0.000" of clearance and a PASS.
 
-    **Since D1 there are TWO tiers and a duct rests on whichever chord its tier names**, so
-    the assertion is that one of the two gaps is zero rather than that the invert is. A
-    south leg rides the upper tier (crown +0.000") and a bay leg the lower (invert +0.000");
-    the 8" trunk is centred and clears both by 0.437"."""
+    Since the flat trunk (2026-11-08) every crossing sits in a J12 pocket at the height that
+    pocket admits, so the assertion is that no gap is negative: the 8x4 trunk clears the
+    bottom chord by 3/8", and the takeoffs that cross (BED2, LAUNDRY) rest on it."""
     findings = _findings(catlin_plan, catlin_model_ro)
     ducts = [f for f in findings
              if any(t.startswith("DU-M-ERV") for t in f.element_tags)
              and "FS-S-WEST" in f.element_tags and "ON A WEB" not in f.message]
-    # Most extract takeoffs are pure BAY legs and cross no truss. The crossings left
-    # to grade are the south-running trunk, three supply radials, LAUNDRY's turn to
-    # its standpipe boot and BED2's jog north at x=16' to its south-wall boot's bay.
     assert sorted(tag for f in ducts for tag in f.element_tags
                   if tag.startswith("DU-M-ERV")) == [
-        "DU-M-ERV-EXH-TRUNK", "DU-M-ERV-R-BED", "DU-M-ERV-R-BED2", "DU-M-ERV-R-LAUNDRY",
-        "DU-M-ERV-R-LIVING", "DU-M-ERV-R-STUDY"]
-    # SUITEBATH now rises in its own bay to the west-wall valve, without a truss crossing.
+        "DU-M-ERV-EXH-NECK", "DU-M-ERV-EXH-TRUNK", "DU-M-ERV-R-BED", "DU-M-ERV-R-BED2",
+        "DU-M-ERV-R-LAUNDRY", "DU-M-ERV-R-LIVING", "DU-M-ERV-R-STUDY"]
     assert not any("DU-M-ERV-R-SUITEBATH" in f.element_tags for f in ducts)
     for finding in ducts:
         assert finding.result is Result.PASS, finding.message
@@ -183,9 +176,7 @@ def test_every_level_two_duct_rests_on_a_chord_and_none_is_inside_one(
         invert = float(finding.message.split("invert ")[1].split('"')[0])
         assert crown >= -1e-9 and invert >= -1e-9, finding.message
         if "DU-M-ERV-EXH-TRUNK" in finding.element_tags:
-            assert crown == pytest.approx(0.437, abs=0.001)
-        else:
-            assert min(crown, invert) == pytest.approx(0.0, abs=1e-6), finding.message
+            assert invert == pytest.approx(0.375, abs=0.001)
 
 
 def test_an_i_joist_pass_is_qualified(catlin_plan, catlin_model_ro) -> None:
