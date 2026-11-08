@@ -98,6 +98,15 @@ def clip(gap: Span, blocked: Sequence[Span]) -> Span | None:
     return max(pieces, key=lambda piece: piece[1] - piece[0]) if pieces else None
 
 
+def solid_block_profile(member: str) -> str:
+    """A solid block's profile in a field of ``member``. Between open-web trusses it is sawn
+    SPF ripped to their depth, not a truss: its holes are R502.8.1's, not a fabricator's."""
+    section = cross_section(member)
+    if section is not None and section.shape == "floor_truss":
+        return f"1.5x{section.depth_m / inch(1).meters:g}:spf"
+    return member
+
+
 def block_member(
     floor: ResolvedFloor,
     key: str,

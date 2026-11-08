@@ -405,6 +405,9 @@
 # ST-SG-PORCH's stringers are 2x12:kdat and bill on the "2x12:kdat" row below (32 LF ordered),
 # not here. The 3.7 LF plan run of each is 4.6 LF of stick on the rake; the cut list has it.
 "2x12" = { material = { low = 1.85, high = 2.6 }, labour = { low = 1.4, high = 2.6 } }  # 96 LF spf — ST-B2M and ST-M2S, three stringers a flight (2026-09-28)
+# Solid blocks between the open-web trusses (wall-top, bearing and partition stations), SPF
+# ripped to the trusses' 11 7/8" depth — priced as the 2x14 stick they come from (2026-11-07).
+"1.5x11.875:spf" = { material = { low = 2.6, high = 3.8 }, labour = { low = 1.4, high = 2.6 } }  # 40 LF ordered
 # KDAT southern pine 2x12, the garden's two deck fields (12" o.c.) and ST-SG-PORCH's stringers.
 # The porch ledgers are Beams and bill in [timber] "beam:BEAM_KDAT". Treated 2x12 runs ~25-40%
 # over the SPF stick above, and 20' lengths carry a further premium.

@@ -59,6 +59,7 @@ from typehaus.resolve.blocking_parts import (
     crossing_runs,
     pass_through_box,
     run_bands,
+    solid_block_profile,
 )
 from typehaus.resolve.floor_ends import FloorEnds, structure_span
 from typehaus.resolve.framing.profiles import cross_section
@@ -212,7 +213,7 @@ def _floor_blocking(
     system: FloorSystem,
     runs: list[RunBand],
 ) -> tuple[list[FramedMember], list[BlockingConflict]]:
-    member = system.joists.member
+    member = solid_block_profile(system.joists.member)
     members: list[FramedMember] = []
     conflicts: list[BlockingConflict] = []
     for bay in bearing_bays(model, floor, system):
@@ -316,7 +317,8 @@ def _partition_top_blocking(
             key = f"{PARTITION_BLOCK_PREFIX}{joint.wall_tag}-{step:03d}"
             crossing = crossing_runs(runs, along_x, centre, width, gap, z0, z1)
             if not crossing:
-                members.append(block_member(floor, key, spec.member, along_x, centre, gap, z0, z1))
+                members.append(block_member(floor, key, solid_block_profile(spec.member),
+                                            along_x, centre, gap, z0, z1))
                 continue
             # The box's 5 1/2" rails stay inside this deck's joist tips, as the block does:
             # a rail centred on an end block reached into the next deck's joist ends.

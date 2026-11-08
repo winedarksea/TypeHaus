@@ -13,6 +13,7 @@ from typehaus.model.floors import FloorSystem
 from typehaus.model.structure import Beam
 from typehaus.quantities import inch
 from typehaus.resolve.band_headers import band_header_findings
+from typehaus.resolve.blocking_parts import solid_block_profile
 from typehaus.resolve.coatings import layer_depth_m
 from typehaus.resolve.floor_ends import floor_ends
 from typehaus.resolve.floor_lines import extra_lines, move_lines
@@ -438,6 +439,7 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
         laid[key] = (cluster_lo, cluster_hi, sisters, sign)
         if not reinforcement.blocking:
             continue
+        block_profile = solid_block_profile(member)
         # Blocks sit at the load, held inside the joist tips, which stop at the rim's
         # inboard face: a block at a tip is tight to the rim, not in it.
         block_axis = min(max(axis_at, ply_lo + ply_width / 2), ply_hi - ply_width / 2)
@@ -460,7 +462,7 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
             block_z0, block_z1 = z0 + start, z1 + start
             block_end = lift(block_axis, b) - start if lift is not None else 0.0
             out.append(FramedMember(
-                system.uid, f"sister-{index}-block-{key}", "blocking", member,
+                system.uid, f"sister-{index}-block-{key}", "blocking", block_profile,
                 q0, q1, block_z0, block_z1, b - a,
                 z0_end_m=(block_z0 + block_end) if block_end else None,
                 z1_end_m=(block_z1 + block_end) if block_end else None,

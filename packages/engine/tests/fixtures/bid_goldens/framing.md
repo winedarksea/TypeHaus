@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** e6c123ef8dba35f4  
-**Lines:** 254
+**Model hash:** 88fdcec909e8f0c4  
+**Lines:** 253
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -22,6 +22,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1 1/4" x 11 7/8" rim board, 14' (1.25x11.875 rim) | 2 | pc | rim board | 28 LF | building |
 | 1 1/4" x 11 7/8" rim board, 16' (1.25x11.875 rim) | 4 | pc | rim board | 64 LF | building |
 | 1 1/4" x 11 7/8" rim board, 20' (1.25x11.875 rim) | 2 | pc | rim board | 40 LF | building |
+| 1.5x11.875 SPF No. 2 & Btr framing lumber, 8' (1.5x11.875:spf) | 5 | pc | blocking | 40 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 16' (1.75x11.875 LSL) | 2 | pc | rim board | 32 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 20' (1.75x11.875 LSL) | 2 | pc | rim board | 40 LF | building |
 | 1 3/4" x 11 7/8" LVL 2.0E, 8' (1.75x11.875 LVL) | 10 | pc | sister joist, trimmer | 80 LF | building |
@@ -30,8 +31,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 11 7/8" TJI 230, 8' (11.875 TJI 230) | 22 | pc | blocking, joist | 176 LF | building |
 | 11 7/8" TJI 230, 10' (11.875 TJI 230) | 20 | pc | joist | 200 LF | building |
 | 11 7/8" TJI 230, 20' (11.875 TJI 230) | 144 | pc | joist, rafter, sister joist | 2880 LF | building |
-| 11 7/8" floor truss, 1' (11.875 floor truss) | 13 | ea | blocking | 13 LF | building |
-| 11 7/8" floor truss, 2' (11.875 floor truss) | 22 | ea | blocking | 44 LF | building |
 | 11 7/8" floor truss, 8' (11.875 floor truss) | 1 | ea | joist | 8 LF | building |
 | 11 7/8" floor truss, 10' (11.875 floor truss) | 4 | ea | trimmer | 40 LF | building |
 | 11 7/8" floor truss, 12' (11.875 floor truss) | 5 | ea | joist | 60 LF | building |
@@ -121,7 +120,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 2.5 SF net | building |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 10.5 SF net | building |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
-| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3566.3 SF net | building |
+| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3566.1 SF net | building |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 43.7 SF net | building |
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 16 | sheets 4x8 | 16 sheets 4x8 over 407.5 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
@@ -341,6 +340,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1 1/4" x 11 7/8" rim board, 14' (1.25x11.875 rim) | — |
 | 1 1/4" x 11 7/8" rim board, 16' (1.25x11.875 rim) | — |
 | 1 1/4" x 11 7/8" rim board, 20' (1.25x11.875 rim) | — |
+| 1.5x11.875 SPF No. 2 & Btr framing lumber, 8' (1.5x11.875:spf) | — |
 | 1 3/4" x 11 7/8" LSL 1.55E, 16' (1.75x11.875 LSL) | — |
 | 1 3/4" x 11 7/8" LSL 1.55E, 20' (1.75x11.875 LSL) | — |
 | 1 3/4" x 11 7/8" LVL 2.0E, 8' (1.75x11.875 LVL) | — |
@@ -349,8 +349,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 11 7/8" TJI 230, 8' (11.875 TJI 230) | — |
 | 11 7/8" TJI 230, 10' (11.875 TJI 230) | — |
 | 11 7/8" TJI 230, 20' (11.875 TJI 230) | — |
-| 11 7/8" floor truss, 1' (11.875 floor truss) | — |
-| 11 7/8" floor truss, 2' (11.875 floor truss) | — |
 | 11 7/8" floor truss, 8' (11.875 floor truss) | — |
 | 11 7/8" floor truss, 10' (11.875 floor truss) | — |
 | 11 7/8" floor truss, 12' (11.875 floor truss) | — |
