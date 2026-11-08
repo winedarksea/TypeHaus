@@ -34,6 +34,9 @@ from typehaus import (
     inch,
 )
 
+# ASHRAE Fitting 3-1/3-2 angle factors (Locklin 1950): C at 30/45/90 deg = C90 x 0.45/0.60/1.00,
+# linear between; an adjustable elbow set down to any turn up to 90 reads them.
+_K = ((30.0, 0.45), (45.0, 0.60), (90.0, 1.0))
 _READ = "notes/air_distribution_products.md, DuctStandard (read 2026-11-05)"
 _IMPERIAL = "Imperial Mfg. catalog Dec 2017 (SKU and gauge only; no dimensions published)"
 _IMP26 = "Imperial PP1142 Galvanized Duct, Pipe & Fittings, Aug 2026 (imperialgroup.s3.amazonaws.com/site/PP1142-Galvanized-Catalogue-En-2026-August-2026-08-18-03.45-PM.pdf), read 2026-11-07; SKU and gauge only, no dimensions"
@@ -135,17 +138,17 @@ DUCT_STANDARD = [
         ),
         elbows=(
             DuctElbowRow(diameter=inch(4), product_ref="PROD-DUCT-ELBOW-S-4", kind="stamped",
-                         loss_c=0.22, source=_STAMPED),
+                         loss_c=0.22, angle_k=_K, source=_STAMPED),
             DuctElbowRow(diameter=inch(6), product_ref="PROD-DUCT-ELBOW-S-6", kind="stamped",
-                         loss_c=0.22, source=_STAMPED),
+                         loss_c=0.22, angle_k=_K, source=_STAMPED),
             DuctElbowRow(diameter=inch(8), product_ref="PROD-DUCT-ELBOW-S-8", kind="stamped",
-                         loss_c=0.22, source=_STAMPED),
+                         loss_c=0.22, angle_k=_K, source=_STAMPED),
             DuctElbowRow(diameter=inch(4), product_ref="PROD-DUCT-ELBOW-4", angles=(90.0,),
-                         center_to_face=inch(4.75), loss_c=0.37, source=_READ),
+                         center_to_face=inch(4.75), loss_c=0.37, angle_k=_K, source=_READ),
             DuctElbowRow(diameter=inch(6), product_ref="PROD-DUCT-ELBOW-6", angles=(90.0,),
-                         center_to_face=inch(6), loss_c=0.37, source=_READ),
+                         center_to_face=inch(6), loss_c=0.37, angle_k=_K, source=_READ),
             DuctElbowRow(diameter=inch(8), product_ref="PROD-DUCT-ELBOW-8", angles=(90.0,),
-                         center_to_face=inch(7), loss_c=0.37, source=_READ),
+                         center_to_face=inch(7), loss_c=0.37, angle_k=_K, source=_READ),
         ),
         parts=(
             DuctPartRow(kind="collar_damper", size="4in", product_ref="PROD-DUCT-SPIN-4",

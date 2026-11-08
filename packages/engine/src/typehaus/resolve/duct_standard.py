@@ -6,6 +6,7 @@ from typing import Any
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.ducts import DuctElbowRow, DuctStandard
+from typehaus.quantities import M_PER_IN
 
 CHECK_ID = "integrity.duct_standard"
 
@@ -95,3 +96,16 @@ def duct_elbow_key(standard: DuctStandard | None, angle_deg: float, size: str,
         if angle_deg <= stock + ELBOW_SNAP_DEG:
             return f"elbow-{stock:g}-{size}"
     return f"bend-{round(angle_deg / 5.0) * 5:g}-{size}"
+
+
+def set_down_spec(standard: DuctStandard | None, diameter_m: float, angle_deg: float,
+                  gap: str | None) -> tuple[Any, str | None]:
+    """An off-catalog round turn the standard's adjustable elbow makes, set down in the field:
+    graded as the catalog's 90-degree pattern (the elbow bought), else ``gap`` stands."""
+    from typehaus.hardware.fittings import KIND_ELBOW, SERVICE_DUCT, fitting_for
+
+    hit = elbow_for_turn(standard, diameter_m, angle_deg) if standard is not None else None
+    if hit is None or hit[0].kind != "adjustable":
+        return None, gap
+    spec = fitting_for(SERVICE_DUCT, KIND_ELBOW, 90.0, round(diameter_m / M_PER_IN, 3))
+    return (spec, None) if spec is not None else (None, gap)

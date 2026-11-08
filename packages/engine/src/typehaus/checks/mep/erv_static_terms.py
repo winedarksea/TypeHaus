@@ -148,9 +148,16 @@ def velocity_pressure_in_wg(cfm: float, bore_m: float) -> float:
     return (velocity_fpm(cfm, bore_m) / 4005.0) ** 2
 
 
-#: ASHRAE Fitting 3-1/3-2 angle factor K_theta (Locklin 1950): C at an angle = C90 x K.
+#: ASHRAE Fitting 3-1/3-2 angle factor K_theta (Locklin 1950): C at an angle = C90 x K. The
+#: fallback for an elbow row that authors no ``angle_k`` of its own.
 ELBOW_ANGLE_FACTOR = ((0.0, 0.0), (20.0, 0.31), (30.0, 0.45), (45.0, 0.60), (60.0, 0.78),
                       (90.0, 1.00))
+
+
+def _angle_k(row, angle: float) -> float:
+    """The row's own published K at ``angle``, else the ASHRAE reference curve."""
+    k = row.k_at(angle)
+    return k if k is not None else interpolate(ELBOW_ANGLE_FACTOR, min(angle, 90.0))
 
 
 def elbow_loss_sum(ctx: CheckContext, duct) -> float | None:
@@ -178,7 +185,7 @@ def elbow_loss_sum(ctx: CheckContext, duct) -> float | None:
         if hit is None or hit[0].loss_c is None:
             total += 2 * max(r.loss_c for r in rows)
         else:
-            total += hit[0].loss_c * interpolate(ELBOW_ANGLE_FACTOR, min(angle, 90.0))
+            total += hit[0].loss_c * _angle_k(hit[0], angle)
     return total
 
 
@@ -241,7 +248,7 @@ def _flex_bend_loss(ctx: CheckContext, duct, part, standard, cfm: float,
         if hit is None or hit[0].loss_c is None:
             gaps.append(f"{duct.tag}: the flex bend at {part.other}.{part.port} has no loss C")
             return 0.0
-        c = hit[0].loss_c * interpolate(ELBOW_ANGLE_FACTOR, min(part.bend_deg, 90.0))
+        c = hit[0].loss_c * _angle_k(hit[0], part.bend_deg)
         gaps.append(f"{duct.tag}: the flex bend at {part.other}.{part.port} is charged as the "
                     f"stock elbow (C x K = {c:.2f}); a measured flex-bend C would be higher")
     return c * velocity_pressure_in_wg(cfm, duct.diameter_m)
