@@ -129,6 +129,37 @@ the tree equals the pre-rip-up tree, B stays unserved, `lifts_kept = 0`, `lifts_
   height `z_d` needs `z_s >= z_d + (D_d + D_s)/2 + 0.5`, and stays inside the crossing member's window
   (`member_window`, centreline `[low + D_s/2, high - D_s/2]`).
 
+**Supply tees (L6-L9, added 2026-11-07).** `--run` lays a supply from its fixture riser to any point on
+its feeder and knows nothing of what tees on it, so L4 refused all three catlin lifts ("loses N"). The rules
+that keep the tees:
+
+* **L6 Taps are derived.** A supply run taps the lifted run only when `supply_tie_in_records` names the
+  lifted run as its parent (its first vertex, the tee). Sharing a vertex is not a tap. CW-WH's first vertex
+  (57, 192, -8.8) is also the first vertex of CW-BATH1, CW-BATH2 and CW-SBATH, which all derive
+  CW-TRUNK: three false losses. Its one true child is CW-BATH (tee at (84, 330, -6.8) on its y = 330 leg).
+  Drains and vents keep the geometric test (either end within 1" of the line).
+* **L7 Hold the tail an unlifted branch tees on.** For the branches that are not lifted, find the segment
+  `i` (parameter `t`) of the lifted run's authored line nearest each tee; the hold starts at vertex
+  `k = i + 1` if `t = 1`, else `i`, minimised over the branches and capped at `n - 2`. The last
+  `n - 1 - k` legs are held as authored and the search starts at vertex `k` (`--hold-upstream` on a supply
+  holds its fixture end; the held legs are appended after the reversal). `k = 0` would leave nothing to
+  search: hold 0, and the branches are lost (L4). The cap holds the last leg for a tee on the fixture end
+  itself, so the run arrives as authored. The first build held nothing there, and CW-BATH came UP to
+  (120, 238, -82) inside USINK-TERMINAL-CW's riser going down from the same point (`mep.run_interference`).
+  By hand: HW-KITCH (16 vertices) carries PR-M-DW-HW's tee at (363.6, 424.2, 5.5), on the riser from vertex
+  12 (z -6.24) to vertex 13 (z 9.06), so `k = 12` and **3 legs are held**: the riser, the 2.7" jog and the
+  riser to 20.0. CW-BATH (8 vertices) has two branches (LAV-, USINK-TERMINAL-CW) teeing at its last vertex
+  (120, 238, -82): `k = 6`, **1 leg held**, the riser down from (120, 238, -6.8).
+* **L8 A lifted branch tees onto its feeder's new line.** A re-laid feeder's proposal replaces its authored
+  line as the branch's goal set (`reroot_supply`), so the branch is re-laid after its feeder. L2's
+  larger-OD-first order gives that on catlin (CW-WH 1" before CW-BATH 3/4"). A branch re-laid first would
+  tie onto the old line, and L4 refuses that ("its tie onto ...").
+* **L9 Accessories that come off the line are listed.** An accessory on a lifted run whose point is more than
+  1" off the new line is named in the after-paste re-seat line, the same sentence `--tree --topology trunk`
+  writes. One on a held leg stays: PA-M-KITCH-STOP-HW (363.6, 421.5, 9.06) is HW-KITCH vertex 14, and
+  PA-B-BATH-STOP-CW stands on CW-BATH's fixture end. PA-B-BFP-BATH (84, 312, -8.8) and PA-B-WH-STOP-CW
+  (93.5, 335.5, -61.44) are on searched legs, so they are listed unless the new line happens to pass them.
+
 ---
 
 ## 4. Catlin, by hand
