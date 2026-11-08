@@ -120,12 +120,38 @@ TILE_EDGE_FLUSH = DoorwayTreatment(transition=_spec(
 
 # Study oak 0.38" over the plant vinyl: the owner's sloped reducer over the vinyl's sealed
 # upturn, ~4 1/2" of run. Oak on -normal.
-D_S_PLANT_REDUCER = DoorwayTreatment(transition=_bevel(
-    SOLID_SURFACE_REDUCER, "12 mm solid surface, 4 1/2 in. slope to the vinyl",
-    "Vinyl turns up and seals to the water-stop riser beneath; anchor from the dry side; "
-    "seal both ends to the jamb returns", "solid-surface-fabricated", sign=-1,
-    rise_in=0.38, run_in=4.5, depth_in=0.12, land_in=0.75, min_in=0.3, max_in=0.4,
-    pairs=(("oak-floor-custom", "catlin-plant-vinyl-raised"),)))
+#
+# ** THE WATER STOP IS THE SPILL DAM (notes/plant_reservoir.md). ** RM-S-PLANT has no drain; a
+# spill stands on the vinyl behind this profile. The riser is cut from the same 12 mm piece, its
+# top on the oak plane: PLANT_RISER_IN above the vinyl, over the 1/4" the room holds at ~21 gal
+# and the 0.12" a whole 10 gal tank makes. The vinyl butts the toe; the toe, both ends and the
+# jamb returns take one silicone bead. The slope stops at the riser's low face.
+PLANT_RISER_IN = 0.38
+PLANT_RISER_RUN_IN = 0.375
+
+
+def _plant_reducer():
+    run, depth, land = 4.5, 0.12, 0.75
+    spec = _bevel(
+        SOLID_SURFACE_REDUCER, "12 mm solid surface, 4 1/2 in. slope to the vinyl, 0.38 in. "
+        "water-stop riser", "Vinyl butts the toe; toe, ends and jamb returns take one "
+        "silicone bead; anchor from the dry side", "solid-surface-fabricated", sign=-1,
+        rise_in=PLANT_RISER_IN, run_in=run, depth_in=depth, land_in=land, min_in=0.3,
+        max_in=0.4, pairs=(("oak-floor-custom", "catlin-plant-vinyl-raised"),))
+    x_riser = -PLANT_RISER_RUN_IN
+    slope_top = PLANT_RISER_IN * (run + x_riser) / run
+    material = "solid-surface-fabricated"
+    parts = (
+        _part("reducer slope", material, ((-run, -depth), (x_riser, -depth),
+                                          (x_riser, slope_top), (-run, 0))),
+        _part("water-stop riser", material, ((x_riser, -depth), (0, -depth),
+                                             (0, PLANT_RISER_IN), (x_riser, PLANT_RISER_IN))),
+        _part("reducer landing", material, ((0, -depth), (land, -depth),
+                                            (land, PLANT_RISER_IN), (0, PLANT_RISER_IN))))
+    return spec.model_copy(update={"parts": parts})
+
+
+D_S_PLANT_REDUCER = DoorwayTreatment(transition=_plant_reducer())
 
 # The gym's 3/4" stall mats meet the 0.735" theater carpet flush (mat on -normal): the
 # carpet tucks into a Z-bar against the mat edge, no reducer (owner 2026-11-01).

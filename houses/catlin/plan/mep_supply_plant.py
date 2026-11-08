@@ -15,20 +15,25 @@ from typehaus import (
     pt,
 )
 
-# --- the automatic-watering stub (2026-09-23) --------------------------------------------
-# The owner wants the room hookable to automatic watering from INSIDE; FX-S-BALCONY-HYD's thread
-# is outdoors and does not count. So a capped 1/2" PEX tee off PR-M-CW-BALCONY-HYD's riser, which
-# already stands in W-S-S1's x 144 3/4"..158" bay: 3" east of the riser at 14" AFF,
-# under BK-S-S1-HYD (21") and the hydrant seat (24"). Nothing crosses the floor, so no new
-# penetration; the only hole is the recessed box, gasketed to the humid membrane like the
-# room's electrical boxes (notes/plant_room.md). Filed on `main`: project elevations.
+# --- the reservoir's feed (2026-09-23 stub; reservoir 2026-11-07) -------------------------
+# The owner wants the room watered from INSIDE; FX-S-BALCONY-HYD's thread is outdoors and does
+# not count. A 1/2" PEX tee off PR-M-CW-BALCONY-HYD's riser, which already stands in W-S-S1's
+# x 144 3/4"..158" bay, runs 3" east at 14" AFF, under BK-S-S1-HYD (21") and the hydrant seat
+# (24"). Nothing crosses the floor, so no new penetration; the only hole is the recessed box,
+# gasketed to the humid membrane like the room's electrical boxes (notes/plant_room.md).
+# Filed on `main`: project elevations.
 #
-# ** WHERE THE WATER GOES: NO FLOOR DRAIN, AND THAT IS STILL THE ANSWER. ** Drip watering
-# drains into the benches' own trays; nothing is washed down. A drain here means a trap in a
-# room nobody uses in February and a DWV branch through FS-S-WEST's trusses from a storey
-# down (notes/plant_room.md, item 2). The sheet vinyl and its sealed 4" rubber base hold a
-# spill in the room. No automatic shutoff (owner 2026-11-03): the stub's stop and the main.
-# Hard-piping irrigation off this stub makes it P2902.5.3's case: a PVB or RPZ is owed then.
+# ** THE STUB NOW FEEDS A FLOAT VALVE, NOT A HOSE. ** Its stop is a 1/4-turn straight stop with
+# a 1/4" compression outlet; a 4 ft 1/4" line runs to APPL-S-PLANT-RESERVOIR's float valve,
+# whose spout stands 2" over the tank rim: the UPC 603.3.1 air gap, so no backflow device is
+# owed (603.5.5). The pump draws from the tank, so nothing hard-pipes irrigation (P2902.5.3).
+# NO FLOOR DRAIN, STILL: a spill stands on the vinyl behind D-S-PLANT's water stop; a whole
+# 10 gal tank is 0.12" (notes/plant_reservoir.md). No automatic shutoff (owner 2026-11-03):
+# the float and this stop are the controls, so a stuck float is the one unbounded case, and
+# nothing in the engine grades the gap, the tank or the float (the note's gap register).
+# The run does NOT name the tank in `serves`: `mep.pipe_sizing` (a permit item) goes UNKNOWN
+# on an appliance with no WSFU row, which would block `haus print`. With it named,
+# `mep.fixture_port_connection` passes the inlet (10.8" from the stub end, 48" line).
 PLANT_STUB_MAIN = [
     PipeRun(uid="9R0AYJMJZ4", tag="PR-M-CW-PLANT-STUB", system=PipeSystem.WATER_COLD,
             path=(pt(ft(12, 8), ft(0, 3.25)), pt(ft(12, 11), ft(0, 3.25))),
@@ -40,10 +45,11 @@ PLANT_STUB_MAIN = [
 # Filed on `second`: an accessory reads its own storey's datum, so 14.829" is 14" AFF plus 0.829"
 # of RM-S-PLANT's build-up over the deck.
 PLANT_STUB_DEVICES_SECOND = [
-    PipeAccessory(uid="KX282R48FS", tag="PA-S-PLANT-WATER-STUB", kind=PipeAccessoryKind.RO_STUB,
+    PipeAccessory(uid="KX282R48FS", tag="PA-S-PLANT-RESERVOIR-STOP", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-M-CW-PLANT-STUB", position=pt(ft(12, 11), ft(0, 3.25)),
                   elevation=inch(14.829), room="RM-S-PLANT", accessible=True,
-                  model='1/2" quarter-turn stop, capped hose-thread outlet, in a recessed box gasketed to the humid membrane'),
+                  serves=("APPL-S-PLANT-RESERVOIR",),
+                  model='1/2" push x 1/4" compression quarter-turn straight stop, in a recessed box gasketed to the humid membrane'),
 ]
 
 # --- FX-S-BALCONY-HYD's sleeve (2026-09-23) ------------------------------------------------
