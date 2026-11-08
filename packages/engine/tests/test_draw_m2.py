@@ -236,10 +236,11 @@ def test_emit_fixtures_draws_the_generated_glyph_as_plain_polylines() -> None:
 
 
 def test_room_blocks_say_name_area_and_ceiling_height() -> None:
-    """A room label states name, area and ceiling height. 8'-10 1/2" is what the main
-    floor's 9'-0" nominal resolves to under 5/8" gypsum on the second floor's deck
-    (``ResolvedCeiling`` carries it per deck region), measured off the finished floor: the
-    ceiling at +107 1/2" over the datum less the 1.0256" plank top (decision #112).
+    """A room label states name, area and ceiling height. 8'-10" is what the main
+    floor's 9'-0" nominal resolves to under 5/8" gypsum on resilient channel on the second
+    floor's deck (``ResolvedCeiling`` carries it per deck region), measured off the finished
+    floor: the board 1/2" below the soffit (RC-1 depth, since 2026-11-07) less the 1.0256"
+    plank top (decision #112).
 
     ``RM-M-LIVING`` spans the second floor's truss/I-joist split on one plane and gets ONE
     caption: a deck seam is not a step, so no main-storey label takes the per-region form.
@@ -252,7 +253,7 @@ def test_room_blocks_say_name_area_and_ceiling_height() -> None:
                if isinstance(node, Text) and node.layer == "A-AREA-IDEN"]
     assert room_display_name("RM-M-LIVING") == "LIVING"
     # 701 since the 1/2" walls (2026-10-23; 699 before, 1/8" each side).
-    assert {"LIVING", "701 SF", 'CLG 8\'-10 1/2"'} <= set(printed)
+    assert {"LIVING", "701 SF", 'CLG 8\'-10"'} <= set(printed)
     assert not [c for c in printed if c.startswith("CLG") and " / " in c], printed
 
 

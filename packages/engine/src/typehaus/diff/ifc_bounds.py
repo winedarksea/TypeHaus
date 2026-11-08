@@ -41,6 +41,14 @@ def _emitted_parts_bounds(model: ResolvedModel, item, hosted_countertops, base_z
             furniture.height.meters)
             if item.tag not in hosted_countertops or not is_counter_part(part)]
         return _parts_bounds(parts, item.position, item.rotation_degrees, base_z_m)
+    # Equipment with a model symbol is drawn from its parts (emit/ifc/mep._emit_equipment).
+    equipment = (next((t for t in model.plan.library.equipment_types if t.tag == item.type_ref),
+                      None) if item.kind == "Equipment" else None)
+    symbol = getattr(getattr(equipment, "model_representation", None), "symbol", None)
+    if symbol:
+        parts = model_parts(symbol, equipment.footprint[0].meters,
+                                equipment.footprint[1].meters, equipment.height.meters)
+        return _parts_bounds(parts, item.position, item.rotation_degrees, base_z_m)
     fixture = next((t for t in model.plan.library.fixture_types if t.tag == item.type_ref), None)
     symbol = model_symbol_for(fixture) if fixture is not None else None
     if is_parts_fixture(symbol):
