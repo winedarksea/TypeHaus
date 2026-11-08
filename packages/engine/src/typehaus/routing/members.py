@@ -30,7 +30,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 from typehaus.quantities import M_PER_IN
-from typehaus.routing.holes import ijoist_bores_ok, pocket_taken
+from typehaus.routing.holes import ijoist_bores_ok, web_refused
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
@@ -186,8 +186,8 @@ class Penetrations:
                 continue
             if band is None and not (floor.window[0] + r <= z <= floor.window[1] - r):
                 return None  # through a chord, a flange or a solid joist's 2" edge
-            if band is None and floor.pockets and pocket_taken(floor, crossed, station, z):
-                return None  # a D web pocket another run already passes (one run each)
+            if band is None and floor.pockets and web_refused(floor, crossed, station, z, r):
+                return None  # on a web, or in a D pocket another run passes (one run each)
             kind = _FLOOR_KIND[floor.kind]
             if kind == "joist" and not _solid_bore_ok(floor, 2 * r):
                 return None

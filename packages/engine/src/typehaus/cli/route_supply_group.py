@@ -214,7 +214,10 @@ def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock,
                          for p in piece)
     if len(seeds) == len(ends):  # nothing laid within reach: offer the trunk whole
         seeds.extend(routes[0].proposal.points)
-    walls = [prism for r in routes if not listed(r)
+    # Off the tee list, or too small to carry any member: a run to keep clear of, not a host
+    # (a 3/4" branch rode a 1/2" one's lane; ``mep.run_interference``).
+    walls = [prism for r in routes
+             if not listed(r) or r.proposal.diameter_m + 1e-9 < small
              for prism in proposal_prisms(r.proposal, inflate_m=CLEARANCE_M)]
     flight = list(gates(model, template.radius_m).values())
     # A riser may stand at the trunk's two ends (a bay either side), and at each fixture end and

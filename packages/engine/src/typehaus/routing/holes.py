@@ -6,7 +6,8 @@ A new crossing is graded against them the way the checks grade it, off the same
 * an I-joist hole stays "2 x the larger hole" clear of every other hole in the same joist
   (ESR-1153 Table A fn 1, as ``plan/framing_charts.py`` transcribes it;
   ``mep.run_member_crossing``);
-* an open-web D pocket takes ONE run (``mep.open_web_panel``).
+* an open-web crossing lands in an opening it fits, and a D pocket takes ONE run
+  (``mep.run_member_crossing``, ``mep.open_web_panel``).
 
 A run the search may occupy (``touch``) is no neighbour. A run laid earlier in the same
 campaign is not in the model yet, so its caller hands it in (``laid_lines``): two branches
@@ -117,17 +118,24 @@ def taken_pockets(lines: list[Line], floor: Any, members: list[Any]) -> list[set
     return out
 
 
-def pocket_taken(floor: Any, crossed: list[int], along: float, z: float) -> bool:
-    """Whether a crossing at ``along``, ``z`` lands in a D pocket another run passes."""
-    from typehaus.resolve.open_web import run_of
+def web_refused(floor: Any, crossed: list[int], along: float, z: float,
+                radius_m: float) -> bool:
+    """Whether a crossing at ``along``, ``z`` misses every opening it fits (a web, a chord,
+    a TrimEnd: ``open_web.grade_crossing``, the check's own verdict) or lands in a D pocket
+    another run passes. The web prisms are the router's coarse reading; this is exact."""
+    from typehaus.resolve.open_web import RunSize, grade_crossing, run_of
 
     along_x = floor.across == "y"
+    size = RunSize(2 * radius_m, 2 * radius_m, True)
     for i in crossed:
         member = floor.parts[i]
-        if member.web is None or not floor.pockets[i]:
+        if member.web is None:
             continue
-        opening = member.web.opening_at(run_of(member, along, along_x), z - member.z0_m)
-        if opening is not None and opening.kind == "D" and opening.key in floor.pockets[i]:
+        grade = grade_crossing(member.web, run_of(member, along, along_x), z - member.z0_m,
+                               size)
+        if not grade.ok:
+            return True
+        if grade.opening.kind == "D" and grade.opening.key in floor.pockets[i]:
             return True
     return False
 
