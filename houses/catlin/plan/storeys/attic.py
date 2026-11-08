@@ -769,6 +769,16 @@ FLOOR_OPENINGS = [
                  outline=(pt(inch(65), inch(389.5)), pt(inch(70), inch(389.5)),
                           pt(inch(70), inch(394.5)), pt(inch(65), inch(394.5))),
                  penetration_for=("DU-A-ERV-R-BATH1",)),
+    # DU-A-ERV-R-ATTIC's 54.7 degree ramp off the deck into its 20'-8" bay, and
+    # DU-A-ERV-R-STUBATH's drop at (2'-0", 21'-8 1/2") into the 21'-8 1/2" bay (2026-11-07).
+    FloorOpening(uid="NJK1P8AW0K", tag="FO-A-ERV-ATTIC", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(14.5), inch(245.75)), pt(inch(20), inch(245.75)),
+                          pt(inch(20), inch(250.25)), pt(inch(14.5), inch(250.25))),
+                 penetration_for=("DU-A-ERV-R-ATTIC",)),
+    FloorOpening(uid="3BDZ9RY2XP", tag="FO-A-ERV-STUBATH", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(21.5), inch(258)), pt(inch(26.5), inch(258)),
+                          pt(inch(26.5), inch(263)), pt(inch(21.5), inch(263))),
+                 penetration_for=("DU-A-ERV-R-STUBATH",)),
     # ...and where BED3 and HP-FEED climb back onto the deck at x=21'-0".
     FloorOpening(uid="Y8G1FJ5SM8", tag="FO-A-ERV-BED3-E", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(249.5), inch(213.5)), pt(inch(254.5), inch(213.5)),
@@ -891,7 +901,8 @@ FLOOR = [
                 openings=("FO-A-STAIR", "FO-A-HALL", "FO-A-ERV-CHASE",
                           "FO-A-VENT-STACK", "FO-A-RADON-STACK", "FO-A-ERV-HPFEED",
                           "FO-A-ERV-BED3", "FO-A-ERV-BATH1", "FO-A-ERV-BED3-E",
-                          "FO-A-ERV-HPFEED-E", "FO-A-ERV-MIX")),
+                          "FO-A-ERV-HPFEED-E", "FO-A-ERV-MIX", "FO-A-ERV-ATTIC",
+                          "FO-A-ERV-STUBATH")),
 ]
 
 # The attic deck's edge along the well's south side, y=5'-9 5/8" — the flight's own south

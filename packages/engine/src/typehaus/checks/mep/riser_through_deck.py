@@ -17,6 +17,10 @@ the model can be silent about it — a horizontal run at least has
 * a ``FloorOpening`` whose ``penetration_for`` names the run. The hole that exists only
   because this pipe goes through it, and the strongest statement the model has.
 
+**A sloped leg is graded too** (``_sloped_footprint``): clipped to the deck sheet, it cuts a
+hole ``D/sin(theta) + t/tan(theta)`` long by ``D`` wide, which the same three answers and the
+same bands read. A leg that starts at the sheet's underside has no member below it to cut.
+
 **What is left is graded in three bands, and the middle one is the finding this was written
 for.** A riser landing on a joist, trimmer or rim **FAILs** naming the member and the
 station: that member is cut and nothing headed it. A riser clear of every member but wider
@@ -61,6 +65,9 @@ MIN_SPAN_FRACTION = 0.5
 #: ``mep_queries._JOIST_BREADTH_FALLBACK_M``.
 _FALLBACK_BREADTH_M = 0.0381
 
+#: A leg rising less than this is level for this check (a drain's fall, a duct's pitch).
+_MIN_SLOPE_DZ_M = 0.5 * M_PER_IN
+
 
 @check(Tier.STRUCTURAL, _CID)
 def riser_through_deck(ctx: CheckContext) -> list[Finding]:
@@ -91,28 +98,40 @@ def riser_through_deck(ctx: CheckContext) -> list[Finding]:
         half_w, _half_d, insulation = sections.get(tag, (0.0, 0.0, None))
         radius = half_w + (insulation_thickness_m(insulation) or 0.0)
         for leg in range(len(path) - 1):
-            if path[leg] != path[leg + 1]:
-                continue  # not a riser: a sloping or level leg is run_member_crossing's
             low, high = sorted((z[leg], z[leg + 1]))
+            vertical = path[leg] == path[leg + 1]
+            if not vertical and high - low < _MIN_SLOPE_DZ_M:
+                continue  # level: run_member_crossing's
             for deck in decks:
                 if (tag, deck.tag) in seen:
                     continue
-                band_low = min(deck.deck_bottom_at(*path[leg][:2]), _members_low(deck))
-                band_high = deck.deck_top_at(*path[leg][:2])  # at the riser, on a tilted deck
-                depth = band_high - band_low
-                if depth <= 0:
-                    continue
-                overlap = min(high, band_high) - max(low, band_low)
-                if overlap < depth * MIN_SPAN_FRACTION:
-                    continue
-                station = Point(path[leg])
+                if vertical:
+                    station = Point(path[leg])
+                    band_low = min(deck.deck_bottom_at(*path[leg][:2]), _members_low(deck))
+                    band_high = deck.deck_top_at(*path[leg][:2])  # on a tilted deck
+                    depth = band_high - band_low
+                    if depth <= 0:
+                        continue
+                    overlap = min(high, band_high) - max(low, band_low)
+                    if overlap < depth * MIN_SPAN_FRACTION:
+                        continue
+                    footprint = station
+                else:
+                    footprint = _sloped_footprint(deck, path[leg], path[leg + 1],
+                                                  z[leg], z[leg + 1], 2 * radius)
+                    if footprint is None:
+                        continue
+                    station = footprint.centroid
                 if not Polygon(deck.deck_outline).contains(station):
                     continue
-                if _is_authorised(deck, tag, station, Polygon):
+                if _is_authorised(deck, tag, footprint, Polygon):
                     continue
                 seen.add((tag, deck.tag))
-                out.append(_verdict(rules, deck, tag, station, radius, limit_m,
-                                    member_window))
+                # A leg that starts at the sheet's underside has nothing below it to cut.
+                below = vertical or min(z[leg], z[leg + 1]) < deck.deck_bottom_at(
+                    *station.coords[0])
+                out.append(_verdict(rules, deck, tag, station, footprint, below, radius,
+                                    limit_m, member_window))
 
     if not out:
         out.append(_pass(_CID, f"every riser through the {len(decks)} decks in this model "
@@ -126,8 +145,44 @@ def _members_low(deck) -> float:
     return min(placed) if placed else deck.deck_z0_m
 
 
+def _sloped_footprint(deck, p0, p1, z0: float, z1: float, diameter: float):
+    """The plan hole a sloped leg cuts in the deck sheet, or ``None`` if it misses it.
+
+    The leg is clipped to ``[deck_bottom_at, deck_top_at]``; the cut is ``D / sin(theta) +
+    t / tan(theta)`` long (along the leg) by ``D`` wide, centred on the crossing's midpoint
+    and trimmed to the leg's own extent.
+    """
+    import math
+
+    from shapely.geometry import LineString, Polygon
+
+    dz = z1 - z0
+    run = math.hypot(p1[0] - p0[0], p1[1] - p0[1])
+    xy = p0
+    for _ in range(2):  # the plane may tilt: re-read the sheet where the leg meets it
+        bottom, top = deck.deck_bottom_at(*xy[:2]), deck.deck_top_at(*xy[:2])
+        t_enter, t_exit = sorted(((bottom - z0) / dz, (top - z0) / dz))
+        t_lo, t_hi = max(t_enter, 0.0), min(t_exit, 1.0)
+        if t_hi <= t_lo:
+            return None
+        mid = (t_lo + t_hi) / 2
+        xy = (p0[0] + (p1[0] - p0[0]) * mid, p0[1] + (p1[1] - p0[1]) * mid)
+    if top - bottom <= 0:
+        return None
+    theta = math.atan2(abs(dz), run)
+    length = diameter / math.sin(theta) + (top - bottom) / math.tan(theta)
+    ux, uy = ((p1[0] - p0[0]) / run, (p1[1] - p0[1]) / run) if run else (1.0, 0.0)
+    hl, hw = length / 2, diameter / 2
+    cut = Polygon([(xy[0] + ux * a - uy * b, xy[1] + uy * a + ux * b)
+                   for a, b in ((-hl, -hw), (hl, -hw), (hl, hw), (-hl, hw))])
+    # The leg exists only between its own joints: past them the neighbouring leg is graded.
+    cut = cut.intersection(LineString((p0, p1)).buffer(hw, cap_style=2))
+    return cut if cut.geom_type == "Polygon" and not cut.is_empty else None
+
+
 def _is_authorised(deck, tag: str, station, Polygon) -> bool:
-    """Whether a hole the model already draws contains this riser — see the module note."""
+    """Whether a hole the model already draws contains this riser (a point) or sloped
+    footprint (a polygon) — see the module note."""
     for ring in deck.deck_voids:
         if len(ring) >= 3 and Polygon(ring).contains(station):
             return True
@@ -140,11 +195,11 @@ def _is_authorised(deck, tag: str, station, Polygon) -> bool:
     return False
 
 
-def _verdict(rules, deck, tag: str, station, radius: float, limit_m: float,
-             member_window) -> Finding:
+def _verdict(rules, deck, tag: str, station, footprint, below: bool, radius: float,
+             limit_m: float, member_window) -> Finding:
     """One riser, one deck: on a member, too big to drill, or a fabricator's question."""
-    hole = station.buffer(radius)
-    for member in deck.members:
+    hole = station.buffer(radius) if footprint.geom_type == "Point" else footprint
+    for member in deck.members if below else ():
         rect = _member_rect(member)
         if rect is None or not rect.intersects(hole):
             continue
