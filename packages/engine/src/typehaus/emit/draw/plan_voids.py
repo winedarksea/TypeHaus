@@ -166,18 +166,20 @@ def _repeats(model: ResolvedModel, storey: str, scale: float):
     A deck with a row of identical pockets is captioned ONCE, ``TYP. OF n``, not once per
     pocket: a caption wider than its 16" void cannot sit inside it, and a dozen of them
     stacked down a walk is the pile-up A-102 printed. A hole that holds its own caption
-    keeps it, so the caption stays on the thing it names.
+    keeps it, so the caption stays on the thing it names. A lone chase too small for even
+    ``CHASE`` (a duct's hole) is not captioned: its symbol says it, and the caption spilled
+    onto its neighbours'.
     """
     groups: dict[tuple, tuple] = {}
     for deck, opening in _deck_openings(model, storey):
         caption, fits = _caption(model, storey, opening, scale)
         area = round(Polygon([p.xy_m for p in opening.outline]).area, 2)
         key = (getattr(deck, "tag", None), caption, area, opening.tag if fits else None)
-        groups.setdefault(key, (deck, caption, []))[2].append(opening)
-    for deck, caption, members in groups.values():
+        groups.setdefault(key, (deck, caption, [], fits))[2].append(opening)
+    for deck, caption, members, fits in groups.values():
         if len(members) > 1 and len(getattr(deck, "outline", ())) >= 3:
             yield deck, caption, members
-        else:
+        elif fits or members[0].purpose is not FloorOpeningPurpose.CHASE:
             for opening in members:
                 yield None, caption, [opening]
 
