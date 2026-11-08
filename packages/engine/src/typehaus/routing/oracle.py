@@ -71,6 +71,8 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
                     test="tests/test_routing_supply.py"),),
     "members": (Oracle(note="framing_bore_limits.md", section="§10",
                        test="tests/test_routing_members.py"),),
+    "holes": (Oracle(note="framing_bore_limits.md", section="§10, §11",
+                     test="tests/test_routing_hole_spacing.py"),),
     "trades/duct": (Oracle(note="mep_duct_routing_basis.md", section="§1, §3",
                            test="tests/test_routing_oracle.py"),),
     "corridor_lanes": (Oracle(note="mep_duct_routing_basis.md", section="§3",
@@ -129,6 +131,10 @@ NOT_A_CALCULATION = frozenset({
     "__init__", "space", "obstacles", "cost", "proposal", "oracle", "timing",
     "diagnostics", "counterfactual", "campaign", "space_view",
     "graph_batch",  # vectorised queries for graph: same answers, oracled through it
+    "rails",  # floor members as rails: geometry the model carries, like ``space``
+    # ``blocking_parts``' own box (its constants, ``crossing_runs``' reading) over
+    # ``floor_blocking.bearing_bays``: a check's rule restated, no arithmetic of its own.
+    "bearing_bays",
     "trades/__init__", "trades/pipe", "trades/conduit",
     # -- E0 --
     # -- /E0 --

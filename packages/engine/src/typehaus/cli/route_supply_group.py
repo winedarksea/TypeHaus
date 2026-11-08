@@ -63,13 +63,14 @@ def gates(model: ResolvedModel, radius_m: float) -> dict[str, Any]:
 
 def space_for(model: ResolvedModel, opts: RouteOptions, net: _Net, ends: Any, seeds: list,
               clock: Any, name: str, *, extra: Any = None, band: Any = None,
-              exempt: Any = None, fixture_ends: tuple = (), cover: bool = True
-              ) -> tuple[Any, Any]:
+              exempt: Any = None, fixture_ends: tuple = (), cover: bool = True,
+              laid: Any = ()) -> tuple[Any, Any]:
     """Space and lattice for ``ends``' pipe; ``extra(space)`` gives prisms to add first.
 
     A riser stands only in wall cover or a soffit (``resolve/riser_cover``) except at the
     route's own ends, ``exempt`` (default: every seed — the trunk's two ends). A
-    ``fixture_ends`` point in a door or a duct is built at the nearest legal wall point."""
+    ``fixture_ends`` point in a door or a duct is built at the nearest legal wall point.
+    ``laid``: runs this campaign laid already, whose holes a new crossing keeps clear of."""
     from typehaus.routing.graph import build_graph
     from typehaus.routing.space import build_space
 
@@ -78,7 +79,7 @@ def space_for(model: ResolvedModel, opts: RouteOptions, net: _Net, ends: Any, se
                             margin_ft=opts.margin_ft, avoid=opts.avoid,
                             touch=frozenset({net.trunk.tag, *net.below, *net.chain}),
                             cost=opts.cost.for_run(ends.kind, ends.system), z_band=band,
-                            cavity_radius_m=ends.cavity_radius_m or None)
+                            cavity_radius_m=ends.cavity_radius_m or None, laid=laid)
     space.bend_radius_m = ends.bend_radius_m
     space.blocking_runs = frozenset(d.tag for d in model.ducts)
     if space.members is not None and cover:
@@ -179,6 +180,7 @@ def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock,
     import numpy as np
 
     from typehaus.routing.campaign import proposal_prisms
+    from typehaus.routing.holes import laid_lines
     from typehaus.routing.obstacles import CLEARANCE_M
     from typehaus.routing.supply_tree import clip_polyline, gate_prisms
 
@@ -212,7 +214,10 @@ def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock,
                          for p in piece)
     if len(seeds) == len(ends):  # nothing laid within reach: offer the trunk whole
         seeds.extend(routes[0].proposal.points)
-    walls = [prism for r in routes if not listed(r)
+    # Off the tee list, or too small to carry any member: a run to keep clear of, not a host
+    # (a 3/4" branch rode a 1/2" one's lane; ``mep.run_interference``).
+    walls = [prism for r in routes
+             if not listed(r) or r.proposal.diameter_m + 1e-9 < small
              for prism in proposal_prisms(r.proposal, inflate_m=CLEARANCE_M)]
     flight = list(gates(model, template.radius_m).values())
     # A riser may stand at the trunk's two ends (a bay either side), and at each fixture end and
@@ -226,6 +231,7 @@ def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock,
     space, graph = space_for(
         model, opts, net, template, seeds, clock, label, band=opts.band,
         exempt=stands, fixture_ends=tuple(e.origin for e in ends.values()), cover=cover,
+        laid=laid_lines(r.proposal for r in routes),
         extra=lambda sp: [*walls, *(gate_prisms(sp.bbox, flight, holes, tight) if flight else [])])
     xyz = np.array([(n.x, n.y, n.z) for n in graph.nodes]).reshape(-1, 3)
     space.reuse = True

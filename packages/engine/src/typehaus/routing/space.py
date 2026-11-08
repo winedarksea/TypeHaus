@@ -20,6 +20,7 @@ from typehaus.routing.corridors import (
 )
 from typehaus.routing.cost import RouteCost
 from typehaus.routing.members import Penetrations
+from typehaus.routing.rails import floor_rails
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
@@ -396,7 +397,7 @@ def build_space(model: ResolvedModel, *, radius_m: float,
                 z_band: tuple[float, float] | None = None,
                 clearance_m: float = CLEARANCE_M,
                 cavity_radius_m: float | None = None,
-                panel_space: bool = True) -> RoutingSpace:
+                panel_space: bool = True, laid: Any = ()) -> RoutingSpace:
     """Inflate the world once for a run of this radius, bounded around its terminals.
 
     ``terminals`` is any iterable of ``(x, y)`` or ``(x, y, z)`` — the points the route has
@@ -405,7 +406,8 @@ def build_space(model: ResolvedModel, *, radius_m: float,
 
     ``touch`` names the existing runs this proposal may occupy — the one it replaces and
     the one it ties into; ``panel_space`` is False for a raceway. See
-    :func:`~typehaus.routing.obstacles.hard_prisms`.
+    :func:`~typehaus.routing.obstacles.hard_prisms`. ``laid`` (``holes.laid_lines``) is a
+    campaign's runs not yet in the model, whose holes ``Penetrations`` keeps clear of.
     """
     points = [(t[0], t[1]) for t in terminals]
     if not points:
@@ -460,40 +462,8 @@ def build_space(model: ResolvedModel, *, radius_m: float,
                         rails=floor_rails(model, (minx, miny, maxx, maxy)),
                         cavity_radius_m=cavity_radius_m,
                         members=Penetrations(model, (minx, miny, maxx, maxy), radius_m,
-                                             cavity_radius_m=cavity_radius_m, touch=touch))
-
-
-def floor_rails(model: ResolvedModel, bbox: tuple[float, float, float, float]) -> list:
-    """Every level, axis-aligned floor member in ``bbox``, as a rail — see ``rails``.
-
-    ``mep.run_through_floor_member`` FAILs a leg "running along inside" a member, and the
-    router laned catlin's kitchen vent along a truss line twice before this.
-    """
-    from typehaus.resolve.framing.profiles import cross_section
-
-    minx, miny, maxx, maxy = bbox
-    out = []
-    for floor in model.floors:
-        for member in floor.members:
-            if member.z0_m is None or member.p0 == member.p1:
-                continue
-            (ax, ay), (bx, by) = member.p0, member.p1
-            if abs(ax - bx) > 1e-6 and abs(ay - by) > 1e-6:
-                continue
-            section = cross_section(member.profile)
-            if section is None:
-                continue
-            axis = "x" if abs(bx - ax) > abs(by - ay) else "y"
-            station = ay if axis == "x" else ax
-            lo, hi = sorted((ax, bx) if axis == "x" else (ay, by))
-            if (axis == "x" and not (miny <= station <= maxy and hi >= minx and lo <= maxx)) \
-                    or (axis == "y" and not (minx <= station <= maxx
-                                            and hi >= miny and lo <= maxy)):
-                continue
-            z1 = member.z1_m if member.z1_m is not None else member.z0_m + section.depth_m
-            out.append((axis, station, lo, hi, section.width_m / 2.0, member.z0_m, z1,
-                        floor.tag))
-    return out
+                                             cavity_radius_m=cavity_radius_m, touch=touch,
+                                             laid=laid))
 
 
 def _corridor_in(corridor: Corridor, minx: float, miny: float,
