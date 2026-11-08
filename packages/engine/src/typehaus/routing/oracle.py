@@ -135,6 +135,7 @@ NOT_A_CALCULATION = frozenset({
     # ``blocking_parts``' own box (its constants, ``crossing_runs``' reading) over
     # ``floor_blocking.bearing_bays``: a check's rule restated, no arithmetic of its own.
     "bearing_bays",
+    "terminal_block",  # a search for a clear point along a wall: geometry, no calculation
     "trades/__init__", "trades/pipe", "trades/conduit",
     # -- E0 --
     # -- /E0 --
