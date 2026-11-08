@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 2ecbb163879bb3ee  
+**Model hash:** e6c123ef8dba35f4  
 **Lines:** 254
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -121,7 +121,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 2.5 SF net | building |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 10.5 SF net | building |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
-| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3566.7 SF net | building |
+| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3566.3 SF net | building |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 43.7 SF net | building |
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 16 | sheets 4x8 | 16 sheets 4x8 over 407.5 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
@@ -204,7 +204,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | PROD-CATLIN-OAK-REDUCER — 3/4 in. oak nosing, eased 3/4 in. nose to the deck | 1 | ea |  | attic |
 | PROD-CATLIN-OAK-REDUCER — 3/4 in. oak reducer, 2 in. bevel to the vinyl | 1 | ea |  | attic |
 | PROD-CATLIN-OAK-REDUCER — 5/4 white oak saddle, 1 3/4 in. flat under the leaf, 2 in. bevel | 1 | ea |  | main |
-| PROD-CATLIN-SOLID-SURFACE-REDUCER — 12 mm solid surface, 4 1/2 in. slope to the vinyl | 1 | ea |  | second |
+| PROD-CATLIN-SOLID-SURFACE-REDUCER — 12 mm solid surface, 4 1/2 in. slope to the vinyl, 0.38 in. water-stop riser | 1 | ea |  | second |
 | PROD-RUBBER-REDUCER — bevelled rubber edge for 3/4 in. mats | 2 | ea |  | basement |
 | PROD-RUBBER-REDUCER — rubber reducer for 1/8 in. sheet vinyl | 2 | ea |  | attic, basement |
 | PROD-SCHLUTER-SCHIENE — aluminium, height to the tile | 3 | ea |  | second |
@@ -513,7 +513,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | PROD-CATLIN-OAK-REDUCER — 3/4 in. oak nosing, eased 3/4 in. nose to the deck | D-A-STUDY |
 | PROD-CATLIN-OAK-REDUCER — 3/4 in. oak reducer, 2 in. bevel to the vinyl | D-A-HALVES |
 | PROD-CATLIN-OAK-REDUCER — 5/4 white oak saddle, 1 3/4 in. flat under the leaf, 2 in. bevel | D-M-BED2 |
-| PROD-CATLIN-SOLID-SURFACE-REDUCER — 12 mm solid surface, 4 1/2 in. slope to the vinyl | D-S-PLANT |
+| PROD-CATLIN-SOLID-SURFACE-REDUCER — 12 mm solid surface, 4 1/2 in. slope to the vinyl, 0.38 in. water-stop riser | D-S-PLANT |
 | PROD-RUBBER-REDUCER — bevelled rubber edge for 3/4 in. mats | D-B-GYM, D-B-SAUNA |
 | PROD-RUBBER-REDUCER — rubber reducer for 1/8 in. sheet vinyl | D-A-POCKET, D-B-BATH |
 | PROD-SCHLUTER-SCHIENE — aluminium, height to the tile | D-S-BATH1, D-S-SUITEBATH, O-S-VANITY |
