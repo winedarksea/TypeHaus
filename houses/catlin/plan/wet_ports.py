@@ -18,19 +18,21 @@ _DELTA = ("Delta M&I 50353 Rev L p.2 fig. 2A + DSP-B-R10000 Rev L p.1, "
           "media.deltafaucet.com, read 2026-11-07")
 
 
-def floor_wc_ports(depth_in: float, supply_left_in: float, supply_aff_in: float,
-                   wall_gap_in: float, *, source: str, stop_note: str = "",
+def floor_wc_ports(depth_in: float, wall_gap_in: float, *, source: str, stop_note: str = "",
+                   wall_stop: tuple[float, float] | None = None,
                    floor_stop: tuple[float, float, float] | None = None,
                    ) -> tuple[ServicePort, ...]:
     """Flange and supply stop for a floor bowl whose tank back stands ``wall_gap_in`` off the
     finished wall, the gap the TOTO sheet draws: the flange stays at the 12" rough-in and the
     stop on the wall face, both ``wall_gap_in`` behind the china.
 
-    The stop is EXACT as house setout, like ``lav_ports``: TOTO prints a suggested station
-    ("Supply as Req'd"), and the house adopts it unless the type says otherwise.
-    ``floor_stop`` = (left of centre, proud of the wall, AFF) is a floor-fed stop instead:
+    Exactly one stop. ``wall_stop`` = (left of centre, AFF) is EXACT as house setout, like
+    ``lav_ports``: TOTO prints a suggested station ("Supply as Req'd") and the house adopts
+    it. ``floor_stop`` = (left of centre, proud of the wall, AFF) is a floor-fed stop:
     TOTO's station is a wall supply's, so the plumber's riser setout governs, approximate.
     """
+    if (wall_stop is None) == (floor_stop is None):
+        raise ValueError("give exactly one of wall_stop and floor_stop")
     wall_in = depth_in / 2 + wall_gap_in
     if floor_stop is not None:
         left_in, proud_in, aff_in = floor_stop
@@ -42,11 +44,12 @@ def floor_wc_ports(depth_in: float, supply_left_in: float, supply_aff_in: float,
                   f'{aff_in}" AFF: house riser setout, clear of the wall base and the china. '
                   f"{source} draws a wall supply only.{stop_note}")
     else:
+        left_in, aff_in = wall_stop
         cold = ServicePort(
             tag="WC-WATER_COLD", service=Service.WATER_COLD,
-            position=(inch(-supply_left_in), inch(wall_in), inch(supply_aff_in)),
+            position=(inch(-left_in), inch(wall_in), inch(aff_in)),
             connection_size=inch(0.5), direction=(0, 1, 0), certainty=PortCertainty.EXACT,
-            notes=f'Angle stop {supply_left_in}" left of centre, {supply_aff_in}" AFF, '
+            notes=f'Angle stop {left_in}" left of centre, {aff_in}" AFF, '
                   f"house setout ({source}).{stop_note}")
     return (
         ServicePort(tag="WC-DRAIN", service=Service.DRAIN,

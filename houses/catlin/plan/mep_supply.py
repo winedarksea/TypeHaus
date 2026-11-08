@@ -727,9 +727,12 @@ SUPPLY = [
     # WEST of W-B-CS's liner face — three and a half feet of bare PEX standing in a sauna
     # on its way to a mixer that is inside the wall. `mep.run_in_finished_volume` called both
     # at 31.6" for 2.64 ft once the ceiling came down. Each now jogs east at its own y and
-    # drops inside W-B-CS's stud cavity (x 213 1/4"..218 3/4"), on x=18'-0" — dead centre of
-    # the bay, 6 1/4" behind the liner, which is where a mixer body belongs and where the
-    # trim escutcheon reaches it from. The two are 4" apart in y, so one x serves both.
+    # drops inside W-B-CS's stud cavity (x 213 1/4"..218 3/4"), on x=18'-0", mid-bay. The
+    # two are 4" apart in y, so one x serves both. ** THE VALVE IS NOT THERE. ** Delta's
+    # R10000 inlets sit 1 3/4" behind the finished face (50353 Rev L p.2), so with the trim on
+    # the shiplap they are at x=211 3/4", inside the 2" foil polyiso (211 1/4"..213 1/4"), and
+    # these drops end 4 1/4" short. How the valve mounts and how the supplies pass the
+    # polyiso are open owner items.
     # The east jog itself rides at 8'-4 5/8" — 6" higher than the 7'-10 5/8" it was
     # authored at, and still above the sauna's 6'-11 1/16" ceiling and inside its service
     # cavity, which is the only thing that paragraph ever asked of it.

@@ -7533,7 +7533,7 @@ concrete-window-bucks-and-blockouts = { low = 250, high = 600, unit = "ea", driv
 # loop in the stone, the 4" riser from slab to roof, its penetration and sealing, and the
 # labelling. Back to an undriven lump because that scope is a stack, not an area — one riser
 # whatever the slab does. The fan, monitor and commissioning are already the
-# `electrical-radon-fan-smoke-co-surge-and-commissioning` row below and are NOT here.
+# `electrical-radon-fan-smoke-co-and-commissioning` row below and are NOT here.
 radon-passive-pipe-and-stack = { low = 900, high = 2200 }
 # ** ANSWERED 2026-08-20: SUMMER POUR, so this is ZERO. ** Foundation and suspended deck go in
 # May-Oct. The row is kept at zero rather than deleted, because it is the reminder of what a
@@ -7998,11 +7998,27 @@ electrical-structured-low-voltage-drops = { low = 200, high = 450, unit = "ea", 
 # 2026-10-29: $150-450 -> $60-200. Broan ARKBWP ships with 2 charcoal filters; row = the ARKBWP kit (~$60-110, unverified) + one FILTERBWPTS spare set.
 # If the hood row is confirmed to include the kit, drop to the replacement set alone ($30-60).
 hvac-range-hood-recirculation-filters = { low = 60, high = 200 }
-# DRIVEN 2026-08-27 off the panel schedule — 36 circuits, counted with the `rows` pseudo-field
-# because a schedule is one row per circuit and carries no count column. A "load centre" price
-# is the can and the main only; every branch breaker in a 2026 MN dwelling is AFCI, GFCI or
-# both, at $39-81 apiece. The retired $1,400-2,900 was this arithmetic on the same 36.
-electrical-afci-gfci-breakers = { low = 39, high = 81, unit = "ea", driver = "panel_schedule.rows" }
+# DRIVEN 2026-08-27 off the panel schedule, counted with the `rows` pseudo-field because a
+# schedule is one row per circuit and carries no count column. A "load centre" price is the
+# can and the main only. Split by breaker kind 2026-11-07; the five drivers are disjoint and
+# together count every row. 1-pole branch breakers are AFCI, GFCI or both, at $39-81 apiece.
+electrical-afci-gfci-breakers = { low = 39, high = 81, unit = "ea", driver = "panel_schedule.rows[poles=1]" }
+# 2-pole GFCI breakers (Square D QO2xxGFI class, Class A 6 mA): RANGE, DRYER, HP1-3 (2026 NEC
+# 210.8(D)(8)/(11), 210.8(F)) plus SPA, KETTLE, GAR-240, WORKSHOP-240. ESTIMATE: retailer
+# prices from search listings read 2026-11-07, pages not fetched (403): homedepot.com/p/-/316285075
+# (QO230GFIC $156.91), zoro.com (QO215GFI $208.99), standardelectricsupply.com (QO240GFI
+# $170.40), reach.dog (QO225GFI/QO240GFI ~$126). Labour is the generic row's share.
+electrical-2pole-gfci-breakers = { material = { low = 125, high = 210 }, labour = { low = 25, high = 50 }, unit = "ea", driver = "panel_schedule.rows[poles=2,gfci=True]" }
+# Plug-on Type 2 SPDs, one per feeder panel (2026 NEC 230.67(B) Ex., 215.18): CKT-SPD (QO2175SB),
+# CKT-SPD-2 (HOM2175SB), CKT-SPD-BACKUP (the backup panel's own line). The plug-on IS the device,
+# so this row is the whole SPD. ESTIMATE: search listings read 2026-11-07, pages not fetched:
+# standardelectricsupply.com QO2175SB $118.31, simplybreakers.com HOM2175SB $115.99, reach.dog
+# HOM2175SB $74.99. Driver: a 2-pole, non-source circuit with no load is an SPD here.
+electrical-spd-plug-on = { material = { low = 75, high = 160 }, labour = { low = 25, high = 50 }, unit = "ea", driver = "panel_schedule.rows[poles=2,gfci=False,source=False,connected_va=0]" }
+# Plain 2-pole breakers (EV-1450, SAUNA, ERV, HP1-AH) and the ESS backfeed breaker: the generic
+# rate, unchanged (an estimate; no source read).
+electrical-2pole-breakers = { low = 39, high = 81, unit = "ea", driver = "panel_schedule.rows[poles=2,gfci=False,connected_va!=0]" }
+electrical-backfeed-breaker = { low = 39, high = 81, unit = "ea", driver = "panel_schedule.rows[source=True]" }
 # RETIRED 2026-09-19 — `electrical-garage-exterior-linear` ($32-85/LF x 73.5 LF) and
 # `electrical-sauna-under-bench-strip` ($26-62/LF x 12 LF) are GONE, replaced by the real
 # [light_run_materials] section above. Both were driven off
@@ -8011,11 +8027,6 @@ electrical-afci-gfci-breakers = { low = 39, high = 81, unit = "ea", driver = "pa
 # was written to make — a damp-location exterior extrusion and a sauna-rated silicone tape
 # are not the 24V cove rate — survives as the qualified keys `channel:ED-T-LT-LINEAR-EXT`
 # and `tape:ED-T-LT-STRIP24-SAUNA`, multiplying the same quantity the driver measured.
-# CKT-SPD rides this row as one more $39-81 branch breaker. That is LOW for a plug-on
-# Type 2 SPD (roughly $100-250 delivered), but the device is NOT unpriced: the "surge" in
-# `electrical-radon-fan-smoke-co-surge-and-commissioning` below is a $1,900-4,300 lump that
-# has carried it since the row was written, and a dedicated row here would double bill it.
-# Left as is deliberately. See that row's comment for the code tie.
 hvac-controls-and-zoning = { low = 1200, high = 3000 }
 # DRIVEN 2026-08-27 off total duct run — 783.2 LF. Mastic and sealing are per foot of duct and
 # the leakage test is a fixed fee inside the rate; $1.28-3.19/LF is the retired lump over
@@ -8078,19 +8089,15 @@ hvac-emergency-drain-pan = { low = 300, high = 750 }
 # produced. Splitting is legal here because the two halves ARE separately known; this is not
 # the forbidden move of dividing a merged installed price.
 plumbing-wall-hung-wc-carrier = { material = { low = 420, high = 900 }, labour = { low = 150, high = 320 }, unit = "ea", driver = "placeables.count[type=FX-TOTO-AP-WH]" }
-# The "surge" in this lump is now a NAMED, CODE-REQUIRED DEVICE, not a general allowance:
-# CKT-SPD in plan/circuits.py, the Type 2 SPD that NEC 2023 230.67 requires on the service
-# of a dwelling. It was never a line anyone could trim, and now the schedule says so. The
-# breaker row above counts CKT-SPD once at the generic $39-81; the device itself is in here.
-# ** THIS LUMP HAS NO WRITTEN BREAKDOWN ** — it was authored as one figure covering the
-# radon fan, the smoke/CO devices, the SPD and commissioning. Worth splitting the day any
-# one of those gets a real quote, because today nothing can say whether $2,450 or $8,000 is
-# the honest number for the SPD's share.
+# ** THE SURGE SHARE LEFT THIS LUMP 2026-11-07. ** The three Type 2 SPDs 2026 NEC 230.67(B)
+# Ex. / 215.18 require (CKT-SPD, CKT-SPD-2, CKT-SPD-BACKUP, one per feeder panel) now bill
+# by count in `electrical-spd-plug-on` above, and the $100-250 + $100-250 SPD line is out of
+# the build-up below, so nothing bills twice. The key dropped "surge" with it.
 # 2026-10-29 build-up ($2,450-8,000 -> $1,900-4,300): radon fan $190-350 + wiring/switch/gauge $150-400; 13 hardwired
 # smoke/CO/heat devices (plan Alarms: 10 combo, 1 smoke, 2 heat; ONE Kidde hardwired line, 2026-10-30: 30CUA10-V combo,
-# 20SA10 smoke, HD135F heat — Alarm has no product_ref, so the line is named here) @ $45-80 mat + $35-75 labour = $1,040-2,015; Type 2 SPD
-# $100-250 + install $100-250; commissioning/labelling $300-1,000.
-electrical-radon-fan-smoke-co-surge-and-commissioning = { low = 1900, high = 4300 }
+# 20SA10 smoke, HD135F heat — Alarm has no product_ref, so the line is named here) @ $45-80 mat + $35-75 labour = $1,040-2,015;
+# commissioning/labelling $300-1,000. 2026-11-07: -$200-500 (the SPD) -> $1,700-3,800.
+electrical-radon-fan-smoke-co-and-commissioning = { low = 1700, high = 3800 }
 # Separate from the building permit, which is in the soft-cost row below.
 permits-mep = { low = 1500, high = 4000 }
 

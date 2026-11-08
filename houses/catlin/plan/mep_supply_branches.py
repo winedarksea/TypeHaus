@@ -39,22 +39,23 @@ BASEMENT_SUPPLY_BRANCHES = [
     # FX-M-BATH2-SH's valve in W-M-BA2E2. Cold off the trunk at x=7'-0", 2" over the band to
     # cross PR-B-HW-SAUNA, and up the wall at 8'-1 1/2"; hot off EQ-B-HW-HEADER's out-4, south
     # in the 83 1/2" lanes under the drains, up into the joist web at y=17'-2" (over
-    # PR-M-S-SUITE-DRAIN) and south to 8'-0 1/2". Both rise in the wall and stub west to the
-    # valve body; an along-wall elbow into the R10000 side hubs is open, as the hot riser
-    # would stand in PR-B-SH2-DRAIN at y=15'-0". PR-B-FILLER-HW leaves out-5 the same way,
-    # west at x=7'-2 1/2".
+    # PR-M-S-SUITE-DRAIN) and south. Each rises in the wall 1 3/4" behind the face, outboard
+    # of its R10000 side hub, and elbows once along the wall into it (Delta 50353 fig. 2A):
+    # the cold 1 1/2" south, the hot 6 3/4" north, past PR-B-SH2-DRAIN's arm at y=15'-0" and
+    # CO-M-SH2-HEAD's extension and cap at y=15'-2 3/8".
+    # PR-B-FILLER-HW leaves out-5 the same way, west at x=7'-2 1/2".
     PipeRun(uid="A4PYMFZWY8", tag="PR-B-BATH2-SH-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(84), inch(192)), pt(inch(84), inch(192)), pt(inch(84), inch(174.25)),
-                  pt(inch(97.5), inch(174.25)), pt(inch(97.5), inch(174.25)),
-                  pt(inch(94.615), inch(174.25)),),
+            path=(pt(inch(84), inch(192)), pt(inch(84), inch(192)), pt(inch(84), inch(172.75)),
+                  pt(inch(96.365), inch(172.75)), pt(inch(96.365), inch(172.75)),
+                  pt(inch(96.365), inch(174.25)),),
             elevations=(inch(100.6375), inch(102.6375), inch(102.6375), inch(102.6375),
                         inch(158.1875), inch(158.1875),),
             diameter=inch(0.5), material="pex", serves=("FX-M-BATH2-SH",)),
     PipeRun(uid="7QKQM2TYZV", tag="PR-B-BATH2-SH-HW", system=PipeSystem.WATER_HOT,
             path=(pt(inch(90), inch(299.874)), pt(inch(90), inch(299.874)),
-                  pt(inch(96.5), inch(299.874)), pt(inch(96.5), inch(206)),
-                  pt(inch(96.5), inch(206)), pt(inch(96.5), inch(178.25)),
-                  pt(inch(96.5), inch(178.25)), pt(inch(94.615), inch(178.25)),),
+                  pt(inch(96.365), inch(299.874)), pt(inch(96.365), inch(206)),
+                  pt(inch(96.365), inch(206)), pt(inch(96.365), inch(185)),
+                  pt(inch(96.365), inch(185)), pt(inch(96.365), inch(178.25)),),
             elevations=(inch(86.149), inch(83.5), inch(83.5), inch(83.5), inch(99.4375),
                   inch(99.4375), inch(158.1875), inch(158.1875),),
             diameter=inch(0.5), material="pex", serves=("FX-M-BATH2-SH",)),
@@ -109,7 +110,10 @@ MAIN_SUPPLY_BRANCHES = [
     # x=3'-9 3/4", so nothing reaches the chase from the risers through the second floor.
     # Cold at 19'-8", hot 2" over it at 19'-10", both over PR-S-BATH1-VENT and south of
     # VR-M-STACK's +19'-6" jog. 3/4" cold: the
-    # tub-shower and the WC are 5.5 WSFU.
+    # tub-shower and the WC are 5.5 WSFU. Both still stub straight in at the tub end's face;
+    # an along-wall elbow into the R10000 side hubs is open, as the cold's drop would move
+    # past the hub to y=34'-5" into VR-M-STACK's vent and take the WC tee onto the
+    # FO-S-ERV-CHASE header.
     PipeRun(uid="9BDG7R9DHR", tag="PR-S-BATH1-SH-CW", system=PipeSystem.WATER_COLD,
             path=(pt(inch(63), inch(318.75)), pt(inch(63), inch(318.75)),
                   pt(inch(63), inch(410.25)), pt(inch(32.5), inch(410.25)),
@@ -145,7 +149,8 @@ MAIN_SUPPLY_BRANCHES = [
                   serves=("FX-S-BATH1-WC",)),
     # RM-S-SUITEBATH, all in W-S-SN3's staggered cavity off the suite risers: the WC west on
     # the axis, the tub-shower pair east (hot on the axis, cold in the south half 6" lower,
-    # under the lav stops' drops), each elbowing along the wall into its R10000 side hub.
+    # under the lav stops' drops). Each tub-shower supply rises in its R10000 inlet's plane,
+    # 1 1/2" outboard, and elbows once into the side hub; the hot tees 3 1/2" down the riser.
     PipeRun(uid="N9GFY7KNY7", tag="PR-S-SUITE-WC-CW", system=PipeSystem.WATER_COLD,
             path=(pt(inch(163.2), inch(268)), pt(inch(128.935), inch(268)),
                   pt(inch(128.935), inch(268)), pt(inch(128.935), inch(264.406)),),
@@ -157,21 +162,23 @@ MAIN_SUPPLY_BRANCHES = [
                   model=_ANGLE_STOP, serves=("FX-S-SUITEBATH-WC",)),
     PipeRun(uid="KNTMDJRJPN", tag="PR-S-SUITE-TUBSH-HW", system=PipeSystem.WATER_HOT,
             path=(pt(inch(171.6), inch(268)), pt(inch(194.115), inch(268)),
-                  pt(inch(194.115), inch(268)), pt(inch(194.115), inch(266.375)),
+                  pt(inch(194.115), inch(266.375)), pt(inch(194.115), inch(266.375)),
                   pt(inch(195.615), inch(266.375)),),
-            elevations=(inch(150), inch(150), inch(150.75), inch(150.75), inch(150.75),),
+            elevations=(inch(146.5), inch(146.5), inch(146.5), inch(150.75), inch(150.75),),
             diameter=inch(0.5), material="pex", serves=("FX-S-SUITEBATH-TUBSH",)),
     PipeRun(uid="TRYB9RHBHH", tag="PR-S-SUITE-TUBSH-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(163.2), inch(268)), pt(inch(163.2), inch(266)),
-                  pt(inch(201.115), inch(266)), pt(inch(201.115), inch(266)),
-                  pt(inch(201.115), inch(266.375)), pt(inch(199.615), inch(266.375)),),
-            elevations=(inch(144), inch(144), inch(144), inch(150.75), inch(150.75),
-                        inch(150.75),),
+            path=(pt(inch(163.2), inch(268)), pt(inch(163.2), inch(266.375)),
+                  pt(inch(201.115), inch(266.375)), pt(inch(201.115), inch(266.375)),
+                  pt(inch(199.615), inch(266.375)),),
+            elevations=(inch(144), inch(144), inch(144), inch(150.75), inch(150.75),),
             diameter=inch(0.5), material="pex", serves=("FX-S-SUITEBATH-TUBSH",)),
     # RM-A-STUBATH: the WC stop off the cold riser in W-A-STU-W, south in the cavity; the
     # shower pair carries on east from the lavatory branches' corners along the north wall
-    # (W-A-HALL-S), the hot in the cavity's front half past the lav revent and shower vent;
-    # both elbow along the wall into the R10000 side hubs.
+    # (W-A-HALL-S), the hot in the cavity's front half past the lav revent and shower vent.
+    # Both still stub straight in at the face. An along-wall elbow into the R10000 side hubs
+    # is open: PR-A-STUBATH-SH-VENT / -LAV-REVENT run the hubs' plane at y=22'-4", 23'-5" to
+    # 23'-8" up, so an inlet-plane riser must start over them, and the hot can only reach
+    # there by crossing the revent.
     PipeRun(uid="CXYTEY6C5D", tag="PR-A-STUBATH-WC-CW", system=PipeSystem.WATER_COLD,
             path=(pt(inch(113.5), inch(246)), pt(inch(113.5), inch(227.6875)),
                   pt(inch(122.188), inch(227.6875)),),
@@ -183,16 +190,14 @@ MAIN_SUPPLY_BRANCHES = [
                   model=_ANGLE_STOP, serves=("FX-A-STUBATH-WC",)),
     PipeRun(uid="9DJH46T5SR", tag="PR-A-STUBATH-SH-HW", system=PipeSystem.WATER_HOT,
             path=(pt(inch(161.625), inch(267.5)), pt(inch(162.5), inch(266.6)),
-                  pt(inch(191.125), inch(266.6)), pt(inch(191.125), inch(266.6)),
-                  pt(inch(191.125), inch(267.375)), pt(inch(192.625), inch(267.375)),),
-            elevations=(inch(272), inch(272), inch(272), inch(288.75), inch(288.75),
-                        inch(288.75),),
+                  pt(inch(192.625), inch(266.6)), pt(inch(192.625), inch(266.6)),
+                  pt(inch(192.625), inch(265.625)),),
+            elevations=(inch(272), inch(272), inch(272), inch(288.75), inch(288.75),),
             diameter=inch(0.5), material="pex", serves=("FX-A-STUBATH-SH",)),
     PipeRun(uid="S8XSR4YYBZ", tag="PR-A-STUBATH-SH-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(167.625), inch(266)), pt(inch(198.125), inch(266)),
-                  pt(inch(198.125), inch(266)), pt(inch(198.125), inch(267.375)),
-                  pt(inch(196.625), inch(267.375)),),
-            elevations=(inch(270), inch(270), inch(288.75), inch(288.75), inch(288.75),),
+            path=(pt(inch(167.625), inch(266)), pt(inch(196.625), inch(266)),
+                  pt(inch(196.625), inch(266)), pt(inch(196.625), inch(265.625)),),
+            elevations=(inch(270), inch(270), inch(288.75), inch(288.75),),
             diameter=inch(0.5), material="pex", serves=("FX-A-STUBATH-SH",)),
     # APPL-M-DW: tees off the kitchen hot riser 5 1/2" over the floor and runs west behind
     # the cold riser, along the cabinet backs, to the machine's inlet. Its stop is in the

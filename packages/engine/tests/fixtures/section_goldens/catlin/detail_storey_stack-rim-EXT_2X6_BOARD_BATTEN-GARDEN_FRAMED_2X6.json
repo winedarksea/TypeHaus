@@ -1084,7 +1084,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-flat-sheet",
-      "fill": "#4d4b50"
+      "fill": "#2c2829"
     },
     {
       "space": "model",
@@ -3947,7 +3947,7 @@
       "layer": "A-DETL-CMPT",
       "uid": null,
       "material": "metal-flat-sheet",
-      "fill": "#4d4b50"
+      "fill": "#2c2829"
     },
     {
       "space": "paper",

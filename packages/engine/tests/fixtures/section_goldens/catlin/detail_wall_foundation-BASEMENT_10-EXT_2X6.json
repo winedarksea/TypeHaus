@@ -3890,7 +3890,7 @@
       "layer": "A-DETL-CMPT",
       "uid": null,
       "material": "foundation-coating-acrylic-tinted",
-      "fill": "#4d4b50"
+      "fill": "#2c2829"
     },
     {
       "space": "paper",
@@ -4687,7 +4687,7 @@
       "layer": "A-DETL-CMPT",
       "uid": null,
       "material": "metal-flat-sheet",
-      "fill": "#4d4b50"
+      "fill": "#2c2829"
     },
     {
       "space": "paper",

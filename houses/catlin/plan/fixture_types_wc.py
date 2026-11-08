@@ -115,7 +115,7 @@ TOTO_CARLYLE_II = FixtureType(
     # SS-02299 v.01 p.2: tank 3/4" [18 mm] off the finished wall, flange at 12". Its one
     # placement backs the DuoFit carrier wall (W-M-HS1), whose frame fills the bay, so the
     # stop is floor-fed: PR-B-BATH2-WC-CW rises 1.14" off the wall at TOTO's 6" / 8".
-    ports=floor_wc_ports(28.3125, 6.0, 8.0, 0.75, source="TOTO SS-02299 v.01 p.2",
+    ports=floor_wc_ports(28.3125, 0.75, source="TOTO SS-02299 v.01 p.2",
                          floor_stop=(6.0, 1.14, 8.0)),
     source='TOTO Carlyle II CST614CEFGAT40#01, owner selection 2026-09-06. 28 5/16" D x '
            '16 1/2" W x 28 3/4" H (TOTO SS-01809, same bowl/tank as MS614124CEF(R)G; '
@@ -147,7 +147,7 @@ TOTO_AQUIA_IV = FixtureType(
     clearances=(water_closet_required_clearance(inch(27.5625)),),
     # SS-02072 v.02 p.2: tank 3/4" [20 mm] off the finished wall, flange at 12"; it suggests
     # the stop at 4 3/4" AFF ("as req'd"), and 7" clears the 3 1/2" base.
-    ports=floor_wc_ports(27.5625, 5.875, 7.0, 0.75,
+    ports=floor_wc_ports(27.5625, 0.75, wall_stop=(5.875, 7.0),
                          source='TOTO SS-02072 v.02 p.2 x; z kept at 7" over its suggested 4 3/4"',
                          stop_note=' Use a 90-degree angle stop; max protrusion with the '
                                    'shutoff 3 1/8" [80 mm] off the finished wall (same page).'),
@@ -168,7 +168,7 @@ TOTO_AQUIA_IV = FixtureType(
 TOTO_AQUIA_IV_FLOOR = TOTO_AQUIA_IV.model_copy(update={
     "tag": "FX-TOTO-AQUIA-IV-FLOOR",
     "name": "Aquia IV skirted dual-flush water closet, floor-fed stop",
-    "ports": floor_wc_ports(27.5625, 5.875, 7.0, 0.75, source="TOTO SS-02072 v.02 p.2",
+    "ports": floor_wc_ports(27.5625, 0.75, source="TOTO SS-02072 v.02 p.2",
                             floor_stop=(10.5, 1.25, 7.0),
                             stop_note=" Use a 90-degree angle stop (same page)."),
     "source": TOTO_AQUIA_IV.source + ' FLOOR-FED VARIANT: SS-02072\'s stop station is a wall '
@@ -189,7 +189,8 @@ TOTO_DRAKE = FixtureType(
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(water_closet_required_clearance(inch(28.375)),),
     # SS-02049 v.04 p.2: tank 13/16" [20 mm] off the finished wall, flange at 12".
-    ports=floor_wc_ports(28.375, 4.3125, 7.5, 0.8125, source="TOTO SS-02049 v.04 p.2 suggested"),
+    ports=floor_wc_ports(28.375, 0.8125, wall_stop=(4.3125, 7.5),
+                         source="TOTO SS-02049 v.04 p.2 suggested"),
     source='TOTO Drake CST776CEFG#01, owner selection 2026-09-06. Published dimensions read '
            '2026-09-06: 28 3/8" D x 17 3/16" W x 30 1/8" H, rim 16 1/8" (universal height), '
            '12" rough-in, 2 1/8" trapway, 1.28 gpf Tornado Flush, CEFIONTECT. Seat is the '
