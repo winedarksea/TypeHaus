@@ -315,6 +315,17 @@ SECOND_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-C1", face="left", distance_from_start=inch(56),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # The drip pump's outlet (notes/plant_reservoir.md): a plug-in timer, then the 12 V supply,
+    # 10" east of APPL-S-PLANT-RESERVOIR's rim in W-S-S1's 177 1/2"-190 1/2" bay under
+    # WIN-S-PLANT4 (sill 32"). RC1/RC2 stand in the bays west of the hydrant, behind no tank.
+    # Same WR GFCI as RC1-5 on the room's circuit. A bubble cover does not close over a plug-in
+    # timer: field choice, open item in the note.
+    ElectricalDevice(uid="PEHTPE0R62", tag="ED-S-PLANT-RC6", kind=DeviceKind.RECEPTACLE_GFCI,
+                     type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-RC-SECOND", room="RM-S-PLANT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-S1", face="left", distance_from_start=inch(184),
+                         normal_gap=inch(0), rotation_offset=deg(180)))),
     ElectricalDevice(uid="CED005K1AA", tag="ED-S-STUDY2-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(24), ft(3)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-STUDY2", controlled_by=("ED-S-STUDY2-SW",),

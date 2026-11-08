@@ -35,6 +35,9 @@
 "canvas_objects/APPL-M-RANGE/body_z0_m": 0.02605,
 "canvas_objects/APPL-M-RANGE/body_z1_m": 0.95315,
 "canvas_objects/APPL-M-RANGE/z_m": 0.02605,
+"canvas_objects/APPL-S-PLANT-RESERVOIR/body_z0_m": 3.076448,
+"canvas_objects/APPL-S-PLANT-RESERVOIR/body_z1_m": 3.511423,
+"canvas_objects/APPL-S-PLANT-RESERVOIR/z_m": 3.076448,
 "canvas_objects/ED-A-EAST-LT/body_z0_m": 8.09625,
 "canvas_objects/ED-A-EAST-LT/body_z1_m": 8.31215,
 "canvas_objects/ED-A-EAST-LT/z_m": 8.09625,
@@ -1145,6 +1148,9 @@
 "canvas_objects/ED-S-PLANT-RC5/body_z0_m": 3.482848,
 "canvas_objects/ED-S-PLANT-RC5/body_z1_m": 3.559048,
 "canvas_objects/ED-S-PLANT-RC5/z_m": 3.482848,
+"canvas_objects/ED-S-PLANT-RC6/body_z0_m": 3.482848,
+"canvas_objects/ED-S-PLANT-RC6/body_z1_m": 3.559048,
+"canvas_objects/ED-S-PLANT-RC6/z_m": 3.482848,
 "canvas_objects/ED-S-PLANT-SPOT/body_z0_m": 4.905248,
 "canvas_objects/ED-S-PLANT-SPOT/body_z1_m": 5.108448,
 "canvas_objects/ED-S-PLANT-SPOT/z_m": 4.905248,
@@ -44549,11 +44555,23 @@
 6,
 "15a120bd741d"
 ],
-"geometry/CSD212AAAA/doorway:transition:reducer": [
+"geometry/CSD212AAAA/doorway:transition:reducer landing": [
 3.0734,
 3.0861,
-10,
-"22e133ecf46b"
+8,
+"d6a159864afc"
+],
+"geometry/CSD212AAAA/doorway:transition:reducer slope": [
+3.0734,
+3.0852957,
+8,
+"94d84aef0385"
+],
+"geometry/CSD212AAAA/doorway:transition:water-stop riser": [
+3.0734,
+3.0861,
+8,
+"d6a159864afc"
 ],
 "geometry/CSD212AAAA/frame": [
 3.076448,
@@ -45642,6 +45660,12 @@
 "f366c40df118"
 ],
 "geometry/CSR401AAAA-base-CSW101AAAA-0/body": [
+3.076448,
+3.178048,
+2,
+"1b94c0140b79"
+],
+"geometry/CSR401AAAA-base-CSW101AAAA-1/body": [
 3.076448,
 3.178048,
 2,
@@ -113323,7 +113347,7 @@
 "pipe_accessories/PA-S-BATH1-STOP-CW/z_m": -0.17272,
 "pipe_accessories/PA-S-BATH1-STOP-HW/z_m": 2.794,
 "pipe_accessories/PA-S-BATH1-WC-STOP/z_m": 3.2639,
-"pipe_accessories/PA-S-PLANT-WATER-STUB/z_m": 3.4246566,
+"pipe_accessories/PA-S-PLANT-RESERVOIR-STOP/z_m": 3.4246566,
 "pipe_accessories/PA-S-SUITE-LAV-CW/z_m": 3.6957,
 "pipe_accessories/PA-S-SUITE-LAV-HW/z_m": 3.6957,
 "pipe_accessories/PA-S-SUITE-WC-STOP/z_m": 3.2639,
@@ -118655,8 +118679,8 @@
 "solids/PA-S-BATH1-STOP-HW/z1_m": 2.8702,
 "solids/PA-S-BATH1-WC-STOP/z0_m": 3.1877,
 "solids/PA-S-BATH1-WC-STOP/z1_m": 3.3401,
-"solids/PA-S-PLANT-WATER-STUB/z0_m": 3.3484566,
-"solids/PA-S-PLANT-WATER-STUB/z1_m": 3.5008566,
+"solids/PA-S-PLANT-RESERVOIR-STOP/z0_m": 3.3484566,
+"solids/PA-S-PLANT-RESERVOIR-STOP/z1_m": 3.5008566,
 "solids/PA-S-SUITE-LAV-CW/z0_m": 3.6195,
 "solids/PA-S-SUITE-LAV-CW/z1_m": 3.7719,
 "solids/PA-S-SUITE-LAV-HW/z0_m": 3.6195,

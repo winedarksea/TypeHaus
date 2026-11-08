@@ -47,7 +47,7 @@ from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, 
                   living_puzzle_table_types, media_types,
                   lighting_attic, lighting_types, masonry_joints, mep, mep_lavatories, mep_supply_branches, millwork,
                   millwork_vanities, placeables,
-                  plant_room, plant_room_types, plant_types, plate_ties, porch_lighting,
+                  plant_reservoir, plant_reservoir_types, plant_room, plant_room_types, plant_types, plate_ties, porch_lighting,
                   opening_products, paint, products, products_paint, smart_home, smart_home_types,
                   sauna, sauna_types, site, study_bridge, titanium_types, transitions, views,
                   wall_top_ties, wind_clamps, window_stools, window_types)
@@ -74,7 +74,7 @@ _library = Library(
               *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS, *products_bath_lavs.BATH_LAV_PRODUCTS,
               *device_types.DEVICE_PRODUCTS, *device_boxes.BOX_PRODUCTS, *ducts.DUCT_PRODUCTS, *drywall.DRYWALL_PRODUCTS, *products_paint.PAINT_PRODUCTS,
               *window_covering_types.WINDOW_COVERING_PRODUCTS, *smart_home_types.SMART_HOME_PRODUCTS,
-              *media_types.MEDIA_PRODUCTS,
+              *media_types.MEDIA_PRODUCTS, *plant_reservoir_types.PLANT_RESERVOIR_PRODUCTS,
               *RAILING_PRODUCTS),
     # The catalog carries what the house hangs, not the whole library ladder (2026-09-12).
     # The 36" pocket is bought as an Eclisse steel cassette (notes/pocket_frame_eclisse.md).
@@ -131,7 +131,8 @@ _library = Library(
     # hood are still unchosen and still correctly generic. Tags are disjoint (APPL-LG-*
     # vs APPL-*), which `integrity.duplicate_catalog_tag` proves rather than assumes.
     appliance_types=(*STARTER_APPLIANCE_TYPES, MICROWAVE_COUNTERTOP_NN_SN686S,
-                     *appliance_types.APPLIANCE_TYPES, *smart_home_types.APPLIANCE_TYPES),
+                     *appliance_types.APPLIANCE_TYPES, *smart_home_types.APPLIANCE_TYPES,
+                     *plant_reservoir_types.PLANT_RESERVOIR_TYPES),
     register_types=(*ALL_REGISTER_TYPES, *mep.REGISTER_TYPES,
                     *equipment_types.STALL_FAN_REGISTER_TYPES,
                     *air_terminal_types.AIR_REGISTER_TYPES),
@@ -442,6 +443,7 @@ PLAN = (
                                 *placeables.SECOND_PLACEABLES,
                                 *window_coverings.SECOND_WINDOW_COVERINGS,
                                 *plant_room.PLANT_ROOM_PLACEABLES, *plant_room.PLANT_ROOM_BACKING,
+                                *plant_reservoir.PLANT_RESERVOIR_PLACED,
                                 *bedroom_wardrobes.BEDROOM_WARDROBES,
                                 *bath1_storage.BATH1_STORAGE,
                                 *study_nook.STUDY_NOOK,
