@@ -88,7 +88,12 @@ MAX_CANDIDATE_LINES = 400
 #:
 #: **500,000 on 2026-11-01** (DU-B-ERV-R-SAUNA-SUP, 475,794); **600,000 on 2026-11-06**
 #: (PR-A-HW-STUBATH, 557,118 after the decision #117 re-lanes; 1.19 GB peak). Same reason.
-MAX_LATTICE_NODES = 600_000
+#:
+#: **650,000 on 2026-11-07** (PR-B-BATH-VENT, 621,032 at the default margin, 601,078 at 6').
+#: The cap hid the real answer: at 4', 6' and 8' it builds (352,913 graph nodes at 8', graph
+#: 39.5 s, 1.16 GB peak, measured under load) and reports its root lanes blocked by
+#: PR-B-BATH-DRAIN. A narrower margin changes nothing.
+MAX_LATTICE_NODES = 650_000
 
 #: Default margin round the terminals' bounding box, in feet. Eight is about the width of
 #: a room: enough for a route to step out of the direct line and back, and small enough
