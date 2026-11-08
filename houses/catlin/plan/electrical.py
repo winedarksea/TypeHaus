@@ -1195,6 +1195,10 @@ _SPA_CHASE_X = ft(9, 5.875)
 # CD-B-PV-INV's start. They chain only on an exact match (conduit_pulls, 1/16" tolerance), and
 # 20" holds 0.28" off the ERV supply elbow where 19.6" held 0.
 _PV_CHASE_X = inch(20)
+# The V2H spare's station through the three CD-GAR sleeves: 2 7/16" east of CD-B-GARAGE's x=16'.
+_V2H_X = inch(194.4375)
+# The three CD-GAR sleeves are re-struck on the pair's centroid, 1 7/16" east of x=16'-0".
+_V2H_SLEEVE_X = inch(193.4375)
 
 CONDUIT_TRUNKS = [
     # Up the mechanical chase beside the radon vent to the PV junction box, at
@@ -1338,6 +1342,33 @@ CONDUIT_TRUNKS = [
                path=(pt(ft(16), ft(35, 5)), pt(ft(16), ft(44, 3.375)), pt(ft(16), ft(44, 3.375))),
                start_elevation=ft(-4), end_elevation=ft(5, 10), elevations=(ft(-4), ft(-4), ft(5, 10)),
                from_ref="ED-B-PANEL-2", to_ref="ED-G-EV-1450"),
+    # ** V2H SPARE, ROUTED (backup_power.md section 10). ** One empty 2" Sch 80 PVC, pull string
+    # in, capped: the owner's "see how the tech develops". It leaves EQ-B-ESS-INV's case top
+    # (-3'-5 7/16") and rises 1'-6" to the ceiling lane, then runs straight east on y=34'-9" at
+    # -1'-11" (haus route --alternatives 3: A, 12.8 ft, 3 bends, no new finding; B and C add
+    # 3 and 8 more bends). That lane is 2 ft south of CD-B-GARAGE's y=35'-3" and 5 3/8" below
+    # it, so the two never meet. It turns north at x=16'-2 7/16", 2 7/16" east of CD-B-GARAGE's
+    # drop, and CD-B-V2H-GAP below carries it down, through the three CD-GAR sleeves and up.
+    ConduitRun(uid="37TTJ40QC7", tag="CD-B-V2H-SPARE", trade_size=inch(2), material="pvc",
+               service=None,
+               path=(pt(ft(5, 2), ft(34, 9)), pt(ft(5, 6.3125), ft(34, 9)),
+                     pt(ft(5, 6.3125), ft(34, 9)), pt(_V2H_X, ft(34, 9)),
+                     pt(_V2H_X, ft(35))),
+               start_elevation=inch(-41.4375), end_elevation=inch(-23),
+               elevations=(inch(-41.4375), inch(-41.4375), inch(-23), inch(-23), inch(-23)),
+               from_ref="EQ-B-ESS-INV", to_ref="ED-G-EV-1450"),
+    # The V2H buried leg, beside CD-B-GAP-EV: down at y=35'-0" to -4'-0" (a pull body at the foot
+    # of the drop splits the 540 deg of bends the two runs carry), north through the sleeves
+    # SP-B-N2-CD-GAR2 / SP-GF-CD-GAR at x=16'-2 7/16" (the EMT is 2 7/16" west of it), and up
+    # through SP-G-CD-GAR to a capped stub 2'-0" over the slab beside ED-G-EV-1450, clear of
+    # the box (48" AFF). A bidirectional charger would stand here and extend it.
+    ConduitRun(uid="EY0KXSAK8Q", tag="CD-B-V2H-GAP", trade_size=inch(2), material="pvc", service=None,
+               path=(pt(_V2H_X, ft(35)), pt(_V2H_X, ft(35)),
+                     pt(_V2H_X, ft(44, 3.375)), pt(_V2H_X, ft(44, 3.375))),
+               start_elevation=inch(-23), end_elevation=inch(-10),
+               elevations=(inch(-23), ft(-4), ft(-4), inch(-10)),
+               pull_points=(1,),
+               from_ref="EQ-B-ESS-INV", to_ref="ED-G-EV-1450"),
     # Across the basement ceiling to the kitchen's east counter wall, where KGF3 (the device
     # this feeds) is.
     #
@@ -1803,9 +1834,15 @@ CONDUIT_SLEEVES = [
     # lands on the same x=16' station the punch always used. W-B-STR at x=10' is framed, so
     # its crossing is bored, not cast. Only the genuine north punch at x=16'
     # (SP-B-N2-CD-GAR2) is a hole in concrete.
+    #
+    # ** ALL THREE ARE 6" SINCE 2026-11-07 (V2H spare). ** Each carries CD-B-GAP-EV's 1.510" EMT
+    # at x=16'-0" and CD-B-V2H-GAP's 2.375" PVC 2 7/16" east of it: 3.885" side by side, 0.495"
+    # apart, spanning x 191.245"..195.625". A 4" ID (4.026") leaves 0.14"; a 6" ID (6.065") holds
+    # the pair centred on x=16'-1 7/16" with 0.84" each side. (At the EMT's axis the PVC's far
+    # edge is 3.13" out against a 3.03" radius, hence the 1 7/16" shift.) backup_power.md s.10.
     SleevePenetration(uid="CNS008AAAA", tag="SP-B-N2-CD-GAR2", host_ref="W-B-N2",
-                      position=pt(ft(16), ft(35, 6)), pipe_diameter=inch(1.25),
-                      sleeve_diameter=inch(2), purpose=Service.POWER_240,
+                      position=pt(_V2H_SLEEVE_X, ft(35, 6)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(6), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),
     # Through the ICF *stem*, not the footing under it. The run holds -4'-0" the whole way
     # (it is pinned to the basement it leaves), and the garage foundation followed grade
@@ -1819,16 +1856,16 @@ CONDUIT_SLEEVES = [
     # mid-depth — 3" of concrete either side — and no future move of the wall line at this
     # scale can reach it.
     SleevePenetration(uid="CNS009AAAA", tag="SP-GF-CD-GAR", host_ref="W-GF-S2",
-                      position=pt(ft(16), ft(43, 8.125)), pipe_diameter=inch(1.25),
-                      sleeve_diameter=inch(2), purpose=Service.POWER_240,
+                      position=pt(_V2H_SLEEVE_X, ft(43, 8.125)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(6), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),
     # The stub-up, 3 3/8" north of the stem's inside face, at 41'-9" — 2 3/8" of concrete
     # around the bore. `integrity.sleeve_in_opening` tests the sleeve's CENTRE, so the full
     # 2 3/8" margin is what protects it, not half the bore's clearance to the slab edge. The
     # conduit runs up the inside face of W-G-S from here to ED-G-EV-1450.
     SleevePenetration(uid="CNS010AAAA", tag="SP-G-CD-GAR", host_ref="SL-G-FLOOR",
-                      position=pt(ft(16), ft(44, 3.375)), pipe_diameter=inch(1.25),
-                      sleeve_diameter=inch(2), purpose=Service.POWER_240),
+                      position=pt(_V2H_SLEEVE_X, ft(44, 3.375)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(6), purpose=Service.POWER_240),
     # (CD-B-KITCHEN, CD-B-DATA-MEDIA and CD-B-PLAY-SPARE cross no concrete since decision #112:
     # they ride the truss bays over the framed x=18' plate, so none carries a sleeve.)
     # Host is W-B-S1 again since the sauna shrink undid the 2026-09-05 pour split: the leg's

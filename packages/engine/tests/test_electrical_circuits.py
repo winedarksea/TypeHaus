@@ -414,8 +414,9 @@ def test_catlin_conduit_trunks(catlin_model):
     # 2026-10-29: + the workshop trunk and its two drops, the theater spare and its drop.
     # 2026-10-30: + the doorbell run and the two camera extensions (plan/smart_home.py),
     # and CD-M-DATA-KITCH-TRUNK, the 1" first legs split off CD-M-DATA-KITCH.
+    # 2026-11-07: + the V2H spare, CD-B-V2H-SPARE and its buried leg CD-B-V2H-GAP.
     authored = [run for run in catlin_model.conduits if run.derived is None]
-    assert len(authored) == 27  # includes the laundry's Class 2 surface feed
+    assert len(authored) == 29  # includes the laundry's Class 2 surface feed
     # Not all from the panel: the three microgrid runs start at the PV junction box and at
     # the inverter, and every data run starts at the patch enclosure — except the two camera
     # extensions, which continue from the AP whose raceway carries their Cat 6A.
