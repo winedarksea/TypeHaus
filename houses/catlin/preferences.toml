@@ -290,8 +290,9 @@ permit_drop = ["A-502", "A-507"]
 #
 # `suppress` takes a bare `check.id` (silence the rule everywhere) or `check.id:ELEMENT-TAG`
 # (silence it on ONE element). An entry names a measured, documented open item.
-# `mep.run_interference` is NOT here and must not come back: its 11-pair campaign closed on
-# 2026-10-08 and `test_catlin_erv_clearance.py` ratchets it at zero, every pair.
+# `mep.run_interference`'s 11-pair campaign closed on 2026-10-08. Only its two ERV level-2
+# element entries below remain, and `test_catlin_erv_clearance.py` holds every other pair at
+# zero. Its `_ON_HOLD` set names the same two pairs and fails once either stops clashing.
 [checks]
 suppress = [
   # The west tapestry is clipped to FURN-B-PLAY-TAPESTRY-W-ROD, not fastened at its bottom.
