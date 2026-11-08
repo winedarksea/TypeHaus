@@ -62,9 +62,7 @@ class Graph:
     #: relaxed from two states (arriving along x and arriving along y) and the geometry it
     #: is priced from does not change between them.
     weights: dict[tuple[int, int], float] = field(default_factory=dict)
-    #: Per-edge human-readable term breakdown, keyed the same way. This is the entire
-    #: content of ``--explain``: a router that cannot say why it chose a line is one nobody
-    #: will take a line from.
+    #: Per-edge term breakdown, keyed the same way: the whole content of ``--explain``.
     terms: dict[tuple[int, int], dict[str, float]] = field(default_factory=dict)
     #: Which corridor each edge rides, keyed the same way; absent when it rides none. This
     #: is what lets a duct proposal print ``floor_ref=``/``soffit_ref=`` from the lanes the
@@ -73,6 +71,9 @@ class Graph:
     #: Tags of hard prisms that a terminal node was standing in. Kept rather than dropped —
     #: see :func:`build_graph` — and reported by the caller.
     blocked_terminals: list[str] = field(default_factory=list)
+    #: Typed record of each ``ends`` terminal inside a door or an unrelated run
+    #: (``routing/terminal_block``): moved along its wall, or with no legal point.
+    terminal_blocks: list = field(default_factory=list)
 
     def neighbours(self, index: int) -> list[tuple[int, str]]:
         return [(other, axis)
@@ -106,9 +107,7 @@ def candidate_levels(space: RoutingSpace,
     zs = _unique(zs)
     if space.z_band is not None:
         # ``--level``: the lattice keeps only the planes inside one storey's band. A
-        # terminal outside it is the caller's refusal to report, not this function's to
-        # paper over — dropping a terminal's own level silently would make the search
-        # answer a question about a route that cannot start where it was told to.
+        # terminal outside it is the caller's refusal to report, not this function's to paper over.
         low, high = space.z_band
         inside = [z for z in zs if low - _LINE_TOL_M <= z <= high + _LINE_TOL_M]
         if inside:
@@ -288,7 +287,8 @@ def candidate_lines(space: RoutingSpace,
 
 def build_graph(space: RoutingSpace,
                 terminals: list[tuple[float, float, float]],
-                levels: list[float] | None = None) -> Graph:
+                levels: list[float] | None = None, *,
+                ends: tuple[tuple[float, float, float], ...] = ()) -> Graph:
     """The lattice, with every node priced against the world once.
 
     A node is dropped when it stands inside a hard prism; an edge is dropped when either
@@ -296,39 +296,43 @@ def build_graph(space: RoutingSpace,
     a cost and a term breakdown.
 
     **Node ids are assigned in ``(z, y, x)`` order** and the search breaks ties on them, so
-    two runs of the same problem return the same route. §4 of the oracle note depends on
-    it, and so does anybody diffing two proposals.
+    two runs of the same problem return the same route (oracle note §4).
 
     ``levels`` is passed through to :func:`candidate_lines`; a gravity run passes one level
-    and searches in plan.
+    and searches in plan. ``ends`` are the route's own fixture ends: one inside a door or an
+    unrelated run is built at the nearest legal point on its wall (``terminal_blocks``).
     """
+    from typehaus.routing.terminal_block import resolve_ends, strict_block
+
+    blocks: list = []
+    if ends:
+        moved, blocks = resolve_ends(space, ends)
+        terminals = [moved.get(tuple(t[:3]), t) for t in terminals]
     zs = candidate_levels(space, terminals, levels)
-    # **Pinned levels mean a plan search**, which is what a gravity run is: the caller fixed
-    # the plane because the elevation is derived along the route rather than chosen by it.
+    # Pinned levels mean a plan search (a gravity run: its elevation is derived, not chosen).
     per_level = [candidate_lines_at(space, terminals, z, plan_search=levels is not None)
                  for z in zs]
     total = sum(len(level_xs) * len(level_ys) for level_xs, level_ys in per_level)
     if total > MAX_LATTICE_NODES:
-        # The line caps do not bound the lattice: 400 x 400 x 60 is inside both of them and
-        # is nine million nodes. This is the guard that actually holds, and it RAISES for
-        # the reason space.py gives — a router that coarsens to finish is answering a
-        # different question from the one asked.
+        # The line caps do not bound the lattice (400 x 400 x 60 is nine million nodes); this
+        # guard holds, and RAISES for space.py's reason: coarsening answers another question.
         shape = " + ".join(f"{len(lx)}x{len(ly)}" for lx, ly in per_level)
         raise RoutingSpaceTooLarge(
             f"{shape} = {total:,} lattice nodes exceeds "
             f"MAX_LATTICE_NODES={MAX_LATTICE_NODES:,}. Narrow --margin, split the problem, "
             "or raise the cap having looked at why")
-    # **A terminal's own plan point is never dropped**, and this is a statement about what
-    # the search is for rather than a leniency. A route has to start and end where it is
-    # told; if the model puts something there — and it usually does, because a branch ties
-    # into the very run that blocks its tie point — that is a fact about the model, not a
-    # reason for the search to refuse. ``blocked_terminals`` records which, so the caller
-    # can say so instead of the graph swallowing it.
-    fixed = {(round(t[0], 6), round(t[1], 6)) for t in terminals}
+    # **A terminal's own plan point is never dropped**: a route has to start and end where it is
+    # told, and the model usually has something there (a branch ties into the very run that
+    # blocks its tie point). ``blocked_terminals`` records which; the caller says so.
+    # The pardon holds the terminal's whole column, except that a door swing or a duct is
+    # pardoned at the terminal's own level only (else a riser could pass through it).
+    fixed: dict[tuple[float, float], list[float | None]] = {}
+    for t in terminals:
+        fixed.setdefault((round(t[0], 6), round(t[1], 6)), []).append(
+            t[2] if len(t) > 2 and levels is None else None)
     blocked_terminals: list[str] = []
-    #: Terminal nodes kept despite standing in a hard prism, with every prism they stand
-    #: in. The edges LEAVING one of them may pass through THOSE — see below — because a
-    #: node a route may not move off is a node it may as well not have.
+    #: Terminal nodes kept despite standing in a hard prism, with every prism they stand in;
+    #: the edges LEAVING one may pass through THOSE (a node a route may not move off is no node).
     lenient: dict[int, frozenset[str]] = {}
     nodes: list[Node] = []
     lookup: dict[tuple[int, int, int], int] = {}
@@ -344,7 +348,9 @@ def build_graph(space: RoutingSpace,
         for ky, y in enumerate(level_ys):
             for kx, x in enumerate(level_xs):
                 if is_blocked[ky, kx]:
-                    if (round(x, 6), round(y, 6)) not in fixed:
+                    pins = fixed.get((round(x, 6), round(y, 6)), ())
+                    if not pins or (strict_block(space, x, y, z) and not any(
+                            tz is None or abs(tz - z) <= 2 * _LINE_TOL_M for tz in pins)):
                         continue
                     offender = space.blocked((x, y), z)
                     blocked_terminals.append(offender)
@@ -354,19 +360,13 @@ def build_graph(space: RoutingSpace,
                 nodes.append(Node(index=len(nodes), x=x, y=y, z=z))
         by_plan.append(plan_index)
 
-    graph = Graph(nodes=nodes, blocked_terminals=sorted(set(blocked_terminals)))
+    graph = Graph(nodes=nodes, blocked_terminals=sorted(set(blocked_terminals)),
+                  terminal_blocks=blocks)
 
     def connect(index: int, other: int, axis: str, state: tuple | None = None) -> None:
-        # **One lattice step of leniency at a blocked terminal, and exactly one.** The node
-        # rule above keeps a terminal that stands inside something — a branch's tie point
-        # usually sits on the very run it ties into, and an ERV manifold packs ten ports
-        # four inches apart so every lane out of one is inside its neighbour. Keeping the
-        # node and dropping every edge off it produces "no route in plan; every lane is
-        # blocked" about a route whose only obstruction is the fitting at its own end. The
-        # blockage is not hidden: it is already in `blocked_terminals` and the caller prints
-        # it as a detail somebody has to draw. **Leniency is for what the terminal stands
-        # IN, and nothing else**: the step off catlin's chase point used to be free to pass
-        # through any prism at all, so a vent's first leg could cross the radon riser.
+        # **One lattice step of leniency at a blocked terminal, and exactly one**, for what it
+        # stands IN and nothing else (the step off catlin's chase point once passed through
+        # the radon riser). The blockage is in `blocked_terminals`; the caller prints it.
         ignore = lenient.get(index, frozenset()) | lenient.get(other, frozenset())
         if state is not None and not ignore:
             priced = (None if state[0] else

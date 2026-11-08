@@ -137,6 +137,12 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                                         cavity_radius_m=ends.cavity_radius_m or None,
                                         panel_space=ends.kind != "conduit")
                     space.bend_radius_m = ends.bend_radius_m
+                    if ends.kind == "pipe" and not ends.falls and space.members is not None:
+                        from typehaus.resolve.riser_cover import riser_cover
+
+                        # A pipe riser stands in cover or a soffit, never a room's open air.
+                        space.members.riser_cover = riser_cover(
+                            model, space.bbox, [ends.origin, ends.root])
                     if racks and ends.kind == "pipe":
                         from typehaus.routing.rack import rack_lanes
 

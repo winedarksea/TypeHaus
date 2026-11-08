@@ -1,7 +1,8 @@
 """Hard obstacles and priced soft volumes, inflated once by radius + clearance.
 
-Hard prisms include opening bucks (not door swings), voids, unsleeved concrete, existing
-runs, and --avoid elements. Soft prisms price finished room volume and in-wall travel.
+Hard prisms include opening bucks and door-swing quadrants (both kind "opening"), voids,
+unsleeved concrete, existing runs, and --avoid elements. Soft prisms price finished room
+volume and in-wall travel.
 Shared opening/run geometry comes from resolve.mep_envelopes, also read by checks.
 Workflow and module map: docs/routing.md."""
 
