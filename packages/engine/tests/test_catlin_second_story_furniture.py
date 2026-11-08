@@ -24,7 +24,7 @@ SECOND_STORY_UI_PLACEMENTS = (
     ("FURN-S-STUDY-CHAIR2", "FURN-CANTILEVER-CHAIR", "RM-S-STUDY2", (8.1304, 0.588713), 90),
     ("FURN-S-PLANT-POT1", "FURN-PLANT-18", "RM-S-PLANT", (1.28957, 0.606871), 0),
     ("FURN-S-PLANT-POT2", "FURN-PLANT-18", "RM-S-PLANT", (2.6348, 0.584116), 0),
-    ("FURN-S-PLANT-POT2-COPY", "FURN-PLANT-18", "RM-S-PLANT", (3.87087, 0.600137), 0),
+    ("FURN-S-PLANT-POT2-COPY", "FURN-PLANT-18", "RM-S-PLANT", (3.7592, 0.600137), 0),
     ("FURN-S-PLANT-ROCKER", "FURN-ROCKING-CHAIR-30", "RM-S-PLANT", (4.51571, 1.96147), -45),
     ("ED-S-PLANT-TUBE1", "ED-T-LT-GROW-BAR", "RM-S-PLANT", (1.62004, 0.594343), 0),
     ("ED-S-PLANT-TUBE2", "ED-T-LT-GROW-BAR", "RM-S-PLANT", (3.7205, 0.609677), 0),
@@ -32,7 +32,7 @@ SECOND_STORY_UI_PLACEMENTS = (
 
 
 @pytest.mark.parametrize("type_ref,shelf_count", [
-    ("FT-BATH1-SHELF-2030", 5), ("FT-SUITEBATH-SHELF-1130", 8),
+    ("FT-BATH1-SHELF-1630", 5), ("FT-SUITEBATH-SHELF-0730", 8),
 ])
 def test_bath_alcove_models_keep_locust_on_the_fronts(catlin_plan, type_ref, shelf_count):
     furniture = next(item for item in catlin_plan.library.furniture_types if item.tag == type_ref)
