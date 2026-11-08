@@ -128,18 +128,36 @@ def resolve_bearing_blocking(model: ResolvedModel) -> None:
                 members=(*model.floors[index].members, *members))
 
 
-def _floor_blocking(
-    model: ResolvedModel,
-    floor: ResolvedFloor,
-    system: FloorSystem,
-    runs: list[RunBand],
-) -> tuple[list[FramedMember], list[BlockingConflict]]:
+@dataclasses.dataclass(frozen=True)
+class BearingBay:
+    """One bay of a blocked bearing line: where its block or 2x6 box goes, run-blind.
+
+    The router reads these (``routing/obstacles``) so a run crossing the line keeps under
+    the box's top rail, the one window ``mep.run_through_blocking`` passes."""
+
+    key: str
+    along_x: bool
+    block_centre: float  #: the solid block's centre along the joists
+    box_centre: float  #: the box rails' centre along the joists (``RAIL_W_M`` wide)
+    gap: Span  #: the clear bay across the joists
+    z0: float
+    z1: float
+    width: float  #: the joist (and solid block) width
+
+
+def bearing_bays(model: ResolvedModel, floor: ResolvedFloor,
+                 system: FloorSystem | None = None) -> list[BearingBay]:
+    """Every bay where a wall above stands on one of ``floor``'s interior or shared lines."""
+    if system is None:
+        system = cast(FloorSystem | None, model.plan.by_tag(floor.tag))
+    if system is None or floor.ends is None:
+        return []
     spec = system.joists
     along_x = floor.direction == "x"
     axis_i, perp_i = (0, 1) if along_x else (1, 0)
     joists = [m for m in floor.members if m.category == "joist"]
     if not joists:
-        return [], []
+        return []
     width = cross_section(spec.member).width_m
     spacing = spec.spacing.meters if spec.spacing is not None else inch(16).meters
     z0, z1 = min(m.z0_m for m in joists), max(m.z1_m for m in joists)
@@ -148,10 +166,9 @@ def _floor_blocking(
                    and abs(w.z0_m - z1) <= BASE_TOL_M]
     edges = [m for m in floor.members if m.category in BAY_EDGES
              and abs(m.p0[perp_i] - m.p1[perp_i]) <= 1e-6]
-    ends = cast(FloorEnds, floor.ends)  # guarded by the resolver entry point
+    ends = cast(FloorEnds, floor.ends)
 
-    members: list[FramedMember] = []
-    conflicts: list[BlockingConflict] = []
+    out: list[BearingBay] = []
     lines_below = _walls_below(model, floor.storey, _line_coords(model, spec, axis_i),
                                z0, axis_i, perp_i)
     for line_index, (coord, spans) in enumerate(_merge_lines(lines_below)):
@@ -183,17 +200,32 @@ def _floor_blocking(
             gap = clip((p_a + w_a / 2.0, p_b - w_b / 2.0), blocked)
             if gap is None:
                 continue
-            key = f"bearing-block-{line_index}-{bay:03d}"
-            block_centre = tip + inward * width / 2.0
-            crossing = crossing_runs(runs, along_x, block_centre, width, gap, z0, z1)
-            if not crossing:
-                members.append(block_member(floor, key, spec.member, along_x, block_centre, gap,
-                                       z0, z1))
-                continue
-            box, box_conflicts = pass_through_box(
-                floor, key, along_x, tip + inward * RAIL_W_M / 2.0, gap, z0, z1, crossing)
-            members.extend(box)
-            conflicts.extend(box_conflicts)
+            out.append(BearingBay(f"bearing-block-{line_index}-{bay:03d}", along_x,
+                                  tip + inward * width / 2.0, tip + inward * RAIL_W_M / 2.0,
+                                  gap, z0, z1, width))
+    return out
+
+
+def _floor_blocking(
+    model: ResolvedModel,
+    floor: ResolvedFloor,
+    system: FloorSystem,
+    runs: list[RunBand],
+) -> tuple[list[FramedMember], list[BlockingConflict]]:
+    member = system.joists.member
+    members: list[FramedMember] = []
+    conflicts: list[BlockingConflict] = []
+    for bay in bearing_bays(model, floor, system):
+        crossing = crossing_runs(runs, bay.along_x, bay.block_centre, bay.width, bay.gap,
+                                 bay.z0, bay.z1)
+        if not crossing:
+            members.append(block_member(floor, bay.key, member, bay.along_x, bay.block_centre,
+                                        bay.gap, bay.z0, bay.z1))
+            continue
+        box, box_conflicts = pass_through_box(floor, bay.key, bay.along_x, bay.box_centre,
+                                              bay.gap, bay.z0, bay.z1, crossing)
+        members.extend(box)
+        conflicts.extend(box_conflicts)
     return members, conflicts
 
 
@@ -286,7 +318,10 @@ def _partition_top_blocking(
             if not crossing:
                 members.append(block_member(floor, key, spec.member, along_x, centre, gap, z0, z1))
                 continue
-            box, box_conflicts = pass_through_box(floor, key, along_x, centre, gap, z0, z1,
+            # The box's 5 1/2" rails stay inside this deck's joist tips, as the block does:
+            # a rail centred on an end block reached into the next deck's joist ends.
+            at = min(max(centre, tip_lo + RAIL_W_M / 2.0), tip_hi - RAIL_W_M / 2.0)
+            box, box_conflicts = pass_through_box(floor, key, along_x, at, gap, z0, z1,
                                                   crossing)
             if box_conflicts:
                 unframed.append(joint.wall_tag)

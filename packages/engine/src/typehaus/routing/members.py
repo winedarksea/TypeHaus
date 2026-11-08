@@ -14,7 +14,10 @@ search cannot propose a hole a check refuses:
 * across a floor, each joist line is a bore: solid-sawn by R502.8.1 (D/3, 2" edges), an
   I-joist inside its flange-clear window — graded on the library's hole ladder where one is
   held (outside its zone refused), else at the unpublished price — an open-web truss free
-  inside its chord window (that is what it is for).
+  inside its chord window (that is what it is for), one run per D pocket. Existing holes,
+  authored or laid this campaign, are ``routing/holes``';
+* a level edge through a blocked bearing-line bay keeps inside its 2x6 box
+  (``routing/bearing_bays``).
 
 Members are kept as SORTED STATIONS per line, so an edge's crossings are a bisect.
 ``notes/framing_bore_limits.md`` §"The router" works one wall and one joist by hand.
@@ -27,6 +30,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 from typehaus.quantities import M_PER_IN
+from typehaus.routing.holes import ijoist_bores_ok, pocket_taken
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
@@ -62,17 +66,26 @@ class _Floor:
     joists: list[tuple[float, float, float, float, str]] = field(default_factory=list)
     #: Trimmers, sisters, headers of ANY profile (an LVL edge) as ``(x0, y0, x1, y1, z0, z1)``.
     blocks: list[tuple[float, float, float, float, float, float]] = field(default_factory=list)
+    parts: list[Any] = field(default_factory=list)  #: the FramedMember of each joist line
+    #: Per joist line, its D web pockets another run passes (``holes.taken_pockets``).
+    pockets: list[set[str]] = field(default_factory=list)
 
 
 class Penetrations:
     """Every wall's studs and plates and every floor's member lines inside one bbox."""
     #: A PIPE search's open-air zones (``resolve.riser_cover``); None leaves risers unjudged.
     riser_cover: Any = None
+    #: Blocked bearing-line bays (``routing/bearing_bays``); None grades none.
+    bays: Any = None
 
     def __init__(self, model: ResolvedModel, bbox: tuple[float, float, float, float],
                  radius_m: float, *, cavity_radius_m: float | None = None,
-                 touch: frozenset[str] = frozenset()) -> None:
+                 touch: frozenset[str] = frozenset(), laid: Any = ()) -> None:
+        """``laid``: runs laid earlier in this campaign (``holes.laid_lines``), whose holes
+        a new crossing keeps clear of just as it does an authored run's."""
         from typehaus.resolve.mep_bore_scope import r602_6_roles
+        from typehaus.routing.bearing_bays import BearingBays
+        from typehaus.routing.holes import run_lines
 
         self.radius_m = radius_m
         self.cavity_radius_m = cavity_radius_m if cavity_radius_m is not None else radius_m
@@ -89,11 +102,12 @@ class Penetrations:
                              int((built.perp[1] + grow) / _BUCKET_M) + 1):
                 self.walls.setdefault((built.axis, key), []).append(built)
         library = getattr(getattr(model, "plan", None), "library", None)
-        holes = _authored_holes(model, touch)
+        lines = run_lines(model, touch, laid)
         for floor in model.floors:
-            built = _floor(floor, library, model, holes)
+            built = _floor(floor, library, model, lines)
             if built is not None:
                 self.floors.append(built)
+        self.bays = BearingBays(model, bbox, radius_m)
 
     def cuts(self, a: tuple[float, float, float], b: tuple[float, float, float], axis: str,
              band: tuple[float, float] | None = None) -> dict[str, int] | None:
@@ -156,6 +170,9 @@ class Penetrations:
                 return None
             if verdict:
                 out["stud"] = out.get("stud", 0) + verdict
+        if (band is None and self.bays is not None
+                and self.bays.refusal(axis, station, lo, hi, z) is not None):
+            return None  # over a bearing box's top rail, or into the face closing its bay
         for wall in self._walls_crossed(other, lo, hi):
             if wall.along[0] <= station <= wall.along[1] and wall.z0 < z < wall.z1 \
                     and _hits_a_stud(wall, station, z, r):
@@ -169,11 +186,13 @@ class Penetrations:
                 continue
             if band is None and not (floor.window[0] + r <= z <= floor.window[1] - r):
                 return None  # through a chord, a flange or a solid joist's 2" edge
+            if band is None and floor.pockets and pocket_taken(floor, crossed, station, z):
+                return None  # a D web pocket another run already passes (one run each)
             kind = _FLOOR_KIND[floor.kind]
             if kind == "joist" and not _solid_bore_ok(floor, 2 * r):
                 return None
             if kind == "unpublished" and getattr(floor, "chart", None) is not None:
-                if not _ijoist_bores_ok(floor, crossed, station, 2 * r):
+                if not ijoist_bores_ok(floor, crossed, station, 2 * r):
                     return None  # outside the maker's hole zone (ESR-1153 Table A)
                 kind = "engineered"
             if kind:
@@ -322,7 +341,7 @@ def _wall(wall: Any, bearing: bool) -> _Wall | None:
 
 
 def _floor(floor: Any, library: Any = None, model: Any = None,
-           holes: Any = None) -> _Floor | None:
+           lines: Any = None) -> _Floor | None:
     from typehaus.resolve.mep_crossings import (
         floor_supports,
         is_member_line,
@@ -330,6 +349,7 @@ def _floor(floor: Any, library: Any = None, model: Any = None,
         support_faces,
     )
     from typehaus.resolve.mep_hole_chart import joist_hole_chart
+    from typehaus.routing.holes import hole_index, taken_pockets
 
     window = member_window(floor)
     if window is None:
@@ -367,37 +387,13 @@ def _floor(floor: Any, library: Any = None, model: Any = None,
     supports = floor_supports(model, floor) if out.chart is not None and model else ()
     out.faces = ([support_faces(floor, j[6], supports)  # type: ignore[attr-defined]
                   for j in joists] if out.chart is not None else [])
-    out.holes = (holes(floor, [j[6].child_key for j in joists])  # type: ignore[attr-defined]
-                 if out.chart is not None and holes is not None else [[] for _ in joists])
+    keys = [j[6].child_key for j in joists]
+    out.holes = (hole_index(lines)(floor, keys)  # type: ignore[attr-defined]
+                 if out.chart is not None and lines is not None else [[] for _ in joists])
+    out.parts = [j[6] for j in joists]
+    webbed = lines is not None and any(j[6].web is not None for j in joists)
+    out.pockets = taken_pockets(lines, floor, out.parts) if webbed else []
     return out
-
-
-def _authored_holes(model: Any, touch: frozenset[str]) -> Any:
-    """``(floor, member keys) -> per member [(station, outside radius)]``: every authored
-    run's hole through those members, but a run this search may occupy (``touch``).
-
-    The chart's spacing rule is about the PAIR ("2 x the larger hole" clear, ESR-1153
-    Table A as ``plan/framing_charts.py`` transcribes it), and ``mep.run_member_crossing``
-    grades a new hole against the existing ones by the same ``leg_crossings`` stations."""
-    from typehaus.resolve.mep_crossings import leg_crossings
-    from typehaus.resolve.mep_envelopes import run_polylines, run_radii
-
-    radii = run_radii(model)
-    runs = [(tag, path, z) for _kind, tag, path, z in run_polylines(model)
-            if tag not in touch and len(path) >= 2 and len(z) == len(path)]
-
-    def holes(floor: Any, keys: list[str]) -> list[list[tuple[float, float]]]:
-        index = {key: i for i, key in enumerate(keys)}
-        out: list[list[tuple[float, float]]] = [[] for _ in keys]
-        for tag, path, z in runs:
-            for k in range(len(path) - 1):
-                for crossing in leg_crossings(floor, path[k], path[k + 1], z[k], z[k + 1]):
-                    i = index.get(crossing.member_key)
-                    if i is not None:
-                        out[i].append((crossing.station_m, radii.get(tag, 0.0)))
-        return out
-
-    return holes
 
 
 def _floor_crossings(floor: _Floor, along: float, lo: float, hi: float, z: float,
@@ -413,33 +409,6 @@ def _floor_crossings(floor: _Floor, along: float, lo: float, hi: float, z: float
             continue
         crossed.append(i)
     return crossed
-
-
-def _ijoist_bores_ok(floor: _Floor, crossed: list[int], along: float,
-                     diameter_m: float) -> bool:
-    """Every hole at ``along`` inside the I-joist chart's zone and clear of the authored
-    holes in the same joist: the check's own verdict, read the check's way."""
-    from typehaus.resolve.mep_bores import joist_bore
-    from typehaus.resolve.mep_hole_chart import DRILLED_HOLE_CLEARANCE_IN
-
-    chart = getattr(floor, "chart", None)
-    half = DRILLED_HOLE_CLEARANCE_IN * M_PER_IN / 2.0
-    for i in crossed:
-        lo, hi = floor.faces[i]  # type: ignore[attr-defined]
-        if lo is None or hi is None:
-            return False
-        centre_in = min(along - lo, hi - along) / M_PER_IN
-        nearest = nearest_d = None
-        for station, other_r in floor.holes[i]:  # type: ignore[attr-defined]
-            clear = (abs(station - along) - diameter_m / 2.0 - other_r - 2 * half) / M_PER_IN
-            if nearest is None or clear < nearest:
-                nearest, nearest_d = clear, 2 * (other_r + half) / M_PER_IN
-        verdict = joist_bore(getattr(floor, "profile", ""), diameter_m / M_PER_IN,
-                             chart=chart, edge_to_support_in=centre_in,
-                             nearest_cut_in=nearest, nearest_diameter_in=nearest_d)
-        if verdict.ok is not True:
-            return False
-    return True
 
 
 def _solid_bore_ok(floor: _Floor, diameter_m: float) -> bool:
