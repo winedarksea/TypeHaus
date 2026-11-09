@@ -2,7 +2,8 @@
 
 NEC 314.25: a completed box has a cover, faceplate or luminaire canopy. The canopy is
 ``LuminaireType.canopy`` (width, height off the sheet), or a round ``canopy_diameter``,
-which must span the face's diagonal. Both are centred on the box by construction
+which must span a rectangular face's diagonal or a round box's diameter. Both are centred
+on the box by construction
 (``resolve/device_boxes.place_box``). A surface box's sides stay in view whatever the
 canopy; that is a finish note, not graded here. Oracle: catlin's PLAY-N sconces, WAC
 Roland 4 1/2" square backplate over a 4" square box (notes/basement_surface_wiring.md).
@@ -39,7 +40,10 @@ def canopy_covers_box(ctx: CheckContext) -> list[Finding]:
         product = types.get(type_ref)
         canopy = getattr(product, "canopy", None)
         diameter = getattr(product, "canopy_diameter", None)
-        face = f"{_in(box.width_m)} x {_in(box.height_m)} {box.mounting} box ({box.box_product})"
+        is_round = box.shape == "round"
+        size = (f"{_in(box.width_m)} round" if is_round
+                else f"{_in(box.width_m)} x {_in(box.height_m)}")
+        face = f"{size} {box.mounting} box ({box.box_product})"
         tags = (box.device_tag,)
         if canopy is not None:
             width, height = (part.meters for part in canopy)
@@ -47,7 +51,7 @@ def canopy_covers_box(ctx: CheckContext) -> list[Finding]:
             what = f"{_in(width)} x {_in(height)} canopy"
         elif diameter is not None:
             width = height = diameter.meters
-            short = math.hypot(box.width_m, box.height_m) - width
+            short = (box.width_m if is_round else math.hypot(box.width_m, box.height_m)) - width
             what = f"{_in(width)} round canopy"
         else:
             unstated.setdefault(type_ref, []).append(box.device_tag)

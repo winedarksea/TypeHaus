@@ -225,6 +225,21 @@ branches' route under the drains (a 1/2" line runs 56.5 ft to the sink against t
 line's 44 ft) are why the built figure is higher. The open move is the attic shower: a ninth
 outlet for the studio would take ~1 gal off it, on a 10-outlet header.
 
+**Pressure on the 1/2" kitchen branch, by hand (2026-11-08).** Hazen-Williams, C = 150, ID
+0.475": psi/100 ft = 0.433 x 0.2083 x (100/150)^1.852 x Q^1.852 / 0.475^4.8655. Length is
+`PR-B-HW-KITCH`'s 57.3 ft off the model, plus 15% for fittings (an allowance) = 66 ft. Lift
+is 86.1" to 129.4", 3.6 ft = 1.6 psi.
+
+| case | Q | loss | with lift | velocity |
+| --- | --- | --- | --- | --- |
+| sink alone | 1.5 gpm | 3.37 psi/100 ft, 2.2 psi | 3.8 psi | 2.7 ft/s |
+| sink + dishwasher filling (1.5 gpm assumed) | 3.0 gpm | 12.2 psi/100 ft, 8.0 psi | 9.6 psi | 5.4 ft/s |
+
+The basin (`PR-B-HW-BATH1`, 12.8 ft, 1.2 gpm) loses under 0.5 psi. So the sink holds a 15 psi
+fixture minimum (the usual UPC 608 figure, not read here) with about 25 psi at the header, even
+with both running. Against the still-unmeasured street pressure above, that is the number to
+compare. The 3.0 gpm case is worst-case; the dishwasher's fill rate is an assumption.
+
 `mep.water_manifold_ports` holds one run per outlet. `haus route houses/catlin --manifold
 EQ-B-HW-HEADER` re-lays the eight together; its first pass proposed several branches running
 exposed at fixture height across the furnace room and workshop, so the lanes above were drawn

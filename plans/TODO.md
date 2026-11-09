@@ -93,15 +93,6 @@ allowance.)
   alternative. Preserve room delivery and backdraft protection. `mep.erv_blower_interlock`
   grades the present arrangement but does not compare operating energy or lifecycle cost.
 
-- **Pressure-check smaller hot-water branches before rough-in.** `PR-B-HW-BATH1` is a
-  ¾-inch copper branch serving one basin (8.8 ft); `PR-B-HW-KITCH` is ¾-inch copper for the
-  kitchen sink and dishwasher (49.5 ft). Price ½-inch alternatives and check fixture demand,
-  pressure, developed length, simultaneous use and the selected pipe's internal diameter.
-  Approximate copper volume falls from 0.22 to 0.11 gal at the basin and 1.24 to 0.60 gal in
-  the kitchen. Shorter waits and less cooled water may save energy; quantify with actual use
-  and HPWH performance. Do not resize shared bath/tub trunks without a separate demand
-  calculation. [EPA hot-water distribution guidance](https://www.epa.gov/watersense/watersense-labeled-homes-hot-water).
-
 - **Make the PV layout comply with roof access, then study a second row.** `params/solar.py`
   calls 12 modules / 5.28 kW a maximum, but generates one row on each slope. Verify the
   current 1 ft ridge clearance, access pathways and array coverage against MN R324 and final
@@ -135,10 +126,7 @@ allowance.)
 - **No `Lintel` element type.** A `Beam` stands in, and its `size` is a free string.
 - **`ResolvedRoom.head_limited_area_m2` and `room_area.countable_floor` are two derivations**
   of R304.3's countable floor; `resolve/roof_geometry` should return the polygon both read.
-- **`BoxRow` has no shape**, so `electrical.canopy_covers_box` grades every box as a rectangle.
-  Add round boxes, then give SCONCE-SPOT/SPOT-SW (WAC Sprig, Ø4 3/8" canopy, plate slotted for
-  a 4" round box, install sheet p.2) that box: today they pass the B122A's diagonal by 0.002".
-  Also derive a fixture-supplied box (Bantam's JB-0501) so SCONCE-STAIR can state its canopy.
+- **Derive a fixture-supplied box** (Bantam's JB-0501) so SCONCE-STAIR can state its canopy.
 - **R502.10.1's single-member header allowance is sawn-lumber only, deliberately** — an
   I-joist/floor-truss deck would need a manufacturer's hung-header table this engine doesn't
   have, so catlin (all I-joist/floor-truss decks) sees no saving from it. **Still open:**
@@ -286,7 +274,7 @@ the future.
 - **Exterior darks are black** (2026-11-07, `houses/catlin/plan/exterior_palette.py`, `notes/exterior_darks.md`). The engine's `RAINSCREEN_BASE_Z` text still calls the base strip aluminium.
 - `haus print3d --colour-groups`: per-piece colour components bucketed from `Material.color`, matched to a sample exported from Bambu Studio before shipping.
 - Do an outlet and light switch placement review pass
-- `ResolvedOpening.is_passage` keys a leafless rough opening on `sill_m == 0`: a seated passage drops out of base breaks, plate cut, floor continuity and the drywall wrap (#122) with no finding. Key it on the sill against both rooms' finished floors, or flag a leafless through opening with 0 < sill < ~6". Promote the wrap to a `ResolvedModel.passage_wraps` record so emitters can draw the returns.
+- Promote the leafless passage's drywall wrap (#122) to a `ResolvedModel.passage_wraps` record so emitters can draw the returns.
 - **Consider a strongback on `FS-S-WEST`** (TrimJoist J12 at 16" o.c. now reads its own published row, `J12_FLOOR_SPAN`).
 - **W-B-N2 wall-top restraint (Minn. R. 1309.0404).** `FO-M-STAIR` fills the first three joist spaces against W-B-N2 for x 10'-3"..17'-6", so no footnote f blocking can stand there and `code.MN_1309_0404_wall_top` reports UNKNOWN. 400 plf x 8' = 3,200 lb goes into the well's edge framing spanning flat between the headers: get the EOR's approved-equivalent detail (a flat strongback or a landing strut) and author it. Basis note `houses/catlin/notes/main_floor_truss_basis.md` §4.
 - **Tile medallions: not this pass (review 2026-11-01).** Any tile forces an underlay under all the LVP (~0.47" more finish: re-derive ST-M2S/ST-B2M risers, every main-floor door, toe kicks and appliance openings). (a) Dining table, ~8'x6': DEFER, lean don't — the table hides it and the joint lands under the pulled-out chairs; worth it only for heat underfoot (~700-900 W Ditra-Heat). (b) Peninsula stool strip, ~6'x22": DEFER, lean don't — glides and a mat do the job; a narrow LVP-tile-LVP strip reads least intentional. (c) East range border, ~36"x6': DON'T — a walkway that merges with (a). Instead: felt glides, a rug under the table, stool tips; if heat is wanted later, a rug-sized film under a removable rug. Revisit only as one (a)+(c) feature, priced with the re-derivation. The 16" o.c. L/480 trusses with the 25 psf dead column are still tile-ready either way (ceramic over Ditra). The flush stacks considered: Ditra/Ditra-Heat + thinset + 8-10 mm tile = 1/2" ply/Exacor/Fiberock + 6.5-7 mm LVP (~3/4").

@@ -154,12 +154,14 @@ METAL_BOX_VOLUME_IN3: dict[str, float] = {
 }
 
 BoxMounting = Literal["surface", "flush", "flush_raceway"]
+BoxShape = Literal["rectangular", "round"]
 
 
 class BoxRow(HausModel):
     """One box and its cover (surface) or device ring (flush), for a mounting × gangs.
 
-    ``box_size`` is (width, height, depth) of the box body. A metal box names its Table
+    ``box_size`` is (width, height, depth) of the box body; a ``shape="round"`` box is
+    (diameter, diameter, depth). A metal box names its Table
     314.16(A) ``designation``; a nonmetallic one authors its marked ``box_volume_in3``.
     ``cover_volume_in3`` is the volume a raised cover or ring adds where it is marked with
     one (314.16(A)); ``cover_rise`` is how far a surface cover stands proud of the box.
@@ -176,6 +178,7 @@ class BoxRow(HausModel):
     # None where the box takes no ring or cover: a flush nonmetallic box under a wall plate.
     cover_product_ref: str | None = None
     box_size: tuple[Length, Length, Length]
+    shape: BoxShape = "rectangular"
     designation: str | None = None
     box_volume_in3: float | None = None
     cover_volume_in3: float = 0.0

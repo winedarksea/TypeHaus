@@ -25,7 +25,7 @@ _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
 
 _STRETCH_BODY = dict(
     footprint=(inch(8), inch(4)), height=inch(8), plan_symbol="sconce-swing-arm",
-    canopy_diameter=inch(4.375),
+    canopy_diameter=inch(4.375), box_use="luminaire-round",
     lamp="LED integrated, toggle on the canopy", watts=5.0, lumens=287.0,
     cct_k=3000, cri=90, dimmable=True, damp_rated=True, load_va=5.0, ports=_POWER_120,
     product_ref="PROD-WAC-BL-23210-BK", replaceable_lamp=False)

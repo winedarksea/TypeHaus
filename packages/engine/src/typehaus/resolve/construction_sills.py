@@ -285,7 +285,9 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule):
         lo, hi = min(projections), max(projections)
         segments = [(lo, hi)]
         for opening in model.openings:
-            if (opening.host_wall == wall.tag and opening.is_passage
+            # Runs before rooms, so not is_passage: the z tests below say if it crosses the plate.
+            if (opening.host_wall == wall.tag
+                    and (opening.is_door or opening.is_leafless_through)
                     and opening.depth_m is None
                     and wall.base_ref_z_m + opening.sill_m <= plate.z1_m + _EPS
                     and wall.base_ref_z_m + opening.sill_m + opening.height_m > plate.z0_m):

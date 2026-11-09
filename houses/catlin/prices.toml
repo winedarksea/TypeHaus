@@ -6451,6 +6451,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "PROD-RACO-768" = { material = { low = 1.5, high = 3.5 }, labour = { low = 0, high = 0 } }
 "PROD-CARLON-B122A" = { material = { low = 1.2, high = 2.5 }, labour = { low = 0, high = 0 } }
 "PROD-CARLON-BH235A" = { material = { low = 7, high = 11 }, labour = { low = 0, high = 0 } }
+"PROD-CARLON-B520A" = { material = { low = 3, high = 6 }, labour = { low = 0, high = 0 } }  # WAC Sprig sconces; ~$3.82 Platt listing (2026-11-08), estimate
 
 [conductors]
 # NEW SECTION 2026-08-27 — [low, high] $/CONDUCTOR-FOOT, split material/labour.

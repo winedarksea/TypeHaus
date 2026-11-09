@@ -11,6 +11,8 @@
 #   * luminaire, surface — a wall light on concrete: RACO 192 4" square x 1 1/2" under a flat
 #     RACO 753, so a 4 1/2" square sconce backplate covers it (geometry review C6-E10, owner
 #     2026-11-01). The box sides stay in view: field-paint them to the wall.
+#   * luminaire-round — the WAC Sprig sconces (marks J, J1): a 4" round box, what the plate is
+#     slotted for and what the 4 3/8" canopy covers with 3/16" to spare all round.
 #   * recessed — the fridge and freezer receptacles: an Arlington IN BOX, plug inside the wall.
 #     Its new-work screws want wood (Q-3), and both boxes sit mid-bay, so each gets a flat
 #     2x4 block behind it, stud to stud, derived from the row (geometry review M3-107).
@@ -61,8 +63,14 @@ ARLINGTON_DVFR1W = Product(tag="PROD-ARLINGTON-DVFR1W", brand="Arlington", model
                            url="https://www.aifittings.com/media/catalog-pages/Q-3.pdf",
                            source="Geometry review C5-E2, owner 2026-11-01.")
 
+# Distributor listings read 2026-11-08 (Gexpro, Platt): 4" round, 2-1/4" deep, 20 cu. in., nail-on.
+CARLON_B520A = Product(tag="PROD-CARLON-B520A", brand="Carlon", model="B520A-UPC",
+                       name="4 in. round nonmetallic nail-on box, 20 cu. in., 2-1/4 in. deep",
+                       url="https://www.gexpro.com/p/17618/carlon/4-round-ceiling-box-nail-on-2-1-4-deep-non-metallic/034481006213/b520a-upc",
+                       source="Round box for the WAC Sprig sconces, 2026-11-08.")
+
 BOX_PRODUCTS = (RACO_232, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
-                RACO_192, RACO_753, ARLINGTON_DVFR1W)
+                CARLON_B520A, RACO_192, RACO_753, ARLINGTON_DVFR1W)
 
 BOX_STANDARD = [
     BoxStandard(
@@ -88,6 +96,9 @@ BOX_STANDARD = [
                    cover_product_ref="PROD-RACO-753",
                    box_size=(inch(4), inch(4), inch(1.563)), designation="4 x 1-1/2 square",
                    cover_rise=inch(0.0625)),
+            BoxRow(mounting="flush", gangs=1, use="luminaire-round",
+                   box_product_ref="PROD-CARLON-B520A", shape="round",
+                   box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0),
             BoxRow(mounting="flush", gangs=1, use="recessed",
                    box_product_ref="PROD-ARLINGTON-DVFR1W",
                    box_size=(inch(4.2), inch(6.698), inch(3.875)), box_volume_in3=21.0,

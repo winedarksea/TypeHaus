@@ -476,6 +476,8 @@ class ResolvedOpening:
     # Where the non-structure layers' cut starts under a seated exterior door (the datum,
     # ``plate_seat.door_skin_sill_m``). ``None`` means ``sill_m``.
     skin_sill_m: float | None = None
+    # A leafless hole with a sill that still lands on its rooms' floors (``resolve/passage_seat``).
+    seated_passage: bool = False
     framing_bumper: Ring = ()
     # Arched head: semicircular/segmental rise above the rectangular jamb height. 0 = square
     # head. The opening's total height_m already includes this rise (straight run = height -
@@ -530,11 +532,17 @@ class ResolvedOpening:
         return self.depth_m is not None
 
     @property
+    def is_leafless_through(self) -> bool:
+        """A bare hole right through the wall, no leaf, cut for no run."""
+        return self.kind == "rough_opening" and self.depth_m is None and not self.penetration_for
+
+    @property
     def is_passage(self) -> bool:
         """A doorway people walk through: a door, or a leafless floor-level through hole.
-        ``is_door`` still means "has a leaf" to framing, schedules and checks."""
-        return self.is_door or (self.kind == "rough_opening" and self.depth_m is None
-                                and not self.penetration_for and self.sill_m <= 1e-9)
+        ``is_door`` still means "has a leaf" to framing, schedules and checks.
+        ``seated_passage`` is only known from the rooms stage on."""
+        return self.is_door or (self.is_leafless_through
+                                and (self.sill_m <= 1e-9 or self.seated_passage))
 
 
 @dataclass(frozen=True)

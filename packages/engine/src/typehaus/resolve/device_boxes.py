@@ -91,6 +91,7 @@ class ResolvedDeviceBox:
     uid: str = ""
     #: The derived block's child key on ``wall_tag``, or None (no row block, or none fits).
     block_key: str | None = None
+    shape: str = "rectangular"
 
 
 _CACHE: dict[int, tuple[Any, BoxStandard | None, frozenset[str]]] = {}
@@ -139,6 +140,11 @@ def standard_findings(plan: Any) -> list[Finding]:
                 f"box standard {standard.tag}'s {row.mounting} {row.gangs}-gang row has no "
                 f"volume: name a {NEC.BOX_VOLUME_TABLE} designation or author the marked "
                 "volume")))
+        width, height, _depth = row.box_size
+        if row.shape == "round" and abs(width.meters - height.meters) > 1e-6:
+            out.append(_error(standard.tag, f"box standard {standard.tag}'s round "
+                                            f"{row.box_product_ref} row needs one diameter: "
+                                            "its width and height differ"))
     return out
 
 
@@ -260,7 +266,8 @@ def place_box(model: ResolvedModel, item: Any, plan: BoxPlan, storey: str, room:
         width_m=width, height_m=height, depth_m=depth, projection_m=plan.projection_m,
         cavity_m=plan.cavity_m, wall_tag=wall.tag, host_layer=plan.host_layer,
         footprint=tuple(ring), z0_m=z0, z1_m=z1, face_point=point, normal=normal,
-        device_footprint=tuple(device_footprint), uid=f"{item.uid}-box", block_key=block_key))
+        device_footprint=tuple(device_footprint), uid=f"{item.uid}-box", block_key=block_key,
+        shape=plan.row.shape))
     model.solids.append(ResolvedSolid(
         uid=f"{item.uid}-box", tag=f"{item.tag}-BOX", storey=storey, category="electrical_box",
         outline=list(ring), z0_m=z0, z1_m=z1, product=plan.row.box_product_ref,

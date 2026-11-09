@@ -215,7 +215,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-STUDY-CLOSET", controlled_by=("ED-M-STUDY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C3", face="left", distance_from_start=inch(45.5),
+                         wall_ref="W-M-C3", face="left", distance_from_start=inch(46.25),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-BATH1: one can over the lavatory, 22" off the mirror wall and east of the ERV

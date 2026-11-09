@@ -128,3 +128,27 @@ def test_box_on_stud_names_the_clearing_move(catlin_model_ro):
     assert on.members == ("king-0-r0",) and on.shift_m is not None
     assert stud_clash(catlin_model_ro, _box(catlin_model_ro, "ED-M-LAUNDRY-DR1")).members == ()
     assert stud_clash(catlin_model_ro, _box(catlin_model_ro, "ED-B-GYM-RC5")) is None
+
+
+def test_canopy_spans_a_round_box_diameter_but_a_square_box_diagonal():
+    from types import SimpleNamespace as NS
+
+    from typehaus.checks.mep.electrical_canopy import canopy_covers_box
+    from typehaus.findings import Result
+
+    def grade(shape):
+        four = 4 * M_PER_IN
+        box = NS(device_kind="light", device_tag="L", width_m=four, height_m=four,
+                 mounting="flush", box_product="P", shape=shape)
+        lamp = NS(tag="T", canopy=None, canopy_diameter=NS(meters=4.375 * M_PER_IN))
+        ctx = NS(model=NS(device_boxes=[box], canvas_objects=[NS(tag="L", type_ref="T")]),
+                 plan=NS(library=NS(electrical_device_types=[lamp])))
+        return canopy_covers_box(ctx)[0].result
+
+    assert grade("round") is Result.PASS
+    assert grade("rectangular") is Result.FAIL
+
+
+def test_the_sprig_sconces_take_the_round_box(catlin_model_ro):
+    box = _box(catlin_model_ro, "ED-S-STUDY2-SPOT1")
+    assert (box.shape, box.box_product) == ("round", "PROD-CARLON-B520A")

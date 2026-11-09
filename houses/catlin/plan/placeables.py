@@ -662,7 +662,7 @@ SECOND_PLACEABLES = [
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-PS1", face="right", distance_from_start=inch(50.125),
+                         wall_ref="W-S-PS1", face="right", distance_from_start=inch(50.75),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # --- plumbing access panel ----------------------------------
