@@ -358,8 +358,7 @@ def _corner_trim_members(
     edge (:mod:`typehaus.resolve.roof_drip_edge`), on the same face plane and leg.
     """
     # Eave pan/hem stays at the membrane, independent of the seam crown.
-    # Image II guide pp. 20–23; hot-roof design currently leaves rib ends open,
-    # with no vent closure. Manufacturer rib-end sealing remains a design TODO.
+    # Image II guide pp. 20–23. Its rib ends are sealed, not vented (roof_eave_rib_ends).
     top = (mating.cladding_under + cladding.thickness.meters) * slope_factor
     z_lo = mating.cladding_under * slope_factor - _CORNER_TRIM_LEG_M
     bands = formed_edge_bands(_CORNER_TRIM_THICKNESS_M, top - z_lo, FLASHING.sheet_m)

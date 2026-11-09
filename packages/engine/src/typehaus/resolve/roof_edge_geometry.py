@@ -281,13 +281,13 @@ def abutted_run_keys(model: ResolvedModel, roof: ResolvedRoof) -> frozenset[str]
     for run in roof_edge_runs(roof):
         stations = [(run.p0[0] + (run.p1[0] - run.p0[0]) * t,
                      run.p0[1] + (run.p1[1] - run.p0[1]) * t) for t in _ABUTMENT_STATIONS]
-        if all(any(_roof_continues_at(roof, other, point) for other in neighbours)
+        if all(any(roof_continues_at(roof, other, point) for other in neighbours)
                for point in stations):
             keys.add(run.key)
     return frozenset(keys)
 
 
-def _roof_continues_at(roof: ResolvedRoof, other: ResolvedRoof,
+def roof_continues_at(roof: ResolvedRoof, other: ResolvedRoof,
                        point: tuple[float, float]) -> bool:
     if Point(point).distance(Polygon(other.footprint)) > CLOSURE_TOLERANCE_M:
         return False
@@ -309,7 +309,7 @@ def seam_register_roofs(model: ResolvedModel, roof: ResolvedRoof) -> tuple[Resol
             mid = ((run.p0[0] + run.p1[0]) / 2, (run.p0[1] + run.p1[1]) / 2)
             for other in model.roofs:
                 if (other.tag not in group and other.ridge_direction == current.ridge_direction
-                        and _roof_continues_at(current, other, mid)):
+                        and roof_continues_at(current, other, mid)):
                     group[other.tag] = other
                     queue.append(other)
     return tuple(sorted(group.values(), key=lambda r: r.tag))

@@ -6780,6 +6780,11 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "corrugated-outside-closure" = { material = { low = 0.45, high = 0.72 }, labour = { low = 0.4, high = 0.9 }, unit = "LF" }
 "butyl-tape" = { material = { low = 0.3, high = 0.6 }, labour = { low = 0, high = 0 }, unit = "LF" }
 "tube-sealant" = { material = { low = 0.15, high = 0.35 }, labour = { low = 0.3, high = 0.7 }, unit = "LF" }
+# NEW 2026-11-08 — Image II eave sealing (notes/roof_eave_rib_end_sealing.md). ALLOWANCES, NOT QUOTES.
+# Cartridge carries the material; the rib plug and hem bead are labour only, so nothing bills twice.
+"64032XX" = { material = { low = 9, high = 16 }, labour = { low = 0, high = 0 } }                # 10.3 oz color-match cartridge; size unconfirmed
+"eave-rib-plug" = { material = { low = 0, high = 0 }, labour = { low = 1.5, high = 4 } }         # notch cleaned, filled, tooled, per rib end
+"eave-hem-bead" = { material = { low = 0, high = 0 }, labour = { low = 0.3, high = 0.7 }, unit = "LF" }  # same rate as the tube-sealant bead
 "trim-stitch-screw" = { material = { low = 0.06, high = 0.12 }, labour = { low = 0, high = 0 } }
 "trim-pop-rivet" = { material = { low = 0.08, high = 0.16 }, labour = { low = 0, high = 0 } }
 

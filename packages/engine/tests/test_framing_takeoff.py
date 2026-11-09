@@ -420,6 +420,7 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "window_returns": ("envelope_layers", "drywall_trims"),
     # Beads and LED shadow-gap beads by the LF, off the DrywallStandard (#103).
     "drywall_trims": ("drywall_trims",),
+    "eave_sealing_runs": ("cladding_trim",),
     "shelf_banks": ("hardwood",),
     # The work surfaces, by the square foot a slab yard quotes. Not "hardwood": a
     # countertop is a purchased fabricated top, not stock the owner's mill saws.

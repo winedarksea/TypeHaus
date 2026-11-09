@@ -1,3 +1,4 @@
+> Rib ends, hem sealant and tape: [decision and specification](roof_eave_rib_end_sealing.md).
 > Roof dimensions and open approvals: [2026-10-28 assessment](roof_sheathing_and_membranes.md). Historical calculations below are not a new moisture or product approval.
 
 ---
@@ -32,9 +33,9 @@ source:
 - {wall_roof:EXT_2X6|*} [K3] 2x6 eave block on edge on the plate, every bay. ccSPF over it.
 - {wall_roof:EXT_2X6|*} [K4] Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.
 - {wall_roof:EXT_2X6|*} [K5] Membrane to deck edge; gutter flange, then eave leg, on it. Bearing 2.04".
-- {wall_roof:EXT_2X6|*} [K6] Strip-in membrane over both flanges, 4" past the hem. Pan rides over it.
+- {wall_roof:EXT_2X6|*} [K6] Strip-in over both flanges, 4" past the hem. 6403899 tape on it; pan over it.
 - {wall_roof:EXT_2X6|*} [K7] PBR 5x4 gutter, level, back behind eave face, flange under eave leg.
-- {wall_roof:EXT_2X6|*} [K8] Eave face over the gutter back, hemmed into the trough; pan hemmed round the lip.
+- {wall_roof:EXT_2X6|*} [K8] Eave face over the gutter back, hemmed into the trough; pan hemmed round the lip, 64032XX bead in the hem.
 - {wall_roof:EXT_2X6|*} [K9] 2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Hanger below the eave face; bracket pending.
 
 ### Spec 06 10 00
@@ -48,7 +49,7 @@ source:
 
 ### Spec 07 61 00
 - Measure eave offsets off the Extended Eave face.
-- Build order: block, girt, deck, membrane, gutter, eave, strip-in, pan. Insulate after.
+- Build order: block, girt, deck, membrane, gutter, eave, strip-in, tape, pan, rib fill. Insulate after.
 
 # Notes
 
@@ -161,7 +162,7 @@ reinstate, and each of them was load-bearing only for the stack it belonged to.
 
 - Gutter: stock PBR 5x4 box gutter 58079XX, installed **level**, back tucked behind the eave face, its 3-1/2" roof flange running up under the eave leg (the combination is this house's: PIM-11 shows the general overlap, PBR guide p.46 the flange; neither shows both). Back top u 0.055, z 0.731 (1.49" above the face bottom); floor 5" below the back top; front crest = back top. Lowest inward route is the flange's upslope end, 1.57" above the crest, so a full or blocked gutter spills outward (`test_a_full_gutter_spills_outward`). Level within 1/8" and never falling from the outlet: `notes/box_gutter_sizing.md` section 8.
 
-- Water paths: *primary* pan, pan hem at the lip, trough, north outlet. *Secondary* field membrane, strip-in, eave leg under the pan, out at the pan hem's return under the lip, trough. *Wall head* covered by the gutter flange and eave leg (two metal layers), then the eave face over the gutter back.
+- Water paths: *primary* pan, pan hem at the lip, trough, north outlet. *Secondary* field membrane and strip-in under the pan; the guide's hem bead and tape close the former exit at the hem's return, so **no secondary outlet is demonstrated** (hold: [rib-end decision](roof_eave_rib_end_sealing.md)). *Wall head* covered by the gutter flange and eave leg (two metal layers), then the eave face over the gutter back.
 
 - Corners: gutter ends under its end cap at the rake; no 45 deg mitre between unlike sections.
 

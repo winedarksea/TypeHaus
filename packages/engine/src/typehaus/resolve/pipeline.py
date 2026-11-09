@@ -356,6 +356,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.roof_panel_skin import resolve_profiled_roof_surfaces
 
         resolve_profiled_roof_surfaces(model)
+        from typehaus.resolve.roof_eave_rib_ends import resolve_eave_rib_ends
+
+        resolve_eave_rib_ends(model)
         model.geometry = build_geometry(model)
 
     model.index_by_tag()

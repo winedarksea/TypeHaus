@@ -7,12 +7,15 @@ which on a folded sheet is usually air. ``u`` grows outboard by ``out_sign``; in
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 from typehaus.emit.draw.section_sheet_metal import PAN_END_CONNECTION
+from typehaus.library.trim.image_ii_eave_sealing import IMAGE_II_EAVE_SEALING
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.geometry_slice import CutPlane, slice_part, slice_solid
+from typehaus.resolve.metal_skin_profiles import IMAGE_II_16_PROFILE
 from typehaus.resolve.roof_image_ii import CONNECTION_EAVE, CONNECTION_STRIP
 
 Anchor = tuple[float, float]
@@ -29,6 +32,8 @@ _BELOW_KICK_IN = 0.5
 _FACE_PLANE_IN = 0.25
 #: Inside the cladding face, over the wall panel head (inches).
 _HEAD_IN = -0.6
+#: The seam legs at a wrapped eave; only a cut along a seam passes through them.
+_SEAM_END_CONNECTION = "roof:seam-end"
 
 
 @dataclass(frozen=True)
@@ -42,6 +47,7 @@ class EaveCut:
     strip: tuple[Anchor, ...]
     gutter: tuple[Anchor, ...]
     gutter_product: str | None
+    seam: tuple[Anchor, ...] = ()
 
     def out(self, point: Anchor) -> float:
         return self.out_sign * (point[0] - self.clad_out)
@@ -65,6 +71,38 @@ class EaveCut:
     def strip_in(self) -> Anchor | None:
         """The strip-in's upslope edge, where it laps onto the field membrane."""
         return min(self.strip, key=self.out, default=None)
+
+    def strip_top_at(self, target_in: float) -> Anchor | None:
+        """The strip-in's weather face ``target_in`` out from the cladding face."""
+        crossings = []
+        for a, b in zip(self.strip, (*self.strip[1:], *self.strip[:1]), strict=True):
+            out_a, out_b = self.out(a), self.out(b)
+            if out_a != out_b and min(out_a, out_b) <= target_in <= max(out_a, out_b):
+                t = (target_in - out_a) / (out_b - out_a)
+                crossings.append((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t))
+        return max(crossings, key=lambda p: p[1], default=None)
+
+    def rib_end(self) -> Anchor | None:
+        """The seam crown's downslope end; ``None`` on a mid-pan cut, which meets no rib."""
+        if not self.seam:
+            return None
+        reach = max(self.out(p) for p in self.seam)
+        return max((p for p in self.seam if self.out(p) >= reach - 0.05), key=lambda p: p[1])
+
+    def rib_plug_outline(self, slope_factor: float) -> tuple[Anchor, ...]:
+        """The plug's allowance in this seam cut: fill depth upslope, rib height down."""
+        end = self.rib_end()
+        if end is None:
+            return ()
+        cos = 1.0 / slope_factor
+        sin = math.sqrt(max(slope_factor ** 2 - 1.0, 0.0)) / slope_factor
+        fill = IMAGE_II_EAVE_SEALING.plug_fill_depth_in.value
+        height = IMAGE_II_16_PROFILE.depth_m / M_PER_IN
+        upslope = (-self.out_sign * cos * fill, sin * fill)
+        down = (-self.out_sign * sin * height, -cos * height)
+        far = (end[0] + upslope[0], end[1] + upslope[1])
+        return (end, far, (far[0] + down[0], far[1] + down[1]),
+                (end[0] + down[0], end[1] + down[1]))
 
     def gutter_flange(self) -> Anchor | None:
         """The roof flange's upslope end, under the eave leg."""
@@ -109,7 +147,7 @@ def eave_cut(model, roof, direction: str, station: float, clad_out: float,
         return None
     plane = CutPlane(axis=direction, station_m=station)
     found: dict[str, list[Anchor]] = {CONNECTION_EAVE: [], PAN_END_CONNECTION: [],
-                                      CONNECTION_STRIP: []}
+                                      CONNECTION_STRIP: [], _SEAM_END_CONNECTION: []}
     for member in roof.members:
         if member.connection not in found:
             continue
@@ -123,7 +161,7 @@ def eave_cut(model, roof, direction: str, station: float, clad_out: float,
     gutter, product = _gutter_points(model, plane, clad_out, junction_z)
     return EaveCut(clad_out, out_sign, tuple(found[CONNECTION_EAVE]),
                    tuple(found[PAN_END_CONNECTION]), tuple(found[CONNECTION_STRIP]),
-                   tuple(gutter), product)
+                   tuple(gutter), product, tuple(found[_SEAM_END_CONNECTION]))
 
 
 def _gutter_points(model, plane, clad_out: float, junction_z: float):

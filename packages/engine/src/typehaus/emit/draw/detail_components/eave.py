@@ -1,5 +1,5 @@
 """The zero-overhang eave: what the cut cannot say on its own — vent screen, gutter support,
-and the leaders naming the pieces and the three water paths.
+and the leaders naming the pieces, the sealing and the water paths.
 
 The metal itself (the Image II eave, the pan ends, the strip-in, the gutter, the wall panel
 heads) is real geometry the section already cuts; this overlay draws no metal of its own. The vent
@@ -21,8 +21,10 @@ from typehaus.emit.draw.detail_components.eave_labels import (
 from typehaus.emit.draw.detail_components.eave_water import (
     eave_piece_labels,
     provisional_hanger,
+    rib_plug_label,
 )
 from typehaus.emit.draw.detail_components.geometry import (
+    closed_region,
     face_of,
     layer_intervals,
     outboard_is_high,
@@ -73,7 +75,10 @@ def zero_overhang_eave(model, wall, crop, direction, station,
     entries = roof_labels(model, roof, clad_out, junction_z, out_sign, slope,
                           roofing=pieces is None)  # the pan-hem leader names the pan
     if pieces is not None:
-        entries += eave_piece_labels(pieces, compact=compact)
+        entries += eave_piece_labels(pieces, compact=compact) + rib_plug_label(pieces)
+        plug = pieces.rib_plug_outline(slope)
+        if plug:
+            nodes += closed_region(plug, "eave-rib-plug", None, None, lineweight=PROFILE)
     else:
         entries.append((member_anchor(*at, "gutter")
                         or solid_anchor(model, direction, station, clad_out, junction_z,

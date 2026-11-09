@@ -37,6 +37,7 @@ from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.roof_edge_geometry import roof_edge_runs
 from typehaus.resolve.roof_image_ii import wrapped_image_ii_edges
 from typehaus.takeoff.drainage import leader_length_m
+from typehaus.takeoff.eave_rib_sealing import cartridge_orders, eave_run_sealing
 from typehaus.takeoff.stock_packing import boards_for
 
 _FT = 0.3048
@@ -267,6 +268,21 @@ def _roof_edge_rows(model: ResolvedModel, rows: _Rows) -> None:
                 _supply(rows, "trim-pop-rivet", 0.0, tag, count=_END_CLOSURE_RIVETS)
 
 
+def _eave_sealing_rows(model: ResolvedModel, rows: _Rows) -> None:
+    """Labour by run, so allocation survives; sealant once, in whole pooled cartridges."""
+    for run in eave_run_sealing(model):
+        if run.terminations:
+            _supply(rows, "eave-rib-plug", 0.0, run.tag, count=run.terminations)
+        _supply(rows, "eave-hem-bead", run.hem_length_m, run.tag)
+        _supply(rows, run.tape_part, run.tape_length_m, run.tag)
+    for order in cartridge_orders(model):
+        name = SUPPLIES[order.sealant_part][0]
+        rows.add("supply", order.sealant_part, name, None, count=order.cartridges, length_m=0.0,
+                 tag=order.tags[0], unit="ea",
+                 note=f"{order.gross_volume_in3:.1f} cu in including waste")
+        rows.rows[("supply", order.sealant_part, None)]["tags"].extend(order.tags[1:])
+
+
 def _has_barge(model: ResolvedModel, roof, key: str) -> bool:
     """Whether the run ``key`` hangs on a fascia (barge) board, the one the flat cleat fixes to.
 
@@ -367,4 +383,5 @@ def cladding_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     _catalog_leader_rows(model, rows)
     if getattr(model, "roofs", None):
         _roof_edge_rows(model, rows)
+        _eave_sealing_rows(model, rows)
     return rows.finish()

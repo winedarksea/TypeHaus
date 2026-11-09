@@ -269,6 +269,13 @@ DETAIL_SLICES = [
          crop=(pt(inch(_EAVE_FACE_E_IN - 7), inch(EAVE_DECK_IN - 9)),
                pt(inch(_EAVE_FACE_E_IN + 9.5), inch(EAVE_DECK_IN + 5))),
          scale="3\"=1'"),
+    # The same eave cut along the seam at y=16'-8": the rib end a mid-pan cut cannot show.
+    Slice(uid="3M64G7WDBP", tag="SL-D-EAVE-RIB", kind=SliceKind.DETAIL,
+         title="East eave at a seam: Image II rib end sealed",
+         cut_origin=pt(ft(0), ft(16, 8)), cut_direction="x",
+         crop=(pt(inch(_EAVE_FACE_E_IN - 7), inch(EAVE_DECK_IN - 9)),
+               pt(inch(_EAVE_FACE_E_IN + 9.5), inch(EAVE_DECK_IN + 5))),
+         scale="3\"=1'"),
     # E2-005: the PBR counterpart to A-503 (the E/W walls, 1 1/4" panel), as a SECTION
     # (A-301.x), cut when the A-5xx block was full; authored details now have A-501..A-529.
     # Cut y=24'-8": clear of every E-wall opening on all storeys and of W-B-E1/E2's and

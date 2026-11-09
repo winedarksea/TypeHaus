@@ -281,3 +281,59 @@ def test_membrane_takeoff_bills_the_strip_in(catlin_model_ro) -> None:
     # Two eaves x ~37' x the 9" strip, plus its climb over the stack.
     assert [r["material"] for r in rows] == ["roof-adhered-butyl-ht"]
     assert 2 * 37.1 * 0.75 < rows[0]["net_area_sqft"] < 2 * 37.6 * 0.8
+
+
+def _house_runs(model) -> list:
+    return [run for run in model.eave_sealing_runs if run.roof_tag == "RF-HOUSE"]
+
+
+@pytest.mark.parametrize("edge", ["west", "east"])
+def test_every_house_rib_end_is_a_real_seam_stub(catlin_model_ro, edge) -> None:
+    """A record lands where the skin's own seam legs stop, not on a nominal module."""
+    roof = next(r for r in catlin_model_ro.roofs if r.tag == "RF-HOUSE")
+    run = next(r for r in _house_runs(catlin_model_ro) if r.edge_name == edge)
+    outward = run.rib_ends[0].outward_normal[0]
+    stubs = {round(m.p0[1], 4) for m in roof.members
+             if m.connection == "roof:seam-end" and m.p0[0] * outward > 5.0 * outward}
+    assert {round(end.station_m, 4) for end in run.rib_ends} == stubs
+    assert len(run.rib_ends) == 27
+
+
+def _seam_and_pan_cuts(model):
+    from typehaus.emit.draw.detail_components.eave_anchors import eave_cut
+
+    roof = next(r for r in model.roofs if r.tag == "RF-HOUSE")
+    for run in _house_runs(model):
+        out_sign = run.rib_ends[0].outward_normal[0]
+        face_in = (roof.footprint[1][0] if out_sign > 0 else roof.footprint[0][0]) / M_PER_IN
+        z_in = roof.eave_z_m / M_PER_IN
+        seam = run.rib_ends[10].station_m
+        yield tuple(eave_cut(model, roof, "x", station, face_in, z_in, out_sign)
+                    for station in (seam, seam + 8 * M_PER_IN))
+
+
+def test_only_a_seam_cut_can_name_a_rib_plug(catlin_model_ro) -> None:
+    from typehaus.emit.draw.detail_components.eave_water import rib_plug_label
+
+    for seam, pan in _seam_and_pan_cuts(catlin_model_ro):
+        assert seam.rib_end() in seam.seam
+        (anchor, text), = rib_plug_label(seam)
+        assert anchor in seam.seam and "64032XX" in text and "ALLOWANCE" in text
+        assert pan.rib_end() is None and rib_plug_label(pan) == [] and pan.pan_end
+
+
+def test_the_secondary_path_is_not_drawn_as_a_demonstrated_exit(catlin_model_ro) -> None:
+    from typehaus.emit.draw.detail_components.eave_water import eave_piece_labels
+
+    for _seam, pan in _seam_and_pan_cuts(catlin_model_ro):
+        for compact in (False, True):
+            text = " ".join(label for _anchor, label in eave_piece_labels(pan, compact=compact))
+            assert "NOT DEMONSTRATED" in text and "64032XX bead in the hem" in text
+            assert "6403899" in text and "out at the pan hem" not in text
+
+
+def test_sealing_adds_no_solid_or_clash_exemption(house) -> None:
+    """The plug is a record plus a detail: nothing new was swept into the roof."""
+    _model, _roof, parts = house
+    assert not any("rib-plug" in part.key or "sealant" in part.key for _role, part in parts)
+

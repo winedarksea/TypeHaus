@@ -1,5 +1,5 @@
-"""The Image II eave's leader text: each piece by catalog name and part number, the three
-water paths, and every provisional item marked as one.
+"""The Image II eave's leader text: each piece by catalog name and part number, the water
+paths, the sealing the 2026 guide requires, and every provisional item marked as one.
 
 Anchors come from ``eave_anchors``; a piece the cut misses gets no leader. Part numbers are
 read from the library profiles, so a catalog change re-letters the sheet.
@@ -10,6 +10,7 @@ from __future__ import annotations
 from typehaus.emit.draw.detail_components.eave_anchors import EaveCut
 from typehaus.library.trim import metal_sales
 from typehaus.library.trim._image_ii import IMAGE_II_EXTENDED_EAVE
+from typehaus.library.trim.image_ii_eave_sealing import IMAGE_II_EAVE_SEALING
 from typehaus.library.trim.profile import TrimProfile
 
 #: The strip-in's width is the resolver's provisional 9" (``roof_image_ii_eave``).
@@ -19,6 +20,11 @@ _STRIP_NOTE = "9\" PROVISIONAL (width: GCP)"
 _HANGER_SHORT = "PROVISIONAL gutter hanger: bracket and sealed fastener pending"
 _PAN_FIELD_IN = -3.5
 _LEG_FIELD_IN = -2.0
+#: Clear of the water-path leader on the same leg.
+_TAPE_FIELD_IN = -0.75
+_SEALANT = IMAGE_II_EAVE_SEALING.sealant.part
+_HEM_BEAD = f"continuous {_SEALANT} bead in the hem"
+_TAPE = f"{IMAGE_II_EAVE_SEALING.tape_part} double-bead tape on the strip-in, under the pan"
 
 
 def _catalog(profile: TrimProfile) -> str:
@@ -57,17 +63,18 @@ def eave_piece_labels(pieces: EaveCut, compact: bool = False) -> list:
     if compact:
         return [
             (pieces.pan_hem(), f"Image II pan hemmed around the {part} hook (1-1/2\" "
-                               f"doubled lip), crimped. {water_1[1]}"),
-            strip,
+                               f"doubled lip), {_HEM_BEAD}, crimped. {water_1[1]}"),
+            (strip[0], f"{strip[1]}; {_TAPE}"),
             (pieces.gutter_back(), f"{eave}, 24 ga: face OVER the gutter back. "
                                    f"{water_3[1]}"),
             flange,
             water_2,
         ]
     return [
-        (pieces.pan_hem(), "Image II pan hemmed around hook, crimped"),
+        (pieces.pan_hem(), f"Image II pan hemmed around hook, {_HEM_BEAD}, crimped"),
         (pieces.eave_hook(), f"{part} hook: 1-1/2\" doubled lip"),
         strip,
+        (pieces.strip_top_at(_TAPE_FIELD_IN), _TAPE),
         (pieces.eave_face(), f"{eave}, 24 ga"),
         flange,
         (pieces.gutter_back(), "gutter back BEHIND the eave face"),
@@ -80,11 +87,21 @@ def _water_paths(pieces: EaveCut) -> list:
         (_nearest_out(pieces, pieces.pan_end, _PAN_FIELD_IN),
          "WATER 1: pan -> lip hem -> trough -> N outlet"),
         (_nearest_out(pieces, pieces.eave, _LEG_FIELD_IN),
-         "WATER 2, secondary: membrane -> strip-in -> eave leg -> out at the pan hem "
-         "return -> trough"),
+         "WATER 2, secondary: membrane and strip-in under the pan; hem sealed, exit "
+         "NOT DEMONSTRATED (HOLD)"),
         (pieces.wall_head(),
          "WATER 3, wall head: gutter flange + eave leg; face over gutter back"),
     ]
+
+
+def rib_plug_label(pieces: EaveCut) -> list:
+    """The plug's leader, only where the cut actually passes along a seam."""
+    end = pieces.rib_end()
+    if end is None:
+        return []
+    depth = IMAGE_II_EAVE_SEALING.plug_fill_depth_in.value
+    return [(end, f"Rib end notched 1-1/2\", filled with {_SEALANT}: {depth:g}\" fill is an "
+                  "ALLOWANCE, the guide gives no depth")]
 
 
 def provisional_hanger(support_labels, compact: bool = False) -> list:

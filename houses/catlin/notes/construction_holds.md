@@ -73,6 +73,23 @@ the model goes back to `plans/TODO.md` as a design item.
   - 05-001 Metal Sales: PBR jamb sticks, gutter end caps and straps (unpriced joins).
   - 13-002 Installer/AHJ: confirm the APsmart transmitter/receiver pairing for NEC 690.12.
 
+## Image II eave sealing
+
+See [roof_eave_rib_end_sealing.md](roof_eave_rib_end_sealing.md). The software records and bills
+the treatment; none of these has been done.
+
+- **Metal Sales 64032XX:** confirm chemistry, package, color and technical data, including
+  compatibility with PVDF/galvanized panel and the butyl membrane and tape.
+- **Rib fill depth:** the 1-1/2" is an allowance; the guide gives none.
+- **Secondary drainage:** the sealed hem and tape close the path formerly drawn. Demonstrate an
+  outlet or revise the custom eave with the manufacturers. Do not cut weep holes.
+- **Mock-up before installation:** two adjacent panels, one joined seam, real plug, hem bead,
+  tape, strip-in and gutter back, at 6:12; add a 4:12 garage sample if its attachment differs.
+  Show pan runoff to the gutter; introduce water at the secondary plane and record where it
+  goes; confirm the plug stays out of any outlet and bonds nothing that must move; photograph
+  finished rib ends and record product and batch. This is an installation check, not a certified
+  wind-driven rain, ice-dam or durability test.
+
 ## Delivered parts, dry-fits and site measurements
 
 - **Confirm the delivered parts:** on the PROPH80 T0 RH120-MSO, the scaled T&P outlet (~46",

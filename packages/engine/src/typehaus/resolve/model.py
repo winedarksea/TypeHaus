@@ -19,6 +19,7 @@ from typehaus.resolve.layout_lines import ResolvedLayoutLine
 from typehaus.resolve.model_door_products import CasedDoorSpec
 from typehaus.resolve.model_ducts import ResolvedDuctPart, ResolvedDuctSupport
 from typehaus.resolve.model_earthwork import ResolvedExcavation, ResolvedWallColumn
+from typehaus.resolve.model_eave_sealing import ResolvedEaveSealingRun
 from typehaus.resolve.model_trim import ResolvedBaseRun, ResolvedDoorCasing, ResolvedDrywallTrim
 from typehaus.resolve.model_window_returns import ResolvedWindowReturn
 from typehaus.resolve.model_window_seat import WindowSeat
@@ -1707,6 +1708,8 @@ class ResolvedModel:
     # Derived base and door casing off the house's ``TrimStandard`` (→ resolve/interior_trim.py).
     base_runs: list[ResolvedBaseRun] = field(default_factory=list)
     door_casings: list[ResolvedDoorCasing] = field(default_factory=list)
+    # Exposed panel rib ends at each eave and how they close (→ resolve/roof_eave_rib_ends.py).
+    eave_sealing_runs: list[ResolvedEaveSealingRun] = field(default_factory=list)
     # Drywall beads and shadow-gap LED reveals off the house's DrywallStandard (#103).
     drywall_trims: list[ResolvedDrywallTrim] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)

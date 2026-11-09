@@ -142,9 +142,12 @@ def test_the_permit_set_fits_what_a_plan_checker_will_read(catlin_sheet_index):
     schedule (rise, going, nosing, width, landings, headroom, guard heights), and A-606, a
     typical bay per guard type with its mount; R311.7 and R312 had no number on the set. The
     two push the cover's sheet index onto G-001.1.
+
+    97 -> 98 on 2026-11-08: SL-D-EAVE-RIB, the eave cut along a seam. Image II's guide
+    requires every exposed rib end filled, and a mid-pan cut cannot show one.
     """
     permit = catlin_sheet_index(sets="permit")
-    assert len(permit) <= 97, [s.number for s in permit]
+    assert len(permit) <= 98, [s.number for s in permit]
     numbers = {s.number for s in permit}
     # What DSI's new-construction checklist asks for.
     assert {"G-001", "C-101", "S-001", "S-100", "S-101.1", "A-101", "A-201",

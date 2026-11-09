@@ -3288,13 +3288,13 @@
       },
       "at": [
         454.2500000000001,
-        253.267471982404
+        251.08969420462623
       ],
       "to": [
         432.62743223770894,
         254.44524976018178
       ],
-      "text": "strip-in over both flanges, 9\"\nPROVISIONAL (width: GCP)",
+      "text": "strip-in over both flanges, 9\"\nPROVISIONAL (width: GCP); 6403899\ndouble-bead tape on the strip-in, under\nthe pan",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3313,7 +3313,7 @@
       },
       "at": [
         454.2500000000001,
-        248.6202497601818
+        244.26469420462624
       ],
       "to": [
         436.1746548315004,
@@ -3338,13 +3338,13 @@
       },
       "at": [
         454.2500000000001,
-        242.88413864907068
+        238.52858309351512
       ],
       "to": [
         437.0231170285578,
         252.33578795156802
       ],
-      "text": "WATER 2, secondary: membrane -> strip-in\n-> eave leg -> out at the pan hem return\n-> trough",
+      "text": "WATER 2, secondary: membrane and strip-\nin under the pan; hem sealed, exit NOT\nDEMONSTRATED (HOLD)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3363,13 +3363,13 @@
       },
       "at": [
         454.2500000000001,
-        234.9702497601818
+        230.61469420462623
       ],
       "to": [
         440.85265176818336,
         250.6477578746737
       ],
-      "text": "Image II pan hemmed around the 52124XX\nhook (1-1/2\" doubled lip), crimped.\nWATER 1: pan -> lip hem -> trough -> N\noutlet",
+      "text": "Image II pan hemmed around the 52124XX\nhook (1-1/2\" doubled lip), continuous\n64032XX bead in the hem, crimped. WATER\n1: pan -> lip hem -> trough -> N outlet",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3388,7 +3388,7 @@
       },
       "at": [
         454.2500000000001,
-        225.96747198240402
+        221.61191642684847
       ],
       "to": [
         439.3051500000001,
@@ -3413,7 +3413,7 @@
       },
       "at": [
         454.2500000000001,
-        219.14247198240403
+        214.78691642684848
       ],
       "to": [
         439.35915000000006,
@@ -3438,7 +3438,7 @@
       },
       "at": [
         454.2500000000001,
-        215.5841386490707
+        211.22858309351514
       ],
       "to": [
         434.25,
@@ -3463,7 +3463,7 @@
       },
       "at": [
         454.2500000000001,
-        212.02580531573736
+        207.6702497601818
       ],
       "to": [
         430.75000000000006,
@@ -3488,7 +3488,7 @@
       },
       "at": [
         454.2500000000001,
-        207.37858309351515
+        203.0230275379596
       ],
       "to": [
         437.25000000000006,
@@ -3563,7 +3563,7 @@
       },
       "at": [
         444.2500000000001,
-        202.53691642684845
+        198.1813608712929
       ],
       "to": [
         434.0000000000001,
@@ -3580,7 +3580,7 @@
       "node": "text",
       "anchor": [
         413.68897637795277,
-        199.2224409448819
+        193.88910761154855
       ],
       "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
       "height": 3.0,
@@ -4554,9 +4554,9 @@
     "• 2x6 eave block on edge on the plate, every bay. ccSPF over it.",
     "• Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.",
     "• Membrane to deck edge; gutter flange, then eave leg, on it. Bearing 2.04\".",
-    "• Strip-in membrane over both flanges, 4\" past the hem. Pan rides over it.",
+    "• Strip-in over both flanges, 4\" past the hem. 6403899 tape on it; pan over it.",
     "• PBR 5x4 gutter, level, back behind eave face, flange under eave leg.",
-    "• Eave face over the gutter back, hemmed into the trough; pan hemmed round the lip.",
+    "• Eave face over the gutter back, hemmed into the trough; pan hemmed round the lip, 64032XX bead in the hem.",
     "• 2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Hanger below the eave face; bracket pending."
   ],
   "frame": {

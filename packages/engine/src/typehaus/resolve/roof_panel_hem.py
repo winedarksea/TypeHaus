@@ -1,7 +1,7 @@
-"""Pan-end return hems; rib ends remain open under the house's hot-roof decision.
+"""Pan-end return hems: ribs notched, the pan hemmed onto an inserted offset cleat.
 
-Image II Pocket Installation Guide pp. 20–23: notch ribs and hem the pan onto an
-inserted offset cleat. The pan returns under the drip nose, independent of rib height.
+Image II Pocket Installation Guide pp. 20–23. The pan returns under the drip nose,
+independent of rib height. Sealing the rib ends is ``roof_eave_rib_ends``.
 """
 
 import math
@@ -36,6 +36,14 @@ def flat_shaded(mesh: GMesh) -> GMesh:
     return GMesh(tuple(positions), tuple(triangles), tuple(normals))
 
 
+def cleat_eave_seat(roof, edge: float, sign: float, base: float) -> tuple[float, float]:
+    """``(across, z)`` of a cleat eave's pan seat, from the roofing rectangle's edge."""
+    factor = roof_slope_factor(roof)
+    # The inset rectangle precedes the layer-base normal translation.
+    edge += sign * base * math.sqrt(factor * factor - 1) / factor
+    return edge, roof_plane_z(roof, edge) + base * factor
+
+
 def roof_pan_hems(roof, rect, base, profile, material, skip=frozenset(), anchor=None):
     """Thin return under each pan, cut short of the seam legs at each module edge.
 
@@ -55,9 +63,7 @@ def roof_pan_hems(roof, rect, base, profile, material, skip=frozenset(), anchor=
             continue
         if _EDGE_NAMES[(along_x, sign)] in skip:
             continue
-        # The inset rectangle precedes the layer-base normal translation.
-        edge += sign * base * slope / factor
-        support = roof_plane_z(roof, edge) + base * factor
+        edge, support = cleat_eave_seat(roof, edge, sign, base)
         drop = CLEAT_SHEET_M + 2 * sheet
         # Left-normal coordinates are +cross for a y ridge, -cross for an x ridge.
         out_sign = sign * (-1 if along_x else 1)

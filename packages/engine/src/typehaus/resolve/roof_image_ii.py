@@ -67,9 +67,14 @@ def _eave_trim(model: ResolvedModel, roof: ResolvedRoof) -> EaveTrim | None:
     return element.eave_trim if isinstance(element, Roof) else None
 
 
-def image_ii_covering(model: ResolvedModel, roof: ResolvedRoof) -> bool:
+def roof_edge_kit(model: ResolvedModel, roof: ResolvedRoof) -> str | None:
+    """The roofing material's declared edge-trim kit, if any."""
     _, _, material = _roofing(model, roof)
-    return material is not None and material.roof_edge_trim_kit == IMAGE_II_KIT
+    return material.roof_edge_trim_kit if material is not None else None
+
+
+def image_ii_covering(model: ResolvedModel, roof: ResolvedRoof) -> bool:
+    return roof_edge_kit(model, roof) == IMAGE_II_KIT
 
 
 def wrapped_image_ii_edges(model: ResolvedModel, roof: ResolvedRoof) -> frozenset[str]:

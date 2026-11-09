@@ -321,6 +321,5 @@ Firstly design a house (with permit checks, building science review, floorplan e
 Secondly gather bids, organize the timeline (inspection gates, etc), then track completed progress.
 Thirdly use the house design as a reference (ie for agents understanding live data on home assistant in context), potentially with feedback loop of updating the design or later running a remodel
 
-- [ ] Implement Image II eave rib-end sealing: use manufacturer-specified tube sealant, with no eave vent closure; verify sealed-hem/secondary drainage, product compatibility, actual rib-end quantities, drawings and garage ventilation. Detailed plan: [image-ii-eave-rib-end-treatment.md](image-ii-eave-rib-end-treatment.md) (2026-11-08; April 2026 guide pp. 26–33).
 
 - [ ] Complete W-BW-SCREEN metal cassette engineering, support/trim details, complete loads and fabrication estimate; rerun structural and 81° door checks including all hardware. See houses/catlin/notes/entry_screen_metal_cassettes.md.

@@ -29,7 +29,7 @@ def wrapped_eave_runs(model, roof):
                  if run.is_eave and run.edge_name in edges and run.key not in abutted), stack
 
 
-def _seam_path(profile) -> list[tuple[float, float]]:
+def seam_path(profile) -> list[tuple[float, float]]:
     """One standing seam across its centre: the right leg of a pan, then the left of the next."""
     points = profile.section_points_m
     right = [(x - profile.pitch_m, w) for x, w in points[-3:]]
@@ -54,7 +54,7 @@ def image_ii_pan_ends(model, roof, rect, profile, material, anchor=None):
     anchor = (low + high) / 2 if anchor is None else anchor
     margin = profile.crown_width_m or profile.sheet_thickness_m
     pan = thickened_ring([stack.uz(s, w) for s, w in stack.pan_path_sw()])
-    seam = _seam_path(profile)
+    seam = seam_path(profile)
     seam_ring = [*seam, *reversed(_inset_section(seam, profile.sheet_thickness_m))]
     along = (1.0, 0.0) if along_x else (0.0, 1.0)
     members = []

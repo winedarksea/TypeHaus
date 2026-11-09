@@ -24,7 +24,7 @@ source:
 - [K2] 2x6 fascia nailer on the tails, 1" formed metal fascia over it.
 - [K3] Vented soffit, fascia back to the wall. Vent baffle in EVERY eave bay (R806.3): the shallow heel leaves the blow no room to stop short on its own.
 - [K4] Formed drip edge: 2" flange on the deck, bend over the deck edge, face over the metal fascia.
-- [K5] Membrane laps OVER the drip flange. Seam panels hem over the drip nose.
+- [K5] Membrane laps OVER the drip flange. Notched seam panels hem over the drip nose, 64032XX bead in the hem.
 - [K6] 5" K-gutter, back sheet BEHIND the drip face, rim 1/2" below the deck edge.
 - [K7] Drip kick 3/4" out and down, into the trough.
 - [K8] Gutter falls 1/16" per foot north to the east and west leaders.
@@ -33,6 +33,7 @@ source:
 - Drip edge and fascia from the same dark PVDF coil as the house trim.
 - Build order: fascia, soffit, drip edge, membrane, standing seam, gutter.
 - Lap order: roofing over drip over membrane-lapped deck; drip face over gutter back.
+- Offset cleat on 6403899 tape. Fill every exposed rib end with 64032XX. Soffit intake and ridge vent stay open.
 
 # Notes
 

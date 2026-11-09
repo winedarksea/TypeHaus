@@ -238,3 +238,21 @@ def test_fascia_edges_keep_the_derived_drip_on_the_garage(catlin_model_ro) -> No
     assert wrapped_image_ii_edges(catlin_model_ro, roof) == frozenset({"south"})
     drips = {m.child_key for m in roof.members if m.category == "drip_edge"}
     assert "eave-lo-drip-edge-face" in drips and "rake-hi-0-drip-edge-face" in drips
+
+
+def test_every_catlin_eave_rib_closes_once_and_open_data_stays_off_the_permit_gate(
+        catlin_model_ro) -> None:
+    from typehaus.checks.code.mn_residential.profile import PROFILES
+    from typehaus.checks.integrity.eave_rib_sealing import (
+        SPEC_STATUS,
+        eave_rib_sealing,
+        eave_rib_sealing_spec,
+    )
+    from typehaus.findings import Result
+
+    ctx = SimpleNamespace(model=catlin_model_ro)
+    assert [f.result for f in eave_rib_sealing(ctx)] == [Result.PASS]
+    assert sum(len(r.rib_ends) for r in catlin_model_ro.eave_sealing_runs) == 100
+    assert {f.result for f in eave_rib_sealing_spec(ctx)} == {Result.UNKNOWN}
+    assert not any(SPEC_STATUS in profile.permit_check_ids() for profile in PROFILES.values())
+
