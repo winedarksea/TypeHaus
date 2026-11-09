@@ -350,8 +350,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
   `packages/engine/tests/test_catlin_eave_water.py` — read it before moving any of these
   numbers. Hanger, splices, outlet fitting and snow protection are open (`plans/TODO.md`).
   Every exposed eave rib end is filled with 64032XX, the hem beaded and the leg taped per the
-  2026 guide (`notes/roof_eave_rib_end_sealing.md`, `resolve/roof_eave_rib_ends.py`); the sealed
-  hem leaves **no demonstrated secondary outlet**, a construction hold. Do not cut weeps.
+  2026 guide (`notes/roof_eave_rib_end_sealing.md`, `resolve/roof_eave_rib_ends.py`); the eave
+  is sealed with **no secondary outlet, by decision**; the membrane holds that water, mock-up
+  pending. Do not cut weeps.
   The chain is ordered in `_CHAIN_MATERIAL`, the house's one exterior dark. See
   `notes/roof_wall_eave_detail.md`.
 - `typehaus/library/placeables/*.py` (inside the engine, not this directory) — the shared FixtureType/

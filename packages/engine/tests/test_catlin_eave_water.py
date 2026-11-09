@@ -322,13 +322,13 @@ def test_only_a_seam_cut_can_name_a_rib_plug(catlin_model_ro) -> None:
         assert pan.rib_end() is None and rib_plug_label(pan) == [] and pan.pan_end
 
 
-def test_the_secondary_path_is_not_drawn_as_a_demonstrated_exit(catlin_model_ro) -> None:
+def test_the_secondary_path_is_drawn_as_a_sealed_eave_with_no_exit(catlin_model_ro) -> None:
     from typehaus.emit.draw.detail_components.eave_water import eave_piece_labels
 
     for _seam, pan in _seam_and_pan_cuts(catlin_model_ro):
         for compact in (False, True):
             text = " ".join(label for _anchor, label in eave_piece_labels(pan, compact=compact))
-            assert "NOT DEMONSTRATED" in text and "64032XX bead in the hem" in text
+            assert "no outlet" in text and "64032XX bead in the hem" in text
             assert "6403899" in text and "out at the pan hem" not in text
 
 

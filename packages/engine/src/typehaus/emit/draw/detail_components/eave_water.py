@@ -87,8 +87,8 @@ def _water_paths(pieces: EaveCut) -> list:
         (_nearest_out(pieces, pieces.pan_end, _PAN_FIELD_IN),
          "WATER 1: pan -> lip hem -> trough -> N outlet"),
         (_nearest_out(pieces, pieces.eave, _LEG_FIELD_IN),
-         "WATER 2, secondary: membrane and strip-in under the pan; hem sealed, exit "
-         "NOT DEMONSTRATED (HOLD)"),
+         "WATER 2, secondary: held on membrane and strip-in; eave sealed per guide, "
+         "no outlet"),
         (pieces.wall_head(),
          "WATER 3, wall head: gutter flange + eave leg; face over gutter back"),
     ]

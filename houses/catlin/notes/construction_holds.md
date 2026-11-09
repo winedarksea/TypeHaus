@@ -81,14 +81,15 @@ the treatment; none of these has been done.
 - **Metal Sales 64032XX:** confirm chemistry, package, color and technical data, including
   compatibility with PVDF/galvanized panel and the butyl membrane and tape.
 - **Rib fill depth:** the 1-1/2" is an allowance; the guide gives none.
-- **Secondary drainage:** the sealed hem and tape close the path formerly drawn. Demonstrate an
-  outlet or revise the custom eave with the manufacturers. Do not cut weep holes.
 - **Mock-up before installation:** two adjacent panels, one joined seam, real plug, hem bead,
   tape, strip-in and gutter back, at 6:12; add a 4:12 garage sample if its attachment differs.
-  Show pan runoff to the gutter; introduce water at the secondary plane and record where it
-  goes; confirm the plug stays out of any outlet and bonds nothing that must move; photograph
-  finished rib ends and record product and batch. This is an installation check, not a certified
-  wind-driven rain, ice-dam or durability test.
+  The eave is sealed with no secondary outlet by decision; this confirms it. Show pan runoff to
+  the gutter. Put dyed water on the strip-in under the pan, upslope of the tape and beside a
+  plugged seam, hold a day or two, then take it apart. **Pass:** deck edge, wall head and behind
+  the eave face dry; no dye under the membrane or strip-in laps; tape and hem bead intact and
+  bonded; the plug bonds nothing that must move. **Fail:** revise the strip-in detail; do not
+  cut weeps or reopen ribs. Photograph finished rib ends and record product and batch. This is
+  an installation check, not a certified wind-driven rain, ice-dam or durability test.
 
 ## Delivered parts, dry-fits and site measurements
 

@@ -102,21 +102,28 @@ These surface as `advisory.eave_rib_sealing_spec` UNKNOWNs, outside the permit g
 carries no plug solid: the records and the seam detail carry it, so an allowance never looks
 like a measured shape.
 
-## Secondary drainage: open
+## Secondary water: a sealed eave, by decision (owner, 2026-11-08)
 
-The former drawing claim was that water on the strip-in leaves "at the pan hem's return". The
-guide's bead fills that hem and its tape lies across the leg, so **that exit is closed by the
-specified detail, and no other exit has been demonstrated.** The drawings now say so. Do not
-restore the claim, omit the tape or bead, cut weep holes or extend a plug across a pan to
-create one. Reopening the ribs would not create a suitable drainage system either.
+**This eave has no secondary outlet, and is not meant to.** The former drawing claim was that
+water on the strip-in leaves "at the pan hem's return"; the guide's bead fills that hem and its
+tape lies across the leg. A text search of the 2026 guide, the 2024 design guide and the 2021
+product manual found no outlet or weep required at a sealed Image II eave. The one weep mention
+(2024 guide, PDF p. 26) is at a Vertical Seam hip's Z-closure, a different panel and condition.
+
+Water that gets under the pan is held on the adhered membrane and strip-in, the waterproof
+layers. Do not cut weep holes, gap the tape or bead, or extend a plug across a pan to make an
+exit; a gap would depart from the published detail and need Metal Sales' agreement.
+
+Not proven by this decision: the long-term effect of a little water held against the hidden
+steel behind the tape (judged minor, not tested), and tape on the strip-in where the guide shows
+bare metal (compatibility is part of the product hold). The mock-up in
+[construction_holds.md](construction_holds.md) is the physical confirmation; if it fails, revise
+the strip-in detail.
 
 Question prepared for Metal Sales (not sent; no response has been requested or received):
 
-> On a 6:12 Image II roof over a fully adhered butyl membrane, with Extended Eave 52124XX over
-> a box gutter flange and a membrane strip-in covering the extended leg to the lip: is a
-> continuous tube-sealant bead in the open hem plus double-bead tape on the strip-in acceptable,
-> and is any secondary outlet required at the hem? Which chemistry is 64032XX, in what package,
-> is it compatible with butyl membrane, and what rib fill depth do you intend?
+> Which chemistry is 64032XX, in what package, what rib fill depth do you intend, and is it
+> compatible with butyl membrane and with double-bead tape set on a butyl membrane strip-in?
 
 ## Quantity effect
 
@@ -131,5 +138,5 @@ Question prepared for Metal Sales (not sent; no response has been requested or r
 ## Open
 
 Construction holds are tracked in [construction_holds.md](construction_holds.md): product data,
-plug depth, secondary drainage and a representative mock-up. Membrane full-coverage approval,
+plug depth and a representative mock-up of the sealed eave. Membrane full-coverage approval,
 gutter supports, snow control and gutter splices remain their own work items.

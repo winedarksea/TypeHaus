@@ -1,6 +1,6 @@
 # Roof deck and underlayment decision — 2026-10-28
 
-Eave rib ends, hem sealant and the open secondary-drainage hold: [roof_eave_rib_end_sealing.md](roof_eave_rib_end_sealing.md).
+Eave rib ends, hem sealant and the sealed-eave decision: [roof_eave_rib_end_sealing.md](roof_eave_rib_end_sealing.md).
 
 Plywood throughout: house `ROOF` uses ordinary CDX **APA Rated Sheathing 40/20,
 19/32 inch**; `GARAGE_ROOF` and `CANOPY_ROOF` use **Structural I 40/20, 19/32 inch**.
