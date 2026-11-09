@@ -218,9 +218,9 @@ ATTIC_WET_BACKING = [
 # Suspension rails and ledger feet for the selected floating boxes (2026-10-24).
 BASEMENT_WET_BACKING = [
     WallBacking(uid="D9Q5V8QJ9N", tag="BK-B-CW2-VANITY-RAIL", wall_ref="W-B-CW2", face="left",
-                start=inch(0.75), length=inch(41.25), elevation=inch(30), height=inch(7.25),
+                start=inch(0.75), length=inch(42.5), elevation=inch(30), height=inch(7.25),
                 profile="2x8", material_ref="spf", purpose="ÄNGSJÖN suspension rail"),
     WallBacking(uid="V6VG5D1HF1", tag="BK-B-CW2-VANITY-FOOT", wall_ref="W-B-CW2", face="left",
-                start=inch(0.75), length=inch(41.25), elevation=inch(7), height=inch(5.5),
+                start=inch(0.75), length=inch(42.5), elevation=inch(7), height=inch(5.5),
                 profile="2x6", material_ref="spf", purpose="ÄNGSJÖN lower wall fixing"),
 ]

@@ -32,7 +32,7 @@ under the plates is 2 x 36' x 1/2" / 12 = 3.0 sf, 0.06 cfm.)
 
 | storey | opening | x | y | size | sf |
 |---|---|---|---|---|---|
-| main | `FO-M-STAIR` (basement stair) | 10'-3 1/4" .. 17'-6" | 26'-0 3/8" .. 35'-4 7/8" | 86 3/4" x 112 1/2" | **67.773** |
+| main | `FO-M-STAIR` (basement stair) | 10'-3 1/4" .. 17'-8 3/4" | 26'-0 3/8" .. 35'-4 7/8" | 89 1/2" x 112 1/2" | **69.922** |
 | second | `FO-S-STAIR` (main stair) | 10'-3 1/8" .. 17'-8 3/4" | 26'-0 3/8" .. 35'-5 1/2" | 89 5/8" x 113 1/8" | **70.409** |
 | attic | `FO-A-STAIR` (second-to-attic flight) | 21'-4 3/8" .. 35'-5 3/8" | 5'-9 5/8" .. 8'-9 3/4" | 169" x 36 1/8" | **42.397** |
 | attic | `FO-A-HALL` (well + hall open to the roof) | 10'-0" .. 18'-0" | 22'-6 3/8" .. 35'-5 3/8" | 96" x 155" | **103.333** |
@@ -44,18 +44,18 @@ The basement has no well: it is the lowest floor under every stair.
 | storey | gross | deducted | CFA (sf) |
 |---|---|---|---|
 | basement | 1,296.000 | 0 | 1,296.000 |
-| main | 1,296.000 | 67.773 | 1,228.227 |
+| main | 1,296.000 | 69.922 | 1,226.078 |
 | second | 1,296.000 | 70.409 | 1,225.591 |
 | attic | 1,296.000 | 145.730 | 1,150.270 |
-| **total** | | | **4,900.088** |
+| **total** | | | **4,897.939** |
 
-The engine reports 1,296 / 1,228 / 1,226 / 1,150, total 4,900.
+The engine reports 1,296 / 1,226 / 1,226 / 1,150, total 4,898.
 
 ## 5. The R403.5 rate
 
 Six bedrooms (`RM-M-BED`, `RM-S-BED1`, `-BED2`, `-BED3`, `RM-S-SUITE`, `RM-A-STUDIO`):
 
-    TVR = 0.02 x 4,900.088 + 15 x (6 + 1) = 98.002 + 105 = 203.0 cfm
+    TVR = 0.02 x 4,897.939 + 15 x (6 + 1) = 97.959 + 105 = 203.0 cfm
     CVR = max(203.0 / 2, 40)                                 = 101.5 cfm
 
 Against the ERV's **delivered 203.9 cfm** (`notes/erv_static_budget.md` §10.6, extract side
@@ -67,7 +67,7 @@ graded.
 | reading | area (sf) | TVR (cfm) | vs 203.9 delivered |
 |---|---|---|---|
 | finish-face room sum (graded before 2026-10-31) | 4,479 | 194.6 | +9.4 |
-| **structural face, wells once (this note)** | **4,900** | **203.0** | **+0.9** |
+| **structural face, wells once (this note)** | **4,898** | **203.0** | **+0.9** |
 | same, chases deducted too (main 20.32, second 5.24, attic 6.71) | 4,868 | 202.4 | +1.6 |
 | wall centrelines (the 2026-09-09 "205") | ~5,000 | ~205 | -1.1 |
 | exterior dimensions, cladding to cladding | 5,455 | 214.1 | -10.2 |

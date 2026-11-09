@@ -62,7 +62,8 @@ galvanic series, so the pair is benign indoors. Anchors are A4/316.
 
 ## 3. Mounting and backing
 
-- **E rail (W-B-CN, concrete):** two A4 6 mm screw anchors per plate, three per flange.
+- **E rail (W-B-CN, framed since 2026-11-09):** returns and mid bracket fall between studs, on
+  `BK-B-CN-HANDRAIL-LOW`/`-MID`/`-HIGH` (2x8 blocks); structural wood screws into the blocks.
 - **W rail mid bracket** (y = 28'-8") is centred on W-M-STRW stud-005; a path vertex
   holds it there, since a bracket otherwise sits at the run's midpoint.
 - **W rail top return** (y = 26'-7 1/4"): square onto W-M-STRW's stair face. Behind the

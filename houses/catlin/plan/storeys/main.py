@@ -1872,8 +1872,8 @@ FLOOR_HEAT = [
 # R311.7.6's 36" landing plus six 11 15/16" treads, well inside R311.7.5.2's 10" minimum.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CMF601AAAA", tag="FO-M-STAIR",
-                 outline=(pt(ft(10, 3.25), ft(26, 0.375)), pt(ft(17, 6), ft(26, 0.375)),
-                          pt(ft(17, 6), ft(35, 4.875)), pt(ft(10, 3.25), ft(35, 4.875))),
+                 outline=(pt(ft(10, 3.25), ft(26, 0.375)), pt(inch(212.75), ft(26, 0.375)),
+                          pt(inch(212.75), ft(35, 4.875)), pt(ft(10, 3.25), ft(35, 4.875))),
                  # The basement walls *under* the two long edges, not the main-storey walls
                  # that stand on them. W-M-STRW/W-M-STRW2 were named here while this hole
                  # was cut in a concrete pour and nothing framed it, so the wrong tags were
@@ -2017,15 +2017,12 @@ SLABS = [
          top_elevation=inch(22.75), openings=("FO-M-TUBDK",)),
 ]
 
-# 7'-2 3/4" well = two 3'-5 1/8" flights + 4 1/2" partition, face to face, each flight clearing
+# 7'-5 1/2" well = two 3'-6 1/2" flights + 4 1/2" partition, face to face, each flight clearing
 # IRC R311.7.1's 36" minimum above the handrail; landing is R311.7.6's 36" minimum. The
-# partition (and W-B-WELL) centres at 13'-10 5/8", midway between the faces (2026-10-30).
-# It read 7'-0" = two 3'-3 3/4" flights until 2026-08-24, when W-B-STR/W-B-STR3 stopped
-# being 12" pours and the well's west face came down to x=10'-3 1/4" (basement.py). The
-# start sits on that face and the lanes now fill the well to W-B-CN's concrete. The shaft
-# now reads exactly as FO-S-STAIR does one storey up — same west face and anchor corner,
-# narrower only because W-M-C5 is 2x6 where W-B-CN
-# is 12" concrete.
+# partition (and W-B-WELL) centres at 14'-0", midway between the faces. West face: W-B-STR,
+# x=10'-3 1/4". East face: W-B-CN's 1/2" gypsum, x=17'-8 3/4" since 2026-11-09, the plane
+# W-M-C5 and FO-S-STAIR hold one storey up, so both flights share one shaft. It was furred
+# 3 1/4" back to the retired pour's x=17'-6" until then.
 # `turn_direction="left"`: the basement flight springs in the east lane and
 # arrives in the west (D-M-STAIR's lane until 2026-08-24; the lane is open now); ST-M2S is
 # mirrored so the east lane carries the flight up to second. The head carries no guard across
@@ -2075,7 +2072,7 @@ SLABS = [
 # required 36", which `code.R311_7_2_stair_headroom` grades as advisory only.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
-          from_storey="basement", to_storey="main", width=ft(3, 5.125),
+          from_storey="basement", to_storey="main", width=ft(3, 6.5),
           base_elevation=inch(-109.4375), top_elevation=inch(1.0255906),
           tread_thickness=inch(1),
           finish_material="catlin-stair-carpet",
@@ -2102,8 +2099,8 @@ STAIRS = [
 STAIR_HANDRAILS = [
     Railing(
         uid="CMRL01AAAA", tag="RL-M-HANDRAIL-E", type_ref="RAILING-INT-TI-HANDRAIL-42", path=(
-            pt(ft(17, 3.25), ft(26, 0.375)),
-            pt(ft(17, 3.25), ft(31, 0.375)),
+            pt(ft(17, 6), ft(26, 0.375)),
+            pt(ft(17, 6), ft(31, 0.375)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
         base_elevation=ft(-9, -4), post_spacing=inch(48), post_size="2x2", rail_count=1,
@@ -2402,7 +2399,7 @@ CONNECTORS = [
 #
 # ST-M2S's landing is a pair of half-width platforms half a step apart, each ledgered to
 # the shaft wall on its outer edge (W-M-STRW at x=10', W-M-C5 at x=18') and closed by a rim
-# on the well line (13'-11 15/16"; ST-B2M's is 13'-10 5/8"). Those inner rims meet no wall, so the stair resolver
+# on the well line (13'-11 15/16"; ST-B2M's is 14'-0"). Those inner rims meet no wall, so the stair resolver
 # stands a 4x4 under each of their four ends — and the deck it stands them on, at the head
 # of the basement stairwell, is FO-M-STAIR's hole. They were in mid-air.
 #
@@ -2444,52 +2441,12 @@ POSTS = [
     # riser board and carpet (1 1/4") the landing edge stands past (2026-09-28,
     # notes/stair_nosing_basis.md). That corner is a rim end no host wall reaches,
     # `bearing.py` stands a 4x4 on it, and it is over FO-M-STAIR's hole — so, like the two
-    # above and unlike P-M-STRLAND-SE, it is a full-height column to the basement slab rather
+    # above, it is a full-height column to the basement slab rather
     # than a squash block in a joist bay.
-    Post(uid="H8TV2XS6B2", tag="P-M-STRWELL-SS", position=pt(inch(166.625), ft(31, 1.625)), size="4x4",
+    Post(uid="H8TV2XS6B2", tag="P-M-STRWELL-SS", position=pt(inch(168), ft(31, 1.625)), size="4x4",
          height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
-    # ST-M2S's lower landing gained a THIRD corner post on 2026-08-24, and it is a direct
-    # consequence of splitting W-M-C5 for RM-M-PANTRY.
-    #
-    # ``resolve/stairs/bearing.py`` ledgers a landing rim to ONE host wall — the segment it
-    # shares the longest run with — and marks only the rim ends that host actually reaches
-    # as supported. landing-rim-lower-1 runs y 31'-11 1/8"..34'-10 3/8" against the centre
-    # line; before the split one W-M-C5 covered all 36" of it. Now W-M-C5B covers the north
-    # 25 3/8" and W-M-C5 the south 10 5/8", the longer one wins the ledger, and the SOUTH
-    # end falls out of the interval — so the resolver stands landing-post-002 there.
-    # ** There is no pantry depth that avoids this ** (the rim occupies y 31'-11 1/8"..
-    # 34'-10 3/8" and a split anywhere inside that range cuts it), and moving the split
-    # south of the rim would push FURN-M-KIT-PANTRYC 19 3/4" past the end of the wall it
-    # backs onto — a worse trade than a 4x4.
-    #
-    # ** IT IS BLOCKING, NOT A COLUMN, WHICH IS WHY IT IS 13 7/16" AND NOT 9'-4". ** The two
-    # P-M-STRWELL posts above stand the basement's full height because FO-M-STAIR's hole is
-    # under them. This corner is not over the hole: FO-M-STAIR stops at x=17'-6" and the
-    # post lands at 17'-8 5/8", on FS-M-WEST's joists — which
-    # ``structural.landing_post_bearing`` deliberately refuses as a load path, since a 4x4
-    # set down mid-bay is a point load on a member sized for a uniform one. So this fills
-    # the joist bay from the deck datum down to W-B-CN's top at -1'-1 7/16" and delivers the
-    # corner reaction into the wall below — the "block the joist bay under it" the check's
-    # own hint asks for. W-B-CN is framed since 2026-11-01 and this corner is over its furred
-    # stair face, so a doubled 2x3 furring stud stands under the block to the slab
-    # (plan/assemblies/interior.py, STAIRWELL_INT_2X6_BRG_FURRED).
-    #
-    # x=17'-7 1/2" puts its EAST face on W-M-C5's stud face (17'-9 1/4") — it laps only the
-    # 5/8" gypsum, which is scribed to it, and touches no stud — while still containing the
-    # rim end at 17'-8 5/8" (y 31'-11 1/8"). Move ST-M2S and this moves with it, as the note above
-    # says of the other two.
-    #
-    # ``supported_by="W-B-CN"``: the gap it fills is the datum down to W-B-CN's top at
-    # -1'-1 7/16", so the block is 13 7/16".
-    #
-    # Naming the bearing does NOT buy this one a post base. At 13 7/16" it is under the
-    # 2'-0" DCA6-2015 p.10 uses as the height at which a stick starts behaving like a
-    # column, so `UpliftTieRules.blocking_max_height_ft` reads it as the squash block the
-    # paragraph above calls it. A block bears; it needs no base to bear through, and
-    # `structural.uplift_load_path` says exactly that rather than reporting it un-gradeable.
-    Post(uid="0Q6WK11T26", tag="P-M-STRLAND-SE", position=pt(ft(17, 7.5), ft(31, 11.124)),
-         size="4x4", height=inch(13.4375), assembly="POST_WHITE_PAINT",
-         supported_by="W-B-CN"),
+    # P-M-STRLAND-SE retired 2026-11-09: landing-rim-lower-1's ledger now runs through the
+    # W-M-C5 / W-M-C5B split (`resolve/stairs/bearing.py`), so that rim end needs no post.
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT,

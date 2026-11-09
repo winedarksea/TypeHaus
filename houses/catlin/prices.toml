@@ -577,7 +577,7 @@
 # 2026-10-29: owner kept LSL; re-priced to ~2x SPF (GBA: TimberStrand LSL ~$8 vs 2x4x8 SPF $3-4, i.e. 2-2.7x) = 1.70-2.30. Was 2.8-4.2 (unsourced 3-4x).
 "2x6:lsl" = { material = { low = 1.7, high = 2.3 }, labour = { low = 0.9, high = 1.6 } }  # 1742 LF
 # The x=18' basement line's top plates (INT_2X6_BRG_HALF_DFL, SAUNA_LINER_INT_2X6_BRG,
-# STAIRWELL_INT_2X6_BRG_FURRED): DF-L No. 2 for Fc-perp 625 psi where SPF read d/c 1.03
+# and W-B-CN): DF-L No. 2 for Fc-perp 625 psi where SPF read d/c 1.03
 # (notes/main_floor_truss_basis.md §5). Upper Midwest yards stock DF-L 2x6 at ~1.2-1.5x SPF;
 # labour is the "2x6" row's. 2026-11-02, estimate.
 "2x6:df-l-no2" = { material = { low = 1.0, high = 1.7 }, labour = { low = 0.9, high = 1.6 } }  # 80 LF ordered
@@ -640,7 +640,7 @@
 # ST-B2M's carpet substrate (2026-11-01): plain 1" tread blanks and 1" landing decks, set by
 # the stair builder; the glued carpet over them is in [allowances]. ESTIMATES, unconfirmed.
 "deck 11x1" = { material = { low = 4.5, high = 7.5 }, labour = { low = 3, high = 6 } }  # 48 LF ordered — ST-B2M treads
-"deck 43.375x1" = { material = { low = 10, high = 16 }, labour = { low = 5, high = 10 } }  # ST-B2M half-landings
+"deck 44.75x1" = { material = { low = 10, high = 16 }, labour = { low = 5, high = 10 } }  # ST-B2M half-landings
 "deck 42x1.5" = { material = { low = 8, high = 16 }, labour = { low = 9.5, high = 25 } }  # 16 LF — ST-B2M landing, carpeted
 "hanger" = { material = { low = 1.5, high = 4 }, labour = { low = 1.3, high = 2.6 } }  # 32 LF — stair hanger board, 2x stock
 
@@ -901,8 +901,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # The 4x4 rung of the same ladder, ZMAX rather than stainless: the posts it serves are
 # the interior stairwell ones, which are dry. 2026-08-28: 0 ea -> 2. P-M-STRWELL-S/N
 # gained the `supported_by="SL-B-FLOOR"` their own comment had always described in
-# prose, so the derived rule can see the joint. The third 4x4, P-M-STRLAND-SE, is a
-# 13 7/16" squash block and takes no base (UpliftTieRules.blocking_max_height_ft).
+# prose, so the derived rule can see the joint.
 "ABU44" = { low = 22, high = 40 }  # 2 ea — DERIVED under P-M-STRWELL-S/SS. The 2 authored under the garage landing posts PT-BW-IC/-IE went with the landing, 2026-10-13
 # The shim pack under every wood beam soffit that lands on a pour. Modelled as a part since
 # 2026-09-03; it was prose inside two assembly `source` strings before that, bought on the
@@ -2198,7 +2197,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # screws $3-9/LF (hardware can exceed the post lumber on an elevated deck), setting $8-18/LF,
 # and primer + 2 coats at $2.00-4.50/SF over 1.833 SF of face per LF. Painting a 6x6 is ~85%
 # labour — four narrow faces with cut-in at cap and base.
-"column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.06 cy — the three interior stairwell posts (P-M-STRWELL-S/SS, P-M-STRLAND-SE) ONLY. Was 0.40 cy / 51.4 LF while all six pillars were wood, then 0.19 cy when four went to cast concrete, then 0.06 when the two centre pillars left for POST_WHITE_PAINT_DF below (all 2026-09-03)
+"column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.06 cy — the two interior stairwell posts (P-M-STRWELL-S/SS) ONLY. Was 0.40 cy / 51.4 LF while all six pillars were wood, then 0.19 cy when four went to cast concrete, then 0.06 when the two centre pillars left for POST_WHITE_PAINT_DF below (all 2026-09-03)
 # The two CENTRE balcony pillars, split out of the row above when they were specified DF-L.
 # Same rate structure, same paint, same labour — it is the identical stick to hang and coat.
 # Material carries a 25% species premium over the SPF above: a DF-L 6x6 runs roughly a fifth

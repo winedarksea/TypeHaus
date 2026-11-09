@@ -4,7 +4,7 @@
 lines doubled under the peninsula, two strongbacks.** Replaces `SL-M-DECK` (BuildDeck; basis in `DESIGN-LOG.md`, "Main
 deck goes wood"). Model: `params/main_deck.py` (`NE_FLOOR`), `params/second_deck.py`
 (`TRIFORCE_OJ418S_FLOOR_SPAN`), `plan/storeys/basement.py` (`W-B-CS2`/`-CN2`/`-CN`),
-`plan/assemblies/interior.py` (`STAIRWELL_INT_2X6_BRG_FURRED`). Independent of the engine: every
+`plan/assemblies/interior.py` (`INT_2X6_BRG_HALF_DFL`). Independent of the engine: every
 number below is worked by hand from the model's geometry. The owner's goal is a floor with no
 bounce, not 60 psf: the 12" o.c. / 60 psf order had no published row.
 
@@ -284,12 +284,12 @@ half of each 18' rafter.
 
 ## 6. Stair face
 
-`W-B-CN`'s stair face is furred back to the pour's old x=17'-6": 2x3 on edge at 16" o.c. plus
-3/4" painted plywood = 3 1/4" off the stud face (209.98" measured). That keeps several things
-where they were:
-- `FO-M-STAIR`'s east edge stays carried;
-- `ST-B2M`'s east lane stays closed;
-- `RL-M-HANDRAIL-E` stays at a 3.58" projection (R311.7.1, 4 1/2" allowed).
-
-`P-M-STRLAND-SE`'s squash block lands over this furring, so a doubled 2x3 stands under it to
-the slab.
+Since 2026-11-09 `W-B-CN`'s stair face is 1/2" abrasion-resistant gypsum directly on the studs,
+x=212 3/4" (studs 213 1/4"), the plane `W-M-C5` and `FO-S-STAIR` hold one storey up. It replaced
+3 1/4" of 2x3 furring and plywood that held the retired pour's x=17'-6".
+- `FO-M-STAIR`'s east edge and `ST-B2M`'s east lane are struck off that face: two 42 1/2" lanes
+  and a 4 1/2" partition centred at x=14'-0".
+- `RL-M-HANDRAIL-E` moved with it, centreline x=17'-6" at the same 3.58" projection; `BK-B-CN-HANDRAIL-*`
+  back its two returns and its mid bracket, none of which falls on a stud.
+- `P-M-STRLAND-SE`, the squash block that landed on that furring, is retired: the ST-M2S landing
+  rim's ledger now runs through the `W-M-C5`/`-C5B` split.

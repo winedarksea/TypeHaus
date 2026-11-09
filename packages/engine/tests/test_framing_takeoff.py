@@ -606,5 +606,5 @@ def test_stair_finish_flags_the_stairs_a_nosing_allowance_cannot_reach(catlin_mo
                  if row["conditioned"] and row["has_nosing"])
     # 136.4 until ST-M2S's lanes widened 1/16" (2026-10-23); 136.5 until its skirts took
     # 1 1/2" off each of its 14 treads (2026-10-30); 134.8 until they were scribed to the
-    # wall faces (41" and 41 1/8", same day).
-    assert billed == pytest.approx(134.9)  # winders' cross-stair edges, round a 12 1/4" notch
+    # wall faces (41" and 41 1/8", same day); 134.9 until ST-B2M's lanes widened (2026-11-09).
+    assert billed == pytest.approx(136.3)  # winders' cross-stair edges, round a 12 1/4" notch

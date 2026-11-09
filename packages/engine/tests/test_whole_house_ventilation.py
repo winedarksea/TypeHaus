@@ -37,9 +37,9 @@ def test_catlin_grades_the_delivered_flow_against_the_cfa_rate(catlin_model_ro) 
     bedrooms ask 203.0 cfm; the ERV delivers 204.5 off its curve, not its 210 rating."""
     summary = whole_house_summary(catlin_model_ro, catlin_model_ro.plan)
     assert summary is not None
-    assert summary.conditioned_area_ft2 == pytest.approx(4900.1, abs=1.0)
+    assert summary.conditioned_area_ft2 == pytest.approx(4897.9, abs=1.0)
     assert dict(summary.storey_areas_ft2) == pytest.approx(
-        {"basement": 1296.0, "main": 1228.2, "second": 1225.6, "attic": 1150.3}, abs=0.5)
+        {"basement": 1296.0, "main": 1226.1, "second": 1225.6, "attic": 1150.3}, abs=0.5)
     assert summary.total_rate_cfm == pytest.approx(203.0, abs=0.1)
     assert summary.provided_cfm == pytest.approx(210.0)
     assert summary.delivered_cfm == pytest.approx(204.5, abs=0.1)

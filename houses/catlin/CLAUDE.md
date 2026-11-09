@@ -819,12 +819,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `params/main_deck.py`; `integrity.floor_bearing_grid` and `floor_end_bearing` hold the grid.
   - **The x=18' line is framed end to end.** `W-B-CS2`/`-CN2`/`-CN` are 2x6 bearing walls on their
     old strip footings (`params/foundations._FRAMED_WALLS`); the plate splits 3 1/2" truss / 2" TJI
-    (`end_bearing`), as on the second floor. `W-B-CN`'s stair face is furred 3 1/4" back to the
-    pour's old x=17'-6" (`STAIRWELL_INT_2X6_BRG_FURRED`): `FO-M-STAIR`'s east edge, `ST-B2M`'s east
-    lane and `RL-M-HANDRAIL-E` are struck off it, and `P-M-STRLAND-SE` lands on a doubled furring
-    stud. **Top plates are DF-L No. 2** (`top_plate_material_ref="df-l-no2"`; SPF Fc⊥ reads d/c
-    0.98 with no margin, DF-L 0.66) on all five segments: `INT_2X6_BRG_HALF_DFL` (`-CS3`/`-CS2`/`-CN2`),
-    `SAUNA_LINER_INT_2X6_BRG` (`-CS`), `STAIRWELL_INT_2X6_BRG_FURRED` (`-CN`). The sole plate is
+    (`end_bearing`), as on the second floor. `W-B-CN`'s stair face is plain 1/2" gypsum on the studs since 2026-11-09, x=17'-8 3/4", the
+    plane `W-M-C5` and `FO-S-STAIR` hold above: `FO-M-STAIR`'s east edge, `ST-B2M`'s east lane and
+    `RL-M-HANDRAIL-E` are struck off it (`BK-B-CN-HANDRAIL-*` back that rail). **Top plates are DF-L No. 2** (`top_plate_material_ref="df-l-no2"`; SPF Fc⊥ reads d/c
+    0.98 with no margin, DF-L 0.66) on all five segments: `INT_2X6_BRG_HALF_DFL` (`-CS3`/`-CS2`/`-CN2`/`-CN`),
+    `SAUNA_LINER_INT_2X6_BRG` (`-CS`). The sole plate is
     the PT SYP sill already. Same stud grid (basis note §5).
   - **Wall-top restraint (Minn. R. 1309.0404, `code.MN_1309_0404_wall_top`).** Table R404.1(1),
     8' wall, GM: 400 plf. Perpendicular fields (`FS-M-NE`/`-EAST`/`-WEST`/`-MECH`) name
@@ -1037,8 +1036,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   stairhead header stands one head riser board past the last riser line** (plus the carpet
   on ST-B2M), so the last tread is a full going; the posts and upper-flight rails follow
   (2026-09-28, `notes/stair_nosing_basis.md`). Over `FO-M-STAIR`'s hole, so
-  full-height to `SL-B-FLOOR` like the two beside it, not a squash block like
-  `P-M-STRLAND-SE`. See `notes/u_stair_split_landing.md`; move ST-M2S and all three move.
+  full-height to `SL-B-FLOOR` like `P-M-STRWELL-S`. See `notes/u_stair_split_landing.md`; move
+  ST-M2S and both move. ST-M2S's lower landing rim needs no third post: its ledger runs through
+  the `W-M-C5`/`-C5B` split (2026-11-09).
 - **The study edge is a stepped conventional partition plus separate casework.** `W-A-SN`
   retains the purchased door on the front y=9'-0" segment; west/rear/east returns enclose
   the explicit `PC-A-STAIR-BOOKCASE` pocket. Only its validated wall geometry can satisfy
@@ -2130,7 +2130,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   their face (`location.attachment`) and `integrity.wall_mount_on_face` grades the body.
 
 - **Hall and circulation.** The hall runs from the stair foot south, west of `W-B-CN2`, the
-  full way to the sauna's north wall, on the x=13'-10 5/8" well-partition centreline shared
+  full way to the sauna's north wall, on the x=14'-0" well-partition centreline shared
   with `W-B-BA-E`/`W-B-WELL`; part of `RM-B-STAIR`'s loop (114.8 -> 147.7 sf, one seed, no
   separate `Room`). Circulation is stair -> hall -> gym (`D-B-GYM`) -> `D-B-PLAY`, and
   stair -> hall -> `D-B-SHOP` -> workshop -> `D-B-FURN`. There are now **no doors through a

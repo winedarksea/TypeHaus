@@ -214,27 +214,24 @@ NODES = [
     # needs no edit.
     Node(uid="YW3E1CW7DT", tag="N-B-BA-NW", position=pt(ft(10), ft(25, 6))),
     #
-    # ** BOTH SLID WEST TO x=13'-10 11/16" ON 2026-09-05 (round two), 13'-10 5/8" since
-    # 2026-10-30. ** x=14'-0" missed the stair well's partition centreline by 1 5/16": `resolve/stairs/common.py` reserves
-    # 4 1/2" for that partition at x 13'-8 3/8"..14'-0 7/8" and builds nothing in it, so
-    # the bathroom's east wall and the flight divider were two nearly-collinear planes an
-    # inch and a third apart — the kind of jog that reads as a mistake and is not one on any
-    # drawing. `inch(166.625)` IS that centreline (1/16" west on 2026-10-30, when ST-B2M's
-    # lanes were evened to centre it between the well's faces), so W-B-BA-E, W-B-WELL above it
+    # ** THE WELL PARTITION'S CENTRELINE, x=14'-0" SINCE 2026-11-09. ** `inch(168)` is midway
+    # between the well's faces (`resolve/stairs/common.py` reserves its 4 1/2" and builds
+    # nothing in it), 1/16" off W-M-WELL above. A bath wall off this line would be a
+    # near-collinear jog that reads as a mistake, so W-B-BA-E, W-B-WELL above it
     # and W-B-CL-N's east end are one continuous plane from y=18' to y=31' now. Everything
     # that references these two nodes rides along and needed no edit; the wet-wall risers,
     # which are absolute coordinates and not node references, did (mep_venting.py,
     # mep_supply.py, mep_supply_devices.py).
-    Node(uid="ZHKG5KWP08", tag="N-B-BA-NE", position=pt(inch(166.625), ft(25, 6))),
-    Node(uid="R1KFP0S4NQ", tag="N-B-BA-SE", position=pt(inch(166.625), ft(18))),
+    Node(uid="ZHKG5KWP08", tag="N-B-BA-NE", position=pt(inch(168), ft(25, 6))),
+    Node(uid="R1KFP0S4NQ", tag="N-B-BA-SE", position=pt(inch(168), ft(18))),
     # ** THE HALL'S SOUTH END, NEW 2026-09-07. ** The 2026-09-05 hall stopped at the y=18'
     # line and crossed into the workshop through a cased opening, which made the workshop a
     # corridor. The hall runs the rest of the way south now — from N-B-BA-SE to the sauna's
-    # north wall — on the SAME x=13'-10 5/8" well-partition centreline the node above
+    # north wall — on the SAME x=14'-0" well-partition centreline the node above
     # stands on, so W-B-BA-E, W-B-WELL and the new W-B-HALL-W are one plane from y=10' to
     # y=31'. This node splits W-B-SA-N so the new partition tees into it rather than dying
     # in the middle of a wall.
-    Node(uid="XE20Z4ZSS6", tag="N-B-HALL-S", position=pt(inch(166.625), ft(10))),
+    Node(uid="XE20Z4ZSS6", tag="N-B-HALL-S", position=pt(inch(168), ft(10))),
     # W-B-CW's east end. Keep the split so the ESS partition tees into the south wall here;
     # W-B-CW3 now continues W-B-CW's assembly at the same 2x4 stud depth. Its uid is unchanged.
     Node(uid="CBN017AAAA", tag="N-B-CW-E", position=pt(ft(6, 9), ft(18))),
@@ -269,7 +266,7 @@ NODES = [
     # `open_end=True` is the honest description and not a silencer: a wall that dies in the
     # middle of a stair well has one edge at this node, which is `integrity.wall_loop_open`'s
     # whole subject, and the flag is how the model says "this end is meant to be free".
-    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(166.625), ft(31)),
+    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(168), ft(31)),
          open_end=True),
     # Glazed-brick veneer over the exposed south wall (W-B-BRICK): a freestanding wythe off
     # the concrete, both ends ``open_end`` like the sunken garden's N-SG-NW/NE (not part of
@@ -670,7 +667,7 @@ WALLS = [
     # their existing footings (params/foundations.py `_FRAMED_WALLS`). Tags and uids kept
     # (decision #16). They still carry FS-M-WEST/-STAIR from the west and FS-M-NE from the
     # east (3 1/2" / 2" plate split, params/main_deck.py), W-M-C2/C3/C5/C5B and through them
-    # RB-HOUSE, BM-M-HALL, FO-M-STAIR's east edge and P-M-STRLAND-SE.
+    # RB-HOUSE, BM-M-HALL and FO-M-STAIR's east edge.
     Wall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
          end_node="N-B-C", assembly="INT_2X6_BRG_HALF_DFL", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.75)),
@@ -679,7 +676,8 @@ WALLS = [
     # node — else `integrity.wall_loop_open` reads it as a free end. W-B-CN keeps the tag,
     # uid, and the north 14'-2 5/8" that W-M-C5 stacks on, so the bearing stack is untouched.
     Wall(uid="CBW113AAAA", tag="W-B-CN", start_node="N-B-BA-E",
-         end_node="N-B-N1", assembly="STAIRWELL_INT_2X6_BRG_FURRED", top=ft(8),
+         end_node="N-B-N1", assembly="INT_2X6_BRG_HALF_DFL", top=ft(8),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING),
     Wall(uid="CBW121AAAA", tag="W-B-CN2", start_node="N-B-C",
@@ -1465,7 +1463,7 @@ PANELING = [
     WallPaneling(uid="CBK901AAAA", tag="WP-B-SAUNA-SPLASH", room="RM-B-SAUNA",
                  material_ref="tile", height=ft(7, 6), replaces_wall_finish=True,
                  spans=(PanelingSpan(wall_ref="W-B-CS", start=inch(4.8125), length=ft(3)),
-                        PanelingSpan(wall_ref="W-B-SA-N2", start=inch(7.0625), length=ft(3)))),
+                        PanelingSpan(wall_ref="W-B-SA-N2", start=inch(5.6875), length=ft(3)))),
 ]
 
 # --- RM-B-BATH's wet-wall bulkhead --------------------------------------------------

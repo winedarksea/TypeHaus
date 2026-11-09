@@ -19,6 +19,7 @@ import pytest
 
 from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
 from typehaus.hardware.config import UpliftTieRules
+from typehaus.quantities import inch
 from typehaus.takeoff.uplift import (
     bearing_connections,
     lateral_tie_plate_rows,
@@ -324,26 +325,24 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
             if isinstance(e, Post) and e.supported_by
             and e.size in {"6x6", "4x4"}}
     assert wood == AUTHORED_POST_BASES | AUTHORED_TENSION_TIES | {
-        "P-M-STRWELL-S", "P-M-STRWELL-SS", "P-M-STRLAND-SE",
+        "P-M-STRWELL-S", "P-M-STRWELL-SS",
         "PT-BW-CW", "PT-BW-CNW", "PT-BW-RE", "PT-BW-RNE"}
 
 
 def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
-    """P-M-STRLAND-SE is 13 7/16" of blocking in a joist bay, not a column.
+    """A 13 7/16" block in a joist bay is not a column.
 
-    It declares a bearing (``W-B-CN``) and its section is one the catalog stocks a base for,
-    so nothing but ``blocking_max_height_ft`` keeps it out of the order — and a base under a
-    block is hardware at a joint whose connection is the bearing itself.
+    It declares a bearing and its section is one the catalog stocks a base for, so nothing but
+    ``blocking_max_height_ft`` keeps it out of the order — and a base under a block is
+    hardware at a joint whose connection is the bearing itself.
     """
     from typehaus.model.structure import Post
     from typehaus.joints.posts import is_squash_block
 
     posts = {e.tag: e for e in catlin_model_ro.plan.all_elements() if isinstance(e, Post)}
-    assert is_squash_block(posts["P-M-STRLAND-SE"], RULES)
-    assert not is_squash_block(posts["P-M-STRWELL-S"], RULES), \
-        "a 9 ft stairwell post is a column; only the 13 in block is blocking"
-    row = post_base_rows(catlin_model_ro, RULES)[0]
-    assert "P-M-STRLAND-SE" not in row["basis"]
+    column = posts["P-M-STRWELL-S"]
+    assert is_squash_block(column.model_copy(update={"height": inch(13.4375)}), RULES)
+    assert not is_squash_block(column, RULES), "a 9 ft stairwell post is a column"
 
 
 # --- rule 2b: the bolt under every base ----------------------------------------------

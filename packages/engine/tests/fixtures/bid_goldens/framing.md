@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** b2f78be47106ed6c  
-**Lines:** 253
+**Model hash:** ac5e3954baae6fdb  
+**Lines:** 252
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -43,12 +43,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1 3/4" x 11 7/8" LVL 2.0E, 8' (2-1.75x11.875 LVL) | 4 | pc | header (2-ply) | 32 LF | building |
 | 1 3/4" x 14" LVL 2.0E, 20' (2-1.75x14 LVL) | 2 | pc | header (2-ply) | 40 LF | building |
 | 1 3/4" x 16" LVL 2.0E, 12' (2-1.75x16 LVL) | 6 | pc | ridge beam (2-ply) | 72 LF | building |
-| 1 3/4" x 7 1/4" LVL 2.0E, 8' (2-1.75x7.25 LVL) | 2 | pc | header (2-ply) | 16 LF | building |
-| 1 3/4" x 9 1/2" LVL 2.0E, 8' (2-1.75x9.5 LVL) | 2 | pc | header (2-ply) | 16 LF | building |
+| 1 3/4" x 9 1/2" LVL 2.0E, 8' (2-1.75x9.5 LVL) | 10 | pc | header (2-ply) | 80 LF | building |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2-2x10) | 6 | pc | header (2-ply) | 48 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6) | 4 | pc | header (2-ply) | 32 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6:spf) | 6 | pc | blocking (2-ply) | 48 LF | building |
-| 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8) | 18 | pc | header (2-ply) | 144 LF | building |
+| 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8) | 12 | pc | header (2-ply) | 96 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8:spf) | 4 | pc | blocking (2-ply) | 32 LF | building |
 | 24 gable roof truss, 24' (24 gable roof truss) | 2 | ea | roof truss | 48 LF | building |
 | 24 roof truss, 24' (24 roof truss) | 14 | ea | roof truss | 336 LF | building |
@@ -65,9 +64,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x2 SPF No. 2 & Btr framing lumber, 8' (2x2) | 30 | pc | blocking, plate, stud | 240 LF | building |
 | 2x2 SPF No. 2 & Btr framing lumber, 10' (2x2) | 2 | pc | plate | 20 LF | building |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
-| 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3:spf) | 11 | pc | girt strapping | 88 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 82 | pc | corner stud, king stud, stud | 632.9 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 147 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud | 1176 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 83 | pc | corner stud, king stud, stud | 640.7 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 148 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud | 1184 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 246 | pc | corner stud, king stud, stud | 2144.8 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
@@ -79,7 +77,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 23 | pc | girt strapping | 460 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 361 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2888 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 367 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2936 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 203 | pc | corner stud, king stud, stud | 1769.9 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 116 5/8" PET (2x6) | 6 | pc | king stud, stud | 58.3 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 49 | pc | plate, raked top plate, strongback | 490 LF | building |
@@ -94,7 +92,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x6:kdat) | 7 | pc | cripple stud, plate, sill, girt strapping | 56 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x6:kdat) | 6 | pc | plate, girt strapping | 60 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x6:kdat) | 1 | pc | girt strapping | 14 LF | building |
-| 2x6 Laminated strand lumber, 8' (2x6:lsl) | 67 | pc | cripple stud, door blocking, jack stud | 536 LF | building |
+| 2x6 Laminated strand lumber, 8' (2x6:lsl) | 66 | pc | cripple stud, door blocking, jack stud | 528 LF | building |
 | 2x6 Laminated strand lumber, 104 5/8" PET (2x6:lsl) | 135 | pc | corner stud, king stud, stud | 1177 LF | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2", 8' (2x6:oak-8q) | 4 | pc | blocking | 32 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | 10 | pc | blocking | 80 LF | building |
@@ -104,6 +102,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | 6 | pc | joist (3-ply) | 120 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | 135 | pc | truss girt block (3-ply) | 1080 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x6:kdat) | 9 | pc | truss girt block (3-ply) | 72 LF | building |
+| 5 1/4" x 7" LVL 2.0E, 8' (5.25x7 LVL) | 1 | pc | header | 8 LF | building |
 | 6x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (6x6:kdat) | 2 | pc | brace, stud | 16 LF | building |
 | hanger, 8' (hanger) | 1 | pc | hanger board | 8 LF | building |
 
@@ -120,7 +119,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 2.5 SF net | building |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 10.5 SF net | building |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
-| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3566.1 SF net | building |
+| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3563.9 SF net | building |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 43.7 SF net | building |
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 16 | sheets 4x8 | 16 sheets 4x8 over 407.5 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
@@ -133,7 +132,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail) | 84 | ea |  | building |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | 1,960 | ea |  | building |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 40 | ea |  | building |
-| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 958 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 966 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | 72 | ea |  | building |
 | HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5) | 248 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 452 | ea |  | building |
@@ -229,7 +228,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | THA422 top-flange floor truss hanger | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 1 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,160 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,156 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 72 | ea |  | building |
 
 ## Other structural solids
@@ -240,7 +239,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column (column) | 1.2 | bf | 1 placed, 0.1 SF plan | second |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | 56.4 | bf | 2 placed, 0.5 SF plan; 0.17 cy in the takeoff | second |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
-| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 19.2 | bf | 3 placed, 0.3 SF plan; 0.06 cy in the takeoff | main |
+| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 18 | bf | 2 placed, 0.2 SF plan; 0.06 cy in the takeoff | main |
 | Slab platform — KNEE_WALL_OAK_CAP (slab_platform:KNEE_WALL_OAK_CAP) | 1.8 | SF | 1 placed, 1.8 SF plan; 0.01 cy in the takeoff | second |
 | Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | 4.3 | SF | 1 placed, 4.3 SF plan; 0.03 cy in the takeoff | main |
 
@@ -279,13 +278,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Treated sill plate, Pressure-treated southern yellow pine No. 2 (sill plate) (pt-sill-plate) | 320.4 | LF |  | building |
+| Treated sill plate, Pressure-treated southern yellow pine No. 2 (sill plate) (pt-sill-plate) | 320.6 | LF |  | building |
 
 ## Sill gaskets
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Sill seal foam gasket, under the sill plate (sill-seal-foam) | 101.6 | LF |  | building |
+| Sill seal foam gasket, under the sill plate (sill-seal-foam) | 101.9 | LF |  | building |
 | Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | 218.7 | LF |  | building |
 
 ## Assembly layers, by material
@@ -361,7 +360,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1 3/4" x 11 7/8" LVL 2.0E, 8' (2-1.75x11.875 LVL) | — |
 | 1 3/4" x 14" LVL 2.0E, 20' (2-1.75x14 LVL) | — |
 | 1 3/4" x 16" LVL 2.0E, 12' (2-1.75x16 LVL) | — |
-| 1 3/4" x 7 1/4" LVL 2.0E, 8' (2-1.75x7.25 LVL) | — |
 | 1 3/4" x 9 1/2" LVL 2.0E, 8' (2-1.75x9.5 LVL) | — |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2-2x10) | — |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6) | — |
@@ -383,7 +381,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x2 SPF No. 2 & Btr framing lumber, 8' (2x2) | — |
 | 2x2 SPF No. 2 & Btr framing lumber, 10' (2x2) | — |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | — |
-| 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3:spf) | — |
 | 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | — |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | — |
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | — |
@@ -422,6 +419,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | — |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | — |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x6:kdat) | — |
+| 5 1/4" x 7" LVL 2.0E, 8' (5.25x7 LVL) | — |
 | 6x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (6x6:kdat) | — |
 | hanger, 8' (hanger) | — |
 | Aluminum deck board (Wahoo AridDek, Granite), 1 1/2" subfloor (aluminum-deck:subfloor) | — |
@@ -543,7 +541,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column (column) | P-S-SN3-SQUASH |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2 |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | PT-M-HP1-L1, PT-M-HP1-L2, PT-M-HP1-L3, PT-M-HP1-L4, PT-M-HP3-L1, PT-M-HP3-L2, PT-M-HP3-L3, PT-M-HP3-L4, PT-SG-HPB1, PT-SG-HPB2, PT-SG-HPB3, PT-SG-HPB4 |
-| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRLAND-SE, P-M-STRWELL-S, P-M-STRWELL-SS |
+| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRWELL-S, P-M-STRWELL-SS |
 | Slab platform — KNEE_WALL_OAK_CAP (slab_platform:KNEE_WALL_OAK_CAP) | SL-S-KNEE-CAP |
 | Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | SL-M-TUBDK |
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | BM-BW-RE, BM-BW-RW, BM-SG-BLE, BM-SG-BLW |

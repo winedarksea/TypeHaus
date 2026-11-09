@@ -193,39 +193,21 @@ def test_a_cast_column_is_not_evaluable_rather_than_broken(findings) -> None:
 def test_the_stairwell_posts_are_graded_now_that_they_declare_a_bearing(findings) -> None:
     """These were the check's three un-gradeable posts until 2026-08-28.
 
-    All three always stood on something — the slab under the two columns, W-B-CN under the
-    landing block — and their own comment said so in prose while ``supported_by`` sat empty.
-    Filling it in is what closed the item, and it split the three two ways: the columns take
-    a derived ABU44, the 13 7/16" block takes nothing because it is not a column.
+    Both always stood on the slab, and their own comment said so in prose while
+    ``supported_by`` sat empty. Filling it in is what closed the item.
     """
     graded = {f.element_tags[0]: f for f in findings}
     for column in ("P-M-STRWELL-S", "P-M-STRWELL-SS"):  # -N retired 2026-09-24
         assert "derived standoff post base" in graded[column].message, column
         assert graded[column].result is Result.PASS
-    block = graded["P-M-STRLAND-SE"]
-    assert block.result is Result.PASS
-    assert "squash block" in block.message
-    assert "post base" not in block.message, \
-        "a block bears; buying it a base is the error blocking_max_height_ft prevents"
     assert not [f for f in findings if "declares no `supported_by`" in f.message], \
         "nothing in catlin is un-gradeable for want of a bearing any more"
 
 
-def test_an_undeclared_bearing_is_still_reported_as_un_gradeable(ctx) -> None:
-    """The tri-state branch must stay alive now that no real post exercises it.
-
-    Closing the last un-gradeable post in the house left this code path with no witness, and
-    an untested branch is one refactor from reporting a modelling gap as a FAIL — which
-    would exit ``haus check`` 1 over an omission, the exact thing the tri-state is for (#32).
-    So strip the bearing back off one post and confirm the branch still answers.
-    """
-    from typehaus.model.structure import Post
-
-    posts = [e for e in ctx.plan.all_elements()
-             if isinstance(e, Post) and e.tag == "P-M-STRWELL-S"]
-    stripped = posts[0].model_copy(update={"supported_by": None})
+def _with_stairwell_post(ctx, **changes):
+    """``ctx`` with P-M-STRWELL-S's authored fields swapped for ``changes``."""
     by_tag = {e.tag: e for e in ctx.plan.all_elements()}
-    by_tag["P-M-STRWELL-S"] = stripped
+    by_tag["P-M-STRWELL-S"] = by_tag["P-M-STRWELL-S"].model_copy(update=changes)
 
     class _Plan:
         def __init__(self, real):
@@ -237,8 +219,30 @@ def test_an_undeclared_bearing_is_still_reported_as_un_gradeable(ctx) -> None:
         def __getattr__(self, name):
             return getattr(self._real, name)
 
-    gapped = type(ctx)(plan=_Plan(ctx.plan), model=ctx.model, preferences=ctx.preferences,
-                       profile=ctx.profile, resolve_findings=ctx.resolve_findings)
+    return type(ctx)(plan=_Plan(ctx.plan), model=ctx.model, preferences=ctx.preferences,
+                     profile=ctx.profile, resolve_findings=ctx.resolve_findings)
+
+
+def test_a_squash_block_bears_and_is_not_asked_for_a_base(ctx) -> None:
+    from typehaus.quantities import inch
+
+    blocked = _with_stairwell_post(ctx, height=inch(13.4375))
+    finding = next(f for f in uplift_path_coverage(blocked)
+                   if f.element_tags[:1] == ("P-M-STRWELL-S",))
+    assert finding.result is Result.PASS
+    assert "squash block" in finding.message
+    assert "post base" not in finding.message
+
+
+def test_an_undeclared_bearing_is_still_reported_as_un_gradeable(ctx) -> None:
+    """The tri-state branch must stay alive now that no real post exercises it.
+
+    Closing the last un-gradeable post in the house left this code path with no witness, and
+    an untested branch is one refactor from reporting a modelling gap as a FAIL — which
+    would exit ``haus check`` 1 over an omission, the exact thing the tri-state is for (#32).
+    So strip the bearing back off one post and confirm the branch still answers.
+    """
+    gapped = _with_stairwell_post(ctx, supported_by=None)
     finding = next(f for f in uplift_path_coverage(gapped)
                    if f.element_tags[:1] == ("P-M-STRWELL-S",))
     # Still UNKNOWN, and this is the line that shows the N/A above was earned rather than

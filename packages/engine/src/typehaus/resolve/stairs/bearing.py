@@ -81,7 +81,7 @@ def _best_host_wall(model: ResolvedModel, stair: Stair, p0: tuple[float, float],
     then by the longest shared run, then by the closest axis — never by authoring order.
 
     Returns ``(wall, shared_interval)`` so the caller can tell which member endpoints the
-    host actually reaches.
+    host actually reaches; the interval runs on through abutting segments of the host's face.
     """
     ranked = []
     for wall in model.walls:
@@ -105,7 +105,30 @@ def _best_host_wall(model: ResolvedModel, stair: Stair, p0: tuple[float, float],
     if not ranked:
         return None, None
     best = min(ranked, key=lambda entry: entry[:4])
-    return best[4], best[5]
+    cross_axis = 1 if abs(p1[0] - p0[0]) > 1e-6 else 0
+    return best[4], _continuous_run(best, ranked, cross_axis, p0[cross_axis])
+
+
+def _continuous_run(best, ranked, cross_axis: int, member_cross: float) -> tuple[float, float]:
+    """``best``'s shared interval, grown across abutting survivors on the same face.
+
+    A wall split at a node (a tee on its far side) is still one face to lag a board to, so
+    the ledger runs through and the rim end past the split needs no post.
+    """
+    def face(wall) -> float:
+        near, far = _depth_extent(wall, cross_axis)
+        return far if member_cross >= (near + far) / 2.0 else near
+
+    lo, hi = best[5]
+    same_face = sorted(entry[5] for entry in ranked if entry[0] == best[0]
+                       and abs(face(entry[4]) - face(best[4])) < 1e-3)
+    for start, end in same_face:
+        if start <= hi + 1e-3:
+            hi = max(hi, end)
+    for start, end in reversed(same_face):
+        if end >= lo - 1e-3:
+            lo = min(lo, start)
+    return lo, hi
 
 
 def _authored_is_bearing(model: ResolvedModel, tag: str) -> bool:

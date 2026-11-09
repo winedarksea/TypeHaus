@@ -424,39 +424,11 @@ STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
     source="catlin basement stair wall (W-B-STR) where it is also RM-B-ESS's west enclosure: INT_2X6_BRG_EXPOSED_PLY with a 5/8 in. Type X leaf on the closet face (notes/backup_power.md)",
 )
 
-# ** W-B-CN'S STAIR FACE, FURRED BACK OUT TO THE WELL (2026-11-01, decision #112). ** The
-# pour's stair face was x=17'-6", and FO-M-STAIR's east edge, ST-B2M's east lane and
-# RL-M-HANDRAIL-E's brackets are all struck off it. The framed wall's stud face is 3 1/4"
-# further east, so the stair face is built back out: 2x3 on edge at 16" o.c., slab to plate,
-# under 3/4" paint-grade plywood — the plywood face W-B-STR carries across the well, and
-# screw-anywhere handrail backing. P-M-STRLAND-SE's block lands on this furring, so a doubled
-# 2x3 stands under it to the slab. Moving the stair 3 1/4" instead would re-open ST-B2M.
 # INT_2X6_BRG_HALF's stud layer with DF-L No. 2 top plates (the x=18' line, below).
 _STUD_DFL_PLATES = Layer(name="stud", material_ref="spf", thickness=inch(5.5),
                          function=LayerFunction.STRUCTURE,
                          framing=FramingSpec(member="2x6", layout_origin="line",
                                              top_plate_material_ref="df-l-no2"))
-
-STAIRWELL_INT_2X6_BRG_FURRED = Assembly(
-    tag="STAIRWELL_INT_2X6_BRG_FURRED",
-    variant_of="INT_2X6_BRG_HALF",
-    substitute=(
-        Substitution(
-            span=layers("paint-a", "gwb-a"),
-            replacement=(
-                Layer(name="paint-stair", material_ref="latex-paint", thickness=inch(0.01),
-                      function=LayerFunction.FINISH),
-                Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
-                      function=LayerFunction.FINISH),
-                Layer(name="stair-furring", material_ref="spf", thickness=inch(2.5),
-                      function=LayerFunction.FURRING,
-                      framing=FramingSpec(member="2x3", spacing=inch(16))),
-            ),
-        ),
-        Substitution(span=layers("stud", "stud"), replacement=(_STUD_DFL_PLATES,)),
-    ),
-    source="catlin basement x=18' bearing wall on the stair well (W-B-CN), 2026-11-01: INT_2X6_BRG_HALF with its stair face furred 3 1/4\" (2x3 on edge, 3/4\" painted plywood) back to the pour's old x=17'-6\" face; DF-L No. 2 top plates (notes/main_floor_truss_basis.md §5)",
-)
 
 # W-B-CS3 / -CS2 / -CN2: the base bearing wall with DF-L No. 2 top plates, the cure for the
 # x=18' line's plate crushing (SPF Fc-perp 425 psi, d/c 1.03; DF-L 625 psi, d/c 0.70,

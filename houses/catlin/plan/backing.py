@@ -106,6 +106,20 @@ BASEMENT_BACKING = [
     WallBacking(uid="THHUNT0003", tag="BK-B-PLAY-TAPESTRY-ROD", wall_ref="W-B-CN", face="right",
                 elevation=inch(70), datum="finished-floor", height=inch(5.5), profile="2x6",
                 material_ref="spf", purpose="west theatre tapestry rod brackets at 74 1/2 in. AFF"),
+    # RL-M-HANDRAIL-E's returns and mid bracket all fall between studs; the mid bracket must
+    # stay near midspan for the tube's 39.4" support limit (R301.5).
+    WallBacking(uid="E852RSA8VB", tag="BK-B-CN-HANDRAIL-LOW", wall_ref="W-B-CN", face="left",
+                start=inch(43.375), length=inch(14.5),
+                elevation=inch(40.5), datum="finished-floor", height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="RL-M-HANDRAIL-E lower wall return"),
+    WallBacking(uid="667BNX5NSZ", tag="BK-B-CN-HANDRAIL-MID", wall_ref="W-B-CN", face="left",
+                start=inch(75.375), length=inch(14.5),
+                elevation=inch(61), datum="finished-floor", height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="RL-M-HANDRAIL-E mid bracket"),
+    WallBacking(uid="MNEV9JDM5P", tag="BK-B-CN-HANDRAIL-HIGH", wall_ref="W-B-CN", face="left",
+                start=inch(107.375), length=inch(14.5),
+                elevation=inch(84), datum="finished-floor", height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="RL-M-HANDRAIL-E upper wall return"),
 ]
 
 MAIN_BACKING = [

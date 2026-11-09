@@ -1,3 +1,15 @@
+## ST-B2M widened to W-B-CN's framed face; the stair furring is gone (2026-11-09, owner)
+
+- `W-B-CN` went from a pour to 2x6 framing on 2026-11-01, and its stair face was furred 3 1/4"
+  (2x3 + 3/4" ply) to hold the pour's x=17'-6". Now it is 1/2" gypsum on the studs, x=17'-8 3/4",
+  the plane `W-M-C5` already holds. **Lanes 41 1/8" -> 42 1/2"**, the partition line 13'-10 5/8"
+  -> 14'-0" (1/16" off `W-M-WELL`, was 1 5/16"), `W-B-BA-E`/`W-B-HALL-W` with it.
+- **`P-M-STRLAND-SE` retired.** Its strip of floor is gone. A landing rim's ledger now runs through
+  abutting segments of one wall face (`resolve/stairs/bearing.py`), so `W-M-C5`/`-C5B` carry it.
+- `RL-M-HANDRAIL-E` loses screw-anywhere plywood: three 2x8 blocks (`BK-B-CN-HANDRAIL-*`). No stud
+  falls inside its mid bracket's window (R301.5, 39.4" product span).
+- Bill: -88 LF 2x3, -114 SF cabinet ply, +114 SF abrasion-resistant gypsum.
+
 ## Garage infrared heater and bracket blocking (2026-11-06)
 
 - Owner selected the **$110 Dr Infrared Heater DR-238** (Home Depot 303985873).

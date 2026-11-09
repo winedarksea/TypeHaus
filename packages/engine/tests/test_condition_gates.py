@@ -409,9 +409,6 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # the corner here — the hot side's vapour control is continuous on all four faces or
         # it is not vapour control — which is exactly what this key exists to put on a sheet.
         "assembly_change:INT_2X6_BRG_HALF_DFL|SAUNA_LINER_INT_2X6_BRG",
-        # W-B-CN2 -> W-B-CN since decision #112 reframed the x=18' pours (which took N-B-C1's
-        # FOUNDATION_WALL_12_INT key with them): the furred plywood stair face starts here.
-        "assembly_change:INT_2X6_BRG_HALF_DFL|STAIRWELL_INT_2X6_BRG_FURRED",
         # N-M-C1: W-M-C1 alone carries INT_2X6_BRG_RC — a resilient channel and a
         # batt on the RM-M-BED face — and W-M-C2 east of the node does not. Exactly the
         # same kind of key as INT_2X4_PARTITION|INT_2X4_RC below, and it earns its sheet

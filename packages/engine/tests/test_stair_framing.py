@@ -111,6 +111,8 @@ def test_no_two_stair_members_are_coincident(catlin_model):
     for stair in catlin_model.stairs:
         seen = {}
         for member in stair.members:
+            if member.category == "hanger":
+                continue  # a ledger is connector geometry, drawn on a flush stringer's own line
             key = (member.p0, member.p1, round(member.z0_m, 6), round(member.z1_m, 6))
             assert key not in seen, (
                 f"{stair.tag}: {member.child_key} coincides with {seen[key]}")
@@ -437,9 +439,8 @@ def test_framed_wall_bearing_picks_the_longest_host(main_stair):
     ** W-M-C5 split at N-M-PAN1 (y=32'-9") on 2026-08-24 for RM-M-PANTRY. The stringer runs
     the length of the flight and still shares most of it with the SOUTH half, which keeps
     the tag; landing-rim-lower-1 runs y 31'-10 3/8"..34'-10 3/8" and now shares 25 3/8" with
-    W-M-C5B against 10 5/8" with W-M-C5, so longest-host correctly re-hosts it. The 10 5/8"
-    that falls out of the ledger's interval is what P-M-STRLAND-SE (storeys/main.py) blocks
-    down to W-B-CN — see its note.
+    W-M-C5B against 10 5/8" with W-M-C5, so longest-host correctly re-hosts it, and its ledger
+    runs through the split to carry the rim's whole length.
     """
     members = {m.child_key: m for m in main_stair.members}
     # The two skirted wall stringers stand off their walls on a spacer, not a ledger.
@@ -447,6 +448,8 @@ def test_framed_wall_bearing_picks_the_longest_host(main_stair):
     assert members["landing-rim-lower-1"].connection == "framed-wall-ledger:W-M-C5B"
     assert members["stringer-upper-0"].connection == "framed-wall-spacer:W-M-STRW"
     assert members["landing-rim-upper-0"].connection == "framed-wall-ledger:W-M-STRW"
+    ledger = members["ledger-W-M-C5B-landing-rim-lower-1"]
+    assert ledger.length_m == pytest.approx(members["landing-rim-lower-1"].length_m)
 
 
 def test_framed_hosts_emit_ledger_boards_flush_with_the_wall_face(catlin_model,

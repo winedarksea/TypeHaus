@@ -247,10 +247,8 @@ DUCTS_ERV_BASEMENT = [
     # at 88 1/2"), so its lower face clears D-B-BATH's flat head (84 7/8"; 86 3/8" until the
     # Eclisse kit dropped its track nailer, 2026-10-29).
     #
-    # ** x=17'-0" STAYS (2026-11-01). ** The strip beside the stair was a 12" pour (x 17'-6"..
-    # 18'-6") and 17'-9" would have been inside it; W-B-CN/-CN2/W-B-CS2 are framed now, with
-    # the stair face furred to x=17'-6", so the lane could move east, but 4" of air to the
-    # furring is the clearance the hall already has and nothing wants the lane.
+    # ** x=17'-0" STAYS. ** W-B-CN/-CN2/W-B-CS2 are framed now, so the lane could move east,
+    # but it already clears the hall's east face and nothing wants the move.
     #
     # ** IT RISES TO 90 1/8" AT x=17'-0" AND CROSSES `W-B-CS3` OVER `D-B-GYM`'s HEADER. ** The
     # header tops out at -22.19" and the double top plate starts at -16.44"; centred at
