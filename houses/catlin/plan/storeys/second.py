@@ -40,6 +40,7 @@ from typehaus import (
     LayerMaterial,
     Node,
     Occupancy,
+    PublishedSpan,
     RadiantSystem,
     Railing,
     RailingKind,
@@ -587,11 +588,27 @@ OPENINGS = [
     # Owner, 2026-10-02: southernmost feasible 16" module station, centre y=2'-8".
     # RO y=17"..47" leaves the south junction and king/jack pack clear; centre 16" would not.
     Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT-SWING30-GLAZED",
-         position=from_node("N-S-S1", ft(1, 5)), doorway=D_S_PLANT_REDUCER),                      # y 2'-8"
+         position=from_node("N-S-S1", ft(1, 5)), doorway=D_S_PLANT_REDUCER,
+         header_spec='2-ply 9.5" LVL',
+         published_span=PublishedSpan(
+             source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.5, 3-1/2\" VERSA-LAM 1.7 2650 Header Look Up Tables",
+             table="Door and window headers, Roof Only + 1 Floor (no mid support), roof load 50 psf snow (115%) + 15 psf dead, 32'-0\" structure width, 3'-2\" clear span: 4-3/8\" (not bolded, single trimmers); double 1-3/4\" substituted per the table note, at the smallest 1-3/4\" depth, 9-1/2\"",
+             member='2-ply 9.5" LVL',
+             span=ft(3, 2),
+             load_psf=65.0,
+             condition="the row is 65 psf x 18' + 52 psf x 16' + 80 plf = 2,082 plf; this header carries the ridge line (900 plf), FS-ATTIC (18' x 42 psf = 756) and the attic wall (~90), 1,746 plf; deflection L/360 live, L/240 total; dry use; uniform load only; see notes/header_spans_r602_7.md section 5a")),                      # y 2'-8"
     # Derived RO since 2026-10-29, centred between W-S-CLN and W-S-SBS on the suite's little
     # hall (owner), which leaves both cherry casing legs ~2 7/16".
     Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT-SWING32-PRIV",
-         position=from_node("N-S-C2", inch(3.875))),                    # y 14'-2"
+         position=from_node("N-S-C2", inch(3.875)),                    # y 14'-2"
+         header_spec='2-ply 9.5" LVL',
+         published_span=PublishedSpan(
+             source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.5, 3-1/2\" VERSA-LAM 1.7 2650 Header Look Up Tables",
+             table="Door and window headers, Roof Only + 1 Floor (no mid support), roof load 50 psf snow (115%) + 15 psf dead, 32'-0\" structure width, 3'-2\" clear span: 4-3/8\" (not bolded, single trimmers); double 1-3/4\" substituted per the table note, at the smallest 1-3/4\" depth, 9-1/2\"",
+             member='2-ply 9.5" LVL',
+             span=ft(3, 2),
+             load_psf=65.0,
+             condition="the row is 65 psf x 18' + 52 psf x 16' + 80 plf = 2,082 plf; this header carries the ridge line (900 plf), FS-ATTIC (18' x 42 psf = 756) and the attic wall (~90), 1,746 plf; deflection L/360 live, L/240 total; dry use; uniform load only; see notes/header_spans_r602_7.md section 5a")),
     # O-S-HALLW (a 3'-0" cased opening at y 28'-7") is gone: the whole 8'-6" between
     # N-S-C2C and N-S-C3D is open under BM-S-HALL now, so there is no wall left to host it.
     # West block
@@ -664,7 +681,7 @@ OPENINGS = [
     # the head moves 6'-0" -> 7'-0". 2026-10-14: STUDY3 follows WIN-M-LIV-E1's 2026-10-03
     # move to 5'-4", restoring their column and clearing the compact corner bookshelf.
     Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2748-TT-T",
-           position=from_node("N-S-SE", ft(4, 2.25)), sill_height=ft(3)),    # y 5'-4"
+           position=from_node("N-S-SE", ft(2, 10.25)), sill_height=ft(3)),    # y 4'-0", 16" south of FO-A-STAIR's trimmer pack (2026-11-08)
     # BED1/BED2 ARE BACK ON THE 27" BEARING CAP, AND THE 2026-08-01 NOTE THAT
     # PUT THEM ON 30" WAS WRONG ABOUT WHY IT HAD TO. That note read: "a 27x36 falls a third
     # short [of R303.1] ... 27" cannot reach it at any height that fits under the 9'-0"

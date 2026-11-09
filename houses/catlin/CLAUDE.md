@@ -318,6 +318,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
   2026-10-31). Coloured/tunable runs (E4, E6, W) take one 96 W HLG-100H-24A plus one
   controller per segment (`ED-T-LT-CTRL-5IN1` indoors; the garage's `ED-T-LT-CTRL-MATTER`
   GL-C-208M in a vented NEMA 4X box, 2026-11-07); split a run rather than reach for a bigger driver.
+  Every HLG-100H-24A takes a RACO 232 AC splice box (`PSU-96-WE.parts`; billed, not drawn). The
+  hall cove is two straight legs (`LR-S-HALL-GAP` west to y=22'-4", `-GAP2` east to the 27'-6"
+  bulkhead), drivers and controllers in RM-S-NCLOSET; a soffit run's ends snap to host edges only within 10".
 - **Lighting conventions (2026-10-31 review, trimmed 2026-11-03; `DESIGN-LOG.md` "Lighting
   review", "Smart-switch reduction"):** smart switching is 11 D315S relays (`ED-T-LEV-MATTER`)
   on exterior, plant, gym and the lounge's accent/downlight/day/peninsula groups; every other
@@ -330,7 +333,8 @@ not instruction: when it disagrees with this file or the model, it is the one th
   T6525-W where the breaker is the GFCI). The conditioned basement's work light is the Q1 T8
   strip on `CKT-LT-BSMT` (off backup); mark D is the revert.
   `advisory.room_illuminance` grades average lux; `[mep.illuminance_lux]` adds the gym.
-- `params/solar.py` — rooftop PV array (12 × 440 W on the gable ridge, computed max fit).
+- `params/solar.py` — rooftop PV array (18 × 410 W bifacial, portrait, one row per plane at the R324.6.2
+  18" hull setback, 36" pathway at the north rake; computed max fit).
 - `params/roof_trim.py` — the eave water chain on RF-HOUSE's west/east eaves, stacked bottom
   to top on the deck: field membrane → PBR 5 x 4 box gutter 58079XX (level, back behind the
   eave face, 3-1/2" flange up under the eave leg) → Image II Extended Eave 52124XX (catalog
@@ -1307,9 +1311,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   The fireplace and its flanking E1/E2 moved **16" south** onto the LVP, a whole module, so
   every grid-locked station survives: brick centre on a bay centre, joist pockets on joists,
   niche kings on the module. **32" was rejected**: E1's RO would stand 18 1/2" off the SE
-  corner and lose the corner's bracing return. E1 no longer columns with `WIN-S-STUDY3`
-  (5'-4", left there on the owner's call; it moved there 2026-10-14, clearing the southeast
-  study bookshelf). The study chess table/chairs moved 30" west; the 23.62" Frailey corner
+  corner and lose the corner's bracing return. E1 columns with `WIN-S-STUDY3` again (4'-0",
+  moved back 2026-11-08 so FO-A-STAIR's trimmer lands outside its header span). The study chess table/chairs moved 30" west; the 23.62" Frailey corner
   shelf keeps both south windows. Its catalog is `plan/study_bookcase_types.py`; RC5 moved to
   the east-wall pier at y=3'-4". **Check `out/render/elev_east.png` before touching this
   row.**
@@ -1319,9 +1322,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   broken). Untempered (33" AFF sill). It carries the house's one named
   `structural.window_framing_module` suppression (the 27" bearing cap stays house-wide) and a
   **2-ply 9 1/2" LVL header read off Boise's VERSA-LAM table** as `header_spec` +
-  `published_span` (`notes/dining_window_header.md`). RC4 is retired (E1's RO took it). RC15 (179")
-  and RC16 cover the counter, leaving ~31" of slab under the dining glass past 24" of a
-  receptacle (open: a listed countertop pop-up). RC13/RC3 (22"/152", 16" AFF) cover the open
+  `published_span` (`notes/dining_window_header.md`). RC4 is retired (E1's RO took it). RC15 (179"),
+  RC18 (166") and RC16 cover the ash counter. The 63" dining glass leaves ~31" of slab with no
+  wall for a box, so that space is graded under NEC 210.52(C)(1) Ex 2, "as close as practicable"
+  (count met; an outlet beside each glass edge). The exception does not name windows, so the AHJ
+  must agree; if it refuses, add a listed countertop pop-up. RC13/RC3 (22"/152", 16" AFF) cover the open
   wall south of the slat partition. The dining thermostat is at 14', 54" AFF.
   The fireplace pier sits between `WIN-M-LIV-E1`/`E2`: a 45 1/2" facebrick surround
   centred y=7'-4", elm mantel at 5'-4". The brick centre is a bay centre on `W-M-E1`'s

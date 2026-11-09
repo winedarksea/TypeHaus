@@ -127,7 +127,7 @@ DIODE_VALENT_X = Product(
            "the counter dark.",
 )
 DIODE_OMNIDRIVE_X = Product(
-    tag="PROD-DIODE-OMNIDRIVE-X", brand="Diode LED", model="OMNIDRIVE X",
+    tag="PROD-DIODE-OMNIDRIVE-X", brand="Diode LED", model="OMNIDRIVE X (60 W: DI-ODX-24V60W-J)",
     name="24V constant-voltage LED driver, ELV/TRIAC/0-10V, no minimum load",
     source="Diode LED specification, read 2026-09-06. ELV + TRIAC + 0-10 V in one part, "
            "0.1% dim-to-dark, and ** NO MINIMUM LOAD -- that last spec is the one that "

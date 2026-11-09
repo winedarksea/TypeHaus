@@ -80,7 +80,7 @@ def span_stations(opening) -> tuple[float, float]:
     return lo, hi
 
 
-def authored_header(spec: str | None) -> HeaderChoice | None:
+def authored_header(spec: str | None, jacks: int | None = None) -> HeaderChoice | None:
     """The member an authored ``header_spec`` names; a flat one lies on its 1 1/2" face. An
     unparseable spec is ``None`` and the caller sizes the header: a typo never does."""
     profile = header_profile_from_spec(spec) if spec is not None else None
@@ -89,12 +89,12 @@ def authored_header(spec: str | None) -> HeaderChoice | None:
     section = cross_section(profile)
     flat = flat_header_member(spec) is not None
     return HeaderChoice(profile, section.width_m if flat else section.depth_m, flat,
-                        basis="authored")
+                        jacks=jacks, basis="authored")
 
 
 def ladder_header(opening) -> HeaderChoice:
     """A bare fixture's header, as before R602.7 was read: authored, else the ladder."""
-    authored = authored_header(opening.header_spec)
+    authored = authored_header(opening.header_spec, getattr(opening, "header_jacks", None))
     if authored is not None:
         return authored
     structural = opening_framing_pattern(opening.operation).header_is_structural
@@ -103,7 +103,7 @@ def ladder_header(opening) -> HeaderChoice:
 
 
 def choose_header(opening, host: HeaderHost, header_bottom_m: float) -> HeaderChoice:
-    authored = authored_header(opening.header_spec)
+    authored = authored_header(opening.header_spec, getattr(opening, "header_jacks", None))
     if authored is not None:
         return authored
     lo, hi = span_stations(opening)

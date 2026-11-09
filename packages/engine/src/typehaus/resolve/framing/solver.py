@@ -11,7 +11,7 @@ from dataclasses import replace
 from typing import Any
 
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.elements import Door, Wall, Window
+from typehaus.model.elements import Door, RoughOpening, Wall, Window
 from typehaus.model.enums import LayerFunction, PartitionLayout
 from typehaus.model.plan import PlanModel
 from typehaus.quantities import M_PER_IN
@@ -742,9 +742,9 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     exterior_door_types = {door_type.tag for door_type in plan.library.door_types
                            if door_type.exterior}
     door_types = {item.tag: item for item in plan.library.door_types}
-    opening_header_specs = {element.tag: element.header_spec
+    opening_header_specs = {element.tag: (element.header_spec, element.header_jacks)
                             for element in plan.all_elements()
-                            if isinstance(element, (Door, Window))}
+                            if isinstance(element, (Door, Window, RoughOpening))}
     band_floors = {element.tag: element.header_in_band for element in plan.all_elements()
                    if isinstance(element, Door) and element.header_in_band}
     # A wall's layout line, so ``FramingSpec.layout_origin="line"`` can phase its module.
@@ -757,8 +757,9 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             center_m=op.center_along_m, width_m=op.width_m, height_m=op.height_m,
             sill_m=op.sill_m, is_door=op.is_door, tag=op.tag,
             operation=door_operations.get(op.type_ref) if op.is_door else None,
-            header_spec=(opening_header_specs.get(op.tag)
+            header_spec=(opening_header_specs.get(op.tag, (None, None))[0]
                          or (type_header_specs.get(op.type_ref) if op.is_door else None)),
+            header_jacks=opening_header_specs.get(op.tag, (None, None))[1],
             pocket_run_m=op.pocket_run_m,
             pocket_sign=op.pocket_sign,
             track_nailer=(not op.pocket_run_m or op.type_ref not in door_types

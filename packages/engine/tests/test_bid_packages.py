@@ -69,7 +69,7 @@ def test_quantities_take_the_unit_a_sub_quotes_in(packages) -> None:
     by_key = {(line.section, line.key): line for p in built.values() for line in p.lines}
     assert by_key[("timber", "beam:BEAM_KDAT")].unit == "bf"
     assert by_key[("wall_structure", "BASEMENT_BRICK_VENEER:brown-brick")].unit == "SF"
-    aptos = "Aptos DNA-108-MFN10-440W (datasheet 08.04.2026), 67.7 x 44.6 x 1.3 in"
+    aptos = "Aptos DNA-108-BF10-410W (datasheet 06/2025), 67.7 x 44.6 x 1.3 in"
     assert by_key[("solar_modules", aptos)].unit == "ea"
     assert by_key[("framing", "24 roof truss")].unit == "ea"
     assert by_key[("envelope_layers", "usga-choker-sand:2.0")].unit == "cy"

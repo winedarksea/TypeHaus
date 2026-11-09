@@ -61,8 +61,9 @@ def test_without_the_extensions_it_fails_on_every_jamb_member(catlin_plan) -> No
         ctx.model.solids[index] = replace(solid, outline=outline)
     finding = next(f for f in bearing_wall_footing(ctx) if f.element_tags[0] == "W-B-CS3")
     assert finding.result is Result.FAIL
-    assert "4 of 4 bearing points" in finding.message
-    for key in ("king-0-l0", "jack-0-l0", "jack-0-r0", "king-0-r0"):
+    # D-B-GYM's two jacks a side; its north king stands past W-B-CS3's end, on FT-B-CS2.
+    assert "5 of 6 bearing points" in finding.message
+    for key in ("jack-0-l1", "jack-0-l0", "jack-0-r0", "jack-0-r1", "king-0-r0"):
         assert key in finding.message
 
 

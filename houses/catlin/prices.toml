@@ -383,6 +383,14 @@
 "2-1.75x9.5 LVL" = { material = { low = 12, high = 22 }, labour = { low = 7, high = 16 } }
 # D-M-LAUN's header (2026-11-07), Boise's Floor - 1 Story row: scaled from 9 1/2" by depth.
 "2-1.75x7.25 LVL" = { material = { low = 9, high = 17 }, labour = { low = 6, high = 13 } }
+# D-B-SAUNA / D-B-GYM's header, one 5 1/4 x 7 Versa-Lam 2650 (2026-11-09), 8 LF over 2 pcs.
+# ESTIMATE — no US retail $/LF was readable for this size (Home Depot lists it as an R/L
+# special-order item, price behind a 403). Material is the house's own LVL rows at
+# $4.3-7.9/bf (2-1.75x9.5: 12-22 over 2.77 bf/LF) x 3.0625 bf/LF. Cross-checks: Star Building
+# Winnipeg lists 1-3/4x7-1/4 beam at 5.78/LF (5.5/bf) and 5 1/4x16 beam at 66.27/LF (9.5/bf),
+# CAD, special order, so wide stock runs above the thin-ply rate. Labour matches the
+# 2-1.75x9.5 row (10.7 lb/ft against 9.6, a two-man lift per 8').
+"5.25x7 LVL" = { material = { low = 13, high = 24 }, labour = { low = 7, high = 16 } }
 # 56 LF over TWO pieces since 2026-08-28: one 16.7' opening header, plus RB-HOUSE, which
 # moved onto this row when the ridge went 3-ply 11 7/8" -> 2-ply 14" (see attic.py). The
 # ridge is 36 LF of it and is bought as THREE 12s rather than one over-length stick — it
@@ -1262,7 +1270,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # S-5-S: published MSRP $7.34 (s-5.com/products/s-5-s-clamps/); carton/street range.
 # 2026-10-29: zeroed. [solar_modules] $/W covers modules + racking + rapid shutdown, so PVKIT and its S-5-N clamp
 # are inside it. $0 rows kept: test_every_catlin_hardware_part_reaches_a_price needs a key.
-"S-5-PVKIT" = { low = 0, high = 0 }  # 48 ea — racking bills in [solar_modules] $/W
+"S-5-PVKIT" = { low = 0, high = 0 }  # 72 ea — racking bills in [solar_modules] $/W
 "S-5-S" = { low = 6, high = 10 }  # 0 ea — retired: Image II is 1" nail strip, not snap-lock
 # Eclisse steel cassettes since 2026-10-09 (notes/pocket_frame_eclisse.md). EKC3680 listed
 # $341.94 (Home Depot) to $465 (Ferguson). The 2x6 (EKQ series) has no 80" retail listing:
@@ -1299,7 +1307,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # for an N clamp to close on — the same swap, and the same argument, as the 48 S-5-S house-
 # wall clamps that went on 2026-08-26. The garage roof remains nail strip.
 # 2026-10-29: zeroed, see S-5-PVKIT; the 2 ColorGard carriers are priced in the "S-5! ColorGard" row.
-"S-5-N" = { low = 0, high = 0 }  # 50 ea — 48 PV seam clamps bill in [solar_modules] $/W
+"S-5-N" = { low = 0, high = 0 }  # 74 ea — 72 PV seam clamps bill in [solar_modules] $/W
 # S-5-N Mini: one setscrew, wind (uplift-only) clamps on both nail-strip roofs. Price is a
 # placeholder range pending a quote; MSRP is below the full S-5-N's.
 "S-5-N Mini" = { low = 4, high = 8 }  # 24 ea — 12 house roof + 12 garage roof wind clamps
@@ -2744,6 +2752,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "ED-T-LEV-GUIDE" = { material = { low = 12, high = 28 }, labour = { low = 38, high = 78 } }  # 6 ea since 2026-11-03 (+ the two breaker-GFCI bath outlets)
 "ED-T-LEV-GFCI-GUIDE" = { material = { low = 30, high = 50 }, labour = { low = 48, high = 92 } }  # 5 ea, the device-GFCI bath vanity outlets with a dusk guide light (GFNL2-W, estimate, 2026-11-03)
 "ED-T-LEV-MATTER" = { material = { low = 34, high = 60 }, labour = { low = 40, high = 80 } }  # 11 ea since 2026-11-03 (was 24 + 2 companions + 1 ELV); D315S-1BW, ~$34 retail listing (estimate)
+"ED-T-LEV-RF-COMPANION" = { material = { low = 25, high = 45 }, labour = { low = 10, high = 25 } }  # 1 ea; DAWSC-1BW inside D-B-SUNKEN for the court flood (listed price unconfirmed)
 "ED-T-ZOOZ-ZEN32" = { material = { low = 45, high = 60 }, labour = { low = 40, high = 80 } }  # 1 ea, lounge scene keypad (2026-10-31), retailer estimate
 "ED-T-LEV-OCC-PANTRY" = { material = { low = 40, high = 80 }, labour = { low = 40, high = 80 } }  # 1 ea
 "ED-T-LEV-OCC-PIR" = { material = { low = 40, high = 80 }, labour = { low = 40, high = 80 } }  # 1 ea
@@ -2846,6 +2855,9 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "ED-T-LT-CTRL-5IN1" = { material = { low = 25, high = 40 }, labour = { low = 20, high = 45 } }  # 6 ea, indoor coves
 "ED-T-LT-CTRL-MATTER" = { material = { low = 25, high = 40 }, labour = { low = 20, high = 45 } }  # 6 ea, garage; Gledopto GL-C-208M, Lectronz $25.62 (https://www.lectronz.com/products/gl-c-208m-rgb-cct-matter-led-controller, read 2026-11-07); high and labour mirror CTRL-5IN1 (estimate)
 "PROD-NEMA4X-BOX-GENERIC" = { material = { low = 7, high = 39 }, labour = 0 }  # 6 ea; Carlon E987R 6x6x4, Elliott Electric $39.28 (https://static.elliottelectric.com/P/Item/TAB/E987R, read 2026-11-07); low = Home Depot E987R-3-HD 3-pack, search snippet only
+"PROD-RACO-232" = { material = { low = 3, high = 6 }, labour = { low = 10, high = 20 } }  # 13 ea, the HLG AC splice box (RACO 232, 4 in. square x 2 1/8)
+"PROD-RACO-752" = { material = { low = 1, high = 2 }, labour = 0 }  # 13 ea, flat blank cover (Elliott ~$1.04)
+"PROD-CORD-GRIP-GENERIC" = { material = { low = 2, high = 5 }, labour = 0 }  # 13 ea, 1/2 in. cord connector
 "PROD-ENCLOSURE-VENT-GENERIC" = { material = { low = 3, high = 8 }, labour = 0 }  # 6 ea; Wiska EVSP 12 (https://www.rapidonline.com/wiska-evsp-12-vent-plugs-m12-549410, read 2026-11-07); high = Remke RVP15-M12-NM at Zoro, search snippet only
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea — ED-M-BATH2-PSU, the sauna's surface-mounted ED-B-SAUNA-LT-PSU and the closet's PAX supply (the pantry went to a PSU-96-WE 2026-10-31)
 "ED-T-LT-SCONCE-EXT" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 4 ea — WAC WS-W2605-BK $186-232 (researched 2026-10-28)
@@ -6506,7 +6518,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # the model has 5,280 W. That drift is the whole reason for this section: the line now moves
 # when a module is added or deleted, and the old lump never did.
 # $/W DC, by module product
-"Aptos DNA-108-MFN10-440W (datasheet 08.04.2026), 67.7 x 44.6 x 1.3 in" = { material = { low = 1.95, high = 2.60 }, labour = { low = 1.05, high = 1.40 } }  # 12 modules, 5,280 W
+"Aptos DNA-108-BF10-410W (datasheet 06/2025), 67.7 x 44.6 x 1.3 in" = { material = { low = 1.95, high = 2.60 }, labour = { low = 1.05, high = 1.40 } }  # 18 modules, 7,380 W (bifacial; $/W carried over from the 440 W monofacial, quote pending)
 
 [data_raceways]
 # NEW SECTION 2026-08-27 — [low, high] $/LF, split material/labour.

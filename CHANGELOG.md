@@ -4,6 +4,27 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
+- **NEC 210.52(E)(3) is graded**: new `code.NEC_210_52_E3_balcony_receptacles` finds balconies
+  and porches from their exterior doors. A soffit-hosted light run's ends now snap to the host
+  edges only within 10".
+- **Catlin electrical pass:** second kitchen TRADFRI driver (the suppression is gone); plain bed
+  switches in RM-S-BED1-3; 16 local Zigbee leak sensors; balcony receptacle and sconce; a wire-free
+  court-flood companion at D-B-SUNKEN; the theater switch at its door; a splice box billed on every
+  HLG-100H; the hall cove re-split into two straight legs, drivers in the linen closet.
+- **Rooftop PV is graded against MN R324.6.** New `code.R324_rooftop_pv_access` reads the
+  ridge setback, the 36" pathways and plan-view coverage off the resolved modules. Catlin's
+  array is re-laid to pass: 18 Aptos DNA-108-BF10-410W bifacial modules (7.38 kW), portrait,
+  one unbroken row per plane, 18" hull setback, north-rake pathway.
+- **`electrical.receptacle_spacing` grades NEC 210.52(C)(1) and (C)(4) off resolved
+  countertops**, replacing the UNKNOWN, including the Ex 2 "as close as practicable" reading
+  for glass standing at the counter (AHJ to agree). Catlin gains `ED-M-LIVING-RC18` and lowers
+  the dishwasher and disposer outlets to 9" AFF.
+- **A published header can be read against a derived line load** (`PublishedSpan.capacity_plf`,
+  `checks/structural/published_line_load.py`, `resolve/header_line_load.py`); `header_jacks` on
+  openings; a stair ledger on a parallel wall is a uniform strip, not a point. Catlin's nine
+  header UNKNOWNs close on Boise's guide with no seal: the x=18' stack and fire niche are 2-ply
+  9 1/2" LVL, D-B-SAUNA/GYM 5 1/4 x 7 LVL on two jacks, WIN-S-STUDY3 back to 4'-0".
+
 - **The block load's glass is Manual J's daily average plus the AED excursion**, not the
   peak plus it, which counted the swing twice. `EnergyReport.solar_btu_per_hour` is now that
   average; the peak moves to `solar_peak_btu_per_hour`.

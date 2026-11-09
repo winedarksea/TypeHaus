@@ -272,6 +272,21 @@ ENCLOSURE_VENT_GENERIC = Product(
            "(polyamide, pressure compensation, -40..+100 C; Rapid Electronics page). In the "
            "box's bottom wall, so the controller box neither sweats nor pumps water in.",
 )
+# The AC splice box on each HLG-100H-24A (PSU-96-WE): the A-type's AC side is a 3-conductor
+# SJOW 17 AWG cable lead, a bare driver case (220 x 68 x 38.8 mm) that cannot go in a 4 in.
+# box. One box, three parts, at every driver (owner, 2026-11-09).
+RACO_752_BLANK = Product(
+    tag="PROD-RACO-752", brand="RACO", model="752", name="4 in. square flat blank cover",
+    url="https://hubbellcdn.com/specsheet/RACO-752-SPEC-EN.pdf",
+    source=_READ7 + "Hubbell RACO 752 (distributor listings): 4 in. square flat blank cover, "
+           "0.063 in. steel, for the RACO 232 box (30.3 in3).")
+CORD_GRIP_GENERIC = Product(
+    tag="PROD-CORD-GRIP-GENERIC", brand="generic", model="1/2 in. cord connector",
+    name="1/2 in. knockout strain-relief cord connector, for 0.25-0.4 in. cord",
+    source=_READ7 + "Any listed screw-in cord connector (non-metallic) for the driver's SJOW "
+           "17 AWG x 3 lead. The lead enters one 1/2 in. KO; the branch NM enters the 3/4 in. KO "
+           "on a clamp. Fill, worst case (14 AWG through-fed): 4 hots/neutrals + 1 ground + 1 "
+           "clamp = 6 x 2.0 = 12 in3 of 30.3 in3. DC leads stay outside: no Class 2 in the box.")
 HALCO_LED_READY_STRIP = Product(
     tag="PROD-HALCO-90511", brand="Halco", model="90511",
     name="4 ft LED-ready 2-lamp strip, non-shunted, Type B double-ended T8",
@@ -334,6 +349,7 @@ WAVEFORM_MODERNVINTAGE_A19_30K = Product(
 )
 
 SELECTED_LIGHTING_PRODUCTS = (
+    RACO_752_BLANK, CORD_GRIP_GENERIC,
     NORA_NSIC_401QAT, NORA_NS_40P, NORA_NS_12, NORA_NS_76W, PAR20_90_30K, PAR20_90_27K,
     PAR20_90_40K, PAR20_90_50K, SORAA_VIVID_PAR20, SORAA_VIVID_PAR20_25, JUNO_WF4_DREG,
     WESTGATE_LP_2X4,

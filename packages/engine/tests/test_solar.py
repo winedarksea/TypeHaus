@@ -13,19 +13,19 @@ from typehaus.resolve.roof_geometry import roof_height_at
 
 
 def test_array_fit_and_wattage(catlin_model):
-    """Landscape max fit: 6 modules per side of the 36' ridge, 12 x 440 W = 5,280 W."""
+    """Portrait max fit: 9 modules per side of the ridge, 18 x 410 W = 7,380 W."""
     panels = catlin_model.solar_panels
-    assert len(panels) == 12
+    assert len(panels) == 18
     west = [p for p in panels if p.tag.startswith("SP-A-PV-W")]
     east = [p for p in panels if p.tag.startswith("SP-A-PV-E")]
-    assert len(west) == 6 and len(east) == 6
-    assert sum(p.watts for p in panels) == 5280.0
+    assert len(west) == 9 and len(east) == 9
+    assert sum(p.watts for p in panels) == 7380.0
 
     from typehaus.takeoff import solar_takeoff
     takeoff = solar_takeoff(catlin_model)
-    assert takeoff["panels"] == 12
-    assert takeoff["total_watts"] == 5280
-    assert takeoff["by_product"][0]["panels"] == 12
+    assert takeoff["panels"] == 18
+    assert takeoff["total_watts"] == 7380
+    assert takeoff["by_product"][0]["panels"] == 18
 
 
 def test_panels_ride_the_roof_plane(catlin_model):
@@ -71,12 +71,16 @@ def test_panels_ride_the_roof_plane(catlin_model):
 
 
 def test_panels_stay_clear_of_ridge_and_eaves(catlin_model):
+    """Every module is inside the roof footprint and its hull is 18" (R324.6.2) off the ridge,
+    the standoff lean included; the 36" pathway at the north rake is graded by
+    code.R324_rooftop_pv_access."""
+    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
+    y_lo = min(p[1] for p in roof.footprint)
+    y_hi = max(p[1] for p in roof.footprint)
     for panel in catlin_model.solar_panels:
-        for (x, y, _z) in panel.corners_bottom:
-            assert 0.0 <= y <= 36 * 0.3048 + 1e-6
-            # Authored 1' plan clearance, minus the small ridge-ward shift the
-            # perpendicular lift introduces (the modules stay clear on their own side).
-            assert abs(x - 18 * 0.3048) >= 0.55 * 0.3048
+        for (x, y, _z) in (*panel.corners_bottom, *panel.corners_top):
+            assert y_lo <= y <= y_hi
+            assert abs(x - 18 * 0.3048) >= 18 * 0.0254 - 1e-4
 
 
 def test_x_ridge_roof_branch(catlin_model):
@@ -143,7 +147,7 @@ def test_ifc_solar_devices(catlin_model_ro, catlin_ifc_path: Path):
 
     f = ifcopenshell.open(str(catlin_ifc_path))
     devices = f.by_type("IfcSolarDevice")
-    assert len(devices) == 12
+    assert len(devices) == 18
     assert all(d.PredefinedType == "SOLARPANEL" for d in devices)
     by_name = {d.Name: d for d in devices}
     panel = next(p for p in catlin_model_ro.solar_panels if p.tag == "SP-A-PV-W1")
@@ -154,7 +158,7 @@ def test_ifc_solar_devices(catlin_model_ro, catlin_ifc_path: Path):
     pset = next(rel.RelatingPropertyDefinition for rel in by_name["SP-A-PV-W1"].IsDefinedBy
                 if rel.RelatingPropertyDefinition.Name == "TypeHaus_Solar")
     props = {prop.Name: prop.NominalValue.wrappedValue for prop in pset.HasProperties}
-    assert props["watts"] == 440.0 and props["roof_ref"] == "RF-HOUSE"
+    assert props["watts"] == 410.0 and props["roof_ref"] == "RF-HOUSE"
 
 
 def test_gltf_carries_the_array(catlin_model):
@@ -164,7 +168,7 @@ def test_gltf_carries_the_array(catlin_model):
     solar_nodes = [node for node in doc["nodes"]
                    if node.get("extras", {}).get("trade") == "electrical"
                    and node["name"].split("|")[-1].startswith("SPV")]
-    assert len(solar_nodes) == 12
+    assert len(solar_nodes) == 18
 
 
 def test_pv_mounting_kits_are_billed(catlin_model):
@@ -173,14 +177,14 @@ def test_pv_mounting_kits_are_billed(catlin_model):
     rows = hardware_takeoff(catlin_model)
     pv = [row for row in rows if row["part_number"] == "S-5-PVKIT"]
     assert len(pv) == 1
-    assert pv[0]["count"] == 48  # 4 kits x 12 modules
+    assert pv[0]["count"] == 72  # 4 kits x 18 modules
     # No plain S-5! is billed: every carrier on a nail-strip roof is an S-5-N (2026-10-27,
-    # Image II). 48 carry the PV kits and 2 the east-eave ColorGard rails; the wind clamps
+    # Image II). 72 carry the PV kits and 2 the east-eave ColorGard rails; the wind clamps
     # are S-5-N Mini.
     assert not [row for row in rows if row["part_number"] == "S-5!"]
     carriers = [row for row in rows if row["part_number"] == "S-5-N"
                 and row["scope"] == "carried-mount"]
-    assert sorted(row["count"] for row in carriers) == [2, 48]
+    assert sorted(row["count"] for row in carriers) == [2, 72]
     mini = [row for row in rows if row["part_number"] == "S-5-N Mini"]
     assert sum(row["count"] for row in mini) == 24, "12 house roof + 12 garage roof"
 
@@ -190,6 +194,6 @@ def test_model_json_serializes_solar(catlin_model):
 
     payload = model_to_dict(catlin_model)
     panels = payload["solar_panels"]
-    assert len(panels) == 12
+    assert len(panels) == 18
     assert all(len(p["corners_bottom"]) == 4 and len(p["corners_top"]) == 4 for p in panels)
-    assert sum(p["watts"] for p in panels) == 5280.0
+    assert sum(p["watts"] for p in panels) == 7380.0

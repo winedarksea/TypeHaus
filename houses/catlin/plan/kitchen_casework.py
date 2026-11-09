@@ -108,7 +108,7 @@ MAIN_KITCHEN_CASEWORK = [
     # Pantry face x=297 3/8; 12 + 24 DW + 36 sink + 18 = 90 inches to the carousel.
     Furniture(uid="49B0RDP4NW", tag="FURN-M-KIT-E1", type_ref="SEKT-B12", room="RM-M-LIVING",
               position=pt(inch(303.375), inch(413.375))),
-    # On CT-M-KIT-N above B12, west of the dishwasher/sink, beside KET1 at x=306".
+    # On CT-M-KIT-N above B12, west of the dishwasher/sink, beside KET1 at x=313".
     # Base cabinets' 36" envelope includes the stone; the kettle stands on that top.
     # Owner-confirmed UK line-to-line use. WK 3422 is 3000 W: 12.5 A at 240 V, so the adapter
     # needs >= 13 A. Sold now (read 2026-11-04): World Cord Sets AD-620UNIV (6-20P to BS 1363

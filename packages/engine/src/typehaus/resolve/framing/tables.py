@@ -96,6 +96,9 @@ _RE_HEADER_SPEC = re.compile(
     r'(?:"|in\.?|inch(?:es)?)?\s+LVL\s*$',
     re.IGNORECASE,
 )
+# A one-piece billet, already spelled the way ``cross_section`` parses it: '5.25x7 LVL'.
+_RE_HEADER_PIECE = re.compile(r'^\s*(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)\s+LVL\s*$',
+                              re.IGNORECASE)
 
 
 def header_profile_from_spec(spec: str) -> str | None:
@@ -113,6 +116,9 @@ def header_profile_from_spec(spec: str) -> str | None:
     built_up = built_up_size(spec)
     if built_up is not None:
         return built_up  # '2-2x8': a sawn header on edge, the spelling the ladder emits
+    piece = _RE_HEADER_PIECE.match(spec)
+    if piece is not None:
+        return f"{float(piece['width']):g}x{float(piece['depth']):g} LVL"
     match = _RE_HEADER_SPEC.match(spec)
     if match is None:
         return None

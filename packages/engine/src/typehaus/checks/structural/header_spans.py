@@ -62,15 +62,19 @@ def _headers(ctx: CheckContext):
             yield wall, header, op, seen
 
 
+def published_stations(ctx: CheckContext, op) -> tuple[float, float]:
+    """The wall stations of ``op``'s clear span, a pocket's cavity included."""
+    operations = {item.tag: item.operation for item in ctx.plan.library.door_types}
+    return span_stations(SimpleNamespace(
+        center_m=op.center_along_m, width_m=op.width_m,
+        operation=operations.get(op.type_ref) if op.is_door else None,
+        pocket_run_m=op.pocket_run_m, pocket_sign=op.pocket_sign))
+
+
 def published_read(ctx: CheckContext, op, index: LoadIndex) -> tuple[float, tuple[str, ...]]:
     """(the span a published header row must cover, in feet — a pocket's cavity included —
     and the point loads bearing inside it). A header guide's rows are uniform-load only."""
-    operations = {item.tag: item.operation for item in ctx.plan.library.door_types}
-    seen = SimpleNamespace(
-        center_m=op.center_along_m, width_m=op.width_m,
-        operation=operations.get(op.type_ref) if op.is_door else None,
-        pocket_run_m=op.pocket_run_m, pocket_sign=op.pocket_sign)
-    lo, hi = span_stations(seen)
+    lo, hi = published_stations(ctx, op)
     wall = ctx.model.wall(op.host_wall)
     points = index.condition(wall, lo, hi).point_loads if wall is not None else ()
     return (hi - lo) / 0.3048, points

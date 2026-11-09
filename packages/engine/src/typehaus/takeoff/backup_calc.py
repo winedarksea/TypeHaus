@@ -49,7 +49,7 @@ from typehaus.takeoff.electrical import (
 DEPTH_OF_DISCHARGE = 0.90
 
 # Energy a strong day yields per kW of installed DC array, kWh/kW/day. Deliberately
-# conservative: the Catlin array is split E/W off a N-S ridge at 4:12, so neither row ever
+# conservative: the Catlin array is split E/W off a N-S ridge at 6:12, so neither row ever
 # sees a normal-incidence noon, and MN's strong-sun days in the season that matters for an
 # outage are short and cold. PVWatts-class annual averages for MN run ~3.5 kWh/kW/day for
 # a south-facing array; 3.0 is that number haircut for the E/W split. Estimate, not a

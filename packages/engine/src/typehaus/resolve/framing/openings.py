@@ -125,6 +125,8 @@ class WallOpening:
     tag: str | None = None
     operation: DoorOperation | None = None
     header_spec: str | None = None
+    #: ``header_jacks`` on the element: jacks per side under an authored header.
+    header_jacks: int | None = None
     pocket_run_m: float = 0.0
     pocket_sign: int = 0
     #: False when the pocket kit hangs its track from its own steel header (Eclisse).

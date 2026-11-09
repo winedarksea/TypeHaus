@@ -82,9 +82,9 @@ def test_light_runs_are_drawn_with_their_length(catlin_model):
 def test_light_run_ticks_mark_every_end_cap_and_corner(catlin_model):
     """A short cross-hatch at every fitting a straight length of channel cannot be on its
     own: two end caps (path endpoints) plus one per interior vertex where it turns."""
-    scene = build_lighting_plan(catlin_model, "second")
-    run = next(r for r in catlin_model.light_runs if r.tag == "LR-S-HALL-GAP2")
-    assert len(run.path) > 2, "need a run that actually turns a corner for this test to bite"
+    # The hall cove's legs went straight 2026-11-09; the sauna's rail is the run that turns.
+    run = next(r for r in catlin_model.light_runs if len(r.path) > 2)
+    scene = build_lighting_plan(catlin_model, run.storey)
     cove_polylines = [node for node in scene.nodes
                       if isinstance(node, Polyline) and node.layer == "E-LITE-COVE"]
     # One 2-point polyline per path vertex is a tick; the run itself is the one polyline
@@ -99,8 +99,8 @@ def test_psu_leader_connects_a_run_to_its_shared_supply(catlin_model):
     """Runs sharing one PSU draw one leader each, and every leader reaches the PSU's position;
     the PSU marker appears once per supply, not once per run.
 
-    The kitchen's four under-cabinet runs share ED-M-KITCH-LT-PSU, a wall-mounted supply,
-    so its point is read through `placed_xy`.
+    The kitchen's WE1/WE2 runs share ED-M-KITCH-LT-PSU, a wall-mounted supply, so its point
+    is read through `placed_xy`.
     """
     from typehaus.resolve.placeables import placed_xy
 
@@ -115,13 +115,13 @@ def test_psu_leader_connects_a_run_to_its_shared_supply(catlin_model):
               if isinstance(node, Polyline) and node.linetype == "DASHED"
               and any(pt == pytest.approx(psu_in, abs=1e-6) for pt in node.points)]
     shared_runs = [r for r in catlin_model.light_runs if r.psu_ref == "ED-M-KITCH-LT-PSU"]
-    assert len(leaders) == len(shared_runs) == 4
-    # Seven run supplies on the main sheet since 2026-11-03, when the two bath night-light
-    # drivers retired.
+    assert len(leaders) == len(shared_runs) == 2
+    # Eight run supplies on the main sheet since 2026-11-08 (second kitchen driver; seven
+    # after 2026-11-03, when the two bath night-light drivers retired).
     psu_labels = [node for node in scene.nodes if isinstance(node, Text) and node.content == "PSU"]
     supplies = {r.psu_ref for r in catlin_model.light_runs if r.storey == "main"}
-    assert len(supplies) == 7
-    assert len(psu_labels) == 9, "one marker per supply, incl. laundry track and pantry jambs"
+    assert len(supplies) == 8
+    assert len(psu_labels) == 10, "one marker per supply, incl. laundry track and pantry jambs"
 
 
 def test_switch_legs_are_dashed_and_only_drawn_where_both_ends_are_on_the_sheet(catlin_model):

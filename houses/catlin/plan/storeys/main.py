@@ -1220,11 +1220,11 @@ OPENINGS = [
     # laundry face, which takes that casing leg (`advisory.casing_clipped`), and the tower
     # moved east under the opening with the tub west of it (plan/fixtures.py).
     Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-POCKET-INT-36",
-         position=from_node("N-M-D1", inch(23.5)), header_spec='2-ply 7.25" LVL',
+         position=from_node("N-M-D1", inch(23.5)), header_spec='2-ply 9.5" LVL',
          published_span=PublishedSpan(
              source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.4, 3-1/2\" VERSA-LAM 1.7 2650 Header Look Up Tables",
-             table="Door and window headers, Floor - 1 Story, floor load 40 psf live + 12 psf dead, flush joists, 32'-0\" structure width, 6'-8\" clear span: 7\" (not bolded, single trimmers); double 1-3/4\" substituted per the table note, at the next 1-3/4\" depth, 7-1/4\"",
-             member='2-ply 7.25" LVL',
+             table="Door and window headers, Floor - 1 Story, floor load 40 psf live + 12 psf dead, flush joists, 32'-0\" structure width, 6'-8\" clear span: 7\" (not bolded, single trimmers); double 1-3/4\" substituted per the table note, at the smallest 1-3/4\" depth p.3 publishes, 9-1/2\"",
+             member='2-ply 9.5" LVL',
              span=ft(6, 8),
              load_psf=52.0,
              condition="the house is 36' wide and p.4 publishes no column past 32', so this is the 32' row plus a load comparison, not a literal cell (the literal 36' read is p.9 Floor Beams, 8 ft clear span: 3-1/2 x 9-1/2 on 2 trimmers; owner item in plans/TODO.md); the row is a full floor framing flush into the header over a 32' width (52 psf x 16' = 832 plf plus 60 plf of interior wall); this header carries FO-A-HALL's trimmer strip of FS-ATTIC, W-A-HALL-S on it, W-S-SN3 and FS-S-WEST's subfloor strip, ~240 plf, because neither floor frames onto this line; BM-S-BATH-E's hung reaction lands on the strike king and jack through squash block P-S-SN3-SQUASH, not in the span; clear span 74 1/2\" (36\" RO + 38 1/2\" cavity) against the row's 80\"; deflection L/360 live, L/240 total; dry use; uniform load only; see notes/header_spans_r602_7.md §4")),
@@ -1258,7 +1258,15 @@ OPENINGS = [
     # the lever.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED-TRIMLESS",
          position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True,
-         maximum_opening_degrees=174),
+         maximum_opening_degrees=174,
+         header_spec='2-ply 9.5" LVL',
+         published_span=PublishedSpan(
+             source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.6, 3-1/2\" VERSA-LAM 1.7 2650 Header Look Up Tables",
+             table="Door and window headers, Roof + 2 Floors (no mid support), roof load 50 psf snow (115%) + 15 psf dead, 32'-0\" structure width, 3'-2\" clear span: 5-1/4\" (not bolded, single trimmers); double 1-3/4\" substituted per the table note, at the smallest 1-3/4\" depth, 9-1/2\"",
+             member='2-ply 9.5" LVL',
+             span=ft(3, 2),
+             load_psf=65.0,
+             condition="the row is 65 psf x 18' + 2 x 52 psf x 16' + 160 plf = 2,994 plf; this header carries the ridge line (900 plf), FS-ATTIC (756), FS-S-WEST and -EAST (18' x 52 = 936) and two walls (~150), 2,742 plf; its floors alone are 1,692 plf against the row's 1,664, covered by the roof term (900 against 1,170); deflection L/360 live, L/240 total; dry use; uniform load only; see notes/header_spans_r602_7.md section 5a")),
     # ** 6'-0" OFF N-M-D3 SINCE 2026-09-15. ** `from_node` resolves to the NEAR JAMB, so
     # the RO is x=170"..202". The king is centred between this opening and D-M-BATH2:
     # its east edge is x=153.3175", and the matching 16" east nightstand ends 0.6825"
@@ -1282,7 +1290,15 @@ OPENINGS = [
     # 9'-5". The open leaf parks along the desk's north end (12 3/4" clear), and both switch
     # gangs moved to the north (latch) jamb.
     Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT-SWING32-TRIMLESS-PUSH",
-         position=from_node("N-M-S1", ft(6, 9)), flip_hinge=True, doorway=D_M_BED2_SADDLE),
+         position=from_node("N-M-S1", ft(6, 9)), flip_hinge=True, doorway=D_M_BED2_SADDLE,
+         header_spec='2-ply 9.5" LVL',
+         published_span=PublishedSpan(
+             source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.6, 3-1/2\" VERSA-LAM 1.7 2650 Header Look Up Tables",
+             table="Door and window headers, Roof + 2 Floors (no mid support), roof load 50 psf snow (115%) + 15 psf dead, 32'-0\" structure width, 3'-2\" clear span: 5-1/4\" (not bolded, single trimmers); double 1-3/4\" substituted per the table note, at the smallest 1-3/4\" depth, 9-1/2\"",
+             member='2-ply 9.5" LVL',
+             span=ft(3, 2),
+             load_psf=65.0,
+             condition="the row is 65 psf x 18' + 2 x 52 psf x 16' + 160 plf = 2,994 plf; this header carries the ridge line (900 plf), FS-ATTIC (756), FS-S-WEST and -EAST (18' x 52 = 936) and two walls (~150), 2,742 plf; its floors alone are 1,692 plf against the row's 1,664, covered by the roof term (900 against 1,170); deflection L/360 live, L/240 total; dry use; uniform load only; see notes/header_spans_r602_7.md section 5a")),
     # O-M-HALL (the old cased pass-through) retired 2026-07-28 with its host wall W-M-C4:
     # the full 4'-2" is open now. Sills raised 2'-0" -> 3'-0" (2026-07-30 facade pass) so
     # every main/second head on the west face lands on one shared 6'-0" line (27" units at
@@ -1396,7 +1412,7 @@ OPENINGS = [
     # 37 mm below the old rail. Dining's fixed stool retains 75 mm and meets the slab.
     # 2026-10-16: E1 and E2 moved one 16" module south with the fireplace, to 4'-0" and
     # 10'-8", still mirrored about the brick's y=88" with each RO 3 3/4" off it. The trio
-    # (ROs 2'-10 1/2"..11'-9 1/2") now sits on the LVP. E1 no longer columns with WIN-S-STUDY3.
+    # (ROs 2'-10 1/2"..11'-9 1/2") now sits on the LVP. E1 columns with WIN-S-STUDY3 again (2026-11-08).
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
            type_ref="WT-2748-TT", position=from_node("N-M-SE", ft(2, 10.25)),
            sill_height=ft(2, 10.28125)),
@@ -1503,7 +1519,15 @@ OPENINGS = [
     RoughOpening(uid="MGNV9YBS74", tag="AO-M-FIRE-NICHE", host="W-M-E1",
                  position=from_node("N-M-SE", inch(71)),
                  width=inch(34), height=inch(25), sill_height=inch(24.4375),
-                 depth=inch(6)),
+                 depth=inch(6),
+                 header_spec='2-ply 9.5" LVL',
+                 published_span=PublishedSpan(
+                     source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.6, 3-1/2\" VERSA-LAM 1.7 2650 Header Look Up Tables",
+                     table="Door and window headers, Roof + 2 Floors (no mid support), roof load 50 psf snow (115%) + 15 psf dead, 32'-0\" structure width, 3'-2\" clear span: 5-1/4\" (not bolded, single trimmers); double 1-3/4\" substituted per the table note, at the smallest 1-3/4\" depth, 9-1/2\"",
+                     member='2-ply 9.5" LVL',
+                     span=ft(3, 2),
+                     load_psf=65.0,
+                     condition="the row is 2,994 plf (65 psf x 18' + 2 x 52 psf x 16' + 160); W-M-E1 carries the roof (445 plf), FS-S-EAST (463), FS-ATTIC (374) and two walls (~190), 1,472 plf; ST-S2A's winder rim is screwed to W-S-E1 above this span (y 59..105\") and comes down as a strip through its studs, at most ~400 plf, 1,872 plf in all; deflection L/360 live, L/240 total; dry use; uniform load only; see notes/header_spans_r602_7.md section 5a")),
 ]
 
 ROOMS = [

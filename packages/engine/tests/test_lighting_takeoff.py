@@ -149,12 +149,15 @@ def test_every_supply_is_sized_at_125_percent_of_what_it_drives(catlin_model):
             continue
         assert supply["adequate"] is True, supply
         assert supply["rated_watts"] >= supply["required_watts"]
-    # Four MITTLED runs share the kitchen supply, so its demand is their sum, not the larger.
-    kitchen = next(s for s in supplies if s["psu"] == "ED-M-KITCH-LT-PSU")
-    assert len(kitchen["runs"]) == 4
-    assert kitchen["connected_watts"] == pytest.approx(
-        round(sum(row["watts"] for row in light_run_takeoff(catlin_model)["runs"]
-                  if row["psu"] == "ED-M-KITCH-LT-PSU"), 1))
+    # Four MITTLED runs split over two kitchen drivers (2026-11-08); each demand is the sum
+    # of its runs, not the larger.
+    split = {"ED-M-KITCH-LT-PSU": 2, "ED-M-KITCH-LT-PSU2": 2}
+    for psu, count in split.items():
+        kitchen = next(s for s in supplies if s["psu"] == psu)
+        assert len(kitchen["runs"]) == count
+        assert kitchen["connected_watts"] == pytest.approx(
+            round(sum(row["watts"] for row in light_run_takeoff(catlin_model)["runs"]
+                      if row["psu"] == psu), 1))
 
 
 def test_controls_name_a_resolvable_switch_or_carry_one_on_the_fixture(catlin_model):

@@ -991,7 +991,7 @@ SECOND_DEVICES = [
                      circuit="CKT-BATH-RC", room="RM-S-VANITY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD-N", face="right", distance_from_start=inch(65.5),
+                         wall_ref="W-S-BD-N", face="right", distance_from_start=inch(65.88),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
@@ -1178,7 +1178,7 @@ PV_JBOX = [
 # panel into the girt with the same gasketed T09150HWAM the panel is hung on, and those are
 # inside the field-grid screw count.
 #
-# NOT to be confused with the 48 S-5-PVKIT clamps in params/solar.py: those are on the
+# NOT to be confused with the 72 S-5-PVKIT clamps in params/solar.py: those are on the
 # mechanically seamed ROOF, which is untouched, and they stay exactly as they are.
 PV_JBOX_CLAMP = []
 
@@ -1906,7 +1906,7 @@ NEC_FILL_BASEMENT = [
                      circuit="CKT-RC-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CS", face="left", distance_from_start=inch(54),
+                         wall_ref="W-B-CS", face="left", distance_from_start=inch(52.625),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="WSTK6T5E4K", tag="ED-B-GYM-RC8", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
@@ -2044,11 +2044,16 @@ NEC_FILL_MAIN = [
     # (152") cover its two segments at the room's 16". A box on the brick jambs is gone (RC14,
     # RC17; uids retired): 3/4" of gwb between each window's jamb pack and the brick cannot
     # hold one. RC3 sits in the 144"-160" bay, south of the partition.
-    # North of it the 36" counter (slab 156 3/4"..271 3/8") is covered by RC15 (179") and RC16
-    # (258 1/8") at 42", 6" over the slab. RC16 uses a 2 3/4" single-gang plate north of the
-    # dining window's jamb pack.
-    # ** 179" -> 258 1/8" LEAVES ~31" OF SLAB UNDER THE DINING GLASS PAST 24". ** The glass
-    # takes the wall; a listed countertop pop-up in the ash slab is the open option.
+    # North of it the 36" counter (slab 156 3/4"..271 3/8") has RC15 (179") and RC16 (258 1/8")
+    # at 42", 6" over the slab, either side of WIN-M-DINING-E (RO 184 1/2"..247 1/2", sill 34"
+    # AFF, under the counter top), and RC18 (166") south of RC15. RC16 uses a 2 3/4"
+    # single-gang plate north of the window's jamb pack.
+    # ** THE GLASS TAKES THE WALL, SO THIS SPACE IS GRADED UNDER 210.52(C)(1) EX 2, "AS CLOSE AS
+    # PRACTICABLE". ** The 31" of slab under the glass past 24" has no wall to put a box on. Ex 2
+    # keeps the count (115" at 24" reach is three outlets: RC15, RC16, RC18) and wants each on or
+    # within 20" above the slab, one beside each glass edge. Ex 2 never names windows; reading
+    # "cannot be installed" to cover a picture window is the owner's (2026-11-09) and the AHJ
+    # must agree. If the AHJ refuses, the answer is a listed countertop pop-up in the slab.
     ElectricalDevice(uid="VHY1DXBHG2", tag="ED-M-LIVING-RC13", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-USBC",
                      circuit="CKT-RC-MAIN",
@@ -2069,6 +2074,13 @@ NEC_FILL_MAIN = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-E1", face="left", distance_from_start=inch(179),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    ElectricalDevice(uid="XGD2FAK54W", tag="ED-M-LIVING-RC18", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-DUPLEX-20",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(166),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="RB8M3Y2Q4N", tag="ED-M-LIVING-RC16", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE-SINGLE-GANG",
@@ -2187,7 +2199,7 @@ NEC_FILL_MAIN = [
                      circuit="CKT-BATH-RC", room="RM-M-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(40)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BAE", face="right", distance_from_start=inch(41.125),
+                         wall_ref="W-M-BAE", face="right", distance_from_start=inch(42.365),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ------------------------------------------------------------------------------------
     # THE TWO WASHLET OUTLETS (2026-09-06) — one stud bay, both baths.
@@ -2504,8 +2516,8 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SS2", face="right", distance_from_start=inch(158.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The southeast corner shelf covers the old south-wall station. The east-wall pier
-    # between shelf and WIN-S-STUDY3 keeps plugs accessible (owner, 2026-10-14).
+    # The southeast corner shelf covers the old south-wall station. The east wall under
+    # WIN-S-STUDY3 keeps the box accessible, 20" below the sill since the 2026-11-08 move.
     ElectricalDevice(uid="NEC062AAAA", tag="ED-S-STUDY2-RC5", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-SECOND",

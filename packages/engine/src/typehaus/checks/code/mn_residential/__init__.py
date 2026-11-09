@@ -31,6 +31,7 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     illumination,
     open_risers,
     radon,
+    rooftop_pv_access,
     room_area,
     room_dimension,
     rules,

@@ -105,6 +105,10 @@ def resolve_mep(model: ResolvedModel) -> list[Finding]:
     return findings
 
 
+# A soffit-hosted run's authored extremes follow the host's edges within this (10 in.).
+_EDGE_SNAP_M = 0.254
+
+
 def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Finding]:
     """Validate a linear-luminaire run and record its developed length and vertex heights.
 
@@ -159,14 +163,22 @@ def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Find
             return [Finding(severity=Severity.ERROR, check_id="integrity.light_run_host",
                             message=f"light run {run.tag} has an invalid perimeter offset",
                             element_tags=(run.tag,), result=Result.FAIL)]
-        # The authored three-sided path keeps its open end; the other three edges follow
-        # the host. This contract avoids a second set of wall-finish coordinates in source.
+        # The authored path keeps its open end; each extreme x follows the nearer host edge
+        # and the north extreme the north edge, but only within _EDGE_SNAP_M of it, so a leg
+        # that stops short of the host's edge (a straight leg, a leg ending mid-soffit) stays
+        # where it is authored. This avoids a second set of wall-finish coordinates in source.
         old_minx = min(x for x, _y in path)
         old_maxx = max(x for x, _y in path)
         old_maxy = max(y for _x, y in path)
-        path = [(minx + offset if x == old_minx else maxx - offset
-                 if x == old_maxx else x,
-                 maxy - offset if y == old_maxy else y) for x, y in path]
+        lo_x, hi_x, hi_y = minx + offset, maxx - offset, maxy - offset
+
+        def _snap_x(x: float) -> float:
+            near = [edge for edge, extreme in ((lo_x, old_minx), (hi_x, old_maxx))
+                    if x == extreme and abs(x - edge) <= _EDGE_SNAP_M]
+            return min(near, key=lambda edge: abs(x - edge)) if near else x
+
+        path = [(_snap_x(x), hi_y if y == old_maxy and abs(y - hi_y) <= _EDGE_SNAP_M else y)
+                for x, y in path]
     z_m = resolved_mount_elevation(storey, run)
     z_path = [z_m + r.meters for r in run.rise] if run.rise else [z_m] * len(path)
     developed = sum(math.hypot(length(sub(path[i], path[i + 1])), z_path[i + 1] - z_path[i])

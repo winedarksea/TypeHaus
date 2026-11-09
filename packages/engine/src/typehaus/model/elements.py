@@ -147,6 +147,8 @@ class Door(Element):
     # Per-opening engineered-header override (e.g. '2-ply 14" LVL'); None lets the framing
     # solver size the header. Falls back to the DoorType's header_spec when unset there too.
     header_spec: str | None = None
+    # Jacks per side under an authored header, where its published row asks for them.
+    header_jacks: int | None = Field(default=None, ge=1)
     # A FloorSystem tag whose band carries the wall above across this opening (a flush rim
     # header, ``JoistReinforcement.extent``): the host wall then frames no header, runs its
     # jacks to the plates and takes a flat nailer at the rough head. ``resolve/band_headers``
@@ -180,6 +182,8 @@ class Window(Element):
     # Per-opening engineered-header override, as on ``Door.header_spec``; None lets the
     # framing solver size the header from R602.7.
     header_spec: str | None = None
+    # Jacks per side under an authored header; see ``Door.header_jacks``.
+    header_jacks: int | None = Field(default=None, ge=1)
     # The published header-table row that sizes ``header_spec``; see ``Door.published_span``.
     published_span: PublishedSpan | None = None
     # The jamb an operable sash hinges on, by its host wall's node. Ordering data only
@@ -239,12 +243,15 @@ class RoughOpening(Element):
     #: creating a second header and jamb pack in the wall.
     framing_required: bool = True
     #: The maker's ALLOWABLE HOLES chart for this opening's header, where one is published
-    #: — the ``Door.published_hole`` field, on the opening kind that carries neither a
-    #: ``header_spec`` nor a ``published_span``. ``mep.run_through_header`` reads it.
+    #: — the ``Door.published_hole`` field. ``mep.run_through_header`` reads it.
     published_hole: PublishedHole | None = None
     #: A floor-level through hole is a leafless doorway: this names its floor transition,
     #: as ``Door.doorway`` does (``resolve/doorway.resolve_doorways``).
     doorway: DoorwayTreatment | None = None
+    #: The header override, its jacks and the row that sizes it, as on ``Door``.
+    header_spec: str | None = None
+    header_jacks: int | None = Field(default=None, ge=1)
+    published_span: PublishedSpan | None = None
 
     @model_validator(mode="after")
     def unframed_opening_must_be_blind(self):

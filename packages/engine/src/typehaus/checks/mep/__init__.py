@@ -24,6 +24,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     electrical_floor,
     electrical_garage,
     electrical_openings,
+    electrical_outdoor,
     electrical_panel_height,
     electrical_panel_space,
     electrical_receptacles,

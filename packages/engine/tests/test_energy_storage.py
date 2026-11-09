@@ -178,31 +178,33 @@ def test_every_module_carries_a_shutdown_device(catlin_plan, catlin_model):
     findings = rapid_shutdown(_context(catlin_plan, catlin_model))
     assert len(findings) == 2  # one per string
     assert all(f.result is Result.PASS for f in findings)
-    assert all("all 6 modules" in f.message for f in findings)
+    assert all("all 9 modules" in f.message for f in findings)
 
 
 def test_dropping_rsd_from_alternate_modules_fails_on_cold_voc(catlin_model):
     """The "every other module" option plans/TODO.md hoped for, tested rather than assumed:
-    two Aptos modules sum to 87.9V at the -30 degC design low, over the 80V limit."""
+    two Aptos modules sum to 85.3V at the -30 degC design low, over the 80V limit."""
     from dataclasses import replace
 
     panels = [replace(p, rsd=(index % 2 == 0))
-              for index, p in enumerate(sorted(catlin_model.solar_panels,
-                                               key=lambda p: p.tag))]
+              for string in ("STR-E", "STR-W")
+              for index, p in enumerate(sorted(
+                  (p for p in catlin_model.solar_panels if p.string == string),
+                  key=lambda p: p.tag))]
     model = catlin_model
     original = list(model.solar_panels)
     model.solar_panels[:] = panels
     try:
         fails = _fails(rapid_shutdown(_context(model.plan, model)))
         assert fails and all("over the 80V limit" in f.message for f in fails)
-        assert any("87.9V" in f.message for f in fails)
+        assert any("85.3V" in f.message for f in fails)
     finally:
         model.solar_panels[:] = original
 
 
 def test_a_module_without_cold_voc_is_unknown_not_a_pass(catlin_model):
     """``voc_cold`` is the only voltage this rule may read. Rated Voc would put a pair at
-    78.1V and pass it — legal in July, not in January."""
+    75.3V and pass it — legal in July, not in January."""
     from dataclasses import replace
 
     original = list(catlin_model.solar_panels)

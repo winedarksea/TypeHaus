@@ -27,7 +27,8 @@ PORCH_LIGHTING = [
     ElectricalDevice(uid="QTM001EAAA", tag="ED-M-PORCH-FLOOD", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-FLOOD-GARDEN", position=GARDEN_FLOOD_POSITION,
                      rotation=deg(0), mount=GARDEN_FLOOD_MOUNT,
-                     circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-FLOOD-SW",)),
+                     circuit="CKT-LT-MAIN",
+                     controlled_by=("ED-M-PORCH-FLOOD-SW", "ED-B-SUNKEN-SW-FLOOD")),
     # Adjacent indoor gangs: porch ambient/landing on one, garden utility light on the other,
     # both D315S relays.
     ElectricalDevice(uid="QTM001FAAA", tag="ED-M-PORCH-FLOOD-SW", kind=DeviceKind.SWITCH,

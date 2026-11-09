@@ -83,7 +83,7 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Scene keypad | `ED-M-LIVING-KEYPAD` | Zooz ZEN32 | Z-Wave JS on the 800 LR stick (local push) | none | does nothing | set scene-only (relay unwired) |
 | Indoor tape controllers (6) | `ED-M-LIVING-LT-CTRL`/`-E`, `ED-M-DINING-LT-CTRL`/`-E`, `ED-S-HALL-LT-CTRL`/`-CTRL2` | Gledopto GL-C-001P | Zigbee, ZHA on the second ZBT-2 (local push) | none | its power-on state (lit by default) | set power-on to "previous" |
 | Garage tape controllers (6) | `ED-G-EAVE-W/-W2/-E/-E2-CTRL`, `ED-G-GABLE-N/-N2-CTRL` | Gledopto GL-C-208M (Matter 1.3, CSA256C5MAT46615-24), each in a gasketed PVC NEMA 4X box with a breather vent plug in its bottom wall (owner, 2026-11-07: moisture, Matter preferred) | Matter over Wi-Fi, HA Matter server on the IoT VLAN (local push); color_temp pinned at the warmest kelvin (the tape's W on the warm terminal, C unused) | none | its power-on state | set power-on to "previous"; garage Wi-Fi coverage at 96" on three walls; electrical and temperature ratings unconfirmed (below) |
-| Closet and kitchen tape | `ED-M-CLOSET-LT-PSU`, `ED-M-KITCH-LT-PSU` (MITTLED) | IKEA TRADFRI 30 W, unpaired; a plain paddle is the hard off | none (no scene uses them) | none | powers on lit | bench-test power-on unpaired; DUBBELKISEL (Matter over Thread, no DIRIGERA) is the drop-in once IKEA US stocks it (FCC-filed 2026-06, no US listing 2026-09) |
+| Closet and kitchen tape | `ED-M-CLOSET-LT-PSU`, `ED-M-KITCH-LT-PSU`/`-PSU2` (MITTLED, two drivers since 2026-11-08) | IKEA TRADFRI 30 W, unpaired; a plain paddle is the hard off | none (no scene uses them) | none | powers on lit | bench-test power-on unpaired; DUBBELKISEL (Matter over Thread, no DIRIGERA) is the drop-in once IKEA US stocks it (FCC-filed 2026-06, no US listing 2026-09) |
 | HA host | `ED-B-UTIL-RC1` / `CKT-HA` | mini PC + ZBT-2 (Thread) + a second ZBT-2 (Zigbee) + Z-Wave 800 LR stick, **owner-furnished and not in the estimate** (2026-11-04) | wired LAN | none | none | UPS: the backup-battery TODO |
 
 Lighting, the fan and the RF-remote fixtures: `notes/workshop_receptacles.md`. Shades:
@@ -170,6 +170,8 @@ library stat on all three zones and uses its own floor sensor. Ask Schluter in w
 the cable warranty survives a non-Schluter thermostat.
 
 **No leak shutoff** (owner, 2026-11-03): the plant room's ZAC36 is dropped, and YoLink was already retired. See [plant_room.md](plant_room.md).
+**Court flood, inside the basement door** (2026-11-09): `ED-B-SUNKEN-SW-FLOOD`, a Leviton DAWSC-1BW wire-free RF companion of `ED-M-PORCH-FLOOD-SW`'s D315S (Leviton lists it compatible; no hub; 50 ft published). No circuit, no box; `ED-M-PORCH-FLOOD` names both in `controlled_by`. Bench-pair it before the board goes up.
+**Leak sensors** (2026-11-08): 16 SONOFF SNZB-05P Zigbee probes on the floor at the wet points, ZHA on the second ZBT-2, notify only; locations and automation in [leak_detectors.md](leak_detectors.md).
 
 **Recording, alarms, UPS.** No cloud recording plans. The HA host, router and PoE switch share
 `CKT-HA` (ALWAYS_ON); a small UPS for them is the separate backup-battery TODO. On battery the

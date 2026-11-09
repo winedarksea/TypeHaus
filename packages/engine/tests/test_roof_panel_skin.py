@@ -105,7 +105,7 @@ def test_catlin_skin_and_clamps_follow_shared_seams(catlin_model_ro):
         if getattr(element, "kind", None) is ConnectorKind.STANDING_SEAM_CLAMP
         and roof.tag in getattr(element, "connects", ())
     ]
-    assert len(clamps) == 60
+    assert len(clamps) == 84  # 12 wind + 72 PV
     for clamp in clamps:
         x, y = clamp.position.xy_m
         assert min(abs(y - station) for station in stations) < 0.25 * 0.0254

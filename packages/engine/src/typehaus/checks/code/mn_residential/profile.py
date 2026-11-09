@@ -80,6 +80,8 @@ MN_2020 = JurisdictionProfile(
         "R327.3 installation per the manufacturer's instructions, R327.4 inverter "
         "listing, R327.5 ventilation and R327.6 protection from impact are NOT covered. "
         "The 2021 R328 kWh caps and detection are advisories, not 2018 code. "
+        "Rooftop PV access: R324.6 pathways, ridge setback and coverage on gable roofs "
+        "(pathway live load, obstructions and escape-opening clearance are NOT covered). "
         + SOURCE_SIDE_COVERAGE +
         "Wall bracing: R602.10 in full for the wind path — line spacing (R602.10.1.3), "
         "the required length per line against Tables R602.10.3(1) and (2), minimum panel "
@@ -302,8 +304,10 @@ MN_2020 = JurisdictionProfile(
                        ("IRC R806.5", "IRC Table R806.5")),
         PermitItemSpec("Receptacle locations and listed floor boxes",
                        ("code.E3902_gfci_locations", "code.E3905_7_floor_boxes",
-                        "code.NEC_210_52_G_garage_receptacles"),
-                       (cite(NEC.GFCI), cite(NEC.FLOOR_BOX), cite(NEC.GARAGE_RECEPTACLE)),
+                        "code.NEC_210_52_G_garage_receptacles",
+                        "code.NEC_210_52_E3_balcony_receptacles"),
+                       (cite(NEC.GFCI), cite(NEC.FLOOR_BOX), cite(NEC.GARAGE_RECEPTACLE),
+                        cite(NEC.BALCONY_RECEPTACLE)),
                        blocking=False),
         # Blocking, unlike the two beside it: the staging lane exists for a rule the
         # reference house cannot answer yet, and this one it can — every basin in the plan
@@ -324,6 +328,8 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Energy storage system",
                        ("code.R327_ess_listing", "code.R327_ess_location"),
                        ("IRC R327.2", "IRC R327.3")),
+        PermitItemSpec("Rooftop PV roof access", ("code.R324_rooftop_pv_access",),
+                       ("IRC R324.6.1", "IRC R324.6.2")),
         # The two source-side NEC rules. Separate item from the ESS: an inspector signs off
         # on a backfeed breaker and a roof shutdown at a different moment than on a battery.
         PermitItemSpec("PV interconnection and rapid shutdown",

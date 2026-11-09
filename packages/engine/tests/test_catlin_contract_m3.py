@@ -1022,8 +1022,8 @@ def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(
     would let a retype break it silently.
 
     WIN-S-BED3 left the row for a three-storey 14" column with WIN-M-KIT-E below and
-    WIN-A-E-N above, so the outer pair is gone. WIN-S-STUDY3 remains at 5'-4" on the owner's
-    call while WIN-M-LIV-E1 moves to 4'-0". This test asserts both halves of the trade: the
+    WIN-A-E-N above, so the outer pair is gone. WIN-S-STUDY3 moved back to 4'-0" on 2026-11-08,
+    over WIN-M-LIV-E1, so FO-A-STAIR's trimmer lands outside its header span. This test asserts both halves of the trade: the
     inner pair still mirrors, and BED3 really is in the column it left the row for.
 
     (The east wall is BEARING, so the inner pair takes the 27" rung of the RO ladder, and
@@ -1043,12 +1043,11 @@ def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(
     assert (south.sill_m + south.height_m
             == pytest.approx(north.sill_m + north.height_m, abs=1e-6))
 
-    # STUDY3 stays at 5'-4" and clears the southeast bookshelf; E1 moves south to 4'-0".
+    # STUDY3 and E1 column at 4'-0" again (2026-11-08).
     study_y, study = _opening_plan_y(catlin_model, "WIN-S-STUDY3")
     living_y, _ = _opening_plan_y(catlin_model, "WIN-M-LIV-E1")
-    assert study_y == pytest.approx(ft(5, 4).meters, abs=1e-6)
+    assert study_y == pytest.approx(ft(4).meters, abs=1e-6)
     assert living_y == pytest.approx(ft(4).meters, abs=1e-6)
-    assert study_y - living_y == pytest.approx(inch(16).meters, abs=1e-6)
     assert study.sill_m == pytest.approx(ft(3).meters, abs=1e-6)
 
     # --- and the column BED3 was traded for actually exists ----------------------------

@@ -22,6 +22,7 @@ from typehaus.resolve.framing.header_tables import (
     table_condition,
 )
 from typehaus.resolve.framing.tables import header_profile_from_spec
+from typehaus.resolve.header_line_load import header_line_load
 from typehaus.resolve.header_loads import LoadIndex
 
 _ONE = TableCondition(EXTERIOR_TABLE, ONE_CENTER_FLOOR, 36, 50)
@@ -110,6 +111,18 @@ def test_catlin_oracle_conditions(catlin_plan, catlin_model_ro):
     assert published_read(ctx, door, index) == (pytest.approx(74.5 / 12), ())
     # The stair wells' trimmers land beside D-B-CLOSET's span, not across their holes.
     assert _condition(index, catlin_model_ro, "D-B-CLOSET").point_loads == ()
+
+
+def test_a_stair_ledger_is_a_strip_and_the_stack_reads_a_line_load(catlin_plan, catlin_model_ro):
+    index = LoadIndex.of(catlin_plan, catlin_model_ro)
+    niche = _condition(index, catlin_model_ro, "AO-M-FIRE-NICHE")
+    assert niche.point_loads == () and niche.strips == ("ST-S2A",)
+    # note §5b: 18' of roof and three floors, 288 plf of walls above: D + L governs.
+    ctx = SimpleNamespace(plan=catlin_plan, model=catlin_model_ro)
+    load = header_line_load(ctx, index, catlin_model_ro.wall("W-B-CS3"),
+                            _condition(index, catlin_model_ro, "D-B-GYM"))
+    assert (load.dead_plf, load.live_plf, load.snow_plf) == pytest.approx((1098, 2160, 630), abs=2)
+    assert load.governing_plf == pytest.approx(3258, abs=2)
 
 
 class _Unauthored:

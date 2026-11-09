@@ -218,6 +218,9 @@ class PublishedSpan(HausModel):
     loads_both_sides: bool | None = None
     #: The least notch throat a stringer row allows (Weyerhaeuser #9010: 5 3/4" at 11 7/8").
     min_throat_in: float | None = None
+    #: A load table's Allowable Total Load in plf at ``span`` (centre to centre of supports,
+    #: the plies already multiplied in). Read against the derived line load, not a psf.
+    capacity_plf: float | None = None
 
 
 class PublishedCapacity(HausModel):

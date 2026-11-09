@@ -301,24 +301,34 @@ LIVING_LIGHTING = [
     # 15.56" drawn, one 15" MITTLED module bought.
     LightRun(uid="5SGJTPFRSQ", tag="LR-M-KIT-N-WE3", type_ref="ED-T-LT-MITTLED",
              path=(pt(inch(400.375), inch(411.375)), pt(inch(411.375), inch(400.375))),
-             room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
+             room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU2",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(73))),
     LightRun(uid="D1YNDEW7NK", tag="LR-M-KIT-E-WN1", type_ref="ED-T-LT-MITTLED",
              path=(pt(ft(34, 3.375), inch(387.375)), pt(ft(34, 3.375), inch(399.375))),
-             room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
+             room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU2",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(73))),
-    # Six US modules (24+12, 18+12, 15, 12) draw 25.2 W, 84% of one TRADFRI 30 W: over the
-    # house's 80% rule, under IKEA's 30 W cap, accepted (owner, 2026-11-07). The closet's idiom
-    # (plan/closet.py): on the shelf inside FURN-M-KIT-WE5, corded into -UC-RC beside it, which
-    # ED-M-KITCH-SW-UC switches. The TRADFRI's 30 VA lands on CKT-LT-BACKUP; the outlet has none.
+    # Six US modules draw 25.2 W, over one TRADFRI 30 W's 125% rule (31.5 W), so two drivers
+    # split them by place (owner, 2026-11-08): -PSU takes WE1 (24+12) and WE2 (18+12), 17.6 W
+    # = 22 W at 125%; -PSU2 the corner WE3 (15) and the east WN1 (12), 7.6 W = 9.5 W. The
+    # closet's idiom (plan/closet.py): both lie on a shelf at 72" inside FURN-M-KIT-WE5 (d
+    # 32.5"-62.5"; each 11 1/4" long, d 34.4"-45.6" and 50.4"-61.6"), under the 76" -UC-RC box
+    # (74"-78") they cord into, which ED-M-KITCH-SW-UC switches. Each TRADFRI's 30 VA lands on
+    # CKT-LT-BACKUP; the outlet has none.
     ElectricalDevice(uid="7VSVT7B8ZS", tag="ED-M-KITCH-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-LT-PSU-TRADFRI-30",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(74)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(72)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-N1", face="left", distance_from_start=inch(60),
+                         wall_ref="W-M-N1", face="left", distance_from_start=inch(56),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    ElectricalDevice(uid="120VZACVB0", tag="ED-M-KITCH-LT-PSU2", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-PSU-TRADFRI-30",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(72)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-N1", face="left", distance_from_start=inch(40),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # GFCI at the device: every kitchen 125 V receptacle wants it, and the circuit has none.
     # 76" keeps the box in the band between the cabinet rail backings (58 1/4"..81 1/2").

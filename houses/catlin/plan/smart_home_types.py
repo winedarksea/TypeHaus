@@ -97,8 +97,17 @@ WARMUP_7IE = Product(
     source="Warmup NAM submittal, read 2026-10-30: Matter over Wi-Fi, 110-240 VAC, 15 A "
            "resistive, integral Class A GFCI (5 mA), 10 ft NTC10K floor sensor, ~114 x 90 mm "
            "face. Schluter cable warranty with a non-Schluter stat: ask in writing." + _NOTE)
+SONOFF_SNZB_05P = Product(
+    tag="PROD-SONOFF-SNZB-05P", brand="SONOFF", model="SNZB-05P",
+    name="Zigbee 3.0 water leak sensor",
+    url="https://sonoff.tech/products/sonoff-snzb-05p-zigbee-water-leak-sensor",
+    source="SONOFF page and retailer listings, read 2026-11-08: 48 x 48 x 21.6 mm, 1 x CR2477, "
+           "-10..60 C, Zigbee 3.0, probe contacts on the underside plus an optional cable "
+           "probe. Pairs to ZHA on the Zigbee ZBT-2 with no SONOFF app or cloud; reports "
+           "water_leak and battery. Retail, no quote." + _NOTE)
 SMART_HOME_PRODUCTS = (REOLINK_DOORBELL, REOLINK_OMVI_3I, REOLINK_DUO3, LIFTMASTER_87504,
-                       GRIZZLE_SMART, KIDDE_SM120X, KIDDE_CO120X, AQARA_W200, WARMUP_7IE)
+                       GRIZZLE_SMART, KIDDE_SM120X, KIDDE_CO120X, AQARA_W200, WARMUP_7IE,
+                       SONOFF_SNZB_05P)
 
 # --- low-voltage endpoints (DATA_OUTLET kind; PoE from the switch in ED-B-NET-PATCH) ----------
 # 12.95 W is the 802.3af PD ceiling, used where the maker publishes no draw; the Duo 3

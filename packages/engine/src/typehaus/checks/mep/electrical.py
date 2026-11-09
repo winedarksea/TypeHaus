@@ -6,6 +6,7 @@ from typehaus.checks._authoring import advisory
 from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
+from typehaus.checks.mep.electrical_counters import counter_findings
 from typehaus.checks.mep.electrical_wall_space import (
     definite_coverage_gaps,
     facing_well_intervals,
@@ -191,8 +192,8 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
     spaces, spaces under 2' are exempt, and every remaining point must be within 6' of a
     receptacle projected onto the boundary. Roof-to-floor plate boundaries are evaluated
     both as wall space and as breaks, with their interpretation explicitly UNKNOWN.
-    The kitchen-counter rule (210.52(C)) is not evaluated — counters are casework, not
-    resolved geometry — and reports UNKNOWN so the gap stays visible.
+    Kitchen counters (210.52(C)) are graded off the resolved countertops by
+    ``electrical_counters.counter_findings``.
     """
     cid = "electrical.receptacle_spacing"
     devices_by_storey: dict[str, list] = {}
@@ -245,10 +246,7 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
         elif not gaps:
             out.append(_pass(cid, f"room {room.tag} meets the 6' receptacle rule",
                              (room.tag,)))
-    out.append(_unknown(cid, f"kitchen counter rule ({NEC.COUNTERTOP}, incl. "
-                             f"{NEC.BELOW_COUNTERTOP}'s 24\" below the counter) not evaluated "
-                             "— counter casework is not resolved geometry; counter "
-                             "receptacles are authored at 42\" in plan/mep.py"))
+    out.extend(counter_findings(ctx, cid))
     return out
 
 

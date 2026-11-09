@@ -326,7 +326,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # ends land on a stud that already has a block (`land_free_ends`).
     # 1160 on 2026-11-06 (decision #116): WIN-M-LIV-E1, -BED-W1/-W2 and -BATH2 take R602.7's
     # NJ 3, and the wider packs take one more jamb station on W-M-E1, -W3 and -W4 each.
-    assert row["count"] == 1160 and furring[0]["count"] == 198
+    # 1156 on 2026-11-08: WIN-S-STUDY3's 16" south move drops its four packed stations.
+    assert row["count"] == 1156 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

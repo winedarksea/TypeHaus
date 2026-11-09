@@ -22,11 +22,13 @@ from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 
-from .header_spans import published_read
+from .header_spans import _pack, published_read, published_stations
 from .published import graded_against_published
+from .published_line_load import graded_against_published_line_load
 
 _CID = "structural.header_prescriptive"
 _PRESCRIPTIVE_SPAN_M = 8.0 * 0.3048
+_STUD_FACE_IN = 1.5  # a 2x jack's face along the wall: one jack, 1 1/2" of bearing
 
 
 @check(Tier.STRUCTURAL, _CID)
@@ -72,6 +74,9 @@ def header_within_prescriptive(ctx: CheckContext) -> list[Finding]:
                     fix_hint="move the opening so the point lands on its jamb pack, or "
                              "carry the header as an engineered item"))
                 continue
+        if published is not None and published.capacity_plf is not None:
+            out.append(_line_load_read(ctx, op, index, spec, published, span_ft))
+            continue
         out.append(graded_against_published(
             _CID, f"opening {op.tag}, headed with {spec}", (op.tag,), span_ft, published,
             spec,
@@ -86,6 +91,32 @@ def header_within_prescriptive(ctx: CheckContext) -> list[Finding]:
             else ("re-read the manufacturer's header-table row at the model's own "
                   "condition, or drop header_spec and let R602.7 size the header")))
     return out
+
+
+def _line_load_read(ctx, op, index, spec, published, span_ft: float) -> Finding:
+    """A load-table row: the demand is the derived plf and the span runs to the jack centres."""
+    from typehaus.loads import DERIVED_AT_GROUND_SNOW_PSF
+    from typehaus.resolve.header_line_load import header_line_load
+
+    wall = ctx.model.wall(op.host_wall)
+    header = next(m for m in wall.members if m.category == "header" and m.opening_tag == op.tag)
+    jacks, _cripples = _pack(wall, header)
+    bearing_in = jacks * _STUD_FACE_IN
+    lo, hi = published_stations(ctx, op)
+    site = getattr(ctx.plan.project, "site", None)
+    ground = getattr(site, "ground_snow_load_psf", None)
+    load = (header_line_load(ctx, index, wall, index.condition(wall, lo, hi))
+            if ground is not None and abs(float(ground) - DERIVED_AT_GROUND_SNOW_PSF) < 1e-6
+            else "the roof load figures are derived at 50 psf ground snow only")
+    if isinstance(load, str):
+        return graded_against_published_line_load(_CID, f"opening {op.tag}, headed with {spec}",
+                                                  (op.tag,), span_ft, published, spec, load,
+                                                  bearing_in=bearing_in)
+    return graded_against_published_line_load(
+        _CID, f"opening {op.tag}, headed with {spec}", (op.tag,), span_ft + bearing_in / 12,
+        published, spec, load.governing_plf, bearing_in=bearing_in,
+        load_basis=f"D {load.dead_plf:,.0f} + L {load.live_plf:,.0f} + S {load.snow_plf:,.0f} "
+                   f"plf: {load.basis}")
 
 
 def _wide_header_demand_psf(ctx: CheckContext) -> float | None:

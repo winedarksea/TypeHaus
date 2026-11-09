@@ -140,7 +140,8 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # 2026-10-22: the dark-steel handrails carry RAILING-INT-ALUM-HANDRAIL; the
     # untyped bucket keeps the rest. Their sum is the same 40.8 LF.
     dark_steel = by_type.get("RAILING-INT-ALUM-HANDRAIL", 0.0)
-    assert dark_steel + by_type["(untyped railing)"] == pytest.approx(40.8, abs=0.1)
+    # 41.8 since 2026-11-08: RL-A-HANDRAIL's return moved south of WIN-S-STUDY3's new jamb.
+    assert dark_steel + by_type["(untyped railing)"] == pytest.approx(41.8, abs=0.1)
     assert dark_steel > 0
     assert by_type["RAILING-INT-TI-HANDRAIL-42"] == pytest.approx(9.5, abs=0.1)
 

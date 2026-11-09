@@ -120,6 +120,14 @@ DIVA_ELV = _prod("DVELV-300P", "Diva ELV dimmer, 300 W, reverse phase, single-po
 # The D215S's successor (D215S discontinued): Matter out of the box.
 D315S = _prod("D315S-1BW", "Decora Smart Wi-Fi switch, Matter, 15 A / 3 A LED",
               "https://www.leviton.com/products/d315s-1bw")
+# Wire-free (battery, RF) companion: no hub, no wiring, no branch circuit. Leviton's page
+# (read 2026-11-09, owner) lists the D315S as compatible; published range 50 ft.
+DAWSC = Product(tag="PROD-LEVITON-DAWSC-1BW", brand="Leviton", model="DAWSC-1BW",
+                name="Decora Smart wire-free companion switch, RF, battery",
+                url="https://leviton.com/products/dawsc-1bw",
+                source="Leviton page via owner, 2026-11-09: wire-free RF companion to the D315S "
+                       "(listed compatible), no hub, 50 ft published range; surface or box "
+                       "mount, battery.")
 DOS02 = _prod("DOS02-LW", "Decora PIR occupancy sensor, 150 W LED, neutral optional")
 ODS10 = _prod("ODS10-IDW", "PIR occupancy sensor, 10 A, LED-rated, no neutral",
               "https://leviton.com/products/ODS10-IDW")
@@ -131,6 +139,11 @@ ZEN32 = _prod("ZEN32", "ZEN32 800LR scene controller, 5 buttons, Z-Wave", brand=
               url="https://www.getzooz.com/zooz-zen32-scene-controller/")
 
 SWITCH_TYPES = (
+    # No power port and no box: a companion draws nothing from a circuit (device_box=False).
+    ElectricalDeviceType(
+        tag="ED-T-LEV-RF-COMPANION", name="Wire-free RF companion (DAWSC-1BW)",
+        footprint=(inch(1.75), inch(0.6)), height=inch(2.9), needs=frozenset(), ports=(),
+        device_box=False, control="smart", product_ref=DAWSC.tag, source=DAWSC.source),
     _dev("ED-T-LEV-SW1", "Lever Edge single-pole switch (E5601-W)", E5601, symbol=None),
     _dev("ED-T-LEV-SW3", "Lever Edge 3-way switch (E5603-W)", E5603, symbol=None),
     _dev("ED-T-LUT-DIVA", "Lutron Diva dimmer (DVCL-153P), Claro plate", DIVA, symbol=None,
@@ -154,5 +167,5 @@ SWITCH_TYPES = (
 DEVICE_TYPES = (*RECEPTACLE_TYPES, *SWITCH_TYPES)
 DEVICE_PRODUCTS = (
     E5825, E5325, GFTR2, GFTR1, GFTA2, GFWT2, GFRBF, T5836, T5380, T6525, GFNL2, T5020, T5461,
-    R278, IN_USE, E5601, E5603, DIVA, DIVA_ELV, D315S, DOS02, ODS10, MAT51, ZEN32,
+    R278, IN_USE, E5601, E5603, DIVA, DIVA_ELV, D315S, DAWSC, DOS02, ODS10, MAT51, ZEN32,
 )

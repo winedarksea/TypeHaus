@@ -22,51 +22,87 @@ from typehaus.model import Location, WallAttachment, m
 
 # --- Second storey --------------------------------------------------------------------
 SECOND_LIGHTING = [
-    # Three-sided shadow gap in SF-S-DUCT's underside: the board stops 5/8" short of both
-    # walls and of SF-S-HP1's bulkhead, the tape in the reveal (DRYWALL-STANDARD, #103); the
-    # bead is the board's depth, so nothing rises into the 2x2 rungs. Host-relative width
-    # and north return follow the resolved wall finishes; the south ends remain at 9'-7".
-    # Clockwise path, opening left: west/east wall wash and the north bulkhead transition.
+    # Two straight shadow-gap legs in SF-S-DUCT's underside (owner, 2026-11-09): no U, no
+    # south crossing, no north return. The board stops 5/8" short of each wall (DRYWALL-
+    # STANDARD, #103); the bead is the board's depth, so nothing rises into the 2x2 rungs, and
+    # the resolver derives the beads off these paths (the north bulkhead's Z bead is gone).
+    # West leg (-GAP, ED-S-HALL-LT-PSU): x=18'-6" from y=9'-7" to 22'-4", where W-S-C2C (the
+    # suite bath) ends at the stair opening: 12.75 ft. East leg (-GAP2, -PSU2): x=21'-6" from
+    # y=9'-7" to the north bulkhead at 27'-6", beside the closet: 17.9 ft.
     # Tunable white (E6) since 2026-10-31: the controller holds a low 2700 K night preset that
     # HA recalls after dark while the plain 3-ways (2026-11-03) leave both drivers' 120 V on.
-    # Two runs since 2026-10-31 (Class 2: a <=100 VA certified supply per segment), split at
-    # the NW corner: the west leg keeps the tag, the north return and east leg are -GAP2. A
-    # split mid-return does not hold: the resolver runs each piece's end to the reveal corner.
     LightRun(uid="QRS0001AAA", tag="LR-S-HALL-GAP", type_ref="ED-T-LT-STRIP24-TUNABLE",
-             path=(pt(ft(18, 6), ft(9, 7)), pt(ft(18, 6), ft(27, 6))),
+             path=(pt(ft(18, 6), ft(9, 7)), pt(ft(18, 6), ft(22, 4))),
              room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU",
              controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
              soffit_ref="SF-S-DUCT", soffit_edge_offset=inch(0.3125),
              emission_side="left",
              mount=Mount(kind=MountKind.CEILING, elevation=inch(94.5))),
     LightRun(uid="6V6YZABYSN", tag="LR-S-HALL-GAP2", type_ref="ED-T-LT-STRIP24-TUNABLE",
-             path=(pt(ft(18, 6), ft(27, 6)), pt(ft(21, 6), ft(27, 6)),
-                   pt(ft(21, 6), ft(9, 7))),
+             path=(pt(ft(21, 6), ft(27, 6)), pt(ft(21, 6), ft(9, 7))),
              room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU2",
              controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
              soffit_ref="SF-S-DUCT", soffit_edge_offset=inch(0.3125),
              emission_side="left",
              mount=Mount(kind=MountKind.CEILING, elevation=inch(94.5))),
-    # The driver moved with the cove: (20'-0", 30'-6") is inside EQ-S-HP1-AH's footprint
-    # since the 2026-09-04 HP1 move. (19'-0", 27'-2") keeps the relationship it always had
-    # — a driver hidden in SF-S-DUCT — on the other side of the
-    # y=27'-8" seam from the machine. One Class 2 HLG-100 (96 W) per run since 2026-10-31:
-    # 18'-1" / 21'-6" at 3 W/ft x1.25 is 68 / 81 W. PSU2 mirrors it at x=21'-0" for -GAP2;
-    # each GL-C-001P (CCT mode) sits 6" south of its driver in the same soffit.
+    # Both Class 2 HLG-100 (96 W) drivers and their GL-C-001P controllers are in RM-S-NCLOSET,
+    # on the east wall (W-S-BW4's closet face) east of EQ-S-HP1-AH, 16" free: reachable with
+    # no soffit hatch. 12.75 ft / 17.9 ft at 3 W/ft x1.25 is 48 / 67 W. Each 24 V pair is
+    # fed at its leg's NORTH end. East: straight out through the bulkhead, ~3 ft. West: 18 AWG
+    # Class 2 through SF-S-HP1/SF-S-DUCT along the east wall to y=22'-4", ~12 ft each way; at
+    # 38 W (1.6 A) the pair drops ~0.3 V (1.3% of 24 V), then the tape's own run. The engine
+    # models no 24 V feeder, so the path is this comment; pull it before the board goes up.
     ElectricalDevice(uid="QTS0001AAA", tag="ED-S-HALL-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(19), ft(27, 2)), type_ref="ED-T-LT-PSU-96-WE",
-                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
-                     mount=Mount(kind=MountKind.CEILING)),
+                     type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-UPPER", room="RM-S-NCLOSET",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(66)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BW4", face="left", distance_from_start=inch(16),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="RTFGRQ9WBV", tag="ED-S-HALL-LT-CTRL", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(19), ft(26, 8)), type_ref="ED-T-LT-CTRL-5IN1",
-                     room="RM-S-HALL", mount=Mount(kind=MountKind.CEILING)),
+                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-S-NCLOSET",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(66)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BW4", face="left", distance_from_start=inch(32),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="PZY7PB1XX0", tag="ED-S-HALL-LT-PSU2", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(21), ft(27, 2)), type_ref="ED-T-LT-PSU-96-WE",
-                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
-                     mount=Mount(kind=MountKind.CEILING)),
+                     type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-UPPER", room="RM-S-NCLOSET",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(52)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BW4", face="left", distance_from_start=inch(16),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="MW0FDQBB4F", tag="ED-S-HALL-LT-CTRL2", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(21), ft(26, 8)), type_ref="ED-T-LT-CTRL-5IN1",
-                     room="RM-S-HALL", mount=Mount(kind=MountKind.CEILING)),
+                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-S-NCLOSET",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(52)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BW4", face="left", distance_from_start=inch(32),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    # The balcony at D-S-BALCONY (owner, 2026-11-09), mirroring the porch's pair on W-M-S2 in
+    # the 18" between the door's east jamb and WIN-S-STUDY1: a WR GFCI with in-use cover (NEC
+    # 210.52(E)(3), `code.NEC_210_52_E3_balcony_receptacles`), 18" above the deck, on
+    # CKT-RC-SECOND (20 A AFCI, GFCI at the device); and one exterior sconce on a plain paddle
+    # inside Study 2 at the door, CKT-LT-UPPER with the load it switches. No room= on either
+    # outdoor fitting: the exterior classifiers place them geometrically.
+    ElectricalDevice(uid="VA4Z7YCQDQ", tag="ED-S-BALCONY-RC1", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-RC-SECOND",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(18)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-S2", face="right", distance_from_start=inch(79),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="9MMKJPKNEW", tag="ED-S-BALCONY-LT", kind=DeviceKind.LIGHT,
+                     type_ref="ED-T-LT-SCONCE-EXT", circuit="CKT-LT-UPPER",
+                     controlled_by=("ED-S-STUDY2-SW-BALCONY",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-S2", face="right", distance_from_start=inch(80),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="YJJ1BVX3AZ", tag="ED-S-STUDY2-SW-BALCONY", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER", room="RM-S-STUDY2",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-S2", face="left", distance_from_start=inch(79),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # No hall cans since 2026-10-31: the three that recessed into SF-S-DUCT sat inside
     # DU-S-HP-SUP. The LR-S-HALL-GAP shadow-gap cove lights the hall on these switches.
     # Both x's follow the hall face of W-S-BW1/BW2, INT_2X4_RC (plan/storeys/second.py) —

@@ -8,6 +8,8 @@
 # siblings; what moved is the receptacle schedule, which is the part that is per-room and the
 # part the studio grew.
 from typehaus import (
+    Alarm,
+    AlarmKind,
     DeviceKind,
     ElectricalDevice,
     Mount,
@@ -248,4 +250,11 @@ NEC_FILL_ATTIC = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-BA-E", face="right", distance_from_start=inch(36),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # Leak sensors (notes/leak_detectors.md): SONOFF SNZB-05P on the floor at each risk point,
+    # Zigbee to ZHA, battery (no circuit). HA notifies; nothing depends on them. `position`
+    # is the floor point (an Alarm has no wall host or elevation).
+    Alarm(uid="7C2XT7S2ZH", tag="AL-A-STUBATH-LEAK", kind=AlarmKind.LEAK, room="RM-A-STUBATH",
+          position=pt(inch(149.6), inch(247.6))),
+    Alarm(uid="KE08WVTHT8", tag="AL-A-STUDIO-LEAK", kind=AlarmKind.LEAK, room="RM-A-STUDIO",
+          position=pt(inch(165.5), inch(187.8))),
 ]

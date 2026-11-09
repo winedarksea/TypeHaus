@@ -138,7 +138,7 @@ MAIN_CLOSET = [
                      room="RM-M-CLOSET",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(93.25)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-CLN2", face="right", distance_from_start=inch(19),
+                         wall_ref="W-M-CLN2", face="right", distance_from_start=inch(21),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # One 38" OVERSIDAN under each north frame's top, 1 1/2" behind the front edge
     # (y 15'-11 1/4"): 76" at 1.5 W/ft = 9.5 W; x1.25 = 11.9 W on the 30 W driver.

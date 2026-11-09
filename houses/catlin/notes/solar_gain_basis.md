@@ -162,7 +162,7 @@ way), and a term that is 7% here would be 30% there.
 **What the glass load is (corrected 2026-11-04).** Manual J's system-level glass load is the
 **daily average plus the excursion**, not the peak plus it: the mass rides the swing up to
 1.3 × the average, and only the excursion past that is added. This note and the engine
-charged the peak, so the swing was counted twice. Today's figures (§8 has the history):
+charged the peak, so the swing was counted twice. Today's figures (the 2026-11-08 revision below reconciles the rest):
 
 ```
 average 9,000.7 + excursion (12,217.1 − 1.3 × 9,000.7 = 516.2)  =  9,516.9 Btu/h
@@ -357,3 +357,24 @@ Earlier tables retain their dated layouts and product assumptions.
 average rises 44.4, so AED = 487.3 + 80.9 − 1.3 × 44.4 = **510.5 Btu/h**. The engine
 agrees to 0.1 Btu/h on the delta; it resolves 12,217 / 516 overall, the 60 Btu/h of south
 drift since the 2026-10-25 revision being unrelated to this retype.
+
+## Revision 2026-11-08 — review of the 2026-11-04 audit
+
+§5's SHR 0.94 and "air-side latent not carried", and §7's table, predate 2026-11-04; the
+current figures are sensible **16,522**, latent **6,076** (`block_load_basis.md` §9), SHR
+0.73, 1.883 tons. Superseded, not re-derived here.
+
+Independent glass check, own code against §1's formulas and the authored A x SHGC by facade
+(S 56.71, W 24.97, E 26.44, N 16.30 ft²), **no shading**, 08:00-20:00 every half hour:
+
+```
+mean irradiance, Btu/h·ft²:  S 85.1   W 106.8   E 74.2   N 38.1
+peak 13,844 at 10:30;  average 10,077;  excursion 13,844 - 1.3 x 10,077 = 743
+glass = 10,077 + 743 = 10,820 Btu/h       engine (shaded): 9,001 + 516 = 9,517
+```
+
+The engine is 1,303 Btu/h (12 %, 0.11 ton) under the unshaded hand figure, which is the
+shading credit of the court, porch and floors above (§3), and no more than it should be. The
+average is over the 12 daylight hours, not 24, which is the conservative reading. No interior
+shading (IAC) is credited. Cooling is not a sizing driver: the zones' units are 2.4 / 4.1 /
+25 x their sensible load (`mep.cooling_capacity`).

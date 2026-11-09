@@ -32,7 +32,8 @@ def _flood(model):
 def test_porch_ambient_and_garden_utility_controls_are_independent(catlin_plan):
     flood = catlin_plan.by_tag(FLOOD)
     assert flood.uid == "QTM001EAAA"
-    assert flood.controlled_by == ("ED-M-PORCH-FLOOD-SW",)
+    # The DAWSC companion inside D-B-SUNKEN is its second switch (2026-11-09).
+    assert flood.controlled_by == ("ED-M-PORCH-FLOOD-SW", "ED-B-SUNKEN-SW-FLOOD")
     assert flood.mount.kind.value == "ceiling"
     assert flood.mount.elevation is not None
     assert flood.location is None

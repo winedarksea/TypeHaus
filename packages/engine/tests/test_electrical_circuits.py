@@ -306,7 +306,8 @@ def test_catlin_receptacle_spacing_separates_known_coverage_and_eave_review(catl
     fails = [f for f in findings if f.result.value == "fail"
              and (f.check_id, *f.element_tags) not in _ACCEPTED_SPACING_GAPS]
     assert not fails, [f.message for f in fails]
-    passes = [f for f in findings if f.result.value == "pass"]
+    passes = [f for f in findings if f.result.value == "pass"
+              and f.element_tags[0].startswith("RM-")]  # counter spaces are CT-*
     assert len(passes) == 10
     unknown_rooms = {f.element_tags[0]: f for f in findings
                      if f.result.value == "unknown" and f.element_tags}
@@ -315,7 +316,10 @@ def test_catlin_receptacle_spacing_separates_known_coverage_and_eave_review(catl
         assert "rafter plate" in finding.message
         assert "both included and excluded" in finding.message
         assert len(finding.element_tags) > 1
-    assert any(f.result.value == "unknown" and not f.element_tags for f in findings)
+    # 210.52(C) is graded off the countertops now, no longer a standing UNKNOWN.
+    assert not any(f.result.value == "unknown" and not f.element_tags for f in findings)
+    assert {t for f in findings if f.result.value == "pass" for t in f.element_tags
+            if t.startswith("CT-")} >= {"CT-M-KIT-N", "CT-M-KIT-E", "CT-M-LIV-E-N"}
 
 
 def test_catlin_circuit_refs_reconcile(catlin_model):
@@ -466,7 +470,7 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
                     "solar", "backup_power"):
         assert section in bom, section
     assert bom["panel_schedule"] == panel_schedule(catlin_model)
-    assert bom["solar"]["total_watts"] == 5280
+    assert bom["solar"]["total_watts"] == 7380
     assert bom["solar"]["panels"] == 12
     devices = {(row["kind"], row["type"]): row["count"] for row in bom["electrical_devices"]}
     assert devices[("meter", "ED-T-METER")] == 1

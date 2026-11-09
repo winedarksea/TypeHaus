@@ -66,8 +66,10 @@ def test_every_alarm_names_an_unswitched_circuit(catlin_model):
     that survives an outage — CKT-RC-GARAGE is GFCI, which is wrong for a life-safety
     device, and there is no spare 1-pole."""
     circuits = {circuit.tag: circuit for circuit in catlin_model.plan.library.circuits}
+    # Leak sensors are battery Zigbee probes (notes/leak_detectors.md): no circuit.
     for alarm in _alarms(catlin_model):
-        assert alarm.circuit == "CKT-LT-BACKUP", alarm.tag
+        if alarm.kind is not AlarmKind.LEAK:
+            assert alarm.circuit == "CKT-LT-BACKUP", alarm.tag
     backup = circuits["CKT-LT-BACKUP"]
     assert backup.backup_tier is not None and backup.poles == 1
 

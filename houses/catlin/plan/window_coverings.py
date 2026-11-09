@@ -70,7 +70,7 @@ SECOND_WINDOW_COVERINGS = [
               room="RM-S-STUDY2",
               mount=Mount(kind=MountKind.WALL, elevation=inch(34.5)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-S-E1", face="left", distance_from_start=inch(64),
+                  wall_ref="W-S-E1", face="left", distance_from_start=inch(48),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 

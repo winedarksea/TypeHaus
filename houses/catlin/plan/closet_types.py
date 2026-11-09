@@ -169,8 +169,10 @@ CLOSET_LUMINAIRE_TYPES = (
 CLOSET_SUPPLY_TYPES = (
     ElectricalDeviceType(tag="ED-T-LT-PSU-TRADFRI-30",
                          name="IKEA TRADFRI 30 W LED driver, plug-in",
-                         footprint=(inch(7.25), inch(2.5)), height=inch(1.25),
+                         footprint=(inch(11.25), inch(2.125)), height=inch(0.75),
                          load_va=30.0, ports=_POWER_120,
                          product_ref="PROD-IKEA-TRADFRI-30",
-                         source="Sits on top of the PAX; ANSLUTA cord to ED-M-CLOSET-RC1."),
+                         source="IKEA US 603.426.61: 285 x 55 x 18 mm (11 1/4 x 2 1/8 x 3/4 in; "
+                                "was drawn 7 1/4 x 2 1/2 x 1 1/4, read 2026-11-08). Plug-in, "
+                                "ANSLUTA cord: no box. Lies on the PAX top / a cabinet shelf."),
 )

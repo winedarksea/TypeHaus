@@ -164,6 +164,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         check_ids=("electrical.receptacle_spacing", "code.E3902_gfci_locations",
                    "code.E3902_16_afci", "code.E3901_6_bathroom_receptacle",
                    "code.NEC_210_52_G_garage_receptacles",
+                   "code.NEC_210_52_E3_balcony_receptacles",
                    "electrical.room_lighting", "electrical.circuit_refs",
                    "electrical.panel_spaces", "electrical.wet_location",
                    "electrical.panel_handle_height"),

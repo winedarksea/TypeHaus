@@ -13,6 +13,9 @@ plan's ``bearing_refs`` — and the checks call the same walk on the finished mo
   opening on a wall across its floor's joists bears only at its outline's corners (the
   trimmer ends), never across its hole; a stair, or an opening whose joists are unknown,
   anywhere along its extent.
+* A stair that lands on a wall through a parallel ledger or anchored rim is a uniform strip
+  along that member, not a point (``HeaderCondition.strips``). R602.7 has no row for it: a
+  header read off a table carries it as a margin the note states.
 * A wall parallel to an opening's joists is under its TRIMMER: a uniform strip of that
   floor along the opening's extent, plus a point at each corner where something hangs in
   the trimmer — a header (the corner's cross edge names no bearer), or a named beam whose
@@ -59,16 +62,20 @@ class HeaderCondition:
     #: "on the ladder | assumes a ladder in <floor> under <upper wall>": a floor whose
     #: joists run along the line, crossed on a ladder of blocks.
     ladders: tuple[str, ...] = ()
+    #: Stairs bearing along this wall on a ledger or anchored rim, inside the span.
+    strips: tuple[str, ...] = ()
 
     @property
     def carries(self) -> bool:
-        return bool(self.roofs or self.floors or self.point_loads)
+        return bool(self.roofs or self.floors or self.point_loads or self.strips)
 
     def describe(self) -> str:
         parts = ([f"roof {', '.join(self.roofs)}"] if self.roofs else []) + [
             f"{tag} ({kind})" for tag, kind in self.floors]
         if self.point_loads:
             parts.append(f"point loads {', '.join(self.point_loads)}")
+        if self.strips:
+            parts.append(f"stair ledger {', '.join(self.strips)}")
         text = "; ".join(parts) or "nothing"
         text += f", via {', '.join(self.via)}" if self.via else ""
         return text + (f" ({'; '.join(self.ladders)})" if self.ladders else "")
@@ -88,6 +95,8 @@ class _Load:
     floor: str | None = None
     #: (source, plan point) of what hangs in a trimmer: headers and hung beam ends.
     hung: tuple[tuple[str, tuple[float, float]], ...] = ()
+    #: A stair's ledger or anchored rim along the wall: a uniform strip over ``footprint``.
+    strip: bool = False
 
 
 @dataclass
@@ -150,8 +159,11 @@ class LoadIndex:
                     hung=self._hung_in_trimmers(el, footprint, direction)), beam_loads)
             elif isinstance(el, Stair):
                 stair = stairs.get(el.tag)
-                self._add(el.bearing_refs, _Load(el.tag, True, footprint=tuple(
-                    stair.outline) if stair else ()), beam_loads)
+                outline = tuple(stair.outline) if stair else ()
+                for ref in el.bearing_refs:
+                    ledger = self._stair_ledger(stair, ref)
+                    self._add((ref,), _Load(el.tag, not ledger, strip=bool(ledger),
+                                            footprint=ledger or outline), beam_loads)
         for tag, beam in self.beams.items():
             roofs, floors = self._beam_carries(tag, beam_loads, set())
             ends = (self.nodes.get(beam.start_node), self.nodes.get(beam.end_node))
@@ -165,6 +177,17 @@ class LoadIndex:
                 if wall is not None and not along:
                     load.footprint = (min(ends, key=lambda p: _line_distance(wall.axis, p)),)
                 self.on.setdefault(ref, []).append(load)
+
+    def _stair_ledger(self, stair, ref: str) -> tuple[tuple[float, float], ...]:
+        """Plan ends of the ledgers and anchored rims running along wall ``ref``."""
+        wall = self.walls.get(ref)
+        if stair is None or wall is None:
+            return ()
+        tags = (f"framed-wall-ledger:{ref}", f"framed-wall-anchor:{ref}")
+        ends = [end for member in stair.members
+                if member.connection in tags and _parallel(wall.axis, (member.p0, member.p1))
+                for end in (member.p0, member.p1)]
+        return tuple(ends)
 
     def _hung_in_trimmers(self, opening, footprint, direction):
         """What hangs in the opening's trimmers, corner by corner (see the module doc)."""
@@ -288,7 +311,7 @@ class LoadIndex:
         return walls_over(self.plan, self.walls.values(), wall)
 
     def condition(self, wall, lo_m: float, hi_m: float) -> HeaderCondition:
-        roofs, floors, points, via, ladders = self._walk(wall, lo_m, hi_m, set(), wall)
+        roofs, floors, points, via, ladders, strips = self._walk(wall, lo_m, hi_m, set(), wall)
         widths = [w for tag in (*roofs, *floors) if (w := self.widths.get(tag)) is not None]
         # A floor is a LEVEL: two half-decks framing to one centre bearing are one floor.
         levels: dict[str, list[str]] = {}
@@ -300,7 +323,7 @@ class LoadIndex:
                 self.floor_kind.get(tag) == "center" for tag in tags) else "clear")
                 for tags in levels.values()),
             point_loads=tuple(points), building_width_m=max(widths) if widths else None,
-            via=tuple(via), ladders=tuple(ladders))
+            via=tuple(via), ladders=tuple(ladders), strips=tuple(strips))
 
     def _walk(self, wall, lo: float, hi: float, seen: set[str], root):
         roofs: dict[str, None] = {}
@@ -308,9 +331,14 @@ class LoadIndex:
         points: dict[str, None] = {}
         via: dict[str, None] = {}
         ladders: dict[str, None] = {}
+        strips: dict[str, None] = {}
         seen.add(wall.tag)
         for load in self.on.get(wall.tag, ()):
             a, b = _extent(wall.axis, load.footprint, lo, hi)
+            if load.strip:
+                if min(b, hi) - max(a, lo) > _OVERLAP_M:
+                    strips[load.source] = None
+                continue
             if load.point and load.joists in ("x", "y") and not _across(wall.axis, load.joists):
                 # Under the trimmer: its floor strip, and what hangs in it at this wall.
                 if load.floor and min(b, hi) - max(a, lo) > _OVERLAP_M:
@@ -340,14 +368,15 @@ class LoadIndex:
                 continue
             ends = sorted(_station(upper.axis, _point(wall.axis, s)) for s in (run_lo, run_hi))
             sub = self._walk(upper, ends[0], ends[1], seen, root)
-            for target, found in zip((roofs, floors, points, via, ladders), sub, strict=True):
+            for target, found in zip((roofs, floors, points, via, ladders, strips), sub,
+                                     strict=True):
                 target.update(dict.fromkeys(found))
             via[upper.tag] = None
             note = ladder_note(self.model, wall, upper, _point(wall.axis, run_lo),
                                _point(wall.axis, run_hi))
             if note is not None:
                 ladders[note] = None
-        return roofs, floors, points, via, ladders
+        return roofs, floors, points, via, ladders, strips
 
     def _on_a_bearing_corner(self, wall, points) -> bool:
         """Points landing on the end of ``wall`` (the wall being graded, not one above it)
@@ -389,6 +418,14 @@ def _line_distance(axis, point) -> float:
     (x0, y0), (x1, y1) = axis
     run = math.dist(axis[0], axis[1]) or 1.0
     return abs((point[0] - x0) * (y1 - y0) - (point[1] - y0) * (x1 - x0)) / run
+
+
+def _parallel(axis, run) -> bool:
+    """Whether ``run`` (two plan points) runs along ``axis``, within about 6 degrees."""
+    (x0, y0), (x1, y1) = axis
+    (a0, b0), (a1, b1) = run
+    length = math.dist(axis[0], axis[1]) * math.dist(run[0], run[1])
+    return length > 0 and abs((x1 - x0) * (b1 - b0) - (y1 - y0) * (a1 - a0)) / length < 0.1
 
 
 def _covers(axis, point) -> bool:

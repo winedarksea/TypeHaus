@@ -190,16 +190,16 @@ MAIN_DEVICES = [
                          wall_ref="W-M-C3", face="left", distance_from_start=inch(45.375),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # --- kitchen outlets (RM-M-LIVING is open plan, so these keep the LIVING suffix) ---
-    # Circuits still deferred (decision 1): symbols and mounting heights, not a panel
-    # schedule. Counter outlets at 42" (6" backsplash over the 36" counter, under 54"
-    # cabinets). KRF1 is an ordinary duplex — the fridge's future battery-backup circuit
-    # isn't modeled. KGF1 and KGF2 both fall over FURN-M-KIT-E2 (a B15
+    # Counter outlets at 42" (6" backsplash over the 36" counter, under 54" cabinets);
+    # `electrical.receptacle_spacing` grades them against the resolved countertops (NEC
+    # 210.52(C): <= 24" of wall line from one, 20" above the top, none within 24" below).
+    # KRF1 is an ordinary duplex — the fridge's future battery-backup circuit isn't modeled. KGF1 and KGF2 both fall over FURN-M-KIT-E2 (a B15
     # since 2026-10-02) and its filler, 30'-10".."32'-3 3/8".
     ElectricalDevice(uid="VDGMBY3YW7", tag="ED-M-LIVING-KET1", kind=DeviceKind.RECEPTACLE_240,
                      type_ref="ED-T-LEV-620-FLUSH", circuit="CKT-KETTLE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-N1", face="left", distance_from_start=inch(125.25),
+                         wall_ref="W-M-N1", face="left", distance_from_start=inch(119),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="N9317V3K8Y", tag="ED-M-LIVING-KGF1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-KITCH-SA1",
@@ -221,8 +221,7 @@ MAIN_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The NE carousel's east leg (y 32'-3 3/8"..35'-5 3/8"); KGF2 serves its north leg.
     # KGF3 at 29'-1 1/4" serves the 14" landing between the hung upper and the range,
-    # its box on the south side of the 29'-4" stud. Nothing in the
-    # engine checks 210.52(C) — the counter rule reports UNKNOWN by design.
+    # its box on the south side of the 29'-4" stud.
     # y=35'-0" clears WIN-M-KIT-E's north jamb at 34'-7".
     ElectricalDevice(uid="DCP5ZCJVTK", tag="ED-M-LIVING-KGF7", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
@@ -230,6 +229,16 @@ MAIN_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-E1", face="left", distance_from_start=inch(420),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # The last stretch of the NE carousel's east leg, between the hood's north end (y 387 1/8")
+    # and WIN-M-KIT-E's RO (y 401"): KGF7 at y=35'-0" is 32 5/8" from the range-side end of
+    # the stone, past 210.52(C)(1)'s 24". 393 1/2" is mid-bay, 6 1/2" off each.
+    ElectricalDevice(uid="1F178X082B", tag="ED-M-LIVING-KGF8", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-DUPLEX-20",
+                     circuit="CKT-KITCH-SA2",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(393.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # --- Under FURN-M-KIT-E-HUNG: the 20" countertop-appliance cave (36-56") -------------
     # Ordinary countertop receptacles since the mixer box was retired (2026-10-25). KGF4 (SA2)
@@ -273,23 +282,23 @@ MAIN_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C5", face="right", distance_from_start=inch(66.625),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # Inside the sink base, 18" up: the dishwasher's cord. Follows APPL-M-DW on the sink
-    # base's west side — see storeys/main.py's OPENINGS and plan/placeables.py's kitchen
-    # header.
+    # Inside the sink base, 9" up (210.52(C)(4): 24" or more below the counter): the dishwasher's
+    # cord. Follows APPL-M-DW on the sink base's west side — see storeys/main.py's OPENINGS
+    # and plan/placeables.py's kitchen header.
     ElectricalDevice(uid="WK41TSMA97", tag="ED-M-LIVING-KDW1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-DISHWASHER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(18)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(9)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N1", face="left", distance_from_start=inch(90),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # The disposer outlet, in the sink base, the same 18" up on the same wall face —
+    # The disposer outlet, in the sink base, the same 9" up on the same wall face —
     # reachable by the cord from APPL-M-DISP hanging under the bowl at 29'-4". Single 5-20R
     # on CKT-DISPOSAL; the wall control is the 24V loop billed with the appliance, not a
     # switch on this branch.
     ElectricalDevice(uid="N4A3YD3680", tag="ED-M-LIVING-KDS1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-SINGLE-520",
                      circuit="CKT-DISPOSAL",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(18)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(9)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N1", face="left", distance_from_start=inch(75),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
@@ -348,13 +357,14 @@ SECOND_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BD1", face="right", distance_from_start=inch(33.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The reading leg: a second gang 4" over from ED-S-BED1-SW.
+    # The reading can's own switch is at the bed (2026-11-08; ED-S-SUITE-LAMP-SW's idiom): 46"
+    # AFF on W-S-SS2, x=33'-8", over the twin's head third, 16"+ from ED-S-STUDY2-RC4 behind.
     ElectricalDevice(uid="3RQFN92MPQ", tag="ED-S-BED1-SW-READ", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD1", face="right", distance_from_start=inch(37.875),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+                         wall_ref="W-S-SS2", face="left", distance_from_start=inch(141),
+                         normal_gap=inch(0), rotation_offset=deg(180)))),
     # y follows W-S-BD1's south face: the wall is INT_2X4_RC (plan/storeys/second.py) with
     # the resilient channel on the BED1 side. The box's back sits ON the face and the box is
     # 2" deep, so the authored y is the face LESS 1": 17'-5 1/8" - 1" = 17'-4 1/8".
@@ -375,12 +385,13 @@ SECOND_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BD2", face="right", distance_from_start=inch(33.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The reading leg: a second gang 4" over from ED-S-BED2-SW.
+    # The reading cans' switch is at the bed (2026-11-08): 46" AFF on W-S-BD2 over the queen's
+    # east head corner, x=34'-7" (the bed stands 1" off W-S-E3).
     ElectricalDevice(uid="5DG7KH9CA2", tag="ED-S-BED2-SW-READ", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD2", face="right", distance_from_start=inch(37.875),
+                         wall_ref="W-S-BD2", face="right", distance_from_start=inch(155),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Same 1/2" as ED-S-BED1-RC1, on W-S-BD2's south face, for the same reason.
     ElectricalDevice(uid="CED007K3AA", tag="ED-S-BED2-RC1", kind=DeviceKind.RECEPTACLE,
@@ -399,13 +410,14 @@ SECOND_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BW3", face="right", distance_from_start=inch(46),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The reading leg: a second gang 4" over from ED-S-BED3-SW.
+    # The reading can's switch is at the bed (2026-11-08): 46" AFF on W-S-E4 at y=30'-4", just
+    # south of the full bed's head, on the open side.
     ElectricalDevice(uid="6RW73D2Q06", tag="ED-S-BED3-SW-READ", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BW3", face="right", distance_from_start=inch(50),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+                         wall_ref="W-S-E4", face="left", distance_from_start=inch(44),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="CED008K3AA", tag="ED-S-BED3-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-SECOND",
                      # x=35'-0", just east of WIN-S-BED3-N (center x=34'-0"); 48" lines up

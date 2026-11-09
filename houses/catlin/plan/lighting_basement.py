@@ -232,7 +232,7 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CS", face="left", distance_from_start=inch(54),
+                         wall_ref="W-B-CS", face="left", distance_from_start=inch(52.625),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-B-FURNACE: two cans, not 2x4 panels — the ceiling is full of supply, drain and ERV
@@ -375,18 +375,29 @@ BASEMENT_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CN", face="right", distance_from_start=inch(116.625),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # The court flood's switch inside D-B-SUNKEN (owner, 2026-11-09): a wire-free RF companion
+    # of ED-M-PORCH-FLOOD-SW's D315S, no circuit and no box, on the east bay between the pair's
+    # east king and stud-000 (x=24'-10 1/2"), 48" AFF.
+    ElectricalDevice(uid="S66994CVB0", tag="ED-B-SUNKEN-SW-FLOOD", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-RF-COMPANION", room="RM-B-GYM",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-S3-FR", face="left", distance_from_start=inch(82.5),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** THE AMBIENT COVE WAS DESIGNED, PRICED AND WITHDRAWN (2026-09-06) FOR THE BATTERY. **
     # Two surface COB channels up the side walls at 7'-4" (2 x 15'-6" at 3 W/ft, 93 W, a
     # PSU-200) would have summed at its rating on CKT-LT-BACKUP. The room is on CKT-LT-BSMT
     # since 2026-11-02, so that objection is gone; a revival takes its own switch.
     #
+    # The theater dimmer is inside D-B-PLAY (2026-11-09): first framed bay west of the pair's
+    # west king (x=23'-11 13/16"), x=23'-8 3/8" on the theater face's stud row.
     ElectricalDevice(uid="QTB000FAAA", tag="ED-B-PLAY-N-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LUT-DIVA",
                      circuit="CKT-LT-BSMT", room="RM-B-PLAY-N",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CN2", face="right", distance_from_start=inch(22.125),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+                         wall_ref="W-B-CE", face="left", distance_from_start=inch(68.4),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-B-STAIR: the railing light the notes ask for. A 24V tape at 34" on the stair's
     # west wall, under the handrail — it lights the treads without a fixture in anyone's

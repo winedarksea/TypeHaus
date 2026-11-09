@@ -311,7 +311,7 @@ def test_attic_handrail_supports_clear_the_window_and_door(catlin_model_ro):
     model = catlin_model_ro
     tag = 'RL-A-HANDRAIL'
     rail = _rails(model, tag)[0]
-    assert rail.sweep.path[0] == pytest.approx(tuple(inch(v).meters for v in (423, 46, 165)))
+    assert rail.sweep.path[0] == pytest.approx(tuple(inch(v).meters for v in (423, 32.25, 165)))
     assert rail.sweep.path[-1][:2] == pytest.approx(
         tuple(inch(v).meters for v in (257.125, 103.25)))
     assert len(_solids(model, tag, 'RAIL')) == 1
@@ -322,47 +322,33 @@ def test_attic_handrail_supports_clear_the_window_and_door(catlin_model_ro):
             assert z == pytest.approx(inch(165).meters, abs=inch(1 / 16).meters)
     assert all(a[2] <= b[2] for a, b in zip(rail.sweep.path, rail.sweep.path[1:], strict=False))
     lower_plate = _solids(model, tag, 'ENDPLATE1')[0]
-    assert max(y for _x, y in lower_plate.outline) < inch(48.5).meters
+    # On the jack pack, 5/8" off WIN-S-STUDY3's RO: drywall returns, no interior casing.
+    assert max(y for _x, y in lower_plate.outline) < inch(34.25).meters
     upper_plate = _solids(model, tag, 'ENDPLATE2')[0]
     assert min(x for x, _y in upper_plate.outline) > inch(261.5).meters
     window = next(o for o in model.openings if o.tag == 'WIN-S-STUDY3')
     bumper = Polygon(window.framing_bumper)
-    supports = _solids(model, tag, 'BRACKET') + _solids(model, tag, 'ENDPLATE')
+    supports = _solids(model, tag, 'BRACKET') + _solids(model, tag, 'ENDPLATE')[1:]
     assert all(not Polygon(s.outline).intersects(bumper) for s in supports)
-    assert any(min(y for _x, y in s.outline) <= inch(84).meters <=
+    assert any(min(y for _x, y in s.outline) <= inch(65).meters <=
                max(y for _x, y in s.outline) for s in _solids(model, tag, 'BRACKET'))
 
 
-def test_attic_handrail_lower_supports_have_bearing_backing(catlin_model_ro):
-    from typehaus.checks.advisory.backing import floating_band_ends
+def test_attic_handrail_lower_supports_stand_on_jamb_packs(catlin_model_ro):
+    """The return and first bracket land on WIN-S-STUDY3's packs; no backing block is needed."""
     from typehaus.resolve.framing.backing_panels import backing_bands
 
     model = catlin_model_ro
     wall = next(w for w in model.walls if w.tag == 'W-S-E1')
-    bands = [b for b in backing_bands(model.plan)[wall.tag] if 'HANDRAIL' in b.tag]
-    assert len(bands) == 2
-    assert floating_band_ends(wall, bands) == []
-    # Backing is cut at the studs (2026-11), so a plate may land on backing AND the stud it
-    # stops against: what must hold is that bearing — backing or stud — runs unbroken under it.
+    assert not [b for b in backing_bands(model.plan).get(wall.tag, ()) if 'HANDRAIL' in b.tag]
     half_stud = inch(0.75).meters
-    bearing = [(min(m.p0[1], m.p1[1]), max(m.p0[1], m.p1[1]), m) for m in wall.members
-               if m.child_key.startswith('backing-')]
-    bearing += [(m.p0[1] - half_stud, m.p0[1] + half_stud, m) for m in wall.members
-                if m.category in ('stud', 'king') and m.p0[1] == m.p1[1]]
-    for suffix, station in [('ENDPLATE1', 46), ('BRACKET2', 84)]:
+    pack = [(m.p0[1] - half_stud, m.p0[1] + half_stud, m) for m in wall.members
+            if m.category in ('king', 'jack') and m.p0[1] == m.p1[1]]
+    for suffix, station in [('ENDPLATE1', 32.25), ('BRACKET2', 65)]:
         support = _solids(model, 'RL-A-HANDRAIL', suffix)[0]
-        lo, hi = (f(y for _x, y in support.outline) for f in (min, max))
-        assert lo <= inch(station).meters
-        spans = sorted((a, b) for a, b, m in bearing
-                       if m.z0_m <= support.z0_m and m.z1_m >= support.z1_m and b > lo and a < hi)
-        assert any(m.child_key.startswith('backing-') and a < hi and b > lo
-                   for a, b, m in bearing), suffix
-        reach = lo
-        for a, b in spans:
-            if a > reach + 1e-6:
-                break
-            reach = max(reach, b)
-        assert reach >= hi - 1e-6, suffix
+        y = inch(station).meters
+        assert any(a <= y <= b and m.z0_m <= support.z0_m and m.z1_m >= support.z1_m
+                   for a, b, m in pack), suffix
 
 
 def test_every_attic_handrail_bracket_is_a_stock_arm_screwed_into_wood(catlin_model_ro):

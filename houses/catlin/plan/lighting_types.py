@@ -405,11 +405,14 @@ AMBIENT_LUMINAIRE_TYPES = (
 # needs conductors out of proportion to the load. Two supplies in the ceiling next to their
 # runs keep the long wire at 120V. The alternative is documented, not built.
 LIGHTING_DEVICE_TYPES = (
-    ElectricalDeviceType(tag="ED-T-LT-PSU-60", name="24V LED driver, 60 W, in-ceiling box",
-                         footprint=(inch(8), inch(6)), height=inch(3),
+    ElectricalDeviceType(tag="ED-T-LT-PSU-60", name="24V LED driver, 60 W, in own junction box",
+                         footprint=(inch(7.4), inch(3.7)), height=inch(1.36),
                          load_va=60.0, output_voltage=24, ports=_POWER_120,
                          product_ref="PROD-DIODE-OMNIDRIVE-X",
-                         source="Diode LED OMNIDRIVE X, 60 W — ELV + TRIAC + 0-10V in one part "
+                         source="Diode LED DI-ODX-24V60W-J (the -J version: driver in its own listed "
+                                "junction box, 7.40 x 3.70 x 1.36 in, retailer listings read 2026-11-08; "
+                                "the driver-only DI-ODX-24V60W would need a box of its own) — "
+                                "OMNIDRIVE X, 60 W: ELV + TRIAC + 0-10V in one part "
                                 "and, the spec that matters, NO MINIMUM LOAD: a cheap ELV "
                                 "driver with a 10-15 W minimum makes a short cove run shimmer "
                                 "or fail to strike. Load to <=80% of nameplate and keep it "
@@ -424,9 +427,17 @@ LIGHTING_DEVICE_TYPES = (
                          footprint=(mm(220), mm(68)), height=mm(38.8),
                          load_va=96.0, output_voltage=24, ports=_POWER_120,
                          product_ref="PROD-MEANWELL-HLG-100H-24A",
+                         # AC lead is bare SJOW cable: a 4 in. square box, blank cover and cord
+                         # connector beside each driver (not in the footprint; PROD-RACO-232 is
+                         # priced in [electrical_boxes] by use, here as a part).
+                         parts=(ProductPart(role="fitting", product_ref="PROD-RACO-232"),
+                                ProductPart(role="fitting", product_ref="PROD-RACO-752"),
+                                ProductPart(role="fitting", product_ref="PROD-CORD-GRIP-GENERIC")),
                          source="Mean Well HLG-100H-24A (HLG-100H-SPEC 2026-07-24): Class 2 "
                                 "power unit, 96 W, 24 V / 4 A, IP65, UL 8750, 220 x 68 x "
-                                "38.8 mm, not dimmable."),
+                                "38.8 mm, not dimmable. A-type: SJOW 17 AWG cable leads (AC "
+                                "and DC), nothing encloses the AC side (the junction-box option "
+                                "is a Mean Well special): the splice box above is ours."),
     # The controller is on the 24V side: no branch circuit, no load of its own worth summing.
     ElectricalDeviceType(tag="ED-T-LT-CTRL-5IN1", name="5-in-1 Zigbee LED controller, 12-54 V",
                          footprint=(inch(4.5), inch(1.8)), height=inch(0.9),

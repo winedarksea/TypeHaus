@@ -333,7 +333,15 @@ WALLS = [
 OPENINGS = [
     # Derived RO since 2026-10-29: 1 5/16" south of where it stood, so it clears the wall end.
     Door(uid="CAD201AAAA", tag="D-A-HALVES", host="W-A-C1B", type_ref="DT-INT-SWING32-PRIV",
-         position=from_node("N-A-C1", inch(3.75)), doorway=D_A_HALVES_OAK_REDUCER),
+         position=from_node("N-A-C1", inch(3.75)), doorway=D_A_HALVES_OAK_REDUCER,
+         header_spec='2-ply 9.5" LVL',
+         published_span=PublishedSpan(
+             source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.4, 3-1/2\" VERSA-LAM 1.7 2650 Header Look Up Tables",
+             table="Door and window headers, Roof Only, roof load 50 psf snow (115%) + 15 psf dead, 32'-0\" structure width, 3'-2\" clear span: 3-1/2\" (not bolded, single trimmers); double 1-3/4\" substituted per the table note, at the smallest 1-3/4\" depth, 9-1/2\"",
+             member='2-ply 9.5" LVL',
+             span=ft(3, 2),
+             load_psf=65.0,
+             condition="the row is trusses on an exterior wall over a 32' width with 2' overhang (65 psf x 18' + 80 plf of wall = 1,250 plf) and this header stands on the x=18' line under RB-HOUSE (18' of rafters x 50 psf = 900 plf, plus ~60 plf of partition); roof only, deflection L/240 live, L/180 total; dry use; uniform load only; see notes/header_spans_r602_7.md section 5a")),
     # The band wall's opening onto the stair head — the source's 2'-7 1/2" gap at
     # x 18'-6"..21'-1 3/4", the only way between the east loft and the stair vestibule.
     # Purchased 30x80 (custom width) Murphy bookcase door, west hinged and swinging into the
@@ -1001,10 +1009,10 @@ FLIGHT_SKIRT = Railing(
 # 2 3/8" off both faces (R311.7.8.2's 1 1/2" clear + the bar's radius); both ends return.
 STAIR_HANDRAIL = Railing(
     uid="CARL02AAAA", tag="RL-A-HANDRAIL", type_ref="RAILING-INT-ALUM-HANDRAIL", path=(
-        # Return south of WIN-S-STUDY3; a support north of its jamb prevents automatic
-        # subdivision from putting the middle bracket into the window.
-        pt(inch(423), inch(46)),
-        pt(inch(423), inch(84)),
+        # Return on WIN-S-STUDY3's south jamb pack, clear of the corner bookcase (30 5/8"); a
+        # support on its north pack keeps automatic subdivision out of the window.
+        pt(inch(423), inch(32.25)),
+        pt(inch(423), inch(65)),
         pt(inch(423), inch(103.25)),
         # One vertex per bracket, each on wood: W-S-SS2 studs at 375"/343", the FS-ATTIC
         # trimmer pack at 310" (rail under the 240" wall top), and the W-A-SN corner stud at

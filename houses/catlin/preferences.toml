@@ -313,9 +313,6 @@ suppress = [
   # test covers it, so it is UNKNOWN by construction. Accepted 2026-10-23 (DESIGN-LOG,
   # "Wall board policy"); a cited rating would need a tested liner wall.
   "advisory.acoustic_adjacency:W-S-PS1",
-  # Kitchen MITTLED (six US modules, 25.2 W) on its TRADFRI: owner accepted 84% of TRADFRI's
-  # 30 W rating, 2026-11-07; IKEA's limit is 30 W. The 125% rule wants 31.5 W.
-  "electrical.light_run_psu:ED-M-KITCH-LT-PSU",
   # mep.run_through_plate: nothing suppressed since 2026-10-29. The last three entries
   # (DU-S-HP-SUP/-SUITE/-SOUTH) were rectangular ducts read at their wider side both ways;
   # at their real 8"/6" depth they pass over the plates (resolve/mep_bore_geometry).

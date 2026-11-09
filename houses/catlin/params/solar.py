@@ -1,12 +1,14 @@
 """Rooftop PV array — parametric module.
 
-One row of 440 W modules each side of the house gable ridge (RF-HOUSE: ridge N-S at
-x=18', 6:12, 36' footprint), landscape orientation (67.7" edge along the ridge), max fit:
-floor(36' / 5.642') = 6 modules per row, centred, 12 x 440 W = 5,280 W installed. Mounted
-on S-5! PVKIT standing-seam kits (no penetrations), four per module; the DC/AC run leaves
-the roof at ED-A-PV-JB beside the radon-vent riser (plan/electrical.py) and lands on the
-EG4 12kPV's MPPTs (EQ-B-ESS-INV, plan/electrical.py) — the array does not backfeed on
-its own any more; the inverter's grid port does, on CKT-ESS-GRID (plan/circuits.py).
+One unbroken row of bifacial 410 W modules each side of the house gable ridge (RF-HOUSE: ridge
+N-S at x=18', 6:12, 36' footprint), PORTRAIT (44.6" edge along the ridge, 67.7" down-slope),
+as close to the ridge as IRC R324.6.2 allows: the module HULL in plan is 18" from the ridge
+(array 24.4% of the plan roof, under 33%). The 36" pathway of R324.6.1 is the north rake end
+of each plane (north is the street side); there is no interior gap. Max fit along the ridge:
+9 portrait modules per row (a landscape row fits 6). 18 x 410 W = 7,380 W, on S-5! PVKIT
+standing-seam kits (no penetrations), four per module on its two across-seam edges. The
+DC/AC run leaves the roof at ED-A-PV-JB beside the radon-vent riser (plan/electrical.py)
+and lands on the EG4 12kPV's MPPTs (EQ-B-ESS-INV).
 
 Generated — max fit is computed, so this cannot live in a ``# haus: editable`` module
 (the dialect forbids loops); ``SolarPanel`` is not a UI-movable kind, so a params home is
@@ -18,24 +20,34 @@ from __future__ import annotations
 
 import math
 
-from params.roof_panel import PITCH, EAVE_DECK_IN, clamp_columns_inches, seam_top_inches
+from params.cladding import HOUSE_NS_OUTBOARD_IN
+from params.roof_panel import (
+    ABOVE_DECK,
+    EAVE_DECK_IN,
+    PITCH,
+    clamp_columns_inches,
+    seam_top_inches,
+)
 
 from typehaus import Connector, ConnectorKind, SolarPanel, ft, inch, pt
+from typehaus.quantities import M_PER_IN
 
 ROOF_TAG = "RF-HOUSE"
 RIDGE_X_FT = 18.0
 FOOTPRINT_FT = 36.0
-PANEL_W_IN = 67.7  # along-ridge edge (landscape)
-PANEL_L_IN = 44.6  # down-slope edge, in the panel plane
+# Aptos DNA-108-BF10-410W, bifacial, same 67.7 x 44.6 x 1.3 in frame as the 440 W
+# monofacial it replaces. Aptos datasheet USSSP201-781 (06/2025), STC front face: Pmax 410 W,
+# Voc 37.67 V, Isc 13.11 A, Vmp 33.08 V, Imp 12.39 A; Pmax -0.32 %/degC, Voc -0.24 %/degC,
+# Isc +0.03 %/degC; rear-side gain rows 5 % 431 W / 15 % 472 W / 25 % 513 W; 5,400 Pa.
+PANEL_ALONG_IN = 44.6  # along-ridge edge (portrait)
+PANEL_DEPTH_IN = 67.7  # down-slope edge, in the panel plane
 PANEL_T_IN = 1.3
-PANEL_WATTS = 440.0
-PRODUCT = "Aptos DNA-108-MFN10-440W (datasheet 08.04.2026), 67.7 x 44.6 x 1.3 in"
+PANEL_WATTS = 410.0
+PRODUCT = "Aptos DNA-108-BF10-410W (datasheet 06/2025), 67.7 x 44.6 x 1.3 in"
 
 # --- module electrical identity -----------------------------------------------------
-# Aptos 440 W: Voc 39.03 V, Vmp 33.48 V, temperature coefficients -0.29%/degC on Pmax,
-# -0.23%/degC on Voc, +0.046%/degC on Isc (Aptos DNA-108-MFN10-440W datasheet 08.04.2026).
-PANEL_VOC = 39.03
-VOC_TEMP_COEFF_PER_C = -0.0023
+PANEL_VOC = 37.67
+VOC_TEMP_COEFF_PER_C = -0.0024
 # Site design low. -30 degC is the cold-side design temperature used for the array's
 # voltage correction — colder than the ASHRAE extreme annual mean minimum for the Twin
 # Cities, deliberately, because a string is sized on the coldest sunny morning and not on
@@ -43,61 +55,70 @@ VOC_TEMP_COEFF_PER_C = -0.0023
 # and the 690.12 grouping, not a heat load.
 DESIGN_LOW_C = -30.0
 STC_C = 25.0
-# 39.03 x (1 + (-0.0023)(-30 - 25)) = 43.97 V. The number every voltage rule must use:
-# rated Voc understates a January morning by 4.9 V per module, which is the difference
-# between a two-module group at 78.1 V (legal) and one at 87.9 V (not).
+# 37.67 x (1 + (-0.0024)(-30 - 25)) = 42.64 V. The number every voltage rule must use.
 PANEL_VOC_COLD = PANEL_VOC * (1.0 + VOC_TEMP_COEFF_PER_C * (DESIGN_LOW_C - STC_C))
 
-# One string per roof side, six modules each, landing on the EG4 12kPV's two MPPTs
-# (EQ-B-ESS-INV, plan/electrical.py). 6 x 43.97 = 263.8 V cold per string, well inside the
-# inverter's 600 VDC ceiling.
+# One string per roof side, nine modules each, one string per MPPT on the 12kPV (2 MPPTs,
+# 120-500 V operating, 600 V max, 25 A usable and 31 A short-circuit per MPPT; spec sheet
+# v1.0.9). 9 x 42.64 = 383.8 V cold; Vmp 9 x 33.08 x (1 - 0.0032 x 45 K) = 255 V at a 70 degC
+# cell; Imp 12.39 A (15.5 A at +25 % rear gain), Isc 13.11 A x 1.25 rear x 1.25 NEC = 20.5 A.
+# Two strings never share an MPPT: 2 x 15.5 A > 25 A. 7.38 kW STC is under 12 kW usable.
 #
-# RSD on every module, and that is a computed outcome rather than a preference: two
-# adjacent Aptos modules sum to 87.9 V cold against NEC 690.12(B)(2)'s 80 V limit, so
-# "every other module" — the option plans/TODO.md hoped for — does not clear it here. One
-# SunSpec receiver per module (the inverter carries the transmitter) is what
-# `code.NEC_690_12_rapid_shutdown` accepts, and if a future module with a lower Voc changes
-# that arithmetic the check will say so.
+# RSD on every module: two adjacent modules sum to 85.3 V cold against NEC 690.12(B)(2)'s
+# 80 V limit, so "every other module" does not clear it. One SunSpec receiver per module (the
+# inverter carries the transmitter) is what `code.NEC_690_12_rapid_shutdown` accepts.
 PANEL_RSD = True
-RIDGE_CLEARANCE_FT = 1.0  # plan gap between the ridge line and the modules' top edge
 CLAMPS_PER_PANEL = 4
-# The panel rows run ALONG the ridge in y; only the z each row sits at derives from the roof
-# pitch. At 6:12 the array's tilt is 26.6 degrees — closer to the 45-degrees-north latitude
-# optimum, so December yield is favoured over June; net annual is a wash to slightly
-# positive, a side effect of the pitch (chosen for headroom) rather than its reason.
+
+# --- layout -----------------------------------------------------------------------------
+# R324.6.2: 18" ridge setback each side below 33 % coverage, measured in plan to the module
+# HULL. The standoff leans the module's top face toward the ridge by (skin + standoff +
+# thickness) x sin(pitch), so the authored origin sits that far further out.
+RIDGE_HULL_SETBACK_IN = 18.0
+STANDOFF_IN = 3.0  # SolarPanel.standoff default (clamp height off the roof skin)
+_SKIN_IN = sum(layer.thickness.meters for layer in ABOVE_DECK) / M_PER_IN
+_LEAN_IN = (_SKIN_IN + STANDOFF_IN + PANEL_T_IN) * PITCH / math.hypot(1.0, PITCH)
+RIDGE_CLEARANCE_IN = RIDGE_HULL_SETBACK_IN + _LEAN_IN + 0.02  # origin-to-ridge, plan
+# The roof edge is the cladding face, HOUSE_NS_OUTBOARD_IN outboard of the 36' line.
+ROOF_SOUTH_IN = -HOUSE_NS_OUTBOARD_IN
+ROOF_NORTH_IN = FOOTPRINT_FT * 12 + HOUSE_NS_OUTBOARD_IN
+# S-5! PVKIT 2.0 manual s1.4.3: 1/4" minimum between module columns (thermal cycling).
+MODULE_GAP_IN = 0.25
+# Gable-edge keep-out south of the array; the north end is the R324.6.1 pathway (36",
+# street side). 4" clears the rake hem and trim fasteners; the whole rake is wind edge zone
+# regardless (a = 0.1 x 37' = 3.7 ft), so this is workmanship, not a wind setback.
+RAKE_MARGIN_SOUTH_IN = 4.0
+PATHWAY_MIN_IN = 36.5  # 36" + 1/2" build tolerance
+_COUNT = math.floor((ROOF_NORTH_IN - PATHWAY_MIN_IN - ROOF_SOUTH_IN - RAKE_MARGIN_SOUTH_IN
+                     + MODULE_GAP_IN) / (PANEL_ALONG_IN + MODULE_GAP_IN))  # 9
+_ROW_START_IN = ROOF_SOUTH_IN + RAKE_MARGIN_SOUTH_IN
+# Plan projection of the down-slope edge (67.7" at 6:12).
+_plan_l_ft = (PANEL_DEPTH_IN / 12.0) / math.sqrt(1.0 + PITCH * PITCH)
 PLANE_Z_AT_X0_FT = EAVE_DECK_IN / 12
-
-_w_ft = PANEL_W_IN / 12.0
-_count = math.floor(FOOTPRINT_FT / _w_ft)  # 6
-_row_start_ft = (FOOTPRINT_FT - _count * _w_ft) / 2.0
-# Plan projection of the down-slope edge (44.6" at 6:12).
-_plan_l_ft = (PANEL_L_IN / 12.0) / math.sqrt(1.0 + PITCH * PITCH)
-
-
-def _plane_z_ft(x: float) -> float:
-    return PLANE_Z_AT_X0_FT + (RIDGE_X_FT - abs(x - RIDGE_X_FT)) * PITCH
 
 
 def _build():
     panels = []
     clamps = []
     for side, sign in (("W", -1.0), ("E", 1.0)):
-        origin_x = RIDGE_X_FT + sign * RIDGE_CLEARANCE_FT
-        for index in range(_count):
+        origin_x = RIDGE_X_FT + sign * RIDGE_CLEARANCE_IN / 12.0
+        for index in range(_COUNT):
             n = index + 1
-            origin_y = _row_start_ft + index * _w_ft
+            start_in = _ROW_START_IN + index * (PANEL_ALONG_IN + MODULE_GAP_IN)
+            origin_y = start_in / 12.0
             tag = f"SP-A-PV-{side}{n}"
             panels.append(SolarPanel(
                 uid=f"SPV{side}{n}AAAA", tag=tag, roof_ref=ROOF_TAG,
                 origin=pt(ft(origin_x), ft(origin_y)),
-                width=inch(PANEL_W_IN), length=inch(PANEL_L_IN),
+                width=inch(PANEL_ALONG_IN), length=inch(PANEL_DEPTH_IN),
                 thickness=inch(PANEL_T_IN), watts=PANEL_WATTS, product=PRODUCT,
                 string=f"STR-{side}", voc=PANEL_VOC, voc_cold=PANEL_VOC_COLD,
                 rsd=PANEL_RSD,
             ))
-            # Keep both seam-snapped columns at least six inches inside the module ends.
+            # Both clamp columns sit on seams at least six inches inside the module ends;
+            # the portrait module's 44.6" edge always spans two or more 16" seam stations.
             column_a, column_b = (value / 12 for value in
-                                  clamp_columns_inches(origin_y * 12, PANEL_W_IN))
+                                  clamp_columns_inches(start_in, PANEL_ALONG_IN))
             near_x = origin_x + sign * 0.5
             far_x = origin_x + sign * (_plan_l_ft - 0.5)
             for letter, (cx, cy) in zip("ABCD", (
@@ -113,5 +134,5 @@ def _build():
 
 _PANELS, _CLAMPS = _build()
 
-TOTAL_WATTS = sum(panel.watts for panel in _PANELS)  # 5,280 W
+TOTAL_WATTS = sum(panel.watts for panel in _PANELS)  # 7,380 W
 ATTIC_ELEMENTS = [*_PANELS, *_CLAMPS]

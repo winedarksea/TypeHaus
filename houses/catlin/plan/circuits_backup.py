@@ -54,15 +54,16 @@ BACKUP_CIRCUITS = (
     # the ESS closet light, the kitchen under-cabinet tape and every alarm; the rest went to
     # CKT-LT-BSMT / CKT-LT-MAIN. The alarms stay on one unswitched branch (Kidde interconnect,
     # R314.4) that rides the outage (the ESS closet's two). load_va is None: the takeoff sums
-    # the devices (65 VA, the alarms at 0). duty_cycle 0.49 is a blend, ~32 W of 65 VA:
-    # - lights: cans 13 W + the tape's 30 VA TRADFRI (its rating, errs heavy) for ~5 h of 24
-    #   = 9.0 W; the closet light ~0.2 W;
+    # the devices (95 VA, the alarms at 0). duty_cycle 0.40 is a blend, ~38 W of 95 VA:
+    # - lights: cans 13 W + the tape's two 30 VA TRADFRIs (their rating, errs heavy; the tape
+    #   draws 25 W, split over two drivers 2026-11-08) for ~5 h of 24 = 15.2 W; the closet
+    #   light ~0.2 W;
     # - the two interconnect relays at their 13.2 VA rating, always energised;
     # - 13 alarms' standby, ~0.75 W each = 9.8 W. AN ESTIMATE: Kidde publishes only a 120 V /
     #   80 mA maximum. Meter it.
     Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=6, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
-            duty_cycle=0.49,
+            duty_cycle=0.40,
             description="Furnace-room + kitchen task light + interconnected alarms"),
 
     # The sump rides ALWAYS_ON since 2026-10-30: the long stormy night is exactly when it

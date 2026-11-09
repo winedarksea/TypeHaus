@@ -8,6 +8,8 @@
 # carry no room=, so the classifiers place them geometrically.
 
 from typehaus import (
+    Alarm,
+    AlarmKind,
     Appliance,
     ConduitRun,
     DeviceKind,
@@ -39,6 +41,21 @@ BASEMENT_ELEMENTS = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-W1", face="left", distance_from_start=inch(45),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # Leak sensors (notes/leak_detectors.md): SONOFF SNZB-05P on the floor at each risk point,
+    # Zigbee to ZHA, battery (no circuit). HA notifies; nothing depends on them. `position`
+    # is the floor point (an Alarm has no wall host or elevation).
+    Alarm(uid="4MRMB39TRR", tag="AL-B-WH-LEAK", kind=AlarmKind.LEAK, room="RM-B-FURNACE",
+          position=pt(inch(105), inch(337))),
+    Alarm(uid="F5CW2JYT7F", tag="AL-B-HDR-LEAK", kind=AlarmKind.LEAK, room="RM-B-FURNACE",
+          position=pt(inch(95), inch(299))),
+    Alarm(uid="XEPT78K46Z", tag="AL-B-UTIL-LEAK", kind=AlarmKind.LEAK, room="RM-B-FURNACE",
+          position=pt(inch(96.5), inch(248))),
+    Alarm(uid="PBBVF80R33", tag="AL-B-SUMP-LEAK", kind=AlarmKind.LEAK, room="RM-B-FURNACE",
+          position=pt(inch(26.5), inch(391))),
+    Alarm(uid="TQGGAKSHH4", tag="AL-B-MAIN-LEAK", kind=AlarmKind.LEAK, room="RM-B-STAIR",
+          position=pt(inch(136), inch(414))),
+    Alarm(uid="PKG7EJRSDK", tag="AL-B-BATH-LEAK", kind=AlarmKind.LEAK, room="RM-B-BATH",
+          position=pt(inch(127), inch(243.1))),
 ]
 
 # --- main: doorbell and the porch camera -----------------------------------------------------
@@ -92,6 +109,17 @@ MAIN_ELEMENTS = [
                # LB at 5, outside the cladding where the leg leaves the wall.
                pull_points=(5,),
                from_ref="ED-M-KITCH-AP", to_ref="ED-BW-CAM-CANOPY"),
+    # Leak sensors (notes/leak_detectors.md): SONOFF SNZB-05P on the floor at each risk point,
+    # Zigbee to ZHA, battery (no circuit). HA notifies; nothing depends on them. `position`
+    # is the floor point (an Alarm has no wall host or elevation).
+    Alarm(uid="WJ9EBM7Q87", tag="AL-M-LAUNDRY-LEAK", kind=AlarmKind.LEAK, room="RM-M-LAUNDRY",
+          position=pt(inch(127.7), inch(237))),
+    Alarm(uid="BDTVWPTR52", tag="AL-M-KITCH-LEAK", kind=AlarmKind.LEAK, room="RM-M-LIVING",
+          position=pt(inch(352), inch(410))),
+    Alarm(uid="YM5VGSJ383", tag="AL-M-BATH1-LEAK", kind=AlarmKind.LEAK, room="RM-M-BATH1",
+          position=pt(inch(42.6), inch(274.9))),
+    Alarm(uid="SA96J50WJP", tag="AL-M-BATH2-LEAK", kind=AlarmKind.LEAK, room="RM-M-BATH2",
+          position=pt(inch(27.5), inch(176.2))),
 ]
 
 # --- entry: the canopy column camera ---------------------------------------------------------
@@ -114,6 +142,17 @@ SECOND_ELEMENTS = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BW2", face="left", distance_from_start=inch(42),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # Leak sensors (notes/leak_detectors.md): SONOFF SNZB-05P on the floor at each risk point,
+    # Zigbee to ZHA, battery (no circuit). HA notifies; nothing depends on them. `position`
+    # is the floor point (an Alarm has no wall host or elevation).
+    Alarm(uid="PZY0BF7HRZ", tag="AL-S-BATH1-LEAK", kind=AlarmKind.LEAK, room="RM-S-BATH1",
+          position=pt(inch(91.9), inch(356.5))),
+    Alarm(uid="580NGDANV5", tag="AL-S-VANITY-LEAK", kind=AlarmKind.LEAK, room="RM-S-VANITY",
+          position=pt(inch(10.4), inch(295.2))),
+    Alarm(uid="4BE63CZDY4", tag="AL-S-SUITEBATH-LEAK", kind=AlarmKind.LEAK, room="RM-S-SUITEBATH",
+          position=pt(inch(147.5), inch(240.5))),
+    Alarm(uid="GBAGDPRYSN", tag="AL-S-PLANT-LEAK", kind=AlarmKind.LEAK, room="RM-S-PLANT",
+          position=pt(inch(166), inch(28))),
 ]
 
 # --- garage: opener, its ceiling receptacle, the EVSE ----------------------------------------

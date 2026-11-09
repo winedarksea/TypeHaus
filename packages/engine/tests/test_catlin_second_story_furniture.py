@@ -192,7 +192,8 @@ def test_study_bookcase_product_takeoff_and_relocated_outlet(catlin_plan, catlin
     shelf_north = Polygon(objects["FURN-S-STUDY-CORNER-BOOKCASE"].footprint).bounds[3]
     window = next(item for item in catlin_model_ro.openings if item.tag == "WIN-S-STUDY3")
     assert outlet_bounds[1] - shelf_north > inch(7).meters
-    assert Polygon(window.framing_bumper).bounds[1] > outlet_bounds[3]
+    # Under WIN-S-STUDY3 since its 2026-11-08 move: the box stands clear below the sill.
+    assert source_outlet.mount.elevation.meters + inch(4).meters < window.sill_m
 
 
 def test_deleted_study_rocker_and_duplicate_pot_reach_the_takeoff(catlin_model_ro):

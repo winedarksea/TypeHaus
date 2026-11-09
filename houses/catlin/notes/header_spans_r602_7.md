@@ -55,7 +55,7 @@ printed table, 2026-11-06. `tests/test_header_spans.py` pins these numbers.
 - Row: "Roof, ceiling and one center-bearing floor", 50 psf, 36': 2-2x8 45" × 0.70 = **31.5"**
   ≥ 27.5", **NJ 2** → PASS, 0.87.
 
-## 3. D-B-SAUNA — `W-B-CS`, interior, BEARING → no row (UNKNOWN)
+## 3. D-B-SAUNA — `W-B-CS`, interior, BEARING → past R602.7 (§5 reads it)
 
 - RO 26.24". Load: `FS-M-WEST` and `FS-M-EAST` both name `W-B-CS` — two half-decks, **one**
   floor level (center-bearing). Above: `W-M-C1` (on the x = 18' line `FS-S-WEST`/`-EAST` bear
@@ -63,10 +63,8 @@ printed table, 2026-11-06. `tests/test_header_spans.py` pins these numbers.
   `RB-HOUSE`, `RF-HOUSE`'s ridge beam. So the span carries the roof and three floors, and is
   interior.
 - R602.7 stops at two floors, R602.7(2) has no roof row, and R602.7(1) is for exterior walls.
-  **No row.** The span-ladder 2-2x8 is drawn as a placeholder and `structural.header_span` is
-  UNKNOWN until a manufacturer's header-guide row (`header_spec` + `published_span`), a door
-  move or an engineered item answers it. The same holds for every door in the x = 18' centre
-  stack (`D-B-GYM`, `D-M-BED2`, `D-M-STUDY`, `D-S-PLANT`, `D-S-SUITE`, `D-A-HALVES`).
+  **No row**, for this and every door in the x = 18' centre stack (`D-B-GYM`, `D-M-BED2`,
+  `D-M-STUDY`, `D-S-PLANT`, `D-S-SUITE`, `D-A-HALVES`). §5 answers each off Boise's guide.
 
 ## 4. D-M-LAUN — `W-M-HS3`, interior pocket, BEARING → Boise's published row (PASS)
 
@@ -131,8 +129,9 @@ outside the span (`tests/test_header_spans.py`).
   (`plans/TODO.md`), the `WIN-M-DINING-E` precedent reads the 32' column the same way. Not bolded,
   so single trimmers. Page notes: L/360 live, L/240 total (or 5/16" total for 7" and smaller);
   interior wall 60 plf; "Tables based upon uniform loading applications shown in tables only";
-  "Double 1¾" VERSA-LAM 1.7 2650 may be substituted". There is no 1 3/4" ply at 7", so the
-  member is **2-ply 1 3/4 x 7 1/4 VERSA-LAM** (the next ply depth, the `WIN-M-DINING-E` idiom).
+  "Double 1¾" VERSA-LAM 1.7 2650 may be substituted". p.3 publishes no 1 3/4" ply below 9 1/2"
+(7 1/4" is a 1 1/2" width), so the member is **2-ply 1 3/4 x 9 1/2 VERSA-LAM**, the
+smallest 1 3/4" depth, the `WIN-M-DINING-E` idiom (corrected 2026-11-08 from a 7 1/4" ply).
 
 ### 4d. Hand check against the row's own load
 
@@ -146,6 +145,82 @@ Row load at 32': 52 x 16 = 832 + 60 = 892 plf over 6'-8" (6.67'): M = 892 x 6.67
 All under the row; the read is the row and the conditions, not this arithmetic.
 `structural.header_prescriptive` grades it (6.21' <= 6.67', PASS) and refuses it while a point
 load bears inside the span. `structural.header_span` steps aside for a published row.
+
+## 5. The x = 18' stack, the niche and WIN-S-STUDY3 (2026-11-08)
+
+Boise guide as in §4c, read from the PDF. Every row is 50 psf snow (115%), 15 dead, the 32'
+column (the widest; 36' is the same load comparison as §4), not bolded (single trimmers). The
+header-type columns the guide publishes for a ridge line are a load comparison: the rows are
+trusses on an exterior wall. Member: 2-ply 1 3/4 x 9 1/2, p.3's smallest 1 3/4" depth.
+
+### 5a. The rows
+
+Tributary at x = 18': roof 18' at 15 + 35 psf = 900 plf; floors 18' at 12 + 40 (attic 30 live).
+
+| opening | clear | carries | plf | row (3'-2") | row plf |
+|---|---|---|---|---|---|
+| D-A-HALVES | 34.2" | ridge + ~60 partition | 960 | p.4 Roof Only: 3 1/2" | 1,250 |
+| D-S-PLANT, -SUITE | 32.2", 34.2" | + FS-ATTIC 756, wall ~90 | 1,746 | p.5 Roof Only + 1 Floor (no mid support): 4 3/8" | 2,082 |
+| D-M-BED2, -STUDY | 34.2", 32.2" | + FS-S 936, walls ~150 | 2,742 | p.6 Roof + 2 Floors (no mid support): 5 1/4" | 2,994 |
+| AO-M-FIRE-NICHE | 34.0" | roof 445 + FS-S-EAST 463 + FS-ATTIC 374 + walls ~190 + ST-S2A | 1,472..1,872 | the same p.6 row | 2,994 |
+
+Row loads: 65 x 18 + 80; + 52 x 16; + 52 x 32 + 160 (two walls). The 2,994 back-checks p.3's
+3 1/2 x 5 1/4 (M 3,761 lb-ft <= 3,892; V 3,436 lb <= 3,491) at 3'-2". On BED2/STUDY the floor
+term is 1,692 against the row's 1,664; the roof term (900 vs 1,170) covers it. The check grades
+span against the row and the load basis, so these numbers are the `condition`, not an input.
+
+**The ledger** (`AO-M-FIRE-NICHE`). `ST-S2A`'s winder box is carried on `W-S-E1` by anchored
+rims (`landing-rim-winder*-5`, y 59..105") and on `W-S-SS2` by rims and a stringer ledger: a
+strip along the wall, not a point (`resolve/header_loads.py`). The box is ~16 sf x 52 psf = 830
+lb plus ~half the flight (30 sf x 52 psf / 2 = 780 lb), split between the two walls, so W-S-E1
+sees about 225 plf, at most 400 plf over 48"; 1,872 plf in all, against the row's 2,994. A
+stair whose stringers land ACROSS a wall stays a point load.
+
+### 5b. D-B-SAUNA and D-B-GYM: a load table, not a header column
+
+The header-type columns stop at Roof + 2 Floors; this stack carries three floors and 3,258 plf
+passes that row's 2,994. So it reads the guide's **p.16 Floor Load Tables (100% Load
+Duration)**, the Allowable Total Load in plf, which names no header type. Span is centre to
+centre of supports, at the next tabulated span with no interpolation.
+`checks/structural/published_line_load.py` reads `PublishedSpan.capacity_plf` against the
+derived load; `header_prescriptive` supplies the load, jack count and centre-to-centre span.
+
+Derived line load (`resolve/header_line_load.py`, `typehaus/loads.py`):
+
+| source | D | L | S |
+|---|---|---|---|
+| roof, 18' at 15 D + 35 S | 270 | | 630 |
+| three floors, 18' at 10 D + 40 L each | 540 | 2,160 | |
+| walls above, 10 psf x (8.76 + 10 + 10)' | 288 | | |
+| **total** | **1,098** | **2,160** | **630** |
+
+D + L = **3,258 plf** governs (D + S 1,728; D + 0.75L + 0.75S 3,190). The floor table is 100%
+duration, so the snow case is read conservatively as well. `main_floor_truss_basis.md` §5 reaches
+3,205 with 12/15 dead and 30 psf attic live. The full D + L + S sum, 3,888, is not a load
+combination.
+
+| | clear | jacks, bearing | c-c | row | d/c |
+|---|---|---|---|---|---|
+| D-B-SAUNA | 26.24" | 2, 3" | 29.24" = 2.44' | 3 ft: 5,395 plf, min end bearing 2.1" | 0.60 |
+| D-B-GYM | 36.0" | 2, 3" | 39" = 3.25' | 4 ft: 3,632 plf, min end bearing 1.9" | 0.90 |
+
+Member: **5 1/4 x 7 VERSA-LAM** (p.3, p.16), 7" deep so its top stands where the old 2-2x8's did
+and the ERV duct and condensate line over `D-B-GYM` keep their crossing (a 9 1/2" header reached
+both, and p.3 caps a hole at 2"). It fits a 2x6 wall. **Bearing:** the GYM's reaction is
+3,258 x 3.25 / 2 = 5,294 lb; the row's end bearing is 1.9" at its full load against 2 jacks x
+1 1/2" = 3" (2 x 8.25 in2 of stud on the PT SYP sill, 321 psi against Fc-perp 565). The row also
+assumes lateral support along the compression edge: head cripples and the plates above.
+
+### 5c. WIN-S-STUDY3
+
+27.5" RO. Its load is 445 + 374 + 90 = 909 plf. `FO-A-STAIR`'s south trimmer pack (y 66 1/8..69
+5/8") brings ~500 lb (a 35 plf strip x 17.8' / 2 = 312, guard ~70, header and flight share ~95)
+inside the old span at y 64" +/- 13 3/4". Moved 16" south to y 4'-0" (RO 34 1/4..61 3/4", north
+pack to 66 1/4") it lands past the king, on the plate; R602.7(1) "Roof, ceiling and one
+center-bearing floor" reads the 2-2x8 at 31.5", NJ 2 (§2). `RL-A-HANDRAIL`'s bottom return moved
+to y 32 1/4" on the jack pack, clear of the corner bookcase (30 5/8"), its next bracket at
+y 65" on the north pack (both handrail backing blocks retired). `BWP-S-E1-0000` ends at the new south jamb and `-0062` starts at the north jamb: 34.25 +
+46.25 = 80.5", the same total.
 
 ## Cross-checks of the table read (not catlin openings)
 

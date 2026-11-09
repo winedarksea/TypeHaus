@@ -23,6 +23,7 @@ from typehaus import (
     Node,
     Occupancy,
     PanelingSpan,
+    PublishedSpan,
     ReinforcementSpec,
     Room,
     RoughOpening,
@@ -1077,7 +1078,16 @@ OPENINGS = [
     # makes.
     RoughOpening(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS3",
                  position=from_node("N-B-C1", ft(0, 2.5625)), width=ft(3), height=ft(6, 8),
-                 doorway=D_B_SAUNA_MAT_REDUCER),
+                 doorway=D_B_SAUNA_MAT_REDUCER,
+                 header_spec='5.25x7 LVL', header_jacks=2,
+                 published_span=PublishedSpan(
+                     source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.16, VERSA-LAM 1.7 2650 Floor Load Tables (100% Load Duration)",
+                     table="5-1/4\" width, 7\" depth, 4 ft span: Allowable Total Load 3632 plf, Allowable Live Load not shown so the Total Load controls, minimum bearing 1.9\" at end",
+                     member='5.25x7 LVL',
+                     span=ft(4),
+                     capacity_plf=3632.0,
+                     min_bearing_in=1.9,
+                     condition="read as a load table, not a header-type column: the guide's header columns stop at Roof + 2 Floors and this stack carries three floors; span is centre to centre of supports, read at the next tabulated span with no interpolation; Total Load limited by shear, moment or L/240, in addition to the beam's own weight, at 100% duration and compared with the governing ASD combination; 1.9\" of end bearing is the row's at its full 3632 plf, against 3\" on 2 jacks across the full 5-1/4\" width; lateral support assumed at each support and along the compression edge (plates and head cripples over it); dry use; uniform load only; see notes/header_spans_r602_7.md section 5b")),
     # The 36" pocket opens the bathroom without a swing in its WC/vanity clearance. Its
     # 37" cavity runs south through N-B-BA-SE into W-B-HALL-W; both walls have the same
     # 2x6 section even though their stud layouts differ. The bathroom services moved to
@@ -1136,7 +1146,16 @@ OPENINGS = [
     # D-B-SUNKEN's inswing arc and the shower pan in the sauna's NE corner, far enough south
     # to keep clear of D-B-GYM. Swings out into the gym on the default.
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-CS", type_ref="DT-INT-SAUNA24",
-         position=from_node("N-B-SA-NE", ft(4, 10.3125)), flip_hinge=True, doorway=D_B_SAUNA_MAT_REDUCER),
+         position=from_node("N-B-SA-NE", ft(4, 10.3125)), flip_hinge=True, doorway=D_B_SAUNA_MAT_REDUCER,
+         header_spec='5.25x7 LVL', header_jacks=2,
+         published_span=PublishedSpan(
+             source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.16, VERSA-LAM 1.7 2650 Floor Load Tables (100% Load Duration)",
+             table="5-1/4\" width, 7\" depth, 3 ft span: Allowable Total Load 5395 plf, Allowable Live Load not shown so the Total Load controls, minimum bearing 2.1\" at end",
+             member='5.25x7 LVL',
+             span=ft(3),
+             capacity_plf=5395.0,
+             min_bearing_in=2.1,
+             condition="read as a load table, not a header-type column: the guide's header columns stop at Roof + 2 Floors and this stack carries three floors; span is centre to centre of supports, read at the next tabulated span with no interpolation; Total Load limited by shear, moment or L/240, in addition to the beam's own weight, at 100% duration and compared with the governing ASD combination; 2.1\" of end bearing is the row's at its full 5395 plf, against 3\" on 2 jacks across the full 5-1/4\" width; lateral support assumed at each support and along the compression edge (plates and head cripples over it); dry use; uniform load only; see notes/header_spans_r602_7.md section 5b")),
     # The framed-wall datum is the curb top; the rough sill is recessed 1.75 inches
     # into the curb seat while the installed threshold remains above the court.
     #

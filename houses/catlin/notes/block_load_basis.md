@@ -343,6 +343,47 @@ occupants      7 × 200                        = 1,400 Btu/h
 latent                                          6,076 Btu/h
 ```
 
+## 10. Review 2026-11-08: the two figures that lean low, and the one that leans high
+
+Own arithmetic, from authored inputs; pinned 30,183 Btu/h reconciles (tests agree to 0.01%).
+
+**Wall R is the card's, not the oracle's.** `W` UA 72.30 on 3,151.6 ft² is R-43.6, the
+assembly card (R-43.5). `catlin_truss_engineering.md` §7 works the same wall by parallel
+paths: R-39.85 wood-only, R-37.9 with girt screws (the card reads the block band as
+unbroken foam and credits the outboard girt):
+
+```
+A/R  3,151.6 / 39.85 = 79.09   (+6.79 UA)  x 85 = +577 Btu/h   (x 13 cooling = +88)
+     3,151.6 / 37.90 = 83.16   (+10.86 UA) x 85 = +923 Btu/h   (x 13 cooling = +141)
+```
+
+**ERV recovery is a low-flow rating.** 0.65 is Broan's SRE at -13 F read at 83 cfm; the
+house runs 204.5 cfm and SRE falls with flow. Published at 32 F: 78 % @ 81 cfm, 72 % @ 161
+(-6 pts/80 cfm). Extended to 204.5 cfm: 72 - 0.075 x 43.5 = 68.7 %, a 0.881 ratio on 78 %;
+at -13 F, 0.65 x 0.881 = 57.3 %:
+
+```
+net cfm  204.5 x (1 - 0.573) = 87.3   against 210 x 0.35 = 73.5
++13.8 cfm x 1.08 x 0.97037 x 85 = +1,229 Btu/h
+```
+
+(An extrapolation past the last published row; no row near 204 cfm exists.)
+
+**Conditioned volume is high.** `_volume_ft3` multiplies the attic's 1,079 ft² of rooms by
+the storey's nominal 11 ft; a 6:12 gable over 36 ft is 9 ft at the ridge, mean 4.5 ft, so
+about 1,079 x 4.5 = 4,860 ft³ against 11,869 charged. Total 41.3k -> ~34.3k ft³, so
+infiltration falls 17 %: 5,178 x 0.17 = **-880 Btu/h** (cooling 445 x 0.17 = -76).
+
+Net: +577..923 +1,229 -880 = **+0.9..1.3 kBtu/h on 30.2 (+3..4 %)**: the pinned heating
+figure is sound to ~4 %. Not independent of it: `ach50 = 1.0` is a target, not a test, and
+each +1.0 ACH50 adds 5,178 Btu/h (1.5 uplift on) until a blower-door result exists.
+
+Latent re-derived by hand (§9 constants): W_out 14.517 / 1,060.07 = 0.013694, W_in
+0.62198 x 0.21504 / 14.0455 = 0.009522, 29.20 gr; 0.68 x 0.97037 x 242.69 cfm x 29.20 =
+4,676. Ground floor U 0.019652 x 1,296 = 25.47 (engine 25.468). Cooling sums:
+2,446 conduction (188.19 x 13) + 445 + 1,001 + 9,517 glass + 2,810 internal + 303 roof
+sol-air = 16,522.
+
 ## Revisions
 
 - **2026-09-22, court narrowed to 17'-0".** W-B-S2-FR/-S3-FR lost 17.0 sf of framed wall
@@ -387,3 +428,7 @@ latent                                          6,076 Btu/h
   - **Air-side latent** (§9): +4,676.
   Sensible 20,337.4 − 3,216.4 − 598.9 = **16,522 Btu/h**; latent **6,076**; SHR 0.73;
   (16,522 + 6,076) / 12,000 = **1.883 tons**.
+- **2026-11-08, review.** Nothing in the engine changed; §10 added. Engine reads heating
+  30,182.8 / sensible 16,522.1 / latent 6,076.4 (`test_energy_envelope_scope.py` passes), the
+  pins above stand. Bounds: heating +3..4 % (wall R, ERV SRE at flow, less the attic volume),
+  cooling glass independent check in `solar_gain_basis.md`.
