@@ -203,3 +203,33 @@ def emit_terminal_necks(model: ResolvedModel) -> None:
                 uid=f"{obj.uid}-neck", tag=f"{obj.tag}-NECK", storey=obj.storey,
                 category="terminal_neck", outline=ring, z0_m=z0, z1_m=z1,
                 product=neck.product_ref, host_ref=obj.tag))
+            _emit_projecting_round_collar(model, obj, neck)
+
+
+def _emit_projecting_round_collar(model: ResolvedModel, obj, neck) -> None:
+    """A wall boot's inlet can project past its shallow rectangular box.
+
+    Extending the whole box to the inlet would invent rectangular corners beside the
+    round collar, producing false collisions with raked stair stringers.
+    """
+    from typehaus.resolve.model import SolidSweep
+    from typehaus.resolve.round_solids import PIPE_FACETS
+    from typehaus.resolve.sweep import round_profile, sweep_plan_silhouette, sweep_z_extent
+
+    inlet = neck.inlet
+    if (obj.mount is None or obj.mount.kind.value != "wall" or inlet is None
+            or inlet.section != "round" or inlet.normal[1] <= 0):
+        return
+    projection = inlet.position[1].meters - neck.depth.meters
+    placed = terminal_inlet(model, obj.tag)
+    if projection <= 1e-9 or placed is None:
+        return
+    centre, normal, diameter, _ = placed
+    length = projection / inlet.normal[1]
+    end = (centre[0] - normal[0] * length, centre[1] - normal[1] * length, centre[2])
+    sweep = SolidSweep(path=(centre, end), profile=round_profile(diameter / 2, PIPE_FACETS))
+    z0, z1 = sweep_z_extent(sweep)
+    model.solids.append(ResolvedSolid(
+        uid=f"{obj.uid}-neck-collar", tag=f"{obj.tag}-NECK-COLLAR", storey=obj.storey,
+        category="terminal_neck", outline=sweep_plan_silhouette(sweep),
+        z0_m=z0, z1_m=z1, sweep=sweep, host_ref=obj.tag, group=obj.tag, derived=True))

@@ -26,9 +26,10 @@ def _findings(model, check_id, tier=Tier.INTEGRITY):
 
 
 def test_every_air_service_maps_to_its_own_duct_system():
-    """The four air services and no others. A POWER or DRAIN entry would be a claim that a
+    """The five air services and no others. A POWER or DRAIN entry would be a claim that a
     duct connects them, which is the one thing this table must never say."""
     assert AIR_SERVICE_DUCT_SYSTEM == {
+        Service.TRANSFER_AIR: DuctSystem.TRANSFER,
         Service.SUPPLY_AIR: DuctSystem.SUPPLY,
         Service.RETURN_AIR: DuctSystem.RETURN,
         Service.EXHAUST_AIR: DuctSystem.EXHAUST,

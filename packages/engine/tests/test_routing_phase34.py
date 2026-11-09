@@ -174,8 +174,8 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
     makes a port exact is that somebody has dimensioned it for THIS house, and a tap this
     house cuts in the field qualifies the same way a fabricated plenum's collar does. The
     PROPH80's sheets publish the heights (K, C 59", E 42 3/8") and a drawing the stations
-    are scaled from (2026-10-29: four exact ports now, incl. condensate and T&P). The collar assertion
-    is therefore now scoped to the ERV boxes, where it is still the thing worth pinning.
+    are scaled from. Two air adapter stations were added on 2026-11-09 with the same
+    scaled-position caveat. The collar assertion is scoped to the ERV boxes.
 
     The hot-water header (2026-11-04) is exact the same way: Uponor's LF2821050 submittal
     dimensions the sweat inlet and the eight outlets (A, B + C, D pitch, G)."""
@@ -193,6 +193,8 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
                      "EQ-B-ERV.supply",
                      "EQ-B-HW-HEADER.inlet",
                      *(f"EQ-B-HW-HEADER.out-{i}" for i in range(1, 9)),
+                     "EQ-B-WH.air-in",
+                     "EQ-B-WH.air-out",
                      "EQ-B-WH.cold",
                      "EQ-B-WH.condensate",
                      "EQ-B-WH.hot",

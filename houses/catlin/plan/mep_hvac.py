@@ -106,6 +106,16 @@ EQUIPMENT_TYPES = (
                                      connection_size=inch(0.75), direction=(-0.342, -0.940, 0.0),
                                      certainty=PortCertainty.EXACT,
                                      notes="Factory T&P valve outlet, front-left, ~20 deg left of front, r ~15.4in. Position AND height scaled off RH-PIHP-SC-SO Rev. 7 p.2 (not published); confirm on the delivered unit."),
+                         ServicePort(tag="air-in", service=Service.TRANSFER_AIR,
+                                     position=(inch(-5.475), inch(2.475), inch(74.1875)),
+                                     connection_size=inch(8), direction=(0.0, 0.0, 1.0),
+                                     certainty=PortCertainty.EXACT,
+                                     notes="Inlet adapter: plan position scaled (+/-1.5in); field verify. Duct route includes the raised elbow envelope."),
+                         ServicePort(tag="air-out", service=Service.TRANSFER_AIR,
+                                     position=(inch(11.4), inch(-4.15), inch(65.5)),
+                                     connection_size=inch(8), direction=(0.940, -0.342, 0.0),
+                                     certainty=PortCertainty.EXACT,
+                                     notes="Outlet adapter: scaled (+/-1.5in) from the side grille above the HydroBoost riser; field verify."),
                          ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))))),
     # --- the backup microgrid (notes/backup_power.md) ----------------------------------
     #

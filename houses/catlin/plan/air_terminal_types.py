@@ -223,8 +223,14 @@ AIR_REGISTER_TYPES = (
                  footprint=(inch(13.75), inch(1)), height=inch(11.75), plan_symbol="register",
                  product_ref="PROD-AIR-RETURN-GRILLE-12X10",
                  neck=TerminalNeck(width=inch(12), height=inch(10), depth=inch(3.5),
-                                   part="12x10 boot, 8in round collar, in the stud bay"),
-                 source=f"Face estimated at +1 3/4in. 120 in2 gross. {_NOTE} §6.",
+                                   part="12x10 shallow boot with projecting rear 8in collar",
+                                   inlet=TerminalNeckInlet(
+                                       position=(inch(0), inch(6.75), inch(0)),
+                                       section="round", width=inch(8), height=inch(8),
+                                       normal=(0.0, 1.0))),
+                 source=f"Face estimated at +1 3/4in. 120 in2 gross. Boot box 3 1/2in deep "
+                        f"with an 8in rear collar reaching 6 3/4in behind the grille; "
+                        f"shop design envelope, not a manufacturer submittal. {_NOTE} §6.",
                  ports=()),
     # D-S-BATH1's sealed door (2026-11-03): one grille per face of W-S-BD-N's west bay,
     # offset in height on a lined bay. The bath face's only clear patch is 7 1/4 x 7 1/8 in.

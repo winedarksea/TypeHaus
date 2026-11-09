@@ -2255,12 +2255,12 @@
 "canvas_objects/REG-B-SUP3/body_z0_m": -0.6461125,
 "canvas_objects/REG-B-SUP3/body_z1_m": -0.6334125,
 "canvas_objects/REG-B-SUP3/z_m": -0.6461125,
-"canvas_objects/REG-B-WH-IN/body_z0_m": -0.6207125,
-"canvas_objects/REG-B-WH-IN/body_z1_m": -0.3222625,
-"canvas_objects/REG-B-WH-IN/z_m": -0.6207125,
-"canvas_objects/REG-B-WH-OUT/body_z0_m": -1.0271125,
-"canvas_objects/REG-B-WH-OUT/body_z1_m": -0.7286625,
-"canvas_objects/REG-B-WH-OUT/z_m": -1.0271125,
+"canvas_objects/REG-B-WH-IN/body_z0_m": -0.8715375,
+"canvas_objects/REG-B-WH-IN/body_z1_m": -0.5730875,
+"canvas_objects/REG-B-WH-IN/z_m": -0.8715375,
+"canvas_objects/REG-B-WH-OUT/body_z0_m": -1.3287375,
+"canvas_objects/REG-B-WH-OUT/body_z1_m": -1.0302875,
+"canvas_objects/REG-B-WH-OUT/z_m": -1.3287375,
 "canvas_objects/REG-M-EXH1/body_z0_m": 2.7305,
 "canvas_objects/REG-M-EXH1/body_z1_m": 2.7559,
 "canvas_objects/REG-M-EXH1/z_m": 2.7305,
@@ -3444,15 +3444,15 @@
 ],
 "ducts/DU-B-WH-IN/z_m": [
 -0.89535,
--0.7223125,
+-0.5699125,
 4,
-"1abf37d98e7f"
+"43207c01fa03"
 ],
 "ducts/DU-B-WH-OUT/z_m": [
 -1.1795125,
--1.1795125,
+-1.1160125,
 4,
-"88b250392501"
+"8b034dde0008"
 ],
 "ducts/DU-ERV-EA/z_m": [
 -0.8594725,
@@ -4920,11 +4920,17 @@
 2,
 "426e608def51"
 ],
+"geometry/1MZ9EB5VTZ-neck-collar/body": [
+-0.8239125,
+-0.6207125,
+24,
+"43dd2eb606f7"
+],
 "geometry/1MZ9EB5VTZ-neck/body": [
--0.5984875,
--0.3444875,
+-0.8493125,
+-0.5953125,
 2,
-"aeb0ecfdcc81"
+"63c6cb356d48"
 ],
 "geometry/1NAESZJ528-box/body": [
 -1.5636875,
@@ -5305,10 +5311,10 @@
 "62c0e749ff80"
 ],
 "geometry/2XHERX8QJG-hanger-61/body": [
--1.2819063,
+-1.2501563,
 -0.301625,
 16,
-"b7ddec511513"
+"2c4301450ba7"
 ],
 "geometry/2XHERX8QJG-hanger-62/body": [
 -1.2819063,
@@ -5318,15 +5324,15 @@
 ],
 "geometry/2XHERX8QJG-run/body": [
 -1.2811125,
--1.0779125,
+-1.0144125,
 72,
-"728b635dbebc"
+"cc5c22ba5186"
 ],
 "geometry/2XHERX8QJG-wrap/body": [
 -1.3192125,
--1.0398125,
+-0.9763125,
 72,
-"d5097d6a5de8"
+"0ef4b18be6f7"
 ],
 "geometry/2Y83RMDSBK/body": [
 -0.2794,
@@ -73316,15 +73322,15 @@
 ],
 "geometry/T2SF2058ME-run/body": [
 -0.89535,
--0.6207125,
+-0.4820143,
 72,
-"f72b74669ec0"
+"b9800e39f582"
 ],
 "geometry/T2SF2058ME-wrap/body": [
 -0.89535,
--0.5826125,
+-0.4490524,
 72,
-"36da0ae7a10e"
+"39559e883035"
 ],
 "geometry/T84MSZYSVQ-RETURN-0-head/body": [
 5.0579782,
@@ -73764,11 +73770,17 @@
 24,
 "80f8255640b2"
 ],
+"geometry/V4Q2XAQCNS-neck-collar/body": [
+-1.2811125,
+-1.0779125,
+24,
+"e746e327f245"
+],
 "geometry/V4Q2XAQCNS-neck/body": [
--1.0048875,
--0.7508875,
+-1.3065125,
+-1.0525125,
 2,
-"be3f923fdb7c"
+"08bd96feadb9"
 ],
 "geometry/V51Z24K1AA-box/body": [
 0.8452,
@@ -117783,17 +117795,17 @@
 "solids/DU-B-ERV-SUP-TRUNK-RUN/z0_m": -0.9026525,
 "solids/DU-B-ERV-SUP-TRUNK-RUN/z1_m": -0.5953125,
 "solids/DU-B-WH-IN-RUN/z0_m": -0.89535,
-"solids/DU-B-WH-IN-RUN/z1_m": -0.6207125,
+"solids/DU-B-WH-IN-RUN/z1_m": -0.4820143,
 "solids/DU-B-WH-IN-WRAP/z0_m": -0.89535,
-"solids/DU-B-WH-IN-WRAP/z1_m": -0.5826125,
-"solids/DU-B-WH-OUT-HANGER-61/z0_m": -1.2819063,
+"solids/DU-B-WH-IN-WRAP/z1_m": -0.4490524,
+"solids/DU-B-WH-OUT-HANGER-61/z0_m": -1.2501563,
 "solids/DU-B-WH-OUT-HANGER-61/z1_m": -0.301625,
 "solids/DU-B-WH-OUT-HANGER-62/z0_m": -1.2819063,
 "solids/DU-B-WH-OUT-HANGER-62/z1_m": -1.0652125,
 "solids/DU-B-WH-OUT-RUN/z0_m": -1.2811125,
-"solids/DU-B-WH-OUT-RUN/z1_m": -1.0779125,
+"solids/DU-B-WH-OUT-RUN/z1_m": -1.0144125,
 "solids/DU-B-WH-OUT-WRAP/z0_m": -1.3192125,
-"solids/DU-B-WH-OUT-WRAP/z1_m": -1.0398125,
+"solids/DU-B-WH-OUT-WRAP/z1_m": -0.9763125,
 "solids/DU-ERV-EA-HANGER-63/z0_m": -0.8577859,
 "solids/DU-ERV-EA-HANGER-63/z1_m": -0.396875,
 "solids/DU-ERV-EA-HANGER-64/z0_m": -0.9000134,
@@ -120776,10 +120788,14 @@
 "solids/REG-B-SUP1-NECK/z1_m": -0.24765,
 "solids/REG-B-SUP2-NECK/z0_m": -0.3226435,
 "solids/REG-B-SUP2-NECK/z1_m": -0.248031,
-"solids/REG-B-WH-IN-NECK/z0_m": -0.5984875,
-"solids/REG-B-WH-IN-NECK/z1_m": -0.3444875,
-"solids/REG-B-WH-OUT-NECK/z0_m": -1.0048875,
-"solids/REG-B-WH-OUT-NECK/z1_m": -0.7508875,
+"solids/REG-B-WH-IN-NECK-COLLAR/z0_m": -0.8239125,
+"solids/REG-B-WH-IN-NECK-COLLAR/z1_m": -0.6207125,
+"solids/REG-B-WH-IN-NECK/z0_m": -0.8493125,
+"solids/REG-B-WH-IN-NECK/z1_m": -0.5953125,
+"solids/REG-B-WH-OUT-NECK-COLLAR/z0_m": -1.2811125,
+"solids/REG-B-WH-OUT-NECK-COLLAR/z1_m": -1.0779125,
+"solids/REG-B-WH-OUT-NECK/z0_m": -1.3065125,
+"solids/REG-B-WH-OUT-NECK/z1_m": -1.0525125,
 "solids/REG-M-EXH1-NECK/z0_m": 2.7305,
 "solids/REG-M-EXH1-NECK/z1_m": 2.8051125,
 "solids/REG-M-EXH2-NECK/z0_m": 2.7305,

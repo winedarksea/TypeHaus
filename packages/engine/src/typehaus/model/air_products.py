@@ -100,7 +100,11 @@ class TerminalNeckComponent(HausModel):
 
 
 class TerminalNeckInlet(HausModel):
-    """Inlet centre in ceiling-plan or wall-back coordinates; normal points to the duct."""
+    """Inlet centre in ceiling-plan or wall-back coordinates; normal points to the duct.
+
+    A round wall inlet beyond the neck box's depth draws a projecting metal collar
+    back to the box; its projection is not an extension of the rectangular envelope.
+    """
 
     # Ceiling: local plan XY and height above face. Wall: across, into host, height
     # above face centre; the origin is the grille's back face.

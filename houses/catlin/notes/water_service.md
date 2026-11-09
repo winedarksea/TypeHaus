@@ -60,23 +60,30 @@ back south. Body hard on `W-B-WELL` and `W-B-BA-N` (0" allowed).
 | T&P outlet | ~20 deg left of front, r ~15.4", ~46" scaled | (158.9", 334.9", ~46") |
 | condensate (C) | front-left shoulder | (161.1", 331.4", 59") |
 | top inlet | ~6" off axis, opposite the exhaust (scaled +-1.5") | (159.1", 317.9", to H 91") |
-| side exhaust | product right, ~63" (scaled) | faces west at x 141.5" |
+| side exhaust | ~70 deg right of front, 65 1/2" (scaled) | (142.2", 324.5", 65.5"), points west/north |
 
 The riser cover is drawn as a lobe on the footprint, north-west in plan, full height though
 it stops at G. Model height is A, 74 3/16". Filter (top) wants 6" over the tank.
 
 **Why this rotation (read 2026-11-09, AP22654 Rev 01 and the MSO spec p.2).** The exhaust sits
 right of the display, directly over the riser; the top inlet is opposite. The stair soffit
-is 92.8" bare at the tank's centre and falls 0.736"/" north (about 92" lined), so the 91" elbow
-clears only with the inlet on the south side: about 1 3/4" here. With the display toward the
-door the inlet lands north and the elbow is about 4" short. Rheem supports both connections
+is 92.8" bare at the tank's centre and falls 0.736"/" north. The earlier claim that the
+91" elbow had 1 3/4" clearance did not establish clearance for its insulated route or for
+manufacturing tolerances; it is withdrawn. With the display toward the door the inlet lands
+north and the elbow is about 4" short. Rheem supports both connections
 ducted to another space (p.9, any size room), 8/7/6/5" duct (Table 1), indoor registers
 approved for HVAC, never tied to another duct (p.15). Ducts: `plan/mep_hpwh_air.py`.
 
-**Field holds.** Confirm the elbow crown against the flight once the tank is delivered: port
-positions are scaled. A 12" flex section belongs between the kit elbow and any rigid duct
-(p.15); these runs are flex to the grille boots, and the inlet's flex is short of 12" where
-it meets the boot, so ask Rheem or lengthen it on site. The tank goes through
+**Construction hold.** The location is conditional, not released for installation. Confirm
+the complete insulated inlet assembly against the lined flight, with the actual adapters:
+port positions are scaled. The inlet routing envelope now rises to an 87" centreline rather
+than hiding the elbow at 81". Its short descending turn still has no demonstrated fitting
+solution. Rheem requires a minimum 12" flex isolation section before rigid duct, and flex
+bends need an **inner** radius at least the duct diameter (12" centreline radius for 8"
+flex). The short inlet and outlet turns cannot simply be bent as drawn. Resolve a real
+adapter/elbow/flex assembly or revise the tank/terminal layout before construction; do not
+crush flex or assume that moving something on site will solve it. See the geometric review
+in `notes/basement_winter_heat.md`. The tank goes through
 `D-B-CLOSET` tilted (74 3/16" against a 72" leaf), with the leaf lifted off its pins.
 
 **Runs.**

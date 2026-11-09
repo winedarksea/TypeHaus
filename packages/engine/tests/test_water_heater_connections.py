@@ -19,9 +19,9 @@ was "is there a vertex on the footprint's centroid" — which a COLD run landing
 answers just as well as the right one, and which three pipes of two services drawn through a
 single point answer best of all. The type now carries the plug-in's side pair on its HydroBoost
 riser (cold at K 5 1/16", hot at E 42 3/8", ``notes/water_service.md``), so the question this
-file asks is the one that was always meant: **each run's tank end lands on the resolved port matching its
-own service**, read through :func:`typehaus.resolve.mep_ports.placed_ports` — the same reading
-``mep.equipment_port_service`` and the router's terminal snapping use.
+file asks is the one that was always meant: **each run's tank end lands on the resolved port
+matching its own service**, read through :func:`typehaus.resolve.mep_ports.placed_ports` —
+the same reading ``mep.equipment_port_service`` and the router's terminal snapping use.
 """
 
 from __future__ import annotations
@@ -180,3 +180,63 @@ def test_the_condensate_run_leaves_the_published_port_and_ties_into_the_erv_line
     from typehaus.resolve.mep_tie_ins import drain_tie_ins
 
     assert drain_tie_ins(catlin_model.pipe_runs)["PR-B-WH-COND"] == "PR-B-ERV-COND"
+
+
+@pytest.mark.parametrize(('run_tag', 'port_tag', 'register_tag'), (
+    ('DU-B-WH-IN', 'air-in', 'REG-B-WH-IN'),
+    ('DU-B-WH-OUT', 'air-out', 'REG-B-WH-OUT'),
+))
+def test_air_connections_reach_their_own_adapter_and_square_boot(
+        catlin_model_ro, run_tag, port_tag, register_tag):
+    from typehaus.resolve.duct_terminations import end_landings
+    from typehaus.resolve.terminal_connections import inlet_connection_error
+
+    landing = next(end for end in end_landings(catlin_model_ro)
+                   if end.run_tag == run_tag and end.index == 0)
+    assert landing.landing == 'port'
+    assert (landing.other, landing.port.port_tag) == ('EQ-B-WH', port_tag)
+    assert landing.port.duct_system == 'transfer'
+    assert inlet_connection_error(catlin_model_ro, register_tag) is None
+
+
+def test_air_boot_collars_bridge_the_gap_without_extending_rectangular_corners(catlin_model_ro):
+    from typehaus.resolve.terminal_necks import terminal_inlet
+
+    solids = {solid.tag: solid for solid in catlin_model_ro.solids}
+    for tag in ('REG-B-WH-IN', 'REG-B-WH-OUT'):
+        box = solids[f'{tag}-NECK']
+        collar = solids[f'{tag}-NECK-COLLAR']
+        centre, _, diameter, _ = terminal_inlet(catlin_model_ro, tag)
+        assert collar.sweep.path[0] == centre
+        assert collar.sweep.path[-1][0] == pytest.approx(min(x for x, _ in box.outline))
+        assert collar.z1_m - collar.z0_m == pytest.approx(diameter)
+        assert collar.z0_m > box.z0_m and collar.z1_m < box.z1_m
+        assert collar.host_ref == tag and collar.derived
+
+
+def test_air_boots_and_insulated_routes_clear_the_actual_raked_stair_framing(catlin_model_ro):
+    """A round collar fits where a deeper rectangular boot or flex jacket cuts the stringer.
+
+    Use the exported solids: the framing check's axis-aligned bounds cannot establish
+    clearance below a raked member, and the bare duct alone misses the jacket collision.
+    """
+    pytest.importorskip('manifold3d')
+    from typehaus.resolve.geometry_build import _solid_geometry
+    from typehaus.resolve.geometry_members import member_solid
+    from typehaus.solids3d.convert import element_manifold, to_manifold
+
+    stair = next(stair for stair in catlin_model_ro.stairs if stair.tag == 'ST-B2M')
+    framing = [(member.child_key, to_manifold(geometry)) for member in stair.members
+               if (geometry := member_solid(member)) is not None]
+    clashes = []
+    for solid in catlin_model_ro.solids:
+        if not solid.tag.startswith(('DU-B-WH-', 'REG-B-WH-')):
+            continue
+        if solid.sweep is None and 'NECK' not in solid.tag:
+            continue
+        shape = element_manifold(_solid_geometry(solid, catlin_model_ro.plan))
+        assert shape.volume() > 0, solid.tag
+        for key, member in framing:
+            if (shape ^ member).volume() > 1e-7:
+                clashes.append((solid.tag, key))
+    assert not clashes, clashes

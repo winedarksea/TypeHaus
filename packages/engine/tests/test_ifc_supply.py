@@ -17,9 +17,7 @@ silently becomes a concrete footing.
 
 from __future__ import annotations
 
-
 import pytest
-
 
 
 @pytest.fixture(scope="module")
@@ -222,7 +220,8 @@ def test_every_routed_run_category_is_declared(catlin_model_ro):
     # and a wrapped duct its jacket (an IfcCovering on the run, resolve/mep_ducts.py).
     minted = {(s.category or "").lower() for s in catlin_model_ro.solids if s.sweep is not None}
     fittings = {"cleanout_fitting", "cleanout_extension", "cleanout_cap"}
-    geometric = {"railing", "beam", "pipe_sleeve", "insulation", "insulation_wrap"}
+    geometric = {"railing", "beam", "pipe_sleeve", "insulation", "insulation_wrap",
+                 "terminal_neck"}
     assert (minted - geometric - fittings - DRAINAGE_CATEGORIES
             <= ROUTED_RUN_CATEGORIES)
 

@@ -177,6 +177,7 @@ class Service(Enum):
     POWER_24 = "power_24"  # Class 2 DC lighting feeds, separate from line-voltage trunks
     SUPPLY_AIR = "supply_air"
     RETURN_AIR = "return_air"
+    TRANSFER_AIR = "transfer_air"
     VENT = "vent"
     # Structured cabling (CAT6 and successors). Its own service rather than a flavour of
     # POWER_120 because NEC 722.15(A) forbids comms and power conductors sharing a
@@ -390,6 +391,7 @@ class DuctSystem(Enum):
 #: ports are connected by something that is not a duct, and a map entry for them would be
 #: a claim this table cannot make.
 AIR_SERVICE_DUCT_SYSTEM = {
+    Service.TRANSFER_AIR: DuctSystem.TRANSFER,
     Service.SUPPLY_AIR: DuctSystem.SUPPLY,
     Service.RETURN_AIR: DuctSystem.RETURN,
     Service.EXHAUST_AIR: DuctSystem.EXHAUST,
