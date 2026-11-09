@@ -216,6 +216,16 @@ AIR_REGISTER_TYPES = (
                  source=f"Two grilles back to back on a lined sleeve; 12in fits a 14 1/2in "
                         f"bay without cutting a stud. Face estimated at +1 3/4in. {_NOTE} §6.",
                  ports=()),
+    # EQ-B-WH's two stair grilles (2026-11-09): indoor registers approved for HVAC (AP22654
+    # p.15); 12in fits W-B-WELL's 14 1/2in bay. Same grille as the transfer pair, one face.
+    RegisterType(tag="REG-T-HPWH-STAIR-1210",
+                 name="HPWH stair grille, 12x10 aluminium return grille on an 8in boot",
+                 footprint=(inch(13.75), inch(1)), height=inch(11.75), plan_symbol="register",
+                 product_ref="PROD-AIR-RETURN-GRILLE-12X10",
+                 neck=TerminalNeck(width=inch(12), height=inch(10), depth=inch(3.5),
+                                   part="12x10 boot, 8in round collar, in the stud bay"),
+                 source=f"Face estimated at +1 3/4in. 120 in2 gross. {_NOTE} §6.",
+                 ports=()),
     # D-S-BATH1's sealed door (2026-11-03): one grille per face of W-S-BD-N's west bay,
     # offset in height on a lined bay. The bath face's only clear patch is 7 1/4 x 7 1/8 in.
     # between the SEKTION rail backing and the top plate, so 6x6 is the size.

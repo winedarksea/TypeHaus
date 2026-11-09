@@ -10,6 +10,7 @@ The 2,515-line original was split by system (AGENTS.md §1.1 keeps files under 5
 - ``plan/mep_supply_devices.py`` — in-line valves, stops and arrestors
 - ``plan/mep_supply_plant.py``   — RM-S-PLANT's watering stub and the balcony hydrant sleeve
 - ``plan/mep_hvac.py``           — System 1's conditioned-air chase, equipment, terminal types
+- ``plan/mep_hpwh_air.py``       — EQ-B-WH's two air connections, ducted into the stair
 - ``plan/mep_hvac_branches.py``  — System 1's bedroom branches: a riser and a bay leg each
 - ``plan/mep_erv_l1.py``         — the ERV system header (the machine, the home-run
   argument, the routing declarations), the basement plenums and their six radials
@@ -47,6 +48,7 @@ from plan import (
                   mep_erv_risers,
                   mep_erv_types,
                   mep_hvac,
+                  mep_hpwh_air,
                   mep_hvac_branches,
                   mep_registers_attic,
                   mep_registers_basement,
@@ -139,7 +141,9 @@ BASEMENT_ELEMENTS = [*mep_drainage.DRAINS,
                      *mep_hvac.DUCTS_BASEMENT,
                      *mep_erv_l1.EQUIPMENT_ERV_BASEMENT,
                      *mep_erv_l1.DUCTS_ERV_BASEMENT,
-                     *mep_registers_basement.REGISTERS_BASEMENT]
+                     *mep_registers_basement.REGISTERS_BASEMENT,
+                     *mep_hpwh_air.DUCTS_HPWH_AIR,
+                     *mep_hpwh_air.REGISTERS_HPWH_AIR]
 SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    *mep_erv_l3.EQUIPMENT_ERV_SECOND,
                    # The stale-air DISCHARGE hood, 13 ft over the intake.

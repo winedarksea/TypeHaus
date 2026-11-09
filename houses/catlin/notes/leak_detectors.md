@@ -20,7 +20,7 @@ probe. Why this one:
 
 | Tag | Room | Risk |
 |---|---|---|
-| `AL-B-WH-LEAK` | RM-B-FURNACE | HPWH (`EQ-B-WH`), 4" off the tank on the open side |
+| `AL-B-WH-LEAK` | RM-B-STAIR (closet) | HPWH (`EQ-B-WH`), 4" off the tank on its north side |
 | `AL-B-HDR-LEAK` | RM-B-FURNACE | hot-water header, floor below it |
 | `AL-B-UTIL-LEAK` | RM-B-FURNACE | utility sink, the ERV/WH condensate receptor |
 | `AL-B-SUMP-LEAK` | RM-B-FURNACE | sump pit overflow (sealed lid), south of the pit |

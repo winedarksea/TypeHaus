@@ -607,16 +607,18 @@ ERV_CONDENSATE = [
             diameter=inch(0.75), material="pvc",
             elevations=(inch(50.8), inch(50.5), inch(48.72), inch(47.67), inch(44.49),
                         inch(44.25),)),
-    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C), 1.2" off the ERV
-    # case's east face: a street elbow turns it down to 51", it steps 2 1/2" west into the
-    # gap under the case's east edge (the tank's circle is 0.9" east of that line), and falls
-    # south onto PR-B-ERV-COND at (91.5", 352"). Pitch >= 1/8"/ft (Rheem), never into the
-    # tank's own pan. The tee is read off the ERV line's fall there (50.5").
+    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C) from the closet
+    # (2026-11-09): north off the port, west under DU-B-WH-OUT, through W-B-STR3 north of
+    # D-B-CLOSET's king, and south-west to tee onto PR-B-ERV-COND's south leg at y=345".
+    # Pitch >= 1/8"/ft (Rheem), never into the tank's own pan.
     PipeRun(uid="V5TVMM2BN9", tag="PR-B-WH-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(94), inch(360.5)), pt(inch(94), inch(360.5)),
-                  pt(inch(91.5), inch(360.5)), pt(inch(91.5), inch(352))),
+            path=(pt(inch(161.125), inch(331.375)), pt(inch(161.125), inch(331.375)),
+                  pt(inch(161.125), inch(336.5)), pt(inch(126), inch(336.5)),
+                  pt(inch(126), inch(359)), pt(inch(104), inch(359)),
+                  pt(inch(104), inch(345)), pt(inch(91.5), inch(345))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(59), inch(51.1), inch(51.0), inch(50.5))),
+            elevations=(inch(59), inch(55.6), inch(55.5), inch(54.75), inch(54.5),
+                        inch(54.0), inch(53.0), inch(50.2))),
 ]
 
 # ** THE COLLECTOR MOVED ONTO THE SERVICE BAND, AND THE HEAD CAME UP 2 5/8" (2026-09-09). **
@@ -670,15 +672,15 @@ CONDENSATE = [
 # falls to SM-B-RADON" to be an argument on its own. The air gap is what UPC 608.5 actually
 # requires; the slope is a slab-pour question the pour has to be told to fall this way
 # rather than assumed to. Flagged in plans/TODO.md.
-# ** THE RELIEF LINE FOLLOWS THE TANK'S T&P PORT (2026-11-02). ** The valve outlet is the
-# type's `relief` port: front-left of the plug-in, ~46" up (scaled), facing west-north-west
-# under the hung ERV case (bottom 54"). A 2" stub pitched down, then straight down to its air
-# gap 6" over the slab under the case, seen from the room; never into the condensate line.
+# ** THE RELIEF LINE FOLLOWS THE TANK'S T&P PORT (2026-11-09). ** The valve outlet is the
+# type's `relief` port: front-left of the plug-in, ~46" up (scaled), facing north-north-east
+# on the closet side of the tank. A 2" stub pitched down, then straight down to its air
+# gap 6" over the slab, seen from the door; never into the condensate line.
 # `test_water_heater_connections` grades its start against the `relief` port.
 TPR_DISCHARGE = [
     PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(90.5), inch(358.3)), pt(inch(88.6), inch(359)),
-                  pt(inch(88.6), inch(359))),
+            path=(pt(inch(158.925), inch(334.875)), pt(inch(159.6), inch(336.75)),
+                  pt(inch(159.6), inch(336.75))),
             diameter=inch(0.75), material="copper",
             elevations=(inch(46), inch(45.75), ft(0, 6))),
 ]

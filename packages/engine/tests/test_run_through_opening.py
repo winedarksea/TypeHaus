@@ -209,8 +209,9 @@ def test_a_run_through_a_door_swing_is_caught(catlin_model) -> None:
     finally:
         runs[at] = live
     hits = [f for f in report.findings if f.result is Result.FAIL]
-    assert [f.element_tags for f in hits] == [("PR-B-ERV-COND", "D-B-CLOSET")]
-    assert "leaf swing" in hits[0].message
+    # The 32" leaf's wider sweep can catch the old path on more than one leg.
+    assert {f.element_tags for f in hits} == {("PR-B-ERV-COND", "D-B-CLOSET")}
+    assert all("leaf swing" in f.message for f in hits)
 
 
 def test_a_french_pair_sweeps_both_quadrants(catlin_model) -> None:

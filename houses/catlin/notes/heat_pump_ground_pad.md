@@ -591,9 +591,9 @@ deliberate rather than an omission: `SleevePenetration` is concrete-only in this
 there is no framed-wall equivalent, so a fake sleeve would put a cast-in item on the pour-day
 schedule that nobody pours. It is recorded here instead.
 
-- **HP2** (three ports, 1/4–3/8): west inside the band bay to x 20'-0" and x 16'-0", then
-  7'-6" up the wall cavity behind `EQ-M-HP2-LIVING` and `EQ-M-HP2-BED`; the gym head runs
-  north 9'-0" in the basement ceiling to `EQ-B-HP2-GYM`. About 25–30 ft each against an 82 ft
+- **HP2** (four-port unit, three used, 1/4–3/8): west inside the band bay to x 20'-0" and
+  x 16'-0", then 7'-6" up the wall cavity behind `EQ-M-HP2-LIVING` and `EQ-M-HP2-BED`; the gym
+  head's set reaches `EQ-B-HP2-GYM` on `W-B-S3-FR` (x about 25'-7 3/8" since 2026-11-09). About 25–30 ft each against an 82 ft
   per-port limit and 263 ft total. Inside the 131 ft precharge — no added charge.
 **The SE-corner stud bay is a dead entry now, kept for the record.** East of
 `WIN-M-LIV-S1`'s jamb pack both `W-M-S2` and `W-S-S2` frame a king at x 33'-5 1/4" and a stud

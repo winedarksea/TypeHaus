@@ -7761,3 +7761,17 @@ the glaze remains smooth polished porcelain, with recessed grout and a separate
 roughness/glaze mask. The images are bundled for offline rendering. The obsolete
 procedural onyx pipeline is removed now that both onyx selections use photography.
 See `ui/src/assets/tiles/opera-blue.md` for sources and the represented face range.
+
+## Water heater to the under-stair closet; gym head on the studs (2026-11-09, owner)
+
+`RM-B-FURNACE` and `RM-B-WORKSHOP` have no heat and the HPWH's chill was their largest load
+(`notes/basement_winter_heat.md`). `EQ-B-WH` moved to the closet's SE corner with both air
+connections ducted through `W-B-WELL` into the stair. The planned orientation (exhaust east,
+controls at the door) proved impossible on Rheem's drawing: the exhaust is right of the display,
+over the riser, and the top inlet is opposite. Rotation 180 was the owner's pick, with the
+exhaust wrapping the tank's north side at about 63"; it is the one quarter where the 91" elbow
+clears the stair soffit and the T&P stays off `W-B-WELL`. `D-B-CLOSET` went to a 32" leaf, 6 3/4"
+off the corner so its jamb clears `FO-M-STAIR`'s point load. R302.7 gypsum under the flight is an
+allowance, because no `Stair` field holds it. `EQ-B-HP2-GYM` moved to `W-B-S3-FR`, straddling the
+jog, with its plate on the framed run (`BK-B-S3FR-HP2-GYM`); the ESS-lid transfer grilles were
+dropped. EQ-M-HP2-OD's comments now say four-port, per Gree's submittal.

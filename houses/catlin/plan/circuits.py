@@ -159,7 +159,7 @@ CIRCUITS = (
             description="Heat pump 1 indoor, ducted air handler + 4.6 kW heat kit (EQ-S-HP1-AH, EQ-S-HP1-STRIP)"),
     Circuit(uid="CKT037AAAA", tag="CKT-HP2", slot=49, panel_ref=_PANEL, breaker_amps=30, poles=2,
             gfci=True, load_va=6000,
-            description="Heat pump 2 outdoor, Multi Ultra 3-port (EQ-M-HP2-OD; feeds its 3 heads)"),
+            description="Heat pump 2 outdoor, Multi Ultra 4-port (EQ-M-HP2-OD; feeds 3 heads, one port unused)"),
     # System 3 (below, backup microgrid) is a true-VFD compressor that soft-starts, which
     # is what makes it carryable by the battery inverter at all.
     # GFCI at the breaker (code.E3902_gfci_locations): ED-M-LIVING-KET1 sits 3.2' from the

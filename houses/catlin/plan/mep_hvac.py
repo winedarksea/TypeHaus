@@ -61,8 +61,8 @@ EQUIPMENT_TYPES = (
     # HydroBoost riser at the product's front-right, no top nipples.
     EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater, Rheem ProTerra Plug-in HydroBoost 80 gal heat pump, 120 V",
                   product_ref="PROD-RHEEM-PROPH80",
-                  # Height = A 74 3/16", the tank top with its filter grille. Not H 91" (ducted);
-                  # the filter wants 6" over it, which the 82" duct soffit above gives.
+                  # Height = A 74 3/16", the tank top with its filter grille. H 91" is the
+                  # ducted inlet elbow (plan/mep_hpwh_air.py); the filter wants 6" over the top.
                   footprint=(inch(24.25), inch(24.25)), height=inch(74.1875),
                   # Tank (B 24 1/4"): a 16-gon, flats on the axes. The lobe at front-right is
                   # the riser cover, 40-75 deg right of front at r 15" (SCALED); it stops at
@@ -84,7 +84,8 @@ EQUIPMENT_TYPES = (
                   # Product frame: -y front, +x right, z off the floor. Heights published (E, K,
                   # C); every x/y SCALED off p.2's plan and elevation (+-1"), and the T&P height
                   # too. 3/4" NPT, MIP fittings. `power` is the factory cord, a face only.
-                  # Clearances 0" rear/sides, 6" top; exhaust 6" off a wall; 2" T&P release.
+                  # Clearances 0" rear/sides, 6" top, 2" T&P release. Ducted on both air
+                  # connections, so "any size room" and no exhaust zone (Use & Care p.9).
                   ports=(ServicePort(tag="cold", service=Service.WATER_COLD,
                                      position=(inch(10.7), inch(-11.9), inch(5.0625)),
                                      connection_size=inch(0.75), direction=(0.669, -0.743, 0.0),
@@ -105,15 +106,7 @@ EQUIPMENT_TYPES = (
                                      connection_size=inch(0.75), direction=(-0.342, -0.940, 0.0),
                                      certainty=PortCertainty.EXACT,
                                      notes="Factory T&P valve outlet, front-left, ~20 deg left of front, r ~15.4in. Position AND height scaled off RH-PIHP-SC-SO Rev. 7 p.2 (not published); confirm on the delivered unit."),
-                         ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0)))),
-                  clearances=(
-                      ClearanceZone(
-                          footprint=Footprint2D(points=(
-                              pt(inch(12.125), inch(-6)), pt(inch(18.125), inch(-6)),
-                              pt(inch(18.125), inch(12)), pt(inch(12.125), inch(12)))),
-                          purpose="air exhaust 6in off any wall or hard surface when not ducted",
-                          policy=ClearancePolicy.RECOMMENDED,
-                          source="Rheem RH-PIHP-SC-SO Rev. 7 / Use & Care p.11, non-ducted note"),)),
+                         ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))))),
     # --- the backup microgrid (notes/backup_power.md) ----------------------------------
     #
     # EG4 12kPV: name is the PV input, not the output. 12,000 W array in, 8,000 W AC out
@@ -357,24 +350,21 @@ DUCTS_HVAC_SECOND = [
 # "this storey has no horizontal duct" is a fact worth stating where the list would be.
 DUCTS_HVAC_ATTIC = []
 
-# The tank sits against W-B-STR3 at (8'-9", 29'-5"), flush to its resolved east interior face,
-# in the slot between the hung ERV case (west), W-B-ESS-S (north) and D-B-CLOSET's swing
-# (south, y <= 339"). Clear of EQ-B-ESS-BATT's 36" zone, the dry-fire lane and the 36"
-# NEC 110.26 working spaces along the west wall.
+# ** IN THE UNDER-STAIR CLOSET'S SE CORNER SINCE 2026-11-09 (owner). ** Body hard on
+# W-B-WELL (x 165.75") and W-B-BA-N (y 308.25"), so its chill leaves the furnace room:
+# both air connections are ducted into the stair (plan/mep_hpwh_air.py,
+# notes/basement_winter_heat.md). The south end is the one place the 91" inlet elbow fits
+# under the flight (soffit 92.8" bare at the tank's centre, falling 0.736"/" north).
 #
-# ** ROTATED -90 SO THE AIR EXHAUST FACES THE ROOM (owner, 2026-10-29). ** Product right
-# (exhaust) is SOUTH: its 6" zone (x 99..117", y 334 7/8..340 7/8") is open floor, with only
-# D-B-CLOSET's leaf in it while it stands open (PR-B-ERV-COND left it on 2026-10-29).
-# Back is EAST on the wall (0" allowed). Left is NORTH, 4 1/2" body-to-wall: PR-B-ERV-COND
-# runs that gap at 52". Front (display, condensate, T&P) is WEST, beside the ERV case: the
-# display is read through EcoNet, the T&P (~46") sits under the case's 54" bottom. The
-# HydroBoost riser is SOUTH-WEST, outside D-B-CLOSET's 75-degree swing. World ports
-# (notes/water_service.md §1): hot (99.9", 338.9", 42 3/8"), cold (93.1", 342.3", 5 1/16"),
-# T&P (90.5", 358.3", ~46"), condensate (94", 360.5", 59"); mep_supply.py,
-# mep_supply_devices.py and mep_drainage.py quote them.
+# ** ROTATED 180: DISPLAY NORTH, EXHAUST WEST, INLET SOUTH-EAST OF CENTRE. ** Not a choice
+# of taste. Rheem's exhaust sits right of the display, over the riser, with the top inlet
+# opposite (RH-PIHP-SC-SO p.2), and only this quarter both lands the inlet on the high
+# side of the rake and keeps the T&P off W-B-WELL (6.8"). World ports
+# (notes/water_service.md §1): hot (139.5", 325.5", 42 3/8"), cold (142.9", 332.3",
+# 5 1/16"), T&P (158.9", 334.9", ~46"), condensate (161.1", 331.4", 59").
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(ft(8, 9), ft(29, 5)), rotation=deg(-90),
-             footprint=(inch(24.25), inch(24.25)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH",
+             position=pt(inch(153.625), inch(320.375)), rotation=deg(180),
+             footprint=(inch(24.25), inch(24.25)), room="RM-B-STAIR", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH",
              relief_discharge_ref="PR-B-WH-TPR"),
 ]

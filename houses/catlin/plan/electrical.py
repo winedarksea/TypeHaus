@@ -9,7 +9,7 @@
 #   System 1  EQ-M-HP1-OD (FLEXX Ultra, NORTH pad) -> EQ-S-HP1-AH, concealed ducted AH in
 #             SF-S-HP1 over RM-S-NCLOSET, feeding the dropped hallway chase SOUTHWARD —
 #             upstairs + two attic branches.
-#   System 2  EQ-M-HP2-OD (Multi Ultra 3-port, -22F) -> EQ-B-HP2-GYM, EQ-M-HP2-BED,
+#   System 2  EQ-M-HP2-OD (Multi Ultra 4-port, -22F) -> EQ-B-HP2-GYM, EQ-M-HP2-BED,
 #             EQ-M-HP2-LIVING.
 #   System 3  EQ-M-HP3-OD (Sapphire R32, VFD soft start, backup battery circuit) ->
 #             EQ-M-HP3-STAIR, stair well NW corner on W-M-N2. Mudroom reached via
@@ -278,14 +278,14 @@ BASEMENT_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # EQ-B-WH's factory cord (Rheem: a grounded standard outlet, not shared past half its
     # breaker). Dedicated CKT-WH, GFCI at the device as the sump's (210.8(A)(5)). On
-    # W-B-ESS-S's south face over the tank's north-west shoulder, 3 13/16" above its 74 3/16"
-    # top: the cord leaves the top front-left and never crosses the south exhaust zone.
+    # W-B-BA-N's closet face, 3 13/16" above the tank's 74 3/16" top, west of its inlet elbow
+    # so the cord can be reached with the tank in place.
     ElectricalDevice(uid="4KWVWZGFP6", tag="ED-B-WH-RC", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-15", circuit="CKT-WH", room="RM-B-FURNACE",
+                     type_ref="ED-T-LEV-GFCI-15", circuit="CKT-WH", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(78)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-ESS-S", face="right", distance_from_start=inch(28),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+                         wall_ref="W-B-BA-N", face="left", distance_from_start=inch(28),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # On the sauna's SOUTH liner immediately WEST of EQ-B-SAUNA-HTR, low like the heater
     # terminals. It followed the heater onto the garden wall when the room rotated on
     # 2026-09-05, into the south-east corner when the room shrank, and 2'-0" further east
@@ -349,7 +349,7 @@ BASEMENT_EQUIPMENT = [
     # out of CZ-B-DRYFIRE: a full 1/4" lands 0.025" in it). Its north edge
     # stops 1 1/8" short of W-B-ESS-S (y 369 5/8"), which is why it moved south from 30'-6".
     # Clear of EQ-B-ESS-BATT's 36" REQUIRED separation zone (x 49 1/4"..145 1/4", y 378"..460")
-    # and of EQ-B-WH's west face. Every ERV branch is authored off the two manifolds
+    # Every ERV branch is authored off the two manifolds
     # (plan/mep_erv_l1.py), not off the machine.
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
               position=pt(ft(6, 8.4375), ft(29, 10)), footprint=(inch(24.8), inch(21)),
@@ -371,8 +371,8 @@ BASEMENT_EQUIPMENT = [
               # crossing band: 1 5/8" under the 7'-6" radial layer, 6 13/16" over this case,
               # and 6'-7 3/8" of headroom beneath — over R305.1.1's 6'-4" basement
               # projection floor. PR-B-ERV-COND (plan/mep_drainage.py) falls by gravity from
-              # the pan to FX-B-UTIL-SINK: behind EQ-B-WH, through the under-stair storage and
-              # W-B-BA-N, then along W-B-STR2's mech face.
+              # the pan to FX-B-UTIL-SINK: south at x=91 1/2", east on y=311" and south
+              # along W-B-STR2's mech face, all inside the furnace room.
               #
               # SERVICE ACCESS (notes/erv_service_access.md): keep this exposed in
               # RM-B-FURNACE, with 13" clear in front of the hinged maintenance door and
@@ -389,29 +389,14 @@ BASEMENT_EQUIPMENT = [
     # Sauna heater: back to the SOUTH liner at x 8'-6"..10'-0", 2" off the face, diagonally
     # opposite the shower pan in the room's north-east corner and 2'-1" west of
     # WIN-B-SAUNA's west jamb. It moved onto the garden wall with the room on 2026-09-05.
-    # EQ-B-HP2-GYM (System 2's basement head). ** MOVED TO THE GYM'S SOUTH WALL BY A UI DRAG
-    # AND KEPT THERE (2026-09-05). ** The comment here said "high on the centre bearing
-    # wall's east face at x=18', backs west, throws east across the gym" and had been wrong
-    # since the drag: it is on W-B-S3-FR, the framed walkout, at x=26'-5", backing SOUTH and
-    # throwing north across the room. That is the better wall — a 32 7/8" cabinet on the
-    # centre line sat between D-B-GYM and D-B-SAUNA, and the long throw is now across the
-    # room's 18' depth rather than its width. y=10 9/16" puts its back on the wall's gwb
-    # face at 6 5/8"; `rotation=deg(0)` aims the discharge at -y, which is into the wall, so
-    # the louvre throws off the coil face at +y. zone_rooms is the whole conditioned
-    # basement (one open volume off the stair) — EQ-B-SAUNA-HTR heats the sauna, not space.
-    # RM-B-ESS is claimed for its load only, like the pantry on HP2-LIVING: no register
-    # is implied, and a supply boot into the sealed Type X closet is still wrong.
-    #
-    # ** THE HEAD WAS 5 1/2" INTO THE CEILING AND THAT WAS NOT THE DRAG'S DOING. ** The mount
-    # was authored at 7'-6" AFF and this is a 10 53/64" cabinet, so its top stood at 100 13/16"
-    # in a room whose ceiling `code.R305_ceiling_height` then measured at 95 3/8".
-    # It read as "high on the wall" and was through the deck; the same numbers held on the
-    # centre wall it came off, so this is a pre-existing error the move surfaced rather than
-    # caused. 6'-6" AFF puts the top at 88 13/16" over the stall mats, 7 3/8" under
-    # FS-M-EAST's gypsum here, which is the air Gree's Multi R32 wall-mount installation
-    # wants over the cabinet (restated 2026-10-30 for the 3/4" mats).
-    # On W-B-S4 at 1'-5", wholly east of the jog at x=26'-2" that it straddled 5/8" deep
-    # (`integrity.wall_mount_on_face`); west of it, D-B-SUNKEN's leaf swings through it.
+    # EQ-B-HP2-GYM (System 2's basement head). On W-B-S3-FR, straddling its jog onto W-B-S4
+    # (owner, 2026-11-09): the mounting plate lands on the framed run, BK-B-S3FR-HP2-GYM,
+    # not concrete. `normal_gap` 1 1/2" puts its back on the concrete plane, which stands
+    # 1.48" proud of the gypsum; a hidden 1 1/2" pad closes the gap on the gypsum.
+    # FIELD HOLD: Gree's wall-plate width is unpublished; confirm it against the framed run.
+    # Backs south, throws north across the room's 18' depth. Top at 88 13/16" over the 3/4"
+    # mats, 7 3/8" under the gypsum. zone_rooms is the whole conditioned basement;
+    # RM-B-ESS is claimed for its load only and takes no register.
     Equipment(uid="CEE031AAAA", tag="EQ-B-HP2-GYM", kind=EquipmentKind.INDOOR_HEAD,
               footprint=(inch(32), inch(8)),
               room="RM-B-GYM", type_ref="EQ-T-GREE-HEAD-9", outdoor_ref="EQ-M-HP2-OD",
@@ -419,8 +404,8 @@ BASEMENT_EQUIPMENT = [
               zone_rooms=("RM-B-GYM", "RM-B-PLAY-N", "RM-B-STAIR", "RM-B-WORKSHOP",
                           "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH", "RM-B-ESS"),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-B-S4", face="left", distance_from_start=inch(17),
-                  normal_gap=inch(0), rotation_offset=deg(0)))),
+                  wall_ref="W-B-S3-FR", face="left", distance_from_start=inch(91.4),
+                  normal_gap=inch(1.5), rotation_offset=deg(0)))),
     # Existing US PC110E remains on the east liner. Resolved body (type dimensions govern):
     # x192.25..207.25, y12.5..28.5, 45" tall. Reading deck ends at x181.75: 10.5" gap.
     # US manual Figure 5 and the fence/service requirements: notes/sauna_seating.md.

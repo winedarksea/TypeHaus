@@ -84,6 +84,11 @@ INTERIOR_DOOR_TYPES = (
                "out into the gym on the 3/4 x 9 1/4 cedar flat jamb; the RO is the 24in leaf's "
                "derived one, unchanged. Sealed: the ERV supply and exhaust balance "
                "at 20/20 cfm (notes/erv_static_budget.md). Oiled, never painted."),
+    DoorType(tag="DT-INT-CLOSET32", width=ft(2, 8), height=ft(6), function="closet",
+             core="hollow", leaf_thickness=inch(1.375),
+             source="2'-8in x 6'-0in under-stair closet leaf, wide enough to bring EQ-B-WH "
+                    "through tilted; the head under ST-B2M cannot give 6'-8in plus a header."
+                    + _PREHUNG.format(undercut="1/2in")),
     DoorType(tag="DT-INT-SWING30-GLAZED", width=ft(2, 6), height=ft(6, 8), glazed=True,
              tempered=True, function="passage",
              source="Tempered-lite stile-and-rail prehung, Halifax Square passage, satin nickel "

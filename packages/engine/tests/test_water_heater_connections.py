@@ -18,8 +18,8 @@ HEATER`` used to state three ports at one local ``(0, 0)``, so the only thing a 
 was "is there a vertex on the footprint's centroid" — which a COLD run landing on the HOT tap
 answers just as well as the right one, and which three pipes of two services drawn through a
 single point answer best of all. The type now carries the plug-in's side pair on its HydroBoost
-riser (cold at K 5 1/16", hot at E 42 3/8", ``notes/water_service.md``), so the question this file asks is
-the one that was always meant: **each run's tank end lands on the resolved port matching its
+riser (cold at K 5 1/16", hot at E 42 3/8", ``notes/water_service.md``), so the question this
+file asks is the one that was always meant: **each run's tank end lands on the resolved port matching its
 own service**, read through :func:`typehaus.resolve.mep_ports.placed_ports` — the same reading
 ``mep.equipment_port_service`` and the router's terminal snapping use.
 """
@@ -145,9 +145,10 @@ def test_the_tank_stands_inside_the_room_it_claims(catlin_model, water_heater) -
     """A placeable that drifts out of its room takes its clearances and loads with it."""
     from shapely.geometry import Polygon
 
-    room = next((r for r in catlin_model.rooms if r.tag == "RM-B-FURNACE"), None)
+    room = next((r for r in catlin_model.rooms if r.tag == "RM-B-STAIR"), None)
     assert room is not None
-    assert Polygon(room.clear_face).contains(Polygon(water_heater.footprint))
+    # Hard on two walls, so a sub-micrometre tolerance on the shared faces.
+    assert Polygon(room.clear_face).buffer(1e-6).contains(Polygon(water_heater.footprint))
 
 
 def test_both_taps_stand_on_the_riser(water_heater, wh_ports) -> None:

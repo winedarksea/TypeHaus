@@ -1723,8 +1723,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     FS-ATTIC deck at the chase head. Moving a terminal between storeys is free; moving it
     between cavities is a new radial off a different manifold.
   - **Machine at (6'-8 7/16", 29'-10"), east of the dry-fire lane (2026-10-17; 3/16" west
-    2026-10-29).** The case (x 68.04–92.84", y 347.5–368.5") sits between the lane (x <= 68")
-    and `EQ-B-WH` (x 92.875"), 0.04" off each, 1 1/8" short of `W-B-ESS-S`; north of that is
+    2026-10-29).** The case (x 68.04–92.84", y 347.5–368.5") sits east of the lane (x <= 68")
+    and the furnace room's open floor, 1 1/8" short of `W-B-ESS-S`; north of that is
     `EQ-B-ESS-BATT`'s 36" zone (y >= 378"), graded as a rectangle by `advisory.ess_clearance`.
     Moving it any further west puts it back in the lane. `DU-ERV-OA`/`-EA` cross the lane at
     78 1/2" AFF, wrapped bottoms over 72".
@@ -2171,8 +2171,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `ED-B-GYM-RC1`/`RC2`/`RC8` are on the gym face of `W-B-CS`/`W-B-CS3` — verify a device's
     side by eye: `electrical.receptacle_spacing` accepts one within 0.5 m of a room's clear
     face regardless of which side it's drawn on. `EQ-B-HP2-GYM` mounts at **6'-6" AFF** on
-    `W-B-S3-FR` (not 7'-6" — its cabinet would top out above `code.R305_ceiling_height`'s
-    95 3/8").
+    `W-B-S3-FR`, straddling its jog onto `W-B-S4` with its plate on `BK-B-S3FR-HP2-GYM` and its
+    back on the concrete plane over a hidden 1 1/2" pad (owner, 2026-11-09; Gree's plate width is a
+    field hold). 7'-6" would top out above `code.R305_ceiling_height`'s 95 3/8".
 
 - **ST-B2M's handrails are the owner's titanium** (`RAILING-INT-TI-HANDRAIL-42`,
   `plan/titanium_types.py`): 42 mm tube on stock 316 fittings for 42.4 mm tube, 70 mm
@@ -2185,7 +2186,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   plan, fitting fit and the R301.5 span: `notes/titanium_handrail_backsplash.md`.
 - **Under-stair space.** No `RM-B-UNDERSTAIR` room exists; the storage under the arriving
   stair flight (and on under the landing deck) is part of `RM-B-STAIR`'s single polygon.
-  `D-B-CLOSET` opens it to the furnace room; `ED-B-CLOSET-LT` (`room=RM-B-STAIR`) lights it.
+  `D-B-CLOSET` (32" leaf, 6'-0" head, 55-degree stop) opens it to the furnace room; `ED-B-CLOSET-LT`
+  (`room=RM-B-STAIR`) lights it. **`EQ-B-WH` stands in its SE corner since 2026-11-09**, with both
+  air connections ducted through `W-B-WELL` into the stair (`plan/mep_hpwh_air.py`,
+  `notes/basement_winter_heat.md`). R302.7 gypsum under the flight is a `prices.toml` allowance:
+  no `Stair` field models it.
   `LR-B-STAIR-RAIL` lies under the flight rather than along it — one `Mount` elevation for
   the whole `LightRun`, measured off the slab, so it cannot rake.
   - `W-B-WELL` gives the well partition its faces only — `resolve/stairs/u_split.py`
@@ -3084,13 +3089,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **The heater is the 120 V PROPH80 T0 RH120-MSO since 2026-11-02** (Rheem RH-PIHP-SC-SO
   Rev. 7 p.2; `notes/water_service.md` §1). Modelled 24 1/4" round x 74 3/16" (A; not 91",
   ducted), with the HydroBoost riser as a lobe on the 16-gon (40-75 deg right of front, r 15",
-  scaled). **Rotation -90 at (8'-9", 29'-5")** (owner, 2026-10-29): exhaust SOUTH into the room,
-  back on `W-B-STR3`, front (display, condensate 59", T&P ~46" under the ERV case) west. SIDE
-  taps on the riser: hot E 42 3/8" and cold K 5 1/16" at the SW, x/y scaled; `D-B-CLOSET`'s
-  sweep clears the riser by 2 1/4". `PR-B-HW-TRUNK` leaves west along the riser to the header, `PR-B-CW-WH`
-  drops at (93 1/2", 335 1/2") with `PA-B-WH-STOP-CW`, `PR-B-CW-BATH` tees off its ceiling leg,
-  `PR-B-WH-TPR` falls straight to an air gap under the case. The cord plugs into `ED-B-WH-RC`
-  (`CKT-WH`) on `W-B-ESS-S` over the tank. On the slab, no plinth or pan.
+  scaled). **Rotation 180 at (153 5/8", 320 3/8"), the closet's SE corner** (owner, 2026-11-09):
+  display north, exhaust west, inlet south-east of centre (the only quarter where the 91" elbow
+  clears the stair soffit, about 1 3/4", scaled). SIDE taps on the riser: hot E 42 3/8" and cold K
+  5 1/16" at the NW, x/y scaled. `PR-B-HW-TRUNK`, `PR-B-CW-WH` and `PR-B-WH-COND` cross `W-B-STR3`
+  in the bay north of `D-B-CLOSET`'s king; `PA-B-WH-STOP-CW` is on the closet drop at 48";
+  `PR-B-CW-BATH` tees off the ceiling leg; `PR-B-WH-TPR` falls to an air gap 6" over the closet
+  slab. The cord plugs into `ED-B-WH-RC` (`CKT-WH`) on `W-B-BA-N` over the tank. On the slab, no
+  plinth or pan.
 - **`PR-G-SERVICE-CW` is the service lateral** (1 1/4" PEX, 6' bury, x=11'-4"), drawn street
   to house so `PR-B-CW-TRUNK` derives it as parent at the entry (11'-4", 35'-6"). **The hydrant
   is a branch of the trunk** (owner, 2026-10-29): `PR-G-HYDRANT-CW` (3/4") tees off the riser

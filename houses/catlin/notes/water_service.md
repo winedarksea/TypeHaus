@@ -49,52 +49,56 @@ exhaust 6" off any wall. Heat trap 6" min on the cold; flexible connections reco
 copper or listed stainless flex: UPC 604.13 bars PEX in the first 18").
 
 **Ports (model, `EQ-T-WATER-HEATER`).** Heights published except the T&P's; every plan
-position SCALED off p.2 (+-1"). Tank at (8'-9", 29'-5"), rotation -90: front west, right south
-(exhaust), left north, back east on `W-B-STR3`.
+position SCALED off p.2 (+-1"). Tank at (153 5/8", 320 3/8") in the under-stair closet's SE
+corner since 2026-11-09, rotation 180: front (display) north, right (exhaust) west, left east,
+back south. Body hard on `W-B-WELL` and `W-B-BA-N` (0" allowed).
 
 | port | product frame | world (x, y, z AFF) |
 |---|---|---|
-| hot (E) | ~70 deg right of front, r ~15" | (99.9", 338.9", 42 3/8") |
-| cold (K) | ~42 deg right of front, r ~16", riser foot | (93.1", 342.3", 5 1/16") |
-| T&P outlet | ~20 deg left of front, r ~15.4", ~46" scaled | (90.5", 358.3", ~46") |
-| condensate (C) | front-left shoulder | (94", 360.5", 59") |
+| hot (E) | ~70 deg right of front, r ~15" | (139.5", 325.5", 42 3/8") |
+| cold (K) | ~42 deg right of front, r ~16", riser foot | (142.9", 332.3", 5 1/16") |
+| T&P outlet | ~20 deg left of front, r ~15.4", ~46" scaled | (158.9", 334.9", ~46") |
+| condensate (C) | front-left shoulder | (161.1", 331.4", 59") |
+| top inlet | ~6" off axis, opposite the exhaust (scaled +-1.5") | (159.1", 317.9", to H 91") |
+| side exhaust | product right, ~63" (scaled) | faces west at x 141.5" |
 
-The riser cover is drawn as a lobe on the footprint, 40-75 deg right of front at r 15" (south-
-west in plan), full height though it stops at G. Model height is A, 74 3/16": the top nipples
-are gone and nothing sits on top. Filter clearance: the nearest thing over the top is
-`DU-B-ERV-R-GYM` / `-R-PLAY` at 82" (7 13/16").
+The riser cover is drawn as a lobe on the footprint, north-west in plan, full height though
+it stops at G. Model height is A, 74 3/16". Filter (top) wants 6" over the tank.
 
-**What it clears.**
-- `D-B-CLOSET` (75-degree stop): its sweep stays 2 1/4" off the riser lobe and 2.95" off the hot
-  tap's centreline. Scaled +-1", so this is the number to check on the delivered unit.
-- ERV case: 0.04" at the tank (unchanged). The T&P outlet sits under its 54" bottom, ~8" below
-  it (scaled); the valve faces west-north-west into open air under the case, its 2" release
-  clear (`PR-B-WH-COND` is ~4" away).
-- `W-B-ESS-S`: 4 1/2" body-to-wall, nothing of the heater on that side now. `ED-B-WH-RC`
-  (CKT-WH, GFCI at the device) is on its south face at x 8'-4", 77"-81", 3" above the tank top:
-  the cord leaves the top front-left and never crosses the south exhaust zone.
+**Why this rotation (read 2026-11-09, AP22654 Rev 01 and the MSO spec p.2).** The exhaust sits
+right of the display, directly over the riser; the top inlet is opposite. The stair soffit
+is 92.8" bare at the tank's centre and falls 0.736"/" north (about 92" lined), so the 91" elbow
+clears only with the inlet on the south side: about 1 3/4" here. With the display toward the
+door the inlet lands north and the elbow is about 4" short. Rheem supports both connections
+ducted to another space (p.9, any size room), 8/7/6/5" duct (Table 1), indoor registers
+approved for HVAC, never tied to another duct (p.15). Ducts: `plan/mep_hpwh_air.py`.
+
+**Field holds.** Confirm the elbow crown against the flight once the tank is delivered: port
+positions are scaled. A 12" flex section belongs between the kit elbow and any rigid duct
+(p.15); these runs are flex to the grille boots, and the inlet's flex is short of 12" where
+it meets the boot, so ask Rheem or lengthen it on site. The tank goes through
+`D-B-CLOSET` tilted (74 3/16" against a 72" leaf), with the leaf lifted off its pins.
 
 **Runs.**
-- `PR-B-HW-TRUNK`: west from the hot tap at 42 3/8" along the riser face to x=94", up to
-  5'-9 1/2", west under `DU-B-ERV-RET-TRUNK` (bottom 72 5/8") to the x=83" riser, then its old
-  route. 5.9" off that duct's rising leg.
-- `PR-B-CW-WH`: ceiling leg to (93 1/2", 27'-11 1/2"), 3.3" outside the door's sweep and south of
-  the extract plenum; falls to 5 1/16" and runs 6 3/4" north onto the tap. The full-height drop
-  is the heat trap. `PA-B-WH-STOP-CW` is on the drop; `PR-B-CW-BATH` now tees off the ceiling
-  leg at x=7'-0".
-- `PR-B-WH-TPR`: full-size 3/4" copper, a 2" stub pitched down, then straight down to an air gap
-  6" over the slab under the ERV case. Not threaded at its end, never into the condensate.
+- `PR-B-HW-TRUNK`: west off the hot tap to x=130", north at 42 3/8" under `DU-B-WH-OUT` to
+  y=354", west through `W-B-STR3` north of the door's king, up at x=96" to 5'-9 1/2", then
+  west under `DU-B-ERV-RET-TRUNK` to the x=83" riser and its old route.
+- `PR-B-CW-WH`: ceiling leg to (93 1/2", 27'-11 1/2"), down to 5'-2", north-east through
+  `W-B-STR3` at y=357 1/2", drop at (146", 357 1/2") to 8", then onto the tap at 5 1/16". The
+  full-height drop is the heat trap. `PA-B-WH-STOP-CW` is on the drop at 48"; `PR-B-CW-BATH`
+  tees off the ceiling leg at x=7'-0".
+- `PR-B-WH-TPR`: full-size 3/4" copper, a 2" stub pitched down, then straight down to an air
+  gap 6" over the closet slab. Not threaded at its end, never into the condensate.
 
 ## 2. Condensate
 
-`PR-B-WH-COND`: 3/4" PVC from the port (59", facing the ERV case) straight down to 52 1/2", then
-6 7/8" north past the tank's NW corner onto `PR-B-ERV-COND` behind it (51.6" there, 1.5"/ft).
-That line runs east through the tank's 4 1/2" north gap and `W-B-STR3`, across the under-stair
-storage, west inside `W-B-BA-N` and down `W-B-STR2`'s mech face to the `FX-B-UTIL-SINK` air gap
-(>= 0.33"/ft). Rheem: pitch >= 1/8"/ft, 3/4" minimum, never into the heater's own pan, trap only
-if it meets a sewer (it ends at an air gap). `mep.drain_slope` and `mep.drain_tie_in` pass. A
-heat-pump water heater makes roughly 1/2-1 gal a day in summer, a rounding error against the
-ERV core's.
+`PR-B-WH-COND`: 3/4" PVC from the port (59") north, west under `DU-B-WH-OUT`, through
+`W-B-STR3` north of the door's king, then south-west to tee onto `PR-B-ERV-COND`'s south leg
+at (91.5", 345"). That line stays in the furnace room (it never crossed the closet) and runs
+to the `FX-B-UTIL-SINK` air gap (>= 0.33"/ft). Rheem: pitch >= 1/8"/ft, 3/4" minimum, never
+into the heater's own pan, trap only if it meets a sewer (it ends at an air gap).
+`mep.drain_slope` and `mep.drain_tie_in` pass. A heat-pump water heater makes roughly 1/2-1
+gal a day in summer, a rounding error against the ERV core's.
 
 ## 3. The service lateral and the hydrant branch
 

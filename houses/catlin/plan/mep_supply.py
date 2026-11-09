@@ -246,11 +246,11 @@ SUPPLY = [
     # the low jog reaches x83" before rising to 83 7/16" AFF; its jacket stays below
     # the extract plenum and east of its riser and BENCH collar. The y310" jog returns
     # to the former south approach, crossing the lane above 81 7/8" clear.
-    # ** FROM THE HYDROBOOST RISER'S SIDE OUTLET (2026-11-02). ** The tap (E 42 3/8", SW
-    # of the tank) faces D-B-CLOSET's swing 3" off, so the trunk leaves WEST along the
-    # riser's face to x=94", rises clear of the riser cover and DU-B-ERV-RET-TRUNK's rising
-    # leg (x <= 91.5"), and runs west at 5'-9 1/2" under that duct to the x=83" riser.
-    # UPC 604.13: copper, or a listed stainless flex connector, at the tap; never PEX.
+    # ** FROM THE HYDROBOOST RISER'S SIDE OUTLET, IN THE CLOSET (2026-11-09). ** The tap (E
+    # 42 3/8", NW of the tank) leaves west to x=130", runs north under DU-B-WH-OUT to y=354"
+    # and crosses W-B-STR3 in the bay north of D-B-CLOSET's king. It rises at x=96", clear
+    # of the door's sweep, to 5'-9 1/2" and runs west under DU-B-ERV-RET-TRUNK to the x=83"
+    # riser. UPC 604.13: copper, or a listed stainless flex connector, at the tap; never PEX.
     # ** IT ENDS AT EQ-B-HW-HEADER (2026-11-04, plan/mep_supply_header.py). ** Eight 1/2" PEX
     # branches leave its down-facing outlets for lanes at 83 1/2" (under the ceiling drains,
     # where this trunk used to run): x=7'-2 1/2" (FILLER), 7'-7 1/2" (BATH2), 7'-9" (SAUNA),
@@ -258,14 +258,16 @@ SUPPLY = [
     # PR-B-HW-SBATH and PR-B-HW-SUITE stay 3/4" and tee off the y=25'-6" leg ahead of it,
     # which then loops 4" north to drop into the +y-facing inlet on its axis (C4 E10).
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
-            path=(pt(inch(99.9), inch(338.9)), pt(inch(94), inch(338.9)),
-                  pt(inch(94), inch(338.9)), pt(inch(83), inch(338.9)),
+            path=(pt(inch(139.525), inch(325.475)), pt(inch(130), inch(325.475)),
+                  pt(inch(130), inch(354)), pt(inch(96), inch(354)), pt(inch(96), inch(354)),
+                  pt(inch(96), inch(338.9)), pt(inch(83), inch(338.9)),
                   pt(inch(83), inch(338.9)),
                   pt(inch(83), inch(310)), pt(ft(5, 4), inch(310)),
                   pt(ft(5, 4), ft(25, 6)), pt(inch(85), ft(25, 6)), pt(inch(85), ft(25, 6)),
                   pt(inch(85), inch(310)), pt(inch(90), inch(310)), pt(inch(90), ft(25, 6))),
             diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(inch(42.375), inch(42.375), ft(5, 9.5), ft(5, 9.5), inch(83.4375),
+            elevations=(inch(42.375), inch(42.375), inch(42.375), inch(42.375), ft(5, 9.5),
+                        ft(5, 9.5), ft(5, 9.5), inch(83.4375),
                         inch(83.4375), inch(83.4375), inch(83.4375), inch(83.4375), ft(7, 4),
                         ft(7, 4), ft(7, 4), ft(7, 4)),
             serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
@@ -283,14 +285,17 @@ SUPPLY = [
                     "APPL-M-DW")),
     # Cold feed to the water heater itself (equipment, not a fixture — no fixture units).
     PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
-            # The drop stands at (93 1/2", 27'-11 1/2"): south of the extract plenum, east of
-            # DU-B-ERV-RET-TRUNK, 3" outside D-B-CLOSET's swing arc (2026-11-02). It falls the
-            # full height to the riser-foot inlet (K 5 1/16"), which is Rheem's 6" heat trap
-            # many times over, then runs 6 3/4" north at that height onto the cold tap.
+            # Off the ceiling band at (93 1/2", 27'-11 1/2"), outside D-B-CLOSET's sweep, it
+            # falls to 5'-2", crosses W-B-STR3 north of the king and stands at (146", 357 1/2")
+            # in the closet (2026-11-09). The full drop to the riser-foot inlet (K 5 1/16") is
+            # Rheem's 6" heat trap many times over.
             # x=5'-8 1/2" (2026-10-29, was 5'-6"): PR-B-HW-SBATH's riser stands at 5'-6 1/2".
             path=(pt(ft(4, 9), ft(16)), pt(inch(68.5), inch(203.5)), pt(inch(68.5), ft(27, 6)),
                   pt(inch(93.5), inch(330)), pt(inch(93.5), inch(335.5)),
-                  pt(inch(93.5), inch(335.5)), pt(inch(93.1), inch(342.3))),
+                  pt(inch(93.5), inch(335.5)), pt(inch(99), inch(335.5)),
+                  pt(inch(99), inch(357.5)), pt(inch(146), inch(357.5)),
+                  pt(inch(146), inch(357.5)), pt(inch(146), inch(336)),
+                  pt(inch(142.925), inch(332.275))),
             diameter=inch(1), material="copper",
             # The cold band rides INSIDE FS-M-WEST's I-joist
             # web, whose window is -10 1/2" to -1 3/8"; two inches down puts a 1" PEX's
@@ -298,7 +303,8 @@ SUPPLY = [
             # inches up is the same 2" of separation in the half of the window that is
             # empty.
             elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375),
-                        ft(8, 6.6375), ft(8, 6.6375), inch(5.0625), inch(5.0625))),
+                        ft(8, 6.6375), ft(8, 6.6375), ft(5, 2), ft(5, 2),
+                        ft(5, 2), ft(5, 2), inch(8), inch(8), inch(5.0625))),
     # Main-storey groups.
     #
     # BATH1 cold stays in the shared south wet wall; the basin takes a separate

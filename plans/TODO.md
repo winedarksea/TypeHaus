@@ -279,7 +279,6 @@ the future.
 - Reverse osmosis sink?
 - See if we can reduce the remove/reduce the RM-S-SUITE door (such that a switch to a solid door makes sense too)
 - Reduce the number of LED strip controllers, ideally one or two for the soffits, not six (Zigbee vs Matter: see the cove-controller item above).
-- basement gym heat pump pointed down towards theater but likely easiest to mount on the wood studs (not concrete). Return vent in wall in mechanical room
 
 # Project Management
 

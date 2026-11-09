@@ -251,7 +251,6 @@ NODES = [
     # east wall has no such gift — W-M-STRW runs y 26'-4"..36'-0" straight across W-B-STR's
     # y=31'-0" split — and that is called out on W-B-STR below.
     #
-    # The corner is only available because EQ-B-WH left it — see plan/mep_hvac.py.
     Node(uid="CBN018AAAA", tag="N-B-ESS-N", position=pt(ft(6), ft(36))),
     Node(uid="BT88F385N4", tag="N-B-ESS-SW", position=pt(ft(6), ft(31))),
     Node(uid="GXJ9S72CKH", tag="N-B-ESS-SE", position=pt(ft(10), ft(31))),
@@ -1003,7 +1002,7 @@ WALLS = [
 OPENINGS = [
     # Interior circulation
     # (2026-10-29: PR-B-ERV-COND left this wall for the bath lavatory on 10-17 and now runs
-    # behind EQ-B-WH and through the under-stair storage. The pin below is history;
+    # east on y=311". The pin below is history;
     # D-B-FURN has not moved.)
     # ** 3'-3", AND IT IS THE CONDENSATE LINE THAT SAYS SO (2026-09-05). ** A UI drag had
     # put this at 1'-6 1/16", and `from_node` offsets the NEAR JAMB, not the centre
@@ -1108,17 +1107,15 @@ OPENINGS = [
     # into the mechanical room instead. It stays the way in now that the storage is open to
     # the stair foot at its north end: this is the end you actually carry things to.
     #
-    # 10" off N-B-BA-NW, not 4", for exactly D-B-ESS's reason two lines up: at 4" the king
-    # stud clashes with the corner post. That puts the leaf at y 26'-4"..28'-4", and the far
-    # jamb is what sizes the door — see DT-INT-CLOSET24 in storeys/main.py. A 6'-8" head
-    # would be six inches inside the stringer.
-    # Derived RO since 2026-10-29. The door stays put (the ERV, the heater and the dry-fire
-    # lane outrank it): it takes no casing, ED-B-CLOSET-LT moved 3" north, and a 75-degree
-    # hinge-pin stop keeps its sweep 2 1/4" off EQ-B-WH's HydroBoost riser (scaled; at 90 it
-    # clips it).
-    Door(uid="B43P8B5Y0T", tag="D-B-CLOSET", host="W-B-STR3", type_ref="DT-INT-CLOSET24",
-         position=from_node("N-B-BA-NW", inch(10)), flip_swing=True, flip_hinge=True,
-         maximum_opening_degrees=75),
+    # A 32" leaf since 2026-11-09, for EQ-B-WH behind it (notes/water_service.md §1), still
+    # on the 6'-0" head: a 6'-8" head would be six inches inside the stringer. It takes no
+    # casing. The tank goes through this door TILTED: 74 3/16" tall against a 72" leaf.
+    # 6 3/4" off N-B-BA-NW: the south jamb clears FO-M-STAIR's corner (y=312 3/8") so its
+    # point load stays off the head, and the RO cuts two studs. A 55-degree stop holds the
+    # leaf off PR-B-ERV-COND at x=91 1/2"; lift it off its pins to bring the tank in.
+    Door(uid="B43P8B5Y0T", tag="D-B-CLOSET", host="W-B-STR3", type_ref="DT-INT-CLOSET32",
+         position=from_node("N-B-BA-NW", inch(6.75)), flip_swing=True, flip_hinge=True,
+         maximum_opening_degrees=55),
     # ** O-B-HALL IS GONE AND D-B-SHOP REPLACES IT (2026-09-07). ** The cased opening was
     # 2'-10" through W-B-CW2B and was justified by the workshop being the through-route
     # from the stair to the gym — "a door across a circulation spine buys nothing". The

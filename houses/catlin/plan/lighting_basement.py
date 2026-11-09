@@ -171,15 +171,15 @@ BASEMENT_LIGHTING = [
     # type). `room` is RM-B-STAIR since the closet stopped being a `Room` of its own the
     # same day (storeys/basement.py ROOMS) — the fixture did not move an inch.
     #
-    # On W-B-STR3's Type X face (x=10'-3 1/4") 2" proud of it, 22" along, 3" north of where
-    # it was so it clears D-B-CLOSET's derived RO (2026-10-29), at 4'-6" AFF. The elevation is set by the RAKE, not by habit: the flight
+    # On W-B-STR3's Type X face (x=10'-3 1/4") 2" proud of it, 18" along, north of D-B-CLOSET's
+    # 32" door and its king (2026-11-09), at 4'-6" AFF. The elevation is set by the RAKE, not by habit: the flight
     # overhead is 6'-1 5/8" up at this y, and a 9" fixture at 54" tops out 10 5/8" under it.
     ElectricalDevice(uid="JYMY6WGGP3", tag="ED-B-CLOSET-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SPOT-SW",
                      circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-STR3", face="left", distance_from_start=inch(22),
+                         wall_ref="W-B-STR3", face="left", distance_from_start=inch(18),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
 

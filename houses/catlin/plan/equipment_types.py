@@ -219,7 +219,7 @@ EQUIPMENT_TYPES = (
     #     `site/long-lead-orders`), because it is settled by what is ordered, not on site.
     GREE_FLEXX_ULTRA_24_AH,
     GREE_FLEXX_ULTRA_24_OD,
-    # System 2 — Gree Multi Ultra, one 3-port outdoor unit driving three wall-mount heads
+    # System 2 — Gree Multi Ultra, one 4-port outdoor unit driving three wall-mount heads
     # (basement gym, main-floor suite bedroom, living room). Rated to -22 F, which is what
     # makes it the unit carrying the three coldest-exposure rooms.
     GREE_MULTI_U30,
