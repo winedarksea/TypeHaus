@@ -6609,7 +6609,7 @@ The source records preserve the originally requested products and reasons for ch
 Floor planes still target 3/4 inch above the framed subfloor. DITRA-HEAT remains in
 both heated bathrooms; Kaleo retains DITRA-XL. Small glass petals at the vanity now
 use a continuous 1/4-inch cement backer instead of DITRA-XL's unsupported small-chip
-application. Stack arithmetic (inches): hex 0.250 + 9.5/25.4 + 0.126 = ~0.750;
+application. Stack arithmetic (inches): hex 0.250 + 9.5/25.4 + 0.144 = ~0.750;
 Carrara 0.250 + 8.3/25.4 + 0.173 = ~0.750; Kaleo 0.3125 + provisional 0.3125 +
 0.125 = 0.750; glass 0.250 + 6/25.4 + 0.264 = ~0.750. These are coordinated height
 allowances, not validated setting-bed prescriptions. Confirm Kaleo supplied thickness,
@@ -7831,3 +7831,28 @@ with a louvered door (dropped once the tank could stand in the workshop with duc
 new walls or door, and the evaporator stays off shop dust); the HPWH in the ESS closet; moving
 the header alone (the trunk stays long); shrinking the ESS closet (no door needs the space, and
 it costs hydrogen containment margin).
+
+
+## Plant-room reservoir geometry and vacation reserve (2026-11-10)
+
+Owner requires approximately ten gallons, 24 small/medium pots in two independently timed
+groups, ten days with manual fill CLOSED and up to $1,000 hardware. Floor leaks stop fill
+and irrigation locally with manual reset; the earlier no-shutoff preference is superseded.
+
+The reservoir is now a tapered lidded BRUTE with its full 18-inch handle envelope, a
+separate float bracket/discharge and top-entry suction. A removable 36 x 12 x 24 equipment
+rack and co-located wired floor detectors are separate placed objects. Two SHURflo bypass
+pumps avoid the prior SEAFLO pressure-switch cycling problem. A normally-open DPDT
+seal-in relay requires manual ARM after a leak, low water or mains loss, independent of HA.
+No auxiliary FloodStop output behavior was invented.
+
+Shared water budget: 9 gal fill minus 1 unusable minus 1 reserve = 7 gal / ten days; each
+12-emitter zone starts at 210 seconds/day. Tank + lines + bounded fill delay releases
+11.875 gal, approximately 0.144 inches after conservative tank/rack displacement.
+
+Actual product parts replace text-only install parts, with no rebilling of kit contents.
+Hardware estimate $930.42 includes dated allowances, not a complete supplier quote.
+`notes/plant_reservoir.md` keeps qualification holds visible: potable float/air-gap review,
+delivered bracket travel/dimensions, procurement, both-sensor spill coverage, electrical/
+hydraulic commissioning and the physical ten-day closed-tap trial. No invented fixture-unit
+row was added to make supply sizing appear graded.

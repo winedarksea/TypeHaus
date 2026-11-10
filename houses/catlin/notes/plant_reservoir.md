@@ -1,190 +1,300 @@
 ---
-title: "Plant-room drip reservoir (RM-S-PLANT): float fill over an air gap, no drain"
+title: "Plant-room reservoir: finite vacation reserve and independent wired leak shutdown"
 applied_to:
   - room: RM-S-PLANT
   - appliance: APPL-S-PLANT-RESERVOIR
+  - appliance: APPL-S-PLANT-IRRIGATION
+  - appliance: APPL-S-PLANT-WIRED-LEAK
+  - appliance: APPL-S-PLANT-FILL-VALVE
   - pipe_accessory: PA-S-PLANT-RESERVOIR-STOP
   - door: D-S-PLANT
   - electrical_device: ED-S-PLANT-RC6
-tags:
-  - plumbing
-  - backflow
-  - irrigation
-  - plant-room
+tags: [plumbing, backflow, irrigation, plant-room]
 source:
   - plan/plant_reservoir.py
   - plan/plant_reservoir_types.py
   - plan/mep_supply_plant.py
   - plan/doorway_transitions.py
-  - plan/mep_electrical.py
 ---
 
-# Notes
+# Plant-room reservoir — revised owner requirements, 2026-11-10
 
-Owner, 2026-11-07: design the reservoir. It replaces `PA-S-PLANT-WATER-STUB` (the capped
-hose-thread stop) as the room's water. Why not a sink: every tie on `PR-M-S-SUITE-DRAIN` is
-within 4.75" of an inlet, no cavity holds a 1 1/4" vent within 42", an outdoor sidewall vent
-fails UPC 906.2 at the south windows, and AAVs are banned (Minn. Stat. 326B.43 subd. 6)
-(`plans/TODO.md`, 2026-11-07).
+Approximately 10 US gallons, no drain, automatic refill for everyday use and **ten days
+with the manual supply stop CLOSED** on vacation. Two independently timed groups support
+up to twelve small/medium pots each. Actual plant demand, not pot count alone, establishes
+endurance. Hardware purchasing ceiling: **$1,000 before tax, shipping and house labour**.
+The earlier 2026-11-03 “no automatic shutoff” decision is superseded for this installation.
 
-## 1. The design
+This is a coordinated **basis of design**, not a commissioned system. The geometry and
+BOM are implemented; the qualification holds below must close before fabrication/use.
+Do not interpret a passing geometry test as potable approval or proof of flood protection.
+
+## Water and control paths
 
 ```text
-PR-M-CW-PLANT-STUB (1/2" PEX, 14" AFF, in W-S-S1)
-  -> PA-S-PLANT-RESERVOIR-STOP  1/4-turn straight stop, 1/4" comp. outlet, recessed box
-  -> 1/4" needle valve (rate limit, section 5), 4 ft of 1/4" poly line
-  -> float valve (Dial 4154), SPOUT 2" ABOVE THE TANK RIM   <- the air gap, UPC 603.3.1
-  -> 10 gal BRUTE tank, no drain, no overflow pipe
-  -> 12 V diaphragm pump on the floor beside it, drawing from the tank
-  -> drip tubing and drippers to the stands and baskets
+Existing 1/2-inch PEX / recessed manual stop, 1/4-inch compression outlet
+  -> FloodStop FS14C motorized fill valve DIRECTLY ON THE STOP, arrow toward tank
+  -> John Guest throttling valve, short rigid connection immediately after electric valve
+  -> potable 1/4-inch flexible fill tube
+  -> Kerick MA252 mechanical float on an independent stainless saddle
+  -> exposed discharge opening, design 2 inches above DELIVERED flood rim
+  -> free air through lid notch -> BRUTE reservoir (no drain/overflow)
+
+Reservoir -> two separate top-entry reinforced suction hoses and inlet strainers
+  -> two 12 V SHURflo internal-bypass pumps
+  -> two 200-mesh filters / pressure test points
+  -> two pressure-rated distribution lines -> 12 XB05PC emitters per group
 ```
 
-- **Nothing downstream of the valve touches the water supply.** The tank is the break. The
-  pump draws from it; no irrigation line is hard-piped to the house (P2902.5.3's PVB/RPZ
-  case does not arise; the earlier stub note's warning is retired).
-- **No drain, no vent, no trap.** The 10 gal tank is the whole worst-case release (section 3).
-- **Where.** Tank centre (166", 16.1") 1/2" off W-S-S1's finished face, rotation 180 so the
-  float valve is on the wall side, west rim, 11" from the stop. East of the hydrant's bay
-  (145"-158"), 12" clear of D-S-PLANT's swing (x >= 186"), under WIN-S-PLANT4's 32" sill (the 17 1/8"
-  tank clears it). The pump and its supply stand on the floor between the tank and
-  `ED-S-PLANT-RC6` (x 184", 16" AFF); they are in the parts list, not the model.
-- **`PA-S-PLANT-WATER-STUB` is retired** (retagged `PA-S-PLANT-RESERVOIR-STOP`, kind SHUTOFF,
-  same uid). The run `PR-M-CW-PLANT-STUB` is unchanged, so the routing tests that name it
-  still hold.
+The domestic supply ends in air. Do not extend its discharge tube into the tank or close
+that gap with a funnel. Plunger leakage must also fall inside the tank. Suction, returns
+and irrigation water must never join the domestic pipe. All reservoir penetrations are
+above the rim; service does not depend on a below-water bulkhead staying watertight.
 
-## 2. Code reading
+**Two independent wired floor detectors, co-located on the spill path:** FloodStop's
+sensor closes its own fill valve; DiversiTech WS-1 removes pump permission. Neither uses
+Zigbee, HA, Wi-Fi or cloud. Existing `AL-S-PLANT-LEAK` remains notification-only.
+The detectors are separate systems: one sensor activating does NOT electrically trigger
+the other. Demonstrating that representative spills wet BOTH is a commissioning hold;
+if floor topography defeats this, add manufacturer-approved remote sensors or redesign
+before accepting the installation. A small leak reaching only one detector is not a
+proved combined shutdown. Do not claim otherwise from the drawing.
 
-Minnesota adopts the **2018 UPC** (Minn. R. 4714.0050; `notes/mep_group_wet_vent_basis.md`),
-chapters 2-11, with Minnesota amendments. **The 2018 text is paywalled and was not read.**
-Wording below is from secondary sources (open-exam-prep's UPC study guide; the Illinois
-adoption of Table 603.3.1; CPC commentary) and from the Minnesota rule text. Have the AHJ
-confirm the numbers against the adopted book before rough-in.
+### Pump safety wiring (electrician's functional schematic)
 
-| Section | What it says (secondary) | How the design answers |
-|---|---|---|
-| **603.3.1 Air gap** | "the unobstructed vertical distance through the free atmosphere" between the lowest supply opening and the flood-level rim of the receptacle | Dial 4154's spout stands 2" over the BRUTE's rim. The rim IS the flood level: no overflow pipe, no weir. |
-| **Table 603.3.1** | Effective opening <= 1/2": 1" clear of a wall, **1 1/2" if a wall is within 3x the opening**; <= 3/4": 1 1/2" / 2 1/4"; <= 1": 2" / 3"; over 1": 2x / 3x. Gaps under 1" only as a listed assembly. | 1/4" compression valve, orifice ~0.2" (assumed): 1" / 1 1/2". **Built 2"**: the spout is near the wall, so 1 1/2" governs and the margin is 1/2". |
-| **603.5.5 Inlets to tanks, vats, sumps, pools** | An air gap, or a listed vacuum breaker 6" up on the discharge side of the last valve, or a backflow preventer suited to the hazard | The air gap is the first of the three. No device to test, tag or log. |
-| **603.5.2 Tank ballcock** | critical level 1" over the overflow's full opening | Not our case (a toilet tank). The BRUTE has no overflow pipe, so the rim is the overflow. |
-| **603.2 / 603.5.23** (Minn. R. 4714.0603 subps. 1, 5) | An approved device before install; testable assemblies are tested yearly by an ASSE 5000 tester | Not triggered: an air gap is not a device or an assembly. This is the practical reason to prefer it. |
-| **603.5.7** | A backflow preventer or vacuum breaker at every hose thread | The old capped hose-thread stop would have carried it. The 1/4" compression outlet is not a hose thread. |
+```text
+RC6 GFCI -> cord to enclosed equipment distribution
+    +-- UNSWITCHED -> FloodStop adapter + 4 AA backup
+    +-- UNSWITCHED -> TR40VA001 control transformer (120 -> 24 VAC)
 
-Minnesota's amendments to chapter 6 (4714.0603: 603.2, 603.5.4 heat exchangers, 603.5.12
-beverage dispensers, 603.5.17 yard hydrants, 603.5.22 barometric loop, 603.5.23 testable
-assemblies) do not touch 603.3.1, Table 603.3.1 or 603.5.5.
+24 VAC R -> WS-1 healthy contact -> M8000 CLOSED-ON-RISE
+    -> [momentary ARM button OR K1 NO seal-in pole] -> RIB2401D K1 coil -> C
+120 VAC L -> K1 second normally OPEN pole -> pump-permitted distribution
+    -> timer A input / timed output -> GST120A12-R7B A -> fused 12 V pump A
+    -> timer B input / timed output -> GST120A12-R7B B -> fused 12 V pump B
+```
 
-**One thing the code does not give us:** the effective opening of the Dial valve. It is not
-published. 0.2" is a bench estimate; anything up to 1/2" keeps the same 1" / 1 1/2" row, so the
-2" gap holds to a 3/4" opening. Measure the delivered valve.
+The timer arrangement above is **timer demand AND manually armed pump permission**.
+Do not bridge two timer outputs or backfeed their outlets. The common permission
+contact is ahead of the two timer INPUTS; their clock
+backup retains time, but confirm programs/outputs after recovery. Their dedicated outlets
+and the supplies live inside the dry control enclosure. Only the rack's cord plug enters
+RC6's in-use cover. No plug-in timer projects through that cover. Keep low-voltage and
+mains terminations segregated; provide strain relief, grounding and fused motor harnesses.
+No override outlet may power a pump around the relay. The low-level float carries only
+relay-coil current; verify close-on-rise with an ohmmeter before connecting.
 
-## 3. Spill arithmetic (oracle for `test_plant_reservoir.py`)
+A floor event latches the WS-1 off until dry and manually reset, and FloodStop separately
+requires its Open button. Drying the floor alone must not restart irrigation. Empty tank
+or an open low-water wire de-energizes the pump relay; refill stays enabled. Return
+of water alone does not rearm the seal-in relay; press ARM after checking the system.
 
-RM-S-PLANT's clear floor is 204.17" x 97.17" = 19,838 sq in = **137.77 sf** (the resolved
-`area_m2`, 12.7995 m2). The sheet vinyl and its sealed 4" rubber base hold water; the room has
-no drain; the one door is D-S-PLANT.
+**Power loss:** pumps stop. FloodStop can still close on its batteries; it is a motorized
+ball valve, NOT a spring-return fail-closed valve. Exhausted batteries plus no mains leave
+fill-valve position uncontrolled by sensing; the mechanical float remains the fill stop.
+WS-1 may reset when power is interrupted, but the relay loses its seal-in and stays OFF
+until ARM is pressed. Following any outage, inspect, verify the two
+safety controls and timer state, and rearm locally. The vacation procedure closes the
+manual water stop, so unattended mains failure cannot admit new supply water.
 
-| Quantity | Hand work | Result |
-|---|---|---|
-| Held at 1/4" | 137.77 sf x (0.25/12) ft = 2.870 cu ft x 7.4805 | **21.5 gal** (21.3 less the tank's footprint, 1.33 sf) |
-| Held to the stop, 0.38" | 137.77 x (0.38/12) = 4.363 cu ft x 7.4805 | **32.6 gal** |
-| A whole 10 gal tank on the floor | 10/7.4805 = 1.337 cu ft / (137.77 - 1.33) sf = 0.0098 ft | **0.118"**, under the 4" base by 34x and under the stop by 3x |
-| Margin at the stop | 32.6 / 10 | 3.3 tanks |
+FloodStop's auxiliary pigtail has not been qualified as a latched, suitably rated pump
+interlock. It is deliberately not connected to a guessed relay circuit. Removing batteries
+from an integrated watering kit was also rejected as a substitute for a documented cutoff.
 
-So the answer to "does it spill out" is no, for a single tank release. The 21 gal the TODO
-carried is right (21.5).
+## Water budget and irrigation settings
 
-**The stop is the dam.** `plan/doorway_transitions.py` now authors a `water-stop riser` part in
-D-S-PLANT's solid-surface profile: top at **0.38"** over the vinyl (`PLANT_RISER_IN`), the oak
-plane. It is cut from the same 12 mm piece as the slope and landing, so there is no joint
-under the profile for water to track. Seal: one silicone bead at the toe, both ends and the
-jamb returns (as `notes/floor_heights.md`). 0.38" over the 1/4" the room is sized to leaves
-0.13" of freeboard. The section is schematic (`section_documented`, supplier PENDING); the
-slope stops 3/8" short of the oak plane to make the riser's face.
+Shared calculation inputs: `typehaus.model.plant_reservoir.RESERVOIR_WATER_BUDGET`.
 
-## 4. The unbounded case is the float
+| Quantity | Design allowance |
+|---|---:|
+| Nominal tank / conservative complete release | 10 gal |
+| Normal measured fill | 9 gal |
+| Unusable below suction / low-water cutoff | 1 gal |
+| Untouched operating reserve | 1 gal |
+| Ten-day irrigation allowance | **7 gal** |
+| Maximum average daily draw | **0.7 gal/day** |
+| 24 plants, equal initial allocation | **110.4 mL/plant/day** |
+| One zone: 12 x 0.5 GPH emitters | 6 GPH |
+| Initial daily run per zone | **210 seconds (3 min 30 sec)** |
 
-A tank cannot overflow if its float closes. If it sticks, the feed runs until someone shuts
-the stop: the owner dropped the leak shutoff on 2026-11-03 and nothing in this design adds
-one. **Every number in section 3 is a single release; a stuck float is not.** The house is
-40-80 psi. Hand estimate, Darcy-Weisbach, 4 ft of 1/4" OD poly (ID ~0.17"), f = 0.027:
-~1 gpm costs ~10 psi, so a 1/4" line unthrottled passes **~2 gpm at 50 psi**. The tank is full,
-so all of it is overflow: **11 min to 21.5 gal, 16 min to the stop**. Containment buys minutes.
+Example schedules: A daily 06:00–06:03:30; B daily 08:00–08:03:30. Times avoid simultaneous
+starting current and make delivered quantities easy to observe. Tune each group to its
+plants; cap the SUM at 0.7 gal/day. Additional/larger pots consume that same water budget.
+Cap unused outlets. Water thoroughly and let pots finish draining before departure.
 
-Two things bound that without an actuator, both in the parts list:
+Nine gallons and the one-gallon cutoff are **measured marks**, not a curve inferred from
+the outside taper. The section shows illustrative heights only. Establish them using a
+graduated container; set cutoff high enough to avoid suction air and vortexing. If usable
+volume is smaller, lower the daily allowance or the supported collection. Never silently
+raise the tank size. The successful trial, not this arithmetic, establishes autonomy.
 
-1. **A 1/4" needle valve** (Dial 94045) ahead of the float, set at ~0.1 gpm (6 gph) with a
-   graduated cylinder: stuck-float time to 21.5 gal becomes **~3.6 h**, to the stop **~5.4 h**.
-   The drip draw is a few gallons a day (section 6), so a 6 gph refill never starves it.
-2. **A local leak sensor** (Zigbee or Matter, any, on the floor beside the tank) that only
-   notifies through Home Assistant, as `notes/smart_home.md` already treats leaks: HA
-   observes, nothing depends on it. Not modelled, not priced; the owner's call.
+**Hydraulics:** select internal bypass rather than the original SEAFLO pressure-switch pump
+to avoid short cycling at 6 GPH. The current Pentair row rates 8000-543-210 at 35 psi bypass
+and 7 A maximum. Use the 7 A value, not an older catalog's 5.5 A. The selected 8.5 A supply
+has nominal current margin; verify cold motor starting before acceptance. Short daily runs
+limit bypass heating; do not run a closed/bypassing zone continuously.
 
-Neither makes an absence of days safe. If the owner wants that, it is a second float valve in
-series on a short stand-pipe above the first, or the shutoff the owner already declined.
+XB05PC pressure compensation requires 15–50 psi. The shelf's 75-inch elevation consumes
+about 2.7 psi from a pump at 12 inches AFF, before pipe/filter losses. Measure pressure and
+catch volume at the highest/farthest outlet with all twelve running; an open-flow pump
+rating is not a hydraulic calculation. A separate low-flow regulator is omitted because
+the pump's 35 psi bypass is inside the emitter range; verify the supplied pump's pressure.
 
-## 5. Parts (retail; no quotes, no approvals, per `product-selection-preferences`)
+**Siphon rule:** every emitter outlet and hose end stays ABOVE the maximum reservoir water
+level, including future plants. Keep secured lines uphill from the tank and do not put
+loose hoses in lower trays. Pump check valves are not credited as anti-siphon protection.
+A floor-pot extension needs a separately selected positive shutoff/anti-siphon arrangement.
+Lines can still drain their finite contents when pumps stop; include them in release volume.
 
-Prices are for `prices.toml`, which the coordinator owns; rows below are proposals.
+## Spill calculation and layout
 
-| Part | Choice | Read | Note |
-|---|---|---|---|
-| Reservoir | Rubbermaid Commercial **BRUTE FG261000GRAY**, 10 gal, 15 5/8" dia x 17 1/8" | retailer listings | Rim is the flood level. A fitted lid with a 1" notch for the valve arm keeps algae and mosquitoes down at 70% RH; not modelled. |
-| Float valve | **Dial 4154**, 1/4" brass compression, Home Depot #100560907 | HD listing, $16.18 | Mount on an angle bracket clamped to the rim; spout 2" over it; bend the arm to close 1" below the rim. |
-| Rate limit | **Dial 94045**, 1/4" compression needle valve, HD #100175352 | HD listing, $10.98 | Section 4. |
-| Stop | **BrassCraft G2PS04X-C1**, 1/2" push x 1/4" comp. quarter-turn straight stop, HD #306206261 | search result only | Push-connect onto the 1/2" PEX stub. |
-| Pump | **SEAFLO SFDP1-012-035-21**, 12 V DC, 1.2 GPM, 35 psi, self-priming, dry-run tolerant | retailer listings; maker sheet not seen | Why not a submersible: Active Aqua AAPW250 lists 5.9 ft of static head, AAPW550 7.9 ft; the top shelf's pots stand at 75" AFF (6.25 ft) and a dripper wants head on top of that. |
-| Pump supply | 12 V DC, >= 5 A, UL-listed plug-in | generic | Model to the shelf. |
-| Pressure | 25 psi drip regulator at the pump | generic | The pump shuts off at 35 psi; 1/4" tubing and compression fittings want less. |
-| Drip kit | Rain Bird **DRIPKITBAG**, HD #326977353 | HD listing, $28.12 | 1/4" tubing and drippers; check the kit's emitter type against the regulator's output. 14 drippers: 12 pots, 2 baskets. |
-| Timer | **Woods 50015WD**, 15 A 7-day outdoor plug-in | HD listing, $15.85 | Pump supply plugs into it. No hub, no cloud. |
-| Receptacle | `ED-S-PLANT-RC6`: the room's WR GFCI (`ED-T-LEV-GFCI-WR`), `CKT-RC-SECOND` | house standard | One more outlet on the room's circuit; the pump is ~48 W. |
+The existing resolved room floor is approximately 137.8 SF, with a modeled doorway water-stop
+crest 0.38 inches above the vinyl. That crest is only useful if both ends, jambs, toe bead
+and all perimeter penetrations hold water. Verify the **lowest actual escape elevation**;
+uneven floor, unsealed trim or another low opening invalidate the flat-room calculation.
 
-**Open on the receptacle.** The room's in-use bubble cover does not close over a plug-in timer.
-Options: a damp-location flip cover (NEC 406.9(A), if the AHJ treats this wall as damp rather
-than wet; I did not read the 2026 text), or no timer and a smart plug on HA (local only,
-nothing safety-critical depends on it). The model carries the same WR GFCI either way.
+Conservatively subtract the entire 18 x 18 inch tank envelope and 36 x 12 inch equipment
+rack, rather than just rack feet. Allow 1.75 gal retained in tubing/filter bodies and a commissioned
+maximum fill rate of 0.1 GPM. Acceptance limits: up to 60 seconds for water to reach and
+activate the floor detectors, plus 15 seconds for valve closure. These are test limits,
+not manufacturer's promised response times.
 
-**Open on the drippers.** The pump's 35 psi needs a regulator; pressure-compensating
-drippers need ~10+ psi to work and non-compensating ones flow with height. The 75" shelf is
-at the far end of the line; set each dripper by eye on first run. No hydraulic calculation was
-made; this is a purchased kit.
+The 1.75 gal allowance covers both full 50-ft headers at 0.600-inch ID
+(1.47 gal), 100 ft of 0.170-inch-ID outlet tube (0.118 gal), and suction/filter allowance.
+Prime the lines before the vacation fill mark; actual daily draw includes refilling any
+line volume that drains between cycles.
 
-Proposed `prices.toml` rows (unit prices left to the coordinator): `PROD-RUBBERMAID-FG261000GRAY`,
-`PROD-DIAL-4154`, `PROD-DIAL-94045`, `PROD-BRASSCRAFT-G2PS04X-C1`, `PROD-SEAFLO-SFDP1-012-035-21`,
-`PROD-PUMP-PSU-12V`, `PROD-RAINBIRD-DRIPKITBAG`, `PROD-WOODS-50015WD`, plus a 4 ft 1/4" poly line.
-The takeoff bills them as `install_parts` strings on `APPL-S-PLANT-RESERVOIR`; the old
-`ro_stub` row (`PA-S-PLANT-WATER-STUB`) becomes a `shutoff` row.
+Total bounded release = 10 + 1.75 + 0.1 x 75/60 = **11.875 gal** for a release on the intact, rate-limited fill branch. This gives about
+**0.144 inches** on the remaining floor, below the 0.25-inch design depth and modeled
+0.38-inch crest. A stuck float with failed leak shutdown remains an **unbounded** supply
+release while the manual stop is open. Throttling delays it; it does not prevent it.
+A leaking connection upstream of the throttling valve does not obey the 0.1 GPM bound;
+measure that separate unrestricted-flow case and verify containment/shutdown before accepting
+the installation. The electric valve cannot isolate a leak upstream of itself.
 
-## 6. Water budget
+Tank centre is (166, 17.75) inches; rotation 180 puts fill toward the south wall. Published
+handle width is 18 inches; minimum bounding-box y is 8.75 inches, beyond the wall finish
+at approximately 7.79 inches. The separately modeled FloodStop valve at (155, 9.75),
+13–16 inches AFF, mounts directly at the manual stop BEFORE flexible tubing; its kit is
+still billed only once on the rack. Equipment rack centre (164, 37), size 36 x 12, rotation 180:
+east edge x=182 stays west of the door-swing strip x>=186. Rack rear edge y=31 leaves a
+4.25-inch separation from the tank's conservative envelope. Wired detectors at (166, 28.8)
+occupy the gap. Keep the floor strip open so water reaches them; move/add probes to actual
+low points on site. No new equipment attaches through the humid liner without a sealed fixing.
 
-14 drippers at 1 gph, 15 min a day: 3.5 gal/day, a third of the tank. The float refills at
-6 gph (section 4) in 35 min. Evaporation from a 15 5/8" open tank in a 70% RH room is small;
-with the lid, negligible. The tank is a break and a buffer, not the day's supply.
+Tank bracket top is 21 inches; the removable lid at the 17.13-inch rim has six inches of
+lift below the 32-inch window sill. Rack top is 24 inches. Keep the equipment service area
+toward the room free of movable plants and furniture. Published body dimensions do not
+establish the bracket arm travel, pump mounting pattern or finished enclosure fit.
 
-## 7. What the engine does not grade (the gap register)
+[Section and distribution illustration](plant_reservoir_section.svg) — schematic water
+levels, explicit inlet/discharge distinction, and the two irrigation groups.
 
-Each of these is a missing check, not a pass. None was faked.
+## Product schedule and dated budget
 
-1. **The air gap.** `mep.backflow_prevention` reads hydrants only (`plan_symbol == "hydrant"`).
-   Nothing reads a tank inlet (603.5.5) or Table 603.3.1. The gap is authored on
-   `ServicePort` `supply` (z over the height) and pinned only by `test_plant_reservoir.py`.
-2. **A float valve is nobody's.** No `PipeAccessoryKind` for it; it rides `install_parts`.
-3. **The WSFU table has no row for the tank.** `mep.pipe_sizing` goes UNKNOWN on an appliance
-   with no `WSFU_BY_SYMBOL` row (`resolve/fixture_units.py`), and that check is a permit item
-   ("Drain and supply pipe sizing"), so naming the tank in `PR-M-CW-PLANT-STUB.serves` would
-   block `haus print`. The run therefore does not name it, and `mep.fixture_port_connection`
-   does not grade the float inlet. With `serves` set I measured it passing: inlet 10.77" from
-   the stub end on a 48" line.
-4. **Spill containment.** Nothing reads a room with no drain: its floor area, its stop height
-   or a release volume. Section 3 is by hand; the test pins it.
-5. **The pump's cord.** No check ties an appliance's POWER port to a receptacle; RC6's
-   proximity is by authoring.
-6. **A stuck float.** Not gradeable: the model has no failure mode.
+Catalog product refs and per-assembly quantities are in `plan/plant_reservoir_types.py`;
+`ProductPart` makes them actual takeoff rows. The tank and rack are priced by their parent
+appliance type; neither is billed again as an extra product. The FloodStop sensor, controller
+and adapter are one kit, not three additional purchases. Its floor symbol does not rebill it.
 
-## 8. Sources
+USD, **2026-11-10**, before tax, delivery and installation. **A = purchasing allowance**, not
+a verified quotation. Pump's $117.99 is the retailer's `product:price:amount`; M8000 $27 is
+maker retail. TR40VA001 $22.20 is SupplyHouse retail; RBY075MPTX $19.52 is Sprinkler Warehouse retail. A budget target is not a promise of current availability or a complete quote.
 
-- [Minn. R. 4714.0603](https://www.revisor.mn.gov/rules/4714.0603/): the chapter 6 amendments.
-- [DLI: the 2018 UPC adoption](https://www.dli.mn.gov/node/5291); effective 2021-12-17.
-- [UPC 603.3.1 / Table 603.3.1 / 603.5.5 study guide](https://open-exam-prep.com/study-guides/wa-plumber/backflow-prevention-cross-connection/air-gaps-vacuum-breakers) (secondary).
-- [Illinois Table 603.3.1 adoption](https://regulations.justia.com/states/illinois/title-77/part-890/subpart-m/appendix-a/table-c) (secondary; same row values).
-- Parts: [Dial 4154](https://www.homedepot.com/p/p/100560907), [Dial 94045](https://homedepot.com/p/DIAL-1-4-in-x-1-4-in-Evaporative-Cooler-Compression-Needle-Valve-94045/100175352), [BrassCraft G2PS04X-C1](https://homedepot.com/p/BrassCraft-1-2-in-Push-Connect-x-1-4-in-Compression-1-4-turn-Straight-Stop-G2PS04X-C1/306206261), [Rain Bird DRIPKITBAG](https://homedepot.com/p/Rain-Bird-Drip-System-Expansion-and-Repair-Kit-in-a-bag-DRIPKITBAG/326977353), [Woods 50015WD](https://www.homedepot.com/p/Woods-15-Amp-7-Day-Outdoor-Plug-In-Dual-Outlet-Digital-Timer-Black-50014WD/301133241), [SEAFLO 21 series](https://www.campingworld.com/seaflo-21-series-12v-1.2-gpm-water-pump-118492.html), [Active Aqua AAPW250](https://1000bulbs.com/product/97301/GROW-AAPW250.html), [BRUTE 10 gal](https://www.katom.com/007-2610G.html).
+| Part / model | Qty | Unit $ | Basis / connection / envelope |
+|---|---:|---:|---|
+| Rubbermaid FG261000GRAY | 1 | 30 A | 15.63 dia, 18 handles, 17.13 high per spec |
+| Rubbermaid FG260900GRAY lid | 1 | 15 A | Matching 10 gal lid; field notches |
+| Kerick MA252 | 1 | 25 A | 1/4 OD tube; arm/setout field-qualified |
+| Fabricated 304 stainless saddle | 1 | 20 A | Slotted bracket; independent of removable lid |
+| FloodStop FS14C / 20020 kit | 1 | 150 A | 1/4 compression; controller within 30 inches of valve |
+| John Guest PPSV040808W | 1 | 12 A | 1/4 OD tube; throttle verified at highest supply pressure |
+| SHURflo 8000-543-210 | 2 | 117.99 | 3/8 NPT; drawing I-18 hold; 9 x 4.5 x 4.5 service box |
+| MEAN WELL GST120A12-R7B | 2 | 40 A | 12 V 8.5 A; 167 x 67 x 35 mm; locking 4-pin |
+| Hydrofarm TM01715D | 2 | 22 A | Local seconds-resolution schedules; one timer per group |
+| Rain Bird XB05PC | 24 | 1.30 A | 0.5 GPH; 15–50 psi |
+| SHURflo 255-323 strainers | 2 | 12 A | 1/2 barb inlet x NPSM outlet; adapt suction to 3/8 NPT |
+| Rain Bird RBY075MPTX | 2 | 19.52 | 3/4 MPT 200-mesh inline filter; no regulator |
+| DiversiTech WS-1 | 1 | 50 A | 24 VAC; manual-reset floor detector |
+| Madison M8000 | 1 | 27 | 1/8 NPT bracket mount; 1-inch float; close-on-rise |
+| Functional Devices RIB2401D | 1 | 35 A | DPDT: seal-in and supply contact; 24 VAC coil |
+| Functional Devices TR40VA001 | 1 | 22.20 | 120/24 VAC 40 VA control transformer |
+| Fabricated 36 x 12 x 24 rack/enclosure | 1 | 30 A | Removable equipment, dry segregated electrical compartment |
+| Commodity fitting/wiring package below | 1 | 60 A | Defined allowance; purchase list must close before ordering |
+
+Total: **$930.42**; **$69.58** unallocated to the $1,000 ceiling. Most prices remain
+allowances, so procurement is on hold until supplier totals including all small parts fit.
+Do not remove protection or under-rate a supply to preserve the estimate.
+
+The commodity package must include: 4 ft potable 1/4 OD fill tube and correct compression
+ferrules/inserts; adapters and pressure test points for the separately counted 200-mesh filters; four 3/8 NPT
+pump hose-barb adapters; strainer adapters; two top-entry reinforced suction hoses and
+clamps; two 50-ft 1/2-inch blank pressure-rated distribution tubing rolls (>=50 psi); a 100-ft
+roll of 1/4-inch outlet tubing; 24 emitter outlet
+stakes; compatible tees, end caps and securing clips; two grounded NEMA5-15/C13 supply
+cords; two correctly pinned Kycon KPPX-4P mating harnesses; motor fuses/holders to OEM
+requirements; control wiring, one guarded 1NO momentary ARM pushbutton, coil suppression, protected
+terminals, strain relief, four AA backup batteries
+and sensor/float brackets. This is an explicit commodity specification, not a named retail
+kit. Confirm filter/tube pressure ratings and fitting/thread standards before purchasing.
+
+## Qualification holds and commissioning
+
+1. **Potable fill / air gap:** confirm MA252 suitability/listing with plumber/AHJ, supply
+   pressure rating and actual effective opening. Prior Dial 4154 and 94045 were cooler parts,
+   not demonstrated potable selections. Read the adopted MN UPC air-gap requirements from
+   the primary code; retain a 2-inch design gap pending that verification. An assumed orifice
+   or the inlet `ServicePort` cannot prove code compliance.
+2. **Delivered geometry:** reconcile Rubbermaid sheet's 17.13-inch rim against current
+   catalog's 17.32-inch height. Fix bracket relative to the actual rim, not the floor.
+   Demonstrate MA252 float closes at the measured nine-gallon mark with the entire discharge
+   assembly two inches above the rim. If it cannot, revise bracket/valve before fabrication.
+   Fit the independent bracket and lid notch, and prove unobstructed float travel/lid removal.
+3. **Procurement:** close all A prices, exact filter/tubing/fitting SKUs and electrical
+   enclosure parts; obtain pump I-18 dimensional drawing. The shown envelopes are not shop
+   drawings. Do not call this BOM fully procurement-qualified until these items close.
+4. **Electrical:** wet-test WS-1, prove NO relay wiring and open-wire/low-water shutdown.
+   Verify PSU cold starts, proper pin pairs, fuse sizing, closed RC6 cover and mains separation.
+   Prove no pump runs on battery power or from an unswitched bypass outlet.
+5. **Fill fault:** hold float open under supervision. Confirm <=0.1 GPM at worst supply
+   pressure. Introduce a small measured spill at each likely leak point; time water arrival
+   and shutdown at BOTH wired detectors. Both pumps and fill must stop within the modeled
+   limits. Drying alone must not restart either. Test/reset both controls independently.
+6. **Watering:** catch every emitter's delivery, including highest/farthest and lowest,
+   with all zone outlets active. Measure terminal pressure, daily draw and tubing retained
+   volume. Check closed-zone heating, pump noise, loose-hose release and siphoning with pump
+   off, including a full tank and the lowest permitted pot. Label the permitted outlet height.
+7. **Power recovery:** test mains loss, FloodStop battery operation/low battery, dry and wet
+   restoration, clock retention, cutoff return and intentional rearm. Record actual behavior;
+   neither valve fail-close nor alarm-latch retention across complete power loss is assumed.
+8. **Vacation trial:** run a full ten days with manual stop CLOSED, measured start/end tank
+   volumes and representative plants. Require healthy plants, <=7 gal use, reserve retained,
+   no dry running/leaks, and the safety tests above. Reduce demand if the trial fails.
+
+### What the engine still does not certify
+
+Domestic `PR-M-CW-PLANT-STUB` still lacks a supported tank fixture-unit basis; do not add a
+fake WSFU value or disguise the tank as a lavatory. The visual symbol uses
+`ModelRepresentation.symbol`, leaving that code vocabulary untouched. No automatic check
+certifies the inlet air gap, physical floor water-tightness, detector water travel, wiring,
+pump curve or plant survival. Reservoir tests establish authored dimensions and arithmetic.
+
+## Source documents
+
+- [Rubbermaid BRUTE manufacturer dimensions](https://rcp.structpim.com/media/20254/brute-spec-sheet.pdf).
+- [Kerick M series](https://www.cdivalve.com/products/detail/kerick-m-series-float-valves).
+- [FloodStop installation documents](https://ipsplumbingproducts.com/brands/floodstop/floodstop-installation-instructions/), FS14C/20020 manual.
+- [Pentair 8000 product rows](https://www.pentair.com/en-us/flow/commercial-products/water-supply-pumps/spray-pumps/8000_series_diaphgram_pumps.html).
+- [Pentair 8000 installation manual](https://www.pentair.com/content/dam/extranet/web/nam/shurflo/manuals/911-314-series-8000-pump-iom.pdf).
+- [Pump retail price](https://sprayersupplies.com/8000-543-210-shurflo-a6501568).
+- [MEAN WELL GST120A sheet](https://www.meanwell.com/Upload/PDF/gst120a/gst120a-spec.pdf).
+- [Hydrofarm timer instructions](https://s3.amazonaws.com/hydrofarmpubdocs/tm01715d_instructions.pdf).
+- [Rain Bird emitters](https://www.rainbird.com/professionals/specifier/emission-devices-bubblers).
+- [WS-1 instructions](https://media.diversitech.com/doc/doc00036.pdf).
+- [M8000 maker specification and retail](https://www.madisonsensor.com/m8000-single-point-level-switch).
+- [Functional Devices RIB specifications](https://hosted.functionaldevices.com/downloads/datasheets/RIB2401D.pdf).
+- [Minnesota chapter 6 amendments](https://www.revisor.mn.gov/rules/4714.0603/) (not a replacement for the adopted UPC table).
+
+- [Control transformer primary specification](https://hosted.functionaldevices.com/downloads/datasheets/TR40VA001.pdf).
+- [Control transformer retail](https://www.supplyhouse.com/Functional-Devices-TR40VA001-Transformer-40-VA-120-to-24-Vac-Foot-and-Single-Threaded-Hub-Mount).
+- [200-mesh filter manufacturer](https://www.rainbird.com/professionals/specifier/zone-filters-pressure-regulators) and [retail](https://www.sprinklerwarehouse.com/rain-bird-200-mesh-inline-wye-filter-3-4-in-rby075mptx).

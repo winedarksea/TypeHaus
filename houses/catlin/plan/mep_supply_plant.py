@@ -23,17 +23,12 @@ from typehaus import (
 # gasketed to the humid membrane like the room's electrical boxes (notes/plant_room.md).
 # Filed on `main`: project elevations.
 #
-# ** THE STUB NOW FEEDS A FLOAT VALVE, NOT A HOSE. ** Its stop is a 1/4-turn straight stop with
-# a 1/4" compression outlet; a 4 ft 1/4" line runs to APPL-S-PLANT-RESERVOIR's float valve,
-# whose spout stands 2" over the tank rim: the UPC 603.3.1 air gap, so no backflow device is
-# owed (603.5.5). The pump draws from the tank, so nothing hard-pipes irrigation (P2902.5.3).
-# NO FLOOR DRAIN, STILL: a spill stands on the vinyl behind D-S-PLANT's water stop; a whole
-# 10 gal tank is 0.12" (notes/plant_reservoir.md). No automatic shutoff (owner 2026-11-03):
-# the float and this stop are the controls, so a stuck float is the one unbounded case, and
-# nothing in the engine grades the gap, the tank or the float (the note's gap register).
-# The run does NOT name the tank in `serves`: `mep.pipe_sizing` (a permit item) goes UNKNOWN
-# on an appliance with no WSFU row, which would block `haus print`. With it named,
-# `mep.fixture_port_connection` passes the inlet (10.8" from the stub end, 48" line).
+# Reservoir-only fill, owner 2026-11-10: manual stop -> FloodStop -> throttling valve ->
+# mechanical float -> open air -> tank. Wired floor protection stops fill and both pumps;
+# the Zigbee sensor only notifies. See notes/plant_reservoir.md for qualification holds.
+# No drain. Single-release containment is finite; failure of both fill protections is not.
+# The supply run still has no tank `serves` link: no adopted fixture-unit basis has been
+# established. Do not invent a WSFU row to conceal that permit-sizing UNKNOWN.
 PLANT_STUB_MAIN = [
     PipeRun(uid="9R0AYJMJZ4", tag="PR-M-CW-PLANT-STUB", system=PipeSystem.WATER_COLD,
             path=(pt(ft(12, 8), ft(0, 3.25)), pt(ft(12, 11), ft(0, 3.25))),

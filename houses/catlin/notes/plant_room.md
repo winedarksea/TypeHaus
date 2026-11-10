@@ -353,9 +353,10 @@ plane down to the vinyl over roughly 4 1/2" of run. Turn the vinyl up against a
 continuous water-stop riser under the reducer and seal the turn and both ends into
 the jamb membrane returns, so a spill cannot pass under the profile. The final
 profile follows measured installed planes and the delivered door's swing clearance.
-The nominal 0.380" drop offers limited passive spill storage. **No automatic shutoff
-(owner, 2026-11-03):** the Zooz ZAC36 actuator is dropped. The stub's own quarter-turn stop
-and the house main remain the shutoffs.
+The nominal 0.380" drop offers limited passive spill storage. **Revised 2026-11-10:**
+the reservoir now requires independent wired fill shutoff and manually armed pump protection
+([installation](plant_reservoir.md)); the earlier no-shutoff preference is superseded here.
+The Zooz ZAC36 remains retired; the manual stop and house main remain accessible.
 
 **No seam, so nothing to weld (2026-09-25).** The room is 17'-0" x 8'-1" clear, so one
 sheet laid across the 8'-1" width covers it whole. That is what retired the earlier
@@ -586,7 +587,9 @@ misted or hosed.
      drain means a burst emitter, a split tube or a timer that fails open empties onto the
      floor until somebody walks in — and the premise of this system is that nobody does.
      The base holds a spill inside the room; it does nothing about the hours. The owner
-     accepts that residual (2026-11-03): no automatic shutoff.
+     accepted that residual in the old hose-fed proposal (2026-11-03). **Superseded
+     2026-11-10:** the indoor reservoir now has wired fill/pump protection; see
+     [reservoir installation](plant_reservoir.md).
    - **What is NOT settled: how the tubing crosses the wall.** The hydrant's escutcheon is
      outdoors at y=−5" (`PR-S-CW-BALCONY-HYD-CU`), so the timer and manifold hang on the
      balcony. That waters balcony planters directly. Reaching the benches *inside*
@@ -650,3 +653,14 @@ defends against frost by unbalancing itself** (Panasonic below 20 °F, Zehnder C
 Blauberg and VENTS specify pairwise reverse-phase installation as the fix). For a room whose
 entire envelope strategy depends on never being pressurised, that is disqualifying, and none of
 them carries an HVI 916 rating Minnesota would credit anyway.
+
+
+## Reservoir irrigation revision — 2026-11-10
+
+The room supply is now a reservoir-only fill, with no floor drain or sink. Owner selected
+a roughly 10-gallon reservoir, two irrigation groups for up to 24 small/medium plants,
+and ten days with the manual tap closed. The prior no-automatic-shutoff preference is
+superseded here: wired fill shutoff and manually reset pump cutoff are required.
+[Reservoir installation](plant_reservoir.md) owns product selections, qualification holds,
+water budget, service geometry and commissioning; earlier hose-thread advice does not
+replace the reservoir's open air gap.

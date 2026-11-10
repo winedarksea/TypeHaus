@@ -1,7 +1,9 @@
 # Leak detectors (2026-11-08)
 
-HA observes, nothing depends on it, no shutoff (owner, 2026-11-03, `smart_home.md`;
-`plant_reservoir.md` §4 named the sensor as the stuck-float answer).
+HA observes; nothing depends on the Zigbee sensors. **Plant-room exception, owner
+2026-11-10:** separate wired FloodStop and WS-1 controls shut down reservoir fill and
+irrigation, with local manual reset. `AL-S-PLANT-LEAK` still only notifies; see
+[reservoir safety and commissioning](plant_reservoir.md).
 
 ## Product
 
@@ -30,7 +32,7 @@ probe. Why this one:
 | `AL-M-KITCH-LEAK` | RM-M-LIVING | sink base floor, 4 1/2" (cabinet bottom): sink, disposal, dishwasher hoses |
 | `AL-M-BATH1-LEAK`, `AL-M-BATH2-LEAK` | main baths | lav/WC; tub side in BATH2 |
 | `AL-S-BATH1-LEAK`, `AL-S-VANITY-LEAK`, `AL-S-SUITEBATH-LEAK` | second-floor baths | over finished ceilings |
-| `AL-S-PLANT-LEAK` | RM-S-PLANT | reservoir `APPL-S-PLANT-RESERVOIR` (21.5 gal): the stuck-float case |
+| `AL-S-PLANT-LEAK` | RM-S-PLANT | 10 gal reservoir: notifications supplement independent wired fill/pump protection |
 | `AL-A-STUBATH-LEAK`, `AL-A-STUDIO-LEAK` | attic | guest bath, studio bar sink |
 
 16 sensors. Instances are in `plan/smart_home.py` (basement, main, second) and

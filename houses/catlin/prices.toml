@@ -2330,6 +2330,29 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "electric" = { material = { low = 2.3, high = 3.3 }, labour = { low = 1.5, high = 3.25 } }
 
 [placeables]
+# Plant reservoir, 2026-11-10, USD before tax/shipping/labour. Pump $117.99 from
+# https://sprayersupplies.com/8000-543-210-shurflo-a6501568 (product:price:amount).
+# Other figures are purchasing ALLOWANCES, not supplier quotes; see reservoir BOM/holds.
+"APPL-PLANT-RESERVOIR" = { low = 30, high = 30 } # tank only; parts billed separately
+"APPL-PLANT-IRRIGATION-RACK" = { low = 30, high = 30 } # fabricated rack/enclosure allowance
+"APPL-PLANT-FILL-VALVE" = { low = 0, high = 0 } # visual component; included in FS14C kit
+"APPL-PLANT-WIRED-LEAK" = { low = 0, high = 0 } # both sensors counted as products/kit
+"PROD-RUBBERMAID-FG260900GRAY" = { low = 15, high = 15 }
+"PROD-KERICK-MA252" = { low = 25, high = 25 }
+"PROD-PLANT-FLOAT-BRACKET" = { low = 20, high = 20 }
+"PROD-MADISON-M8000" = { low = 27, high = 27 } # maker retail $27
+"PROD-FLOODSTOP-FS14C" = { low = 150, high = 150 }
+"PROD-JOHNGUEST-PPSV040808W" = { low = 12, high = 12 }
+"PROD-SHURFLO-8000-543-210" = { low = 117.99, high = 117.99 }
+"PROD-MEANWELL-GST120A12-R7B" = { low = 40, high = 40 }
+"PROD-HYDROFARM-TM01715D" = { low = 22, high = 22 }
+"PROD-RAINBIRD-XB05PC" = { low = 1.3, high = 1.3 }
+"PROD-SHURFLO-255-323" = { low = 12, high = 12 }
+"PROD-DIVERSITECH-WS1" = { low = 50, high = 50 }
+"PROD-FUNCTIONAL-RIB2401D" = { low = 35, high = 35 }
+"PROD-FUNCTIONAL-TR40VA001" = { low = 22.20, high = 22.20 } # SupplyHouse retail, 2026-11-10
+"PROD-RAINBIRD-RBY075MPTX" = { low = 19.52, high = 19.52 } # Sprinkler Warehouse retail, 2026-11-10
+"PROD-PLANT-IRRIGATION-FITTINGS" = { low = 60, high = 60 }
 # 2026-10-22: Moen shop YB0408BN $65.10, list $86.80, excluding tax/shipping.
 # https://shop.moen.com/products/yb0408ch?variant=49905631363382
 # Labour and pad/through-fastener costs are house installation allowances, not vendor quotes.

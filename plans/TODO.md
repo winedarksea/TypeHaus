@@ -194,7 +194,7 @@ the future.
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
 - W-BW-SCREEN's shear role is already redundant with the garage path (graded 100%). Relaxing its 4″ edge nailing needs the reviewer to accept `canopy_garage_diaphragm.md`'s 'garage takes the whole load'.
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps a vertical grab bar between the toilet and the tub, serving both.
-- Plant-room reservoir (owner chose it over a sink, 2026-11-07; `notes/plant_reservoir.md`): 10 gal BRUTE, Dial 4154 float fill 2" over the rim (UPC 603.3.1/603.5.5, Table 603.3.1 read from secondary sources), SEAFLO 12 V drip pump on `ED-S-PLANT-RC6`, D-S-PLANT riser at 0.38" (21.5 gal held at 1/4", 32.6 gal to the stop). Open: (1) a stuck float is unbounded without a shutoff (needle valve at ~0.1 gpm gives ~3.6 h to 21.5 gal): owner; (2) no check grades a tank inlet or air gap; (3) no WSFU row for the tank, so `PR-M-CW-PLANT-STUB` can't name it in `serves` without `mep.pipe_sizing` going UNKNOWN (a permit item); (4) timer vs. the RC6 in-use cover; (5) drip regulator/emitter pick; (6) `prices.toml` rows for the eight new `PROD-*` tags.
+- Plant-room reservoir (2026-11-10): shared 3D tank/rack/wired sensors, two-zone product BOM and water-budget tests implemented; `houses/catlin/notes/plant_reservoir.md`. Still open before fabrication/use: MA252 potable suitability and actual bracket/air-gap travel, supplier quotes/commodity SKUs within $1,000 (allowance estimate $930.42), WSFU sizing basis, both-detector spill coverage, electrical/hydraulic commissioning and a ten-day closed-tap trial.
 - Maybe add a lighting view to the UI (lights generate cast lighting effect, background otherwise goes to full shadow/black)
 - Geometry review round 2 (2026-11-05): [report](geometry-review/REPORT.md) §1 ranks the open escalations; detail in `geometry-review/2026-11-04/adjudicated/C1..C5.md`. 0 FAIL kept. Open, by rank:
   - [ ] `D-B-SUNKEN` band header (structural project): load takedown for the stacked D-S-BALCONY/D-M-PORCH jamb packs, their bearing interfaces, LVL ply fastening, and the edge I-joist filler/backer connections (`notes/sunken_door_band_header.md` §4).
@@ -289,7 +289,7 @@ the future.
 - Reverse osmosis sink?
 - Reduce the number of LED strip controllers, ideally one or two for the soffits, not six (Zigbee vs Matter: see the cove-controller item above).
 - [x] 3d heat pump head model — rounded white plastic casing, intake grille and recessed outlet.
-- 3d model of the plant room reservoir
+- [x] 3d model of the plant room reservoir — tapered lidded BRUTE with handles, independent float bracket, service rack and wired floor sensors; field qualification remains in `notes/plant_reservoir.md`.
 - [x] 3d model of the washer dryer — WashTower silhouette with round glazed doors and center controls.
 - [x] Terminal-neck and transfer-grille 3D geometry: open collars/shells and framed blades; REG-M-XFER-MUD is one stair-side grille over a cut in the painted MDO panel, without a full-depth sleeve.
 - Pantry shelves have a middle support that would ideally only go half depth (sticking to north half), right now it is rather restricting access to the west end of the pantry.
