@@ -9,10 +9,12 @@ Bare section strings; ``cite`` adds the "NEC " prefix. The next renumbering is t
 
 Sources (read 2026-11-07): NFPA 70 second-draft reports (docinfofiles.nfpa.org, A2025 P02,
 P03, P10, P17), the NEC Handbook 2026 errata page for Table 120.54, MN DLI "2026 NEC FAQ"
-(rev. 2026-10-05), EC&M 2026 change summaries (Holt, Jackson, Austin). None was checked
-against the printed 2026 text. ``UNCONFIRMED`` names the rows whose 2026 NUMBER no source
-gives (moved or inferred, not merely "no change reported"); ``cite``/``mark`` print them
-with a caveat, so the doubt reaches the finding, the permit checklist and the sheet.
+(rev. 2026-10-05), EC&M 2026 change summaries (Holt, Jackson, Austin); re-read 2026-11-09 with
+NFPA's first- and second-draft reports and the Aug 2025 Standards Council minutes (210.12(B)'s
+bathroom-lighting item was not issued). None was checked against the printed 2026 text.
+``UNCONFIRMED`` names the rows read only in those drafts or secondary sources, kept by the
+owner until someone reads them in the printed code; ``cite``/``mark`` print them with a
+caveat, so the doubt reaches the finding, the permit checklist and the sheet.
 120.82(C): (3) heat pump + 65% supplemental is quoted (Holt, EC&M Nov 2025). The resistance
 heat items are contested (Holt: (4) 65%, (5) 40%; Annex D2 draft: 5, 6), so cite 120.82(C).
 """
@@ -67,7 +69,9 @@ class NEC:
     GFCI_SUMP: Final = "210.8(D)(6)"
     GFCI_RANGE: Final = "210.8(D)(8)"
     GFCI_DRYER: Final = "210.8(D)(11)"
+    GFCI_MICROWAVE: Final = "210.8(D)(12)"
     GFCI_OUTDOOR_OUTLETS: Final = "210.8(F)"
+    BATHROOM_BRANCH: Final = "210.11(C)(3)"
     AFCI_DWELLING: Final = "210.12(B)"
     RECEPTACLE_OUTLETS: Final = "210.52"
     WALL_SPACE_SPACING: Final = "210.52(A)(1)"
@@ -86,7 +90,8 @@ class NEC:
     GARAGE_RECEPTACLE: Final = "210.52(G)(1)"
     STORAGE_EQUIPMENT_LIGHTING: Final = "210.70(A)(3)"
 
-    # Art. 230/240 — service and overcurrent.
+    # Art. 215/230/240 — feeders, service and overcurrent.
+    FEEDER_SPD: Final = "215.18"
     SERVICE_SPD: Final = "230.67"
     SERVICE_DISCONNECT_OUTDOOR: Final = "230.70(A)(1)"
     SMALL_CONDUCTOR_OCPD: Final = "240.4(D)"
@@ -99,7 +104,7 @@ class NEC:
     BOX_FILL_AND_VOLUME: Final = "314.16"
     BOX_FILL: Final = "314.16(B)"
     BOX_VOLUME_TABLE: Final = "Table 314.16(A)"
-    BOX_MARKED_VOLUME: Final = "314.16(A)(1)"
+    BOX_MARKED_VOLUME: Final = "314.16(A)(2)"
     CONDUCTOR_VOLUME_TABLE: Final = "Table 314.16(B)"
     BOX_SUPPORT: Final = "314.20 / 314.23"
     BOX_COVER: Final = "314.25"
@@ -128,6 +133,7 @@ class NEC:
     # Ch. 6-7 — sources; limited energy.
     RAPID_SHUTDOWN: Final = "690.12"
     RAPID_SHUTDOWN_ARRAY: Final = "690.12(B)(2)"
+    RAPID_SHUTDOWN_INITIATION: Final = "690.12(C)"
     INTERCONNECTION: Final = "705.12"
     INTERCONNECTION_120PCT: Final = "705.12(B)(2)(a)"
     # Was 800.133 / 725.136; Arts. 805 and 725.136 are gone, limited energy is Arts. 720-723.
@@ -138,7 +144,7 @@ class NEC:
     SLEEVE_FILL: Final = "Chapter 9 Note 2"
 
 
-#: Rows no source pins to the 2026 text: each is the best-supported location, not a reading.
+#: Rows not yet read in the printed 2026 text: each is the best-supported location.
 #: TODO: confirm every one against NFPA 70-2026 before a permit set relies on it.
 UNCONFIRMED: Final = frozenset({
     NEC.NONCOINCIDENT, NEC.FEEDER_SERVICE_STANDARD, NEC.GFCI_SINK, NEC.AFCI_DWELLING,

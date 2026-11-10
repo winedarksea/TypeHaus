@@ -20,44 +20,45 @@ def catalog_flashing_sections(placement, opening, assembly, clad):
     sheet = spec.head_profile_thickness.meters
     top = head + casing
     span = opening.width_m + 2 * (casing + FLASHING.head_end_lap_m)
-    # SureSill HeadFlash 1-3/8 x 84 complete pack; cross-section remains a coordination
-    # envelope until a dimensioned drawing establishes its upstand, gauge and downstand.
-    rectangle(
-        "stock-headflash-cap-envelope",
-        face,
-        face + spec.head_cap_depth.meters,
-        top,
-        top + sheet,
-        spec.head_material_ref,
-        "membrane",
-        source_url=spec.head_source_url,
-        span=span,
-    )
-    rectangle(
-        "stock-headflash-upstand-envelope",
-        face,
-        face + sheet,
-        top,
-        top + spec.head_upstand_height.meters,
-        spec.head_material_ref,
-        "membrane",
-        source_url=spec.head_source_url,
-        span=span,
-    )
-    for side in (-1, 1):
-        along = side * (span / 2 - sheet / 2)
+    if spec.stock_head_flashing:
+        # SureSill HeadFlash 1-3/8 x 84 complete pack; cross-section remains a coordination
+        # envelope until a dimensioned drawing establishes its upstand, gauge and downstand.
         rectangle(
-            f"stock-headflash-end-dam-envelope-{side}",
+            "stock-headflash-cap-envelope",
             face,
             face + spec.head_cap_depth.meters,
             top,
-            top + spec.head_end_dam_height.meters,
+            top + sheet,
             spec.head_material_ref,
             "membrane",
             source_url=spec.head_source_url,
-            span=sheet,
-            along=along,
+            span=span,
         )
+        rectangle(
+            "stock-headflash-upstand-envelope",
+            face,
+            face + sheet,
+            top,
+            top + spec.head_upstand_height.meters,
+            spec.head_material_ref,
+            "membrane",
+            source_url=spec.head_source_url,
+            span=span,
+        )
+        for side in (-1, 1):
+            along = side * (span / 2 - sheet / 2)
+            rectangle(
+                f"stock-headflash-end-dam-envelope-{side}",
+                face,
+                face + spec.head_cap_depth.meters,
+                top,
+                top + spec.head_end_dam_height.meters,
+                spec.head_material_ref,
+                "membrane",
+                source_url=spec.head_source_url,
+                span=sheet,
+                along=along,
+            )
     if not spec.independent_landing_flashing:
         return tuple(builder.sections)
     # These terminate the two existing rear flashing runs without fastening across the

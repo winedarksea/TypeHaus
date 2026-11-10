@@ -50,8 +50,8 @@ export function earthElevation(model: Model): number {
 
 // Holes punched in the site sheet so the translucent earth stops where the ground was dug
 // away. The rings are resolved server-side (resolve/site_earth.py → `site.earth_voids`) from
-// every slab finishing at or below grade, unioned into disjoint outer boundaries — three for
-// Catlin: house, garage, sunken garden.
+// slabs finishing at or below grade and the below-grade enclosure shared with earthwork,
+// unioned into disjoint outer boundaries. The enclosure includes walls and separation joints.
 //
 // Deriving this from `model.rooms` on the lowest storey would be structurally incapable of
 // seeing more than one storey of one structure: a detached garage and an open-air sunken

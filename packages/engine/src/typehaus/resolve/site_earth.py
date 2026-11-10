@@ -4,11 +4,9 @@ The translucent "site earth" plane is a single sheet at grade. Anything that has
 excavated out of the soil must punch a hole in it, or the sheet slices through the interior
 spaces it should have been dug away for.
 
-The rule is derived, not enumerated per structure: **soil is displaced wherever a floor slab
-finishes at or below grade**. A slab is the one element that is by definition both a surface
-people stand on and the bottom of an excavation, so its plan outline is exactly the ring the
-earth is missing. That covers the house basement, a freestanding garage on its own slab, and
-an open-air sunken garden alike — none of which share a storey, a room set, or a wall loop.
+Slabs at or below grade displace soil, as do the walls and separation joints enclosing
+below-grade floors. The shared earthwork outline includes that enclosure; slab footprints
+alone leave a strip of fictitious soil between a sunken court and its house.
 
 Consumers: the IFC site pad (``emit/ifc/site.py``), the serialized UI contract
 (``server/model_json_document.py`` → ``site.earth_voids``), and the three.js site sheet.
@@ -65,6 +63,13 @@ def earth_plane_void_rings(model: ResolvedModel) -> list[Ring]:
         polygon = Polygon(outline)
         if polygon.is_valid and polygon.area > 0.0:
             footprints.append(polygon)
+    # This is the enclosure kept clear of backfill, not the excavation's wider working
+    # space or side slopes. Import here: earthwork_outline uses our floor classification.
+    from typehaus.resolve.earthwork_outline import dug_outline
+
+    enclosure = dug_outline(model)
+    if enclosure is not None and not enclosure.is_empty:
+        footprints.append(enclosure)
     if not footprints:
         return []
     merged = union_all(footprints)

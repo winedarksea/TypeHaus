@@ -103,10 +103,10 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
     report["seat_interference_status"] = "FAIL" if seat_conflicts else "PASS"
     report["seat_interference_conflicts"] = seat_conflicts
     conflicts.extend(seat_conflicts)
-    unknown.append(
-        "stock HeadFlash and silicone end-transition outlines require "
-        "installed sections/bond evidence"
-    )
+    if spec.stock_head_flashing:
+        unknown.append("stock HeadFlash outline requires installed sections/bond evidence")
+    if spec.independent_landing_flashing:
+        unknown.append("silicone end-transition outlines require installed sections/bond evidence")
     return replace(
         assembly,
         exterior_placement=placement,

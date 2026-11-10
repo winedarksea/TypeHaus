@@ -240,7 +240,7 @@ the future.
   - Snow protection: gutter front is about 2" above the snow-slide line.
 - Consider 1/2" advantech for walls sheathing, maybe 1/2" osb and tape the seams
 - Pg 288 of the book has a roof eave detail where the roof and drip flashing alone extend out about an inch (no metal or sheathing).
-- D-B-SUNKEN has some weird top flashing that isn't needed here it seems (the threshold now reaches over the foam gap: the foam-bed tread, 2026-11-04).
+- [x] D-B-SUNKEN: removed the stock HeadFlash from the brick face above the sheltered arch (2026-11-09; `notes/court_opening_detail.md`). The Earthwork grade strip between the court and house is also cut out using the shared enclosure outline.
 - Fixture connections (stations applied 2026-11-07, `houses/catlin/plan/wet_ports.py`). Still open:
   - BATH2/BATH1 R10000 supplies stub straight in at the finished face. BATH2's hot riser is elbowed
     6 3/4" north (riser y 185, not the cold's 1 1/2"); at hub + 1 1/2" it FAILs `run_interference`
@@ -259,15 +259,13 @@ the future.
 - Upgrade fasteners still uncounted (decision #105 covers panel screws, connector schedules, treated framing, roof/screen sheathing): wall sheathing and subfloor nailing, fascia/trim screws, window-install screws, and the HL angles' site-length through-bolts.
 - Backup battery, still open (`houses/catlin/notes/backup_power.md` §11-§12): EG4's UL 9540 certificate naming 12kPV + WallMount Indoor; how the 12kPV's load port behaves on its "No Battery" setting (ask EG4); its GEN port rating; declare future storage and V2H on the Xcel application; DSI's position on a UL 9540 3rd-ed. DC ESS battery; a freeze drain-down plan; a small LFP UPS for Home Assistant, the router and the leak valve. After the 2026-11-02 trim the always-on tier passes summer's 48 h and the bridge (0.28 kWh margin) and still fails December's cycle (§6).
 - V2H spare raceway (routed 2026-11-07, `backup_power.md` §10): add PVC 2" rows to `prices.toml [conduit_fittings]`; the ICF supplier/engineer details rebar round the three 6" CD-GAR sleeve boxouts in W-B-N2 and W-GF-S2. `CD-B-GAP-EV` ends at +5'10" abs while `ED-G-EV-1450` is at 48" AFF (+14" abs): an existing over-rise to check.
-- **2026 NEC residue (decision #120).** Confirm every `typehaus.model.nec.UNCONFIRMED` row against
-  the printed NFPA 70-2026; get 110.26(A)'s door text before grading door swings. Not graded:
-  210.12(B)(14) bathroom lighting AFCI, 210.11(C)(3), SPD coverage, 690.12(C)'s outdoor
-  initiation device, 705.11/705.20 source OCP. Revisit Class C SPGFCI for CKT-HP1-3 after the
-  NFPA Standards Council (2026-12-15/16); they are Class A breakers meanwhile.
-  Confirm the full 2026 210.8(D) item list (microwave, disposer, water heater are ungraded);
-  `model/electrical.py`'s 314.16(A)(1) marked-volume cite is unverified.
-  `prices.toml`'s `electrical-spd-plug-on` keys on a 2-pole, non-source circuit with no load: give
-  `Circuit` a kind (or SPD a type) before another load-less 2-pole circuit bills as an SPD.
+- **2026 NEC residue (decision #120).** Confirm the 11 `typehaus.model.nec.UNCONFIRMED` rows
+  against the printed NFPA 70-2026 (read so far only in NFPA drafts or secondary sources; the
+  caveat stays until then). 120.82(C)'s resistance-heat item numbers are contested, so prose cites 120.82(C).
+  690.12(C)(1)(b): the rapid-shutdown initiation device must be outdoors. Catlin models none; confirm with EG4
+  what initiates shutdown on the 12kPV (does opening the CL320 meter-main do it while backing
+  up the house?), then place the device. Revisit Class C SPGFCI for CKT-HP1-3 after the
+  NFPA Standards Council (2026-12-15/16, ACCA/AHRI appeals); they are Class A breakers meanwhile.
 - **Exterior darks are black** (2026-11-07, `houses/catlin/plan/exterior_palette.py`, `notes/exterior_darks.md`). The engine's `RAINSCREEN_BASE_Z` text still calls the base strip aluminium.
 - `haus print3d --colour-groups`: per-piece colour components bucketed from `Material.color`, matched to a sample exported from Bambu Studio before shipping.
 - Promote the leafless passage's drywall wrap (#122) to a `ResolvedModel.passage_wraps` record so emitters can draw the returns.

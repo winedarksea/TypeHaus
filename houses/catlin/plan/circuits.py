@@ -204,8 +204,7 @@ CIRCUITS = (
     # `source=False`, `load_va=0`: neither a load nor a source, so 120.82 counts nothing and
     # the 705.12 busbar check must NOT see a backfeed.
     #
-    # ** NOTHING GRADES THESE. ** No check encodes 230.67 or 215.18, so these comments and
-    # the circuit rows are the only record that the requirement was met. If an SPD is ever
+    # `spd=True` is what `code.NEC_215_18_spd` and the price row read. If an SPD is ever
     # value-engineered out, it comes out of a code article, not out of a nice-to-have.
     Circuit(tag="CKT-SPD", slot=10, panel_ref=_PANEL, breaker_amps=20, poles=2,
             load_va=0, spd=True,
@@ -377,7 +376,8 @@ CIRCUITS = (
     # receptacles ED-G-RC-W/-E. The opener's outlet is on CKT-LT-MAIN behind ED-G-GDO-GFCI.
     # ** EVERY BATHROOM VANITY RECEPTACLE, ONE CIRCUIT (owner, 2026-11-07). ** NEC
     # 210.11(C)(3): a 20 A circuit for bathroom receptacles feeding no other outlets
-    # (210.23(B) Ex.), which may serve several bathrooms. No check encodes it. These outlets
+    # (210.23(B) Ex.), which may serve several bathrooms; `code.NEC_210_11_C3_bathroom_circuit`
+    # grades it. These outlets
     # rode the storey circuits until now, and CKT-BATH-ATTIC is retired into this (slot 41
     # free). Eight outlets in seven bathrooms: ED-M-BATH1-RC1, ED-M-BATH2-RC1,
     # ED-M-BATH2-MIRROR-PLUG, ED-S-BATH1-RC-MIRROR, ED-S-SUITEBATH-RC1, ED-S-VANITY-RC1,
@@ -386,7 +386,7 @@ CIRCUITS = (
     # (CKT-BATH2-TUB) and the two washlet outlets, each on its own dedicated circuit.
     # GFCI AT THE DEVICE (reset in the room): GFCI guide-light vanity outlets; the mirror plug
     # behind the glass rides ED-M-BATH2-RC1's load side (gfci_ref). No AFCI: 2026 210.12(B)
-    # lists bathroom lighting outlets, not receptacles. Not on backup (backup_power.md §5).
+    # does not list bathrooms. Not on backup (backup_power.md §5).
     # load_va 116 is the MHAP4236; receptacles are in 120.82(B)(1)'s VA/ft2 term, and
     # load_va overrides device summation, so never add 116 twice.
     Circuit(tag="CKT-BATH-RC", slot=31, panel_ref=_PANEL, breaker_amps=20, poles=1,
@@ -425,8 +425,7 @@ CIRCUITS = (
     # WASHLET S5 seats since the fixtures were selected. ** THE ELECTRICAL FOR THEM EXISTED
     # NOWHERE. ** Each bath had exactly one receptacle, a 44" vanity outlet on CKT-RC-MAIN,
     # and two 1.4 kW seats on a general storey circuit is ~23 A on a 20 A breaker before
-    # anything else is plugged in. Nothing reported it: no check encodes 210.11(C)(3)
-    # (see CKT-BATH-RC above) and nothing ties a Product to a device.
+    # anything else is plugged in. Nothing reported it: nothing ties a Product to a device.
     #
     # ** TWO CIRCUITS, NOT ONE, AND DO NOT GANG THEM LATER. ** An instantaneous seat draws
     # 1.2-1.4 kW the whole time it is heating and both baths are used at the same hour of the
@@ -441,8 +440,8 @@ CIRCUITS = (
     # actually uses (ED-M-BATH2-RC1's note): a washlet's own leakage trips a Class A GFCI
     # from time to time, and a reset in the basement for a toilet seat is the failure mode
     # the convention exists to avoid. Contrast CKT-BATH2-TUB, which IS breaker-protected
-    # because its outlet is sealed inside the tub deck. No AFCI: 210.12 does not list bathroom
-    # receptacle outlets (2026 adds bathroom lighting outlets only).
+    # because its outlet is sealed inside the tub deck. No AFCI: 210.12(B) does not list
+    # bathrooms.
     #
     # ** load_va IS 0, AND THE NAMEPLATE IS RECORDED HERE SO THE ZERO IS A DECISION AND NOT
     # AN OMISSION. ** Each seat is ~1,400 VA at the top of the researched 1.2-1.4 kW band,

@@ -302,6 +302,10 @@ def test_flashing_selection_and_dimensions_are_independent_of_support(catlin_mod
     assert any(s.name == "flashing-end-house-adapter--1"
                for s in sections(support_kind="concrete_cantilever"))
     assert len(sections(independent_landing_flashing=False)) == 4
+    without_head = sections(stock_head_flashing=False)
+    assert not any(s.name.startswith("stock-headflash-") for s in without_head)
+    assert any(s.name.startswith("flashing-end-") for s in without_head)
+
     modified = sections(head_cap_depth=inch(2), transition_strip_width=inch(8),
                         head_source_url="https://example.test/head", transition_sheet_thickness=inch(.04))
     cap = next(s for s in modified if s.name == "stock-headflash-cap-envelope")
@@ -366,3 +370,11 @@ def test_sunken_door_brick_trim_and_crown_clearance(catlin_model_ro):
     assert placement.installation_report["centreline_reveal_clear_height_in"] >= 78
     assert all(b.z_m - b.height_m / 2 == pytest.approx(door.doorway.jamb_bottom_z_m)
                for b in returns if "jamb" in b.name)
+
+
+def test_sheltered_sunken_arch_has_no_stock_head_flashing(catlin_model_ro):
+    opening = next(o for o in catlin_model_ro.openings if o.tag == "D-B-SUNKEN")
+    placement = opening.doorway.exterior_placement
+    assert not placement.specification.catalog_installation.stock_head_flashing
+    assert not any(s.name.startswith("stock-headflash-") for s in placement.sections)
+    assert not any("HeadFlash" in message for message in opening.doorway.unknown)

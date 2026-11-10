@@ -36,6 +36,8 @@ def catalog_installation(**overrides):
 # installation.md §6). Off Trex's published install (joists at 16", air under): a warranty
 # exposure the owner accepted, not a code one.
 _SUNKEN_TREAD = dict(
+    # The sheltered self-supporting veneer arch has no face-mounted head flashing.
+    stock_head_flashing=False,
     independent_landing_flashing=False,
     support_kind='foam_bed', support_ref='W-B-S3', support_material_ref='xps-40',
     support_width=inch(5.5), support_depth=inch(4.06), foam_rated_psi=40.0,

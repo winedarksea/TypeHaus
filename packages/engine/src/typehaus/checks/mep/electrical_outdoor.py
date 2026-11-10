@@ -10,6 +10,8 @@ the door's own level (``_LEVEL_M`` of the storey datum). The court stands 5 in. 
 yet its porch and balcony both land at their doors, so no gap is tested. A receptacle on the
 house wall counts when it is within ``_PERIMETER_M`` of the surface's outline. A surface under
 ``_MIN_SPAN_M`` across is a stoop or landing, not a porch or deck, and is not graded.
+The official text reaches surfaces within 4 in. horizontally of the dwelling unit, so grading
+the court, 5 in. off, is stricter than the rule.
 """
 
 from __future__ import annotations

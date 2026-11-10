@@ -317,6 +317,9 @@ MN_2020 = JurisdictionProfile(
                        (cite(NEC.BATHROOM_RECEPTACLE),)),
         PermitItemSpec("AFCI branch circuits", ("code.E3902_16_afci",),
                        (cite(NEC.AFCI_DWELLING),), blocking=False),
+        PermitItemSpec("Surge protection and bathroom circuit",
+                       ("code.NEC_215_18_spd", "code.NEC_210_11_C3_bathroom_circuit"),
+                       (cite(NEC.FEEDER_SPD, NEC.SERVICE_SPD), cite(NEC.BATHROOM_BRANCH))),
         # Panel tops, not handles: a type with no handle offset grades its body top.
         PermitItemSpec("Panelboard handle height", ("electrical.panel_handle_height",),
                        (cite(NEC.OCPD_HEIGHT), cite(NEC.SWITCH_HEIGHT))),

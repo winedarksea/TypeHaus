@@ -30,8 +30,10 @@ questions: the two installation TODOs remain open until these design issues clos
 | Pan | SureSill 4-9/16 inch sloped pan, 80 inch complete pack | Manufacturer FAQ gives 1/4–3/8 inch rise depending on pan; **3/8 inch is the conservative coordination allowance**, not a traced installed pan section |
 | Apron | Impermeable self-adhered membrane under the approach, with raised jamb ends | Exact sheet/primer/sealant combination, PVC-pan bond and water-plane tie; no implicit approval of an unidentified waterproofing material or ccSPF |
 | Approach | AridDek standard boards, nominal 6 inch module and modeled 1-1/2 inch depth, 1:48 outward slope, stock profile trim | Board/rib section, minimum cut length, end support, isolation and fastener details for this short approach |
-| Head | SureSill HeadFlash 1-3/8 × 84 complete pack, stock end caps | Upstand, thickness and end-dam geometry are labeled coordination envelopes; they are not traced product sections |
+| Head (D-S-BALCONY only) | SureSill HeadFlash 1-3/8 × 84 complete pack, stock end caps | Upstand, thickness and end-dam geometry are labeled coordination envelopes; they are not traced product sections |
 | Balcony ends | Proglaze ETA System 1, standard 6 inch extrusion, molded corners, aluminum adaptors and Spectrem 1 | A candidate application: its published instructions assume engineering review and require substrate adhesion/compatibility verification. No such review or approval has been obtained |
+
+D-B-SUNKEN has no stock HeadFlash: its self-supporting veneer arch is sheltered under the porch, per `court_opening_detail.md`. A straight cap on the brick face above that arch is not an installation detail.
 
 Primary documents:
 

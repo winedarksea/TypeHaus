@@ -277,7 +277,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   only). `CKT-WASHLET-BATH1`/`-BATH2` at slots 25 and 28 feed `ED-M-BATH1-WC-RC` /
   `ED-M-BATH2-WC-RC`, one outlet each, GFCI at the DEVICE (a washlet trips a Class A GFCI
   now and then and a reset in the basement for a toilet seat is the failure mode the
-  convention avoids), no AFCI (2026 210.12 lists bathroom *lighting* outlets, not receptacles), `load_va=0`.
+  convention avoids), no AFCI (2026 210.12(B) does not list bathrooms), `load_va=0`.
   - **Both boxes are in ONE stud bay and there is no second candidate.** `W-M-HS1` is the
     wet wall between the two baths and carries both bowls; the resolved framing leaves
     exactly one clear 2x6 cavity beside them, x 8 1/8"..15" between `stud-000` and the

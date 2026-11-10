@@ -1,12 +1,12 @@
 """2026 NEC 210.8(D) and (F) — GFCI by what an outlet feeds, not where it is.
 
 Split from ``electrical_code.py`` (the 210.8(A) location rule) to keep both under the file
-limit. (D) lists appliances whose outlet needs GFCI wherever it stands. The model names four
+limit. (D) lists appliances whose outlet needs GFCI wherever it stands. The model names five
 of them: an electric range or other cooking unit (``ApplianceType.cooking`` with a 240 V
 need), a clothes dryer (the population text ``code.M1502_dryer_exhaust`` reads), a
-dishwasher (the same, by name) and a sump pump (``Sump.pump``). An outlet is traced through
-the circuit the item names, else to a receptacle within reach; one that cannot be traced is
-UNKNOWN. Disposers and water heaters are not on the list the sources show, so are not graded.
+dishwasher and a microwave (the same, by name) and a sump pump (``Sump.pump``). An outlet is
+traced through the circuit the item names, else to a receptacle within reach; one that cannot
+be traced is UNKNOWN. Disposers and water heaters are not on (D)'s list, so are not graded.
 (F) is every outdoor outlet: a Class A GFCI passes, a Class C SPGFCI (``Circuit.gfci_class``)
 passes only where every outlet is HVAC (Ex. 3), and an unprotected one fails.
 """
@@ -68,6 +68,9 @@ def _items(ctx: CheckContext) -> list[_Item]:
         if "dishwasher" in words:
             out.append(_Item(obj.tag, obj.storey, body,
                              f"{NEC.GFCI_APPLIANCES} (dishwasher {obj.tag})", None, "120"))
+        if "microwave" in words:
+            out.append(_Item(obj.tag, obj.storey, body,
+                             f"{NEC.GFCI_MICROWAVE} (microwave oven {obj.tag})", None, "120"))
     for storey in ctx.plan.storeys:
         for element in ctx.plan.storey_elements(storey.tag):
             pump = getattr(element, "pump", None) if element.element_kind == "Sump" else None

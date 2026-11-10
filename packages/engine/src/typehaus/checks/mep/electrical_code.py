@@ -351,7 +351,6 @@ def _sink_points(ctx: CheckContext) -> dict[str, list]:
 # NEC 210.12: AFCI protection on the 120V 15/20A branch circuits serving these rooms. The
 # list is close to "everywhere people live" — the exclusions are bathrooms, garages, and
 # unfinished basements, which is to say the places 210.8 already sends to GFCI instead.
-# 2026 adds bathroom lighting outlets; this per-room screen does not grade them.
 _AFCI_OCCUPANCIES = frozenset({
     Occupancy.KITCHEN.value, Occupancy.LIVING.value, Occupancy.DINING.value,
     Occupancy.BEDROOM.value, Occupancy.HALLWAY.value, Occupancy.LAUNDRY.value,

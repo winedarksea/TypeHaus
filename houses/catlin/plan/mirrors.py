@@ -61,7 +61,7 @@ MAIN_MIRRORS = [
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="5AE57JENYW", tag="ED-M-BATH2-MIRROR-HALO", kind=DeviceKind.LIGHT,
             type_ref="ED-T-LT-MIRROR-HALO-2700", room="RM-M-BATH2",
-            circuit="CKT-BATH-RC",
+            circuit="CKT-BATH-RC", plugs_into="ED-M-BATH2-MIRROR-PLUG",
             mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-M-W3", face="left", distance_from_start=inch(85.625),

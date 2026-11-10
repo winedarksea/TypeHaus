@@ -44,6 +44,7 @@ class ExteriorDoorCatalogInstallation(HausModel):
         "https://www.tremcosealants.com/resource/download/Proglaze_ETA_System_1_AI.pdf"
     )
     # Design envelopes pending installed sections; these are not certified product dimensions.
+    stock_head_flashing: bool = True
     head_cap_depth: Length = inch(1.375)
     head_upstand_height: Length = inch(1.5)
     head_end_dam_height: Length = inch(0.5)

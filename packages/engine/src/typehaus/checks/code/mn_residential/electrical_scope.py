@@ -11,10 +11,11 @@ from typehaus.model.nec import NEC, mark
 ELECTRICAL_COVERAGE = (
     f"Electrical, on the {NEC.EDITION} (Minn. R. 1309.0010 subp. 3.E deletes IRC ch. "
     f"34-43): {NEC.GFCI_DWELLING} GFCI receptacle locations, {NEC.GFCI_APPLIANCES} "
-    "ranges, dryers, dishwashers and sump pumps and "
+    "ranges, dryers, dishwashers, microwave ovens and sump pumps and "
     f"{NEC.GFCI_OUTDOOR_OUTLETS} outdoor outlets where the model can trace the outlet, "
-    f"{mark(NEC.AFCI_DWELLING)} AFCI branch-circuit coverage by room (bathroom lighting "
-    "outlets, 2026 210.12(B)(14), are not graded), "
+    f"{mark(NEC.AFCI_DWELLING)} AFCI branch-circuit coverage by room, "
+    f"{NEC.FEEDER_SPD} / {NEC.SERVICE_SPD} an SPD in each panel holding branch breakers, "
+    f"{NEC.BATHROOM_BRANCH} the circuit feeding the required bathroom receptacle, "
     f"and {NEC.BATHROOM_RECEPTACLE} the receptacle required at each lavatory basin — "
     "with the basin taken as the whole vanity carcass, since no basin extent "
     "is modeled, which makes that reach test permissive rather than exact. No "
@@ -24,7 +25,8 @@ ELECTRICAL_COVERAGE = (
 
 SOURCE_SIDE_COVERAGE = (
     f"Source-side NEC: {NEC.INTERCONNECTION} "
-    f"busbar interconnection and {NEC.RAPID_SHUTDOWN} PV rapid shutdown; and "
+    f"busbar interconnection and {NEC.RAPID_SHUTDOWN} PV rapid shutdown (the "
+    f"{NEC.RAPID_SHUTDOWN_INITIATION} outdoor initiation device is not graded); and "
     f"{NEC.OCPD_HEIGHT} / {NEC.SWITCH_HEIGHT} "
     "the highest panel handle at 6'-7\" (the body top where no handle offset is "
     f"stated); {NEC.WORKING_SPACE} panel working space (36\" x 30\" x 6'-6\", door "
