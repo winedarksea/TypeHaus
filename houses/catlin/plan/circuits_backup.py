@@ -111,6 +111,6 @@ BACKUP_CIRCUITS = (
     # it holds branch OCPDs; see CKT-SPD in plan/circuits.py). Slots 8/10 of the five spares.
     # Not a backup load, so no tier and no duty cycle.
     Circuit(tag="CKT-SPD-BACKUP", slot=8, panel_ref=_BACKUP_PANEL, breaker_amps=20, poles=2,
-            load_va=0,
+            load_va=0, spd=True,
             description="Type 2 surge protective device, backup panel (NEC 215.18)"),
 )

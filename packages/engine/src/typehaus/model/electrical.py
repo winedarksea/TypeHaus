@@ -55,6 +55,8 @@ class Circuit(Element):
     # The service-load summary excludes these: a backfeed breaker is not demand. The
     # 705.12 interconnection check reads exactly this flag to find the source breakers.
     source: bool = False
+    # This position holds a plug-on surge protective device: no load, no source.
+    spd: bool = False
     # Authored average-draw fraction of ``load_va`` over a backup event, 0..1. ESTIMATE
     # ONLY, and only meaningful on backup circuits — it exists so the autonomy calc can
     # say "the fridge is not drawing 700 VA for 24 hours". Never defaulted: a circuit

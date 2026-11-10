@@ -59,6 +59,7 @@ def panel_schedule(model: ResolvedModel) -> list[dict[str, object]]:
             "backup_tier": circuit.backup_tier.value if circuit.backup_tier else "",
             "panel": circuit.panel_ref,
             "source": circuit.source,
+            "spd": circuit.spd,
             "connected_va": round(_connected_va(model, circuit, served), 0),
             "devices": sorted(element.tag for element in served),
         })

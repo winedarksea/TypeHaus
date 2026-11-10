@@ -8037,8 +8037,8 @@ electrical-2pole-gfci-breakers = { material = { low = 125, high = 210 }, labour 
 # CKT-SPD-2 (HOM2175SB), CKT-SPD-BACKUP (the backup panel's own line). The plug-on IS the device,
 # so this row is the whole SPD. ESTIMATE: search listings read 2026-11-07, pages not fetched:
 # standardelectricsupply.com QO2175SB $118.31, simplybreakers.com HOM2175SB $115.99, reach.dog
-# HOM2175SB $74.99. Driver: a 2-pole, non-source circuit with no load is an SPD here.
-electrical-spd-plug-on = { material = { low = 75, high = 160 }, labour = { low = 25, high = 50 }, unit = "ea", driver = "panel_schedule.rows[poles=2,gfci=False,source=False,connected_va=0]" }
+# HOM2175SB $74.99.
+electrical-spd-plug-on = { material = { low = 75, high = 160 }, labour = { low = 25, high = 50 }, unit = "ea", driver = "panel_schedule.rows[spd=True]" }
 # Plain 2-pole breakers (EV-1450, SAUNA, ERV, HP1-AH) and the ESS backfeed breaker: the generic
 # rate, unchanged (an estimate; no source read).
 electrical-2pole-breakers = { low = 39, high = 81, unit = "ea", driver = "panel_schedule.rows[poles=2,gfci=False,connected_va!=0]" }
