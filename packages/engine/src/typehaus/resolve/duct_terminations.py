@@ -26,6 +26,7 @@ from typehaus.resolve.mep_soffit import (
     plan_distance_to_segment,
 )
 from typehaus.resolve.model_ducts import Point3, ResolvedDuctPart
+from typehaus.resolve.terminal_drops import collar_seat_problem, collars_by_run
 
 #: A duct end this close to an exact port or collar lands on it.
 PORT_TOLERANCE_M = 1.0 * M_PER_IN
@@ -85,16 +86,23 @@ def _registers(model: Any) -> dict[str, list[Any]]:
 def end_landings(model: Any) -> list[EndLanding]:
     """Both ends of every run, classified."""
     registers = _registers(model)
+    collars = collars_by_run(model)
     out: list[EndLanding] = []
     for duct in sorted(model.ducts, key=lambda d: d.tag):
         for index, point, axis in duct_ends(duct):
-            out.append(EndLanding(duct.tag, index, point, axis,
-                                  *_classify(model, duct, point, registers)))
+            out.append(EndLanding(duct.tag, index, point, axis, *_classify(
+                model, duct, point, registers, _round_collars(duct, collars), index != 0)))
     return out
 
 
-def _classify(model: Any, duct: Any, point: Point3,
-              registers: dict[str, list[Any]]) -> tuple[str | None, str | None, Any]:
+def _round_collars(duct: Any, collars: dict[str, list]) -> dict[str, Any]:
+    """``{register tag: collar}`` for the ceiling collars a ROUND run must drop onto."""
+    return dict(collars.get(duct.tag, ())) if duct.diameter_m is not None else {}
+
+
+def _classify(model: Any, duct: Any, point: Point3, registers: dict[str, list[Any]],
+              collars: dict[str, Any], at_end: bool,
+              ) -> tuple[str | None, str | None, Any]:
     port = port_at(model, point[:2], point[2], duct_system=duct.system,
                    tolerance_m=PORT_TOLERANCE_M)
     if port is not None:
@@ -104,7 +112,11 @@ def _classify(model: Any, duct: Any, point: Point3,
                 point[:2], point[2], other.path, other.z_m) is not None:
             return "joined", other.tag, None
     for obj in registers.get(duct.tag, ()):
-        if math.dist(obj.position, point[:2]) <= BOOT_REACH_M:
+        if obj.tag in collars:  # seated on its top, or nothing: no plan-only reach
+            if collar_seat_problem(duct.path, duct.z_m, at_end, obj.tag,
+                                   collars[obj.tag]) is None:
+                return "terminal", obj.tag, None
+        elif math.dist(obj.position, point[:2]) <= BOOT_REACH_M:
             return "terminal", obj.tag, None
     case = _in_case(model, point)
     if case is not None:
@@ -119,6 +131,8 @@ def _classify(model: Any, duct: Any, point: Point3,
         return "equipment", case.tag, None
     leg = duct.path[:2] if point[:2] == tuple(duct.path[0]) else duct.path[-2:]
     for obj in registers.get(duct.tag, ()):
+        if obj.tag in collars:
+            continue
         if plan_distance_to_segment(obj.position, leg[0], leg[1])[0] <= BOOT_REACH_M:
             return "cap", obj.tag, None
     return None, None, None
@@ -195,21 +209,33 @@ def _boots(model: Any, standard: DuctStandard) -> list[ResolvedDuctPart]:
     types = {t.tag: t for t in model.plan.library.register_types}
     by_tag = {d.tag: d for d in model.ducts}
     out = []
+    collars = collars_by_run(model)
     for duct_tag, objects in sorted(_registers(model).items()):
         duct = by_tag.get(duct_tag)
         if duct is None or len(duct.path) < 2:
             continue
         size = section(duct)
+        seated = _round_collars(duct, collars)
         for obj in sorted(objects, key=lambda o: o.tag):
             neck = neck_text(types.get(obj.type_ref))
             row = standard.part("boot", size, neck)
-            point, axis = _nearest(duct, obj.position)
+            point, axis = (_end_nearest(duct, seated[obj.tag]) if obj.tag in seated
+                           else _nearest(duct, obj.position))
             out.append(ResolvedDuctPart(
                 kind="boot", run_tag=duct.tag, storey=duct.storey, size=size, branch=neck,
                 point=point, axis=axis, other=obj.tag,
                 gap=None if row else f"no boot row for {size} to {neck}",
                 **_row_fields(row)))
     return out
+
+
+def _end_nearest(duct: Any, collar: tuple[float, ...]) -> tuple[Point3, Point3]:
+    """The run end nearest a ceiling collar's top, and its axis (the drop, not the level
+    leg ``_nearest`` would find first over the same plan point)."""
+    top = (collar[0], collar[1], collar[2])
+    _, point, axis = min(((math.dist(point, top), point, axis)
+                          for _, point, axis in duct_ends(duct)), key=lambda e: e[0])
+    return point, axis
 
 
 def _nearest(duct: Any, at: tuple[float, float]) -> tuple[Point3, Point3]:

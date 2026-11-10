@@ -37,7 +37,9 @@ than from a naming convention:
   ``BOOT_REACH_M``. That is the boot: the flex tail and collar between the end of the hard
   duct and the grille in the ceiling. This house authors them up to 34" off a run end
   (``plan/mep_registers_*.py``), so they are the design, not a defect, and a check that called
-  them orphans would be reporting the drawing rather than the building.
+  them orphans would be reporting the drawing rather than the building. A round run's
+  ceiling COLLAR earns no plan reach: the run must end on its top, arriving from above
+  (``resolve/terminal_drops``), and a collar no run end reaches is mid-run.
 
 * **its own take-off**, when the end is the cap past the last boot on a served trunk. A trunk
   that feeds grilles along its length ends a few inches past the last one and is capped —
@@ -186,11 +188,12 @@ def _takeoffs(ctx: CheckContext, duct: ResolvedDuct) -> list[tuple[str, tuple[fl
 def _boot(ctx: CheckContext, duct: ResolvedDuct,
           point: tuple[float, float]) -> str | None:
     """A register that names this run and is within a boot's reach of the end."""
+    collars = _collar_tags(ctx, duct)
     for tag, at in _takeoffs(ctx, duct):
         from typehaus.resolve.terminal_necks import terminal_inlet
 
-        if terminal_inlet(ctx.model, tag) is not None:
-            continue  # A dimensioned inlet cannot earn an implicit boot or cap allowance.
+        if tag in collars or terminal_inlet(ctx.model, tag) is not None:
+            continue  # A dimensioned inlet or a ceiling collar earns no plan-only allowance.
         span = ((at[0] - point[0]) ** 2 + (at[1] - point[1]) ** 2) ** 0.5
         if span <= BOOT_REACH_M:
             return tag
@@ -215,15 +218,63 @@ def _capped_past_a_takeoff(ctx: CheckContext, duct: ResolvedDuct,
         return None
     leg = ((duct.path[-2], duct.path[-1]) if point == duct.path[-1]
            else (duct.path[0], duct.path[1]))
+    collars = _collar_tags(ctx, duct)
     for tag, at in _takeoffs(ctx, duct):
         from typehaus.resolve.terminal_necks import terminal_inlet
 
-        if terminal_inlet(ctx.model, tag) is not None:
-            continue  # A dimensioned inlet cannot earn an implicit boot or cap allowance.
+        if tag in collars or terminal_inlet(ctx.model, tag) is not None:
+            continue  # A dimensioned inlet or a ceiling collar earns no plan-only allowance.
         span, _ = plan_distance_to_segment(at, leg[0], leg[1])
         if span <= BOOT_REACH_M:
             return tag
     return None
+
+
+def _collars(ctx: CheckContext, duct: ResolvedDuct) -> list:
+    """The ceiling collars naming a ROUND run; each takes a run end from above."""
+    from typehaus.resolve.terminal_drops import collars_by_run
+
+    if duct.diameter_m is None:
+        return []
+    return shared(ctx, "duct_connectivity.collars",
+                  lambda: collars_by_run(ctx.model)).get(duct.tag, [])
+
+
+def _collar_tags(ctx: CheckContext, duct: ResolvedDuct) -> set[str]:
+    return {tag for tag, _ in _collars(ctx, duct)}
+
+
+def _collar_end(ctx: CheckContext, duct: ResolvedDuct,
+                at_end: bool) -> tuple[str, str | None] | None:
+    """``(register, problem or None)`` for the ceiling collar nearest this end, if one is
+    within a boot's reach in plan."""
+    from typehaus.resolve.terminal_drops import collar_seat_problem
+
+    point, other = ((duct.path[-1], duct.path[0]) if at_end
+                    else (duct.path[0], duct.path[-1]))
+
+    def span(c, p):
+        return ((c[0] - p[0]) ** 2 + (c[1] - p[1]) ** 2) ** 0.5
+
+    # Each collar is graded at the nearer of its run's two ends only.
+    near = [(tag, c) for tag, c in _collars(ctx, duct)
+            if span(c, point) <= BOOT_REACH_M and span(c, point) <= span(c, other)]
+    if not near:
+        return None
+    tag, collar = min(near, key=lambda item: span(item[1], point))
+    return tag, collar_seat_problem(duct.path, duct.z_m, at_end, tag, collar)
+
+
+def _mid_run_collars(ctx: CheckContext, duct: ResolvedDuct) -> list[Finding]:
+    """A ceiling collar no end of its run reaches: the collar cannot tee off a trunk."""
+    out = []
+    for tag, (x, y, _, _) in _collars(ctx, duct):
+        if all(((x - p[0]) ** 2 + (y - p[1]) ** 2) ** 0.5 > BOOT_REACH_M
+               for p in (duct.path[0], duct.path[-1])):
+            out.append(failed("mep.duct_connectivity",
+                              f"{tag} is mid-run on {duct.tag}; a ceiling collar takes a run "
+                              "end or a tee branch", (duct.tag, tag)))
+    return out
 
 
 @check(Tier.INTEGRITY, "mep.duct_connectivity")
@@ -257,9 +308,17 @@ def duct_connectivity(ctx: CheckContext) -> list[Finding]:
                                       f"{terminal_ref}'s dimensioned inlet",
                                       (duct.tag, terminal_ref)))
                 continue
-            landed = (_meets_another_duct(ctx, duct, z, point)
-                      or equipment_at_end(ctx, z, point)
-                      or _boot(ctx, duct, point))
+            joined = _meets_another_duct(ctx, duct, z, point)
+            # Before the case test: a collar's own face is a "case" an inch deep.
+            collar = None if joined else _collar_end(ctx, duct, label == "end")
+            if collar is not None:
+                tag, problem = collar
+                out.append(failed("mep.duct_connectivity", f"duct {duct.tag} {label} {problem}",
+                                  (duct.tag, tag)) if problem else passed(
+                    "mep.duct_connectivity",
+                    f"duct {duct.tag} {label} drops onto {tag}'s ceiling collar", (duct.tag,)))
+                continue
+            landed = joined or equipment_at_end(ctx, z, point) or _boot(ctx, duct, point)
             mismatch = _collar_mismatch(ctx, duct, landed) if landed is not None else None
             if mismatch is not None:
                 out.append(failed("mep.duct_connectivity", f"duct {duct.tag} {label} lands "
@@ -295,6 +354,7 @@ def duct_connectivity(ctx: CheckContext) -> list[Finding]:
                 f"no register naming this run is within {BOOT_REACH_M / M_PER_IN:.0f}\" of it "
                 "or of the leg it ends, and "
                 "it is not outdoors", (duct.tag,)))
+        out.extend(_mid_run_collars(ctx, duct))
     return out
 
 

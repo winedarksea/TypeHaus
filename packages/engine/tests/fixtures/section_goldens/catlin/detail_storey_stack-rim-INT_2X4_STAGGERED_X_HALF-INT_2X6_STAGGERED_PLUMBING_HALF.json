@@ -487,6 +487,120 @@
       "node": "polyline",
       "points": [
         [
+          271.25,
+          107.50000000000001
+        ],
+        [
+          281.0925196850394,
+          107.50000000000001
+        ],
+        [
+          281.0925196850394,
+          108.125
+        ],
+        [
+          271.25,
+          108.125
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMR403AAAA-ceiling",
+      "tag": "CEIL-RM-M-BATH1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          271.25,
+          107.50000000000001
+        ],
+        [
+          281.0925196850394,
+          107.50000000000001
+        ],
+        [
+          281.0925196850394,
+          108.125
+        ],
+        [
+          271.25,
+          108.125
+        ]
+      ],
+      "pattern": "gwb-mr",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb-mr",
+      "fill": "#e0d6ec"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          254.90748031496065,
+          107.50000000000001
+        ],
+        [
+          264.75,
+          107.50000000000001
+        ],
+        [
+          264.75,
+          108.125
+        ],
+        [
+          254.90748031496065,
+          108.125
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMR404AAAA-ceiling",
+      "tag": "CEIL-RM-M-BATH2"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          254.90748031496065,
+          107.50000000000001
+        ],
+        [
+          264.75,
+          107.50000000000001
+        ],
+        [
+          264.75,
+          108.125
+        ],
+        [
+          254.90748031496065,
+          108.125
+        ]
+      ],
+      "pattern": "gwb-mr",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb-mr",
+      "fill": "#e0d6ec"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           259.75000000000006,
           110.87500000000001
         ],
@@ -601,120 +715,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          271.25,
-          107.50000000000001
-        ],
-        [
-          281.0925196850394,
-          107.50000000000001
-        ],
-        [
-          281.0925196850394,
-          108.125
-        ],
-        [
-          271.25,
-          108.125
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMR403AAAA-ceiling",
-      "tag": "CEIL-RM-M-BATH1"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          271.25,
-          107.50000000000001
-        ],
-        [
-          281.0925196850394,
-          107.50000000000001
-        ],
-        [
-          281.0925196850394,
-          108.125
-        ],
-        [
-          271.25,
-          108.125
-        ]
-      ],
-      "pattern": "gwb-mr",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "gwb-mr",
-      "fill": "#e0d6ec"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          254.90748031496065,
-          107.50000000000001
-        ],
-        [
-          264.75,
-          107.50000000000001
-        ],
-        [
-          264.75,
-          108.125
-        ],
-        [
-          254.90748031496065,
-          108.125
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMR404AAAA-ceiling",
-      "tag": "CEIL-RM-M-BATH2"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          254.90748031496065,
-          107.50000000000001
-        ],
-        [
-          264.75,
-          107.50000000000001
-        ],
-        [
-          264.75,
-          108.125
-        ],
-        [
-          254.90748031496065,
-          108.125
-        ]
-      ],
-      "pattern": "gwb-mr",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "gwb-mr",
-      "fill": "#e0d6ec"
     },
     {
       "space": "model",

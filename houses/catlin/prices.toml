@@ -3641,12 +3641,13 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # Disc valve: Vents-US AM 100 VRF $19.00 with collar (hvacdirect.com, 2026-10-31); the high end
 # is an EU or-equal (Lindab/Trox ~EUR 46-54 + frame) landed. Labour is the ceiling cut, the
 # collar, mastic and tape — unchanged from the diffuser rows these replace.
-"REG-T-ERV-VALVE-SUP" = { material = { low = 19, high = 60 }, labour = { low = 18, high = 45 } }  # 4 ea
+"REG-T-ERV-VALVE-SUP" = { material = { low = 19, high = 60 }, labour = { low = 18, high = 45 } }  # 3 ea
 "REG-T-ERV-VALVE-EXH" = { material = { low = 19, high = 60 }, labour = { low = 18, high = 45 } }  # 7 ea
-# 125 mm valve on a 4x5 increaser, the one 30 cfm terminal (REG-B-SUP2). Price not read.
-"REG-T-ERV-VALVE-SUP-125" = { material = { low = 30, high = 75 }, labour = { low = 22, high = 50 } }  # 1 ea
 # Same valve in a stud bay: the labour premium is cutting and blocking a wall for the collar.
 "REG-T-ERV-VALVE-EXH-WALL" = { material = { low = 19, high = 60 }, labour = { low = 28, high = 65 } }  # 3 ea
+"REG-T-ERV-VALVE-SUP-WALL" = { material = { low = 19, high = 60 }, labour = { low = 28, high = 65 } }  # 1 ea
+# 125 mm valve on a 4x5 increaser, the one 30 cfm terminal (REG-B-SUP2). Price not read.
+"REG-T-ERV-VALVE-SUP-125-WALL" = { material = { low = 30, high = 75 }, labour = { low = 32, high = 70 } }  # 1 ea
 # Floor extract: Reggio 412-AH 2 1/4x10 aluminium grille ~$30 (Ferguson Home) + a 2 1/4x10x4
 # stamped boot (Snappy P13-204, price not read).
 "REG-T-ERV-EXH-FLOOR" = { material = { low = 38, high = 70 }, labour = { low = 18, high = 45 } }  # 5 ea

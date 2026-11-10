@@ -31,6 +31,7 @@ from .erv_balance import (
     DU_M_ERV_R_LIVING,
     DU_M_ERV_R_MUD,
     DU_M_ERV_R_PLANT,
+    DU_M_ERV_R_RET3,
     DU_M_ERV_R_STUDY,
     DU_M_ERV_R_SUITEBATH,
     DU_M_ERV_R_VANITY,
@@ -128,6 +129,9 @@ _LOW_Z = inch(-9.625)
 _LAUNDRY_Z = inch(-9.875)
 #: KITCH passes under PR-M-S-SUITE-WC-DRAIN's south leg at x=12'-0".
 _KITCH_Z = inch(-9.125)
+#: A level end over a ceiling valve: 6" over a 107" ceiling's collar top, a stock 90 down onto
+#: it (`resolve/terminal_drops.py`). LIVING and KITCH climb to it past their last crossing.
+_DROP_Z = inch(-4)
 #: The 6x4 neck's centreline where it crosses joist-0-026-1, the chase trimmers and the
 #: 32' truss: 7.9" over the chord, the one height all four pass a 6x4 at x 57 1/8"..58 5/8".
 _NECK_Z = inch(-3.975)
@@ -168,42 +172,48 @@ DUCTS_ERV_LEVEL2 = [
             # Under the neck to x 63", up to the upper tier, south in R1's x=106 7/8" lane
             # (the trusses' south chase, east of the vent string), over DU-M-ERV-R-LAUNDRY,
             # then a 45 down to the low tier in its own bay, north of LAUNDRY: the suite's pipes
-            # fill the upper tier, and PR-B-HW-SUITE dips to 4.9" by the valve.
+            # fill the upper tier. Past PR-M-S-SUITE-TUB-DRAIN (x=155.8") it climbs 3" to drop
+            # onto REG-M-SUP4, west of PR-B-CW-SUITE's x=183" crossing.
             path=(pt(inch(58), inch(408.5)), pt(inch(58), inch(408.5)),
                   pt(inch(63), inch(408.5)), pt(inch(70), inch(408.5)),
                   pt(inch(106.875), inch(408.5)), pt(inch(106.875), inch(254.25)),
-                  pt(inch(106.875), inch(248.6)), pt(ft(17, 2), inch(248.6))),
-            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _STUDY_Z, _STUDY_Z, _STUDY_Z, _LOW_Z, _LOW_Z),
+                  pt(inch(106.875), inch(248.6)), pt(inch(158.5), inch(248.6)),
+                  pt(inch(161.5), inch(248.6)), pt(ft(14, 8), inch(248.6))),
+            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _STUDY_Z, _STUDY_Z, _STUDY_Z, _LOW_Z, _LOW_Z,
+                        inch(-6.625), inch(-6.625)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_STUDY),
     DuctRun(uid="MRH0QZT6NN", tag="DU-M-ERV-R-LIVING", system=DuctSystem.SUPPLY,
             # Straight south in the D pockets at x=42 1/4", over the trunk's cross leg, then
-            # east in the 12'-8" bay, ramping to the low tier under BED.
+            # east in the 12'-8" bay, ramping to the low tier under BED and PR-M-CW-HYD-DIST
+            # (x=96.5"), and back up to _DROP_Z for the valve.
             path=(pt(inch(42.25), inch(405.375)), pt(inch(42.25), inch(405.375)),
                   pt(inch(42.25), ft(12, 8)), pt(inch(46), ft(12, 8)),
-                  pt(inch(53.8), ft(12, 8)), pt(ft(27), ft(12, 8))),
-            elevations=(_PORT_Z, _HI_Z, _HI_Z, _HI_Z, _BAY_Z, _BAY_Z),
+                  pt(inch(53.8), ft(12, 8)), pt(inch(99.5), ft(12, 8)),
+                  pt(inch(103.875), ft(12, 8)), pt(ft(27), ft(12, 8))),
+            elevations=(_PORT_Z, _HI_Z, _HI_Z, _HI_Z, _BAY_Z, _BAY_Z, _DROP_Z, _DROP_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_LIVING),
     # 1/4" south of 34'-1" (2026-10-30): CD-M-DATA-KITCH-TRUNK's 1" EMT needs the 1" between
     # this duct's face and the truss at y=34'-4".
     DuctRun(uid="83MA15Q308", tag="DU-M-ERV-R-BED", system=DuctSystem.SUPPLY,
             # East under the neck, up over CD-M-DATA-KITCH, south in the D pockets at
-            # x=83 3/4" on the upper tier, and down to the valve in its own bay.
+            # x=83 3/4" on the upper tier, and straight down onto the valve in its own bay.
             path=(pt(inch(62), inch(404.125)), pt(inch(62), inch(404.125)),
                   pt(inch(66), inch(404.125)), pt(inch(73), inch(404.125)),
-                  pt(inch(83.75), inch(404.125)), pt(inch(83.75), inch(78.25)),
-                  pt(inch(83.75), inch(71.25))),
-            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _UP_Z, _UP_Z, _UP_Z, _BAY_Z),
+                  pt(inch(83.75), inch(404.125)), pt(inch(83.75), inch(71.25))),
+            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _UP_Z, _UP_Z, _UP_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_BED),
 
     # --- THE TEN EXTRACT TAKEOFFS -------------------------------------------------------
     # Every one leaves the trunk (MUD the neck) on a 4x4 side tap at its own bay and rides that
     # bay low to its terminal; only BED2 and LAUNDRY cross a truss, each in its own D pocket.
+    # A ceiling valve's run climbs past its last crossing and drops onto the collar (>= 2").
     DuctRun(uid="K04AT15S97", tag="DU-M-ERV-R-BATH1", system=DuctSystem.EXHAUST,
-            path=(pt(inch(27), ft(24, 6)), pt(ft(1, 2), ft(24, 6))),
-            elevations=(_BAY_Z, _BAY_Z),
+            path=(pt(inch(27), ft(24, 6)), pt(inch(22), ft(24, 6)),
+                  pt(inch(17.625), ft(24, 6)), pt(ft(1), ft(24, 6))),
+            elevations=(_BAY_Z, _BAY_Z, _DROP_Z, _DROP_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_BATH1),
     DuctRun(uid="BKE5RKVE8Z", tag="DU-M-ERV-R-VANITY", system=DuctSystem.EXHAUST,
@@ -212,14 +222,16 @@ DUCTS_ERV_LEVEL2 = [
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_VANITY),
     DuctRun(uid="0DMX0NM8XS", tag="DU-M-ERV-R-BATH2", system=DuctSystem.EXHAUST,
-            path=(pt(inch(27), inch(186.25)), pt(ft(4, 4), inch(186.25))),
-            elevations=(_BAY_Z, _BAY_Z),
+            # Under LIVING's x=42 1/4" lane, then 3" up: the valve is 6" past it.
+            path=(pt(inch(27), inch(186.25)), pt(inch(46), inch(186.25)),
+                  pt(inch(49), inch(186.25)), pt(ft(4, 4), inch(186.25))),
+            elevations=(_BAY_Z, _BAY_Z, inch(-5.375), inch(-5.375)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_BATH2),
     DuctRun(uid="P5H0GQ3E8N", tag="DU-M-ERV-R-MUD", system=DuctSystem.RETURN,
-            # Off the neck's west face, 5 1/2" to the valve over the hall strip.
+            # Off the neck's west face, level 5 1/2" to over the valve, and down onto it.
             path=(pt(inch(57.5), ft(31, 4)), pt(ft(4, 4), ft(31, 4))),
-            elevations=(_NECK_Z, _BAY_Z),
+            elevations=(_NECK_Z, _NECK_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_MUD),
     # BED1 and BED2 end at south-wall floor boots (2026-10-02; mep_registers_second.py), each in
@@ -254,15 +266,26 @@ DUCTS_ERV_LEVEL2 = [
     DuctRun(uid="ANSKB7EGDH", tag="DU-M-ERV-R-LAUNDRY", system=DuctSystem.RETURN,
             # Low tier the whole way, in the south half of its bay so DU-M-ERV-R-STUDY's 45
             # comes down north of it; south in the x=172 3/8" D pockets to the standpipe boot.
-            path=(pt(inch(27), inch(244)), pt(ft(10, 6), inch(244)),
-                  pt(inch(152), inch(244)), pt(inch(172.375), inch(244)),
+            path=(pt(inch(27), inch(244)), pt(inch(152), inch(244)),
+                  pt(inch(172.375), inch(244)),
                   pt(inch(172.375), ft(18)), pt(inch(172.375), ft(18))),
-            elevations=(_LAUNDRY_Z, _LAUNDRY_Z, _LAUNDRY_Z, _BAY_Z, _BAY_Z, inch(-108)),
+            elevations=(_LAUNDRY_Z, _LAUNDRY_Z, _BAY_Z, _BAY_Z, inch(-108)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_LAUNDRY),
+    # REG-M-RET3 off LAUNDRY's crown (2026-11-10): a ceiling collar takes a run end, so the
+    # valve moved into the next bay south and this branch reaches it up through R1's
+    # x=106 7/8" opening at STUDY's height, where STUDY's lane stops one bay short.
+    DuctRun(uid="J3E13FS8VT", tag="DU-M-ERV-R-RET3", system=DuctSystem.RETURN,
+            path=(pt(inch(106.875), inch(244)), pt(inch(106.875), inch(244)),
+                  pt(inch(106.875), ft(19, 4))),
+            elevations=(_LAUNDRY_Z, _STUDY_Z, _STUDY_Z),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=DU_M_ERV_R_RET3),
     DuctRun(uid="YEXGZK2KW2", tag="DU-M-ERV-R-KITCH", system=DuctSystem.RETURN,
-            path=(pt(inch(27), ft(21, 9.75)), pt(ft(20, 10.7), ft(21, 9.75))),
-            elevations=(_KITCH_Z, _KITCH_Z),
+            # Under the suite's pipes, then up to _DROP_Z past PR-B-HW-SUITE (x=201.8").
+            path=(pt(inch(27), ft(21, 9.75)), pt(inch(205), ft(21, 9.75)),
+                  pt(inch(210.125), ft(21, 9.75)), pt(ft(20, 10.7), ft(21, 9.75))),
+            elevations=(_KITCH_Z, _KITCH_Z, _DROP_Z, _DROP_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_KITCH),
     DuctRun(uid="X05VC14PBH", tag="DU-M-ERV-R-PLANT", system=DuctSystem.EXHAUST,

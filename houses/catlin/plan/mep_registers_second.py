@@ -285,7 +285,8 @@ REGISTERS_SECOND = [
             type_ref="REG-T-ERV-EXH-FLOOR", design_cfm=REG_S_EXH4,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CSRV05AAAA", tag="REG-S-EXH1", kind=DuctSystem.EXHAUST, room="RM-S-BATH1",
-            position=pt(ft(5), ft(32, 8)), duct_ref="DU-A-ERV-R-BATH1",
+            # Under its deck leg's end (2026-11-10): one stock 90 down onto the collar.
+            position=pt(ft(5, 7.5), ft(32, 8)), duct_ref="DU-A-ERV-R-BATH1",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_S_EXH1,
             mount=Mount(kind=MountKind.CEILING), rotation=deg(90)),
     # D-S-BATH1 is sealed (2026-11-03), so REG-S-EXH1's 20 cfm makes up through an offset

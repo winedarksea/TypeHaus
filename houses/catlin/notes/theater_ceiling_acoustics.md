@@ -57,9 +57,9 @@ the install spec.
   `paint-theater-ceiling-perimeter-caulk` (68 LF).
 - **No ceiling lights or boxes.** The six wall sconces stay. `ED-B-PLAY-N-JB` is on `W-B-N1`
   since 2026-11-02 (`plan/electrical_branches.py`).
-- **`REG-B-SUP2` supply boot is sealed to the board** (flexible collar, acrylic caulk) and is
-  not tied rigidly through the channel or to a chord. It sits mid-bay at y=20'-6" on the
-  cavity duct (`plan/mep_registers_basement.py`), so no chord is in its way.
+- **No ceiling penetrations at all (2026-11-10).** `REG-B-SUP2` is a sidewall valve on
+  `W-B-CN2`'s theater face at y=20'-6" (`plan/mep_registers_basement.py`), so the decoupled
+  ceiling carries no boot.
 
 ## Modelled depth
 The resolver hangs the board the RC-1 profile's 1/2" below the truss soffit

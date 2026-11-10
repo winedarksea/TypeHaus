@@ -776,7 +776,8 @@ FLOOR_OPENINGS = [
     FloorOpening(uid="N86ZVB7HWZ", tag="FO-A-ERV-BATH1", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(65), inch(389.5)), pt(inch(70), inch(389.5)),
                           pt(inch(70), inch(394.5)), pt(inch(65), inch(394.5))),
-                 penetration_for=("DU-A-ERV-R-BATH1",)),
+                 penetration_for=("DU-A-ERV-R-BATH1",),
+                 cuts_ceiling_below=False),
     # DU-A-ERV-R-ATTIC's 54.7 degree ramp off the deck into its 20'-8" bay, and
     # DU-A-ERV-R-STUBATH's drop at (2'-0", 21'-8 1/2") into the 21'-8 1/2" bay (2026-11-07).
     FloorOpening(uid="NJK1P8AW0K", tag="FO-A-ERV-ATTIC", purpose=FloorOpeningPurpose.CHASE,
@@ -807,6 +808,13 @@ FLOOR_OPENINGS = [
                  outline=(pt(inch(248.5), inch(259.5)), pt(inch(255.5), inch(259.5)),
                           pt(inch(255.5), inch(265.7)), pt(inch(248.5), inch(265.7))),
                  penetration_for=("DU-S-ERV-HP-FEED",)),
+    # BED3's drop through the deck onto REG-S-RET-BED3's collar (2026-11-10). This and
+    # FO-A-ERV-BATH1 leave the board: the valve's collar is the ceiling's only hole.
+    FloorOpening(uid="4YZXGNW483", tag="FO-A-ERV-BED3-VALVE", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(345.5), inch(373.5)), pt(inch(350.5), inch(373.5)),
+                          pt(inch(350.5), inch(378.5)), pt(inch(345.5), inch(378.5))),
+                 penetration_for=("DU-A-ERV-R-BED3",),
+                 cuts_ceiling_below=False),
     # HP-FEED's drop through the deck into EQ-S-ERV-MIX.
     FloorOpening(uid="WE96G7XJTG", tag="FO-A-ERV-MIX", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(248.5), inch(341.5)), pt(inch(255.5), inch(341.5)),
@@ -922,7 +930,7 @@ FLOOR = [
                           "FO-A-ERV-BED3", "FO-A-ERV-BATH1", "FO-A-ERV-BED3-E",
                           "FO-A-ERV-HPFEED-E", "FO-A-ERV-MIX", "FO-A-ERV-ATTIC",
                           "FO-A-ERV-STUBATH", "FO-A-ERV-STUBATH-RISER",
-                          "FO-A-STUBATH-SH-TEE")),
+                          "FO-A-STUBATH-SH-TEE", "FO-A-ERV-BED3-VALVE")),
 ]
 
 # The attic deck's edge along the well's south side, y=5'-9 5/8" — the flight's own south

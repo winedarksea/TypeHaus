@@ -32,7 +32,10 @@ type's `footprint`/`height` is the published FACE (a wall type authors face widt
 projection, with the face height in `height`); its `TerminalNeck` is the part in the cavity
 (boot, collar, damper box), drawn behind the face and graded by `mep.terminal_neck_fit`.
 
-## 2. ERV disc valves — `REG-T-ERV-VALVE-SUP` / `-EXH` / `-EXH-WALL`, `-SUP-125`
+## 2. ERV disc valves — `REG-T-ERV-VALVE-SUP` / `-EXH`, `-EXH-WALL` / `-SUP-WALL`, `-SUP-125-WALL`
+
+Both basement supplies are sidewall valves since 2026-11-10 (the ceiling collar takes its
+run from above on a stock 90, `resolve/terminal_drops.py`).
 
 | term | basis of design | or equal | value | source |
 |---|---|---|---|---|

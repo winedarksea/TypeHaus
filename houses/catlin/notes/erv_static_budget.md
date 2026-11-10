@@ -984,6 +984,33 @@ The engine reports 0.034" and 0.030". The extract side's worst path becomes
 trunk on any path). It stays under the supply side's 0.430" via `DU-B-ERV-R-PLAY`, so the
 machine still delivers **204.5 cfm**, against 203.0 cfm required (`code.N1103_6_whole_house_ventilation`).
 
+### 10.15 Ceiling collars and the basement sidewall supplies (2026-11-10)
+
+A ceiling valve now takes its run's end on a derived stock 90 (`resolve/terminal_drops.py`), and
+both basement supplies moved to sidewall valves on the x=18' line. Only the governing radial
+changes the answer.
+
+**`DU-B-ERV-R-PLAY`**, 30 cfm, 4" galvanized. It used to turn east at (16'-9", 20'-6") onto a
+45 climb to 101 1/4" (10 1/2" plan, 14.85" developed) and run 16 1/2" over W-B-CN2's plate to
+the ceiling valve. Now it runs 15" level into the stud bay and ends on `REG-B-SUP2` (125 mm,
+same `_VALVE_125_PA` curve, 8.2 Pa). The corner at (16'-9", 20'-6") was a compound 90 (north to
+east-and-up, dot product 0) and stays a 90; the 45 at the top of the climb goes.
+
+    developed: 14.85 + 16.50 - 15.00 = 16.35 in shorter = 1.3625 ft     25.976 -> 24.614 ft
+    elbows:    Sum C K 1.8387 - 0.22 x 0.60 = 1.7067                     (one 45 fewer)
+    VP:        V = 30 / (pi/4 x (4/12)^2) = 343.8 fpm;  VP = (343.8/4005)^2 = 0.007369 in.
+    old:       friction 0.03139 - 1.8387 x 0.007369 = 0.01784 in. over 25.976 ft = 0.000687 in./ft
+    new:       24.614 x 0.000687 + 1.7067 x 0.007369 = 0.01691 + 0.01258 = 0.0295 in.
+
+The supply column falls by 0.0314 - 0.0295 = 0.0019 in.: **0.4301 -> 0.4282 in.** Off the curve
+between 0.4" (206) and 0.5" (201): 206 - (0.0282 / 0.1) x 5 = **204.6 cfm**, against R403.5's
+203.0: **+1.6 cfm**. The check reads 0.428 and 205 (rounded).
+
+`DU-B-ERV-R-GYM` loses its 12" exposed gym leg (0.0040 -> 0.0039 in.), off the governing path.
+On the extract side `DU-M-ERV-R-BATH1`, `-BATH2`, `-KITCH`, `-MUD` and the new `-RET3` branch
+gain a climb and a drop (at most 0.002 in. each: BATH1 0.0004 -> 0.0022, at 20 cfm); the worst
+extract path is still `DU-M-ERV-R-SUITEBATH` at **0.417 in.**, unchanged.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

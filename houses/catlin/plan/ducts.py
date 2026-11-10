@@ -179,6 +179,9 @@ DUCT_STANDARD = [
                         source="rectangular branch, shop-fabricated with the trunk"),
             DuctPartRow(kind="tee", size="6in", branch="6in", product_ref="PROD-DUCT-TEE-6-6",
                         source=_IMP26),
+            # REG-M-RET3's branch off LAUNDRY's crown (2026-11-10). No 4x4x4 SKU read yet.
+            DuctPartRow(kind="tee", size="4in", branch="4in", fabricated=True,
+                        source="4 x 4 x 4 in. tee, shop-fabricated with the radial; SKU not read"),
             # Imperial makes no 8 to 4; the set's laying length is unpublished. Stand-in: two
             # M&M 400s at their 7.0" maximum, one 1.75" collar engaged: 7.0 + 7.0 - 1.75.
             DuctPartRow(kind="reducer", size="8in", branch="4in",

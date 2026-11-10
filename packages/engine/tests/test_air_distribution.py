@@ -76,3 +76,29 @@ def test_every_typed_neck_is_placed_and_clear(catlin_model_ro) -> None:
     assert len(findings) >= 30
     assert all(f.result is Result.PASS for f in findings), [
         f.message for f in findings if f.result is not Result.PASS]
+
+
+def test_a_ceiling_collar_takes_its_run_on_a_derived_drop(catlin_model_ro) -> None:
+    """DU-M-ERV-R-LIVING is authored level over REG-M-SUP1; the resolver adds the drop onto
+    the collar top, ``mep_fittings`` the 90 there. Moved under the collar top, it FAILs."""
+    from typehaus.resolve.mep_fittings import fitting_records
+    from typehaus.resolve.terminal_drops import collars_by_run
+
+    model = catlin_model_ro
+    duct = next(d for d in model.ducts if d.tag == "DU-M-ERV-R-LIVING")
+    (_, (x, y, top, _)), = collars_by_run(model)[duct.tag]
+    assert duct.path[-1] == pytest.approx((x, y))
+    assert duct.path[-2] == pytest.approx((x, y))
+    assert duct.z_m[-1] == pytest.approx(top)
+    assert duct.z_m[-2] - top > 2 * M_PER_IN
+    drop = len(duct.path) - 2
+    assert any(r.run_tag == duct.tag and r.index == drop and r.angle_deg == pytest.approx(90)
+               for r in fitting_records(model))
+
+    sunk = replace(model)
+    z = [*duct.z_m[:-2], top - 6 * M_PER_IN]
+    sunk.ducts = [replace(d, path=d.path[:-1], z_m=tuple(z)) if d is duct else d
+                  for d in model.ducts]
+    failed = [f for f in duct_connectivity(check_context(model=sunk))
+              if f.result is Result.FAIL and duct.tag in f.element_tags]
+    assert failed and "below REG-M-SUP1's collar top" in failed[0].message

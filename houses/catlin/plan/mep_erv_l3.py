@@ -282,11 +282,10 @@ DUCTS_ERV_ATTIC = [
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_A_ERV_R_BED3),
     DuctRun(uid="4YT114ADP3", tag="DU-A-ERV-R-BATH1", system=DuctSystem.EXHAUST,
-            path=(pt(ft(5, 7.5), ft(34, 2)), pt(ft(5, 7.5), ft(32, 8)),
-                  pt(ft(5, 7.5), ft(32, 8)), pt(ft(5), ft(32, 8))),
-            # -9.3", not _ATTIC_BAY_Z: 12" of drop between the two stamped 90s off the
-            # bearing deck leg (2026-11-07); 9/16" clear of the ceiling.
-            elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, inch(-9.3), inch(-9.3)),
+            # The bearing deck leg ends over REG-S-EXH1 and drops 12 5/16" onto its collar on
+            # one stock 90 (2026-11-10; the 7 1/2" leg under the deck is gone).
+            path=(pt(ft(5, 7.5), ft(34, 2)), pt(ft(5, 7.5), ft(32, 8))),
+            elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_A_ERV_R_BATH1),
 ]

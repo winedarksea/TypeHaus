@@ -143,9 +143,10 @@ def test_ratio_ranking_reproduces_the_run_the_hand_analysis_named(by_tag):
     `_ATTIC_BAY_Z` was re-derived to -8 1/2" and lifted the two bay-leg verticals 1 3/8"
     each — the duct rides the top of the I-joist's bottom flange, not the ceiling board.) Squared off from the further-south bay it
     developed 60.1 LF for a ratio of 2.51, which `mep.run_route_efficiency` FAILs against
-    this house's 2.50; the diagonal is what bought the margin back, and it costs one elbow."""
-    assert by_tag["DU-A-ERV-R-BED3"]["ratio"] == pytest.approx(2.26, abs=0.03)
-    assert by_tag["DU-A-ERV-R-BED3"]["developed_ft"] == pytest.approx(54.05, abs=0.2)
+    this house's 2.50; the diagonal is what bought the margin back, and it costs one elbow.
+    54.96 / 2.30 since 2026-11-10: the derived 12 5/16" drop onto REG-S-RET-BED3's collar."""
+    assert by_tag["DU-A-ERV-R-BED3"]["ratio"] == pytest.approx(2.30, abs=0.03)
+    assert by_tag["DU-A-ERV-R-BED3"]["developed_ft"] == pytest.approx(54.96, abs=0.2)
 
 
 def test_the_reroute_is_visible_in_the_schedule(by_tag):

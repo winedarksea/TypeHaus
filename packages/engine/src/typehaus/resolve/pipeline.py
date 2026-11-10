@@ -228,11 +228,15 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         # These endpoints depend on the resolved ceiling-mounted terminal, not a copied Z.
         from typehaus.model.mep import DuctRun
         from typehaus.resolve.mep import _resolve_duct_run
+        from typehaus.resolve.terminal_drops import collar_fed_runs
 
+        late = collar_fed_runs(plan)  # a ceiling valve's collar height is placed, too
         for storey in plan.storeys:
             for element in plan.storey_elements(storey.tag):
-                if isinstance(element, DuctRun) and element.end_terminal_ref is not None:
-                    findings.extend(_resolve_duct_run(model, element, storey))
+                if isinstance(element, DuctRun) and (element.end_terminal_ref is not None
+                                                     or element.tag in late):
+                    findings.extend(_resolve_duct_run(model, element, storey,
+                                                      collar_fed=element.tag in late))
         # Both blocking passes must see ALL runs, including the terminal-anchored tails.
         resolve_bearing_blocking(model)
     with _stage("fireblocks"):

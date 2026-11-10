@@ -23,39 +23,41 @@ from .erv_balance import (
     REG_B_SUP3,
 )
 
-# Basement terminals are ceiling valves under the FS-M-* floors, fed from the CHASE trunks in
-# the joist/truss cavity above — except the sauna's stale pickup, which is the one
-# wall-mounted terminal in the house (see below).
+# Basement ERV terminals are sidewall valves (both supplies and the bath extract), the sauna's
+# two wood vents and the workshop's bench hood.
 REGISTERS_BASEMENT = [
+    # ** BOTH BASEMENT SUPPLIES ARE SIDEWALL VALVES ON THE x=18' LINE (2026-11-10). ** A ceiling
+    # collar takes its run from above on a stock 90, and under FS-M-EAST/-NE that meant an
+    # exposed gym leg and a climb over W-B-CN2's plate. Each run now ends in a stud bay of the
+    # wall it crossed, the valve on the room face, centred on the duct.
+    #
+    # REG-B-SUP1: W-B-CS3's gym face at y=13'-4", over D-B-GYM's header, between the header
+    # (top 87 1/4") and the plates (93"), where DU-B-ERV-R-GYM already crossed the wall.
+    # 10 cfm since 2026-11-03: 8 went to the sauna's supply (REG-B-SUP3).
     Register(uid="CBRV01AAAA", tag="REG-B-SUP1", kind=DuctSystem.SUPPLY, room="RM-B-GYM",
-            # Dragged north-east on 2026-09-05 and kept, rounded onto (19'-0", 13'-0") —
-            # 1 11/16" and 1/2" off the drag, both genuinely round stations, and near the
-            # centre of the gym's 18' x 18' ceiling instead of tucked into its south-west
-            # corner. DU-B-ERV-R-GYM's last leg follows it: a register and the duct that
-            # feeds it have to end at the same point. 13'-4" since 2026-10-31: on 13'-0" the
-            # valve's collar stood on an FS-M-EAST joist (`mep.terminal_neck_fit`).
-            # 10 cfm since 2026-11-03: 8 went to the sauna's supply (REG-B-SUP3).
-            position=pt(ft(19), ft(13, 4)), duct_ref="DU-B-ERV-R-GYM",
-            type_ref="REG-T-ERV-VALVE-SUP", design_cfm=REG_B_SUP1,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+            duct_ref="DU-B-ERV-R-GYM",
+            type_ref="REG-T-ERV-VALVE-SUP-WALL", design_cfm=REG_B_SUP1,
+            mount=Mount(kind=MountKind.WALL, elevation=inch(86.84375)),
+            location=Location(attachment=WallAttachment(
+                wall_ref="W-B-CS3", face="left", distance_from_start=inch(6),
+                normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RM-B-PLAY-N is 324 sf of windowless habitable MEDIA space, legal only under R303.1
     # Exception 1, whose second half requires outdoor air supplied to *the room* — an
     # adjacent room's grille doesn't satisfy it. **Deleting this terminal is a hard
     # code.R303_1_light_and_ventilation FAIL.**
     #
-    # (19', 20'-6"): entering at the room's west edge and stopping just inside cuts about eight
-    # feet of duct off the old (27', 27') position; it still throws away from FURN-B-PLAY-TV on
-    # the east wall. Moved 5'-0" south on 2026-09-23 (was y=25'), where the duct arrives from
-    # the south up the hall: over the walk between the south bookcases (fronts y=19'-3 3/8",
-    # tops 7'-6") and the sectional, not over either.
-    # ** 20'-6" SINCE 2026-11-01 (decision #112). ** The ceiling is FS-M-NE's trusses over a
-    # resilient channel, so the valve's 125 mm collar and increaser (2.94" tall) stand in the
-    # cavity: at y=20'-0" they stood on a 12" o.c. truss (`mep.terminal_neck_fit`, 3.50"); at 20'-6"
-    # they are mid-bay of the 16" o.c. lines (236, 252: 237 3/4".. 250 1/4"), fed by the cavity duct.
+    # W-B-CN2's theater face at y=20'-6", in the 240"..256" stud bay. The face centre sits
+    # 5/16" under DU-B-ERV-R-PLAY's 90 3/4" (the 4" duct stays inside the 5" increaser) so
+    # the increaser clears the plates (93"); the duct cannot drop, SF-B-BATH holds it up. It
+    # throws east across the room, away from nothing: FURN-B-PLAY-TV is on the east wall.
+    # Mount elevations here are off the finished floor, 3/4" over the slab datum.
     Register(uid="CBRV02AAAA", tag="REG-B-SUP2", kind=DuctSystem.SUPPLY, room="RM-B-PLAY-N",
-            position=pt(ft(19), ft(20, 6)), duct_ref="DU-B-ERV-R-PLAY",
-            type_ref="REG-T-ERV-VALVE-SUP-125", design_cfm=REG_B_SUP2,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+            duct_ref="DU-B-ERV-R-PLAY",
+            type_ref="REG-T-ERV-VALVE-SUP-125-WALL", design_cfm=REG_B_SUP2,
+            mount=Mount(kind=MountKind.WALL, elevation=inch(86.5)),
+            location=Location(attachment=WallAttachment(
+                wall_ref="W-B-CN2", face="right", distance_from_start=inch(30),
+                normal_gap=inch(0), rotation_offset=deg(0)))),
     # THE WORKSHOP TERMINAL IS A BENCH HOOD, NOT A CEILING DIFFUSER: a diffuser eight feet
     # up does not capture solder fume, it dilutes it into the room and then extracts the
     # dilution. REG-T-ERV-BENCH-HOOD is a 30" x 12" capture face hung at 5'-6", i.e. 24"

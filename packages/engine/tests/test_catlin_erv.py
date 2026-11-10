@@ -76,13 +76,12 @@ def test_every_rectangular_erv_trunk_is_gone(catlin_plan) -> None:
 def test_the_play_rooms_fresh_supply_survives_and_moved(catlin_plan) -> None:
     """Deleting REG-B-SUP2 is a hard ``code.R303_1_light_and_ventilation`` FAIL: RM-B-PLAY-N
     is 324 sf of windowless MEDIA space legal only under R303.1 Exception 1, whose second
-    half requires a fresh-air supply *to that room*. It was re-sited, not dropped. y=20'-6"
-    since 2026-11-01 (decision #112): the ceiling is FS-M-NE's trusses at 16" o.c., and the
-    valve's collar stands mid-bay between the y=236" and 252" trusses."""
+    half requires a fresh-air supply *to that room*. It was re-sited, not dropped: a sidewall
+    valve on W-B-CN2's theater face at y=20'-6" since 2026-11-10."""
     reg = next(e for e in catlin_plan.all_elements() if e.tag == "REG-B-SUP2")
-    x, y = reg.position.xy_m
-    assert x / _FT == pytest.approx(19.0, abs=0.01)
-    assert y / _FT == pytest.approx(20.5, abs=0.01)
+    attachment = reg.location.attachment
+    assert attachment.wall_ref == "W-B-CN2"
+    assert attachment.distance_from_start.meters / _FT == pytest.approx(2.5, abs=0.01)
     assert reg.duct_ref == "DU-B-ERV-R-PLAY"
 
 
@@ -116,7 +115,12 @@ def test_every_erv_radial_carries_exactly_its_registers_flow(catlin_plan) -> Non
     for e in catlin_plan.all_elements():
         if e.element_kind == "Register" and e.duct_ref in ducts:
             served[e.duct_ref] = served.get(e.duct_ref, 0.0) + e.design_cfm
-    assert {t: d.design_cfm for t, d in ducts.items()} == served
+    # A branch's air also crosses the radial it tees off (REG-M-RET3's, 2026-11-10).
+    branches = {"DU-M-ERV-R-RET3": "DU-M-ERV-R-LAUNDRY"}
+    carried = dict(served)
+    for branch, parent in branches.items():
+        carried[parent] += served[branch]
+    assert {t: d.design_cfm for t, d in ducts.items()} == carried
     supply = sum(served[t] for t, d in ducts.items() if d.system is DuctSystem.SUPPLY)
     assert supply + catlin_plan.by_tag("DU-S-ERV-HP-FEED").design_cfm == 210
     assert sum(served.values()) - supply == 210
@@ -400,7 +404,7 @@ def test_the_fresh_feed_drops_into_the_soffit(catlin_model) -> None:
 
 # --- the 2026-09-12 standard-parts redesign (plans/buildability.md BLD-08) -----------------
 
-def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_three(catlin_model) -> None:
+def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_four(catlin_model) -> None:
     """The whole BLD-08 distribution decision, in one assertion.
 
     The 75 mm semi-rigid tube had three US sellers and no Minnesota dealer, so it is gone;
@@ -409,7 +413,8 @@ def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_three(catlin_
     """
     radials = [d for d in catlin_model.ducts
                if d.tag.startswith(("DU-B-ERV-R-", "DU-M-ERV-R-", "DU-A-ERV-R-"))]
-    assert len(radials) == 23, sorted(d.tag for d in radials)
+    # 23 home runs plus REG-M-RET3's branch off LAUNDRY (2026-11-10).
+    assert len(radials) == 24, sorted(d.tag for d in radials)
     for duct in radials:
         assert duct.diameter_m == pytest.approx(4 * M_PER_IN), duct.tag
         assert duct.material == "galvanized", duct.tag

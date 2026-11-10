@@ -83,7 +83,8 @@ $1.50-3.50/SF to glue it down.
   reaches.
 - **Ceiling clearances:** keep ceiling panels out of a ~38" radius circle around the fan at
   (27', 9'): the 52" sweep is 26" in radius, plus a 12" margin. Keep them off the four cans
-  at (22'/32', 6'/12') and REG-B-SUP1 at (19', 13'). Keep them off the overhead-lift spot,
+  at (22'/32', 6'/12'). REG-B-SUP1 is a sidewall valve on W-B-CS3 over D-B-GYM since
+  2026-11-10, clear of the ceiling. Keep them off the overhead-lift spot,
   which is not modelled: wherever the rack or press is, leave a bar's arc over it bare.
 - Fix to concrete with Tapcons through a cleat. Fix to gypsum with impaling clips or a
   French cleat into the studs. Nothing is glued to the board.

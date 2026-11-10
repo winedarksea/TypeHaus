@@ -72,6 +72,7 @@ from typehaus.resolve.sweep import (
     sweep_plan_silhouette,
     sweep_z_extent,
 )
+from typehaus.resolve.terminal_drops import collar_fed_runs
 
 
 def resolve_mep(model: ResolvedModel) -> list[Finding]:
@@ -83,12 +84,15 @@ def resolve_mep(model: ResolvedModel) -> list[Finding]:
         for element in model.plan.storey_elements(storey.tag):
             if isinstance(element, PipeRun):
                 findings.extend(_resolve_pipe_run(model, element, storey))
+    late: set[str] | None = None  # runs waiting for the placed register (terminal_ducts)
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
             if isinstance(element, SleevePenetration):
                 findings.extend(_resolve_sleeve(model, element, storey.tag))
             elif isinstance(element, DuctRun) and element.end_terminal_ref is None:
-                findings.extend(_resolve_duct_run(model, element, storey))
+                late = collar_fed_runs(model.plan) if late is None else late
+                if element.tag not in late:
+                    findings.extend(_resolve_duct_run(model, element, storey))
             elif isinstance(element, ConduitRun):
                 findings.extend(_resolve_conduit_run(model, element, storey.tag))
             elif isinstance(element, LightRun):
@@ -433,11 +437,12 @@ def _host_z_at(host: ResolvedPipeRun, point: tuple[float, float]) -> float | Non
     return host.z_m[best]
 
 
-def _resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey) -> list[Finding]:
+def _resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey, *,
+                      collar_fed: bool = False) -> list[Finding]:
     """Thin seam onto :mod:`typehaus.resolve.mep_ducts` — see that module's docstring.
 
     ``_emit_run_solids`` is handed over rather than imported there: this module owns it and
     is the one every call site imports, so the dependency runs mep -> mep_ducts and stays
     acyclic.
     """
-    return resolve_duct_run(model, duct, storey, _emit_run_solids)
+    return resolve_duct_run(model, duct, storey, _emit_run_solids, collar_fed=collar_fed)

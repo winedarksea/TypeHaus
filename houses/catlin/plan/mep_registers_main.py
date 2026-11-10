@@ -73,6 +73,9 @@ REGISTERS_MAIN = [
     #
     # -- the supply, back in the ceiling ---------------------------------------------
     #
+    # ** (14'-8", 20'-8") SINCE 2026-11-10. ** The duct drops onto the valve's collar on a stock
+    # 90 now, and east of PR-B-CW-SUITE (x=183") the suite's pipes leave no room over the
+    # low tier to drop from; the history below is the old (17'-2") position.
     # (17'-2", 20'-8") on the ceiling. ED-M-STUDY-SPOT is at (17'-6 5/8", 21'-9 1/2"), so this is
     # 4 5/8" west and 13 1/2" south of directly above the sconce, three feet over it.
     # FS-S-WEST's bays centre on 8" + n*16", so 20'-8" is a bay; the sconce's 21'-9 1/2"
@@ -83,7 +86,7 @@ REGISTERS_MAIN = [
     # east as a 7" grille goes: the face reaches 17'-5 1/2", 3 1/8" clear of W-M-C3's study
     # face and 3 3/4" clear of its top plate.
     Register(uid="CMRV04AAAA", tag="REG-M-SUP4", kind=DuctSystem.SUPPLY, room="RM-M-STUDY-CLOSET",
-            position=pt(ft(17, 2), inch(248.6)), duct_ref="DU-M-ERV-R-STUDY",
+            position=pt(ft(14, 8), inch(248.6)), duct_ref="DU-M-ERV-R-STUDY",
             type_ref="REG-T-ERV-VALVE-SUP", design_cfm=REG_M_SUP4,
             mount=Mount(kind=MountKind.CEILING)),
     # -- the extract, low, and NOT on the east wall -----------------------------------
@@ -154,8 +157,10 @@ REGISTERS_MAIN = [
                 normal_gap=inch(0), rotation_offset=deg(180)))),
     # The two baths are EXHAUST at 20 cfm each, like the second storey's — see the note over
     # REGISTERS_SECOND for why the whole wet-room set changed direction on 2026-08-01.
+    # On its run's line (24'-6") and 2" west (2026-11-10): the run climbs 4 3/8" off the trunk
+    # tap and drops onto the collar.
     Register(uid="CMRV05AAAA", tag="REG-M-EXH1", kind=DuctSystem.EXHAUST, room="RM-M-BATH1",
-            position=pt(ft(1, 2), ft(24, 8)), duct_ref="DU-M-ERV-R-BATH1",
+            position=pt(ft(1), ft(24, 6)), duct_ref="DU-M-ERV-R-BATH1",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_M_EXH1,
             mount=Mount(kind=MountKind.CEILING)),
     # BATH2's moved 2026-10-12 from (4'-0", 18'-0") by the tub to the 15'-4" bay, ~8" west of
@@ -178,9 +183,10 @@ REGISTERS_MAIN = [
     # deletion stands: BEDROOM is NOT in that set.)
     #
     # So it stays, at 5 cfm rather than a full pickup — the smallest rate that is both true
-    # and passing, on its own radial at the 20'-8" bay centre that radial rides.
+    # and passing. At the 19'-4" bay centre on its own branch, DU-M-ERV-R-RET3, off
+    # LAUNDRY's crown (2026-11-10): a ceiling collar takes a run end, not a pass-by.
     Register(uid="CMRV07AAAA", tag="REG-M-RET3", kind=DuctSystem.RETURN, room="RM-M-LAUNDRY",
-            position=pt(ft(10, 6), inch(244)), duct_ref="DU-M-ERV-R-LAUNDRY",
+            position=pt(inch(106.875), ft(19, 4)), duct_ref="DU-M-ERV-R-RET3",
             type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_M_RET3,
             mount=Mount(kind=MountKind.CEILING)),
     Register(uid="CMRV08AAAA", tag="REG-M-RET5", kind=DuctSystem.RETURN, room="RM-M-LIVING",

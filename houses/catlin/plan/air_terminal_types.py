@@ -71,17 +71,28 @@ AIR_REGISTER_TYPES = (
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     # The house's one 30 cfm terminal (REG-B-SUP2, PLAY's outdoor-air supply, R303.1 Exc. 1):
     # a 100 mm valve loses 17 Pa there and governed the whole machine, so it takes the
-    # 125 mm valve on a 4x5 increaser — 8 Pa (notes/erv_static_budget.md §10).
-    RegisterType(tag="REG-T-ERV-VALVE-SUP-125",
-                 name="ERV supply disc valve, 125 mm, white steel, ceiling collar, 4x5in "
+    # 125 mm valve on a 4x5 increaser — 8 Pa (notes/erv_static_budget.md §10). On the wall
+    # since 2026-11-10, like both basement supplies: (face width, projection), height.
+    RegisterType(tag="REG-T-ERV-VALVE-SUP-125-WALL",
+                 name="ERV supply disc valve, 125 mm, white steel, sidewall collar, 4x5in "
                       "increaser",
-                 footprint=(inch(6.375), inch(6.375)), height=inch(1), plan_symbol="register",
-                 ventilation_terminal=True, product_ref="PROD-AIR-DISC-VALVE-100",
+                 footprint=(inch(6.375), inch(1.75)), height=inch(6.375),
+                 plan_symbol="register", ventilation_terminal=True,
+                 product_ref="PROD-AIR-DISC-VALVE-100",
                  static_loss_pa_at_cfm=_VALVE_125_PA,
                  neck=TerminalNeck(width=inch(5), height=inch(5), depth=inch(2.9375),
                                    part="125 mm valve collar on a 4x5in increaser"),
                  source=f"Same family at 125 mm: face 162 mm (Trox LVS 125 table), spigot "
-                        f"124 mm into a 5in collar. {_NOTE} §2.",
+                        f"124 mm into a 5in collar, screwed to the stud-bay blocking. {_NOTE} §2.",
+                 ports=(_port("supply", Service.SUPPLY_AIR),)),
+    RegisterType(tag="REG-T-ERV-VALVE-SUP-WALL",
+                 name="ERV supply disc valve, 100 mm, white steel, sidewall collar",
+                 footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
+                 plan_symbol="register", ventilation_terminal=True,
+                 product_ref="PROD-AIR-DISC-VALVE-100",
+                 static_loss_pa_at_cfm=_VALVE_PA, neck=_VALVE_NECK,
+                 source=f"The supply valve in a wall collar, as REG-T-ERV-VALVE-EXH-WALL. "
+                        f"{_NOTE} §2.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     RegisterType(tag="REG-T-ERV-VALVE-EXH",
                  name="ERV extract disc valve, 100 mm, white steel, ceiling collar",

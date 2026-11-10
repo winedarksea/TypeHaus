@@ -169,7 +169,7 @@ def _emit_wrap(model: ResolvedModel, duct: DuctRun, storey_tag: str,
 
 
 def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
-                     emit_solids) -> list[Finding]:
+                     emit_solids, *, collar_fed: bool = False) -> list[Finding]:
     """Validate one run, give it elevations and a swept solid, and record it.
 
     ``emit_solids`` is ``resolve.mep._emit_run_solids`` passed in rather than imported:
@@ -227,6 +227,10 @@ def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
                     element_tags=(duct.tag, duct.end_terminal_ref), result=Result.FAIL)]
             path.insert(-1, approach)
             z.insert(-1, z[-1])
+    if collar_fed and diameter_m is not None:
+        from typehaus.resolve.terminal_drops import drop_onto_collars
+
+        drop_onto_collars(model, duct.tag, path, z)
     developed = sum(
         math.hypot(length(sub(path[i], path[i + 1])), z[i + 1] - z[i])
         for i in range(len(path) - 1))
