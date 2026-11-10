@@ -360,3 +360,42 @@ def test_the_house_no_longer_states_the_rule(catlin_plan, catlin_model, catlin_p
 def test_no_rule_no_findings(catlin_plan, catlin_model):
     """A house that states no preference is not a house getting it wrong."""
     assert pipe_material_preference(_context(catlin_plan, catlin_model)) == []
+
+
+# --- UPC 606.5 control valves (houses/catlin/notes/supply_isolation_basis.md §3) ---------
+
+def test_a_lavatory_supply_needs_its_own_valve(catlin_plan, catlin_model):
+    """Rule 1: a slip-joint supply needs a valve before any tee. Drop the basement lav's cold
+    angle stop and the walk meets the bath group's tee first; the WC's stop is not required."""
+    from typehaus.checks.mep.fixture_control_valve import fixture_control_valve
+
+    ctx = _context(catlin_plan, catlin_model)
+    passing = fixture_control_valve(ctx)
+    assert not _fails(passing), [f.message for f in _fails(passing)]
+    assert not any("FX-B-BATH-WC" in f.element_tags for f in passing)  # rule 4: exempt
+    saved = list(catlin_model.pipe_accessories)
+    try:
+        catlin_model.pipe_accessories[:] = [a for a in saved if a.tag != "PA-B-LAV-TERMINAL-CW"]
+        failing = _fails(fixture_control_valve(ctx))
+    finally:
+        catlin_model.pipe_accessories[:] = saved
+    assert [f.element_tags[0] for f in failing] == ["FX-B-BATH-LAV"]
+
+
+def test_a_second_stop_with_no_tee_between_is_redundant(catlin_plan, catlin_model):
+    """A copy of a lav stop an inch up its own run isolates the same one fixture."""
+    import dataclasses
+
+    from typehaus.checks.advisory.redundant_isolation import redundant_isolation
+
+    ctx = _context(catlin_plan, catlin_model)
+    saved = list(catlin_model.pipe_accessories)
+    stop = next(a for a in saved if a.tag == "PA-B-LAV-TERMINAL-CW")
+    run = next(r for r in catlin_model.pipe_runs if r.tag == stop.pipe_ref)
+    twin = dataclasses.replace(stop, tag="PA-TWIN", position=run.path[-2], z_m=run.z_m[-2])
+    try:
+        catlin_model.pipe_accessories.append(twin)
+        flagged = [f for f in redundant_isolation(ctx) if f.result is Result.ADVISORY]
+    finally:
+        catlin_model.pipe_accessories[:] = saved
+    assert any(set(f.element_tags) == {"PA-B-LAV-TERMINAL-CW", "PA-TWIN"} for f in flagged)

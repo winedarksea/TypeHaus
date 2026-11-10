@@ -997,7 +997,7 @@ PENETRATIONS_HYDRANT_SECOND = [
 # BOTH RISERS ARE NORTH OF THE TOILET, DELIBERATELY: the water closet is on this wall
 # (plan/fixtures.py) and its tank occupies y 18'-6"..20'-2" against it — a riser behind the
 # tank would wall in the angle stop while `PA-A-STUBATH-STOP-*.accessible` still claimed
-# True. Nothing checks that: `mep.stop_accessibility` grades the FLAG, not the geometry.
+# True. Nothing checks that geometry: `mep.fixture_control_valve` reads the FLAG (UPC 606.6).
 # 6" of y separates the two risers, and 3" of z (cold 9'-4", hot 9'-7") keeps their
 # truss-floor jogs apart. North of the WC they are also nearer the lavatory they feed.
 STUDIO_SUPPLY = [

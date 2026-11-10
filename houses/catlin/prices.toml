@@ -6565,14 +6565,14 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "main_shutoff" = { material = { low = 25, high = 70 }, labour = { low = 25, high = 70 } }  # 1 ea
 "penetration_seal" = { material = { low = 25, high = 90 }, labour = { low = 25, high = 70 } }  # 4 ea (PA-B-ESS-SEAL-W/-E joined 2026-10-30)
 "ro_stub" = { material = { low = 15, high = 45 }, labour = { low = 25, high = 70 } }  # 3 ea
-"shutoff" = { material = { low = 8, high = 25 }, labour = { low = 25, high = 70 } }  # 4 ea
+"shutoff" = { material = { low = 8, high = 25 }, labour = { low = 25, high = 70 } }  # 47 ea (2026-11-10)
 "vacuum_breaker" = { material = { low = 10, high = 35 }, labour = { low = 25, high = 70 } }  # 2 ea (PA-B-USINK-VB joined 2026-10-30; Woodford 34HD ~$32)
 "water_hammer_arrestor" = { material = { low = 12, high = 35 }, labour = { low = 25, high = 70 } }  # 3 ea
 # Cleanouts (2026-11-04). One-way is an access fitting + cap at 1.5-3" (estimate, no single
 # listing); it bills CO-M-KITCH-ARM too, so [install_parts] carries no separate arm cleanout.
 # Two-way 4": SquarePeg body $30.29, HD $39.97, Zoro $45.35, Tigre $19.99.
-"cleanout_one_way" = { material = { low = 6, high = 25 }, labour = { low = 25, high = 70 } }  # 10 ea (2 at 1.5", 4 at 2", 4 at 3")
-"cleanout_two_way:4.0" = { material = { low = 20, high = 45 }, labour = { low = 25, high = 70 } }  # 3 ea
+"cleanout_one_way" = { material = { low = 6, high = 25 }, labour = { low = 25, high = 70 } }  # 11 ea (2026-11-10: no slab turn cleanouts)
+"cleanout_two_way:4.0" = { material = { low = 20, high = 45 }, labour = { low = 25, high = 70 } }  # 2 ea
 
 [install_parts]
 # Kitchen selection 2026-10-24. Material only; set/connect labour stays in the sink row.

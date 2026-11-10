@@ -239,13 +239,14 @@ def test_the_basement_slab_fixtures_drain_by_gravity(catlin_model):
     main = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-MAIN-DRAIN")
     branches = {
         # branch tag: (fixtures it carries, the vent branch that serves them)
-        "PR-B-BATH-DRAIN": (("FX-B-BATH-WC", "FX-B-BATH-LAV"), "PR-B-BATH-VENT"),
+        # The WC's branch is its own since 2026-11-10 (the lav rides PR-B-USINK-DRAIN).
+        "PR-B-BATH-DRAIN": (("FX-B-BATH-WC",), "PR-B-BATH-WC-VENT"),
         "PR-B-SAUNA-DRAIN": (("FX-B-SAUNA-SH", "FX-B-SAUNA-FD"), "PR-B-SAUNA-VENT"),
     }
     for arm_tag, (fixtures, vent_tag) in branches.items():
         arm = next(r for r in catlin_model.pipe_runs if r.tag == arm_tag)
         assert set(fixtures) <= set(arm.serves), arm_tag
-        # Each ties onto the main's under-slab leg (three segments since its 2026-11-05 jog),
+        # Each ties onto the main's under-slab leg (its last segments, past the drop's offset),
         # and arrives no lower than the main's invert where it lands — a branch below the
         # main it joins would not flow.
         assert any(_on_segment(arm.path[-1], a, b)

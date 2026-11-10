@@ -274,6 +274,6 @@ def _with_cleanouts(model, space, made):
     cleanouts, cost, notes = place_cleanouts(model, space, made)
     terms = dict(made.terms)
     if cost and terms:
-        terms["cleanout_concealed_in"] = cost
+        terms["cleanouts_in"] = cost
     return replace(made, cleanouts=cleanouts, cost=made.cost + cost, terms=terms,
                    notes=[*made.notes, *notes])

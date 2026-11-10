@@ -443,7 +443,7 @@ def test_dragging_a_floor_drained_wc_carries_its_sleeve_and_drain_run() -> None:
     """The flange is not a symbol: a cast-in sleeve and a routed drop sit under it.
 
     FX-B-BATH-WC drains under its own bowl (no ``drain_position`` override, no hot-water
-    connection), so a drag has to re-point SP-B-BATH-WC and the head of PR-B-BATH-DRAIN with
+    connection), so a drag has to re-point SP-B-BATH-WC and the head of PR-B-BATH-WC-DRAIN with
     it. Its riser is authored as the same plan point twice (two inverts), so BOTH leading
     vertices have to move or the drop becomes a slope. Leaving them behind is exactly the
     76c1871 defect: a 6.46" nudge that built cleanly and only showed up in
@@ -464,14 +464,14 @@ def test_dragging_a_floor_drained_wc_carries_its_sleeve_and_drain_run() -> None:
     assert [(op.type, op.tag) for op in result.ops] == [
         ("Fixture", "FX-B-BATH-WC"),
         ("SleevePenetration", "SP-B-BATH-WC"),
-        ("PipeRun", "PR-B-BATH-DRAIN"),
+        ("PipeRun", "PR-B-BATH-WC-DRAIN"),
     ]
     sleeve = next(item for item in plan.all_elements() if item.tag == "SP-B-BATH-WC")
     sleeve_x, sleeve_y = sleeve.position.xy_m
     assert _expr_point(result.ops[1].fields["position"]) == pytest.approx(
         (sleeve_x + 0.1, sleeve_y - 0.05), abs=1e-3)
 
-    run = next(item for item in plan.all_elements() if item.tag == "PR-B-BATH-DRAIN")
+    run = next(item for item in plan.all_elements() if item.tag == "PR-B-BATH-WC-DRAIN")
     assert run.path[0] == run.path[1], "the riser's duplicated vertex pair is the point of this test"
     moved_path = _expr_path(result.ops[2].fields["path"])
     assert len(moved_path) == len(run.path)
@@ -483,7 +483,7 @@ def test_dragging_a_floor_drained_wc_carries_its_sleeve_and_drain_run() -> None:
         assert moved_path[index] == pytest.approx(vertex.xy_m, abs=1e-9)
 
     joined = " | ".join(result.warnings)
-    assert "SP-B-BATH-WC" in joined and "PR-B-BATH-DRAIN" in joined
+    assert "SP-B-BATH-WC" in joined and "PR-B-BATH-WC-DRAIN" in joined
     # …and the runs that merely *serve* the WC (its supply, its vent, the house collector)
     # are reported as left behind rather than silently dragged twenty feet across the plan.
     assert "PR-B-BATH-VENT" in joined and "left as routed" in joined
@@ -529,7 +529,7 @@ def test_coupled_drain_move_writes_source_that_reloads(tmp_path: Path) -> None:
     moved = {item.tag: item for item in reloaded.plan.all_elements()}
     assert moved["SP-B-BATH-WC"].position.xy_m == pytest.approx(
         (flange_x + 0.1, flange_y - 0.05), abs=1e-3)
-    run = moved["PR-B-BATH-DRAIN"]
+    run = moved["PR-B-BATH-WC-DRAIN"]
     assert run.path[0].xy_m == pytest.approx((flange_x + 0.1, flange_y - 0.05), abs=1e-3)
     assert run.path[0] == run.path[1]
     # The rewrite replaces vertices in place, so the per-vertex invert list still lines up.

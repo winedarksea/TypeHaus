@@ -34,8 +34,8 @@ from typehaus.model import m
 # its own corner (3', 16'-6") — SP-B-SLAB-MAIN. From there the building drain runs north
 # under the workshop and RM-B-FURNACE and leaves *beneath* FT-B-N4 in a protection sleeve
 # (UPC 314.1). The walls stop at the slab's top, so there is no wall below grade to exit
-# through. The drop's base is also where both basement slab branches (PR-B-BATH-DRAIN,
-# PR-B-SAUNA-DRAIN below) arrive.
+# through. The basement slab branches (PR-B-BATH-DRAIN, PR-B-SAUNA-DRAIN, PR-B-USINK-DRAIN)
+# tie into it downstream of the base.
 DRAINS = [
     #
     # The collector STARTS at the tie (6'-0", 22'-7"); nothing drops through the deck here.
@@ -48,23 +48,24 @@ DRAINS = [
     PipeRun(uid="CMP905AAAA", tag="PR-B-MAIN-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(6), ft(22, 7)), pt(ft(6), ft(16, 6)),
                   pt(ft(3), ft(16, 6)), pt(ft(3), ft(16, 6)),
-                  pt(ft(3), inch(214)), pt(inch(42), inch(220)), pt(inch(42), ft(37))),
+                  pt(inch(42), inch(204)), pt(inch(42), ft(37))),
             diameter=inch(4), material="pvc",
             # The drop is AT the collector's corner. The old 1'-0" jog south to y=15'-6" kept
             # it clear of FT-B-CW's 45° line, and FT-B-CW is retired. The jog also bent the
             # collector a further 90°, past 707.4's 135° aggregate, which put a cleanout
             # here. A vertical drop ends the horizontal line instead, so the corner needs none.
             #
-            # The base is set by PR-B-SAUNA-DRAIN, the longest slab branch: 24.6 ft at the
-            # 1/4"/ft minimum from its -8.58" trap lands it at -14.75". The base sits 1/4"
-            # under that, and the building drain then holds 1/4"/ft for 20'-6" to the exit
-            # 1'-0" past FT-B-N4. Sized 4": the rolled-up basement load is past the 35 a 3"
-            # branch carries (Table 703.2), at 48 DFU. ** It jogs 6" east on a pair of 1/8
-            # bends at y=17'-10" (2026-11-05) ** so SM-B-RADON can sit clear of the 25" W1/N4
-            # strips: past the last tie and 10" from CO-B-STACK-BASE, which serves the jog's
-            # 707.4 aggregate too. 248.5" of buried line at 0.2525"/ft from the base.
-            elevations=(ft(7, 9.4375), ft(6, 11.9375), ft(6, 11.1375), inch(-15.0),
-                        inch(-15.3367), inch(-15.5152), inch(-20.2283)),
+            # The base was set by PR-B-SAUNA-DRAIN's old 24.6 ft route and holds; the building
+            # drain holds 1/4"/ft for 20'-6" to the exit 1'-0" past FT-B-N4. Sized 4": the
+            # rolled-up basement load is past the 35 a 3" branch carries (Table 703.2), at 48
+            # DFU. It sits 6" east, on x=3'-6", so SM-B-RADON clears the 25" W1/N4 strips.
+            # ** THAT 6" JOG IS A 1/8-BEND OFFSET AT THE FOOT OF THE DROP SINCE 2026-11-10 **,
+            # under the slab (the dry-fire lane owns x>=40 1/2" to 72" AFF). It was two 1/8
+            # bends past the stack's base, and every buried branch carried their 90° into
+            # 707.4's aggregate; a 45° offset in a stack is vertical piping (707.4 exception
+            # 2). 240" buried at 0.2525"/ft from the base.
+            elevations=(ft(7, 9.4375), ft(6, 11.9375), ft(6, 11.1375), inch(-6.7),
+                        inch(-15.178), inch(-20.2283)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-M-KITCH-SINK",
                     "FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
@@ -247,97 +248,83 @@ DRAINS = [
             diameter=inch(2), material="pvc",
             elevations=(ft(9, 1.4375), inch(91.25), inch(87.75)),
             serves=("FX-M-LAUNDRY-SINK", "FX-M-LAUNDRY")),
-    # --- the two basement slab-fixture branches ---------------------------------------
+    # --- the basement slab-fixture branches ------------------------------------------
     #
-    # Every fixture on these two runs stands *on* the basement floor, too low to reach the
+    # Every fixture on these runs stands *on* the basement floor, too low to reach the
     # ceiling collector, so each drops through its cast stub and runs under the slab to
-    # PR-B-MAIN-DRAIN's under-slab leg at x=3'.
+    # PR-B-MAIN-DRAIN's under-slab leg on x=3'-6".
     #
-    # Inverts are basement-relative. Both runs fall a uniform 1/4"/ft (`mep.drain_slope`'s
-    # minimum), stay deep enough for `mep.under_slab_burial`'s 1" bedding below the
-    # slab's -9'-3 1/2" underside, and tie into the main between its invert and crown (a wye
-    # into the pipe's upper half, not a bottom entry).
+    # Inverts are basement-relative. Each falls at least 1/4"/ft (`mep.drain_slope`'s
+    # minimum), stays deep enough for `mep.under_slab_burial`'s 1" bedding, and ties into the
+    # main between its invert and crown (a wye into the upper half, not a bottom entry).
     #
-    # Neither fixture group is re-listed in PR-B-MAIN-DRAIN's `serves` — the convention is a
+    # No fixture group is re-listed in PR-B-MAIN-DRAIN's `serves` — the convention is a
     # slab branch carries its own fixtures while the main lists the stacks it collects;
     # `mep.pipe_sizing` rolls every drain's load up through the routed geometry regardless
     # (resolve/mep.py::accumulated_serves).
     #
-    # The bathroom branch: 3" out of the WC's closet bend at (12', 24'-1 5/8"), straight
-    # south under the bathroom and W-B-CW2 to y=17'-4 3/4", then west under the workshop to
-    # PR-B-MAIN-DRAIN's under-slab leg, 10 3/4" downstream of the stack's base. It crosses no
-    # footing at all: W-B-CW2 is a framed partition on the slab and FT-B-CW / FT-B-STR2 were
-    # retired with the pours they sat under, so there is nothing on this route to sleeve.
+    # ** NO SLAB BRANCH TURNS MORE THAN 135° ON ITS WAY TO THE SEWER (2026-11-10). ** 707.4
+    # sums every horizontal change of direction from a branch's upper terminal to the
+    # building drain's end, so a branch that flows south and then joins a main flowing north
+    # owes a cleanout however it gets there. Each branch below flows west (or north-west)
+    # and enters the main on one wye: no turn cleanouts, and the upper-terminal ones are
+    # wall panels (mep_cleanouts.py).
     #
-    # ** 1/4"/ft, AND IT NOW HAS HEAD TO SPARE. ** MN ch. 4714 (UPC) 708.0's minimum is 1/4"
-    # at every size; the 1/8"/ft row for pipe over 3" is IRC P3005.3, and Minn. R. 1309.0010
-    # subp. 3.D deletes IRC ch. 25-33. On the old south-exit route this branch arrived 0.19"
-    # above the main. With the main flowing north, its run shortens to 15.74 ft and the
-    # branch lands 2.7" up the 4" barrel, a side entry into the upper half.
-    #
-    # It turns south then west, and the main carries it north: 180° in aggregate, so 707.4
-    # wants a cleanout at the tie. CO-B-STACK-BASE is that cleanout.
-    PipeRun(uid="CBPD07AAAA", tag="PR-B-BATH-DRAIN", system=PipeSystem.DRAIN,
-            # 905 REROUTE (basement vents): south 27 13/16", a 45-degree run SW to the
-            # W-B-STR2 line at (10'-0", 20'-0"), and south down that wall to y=17'-4 3/4". The
-            # WC's vent tee is the diagonal's end, under the wall's 232"-248" bay: its arm is
-            # 70" against 72", and the lavatory and utility sink now drop onto the x=10' leg.
+    # The WC: a 3" arm off the closet bend at (12', 24'-1 13/16"), south 28" and a 1/8 bend
+    # south-west to the W-B-STR2 line (59": 707.4 exception 1, under 5 ft and no sink), where
+    # the branch starts and runs straight west under RM-B-FURNACE to the main. The bend
+    # passes 4" clear of FT-B-STR3B's corner (W-B-STR3B stands on a 25" footing; STR2 does
+    # not). Its vent tee is under STR2 at (10'-0", 20'-2"), 61" of arm against 72". W->N
+    # is the branch's only turn.
+    PipeRun(uid="0527BZ0N6K", tag="PR-B-BATH-WC-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(12), inch(291.8125)), pt(ft(12), inch(291.8125)),
-                  pt(ft(12), inch(264)), pt(ft(10), inch(240)),
-                  pt(ft(10), ft(17, 4.75)), pt(ft(3), ft(17, 4.75))),
+                  pt(ft(12), inch(263.46)), pt(inch(122.54), inch(242))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(0), inch(-8.55), None, None, None, inch(-12.54)),
+            elevations=(ft(0), inch(-8.55), None, inch(-9.8)),
             slope_in_per_ft=0.25,
-            serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
-    # The lavatory's own 1 1/2" arm. The vanity sits on the same x=12' line as the WC, so
-    # its trap drops straight onto the 3" branch below it — one vertical leg with no
-    # horizontal arm under the slab at all, authored as its own run (not a vertex on the
-    # branch) so `mep.sleeve_coverage` sees a run passing through SP-B-BATH-LAV.
-    # It arrives at -8", inside the 3" branch's upper half there (invert -9 15/16",
-    # crown -6 7/16").
+            serves=("FX-B-BATH-WC",)),
+    PipeRun(uid="CBPD07AAAA", tag="PR-B-BATH-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(inch(122.54), inch(242)), pt(inch(42), inch(242))),
+            diameter=inch(3), material="pvc",
+            # Steeper than 1/4"/ft so it lands 3" up the main's barrel.
+            elevations=(inch(-9.8), inch(-13.0)),
+            serves=("FX-B-BATH-WC",)),
+    # The lavatory's own 1 1/2" arm and drop through SP-B-BATH-LAV, then a 1/8 bend north-west
+    # and west onto the foot of PR-B-USINK-DRAIN's drop (mep_lavatories.py), which carries
+    # both to the main. 32" of horizontal, no sink: 707.4 exception 1.
     PipeRun(uid="CBPD09AAAA", tag="PR-B-BATH-LAV-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(144), inch(218.25)), pt(inch(144), inch(224.375)), pt(inch(144), inch(224.375)),
-                  pt(inch(120), inch(224.375)),),
+            path=(pt(inch(144), inch(218.25)), pt(inch(144), inch(224.375)),
+                  pt(inch(144), inch(224.375)), pt(inch(138.875), inch(229.5)),
+                  pt(inch(120), inch(229.5))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(20.12), inch(19.99), inch(-9.0), inch(-9.55),),
+            elevations=(inch(20.12), inch(19.99), inch(-9.75), inch(-10.03), inch(-10.75)),
             serves=("FX-B-BATH-LAV",)),
-    # The sauna group: the curbed pan's drop at the NE corner, then a 1/8 bend south-west to
-    # y=5'-10", then west beneath the removable foot platform. The cleanout fitting stays
-    # on this leg; its rising cap extension ends in the aisle (mep_cleanouts.py). West under the
-    # sauna and the workshop to x=3'-0", and north to the base of PR-B-MAIN-DRAIN's slab
-    # drop. It is the straight head of the building drain, which continues north on the same
-    # line. One 2" branch carries both fixtures (4 DFU against the 6 a 2" branch takes).
-    # It crosses no footing: W-B-SA-W is a framed partition, and x=3'-0" is 2'-2" clear of
-    # FT-B-W2's edge, outside its 45° influence line.
-    #
-    # The bend is ~44° and the turn north is 90°: 134° in aggregate, under 707.4's 135°, so it
-    # carries only its upper-terminal cleanout. The old route went west, south and west to
-    # meet a south-flowing main, and needed CO-B-SAUNA-TURN for it. At 1/4"/ft over 24.6 ft
-    # it arrives at -14.75", which is what sets the main's base.
+    # The sauna group: the curbed pan's drop at the NE corner, a 1/8 bend north-west to
+    # W-B-SA-N's line, west under it past both vent tees (the shower's at x=13'-2", the floor
+    # drain's at 11'-11") and the workshop to x=3'-6", then north to the stack's base, the
+    # straight head of the building drain. 45° + 90° = 135°: only the upper-terminal
+    # cleanout, a wall panel in the hall face of W-B-SA-N2. One 2" branch carries both
+    # fixtures (4 DFU of 6). It
+    # crosses no footing: W-B-SA-W is a framed partition and x=3'-6" is clear of FT-B-W2.
     PipeRun(uid="CBPD08AAAA", tag="PR-B-SAUNA-DRAIN", system=PipeSystem.DRAIN,
-            # 905 REROUTE (basement vents): north 23 1/4" to the cavity of W-B-SA-N2 and west
-            # under the wall line to x=3'-0", so the shower and floor-drain vent tees sit where
-            # the drain passes under the wall that carries their risers. 256" at 0.29"/ft.
             path=(pt(inch(191.75), inch(98.1875)), pt(inch(191.75), inch(98.1875)),
-                  pt(inch(191.75), inch(121.375)), pt(ft(3), inch(121.375)),
-                  pt(ft(3), ft(16, 6))),
+                  pt(inch(168.5625), inch(121.375)), pt(inch(42), inch(121.375)),
+                  pt(inch(42), inch(204))),
             diameter=inch(2), material="pvc",
-            # As PR-B-BATH-DRAIN: the grade is authored and the intermediate inverts follow.
+            # The grade is authored and the intermediate inverts follow: 242" at 0.31"/ft.
             elevations=(ft(0, 2), inch(-8.58), None, None, inch(-14.75)),
             slope_in_per_ft=0.25,
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
     # The floor drain's own drop through the slab: a floor drain has no trap arm above the
-    # floor — the body *is* the penetration — so this is one vertical drop, authored
-    # separately (not as a vertex on the branch) so `mep.sleeve_coverage` sees a run actually
-    # passing through the cast stub rather than a stale or mis-routed sleeve.
-    # Since the 905 reroute the branch runs west on y=10'-1 3/8" under W-B-SA-N, so the drop
-    # takes a 1'-11 3/8" arm north onto it, landing on the branch's centreline, and its vent
-    # tee is the arm's end. Under 5 ft and serving no sink, it needs no cleanout.
+    # floor — the body *is* the penetration — authored as its own run so
+    # `mep.sleeve_coverage` sees a run through the cast stub. A 27" arm north and north-west
+    # lands it on the branch at x=12'-8", downstream of the shower's vent tee and upstream of
+    # its own. Under 5 ft and serving no sink, it needs no cleanout.
     PipeRun(uid="CBPD10AAAA", tag="PR-B-SAUNA-FD-DROP", system=PipeSystem.DRAIN,
             path=(pt(ft(13, 6), inch(98.1875)), pt(ft(13, 6), inch(98.1875)),
-                  pt(ft(13, 6), inch(121.375))),
+                  pt(ft(13, 6), inch(111.375)), pt(inch(152), inch(121.375))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(0), inch(-8.7), inch(-9.6)),
+            elevations=(ft(0), inch(-8.7), inch(-9.09), inch(-9.5)),
             serves=("FX-B-SAUNA-FD",)),
 ]
 

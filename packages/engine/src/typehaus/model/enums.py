@@ -332,11 +332,11 @@ class PipeAccessoryKind(Enum):
     differ only in what IFC class and code section they answer to.
     """
 
-    MAIN_SHUTOFF = "main_shutoff"            # P2903.9.1 — the one valve for the whole house
-    SHUTOFF = "shutoff"                      # a branch/fixture isolation valve
-    BACKFLOW_PREVENTER = "backflow_preventer"  # P2902 — cross-connection control
-    VACUUM_BREAKER = "vacuum_breaker"        # P2902.3.1 — hose-connection backflow
-    WATER_HAMMER_ARRESTOR = "water_hammer_arrestor"  # P2903.5 — quick-closing valves
+    MAIN_SHUTOFF = "main_shutoff"            # UPC 606.1 — the one valve for the whole house
+    SHUTOFF = "shutoff"                      # UPC 606.5 — a branch/fixture control valve
+    BACKFLOW_PREVENTER = "backflow_preventer"  # UPC 603 — cross-connection control
+    VACUUM_BREAKER = "vacuum_breaker"        # UPC 603.5.7 — hose-connection backflow
+    WATER_HAMMER_ARRESTOR = "water_hammer_arrestor"  # UPC 609.10 — quick-acting valves
     RO_STUB = "ro_stub"                      # capped tee, provision for a future RO tap
     PENETRATION_SEAL = "penetration_seal"    # the gasket/bracket/foam kit at an envelope pass
     # P2717.2 / IPC 1002.4 — the small line that keeps a seldom-used floor drain's trap

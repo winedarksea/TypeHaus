@@ -175,7 +175,7 @@ class PipeAccessory(Element):
     installation rather than of the hydrant type, which is why they ride the accessory and
     not the catalog.
 
-    ``accessible`` is the claim P2903.9.1 tests on a main shutoff — reachable without
+    ``accessible`` is the claim UPC 606.6 tests on a required valve — reachable without
     removing a panel or standing on something. Authored, never inferred: whether a valve
     behind the water heater can be reached is a judgement about the room, and the model
     would only be guessing.

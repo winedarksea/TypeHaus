@@ -17,4 +17,5 @@ from typehaus.checks.advisory import (  # noqa: F401 - registers checks
     guards,
     held_rough_opening,
     interior_trim,
+    redundant_isolation,
 )

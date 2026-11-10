@@ -3092,6 +3092,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   and tee off the trunk ahead of the header. A branch whose first vertex is on an outlet
   derives that port as its source; `mep.water_manifold_ports` holds one run per outlet, and
   `haus route --manifold EQ-B-HW-HEADER` re-lays the eight together. Cold side unchanged.
+- **Control valves are UPC 606.5** (`mep.fixture_control_valve`, `notes/supply_isolation_basis.md`,
+  2026-11-10): a stop with no tee before it at every lav, sink and appliance supply. The header's
+  outlets tee, so it is a branch header, not a parallel system, and the shower/filler home runs
+  owe no stop; WC stops are the owner's. A manifold port stands in for a stop only on a valved
+  (`EquipmentType.valved_outlets`) home-run manifold, one fixture per port.
 - **The heater is the 120 V PROPH80 T0 RH120-MSO since 2026-11-02** (Rheem RH-PIHP-SC-SO
   Rev. 7 p.2; `notes/water_service.md` §1). Modelled 24 1/4" round x 74 3/16" (A; not 91",
   ducted), with the HydroBoost riser as a lobe on the 16-gon (40-75 deg right of front, r 15",

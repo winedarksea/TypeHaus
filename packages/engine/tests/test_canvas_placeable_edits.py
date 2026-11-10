@@ -95,7 +95,7 @@ def test_drain_followers_are_carried_impacts(catlin_plan):
     result = move_placeable(catlin_plan, "basement", tag="FX-B-BATH-WC",
                             position=(x + 0.1, y - 0.05))
     kinds = {(i.tag, i.kind) for i in result.impacts}
-    assert {("SP-B-BATH-WC", "carried"), ("PR-B-BATH-DRAIN", "carried")} <= kinds
+    assert {("SP-B-BATH-WC", "carried"), ("PR-B-BATH-WC-DRAIN", "carried")} <= kinds
     assert ("FX-B-BATH-WC", "needs_review") in kinds  # the vent/supply left as routed
     pinned = move_placeable(catlin_plan, "basement", tag="FX-B-BATH-LAV", position=(5.1, 6.2))
     # Ports now move the unpinned lavatory connection and its nearby sleeve together.

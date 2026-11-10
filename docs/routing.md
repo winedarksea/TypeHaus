@@ -76,7 +76,7 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | Short level jogs as a pair of 1/8 bends, re-checked against obstacles | `routing/compaction.py` | drain basis §10 |
 | Trap arm within Table 1002.2, no S-trap, vent taken off inside the arm and plumb to 6" over the rim | `routing/trap_vent.py`, `cli/route_fixture_vent.py` | drain basis §9 |
 | Branch ties on a level main keep the catalogued inlet pitch | `cli/route_roots._spaced_goals`, `resolve/mep_inlet_spacing` | drain basis §10 |
-| Cleanouts (UPC 707.4) placed with 707.9 clearance on the plug axis | `cli/route_cleanouts.py`, `resolve/cleanout_rules.py` | `mep.drain_cleanouts` |
+| Cleanouts (UPC 707.4) placed with 707.9 clearance on the plug axis; priced `cleanout_in` each, + `cleanout_concealed_in` behind a panel, + `cleanout_floor_finished_in` for a floor cap in a priced room; a buried station may rise in a partition cavity instead; cheapest station wins | `cli/route_cleanouts.py`, `resolve/cleanout_rules.py` | `mep.drain_cleanouts` |
 | PEX bends where its 6 x OD arc clears; copper and CPVC take a fitting | `search.bend_price`, `trades/pipe.bend_radius_m` | drain basis §11 |
 | Supply and drain in an exterior insulated cavity pay per foot; vents, ducts, conduit exempt | `graph._finish`, `RouteCost.for_run` | drain basis §11 |
 | NEC 110.26(E)(1) dedicated space is hard for pipe and duct | `resolve/panel_space.py`, `routing/obstacles` | drain basis §11 |
@@ -124,7 +124,8 @@ table**: every candidate, its wall and arm length, and the first thing a plumb r
 the arm meets (`route_takeoff_table`); `--counterfactual` lifts those blockers in the vent
 lattice too, and `--summary` drops each row's station. **Cleanouts** a proposed drain needs are placed
 on it, each with access (wall, floor or ceiling), cap point and concealment; a concealed
-one pays `cleanout_concealed_in`.
+one pays `cleanout_concealed_in`, and every one `cleanout_in`, so a route needing fewer cleanouts
+ranks higher.
 
 **Limitations.** `--fixture` offers a wet vent only onto a drain already authored (`--group`
 lays the whole group); seeds keep the two cheapest take-offs (`keep=2`); a vertical barrel's

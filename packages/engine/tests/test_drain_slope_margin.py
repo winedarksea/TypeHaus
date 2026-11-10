@@ -86,9 +86,10 @@ def test_the_margin_prints_on_pass_too(catlin_plan, catlin_model_ro) -> None:
 def test_pr_b_bath_drain_is_the_run_bld05_was_reaching_for(
         catlin_plan, catlin_model_ro) -> None:
     """Exactly the code minimum, zero in hand, buried under a slab — the run BLD-05 actually
-    named. The suite WC it was contrasted with is thin too since 2026-10-26, but not zero."""
+    named. The suite WC it was contrasted with is thin too since 2026-10-26, but not zero.
+    Since 2026-11-10 the 1/4"/ft part is the WC's own arm, PR-B-BATH-WC-DRAIN."""
     findings = _run(catlin_plan, catlin_model_ro)
-    assert _margin_of(findings, "PR-B-BATH-DRAIN") == pytest.approx(0.0, abs=1e-9)
+    assert _margin_of(findings, "PR-B-BATH-WC-DRAIN") == pytest.approx(0.0, abs=1e-9)
     assert _margin_of(findings, "PR-M-S-SUITE-WC-DRAIN") == pytest.approx(0.010, abs=1e-9)
 
 

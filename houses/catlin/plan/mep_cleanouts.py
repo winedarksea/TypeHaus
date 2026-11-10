@@ -19,15 +19,6 @@ BASEMENT_CLEANOUTS = [
                   cap_position=pt(ft(5, 3), ft(17, 9)), cap_elevation=inch(87.7375),
                   direction="two_way", access="wall", wall_ref="W-B-CW",
                   clear_width=inch(24), clear_depth=inch(24)),
-    # The stack's base turns the main north, and PR-B-BATH-DRAIN's tie (y=17'-4 3/4") turns
-    # the bath branch north into it before the main's two 1/8 bends at y=17'-10". Two-way,
-    # between that tie and the bends (since the 2026-11-05 905 reroute, which put the bath
-    # branch's own turn cleanout upstream), capped flush in the workshop floor.
-    DrainCleanout(uid="COB0000010", tag="CO-B-STACK-BASE", pipe_ref="PR-B-MAIN-DRAIN",
-                  position=pt(ft(3), inch(211.25)), fitting_elevation=inch(-15.28),
-                  cap_position=pt(ft(3), inch(211.25)), cap_elevation=inch(0),
-                  direction="two_way", access="floor",
-                  clear_width=inch(24), clear_depth=inch(24)),
     DrainCleanout(uid="COB0000003", tag="CO-B-KITCH-HEAD", pipe_ref="PR-B-KITCH-DRAIN",
                   position=pt(inch(352), inch(416.99)), fitting_elevation=inch(106.25),
                   cap_position=pt(inch(352), inch(416.99)), cap_elevation=inch(121.4375),
@@ -48,29 +39,23 @@ BASEMENT_CLEANOUTS = [
                   position=pt(inch(117.5), inch(229.5)), fitting_elevation=inch(15.9375),
                   cap_position=pt(inch(115.5), inch(229.5)), cap_elevation=inch(18),
                   access="cabinet", clear_width=inch(18), clear_depth=inch(18)),
-    # Buried branches use flush caps in the basement slab, away from their fixture drops.
-    # The branch turns 180° at (10'-0", 17'-4 3/4") (S, SW, S, then W), so 707.4 wants a turn
-    # cleanout there too; capped flush in the workshop floor 8" west of the corner.
-    DrainCleanout(uid="GBM1ZV4EJV", tag="CO-B-BATH-TURN", pipe_ref="PR-B-BATH-DRAIN",
-                  position=pt(inch(112), inch(208.75)), fitting_elevation=inch(-10.83),
-                  cap_position=pt(inch(112), inch(208.75)), cap_elevation=inch(0),
-                  access="floor", clear_width=inch(24), clear_depth=inch(24)),
+    # The slab branches' upper terminals are wall panels: the fitting on the buried pipe, its
+    # extension up a stud bay, the cap behind a panel. No slab branch turns past 707.4's
+    # 135° (mep_drainage.py), so none needs a turn cleanout.
+    # The WC branch: a wye 6 1/2" down it, west of W-B-STR2, its cap in the bath face of the
+    # wall's 232"-248" bay, 6" south of the WC vent's riser.
     DrainCleanout(uid="COB0000006", tag="CO-B-BATH", pipe_ref="PR-B-BATH-DRAIN",
-                  position=pt(inch(134), inch(254)), fitting_elevation=inch(-9.5),
-                  cap_position=pt(inch(134), inch(254)), cap_elevation=inch(0),
-                  access="floor", clear_width=inch(24), clear_depth=inch(24)),
-    # Keep the fitting on the branch; its rising access extension now terminates in the
-    # open aisle at (181", 60"). An 18" square clears the foot platform and access step.
+                  position=pt(inch(116), inch(242)), fitting_elevation=inch(-10.06),
+                  cap_position=pt(inch(122), inch(236)), cap_elevation=inch(12),
+                  access="wall", wall_ref="W-B-STR2",
+                  clear_width=inch(24), clear_depth=inch(24)),
+    # The sauna branch: a wye on its 1/8 bend 22" from the drop, the extension rising clear of
+    # W-B-SA-N2's cavity, the cap in the hall face (never the sauna's).
     DrainCleanout(uid="COB0000007", tag="CO-B-SAUNA-HEAD", pipe_ref="PR-B-SAUNA-DRAIN",
-                  position=pt(inch(191.75), inch(108)), fitting_elevation=inch(-8.82),
-                  cap_position=pt(inch(181), inch(60)), cap_elevation=inch(0),
-                  access="floor", clear_width=inch(18), clear_depth=inch(18)),
-    # The shower branch turns north-to-west at the wall and west-to-north at x=3'-4" (180°
-    # in aggregate), so 707.4 wants a turn cleanout; capped flush in the workshop floor.
-    DrainCleanout(uid="PK92YRMM4A", tag="CO-B-SAUNA-TURN", pipe_ref="PR-B-SAUNA-DRAIN",
-                  position=pt(inch(40), inch(121.375)), fitting_elevation=inch(-12.8),
-                  cap_position=pt(inch(40), inch(121.375)), cap_elevation=inch(0),
-                  access="floor", clear_width=inch(18), clear_depth=inch(18)),
+                  position=pt(inch(176.5), inch(113.4375)), fitting_elevation=inch(-9.13),
+                  cap_position=pt(inch(176.5), inch(122.5)), cap_elevation=inch(12),
+                  access="wall", wall_ref="W-B-SA-N2",
+                  clear_width=inch(18), clear_depth=inch(18)),
     # WC2's branch runs in the basement ceiling. Its upper terminal is the closet bend's heel;
     # the cleanout is a 45 wye there, its cap 3 1/2" SW and up, off the drop's axis and away
     # from PR-M-BATH2-WC-VENT, just under the furnace-room ceiling. Its turn east into the

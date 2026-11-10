@@ -499,14 +499,13 @@ VENT_BRANCHES_BASEMENT = [
     # the backup enclosure's 110.26 dedicated space, over the supply duct's leg — and north
     # onto the vent riser at x=10". PR-B-BATH-VENT ties into it at (9'-0", 19'-1 1/2").
     PipeRun(uid="CBPV02AAAA", tag="PR-B-SAUNA-VENT", system=PipeSystem.VENT,
-            # ** THE RISER IS IN W-B-SA-N2'S 2x4 CAVITY SINCE 2026-11-01 ** (the stud-002/-003
-            # bay; x=15'-11 3/4" since 2026-11-05, plumb off the branch corner and clear of the 25"
-            # FT-B-CS). At (17'-3", 8'-2 3/16") it stood
-            # in the pan, 3" in front of the liner, and its north leg ran through the sauna
-            # ceiling's foil. It clears the wall's top plates (+90") before jogging north.
-            path=(pt(inch(191.75), inch(121.375)), pt(inch(191.75), inch(121.375)),
-                  pt(inch(191.75), inch(121.375)),
-                  pt(inch(191.75), ft(10, 6)), pt(ft(9), ft(10, 6)),
+            # ** THE RISER IS IN W-B-SA-N'S 150"-166" BAY SINCE 2026-11-10 **, on the branch
+            # 43" down the shower's arm and 4" west of PR-B-COND's drop, since the branch now
+            # reaches the wall on a 1/8 bend (mep_drainage.py). It clears the wall's top plates
+            # (+90") before jogging north.
+            path=(pt(inch(158), inch(121.375)), pt(inch(158), inch(121.375)),
+                  pt(inch(158), inch(121.375)),
+                  pt(inch(158), ft(10, 6)), pt(ft(9), ft(10, 6)),
                   pt(ft(9), ft(19)), pt(ft(9), ft(28, 8)), pt(inch(51.5), ft(28, 8)),
                   pt(inch(51.5), inch(400)), pt(inch(10), inch(400)),
                   pt(inch(10), inch(412.9))),
@@ -521,17 +520,17 @@ VENT_BRANCHES_BASEMENT = [
             # dry-fire collector lift, keeping clear of the raised laundry drain. The
             # north profile retains the half-inch clearance over
             # DU-B-ERV-R-PLAY at y=30'-6", where D3 left it 2 1/2 thousandths of an inch.
-            elevations=(inch(-9.0), ft(0, 3.4375), inch(90.5), inch(90.5625),
+            elevations=(inch(-9.19), ft(0, 3.4375), inch(90.5), inch(90.5625),
                         inch(91.75), inch(93.75), ft(7, 10.4375), ft(7, 11.14), ft(7, 11.54),
                         ft(8, 0.0375), ft(8, 0.1375)),
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
-    # The floor drain's own tee (C6-E7): off the bottom of PR-B-SAUNA-FD-DROP, north-west under the
-    # slab on the drop's fall, up W-B-SA-N's cavity through SP-B-SLAB-SA-FDV, and over the
-    # plates onto PR-B-SAUNA-VENT's y=10'-6" run. Arm ~9" against Table 1002.2's 60".
+    # The floor drain's own tee: on the branch 9" downstream of PR-B-SAUNA-FD-DROP's tie,
+    # up W-B-SA-N's 134"-150" bay through SP-B-SLAB-SA-FDV, and over the plates onto
+    # PR-B-SAUNA-VENT's y=10'-6" run. Arm ~36" against Table 1002.2's 60".
     PipeRun(uid="D9Z3MBW6KV", tag="PR-B-SAUNA-FD-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(155.5), inch(121.375)), pt(inch(155.5), inch(121.375)),
-                  pt(inch(155.5), ft(10, 6))),
+            path=(pt(inch(143), inch(121.375)), pt(inch(143), inch(121.375)),
+                  pt(inch(143), ft(10, 6))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(-9.8), inch(90.6), inch(91.05)),
+            elevations=(inch(-9.57), inch(90.6), inch(91.05)),
             serves=("FX-B-SAUNA-FD",)),
 ]

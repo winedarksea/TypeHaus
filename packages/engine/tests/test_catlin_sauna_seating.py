@@ -131,17 +131,11 @@ def test_removable_decks_preserve_drain_and_exhaust(catlin_model_ro):
                     assert frame.intersection(Polygon(fixture.footprint)).area < 1e-10
     drain = next(o for o in protected if o.tag == "FX-B-SAUNA-FD")
     assert _footprint(_object(model, "LOWER")).covers(_footprint(drain))
+    # The head cleanout left the sauna floor on 2026-11-10: a wall panel in the hall face.
     cleanout = next(c for c in model.drain_cleanouts if c.tag == "CO-B-SAUNA-HEAD")
-    cap = tuple(v / M_PER_IN for v in cleanout.cap_position)
-    assert cap == pytest.approx((181, 60))
+    assert cleanout.access == "wall" and cleanout.wall_ref == "W-B-SA-N2"
     extension = next(s for s in model.solids if s.tag == "CO-B-SAUNA-HEAD-EXT")
-    assert extension.z1_m <= cleanout.cap_z_m + 1e-8
-    assert extension.sweep.path[-1][:2] == cleanout.cap_position
-    assert extension.sweep.path[-2][:2] == cleanout.cap_position
-    access = box(cap[0] - 9, cap[1] - 9, cap[0] + 9, cap[1] + 9)
-    for suffix in BASE_TAGS:
-        assert access.intersection(_footprint(_object(model, suffix))).area == 0
-    assert Point(cap).within(access)
+    assert extension.sweep.path[-1] == pytest.approx((*cleanout.cap_position, cleanout.cap_z_m))
 
 
 def test_condensate_outlets_land_over_grate_and_clear_joinery(catlin_model_ro):

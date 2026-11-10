@@ -23,11 +23,14 @@ BASEMENT_LAV_CONNECTIONS = [
                   serves=("FX-B-BATH-LAV",)),
     # FX-B-UTIL-SINK (2026-10-30). The cabinet trap's 1 1/2" arm runs 5" east into W-B-STR2
     # and tees under PR-B-BATH-VENT's riser at (10'-0", 19'-1 1/2") — the vent before the
-    # drop, so no S-trap — then drops through SP-B-SLAB-USINK and runs 20 3/4" south under
-    # the slab onto PR-B-BATH-DRAIN's y=17'-4 3/4" leg, upper half.
+    # drop, so no S-trap — then drops through SP-B-SLAB-USINK and, since 2026-11-10, runs
+    # under the slab to the main as the lavatory's branch too (PR-B-BATH-LAV-DRAIN lands on
+    # the drop's foot): 3 DFU, Table 703.2's 1 1/2" row. Past the drop it bends 1/8 south-west
+    # and runs west on y=18'-4", tying in 20" south of PR-B-BATH-DRAIN: 45° + 90° = 135°, so
+    # CO-B-USINK on the arm is its only cleanout.
     PipeRun(uid="TV31MEHNBX", tag="PR-B-USINK-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(115), inch(229.5)), pt(inch(120), inch(229.5)), pt(inch(120), inch(229.5)),),
-            elevations=(inch(16), inch(15.84375), inch(-9.0),),
+            path=(pt(inch(115), inch(229.5)), pt(inch(120), inch(229.5)), pt(inch(120), inch(229.5)), pt(inch(110.5), inch(220)), pt(inch(42), inch(220)),),
+            elevations=(inch(16), inch(15.84375), inch(-11.0), inch(-11.41), inch(-13.5),),
             diameter=inch(1.5), material="pvc", serves=("FX-B-UTIL-SINK",)),
     # Stubs tee off the bath branches' W-B-STR2 drop ends (the hot carries on down to 24",
     # under the lavatory's cold terminal) and drop in the cabinet: hot at 18'-8 1/2", south

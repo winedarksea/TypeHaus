@@ -134,7 +134,8 @@ def test_catlin_sewer_cleanout_is_inside_by_the_north_exit(catlin_model_ro):
 
 def test_catlin_cleanouts_have_plan_schedule_and_three_solids(catlin_model_ro):
     model = catlin_model_ro
-    assert len(model.drain_cleanouts) == 16  # 13 + BATH-TURN, SAUNA-TURN, M-SH2-HEAD
+    # No turn cleanouts on the slab branches since 2026-11-10 (BATH-TURN, SAUNA-TURN, STACK-BASE)
+    assert len(model.drain_cleanouts) == 13
     wc2_cleanouts = {item.tag: item for item in model.drain_cleanouts
                      if item.pipe_ref == "PR-B-WC2-DRAIN"}
     assert set(wc2_cleanouts) == {"CO-B-WC2-HEAD"}
@@ -173,7 +174,7 @@ def test_minnesota_permit_checklist_includes_cleanouts():
 
 def test_floor_cap_covered_by_fixture_fails(catlin_model_ro):
     model = copy.copy(catlin_model_ro)
-    original = next(c for c in model.drain_cleanouts if c.tag == "CO-B-BATH")
+    original = next(c for c in model.drain_cleanouts if c.tag == "CO-B-SEWER")
     wc = next(item for item in model.canvas_objects if item.tag == "FX-B-BATH-WC")
     model.drain_cleanouts = [replace(c, cap_position=wc.position) if c.tag == original.tag else c
                              for c in model.drain_cleanouts]

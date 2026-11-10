@@ -104,20 +104,19 @@ def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> Non
     3" / 1 1/2" / 1 1/4" and each size gets its own world — inflating one shared world at
     the widest walls the narrow branches out of lanes they fit perfectly well.
 
-    **One of two routes, and the other is refused with its number.** The basement bath's
-    WC routes at 3" and its lav, on its own 1 1/4" lattice, is short of head. (This was the
-    suite bath until 2026-09-24, when DU-M-ERV-R-SUITEBATH's north leg closed the one lane
-    the router had found for its lav; the authored drain crosses over the duct.)
+    **Two of three route, and the third is refused with its reason.** The suite bath's
+    tub-shower and lav route on their own 1 1/2" and 1 1/4" lattices; its WC finds no 3"
+    lane. (The basement bath carried this until 2026-11-10, when its WC got a branch of its
+    own and its lav moved onto PR-B-USINK-DRAIN.)
     """
     before = _plan_digest()
     result = runner.invoke(app, ["route", str(_CATLIN),
-                                 "--tree", "PR-B-BATH-DRAIN", "--explain"])
+                                 "--tree", "PR-M-S-SUITE-DRAIN", "--explain"])
     assert result.exit_code == 0, result.output
-    # 1 1/2" is FX-B-UTIL-SINK's arm (2026-10-30).
     assert '3 branch sizes (3", 1.5", 1.25")' in result.output
-    assert "FX-B-BATH-WC-PROPOSED" in result.output
-    assert "diameter=inch(3)" in result.output
-    assert 'FX-B-BATH-LAV: short' in result.output
+    assert "FX-S-SUITEBATH-TUBSH-PROPOSED" in result.output
+    assert "diameter=inch(1.5)" in result.output
+    assert "FX-S-SUITEBATH-WC: no route" in result.output
     assert "deepest first" in result.output
     assert _plan_digest() == before
 

@@ -5,7 +5,7 @@ inverts off it is twelve chances to get the arithmetic wrong and no way for the 
 what it meant — which is how the reference house ended up with runs whose comments declared
 "a uniform 0.3"/ft" against numbers that were 0.2941 and 0.3013 on adjacent legs.
 
-Three runs in catlin were converted (PR-B-BATH-DRAIN, PR-B-SAUNA-DRAIN, PR-B-COND); their
+Three runs in catlin were converted (PR-B-BATH-WC-DRAIN, PR-B-SAUNA-DRAIN, PR-B-COND); their
 inverts are pinned below so the conversion is provably not a silent geometry change.
 """
 
@@ -188,10 +188,14 @@ def test_a_solved_endpoint_does_not_argue_with_the_field_it_came_from() -> None:
 #: BATH and SAUNA re-pinned 2026-11-05 (the 905 vent reroute): the bath branch runs south, a
 #: 45 SW and down W-B-STR2; the sauna north and west under W-B-SA-N. Both keep their authored
 #: tie inverts, so the last leg takes the difference: 0.293 and 0.382"/ft, steeper than 1/4.
+#:
+#: 2026-11-10 (no slab turn cleanouts): the WC's solved part is its own arm, PR-B-BATH-WC-DRAIN
+#: (south and a 1/8 bend to the W-B-STR2 line); PR-B-BATH-DRAIN beyond it is two authored
+#: inverts. The sauna reaches W-B-SA-N on a 1/8 bend and ties at the stack's base: 0.414.
 _PINNED_FT = {
     "PR-B-COND": [-1.45313, -1.64813, -1.68965, -1.78715, -1.81141, -8.32135, -8.36979],
-    "PR-B-BATH-DRAIN": [-9.11979, -9.83229, -9.88058, -9.9395, -9.99376, -10.16479],
-    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.87505, -10.14545, -10.34896],
+    "PR-B-BATH-WC-DRAIN": [-9.11979, -9.83229, -9.88151, -9.93646],
+    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.89172, -10.11145, -10.34896],
 }
 
 #: The grade each of the three declares in its own comment. PR-B-BATH-DRAIN went to
@@ -201,13 +205,13 @@ _PINNED_FT = {
 #: the branch arrived below its invert.
 _GRADE_IN_PER_FT = {
     "PR-B-COND": 0.26,
-    "PR-B-BATH-DRAIN": 0.25,
+    "PR-B-BATH-WC-DRAIN": 0.25,
     "PR-B-SAUNA-DRAIN": 0.25,
 }
 #: PR-B-COND's authored under-bench leg kept its 0.3"/ft when the run went to 0.26; the bath
 #: and sauna last legs fall to their authored tie inverts.
-_LEG_GRADE = {("PR-B-COND", 5): 0.3, ("PR-B-BATH-DRAIN", 4): 0.293,
-              ("PR-B-SAUNA-DRAIN", 3): 0.382}
+_LEG_GRADE = {("PR-B-COND", 5): 0.3, ("PR-B-BATH-WC-DRAIN", 2): 0.261,
+              ("PR-B-SAUNA-DRAIN", 3): 0.414}
 
 
 @pytest.mark.parametrize("tag", sorted(_PINNED_FT))

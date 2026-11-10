@@ -515,6 +515,11 @@ MN_2020 = JurisdictionProfile(
                         "MN Plumbing Code (ch. 4714) 606.3",
                         "MN Plumbing Code (ch. 4714) 603.5.7",
                         "MN Plumbing Code (ch. 4714) 609.10")),
+        # A control valve immediately ahead of each appliance and slip-joint supply, or a
+        # valved port on a readily accessible home-run manifold (notes/supply_isolation_basis.md).
+        PermitItemSpec("Fixture and appliance control valves", ("mep.fixture_control_valve",),
+                       ("MN Plumbing Code (ch. 4714) 606.5",
+                        "MN Plumbing Code (ch. 4714) 606.6")),
         PermitItemSpec("Hot-water pipe insulation", ("mep.hot_water_insulation",),
                        ("IRC N1103.4.2",)),
         # A balanced ventilator's outdoor-side terminations. A plan reviewer

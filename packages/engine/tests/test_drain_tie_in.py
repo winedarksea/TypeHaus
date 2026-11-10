@@ -28,8 +28,8 @@ def test_catlin_is_clean(catlin_plan, catlin_model_ro) -> None:
     assert not fails, [f.message for f in fails]
     # incl. two kitchen waste connections and PR-B-USINK-DRAIN; the washer's standpipe and
     # drop went when it began draining into the laundry tub (2026-11-07), and PR-B-WH-COND
-    # ends at its own air gap since 2026-11-09
-    assert len(findings) == 33
+    # ends at its own air gap since 2026-11-09; PR-B-BATH-WC-DRAIN joined 2026-11-10
+    assert len(findings) == 34
     # E16: a branch entering a stack prints its 3D station, not 120" over the stack's foot.
     wc = next(f for f in findings if "PR-M-S-BATH1-WC-DRAIN" in f.element_tags)
     assert "on its centreline" in wc.message, wc.message
@@ -137,7 +137,7 @@ def test_an_accepted_but_low_entry_is_an_advisory_fail(
 
     assert "PR-B-BATH-DRAIN" in drain_tie_ins(_drains(model)), "must still tie in"
     findings = drain_tie_in(check_context(plan=catlin_plan, model=model))
-    finding = next(f for f in findings if "PR-B-BATH-DRAIN" in f.element_tags)
+    finding = next(f for f in findings if f.element_tags[0] == "PR-B-BATH-DRAIN")
     assert finding.result is Result.FAIL
     assert finding.severity is Severity.WARN
     assert "below its centreline" in finding.message

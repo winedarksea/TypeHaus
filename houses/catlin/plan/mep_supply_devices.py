@@ -152,29 +152,9 @@ SUPPLY_STOPS = [
                   accessible=True, room="RM-M-BATH1",
                   model='1/2" quarter-turn basin stop, exposed below wall-mounted basin',
                   serves=("FX-M-BATH1-LAV",)),
-    # RM-M-BATH2 — WC, shower, tub and sink; the busiest group in the house and the one
-    # most worth being able to isolate on its own.
-    #
-    # The cold stop MOVED on 2026-09-11 to follow its run. It stood at (2'-3", 17'-2.4")
-    # — the station PR-B-CW-BATH2 rose at until 2026-09-09, when that riser came out of the
-    # middle of the bathroom floor and into W-M-HS1's x=1'-0" bay (plan/mep_supply.py). The
-    # hot sibling below never moved because PR-B-HW-BATH2 never did: it still terminates at
-    # (2'-3", 16'-9.6"). Nothing caught the drift — no check grades an accessory's position
-    # against its host run's polyline, so a stop two feet off its own pipe read as 0 FAIL.
-    # The new position is the run's last vertex, which is this file's rule for every stop
-    # here and what lets the accessory take the riser head's invert rather than a second,
-    # drift-prone copy of it.
-    PipeAccessory(uid="3VR28WJF1E", tag="PA-M-BATH2-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-BATH2", position=pt(ft(1, 1), ft(22, 4)),
-                  accessible=True, room="RM-M-BATH2",
-                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
-                  serves=("FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
-                          "FX-M-BATH2-SINK")),
-    PipeAccessory(uid="4ZC2WZVFWB", tag="PA-M-BATH2-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-BATH2", position=pt(inch(9), inch(201.6)),
-                  accessible=True, room="RM-M-BATH2",
-                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
-                  serves=("FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK")),
+    # RM-M-BATH2's riser-head stops are gone (2026-11-10): the shower and filler now leave
+    # the trunk and the header on their own runs, so each stop isolated the sink alone, in
+    # series with its angle stops (`advisory.redundant_isolation`).
     # RM-S-BATH1 — the second floor's hall bath plus the two vanity lavatories it feeds.
     PipeAccessory(uid="B20MFS2ZH2", tag="PA-S-BATH1-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-B-CW-SBATH", position=pt(ft(5, 3), ft(26, 6.75)),

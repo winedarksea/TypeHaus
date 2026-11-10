@@ -76,6 +76,13 @@ class RouteCost:
     exterior_wall_per_ft: float = 96.0
     #: A cleanout whose access face is concealed needs an access panel (UPC 707.9).
     cleanout_concealed_in: float = 48.0
+    #: Base price of ANY cleanout: a wye or tee, extension and plug, over a bend's 24" since
+    #: it is also a cap somebody must reach. Every turn that adds one pays it, so a route
+    #: that stays under 135 degrees beats one that needs a cleanout for the same length.
+    cleanout_in: float = 36.0
+    #: A cap in a finished, occupied room's floor (a priced room, :meth:`room_penalty` > 0).
+    #: Above the 48" panel so a wall station wins there; an unfinished floor pays nothing.
+    cleanout_floor_finished_in: float = 72.0
     #: Room a tool needs round a joint, beyond the fitting's own body, by joining method.
     solvent_weld_tool_in: float = 1.0
     propress_tool_in: float = 2.0
@@ -168,8 +175,9 @@ class RouteCost:
             f'cuts: stud {self.bore_stud_in:.0f}", plate {self.plate_cut_in:.0f}", joist '
             f'{self.bore_joist_in:.0f}", I-joist {self.bore_engineered_in:.0f}" '
             f'({self.bore_unpublished_in:.0f}" with no published hole); exterior wall '
-            f'+{self.exterior_wall_per_ft:.0f}"/ft; concealed cleanout '
-            f'{self.cleanout_concealed_in:.0f}"',
+            f'+{self.exterior_wall_per_ft:.0f}"/ft; cleanout '
+            f'{self.cleanout_in:.0f}" (+{self.cleanout_concealed_in:.0f}" concealed, '
+            f'+{self.cleanout_floor_finished_in:.0f}" in a finished floor)',
         ]
         for key, why in self.superseded:
             lines.append(f"  [mep.routing] {key} is SUPERSEDED and ignored: {why}")
@@ -219,7 +227,8 @@ _FLOAT_KEYS = (
     "rack_spacing_in",
     "dwv_sweep_in", "pex_bend_in", "bore_stud_in", "plate_cut_in", "bore_joist_in",
     "bore_engineered_in", "bore_unpublished_in", "exterior_wall_per_ft",
-    "cleanout_concealed_in", "solvent_weld_tool_in", "propress_tool_in",
+    "cleanout_concealed_in", "cleanout_in", "cleanout_floor_finished_in",
+    "solvent_weld_tool_in", "propress_tool_in",
     "pex_expansion_tool_in", "offset_jog_max_in",
 )
 

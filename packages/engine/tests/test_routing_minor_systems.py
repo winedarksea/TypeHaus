@@ -86,6 +86,23 @@ def test_no_cleanouts_on_a_run_that_is_not_sanitary() -> None:
     assert place_cleanouts(None, None, proposal) == ((), 0.0, [])
 
 
+@pytest.mark.parametrize(("occupancy", "access", "price"), [
+    ("garage", "floor", 36.0),         # unfinished floor: base only, beats a 36 + 48 panel
+    ("bedroom", "wall", 36.0 + 48.0),  # finished floor: 36 + 72 loses to the wall station
+])
+def test_a_buried_cleanout_takes_the_cheaper_of_floor_and_wall(occupancy, access, price) -> None:
+    from typehaus.cli.route_cleanouts import _cheapest, _price
+    from typehaus.routing.cost import RouteCost
+
+    room = SimpleNamespace(kind="room", occupancy=occupancy)
+    space = SimpleNamespace(cost=RouteCost(), soft_at=lambda xy, z: [room])
+    buried = (0.0, 0.0, -0.3)
+    floor = (buried, None, (1.0, 0.0), None)
+    wall = (buried, SimpleNamespace(kind="wall"), (1.0, 0.0), (0.0, 0.05, 0.3))
+    assert _cheapest(space, [floor, wall], 0.0) is (floor if access == "floor" else wall)
+    assert _price(space, access, buried, 0.0) == price
+
+
 def test_radon_and_sump_have_trades_and_only_gas_goes_unassigned() -> None:
     runs = [SimpleNamespace(tag=f"PR-{system}", system=system, storey="basement",
                             diameter_m=0.05, z_m=[0.0])

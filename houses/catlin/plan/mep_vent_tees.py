@@ -170,13 +170,13 @@ VENT_TEES = [
             diameter=inch(1.5), material="pvc",
             elevations=(inch(-89.32), inch(-86.8), inch(-19.5), inch(-19.25), inch(-18.6)),
             serves=("FX-B-BATH-LAV",)),
-    # RM-B-BATH's water closet: a sanitary tee at the end of the branch's 45-degree run, (10'-0",
-    # 20'-0") under W-B-STR2 (arm 70" against Table 1002.2's 72"), plumb in the wall's cavity,
+    # RM-B-BATH's water closet: a sanitary tee at the head of PR-B-BATH-DRAIN, (10'-0",
+    # 20'-2") under W-B-STR2 (arm 61" against Table 1002.2's 72"), plumb in the wall's cavity,
     # then west and south onto PR-B-BATH-VENT's west end at (9'-0", 19'-1 1/2").
     PipeRun(uid="KBNJYZPWCZ", tag="PR-B-BATH-WC-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(120), inch(240)), pt(inch(120), inch(240)),
-                  pt(inch(108), inch(240)), pt(inch(108), inch(229.5))),
+            path=(pt(inch(120), inch(242)), pt(inch(120), inch(242)),
+                  pt(inch(108), inch(242)), pt(inch(108), inch(229.5))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(-119.3), inch(-20.9), inch(-19.0), inch(-15.7)),
+            elevations=(inch(-119.34), inch(-20.9), inch(-19.0), inch(-15.7)),
             serves=("FX-B-BATH-WC",)),
 ]
