@@ -265,12 +265,13 @@ def _collar_end(ctx: CheckContext, duct: ResolvedDuct,
     return tag, collar_seat_problem(duct.path, duct.z_m, at_end, tag, collar)
 
 
-def _mid_run_collars(ctx: CheckContext, duct: ResolvedDuct) -> list[Finding]:
-    """A ceiling collar no end of its run reaches: the collar cannot tee off a trunk."""
+def _mid_run_collars(ctx: CheckContext, duct: ResolvedDuct,
+                     graded: set[str]) -> list[Finding]:
+    """A ceiling collar no end of its run was graded against (none near, the near end joins
+    a duct, or another collar is nearer it): the collar cannot tee off a trunk."""
     out = []
-    for tag, (x, y, _, _) in _collars(ctx, duct):
-        if all(((x - p[0]) ** 2 + (y - p[1]) ** 2) ** 0.5 > BOOT_REACH_M
-               for p in (duct.path[0], duct.path[-1])):
+    for tag, _ in _collars(ctx, duct):
+        if tag not in graded:
             out.append(failed("mep.duct_connectivity",
                               f"{tag} is mid-run on {duct.tag}; a ceiling collar takes a run "
                               "end or a tee branch", (duct.tag, tag)))
@@ -289,6 +290,7 @@ def duct_connectivity(ctx: CheckContext) -> list[Finding]:
 
     out: list[Finding] = []
     for duct in runs:
+        graded: set[str] = set()
         z_by_end = {"start": duct.z_m[0] if duct.z_m else None,
                     "end": duct.z_m[-1] if duct.z_m else None}
         for point, label in ((duct.path[0], "start"), (duct.path[-1], "end")):
@@ -313,6 +315,7 @@ def duct_connectivity(ctx: CheckContext) -> list[Finding]:
             collar = None if joined else _collar_end(ctx, duct, label == "end")
             if collar is not None:
                 tag, problem = collar
+                graded.add(tag)
                 out.append(failed("mep.duct_connectivity", f"duct {duct.tag} {label} {problem}",
                                   (duct.tag, tag)) if problem else passed(
                     "mep.duct_connectivity",
@@ -354,7 +357,7 @@ def duct_connectivity(ctx: CheckContext) -> list[Finding]:
                 f"no register naming this run is within {BOOT_REACH_M / M_PER_IN:.0f}\" of it "
                 "or of the leg it ends, and "
                 "it is not outdoors", (duct.tag,)))
-        out.extend(_mid_run_collars(ctx, duct))
+        out.extend(_mid_run_collars(ctx, duct, graded))
     return out
 
 
