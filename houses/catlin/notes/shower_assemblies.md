@@ -124,14 +124,9 @@ A steam-room label by itself cannot establish suitability for this hotter sauna.
 
 ## Geometry reviews
 
-Generated from resolved geometry with `scripts/render_shower_assemblies.py`:
-
-- [Sauna shower](assets/fx-b-sauna-sh-assembly.png)
-- [BATH2](assets/fx-m-bath2-sh-assembly.png)
-- [Attic](assets/fx-a-stubath-sh-assembly.png)
-- [BATH1 tub shower](assets/fx-s-bath1-sh-assembly.png)
-- [Suite tub shower](assets/fx-s-suitebath-tubsh-assembly.png)
-- [Sauna valve section](assets/sauna-shower-valve-section.png)
+No per-shower review images were committed; view the assemblies in `haus serve`. BATH2's
+drain bay: [bath2-shower-drain-framing.svg](assets/bath2-shower-drain-framing.svg)
+(`scripts/render_bath2_shower_drain.py`).
 
 The shared geometry tests compare placed, rotated IFC mesh vertices and GLB vertices with
 the viewer's source parts. Catlin regressions reuse the read-only model, context and IFC

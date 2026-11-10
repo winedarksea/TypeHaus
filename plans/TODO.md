@@ -251,10 +251,15 @@ the future.
     documented temperature compatibility of the complete waterproofing, tape, mortar,
     collars and sealants, and the sealed foil/pan-liner transitions. Durock suitability
     alone is not system approval.
-  - [x] BATH2 molded-pan drain offset (2026-11-09): pipe and port centred on the SS-3636;
-    joist 011 moves from y=176 to 170", with one full-span TJI added at y=186" so bays
-    stay <=16" o.c. Six-inch subfloor clearance, ceiling below closed; adjacent hot routes
-    coordinated. See `houses/catlin/notes/bath2_shower.md` §5.
+  - [ ] FS-M-WEST joist 012 (y=192") clashes, found by `scripts/render_bath2_shower_drain.py`'s
+    section and graded by nothing: `PR-B-CW-TRUNK` (x 57..200") and `PR-B-CW-BATH2` run
+    *inside* its web at 100 5/8" bsmt, and every branch tees there; `PR-B-CW-BATH` does the
+    same along FS-M-WEST `sister-1-0` at y=243". The hot lanes at 97 7/16" bsmt
+    (`PR-B-HW-BATH2`/`-KITCH`/`-SAUNA` and their y=188" legs) sit 1/8" under the joist
+    underside, so the 5/8" PEX is in the bottom flange and the ceiling board, and their
+    x=90/93/95" crossings plus the SH hot at 96.4" are too close to bore (ESR-1153 2x hole).
+    Needs a lane redesign, plus two check gaps: `run_member_crossing` reads the centreline,
+    not the envelope, and no check sees a run lying along a member.
   - APPL-LG-DISHWASHER: a Product and price row for the 48" braided 3/8" supply its `hose_length` assumes.
   - The floor-fed WC stops (FX-M-BATH2-WC, FX-S-BATH1-WC) are house setout, APPROXIMATE.
   - The washer's real valves are mid-run tees, which the endpoint grade cannot see.
