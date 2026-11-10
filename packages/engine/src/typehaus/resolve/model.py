@@ -1600,6 +1600,8 @@ class ResolvedDuct:
     material: str | None = None
     insulation: str | None = None
     soffit_ref: str | None = None
+    #: (x, y, z) of each turn ``DuctRun.adjustable_elbows`` makes with the adjustable elbow.
+    adjustable_points: tuple[tuple[float, float, float], ...] = ()
 
 
 @dataclass(frozen=True)

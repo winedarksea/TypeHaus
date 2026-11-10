@@ -58,14 +58,15 @@ def _error(tags: tuple[str, ...], message: str) -> Finding:
 ELBOW_SNAP_DEG = 10.0
 
 
-def elbow_for_turn(standard: DuctStandard, diameter_m: float,
-                   angle_deg: float) -> tuple[DuctElbowRow, float] | None:
+def elbow_for_turn(standard: DuctStandard, diameter_m: float, angle_deg: float,
+                   adjustable: bool = False) -> tuple[DuctElbowRow, float] | None:
     """(row, stock angle) for a round turn: a fixed (stamped) elbow within the snap of one
     of its angles first, else an adjustable one set down from the smallest angle at or
-    above the turn. None where neither makes it (a reversal, or no row at the size)."""
+    above the turn. None where neither makes it (a reversal, or no row at the size).
+    ``adjustable`` (the run names this vertex) skips the fixed rows."""
     rows = [r for r in standard.elbows if abs(r.diameter.meters - diameter_m) < 1e-4]
     for row in rows:
-        if row.kind != "adjustable" and row.angles:
+        if row.kind != "adjustable" and row.angles and not adjustable:
             stock = min(row.angles, key=lambda a: abs(a - angle_deg))
             if abs(stock - angle_deg) <= ELBOW_SNAP_DEG:
                 return row, stock
@@ -78,7 +79,7 @@ def elbow_for_turn(standard: DuctStandard, diameter_m: float,
 
 
 def duct_elbow_key(standard: DuctStandard | None, angle_deg: float, size: str,
-                   diameter_m: float | None = None) -> str | None:
+                   diameter_m: float | None = None, adjustable: bool = False) -> str | None:
     """The elbow row a duct turn is billed on, off the elbows the standard buys (M4-108).
 
     A round turn takes ``elbow_for_turn``'s row (``elbow-adj-`` for an adjustable one); a
@@ -87,7 +88,7 @@ def duct_elbow_key(standard: DuctStandard | None, angle_deg: float, size: str,
     """
     if standard is None:
         return None
-    hit = elbow_for_turn(standard, diameter_m, angle_deg) if diameter_m else None
+    hit = elbow_for_turn(standard, diameter_m, angle_deg, adjustable) if diameter_m else None
     if hit is not None:
         row, stock = hit
         return f"elbow-{'adj-' if row.kind == 'adjustable' else ''}{stock:g}-{size}"
@@ -99,12 +100,13 @@ def duct_elbow_key(standard: DuctStandard | None, angle_deg: float, size: str,
 
 
 def set_down_spec(standard: DuctStandard | None, diameter_m: float, angle_deg: float,
-                  gap: str | None) -> tuple[Any, str | None]:
+                  gap: str | None, adjustable: bool = False) -> tuple[Any, str | None]:
     """An off-catalog round turn the standard's adjustable elbow makes, set down in the field:
     graded as the catalog's 90-degree pattern (the elbow bought), else ``gap`` stands."""
     from typehaus.hardware.fittings import KIND_ELBOW, SERVICE_DUCT, fitting_for
 
-    hit = elbow_for_turn(standard, diameter_m, angle_deg) if standard is not None else None
+    hit = (elbow_for_turn(standard, diameter_m, angle_deg, adjustable)
+           if standard is not None else None)
     if hit is None or hit[0].kind != "adjustable":
         return None, gap
     spec = fitting_for(SERVICE_DUCT, KIND_ELBOW, 90.0, round(diameter_m / M_PER_IN, 3))

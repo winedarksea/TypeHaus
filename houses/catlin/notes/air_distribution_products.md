@@ -274,7 +274,10 @@ level-2 extract trunk (9), GV0853 6" spin collar on the System 1 trunks (4). Boo
 the stair box, the suite-bath box and neckless vents take the duct on their own collar; the
 2-1/4x10 floor grilles take a Snappy P13-204 (or Imperial GV0602); 12x6 sidewalls on 6" a GV0671
 end boot; REG-B-SUP2's 125 mm valve a GV0766 4-to-5 increaser (M4-120). The 6x6x6 tee is an
-**Imperial GV0893** full-flow tee, 30 ga (p.19), the GV0890's sibling. Imperial makes no 8-to-4
+**Imperial GV0893** full-flow tee, 30 ga (p.19), the GV0890's sibling. The 4x4x4 tee where
+`DU-M-ERV-R-RET3` leaves `DU-M-ERV-R-LAUNDRY` is a **Master Flow (GAF) T4X4X4** (Home Depot
+100131692, about $16; owner, 2026-11-10): gauge and dimensions unpublished, drawn at its
+estimated envelope. Imperial makes no 8-to-4
 reducer, so it is a stacked **GV0821 8-to-6 (28 ga) + GV0811 6-to-4 (30 ga)** (p.15), one
 billed set (`PROD-DUCT-REDUCER-8-4`), drawn 12.25" long: a stand-in off M&M's 400 round reducer
 (1.75" collar + 2.50-3.50" taper + 1.75" collar, mmmfg.com 400 submittal, no per-size table)

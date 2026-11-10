@@ -283,6 +283,9 @@ class DuctRun(Element):
     # Documentation, not a solved quantity: there is no airflow solver here, and inventing
     # one from the section would be exactly the kind of guess this model refuses to make.
     design_cfm: float | None = None
+    #: Authored path vertices whose turn is the DuctStandard's adjustable elbow rather than
+    #: the stamped one: where the stamped laying length does not fit (decision #114).
+    adjustable_elbows: tuple[int, ...] = ()
 
 
 @register_element

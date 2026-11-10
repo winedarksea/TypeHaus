@@ -184,8 +184,8 @@ def elbow_loss_sum(ctx: CheckContext, duct) -> float | None:
     turns = shared(ctx, "erv_static.duct_turns", lambda: _turns_by_run(
         [r for r in fitting_records(ctx.model) if r.family == FAMILY_DUCT]))
     total = 0.0
-    for angle in turns.get(duct.tag, ()):
-        hit = elbow_for_turn(standard, size, angle)
+    for angle, adjustable in turns.get(duct.tag, ()):
+        hit = elbow_for_turn(standard, size, angle, adjustable)
         if hit is None or hit[0].loss_c is None:
             total += 2 * max(r.loss_c for r in rows)
         else:
@@ -193,11 +193,11 @@ def elbow_loss_sum(ctx: CheckContext, duct) -> float | None:
     return total
 
 
-def _turns_by_run(records) -> dict[str, list[float]]:
-    out: dict[str, list[float]] = {}
+def _turns_by_run(records) -> dict[str, list[tuple[float, bool]]]:
+    out: dict[str, list[tuple[float, bool]]] = {}
     for record in records:
         if record.index is not None:
-            out.setdefault(record.run_tag, []).append(record.angle_deg)
+            out.setdefault(record.run_tag, []).append((record.angle_deg, record.adjustable))
     return out
 
 

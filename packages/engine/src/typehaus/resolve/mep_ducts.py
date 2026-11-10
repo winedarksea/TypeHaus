@@ -199,6 +199,8 @@ def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
     conflicts, crossings, depth_ok = _bay_occupancy(
         model, duct, floor.storey if floor is not None else storey.tag, path, floor,
         width_m, depth_m, z)
+    adjustable = tuple((path[i][0], path[i][1], z[i]) for i in duct.adjustable_elbows
+                       if 0 <= i < len(path))
     if duct.end_terminal_ref is not None:
         from typehaus.resolve.terminal_necks import terminal_inlet
 
@@ -246,5 +248,6 @@ def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
         depth_ok=depth_ok, design_cfm=duct.design_cfm, diameter_m=diameter_m,
         z_m=tuple(z), length_m=developed, material=duct.material,
         insulation=duct.insulation, soffit_ref=duct.soffit_ref,
+        adjustable_points=adjustable,
     ))
     return findings

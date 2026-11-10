@@ -118,7 +118,7 @@ def _takeoff_in(record, elbows: dict) -> float:
     row = None
     if record.family == FAMILY_DUCT and elbows and record.gap != RECTANGULAR_DUCT_GAP:
         hit = elbow_for_turn(elbows["standard"], record.nominal_in * M_PER_IN,
-                             record.angle_deg)
+                             record.angle_deg, record.adjustable)
         row = hit[0] if hit is not None else None
     radius = (row.center_to_face.meters / M_PER_IN if row is not None and row.center_to_face
               else getattr(record.spec, "bend_radius_in", None))

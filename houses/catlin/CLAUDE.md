@@ -1594,7 +1594,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   Redesigned 2026-09-12 (BLD-08): the topology did not change, what it is built from did.
   - **A ceiling valve takes its run's end on a derived stock elbow; a run ends level >= 2" over
     the collar** (`resolve/terminal_drops.py`, 2026-11-10). Under the stamped elbow's 6" it is
-    `mep.fitting_pattern` UNKNOWN; a collar mid-run or under the run FAILs `mep.duct_connectivity`.
+    `mep.fitting_pattern` UNKNOWN unless the run names that vertex in `adjustable_elbows`
+    (the 4.75" adjustable; STUDY, notes §10.16); a collar mid-run or under the run FAILs `mep.duct_connectivity`.
   - **No proprietary tube anywhere.** The 160 mm/75 mm radial manifold and its semi-rigid
     tube had three US sellers and no Minnesota dealer, and the owner's decision is not to
     buy one. Every radial is **4" galvanized snap-lock** (`material="galvanized"`), every

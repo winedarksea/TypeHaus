@@ -169,20 +169,22 @@ DUCTS_ERV_LEVEL2 = [
     # Each rises off its own collar into the chase-trimmer bay and takes its own pocket lane
     # south on the upper tier (header table). STUDY and BED pass under the neck first.
     DuctRun(uid="2ZZ3MF5VAF", tag="DU-M-ERV-R-STUDY", system=DuctSystem.SUPPLY,
-            # Under the neck to x 63", up to the upper tier, south in R1's x=106 7/8" lane
-            # (the trusses' south chase, east of the vent string), over DU-M-ERV-R-LAUNDRY,
+            # Under the neck to x 65", up at 25 deg to the upper tier, south in R1's x=106 7/8"
+            # lane (the trusses' south chase, east of the vent string), over DU-M-ERV-R-LAUNDRY,
             # then a 45 down to the low tier in its own bay, north of LAUNDRY: the suite's pipes
-            # fill the upper tier. Past PR-M-S-SUITE-TUB-DRAIN (x=155.8") it climbs 3" to drop
-            # onto REG-M-SUP4, west of PR-B-CW-SUITE's x=183" crossing.
+            # fill the upper tier. Past PR-M-S-SUITE-TUB-DRAIN (x=155.8") it climbs 4.8" (to
+            # just under PR-A-HW-STUBATH at x=168.7") and drops 4.76" onto REG-M-SUP4. The
+            # stamped 90 needs 6"; the adjustable's 4.75" fits, there and at vertex 6
+            # (2026-11-10, owner: "adjustable is fine"; notes/erv_static_budget.md §10.16).
             path=(pt(inch(58), inch(408.5)), pt(inch(58), inch(408.5)),
-                  pt(inch(63), inch(408.5)), pt(inch(70), inch(408.5)),
+                  pt(inch(65.125), inch(408.5)), pt(inch(74.5), inch(408.5)),
                   pt(inch(106.875), inch(408.5)), pt(inch(106.875), inch(254.25)),
                   pt(inch(106.875), inch(248.6)), pt(inch(158.5), inch(248.6)),
-                  pt(inch(161.5), inch(248.6)), pt(ft(14, 8), inch(248.6))),
+                  pt(inch(163.325), inch(248.6)), pt(ft(14, 8), inch(248.6))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _STUDY_Z, _STUDY_Z, _STUDY_Z, _LOW_Z, _LOW_Z,
-                        inch(-6.625), inch(-6.625)),
+                        inch(-4.8), inch(-4.8)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="galvanized", design_cfm=DU_M_ERV_R_STUDY),
+            material="galvanized", design_cfm=DU_M_ERV_R_STUDY, adjustable_elbows=(6, 9)),
     DuctRun(uid="MRH0QZT6NN", tag="DU-M-ERV-R-LIVING", system=DuctSystem.SUPPLY,
             # Straight south in the D pockets at x=42 1/4", over the trunk's cross leg, then
             # east in the 12'-8" bay, ramping to the low tier under BED and PR-M-CW-HYD-DIST

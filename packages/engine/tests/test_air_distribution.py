@@ -102,3 +102,20 @@ def test_a_ceiling_collar_takes_its_run_on_a_derived_drop(catlin_model_ro) -> No
     failed = [f for f in duct_connectivity(check_context(model=sunk))
               if f.result is Result.FAIL and duct.tag in f.element_tags]
     assert failed and "below REG-M-SUP1's collar top" in failed[0].message
+
+
+def test_study_drops_on_the_adjustable_elbow_it_names(catlin_model_ro) -> None:
+    """``adjustable_elbows=(6, 9)`` makes those two turns the 4.75" adjustable 90: the 4.76"
+    drop onto REG-M-SUP4 fits it, and the radial is the note's §10.16 hand figure."""
+    from typehaus.checks.mep.erv_static import _duct_drop
+    from typehaus.resolve.mep_fittings import fitting_records
+
+    model = catlin_model_ro
+    duct = next(d for d in model.ducts if d.tag == "DU-M-ERV-R-STUDY")
+    keys = {r.index: (r.order_key, r.adjustable) for r in fitting_records(model)
+            if r.run_tag == duct.tag}
+    assert keys[6] == keys[9] == ("elbow-adj-90-4in", True)
+    assert keys[1] == ("elbow-90-4in", False)
+    assert (duct.z_m[-2] - duct.z_m[-1]) / M_PER_IN == pytest.approx(4.7625, abs=0.01)
+    leg = _duct_drop(check_context(model=model), duct, 0)
+    assert leg.drop_in_wg == pytest.approx(0.008474, abs=2e-6)

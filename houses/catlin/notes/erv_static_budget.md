@@ -1011,6 +1011,33 @@ On the extract side `DU-M-ERV-R-BATH1`, `-BATH2`, `-KITCH`, `-MUD` and the new `
 gain a climb and a drop (at most 0.002 in. each: BATH1 0.0004 -> 0.0022, at 20 cfm); the worst
 extract path is still `DU-M-ERV-R-SUITEBATH` at **0.417 in.**, unchanged.
 
+### 10.16 STUDY's drop on the adjustable 90 (2026-11-10)
+
+`DU-M-ERV-R-STUDY` dropped 2.94" onto `REG-M-SUP4` against the stamped 90's 6.0" (1.5 D
+stand-in). `PR-A-HW-STUBATH` crosses over the last leg at x=168.7" (centre 118.25"), so the leg
+climbs only to 115.2" (crown 117.2"): a 4.76" drop, which the C.L. Ward adjustable's 4.75"
+fits. The run names that vertex and the turn into the low-tier bay (`adjustable_elbows=(6, 9)`);
+the port-end ramp eases from 32.2 to 25.1 degrees (x 63/70 -> 65.125/74.5"). Every straight
+now clears its take-offs (vertex 1-2 7.13 vs 7.06", 5-6 7.99 vs 7.24", 7-8 6.82 vs 4.97",
+9-10 4.76 vs 4.75"). A sidewall valve was refused: the booth's walls stop under the floor's
+3/4" deflection gap or are 2x4, so it would add two 90s and a bored plate.
+
+15 cfm, 4" galvanized:
+
+    VP:        V = 15 / (pi/4 x (4/12)^2) = 171.9 fpm;  VP = (171.9/4005)^2 = 0.001842 in.
+    old:       friction 0.008011 - 1.6249 x 0.001842 = 0.005018 in. over 24.672 ft = 0.0002034 in./ft
+    developed: tail  climb 4.243 -> 6.824, level 14.500 -> 12.675, drop 2.938 -> 4.763  (+2.581 in)
+               head  5.000 + 8.268 + 36.875 -> 7.125 + 10.356 + 32.375                (-0.287 in)
+               24.672 + 2.294/12 = 24.863 ft
+    elbows:    vertices 2, 3 (adjustable, 32.15 -> 25.14 deg): K 0.4715 -> 0.3771,
+               2 x 0.37 x -0.0944 = -0.0699; vertices 6, 9 stamped 0.22 -> adjustable 0.37: +0.30
+               Sum C K 1.6249 - 0.0699 + 0.30 = 1.8551
+    new:       24.863 x 0.0002034 + 1.8551 x 0.001842 = 0.005057 + 0.003417 = 0.008474 in.
+
+The STUDY path rises 0.0005 in., **0.3332 -> 0.3337 in.** (radial + 4.6 Pa valve + the level-2
+plenum's 0.5 Pa + the supply trunks), 0.0945 in. under `DU-B-ERV-R-PLAY`'s governing
+**0.4282 in.** Delivery is unchanged: **204.6 cfm** against 203.0, **+1.6 cfm**.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

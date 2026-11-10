@@ -75,9 +75,12 @@ REGISTERS_MAIN = [
     #
     # -- the supply, back in the ceiling ---------------------------------------------
     #
-    # ** (14'-8", 20'-8") SINCE 2026-11-10. ** The duct drops onto the valve's collar on a stock
-    # 90 now, and east of PR-B-CW-SUITE (x=183") the suite's pipes leave no room over the
-    # low tier to drop from; the history below is the old (17'-2") position.
+    # ** (14'-8", 20'-8") SINCE 2026-11-10. ** The duct drops onto the valve's collar on an
+    # adjustable 90 (4.75"; the stamped one's 6" does not fit under PR-A-HW-STUBATH), and east
+    # of PR-B-CW-SUITE (x=183") the suite's pipes leave no room over the low tier to drop
+    # from; the history below is the old (17'-2") position. A sidewall valve was weighed and
+    # refused: every wall of this booth stops under FS-S-WEST's 3/4" deflection gap or is a
+    # 2x4, so the duct would need two more 90s and a bored plate.
     # (17'-2", 20'-8") on the ceiling. ED-M-STUDY-SPOT is at (17'-6 5/8", 21'-9 1/2"), so this is
     # 4 5/8" west and 13 1/2" south of directly above the sconce, three feet over it.
     # FS-S-WEST's bays centre on 8" + n*16", so 20'-8" is a bay; the sconce's 21'-9 1/2"

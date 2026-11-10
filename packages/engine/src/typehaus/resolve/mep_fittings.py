@@ -1,11 +1,8 @@
 """Every fitting a run takes, derived once — the reading the take-off, the checks, the IFC
 emitter and the router's proposal all share.
 
-A run's geometry states where it turns and where another run joins it. What gets *installed*
-at each of those points is a part, and until this module existed the answer was derived
-three times over and agreed nowhere: ``takeoff/plumbing.fitting_takeoff`` counted elbows off
-``sweep_turns`` and snapped them to three angles, ``emit/ifc/mep.py`` emitted no fitting at
-all, and the router's proposal printed a polyline whose corners nobody had priced.
+A run's geometry states where it turns and where another run joins it; what is installed
+there is a part, derived here once rather than three ways (take-off, IFC, router).
 
 **Two questions, deliberately kept apart.** A vertex asks *what does this cost to buy* and
 *what part is it*, and they are not the same question:
@@ -17,8 +14,7 @@ all, and the router's proposal printed a polyline whose corners nobody had price
 * :attr:`FittingRecord.spec` is the catalog's answer — the ASTM/ASME pattern that makes this
   turn, or ``None`` with :attr:`FittingRecord.gap` saying why not.
 
-They disagree on catlin: ``elbow-22.5-1in`` is a priced row for a part ASME B16.22 does not
-make. Merging the two would have buried that.
+They disagree on catlin (``elbow-22.5-1in``); merging the two would have buried that.
 
 **A bendable service is not a fitting service.** Copper and PEX turn by being bent, to a
 radius the *product* bounds; DWV and rigid duct turn by being fitted, so
@@ -85,10 +81,10 @@ MIN_DWV_SIZE_IN = 1.25
 #: the same allowance the DWV rows carry in their own ``snap_deg``.
 PITCHED_SNAP_BONUS_DEG = 5.0
 
-#: Below this a vertex is not a fitting at all: it is where a run changes grade, which is the
-#: pipe flexing or two lengths glued straight. Half the smallest stock DWV bend, and the same
-#: number ``fitting_takeoff`` has always used.
+#: Below this a vertex is a grade change, not a fitting: half the smallest stock DWV bend.
 MIN_FITTING_TURN_DEG = 10.0
+#: A turn this close to a run's ``adjustable_points`` entry is that vertex.
+_ADJUSTABLE_MATCH_M = M_PER_IN / 16.0
 
 #: Which take-off bills a record. Two families rather than one because they are two BOM
 #: sections priced by two trades, and a shared reading that lost track of which would make
@@ -140,6 +136,8 @@ class FittingRecord:
     gap: str | None
     #: Whether this service turns by bending the product rather than by a fitting.
     bendable: bool
+    #: A duct turn its run names for the standard's adjustable elbow (``adjustable_elbows``).
+    adjustable: bool = False
 
     @property
     def tag_for_report(self) -> str:
@@ -149,13 +147,11 @@ class FittingRecord:
         return f"{self.run_tag} where {self.branch_tag} joins it"
 
 
-#: Stock DWV/supply elbow angles the *order key* snaps to. This is the take-off's own list
-#: and is deliberately NOT the catalog's: it decides a price row, and the catalog decides a
-#: part. See this module's docstring.
+#: Stock DWV/supply elbow angles the *order key* snaps to: the take-off's own list (a price
+#: row), deliberately NOT the catalog's (a part).
 _ORDER_STOCK_DEG = (90.0, 45.0, 22.5)
 _ORDER_SNAP_DEG = 10.0
-#: A made bend's angle is rounded to this before it becomes a row: 71.4 and 71.6 degrees are
-#: one bend made twice, and 71 and 57 are not.
+#: A made bend's angle is rounded to this before it becomes a row (71.4 and 71.6 are one).
 _ORDER_ROUND_DEG = 5.0
 
 
@@ -280,7 +276,9 @@ def _bend(path: Sequence[tuple[float, float, float]], index: int, angle_deg: flo
 def polyline_fittings(tag: str, family: str, system: str,
                       points: Sequence[tuple[float, float, float]], size_m: float,
                       *, rectangular: bool = False, material: str | None = None,
-                      duct_standard: Any = None, order_size: str = "") -> list[FittingRecord]:
+                      duct_standard: Any = None, order_size: str = "",
+                      adjustable_points: Sequence[tuple[float, float, float]] = ()
+                      ) -> list[FittingRecord]:
     """The elbows a bare 3D polyline takes — for a run that is not in the model yet.
 
     The router proposes geometry before anybody has pasted it, and "what parts does this
@@ -301,13 +299,14 @@ def polyline_fittings(tag: str, family: str, system: str,
     nominal = _nominal_in(size_m)
     cleaned = clean_path(list(points))
     sweep = SolidSweep(path=cleaned, profile=((size_m / 2.0, 0.0),))
-    duct_key = (lambda angle: duct_elbow_key(duct_standard, angle, order_size, None
-                                             if rectangular else size_m)
+    duct_key = (lambda angle, adj: duct_elbow_key(duct_standard, angle, order_size, None
+                                                  if rectangular else size_m, adj)
                 ) if family == FAMILY_DUCT and duct_standard is not None else None
     out: list[FittingRecord] = []
     for turn in sweep_turns(sweep):
         if turn.angle_deg < MIN_FITTING_TURN_DEG:
             continue  # a grade change, not a fitting
+        adj = any(math.dist(turn.point, p) < _ADJUSTABLE_MATCH_M for p in adjustable_points)
         if rectangular:
             spec, gap = None, RECTANGULAR_DUCT_GAP
         elif family == FAMILY_RACEWAY:
@@ -316,7 +315,7 @@ def polyline_fittings(tag: str, family: str, system: str,
             spec, gap = _match(service, KIND_ELBOW, turn.angle_deg, nominal, None,
                                bendable, bonus)
             if spec is None and family == FAMILY_DUCT:
-                spec, gap = set_down_spec(duct_standard, size_m, turn.angle_deg, gap)
+                spec, gap = set_down_spec(duct_standard, size_m, turn.angle_deg, gap, adj)
             if spec is None and bendable:
                 bent, why = _bend(cleaned, turn.index, turn.angle_deg, size_m, material)
                 if bent is not None or why is not None:
@@ -325,9 +324,9 @@ def polyline_fittings(tag: str, family: str, system: str,
             run_tag=tag, family=family, kind=KIND_ELBOW, service=service, system=system,
             index=turn.index, point=tuple(turn.point), angle_deg=turn.angle_deg,
             plan_angle_deg=turn.plan_angle_deg, nominal_in=nominal, branch_in=None,
-            order_key=(duct_key(turn.angle_deg) if duct_key
+            order_key=(duct_key(turn.angle_deg, adj) if duct_key
                        else order_key(turn.angle_deg, size_m)), spec=spec, gap=gap,
-            bendable=bendable, branch_tag=None))
+            bendable=bendable, branch_tag=None, adjustable=adj))
     return out
 
 
@@ -339,7 +338,8 @@ def _turn_records(run: Any, family: str, *, size_m: float, rectangular: bool = F
     return polyline_fittings(
         run.tag, family, run.system,
         [(x, y, zz) for (x, y), zz in zip(run.path, z, strict=True)], size_m,
-        rectangular=rectangular, material=getattr(run, "material", None), **duct)
+        rectangular=rectangular, material=getattr(run, "material", None),
+        adjustable_points=getattr(run, "adjustable_points", ()), **duct)
 
 
 def _pipe_service(system: str, nominal_in: float) -> tuple[str, float]:

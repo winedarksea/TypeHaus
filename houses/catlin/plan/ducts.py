@@ -11,9 +11,10 @@
 #   * Elbows: a 90 or 45 turn is a DIE-STAMPED Linx E90/E45 (commercial, 3-12"), C 0.22 at
 #     r/D 1.0 (ASHRAE Fitting 3-1; Linx offers 1.0 or 1.5 radius, 1.0 taken): no retail
 #     stamped elbow exists, and the retail adjustable's C put R403.5 short (owner, 2026-11-05).
-#     Any other turn is a C.L. Ward adjustable 90 set down, dimension A as centre-to-face
-#     (4.75/6/7"; read to the far side the 8" radius would be under D/2), C 0.37 (Fitting 3-2,
-#     4-piece, r/D 1.0). The stamped laying length is unpublished: 1.5 D stands in.
+#     Any other turn, or a vertex a run names in `adjustable_elbows` (the stamped laying
+#     length does not fit), is a C.L. Ward adjustable 90 set down, dimension A as centre-to-
+#     face (4.75/6/7"; read to the far side the 8" radius would be under D/2), C 0.37
+#     (Fitting 3-2, 4-piece, r/D 1.0). The stamped laying length is unpublished: 1.5 D stands in.
 #   * Supports: SMACNA HVAC DCS 1995 Tables 4-1/4-2; within 2' of each fitting (S4.1). With no
 #     framing in reach, a saddle strapped to the deck the duct bears on (house practice; SMACNA
 #     draws no bottom support), else a bracket to a wall within 2" (Fig. 4-8) (owner,
@@ -83,6 +84,10 @@ DUCT_PRODUCTS = (
             name="6 x 6 x 4 in. full-flow tee, 30 ga", source=_IMPERIAL),
     Product(tag="PROD-DUCT-TEE-6-6", brand="Imperial", model="GV0893",
             name="6 x 6 x 6 in. full-flow tee, 30 ga", source=_IMP26),
+    Product(tag="PROD-DUCT-TEE-4-4", brand="Master Flow", model="T4X4X4",
+            name="4 x 4 x 4 in. round tee, galvanized",
+            url="https://www.homedepot.com/p/4-in-Round-Tee-T4X4X4/100131692",
+            source="Master Flow (GAF) T4X4X4, Home Depot listing, about $16 (owner, 2026-11-10); gauge and dimensions not published: the tee's laying length stays estimated"),
     Product(tag="PROD-DUCT-REDUCER-8-4", brand="Imperial", model="GV0821 + GV0811",
             name="8 to 4 in. reducer set: GV0821 8 to 6 in. (28 ga) + GV0811 6 to 4 in. (30 ga), stacked",
             source=_IMP26),
@@ -179,9 +184,9 @@ DUCT_STANDARD = [
                         source="rectangular branch, shop-fabricated with the trunk"),
             DuctPartRow(kind="tee", size="6in", branch="6in", product_ref="PROD-DUCT-TEE-6-6",
                         source=_IMP26),
-            # REG-M-RET3's branch off LAUNDRY's crown (2026-11-10). No 4x4x4 SKU read yet.
-            DuctPartRow(kind="tee", size="4in", branch="4in", fabricated=True,
-                        source="4 x 4 x 4 in. tee, shop-fabricated with the radial; SKU not read"),
+            # REG-M-RET3's branch off LAUNDRY's crown (2026-11-10).
+            DuctPartRow(kind="tee", size="4in", branch="4in", product_ref="PROD-DUCT-TEE-4-4",
+                        source="Master Flow T4X4X4 (owner, 2026-11-10); gauge and dimensions unpublished"),
             # Imperial makes no 8 to 4; the set's laying length is unpublished. Stand-in: two
             # M&M 400s at their 7.0" maximum, one 1.75" collar engaged: 7.0 + 7.0 - 1.75.
             DuctPartRow(kind="reducer", size="8in", branch="4in",
