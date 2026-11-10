@@ -34,10 +34,11 @@ BASEMENT_CLEANOUTS = [
                   access="wall", wall_ref="W-B-CW3",
                   clear_width=inch(18), clear_depth=inch(18)),
     # FX-B-UTIL-SINK's line is a sink line (707.4): a cleanout tee on the trap arm at the
-    # W-B-STR2 face, reached through the tub's cabinet.
+    # W-B-STR2 face, reached through the tub's cabinet. The cap is 2 1/2" off the fitting so
+    # the 2" body (2026-11-10) does not swallow it.
     DrainCleanout(uid="NY556FY4H7", tag="CO-B-USINK", pipe_ref="PR-B-USINK-DRAIN",
                   position=pt(inch(117.5), inch(229.5)), fitting_elevation=inch(15.9375),
-                  cap_position=pt(inch(115.5), inch(229.5)), cap_elevation=inch(18),
+                  cap_position=pt(inch(115), inch(229.5)), cap_elevation=inch(18),
                   access="cabinet", clear_width=inch(18), clear_depth=inch(18)),
     # The slab branches' upper terminals are wall panels: the fitting on the buried pipe, its
     # extension up a stud bay, the cap behind a panel. No slab branch turns past 707.4's

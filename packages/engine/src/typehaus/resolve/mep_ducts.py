@@ -199,8 +199,17 @@ def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
     conflicts, crossings, depth_ok = _bay_occupancy(
         model, duct, floor.storey if floor is not None else storey.tag, path, floor,
         width_m, depth_m, z)
-    adjustable = tuple((path[i][0], path[i][1], z[i]) for i in duct.adjustable_elbows
-                       if 0 <= i < len(path))
+    authored = len(path)
+    # Indices name AUTHORED vertices: a path edit that inserts or drops a vertex (a UI
+    # write-back patches `path` alone) shifts them silently, so re-read them after one.
+    bad = sorted({i for i in duct.adjustable_elbows
+                  if not 0 < i < authored - (0 if collar_fed else 1)})
+    if bad:
+        findings.append(Finding(
+            severity=Severity.ERROR, check_id="integrity.duct_adjustable_elbows",
+            message=f"{duct.tag}: adjustable_elbows {bad} name no interior turn of its "
+                    f"{authored}-vertex path (an end takes one only where it drops onto a "
+                    "collar)", element_tags=(duct.tag,), result=Result.FAIL))
     if duct.end_terminal_ref is not None:
         from typehaus.resolve.terminal_necks import terminal_inlet
 
@@ -229,6 +238,10 @@ def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
                     element_tags=(duct.tag, duct.end_terminal_ref), result=Result.FAIL)]
             path.insert(-1, approach)
             z.insert(-1, z[-1])
+    # After the terminal's approach (inserted before the last vertex) and its inlet z.
+    adjustable = tuple((path[j][0], path[j][1], z[j]) for i in duct.adjustable_elbows
+                       if 0 < i < authored
+                       for j in [len(path) - 1 if i == authored - 1 else i])
     if collar_fed and diameter_m is not None:
         from typehaus.resolve.terminal_drops import drop_onto_collars
 

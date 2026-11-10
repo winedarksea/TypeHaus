@@ -143,6 +143,28 @@ class ConnectorPlacementIndex:
         return None
 
 
+def _onto_face(index: ConnectorPlacementIndex, carrier: str, point: Vec2, outward: Vec2,
+               width_m: float) -> Vec2:
+    """``point`` moved along ``outward`` onto the carrier's face on the carried side."""
+    member = index.members.get(carrier)
+    solid = index.solids.get(carrier)
+    ends = ((member.p0, member.p1) if member is not None else
+            centerline_endpoints(list(solid.outline)) if solid is not None
+            and len(solid.outline) >= 3 else None)
+    if ends is None:
+        return (point[0] + outward[0] * width_m / 2, point[1] + outward[1] * width_m / 2)
+    run = _direction(ends[0][:2], ends[1][:2])
+    normal = (-run[1], run[0])
+    cos = normal[0] * outward[0] + normal[1] * outward[1]
+    if cos < 0:
+        normal, cos = (-normal[0], -normal[1]), -cos
+    if cos < 0.3:
+        return (point[0] + outward[0] * width_m / 2, point[1] + outward[1] * width_m / 2)
+    inset = (point[0] - ends[0][0]) * normal[0] + (point[1] - ends[0][1]) * normal[1]
+    step = (width_m / 2 - inset) / cos
+    return (point[0] + outward[0] * step, point[1] + outward[1] * step)
+
+
 def solid_with_body(solid: ResolvedSolid, mesh: GMesh) -> ResolvedSolid:
     """Keep the picking envelope synchronized with the body every renderer exports."""
     xs, ys, zs = zip(*mesh.positions, strict=True)
@@ -318,11 +340,10 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
                  _connected_beam(index, references)), references[0])
             support_width_m = index.support_width(support_ref, tangent)
             if joint is not None and outward is not None and support_width_m is not None:
-                # Hung connections are detected on the carrier centreline, but face-mount
-                # catalog geometry uses y=0 as the carrier face. Move the datum to the
-                # face on the carried member's side before fitting the hanger body.
-                point = (point[0] + outward[0] * support_width_m / 2,
-                         point[1] + outward[1] * support_width_m / 2)
+                # The catalog's y=0 is the carrier face. A hung end may stop on the carrier
+                # centreline (a beam) or at its face (a header, trimmer, ridge beam), so
+                # move the datum by what is left to the face, not a blind half width.
+                point = _onto_face(index, support_ref, point, outward, support_width_m)
     elif part.startswith(BASE_PREFIXES):
         if joint is not None and len(references) > 1:
             support = index.solids.get(references[1])

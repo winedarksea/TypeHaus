@@ -139,6 +139,7 @@
   "connector_hanger|framing": [56, 0.000226],
   "connector_hanger|opening_lining": [1, 2.9e-05],
   "connector_hanger|soffit": [6, 7e-06],
+  "connector_hanger|sill_plate": [1, 1e-06],
   "connector_hanger|wall": [7, 0.000314],
   "door_casing|opening": [2, 1e-05],
   "door_casing|pipe_drain": [1, 1.9e-05],

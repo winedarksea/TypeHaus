@@ -488,8 +488,8 @@ SECOND_BRANCH_DRAINS = [
     # at 2 3/4" above the finished floor and lands on the stack head at 10'-2 9/16" (the
     # stack tops out at this, its highest inlet). LAV1's 1 1/2" leg carries 1 DFU past
     # stud-006 (x=56") to LAV2's inlet at x=58 1/4"; from there both bowls' 2 DFU ride 2"
-    # (UPC Table 703.2: 1 1/2" is 1 DFU), 2026-11-10. A 2" bore in a 2x4 passes R602.6's 60%,
-    # so LAV2's arm runs east in its cabinet to enter the wall past that stud.
+    # (UPC Table 703.2: 1 1/2" is 1 DFU), 2026-11-10. A 2" bore in a 2x4 breaks R602.6's 60%
+    # (2.10"), so LAV2's arm runs east in its cabinet to enter the wall past that stud.
     PipeRun(uid="67KKJ3MBFA", tag="PR-M-S-VANITY-LAV1-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(22.375), inch(318)), pt(inch(58.25), inch(318)),),
             diameter=inch(1.5), material="pvc",

@@ -10,7 +10,7 @@ from typehaus.joints import derived_joints
 from typehaus.joints.model import marker_uid
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.connector_geometry.fasteners import fastener_mesh
-from typehaus.resolve.connector_geometry.placement import ConnectorPlacementIndex
+from typehaus.resolve.connector_geometry.placement import ConnectorPlacementIndex, _onto_face
 
 SIMPSON_PREFIXES = ("LUS", "IUS", "LSSR", "LSC", "THA", "HU", "HHUS", "H2.5", "H10",
                     "ABU", "CBSTQ", "CCQ", "PC", "AC", "ACE", "HL", "L50", "STHD",
@@ -57,11 +57,14 @@ def test_hanger_seats_use_carried_member_ends_and_face_into_them(catlin_model_ro
         solid = solids[marker_uid(joint.key)]
         outward = joint.outward_xy
         tangent = (0.0, 1.0) if joint.axis == "y" else (1.0, 0.0)
-        support_face_offset = index.support_width(joint.members[0], tangent) / 2
+        # A hung end stops on the carrier centreline (a beam) or at its face (a header).
+        face = _onto_face(index, joint.members[0], joint.point, outward,
+                          index.support_width(joint.members[0], tangent))
+        support_face_offset = sum((face[i] - joint.point[i]) * outward[i] for i in range(2))
         local = [(sum((p[i] - joint.point[i]) * outward[i] for i in range(2)),
                   p[2] - joint.seat_z_m) for p in solid.body_mesh.positions]
-        assert max(y for y, _ in local) > M_PER_IN, solid.tag
-        # The seat starts at the support face; joint.point lies on its centreline.
+        assert max(y for y, _ in local) - support_face_offset > M_PER_IN - 1e-9, solid.tag
+        # The seat starts at the support face.
         assert any(y > support_face_offset
                    and abs(z - (y - support_face_offset)
                            * math.tan(joint.slope_radians)) < 1e-8

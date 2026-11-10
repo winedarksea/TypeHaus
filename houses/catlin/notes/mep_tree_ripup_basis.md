@@ -157,7 +157,7 @@ that keep the tees:
 * **L9 Accessories that come off the line are listed.** An accessory on a lifted run whose point is more than
   1" off the new line is named in the after-paste re-seat line, the same sentence `--tree --topology trunk`
   writes. One on a held leg stays: PA-M-KITCH-STOP-HW (363.6, 421.5, 9.06) is HW-KITCH vertex 14, and
-  PA-B-BATH-STOP-CW stands on CW-BATH's fixture end. PA-B-BFP-BATH (84, 312, -8.8) and PA-B-WH-STOP-CW
+  PA-B-BATH-STOP-CW stood on CW-BATH's fixture end (removed 2026-11-10, W5). PA-B-BFP-BATH (84, 312, -8.8) and PA-B-WH-STOP-CW
   (93.5, 335.5, -61.44) are on searched legs, so they are listed unless the new line happens to pass them.
 
 ---

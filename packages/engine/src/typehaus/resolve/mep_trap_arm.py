@@ -451,12 +451,21 @@ def wet_vent_data(model) -> WetVentData:
 
 def whole_trap_arms(model, data: WetVentData | None = None) -> set[str]:
     """Drain runs that are wholly one fixture's trap arm: its leaf run, ending on one of its
-    own vent tees. Table 703.2 note 1 leaves these out of branch capacity."""
+    own vent tees. Table 703.2 note 1 leaves these out of branch capacity.
+
+    Only a run carrying that fixture alone (its whole upstream subtree), and never a water
+    closet's: 710.1's 3" floor binds the closet's own arm, so it stays on the table path."""
+    from typehaus.resolve.mep_queries import accumulated_serves
+
     data = data or wet_vent_data(model)
+    carried = accumulated_serves(model.pipe_runs)
     out = set()
-    for tag, (leaf, *_rest) in data.fx.items():
+    for tag, (leaf, _dfu, symbol, _storey) in data.fx.items():
         pts = data.drains.get(leaf)
-        if pts and any(math.dist(pts[-1], e) <= TEE_TOL_M for e in data.vent_ends.get(tag, ())):
+        if (pts and not symbol.startswith("toilet")
+                and set(carried.get(leaf, ())) <= {tag}
+                and any(math.dist(pts[-1], e) <= TEE_TOL_M
+                        for e in data.vent_ends.get(tag, ()))):
             out.add(leaf)
     return out
 
