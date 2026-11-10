@@ -69,6 +69,9 @@ ROWS: tuple[C, ...] = (
     # Raceways, split power vs comms for colour.
     C("conduit_power", trade="electrical", billed_elsewhere=True, collision=_HARD),
     C("conduit_data", trade="electrical", billed_elsewhere=True, collision=_HARD),
+    # Grounding (#123): rods and bare conductors, billed in [grounding]/[grounding_conductors].
+    C("grounding_electrode", trade="electrical", billed_elsewhere=True),
+    C("grounding_conductor", trade="electrical", billed_elsewhere=True),
     # A derived device box (resolve/device_boxes.py); its device carries the collision.
     C("electrical_box", trade="electrical", ifc_class="IfcJunctionBox", ifc_predefined="POWER",
       billed_elsewhere=True),

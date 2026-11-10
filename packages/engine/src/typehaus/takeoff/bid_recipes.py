@@ -131,6 +131,8 @@ SHAPES: dict[str, Shape] = {
     "conduit": Shape("Conduit, by material and trade size", _runs, "LF"),
     "conduit_fittings": Shape("Conduit fittings, by the piece"),
     "electrical_boxes": Shape("Device boxes and covers, by the piece"),
+    "grounding": Shape("Grounding rods, clamps and transitions, by the piece"),
+    "grounding_conductors": Shape("Grounding and bonding conductors", None, "LF"),
     "conductors": Shape("Conductors"),
     "data_raceways": Shape("Data raceways", _runs, "LF"),
     "solar_modules": Shape("PV modules, by the module", None),
@@ -289,7 +291,8 @@ RECIPES: dict[str, Recipe] = {
                          "conductors by the foot, the PV array with its inverter and battery, "
                          "and the appliance control kits.",
                          ("placeables", "conduit", "conduit_fittings", "electrical_boxes",
-                          "conductors", "data_raceways", "solar_modules", "hardware",
+                          "grounding", "grounding_conductors", "conductors", "data_raceways",
+                          "solar_modules", "hardware",
                           "install_parts", "freeze_protection", "solids", "allowances"),
                          ("E-101", "E-601", "E-602")),
     "low_voltage": Recipe("Low voltage", "Data outlets, PoE devices and the media enclosure, "

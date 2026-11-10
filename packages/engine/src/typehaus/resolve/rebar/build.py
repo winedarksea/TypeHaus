@@ -367,7 +367,7 @@ def _lay_continuations(model, sink: Sink, spec, solid, cover: float) -> None:
     from shapely.geometry import Point, Polygon
 
     for entry in spec.bars:
-        if not entry.continues_into or entry.spacing is None:
+        if not entry.continues_into or (entry.spacing is None and entry.role != "electrode"):
             continue
         hosts = [(Polygon(s.outline), s) for s in model.solids
                  if s.tag in entry.continues_into and not s.derived]

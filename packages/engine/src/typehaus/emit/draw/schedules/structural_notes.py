@@ -225,12 +225,13 @@ def footing_dowel_lines(model: ResolvedModel, profile: JurisdictionProfile | Non
     from shapely.geometry import LineString, Polygon
 
     from typehaus.emit.draw.foundation_schedule import slabs_on_grade
+    from typehaus.model.rebar import is_reinforced
     from typehaus.model.structure import Footing, FoundationWall
     from typehaus.resolve.overlay import union_all
 
     plain: dict[str, list[str]] = {}
     for el in model.plan.all_elements():
-        if isinstance(el, Footing) and el.reinforcement is None:
+        if isinstance(el, Footing) and not is_reinforced(el.reinforcement):
             plain.setdefault(el.under, []).append(el.tag)
     strips = {s.tag: s for s in model.solids if s.category == "footing"}
     slabs = slabs_on_grade(model)

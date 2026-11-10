@@ -826,3 +826,11 @@ area (`north_entry_piers.md` §13b, F5-106), and each takes six dowels: column #
 pieces, 470.3 → 558.8 lb**. Total **5,179.7 lb / 829 pieces** over the same 118.25 cy,
 **43.8 lb/cy**. Round-column dowels now lap beside their verticals on the bar circle, which
 moves no length.
+
+## Addendum 2026-11-10 — the Ufer bar (decision #123)
+
+One #4 HDG `electrode` bar on the bottom of FT-B-W1 and FT-B-W2 (210" each) plus the splice
+across their joint: footing #4 **48 → 51 pieces, 234.9 → 261.5 lb** (+26.6; the hand sum in
+`grounding_bonding.md` §3 is 26.2 off placed length, the rest is the splice's cut length).
+Total **5,205.9 lb / 832 pieces** over the same 118.25 cy, **44.0 lb/cy**.
+

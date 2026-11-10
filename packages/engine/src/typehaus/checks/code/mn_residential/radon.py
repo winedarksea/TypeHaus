@@ -243,9 +243,12 @@ def _fan_power_finding(ctx: CheckContext, riser: VentRun) -> Finding:
     from shapely.geometry import Point
 
     rx, ry = _exterior_riser_point(riser)
+    # An intersystem bonding bar is a JUNCTION_BOX type with ``ibt`` set; it is not a fan box.
+    ibt_types = {t.tag for t in ctx.plan.library.electrical_device_types if t.ibt}
     boxes = [e for e in ctx.plan.all_elements()
              if getattr(e, "element_kind", None) == "ElectricalDevice"
-             and getattr(e, "kind", None) is DeviceKind.JUNCTION_BOX]
+             and getattr(e, "kind", None) is DeviceKind.JUNCTION_BOX
+             and getattr(e, "type_ref", None) not in ibt_types]
     if not boxes:
         return _fail(_CID, f"{riser.tag} has no electrical box at the fan location; subpart 6 "
                            "requires the circuit and an approved box to be installed during "

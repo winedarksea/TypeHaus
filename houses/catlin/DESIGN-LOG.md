@@ -1,3 +1,20 @@
+## Grounding and bonding modelled; the Ufer the old comment claimed did not exist (2026-11-10, owner)
+
+- No footing carried a bar, and the wall steel sits behind XPS, so the comment's "Ufer" was not
+  an electrode. Now one #4 HDG bar runs in FT-B-W1 spliced into FT-B-W2: 35'-0" qualifying.
+  W1 alone is 17'-6". Two rods 14'-4" apart sit outside the west wall.
+- The GECs land at the meter-main (`ED-M-METER`, the service disconnect), not `ED-B-PANEL`.
+- The garage gets its own rod pair (250.32: seven crossing circuits). The court has none filed in
+  its building.
+- Lightning is design hooks only:
+  - a counterpoise SW to NE;
+  - an aluminium PV down-lead;
+  - SPDs at the service, the PV box, the inverter and the garage;
+  - power and data entering together with an IBT.
+- Rejected, with numbers in `notes/grounding_bonding.md` §6-§7:
+  - grounds tied through resistors, diodes or capacitors;
+  - the skin as a Faraday cage.
+
 ## ST-B2M widened to W-B-CN's framed face; the stair furring is gone (2026-11-09, owner)
 
 - `W-B-CN` went from a pour to 2x6 framing on 2026-11-01, and its stair face was furred 3 1/4"

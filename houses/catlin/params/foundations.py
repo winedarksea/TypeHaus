@@ -301,8 +301,17 @@ def _center_on(tag: str) -> str:
     return "wall"
 
 
+# The Ufer (decision #123, notes/grounding_bonding.md): one #4 HDG bar on the bottom of
+# FT-B-W1, spliced on into FT-B-W2 (W1 alone is 18'-0", short of NEC 250.52(A)(3)'s 20 ft).
+# Grounding only: `is_reinforced` keeps both strips plain for R403.1(1).
+_UFER_BAR = dict(role="electrode", bar=4, count=1, coating="hdg-a767")
+_ELECTRODE = {
+    "W-B-W1": ReinforcementSpec(bars=(BarSpec(**_UFER_BAR, continues_into=("FT-B-W2",)),)),
+    "W-B-W2": ReinforcementSpec(bars=(BarSpec(**_UFER_BAR),)),
+}
+
 HOUSE_FOOTINGS = [
-    Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,
+    Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t, reinforcement=_ELECTRODE.get(t),
             width=_STRIP_WIDTH,
             depth=_GARDEN_END_DEPTH if t in _GARDEN_END_TRIMMED else _STRIP_DEPTH,
             center_on=_center_on(t), offset=_toe_offset(t),

@@ -55,7 +55,7 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "site", "solids",
              "sleeves", "conduit",
              # Raceway parts and device boxes by the piece (→ takeoff/raceways.py,
              # takeoff/device_boxes.py).
-             "conduit_fittings", "electrical_boxes",
+             "conduit_fittings", "electrical_boxes", "grounding", "grounding_conductors",
              # The three electrical tables the model resolves and nothing else prices:
              # branch-circuit wire by the foot, the PV array by the watt, and the low-voltage
              # raceways [conduit] deliberately excludes. Each replaces a lump sum — see
@@ -310,6 +310,10 @@ class Prices:
     conduit_fittings: Mapping[str, PriceRange] = field(default_factory=dict)
     # Device boxes and their covers/rings each, keyed on the Product tag.
     electrical_boxes: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Grounding hardware each, keyed on the Product tag; bonds $/LF keyed "<size> <material>"
+    # ("6 copper", "1/0 aluminum"). The IBT and SPDs price in [placeables] as ED-T-* types.
+    grounding: Mapping[str, PriceRange] = field(default_factory=dict)
+    grounding_conductors: Mapping[str, PriceRange] = field(default_factory=dict)
     # Branch-circuit conductors by the lineal foot, keyed on ``poles`` — "1" for a 120 V
     # circuit (3 conductors: hot, neutral, ground), "2" for a 240 V one (4). The route is
     # [conduit] and this is the wire in it. Mind the mirror: the two are separate purchases

@@ -232,6 +232,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   `mep_erv_types` is the catalog. The split was byte-neutral: every element in
   `out/model.json` is unchanged, and only `contentHash` — which hashes the plan SOURCE —
   moved.
+- `plan/electrical_grounding.py` — `# haus: editable` grounding (decision #123): the Ufer (`params/foundations._ELECTRODE`, #4 HDG in FT-B-W1 into W2; **tie and stub before the pour**), two rods at the meter-main (the root), the counterpoise and lightning terminals, the PV down-lead, SPDs, the IBT and the garage's rod pair. Parts in `plan/grounding_types.py`; basis, oracle and the rejected resistor/Faraday ideas in `notes/grounding_bonding.md`.
 - `plan/smart_home.py` — `# haus: editable` doorbell, cameras, opener, EVSE, HP1 stat, alarm
   relays; types in `plan/smart_home_types.py`. Local-only HA register:
   `notes/smart_home.md`.

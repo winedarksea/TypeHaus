@@ -298,7 +298,6 @@ the future.
 - Drywall returns on the rough openings that aren't doors.
 - ED-B-BATH-CAN1 is placed inside the soffit
 - Tile of the bathroom
-- Grounding rod
 - Robot training
 - Camera in ESS Room and Plant Room
 - 3d model of the S-5! snowguards over the entry of the canopy (already present but not well modeled)

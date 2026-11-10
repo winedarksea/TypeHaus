@@ -106,7 +106,7 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS
     "water-heater", "sauna-heater", "panel", "register",
     "rheem-proterra-plugin-80",
     "infrared-heater",
-    "disconnect", "meter", "junction-box",
+    "disconnect", "meter", "junction-box", "spd",
     # plumbing fixtures. "hydrant" is the odd one out: it is a standpipe, not a vessel, so
     # its glyph is the riser's own diameter with a handle bar and an outlet nipple rather
     # than a basin. "floor-drain" is the other one: it is the opening itself, so its glyph is

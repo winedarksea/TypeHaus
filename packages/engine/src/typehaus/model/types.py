@@ -1077,6 +1077,11 @@ class ElectricalDeviceType(FurnitureType):
     # Picks a BoxStandard row by its ``use`` (e.g. "recessed"); a light defaults to
     # "luminaire". Unmatched, the general row serves.
     box_use: str | None = None
+    # SPD kinds: UL 1449 type ("1", "2") or a PV DC unit ("pv_dc"), and its nominal kA.
+    spd_class: Literal["1", "2", "pv_dc"] | None = None
+    surge_ka: float | None = None
+    # A JUNCTION_BOX type that is the intersystem bonding termination (NEC 250.94).
+    ibt: bool = False
 
 
 class LuminaireType(ElectricalDeviceType):

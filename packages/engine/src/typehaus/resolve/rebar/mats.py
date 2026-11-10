@@ -104,8 +104,26 @@ def lay_mat(sink: Sink, spec, solid, cover: float, *, ey=(0.0, 1.0),
                                       hook_dirs=hk, lap_offset=frame.along(not runs_x),
                                       top_cast=level == "top" and z - solid.z0_m > 12 * _IN,
                                       hook_kind=entry.hook_kind or "std90")
+    _lay_electrodes(sink, spec, region, frame, z_bot + cover + acc["bottom"])
     if ribs is not None:
         _lay_ribs(sink, spec, concrete, region, frame, cover, z_bot, z_top)
+
+
+def _lay_electrodes(sink: Sink, spec, region, frame: _Frame, z_floor: float) -> None:
+    """``electrode`` bars: ``count`` runs along local y, spread across x, on the bottom."""
+    minx, miny, maxx, maxy = region.bounds
+    for entry in spec.bars:
+        if entry.role != "electrode" or not entry.count:
+            continue
+        db = BARS[entry.bar].diameter_in * _IN
+        z = z_floor + db / 2
+        n = entry.count
+        xs = ([(minx + maxx) / 2] if n == 1
+              else [minx + db / 2 + (maxx - minx - db) * i / (n - 1) for i in range(n)])
+        for q in xs:
+            for a, b in _segments(region, False, q, miny - 1.0, maxy + 1.0):
+                sink.straight(entry, frame.world(*a, z), frame.world(*b, z),
+                              lap_offset=frame.along(True))
 
 
 def _lay_ribs(sink: Sink, spec, concrete, region, frame: _Frame, cover: float,

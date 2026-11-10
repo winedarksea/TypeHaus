@@ -459,6 +459,7 @@ _DEVICE_KIND_TOKENS = (
     ("light", DeviceKind.LIGHT), ("sconce", DeviceKind.LIGHT), ("can", DeviceKind.LIGHT),
     ("panel", DeviceKind.PANEL), ("load centre", DeviceKind.PANEL),
     ("meter", DeviceKind.METER), ("disconnect", DeviceKind.DISCONNECT),
+    ("spd", DeviceKind.SPD), ("surge", DeviceKind.SPD),
     ("junction", DeviceKind.JUNCTION_BOX), ("data", DeviceKind.DATA_OUTLET),
 )
 

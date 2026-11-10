@@ -154,7 +154,11 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 #
 # RAISED 26 -> 27 on 2026-11-06: "Headers up to 8' (IRC R602.7 tables) and wall roles"
 # (decision #116); staged while catlin triages 13 header UNKNOWNs (plans/TODO.md).
-MAX_NON_BLOCKING_ITEMS = {"mn-2020": 27}
+#
+# RAISED 27 -> 28 on 2026-11-10: "Concrete-encased electrode" (NEC 250.52(A)(3), decision
+# #123); earth contact through a drained stone bed is the inspector's reading, and the rods
+# complete the electrode system whatever it is, so it stages rather than gates.
+MAX_NON_BLOCKING_ITEMS = {"mn-2020": 28}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*

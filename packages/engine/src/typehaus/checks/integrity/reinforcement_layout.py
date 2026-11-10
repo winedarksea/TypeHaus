@@ -32,7 +32,7 @@ _BEAM = {"top-y", "bottom-y", "ties", "stirrups", "horizontal"}
 _ALLOWED: dict[str, set[str]] = {
     "FoundationWall": {"vertical", "horizontal", "dowels"} | _BEAM,
     "Wall": {"vertical", "horizontal", "dowels"} | _BEAM,
-    "Footing": _MAT,
+    "Footing": _MAT | {"electrode"},
     "Pad": _MAT,
     "Slab": _MAT | {"rib", "stirrups"},
     "Post": {"vertical", "ties", "dowels"},
@@ -94,7 +94,8 @@ def _schema_errors(ctx: CheckContext, element, spec):
         if e.zone is not None and e.role not in ("ties", "stirrups") and not (
                 e.role in _MAT and kind in ("Footing", "Pad", "Slab")):
             yield f"role {e.role} cannot take a zone"
-        if e.continues_into and (e.role not in _MAT or kind not in ("Footing", "Pad", "Slab")):
+        if e.continues_into and (e.role not in (*_MAT, "electrode")
+                                 or kind not in ("Footing", "Pad", "Slab")):
             yield f"role {e.role} takes continues_into only as a footing/pad/slab mat role"
         for tag in e.continues_into or ():
             if ctx.plan.by_tag(tag) is None:

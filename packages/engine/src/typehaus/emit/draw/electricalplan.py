@@ -9,6 +9,8 @@ from __future__ import annotations
 from typehaus.emit.draw._shared import emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.annotation_requests import add_point_label
+from typehaus.emit.draw.grounding_plan import emit_grounding
+from typehaus.emit.draw.grounding_plan import emit_legend as emit_grounding_legend
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.emit.draw.typography import MIN_PT
 from typehaus.quantities import M_PER_IN
@@ -19,6 +21,7 @@ _DEVICE_LAYER = {
     "receptacle": "E-POWR-DEVC", "gfci": "E-POWR-DEVC", "receptacle_240": "E-POWR-DEVC",
     "switch": "E-LITE", "light": "E-LITE", "panel": "E-POWR-DEVC",
     "junction_box": "E-POWR-DEVC", "meter": "E-POWR-DEVC", "disconnect": "E-POWR-DEVC",
+    "spd": "E-POWR-DEVC",
     # Low-voltage lands on its own AIA discipline layer, not E-POWR: an electrician pulling
     # branch circuits and a low-voltage tech pulling CAT6 want to switch each other off.
     "data_outlet": "E-COMM-DEVC",
@@ -30,6 +33,7 @@ _LEGEND = (
     ("receptacle_240", "240V RECEPTACLE"), ("switch", "SWITCH"), ("light", "LIGHT"),
     ("panel", "ELECTRICAL PANEL"), ("junction_box", "JUNCTION BOX"),
     ("meter", "UTILITY METER"), ("disconnect", "DISCONNECT"),
+    ("spd", "SPD (SURGE PROTECTIVE DEVICE)"),
     ("data_outlet", "DATA / LOW-VOLTAGE"),
 )
 
@@ -84,6 +88,7 @@ def build_electrical_plan(model: ResolvedModel, storey: str) -> Scene:
         add_point_label(b, key=f"conduit-{run.uid}", text=label, target=_in(mid),
                         layer="A-ANNO-TEXT", height_pt=_TAG_PT, priority=20, leader=False)
 
+    emit_grounding(b, model, storey)
     _emit_legend(b, model, storey)
     return b.build()
 
@@ -99,8 +104,11 @@ def _emit_legend(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
               if element.element_kind == "ElectricalDevice"]
     origin = (max(x for x, _y in points) + 2.0, max(y for _x, y in points))
     b.add(Text(anchor=_in(origin), content="LEGEND", height=3.5, layer="A-ANNO-TEXT"))
+    rows = 0
     for row, (kind, label) in enumerate(k for k in _LEGEND if k[0] in present):
         y = origin[1] - (row + 1) * 0.6
         b.add(Symbol(name=kind, insert=_in((origin[0], y)), layer=_DEVICE_LAYER[kind]))
         b.add(Text(anchor=_in((origin[0] + 0.6, y)), content=label, height=2.5,
                    layer="A-ANNO-TEXT"))
+        rows = row + 1
+    emit_grounding_legend(b, model, storey, origin, rows)

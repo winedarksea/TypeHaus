@@ -59,7 +59,7 @@ SECTION_CATEGORY: dict[str, str] = {
     "pipe_runs": "pipe", "pipe_fittings": "pipe", "pipe_insulation": "pipe",
     "freeze_protection": "pipe",
     "conduit": "rough_in", "conduit_fittings": "rough_in", "electrical_boxes": "rough_in",
-    "conductors": "rough_in",
+    "conductors": "rough_in", "grounding": "rough_in", "grounding_conductors": "rough_in",
     "data_raceways": "low_voltage",
     "light_run_materials": "lighting",
     "solar_modules": "solar_backup",

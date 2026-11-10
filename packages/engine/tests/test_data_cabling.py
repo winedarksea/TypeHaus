@@ -36,7 +36,7 @@ def test_data_raceways_carry_their_service_and_the_spare_carries_none(catlin_mod
     # A capped spare is neither power nor data. Giving it either would pre-decide what gets
     # pulled through it, and it would then be billed as wire that does not exist.
     assert by_tag["CD-B-SPARE-CHASE"].service is None
-    assert by_tag["CD-B-ATTIC-RISER"].service == "power_120"
+    assert by_tag["CD-B-ATTIC-RISER"].service == "power_dc"  # PV source circuits, #123
 
 
 def test_power_and_data_raceways_are_billed_apart(catlin_model):

@@ -302,6 +302,27 @@ def junction_box() -> Builder:
     return build
 
 
+def spd() -> Builder:
+    """A surge protective device: a small enclosure with a bolt mark on its face.
+
+    The bolt (a Z-shaped zigzag) is what separates it from the blank junction box at plan
+    scale; the 3D body is the same can with a darker face plate."""
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        cover_t = min(0.008, depth * 0.2)
+        top, mid, bot = depth * 0.3, 0.0, -depth * 0.3
+        zig = [(-width * 0.18, top), (width * 0.12, top), (-width * 0.12, mid),
+               (width * 0.18, mid), (-width * 0.12, bot)]
+        strokes = [rect(0, 0, width, depth, fill="metal"),
+                   *(line(a, b, weight=DETAIL_WEIGHT) for a, b in zip(zig, zig[1:], strict=False))]
+        parts = [box(0, cover_t / 2, 0.0, height, width, depth - cover_t, "metal"),
+                 box(0, -depth / 2 + cover_t / 2, height * 0.06, height * 0.94,
+                     width * 0.88, cover_t, "luminaire-housing")]
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def grille(*, louvers: int = 5) -> Builder:
     """A supply/return register: the louver lines are the whole symbol."""
 
@@ -348,5 +369,6 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "meter": meter_socket(),
     "disconnect": safety_switch(),
     "junction-box": junction_box(),
+    "spd": spd(),
     "register": grille(louvers=5),
 }

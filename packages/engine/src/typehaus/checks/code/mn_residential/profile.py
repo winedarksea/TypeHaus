@@ -339,6 +339,27 @@ MN_2020 = JurisdictionProfile(
                        ("code.NEC_705_12_interconnection",
                         "code.NEC_690_12_rapid_shutdown"),
                        (cite(NEC.INTERCONNECTION_120PCT), cite(NEC.RAPID_SHUTDOWN_ARRAY))),
+        # Grounding and bonding (decision #123), read off model.grounding.
+        PermitItemSpec("Grounding electrode system",
+                       ("code.NEC_250_50_electrode_system", "code.NEC_250_53_rods",
+                        "code.NEC_250_66_gec_size"),
+                       (cite(NEC.ELECTRODE_SYSTEM), cite(NEC.ROD_INSTALLATION),
+                        cite(NEC.GEC_SIZE))),
+        # Staged: whether a footing on a drained, foam-sided bed is "in direct contact with
+        # the earth" is the inspector's reading, so it answers UNKNOWN until they make it.
+        PermitItemSpec("Concrete-encased electrode", ("code.NEC_250_52_ufer",),
+                       (cite(NEC.CONCRETE_ENCASED),), blocking=False),
+        PermitItemSpec("Separate building grounding", ("code.NEC_250_32_separate_buildings",),
+                       (cite(NEC.SEPARATE_BUILDING),)),
+        PermitItemSpec("Intersystem, water pipe and lightning bonding",
+                       ("code.NEC_250_94_ibt", "code.NEC_250_104_water_bond",
+                        "code.NEC_250_106_lps_bond"),
+                       (cite(NEC.INTERSYSTEM_BONDING), cite(NEC.WATER_PIPE_BOND),
+                        cite(NEC.LIGHTNING_BOND))),
+        PermitItemSpec("PV system grounding", ("code.NEC_690_47_pv_grounding",),
+                       (cite(NEC.PV_GROUNDING),)),
+        PermitItemSpec("Service surge protection", ("code.NEC_230_67_service_spd",),
+                       (cite(NEC.SERVICE_SPD),)),
         PermitItemSpec("Dryer exhaust", ("code.M1502_dryer_exhaust",), ("IRC M1502",),
                        blocking=False),
         # ** THE CITATION WAS IRC P2801.6 / P2804.6.1 AND MINNESOTA DELETED BOTH. ** Same

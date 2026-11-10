@@ -48,6 +48,7 @@ from typehaus.takeoff.framing import (
     structural_solids_takeoff,
 )
 from typehaus.takeoff.glazing import glazing_panel_takeoff, glazing_trim_takeoff
+from typehaus.takeoff.grounding import grounding_conductor_takeoff, grounding_takeoff
 from typehaus.takeoff.hardware import hardware_takeoff
 from typehaus.takeoff.hardwood import hardwood_takeoff
 from typehaus.takeoff.interior_trim import interior_trim_takeoff
@@ -256,6 +257,9 @@ def bill_of_materials(
         # resolve/device_boxes.py).
         "conduit_fittings": conduit_fitting_takeoff(model),
         "electrical_boxes": device_box_takeoff(model),
+        # Rods, clamps, transitions and the bonds between them (#123, → takeoff/grounding.py).
+        "grounding": grounding_takeoff(model),
+        "grounding_conductors": grounding_conductor_takeoff(model),
         "conductors": conductor_takeoff(model),
         "solar": solar,
         # The priced view of the dict above. Every ``ESTIMATE_PLANS`` entry

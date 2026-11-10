@@ -108,6 +108,8 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
                "conduit": bom["conduit"],
                "conduit_fittings": bom["conduit_fittings"],
                "electrical_boxes": bom["electrical_boxes"],
+               "grounding": bom["grounding"],
+               "grounding_conductors": bom["grounding_conductors"],
                "solar": bom["solar"],
                # The priced by-product view beside the summary dict — a section the payload
                # drops is invisible to the estimate and to `haus variants compare`.

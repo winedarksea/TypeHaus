@@ -46,7 +46,8 @@ PANEL_WORKING_SPACE = [
               except_tags=("ED-B-PANEL", "ED-B-PANEL-2", "ED-B-BACKUP-PANEL", "ED-B-UTIL-RC1",
                            "ED-B-UTIL-RC1-BOX", "ED-B-UTIL-RC1-DROP", "CD-B-ATTIC-RISER",
                            "CD-B-DATA-SHOP", "CD-B-GARAGE", "CD-B-INV-BACKUP", "CD-B-INV-PANEL",
-                           "CD-B-KITCHEN", "CD-B-PLAY-SPARE", "CD-B-SPA", "CD-B-WORKSHOP")),
+                           "CD-B-KITCHEN", "CD-B-PLAY-SPARE", "CD-B-SPA", "CD-B-WORKSHOP",
+                           "BC-M-GEC-UFER-RUN")),
     ClearZone(uid="2DKXS1S95A", tag="CZ-B-DS-BACKUP-ENCL",
               outline=(pt(inch(8), inch(379.625)), pt(inch(14), inch(379.625)),
                        pt(inch(14), inch(398)), pt(inch(8), inch(398))),
@@ -54,5 +55,5 @@ PANEL_WORKING_SPACE = [
               purpose="NEC 110.26(E) dedicated space, ED-B-BACKUP-ENCL",
               except_tags=("ED-B-BACKUP-ENCL", "CD-B-DATA-CHASE", "CD-B-INV-BACKUP",
                            "CD-B-INV-PANEL", "CD-B-SPARE-CHASE", "ED-B-ALARM-RELAY-CO",
-                           "ED-B-ALARM-RELAY-SMOKE")),
+                           "ED-B-ALARM-RELAY-SMOKE", "CD-M-DATA-ENTRY")),
 ]

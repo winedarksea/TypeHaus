@@ -111,13 +111,14 @@ def _normal_span_in(axis, points) -> tuple[float, float]:
 
 def _projection_findings(ctx: CheckContext) -> list[Finding]:
     """R403.1.1's 2" <= P <= T on both faces of each plain concrete strip under a wall."""
+    from typehaus.model.rebar import is_reinforced
     from typehaus.model.structure import Footing
     from typehaus.resolve.construction_sills import _is_concrete_ref
 
     solids = {s.tag: s for s in ctx.model.solids if s.category == "footing"}
     out: list[Finding] = []
     for footing in ctx.plan.all_elements():
-        if not isinstance(footing, Footing) or footing.reinforcement is not None:
+        if not isinstance(footing, Footing) or is_reinforced(footing.reinforcement):
             continue
         wall, solid = ctx.model.wall(footing.under), solids.get(footing.tag)
         if wall is None or solid is None or not _is_concrete_ref(ctx.model, footing.assembly):

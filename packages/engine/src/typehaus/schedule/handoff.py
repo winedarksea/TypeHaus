@@ -40,7 +40,7 @@ _BY_TRADE: dict[str, tuple[str, ...]] = {
 
 #: A framed-wall sleeve is set by the trade whose run it carries, never cast: by purpose.
 _AIR = frozenset({"supply_air", "return_air", "outdoor_air", "exhaust_air"})
-_WIRE = frozenset({"power_120", "power_240", "power_24", "data"})
+_WIRE = frozenset({"power_120", "power_240", "power_24", "power_dc", "data"})
 
 
 def handoff_items(model: Any, visit: Any) -> list[HandoffItem]:

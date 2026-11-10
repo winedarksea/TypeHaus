@@ -139,6 +139,7 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         "panel": "IfcElectricDistributionBoard",
         "junction_box": "IfcJunctionBox", "meter": "IfcFlowMeter",
         "disconnect": "IfcSwitchingDevice", "data_outlet": "IfcOutlet",
+        "spd": "IfcProtectiveDevice",
     }
     device_types = {t.tag: t for t in model.plan.library.electrical_device_types}
     from typehaus.resolve.geometry_countertops import slab_hosts
@@ -249,7 +250,7 @@ def external_elems(ifc_path: Path) -> list[DiffElem]:
     for cls in ("IfcWall", "IfcOpeningElement", "IfcWindow", "IfcDoor", "IfcFurniture",
                 "IfcSanitaryTerminal", "IfcBuildingElementProxy", "IfcOutlet", "IfcAirTerminal",
                 "IfcSwitchingDevice", "IfcLightFixture", "IfcElectricDistributionBoard",
-                "IfcJunctionBox", "IfcFlowMeter", "IfcUnitaryEquipment",
+                "IfcJunctionBox", "IfcFlowMeter", "IfcProtectiveDevice", "IfcUnitaryEquipment",
                 "IfcAirToAirHeatRecovery", "IfcFan",
                 # Low-voltage, reachable only through ``ElectricalDeviceType.ifc_entity``.
                 # Left off this list, every access point and camera we exported would read

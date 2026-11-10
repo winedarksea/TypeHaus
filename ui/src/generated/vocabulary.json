@@ -227,6 +227,8 @@
     "furniture": 7687987,
     "furring": 11371863,
     "glass": 9418697,
+    "grounding_conductor": 12088115,
+    "grounding_electrode": 12088115,
     "gutter": 14277598,
     "hanger": 1710620,
     "header": 10054466,
@@ -445,6 +447,8 @@
     "furniture": 7687987,
     "furring": 11371863,
     "glass": 9418697,
+    "grounding_conductor": 12088115,
+    "grounding_electrode": 12088115,
     "gutter": 14277598,
     "hanger": 1710620,
     "header": 10054466,
@@ -683,6 +687,12 @@
     "glazing_trim": [
       "openings"
     ],
+    "grounding_conductor": [
+      "electrical"
+    ],
+    "grounding_electrode": [
+      "electrical"
+    ],
     "gutter": [
       "gutters"
     ],
@@ -896,6 +906,8 @@
     "french_drain": "drainage",
     "glazing": "openings",
     "glazing_trim": "openings",
+    "grounding_conductor": "electrical",
+    "grounding_electrode": "electrical",
     "gutter": "gutters",
     "insulation": "insulation",
     "insulation_wrap": "mechanical",

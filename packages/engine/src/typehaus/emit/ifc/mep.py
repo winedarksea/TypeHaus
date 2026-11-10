@@ -554,7 +554,8 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
     ifc_class, _ = _device_ifc_classes(device.kind.value, product_type)
     element = ll.create_entity(f, ifc_class, name=device.tag)
     element.GlobalId = derive_guid(project_uuid, device.uid)
-    predefined = getattr(product_type, "ifc_predefined_type", None)
+    predefined = (getattr(product_type, "ifc_predefined_type", None)
+                  or ("VARISTOR" if device.kind.value == "spd" else None))
     if predefined and hasattr(element, "PredefinedType"):
         element.PredefinedType = predefined
     track = getattr(product_type, "track_lighting", None)
@@ -676,6 +677,7 @@ def _device_ifc_classes(kind: str, product_type: Any | None = None) -> tuple[str
         "junction_box": ("IfcJunctionBox", "IfcJunctionBoxType"),
         "meter": ("IfcFlowMeter", "IfcFlowMeterType"),
         "disconnect": ("IfcSwitchingDevice", "IfcSwitchingDeviceType"),
+        "spd": ("IfcProtectiveDevice", "IfcProtectiveDeviceType"),
         # Bare fallback for a low-voltage device whose type names no ``ifc_entity``: a data
         # jack is an outlet. Access points and cameras override it on the type.
         "data_outlet": ("IfcOutlet", "IfcOutletType"),

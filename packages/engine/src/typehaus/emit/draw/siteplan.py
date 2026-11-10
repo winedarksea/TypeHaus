@@ -16,6 +16,7 @@ from __future__ import annotations
 import math
 
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.grounding_plan import emit_site as emit_site_grounding
 from typehaus.emit.draw.lineweights import CUT, CUT_HEAVY, LIGHT, PROFILE, REFERENCE
 from typehaus.emit.draw.scene import (
     Polyline,
@@ -52,7 +53,7 @@ def build_site_plan(model: ResolvedModel, metrics: BlockMetrics | None = None) -
     _emit_drainage_overlay(builder, model)
     emit_site_planting(builder, model)
     emit_site_annotations(builder, model, site, metrics)
-    _emit_utilities(builder, site)
+    _emit_utilities(builder, site, model)
     _emit_spot_elevations_and_drainage(builder, site)
     _emit_foundation_grading(builder, model, site)
     _emit_impervious_grading(builder, model, site)
@@ -256,7 +257,8 @@ def _emit_drainage_overlay(builder: SceneBuilder, model: ResolvedModel) -> None:
                             preferred_direction=(0.0, 1.0))
 
 
-def _emit_utilities(builder: SceneBuilder, site) -> None:
+def _emit_utilities(builder: SceneBuilder, site, model: ResolvedModel) -> None:
+    emit_site_grounding(builder, model, text_pt=TEXT_PT)  # rods, counterpoise, PV down-lead
     for utility_index, line in enumerate(site.utilities):
         path = [p.xy_m for p in line.path]
         if len(path) < 2:

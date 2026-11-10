@@ -103,7 +103,8 @@ PIPE_ACCESSORY_CATEGORIES = frozenset(kind.value for kind in PipeAccessoryKind)
 #: raise in `_emit_solid` (no IFC class). glTF and ``model.json`` are the other way round.
 ROUTED_RUN_CATEGORIES = (frozenset(f"pipe_{system.value}" for system in PipeSystem)
                          | frozenset(f"duct_{system.value}" for system in DuctSystem)
-                         | frozenset({"conduit_power", "conduit_data"}))
+                         | frozenset({"conduit_power", "conduit_data",
+                                     "grounding_electrode", "grounding_conductor"}))
 
 
 def solid_trade(category: str | None) -> str:

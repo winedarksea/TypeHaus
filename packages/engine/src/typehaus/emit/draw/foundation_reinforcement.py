@@ -63,7 +63,7 @@ def reinforcement_schedule(model: ResolvedModel) -> ScheduleTable:
 
 _ROLE_ABBREV = {"vertical": "V", "horizontal": "H", "top-x": "TX", "top-y": "TY",
                 "bottom-x": "BX", "bottom-y": "BY", "ties": "TIES", "stirrups": "STIR",
-                "dowels": "DWL", "rib": "RIB"}
+                "dowels": "DWL", "rib": "RIB", "electrode": "GND"}
 
 
 def _bar_text(bar) -> str:

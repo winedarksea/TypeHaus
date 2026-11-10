@@ -97,8 +97,11 @@ class BarSpec(HausModel):
     R404.1.2(1) states rows, not a spacing). ``resolve/rebar`` lays all of it out.
     """
 
+    #: ``electrode`` is a concrete-encased grounding electrode (NEC 250.52(A)(3), decision
+    #: #123): ``count`` bars along a strip's axis in the bottom layer, graded by no
+    #: structural limit state and never making a footing "reinforced" for R403.1.
     role: Literal["vertical", "horizontal", "top-x", "top-y", "bottom-x", "bottom-y",
-                  "ties", "stirrups", "dowels", "rib"]
+                  "ties", "stirrups", "dowels", "rib", "electrode"]
     #: Bar designation number: 5 for a ``#5``. Unknown sizes report rather than crash.
     bar: int
     #: Centre-to-centre spacing — the wall-and-slab shape. Exclusive with ``count``.
@@ -212,6 +215,16 @@ class ReinforcementSpec(HausModel):
     #: The rib module of a ribbed (joist-form) slab, which ``rib`` and ``stirrups`` roles need.
     ribs: RibLayout | None = None
     source: str | None = None
+
+    @property
+    def is_structural(self) -> bool:
+        """Any bar but an ``electrode``: a grounding-only spec leaves the pour plain."""
+        return any(entry.role != "electrode" for entry in self.bars)
+
+
+def is_reinforced(spec: ReinforcementSpec | None) -> bool:
+    """Whether a pour is reinforced for a structural limit state (R403.1's plain table)."""
+    return spec is not None and spec.is_structural
 
 
 for _name, _obj in (("BarSpec", BarSpec), ("ReinforcementSpec", ReinforcementSpec),

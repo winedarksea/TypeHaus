@@ -103,6 +103,7 @@ _LAYER_STYLE = {
     "M-HVAC-EQPM": ("#2a6a4a", 0.8),
     "E-POWR-DEVC": ("#8a2a2a", 0.5),
     "E-POWR-CNDT": ("#b05050", 0.4),
+    "E-GRND": ("#4a7a2a", 0.4),
     "E-COMM-DEVC": ("#1f6f7a", 0.5),
     "E-COMM-CNDT": ("#2f9aa8", 0.4),
     "E-LITE": ("#c08a00", 0.5),
@@ -171,7 +172,7 @@ _MARKER_STYLE = {
     "spot-elev": ("+", "#5a8a5a"), "utility-entry": ("x", "#333333"),
     "level-marker": ("<", "#204070"), "alarm": ("h", "#555555"),
     "junction_box": ("$J$", "#8a2a2a"), "meter": ("$M$", "#8a2a2a"),
-    "disconnect": ("$D$", "#8a2a2a"),
+    "disconnect": ("$D$", "#8a2a2a"), "spd": ("$Z$", "#8a2a2a"),
     # Teal, not the power reds or the lighting amber — low-voltage is a third trade and the
     # E-COMM layer it draws on says so. "N" rather than the conventional data triangle
     # because ^/v are already the supply/return registers, and a third triangle in a fourth

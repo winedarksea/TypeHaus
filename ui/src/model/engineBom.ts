@@ -88,7 +88,7 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     // because every price plan reads a list. Both are shown: the dict carries the per-string
     // cold-Voc check, the list carries the order line.
     sections: ["electrical_devices", "electrical_boxes", "panel_schedule", "service_load",
-      "conduit", "conduit_fittings", "conductors", "solar", "solar_modules", "backup_power"],
+      "conduit", "conduit_fittings", "grounding", "grounding_conductors", "conductors", "solar", "solar_modules", "backup_power"],
   },
   {
     id: "lighting",

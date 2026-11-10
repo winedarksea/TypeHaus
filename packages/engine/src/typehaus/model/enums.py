@@ -175,6 +175,8 @@ class Service(Enum):
     POWER_120 = "power_120"
     POWER_240 = "power_240"
     POWER_24 = "power_24"  # Class 2 DC lighting feeds, separate from line-voltage trunks
+    # PV source/output circuits (NEC 690): DC, upstream of the inverter, own SPD class.
+    POWER_DC = "power_dc"
     SUPPLY_AIR = "supply_air"
     RETURN_AIR = "return_air"
     TRANSFER_AIR = "transfer_air"
@@ -497,6 +499,8 @@ class DeviceKind(Enum):
     # data jack, PoE camera. One kind, because they share a plan glyph and the E-COMM layer;
     # the product identity (and the IFC class) rides ``type_ref``.
     DATA_OUTLET = "data_outlet"
+    # Surge protective device (NEC 242 / 230.67): its class rides ``spd_class`` on the type.
+    SPD = "spd"
 
 
 class LuminaireForm(Enum):

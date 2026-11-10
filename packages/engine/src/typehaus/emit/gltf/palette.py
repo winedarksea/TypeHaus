@@ -209,6 +209,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "conduit_power": (0.545, 0.302, 0.702, 1.0),  # 0x8b4db3
     "electrical_box": (0.62, 0.64, 0.66, 1.0),  # galvanized steel
     "conduit_data": (0.180, 0.659, 0.608, 1.0),   # 0x2ea89b
+    "grounding_electrode": (0.722, 0.451, 0.200, 1.0),  # copper-clad rod
+    "grounding_conductor": (0.722, 0.451, 0.200, 1.0),  # bare copper
     # The cast-in block-out (→ resolve/mep.py _emit_sleeve_solid). Not concrete — it is the
     # hole, and reading as the pour it sits in would defeat the point of drawing it — and not
     # pipe metal either: the cream is the fibre void former the concrete crew actually sets.

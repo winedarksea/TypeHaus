@@ -78,13 +78,14 @@ def footing_size(ctx: CheckContext) -> list[Finding]:
     """Grade each plain concrete wall strip's W x T against Table R403.1(1)."""
     if ctx.plan is None:
         return []
+    from typehaus.model.rebar import is_reinforced
     from typehaus.model.structure import Footing
     from typehaus.resolve.construction_sills import _is_concrete_ref
 
     solids = {s.tag: s for s in ctx.model.solids if s.category == "footing"}
     strips = []
     for footing in ctx.plan.all_elements():
-        if not isinstance(footing, Footing) or footing.reinforcement is not None:
+        if not isinstance(footing, Footing) or is_reinforced(footing.reinforcement):
             continue
         wall, solid = ctx.model.wall(footing.under), solids.get(footing.tag)
         if wall is None or solid is None or not _is_concrete_ref(ctx.model, footing.assembly):

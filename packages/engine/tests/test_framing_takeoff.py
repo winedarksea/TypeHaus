@@ -197,7 +197,8 @@ def test_structural_solids_account_for_every_resolved_solid(catlin_model) -> Non
     measured = [solid for solid in catlin_model.solids
                 if not solid.derived and solid.tag not in steel_tags
                 and solid.category not in {"fireblock", "window_return", "tub_insulation_return",
-                                           "bug_screen", "sill_plate", "sill_gasket"}]
+                                           "bug_screen", "sill_plate", "sill_gasket",
+                                           "grounding_electrode", "grounding_conductor"}]
     assert measured, "every solid is derived — the fixture is wrong, not the rule"
     assert sum(int(row["count"]) for row in rows) == len(measured)
     assert {tag for row in rows for tag in row["tags"]} == {
@@ -233,6 +234,7 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "glazing_trim", "hardware", "placeables", "shelving", "floor_heat",
                         "electrical_devices", "panel_schedule", "service_load",
                         "conduit", "conduit_fittings", "electrical_boxes", "conductors",
+                        "grounding", "grounding_conductors",
                         "solar",
                         # The list view of ``solar["by_product"]`` that
                         # [solar_modules] prices — every price plan
@@ -404,6 +406,7 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "duct_supports": ("duct_supports",),
     "conduits": ("conduit", "conduit_fittings", "conductors"),
     "device_boxes": ("electrical_boxes",),
+    "grounding": ("grounding", "grounding_conductors"),
     "footing_beddings": ("footing_bedding",),
     "wall_columns": ("excavation",),
     "excavations": ("excavation",),

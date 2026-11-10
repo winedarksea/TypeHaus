@@ -34,7 +34,7 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 _SCHEDULE = {
     ("column", "#3", "hdg-a767"): (91, 118.5),
     ("column", "#5", "hdg-a767"): (96, 558.8),
-    ("footing", "#4", "hdg-a767"): (48, 234.9),
+    ("footing", "#4", "hdg-a767"): (51, 261.5),  # +3: the Ufer bar (#123)
     ("footing", "#5", "hdg-a767"): (179, 1465.9),
     ("foundation wall", "#3", "hdg-a767"): (12, 16.2),
     ("foundation wall", "#4", "hdg-a767"): (283, 1610.1),
@@ -95,8 +95,8 @@ _SCHEDULE = {
 # free body §6 addendum) — W-SG-S 32 -> 23 verticals, W2/E2 eight fewer each.
 # +88.5 lb, +16 pieces on 2026-11-05 (F5-106, note addendum): the four 14" north-entry piers
 # (4) #5 -> (6) #5, two more verticals and two more dowels each.
-_TOTAL_LB = 5179.7
-_TOTAL_PIECES = 829
+_TOTAL_LB = 5205.9
+_TOTAL_PIECES = 832
 
 @pytest.fixture(scope="module")
 def rows(catlin_model):
@@ -236,4 +236,5 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # 44.9 on 2026-11-02: the court stems at #5 @ 10" (−265.9 lb), 5,091.2 lb / 113.49 cy.
     # 43.1 on 2026-11-05: plain concrete in, no steel — the wider house strips, 118.25 cy.
     # 43.8 the same day: the 14" north-entry piers at (6) #5, +88.5 lb (F5-106).
-    assert total_lb / total_cy == pytest.approx(43.80, rel=0.02)
+    # 44.0 on 2026-11-10: the Ufer bar in FT-B-W1/W2, +26.6 lb (decision #123).
+    assert total_lb / total_cy == pytest.approx(44.02, rel=0.02)

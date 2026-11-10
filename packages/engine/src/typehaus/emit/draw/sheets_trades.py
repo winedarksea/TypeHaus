@@ -18,6 +18,11 @@ from typehaus.emit.draw.schedules import (
     _write_panel_schedule,
 )
 from typehaus.emit.draw.schedules.electrical import control_tables
+from typehaus.emit.draw.schedules.grounding import (
+    grounding_tables,
+    has_grounding_schedule,
+    write_grounding_schedule,
+)
 from typehaus.emit.draw.schedules.mechanical import (
     has_mechanical_schedule,
     mechanical_tables,
@@ -113,5 +118,10 @@ def trade_sheets(model: ResolvedModel, level_tags: list[str],
     if _has_data_content(model):
         sheets.append(SheetSpec("E-603", "Data / low-voltage schedule",
                                 page=_write_data_schedule, sets=FULL_ONLY))
+
+    if has_grounding_schedule(model):
+        # Electrodes, bonds and the install notes (#123), paged like M-601.
+        sheets.extend(_paged("E-604", "Grounding and bonding schedules", write_grounding_schedule,
+                             page_count(grounding_tables(model), paper), sets=FULL_ONLY))
 
     return sheets

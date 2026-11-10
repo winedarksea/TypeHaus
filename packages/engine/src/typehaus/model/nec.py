@@ -98,6 +98,18 @@ class NEC:
     OCPD_HEIGHT: Final = "240.24(A)"
     SLEEVE_BONDING: Final = "250.86 Ex. 2"
 
+    # Art. 250 — grounding and bonding (decision #123). Every row is UNCONFIRMED.
+    SERVICE_GROUNDING: Final = "250.24"
+    SEPARATE_BUILDING: Final = "250.32"
+    ELECTRODE_SYSTEM: Final = "250.50"
+    CONCRETE_ENCASED: Final = "250.52(A)(3)"
+    ROD_INSTALLATION: Final = "250.53"
+    GEC_INSTALLATION: Final = "250.64"
+    GEC_SIZE: Final = "250.66"
+    INTERSYSTEM_BONDING: Final = "250.94"
+    WATER_PIPE_BOND: Final = "250.104(A)"
+    LIGHTNING_BOND: Final = "250.106"
+
     # Ch. 3 — wiring methods, boxes, raceways.
     RACEWAY_BENDS_MIXED: Final = "300.24"
     AMPACITY_TABLE: Final = "Table 310.16"
@@ -132,6 +144,7 @@ class NEC:
 
     # Ch. 6-7 — sources; limited energy.
     RAPID_SHUTDOWN: Final = "690.12"
+    PV_GROUNDING: Final = "690.47"
     RAPID_SHUTDOWN_ARRAY: Final = "690.12(B)(2)"
     RAPID_SHUTDOWN_INITIATION: Final = "690.12(C)"
     INTERCONNECTION: Final = "705.12"
@@ -150,7 +163,22 @@ UNCONFIRMED: Final = frozenset({
     NEC.NONCOINCIDENT, NEC.FEEDER_SERVICE_STANDARD, NEC.GFCI_SINK, NEC.AFCI_DWELLING,
     NEC.FLOOR_BOX, NEC.INTERCONNECTION_120PCT, NEC.LIMITED_ENERGY_SEPARATION, NEC.ISLAND_PROVISION,
     NEC.COUNTERTOP_RECEPTACLE_LOCATION, NEC.WALL_COUNTERTOP, NEC.BALCONY_RECEPTACLE,
+    NEC.SERVICE_GROUNDING, NEC.SEPARATE_BUILDING, NEC.ELECTRODE_SYSTEM, NEC.CONCRETE_ENCASED,
+    NEC.ROD_INSTALLATION, NEC.GEC_INSTALLATION, NEC.GEC_SIZE, NEC.INTERSYSTEM_BONDING,
+    NEC.WATER_PIPE_BOND, NEC.LIGHTNING_BOND, NEC.PV_GROUNDING,
 })
+
+
+class NFPA780:
+    """NFPA 780 (lightning protection) — not NEC, cited by advisories only. All UNCONFIRMED:
+    none was read first-hand; read the printed standard before designing a full system."""
+
+    EDITION: Final = "NFPA 780"
+    CONDUCTORS: Final = "NFPA 780 4.1 / Table 4.1.1.1"
+    GROUND_RING: Final = "NFPA 780 4.13.4"
+    DISSIMILAR_METALS: Final = "NFPA 780 4.4.1 (Al within 18 in of earth)"
+    COMMON_GROUNDING: Final = "NFPA 780 4.14"
+    SURGE: Final = "NFPA 780 4.20"
 
 
 _CAVEAT = " [2026 number unconfirmed]"

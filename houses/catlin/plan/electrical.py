@@ -45,31 +45,9 @@
 #   clamp cluster; at x=11' the 6:12 rake carries siding to 26'-5 3/8", so 25'-6" absolute
 #   has cladding to grip.
 #
-# ** THE GROUNDING ELECTRODE SYSTEM IS NOT MODELLED, AND THIS COMMENT IS ALL THERE IS. **
-# No element kind can hold one: grep the engine for `grounding electrode`, `ground rod` or
-# `ufer` and there are no hits, so there is nothing to author and nothing to grade. The
-# intent, recorded here so it reaches the electrician rather than being rediscovered on
-# site:
-#
-# - A CONCRETE-ENCASED ELECTRODE (NEC 250.52(A)(3), the "Ufer") is the primary. This house
-#   pours continuous footings with galvanized bar throughout, which is exactly the
-#   condition the article is written for: 20 ft or more of 1/2" or larger bar in the
-#   bottom of a footing in direct contact with earth. It is close to free at pour time and
-#   cannot be retrofitted afterwards at any price. ** It must be tied and stubbed BEFORE
-#   the footing pour ** — this is the one item on this list with a hard deadline.
-# - SUPPLEMENTAL RODS where the encased electrode alone is not accepted. 250.53(A)(2)
-#   wants a second rod unless the first is shown to be 25 ohms or less, and a rod pair is
-#   cheaper than the resistance test.
-# - The bonding jumper lands at ED-B-PANEL at (10", 29'), which is the same enclosure
-#   CKT-SPD protects. That is not a coincidence and it matters: an SPD clamps to ground,
-#   so its let-through voltage is only as good as the electrode behind it. A surge device
-#   on a poor ground is decoration.
-# - ** DO NOT bond the PV/lightning path to a rebar run carrying a cathodic anode. **
-#   plans/notes.md flagged this and it is real — an anode tied to a grounded system
-#   discharges into the earth instead of into the steel it is meant to protect. The
-#   columns declined anodes in favour of galvanized bar at 2" cover, so today there is no
-#   conflict; re-read this line if anodes are ever added (plans/TODO.md tracks that
-#   decision for the sunken-garden walls).
+# Grounding, bonding, SPDs and the lightning hooks are modelled in
+# plan/electrical_grounding.py (decision #123); basis and pour-deadline items in
+# notes/grounding_bonding.md. The anode warning carried here moved there too.
 
 from typehaus import (
     ConduitRun,
@@ -1205,6 +1183,7 @@ CONDUIT_TRUNKS = [
                start_elevation=inch(-31.4375), end_elevation=ft(20, 6),
                elevations=(inch(-31.4375), inch(-29.4375), inch(-29.4375), inch(-29.4375),
                            ft(20, 6)),
+               service=Service.POWER_DC,  # PV source circuits (decision #123)
                from_ref="ED-B-PANEL", to_ref="ED-A-PV-JB"),
     # The over-and-up leg: east along the attic deck under the north rake, into the north
     # gable wall, and up it to ED-A-PV-JB at 25'-6". 6" above the deck for the flat part,
@@ -1240,6 +1219,7 @@ CONDUIT_TRUNKS = [
                # stack's pair went side by side across the gable. The trimmer jog's extra
                # quarter bend takes a conduit body at 1, the riser head, to stay within 360°.
                pull_points=(1, 3),
+               service=Service.POWER_DC,  # PV source circuits (decision #123)
                from_ref="CD-B-ATTIC-RISER", to_ref="ED-A-PV-JB"),
     # --- the backup microgrid's three raceways ----------------------------------------
     #
@@ -1256,6 +1236,7 @@ CONDUIT_TRUNKS = [
                start_elevation=inch(-29.4375), end_elevation=inch(-76.4375),
                elevations=(inch(-29.4375), inch(-79.4375), inch(-79.4375), inch(-79.4375),
                            inch(-76.4375)),
+               service=Service.POWER_DC,  # PV source circuits (decision #123)
                from_ref="ED-A-PV-JB", to_ref="EQ-B-ESS-INV"),
     # Grid port to ED-B-PANEL's CKT-ESS-GRID breaker: the run that carries the backfeed.
     ConduitRun(uid="CDT006AAAA", tag="CD-B-INV-PANEL", trade_size=inch(1),

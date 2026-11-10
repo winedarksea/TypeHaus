@@ -1765,6 +1765,8 @@ class ResolvedModel:
     # Laid-out reinforcing bars, one set per reinforced host (→ resolve/rebar). Deliberately
     # NOT framed members: nothing that walks ``all_members()`` may see a bar.
     rebar: list[ResolvedRebarSet] = field(default_factory=list)
+    # Electrodes, bonds and bonding systems (→ resolve/grounding.py, decision #123).
+    grounding: Any = None
     # Per-stage resolve timings in milliseconds (Phase 0 instrumentation). Not serialized
     # as source; surfaced to the UI via the `perf` payload for measurement, not correctness.
     timings: dict[str, float] = field(default_factory=dict)
