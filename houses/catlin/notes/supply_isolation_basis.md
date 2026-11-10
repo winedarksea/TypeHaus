@@ -105,8 +105,13 @@ Grade each water-supplied connection (fixture or appliance supply, per supply: h
 4. **Exempt** (no code stop): shower/tub supplies and WC supplies on trunk-and-branch. WC stops
    are kept for owner reasons and are not required. On a parallel supply they still need a
    port.
-5. N/A only with no supply runs. An inaccessible manifold means every downstream connection
-   needs its own stop.
+5. N/A only with no lav, sink or appliance fixture and no supply runs; such fixtures with no
+   runs to walk are UNKNOWN. An inaccessible manifold means every downstream connection needs
+   its own stop.
+
+Implementation proxies (judgement, not text): "readily accessible" is read as "a room that is
+not `unconditioned` owns the manifold", and a port's label as the one fixture its run feeds.
+Neither sees an access panel or a cabinet door, so a valved manifold behind one would PASS.
 
 Cite "UPC 606.5 / 606.6 (MN Rules 4714.0050, not amended)". CODE; redundant series stops are
 the separate `advisory.redundant_isolation` preference.

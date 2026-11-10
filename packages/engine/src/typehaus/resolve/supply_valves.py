@@ -97,8 +97,9 @@ def supply_tree(model) -> SupplyTree:
 def walk_up(tree: SupplyTree, run_tag: str, station: float,
             skip_valve: str | None = None) -> Isolation:
     """The first valve, tee or manifold port upstream of ``station`` on ``run_tag``."""
-    run_tag0, came_from = run_tag, None
-    while True:
+    run_tag0, came_from, seen = run_tag, None, set()
+    while run_tag not in seen:  # an end-to-end ring of runs (a recirculation loop) ends
+        seen.add(run_tag)
         run = tree.runs[run_tag]
         events = [(s, "valve", a.tag) for s, a in tree.valves.get(run_tag, ())
                   if s <= station + 1e-6 and a.tag != skip_valve]
@@ -121,6 +122,7 @@ def walk_up(tree: SupplyTree, run_tag: str, station: float,
         if beyond or _length(tree.runs[run_tag]) - station > _END_TOL_M:
             return Isolation(run_tag0, tree.runs[run_tag].system, None,
                              blocked_by=beyond[0] if beyond else run_tag)
+    return Isolation(run_tag0, tree.runs[run_tag0].system, None)
 
 
 def connections(model, tree: SupplyTree) -> list[tuple[str, str | None]]:
@@ -136,7 +138,9 @@ def connections(model, tree: SupplyTree) -> list[tuple[str, str | None]]:
     out = []
     for tag, run in tree.runs.items():
         end_station = _length(run)
-        if any(s >= end_station - _END_TOL_M for s, _ in tree.children.get(tag, ())):
+        # A capped stub teed at the end (PR-M-CW-COLDSTORE-STUB) feeds nothing yet.
+        if any(s >= end_station - _END_TOL_M and not _capped(tree, child)
+               for s, child in tree.children.get(tag, ())):
             continue
         (x, y), z = run.path[-1][:2], run.z_m[-1]
         port = next((p for p in ports if p.exact and max(
@@ -151,6 +155,11 @@ def connections(model, tree: SupplyTree) -> list[tuple[str, str | None]]:
         if serves:
             out.append((tag, serves[0]))
     return out
+
+
+def _capped(tree: SupplyTree, tag: str) -> bool:
+    """A run that serves nothing and feeds nothing: a capped provision."""
+    return not tree.runs[tag].serves and not tree.children.get(tag)
 
 
 def _gap(obj, xy) -> float:

@@ -373,6 +373,8 @@ def test_a_lavatory_supply_needs_its_own_valve(catlin_plan, catlin_model):
     passing = fixture_control_valve(ctx)
     assert not _fails(passing), [f.message for f in _fails(passing)]
     assert not any("FX-B-BATH-WC" in f.element_tags for f in passing)  # rule 4: exempt
+    # A capped stub teed past the kitchen stop does not hide the trunk's end at the sink.
+    assert ("FX-M-KITCH-SINK", "PA-M-KITCH-STOP-CW") in {f.element_tags for f in passing}
     saved = list(catlin_model.pipe_accessories)
     try:
         catlin_model.pipe_accessories[:] = [a for a in saved if a.tag != "PA-B-LAV-TERMINAL-CW"]

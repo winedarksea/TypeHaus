@@ -45,6 +45,18 @@ def _host_tangent(host, point):
     return candidate
 
 
+def _in_wall(model: ResolvedModel, wall_ref: str | None, point) -> bool:
+    """Whether ``point`` is inside ``wall_ref``'s structure layer in plan."""
+    from shapely.geometry import Point, Polygon
+
+    wall = next((w for w in model.walls if w.tag == wall_ref), None)
+    structure = None if wall is None else next(
+        (ly for ly in wall.layers if ly.function == "structure"), None)
+    if structure is None or len(structure.polygon) < 3:
+        return True  # nothing to read: keep the riser at the fitting
+    return Polygon(structure.polygon).buffer(1e-6).covers(Point(point))
+
+
 def resolve_drain_cleanout(model: ResolvedModel, element: DrainCleanout,
                            storey) -> list[Finding]:
     host = next((run for run in model.pipe_runs if run.tag == element.pipe_ref), None)
@@ -99,6 +111,15 @@ def resolve_drain_cleanout(model: ResolvedModel, element: DrainCleanout,
     cap_end = (cap[0], cap[1], cap_z)
     extension = ((fitting_end, (fitting[0], fitting[1], cap_z), cap_end)
                  if element.access == "wall" else (fitting_end, cap_end))
+    if (element.access == "wall" and fitting_z < storey.elevation.meters < cap_z
+            and not _in_wall(model, element.wall_ref, fitting)):
+        # A fitting under the floor beside its wall: across to the wall, then up its cavity
+        # 1 1/2" behind the cap, never up through the room above the fitting (the shower
+        # over CO-B-SAUNA-HEAD's).
+        span = math.dist(fitting, cap)
+        riser = (cap[0] - (cap[0] - fitting[0]) / span * inch(1.5).meters,
+                 cap[1] - (cap[1] - fitting[1]) / span * inch(1.5).meters)
+        extension = (fitting_end, (*riser, fitting_end[2]), (*riser, cap_z), cap_end)
     if (element.access == "floor" and math.dist(fitting, cap) > 1e-6
             and cap_z > fitting_end[2]):
         # An offset floor access tube needs a vertical terminal: ending an inclined

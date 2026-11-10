@@ -42,15 +42,16 @@ BASEMENT_CLEANOUTS = [
     # The slab branches' upper terminals are wall panels: the fitting on the buried pipe, its
     # extension up a stud bay, the cap behind a panel. No slab branch turns past 707.4's
     # 135° (mep_drainage.py), so none needs a turn cleanout.
-    # The WC branch: a wye 6 1/2" down it, west of W-B-STR2, its cap in the bath face of the
-    # wall's 232"-248" bay, 6" south of the WC vent's riser.
+    # The WC branch: a wye 6 1/2" down it, west of W-B-STR2; the extension runs under the
+    # slab into the wall's 232"-248" bay, 6" south of the WC vent's riser, cap in the bath face.
     DrainCleanout(uid="COB0000006", tag="CO-B-BATH", pipe_ref="PR-B-BATH-DRAIN",
                   position=pt(inch(116), inch(242)), fitting_elevation=inch(-10.06),
                   cap_position=pt(inch(122), inch(236)), cap_elevation=inch(12),
                   access="wall", wall_ref="W-B-STR2",
                   clear_width=inch(24), clear_depth=inch(24)),
-    # The sauna branch: a wye on its 1/8 bend 22" from the drop, the extension rising clear of
-    # W-B-SA-N2's cavity, the cap in the hall face (never the sauna's).
+    # The sauna branch: a wye on its 1/8 bend 22" from the drop, under the shower pan; the
+    # extension runs under the slab into W-B-SA-N2's cavity, cap in the hall face (never the
+    # sauna's).
     DrainCleanout(uid="COB0000007", tag="CO-B-SAUNA-HEAD", pipe_ref="PR-B-SAUNA-DRAIN",
                   position=pt(inch(176.5), inch(113.4375)), fitting_elevation=inch(-9.13),
                   cap_position=pt(inch(176.5), inch(122.5)), cap_elevation=inch(12),

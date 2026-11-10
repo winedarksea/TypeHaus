@@ -43864,10 +43864,10 @@
 "25cf0b95f046"
 ],
 "geometry/COB0000006-EXT/body": [
--2.9336365,
+-2.9679265,
 -2.4406225,
-48,
-"d71cf26ff332"
+72,
+"e46516471773"
 ],
 "geometry/COB0000006/body": [
 -3.0860365,
@@ -43882,10 +43882,10 @@
 "8714b2e9b6b2"
 ],
 "geometry/COB0000007-EXT/body": [
--2.9100145,
+-2.9328745,
 -2.4520525,
-48,
-"02a661db91d0"
+72,
+"4ce1cb23a9e3"
 ],
 "geometry/COB0000007/body": [
 -3.0624145,
@@ -117481,7 +117481,7 @@
 "solids/CN~THA422~BM-M-HALL~03/z1_m": 3.048,
 "solids/CO-B-BATH-CAP/z0_m": -2.5191085,
 "solids/CO-B-BATH-CAP/z1_m": -2.4307165,
-"solids/CO-B-BATH-EXT/z0_m": -2.9336365,
+"solids/CO-B-BATH-EXT/z0_m": -2.9679265,
 "solids/CO-B-BATH-EXT/z1_m": -2.4406225,
 "solids/CO-B-BATH/z0_m": -3.0860365,
 "solids/CO-B-BATH/z1_m": -2.9336365,
@@ -117515,7 +117515,7 @@
 "solids/CO-B-LSINK/z1_m": -0.3603625,
 "solids/CO-B-SAUNA-HEAD-CAP/z0_m": -2.5043765,
 "solids/CO-B-SAUNA-HEAD-CAP/z1_m": -2.4454485,
-"solids/CO-B-SAUNA-HEAD-EXT/z0_m": -2.9100145,
+"solids/CO-B-SAUNA-HEAD-EXT/z0_m": -2.9328745,
 "solids/CO-B-SAUNA-HEAD-EXT/z1_m": -2.4520525,
 "solids/CO-B-SAUNA-HEAD/z0_m": -3.0624145,
 "solids/CO-B-SAUNA-HEAD/z1_m": -2.9100145,

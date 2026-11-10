@@ -16,10 +16,10 @@ tees to a second fixture is never reached, because the tee is met first.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import failed, not_applicable, passed
+from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
-from typehaus.model.enums import Occupancy
+from typehaus.model.enums import EquipmentKind, Occupancy
 from typehaus.resolve.plumbing_tables import FIXTURE_CLASS_BY_SYMBOL
 from typehaus.resolve.room_lookup import room_owning
 from typehaus.resolve.supply_valves import connections, isolation_of, supply_tree
@@ -43,11 +43,14 @@ def _kind(element, fixture_types) -> str:
     return "slip_joint" if label in _SLIP_JOINT else "other"
 
 
-def _home_run_manifolds(tree) -> set[str]:
-    """Manifolds no outlet run of which tees: a parallel system, not a branch header."""
+def _home_run_manifolds(tree, equipment) -> set[str]:
+    """Water manifolds no outlet run of which tees: a parallel system, not a branch header.
+    A water heater's outlet is a source, never a manifold."""
     sourced: dict[str, bool] = {}
     for run, port in tree.source_port.items():
         tag = port.split(".", 1)[0]
+        if getattr(equipment.get(tag), "kind", None) is not EquipmentKind.WATER_MANIFOLD:
+            continue
         sourced[tag] = sourced.get(tag, True) and not tree.children.get(run)
     return {tag for tag, single in sourced.items() if single}
 
@@ -55,9 +58,11 @@ def _home_run_manifolds(tree) -> set[str]:
 def _usable_port(ctx, port: str, equipment, home_run: set[str]) -> str | None:
     """None when the outlet can stand as the control valve, else why it cannot."""
     tag = port.split(".", 1)[0]
+    element = equipment.get(tag)
+    if getattr(element, "kind", None) is not EquipmentKind.WATER_MANIFOLD:
+        return f"{tag} is a source, not a manifold"
     if tag not in home_run:
         return f"{tag} is a branch header (an outlet run tees), not a parallel system"
-    element = equipment.get(tag)
     types = {t.tag: t for t in ctx.plan.library.equipment_types}
     machine = types.get(getattr(element, "type_ref", None) or "")
     if machine is None or not machine.valved_outlets:
@@ -74,13 +79,20 @@ def _usable_port(ctx, port: str, equipment, home_run: set[str]) -> str | None:
 @check(Tier.CODE, CID)
 def fixture_control_valve(ctx: CheckContext) -> list[Finding]:
     tree = supply_tree(ctx.model)
-    if not tree.runs:
-        return [not_applicable(CID, "no water supply runs", code=_CODE)]
     elements = {e.tag: e for e in ctx.plan.all_elements()}
     fixture_types = {t.tag: t for t in ctx.plan.library.fixture_types}
+    if not tree.runs:
+        named = sorted(t for t, e in elements.items() if e.element_kind == "Fixture"
+                       and _kind(e, fixture_types) != "other")
+        if named:  # N/A is earned only by the absence of what 606.5 names
+            return [unknown(CID, f"{len(named)} lav/sink/appliance fixtures but no water "
+                                 "supply runs to read their valves from", tuple(named),
+                            code=_CODE)]
+        return [not_applicable(CID, "no lav, sink or appliance fixture and no supply runs",
+                               code=_CODE)]
     equipment = {t: e for t, e in elements.items() if e.element_kind == "Equipment"}
     accessories = {a.tag: a for a in ctx.model.pipe_accessories}
-    home_run = _home_run_manifolds(tree)
+    home_run = _home_run_manifolds(tree, equipment)
     picked: dict[tuple[str, str], tuple[str, str]] = {}
     for run_tag, target in connections(ctx.model, tree):
         key = (target, tree.runs[run_tag].system)
