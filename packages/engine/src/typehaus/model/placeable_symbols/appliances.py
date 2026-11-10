@@ -20,6 +20,7 @@ from typehaus.model.placeable_symbols._frame import (
     prism,
     rect,
 )
+from typehaus.model.placeable_symbols._mini_split_head import mini_split_head
 from typehaus.model.placeable_symbols._rheem_proterra import rheem_proterra_plugin_80
 from typehaus.model.placeable_symbols._tea_kettle import tea_kettle
 
@@ -329,6 +330,7 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "hood": canopy_hood(),
     "furnace": air_handler(),
     "heat-pump-outdoor": outdoor_condenser(),
+    "heat-pump-indoor": mini_split_head,
     # An ERV/HRV core is the same read at plan scale as any other air-side cabinet — a box
     # with a filter slot and a plenum collar on top — so it shares the builder rather than
     # inventing a glyph that differs only in the label beside it.

@@ -8,6 +8,7 @@ whether a unit covers it, is the house's arithmetic, never a row's.
 from __future__ import annotations
 
 from typehaus import EquipmentType, HeatPumpRating, RatingBasis, Service, ServicePort, ft, inch
+from typehaus.model.placeables import ModelRepresentation
 
 GREE_FLEXX_ULTRA_24_AH = EquipmentType(
     tag="EQ-T-GREE-FLEXX-ULTRA-24-AH",
@@ -194,6 +195,7 @@ GREE_HEAD_9 = EquipmentType(
     name="Gree Multi R32 wall-mount head, 9k",
     footprint=(inch(32.875), inch(7.875)),
     height=inch(10.828125),
+    model_representation=ModelRepresentation(symbol="heat-pump-indoor"),
     cooling_capacity_btuh=9000,
     source=("Gree GWH09ATCXB-D6DNA3C/I, Multi R32 9k wall-mounted indoor unit (submittal 'Wall "
             "Mounted Indoor Unit 09KBTU R32'): 32 7/8 x 10 53/64 x 7 7/8 in (W x H x D), 19.8 lb —"
@@ -206,6 +208,7 @@ GREE_HEAD_12 = EquipmentType(
     name="Gree Multi R32 wall-mount head, 12k",
     footprint=(inch(32.875), inch(7.875)),
     height=inch(10.828125),
+    model_representation=ModelRepresentation(symbol="heat-pump-indoor"),
     cooling_capacity_btuh=12000,
     source=("Gree GWH12ATCXB-D6DNA3A/I, Multi R32 12k wall-mounted indoor unit (submittal 'Wall "
             "Mounted Indoor Unit 12KBTU R32'): 32 7/8 x 10 53/64 x 7 7/8 in (W x H x D), 19.8 lb —"
@@ -218,6 +221,7 @@ GREE_SAPPHIRE_9 = EquipmentType(
     name="Gree Sapphire R32 wall-mount head, 9.1k (VFD soft start)",
     footprint=(inch(38.1875), inch(10.125)),
     height=inch(13.65625),
+    model_representation=ModelRepresentation(symbol="heat-pump-indoor"),
     cooling_capacity_btuh=9100,
     hspf2=11.2,
     seer2=30.0,

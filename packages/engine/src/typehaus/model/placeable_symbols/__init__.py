@@ -101,7 +101,8 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS
     # appliances + mechanical/electrical equipment
     "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
     "microwave", "countertop-microwave", "hood", "tea-kettle", "espresso-machine",
-    "furnace", "erv", "heat-pump-outdoor", "water-heater", "sauna-heater", "panel", "register",
+    "furnace", "erv", "heat-pump-outdoor", "heat-pump-indoor",
+    "water-heater", "sauna-heater", "panel", "register",
     "rheem-proterra-plugin-80",
     "infrared-heater",
     "disconnect", "meter", "junction-box",
