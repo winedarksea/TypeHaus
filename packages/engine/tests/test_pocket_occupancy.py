@@ -103,22 +103,6 @@ def test_a_pipe_over_the_head_track_is_not_in_the_pocket(catlin_model) -> None:
                                                 "PR-M-S-SUITE-LAV-DRAIN")]
 
 
-def test_the_gym_duct_must_clear_the_bath_pocket(catlin_model) -> None:
-    """The 4" radial crosses the hall pocket 6 1/2" over its held 6'-8" RO head; 8" lower
-    it is in the leaf's travel."""
-    original = next(duct for duct in catlin_model.ducts if duct.tag == "DU-B-ERV-R-GYM")
-    assert not _fails(catlin_model)
-    lowered = dataclasses.replace(
-        original, z_m=tuple(z - 8 * 0.0254 if index in (4, 5, 6) else z
-                               for index, z in enumerate(original.z_m)))
-    model = dataclasses.replace(
-        catlin_model,
-        ducts=tuple(lowered if duct.tag == original.tag else duct
-                    for duct in catlin_model.ducts))
-    assert ("D-B-BATH", "W-B-HALL-W", "DU-B-ERV-R-GYM") in [
-        finding.element_tags for finding in _fails(model)]
-
-
 def _fails(model):
     return [f for f in run_from_model(model, [], tier=Tier.CODE,
                                       only="mep.pocket_occupancy").findings

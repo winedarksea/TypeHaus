@@ -278,14 +278,14 @@ BASEMENT_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # EQ-B-WH's factory cord (Rheem: a grounded standard outlet, not shared past half its
     # breaker). Dedicated CKT-WH, GFCI at the device as the sump's (210.8(A)(5)). On
-    # W-B-BA-N's closet face, 3 13/16" above the tank's 74 3/16" top, west of its inlet elbow
-    # so the cord can be reached with the tank in place.
+    # W-B-CW2's workshop face beside the tank's north-west shoulder, 3 13/16" above its
+    # 74 3/16" top, west of the inlet elbow: reachable with the tank in place.
     ElectricalDevice(uid="4KWVWZGFP6", tag="ED-B-WH-RC", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-15", circuit="CKT-WH", room="RM-B-STAIR",
+                     type_ref="ED-T-LEV-GFCI-15", circuit="CKT-WH", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(78)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-BA-N", face="left", distance_from_start=inch(28),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         wall_ref="W-B-CW2", face="right", distance_from_start=inch(7),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # On the sauna's SOUTH liner immediately WEST of EQ-B-SAUNA-HTR, low like the heater
     # terminals. It followed the heater onto the garden wall when the room rotated on
     # 2026-09-05, into the south-east corner when the room shrank, and 2'-0" further east

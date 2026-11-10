@@ -238,15 +238,14 @@ DUCTS_ERV_BASEMENT = [
     # Its collar moved to x=6'-10" (2026-11-01), clear of the supply trunk on Broan's port 2;
     # GYM and PLAY now leave the ceiling layer on 30° ramps, not 6" drops between two 90s.
     # THE GYM RADIAL GOES THROUGH THE WORKSHOP. South on x=9'-0", directly under
-    # PR-B-SAUNA-VENT, the bath vent, and the HW-BATH and LSINK legs it crosses; it stays at
-    # 84" past the bath extract and laundry sink drain, then rises on a 30° ramp to 89"
-    # from y=18'-1 3/8" to 17'-4 3/4". Through W-B-CW3 in its 8'-1"..9'-5" stud bay, over the 2x8
-    # backing (top 6'-7 1/4"); east on y=17'-4 3/4", 2 1/4" clear of PR-M-S-SUITE-DRAIN's
-    # riser, through W-B-HALL-W's 16'-8"..18'-0" bay; then the hall's x=17'-0" lane south
-    # of the stair to y=13'-0" as before. The east leg falls 89" -> 88 1/2" (2026-10-29, was level
-    # at 88 1/2"), so its lower face clears D-B-BATH's flat head (84 7/8"; 86 3/8" until the
-    # Eclisse kit dropped its track nailer, 2026-10-29).
-    #
+    # PR-B-SAUNA-VENT, the bath vent, and the HW-BATH and LSINK legs it crosses, at 84" past
+    # the bath extract and laundry sink drain, then a 45° ramp to 90 1/8" by y=18'-2 3/8".
+    # Through W-B-CW3 in its 8'-1"..9'-5" stud bay, 1 1/2" under the plates.
+    # ** SOUTH OF EQ-B-WH SINCE 2026-11-09. ** A 45° offset takes it 4" east, off the vent's
+    # x=9'-0" line, then south on x=9'-4" over PR-M-S-SUITE-DRAIN (1/2" clear) to y=13'-4",
+    # and straight east over D-B-SHOP's flat head (5" over the head, 1 5/8" under the plates)
+    # and the hall. The NE corner stays free for the tank's ducts and header; about the same
+    # length as the old y=17'-4 3/4" leg.
     # ** x=17'-0" STAYS. ** W-B-CN/-CN2/W-B-CS2 are framed now, so the lane could move east,
     # but it already clears the hall's east face and nothing wants the move.
     #
@@ -260,17 +259,14 @@ DUCTS_ERV_BASEMENT = [
     # `W-B-CS2` (y >= 13'-10"), so it crosses no wall on the x=18' line, and it runs on
     # exposed in the gym (`RM-B-GYM.exposed_services`) to the register.
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
-            # (2026-11-07) Stock turns only: the rise to 89" is a 30 degree ramp from
-            # y=217.41" (was 18.2 degrees), and the hall leg holds 88 1/2" to a 30 degree pair
-            # at y=172" onto 90 1/8" (was a 5 degree fall to 84" and a 6 1/8" vertical).
+            # Stock turns only: a 45 degree ramp and a 45 degree offset.
             path=(pt(ft(6, 10), ft(30, 2)), pt(ft(6, 10), ft(29, 8)),
                   pt(inch(92.375), ft(29, 8)), pt(ft(9), ft(29, 8)),
-                  pt(ft(9), inch(217.41)), pt(ft(9), ft(17, 4.75)),
-                  pt(ft(17), ft(17, 4.75)),
-                  pt(ft(17), inch(172)), pt(ft(17), inch(169.185)),
-                  pt(ft(17), ft(13, 4)), pt(ft(19), ft(13, 4))),
-            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(89),
-                        inch(88.5), inch(88.5), inch(90.125), inch(90.125), inch(90.125)),
+                  pt(ft(9), inch(224.5)), pt(ft(9), inch(218.375)), pt(ft(9), inch(212)),
+                  pt(inch(112), inch(208)),
+                  pt(inch(112), ft(13, 4)), pt(ft(19), ft(13, 4))),
+            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(90.125),
+                        inch(90.125), inch(90.125), inch(90.125), inch(90.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_GYM),
     # THE PLAY RADIAL GOES THROUGH SF-B-BATH. From the plenum's east end it drops to -25 7/16"

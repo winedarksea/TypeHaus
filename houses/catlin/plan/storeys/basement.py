@@ -936,8 +936,8 @@ WALLS = [
     # ** IT USED TO BE TWO. ** W-B-CL-N closed this space off at y=31'-0" and made it a
     # 17.5 sf closet, RM-B-UNDERSTAIR; both are gone (2026-09-05, round three). The storage
     # runs the full length of the flight now — north past y=31'-0" and on under the landing
-    # deck — and the volume is part of RM-B-STAIR again, reached through D-B-CLOSET from the
-    # furnace room and open to the stair foot at its north end. See ROOMS for why it is no
+    # deck — and the volume is part of RM-B-STAIR again, reached only through D-B-CLOSET
+    # from the furnace room: the north end runs on under the landing, too low to walk. See ROOMS for why it is no
     # longer a `Room`: with nothing closing it, a second seed in the same face resolved the
     # SAME 114.8 sf polygon twice, and nothing grades that.
     #
@@ -1092,7 +1092,7 @@ OPENINGS = [
     # W-B-STR2 and the east-wall backing stops at the north jamb. Keep the original uid.
     # Derived 83 1/4" Eclisse RO since 2026-10-29 under a flat 2x6 (the kit hangs its track
     # from its own steel pocket header, screwed up into this one; nothing bears on it).
-    # DU-B-ERV-R-GYM rose 1/2" to pass over it.
+    # Nothing crosses the pocket since DU-B-ERV-R-GYM moved south of EQ-B-WH (2026-11-09).
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-POCKET-INT-36-PRIV",
          position=from_node("N-B-BA-NE", ft(2, 9.9375)), header_spec="flat 2x6 nonbearing", doorway=D_B_BATH_VINYL_REDUCER),
     # ESS closet door: a cheap 24x80 steel leaf with a small tempered vision lite in a KD
@@ -1105,15 +1105,14 @@ OPENINGS = [
     # under the arriving flight reachable without walking the well. ** In W-B-STR3, opening
     # WEST into RM-B-FURNACE: W-B-STR3 runs north-to-south, so its default left-hand normal
     # is east — into the space under a rake, where no leaf can open. `flip_swing` sends it
-    # into the mechanical room instead. It stays the way in now that the storage is open to
-    # the stair foot at its north end: this is the end you actually carry things to.
+    # into the mechanical room instead. It is the only way into the storage, and the
+    # full-height way in to PA-B-MAIN-SHUTOFF.
     #
-    # A 32" leaf since 2026-11-09, for EQ-B-WH behind it (notes/water_service.md §1), still
-    # on the 6'-0" head: a 6'-8" head would be six inches inside the stringer. It takes no
-    # casing. The tank goes through this door TILTED: 74 3/16" tall against a 72" leaf.
-    # 6 3/4" off N-B-BA-NW: the south jamb clears FO-M-STAIR's corner (y=312 3/8") so its
-    # point load stays off the head, and the RO cuts two studs. A 55-degree stop holds the
-    # leaf off PR-B-ERV-COND at x=91 1/2"; lift it off its pins to bring the tank in.
+    # 32" leaf on the 6'-0" head (a 6'-8" head would be six inches inside the stringer); no
+    # casing, standard 1/2" undercut. Kept at 32" when EQ-B-WH left the closet for the
+    # workshop (2026-11-09): the fewest differences. 6 3/4" off N-B-BA-NW: the south jamb
+    # clears FO-M-STAIR's corner (y=312 3/8") so its point load stays off the head, and the
+    # RO cuts two studs. The 55-degree stop holds the leaf off PR-B-ERV-COND at x=91 1/2".
     Door(uid="B43P8B5Y0T", tag="D-B-CLOSET", host="W-B-STR3", type_ref="DT-INT-CLOSET32",
          position=from_node("N-B-BA-NW", inch(6.75)), flip_swing=True, flip_hinge=True,
          maximum_opening_degrees=55),

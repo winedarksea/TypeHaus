@@ -12,7 +12,7 @@
 # 2026-11-04). Sold by SupplyHouse; Uponor's sheet says made to order.
 #
 # Product frame: body along x, closed end -x, sweat inlet +x, outlets hung DOWN so the
-# branches leave at 83 1/2", under the basement-ceiling drains, where the old trunk ran.
+# branches leave at 83 1/2".
 # A = 14.675" long, body H = 1.256" OD, G = 2.479" over the outlet tips, D = 1.5" pitch. The
 # first outlet sits B + C = 1.626" in from the inlet end (the sheet's letters, off its drawing).
 
@@ -74,17 +74,22 @@ EQUIPMENT_TYPES_HEADER = (
                                      certainty=PortCertainty.EXACT))),
 )
 
-# Hung under the basement ceiling in RM-B-FURNACE on the old trunk's x=7'-6" lane, inlet
-# north at (7'-6", 25'-6"), body centre 88" (the trunk's height there). Copper and 13 ft of
-# developed trunk from the tap, so every PEX branch clears UPC 604.13's 18".
-# Every branch turns onto its 83 1/2" lane 2.65" under its tip; no lane sits 6" lower under
-# the ceiling drains, so each bend takes a bend support (Uponor LF2831050-family submittal
-# rev. B 2017: "Any bend within 6 inches of the ProPEX connection ... requires ... Bend
-# Support (A5110500 ...)"; A5110500 is the 1/2" metal one, submittal rev. A 2008, R 2.00").
+# ** IN THE WORKSHOP'S NE CORNER BESIDE EQ-B-WH SINCE 2026-11-09 ** (was x=7'-6" in
+# RM-B-FURNACE), so the 1" trunk is 7.2 ft: a foot of it holds what 4.7 ft of 1/2" PEX does.
+# Body on x=13'-4" between the tank and W-B-HALL-W, inlet south, closed end 3/8" off
+# W-B-CW2; tips at 86 1/8". Copper and 7.2 ft of trunk from the tap: UPC 604.13's 18" holds.
+# Each branch drops 2 5/8" to 83 1/2" and turns west (a bend support at each), then:
+#   out-1 SAUNA, out-2 KITCH: 6-7" west, up to 103 3/16" in the joist web, south and east.
+#   out-3..8 FILLER, WASH, BATH2, BATH, BATH1, BATH2-SH: up at x=12'-7" to 95 7/16" and
+#     west over the tank's elbow on their own outlet's line (BATH2 at 97 7/16"), each
+#     dropping or climbing where it turns. Lines south of out-3 would meet
+#     PR-M-S-SUITE-DRAIN's drop at x=10'-2".
+# Lanes drawn by hand and graded by `haus check` (0 FAIL); `haus route --manifold` proposed
+# exposed runs at fixture height.
 EQUIPMENT_HEADER = [
     Equipment(uid="GVKJA0755W", tag="EQ-B-HW-HEADER", kind=EquipmentKind.WATER_MANIFOLD,
-              position=pt(inch(90), inch(298.6625)), rotation=deg(90),
-              footprint=(inch(14.675), inch(1.5)), room="RM-B-FURNACE",
+              position=pt(inch(160), inch(206)), rotation=deg(-90),
+              footprint=(inch(14.675), inch(1.5)), room="RM-B-WORKSHOP",
               type_ref="EQ-T-HW-HEADER-8",
               mount=Mount(kind=MountKind.CEILING, elevation=inch(86.149)),
               install_parts=("Uponor A5110500 1/2in metal bend support",

@@ -89,11 +89,10 @@ INTERIOR_DOOR_TYPES = (
                "derived one, unchanged. Sealed: the ERV supply and exhaust balance "
                "at 20/20 cfm (notes/erv_static_budget.md). Oiled, never painted."),
     DoorType(tag="DT-INT-CLOSET32", width=ft(2, 8), height=ft(6), function="closet",
-             core="hollow", leaf_thickness=inch(1.375), undercut=_RELIEF,
-             source="2'-8in x 6'-0in under-stair closet leaf, wide enough to bring EQ-B-WH "
-                    "through tilted; the head under ST-B2M cannot give 6'-8in plus a header. "
-                    "3/4in undercut: 24 in2 against the 18 in2 Rheem AP22654 p.9 lists for one duct."
-                    + _PREHUNG.format(undercut="3/4in")),
+             core="hollow", leaf_thickness=inch(1.375),
+             source="2'-8in x 6'-0in under-stair closet leaf, the full-height way in to "
+                    "PA-B-MAIN-SHUTOFF; the head under ST-B2M cannot give 6'-8in plus a header."
+                    + _PREHUNG.format(undercut="1/2in")),
     DoorType(tag="DT-INT-SWING30-GLAZED", width=ft(2, 6), height=ft(6, 8), glazed=True,
              tempered=True, function="passage",
              source="Tempered-lite stile-and-rail prehung, Halifax Square passage, satin nickel "

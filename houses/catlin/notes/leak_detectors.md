@@ -20,8 +20,8 @@ probe. Why this one:
 
 | Tag | Room | Risk |
 |---|---|---|
-| `AL-B-WH-LEAK` | RM-B-STAIR (closet) | HPWH (`EQ-B-WH`), 4" off the tank on its north side |
-| `AL-B-HDR-LEAK` | RM-B-FURNACE | hot-water header, floor below it |
+| `AL-B-WH-LEAK` | RM-B-WORKSHOP | HPWH (`EQ-B-WH`), beside the HydroBoost riser foot (drain valve, cold inlet), 3" off the tank |
+| `AL-B-HDR-LEAK` | RM-B-WORKSHOP | hot-water header, floor below it (NE corner, beside the tank) |
 | `AL-B-UTIL-LEAK` | RM-B-FURNACE | utility sink, the ERV/WH condensate receptor |
 | `AL-B-SUMP-LEAK` | RM-B-FURNACE | sump pit overflow (sealed lid), south of the pit |
 | `AL-B-MAIN-LEAK` | RM-B-STAIR | main shutoff `PA-B-MAIN-SHUTOFF` (water entry) |

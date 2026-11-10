@@ -145,9 +145,9 @@ def test_the_tank_stands_inside_the_room_it_claims(catlin_model, water_heater) -
     """A placeable that drifts out of its room takes its clearances and loads with it."""
     from shapely.geometry import Polygon
 
-    room = next((r for r in catlin_model.rooms if r.tag == "RM-B-STAIR"), None)
+    room = next((r for r in catlin_model.rooms if r.tag == "RM-B-WORKSHOP"), None)
     assert room is not None
-    # Hard on two walls, so a sub-micrometre tolerance on the shared faces.
+    # Hard on a wall, so a sub-micrometre tolerance on the shared faces.
     assert Polygon(room.clear_face).buffer(1e-6).contains(Polygon(water_heater.footprint))
 
 
@@ -165,7 +165,7 @@ def test_both_taps_stand_on_the_riser(water_heater, wh_ports) -> None:
 def test_the_condensate_run_leaves_the_published_port_and_ties_into_the_erv_line(
         catlin_model, water_heater) -> None:
     """Rheem puts the 3/4" condensate connection 59" up (sheet dimension C); PR-B-WH-COND
-    starts on it and ends on PR-B-ERV-COND, which carries it to the utility sink air gap."""
+    starts on it and ends at its own air gap over the utility sink (a drain terminal)."""
     from typehaus.resolve.mep_ports import placed_ports
 
     port = next(p for p in placed_ports(catlin_model)
@@ -179,7 +179,7 @@ def test_the_condensate_run_leaves_the_published_port_and_ties_into_the_erv_line
     assert abs(cond.z_m[0] - port.z_m) <= _TOLERANCE_M
     from typehaus.resolve.mep_tie_ins import drain_tie_ins
 
-    assert drain_tie_ins(catlin_model.pipe_runs)["PR-B-WH-COND"] == "PR-B-ERV-COND"
+    assert "PR-B-WH-COND" not in drain_tie_ins(catlin_model.pipe_runs)
 
 
 def test_exhaust_duct_reaches_its_adapter_and_square_boot(catlin_model_ro):

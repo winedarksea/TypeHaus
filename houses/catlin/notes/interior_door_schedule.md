@@ -51,7 +51,7 @@ sweep or automatic bottom closes its undercut (`DoorType.bottom_seal`).
 | D-B-PLAY | play / gym | DT-INT-DOUBLE60 | pair: passage + dummy + flush bolts | solid | jamb/head gaskets + astragal, 3/4" | 30 cfm supply exits under the pair |
 | D-B-BATH | bath / stair hall | DT-POCKET-INT-36-PRIV | pocket privacy + edge pull | - | - | - |
 | D-B-ESS | ESS closet | DT-INT-STEEL24-LITE | passage, spring hinges | steel | - | - |
-| D-B-CLOSET | under-stair | DT-INT-CLOSET32 | closet (dummy knob) | - | - | - |
+| D-B-CLOSET | under-stair storage | DT-INT-CLOSET32 | closet (dummy knob) | hollow | 1/2" (standard; the 3/4" heater undercut is retired, 2026-11-09) | - |
 
 **Open at order.** The sauna door's maker and its RO against the 3/4 x 9 1/4 cedar flat jamb
 (the model keeps the 24" leaf's derived RO); the Halifax lever projection against the 3"

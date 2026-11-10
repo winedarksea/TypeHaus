@@ -2186,11 +2186,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   plan, fitting fit and the R301.5 span: `notes/titanium_handrail_backsplash.md`.
 - **Under-stair space.** No `RM-B-UNDERSTAIR` room exists; the storage under the arriving
   stair flight (and on under the landing deck) is part of `RM-B-STAIR`'s single polygon.
-  `D-B-CLOSET` (32" leaf, 6'-0" head, 55-degree stop) opens it to the furnace room; `ED-B-CLOSET-LT`
-  (`room=RM-B-STAIR`) lights it. **`EQ-B-WH` stands in its SE corner since 2026-11-09**, exhaust ducted
-  through `W-B-WELL` into the stair, top inlet open and fed by `REG-B-WH-IN`'s grille and sleeve
-  in the same wall; a ducted inlet cannot meet Rheem's 12" flex section there (`plan/mep_hpwh_air.py`,
-  `notes/basement_winter_heat.md`). `D-B-CLOSET`'s 3/4" undercut is Rheem's 18 in2. R302.7 gypsum under the flight is a `prices.toml` allowance:
+  `D-B-CLOSET` (32" leaf, 6'-0" head, 55-degree stop, standard 1/2" undercut) is its only way in,
+  from the furnace room, and the full-height way to `PA-B-MAIN-SHUTOFF`; `ED-B-CLOSET-LT`
+  (`room=RM-B-STAIR`) lights it. Plain storage: `EQ-B-WH` left it for the workshop the day it
+  arrived (2026-11-09). R302.7 gypsum under the flight is a `prices.toml` allowance:
   no `Stair` field models it.
   `LR-B-STAIR-RAIL` lies under the flight rather than along it — one `Mount` elevation for
   the whole `LightRun`, measured off the slab, so it cannot rake.
@@ -3073,15 +3072,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Water supply
 
 - **Supply is PEX-A, except copper at `EQ-B-WH`'s taps** (owner, 2026-09-26): `PR-B-HW-TRUNK`,
-  `PR-B-CW-WH`, and the two branches still teed near them (`PR-B-HW-SBATH`, `PR-B-CW-BATH`).
+  `PR-B-CW-WH`, `PR-B-HW-SBATH` and `PR-B-CW-BATH`.
   UPC 604.13 keeps PEX out of the first 18" of piping on any water heater, graded by
   `mep.pex_water_heater_clearance` along the developed piping; the header's PEX branches
-  start over 9 ft of trunk out.
+  start 7 ft of trunk out.
   A PEX turn off a stock elbow is a BEND graded against Uponor's 6 x OD
   (`library/fittings.TUBE_BEND_RULES`); a short jog wants a plumb step, not a diagonal.
 - **Hot side is a header since 2026-11-04** (owner, 2026-11-03; `plan/mep_supply_header.py`,
   `notes/water_service.md` §6). `PR-B-HW-TRUNK` (1" copper) ends at `EQ-B-HW-HEADER`, an Uponor
-  LF2821050 (1" copper, eight 1/2" ProPEX outlets) hung at 88" on x=7'-6" in RM-B-FURNACE; eight
+  LF2821050 (1" copper, eight 1/2" ProPEX outlets) hung beside the tank in RM-B-WORKSHOP's NE
+  corner since 2026-11-09 (trunk 7.2 ft, was 19.3; lanes in its file); eight
   1/2" PEX branches leave one outlet each, uninsulated (N1103.4.2 starts at 3/4").
   `PR-B-HW-SBATH` and `PR-B-HW-SUITE` stay 3/4" (5.25 / 6.75 WSFU; SUITE carries the studio)
   and tee off the trunk ahead of the header. A branch whose first vertex is on an outlet
@@ -3090,14 +3090,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **The heater is the 120 V PROPH80 T0 RH120-MSO since 2026-11-02** (Rheem RH-PIHP-SC-SO
   Rev. 7 p.2; `notes/water_service.md` §1). Modelled 24 1/4" round x 74 3/16" (A; not 91",
   ducted), with the HydroBoost riser as a lobe on the 16-gon (40-75 deg right of front, r 15",
-  scaled). **Rotation 180 at (153 5/8", 320 3/8"), the closet's SE corner** (owner, 2026-11-09):
-  display north, exhaust west, inlet south-east of centre (the only quarter where the 91" elbow
-  clears the stair soffit, about 1 3/4", scaled). SIDE taps on the riser: hot E 42 3/8" and cold K
-  5 1/16" at the NW, x/y scaled. `PR-B-HW-TRUNK`, `PR-B-CW-WH` and `PR-B-WH-COND` cross `W-B-STR3`
-  in the bay north of `D-B-CLOSET`'s king; `PA-B-WH-STOP-CW` is on the closet drop at 48";
-  `PR-B-CW-BATH` tees off the ceiling leg; `PR-B-WH-TPR` falls to an air gap 6" over the closet
-  slab. The cord plugs into `ED-B-WH-RC` (`CKT-WH`) on `W-B-BA-N` over the tank. On the slab, no
-  plinth or pan.
+  scaled). **Open in RM-B-WORKSHOP's NE corner since 2026-11-09** (owner): (137 1/2", 201 3/8"),
+  back on `W-B-CW2`, rotation -40 so the side exhaust and the top elbow's outlet share one plan
+  line. **Both air connections are ducted** (`plan/mep_hpwh_air.py`, `notes/basement_winter_heat.md`):
+  two stacked 12x10 boots in `W-B-HALL-W`'s only 12" bay north of `D-B-SHOP`, each run a straight
+  leg and one bend, so the chill is the stair hall's and shop dust stays off the filter.
+  `DU-B-ERV-R-GYM` passes south of the tank and `PR-M-S-SUITE-DRAIN` crosses it at 98" (the elbow
+  tops at 91"). SIDE taps on the riser: hot E 42 3/8" and cold K 5 1/16", x/y scaled.
+  `PR-B-CW-WH` drops on the inlet's axis with `PA-B-WH-STOP-CW` at 48"; `PR-B-WH-COND` runs to
+  its own air gap at `FX-B-UTIL-SINK` through `W-B-CW3`; `PR-B-WH-TPR` falls beside the tank to an
+  air gap 6" over the slab. The cord plugs into `ED-B-WH-RC` (`CKT-WH`) on `W-B-CW2` over the
+  tank's shoulder. On the slab, no plinth or pan (`notes/water_service.md` §1, §5).
 - **`PR-G-SERVICE-CW` is the service lateral** (1 1/4" PEX, 6' bury, x=11'-4"), drawn street
   to house so `PR-B-CW-TRUNK` derives it as parent at the entry (11'-4", 35'-6"). **The hydrant
   is a branch of the trunk** (owner, 2026-10-29): `PR-G-HYDRANT-CW` (3/4") tees off the riser

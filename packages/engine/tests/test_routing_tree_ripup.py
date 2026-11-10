@@ -176,8 +176,8 @@ def test_upsize_lets_a_bigger_terminal_tie_on_p8():
 
 
 def test_supply_lift_keeps_only_its_derived_tees_l6_l7(catlin_model):
-    # Note §3 L6/L7: CW-WH shares its first vertex with three CW-TRUNK branches but only
-    # CW-BATH tees on it; DW-HW's tee on HW-KITCH's riser holds HW-KITCH's last 3 legs.
+    # Note §3 L6/L7: eight header branches leave at HW-TRUNK's end but only SBATH and SUITE
+    # tee on it; DW-HW's tee on HW-KITCH's riser holds HW-KITCH's last 3 legs.
     from types import SimpleNamespace
 
     from typehaus.cli.route_roots import supply_records
@@ -185,8 +185,8 @@ def test_supply_lift_keeps_only_its_derived_tees_l6_l7(catlin_model):
 
     runs = {r.tag: r for r in catlin_model.pipe_runs}
     parents = {c: r.parent for c, r in supply_records(catlin_model)[1].items() if r.parent}
-    wh = runs["PR-B-CW-WH"]
+    wh = runs["PR-B-HW-TRUNK"]
     away = SimpleNamespace(points=[(x + 10.0, y, z) for (x, y), z
                                    in zip(wh.path, wh.z_m, strict=True)])
-    assert _orphans(catlin_model, wh, away, {}, parents) == ["PR-B-CW-BATH"]
+    assert _orphans(catlin_model, wh, away, {}, parents) == ["PR-B-HW-SBATH", "PR-B-HW-SUITE"]
     assert _tail_hold(runs["PR-B-HW-KITCH"], [runs["PR-M-DW-HW"]]) == 3

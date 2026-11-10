@@ -150,7 +150,7 @@ def test_the_header_outlets_feed_the_hot_branches(catlin_model_ro) -> None:
     on_header = {tag: rec.port for tag, rec in records.items()
                  if rec.reason == "equipment_port" and (rec.port or "").startswith("EQ-B-HW-")}
     assert len(on_header) == 8 and len(set(on_header.values())) == 8, on_header
-    assert on_header["PR-B-HW-KITCH"] == "EQ-B-HW-HEADER.out-6"
+    assert on_header["PR-B-HW-KITCH"] == "EQ-B-HW-HEADER.out-2"
 
 
 def test_the_nearest_ancestor_wins_not_the_largest(catlin_model_ro) -> None:

@@ -84,8 +84,8 @@ EQUIPMENT_TYPES = (
                   # Product frame: -y front, +x right, z off the floor. Heights published (E, K,
                   # C); every x/y SCALED off p.2's plan and elevation (+-1"), and the T&P height
                   # too. 3/4" NPT, MIP fittings. `power` is the factory cord, a face only.
-                  # Clearances 0" rear/sides, 6" top, 2" T&P release. Exhaust ducted, inlet
-                  # open: "any size room" with 18 in2 under the door (Use & Care p.9).
+                  # Clearances 0" rear/sides, 6" top, 2" T&P release. Both connections
+                  # ducted: "any size room", no added ventilation (AP22654 p.9).
                   ports=(ServicePort(tag="cold", service=Service.WATER_COLD,
                                      position=(inch(10.7), inch(-11.9), inch(5.0625)),
                                      connection_size=inch(0.75), direction=(0.669, -0.743, 0.0),
@@ -111,6 +111,11 @@ EQUIPMENT_TYPES = (
                                      connection_size=inch(8), direction=(0.940, -0.342, 0.0),
                                      certainty=PortCertainty.EXACT,
                                      notes="Outlet adapter: scaled (+/-1.5in) from the side grille above the HydroBoost riser; field verify."),
+                         ServicePort(tag="air-in", service=Service.TRANSFER_AIR,
+                                     position=(inch(0), inch(0), inch(74.1875)),
+                                     connection_size=inch(8), direction=(0.0, 0.0, 1.0),
+                                     certainty=PortCertainty.EXACT,
+                                     notes="Top inlet: the filter grille under Rheem's inlet adapter and SP20890 elbow (H 91in to its top, AP22654 p.17). Plan centre assumed."),
                          ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))))),
     # --- the backup microgrid (notes/backup_power.md) ----------------------------------
     #
@@ -356,20 +361,21 @@ DUCTS_HVAC_SECOND = [
 # "this storey has no horizontal duct" is a fact worth stating where the list would be.
 DUCTS_HVAC_ATTIC = []
 
-# ** IN THE UNDER-STAIR CLOSET'S SE CORNER SINCE 2026-11-09 (owner). ** Body hard on
-# W-B-WELL (x 165.75") and W-B-BA-N (y 308.25"), so its chill leaves the furnace room:
-# its exhaust is ducted into the stair and it draws stair air through a sleeve in W-B-WELL
-# (plan/mep_hpwh_air.py, notes/basement_winter_heat.md). The 6" filter clearance holds at
-# the rake: lined soffit 83.1" at the tank's north edge against an 80 3/16" need.
+# ** OPEN IN RM-B-WORKSHOP's NE CORNER SINCE 2026-11-09 (owner). ** Back on W-B-CW2 (Rheem
+# 0" rear), riser lobe 14" off W-B-HALL-W. Both air connections are ducted through
+# W-B-HALL-W's one 12 1/2" bay north of D-B-SHOP into the stair hall (plan/mep_hpwh_air.py),
+# so the chill and the shop dust both stay out of the workshop's air and the filter.
 #
-# ** ROTATED 180: DISPLAY NORTH, EXHAUST WEST. ** Rheem's exhaust sits right of the display,
-# over the riser (RH-PIHP-SC-SO p.2), and this quarter keeps the T&P off W-B-WELL (6.8").
-# World ports
-# (notes/water_service.md §1): hot (139.5", 325.5", 42 3/8"), cold (142.9", 332.3",
-# 5 1/16"), T&P (158.9", 334.9", ~46"), condensate (161.1", 331.4", 59").
+# ** ROTATED -40 deg: EXHAUST SOUTH-EAST, ON THE BAY'S LINE. ** The exhaust is front + 70
+# deg, so the side port, the top elbow's outlet and the turn onto the bay line up in plan:
+# each duct runs straight to one bend square to W-B-HALL-W. The display faces south-west
+# over the 30x30 working space on the open floor; the T&P and condensate face it, west of
+# the ducts. World ports (notes/water_service.md §1): hot (145.0", 188.4", 42 3/8"), cold
+# (138.0", 185.4", 5 1/16"), T&P (124.1", 193.7", ~46"), condensate (124.7", 197.8", 59"),
+# air-out (143.6", 190.9", 65 1/2"), air-in (top centre, 74 3/16").
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(inch(153.625), inch(320.375)), rotation=deg(180),
-             footprint=(inch(24.25), inch(24.25)), room="RM-B-STAIR", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH",
+             position=pt(inch(137.5), inch(201.375)), rotation=deg(-40),
+             footprint=(inch(24.25), inch(24.25)), room="RM-B-WORKSHOP", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH",
              relief_discharge_ref="PR-B-WH-TPR"),
 ]

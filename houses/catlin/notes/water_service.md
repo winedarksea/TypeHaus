@@ -49,53 +49,54 @@ exhaust 6" off any wall. Heat trap 6" min on the cold; flexible connections reco
 copper or listed stainless flex: UPC 604.13 bars PEX in the first 18").
 
 **Ports (model, `EQ-T-WATER-HEATER`).** Heights published except the T&P's; every plan
-position SCALED off p.2 (+-1"). Tank at (153 5/8", 320 3/8") in the under-stair closet's SE
-corner since 2026-11-09, rotation 180: front (display) north, right (exhaust) west, left east,
-back south. Body hard on `W-B-WELL` and `W-B-BA-N` (0" allowed).
+position SCALED off p.2 (+-1"). Tank at (137 1/2", 201 3/8") in `RM-B-WORKSHOP`'s north-east
+corner since 2026-11-09, open in the room, back on `W-B-CW2` (0" allowed), riser lobe 14" off
+`W-B-HALL-W`; rotation -40: front (display) south-west over the 30x30 working space, the
+side exhaust south-east.
 
 | port | product frame | world (x, y, z AFF) |
 |---|---|---|
-| hot (E) | ~70 deg right of front, r ~15" | (139.5", 325.5", 42 3/8") |
-| cold (K) | ~42 deg right of front, r ~16", riser foot | (142.9", 332.3", 5 1/16") |
-| T&P outlet | ~20 deg left of front, r ~15.4", ~46" scaled | (158.9", 334.9", ~46") |
-| condensate (C) | front-left shoulder | (161.1", 331.4", 59") |
-| top inlet | open since 2026-11-09, no adapter or elbow | filter grille at A |
-| side exhaust | ~70 deg right of front, 65 1/2" (scaled) | (142.2", 324.5", 65.5"), points west/north |
+| hot (E) | ~70 deg right of front, r ~15" | (145.0", 188.4", 42 3/8") |
+| cold (K) | ~42 deg right of front, r ~16", riser foot | (138.0", 185.4", 5 1/16") |
+| T&P outlet | ~20 deg left of front, r ~15.4", ~46" scaled | (124.1", 193.7", ~46") |
+| condensate (C) | front-left shoulder | (124.7", 197.8", 59") |
+| top inlet (`air-in`) | top centre, under Rheem's adapter and elbow | (137.5", 201.4", 74 3/16") |
+| side exhaust (`air-out`) | ~70 deg right of front, 65 1/2" (scaled) | (143.6", 190.9", 65 1/2"), points south-east |
 
-The riser cover is drawn as a lobe on the footprint, north-west in plan, full height though
-it stops at G. Model height is A, 74 3/16". Filter (top) wants 6" over the tank.
+The riser cover is drawn as a lobe on the footprint, south-south-east in plan, full height
+though it stops at G. Model height is A, 74 3/16". Filter (top) wants 6" over the tank.
 
-**Why this rotation (read 2026-11-09, AP22654 Rev 01 and the MSO spec p.2).** The exhaust sits
-right of the display, directly over the riser, and this quarter keeps the T&P off `W-B-WELL`.
-Rheem lists one duct for any size room with 18 in2 under the door (p.9), 8/7/6/5" duct
-(Table 1), indoor registers approved for HVAC, never tied to another duct (p.15).
+**Why here (owner, 2026-11-09).** The workshop keeps its area and gains no walls or door;
+both air connections are ducted through `W-B-HALL-W` to two grilles in the stair hall, so the
+chill and the evaporator's air are the hall's and the shop's dust stays off the filter. The
+under-stair closet (its home for part of that day) left the condensate line in
+`D-B-CLOSET`'s doorway, looped the exhaust and could not take a ducted inlet; `D-B-CLOSET`
+is plain storage again, the full-height way in to `PA-B-MAIN-SHUTOFF`.
 
-**Air.** The exhaust is ducted to the stair and the inlet is open, fed through a grille in
-`W-B-WELL`: a ducted top inlet cannot meet Rheem's 12" flex section at this spot. H and J above
-are Rheem's ducted figures, not built here. Parts, arithmetic and field holds:
-`notes/basement_winter_heat.md`; ducts: `plan/mep_hpwh_air.py`. The tank goes through
-`D-B-CLOSET` tilted (74 3/16" against a 72" leaf), with the leaf lifted off its pins.
+**Air.** Both ducted, `plan/mep_hpwh_air.py`: Rheem's rules, parts and holds are in
+`notes/basement_winter_heat.md` "Air connections".
 
-**Runs.**
-- `PR-B-HW-TRUNK`: west off the hot tap to x=130", north at 42 3/8" under `DU-B-WH-OUT` to
-  y=354", west through `W-B-STR3` north of the door's king, up at x=96" to 5'-9 1/2", then
-  west under `DU-B-ERV-RET-TRUNK` to the x=83" riser and its old route.
-- `PR-B-CW-WH`: ceiling leg to (93 1/2", 27'-11 1/2"), down to 5'-2", north-east through
-  `W-B-STR3` at y=357 1/2", drop at (146", 357 1/2") to 8", then onto the tap at 5 1/16". The
-  full-height drop is the heat trap. `PA-B-WH-STOP-CW` is on the drop at 48"; `PR-B-CW-BATH`
-  tees off the ceiling leg at x=7'-0".
-- `PR-B-WH-TPR`: full-size 3/4" copper, a 2" stub pitched down, then straight down to an air
-  gap 6" over the closet slab. Not threaded at its end, never into the condensate.
+**Pan.** None, as §5: UPC 507.5 / IRC P2801.6 want one only where a leak would damage the
+building; this tank stands on the slab with nothing below, and `AL-B-WH-LEAK` sits beside
+its riser foot.
+
+**Runs** (developed lengths off the model):
+- `PR-B-HW-TRUNK` (7.2 ft, was 19.3): a 3" stub on the hot tap's axis, a 90 to x=12'-9 3/4",
+  up to 95 1/2", north and east, and down into `EQ-B-HW-HEADER`'s inlet beside the tank.
+- `PR-B-CW-WH` (9.0 ft, was 30.8): tees off `PR-B-CW-TRUNK` over the tank and drops on the
+  inlet's axis 3" off the tap. The full-height drop is the heat trap; `PA-B-WH-STOP-CW` is on
+  it at 48". `PR-B-CW-BATH` tees off the trunk's x=4'-9" leg now.
+- `PR-B-WH-TPR`: full-size 3/4" copper, a 2" stub pitched down, then straight down beside
+  the tank to an air gap 6" over the workshop slab. Never into the condensate.
 
 ## 2. Condensate
 
-`PR-B-WH-COND`: 3/4" PVC from the port (59") north, west under `DU-B-WH-OUT`, through
-`W-B-STR3` north of the door's king, then south-west to tee onto `PR-B-ERV-COND`'s south leg
-at (91.5", 345"). That line stays in the furnace room (it never crossed the closet) and runs
-to the `FX-B-UTIL-SINK` air gap (>= 0.33"/ft). Rheem: pitch >= 1/8"/ft, 3/4" minimum, never
-into the heater's own pan, trap only if it meets a sewer (it ends at an air gap).
-`mep.drain_slope` and `mep.drain_tie_in` pass. A heat-pump water heater makes roughly 1/2-1
-gal a day in summer, a rounding error against the ERV core's.
+`PR-B-WH-COND` (5.3 ft): 3/4" PVC off the port's axis, west along the tank's side, north at
+x=9'-8" through `W-B-CW3`, and down to its own air gap 13" over `FX-B-UTIL-SINK`'s rim, 6"
+from `PR-B-ERV-COND`'s. Every leg >= 1/4"/ft. Rheem: pitch >= 1/8"/ft, 3/4" minimum, never
+into the heater's own pan, trap only if it meets a sewer (it ends at an air gap). It crosses
+no doorway or swing. A heat-pump water heater makes roughly 1/2-1 gal a day in summer, a
+rounding error against the ERV core's.
 
 ## 3. The service lateral and the hydrant branch
 
@@ -195,44 +196,47 @@ alone is ~$0.3-0.7k cheaper and cuts the wait for hot water; the cold side has n
 gain and stays a trunk. No recirculation is modelled and the header makes one unnecessary,
 which suits a heat-pump heater that should not be fed a recirc loop's return.
 
-**What is built.** `PR-B-HW-TRUNK` (1" copper, 11.35 ft developed) ends at `EQ-B-HW-HEADER`,
-an Uponor LF2821050: 1" copper body, 1" sweat supply, eight 1/2" ProPEX LF brass outlets on
-1 1/2" centres (Uponor submittal "ProPEX (type L) copper branch manifolds", read 2026-11-04;
+**What is built.** `PR-B-HW-TRUNK` (1" copper) ends at `EQ-B-HW-HEADER`, an Uponor
+LF2821050: 1" copper body, 1" sweat supply, eight 1/2" ProPEX LF brass outlets on 1 1/2"
+centres (Uponor submittal "ProPEX (type L) copper branch manifolds", read 2026-11-04;
 SupplyHouse lists the 10-outlet LF2831050 at $202.82 the same day, and Uponor's sheet calls
-the line made to order). It hangs outlets down at 88" (body centre) on x=7'-6" in
-RM-B-FURNACE, so the eight 1/2" PEX branches leave at 83 1/2", under the ceiling drains, where
-the old trunk ran, and rise into the joist bays only south of y=17'-2". `PR-B-HW-SBATH`
-(5.25 WSFU) and `PR-B-HW-SUITE` (6.75 WSFU: it carries the studio, which its `serves` now
-says) need 3/4" by `mep.pipe_sizing`, and a 1/2" outlet cannot feed them, so both tee off the
-trunk ahead of the header. 1/2" lines need no insulation (N1103.4.2 starts at 3/4"). Copper
-stays within UPC 604.13's 18" of the tap: the PEX starts over 9 ft of trunk out.
+the line made to order). `PR-B-HW-SBATH` (5.25 WSFU) and `PR-B-HW-SUITE` (6.75 WSFU: it
+carries the studio) need 3/4" by `mep.pipe_sizing`, and a 1/2" outlet cannot feed them, so
+both tee off the trunk ahead of the header. 1/2" lines need no insulation (N1103.4.2 starts
+at 3/4").
+
+**The header beside the heater (2026-11-09).** With the tank in the workshop's north-east
+corner the header hangs right beside it (x=13'-4", outlets down at 86 1/8"), and the trunk is
+7.2 ft instead of 19.3. A foot of 1" copper holds what 4.7 ft of 1/2" PEX does, so the
+shortest trunk is the shortest wait. Branch lanes: `plan/mep_supply_header.py`.
 
 **Volumes, worked by hand** (gal/ft from the inside diameter: 1" type L copper, ID 1.025",
 0.0429; 1/2" PEX-A, ID 0.475", 0.0092; 3/4" PEX-A, ID 0.681", 0.0189; 3/4" type L copper, ID
-0.785", 0.0251). Developed lengths off the model, tap to fixture stub. A header branch adds the
-whole trunk, 11.35 x 0.0429 = 0.49 gal.
+0.785", 0.0251). Developed lengths off the model, tap to fixture stub, each with the whole
+trunk (conservative for the two 3/4" tees): 19.3 ft x 0.0429 = 0.83 gal before, 7.2 ft x
+0.0429 = 0.31 gal now.
 
-| fixture | trunk + tees (was) | header (now) |
-| --- | --- | --- |
-| kitchen sink, `PR-B-HW-KITCH` | 1.89 gal | 0.49 + 56.5 ft x 0.0092 = 1.01 gal |
-| main bath shower, `PR-B-BATH2-SH-HW` | 0.93 | 0.65 |
-| main bath tub, `PR-B-FILLER-HW` | 0.91 | 0.61 |
-| main bath sink, `PR-B-HW-BATH2` | 1.21 | 0.70 |
-| laundry, `PR-B-HW-WASH` | 0.94 | 0.67 |
-| sauna shower, `PR-B-HW-SAUNA` | 1.23 | 0.81 |
-| powder lav, `PR-B-HW-BATH1` | 0.71 | 0.60 |
-| basement lav, `PR-B-HW-BATH` | 0.64 | 0.64 |
-| attic shower (via SUITE, still 3/4") | 1.94 | 1.64 |
+| fixture | branch ft (closet) | gal (closet) | branch ft (now) | gal (now) |
+| --- | --- | --- | --- | --- |
+| kitchen sink, `PR-B-HW-KITCH` | 57.0 | 1.35 | 42.9 | 0.71 |
+| main bath shower, `PR-B-BATH2-SH-HW` | 17.1 | 0.99 | 14.5 | 0.44 |
+| main bath tub, `PR-B-FILLER-HW` | 12.5 | 0.94 | 12.4 | 0.43 |
+| main bath sink, `PR-B-HW-BATH2` | 22.1 | 1.03 | 22.6 | 0.52 |
+| laundry, `PR-B-HW-WASH` | 16.5 | 0.98 | 12.9 | 0.43 |
+| sauna shower, `PR-B-HW-SAUNA` | 32.1 | 1.12 | 19.7 | 0.49 |
+| powder lav, `PR-B-HW-BATH1` | 12.8 | 0.95 | 20.8 | 0.50 |
+| basement lav, `PR-B-HW-BATH` | 15.8 | 0.97 | 14.2 | 0.44 |
+| suite and attic (`PR-B-HW-SUITE`, 3/4" PEX) | 41.0 | 1.60 | 25.6 | 0.80 |
+| hall bath upstairs (`PR-B-HW-SBATH`, 3/4" copper) | 21.8 | 1.37 | 39.7 | 1.31 |
 
-At 1.5 gpm the kitchen waits ~40 s instead of ~76 s. The study's 0.72 gal kitchen figure
-assumed every branch on the header; the two 3/4" branches teed ahead of it and the eight
-branches' route under the drains (a 1/2" line runs 56.5 ft to the sink against the old 3/4"
-line's 44 ft) are why the built figure is higher. The open move is the attic shower: a ninth
-outlet for the studio would take ~1 gal off it, on a 10-outlet header.
+At 1.5 gpm the kitchen waits ~28 s (was ~54 s in the closet). Only the powder lav's branch
+got longer (it now crosses from the workshop), and it still waits less: the trunk it
+shares is 12 ft shorter. The hall bath upstairs is the longest wait left; a ninth outlet
+cannot feed it (3/4" by `mep.pipe_sizing`).
 
 **Pressure on the 1/2" kitchen branch, by hand (2026-11-08).** Hazen-Williams, C = 150, ID
-0.475": psi/100 ft = 0.433 x 0.2083 x (100/150)^1.852 x Q^1.852 / 0.475^4.8655. Length is
-`PR-B-HW-KITCH`'s 57.3 ft off the model, plus 15% for fittings (an allowance) = 66 ft. Lift
+0.475": psi/100 ft = 0.433 x 0.2083 x (100/150)^1.852 x Q^1.852 / 0.475^4.8655. Length was
+`PR-B-HW-KITCH`'s 57.3 ft off the model (42.9 ft since 2026-11-09, so these losses fall by a quarter), plus 15% for fittings (an allowance) = 66 ft. Lift
 is 86.1" to 129.4", 3.6 ft = 1.6 psi.
 
 | case | Q | loss | with lift | velocity |
@@ -245,14 +249,14 @@ fixture minimum (the usual UPC 608 figure, not read here) with about 25 psi at t
 with both running. Against the still-unmeasured street pressure above, that is the number to
 compare. The 3.0 gpm case is worst-case; the dishwasher's fill rate is an assumption.
 
-**BATH2 drain bay coordination, 2026-11-09.** The new y=186-inch TJI requires the kitchen,
-BATH2-lavatory and sauna hot turns at y=188 inches. The sauna hot crosses at x=195 to
+**BATH2 drain bay coordination, 2026-11-09.** The new y=186-inch TJI requires the BATH2-lavatory
+and sauna hot turns at y=188 inches. The sauna hot crosses at x=195 to
 separate its web bore from the x=200 cold trunk. The shower hot riser is y=189.5 and its
 48-inch valve station stays fixed. `notes/bath2_shower.md` §5 gives the drain and framing
 setout; manifold outlets and branch diameters are unchanged.
 
 `mep.water_manifold_ports` holds one run per outlet. `haus route houses/catlin --manifold
-EQ-B-HW-HEADER` re-lays the eight together; its first pass proposed several branches running
-exposed at fixture height across the furnace room and workshop, so the lanes above were drawn
-by hand on the old trunk's lane and graded by `haus check` (0 FAIL).
+EQ-B-HW-HEADER` re-lays the eight together; per-branch proposals for the workshop header ran
+branches through `W-B-HALL-W`'s cavity and around the furnace room, so the lanes were drawn by
+hand (fixture-end legs kept) and graded by `haus check` (0 FAIL).
 

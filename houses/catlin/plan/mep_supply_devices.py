@@ -27,7 +27,7 @@ SUPPLY_DEVICES_BASEMENT = [
     # inboard (y=35'-0" since 2026-10-31, clear of W-B-N2's concrete); this valve sits on
     # that riser at 3'-0", under the landing (4'-2" clear beneath it). Since
     # the landing reached the wall (2026-09-24) it is reached from the storage under it,
-    # open to the stair foot and D-B-CLOSET, not from the landing above.
+    # through D-B-CLOSET (its only way in), not from the landing above.
     #
     # The garage hydrant is DOWNSTREAM of it since 2026-10-29 (owner): PR-G-HYDRANT-CW tees
     # off this riser 12" higher, so this valve shuts the hydrant too. The indoor legs are warm;
@@ -256,11 +256,11 @@ SUPPLY_STOPS = [
     # The water heater's cold inlet — the one stop in this list that IS at its branch's own
     # end rather than at a fixture, and the one the house most obviously lacked. P2903.9.2
     # wants a valve on the cold supply to a water heater; without it, changing an anode rod
-    # or a T&P valve means closing the main. It stands on the cold drop beside the riser,
-    # at hand height in the closet, downstream of PR-B-CW-BATH's tee (2026-11-09).
+    # or a T&P valve means closing the main. It stands on the cold drop beside the tank,
+    # at hand height in the workshop (2026-11-09).
     PipeAccessory(uid="XTPXNZ8PRZ", tag="PA-B-WH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-WH", position=pt(inch(146), inch(357.5)),
-                  elevation=inch(48), accessible=True, room="RM-B-STAIR",
+                  pipe_ref="PR-B-CW-WH", position=pt(inch(138.15), inch(182.38)),
+                  elevation=inch(48), accessible=True, room="RM-B-WORKSHOP",
                   model='1" full-port bronze ball valve, lever handle, at the tank inlet',
                   serves=("EQ-B-WH",)),
 ]

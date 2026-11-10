@@ -377,18 +377,23 @@ SECOND_DRAINS = [
     # (13'-0", 16'-10.8"), 9.8" off the closet's north wall and through FURN-M-CLOSET-SHELF;
     # RM-M-CLOSET is `closed_to_services`. W-M-CLN is staggered 2x4 on 2x6 plates and
     # non-bearing, so a 3.50" barrel stands mid-bay at x=12'-6" with 1 1/2" to the studs
-    # either side and bores both plates. A straight drop would land 3/8" into
-    # DU-B-ERV-R-GYM's y=17'-4.8" lane, so it offsets 1'-4" south inside FS-M-WEST's joist
-    # band — one web bore at the y=17'-4" I-joist — and drops onto its old lane west.
+    # either side and bores both plates. It offsets 1'-4" south inside FS-M-WEST's joist
+    # band (one web bore at the y=17'-4" I-joist) onto its old y=16'-8" lane west.
+    # ** IT CROSSES EQ-B-WH HIGH (2026-11-09). ** The tank's top elbow stands at 91" under
+    # this lane, so the drain drops only to 98" AFF in the joist bay (parallel to the joists,
+    # nothing bored), runs west past the tank, and drops to 86" at x=10'-2", 3" west of the
+    # tank, so DU-B-ERV-R-GYM clears it; 1/4"/ft from there to the main.
     PipeRun(uid="CMPD08AAAA", tag="PR-M-S-SUITE-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(12, 6), ft(18)), pt(ft(12, 6), ft(18)), pt(ft(12, 6), ft(18)),
                   pt(ft(12, 6), ft(18)), pt(ft(12, 6), ft(16, 8)),
-                  pt(ft(12, 6), ft(16, 8)), pt(ft(6, 2.4), ft(16, 8.4)),
+                  pt(ft(12, 6), ft(16, 8)), pt(ft(10, 2), ft(16, 8)),
+                  pt(ft(10, 2), ft(16, 8)), pt(ft(6, 2.4), ft(16, 8.4)),
                   pt(ft(6), ft(16, 6))),
             diameter=inch(3), material="pvc",
             elevations=(ft(9, 7.5), ft(8, 11.875), ft(0), inch(-5), inch(-5.5),
-                        ft(-1.8333), inch(-24.5036), inch(-25.2956)),
-            wall_refs=(None, "W-M-CLN", None, None, None, None, None),
+                        inch(-11.4375), inch(-12.0625), inch(-23.4375), inch(-24.5036),
+                        inch(-25.2956)),
+            wall_refs=(None, "W-M-CLN", None, None, None, None, None, None, None),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
 ]
@@ -609,18 +614,17 @@ ERV_CONDENSATE = [
             diameter=inch(0.75), material="pvc",
             elevations=(inch(50.8), inch(50.5), inch(48.72), inch(47.67), inch(44.49),
                         inch(44.25),)),
-    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C) from the closet
-    # (2026-11-09): north off the port, west under DU-B-WH-OUT, through W-B-STR3 north of
-    # D-B-CLOSET's king, and south-west to tee onto PR-B-ERV-COND's south leg at y=345".
-    # Pitch >= 1/8"/ft (Rheem), never into the tank's own pan.
+    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C), 2026-11-09: off the
+    # port's axis, west along the tank's side, north at x=9'-8" through W-B-CW3 into the
+    # furnace room, and down to its own 13" air gap over FX-B-UTIL-SINK's rim, beside
+    # PR-B-ERV-COND's (5.3 ft, >= 1/4"/ft). Never into the tank's own pan; no trap to
+    # a non-sewer receptor (Rheem). It crosses no doorway or swing.
     PipeRun(uid="V5TVMM2BN9", tag="PR-B-WH-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(161.125), inch(331.375)), pt(inch(161.125), inch(331.375)),
-                  pt(inch(161.125), inch(336.5)), pt(inch(126), inch(336.5)),
-                  pt(inch(126), inch(359)), pt(inch(104), inch(359)),
-                  pt(inch(104), inch(345)), pt(inch(91.5), inch(345))),
+            path=(pt(inch(124.684), inch(197.769)), pt(inch(122.916), inch(195.663)),
+                  pt(inch(116), inch(195.663)), pt(inch(116), inch(232)),
+                  pt(inch(112), inch(232)), pt(inch(112), inch(232))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(59), inch(55.6), inch(55.5), inch(54.75), inch(54.5),
-                        inch(54.0), inch(53.0), inch(50.2))),
+            elevations=(inch(59), inch(58.9), inch(58.75), inch(57.9), inch(57.8), inch(44))),
 ]
 
 # ** THE COLLECTOR MOVED ONTO THE SERVICE BAND, AND THE HEAD CAME UP 2 5/8" (2026-09-09). **
@@ -668,23 +672,23 @@ CONDENSATE = [
 #
 # 3/4" full-size copper (the valve's own outlet — UPC 608.5 forbids reducing it, or any
 # valve/trap/rise along the run). Falls from the valve to an air gap 6" over the floor — inside Minn. R. 4714.0608's "within 18 inches of the floor"
-# (its rewrite of UPC 608.5(3)). Discharges onto the mechanical-room slab by design, with no
+# (its rewrite of UPC 608.5(3)). Discharges onto the workshop slab by design, with no
 # fixture below to damage — the same reason UPC 507.5 needs no pan under the tank. It ends
-# ~11' from SM-B-RADON — too far for "the floor
+# ~19' from SM-B-RADON — too far for "the floor
 # falls to SM-B-RADON" to be an argument on its own. The air gap is what UPC 608.5 actually
 # requires; the slope is a slab-pour question the pour has to be told to fall this way
 # rather than assumed to. Flagged in plans/TODO.md.
 # ** THE RELIEF LINE FOLLOWS THE TANK'S T&P PORT (2026-11-09). ** The valve outlet is the
-# type's `relief` port: front-left of the plug-in, ~46" up (scaled), facing north-north-east
-# on the closet side of the tank. A 2" stub pitched down, then straight down to its air
-# gap 6" over the slab, seen from the door; never into the condensate line.
+# type's `relief` port: front-left of the plug-in, ~46" up (scaled), facing south-west into
+# the workshop. A 2" stub pitched down, then straight down beside the tank to its air gap
+# 6" over the slab; never into the condensate line.
 # `test_water_heater_connections` grades its start against the `relief` port.
 TPR_DISCHARGE = [
     PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(158.925), inch(334.875)), pt(inch(159.6), inch(336.75)),
-                  pt(inch(159.6), inch(336.75))),
+            path=(pt(inch(124.12), inch(193.674)), pt(inch(122.388), inch(192.674)),
+                  pt(inch(122.388), inch(192.674))),
             diameter=inch(0.75), material="copper",
-            elevations=(inch(46), inch(45.75), ft(0, 6))),
+            elevations=(inch(46), inch(45.75), inch(6))),
 ]
 
 # --- Radon sump + shared radon/plumbing vent riser ---------------------------------

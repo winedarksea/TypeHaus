@@ -7795,3 +7795,39 @@ to clear the new joist and its neighbouring routes. One TJI and one A35Z are add
 existing takeoff. The trap arm is straight, with its cleanout takeoff shifted 1/4" south;
 the vent tee, cleanout cap and main-drain tie remain. Detail and drawing:
 `notes/bath2_shower.md` §5.
+
+## Water heater to the workshop's NE corner, both air connections ducted to the hall (2026-11-09, owner)
+
+A review of the closet layout found three problems: `PR-B-WH-COND` ran through `D-B-CLOSET`'s
+doorway and sat where the leaf lies at 90 deg (only the 55 deg stop hid it), the exhaust looped
+because the 41 3/4" closet gave the tank no room to turn, and the hot side was long
+(`PR-B-HW-TRUNK` 19.3 ft for 4.4 ft of straight line; `PR-B-HW-KITCH` 57 ft).
+
+`EQ-B-WH` now stands open in `RM-B-WORKSHOP`'s NE corner, back on `W-B-CW2`. Rheem (AP22654
+Rev 01, read in full) lists ducting both connections for any size room and names no
+workshop exclusion. Both air connections are ducted through `W-B-HALL-W` into the stair hall,
+so the chill and the evaporator's air are the hall's and shop dust stays off the filter. The
+header moved beside the tank: trunk 7.2 ft, every branch but the powder lav's shorter, every
+fixture's wait lower (kitchen 1.35 -> 0.71 gal). `D-B-CLOSET` is plain storage again, 32" leaf
+kept, standard undercut. `RM-B-ESS` was not shrunk.
+
+What the review's plan assumed and the model refused:
+- **Two bays, one boot each.** `W-B-HALL-W` has one 12"-clear bay north of `D-B-SHOP`; the next
+  is 9.8" (stud to `D-B-BATH`'s pocket king). Both boots stack in it.
+- **Straight ducts.** A boot's collar takes its duct square, so each run is a straight leg and
+  one 60 deg bend; the tank turned -40 deg (not -20) so the side port and the elbow's outlet
+  share that leg's line.
+- **`DU-B-ERV-R-GYM` south of the tank at y=15'-3".** The intake crosses that line; the radial
+  instead runs on x=9'-4" to y=13'-4" and east over `D-B-SHOP`'s head, about the same length.
+- **The corner was clear overhead.** `PR-M-S-SUITE-DRAIN` dropped onto an 86" lane straight
+  through the elbow (91"). It now holds 98" in the joist bay past the tank and drops 3" west
+  of it.
+- **The header's branches re-laid by `haus route`.** Per-branch proposals ran through
+  `W-B-HALL-W`'s cavity and around the furnace room; the lanes were drawn by hand, fixture-end
+  legs kept, and graded by `haus check`.
+
+Rejected: the closet in place (above); the bath sliding north under the flight; a hall alcove
+with a louvered door (dropped once the tank could stand in the workshop with ducted air: no
+new walls or door, and the evaporator stays off shop dust); the HPWH in the ESS closet; moving
+the header alone (the trunk stays long); shrinking the ESS closet (no door needs the space, and
+it costs hydrogen containment margin).
