@@ -1,9 +1,11 @@
-"""Where each alarm head hangs — plan point from ``resolve.alarms.alarm_xy``, z on the ceiling."""
+"""Where each alarm head goes — plan point from ``resolve.alarms.alarm_xy``; z on the ceiling,
+or on the finished floor for a leak sensor."""
 
 from __future__ import annotations
 
 from typing import Any
 
+from typehaus.model.enums import AlarmKind
 from typehaus.model.refs import FollowRoof
 from typehaus.resolve.alarms import alarm_xy
 from typehaus.resolve.model import ResolvedModel
@@ -12,12 +14,25 @@ from typehaus.resolve.room_floor import room_finished_floor_elevation
 
 
 def alarm_points(model: ResolvedModel, alarm: Any, storey_tag: str) -> dict[str, Any]:
-    """``x``/``y``/``z`` of one alarm; each ``None`` when it cannot be derived (never invented)."""
+    """``x``/``y``/``z``/``mount`` of one alarm; a point is ``None`` when underivable."""
+    on_floor = alarm.kind is AlarmKind.LEAK
+    mount = "floor" if on_floor else "ceiling"
     room_el = model.plan.by_tag(alarm.room) if alarm.room else None
     xy = alarm_xy(alarm, room_el)
     if xy is None:
-        return {"x": None, "y": None, "z": None}
-    return {"x": xy[0], "y": xy[1], "z": _ceiling_z(model, room_el, alarm.room, storey_tag, xy)}
+        return {"x": None, "y": None, "z": None, "mount": mount}
+    z = (_floor_z(model, alarm.room, storey_tag) if on_floor
+         else _ceiling_z(model, room_el, alarm.room, storey_tag, xy))
+    return {"x": xy[0], "y": xy[1], "z": z, "mount": mount}
+
+
+def _resolved_room(model: ResolvedModel, room_tag: str | None, storey_tag: str) -> Any | None:
+    return next((r for r in model.rooms if r.tag == room_tag and r.storey == storey_tag), None)
+
+
+def _floor_z(model: ResolvedModel, room_tag: str | None, storey_tag: str) -> float | None:
+    room = _resolved_room(model, room_tag, storey_tag)
+    return None if room is None else room_finished_floor_elevation(model, room)
 
 
 def _ceiling_z(model: ResolvedModel, room_el: Any, room_tag: str | None, storey_tag: str,
@@ -29,7 +44,7 @@ def _ceiling_z(model: ResolvedModel, room_el: Any, room_tag: str | None, storey_
         depth = None if roof is None else roof_underside_depth_m(model, roof, room_tag)
         if depth is not None:
             return roof_height_at(roof, xy) - depth
-    room = next((r for r in model.rooms if r.tag == room_tag and r.storey == storey_tag), None)
+    room = _resolved_room(model, room_tag, storey_tag)
     if room is None:
         return None
     if room.clear_height_m is not None:

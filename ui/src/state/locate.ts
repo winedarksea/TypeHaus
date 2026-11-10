@@ -71,6 +71,11 @@ export function locateUid(model: Model, uid: string): LocatedElement | null {
   if (item) return { kind: "canvas_object", tag: item.tag, storey: item.storey,
     source: null, editable: null, centroid: item.position_m ?? null };
 
+  const alarm = (model.alarms ?? []).find((x) => x.uid === uid);
+  if (alarm) return { kind: "alarm", tag: alarm.tag, storey: alarm.storey,
+    source: sourceOf(alarm.provenance), editable: editableOf(alarm.provenance),
+    centroid: alarm.x != null && alarm.y != null ? [alarm.x, alarm.y] : null };
+
   const solid = (model.solids ?? []).find((x) => x.uid === uid);
   if (solid) return { kind: "solid", tag: solid.tag, storey: solid.storey,
     source: sourceOf(solid.provenance), editable: editableOf(solid.provenance),

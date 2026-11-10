@@ -12,6 +12,7 @@ import { FloorInspector, FootingBeddingInspector, LightRunInspector, MemberUidIn
 import { locateUid } from "../state/locate";
 import { useIsCompact } from "../hooks/useBreakpoint";
 import { Sheet } from "./ui/Sheet";
+import { AlarmInspector } from "./inspector/AlarmInspector";
 import { CanvasObjectInspector } from "./inspector/CanvasObjectInspector";
 import { WallPinControls } from "./inspector/WallPinControls";
 
@@ -223,6 +224,10 @@ function SelectionInspector({
         <Provenance p={r.provenance} />
       </div>
     );
+  }
+  if (kind === "alarm") {
+    const alarm = (model.alarms ?? []).find((item) => item.uid === uid);
+    return alarm ? <AlarmInspector alarm={alarm} /> : null;
   }
   if (kind === "stair") {
     const stair = (model.stairs ?? []).find((item) => item.uid === uid);

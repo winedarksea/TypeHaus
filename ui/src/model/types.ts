@@ -612,10 +612,12 @@ export interface Alarm {
   // The circuit that powers this detector, if any — the panel schedule names the alarms on
   // a circuit, so this is the reverse edge a reader needs to show it from the alarm's side.
   circuit: string | null;
-  /** Head position: plan point (the shared `alarm_xy`) and ceiling-face z; null = underivable. */
+  /** Head position: plan point (the shared `alarm_xy`) and the `mount` face's z; null = underivable. */
   x: number | null;
   y: number | null;
   z: number | null;
+  /** The face `z` is on: a leak sensor lies on the floor, every other head hangs from the ceiling. */
+  mount: "floor" | "ceiling";
   provenance: Provenance | null;
 }
 

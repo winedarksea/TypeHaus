@@ -498,6 +498,7 @@ def test_catalog_wood_appearance_preserves_species_and_finish_exceptions(catlin_
 
 def test_alarms_are_served_at_the_shared_alarm_point(catlin_model_ro, catlin_payload):
     from typehaus.resolve.alarms import alarm_xy
+    from typehaus.resolve.room_floor import room_finished_floor_elevation
 
     alarms = catlin_payload["alarms"]
     assert alarms
@@ -506,4 +507,9 @@ def test_alarms_are_served_at_the_shared_alarm_point(catlin_model_ro, catlin_pay
         expected = alarm_xy(alarm, catlin_model_ro.plan.by_tag(alarm.room) if alarm.room else None)
         assert (record["x"], record["y"]) == expected
     hall = next(record for record in alarms if record["tag"] == "AL-S-HALL")
-    assert hall["z"] is not None
+    assert hall["z"] is not None and hall["mount"] == "ceiling"
+    # A leak sensor lies on the slab, not at the ceiling over the stair it sits under.
+    leak = next(record for record in alarms if record["tag"] == "AL-B-WH-LEAK")
+    room = next(room for room in catlin_model_ro.rooms if room.tag == "RM-B-STAIR")
+    assert leak["mount"] == "floor"
+    assert leak["z"] == room_finished_floor_elevation(catlin_model_ro, room)
