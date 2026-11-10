@@ -20,6 +20,7 @@ from typehaus.model.placeable_symbols._frame import (
     prism,
     rect,
 )
+from typehaus.model.placeable_symbols._laundry_tower import laundry_tower
 from typehaus.model.placeable_symbols._mini_split_head import mini_split_head
 from typehaus.model.placeable_symbols._rheem_proterra import rheem_proterra_plugin_80
 from typehaus.model.placeable_symbols._tea_kettle import tea_kettle
@@ -319,12 +320,7 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "dishwasher": appliance_case(doors=1, body="appliance-steel"),
     "washer": appliance_case(doors=1, porthole=True, controls=True),
     "dryer": appliance_case(doors=1, porthole=True, controls=True),
-    # A stacked pair is one tower with two front-loader doors, so the face splits in
-    # elevation and each half gets its own glass — a single centred porthole would sit on
-    # the seam between the machines. Only the upper machine wears a console, but the family
-    # draws one band at the top, which is where a stack's shared controls actually are.
-    "washer-dryer-stacked": appliance_case(doors=2, split="horizontal", porthole=True,
-                                           porthole_per_door=True, controls=True),
+    "washer-dryer-stacked": laundry_tower,
     "microwave": appliance_case(doors=1, body="appliance-steel"),
     "countertop-microwave": countertop_microwave,
     "hood": canopy_hood(),

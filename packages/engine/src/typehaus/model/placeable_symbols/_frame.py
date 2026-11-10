@@ -113,6 +113,7 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "high-gloss-white": (0.96, 0.96, 0.95, 1.0),
     "solid-surface-white": (244 / 255, 245 / 255, 244 / 255, 1.0),
     "appliance-steel": (0.76, 0.78, 0.80, 1.0),
+    "laundry-black-steel": (0.12, 0.13, 0.14, 1.0),
     "proterra-jacket": (0.47, 0.48, 0.46, 1.0),
     "proterra-badge": (0.65, 0.015, 0.025, 1.0),
     # Recessed joins in painted furniture. The shade is light enough to read as a real
@@ -207,6 +208,7 @@ PART_SURFACE_PROPERTIES = {
     "porcelain": {"metalness": 0.0, "roughness": 0.22},
     "faucet": {"metalness": 1.0, "roughness": 0.12},
     "appliance-steel": {"metalness": 0.85, "roughness": 0.32},
+    "laundry-black-steel": {"metalness": 0.75, "roughness": 0.32},
     "chrome": {"metalness": 1.0, "roughness": 0.12},
     "mirror": MIRROR_SURFACE_PROPERTIES,
     "brushed-nickel": {"metalness": 0.85, "roughness": 0.32},
