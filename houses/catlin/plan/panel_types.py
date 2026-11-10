@@ -11,7 +11,7 @@ from typehaus import Service, ServicePort, ft
 PANEL_TYPES = (
     # ``bus_amps=225`` is what `code.NEC_705_12_interconnection` computes the 120% rule
     # against. It is the busbar rating, deliberately not the main:
-    # NEC 705.12(B)(3)(2) sizes the allowable backfeed on the bus, and this panel is a 225A
+    # NEC 705.12(B)(2)(a) sizes the allowable backfeed on the bus, and this panel is a 225A
     # bus behind a 200A main precisely so there is 70A of source headroom.
     #
     # ``service_amps=200`` is THIS PANEL'S MAIN, and it has to be stated now that the

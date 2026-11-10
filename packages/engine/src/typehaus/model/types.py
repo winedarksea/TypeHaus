@@ -1017,7 +1017,7 @@ class ElectricalDeviceType(FurnitureType):
     # Breaker spaces in the enclosure (panel kinds only) — what electrical.panel_spaces
     # reconciles the circuit slots against.
     spaces: int | None = None
-    # Busbar rating in amps (panel kinds only). NEC 705.12(B)(3)(2) sizes the allowable
+    # Busbar rating in amps (panel kinds only). NEC 705.12(B)(2)(a) sizes the allowable
     # backfeed against the bus, not the main breaker, so the number has to be carried on
     # the type rather than assumed equal to the service size.
     bus_amps: int | None = None

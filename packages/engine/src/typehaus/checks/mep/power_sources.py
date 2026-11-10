@@ -7,7 +7,7 @@ differently and they are read by different people.
 
 Two rules:
 
-- **705.12(B)(3)(2)** — the busbar's 120% allowance. The sum of the main breaker and every
+- **705.12(B)(2)(a)** — the busbar's 120% allowance. The sum of the main breaker and every
   source breaker may not exceed 1.2 x the bus rating.
 - **690.12** — rapid shutdown. Inside the array boundary, conductors must drop to a limited
   voltage; a module either carries its own shutdown device or belongs to a group whose
@@ -25,7 +25,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.nec import NEC, cite
 
-# NEC 705.12(B)(3)(2), the "120% rule": bus rating x 1.2 >= main OCPD + Σ source breakers.
+# NEC 705.12(B)(2)(a), the "120% rule": bus rating x 1.2 >= main OCPD + Σ source breakers.
 _BUS_ALLOWANCE = 1.2
 
 # NEC 690.12(B)(2) — the controlled-conductor limit inside the array boundary. A module
@@ -36,7 +36,7 @@ _RAPID_SHUTDOWN_LIMIT_V = 80.0
 
 @check(Tier.CODE, "code.NEC_705_12_interconnection")
 def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
-    """NEC 705.12(B)(3)(2) — the 120% busbar allowance, per panel that carries a source.
+    """NEC 705.12(B)(2)(a) — the 120% busbar allowance, per panel that carries a source.
 
     The main breaker term is the panel's OWN ``service_amps`` where its type states one —
     705.12 measures a backfeed against the main ahead of the bus, and on a Class 320
@@ -53,7 +53,7 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
     first.
 
     A source breaker at the *opposite end* of the bus from the main is the other half of
-    705.12(B)(3)(2), and it is authored rather than derived: the check reports the slot the
+    705.12(B)(2)(a), and it is authored rather than derived: the check reports the slot the
     source circuit occupies so a reviewer can see it, but it does not claim to know which
     physical end of a busbar a slot number lands on.
     """

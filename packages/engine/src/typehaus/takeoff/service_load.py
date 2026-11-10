@@ -19,7 +19,7 @@ GENERAL_LIGHTING_VA_PER_FT2 = 2.0
 SMALL_APPLIANCE_AND_LAUNDRY_VA = 4500.0  # 2 x 1500 small-appliance + 1500 laundry
 FIRST_8KVA = 8000.0
 REMAINDER_DEMAND_FACTOR = 0.4
-# 120.82(C)(5)/(6): electric space heating is taken at 65% of nameplate when there are
+# 120.82(C), item numbers contested: electric space heating is taken at 65% of nameplate when there are
 # fewer than four separately controlled units, 40% at four or more.
 SEPARATELY_CONTROLLED_UNIT_THRESHOLD = 4
 RESISTANCE_HEAT_FACTOR_FEW = 0.65

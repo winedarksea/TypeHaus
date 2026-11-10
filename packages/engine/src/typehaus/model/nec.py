@@ -13,8 +13,8 @@ P03, P10, P17), the NEC Handbook 2026 errata page for Table 120.54, MN DLI "2026
 against the printed 2026 text. ``UNCONFIRMED`` names the rows whose 2026 NUMBER no source
 gives (moved or inferred, not merely "no change reported"); ``cite``/``mark`` print them
 with a caveat, so the doubt reaches the finding, the permit checklist and the sheet.
-120.82(C): (3) heat pump + 65% supplemental is quoted (Holt, EC&M Nov 2025) and (6) is the
-40% term for four or more units (CMP-2 Annex D2(a)); (2) and the 65% (5) are inferred.
+120.82(C): (3) heat pump + 65% supplemental is quoted (Holt, EC&M Nov 2025). The resistance
+heat items are contested (Holt: (4) 65%, (5) 40%; Annex D2 draft: 5, 6), so cite 120.82(C).
 """
 
 from __future__ import annotations
@@ -44,9 +44,7 @@ class NEC:
     OPTIONAL_GENERAL_LOADS: Final = "120.82(B)"
     OPTIONAL_FIXED_APPLIANCES: Final = "120.82(B)(3)"
     OPTIONAL_HVAC: Final = "120.82(C)"
-    OPTIONAL_HEAT_PUMP: Final = "120.82(C)(2)"
     OPTIONAL_HEAT_PUMP_SUPPLEMENTAL: Final = "120.82(C)(3)"
-    OPTIONAL_RESISTANCE_HEAT: Final = "120.82(C)(5)/(6)"
     OPTIONAL_EVSE: Final = "120.82(D)"
 
     # Art. 130 (was Art. 750) — energy management.
@@ -131,7 +129,7 @@ class NEC:
     RAPID_SHUTDOWN: Final = "690.12"
     RAPID_SHUTDOWN_ARRAY: Final = "690.12(B)(2)"
     INTERCONNECTION: Final = "705.12"
-    INTERCONNECTION_120PCT: Final = "705.12(B)(3)(2)"
+    INTERCONNECTION_120PCT: Final = "705.12(B)(2)(a)"
     # Was 800.133 / 725.136; Arts. 805 and 725.136 are gone, limited energy is Arts. 720-723.
     LIMITED_ENERGY_SEPARATION: Final = "722.15(A)"
 
@@ -143,9 +141,8 @@ class NEC:
 #: Rows no source pins to the 2026 text: each is the best-supported location, not a reading.
 #: TODO: confirm every one against NFPA 70-2026 before a permit set relies on it.
 UNCONFIRMED: Final = frozenset({
-    NEC.NONCOINCIDENT, NEC.OPTIONAL_HEAT_PUMP, NEC.OPTIONAL_RESISTANCE_HEAT,
-    NEC.FEEDER_SERVICE_STANDARD, NEC.GFCI_SINK, NEC.AFCI_DWELLING, NEC.FLOOR_BOX,
-    NEC.INTERCONNECTION_120PCT, NEC.LIMITED_ENERGY_SEPARATION, NEC.ISLAND_PROVISION,
+    NEC.NONCOINCIDENT, NEC.FEEDER_SERVICE_STANDARD, NEC.GFCI_SINK, NEC.AFCI_DWELLING,
+    NEC.FLOOR_BOX, NEC.INTERCONNECTION_120PCT, NEC.LIMITED_ENERGY_SEPARATION, NEC.ISLAND_PROVISION,
     NEC.COUNTERTOP_RECEPTACLE_LOCATION, NEC.WALL_COUNTERTOP, NEC.BALCONY_RECEPTACLE,
 })
 
